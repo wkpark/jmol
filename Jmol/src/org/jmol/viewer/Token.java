@@ -259,7 +259,7 @@ class Token {
   final static int atom         = showparam |  6;
   final static int sequence     = showparam |  7 | expression;
   final static int symmetry     = showparam |  8 | expression | predefinedset;
-  final static int translation  = showparam |  9;
+  final static int translation  = showparam |  9 | atomproperty;
   // chime show parameters
   final static int residue      = showparam | 10;
   final static int url          = showparam | 11;
@@ -325,19 +325,18 @@ class Token {
   final static int resno        = atomproperty | 2;
   final static int radius       = atomproperty | 3 | setparam;
   final static int temperature  = atomproperty | 4;
-  final static int model        =
-    atomproperty | 5 | showparam | expression | command;
+  final static int model        = atomproperty | 5 | showparam | command;
   final static int _bondedcount = atomproperty | 6;
   final static int _groupID     = atomproperty | 7;
   final static int _atomID      = atomproperty | 8;
   final static int _structure   = atomproperty | 9;
   final static int occupancy    = atomproperty | 10;
   final static int polymerLength= atomproperty | 11;
-  final static int molecule     = atomproperty | command | 12 | expression;
-  final static int cell         = atomproperty | 13 | expression;
-  final static int site         = atomproperty | 14 | expression;
-  final static int element      = atomproperty | 15 | expression;
-  final static int symop        = atomproperty | 16 | expression;
+  final static int molecule     = atomproperty | command | 12;
+  final static int cell         = atomproperty | 13;
+  final static int site         = atomproperty | 14;
+  final static int element      = atomproperty | 15;
+  final static int symop        = atomproperty | 16;
   final static int surfacedistance = atomproperty | 17;
 
 

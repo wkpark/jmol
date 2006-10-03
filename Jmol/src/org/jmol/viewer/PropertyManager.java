@@ -25,12 +25,14 @@ package org.jmol.viewer;
 
 //import org.jmol.util.Logger;
 
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+
 import org.jmol.util.Logger;
 
 /**
@@ -83,6 +85,7 @@ class PropertyManager {
     
     "boundBoxInfo"    , "", "",  
     "dataInfo"        , "<data type>", "types",
+    "image"           , "", "",
   };
 
   final static int PROP_APPLET_INFO = 0;
@@ -117,7 +120,8 @@ class PropertyManager {
   
   final static int PROP_BOUNDBOX_INFO = 25;
   final static int PROP_DATA_INFO = 26;
-  final static int PROP_COUNT = 27;
+  final static int PROP_IMAGE = 27;
+  final static int PROP_COUNT = 28;
 
   int getPropertyNumber(String infoType) {
     if (infoType == null)
@@ -147,7 +151,7 @@ class PropertyManager {
   }
   
   final static String[] readableTypes = {
-    "extractmodel", "filecontents", "fileheader"};
+    "extractmodel", "filecontents", "fileheader", "image"};
   
   boolean isReadableAsString(String infoType) {
     for (int i = readableTypes.length; --i >= 0; )
@@ -236,6 +240,8 @@ class PropertyManager {
       return viewer.getMatrixRotate();
     case PROP_DATA_INFO:
       return viewer.getData(myParam);
+    case PROP_IMAGE:
+      return viewer.getJpegBase64(100);
     }
     String info = "getProperty ERROR\n" + infoType + "?\nOptions include:\n";
     for (int i = 0; i < PROP_COUNT; i++) {

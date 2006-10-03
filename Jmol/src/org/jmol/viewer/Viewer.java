@@ -47,6 +47,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 import java.net.URL;
+import java.io.ByteArrayOutputStream;
 import java.io.Reader;
 
 /*
@@ -2076,17 +2077,38 @@ public class Viewer extends JmolViewer {
 
   public Image getScreenImage() {
     boolean antialias = true;
+    boolean isStereo = false;
     setRectClip(null);
     int stereoMode = getStereoMode();
     switch (stereoMode) {
+    case JmolConstants.STEREO_DOUBLE:
+      // this allows for getting both eye views in two images
+      // because you can adjust using "stereo -2.5", then "stereo +2.5"
+      isStereo = true;
+      break;
     case JmolConstants.STEREO_REDCYAN:
     case JmolConstants.STEREO_REDBLUE:
     case JmolConstants.STEREO_REDGREEN:
     case JmolConstants.STEREO_CUSTOM:
       return getStereoImage(stereoMode, false);
-    }
-    return getImage(false, antialias);
+   }
+    return getImage(isStereo, antialias);
   }
+
+  /**
+   * @param quality
+   * @return base64-encoded version of the image
+   */
+  public String getJpegBase64(int quality) {
+    Image eImage = getScreenImage();
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+    JpegEncoder jc = new JpegEncoder(eImage, quality, os);
+    jc.Compress();
+    byte[] jpeg = os.toByteArray();
+    releaseScreenImage();
+    return "" + Base64.getBase64(jpeg);
+  }
+  
 
   public void releaseScreenImage() {
     g3d.releaseScreenImage();

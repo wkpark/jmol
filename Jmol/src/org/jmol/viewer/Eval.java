@@ -883,6 +883,7 @@ class Eval { //implements Runnable {
         stack[sp++] = viewer.getAtomBits("SpecSeqcodeRange", new int[] {
             seqcodeA, seqcodeB });
         break;
+
       case Token.spec_chain:
         stack[sp++] = viewer.getAtomBits("SpecChain", instruction.intValue);
         break;
@@ -1064,8 +1065,11 @@ class Eval { //implements Runnable {
         if (propertyValue < 0)
           continue;
         break;
+      case Token.translation:
+        propertyValue = frame.getTranslation(atom.atomIndex);
+        break;
       case Token.surfacedistance:
-        if (viewer.getFrame().getSurfaceDistanceMax() == 0)
+        if (frame.getSurfaceDistanceMax() == 0)
           dots(statementLength, Dots.DOTS_MODE_CALCONLY);
         propertyValue = atom.getSurfaceDistance();
         if (propertyValue < 0)

@@ -28,6 +28,7 @@ import org.jmol.api.*;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
+import org.jmol.util.*;
 
 //import org.openscience.cdk.applications.plugin.CDKPluginManager;
 import Acme.JPM.Encoders.PpmEncoder;
@@ -36,7 +37,6 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
-import com.obrador.JpegEncoder;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
 import java.awt.event.*;
@@ -1582,56 +1582,6 @@ class ImageCreator {
     this.status = status;
   }
  
-  /**
-   * (maybe? -- untested) 
-   * @param quality
-   * @return base64-encoded version of the image
-   */
-  public String getJpegBase64(int quality) {
-    Image eImage = viewer.getScreenImage();
-    ByteArrayOutputStream os = new ByteArrayOutputStream();
-    JpegEncoder jc = new JpegEncoder(eImage, quality, os);
-    jc.Compress();
-    byte[] jpeg = os.toByteArray();
-    viewer.releaseScreenImage();
-    return "" + getBase64(jpeg);
-  }
-  
-  static String base64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-  StringBuffer getBase64(byte[] bytes) {
-    long nBytes = bytes.length;
-    StringBuffer sout = new StringBuffer();
-    if (nBytes == 0)
-      return sout;
-    for (int i = 0, nPad = 0; i < nBytes && nPad == 0;) {
-      if (false) {
-        sout.append(  (char) bytes[i++]);
-      } else {
-        if (i % 75 == 0 && i != 0)
-          sout.append("\r\n");
-        nPad = (i + 2 == nBytes ? 1 : i + 1 == nBytes ? 2 : 0);
-        int outbytes = (((int) (bytes[i++]) << 16) & 0xFF0000)
-            | ((nPad >= 1 ? 0 : (int) (bytes[i++]) << 8) & 0x00FF00)
-            | ((nPad == 2 ? 0 : (int) bytes[i++]) & 0x0000FF);
-        
-        sout.append(base64.charAt((outbytes >> 18) & 0x3F));
-
-        sout.append(base64.charAt((outbytes >> 12) & 0x3F));
-        sout.append(nPad == 2 ? '=' : base64.charAt((outbytes >> 6) & 0x3F));
-        sout.append(nPad >= 1 ? '=' : base64.charAt(outbytes & 0x3F));
-      }
-    }
-    return sout;
-  }
-  
-  byte[] toBytes(StringBuffer sb) {
-    byte[] b = new byte[sb.length()];
-    for (int i = sb.length(); --i >= 0;)
-      b[i] = (byte) sb.charAt(i);
-    return b;
-  }
-  
-  
   void clipImage() {
     Image eImage = viewer.getScreenImage();
     ImageSelection.setClipboard(eImage);
@@ -1661,8 +1611,8 @@ class ImageCreator {
           jc.Compress();
           osb.flush();
           osb.close();
-          StringBuffer jpg = getBase64(osb.toByteArray());
-          os.write(toBytes(jpg));
+          StringBuffer jpg = Base64.getBase64(osb.toByteArray());
+          os.write(Base64.toBytes(jpg));
         }
         os.flush();
         os.close();

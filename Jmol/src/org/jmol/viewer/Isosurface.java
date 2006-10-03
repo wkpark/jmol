@@ -4255,7 +4255,6 @@ class Isosurface extends MeshCollection {
   Point3f[] solvent_ptAtom;
   int solvent_nAtoms;
   int solvent_firstNearbyAtom;
-  Elf elf;
 
   BitSet atomSet = new BitSet();
   Voxel solvent_voxel = new Voxel();

@@ -252,6 +252,7 @@ class Isosurface extends MeshCollection {
 
   boolean iAddGridPoints;
   boolean associateNormals;
+  boolean newSolventMethod;
   boolean force2SidedTriangles;
   boolean isColorReversed;
 
@@ -721,7 +722,11 @@ class Isosurface extends MeshCollection {
       if (!isSilent)
         Logger.info("loading voxel data...");
       checkFlags();
+      long timeBegin = System.currentTimeMillis();
       createIsosurface();
+      if (!isSilent)
+        Logger.info("surface calculation time: " + (System.currentTimeMillis() - timeBegin)
+          + " ms");
       initializeMesh(force2SidedTriangles);
       jvxlFileMessage = (jvxlDataIsColorMapped ? "mapped" : "");
       if (isContoured && thePlane == null) {
@@ -812,6 +817,7 @@ class Isosurface extends MeshCollection {
     precalculateVoxelData = false;
     isColorReversed = false;
     iAddGridPoints = false;
+    newSolventMethod = true;
     associateNormals = true;
     force2SidedTriangles = true;
     colorBySign = colorByPhase = false;
@@ -845,7 +851,6 @@ class Isosurface extends MeshCollection {
     solventAtomRadiusAbsolute = 0;
     solventAtomRadiusOffset = 0;
     useIonic = false;
-
     jvxlInitFlags();
     initState();
   }
@@ -944,13 +949,15 @@ class Isosurface extends MeshCollection {
   }
 
   void checkFlags() {
+    if (viewer.getTestFlag1()) // turn off new solvent method
+      newSolventMethod = false;
     if (viewer.getTestFlag2())
       associateNormals = false;
-    if (viewer.getTestFlag1() || viewer.getTestFlag4()) // turn off 2-sided if showing normals
+    if (viewer.getTestFlag4()) // turn off 2-sided if showing normals
       force2SidedTriangles = false;
     if (logMessages) {
       Logger
-          .debug("Isosurface using testflag1 or testflag4: no 2-sided triangles = "
+          .debug("Isosurface using testflag4: no 2-sided triangles = "
               + !force2SidedTriangles);
       Logger.debug("Isosurface using testflag2: no associative grouping = "
           + !associateNormals);
@@ -968,10 +975,10 @@ class Isosurface extends MeshCollection {
     readData(false);
     calcVoxelVertexVectors();
     generateSurfaceData();
-    currentMesh.jvxlFileHeader = jvxlFileHeader;
+    currentMesh.jvxlFileHeader = "" + jvxlFileHeader;
     currentMesh.cutoff = (isJvxl ? jvxlCutoff : cutoff);
     currentMesh.jvxlColorData = "";
-    currentMesh.jvxlEdgeData = fractionData;
+    currentMesh.jvxlEdgeData = "" + fractionData;
     currentMesh.isBicolorMap = isBicolorMap;
     currentMesh.isContoured = isContoured;
     currentMesh.nContours = nContours;
@@ -1139,16 +1146,19 @@ class Isosurface extends MeshCollection {
     }
   }
 
-  String jvxlFileHeader;
+  StringBuffer jvxlFileHeader = new StringBuffer();
   String jvxlFileMessage;
   String jvxlEdgeDataRead;
   String jvxlColorDataRead;
 
   void readTitleLines() throws Exception {
-    jvxlFileHeader = br.readLine() + "\n";
-    jvxlFileHeader += br.readLine() + "\n";
+    jvxlFileHeader = new StringBuffer();
+    jvxlFileHeader.append(br.readLine());
+    jvxlFileHeader.append('\n');
+    jvxlFileHeader.append(br.readLine());
+    jvxlFileHeader.append('\n');
     if (!isSilent)
-      Logger.info(jvxlFileHeader);
+      Logger.info("" + jvxlFileHeader);
   }
 
   int atomCount;
@@ -1171,12 +1181,13 @@ class Isosurface extends MeshCollection {
     volumetricOrigin.set(parseFloat(), parseFloat(), parseFloat());
     if (!isAngstroms)
       volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
-    jvxlFileHeader += jvxlAtoms + atomLine + "\n";
+    jvxlFileHeader.append(jvxlAtoms + atomLine + '\n');
   }
 
   void readVoxelVector(int voxelVectorIndex) throws Exception {
     line = br.readLine();
-    jvxlFileHeader += line + "\n";
+    jvxlFileHeader.append(line);
+    jvxlFileHeader.append('\n');
     Vector3f voxelVector = volumetricVectors[voxelVectorIndex];
     voxelCounts[voxelVectorIndex] = parseInt(line);
     voxelVector.set(parseFloat(), parseFloat(), parseFloat());
@@ -1199,15 +1210,15 @@ class Isosurface extends MeshCollection {
 
   void readAtoms() throws Exception {
     for (int i = 0; i < atomCount; ++i)
-      jvxlFileHeader += br.readLine() + "\n";
+      jvxlFileHeader.append(br.readLine() + "\n");
     if (atomCount == 0) {
       Point3f pt = new Point3f(volumetricOrigin);
-      jvxlFileHeader += "1 1.0 " + pt.x + " " + pt.y + " " + pt.z
-          + " //BOGUS H ATOM ADDED FOR JVXL FORMAT\n";
+      jvxlFileHeader.append("1 1.0 " + pt.x + " " + pt.y + " " + pt.z
+          + " //BOGUS H ATOM ADDED FOR JVXL FORMAT\n");
       for (int i = 0; i < 3; i++)
         pt.scaleAdd(voxelCounts[i] - 1, volumetricVectors[i], pt);
-      jvxlFileHeader += "2 2.0 " + pt.x + " " + pt.y + " " + pt.z
-          + " //BOGUS He ATOM ADDED FOR JVXL FORMAT\n";
+      jvxlFileHeader.append("2 2.0 " + pt.x + " " + pt.y + " " + pt.z
+          + " //BOGUS He ATOM ADDED FOR JVXL FORMAT\n");
     }
   }
 
@@ -1321,6 +1332,8 @@ class Isosurface extends MeshCollection {
         generateQuantumCube();
       else if (dataType == SURFACE_MEP)
         generateMepCube();
+      else if ((dataType & IS_SOLVENTTYPE) != 0)
+          generateSolventCube();
       else
         Logger.error("code error -- isPrecalculation, but how?");
       if (isMapData || thePlane != null)
@@ -1363,7 +1376,10 @@ class Isosurface extends MeshCollection {
               break;
             case SURFACE_SOLVENT:
             case SURFACE_SASURFACE:
-              voxelValue = getSolventValue(x, y, z);
+              if (isPrecalculation)
+                voxelValue = strip[z]; //precalculated
+              else  // old way (for testing)
+                voxelValue = getSolventValue(x, y, z);
               break;
             case SURFACE_ATOMICORBITAL:
               voxelValue = getPsi(x, y, z);
@@ -1389,7 +1405,7 @@ class Isosurface extends MeshCollection {
 
           if (logCube)
             if (x < 20 && y < 20 && z < 20) {
-              this.voxelPtToXYZ(x, y, z, ptXyzTemp);
+              voxelPtToXYZ(x, y, z, ptXyzTemp);
               Logger.info("voxelData[" + x + "][" + y + "][" + z
                   + "] xyz(Angstroms)=" + ptXyzTemp + " value=" + voxelValue);
             }
@@ -2005,7 +2021,7 @@ class Isosurface extends MeshCollection {
     fractionPtr = 0;
     int vertexCount = mesh.vertexCount;
     short[] colixes = mesh.vertexColixes;
-    fractionData = "";
+    fractionData = new StringBuffer();
     strFractionTemp = (isJvxl ? jvxlColorDataRead : "");
     fractionPtr = 0;
     Logger.info("JVXL reading color data base/range: " + mappedDataMin + "/"
@@ -2082,7 +2098,7 @@ class Isosurface extends MeshCollection {
 
   int fractionPtr;
   String strFractionTemp = "";
-  String fractionData = "";
+  StringBuffer fractionData = new StringBuffer();
 
   float jvxlGetNextFraction(int base, int range, float fracOffset) {
     if (fractionPtr >= strFractionTemp.length()) {
@@ -2091,7 +2107,8 @@ class Isosurface extends MeshCollection {
             + fractionData.length());
       endOfData = true;
       strFractionTemp = "" + (char) base;
-      fractionData += strFractionTemp + "\n";
+      fractionData.append(strFractionTemp);
+      fractionData.append('\n');
       fractionPtr = 0;
     }
     return jvxlFractionFromCharacter(strFractionTemp.charAt(fractionPtr++),
@@ -2369,7 +2386,7 @@ class Isosurface extends MeshCollection {
     cubeCountX = voxelData.length - 1;
     cubeCountY = voxelData[0].length - 1;
     cubeCountZ = voxelData[0][0].length - 1;
-    fractionData = "";
+    fractionData = new StringBuffer();
     strFractionTemp = (isJvxl ? jvxlEdgeDataRead : "");
     fractionPtr = 0;
     if (thePlane != null) {
@@ -2379,10 +2396,12 @@ class Isosurface extends MeshCollection {
       contourVertexCount = 0;
       contourType = 2;
     }
-    if (!isSilent || logMessages)
+    if (!isSilent || logMessages) {
       Logger.info("cutoff=" + cutoff + " voxel cubes=" + cubeCountX + ","
           + cubeCountY + "," + cubeCountZ + "," + " total="
           + (cubeCountX * cubeCountY * cubeCountZ));
+      Logger.info("resolutions(x,y,z)="+1/volumetricVectors[0].length()+","+1/volumetricVectors[1].length()+","+1/volumetricVectors[2].length());
+    }
 
     int[][] isoPointIndexes = new int[cubeCountY * cubeCountZ][12];
     for (int i = cubeCountY * cubeCountZ; --i >= 0;)
@@ -2431,9 +2450,11 @@ class Isosurface extends MeshCollection {
         }
       }
     }
-    if (isJvxl)
-      fractionData = jvxlEdgeDataRead;
-    fractionData += "\n"; //from generateSurfaceData
+    if (isJvxl) {
+      fractionData = new StringBuffer();
+      fractionData.append(jvxlEdgeDataRead);
+    }
+    fractionData.append('\n'); //from generateSurfaceData
     if (!isSilent || logMessages)
       Logger.info("insideCount=" + insideCount + " outsideCount=" + outsideCount + " surfaceCount="
           + surfaceCount + " total="
@@ -2618,8 +2639,8 @@ class Isosurface extends MeshCollection {
       }
       thisValue = valueA + fraction * diff;
       if (!isJvxl)
-        fractionData += jvxlFractionAsCharacter(fraction, edgeFractionBase,
-            edgeFractionRange);
+        fractionData.append(jvxlFractionAsCharacter(fraction, edgeFractionBase,
+            edgeFractionRange));
     }
     edgeVector.sub(pointB, pointA);
     surfacePoint.scaleAdd(fraction, edgeVector, pointA);
@@ -3601,6 +3622,15 @@ class Isosurface extends MeshCollection {
     pt2.z = scaleByVoxelVector(pointVector, 2);
   }
 
+  void xyzToVoxelPt(float x, float y, float z, Point3i pt2) {
+    pointVector.set(x, y, z);
+    pointVector.sub(volumetricOrigin);
+    ptXyzTemp.x = scaleByVoxelVector(pointVector, 0);
+    ptXyzTemp.y = scaleByVoxelVector(pointVector, 1);
+    ptXyzTemp.z = scaleByVoxelVector(pointVector, 2);
+    pt2.set((int) ptXyzTemp.x, (int) ptXyzTemp.y, (int) ptXyzTemp.z);
+  }
+
   void offsetCenter() {
     Point3f pt = new Point3f();
     pt.scaleAdd((voxelCounts[0] - 1) / 2f, volumetricVectors[0], pt);
@@ -3681,12 +3711,14 @@ class Isosurface extends MeshCollection {
     } else {
       nGrid = (int) (range * ptsPerAngstrom);
     }
-    if ((dataType & HAS_MAXGRID) > 0 && nGrid > gridMax) {
-      if (resolution != Float.MAX_VALUE)
-        Logger.info("Maximum number of voxels for index=" + index);
-      nGrid = gridMax;
-    } else if (resolution == Float.MAX_VALUE && nGrid > gridMax) {
-      nGrid = gridMax;
+    if (nGrid > gridMax) {
+      if ((dataType & HAS_MAXGRID) > 0) {
+        if (resolution != Float.MAX_VALUE)
+          Logger.info("Maximum number of voxels for index=" + index);
+        nGrid = gridMax;
+      } else if (resolution == Float.MAX_VALUE) {
+        nGrid = gridMax;
+      }
     }
     ptsPerAngstrom = nGrid / range;
     float d = volumetricVectorLengths[index] = 1f / ptsPerAngstrom;
@@ -3748,13 +3780,14 @@ class Isosurface extends MeshCollection {
     float radius = sphere_radiusAngstroms * 1.1f * eccentricityScale;
     for (int i = 0; i < 3; i++)
       setVoxelRange(i, -radius, radius, sphere_ptsPerAngstrom, sphere_gridMax);
-    jvxlFileHeader = "SPHERE \nres="
+    jvxlFileHeader = new StringBuffer();
+    jvxlFileHeader.append("SPHERE \nres="
         + sphere_ptsPerAngstrom
         + " rad="
         + sphere_radiusAngstroms
         + (isAnisotropic ? " anisotropy=(" + anisotropy[0] + ","
-            + anisotropy[1] + "," + anisotropy[2] + ")" : "") + "\n";
-    jvxlFileHeader += jvxlGetVolumeHeader(2);
+            + anisotropy[1] + "," + anisotropy[2] + ")" : "") + "\n");
+    jvxlFileHeader.append(jvxlGetVolumeHeader(2));
     atomCount = 0;
     negativeAtomCount = false;
   }
@@ -3792,7 +3825,8 @@ class Isosurface extends MeshCollection {
     for (int i = 0; i < 3; i++)
       setVoxelRange(i, -psi_radiusAngstroms, psi_radiusAngstroms,
           psi_ptsPerAngstrom, psi_gridMax);
-    jvxlFileHeader = "hydrogen-like orbital \nn="
+    jvxlFileHeader = new StringBuffer();
+    jvxlFileHeader.append("hydrogen-like orbital \nn="
         + psi_n
         + ", l="
         + psi_l
@@ -3805,8 +3839,8 @@ class Isosurface extends MeshCollection {
         + " rad="
         + psi_radiusAngstroms
         + (isAnisotropic ? " anisotropy=(" + anisotropy[0] + ","
-            + anisotropy[1] + "," + anisotropy[2] + ")" : "") + "\n";
-    jvxlFileHeader += jvxlGetVolumeHeader(2);
+            + anisotropy[1] + "," + anisotropy[2] + ")" : "") + "\n");
+    jvxlFileHeader.append(jvxlGetVolumeHeader(2));
     atomCount = 0;
     negativeAtomCount = false;
     calcFactors(psi_n, psi_l, psi_m);
@@ -3912,7 +3946,8 @@ class Isosurface extends MeshCollection {
     setVoxelRange(1, -radius, radius, lobe_ptsPerAngstrom, lobe_gridMax);
     setVoxelRange(2, 0, radius / eccentricityRatio, lobe_ptsPerAngstrom,
         lobe_gridMax);
-    jvxlFileHeader = "lobe \nn="
+    jvxlFileHeader = new StringBuffer();
+    jvxlFileHeader.append("lobe \nn="
         + psi_n
         + ", l="
         + psi_l
@@ -3925,8 +3960,8 @@ class Isosurface extends MeshCollection {
         + " rad="
         + radius
         + (isAnisotropic ? " anisotropy=(" + anisotropy[0] + ","
-            + anisotropy[1] + "," + anisotropy[2] + ")" : "") + "\n";
-    jvxlFileHeader += jvxlGetVolumeHeader(2);
+            + anisotropy[1] + "," + anisotropy[2] + ")" : "") + "\n");
+    jvxlFileHeader.append(jvxlGetVolumeHeader(2));
     atomCount = 0;
     negativeAtomCount = false;
     calcFactors(psi_n, psi_l, psi_m);
@@ -4059,15 +4094,16 @@ class Isosurface extends MeshCollection {
     }
 
     Logger.info("MO range bohr " + xyzMin + " to " + xyzMax);
-    jvxlFileHeader = "MO range bohr " + xyzMin + " to " + xyzMax
-        + "\ncalculation type: " + moData.get("calculationType") + "\n";
+    jvxlFileHeader = new StringBuffer();
+    jvxlFileHeader.append("MO range bohr " + xyzMin + " to " + xyzMax
+        + "\ncalculation type: " + moData.get("calculationType") + "\n");
 
     int maxGrid = qm_gridMax;
 
     setVoxelRange(0, xyzMin.x, xyzMax.x, qm_ptsPerAngstrom, maxGrid);
     setVoxelRange(1, xyzMin.y, xyzMax.y, qm_ptsPerAngstrom, maxGrid);
     setVoxelRange(2, xyzMin.z, xyzMax.z, qm_ptsPerAngstrom, maxGrid);
-    jvxlFileHeader += jvxlGetVolumeHeader(iAtom);
+    jvxlFileHeader.append(jvxlGetVolumeHeader(iAtom));
     Point3f pt = new Point3f();
     for (int i = 0; i < nAtoms; i++) {
       Atom atom = atoms[i];
@@ -4075,9 +4111,9 @@ class Isosurface extends MeshCollection {
         continue;
       pt.set(atom);
       pt.scale(1 / ANGSTROMS_PER_BOHR);
-      jvxlFileHeader += atom.getAtomicAndIsotopeNumber() + " "
+      jvxlFileHeader.append(atom.getAtomicAndIsotopeNumber() + " "
           + atom.getAtomicAndIsotopeNumber() + ".0 " + pt.x + " " + pt.y + " "
-          + pt.z + "\n";
+          + pt.z + "\n");
     }
     atomCount = -Integer.MAX_VALUE;
     negativeAtomCount = false;
@@ -4177,14 +4213,15 @@ class Isosurface extends MeshCollection {
     }
 
     Logger.info("MEP range bohr " + xyzMin + " to " + xyzMax);
-    jvxlFileHeader = "MEP range bohr " + xyzMin + " to " + xyzMax + "\n";
+    jvxlFileHeader = new StringBuffer();
+    jvxlFileHeader.append("MEP range bohr " + xyzMin + " to " + xyzMax + "\n");
 
     int maxGrid = mep_gridMax;
 
     setVoxelRange(0, xyzMin.x, xyzMax.x, mep_ptsPerAngstrom, maxGrid);
     setVoxelRange(1, xyzMin.y, xyzMax.y, mep_ptsPerAngstrom, maxGrid);
     setVoxelRange(2, xyzMin.z, xyzMax.z, mep_ptsPerAngstrom, maxGrid);
-    jvxlFileHeader += jvxlGetVolumeHeader(iAtom);
+    jvxlFileHeader.append(jvxlGetVolumeHeader(iAtom));
     Point3f pt = new Point3f();
     for (int i = 0; i < nAtoms; i++) {
       Atom atom = atoms[i];
@@ -4192,9 +4229,9 @@ class Isosurface extends MeshCollection {
         continue;
       pt.set(atom);
       pt.scale(1 / ANGSTROMS_PER_BOHR);
-      jvxlFileHeader += atom.getAtomicAndIsotopeNumber() + " "
+      jvxlFileHeader.append(atom.getAtomicAndIsotopeNumber() + " "
           + atom.getAtomicAndIsotopeNumber() + ".0 " + pt.x + " " + pt.y + " "
-          + pt.z + "\n";
+          + pt.z + "\n");
     }
     atomCount = -Integer.MAX_VALUE;
     negativeAtomCount = false;
@@ -4212,18 +4249,36 @@ class Isosurface extends MeshCollection {
   ///// solvent-accessible, solvent-excluded surface //////
 
   float solvent_ptsPerAngstrom = 2f;
-  int solvent_gridMax = 40;
+  int solvent_gridMax = 60;
   int solvent_modelIndex;
   float[] solvent_atomRadius;
   Point3f[] solvent_ptAtom;
   int solvent_nAtoms;
   int solvent_firstNearbyAtom;
+  Elf elf;
 
   BitSet atomSet = new BitSet();
-
   Voxel solvent_voxel = new Voxel();
 
   void setupSolvent() {
+    /*
+     * The surface fragment idea:
+     * 
+     * isosurface solvent|sasurface both work on the SELECTED atoms, thus
+     * allowing for a subset of the molecule to be involved. But in that
+     * case we don't want to be creating a surface that goes right through
+     * another atom. Rather, what we want (probably) is just the portion
+     * of the OVERALL surface that involves these atoms. 
+     * 
+     * The addition of Mesh.voxelValue[] means that we can specify any 
+     * voxel we want to NOT be excluded (NaN). Here we first exclude any 
+     * voxel that would have been INSIDE a nearby atom. This will take care
+     * of any portion of the vanderwaals surface that would be there. Then
+     * we exclude any special-case voxel that is between two nearby atoms. 
+     *  
+     *  Bob Hanson 13 Jul 2006
+     *  
+     */
     Atom[] atoms = frame.atoms;
     Point3f xyzMin = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE,
         Float.MAX_VALUE);
@@ -4264,12 +4319,7 @@ class Isosurface extends MeshCollection {
       solvent_ptAtom = new Point3f[iAtom + nH];
       atomNo = new int[iAtom + nH];
 
-      float r = (solventAtomRadiusAbsolute > 0 ? solventAtomRadiusAbsolute
-          : JmolConstants.vanderwaalsMars[1] / 1000f);
-      r *= solventAtomRadiusFactor;
-      r += solventExtendedAtomRadius + solventAtomRadiusOffset;
-      if (r < 0.1)
-         r = 0.1f;
+      float r = solventWorkingRadius(null);
       for (int i = 0; i < nH; i++) {
         atomNo[i] = 1;
         solvent_atomRadius[i] = r;
@@ -4284,14 +4334,7 @@ class Isosurface extends MeshCollection {
           continue;
         atomNo[iAtom] = atoms[i].getElementNumber();
         solvent_ptAtom[iAtom] = atoms[i];
-        r = (solventAtomRadiusAbsolute > 0 ? solventAtomRadiusAbsolute
-            : useIonic ? atoms[i].getBondingRadiusFloat() : atoms[i]
-                .getVanderwaalsRadiusFloat());
-        r *= solventAtomRadiusFactor; 
-        r += solventExtendedAtomRadius + solventAtomRadiusOffset;
-        if (r < 0.1)
-          r = 0.1f;
-        solvent_atomRadius[iAtom++] = r;
+        solvent_atomRadius[iAtom++] = solventWorkingRadius(atoms[i]);
       }
     }
     solvent_nAtoms = solvent_firstNearbyAtom = iAtom;
@@ -4315,27 +4358,14 @@ class Isosurface extends MeshCollection {
         xyzMax.z = pt.z + rA;
     }
     Logger.info("surface range " + xyzMin + " to " + xyzMax);
-    jvxlFileHeader = "solvent-"
+    jvxlFileHeader = new StringBuffer();
+    jvxlFileHeader.append("solvent-"
         + (dataType == SURFACE_SASURFACE ? "accesible" : "excluded")
-        + " surface\nrange " + xyzMin + " to " + xyzMax + "\n";
+        + " surface\nrange " + xyzMin + " to " + xyzMax + "\n");
 
     // fragment idea
 
-    int maxGrid = solvent_gridMax / (iAtom > 50 ? 2 : 1);
-    setVoxelRange(0, xyzMin.x, xyzMax.x, solvent_ptsPerAngstrom, maxGrid);
-    setVoxelRange(1, xyzMin.y, xyzMax.y, solvent_ptsPerAngstrom, maxGrid);
-    setVoxelRange(2, xyzMin.z, xyzMax.z, solvent_ptsPerAngstrom, maxGrid);
-
-    jvxlFileHeader += jvxlGetVolumeHeader(iAtom);
     Point3f pt = new Point3f();
-    for (int i = 0; i < solvent_nAtoms; i++) {
-      pt.set(solvent_ptAtom[i]);
-      pt.scale(1 / ANGSTROMS_PER_BOHR);
-      jvxlFileHeader += atomNo[i] + " " + atomNo[i] + ".0 " + pt.x + " " + pt.y
-          + " " + pt.z + "\n";
-    }
-    atomCount = -Integer.MAX_VALUE;
-    negativeAtomCount = false;
 
     BitSet bsNearby = new BitSet();
     int nNearby = 0;
@@ -4345,16 +4375,7 @@ class Isosurface extends MeshCollection {
       if (atomSet.get(i) || bsIgnore != null && bsIgnore.get(i))
         continue;
       pt = atoms[i];
-      float rA = atoms[i].getVanderwaalsRadiusFloat()
-          + solventExtendedAtomRadius;
-      
-      rA = (solventAtomRadiusAbsolute > 0 ? solventAtomRadiusAbsolute
-          : useIonic ? atoms[i].getBondingRadiusFloat() : atoms[i]
-              .getVanderwaalsRadiusFloat());
-      rA *= solventAtomRadiusFactor;
-      rA += solventExtendedAtomRadius + solventAtomRadiusOffset;
-      if (rA < 0.1)
-        rA = 0.1f;
+      float rA = solventWorkingRadius(atoms[i]);
       if (pt.x + rA > xyzMin.x && pt.x - rA < xyzMax.x && pt.y + rA > xyzMin.y
           && pt.y - rA < xyzMax.y && pt.z + rA > xyzMin.z
           && pt.z - rA < xyzMax.z) {
@@ -4366,44 +4387,173 @@ class Isosurface extends MeshCollection {
       }
     }
 
-    if (nNearby == 0)
-      return;
-    solvent_nAtoms += nNearby;
-    solvent_atomRadius = (float[]) ArrayUtil.setLength(solvent_atomRadius,
-        solvent_nAtoms);
-    solvent_ptAtom = (Point3f[]) ArrayUtil.setLength(solvent_ptAtom,
-        solvent_nAtoms);
+    if (nNearby != 0) {
+      solvent_nAtoms += nNearby;
+      solvent_atomRadius = (float[]) ArrayUtil.setLength(solvent_atomRadius,
+          solvent_nAtoms);
+      solvent_ptAtom = (Point3f[]) ArrayUtil.setLength(solvent_ptAtom,
+          solvent_nAtoms);
 
-    iAtom = solvent_firstNearbyAtom;
-    for (int i = firstSet; i <= lastSet; i++) {
-      if (!bsNearby.get(i))
-        continue;
-      solvent_ptAtom[iAtom] = atoms[i];
-      solvent_atomRadius[iAtom++] = atoms[i].getVanderwaalsRadiusFloat()
-          + solventExtendedAtomRadius;
+      iAtom = solvent_firstNearbyAtom;
+      for (int i = firstSet; i <= lastSet; i++) {
+        if (!bsNearby.get(i))
+          continue;
+        solvent_ptAtom[iAtom] = atoms[i];
+        solvent_atomRadius[iAtom++] = solventWorkingRadius(atoms[i]);
+      }
     }
+
+    int maxGrid;
+    maxGrid = solvent_gridMax;
+    setVoxelRange(0, xyzMin.x, xyzMax.x, solvent_ptsPerAngstrom, maxGrid);
+    setVoxelRange(1, xyzMin.y, xyzMax.y, solvent_ptsPerAngstrom, maxGrid);
+    setVoxelRange(2, xyzMin.z, xyzMax.z, solvent_ptsPerAngstrom, maxGrid);
+    precalculateVoxelData = newSolventMethod;
+    int nAtomsWritten = Math.min(solvent_firstNearbyAtom, 100);
+    jvxlFileHeader.append(jvxlGetVolumeHeader(nAtomsWritten));
+
+    pt = new Point3f();
+    for (int i = 0; i < nAtomsWritten; i++) {
+      pt.set(solvent_ptAtom[i]);
+      pt.scale(1 / ANGSTROMS_PER_BOHR);
+      jvxlFileHeader.append(atomNo[i] + " " + atomNo[i] + ".0 " + pt.x + " "
+          + pt.y + " " + pt.z + "\n");
+    }
+    atomCount = -Integer.MAX_VALUE;
+    negativeAtomCount = false;
   }
 
+  float solventWorkingRadius(Atom atom) {
+    float r = (solventAtomRadiusAbsolute > 0 ? solventAtomRadiusAbsolute
+        : atom == null ? JmolConstants.vanderwaalsMars[1] / 1000f 
+        : useIonic ? atom.getBondingRadiusFloat() 
+        : atom.getVanderwaalsRadiusFloat());
+    r *= solventAtomRadiusFactor;
+    r += solventExtendedAtomRadius + solventAtomRadiusOffset;
+    if (r < 0.1)
+      r = 0.1f;
+    return r;
+  }
+
+  void generateSolventCube() {
+    float rA, rB;
+    Point3f ptA;
+    Point3f ptY0 = new Point3f(), ptZ0 = new Point3f();
+    Point3i pt0 = new Point3i(), pt1 = new Point3i();
+    for (int x = 0; x < nPointsX; ++x)
+      for (int y = 0; y < nPointsY; ++y)
+        for (int z = 0; z < nPointsZ; ++z)
+          voxelData[x][y][z] = Float.MAX_VALUE;
+    float maxRadius = 0;
+    for (int iAtom = 0; iAtom < solvent_nAtoms; iAtom++) {
+      ptA = solvent_ptAtom[iAtom];
+      rA = solvent_atomRadius[iAtom];
+      if (rA > maxRadius)
+        maxRadius = rA;
+      boolean isNearby = (iAtom >= solvent_firstNearbyAtom);
+      setGridLimitsForAtom(ptA, rA, pt0, pt1);
+      voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
+      for (int i = pt0.x; i < pt1.x; i++) {
+        ptY0.set(ptXyzTemp);
+        for (int j = pt0.y; j < pt1.y; j++) {
+          ptZ0.set(ptXyzTemp);
+          for (int k = pt0.z; k < pt1.z; k++) {
+            float v = ptXyzTemp.distance(ptA) - rA;
+            if (v < voxelData[i][j][k])
+              voxelData[i][j][k] = (isNearby ? Float.NaN : v);
+            ptXyzTemp.add(volumetricVectors[2]);
+          }
+          ptXyzTemp.set(ptZ0);
+          ptXyzTemp.add(volumetricVectors[1]);
+        }
+        ptXyzTemp.set(ptY0);
+        ptXyzTemp.add(volumetricVectors[0]);
+      }
+    }
+    if (dataType != SURFACE_SOLVENT || solventRadius == 0)
+      return;
+    Point3i ptA0 = new Point3i();
+    Point3i ptB0 = new Point3i();
+    Point3i ptA1 = new Point3i();
+    Point3i ptB1 = new Point3i();
+    for (int iAtom = 0; iAtom < solvent_firstNearbyAtom - 1; iAtom++)
+      if (solvent_ptAtom[iAtom] instanceof Atom) {
+        ptA = solvent_ptAtom[iAtom];
+        rA = solvent_atomRadius[iAtom] + solventRadius;
+        setGridLimitsForAtom(ptA, rA - solventRadius, ptA0, ptA1);
+        AtomIterator iter = frame.getWithinModelIterator((Atom) ptA, rA
+            + solventRadius + maxRadius);
+        while (iter.hasNext()) {
+          Atom ptB = iter.next();
+          if (ptB.atomIndex <= ((Atom)ptA).atomIndex)
+            continue;
+          // selected 
+          // only consider selected neighbors
+          if (!bsSelected.get(ptB.atomIndex))
+            continue;
+          rB = solventWorkingRadius(ptB) + solventRadius;
+          float dAB = ptA.distance(ptB);
+          if (dAB >= rA + rB)
+            continue;
+          //defining pt0 and pt1 very crudely -- this could be refined
+          setGridLimitsForAtom(ptB, rB - solventRadius, ptB0, ptB1);
+          pt0.x = Math.min(ptA0.x, ptB0.x);
+          pt0.y = Math.min(ptA0.y, ptB0.y);
+          pt0.z = Math.min(ptA0.z, ptB0.z);
+          pt1.x = Math.max(ptA1.x, ptB1.x);
+          pt1.y = Math.max(ptA1.y, ptB1.y);
+          pt1.z = Math.max(ptA1.z, ptB1.z);
+          voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
+          for (int i = pt0.x; i < pt1.x; i++) {
+            ptY0.set(ptXyzTemp);
+            for (int j = pt0.y; j < pt1.y; j++) {
+              ptZ0.set(ptXyzTemp);
+              for (int k = pt0.z; k < pt1.z; k++) {
+                float dVS = checkSpecialVoxel(ptA, rA, ptB, rB, dAB, ptXyzTemp);
+                if (!Float.isNaN(dVS)) {
+                  float v = solventRadius - dVS;
+                  if (v < voxelData[i][j][k])
+                    voxelData[i][j][k] = v;
+                }
+                ptXyzTemp.add(volumetricVectors[2]);
+              }
+              ptXyzTemp.set(ptZ0);
+              ptXyzTemp.add(volumetricVectors[1]);
+            }
+            ptXyzTemp.set(ptY0);
+            ptXyzTemp.add(volumetricVectors[0]);
+          }
+        }
+      }
+  }
+  
+  void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0, Point3i pt1) {
+    xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);
+    pt0.x -= 1;
+    pt0.y -= 1;
+    pt0.z -= 1;
+    if (pt0.x < 0)
+      pt0.x = 0;
+    if (pt0.y < 0)
+      pt0.y = 0;
+    if (pt0.z < 0)
+      pt0.z = 0;
+    xyzToVoxelPt(ptA.x + rA, ptA.y + rA, ptA.z + rA, pt1);
+    pt1.x += 2;
+    pt1.y += 2;
+    pt1.z += 2;
+    if (pt1.x >= nPointsX)
+      pt1.x = nPointsX;
+    if (pt1.y >= nPointsY)
+      pt1.y = nPointsY;
+    if (pt1.z >= nPointsZ)
+      pt1.z = nPointsZ;
+  }
+  
   float getSolventValue(int x, int y, int z) {
 
-    /*
-     * The surface fragment idea:
-     * 
-     * isosurface solvent|sasurface both work on the SELECTED atoms, thus
-     * allowing for a subset of the molecule to be involved. But in that
-     * case we don't want to be creating a surface that goes right through
-     * another atom. Rather, what we want (probably) is just the portion
-     * of the OVERALL surface that involves these atoms. 
-     * 
-     * The addition of Mesh.voxelValue[] means that we can specify any 
-     * voxel we want to NOT be excluded (NaN). Here we first exclude any 
-     * voxel that would have been INSIDE a nearby atom. This will take care
-     * of any portion of the vanderwaals surface that would be there. Then
-     * we exclude any special-case voxel that is between two nearby atoms. 
-     *  
-     *  Bob Hanson 13 Jul 2006
-     *  
-     */
+    // old method -- not used 
+    
     solvent_voxel.setValue(x, y, z, Float.MAX_VALUE);
     float rA, rB;
     Point3f ptA, ptB;
@@ -4416,6 +4566,7 @@ class Isosurface extends MeshCollection {
     }
     if (solventRadius == 0)
       return solvent_voxel.value;
+    Point3f ptV = solvent_voxel.ptXyz;
     for (int i = 0; i < solvent_nAtoms - 1 && solvent_voxel.value >= -0.5; i++) {
       ptA = solvent_ptAtom[i];
       rA = solvent_atomRadius[i] + solventRadius;
@@ -4427,7 +4578,9 @@ class Isosurface extends MeshCollection {
         float dAB = ptA.distance(ptB);
         if (dAB >= rA + rB)
           continue;
-        checkSpecialVoxel(i, j, ptA, rA, ptB, rB, dAB);
+        float dVS = checkSpecialVoxel(ptA, rA, ptB, rB, dAB, ptV);
+        if (!Float.isNaN(dVS))
+          solvent_voxel.setValue(solventRadius - dVS);
       }
     }
     return solvent_voxel.value;
@@ -4435,8 +4588,8 @@ class Isosurface extends MeshCollection {
 
   final Point3f ptS = new Point3f();
 
-  void checkSpecialVoxel(int iA, int iB, Point3f ptA, float rAS, Point3f ptB,
-                         float rBS, float dAB) {
+  float checkSpecialVoxel(Point3f ptA, float rAS, Point3f ptB,
+                         float rBS, float dAB, Point3f ptV) {
     /*
      * Checking here for voxels that are in the situation:
      * 
@@ -4489,31 +4642,31 @@ class Isosurface extends MeshCollection {
      * (solvent radius - dVS).
      * 
      */
-    Point3f ptV = solvent_voxel.ptXyz;
     float dAV = ptA.distance(ptV);
     float dBV = ptB.distance(ptV);
-    float dVS;
+    float dVS = Float.NaN;
     float f = rAS / dAV;
     if (f > 1) {
       ptS.set(ptA.x + (ptV.x - ptA.x) * f, ptA.y + (ptV.y - ptA.y) * f, ptA.z
           + (ptV.z - ptA.z) * f);
       if (ptB.distance(ptS) < rBS) {
         dVS = solventDistance(ptV, ptA, ptB, rAS, rBS, dAB, dAV, dBV);
-        if (voxelIsInTrough(dVS, rAS * rAS, rBS, dAB, dAV, dBV))
-          solvent_voxel.setValue(solventRadius - dVS);
+        if (!voxelIsInTrough(dVS, rAS * rAS, rBS, dAB, dAV, dBV))
+          return Float.NaN;
       }
-      return;
+      return dVS;
     }
     f = rBS / dBV;
     if (f <= 1)
-      return;
+      return dVS;
     ptS.set(ptB.x + (ptV.x - ptB.x) * f, ptB.y + (ptV.y - ptB.y) * f, ptB.z
         + (ptV.z - ptB.z) * f);
     if (ptA.distance(ptS) < rAS) {
       dVS = solventDistance(ptV, ptB, ptA, rBS, rAS, dAB, dBV, dAV);
-      if (voxelIsInTrough(dVS, rAS * rAS, rBS, dAB, dAV, dBV))
-        solvent_voxel.setValue(solventRadius - dVS);
+      if (!voxelIsInTrough(dVS, rAS * rAS, rBS, dAB, dAV, dBV))
+        return Float.NaN;
     }
+    return dVS;
   }
 
   boolean voxelIsInTrough(float dVS, float rAS2, float rBS, float dAB,
@@ -4540,7 +4693,8 @@ class Isosurface extends MeshCollection {
   String functionName;
 
   void setupFunctionXY() {
-    jvxlFileHeader = "functionXY\n" + functionXYinfo + "\n";
+    jvxlFileHeader = new StringBuffer();
+    jvxlFileHeader.append("functionXY\n" + functionXYinfo + "\n");
     functionName = (String) functionXYinfo.get(0);
     volumetricOrigin.set((Point3f) functionXYinfo.get(1));
     if (!isAngstroms)
@@ -4554,7 +4708,7 @@ class Isosurface extends MeshCollection {
       volumetricVectorLengths[i] = volumetricVectors[i].length();
       unitVolumetricVectors[i].normalize(volumetricVectors[i]);
     }
-    jvxlFileHeader += jvxlGetVolumeHeader(2);
+    jvxlFileHeader.append(jvxlGetVolumeHeader(2));
     atomCount = 0;
     negativeAtomCount = false;
   }

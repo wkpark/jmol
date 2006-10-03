@@ -61,6 +61,10 @@
     </section>
     <section title="Crystallography">
       <screenshots>
+        <screenshot image="zeolite-rho.jpg">
+          Network of aluminate-silicate tetrahedra and the volume available for absorption.
+          <i>(submitted by Alan Hewat)</i>
+        </screenshot>
         <screenshot image="screenshot4.jpg">
           Display of a crystal structure.
         </screenshot>

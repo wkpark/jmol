@@ -28,8 +28,9 @@ import java.util.*;
 import org.jmol.util.Logger;
 
 public class GT {
-    
-  private static GT getTextWrapper = new GT();
+
+  private static boolean ignoreApplicationBundle = false;
+  private static GT getTextWrapper;
   private ResourceBundle translationResources;
   private ResourceBundle appletTranslationResources;
 
@@ -46,8 +47,10 @@ public class GT {
     }
     Logger.debug("Instantiating gettext wrapper...");
     try {
-      translationResources = ResourceBundle.getBundle(
-          "org.jmol.translation.Jmol.Messages");
+      if (!ignoreApplicationBundle) {
+        translationResources = ResourceBundle.getBundle(
+            "org.jmol.translation.Jmol.Messages");
+      }
     } catch (MissingResourceException mre) {
       Logger.warn("Translations do not seem to have been installed!");
       Logger.warn(mre.getMessage());
@@ -69,12 +72,23 @@ public class GT {
     }
   }
 
+  private static GT getTextWrapper() {
+    if (getTextWrapper == null) {
+      getTextWrapper = new GT();
+    }
+    return getTextWrapper;
+  }
+
+  public static void ignoreApplicationBundle() {
+    ignoreApplicationBundle = true;
+  }
+
   public static String _(String string) {
-    return getTextWrapper.getString(string);
+    return getTextWrapper().getString(string);
   }
 
   public static String _(String string, Object[] objects) {
-    return getTextWrapper.getString(string, objects);
+    return getTextWrapper().getString(string, objects);
   }
 
   private String getString(String string) {

@@ -77,6 +77,7 @@ public class AppletWrapper extends Applet {
                        String preloadTextMessage,
                        int preloadThreadCount,
                        String[] preloadClassNames) {
+    GT.ignoreApplicationBundle();
     this.wrappedAppletClassName = wrappedAppletClassName;
     this.preloadImageName = preloadImageName;
     this.preloadTextMessage = preloadTextMessage;

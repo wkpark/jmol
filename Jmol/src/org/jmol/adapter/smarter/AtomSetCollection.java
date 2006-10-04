@@ -80,7 +80,6 @@ class AtomSetCollection extends Parser {
   // expands to 22 for cartesianToFractional matrix as array (PDB)
   
   SpaceGroup spaceGroup;
-  Vector latticeKey;
   UnitCell unitCell;
 
   AtomSetCollection(String fileTypeName) {
@@ -181,7 +180,6 @@ class AtomSetCollection extends Parser {
     bonds = null;
     notionalUnitCell = null;
     spaceGroup = null;
-    latticeKey = null;
     structures = new Structure[16];
     atomSetNumbers = new int[16];
     atomSetNames = new String[16];
@@ -408,7 +406,6 @@ class AtomSetCollection extends Parser {
     int operationCount = finalOperations.length;
     cartesians = new Point3f[count * operationCount * maxX * maxY * maxZ];
     int pt = 0;
-    latticeKey = new Vector();
     for (int tx = 0; tx < maxX; tx++)
       for (int ty = 0; ty < maxY; ty++)
         for (int tz = 0; tz < maxZ; tz++)
@@ -423,7 +420,6 @@ class AtomSetCollection extends Parser {
     setAtomSetAuxiliaryInfo("presymmetryAtomCount", new Integer(count));
     setAtomSetAuxiliaryInfo("symmetryCount", new Integer(operationCount));
     setAtomSetAuxiliaryInfo("latticeDesignation", spaceGroup.getLatticeDesignation());
-    setAtomSetCollectionAuxiliaryInfo("latticeKey", latticeKey);
     spaceGroup = null;
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false; //turn off global fractional conversion -- this wil be model by model
@@ -435,7 +431,6 @@ class AtomSetCollection extends Parser {
                         int count, int transX, int transY, int transZ, int pt) {
     boolean isBaseCell = (transX == 0 && transY == 0 && transZ == 0);
     int nOperations = finalOperations.length;
-    Integer latticeKeyCode = new Integer((transX +5)*100 + (transY + 5)*10 + transZ + 5);
     if (isBaseCell)
       pt = 0;
       for (; pt < count; pt++) {
@@ -443,7 +438,6 @@ class AtomSetCollection extends Parser {
         cartesians[pt] = new Point3f(atom);
         finalOperations[0].transform(cartesians[pt]);
         atom.bsSymmetry.set(0);
-        latticeKey.add(pt, latticeKeyCode);
       }
     for (int iSym = 0; iSym < nOperations; iSym++) {
       int pt0 = pt;
@@ -473,7 +467,6 @@ class AtomSetCollection extends Parser {
             }
           }
           if (special == null) {
-            latticeKey.add(pt, latticeKeyCode);
             Atom atom1 = newCloneAtom(atoms[i]);
             atom1.x = atom.x;
             atom1.y = atom.y;

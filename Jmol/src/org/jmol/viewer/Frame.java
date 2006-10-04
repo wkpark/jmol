@@ -61,9 +61,6 @@ public final class Frame {
   float maxBondingRadius = Float.MIN_VALUE;
   float maxVanderwaalsRadius = Float.MIN_VALUE;
   CellInfo[] cellInfos;
-  Vector latticeKey;
-  boolean haveLatticeKey;
-
   int atomCount;
   public Atom[] atoms;
   ////////////////////////////////////////////////////////////////
@@ -2326,18 +2323,6 @@ public final class Frame {
     return surfaceDistances[atomIndex]; 
   }
   
-  int getTranslation(int atomIndex) {
-    if (!haveLatticeKey) {
-      latticeKey = (Vector) getModelSetAuxiliaryInfo("latticeKey");
-      haveLatticeKey = true;
-    }
-    if (latticeKey == null)
-      return 0;
-    Integer i = (Integer) latticeKey.get(atomIndex);
-    return (i == null ? 0 : i.intValue());
-  }
-  
-
   float surfaceDistanceMax;
   float getSurfaceDistanceMax() {
     if (surfaceDistances == null)

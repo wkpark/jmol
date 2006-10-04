@@ -259,7 +259,7 @@ class Token {
   final static int atom         = showparam |  6;
   final static int sequence     = showparam |  7 | expression;
   final static int symmetry     = showparam |  8 | expression | predefinedset;
-  final static int translation  = showparam |  9 | atomproperty;
+  final static int translation  = showparam |  9;
   // chime show parameters
   final static int residue      = showparam | 10;
   final static int url          = showparam | 11;

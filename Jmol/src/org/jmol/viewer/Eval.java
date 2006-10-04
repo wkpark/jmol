@@ -1090,9 +1090,6 @@ class Eval { //implements Runnable {
         if (propertyValue < 0)
           continue;
         break;
-      case Token.translation:
-        propertyValue = frame.getTranslation(atom.atomIndex);
-        break;
       case Token.surfacedistance:
         if (frame.getSurfaceDistanceMax() == 0)
           dots(statementLength, Dots.DOTS_MODE_CALCONLY);

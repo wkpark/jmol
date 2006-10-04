@@ -57,6 +57,16 @@
           at bottom-right).
           <i>(submitted by Angel Herráez)</i>
         </screenshot>
+        <screenshot image="Thermus ribosome 1jgo and 1giy.jpg">
+          Eubactierial 70S Ribosome from Thermus thermophilus (PDB CODES: 1jgo and 1giy)<br />
+          On the right is the small subunit and on  the left is the large subunit.
+          In between the subunits:<b>
+          <font color="yellow">mRNA</font>
+          <font color="pink">A-site tRNA</font>
+          <font color="purple">P-site tRNA</font>
+          <font color="cyan">E-site tRNA</font></b>
+          <i>(submitted by Wayne Decatur)</i>
+        </screenshot>
       </screenshots>
     </section>
     <section title="Crystallography">

@@ -3363,6 +3363,9 @@
   <fah_proj number="1496" name="p1496_Protein in POPC" public="y" file="y"
     server="171.65.103.68" atoms="77373" preferred="48" deadline="127"
     credit="459" frames="0" code="A0" contact="kasson"/>
+  <fah_proj number="1497" name="p1497_TETHERED VESICLES" public="y"
+    server="171.64.122.128" atoms="126006" preferred="35" deadline="52"
+    credit="364" frames="100" code="G" contact="kasson"/>
 
   <!-- Projects 1500 to 1599 -->
   <fah_proj number="1500" name="p1500_FSnat_273_dd19_lowv" public="y" file="y"

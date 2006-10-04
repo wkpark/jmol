@@ -77,7 +77,7 @@ import java.io.Reader;
 public class Viewer extends JmolViewer {
 
   public void finalize() {
-    System.out.println("viewer finalize " + this);
+    Logger.debug("viewer finalize " + this);
   }
   
   StateManager stateManager = new StateManager(this);
@@ -110,7 +110,7 @@ public class Viewer extends JmolViewer {
   public CommandHistory commandHistory = new CommandHistory();
   
   Viewer(Component display, JmolAdapter modelAdapter) {
-    System.out.println("Viewer constructor " + this);
+    Logger.debug("Viewer constructor " + this);
     this.display = display;
     this.modelAdapter = modelAdapter;
     strJavaVendor = System.getProperty("java.vendor");

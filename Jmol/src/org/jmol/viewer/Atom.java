@@ -709,6 +709,17 @@ final public class Atom extends Point3fi implements Tuple {
     return atomSymmetry;
   }
 
+  int getSymmetryTranslation(int symop) {
+    Frame.CellInfo[] c = group.chain.frame.cellInfos;
+    if (c == null)
+      return 0;
+    Vector3f pt0 = new Vector3f(getFractionalCoord());
+    pt0.sub(group.chain.frame.getSymmetryBaseAtom(modelIndex, atomSite, symop)
+        .getFractionalCoord());
+    return ((int) (pt0.x + 0.01)) * 100 + ((int) (pt0.y + 0.01)) * 10
+        + ((int) (pt0.z + 0.01));
+  }
+  
   String getSymmetryOperatorList() {
     String str = "";
     if (atomSymmetry == null)

@@ -1032,14 +1032,17 @@ class Eval { //implements Runnable {
       throws ScriptException {
     int comparator = instruction.tok;
     int property = instruction.intValue;
-    float propertyValue = 0;
-    BitSet propertyBitSet = null;
+    float propertyValue = Float.NaN;
     int comparisonValue = ((Integer) instruction.value).intValue();
+    BitSet propertyBitSet = null;
+    int bitsetComparator = comparator;
+    int bitsetBaseValue = comparisonValue;
     int numberOfAtoms = viewer.getAtomCount();
     int imax = 0;
     int imin = 0;
     Frame frame = viewer.getFrame();
     for (int i = 0; i < numberOfAtoms; ++i) {
+      boolean match = false;
       Atom atom = frame.getAtomAt(i);
       switch (property) {
       case Token.atomno:
@@ -1056,6 +1059,28 @@ class Eval { //implements Runnable {
         break;
       case Token.symop:
         propertyBitSet = atom.getAtomSymmetry();
+        if (bitsetBaseValue >= 1000) {
+          /*
+           * symop>1000 indicates symop*1000 + lattice_translation
+           * for this the comparision is only with the
+           * translational component; the symop itself must match
+           * thus: 
+           * select symop!=1100 selects all symop=1 and translation !=100
+           * select symo >=2200 selects all symop=2 and translation >200
+           * 
+           * The reason this is tied together an atom may have one translation
+           * for one symop and another for a different one.
+           * 
+           * Bob Hanson - 10/2006
+           */
+          
+          comparisonValue = bitsetBaseValue % 1000;
+          int symop = bitsetBaseValue / 1000 - 1;
+          if (symop < 0 || !(match = propertyBitSet.get(symop)))
+            continue;
+          bitsetComparator = Token.none;
+          propertyValue = atom.getSymmetryTranslation(symop); 
+        }
         break;
       case Token.molecule:
         propertyValue = atom.getMoleculeNumber();
@@ -1113,10 +1138,9 @@ class Eval { //implements Runnable {
       default:
         unrecognizedAtomProperty(property);
       }
-      boolean match = false;
       // note that a symop property can be both LE and GT !
       if (propertyBitSet != null) {
-        switch (comparator) {
+        switch (bitsetComparator) {
         case Token.opLT:
           imax = comparisonValue - 1;
           imin = 0;
@@ -1147,11 +1171,12 @@ class Eval { //implements Runnable {
           imax = propertyBitSet.size();
         for (int iBit = imin; iBit < imax; iBit++) {
           if (propertyBitSet.get(iBit)) {
-            bs.set(i);
+            match = true;
             break;
           }          
         }
-        continue;
+        if (!match || Float.isNaN(propertyValue))
+            comparator = Token.none;
       }
       switch (comparator) {
       case Token.opLT:
@@ -5291,6 +5316,12 @@ class Eval { //implements Runnable {
           i = pcLastExpressionInstruction;
           propertyName = "functionXY";
           propertyValue = v;
+          break;
+        }
+        if (str.equalsIgnoreCase("molecular")) {
+          surfaceObjectSeen = true;
+          propertyName = "solvent";
+          propertyValue = new Float(1.4);
           break;
         }
         propertyValue = token.value;

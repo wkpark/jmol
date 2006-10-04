@@ -1890,6 +1890,16 @@ public final class Frame {
     return -1;
   }
 
+  Atom getSymmetryBaseAtom(int modelIndex, int site, int symop) {
+    Frame.CellInfo[] c = cellInfos;
+    if (c != null)
+      for (int i = 0; i < atomCount; i++)
+        if (atoms[i].modelIndex == modelIndex && atoms[i].atomSite == site
+            && atoms[i].atomSymmetry.get(symop))
+          return atoms[i];
+    return null;
+  }
+
   BitSet getAtomBits(String setType) {
     if (setType.equals("specialPosition"))
       return getSpecialPosition();

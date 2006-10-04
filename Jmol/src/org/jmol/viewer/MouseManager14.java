@@ -37,7 +37,11 @@ class MouseManager14 extends MouseManager11
     //Logger.debug("MouseManager14 implemented");
     display.addMouseWheelListener(this);
   }
-  
+
+  void removeMouseListeners14() {
+    viewer.display.removeMouseWheelListener(this);
+  }
+
  public void mouseWheelMoved(MouseWheelEvent e) {
     mouseWheel(e.getWhen(), e.getWheelRotation(), e.getModifiers());
   }

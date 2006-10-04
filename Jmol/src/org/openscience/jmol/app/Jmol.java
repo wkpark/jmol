@@ -29,6 +29,7 @@ import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 import org.jmol.util.*;
+import org.jmol.viewer.JmolConstants;
 
 //import org.openscience.cdk.applications.plugin.CDKPluginManager;
 import Acme.JPM.Encoders.PpmEncoder;

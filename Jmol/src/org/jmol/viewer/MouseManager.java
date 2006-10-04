@@ -61,6 +61,17 @@ abstract class MouseManager {
     hoverWatcherThread.start();
   }
 
+  void removeMouseListeners11() {}
+  void removeMouseListeners14() {}
+
+  void setModeMouse(int modeMouse) {
+    if (modeMouse == JmolConstants.MOUSE_NONE) {
+      hoverWatcherThread.interrupt();
+      removeMouseListeners11();
+      removeMouseListeners14();
+    }
+  }
+
   Rectangle getRubberBand() {
     if (!rubberbandSelectionMode)
       return null;

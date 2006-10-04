@@ -69,6 +69,7 @@ final public class JmolConstants {
   
   public final static short MAR_DELETED = Short.MIN_VALUE;
 
+  public static final int MOUSE_NONE = -1;
   public static final int MOUSE_ROTATE = 0;
   public static final int MOUSE_ZOOM = 1;
   public static final int MOUSE_XLATE = 2;

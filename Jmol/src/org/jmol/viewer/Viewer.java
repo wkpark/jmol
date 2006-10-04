@@ -143,7 +143,17 @@ public class Viewer extends JmolViewer {
     fileManager = new FileManager(this, modelAdapter);
     repaintManager = new RepaintManager(this);
   }
-
+  /**
+   * NOTE: for APPLICATION (not APPLET) call
+   * 
+   *   setModeMouse(JmolConstants.MOUSE_NONE);
+   * 
+   * before setting viewer=null
+   * 
+   * @param display       either DisplayPanel or WrappedApplet
+   * @param modelAdapter  the model reader
+   * @return              a viewer instance 
+   */
   public static JmolViewer allocateViewer(Component display,
                                           JmolAdapter modelAdapter) {
     return new Viewer(display, modelAdapter);
@@ -995,7 +1005,8 @@ public class Viewer extends JmolViewer {
   // ///////////////////////////////////////////////////////////////
 
   public void setModeMouse(int modeMouse) {
-    // deprecated
+     //call before setting viewer=null
+      mouseManager.setModeMouse(modeMouse);
   }
 
   Rectangle getRubberBandSelection() {

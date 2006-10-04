@@ -109,7 +109,15 @@ abstract class MeshCollection extends SelectionIndependentShape {
     }
     
     if ("color" == propertyName) {
-      if (value != null) {
+      if (value == "sets") {
+        currentMesh.allocVertexColixes();
+        for (int i = 0; i < currentMesh.surfaceSet.length; i++)
+          for (int j = 0; j < currentMesh.vertexCount; j++)
+          if (currentMesh.surfaceSet[i].get(j))
+            currentMesh.vertexColixes[j] = Graphics3D.getColix(Graphics3D.colorNames[i]);
+        return;
+      }
+      if (value != null) {  
         colix = Graphics3D.getColix(value);
         if (currentMesh != null) {
           currentMesh.colix = colix;

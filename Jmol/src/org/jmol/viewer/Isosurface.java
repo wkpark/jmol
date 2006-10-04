@@ -449,6 +449,10 @@ class Isosurface extends MeshCollection {
 
     if ("setColorScheme" == propertyName) {
       colorScheme = ((String) value);
+      if (currentMesh != null  && colorScheme.equals("sets")) {
+        currentMesh.surfaceSet = getSurfaceSet(0);
+        super.setProperty("color", "sets", null);
+      }
       return;
     }
 
@@ -742,6 +746,10 @@ class Isosurface extends MeshCollection {
         state = STATE_DATA_COLORED;
         mappingType = dataType;
         applyColorScale(currentMesh);
+      }
+      if (colorScheme.equals("sets")) {
+        currentMesh.surfaceSet = getSurfaceSet(0);
+        super.setProperty("color", "sets", null);
       }
       setModelIndex();
       if (logMessages && thePlane == null && !isSilent)
@@ -4862,4 +4870,93 @@ class Isosurface extends MeshCollection {
     return V;
   }
 
+  BitSet[] surfaceSet;
+  int nSets = 0;
+  boolean setsSuccessful; 
+  BitSet[] getSurfaceSet(int level) {
+    if (currentMesh == null)
+      return null;
+    if (level == 0) {
+      surfaceSet = new BitSet[100];
+      nSets = 0;
+    }
+    setsSuccessful = true;
+    for (int i = 0; i < currentMesh.polygonCount; i++) {
+      int[] p = currentMesh.polygonIndexes[i];
+      int pt0 = findSet(p[0]);
+      int pt1 = findSet(p[1]);
+      int pt2 = findSet(p[2]);
+      if (pt0 < 0 && pt1 < 0 && pt2 < 0) {
+        createSet(p[0], p[1], p[2]);
+        continue;
+      }
+      if (pt0 == pt1 && pt2 == pt2)
+        continue;
+      if (pt0 >= 0) {
+        surfaceSet[pt0].set(p[1]);
+        surfaceSet[pt0].set(p[2]);
+        if (pt1 >= 0 && pt1 != pt0)
+          mergeSets(pt0, pt1);
+        if (pt2 >= 0 && pt2 != pt0 && pt2 != pt1)
+          mergeSets(pt0, pt2);
+        continue;
+      }
+      if (pt1 >= 0) {
+        surfaceSet[pt1].set(p[0]);
+        surfaceSet[pt1].set(p[2]);
+        if (pt2 >= 0 && pt2 != pt1)
+          mergeSets(pt1, pt2);
+        continue;
+      }
+      surfaceSet[pt2].set(p[0]);
+      surfaceSet[pt2].set(p[1]);
+    }
+    int n = 0;
+    for (int i = 0; i < nSets; i++)
+      if (surfaceSet[i] != null)
+        n++;
+    BitSet[] temp = new BitSet[n];
+    n = 0;
+    for (int i = 0; i < nSets; i++)
+      if (surfaceSet[i] != null)
+        temp[n++] = surfaceSet[i];
+    nSets = n;
+    surfaceSet = temp;
+    if (!setsSuccessful && level < 2)
+      getSurfaceSet(++level);
+    return surfaceSet;
+  }
+  
+  int findSet(int vertex) {
+    for (int i = 0; i < nSets; i++)
+      if (surfaceSet[i] != null && surfaceSet[i].get(vertex))
+        return i;
+    return -1;
+  }
+
+  void createSet(int v1, int v2, int v3) {
+    int i;
+    for (i = 0; i < nSets; i++)
+      if (surfaceSet[i] == null)
+        break;
+    if (i >= 100) {
+      setsSuccessful = false;
+      return;
+    }
+    if (i == nSets)
+      nSets = i + 1;
+    surfaceSet[i] = new BitSet();
+    surfaceSet[i].set(v1);
+    surfaceSet[i].set(v2);
+    surfaceSet[i].set(v3);
+  }
+  
+  void mergeSets(int a, int b) {
+    //for (int i = 0; i < nSets; i++)
+      //if (surfaceSet[i] != null)
+        //System.out.println("set " + i + surfaceSet[i]);
+    surfaceSet[a].or(surfaceSet[b]);
+    surfaceSet[b] = null;
+    //System.out.println("merging " + a + " " + b + ":\n"+surfaceSet[a] + '\n'+surfaceSet[b]);
+  }
 }

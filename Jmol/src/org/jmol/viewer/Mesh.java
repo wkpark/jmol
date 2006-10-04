@@ -34,6 +34,7 @@ import org.jmol.g3d.*;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
+import java.util.BitSet;
 
 class Mesh {
   Viewer viewer;
@@ -60,7 +61,7 @@ class Mesh {
   int nContours;
   boolean hasGridPoints;
   boolean hideBackground;
-
+  BitSet[] surfaceSet;
   int firstViewableVertex;
   int lastViewableVertex;
 

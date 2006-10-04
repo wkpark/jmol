@@ -4559,13 +4559,13 @@
   <fah_proj number="2718" name="p2718_GPUlambda" public="y"
     server="171.65.103.159" atoms="1258" preferred="0.12" deadline="0.12"
     credit="1" frames="100" code="GG" contact="densign"/>
-  <fah_proj number="2721" name="p2721_GPUlambda" public="n"
+  <fah_proj number="2721" name="p2721_GPUlambda" public="y"
     server="171.65.103.159" atoms="1258" preferred="3" deadline="4"
     credit="220" frames="100" code="GG" contact="densign"/>
   <fah_proj number="2722" name="p2722_GPUlambda" public="y"
     server="171.65.103.159" atoms="1258" preferred="3" deadline="4"
     credit="220" frames="100" code="GG" contact="densign"/>
-  <fah_proj number="2723" name="p2723_GPUlambda" public="n"
+  <fah_proj number="2723" name="p2723_GPUlambda" public="y"
     server="171.65.103.159" atoms="1258" preferred="3" deadline="4"
     credit="220" frames="100" code="GG" contact="densign"/>
   <fah_proj number="2725" name="p2725_GPUlambda" public="y"

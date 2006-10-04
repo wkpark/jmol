@@ -126,7 +126,6 @@ class CartoonRenderer extends MpsRenderer {
         isNucleicPolymer ? 0f : -0.5f / 1000);
     if (!isNucleicPolymer)
       calcRopeMidPoints(polymer, newRockets);
-    getScreens();
     clearPending();
     return true;
   }
@@ -160,20 +159,15 @@ class CartoonRenderer extends MpsRenderer {
       point.set(proteinstructurePrev.getAxisEndPoint());
     else
       polymer.getLeadMidPoint(monomerCount, point);
-  }
-
-  void getScreens() {
-    int count = monomerCount + 1;
-    screens = viewer.allocTempScreens(count);
-    screensf = viewer.allocTempPoints(count);
-    for (int i = count; --i >= 0; ) {
+    screens = viewer.allocTempScreens(midPointCount);
+    screensf = viewer.allocTempPoints(midPointCount);
+    for (int i = midPointCount; --i >= 0; ) {
       viewer.transformPoint(cordMidPoints[i], screensf[i]);
       screens[i].x = (int)Math.floor(screensf[i].x);
       screens[i].y = (int)Math.floor(screensf[i].y);
       screens[i].z = (int)Math.floor(screensf[i].z);
     }
   }
-
 
   boolean tPending;
   ProteinStructure proteinstructurePending;

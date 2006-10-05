@@ -30,6 +30,7 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
+import org.jmol.g3d.Graphics3D;
 
 class Draw extends MeshCollection {
 
@@ -334,7 +335,7 @@ class Draw extends MeshCollection {
         nVertices = 4;
       } else if (nVertices >= 3 && !isPlane && isPerpendicular) {
         // normal to plane
-        g3d.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal, vAB, vAC);
+        Graphics3D.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal, vAB, vAC);
         center = new Point3f(ptList[0]);
         for (int i = 1; i < nVertices; i++)
           center.add(ptList[i]);
@@ -365,7 +366,7 @@ class Draw extends MeshCollection {
           //  0-------+--------1
           //          |
           //          2
-          g3d.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal);
+          Graphics3D.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal, vAB, vAC);
           normal.scale(dist);
           ptList[3] = new Point3f(center);
           ptList[3].add(normal);

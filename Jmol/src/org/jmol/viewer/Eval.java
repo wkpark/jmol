@@ -865,12 +865,12 @@ class Eval { //implements Runnable {
         if (!refreshed)
           viewer.setModelVisibility();
         refreshed = true;
-        stack[sp++] = copyBitSet(viewer.getVisibleSet());
+        stack[sp++] = viewer.getVisibleSet();
         break;
       case Token.clickable:
         viewer.setTainted(true);
         viewer.refresh();
-        stack[sp++] = copyBitSet(viewer.getClickableSet());
+        stack[sp++] = viewer.getClickableSet();
         break;
       case Token.specialposition:
       case Token.symmetry:
@@ -1565,7 +1565,7 @@ class Eval { //implements Runnable {
     return mad;
   }
 
-  BitSet copyBitSet(BitSet bitSet) {
+  static BitSet copyBitSet(BitSet bitSet) {
     BitSet copy = new BitSet();
     copy.or(bitSet);
     return copy;

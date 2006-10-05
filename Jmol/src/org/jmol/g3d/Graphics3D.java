@@ -2050,21 +2050,18 @@ final public class Graphics3D {
    * ***************************************************************/
 
 
-  final Vector3f vAB = new Vector3f();
-  final Vector3f vAC = new Vector3f();
-
-  public void calcNormalizedNormal(Point3f pointA, Point3f pointB,
-                                   Point3f pointC, Vector3f vNormNorm) {
+  public static void calcNormalizedNormal(Point3f pointA, Point3f pointB,
+                                   Point3f pointC, Vector3f vNormNorm, Vector3f vAB, Vector3f vAC) {
     vAB.sub(pointB, pointA);
     vAC.sub(pointC, pointA);
     vNormNorm.cross(vAB, vAC);
     vNormNorm.normalize();
   }
 
-  public float getPlaneThroughPoints(Point3f pointA, Point3f pointB,
-                                   Point3f pointC, Vector3f vNorm) {
+  public static float getPlaneThroughPoints(Point3f pointA, Point3f pointB,
+                                   Point3f pointC, Vector3f vNorm, Vector3f vAB, Vector3f vAC) {
     // for Polyhedra
-    calcNormalizedNormal(pointA, pointB, pointC, vNorm);
+    calcNormalizedNormal(pointA, pointB, pointC, vNorm, vAB, vAC);
     // ax + by + cz + d = 0
     // so if a point is in the plane, then N dot X = -d
     vAB.set(pointA);
@@ -2072,12 +2069,14 @@ final public class Graphics3D {
     return d;
   }
 
-  Point3f ptT = new Point3f();
-  Point3f ptT2 = new Point3f();
-  public void getNormalFromCenter(Point3f ptCenter, Point3f ptA, Point3f ptB,
+  public static void getNormalFromCenter(Point3f ptCenter, Point3f ptA, Point3f ptB,
                             Point3f ptC, boolean isOutward, Vector3f normal) {
     // for Polyhedra
-    calcNormalizedNormal(ptA, ptB, ptC, normal);
+    Point3f ptT = new Point3f();
+    Point3f ptT2 = new Point3f();
+    Vector3f vAB = new Vector3f();
+    Vector3f vAC = new Vector3f();
+    calcNormalizedNormal(ptA, ptB, ptC, normal, vAB, vAC);
     //but which way is it? add N to A and see who is closer to Center, A or N. 
     ptT.set(ptA);
     ptT.add(ptB);

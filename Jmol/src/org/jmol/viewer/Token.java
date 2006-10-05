@@ -427,7 +427,8 @@ class Token {
   final static int pyrimidine  = predefinedset | 11;
   final static int surface     = predefinedset | 12;
   final static int visible     = predefinedset | 13;
-  final static int carbohydrate = predefinedset | 14;
+  final static int clickable   = predefinedset | 14;
+  final static int carbohydrate = predefinedset | 15;
   
 
   final static Token tokenOn  = new Token(on, 1, "on");
@@ -751,6 +752,7 @@ class Token {
     "surface",      new Token(surface,         "surface"),
     "surfacedistance", new Token(surfacedistance, "surfacedistance"),
     "visible",      new Token(visible,         "visible"),
+    "clickable",    new Token(clickable,       "clickable"),
     "mode",         new Token(mode,            "mode"),
     "direction",    new Token(direction,       "direction"),
     "jmol",         new Token(jmol,            "jmol"),

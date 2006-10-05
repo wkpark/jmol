@@ -1,4 +1,4 @@
- /* $Author$
+/* $Author$
  * $Date$
  * $Revision$
  *
@@ -1234,6 +1234,9 @@ class Compiler {
     }
     if (! tokenNext(Token.opOr))       // ,
       return commaExpected();
+    if (tokPeek() == Token.leftbrace) {
+      return addTokenToPostfix(new Token(Token.within, new Float(Float.NaN)));
+    }
     if (! clauseOr())                        // *expression*
       return false;
     if (! tokenNext(Token.rightparen)) // )T

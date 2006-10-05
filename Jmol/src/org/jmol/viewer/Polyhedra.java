@@ -319,7 +319,7 @@ class Polyhedra extends SelectionIndependentShape {
     float factor = distanceFactor;
     BitSet bs = new BitSet(ptCenter);
     boolean isOK = (dAverage == 0);
-    
+
     // here we are assuring that at least ONE face is drawn to 
     // all matching vertices
 
@@ -370,7 +370,6 @@ class Polyhedra extends SelectionIndependentShape {
      */
 
     // produce face-centered catalog and facet-aligned catalog
-    
     String faceCatalog = "";
     String facetCatalog = "";
     for (int i = 0; i < ptCenter - 2; i++)
@@ -393,10 +392,10 @@ class Polyhedra extends SelectionIndependentShape {
           if (points[i].distance(points[k]) > distMax
               || points[j].distance(points[k]) > distMax)
             continue;
-          
+
           if (planeCount >= FACE_COUNT_MAX) {
-            Logger.error("Polyhedron error: maximum face("
-                + FACE_COUNT_MAX + ") -- reduce RADIUS ");
+            Logger.error("Polyhedron error: maximum face(" + FACE_COUNT_MAX
+                + ") -- reduce RADIUS ");
             return null;
           }
           if (nPoints >= MAX_VERTICES) {
@@ -408,11 +407,11 @@ class Polyhedra extends SelectionIndependentShape {
           // if center is on the face, then we need a different point to 
           // define the normal
           if (isFaceCentered) {
-            g3d.getNormalFromCenter(randomPoint, points[i], points[j],
+            Graphics3D.getNormalFromCenter(randomPoint, points[i], points[j],
                 points[k], false, normal);
           } else {
-            g3d.getNormalFromCenter(points[ptCenter], points[i], points[j],
-                points[k], true, normal);
+            Graphics3D.getNormalFromCenter(points[ptCenter], points[i],
+                points[j], points[k], true, normal);
           }
           normal.scale(isCollapsed && !isFaceCentered ? faceCenterOffset
               : 0.001f);
@@ -433,9 +432,10 @@ class Polyhedra extends SelectionIndependentShape {
             planesT[ipt++] = (byte) i;
             planesT[ipt++] = (byte) j;
             planesT[ipt++] = (byte) nRef;
-            g3d.getNormalFromCenter(points[k], points[i], points[j], ptRef,
-                false, normal);
-            normixesT[planeCount++] = (isFaceCentered ? g3d.get2SidedNormix(normal) : g3d.getNormix(normal));
+            Graphics3D.getNormalFromCenter(points[k], points[i], points[j],
+                ptRef, false, normal);
+            normixesT[planeCount++] = (isFaceCentered ? g3d
+                .get2SidedNormix(normal) : g3d.getNormix(normal));
           }
           facet = faceId(i, k, -1);
           if (isCollapsed || isFaceCentered && facetCatalog.indexOf(facet) < 0) {
@@ -443,9 +443,10 @@ class Polyhedra extends SelectionIndependentShape {
             planesT[ipt++] = (byte) i;
             planesT[ipt++] = (byte) nRef;
             planesT[ipt++] = (byte) k;
-            g3d.getNormalFromCenter(points[j], points[i], ptRef, points[k],
-                false, normal);
-            normixesT[planeCount++] = (isFaceCentered ? g3d.get2SidedNormix(normal) : g3d.getNormix(normal));
+            Graphics3D.getNormalFromCenter(points[j], points[i], ptRef,
+                points[k], false, normal);
+            normixesT[planeCount++] = (isFaceCentered ? g3d
+                .get2SidedNormix(normal) : g3d.getNormix(normal));
           }
           facet = faceId(j, k, -1);
           if (isCollapsed || isFaceCentered && facetCatalog.indexOf(facet) < 0) {
@@ -453,9 +454,10 @@ class Polyhedra extends SelectionIndependentShape {
             planesT[ipt++] = (byte) nRef;
             planesT[ipt++] = (byte) j;
             planesT[ipt++] = (byte) k;
-            g3d.getNormalFromCenter(points[i], ptRef, points[j], points[k],
-                false, normal);
-            normixesT[planeCount++] = (isFaceCentered ? g3d.get2SidedNormix(normal) : g3d.getNormix(normal));
+            Graphics3D.getNormalFromCenter(points[i], ptRef, points[j],
+                points[k], false, normal);
+            normixesT[planeCount++] = (isFaceCentered ? g3d
+                .get2SidedNormix(normal) : g3d.getNormix(normal));
           }
           if (!isFaceCentered) {
             if (isCollapsed) {
@@ -488,6 +490,9 @@ class Polyhedra extends SelectionIndependentShape {
     return ( angle < 0.01f || angle > 3.13f);
   }
   
+  final Vector3f vAB = new Vector3f();
+  final Vector3f vAC = new Vector3f();
+  
   static float minDistanceForPlanarity = 0.1f;
   boolean isPlanar(Point3f pt1, Point3f pt2, Point3f pt3, Point3f ptX) {
     /*
@@ -497,7 +502,7 @@ class Polyhedra extends SelectionIndependentShape {
      * 
      */
       Vector3f plane = new Vector3f();
-      float w = g3d.getPlaneThroughPoints(pt1, pt2, pt3, plane);
+      float w = Graphics3D.getPlaneThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
       float distanceToPlane = Math.abs(plane.x * ptX.x + plane.y * ptX.y + plane.z * ptX.z + w)
           / (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z * plane.z);
       boolean isPlanar = (distanceToPlane < minDistanceForPlanarity);

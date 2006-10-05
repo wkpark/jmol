@@ -2398,6 +2398,14 @@ public final class Frame {
     return bs;
   }
 
+  BitSet getClickableSet() {
+    BitSet bs = new BitSet();
+    for (int i = atomCount; --i >= 0;)
+      if (atoms[i].clickabilityFlags != 0)
+        bs.set(i);
+    return bs;
+  }
+
   ////////////////////////////////////////////////////////////////
   // measurements
   ////////////////////////////////////////////////////////////////

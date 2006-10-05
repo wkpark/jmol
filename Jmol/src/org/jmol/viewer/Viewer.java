@@ -1613,6 +1613,11 @@ public class Viewer extends JmolViewer {
     return modelManager.getAtomsWithin(withinWhat, bs);
   }
 
+  BitSet getAtomsWithin(float distance, Point3f coord) {
+    //select within(distance, coord) not compilable at the present time
+    return modelManager.getAtomsWithin(distance, coord);
+  }
+
   BitSet getAtomsWithin(String withinWhat, String specInfo, BitSet bs) {
     return modelManager.getAtomsWithin(withinWhat, specInfo, bs);
   }
@@ -1639,6 +1644,10 @@ public class Viewer extends JmolViewer {
 
   BitSet getVisibleSet() {
     return modelManager.getVisibleSet();
+  }
+
+  BitSet getClickableSet() {
+    return modelManager.getClickableSet();
   }
 
   public BitSet getGroupsPresentBitSet() {

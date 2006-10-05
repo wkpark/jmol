@@ -1,4 +1,4 @@
-  /* $RCSfile$
+/* $RCSfile$
  * $Author$
  * $Date$
  * $Revision$
@@ -24,7 +24,7 @@
 package org.jmol.viewer;
 
 import org.jmol.util.Logger;
-
+import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
 import org.jmol.smiles.InvalidSmilesException;
 import org.jmol.util.CommandHistory;
@@ -799,6 +799,7 @@ class Eval { //implements Runnable {
     BitSet bs;
     BitSet[] stack = new BitSet[10];
     int sp = 0;
+    Point3f thisCoordinate = null;
     boolean refreshed = false;
     pcLastExpressionInstruction = 1000;
 
@@ -814,6 +815,10 @@ class Eval { //implements Runnable {
       case Token.expressionEnd:
         pcLastExpressionInstruction = pc;
         break expression_loop;
+      case Token.leftbrace:
+        thisCoordinate = getCoordinate(pc, true);
+        pc = pcLastExpressionInstruction;
+        break;
       case Token.all:
         bs = stack[sp++] = new BitSet(numberOfAtoms);
         for (int i = numberOfAtoms; --i >= 0;)
@@ -835,6 +840,14 @@ class Eval { //implements Runnable {
         notSet(bs);
         break;
       case Token.within:
+        if (thisCoordinate != null) {
+          Object withinSpec = instruction.value;
+          if (!(withinSpec instanceof Float))
+            numberExpected();
+          stack[sp++] = viewer.getAtomsWithin(((Float) withinSpec).floatValue(), thisCoordinate);
+          thisCoordinate = null;
+          break;
+        }
         bs = stack[sp - 1];
         stack[sp - 1] = within(instruction, bs);
         break;
@@ -853,6 +866,11 @@ class Eval { //implements Runnable {
           viewer.setModelVisibility();
         refreshed = true;
         stack[sp++] = copyBitSet(viewer.getVisibleSet());
+        break;
+      case Token.clickable:
+        viewer.setTainted(true);
+        viewer.refresh();
+        stack[sp++] = copyBitSet(viewer.getClickableSet());
         break;
       case Token.specialposition:
       case Token.symmetry:
@@ -1425,26 +1443,56 @@ class Eval { //implements Runnable {
     return false;
   }
 
+  Point3f atomCenterOrCoordinateParameter(int i) throws ScriptException {
+    if (i >= statementLength)
+      badArgumentCount();
+    switch (statement[i].tok) {
+    case Token.expressionBegin:
+      return viewer.getAtomSetCenter(expression(statement, ++i));
+    case Token.leftbrace:
+      return getCoordinate(i, true);
+    }
+    invalidArgument();
+    //impossible return
+    return null;
+  }
   Point4f planeParameter(int i) throws ScriptException {
+    Vector3f vAB = new Vector3f();
+    Vector3f vAC = new Vector3f();
     while (true) {
       if (i >= statementLength)
         break;
-      if (statement[i].tok == Token.leftbrace)
-        return getPoint4f(i);
-      if (statement[i].tok != Token.string)
+      switch (statement[i].tok) {
+      case Token.leftbrace:
+        if (!isCoordinate3(i))
+          return getPoint4f(i);
+      case Token.expressionBegin:
+        Point3f pt1 = atomCenterOrCoordinateParameter(i);
+        i = pcLastExpressionInstruction;
+        Point3f pt2 = atomCenterOrCoordinateParameter(++i);
+        i = pcLastExpressionInstruction;
+        Point3f pt3 = atomCenterOrCoordinateParameter(++i);
+        i = pcLastExpressionInstruction;
+        Vector3f plane = new Vector3f();
+        Logger.info("defined plane: " + plane);
+        float w = Graphics3D.getPlaneThroughPoints(pt1, pt2, pt3, plane, vAB,
+            vAC);
+        return new Point4f(plane.x, plane.y, plane.z, w);
+      case Token.string:
+        String str = (String) statement[i].value;
+        pcLastExpressionInstruction = i;
+        if (str.equalsIgnoreCase("xy"))
+          return new Point4f(0, 0, 1, 0);
+        if (str.equalsIgnoreCase("xz"))
+          return new Point4f(0, 1, 0, 0);
+        if (str.equalsIgnoreCase("yz"))
+          return new Point4f(1, 0, 0, 0);
+      default:
         break;
-      String str = (String) statement[i].value;
-      pcLastExpressionInstruction = i;
-      if (str.equalsIgnoreCase("xy"))
-        return new Point4f(0, 0, 1, 0);
-      if (str.equalsIgnoreCase("xz"))
-        return new Point4f(0, 1, 0, 0);
-      if (str.equalsIgnoreCase("yz"))
-        return new Point4f(1, 0, 0, 0);
-      break;
+      }
     }
-    evalError(GT._("plane expected -- either {0} or {1}",
-                   new Object[] { "{a b c d}", "\"xy\" \"xz\" \"yz\"" } ));
+    evalError(GT._("plane expected -- either three points or atom expressions or {0} or {1}", new Object[] {
+        "{a b c d}", "\"xy\" \"xz\" \"yz\"" }));
     //impossible return
     return null;
   }
@@ -1567,6 +1615,15 @@ class Eval { //implements Runnable {
   }
 
   boolean coordinatesAreFractional;
+
+  boolean isCoordinate3(int i) {
+    try {
+      getCoordinate(i, true, true);
+    } catch (Exception e) {
+      return false;
+    }
+    return true;
+  }
 
   Point3f getCoordinate(int i, boolean allowFractional) throws ScriptException {
     return getCoordinate(i, allowFractional, true);
@@ -5077,11 +5134,8 @@ class Eval { //implements Runnable {
             drawObjectNotDefined(id);
           break;
         case Token.expressionBegin:
-          propertyValue = viewer.getAtomSetCenter(expression(statement, ++i));
-          i = pcLastExpressionInstruction;
-          break;
         case Token.leftbrace:
-          propertyValue = getCoordinate(i, true);
+          propertyValue = atomCenterOrCoordinateParameter(i);
           i = pcLastExpressionInstruction;
           break;
         default:
@@ -5449,7 +5503,10 @@ class Eval { //implements Runnable {
 
   ////// script exceptions ///////
 
+  boolean ignoreError;
   void evalError(String message) throws ScriptException {
+    if (ignoreError)
+      throw new NullPointerException();
     String s = viewer.removeCommand();
     viewer.addCommand(s + CommandHistory.ERROR_FLAG);
     throw new ScriptException(message, getLine(), filename, getLinenumber());

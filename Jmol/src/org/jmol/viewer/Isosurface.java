@@ -488,7 +488,8 @@ class Isosurface extends MeshCollection {
       if (state == STATE_DATA_READ) {
         dataType = surfaceType;
         state = STATE_DATA_COLORED;
-        applyColorScale(currentMesh);
+        if (currentMesh != null)
+          applyColorScale(currentMesh);
       }
       return;
     }
@@ -1955,7 +1956,9 @@ class Isosurface extends MeshCollection {
           challenger = getInterpolatedPixelValue(vertexes[i]);
         else
           challenger = lookupInterpolatedVoxelValue(vertexes[i]);
-        if (challenger > max)
+        if (challenger == Float.MAX_VALUE)
+          challenger = 0; //for now TESTING ONLY
+        if (challenger > max && challenger != Float.MAX_VALUE)
           max = challenger;
       }
     Logger.debug("maximum mapped value: " + max);
@@ -4477,62 +4480,72 @@ class Isosurface extends MeshCollection {
         ptXyzTemp.add(volumetricVectors[0]);
       }
     }
-    if (dataType != SURFACE_SOLVENT || solventRadius == 0)
-      return;
-    Point3i ptA0 = new Point3i();
-    Point3i ptB0 = new Point3i();
-    Point3i ptA1 = new Point3i();
-    Point3i ptB1 = new Point3i();
-    for (int iAtom = 0; iAtom < solvent_firstNearbyAtom - 1; iAtom++)
-      if (solvent_ptAtom[iAtom] instanceof Atom) {
-        ptA = solvent_ptAtom[iAtom];
-        rA = solvent_atomRadius[iAtom] + solventRadius;
-        setGridLimitsForAtom(ptA, rA - solventRadius, ptA0, ptA1);
-        AtomIterator iter = frame.getWithinModelIterator((Atom) ptA, rA
-            + solventRadius + maxRadius);
-        while (iter.hasNext()) {
-          Atom ptB = iter.next();
-          if (ptB.atomIndex <= ((Atom)ptA).atomIndex)
-            continue;
-          // selected 
-          // only consider selected neighbors
-          if (!bsSelected.get(ptB.atomIndex))
-            continue;
-          rB = solventWorkingRadius(ptB) + solventRadius;
-          float dAB = ptA.distance(ptB);
-          if (dAB >= rA + rB)
-            continue;
-          //defining pt0 and pt1 very crudely -- this could be refined
-          setGridLimitsForAtom(ptB, rB - solventRadius, ptB0, ptB1);
-          pt0.x = Math.min(ptA0.x, ptB0.x);
-          pt0.y = Math.min(ptA0.y, ptB0.y);
-          pt0.z = Math.min(ptA0.z, ptB0.z);
-          pt1.x = Math.max(ptA1.x, ptB1.x);
-          pt1.y = Math.max(ptA1.y, ptB1.y);
-          pt1.z = Math.max(ptA1.z, ptB1.z);
-          voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
-          for (int i = pt0.x; i < pt1.x; i++) {
-            ptY0.set(ptXyzTemp);
-            for (int j = pt0.y; j < pt1.y; j++) {
-              ptZ0.set(ptXyzTemp);
-              for (int k = pt0.z; k < pt1.z; k++) {
-                float dVS = checkSpecialVoxel(ptA, rA, ptB, rB, dAB, ptXyzTemp);
-                if (!Float.isNaN(dVS)) {
-                  float v = solventRadius - dVS;
-                  if (v < voxelData[i][j][k])
-                    voxelData[i][j][k] = v;
+    if (dataType == SURFACE_SOLVENT && solventRadius > 0) {
+      Point3i ptA0 = new Point3i();
+      Point3i ptB0 = new Point3i();
+      Point3i ptA1 = new Point3i();
+      Point3i ptB1 = new Point3i();
+      for (int iAtom = 0; iAtom < solvent_firstNearbyAtom - 1; iAtom++)
+        if (solvent_ptAtom[iAtom] instanceof Atom) {
+          ptA = solvent_ptAtom[iAtom];
+          rA = solvent_atomRadius[iAtom] + solventRadius;
+          setGridLimitsForAtom(ptA, rA - solventRadius, ptA0, ptA1);
+          AtomIterator iter = frame.getWithinModelIterator((Atom) ptA, rA
+              + solventRadius + maxRadius);
+          while (iter.hasNext()) {
+            Atom ptB = iter.next();
+            if (ptB.atomIndex <= ((Atom) ptA).atomIndex)
+              continue;
+            // selected 
+            // only consider selected neighbors
+            if (!bsSelected.get(ptB.atomIndex))
+              continue;
+            rB = solventWorkingRadius(ptB) + solventRadius;
+            float dAB = ptA.distance(ptB);
+            if (dAB >= rA + rB)
+              continue;
+            //defining pt0 and pt1 very crudely -- this could be refined
+            setGridLimitsForAtom(ptB, rB - solventRadius, ptB0, ptB1);
+            pt0.x = Math.min(ptA0.x, ptB0.x);
+            pt0.y = Math.min(ptA0.y, ptB0.y);
+            pt0.z = Math.min(ptA0.z, ptB0.z);
+            pt1.x = Math.max(ptA1.x, ptB1.x);
+            pt1.y = Math.max(ptA1.y, ptB1.y);
+            pt1.z = Math.max(ptA1.z, ptB1.z);
+            voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
+            for (int i = pt0.x; i < pt1.x; i++) {
+              ptY0.set(ptXyzTemp);
+              for (int j = pt0.y; j < pt1.y; j++) {
+                ptZ0.set(ptXyzTemp);
+                for (int k = pt0.z; k < pt1.z; k++) {
+                  float dVS = checkSpecialVoxel(ptA, rA, ptB, rB, dAB,
+                      ptXyzTemp);
+                  if (!Float.isNaN(dVS)) {
+                    float v = solventRadius - dVS;
+                    if (v < voxelData[i][j][k])
+                      voxelData[i][j][k] = v;
+                  }
+                  ptXyzTemp.add(volumetricVectors[2]);
                 }
-                ptXyzTemp.add(volumetricVectors[2]);
+                ptXyzTemp.set(ptZ0);
+                ptXyzTemp.add(volumetricVectors[1]);
               }
-              ptXyzTemp.set(ptZ0);
-              ptXyzTemp.add(volumetricVectors[1]);
+              ptXyzTemp.set(ptY0);
+              ptXyzTemp.add(volumetricVectors[0]);
             }
-            ptXyzTemp.set(ptY0);
-            ptXyzTemp.add(volumetricVectors[0]);
           }
         }
-      }
-  }
+    }
+    float maxValue = 0.001f;
+    for (int x = 0; x < nPointsX; ++x)
+      for (int y = 0; y < nPointsY; ++y)
+        for (int z = 0; z < nPointsZ; ++z)
+          if (voxelData[x][y][z] < maxValue) {
+          } else {
+            // allows for Float.NaN conversion
+            voxelData[x][y][z] = maxValue;
+          }
+    }
   
   void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0, Point3i pt1) {
     xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);

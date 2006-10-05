@@ -305,6 +305,9 @@ class Draw extends MeshCollection {
     return setPolygon(currentMesh, nPoints, nPoly);
   }
 
+  final Vector3f vAB = new Vector3f();
+  final Vector3f vAC = new Vector3f();
+
   private int setPolygon(Mesh mesh, int nVertices, int nPoly) {
     /*
      * for now, just add all new vertices. It's simpler this way
@@ -331,7 +334,7 @@ class Draw extends MeshCollection {
         nVertices = 4;
       } else if (nVertices >= 3 && !isPlane && isPerpendicular) {
         // normal to plane
-        g3d.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal);
+        g3d.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal, vAB, vAC);
         center = new Point3f(ptList[0]);
         for (int i = 1; i < nVertices; i++)
           center.add(ptList[i]);

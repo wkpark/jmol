@@ -509,6 +509,10 @@ class ModelManager {
     return (frame == null) ? null : frame.getVisibleSet();
   }
 
+  BitSet getClickableSet() {
+    return (frame == null) ? null : frame.getClickableSet();
+  }
+
   BitSet getModelAtomBitSet(int modelIndex) {
     return (frame == null) ? null : frame.getModelAtomBitSet(modelIndex);
   }
@@ -802,6 +806,8 @@ String getAtomInfoChime(int i) {
   }
 
   BitSet getAtomsWithin(float distance, BitSet bs) {
+    if (frame == null)
+      return null;
     BitSet bsResult = new BitSet();
     for (int i = frame.getAtomCount(); --i >= 0;) {
       if (bs.get(i)) {
@@ -811,6 +817,18 @@ String getAtomInfoChime(int i) {
         while (iterWithin.hasNext())
           bsResult.set(iterWithin.next().getAtomIndex());
       }
+    }
+    return bsResult;
+  }
+
+  BitSet getAtomsWithin(float distance, Point3f coord) {
+    if (frame == null)
+      return null;
+    BitSet bsResult = new BitSet();
+    for (int i = frame.getAtomCount(); --i >= 0;) {
+      Atom atom = frame.getAtomAt(i);
+      if (atom.distance(coord) <= distance)
+        bsResult.set(atom.atomIndex);
     }
     return bsResult;
   }

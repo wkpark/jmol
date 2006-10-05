@@ -172,6 +172,9 @@ class Mesh {
           Graphics3D.setTranslucent(vertexColixes[i], isTranslucent);
   }
 
+  final Vector3f vAB = new Vector3f();
+  final Vector3f vAC = new Vector3f();
+
   void sumVertexNormals(Vector3f[] vectorSums) {
     final Vector3f vNormalizedNormal = new Vector3f();
 
@@ -179,8 +182,8 @@ class Mesh {
       int[] pi = polygonIndexes[i];
       try {
         if (pi != null) {
-          g3d.calcNormalizedNormal(vertices[pi[0]], vertices[pi[1]],
-              vertices[pi[2]], vNormalizedNormal);
+          Graphics3D.calcNormalizedNormal(vertices[pi[0]], vertices[pi[1]],
+              vertices[pi[2]], vNormalizedNormal, vAB, vAC);
           // general 10.? error here was not watching out for 
           // occurrances of intersection AT a corner, leading to
           // two points of triangle being identical
@@ -324,10 +327,10 @@ class Mesh {
       if(drawVertexCount == 2) {
         axes[i].sub(vertices[polygonIndexes[i][0]], vertices[polygonIndexes[i][1]]);
       } else {      
-        g3d.calcNormalizedNormal(vertices[polygonIndexes[i][0]],
+        Graphics3D.calcNormalizedNormal(vertices[polygonIndexes[i][0]],
                                  vertices[polygonIndexes[i][1]],
                                  vertices[polygonIndexes[i][2]],
-                                 axes[i]);
+                                 axes[i], vAB, vAC);
       }
       axis.add(axes[i]);
     }

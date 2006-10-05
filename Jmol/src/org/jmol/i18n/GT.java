@@ -31,8 +31,8 @@ public class GT {
 
   private static boolean ignoreApplicationBundle = false;
   private static GT getTextWrapper;
-  private ResourceBundle translationResources;
-  private ResourceBundle appletTranslationResources;
+  private ResourceBundle[] translationResources = null;
+  private int translationResourcesCount = 0;
 
   private GT() {
     Locale locale = Locale.getDefault();
@@ -48,27 +48,65 @@ public class GT {
     Logger.debug("Instantiating gettext wrapper...");
     try {
       if (!ignoreApplicationBundle) {
-        translationResources = ResourceBundle.getBundle(
-            "org.jmol.translation.Jmol.Messages");
+        addBundles("org.jmol.translation.Jmol.Messages");
       }
-    } catch (MissingResourceException mre) {
-      Logger.warn("Translations do not seem to have been installed!");
-      Logger.warn(mre.getMessage());
-      translationResources = null;
     } catch (Exception exception) {
       Logger.error("Some exception occured!", exception);
       translationResources = null;
     }
     try {
-     appletTranslationResources = ResourceBundle.getBundle(
-         "org.jmol.translation.JmolApplet.Messages");
-    } catch (MissingResourceException mre) {
-      Logger.warn("Applet translations do not seem to have been installed!");
-      Logger.warn(mre.getMessage());
-      appletTranslationResources = null;
+      addBundles("org.jmol.translation.JmolApplet.Messages");
     } catch (Exception exception) {
       Logger.error("Some exception occured!", exception);
-      appletTranslationResources = null;
+    }
+  }
+
+  private void addBundles(String name) {
+    Locale locale = Locale.getDefault();
+    if ((locale != null) && (locale.getLanguage() != null)) {
+      if (locale.getCountry() != null) {
+        // Currently, there's no need for variants
+        /*if (locale.getVariant() != null) {
+          addBundle(
+              name + "_" + locale.getLanguage() +
+              "_" + locale.getCountry() + "_" + locale.getVariant());
+        }*/
+        addBundle(name + "_" + locale.getLanguage() + "_" + locale.getCountry());
+      }
+      addBundle(name + "_" + locale.getLanguage());
+    }
+    // Currently, there's no base class
+    //addBundle(name);
+  }
+
+  private void addBundle(String name) {
+    ClassLoader loader = getClass().getClassLoader();
+    Class bundleClass = null;
+    try {
+      if (loader != null) {
+        bundleClass = loader.loadClass(name);
+      } else {
+        bundleClass = Class.forName(name);
+      }
+    } catch (ClassNotFoundException e) {
+      // Class not found: can be normal
+    }
+    if ((bundleClass != null) && ResourceBundle.class.isAssignableFrom(bundleClass)) {
+      try {
+        ResourceBundle myBundle = (ResourceBundle) bundleClass.newInstance();
+        if (myBundle != null) {
+          if (translationResources == null) {
+            translationResources = new ResourceBundle[8];
+            translationResourcesCount = 0;
+          }
+          translationResources[translationResourcesCount] = myBundle;
+          translationResourcesCount++;
+        }
+      } catch (IllegalAccessException e) {
+        Logger.warn("Illegal Access Exception: " + e.getMessage());
+      } catch (InstantiationException e) {
+        Logger.warn("Instantiation Excaption: " + e.getMessage());
+      }
     }
   }
 
@@ -80,6 +118,7 @@ public class GT {
   }
 
   public static void ignoreApplicationBundle() {
+    Logger.warn("Ignore");
     ignoreApplicationBundle = true;
   }
 
@@ -92,58 +131,33 @@ public class GT {
   }
 
   private String getString(String string) {
-    if (translationResources != null) {
+    for (int bundle = 0; bundle < translationResourcesCount; bundle++) {
       try {
-        String trans = translationResources.getString(string);
-        //Logger.debug("trans: " + string  + " ->" + trans);
+        String trans = translationResources[bundle].getString(string);
         return trans;
-      } catch (MissingResourceException mre) {
-        //Logger.debug("No trans, using default: " + string);
-        //return string;
+      } catch (MissingResourceException e) {
+        // Normal
       }
     }
-    if (appletTranslationResources != null) {
-      try {
-        String trans = appletTranslationResources.getString(string);
-        //Logger.debug("trans: " + string  + " ->" + trans);
-        return trans;
-      } catch (MissingResourceException mre) {
-        //Logger.debug("No trans, using default: " + string);
-        //return string;
-      }
-    }
-    if ((translationResources != null) ||
-        (appletTranslationResources != null)) {
+    if (translationResourcesCount > 0) {
       Logger.debug("No trans, using default: " + string);
     }
     return string;
   }
 
   private String getString(String string, Object[] objects) {
-    String trans = string;
-    if (translationResources != null) {
+    String trans = null;
+    for (int bundle = 0; bundle < translationResourcesCount; bundle++) {
       try {
-        trans = MessageFormat.format(translationResources.getString(string), objects);
-        //Logger.debug("trans: " + string  + " ->" + trans);
+        trans = MessageFormat.format(
+            translationResources[bundle].getString(string), objects);
         return trans;
-      } catch (MissingResourceException mre) {
-        //trans = MessageFormat.format(string, objects);
-        //Logger.debug("No trans, using default: " + trans);
-      }
-    }
-    if (appletTranslationResources != null) {
-      try {
-        trans = MessageFormat.format(appletTranslationResources.getString(string), objects);
-        //Logger.debug("trans: " + string  + " ->" + trans);
-        return trans;
-      } catch (MissingResourceException mre) {
-        //trans = MessageFormat.format(string, objects);
-        //Logger.debug("No trans, using default: " + trans);
+      } catch (MissingResourceException e) {
+        // Normal
       }
     }
     trans = MessageFormat.format(string, objects);
-    if ((translationResources != null) ||
-        (appletTranslationResources != null)) {
+    if (translationResourcesCount > 0) {
       Logger.debug("No trans, using default: " + trans);
     }
     return trans;

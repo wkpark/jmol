@@ -2155,7 +2155,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //    "@cystine",
 
     "@buried ala,cys,ile,leu,met,phe,trp,val",
-    "@surface !buried", // this looks wrong to me -- mth
+    "@surface amino&!buried",
 
     // doc on hydrophobic is inconsistent
     // text description of hydrophobic says this

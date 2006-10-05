@@ -1474,10 +1474,12 @@ class Eval { //implements Runnable {
         Point3f pt3 = atomCenterOrCoordinateParameter(++i);
         i = pcLastExpressionInstruction;
         Vector3f plane = new Vector3f();
-        Logger.info("defined plane: " + plane);
         float w = Graphics3D.getPlaneThroughPoints(pt1, pt2, pt3, plane, vAB,
             vAC);
-        return new Point4f(plane.x, plane.y, plane.z, w);
+        Point4f p = new Point4f(plane.x, plane.y, plane.z, w);
+        Logger.info("defined plane: " + p);
+        return p;
+      case Token.identifier:
       case Token.string:
         String str = (String) statement[i].value;
         pcLastExpressionInstruction = i;
@@ -1487,6 +1489,22 @@ class Eval { //implements Runnable {
           return new Point4f(0, 1, 0, 0);
         if (str.equalsIgnoreCase("yz"))
           return new Point4f(1, 0, 0, 0);
+        pcLastExpressionInstruction += 2;
+        if (str.equalsIgnoreCase("x")) {
+          if (++i == statementLength || statement[i++].tok != Token.opEQ)
+            evalError("x=?");
+          return new Point4f(1, 0, 0, -floatParameter(i));
+        }
+        if (str.equalsIgnoreCase("y")) {
+          if (++i == statementLength || statement[i++].tok != Token.opEQ)
+            evalError("y=?");
+          return new Point4f(0, 1, 0, -floatParameter(i));
+        }
+        if (str.equalsIgnoreCase("z")) {
+          if (++i == statementLength || statement[i++].tok != Token.opEQ)
+            evalError("z=?");
+          return new Point4f(0, 0, 1, -floatParameter(i));
+        }
       default:
         break;
       }

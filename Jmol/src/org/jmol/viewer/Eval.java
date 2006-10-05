@@ -868,8 +868,7 @@ class Eval { //implements Runnable {
         stack[sp++] = viewer.getVisibleSet();
         break;
       case Token.clickable:
-        viewer.setTainted(true);
-        viewer.refresh();
+        refresh();
         stack[sp++] = viewer.getClickableSet();
         break;
       case Token.specialposition:

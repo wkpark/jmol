@@ -65,17 +65,18 @@ public class GT {
     Locale locale = Locale.getDefault();
     if ((locale != null) && (locale.getLanguage() != null)) {
       if (locale.getCountry() != null) {
-        // Currently, there's no need for variants
-        /*if (locale.getVariant() != null) {
-          addBundle(
+        if (locale.getVariant() != null) {
+          // NOTE: Currently, there's no need for variants
+          /*addBundle(
               name + "_" + locale.getLanguage() +
-              "_" + locale.getCountry() + "_" + locale.getVariant());
-        }*/
-        addBundle(name + "_" + locale.getLanguage() + "_" + locale.getCountry());
+              "_" + locale.getCountry() + "_" + locale.getVariant());*/
+        }
+        // NOTE: Currently, there's no need for countries
+        //addBundle(name + "_" + locale.getLanguage() + "_" + locale.getCountry());
       }
       addBundle(name + "_" + locale.getLanguage());
     }
-    // Currently, there's no base class
+    // NOTE: Currently, there's no base class
     //addBundle(name);
   }
 

@@ -74,13 +74,12 @@ public class AppletWrapper extends Applet {
 
   public AppletWrapper(String wrappedAppletClassName,
                        String preloadImageName,
-                       String preloadTextMessage,
                        int preloadThreadCount,
                        String[] preloadClassNames) {
     GT.ignoreApplicationBundle();
     this.wrappedAppletClassName = wrappedAppletClassName;
     this.preloadImageName = preloadImageName;
-    this.preloadTextMessage = preloadTextMessage;
+    this.preloadTextMessage = GT._("Loading Jmol applet ...");
     this.preloadThreadCount = preloadThreadCount;
     this.preloadClassNames = preloadClassNames;
     needToCompleteInitialization = true;

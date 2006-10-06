@@ -273,6 +273,7 @@ class AtomSetCollection extends Parser {
   void addAtom(Atom atom) {
     if (atomCount == atoms.length)
       atoms = (Atom[])ArrayUtil.doubleLength(atoms);
+    atom.atomIndex = atomCount;
     atoms[atomCount++] = atom;
     if (atomSetCount == 0) {
       atomSetCount = 1;

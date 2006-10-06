@@ -270,7 +270,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     public int getAtomSetIndex() { return atom.atomSetIndex; }
     public BitSet getAtomSymmetry() { return atom.bsSymmetry; }
     public int getAtomSite() { return atom.atomSite; }
-    public Object getUniqueID() { return atom; }
+    public Object getUniqueID() { return new Integer(atom.atomIndex); }
     public String getElementSymbol() {
       if (atom.elementSymbol != null)
         return atom.elementSymbol;
@@ -319,10 +319,10 @@ public class SmarterJmolAdapter extends JmolAdapter {
       return true;
     }
     public Object getAtomUniqueID1() {
-      return atoms[bond.atomIndex1];
+      return new Integer(bond.atomIndex1);
     }
     public Object getAtomUniqueID2() {
-      return atoms[bond.atomIndex2];
+      return new Integer(bond.atomIndex2);
     }
     public int getEncodedOrder() {
       return bond.order;

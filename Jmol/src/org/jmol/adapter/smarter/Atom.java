@@ -29,6 +29,7 @@ import java.util.BitSet;
 
 class Atom extends Point3f implements Cloneable {
   int atomSetIndex;
+  int atomIndex;
   BitSet bsSymmetry;
   int atomSite;
   String elementSymbol;

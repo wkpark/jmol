@@ -5495,10 +5495,16 @@ class Eval { //implements Runnable {
         propertyValue = new Float(radius);
         break;
       case Token.string:
+        propertyName = surfaceObjectSeen || planeSeen ? "mapColor" : "getSurface";
+        surfaceObjectSeen = true;
         // must be a file name, optionally followed by an integer file index.
         String filename = (String) token.value;
-        if (filename.length() == 0)
+        if (filename.length() == 0) {
+          propertyValue = viewer.getModelAuxiliaryInfo(modelIndex, "jmolSurfaceInfo");
+          if (propertyValue != null)
+            break;
           filename = viewer.getFullPathName();
+        }
         if (i + 1 < statementLength && statement[i + 1].tok == Token.integer)
           viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "fileIndex",
               new Integer(intParameter(++i)));
@@ -5507,9 +5513,7 @@ class Eval { //implements Runnable {
         if (t instanceof String)
           fileNotFoundException(filename + ":" + t);
         Logger.info("reading isosurface data from " + filename);
-        propertyName = surfaceObjectSeen || planeSeen ? "mapColor" : "getSurface";
         propertyValue = t;
-        surfaceObjectSeen = true;
         break;
       default:
         if (!setMeshDisplayProperty(JmolConstants.SHAPE_ISOSURFACE, token.tok))

@@ -208,6 +208,7 @@ class Isosurface extends MeshCollection {
   final static int SURFACE_ATOMICORBITAL = 14;
   final static int SURFACE_MEP = 15 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_FILE = 16;
+  final static int SURFACE_INFO = 17;
 
   float solventRadius;
   float solventExtendedAtomRadius;
@@ -266,6 +267,7 @@ class Isosurface extends MeshCollection {
   boolean isFixed;
 
   BufferedReader br;
+  Hashtable surfaceInfo;
   BitSet bsSelected;
   BitSet bsIgnore;
 
@@ -718,8 +720,16 @@ class Isosurface extends MeshCollection {
       if (++state != STATE_DATA_READ)
         return;
       if (dataType == SURFACE_NONE) {
-        br = (BufferedReader) value;
-        dataType = SURFACE_FILE;
+        if (value instanceof BufferedReader) {
+          br = (BufferedReader) value;
+          dataType = SURFACE_FILE;
+        } else if (value instanceof Hashtable) {
+          surfaceInfo = (Hashtable) value;
+          dataType = SURFACE_INFO;
+        } else {
+          Logger.error("unknown surface data type??");
+          return;
+        }
         if (colorBySign)
           isBicolorMap = true;
       }
@@ -766,8 +776,16 @@ class Isosurface extends MeshCollection {
       if (!isSilent)
         Logger.info("mapping data...");
       if (dataType == SURFACE_NONE) {
-        br = (BufferedReader) value;
-        dataType = SURFACE_FILE;
+        if (value instanceof BufferedReader) {
+          br = (BufferedReader) value;
+          dataType = SURFACE_FILE;
+        } else if (value instanceof Hashtable) {
+          surfaceInfo = (Hashtable) value;
+          dataType = SURFACE_INFO;
+        } else {
+          Logger.error("unknown surface data type??");
+          return;
+        }
       }
       mappingType = dataType;
       checkFlags();
@@ -1117,6 +1135,9 @@ class Isosurface extends MeshCollection {
       case SURFACE_MEP:
         setupMep();
         break;
+      case SURFACE_INFO:
+        setupSurfaceInfo();
+        break;
       case SURFACE_FILE:
       default:
         readTitleLines();
@@ -1330,25 +1351,26 @@ class Isosurface extends MeshCollection {
 
     boolean justDefiningPlane = (!isMapData && thePlane != null);
     boolean isPrecalculation = (precalculateVoxelData && !justDefiningPlane);
-    voxelData = new float[nPointsX][][];
-    if (isPrecalculation) {
-      for (int x = 0; x < nPointsX; ++x) {
-        voxelData[x] = new float[nPointsY][];
-        for (int y = 0; y < nPointsY; ++y)
-          voxelData[x][y] = new float[nPointsZ];
-      }
-      if (dataType == SURFACE_MOLECULARORBITAL)
-        generateQuantumCube();
-      else if (dataType == SURFACE_MEP)
-        generateMepCube();
-      else if ((dataType & IS_SOLVENTTYPE) != 0)
+    if (dataType != SURFACE_INFO) {
+      voxelData = new float[nPointsX][][];
+      if (isPrecalculation) {
+        for (int x = 0; x < nPointsX; ++x) {
+          voxelData[x] = new float[nPointsY][];
+          for (int y = 0; y < nPointsY; ++y)
+            voxelData[x][y] = new float[nPointsZ];
+        }
+        if (dataType == SURFACE_MOLECULARORBITAL)
+          generateQuantumCube();
+        else if (dataType == SURFACE_MEP)
+          generateMepCube();
+        else if ((dataType & IS_SOLVENTTYPE) != 0)
           generateSolventCube();
-      else
-        Logger.error("code error -- isPrecalculation, but how?");
-      if (isMapData || thePlane != null)
-        return;
+        else
+          Logger.error("code error -- isPrecalculation, but how?");
+        if (isMapData || thePlane != null)
+          return;
+      }
     }
-
     nDataPoints = 0;
     float zValue = 0;
     line = "";
@@ -1387,7 +1409,8 @@ class Isosurface extends MeshCollection {
             case SURFACE_SASURFACE:
               if (isPrecalculation)
                 voxelValue = strip[z]; //precalculated
-              else  // old way (for testing)
+              else
+                // old way (for testing)
                 voxelValue = getSolventValue(x, y, z);
               break;
             case SURFACE_ATOMICORBITAL:
@@ -1399,6 +1422,9 @@ class Isosurface extends MeshCollection {
               break;
             case SURFACE_FUNCTIONXY:
               voxelValue = (thePlane == null ? zValue - z : zValue);
+              break;
+            case SURFACE_INFO:
+              voxelValue = voxelData[x][y][z];
               break;
             case SURFACE_FILE:
             default:
@@ -4730,6 +4756,20 @@ class Isosurface extends MeshCollection {
     float dVS = (float) Math.sqrt(rAS * rAS + dAV * dAV - 2 * rAS * dAV
         * Math.cos(angleBAS - angleVAB));
     return dVS;
+  }
+
+  //////// file-based data already in Hashtable /////////
+  
+  void setupSurfaceInfo() {
+    volumetricOrigin.set((Point3f)surfaceInfo.get("volumetricOrigin"));
+    Vector3f[] v = (Vector3f[])surfaceInfo.get("volumetricVectors");
+    for (int i = 0; i < 3; i++)
+      volumetricVectors[i].set(v[i]);
+    int[] counts = (int[])surfaceInfo.get("voxelCounts");
+    for (int i = 0; i < 3; i++)
+      voxelCounts[i] = counts[i];
+    voxelData = (float[][][])surfaceInfo.get("voxelData");
+    precalculateVoxelData = true;
   }
 
   //////// user function //////////

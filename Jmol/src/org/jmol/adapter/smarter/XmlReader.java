@@ -36,7 +36,7 @@ import org.jmol.util.Logger;
  * A generic XML reader template -- by itself, does nothing.
  * 
  * The actual readers are XmlCmlReader, XmlMolproReader (which is an
- * extension of XmlCmlReader, and XmlOdysseyReader, which is wholely different.
+ * extension of XmlCmlReader, XmlChem3dReader, and XmlOdysseyReader, which is wholely different.
  * 
  * 
  * XmlReader takes all XML streams, whether from a file reader or from DOM.
@@ -57,6 +57,9 @@ import org.jmol.util.Logger;
  * 
  * XmlMolproReader extends XmlCmlReader. If you feel like expanding on that, feel free.
  * XmlMolproReader.MolprolHandler extends XmlCmlReader.CmlHandler adds Molpro-specific XML tag processing
+ * 
+ * XmlChem3dReader extends XmlReader. That one is simple; no need to expand on it at this time.
+ * XmlChem3dReader.Chem3dHandler extends XmlReader.JmolXmlHandler is generic
  * 
  * XmlOdysseyReader extends XmlReader. That one is simple; no need to expand on it at this time.
  * XmlOdysseyReader.OdysseyHandler extends XmlReader.JmolXmlHandler is generic
@@ -172,6 +175,10 @@ class XmlReader extends AtomSetCollectionReader {
       subReader = new XmlMolproReader(this, atomSetCollection, reader, xmlReader);
       return;
     }
+    if (xmlType == "chem3d(xml)") {
+      subReader = new XmlChem3dReader(this, atomSetCollection, reader, xmlReader);
+      return;
+    }
     if (xmlType == "odyssey(xml)") {
       subReader = new XmlOdysseyReader(this, atomSetCollection, reader, xmlReader);
       return;
@@ -201,6 +208,9 @@ class XmlReader extends AtomSetCollectionReader {
     }
     if (header.indexOf("odyssey") >= 0) {
       return "odyssey(xml)";
+    }
+    if (header.indexOf("C3XML") >= 0) {
+      return "chem3d(xml)";
     }
     if (header.indexOf("arguslab") >= 0) {
       return "arguslab(xml)";
@@ -245,6 +255,10 @@ class XmlReader extends AtomSetCollectionReader {
     }
     if (xmlType == "molpro(DOM)") {
       subReader = new XmlMolproReader(this, atomSetCollection, DOMNode);
+      return;
+    }
+    if (xmlType == "chem3d(DOM)") {
+      subReader = new XmlChem3dReader(this, atomSetCollection, DOMNode);
       return;
     }
     if (xmlType == "odyssey(DOM)") {

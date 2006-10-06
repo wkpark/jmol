@@ -1455,6 +1455,8 @@ class Eval { //implements Runnable {
     //impossible return
     return null;
   }
+
+
   Point4f planeParameter(int i) throws ScriptException {
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
@@ -1512,6 +1514,41 @@ class Eval { //implements Runnable {
         "{a b c d}", "\"xy\" \"xz\" \"yz\"" }));
     //impossible return
     return null;
+  }
+
+  Point4f hklParameter(int i) throws ScriptException {
+    Vector3f vAB = new Vector3f();
+    Vector3f vAC = new Vector3f();
+    Point3f pt = getCoordinate(i, true);
+    Point3f pt1 = new Point3f(pt.x == 0 ? 1 : 1 / pt.x, 0, 0);
+    Point3f pt2 = new Point3f(0, pt.y == 0 ? 1 : 1 / pt.y, 0);
+    Point3f pt3 = new Point3f(0, 0, pt.z == 0 ? 1 : 1 / pt.z);
+    //trick for 001 010 100 is to define the other points on other edges
+
+    if (pt.x == 0 && pt.y == 0) {
+      pt1.set(1, 0, pt3.z);
+      pt2.set(0, 1, pt3.z);
+    } else if (pt.y == 0 && pt.z == 0) {
+      pt2.set(pt1.x, 0, 1);
+      pt3.set(pt1.x, 1, 0);
+    } else if (pt.z == 0 && pt.x == 0) {
+      pt3.set(0, pt2.y, 1);
+      pt1.set(1, pt2.y, 0);
+    } else if (pt.x == 0) {
+      pt1.set(1, pt2.y, 0);
+    } else if (pt.y == 0) {
+      pt2.set(0, 1, pt3.z);
+    } else if (pt.z == 0) {
+      pt3.set(pt1.x, 0, 1);
+    }
+    viewer.convertFractionalCoordinates(pt1);
+    viewer.convertFractionalCoordinates(pt2);
+    viewer.convertFractionalCoordinates(pt3);
+    Vector3f plane = new Vector3f();
+    float w = Graphics3D.getPlaneThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
+    Point4f p = new Point4f(plane.x, plane.y, plane.z, w);
+    Logger.info("defined plane: " + p);
+    return p;
   }
 
   short getMadParameter() throws ScriptException {
@@ -5123,6 +5160,7 @@ class Eval { //implements Runnable {
     int colorRangeStage = 0;
     int signPt = 0;
     boolean surfaceObjectSeen = false;
+    boolean planeSeen = false;
     float[] nlmZ = new float[5];
     String str;
     int modelIndex = viewer.getDisplayModelIndex();
@@ -5329,9 +5367,17 @@ class Eval { //implements Runnable {
         }
         if (str.equalsIgnoreCase("plane")) {
           // plane {X, Y, Z, W}
-          surfaceObjectSeen = true;
+          planeSeen = true;
           propertyName = "plane";
           propertyValue = planeParameter(++i);
+          i = pcLastExpressionInstruction;
+          break;
+        }
+        if (str.equalsIgnoreCase("hkl")) {
+          // miller indices hkl 
+          planeSeen = true;
+          propertyName = "plane";
+          propertyValue = hklParameter(++i);
           i = pcLastExpressionInstruction;
           break;
         }
@@ -5461,7 +5507,7 @@ class Eval { //implements Runnable {
         if (t instanceof String)
           fileNotFoundException(filename + ":" + t);
         Logger.info("reading isosurface data from " + filename);
-        propertyName = surfaceObjectSeen ? "mapColor" : "getSurface";
+        propertyName = surfaceObjectSeen || planeSeen ? "mapColor" : "getSurface";
         propertyValue = t;
         surfaceObjectSeen = true;
         break;
@@ -5472,6 +5518,9 @@ class Eval { //implements Runnable {
       if (propertyName != null)
         viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, propertyName,
             propertyValue);
+    }
+    if (planeSeen && !surfaceObjectSeen) {
+      viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "sasurface", new Float(0));
     }
   }
 

@@ -337,7 +337,6 @@ class TransformManager {
   }
 
   void translateToXPercent(float percent) {
-    // FIXME -- what is the proper RasMol interpretation of this with zooming?
     xFixedTranslation = (width / 2) + width * percent / 100;
   }
 
@@ -608,6 +607,8 @@ class TransformManager {
   float cameraDistanceFloat = 1000; // prevent divide by zero on startup
 
   void setPerspectiveDepth(boolean perspectiveDepth) {
+    if (this.perspectiveDepth == perspectiveDepth)
+      return;
     this.perspectiveDepth = perspectiveDepth;
     scaleFitToScreen();
   }
@@ -740,8 +741,6 @@ class TransformManager {
   }
 
   short scaleToScreen(int z, int milliAngstroms) {
-    if (z == 0)
-      System.out.println("scaleToScreen 0 z");
     if (milliAngstroms == 0)
       return 0;
     int pixelSize = (int) (milliAngstroms * scalePixelsPerAngstrom / 1000);
@@ -799,7 +798,7 @@ class TransformManager {
     setPerspectiveOffset();
   }
 
-  Vector3f perspectiveOffset = new Vector3f(0, 0, 0);
+  private final Vector3f perspectiveOffset = new Vector3f(0, 0, 0);
   void setPerspectiveOffset() {
     // lock in the perspective so that when you change
     // centers there is no jump
@@ -810,7 +809,6 @@ class TransformManager {
     }
     perspectiveOffset.x = xFixedTranslation; 
     perspectiveOffset.y = yFixedTranslation;
-    
     if (!viewer.isCameraAdjustable())
       perspectiveOffset.z = 0;
     /*

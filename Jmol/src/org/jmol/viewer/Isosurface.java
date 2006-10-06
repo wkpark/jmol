@@ -4059,7 +4059,7 @@ class Isosurface extends MeshCollection {
     for (int i = 0; i < nAtoms; i++)
       if (atoms[i].modelIndex == modelIndex) {
         ++iAtom;
-        if (bsSelected != null && bsSelected.get(i))
+        if (bsSelected.get(i))
           ++nSelected;
       }
     qm_nAtoms = iAtom;
@@ -4178,13 +4178,13 @@ class Isosurface extends MeshCollection {
     for (int i = 0; i < nAtoms; i++)
       if (atoms[i].modelIndex == modelIndex) {
         ++iAtom;
-        if (bsSelected != null && bsSelected.get(i))
+        if (bsSelected.get(i))
           ++nSelected;
       }
     mep_nAtoms = iAtom;
     if (nSelected > 0)
       Logger.info(nSelected + " of " + mep_nAtoms
-          + " atoms will be used in the orbital calculation");
+          + " atoms will be used in the mep calculation");
     if (mep_nAtoms > 0)
       mep_atoms = new Atom[mep_nAtoms];
     iAtom = 0;
@@ -4193,7 +4193,7 @@ class Isosurface extends MeshCollection {
       if (atom.modelIndex != modelIndex)
         continue;
       Point3f pt = new Point3f(atom);
-      if (nSelected == 0 || bsSelected.get(i)) {
+      if (bsSelected.get(i)) {
         float rA = atom.getVanderwaalsRadiusFloat() + mep_marginAngstroms;
         if (pt.x - rA < xyzMin.x)
           xyzMin.x = pt.x - rA;
@@ -4266,8 +4266,9 @@ class Isosurface extends MeshCollection {
   Point3f[] solvent_ptAtom;
   int solvent_nAtoms;
   int solvent_firstNearbyAtom;
-
+  boolean solvent_quickPlane;
   BitSet atomSet = new BitSet();
+  BitSet bsSolventSelected;
   Voxel solvent_voxel = new Voxel();
 
   void setupSolvent() {
@@ -4289,6 +4290,10 @@ class Isosurface extends MeshCollection {
      *  Bob Hanson 13 Jul 2006
      *  
      */
+    bsSolventSelected = new BitSet();
+    if (thePlane != null)
+      setPlaneParameters(thePlane);
+    solvent_quickPlane = true;//viewer.getTestFlag1();
     Atom[] atoms = frame.atoms;
     Point3f xyzMin = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE,
         Float.MAX_VALUE);
@@ -4298,15 +4303,23 @@ class Isosurface extends MeshCollection {
     int iAtom = 0;
     int nAtoms = viewer.getAtomCount();
     int nSelected = 0;
-    for (int i = 0; i < nAtoms; i++)
-      if (bsSelected != null && bsSelected.get(i))
+    for (int i = 0; i < nAtoms; i++) {
+      if (bsSelected.get(i) 
+          && (bsIgnore == null || !bsIgnore.get(i))) {
+        if (solvent_quickPlane
+            && thePlane != null
+            && Math.abs(distancePointToPlane(atoms[i], thePlane)) > 2 * solventWorkingRadius(atoms[i])) {
+          continue;
+        }
+        bsSolventSelected.set(i);
         nSelected++;
+      }
+    }
     atomSet = new BitSet();
     int firstSet = -1;
     int lastSet = 0;
     for (int i = 0; i < nAtoms; i++)
-      if ((bsIgnore == null || !bsIgnore.get(i))
-          && (nSelected == 0 || bsSelected.get(i))) {
+      if (bsSolventSelected.get(i)) {
         if (solvent_modelIndex < 0)
           solvent_modelIndex = atoms[i].modelIndex;
         if (solvent_modelIndex != atoms[i].modelIndex)
@@ -4384,8 +4397,12 @@ class Isosurface extends MeshCollection {
     for (int i = 0; i < nAtoms; i++) {
       if (atomSet.get(i) || bsIgnore != null && bsIgnore.get(i))
         continue;
-      pt = atoms[i];
       float rA = solventWorkingRadius(atoms[i]);
+      if (solvent_quickPlane
+          && thePlane != null
+          && Math.abs(distancePointToPlane(atoms[i], thePlane)) > 2 * rA)
+        continue;
+      pt = atoms[i];
       if (pt.x + rA > xyzMin.x && pt.x - rA < xyzMax.x && pt.y + rA > xyzMin.y
           && pt.y - rA < xyzMax.y && pt.z + rA > xyzMin.z
           && pt.z - rA < xyzMax.z) {
@@ -4446,6 +4463,7 @@ class Isosurface extends MeshCollection {
   }
 
   void generateSolventCube() {
+    long time = System.currentTimeMillis();
     float rA, rB;
     Point3f ptA;
     Point3f ptY0 = new Point3f(), ptZ0 = new Point3f();
@@ -4498,9 +4516,14 @@ class Isosurface extends MeshCollection {
               continue;
             // selected 
             // only consider selected neighbors
-            if (!bsSelected.get(ptB.atomIndex))
+            if (!bsSolventSelected.get(ptB.atomIndex))
               continue;
             rB = solventWorkingRadius(ptB) + solventRadius;
+            if (solvent_quickPlane
+                && thePlane != null
+                && Math.abs(distancePointToPlane(ptB, thePlane)) > 2 * rB)
+              continue;
+
             float dAB = ptA.distance(ptB);
             if (dAB >= rA + rB)
               continue;
@@ -4545,7 +4568,8 @@ class Isosurface extends MeshCollection {
             // allows for Float.NaN conversion
             voxelData[x][y][z] = maxValue;
           }
-    }
+    Logger.debug("solvent surface time:"+(System.currentTimeMillis() - time));
+  }
   
   void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0, Point3i pt1) {
     xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);

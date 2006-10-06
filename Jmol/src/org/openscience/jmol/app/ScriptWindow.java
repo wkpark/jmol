@@ -123,7 +123,6 @@ public final class ScriptWindow extends JDialog
   }
   
   public void sendConsoleMessage(String strStatus) {
-    System.out.println("send console iserror="+isError+" " +strStatus);
     if (strStatus == null) {
       console.clearContent();
       console.outputStatus("");
@@ -137,7 +136,6 @@ public final class ScriptWindow extends JDialog
   }
 
   public void notifyScriptTermination(String strMsg, int msWalltime) {
-    System.out.println("send notifyterm iserror="+isError+" " +strMsg);
     if (strMsg != null && strMsg.indexOf("ERROR") >= 0) {
       console.outputError(strMsg);
     }
@@ -372,7 +370,6 @@ class ConsoleTextPane extends JTextPane {
    */
    void recallCommand(boolean up) {
      String cmd = viewer.getSetHistory(up ? -1 : 1);
-     System.out.println(viewer.getSetHistory(Integer.MAX_VALUE)+"\nthis command:" + cmd);
     if (cmd == null)
       return;
     try {

@@ -199,6 +199,7 @@ class Isosurface extends MeshCollection {
   final static int SURFACE_ELLIPSOID = 2 | IS_SILENT;
   final static int SURFACE_LOBE = 3 | IS_SILENT;
   final static int SURFACE_LCAOCARTOON = 4 | IS_SILENT;
+
   final static int SURFACE_FUNCTIONXY = 15;
 
   // getSurface or mapColor:
@@ -206,9 +207,9 @@ class Isosurface extends MeshCollection {
   final static int SURFACE_SASURFACE = 12 | IS_SOLVENTTYPE | NO_ANISOTROPY;
   final static int SURFACE_MOLECULARORBITAL = 13 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_ATOMICORBITAL = 14;
-  final static int SURFACE_MEP = 15 | NO_ANISOTROPY | HAS_MAXGRID;
-  final static int SURFACE_FILE = 16;
-  final static int SURFACE_INFO = 17;
+  final static int SURFACE_MEP =16 | NO_ANISOTROPY | HAS_MAXGRID;
+  final static int SURFACE_FILE = 17;
+  final static int SURFACE_INFO = 18;
 
   float solventRadius;
   float solventExtendedAtomRadius;
@@ -738,7 +739,10 @@ class Isosurface extends MeshCollection {
         Logger.info("loading voxel data...");
       checkFlags();
       long timeBegin = System.currentTimeMillis();
-      createIsosurface();
+      if (!createIsosurface()) {
+        Logger.error("Could not create isosurface");        
+        return;
+      }
       if (!isSilent)
         Logger.info("surface calculation time: " + (System.currentTimeMillis() - timeBegin)
           + " ms");
@@ -997,11 +1001,15 @@ class Isosurface extends MeshCollection {
     }
   }
 
-  void createIsosurface() {
+  boolean createIsosurface() {
     resetIsosurface();
-    readData(false);
-    calcVoxelVertexVectors();
-    generateSurfaceData();
+    try {
+      readData(false);
+      calcVoxelVertexVectors();
+      generateSurfaceData();
+    } catch (Exception e) {
+      return false;
+    }
     currentMesh.jvxlFileHeader = "" + jvxlFileHeader;
     currentMesh.cutoff = (isJvxl ? jvxlCutoff : cutoff);
     currentMesh.jvxlColorData = "";
@@ -1015,6 +1023,7 @@ class Isosurface extends MeshCollection {
     currentMesh.jvxlExtraLine = jvxlExtraLine(1);
     if (thePlane != null && iAddGridPoints)
       addGridPointCube();
+    return true;
   }
 
   void resetIsosurface() {
@@ -1327,7 +1336,8 @@ class Isosurface extends MeshCollection {
     nPointsY = voxelCounts[1];
     nPointsZ = voxelCounts[2];
     int nPoints = nPointsX * nPointsY * nPointsZ;
-
+    if (nPointsX <=0 || nPointsY <=0 || nPointsZ <=0)
+      return;
     if (!isSilent)
       Logger.debug("entering readVoxelData for fileIndex = " + fileIndex + "; "
           + nPoints + " data points mapping=" + isMapData);
@@ -4545,8 +4555,7 @@ class Isosurface extends MeshCollection {
             if (!bsSolventSelected.get(ptB.atomIndex))
               continue;
             rB = solventWorkingRadius(ptB) + solventRadius;
-            if (solvent_quickPlane
-                && thePlane != null
+            if (solvent_quickPlane && thePlane != null
                 && Math.abs(distancePointToPlane(ptB, thePlane)) > 2 * rB)
               continue;
 
@@ -4585,16 +4594,18 @@ class Isosurface extends MeshCollection {
           }
         }
     }
-    float maxValue = 0.001f;
-    for (int x = 0; x < nPointsX; ++x)
-      for (int y = 0; y < nPointsY; ++y)
-        for (int z = 0; z < nPointsZ; ++z)
-          if (voxelData[x][y][z] < maxValue) {
-          } else {
-            // allows for Float.NaN conversion
-            voxelData[x][y][z] = maxValue;
-          }
-    Logger.debug("solvent surface time:"+(System.currentTimeMillis() - time));
+    if (thePlane != null) {
+      float maxValue = 0.001f;
+      for (int x = 0; x < nPointsX; ++x)
+        for (int y = 0; y < nPointsY; ++y)
+          for (int z = 0; z < nPointsZ; ++z)
+            if (voxelData[x][y][z] < maxValue) {
+              // Float.NaN will also match ">=" this way  
+            } else {
+              voxelData[x][y][z] = maxValue;
+            }
+    }
+    Logger.debug("solvent surface time:" + (System.currentTimeMillis() - time));
   }
   
   void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0, Point3i pt1) {

@@ -39,10 +39,9 @@ import java.io.DataInputStream;
  * 
  */
 
-public class BinaryDocument {
+class BinaryDocument {
 
-  public BinaryDocument() {
-    
+  BinaryDocument() {  
   }
   
 //  RandomAccessFile file;
@@ -91,7 +90,7 @@ public class BinaryDocument {
         .readByte()) & 0xff) << 54);
   }
 
-  public void seek(long offset) {
+  void seek(long offset) {
     // slower, but all that is available using the applet
     try {
       stream.reset();
@@ -103,7 +102,7 @@ public class BinaryDocument {
 
 /*  random access -- application only:
  * 
-    public void seekFile(long offset) {
+    void seekFile(long offset) {
     try {
       file.seek(offset);
     } catch (Exception e) {

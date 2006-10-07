@@ -147,6 +147,10 @@ public class JmolPopupSwing extends JmolPopup {
     ((JMenu)menu).setEnabled(enable);
   }
 
+  void enableMenuItem(Object item, boolean enable) {
+    ((JMenuItem)item).setEnabled(enable);
+  }
+
   long maxMemoryForNewerJvm() {
     return Runtime.getRuntime().maxMemory();
   }

@@ -26,6 +26,7 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -52,7 +53,8 @@ class XmlChem3dReader extends XmlReader {
       "bondAtom1", "bondAtom2", "bondOrder", //bond
       "gridDatXDim", "gridDatYDim", "gridDatZDim",    
       "gridDatXSize", "gridDatYSize", "gridDatZSize",    
-      "gridDatOrigin", "gridDatDat",   // grid cube data    
+      "gridDatOrigin", "gridDatDat",   // grid cube data
+      "calcPartialCharges", // electronicStructureCalculation 
   };
 
   String modelName = null;
@@ -75,7 +77,7 @@ class XmlChem3dReader extends XmlReader {
 
   void processStartElement(String namespaceURI, String localName, String qName,
                            HashMap atts) {
-
+    String[] tokens;
     if ("model".equals(localName)) {
       atomSetCollection.newAtomSet();
       return;
@@ -87,7 +89,7 @@ class XmlChem3dReader extends XmlReader {
       atom.elementSymbol = (String) atts.get("symbol");
       if (atts.containsKey("cartCoords")) {
         String xyz = (String) atts.get("cartCoords");
-        String[] tokens = getTokens(xyz);
+        tokens = getTokens(xyz);
         atom.x = parseFloat(tokens[0]);
         atom.y = parseFloat(tokens[1]);
         atom.z = parseFloat(tokens[2]);
@@ -104,6 +106,16 @@ class XmlChem3dReader extends XmlReader {
       return;
     }
 
+    if ("electronicStructureCalculation".equals(localName)) {
+      tokens = getTokens((String) atts.get("calcPartialCharges"));
+      int nData = parseInt(tokens[0]);
+      Vector charges = new Vector();
+      for (int i = 0; i < nData; i++)
+       charges.add(i, new Float(parseFloat(tokens[i+1])));
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("calcPartialCharges", charges);
+      atomSetCollection.setAtomSetCollectionPartialCharges("calcPartialCharges");        
+    }
+    
     if ("gridData".equals(localName)) {
       int nPointsX=parseInt((String) atts.get("gridDatXDim"));
       int nPointsY=parseInt((String) atts.get("gridDatYDim"));
@@ -112,7 +124,7 @@ class XmlChem3dReader extends XmlReader {
       float yStep=parseFloat((String) atts.get("gridDatYSize")) / (nPointsY - 1f);
       float zStep=parseFloat((String) atts.get("gridDatZSize")) / (nPointsZ- 1f);
       String xyz = (String) atts.get("gridDatOrigin");
-      String[] tokens = getTokens(xyz);
+      tokens = getTokens(xyz);
       float originX = parseFloat(tokens[0]);
       float originY = parseFloat(tokens[1]);
       float originZ = parseFloat(tokens[2]);

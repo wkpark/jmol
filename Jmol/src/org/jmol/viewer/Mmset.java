@@ -197,6 +197,8 @@ final class Mmset {
   }
 
   Object getModelAuxiliaryInfo(int modelIndex, String key) {
+    if (modelIndex < 0)
+      return null;
     Hashtable info = modelAuxiliaryInfo[modelIndex];
     return info == null ? null : info.get(key);
   }

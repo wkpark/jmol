@@ -3718,4 +3718,8 @@ public class Viewer extends JmolViewer {
     setModelVisibility();
     statusManager.createImage(file, type, quality);
   }
+  
+  public boolean havePartialCharges() {
+    return modelManager.havePartialCharges();
+  }
 }

@@ -52,7 +52,7 @@ class PopupResourceBundle {
   private static final String[][] structureContents = {
     { "popupMenu", "modelSetInfoMenu - selectMenu renderMenu labelMenu colorMenu - " +
                    "zoomMenu spinMenu animateMenu - " +
-                   "measureMenu pickingMenu crystalMenu optionsMenu - showMenu - " +
+                   "measureMenu pickingMenu surfaceMenu crystalMenu optionsMenu - showMenu - " +
                    "aboutMenu" },
 
     { "selectMenu", "selectAll selectNone - " +
@@ -576,7 +576,7 @@ class PopupResourceBundle {
     { "pickMolecule" , "set picking molecule" },
     { "pickSite" , "set picking site" },
     { "pickSpin" , "set picking spin" },
-    
+
     { "showMenu" , "showConsole showFile showFileHeader showIsosurface "
       + "showMeasure showMo showModel " + 
       "showOrient showSpacegroup showSymmetry showUnitcell extractMOL" },
@@ -592,7 +592,16 @@ class PopupResourceBundle {
     { "showSymmetry", "console on;show symmetry"},
     { "showUnitcell", "console on;show unitcell"},
     { "extractMOL", "console on;getproperty extractModel \"visible\" "},
-      
+
+    { "surfaceMenu" , "surfVDW surfMolecular surfSolvent surfSolventAccessible surfMEP surfMoComputedMenu - surfOpaque surfTranslucent" },
+    { "surfVDW", "isosurface delete resolution 0 solvent 0 translucent" },
+    { "surfMolecular", "isosurface delete resolution 0 molecular translucent" },
+    { "surfSolvent", "isosurface delete resolution 0 solvent translucent" },
+    { "surfSolventAccessible", "isosurface delete resolution 0 sasurface translucent" },
+    { "surfMEP", "isosurface delete resolution 0 molecular map MEP translucent" },
+    { "surfOpaque", "isosurface opaque" },
+    { "surfTranslucent", "isosurface translucent" },
+
     { "crystalMenu", "axesMenu bbcageMenu uccageMenu" },
 
     { "axesMenu", "axesOff axesDotted axesByPixelMenu axesByAngstromMenu colorAxesMenu" },
@@ -1145,6 +1154,16 @@ class PopupResourceBundle {
     { "showSymmetry",  GT._("Symmetry")},
     { "showUnitcell",  GT._("Unit cell")},    
     { "extractMOL",  GT._("Extract MOL data")},
+
+    { "surfaceMenu",  GT._("Surfaces")},
+    { "surfVDW", GT._("van der Waals Surface") },
+    { "surfMolecular", GT._("Molecular Surface") },
+    { "surfSolvent", GT._("Solvent Surface - 1.2 Angstrom") },
+    { "surfSolventAccessible",  GT._("Solvent-Accessible Surface - 1.2 Angstrom") },
+    { "surfMEP", GT._("Molecular Electrostatic Potential") },
+    { "surfMoComputedMenu" ,  GT._("Molecular Orbitals")},
+    { "surfOpaque", GT._("Make Opaque") },
+    { "surfTranslucent", GT._("Make Translucent") },
 
     { "crystalMenu", GT._("Crystal") },
 

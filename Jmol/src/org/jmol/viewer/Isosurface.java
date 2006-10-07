@@ -365,6 +365,8 @@ class Isosurface extends MeshCollection {
 
     if ("resolution" == propertyName) {
       resolution = ((Float) value).floatValue();
+      if (resolution == 0)
+        resolution = getDefaultResolution();
       return;
     }
 
@@ -3837,6 +3839,20 @@ class Isosurface extends MeshCollection {
 
   float[] fact = new float[20];
 
+  float getDefaultResolution() {
+    return Float.MAX_VALUE;
+    // for popup menu?
+ /* maybe....
+    int nAtoms = viewer.getAtomCount();
+    float res = 0;
+    if (nAtoms < 200)
+      res = 4;
+    else if (nAtoms < 2000)
+      res = 1;
+    return res;
+*/
+  }
+
   /////// spheres and ellipsoids //////
 
   int sphere_gridMax = 20;
@@ -4317,7 +4333,7 @@ class Isosurface extends MeshCollection {
 
   ///// solvent-accessible, solvent-excluded surface //////
 
-  float solvent_ptsPerAngstrom = 2f;
+  float solvent_ptsPerAngstrom = 4f;
   int solvent_gridMax = 60;
   int solvent_modelIndex;
   float[] solvent_atomRadius;

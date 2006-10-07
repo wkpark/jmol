@@ -241,6 +241,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public String getSetHistory(int howFarBack);
   
+  abstract public boolean havePartialCharges();
   // not really implemented:
   
   abstract public void setSyncDriver(int syncMode);

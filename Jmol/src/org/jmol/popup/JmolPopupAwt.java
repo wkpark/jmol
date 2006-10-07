@@ -187,4 +187,7 @@ public class JmolPopupAwt extends JmolPopup {
   void enableMenu(Object menu, boolean enable) {
     ((Menu)menu).setEnabled(enable);
   }
+  void enableMenuItem(Object item, boolean enable) {
+    ((MenuItem)item).setEnabled(enable);
+  }
 }

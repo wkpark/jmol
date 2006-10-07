@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Vector;
 
 abstract public class JmolPopup {
   private final static boolean forceAwt = false;
@@ -44,6 +45,8 @@ abstract public class JmolPopup {
   Object elementsComputedMenu;
   Object aaresiduesComputedMenu;
   Object heteroComputedMenu;
+  Object surfMoComputedMenu;
+  Object surfMEP;
   Object aboutMenu;
   int aboutMenuBaseCount;
   Object consoleMenu;
@@ -72,15 +75,46 @@ abstract public class JmolPopup {
 
   public void updateComputedMenus() {
     updateElementsComputedMenu(viewer.getElementsPresentBitSet());
+    updatesurfMEP(viewer.havePartialCharges());
     updateHeteroComputedMenu(viewer.getHeteroList());
+    updateSurfMoComputedMenu((Hashtable) viewer.getModelAuxiliaryInfo(viewer.getDisplayModelIndex(),"moData"));
     updateAaresiduesComputedMenu(viewer.getGroupsPresentBitSet());
     updateModelSetInfoMenu();
   }
 
+  void updatesurfMEP(boolean haveCharges) {
+    if (surfMEP == null)
+      return;
+    enableMenuItem(surfMEP, haveCharges);
+  }
+
+  void updateSurfMoComputedMenu(Hashtable moData) {
+    if (surfMoComputedMenu == null)
+      return;
+    enableMenu(surfMoComputedMenu, false);
+    removeAll(surfMoComputedMenu);
+    if (moData == null)
+      return;
+    Vector mos = (Vector) (moData.get("mos"));
+    int nOrb = (mos == null ? 0 : mos.size());
+    if (nOrb == 0)
+      return;
+    enableMenu(surfMoComputedMenu, true);
+    for (int i = nOrb; --i >= 0;) {
+      String entryName = "#" + (i + 1) +" " 
+      + ((Hashtable)(mos.get(i))).get("energy");
+      String script = "mo " + (i + 1);
+      addMenuItem(surfMoComputedMenu, entryName, script);
+    }
+  }
+
   void updateElementsComputedMenu(BitSet elementsPresentBitSet) {
-    if (elementsComputedMenu == null || elementsPresentBitSet == null)
+    if (elementsComputedMenu == null)
       return;
     removeAll(elementsComputedMenu);
+    enableMenu(elementsComputedMenu, false);
+    if (elementsPresentBitSet == null)
+      return;
     for (int i = 0; i < JmolConstants.elementNumberMax; ++i) {
       if (elementsPresentBitSet.get(i)) {
         String elementName = JmolConstants.elementNameFromNumber(i);
@@ -101,13 +135,17 @@ abstract public class JmolPopup {
         addMenuItem(elementsComputedMenu, entryName, script);
       }
     }
+    enableMenu(elementsComputedMenu, true);
   }
 
   void updateHeteroComputedMenu(Hashtable htHetero) {
-    if (htHetero == null)
+    if (heteroComputedMenu == null)
       return;
     removeAll(heteroComputedMenu);
+    if (htHetero == null)
+      return;
     Enumeration e = htHetero.keys();
+    int n = 0;
     while (e.hasMoreElements()) {
         String heteroCode = (String) e.nextElement();
         String heteroName = (String) htHetero.get(heteroCode);
@@ -116,13 +154,18 @@ abstract public class JmolPopup {
         String entryName = heteroCode + " - " + heteroName;
         String script = "select " + heteroCode;
         addMenuItem(heteroComputedMenu, entryName, script);
+        n++;
     }
+    enableMenu(heteroComputedMenu, (n > 0));
   }
 
   void updateAaresiduesComputedMenu(BitSet groupsPresentBitSet) {
-    if (aaresiduesComputedMenu == null || groupsPresentBitSet == null)
+    if (aaresiduesComputedMenu == null)
       return;
     removeAll(aaresiduesComputedMenu);
+    enableMenu(aaresiduesComputedMenu, false);
+    if (groupsPresentBitSet == null)
+      return;
     for (int i = 1; i < JmolConstants.GROUPID_AMINO_MAX; ++i) {
       if (groupsPresentBitSet.get(i)) {
         String aaresidueName = JmolConstants.predefinedGroup3Names[i];
@@ -130,6 +173,7 @@ abstract public class JmolPopup {
         addMenuItem(aaresiduesComputedMenu, aaresidueName, script);
       }
     }
+    enableMenu(aaresiduesComputedMenu, true);
   }
 
   void updateModelSetInfoMenu() {
@@ -214,6 +258,7 @@ abstract public class JmolPopup {
     }
     StringTokenizer st = new StringTokenizer(value);
     while (st.hasMoreTokens()) {
+      Object newMenu = null;
       String item = st.nextToken();
       String word = popupResourceBundle.getWord(item);
       if (item.endsWith("Menu")) {
@@ -224,6 +269,8 @@ abstract public class JmolPopup {
           aaresiduesComputedMenu = subMenu;
         else if ("heteroComputedMenu".equals(item))
           heteroComputedMenu = subMenu;
+        else if ("surfMoComputedMenu".equals(item))
+          surfMoComputedMenu = subMenu;
         else
           addMenuItems(item, subMenu, popupResourceBundle);
         if ("aboutMenu".equals(item))
@@ -246,7 +293,9 @@ abstract public class JmolPopup {
         String basename = item.substring(0, item.length() - 8);
         addCheckboxMenuItem(menu, word, basename);
       } else {
-        addMenuItem(menu, word, popupResourceBundle.getStructure(item));
+        newMenu = addMenuItem(menu, word, popupResourceBundle.getStructure(item));
+        if ("surfMEP".equals(item))
+          surfMEP = newMenu;
       }
     }
   }
@@ -297,6 +346,8 @@ abstract public class JmolPopup {
   abstract Object newMenu(String menuName);
 
   abstract void enableMenu(Object menu, boolean enable);
+
+  abstract void enableMenuItem(Object item, boolean enable);
 
   abstract void renameMenu(Object menu, String menuName);
 

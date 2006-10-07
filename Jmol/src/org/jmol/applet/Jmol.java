@@ -755,6 +755,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       if (animFrameCallback != null && jsoWindow != null)
         jsoWindow.call(animFrameCallback, new Object[] { htmlName,
             new Integer(frameNo) });
+      if (jmolpopup != null)
+        jmolpopup.updateComputedMenus();
     }
 
     public void notifyAtomPicked(int atomIndex, String strInfo) {

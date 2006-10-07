@@ -1661,6 +1661,9 @@ String getAtomInfoChime(int i) {
     frame.setEchoStateActive(TF);
   }
 
+  boolean havePartialCharges() {
+    return frame != null && frame.partialCharges != null;
+  }
 
 
 

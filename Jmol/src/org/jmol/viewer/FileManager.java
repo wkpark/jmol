@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.util.CompoundDocument;
 import org.jmol.util.Logger;
 
 import org.jmol.api.JmolAdapter;

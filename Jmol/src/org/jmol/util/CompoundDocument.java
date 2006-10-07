@@ -21,9 +21,8 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.viewer;
+package org.jmol.util;
 
-import org.jmol.util.Logger;
 
 import java.io.DataInputStream;
 import java.io.BufferedInputStream;
@@ -44,7 +43,7 @@ import java.util.Vector;
  * 
  */
 
-class CompoundDocument {
+public class CompoundDocument {
 
 //  RandomAccessFile file;
   DataInputStream stream;
@@ -61,7 +60,7 @@ class CompoundDocument {
   int nDirEntriesperSector;
   boolean isRandom = false;
 
-  CompoundDocument(String fileName, BufferedInputStream bis) {
+  public CompoundDocument(String fileName, BufferedInputStream bis) {
 
     /*    try {
      file = new RandomAccessFile(fileName, "r");

@@ -227,7 +227,7 @@ class PopupResourceBundle {
 
     { "colorMenu", "colorAtomMenu colorBondMenu colorHbondMenu colorSSbondMenu - " +
                    "colorBackboneMenu colorTraceMenu colorCartoonMenu colorRibbonsMenu - " +
-                   "colorLabelMenu colorBackgroundMenu - " +
+                   "colorLabelMenu colorSurfaceMenu colorBackgroundMenu - " +
                    "colorVectorMenu" },
     { "colorAtomMenu", "colorAtomSchemeMenu - " +
                        "colorAtomBlack colorAtomWhite - " +
@@ -465,6 +465,21 @@ class PopupResourceBundle {
     { "colorBackgroundIndigo", "background indigo" },
     { "colorBackgroundViolet", "background violet" },
     { "colorBackgroundCyan", "background cyan" },
+
+    { "colorSurfaceMenu", "colorSurfaceBlack colorSurfaceWhite - " +
+      "colorSurfaceRed colorSurfaceOrange colorSurfaceYellow " +
+      "colorSurfaceGreen colorSurfaceBlue colorSurfaceIndigo " +
+      "colorSurfaceViolet - surfOpaque surfTranslucent" },
+    { "colorSurfaceBlack", "color isosurface black" },
+    { "colorSurfaceWhite", "color isosurface white" },
+    { "colorSurfaceRed", "color isosurface red" }, 
+    { "colorSurfaceOrange", "color isosurface orange" },
+    { "colorSurfaceYellow", "color isosurface yellow" },
+    { "colorSurfaceGreen", "color isosurface green" },
+    { "colorSurfaceBlue", "color isosurface blue" },
+    { "colorSurfaceIndigo", "color isosurface indigo" },
+    { "colorSurfaceViolet", "color isosurface violet" },
+    { "colorSurfaceCyan", "color isosurface cyan" },
 
     { "colorVectorMenu", "colorVectorInherit - " +
                          "colorVectorBlack colorVectorWhite colorVectorCyan - " +
@@ -1039,6 +1054,18 @@ class PopupResourceBundle {
     { "colorBackgroundIndigo", GT._("Indigo") },
     { "colorBackgroundViolet", GT._("Violet") },
     { "colorBackgroundCyan", GT._("Cyan") },
+
+    { "colorSurfaceMenu", GT._("Surface") },
+    { "colorSurfaceBlack", GT._("Black") },
+    { "colorSurfaceWhite", GT._("White") },
+    { "colorSurfaceRed", GT._("Red") },
+    { "colorSurfaceOrange", GT._("Orange") },
+    { "colorSurfaceYellow", GT._("Yellow") },
+    { "colorSurfaceGreen", GT._("Green") },
+    { "colorSurfaceBlue", GT._("Blue") },
+    { "colorSurfaceIndigo", GT._("Indigo") },
+    { "colorSurfaceViolet", GT._("Violet") },
+    { "colorSurfaceCyan", GT._("Cyan") },
 
     { "colorVectorMenu", GT._("Vectors") },
     { "colorVectorInherit", GT._("Inherit") },

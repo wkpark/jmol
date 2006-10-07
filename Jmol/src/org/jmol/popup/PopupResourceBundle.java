@@ -593,7 +593,8 @@ class PopupResourceBundle {
     { "showUnitcell", "console on;show unitcell"},
     { "extractMOL", "console on;getproperty extractModel \"visible\" "},
 
-    { "surfaceMenu" , "surfVDW surfMolecular surfSolvent surfSolventAccessible surfMEP surfMoComputedMenu - surfOpaque surfTranslucent surfOff" },
+    { "surfaceMenu" , "surfDots surfVDW surfMolecular surfSolvent surfSolventAccessible surfMEP surfMoComputedMenu - surfOpaque surfTranslucent surfOff" },
+    { "surfDots", "select *;dots on" },
     { "surfVDW", "isosurface delete resolution 0 solvent 0 translucent" },
     { "surfMolecular", "isosurface delete resolution 0 molecular translucent" },
     { "surfSolvent", "isosurface delete resolution 0 solvent translucent" },
@@ -601,7 +602,7 @@ class PopupResourceBundle {
     { "surfMEP", "isosurface delete resolution 0 molecular map MEP translucent" },
     { "surfOpaque", "isosurface opaque" },
     { "surfTranslucent", "isosurface translucent" },
-    { "surfOff", "isosurface delete" },
+    { "surfOff", "isosurface delete;select *;dots off" },
 
     { "crystalMenu", "axesMenu bbcageMenu uccageMenu" },
 
@@ -1157,6 +1158,7 @@ class PopupResourceBundle {
     { "extractMOL",  GT._("Extract MOL data")},
 
     { "surfaceMenu",  GT._("Surfaces")},
+    { "surfDots", GT._("Dot Surface") },
     { "surfVDW", GT._("van der Waals Surface") },
     { "surfMolecular", GT._("Molecular Surface") },
     { "surfSolvent", GT._("Solvent Surface - 1.2 Angstrom") },

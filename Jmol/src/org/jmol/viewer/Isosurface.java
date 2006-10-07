@@ -200,7 +200,7 @@ class Isosurface extends MeshCollection {
   final static int SURFACE_LOBE = 3 | IS_SILENT;
   final static int SURFACE_LCAOCARTOON = 4 | IS_SILENT;
 
-  final static int SURFACE_FUNCTIONXY = 15;
+  final static int SURFACE_FUNCTIONXY = 5;
 
   // getSurface or mapColor:
   final static int SURFACE_SOLVENT = 11 | IS_SOLVENTTYPE | NO_ANISOTROPY;
@@ -210,6 +210,11 @@ class Isosurface extends MeshCollection {
   final static int SURFACE_MEP =16 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_FILE = 17;
   final static int SURFACE_INFO = 18;
+  
+  // mapColor only:
+  
+  final static int SURFACE_NOMAP = 19 | IS_SOLVENTTYPE | NO_ANISOTROPY;
+  
 
   float solventRadius;
   float solventExtendedAtomRadius;
@@ -452,7 +457,7 @@ class Isosurface extends MeshCollection {
 
     if ("setColorScheme" == propertyName) {
       colorScheme = ((String) value);
-      if (currentMesh != null  && colorScheme.equals("sets")) {
+      if (currentMesh != null && colorScheme.equals("sets")) {
         currentMesh.surfaceSet = getSurfaceSet(0);
         super.setProperty("color", "sets", null);
       }
@@ -584,20 +589,26 @@ class Isosurface extends MeshCollection {
       return;
     }
 
-    if ("solvent" == propertyName || "sasurface" == propertyName) {
+    if ("solvent" == propertyName || "sasurface" == propertyName
+        || "nomap" == propertyName) {
+      // plain plane
       isEccentric = isAnisotropic = false;
       //anisotropy[0] = anisotropy[1] = anisotropy[2] = 1f;
       solventRadius = ((Float) value).floatValue();
       if (solventRadius < 0)
         solventRadius = defaultSolventRadius;
-      dataType = ("sasurface" == propertyName || solventRadius == 0f ? SURFACE_SASURFACE
+      dataType = ("nomap" == propertyName ? SURFACE_NOMAP : "sasurface" == propertyName || solventRadius == 0f ? SURFACE_SASURFACE
           : SURFACE_SOLVENT);
-      if (dataType == SURFACE_SASURFACE) {
-        solventExtendedAtomRadius = solventRadius;
+      switch (dataType) {
+      case SURFACE_SASURFACE:
         Logger.info("creating solvent-accessible surface with radius "
             + solventExtendedAtomRadius);
+      case SURFACE_NOMAP:
+        solventExtendedAtomRadius = solventRadius;
         solventRadius = 0f;
-      } else {
+        isContoured = false;
+        break;
+      case SURFACE_SOLVENT:
         Logger.info("creating solvent-excluded surface with radius "
             + solventRadius);
         solventExtendedAtomRadius = 0f;
@@ -612,6 +623,7 @@ class Isosurface extends MeshCollection {
 
     if ("moData" == propertyName) {
       moData = (Hashtable) value;
+      propertyName = "mapColor";
       return;
     }
 
@@ -740,12 +752,12 @@ class Isosurface extends MeshCollection {
       checkFlags();
       long timeBegin = System.currentTimeMillis();
       if (!createIsosurface()) {
-        Logger.error("Could not create isosurface");        
+        Logger.error("Could not create isosurface");
         return;
       }
       if (!isSilent)
-        Logger.info("surface calculation time: " + (System.currentTimeMillis() - timeBegin)
-          + " ms");
+        Logger.info("surface calculation time: "
+            + (System.currentTimeMillis() - timeBegin) + " ms");
       initializeMesh(force2SidedTriangles);
       jvxlFileMessage = (jvxlDataIsColorMapped ? "mapped" : "");
       if (isContoured && thePlane == null) {
@@ -1128,6 +1140,7 @@ class Isosurface extends MeshCollection {
       case SURFACE_LOBE:
         setupLobe();
         break;
+      case SURFACE_NOMAP:
       case SURFACE_SOLVENT:
       case SURFACE_SASURFACE:
         setupSolvent();
@@ -1349,7 +1362,7 @@ class Isosurface extends MeshCollection {
     thisInside = (!isJvxl || !isContoured);
     if (insideOut)
       thisInside = !thisInside;
-
+    
     if (thePlane != null) {
       setPlaneParameters(thePlane);
       cutoff = 0f;
@@ -1435,6 +1448,9 @@ class Isosurface extends MeshCollection {
               break;
             case SURFACE_INFO:
               voxelValue = voxelData[x][y][z];
+              break;
+            case SURFACE_NOMAP:
+              voxelValue = 0f;
               break;
             case SURFACE_FILE:
             default:
@@ -1837,6 +1853,7 @@ class Isosurface extends MeshCollection {
       jvxlWritePrecisionColor = true;
     for (int i = 0; i < vertexCount; i += incr) {
       float value = getVertexColorValue(mesh, i);
+      value += 1;
       if (mesh.firstViewableVertex == 0 || i < mesh.firstViewableVertex) {
         char ch;
         if (jvxlWritePrecisionColor) {
@@ -3235,12 +3252,17 @@ class Isosurface extends MeshCollection {
     //skipping the dimension designated by the contourType
     if (thePlane == null)
       return;
-    int ipt = 0;
+    int max = 0;
     for (int i = 0; i < 3; i++) {
       if (i != contourType)
-        pixelCounts[ipt++] = voxelCounts[i];
+         max = Math.max(max, voxelCounts[i]);
     }
-    if (logMessages)
+    pixelCounts[0] = pixelCounts[1] = max;
+    // just use the maximum value -- this isn't too critical,
+    // but we want to have enough, and there were
+    // problems with hkl = 110
+    
+//    if (logMessages)
       Logger.info("getPixelCounts " + pixelCounts[0] + "," + pixelCounts[1]);
   }
 
@@ -3637,7 +3659,7 @@ class Isosurface extends MeshCollection {
     for (int y = y2; y >= y1; y--) {
       s += "\n*" + y + "*";
       for (int x = x1; x <= x2; x++)
-        s += "\t" + A[x][y];
+        s += "\t" + (x < A.length && y < A[x].length ? A[x][y] : Float.NaN);
     }
     return s;
   }
@@ -4504,10 +4526,13 @@ class Isosurface extends MeshCollection {
     Point3f ptA;
     Point3f ptY0 = new Point3f(), ptZ0 = new Point3f();
     Point3i pt0 = new Point3i(), pt1 = new Point3i();
+    float maxValue = (dataType == SURFACE_NOMAP ? Float.MAX_VALUE : Float.MAX_VALUE);
     for (int x = 0; x < nPointsX; ++x)
       for (int y = 0; y < nPointsY; ++y)
         for (int z = 0; z < nPointsZ; ++z)
-          voxelData[x][y][z] = Float.MAX_VALUE;
+          voxelData[x][y][z] = maxValue;
+    if (dataType == SURFACE_NOMAP)
+      return;
     float maxRadius = 0;
     for (int iAtom = 0; iAtom < solvent_nAtoms; iAtom++) {
       ptA = solvent_ptAtom[iAtom];
@@ -4595,7 +4620,7 @@ class Isosurface extends MeshCollection {
         }
     }
     if (thePlane != null) {
-      float maxValue = 0.001f;
+      maxValue = 0.001f;
       for (int x = 0; x < nPointsX; ++x)
         for (int y = 0; y < nPointsY; ++y)
           for (int z = 0; z < nPointsZ; ++z)

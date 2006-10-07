@@ -5540,7 +5540,7 @@ class Eval { //implements Runnable {
             propertyValue);
     }
     if (planeSeen && !surfaceObjectSeen) {
-      viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "sasurface", new Float(0));
+      viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "nomap", new Float(0));
     }
   }
 

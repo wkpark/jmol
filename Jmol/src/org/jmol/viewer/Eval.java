@@ -1519,13 +1519,15 @@ class Eval { //implements Runnable {
   Point4f hklParameter(int i) throws ScriptException {
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
-    Point3f pt = getCoordinate(i, true);
+    Point3f pt = getCoordinate(i, true, false, true);
     Point3f pt1 = new Point3f(pt.x == 0 ? 1 : 1 / pt.x, 0, 0);
     Point3f pt2 = new Point3f(0, pt.y == 0 ? 1 : 1 / pt.y, 0);
     Point3f pt3 = new Point3f(0, 0, pt.z == 0 ? 1 : 1 / pt.z);
     //trick for 001 010 100 is to define the other points on other edges
 
-    if (pt.x == 0 && pt.y == 0) {
+    if (pt.x == 0 && pt.y == 0 && pt.z == 0) {
+      evalError(GT._("Miller indices cannot all be zero."));  
+    } else if (pt.x == 0 && pt.y == 0) {
       pt1.set(1, 0, pt3.z);
       pt2.set(0, 1, pt3.z);
     } else if (pt.y == 0 && pt.z == 0) {
@@ -1672,7 +1674,7 @@ class Eval { //implements Runnable {
 
   boolean isCoordinate3(int i) {
     try {
-      getCoordinate(i, true, true);
+      getCoordinate(i, true, true, false);
     } catch (Exception e) {
       return false;
     }
@@ -1680,10 +1682,10 @@ class Eval { //implements Runnable {
   }
 
   Point3f getCoordinate(int i, boolean allowFractional) throws ScriptException {
-    return getCoordinate(i, allowFractional, true);
+    return getCoordinate(i, allowFractional, true, false);
   }
 
-  Point3f getCoordinate(int i, boolean allowFractional, boolean doConvert)
+  Point3f getCoordinate(int i, boolean allowFractional, boolean doConvert, boolean implicitFractional)
       throws ScriptException {
     // syntax:  {1/2, 1/2, 1/3} or {0.5/, 0.5, 0.5}
     // ONE fractional sign anywhere is enough to make ALL fractional;
@@ -1691,7 +1693,7 @@ class Eval { //implements Runnable {
     // commas not necessary if denominator is present or not a fraction
     if (i >= statementLength)
       coordinateExpected();      
-    coordinatesAreFractional = false;
+    coordinatesAreFractional = implicitFractional;
     if (statement[i++].tok != Token.leftbrace)
       coordinateExpected();
     Point3f pt = new Point3f();
@@ -3933,7 +3935,7 @@ class Eval { //implements Runnable {
       return;
     }
     viewer.setShapeProperty(JmolConstants.SHAPE_UCCAGE, "offset",
-        getCoordinate(cmdPt, true, false));
+        getCoordinate(cmdPt, true, false, true));
   }
 
   void setFrank(int cmdPt) throws ScriptException {
@@ -5497,10 +5499,24 @@ class Eval { //implements Runnable {
       case Token.string:
         propertyName = surfaceObjectSeen || planeSeen ? "mapColor" : "getSurface";
         surfaceObjectSeen = true;
-        // must be a file name, optionally followed by an integer file index.
+        /*
+         * a file name, optionally followed by an integer file index.
+         * OR empty. In that case, if the model auxiliary info has the
+         * data stored in it, we use that. There are two possible structures:
+         * 
+         * jmolSurfaceInfo
+         * jmolMappedDataInfo 
+         * 
+         * Both can be present, but if jmolMappedDataInfo is missing,
+         * then jmolSurfaceInfo is used by default.
+         * 
+         */
         String filename = (String) token.value;
         if (filename.length() == 0) {
-          propertyValue = viewer.getModelAuxiliaryInfo(modelIndex, "jmolSurfaceInfo");
+          if (surfaceObjectSeen || planeSeen)
+            propertyValue = viewer.getModelAuxiliaryInfo(modelIndex, "jmolMappedDataInfo");
+          if (propertyValue == null)
+            propertyValue  = viewer.getModelAuxiliaryInfo(modelIndex, "jmolSurfaceInfo");
           if (propertyValue != null)
             break;
           filename = viewer.getFullPathName();

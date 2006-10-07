@@ -29,4 +29,20 @@ public class Point3fi extends Point3f {
   public int screenX;
   public int screenY;
   public int screenZ;
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  public boolean equals(Object obj) {
+    if (!(obj instanceof Point3fi)) {
+      return false;
+    }
+    Point3fi other = (Point3fi) obj;
+    if ((screenX != other.screenX) ||
+        (screenY != other.screenY) ||
+        (screenZ != other.screenZ)) {
+      return false;
+    }
+    return super.equals(other);
+  }
 }

@@ -593,7 +593,7 @@ class PopupResourceBundle {
     { "showUnitcell", "console on;show unitcell"},
     { "extractMOL", "console on;getproperty extractModel \"visible\" "},
 
-    { "surfaceMenu" , "surfVDW surfMolecular surfSolvent surfSolventAccessible surfMEP surfMoComputedMenu - surfOpaque surfTranslucent" },
+    { "surfaceMenu" , "surfVDW surfMolecular surfSolvent surfSolventAccessible surfMEP surfMoComputedMenu - surfOpaque surfTranslucent surfOff" },
     { "surfVDW", "isosurface delete resolution 0 solvent 0 translucent" },
     { "surfMolecular", "isosurface delete resolution 0 molecular translucent" },
     { "surfSolvent", "isosurface delete resolution 0 solvent translucent" },
@@ -601,6 +601,7 @@ class PopupResourceBundle {
     { "surfMEP", "isosurface delete resolution 0 molecular map MEP translucent" },
     { "surfOpaque", "isosurface opaque" },
     { "surfTranslucent", "isosurface translucent" },
+    { "surfOff", "isosurface delete" },
 
     { "crystalMenu", "axesMenu bbcageMenu uccageMenu" },
 
@@ -1164,6 +1165,7 @@ class PopupResourceBundle {
     { "surfMoComputedMenu" ,  GT._("Molecular Orbitals")},
     { "surfOpaque", GT._("Make Opaque") },
     { "surfTranslucent", GT._("Make Translucent") },
+    { "surfOff", GT._("Off") },
 
     { "crystalMenu", GT._("Crystal") },
 

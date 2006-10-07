@@ -43,10 +43,9 @@ import java.util.Vector;
  * 
  */
 
-public class CompoundDocument {
+public class CompoundDocument extends BinaryDocument {
 
 //  RandomAccessFile file;
-  DataInputStream stream;
   CmpDocHeader header = new CmpDocHeader();
   Vector directory = new Vector(); //i.e.  CmpDocDirectoryEntry[]
   CmpDocDirectoryEntry rootEntry;
@@ -58,7 +57,6 @@ public class CompoundDocument {
   int nShortSectorsPerStandardSector;
   int nIntPerSector;
   int nDirEntriesperSector;
-  boolean isRandom = false;
 
   public CompoundDocument(String fileName, BufferedInputStream bis) {
 
@@ -126,8 +124,6 @@ public class CompoundDocument {
     }
     return new StringBuffer();
   }
-
-  boolean isBigEndian = true;
 
   class CmpDocHeader {
 
@@ -426,65 +422,4 @@ public class CompoundDocument {
     }
     return data;
   }
-
-  // generic
-
-  byte readByte() throws Exception {
-    return stream.readByte();
-  }
-
-  void readByteArray(byte[] b) throws Exception {
-    stream.read(b);
-  }
-
-  void readByteArray(byte[] b, int off, int len) throws Exception {
-    stream.read(b, off, len);
-  }
-
-  short readShort() throws Exception {
-    if (isBigEndian)
-      return stream.readShort();
-    return (short) ((((int) stream.readByte()) & 0xff) | (((int) stream
-        .readByte()) & 0xff) << 8);
-  }
-
-  int readInt() throws Exception {
-    if (isBigEndian)
-      return stream.readInt();
-    return ((((int) stream.readByte()) & 0xff)
-        | (((int) stream.readByte()) & 0xff) << 8
-        | (((int) stream.readByte()) & 0xff) << 16 | (((int) stream.readByte()) & 0xff) << 24);
-  }
-
-  long readLong() throws Exception {
-    if (isBigEndian)
-      return stream.readLong();
-    return ((((long) stream.readByte()) & 0xff)
-        | (((long) stream.readByte()) & 0xff) << 8
-        | (((long) stream.readByte()) & 0xff) << 16
-        | (((long) stream.readByte()) & 0xff) << 24
-        | (((long) stream.readByte()) & 0xff) << 32
-        | (((long) stream.readByte()) & 0xff) << 40
-        | (((long) stream.readByte()) & 0xff) << 48 | (((long) stream
-        .readByte()) & 0xff) << 54);
-  }
-
-  private void seek(long offset) {
-    // slower, but all that is available using the applet
-    try {
-      stream.reset();
-      stream.skipBytes((int)offset);
-    } catch (Exception e) {
-      Logger.error(null, e);
-    }
-  }
-
-/*  private void seekFile(long offset) {
-    try {
-      file.seek(offset);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-*/
 }

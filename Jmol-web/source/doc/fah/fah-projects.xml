@@ -3363,8 +3363,11 @@
   <fah_proj number="1496" name="p1496_Protein in POPC" public="y" file="y"
     server="171.65.103.68" atoms="77373" preferred="48" deadline="127"
     credit="459" frames="0" code="A0" contact="kasson"/>
-  <fah_proj number="1497" name="p1497_TETHERED VESICLES" public="y"
+  <fah_proj number="1497" name="p1497_TETHERED VESICLES" public="y" file="y"
     server="171.64.122.128" atoms="126006" preferred="35" deadline="52"
+    credit="364" frames="100" code="G" contact="kasson"/>
+  <fah_proj number="1498" name="p1498_TETHERED VESICLES" public="y"
+    server="171.64.122.128" atoms="308047" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
 
   <!-- Projects 1500 to 1599 -->
@@ -4570,6 +4573,9 @@
     credit="220" frames="100" code="GG" contact="densign"/>
   <fah_proj number="2725" name="p2725_GPUlambda" public="y"
     server="171.65.103.159" atoms="1258" preferred="3" deadline="4"
+    credit="220" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2728" name="p2728_GPU villin nle 00" public="y"
+    server="171.65.103.159" atoms="590" preferred="3" deadline="4"
     credit="220" frames="100" code="GG" contact="densign"/>
 
   <!-- Projects 2800 to 2899 -->

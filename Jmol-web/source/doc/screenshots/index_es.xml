@@ -103,8 +103,8 @@
 		</section>
 		<section title="Reacciones, vibraciones, etc.">
 			<screenshots>
-				<screenshot image="sn2-distance.png">
-        Un fotograma de una reacción S<sub>N</sub>2 animada, mostrando la 
+				<screenshot image="sn2-distance-anim.gif">
+        Una reacción S<sub>N</sub>2 animada, mostrando la 
         medida de distancia entre los átomos de cloro y carbono.
 			      </screenshot>
 				<screenshot image="vibrate.jpg">

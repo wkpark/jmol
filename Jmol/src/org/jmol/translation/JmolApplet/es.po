@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-10-08 15:56+0200\n"
-"PO-Revision-Date: 2006-10-06 21:31+0100\n"
+"PO-Revision-Date: 2006-10-08 18:13+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -39,9 +39,7 @@ msgstr "Cargar"
 
 #: org/jmol/applet/Console.java:89
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"pulsa Ctrl+Enter para un salto de línea o pega datos de un modelo y pulsa "
-"Cargar"
+msgstr "pulsa Ctrl+Enter para un salto de línea o pega datos de un modelo y pulsa Cargar"
 
 #: org/jmol/applet/Jmol.java:597
 #, java-format
@@ -872,9 +870,8 @@ msgid "Background"
 msgstr "Fondo"
 
 #: org/jmol/popup/PopupResourceBundle.java:1060
-#, fuzzy
 msgid "Surface"
-msgstr "Cordón"
+msgstr "Superficie"
 
 #: org/jmol/popup/PopupResourceBundle.java:1085
 msgid "Zoom"
@@ -1079,50 +1076,48 @@ msgid "Extract MOL data"
 msgstr "Extraer datos MOL"
 
 #: org/jmol/popup/PopupResourceBundle.java:1189
-#, fuzzy
 msgid "Surfaces"
-msgstr "Cordón"
+msgstr "Superficies"
 
 #: org/jmol/popup/PopupResourceBundle.java:1190
 msgid "Dot Surface"
-msgstr ""
+msgstr "Superficie de puntos"
 
 #: org/jmol/popup/PopupResourceBundle.java:1191
 msgid "van der Waals Surface"
-msgstr ""
+msgstr "Superficie de van der Waals"
 
 #: org/jmol/popup/PopupResourceBundle.java:1192
 msgid "Molecular Surface"
-msgstr ""
+msgstr "Superficie molecular"
 
 #: org/jmol/popup/PopupResourceBundle.java:1193
 #: org/jmol/popup/PopupResourceBundle.java:1194
 #, java-format
 msgid "Solvent Surface ({0}-Angstrom probe)"
-msgstr ""
+msgstr "Superficie del disolvente ({0}-ángstroms sonda)"
 
 #: org/jmol/popup/PopupResourceBundle.java:1195
 #: org/jmol/popup/PopupResourceBundle.java:1196
 #, java-format
 msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
-msgstr ""
+msgstr "Superficie accesible al disolvente (vdW + {0} ángstroms)"
 
 #: org/jmol/popup/PopupResourceBundle.java:1197
 msgid "Molecular Electrostatic Potential"
-msgstr ""
+msgstr "Potencial electrostático molecular"
 
 #: org/jmol/popup/PopupResourceBundle.java:1198
-#, fuzzy
 msgid "Molecular Orbitals"
-msgstr "Datos JVXL de orbital molecular"
+msgstr "Orbitales moleculares"
 
 #: org/jmol/popup/PopupResourceBundle.java:1199
 msgid "Make Opaque"
-msgstr ""
+msgstr "Hacer opaco"
 
 #: org/jmol/popup/PopupResourceBundle.java:1200
 msgid "Make Translucent"
-msgstr ""
+msgstr "Hacer translúcido"
 
 #: org/jmol/popup/PopupResourceBundle.java:1203
 msgid "Crystal"
@@ -1276,8 +1271,7 @@ msgstr "demasiados niveles de guión"
 
 #: org/jmol/viewer/Eval.java:946
 msgid "atom expression compiler error - stack over/underflow"
-msgstr ""
-"error del compilador con una expresión atómica; desbordamiento de la pila"
+msgstr "error del compilador con una expresión atómica; desbordamiento de la pila"
 
 #: org/jmol/viewer/Eval.java:1002
 msgid "invalid insertion code"
@@ -1291,19 +1285,18 @@ msgstr "No se reconoce el parámetro {0}"
 #: org/jmol/viewer/Eval.java:1513
 #, java-format
 msgid "plane expected -- either three points or atom expressions or {0} or {1}"
-msgstr ""
-"se esperaba un plano, bien en forma de tres puntos o bien de expresiones "
-"atómicas {0} o {1}"
+msgstr "se esperaba un plano, bien en forma de tres puntos o bien de expresiones atómicas {0} o {1}"
 
 #: org/jmol/viewer/Eval.java:1529
 msgid "Miller indices cannot all be zero."
-msgstr ""
+msgstr "Alguno de los índices de Miller debe ser distinto de cero"
 
 #: org/jmol/viewer/Eval.java:1668
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "se requiere un nombre de color o de paleta (Jmol, Rasmol)"
 
-#: org/jmol/viewer/Eval.java:1709 org/jmol/viewer/Eval.java:1734
+#: org/jmol/viewer/Eval.java:1709
+#: org/jmol/viewer/Eval.java:1734
 msgid "fractional coordinates are not allowed in this context"
 msgstr "no se permiten coordenadas fraccionarias en este contexto"
 
@@ -1353,13 +1346,13 @@ msgstr "La instrucción {0} no está disponible para la miniaplicación"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "¿qué escribir? {0} o {1} \"nombre de archivo\""
 
-#: org/jmol/viewer/Eval.java:4505 org/jmol/viewer/Eval.java:5137
+#: org/jmol/viewer/Eval.java:4505
+#: org/jmol/viewer/Eval.java:5137
 msgid "MO isosurfaces require that only one model be displayed"
-msgstr ""
-"las isosuperficies de orbital molecular requieren que sólo se esté mostrando "
-"un modelo"
+msgstr "las isosuperficies de orbital molecular requieren que sólo se esté mostrando un modelo"
 
-#: org/jmol/viewer/Eval.java:4509 org/jmol/viewer/Eval.java:5141
+#: org/jmol/viewer/Eval.java:4509
+#: org/jmol/viewer/Eval.java:5141
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "en este modelo no hay datos disponibles de base o coeficientes para MO"
 
@@ -1368,13 +1361,15 @@ msgstr "en este modelo no hay datos disponibles de base o coeficientes para MO"
 msgid "use {0}"
 msgstr "utiliza {0}"
 
-#: org/jmol/viewer/Eval.java:4557 org/jmol/viewer/Eval.java:4560
+#: org/jmol/viewer/Eval.java:4557
+#: org/jmol/viewer/Eval.java:4560
 #: org/jmol/viewer/Eval.java:4563
 #, java-format
 msgid "unrecognized {0} parameter --  use {1}"
 msgstr "no se reconoce el parámetro {0}; utiliza {1}"
 
-#: org/jmol/viewer/Eval.java:4575 org/jmol/viewer/Eval.java:5713
+#: org/jmol/viewer/Eval.java:4575
+#: org/jmol/viewer/Eval.java:5713
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "no se reconoce el parámetro {0}"
@@ -1398,12 +1393,8 @@ msgid "the {0} command requires that only one model be displayed"
 msgstr "la instrucción {0} requiere que sólo se esté mostrando un modelo"
 
 #: org/jmol/viewer/Eval.java:5485
-msgid ""
-"No partial charges were read from the file; Jmol needs these to render the "
-"MEP data."
-msgstr ""
-"No se han podido leer las cargas parciales en el archivo; Jmol las necesita "
-"para trazar los datos de MEP"
+msgid "No partial charges were read from the file; Jmol needs these to render the MEP data."
+msgstr "No se han podido leer las cargas parciales en el archivo; Jmol las necesita para trazar los datos de MEP"
 
 #: org/jmol/viewer/Eval.java:5602
 msgid "unrecognized command"
@@ -1478,7 +1469,8 @@ msgstr "se esperaba un eje x y z"
 msgid "color expected"
 msgstr "se esperaba un color"
 
-#: org/jmol/viewer/Eval.java:5675 org/jmol/viewer/Eval.java:5780
+#: org/jmol/viewer/Eval.java:5675
+#: org/jmol/viewer/Eval.java:5780
 msgid "keyword expected"
 msgstr "se esperaba una palabra clave"
 
@@ -1502,7 +1494,8 @@ msgstr "final imprevisto de la instrucción de guión"
 msgid "bad argument count"
 msgstr "el número de argumentos no es correcto"
 
-#: org/jmol/viewer/Eval.java:5702 org/jmol/viewer/Eval.java:5709
+#: org/jmol/viewer/Eval.java:5702
+#: org/jmol/viewer/Eval.java:5709
 msgid "invalid argument"
 msgstr "el argumento no es válido"
 
@@ -1599,27 +1592,20 @@ msgstr "Jmol ejecutando un guión..."
 
 #~ msgid "console ON|OFF"
 #~ msgstr "consola sí/no"
-
 #~ msgid "Calculate what? hbonds?  surface? structure?"
 #~ msgstr "¿qué calcular? ¿enlaces, orientación, selección?"
-
 #~ msgid "save what? bonds? orientation? selection?"
 #~ msgstr "¿qué guardar? ¿enlaces, orientación, selección?"
-
 #~ msgid "restore what? bonds? orientation? selection?"
 #~ msgstr "¿qué restaurar? ¿enlaces, orientación, selección?"
-
 #~ msgid "use \"show ORIENTATION\""
 #~ msgstr "utiliza \"show ORIENTATION\""
-
 #~ msgid "unrecognized SHOW parameter --  use \"getProperty CHAININFO \""
 #~ msgstr "parámetro SHOW no reconocido; utiliza \"getProperty CHAININFO \""
-
 #~ msgid ""
 #~ "unrecognized SHOW parameter --  use \"getProperty ATOMINFO (selected)\""
 #~ msgstr ""
 #~ "parámetro SHOW no reconocido; utiliza \"getProperty ATOMINFO (selected)\""
-
 #~ msgid ""
 #~ "unrecognized SHOW parameter --  use \"getProperty ATOMINFO (atom "
 #~ "expression)\""
@@ -1630,46 +1616,34 @@ msgstr "Jmol ejecutando un guión..."
 #, fuzzy
 #~ msgid "space group "
 #~ msgstr "Grupo espacial"
-
 #~ msgid "Except Solvent"
 #~ msgstr "Excepto disolvente"
-
 #~ msgid "Except Water"
 #~ msgstr "Excepto agua"
-
 #~ msgid "Other"
 #~ msgstr "Otros"
-
 #~ msgid "Lipid"
 #~ msgstr "Lípidos"
-
 #~ msgid "pick "
 #~ msgstr "elige"
-
 #~ msgid "Nanometers"
 #~ msgstr "Nanómetros"
-
 #~ msgid "Angstroms"
 #~ msgstr "Angstroms"
-
 #~ msgid "Picometers"
 #~ msgstr "Picómetros"
-
 #~ msgid "Open"
 #~ msgstr "Abrir"
-
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol, visualización molecular http://www.jmol.org"
-
 #~ msgid "Name hidden"
 #~ msgstr "Nombre oculto"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotación como alambres"
-
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Miniaplicación Jmol, parte del proyecto OpenScience; para más "
 #~ "información, vea http://www.jmol.org"
+

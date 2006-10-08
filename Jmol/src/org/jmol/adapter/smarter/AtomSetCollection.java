@@ -575,6 +575,10 @@ class AtomSetCollection extends Parser {
     return true;
   }
   
+  void mapPartialCharge(String atomName, float charge) {
+    atoms[getAtomNameIndex(atomName)].partialCharge = charge;  
+  }
+  
   Object getAtomSetCollectionAuxiliaryInfo(String key) {
     return atomSetCollectionAuxiliaryInfo.get(key);
   }

@@ -5436,7 +5436,7 @@ class Eval { //implements Runnable {
         }
         if (str.equalsIgnoreCase("molecular")) {
           surfaceObjectSeen = true;
-          propertyName = "solvent";
+          propertyName = "molecular";
           propertyValue = new Float(1.4);
           break;
         }

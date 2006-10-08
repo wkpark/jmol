@@ -133,6 +133,8 @@ class Isosurface extends MeshCollection {
   final static float defaultMappedDataMax = 1.0f;
   final static float defaultCutoff = 0.02f;
   final static float defaultMepCutoff = 0.05f;
+  final static float defaultMepMin = -0.5f;
+  final static float defaultMepMax = -0.5f;
   final static float defaultOrbitalCutoff = 0.14f;
   final static float defaultQMOrbitalCutoff = 0.050f; // WebMO
   final static int defaultContourCount = 11; //odd is better
@@ -210,10 +212,11 @@ class Isosurface extends MeshCollection {
   final static int SURFACE_MEP =16 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_FILE = 17;
   final static int SURFACE_INFO = 18;
+  final static int SURFACE_MOLECULAR = 19 | IS_SOLVENTTYPE | NO_ANISOTROPY;
   
   // mapColor only:
   
-  final static int SURFACE_NOMAP = 19 | IS_SOLVENTTYPE | NO_ANISOTROPY;
+  final static int SURFACE_NOMAP = 20 | IS_SOLVENTTYPE | NO_ANISOTROPY;
   
 
   float solventRadius;
@@ -591,7 +594,7 @@ class Isosurface extends MeshCollection {
       return;
     }
 
-    if ("solvent" == propertyName || "sasurface" == propertyName
+    if ("molecular" == propertyName || "solvent" == propertyName || "sasurface" == propertyName
         || "nomap" == propertyName) {
       // plain plane
       isEccentric = isAnisotropic = false;
@@ -599,21 +602,34 @@ class Isosurface extends MeshCollection {
       solventRadius = ((Float) value).floatValue();
       if (solventRadius < 0)
         solventRadius = defaultSolventRadius;
-      dataType = ("nomap" == propertyName ? SURFACE_NOMAP : "sasurface" == propertyName || solventRadius == 0f ? SURFACE_SASURFACE
+      dataType = ("nomap" == propertyName ? SURFACE_NOMAP : "molecular" == propertyName ? SURFACE_MOLECULAR : "sasurface" == propertyName || solventRadius == 0f ? SURFACE_SASURFACE
           : SURFACE_SOLVENT);
       switch (dataType) {
-      case SURFACE_SASURFACE:
-        Logger.info("creating solvent-accessible surface with radius "
-            + solventExtendedAtomRadius);
       case SURFACE_NOMAP:
         solventExtendedAtomRadius = solventRadius;
         solventRadius = 0f;
         isContoured = false;
         break;
+      case SURFACE_MOLECULAR:
+        solventExtendedAtomRadius = 0f;
+        Logger.info("creating molecular surface with radius "
+            + solventRadius);
+        break;
       case SURFACE_SOLVENT:
+        solventExtendedAtomRadius = 0f;
+        if (bsIgnore == null)
+          bsIgnore = viewer.getAtomBitSet("(solvent)");
         Logger.info("creating solvent-excluded surface with radius "
             + solventRadius);
-        solventExtendedAtomRadius = 0f;
+        break;
+      case SURFACE_SASURFACE:
+        solventExtendedAtomRadius = solventRadius;
+        solventRadius = 0f;
+        if (bsIgnore == null)
+          bsIgnore = viewer.getAtomBitSet("(solvent)");
+        Logger.info("creating solvent-accessible surface with radius "
+            + solventExtendedAtomRadius);
+        break;
       }
       if (state == STATE_DATA_READ) {
         propertyName = "mapColor";
@@ -674,6 +690,11 @@ class Isosurface extends MeshCollection {
       isEccentric = isAnisotropic = false;
       dataType = SURFACE_MEP;
       if (state == STATE_DATA_READ) {
+        if (!rangeDefined) {
+          valueMappedToRed = defaultMepMin;
+          valueMappedToBlue = defaultMepMax;
+          rangeDefined = true;
+        }
         propertyName = "mapColor";
       } else {
         colorBySign = true;
@@ -1144,6 +1165,7 @@ class Isosurface extends MeshCollection {
         break;
       case SURFACE_NOMAP:
       case SURFACE_SOLVENT:
+      case SURFACE_MOLECULAR:
       case SURFACE_SASURFACE:
         setupSolvent();
         break;
@@ -1430,6 +1452,7 @@ class Isosurface extends MeshCollection {
             case SURFACE_LOBE:
               voxelValue = getLobeValue(x, y, z);
               break;
+            case SURFACE_MOLECULAR:
             case SURFACE_SOLVENT:
             case SURFACE_SASURFACE:
               if (isPrecalculation)
@@ -4575,7 +4598,7 @@ class Isosurface extends MeshCollection {
         ptXyzTemp.add(volumetricVectors[0]);
       }
     }
-    if (dataType == SURFACE_SOLVENT && solventRadius > 0) {
+    if ((dataType == SURFACE_SOLVENT || dataType == SURFACE_MOLECULAR) && solventRadius > 0) {
       Point3i ptA0 = new Point3i();
       Point3i ptB0 = new Point3i();
       Point3i ptA1 = new Point3i();

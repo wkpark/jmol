@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-10-08 09:09+0200\n"
-"PO-Revision-Date: 2006-09-28 23:48+0100\n"
+"PO-Revision-Date: 2006-10-08 09:20+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -44,9 +44,7 @@ msgstr "Charger"
 
 #: org/jmol/applet/Console.java:89
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"Appuyer sur Ctrl+Entrée pour une nouvelle ligne ou copier les données d'un "
-"modèle et appuyer sur Load"
+msgstr "Appuyer sur Ctrl+Entrée pour une nouvelle ligne ou copier les données d'un modèle et appuyer sur Load"
 
 #: org/jmol/applet/Jmol.java:597
 #, java-format
@@ -878,9 +876,8 @@ msgid "Background"
 msgstr "Fond"
 
 #: org/jmol/popup/PopupResourceBundle.java:1058
-#, fuzzy
 msgid "Surface"
-msgstr "Trace"
+msgstr "Surface"
 
 #: org/jmol/popup/PopupResourceBundle.java:1083
 msgid "Zoom"
@@ -1070,7 +1067,7 @@ msgstr "Orientation"
 
 #: org/jmol/popup/PopupResourceBundle.java:1182
 msgid "Space group"
-msgstr ""
+msgstr "Groupe spatial"
 
 #: org/jmol/popup/PopupResourceBundle.java:1183
 msgid "Symmetry"
@@ -1082,49 +1079,47 @@ msgstr "Cellule unitaire"
 
 #: org/jmol/popup/PopupResourceBundle.java:1185
 msgid "Extract MOL data"
-msgstr ""
+msgstr "Extraire les données MOL"
 
 #: org/jmol/popup/PopupResourceBundle.java:1187
-#, fuzzy
 msgid "Surfaces"
-msgstr "Trace"
+msgstr "Surfaces"
 
 #: org/jmol/popup/PopupResourceBundle.java:1188
 msgid "Dot Surface"
-msgstr ""
+msgstr "Surface pointillée"
 
 #: org/jmol/popup/PopupResourceBundle.java:1189
 msgid "van der Waals Surface"
-msgstr ""
+msgstr "Surface de van der Waals"
 
 #: org/jmol/popup/PopupResourceBundle.java:1190
 msgid "Molecular Surface"
-msgstr ""
+msgstr "Surface moléculaire"
 
 #: org/jmol/popup/PopupResourceBundle.java:1191
 msgid "Solvent Surface - 1.2 Angstrom"
-msgstr ""
+msgstr "Surface du solvant - 1.2 Å"
 
 #: org/jmol/popup/PopupResourceBundle.java:1192
 msgid "Solvent-Accessible Surface - 1.2 Angstrom"
-msgstr ""
+msgstr "Surface accessible au solvant - 1.2 Å"
 
 #: org/jmol/popup/PopupResourceBundle.java:1193
 msgid "Molecular Electrostatic Potential"
-msgstr ""
+msgstr "Potentiel électrostatic moléculaire"
 
 #: org/jmol/popup/PopupResourceBundle.java:1194
-#, fuzzy
 msgid "Molecular Orbitals"
-msgstr "Données orbites moléculaires au format JVXL"
+msgstr "Orbites moléculaires"
 
 #: org/jmol/popup/PopupResourceBundle.java:1195
 msgid "Make Opaque"
-msgstr ""
+msgstr "Rendre opaque"
 
 #: org/jmol/popup/PopupResourceBundle.java:1196
 msgid "Make Translucent"
-msgstr ""
+msgstr "Rendre translucide"
 
 #: org/jmol/popup/PopupResourceBundle.java:1199
 msgid "Crystal"
@@ -1278,7 +1273,7 @@ msgstr "trop de niveaux de script"
 
 #: org/jmol/viewer/Eval.java:946
 msgid "atom expression compiler error - stack over/underflow"
-msgstr ""
+msgstr "Erreur du compilateur d'expression d'atomes - stack over/underflow"
 
 #: org/jmol/viewer/Eval.java:1002
 msgid "invalid insertion code"
@@ -1290,19 +1285,20 @@ msgid "Unrecognized {0} parameter"
 msgstr "Paramètre {0} non reconnu"
 
 #: org/jmol/viewer/Eval.java:1513
-#, fuzzy, java-format
+#, java-format
 msgid "plane expected -- either three points or atom expressions or {0} or {1}"
-msgstr "plan attendu -- soit {0}, soit {1}"
+msgstr "plan attendu -- soit 3 points ou une expression d''atomes ou {0} ou {1}"
 
 #: org/jmol/viewer/Eval.java:1529
 msgid "Miller indices cannot all be zero."
-msgstr ""
+msgstr "Les indices de Miller ne peuvent pas être tous égaux à 0."
 
 #: org/jmol/viewer/Eval.java:1668
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "un nom de couleur ou de palette (Jmol, Rasmol) est requis"
 
-#: org/jmol/viewer/Eval.java:1709 org/jmol/viewer/Eval.java:1734
+#: org/jmol/viewer/Eval.java:1709
+#: org/jmol/viewer/Eval.java:1734
 msgid "fractional coordinates are not allowed in this context"
 msgstr "les coordonnées fractionnelles ne sont pas autorisées dans ce contexte"
 
@@ -1314,12 +1310,12 @@ msgstr "Actuellement, la commande {0} ne marche que pour l'applet"
 #: org/jmol/viewer/Eval.java:2417
 #, java-format
 msgid "space group {0} was not found."
-msgstr ""
+msgstr "Le groupe spatial {0} n'a pas été trouvé"
 
 #: org/jmol/viewer/Eval.java:3195
 #, java-format
 msgid "{0} not allowed with background model displayed"
-msgstr ""
+msgstr "{0} n'est pas autorisé avec un modèle de fond affiché"
 
 #: org/jmol/viewer/Eval.java:3438
 msgid "Calculate what?"
@@ -1332,7 +1328,7 @@ msgstr "Les surfaces requièrent qu'un seul modèle soit affiché"
 #: org/jmol/viewer/Eval.java:3666
 #, java-format
 msgid "invalid {0} control keyword"
-msgstr ""
+msgstr "mot clé de contrôle {0} incorrect"
 
 #: org/jmol/viewer/Eval.java:4381
 msgid "save what?"
@@ -1352,11 +1348,13 @@ msgstr "La commande {0} n'est pas disponible pour l'applet."
 msgid "write what? {0} or {1} \"filename\""
 msgstr "écrire quoi? {0} ou {1} \"nom de fichier\""
 
-#: org/jmol/viewer/Eval.java:4505 org/jmol/viewer/Eval.java:5137
+#: org/jmol/viewer/Eval.java:4505
+#: org/jmol/viewer/Eval.java:5137
 msgid "MO isosurfaces require that only one model be displayed"
 msgstr "Les isosurfaces MO requièrent qu'un seul modèle soit affiché"
 
-#: org/jmol/viewer/Eval.java:4509 org/jmol/viewer/Eval.java:5141
+#: org/jmol/viewer/Eval.java:4509
+#: org/jmol/viewer/Eval.java:5141
 msgid "no MO basis/coefficient data available for this frame"
 msgstr ""
 
@@ -1365,13 +1363,15 @@ msgstr ""
 msgid "use {0}"
 msgstr "utiliser {0}"
 
-#: org/jmol/viewer/Eval.java:4557 org/jmol/viewer/Eval.java:4560
+#: org/jmol/viewer/Eval.java:4557
+#: org/jmol/viewer/Eval.java:4560
 #: org/jmol/viewer/Eval.java:4563
 #, java-format
 msgid "unrecognized {0} parameter --  use {1}"
 msgstr "Paramètre {0} non reconnu -- utiliser {1}"
 
-#: org/jmol/viewer/Eval.java:4575 org/jmol/viewer/Eval.java:5713
+#: org/jmol/viewer/Eval.java:4575
+#: org/jmol/viewer/Eval.java:5713
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "Paramètre {0} non reconnu"
@@ -1395,12 +1395,8 @@ msgid "the {0} command requires that only one model be displayed"
 msgstr "La commande {0} requiert qu'un seul modèle soit affiché"
 
 #: org/jmol/viewer/Eval.java:5485
-msgid ""
-"No partial charges were read from the file; Jmol needs these to render the "
-"MEP data."
-msgstr ""
-"Aucune charge partielle n'a été lue depuis le fichier; Jmol en a besoin pour "
-"générer les données MEP."
+msgid "No partial charges were read from the file; Jmol needs these to render the MEP data."
+msgstr "Aucune charge partielle n'a été lue depuis le fichier; Jmol en a besoin pour générer les données MEP."
 
 #: org/jmol/viewer/Eval.java:5602
 msgid "unrecognized command"
@@ -1475,7 +1471,8 @@ msgstr "axe x y z attendu"
 msgid "color expected"
 msgstr "couleur attendue"
 
-#: org/jmol/viewer/Eval.java:5675 org/jmol/viewer/Eval.java:5780
+#: org/jmol/viewer/Eval.java:5675
+#: org/jmol/viewer/Eval.java:5780
 msgid "keyword expected"
 msgstr "mot clé attendu"
 
@@ -1499,7 +1496,8 @@ msgstr "fin inattendue du script de commande"
 msgid "bad argument count"
 msgstr "mauvais nombre d'arguments"
 
-#: org/jmol/viewer/Eval.java:5702 org/jmol/viewer/Eval.java:5709
+#: org/jmol/viewer/Eval.java:5702
+#: org/jmol/viewer/Eval.java:5709
 msgid "invalid argument"
 msgstr "argument incorrect"
 
@@ -1513,7 +1511,7 @@ msgstr "sous-commande attendue"
 
 #: org/jmol/viewer/Eval.java:5725
 msgid "interpreter error - setspecial should not be here"
-msgstr ""
+msgstr "Erreur de l'interpéteur - setspecial ne devrait pas être ici"
 
 #: org/jmol/viewer/Eval.java:5729
 msgid "number out of range"
@@ -1580,8 +1578,7 @@ msgstr "nombre d'arguments insuffisant"
 
 #: org/jmol/viewer/PickingManager.java:167
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr ""
-"Choisir un atome supplémentaire pour faire tourner le modèle autour d'un axe"
+msgstr "Choisir un atome supplémentaire pour faire tourner le modèle autour d'un axe"
 
 #: org/jmol/viewer/PickingManager.java:168
 msgid "pick two atoms in order to spin the model around an axis"
@@ -1597,33 +1594,24 @@ msgstr "Jmol exécute un script ..."
 
 #~ msgid "Except Solvent"
 #~ msgstr "Excepté le solvant"
-
 #~ msgid "Except Water"
 #~ msgstr "Excepté l'eau"
-
 #~ msgid "Other"
 #~ msgstr "Autre"
-
 #~ msgid "Lipid"
 #~ msgstr "Lipide"
-
 #~ msgid "Nanometers"
 #~ msgstr "Nanomètres"
-
 #~ msgid "Angstroms"
 #~ msgstr "Angströms"
-
 #~ msgid "Picometers"
 #~ msgstr "Picomètres"
-
 #~ msgid "Open"
 #~ msgstr "Ouvrir"
-
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol Visualisation Moléculaire http://www.jmol.org"
-
 #~ msgid "Name hidden"
 #~ msgstr "Nom caché"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotation fil de fer"
+

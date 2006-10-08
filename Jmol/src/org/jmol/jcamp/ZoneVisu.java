@@ -662,7 +662,7 @@ public class ZoneVisu extends Canvas {
   /**
    * 
    * @param tam
-   * @return
+   * @return String
    */
   public String trouve_f(double tam) {
     if (tam<Sav_Firstx || tam>Sav_Lastx) return "(outside spectra)";

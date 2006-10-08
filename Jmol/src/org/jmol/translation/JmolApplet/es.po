@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-10-08 15:56+0200\n"
-"PO-Revision-Date: 2006-10-08 18:13+0100\n"
+"PO-Revision-Date: 2006-10-09 00:09+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -1081,43 +1081,43 @@ msgstr "Superficies"
 
 #: org/jmol/popup/PopupResourceBundle.java:1190
 msgid "Dot Surface"
-msgstr "Superficie de puntos"
+msgstr "de puntos"
 
 #: org/jmol/popup/PopupResourceBundle.java:1191
 msgid "van der Waals Surface"
-msgstr "Superficie de van der Waals"
+msgstr "de van der Waals"
 
 #: org/jmol/popup/PopupResourceBundle.java:1192
 msgid "Molecular Surface"
-msgstr "Superficie molecular"
+msgstr "molecular"
 
 #: org/jmol/popup/PopupResourceBundle.java:1193
 #: org/jmol/popup/PopupResourceBundle.java:1194
 #, java-format
 msgid "Solvent Surface ({0}-Angstrom probe)"
-msgstr "Superficie del disolvente ({0}-ángstroms sonda)"
+msgstr "del disolvente (sonda de {0}-ángstroms)"
 
 #: org/jmol/popup/PopupResourceBundle.java:1195
 #: org/jmol/popup/PopupResourceBundle.java:1196
 #, java-format
 msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
-msgstr "Superficie accesible al disolvente (vdW + {0} ángstroms)"
+msgstr "accesible al disolvente (vdW + {0} ángstroms)"
 
 #: org/jmol/popup/PopupResourceBundle.java:1197
 msgid "Molecular Electrostatic Potential"
-msgstr "Potencial electrostático molecular"
+msgstr "potencial electrostático molecular"
 
 #: org/jmol/popup/PopupResourceBundle.java:1198
 msgid "Molecular Orbitals"
-msgstr "Orbitales moleculares"
+msgstr "orbitales moleculares"
 
 #: org/jmol/popup/PopupResourceBundle.java:1199
 msgid "Make Opaque"
-msgstr "Hacer opaco"
+msgstr "opaca"
 
 #: org/jmol/popup/PopupResourceBundle.java:1200
 msgid "Make Translucent"
-msgstr "Hacer translúcido"
+msgstr "translúcida"
 
 #: org/jmol/popup/PopupResourceBundle.java:1203
 msgid "Crystal"

@@ -26,7 +26,6 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Vector;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -54,7 +53,7 @@ class XmlChem3dReader extends XmlReader {
       "gridDatXDim", "gridDatYDim", "gridDatZDim",    
       "gridDatXSize", "gridDatYSize", "gridDatZSize",    
       "gridDatOrigin", "gridDatDat",   // grid cube data
-      "calcPartialCharges", // electronicStructureCalculation 
+      "calcPartialCharges", "calcAtoms" // electronicStructureCalculation 
   };
 
   String modelName = null;
@@ -93,7 +92,7 @@ class XmlChem3dReader extends XmlReader {
         atom.x = parseFloat(tokens[0]);
         atom.y = parseFloat(tokens[1]);
         atom.z = parseFloat(tokens[2]);
-      } 
+      }
       return;
     }
     if ("bond".equals(localName)) {
@@ -108,21 +107,22 @@ class XmlChem3dReader extends XmlReader {
 
     if ("electronicStructureCalculation".equals(localName)) {
       tokens = getTokens((String) atts.get("calcPartialCharges"));
-      int nData = parseInt(tokens[0]);
-      Vector charges = new Vector();
-      for (int i = 0; i < nData; i++)
-       charges.add(i, new Float(parseFloat(tokens[i+1])));
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("calcPartialCharges", charges);
-      atomSetCollection.setAtomSetCollectionPartialCharges("calcPartialCharges");        
+      String[] tokens2 = getTokens((String) atts.get("calcAtoms"));
+      for (int i = parseInt(tokens[0]); --i >= 0;)
+        atomSetCollection.mapPartialCharge(tokens2[i + 1],
+            parseFloat(tokens[i + 1]));
     }
-    
+
     if ("gridData".equals(localName)) {
-      int nPointsX=parseInt((String) atts.get("gridDatXDim"));
-      int nPointsY=parseInt((String) atts.get("gridDatYDim"));
-      int nPointsZ=parseInt((String) atts.get("gridDatZDim"));
-      float xStep=parseFloat((String) atts.get("gridDatXSize")) / (nPointsX - 1f);
-      float yStep=parseFloat((String) atts.get("gridDatYSize")) / (nPointsY - 1f);
-      float zStep=parseFloat((String) atts.get("gridDatZSize")) / (nPointsZ- 1f);
+      int nPointsX = parseInt((String) atts.get("gridDatXDim"));
+      int nPointsY = parseInt((String) atts.get("gridDatYDim"));
+      int nPointsZ = parseInt((String) atts.get("gridDatZDim"));
+      float xStep = parseFloat((String) atts.get("gridDatXSize"))
+          / (nPointsX - 1f);
+      float yStep = parseFloat((String) atts.get("gridDatYSize"))
+          / (nPointsY - 1f);
+      float zStep = parseFloat((String) atts.get("gridDatZSize"))
+          / (nPointsZ - 1f);
       String xyz = (String) atts.get("gridDatOrigin");
       tokens = getTokens(xyz);
       float originX = parseFloat(tokens[0]);
@@ -137,21 +137,21 @@ class XmlChem3dReader extends XmlReader {
         for (int y = 0; y < nPointsY; ++y) {
           voxelData[x][y] = new float[nPointsZ];
         }
-      }   
+      }
       // this is pure speculation for now.
       // seems to work for one test case.
       // could EASILY be backward.
-      
-      for (int z = nPointsZ; --z >=0;)
-        for (int y = nPointsY; --y >= 0;)
-          for (int x = nPointsX; --x >=0;)
+
+      for (int z = nPointsZ; --z >= 0;)
+        for (int y = 0; y < nPointsY; y++)
+          for (int x = nPointsX; --x >= 0;)
             voxelData[x][y][z] = parseFloat(tokens[pt++]);
-      int[] voxelCounts = new int[] {nPointsX, nPointsY, nPointsZ};
+      int[] voxelCounts = new int[] { nPointsX, nPointsY, nPointsZ };
       Point3f volumetricOrigin = new Point3f(originX, originY, originZ);
       Vector3f[] volumetricVectors = new Vector3f[3];
       volumetricVectors[0] = new Vector3f(xStep, 0, 0);
-      volumetricVectors[1] = new Vector3f(0,yStep, 0);
-      volumetricVectors[2] = new Vector3f(0,0,zStep);
+      volumetricVectors[1] = new Vector3f(0, yStep, 0);
+      volumetricVectors[2] = new Vector3f(0, 0, zStep);
       Hashtable surfaceInfo = new Hashtable();
       surfaceInfo.put("volumetricOrigin", volumetricOrigin);
       surfaceInfo.put("voxelCounts", voxelCounts);
@@ -161,7 +161,7 @@ class XmlChem3dReader extends XmlReader {
       atomSetCollection.setAtomSetAuxiliaryInfo("jmolSurfaceInfo", surfaceInfo);
       return;
     }
-}
+  }
 
   void processEndElement(String uri, String localName, String qName) {
     if ("atom".equals(localName)) {

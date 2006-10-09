@@ -286,7 +286,7 @@ class Isosurface extends MeshCollection {
         + " = " + value);
 
     if ("init" == propertyName) {
-      bsSelected = bs;
+      bsSelected = bs; //THIS MAY BE NULL
       initializeIsosurface();
       super.setProperty("thisID", null, null);
       return;
@@ -4158,7 +4158,7 @@ class Isosurface extends MeshCollection {
     for (int i = 0; i < nAtoms; i++)
       if (atoms[i].modelIndex == modelIndex) {
         ++iAtom;
-        if (bsSelected.get(i))
+        if (bsSelected == null || bsSelected.get(i))
           ++nSelected;
       }
     qm_nAtoms = iAtom;

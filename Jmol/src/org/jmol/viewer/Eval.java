@@ -1602,8 +1602,8 @@ class Eval { //implements Runnable {
       break;
     case Token.integer:
       int diameterPixels = statement[cmdPt].intValue;
-      if (diameterPixels < 0 || diameterPixels >= 20)
-        numberOutOfRange(0, 19);
+      if (diameterPixels < -1 || diameterPixels >= 20)
+        numberOutOfRange(-1, 19);
       mad = (short) diameterPixels;
       break;
     case Token.decimal:
@@ -5487,7 +5487,6 @@ class Eval { //implements Runnable {
         propertyName = "mep";
         propertyValue = partialCharges;
         break;
-      case Token.molecule:
       case Token.sasurface:
       case Token.solvent:
         surfaceObjectSeen = true;

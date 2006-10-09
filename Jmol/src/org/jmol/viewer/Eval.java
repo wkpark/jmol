@@ -1616,7 +1616,7 @@ class Eval { //implements Runnable {
       mad = -1;
       break;
     default:
-      booleanOrNumberExpected("or dotted");
+      booleanOrNumberExpected(GT._("or dotted"));
     }
     return mad;
   }

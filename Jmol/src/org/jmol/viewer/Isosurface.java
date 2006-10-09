@@ -4173,7 +4173,7 @@ class Isosurface extends MeshCollection {
       if (atom.modelIndex != modelIndex)
         continue;
       Point3f pt = new Point3f(atom);
-      if (nSelected == 0 || bsSelected.get(i)) {
+      if (nSelected == 0 || bsSelected == null || bsSelected.get(i)) {
         float rA = atom.getVanderwaalsRadiusFloat() + qm_marginAngstroms;
         if (pt.x - rA < xyzMin.x)
           xyzMin.x = pt.x - rA;

@@ -133,8 +133,8 @@ class Isosurface extends MeshCollection {
   final static float defaultMappedDataMax = 1.0f;
   final static float defaultCutoff = 0.02f;
   final static float defaultMepCutoff = 0.05f;
-  final static float defaultMepMin = -0.5f;
-  final static float defaultMepMax = -0.5f;
+  final static float defaultMepMin = -0.05f;
+  final static float defaultMepMax = 0.05f;
   final static float defaultOrbitalCutoff = 0.14f;
   final static float defaultQMOrbitalCutoff = 0.050f; // WebMO
   final static int defaultContourCount = 11; //odd is better
@@ -806,6 +806,7 @@ class Isosurface extends MeshCollection {
         Logger.debug("\n" + jvxlGetFile(currentMesh, jvxlFileMessage, true, 1));
       discardTempData(jvxlDataIs2dContour);
       dataType = SURFACE_NONE;
+      mappedDataMin = Float.MAX_VALUE;
       return;
     }
 
@@ -1094,6 +1095,7 @@ class Isosurface extends MeshCollection {
   void readData(boolean isMapData) {
     isJvxl = false;
     endOfData = false;
+    mappedDataMin = Float.MAX_VALUE;
     int nSurfaces = readVolumetricHeader();
     if (nSurfaces < fileIndex) {
       Logger.warn("not enough surfaces in file -- resetting fileIndex to "

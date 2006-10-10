@@ -40,7 +40,7 @@ abstract public class JmolPopup {
   private final static boolean forceAwt = false;
 
   //list is saved in http://www.stolaf.edu/academics/chemapps/jmol/docs/misc
-  private final static boolean dumpList = false;
+  private final static boolean dumpList = true;
   
   JmolViewer viewer;
   Component jmolComponent;
@@ -65,6 +65,7 @@ abstract public class JmolPopup {
   Vector VibrationOnly = new Vector();
   Vector SymmetryOnly = new Vector();
   Vector AppletOnly = new Vector();
+  Vector ChargesOnly = new Vector();
 
   boolean isPDB;
   boolean isSymmetry;
@@ -72,6 +73,7 @@ abstract public class JmolPopup {
   boolean isMultiFrame;
   boolean isVibration;
   boolean isApplet;
+  boolean haveCharges;
   int modelIndex;
 
 
@@ -102,10 +104,10 @@ abstract public class JmolPopup {
     isSymmetry = checkBoolean(info, "someModelsHaveSymmetry");
     isUnitCell = checkBoolean(info, "someModelsHaveUnitcells");
     isMultiFrame = (viewer.getModelCount() > 1);
-    isVibration = (viewer.modelHasVibrationVectors(modelIndex)); 
+    isVibration = (viewer.modelHasVibrationVectors(modelIndex));
+    haveCharges = (viewer.havePartialCharges());
 
     updateElementsComputedMenu(viewer.getElementsPresentBitSet());
-    updatesurfMEP(viewer.havePartialCharges());
     updateHeteroComputedMenu(viewer.getHeteroList());
     updateSurfMoComputedMenu((Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,"moData"));
     updateAaresiduesComputedMenu(viewer.getGroupsPresentBitSet());
@@ -132,14 +134,10 @@ abstract public class JmolPopup {
       enableMenu(SymmetryOnly.get(i), isSymmetry && isUnitCell);
     for (int i = 0; i < AppletOnly.size(); i++)
       enableMenu(AppletOnly.get(i), isApplet);
+    for (int i = 0; i < ChargesOnly.size(); i++)
+      enableMenu(ChargesOnly.get(i), haveCharges);
   }
   
-  void updatesurfMEP(boolean haveCharges) {
-    if (surfMEP == null)
-      return;
-    enableMenuItem(surfMEP, haveCharges);
-  }
-
   void updateFRAMESbyModelComputedMenu() {
     if (FRAMESbyModelComputedMenu == null)
       return;
@@ -426,10 +424,6 @@ abstract public class JmolPopup {
         if (script == null)
           script = item;
         newMenu = addMenuItemWithId(menu, word, script, id + "." + item);
-        // add a menu-path to this item for color context
-        // addition items that may need enabling/disabling:
-        if ("surfMEP".equals(item))
-          surfMEP = newMenu;
       }
 
       // menus or menu items:
@@ -437,6 +431,8 @@ abstract public class JmolPopup {
         PDBOnly.add(newMenu);
       } else if (item.indexOf("Url") >= 0) {
         AppletOnly.add(newMenu);
+      } else if (item.indexOf("MEP") >= 0) {
+        ChargesOnly.add(newMenu);
       } else if (item.indexOf("nitCell") >= 0) {
         UnitcellOnly.add(newMenu);
       } else if (item.indexOf("FRAMES") >= 0) {
@@ -509,6 +505,12 @@ abstract public class JmolPopup {
       pt = id.lastIndexOf(".setSpin");
       return (pt < 0 ? script : "set spin "
           + id.substring(pt + 8, id.indexOf("Menu", pt)) + " " + script);
+    }
+    if (id.indexOf("._") >= 0) {
+      // setFooMenu
+      pt = id.lastIndexOf("._");
+      return (pt < 0 ? script : 
+          id.substring(pt + 2, id.indexOf("Menu", pt)) + " " + script);
     }
     if (id.indexOf(".set") >= 0) {
       // setFooMenu

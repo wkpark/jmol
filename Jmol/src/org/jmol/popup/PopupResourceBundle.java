@@ -133,7 +133,7 @@ class PopupResourceBundle {
       {
           "renderMenu",
           "perspectiveDepthCheckbox stereoMenu - renderSchemeMenu - atomMenu labelMenu bondMenu hbondMenu ssbondMenu - "
-              + "PDBstructureMenu setAxesMenu setBoundBoxMenu setUnitCellMenu" },
+              + "PDBstructureMenu _AxesMenu _BoundBoxMenu _UnitCellMenu" },
       {
           "renderSchemeMenu",
           "renderCpkSpacefill renderBallAndStick "
@@ -319,23 +319,23 @@ class PopupResourceBundle {
 
       {
           "FRAMESanimateMenu",
-          "setAnimModeMenu - " + "play stop nextframe prevframe rewind - "
-              + "setAnimFpsMenu" },
-      { "setAnimModeMenu", "OnceThrough Palindrome Loop" },
-      { "OnceThrough", "anim mode once" },
-      { "Palindrome", "anim mode palindrome" },
-      { "Loop", "anim mode loop" },
+          "animModeMenu - " + "play stop nextframe prevframe rewind - "
+              + "animFpsMenu" },
+      { "animModeMenu", "OnceThrough Palindrome Loop" },
+      { "OnceThrough", "set anim mode once" },
+      { "Palindrome", "set anim mode palindrome" },
+      { "Loop", "set anim mode loop" },
       { "play", "anim on" },
       { "stop", "anim off" },
       { "nextframe", "frame next" },
       { "prevframe", "frame prev" },
       { "rewind", "frame 1" },
-      { "setAnimFpsMenu", "animfps5 animfps10 animfps20 animfps30 animfps50" },
-      { "animfps5", "anim fps 5" },
-      { "animfps10", "anim fps 10" },
-      { "animfps20", "anim fps 20" },
-      { "animfps30", "anim fps 30" },
-      { "animfps50", "anim fps 50" },
+      { "animFpsMenu", "animfps5 animfps10 animfps20 animfps30 animfps50" },
+      { "animfps5", "set anim fps 5" },
+      { "animfps10", "set anim fps 10" },
+      { "animfps20", "set anim fps 20" },
+      { "animfps30", "set anim fps 30" },
+      { "animfps50", "set anim fps 50" },
 
       {
           "measureMenu",
@@ -409,9 +409,9 @@ class PopupResourceBundle {
       { "nineUnitCells", "save orientation;load \"\" {3 3 3} ;restore orientation" },
       { "nineUnitCellsRestricted", "save orientation;load \"\" {3 3 3} ;restore orientation;unitCell {1 1 1}; restrict cell=666; polyhedra 4,6 (visible);center visible;zoom 200" },
       
-      { "setAxesMenu", "off dotted - byPixelMenu byAngstromMenu" },
-      { "setBoundBoxMenu", null },
-      { "setUnitCellMenu", null },
+      { "_AxesMenu", "off dotted - byPixelMenu byAngstromMenu" },
+      { "_BoundBoxMenu", null },
+      { "_UnitCellMenu", null },
 
       { "byPixelMenu", "1p 3p 5p 10p" },
       { "1p", "on" },
@@ -664,7 +664,7 @@ class PopupResourceBundle {
       { "s50", "50" },
 
       { "FRAMESanimateMenu", GT._("Animate") },
-      { "setAnimModeMenu", GT._("Animation Mode") },
+      { "animModeMenu", GT._("Animation Mode") },
       { "OnceThrough", GT._("Play Once") },
       { "Palindrome", GT._("Palindrome") },
       { "Loop", GT._("Loop") },
@@ -674,7 +674,7 @@ class PopupResourceBundle {
       { "prevframe", GT._("Previous Frame") },
       { "rewind", GT._("Rewind") },
       { "revplay", GT._("Reverse Play") },
-      { "setAnimFpsMenu", GT._("Set FPS") },
+      { "animFpsMenu", GT._("Set FPS") },
       { "animfps5", "5" },
       { "animfps10", "10" },
       { "animfps20", "20" },
@@ -742,8 +742,9 @@ class PopupResourceBundle {
       { "nineUnitCells", "{3 3 3}" },
       { "nineUnitCellsRestricted", GT._("Polyhedra") },
 
-      { "setAxesMenu", GT._("Axes") }, { "setBoundBoxMenu", GT._("Boundbox") },
-      { "setUnitCellMenu", GT._("Unitcell") },
+      { "_AxesMenu", GT._("Axes") }, 
+      { "_BoundBoxMenu", GT._("Boundbox") },
+      { "_UnitCellMenu", GT._("Unitcell") },
 
       { "off", GT._("Hide") }, { "dotted", GT._("Dotted") },
 

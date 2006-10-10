@@ -118,8 +118,8 @@ public final class ScriptWindow extends JDialog
   boolean isError = false;
   void setError(boolean TF) {
     isError = TF;
-    if (isError)
-      console.recallCommand(true);
+    //if (isError)
+      //console.recallCommand(true);
   }
   
   public void sendConsoleMessage(String strStatus) {
@@ -128,10 +128,9 @@ public final class ScriptWindow extends JDialog
       console.outputStatus("");
     } else if (strStatus.indexOf("ERROR:") >= 0) {
       console.outputError(strStatus);
-      setError(true);
+      isError = true;
     } else if (!isError) {
       console.outputStatus(strStatus);
-      setError(false);
     }
   }
 
@@ -370,8 +369,11 @@ class ConsoleTextPane extends JTextPane {
    */
    void recallCommand(boolean up) {
      String cmd = viewer.getSetHistory(up ? -1 : 1);
-    if (cmd == null)
+    if (cmd == null) {
+      appendNewline();
+      setPrompt();
       return;
+    }
     try {
       if (cmd.endsWith(CommandHistory.ERROR_FLAG)) {
         cmd = cmd.substring(0, cmd.indexOf(CommandHistory.ERROR_FLAG));

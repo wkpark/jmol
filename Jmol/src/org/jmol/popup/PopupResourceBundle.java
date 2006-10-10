@@ -62,7 +62,7 @@ class PopupResourceBundle {
   private static final String[][] structureContents = {
       {
           "popupMenu",
-          "modelSetInfoMenu FRAMESbyModelComputedMenu - selectMenu colorMenu renderMenu surfaceMenu - "
+          "modelSetInfoMenu FRAMESbyModelComputedMenu - selectMenu colorMenu renderMenu surfaceMenu SYMMETRYunitCellMenu - "
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "
               + "measureMenu pickingMenu - showConsole showMenu - "
@@ -372,7 +372,7 @@ class PopupResourceBundle {
 
       { "showMenu", "showHistory showFile showFileHeader - "
               + "showOrient showMeasure - "
-              + "showSpacegroup showSymmetry showUnitCell - showIsosurface showMo - extractMOL" },
+              + "showSpacegroup SYMMETRYshowSymmetry showUnitCell - showIsosurface showMo - extractMOL" },
       { "showConsole", "console" },
       { "showFile", "console on;show file" },
       { "showFileHeader", "console on;getProperty FileHeader" },
@@ -383,12 +383,11 @@ class PopupResourceBundle {
       { "showModel", "console on;show model" },
       { "showOrient", "console on;show orientation" },
       { "showSpacegroup", "console on;show spacegroup" },
-      { "showSymmetry", "console on;show symmetry" },
+      { "SYMMETRYshowSymmetry", "console on;show symmetry" },
       { "showUnitCell", "console on;show unitcell" },
       { "extractMOL", "console on;getproperty extractModel \"visible\" " },
 
-      {
-          "surfaceMenu",
+      { "surfaceMenu",
           "surfDots surfVDW surfSolventAccessible14 surfSolvent14 surfMolecular surfMEP surfMoComputedMenu - surfOpaque surfTranslucent surfOff" },
       { "surfDots", "select *;dots on" },
       { "surfVDW", "isosurface delete resolution 0 solvent 0 translucent" },
@@ -403,6 +402,13 @@ class PopupResourceBundle {
       { "surfTranslucent", "isosurface translucent" },
       { "surfOff", "isosurface delete;select *;dots off" },
 
+      { "SYMMETRYunitCellMenu", "oneUnitCell fourUnitCells nineUnitCells nineUnitCellsRestricted" },
+      
+      { "oneUnitCell", "save orientation;load \"\" {1 1 1} ;restore orientation" },
+      { "fourUnitCells", "save orientation;load \"\" {2 2 2} ;restore orientation" },
+      { "nineUnitCells", "save orientation;load \"\" {3 3 3} ;restore orientation" },
+      { "nineUnitCellsRestricted", "save orientation;load \"\" {3 3 3} ;restore orientation;unitCell {1 1 1}; restrict cell=666; polyhedra 4,6 (visible);center visible;zoom 200" },
+      
       { "setAxesMenu", "off dotted - byPixelMenu byAngstromMenu" },
       { "setBoundBoxMenu", null },
       { "setUnitCellMenu", null },
@@ -421,8 +427,7 @@ class PopupResourceBundle {
       { "100a", "1.0" },
 
 //      { "optionsMenu", "rasmolChimeCompatibility" },
-      {
-          "rasmolChimeCompatibility",
+      { "rasmolChimeCompatibility",
           "set color rasmol; set zeroBasedXyzRasmol on; "
               + "set axesOrientationRasmol on; load \"\"; select *; cpk off; wireframe on; " },
 
@@ -711,7 +716,7 @@ class PopupResourceBundle {
       { "showModel", GT._("Model") },
       { "showOrient", GT._("Orientation") },
       { "showSpacegroup", GT._("Space group") },
-      { "showSymmetry", GT._("Symmetry") },
+      { "SYMMETRYshowSymmetry", GT._("Symmetry") },
       { "showUnitCell", GT._("Unit cell") },
       { "extractMOL", GT._("Extract MOL data") },
 
@@ -730,6 +735,12 @@ class PopupResourceBundle {
       { "surfOpaque", GT._("Make Opaque") },
       { "surfTranslucent", GT._("Make Translucent") },
       { "surfOff", GT._("Off") },
+
+      { "SYMMETRYunitCellMenu", GT._("Symmetry") },
+      { "oneUnitCell", "{1 1 1}" },
+      { "fourUnitCells", "{2 2 2}" },
+      { "nineUnitCells", "{3 3 3}" },
+      { "nineUnitCellsRestricted", GT._("Polyhedra") },
 
       { "setAxesMenu", GT._("Axes") }, { "setBoundBoxMenu", GT._("Boundbox") },
       { "setUnitCellMenu", GT._("Unitcell") },

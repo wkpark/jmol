@@ -62,6 +62,7 @@ abstract public class JmolPopup {
   Vector UnitcellOnly = new Vector();
   Vector FramesOnly = new Vector();
   Vector VibrationOnly = new Vector();
+  Vector SymmetryOnly = new Vector();
 
   JmolPopup(JmolViewer viewer) {
     this.viewer = viewer;
@@ -122,6 +123,8 @@ abstract public class JmolPopup {
       enableMenu(FramesOnly.get(i), isMultiFrame);
     for (int i = 0; i < VibrationOnly.size(); i++)
       enableMenu(VibrationOnly.get(i), isVibration);
+    for (int i = 0; i < SymmetryOnly.size(); i++)
+      enableMenu(SymmetryOnly.get(i), isSymmetry && isUnitCell);
   }
   
   void updatesurfMEP(boolean haveCharges) {
@@ -428,6 +431,8 @@ abstract public class JmolPopup {
         FramesOnly.add(newMenu);
       } else if (item.indexOf("VIBRATION") >= 0) {
         VibrationOnly.add(newMenu);
+      } else if (item.indexOf("SYMMETRY") >= 0) {
+        SymmetryOnly.add(newMenu);
       }
     }
   }

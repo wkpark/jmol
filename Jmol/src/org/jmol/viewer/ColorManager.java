@@ -43,8 +43,14 @@ class ColorManager {
       altArgbsCpk[i] = JmolConstants.altArgbsCpk[i];
   }
 
+  boolean isDefaultColorRasmol;
+  boolean getDefaultColorRasmol() {
+    return isDefaultColorRasmol;
+  }
+  
   void setDefaultColors(String colorScheme) {
     if (colorScheme.equals("jmol")) {
+      isDefaultColorRasmol = false;
       argbsCpk = JmolConstants.argbsCpk;
       viewer.setColorBackground("black");
       //must be a very old idea -- clear dots color with
@@ -53,6 +59,7 @@ class ColorManager {
       //if colors are reset with dots or labels or anything else
       //defined, they are automatically reset.
     } else if (colorScheme.equals("rasmol")) {
+      isDefaultColorRasmol = true;
       copyArgbsCpk();
       int argb = JmolConstants.argbsCpkRasmol[0] | 0xFF000000;
       for (int i = argbsCpk.length; --i >= 0; )

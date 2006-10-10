@@ -139,6 +139,10 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public int getGroupCount();
   abstract public int getChainCount();
   abstract public int getPolymerCount();
+  abstract public int getAtomCountInModel(int modelIndex);
+  abstract public int getBondCountInModel(int modelIndex);
+  abstract public int getGroupCountInModel(int modelIndex);
+  abstract public int getChainCountInModel(int modelIindex);
   abstract public int getPolymerCountInModel(int modelIndex);
 
   abstract public void setModeMouse(int modeMouse);

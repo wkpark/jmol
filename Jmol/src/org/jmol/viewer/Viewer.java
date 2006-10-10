@@ -1474,8 +1474,16 @@ public class Viewer extends JmolViewer {
     return modelManager.getChainCount();
   }
 
+  public int getChainCountInModel(int modelIndex) {
+    return modelManager.getChainCountInModel(modelIndex);
+  }
+
   public int getGroupCount() {
     return modelManager.getGroupCount();
+  }
+
+  public int getGroupCountInModel(int modelIndex) {
+    return modelManager.getGroupCountInModel(modelIndex);
   }
 
   public int getPolymerCount() {
@@ -1490,8 +1498,16 @@ public class Viewer extends JmolViewer {
     return modelManager.getAtomCount();
   }
 
+  public int getAtomCountInModel(int modelIndex) {
+    return modelManager.getAtomCountInModel(modelIndex);
+  }
+
   public int getBondCount() {
     return modelManager.getBondCount();
+  }
+
+  public int getBondCountInModel(int modelIndex) {
+    return modelManager.getBondCountInModel(modelIndex);
   }
 
   boolean frankClicked(int x, int y) {
@@ -2619,6 +2635,8 @@ public class Viewer extends JmolViewer {
    ****************************************************************************/
 
   public boolean getBooleanProperty(String key) {
+    if (key.equalsIgnoreCase("colorRasmol"))
+      return colorManager.getDefaultColorRasmol();
     if (key.equalsIgnoreCase("perspectiveDepth"))
       return getPerspectiveDepth();
     if (key.equalsIgnoreCase("showAxes"))
@@ -2665,6 +2683,10 @@ public class Viewer extends JmolViewer {
 
   public void setBooleanProperty(String key, boolean value) {
     while (true) {
+      if (key.equalsIgnoreCase("colorRasmol")) {
+        setDefaultColors(value ? "rasmol" : "jmol");
+        break;
+      }
       if (key.equalsIgnoreCase("perspectiveDepth")) {
         setPerspectiveDepth(value);
         break;

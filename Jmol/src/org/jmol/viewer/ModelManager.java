@@ -837,7 +837,7 @@ String getAtomInfoChime(int i) {
     BitSet bsResult = new BitSet();
     int atomCount = getAtomCount();
     int[] nBonded = new int[atomCount];
-    int bondCount = getBondCount();
+    int bondCount = getBondCountInModel(-1);
     for (int ibond = 0; ibond < bondCount; ibond++) {
       Bond bond = frame.bonds[ibond];
       if (bond.order > 0) {
@@ -1087,7 +1087,7 @@ String getAtomInfoChime(int i) {
 
   Vector getAllBondInfo(BitSet bs) {
     Vector V = new Vector();
-    int bondCount = viewer.getBondCount();
+    int bondCount = getBondCount();
     for (int i = 0; i < bondCount; i++)
       if (bs.get(frame.getBondAt(i).getAtom1().atomIndex) 
           && bs.get(frame.getBondAt(i).getAtom2().atomIndex)) 
@@ -1343,7 +1343,7 @@ String getAtomInfoChime(int i) {
     
     isFirst = true;
     V = new Vector();
-    int bondCount = viewer.getBondCount();
+    int bondCount = getBondCountInModel(-1);
     for (int i = 0; i < bondCount; i++) {
       if (! bs.get(frame.getBondAt(i).getAtom1().atomIndex) 
           || bs.get(frame.getBondAt(i).getAtom2().atomIndex))
@@ -1617,7 +1617,7 @@ String getAtomInfoChime(int i) {
         sg = SpaceGroup.createSpaceGroup(spaceGroup);
     }
     if (sg == null)
-      return "invalid space group name";
+      return "could not identify space group from name: " + spaceGroup;
     return sg.dumpInfo() + strOperations;
   }
 

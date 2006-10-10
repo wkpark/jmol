@@ -31,6 +31,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JCheckBoxMenuItem;
+
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Enumeration;
@@ -63,7 +64,7 @@ public class JmolPopupSwing extends JmolPopup {
     public void itemStateChanged(ItemEvent e) {
       //Logger.debug("CheckboxMenuItemListener() " + e.getSource());
       JCheckBoxMenuItem jcmi = (JCheckBoxMenuItem)e.getSource();
-      viewer.setBooleanProperty(jcmi.getActionCommand(), jcmi.getState());
+      setCheckBoxValue(jcmi.getActionCommand(), jcmi.getState());
     }
   }
 
@@ -94,6 +95,13 @@ public class JmolPopupSwing extends JmolPopup {
     return jmi;
   }
 
+  void setLabel(Object menu, String entry) {
+    if (menu instanceof JMenuItem)
+      ((JMenuItem) menu).setLabel(entry);
+    else
+      ((JMenu) menu).setLabel(entry);
+  }
+  
   void updateMenuItem(Object menuItem, String entry, String script) {
     JMenuItem jmi = (JMenuItem)menuItem;
     jmi.setLabel(entry);
@@ -103,12 +111,13 @@ public class JmolPopupSwing extends JmolPopup {
     //    jmi.setEnabled(script != null);
   }
 
-  void addCheckboxMenuItem(Object menu, String entry, String basename) {
+  Object addCheckboxMenuItem(Object menu, String entry, String basename) {
     JCheckBoxMenuItem jcmi = new JCheckBoxMenuItem(entry);
     jcmi.addItemListener(cmil);
     jcmi.setActionCommand(basename);
     addToMenu(menu, jcmi);
     rememberCheckbox(basename, jcmi);
+    return jcmi;
   }
 
   void addMenuSubMenu(Object menu, Object subMenu) {
@@ -144,6 +153,10 @@ public class JmolPopupSwing extends JmolPopup {
   }
 
   void enableMenu(Object menu, boolean enable) {
+    if (menu instanceof JMenuItem) {
+      enableMenuItem(menu, enable);
+      return;
+    }
     ((JMenu)menu).setEnabled(enable);
   }
 
@@ -157,5 +170,5 @@ public class JmolPopupSwing extends JmolPopup {
 
   int availableProcessorsForNewerJvm() {
     return Runtime.getRuntime().availableProcessors();
-  }
+  }  
 }

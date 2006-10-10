@@ -1473,8 +1473,7 @@ public class Jmol extends JPanel {
       }
       
       if (!haveDisplay.booleanValue())
-        return;
-      
+        return;      
       jmolpopup.updateComputedMenus();
       if (fullPathName == null) {
         // a 'clear/zap' operation
@@ -1494,7 +1493,7 @@ public class Jmol extends JPanel {
     }
 
     public void notifyFrameChanged(int frameNo) {
-        // don't do anything
+      jmolpopup.updateComputedMenus();
     }
 
     public void notifyScriptStart(String statusMessage, String additionalInfo) {

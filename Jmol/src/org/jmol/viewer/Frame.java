@@ -738,7 +738,7 @@ public final class Frame {
       Atom atom = atoms[i];
       if (atom.modelIndex != lastModelIndex) {
         lastModelIndex = atom.modelIndex;
-        modelAtomIndex = 1;
+        modelAtomIndex = (isZeroBased ? 0 : 1);
       }
       atomSerials[i] = modelAtomIndex++;
     }
@@ -833,7 +833,8 @@ public final class Frame {
   boolean modelHasVibrationVectors(int modelIndex) {
     if (vibrationVectors != null)
       for (int i = atomCount; --i >= 0;)
-        if (atoms[i].modelIndex == modelIndex && vibrationVectors[i] != null)
+        if ((modelIndex < 0 || atoms[i].modelIndex == modelIndex)
+            && vibrationVectors[i] != null)
           return true;
     return false;
   }
@@ -939,7 +940,7 @@ public final class Frame {
   int getBondCountInModel(int modelIndex) {
     int n = 0;
     for (int i = bonds.length; --i >= 0;)
-      if (bonds[i].atom1.modelIndex == modelIndex)
+      if (modelIndex < 0 || bonds[i].atom1.modelIndex == modelIndex)
         n++;
     return n;
   }
@@ -2639,9 +2640,16 @@ public final class Frame {
   }
 
   int getMoleculeCountInModel(int modelIndex) {
+    //not implemented for pop-up menu -- will slow it down.
+    int n = 0;
     if (moleculeCount == 0)
       getMolecules();
-    return mmset.getModel(modelIndex).moleculeCount;
+    int modelCount = getModelCount();
+    for (int i = 0; i < modelCount; i++) {
+      if (modelIndex == i || modelIndex < 0)
+        n += mmset.getModel(i).moleculeCount;
+    }
+    return n;
   }
 
   BitSet getGroupBitSet(int atomIndex) {

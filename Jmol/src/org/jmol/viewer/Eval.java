@@ -1616,7 +1616,7 @@ class Eval { //implements Runnable {
       mad = -1;
       break;
     default:
-      booleanOrNumberExpected(GT._("or dotted"));
+      booleanOrNumberExpected(GT._("dotted"));
     }
     return mad;
   }
@@ -3727,7 +3727,6 @@ class Eval { //implements Runnable {
       setBoundbox(2);
       break;
     case Token.color:
-      Logger.warn("WARNING! use 'set defaultColors' not 'set color'");
     // fall into
     case Token.defaultColors:
       setDefaultColors();

@@ -65,7 +65,7 @@ public class JmolPopupAwt extends JmolPopup {
   class CheckboxMenuItemListener implements ItemListener {
     public void itemStateChanged(ItemEvent e) {
       CheckboxMenuItem cmi = (CheckboxMenuItem)e.getSource();
-      viewer.setBooleanProperty(cmi.getActionCommand(), cmi.getState());
+      setCheckBoxValue(cmi.getActionCommand(), cmi.getState());
     }
   }
 
@@ -135,6 +135,13 @@ public class JmolPopupAwt extends JmolPopup {
     return mi;
   }
 
+  void setLabel(Object menu, String entry) {
+    if (menu instanceof MenuItem)
+      ((MenuItem) menu).setLabel(entry);
+    else
+      ((Menu) menu).setLabel(entry);
+  }
+  
   void updateMenuItem(Object menuItem, String entry, String script) {
     MenuItem mi = (MenuItem)menuItem;
     mi.setLabel(entry);
@@ -144,12 +151,13 @@ public class JmolPopupAwt extends JmolPopup {
     //    mi.setEnabled(script != null);
   }
 
-  void addCheckboxMenuItem(Object menu, String entry, String basename) {
+  Object addCheckboxMenuItem(Object menu, String entry, String basename) {
     CheckboxMenuItem cmi = new CheckboxMenuItem(entry);
     cmi.addItemListener(cmil);
     cmi.setActionCommand(basename);
     addToMenu(menu, cmi);
     rememberCheckbox(basename, cmi);
+    return cmi;
   }
 
   void addMenuSubMenu(Object menu, Object subMenu) {
@@ -185,9 +193,14 @@ public class JmolPopupAwt extends JmolPopup {
   }
 
   void enableMenu(Object menu, boolean enable) {
-    ((Menu)menu).setEnabled(enable);
+    if (menu instanceof MenuItem) {
+      enableMenuItem(menu, enable);
+      return;
+    }
+   ((Menu)menu).setEnabled(enable);
   }
+  
   void enableMenuItem(Object item, boolean enable) {
     ((MenuItem)item).setEnabled(enable);
-  }
+  }  
 }

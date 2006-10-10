@@ -370,8 +370,11 @@ class ConsoleTextPane extends JTextPane {
    void recallCommand(boolean up) {
      String cmd = viewer.getSetHistory(up ? -1 : 1);
     if (cmd == null) {
-      appendNewline();
-      setPrompt();
+      String str = getText();
+      if (str.lastIndexOf("$") != str.length() - 2) {
+        appendNewline();
+        setPrompt();
+      }
       return;
     }
     try {

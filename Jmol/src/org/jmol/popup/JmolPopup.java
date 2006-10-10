@@ -28,7 +28,6 @@ import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import java.awt.Component;
-import java.awt.MenuComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.StringTokenizer;
@@ -474,9 +473,7 @@ abstract public class JmolPopup {
       String script = e.getActionCommand();
       if (script == null || script.length() == 0)
         return;
-      Object item = e.getSource();
-      String id = (item instanceof Component ? ((Component) item).getName()
-          : ((MenuComponent) item).getName());
+      String id = getId(e.getSource());
       if (id != null)
         script = fixScript(id, script);
       viewer.script(script);
@@ -558,6 +555,8 @@ abstract public class JmolPopup {
   abstract int getMenuItemCount(Object menu);
 
   abstract void removeMenuItem(Object menu, int index);
+  
+  abstract String getId(Object menuItem);
 
   long maxMemoryForNewerJvm() {
     // this method is overridden in JmolPopupSwing for newer Javas

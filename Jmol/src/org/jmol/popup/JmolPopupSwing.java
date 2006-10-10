@@ -104,6 +104,10 @@ public class JmolPopupSwing extends JmolPopup {
       ((JMenu) menu).setLabel(entry);
   }
   
+  String getId(Object menu) {
+    return ((Component) menu).getName();
+  }
+  
   void updateMenuItem(Object menuItem, String entry, String script) {
     JMenuItem jmi = (JMenuItem)menuItem;
     jmi.setLabel(entry);

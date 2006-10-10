@@ -25,8 +25,8 @@ package org.jmol.popup;
 
 import org.jmol.api.*;
 
-import java.awt.MenuComponent;
 import java.awt.PopupMenu;
+import java.awt.MenuComponent;
 import java.awt.Menu;
 import java.awt.MenuItem;
 import java.awt.CheckboxMenuItem;
@@ -142,6 +142,10 @@ public class JmolPopupAwt extends JmolPopup {
       ((MenuItem) menu).setLabel(entry);
     else
       ((Menu) menu).setLabel(entry);
+  }
+  
+  String getId(Object menu) {
+    return ((MenuComponent) menu).getName();
   }
   
   void updateMenuItem(Object menuItem, String entry, String script) {

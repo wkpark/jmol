@@ -41,6 +41,9 @@ import java.util.Vector;
 abstract public class JmolPopup {
   private final static boolean forceAwt = false;
 
+  //list is saved in http://www.stolaf.edu/academics/chemapps/jmol/docs/misc
+  private final static boolean dumpList = false;
+  
   JmolViewer viewer;
   Component jmolComponent;
   MenuItemListener mil;
@@ -406,11 +409,13 @@ abstract public class JmolPopup {
           enableMenu(modelSetInfoMenu, false);
         }
         newMenu = subMenu;
+        value = "";
       } else if ("-".equals(item)) {
         addMenuSeparator(menu);
       } else if (item.endsWith("Checkbox")) {
         String basename = item.substring(0, item.length() - 8);
         newMenu = addCheckboxMenuItemWithId(menu, word, basename, id + " " + item);
+        value = "set " + basename + " true|false";
       } else {
         String script = popupResourceBundle.getStructure(item);
         if (script == null)
@@ -420,6 +425,7 @@ abstract public class JmolPopup {
         // addition items that may need enabling/disabling:
         if ("surfMEP".equals(item))
           surfMEP = newMenu;
+        value = script;
       }
       
       // menus or menu items:
@@ -433,6 +439,10 @@ abstract public class JmolPopup {
         VibrationOnly.add(newMenu);
       } else if (item.indexOf("SYMMETRY") >= 0) {
         SymmetryOnly.add(newMenu);
+      }
+      
+      if (dumpList && newMenu != null) {
+        Logger.info((item.endsWith("Menu") ? "----" : ((Component)newMenu).getName() + ": " + value));
       }
     }
   }

@@ -28,6 +28,7 @@ import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import java.awt.Component;
+import java.awt.MenuComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.StringTokenizer;
@@ -148,7 +149,7 @@ abstract public class JmolPopup {
     if (modelCount < 2)
       return;
     enableMenu(FRAMESbyModelComputedMenu, true);
-    addMenuItemWithId(FRAMESbyModelComputedMenu, "all", "frame 0", null);
+    addMenuItem(FRAMESbyModelComputedMenu, "all", "frame 0", null);
     for (int i = 0; i < modelCount; i++) {
       String script = "" + viewer.getModelNumber(i);
       String entryName = viewer.getModelName(i);
@@ -156,7 +157,7 @@ abstract public class JmolPopup {
         entryName = script + ": " + entryName;
       if (entryName.length() > 30)
         entryName = entryName.substring(0, 20) + "...";
-      addMenuItemWithId(FRAMESbyModelComputedMenu, entryName, "model " + script, null);
+      addMenuItem(FRAMESbyModelComputedMenu, entryName, "model " + script, null);
     }
   }
 
@@ -176,7 +177,7 @@ abstract public class JmolPopup {
       String entryName = "#" + (i + 1) +" " 
       + ((Hashtable)(mos.get(i))).get("energy");
       String script = "mo " + (i + 1);
-      addMenuItemWithId(surfMoComputedMenu, entryName, script, null);
+      addMenuItem(surfMoComputedMenu, entryName, script, null);
     }
   }
 
@@ -192,7 +193,7 @@ abstract public class JmolPopup {
         String elementName = JmolConstants.elementNameFromNumber(i);
         String elementSymbol = JmolConstants.elementSymbolFromNumber(i);
         String entryName = elementSymbol + " - " + elementName;
-        addMenuItemWithId(elementsComputedMenu, entryName, elementName, null);
+        addMenuItem(elementsComputedMenu, entryName, elementName, null);
       }
     }
     for (int i = JmolConstants.firstIsotope; i < JmolConstants.altElementMax; ++i) {
@@ -202,7 +203,7 @@ abstract public class JmolPopup {
         String elementName = JmolConstants.elementNameFromNumber(n);
         String elementSymbol = JmolConstants.elementSymbolFromNumber(n);
         String entryName = elementSymbol + " - " + elementName;
-        addMenuItemWithId(elementsComputedMenu, entryName, elementName, null);
+        addMenuItem(elementsComputedMenu, entryName, elementName, null);
       }
     }
     enableMenu(elementsComputedMenu, true);
@@ -222,7 +223,7 @@ abstract public class JmolPopup {
         if (heteroName.length() > 20)
           heteroName = heteroName.substring(0,20) + "...";
         String entryName = heteroCode + " - " + heteroName;        
-        addMenuItemWithId(heteroComputedMenu, entryName, heteroCode, null);
+        addMenuItem(heteroComputedMenu, entryName, heteroCode, null);
         n++;
     }
     enableMenu(heteroComputedMenu, (n > 0));
@@ -238,7 +239,7 @@ abstract public class JmolPopup {
     for (int i = 1; i < JmolConstants.GROUPID_AMINO_MAX; ++i) {
       if (groupsPresentBitSet.get(i)) {
         String aaresidueName = JmolConstants.predefinedGroup3Names[i];
-        addMenuItemWithId(aaresiduesComputedMenu, aaresidueName, null, null);
+        addMenuItem(aaresiduesComputedMenu, aaresidueName, null, null);
       }
     }
     enableMenu(aaresiduesComputedMenu, true);
@@ -278,7 +279,7 @@ abstract public class JmolPopup {
     }
     if (viewer.showModelSetDownload()
         && !viewer.getBooleanProperty("hideNameInPopup")) {
-      addMenuItemWithId(modelSetInfoMenu, viewer.getModelSetFileName(), viewer
+      addMenuItem(modelSetInfoMenu, viewer.getModelSetFileName(), viewer
           .getModelSetPathName(), null);
     }
   }
@@ -335,7 +336,7 @@ abstract public class JmolPopup {
     String value = popupResourceBundle.getStructure(key);
     Logger.debug(id + " --- " + value);
     if (value == null) {
-      addMenuItemWithId(menu, "#" + key, "", "");
+      addMenuItem(menu, "#" + key, "", "");
       return;
     }
     boolean isColorScheme = false;
@@ -380,8 +381,7 @@ abstract public class JmolPopup {
       }
       String word = popupResourceBundle.getWord(item);
       if (item.indexOf("Menu") >= 0) {
-        Object subMenu = newMenu(word);
-        ((Component) subMenu).setName(id + "." + item);
+        Object subMenu = newMenu(word, id + "." + item);
         addMenuSubMenu(menu, subMenu);
 
         // these will need creating later:
@@ -416,14 +416,14 @@ abstract public class JmolPopup {
         addMenuSeparator(menu);
       } else if (item.endsWith("Checkbox")) {
         String basename = item.substring(0, item.length() - 8);
-        newMenu = addCheckboxMenuItemWithId(menu, word, basename, id + "."
+        newMenu = addCheckboxMenuItem(menu, word, basename, id + "."
             + item);
         script = "set " + basename + " [true|false]";
       } else {
         script = popupResourceBundle.getStructure(item);
         if (script == null)
           script = item;
-        newMenu = addMenuItemWithId(menu, word, script, id + "." + item);
+        newMenu = addMenuItem(menu, word, script, id + "." + item);
       }
 
       // menus or menu items:
@@ -452,19 +452,6 @@ abstract public class JmolPopup {
     }
   }
 
-  Object addMenuItemWithId(Object menu, String word, String script, String id) {
-    Object newMenu = addMenuItem(menu, word, script);
-    ((Component)newMenu).setName(id == null ? ((Component)menu).getName() : id);
-    return newMenu;
-  }
-  
-  Object addCheckboxMenuItemWithId(Object menu, String entry, String basename,
-                                   String id) {
-    Object newMenu = addCheckboxMenuItem(menu, entry, basename);
-    ((Component) newMenu).setName(id == null ? ((Component)menu).getName() : id);
-    return newMenu;
-  }
-  
   Hashtable htCheckbox = new Hashtable();
 
   void rememberCheckbox(String key, Object checkboxMenuItem) {
@@ -487,7 +474,9 @@ abstract public class JmolPopup {
       String script = e.getActionCommand();
       if (script == null || script.length() == 0)
         return;
-      String id = ((Component) e.getSource()).getName();
+      Object item = e.getSource();
+      String id = (item instanceof Component ? ((Component) item).getName()
+          : ((MenuComponent) item).getName());
       if (id != null)
         script = fixScript(id, script);
       viewer.script(script);
@@ -532,7 +521,7 @@ abstract public class JmolPopup {
   }
   
   Object addMenuItem(Object menuItem, String entry) {
-    return addMenuItemWithId(menuItem, entry, "", null);
+    return addMenuItem(menuItem, entry, "", null);
   }
 
   public void show(int x, int y) {
@@ -546,17 +535,17 @@ abstract public class JmolPopup {
 
   abstract void addMenuSeparator(Object menu);
 
-  abstract Object addMenuItem(Object menu, String entry, String script);
+  abstract Object addMenuItem(Object menu, String entry, String script, String id);
 
   abstract void setLabel(Object menu, String entry);
 
   abstract void updateMenuItem(Object menuItem, String entry, String script);
 
-  abstract Object addCheckboxMenuItem(Object menu, String entry,String basename);
+  abstract Object addCheckboxMenuItem(Object menu, String entry,String basename, String id);
 
   abstract void addMenuSubMenu(Object menu, Object subMenu);
 
-  abstract Object newMenu(String menuName);
+  abstract Object newMenu(String menuName, String id);
 
   abstract void enableMenu(Object menu, boolean enable);
 

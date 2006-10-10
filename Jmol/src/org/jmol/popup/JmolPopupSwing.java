@@ -32,6 +32,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JCheckBoxMenuItem;
 
+import java.awt.Component;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Enumeration;
@@ -87,10 +88,11 @@ public class JmolPopupSwing extends JmolPopup {
       ((JMenu)menu).addSeparator();
   }
 
-  Object addMenuItem(Object menu, String entry, String script) {
+  Object addMenuItem(Object menu, String entry, String script, String id) {
     JMenuItem jmi = new JMenuItem(entry);
     updateMenuItem(jmi, entry, script);
     jmi.addActionListener(mil);
+    jmi.setName(id == null ? ((Component)menu).getName() : id);
     addToMenu(menu, jmi);
     return jmi;
   }
@@ -111,10 +113,11 @@ public class JmolPopupSwing extends JmolPopup {
     //    jmi.setEnabled(script != null);
   }
 
-  Object addCheckboxMenuItem(Object menu, String entry, String basename) {
+  Object addCheckboxMenuItem(Object menu, String entry, String basename, String id) {
     JCheckBoxMenuItem jcmi = new JCheckBoxMenuItem(entry);
     jcmi.addItemListener(cmil);
     jcmi.setActionCommand(basename);
+    jcmi.setName(id == null ? ((Component)menu).getName() : id);
     addToMenu(menu, jcmi);
     rememberCheckbox(basename, jcmi);
     return jcmi;
@@ -124,8 +127,10 @@ public class JmolPopupSwing extends JmolPopup {
     addToMenu(menu, (JMenu)subMenu);
   }
 
-  Object newMenu(String menuName) {
-    return new JMenu(menuName);
+  Object newMenu(String menuName, String id) {
+    JMenu jm = new JMenu(menuName);
+    jm.setName(id);
+    return jm;
   }
 
   void renameMenu(Object menu, String newMenuName) {

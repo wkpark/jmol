@@ -25,6 +25,7 @@ package org.jmol.popup;
 
 import org.jmol.api.*;
 
+import java.awt.MenuComponent;
 import java.awt.PopupMenu;
 import java.awt.Menu;
 import java.awt.MenuItem;
@@ -127,10 +128,11 @@ public class JmolPopupAwt extends JmolPopup {
     ((Menu)menu).addSeparator();
   }
 
-  Object addMenuItem(Object menu, String entry, String script) {
+  Object addMenuItem(Object menu, String entry, String script, String id) {
     MenuItem mi = new MenuItem(entry);
     updateMenuItem(mi, entry, script);
     mi.addActionListener(mil);
+    mi.setName(id == null ? ((MenuComponent)menu).getName() : id);
     addToMenu(menu, mi);
     return mi;
   }
@@ -151,10 +153,11 @@ public class JmolPopupAwt extends JmolPopup {
     //    mi.setEnabled(script != null);
   }
 
-  Object addCheckboxMenuItem(Object menu, String entry, String basename) {
+  Object addCheckboxMenuItem(Object menu, String entry, String basename, String id) {
     CheckboxMenuItem cmi = new CheckboxMenuItem(entry);
     cmi.addItemListener(cmil);
     cmi.setActionCommand(basename);
+    cmi.setName(id == null ? ((MenuComponent)menu).getName() : id);
     addToMenu(menu, cmi);
     rememberCheckbox(basename, cmi);
     return cmi;
@@ -164,8 +167,10 @@ public class JmolPopupAwt extends JmolPopup {
     addToMenu(menu, (Menu)subMenu);
   }
 
-  Object newMenu(String menuName) {
-    return new Menu(menuName);
+  Object newMenu(String menuName, String id) {
+    Menu m = new Menu(menuName);
+    m.setName(id);
+    return m;
   }
 
   void renameMenu(Object menu, String newMenuName) {

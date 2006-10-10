@@ -23,8 +23,6 @@
  */
 package org.jmol.popup;
 
-
-
 import org.jmol.api.*;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
@@ -66,6 +64,16 @@ abstract public class JmolPopup {
   Vector FramesOnly = new Vector();
   Vector VibrationOnly = new Vector();
   Vector SymmetryOnly = new Vector();
+  Vector AppletOnly = new Vector();
+
+  boolean isPDB;
+  boolean isSymmetry;
+  boolean isUnitCell;
+  boolean isMultiFrame;
+  boolean isVibration;
+  boolean isApplet;
+  int modelIndex;
+
 
   JmolPopup(JmolViewer viewer) {
     this.viewer = viewer;
@@ -86,14 +94,8 @@ abstract public class JmolPopup {
       enableMenu(consoleMenu, false);
   }
 
-  boolean isPDB;
-  boolean isSymmetry;
-  boolean isUnitCell;
-  boolean isMultiFrame;
-  boolean isVibration;
-  int modelIndex;
-
   public void updateComputedMenus() {
+    isApplet = viewer.isApplet();
     modelIndex = viewer.getDisplayModelIndex();
     Hashtable info = viewer.getModelSetAuxiliaryInfo();
     isPDB = checkBoolean(info, "isPDB");
@@ -128,6 +130,8 @@ abstract public class JmolPopup {
       enableMenu(VibrationOnly.get(i), isVibration);
     for (int i = 0; i < SymmetryOnly.size(); i++)
       enableMenu(SymmetryOnly.get(i), isSymmetry && isUnitCell);
+    for (int i = 0; i < AppletOnly.size(); i++)
+      enableMenu(AppletOnly.get(i), isApplet);
   }
   
   void updatesurfMEP(boolean haveCharges) {
@@ -329,7 +333,7 @@ abstract public class JmolPopup {
   
   private void addMenuItems(String parentId, String key, Object menu,
                             PopupResourceBundle popupResourceBundle) {
-    String id = parentId + " " + key;
+    String id = parentId + "." + key;
     String value = popupResourceBundle.getStructure(key);
     Logger.debug(id + " --- " + value);
     if (value == null) {
@@ -342,6 +346,7 @@ abstract public class JmolPopup {
     StringTokenizer st = new StringTokenizer(value);
     while (st.hasMoreTokens()) {
       Object newMenu = null;
+      String script = "";
       String item = st.nextToken();
       if (item.equals("@")) {
         isColorScheme = true;
@@ -378,7 +383,7 @@ abstract public class JmolPopup {
       String word = popupResourceBundle.getWord(item);
       if (item.indexOf("Menu") >= 0) {
         Object subMenu = newMenu(word);
-        ((Component) subMenu).setName(id + " " + item);
+        ((Component) subMenu).setName(id + "." + item);
         addMenuSubMenu(menu, subMenu);
 
         // these will need creating later:
@@ -409,28 +414,29 @@ abstract public class JmolPopup {
           enableMenu(modelSetInfoMenu, false);
         }
         newMenu = subMenu;
-        value = "";
       } else if ("-".equals(item)) {
         addMenuSeparator(menu);
       } else if (item.endsWith("Checkbox")) {
         String basename = item.substring(0, item.length() - 8);
-        newMenu = addCheckboxMenuItemWithId(menu, word, basename, id + " " + item);
-        value = "set " + basename + " true|false";
+        newMenu = addCheckboxMenuItemWithId(menu, word, basename, id + "."
+            + item);
+        script = "set " + basename + " [true|false]";
       } else {
-        String script = popupResourceBundle.getStructure(item);
+        script = popupResourceBundle.getStructure(item);
         if (script == null)
           script = item;
-        newMenu = addMenuItemWithId(menu, word, script, id + " " + item);
+        newMenu = addMenuItemWithId(menu, word, script, id + "." + item);
         // add a menu-path to this item for color context
         // addition items that may need enabling/disabling:
         if ("surfMEP".equals(item))
           surfMEP = newMenu;
-        value = script;
       }
-      
+
       // menus or menu items:
       if (item.indexOf("PDB") >= 0) {
         PDBOnly.add(newMenu);
+      } else if (item.indexOf("Url") >= 0) {
+        AppletOnly.add(newMenu);
       } else if (item.indexOf("nitCell") >= 0) {
         UnitcellOnly.add(newMenu);
       } else if (item.indexOf("FRAMES") >= 0) {
@@ -440,9 +446,12 @@ abstract public class JmolPopup {
       } else if (item.indexOf("SYMMETRY") >= 0) {
         SymmetryOnly.add(newMenu);
       }
-      
-      if (dumpList && newMenu != null) {
-        Logger.info((item.endsWith("Menu") ? "----" : ((Component)newMenu).getName() + ": " + value));
+
+      if (dumpList) {
+        String str = item.endsWith("Menu") ? "----" : id + "." + item + "\t" + word
+            + "\t" + fixScript(id + "." + item, script);
+        str = "addMenuItem('\t" + str + "\t')";
+        Logger.info(str);
       }
     }
   }
@@ -482,39 +491,44 @@ abstract public class JmolPopup {
       String script = e.getActionCommand();
       if (script == null || script.length() == 0)
         return;
-      if (script.startsWith("http:") || script.startsWith("file:")
-          || script.startsWith("/")) {
-        viewer.showUrl(script);
-        return;
-      }
       String id = ((Component) e.getSource()).getName();
-      System.out.println(id + ": " + script);
-      if (id != null) {
-        if (id.indexOf(" setSpin") >= 0) {
-          // setSpinFooMenu
-          int pt = id.lastIndexOf(" setSpin");
-          if (pt >= 0)
-            script = "set spin " + id.substring(pt + 8, id.indexOf("Menu", pt)) + " " + script;
-        } else if (id.indexOf(" set") >= 0) {
-          // setFooMenu
-          int pt = id.lastIndexOf(" set");
-          if (pt >= 0)
-            script = "set " + id.substring(pt + 6, id.indexOf("Menu", pt)) + " " + script;
-        } else if (id.indexOf(" select") >= 0) {
-          // select item but not selectMenu set selectionHalos
-          if (script.indexOf("set") != 0)
-            script = "select " + script;
-        } else if(id.indexOf(" color") >= 0){
-          // colorFooMenu
-          int pt = id.lastIndexOf(" color");
-          if (pt >= 0)
-            script = "color " + id.substring(pt + 6, id.indexOf("Menu", pt)) + " " + script;
-        }
-      }
+      if (id != null)
+        script = fixScript(id, script);
       viewer.script(script);
     }
   }
 
+  String fixScript(String id, String script) {
+    int pt;
+    if (script == "" || id.endsWith("Checkbox"))
+      return script;
+    if (id.indexOf("Url") >= 0)
+      return "show url \"" + script + "\"";
+    if (id.indexOf(".setSpin") >= 0) {
+      // setSpinFooMenu
+      pt = id.lastIndexOf(".setSpin");
+      return (pt < 0 ? script : "set spin "
+          + id.substring(pt + 8, id.indexOf("Menu", pt)) + " " + script);
+    }
+    if (id.indexOf(".set") >= 0) {
+      // setFooMenu
+      pt = id.lastIndexOf(".set");
+      return (pt < 0 ? script : "set "
+          + id.substring(pt + 4, id.indexOf("Menu", pt)) + " " + script);
+    }
+    if (id.indexOf(".select") >= 0) {
+      // select item but not selectMenu set selectionHalos
+      return (script.indexOf("set") == 0 ? script : "select " + script);
+    }
+    if (id.indexOf(".color") >= 0) {
+      // colorFooMenu
+      pt = id.lastIndexOf(".color");
+      return (pt < 0 ? script : "color "
+          + id.substring(pt + 6, id.indexOf("Menu", pt)) + " " + script);
+    }
+    return script;
+  }
+  
   Object addMenuItem(Object menuItem, String entry) {
     return addMenuItemWithId(menuItem, entry, "", null);
   }

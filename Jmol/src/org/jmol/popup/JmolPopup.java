@@ -40,7 +40,7 @@ abstract public class JmolPopup {
   private final static boolean forceAwt = false;
 
   //list is saved in http://www.stolaf.edu/academics/chemapps/jmol/docs/misc
-  private final static boolean dumpList = true;
+  private final static boolean dumpList = false;
   
   JmolViewer viewer;
   Component jmolComponent;

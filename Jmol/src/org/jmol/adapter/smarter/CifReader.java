@@ -63,6 +63,7 @@ class CifReader extends AtomSetCollectionReader {
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
+    int nAtoms = 0;
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("cif");
 
@@ -97,6 +98,7 @@ class CifReader extends AtomSetCollectionReader {
           applySymmetry();
           processDataParameter();
           iHaveDesiredModel = (desiredModelNumber > 0);
+          nAtoms = atomSetCollection.atomCount;
         }
         continue;
       }
@@ -149,7 +151,12 @@ class CifReader extends AtomSetCollectionReader {
         }
       }
     }
-    applySymmetry();
+    
+    if (atomSetCollection.atomCount > nAtoms)
+      applySymmetry();
+    else
+      atomSetCollection.atomSetCount--;
+    atomSetCollection.setCollectionName("<collection of " + atomSetCollection.atomSetCount + " models>");
     return atomSetCollection;
   }
 
@@ -169,8 +176,6 @@ class CifReader extends AtomSetCollectionReader {
         // note that there can be problems with multi-data mmCIF sets each with
         // multiple models; and we could be loading multiple files!
         atomSetCollection.newAtomSet();
-        atomSetCollection.setCollectionName("<collection of "
-            + (atomSetCollection.currentAtomSetIndex + 1) + " models>");
       } else {
         atomSetCollection.setCollectionName(thisDataSetName);
       }

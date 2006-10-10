@@ -142,11 +142,13 @@ abstract public class JmolPopup {
     enableMenu(FRAMESbyModelComputedMenu, true);
     addMenuItemWithId(FRAMESbyModelComputedMenu, "all", "frame 0", null);
     for (int i = 0; i < modelCount; i++) {
-      String script = "model " + viewer.getModelNumber(i);
-      String entryName = script + viewer.getModelName(i);
+      String script = "" + viewer.getModelNumber(i);
+      String entryName = viewer.getModelName(i);
+      if (!entryName.equals(script))
+        entryName = script + ": " + entryName;
       if (entryName.length() > 30)
         entryName = entryName.substring(0, 20) + "...";
-      addMenuItemWithId(FRAMESbyModelComputedMenu, entryName, script, null);
+      addMenuItemWithId(FRAMESbyModelComputedMenu, entryName, "model " + script, null);
     }
   }
 

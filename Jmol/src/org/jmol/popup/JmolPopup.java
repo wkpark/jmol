@@ -367,13 +367,6 @@ abstract public class JmolPopup {
         }
         if (st.hasMoreTokens())
           continue;
-        /*
-         String colorList = (String) colorMenus.get(colorCode);
-         if (colorList == null) {
-         popupResourceBundle.addStructure(key, colorSet);
-         colorMenus.put(colorCode, colorSet);
-         }
-         */
         popupResourceBundle.addStructure(key, colorSet);
         addMenuItems(parentId, key, menu, popupResourceBundle);
         return;

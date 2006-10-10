@@ -65,14 +65,11 @@ class Axes extends SelectionIndependentShape {
     font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
     int axesMode = viewer.getAxesMode();
     if (axesMode == JmolConstants.AXES_MODE_UNITCELL && frame.cellInfos != null) {
-      int modelIndex = viewer.getDisplayModelIndex();
-      if (modelIndex < 0)
-        return;
-      UnitCell unitcell = frame.cellInfos[modelIndex].getUnitCell();
+      UnitCell unitcell = viewer.getCurrentUnitCell();
       if (unitcell == null)
         return;
       Point3f[] vectors = unitcell.getVertices();
-      Point3f offset = unitcell.getOffset();
+      Point3f offset = unitcell.getCartesianOffset();
       originPoint.set(offset);
       axisPoints[0].add(offset, vectors[4]);
       axisPoints[1].add(offset, vectors[2]);

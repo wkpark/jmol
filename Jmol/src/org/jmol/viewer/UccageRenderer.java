@@ -49,26 +49,23 @@ class UccageRenderer extends ShapeRenderer {
   Uccage uccage;
 
   void render() {
-    int modelIndex = viewer.getDisplayModelIndex();
-    if (modelIndex < 0)
-      return;
     uccage = (Uccage) shape;
     short colix = uccage.colix;
     short mad = uccage.mad;
     if (mad == 0)
       return;
-    render1(modelIndex, mad, colix);
+    render1(mad, colix);
   }
   
-  void render1(int modelIndex, short mad, short colix) {
+  void render1(short mad, short colix) {
     if (frame.cellInfos == null)
       return;
-    Frame.CellInfo cellInfo = frame.cellInfos[modelIndex];
-    UnitCell unitCell = cellInfo.getUnitCell();
+    UnitCell unitCell = viewer.getCurrentUnitCell();
     if (unitCell == null)
       return;
+    Frame.CellInfo cellInfo = frame.cellInfos[viewer.getDisplayModelIndex()];
     Point3f[] vertices = unitCell.getVertices();
-    Point3f offset = unitCell.getOffset(); 
+    Point3f offset = unitCell.getCartesianOffset(); 
     if (colix == 0)
       colix = Graphics3D.OLIVE;
     for (int i = 8; --i >= 0;)

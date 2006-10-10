@@ -28,7 +28,6 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
 import org.jmol.smiles.InvalidSmilesException;
 import org.jmol.util.CommandHistory;
-
 import java.io.*;
 import java.util.BitSet;
 import java.util.Vector;
@@ -873,6 +872,7 @@ class Eval { //implements Runnable {
         break;
       case Token.specialposition:
       case Token.symmetry:
+      case Token.unitcell:
       case Token.hetero:
       case Token.hydrogen:
       case Token.protein:
@@ -1070,6 +1070,9 @@ class Eval { //implements Runnable {
         break;
       case Token.element:
         propertyValue = atom.getAtomicAndIsotopeNumber();
+        break;
+      case Token.formalCharge:
+        propertyValue = atom.getFormalCharge();
         break;
       case Token.site:
         propertyValue = atom.getAtomSite();
@@ -1517,6 +1520,9 @@ class Eval { //implements Runnable {
   }
 
   Point4f hklParameter(int i) throws ScriptException {
+    Point3f offset = viewer.getCurrentUnitCellOffset();
+    if (offset == null)
+      evalError(GT._("No unit cell"));
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
     Point3f pt = getCoordinate(i, true, false, true);
@@ -1546,6 +1552,9 @@ class Eval { //implements Runnable {
     viewer.convertFractionalCoordinates(pt1);
     viewer.convertFractionalCoordinates(pt2);
     viewer.convertFractionalCoordinates(pt3);
+    pt1.add(offset);
+    pt2.add(offset);
+    pt3.add(offset);
     Vector3f plane = new Vector3f();
     float w = Graphics3D.getPlaneThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
     Point4f p = new Point4f(plane.x, plane.y, plane.z, w);
@@ -3822,8 +3831,8 @@ class Eval { //implements Runnable {
     case Token.transparent:
     case Token.vectps:
     case Token.write:
-    case Token.formalCharge: // set charge in Chime
-      notImplemented(1);
+    case Token.formalCharge:
+      viewer.setFormalCharges(intParameter(2));
       break;
     case Token.identifier:
       String str = (String) statement[1].value;
@@ -3926,15 +3935,13 @@ class Eval { //implements Runnable {
     if (statementLength == cmdPt + 1) {
       if (statement[cmdPt].tok == Token.integer
           && statement[cmdPt].intValue >= 111)
-        viewer.setShapeProperty(JmolConstants.SHAPE_UCCAGE, "offset",
-            new Integer(intParameter(cmdPt)));
+        viewer.setCurrentUnitCellOffset(intParameter(cmdPt));
       else
         viewer.setShapeSize(JmolConstants.SHAPE_UCCAGE,
             getSetAxesTypeMad(cmdPt));
       return;
     }
-    viewer.setShapeProperty(JmolConstants.SHAPE_UCCAGE, "offset",
-        getCoordinate(cmdPt, true, false, true));
+    viewer.setCurrentUnitCellOffset(getCoordinate(cmdPt, true, false, true));
   }
 
   void setFrank(int cmdPt) throws ScriptException {

@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.symmetry.UnitCell;
 import org.jmol.util.*;
 
 import org.jmol.api.*;
@@ -974,6 +975,10 @@ public class Viewer extends JmolViewer {
 
   int getSelectionCount() {
     return selectionManager.getSelectionCount();
+  }
+
+  void setFormalCharges(int formalCharge) {
+    modelManager.setFormalCharges(selectionManager.bsSelection, formalCharge);
   }
 
   public void addSelectionListener(JmolSelectionListener listener) {
@@ -3743,5 +3748,22 @@ public class Viewer extends JmolViewer {
   
   public boolean havePartialCharges() {
     return modelManager.havePartialCharges();
+  }  
+    
+  UnitCell getCurrentUnitCell() {
+    return modelManager.getUnitCell(getDisplayModelIndex());
   }
+  
+  Point3f getCurrentUnitCellOffset() {
+    return modelManager.getUnitCellOffset(getDisplayModelIndex());
+  }
+  
+  void setCurrentUnitCellOffset(int offset) {
+    modelManager.setUnitCellOffset(getDisplayModelIndex(), offset);
+  }
+  
+  void setCurrentUnitCellOffset(Point3f pt) {
+    modelManager.setUnitCellOffset(getDisplayModelIndex(), pt);
+  }
+
 }

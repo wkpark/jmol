@@ -25,6 +25,7 @@
 package org.jmol.viewer;
 
 import org.jmol.symmetry.SpaceGroup;
+import org.jmol.symmetry.UnitCell;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Frame.CellInfo;
 
@@ -1665,6 +1666,38 @@ String getAtomInfoChime(int i) {
     return frame != null && frame.partialCharges != null;
   }
 
+  void setFormalCharges(BitSet bs, int formalCharge) {    
+    if (frame == null)
+      return;
+    frame.setFormalCharges(bs, formalCharge);
+  }
 
+  UnitCell getUnitCell(int modelIndex) {
+    if (frame == null || modelIndex < 0)
+      return null;
+    return (frame.cellInfos == null ? null : frame.cellInfos[modelIndex].unitCell);
+  }
 
+  Point3f getUnitCellOffset(int modelIndex) {
+    // from "unitcell {i j k}" via uccage
+    UnitCell unitCell = getUnitCell(modelIndex);
+    if (unitCell == null)
+      return null;
+    return unitCell.getCartesianOffset();
+  }
+
+  void setUnitCellOffset(int modelIndex, Point3f pt) {
+    // from "unitcell {i j k}" via uccage
+    UnitCell unitCell = getUnitCell(modelIndex);
+    if (unitCell == null)
+      return;
+    unitCell.setOffset(pt);
+  }
+
+  void setUnitCellOffset(int modelIndex, int nnn) {
+    UnitCell unitCell = getUnitCell(modelIndex);
+    if (unitCell == null)
+      return;
+    unitCell.setOffset(nnn);
+  }
 }

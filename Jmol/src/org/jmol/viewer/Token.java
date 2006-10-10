@@ -224,7 +224,7 @@ class Token {
   // stereo
   // strands
   final static int transparent  = setparam | 19;
-  final static int unitcell     = setparam | 20 | showparam | command;
+  final static int unitcell     = setparam | 20 | expression | predefinedset | showparam | command;
   final static int vectps       = setparam | 21;
   
   // write
@@ -243,7 +243,7 @@ class Token {
   final static int diffuse      = setparam | 30;
   final static int labeloffset  = setparam | 31;
   final static int frank        = setparam | 32 | command;
-  final static int formalCharge = setparam | 33;
+  final static int formalCharge = setparam | 33 | atomproperty;
   final static int partialCharge= setparam | 34;
   final static int pickingStyle = setparam | 35;
   final static int spacegroup   = setparam | 36 | showparam;

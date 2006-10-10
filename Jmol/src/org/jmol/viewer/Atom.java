@@ -41,6 +41,7 @@ final public class Atom extends Point3fi implements Tuple {
 
   final static byte VIBRATION_VECTOR_FLAG = 0x02;
   final static byte IS_HETERO_FLAG = 0x04;
+  final static byte FORMALCHARGE_FLAGS = 0x07;
 
   Group group;
   int atomIndex;
@@ -94,7 +95,7 @@ final public class Atom extends Point3fi implements Tuple {
     this.atomSite = atomSite;
     this.atomIndex = atomIndex;
     this.atomicAndIsotopeNumber = atomicAndIsotopeNumber;
-    this.formalChargeAndFlags = (byte)(formalCharge << 3);
+    setFormalCharge(formalCharge);
     this.colixAtom = viewer.getColixAtom(this);
     this.alternateLocationID = (byte)alternateLocationID;
     setMadAtom(viewer.getMadAtom());
@@ -168,6 +169,11 @@ final public class Atom extends Point3fi implements Tuple {
     } else {
       shapeVisibilityFlags &=~shapeVisibilityFlag;
     }
+  }
+  
+  void setFormalCharge(int charge) {
+    //note,this may be negative
+    formalChargeAndFlags = (byte)((formalChargeAndFlags & FORMALCHARGE_FLAGS) | (charge << 3));
   }
   
   void setGroup(Group group) {

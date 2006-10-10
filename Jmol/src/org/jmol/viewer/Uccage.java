@@ -23,24 +23,5 @@
  */
 package org.jmol.viewer;
 
-import java.util.BitSet;
-import javax.vecmath.Point3f;
-
 class Uccage extends SelectionIndependentShape {
-  void setProperty(String propertyName, Object value, BitSet bsSelected) {
-    if ("offset" == propertyName) {
-      Frame.CellInfo[] c = frame.cellInfos;
-      if (c == null)
-        return;
-      int modelIndex = viewer.getDisplayModelIndex();
-      if (modelIndex < 0)
-        return;
-      if (value instanceof Point3f) // {i j k}
-        c[modelIndex].setOffset((Point3f)value);
-      else                          // nnn
-        c[modelIndex].setOffset(((Integer)value).intValue());
-      return;
-    }
-    super.setProperty(propertyName, value, bsSelected);
-  }  
 }

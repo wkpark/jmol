@@ -54,7 +54,8 @@ public class UnitCell {
   Matrix4f matrixFractionalToCartesian;
   Point3f[] vertices; // eight corners
 
-  Point3f offset = new Point3f();
+  Point3f cartesianOffset = new Point3f();
+  Point3f fractionalOffset = new Point3f();
   
   public UnitCell(float[] notionalUnitcell) {
     setUnitCell(notionalUnitcell);
@@ -74,8 +75,9 @@ public class UnitCell {
   
   public void setOffset(Point3f pt) {
     // from "unitcell {i j k}" via uccage
-    offset.set(pt);
-    matrixFractionalToCartesian.transform(offset);
+    fractionalOffset.set(pt);
+    cartesianOffset.set(pt);
+    matrixFractionalToCartesian.transform(cartesianOffset);
   }
 
   public void setOffset(int nnn) {
@@ -97,8 +99,12 @@ public class UnitCell {
     return vertices;
   }
   
-  public Point3f getOffset() {
-    return offset;
+  public Point3f getCartesianOffset() {
+    return cartesianOffset;
+  }
+  
+  public Point3f getFractionalOffset() {
+    return fractionalOffset;
   }
   
   public float[] getNotionalUnitCell() {

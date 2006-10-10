@@ -1903,6 +1903,8 @@ public final class Frame {
       return getSpecialPosition();
     if (setType.equals("symmetry"))
       return getSymmetrySet();
+    if (setType.equals("unitcell"))
+      return getUnitCellSet();
     if (setType.equals("hetero"))
       return getHeteroSet();
     if (setType.equals("hydrogen"))
@@ -1951,6 +1953,21 @@ public final class Frame {
   BitSet getCellSet(int ix, int jy, int kz) {
     BitSet bsCell = new BitSet();
     Point3f cell = new Point3f(ix / 1000f, jy / 1000f, kz / 1000f);
+    for (int i = atomCount; --i >= 0;)
+      if (atoms[i].isInLatticeCell(cell))
+        bsCell.set(i);
+    return bsCell;
+  }
+
+  BitSet getUnitCellSet() {
+    BitSet bsCell = new BitSet();
+    UnitCell unitcell = viewer.getCurrentUnitCell();
+    if (unitcell == null)
+      return bsCell;
+    Point3f cell = new Point3f(unitcell.getFractionalOffset());
+    cell.x += 1;
+    cell.y += 1;
+    cell.z += 1;
     for (int i = atomCount; --i >= 0;)
       if (atoms[i].isInLatticeCell(cell))
         bsCell.set(i);
@@ -2828,17 +2845,6 @@ public final class Frame {
       showInfo();
     }
 
-    void setOffset(Point3f pt) {
-      // from "unitcell {i j k}" via uccage
-      if (unitCell == null)
-        return;
-      unitCell.setOffset(pt);
-    }
-
-    void setOffset(int nnn) {
-      unitCell.setOffset(nnn);
-    }
-
     UnitCell getUnitCell() {
       return unitCell;  
     }
@@ -2876,6 +2882,12 @@ public final class Frame {
     Logger.info(str + pt);
   }
 
+  void setFormalCharges(BitSet bs, int formalCharge) {    
+    for (int i = 0; i < atomCount; i++) 
+      if (bs.get(i))
+        atoms[i].setFormalCharge(formalCharge);
+  }
+  
   void setAtomCoord(int atomIndex, float x, float y, float z) {
     if (atomIndex < 0 || atomIndex >= atomCount)
       return;

@@ -210,6 +210,13 @@ class AtomSetCollection extends Parser {
     }
   }
 
+  void removeAtomSet() {
+    if (currentAtomSetIndex < 0)
+      return;
+    currentAtomSetIndex--;
+    atomSetCount--;
+  }
+  
   Atom newCloneAtom(Atom atom) {
     //Logger.debug("newCloneAtom()");
     Atom clone = atom.cloneAtom();

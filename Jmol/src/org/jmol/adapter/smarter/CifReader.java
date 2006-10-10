@@ -95,7 +95,11 @@ class CifReader extends AtomSetCollectionReader {
           chemicalName = "";
           thisStructuralFormula = "";
           thisFormula = "";
-          applySymmetry();
+          if (nAtoms == atomSetCollection.atomCount)
+            // we found no atoms -- must revert
+            atomSetCollection.removeAtomSet();
+          else 
+            applySymmetry();
           processDataParameter();
           iHaveDesiredModel = (desiredModelNumber > 0);
           nAtoms = atomSetCollection.atomCount;
@@ -152,10 +156,10 @@ class CifReader extends AtomSetCollectionReader {
       }
     }
     
-    if (atomSetCollection.atomCount > nAtoms)
-      applySymmetry();
+    if (atomSetCollection.atomCount == nAtoms)
+      atomSetCollection.removeAtomSet();
     else
-      atomSetCollection.atomSetCount--;
+      applySymmetry();
     atomSetCollection.setCollectionName("<collection of " + atomSetCollection.atomSetCount + " models>");
     return atomSetCollection;
   }

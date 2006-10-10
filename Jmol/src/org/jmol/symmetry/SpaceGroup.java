@@ -54,6 +54,7 @@ public class SpaceGroup {
   String hmSymbolCompressed; 
   String hmSymbolExt;
   String hmSymbolAbbr;
+  String hmSymbolAlternative;
   String hmSymbolAbbrShort;
   char ambiguityType;
   char uniqueAxis; 
@@ -88,6 +89,10 @@ public class SpaceGroup {
         + term.substring(2)).trim();
     hmSymbol = extractTerm(':');
     hmSymbolExt = term.toLowerCase();
+    int pt = hmSymbol.indexOf(" -3");
+    if (pt >= 1)
+      if ("admn".indexOf(hmSymbol.charAt(pt - 1)) >= 0)
+        hmSymbolAlternative = hmSymbol.substring(0, pt) + " 3" + hmSymbol.substring(pt+3);
     char c;
     term = "";
     for (int i = 0; i < hmSymbol.length(); i++)
@@ -277,9 +282,9 @@ public class SpaceGroup {
     int i;
     if (name.length() >= 2) {
       i = (name.indexOf("-") == 0 ? 2 : 1);
-      if(i < name.length() && name.charAt(i) != ' ')
+      if (i < name.length() && name.charAt(i) != ' ')
         name = name.substring(0, i) + " " + name.substring(i);
-      name = name.substring(0,2).toUpperCase() + name.substring(2);
+      name = name.substring(0, 2).toUpperCase() + name.substring(2);
     }
     String ext = "";
     if ((i = name.indexOf(":")) > 0) {
@@ -313,13 +318,21 @@ public class SpaceGroup {
     }
 
     // Full H-M symbol, including :xx
-    
+
     // BUT some on the list presume defaults. The way to finesse this is
     // to add ":?" to a space group name to force axis ambiguity check
 
     for (i = spaceGroupDefinitions.length; --i >= 0;) {
       s = spaceGroupDefinitions[i];
       if (s.hmSymbolFull.equals(nameExt))
+        return i;
+    }
+
+    // alternative, but unique H-M symbol, specifically for F m 3 m/F m -3 m type
+    for (i = spaceGroupDefinitions.length; --i >= 0;) {
+      s = spaceGroupDefinitions[i];
+      if (s.hmSymbolAlternative != null
+          && s.hmSymbolAlternative.equals(nameExt))
         return i;
     }
 
@@ -336,7 +349,8 @@ public class SpaceGroup {
     if (ext.length() > 0) // P2/m:a      
       for (i = spaceGroupDefinitions.length; --i >= 0;) {
         s = spaceGroupDefinitions[i];
-        if (s.hmSymbolAbbrShort.equals(abbr) && s.intlTableNumberExt.equals(ext))
+        if (s.hmSymbolAbbrShort.equals(abbr)
+            && s.intlTableNumberExt.equals(ext))
           return i;
       }
 
@@ -344,7 +358,7 @@ public class SpaceGroup {
 
     char uniqueAxis = determineUniqueAxis(a, b, c, alpha, beta, gamma);
 
-    if (ext.length() == 0 || ext.charAt(0) == '?') 
+    if (ext.length() == 0 || ext.charAt(0) == '?')
       // no extension or unknown extension, so we look for unique axis      
       for (i = spaceGroupDefinitions.length; --i >= 0;) {
         s = spaceGroupDefinitions[i];

@@ -2855,8 +2855,8 @@ class Eval { //implements Runnable {
 
   void history(int pt) throws ScriptException {
     if (statementLength == 1) {
-      // history (clear and turn on)
-      viewer.getSetHistory(Integer.MIN_VALUE);
+      //show it
+      showString(viewer.getSetHistory(Integer.MAX_VALUE));
       return;
     }
     if (pt == 2) {

@@ -31,6 +31,7 @@ final public class CommandHistory {
 
   
   public final static String ERROR_FLAG = "#??";
+  public final static String NOHISTORY_FLAG = "#--";
   final static int DEFAULT_MAX_SIZE = 100;
   
   /**
@@ -155,6 +156,7 @@ final public class CommandHistory {
     if (!isOn && !strCommand.endsWith(ERROR_FLAG))
       return;
     int i;
+    
     // I don't think Jmol can deliver a multiline parameter here
     while ((i = strCommand.indexOf("\n")) >= 0) {
       String str = strCommand.substring(0, i);
@@ -227,6 +229,8 @@ final public class CommandHistory {
    */
   private void addCommandLine(String command) {
     if(command == null || command.length() == 0)
+      return;
+    if (command.endsWith(NOHISTORY_FLAG))
       return;
     if (nextCommand >= maxSize) {
       commandList.remove(0);

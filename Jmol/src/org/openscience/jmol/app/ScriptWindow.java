@@ -110,7 +110,9 @@ public final class ScriptWindow extends JDialog
 
   public void sendConsoleEcho(String strEcho) {
     if (strEcho != null && !isError) {
+      
       console.outputEcho(strEcho);
+      
     }
     setError(false);
   }
@@ -370,11 +372,6 @@ class ConsoleTextPane extends JTextPane {
    void recallCommand(boolean up) {
      String cmd = viewer.getSetHistory(up ? -1 : 1);
     if (cmd == null) {
-      String str = getText();
-      if (str.lastIndexOf("$") != str.length() - 2) {
-        appendNewline();
-        setPrompt();
-      }
       return;
     }
     try {
@@ -443,12 +440,20 @@ class ConsoleDocument extends DefaultStyledDocument {
   void setPrompt() {
     try {
       super.insertString(getLength(), "$ ", attPrompt);
+      setOffsetPositions();
+      consoleTextPane.setCaretPosition(offsetAfterPrompt);
+    } catch (BadLocationException e) {
+      e.printStackTrace();
+    }
+  }
+
+  void setOffsetPositions() {
+    try {
       offsetAfterPrompt = getLength();
       positionBeforePrompt = createPosition(offsetAfterPrompt - 2);
-       // after prompt should be immediately after $ otherwise tracks the end
-       // of the line (and no command will be found) at least on Mac OS X it did.
-      positionAfterPrompt = createPosition(offsetAfterPrompt-1);
-      consoleTextPane.setCaretPosition(offsetAfterPrompt);
+      // after prompt should be immediately after $ otherwise tracks the end
+      // of the line (and no command will be found) at least on Mac OS X it did.
+      positionAfterPrompt = createPosition(offsetAfterPrompt - 1);
     } catch (BadLocationException e) {
       e.printStackTrace();
     }
@@ -469,11 +474,13 @@ class ConsoleDocument extends DefaultStyledDocument {
   // position after the prompt in stead
   void outputBeforePrompt(String str, SimpleAttributeSet attribute) {
     try {
-      Position caretPosition = createPosition(consoleTextPane.getCaretPosition());
-      super.insertString(positionBeforePrompt.getOffset(), str+"\n", attribute);
-      // keep the offsetAfterPrompt in sync
-      offsetAfterPrompt = positionBeforePrompt.getOffset() + 2;
-      consoleTextPane.setCaretPosition(caretPosition.getOffset());
+      int pt = consoleTextPane.getCaretPosition();
+      Position caretPosition = createPosition(pt);
+      pt = positionBeforePrompt.getOffset();
+      super.insertString(pt, str+"\n", attribute);
+      setOffsetPositions();
+      pt = caretPosition.getOffset();
+      consoleTextPane.setCaretPosition(pt);
     } catch (BadLocationException e) {
       e.printStackTrace();
     }

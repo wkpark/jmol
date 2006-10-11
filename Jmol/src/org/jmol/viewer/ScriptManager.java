@@ -134,14 +134,15 @@ class ScriptManager {
   private void startScriptQueue() {
     if (scriptQueueRunning)
       return;
+    scriptQueueRunning = true;
     queueThread = new Thread(new ScriptQueueRunnable());
     queueThread.start();
   }
   
   boolean scriptQueueRunning;
+  int level;
   class ScriptQueueRunnable implements Runnable {
     public void run() {
-      scriptQueueRunning = true;
       while (scriptQueue.size() != 0) {
         runNextScript();
       }

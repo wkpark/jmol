@@ -280,21 +280,40 @@ class ModelManager {
     return (frame == null) ? null : frame.getAtomBits(setType, specInfo);
   }
 
-
-  int getChainCount() {
-    return (frame == null) ? 0 : frame.getChainCount();
+  int getAtomCount() {
+    return (frame == null) ? 0 : frame.getAtomCount();
   }
 
-  int getChainCountInModel(int modelIndex) {
-    return (frame == null) ? 0 : frame.getChainCountInModel(modelIndex);
+  int getAtomCountInModel(int modelIndex) {
+    return (frame == null) ? 0 : modelIndex < 0 ? getAtomCount() : frame
+        .getAtomCountInModel(modelIndex);
   }
-  
+
+  int getBondCount() {
+    return (frame == null) ? 0 : frame.getBondCount();
+  }
+
+  int getBondCountInModel(int modelIndex) {
+    return (frame == null) ? 0 : modelIndex < 0 ? getBondCount() : frame
+        .getBondCountInModel(modelIndex);
+  }
+
   int getGroupCount() {
     return (frame == null) ? 0 : frame.getGroupCount();
   }
 
   int getGroupCountInModel(int modelIndex) {
-    return (frame == null) ? 0 : frame.getGroupCountInModel(modelIndex);
+    return (frame == null) ? 0 : modelIndex < 0 ? getGroupCount() : frame
+        .getGroupCountInModel(modelIndex);
+  }
+  
+  int getChainCount() {
+    return (frame == null) ? 0 : frame.getChainCount();
+  }
+
+  int getChainCountInModel(int modelIndex) {
+    return (frame == null) ? 0 : modelIndex < 0 ? getChainCount() : frame
+        .getChainCountInModel(modelIndex);
   }
   
   int getPolymerCount() {
@@ -302,27 +321,12 @@ class ModelManager {
   }
 
   int getPolymerCountInModel(int modelIndex) {
-    return (frame == null) ? 0 : frame.getPolymerCountInModel(modelIndex);
+    return (frame == null) ? 0 : modelIndex < 0 ? getPolymerCount() : frame
+        .getPolymerCountInModel(modelIndex);
   }
   
-  int getAtomCount() {
-    return (frame == null) ? 0 : frame.getAtomCount();
-  }
-
-  int getBondCount() {
-    return (frame == null) ? 0 : frame.getBondCount();
-  }
-
   int getMoleuleCount() {
     return (frame == null) ? 0 : frame.getMoleculeCount();
-  }
-
-  int getAtomCountInModel(int modelIndex) {
-    return (frame == null) ? 0 : frame.getAtomCountInModel(modelIndex);
-  }
-
-  int getBondCountInModel(int modelIndex) {
-    return (frame == null) ? 0 : frame.getBondCountInModel(modelIndex);
   }
 
   Point3f getRotationCenter() {
@@ -1705,5 +1709,9 @@ String getAtomInfoChime(int i) {
     if (frame == null)
       return;
     frame.hide(bsHide);
+  }
+  
+  BitSet getHiddenSet() {
+    return (frame == null ? null : frame.bsHidden);
   }
 }

@@ -915,6 +915,10 @@ public class Viewer extends JmolViewer {
     reportSelection("" + cardinalityOf(bs) + GT._(" atoms hidden"));
   }
 
+  BitSet getHiddenSet() {
+    return modelManager.getHiddenSet();
+  }
+
   void addSelection(int atomIndex) {
     selectionManager.addSelection(atomIndex);
     refresh(0, "Viewer:addSelection()");

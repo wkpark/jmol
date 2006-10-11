@@ -142,7 +142,7 @@ abstract public class JmolPopup {
     if (FRAMESbyModelComputedMenu == null)
       return;
     enableMenu(FRAMESbyModelComputedMenu, false);
-    setLabel(FRAMESbyModelComputedMenu, (modelIndex < 0 ? GT._("Models/Frames") : getModelLabel()));
+    setLabel(FRAMESbyModelComputedMenu, (modelIndex < 0 ? GT._("All {0} models", viewer.getModelCount()) : getModelLabel()));
     removeAll(FRAMESbyModelComputedMenu);
     int modelCount = viewer.getModelCount();
     if (modelCount < 2)
@@ -257,23 +257,22 @@ abstract public class JmolPopup {
         viewer.getBooleanProperty("hideNameInPopup") ? hiddenModelSetName
             : modelSetName);
     enableMenu(modelSetInfoMenu, true);
-    addMenuItem(modelSetInfoMenu, GT._("atoms: {0}",
-        new Object[] { new Integer(viewer.getAtomCountInModel(modelIndex)) }));
-    addMenuItem(modelSetInfoMenu, GT._("bonds: {0}",
-        new Object[] { new Integer(viewer.getBondCountInModel(modelIndex)) }));
+    addMenuItem(modelSetInfoMenu, GT._("atoms: {0}", viewer
+        .getAtomCountInModel(modelIndex)));
+    addMenuItem(modelSetInfoMenu, GT._("bonds: {0}", viewer
+        .getBondCountInModel(modelIndex)));
     addMenuSeparator(modelSetInfoMenu);
     if (isPDB) {
-      addMenuItem(modelSetInfoMenu, GT._("groups: {0}",
-          new Object[] { new Integer(viewer.getGroupCountInModel(modelIndex)) }));
-      addMenuItem(modelSetInfoMenu, GT._("chains: {0}",
-          new Object[] { new Integer(viewer.getChainCountInModel(modelIndex)) }));
-      addMenuItem(modelSetInfoMenu, GT._("polymers: {0}",
-          new Object[] { new Integer(viewer.getPolymerCountInModel(modelIndex)) }));
+      addMenuItem(modelSetInfoMenu, GT._("groups: {0}", viewer
+          .getGroupCountInModel(modelIndex)));
+      addMenuItem(modelSetInfoMenu, GT._("chains: {0}", viewer
+          .getChainCountInModel(modelIndex)));
+      addMenuItem(modelSetInfoMenu, GT._("polymers: {0}", viewer
+          .getPolymerCountInModel(modelIndex)));
       addMenuSeparator(modelSetInfoMenu);
     }
     if (isMultiFrame) {
-      addMenuItem(modelSetInfoMenu, GT._("models: {0}",
-          new Object[] { new Integer(viewer.getModelCount()) }));
+      addMenuItem(modelSetInfoMenu, GT._("models: {0}", viewer.getModelCount()));
       addMenuSeparator(modelSetInfoMenu);
     }
     if (viewer.showModelSetDownload()
@@ -284,8 +283,7 @@ abstract public class JmolPopup {
   }
 
   String getModelLabel() {
-    return GT._("model: {0}",
-        new Object[] { (modelIndex + 1) + "/" + viewer.getModelCount() });
+    return GT._("model: {0}",(modelIndex + 1) + "/" + viewer.getModelCount());
   }
   
   private void updateAboutSubmenu() {
@@ -316,7 +314,7 @@ abstract public class JmolPopup {
     if (availableProcessors > 0)
       addMenuItem(aboutMenu, (availableProcessors == 1) ?
                   GT._("1 processor") :
-                  GT._("{0} processors", new Object[] { new Integer(availableProcessors) } ));
+                  GT._("{0} processors", availableProcessors));
     else
       addMenuItem(aboutMenu, GT._("unknown processor count"));
   }

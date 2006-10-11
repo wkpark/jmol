@@ -362,12 +362,12 @@ ActionListener, ChangeListener, Runnable {
         insert = GT._("vector");
     }
     String tooltips[] = {
-        GT._("Go to first {0} in the collection", new Object[] { insert }),
-        GT._("Go to previous {0} in the collection", new Object[] { insert }),
-        GT._("Play the whole collection of {0}'s", new Object[] { insert }),
+        GT._("Go to first {0} in the collection", insert),
+        GT._("Go to previous {0} in the collection", insert),
+        GT._("Play the whole collection of {0}'s", insert),
         GT._("Pause playing"),
-        GT._("Go to next {0} in the collection", new Object[] { insert }),
-        GT._("Jump to last {0} in the collection", new Object[] { insert })
+        GT._("Go to next {0} in the collection", insert),
+        GT._("Jump to last {0} in the collection", insert)
     };
     for (int i=buttons.length, idx=0; --i>=0; idx++) {
       String action = buttons[idx];

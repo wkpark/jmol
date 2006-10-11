@@ -400,7 +400,7 @@ public class Jmol extends JPanel {
     options.addOption(OptionBuilder.create("D"));
     
     OptionBuilder.withLongOpt("geometry");
-    OptionBuilder.withDescription(GT._("window size, e.g. {0}", new Object[] { "-g500x500" }));
+    OptionBuilder.withDescription(GT._("window size, e.g. {0}", "-g500x500"));
     OptionBuilder.withValueSeparator();
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("g"));

@@ -630,8 +630,8 @@ class Eval { //implements Runnable {
       case Token.getproperty:
         getProperty();
         break;
-      case Token.conformation:
-        conformation();
+      case Token.configuration:
+        configuration();
         break;
       case Token.axes:
         setAxes(1);
@@ -3207,22 +3207,22 @@ class Eval { //implements Runnable {
     viewer.setShapeSize(JmolConstants.SHAPE_HSTICKS, getMadParameter());
   }
 
-  void conformation() throws ScriptException {
+  void configuration() throws ScriptException {
     if (viewer.getDisplayModelIndex() <= -2)
       evalError(GT._("{0} not allowed with background model displayed",
-                      "\"CONFORMATION\""));
-    BitSet bsConformations;
+                      "\"CONFIGURATION\""));
+    BitSet bsConfigurations;
     if (statementLength == 1) {
-      bsConformations = viewer.setConformation();
+      bsConfigurations = viewer.setConformation();
     } else {
       checkLength2();
-      bsConformations = viewer.setConformation(intParameter(1) - 1);
+      bsConfigurations = viewer.setConformation(intParameter(1) - 1);
     }
     boolean addHbonds = viewer.hbondsAreVisible();
-    viewer.setShapeSize(JmolConstants.SHAPE_HSTICKS, 0, bsConformations);
+    viewer.setShapeSize(JmolConstants.SHAPE_HSTICKS, 0, bsConfigurations);
     if (addHbonds)
-      viewer.autoHbond(bsConformations, bsConformations);
-    viewer.select(bsConformations);
+      viewer.autoHbond(bsConfigurations, bsConfigurations);
+    viewer.select(bsConfigurations);
   }
 
   void vector() throws ScriptException {

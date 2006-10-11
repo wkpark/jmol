@@ -62,12 +62,12 @@ class PopupResourceBundle {
   private static final String[][] structureContents = {
       {
           "popupMenu",
-          "modelSetInfoMenu FRAMESbyModelComputedMenu - selectMenu colorMenu renderMenu surfaceMenu SYMMETRYunitCellMenu - "
+          "modelSetComputedMenu - selectMenu colorMenu renderMenu surfaceMenu SYMMETRYunitCellMenu - "
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "
               + "measureMenu pickingMenu - showConsole showMenu - "
 //              + "- optionsMenu "
-              + "aboutMenu" },
+              + "aboutComputedMenu" },
 
       {
           "selectMenu",
@@ -431,13 +431,14 @@ class PopupResourceBundle {
           "set color rasmol; set zeroBasedXyzRasmol on; "
               + "set axesOrientationRasmol on; load \"\"; select *; cpk off; wireframe on; " },
 
-      { "aboutMenu", "jmolUrl mouseManualUrl translatingUrl" },
+      { "aboutComputedMenu", "jmolUrl mouseManualUrl translatingUrl" },
       { "jmolUrl", "http://www.jmol.org" },
       { "mouseManualUrl", "http://wiki.jmol.org/index.php/Mouse_Manual" },
       { "translatingUrl", "http://wiki.jmol.org/index.php/Internationalisation" }, };
 
   private static final String[][] wordContents = {
-      { "modelSetInfoMenu", GT._("No atoms loaded") },
+      { "modelSetComputedMenu", GT._("No atoms loaded") },
+      { "CONFIGURATIONComputedMenu", GT._("Configurations") },
       { "hiddenModelSetName", GT._("Model information") },
 
       { "selectMenu", GT._("Select") },
@@ -771,7 +772,7 @@ class PopupResourceBundle {
       { "axesOrientationRasmolCheckbox", GT._("Axes RasMol/Chime") },
       { "zeroBasedXyzRasmolCheckbox", GT._("Zero-Based Xyz Rasmol") },
 
-      { "aboutMenu", GT._("About Jmol") }, { "jmolUrl", "www.jmol.org" },
+      { "aboutComputedMenu", GT._("About Jmol") }, { "jmolUrl", "http://www.jmol.org" },
       { "mouseManualUrl", GT._("Mouse Manual") },
       { "translatingUrl", GT._("Translations") }, };
 

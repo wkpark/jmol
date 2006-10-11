@@ -25,7 +25,6 @@
 
 package org.jmol.viewer;
 
-import org.jmol.util.Logger;
 import org.jmol.vecmath.Point3fi;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.bspt.Tuple;
@@ -206,30 +205,8 @@ final public class Atom extends Point3fi implements Tuple {
     setShapeVisibility(backboneVisibilityFlag, isVisible);
   }
   
-  void deleteBondedAtom(Atom atomToDelete) {
-    if (bonds == null)
-      return;
-    for (int i = bonds.length; --i >= 0;)
-      if (bonds[i].getOtherAtom(this) == atomToDelete) {
-        deleteBond(i);
-        return;
-      }
-  }
-
-  void deleteAllBonds() {
-    if (bonds == null)
-      return;
-    if (group == null)
-      return;
-    for (int i = bonds.length; --i >= 0; )
-      group.chain.frame.deleteBond(bonds[i]);
-    if (bonds != null) {
-      Logger.error("bond delete error");
-      throw new NullPointerException();
-    }
-  }
-
   void deleteBond(Bond bond) {
+    //this one is used -- from Bond.deleteAtomReferences
     for (int i = bonds.length; --i >= 0; )
       if (bonds[i] == bond) {
         deleteBond(i);
@@ -237,7 +214,7 @@ final public class Atom extends Point3fi implements Tuple {
       }
   }
 
-  void deleteBond(int i) {
+  private void deleteBond(int i) {
     int newLength = bonds.length - 1;
     if (newLength == 0) {
       bonds = null;
@@ -775,11 +752,6 @@ final public class Atom extends Point3fi implements Tuple {
 
   boolean isDeleted() {
     return madAtom == JmolConstants.MAR_DELETED;
-  }
-
-  void markDeleted() {
-    deleteAllBonds();
-    madAtom = JmolConstants.MAR_DELETED;
   }
 
   byte getProteinStructureType() {

@@ -936,13 +936,24 @@ public final class Frame {
     return atoms[atomIndex];
   }
 
+  /**
+   * For use for setting a for() construct bound ONLY
+   * @return size of the bonds array;
+   */
   int getBondCount() {
+    //not necessarily the REAL bond count; this is an ARRAY MAXIMUM
     return bondCount;
   }
 
+  /**
+   * for general use
+   * 
+   * @param modelIndex the model of interest or -1 for all
+   * @return the actual number of connections
+   */
   int getBondCountInModel(int modelIndex) {
     int n = 0;
-    for (int i = bonds.length; --i >= 0;)
+    for (int i = bondCount; --i >= 0;)
       if (modelIndex < 0 || bonds[i].atom1.modelIndex == modelIndex)
         n++;
     return n;
@@ -1348,10 +1359,6 @@ public final class Frame {
     }
   }
 
-  private void clearBspf() {
-    bspf = null;
-  }
-
   int getBsptCount() {
     if (bspf == null)
       initializeBspf();
@@ -1634,19 +1641,6 @@ public final class Frame {
     bondCount = 0;
   }
 
-  void deleteBond(Bond bond) {
-    // what a disaster ... I hate doing this
-    for (int i = bondCount; --i >= 0;) {
-      if (bonds[i] == bond) {
-        bonds[i].deleteAtomReferences();
-        System.arraycopy(bonds, i + 1, bonds, i, bondCount - i - 1);
-        --bondCount;
-        bonds[bondCount] = null;
-        return;
-      }
-    }
-  }
-
   void deleteBonds(BitSet bs) {
     int iSrc = 0;
     int iDst = 0;
@@ -1762,11 +1756,6 @@ public final class Frame {
       }
     }
     deleteBonds(bsDelete);
-  }
-
-  void deleteAtom(int atomIndex) {
-    clearBspf();
-    atoms[atomIndex].markDeleted();
   }
 
   /////////////////////////

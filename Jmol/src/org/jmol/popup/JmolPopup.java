@@ -27,9 +27,12 @@ import org.jmol.api.*;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
+
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.StringTokenizer;
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -37,6 +40,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 abstract public class JmolPopup {
+
   private final static boolean forceAwt = false;
 
   //list is saved in http://www.stolaf.edu/academics/chemapps/jmol/docs/misc
@@ -45,17 +49,18 @@ abstract public class JmolPopup {
   JmolViewer viewer;
   Component jmolComponent;
   MenuItemListener mil;
+  CheckboxMenuItemListener cmil;
 
-  Object FRAMESbyModelComputedMenu;
+  Object FRAMESbyModelComputedMenu = newMenu("label","FRAMESbyModelComputedMenu");
+  Object CONFIGURATIONComputedMenu = newMenu("label","CONFIGURATIONComputedMenu");
   Object elementsComputedMenu;
   Object aaresiduesComputedMenu;
   Object heteroComputedMenu;
   Object surfMoComputedMenu;
   Object surfMEP;
-  Object aboutMenu;
-  int aboutMenuBaseCount;
-  Object consoleMenu;
-  Object modelSetInfoMenu;
+  Object aboutComputedMenu;
+  int aboutComputedMenuBaseCount;
+  Object modelSetComputedMenu;
   String nullModelSetName;
   String hiddenModelSetName;
 
@@ -71,16 +76,19 @@ abstract public class JmolPopup {
   boolean isSymmetry;
   boolean isUnitCell;
   boolean isMultiFrame;
+  boolean isMultiConfiguration;
   boolean isVibration;
   boolean isApplet;
   boolean haveCharges;
+  boolean haveAltLocs;
+  
   int modelIndex;
-
 
   JmolPopup(JmolViewer viewer) {
     this.viewer = viewer;
     jmolComponent = viewer.getAwtComponent();
     mil = new MenuItemListener();
+    cmil = new CheckboxMenuItemListener();
   }
 
   static public JmolPopup newJmolPopup(JmolViewer viewer) {
@@ -92,11 +100,15 @@ abstract public class JmolPopup {
 
   void build(Object popupMenu) {
     addMenuItems("", "popupMenu", popupMenu, new PopupResourceBundle());
-    if (! viewer.isJvm12orGreater() && (consoleMenu != null))
-      enableMenu(consoleMenu, false);
   }
 
+  final static int UPDATE_ALL = 0;
+  final static int UPDATE_CONFIG = 1;
+  final static int UPDATE_SHOW = 2;
+  int updateMode;
+  
   public void updateComputedMenus() {
+    updateMode = UPDATE_ALL;
     isApplet = viewer.isApplet();
     modelIndex = viewer.getDisplayModelIndex();
     Hashtable info = viewer.getModelSetAuxiliaryInfo();
@@ -104,6 +116,7 @@ abstract public class JmolPopup {
     isSymmetry = checkBoolean(info, "someModelsHaveSymmetry");
     isUnitCell = checkBoolean(info, "someModelsHaveUnitcells");
     isMultiFrame = (viewer.getModelCount() > 1);
+    isMultiConfiguration = (viewer.getAltLocListInModel(modelIndex) != null);
     isVibration = (viewer.modelHasVibrationVectors(modelIndex));
     haveCharges = (viewer.havePartialCharges());
 
@@ -111,8 +124,7 @@ abstract public class JmolPopup {
     updateHeteroComputedMenu(viewer.getHeteroList());
     updateSurfMoComputedMenu((Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,"moData"));
     updateAaresiduesComputedMenu(viewer.getGroupsPresentBitSet());
-    updateFRAMESbyModelComputedMenu();
-    updateModelSetInfoMenu();
+    updateModelSetComputedMenu();
     updateFileTypeDependentMenus();
   }
 
@@ -121,45 +133,6 @@ abstract public class JmolPopup {
         return false;
     return ((Boolean)(info.get(key))).booleanValue();
   }
-  void updateFileTypeDependentMenus() {
-    for (int i = 0; i < PDBOnly.size(); i++)
-      enableMenu(PDBOnly.get(i), isPDB);
-    for (int i = 0; i < UnitcellOnly.size(); i++)
-      enableMenu(UnitcellOnly.get(i), isUnitCell);
-    for (int i = 0; i < FramesOnly.size(); i++)
-      enableMenu(FramesOnly.get(i), isMultiFrame);
-    for (int i = 0; i < VibrationOnly.size(); i++)
-      enableMenu(VibrationOnly.get(i), isVibration);
-    for (int i = 0; i < SymmetryOnly.size(); i++)
-      enableMenu(SymmetryOnly.get(i), isSymmetry && isUnitCell);
-    for (int i = 0; i < AppletOnly.size(); i++)
-      enableMenu(AppletOnly.get(i), isApplet);
-    for (int i = 0; i < ChargesOnly.size(); i++)
-      enableMenu(ChargesOnly.get(i), haveCharges);
-  }
-  
-  void updateFRAMESbyModelComputedMenu() {
-    if (FRAMESbyModelComputedMenu == null)
-      return;
-    enableMenu(FRAMESbyModelComputedMenu, false);
-    setLabel(FRAMESbyModelComputedMenu, (modelIndex < 0 ? GT._("All {0} models", viewer.getModelCount()) : getModelLabel()));
-    removeAll(FRAMESbyModelComputedMenu);
-    int modelCount = viewer.getModelCount();
-    if (modelCount < 2)
-      return;
-    enableMenu(FRAMESbyModelComputedMenu, true);
-    addMenuItem(FRAMESbyModelComputedMenu, "all", "frame 0", null);
-    for (int i = 0; i < modelCount; i++) {
-      String script = "" + viewer.getModelNumber(i);
-      String entryName = viewer.getModelName(i);
-      if (!entryName.equals(script))
-        entryName = script + ": " + entryName;
-      if (entryName.length() > 30)
-        entryName = entryName.substring(0, 20) + "...";
-      addMenuItem(FRAMESbyModelComputedMenu, entryName, "model " + script, null);
-    }
-  }
-
   void updateSurfMoComputedMenu(Hashtable moData) {
     if (surfMoComputedMenu == null)
       return;
@@ -244,79 +217,145 @@ abstract public class JmolPopup {
     enableMenu(aaresiduesComputedMenu, true);
   }
 
-  void updateModelSetInfoMenu() {
-    if (modelSetInfoMenu == null)
+  void updateFRAMESbyModelComputedMenu() {
+    //allowing this in case we move it later
+    if (FRAMESbyModelComputedMenu == null)
       return;
-    removeAll(modelSetInfoMenu);
-    renameMenu(modelSetInfoMenu, nullModelSetName);
-    enableMenu(modelSetInfoMenu, false);
-    String modelSetName = viewer.getModelSetName();
-    if (modelSetName == null)
+    int modelCount = viewer.getModelCount();
+    enableMenu(FRAMESbyModelComputedMenu, (modelCount > 1));
+    setLabel(FRAMESbyModelComputedMenu, (modelIndex < 0 ? GT._("All {0} models", viewer.getModelCount()) : getModelLabel()));
+    removeAll(FRAMESbyModelComputedMenu);
+    if (modelCount < 2)
       return;
-    renameMenu(modelSetInfoMenu,
-        viewer.getBooleanProperty("hideNameInPopup") ? hiddenModelSetName
-            : modelSetName);
-    enableMenu(modelSetInfoMenu, true);
-    addMenuItem(modelSetInfoMenu, GT._("atoms: {0}", viewer
-        .getAtomCountInModel(modelIndex)));
-    addMenuItem(modelSetInfoMenu, GT._("bonds: {0}", viewer
-        .getBondCountInModel(modelIndex)));
-    addMenuSeparator(modelSetInfoMenu);
-    if (isPDB) {
-      addMenuItem(modelSetInfoMenu, GT._("groups: {0}", viewer
-          .getGroupCountInModel(modelIndex)));
-      addMenuItem(modelSetInfoMenu, GT._("chains: {0}", viewer
-          .getChainCountInModel(modelIndex)));
-      addMenuItem(modelSetInfoMenu, GT._("polymers: {0}", viewer
-          .getPolymerCountInModel(modelIndex)));
-      addMenuSeparator(modelSetInfoMenu);
-    }
-    if (isMultiFrame) {
-      addMenuItem(modelSetInfoMenu, GT._("models: {0}", viewer.getModelCount()));
-      addMenuSeparator(modelSetInfoMenu);
-    }
-    if (viewer.showModelSetDownload()
-        && !viewer.getBooleanProperty("hideNameInPopup")) {
-      addMenuItem(modelSetInfoMenu, viewer.getModelSetFileName(), viewer
-          .getModelSetPathName(), null);
+    addCheckboxMenuItem(FRAMESbyModelComputedMenu, GT._("all"), "frame 0 #", null, (modelIndex < 0));
+    for (int i = 0; i < modelCount; i++) {
+      String script = "" + viewer.getModelNumber(i);
+      String entryName = viewer.getModelName(i);
+      if (!entryName.equals(script))
+        entryName = script + ": " + entryName;
+      if (entryName.length() > 30)
+        entryName = entryName.substring(0, 20) + "...";
+      addCheckboxMenuItem(FRAMESbyModelComputedMenu, entryName, "model " + script + " #", null, (modelIndex == i));
     }
   }
 
+  String configurationSelected = "";
+  
+  void updateCONFIGURATIONComputedMenu() {
+    if (CONFIGURATIONComputedMenu == null || !isMultiConfiguration)
+      return;
+    String altlocs = viewer.getAltLocListInModel(modelIndex);
+    int nAltLocs = altlocs.length();
+    setLabel(CONFIGURATIONComputedMenu, GT._("Configurations ({0})", nAltLocs));
+    enableMenu(CONFIGURATIONComputedMenu, true);
+    removeAll(CONFIGURATIONComputedMenu);
+    String script = "hide none #CONFIG";
+    addCheckboxMenuItem(CONFIGURATIONComputedMenu, GT._("all"), script, null,
+        (updateMode == UPDATE_CONFIG && configurationSelected.equals(script)));
+    for (int i = 0; i < nAltLocs; i++) {
+      script = "configuration " + (i + 1) + "; hide not selected #CONFIG";
+      String entryName = "" + (i + 1) + " -- \"" + altlocs.charAt(i) + "\"";
+      addCheckboxMenuItem(CONFIGURATIONComputedMenu, entryName, script, null,
+          (updateMode == UPDATE_CONFIG && configurationSelected.equals(script)));
+    }
+  }
+
+  void updateModelSetComputedMenu() {
+    if (modelSetComputedMenu == null)
+      return;
+    removeAll(modelSetComputedMenu);
+    renameMenu(modelSetComputedMenu, nullModelSetName);
+    enableMenu(modelSetComputedMenu, false);
+    String modelSetName = viewer.getModelSetName();
+    if (modelSetName == null)
+      return;
+    renameMenu(modelSetComputedMenu, viewer
+        .getBooleanProperty("hideNameInPopup") ? hiddenModelSetName
+        : modelSetName);
+    enableMenu(modelSetComputedMenu, true);
+    if (isMultiFrame) {
+      updateFRAMESbyModelComputedMenu();
+      addMenuSubMenu(modelSetComputedMenu, FRAMESbyModelComputedMenu);
+    }
+    if (isMultiConfiguration) {
+      updateMode = UPDATE_CONFIG;
+      updateCONFIGURATIONComputedMenu();
+      addMenuSubMenu(modelSetComputedMenu, CONFIGURATIONComputedMenu);
+    }
+    addMenuSeparator(modelSetComputedMenu);
+    addMenuItem(modelSetComputedMenu, GT._("atoms: {0}", viewer
+        .getAtomCountInModel(modelIndex)));
+    addMenuItem(modelSetComputedMenu, GT._("bonds: {0}", viewer
+        .getBondCountInModel(modelIndex)));
+    addMenuSeparator(modelSetComputedMenu);
+    if (isPDB) {
+      addMenuItem(modelSetComputedMenu, GT._("groups: {0}", viewer
+          .getGroupCountInModel(modelIndex)));
+      addMenuItem(modelSetComputedMenu, GT._("chains: {0}", viewer
+          .getChainCountInModel(modelIndex)));
+      addMenuItem(modelSetComputedMenu, GT._("polymers: {0}", viewer
+          .getPolymerCountInModel(modelIndex)));
+      addMenuSeparator(modelSetComputedMenu);
+    }
+    if (isApplet && viewer.showModelSetDownload()
+        && !viewer.getBooleanProperty("hideNameInPopup")) {
+      addMenuItem(modelSetComputedMenu, GT._("View {0}", viewer
+          .getModelSetFileName()), viewer.getModelSetPathName(), null);
+    }
+  }
+
+  void updateFileTypeDependentMenus() {
+    for (int i = 0; i < PDBOnly.size(); i++)
+      enableMenu(PDBOnly.get(i), isPDB);
+    for (int i = 0; i < UnitcellOnly.size(); i++)
+      enableMenu(UnitcellOnly.get(i), isUnitCell);
+    for (int i = 0; i < FramesOnly.size(); i++)
+      enableMenu(FramesOnly.get(i), isMultiFrame);
+    for (int i = 0; i < VibrationOnly.size(); i++)
+      enableMenu(VibrationOnly.get(i), isVibration);
+    for (int i = 0; i < SymmetryOnly.size(); i++)
+      enableMenu(SymmetryOnly.get(i), isSymmetry && isUnitCell);
+    for (int i = 0; i < AppletOnly.size(); i++)
+      enableMenu(AppletOnly.get(i), isApplet);
+    for (int i = 0; i < ChargesOnly.size(); i++)
+      enableMenu(ChargesOnly.get(i), haveCharges);
+  }
+  
   String getModelLabel() {
-    return GT._("model: {0}",(modelIndex + 1) + "/" + viewer.getModelCount());
+    return GT._("model {0}",(modelIndex + 1) + "/" + viewer.getModelCount());
   }
   
   private void updateAboutSubmenu() {
-    if (aboutMenu == null)
+    if (aboutComputedMenu == null)
       return;
-    for (int i = getMenuItemCount(aboutMenu); --i >= aboutMenuBaseCount; )
-      removeMenuItem(aboutMenu, i);
-    addMenuSeparator(aboutMenu);
-    addMenuItem(aboutMenu, "Jmol " + JmolConstants.version);
-    addMenuItem(aboutMenu, JmolConstants.date);
-    addMenuItem(aboutMenu, viewer.getOperatingSystemName());
-    addMenuItem(aboutMenu, viewer.getJavaVendor());
-    addMenuItem(aboutMenu, viewer.getJavaVersion());
-    addMenuSeparator(aboutMenu);
-    addMenuItem(aboutMenu, GT._("Java memory usage"));
+    for (int i = getMenuItemCount(aboutComputedMenu); --i >= aboutComputedMenuBaseCount; )
+      removeMenuItem(aboutComputedMenu, i);
+    addMenuSeparator(aboutComputedMenu);
+    addMenuItem(aboutComputedMenu, "Jmol " + JmolConstants.version);
+    addMenuItem(aboutComputedMenu, JmolConstants.date);
+    addMenuItem(aboutComputedMenu, viewer.getOperatingSystemName());
+    addMenuItem(aboutComputedMenu, viewer.getJavaVendor());
+    addMenuItem(aboutComputedMenu, viewer.getJavaVersion());
+    addMenuSeparator(aboutComputedMenu);
+    addMenuItem(aboutComputedMenu, GT._("Java memory usage"));
     Runtime runtime = Runtime.getRuntime();
     runtime.gc();
     long mbTotal = convertToMegabytes(runtime.totalMemory());
     long mbFree = convertToMegabytes(runtime.freeMemory());
     long mbMax = convertToMegabytes(maxMemoryForNewerJvm());
-    addMenuItem(aboutMenu, GT._("{0} MB total", new Object[] { new Long(mbTotal) }));
-    addMenuItem(aboutMenu, GT._("{0} MB free", new Object[] { new Long(mbFree) }));
+    addMenuItem(aboutComputedMenu, GT._("{0} MB total", new Object[] { new Long(mbTotal) }));
+    addMenuItem(aboutComputedMenu, GT._("{0} MB free", new Object[] { new Long(mbFree) }));
     if (mbMax > 0)
-      addMenuItem(aboutMenu, GT._("{0} MB maximum", new Object[] { new Long(mbMax) }));
+      addMenuItem(aboutComputedMenu, GT._("{0} MB maximum", new Object[] { new Long(mbMax) }));
     else
-      addMenuItem(aboutMenu, GT._("unknown maximum"));
+      addMenuItem(aboutComputedMenu, GT._("unknown maximum"));
     int availableProcessors = availableProcessorsForNewerJvm();
     if (availableProcessors > 0)
-      addMenuItem(aboutMenu, (availableProcessors == 1) ?
+      addMenuItem(aboutComputedMenu, (availableProcessors == 1) ?
                   GT._("1 processor") :
                   GT._("{0} processors", availableProcessors));
     else
-      addMenuItem(aboutMenu, GT._("unknown processor count"));
+      addMenuItem(aboutComputedMenu, GT._("unknown processor count"));
   }
 
   private long convertToMegabytes(long num) {
@@ -383,23 +422,21 @@ abstract public class JmolPopup {
           heteroComputedMenu = subMenu;
         else if ("surfMoComputedMenu".equals(item))
           surfMoComputedMenu = subMenu;
-        else if ("FRAMESbyModelComputedMenu".equals(item))
-          FRAMESbyModelComputedMenu = subMenu;
+        else if ("CONFIGURATIONComputedMenu".equals(item))
+          CONFIGURATIONComputedMenu = subMenu;
         else
           addMenuItems(id, item, subMenu, popupResourceBundle);
 
         // these will need tweaking:
-        if ("aboutMenu".equals(item)) {
-          aboutMenu = subMenu;
-          aboutMenuBaseCount = getMenuItemCount(subMenu);
-        } else if ("consoleMenu".equals(item)) {
-          consoleMenu = subMenu;
-        } else if ("modelSetInfoMenu".equals(item)) {
+        if ("aboutComputedMenu".equals(item)) {
+          aboutComputedMenu = subMenu;
+          aboutComputedMenuBaseCount = getMenuItemCount(subMenu);
+        } else if ("modelSetComputedMenu".equals(item)) {
           nullModelSetName = word;
           hiddenModelSetName = popupResourceBundle
               .getWord("hiddenModelSetName");
-          modelSetInfoMenu = subMenu;
-          enableMenu(modelSetInfoMenu, false);
+          modelSetComputedMenu = subMenu;
+          enableMenu(modelSetComputedMenu, false);
         }
         newMenu = subMenu;
       } else if ("-".equals(item)) {
@@ -455,8 +492,14 @@ abstract public class JmolPopup {
    * @param TF   true or false
    */
   void setCheckBoxValue(String what, boolean TF) {
-    if (viewer.getBooleanProperty(what) != TF)
+    if (what.indexOf("#") > 0)
+      viewer.script(what);
+    else if (viewer.getBooleanProperty(what) != TF)
       viewer.setBooleanProperty(what, TF);
+    if (what.indexOf("#CONFIG") >= 0) {
+      configurationSelected = what;
+      this.updateModelSetComputedMenu();
+    }
   }
   
   class MenuItemListener implements ActionListener {
@@ -468,6 +511,13 @@ abstract public class JmolPopup {
       if (id != null)
         script = fixScript(id, script);
       viewer.script(script);
+    }
+  }
+
+  class CheckboxMenuItemListener implements ItemListener {
+    public void itemStateChanged(ItemEvent e) {
+      setCheckBoxValue(e.getSource());
+      //Logger.debug("CheckboxMenuItemListener() " + e.getSource());
     }
   }
 
@@ -512,15 +562,33 @@ abstract public class JmolPopup {
     return addMenuItem(menuItem, entry, "", null);
   }
 
+  Object addCheckboxMenuItem(Object menu, String entry, String basename, String id) {
+    Object item = addCheckboxMenuItem(menu, entry, basename, id, false); 
+    rememberCheckbox(basename, item);
+    return item; 
+  }
+
   public void show(int x, int y) {
-    updateAboutSubmenu();
-    showPopup(x, y);
+    updateMode = UPDATE_SHOW;
+    updateModelSetComputedMenu();
+    updateAboutSubmenu();    
+    for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements(); ) {
+      String key = (String)keys.nextElement();
+      Object item = htCheckbox.get(key);
+      String id = getId(item);
+      System.out.println(key + " " + id);
+      boolean b = viewer.getBooleanProperty(key);
+      setCheckBoxState(item, b);
+    }
+    showPopupMenu(x, y);
   }
 
   ////////////////////////////////////////////////////////////////
 
-  abstract void showPopup(int x, int y);
+  abstract void showPopupMenu(int x, int y);
 
+  abstract void setCheckBoxState(Object item, boolean state);
+  
   abstract void addMenuSeparator(Object menu);
 
   abstract Object addMenuItem(Object menu, String entry, String script, String id);
@@ -529,7 +597,9 @@ abstract public class JmolPopup {
 
   abstract void updateMenuItem(Object menuItem, String entry, String script);
 
-  abstract Object addCheckboxMenuItem(Object menu, String entry,String basename, String id);
+  abstract Object addCheckboxMenuItem(Object menu, String entry,
+                                      String basename, String id,
+                                      boolean state);
 
   abstract void addMenuSubMenu(Object menu, Object subMenu);
 
@@ -549,6 +619,8 @@ abstract public class JmolPopup {
   
   abstract String getId(Object menuItem);
 
+  abstract void setCheckBoxValue(Object source);
+  
   long maxMemoryForNewerJvm() {
     // this method is overridden in JmolPopupSwing for newer Javas
     // JmolPopupAwt does not implement this

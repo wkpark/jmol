@@ -294,8 +294,7 @@ class ModelManager {
   }
 
   int getBondCountInModel(int modelIndex) {
-    return (frame == null) ? 0 : modelIndex < 0 ? getBondCount() : frame
-        .getBondCountInModel(modelIndex);
+    return (frame == null) ? 0 : frame.getBondCountInModel(modelIndex);
   }
 
   int getGroupCount() {
@@ -842,7 +841,7 @@ String getAtomInfoChime(int i) {
     BitSet bsResult = new BitSet();
     int atomCount = getAtomCount();
     int[] nBonded = new int[atomCount];
-    int bondCount = getBondCountInModel(-1);
+    int bondCount = getBondCount();
     for (int ibond = 0; ibond < bondCount; ibond++) {
       Bond bond = frame.bonds[ibond];
       if (bond.order > 0) {
@@ -1495,26 +1494,29 @@ String getAtomInfoChime(int i) {
   BitSet setConformation(int modelIndex, int conformationIndex) {
     if (frame == null)
       return null;
-    int modelCount = getModelCount();
     BitSet bsResult = new BitSet();
-    for (int i = modelCount; --i >= 0;) {
-      if (i != modelIndex || modelIndex < 0)
-        continue;
-      String altLocs = frame.getAltLocListInModel(i);
-      BitSet bsConformation = getModelAtomBitSet(i);
+    String altLocs = getAltLocListInModel(modelIndex);
+    if (altLocs != null && altLocs.length() > 0) {
+      BitSet bsConformation = getModelAtomBitSet(modelIndex);
       if (conformationIndex >= 0)
-        for (int c = frame.getAltLocCountInModel(i); --c >= 0;)
+        for (int c = frame.getAltLocCountInModel(modelIndex); --c >= 0;)
           if (c != conformationIndex)
             bsConformation.andNot(frame.getSpecAlternate(altLocs.substring(c,
                 c + 1)));
       if (bsConformation.length() > 0) {
-        frame.setConformation(i, bsConformation);
+        frame.setConformation(modelIndex, bsConformation);
         bsResult.or(bsConformation);
       }
     }
     return bsResult;
   }
 
+  String getAltLocListInModel(int modelIndex) {
+    if (frame == null || modelIndex < 0)
+      return "";
+    return frame.getAltLocListInModel(modelIndex);
+  }
+  
   void autoHbond(BitSet bsFrom, BitSet bsTo) {
     if (frame == null)
       return;

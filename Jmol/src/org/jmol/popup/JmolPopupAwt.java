@@ -30,9 +30,6 @@ import java.awt.MenuComponent;
 import java.awt.Menu;
 import java.awt.MenuItem;
 import java.awt.CheckboxMenuItem;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.Enumeration;
 
 // mth 2003 05 27
 // This class is built with awt instead of swing so that it will
@@ -41,82 +38,18 @@ import java.util.Enumeration;
 public class JmolPopupAwt extends JmolPopup {
 
   PopupMenu awtPopup;
-  CheckboxMenuItemListener cmil;
   Menu elementComputedMenu;
 
   public JmolPopupAwt(JmolViewer viewer) {
     super(viewer);
     awtPopup = new PopupMenu("Jmol");
-    mil = new MenuItemListener();
-    cmil = new CheckboxMenuItemListener();
     jmolComponent.add(awtPopup);
     build(awtPopup);
   }
 
-  void showPopup(int x, int y) {
-    for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements(); ) {
-      String key = (String)keys.nextElement();
-      CheckboxMenuItem cbmi = (CheckboxMenuItem)htCheckbox.get(key);
-      boolean b = viewer.getBooleanProperty(key);
-      cbmi.setState(b);
-    }
+  void showPopupMenu(int x, int y) {
     awtPopup.show(jmolComponent, x, y);
   }
-
-  class CheckboxMenuItemListener implements ItemListener {
-    public void itemStateChanged(ItemEvent e) {
-      CheckboxMenuItem cmi = (CheckboxMenuItem)e.getSource();
-      setCheckBoxValue(cmi.getActionCommand(), cmi.getState());
-    }
-  }
-
-  /*
-  void addMenuItems(String key, Menu menu) {
-    String value = getValue(key);
-    if (value == null) {
-      MenuItem mi = new MenuItem("#" + key);
-      menu.add(mi);
-      return;
-    }
-    StringTokenizer st = new StringTokenizer(getValue(key));
-    while (st.hasMoreTokens()) {
-      String item = st.nextToken();
-      if (item.endsWith("Menu")) {
-        String word = getWord(item);
-        Menu subMenu = new Menu(word);
-        addMenuItems(item, subMenu);
-        menu.add(subMenu);
-      } else if (item.equals("-")) {
-        menu.addSeparator();
-      } else {
-        String word = getWord(item);
-        MenuItem mi;
-        if (item.endsWith("Checkbox")) {
-          CheckboxMenuItem cmi = new CheckboxMenuItem(word);
-          String basename = item.substring(0, item.length() - 8);
-          cmi.addItemListener(cmil);
-          rememberCheckbox(basename, cmi);
-          cmi.setActionCommand(basename);
-          mi = cmi;
-        } else {
-          mi = new MenuItem(word);
-          getValue(item);
-          mi.addActionListener(mil);
-          mi.setActionCommand(item);
-        }
-        menu.add(mi);
-      }
-    }
-  }
-
-  void addVersionAndDate() {
-    addSeparator();
-    MenuItem mi = new MenuItem("Jmol " + JmolConstants.version);
-    add(mi);
-    mi = new MenuItem(JmolConstants.date);
-    add(mi);
-  }
-  */
 
   void addToMenu(Object menu, MenuItem item) {
     ((Menu)menu).add(item);
@@ -148,6 +81,15 @@ public class JmolPopupAwt extends JmolPopup {
     return ((MenuComponent) menu).getName();
   }
   
+  void setCheckBoxValue(Object source) {
+    CheckboxMenuItem cmi = (CheckboxMenuItem)source;
+    setCheckBoxValue(cmi.getActionCommand(), cmi.getState());
+  }
+
+  void setCheckBoxState(Object item, boolean state) {
+    ((CheckboxMenuItem) item).setState(state);
+  }
+ 
   void updateMenuItem(Object menuItem, String entry, String script) {
     MenuItem mi = (MenuItem)menuItem;
     mi.setLabel(entry);
@@ -157,13 +99,14 @@ public class JmolPopupAwt extends JmolPopup {
     //    mi.setEnabled(script != null);
   }
 
-  Object addCheckboxMenuItem(Object menu, String entry, String basename, String id) {
+  Object addCheckboxMenuItem(Object menu, String entry, String basename,
+                             String id, boolean state) {
     CheckboxMenuItem cmi = new CheckboxMenuItem(entry);
+    cmi.setState(state);
     cmi.addItemListener(cmil);
     cmi.setActionCommand(basename);
-    cmi.setName(id == null ? ((MenuComponent)menu).getName() : id);
+    cmi.setName(id == null ? ((MenuComponent) menu).getName() : id);
     addToMenu(menu, cmi);
-    rememberCheckbox(basename, cmi);
     return cmi;
   }
 

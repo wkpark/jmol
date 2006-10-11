@@ -183,7 +183,7 @@ class Token {
   final static int draw         = command | 95 | coordOrSet | showparam | colorparam;
   final static int getproperty  = command | 96;
   final static int dipole       = command | 97 | coordOrSet;
-  final static int conformation = command | 98;
+  final static int configuration = command | 98;
   final static int mo           = command | 99 | showparam | colorparam | negnums;
   final static int lcaocartoon  = command | 100| colorparam;
   final static int message      = command | 101 | specialstring;
@@ -568,7 +568,9 @@ class Token {
     "isosurface",        new Token(isosurface,varArgCount,"isosurface"),
     "geosurface",        new Token(geosurface,varArgCount, "geosurface"),
     "getproperty",       new Token(getproperty,varArgCount, "getproperty"),
-    "conformation",      new Token(conformation,varArgCount, "conformation"),
+    "configuration",     new Token(configuration,varArgCount, "configuration"),
+    "config",            null,
+    "conformation",      null,
     "lcaocartoon",       new Token(lcaocartoon,varArgCount, "lcaocartoon"),
     "lcaocartoons",      null,
     "message",           new Token(message,     varArgCount, "message"),

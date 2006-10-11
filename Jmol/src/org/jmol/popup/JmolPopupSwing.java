@@ -33,40 +33,20 @@ import javax.swing.JMenuItem;
 import javax.swing.JCheckBoxMenuItem;
 
 import java.awt.Component;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.Enumeration;
 
 public class JmolPopupSwing extends JmolPopup {
 
   JPopupMenu swingPopup;
-  CheckboxMenuItemListener cmil;
   JMenu elementComputedMenu;
 
   public JmolPopupSwing(JmolViewer viewer) {
     super(viewer);
     swingPopup = new JPopupMenu("Jmol");
-    cmil = new CheckboxMenuItemListener();
     build(swingPopup);
   }
 
-  void showPopup(int x, int y) {
-    for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements(); ) {
-      String key = (String)keys.nextElement();
-      JCheckBoxMenuItem jcbmi = (JCheckBoxMenuItem)htCheckbox.get(key);
-      boolean b = viewer.getBooleanProperty(key);
-      //Logger.debug("found:" + key + " & it is:" + b);
-      jcbmi.setState(b);
-    }
+  void showPopupMenu(int x, int y) {
     swingPopup.show(jmolComponent, x, y);
-  }
-
-  class CheckboxMenuItemListener implements ItemListener {
-    public void itemStateChanged(ItemEvent e) {
-      //Logger.debug("CheckboxMenuItemListener() " + e.getSource());
-      JCheckBoxMenuItem jcmi = (JCheckBoxMenuItem)e.getSource();
-      setCheckBoxValue(jcmi.getActionCommand(), jcmi.getState());
-    }
   }
 
   void addToMenu(Object menu, JComponent item) {
@@ -108,6 +88,15 @@ public class JmolPopupSwing extends JmolPopup {
     return ((Component) menu).getName();
   }
   
+  void setCheckBoxValue(Object source) {
+    JCheckBoxMenuItem jcmi = (JCheckBoxMenuItem) source;
+    setCheckBoxValue(jcmi.getActionCommand(), jcmi.getState());
+  }
+
+  void setCheckBoxState(Object item, boolean state) {
+    ((JCheckBoxMenuItem) item).setState(state);
+  }
+ 
   void updateMenuItem(Object menuItem, String entry, String script) {
     JMenuItem jmi = (JMenuItem)menuItem;
     jmi.setLabel(entry);
@@ -117,13 +106,13 @@ public class JmolPopupSwing extends JmolPopup {
     //    jmi.setEnabled(script != null);
   }
 
-  Object addCheckboxMenuItem(Object menu, String entry, String basename, String id) {
+  Object addCheckboxMenuItem(Object menu, String entry, String basename, String id, boolean state) {
     JCheckBoxMenuItem jcmi = new JCheckBoxMenuItem(entry);
+    jcmi.setState(state);
     jcmi.addItemListener(cmil);
     jcmi.setActionCommand(basename);
     jcmi.setName(id == null ? ((Component)menu).getName() : id);
     addToMenu(menu, jcmi);
-    rememberCheckbox(basename, jcmi);
     return jcmi;
   }
 

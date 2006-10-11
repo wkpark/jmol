@@ -81,7 +81,7 @@ public class Viewer extends JmolViewer {
   public void finalize() {
     Logger.debug("viewer finalize " + this);
   }
-  
+
   StateManager stateManager = new StateManager(this);
   StateManager.GlobalSettings global = stateManager.globalSettings;
   Component display;
@@ -110,7 +110,7 @@ public class Viewer extends JmolViewer {
   boolean jvm12orGreater = false;
   boolean jvm14orGreater = false;
   public CommandHistory commandHistory = new CommandHistory();
-  
+
   Viewer(Component display, JmolAdapter modelAdapter) {
     Logger.debug("Viewer constructor " + this);
     this.display = display;
@@ -145,6 +145,7 @@ public class Viewer extends JmolViewer {
     fileManager = new FileManager(this, modelAdapter);
     repaintManager = new RepaintManager(this);
   }
+
   /**
    * NOTE: for APPLICATION (not APPLET) call
    * 
@@ -167,12 +168,12 @@ public class Viewer extends JmolViewer {
   String writeInfo;
   boolean haveDisplay = true;
   boolean mustRender = true;
-  
+
   public void setAppletContext(String htmlName, URL documentBase, URL codeBase,
                                String appletProxyOrCommandOptions) {
     this.htmlName = htmlName;
     isApplet = (documentBase != null);
-    String str = appletProxyOrCommandOptions; 
+    String str = appletProxyOrCommandOptions;
     if (!isApplet) {
       // not an applet -- used to pass along command line options
       if (str.indexOf("-i") >= 0) {
@@ -189,36 +190,38 @@ public class Viewer extends JmolViewer {
       if (str.indexOf("-w") >= 0) {
         int i = str.indexOf("\1");
         int j = str.lastIndexOf("\1");
-        writeInfo = str.substring(i + 1,j);
+        writeInfo = str.substring(i + 1, j);
       }
       mustRender = (haveDisplay || writeInfo != null);
     }
-    
-/*
-    Logger.info("jvm11orGreater=" + jvm11orGreater
-        + "\njvm12orGreater=" + jvm12orGreater + "\njvm14orGreater="
-        + jvm14orGreater);
-*/
+
+    /*
+     Logger.info("jvm11orGreater=" + jvm11orGreater
+     + "\njvm12orGreater=" + jvm12orGreater + "\njvm14orGreater="
+     + jvm14orGreater);
+     */
     if (!isSilent) {
-      Logger.info(JmolConstants.copyright + "\nJmol Version " + getJmolVersion()
-        + "\njava.vendor:" + strJavaVendor + "\njava.version:" + strJavaVersion
-        + "\nos.name:" + strOSName + "\n" + htmlName);
+      Logger.info(JmolConstants.copyright + "\nJmol Version "
+          + getJmolVersion() + "\njava.vendor:" + strJavaVendor
+          + "\njava.version:" + strJavaVersion + "\nos.name:" + strOSName
+          + "\n" + htmlName);
     }
-    
+
     if (isApplet)
-      fileManager.setAppletContext(documentBase, codeBase, appletProxyOrCommandOptions);
+      fileManager.setAppletContext(documentBase, codeBase,
+          appletProxyOrCommandOptions);
     zap(); //here to allow echos
   }
 
   boolean mustRenderFlag() {
     return mustRender;
   }
-  
+
   static void setLogLevel(int ilevel) {
     for (int i = Logger.NB_LEVELS; --i >= 0;)
       Logger.setActiveLevel(i, (Logger.NB_LEVELS - i) <= ilevel);
   }
-  
+
   public Component getAwtComponent() {
     return display;
   }
@@ -1020,8 +1023,8 @@ public class Viewer extends JmolViewer {
   // ///////////////////////////////////////////////////////////////
 
   public void setModeMouse(int modeMouse) {
-     //call before setting viewer=null
-      mouseManager.setModeMouse(modeMouse);
+    //call before setting viewer=null
+    mouseManager.setModeMouse(modeMouse);
   }
 
   Rectangle getRubberBandSelection() {
@@ -1110,8 +1113,8 @@ public class Viewer extends JmolViewer {
     fileManager.openStringInline(strModel, params);
     String errorMsg = getOpenFileError();
     if (errorMsg == null)
-      setStatusFileLoaded(1, "string", "", modelManager.getModelSetName(), null,
-          null);
+      setStatusFileLoaded(1, "string", "", modelManager.getModelSetName(),
+          null, null);
   }
 
   public String getInlineData() {
@@ -1225,7 +1228,7 @@ public class Viewer extends JmolViewer {
   // ///////////////////////////////////////////////////////////////
 
   public boolean getEchoStateActive() {
-   return modelManager.getEchoStateActive();
+    return modelManager.getEchoStateActive();
   }
 
   public void setEchoStateActive(boolean TF) {
@@ -1237,7 +1240,7 @@ public class Viewer extends JmolViewer {
     modelManager.zap();
     initializeModel();
   }
-  
+
   public void calculateStructures() {
     modelManager.calculateStructures();
   }
@@ -1250,7 +1253,8 @@ public class Viewer extends JmolViewer {
     setStatusFileLoaded(2, fullPathName, fileName, modelManager
         .getModelSetName(), clientFile, null);
     pushHoldRepaint();
-    modelManager.setClientFile(fullPathName, fileName, modelAdapter, clientFile);
+    modelManager
+        .setClientFile(fullPathName, fileName, modelAdapter, clientFile);
     initializeModel();
     popHoldRepaint();
     setStatusFileLoaded(3, fullPathName, fileName, modelManager
@@ -1285,7 +1289,7 @@ public class Viewer extends JmolViewer {
     setBackgroundModelIndex(-1);
     setTainted(true);
   }
-  
+
   public String getModelSetName() {
     return modelManager.getModelSetName();
   }
@@ -1351,13 +1355,12 @@ public class Viewer extends JmolViewer {
 
   // this is a problem. SmarterJmolAdapter doesn't implement this;
   // it can only return null. Do we need it?
-  
+
   String getClientAtomStringProperty(Object clientAtom, String propertyName) {
     if (modelAdapter == null)
       return null;
     return modelAdapter.getClientAtomStringProperty(clientAtom, propertyName);
   }
-
 
   /*****************************************************************************
    * This is the method that should be used to extract the model data from Jmol.
@@ -1517,10 +1520,20 @@ public class Viewer extends JmolViewer {
     return modelManager.getAtomCountInModel(modelIndex);
   }
 
+  /**
+   * For use in setting a for() construct max value
+   * @return used size of the bonds array;
+   */
   public int getBondCount() {
     return modelManager.getBondCount();
   }
 
+  /**
+   * from JmolPopup.udateModelSetComputedMenu
+   * 
+   * @param modelIndex the model of interest or -1 for all
+   * @return the actual number of connections
+   */
   public int getBondCountInModel(int modelIndex) {
     return modelManager.getBondCountInModel(modelIndex);
   }
@@ -1668,7 +1681,7 @@ public class Viewer extends JmolViewer {
   public BitSet getElementsPresentBitSet() {
     return modelManager.getElementsPresentBitSet();
   }
-  
+
   public Hashtable getHeteroList() {
     return modelManager.getHeteroList();
   }
@@ -1778,6 +1791,10 @@ public class Viewer extends JmolViewer {
     return (String[]) dataValues.get(type);
   }
 
+  public String getAltLocListInModel(int modelIndex) {
+    return modelManager.getAltLocListInModel(modelIndex);    
+  }
+
   public BitSet setConformation() {
     // user has selected some atoms, now this sets that as a conformation
     // with the effect of rewriting the cartoons to match
@@ -1785,6 +1802,7 @@ public class Viewer extends JmolViewer {
     return modelManager.setConformation(-1, getSelectionSet());
   }
 
+  // AKA "configuration"
   public BitSet setConformation(int conformationIndex) {
     return modelManager.setConformation(getDisplayModelIndex(),
         conformationIndex);
@@ -2042,14 +2060,14 @@ public class Viewer extends JmolViewer {
   }
 
   void requestRepaintAndWait() {
-   if (haveDisplay)
-     repaintManager.requestRepaintAndWait();
+    if (haveDisplay)
+      repaintManager.requestRepaintAndWait();
   }
 
   public void repaintView() {
     repaintManager.repaintView();
   }
-  
+
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
     if (isTainted || getSlabEnabled())
       setModelVisibility();
@@ -2142,7 +2160,7 @@ public class Viewer extends JmolViewer {
     case JmolConstants.STEREO_REDGREEN:
     case JmolConstants.STEREO_CUSTOM:
       return getStereoImage(stereoMode, false);
-   }
+    }
     return getImage(isStereo, antialias);
   }
 
@@ -2159,7 +2177,6 @@ public class Viewer extends JmolViewer {
     releaseScreenImage();
     return "" + Base64.getBase64(jpeg);
   }
-  
 
   public void releaseScreenImage() {
     g3d.releaseScreenImage();
@@ -2177,7 +2194,7 @@ public class Viewer extends JmolViewer {
   public String script(String strScript) {
     return evalString(strScript);
   }
-  
+
   public String evalString(String strScript) {
     if (checkResume(strScript))
       return "script processing resumed";
@@ -3687,7 +3704,7 @@ public class Viewer extends JmolViewer {
       global.helpPath = styleManager.getDefaultHelpPath();
     showUrl(global.helpPath + what);
   }
-  
+
   // ///////////////////////////////////////////////////////////////
   // delegated to StyleManager
   // ///////////////////////////////////////////////////////////////
@@ -3701,8 +3718,7 @@ public class Viewer extends JmolViewer {
    * into this history to get a full history. We'll see!  BH 9/2006
    * 
    */
-  
-  
+
   /**
    * Adds one or more commands to the command history
    * @param command  the command to add
@@ -3710,7 +3726,7 @@ public class Viewer extends JmolViewer {
   void addCommand(String command) {
     commandHistory.addCommand(command);
   }
-  
+
   /**
    * Removes one command from the command history
    * @return command removed
@@ -3735,7 +3751,7 @@ public class Viewer extends JmolViewer {
   public String getSetHistory(int howFarBack) {
     return commandHistory.getSetHistory(howFarBack);
   }
-  
+
   void createImage(String type_name) {
     if (type_name == null)
       return;
@@ -3745,33 +3761,33 @@ public class Viewer extends JmolViewer {
     if (i < 0) {
       i = type_name.length();
       type_name += ":jmol.jpg";
-   }
+    }
     String type = type_name.substring(0, i);
     String file = type_name.substring(i + 1);
-    createImage(file, type, 100);  
+    createImage(file, type, 100);
   }
-  
+
   public void createImage(String file, String type, int quality) {
     setModelVisibility();
     statusManager.createImage(file, type, quality);
   }
-  
+
   public boolean havePartialCharges() {
     return modelManager.havePartialCharges();
-  }  
-    
+  }
+
   UnitCell getCurrentUnitCell() {
     return modelManager.getUnitCell(getDisplayModelIndex());
   }
-  
+
   Point3f getCurrentUnitCellOffset() {
     return modelManager.getUnitCellOffset(getDisplayModelIndex());
   }
-  
+
   void setCurrentUnitCellOffset(int offset) {
     modelManager.setUnitCellOffset(getDisplayModelIndex(), offset);
   }
-  
+
   void setCurrentUnitCellOffset(Point3f pt) {
     modelManager.setUnitCellOffset(getDisplayModelIndex(), pt);
   }

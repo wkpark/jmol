@@ -135,12 +135,12 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public int getModelCount();
   abstract public int getDisplayModelIndex(); // can return -2 - modelIndex if a background model is displayed
   abstract public int getAtomCount();
-  abstract public int getBondCount();
+  abstract public int getBondCount(); // NOT THE REAL BOND COUNT -- just an array maximum
   abstract public int getGroupCount();
   abstract public int getChainCount();
   abstract public int getPolymerCount();
   abstract public int getAtomCountInModel(int modelIndex);
-  abstract public int getBondCountInModel(int modelIndex);
+  abstract public int getBondCountInModel(int modelIndex);  // use -1 here for "all"
   abstract public int getGroupCountInModel(int modelIndex);
   abstract public int getChainCountInModel(int modelIindex);
   abstract public int getPolymerCountInModel(int modelIndex);
@@ -248,6 +248,8 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public boolean havePartialCharges();
 
   abstract public boolean isApplet();
+
+  abstract public String getAltLocListInModel(int modelIndex);
 
   // not really implemented:
   

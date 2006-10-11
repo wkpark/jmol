@@ -145,6 +145,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public int getChainCountInModel(int modelIindex);
   abstract public int getPolymerCountInModel(int modelIndex);
 
+  abstract public int getSelectionCount();
   abstract public void setModeMouse(int modeMouse);
   abstract public void setSelectionHaloEnabled(boolean haloEnabled);
 

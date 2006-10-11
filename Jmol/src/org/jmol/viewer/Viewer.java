@@ -986,7 +986,7 @@ public class Viewer extends JmolViewer {
     return selectionManager.bsSelection;
   }
 
-  int getSelectionCount() {
+  public int getSelectionCount() {
     return selectionManager.getSelectionCount();
   }
 

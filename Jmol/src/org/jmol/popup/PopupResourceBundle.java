@@ -284,7 +284,7 @@ class PopupResourceBundle {
       { "colorBoundBoxMenu", null },
       { "colorUnitCellMenu", null },
 
-      { "SchemeMenu", "cpk amino structure chain formalcharge partialcharge" },
+      { "SchemeMenu", "cpk altloc molecule formalcharge partialcharge - amino structure chain " },
       {
           "zoomMenu",
           "zoom50 zoom100 zoom150 zoom200 zoom400 zoom800 - "
@@ -389,7 +389,7 @@ class PopupResourceBundle {
 
       { "surfaceMenu",
           "surfDots surfVDW surfSolventAccessible14 surfSolvent14 surfMolecular surfMEP surfMoComputedMenu - surfOpaque surfTranslucent surfOff" },
-      { "surfDots", "select *;dots on" },
+      { "surfDots", "dots on" },
       { "surfVDW", "isosurface delete resolution 0 solvent 0 translucent" },
       { "surfMolecular", "isosurface delete resolution 0 molecular translucent" },
       { "surfSolvent14",
@@ -589,11 +589,14 @@ class PopupResourceBundle {
 
       { "SchemeMenu", GT._("By Scheme") },
       { "cpk", GT._("Element (CPK)") },
-      { "amino", GT._("Amino") },
-      { "structure", GT._("Secondary Structure") },
-      { "chain", GT._("Chain") },
+      { "altloc", GT._("Alternative Location") },
+      { "molecule", GT._("Molecule") },
       { "formalcharge", GT._("Formal Charge") },
       { "partialcharge", GT._("Partial Charge") },
+
+      { "amino", GT._("Amino Acid") },
+      { "structure", GT._("Secondary Structure") },
+      { "chain", GT._("Chain") },
 
       { "none", GT._("Inherit") },
       { "black", GT._("Black") },

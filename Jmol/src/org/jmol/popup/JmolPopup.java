@@ -57,7 +57,7 @@ abstract public class JmolPopup {
   Object aaresiduesComputedMenu;
   Object heteroComputedMenu;
   Object surfMoComputedMenu;
-  Object surfMEP;
+  Object selectMenu;
   Object aboutComputedMenu;
   int aboutComputedMenuBaseCount;
   Object modelSetComputedMenu;
@@ -120,39 +120,35 @@ abstract public class JmolPopup {
     isVibration = (viewer.modelHasVibrationVectors(modelIndex));
     haveCharges = (viewer.havePartialCharges());
 
+    updateSelectMenu();
     updateElementsComputedMenu(viewer.getElementsPresentBitSet());
     updateHeteroComputedMenu(viewer.getHeteroList());
     updateSurfMoComputedMenu((Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,"moData"));
     updateAaresiduesComputedMenu(viewer.getGroupsPresentBitSet());
     updateModelSetComputedMenu();
     updateFileTypeDependentMenus();
+    updateAboutSubmenu();
   }
 
+  private void updateForShow() {
+    updateMode = UPDATE_SHOW;
+    updateSelectMenu();
+    updateModelSetComputedMenu();
+    updateAboutSubmenu();
+  }
+  
   boolean checkBoolean(Hashtable info, String key) {
     if (info == null || !info.containsKey(key))
         return false;
     return ((Boolean)(info.get(key))).booleanValue();
   }
-  void updateSurfMoComputedMenu(Hashtable moData) {
-    if (surfMoComputedMenu == null)
-      return;
-    enableMenu(surfMoComputedMenu, false);
-    removeAll(surfMoComputedMenu);
-    if (moData == null)
-      return;
-    Vector mos = (Vector) (moData.get("mos"));
-    int nOrb = (mos == null ? 0 : mos.size());
-    if (nOrb == 0)
-      return;
-    enableMenu(surfMoComputedMenu, true);
-    for (int i = nOrb; --i >= 0;) {
-      String entryName = "#" + (i + 1) +" " 
-      + ((Hashtable)(mos.get(i))).get("energy");
-      String script = "mo " + (i + 1);
-      addMenuItem(surfMoComputedMenu, entryName, script, null);
-    }
-  }
 
+  void updateSelectMenu() {
+    if (selectMenu == null)
+      return;
+    setLabel(selectMenu, GT._("Select ({0})", viewer.getSelectionCount()));
+  }
+  
   void updateElementsComputedMenu(BitSet elementsPresentBitSet) {
     if (elementsComputedMenu == null)
       return;
@@ -199,6 +195,26 @@ abstract public class JmolPopup {
         n++;
     }
     enableMenu(heteroComputedMenu, (n > 0));
+  }
+
+  void updateSurfMoComputedMenu(Hashtable moData) {
+    if (surfMoComputedMenu == null)
+      return;
+    enableMenu(surfMoComputedMenu, false);
+    removeAll(surfMoComputedMenu);
+    if (moData == null)
+      return;
+    Vector mos = (Vector) (moData.get("mos"));
+    int nOrb = (mos == null ? 0 : mos.size());
+    if (nOrb == 0)
+      return;
+    enableMenu(surfMoComputedMenu, true);
+    for (int i = nOrb; --i >= 0;) {
+      String entryName = "#" + (i + 1) +" " 
+      + ((Hashtable)(mos.get(i))).get("energy");
+      String script = "mo " + (i + 1);
+      addMenuItem(surfMoComputedMenu, entryName, script, null);
+    }
   }
 
   void updateAaresiduesComputedMenu(BitSet groupsPresentBitSet) {
@@ -437,7 +453,8 @@ abstract public class JmolPopup {
               .getWord("hiddenModelSetName");
           modelSetComputedMenu = subMenu;
           enableMenu(modelSetComputedMenu, false);
-        }
+        } else if ("selectMenu".equals(item))
+          selectMenu = subMenu;
         newMenu = subMenu;
       } else if ("-".equals(item)) {
         addMenuSeparator(menu);
@@ -569,14 +586,12 @@ abstract public class JmolPopup {
   }
 
   public void show(int x, int y) {
-    updateMode = UPDATE_SHOW;
-    updateModelSetComputedMenu();
-    updateAboutSubmenu();    
+    updateForShow();
     for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements(); ) {
       String key = (String)keys.nextElement();
       Object item = htCheckbox.get(key);
-      String id = getId(item);
-      System.out.println(key + " " + id);
+      //String id = getId(item);
+      //System.out.println(key + " " + id);
       boolean b = viewer.getBooleanProperty(key);
       setCheckBoxState(item, b);
     }

@@ -475,7 +475,7 @@ abstract public class JmolPopup {
         PDBOnly.add(newMenu);
       } else if (item.indexOf("Url") >= 0) {
         AppletOnly.add(newMenu);
-      } else if (item.indexOf("MEP") >= 0) {
+      } else if (item.indexOf("CHARGE") >= 0) {
         ChargesOnly.add(newMenu);
       } else if (item.indexOf("nitCell") >= 0) {
         UnitcellOnly.add(newMenu);
@@ -497,7 +497,6 @@ abstract public class JmolPopup {
   }
 
   Hashtable htCheckbox = new Hashtable();
-
   void rememberCheckbox(String key, Object checkboxMenuItem) {
     htCheckbox.put(key, checkboxMenuItem);
   }
@@ -509,10 +508,17 @@ abstract public class JmolPopup {
    * @param TF   true or false
    */
   void setCheckBoxValue(String what, boolean TF) {
+    String basename = what;
+    String extension = "";
+    int pt;
+    if ((pt = what.indexOf(";")) >=0) {
+      basename = what.substring(0, pt);
+      extension = what.substring(pt);
+    }
     if (what.indexOf("#") > 0)
       viewer.script(what);
-    else if (viewer.getBooleanProperty(what) != TF)
-      viewer.setBooleanProperty(what, TF);
+    else if (viewer.getBooleanProperty(basename) != TF)
+      viewer.script("set " + basename + (TF ? " TRUE":" FALSE" + extension));
     if (what.indexOf("#CONFIG") >= 0) {
       configurationSelected = what;
       this.updateModelSetComputedMenu();
@@ -587,12 +593,13 @@ abstract public class JmolPopup {
 
   public void show(int x, int y) {
     updateForShow();
-    for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements(); ) {
-      String key = (String)keys.nextElement();
+    for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements();) {
+      String key = (String) keys.nextElement();
       Object item = htCheckbox.get(key);
-      //String id = getId(item);
-      //System.out.println(key + " " + id);
-      boolean b = viewer.getBooleanProperty(key);
+      String basename = (key.indexOf(";") >= 0 ? key.substring(0, key
+          .indexOf(";")) : key);
+      boolean b = viewer.getBooleanProperty(basename);
+      //System.out.println("set " + basename + " " + b +"#" + key + " " + getId(item));
       setCheckBoxState(item, b);
     }
     showPopupMenu(x, y);

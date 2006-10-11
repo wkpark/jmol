@@ -3190,10 +3190,5 @@ public final class Frame {
   
   public void setEchoStateActive(boolean TF) {
     echoShapeActive = TF;
-  }
-  
-  void hide(BitSet bs) {
-    bsHidden = new BitSet();
-    bsHidden.or(bs);
-  }
+  }  
 }

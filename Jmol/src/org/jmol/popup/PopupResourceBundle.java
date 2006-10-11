@@ -66,16 +66,17 @@ class PopupResourceBundle {
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "
               + "measureMenu pickingMenu - showConsole showMenu - "
-//              + "- optionsMenu "
+              //              + "- optionsMenu "
               + "aboutComputedMenu" },
 
       {
           "selectMenu",
-          "showSelectionsCheckbox - selectAll selectNone elementsComputedMenu - "
-              + "PDBproteinMenu PDBnucleicMenu PDBheteroMenu PDBcarbohydrate PDBnoneOfTheAbove - "
-              + "invertSelection restrictToSelection" },
+          "hideNotSelected;hide(none)Checkbox showSelectionsCheckbox - selectAll selectNone invertSelection - elementsComputedMenu - "
+              + "PDBproteinMenu PDBnucleicMenu PDBheteroMenu PDBcarbohydrate PDBnoneOfTheAbove" },
       { "selectAll", "all" },
       { "selectNone", "none" },
+      { "invertSelection", "not selected" },
+      { "hideNotSelected;hide(none)Checkbox", "selected; hide not selected" },
 
       {
           "PDBproteinMenu",
@@ -88,7 +89,7 @@ class PopupResourceBundle {
       { "proteinSideChains", "protein and not backbone" },
       { "polar", "protein and polar" },
       { "nonpolar", "protein and not polar" },
-      { "positiveCharge", "protein and basic" },
+      { "positive ", "protein and basic" },
       { "negativeCharge", "protein and acidic" },
       { "noCharge", "protein and not (acidic,basic)" },
 
@@ -125,10 +126,6 @@ class PopupResourceBundle {
       { "PDBcarbohydrate", "carbohydrate" },
       // not implemented    { "Lipid", "lipid" },
       { "PDBnoneOfTheAbove", "not(hetero,protein,nucleic,carbohydrate)" },
-
-      { "invertSelection", "not selected" },
-
-      { "restrictToSelection", "selected; restrict selected" },
 
       {
           "renderMenu",
@@ -284,7 +281,9 @@ class PopupResourceBundle {
       { "colorBoundBoxMenu", null },
       { "colorUnitCellMenu", null },
 
-      { "SchemeMenu", "cpk altloc molecule formalcharge partialcharge - amino structure chain " },
+      {
+          "SchemeMenu",
+          "cpk altloc molecule formalcharge partialCHARGE - amino#PDB structure#PDB chain#PDB " },
       {
           "zoomMenu",
           "zoom50 zoom100 zoom150 zoom200 zoom400 zoom800 - "
@@ -370,7 +369,9 @@ class PopupResourceBundle {
       { "pickSite", "set picking site" },
       { "pickSpin", "set picking spin" },
 
-      { "showMenu", "showHistory showFile showFileHeader - "
+      {
+          "showMenu",
+          "showHistory showFile showFileHeader - "
               + "showOrient showMeasure - "
               + "showSpacegroup SYMMETRYshowSymmetry showUnitCell - showIsosurface showMo - extractMOL" },
       { "showConsole", "console" },
@@ -387,8 +388,9 @@ class PopupResourceBundle {
       { "showUnitCell", "console on;show unitcell" },
       { "extractMOL", "console on;getproperty extractModel \"visible\" " },
 
-      { "surfaceMenu",
-          "surfDots surfVDW surfSolventAccessible14 surfSolvent14 surfMolecular surfMEP surfMoComputedMenu - surfOpaque surfTranslucent surfOff" },
+      {
+          "surfaceMenu",
+          "surfDots surfVDW surfSolventAccessible14 surfSolvent14 surfMolecular CHARGEsurfMEP surfMoComputedMenu - surfOpaque surfTranslucent surfOff" },
       { "surfDots", "dots on" },
       { "surfVDW", "isosurface delete resolution 0 solvent 0 translucent" },
       { "surfMolecular", "isosurface delete resolution 0 molecular translucent" },
@@ -396,19 +398,25 @@ class PopupResourceBundle {
           "isosurface delete resolution 0 solvent 1.4 translucent" },
       { "surfSolventAccessible14",
           "isosurface delete resolution 0 sasurface 1.4 translucent" },
-      { "surfMEP",
+      { "CHARGEsurfMEP",
           "isosurface delete resolution 0 molecular map MEP translucent" },
       { "surfOpaque", "isosurface opaque" },
       { "surfTranslucent", "isosurface translucent" },
       { "surfOff", "isosurface delete;select *;dots off" },
 
-      { "SYMMETRYunitCellMenu", "oneUnitCell fourUnitCells nineUnitCells nineUnitCellsRestricted" },
-      
-      { "oneUnitCell", "save orientation;load \"\" {1 1 1} ;restore orientation" },
-      { "fourUnitCells", "save orientation;load \"\" {2 2 2} ;restore orientation" },
-      { "nineUnitCells", "save orientation;load \"\" {3 3 3} ;restore orientation" },
-      { "nineUnitCellsRestricted", "save orientation;load \"\" {3 3 3} ;restore orientation;unitCell {1 1 1}; restrict cell=666; polyhedra 4,6 (visible);center visible;zoom 200" },
-      
+      { "SYMMETRYunitCellMenu",
+          "oneUnitCell fourUnitCells nineUnitCells nineUnitCellsRestricted" },
+
+      { "oneUnitCell",
+          "save orientation;load \"\" {1 1 1} ;restore orientation;center" },
+      { "fourUnitCells",
+          "save orientation;load \"\" {2 2 2} ;restore orientation;center" },
+      { "nineUnitCells",
+          "save orientation;load \"\" {3 3 3} ;restore orientation;center" },
+      {
+          "nineUnitCellsRestricted",
+          "save orientation;load \"\" {3 3 3} ;restore orientation;unitCell {1 1 1}; restrict cell=666; polyhedra 4,6 (visible);center visible;zoom 200" },
+
       { "_AxesMenu", "off dotted - byPixelMenu byAngstromMenu" },
       { "_BoundBoxMenu", null },
       { "_UnitCellMenu", null },
@@ -426,8 +434,9 @@ class PopupResourceBundle {
       { "50a", "0.50" },
       { "100a", "1.0" },
 
-//      { "optionsMenu", "rasmolChimeCompatibility" },
-      { "rasmolChimeCompatibility",
+      //      { "optionsMenu", "rasmolChimeCompatibility" },
+      {
+          "rasmolChimeCompatibility",
           "set color rasmol; set zeroBasedXyzRasmol on; "
               + "set axesOrientationRasmol on; load \"\"; select *; cpk off; wireframe on; " },
 
@@ -445,6 +454,8 @@ class PopupResourceBundle {
       { "elementsComputedMenu", GT._("Element") },
       { "selectAll", GT._("All") },
       { "selectNone", GT._("None") },
+      { "hideNotSelected;hide(none)Checkbox", GT._("Display Selected Only") },
+      { "invertSelection", GT._("Invert Selection") },
 
       { "PDBproteinMenu", GT._("Protein") },
       { "allProtein", GT._("All") },
@@ -484,9 +495,6 @@ class PopupResourceBundle {
       { "PDBnoneOfTheAbove", GT._("None of the above") },
 
       { "FRAMESbyModelComputedMenu", GT._("Model/Frame") },
-      { "invertSelection", GT._("Invert Selection") },
-
-      { "restrictToSelection", GT._("Display Selected Only") },
 
       { "renderMenu", GT._("Style") },
       { "renderSchemeMenu", GT._("Scheme") },
@@ -592,11 +600,11 @@ class PopupResourceBundle {
       { "altloc", GT._("Alternative Location") },
       { "molecule", GT._("Molecule") },
       { "formalcharge", GT._("Formal Charge") },
-      { "partialcharge", GT._("Partial Charge") },
+      { "partialCHARGE", GT._("Partial Charge") },
 
-      { "amino", GT._("Amino Acid") },
-      { "structure", GT._("Secondary Structure") },
-      { "chain", GT._("Chain") },
+      { "amino#PDB", GT._("Amino Acid") },
+      { "structure#PDB", GT._("Secondary Structure") },
+      { "chain#PDB", GT._("Chain") },
 
       { "none", GT._("Inherit") },
       { "black", GT._("Black") },
@@ -728,34 +736,28 @@ class PopupResourceBundle {
       { "surfDots", GT._("Dot Surface") },
       { "surfVDW", GT._("van der Waals Surface") },
       { "surfMolecular", GT._("Molecular Surface") },
-      { "surfSolvent14",
-          GT._("Solvent Surface ({0}-Angstrom probe)", "1.4") },
-      {
-          "surfSolventAccessible14",
-          GT._("Solvent-Accessible Surface (VDW + {0} Angstrom)",
-              "1.4") },
-      { "surfMEP", GT._("Molecular Electrostatic Potential") },
+      { "surfSolvent14", GT._("Solvent Surface ({0}-Angstrom probe)", "1.4") },
+      { "surfSolventAccessible14",
+          GT._("Solvent-Accessible Surface (VDW + {0} Angstrom)", "1.4") },
+      { "CHARGEsurfMEP", GT._("Molecular Electrostatic Potential") },
       { "surfMoComputedMenu", GT._("Molecular Orbitals") },
       { "surfOpaque", GT._("Make Opaque") },
       { "surfTranslucent", GT._("Make Translucent") },
       { "surfOff", GT._("Off") },
 
       { "SYMMETRYunitCellMenu", GT._("Symmetry") },
-      { "oneUnitCell", "{1 1 1}" },
-      { "fourUnitCells", "{2 2 2}" },
-      { "nineUnitCells", "{3 3 3}" },
-      { "nineUnitCellsRestricted", GT._("Polyhedra") },
+      { "oneUnitCell", GT._("Reload {0}", "{1 1 1}") },
+      { "fourUnitCells", GT._("Reload {0}", "{2 2 2}") },
+      { "nineUnitCells", GT._("Reload {0}", "{3 3 3}") },
+      { "nineUnitCellsRestricted", GT._("Reload {0}", "Polyhedra") },
 
-      { "_AxesMenu", GT._("Axes") }, 
-      { "_BoundBoxMenu", GT._("Boundbox") },
+      { "_AxesMenu", GT._("Axes") }, { "_BoundBoxMenu", GT._("Boundbox") },
       { "_UnitCellMenu", GT._("Unitcell") },
 
       { "off", GT._("Hide") }, { "dotted", GT._("Dotted") },
 
-      { "byPixelMenu", GT._("Pixel Width") },
-      { "1p", GT._("{0} px", "1") },
-      { "3p", GT._("{0} px", "3") },
-      { "5p", GT._("{0} px", "5") },
+      { "byPixelMenu", GT._("Pixel Width") }, { "1p", GT._("{0} px", "1") },
+      { "3p", GT._("{0} px", "3") }, { "5p", GT._("{0} px", "5") },
       { "10p", GT._("{0} px", "10") },
 
       { "byAngstromMenu", GT._("Angstrom Width") },
@@ -775,7 +777,8 @@ class PopupResourceBundle {
       { "axesOrientationRasmolCheckbox", GT._("Axes RasMol/Chime") },
       { "zeroBasedXyzRasmolCheckbox", GT._("Zero-Based Xyz Rasmol") },
 
-      { "aboutComputedMenu", GT._("About Jmol") }, { "jmolUrl", "http://www.jmol.org" },
+      { "aboutComputedMenu", GT._("About Jmol") },
+      { "jmolUrl", "http://www.jmol.org" },
       { "mouseManualUrl", GT._("Mouse Manual") },
       { "translatingUrl", GT._("Translations") }, };
 

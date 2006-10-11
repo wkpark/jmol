@@ -914,12 +914,12 @@ public class Viewer extends JmolViewer {
   }
 
   void hide(BitSet bs) {
-    modelManager.hide(bs);
+    selectionManager.hide(bs);
     reportSelection("" + cardinalityOf(bs) + GT._(" atoms hidden"));
   }
 
   BitSet getHiddenSet() {
-    return modelManager.getHiddenSet();
+    return selectionManager.getHiddenSet();
   }
 
   void addSelection(int atomIndex) {
@@ -965,6 +965,10 @@ public class Viewer extends JmolViewer {
   public void setSelectionSet(BitSet set) {
     selectionManager.setSelectionSet(set);
     refresh(0, "Viewer:setSelectionSet()");
+  }
+
+  public void setHideNotSelected(boolean TF) {
+    selectionManager.setHideNotSelected(TF);
   }
 
   void toggleSelectionSet(BitSet set) {
@@ -2667,6 +2671,8 @@ public class Viewer extends JmolViewer {
    ****************************************************************************/
 
   public boolean getBooleanProperty(String key) {
+    if (key.equalsIgnoreCase("hideNotSelected"))
+      return selectionManager.getHideNotSelected();
     if (key.equalsIgnoreCase("colorRasmol"))
       return colorManager.getDefaultColorRasmol();
     if (key.equalsIgnoreCase("perspectiveDepth"))
@@ -2715,6 +2721,10 @@ public class Viewer extends JmolViewer {
 
   public void setBooleanProperty(String key, boolean value) {
     while (true) {
+     if (key.equalsIgnoreCase("hideNotSelected")) {
+        setHideNotSelected(value);
+        break;
+      }
       if (key.equalsIgnoreCase("colorRasmol")) {
         setDefaultColors(value ? "rasmol" : "jmol");
         break;

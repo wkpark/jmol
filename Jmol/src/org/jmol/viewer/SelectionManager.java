@@ -48,6 +48,37 @@ class SelectionManager {
   final static int UNKNOWN = -1;
   int empty = TRUE;
 
+  boolean hideNotSelected;
+  BitSet bsHidden = new BitSet();
+  
+  void hide(BitSet bs) {
+    bsHidden.and(bsNull);
+    bsHidden.or(bs);
+    viewer.getFrame().bsHidden = bsHidden;
+  }
+
+  BitSet getHiddenSet() {
+    return bsHidden;
+  }
+
+  boolean getHideNotSelected() {
+    return hideNotSelected;    
+  }
+  
+  void setHideNotSelected(boolean TF) {
+    hideNotSelected = TF;
+    if (TF)
+      selectionChanged();
+  }
+  
+  void hideNotSelected() {
+    BitSet bs = new BitSet();
+    for (int i = viewer.getAtomCount(); --i >= 0;)
+      if (!bsSelection.get(i))
+        bs.set(i);
+    viewer.hide(bs);
+  }
+
   void removeSelection(int atomIndex) {
     bsSelection.clear(atomIndex);
     if (empty != TRUE)
@@ -123,6 +154,8 @@ class SelectionManager {
   }
 
   void clearSelection() {
+    hideNotSelected = false;
+    bsHidden.and(bsNull);
     bsSelection.and(bsNull);
     empty = TRUE;
     selectionChanged();
@@ -232,6 +265,8 @@ class SelectionManager {
   }
 
   private void selectionChanged() {
+    if (hideNotSelected)
+      hideNotSelected();
     for (int i = listeners.length; --i >= 0; ) {
       JmolSelectionListener listener = listeners[i];
       if (listener != null)

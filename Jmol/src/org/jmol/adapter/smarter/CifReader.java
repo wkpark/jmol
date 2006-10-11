@@ -444,6 +444,7 @@ class CifReader extends AtomSetCollectionReader {
   final static byte GROUP_PDB = 16;
   final static byte MODEL_NO = 17;
   final static byte DUMMY_ATOM = 18;
+  final static byte DISORDER_GROUP = 19;
 
   final static String[] atomFields = { 
       "_atom_site_type_symbol",
@@ -465,6 +466,7 @@ class CifReader extends AtomSetCollectionReader {
       "_atom_site.group_PDB", 
       "_atom_site.pdbx_PDB_model_num",
       "_atom_site_calc_flag", 
+      "_atom_site_disorder_group",
   };
 
 
@@ -573,6 +575,7 @@ class CifReader extends AtomSetCollectionReader {
           atom.chainID = firstChar;
           break;
         case ALT_ID:
+        case DISORDER_GROUP: //not QUITE correct
           atom.alternateLocationID = field.charAt(0);
           break;
         case GROUP_PDB:

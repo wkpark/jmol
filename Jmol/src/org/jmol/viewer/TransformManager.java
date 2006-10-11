@@ -24,7 +24,6 @@
 package org.jmol.viewer;
 
 import org.jmol.util.Logger;
-
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
@@ -507,8 +506,8 @@ class TransformManager {
   int slabPercentSetting = 100;
   int depthPercentSetting = 0;
 
-  private int slabValue;
-  private int depthValue;
+  int slabValue;
+  int depthValue;
 
   boolean getSlabEnabled() {
     return slabEnabled;
@@ -579,7 +578,7 @@ class TransformManager {
     return modeSlab;
   }
 
-  void calcSlabAndDepthValues() {
+  void calcSlabAndDepthValues(float rotationRadius) {
     slabValue = 0;
     depthValue = Integer.MAX_VALUE;
     if (slabEnabled) {
@@ -590,7 +589,7 @@ class TransformManager {
       // all transformed z coordinates are negative
       // a slab percentage of 100 should map to zero
       // a slab percentage of 0 should map to -diameter
-      int radius = (int) (viewer.getRotationRadius() * scalePixelsPerAngstrom);
+      int radius = (int) (rotationRadius * scalePixelsPerAngstrom);
       slabValue = ((100 - slabPercentSetting) * 2 * radius / 100)
           + cameraDistance;
       depthValue = ((100 - depthPercentSetting) * 2 * radius / 100)
@@ -787,10 +786,9 @@ class TransformManager {
   
   float minimumZ;
 
-  synchronized void finalizeTransformParameters() {
+  synchronized void finalizeTransformParameters(float rotationRadius) {
     calcTransformMatrix();
-    calcSlabAndDepthValues();
-    viewer.setSlabAndDepthValues(slabValue, depthValue);
+    calcSlabAndDepthValues(rotationRadius);
     increaseRotationRadius = false;
     minimumZ = Float.MAX_VALUE;
     haveNotifiedNaN = false;

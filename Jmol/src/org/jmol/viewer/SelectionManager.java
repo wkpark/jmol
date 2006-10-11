@@ -27,6 +27,8 @@ import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 
 import org.jmol.api.JmolSelectionListener;
+import org.jmol.i18n.GT;
+
 import java.util.BitSet;
 import java.util.Vector;
 
@@ -57,6 +59,8 @@ class SelectionManager {
       bsHidden.or(bs);
     if (viewer.getFrame() != null)
       viewer.getFrame().bsHidden = bsHidden;
+    viewer.reportSelection(viewer.cardinalityOf(bsHidden)
+        + GT._(" atoms hidden"));
   }
 
   BitSet getHiddenSet() {
@@ -78,7 +82,7 @@ class SelectionManager {
     for (int i = viewer.getAtomCount(); --i >= 0;)
       if (!bsSelection.get(i))
         bs.set(i);
-    viewer.hide(bs);
+    hide(bs);
   }
 
   void removeSelection(int atomIndex) {
@@ -135,7 +139,7 @@ class SelectionManager {
     return true;
   }
 
-  void select(BitSet bs) {    
+  void select(BitSet bs) {
     if (bs == null) {
       if (!viewer.getRasmolHydrogenSetting())
         excludeSelectionSet(viewer.getAtomBits("hydrogen"));
@@ -145,6 +149,8 @@ class SelectionManager {
     } else {
       setSelectionSet(bs);
     }
+    viewer.reportSelection(getSelectionCount() + " "
+        + GT._("atoms selected"));
   }
   
   void selectAll() {

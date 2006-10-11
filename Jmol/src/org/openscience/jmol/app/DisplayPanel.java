@@ -24,7 +24,6 @@
 package org.openscience.jmol.app;
 
 import org.jmol.api.*;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.i18n.GT;
 import java.awt.*;
 import java.awt.event.*;
@@ -75,7 +74,6 @@ public class DisplayPanel extends JPanel
 
   void setRotateMode() {
       Jmol.setRotateButton();
-      viewer.setModeMouse(JmolConstants.MOUSE_ROTATE);
       viewer.setSelectionHaloEnabled(false);
   }
     
@@ -224,7 +222,6 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeMouse(JmolConstants.MOUSE_PICK);
       viewer.setSelectionHaloEnabled(true);
       status.setStatus(1, GT._("Select Atoms"));
     }
@@ -238,7 +235,6 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeMouse(JmolConstants.MOUSE_DELETE);
       viewer.setSelectionHaloEnabled(false);
       status.setStatus(1, GT._("Delete Atoms"));
     }
@@ -252,7 +248,6 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeMouse(JmolConstants.MOUSE_ROTATE);
       viewer.setSelectionHaloEnabled(false);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
@@ -266,7 +261,6 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeMouse(JmolConstants.MOUSE_ZOOM);
       viewer.setSelectionHaloEnabled(false);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
@@ -280,7 +274,6 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setModeMouse(JmolConstants.MOUSE_XLATE);
       viewer.setSelectionHaloEnabled(false);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }

@@ -28,7 +28,6 @@ import org.jmol.util.*;
 
 import org.jmol.api.*;
 import org.jmol.g3d.*;
-import org.jmol.i18n.GT;
 import org.jmol.util.CommandHistory;
 
 import java.awt.Graphics;
@@ -231,6 +230,7 @@ public class Viewer extends JmolViewer {
   }
 
   public void homePosition() {
+    //mouse double-click -- same as eval(reset)  **
     setCenter(null);
     transformManager.homePosition();
     if (modelManager.modelsHaveSymmetry())
@@ -274,27 +274,33 @@ public class Viewer extends JmolViewer {
   }
 
   void saveOrientation(String saveName) {
+    //from Eval
     stateManager.saveOrientation(saveName);
   }
 
   boolean restoreOrientation(String saveName, float timeSeconds) {
+    //from Eval
     return stateManager.restoreOrientation(saveName, timeSeconds);
   }
 
   void saveBonds(String saveName) {
+    //from Eval
     stateManager.saveBonds(saveName);
   }
 
   boolean restoreBonds(String saveName) {
+    //from Eval
     return stateManager.restoreBonds(saveName);
   }
 
   void saveSelection(String saveName) {
+    //from Eval
     stateManager.saveSelection(saveName, selectionManager.bsSelection);
     stateManager.restoreSelection(saveName); //just to register the # of selected atoms
   }
 
   boolean restoreSelection(String saveName) {
+    //from Eval
     return stateManager.restoreSelection(saveName);
   }
 
@@ -304,17 +310,20 @@ public class Viewer extends JmolViewer {
 
   void move(Vector3f dRot, int dZoom, Vector3f dTrans, int dSlab,
             float floatSecondsTotal, int fps) {
+    //from Eval
     transformManager.move(dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
   }
 
   public void moveTo(float floatSecondsTotal, Point3f pt, float degrees,
                      int zoom, int xTrans, int yTrans) {
+    //from Eval
     transformManager.moveTo(floatSecondsTotal, pt, degrees, zoom, xTrans,
         yTrans);
   }
 
   public void moveTo(float floatSecondsTotal, Matrix3f rotationMatrix,
                      Point3f center, int zoom, int xTrans, int yTrans) {
+    //from StateManager
     transformManager.moveTo(floatSecondsTotal, rotationMatrix, center, zoom,
         xTrans, yTrans);
   }
@@ -324,114 +333,73 @@ public class Viewer extends JmolViewer {
   }
 
   void rotateXYBy(int xDelta, int yDelta) {
-    //mouse
+    //mouseSinglePressDrag
     transformManager.rotateXYBy(xDelta, yDelta);
     refresh(1, "Viewer:rotateXYBy()");
   }
 
   void rotateZBy(int zDelta) {
-    //mouse
+    //mouseSinglePressDrag
     transformManager.rotateZBy(zDelta);
     refresh(1, "Viewer:rotateZBy()");
   }
 
   public void rotateFront() {
-    //appdisplaypanel
+    //app DisplayPanel.FrontAction
     transformManager.rotateFront();
+    refresh(1, "Viewer:rotateFront()");
   }
 
   public void rotateToX(float angleRadians) {
-    //JmolViewer
+    //Viewer.rotateToX(int)
+    //app DisplayPanel.rotate();
     transformManager.rotateToX(angleRadians);
+    refresh(1, "Viewer:rotateToX()");
   }
 
   public void rotateToY(float angleRadians) {
-    //JmolViewer
+    //Viewer.rotateToY(int)
+    //app DisplayPanel.rotate();
     transformManager.rotateToY(angleRadians);
+    refresh(1, "Viewer:rotateToY()");
   }
 
   public void rotateToZ(float angleRadians) {
-    //JmolViewer
+    //app DisplayPanel.rotate();
     transformManager.rotateToZ(angleRadians);
+    refresh(1, "Viewer:rotateToZ()");
   }
 
   final static float radiansPerDegree = (float) (2 * Math.PI / 360);
-  final static float degreesPerRadian = (float) (360 / (2 * Math.PI));
 
   public void rotateToX(int angleDegrees) {
-    //appdisplaypanel
+    //app DisplayPanel.BottomAction, .TopAction;
     rotateToX(angleDegrees * radiansPerDegree);
   }
 
   public void rotateToY(int angleDegrees) {
-    //appdisplaypanel
+    //app DisplayPanel.LeftAction, .RightAction;
     rotateToY(angleDegrees * radiansPerDegree);
   }
 
-  void rotateToZ(int angleDegrees) {
-    //appdisplaypanel
-    rotateToZ(angleDegrees * radiansPerDegree);
-  }
-
-  void rotateXRadians(float angleRadians) {
-    //eval move
-    transformManager.rotateXRadians(angleRadians);
-    refresh(1, "Viewer:rotateXRadians()");
-  }
-
-  void rotateYRadians(float angleRadians) {
-    //eval move
-    transformManager.rotateYRadians(angleRadians);
-    refresh(1, "Viewer:rotateYRadians()");
-  }
-
-  void rotateZRadians(float angleRadians) {
-    //eval move
-    transformManager.rotateZRadians(angleRadians);
-    refresh(1, "Viewer:rotateZRadians()");
-  }
-
-  void rotateXDegrees(float angleDegrees) {
-    //deprecated
-    rotateXRadians(angleDegrees * radiansPerDegree);
-  }
-
-  void rotateYDegrees(float angleDegrees) {
-    //deprecated
-    rotateYRadians(angleDegrees * radiansPerDegree);
-  }
-
-  void rotateZDegrees(float angleDegrees) {
-    //deprecated
-    rotateZRadians(angleDegrees * radiansPerDegree);
-  }
-
-  void rotate(AxisAngle4f axisAngle) {
-    //unused
-    transformManager.rotateAxisAngle(axisAngle);
-  }
-
-  void rotateTo(float xAxis, float yAxis, float zAxis, float degrees) {
-    //unused
-    transformManager.rotateTo(xAxis, yAxis, zAxis, degrees);
-  }
-
-  void rotateTo(AxisAngle4f axisAngle) {
-    //unused
-    transformManager.rotateTo(axisAngle);
-  }
-
   void translateXYBy(int xDelta, int yDelta) {
+    //mouseDoublePressDrag, mouseSinglePressDrag
     transformManager.translateXYBy(xDelta, yDelta);
     refresh(1, "Viewer:translateXYBy()");
   }
 
   void translateToXPercent(float percent) {
+    //Eval.translate()
+    //ModelManager.setNewRotationCenter()
+    //StateManager.Orientation()
     transformManager.translateToXPercent(percent);
     refresh(1, "Viewer:translateToXPercent()");
   }
 
   void translateToYPercent(float percent) {
+    //Eval.translate()
+    //ModelManager.setNewRotationCenter()
+    //StateManager.Orientation()
     transformManager.translateToYPercent(percent);
     refresh(1, "Viewer:translateToYPercent()");
   }
@@ -439,6 +407,7 @@ public class Viewer extends JmolViewer {
   void translateToZPercent(float percent) {
     transformManager.translateToZPercent(percent);
     refresh(1, "Viewer:translateToZPercent()");
+    //Eval.translate()
   }
 
   float getTranslationXPercent() {
@@ -457,24 +426,8 @@ public class Viewer extends JmolViewer {
     return transformManager.getTranslationScript();
   }
 
-  void translateByXPercent(float percent) {
-    translateToXPercent(getTranslationXPercent() + percent);
-  }
-
-  void translateByYPercent(float percent) {
-    translateToYPercent(getTranslationYPercent() + percent);
-  }
-
-  void translateByZPercent(float percent) {
-    translateToZPercent(getTranslationZPercent() + percent);
-  }
-
-  void translateCenterTo(int x, int y) {
-    // not called
-    transformManager.translateCenterTo(x, y);
-  }
-
   void zoomBy(int pixels) {
+    //MouseManager.mouseSinglePressDrag
     transformManager.zoomBy(pixels);
     refresh(1, "Viewer:zoomBy()");
   }
@@ -496,6 +449,9 @@ public class Viewer extends JmolViewer {
   }
 
   void zoomByPercent(int percent) {
+    //Eval.zoom
+    //MouseManager.mouseWheel
+    //StyleManager.setCommonDefaults
     transformManager.zoomByPercent(percent);
     refresh(1, "Viewer:zoomByPercent()");
   }
@@ -518,42 +474,39 @@ public class Viewer extends JmolViewer {
   }
 
   void slabByPixels(int pixels) {
+    //MouseManager.mouseSinglePressDrag
     transformManager.slabByPercentagePoints(pixels);
     refresh(0, "Viewer:slabByPixels()");
   }
 
   void depthByPixels(int pixels) {
+    //MouseManager.mouseDoublePressDrag
     transformManager.depthByPercentagePoints(pixels);
     refresh(0, "Viewer:depthByPixels()");
   }
 
   void slabDepthByPixels(int pixels) {
+    //MouseManager.mouseSinglePressDrag
     transformManager.slabDepthByPercentagePoints(pixels);
     refresh(0, "Viewer:slabDepthByPixels()");
   }
 
   void slabToPercent(int percentSlab) {
+    //Eval.slab
     transformManager.slabToPercent(percentSlab);
     refresh(0, "Viewer:slabToPercent()");
   }
 
   void depthToPercent(int percentDepth) {
+    //Eval.depth
     transformManager.depthToPercent(percentDepth);
     refresh(0, "Viewer:depthToPercent()");
   }
 
   void setSlabEnabled(boolean slabEnabled) {
+    //Eval.slab
     transformManager.setSlabEnabled(slabEnabled);
     refresh(0, "Viewer:setSlabEnabled()");
-  }
-
-  void setModeSlab(int modeSlab) {
-    transformManager.setModeSlab(modeSlab);
-    refresh(0, "Viewer:setModeSlab()");
-  }
-
-  int getModeSlab() {
-    return transformManager.modeSlab;
   }
 
   public Matrix4f getUnscaledTransformMatrix() {
@@ -561,7 +514,10 @@ public class Viewer extends JmolViewer {
   }
 
   void finalizeTransformParameters() {
-    transformManager.finalizeTransformParameters();
+    //FrameRenderer
+    transformManager.finalizeTransformParameters(getRotationRadius());
+    g3d.setSlabAndDepthValues(transformManager.slabValue,
+        transformManager.depthValue);
   }
 
   Point3i transformPoint(Point3f pointAngstroms) {
@@ -604,18 +560,23 @@ public class Viewer extends JmolViewer {
   }
 
   float scaleToScreen(int z, float sizeAngstroms) {
+    //Sticks renderer
     return transformManager.scaleToScreen(z, sizeAngstroms);
   }
 
   short scaleToScreen(int z, int milliAngstroms) {
+    //all shapes
     return transformManager.scaleToScreen(z, milliAngstroms);
   }
 
   float scaleToPerspective(int z, float sizeAngstroms) {
+    //DotsRenderer
     return transformManager.scaleToPerspective(z, sizeAngstroms);
   }
 
   void scaleFitToScreen() {
+    //ModelManager.setNewRotationCenter
+    //setCenter
     transformManager.scaleFitToScreen();
   }
 
@@ -627,11 +588,8 @@ public class Viewer extends JmolViewer {
     return TF;
   }
 
-  void setCrystallographicDefaults() {
-    styleManager.setCrystallographicDefaults();
-  }
-
   void checkCameraDistance() {
+    //RepaintManager
     if (!allowCameraMove())
       return;
     if (transformManager.getIncreaseRotationRadius())
@@ -687,26 +645,18 @@ public class Viewer extends JmolViewer {
   }
 
   void setScaleAngstromsPerInch(float angstromsPerInch) {
+    //Eval.setScale3d
     transformManager.setScaleAngstromsPerInch(angstromsPerInch);
   }
 
-  void setSlabAndDepthValues(int slabValue, int depthValue) {
-    g3d.setSlabAndDepthValues(slabValue, depthValue);
-  }
-
   public void setVibrationPeriod(float period) {
+    //Eval
+    //app AtomSetChooser
     transformManager.setVibrationPeriod(period);
   }
 
-  void setVibrationT(float t) {
-    transformManager.setVibrationT(t);
-  }
-
-  float getVibrationRadians() {
-    return transformManager.vibrationRadians;
-  }
-
   void setSpinX(int value) {
+    //Eval
     transformManager.setSpinX(value);
   }
 
@@ -715,6 +665,7 @@ public class Viewer extends JmolViewer {
   }
 
   void setSpinY(int value) {
+    //Eval
     transformManager.setSpinY(value);
   }
 
@@ -723,6 +674,7 @@ public class Viewer extends JmolViewer {
   }
 
   void setSpinZ(int value) {
+    //Eval
     transformManager.setSpinZ(value);
   }
 
@@ -731,6 +683,7 @@ public class Viewer extends JmolViewer {
   }
 
   void setSpinFps(int value) {
+    //Eval
     transformManager.setSpinFps(value);
   }
 
@@ -739,6 +692,9 @@ public class Viewer extends JmolViewer {
   }
 
   void setSpinOn(boolean spinOn) {
+    //Eval
+    //PickingManager.atomPicked
+    //startSpinningAxis
     transformManager.setSpinOn(spinOn);
   }
 
@@ -766,10 +722,6 @@ public class Viewer extends JmolViewer {
     return transformManager.getTransformText();
   }
 
-  void setRotation(Matrix3f matrixRotation) {
-    transformManager.setRotation(matrixRotation);
-  }
-
   void getRotation(Matrix3f matrixRotation) {
     transformManager.getRotation(matrixRotation);
   }
@@ -779,6 +731,8 @@ public class Viewer extends JmolViewer {
   // ///////////////////////////////////////////////////////////////
 
   void setDefaultColors(String colorScheme) {
+    //Eval
+    //StyleManager
     if (!isSilent)
       Logger.info("setting color scheme to:" + colorScheme);
     colorManager.setDefaultColors(colorScheme);
@@ -798,6 +752,7 @@ public class Viewer extends JmolViewer {
   }
 
   void setRubberbandArgb(int argb) {
+    //Eval
     colorManager.setRubberbandArgb(argb);
   }
 
@@ -806,6 +761,7 @@ public class Viewer extends JmolViewer {
   }
 
   void setElementArgb(int elementNumber, int argb) {
+    //Eval
     colorManager.setElementArgb(elementNumber, argb);
   }
 
@@ -814,10 +770,14 @@ public class Viewer extends JmolViewer {
   }
 
   public void setVectorScale(float scale) {
+    //Eval
+    //AtomSetChooser
     transformManager.setVectorScale(scale);
   }
 
   public void setVibrationScale(float scale) {
+    //Eval
+    //AtomSetChooser
     transformManager.setVibrationScale(scale);
   }
 
@@ -826,6 +786,7 @@ public class Viewer extends JmolViewer {
   }
 
   public void setBackgroundArgb(int argb) {
+    //Eval
     colorManager.setBackgroundArgb(argb);
     refresh(0, "Viewer:setBackgroundArgb()");
   }
@@ -835,6 +796,8 @@ public class Viewer extends JmolViewer {
   }
 
   public void setColorBackground(String colorName) {
+    //ColorManager.setDefaultColors
+    //Jmol applet
     colorManager.setColorBackground(colorName);
     refresh(0, "Viewer:setColorBackground()");
   }
@@ -848,6 +811,7 @@ public class Viewer extends JmolViewer {
   }
 
   void setSpecular(boolean specular) {
+    //Eval
     colorManager.setSpecular(specular);
   }
 
@@ -856,25 +820,23 @@ public class Viewer extends JmolViewer {
   }
 
   void setSpecularPower(int specularPower) {
+    //Eval
     colorManager.setSpecularPower(specularPower);
   }
 
   void setAmbientPercent(int ambientPercent) {
+    //Eval
     colorManager.setAmbientPercent(ambientPercent);
   }
 
   void setDiffusePercent(int diffusePercent) {
+    //Eval
     colorManager.setDiffusePercent(diffusePercent);
   }
 
   void setSpecularPercent(int specularPercent) {
+    //Eval
     colorManager.setSpecularPercent(specularPercent);
-  }
-
-  // x & y light source coordinates are fixed at -1,-1
-  // z should be in the range 0, +/- 3 ?
-  void setLightsourceZ(float z) {
-    colorManager.setLightsourceZ(z);
   }
 
   short getColixAtom(Atom atom) {
@@ -899,23 +861,26 @@ public class Viewer extends JmolViewer {
   // ///////////////////////////////////////////////////////////////
 
   void removeSelection(int atomIndex) {
+    //PickingManager.applyMouseStyle
     selectionManager.removeSelection(atomIndex);
     refresh(0, "Viewer:removeSelection()");
   }
 
   void removeSelection(BitSet set) {
+    //PickingManager.applyMouseStyle
     selectionManager.removeSelection(set);
     refresh(0, "Viewer:removeSelection()");
   }
 
   void select(BitSet bs) {
+    //Eval
+    //StateManager
     selectionManager.select(bs);
-    reportSelection("" + getSelectionCount() + " " + GT._("atoms selected"));
   }
 
   void hide(BitSet bs) {
+    //Eval
     selectionManager.hide(bs);
-    reportSelection("" + cardinalityOf(bs) + GT._(" atoms hidden"));
   }
 
   BitSet getHiddenSet() {
@@ -923,21 +888,25 @@ public class Viewer extends JmolViewer {
   }
 
   void addSelection(int atomIndex) {
+    //PickingManager.applyMouseStyle
     selectionManager.addSelection(atomIndex);
     refresh(0, "Viewer:addSelection()");
   }
 
   void addSelection(BitSet set) {
+    //PickingManager.applyMouseStyle
     selectionManager.addSelection(set);
     refresh(0, "Viewer:addSelection()");
   }
 
   void toggleSelection(int atomIndex) {
+    //PickingManager.applyMouseStyle
     selectionManager.toggleSelection(atomIndex);
     refresh(0, "Viewer:toggleSelection()");
   }
 
   void setSelection(int atomIndex) {
+    //PickingManager.applyMouseStyle
     selectionManager.setSelection(atomIndex);
     refresh(0, "Viewer:setSelection()");
   }
@@ -953,16 +922,21 @@ public class Viewer extends JmolViewer {
   }
 
   public void selectAll() {
+    //app DisplayPanel.SelectallAction
+    //initializeModel
     selectionManager.selectAll();
     refresh(0, "Viewer:selectAll()");
   }
 
   public void clearSelection() {
+    //app DisplayPanel.DeselectallAction
+    //PickingManager.atomPicked (Pfatt)
     selectionManager.clearSelection();
     refresh(0, "Viewer:clearSelection()");
   }
 
   public void setSelectionSet(BitSet set) {
+    //PickingManager.applyMouseStyle
     selectionManager.setSelectionSet(set);
     refresh(0, "Viewer:setSelectionSet()");
   }
@@ -972,17 +946,14 @@ public class Viewer extends JmolViewer {
   }
 
   void toggleSelectionSet(BitSet set) {
+    //PickingManager.applyMouseStyle
     selectionManager.toggleSelectionSet(set);
     refresh(0, "Viewer:toggleSelectionSet()");
   }
 
   void invertSelection() {
+    //Eval
     selectionManager.invertSelection();
-    // only used from a script, so I do not think a refresh() is necessary
-  }
-
-  void excludeSelectionSet(BitSet set) {
-    selectionManager.excludeSelectionSet(set);
     // only used from a script, so I do not think a refresh() is necessary
   }
 
@@ -995,6 +966,7 @@ public class Viewer extends JmolViewer {
   }
 
   void setFormalCharges(int formalCharge) {
+    //Eval
     modelManager.setFormalCharges(selectionManager.bsSelection, formalCharge);
   }
 
@@ -1048,6 +1020,7 @@ public class Viewer extends JmolViewer {
   // ///////////////////////////////////////////////////////////////
 
   void setAppletProxy(String appletProxy) {
+    //Eval
     fileManager.setAppletProxy(appletProxy);
   }
 
@@ -1056,6 +1029,7 @@ public class Viewer extends JmolViewer {
   }
 
   void setDefaultDirectory(String defaultDirectory) {
+    //Eval
     fileManager.setDefaultDirectory(defaultDirectory);
   }
 
@@ -1072,10 +1046,13 @@ public class Viewer extends JmolViewer {
   }
 
   public void openFile(String name) {
+    //Jmol app file dropper, main, OpenUrlAction, RecentFilesAction
+    //app Jmol BYPASSES SCRIPTING **
     openFile(name, null);
   }
 
   public void openFile(String name, int[] params) {
+    //Eval
     if (name == null)
       return;
     if (name.equalsIgnoreCase("string")) {
@@ -1095,6 +1072,7 @@ public class Viewer extends JmolViewer {
   }
 
   public void openFiles(String modelName, String[] names) {
+    //Eval
     clear();
     // keep old screen image while new file is being loaded
     // forceRefresh();
@@ -1109,10 +1087,12 @@ public class Viewer extends JmolViewer {
   }
 
   public void openStringInline(String strModel) {
+    //Jmol app file dropper
     openStringInline(strModel, null);
   }
 
-  public void openStringInline(String strModel, int[] params) {
+  private void openStringInline(String strModel, int[] params) {
+    //loadInline, openFile, openStringInline
     clear();
     fileManager.openStringInline(strModel, params);
     String errorMsg = getOpenFileError();
@@ -1125,19 +1105,18 @@ public class Viewer extends JmolViewer {
     return fileManager.inlineData;
   }
 
-  public void setInlineChar(char newLine) {
-    global.inlineNewlineChar = newLine;
-  }
-
   public char getInlineChar() {
     return global.inlineNewlineChar;
   }
 
   public void loadInline(String strModel) {
+    //applet Console, loadInline, app PasteClipboard
     loadInline(strModel, global.inlineNewlineChar);
   }
 
   public void loadInline(String strModel, char newLine) {
+    //Eval data
+    //loadInline
     if (strModel == null)
       return;
     Logger.debug(strModel);
@@ -1155,6 +1134,7 @@ public class Viewer extends JmolViewer {
   }
 
   public void openDOM(Object DOMNode) {
+    //applet.loadDOMNode
     clear();
     long timeBegin = System.currentTimeMillis();
     fileManager.openDOM(DOMNode);
@@ -1184,12 +1164,12 @@ public class Viewer extends JmolViewer {
     System.gc();
   }
 
+  /**
+   * misnamed -- really this opens the file, gets the data, and returns error or null
+   * 
+   * @return errorMsg
+   */
   public String getOpenFileError() {
-    String errorMsg = getOpenFileError1();
-    return errorMsg;
-  }
-
-  String getOpenFileError1() {
     String fullPathName = getFullPathName();
     String fileName = getFileName();
     Object clientFile = fileManager.waitForClientFileOrErrorMessage();
@@ -1200,6 +1180,22 @@ public class Viewer extends JmolViewer {
     }
     openClientFile(fullPathName, fileName, clientFile);
     return null;
+  }
+
+  public void openClientFile(String fullPathName, String fileName,
+                             Object clientFile) {
+    // maybe there needs to be a call to clear()
+    // or something like that here
+    // for when CdkEditBus calls this directly
+    setStatusFileLoaded(2, fullPathName, fileName, modelManager
+        .getModelSetName(), clientFile, null);
+    pushHoldRepaint();
+    modelManager
+        .setClientFile(fullPathName, fileName, modelAdapter, clientFile);
+    initializeModel();
+    popHoldRepaint();
+    setStatusFileLoaded(3, fullPathName, fileName, modelManager
+        .getModelSetName(), clientFile, null);
   }
 
   public String getCurrentFileAsString() {
@@ -1236,36 +1232,19 @@ public class Viewer extends JmolViewer {
   }
 
   public void setEchoStateActive(boolean TF) {
+    //Eval
     modelManager.setEchoStateActive(TF);
   }
 
   public void zap() {
+    //Eval
+    //setAppletContext
     clear();
     modelManager.zap();
     initializeModel();
   }
 
-  public void calculateStructures() {
-    modelManager.calculateStructures();
-  }
-
-  public void openClientFile(String fullPathName, String fileName,
-                             Object clientFile) {
-    // maybe there needs to be a call to clear()
-    // or something like that here
-    // for when CdkEditBus calls this directly
-    setStatusFileLoaded(2, fullPathName, fileName, modelManager
-        .getModelSetName(), clientFile, null);
-    pushHoldRepaint();
-    modelManager
-        .setClientFile(fullPathName, fileName, modelAdapter, clientFile);
-    initializeModel();
-    popHoldRepaint();
-    setStatusFileLoaded(3, fullPathName, fileName, modelManager
-        .getModelSetName(), clientFile, null);
-  }
-
-  void clear() {
+  private void clear() {
     repaintManager.clear();
     transformManager.clearVibration();
     transformManager.clearSpin();
@@ -1279,7 +1258,7 @@ public class Viewer extends JmolViewer {
     System.gc();
   }
 
-  void initializeModel() {
+  private void initializeModel() {
     homePosition();
     selectAll();
     setCenter(getRotationCenter());
@@ -1335,7 +1314,13 @@ public class Viewer extends JmolViewer {
     return modelManager.frame != null;
   }
 
+  public void calculateStructures() {
+    //Eval
+    modelManager.calculateStructures();
+  }
+
   void clearBfactorRange() {
+    //Eval
     modelManager.clearBfactorRange();
   }
 
@@ -1567,6 +1552,7 @@ public class Viewer extends JmolViewer {
   }
 
   void setCenterFromInternalRotation(Point3f center) {
+    //TransformManager.getNewFixedRotationCenter
     modelManager.setRotationCenterAndRadiusXYZ(center, false);
   }
 

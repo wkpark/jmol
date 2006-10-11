@@ -498,6 +498,9 @@ class Eval { //implements Runnable {
       case Token.move:
         move();
         break;
+      case Token.hide:
+        hide();
+        break;
       case Token.restrict:
         restrict();
         break;
@@ -2879,6 +2882,10 @@ class Eval { //implements Runnable {
     }
   }
 
+  void hide() throws ScriptException {
+    viewer.hide(statementLength == 1 ? null : expression(statement, 1));
+  }
+
   void select() throws ScriptException {
     // NOTE this is called by restrict()
     viewer.select(statementLength == 1 ? null : expression(statement, 1));
@@ -3214,7 +3221,7 @@ class Eval { //implements Runnable {
     viewer.setShapeSize(JmolConstants.SHAPE_HSTICKS, 0, bsConformations);
     if (addHbonds)
       viewer.autoHbond(bsConformations, bsConformations);
-    viewer.setSelectionSet(bsConformations);
+    viewer.select(bsConformations);
   }
 
   void vector() throws ScriptException {

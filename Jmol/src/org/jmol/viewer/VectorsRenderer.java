@@ -31,19 +31,20 @@ import javax.vecmath.*;
 class VectorsRenderer extends ShapeRenderer {
 
   void render() {
-    if (! frame.hasVibrationVectors)
+    if (!frame.hasVibrationVectors)
       return;
     Atom[] atoms = frame.atoms;
-    Vectors vectors = (Vectors)shape;
+    Vectors vectors = (Vectors) shape;
     short[] mads = vectors.mads;
     if (mads == null)
       return;
     short[] colixes = vectors.colixes;
-    for (int i = frame.atomCount; --i >= 0; ) {
+    for (int i = frame.atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       //Logger.debug("vector render"+atom.shapeVisibilityFlags + " " + vectors.myVisibilityFlag);
-      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) ==0
-          || (atom.shapeVisibilityFlags & vectors.myVisibilityFlag) ==0)
+      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) == 0
+          || (atom.shapeVisibilityFlags & vectors.myVisibilityFlag) == 0
+          || frame.bsHidden.get(i))
         continue;
       Vector3f vibrationVector = atom.getVibrationVector();
       if (vibrationVector == null)

@@ -76,6 +76,9 @@ public final class Frame {
   String[] atomNames;
   int[] atomSerials;
   byte[] specialAtomIDs;
+  
+  BitSet bsHidden = new BitSet();
+  
   ////////////////////////////////////////////////////////////////
 
   int bondCount;
@@ -3198,5 +3201,10 @@ public final class Frame {
   
   public void setEchoStateActive(boolean TF) {
     echoShapeActive = TF;
+  }
+  
+  void hide(BitSet bs) {
+    bsHidden = new BitSet();
+    bsHidden.or(bs);
   }
 }

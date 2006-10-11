@@ -69,7 +69,7 @@ class Backbone extends Mps {
       int[] atomIndices = polymer.getLeadAtomIndices();
       for (int i = monomerCount; --i >= 0; ) {
         Atom atom = frame.getAtomAt(atomIndices[i]);
-        if (atom.nBackbonesDisplayed > 0)
+        if (atom.nBackbonesDisplayed > 0 && !frame.bsHidden.get(i))
           atom.clickabilityFlags |= myVisibilityFlag;
       }
     }

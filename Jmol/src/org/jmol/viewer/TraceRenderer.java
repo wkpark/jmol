@@ -55,15 +55,14 @@ class TraceRenderer extends MpsRenderer {
   Point3f[] leadMidpoints;
 
   void render1Chain(short[] mads, short[] colixes) {
-    for (int i = monomerCount; --i >= 0; ) {
-      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0)
+    for (int i = monomerCount; --i >= 0;) {
+      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
+          || frame.bsHidden.get(monomers[i].getLeadAtomIndex()))
         continue;
-      short colix =
-        Graphics3D.inheritColix(colixes[i],
-                                monomers[i].getLeadAtom().colixAtom);
-      renderRopeSegment(colix, mads, i,
-                        monomerCount, monomers,
-                        leadMidpointScreens, null);
+      short colix = Graphics3D.inheritColix(colixes[i], monomers[i]
+          .getLeadAtom().colixAtom);
+      renderRopeSegment(colix, mads, i, monomerCount, monomers,
+          leadMidpointScreens, null);
     }
   }
 

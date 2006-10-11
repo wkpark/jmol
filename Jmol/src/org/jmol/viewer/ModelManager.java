@@ -1700,4 +1700,10 @@ String getAtomInfoChime(int i) {
       return;
     unitCell.setOffset(nnn);
   }
+  
+  void hide(BitSet bsHide) {
+    if (frame == null)
+      return;
+    frame.hide(bsHide);
+  }
 }

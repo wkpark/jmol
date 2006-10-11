@@ -44,11 +44,13 @@ class PolyhedraRenderer extends ShapeRenderer {
   }
 
   void render1(Polyhedra.Polyhedron p) {
-    if ((p.visibilityFlags & myVisibilityFlag) == 0)
+    if ((p.visibilityFlags & myVisibilityFlag) == 0
+        || frame.bsHidden.get(p.centralAtom.atomIndex))
       return;
+
     /*Logger.debug("\npolynomialrenderer" + p.planeCount+" "+p.centralAtom.getIdentity());
      for (int i = 0; i < p.vertices.length; i++) {
-       Logger.debug("atom "+p.vertices[i].getIdentity());
+     Logger.debug("atom "+p.vertices[i].getIdentity());
      }
      */
     short colix = Graphics3D.inheritColix(p.polyhedronColix,
@@ -67,8 +69,8 @@ class PolyhedraRenderer extends ShapeRenderer {
 
     // no edges to new points when not collapsed 
     for (int i = 0, j = 0; j < planes.length;)
-      if (true || p.collapsed || planes[j] < p.ptCenter && planes[j + 1] < p.ptCenter
-          && planes[j + 2] < p.ptCenter) {
+      if (true || p.collapsed || planes[j] < p.ptCenter
+          && planes[j + 1] < p.ptCenter && planes[j + 2] < p.ptCenter) {
         drawFace(colix, p.normixes[i++], vertices[planes[j++]],
             vertices[planes[j++]], vertices[planes[j++]], isAll, isFrontOnly);
       } else {

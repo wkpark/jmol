@@ -98,6 +98,8 @@ class DipolesRenderer extends ShapeRenderer {
         points[cylinderBase]);
 
     if (dipole.atoms[0] != null) {
+      if (frame.bsHidden.get(dipole.atoms[0].atomIndex))
+        return false;
       offset.set(points[center]);
       offset.cross(offset, vector);
       if (offset.length() == 0) {

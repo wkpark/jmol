@@ -96,15 +96,16 @@ class RibbonsRenderer extends MpsRenderer { // not current for Mcp class
     viewer.freeTempScreens(ribbonBottomScreens);
   }
   
-  void render2Strand(int monomerCount, Monomer[] monomers,
-                     short[] mads, short[] colixes,
-                     Point3i[] ribbonTopScreens,
+  void render2Strand(int monomerCount, Monomer[] monomers, short[] mads,
+                     short[] colixes, Point3i[] ribbonTopScreens,
                      Point3i[] ribbonBottomScreens) {
-    for (int i = monomerCount; --i >= 0; )
-      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) != 0)
-        render2StrandSegment(monomerCount,
-                             monomers[i], colixes[i], mads,
-                             ribbonTopScreens, ribbonBottomScreens, i);
+    for (int i = monomerCount; --i >= 0;) {
+      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
+          || frame.bsHidden.get(monomers[i].getLeadAtomIndex()))
+        continue;
+      render2StrandSegment(monomerCount, monomers[i], colixes[i], mads,
+          ribbonTopScreens, ribbonBottomScreens, i);
+    }
   }
 
   void render2StrandSegment(int monomerCount, Monomer monomer, short colix,

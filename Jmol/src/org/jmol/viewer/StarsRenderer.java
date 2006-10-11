@@ -30,17 +30,17 @@ import org.jmol.g3d.*;
 class StarsRenderer extends ShapeRenderer {
 
   void render() {
-    Stars stars = (Stars)shape;
+    Stars stars = (Stars) shape;
     if (stars.mads == null)
       return;
     Atom[] atoms = frame.atoms;
     int myVisibilityFlag = stars.myVisibilityFlag;
-    for (int i = frame.atomCount; --i >= 0; ) {
+    for (int i = frame.atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      if (atom.isShapeVisible(myVisibilityFlag)) {
-        short colix = stars.colixes == null ? 0 : stars.colixes[i];
-        render1(atom, stars.mads[i], colix);
-      }
+      if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i))
+        continue;
+      short colix = stars.colixes == null ? 0 : stars.colixes[i];
+      render1(atom, stars.mads[i], colix);
     }
   }
 

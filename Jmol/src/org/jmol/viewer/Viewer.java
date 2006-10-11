@@ -28,6 +28,7 @@ import org.jmol.util.*;
 
 import org.jmol.api.*;
 import org.jmol.g3d.*;
+import org.jmol.i18n.GT;
 import org.jmol.util.CommandHistory;
 
 import java.awt.Graphics;
@@ -906,7 +907,12 @@ public class Viewer extends JmolViewer {
 
   void select(BitSet bs) {
     selectionManager.select(bs);
-    reportSelection("" + getSelectionCount() + " atoms selected");
+    reportSelection("" + getSelectionCount() + " " + GT._("atoms selected"));
+  }
+
+  void hide(BitSet bs) {
+    modelManager.hide(bs);
+    reportSelection("" + cardinalityOf(bs) + GT._(" atoms hidden"));
   }
 
   void addSelection(int atomIndex) {

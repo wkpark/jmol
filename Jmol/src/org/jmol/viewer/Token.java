@@ -164,6 +164,7 @@ class Token {
   final static int animation    = command | 67;
   final static int frame        = command | 68;
   // jmol commands
+  final static int hide         = command | 79 | expressionCommand;
   final static int font         = command | 80;
   final static int hover        = command | 81 | specialstring;
   final static int vibration    = command | 82;
@@ -500,6 +501,7 @@ class Token {
     "reset",             new Token(reset,              0, "reset"),
     "restore",           new Token(restore,  varArgCount, "restore"),
     "restrict",          new Token(restrict, varArgCount, "restrict"),
+    "hide",              new Token(hide,     varArgCount, "hide"),
     "ribbon",            new Token(ribbon,    onDefault1, "ribbon"),
     "ribbons",           null,
     "rotate",            new Token(rotate,   varArgCount, "rotate"),

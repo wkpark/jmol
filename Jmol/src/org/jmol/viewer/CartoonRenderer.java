@@ -191,7 +191,8 @@ class CartoonRenderer extends MpsRenderer {
     for (int i = monomerCount; --i >= 0;) {
       // runs backwards, so it can render the heads first
       Monomer group = monomers[i];
-      if ((group.shapeVisibilityFlags & myVisibilityFlag) != 0) {
+      if ((group.shapeVisibilityFlags & myVisibilityFlag) != 0 &&
+        !frame.bsHidden.get(group.getLeadAtomIndex())) {
         short colix = Graphics3D.inheritColix(colixes[i],
             group.getLeadAtom().colixAtom);
         boolean isHelix = isHelixes[i];

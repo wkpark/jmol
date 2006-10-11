@@ -682,10 +682,12 @@ class Dots extends Shape {
   }
 
   void setModelClickability() {
-    for (int i = frame.atomCount; --i >= 0; ) {
+    for (int i = frame.atomCount; --i >= 0;) {
       Atom atom = frame.atoms[i];
-      if ((atom.shapeVisibilityFlags & myVisibilityFlag) != 0)
-        atom.clickabilityFlags |= myVisibilityFlag;
+      if ((atom.shapeVisibilityFlags & myVisibilityFlag) == 0
+          || frame.bsHidden.get(i))
+        continue;
+      atom.clickabilityFlags |= myVisibilityFlag;
     }
   }
 }

@@ -80,7 +80,7 @@ class Halos extends Shape {
       return;
     for (int i = frame.atomCount; --i >= 0;) {
       Atom atom = frame.atoms[i];
-      if ((atom.shapeVisibilityFlags & myVisibilityFlag) != 0)
+      if ((atom.shapeVisibilityFlags & myVisibilityFlag) == 0)
         atom.clickabilityFlags |= myVisibilityFlag;
     }
   }

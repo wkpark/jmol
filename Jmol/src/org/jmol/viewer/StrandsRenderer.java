@@ -104,11 +104,13 @@ class StrandsRenderer extends MpsRenderer {
 
   void render1Strand(int monomerCount, Monomer[] monomers, short[] mads,
                      short[] colixes, Point3i[] screens) {
-    for (int i = monomerCount; --i >= 0; )
-      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) != 0) {
-        render1StrandSegment(monomerCount,
-                             monomers[i], colixes[i], mads, screens, i);
-      }
+    for (int i = monomerCount; --i >= 0;) {
+      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
+          || frame.bsHidden.get(monomers[i].getLeadAtomIndex()))
+        continue;
+      render1StrandSegment(monomerCount, monomers[i], colixes[i], mads,
+          screens, i);
+    }
   }
 
 

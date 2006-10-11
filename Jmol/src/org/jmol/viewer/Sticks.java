@@ -153,12 +153,14 @@ class Sticks extends Shape {
 
   void setModelClickability() {
     Bond[] bonds = frame.bonds;
-    for (int i = frame.bondCount; --i >= 0; ) {
+    for (int i = frame.bondCount; --i >= 0;) {
       Bond bond = bonds[i];
-      if((bond.shapeVisibilityFlags & myVisibilityFlag) != 0) {
-        bond.atom1.clickabilityFlags |= myVisibilityFlag;
-        bond.atom2.clickabilityFlags |= myVisibilityFlag;
-      }
+      if ((bond.shapeVisibilityFlags & myVisibilityFlag) == 0
+          || frame.bsHidden.get(bond.atom1.atomIndex)
+          || frame.bsHidden.get(bond.atom2.atomIndex))
+        continue;
+      bond.atom1.clickabilityFlags |= myVisibilityFlag;
+      bond.atom2.clickabilityFlags |= myVisibilityFlag;
     }
   }
 

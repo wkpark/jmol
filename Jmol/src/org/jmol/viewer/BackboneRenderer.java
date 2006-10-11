@@ -42,28 +42,30 @@ class BackboneRenderer extends MpsRenderer {
                  bbpolymer.mads, bbpolymer.colixes);
   }
 
-  void render1Chain(int monomerCount, Monomer[] monomers, 
-                    int[] atomIndices, short[] mads, short[] colixes) {
-    for (int i = monomerCount - 1; --i >= 0; ) {
+  void render1Chain(int monomerCount, Monomer[] monomers, int[] atomIndices,
+                    short[] mads, short[] colixes) {
+    for (int i = monomerCount - 1; --i >= 0;) {
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0)
         continue;
 
       Atom atomA = frame.getAtomAt(atomIndices[i]);
       Atom atomB = frame.getAtomAt(atomIndices[i + 1]);
-      if (atomA.nBackbonesDisplayed == 0 || atomB.nBackbonesDisplayed == 0)
+      if (atomA.nBackbonesDisplayed == 0 || atomB.nBackbonesDisplayed == 0
+          || frame.bsHidden.get(atomA.atomIndex)
+          || frame.bsHidden.get(atomB.atomIndex))
         continue;
-      int xA = atomA.getScreenX(), yA = atomA.getScreenY(),
-        zA = atomA.getScreenZ();
-      int xB = atomB.getScreenX(), yB = atomB.getScreenY(),
-        zB = atomB.getScreenZ(); 
+      int xA = atomA.getScreenX(), yA = atomA.getScreenY(), zA = atomA
+          .getScreenZ();
+      int xB = atomB.getScreenX(), yB = atomB.getScreenY(), zB = atomB
+          .getScreenZ();
       short colixA = Graphics3D.inheritColix(colixes[i], atomA.colixAtom);
       short colixB = Graphics3D.inheritColix(colixes[i + 1], atomB.colixAtom);
       if (mads[i] < 0) {
         g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
       } else {
-        int width = viewer.scaleToScreen((zA + zB)/2, mads[i]);
-        g3d.fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_SPHERICAL,
-                         width, xA, yA, zA, xB, yB, zB);
+        int width = viewer.scaleToScreen((zA + zB) / 2, mads[i]);
+        g3d.fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_SPHERICAL, width,
+            xA, yA, zA, xB, yB, zB);
       }
     }
   }

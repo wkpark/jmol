@@ -258,9 +258,9 @@ class Labels extends Shape {
   void setModelClickability() {
     if (strings == null)
       return;
-    for (int i = strings.length; --i >= 0; ) {
+    for (int i = strings.length; --i >= 0;) {
       String label = strings[i];
-      if (label != null && frame.atoms.length > i)
+      if (label != null && frame.atoms.length > i && !frame.bsHidden.get(i))
         frame.atoms[i].clickabilityFlags |= myVisibilityFlag;
     }
   }

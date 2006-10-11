@@ -47,24 +47,24 @@ class RocketsRenderer extends MpsRenderer {
   }
 
   void render1Chain(Polymer polymer, short[] mads, short[] colixes) {
-    if (! (polymer instanceof AminoPolymer))
+    if (!(polymer instanceof AminoPolymer))
       return;
-    initializeChain((AminoPolymer)polymer);
+    initializeChain((AminoPolymer) polymer);
     clearPending();
     for (int i = 0; i < monomerCount; ++i) {
-      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0)
-        continue;
       Monomer monomer = monomers[i];
+      if ((monomer.shapeVisibilityFlags & myVisibilityFlag) == 0
+          || frame.bsHidden.get(monomer.getLeadAtomIndex()))
+        continue;
       short colix = Graphics3D.inheritColix(colixes[i],
-                                            monomer.getLeadAtom().colixAtom);
+          monomer.getLeadAtom().colixAtom);
       if (monomer.isHelixOrSheet()) {
         //Logger.debug("renderSpecialSegment[" + i + "]");
         renderSpecialSegment(monomer, colix, mads[i]);
       } else {
         //Logger.debug("renderRopeSegment[" + i + "]");
-        renderRopeSegment(colix, mads, i,
-                          monomerCount, monomers,
-                          screens, isSpecials);
+        renderRopeSegment(colix, mads, i, monomerCount, monomers, screens,
+            isSpecials);
       }
     }
     renderPending();
@@ -171,31 +171,27 @@ class RocketsRenderer extends MpsRenderer {
   }
 
   void renderPending() {
-    if (tPending) {
-      Point3f[] segments = proteinstructurePending.getSegments();
-      boolean tEnd =
-        (endIndexPending == proteinstructurePending.getMonomerCount() - 1);
+    if (!tPending)
+      return;
+    Point3f[] segments = proteinstructurePending.getSegments();
+    boolean tEnd = (endIndexPending == proteinstructurePending
+        .getMonomerCount() - 1);
 
-      /*
-      Logger.debug("structurePending.getPolymerCount()=" +
-                         structurePending.getPolymerCount());
-      Logger.debug("segments.length=" + segments.length);
-      Logger.debug(" startIndexPending=" + startIndexPending +
-                         " endIndexPending=" + endIndexPending);
-      Logger.debug("tEnd=" + tEnd);
-      */
-      if (proteinstructurePending instanceof Helix)
-        renderPendingHelix(segments[startIndexPending],
-                           segments[endIndexPending],
-                           segments[endIndexPending + 1],
-                           tEnd);
-      else if (proteinstructurePending instanceof Sheet)
-        renderPendingSheet(segments[startIndexPending],
-                           segments[endIndexPending],
-                           segments[endIndexPending + 1],
-                           tEnd);
-      tPending = false;
-    }
+    /*
+     Logger.debug("structurePending.getPolymerCount()=" +
+     structurePending.getPolymerCount());
+     Logger.debug("segments.length=" + segments.length);
+     Logger.debug(" startIndexPending=" + startIndexPending +
+     " endIndexPending=" + endIndexPending);
+     Logger.debug("tEnd=" + tEnd);
+     */
+    if (proteinstructurePending instanceof Helix)
+      renderPendingHelix(segments[startIndexPending],
+          segments[endIndexPending], segments[endIndexPending + 1], tEnd);
+    else if (proteinstructurePending instanceof Sheet)
+      renderPendingSheet(segments[startIndexPending],
+          segments[endIndexPending], segments[endIndexPending + 1], tEnd);
+    tPending = false;
   }
 
   void renderPendingHelix(Point3f pointStart, Point3f pointBeforeEnd,

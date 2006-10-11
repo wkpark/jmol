@@ -245,7 +245,10 @@ class NucleicMonomer extends PhosphorusMonomer {
   void setModelClickability() {
     Atom atom;
     atom = getLeadAtom();
+    if (chain.frame.bsHidden.get(atom.atomIndex))
+      return;
     int cartoonflag = Viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_CARTOON);
+    
     for (int i = 6; --i >= 0; ) {
       atom = getAtomFromOffsetIndex(i + 3);
       atom.clickabilityFlags |= cartoonflag;

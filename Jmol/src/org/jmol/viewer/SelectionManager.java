@@ -53,8 +53,10 @@ class SelectionManager {
   
   void hide(BitSet bs) {
     bsHidden.and(bsNull);
-    bsHidden.or(bs);
-    viewer.getFrame().bsHidden = bsHidden;
+    if (bs != null)
+      bsHidden.or(bs);
+    if (viewer.getFrame() != null)
+      viewer.getFrame().bsHidden = bsHidden;
   }
 
   BitSet getHiddenSet() {
@@ -155,7 +157,6 @@ class SelectionManager {
 
   void clearSelection() {
     hideNotSelected = false;
-    bsHidden.and(bsNull);
     bsSelection.and(bsNull);
     empty = TRUE;
     selectionChanged();

@@ -1269,8 +1269,9 @@ public class Viewer extends JmolViewer {
     repaintManager.clear();
     transformManager.clearVibration();
     transformManager.clearSpin();
-    selectionManager.clearSelection();
     modelManager.setClientFile(null, null, null, null);
+    selectionManager.clearSelection();
+    selectionManager.hide(null);
     clearMeasurements();
     transformManager.setFixedRotationCenter(new Point3f(0, 0, 0));
     setStatusFileLoaded(0, null, null, null, null, null);
@@ -2537,6 +2538,8 @@ public class Viewer extends JmolViewer {
   }
 
   void clearClickCount() {
+    selectionManager.setHideNotSelected(false);
+    selectionManager.hide(null);
     mouseManager.clearClickCount();
   }
 

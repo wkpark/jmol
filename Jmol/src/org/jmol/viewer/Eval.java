@@ -863,6 +863,9 @@ class Eval { //implements Runnable {
       case Token.selected:
         stack[sp++] = copyBitSet(viewer.getSelectionSet());
         break;
+      case Token.hidden:
+        stack[sp++] = copyBitSet(viewer.getHiddenSet());
+        break;
       case Token.visible:
         if (!refreshed)
           viewer.setModelVisibility();
@@ -1235,7 +1238,7 @@ class Eval { //implements Runnable {
         return viewer.getAtomsWithin(withinStr, bs);
       return viewer.getAtomsWithin("sequence", withinStr, bs);
     }
-    evalError(GT._("Unrecognized {0} parameter", new Object[] { "WITHIN" } ) + 
+    evalError(GT._("Unrecognized {0} parameter", "WITHIN") + 
               ":" + withinSpec);
     return null; //can't get here
   }
@@ -1628,7 +1631,7 @@ class Eval { //implements Runnable {
       mad = -1;
       break;
     default:
-      booleanOrNumberExpected(GT._("dotted"));
+      booleanOrNumberExpected("DOTTED");
     }
     return mad;
   }
@@ -1782,8 +1785,7 @@ class Eval { //implements Runnable {
 
   void help() throws ScriptException {
     if (!viewer.isApplet())
-      evalError(GT._("Currently the {0} command only works for the applet",
-                     new Object[] { "help" } ));
+      evalError(GT._("Currently the {0} command only works for the applet",                    "help"));
     String what = (statementLength == 1 ? "" : stringParameter(1));
     viewer.getHelp(what);
   }
@@ -2426,8 +2428,7 @@ class Eval { //implements Runnable {
           } else {
             iGroup = viewer.getSpaceGroupIndexFromName(spacegroup);
             if (iGroup == -1)
-              evalError(GT._("space group {0} was not found.",
-                             new Object[] { spacegroup }));
+              evalError(GT._("space group {0} was not found.", spacegroup));
           }
           p = new int[5];
           for (int j = 0; j < 4; j++)
@@ -3209,7 +3210,7 @@ class Eval { //implements Runnable {
   void conformation() throws ScriptException {
     if (viewer.getDisplayModelIndex() <= -2)
       evalError(GT._("{0} not allowed with background model displayed",
-                     new Object[] { "\"conformation\"" }));
+                      "\"CONFORMATION\""));
     BitSet bsConformations;
     if (statementLength == 1) {
       bsConformations = viewer.setConformation();
@@ -3679,7 +3680,7 @@ class Eval { //implements Runnable {
       viewer.rewindAnimation();
       return;
     default:
-      evalError(GT._("invalid {0} control keyword", new Object[] { "frame" }) + ": " + token.toString());
+      evalError(GT._("invalid {0} control keyword", "frame") + ": " + token.toString());
     }
   }
 
@@ -4417,8 +4418,7 @@ class Eval { //implements Runnable {
   
   void write() throws ScriptException {
     if (viewer.isApplet())
-      evalError(GT._("The {0} command is not available for the applet.",
-                     new Object[] { "WRITE" } ));
+      evalError(GT._("The {0} command is not available for the applet.", "WRITE"));
     int tok = (statementLength == 1 ? 0 : statement[1].tok);
     if (statementLength == 1 || tok == Token.clipboard) {
       viewer.createImage(null, "CLIP", 100);
@@ -4429,7 +4429,7 @@ class Eval { //implements Runnable {
         : stringParameter(1));
     if (";JPEG;JPG64;JPG;PDF;PNG;".indexOf((";"+type+";").toUpperCase()) < 0)
       evalError(GT._("write what? {0} or {1} \"filename\"",
-                     new Object[] { "CLIPBOARD", "JPG|JPG64|PNG|PPM" } ));
+                     new Object[] { "CLIPBOARD", "JPG|JPG64|PNG|PPM" }));
     String fileName = (statement[2].tok == Token.identifier ? (String) statement[2].value
         : stringParameter(2));
     viewer.createImage(fileName, type, 100);
@@ -4585,8 +4585,7 @@ class Eval { //implements Runnable {
       notImplemented(1);
       break;
     default:
-      evalError(GT._("unrecognized {0} parameter",
-                     new Object[] { "SHOW" } ));
+      evalError(GT._("unrecognized {0} parameter", "SHOW"));
     }
   }
 
@@ -5159,7 +5158,7 @@ class Eval { //implements Runnable {
     if (nOrb == 1 && moNumber > 1)
       evalError(GT._("Only one molecular orbital is available in this file"));
     if (moNumber < 1 || moNumber > nOrb)
-      evalError(GT._("An MO index from 1 to {0} is required",  new Object[]{ new Integer(nOrb) }));
+      evalError(GT._("An MO index from 1 to {0} is required", nOrb));
     lastMoNumber = moNumber;
     viewer.setShapeProperty(shape, "moData", moData);
     if (title != null)
@@ -5180,9 +5179,7 @@ class Eval { //implements Runnable {
     String str;
     int modelIndex = viewer.getDisplayModelIndex();
     if (modelIndex < 0)
-      evalError(GT._("the {0} command requires that only one model be displayed",
-                     new Object[] { "isosurface" } ));
-
+      evalError(GT._("the {0} command requires that only one model be displayed", "ISOSURFACE"));
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -5636,8 +5633,7 @@ class Eval { //implements Runnable {
   }
 
   void booleanOrNumberExpected(String orWhat) throws ScriptException {
-    evalError(GT._("boolean, number, or {0} expected",
-                   new Object[] { "\"" + orWhat + "\"" } ));
+    evalError(GT._("boolean, number, or {0} expected", "\"" + orWhat + "\""));
   }
 
   void expressionOrDecimalExpected() throws ScriptException {
@@ -5723,7 +5719,7 @@ class Eval { //implements Runnable {
   }
 
   void unrecognizedSetParameter() throws ScriptException {
-    evalError(GT._("unrecognized {0} parameter", new Object[] { "SET" } ));
+    evalError(GT._("unrecognized {0} parameter", "SET"));
   }
 
   void unrecognizedSubcommand(String cmd) throws ScriptException {

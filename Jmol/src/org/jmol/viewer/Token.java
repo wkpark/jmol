@@ -430,7 +430,8 @@ class Token {
   final static int visible     = predefinedset | 13;
   final static int clickable   = predefinedset | 14;
   final static int carbohydrate = predefinedset | 15;
-  
+  final static int hidden      = predefinedset | 16;
+   
 
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenAll = new Token(all, "all");
@@ -740,6 +741,7 @@ class Token {
     "hydrogen",     new Token(hydrogen,        "hydrogen"),
     "hydrogens",    null,
     "selected",     new Token(selected,        "selected"),
+    "hidden",       new Token(hidden,          "hidden"),
     "solvent",      new Token(solvent,         "solvent"),
     "%",            new Token(percent,         "%"),
     "dotted",       new Token(dotted,          "dotted"),

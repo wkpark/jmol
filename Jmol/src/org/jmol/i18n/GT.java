@@ -127,6 +127,14 @@ public class GT {
     return getTextWrapper().getString(string);
   }
 
+  public static String _(String string, String item) {
+    return getTextWrapper().getString(string, new Object[] { item });
+  }
+
+  public static String _(String string, int item) {
+    return getTextWrapper().getString(string, new Object[] { new Integer(item) });
+  }
+
   public static String _(String string, Object[] objects) {
     return getTextWrapper().getString(string, objects);
   }

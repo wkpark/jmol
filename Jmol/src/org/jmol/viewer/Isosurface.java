@@ -4840,8 +4840,11 @@ class Isosurface extends MeshCollection {
   void setupSurfaceInfo() {
     volumetricOrigin.set((Point3f)surfaceInfo.get("volumetricOrigin"));
     Vector3f[] v = (Vector3f[])surfaceInfo.get("volumetricVectors");
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 3; i++) {
       volumetricVectors[i].set(v[i]);
+      volumetricVectorLengths[i] = volumetricVectors[i].length();
+      unitVolumetricVectors[i].normalize(volumetricVectors[i]);
+    }
     int[] counts = (int[])surfaceInfo.get("voxelCounts");
     for (int i = 0; i < 3; i++)
       voxelCounts[i] = counts[i];

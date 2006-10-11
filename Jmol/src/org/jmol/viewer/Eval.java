@@ -5510,7 +5510,6 @@ class Eval { //implements Runnable {
         break;
       case Token.string:
         propertyName = surfaceObjectSeen || planeSeen ? "mapColor" : "getSurface";
-        surfaceObjectSeen = true;
         /*
          * a file name, optionally followed by an integer file index.
          * OR empty. In that case, if the model auxiliary info has the
@@ -5529,10 +5528,12 @@ class Eval { //implements Runnable {
             propertyValue = viewer.getModelAuxiliaryInfo(modelIndex, "jmolMappedDataInfo");
           if (propertyValue == null)
             propertyValue  = viewer.getModelAuxiliaryInfo(modelIndex, "jmolSurfaceInfo");
+          surfaceObjectSeen = true;
           if (propertyValue != null)
             break;
           filename = viewer.getFullPathName();
         }
+        surfaceObjectSeen = true;
         if (i + 1 < statementLength && statement[i + 1].tok == Token.integer)
           viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "fileIndex",
               new Integer(intParameter(++i)));

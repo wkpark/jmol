@@ -530,7 +530,7 @@ class CifReader extends AtomSetCollectionReader {
           if (atomTypes != null && atomTypes.containsKey(field)) {
             float charge = ((Float) atomTypes.get(field)).floatValue();
             atom.formalCharge = (int) (charge + (charge < 0 ? -0.5 : 0.5));
-            //because -1.6 is rounded UP to -1, and  1.6 is rounded DOWN to 1
+            //because otherwise -1.6 is rounded UP to -1, and  1.6 is rounded DOWN to 1
             if (Math.abs(atom.formalCharge - charge) > 0.1)
               logger.log("CIF charge on " + field + " was " + charge
                   + "; rounded to " + atom.formalCharge);

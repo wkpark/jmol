@@ -42,8 +42,8 @@ class StyleManager {
   
   void setCommonDefaults() {
     viewer.zoomToPercent(100);
-    viewer.setPercentVdwAtom(DEFAULT_PERCENT_VDW_ATOM);
     viewer.setPerspectiveDepth(true);
+    viewer.setPercentVdwAtom(DEFAULT_PERCENT_VDW_ATOM);
     viewer.setBondTolerance(DEFAULT_BOND_TOLERANCE);
     viewer.setMinBondDistance(DEFAULT_MIN_BOND_DISTANCE);
     viewer.setMarBond((short)(DEFAULT_BOND_RADIUS * 1000));
@@ -53,14 +53,14 @@ class StyleManager {
     setCommonDefaults();
     viewer.setDefaultColors("jmol");
     viewer.setAxesOrientationRasmol(false);
-    setZeroBasedXyzRasmol(false);
+    viewer.setZeroBasedXyzRasmol(false);
   }
 
   void setRasmolDefaults() {
     setCommonDefaults();
     viewer.setDefaultColors("rasmol");
     viewer.setAxesOrientationRasmol(true);
-    setZeroBasedXyzRasmol(true);
+    viewer.setZeroBasedXyzRasmol(true);
     viewer.setPercentVdwAtom(0);
     viewer.setMarBond((short)1);
   }
@@ -141,11 +141,6 @@ class StyleManager {
   boolean showMeasurements = true;
   void setShowMeasurements(boolean showMeasurements) {
     this.showMeasurements = showMeasurements;
-  }
-
-  boolean showMeasurementLabels = true;
-  void setShowMeasurementLabels(boolean showMeasurementLabels) {
-    this.showMeasurementLabels = showMeasurementLabels;
   }
 
   String measureDistanceUnits = "nanometers";

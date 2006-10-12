@@ -308,7 +308,7 @@ abstract class MouseManager {
     case MIDDLE:
     case SHIFT_LEFT:
       if (nearestAtomIndex < 0)
-        viewer.homePosition();
+        viewer.script("reset");
       break;
     }
   }

@@ -41,8 +41,8 @@ class MouseManager11 extends MouseManager
   }
 
   void removeMouseListeners11() {
-    viewer.display.removeMouseListener(this);
-    viewer.display.removeMouseMotionListener(this);
+    viewer.getAwtComponent().removeMouseListener(this);
+    viewer.getAwtComponent().removeMouseMotionListener(this);
   }
 
   boolean handleOldJvm10Event(Event e) {

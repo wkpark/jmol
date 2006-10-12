@@ -311,7 +311,7 @@ public class Jmol extends JPanel {
     dropper.addPropertyChangeListener (new PropertyChangeListener () {
         
         public void propertyChange (PropertyChangeEvent evt) {
-            System.out.println("Drop triggered...");
+            //System.out.println("Drop triggered...");
             f.setCursor (Cursor.getPredefinedCursor (Cursor.WAIT_CURSOR));
             
             if (evt.getPropertyName ().equals (FileDropper.FD_PROPERTY_FILENAME)) {
@@ -1493,11 +1493,18 @@ public class Jmol extends JPanel {
     }
 
     public void notifyFrameChanged(int frameNo) {
+      // Note: twos-complement. To get actual frame number, use 
+      // Math.max(frameNo, -2 - frameNo)
+      // -1 means all frames are now displayed
+      
+      boolean isAnimationRunning = (frameNo <= -2);
+      if (jmolpopup == null || isAnimationRunning)
+        return;
       jmolpopup.updateComputedMenus();
     }
 
     public void notifyScriptStart(String statusMessage, String additionalInfo) {
-      System.out.println("notifyScriptStart:" + statusMessage + (additionalInfo == "" ? "" : additionalInfo));
+      //System.out.println("notifyScriptStart:" + statusMessage + (additionalInfo == "" ? "" : additionalInfo));
     }
     
     public void sendConsoleEcho(String strEcho) {

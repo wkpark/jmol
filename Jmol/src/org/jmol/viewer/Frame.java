@@ -717,10 +717,6 @@ public final class Frame {
     mmset.freeze();
   }
 
-  void recalculateStructure(BitSet bsSelected) {
-    mmset.recalculateStructure(bsSelected);
-  }
-
   void setConformation(int modelIndex, BitSet bsConformation) {
     mmset.setConformation(modelIndex, bsConformation);
   }

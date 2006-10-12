@@ -318,23 +318,30 @@ class PopupResourceBundle {
 
       {
           "FRAMESanimateMenu",
-          "animModeMenu - " + "play stop nextframe prevframe rewind - "
+          "animModeMenu - play pause resume stop - nextframe prevframe rewind - playrev restart - "
               + "animFpsMenu" },
-      { "animModeMenu", "OnceThrough Palindrome Loop" },
-      { "OnceThrough", "set anim mode once" },
-      { "Palindrome", "set anim mode palindrome" },
-      { "Loop", "set anim mode loop" },
-      { "play", "anim on" },
-      { "stop", "anim off" },
-      { "nextframe", "frame next" },
-      { "prevframe", "frame prev" },
-      { "rewind", "frame 1" },
+      { "animModeMenu", "onceThrough palindrome loop" },
+      { "onceThrough", "anim mode once#" },
+      { "palindrome", "anim mode palindrome#" },
+      { "loop", "anim mode loop#" },
+      { "play", "anim play#" },
+      { "pause", "anim pause#" },
+      { "resume", "anim resume#" },
+      { "stop", "anim off#" },
+      
+      { "nextframe", "frame next#" },
+      { "prevframe", "frame prev#" },
+      { "playrev", "anim playrev#" },
+      
+      { "rewind", "anim rewind#" },
+      { "restart", "anim on#" },
+      
       { "animFpsMenu", "animfps5 animfps10 animfps20 animfps30 animfps50" },
-      { "animfps5", "set anim fps 5" },
-      { "animfps10", "set anim fps 10" },
-      { "animfps20", "set anim fps 20" },
-      { "animfps30", "set anim fps 30" },
-      { "animfps50", "set anim fps 50" },
+      { "animfps5", "anim fps 5#" },
+      { "animfps10", "anim fps 10#" },
+      { "animfps20", "anim fps 20#" },
+      { "animfps30", "anim fps 30#" },
+      { "animfps50", "anim fps 50#" },
 
       {
           "measureMenu",
@@ -677,15 +684,21 @@ class PopupResourceBundle {
 
       { "FRAMESanimateMenu", GT._("Animate") },
       { "animModeMenu", GT._("Animation Mode") },
-      { "OnceThrough", GT._("Play Once") },
-      { "Palindrome", GT._("Palindrome") },
-      { "Loop", GT._("Loop") },
+      { "onceThrough", GT._("Play Once") },
+      { "palindrome", GT._("Palindrome") },
+      { "loop", GT._("Loop") },
+      
       { "play", GT._("Play") },
+      { "pause", GT._("Pause") },
+      { "resume", GT._("Resume") },
       { "stop", GT._("Stop") },
       { "nextframe", GT._("Next Frame") },
       { "prevframe", GT._("Previous Frame") },
       { "rewind", GT._("Rewind") },
-      { "revplay", GT._("Reverse Play") },
+
+      { "playrev", GT._("Reverse") },
+      { "animOn", GT._("Restart") },
+
       { "animFpsMenu", GT._("Set FPS") },
       { "animfps5", "5" },
       { "animfps10", "10" },

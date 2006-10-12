@@ -150,7 +150,12 @@ class StatusManager {
   }
 
   synchronized void setStatusFrameChanged(int frameNo) {
-    setStatusChanged("frameChanged", frameNo, (frameNo >=0 ? viewer.getModelName(frameNo) : ""), false);
+    boolean isAnimationRunning = (frameNo <= -2);
+    int f = frameNo;
+    if (isAnimationRunning)
+      f = -2 - f;
+    setStatusChanged("frameChanged", frameNo, (f >= 0 ? viewer
+        .getModelName(f) : ""), false);
     if (jmolStatusListener != null)
       jmolStatusListener.notifyFrameChanged(frameNo);
   }
@@ -258,7 +263,7 @@ class StatusManager {
     drivingSync = (syncMode == 1 ? true : false);
     isSynced = (syncMode > 0 || 
         isSynced && syncMode < 0? true : false);
-    Logger.debug(viewer.htmlName + " " + syncMode + " synced? " + isSynced + " driving?" + drivingSync);
+    Logger.debug(viewer.getHtmlName() + " " + syncMode + " synced? " + isSynced + " driving?" + drivingSync);
   }
 
   public void syncSend(String script, String appletName) {

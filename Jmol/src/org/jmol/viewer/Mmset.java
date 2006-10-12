@@ -75,11 +75,6 @@ final class Mmset {
       models[i].calculateStructures();
   }
 
-  void recalculateStructure(BitSet bsSelected) {
-    for (int i = modelCount; --i >= 0;)
-      models[i].recalculateStructure(bsSelected);
-  }
-
   void setConformation(int modelIndex, BitSet bsConformation) {
     for (int i = modelCount; --i >= 0;)
       if (i == modelIndex || modelIndex < 0)

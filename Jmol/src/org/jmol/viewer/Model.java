@@ -132,10 +132,6 @@ final class Model {
       polymers[i].calculateStructures();
   }
 
-  void recalculateStructure(BitSet bsSelected) {
-    //unfinished
-  }
-
   void setConformation(BitSet bsConformation) {
     //Logger.debug("Model.calculateStructures");
     for (int i = polymerCount; --i >= 0; )

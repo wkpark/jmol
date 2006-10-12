@@ -752,11 +752,13 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     }
 
     public void notifyFrameChanged(int frameNo) {
+      boolean isAnimationRunning = (frameNo <= -2);
       if (animFrameCallback != null && jsoWindow != null)
         jsoWindow.call(animFrameCallback, new Object[] { htmlName,
-            new Integer(frameNo) });
-      if (jmolpopup != null)
-        jmolpopup.updateComputedMenus();
+            new Integer(Math.max(frameNo, -2 - frameNo)) });
+      if (jmolpopup == null || isAnimationRunning)
+        return;
+      jmolpopup.updateComputedMenus();
     }
 
     public void notifyAtomPicked(int atomIndex, String strInfo) {

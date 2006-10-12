@@ -27,7 +27,6 @@ import org.jmol.util.Logger;
 
 import org.jmol.g3d.*;
 
-import java.awt.Image;
 import java.awt.Rectangle;
 import java.util.Hashtable;
 import java.util.BitSet;
@@ -54,10 +53,14 @@ class RepaintManager {
     if (displayModelIndex == -1)
       setBackgroundModelIndex(-1);    
     viewer.setTainted(true);
-    viewer.setStatusFrameChanged(modelIndex);
+    setStatusFrameChanged();
     setFrameRangeVisible(); 
   }
 
+  void setStatusFrameChanged() {
+    viewer.setStatusFrameChanged(animationOn ? -2 - displayModelIndex : displayModelIndex);
+  }
+  
   int backgroundModelIndex = -1;
   void setBackgroundModelIndex(int modelIndex) {
     // no background unless only a SINGLE model is being displayed (for now)
@@ -100,11 +103,6 @@ class RepaintManager {
       refresh();
   }
 
-  Image takeSnapshot() {
-    return null;
-    //return awtComponent.takeSnapshot();
-  }
-
   int holdRepaint = 0;
   boolean repaintPending;
   void pushHoldRepaint() {
@@ -116,7 +114,7 @@ class RepaintManager {
     if (holdRepaint <= 0) {
       holdRepaint = 0;
       repaintPending = true;
-      viewer.display.repaint();
+      viewer.repaint();
     }
   }
 
@@ -125,13 +123,13 @@ class RepaintManager {
       return;
     repaintPending = true;
     if (holdRepaint == 0) {
-      viewer.display.repaint();
+      viewer.repaint();
     }
   }
 
 
   synchronized void requestRepaintAndWait() {
-    viewer.display.repaint();
+    viewer.repaint();
     try {
       wait();
     } catch (InterruptedException e) {
@@ -210,12 +208,8 @@ class RepaintManager {
   int animationDirection = 1;
   int currentDirection = 1;
   void setAnimationDirection(int animationDirection) {
-    if (animationDirection == 1 || animationDirection == -1) {
-      this.animationDirection = animationDirection;
-      currentDirection = 1;
-    }
-    else
-      Logger.error("invalid animationDirection:" + animationDirection);
+    this.animationDirection = animationDirection;
+    currentDirection = 1;
   }
 
   int animationFps = 10;
@@ -277,10 +271,17 @@ class RepaintManager {
     animationPaused = isPaused;
     viewer.refresh(0, "Viewer:setAnimationOff");
     animationOn = false;
+    setStatusFrameChanged();
   }
 
   void pauseAnimation() {
     setAnimationOff(true);
+  }
+  
+  void reverseAnimation() {
+    currentDirection = -currentDirection;
+    if (!animationOn)
+      resumeAnimation();
   }
   
   int intAnimThread = 0;

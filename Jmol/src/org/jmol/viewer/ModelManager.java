@@ -1480,12 +1480,6 @@ String getAtomInfoChime(int i) {
     return (frame == null ? false : frame.someModelsHaveSymmetry);
   }
 
-  void recalculateStructure(BitSet bsSelected) {
-    if (frame == null)
-      return;
-    frame.recalculateStructure(bsSelected);
-  }
-
   BitSet setConformation(int modelIndex, BitSet bsConformation) {
     frame.setConformation(modelIndex, bsConformation);
     return bsConformation;

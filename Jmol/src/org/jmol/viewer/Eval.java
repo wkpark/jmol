@@ -443,7 +443,7 @@ class Eval { //implements Runnable {
         if (pc > 1)
           viewer.clearScriptQueue();
       case Token.quit: // quit this only if it isn't the first command
-        interruptExecution = ((pc > 1 || !viewer.scriptManager.useQueue) ? Boolean.TRUE
+        interruptExecution = ((pc > 1 || !viewer.usingScriptQueue()) ? Boolean.TRUE
             : Boolean.FALSE);
         break;
       case Token.label:
@@ -3662,7 +3662,7 @@ class Eval { //implements Runnable {
   void frameControl(Token token, boolean isSubCmd) throws ScriptException {
     switch (token.tok) {
     case Token.playrev:
-      viewer.setAnimationDirection(-viewer.getAnimationDirection());
+      viewer.reverseAnimation();
     case Token.play:
     case Token.resume:
       viewer.resumeAnimation();

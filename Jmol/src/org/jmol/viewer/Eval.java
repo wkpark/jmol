@@ -498,6 +498,9 @@ class Eval { //implements Runnable {
       case Token.move:
         move();
         break;
+      case Token.display:
+        display();
+        break;
       case Token.hide:
         hide();
         break;
@@ -797,7 +800,6 @@ class Eval { //implements Runnable {
   int pcLastExpressionInstruction;
 
   BitSet expression(Token[] code, int pcStart) throws ScriptException {
-    int numberOfAtoms = viewer.getAtomCount();
     BitSet bs;
     BitSet[] stack = new BitSet[10];
     int sp = 0;
@@ -822,9 +824,7 @@ class Eval { //implements Runnable {
         pc = pcLastExpressionInstruction;
         break;
       case Token.all:
-        bs = stack[sp++] = new BitSet(numberOfAtoms);
-        for (int i = numberOfAtoms; --i >= 0;)
-          bs.set(i);
+        bs = stack[sp++] = bsAll();
         break;
       case Token.none:
         stack[sp++] = new BitSet();
@@ -1060,11 +1060,11 @@ class Eval { //implements Runnable {
     BitSet propertyBitSet = null;
     int bitsetComparator = comparator;
     int bitsetBaseValue = comparisonValue;
-    int numberOfAtoms = viewer.getAtomCount();
+    int atomCount = viewer.getAtomCount();
     int imax = 0;
     int imin = 0;
     Frame frame = viewer.getFrame();
-    for (int i = 0; i < numberOfAtoms; ++i) {
+    for (int i = 0; i < atomCount; ++i) {
       boolean match = false;
       Atom atom = frame.getAtomAt(i);
       switch (property) {
@@ -2887,6 +2887,18 @@ class Eval { //implements Runnable {
     viewer.hide(statementLength == 1 ? null : expression(statement, 1));
   }
 
+  void display() throws ScriptException {
+    viewer.display(bsAll(), statementLength == 1 ? null : expression(statement, 1));
+  }
+
+  BitSet bsAll() {
+    int atomCount = viewer.getAtomCount();
+    BitSet bs = new BitSet(atomCount);
+    for (int i = atomCount; --i >= 0;)
+      bs.set(i);
+    return bs;
+  }
+  
   void select() throws ScriptException {
     // NOTE this is called by restrict()
     viewer.select(statementLength == 1 ? null : expression(statement, 1));

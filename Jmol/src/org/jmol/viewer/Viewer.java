@@ -895,6 +895,11 @@ public class Viewer extends JmolViewer {
     selectionManager.hide(bs);
   }
 
+  void display(BitSet bsAll, BitSet bs) {
+    //Eval
+    selectionManager.display(bsAll, bs);
+  }
+
   BitSet getHiddenSet() {
     return selectionManager.getHiddenSet();
   }

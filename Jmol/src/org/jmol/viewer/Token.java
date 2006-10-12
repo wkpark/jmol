@@ -192,6 +192,7 @@ class Token {
   final static int restore      = command | 104;
   final static int selectionHalo = command | 105 | setparam;
   final static int history       = command | 106 | setparam | showparam;
+  final static int display      = command |  107 | setparam | expressionCommand;
   
   // parameters
   final static int ambient      = setparam |  0;
@@ -203,7 +204,6 @@ class Token {
   final static int boundbox     = setparam |  5 | showparam | command;
   // cartoon
   final static int cisangle     = setparam |  6;
-  final static int display      = setparam |  7;
   final static int fontsize     = setparam |  8;
   final static int fontstroke   = setparam |  9;
   // hbonds

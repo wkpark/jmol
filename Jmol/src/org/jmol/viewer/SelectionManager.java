@@ -63,6 +63,18 @@ class SelectionManager {
         + GT._(" atoms hidden"));
   }
 
+  void display(BitSet bsAll, BitSet bs) {
+    bsHidden.or(bsNull);
+    if (bs != null) {
+      bsHidden.or(bsAll);
+      bsHidden.andNot(bs);
+    }
+    if (viewer.getFrame() != null)
+      viewer.getFrame().bsHidden = bsHidden;
+    viewer.reportSelection(viewer.cardinalityOf(bsHidden)
+        + GT._(" atoms hidden"));
+  }
+
   BitSet getHiddenSet() {
     return bsHidden;
   }

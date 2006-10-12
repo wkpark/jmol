@@ -87,12 +87,12 @@ class Balls extends Shape {
           ~JmolConstants.ATOM_IN_MODEL
           & ~myVisibilityFlag);
       if (atom.madAtom == JmolConstants.MAR_DELETED
-          || ! showHydrogens && atom.getElementNumber() == 1 || frame.bsHidden.get(i))
+          || ! showHydrogens && atom.getElementNumber() == 1)
         continue;
       if (! isOneFrame && bs.get(atom.modelIndex) 
           || atom.modelIndex == displayModelIndex) { 
         atom.shapeVisibilityFlags |= JmolConstants.ATOM_IN_MODEL;
-        if (atom.madAtom != 0)
+        if (atom.madAtom != 0 &&  !frame.bsHidden.get(i))
           atom.shapeVisibilityFlags |= myVisibilityFlag;
       }
     }

@@ -866,6 +866,9 @@ class Eval { //implements Runnable {
       case Token.hidden:
         stack[sp++] = copyBitSet(viewer.getHiddenSet());
         break;
+      case Token.displayed:
+        stack[sp++] = invertBitSet(viewer.getHiddenSet());
+        break;
       case Token.visible:
         if (!refreshed)
           viewer.setModelVisibility();
@@ -1639,6 +1642,12 @@ class Eval { //implements Runnable {
   static BitSet copyBitSet(BitSet bitSet) {
     BitSet copy = new BitSet();
     copy.or(bitSet);
+    return copy;
+  }
+
+  private BitSet invertBitSet(BitSet bitSet) {
+    BitSet copy = bsAll();
+    copy.andNot(bitSet);
     return copy;
   }
 

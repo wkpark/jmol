@@ -485,7 +485,7 @@ public class SpaceGroup {
       operations = new SymmetryOperation[4];
       operationCount = 0;
       if (hallInfo == null || hallInfo.nRotations == 0)
-        hallInfo = new HallInfo(hallSymbol);
+        h = hallInfo = new HallInfo(hallSymbol);
       setLattice(hallInfo.latticeCode, hallInfo.isCentrosymmetric);
       addOperation(null);
       addSymmetry("x,y,z");

@@ -43,7 +43,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "10.9.74"; //popup menu reorganization; very minor fix for not identifying certain nonstandard spacegroup names;  
+  public final static String version = "10.9.75"; //better animation controls on menu, smoother animation than 10.9.74  
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
   

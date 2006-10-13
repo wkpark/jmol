@@ -166,12 +166,14 @@ In Chem3D, all grid data in following format:
       volumetricVectors[1] = new Vector3f(0, yStep, 0);
       volumetricVectors[2] = new Vector3f(0, 0, zStep);
       Hashtable surfaceInfo = new Hashtable();
+      surfaceInfo.put("surfaceDataType", "mo");
       surfaceInfo.put("volumetricOrigin", volumetricOrigin);
       surfaceInfo.put("voxelCounts", voxelCounts);
       surfaceInfo.put("volumetricVectors", volumetricVectors);
       surfaceInfo.put("nCubeData", new Integer(nData));
       surfaceInfo.put("voxelData", voxelData);
       atomSetCollection.setAtomSetAuxiliaryInfo("jmolSurfaceInfo", surfaceInfo);
+      logger.log("Chem3D molecular orbital data displayable using:  isosurface sign \"\" ");
       return;
     }
   }

@@ -5167,6 +5167,19 @@ class Eval { //implements Runnable {
       evalError(GT._("MO isosurfaces require that only one model be displayed"));
     Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
         "moData");
+    Hashtable surfaceInfo = (Hashtable) viewer.getModelAuxiliaryInfo(
+        modelIndex, "jmolSurfaceInfo");
+    if (surfaceInfo != null
+        && ((String) surfaceInfo.get("surfaceDataType")).equals("mo")) {
+      viewer.loadShape(JmolConstants.SHAPE_ISOSURFACE);
+      viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "init", null);
+      viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "sign",
+          Boolean.TRUE);
+      viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getSurface",
+          surfaceInfo);
+      
+      return;
+    }
     if (moData == null)
       evalError(GT._("no MO basis/coefficient data available for this frame"));
     Vector mos = (Vector) (moData.get("mos"));

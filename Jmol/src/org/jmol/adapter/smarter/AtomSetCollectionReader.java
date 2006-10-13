@@ -240,6 +240,7 @@ abstract class AtomSetCollectionReader extends Parser {
   void setSymmetryOperator(String jonesFaithful) {
     if(ignoreFileSymmetryOperators)
       return;
+    atomSetCollection.setLatticeCells(latticeCells);
     if(!atomSetCollection.addSymmetry(jonesFaithful))
       Logger.warn("Skipping symmetry operation " + jonesFaithful);
     iHaveSymmetryOperators = true;
@@ -316,10 +317,10 @@ abstract class AtomSetCollectionReader extends Parser {
           if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
             Logger.debug("using generated space group " + sg.dumpInfo());
           atomSetCollection.setAtomSetSpaceGroupName(sg.getName());
-          atomSetCollection.applySymmetry(sg, latticeCells);
+          atomSetCollection.applySymmetry(sg);
         }
       } else {
-        atomSetCollection.applySymmetry(latticeCells);
+        atomSetCollection.applySymmetry();
       }
     }
     initializeSymmetry();

@@ -71,6 +71,7 @@ class AtomSetCollection extends Parser {
   int[] atomSetAtomCounts = new int[16];
   Properties[] atomSetProperties = new Properties[16];
   Hashtable[] atomSetAuxiliaryInfo = new Hashtable[16];
+  int[] latticeCells;
 
   String errorMessage;
 
@@ -364,6 +365,13 @@ class AtomSetCollection extends Parser {
       setGlobalBoolean(GLOBAL_FRACTCOORD);    
   }
   
+  void setLatticeCells(int[] latticeCells) {
+    //set when unit cell is determined
+    //large numbers for x or y indicate that z is 0 (don't normalize) or 1 (normalize)
+    this.latticeCells = latticeCells;
+    doNormalize = (latticeCells[0] < 9 && latticeCells[1] < 9 || latticeCells[2] != 0);
+  }
+  
   boolean setNotionalUnitCell(float[] info) {
     notionalUnitCell = new float[info.length];
     for (int i = 0; i < info.length; i++)
@@ -380,7 +388,7 @@ class AtomSetCollection extends Parser {
   
   boolean addSymmetry(String xyz) {
     if (spaceGroup == null)
-      spaceGroup = new SpaceGroup();
+      spaceGroup = new SpaceGroup(doNormalize);
     if (!spaceGroup.addSymmetry(xyz))
       return false;
     return true;
@@ -388,16 +396,16 @@ class AtomSetCollection extends Parser {
   
   void setLatticeParameter(int latt) {
     if (spaceGroup == null)
-      spaceGroup = new SpaceGroup();
+      spaceGroup = new SpaceGroup(doNormalize);
     spaceGroup.setLattice(latt);
   }
   
-   void applySymmetry(int[] latticeCells) {
+   void applySymmetry() {
      //parameters are counts of unit cells as [a b c]
      applySymmetry(latticeCells[0], latticeCells[1], latticeCells[2]);
    }
 
-   void applySymmetry(SpaceGroup spaceGroup, int[] latticeCells) {
+   void applySymmetry(SpaceGroup spaceGroup) {
      this.spaceGroup = spaceGroup;
      //parameters are counts of unit cells as [a b c]
      applySymmetry(latticeCells[0], latticeCells[1], latticeCells[2]);
@@ -405,15 +413,9 @@ class AtomSetCollection extends Parser {
 
    boolean doNormalize = true;
    
-   void setNormalization(boolean TF) {
-    doNormalize = TF;  
-   }
-   
    void applySymmetry(int maxX, int maxY, int maxZ) {
     if (!coordinatesAreFractional || spaceGroup == null)
       return;
-    doNormalize = (maxX < 9 && maxY < 9 || maxZ == 1);
-
     int count = getLastAtomSetAtomCount();
     int atomIndex = getLastAtomSetAtomIndex();
     SymmetryOperation[] finalOperations = spaceGroup.getFinalOperations(atoms,

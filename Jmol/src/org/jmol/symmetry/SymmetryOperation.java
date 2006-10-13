@@ -162,9 +162,9 @@ public class SymmetryOperation extends Matrix4f {
         // put translation into 12ths
         iValue = iValue * 12f;
         if (doNormalize) {
-          if (iValue > 6)
+          while (iValue > 6)
             iValue -= 12;
-          if (iValue < -6)
+          while (iValue <= -6)
             iValue += 12;
         }
         temp[tpt++] = x;
@@ -200,7 +200,9 @@ public class SymmetryOperation extends Matrix4f {
         int ich = ch - '0';
         if (isDecimal && ich >= 0 && ich <= 9) {
           decimalMultiplier /= 10f;
-          iValue += decimalMultiplier * ich;
+          if (iValue < 0)
+            isNegative = true;
+          iValue += decimalMultiplier * ich * (isNegative ? -1 : 1);
           continue;
         }
         if (ich >= 1 && ich <= 9) {

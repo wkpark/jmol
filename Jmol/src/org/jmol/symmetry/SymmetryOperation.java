@@ -44,52 +44,44 @@ import org.jmol.util.Logger;
 public class SymmetryOperation extends Matrix4f {
   String xyzOriginal;
   String xyz;
+  boolean doNormalize = true;
 
   public SymmetryOperation() {
   }
 
+  public SymmetryOperation(boolean doNormalize) {
+    this.doNormalize = doNormalize;
+  }
+
   public SymmetryOperation(SymmetryOperation op, Point3f[] atoms,
-      int atomIndex, int count) {
+                           int atomIndex, int count, boolean doNormalize) {
     /*
      * externalizes and transforms an operation for use in atom reader
      * 
      */
+    this.doNormalize = doNormalize;
     xyzOriginal = op.xyzOriginal;
     xyz = op.xyz;
-    set(op);
+    set(op); // sets the underlying Matrix4f
     m03 /= 12f;
     m13 /= 12f;
     m23 /= 12f;
-    setOffset(atoms, atomIndex, count);
+    if (doNormalize)
+      setOffset(atoms, atomIndex, count);
   }
-
+  
   public String getXyz() {
     return xyz;
+  }
+
+  public String getXyzOriginal() {
+    return xyzOriginal;
   }
 
   public void newPoint(Point3f atom1, Point3f atom2,
                        int transX, int transY, int transZ) {
     Point4f temp = new Point4f(atom1.x, atom1.y, atom1.z, 1);
     transform(temp, temp);
-    /* removed -- 
-     * would allow all atoms to be forced into the unit cell
-     * instead, we use geometric center now
-     * 
-    if (normalize) {
-      while (temp.x > 1f)
-        temp.x -= 1f;
-      while (temp.y > 1f)
-        temp.y -= 1f;
-      while (temp.z > 1f)
-        temp.z -= 1f;
-      while (temp.x < 0)
-        temp.x += 1f;
-      while (temp.y < 0)
-        temp.y += 1f;
-      while (temp.z < 0)
-        temp.z += 1f;
-    }
-    */
     atom2.x = temp.x + transX;
     atom2.y = temp.y + transY;
     atom2.z = temp.z + transZ;
@@ -169,10 +161,12 @@ public class SymmetryOperation extends Matrix4f {
         int tpt = rowPt * 4;
         // put translation into 12ths
         iValue = iValue * 12f;
-        if (iValue > 6)
-          iValue -= 12;
-        if (iValue < -6)
-          iValue += 12;
+        if (doNormalize) {
+          if (iValue > 6)
+            iValue -= 12;
+          if (iValue < -6)
+            iValue += 12;
+        }
         temp[tpt++] = x;
         temp[tpt++] = y;
         temp[tpt++] = z;

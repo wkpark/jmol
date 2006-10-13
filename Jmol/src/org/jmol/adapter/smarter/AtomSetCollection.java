@@ -403,31 +403,61 @@ class AtomSetCollection extends Parser {
      applySymmetry(latticeCells[0], latticeCells[1], latticeCells[2]);
    }
 
+   boolean doNormalize = true;
+   
+   void setNormalization(boolean TF) {
+    doNormalize = TF;  
+   }
+   
    void applySymmetry(int maxX, int maxY, int maxZ) {
     if (!coordinatesAreFractional || spaceGroup == null)
       return;
+    doNormalize = (maxX < 9 && maxY < 9 || maxZ == 1);
+
     int count = getLastAtomSetAtomCount();
     int atomIndex = getLastAtomSetAtomIndex();
-    SymmetryOperation[] finalOperations = spaceGroup.getFinalOperations(atoms, atomIndex, count);
+    SymmetryOperation[] finalOperations = spaceGroup.getFinalOperations(atoms,
+        atomIndex, count, doNormalize);
     for (int i = 0; i < count; i++)
       atoms[i + atomIndex].bsSymmetry = new BitSet();
     int operationCount = finalOperations.length;
-    cartesians = new Point3f[count * operationCount * maxX * maxY * maxZ];
+    int minX = 0;
+    int minY = 0;
+    int minZ = 0;
+    if (maxX > 9 || maxY > 9) {
+      //555 --> {0 0 0}
+      minX = (maxX / 100) - 5;
+      minY = (maxX % 100) / 10 - 5;
+      minZ = (maxX % 10) - 5;
+      //555 --> {1 1 1}
+      maxX = (maxY / 100) - 4;
+      maxZ = (maxY % 10) - 4;
+      maxY = (maxY % 100) / 10 - 4;
+    }
+    cartesians = new Point3f[count * operationCount * (maxX - minX)
+        * (maxY - minY) * (maxZ - minZ)];
     int pt = 0;
-    for (int tx = 0; tx < maxX; tx++)
-      for (int ty = 0; ty < maxY; ty++)
-        for (int tz = 0; tz < maxZ; tz++)
-          pt = symmetryAddAtoms(finalOperations, atomIndex, count, tx, ty, tz, pt);
+    if (cartesians.length > 0)
+      pt = symmetryAddAtoms(finalOperations, atomIndex, count, 0, 0, 0, pt);
+    for (int tx = minX; tx < maxX; tx++)
+      for (int ty = minY; ty < maxY; ty++)
+        for (int tz = minZ; tz < maxZ; tz++)
+          if (tx != 0 || ty != 0 || tz != 0)
+            pt = symmetryAddAtoms(finalOperations, atomIndex, count, tx, ty,
+                tz, pt);
     if (operationCount > 0) {
       String[] symmetryList = new String[operationCount];
       for (int i = 0; i < operationCount; i++)
-        symmetryList[i] = "" + finalOperations[i].getXyz();
+        symmetryList[i] = ""
+            + (doNormalize ? finalOperations[i].getXyz() : finalOperations[i]
+                .getXyzOriginal());
       setAtomSetAuxiliaryInfo("symmetryOperations", symmetryList);
     }
     setAtomSetAuxiliaryInfo("presymmetryAtomIndex", new Integer(atomIndex));
     setAtomSetAuxiliaryInfo("presymmetryAtomCount", new Integer(count));
     setAtomSetAuxiliaryInfo("symmetryCount", new Integer(operationCount));
-    setAtomSetAuxiliaryInfo("latticeDesignation", spaceGroup.getLatticeDesignation());
+    setAtomSetAuxiliaryInfo("latticeDesignation", spaceGroup
+        .getLatticeDesignation());
     spaceGroup = null;
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false; //turn off global fractional conversion -- this wil be model by model

@@ -111,7 +111,7 @@ abstract class AtomSetCollectionReader extends Parser {
   boolean iHaveFractionalCoordinates;
   boolean iHaveSymmetryOperators;
   boolean needToApplySymmetry;
-
+  
   abstract AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception;
 
@@ -170,29 +170,36 @@ abstract class AtomSetCollectionReader extends Parser {
     initialize();
     if (params == null)
       return;
-    
+
     // params is of variable length: 4, 5, or 11
     // [desiredModelNumber, i, j, k, 
     //  desiredSpaceGroupIndex,
     //  a*10000, b*10000, c*10000, alpha*10000, beta*10000, gamma*10000]
-    
+
     desiredModelNumber = params[0];
     latticeCells[0] = params[1];
     latticeCells[1] = params[2];
     latticeCells[2] = params[3];
-    doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0 && latticeCells[2] > 0);
-    
+    doApplySymmetry = (latticeCells[0] > 0 && latticeCells[1] > 0
+        && latticeCells[2] > 0 || latticeCells[0] > 9 && latticeCells[1] > 9);
+    //allows for {1 1 1} or {555 555 0|1}
+    if (!doApplySymmetry) {
+      latticeCells[0] = 0;
+      latticeCells[1] = 0;
+      latticeCells[2] = 0;
+    }
+
     //this flag FORCES symmetry -- generally if coordinates are not fractional,
     //we may note the unit cell, but we do not apply symmetry
     //with this flag, we convert any nonfractional coordinates to fractional
     //if a unit cell is available.
-    
+
     if (params.length >= 5) {
       // three options include:
       // = -1: normal -- use operators if present or name if not
       // >=0: spacegroup fully determined
       // = -999: ignore just the operators
-     
+
       desiredSpaceGroupIndex = params[4];
       ignoreFileSpaceGroupName = (desiredSpaceGroupIndex >= 0);
       ignoreFileSymmetryOperators = (desiredSpaceGroupIndex != -1);

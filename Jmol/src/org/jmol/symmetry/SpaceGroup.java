@@ -69,8 +69,14 @@ public class SpaceGroup {
   char latticeCode;
   SymmetryOperation[] operations;
   int operationCount;
+  boolean doNormalize = true;
  
   public SpaceGroup() {
+    addSymmetry("x,y,z");
+  }
+  
+  public SpaceGroup(boolean doNormalize) {
+    this.doNormalize = doNormalize;
     addSymmetry("x,y,z");
   }
   
@@ -403,7 +409,7 @@ public class SpaceGroup {
     xyz = xyz.toLowerCase();
     if (xyz.indexOf("x") < 0 || xyz.indexOf("y") < 0 || xyz.indexOf("z") < 0)
       return false;
-    SymmetryOperation symmetryOperation = new SymmetryOperation();
+    SymmetryOperation symmetryOperation = new SymmetryOperation(doNormalize);
     if (!symmetryOperation.setMatrixFromXYZ(xyz)) {
       Logger.error("couldn't interpret symmetry operation: " + xyz);      
       return false;
@@ -412,15 +418,20 @@ public class SpaceGroup {
     return true;
   }
    
-  public SymmetryOperation[] getFinalOperations(Point3f[] atoms, int atomIndex, int count) {
+  public SymmetryOperation[] getFinalOperations(Point3f[] atoms, int atomIndex,
+                                                int count, boolean doNormalize) {
+    //from AtomSetCollection.applySymmetry only
     if (hallInfo == null && latticeParameter != 0) {
-      HallInfo h = new HallInfo(Translation.getHallLatticeEquivalent(latticeParameter));
-      generateAllOperators(h);      
+      HallInfo h = new HallInfo(Translation
+          .getHallLatticeEquivalent(latticeParameter));
+      generateAllOperators(h);
+      doNormalize = false;
     }
 
     SymmetryOperation[] finalOperations = new SymmetryOperation[operationCount];
     for (int i = 0; i < operationCount; i++) {
-      finalOperations[i] = new SymmetryOperation(operations[i], atoms, atomIndex, count);
+      finalOperations[i] = new SymmetryOperation(operations[i], atoms,
+          atomIndex, count, doNormalize);
     }
     return finalOperations;
   }

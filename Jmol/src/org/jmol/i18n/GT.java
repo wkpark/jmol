@@ -33,14 +33,14 @@ public class GT {
   private static GT getTextWrapper;
   private ResourceBundle[] translationResources = null;
   private int translationResourcesCount = 0;
+  private static Boolean doTranslate = new Boolean(true);
 
   private GT() {
     Locale locale = Locale.getDefault();
-    if ((locale != null) &&
-        (locale.getLanguage() != null)) {
+    if ((locale != null) && (locale.getLanguage() != null)) {
       String language = locale.getLanguage();
-      if ((language.equals("")) ||
-          (language.equals(Locale.ENGLISH.getLanguage()))) {
+      if ((language.equals(""))
+          || (language.equals(Locale.ENGLISH.getLanguage()))) {
         Logger.debug("English: no need for gettext wrapper");
         return;
       }
@@ -68,8 +68,8 @@ public class GT {
         if (locale.getVariant() != null) {
           // NOTE: Currently, there's no need for variants
           /*addBundle(
-              name + "_" + locale.getLanguage() +
-              "_" + locale.getCountry() + "_" + locale.getVariant());*/
+           name + "_" + locale.getLanguage() +
+           "_" + locale.getCountry() + "_" + locale.getVariant());*/
         }
         // NOTE: Currently, there's no need for countries
         //addBundle(name + "_" + locale.getLanguage() + "_" + locale.getCountry());
@@ -92,7 +92,8 @@ public class GT {
     } catch (ClassNotFoundException e) {
       // Class not found: can be normal
     }
-    if ((bundleClass != null) && ResourceBundle.class.isAssignableFrom(bundleClass)) {
+    if ((bundleClass != null)
+        && ResourceBundle.class.isAssignableFrom(bundleClass)) {
       try {
         ResourceBundle myBundle = (ResourceBundle) bundleClass.newInstance();
         if (myBundle != null) {
@@ -123,6 +124,47 @@ public class GT {
     ignoreApplicationBundle = true;
   }
 
+  public static void setDoTranslate(boolean TF) {
+    doTranslate = (TF ? Boolean.TRUE : Boolean.FALSE);
+  }
+
+  public static boolean getDoTranslate() {
+    return doTranslate.booleanValue();
+  }
+
+  public static String T(String string) {
+    return T(string, (Object[])null);
+  }
+
+  public static String T(String string, String item) {
+    return T(string, new Object[] { item });
+  }
+
+  public static String T(String string, int item) {
+    return T(string, new Object[] { new Integer(item) });
+  }
+
+  public static String T(String string, Object[] objects) {
+    if (doTranslate.booleanValue())
+    forceTranslate(true);
+    String str = (objects == null ? _(string) : _(string, objects));
+    if (tempDoTranslate.booleanValue())
+    forceTranslate(false);
+    return str;
+  }
+
+  static Boolean tempDoTranslate = Boolean.TRUE;
+  private synchronized static void forceTranslate(boolean TF) {
+    if (TF) {
+      tempDoTranslate = (doTranslate.booleanValue() ? Boolean.TRUE
+          : Boolean.FALSE);
+      doTranslate = Boolean.FALSE;
+    } else {
+      doTranslate = (tempDoTranslate.booleanValue() ? Boolean.TRUE
+          : Boolean.FALSE);
+    }
+  }
+  
   public static String _(String string) {
     return getTextWrapper().getString(string);
   }
@@ -132,7 +174,8 @@ public class GT {
   }
 
   public static String _(String string, int item) {
-    return getTextWrapper().getString(string, new Object[] { new Integer(item) });
+    return getTextWrapper().getString(string,
+        new Object[] { new Integer(item) });
   }
 
   public static String _(String string, Object[] objects) {
@@ -156,10 +199,12 @@ public class GT {
 
   private String getString(String string, Object[] objects) {
     String trans = null;
+    if (!doTranslate.booleanValue())
+      return MessageFormat.format(string, objects);
     for (int bundle = 0; bundle < translationResourcesCount; bundle++) {
       try {
-        trans = MessageFormat.format(
-            translationResources[bundle].getString(string), objects);
+        trans = MessageFormat.format(translationResources[bundle]
+            .getString(string), objects);
         return trans;
       } catch (MissingResourceException e) {
         // Normal

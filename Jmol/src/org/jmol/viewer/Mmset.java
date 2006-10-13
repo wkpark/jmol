@@ -81,18 +81,19 @@ final class Mmset {
       models[i].setConformation(bsConformation);
   }
 
-  Hashtable getHeteroList() {
+  Hashtable getHeteroList(int modelIndex) {
     Hashtable htFull = new Hashtable();
-    for (int i = modelCount; --i >= 0;) {
-      Hashtable ht = (Hashtable) getModelAuxiliaryInfo(i, "hetNames");
-      if (ht == null)
-        continue;
-      Enumeration e = ht.keys();
-      while (e.hasMoreElements()) {
-        String key = (String) e.nextElement();
-        htFull.put(key, ht.get(key));
-      }        
-    }
+    for (int i = modelCount; --i >= 0;)
+      if (modelIndex < 0 || i == modelIndex) {
+        Hashtable ht = (Hashtable) getModelAuxiliaryInfo(i, "hetNames");
+        if (ht == null)
+          continue;
+        Enumeration e = ht.keys();
+        while (e.hasMoreElements()) {
+          String key = (String) e.nextElement();
+          htFull.put(key, ht.get(key));
+        }
+      }
     return htFull;
   }
 

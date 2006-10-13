@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import org.jmol.symmetry.UnitCell;
 import org.jmol.util.*;
+import org.jmol.i18n.GT;
 
 import org.jmol.api.*;
 import org.jmol.g3d.*;
@@ -1697,8 +1698,8 @@ public class Viewer extends JmolViewer {
     return modelManager.getElementsPresentBitSet();
   }
 
-  public Hashtable getHeteroList() {
-    return modelManager.getHeteroList();
+  public Hashtable getHeteroList(int modelIndex) {
+    return modelManager.getHeteroList(modelIndex);
   }
 
   BitSet getVisibleSet() {
@@ -2315,20 +2316,23 @@ public class Viewer extends JmolViewer {
 
   public String scriptWait(String strScript) {
     scriptManager.waitForQueue();
-    return evalStringWait(strScript);
-  }
-
-  public String evalStringWait(String strScript) {
-    scriptManager.waitForQueue();
-    return (String) evalStringWaitStatus("JSON", strScript,
+    boolean doTranslateTemp = GT.getDoTranslate();
+    GT.setDoTranslate(false);
+    String str=(String) evalStringWaitStatus("JSON", strScript,
         "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated", false,
         false, null);
+    GT.setDoTranslate(doTranslateTemp);
+    return str;
   }
 
   public Object scriptWaitStatus(String strScript, String statusList) {
     scriptManager.waitForQueue();
-    return evalStringWaitStatus("object", strScript, statusList, false, false,
+    boolean doTranslateTemp = GT.getDoTranslate();
+    GT.setDoTranslate(false);
+    Object ret = evalStringWaitStatus("object", strScript, statusList, false, false,
         null);
+    GT.setDoTranslate(doTranslateTemp);
+    return ret;
   }
 
   public Object evalStringWaitStatus(String returnType, String strScript,

@@ -501,8 +501,8 @@ class ModelManager {
     return (frame == null) ? null : frame.getElementsPresentBitSet();
   }
 
-  public Hashtable getHeteroList() {
-    return (frame == null) ? null : frame.mmset.getHeteroList();
+  public Hashtable getHeteroList(int modelIndex) {
+    return (frame == null) ? null : frame.mmset.getHeteroList(modelIndex);
   }
 
   BitSet getGroupsPresentBitSet() {

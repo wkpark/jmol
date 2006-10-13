@@ -122,7 +122,7 @@ abstract public class JmolPopup {
 
     updateSelectMenu();
     updateElementsComputedMenu(viewer.getElementsPresentBitSet());
-    updateHeteroComputedMenu(viewer.getHeteroList());
+    updateHeteroComputedMenu(viewer.getHeteroList(modelIndex));
     updateSurfMoComputedMenu((Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,"moData"));
     updateAaresiduesComputedMenu(viewer.getGroupsPresentBitSet());
     updateModelSetComputedMenu();
@@ -146,7 +146,7 @@ abstract public class JmolPopup {
   void updateSelectMenu() {
     if (selectMenu == null)
       return;
-    setLabel(selectMenu, GT._("Select ({0})", viewer.getSelectionCount()));
+    setLabel(selectMenu, GT.T("Select ({0})", viewer.getSelectionCount()));
   }
   
   void updateElementsComputedMenu(BitSet elementsPresentBitSet) {
@@ -239,11 +239,11 @@ abstract public class JmolPopup {
       return;
     int modelCount = viewer.getModelCount();
     enableMenu(FRAMESbyModelComputedMenu, (modelCount > 1));
-    setLabel(FRAMESbyModelComputedMenu, (modelIndex < 0 ? GT._("All {0} models", viewer.getModelCount()) : getModelLabel()));
+    setLabel(FRAMESbyModelComputedMenu, (modelIndex < 0 ? GT.T("All {0} models", viewer.getModelCount()) : getModelLabel()));
     removeAll(FRAMESbyModelComputedMenu);
     if (modelCount < 2)
       return;
-    addCheckboxMenuItem(FRAMESbyModelComputedMenu, GT._("all"), "frame 0 #", null, (modelIndex < 0));
+    addCheckboxMenuItem(FRAMESbyModelComputedMenu, GT.T("all"), "frame 0 #", null, (modelIndex < 0));
     for (int i = 0; i < modelCount; i++) {
       String script = "" + viewer.getModelNumber(i);
       String entryName = viewer.getModelName(i);
@@ -262,11 +262,11 @@ abstract public class JmolPopup {
       return;
     String altlocs = viewer.getAltLocListInModel(modelIndex);
     int nAltLocs = altlocs.length();
-    setLabel(CONFIGURATIONComputedMenu, GT._("Configurations ({0})", nAltLocs));
+    setLabel(CONFIGURATIONComputedMenu, GT.T("Configurations ({0})", nAltLocs));
     enableMenu(CONFIGURATIONComputedMenu, true);
     removeAll(CONFIGURATIONComputedMenu);
     String script = "hide none #CONFIG";
-    addCheckboxMenuItem(CONFIGURATIONComputedMenu, GT._("all"), script, null,
+    addCheckboxMenuItem(CONFIGURATIONComputedMenu, GT.T("all"), script, null,
         (updateMode == UPDATE_CONFIG && configurationSelected.equals(script)));
     for (int i = 0; i < nAltLocs; i++) {
       script = "configuration " + (i + 1) + "; hide not selected #CONFIG";
@@ -299,23 +299,23 @@ abstract public class JmolPopup {
       addMenuSubMenu(modelSetComputedMenu, CONFIGURATIONComputedMenu);
     }
     addMenuSeparator(modelSetComputedMenu);
-    addMenuItem(modelSetComputedMenu, GT._("atoms: {0}", viewer
+    addMenuItem(modelSetComputedMenu, GT.T("atoms: {0}", viewer
         .getAtomCountInModel(modelIndex)));
-    addMenuItem(modelSetComputedMenu, GT._("bonds: {0}", viewer
+    addMenuItem(modelSetComputedMenu, GT.T("bonds: {0}", viewer
         .getBondCountInModel(modelIndex)));
     addMenuSeparator(modelSetComputedMenu);
     if (isPDB) {
-      addMenuItem(modelSetComputedMenu, GT._("groups: {0}", viewer
+      addMenuItem(modelSetComputedMenu, GT.T("groups: {0}", viewer
           .getGroupCountInModel(modelIndex)));
-      addMenuItem(modelSetComputedMenu, GT._("chains: {0}", viewer
+      addMenuItem(modelSetComputedMenu, GT.T("chains: {0}", viewer
           .getChainCountInModel(modelIndex)));
-      addMenuItem(modelSetComputedMenu, GT._("polymers: {0}", viewer
+      addMenuItem(modelSetComputedMenu, GT.T("polymers: {0}", viewer
           .getPolymerCountInModel(modelIndex)));
       addMenuSeparator(modelSetComputedMenu);
     }
     if (isApplet && viewer.showModelSetDownload()
         && !viewer.getBooleanProperty("hideNameInPopup")) {
-      addMenuItem(modelSetComputedMenu, GT._("View {0}", viewer
+      addMenuItem(modelSetComputedMenu, GT.T("View {0}", viewer
           .getModelSetFileName()), viewer.getModelSetPathName(), null);
     }
   }
@@ -338,7 +338,7 @@ abstract public class JmolPopup {
   }
   
   String getModelLabel() {
-    return GT._("model {0}",(modelIndex + 1) + "/" + viewer.getModelCount());
+    return GT.T("model {0}",(modelIndex + 1) + "/" + viewer.getModelCount());
   }
   
   private void updateAboutSubmenu() {
@@ -353,25 +353,25 @@ abstract public class JmolPopup {
     addMenuItem(aboutComputedMenu, viewer.getJavaVendor());
     addMenuItem(aboutComputedMenu, viewer.getJavaVersion());
     addMenuSeparator(aboutComputedMenu);
-    addMenuItem(aboutComputedMenu, GT._("Java memory usage"));
+    addMenuItem(aboutComputedMenu, GT.T("Java memory usage"));
     Runtime runtime = Runtime.getRuntime();
     runtime.gc();
     long mbTotal = convertToMegabytes(runtime.totalMemory());
     long mbFree = convertToMegabytes(runtime.freeMemory());
     long mbMax = convertToMegabytes(maxMemoryForNewerJvm());
-    addMenuItem(aboutComputedMenu, GT._("{0} MB total", new Object[] { new Long(mbTotal) }));
-    addMenuItem(aboutComputedMenu, GT._("{0} MB free", new Object[] { new Long(mbFree) }));
+    addMenuItem(aboutComputedMenu, GT.T("{0} MB total", new Object[] { new Long(mbTotal) }));
+    addMenuItem(aboutComputedMenu, GT.T("{0} MB free", new Object[] { new Long(mbFree) }));
     if (mbMax > 0)
-      addMenuItem(aboutComputedMenu, GT._("{0} MB maximum", new Object[] { new Long(mbMax) }));
+      addMenuItem(aboutComputedMenu, GT.T("{0} MB maximum", new Object[] { new Long(mbMax) }));
     else
-      addMenuItem(aboutComputedMenu, GT._("unknown maximum"));
+      addMenuItem(aboutComputedMenu, GT.T("unknown maximum"));
     int availableProcessors = availableProcessorsForNewerJvm();
     if (availableProcessors > 0)
       addMenuItem(aboutComputedMenu, (availableProcessors == 1) ?
-                  GT._("1 processor") :
-                  GT._("{0} processors", availableProcessors));
+                  GT.T("1 processor") :
+                  GT.T("{0} processors", availableProcessors));
     else
-      addMenuItem(aboutComputedMenu, GT._("unknown processor count"));
+      addMenuItem(aboutComputedMenu, GT.T("unknown processor count"));
   }
 
   private long convertToMegabytes(long num) {

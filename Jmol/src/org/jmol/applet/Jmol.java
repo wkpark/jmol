@@ -287,6 +287,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       statusText = getValue("StatusText", null); //text
       statusTextarea = getValue("StatusTextarea", null); //textarea
 
+      boolean haveTranslateFlag = (getValue("doTranslate", null) != null);
+      boolean doTranslate = getBooleanValue("doTranslate", true);
+
       if (animFrameCallback != null)
         Logger.info("animFrameCallback=" + animFrameCallback);
       if (loadStructCallback != null)
@@ -305,13 +308,28 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         Logger.info("applet textarea status will be reported to document."
             + statusForm + "." + statusTextarea);
       }
-      if (!mayScript
-          && (animFrameCallback != null || loadStructCallback != null
-              || messageCallback != null ||
-          // pauseCallback != null ||
-          pickCallback != null))
-        Logger.warn("WARNING!! MAYSCRIPT not found");
-
+      if (animFrameCallback != null || loadStructCallback != null
+          || messageCallback != null || hoverCallback != null
+          // || pauseCallback != null
+          || pickCallback != null || statusForm != null || statusText != null) {
+        if (!mayScript)
+          Logger.warn("WARNING!! MAYSCRIPT not found");
+      }
+      if (messageCallback != null || statusForm != null || statusText != null) {
+        if (!haveTranslateFlag) {
+          doTranslate = false;
+          Logger
+              .warn("Note -- language translation disabled due to the presence of the message callback function; "
+                  + "to enable language translation, use jmolSetTranslation(true) prior to jmolApplet()");
+        }
+        if (doTranslate)
+          Logger
+              .warn("Note -- language translation may affect parsing of callback messages");
+      }
+      if (!doTranslate) {
+        GT.setDoTranslate(false);
+        Logger.warn("Note -- language translation disabled");
+      }
       String loadParam;
       String scriptParam = getValue("script", "");
       if ((loadParam = getValue("loadInline", null)) != null)
@@ -402,14 +420,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   final static String[] progressbarMsgs = { "Jmol developer alert!", "",
-      "progressbar is REQUIRED ... otherwise users",
-      "will have no indicate that the applet is loading", "",
-      "<applet code='JmolApplet' ... >",
-      "  <param name='progressbar' value='true' />",
-      "  <param name='progresscolor' value='blue' />",
-      "  <param name='boxmessage' value='your-favorite-message' />",
-      "  <param name='boxbgcolor' value='#112233' />",
-      "  <param name='boxfgcolor' value='#778899' />", "   ...", "</applet>", };
+      "Please use jmol.js. You are missing the require 'progressbar' parameter.",
+      "  <param name='progressbar' value='true' />",};
 
   void printProgressbarMessage(Graphics g) {
     g.setColor(Color.yellow);

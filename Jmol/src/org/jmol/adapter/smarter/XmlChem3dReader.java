@@ -142,9 +142,22 @@ class XmlChem3dReader extends XmlReader {
       // seems to work for one test case.
       // could EASILY be backward.
 
-      for (int z = nPointsZ; --z >= 0;)
+      /* from adeptscience:
+       *
+       * 
+"Here is what we can tell you:
+
+In Chem3D, all grid data in following format:
+
+  for (int z = 0; z < ZDim; z++)
+  for (int y = 0; y < YDim; y++)
+  for (int x = 0; x < XDim; x++)"
+  
+       */
+      
+      for (int z = 0; z < nPointsZ; z++)
         for (int y = 0; y < nPointsY; y++)
-          for (int x = nPointsX; --x >= 0;)
+          for (int x = 0; x < nPointsX; x++)
             voxelData[x][y][z] = parseFloat(tokens[pt++]);
       int[] voxelCounts = new int[] { nPointsX, nPointsY, nPointsZ };
       Point3f volumetricOrigin = new Point3f(originX, originY, originZ);

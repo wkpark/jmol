@@ -1517,7 +1517,7 @@ class Compiler {
         tokenNext();
       int seqcodeA = seqcode;
       if (!clauseSequenceCode())
-        return false;
+        seqcode = Integer.MAX_VALUE;
       return generateResidueSpecCode(new Token(Token.spec_seqcode_range, seqcodeA,
           new Integer(seqcode)));
     }

@@ -254,7 +254,7 @@ class StyleManager {
   void setCrystallographicDefaults() { 
     //axes on and mode unitCell; unitCell on; perspective depth off;
     viewer.setShapeSize(JmolConstants.SHAPE_AXES, 200);
-    viewer.setShapeSize(JmolConstants.SHAPE_UCCAGE, 1);
+    viewer.setShapeSize(JmolConstants.SHAPE_UCCAGE, -1);
     viewer.setAxesModeUnitCell(true);
     viewer.setPerspectiveDepth(false);
   }

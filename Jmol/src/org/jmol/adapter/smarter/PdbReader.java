@@ -97,6 +97,10 @@ class PdbReader extends AtomSetCollectionReader {
         structure();
         continue;
       }
+      if (line.startsWith("HET   ")) {
+        het();
+        continue;
+      }
       if (line.startsWith("HETNAM")) {
         hetnam();
         continue;
@@ -256,9 +260,11 @@ class PdbReader extends AtomSetCollectionReader {
       // note that values are +1 in this serial map
       serialMap[serial] = atomSetCollection.atomCount;
       
-      if (isHetero && htHetero != null) {
+      if (isHetero) {
+        if (htHetero != null) {
         atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
         htHetero = null;
+        }
       }
 
     } catch (NumberFormatException e) {
@@ -466,6 +472,18 @@ class PdbReader extends AtomSetCollectionReader {
       else if (Atom.isValidElementSymbol(chFirst))
         htElementsInGroup.put("" + chFirst, Boolean.TRUE);
     }
+  }
+  
+  void het() {
+    if (htHetero == null)
+      htHetero = new Hashtable();
+    String groupName = parseToken(line, 7, 10);
+    String hetName = "";
+    String htName = (String) htHetero.get(groupName);
+    if (htName != null)
+      return;
+    htHetero.put(groupName, hetName);
+    logger.log("het: "+groupName);
   }
   
   void hetnam() {

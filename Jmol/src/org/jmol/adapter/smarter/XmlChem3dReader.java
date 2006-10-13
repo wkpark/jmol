@@ -118,11 +118,11 @@ class XmlChem3dReader extends XmlReader {
       int nPointsY = parseInt((String) atts.get("gridDatYDim"));
       int nPointsZ = parseInt((String) atts.get("gridDatZDim"));
       float xStep = parseFloat((String) atts.get("gridDatXSize"))
-          / (nPointsX - 1f);
+          / (nPointsX);
       float yStep = parseFloat((String) atts.get("gridDatYSize"))
-          / (nPointsY - 1f);
+          / (nPointsY);
       float zStep = parseFloat((String) atts.get("gridDatZSize"))
-          / (nPointsZ - 1f);
+          / (nPointsZ);
       String xyz = (String) atts.get("gridDatOrigin");
       tokens = getTokens(xyz);
       float originX = parseFloat(tokens[0]);

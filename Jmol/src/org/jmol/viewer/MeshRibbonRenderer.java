@@ -120,11 +120,12 @@ class MeshRibbonRenderer extends MpsRenderer { // not current for Mcp class
 
   void render1Strand(int monomerCount, Monomer[] monomers, short[] mads,
                      short[] colixes, Point3i[] screens) {
-    for (int i = monomerCount; --i >= 0; ) {
+    for (int i = monomerCount; --i >= 0;) {
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
           || frame.bsHidden.get(monomers[i].getLeadAtomIndex()))
-        render1StrandSegment(monomerCount,
-                             monomers[i], colixes[i], mads, screens, i);
+        continue;
+      render1StrandSegment(monomerCount, monomers[i], colixes[i], mads,
+          screens, i);
     }
   }
   
@@ -142,18 +143,17 @@ class MeshRibbonRenderer extends MpsRenderer { // not current for Mcp class
   void render2Strand(int monomerCount, Monomer[] monomers, short[] mads,
                      short[] colixes, Point3i[] ribbonTopScreens,
                      Point3i[] ribbonBottomScreens) {
-    for (int i = monomerCount; --i >= 0; )
-      if (mads[i] > 0)
-        render2StrandSegment(monomerCount,
-                             monomers[i], colixes[i], mads,
-                             ribbonTopScreens, ribbonBottomScreens, i);
+    for (int i = monomerCount; --i >= 0;) {
+      if (mads[i] == 0 || frame.bsHidden.get(monomers[i].getLeadAtomIndex()))
+        continue;
+      render2StrandSegment(monomerCount, monomers[i], colixes[i], mads,
+          ribbonTopScreens, ribbonBottomScreens, i);
+    }
   }
   
   void render2StrandSegment(int monomerCount, Monomer monomer, short colix,
                             short[] mads, Point3i[] ribbonTopScreens,
                             Point3i[] ribbonBottomScreens, int i) {
-    if (frame.bsHidden.get(monomer.getLeadAtomIndex()))
-      return;
     int iLast = monomerCount;
     int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
     int iNext = i + 1; if (iNext > iLast) iNext = iLast;

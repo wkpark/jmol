@@ -2612,9 +2612,8 @@ public class Viewer extends JmolViewer {
 
   void clearClickCount() {
     //MouseManager.clearclickCount()
-    selectionManager.setHideNotSelected(false);
-    selectionManager.hide(null);
     mouseManager.clearClickCount();
+    setTainted(true);
   }
 
   void setPickingMode(int pickingMode) {

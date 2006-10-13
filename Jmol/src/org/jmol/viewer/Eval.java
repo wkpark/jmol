@@ -3488,9 +3488,6 @@ class Eval { //implements Runnable {
   }
   
   void dots(int ipt, int dotsMode) throws ScriptException {
-    int modelIndex = viewer.getDisplayModelIndex();
-    if (modelIndex < 0)
-      evalError(GT._("surfaces require that only one model be displayed"));
     viewer.loadShape(JmolConstants.SHAPE_DOTS);
     viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "init",
         new Integer(dotsMode));

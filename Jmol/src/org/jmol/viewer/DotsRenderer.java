@@ -41,7 +41,6 @@ class DotsRenderer extends ShapeRenderer {
   final Point3f[] vertexTest = new Point3f[12];
   final Vector3f[] vectorTest = new Vector3f[12];
 
-
   void initRenderer() {
 
     //level = 3 for both
@@ -92,39 +91,13 @@ class DotsRenderer extends ShapeRenderer {
     //boolean iShowSolid = (viewer.getTestFlag3()||dots.showSurface) && dots.useBobsAlgorithm;
     for (int i = dots.dotsConvexMax; --i >= 0;) {
       Atom atom = atoms[i];
-      if (atom.isShapeVisible(myVisibilityFlag)) {
-        renderConvex(dots, atom, colixesConvex[i], dotsConvexMaps[i],
-            iShowSolid, isInMotion);
-        //if (dots.useBobsAlgorithm)
-          //renderSolventSurface(dots, atoms, colixesConvex, i, iShowSolid, isInMotion);
-      }
+      if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i))
+        continue;
+      renderConvex(dots, atom, colixesConvex[i], dotsConvexMaps[i], iShowSolid,
+          isInMotion);
     }
-
-    // no need for this for sasurface:
-    /*
-    Dots.Torus[] tori = dots.tori;
-    for (int i = dots.torusCount; --i >= 0;) {
-      Dots.Torus torus = tori[i];
-      Atom atom = atoms[torus.ixI];
-      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) != 0
-          && (atom.shapeVisibilityFlags & dots.myVisibilityFlag) != 0)
-        renderTorus(torus, atoms, colixesConvex, dotsConvexMaps);
-    }
-    Dots.Cavity[] cavities = dots.cavities;
-    if (false) {
-      return;
-    }
-    for (int i = dots.cavityCount; --i >= 0;) {
-      Dots.Cavity cavity = cavities[i];
-      Atom atom = atoms[cavity.ixI];
-      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) != 0
-          && (atom.shapeVisibilityFlags & dots.myVisibilityFlag) != 0)
-        renderCavity(cavities[i], atoms, colixesConvex, dotsConvexMaps);
-    }
-    */
     dots.timeEndExecution = System.currentTimeMillis();
     //Logger.debug("dots rendering time = "+ dots.getExecutionWalltime());
-   
   }
 
   int[] mapAtoms = null; 
@@ -177,270 +150,6 @@ class DotsRenderer extends ShapeRenderer {
       g3d.fillTriangle(colix, facePt1, facePt2, facePt3);
     }
   }
-  
-  /*
-  Point3i[] screen1;
-  Point3i[] screen2;      
-
-  void renderSolventSurface(Dots dots, Atom[] atoms, short[] colixes, int atomIndex,
-                     boolean iShowSolid, boolean isInMotion) {
-    geodesicSolvent.transform();
-    int nSolventArcs = dots.nSolventArcs[atomIndex];
-    Dots.SolventArc[] solventArcs = dots.solventArcs[atomIndex];
-    if (nSolventArcs == 0)
-      return;
-    int nArcPoints = dots.nArcPoints;
-    //testFlag3 shows solid
-    //testFlag4 shows center points
-    boolean iShowLines = viewer.getTestFlag2();
-    boolean iShowCenters = viewer.getTestFlag4();
-    int[] screenCoordinates = new int[nSolventArcs * 3 * nArcPoints];
-    Point3i screen = new Point3i();
-    //Logger.debug("renderConvex"+atom.getIdentity()+" nDotsMoved"+nDotsMoved+"len="+dotsMoved.length);
-    int ptOther = (nArcPoints - 1)  / 2;
-    int nCoord;
-    int[] map = new int[geodesicSolvent.vertices.length];
-    for (int i = 0; i < nSolventArcs; i++) {
-      short colix1 = Graphics3D.inheritColix(colixes[solventArcs[i].atomIndex1],
-          atoms[solventArcs[i].atomIndex1].colixAtom);
-      short colix2 = Graphics3D.inheritColix(colixes[solventArcs[i].atomIndex2],
-          atoms[solventArcs[i].atomIndex2].colixAtom);
-      if (iShowCenters) {
-        viewer.transformPoint(solventArcs[i].center, screen);
-        g3d.fillSphereCentered(Graphics3D.WHITE, 5, screen);
-      }
-      if(isInMotion)
-        continue;
-      if (iShowSolid) {
-        colix1 = colix2 = Graphics3D.GRAY;
-        if (i < nSolventArcs - 1) 
-          renderTorusFragment(solventArcs[i], solventArcs[i+1], nArcPoints, colix1, colix2);        
-      } else {
-        nCoord = 0;
-        for (int j = 0; j < ptOther; j++) {
-          viewer.transformPoint(solventArcs[i].arcPoints[j], screen);
-          screenCoordinates[nCoord++] = screen.x;
-          screenCoordinates[nCoord++] = screen.y;
-          screenCoordinates[nCoord++] = screen.z;
-        }
-        g3d.drawPoints(colix1, nCoord / 3, screenCoordinates);
-        nCoord = 0;
-        for (int j = ptOther; j < nArcPoints; j++) {
-          viewer.transformPoint(solventArcs[i].arcPoints[j], screen);
-          screenCoordinates[nCoord++] = screen.x;
-          screenCoordinates[nCoord++] = screen.y;
-          screenCoordinates[nCoord++] = screen.z;
-        }
-        g3d.drawPoints(colix2, nCoord / 3, screenCoordinates);
-      }
-    }
-    short color = Graphics3D.YELLOW;
-    for (int i = dots.nSolventPoints; --i >= 0;) {
-      Dots.SolventPoint p = dots.solventPoints[i];
-      viewer.transformPoint(p.center, screen);
-      if (iShowCenters) {
-        g3d.fillSphereCentered(color, 5, screen);
-      }
-      if (iShowLines) {
-        for (int j = 0; j < 3; j++) {
-          g3d.fillCylinder(j < 2 ? color : Graphics3D.ORANGE, Graphics3D.ENDCAPS_FLAT, 2, screen, viewer
-              .transformPoint(p.atomContact[j]));
-        }
-      }
-      
-      if(isInMotion)
-        continue;
-      //this next call sets the geodesic screenCenterXYZ 
-      //and scaledRadius for renderGeodesicFragment
-      geodesicSolvent.calcScreenPoints(p.geodesicPoints, dots.radiusP
-          * Dots.SOLVENT_GEODESIC_FACTOR, screen.x, screen.y, screen.z, map);
-      if (geodesicSolvent.screenCoordinateCount == 0)
-        continue;
-      if (iShowSolid) {
-        renderGeodesicFragment(Graphics3D.GRAY, geodesicSolvent, p.geodesicPoints, map, geodesicSolvent.screenDotCount);
-      } else {
-        g3d.drawPoints(color, geodesicSolvent.screenCoordinateCount,
-            geodesicSolvent.screenCoordinates);
-      }
-    }
-  }
-  
-  void renderTorusFragment(Dots.SolventArc solventArc1, Dots.SolventArc solventArc2, int nArcPoints, short color1, short color2) {
-    if (solventArc2.isFirst)
-      return;
-    if (solventArc1.isFirst) {
-      screen1 = new Point3i[nArcPoints];
-      screen2 = new Point3i[nArcPoints];
-      for (int i = 0; i < nArcPoints; i++) {
-        screen1[i] = new Point3i();
-        screen2[i] = new Point3i();
-        viewer.transformPoint(solventArc1.arcPoints[i], screen1[i]);
-      }
-    } else {
-      for (int i = 0; i < nArcPoints; i++)
-        screen1[i].set(screen2[i]);
-    }
-    for (int i = 0; i < nArcPoints; i++)
-      viewer.transformPoint(solventArc2.arcPoints[i], screen2[i]);
-    
-    // very crude -- needs normixes
-    
-    //Logger.debug("renderConvex"+atom.getIdentity()+" nDotsMoved"+nDotsMoved+"len="+dotsMoved.length);
-    int ptOther = (nArcPoints - 1) / 2;
-    for (int j = 0; j < ptOther; j++)
-      g3d.fillQuadrilateral(color1, screen1[j], screen1[j+1], screen2[j+1], screen2[j]);
-    for (int j = ptOther; j < nArcPoints - 1; j++)
-      g3d.fillQuadrilateral(color2, screen1[j], screen1[j+1], screen2[j+1], screen2[j]);
-  }
-
-  void fillSolventSphere(Dots.SolventArc arc) {
-    Point3i screen = new Point3i();
-    short madAtom = (short) (2400);
-    viewer.transformPoint(arc.center, screen);
-    int diameter = viewer.scaleToScreen(screen.z, madAtom);
-    g3d.fillSphereCentered(Graphics3D.GREEN, diameter, screen.x, screen.y,
-        screen.z);
-  }
-*/  
- /////////////////////////////////////////back to you////////////////
-  
-  /*
-  Point3f pointT = new Point3f();
-  Point3f pointT1 = new Point3f();
-  Matrix3f matrixT = new Matrix3f();
-  Matrix3f matrixT1 = new Matrix3f();
-  Matrix3f matrixRot = new Matrix3f();
-  AxisAngle4f aaT = new AxisAngle4f();
-  AxisAngle4f aaT1 = new AxisAngle4f();
-
-  static final float torusStepAngle = 2 * (float)Math.PI / 64;
-
-  void renderTorus(Dots.Torus torus,
-                   Atom[] atoms, short[] colixes, int[][] dotsConvexMaps) {
-    if (dotsConvexMaps[torus.ixI] != null)
-      renderTorusHalf(torus,
-                      getColix(torus.colixI, colixes, atoms, torus.ixI),
-                      false);
-    if (dotsConvexMaps[torus.ixJ] != null)
-      renderTorusHalf(torus,
-                      getColix(torus.colixJ, colixes, atoms, torus.ixJ),
-                      true);
-  }
-
-  short getColix(short colix, short[] colixes, Atom[] atoms, int index) {
-    return Graphics3D.inheritColix(colix, atoms[index].colixAtom);
-  }
-
-  void renderTorusHalf(Dots.Torus torus, short colix, boolean renderJHalf) {
-    g3d.setColix(colix);
-    long probeMap = torus.probeMap;
-
-    int torusDotCount1 =
-      (int)(getTorusOuterDotCount() * torus.outerAngle / (2 * Math.PI));
-    float stepAngle1 = torus.outerAngle / torusDotCount1;
-    if (renderJHalf)
-      stepAngle1 = -stepAngle1;
-    aaT1.set(torus.tangentVector, 0);
-
-    aaT.set(torus.axisVector, 0);
-    int step = getTorusIncrement();
-    for (int i = 0; probeMap != 0; i += step, probeMap <<= step) {
-      if (probeMap >= 0)
-        continue;
-      aaT.angle = i * torusStepAngle;
-      matrixT.set(aaT);
-      matrixT.transform(torus.radialVector, pointT);
-      pointT.add(torus.center);
-
-      for (int j = torusDotCount1; --j >= 0; ) {
-        aaT1.angle = j * stepAngle1;
-        matrixT1.set(aaT1);
-        matrixT1.transform(torus.outerRadial, pointT1);
-        matrixT.transform(pointT1);
-        pointT1.add(pointT);
-        g3d.drawPixel(viewer.transformPoint(pointT1));
-      }
-    }
-  }
-
-  int getTorusIncrement() {
-    if (scalePixelsPerAngstrom <= 5)
-      return 16;
-    if (scalePixelsPerAngstrom <= 10)
-      return 8;
-    if (scalePixelsPerAngstrom <= 20)
-      return 4;
-    if (scalePixelsPerAngstrom <= 40)
-      return 2;
-    return 1;
-  }
-
-  int getTorusOuterDotCount() {
-    int dotCount = 8;
-    if (scalePixelsPerAngstrom > 5) {
-      dotCount = 16;
-      if (scalePixelsPerAngstrom > 10) {
-        dotCount = 32;
-        if (scalePixelsPerAngstrom > 20) {
-          dotCount = 64;
-        }
-      }
-    }
-    return dotCount;
-  }
-  */
-  /**
-   * So, I need some help with this.
-   * I cannot think of a good way to render this cavity.
-   * The shapes are spherical triangle, but are very irregular.
-   * In the center of aromatic rings there are 2-4 ... which looks ugly
-   * So, if you have an idea how to render this, please let me know.
-   */
-  /*
-  final static byte nearI = (byte)(1 << 0);
-  final static byte nearJ = (byte)(1 << 1);
-  final static byte nearK = (byte)(1 << 2);
-
-  final static byte[] nearAssociations = {
-    nearI | nearJ | nearK,
-
-    nearI, nearJ, nearK,
-    nearI | nearJ, nearJ | nearK, nearK | nearI,
-    nearI, nearJ, nearJ, nearK, nearK, nearI,
-    // index 13 starts here
-    nearI, nearJ, nearK,
-    nearI | nearJ, nearJ | nearK, nearK | nearI,
-    nearI, nearJ, nearJ, nearK, nearK, nearI,
-  };
-
-  void renderCavity(Dots.Cavity cavity,
-                    Atom[] atoms, short[] colixes, int[][] dotsConvexMaps) {
-    Point3f[] points = cavity.points;
-    if (dotsConvexMaps[cavity.ixI] != null) {
-      g3d.setColix(getColix(cavity.colixI, colixes, atoms, cavity.ixI));
-      renderCavityThird(points, 0);
-    }
-    if (dotsConvexMaps[cavity.ixJ] != null) {
-      g3d.setColix(getColix(cavity.colixJ, colixes, atoms, cavity.ixJ));
-      renderCavityThird(points, 1);
-    }
-    if (dotsConvexMaps[cavity.ixK] != null) {
-      g3d.setColix(getColix(cavity.colixK, colixes, atoms, cavity.ixK));
-      renderCavityThird(points, 2);
-    }
-  }
-
-  void renderCavityThird(Point3f[] points, int which) {
-    Point3i screen;
-    for (int i = points.length; --i >= 0; ) {
-      if ((nearAssociations[i] & (1 << which)) != 0) {
-        screen = viewer.transformPoint(points[i]);
-        g3d.drawPixel(screen);
-      }
-    }
-  }
-*/
-  
   final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));
   final static float oneFifth = 2 * (float)Math.PI / 5;
   final static float oneTenth = oneFifth / 2;
@@ -692,10 +401,6 @@ class DotsRenderer extends ShapeRenderer {
         throw new NullPointerException();
       }
       htVertex = null;
-      //      bitmap = allocateBitmap(nVerticesNew);
-      
-      //checkVertices();
-
     }
     
     private short getVertex(short i1, short i2) {
@@ -729,80 +434,10 @@ class DotsRenderer extends ShapeRenderer {
       s = n + " points:" + s;
       return s;
     }
-    
-    /*
-     * 
-       void checkVertices() {
-        
-        //this runs through ORIGINAL set of 20 faces
-        int p4 = power4[level - 1];
-        Logger.debug("level"+level+" "+(faceIndices.length / 3) + " faces");
-         
-        for (int f = 0; f < 20; f++) {
-          Logger.debug("face" + f 
-              + " " + faceIndices[3 * p4 * (4 * f + 0)]
-              + " " + faceIndices[3 * p4 * (4 * f + 1)]
-              + " " + faceIndices[3 * p4 * (4 * f + 2)]
-              + " ");
-          }
-
-        if (level < 2) return;
-        //this runs through level1 set of 80 faces
-        p4 = power4[level - 2];
-        for (int f = 0; f < 80; f++) {
-          Logger.debug("face" + f 
-              + " " + faceIndices[3 * p4 * (4 * f + 0)]
-              + " " + faceIndices[3 * p4 * (4 * f + 1)] 
-              + " " + faceIndices[3 * p4 * (4 * f + 2)] 
-              + " ");
-        }
-
-        if (level < 3) return;
-        //this runs through level2 set of 320 faces
-        p4 = power4[level - 3];
-        for (int f = 0; f < 320; f++) {
-          Logger.debug("face" + f 
-              + " " + faceIndices[3 * p4 * (4 * f + 0)]
-              + " " + faceIndices[3 * p4 * (4 * f + 1)] 
-              + " " + faceIndices[3 * p4 * (4 * f + 2)] 
-              + " ");
-        }
-
-      }
-      */
-      
   }
   
   final static boolean getBit(int[] bitmap, int i) {
     return (bitmap[(i >> 5)] << (i & 31)) < 0;
   }
-
-  /*
-  private final static int[] allocateBitmap(int count) {
-    return new int[(count + 31) >> 5];
-  }
-
-  private final static void setBit(int[] bitmap, int i) {
-    bitmap[(i >> 5)] |= 1 << (~i & 31);
-  }
-
-  private final static void clearBit(int[] bitmap, int i) {
-    bitmap[(i >> 5)] &= ~(1 << (~i & 31));
-  }
-
-  private final static void setAllBits(int[] bitmap, int count) {
-    int i = count >> 5;
-    if ((count & 31) != 0)
-      bitmap[i] = 0x80000000 >> (count - 1);
-    while (--i >= 0)
-      bitmap[i] = -1;
-  }
-  
-  private final static void clearBitmap(int[] bitmap) {
-    for (int i = bitmap.length; --i >= 0; )
-      bitmap[i] = 0;
-  }
-  */
-  
 }
 

@@ -2435,6 +2435,9 @@ class Eval { //implements Runnable {
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
             iGroup = -999;
           } else {
+            if (spacegroup.indexOf(",") >= 0) //Jones Faithful
+              if ((unitCells.x < 9 && unitCells.y < 9 && unitCells.z == 0))
+                spacegroup+="#doNormalize=0";
             iGroup = viewer.getSpaceGroupIndexFromName(spacegroup);
             if (iGroup == -1)
               evalError(GT._("space group {0} was not found.", spacegroup));

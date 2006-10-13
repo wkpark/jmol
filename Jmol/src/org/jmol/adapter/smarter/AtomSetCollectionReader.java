@@ -310,6 +310,7 @@ abstract class AtomSetCollectionReader extends Parser {
     atomSetCollection.setNotionalUnitCell(notionalUnitCell);
     atomSetCollection.setAtomSetSpaceGroupName(spaceGroup);
     if (doConvertToFractional || fileCoordinatesAreFractional) {
+      atomSetCollection.setLatticeCells(latticeCells);
       if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
         SpaceGroup sg = SpaceGroup.createSpaceGroup(desiredSpaceGroupIndex,
             spaceGroup, notionalUnitCell);

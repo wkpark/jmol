@@ -126,45 +126,13 @@ public class GT {
 
   public static void setDoTranslate(boolean TF) {
     doTranslate = (TF ? Boolean.TRUE : Boolean.FALSE);
+//    System.out.println("setDoTranslate " + doTranslate.booleanValue());
   }
 
   public static boolean getDoTranslate() {
     return doTranslate.booleanValue();
   }
 
-  public static String T(String string) {
-    return T(string, (Object[])null);
-  }
-
-  public static String T(String string, String item) {
-    return T(string, new Object[] { item });
-  }
-
-  public static String T(String string, int item) {
-    return T(string, new Object[] { new Integer(item) });
-  }
-
-  public static String T(String string, Object[] objects) {
-    if (doTranslate.booleanValue())
-    forceTranslate(true);
-    String str = (objects == null ? _(string) : _(string, objects));
-    if (tempDoTranslate.booleanValue())
-    forceTranslate(false);
-    return str;
-  }
-
-  static Boolean tempDoTranslate = Boolean.TRUE;
-  private synchronized static void forceTranslate(boolean TF) {
-    if (TF) {
-      tempDoTranslate = (doTranslate.booleanValue() ? Boolean.TRUE
-          : Boolean.FALSE);
-      doTranslate = Boolean.FALSE;
-    } else {
-      doTranslate = (tempDoTranslate.booleanValue() ? Boolean.TRUE
-          : Boolean.FALSE);
-    }
-  }
-  
   public static String _(String string) {
     return getTextWrapper().getString(string);
   }
@@ -182,7 +150,34 @@ public class GT {
     return getTextWrapper().getString(string, objects);
   }
 
+  //forced translations
+  
+  public static String _(String string, boolean t) {
+    return _(string, (Object[])null, t);
+  }
+
+  public static String _(String string, String item, boolean t) {
+    return _(string, new Object[] { item });
+  }
+
+  public static String _(String string, int item, boolean t) {
+    return _(string, new Object[] { new Integer(item) });
+  }
+
+  public static synchronized String _(String string, Object[] objects, boolean t) {
+    boolean wasTranslating;
+    if (!(wasTranslating = doTranslate.booleanValue()))
+      setDoTranslate(true);
+    String str = (objects == null ? _(string) : _(string, objects));
+    if (!wasTranslating)
+      setDoTranslate(false);
+    return str;
+  }
+
   private String getString(String string) {
+    System.out.println("translating " + string + " " + doTranslate.booleanValue());
+    if (!doTranslate.booleanValue())
+      return string;
     for (int bundle = 0; bundle < translationResourcesCount; bundle++) {
       try {
         String trans = translationResources[bundle].getString(string);
@@ -199,6 +194,7 @@ public class GT {
 
   private String getString(String string, Object[] objects) {
     String trans = null;
+    System.out.println("translating " + string + " " + doTranslate.booleanValue());
     if (!doTranslate.booleanValue())
       return MessageFormat.format(string, objects);
     for (int bundle = 0; bundle < translationResourcesCount; bundle++) {

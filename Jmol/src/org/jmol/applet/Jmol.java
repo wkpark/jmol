@@ -319,8 +319,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         if (!haveTranslateFlag) {
           doTranslate = false;
           Logger
-              .warn("Note -- language translation disabled due to the presence of the message callback function; "
-                  + "to enable language translation, use jmolSetTranslation(true) prior to jmolApplet()");
+              .warn("Note -- Presence of message callback will disable translation; "
+                  + "unless you use jmolSetTranslation(true) prior to jmolApplet()");
         }
         if (doTranslate)
           Logger

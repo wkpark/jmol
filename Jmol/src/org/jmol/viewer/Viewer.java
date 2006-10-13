@@ -2811,7 +2811,11 @@ public class Viewer extends JmolViewer {
   public void setBooleanProperty(String key, boolean value) {
     //Eval
     while (true) {
-     if (key.equalsIgnoreCase("hideNotSelected")) {
+      if (key.equalsIgnoreCase("languageTranslation")) {
+        GT.setDoTranslate(value);
+        break;  
+      }
+      if (key.equalsIgnoreCase("hideNotSelected")) {
         setHideNotSelected(value);
         break;
       }

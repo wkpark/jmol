@@ -1400,7 +1400,14 @@ class Isosurface extends MeshCollection {
 
     boolean justDefiningPlane = (!isMapData && thePlane != null);
     boolean isPrecalculation = (precalculateVoxelData && !justDefiningPlane);
-    if (dataType != SURFACE_INFO) {
+    if (dataType == SURFACE_INFO) {
+      if(justDefiningPlane) {
+        voxelData = new float[nPointsX][][];        
+      } else {
+        voxelData = tempVoxelData;
+        tempVoxelData = null;
+      }
+    } else {
       voxelData = new float[nPointsX][][];
       if (isPrecalculation) {
         for (int x = 0; x < nPointsX; ++x) {
@@ -4837,6 +4844,7 @@ class Isosurface extends MeshCollection {
 
   //////// file-based data already in Hashtable /////////
   
+  float[][][] tempVoxelData;
   void setupSurfaceInfo() {
     volumetricOrigin.set((Point3f)surfaceInfo.get("volumetricOrigin"));
     Vector3f[] v = (Vector3f[])surfaceInfo.get("volumetricVectors");
@@ -4848,7 +4856,7 @@ class Isosurface extends MeshCollection {
     int[] counts = (int[])surfaceInfo.get("voxelCounts");
     for (int i = 0; i < 3; i++)
       voxelCounts[i] = counts[i];
-    voxelData = (float[][][])surfaceInfo.get("voxelData");
+    tempVoxelData = voxelData = (float[][][])surfaceInfo.get("voxelData");
     precalculateVoxelData = true;
   }
 

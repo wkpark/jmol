@@ -175,7 +175,6 @@ public class GT {
   }
 
   private String getString(String string) {
-    System.out.println("translating " + string + " " + doTranslate.booleanValue());
     if (!doTranslate.booleanValue())
       return string;
     for (int bundle = 0; bundle < translationResourcesCount; bundle++) {
@@ -194,7 +193,6 @@ public class GT {
 
   private String getString(String string, Object[] objects) {
     String trans = null;
-    System.out.println("translating " + string + " " + doTranslate.booleanValue());
     if (!doTranslate.booleanValue())
       return MessageFormat.format(string, objects);
     for (int bundle = 0; bundle < translationResourcesCount; bundle++) {

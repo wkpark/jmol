@@ -593,7 +593,12 @@ public final class Frame {
      * these will NOT be the same for each conformation  
      * 
      */
-    int distinguishingBits = 0;
+    Group group = null;
+    int lastAtomIndex = maxAtomIndex - 1;
+
+    if (group3 != null) {
+      int distinguishingBits = 0;
+    
     // clear previous specialAtomIndexes
     for (int i = JmolConstants.ATOMID_MAX; --i >= 0;)
       specialAtomIndexes[i] = Integer.MIN_VALUE;
@@ -625,11 +630,9 @@ public final class Frame {
       }
     }
 
-    int lastAtomIndex = maxAtomIndex - 1;
     if (lastAtomIndex < firstAtomIndex)
       throw new NullPointerException();
 
-    Group group = null;
     if ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) == JmolConstants.ATOMID_PROTEIN_MASK) {
       group = AminoMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
@@ -651,9 +654,12 @@ public final class Frame {
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
       countGroup(atoms[firstAtomIndex].modelIndex, "c>", group3);
     }
+    
+    }
     if (group == null) {
       group = new Group(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
-      countGroup(atoms[firstAtomIndex].modelIndex, "o>", group3);
+      if (group3 != null)
+        countGroup(atoms[firstAtomIndex].modelIndex, "o>", group3);
     }
 
     chain.addGroup(group);

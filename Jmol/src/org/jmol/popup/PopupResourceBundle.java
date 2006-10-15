@@ -362,18 +362,18 @@ class PopupResourceBundle {
 
       {
           "pickingMenu",
-          "pickOff pickCenter pickLabel pickAtom pickChain "
-              + "pickElement pickGroup pickMolecule pickSite pickSpin" },
+          "pickOff pickCenter pickLabel pickAtom "
+              + "pickMolecule pickElement pickPDBChain pickPDBGroup pickSYMMETRYSite pickSpin" },
       { "pickOff", "set picking off" },
       { "pickCenter", "set picking center" },
       //    { "pickDraw" , "set picking draw" },
       { "pickLabel", "set picking label" },
       { "pickAtom", "set picking atom" },
-      { "pickChain", "set picking chain" },
+      { "pickPDBChain", "set picking chain" },
       { "pickElement", "set picking element" },
-      { "pickGroup", "set picking group" },
+      { "pickPDBGroup", "set picking group" },
       { "pickMolecule", "set picking molecule" },
-      { "pickSite", "set picking site" },
+      { "pickSYMMETRYSite", "set picking site" },
       { "pickSpin", "set picking spin" },
 
       {
@@ -724,11 +724,11 @@ class PopupResourceBundle {
       //    { "pickDraw" , GT._("moves arrows", true) },
       { "pickLabel", GT._("Label", true) },
       { "pickAtom", GT._("Select atom", true) },
-      { "pickChain", GT._("Select chain", true) },
+      { "pickPDBChain", GT._("Select chain", true) },
       { "pickElement", GT._("Select element", true) },
-      { "pickGroup", GT._("Select group", true) },
+      { "pickPDBGroup", GT._("Select group", true) },
       { "pickMolecule", GT._("Select molecule", true) },
-      { "pickSite", GT._("Select site", true) },
+      { "pickSYMMETRYSite", GT._("Select site", true) },
       { "pickSpin", GT._("Spin", true) },
 
       { "showMenu", GT._("Show", true) },

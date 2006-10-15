@@ -66,7 +66,6 @@ class PopupResourceBundle {
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "
               + "measureMenu pickingMenu - showConsole showMenu - "
-              //              + "- optionsMenu "
               + "aboutComputedMenu" },
               
       {   "modelSetMenu", "FRAMESbyModelComputedMenu CONFIGURATIONComputedMenu" },
@@ -85,7 +84,7 @@ class PopupResourceBundle {
           "allProtein proteinBackbone proteinSideChains - "
               + "polar nonpolar - "
               + "positiveCharge negativeCharge noCharge - "
-              + "aaresiduesComputedMenu" },
+              + "PDBaaresiduesComputedMenu" },
       { "allProtein", "protein" },
       { "proteinBackbone", "protein and backbone" },
       { "proteinSideChains", "protein and not backbone" },
@@ -115,7 +114,7 @@ class PopupResourceBundle {
 
       {
           "PDBheteroMenu",
-          "heteroComputedMenu - allHetero Solvent Water - "
+          "PDBheteroComputedMenu - allHetero Solvent Water - "
               + "Ligand exceptWater nonWaterSolvent" },
       { "allHetero", "hetero" },
       { "Solvent", "solvent" },
@@ -212,11 +211,11 @@ class PopupResourceBundle {
       { "strands", "strands on" },
       { "trace", "trace 0.3" },
 
-      { "VIBRATIONMenu", "vibrationOff vibrationOn vectorMenu" },
+      { "VIBRATIONMenu", "vibrationOff vibrationOn VIBRATIONvectorMenu" },
       { "vibrationOff", "vibration off" },
       { "vibrationOn", "vibration on" },
       {
-          "vectorMenu",
+          "VIBRATIONvectorMenu",
           "vectorOff vectorOn vector3 vector005 vector01 - "
               + "vectorScale02 vectorScale05 vectorScale1 vectorScale2 vectorScale5" },
       { "vectorOff", "vectors off" },
@@ -321,7 +320,7 @@ class PopupResourceBundle {
       {
           "FRAMESanimateMenu",
           "animModeMenu - play pause resume stop - nextframe prevframe rewind - playrev restart - "
-              + "animFpsMenu" },
+              + "FRAMESanimFpsMenu" },
       { "animModeMenu", "onceThrough palindrome loop" },
       { "onceThrough", "anim mode once#" },
       { "palindrome", "anim mode palindrome#" },
@@ -338,7 +337,7 @@ class PopupResourceBundle {
       { "rewind", "anim rewind#" },
       { "restart", "anim on#" },
       
-      { "animFpsMenu", "animfps5 animfps10 animfps20 animfps30 animfps50" },
+      { "FRAMESanimFpsMenu", "animfps5 animfps10 animfps20 animfps30 animfps50" },
       { "animfps5", "anim fps 5#" },
       { "animfps10", "anim fps 10#" },
       { "animfps20", "anim fps 20#" },
@@ -475,8 +474,8 @@ class PopupResourceBundle {
       { "positiveCharge", GT._("Basic Residues (+)", true) },
       { "negativeCharge", GT._("Acidic Residues (-)", true) },
       { "noCharge", GT._("Uncharged Residues", true) },
-      { "aaresiduesComputedMenu", GT._("By Residue Name", true) },
-      { "heteroComputedMenu", GT._("By HETATM", true) },
+      { "PDBaaresiduesComputedMenu", GT._("By Residue Name", true) },
+      { "PDBheteroComputedMenu", GT._("By HETATM", true) },
       { "PDBnucleicMenu", GT._("Nucleic", true) },
       { "allNucleic", GT._("All", true) },
       { "DNA", GT._("DNA", true) },
@@ -567,7 +566,7 @@ class PopupResourceBundle {
       { "VIBRATIONMenu", GT._("Vibration", true) },
       { "vibrationOff", GT._("Off", true) },
       { "vibrationOn", GT._("On", true) },
-      { "vectorMenu", GT._("Vectors", true) },
+      { "VIBRATIONvectorMenu", GT._("Vectors", true) },
       { "vectorOff", GT._("Off", true) },
       { "vectorOn", GT._("On", true) },
       { "vector3", GT._("{0} pixels", "3", true) },
@@ -684,7 +683,7 @@ class PopupResourceBundle {
       { "s40", "40" },
       { "s50", "50" },
 
-      { "FRAMESanimateMenu", GT._("Animate", true) },
+      { "FRAMESanimateMenu", GT._("Animation", true) },
       { "animModeMenu", GT._("Animation Mode", true) },
       { "onceThrough", GT._("Play Once", true) },
       { "palindrome", GT._("Palindrome", true) },
@@ -701,7 +700,7 @@ class PopupResourceBundle {
       { "playrev", GT._("Reverse", true) },
       { "animOn", GT._("Restart", true) },
 
-      { "animFpsMenu", GT._("Set FPS", true) },
+      { "FRAMESanimFpsMenu", GT._("Set FPS", true) },
       { "animfps5", "5" },
       { "animfps10", "10" },
       { "animfps20", "20" },

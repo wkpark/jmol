@@ -137,18 +137,18 @@ abstract public class JmolPopup {
   }
 
   void updateSelectMenu() {
-    Object selectMenu = htMenus.get("selectMenu");
-    if (selectMenu == null)
+    Object menu = htMenus.get("selectMenu");
+    if (menu == null)
       return;
-    setLabel(selectMenu, GT._("Select ({0})", viewer.getSelectionCount(), true));
+    setLabel(menu, GT._("Select ({0})", viewer.getSelectionCount(), true));
   }
   
   void updateElementsComputedMenu(BitSet elementsPresentBitSet) {
-    Object elementsComputedMenu = htMenus.get("elementsComputedMenu");
-    if (elementsComputedMenu == null)
+    Object menu = htMenus.get("elementsComputedMenu");
+    if (menu == null)
       return;
-    removeAll(elementsComputedMenu);
-    enableMenu(elementsComputedMenu, false);
+    removeAll(menu);
+    enableMenu(menu, false);
     if (elementsPresentBitSet == null)
       return;
     for (int i = 0; i < JmolConstants.elementNumberMax; ++i) {
@@ -156,7 +156,7 @@ abstract public class JmolPopup {
         String elementName = JmolConstants.elementNameFromNumber(i);
         String elementSymbol = JmolConstants.elementSymbolFromNumber(i);
         String entryName = elementSymbol + " - " + elementName;
-        addMenuItem(elementsComputedMenu, entryName, elementName, null);
+        addMenuItem(menu, entryName, elementName, null);
       }
     }
     for (int i = JmolConstants.firstIsotope; i < JmolConstants.altElementMax; ++i) {
@@ -166,17 +166,17 @@ abstract public class JmolPopup {
         String elementName = JmolConstants.elementNameFromNumber(n);
         String elementSymbol = JmolConstants.elementSymbolFromNumber(n);
         String entryName = elementSymbol + " - " + elementName;
-        addMenuItem(elementsComputedMenu, entryName, elementName, null);
+        addMenuItem(menu, entryName, elementName, null);
       }
     }
-    enableMenu(elementsComputedMenu, true);
+    enableMenu(menu, true);
   }
 
   void updateHeteroComputedMenu(Hashtable htHetero) {
-    Object heteroComputedMenu = htMenus.get("heteroComputedMenu");
-    if (heteroComputedMenu == null)
+    Object menu = htMenus.get("PDBheteroComputedMenu");
+    if (menu == null)
       return;
-    removeAll(heteroComputedMenu);
+    removeAll(menu);
     if (htHetero == null)
       return;
     Enumeration e = htHetero.keys();
@@ -187,48 +187,48 @@ abstract public class JmolPopup {
         if (heteroName.length() > 20)
           heteroName = heteroName.substring(0,20) + "...";
         String entryName = heteroCode + " - " + heteroName;        
-        addMenuItem(heteroComputedMenu, entryName, heteroCode, null);
+        addMenuItem(menu, entryName, heteroCode, null);
         n++;
     }
-    enableMenu(heteroComputedMenu, (n > 0));
+    enableMenu(menu, (n > 0));
   }
 
   void updateSurfMoComputedMenu(Hashtable moData) {
-    Object surfMoComputedMenu = htMenus.get("surfMoComputedMenu");
-    if (surfMoComputedMenu == null)
+    Object menu = htMenus.get("surfMoComputedMenu");
+    if (menu == null)
       return;
-    enableMenu(surfMoComputedMenu, false);
-    removeAll(surfMoComputedMenu);
+    enableMenu(menu, false);
+    removeAll(menu);
     if (moData == null)
       return;
     Vector mos = (Vector) (moData.get("mos"));
     int nOrb = (mos == null ? 0 : mos.size());
     if (nOrb == 0)
       return;
-    enableMenu(surfMoComputedMenu, true);
+    enableMenu(menu, true);
     for (int i = nOrb; --i >= 0;) {
       String entryName = "#" + (i + 1) +" " 
       + ((Hashtable)(mos.get(i))).get("energy");
       String script = "mo " + (i + 1);
-      addMenuItem(surfMoComputedMenu, entryName, script, null);
+      addMenuItem(menu, entryName, script, null);
     }
   }
 
   void updateAaresiduesComputedMenu(BitSet groupsPresentBitSet) {
-    Object aaresiduesComputedMenu = htMenus.get("aaresiduesComputedMenu");
-    if (aaresiduesComputedMenu == null)
+    Object menu = htMenus.get("PDBaaresiduesComputedMenu");
+    if (menu == null)
       return;
-    removeAll(aaresiduesComputedMenu);
-    enableMenu(aaresiduesComputedMenu, false);
+    removeAll(menu);
+    enableMenu(menu, false);
     if (groupsPresentBitSet == null)
       return;
     for (int i = 1; i < JmolConstants.GROUPID_AMINO_MAX; ++i) {
       if (groupsPresentBitSet.get(i)) {
         String aaresidueName = JmolConstants.predefinedGroup3Names[i];
-        addMenuItem(aaresiduesComputedMenu, aaresidueName, null, null);
+        addMenuItem(menu, aaresidueName, null, null);
       }
     }
-    enableMenu(aaresiduesComputedMenu, true);
+    enableMenu(menu, true);
   }
 
   Object CONFIGURATIONComputedMenu;
@@ -278,46 +278,46 @@ abstract public class JmolPopup {
   }
 
   void updateModelSetComputedMenu() {
-    Object modelSetComputedMenu = htMenus.get("modelSetMenu");
-    if (modelSetComputedMenu == null)
+    Object menu = htMenus.get("modelSetMenu");
+    if (menu == null)
       return;
-    removeAll(modelSetComputedMenu);
-    renameMenu(modelSetComputedMenu, nullModelSetName);
-    enableMenu(modelSetComputedMenu, false);
+    removeAll(menu);
+    renameMenu(menu, nullModelSetName);
+    enableMenu(menu, false);
     String modelSetName = viewer.getModelSetName();
     if (modelSetName == null)
       return;
-    renameMenu(modelSetComputedMenu, viewer
+    renameMenu(menu, viewer
         .getBooleanProperty("hideNameInPopup") ? hiddenModelSetName
         : modelSetName);
-    enableMenu(modelSetComputedMenu, true);
+    enableMenu(menu, true);
     if (isMultiFrame) {
       updateFRAMESbyModelComputedMenu();
-      addMenuSubMenu(modelSetComputedMenu, FRAMESbyModelComputedMenu);
+      addMenuSubMenu(menu, FRAMESbyModelComputedMenu);
     }
     if (isMultiConfiguration) {
       updateMode = UPDATE_CONFIG;
       updateCONFIGURATIONComputedMenu();
-      addMenuSubMenu(modelSetComputedMenu, CONFIGURATIONComputedMenu);
+      addMenuSubMenu(menu, CONFIGURATIONComputedMenu);
     }
-    addMenuSeparator(modelSetComputedMenu);
-    addMenuItem(modelSetComputedMenu, GT._("atoms: {0}", viewer
+    addMenuSeparator(menu);
+    addMenuItem(menu, GT._("atoms: {0}", viewer
         .getAtomCountInModel(modelIndex), true));
-    addMenuItem(modelSetComputedMenu, GT._("bonds: {0}", viewer
+    addMenuItem(menu, GT._("bonds: {0}", viewer
         .getBondCountInModel(modelIndex), true));
-    addMenuSeparator(modelSetComputedMenu);
+    addMenuSeparator(menu);
     if (isPDB) {
-      addMenuItem(modelSetComputedMenu, GT._("groups: {0}", viewer
+      addMenuItem(menu, GT._("groups: {0}", viewer
           .getGroupCountInModel(modelIndex), true));
-      addMenuItem(modelSetComputedMenu, GT._("chains: {0}", viewer
+      addMenuItem(menu, GT._("chains: {0}", viewer
           .getChainCountInModel(modelIndex), true));
-      addMenuItem(modelSetComputedMenu, GT._("polymers: {0}", viewer
+      addMenuItem(menu, GT._("polymers: {0}", viewer
           .getPolymerCountInModel(modelIndex), true));
-      addMenuSeparator(modelSetComputedMenu);
+      addMenuSeparator(menu);
     }
     if (isApplet && viewer.showModelSetDownload()
         && !viewer.getBooleanProperty("hideNameInPopup")) {
-      addMenuItem(modelSetComputedMenu, GT._("View {0}", viewer
+      addMenuItem(menu, GT._("View {0}", viewer
           .getModelSetFileName(), true), viewer.getModelSetPathName(), null);
     }
   }
@@ -344,37 +344,39 @@ abstract public class JmolPopup {
   }
   
   private void updateAboutSubmenu() {
-    Object aboutComputedMenu = htMenus.get("aboutComputedMenu");
-    if (aboutComputedMenu == null)
+    Object menu = htMenus.get("aboutComputedMenu");
+    if (menu == null)
       return;
-    for (int i = getMenuItemCount(aboutComputedMenu); --i >= aboutComputedMenuBaseCount; )
-      removeMenuItem(aboutComputedMenu, i);
-    addMenuSeparator(aboutComputedMenu);
-    addMenuItem(aboutComputedMenu, "Jmol " + JmolConstants.version);
-    addMenuItem(aboutComputedMenu, JmolConstants.date);
-    addMenuItem(aboutComputedMenu, viewer.getOperatingSystemName());
-    addMenuItem(aboutComputedMenu, viewer.getJavaVendor());
-    addMenuItem(aboutComputedMenu, viewer.getJavaVersion());
-    addMenuSeparator(aboutComputedMenu);
-    addMenuItem(aboutComputedMenu, GT._("Java memory usage", true));
+    for (int i = getMenuItemCount(menu); --i >= aboutComputedMenuBaseCount;)
+      removeMenuItem(menu, i);
+    addMenuSeparator(menu);
+    addMenuItem(menu, "Jmol " + JmolConstants.version);
+    addMenuItem(menu, JmolConstants.date);
+    addMenuItem(menu, viewer.getOperatingSystemName());
+    addMenuItem(menu, viewer.getJavaVendor());
+    addMenuItem(menu, viewer.getJavaVersion());
+    addMenuSeparator(menu);
+    addMenuItem(menu, GT._("Java memory usage", true));
     Runtime runtime = Runtime.getRuntime();
     runtime.gc();
     long mbTotal = convertToMegabytes(runtime.totalMemory());
     long mbFree = convertToMegabytes(runtime.freeMemory());
     long mbMax = convertToMegabytes(maxMemoryForNewerJvm());
-    addMenuItem(aboutComputedMenu, GT._("{0} MB total", new Object[] { new Long(mbTotal) }, true));
-    addMenuItem(aboutComputedMenu, GT._("{0} MB free", new Object[] { new Long(mbFree) }, true));
+    addMenuItem(menu, GT._("{0} MB total", new Object[] { new Long(mbTotal) },
+        true));
+    addMenuItem(menu, GT._("{0} MB free", new Object[] { new Long(mbFree) },
+        true));
     if (mbMax > 0)
-      addMenuItem(aboutComputedMenu, GT._("{0} MB maximum", new Object[] { new Long(mbMax) }, true));
+      addMenuItem(menu, GT._("{0} MB maximum",
+          new Object[] { new Long(mbMax) }, true));
     else
-      addMenuItem(aboutComputedMenu, GT._("unknown maximum", true));
+      addMenuItem(menu, GT._("unknown maximum", true));
     int availableProcessors = availableProcessorsForNewerJvm();
     if (availableProcessors > 0)
-      addMenuItem(aboutComputedMenu, (availableProcessors == 1) ?
-                  GT._("1 processor", true) :
-                  GT._("{0} processors", availableProcessors, true));
+      addMenuItem(menu, (availableProcessors == 1) ? GT._("1 processor", true)
+          : GT._("{0} processors", availableProcessors, true));
     else
-      addMenuItem(aboutComputedMenu, GT._("unknown processor count", true));
+      addMenuItem(menu, GT._("unknown processor count", true));
   }
 
   private long convertToMegabytes(long num) {
@@ -437,7 +439,7 @@ abstract public class JmolPopup {
         // these will need tweaking:
         if ("aboutComputedMenu".equals(item)) {
           aboutComputedMenuBaseCount = getMenuItemCount(subMenu);
-        } else if ("modelSetComputedMenu".equals(item)) {
+        } else if ("modelSetMenu".equals(item)) {
           nullModelSetName = word;
           hiddenModelSetName = popupResourceBundle
               .getWord("hiddenModelSetName");

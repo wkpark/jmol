@@ -39,7 +39,8 @@ class HalosRenderer extends ShapeRenderer {
     BitSet bsSelected = (selectDisplayTrue ? viewer.getSelectionSet() : null);
     for (int i = frame.atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) == 0)
+      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) == 0
+          || frame.bsHidden.get(i))
         continue;
       short mad = (halos.mads == null ? 0 : halos.mads[i]);
       short colix = (halos.colixes == null ? 0 : halos.colixes[i]);
@@ -50,8 +51,7 @@ class HalosRenderer extends ShapeRenderer {
           colix = viewer.getColixSelection();
         if (colix == Graphics3D.UNRECOGNIZED)
           colix = Graphics3D.GOLD;
-      } else if (frame.bsHidden.get(i))
-        continue;
+      }
       if (mad == 0)
         continue;
       render1(atom, mad, colix);

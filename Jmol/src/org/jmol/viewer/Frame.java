@@ -72,8 +72,7 @@ public final class Frame {
   Molecule[] molecules = new Molecule[4];
   int modelCount;
 
-  BitSet elementsPresent;
-  BitSet groupsPresent;
+  private BitSet elementsPresent;
 
   ////////////////////////////////////////////////////////////////
   // these may or may not be allocated
@@ -763,7 +762,6 @@ public final class Frame {
       structuresDefined = false;
       moleculeCount = 0;
     }
-    findGroupsPresent();
     if (!structuresDefined)
       mmset.calculateStructures();
     mmset.freeze();
@@ -2300,17 +2298,6 @@ public final class Frame {
     return elementsPresent;
   }
 
-  void findGroupsPresent() {
-    Group groupLast = null;
-    groupsPresent = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (groupLast != atoms[i].group) {
-        groupLast = atoms[i].group;
-        groupsPresent.set(groupLast.getGroupID());
-      }
-    }
-  }
-
   void calcSelectedGroupsCount(BitSet bsSelected) {
     mmset.calcSelectedGroupsCount(bsSelected);
   }
@@ -2349,10 +2336,6 @@ public final class Frame {
       if (vdwRadius > maxVanderwaalsRadius)
         maxVanderwaalsRadius = vdwRadius;
     }
-  }
-
-  BitSet getGroupsPresentBitSet() {
-    return groupsPresent;
   }
 
   BitSet bsSurfaceSet;

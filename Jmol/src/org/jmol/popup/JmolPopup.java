@@ -108,7 +108,7 @@ abstract public class JmolPopup {
     updateHeteroComputedMenu(viewer.getHeteroList(modelIndex));
     updateSurfMoComputedMenu((Hashtable) modelInfo.get("moData"));
     updateFileTypeDependentMenus();
-    updatePDBComputedMenus(viewer.getGroupsPresentBitSet());
+    updatePDBComputedMenus();
     updateModelSetComputedMenu();
     updateAboutSubmenu();
   }
@@ -221,7 +221,7 @@ abstract public class JmolPopup {
     }
   }
 
-  void updatePDBComputedMenus(BitSet groupsPresentBitSet) {
+  void updatePDBComputedMenus() {
 
     Object menu = htMenus.get("PDBaaResiduesComputedMenu");
     if (menu == null)

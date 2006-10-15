@@ -1710,10 +1710,6 @@ public class Viewer extends JmolViewer {
     return modelManager.getClickableSet();
   }
 
-  public BitSet getGroupsPresentBitSet() {
-    return modelManager.getGroupsPresentBitSet();
-  }
-
   void calcSelectedGroupsCount() {
     modelManager.calcSelectedGroupsCount(selectionManager.bsSelection);
   }

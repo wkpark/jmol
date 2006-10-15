@@ -505,10 +505,6 @@ class ModelManager {
     return (frame == null) ? null : frame.mmset.getHeteroList(modelIndex);
   }
 
-  BitSet getGroupsPresentBitSet() {
-    return (frame == null) ? null : frame.getGroupsPresentBitSet();
-  }
-
   BitSet getVisibleSet() {
     return (frame == null) ? null : frame.getVisibleSet();
   }

@@ -222,11 +222,26 @@ abstract public class JmolPopup {
     enableMenu(menu, false);
     if (groupsPresentBitSet == null)
       return;
-    for (int i = 1; i < JmolConstants.GROUPID_AMINO_MAX; ++i) {
-      if (groupsPresentBitSet.get(i)) {
-        String aaresidueName = JmolConstants.predefinedGroup3Names[i];
-        addMenuItem(menu, aaresidueName, null, null);
-      }
+    Hashtable groupInfo = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex, "group3Info");
+    int[] group3Counts = null;
+    String group3List = null;
+    if (groupInfo == null && modelIndex > 0)
+      return;
+    if (groupInfo != null) {
+      group3Counts = (int[])groupInfo.get("group3Counts");
+      group3List = (String)groupInfo.get("group3List");
+    }
+    
+    for (int i = 1; i <= JmolConstants.GROUPID_AMINO_MAX; ++i) {
+        String name = JmolConstants.predefinedGroup3Names[i];
+        int n = 1;
+        if (group3List != null)
+          n = group3Counts[group3List.indexOf(name) / 6];
+        if (n > 0)
+          name += "  (" + n + ")";
+        Object item = addMenuItem(menu, name, null, getId(menu) + "." + name);
+        if (n == 0 || !groupsPresentBitSet.get(i))
+          enableMenuItem(item, false);
     }
     enableMenu(menu, true);
   }
@@ -570,6 +585,9 @@ abstract public class JmolPopup {
     }
     if (id.indexOf(".select") >= 0) {
       // select item but not selectMenu set selectionHalos
+      // two spaces means "ignore after this"
+      if ((pt = script.indexOf("  ")) >= 0)
+        script = script.substring(0,pt);
       return (script.indexOf("set") == 0 ? script : "select " + script);
     }
     if (id.indexOf(".color") >= 0) {

@@ -1864,14 +1864,14 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   public final static int ATOMID_MAX = specialAtomNames.length;
 
-  // just in this form for readability
+  // this form is used for counting groups in Frame
   private final static String allCarbohydrates = 
-    "[AFL],[AGC],[AHR],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA]," +
-    "[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLB],[GLC]," +
-    "[GUP],[LXC],[MAN],[RAA],[RAM],[RIB],[RIP],[XYP],[XYS]," +
-    "[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT]," +
-    "[SUC],[TRE],[ASF],[GCU],[MTL],[NAG],[NAM],[RHA],[SOR]," +
-    "[XYL]";// from Eric Martz
+    ",[AFL],[AGC],[AHR],[ARA],[ARB],[BDF],[BDR],[BGC],[BMA]" +
+    ",[FCA],[FCB],[FRU],[FUC],[FUL],[GAL],[GLA],[GLB],[GLC]" +
+    ",[GUP],[LXC],[MAN],[RAA],[RAM],[RIB],[RIP],[XYP],[XYS]" +
+    ",[CBI],[CT3],[CTR],[CTT],[LAT],[MAB],[MAL],[MLR],[MTT]" +
+    ",[SUC],[TRE],[ASF],[GCU],[MTL],[NAG],[NAM],[RHA],[SOR]" +
+    ",[XYL]";// from Eric Martz
 
   /**
    * @param group3 a potential group3 name
@@ -2071,6 +2071,17 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   };
 
+  static String getGroup3List() {
+    StringBuffer s = new StringBuffer();
+    for (int i = 1; i < predefinedGroup3Names.length; i++)
+      s.append(",[" + (predefinedGroup3Names[i]+"   ").substring(0,3)+"]");
+    s.append(allCarbohydrates);
+    return "" + s;
+  }
+  
+  public final static String group3List = getGroup3List();
+  public final static int group3Count = group3List.length() / 6;
+  
   public final static String[] predefinedGroup1Names = {
     /* rmh
      * 

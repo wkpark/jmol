@@ -77,6 +77,9 @@ public final class Frame {
   int[] atomSerials;
   byte[] specialAtomIDs;
   
+  String[] group3Lists;
+  int[][] group3Counts;
+  
   BitSet bsHidden = new BitSet();
   
   ////////////////////////////////////////////////////////////////
@@ -264,9 +267,9 @@ public final class Frame {
     currentModelIndex = -1;
     if (adapter == null) {
       mmset.setModelNameNumberProperties(0, "", 1, null, null, false);
-      //addAtom(0,null,0, "XXX", (short)0,"X",0,0,0,0,0,0,0,false,
-        //  0,' ',null,0,' ',0,0,0,' ',null);
     } else {
+      group3Lists = new String[modelCount];
+      group3Counts = new int[modelCount][];
       for (int i = 0; i < modelCount; ++i) {
         int modelNumber = adapter.getAtomSetNumber(clientFile, i);
         String modelName = adapter.getAtomSetName(clientFile, i);
@@ -280,6 +283,10 @@ public final class Frame {
             "isPDB"));
         mmset.setModelNameNumberProperties(i, modelName, modelNumber,
             modelProperties, modelAuxiliaryInfo, isPDBModel);
+        if (isPDB) {
+          group3Lists[i] = JmolConstants.group3List;
+          group3Counts[i] = new int[JmolConstants.group3Count + 10];
+        }
       }
 
       for (JmolAdapter.AtomIterator iterAtom = adapter
@@ -344,6 +351,7 @@ public final class Frame {
     doUnitcellStuff();
     doAutobond();
     finalizeGroupBuild(); // set group offsets and build monomers
+    saveGroup3Info(modelCount);
     buildPolymers();
     freeze();
     finalizeBuild();
@@ -544,7 +552,7 @@ public final class Frame {
     // groups get defined going up
     groups = new Group[groupCount];
     for (int i = 0; i < groupCount; ++i) {
-      distinguishAndPropogateGroup(i, chains[i], group3s[i], seqcodes[i],
+      distinguishAndPropagateGroup(i, chains[i], group3s[i], seqcodes[i],
           firstAtomIndexes[i], (i == groupCount - 1 ? atomCount
               : firstAtomIndexes[i + 1]));
       chains[i] = null;
@@ -554,7 +562,19 @@ public final class Frame {
     group3s = null;
   }
 
-  void distinguishAndPropogateGroup(int groupIndex, Chain chain, String group3,
+  void saveGroup3Info(int modelCount) {
+    if (group3Lists == null)
+      return;
+    for (int i = 0; i < modelCount; i++) 
+      if (group3Lists[i] != null) {
+        Hashtable group3Info = new Hashtable();
+        group3Info.put("group3List", group3Lists[i]);
+        group3Info.put("group3Counts", group3Counts[i]);
+        mmset.setModelAuxiliaryInfo(i, "group3Info", group3Info);
+      }
+  }
+  
+  void distinguishAndPropagateGroup(int groupIndex, Chain chain, String group3,
                                     int seqcode, int firstAtomIndex,
                                     int maxAtomIndex) {
     /*
@@ -610,33 +630,56 @@ public final class Frame {
       throw new NullPointerException();
 
     Group group = null;
-    if ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) == JmolConstants.ATOMID_PROTEIN_MASK)
+    if ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) == JmolConstants.ATOMID_PROTEIN_MASK) {
       group = AminoMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-    else if (distinguishingBits == JmolConstants.ATOMID_ALPHA_ONLY_MASK)
+      countGroup(atoms[firstAtomIndex].modelIndex, "p>", group3);
+    } else if (distinguishingBits == JmolConstants.ATOMID_ALPHA_ONLY_MASK) {
       group = AlphaMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-    else if (((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) == JmolConstants.ATOMID_NUCLEIC_MASK))
+      countGroup(atoms[firstAtomIndex].modelIndex, "p>", group3);
+    } else if (((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) == JmolConstants.ATOMID_NUCLEIC_MASK)) {
       group = NucleicMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-    else if (distinguishingBits == JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK)
+      countGroup(atoms[firstAtomIndex].modelIndex, "n>", group3);
+    } else if (distinguishingBits == JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK) {
       group = PhosphorusMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-    else if (JmolConstants.checkCarbohydrate(group3))
+      countGroup(atoms[firstAtomIndex].modelIndex, "n>", group3);
+    } else if (JmolConstants.checkCarbohydrate(group3)) {
       group = CarbohydrateMonomer.validateAndAllocate(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-    
+      countGroup(atoms[firstAtomIndex].modelIndex, "c>", group3);
+    }
     if (group == null)
       group = new Group(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
 
     chain.addGroup(group);
     groups[groupIndex] = group;
 
-    ////////////////////////////////////////////////////////////////
     for (int i = maxAtomIndex; --i >= firstAtomIndex;)
       atoms[i].setGroup(group);
   }
 
+  void countGroup(int modelIndex, String code, String group3) {
+    String g3code = (group3 + "   ").substring(0, 3);
+    int pt = group3Lists[modelIndex].indexOf(g3code);
+    if (pt < 0) {
+      group3Lists[modelIndex] += ",[" + g3code + "]";
+      pt = group3Lists[modelIndex].indexOf(g3code);
+      group3Counts[modelIndex] = (int[]) ArrayUtil.setLength(
+          group3Counts[modelIndex], group3Counts[modelIndex].length + 10);
+    }
+    group3Counts[modelIndex][pt / 6]++;
+    pt = group3Lists[modelIndex].indexOf(",[" + g3code);
+    if (pt >= 0)
+      group3Lists[modelIndex] = group3Lists[modelIndex].substring(0, pt) + code
+          + group3Lists[modelIndex].substring(pt + 2);
+    //becomes x> instead of ,[ 
+    //these will be used for setting up the popup menu
+
+  }
+  
   ////////////////////////////////////////////////////////////////
 
   void buildPolymers() {

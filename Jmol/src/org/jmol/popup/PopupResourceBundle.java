@@ -1,4 +1,4 @@
-/* $RCSfile$
+ /* $RCSfile$
  * $Author$
  * $Date$
  * $Revision$
@@ -80,11 +80,10 @@ class PopupResourceBundle {
       { "hideNotSelected;hide(none)Checkbox", "selected; hide not selected" },
 
       {
-          "PDBproteinMenu",
-          "allProtein proteinBackbone proteinSideChains - "
+          "PDBproteinMenu", "PDBaaresiduesComputedMenu - "
+          + "allProtein proteinBackbone proteinSideChains - "
               + "polar nonpolar - "
-              + "positiveCharge negativeCharge noCharge - "
-              + "PDBaaresiduesComputedMenu" },
+              + "positiveCharge negativeCharge noCharge" },
       { "allProtein", "protein" },
       { "proteinBackbone", "protein and backbone" },
       { "proteinSideChains", "protein and not backbone" },

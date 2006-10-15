@@ -192,6 +192,10 @@ final class Mmset {
     return modelAuxiliaryInfo[modelIndex];
   }
 
+  void setModelAuxiliaryInfo(int modelIndex, Object key, Object value) {
+    modelAuxiliaryInfo[modelIndex].put(key, value);
+  }
+
   Object getModelAuxiliaryInfo(int modelIndex, String key) {
     if (modelIndex < 0)
       return null;

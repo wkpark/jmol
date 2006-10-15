@@ -63,6 +63,18 @@ public final class Frame {
   CellInfo[] cellInfos;
   int atomCount;
   public Atom[] atoms;
+  int bondCount;
+  Bond[] bonds;  
+  int groupCount;
+  Group[] groups;
+  //note: Molecules is set up to only be calculated WHEN NEEDED
+  int moleculeCount;
+  Molecule[] molecules = new Molecule[4];
+  int modelCount;
+
+  BitSet elementsPresent;
+  BitSet groupsPresent;
+
   ////////////////////////////////////////////////////////////////
   // these may or may not be allocated
   // depending upon the AtomSetCollection characteristics
@@ -75,8 +87,7 @@ public final class Frame {
   int[] surfaceAtoms;
   String[] atomNames;
   int[] atomSerials;
-  byte[] specialAtomIDs;
-  
+  byte[] specialAtomIDs;  
   String[] group3Lists;
   int[][] group3Counts;
   
@@ -84,8 +95,7 @@ public final class Frame {
   
   ////////////////////////////////////////////////////////////////
 
-  int bondCount;
-  Bond[] bonds;
+
   private final static int growthIncrement = 250;
 
   //deprecated due to multimodel issue:
@@ -102,16 +112,10 @@ public final class Frame {
 
   boolean structuresDefined;
 
-  BitSet elementsPresent;
+  boolean hasBfactorRange;
+  int bfactor100Lo;
+  int bfactor100Hi;
 
-  int groupCount;
-  Group[] groups;
-
-  BitSet groupsPresent;
-
-  //note: Molecules is set up to only be calculated WHEN NEEDED
-  int moleculeCount;
-  Molecule[] molecules = new Molecule[4];
 
   class Molecule {
     int moleculeIndex;
@@ -196,10 +200,6 @@ public final class Frame {
 
   }
 
-  boolean hasBfactorRange;
-  int bfactor100Lo;
-  int bfactor100Hi;
-
   Frame(Viewer viewer, String name) {
     this.viewer = viewer;
     initializeFrame(name, 1, null, null);    
@@ -250,7 +250,7 @@ public final class Frame {
 }
 
   void initializeModel(JmolAdapter adapter, Object clientFile) {
-    int modelCount = (adapter == null ? 1 : adapter.getAtomSetCount(clientFile));
+    modelCount = (adapter == null ? 1 : adapter.getAtomSetCount(clientFile));
     mmset.setModelCount(modelCount);
 
     Logger.info("frame: haveSymmetry:" + someModelsHaveSymmetry
@@ -268,8 +268,8 @@ public final class Frame {
     if (adapter == null) {
       mmset.setModelNameNumberProperties(0, "", 1, null, null, false);
     } else {
-      group3Lists = new String[modelCount];
-      group3Counts = new int[modelCount][];
+      group3Lists = new String[modelCount + 1];
+      group3Counts = new int[modelCount + 1][];
       for (int i = 0; i < modelCount; ++i) {
         int modelNumber = adapter.getAtomSetNumber(clientFile, i);
         String modelName = adapter.getAtomSetName(clientFile, i);
@@ -286,6 +286,10 @@ public final class Frame {
         if (isPDB) {
           group3Lists[i] = JmolConstants.group3List;
           group3Counts[i] = new int[JmolConstants.group3Count + 10];
+          if (group3Lists[modelCount] == null) {
+            group3Lists[modelCount] = JmolConstants.group3List;
+            group3Counts[modelCount] = new int[JmolConstants.group3Count + 10];
+          }
         }
       }
 
@@ -351,7 +355,7 @@ public final class Frame {
     doUnitcellStuff();
     doAutobond();
     finalizeGroupBuild(); // set group offsets and build monomers
-    saveGroup3Info(modelCount);
+    saveGroup3Info();
     buildPolymers();
     freeze();
     finalizeBuild();
@@ -562,16 +566,12 @@ public final class Frame {
     group3s = null;
   }
 
-  void saveGroup3Info(int modelCount) {
+  void saveGroup3Info() {
     if (group3Lists == null)
       return;
-    for (int i = 0; i < modelCount; i++) 
-      if (group3Lists[i] != null) {
-        Hashtable group3Info = new Hashtable();
-        group3Info.put("group3List", group3Lists[i]);
-        group3Info.put("group3Counts", group3Counts[i]);
-        mmset.setModelAuxiliaryInfo(i, "group3Info", group3Info);
-      }
+    Hashtable info = getModelSetAuxiliaryInfo(); 
+    info.put("group3Lists", group3Lists);
+    info.put("group3Counts", group3Counts);
   }
   
   void distinguishAndPropagateGroup(int groupIndex, Chain chain, String group3,
@@ -651,8 +651,10 @@ public final class Frame {
           firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
       countGroup(atoms[firstAtomIndex].modelIndex, "c>", group3);
     }
-    if (group == null)
+    if (group == null) {
       group = new Group(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
+      countGroup(atoms[firstAtomIndex].modelIndex, "o>", group3);
+    }
 
     chain.addGroup(group);
     groups[groupIndex] = group;
@@ -677,7 +679,8 @@ public final class Frame {
           + group3Lists[modelIndex].substring(pt + 2);
     //becomes x> instead of ,[ 
     //these will be used for setting up the popup menu
-
+    if (modelIndex < modelCount)
+      countGroup(modelCount, code, group3);
   }
   
   ////////////////////////////////////////////////////////////////
@@ -1822,7 +1825,6 @@ public final class Frame {
      * 
      */
 
-    int modelCount = getModelCount();
     if (someModelsHaveUnitcells) {
       boolean doPdbScale = (modelCount == 1);
       cellInfos = new CellInfo[modelCount];
@@ -1870,7 +1872,6 @@ public final class Frame {
   void calcUnitCellMinMax(Point3f pointMin, Point3f pointMax) {
     if (cellInfos == null)
       return;
-    int modelCount = getModelCount();
     for (int i = 0; i < modelCount; i++) {
       if (!cellInfos[i].coordinatesAreFractional)
         continue;
@@ -2028,7 +2029,6 @@ public final class Frame {
     BitSet bs = new BitSet(atomCount);
     for (int i = atomCount; --i >= 0;)
       bs.set(i);
-    int modelCount = getModelCount();
     for (int i = 0; i < modelCount; i++) {
       int atomIndex = mmset.getPreSymmetryAtomIndex(i);
       int preSymAtomCount = mmset.getPreSymmetryAtomCount(i);
@@ -2692,7 +2692,6 @@ public final class Frame {
     int n = 0;
     if (moleculeCount == 0)
       getMolecules();
-    int modelCount = getModelCount();
     for (int i = 0; i < modelCount; i++) {
       if (modelIndex == i || modelIndex < 0)
         n += mmset.getModel(i).moleculeCount;

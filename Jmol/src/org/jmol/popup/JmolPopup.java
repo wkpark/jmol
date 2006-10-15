@@ -57,7 +57,7 @@ abstract public class JmolPopup {
   int aboutComputedMenuBaseCount;
   String nullModelSetName;
   String hiddenModelSetName;
-
+  Hashtable modelSetInfo, modelInfo;
   Vector PDBOnly = new Vector();
   Vector UnitcellOnly = new Vector();
   Vector FramesOnly = new Vector();
@@ -76,7 +76,7 @@ abstract public class JmolPopup {
   boolean haveCharges;
   boolean haveAltLocs;
   
-  int modelIndex;
+  int modelIndex, modelCount;
   
   JmolPopup(JmolViewer viewer) {
     this.viewer = viewer;
@@ -102,27 +102,34 @@ abstract public class JmolPopup {
   
   public void updateComputedMenus() {
     updateMode = UPDATE_ALL;
-    isApplet = viewer.isApplet();
-    modelIndex = viewer.getDisplayModelIndex();
-    Hashtable info = viewer.getModelSetAuxiliaryInfo();
-    isPDB = checkBoolean(info, "isPDB");
-    isSymmetry = checkBoolean(info, "someModelsHaveSymmetry");
-    isUnitCell = checkBoolean(info, "someModelsHaveUnitcells");
-    isMultiFrame = (viewer.getModelCount() > 1);
-    isMultiConfiguration = (viewer.getAltLocListInModel(modelIndex) != null);
-    isVibration = (viewer.modelHasVibrationVectors(modelIndex));
-    haveCharges = (viewer.havePartialCharges());
-
+    getViewerData();
     updateSelectMenu();
     updateElementsComputedMenu(viewer.getElementsPresentBitSet());
     updateHeteroComputedMenu(viewer.getHeteroList(modelIndex));
-    updateSurfMoComputedMenu((Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,"moData"));
-    updateAaresiduesComputedMenu(viewer.getGroupsPresentBitSet());
-    updateModelSetComputedMenu();
+    updateSurfMoComputedMenu((Hashtable) modelInfo.get("moData"));
     updateFileTypeDependentMenus();
+    updatePDBComputedMenus(viewer.getGroupsPresentBitSet());
+    updateModelSetComputedMenu();
     updateAboutSubmenu();
   }
 
+  private void getViewerData() {
+    isApplet = viewer.isApplet();
+    modelIndex = viewer.getDisplayModelIndex();
+    modelCount = viewer.getModelCount();
+    modelSetInfo = viewer.getModelSetAuxiliaryInfo();
+    modelInfo = viewer.getModelAuxiliaryInfo(modelIndex);
+    if (modelInfo == null)
+      modelInfo = new Hashtable();
+    isPDB = checkBoolean(modelSetInfo, "isPDB");
+    isSymmetry = checkBoolean(modelSetInfo, "someModelsHaveSymmetry");
+    isUnitCell = checkBoolean(modelSetInfo, "someModelsHaveUnitcells");
+    isMultiFrame = (modelCount > 1);
+    isMultiConfiguration = (viewer.getAltLocListInModel(modelIndex) != null);
+    isVibration = (viewer.modelHasVibrationVectors(modelIndex));
+    haveCharges = (viewer.havePartialCharges());
+  }
+  
   private void updateForShow() {
     updateMode = UPDATE_SHOW;
     updateSelectMenu();
@@ -214,36 +221,73 @@ abstract public class JmolPopup {
     }
   }
 
-  void updateAaresiduesComputedMenu(BitSet groupsPresentBitSet) {
-    Object menu = htMenus.get("PDBaaresiduesComputedMenu");
+  void updatePDBComputedMenus(BitSet groupsPresentBitSet) {
+
+    Object menu = htMenus.get("PDBaaResiduesComputedMenu");
     if (menu == null)
       return;
     removeAll(menu);
     enableMenu(menu, false);
-    if (groupsPresentBitSet == null)
+
+    Object menu1 = htMenus.get("PDBnucleicResiduesComputedMenu");
+    removeAll(menu1);
+    enableMenu(menu1, false);
+
+    if (!isPDB)
       return;
-    Hashtable groupInfo = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex, "group3Info");
-    int[] group3Counts = null;
-    String group3List = null;
-    if (groupInfo == null && modelIndex > 0)
-      return;
-    if (groupInfo != null) {
-      group3Counts = (int[])groupInfo.get("group3Counts");
-      group3List = (String)groupInfo.get("group3List");
-    }
     
-    for (int i = 1; i <= JmolConstants.GROUPID_AMINO_MAX; ++i) {
-        String name = JmolConstants.predefinedGroup3Names[i];
-        int n = 1;
-        if (group3List != null)
-          n = group3Counts[group3List.indexOf(name) / 6];
-        if (n > 0)
-          name += "  (" + n + ")";
-        Object item = addMenuItem(menu, name, null, getId(menu) + "." + name);
-        if (n == 0 || !groupsPresentBitSet.get(i))
-          enableMenuItem(item, false);
+    int n = (modelIndex < 0 ? modelCount : modelIndex);
+    String[] lists = ((String[]) modelSetInfo.get("group3Lists"));
+    group3List = (lists == null ? null : lists[n]);
+    group3Counts = (lists == null ? null : ((int[][]) modelSetInfo.get("group3Counts"))[n]);
+
+    if (group3List == null)
+      return;
+    //next is correct as "<=" because it includes "UNK"
+    int nItems = 0;
+    for (int i = 1; i <= JmolConstants.GROUPID_AMINO_MAX; ++i)
+      nItems += updateGroup3List(menu, JmolConstants.predefinedGroup3Names[i]);
+    nItems += augmentGroup3List(menu, "p>", true);
+    enableMenu(menu, (nItems > 0));
+    enableMenu(htMenus.get("PDBproteinMenu"), (nItems > 0));
+    
+    nItems = augmentGroup3List(menu1, "n>", false);
+    enableMenu(menu1, nItems > 0);
+    enableMenu(htMenus.get("PDBnucleicMenu"), (nItems > 0));
+  }
+
+  String group3List;
+  int[] group3Counts;
+
+  int updateGroup3List(Object menu, String name) {
+    int nItems = 0;
+    int n = group3Counts[group3List.indexOf(name) / 6];
+    if (n > 0) {
+      name += "  (" + n + ")";
+      nItems++;
     }
-    enableMenu(menu, true);
+    Object item = addMenuItem(menu, name, null, getId(menu) + "." + name);
+    if (n == 0)
+      enableMenuItem(item, false);
+    return nItems;
+  }
+  
+  int augmentGroup3List(Object menu, String type, boolean addSeparator) {
+    int pt = JmolConstants.GROUPID_AMINO_MAX * 6;
+    // ...... p>AFN]o>ODH]n>+T ]
+    int nItems = 0;
+    while (true) {
+      pt = group3List.indexOf(type, pt);
+      if (pt < 0)
+        break;
+      if (nItems++ == 0 && addSeparator)
+        addMenuSeparator(menu);
+      int n = group3Counts[pt / 6];
+      String name = group3List.substring(pt + 2, pt + 5) + "  (" + n + ")";
+      addMenuItem(menu, name, null, getId(menu) + "." + name);
+      pt++;
+    }
+    return nItems;
   }
 
   Object CONFIGURATIONComputedMenu;
@@ -252,9 +296,8 @@ abstract public class JmolPopup {
   void updateFRAMESbyModelComputedMenu() {
     //allowing this in case we move it later
     FRAMESbyModelComputedMenu = htMenus.get("FRAMESbyModelComputedMenu");
-    int modelCount = viewer.getModelCount();
     enableMenu(FRAMESbyModelComputedMenu, (modelCount > 1));
-    setLabel(FRAMESbyModelComputedMenu, (modelIndex < 0 ? GT._("All {0} models", viewer.getModelCount(), true) : getModelLabel()));
+    setLabel(FRAMESbyModelComputedMenu, (modelIndex < 0 ? GT._("All {0} models", modelCount, true) : getModelLabel()));
     removeAll(FRAMESbyModelComputedMenu);
     if (modelCount < 2)
       return;
@@ -355,7 +398,7 @@ abstract public class JmolPopup {
   }
   
   String getModelLabel() {
-    return GT._("model {0}",(modelIndex + 1) + "/" + viewer.getModelCount(), true);
+    return GT._("model {0}",(modelIndex + 1) + "/" + modelCount, true);
   }
   
   private void updateAboutSubmenu() {

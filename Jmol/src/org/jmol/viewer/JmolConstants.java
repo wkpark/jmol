@@ -2073,8 +2073,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   static String getGroup3List() {
     StringBuffer s = new StringBuffer();
-    for (int i = 1; i < predefinedGroup3Names.length; i++)
+    //for menu presentation order
+    for (int i = 1; i < GROUPID_PURINE_MIN; i++)
       s.append(",[" + (predefinedGroup3Names[i]+"   ").substring(0,3)+"]");
+    s.append(",[G  ],[C  ],[A  ],[T  ],[I  ],[U  ],[+G ],[+C ],[+A ],[+T ],[+I ],[+U ]");
     s.append(allCarbohydrates);
     return "" + s;
   }

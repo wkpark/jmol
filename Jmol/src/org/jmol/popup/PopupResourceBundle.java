@@ -80,7 +80,7 @@ class PopupResourceBundle {
       { "hideNotSelected;hide(none)Checkbox", "selected; hide not selected" },
 
       {
-          "PDBproteinMenu", "PDBaaresiduesComputedMenu - "
+          "PDBproteinMenu", "PDBaaResiduesComputedMenu - "
           + "allProtein proteinBackbone proteinSideChains - "
               + "polar nonpolar - "
               + "positiveCharge negativeCharge noCharge" },
@@ -95,8 +95,8 @@ class PopupResourceBundle {
 
       {
           "PDBnucleicMenu",
-          "allNucleic nucleicBackbone nucleicBases - " + "DNA RNA - "
-              + "A C G T U - " + "atPairs auPairs gcPairs" },
+          "PDBnucleicResiduesComputedMenu allNucleic nucleicBackbone nucleicBases - " + "DNA RNA - "
+              + "atPairs auPairs gcPairs" },
       { "allNucleic", "nucleic" },
       { "DNA", "dna" },
       { "RNA", "rna" },
@@ -473,7 +473,8 @@ class PopupResourceBundle {
       { "positiveCharge", GT._("Basic Residues (+)", true) },
       { "negativeCharge", GT._("Acidic Residues (-)", true) },
       { "noCharge", GT._("Uncharged Residues", true) },
-      { "PDBaaresiduesComputedMenu", GT._("By Residue Name", true) },
+      { "PDBaaResiduesComputedMenu", GT._("By Residue Name", true) },
+      { "PDBnucleicResiduesComputedMenu", GT._("By Residue Name", true) },
       { "PDBheteroComputedMenu", GT._("By HETATM", true) },
       { "PDBnucleicMenu", GT._("Nucleic", true) },
       { "allNucleic", GT._("All", true) },

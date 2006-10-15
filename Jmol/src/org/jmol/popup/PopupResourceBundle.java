@@ -62,12 +62,14 @@ class PopupResourceBundle {
   private static final String[][] structureContents = {
       {
           "popupMenu",
-          "modelSetComputedMenu - selectMenu colorMenu renderMenu surfaceMenu SYMMETRYunitCellMenu - "
+          "modelSetMenu - selectMenu colorMenu renderMenu surfaceMenu SYMMETRYunitCellMenu - "
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "
               + "measureMenu pickingMenu - showConsole showMenu - "
               //              + "- optionsMenu "
               + "aboutComputedMenu" },
+              
+      {   "modelSetMenu", "FRAMESbyModelComputedMenu CONFIGURATIONComputedMenu" },
 
       {
           "selectMenu",
@@ -451,9 +453,9 @@ class PopupResourceBundle {
       { "jmolUrl", "http://www.jmol.org" },
       { "mouseManualUrl", "http://wiki.jmol.org/index.php/Mouse_Manual" },
       { "translatingUrl", "http://wiki.jmol.org/index.php/Internationalisation" }, };
-
+  
   private static final String[][] wordContents = {
-      { "modelSetComputedMenu", GT._("No atoms loaded", true) },
+      { "modelSetMenu", GT._("No atoms loaded", true) },
       { "CONFIGURATIONComputedMenu", GT._("Configurations", true) },
       { "hiddenModelSetName", GT._("Model information", true) },
 

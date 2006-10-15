@@ -2689,6 +2689,7 @@ public class Viewer extends JmolViewer {
   void popupMenu(int x, int y) {
     if (global.disablePopupMenu)
       return;
+    setFrankOn(true);
     statusManager.popupMenu(x, y);
   }
 

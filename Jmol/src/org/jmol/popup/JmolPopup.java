@@ -51,16 +51,10 @@ abstract public class JmolPopup {
   MenuItemListener mil;
   CheckboxMenuItemListener cmil;
 
-  Object FRAMESbyModelComputedMenu = newMenu("label","FRAMESbyModelComputedMenu");
-  Object CONFIGURATIONComputedMenu = newMenu("label","CONFIGURATIONComputedMenu");
-  Object elementsComputedMenu;
-  Object aaresiduesComputedMenu;
-  Object heteroComputedMenu;
-  Object surfMoComputedMenu;
-  Object selectMenu;
-  Object aboutComputedMenu;
+  Hashtable htMenus = new Hashtable();
+  Object frankPopup;
+  
   int aboutComputedMenuBaseCount;
-  Object modelSetComputedMenu;
   String nullModelSetName;
   String hiddenModelSetName;
 
@@ -83,7 +77,7 @@ abstract public class JmolPopup {
   boolean haveAltLocs;
   
   int modelIndex;
-
+  
   JmolPopup(JmolViewer viewer) {
     this.viewer = viewer;
     jmolComponent = viewer.getAwtComponent();
@@ -96,7 +90,6 @@ abstract public class JmolPopup {
       return new JmolPopupAwt(viewer);
     return new JmolPopupSwing(viewer);
   }
-
 
   void build(Object popupMenu) {
     addMenuItems("", "popupMenu", popupMenu, new PopupResourceBundle());
@@ -144,12 +137,14 @@ abstract public class JmolPopup {
   }
 
   void updateSelectMenu() {
+    Object selectMenu = htMenus.get("selectMenu");
     if (selectMenu == null)
       return;
     setLabel(selectMenu, GT._("Select ({0})", viewer.getSelectionCount(), true));
   }
   
   void updateElementsComputedMenu(BitSet elementsPresentBitSet) {
+    Object elementsComputedMenu = htMenus.get("elementsComputedMenu");
     if (elementsComputedMenu == null)
       return;
     removeAll(elementsComputedMenu);
@@ -178,6 +173,7 @@ abstract public class JmolPopup {
   }
 
   void updateHeteroComputedMenu(Hashtable htHetero) {
+    Object heteroComputedMenu = htMenus.get("heteroComputedMenu");
     if (heteroComputedMenu == null)
       return;
     removeAll(heteroComputedMenu);
@@ -198,6 +194,7 @@ abstract public class JmolPopup {
   }
 
   void updateSurfMoComputedMenu(Hashtable moData) {
+    Object surfMoComputedMenu = htMenus.get("surfMoComputedMenu");
     if (surfMoComputedMenu == null)
       return;
     enableMenu(surfMoComputedMenu, false);
@@ -218,6 +215,7 @@ abstract public class JmolPopup {
   }
 
   void updateAaresiduesComputedMenu(BitSet groupsPresentBitSet) {
+    Object aaresiduesComputedMenu = htMenus.get("aaresiduesComputedMenu");
     if (aaresiduesComputedMenu == null)
       return;
     removeAll(aaresiduesComputedMenu);
@@ -233,10 +231,12 @@ abstract public class JmolPopup {
     enableMenu(aaresiduesComputedMenu, true);
   }
 
+  Object CONFIGURATIONComputedMenu;
+  Object FRAMESbyModelComputedMenu;
+  
   void updateFRAMESbyModelComputedMenu() {
     //allowing this in case we move it later
-    if (FRAMESbyModelComputedMenu == null)
-      return;
+    FRAMESbyModelComputedMenu = htMenus.get("FRAMESbyModelComputedMenu");
     int modelCount = viewer.getModelCount();
     enableMenu(FRAMESbyModelComputedMenu, (modelCount > 1));
     setLabel(FRAMESbyModelComputedMenu, (modelIndex < 0 ? GT._("All {0} models", viewer.getModelCount(), true) : getModelLabel()));
@@ -258,12 +258,13 @@ abstract public class JmolPopup {
   String configurationSelected = "";
   
   void updateCONFIGURATIONComputedMenu() {
-    if (CONFIGURATIONComputedMenu == null || !isMultiConfiguration)
+    CONFIGURATIONComputedMenu = htMenus.get("CONFIGURATIONComputedMenu");
+    enableMenu(CONFIGURATIONComputedMenu, isMultiConfiguration);
+    if (!isMultiConfiguration)
       return;
     String altlocs = viewer.getAltLocListInModel(modelIndex);
     int nAltLocs = altlocs.length();
     setLabel(CONFIGURATIONComputedMenu, GT._("Configurations ({0})", nAltLocs, true));
-    enableMenu(CONFIGURATIONComputedMenu, true);
     removeAll(CONFIGURATIONComputedMenu);
     String script = "hide none #CONFIG";
     addCheckboxMenuItem(CONFIGURATIONComputedMenu, GT._("all", true), script, null,
@@ -277,6 +278,7 @@ abstract public class JmolPopup {
   }
 
   void updateModelSetComputedMenu() {
+    Object modelSetComputedMenu = htMenus.get("modelSetMenu");
     if (modelSetComputedMenu == null)
       return;
     removeAll(modelSetComputedMenu);
@@ -342,6 +344,7 @@ abstract public class JmolPopup {
   }
   
   private void updateAboutSubmenu() {
+    Object aboutComputedMenu = htMenus.get("aboutComputedMenu");
     if (aboutComputedMenu == null)
       return;
     for (int i = getMenuItemCount(aboutComputedMenu); --i >= aboutComputedMenuBaseCount; )
@@ -428,33 +431,18 @@ abstract public class JmolPopup {
       if (item.indexOf("Menu") >= 0) {
         Object subMenu = newMenu(word, id + "." + item);
         addMenuSubMenu(menu, subMenu);
-
-        // these will need creating later:
-        if ("elementsComputedMenu".equals(item))
-          elementsComputedMenu = subMenu;
-        else if ("aaresiduesComputedMenu".equals(item))
-          aaresiduesComputedMenu = subMenu;
-        else if ("heteroComputedMenu".equals(item))
-          heteroComputedMenu = subMenu;
-        else if ("surfMoComputedMenu".equals(item))
-          surfMoComputedMenu = subMenu;
-        else if ("CONFIGURATIONComputedMenu".equals(item))
-          CONFIGURATIONComputedMenu = subMenu;
-        else
+        htMenus.put(item, subMenu);
+        if (item.indexOf("Computed") < 0)
           addMenuItems(id, item, subMenu, popupResourceBundle);
-
         // these will need tweaking:
         if ("aboutComputedMenu".equals(item)) {
-          aboutComputedMenu = subMenu;
           aboutComputedMenuBaseCount = getMenuItemCount(subMenu);
         } else if ("modelSetComputedMenu".equals(item)) {
           nullModelSetName = word;
           hiddenModelSetName = popupResourceBundle
               .getWord("hiddenModelSetName");
-          modelSetComputedMenu = subMenu;
-          enableMenu(modelSetComputedMenu, false);
-        } else if ("selectMenu".equals(item))
-          selectMenu = subMenu;
+          enableMenu(subMenu, false);
+        }
         newMenu = subMenu;
       } else if ("-".equals(item)) {
         addMenuSeparator(menu);
@@ -525,21 +513,31 @@ abstract public class JmolPopup {
     }
   }
   
+  String currentMenuItemId = null;
+  
   class MenuItemListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
+      restorePopupMenu();
       String script = e.getActionCommand();
       if (script == null || script.length() == 0)
         return;
       String id = getId(e.getSource());
-      if (id != null)
+      if (id != null) {
         script = fixScript(id, script);
+        currentMenuItemId = id;
+      }
       viewer.script(script);
     }
   }
 
   class CheckboxMenuItemListener implements ItemListener {
     public void itemStateChanged(ItemEvent e) {
+      restorePopupMenu();
       setCheckBoxValue(e.getSource());
+      String id = getId(e.getSource());
+      if (id != null) {
+        currentMenuItemId = id;
+      }
       //Logger.debug("CheckboxMenuItemListener() " + e.getSource());
     }
   }
@@ -592,6 +590,7 @@ abstract public class JmolPopup {
   }
 
   public void show(int x, int y) {
+    String id = currentMenuItemId;
     updateForShow();
     for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements();) {
       String key = (String) keys.nextElement();
@@ -602,12 +601,64 @@ abstract public class JmolPopup {
       //System.out.println("set " + basename + " " + b +"#" + key + " " + getId(item));
       setCheckBoxState(item, b);
     }
+    if (x < 0) {
+      x = -x;
+      setFrankMenu(id);
+      if (nFrankList > 0) {
+        showFrankMenu(x - 50, y - nFrankList * getMenuItemHeight());
+        return;
+      }
+    } 
+    restorePopupMenu();
     showPopupMenu(x, y);
   }
 
+  Object[][] frankList = new Object[10][]; //enough to cover menu drilling
+  int nFrankList = 0;
+  String currentFrankId = null;
+  void setFrankMenu(String id) {
+    if (currentFrankId != null && currentFrankId == id && nFrankList > 0)
+      return;
+    if (frankPopup == null)
+      createFrankPopup();
+    resetFrankMenu();
+    if (id == null)
+      return;
+    currentFrankId = id;
+    nFrankList = 0;
+    for (int i = id.indexOf(".", 2) + 1;;) {
+      int iNew = id.indexOf(".", i);
+      if (iNew < 0)
+        break;
+      String strMenu = id.substring(i, iNew);
+      Object menu = htMenus.get(strMenu);
+      frankList[nFrankList++] = new Object[] {getParent(menu), menu, new Integer(getPosition(menu)) };
+      addMenuSubMenu(frankPopup, menu);
+      i = iNew + 1;
+    }
+  }
+
+  void restorePopupMenu() {
+    if (nFrankList == 0)
+      return;
+    for (int i = nFrankList; --i >= 0;) {
+      insertMenuSubMenu(frankList[i][0], frankList[i][1], ((Integer)frankList[i][2]).intValue());
+    }
+    nFrankList = 0;
+  }
   ////////////////////////////////////////////////////////////////
 
+  abstract void resetFrankMenu();
+
+  abstract Object getParent(Object menu);
+
+  abstract void insertMenuSubMenu(Object menu, Object subMenu, int index);
+  
+  abstract int getPosition(Object menu);
+
   abstract void showPopupMenu(int x, int y);
+
+  abstract void showFrankMenu(int x, int y);
 
   abstract void setCheckBoxState(Object item, boolean state);
   
@@ -643,6 +694,10 @@ abstract public class JmolPopup {
 
   abstract void setCheckBoxValue(Object source);
   
+  abstract void createFrankPopup();
+
+  abstract int getMenuItemHeight();
+
   long maxMemoryForNewerJvm() {
     // this method is overridden in JmolPopupSwing for newer Javas
     // JmolPopupAwt does not implement this

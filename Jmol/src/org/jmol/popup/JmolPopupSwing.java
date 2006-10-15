@@ -38,6 +38,8 @@ public class JmolPopupSwing extends JmolPopup {
 
   JPopupMenu swingPopup;
   JMenu elementComputedMenu;
+  
+  static int MENUITEM_HEIGHT = 20; 
 
   public JmolPopupSwing(JmolViewer viewer) {
     super(viewer);
@@ -47,6 +49,48 @@ public class JmolPopupSwing extends JmolPopup {
 
   void showPopupMenu(int x, int y) {
     swingPopup.show(jmolComponent, x, y);
+  }
+
+  Object getParent(Object menu) {
+    return ((JMenu)menu).getParent();  
+  }
+  
+  int getMenuItemHeight() {
+    return MENUITEM_HEIGHT;
+  }
+
+  int getPosition(Object menu) {
+    Object p = getParent(menu);
+    if (p instanceof JPopupMenu) {
+      for (int i = ((JPopupMenu) p).getComponentCount(); --i >= 0;)
+        if (((JPopupMenu) p).getComponent(i) == menu)
+          return i;
+    } else {
+      for (int i = ((JMenu) p).getItemCount(); --i >= 0;)
+        if (((JMenu) p).getItem(i) == menu)
+          return i;
+    }
+    return -1;
+  }
+
+  void insertMenuSubMenu(Object menu, Object subMenu, int index) {
+    if (menu instanceof JPopupMenu)
+      ((JPopupMenu)menu).insert((JMenu)subMenu, index);
+    else
+   ((JMenu)menu).insert((JMenu)subMenu, index);
+  }
+  
+  void createFrankPopup() {
+    frankPopup = new JPopupMenu("Frank");
+  }
+  
+  void showFrankMenu(int x, int y) {
+    ((JPopupMenu)frankPopup).show(jmolComponent, x, y);
+  }
+
+  void resetFrankMenu() {
+    JPopupMenu menu = (JPopupMenu) frankPopup;
+    menu.removeAll();
   }
 
   void addToMenu(Object menu, JComponent item) {
@@ -101,9 +145,6 @@ public class JmolPopupSwing extends JmolPopup {
     JMenuItem jmi = (JMenuItem)menuItem;
     jmi.setLabel(entry);
     jmi.setActionCommand(script);
-    // miguel 2004 12 03
-    // greyed out menu entries are too hard to read
-    //    jmi.setEnabled(script != null);
   }
 
   Object addCheckboxMenuItem(Object menu, String entry, String basename, String id, boolean state) {
@@ -116,6 +157,10 @@ public class JmolPopupSwing extends JmolPopup {
     return jcmi;
   }
 
+  Object cloneMenu(Object menu) {
+    return null;  
+  }
+  
   void addMenuSubMenu(Object menu, Object subMenu) {
     addToMenu(menu, (JMenu)subMenu);
   }
@@ -123,9 +168,14 @@ public class JmolPopupSwing extends JmolPopup {
   Object newMenu(String menuName, String id) {
     JMenu jm = new JMenu(menuName);
     jm.setName(id);
+    jm.setAutoscrolls(true);
     return jm;
   }
 
+  void setAutoscrolls(Object menu) {
+   ((JMenu) menu).setAutoscrolls(true);  
+  }
+  
   void renameMenu(Object menu, String newMenuName) {
     ((JMenu)menu).setLabel(newMenuName);
   }

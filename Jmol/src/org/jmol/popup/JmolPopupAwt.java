@@ -39,6 +39,7 @@ public class JmolPopupAwt extends JmolPopup {
 
   PopupMenu awtPopup;
   Menu elementComputedMenu;
+  static int MENUITEM_HEIGHT = 20; 
 
   public JmolPopupAwt(JmolViewer viewer) {
     super(viewer);
@@ -49,6 +50,49 @@ public class JmolPopupAwt extends JmolPopup {
 
   void showPopupMenu(int x, int y) {
     awtPopup.show(jmolComponent, x, y);
+  }
+
+  Object getParent(Object menu) {
+    return ((Menu)menu).getParent();  
+  }
+
+  int getMenuItemHeight() {
+    return MENUITEM_HEIGHT;
+  }
+
+  int getPosition(Object menu) {
+    Object p = getParent(menu);
+    if (p instanceof PopupMenu) {
+      for (int i = ((PopupMenu) p).getItemCount(); --i >= 0;)
+        if (((PopupMenu) p).getItem(i) == menu)
+          return i;
+    } else {
+      for (int i = ((Menu)p).getItemCount(); --i >= 0;)
+        if (((Menu)p).getItem(i) == menu)
+          return i;
+    }
+    return -1;
+  }
+
+  void insertMenuSubMenu(Object menu, Object subMenu, int index) {
+    if (menu instanceof PopupMenu)
+      ((PopupMenu)menu).insert((Menu)subMenu, index);
+    else
+      ((Menu)menu).insert((Menu)subMenu, index);
+  }
+  
+  void createFrankPopup() {
+    frankPopup = new PopupMenu("Frank");
+    jmolComponent.add((PopupMenu)frankPopup);
+  }
+  
+  void showFrankMenu(int x, int y) {
+    ((PopupMenu)frankPopup).show(jmolComponent, x, y);
+  }
+
+  void resetFrankMenu() {
+    PopupMenu menu = (PopupMenu) frankPopup;
+    menu.removeAll();
   }
 
   void addToMenu(Object menu, MenuItem item) {
@@ -110,6 +154,10 @@ public class JmolPopupAwt extends JmolPopup {
     return cmi;
   }
 
+  Object cloneMenu(Object menu) {
+    return null;  
+  }
+  
   void addMenuSubMenu(Object menu, Object subMenu) {
     addToMenu(menu, (Menu)subMenu);
   }
@@ -120,6 +168,9 @@ public class JmolPopupAwt extends JmolPopup {
     return m;
   }
 
+  void setAutoscrolls(Object menu) {
+  }
+  
   void renameMenu(Object menu, String newMenuName) {
     ((Menu)menu).setLabel(newMenuName);
   }

@@ -268,7 +268,7 @@ abstract class MouseManager {
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case LEFT:
       if (viewer.frankClicked(x, y)) {
-        viewer.popupMenu(x, y);
+        viewer.popupMenu(-x, y);
         return;
       }
       if (!drawMode)

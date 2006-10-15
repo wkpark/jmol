@@ -83,18 +83,20 @@ final class Mmset {
 
   Hashtable getHeteroList(int modelIndex) {
     Hashtable htFull = new Hashtable();
+    boolean ok = false;
     for (int i = modelCount; --i >= 0;)
       if (modelIndex < 0 || i == modelIndex) {
         Hashtable ht = (Hashtable) getModelAuxiliaryInfo(i, "hetNames");
         if (ht == null)
           continue;
+        ok = true;
         Enumeration e = ht.keys();
         while (e.hasMoreElements()) {
           String key = (String) e.nextElement();
           htFull.put(key, ht.get(key));
         }
       }
-    return htFull;
+    return (ok ? htFull : (Hashtable) getModelSetAuxiliaryInfo("hetNames"));
   }
 
   void freeze() {
@@ -236,11 +238,12 @@ final class Mmset {
     return models[modelIndex].nInsertions;
   }
     
-  void setModelNameNumberProperties(int modelIndex, String modelName,
+  boolean setModelNameNumberProperties(int modelIndex, String modelName,
                                     int modelNumber,
                                     Properties modelProperties,
-                                    Hashtable modelAuxiliaryInfo,
-                                    boolean isPDB) {
+                                    Hashtable modelAuxiliaryInfo, boolean isPDB) {
+    
+
     modelNames[modelIndex] = modelName;
     modelNumbers[modelIndex] = modelNumber;
     this.modelProperties[modelIndex] = modelProperties;
@@ -250,7 +253,7 @@ final class Mmset {
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
     codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
     models[modelIndex].setNInsertions(codes == null ? 0 : codes.length());
-    models[modelIndex].isPDB = isPDB;
+    return models[modelIndex].isPDB = isPDB || getModelAuxiliaryInfoBoolean(modelIndex, "isPDB");
   }
 
   int getAltLocCountInModel(int modelIndex) {

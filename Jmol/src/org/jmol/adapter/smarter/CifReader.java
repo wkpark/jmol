@@ -25,6 +25,7 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 import java.util.Hashtable;
+import org.jmol.viewer.JmolConstants;
 
 /**
  * A true line-free CIF file reader for CIF and mmCIF files.
@@ -333,8 +334,11 @@ class CifReader extends AtomSetCollectionReader {
       processNonpolyLoopBlock();
       return;
     }
-    if (str.startsWith("_struct_conf")
-        && !str.startsWith("_struct_conf_type")) {
+    if (str.startsWith("_chem_comp")) {
+      processChemCompLoopBlock();
+      return;
+    }
+    if (str.startsWith("_struct_conf") && !str.startsWith("_struct_conf_type")) {
       processStructConfLoopBlock();
       return;
     }
@@ -355,7 +359,7 @@ class CifReader extends AtomSetCollectionReader {
         processSymmetryOperationsLoopBlock();
       }
       return;
-    }    
+    }
     skipLoop();
   }
 
@@ -385,7 +389,6 @@ class CifReader extends AtomSetCollectionReader {
     parseLoopParameters(atomTypeFields);
     for (int i = propertyCount; --i >= 0;)
       if (!propertyReferenced[i]) {
-        logger.log("?que? missing _atom_type property:" + i);
         skipLoop();
         return;
       }
@@ -609,12 +612,15 @@ class CifReader extends AtomSetCollectionReader {
         atomSetCollection.addAtomWithMappedName(atom);
         if (atom.isHetero && htHetero != null) {
           atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
+          atomSetCollection.setAtomSetCollectionAuxiliaryInfo("hetNames", htHetero);
           htHetero = null;
         }
       }
     }
-    if (isPDB)
+    if (isPDB) {
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", new Boolean(isPDB));
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", new Boolean(isPDB));
+    }
     return true;
   }
 
@@ -718,6 +724,51 @@ class CifReader extends AtomSetCollectionReader {
     hetatmData = null;
   }
 
+
+  final static byte CHEM_COMP_ID = 0;
+  final static byte CHEM_COMP_NAME = 1;
+
+  final static String[] chemCompFields = { 
+      "_chem_comp.id",
+      "_chem_comp.name",  
+  };
+  
+
+  /**
+   * 
+   * a general name definition field. Not all hetero
+   * 
+   * @throws Exception
+   */
+  void processChemCompLoopBlock() throws Exception {
+    parseLoopParameters(chemCompFields);
+    while (tokenizer.getData()) {
+      String groupName = null;
+      String hetName = null;
+      for (int i = 0; i < fieldCount; ++i) {
+        String field = loopData[i];
+        if (field.length() == 0)
+          continue;
+        char firstChar = field.charAt(0);
+        if (firstChar == '\0')
+          continue;
+        switch (fieldTypes[i]) {
+        case NONE:
+          break;
+        case CHEM_COMP_ID:
+          groupName = field;
+          break;
+        case CHEM_COMP_NAME:
+          hetName = field;
+          break;
+        }
+      }
+      if (groupName == null || hetName == null)
+        return;
+      addHetero(groupName, hetName);
+    }
+  }
+
   /**
    * 
    * a HETERO name definition field. Maybe not all hetero? nonpoly?
@@ -755,6 +806,8 @@ class CifReader extends AtomSetCollectionReader {
   }
 
   void addHetero(String groupName, String hetName) {
+  if (!JmolConstants.isHetero(groupName))
+    return;
   if (htHetero == null)
     htHetero = new Hashtable();
   htHetero.put(groupName, hetName);

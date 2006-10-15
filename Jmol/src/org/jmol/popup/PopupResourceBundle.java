@@ -73,7 +73,7 @@ class PopupResourceBundle {
       {
           "selectMenu",
           "hideNotSelected;hide(none)Checkbox showSelectionsCheckbox - selectAll selectNone invertSelection - elementsComputedMenu - "
-              + "PDBproteinMenu PDBnucleicMenu PDBheteroMenu PDBcarbohydrate PDBnoneOfTheAbove" },
+              + "PDBproteinMenu PDBnucleicMenu PDBheteroMenu PDBcarboMenu PDBnoneOfTheAbove" },
       { "selectAll", "all" },
       { "selectNone", "none" },
       { "invertSelection", "not selected" },
@@ -92,10 +92,15 @@ class PopupResourceBundle {
       { "positive ", "protein and basic" },
       { "negativeCharge", "protein and acidic" },
       { "noCharge", "protein and not (acidic,basic)" },
+      { "allCarbo", "carbohydrate" },
+
+      {
+        "PDBcarboMenu",
+        "PDBcarboResiduesComputedMenu - allCarbo" },
 
       {
           "PDBnucleicMenu",
-          "PDBnucleicResiduesComputedMenu allNucleic nucleicBackbone nucleicBases - " + "DNA RNA - "
+          "PDBnucleicResiduesComputedMenu - allNucleic nucleicBackbone nucleicBases - " + "DNA RNA - "
               + "atPairs auPairs gcPairs" },
       { "allNucleic", "nucleic" },
       { "DNA", "dna" },
@@ -123,7 +128,6 @@ class PopupResourceBundle {
       { "exceptWater", "hetero and not water" },
       { "Ligand", "ligand" },
 
-      { "PDBcarbohydrate", "carbohydrate" },
       // not implemented    { "Lipid", "lipid" },
       { "PDBnoneOfTheAbove", "not(hetero,protein,nucleic,carbohydrate)" },
 
@@ -475,6 +479,7 @@ class PopupResourceBundle {
       { "noCharge", GT._("Uncharged Residues", true) },
       { "PDBaaResiduesComputedMenu", GT._("By Residue Name", true) },
       { "PDBnucleicResiduesComputedMenu", GT._("By Residue Name", true) },
+      { "PDBcarboResiduesComputedMenu", GT._("By Residue Name", true) },
       { "PDBheteroComputedMenu", GT._("By HETATM", true) },
       { "PDBnucleicMenu", GT._("Nucleic", true) },
       { "allNucleic", GT._("All", true) },
@@ -499,7 +504,9 @@ class PopupResourceBundle {
           GT._("Nonaqueous Solvent") + " (solvent and not water)" },
       { "exceptWater", GT._("Nonaqueous HETATM") + " (hetero and not water)" },
       { "Ligand", GT._("Ligand") + " (hetero and not solvent)" },
-      { "PDBcarbohydrate", GT._("Carbohydrate", true) },
+
+      { "allCarbo", GT._("All", true) },
+      { "PDBcarboMenu", GT._("Carbohydrate", true) },
       { "PDBnoneOfTheAbove", GT._("None of the above", true) },
 
       { "FRAMESbyModelComputedMenu", GT._("Model/Frame", true) },

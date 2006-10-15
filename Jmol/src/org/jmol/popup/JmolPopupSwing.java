@@ -116,7 +116,7 @@ public class JmolPopupSwing extends JmolPopup {
     JMenuItem jmi = new JMenuItem(entry);
     updateMenuItem(jmi, entry, script);
     jmi.addActionListener(mil);
-    jmi.setName(id == null ? ((Component)menu).getName() : id);
+    jmi.setName(id == null ? ((Component)menu).getName() + ".": id);
     addToMenu(menu, jmi);
     return jmi;
   }
@@ -152,7 +152,7 @@ public class JmolPopupSwing extends JmolPopup {
     jcmi.setState(state);
     jcmi.addItemListener(cmil);
     jcmi.setActionCommand(basename);
-    jcmi.setName(id == null ? ((Component)menu).getName() : id);
+    jcmi.setName(id == null ? ((Component)menu).getName() + "." : id);
     addToMenu(menu, jcmi);
     return jcmi;
   }

@@ -2081,6 +2081,11 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return "" + s;
   }
   
+  public final static boolean isHetero(String group3) {
+    int pt = group3List.indexOf("[" + (group3 + "   ").substring(0, 3) + "]");
+    return (pt < 0 || pt / 6 > GROUPID_PYRIMIDINE_LAST);
+  }
+
   public final static String group3List = getGroup3List();
   public final static int group3Count = group3List.length() / 6;
   

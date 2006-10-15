@@ -735,8 +735,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
           else
             jsoWindow.call(loadStructCallback, new Object[] { htmlName,
                 fullPathName });
-      if (jmolpopup != null)
-        jmolpopup.updateComputedMenus();
+//      if (jmolpopup != null)
+  //      jmolpopup.updateComputedMenus();
     }
 
     public void notifyScriptStart(String statusMessage, String additionalInfo) {

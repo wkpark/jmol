@@ -478,7 +478,7 @@ class PdbReader extends AtomSetCollectionReader {
     if (htHetero == null)
       htHetero = new Hashtable();
     String groupName = parseToken(line, 7, 10);
-    String hetName = "";
+    String hetName = line.substring(30, 70).trim();
     String htName = (String) htHetero.get(groupName);
     if (htName != null)
       return;

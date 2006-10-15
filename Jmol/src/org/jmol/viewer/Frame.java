@@ -278,11 +278,9 @@ public final class Frame {
             .getAtomSetProperties(clientFile, i);
         Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
             clientFile, i);
-        boolean isPDBModel = (isPDB || mmset.getModelAuxiliaryInfoBoolean(i,
-            "isPDB"));
-        mmset.setModelNameNumberProperties(i, modelName, modelNumber,
-            modelProperties, modelAuxiliaryInfo, isPDBModel);
-        if (isPDB) {
+        boolean isPDBModel = mmset.setModelNameNumberProperties(i, modelName, modelNumber,
+            modelProperties, modelAuxiliaryInfo, isPDB);
+        if (isPDBModel) {
           group3Lists[i] = JmolConstants.group3List;
           group3Counts[i] = new int[JmolConstants.group3Count + 10];
           if (group3Lists[modelCount] == null) {

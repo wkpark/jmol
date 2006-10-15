@@ -109,7 +109,7 @@ public class JmolPopupAwt extends JmolPopup {
     MenuItem mi = new MenuItem(entry);
     updateMenuItem(mi, entry, script);
     mi.addActionListener(mil);
-    mi.setName(id == null ? ((MenuComponent)menu).getName() : id);
+    mi.setName(id == null ? ((MenuComponent)menu).getName() + ".": id);
     addToMenu(menu, mi);
     return mi;
   }
@@ -149,7 +149,7 @@ public class JmolPopupAwt extends JmolPopup {
     cmi.setState(state);
     cmi.addItemListener(cmil);
     cmi.setActionCommand(basename);
-    cmi.setName(id == null ? ((MenuComponent) menu).getName() : id);
+    cmi.setName(id == null ? ((MenuComponent) menu).getName() + "." : id);
     addToMenu(menu, cmi);
     return cmi;
   }

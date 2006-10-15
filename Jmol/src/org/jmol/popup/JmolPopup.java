@@ -78,6 +78,8 @@ abstract public class JmolPopup {
   
   int modelIndex, modelCount;
   
+  final static int MAX_ITEMS = 25;
+  
   JmolPopup(JmolViewer viewer) {
     this.viewer = viewer;
     jmolComponent = viewer.getAwtComponent();
@@ -213,11 +215,25 @@ abstract public class JmolPopup {
     if (nOrb == 0)
       return;
     enableMenu(menu, true);
+    Object subMenu = menu;
+    int nmod = (nOrb % MAX_ITEMS);
+    if (nmod == 0)
+      nmod = MAX_ITEMS;
+    int pt = (nOrb > MAX_ITEMS ? 0 : Integer.MIN_VALUE);
     for (int i = nOrb; --i >= 0;) {
-      String entryName = "#" + (i + 1) +" " 
-      + ((Hashtable)(mos.get(i))).get("energy");
+      if (pt >= 0 && (pt++ % nmod) == 0) {
+        if (pt == nmod + 1)
+          nmod = MAX_ITEMS;
+        String id = "mo" + pt + "Menu";
+        subMenu = newMenu(Math.max(i + 2 - nmod, 1) + "..." + (i + 1),  getId(menu) + "." + id);
+        addMenuSubMenu(menu, subMenu);
+        htMenus.put(id, subMenu);
+        pt = 1;
+      }
+      String entryName = "#" + (i + 1) + " "
+          + ((Hashtable) (mos.get(i))).get("energy");
       String script = "mo " + (i + 1);
-      addMenuItem(menu, entryName, script, null);
+      addMenuItem(subMenu, entryName, script, null);
     }
   }
 
@@ -232,6 +248,10 @@ abstract public class JmolPopup {
     Object menu1 = htMenus.get("PDBnucleicResiduesComputedMenu");
     removeAll(menu1);
     enableMenu(menu1, false);
+
+    Object menu2 = htMenus.get("PDBcarboResiduesComputedMenu");
+    removeAll(menu2);
+    enableMenu(menu2, false);
 
     if (!isPDB)
       return;
@@ -254,7 +274,11 @@ abstract public class JmolPopup {
     nItems = augmentGroup3List(menu1, "n>", false);
     enableMenu(menu1, nItems > 0);
     enableMenu(htMenus.get("PDBnucleicMenu"), (nItems > 0));
-  }
+
+    nItems = augmentGroup3List(menu2, "c>", false);
+    enableMenu(menu2, nItems > 0);
+    enableMenu(htMenus.get("PDBcarboMenu"), (nItems > 0));
+}
 
   String group3List;
   int[] group3Counts;
@@ -296,12 +320,17 @@ abstract public class JmolPopup {
   void updateFRAMESbyModelComputedMenu() {
     //allowing this in case we move it later
     FRAMESbyModelComputedMenu = htMenus.get("FRAMESbyModelComputedMenu");
-    enableMenu(FRAMESbyModelComputedMenu, (modelCount > 1));
-    setLabel(FRAMESbyModelComputedMenu, (modelIndex < 0 ? GT._("All {0} models", modelCount, true) : getModelLabel()));
-    removeAll(FRAMESbyModelComputedMenu);
+    Object menu = FRAMESbyModelComputedMenu;
+    enableMenu(menu, (modelCount > 1));
+    setLabel(menu, (modelIndex < 0 ? GT._("All {0} models", modelCount, true) : getModelLabel()));
+    removeAll(menu);
     if (modelCount < 2)
       return;
-    addCheckboxMenuItem(FRAMESbyModelComputedMenu, GT._("all", true), "frame 0 #", null, (modelIndex < 0));
+    addCheckboxMenuItem(menu, GT._("all", true), "frame 0 #", null, (modelIndex < 0));
+    
+    Object subMenu = menu;
+    int nmod = MAX_ITEMS;
+    int pt = (modelCount > MAX_ITEMS ? 0 : Integer.MIN_VALUE);
     for (int i = 0; i < modelCount; i++) {
       String script = "" + viewer.getModelNumber(i);
       String entryName = viewer.getModelName(i);
@@ -309,7 +338,14 @@ abstract public class JmolPopup {
         entryName = script + ": " + entryName;
       if (entryName.length() > 30)
         entryName = entryName.substring(0, 20) + "...";
-      addCheckboxMenuItem(FRAMESbyModelComputedMenu, entryName, "model " + script + " #", null, (modelIndex == i));
+      if (pt >= 0 && (pt++ % nmod) == 0) {
+        String id = "model" + pt + "Menu";
+        subMenu = newMenu((i + 1) + "..." + Math.min(i + MAX_ITEMS, modelCount),getId(menu) + "." + id);
+        addMenuSubMenu(menu, subMenu);
+        htMenus.put(id, subMenu);
+        pt = 1;
+      }
+      addCheckboxMenuItem(subMenu, entryName, "model " + script + " #", null, (modelIndex == i));
     }
   }
 
@@ -661,7 +697,6 @@ abstract public class JmolPopup {
       String basename = (key.indexOf(";") >= 0 ? key.substring(0, key
           .indexOf(";")) : key);
       boolean b = viewer.getBooleanProperty(basename);
-      //System.out.println("set " + basename + " " + b +"#" + key + " " + getId(item));
       setCheckBoxState(item, b);
     }
     if (x < 0) {
@@ -679,6 +714,7 @@ abstract public class JmolPopup {
   Object[][] frankList = new Object[10][]; //enough to cover menu drilling
   int nFrankList = 0;
   String currentFrankId = null;
+  
   void setFrankMenu(String id) {
     if (currentFrankId != null && currentFrankId == id && nFrankList > 0)
       return;

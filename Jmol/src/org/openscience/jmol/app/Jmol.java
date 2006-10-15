@@ -1474,7 +1474,7 @@ public class Jmol extends JPanel {
       
       if (!haveDisplay.booleanValue())
         return;      
-      jmolpopup.updateComputedMenus();
+//      jmolpopup.updateComputedMenus();
       if (fullPathName == null) {
         // a 'clear/zap' operation
         return;

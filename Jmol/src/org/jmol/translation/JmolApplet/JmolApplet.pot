@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-10-14 12:10+0200\n"
+"POT-Creation-Date: 2006-10-15 11:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -67,93 +67,93 @@ msgstr ""
 msgid "  {0} seconds"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:149
+#: org/jmol/popup/JmolPopup.java:143
 #, java-format
 msgid "Select ({0})"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:242
+#: org/jmol/popup/JmolPopup.java:257
 #, java-format
 msgid "All {0} models"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:246 org/jmol/popup/JmolPopup.java:269
+#: org/jmol/popup/JmolPopup.java:261 org/jmol/popup/JmolPopup.java:285
 msgid "all"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:265
+#: org/jmol/popup/JmolPopup.java:282
 #, java-format
 msgid "Configurations ({0})"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:302
+#: org/jmol/popup/JmolPopup.java:319
 #, java-format
 msgid "atoms: {0}"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:304
+#: org/jmol/popup/JmolPopup.java:321
 #, java-format
 msgid "bonds: {0}"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:308
+#: org/jmol/popup/JmolPopup.java:325
 #, java-format
 msgid "groups: {0}"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:310
+#: org/jmol/popup/JmolPopup.java:327
 #, java-format
 msgid "chains: {0}"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:312
+#: org/jmol/popup/JmolPopup.java:329
 #, java-format
 msgid "polymers: {0}"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:318
+#: org/jmol/popup/JmolPopup.java:335
 #, java-format
 msgid "View {0}"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:341
+#: org/jmol/popup/JmolPopup.java:358
 #, java-format
 msgid "model {0}"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:356
+#: org/jmol/popup/JmolPopup.java:374
 msgid "Java memory usage"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:362
+#: org/jmol/popup/JmolPopup.java:380
 #, java-format
 msgid "{0} MB total"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:363
+#: org/jmol/popup/JmolPopup.java:382
 #, java-format
 msgid "{0} MB free"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:365
+#: org/jmol/popup/JmolPopup.java:385
 #, java-format
 msgid "{0} MB maximum"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:367
+#: org/jmol/popup/JmolPopup.java:388
 msgid "unknown maximum"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:371
+#: org/jmol/popup/JmolPopup.java:391
 msgid "1 processor"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:372
+#: org/jmol/popup/JmolPopup.java:392
 #, java-format
 msgid "{0} processors"
 msgstr ""
 
-#: org/jmol/popup/JmolPopup.java:374
+#: org/jmol/popup/JmolPopup.java:394
 msgid "unknown processor count"
 msgstr ""
 
@@ -736,7 +736,7 @@ msgid "Set FPS"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:685
-msgid "Animate"
+msgid "Animation"
 msgstr ""
 
 #: org/jmol/popup/PopupResourceBundle.java:686
@@ -1352,7 +1352,8 @@ msgstr ""
 
 #: org/jmol/viewer/SelectionManager.java:63
 #: org/jmol/viewer/SelectionManager.java:75
-msgid " atoms hidden"
+#, java-format
+msgid "{0} atoms hidden"
 msgstr ""
 
 #: org/jmol/viewer/StatusManager.java:182

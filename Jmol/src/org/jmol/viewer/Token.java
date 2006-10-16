@@ -173,7 +173,7 @@ class Token {
   final static int halo         = command | 85;
   final static int rocket       = command | 86;
   final static int geosurface   = command | 87;
-  final static int moveto       = command | 88 | negnums;
+  final static int moveto       = command | 88 | negnums | embeddedExpression;
   final static int bondorder    = command | 89;
   final static int console      = command | 90;
   final static int pmesh        = command | 91;

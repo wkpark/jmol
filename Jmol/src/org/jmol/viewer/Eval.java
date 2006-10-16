@@ -1863,7 +1863,10 @@ class Eval { //implements Runnable {
     if (i != statementLength) {
       center = atomCenterOrCoordinateParameter(i);
       i = pcLastExpressionInstruction + 1;
-      rotationRadius = floatParameter(i++);
+      if (i == statementLength)
+        rotationRadius = viewer.calcRotationRadius(center);
+      else
+        rotationRadius = floatParameter(i++);
     }
     refresh();
     viewer.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans, yTrans, rotationRadius);

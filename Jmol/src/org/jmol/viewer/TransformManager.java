@@ -733,6 +733,8 @@ class TransformManager {
   float scaleToScreen(int z, float sizeAngstroms) {
     // all z's are >= 0
     // so the more positive z is, the smaller the screen scale
+    if (z <= 0)
+      z = 1;
     float pixelSize = sizeAngstroms * scalePixelsPerAngstrom;
     if (perspectiveDepth)
       pixelSize = (pixelSize * cameraDistance) / z;
@@ -740,6 +742,8 @@ class TransformManager {
   }
 
   short scaleToScreen(int z, int milliAngstroms) {
+    if (z <= 0)
+      z = 1;
     if (milliAngstroms == 0)
       return 0;
     int pixelSize = (int) (milliAngstroms * scalePixelsPerAngstrom / 1000);
@@ -751,9 +755,10 @@ class TransformManager {
   }
 
   float scaleToPerspective(int z, float sizeAngstroms) {
+    if (z <= 0)
+      z = 1;
     return (perspectiveDepth
-    // mth 2004 04 02 ... what the hell is this ... must be a bug
-        ? (sizeAngstroms * cameraDistance) / +z // <-- ??
+        ? (sizeAngstroms * cameraDistance) / z 
         : sizeAngstroms);
   }
 

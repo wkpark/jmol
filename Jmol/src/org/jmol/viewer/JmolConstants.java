@@ -82,7 +82,7 @@ final public class JmolConstants {
 
   public final static byte MULTIBOND_NEVER =     0;
   public final static byte MULTIBOND_WIREFRAME = 1;
-  public final static byte MULTIBOND_SMALL =     2;
+  public final static byte MULTIBOND_NOTSMALL =  2;
   public final static byte MULTIBOND_ALWAYS =    3;
 
   public final static short madMultipleBondSmallMaximum = 500;

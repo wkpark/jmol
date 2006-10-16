@@ -1262,7 +1262,7 @@ public class Viewer extends JmolViewer {
     // there probably needs to be a better startup mechanism for shapes
     if (modelManager.hasVibrationVectors())
       setShapeSize(JmolConstants.SHAPE_VECTORS, styleManager.defaultVectorMad);
-    setFrankOn(styleManager.frankOn);
+    setFrankOn(global.frankOn);
     repaintManager.initializePointers(1);
     setDisplayModelIndex(0);
     setBackgroundModelIndex(-1);
@@ -2404,25 +2404,25 @@ public class Viewer extends JmolViewer {
   }
 
   boolean getSsbondsBackbone() {
-    return styleManager.ssbondsBackbone;
+    return global.ssbondsBackbone;
   }
 
-  void setHbondsBackbone(boolean hbondsBackbone) {
+  void setHbondsBackbone(boolean TF) {
     //Eval
-    styleManager.setHbondsBackbone(hbondsBackbone);
+    global.hbondsBackbone = TF;
   }
 
   boolean getHbondsBackbone() {
-    return styleManager.hbondsBackbone;
+    return global.hbondsBackbone;
   }
 
-  void setHbondsSolid(boolean hbondsSolid) {
+  void setHbondsSolid(boolean TF) {
     //Eval
-    styleManager.setHbondsSolid(hbondsSolid);
+    global.hbondsSolid = TF;
   }
 
   boolean getHbondsSolid() {
-    return styleManager.hbondsSolid;
+    return global.hbondsSolid;
   }
 
   public void setMarBond(short marBond) {
@@ -2829,6 +2829,10 @@ public class Viewer extends JmolViewer {
         setShowHydrogens(value);
         break;
       }
+      if (key.equalsIgnoreCase("showHiddenSelectionHalos")) {
+        setShowHiddenSelectionHalos(value);
+        break;
+      }
       if (key.equalsIgnoreCase("showMeasurements")) {
         setShowMeasurements(value);
         break;
@@ -3160,9 +3164,9 @@ public class Viewer extends JmolViewer {
     global.hideNameInPopup = hideNameInPopup;
   }
 
-  void setSsbondsBackbone(boolean ssbondsBackbone) {
+  void setSsbondsBackbone(boolean TF) {
     //Eval
-    styleManager.setSsbondsBackbone(ssbondsBackbone);
+    global.ssbondsBackbone = TF;
   }
 
   public void setAutoBond(boolean ab) {
@@ -3235,14 +3239,14 @@ public class Viewer extends JmolViewer {
     setShapeSize(JmolConstants.SHAPE_BALLS, -percentVdwAtom);
   }
 
-  public void setFrankOn(boolean frankOn) {
+  public void setFrankOn(boolean TF) {
     //applet, initializeModel
-    styleManager.setFrankOn(frankOn);
-    setShapeSize(JmolConstants.SHAPE_FRANK, frankOn ? -1 : 0);
+    global.frankOn = TF;
+    setShapeSize(JmolConstants.SHAPE_FRANK, TF ? -1 : 0);
   }
 
   boolean getFrankOn() {
-    return styleManager.frankOn;
+    return global.frankOn;
   }
 
   public int getPercentVdwAtom() {
@@ -3259,35 +3263,46 @@ public class Viewer extends JmolViewer {
 
   void setModeMultipleBond(byte modeMultipleBond) {
     //not implemented
-    styleManager.setModeMultipleBond(modeMultipleBond);
+    global.modeMultipleBond = modeMultipleBond;
     refresh(0, "Viewer:setModeMultipleBond()");
   }
 
   byte getModeMultipleBond() {
-    return styleManager.modeMultipleBond;
+    //sticksRenderer
+    return global.modeMultipleBond;
   }
 
-  void setShowMultipleBonds(boolean showMultipleBonds) {
+  void setShowMultipleBonds(boolean TF) {
     //Eval.setBonds
     //StyleManager
-    styleManager.setShowMultipleBonds(showMultipleBonds);
+    global.showMultipleBonds = TF;
     refresh(0, "Viewer:setShowMultipleBonds()");
   }
 
   boolean getShowMultipleBonds() {
-    return styleManager.showMultipleBonds;
+    return global.showMultipleBonds;
   }
 
-  public void setShowHydrogens(boolean showHydrogens) {
+  public void setShowHydrogens(boolean TF) {
     //DisplayPanel.HydrogensAction 
     //PreferncesDialog
     //setBooleanProperty
-    styleManager.setShowHydrogens(showHydrogens);
+    global.showHydrogens = TF;
     refresh(0, "Viewer:setShowHydrogens()");
   }
 
   public boolean getShowHydrogens() {
-    return styleManager.showHydrogens;
+    return global.showHydrogens;
+  }
+
+  public void setShowHiddenSelectionHalos(boolean TF) {
+    //setBooleanProperty
+    global.showHiddenSelectionHalos = TF;
+    refresh(0, "Viewer:setShowHiddenSelectionHalos()");
+  }
+
+  public boolean getShowHiddenSelectionHalos() {
+    return global.showHiddenSelectionHalos;
   }
 
   public void setShowBbcage(boolean showBbcage) {
@@ -3310,12 +3325,16 @@ public class Viewer extends JmolViewer {
     return getShapeShow(JmolConstants.SHAPE_AXES);
   }
 
-  public void setShowMeasurements(boolean showMeasurements) {
+  public void setShowMeasurements(boolean TF) {
     //DisplayPanel
     //PreferencesDialog
     //setbooleanProperty
-    styleManager.setShowMeasurements(showMeasurements);
+    global.showMeasurements = TF;
     refresh(0, "setShowMeasurements()");
+  }
+
+  public boolean getShowMeasurements() {
+    return global.showMeasurements;
   }
 
   private void setMeasureAllModels(boolean TF) {
@@ -3324,10 +3343,6 @@ public class Viewer extends JmolViewer {
 
   boolean getMeasureAllModelsFlag() {
     return global.measureAllModels;
-  }
-
-  public boolean getShowMeasurements() {
-    return styleManager.showMeasurements;
   }
 
   boolean setMeasureDistanceUnits(String units) {

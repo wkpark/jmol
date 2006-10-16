@@ -241,11 +241,22 @@ class StateManager {
     boolean dotsSelectedOnlyFlag;
     boolean dotSurfaceFlag = true;
     boolean displayCellParameters = true;
+    boolean showHiddenSelectionHalos = false;
+    boolean showMeasurements = true;
+    boolean frankOn = false;
+
     int axesMode = JmolConstants.AXES_MODE_BOUNDBOX;
 
     //atoms and bonds
     
-    boolean bondSelectionModeOr;
+    boolean bondSelectionModeOr = false;
+    boolean showMultipleBonds = true;
+    boolean showHydrogens = true;
+    boolean ssbondsBackbone = false;
+    boolean hbondsBackbone = false;
+    boolean hbondsSolid = false;
+
+    byte modeMultipleBond = JmolConstants.MULTIBOND_NOTSMALL;
 
     //secondary structure + Rasmol
     
@@ -262,6 +273,7 @@ class StateManager {
     boolean hideNameInPopup;
     boolean disablePopupMenu;
     String helpPath;
+
     
     //testing
     
@@ -271,4 +283,6 @@ class StateManager {
     boolean testFlag3;
     boolean testFlag4;
   }
+  
+  
 }

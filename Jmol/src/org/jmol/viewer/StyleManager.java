@@ -103,44 +103,9 @@ class StyleManager {
     this.minBondDistance = minBondDistance;
   }
 
-  byte modeMultipleBond = JmolConstants.MULTIBOND_SMALL;
-  void setModeMultipleBond(byte modeMultipleBond) {
-    this.modeMultipleBond = modeMultipleBond;
-  }
-
-  boolean showMultipleBonds = true;
-  void setShowMultipleBonds(boolean showMultipleBonds) {
-    this.showMultipleBonds = showMultipleBonds;
-  }
-
-  boolean showAtoms = true;
-  void setShowAtoms(boolean showAtoms) {
-    this.showAtoms = showAtoms;
-  }
-
-  boolean showBonds = true;
-  void setShowBonds(boolean showBonds) {
-    this.showBonds = showBonds;
-  }
-
-  boolean showHydrogens = true;
-  void setShowHydrogens(boolean showHydrogens) {
-    this.showHydrogens = showHydrogens;
-  }
-
   int defaultVectorMad = 0;
   void setDefaultVectorMad(int mad) {
     this.defaultVectorMad = mad;
-  }
-
-  boolean showVectors = true;
-  void setShowVectors(boolean showVectors) {
-    this.showVectors = showVectors;
-  }
-
-  boolean showMeasurements = true;
-  void setShowMeasurements(boolean showMeasurements) {
-    this.showMeasurements = showMeasurements;
   }
 
   String measureDistanceUnits = "nanometers";
@@ -174,26 +139,6 @@ class StyleManager {
 
   float getMinBondDistance() {
     return minBondDistance;
-  }
-
-  boolean frankOn;
-  void setFrankOn(boolean frankOn) {
-    this.frankOn = frankOn;
-  }
-
-  boolean ssbondsBackbone;
-  void setSsbondsBackbone(boolean ssbondsBackbone) {
-    this.ssbondsBackbone = ssbondsBackbone;
-  }
-
-  boolean hbondsBackbone;
-  void setHbondsBackbone(boolean hbondsBackbone) {
-    this.hbondsBackbone = hbondsBackbone;
-  }
-
-  boolean hbondsSolid;
-  void setHbondsSolid(boolean hbondsSolid) {
-    this.hbondsSolid = hbondsSolid;
   }
 
   /****************************************************************

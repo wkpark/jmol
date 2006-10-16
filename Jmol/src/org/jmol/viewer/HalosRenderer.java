@@ -33,24 +33,30 @@ class HalosRenderer extends ShapeRenderer {
   void render() {
     Halos halos = (Halos) shape;
     boolean selectDisplayTrue = viewer.getSelectionHaloEnabled();
+    boolean showHiddenSelections = (selectDisplayTrue && viewer
+        .getShowHiddenSelectionHalos());
     if (halos.mads == null && !selectDisplayTrue)
       return;
     Atom[] atoms = frame.atoms;
     BitSet bsSelected = (selectDisplayTrue ? viewer.getSelectionSet() : null);
     for (int i = frame.atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) == 0
-          || frame.bsHidden.get(i))
+      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) == 0)
         continue;
       short mad = (halos.mads == null ? 0 : halos.mads[i]);
       short colix = (halos.colixes == null ? 0 : halos.colixes[i]);
+      boolean isHidden = frame.bsHidden.get(i);
       if (selectDisplayTrue && bsSelected.get(i)) {
+        if (isHidden && !showHiddenSelections)
+          continue;
         if (mad == 0)
           mad = -1; // unsized
         if (colix == 0)
           colix = viewer.getColixSelection();
         if (colix == Graphics3D.UNRECOGNIZED)
           colix = Graphics3D.GOLD;
+      } else if (isHidden) {
+        continue;
       }
       if (mad == 0)
         continue;

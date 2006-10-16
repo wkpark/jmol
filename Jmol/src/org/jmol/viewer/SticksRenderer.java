@@ -169,9 +169,8 @@ class SticksRenderer extends ShapeRenderer {
       if (order == 1 ||
           !showMultipleBonds ||
           modeMultipleBond == JmolConstants.MULTIBOND_NEVER ||
-          (modeMultipleBond == JmolConstants.MULTIBOND_SMALL &&
+          (modeMultipleBond == JmolConstants.MULTIBOND_NOTSMALL &&
            madBond > JmolConstants.madMultipleBondSmallMaximum)) {
-          // there used to be a test here for order == -1 ? why ?
         return 1;
       }
     }

@@ -202,7 +202,7 @@ class PropertyManager {
     case PROP_BOUNDBOX_INFO:
       return viewer.getBoundBoxInfo();
     case PROP_CENTER_INFO:
-      return viewer.getCenter();
+      return viewer.getRotationCenter();
     case PROP_CHAIN_INFO:
       return viewer.getAllChainInfo(myParam);
     case PROP_EXTRACT_MODEL:

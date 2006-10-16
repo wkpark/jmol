@@ -1703,12 +1703,15 @@ class Eval { //implements Runnable {
   boolean coordinatesAreFractional;
 
   boolean isCoordinate3(int i) {
+    ignoreError = true;
+    boolean isOK = true;
     try {
       getCoordinate(i, true, true, false);
     } catch (Exception e) {
-      return false;
+      isOK = false;
     }
-    return true;
+    ignoreError = false;
+    return isOK;
   }
 
   Point3f getCoordinate(int i, boolean allowFractional) throws ScriptException {
@@ -1811,7 +1814,7 @@ class Eval { //implements Runnable {
   }
   
   void moveto() throws ScriptException {
-    //moveto time { x y z } zoom xTrans yTrans
+    //moveto time { x y z deg} zoom xTrans yTrans
     if (statementLength == 2) {
       refresh();
       viewer
@@ -1823,29 +1826,43 @@ class Eval { //implements Runnable {
     Point3f pt;
     Point3f center = null;
     float floatSecondsTotal = floatParameter(1);
-    int zoom = 100;
-    int xTrans = 0;
-    int yTrans = 0;
+    float zoom = 100;
+    float xTrans = 0;
+    float yTrans = 0;
     int i = 2;
+    float degrees = 0;
     if (statement[2].tok == Token.leftbrace) {
-      // {X, Y, Z}
-      pt = getCoordinate(2, true);
-      i = pcLastExpressionInstruction + 1;
+      // {X, Y, Z} deg or {x y z deg}
+      if (isCoordinate3(i)) {
+        pt = getCoordinate(2, true);
+        i = pcLastExpressionInstruction + 1;
+        degrees = floatParameter(i++);        
+      } else {
+        Point4f pt4 = getPoint4f(i);
+        pt = new Point3f(pt4.x, pt4.y, pt4.z);
+        degrees = pt4.w;
+        i = pcLastExpressionInstruction + 1;
+      }
     } else {
+      //X Y Z deg
       pt = new Point3f(floatParameter(i++), floatParameter(i++),
           floatParameter(i++));
+      degrees = floatParameter(i++);
     }
-    float degrees = floatParameter(i++);
     if (i != statementLength && !isAtomCenterOrCoordinateNext(i))
-      zoom = intParameter(i++);
+      zoom = floatParameter(i++);
     if (i != statementLength && !isAtomCenterOrCoordinateNext(i)) {
-      xTrans = intParameter(i++);
-      yTrans = intParameter(i++);
+      xTrans = floatParameter(i++);
+      yTrans = floatParameter(i++);
     }
-    if (i != statementLength)
+    float rotationRadius = 10;
+    if (i != statementLength) {
       center = atomCenterOrCoordinateParameter(i);
+      i = pcLastExpressionInstruction + 1;
+      rotationRadius = floatParameter(i++);
+    }
     refresh();
-    viewer.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans, yTrans);
+    viewer.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans, yTrans, rotationRadius);
   }
 
   void bondorder() throws ScriptException {
@@ -4511,7 +4528,7 @@ class Eval { //implements Runnable {
           + viewer.getBoundBoxCornerVector());
       return;
     case Token.center:
-      Point3f pt = viewer.getCenter();
+      Point3f pt = viewer.getRotationCenter();
       showString("center {" + pt.x + " " + pt.y + " " + pt.z + "}");
       return;
     case Token.draw:

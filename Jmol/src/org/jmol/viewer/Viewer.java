@@ -328,19 +328,6 @@ public class Viewer extends JmolViewer {
     return transformManager.getRotationCenter();
   }
 
-  Point3f getRotationCenterDefault() {
-    return transformManager.getRotationCenterDefault();
-  }
-
-  Point3f getCenter() {
-    return transformManager.getRotationCenter();
-  }
-
-  private void setCenter(Point3f center) {
-    transformManager.setCenter(center);
-    refresh(0, "Viewer:setCenter()");
-  }
-  
   void setCenter(String relativeTo, Point3f pt) {
     //Eval
     transformManager.setCenter(relativeTo, pt);
@@ -375,17 +362,17 @@ public class Viewer extends JmolViewer {
   }
 
   public void moveTo(float floatSecondsTotal, Point3f center, Point3f pt, float degrees,
-                     int zoom, int xTrans, int yTrans) {
+                     float zoom, float xTrans, float yTrans, float rotationRadius) {
     //from Eval
     transformManager.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans,
-        yTrans);
+        yTrans, rotationRadius);
   }
 
   public void moveTo(float floatSecondsTotal, Matrix3f rotationMatrix,
-                     Point3f center, int zoom, int xTrans, int yTrans) {
+                     Point3f center, float zoom, float xTrans, float yTrans, float rotationRadius) {
     //from StateManager
     transformManager.moveTo(floatSecondsTotal, rotationMatrix, center, zoom,
-        xTrans, yTrans);
+        xTrans, yTrans, rotationRadius);
   }
 
   String getMoveToText(float timespan) {
@@ -491,11 +478,15 @@ public class Viewer extends JmolViewer {
   }
 
   public int getZoomPercent() {
-    return transformManager.zoomPercent;
+    return transformManager.getZoomPercent();
   }
 
-  int getZoomPercentSetting() {
-    return transformManager.zoomPercentSetting;
+  float getZoomPercentFloat() {
+    return transformManager.getZoomPercentFloat();
+  }
+
+  float getZoomPercentSetting() {
+    return transformManager.getZoomPercentSetting();
   }
 
   public final static int MAXIMUM_ZOOM = 200;
@@ -1251,13 +1242,12 @@ public class Viewer extends JmolViewer {
 
   private void clear() {
     repaintManager.clear();
-    transformManager.clearVibration();
-    transformManager.clearSpin();
+    transformManager.clear();
+    pickingManager.clear();
     modelManager.setClientFile(null, null, null, null);
     selectionManager.clearSelection();
     selectionManager.hide(null);
     clearMeasurements();
-    transformManager.setFixedRotationCenter(new Point3f(0, 0, 0));
     setStatusFileLoaded(0, null, null, null, null, null);
     refresh(0, "Viewer:clear()");
     System.gc();
@@ -1266,7 +1256,7 @@ public class Viewer extends JmolViewer {
   private void initializeModel() {
     homePosition();
     selectAll();
-    setCenter(getRotationCenter());
+    transformManager.setCenter();
     if (eval != null)
       eval.clearDefinitionsAndLoadPredefined();
     // there probably needs to be a better startup mechanism for shapes
@@ -3114,10 +3104,6 @@ public class Viewer extends JmolViewer {
 
   public boolean getPerspectiveDepth() {
     return transformManager.getPerspectiveDepth();
-  }
-
-  float getCameraDepth() {
-    return transformManager.getCameraDepth();
   }
 
   public void setSelectionHaloEnabled(boolean selectionHaloEnabled) {

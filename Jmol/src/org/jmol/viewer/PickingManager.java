@@ -43,8 +43,13 @@ class PickingManager {
 
   PickingManager(Viewer viewer) {
     this.viewer = viewer;
+    clear();
   }
 
+  void clear() {
+    pickingMode = JmolConstants.PICKING_IDENT;
+  }
+  
   void atomPicked(int atomIndex, int modifiers) {
     boolean shiftKey = ((modifiers & MouseManager.SHIFT) != 0);
     boolean alternateKey = ((modifiers & MouseManager.ALT) != 0);

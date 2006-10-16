@@ -90,46 +90,24 @@ class StateManager {
     String saveName;
 
     Matrix3f rotationMatrix = new Matrix3f();
-    int xTrans, yTrans, zoom;
+    float xTrans, yTrans;
+    float zoom, rotationRadius;
     Point3f center = new Point3f();
     boolean windowCenteredFlag;
     
     Orientation () {
       viewer.getRotation(rotationMatrix);
-      xTrans = (int) viewer.getTranslationXPercent();
-      yTrans = (int) viewer.getTranslationYPercent();
-      zoom = viewer.getZoomPercent();
-      center.set(viewer.getCenter());
+      xTrans = viewer.getTranslationXPercent();
+      yTrans = viewer.getTranslationYPercent();
+      zoom = viewer.getZoomPercentFloat();
+      center.set(viewer.getRotationCenter());
       windowCenteredFlag = viewer.isWindowCentered();
+      rotationRadius = viewer.getRotationRadius();
     }
-    
-    void setRotationMatrix(Matrix3f mat) {
-      rotationMatrix.set(mat);
-    }
-    
-    void setTranslation(int x, int y) {
-      xTrans = x;
-      yTrans = y;
-    }
-    
-    void setZoom(int zoom) {
-      this.zoom = zoom;
-    }
-    
-    void setCenter(Point3f pt) {
-      center.set(pt);
-    }
-    
-    void setWindowCentered(boolean TF) {
-      windowCenteredFlag = TF;
-    }
-    
+        
     void restore(float timeSeconds) {
-      viewer.moveTo(timeSeconds, rotationMatrix, center, zoom, xTrans, yTrans);
-      viewer.translateToXPercent(xTrans);
-      viewer.translateToYPercent(yTrans);
       viewer.setWindowCentered(windowCenteredFlag);
-      //viewer.setRotationCenterNoScale(center);
+      viewer.moveTo(timeSeconds, rotationMatrix, center, zoom, xTrans, yTrans, rotationRadius);
     }
   }
 

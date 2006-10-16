@@ -111,6 +111,9 @@ abstract public class JmolPopup {
     updateSurfMoComputedMenu((Hashtable) modelInfo.get("moData"));
     updateFileTypeDependentMenus();
     updatePDBComputedMenus();
+    updateFRAMESbyModelComputedMenu();
+    updateMode = UPDATE_CONFIG;
+    updateCONFIGURATIONComputedMenu();
     updateSYMMETRYComputedMenu();
     updateModelSetComputedMenu();
     updateAboutSubmenu();
@@ -417,15 +420,15 @@ abstract public class JmolPopup {
         .getBooleanProperty("hideNameInPopup") ? hiddenModelSetName
         : modelSetName);
     enableMenu(menu, true);
-    if (isMultiFrame) {
+//    if (isMultiFrame) {
       updateFRAMESbyModelComputedMenu();
-      addMenuSubMenu(menu, FRAMESbyModelComputedMenu);
-    }
-    if (isMultiConfiguration) {
-      updateMode = UPDATE_CONFIG;
-      updateCONFIGURATIONComputedMenu();
-      addMenuSubMenu(menu, CONFIGURATIONComputedMenu);
-    }
+ //     addMenuSubMenu(menu, FRAMESbyModelComputedMenu);
+ //   }
+//    if (isMultiConfiguration) {
+//      updateMode = UPDATE_CONFIG;
+//      updateCONFIGURATIONComputedMenu();
+//      addMenuSubMenu(menu, CONFIGURATIONComputedMenu);
+ //   }
     addMenuSeparator(menu);
     addMenuItem(menu, GT._("atoms: {0}", viewer
         .getAtomCountInModel(modelIndex), true));

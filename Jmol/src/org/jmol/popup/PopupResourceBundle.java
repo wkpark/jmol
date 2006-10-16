@@ -62,14 +62,12 @@ class PopupResourceBundle {
   private static final String[][] structureContents = {
       {
           "popupMenu",
-          "modelSetMenu - selectMenu colorMenu renderMenu surfaceMenu SYMMETRYunitCellMenu - "
+          "modelSetMenu FRAMESbyModelComputedMenu CONFIGURATIONComputedMenu - selectMenu colorMenu renderMenu surfaceMenu SYMMETRYunitCellMenu - "
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "
               + "measureMenu pickingMenu - showConsole showMenu - "
               + "aboutComputedMenu" },
               
-      {   "modelSetMenu", "FRAMESbyModelComputedMenu CONFIGURATIONComputedMenu" },
-
       {
           "selectMenu",
           "hideNotSelected;hide(none)Checkbox showSelectionsCheckbox - selectAll selectNone invertSelection - elementsComputedMenu SYMMETRYComputedMenu - "

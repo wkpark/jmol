@@ -217,10 +217,6 @@ class ModelManager {
     return frame.hasVibrationVectors();
   }
 
-  float getRotationRadius() {
-    return (frame == null) ? 1 : frame.getRotationRadius();
-  }
-
   Point3f getSpinCenter(String axisID, int modelIndex) {
     Draw draw = (Draw) frame.shapes[JmolConstants.SHAPE_DRAW];
     if (draw == null) 
@@ -243,13 +239,16 @@ class ModelManager {
     return draw.meshes[meshIndex].getSpinAxis(modelIndex);
    }
    
-  void increaseRotationRadius(float increaseInAngstroms) {
-    if (frame != null)
-      frame.increaseRotationRadius(increaseInAngstroms);
+  float calcRotationRadius(Point3f center) {
+    return (frame == null) ? 1f : frame.calcRotationRadius(center);
   }
 
   Point3f getBoundBoxCenter() {
     return (frame == null) ? null : frame.getBoundBoxCenter();
+  }
+
+  Point3f getAverageAtomPoint() {
+    return (frame == null) ? null : frame.getAverageAtomPoint();
   }
 
   Vector3f getBoundBoxCornerVector() {
@@ -326,87 +325,6 @@ class ModelManager {
   
   int getMoleuleCount() {
     return (frame == null) ? 0 : frame.getMoleculeCount();
-  }
-
-  Point3f getRotationCenter() {
-    return (frame == null ? null : frame.getRotationCenter());
-  }
-
-  Point3f getRotationCenterDefault() {
-    return (frame == null ? null : frame.getRotationCenterDefault());
-  }
-
-  private final Point3f pointT = new Point3f();
-  Point3f setCenterBitSet(BitSet bsCenter, boolean doScale) {
-    if (frame == null)
-      return new Point3f(0, 0, 0);
-    Point3f center = null;
-    if (bsCenter != null) {
-      int countSelected = 0;
-      center = pointT;
-      center.set(0,0,0);
-      for (int i = getAtomCount(); --i >= 0; ) {
-        if (! bsCenter.get(i))
-          continue;
-        ++countSelected;
-        center.add(frame.getAtomPoint3f(i));
-      }
-      if (countSelected > 0)
-        center.scale(1.0f / countSelected); // just divide by the quantity
-      else
-        center = null;
-    }
-    
-    if (center == null)
-      center = frame.getRotationCenterDefault();
-    setNewRotationCenter(center, doScale);
-    return center;
-  }
-
-  void setNewRotationCenter(Point3f center, boolean doScale) {
-    // once we have the center, we need to optionally move it to 
-    // the proper XY position and possibly scale
-    if (frame == null)
-      return;
-    if (frame.isWindowCentered()) {
-      viewer.translateToXPercent(0);
-      viewer.translateToYPercent(0);///CenterTo(0, 0);
-      frame.setRotationCenterAndRadiusXYZ(center, true);
-      if (doScale)
-        viewer.scaleFitToScreen();
-    } else {
-      viewer.moveRotationCenter(center);
-    }  
-  }
-  
-  boolean isWindowCentered() {
-    if (frame == null)
-      return false;
-    return frame.isWindowCentered();
-  }
-
-  void setWindowCentered(boolean TF) {
-    if (frame == null)
-      return;
-    frame.setWindowCentered(TF);
-  }
-  
-  Point3f setRotationCenterAndRadiusXYZ(Point3f center, boolean andRadius) {
-    if (frame == null)
-      return null;
-    return frame.setRotationCenterAndRadiusXYZ(center, andRadius);
-  }
-
-  Point3f setRotationCenterAndRadiusXYZ(String relativeTo, Point3f pt) {
-    if (frame == null)
-      return new Point3f(0, 0, 0);
-    return frame.setRotationCenterAndRadiusXYZ(relativeTo, pt);
-  }
-  
-  void setRotationCenter(Point3f center) {
-    if (frame == null)
-      return;
-    frame.setRotationCenter(center);
   }
 
   boolean autoBond = true;

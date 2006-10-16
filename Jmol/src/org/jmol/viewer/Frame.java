@@ -356,6 +356,8 @@ public final class Frame {
     buildPolymers();
     freeze();
     finalizeBuild();
+    calcAverageAtomPoint();
+    calcBoundBoxDimensions();
   }
   
   void dumpAtomSetNameDiagnostics(JmolAdapter adapter, Object clientFile) {
@@ -1095,104 +1097,20 @@ public final class Frame {
   final Point3f minBoundBox = new Point3f();
   final Point3f maxBoundBox = new Point3f();
 
-  //  float radiusBoundBox;
-  Point3f rotationCenter;
-  float rotationRadius;
-  Point3f rotationCenterDefault;
-  float rotationRadiusDefault;
-
   Point3f getBoundBoxCenter() {
-    findBounds();
     return centerBoundBox;
   }
 
   Point3f getAverageAtomPoint() {
-    findBounds();
     return averageAtomPoint;
   }
 
   Vector3f getBoundBoxCornerVector() {
-    findBounds();
     return boundBoxCornerVector;
   }
-
-  Point3f getRotationCenter() {
-    findBounds();
-    return rotationCenter;
-  }
-
-  void setRotationCenter(Point3f center) {
-    rotationCenter.set(center);  
-  }
   
-  Point3f getRotationCenterDefault() {
-    findBounds();
-    return rotationCenterDefault;
-  }
-
-  void increaseRotationRadius(float increaseInAngstroms) {
-    if (isWindowCentered())
-      rotationRadius += increaseInAngstroms;
-  }
-
-  float getRotationRadius() {
-    findBounds();
-    return rotationRadius;
-  }
-
-  Point3f setRotationCenterAndRadiusXYZ(Point3f newCenterOfRotation,
-                                        boolean andRadius) {
-    if (newCenterOfRotation != null) {
-      rotationCenter = newCenterOfRotation;
-      if (andRadius && isWindowCentered())
-        rotationRadius = calcRotationRadius(rotationCenter);
-    } else {
-      rotationCenter = rotationCenterDefault;
-      rotationRadius = rotationRadiusDefault;
-    }
-    return rotationCenter;
-  }
-
-  boolean windowCenteredFlag = true;
-  
-  boolean isWindowCentered() {
-    return windowCenteredFlag;
-  }
-
-  void setWindowCentered(boolean TF) {
-    windowCenteredFlag = TF;
-  }
-
-  Point3f setRotationCenterAndRadiusXYZ(String relativeTo, Point3f pt) {
-    Point3f pointT = new Point3f(pt);
-    if (relativeTo == "average")
-      pointT.add(getAverageAtomPoint());
-    else if (relativeTo == "boundbox")
-      pointT.add(getBoundBoxCenter());
-    else if (relativeTo != "absolute")
-      pointT.set(getRotationCenterDefault());
-    setRotationCenterAndRadiusXYZ(pointT, true);
-    return pointT;
-  }
-
-  void clearBounds() {
-    // not referenced in project
-    rotationCenter = null;
-    rotationRadius = 0;
-  }
-
-  private void findBounds() {
-    //set ONCE 
-    if ((rotationCenter != null))
-      return;
-    calcAverageAtomPoint();
-    calcBoundBoxDimensions();
-    rotationCenter = rotationCenterDefault = centerBoundBox;//averageAtomPoint;
-    rotationRadius = rotationRadiusDefault = calcRotationRadius(rotationCenterDefault);
-  }
-
   private void calcAverageAtomPoint() {
-    Point3f average = this.averageAtomPoint;
+    Point3f average = averageAtomPoint;
     average.set(0, 0, 0);
     if (atomCount == 0)
       return;
@@ -1224,8 +1142,7 @@ public final class Frame {
     }
   }
 
-  private float calcRotationRadius(Point3f center) {
-
+ float calcRotationRadius(Point3f center) {
     float maxRadius = 0;
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
@@ -1235,7 +1152,6 @@ public final class Frame {
       if (outerVdw > maxRadius)
         maxRadius = outerVdw;
     }
-
     return (maxRadius == 0 ? 10 : maxRadius);
   }
 

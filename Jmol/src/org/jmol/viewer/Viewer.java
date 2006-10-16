@@ -244,7 +244,6 @@ public class Viewer extends JmolViewer {
     //DisplayPanel
     //initializeModel
     //was mouse double-click
-    setCenter(null);
     transformManager.homePosition();
     if (modelManager.modelsHaveSymmetry())
       styleManager.setCrystallographicDefaults();
@@ -321,16 +320,64 @@ public class Viewer extends JmolViewer {
   // delegated to TransformManager
   // ///////////////////////////////////////////////////////////////
 
+  public float getRotationRadius() {
+    return transformManager.getRotationRadius();
+  }
+
+  Point3f getRotationCenter() {
+    return transformManager.getRotationCenter();
+  }
+
+  Point3f getRotationCenterDefault() {
+    return transformManager.getRotationCenterDefault();
+  }
+
+  Point3f getCenter() {
+    return transformManager.getRotationCenter();
+  }
+
+  private void setCenter(Point3f center) {
+    transformManager.setCenter(center);
+    refresh(0, "Viewer:setCenter()");
+  }
+  
+  void setCenter(String relativeTo, Point3f pt) {
+    //Eval
+    transformManager.setCenter(relativeTo, pt);
+    refresh(0, "Viewer:setCenter(" + relativeTo + ")");
+  }
+
+  void setCenterBitSet(BitSet bsCenter, boolean doScale) {
+    //Eval
+    //PickingManager.atomPicked()
+    //setCenterSelected
+    transformManager.setCenterBitSet(bsCenter, doScale);
+    refresh(0, "Viewer:setCenterBitSet()");
+  }
+
+  public void setNewRotationCenter(String axisID) {
+    //for center [line1]
+    Point3f center = getDrawObjectCenter(axisID);
+    if (center == null)
+      return;
+    setNewRotationCenter(center);
+  }
+
+  public void setNewRotationCenter(Point3f center) {
+    transformManager.setNewRotationCenter(center, true);
+    refresh(0, "Viewer:setCenterBitSet()");
+  }
+
   void move(Vector3f dRot, int dZoom, Vector3f dTrans, int dSlab,
             float floatSecondsTotal, int fps) {
     //from Eval
     transformManager.move(dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
   }
 
-  public void moveTo(float floatSecondsTotal, Point3f pt, float degrees,
+  public void moveTo(float floatSecondsTotal, Point3f center, Point3f pt, float degrees,
                      int zoom, int xTrans, int yTrans) {
     //from Eval
-    transformManager.moveTo(floatSecondsTotal, pt, degrees, zoom, xTrans,
+    transformManager.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans,
         yTrans);
   }
 
@@ -403,7 +450,6 @@ public class Viewer extends JmolViewer {
 
   void translateToXPercent(float percent) {
     //Eval.translate()
-    //ModelManager.setNewRotationCenter()
     //StateManager.Orientation()
     transformManager.translateToXPercent(percent);
     refresh(1, "Viewer:translateToXPercent()");
@@ -411,7 +457,6 @@ public class Viewer extends JmolViewer {
 
   void translateToYPercent(float percent) {
     //Eval.translate()
-    //ModelManager.setNewRotationCenter()
     //StateManager.Orientation()
     transformManager.translateToYPercent(percent);
     refresh(1, "Viewer:translateToYPercent()");
@@ -528,7 +573,7 @@ public class Viewer extends JmolViewer {
 
   void finalizeTransformParameters() {
     //FrameRenderer
-    transformManager.finalizeTransformParameters(getRotationRadius());
+    transformManager.finalizeTransformParameters();
     g3d.setSlabAndDepthValues(transformManager.slabValue,
         transformManager.depthValue);
   }
@@ -588,73 +633,15 @@ public class Viewer extends JmolViewer {
   }
 
   void scaleFitToScreen() {
-    //ModelManager.setNewRotationCenter
     //setCenter
     transformManager.scaleFitToScreen();
-  }
-
-  private boolean axesAreTainted = false;
-
-  boolean areAxesTainted() {
-    boolean TF = axesAreTainted;
-    axesAreTainted = false;
-    return TF;
   }
 
   void checkCameraDistance() {
     //RepaintManager
     if (!allowCameraMove())
       return;
-    if (transformManager.getIncreaseRotationRadius())
-      modelManager.increaseRotationRadius(transformManager
-          .getRotationRadiusIncrease());
-  }
-
-  final Dimension dimScreen = new Dimension();
-
-  final Rectangle rectClip = new Rectangle();
-
-  public void setScreenDimension(Dimension dim) {
-    // There is a bug in Netscape 4.7*+MacOS 9 when comparing dimension objects
-    // so don't try dim1.equals(dim2)
-    int height = dim.height;
-    int width = dim.width;
-    if (getStereoMode() == JmolConstants.STEREO_DOUBLE)
-      width = (width + 1) / 2;
-    if (dimScreen.width == width && dimScreen.height == height)
-      return;
-    dimScreen.width = width;
-    dimScreen.height = height;
-    transformManager.setScreenDimension(width, height);
-    transformManager.scaleFitToScreen();
-    g3d.setWindowSize(width, height, global.enableFullSceneAntialiasing);
-  }
-
-  public int getScreenWidth() {
-    return dimScreen.width;
-  }
-
-  public int getScreenHeight() {
-    return dimScreen.height;
-  }
-
-  void setRectClip(Rectangle clip) {
-    if (clip == null) {
-      rectClip.x = rectClip.y = 0;
-      rectClip.setSize(dimScreen);
-    } else {
-      rectClip.setBounds(clip);
-      // on Linux platform with Sun 1.4.2_02 I am getting a clipping rectangle
-      // that is wider than the current window during window resize
-      if (rectClip.x < 0)
-        rectClip.x = 0;
-      if (rectClip.y < 0)
-        rectClip.y = 0;
-      if (rectClip.x + rectClip.width > dimScreen.width)
-        rectClip.width = dimScreen.width - rectClip.x;
-      if (rectClip.y + rectClip.height > dimScreen.height)
-        rectClip.height = dimScreen.height - rectClip.y;
-    }
+    transformManager.checkCameraDistance();
   }
 
   void setScaleAngstromsPerInch(float angstromsPerInch) {
@@ -1404,20 +1391,16 @@ public class Viewer extends JmolViewer {
     return modelManager.getFrame();
   }
 
-  public float getRotationRadius() {
-    return modelManager.getRotationRadius();
-  }
-
-  Point3f getRotationCenter() {
-    return modelManager.getRotationCenter();
-  }
-
-  Point3f getRotationCenterDefault() {
-    return modelManager.getRotationCenterDefault();
-  }
-
   Point3f getBoundBoxCenter() {
     return modelManager.getBoundBoxCenter();
+  }
+
+  Point3f getAverageAtomPoint() {
+    return modelManager.getAverageAtomPoint();
+  }
+
+  float calcRotationRadius(Point3f center) {
+    return modelManager.calcRotationRadius(center);
   }
 
   Vector3f getBoundBoxCornerVector() {
@@ -1563,64 +1546,6 @@ public class Viewer extends JmolViewer {
     if (modelIndex < 0)
       return;
     modelManager.convertFractionalCoordinates(modelIndex, pt);
-  }
-
-  Point3f getCenter() {
-    return modelManager.getRotationCenter();
-  }
-
-  void setCenterFromInternalRotation(Point3f center) {
-    //TransformManager.getNewFixedRotationCenter
-    modelManager.setRotationCenterAndRadiusXYZ(center, false);
-  }
-
-  private void setCenter(Point3f center) {
-    center = modelManager.setRotationCenterAndRadiusXYZ(center, true);
-    if (center != null)
-      transformManager.setFixedRotationCenter(center);
-    refresh(0, "Viewer:setCenter()");
-  }
-
-  void setCenter(String relativeTo, Point3f pt) {
-    //Eval
-    Point3f center = modelManager.setRotationCenterAndRadiusXYZ(relativeTo, pt);
-    scaleFitToScreen();
-    if (center != null)
-      transformManager.setFixedRotationCenter(center);
-    refresh(0, "Viewer:setCenter(" + relativeTo + ")");
-  }
-
-  void setCenterBitSet(BitSet bsCenter, boolean doScale) {
-    //Eval
-    //PickingManager.atomPicked()
-    //setCenterSelected
-    Point3f center = modelManager.setCenterBitSet(bsCenter, doScale);
-    transformManager.setFixedRotationCenter(center);
-    refresh(0, "Viewer:setCenterBitSet()");
-  }
-
-  public void setNewRotationCenter(String axisID) {
-    //for center [line1]
-    Point3f center = getDrawObjectCenter(axisID);
-    if (center == null)
-      return;
-    setNewRotationCenter(center);
-  }
-
-  public void setNewRotationCenter(Point3f center) {
-    modelManager.setNewRotationCenter(center, true);
-    transformManager.setFixedRotationCenter(center);
-    refresh(0, "Viewer:setCenterBitSet()");
-  }
-
-  public void setRotationCenter(Point3f center) {
-    modelManager.setRotationCenter(center);
-  }
-
-  void moveRotationCenter(Point3f center) {
-    center = modelManager.setRotationCenterAndRadiusXYZ(center, false);
-    transformManager.setFixedRotationCenter(center);
-    transformManager.setRotationPointXY(center);
   }
 
   public void setCenterSelected() {
@@ -2127,6 +2052,63 @@ public class Viewer extends JmolViewer {
 
   public void repaintView() {
     repaintManager.repaintView();
+  }
+
+  private boolean axesAreTainted = false;
+
+  boolean areAxesTainted() {
+    boolean TF = axesAreTainted;
+    axesAreTainted = false;
+    return TF;
+  }
+
+  ////////////// screen/image methods ///////////////
+  
+  final Dimension dimScreen = new Dimension();
+
+  final Rectangle rectClip = new Rectangle();
+
+  public void setScreenDimension(Dimension dim) {
+    // There is a bug in Netscape 4.7*+MacOS 9 when comparing dimension objects
+    // so don't try dim1.equals(dim2)
+    int height = dim.height;
+    int width = dim.width;
+    if (getStereoMode() == JmolConstants.STEREO_DOUBLE)
+      width = (width + 1) / 2;
+    if (dimScreen.width == width && dimScreen.height == height)
+      return;
+    dimScreen.width = width;
+    dimScreen.height = height;
+    transformManager.setScreenDimension(width, height);
+    transformManager.scaleFitToScreen();
+    g3d.setWindowSize(width, height, global.enableFullSceneAntialiasing);
+  }
+
+  public int getScreenWidth() {
+    return dimScreen.width;
+  }
+
+  public int getScreenHeight() {
+    return dimScreen.height;
+  }
+
+  void setRectClip(Rectangle clip) {
+    if (clip == null) {
+      rectClip.x = rectClip.y = 0;
+      rectClip.setSize(dimScreen);
+    } else {
+      rectClip.setBounds(clip);
+      // on Linux platform with Sun 1.4.2_02 I am getting a clipping rectangle
+      // that is wider than the current window during window resize
+      if (rectClip.x < 0)
+        rectClip.x = 0;
+      if (rectClip.y < 0)
+        rectClip.y = 0;
+      if (rectClip.x + rectClip.width > dimScreen.width)
+        rectClip.width = dimScreen.width - rectClip.x;
+      if (rectClip.y + rectClip.height > dimScreen.height)
+        rectClip.height = dimScreen.height - rectClip.y;
+    }
   }
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
@@ -3001,12 +2983,12 @@ public class Viewer extends JmolViewer {
   }
 
   boolean isWindowCentered() {
-    return modelManager.isWindowCentered();
+    return transformManager.isWindowCentered();
   }
 
   void setWindowCentered(boolean TF) {
     //stateManager
-    modelManager.setWindowCentered(TF);
+    transformManager.setWindowCentered(TF);
   }
 
   boolean isCameraAdjustable() {
@@ -3683,9 +3665,6 @@ public class Viewer extends JmolViewer {
   void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,
                                float degrees, float endDegrees, boolean isSpin) {
     // Eval: rotate FIXED
-    if (rotCenter != null)
-      moveRotationCenter(rotCenter);
-
     transformManager.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees,
         endDegrees, isSpin);
   }

@@ -1454,6 +1454,12 @@ class Eval { //implements Runnable {
     return false;
   }
 
+  boolean isAtomCenterOrCoordinateNext(int i) {
+    return (i != statementLength 
+        && (statement[i].tok == Token.leftbrace 
+            || statement[i].tok == Token.expressionBegin));
+  }
+  
   Point3f atomCenterOrCoordinateParameter(int i) throws ScriptException {
     if (i >= statementLength)
       badArgumentCount();
@@ -1808,12 +1814,14 @@ class Eval { //implements Runnable {
     //moveto time { x y z } zoom xTrans yTrans
     if (statementLength == 2) {
       refresh();
-      viewer.moveTo(floatParameter(1), new Point3f(0, 0, 1), 0, 100, 0, 0);
+      viewer
+          .moveTo(floatParameter(1), null, new Point3f(0, 0, 1), 0, 100, 0, 0);
       return;
     }
     if (statementLength < 6)
       badArgumentCount();
     Point3f pt;
+    Point3f center = null;
     float floatSecondsTotal = floatParameter(1);
     int zoom = 100;
     int xTrans = 0;
@@ -1828,14 +1836,16 @@ class Eval { //implements Runnable {
           floatParameter(i++));
     }
     float degrees = floatParameter(i++);
-    if (i != statementLength)
+    if (i != statementLength && !isAtomCenterOrCoordinateNext(i))
       zoom = intParameter(i++);
-    if (i != statementLength)
+    if (i != statementLength && !isAtomCenterOrCoordinateNext(i)) {
       xTrans = intParameter(i++);
-    if (i != statementLength)
       yTrans = intParameter(i++);
+    }
+    if (i != statementLength)
+      center = atomCenterOrCoordinateParameter(i);
     refresh();
-    viewer.moveTo(floatSecondsTotal, pt, degrees, zoom, xTrans, yTrans);
+    viewer.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans, yTrans);
   }
 
   void bondorder() throws ScriptException {
@@ -4501,7 +4511,8 @@ class Eval { //implements Runnable {
           + viewer.getBoundBoxCornerVector());
       return;
     case Token.center:
-      showString("center: " + viewer.getCenter());
+      Point3f pt = viewer.getCenter();
+      showString("center {" + pt.x + " " + pt.y + " " + pt.z + "}");
       return;
     case Token.draw:
       showString((String) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
@@ -4588,14 +4599,14 @@ class Eval { //implements Runnable {
     case Token.group:
     case Token.sequence:
     case Token.residue:
-      evalError(GT._("unrecognized {0} parameter --  use {1}",
-                     new Object[] { "SHOW", "\"getProperty CHAININFO\"" } ));
+      evalError(GT._("unrecognized {0} parameter --  use {1}", new Object[] {
+          "SHOW", "\"getProperty CHAININFO\"" }));
     case Token.selected:
-      evalError(GT._("unrecognized {0} parameter --  use {1}",
-                     new Object[] { "SHOW", "\"getProperty ATOMINFO (selected)\"" } ));
+      evalError(GT._("unrecognized {0} parameter --  use {1}", new Object[] {
+          "SHOW", "\"getProperty ATOMINFO (selected)\"" }));
     case Token.atom:
-      evalError(GT._("unrecognized {0} parameter --  use {1}",
-                     new Object[] { "SHOW", "\"getProperty ATOMINFO (atom expression)\"" } ));
+      evalError(GT._("unrecognized {0} parameter --  use {1}", new Object[] {
+          "SHOW", "\"getProperty ATOMINFO (atom expression)\"" }));
     case Token.spin:
     case Token.list:
     case Token.mlp:

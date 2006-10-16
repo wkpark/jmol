@@ -133,7 +133,7 @@ class PopupResourceBundle {
 
       {
           "renderMenu",
-          "perspectiveDepthCheckbox stereoMenu - renderSchemeMenu - atomMenu labelMenu bondMenu hbondMenu ssbondMenu - "
+          "perspectiveDepthCheckbox showBoundBoxCheckbox showUnitCellCheckbox showAxes;set_axesMolecularCheckbox stereoMenu - renderSchemeMenu - atomMenu labelMenu bondMenu hbondMenu ssbondMenu - "
               + "PDBstructureMenu _AxesMenu _BoundBoxMenu _UnitCellMenu" },
       {
           "renderSchemeMenu",
@@ -793,7 +793,10 @@ class PopupResourceBundle {
       { "showSelectionsCheckbox", GT._("Selection Halos", true) },
       { "showHydrogensCheckbox", GT._("Show Hydrogens", true) },
       { "showMeasurementsCheckbox", GT._("Show Measurements", true) },
-      { "perspectiveDepthCheckbox", GT._("Perspective Depth", true) },
+      { "perspectiveDepthCheckbox", GT._("Perspective Depth", true) },      
+      { "showBoundBoxCheckbox", GT._("Bound Box", true) },
+      { "showAxes;set_axesMolecularCheckbox", GT._("Axes", true) },
+      { "showUnitCellCheckbox", GT._("Unit Cell", true) },      
       { "rasmolChimeCompatibility", GT._("RasMol/Chime Settings", true) },
       { "colorrasmolCheckbox", GT._("RasMol Colors", true) },
       { "axesOrientationRasmolCheckbox", GT._("Axes RasMol/Chime", true) },

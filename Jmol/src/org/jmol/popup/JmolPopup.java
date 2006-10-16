@@ -627,14 +627,19 @@ abstract public class JmolPopup {
     String basename = what;
     String extension = "";
     int pt;
-    if ((pt = what.indexOf(";")) >=0) {
+    if ((pt = what.indexOf(";")) >= 0) {
       basename = what.substring(0, pt);
       extension = what.substring(pt);
+      for (int i = 0; i < extension.length(); i++) {
+        if (extension.charAt(i) == '_')
+          extension = extension.substring(0, i) + " "
+              + extension.substring(i + 1);
+      }
     }
     if (what.indexOf("#") > 0)
       viewer.script(what);
     else if (viewer.getBooleanProperty(basename) != TF)
-      viewer.script("set " + basename + (TF ? " TRUE":" FALSE" + extension));
+      viewer.script("set " + basename + (TF ? " TRUE" : " FALSE" + extension));
     if (what.indexOf("#CONFIG") >= 0) {
       configurationSelected = what;
       this.updateModelSetComputedMenu();

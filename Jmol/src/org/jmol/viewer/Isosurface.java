@@ -4409,9 +4409,12 @@ class Isosurface extends MeshCollection {
     int iAtom = 0;
     int nAtoms = viewer.getAtomCount();
     int nSelected = 0;
+    if (bsIgnore == null) {
+      bsIgnore = new BitSet();
+    }
     for (int i = 0; i < nAtoms; i++) {
       if (bsSelected.get(i) 
-          && (bsIgnore == null || !bsIgnore.get(i))) {
+          && (!bsIgnore.get(i))) {
         if (solvent_quickPlane
             && thePlane != null
             && Math.abs(distancePointToPlane(atoms[i], thePlane)) > 2 * solventWorkingRadius(atoms[i])) {
@@ -4428,8 +4431,10 @@ class Isosurface extends MeshCollection {
       if (bsSolventSelected.get(i)) {
         if (solvent_modelIndex < 0)
           solvent_modelIndex = atoms[i].modelIndex;
-        if (solvent_modelIndex != atoms[i].modelIndex)
+        if (solvent_modelIndex != atoms[i].modelIndex) {
+          bsIgnore.set(i);
           continue;
+        }
         ++iAtom;
         atomSet.set(i);
         if (firstSet == -1)
@@ -4501,7 +4506,7 @@ class Isosurface extends MeshCollection {
     firstSet = -1;
     lastSet = 0;
     for (int i = 0; i < nAtoms; i++) {
-      if (atomSet.get(i) || bsIgnore != null && bsIgnore.get(i))
+      if (atomSet.get(i) || bsIgnore.get(i))
         continue;
       float rA = solventWorkingRadius(atoms[i]);
       if (solvent_quickPlane

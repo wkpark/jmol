@@ -416,6 +416,8 @@ abstract public class JmolPopup {
     String modelSetName = viewer.getModelSetName();
     if (modelSetName == null)
       return;
+    if (modelSetName.length() > 25)
+      modelSetName = modelSetName.substring(0,20) + "...";
     renameMenu(menu, viewer
         .getBooleanProperty("hideNameInPopup") ? hiddenModelSetName
         : modelSetName);

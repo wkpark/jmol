@@ -490,6 +490,7 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   boolean isClickable() {
+    //hidden won't show up here
     if (!isModelVisible())
       return false;
     int flags = shapeVisibilityFlags;
@@ -498,7 +499,7 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   boolean isVisible() {
-    if (!isModelVisible())
+    if (!isModelVisible() || group.chain.frame.bsHidden.get(atomIndex))
       return false;
     int flags = shapeVisibilityFlags;
     if (group != null)

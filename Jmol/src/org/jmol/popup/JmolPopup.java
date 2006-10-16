@@ -111,6 +111,7 @@ abstract public class JmolPopup {
     updateSurfMoComputedMenu((Hashtable) modelInfo.get("moData"));
     updateFileTypeDependentMenus();
     updatePDBComputedMenus();
+    updateSYMMETRYComputedMenu();
     updateModelSetComputedMenu();
     updateAboutSubmenu();
   }
@@ -314,6 +315,37 @@ abstract public class JmolPopup {
     return nItems;
   }
 
+  void updateSYMMETRYComputedMenu() {
+    Object menu = htMenus.get("SYMMETRYComputedMenu");
+    if (menu == null)
+      return;
+    removeAll(menu);
+    enableMenu(menu, false);
+    if (!isSymmetry || modelIndex < 0)
+      return;
+    String[] list = (String[]) modelInfo.get("symmetryOperations");
+    if (list == null)
+      return;
+    boolean haveUnitCellRange = (modelInfo.get("unitCellRange") != null);
+    Object subMenu = menu;
+    int nmod = MAX_ITEMS;
+    int pt = (list.length > MAX_ITEMS ? 0 : Integer.MIN_VALUE);
+    for (int i = 0; i < list.length; i++) {
+      if (pt >= 0 && (pt++ % nmod) == 0) {
+        String id = "symop" + pt + "Menu";
+        subMenu = newMenu((i + 1) + "..."
+            + Math.min(i + MAX_ITEMS, list.length), getId(menu) + "." + id);
+        addMenuSubMenu(menu, subMenu);
+        htMenus.put(id, subMenu);
+        pt = 1;
+      }
+      String entryName = "symop=" + (i + 1) + " # " + list[i];
+      enableMenuItem(addMenuItem(subMenu, entryName, "symop=" + (i + 1), null),
+          haveUnitCellRange);
+    }
+    enableMenu(menu, true);
+  }
+
   Object CONFIGURATIONComputedMenu;
   Object FRAMESbyModelComputedMenu;
   
@@ -332,12 +364,6 @@ abstract public class JmolPopup {
     int nmod = MAX_ITEMS;
     int pt = (modelCount > MAX_ITEMS ? 0 : Integer.MIN_VALUE);
     for (int i = 0; i < modelCount; i++) {
-      String script = "" + viewer.getModelNumber(i);
-      String entryName = viewer.getModelName(i);
-      if (!entryName.equals(script))
-        entryName = script + ": " + entryName;
-      if (entryName.length() > 30)
-        entryName = entryName.substring(0, 20) + "...";
       if (pt >= 0 && (pt++ % nmod) == 0) {
         String id = "model" + pt + "Menu";
         subMenu = newMenu((i + 1) + "..." + Math.min(i + MAX_ITEMS, modelCount),getId(menu) + "." + id);
@@ -345,6 +371,12 @@ abstract public class JmolPopup {
         htMenus.put(id, subMenu);
         pt = 1;
       }
+      String script = "" + viewer.getModelNumber(i);
+      String entryName = viewer.getModelName(i);
+      if (!entryName.equals(script))
+        entryName = script + ": " + entryName;
+      if (entryName.length() > 30)
+        entryName = entryName.substring(0, 20) + "...";
       addCheckboxMenuItem(subMenu, entryName, "model " + script + " #", null, (modelIndex == i));
     }
   }

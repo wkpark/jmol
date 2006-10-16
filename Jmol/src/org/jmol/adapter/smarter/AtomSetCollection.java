@@ -460,6 +460,8 @@ class AtomSetCollection extends Parser {
     setAtomSetAuxiliaryInfo("symmetryCount", new Integer(operationCount));
     setAtomSetAuxiliaryInfo("latticeDesignation", spaceGroup
         .getLatticeDesignation());
+    if (minX != maxX || minY != maxY || minZ != maxZ)
+      setAtomSetAuxiliaryInfo("unitCellRange", new int[] {minX, minY, minZ, maxX, maxY, maxZ});
     spaceGroup = null;
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false; //turn off global fractional conversion -- this wil be model by model

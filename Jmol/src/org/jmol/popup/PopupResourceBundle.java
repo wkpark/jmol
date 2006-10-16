@@ -72,7 +72,7 @@ class PopupResourceBundle {
 
       {
           "selectMenu",
-          "hideNotSelected;hide(none)Checkbox showSelectionsCheckbox - selectAll selectNone invertSelection - elementsComputedMenu - "
+          "hideNotSelected;hide(none)Checkbox showSelectionsCheckbox - selectAll selectNone invertSelection - elementsComputedMenu SYMMETRYComputedMenu - "
               + "PDBproteinMenu PDBnucleicMenu PDBheteroMenu PDBcarboMenu PDBnoneOfTheAbove" },
       { "selectAll", "all" },
       { "selectNone", "none" },
@@ -750,6 +750,7 @@ class PopupResourceBundle {
       { "showOrient", GT._("Orientation", true) },
       { "showSpacegroup", GT._("Space group", true) },
       { "SYMMETRYshowSymmetry", GT._("Symmetry", true) },
+      { "SYMMETRYComputedMenu", GT._("Symmetry", true) },
       { "showUnitCell", GT._("Unit cell", true) },
       { "extractMOL", GT._("Extract MOL data", true) },
 

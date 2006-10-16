@@ -1090,12 +1090,16 @@ class Eval { //implements Runnable {
         propertyBitSet = atom.getAtomSymmetry();
         if (bitsetBaseValue >= 1000) {
           /*
-           * symop>1000 indicates symop*1000 + lattice_translation
+           * symop>=1000 indicates symop*1000 + lattice_translation(555)
            * for this the comparision is only with the
            * translational component; the symop itself must match
            * thus: 
-           * select symop!=1100 selects all symop=1 and translation !=100
-           * select symo >=2200 selects all symop=2 and translation >200
+           * select symop!=1655 selects all symop=1 and translation !=655
+           * select symo >=2555 selects all symop=2 and translation >555
+           * 
+           * Note that when normalization is not done, symop=1555 may not be in the 
+           * base unit cell. Everything is relative to wherever the base atoms ended up,
+           * usually in 555, but not necessarily.
            * 
            * The reason this is tied together an atom may have one translation
            * for one symop and another for a different one.

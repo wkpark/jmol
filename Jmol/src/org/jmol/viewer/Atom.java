@@ -700,8 +700,8 @@ final public class Atom extends Point3fi implements Tuple {
     Vector3f pt0 = new Vector3f(getFractionalCoord());
     pt0.sub(group.chain.frame.getSymmetryBaseAtom(modelIndex, atomSite, symop)
         .getFractionalCoord());
-    return ((int) (pt0.x + 0.01)) * 100 + ((int) (pt0.y + 0.01)) * 10
-        + ((int) (pt0.z + 0.01));
+    return ((int) (pt0.x + 5.01)) * 100 + ((int) (pt0.y + 5.01)) * 10
+        + ((int) (pt0.z + 5.01));
   }
   
   String getSymmetryOperatorList() {

@@ -718,7 +718,7 @@ class Eval { //implements Runnable {
     int i = 1;
     if (i < statementLength && statement[i].tok == Token.leftparen)
       i++;
-    if (statement[i].tok == Token.opNot) {
+    if (i < statementLength && statement[i].tok == Token.opNot) {
       i++;
       isNot = true;
     }

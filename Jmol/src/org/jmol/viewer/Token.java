@@ -107,7 +107,7 @@ class Token {
   final static int background   = command |  1 | colorparam | setspecial;
   final static int bond         = command |  2 | setparam | bool;
   final static int cartoon      = command |  3 | setparam;
-  final static int center       = command |  4 | showparam | expressionCommand;
+  final static int center       = command |  4 | setparam | showparam | expressionCommand;
   final static int clipboard    = command |  5;
   final static int color        = command |  6 | colorparam | setparam;
   final static int connect      = command |  7 | embeddedExpression;

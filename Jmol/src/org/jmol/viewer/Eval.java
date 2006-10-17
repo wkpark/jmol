@@ -4128,6 +4128,11 @@ class Eval { //implements Runnable {
       echoShapeActive = false;
     case Token.all:
       checkLength3();
+    case Token.left:
+    case Token.right:
+    case Token.top:
+    case Token.bottom:
+    case Token.center:
     case Token.identifier:
       propertyValue = statement[2].value;
       break;
@@ -4147,8 +4152,12 @@ class Eval { //implements Runnable {
       case Token.off:
         propertyName = "off";
         break;
-      case Token.identifier:
+      case Token.left:
+      case Token.right:
+      case Token.top:
+      case Token.bottom:
       case Token.center:
+      case Token.identifier: //middle
         propertyValue = statement[3].value;
         break;
       default:

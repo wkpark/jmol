@@ -336,7 +336,6 @@ public class Viewer extends JmolViewer {
 
   void setCenterBitSet(BitSet bsCenter, boolean doScale) {
     //Eval
-    //PickingManager.atomPicked()
     //setCenterSelected
     transformManager.setCenterBitSet(bsCenter, doScale);
     refresh(0, "Viewer:setCenterBitSet()");
@@ -420,12 +419,12 @@ public class Viewer extends JmolViewer {
   final static float radiansPerDegree = (float) (2 * Math.PI / 360);
 
   public void rotateToX(int angleDegrees) {
-    //app DisplayPanel.BottomAction, .TopAction;
+    //not in this project
     rotateToX(angleDegrees * radiansPerDegree);
   }
 
   public void rotateToY(int angleDegrees) {
-    //app DisplayPanel.LeftAction, .RightAction;
+    //not in this project
     rotateToY(angleDegrees * radiansPerDegree);
   }
 
@@ -437,14 +436,12 @@ public class Viewer extends JmolViewer {
 
   void translateToXPercent(float percent) {
     //Eval.translate()
-    //StateManager.Orientation()
     transformManager.translateToXPercent(percent);
     refresh(1, "Viewer:translateToXPercent()");
   }
 
   void translateToYPercent(float percent) {
     //Eval.translate()
-    //StateManager.Orientation()
     transformManager.translateToYPercent(percent);
     refresh(1, "Viewer:translateToYPercent()");
   }
@@ -684,7 +681,6 @@ public class Viewer extends JmolViewer {
 
   void setSpinOn(boolean spinOn) {
     //Eval
-    //PickingManager.atomPicked
     //startSpinningAxis
     transformManager.setSpinOn(spinOn);
   }
@@ -851,18 +847,6 @@ public class Viewer extends JmolViewer {
   // delegated to SelectionManager
   // ///////////////////////////////////////////////////////////////
 
-  void removeSelection(int atomIndex) {
-    //PickingManager.applyMouseStyle
-    selectionManager.removeSelection(atomIndex);
-    refresh(0, "Viewer:removeSelection()");
-  }
-
-  void removeSelection(BitSet set) {
-    //PickingManager.applyMouseStyle
-    selectionManager.removeSelection(set);
-    refresh(0, "Viewer:removeSelection()");
-  }
-
   void select(BitSet bs) {
     //Eval
     //StateManager
@@ -883,30 +867,6 @@ public class Viewer extends JmolViewer {
     return selectionManager.getHiddenSet();
   }
 
-  void addSelection(int atomIndex) {
-    //PickingManager.applyMouseStyle
-    selectionManager.addSelection(atomIndex);
-    refresh(0, "Viewer:addSelection()");
-  }
-
-  void addSelection(BitSet set) {
-    //PickingManager.applyMouseStyle
-    selectionManager.addSelection(set);
-    refresh(0, "Viewer:addSelection()");
-  }
-
-  void toggleSelection(int atomIndex) {
-    //PickingManager.applyMouseStyle
-    selectionManager.toggleSelection(atomIndex);
-    refresh(0, "Viewer:toggleSelection()");
-  }
-
-  void setSelection(int atomIndex) {
-    //PickingManager.applyMouseStyle
-    selectionManager.setSelection(atomIndex);
-    refresh(0, "Viewer:setSelection()");
-  }
-
   boolean isSelected(int atomIndex) {
     return selectionManager.isSelected(atomIndex);
   }
@@ -925,26 +885,19 @@ public class Viewer extends JmolViewer {
   }
 
   public void clearSelection() {
-    //app DisplayPanel.DeselectallAction
-    //PickingManager.atomPicked (Pfatt)
+    //not used in this project; in jmolViewer interface, though
     selectionManager.clearSelection();
     refresh(0, "Viewer:clearSelection()");
   }
 
   public void setSelectionSet(BitSet set) {
-    //PickingManager.applyMouseStyle
+    //not used in this project; in jmolViewer interface, though
     selectionManager.setSelectionSet(set);
     refresh(0, "Viewer:setSelectionSet()");
   }
 
   public void setHideNotSelected(boolean TF) {
     selectionManager.setHideNotSelected(TF);
-  }
-
-  void toggleSelectionSet(BitSet set) {
-    //PickingManager.applyMouseStyle
-    selectionManager.toggleSelectionSet(set);
-    refresh(0, "Viewer:toggleSelectionSet()");
   }
 
   void invertSelection() {
@@ -2456,14 +2409,11 @@ public class Viewer extends JmolViewer {
     setShapeProperty(JmolConstants.SHAPE_LABELS, "label", strLabel);
   }
 
-  void togglePickingLabel(int atomIndex) {
-    //PickingManage.atomPicked    **
-    if (atomIndex < 0)
-      return;
-    // hack to force it to load
+  void togglePickingLabel(BitSet bs) {
+    //eval set toggleLabel (atomset)
     setShapeSize(JmolConstants.SHAPE_LABELS, styleManager.pointsLabelFontSize);
-    modelManager.setShapeProperty(JmolConstants.SHAPE_LABELS, "pickingLabel",
-        new Integer(atomIndex), null);
+    modelManager.setShapeProperty(JmolConstants.SHAPE_LABELS, "toggleLabel",
+        null, bs);
     refresh(0, "Viewer:");
   }
 

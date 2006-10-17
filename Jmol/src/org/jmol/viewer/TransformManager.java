@@ -1072,7 +1072,7 @@ class TransformManager {
   
   void moveTo(float floatSecondsTotal, Point3f center, Point3f pt, float degrees, float zoom,
               float xTrans, float yTrans, float newRotationRadius) {
-
+    
     Vector3f axis = new Vector3f(pt);
     initializeMoveTo();
     if (degrees < 0.01f && degrees > -0.01f) {
@@ -1103,7 +1103,8 @@ class TransformManager {
     ptCenter = (center == null ? fixedRotationCenter : center);
     float startRotationRadius = rotationRadius;
     float targetRotationRadius = (center == null ? rotationRadius
-        : newRotationRadius);
+        : newRotationRadius <= 0 ? viewer.calcRotationRadius(center)
+            : newRotationRadius);
     float startPixelScale = scaleDefaultPixelsPerAngstrom;
     float targetPixelScale = (center == null ? startPixelScale
         : defaultScaleToScreen(targetRotationRadius));

@@ -25,7 +25,6 @@ package org.jmol.viewer;
 
 import org.jmol.util.Logger;
 
-import java.util.BitSet;
 import org.jmol.i18n.GT;
 
 class PickingManager {
@@ -56,7 +55,7 @@ class PickingManager {
     if (atomIndex == -1) {
       if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT 
           && !shiftKey && !alternateKey) {
-        viewer.clearSelection();
+        viewer.script("select none");
         reportSelection();
       }
       if (pickingMode == JmolConstants.PICKING_MEASURE
@@ -120,45 +119,38 @@ class PickingManager {
         toggleMeasurement(4);
       break;
     case JmolConstants.PICKING_LABEL:
-      viewer.togglePickingLabel(atomIndex);
+      viewer.script("set toggleLabel (atomindex="+atomIndex+")");
       break;
     case JmolConstants.PICKING_CENTER:
-      BitSet bs = new BitSet();
-      bs.set(atomIndex);
-      viewer.setCenterBitSet(bs, false);
+      viewer.script("center (atomindex=" + atomIndex+")");
       break;
     case JmolConstants.PICKING_SELECT_ATOM:
-      applyMouseStyle(atomIndex, shiftKey, alternateKey);
+      applyMouseStyle("atomIndex="+atomIndex, shiftKey, alternateKey);
       viewer.clearClickCount();
       break;
     case JmolConstants.PICKING_SELECT_GROUP:
-      BitSet bsGroup = frame.getGroupBitSet(atomIndex);
-      applyMouseStyle(bsGroup, shiftKey, alternateKey);
+      applyMouseStyle("within(group, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
       viewer.clearClickCount();
       break;
     case JmolConstants.PICKING_SELECT_CHAIN:
-      BitSet bsChain = frame.getChainBitSet(atomIndex);
-      applyMouseStyle(bsChain, shiftKey, alternateKey);
+      applyMouseStyle("within(chain, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
       viewer.clearClickCount();
       break;
     case JmolConstants.PICKING_SELECT_MOLECULE:
-      BitSet bsMolecule = frame.getMoleculeBitSet(atomIndex);
-      applyMouseStyle(bsMolecule, shiftKey, alternateKey);
+      applyMouseStyle("within(molecule, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
       viewer.clearClickCount();
       break;
     case JmolConstants.PICKING_SELECT_SITE:
-      BitSet bsSite = frame.getVisibleSiteBitSet(atomIndex);
-      applyMouseStyle(bsSite, shiftKey, alternateKey);
+      applyMouseStyle("within(site, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
       viewer.clearClickCount();
       break;
     case JmolConstants.PICKING_SELECT_ELEMENT:
-      BitSet bsElement = frame.getVisibleElementBitSet(atomIndex);
-      applyMouseStyle(bsElement, shiftKey, alternateKey);
+      applyMouseStyle("within(element, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
       viewer.clearClickCount();
       break;
     case JmolConstants.PICKING_SPIN:
       if (viewer.getSpinOn()) {
-        viewer.setSpinOn(false);
+        viewer.script("spin off");
         break;
       }
       if (queuedAtomCount >= 2)
@@ -167,14 +159,14 @@ class PickingManager {
         break;
       queueAtom(atomIndex);
       if (queuedAtomCount < 2) {
-        viewer.setSpinOn(false);
+        if (viewer.getSpinOn())
+          viewer.script("spin off");
         viewer.scriptStatus(queuedAtomCount == 1 ?
             GT._("pick one more atom in order to spin the model around an axis") :
             GT._("pick two atoms in order to spin the model around an axis"));
         break;
       }
-      viewer
-          .startSpinningAxis(queuedAtomIndexes[0], atomIndex, false/*isClockwise*/);
+      viewer.script("spin (atomindex="+queuedAtomIndexes[0]+") (atomIndex="+atomIndex+")");
     }
   }
 
@@ -192,44 +184,26 @@ class PickingManager {
     viewer.toggleMeasurement(countPlusIndexes);  
   }
   
-  void applyMouseStyle(int atomIndex, boolean shiftKey, boolean alternateKey) {
+  void applyMouseStyle(String item, boolean shiftKey, boolean alternateKey) {
+    item = "(" + item + ")";
     if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT) {
       if (shiftKey && alternateKey)
-        viewer.removeSelection(atomIndex);
+        viewer.script("select selected and not " + item);
       else if (shiftKey)
-        viewer.toggleSelection(atomIndex);
+        viewer.script("select selected tog " + item); //toggle
       else if (alternateKey)
-        viewer.addSelection(atomIndex);
+        viewer.script("select selected or " + item);
       else
-        viewer.setSelection(atomIndex);
+        viewer.script("select " + item);
     } else {
       if (shiftKey | pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_CHIME)
-        viewer.toggleSelection(atomIndex);
+        viewer.script("select selected tog " + item); //toggle
       else
-        viewer.setSelection(atomIndex);
+        viewer.script("select " + item);
     }
     reportSelection();
   }
   
-  void applyMouseStyle(BitSet bs, boolean shiftKey, boolean alternateKey) {
-    if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT) {
-      if (shiftKey && alternateKey)
-        viewer.removeSelection(bs);
-      else if (shiftKey)
-        viewer.toggleSelectionSet(bs);
-      else if (alternateKey)
-        viewer.addSelection(bs);
-      else
-        viewer.setSelectionSet(bs);
-    } else {
-      if (shiftKey | pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_CHIME)
-        viewer.toggleSelectionSet(bs);
-      else
-        viewer.setSelectionSet(bs);
-    }
-    reportSelection();
-  }
-
     void reportSelection() {
     viewer.reportSelection("" + viewer.getSelectionCount() + " " + GT._("atoms selected"));
   }

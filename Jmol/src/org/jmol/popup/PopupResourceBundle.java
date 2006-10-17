@@ -62,7 +62,7 @@ class PopupResourceBundle {
   private static final String[][] structureContents = {
       {
           "popupMenu",
-          "modelSetMenu FRAMESbyModelComputedMenu CONFIGURATIONComputedMenu - selectMenu colorMenu renderMenu surfaceMenu SYMMETRYunitCellMenu - "
+          "modelSetMenu FRAMESbyModelComputedMenu CONFIGURATIONComputedMenu - selectMenu viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYunitCellMenu - "
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "
               + "measureMenu pickingMenu - showConsole showMenu - "
@@ -129,6 +129,13 @@ class PopupResourceBundle {
       // not implemented    { "Lipid", "lipid" },
       { "PDBnoneOfTheAbove", "not(hetero,protein,nucleic,carbohydrate)" },
 
+      { "viewMenu","front left right top bottom back" },
+      { "front", "boundbox on;moveto 2.0 front;delay 1;boundbox off" },
+      { "left", "boundbox on;moveto 1.0 front;moveto 2.0 left;delay 1;boundbox off" },
+      { "right", "boundbox on;moveto 1.0 front;moveto 2.0 right;delay 1;boundbox off" },
+      { "top", "boundbox on;moveto 1.0 front;moveto 2.0 top;delay 1;boundbox off" },
+      { "bottom", "boundbox on;moveto 1.0 front;moveto 2.0 bottom;delay 1;boundbox off" },
+      { "back", "boundbox on;moveto 1.0 front;moveto 2.0 back;delay 1;boundbox off" },
       {
           "renderMenu",
           "perspectiveDepthCheckbox showBoundBoxCheckbox showUnitCellCheckbox showAxes;set_axesMolecularCheckbox stereoMenu - renderSchemeMenu - atomMenu labelMenu bondMenu hbondMenu ssbondMenu - "
@@ -136,12 +143,13 @@ class PopupResourceBundle {
       {
           "renderSchemeMenu",
           "renderCpkSpacefill renderBallAndStick "
-              + "renderSticks renderWireframe" },
-      { "renderCpkSpacefill", "backbone off;wireframe off;spacefill 100%" },
-      { "renderBallAndStick", "backbone off;spacefill 20%;wireframe 0.15" },
-      { "renderSticks", "backbone off;spacefill off;wireframe 0.3" },
-      { "renderWireframe", "backbone off;spacefill off;wireframe on" },
-      { "renderBackbone", "spacefill off;wireframe off;backbone on" },
+              + "renderSticks renderWireframe renderPDBCartoonsOnly renderPDBTraceOnly" },
+      { "renderCpkSpacefill", "restrict not selected;select not selected;spacefill 100%;color cpk" },
+      { "renderBallAndStick", "restrict not selected;select not selected;spacefill 20%;wireframe 0.15;color cpk" },
+      { "renderSticks", "restrict not selected;select not selected;wireframe 0.3;color cpk" },
+      { "renderWireframe", "restrict not selected;select not selected;wireframe on;color cpk" },
+      { "renderPDBCartoonsOnly", "restrict not selected;select not selected;cartoons on;color structure" },
+      { "renderPDBTraceOnly", "restrict not selected;select not selected;trace on;color structure" },
 
       {
           "atomMenu",
@@ -204,13 +212,13 @@ class PopupResourceBundle {
               + "backbone cartoon cartoonRockets ribbons rockets strands trace" },
       { "structureNone",
           "backbone off;cartoons off;ribbons off;rockets off;strands off;trace off;" },
-      { "backbone", "backbone 0.3" },
-      { "cartoon", "set cartoonRockets false;cartoons on" },
-      { "cartoonRockets", "set cartoonRockets;cartoons on" },
-      { "ribbons", "ribbons on" },
-      { "rockets", "rockets on" },
-      { "strands", "strands on" },
-      { "trace", "trace 0.3" },
+      { "backbone", "restrict not selected;select not selected;backbone 0.3" },
+      { "cartoon", "restrict not selected;select not selected;set cartoonRockets false;cartoons on" },
+      { "cartoonRockets", "restrict not selected;select not selected;set cartoonRockets;cartoons on" },
+      { "ribbons", "restrict not selected;select not selected;ribbons on" },
+      { "rockets", "restrict not selected;select not selected;rockets on" },
+      { "strands", "restrict not selected;select not selected;strands on" },
+      { "trace", "restrict not selected;select not selected;trace 0.3" },
 
       { "VIBRATIONMenu", "vibrationOff vibrationOn VIBRATIONvectorMenu" },
       { "vibrationOff", "vibration off" },
@@ -414,17 +422,17 @@ class PopupResourceBundle {
       { "surfOff", "isosurface delete;select *;dots off" },
 
       { "SYMMETRYunitCellMenu",
-          "oneUnitCell fourUnitCells nineUnitCells nineUnitCellsRestricted" },
+          "oneUnitCell nineUnitCells nineUnitCellsRestricted nineUnitCellsPoly" },
 
       { "oneUnitCell",
           "save orientation;load \"\" {1 1 1} ;restore orientation;center" },
-      { "fourUnitCells",
-          "save orientation;load \"\" {2 2 2} ;restore orientation;center" },
       { "nineUnitCells",
-          "save orientation;load \"\" {3 3 3} ;restore orientation;center" },
-      {
-          "nineUnitCellsRestricted",
-          "save orientation;load \"\" {3 3 3} ;restore orientation;unitCell {1 1 1}; restrict cell=666; polyhedra 4,6 (visible);center visible;zoom 200" },
+          "save orientation;load \"\" {444 666 1} ;restore orientation;center" },
+      {"nineUnitCellsRestricted",
+          "save orientation;load \"\" {444 666 1} ;restore orientation; unitcell on; display cell=555;center visible;zoom 200" },
+
+      {"nineUnitCellsPoly",
+          "save orientation;load \"\" {444 666 1} ;restore orientation; unitcell on; display cell=555; polyhedra 4,6 (displayed);center (visible);zoom 200" },
 
       { "_AxesMenu", "off dotted - byPixelMenu byAngstromMenu" },
       { "_BoundBoxMenu", null },
@@ -465,6 +473,14 @@ class PopupResourceBundle {
       { "selectNone", GT._("None", true) },
       { "hideNotSelected;hide(none)Checkbox", GT._("Display Selected Only", true) },
       { "invertSelection", GT._("Invert Selection", true) },
+
+      { "viewMenu", GT._("View", true) },
+      { "front", GT._("Front", true) },
+      { "left", GT._("Left", true) },
+      { "right", GT._("Right", true) },
+      { "top", GT._("Top", true) },
+      { "bottom", GT._("Bottom", true) },
+      { "back", GT._("Back", true) },
 
       { "PDBproteinMenu", GT._("Protein", true) },
       { "allProtein", GT._("All", true) },
@@ -515,7 +531,8 @@ class PopupResourceBundle {
       { "renderBallAndStick", GT._("Ball and Stick", true) },
       { "renderSticks", GT._("Sticks", true) },
       { "renderWireframe", GT._("Wireframe", true) },
-      { "renderBackbone", GT._("Backbone", true) },
+      { "renderPDBCartoonsOnly", GT._("Cartoon", true) },
+      { "renderPDBTraceOnly", GT._("Trace", true) },
 
       { "atomMenu", GT._("Atoms", true) },
       { "atomNone", GT._("Off", true) },
@@ -767,9 +784,10 @@ class PopupResourceBundle {
 
       { "SYMMETRYunitCellMenu", GT._("Symmetry", true) },
       { "oneUnitCell", GT._("Reload {0}", "{1 1 1}", true) },
-      { "fourUnitCells", GT._("Reload {0}", "{2 2 2}", true) },
-      { "nineUnitCells", GT._("Reload {0}", "{3 3 3}", true) },
-      { "nineUnitCellsRestricted", GT._("Reload {0}", "Polyhedra", true) },
+      { "nineUnitCells", GT._("Reload {0}", "{444 666 1}", true) },
+      { "nineUnitCellsRestricted", GT._("Reload {0}", "{444 666 1};display 555", true) },
+      { "nineUnitCellsPoly", GT._("Reload {0}", "+ Polyhedra", true) },
+      
 
       { "_AxesMenu", GT._("Axes", true) }, { "_BoundBoxMenu", GT._("Boundbox", true) },
       { "_UnitCellMenu", GT._("Unitcell", true) },

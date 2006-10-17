@@ -876,7 +876,7 @@ class Compiler {
 
     expression       :: = clauseOr
 
-    clauseOr         ::= clauseAnd {OR clauseAnd}*
+    clauseOr         ::= clauseAnd {OR|XOR|OrNot clauseAnd}*
 
     clauseAnd        ::= clauseNot {AND clauseNot}*
 
@@ -1041,7 +1041,9 @@ class Compiler {
   boolean clauseOr() {
     if (! clauseAnd())
       return false;
-    while (tokPeek() == Token.opOr) {
+    //for simplicity, giving XOR (toggle) same precedence as OR
+    //OrNot: First OR, but if that makes no change, then NOT (special toggle)
+    while (tokPeek() == Token.opOr || tokPeek() == Token.opXor || tokPeek() == Token.opToggle) {
       Token tokenOr = tokenNext();
       if (! clauseAnd())
         return false;

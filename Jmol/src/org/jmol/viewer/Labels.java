@@ -177,20 +177,22 @@ class Labels extends Shape {
         defaultAlignment = alignment;
     }
 
-    if ("pickingLabel" == propertyName) {
+    if ("toggleLabel" == propertyName) {
       // toggle
-      int atomIndex = ((Integer) value).intValue();
-      Atom atom = atoms[atomIndex];
-      if (strings != null && strings.length > atomIndex
-          && strings[atomIndex] != null) {
-        strings[atomIndex] = null;
-      } else {
-        String strLabel = viewer.getStandardLabelFormat();
-        strings = ArrayUtil.ensureLength(strings, atomIndex + 1);
-        strings[atomIndex] = atom.formatLabel(strLabel);
-      }
-      atom.setShapeVisibility(myVisibilityFlag, strings[atomIndex] != null);
-      return;
+      for (int atomIndex = frame.atomCount; --atomIndex >= 0;)
+        if (bsSelected.get(atomIndex)) {
+          Atom atom = atoms[atomIndex];
+          if (strings != null && strings.length > atomIndex
+              && strings[atomIndex] != null) {
+            strings[atomIndex] = null;
+          } else {
+            String strLabel = viewer.getStandardLabelFormat();
+            strings = ArrayUtil.ensureLength(strings, atomIndex + 1);
+            strings[atomIndex] = atom.formatLabel(strLabel);
+          }
+          atom.setShapeVisibility(myVisibilityFlag, strings[atomIndex] != null);
+          return;
+        }
     }
   }
 

@@ -772,19 +772,8 @@ class Eval { //implements Runnable {
       case Token.string:
         strbufLog.append("\"" + token.value + "\"");
         continue;
-      case Token.opEQ:
-      case Token.opNE:
-      case Token.opGT:
-      case Token.opGE:
-      case Token.opLT:
-      case Token.opLE:
-        try {
-          strbufLog.append(Token.atomPropertyNames[token.intValue & 0x0F]);
-        } catch (Exception e) {
-          strbufLog.append(token.value);
-        }
-        strbufLog.append(Token.comparatorNames[token.tok & 0x0F]);
-        break;
+      default:
+        strbufLog.append(token.toString());
       }
       strbufLog.append("" + token.value);
     }
@@ -833,6 +822,10 @@ class Eval { //implements Runnable {
         bs = stack[--sp];
         stack[sp - 1].or(bs);
         break;
+      case Token.opXor:
+        bs = stack[--sp];
+        stack[sp - 1].xor(bs);
+        break;
       case Token.opAnd:
         bs = stack[--sp];
         stack[sp - 1].and(bs);
@@ -840,6 +833,10 @@ class Eval { //implements Runnable {
       case Token.opNot:
         bs = stack[sp - 1];
         notSet(bs);
+        break;
+      case Token.opToggle:
+        bs = stack[--sp];
+        toggle(stack[sp-1], bs);
         break;
       case Token.within:
         if (thisCoordinate != null) {
@@ -954,6 +951,19 @@ class Eval { //implements Runnable {
     if (sp != 1)
       evalError(GT._("atom expression compiler error - stack over/underflow"));
     return stack[0];
+  }
+
+  void toggle(BitSet A, BitSet B) {
+    for (int i = viewer.getAtomCount(); --i >= 0;) {
+      if (!B.get(i))
+        continue;
+      if (A.get(i)) { //both set --> clear A
+        A.clear(i);
+      } else {
+        A.or(B); //A is not set --> return all on
+        return;
+      }
+    }
   }
 
   void notSet(BitSet bs) {
@@ -1073,6 +1083,9 @@ class Eval { //implements Runnable {
       switch (property) {
       case Token.atomno:
         propertyValue = atom.getAtomNumber();
+        break;
+      case Token.atomIndex:
+        propertyValue = i;
         break;
       case Token.elemno:
         propertyValue = atom.getElementNumber();
@@ -1818,36 +1831,66 @@ class Eval { //implements Runnable {
   }
   
   void moveto() throws ScriptException {
-    //moveto time { x y z deg} zoom xTrans yTrans
-    if (statementLength == 2) {
+    //moveto time
+    //moveto [time] { x y z deg} zoom xTrans yTrans
+    //moveto [time] front|back|left|right|top|bottom
+    if (statementLength < 2)
+      badArgumentCount();
+    if (statementLength == 2 && isFloatParameter(1)) {
       refresh();
       viewer
-          .moveTo(floatParameter(1), null, new Point3f(0, 0, 1), 0, 100, 0, 0);
+          .moveTo(floatParameter(1), null, new Point3f(0, 0, 1), 0, 100, 0, 0, 0);
       return;
     }
-    if (statementLength < 6)
-      badArgumentCount();
-    Point3f pt;
+    Point3f pt = new Point3f();
     Point3f center = null;
-    float floatSecondsTotal = floatParameter(1);
+    int i = 1;
+    float floatSecondsTotal = (isFloatParameter(1)? floatParameter(i++) : 2.0f);
     float zoom = 100;
     float xTrans = 0;
     float yTrans = 0;
-    int i = 2;
-    float degrees = 0;
-    if (statement[2].tok == Token.leftbrace) {
+    float degrees = 90;
+    switch (statement[i].tok) {
+    case Token.leftbrace:
       // {X, Y, Z} deg or {x y z deg}
       if (isCoordinate3(i)) {
-        pt = getCoordinate(2, true);
+        pt = getCoordinate(i, true);
         i = pcLastExpressionInstruction + 1;
-        degrees = floatParameter(i++);        
+        degrees = floatParameter(i++);
       } else {
         Point4f pt4 = getPoint4f(i);
-        pt = new Point3f(pt4.x, pt4.y, pt4.z);
+        pt.set(pt4.x, pt4.y, pt4.z);
         degrees = pt4.w;
         i = pcLastExpressionInstruction + 1;
       }
-    } else {
+      break;
+    case Token.front:
+      pt.set(1, 0, 0);
+      degrees = 0f;
+      i++;
+      break;
+    case Token.back:
+      pt.set(0, 1, 0);
+      degrees = 180f;
+      i++;
+      break;
+    case Token.left:
+      pt.set(0, 1, 0);
+      i++;
+      break;
+    case Token.right:
+      pt.set(0, -1, 0);
+      i++;
+      break;
+    case Token.top:
+      pt.set(1, 0, 0);
+      i++;
+      break;
+    case Token.bottom:
+      pt.set(-1, 0, 0);
+      i++;
+      break;
+    default:
       //X Y Z deg
       pt = new Point3f(floatParameter(i++), floatParameter(i++),
           floatParameter(i++));
@@ -1859,17 +1902,16 @@ class Eval { //implements Runnable {
       xTrans = floatParameter(i++);
       yTrans = floatParameter(i++);
     }
-    float rotationRadius = 10;
+    float rotationRadius = 0;
     if (i != statementLength) {
       center = atomCenterOrCoordinateParameter(i);
       i = pcLastExpressionInstruction + 1;
-      if (i == statementLength)
-        rotationRadius = viewer.calcRotationRadius(center);
-      else
+      if (i != statementLength)
         rotationRadius = floatParameter(i++);
     }
     refresh();
-    viewer.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans, yTrans, rotationRadius);
+    viewer.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans, yTrans,
+        rotationRadius);
   }
 
   void bondorder() throws ScriptException {
@@ -3899,6 +3941,10 @@ class Eval { //implements Runnable {
       break;
     case Token.identifier:
       String str = (String) statement[1].value;
+      if (str.equalsIgnoreCase("toggleLabel")) {
+        viewer.togglePickingLabel(expression(statement, 2));
+        break;
+      }
       if (str.equalsIgnoreCase("measurementNumbers")) {
         setMonitor(2);
         break;

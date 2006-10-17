@@ -85,25 +85,23 @@ class Token {
   // every predefined is also valid in an expression context
   final static int comparator        = (1 << 17) | expression;
   final static int predefinedset     = (1 << 18) | expression;
+  final static int colorparam        = (1 << 19);
   final static int specialstring     = (1 << 20); // echo, label
   // generally, the minus sign is used to denote atom ranges
   // this property is used for the few commands which allow negative integers
-  final static int negnums      = (1 << 21);
+  final static int negnums           = (1 << 21);
   // for some commands the 'set' is optional
   // so, just delete the set command from the token list
   // but not for hbonds nor ssbonds
   final static int setspecial        = (1 << 22);
   final static int objectid          = (1 << 23);
   
-  final static int colorparam        = (1 << 19);
-
+  final static int coordOrSet = negnums | embeddedExpression; 
 
   // These are unrelated
   final static int varArgCount       = (1 << 4);
   final static int onDefault1        = (1 << 5) | 1;
   
-  final static int coordOrSet = negnums | embeddedExpression; 
-
   // rasmol commands
   final static int backbone     = command |  0 | bool | predefinedset;
   final static int background   = command |  1 | colorparam | setspecial;
@@ -135,7 +133,7 @@ class Token {
   final static int save         = command | 28 | showparam;
   final static int script       = command | 29 | specialstring;
   final static int select       = command | 30 | expressionCommand;
-  final static int set          = command | 31 | bool | negnums;
+  final static int set          = command | 31 | bool | negnums | embeddedExpression;
   final static int show         = command | 32;
   final static int slab         = command | 33 | bool;
   final static int cpk          = command | 35 | setparam | bool | negnums;
@@ -215,7 +213,6 @@ class Token {
   // monitor
   final static int mouse        = setparam | 13;
   final static int picking      = setparam | 14;
-  //  final static int radius       = setparam | 15 | atomproperty;
   final static int shadow       = setparam | 15;
   final static int slabmode     = setparam | 16;
   // solvent
@@ -244,7 +241,6 @@ class Token {
   final static int diffuse      = setparam | 30;
   final static int labeloffset  = setparam | 31;
   final static int frank        = setparam | 32 | command;
-  final static int formalCharge = setparam | 33 | atomproperty;
   final static int partialCharge= setparam | 34;
   final static int pickingStyle = setparam | 35;
   final static int spacegroup   = setparam | 36 | showparam;
@@ -311,6 +307,8 @@ class Token {
   final static int connected    = expression | 20;
   final static int altloc       = expression | 21;
   final static int insertion    = expression | 22;
+  final static int opXor        = expression | 23;
+  final static int opToggle     = expression | 24;
 
   
 
@@ -327,19 +325,22 @@ class Token {
   final static int radius       = atomproperty | 3 | setparam;
   final static int temperature  = atomproperty | 4;
   final static int model        = atomproperty | 5 | showparam | command;
+  
   final static int _bondedcount = atomproperty | 6;
   final static int _groupID     = atomproperty | 7;
   final static int _atomID      = atomproperty | 8;
   final static int _structure   = atomproperty | 9;
   final static int occupancy    = atomproperty | 10;
+  
   final static int polymerLength= atomproperty | 11;
-  final static int molecule     = atomproperty | command | 12;
+  final static int molecule     = atomproperty | 12 | command;
   final static int cell         = atomproperty | 13;
   final static int site         = atomproperty | 14;
   final static int element      = atomproperty | 15;
   final static int symop        = atomproperty | 16;
   final static int surfacedistance = atomproperty | 17;
-
+  final static int atomIndex    = atomproperty | 18;
+  final static int formalCharge = atomproperty | 19 | setparam ;
 
   final static int opGT         = comparator |  0;
   final static int opGE         = comparator |  1;
@@ -412,6 +413,12 @@ class Token {
   final static int range        = misc | 62;
   final static int point3f      = misc | 63;
   final static int sasurface    = misc | 64;
+  final static int left         = misc | 65;
+  final static int right        = misc | 66;
+  final static int front        = misc | 67;
+  final static int back         = misc | 68;
+  final static int top          = misc | 69;
+  final static int bottom       = misc | 70;
   
  
   final static int amino       = predefinedset |  0;
@@ -437,21 +444,14 @@ class Token {
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenAll = new Token(all, "all");
   final static Token tokenAnd = new Token(opAnd, "and");
-  final static Token tokenElemno = new Token(elemno, "elemno");
   final static Token tokenExpressionBegin =
     new Token(expressionBegin, "expressionBegin");
   final static Token tokenExpressionEnd =
     new Token(expressionEnd, "expressionEnd");
   
 
-  final static String[] comparatorNames = {">", ">=", "<=", "<", "=", "!="};
-  final static String[] atomPropertyNames = {
-    "atomno", "elemno", "resno", "radius", "temperature", "model",
-    "_bondedcount", "_groupID", "_atomID", "_structure", "occupancy",
-    "polymerLength", "molecule", "altloc","insertion"};
-
   /*
-    Note that the RasMol scripting language is case-insensitive.
+    Note that the Jmol scripting language is case-insensitive.
     So, the compiler turns all identifiers to lower-case before
     looking up in the hash table. 
     Therefore, the left column of this array *must* be lower-case
@@ -671,6 +671,10 @@ class Token {
     "||",            null,
     "not",          new Token(opNot, "not"),
     "!",            null,
+    "xor",          new Token(opXor, "xor"),
+    "~",            null,
+    "tog",          new Token(opToggle, "tog"),
+    ",|",           null,
     "<",            new Token(opLT, "<"),
     "<=",           new Token(opLE, "<="),
     ">=",           new Token(opGE, ">="),
@@ -693,9 +697,9 @@ class Token {
     "/",            new Token(slash, "/"),
     "substructure", new Token(substructure, "substructure"),
     "connected",    new Token(connected, "connected"),
-
+    "atomindex",    new Token(atomIndex, "atomIndex"),
     "atomno",       new Token(atomno, "atomno"),
-    "elemno",       tokenElemno,
+    "elemno",       new Token(elemno, "elemno"),
     "_e",           null,
     "element",      new Token(element, "element"),
     "resno",        new Token(resno, "resno"),
@@ -794,7 +798,12 @@ class Token {
     "range",        new Token(range,           "range"),
     "point3f",      new Token(point3f,         "point3f"),
     "sasurface",    new Token(sasurface,       "sasurface"),
-    
+    "top",          new Token(top,             "top"),    
+    "bottom",       new Token(bottom,          "bottom"),    
+    "left",         new Token(left,            "left"),    
+    "right",        new Token(right,           "right"),    
+    "front",        new Token(front,           "front"),    
+    "back",         new Token(back,            "back"),    
   };
 
   static Hashtable map = new Hashtable();

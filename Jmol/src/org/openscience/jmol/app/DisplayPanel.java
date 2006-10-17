@@ -194,7 +194,7 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
 
       if (viewer.haveFrame()) {
-        viewer.selectAll();
+        viewer.script("select all");
       }
     }
   }
@@ -209,7 +209,7 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
 
       if (viewer.haveFrame()) {
-        viewer.clearSelection();
+        viewer.script("select none");
       }
     }
   }
@@ -287,7 +287,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.rotateFront();
+      viewer.script("boundbox on;moveto 2.0 front;delay 1;boundbox off");
     }
   }
 
@@ -299,7 +299,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.rotateToX(90);
+      viewer.script("boundbox on;moveto 1.0 front;moveto 2.0 top;delay 1;boundbox off");
     }
   }
 
@@ -311,7 +311,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.rotateToX(-90);
+      viewer.script("boundbox on;moveto 1.0 front;moveto 2.0 bottom;delay 1;boundbox off");
     }
   }
 
@@ -323,7 +323,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.rotateToY(90);
+      viewer.script("boundbox on;moveto 1.0 front;moveto 2.0 right;delay 1;boundbox off");
     }
   }
 
@@ -335,7 +335,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.rotateToY(-90);
+      viewer.script("boundbox on;moveto 1.0 front;moveto 2.0 left;delay 1;boundbox off");
     }
   }
 

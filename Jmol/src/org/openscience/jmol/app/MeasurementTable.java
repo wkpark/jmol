@@ -124,7 +124,7 @@ public class MeasurementTable extends JDialog {
     deleteButton = new JButton(GT._("Delete"));
     deleteButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          viewer.deleteMeasurement(selectedMeasurementRow);
+          viewer.script("measures delete " + (selectedMeasurementRow + 1));
           updateMeasurementTableData();
         }
       });
@@ -133,7 +133,7 @@ public class MeasurementTable extends JDialog {
     deleteAllButton = new JButton(GT._("DeleteAll"));
     deleteAllButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          viewer.clearMeasurements();
+          viewer.script("measures delete");
           updateMeasurementTableData();
         }
       });

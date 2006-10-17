@@ -301,7 +301,7 @@ ActionListener, ChangeListener, Runnable {
     scaleSlider = new JSlider(0, (int)(SCALE_MAX/SCALE_PRECISION),
         (int) (SCALE_VALUE/SCALE_PRECISION));
     scaleSlider.addChangeListener(this);
-    viewer.setVectorScale(SCALE_VALUE);
+    viewer.evalStringQuiet("vector scale " + SCALE_VALUE);
     scalePanel.add(scaleSlider);
     row1.add(scalePanel);
     vectorPanel.add(row1);
@@ -314,7 +314,7 @@ ActionListener, ChangeListener, Runnable {
     amplitudePanel.setBorder(new TitledBorder(GT._("Amplitude")));
     amplitudeSlider = new JSlider(0, (int) (AMPLITUDE_MAX/AMPLITUDE_PRECISION),
         (int)(AMPLITUDE_VALUE/AMPLITUDE_PRECISION));
-    viewer.setVibrationScale(AMPLITUDE_VALUE);
+    viewer.evalStringQuiet("vibration scale " + AMPLITUDE_VALUE);
     amplitudeSlider.addChangeListener(this);
     amplitudePanel.add(amplitudeSlider);
     row2.add(amplitudePanel);
@@ -325,7 +325,7 @@ ActionListener, ChangeListener, Runnable {
     periodSlider = new JSlider(0,
         (int)(PERIOD_MAX/PERIOD_PRECISION),
         (int)(PERIOD_VALUE/PERIOD_PRECISION));
-    viewer.setVibrationPeriod(PERIOD_VALUE);
+    viewer.evalStringQuiet("vibration " + PERIOD_VALUE);
     periodSlider.addChangeListener(this);
     periodPanel.add(periodSlider);
     row2.add(periodPanel);
@@ -419,7 +419,6 @@ ActionListener, ChangeListener, Runnable {
     try {
       currentIndex = index;
       int atomSetIndex = indexes[index];
-      //    viewer.setDisplayModelIndex(atomSetIndex);  // does not update
       viewer.evalStringQuiet("frame " + viewer.getModelNumber(atomSetIndex));
       infoLabel.setText(viewer.getModelName(atomSetIndex));
       showProperties(viewer.getModelProperties(atomSetIndex));
@@ -521,7 +520,8 @@ ActionListener, ChangeListener, Runnable {
           int modelIndex = indexes[idx];
           StringBuffer str = new StringBuffer(viewer.getModelName(modelIndex)+"\n");
           int natoms=0;
-          for (int i = 0; i < viewer.getAtomCount(); i++) {
+          int atomCount = viewer.getAtomCount();
+          for (int i = 0; i < atomCount;  i++) {
             if (viewer.getAtomModelIndex(i)==modelIndex) {
               natoms++;
               Point3f p = viewer.getAtomPoint3f(i);
@@ -564,27 +564,28 @@ ActionListener, ChangeListener, Runnable {
   
   public void stateChanged(ChangeEvent e) {
     Object src = e.getSource();
-    int value = ((JSlider)src).getValue();
+    int value = ((JSlider) src).getValue();
     if (src == selectSlider) {
       showAtomSetIndex(value, false);
     } else if (src == fpsSlider) {
       if (value == 0)
-        fpsSlider.setValue(1);  // make sure I never set it to 0...
+        fpsSlider.setValue(1); // make sure I never set it to 0...
       else
-        viewer.setAnimationFps(value);
-    }  else if (src == radiusSlider) {
+        viewer.evalStringQuiet("animation fps " + value);
+    } else if (src == radiusSlider) {
       if (value == 0)
         radiusSlider.setValue(1); // make sure I never set it to 0..
       else
         viewer.evalStringQuiet("vector " + value);
     } else if (src == scaleSlider) {
-      viewer.evalStringQuiet("vector scale "+value*SCALE_PRECISION);
+      viewer.evalStringQuiet("vector scale " + (value * SCALE_PRECISION));
     } else if (src == amplitudeSlider) {
-      viewer.setVibrationScale(value*AMPLITUDE_PRECISION);
+      viewer
+          .evalStringQuiet("vibration scale " + (value * AMPLITUDE_PRECISION));
     } else if (src == periodSlider) {
-      viewer.setVibrationPeriod(value*PERIOD_PRECISION);
+      viewer.evalStringQuiet("vibration " + (value * PERIOD_PRECISION));
     }
- }
+  }
   
   /**
    * Shows the properties in the propertiesPane of the

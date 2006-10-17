@@ -304,7 +304,7 @@ class Compiler {
       }
       if (ltoken.size() == 0)
         return commandExpected();
-      return unrecognizedToken();
+      return unrecognizedToken(script);
     }
     aatokenCompiled = new Token[lltoken.size()][];
     lltoken.copyInto(aatokenCompiled);
@@ -734,8 +734,8 @@ class Compiler {
   private boolean invalidExpressionToken(String ident) {
     return compileError("invalid expression token:" + ident);
   }
-  private boolean unrecognizedToken() {
-    return compileError("unrecognized token");
+  private boolean unrecognizedToken(String ident) {
+    return compileError("unrecognized token" + ident);
   }
   private boolean badArgumentCount() {
     return compileError("bad argument count");

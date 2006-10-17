@@ -239,16 +239,17 @@ public class Viewer extends JmolViewer {
     return mouseManager.handleOldJvm10Event(e);
   }
 
-  public void homePosition() {
+  void reset() {
     //Eval.reset()
-    //DisplayPanel
     //initializeModel
-    //was mouse double-click
     transformManager.homePosition();
     if (modelManager.modelsHaveSymmetry())
       styleManager.setCrystallographicDefaults();
-
     refresh(1, "Viewer:homePosition()");
+  }
+  
+  public void homePosition() {
+    script("reset");
   }
 
   final Hashtable imageCache = new Hashtable();
@@ -391,27 +392,25 @@ public class Viewer extends JmolViewer {
   }
 
   public void rotateFront() {
-    //app DisplayPanel.FrontAction
+    //deprecated
     transformManager.rotateFront();
     refresh(1, "Viewer:rotateFront()");
   }
 
   public void rotateToX(float angleRadians) {
-    //Viewer.rotateToX(int)
-    //app DisplayPanel.rotate();
+    //deprecated
     transformManager.rotateToX(angleRadians);
     refresh(1, "Viewer:rotateToX()");
   }
 
   public void rotateToY(float angleRadians) {
-    //Viewer.rotateToY(int)
-    //app DisplayPanel.rotate();
+    //deprecated
     transformManager.rotateToY(angleRadians);
     refresh(1, "Viewer:rotateToY()");
   }
 
   public void rotateToZ(float angleRadians) {
-    //app DisplayPanel.rotate();
+    //deprecated
     transformManager.rotateToZ(angleRadians);
     refresh(1, "Viewer:rotateToZ()");
   }
@@ -419,12 +418,12 @@ public class Viewer extends JmolViewer {
   final static float radiansPerDegree = (float) (2 * Math.PI / 360);
 
   public void rotateToX(int angleDegrees) {
-    //not in this project
+    //deprecated
     rotateToX(angleDegrees * radiansPerDegree);
   }
 
   public void rotateToY(int angleDegrees) {
-    //not in this project
+    //deprecated
     rotateToY(angleDegrees * radiansPerDegree);
   }
 
@@ -639,7 +638,6 @@ public class Viewer extends JmolViewer {
 
   public void setVibrationPeriod(float period) {
     //Eval
-    //app AtomSetChooser
     transformManager.setVibrationPeriod(period);
   }
 
@@ -758,7 +756,6 @@ public class Viewer extends JmolViewer {
 
   public void setVectorScale(float scale) {
     //Eval
-    //AtomSetChooser
     transformManager.setVectorScale(scale);
   }
 
@@ -878,7 +875,6 @@ public class Viewer extends JmolViewer {
   }
 
   public void selectAll() {
-    //app DisplayPanel.SelectallAction
     //initializeModel
     selectionManager.selectAll();
     refresh(0, "Viewer:selectAll()");
@@ -1200,14 +1196,14 @@ public class Viewer extends JmolViewer {
     modelManager.setClientFile(null, null, null, null);
     selectionManager.clearSelection();
     selectionManager.hide(null);
-    clearMeasurements();
+    clearAllMeasurements();
     setStatusFileLoaded(0, null, null, null, null, null);
     refresh(0, "Viewer:clear()");
     System.gc();
   }
 
   private void initializeModel() {
-    homePosition();
+    reset();
     selectAll();
     transformManager.setCenter();
     if (eval != null)
@@ -1492,9 +1488,8 @@ public class Viewer extends JmolViewer {
   }
 
   public void setCenterSelected() {
-    //DisplayPanel.DefineCenterAction BYPASSES 
-    //==script("center selected")
-    setCenterBitSet(selectionManager.bsSelection, true);
+    //depricated
+    script("center (selected)");
   }
 
   public void rebond() {
@@ -1727,15 +1722,9 @@ public class Viewer extends JmolViewer {
   }
 
 
-  /*****************************************************************************
+  /* ****************************************************************************
    * delegated to MeasurementManager
    ****************************************************************************/
-
-  public void clearMeasurements() {
-    //Eval, app MeasurementTable, clear()
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "clear", null);
-    refresh(0, "Viewer:clearMeasurements()");
-  }
 
   public int getMeasurementCount() {
     int count = getShapePropertyAsInt(JmolConstants.SHAPE_MEASURES, "count");
@@ -1767,6 +1756,17 @@ public class Viewer extends JmolViewer {
         atomCountPlusIndices);
   }
 
+  void clearAllMeasurements() {
+    //Eval only
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "clear", null);
+    refresh(0, "Viewer:clearAllMeasurements()");
+  }
+
+  public void clearMeasurements() {
+    //depricated but in the API -- use "script" directly
+    script("measures delete");
+  }
+
   void defineMeasurement(Vector monitorExpressions, float[] rangeMinMax,
                          boolean isDelete, boolean isAllConnected,
                          boolean isShowHide, boolean isHidden) {
@@ -1781,7 +1781,7 @@ public class Viewer extends JmolViewer {
   }
 
   public void deleteMeasurement(int i) {
-    //app MeasurementTable
+    //Eval
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "delete", new Integer(i));
   }
 
@@ -1795,7 +1795,7 @@ public class Viewer extends JmolViewer {
     //Eval
     setShapeProperty(JmolConstants.SHAPE_MEASURES, isON ? "show" : "hide",
         atomCountPlusIndices);
-    refresh(0, "Viewer:clearMeasurements()");
+    refresh(0, "Viewer:showMeasurements()");
   }
 
   public void hideMeasurements(boolean isOFF) {
@@ -1806,11 +1806,11 @@ public class Viewer extends JmolViewer {
   }
 
   void toggleMeasurement(int[] atomCountPlusIndices) {
-    //Eval, MouseManager, PickingManager
+    //Eval
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "toggle",
         atomCountPlusIndices);
   }
-
+  
   // ///////////////////////////////////////////////////////////////
   // delegated to RepaintManager
   // ///////////////////////////////////////////////////////////////
@@ -3012,7 +3012,6 @@ public class Viewer extends JmolViewer {
   public void setPerspectiveDepth(boolean perspectiveDepth) {
     //setBooleanProperty                      
     //StyleManager.setCrystallographicDefaults
-    //app DisplayPanel
     //app preferences dialog   
     transformManager.setPerspectiveDepth(perspectiveDepth);
     refresh(0, "Viewer:setPerspectiveDepth()");
@@ -3060,8 +3059,13 @@ public class Viewer extends JmolViewer {
     return transformManager.getPerspectiveDepth();
   }
 
-  public void setSelectionHaloEnabled(boolean selectionHaloEnabled) {
+  public void setSelectionHalos(boolean TF) {
     //app DisplayPanel
+    if (getSelectionHaloEnabled() != TF)
+      script("selectionHalos "+ TF);
+  }
+
+  void setSelectionHaloEnabled(boolean selectionHaloEnabled) {
     //Eval
     //setBooleanProperty
     loadShape(JmolConstants.SHAPE_HALOS);
@@ -3234,8 +3238,7 @@ public class Viewer extends JmolViewer {
   }
 
   public void setShowHydrogens(boolean TF) {
-    //DisplayPanel.HydrogensAction 
-    //PreferncesDialog
+    //PreferencesDialog
     //setBooleanProperty
     global.showHydrogens = TF;
     refresh(0, "Viewer:setShowHydrogens()");
@@ -3256,7 +3259,6 @@ public class Viewer extends JmolViewer {
   }
 
   public void setShowBbcage(boolean showBbcage) {
-    //DisplayPanel
     //PreferencesDialog
     setShapeShow(JmolConstants.SHAPE_BBCAGE, showBbcage);
   }
@@ -3266,7 +3268,6 @@ public class Viewer extends JmolViewer {
   }
 
   public void setShowAxes(boolean showAxes) {
-    //DisplayPanel
     //PreferencesDialog
     setShapeShow(JmolConstants.SHAPE_AXES, showAxes);
   }
@@ -3276,7 +3277,6 @@ public class Viewer extends JmolViewer {
   }
 
   public void setShowMeasurements(boolean TF) {
-    //DisplayPanel
     //PreferencesDialog
     //setbooleanProperty
     global.showMeasurements = TF;

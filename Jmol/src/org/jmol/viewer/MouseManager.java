@@ -500,7 +500,7 @@ abstract class MouseManager {
   void toggleMeasurement() {
     if (measurementCount >= 2 && measurementCount <= 4) {
       measurementCountPlusIndices[0] = measurementCount;
-      viewer.toggleMeasurement(measurementCountPlusIndices);
+      viewer.script(Measurement.getMeasurementScript(measurementCountPlusIndices));
     }
     exitMeasurementMode();
   }

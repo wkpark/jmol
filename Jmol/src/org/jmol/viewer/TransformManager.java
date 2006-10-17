@@ -1194,7 +1194,6 @@ class TransformManager {
     axisangleT.set(matrixRotate);
     float degrees = axisangleT.angle * degreesPerRadian;
     StringBuffer sb = new StringBuffer();
-    sb.append("#sppa " + scalePixelsPerAngstrom + " rrad " + rotationRadius + "\n");
     sb.append("moveto " + timespan);
     if (degrees < 0.01f) {
       sb.append(" {0 0 1 0}"); 

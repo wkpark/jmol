@@ -38,8 +38,6 @@ class PickingManager {
   int queuedAtomCount = 0;
   int[] queuedAtomIndexes = new int[4];
 
-  int[] countPlusIndexes = new int[5];
-
   PickingManager(Viewer viewer) {
     this.viewer = viewer;
     clear();
@@ -170,8 +168,9 @@ class PickingManager {
     }
   }
 
+  int[] countPlusIndices = new int[5];
   void toggleMeasurement(int nAtoms) {
-    countPlusIndexes[0] = nAtoms;
+    countPlusIndices[0] = nAtoms;
     int iLast = -1;
     int iThis;
     for (int i = 0; i < nAtoms; i++) {
@@ -179,9 +178,9 @@ class PickingManager {
         queuedAtomCount = i;
         return;
       }
-      iLast = countPlusIndexes[i + 1] = iThis;
+      iLast = countPlusIndices[i + 1] = iThis;
     }
-    viewer.toggleMeasurement(countPlusIndexes);  
+    viewer.script(Measurement.getMeasurementScript(countPlusIndices));
   }
   
   void applyMouseStyle(String item, boolean shiftKey, boolean alternateKey) {

@@ -74,7 +74,7 @@ public class DisplayPanel extends JPanel
 
   void setRotateMode() {
       Jmol.setRotateButton();
-      viewer.setSelectionHaloEnabled(false);
+      viewer.setSelectionHalos(false);
   }
     
   public void componentHidden(java.awt.event.ComponentEvent e) {
@@ -158,6 +158,13 @@ public class DisplayPanel extends JPanel
   private AxesAction axesAction = new AxesAction();
   private BoundboxAction boundboxAction = new BoundboxAction();
 
+  void moveTo(String move) {
+  if (viewer.getShowBbcage() || viewer.getBooleanProperty("showUnitCell"))
+    viewer.script(move);
+  else
+    viewer.script("boundbox on;" + move +";delay 1;boundbox off");
+  }
+
   class HydrogensAction extends AbstractAction {
 
     public HydrogensAction() {
@@ -167,7 +174,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.setShowHydrogens(cbmi.isSelected());
+      viewer.script("set showHydrogens " + cbmi.isSelected());
     }
   }
 
@@ -180,7 +187,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.setShowMeasurements(cbmi.isSelected());
+      viewer.script ("set showMeasurements " +cbmi.isSelected());
     }
   }
 
@@ -192,10 +199,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-
-      if (viewer.haveFrame()) {
-        viewer.script("select all");
-      }
+      viewer.script("select all");
     }
   }
 
@@ -207,10 +211,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-
-      if (viewer.haveFrame()) {
-        viewer.script("select none");
-      }
+      viewer.script("select none");
     }
   }
 
@@ -222,7 +223,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setSelectionHaloEnabled(true);
+      viewer.setSelectionHalos(false);
       status.setStatus(1, GT._("Select Atoms"));
     }
   }
@@ -235,7 +236,8 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setSelectionHaloEnabled(false);
+      //not implemented (I hope)
+      viewer.setSelectionHalos(false);
       status.setStatus(1, GT._("Delete Atoms"));
     }
   }
@@ -248,7 +250,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setSelectionHaloEnabled(false);
+      viewer.setSelectionHalos(false);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -261,7 +263,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setSelectionHaloEnabled(false);
+      viewer.setSelectionHalos(false);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -274,7 +276,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setSelectionHaloEnabled(false);
+      viewer.setSelectionHalos(false);
       status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
     }
   }
@@ -287,7 +289,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.script("boundbox on;moveto 2.0 front;delay 1;boundbox off");
+      moveTo("moveto 2.0 front");
     }
   }
 
@@ -299,7 +301,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.script("boundbox on;moveto 1.0 front;moveto 2.0 top;delay 1;boundbox off");
+      moveTo("moveto 1.0 front;moveto 2.0 top");
     }
   }
 
@@ -311,7 +313,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.script("boundbox on;moveto 1.0 front;moveto 2.0 bottom;delay 1;boundbox off");
+      moveTo("moveto 1.0 front;moveto 2.0 bottom");
     }
   }
 
@@ -323,7 +325,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.script("boundbox on;moveto 1.0 front;moveto 2.0 right;delay 1;boundbox off");
+      moveTo("moveto 1.0 front;moveto 2.0 right");
     }
   }
 
@@ -335,7 +337,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.script("boundbox on;moveto 1.0 front;moveto 2.0 left;delay 1;boundbox off");
+      moveTo("moveto 1.0 front;moveto 2.0 left");
     }
   }
 
@@ -347,9 +349,9 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.setCenterSelected();
+      viewer.script("center (selected)");
       setRotateMode();
-      viewer.setSelectionHaloEnabled(false);
+      viewer.setSelectionHalos(false);
     }
   }
 
@@ -375,7 +377,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.setPerspectiveDepth(cbmi.isSelected());
+      viewer.script("set PerspectiveDepth " +cbmi.isSelected());
     }
   }
 
@@ -388,7 +390,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.setShowAxes(cbmi.isSelected());
+      viewer.script("set showAxes " + cbmi.isSelected());
     }
   }
 
@@ -401,7 +403,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.setShowBbcage(cbmi.isSelected());
+      viewer.script("set showBoundBox " + cbmi.isSelected());
     }
   }
 
@@ -501,20 +503,6 @@ public class DisplayPanel extends JPanel
         status.setStatus(3, fmt(1000/timeLast) + "FPS : " + fmt(1000/timeAverage) + "FPS");
     } else {
         status.setStatus(3, fmt(timeLast) + "ms : " + fmt(timeAverage) + "ms");
-    }
-  }
-
-  public final static int X_AXIS = 1;
-  public final static int Y_AXIS = 2;
-  public final static int Z_AXIS = 3;
-
-  public void rotate(int axis, double angle) {
-    if (axis == X_AXIS) {
-      viewer.rotateToX((float)Math.toRadians(angle));
-    } else if (axis == Y_AXIS) {
-      viewer.rotateToY((float)Math.toRadians(angle));
-    } else if (axis == Z_AXIS) {
-      viewer.rotateToZ((float)Math.toRadians(angle));
     }
   }
 }

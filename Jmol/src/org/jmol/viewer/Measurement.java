@@ -56,6 +56,21 @@ class Measurement {
     setInfo(frame, atomCountPlusIndices, value);
   }   
 
+  /**
+   * Used by MouseManager and Picking Manager to build the script
+   * @param countPlusIndexes
+   * @return measure (atomIndex=1) (atomIndex=2)....
+   */
+  static String getMeasurementScript(int[] countPlusIndexes) {
+    String str = "measure";
+    int nAtoms = countPlusIndexes[0];
+    for (int i = 0; i < nAtoms; i++) {
+      str += " (atomIndex=" + countPlusIndexes[i + 1] + ")"; 
+    }
+    return str;  
+  }
+  
+
   void setInfo(Frame frame, int[] atomCountPlusIndices, float value) {
     if (atomCountPlusIndices == null)
       count = 0;

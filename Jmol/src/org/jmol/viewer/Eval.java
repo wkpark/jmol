@@ -394,6 +394,8 @@ class Eval { //implements Runnable {
     return !interruptExecution.booleanValue();
   }
   
+  int commandHistoryLevelMax = 0;
+  
   void instructionDispatchLoop() throws ScriptException {
     long timeBegin = 0;
     logMessages = Logger.isActiveLevel(Logger.LEVEL_DEBUG);
@@ -402,7 +404,8 @@ class Eval { //implements Runnable {
       viewer.scriptStatus("Eval.instructionDispatchLoop():" + timeBegin);
       viewer.scriptStatus(toString());
     }
-    viewer.addCommand(script);
+    if (scriptLevel <= commandHistoryLevelMax)
+      viewer.addCommand(script);
     while (pc < aatoken.length) {
       if (!checkContinue())
         break;
@@ -2573,24 +2576,32 @@ class Eval { //implements Runnable {
   //measure() see monitor()
 
   void monitor() throws ScriptException {
-    int[] monitorArgs = new int[5];
+    int[] countPlusIndexes = new int[5];
     float[] rangeMinMax = new float[2];
-    if (statementLength == 1) {
+    switch (statementLength) {
+    case 1:
       viewer.hideMeasurements(false);
       return;
-    }
-    if (statementLength == 2) {
+    case 2:
       if (statement[1].tok == Token.on)
         viewer.hideMeasurements(false);
       else if (statement[1].tok == Token.off)
         viewer.hideMeasurements(true);
       else if (statement[1].tok == Token.delete)
-        viewer.clearMeasurements();
+        viewer.clearAllMeasurements();
       else
         keywordExpected("ON, OFF, or DELETE");
       return;
+    case 3: //measure delete N
+      if (statement[1].tok == Token.delete) {
+        if (statement[1].tok == Token.all) 
+          viewer.clearAllMeasurements();
+        else
+          viewer.deleteMeasurement(intParameter(2) - 1);
+        return;
+      }
     }
-    monitorArgs[0] = 0;
+    countPlusIndexes[0] = 0;
     int argCount = statementLength - 1;
     int expressionCount = 0;
     int atomIndex = -1;
@@ -2675,9 +2686,9 @@ class Eval { //implements Runnable {
       } else {
         if (atomIndex == -1)
           badAtomNumber();
-        if (++monitorArgs[0] > 4)
+        if (++countPlusIndexes[0] > 4)
           badArgumentCount();
-        monitorArgs[monitorArgs[0]] = atomIndex;
+        countPlusIndexes[countPlusIndexes[0]] = atomIndex;
       }
     }
     if (isAll) {
@@ -2691,13 +2702,13 @@ class Eval { //implements Runnable {
       viewer.defineMeasurement(monitorExpressions, rangeMinMax, isDelete,
           isAllConnected, isON || isOFF, isOFF);
     } else if (isDelete)
-      viewer.deleteMeasurement(monitorArgs);
+      viewer.deleteMeasurement(countPlusIndexes);
     else if (isON)
-      viewer.showMeasurement(monitorArgs, true);
+      viewer.showMeasurement(countPlusIndexes, true);
     else if (isOFF)
-      viewer.showMeasurement(monitorArgs, false);
+      viewer.showMeasurement(countPlusIndexes, false);
     else
-      viewer.toggleMeasurement(monitorArgs);
+      viewer.toggleMeasurement(countPlusIndexes);
   }
 
   void refresh() {
@@ -2706,7 +2717,7 @@ class Eval { //implements Runnable {
   }
 
   void reset() {
-    viewer.homePosition();
+    viewer.reset();
   }
 
   void restrict() throws ScriptException {
@@ -3845,9 +3856,6 @@ class Eval { //implements Runnable {
     case Token.defaultColors:
       setDefaultColors();
       break;
-    case Token.debugscript:
-      setDebugScript();
-      break;
     case Token.selectionHalo:
     case Token.display: //deprecated  
       setSelectionHalo(2);
@@ -3924,6 +3932,10 @@ class Eval { //implements Runnable {
     case Token.pickingStyle:
       setPickingStyle();
       break;
+    case Token.formalCharge:
+      viewer.setFormalCharges(intParameter(2));
+      break;
+
     // not implemented
     case Token.backfade:
     case Token.cartoon:
@@ -3936,9 +3948,9 @@ class Eval { //implements Runnable {
     case Token.transparent:
     case Token.vectps:
     case Token.write:
-    case Token.formalCharge:
-      viewer.setFormalCharges(intParameter(2));
-      break;
+      // fall through to identifier
+      
+    case Token.debugscript:
     case Token.identifier:
       String str = (String) statement[1].value;
       if (str.equalsIgnoreCase("toggleLabel")) {
@@ -3955,6 +3967,10 @@ class Eval { //implements Runnable {
           func = null;
         viewer.setCallbackFunction(str,func);
         break;
+      }
+      if (str.equalsIgnoreCase("historyLevel")) {
+        commandHistoryLevelMax = intParameter(2);
+          break;
       }
       if (str.equalsIgnoreCase("defaultLattice")) {
         if (statementLength < 3)
@@ -4255,10 +4271,6 @@ class Eval { //implements Runnable {
       return;
     }
     viewer.setShapeSize(JmolConstants.SHAPE_MEASURES, getSetAxesTypeMad(cmdPt));
-  }
-
-  void setDebugScript() throws ScriptException {
-    viewer.setDebugScript(getSetBoolean());
   }
 
   void setProperty() throws ScriptException {

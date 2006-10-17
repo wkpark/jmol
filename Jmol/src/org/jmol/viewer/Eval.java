@@ -3906,9 +3906,6 @@ class Eval { //implements Runnable {
     case Token.fontsize:
       setFontsize();
       break;
-    case Token.frank:
-      setFrank(2);
-      break;
     case Token.hetero:
       setHetero();
       break;
@@ -3991,6 +3988,7 @@ class Eval { //implements Runnable {
       // fall through to identifier
       
     case Token.debugscript:
+    case Token.frank:
     case Token.identifier:
       String str = (String) statement[1].value;
       if (str.equalsIgnoreCase("toggleLabel")) {
@@ -4110,7 +4108,7 @@ class Eval { //implements Runnable {
   }
 
   void setFrank(int cmdPt) throws ScriptException {
-    viewer.setShapeSize(JmolConstants.SHAPE_FRANK, getSetAxesTypeMad(cmdPt));
+    viewer.setBooleanProperty("frank", booleanParameter(cmdPt));
   }
 
   void setDefaultColors() throws ScriptException {
@@ -4141,7 +4139,7 @@ class Eval { //implements Runnable {
   }
 
   void setBonds() throws ScriptException {
-    viewer.setShowMultipleBonds(getSetBoolean());
+    viewer.setBooleanProperty("showMultipleBonds", getSetBoolean());
   }
 
   void setSelectionHalo(int pt) throws ScriptException {

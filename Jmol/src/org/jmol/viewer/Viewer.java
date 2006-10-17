@@ -2691,8 +2691,14 @@ public class Viewer extends JmolViewer {
       return getShapeShow(JmolConstants.SHAPE_BBCAGE);
     if (key.equalsIgnoreCase("showUnitcell"))
       return getShapeShow(JmolConstants.SHAPE_UCCAGE);
+    if (key.equalsIgnoreCase("debugScript"))
+      return getDebugScript();
     if (key.equalsIgnoreCase("showHydrogens"))
       return getShowHydrogens();
+    if (key.equalsIgnoreCase("frank"))
+      return getFrankOn();
+    if (key.equalsIgnoreCase("showMultipleBonds"))
+      return getShowMultipleBonds();
     if (key.equalsIgnoreCase("showMeasurements"))
       return getShowMeasurements();
     if (key.equalsIgnoreCase("showSelections"))
@@ -2775,8 +2781,20 @@ public class Viewer extends JmolViewer {
         setSelectionHaloEnabled(value);
         break;
       }
+      if (key.equalsIgnoreCase("debugScript")) {
+        setDebugScript(value);
+        break;
+      }
+      if (key.equalsIgnoreCase("frank")) {
+        setFrankOn(value);
+        break;
+      }
       if (key.equalsIgnoreCase("showHydrogens")) {
         setShowHydrogens(value);
+        break;
+      }
+      if (key.equalsIgnoreCase("showMultipleBonds")) {
+        setShowMultipleBonds(value);
         break;
       }
       if (key.equalsIgnoreCase("showHiddenSelectionHalos")) {

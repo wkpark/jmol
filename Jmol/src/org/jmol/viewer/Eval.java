@@ -716,12 +716,12 @@ class Eval { //implements Runnable {
     boolean value = false;
     boolean isNot = false; 
     int i = 1;
+    if (i < statementLength && statement[i].tok == Token.leftparen)
+      i++;
     if (statement[i].tok == Token.opNot) {
       i++;
       isNot = true;
     }
-    if (i < statementLength && statement[i].tok == Token.leftparen)
-      i++;
     if (i == statementLength)
       badArgumentCount();
     String str = (String) statement[i].value;

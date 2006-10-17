@@ -29,6 +29,7 @@ import org.jmol.i18n.GT;
 
 class PopupResourceBundle {
 
+  
   PopupResourceBundle() {
     // Nothing
   }
@@ -59,6 +60,10 @@ class PopupResourceBundle {
   final static String TRANSLUCENCY = "opaque translucent";
   final static String AXESCOLOR = "gray salmon maroon olive slateblue gold orchid";
 
+  
+  static String Box(String cmd) {
+    return "if not(showBoundBox);if not(showUnitcell);boundbox on;"+cmd+";boundbox off;else;"+cmd+";endif;endif;";
+  }
   private static final String[][] structureContents = {
       {
           "popupMenu",
@@ -130,12 +135,12 @@ class PopupResourceBundle {
       { "PDBnoneOfTheAbove", "not(hetero,protein,nucleic,carbohydrate)" },
 
       { "viewMenu","front left right top bottom back" },
-      { "front", "boundbox on;moveto 2.0 front;delay 1;boundbox off" },
-      { "left", "boundbox on;moveto 1.0 front;moveto 2.0 left;delay 1;boundbox off" },
-      { "right", "boundbox on;moveto 1.0 front;moveto 2.0 right;delay 1;boundbox off" },
-      { "top", "boundbox on;moveto 1.0 front;moveto 2.0 top;delay 1;boundbox off" },
-      { "bottom", "boundbox on;moveto 1.0 front;moveto 2.0 bottom;delay 1;boundbox off" },
-      { "back", "boundbox on;moveto 1.0 front;moveto 2.0 back;delay 1;boundbox off" },
+      { "front", Box( "moveto 2.0 front;delay 1" ) },
+      { "left", Box( "moveto 1.0 front;moveto 2.0 left;delay 1"  ) },
+      { "right", Box( "moveto 1.0 front;moveto 2.0 right;delay 1"  ) },
+      { "top", Box( "moveto 1.0 front;moveto 2.0 top;delay 1"  ) },
+      { "bottom", Box( "moveto 1.0 front;moveto 2.0 bottom;delay 1"  ) },
+      { "back", Box( "moveto 1.0 front;moveto 2.0 back;delay 1"  ) },
       {
           "renderMenu",
           "perspectiveDepthCheckbox showBoundBoxCheckbox showUnitCellCheckbox showAxes;set_axesMolecularCheckbox stereoMenu - renderSchemeMenu - atomMenu labelMenu bondMenu hbondMenu ssbondMenu - "

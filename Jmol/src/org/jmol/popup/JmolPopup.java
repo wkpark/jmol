@@ -642,9 +642,9 @@ abstract public class JmolPopup {
       }
     }
     if (what.indexOf("#") > 0)
-      viewer.script(what);
+      viewer.evalStringQuiet(what);
     else if (viewer.getBooleanProperty(basename) != TF)
-      viewer.script("set " + basename + (TF ? " TRUE" : " FALSE" + extension));
+      viewer.evalStringQuiet("set " + basename + (TF ? " TRUE" : " FALSE" + extension));
     if (what.indexOf("#CONFIG") >= 0) {
       configurationSelected = what;
       this.updateModelSetComputedMenu();
@@ -664,7 +664,7 @@ abstract public class JmolPopup {
         script = fixScript(id, script);
         currentMenuItemId = id;
       }
-      viewer.script(script);
+      viewer.evalStringQuiet(script);
     }
   }
 

@@ -160,9 +160,9 @@ public class DisplayPanel extends JPanel
 
   void moveTo(String move) {
   if (viewer.getShowBbcage() || viewer.getBooleanProperty("showUnitCell"))
-    viewer.script(move);
+    viewer.evalStringQuiet(move);
   else
-    viewer.script("boundbox on;" + move +";delay 1;boundbox off");
+    viewer.evalStringQuiet("boundbox on;" + move +";delay 1;boundbox off");
   }
 
   class HydrogensAction extends AbstractAction {
@@ -174,7 +174,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.script("set showHydrogens " + cbmi.isSelected());
+      viewer.evalStringQuiet("set showHydrogens " + cbmi.isSelected());
     }
   }
 
@@ -187,7 +187,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.script ("set showMeasurements " +cbmi.isSelected());
+      viewer.evalStringQuiet ("set showMeasurements " +cbmi.isSelected());
     }
   }
 
@@ -199,7 +199,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.script("select all");
+      viewer.evalStringQuiet("select all");
     }
   }
 
@@ -211,7 +211,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.script("select none");
+      viewer.evalStringQuiet("select none");
     }
   }
 
@@ -349,7 +349,7 @@ public class DisplayPanel extends JPanel
     }
 
     public void actionPerformed(ActionEvent e) {
-      viewer.script("center (selected)");
+      viewer.evalStringQuiet("center (selected)");
       setRotateMode();
       viewer.setSelectionHalos(false);
     }
@@ -377,7 +377,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.script("set PerspectiveDepth " +cbmi.isSelected());
+      viewer.evalStringQuiet("set PerspectiveDepth " +cbmi.isSelected());
     }
   }
 
@@ -390,7 +390,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.script("set showAxes " + cbmi.isSelected());
+      viewer.evalStringQuiet("set showAxes " + cbmi.isSelected());
     }
   }
 
@@ -403,7 +403,7 @@ public class DisplayPanel extends JPanel
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.script("set showBoundBox " + cbmi.isSelected());
+      viewer.evalStringQuiet("set showBoundBox " + cbmi.isSelected());
     }
   }
 

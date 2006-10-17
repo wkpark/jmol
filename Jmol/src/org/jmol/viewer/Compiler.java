@@ -324,56 +324,6 @@ class Compiler {
     ltoken.addElement(new Token(Token.data, str));
     cchToken = i - ichToken + 6 + key.length();
   }
-  /*
-    mth - 2003 01 05
-    initial implementation used java.util.regex.*
-    second round used hand-rolled tokenizing to support old browser jvms
-
-    the grammar of rasmol scripts is a little messed-up, so this structure
-    was the easiest thing for me to come up with that worked
-
-  final static Pattern patternLeadingWhiteSpace =
-    Pattern.compile("[\\s&&[^\\r\\n]]+");
-  final static Pattern patternComment =
-    Pattern.compile("#[^\\r\\n]*");
-  final static Pattern patternEndOfStatement =
-    Pattern.compile(";");
-  final static Pattern patternEndOfLine =
-    Pattern.compile("\\r?\\n|\\r|$", Pattern.MULTILINE);
-  final static Pattern patternDecimal =
-    Pattern.compile("-?\\d+\\.(\\d*)?|-?\\.\\d+");
-  final static Pattern patternPositiveInteger =
-    Pattern.compile("\\d+");
-  final static Pattern patternNegativeInteger =
-    Pattern.compile("-\\d+");
-  final static Pattern patternString =
-    Pattern.compile("([\"'`])(.*?)\\1");
-  final static Pattern patternSpecialString =
-    Pattern.compile("[^\\r\\n]+");
-  final static Pattern patternLookup =
-    Pattern.compile("\\(|\\)|," +
-                    "|<=|<|>=|>|==|=|!=|<>|/=" +
-                    "|&|\\||!" +
-                    "|\\*" +                      // select *
-                    "|-" +                        // range
-                    "|\\[|\\]" +                  // color [##,##,##]
-                    "|\\+" +                      // bond
-                    "|\\?" +                      // help command
-                    "|[a-zA-Z_][a-zA-Z_0-9]*"
-                    );
-
-  boolean lookingAt(Pattern pattern, String description) {
-    Matcher m = pattern.matcher(script.subSequence(ichToken, cchScript));
-    boolean lookingAt = m.lookingAt();
-    if (lookingAt) {
-      strToken = m.group();
-      cchToken = m.end();
-    } else {
-      cchToken = 0;
-    }
-    return lookingAt;
-  }
-  */
 
   private final static boolean isSpaceOrTab(char ch) {
     return ch == ' ' || ch == '\t';

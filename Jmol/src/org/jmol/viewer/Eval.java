@@ -396,8 +396,13 @@ class Eval { //implements Runnable {
   
   int commandHistoryLevelMax = 0;
   
+  final static int MAX_IF_DEPTH = 10; //should be plenty
+  boolean[] ifs = new boolean[MAX_IF_DEPTH + 1];
+
   void instructionDispatchLoop() throws ScriptException {
     long timeBegin = 0;
+    int ifLevel = 0;
+    ifs[0] = true;
     logMessages = Logger.isActiveLevel(Logger.LEVEL_DEBUG);
     if (logMessages) {
       timeBegin = System.currentTimeMillis();
@@ -417,7 +422,23 @@ class Eval { //implements Runnable {
       if (logMessages)
         logDebugScript();
       Logger.debug(token.toString());
+      if (ifLevel > 0 && !ifs[ifLevel] && token.tok != Token.endifcmd && token.tok != Token.ifcmd && token.tok != Token.elsecmd)
+        continue;
       switch (token.tok) {
+      case Token.ifcmd:
+        if (++ifLevel == MAX_IF_DEPTH)
+          evalError (GT._("Too many nested {0} commands", "IF"));
+        ifs[ifLevel] = (ifs[ifLevel - 1] && ifCmd());
+        break;
+      case Token.elsecmd:
+        if (ifLevel < 1)
+          evalError (GT._("Invalid {0} command", "ELSE"));
+        ifs[ifLevel] = !ifs[ifLevel];
+        break;
+      case Token.endifcmd:
+        if (--ifLevel < 0)
+          evalError (GT._("Invalid {0} command", "ENDIF"));
+        break;
       case Token.backbone:
         proteinShape(JmolConstants.SHAPE_BACKBONE);
         break;
@@ -689,6 +710,25 @@ class Eval { //implements Runnable {
     }
   }
 
+  boolean ifCmd() throws ScriptException {
+    if (statementLength < 1)
+      badArgumentCount();
+    boolean value = false;
+    boolean isNot = false; 
+    int i = 1;
+    if (statement[i].tok == Token.opNot) {
+      i++;
+      isNot = true;
+    }
+    if (i < statementLength && statement[i].tok == Token.leftparen)
+      i++;
+    if (i == statementLength)
+      badArgumentCount();
+    String str = (String) statement[i].value;
+    value = viewer.getBooleanProperty(str);
+    return (isNot ? !value : value);
+  }
+  
   int getLinenumber() {
     return linenumbers[pc];
   }

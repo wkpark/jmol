@@ -436,20 +436,20 @@ abstract public class JmolPopup {
         .getAtomCountInModel(modelIndex), true));
     addMenuItem(menu, GT._("bonds: {0}", viewer
         .getBondCountInModel(modelIndex), true));
-    addMenuSeparator(menu);
     if (isPDB) {
+      addMenuSeparator(menu);
       addMenuItem(menu, GT._("groups: {0}", viewer
           .getGroupCountInModel(modelIndex), true));
       addMenuItem(menu, GT._("chains: {0}", viewer
           .getChainCountInModel(modelIndex), true));
       addMenuItem(menu, GT._("polymers: {0}", viewer
           .getPolymerCountInModel(modelIndex), true));
-      addMenuSeparator(menu);
     }
-    if (isApplet && viewer.showModelSetDownload()
+    if (true || isApplet && viewer.showModelSetDownload()
         && !viewer.getBooleanProperty("hideNameInPopup")) {
+      addMenuSeparator(menu);
       addMenuItem(menu, GT._("View {0}", viewer
-          .getModelSetFileName(), true), "show url \"" + viewer.getModelSetPathName() + "\"", null);
+          .getModelSetFileName(), true), "show url", null);
     }
   }
 

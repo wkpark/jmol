@@ -446,6 +446,8 @@ class Compiler {
   }
 
   String getUnescapedStringLiteral() {
+    if (cchToken < 2)
+      return "";
     StringBuffer sb = new StringBuffer(cchToken - 2);
     int ichMax = ichToken + cchToken - 1;
     int ich = ichToken + 1;

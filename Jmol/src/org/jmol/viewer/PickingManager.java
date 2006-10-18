@@ -60,7 +60,7 @@ class PickingManager {
           || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
         queuedAtomCount = 0;
       if (pickingMode == JmolConstants.PICKING_CENTER)
-        viewer.script("zoomTo null null");
+        viewer.script("zoomTo out");
       return;
     }
 

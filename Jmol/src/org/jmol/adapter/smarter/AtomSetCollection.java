@@ -479,6 +479,7 @@ class AtomSetCollection extends Parser {
         Atom atom = atoms[atomIndex + pt];
         cartesians[pt] = new Point3f(atom);
         finalOperations[0].transform(cartesians[pt]);
+        unitCell.toCartesian(cartesians[pt]);
         atom.bsSymmetry.set(0);
       }
     for (int iSym = 0; iSym < nOperations; iSym++) {

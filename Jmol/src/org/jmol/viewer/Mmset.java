@@ -191,7 +191,7 @@ final class Mmset {
   }
 
   Hashtable getModelAuxiliaryInfo(int modelIndex) {
-    return modelAuxiliaryInfo[modelIndex];
+    return (modelIndex < 0 ? null : modelAuxiliaryInfo[modelIndex]);
   }
 
   void setModelAuxiliaryInfo(int modelIndex, Object key, Object value) {

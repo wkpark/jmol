@@ -446,7 +446,7 @@ class Eval { //implements Runnable {
         background();
         break;
       case Token.center:
-        center();
+        center(1);
         break;
       case Token.color:
         color();
@@ -2208,33 +2208,27 @@ class Eval { //implements Runnable {
           getArgbOrNoneParam(2));
   }
 
-  // mth - 2003 01
-  // the doc for RasMol says that they use the center of gravity
-  // this is currently only using the geometric center
-  // but someplace in the rasmol doc it makes reference to the geometric
-  // center as the default for rotations. who knows.
-  void center() throws ScriptException {
-
+  void center(int i) throws ScriptException {
+    // from center (atom) or from zoomTo under conditions of not windowCentered()
     if (statementLength == 1) {
       viewer.setCenterBitSet(null, true);
       return;
     }
 
-    if (statement[1].tok == Token.dollarsign) {
+    if (statement[i].tok == Token.dollarsign) {
       //center $ id
-      String axisID = objectNameParameter(2);
+      String axisID = objectNameParameter(i+1);
       viewer.setNewRotationCenter(axisID);
       return;
     }
 
-    if (statement[1].tok == Token.leftbrace) {
+    if (statement[i].tok == Token.leftbrace) {
       //center { x y z } 
-      Point3f pt = getCoordinate(1, true);
+      Point3f pt = getCoordinate(i, true);
       viewer.setNewRotationCenter(pt);
       return;
     }
-
-    viewer.setCenterBitSet(expression(statement, 1), true);
+    viewer.setCenterBitSet(expression(statement, i), true);
   }
 
   void color() throws ScriptException {
@@ -3085,7 +3079,8 @@ class Eval { //implements Runnable {
     //zoom
     if (statementLength == 1) {
       if (isZoomTo)
-        viewer.moveTo(1, null, new Point3f(0, 0, 0), 0, viewer.getZoomPercentFloat()*2f, 0, 0, 0);
+        viewer.moveTo(1, null, new Point3f(0, 0, 0), 0, viewer
+            .getZoomPercentFloat() * 2f, 0, 0, 0);
       else
         viewer.setZoomEnabled(true);
       return;
@@ -3110,10 +3105,14 @@ class Eval { //implements Runnable {
     if (isFloatParameter(i) && isZoomTo)
       time = floatParameter(i++);
     //zoom {x y z} or (atomno=3)
+    int ptCenter = 0;
     if (isAtomCenterOrCoordinateNext(i)) {
+      ptCenter = i;
       center = atomCenterOrCoordinateParameter(i);
       i = pcLastExpressionInstruction + 1;
     }
+
+    boolean isSameAtom = (center != null && currentCenter.distance(center) < 0.1);
 
     //zoom/zoomTo percent|-factor|+factor|*factor|/factor 
     if (isFloatParameter(i))
@@ -3122,8 +3121,8 @@ class Eval { //implements Runnable {
       factor += zoom;
     if (factor == 0) {
       factor = zoom;
-      if (isFloatParameter(i+1)) {
-        float value = floatParameter(i+1);
+      if (isFloatParameter(i + 1)) {
+        float value = floatParameter(i + 1);
         switch (statement[i].tok) {
         case Token.slash:
           factor /= value;
@@ -3141,13 +3140,23 @@ class Eval { //implements Runnable {
         // no factor -- check for no center (zoom out) or same center (zoom in)
         if (center == null)
           factor /= 2;
-        else if (currentCenter.distance(center) < 0.1)
+        else if (isSameAtom) 
           factor *= 2;
       }
     }
+    float xTrans = 0;
+    float yTrans = 0;
     if (factor < 5 || factor > Viewer.MAXIMUM_ZOOM_PERCENTAGE)
       numberOutOfRange(5, Viewer.MAXIMUM_ZOOM_PERCENTAGE);
-    viewer.moveTo(time, center, new Point3f(0, 0, 0), 0, factor, 0, 0, radius);
+    if (!viewer.isWindowCentered()) {
+      // do a smooth zoom only if not windowCentered
+      if (center != null)
+        viewer.setCenterBitSet(expression(statement, ptCenter), false);
+      center = viewer.getRotationCenter();
+      xTrans = viewer.getTranslationXPercent();
+      yTrans = viewer.getTranslationYPercent();
+    }
+    viewer.moveTo(time, center, new Point3f(0, 0, 0), 0, factor, xTrans, yTrans, radius);
   }
 
   void delay() throws ScriptException {

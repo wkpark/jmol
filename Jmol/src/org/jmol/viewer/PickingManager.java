@@ -59,6 +59,8 @@ class PickingManager {
       if (pickingMode == JmolConstants.PICKING_MEASURE
           || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
         queuedAtomCount = 0;
+      if (pickingMode == JmolConstants.PICKING_CENTER)
+        viewer.script("zoomTo null null");
       return;
     }
 
@@ -120,7 +122,7 @@ class PickingManager {
       viewer.script("set toggleLabel (atomindex="+atomIndex+")");
       break;
     case JmolConstants.PICKING_CENTER:
-      viewer.script("center (atomindex=" + atomIndex+")");
+      viewer.script("zoomTo (atomindex=" + atomIndex+")");
       break;
     case JmolConstants.PICKING_SELECT_ATOM:
       applyMouseStyle("atomIndex="+atomIndex, shiftKey, alternateKey);

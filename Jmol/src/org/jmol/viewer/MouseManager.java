@@ -428,7 +428,7 @@ abstract class MouseManager {
         while (++rotation <= 0)
           zoomLevel *= wheelClickFractionDown;
       }
-      viewer.zoomToPercent((int)(zoomLevel * 100 + 0.5f));
+      viewer.zoomToPercent(zoomLevel * 100 + 0.5f);
     }
   }
   

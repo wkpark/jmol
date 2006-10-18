@@ -147,7 +147,8 @@ class Token {
   final static int wireframe    = command | 44 | bool;
   final static int write        = command | 45 | setparam;
   final static int zap          = command | 46;
-  final static int zoom         = command | 47 | showparam | bool;
+  final static int zoom         = command | 47 | showparam | negnums | embeddedExpression;
+  final static int zoomTo       = command | 48 | showparam | negnums | embeddedExpression;
   // openrasmol commands
   final static int depth        = command | 50;
   final static int star         = command | 51;
@@ -531,7 +532,8 @@ class Token {
     "wireframe",         new Token(wireframe, onDefault1, "wireframe"),
     "write",             new Token(write,    varArgCount, "write"),
     "zap",               new Token(zap,                0, "zap"),
-    "zoom",              new Token(zoom,      onDefault1, "zoom"),
+    "zoom",              new Token(zoom,     varArgCount, "zoom"),
+    "zoomto",            new Token(zoomTo,   varArgCount, "zoomTo"),
     // openrasmol commands
     "depth",             new Token(depth,              1, "depth"),
     "star",              new Token(star,     varArgCount, "star"),

@@ -510,7 +510,10 @@ class Eval { //implements Runnable {
         zap();
         break;
       case Token.zoom:
-        zoom();
+        zoom(false);
+        break;
+      case Token.zoomTo:
+        zoom(true);
         break;
       case Token.delay:
         delay();
@@ -1790,12 +1793,12 @@ class Eval { //implements Runnable {
     if (statement[i++].tok != Token.leftbrace)
       coordinateExpected();
     Point3f pt = new Point3f();
-    for (int j = i; j + 1 < statementLength; j++) {
+    out: for (int j = i; j + 1 < statementLength; j++) {
       switch (statement[j].tok) {
       case Token.slash:
         coordinatesAreFractional = true;
       case Token.rightbrace:
-        break;
+        break out;
       }
     }
     if (coordinatesAreFractional && !allowFractional)
@@ -1815,12 +1818,12 @@ class Eval { //implements Runnable {
     if (statement[i++].tok != Token.leftbrace)
       coordinateExpected();
     Point4f pt = new Point4f();
-    for (int j = i; j + 1 < statementLength; j++) {
+    out: for (int j = i; j + 1 < statementLength; j++) {
       switch (statement[j].tok) {
       case Token.slash:
         coordinatesAreFractional = true;
       case Token.rightbrace:
-        break;
+        break out;
       }
     }
     if (coordinatesAreFractional)
@@ -1947,7 +1950,7 @@ class Eval { //implements Runnable {
     }
     float rotationRadius = 0;
     if (i != statementLength) {
-      center = atomCenterOrCoordinateParameter(i);
+      center  = atomCenterOrCoordinateParameter(i);
       i = pcLastExpressionInstruction + 1;
       if (i != statementLength)
         rotationRadius = floatParameter(i++);
@@ -3078,25 +3081,73 @@ class Eval { //implements Runnable {
     viewer.zap();
   }
 
-  void zoom() throws ScriptException {
-    // token has ondefault1
-    if (statement[1].tok == Token.integer) {
-      int percent = statement[1].intValue;
-      if (percent < 5 || percent > Viewer.MAXIMUM_ZOOM_PERCENTAGE)
-        numberOutOfRange(5, Viewer.MAXIMUM_ZOOM_PERCENTAGE);
-      viewer.zoomToPercent(percent);
+  void zoom(boolean isZoomTo) throws ScriptException {
+    //zoom
+    if (statementLength == 1) {
+      if (isZoomTo)
+        viewer.moveTo(1, null, new Point3f(0, 0, 0), 0, viewer.getZoomPercentFloat()*2f, 0, 0, 0);
+      else
+        viewer.setZoomEnabled(true);
       return;
     }
+    //zoom on|off
     switch (statement[1].tok) {
     case Token.on:
       viewer.setZoomEnabled(true);
-      break;
+      return;
     case Token.off:
       viewer.setZoomEnabled(false);
-      break;
-    default:
-      booleanOrPercentExpected();
+      return;
     }
+    float time = (isZoomTo ? 1f : 0f);
+    float zoom = viewer.getZoomPercentFloat();
+    float factor = 0;
+    float radius = viewer.getRotationRadius();
+    Point3f center = null;
+    Point3f currentCenter = viewer.getRotationCenter();
+    int i = 1;
+    //zoomTo time-sec 
+    if (isFloatParameter(i) && isZoomTo)
+      time = floatParameter(i++);
+    //zoom {x y z} or (atomno=3)
+    if (isAtomCenterOrCoordinateNext(i)) {
+      center = atomCenterOrCoordinateParameter(i);
+      i = pcLastExpressionInstruction + 1;
+    }
+
+    //zoom/zoomTo percent|-factor|+factor|*factor|/factor 
+    if (isFloatParameter(i))
+      factor = floatParameter(i++);
+    if (factor < 0)
+      factor += zoom;
+    if (factor == 0) {
+      factor = zoom;
+      if (isFloatParameter(i+1)) {
+        float value = floatParameter(i+1);
+        switch (statement[i].tok) {
+        case Token.slash:
+          factor /= value;
+          break;
+        case Token.asterisk:
+          factor *= value;
+          break;
+        case Token.plus:
+          factor += value;
+          break;
+        default:
+          evalError(GT._("Invalid {0} command", "ZOOM"));
+        }
+      } else if (isZoomTo) {
+        // no factor -- check for no center (zoom out) or same center (zoom in)
+        if (center == null)
+          factor /= 2;
+        else if (currentCenter.distance(center) < 0.1)
+          factor *= 2;
+      }
+    }
+    if (factor < 5 || factor > Viewer.MAXIMUM_ZOOM_PERCENTAGE)
+      numberOutOfRange(5, Viewer.MAXIMUM_ZOOM_PERCENTAGE);
+    viewer.moveTo(time, center, new Point3f(0, 0, 0), 0, factor, 0, 0, radius);
   }
 
   void delay() throws ScriptException {

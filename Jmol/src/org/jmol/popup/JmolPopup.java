@@ -659,6 +659,10 @@ abstract public class JmolPopup {
       String script = e.getActionCommand();
       if (script == null || script.length() == 0)
         return;
+      if (script.equals("MAIN")) {
+        show(thisx, thisy);
+        return;
+      }
       String id = getId(e.getSource());
       if (id != null) {
         script = fixScript(id, script);
@@ -730,7 +734,11 @@ abstract public class JmolPopup {
     return item; 
   }
 
+  int thisx, thisy;
+  
   public void show(int x, int y) {
+    thisx = x;
+    thisy = y;
     String id = currentMenuItemId;
     updateForShow();
     for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements();) {
@@ -742,15 +750,16 @@ abstract public class JmolPopup {
       setCheckBoxState(item, b);
     }
     if (x < 0) {
-      x = -x;
       setFrankMenu(id);
-      if (nFrankList > 0) {
-        showFrankMenu(x - 50, y - nFrankList * getMenuItemHeight());
+      thisx = -x - 50;
+      if (nFrankList > 1) {
+        thisy = y - nFrankList * getMenuItemHeight();
+        showFrankMenu(thisx, thisy);
         return;
       }
     } 
     restorePopupMenu();
-    showPopupMenu(x, y);
+    showPopupMenu(thisx, thisy);
   }
 
   Object[][] frankList = new Object[10][]; //enough to cover menu drilling
@@ -767,6 +776,8 @@ abstract public class JmolPopup {
       return;
     currentFrankId = id;
     nFrankList = 0;
+    frankList[nFrankList++] = new Object[] {null, null, null };
+    addMenuItem(frankPopup, GT._("Main Menu"), "MAIN", "");
     for (int i = id.indexOf(".", 2) + 1;;) {
       int iNew = id.indexOf(".", i);
       if (iNew < 0)
@@ -780,12 +791,13 @@ abstract public class JmolPopup {
   }
 
   void restorePopupMenu() {
-    if (nFrankList == 0)
+    if (nFrankList < 2)
       return;
-    for (int i = nFrankList; --i >= 0;) {
+    // first entry is just the main item
+    for (int i = nFrankList; --i > 0;) {
       insertMenuSubMenu(frankList[i][0], frankList[i][1], ((Integer)frankList[i][2]).intValue());
     }
-    nFrankList = 0;
+    nFrankList = 1;
   }
   ////////////////////////////////////////////////////////////////
 

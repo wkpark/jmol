@@ -445,7 +445,7 @@ abstract public class JmolPopup {
       addMenuItem(menu, GT._("polymers: {0}", viewer
           .getPolymerCountInModel(modelIndex), true));
     }
-    if (true || isApplet && viewer.showModelSetDownload()
+    if (isApplet && viewer.showModelSetDownload()
         && !viewer.getBooleanProperty("hideNameInPopup")) {
       addMenuSeparator(menu);
       addMenuItem(menu, GT._("View {0}", viewer

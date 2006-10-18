@@ -449,7 +449,7 @@ abstract public class JmolPopup {
     if (isApplet && viewer.showModelSetDownload()
         && !viewer.getBooleanProperty("hideNameInPopup")) {
       addMenuItem(menu, GT._("View {0}", viewer
-          .getModelSetFileName(), true), viewer.getModelSetPathName(), null);
+          .getModelSetFileName(), true), "show url \"" + viewer.getModelSetPathName() + "\"", null);
     }
   }
 

@@ -289,13 +289,17 @@ class CifReader extends AtomSetCollectionReader {
   
   /**
    * 
-   * @return TRUE if data, even if ''; FALSE if '.' or  '?'.
+   * @return TRUE if data, even if ''; FALSE if '.' or  '?' or eof.
    * 
    * @throws Exception
    */
   boolean getData() throws Exception {
     key = tokenizer.getTokenPeeked();
     data = tokenizer.getNextToken();
+    if (data == null) {
+      logger.log("CIF ERROR ? end of file; data missing: " + key);
+      return false;
+    }
     return (data.length() == 0 || data.charAt(0) != '\0');
   }
   

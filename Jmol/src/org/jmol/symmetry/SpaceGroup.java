@@ -286,17 +286,29 @@ public class SpaceGroup {
     name = name.trim();
     String nameExt = name;
     int i;
+    
+    // '_' --> ' '
+    if (name.indexOf("_") >= 0)
+      for (i = name.length(); --i >= 0;)
+        if (name.charAt(i) == '_')
+          name = name.substring(0, i) + " " + name.substring(i + 1);
+
+    // get lattice term to upper case and separated
     if (name.length() >= 2) {
       i = (name.indexOf("-") == 0 ? 2 : 1);
       if (i < name.length() && name.charAt(i) != ' ')
         name = name.substring(0, i) + " " + name.substring(i);
       name = name.substring(0, 2).toUpperCase() + name.substring(2);
     }
+    
+    // get extension
     String ext = "";
     if ((i = name.indexOf(":")) > 0) {
       ext = name.substring(i + 1).toLowerCase();
       name = name.substring(0, i).trim();
     }
+    
+    // generate spaceless abbreviation "P m m m" --> "Pmmm"
     String abbr = "";
     for (i = 0; i < name.length(); i++) {
       if (name.charAt(i) != ' ')

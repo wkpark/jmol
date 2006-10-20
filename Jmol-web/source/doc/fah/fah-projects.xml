@@ -4577,6 +4577,9 @@
   <fah_proj number="2728" name="p2728_GPU villin nle 00" public="y"
     server="171.65.103.159" atoms="590" preferred="3" deadline="4"
     credit="220" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2730" name="p2730_GPUlambda" public="n"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="4"
+    credit="330" frames="100" code="GG" contact="densign"/>
 
   <!-- Projects 2800 to 2899 -->
   <fah_proj number="2800" name="p2800_jrz_apo" public="y" file="y"

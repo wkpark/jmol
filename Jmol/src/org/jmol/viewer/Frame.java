@@ -816,7 +816,7 @@ public final class Frame {
     if (alternateLocationID == '\0')
       return 0;
     String altLocList = getAltLocListInModel(modelIndex);
-    if (altLocList == null)
+    if (altLocList.length() == 0)
       return 0;
     return altLocList.indexOf(alternateLocationID) + 1;
   }
@@ -825,17 +825,19 @@ public final class Frame {
     if (insertionCode == '\0')
       return 0;
     String codeList = getInsertionListInModel(modelIndex);
-    if (codeList == null)
+    if (codeList.length() == 0)
       return 0;
     return codeList.indexOf(insertionCode) + 1;
   }
 
   String getAltLocListInModel(int modelIndex) {
-    return (String) getModelAuxiliaryInfo(modelIndex, "altLocs");
+    String str = (String) getModelAuxiliaryInfo(modelIndex, "altLocs");
+    return (str == null ? "" : str);
   }
 
   String getInsertionListInModel(int modelIndex) {
-    return (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
+    String str = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
+    return (str == null ? "" : str);
   }
   
   String getModelSymmetryList(int modelIndex) {

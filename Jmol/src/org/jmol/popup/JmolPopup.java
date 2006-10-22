@@ -75,6 +75,7 @@ abstract public class JmolPopup {
   boolean isApplet;
   boolean haveCharges;
   boolean haveAltLocs;
+  String altlocs;
   
   int modelIndex, modelCount;
   
@@ -131,7 +132,8 @@ abstract public class JmolPopup {
     isSymmetry = checkBoolean(modelSetInfo, "someModelsHaveSymmetry");
     isUnitCell = checkBoolean(modelSetInfo, "someModelsHaveUnitcells");
     isMultiFrame = (modelCount > 1);
-    isMultiConfiguration = (viewer.getAltLocListInModel(modelIndex) != null);
+    altlocs = viewer.getAltLocListInModel(modelIndex);
+    isMultiConfiguration = (altlocs.length() > 0);
     isVibration = (viewer.modelHasVibrationVectors(modelIndex));
     haveCharges = (viewer.havePartialCharges());
   }
@@ -391,7 +393,6 @@ abstract public class JmolPopup {
     enableMenu(CONFIGURATIONComputedMenu, isMultiConfiguration);
     if (!isMultiConfiguration)
       return;
-    String altlocs = viewer.getAltLocListInModel(modelIndex);
     int nAltLocs = altlocs.length();
     setLabel(CONFIGURATIONComputedMenu, GT._("Configurations ({0})", nAltLocs, true));
     removeAll(CONFIGURATIONComputedMenu);

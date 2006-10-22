@@ -110,14 +110,7 @@ class Mol2Reader extends AtomSetCollectionReader {
         line = reader.readLine();
       }
     }
-    if (atomSetCollection.currentAtomSetIndex >= 0) {
-      atomSetCollection.newAtomSet();
-      atomSetCollection.setCollectionName("<collection of "
-          + (atomSetCollection.currentAtomSetIndex + 1) + " models>");
-    } else {
-      atomSetCollection.setCollectionName(thisDataSetName);
-    }
-    logger.log(thisDataSetName);
+    newAtomSet(thisDataSetName);
     while (line != null && !line.equals("@<TRIPOS>MOLECULE")) {
       if (line.equals("@<TRIPOS>ATOM")) {
         readAtoms(reader, atomCount, iHaveCharges);

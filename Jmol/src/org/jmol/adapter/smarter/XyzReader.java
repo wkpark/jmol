@@ -58,7 +58,6 @@ class XyzReader extends AtomSetCollectionReader {
           continue;
         }
         iHaveAtoms = true;
-        atomSetCollection.newAtomSet();
         readAtomSetName(reader);
         readAtoms(reader, modelAtomCount);
         applySymmetry();
@@ -87,12 +86,8 @@ class XyzReader extends AtomSetCollectionReader {
 
   void readAtomSetName(BufferedReader reader) throws Exception {
     String firstline = reader.readLine().trim();
-    if (firstline.endsWith("#noautobond")) {
-      firstline = firstline.substring(0, firstline.lastIndexOf('#')).trim();
-      atomSetCollection.setAtomSetCollectionProperty("noautobond", "true");
-    }
     firstline = checkLineForScript(firstline);
-    atomSetCollection.setAtomSetName(firstline);
+    newAtomSet(firstline);
   }
 
   final float[] chargeAndOrVector = new float[4];

@@ -121,6 +121,10 @@ abstract class AtomSetCollectionReader extends Parser {
   }
 
   String checkLineForScript(String line) {
+    if (line.endsWith("#noautobond")) {
+      line = line.substring(0, line.lastIndexOf('#')).trim();
+      atomSetCollection.setAtomSetCollectionProperty("noautobond", "true");
+    }
     int pt = line.indexOf("#jmolscript:");
     if (pt >= 0) {
       String script = line.substring(pt + 12, line.length());
@@ -229,6 +233,17 @@ abstract class AtomSetCollectionReader extends Parser {
   void initializeCartesianToFractional() {
     for (int i = 0; i < 16; i++)
       notionalUnitCell[6 + i] = ((i % 5 == 0 ? 1 : 0)); 
+  }
+
+  void newAtomSet(String name) {
+    if (atomSetCollection.currentAtomSetIndex >= 0) {
+      atomSetCollection.newAtomSet();
+      atomSetCollection.setCollectionName("<collection of "
+          + (atomSetCollection.currentAtomSetIndex + 1) + " models>");
+    } else {
+      atomSetCollection.setCollectionName(name);
+    }
+    logger.log(name);
   }
 
   void setSpaceGroupName(String name) {

@@ -1404,7 +1404,7 @@ String getAtomInfoChime(int i) {
       return null;
     BitSet bsResult = new BitSet();
     String altLocs = getAltLocListInModel(modelIndex);
-    if (altLocs != null && altLocs.length() > 0) {
+    if (altLocs.length() > 0) {
       BitSet bsConformation = getModelAtomBitSet(modelIndex);
       if (conformationIndex >= 0)
         for (int c = frame.getAltLocCountInModel(modelIndex); --c >= 0;)

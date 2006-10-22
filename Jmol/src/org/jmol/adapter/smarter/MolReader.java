@@ -44,26 +44,41 @@ import java.io.BufferedReader;
  *  
  */
 class MolReader extends AtomSetCollectionReader {
-    
+
+  String header = "";
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
-    throws Exception {
+      throws Exception {
     atomSetCollection = new AtomSetCollection("mol");
-    String firstLine = reader.readLine();
-    if (firstLine.startsWith("$MDL")) {
-      processRgHeader(reader, firstLine);
-      //String line;
-      while (!reader.readLine().startsWith("$CTAB"))
-        { }
-      processCtab(reader);
-    } else {
-      processMolSdHeader(reader, firstLine);
-      processCtab(reader);
+    this.reader = reader;
+    boolean iHaveAtoms = false;
+    try {
+      while ((line = reader.readLine()) != null) {
+        if (line.startsWith("$MDL")) {
+          processRgHeader();
+          //String line;
+          while (!reader.readLine().startsWith("$CTAB")) {
+          }
+          processCtab();
+        } else {
+          if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
+            if (iHaveAtoms)
+              break;
+            flushLines();
+            continue;
+          }
+          iHaveAtoms = true;
+          processMolSdHeader();
+          processCtab();
+        }
+        flushLines();
+      }
+    } catch (Exception ex) {
+      atomSetCollection.errorMessage = "Could not read file:" + ex;
     }
     return atomSetCollection;
   }
-
-  void processMolSdHeader(BufferedReader reader, String firstLine)
-                          throws Exception {
+  
+  void processMolSdHeader() throws Exception {
     /* 
      * obviously we aren't being this strict, but for the record:
      *  
@@ -90,19 +105,20 @@ class MolReader extends AtomSetCollectionReader {
      * Line 3: A line for comments. If no comment is entered, a blank line 
      * must be present.
      */
-    
-    String header = firstLine+"\n";
-    atomSetCollection.setCollectionName(firstLine);
+
+    String thisDataSetName = line;
+    header += line + "\n";
+    atomSetCollection.setCollectionName(line);
     header += reader.readLine() + "\n";
     //line 3:
     String comment = reader.readLine();
     header += comment + "\n";
     checkLineForScript(comment);
     atomSetCollection.setAtomSetCollectionProperty("fileHeader", header);
+    newAtomSet(thisDataSetName);
   }
 
-  void processRgHeader(BufferedReader reader, String firstLine)
-    throws Exception {
+  void processRgHeader() throws Exception {
     /*
      * from ctfile.pdf:
      * 
@@ -122,38 +138,44 @@ class MolReader extends AtomSetCollectionReader {
      * $END RGP
      * $END MOL
      */
-    
-    String line;
-    while ((line = reader.readLine()) != null &&
-           !line.startsWith("$HDR"))
-      { }
+
+    while ((line = reader.readLine()) != null && !line.startsWith("$HDR")) {
+    }
     if (line == null) {
       logger.log("$HDR not found in MDL RG file");
       return;
     }
-    processMolSdHeader(reader, reader.readLine());
+    line = reader.readLine();
+    processMolSdHeader();
   }
 
-  void processCtab(BufferedReader reader) throws Exception {
-    String countLine = reader.readLine();
-    int atomCount = parseInt(countLine, 0, 3);
-    int bondCount = parseInt(countLine, 3, 6);
-    readAtoms(reader, atomCount);
-    readBonds(reader, bondCount);
+  void processCtab() throws Exception {
+    line = reader.readLine();
+    int atomCount = parseInt(line, 0, 3);
+    int bondCount = parseInt(line, 3, 6);
+    int atom0 = atomSetCollection.atomCount;
+    readAtoms(atomCount);
+    readBonds(atom0, bondCount);
     applySymmetry();
   }
-  
-  void readAtoms(BufferedReader reader, int atomCount) throws Exception {
+
+  void flushLines() throws Exception {
+    while ((line = reader.readLine()) != null && !line.startsWith("$$$$")) {
+      //flush
+    }
+  }
+
+  void readAtoms(int atomCount) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
-      String line = reader.readLine();
+      line = reader.readLine();
       String elementSymbol = "";
       if (line.length() > 34) {
-          elementSymbol = line.substring(31,34).trim().intern();
+        elementSymbol = line.substring(31, 34).trim().intern();
       } else {
-           // deal with older Mol format where nothing after the symbol is used
-          elementSymbol = line.substring(31).trim().intern();
+        // deal with older Mol format where nothing after the symbol is used
+        elementSymbol = line.substring(31).trim().intern();
       }
-      float x = parseFloat(line,  0, 10);
+      float x = parseFloat(line, 0, 10);
       float y = parseFloat(line, 10, 20);
       float z = parseFloat(line, 20, 30);
       int charge = 0;
@@ -169,15 +191,16 @@ class MolReader extends AtomSetCollectionReader {
     }
   }
 
-  void readBonds(BufferedReader reader, int bondCount) throws Exception {
+  void readBonds(int atom0, int bondCount) throws Exception {
     for (int i = 0; i < bondCount; ++i) {
-      String line = reader.readLine();
+      line = reader.readLine();
       int atomIndex1 = parseInt(line, 0, 3);
       int atomIndex2 = parseInt(line, 3, 6);
       int order = parseInt(line, 6, 9);
       if (order == 4)
         order = JmolAdapter.ORDER_AROMATIC;
-      atomSetCollection.addBond(new Bond(atomIndex1-1, atomIndex2-1, order));
+      atomSetCollection
+          .addBond(new Bond(atom0 + atomIndex1 - 1, atom0 + atomIndex2 - 1, order));
     }
   }
 }

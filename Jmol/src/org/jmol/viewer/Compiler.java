@@ -190,8 +190,13 @@ class Compiler {
           ltoken.addElement(new Token(Token.string, str));
           continue;
         }
+        float value;
+        if (!Float.isNaN(value = lookingAtExponential())) {
+          ltoken.addElement(new Token(Token.decimal, new Float(value)));
+          continue;          
+        }
         if (lookingAtDecimal((tokCommand & Token.negnums) != 0)) {
-          float value =
+          value =
           // can't use parseFloat with jvm 1.1
           // Float.parseFloat(script.substring(ichToken, ichToken + cchToken));
           Float.valueOf(script.substring(ichToken, ichToken + cchToken))
@@ -531,6 +536,52 @@ class Compiler {
     cchToken = ichT - ichToken;
     log("lookingAtSpecialString cchToken=" + cchToken);
     return cchToken > 0;
+  }
+
+  float lookingAtExponential() {
+    if (ichToken == cchScript)
+      return Float.NaN; //end
+    int ichT = ichToken;
+    boolean isNegative = (script.charAt(ichT) == '-');
+    if (isNegative)
+      ++ichT;
+    int pt0 = ichT;
+    boolean digitSeen = false;
+    char ch = 'X';
+    while (ichT < cchScript && isDigit(ch = script.charAt(ichT))) {
+      ++ichT;
+      digitSeen = true;
+    }
+    if (ichT < cchScript && ch == '.')
+      ++ichT;
+    while (ichT < cchScript && isDigit(ch = script.charAt(ichT))) {
+      ++ichT;
+      digitSeen = true;
+    }    
+    if (ichT == cchScript || !digitSeen)
+      return Float.NaN;  //integer
+    int ptE = ichT;
+    int factor = 1;
+    int exp = 0;
+    boolean isExponential = (ch != 'E' || ch != 'e');
+    if (!isExponential || ++ichT == cchScript)
+      return Float.NaN;
+    ch = script.charAt(ichT);
+    if (ch == '-' || ch == '+') {
+      ichT++;
+      factor = (ch == '-'? -1 : 1);
+    }
+    while (ichT < cchScript && isDigit(ch = script.charAt(ichT))) {
+      ichT++;
+      exp = (exp * 10 + ch - '0');
+    }
+    if (exp == 0)
+      return Float.NaN;
+    cchToken = ichT - ichToken;
+    double value = Float.valueOf(script.substring(pt0, ptE)).doubleValue(); 
+    value *= (isNegative ? -1 : 1) * Math.pow(10, factor * exp);
+    System.out.println("compiler "+ script + "=" + value);
+    return (float) value;
   }
 
   boolean lookingAtDecimal(boolean allowNegative) {

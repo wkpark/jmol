@@ -200,7 +200,7 @@ abstract public class JmolPopup {
         if (heteroName.length() > 20)
           heteroName = heteroName.substring(0,20) + "...";
         String entryName = heteroCode + " - " + heteroName;        
-        addMenuItem(menu, entryName, heteroCode, null);
+        addMenuItem(menu, entryName, "[" + heteroCode + "]", null);
         n++;
     }
     enableMenu(menu, (n > 0));

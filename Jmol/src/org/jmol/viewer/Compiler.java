@@ -567,10 +567,15 @@ class Compiler {
     if (!isExponential || ++ichT == cchScript)
       return Float.NaN;
     ch = script.charAt(ichT);
+    // I THOUGHT we only should allow "E+" or "E-" here, not "2E1" because
+    // "2E1" might be a PDB het group by that name. BUT it turns out that
+    // any HET group starting with a number is unacceptable and must
+    // be given as [nXm], in brackets.
+    
     if (ch == '-' || ch == '+') {
       ichT++;
       factor = (ch == '-'? -1 : 1);
-    }
+    }    
     while (ichT < cchScript && isDigit(ch = script.charAt(ichT))) {
       ichT++;
       exp = (exp * 10 + ch - '0');

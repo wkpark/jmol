@@ -126,19 +126,23 @@ class Resolver {
         }
       }
     }
+    
+    String header = llr.getHeader();
     for (int i = 0; i < containsRecords.length; ++i) {
       String[] recordTags = containsRecords[i];
       for (int j = 0; j < recordTags.length; ++j) {
         String recordTag = recordTags[j];
-        for (int k = 0; k < lines.length; ++k) {
-          if (lines[k].indexOf(recordTag) != -1)
-            return containsFormats[i];
-        }
+        if (header.indexOf(recordTag) != -1)
+          return containsFormats[i];
       }
     }
 
     if (lines[1] == null || lines[1].trim().length() == 0)
       return "Jme"; // this is really quite broken :-)
+    
+    for (int i = 0; i < lines.length; ++i)
+      lines[i] = llr.readLineWithNewline();
+
     return null;
   }
 
@@ -327,13 +331,16 @@ class Resolver {
   final static String[] spartanBinaryRecords =
   { "|PropertyArchive" };
 
+  final static String[] adfRecords =
+  { "Amsterdam Density Functional" };
+  
   final static String[][] containsRecords =
   { xmlRecords, gaussianRecords, mopacRecords, qchemRecords, gamessRecords,
-    spartanRecords, spartanBinaryRecords, mol2Records,
+    spartanRecords, spartanBinaryRecords, mol2Records, adfRecords, 
   };
 
   final static String[] containsFormats =
-  { "Xml", "Gaussian", "Mopac", "Qchem", "Gamess", "Spartan", "SpartanSmol" , "Mol2"};
+  { "Xml", "Gaussian", "Mopac", "Qchem", "Gamess", "Spartan", "SpartanSmol" , "Mol2", "Adf"};
 }
 
 class LimitedLineReader {
@@ -352,6 +359,10 @@ class LimitedLineReader {
     bufferedReader.reset();
   }
 
+  String getHeader() {
+    return new String(buf);  
+  }
+  
   String readLineWithNewline() {
     // mth 2004 10 17
     // for now, I am going to put in a hack here

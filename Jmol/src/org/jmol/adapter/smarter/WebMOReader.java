@@ -48,32 +48,33 @@ class WebMOReader extends AtomSetCollectionReader {
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
     atomSetCollection = new AtomSetCollection("webmo");
+    this.reader = reader;
     line = reader.readLine();
     modelNumber = 0;
     try {
       while (line != null) {
         if (line.equals("[HEADER]")) {
-          readHeader(reader);
+          readHeader();
           continue;
         } else if (line.equals("[ATOMS]")) {
-          readAtoms(reader);
+          readAtoms();
           //        atomSetCollection.setAtomSetName(thisDataSetName);
           continue;
         } else if (line.equals("[BONDS]")) {
-          readBonds(reader);
+          readBonds();
           continue;
         } else if (line.equals("[AO_ORDER]")) {
-          readAtomicOrbitalOrder(reader);
+          readAtomicOrbitalOrder();
           continue;
         } else if (line.equals("[GTO]")) {
-          readGaussianBasis(reader);
+          readGaussianBasis();
           continue;
         } else if (line.equals("[STO]")) {
-          readSlaterBasis(reader);
+          readSlaterBasis();
           continue;
         } else if (line.indexOf("[MO") == 0) {
           if (++modelNumber == desiredModelNumber || desiredModelNumber <= 0) {
-            readMolecularOrbital(reader);
+            readMolecularOrbital();
             if (desiredModelNumber > 0)
               break;
           }
@@ -92,7 +93,7 @@ class WebMOReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
-  void readHeader(BufferedReader reader) throws Exception {
+  void readHeader() throws Exception {
     while ((line = reader.readLine()) != null && line.length() > 0) {
       moData.put("calculationType", "?");
       String[] tokens = getTokens(line);
@@ -105,7 +106,7 @@ class WebMOReader extends AtomSetCollectionReader {
     }
   }
 
-  void readAtoms(BufferedReader reader) throws Exception {
+  void readAtoms() throws Exception {
     /*
      
      [ATOMS]
@@ -141,7 +142,7 @@ class WebMOReader extends AtomSetCollectionReader {
     }
   }
 
-  void readBonds(BufferedReader reader) throws Exception {
+  void readBonds() throws Exception {
     /*
      
      [BONDS]
@@ -164,7 +165,7 @@ class WebMOReader extends AtomSetCollectionReader {
     }
   }
 
-  void readAtomicOrbitalOrder(BufferedReader reader) throws Exception {
+  void readAtomicOrbitalOrder() throws Exception {
     /*
      [AO_ORDER]
      DOrbitals XX YY ZZ XY XZ YZ
@@ -181,7 +182,7 @@ class WebMOReader extends AtomSetCollectionReader {
     moData.put("atomicOrbitalOrder", info);
   }
 
-  void readGaussianBasis(BufferedReader reader) throws Exception {
+  void readGaussianBasis() throws Exception {
     /*
      * standard Gaussian format:
      
@@ -242,7 +243,7 @@ class WebMOReader extends AtomSetCollectionReader {
     logger.log(garray.length + " gaussian primitives read");
   }
 
-  void readSlaterBasis(BufferedReader reader) throws Exception {
+  void readSlaterBasis() throws Exception {
     /*
      * slater format:
      [STO]
@@ -280,7 +281,7 @@ class WebMOReader extends AtomSetCollectionReader {
     moData.put("slaterData", farray);
   }
 
-  void readMolecularOrbital(BufferedReader reader) throws Exception {
+  void readMolecularOrbital() throws Exception {
     /*
      [MOn]
      -11.517

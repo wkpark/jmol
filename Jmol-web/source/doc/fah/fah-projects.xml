@@ -4548,6 +4548,9 @@
     credit="136" frames="100" code="GB" contact="luttmann"/>
 
   <!-- Projects 2600 to 2699 -->
+  <fah_proj number="2602" name="p2602_Protein in POPC" public="n"
+    server="171.64.65.56" atoms="77373" preferred="48" deadline="127"
+    credit="1" frames="100" code="A0" contact="kasson"/>
 
   <!-- Projects 2700 to 2799 -->
   <fah_proj number="2711" name="p2711_GPUlambda" public="y"
@@ -4577,7 +4580,7 @@
   <fah_proj number="2728" name="p2728_GPU villin nle 00" public="y"
     server="171.65.103.159" atoms="590" preferred="3" deadline="4"
     credit="220" frames="100" code="GG" contact="densign"/>
-  <fah_proj number="2730" name="p2730_GPUlambda" public="n"
+  <fah_proj number="2730" name="p2730_GPUlambda" public="y"
     server="171.64.65.20" atoms="1258" preferred="3" deadline="4"
     credit="330" frames="100" code="GG" contact="densign"/>
 

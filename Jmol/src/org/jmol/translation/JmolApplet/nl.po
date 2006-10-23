@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-10-23 20:16+0200\n"
+"POT-Creation-Date: 2006-10-23 22:35+0200\n"
 "PO-Revision-Date: 2006-09-24 14:11+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Nederlands <jmol-developers@lists.sourceforge.net>\n"
@@ -18,10 +18,6 @@ msgstr ""
 "X-Poedit-Country: Nederlands\n"
 "X-Poedit-Basepath: ../../../..\n"
 "X-Generator: KBabel 1.10\n"
-
-#: org/jmol/adapter/smarter/SpartanArchive.java:347
-msgid "\""
-msgstr ""
 
 #: org/jmol/applet/Console.java:39
 #, fuzzy

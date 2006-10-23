@@ -331,7 +331,7 @@ class SpartanArchive {
     Vector vector = new Vector();
     if (tokens[3].equals("=")) {
       if (isString) {
-        value = getString(tokens[4].substring(0, 1));
+        value = getQuotedString(tokens[4].substring(0, 1));
       } else {
         value = new Float(parseFloat(tokens[4]));
       }
@@ -344,7 +344,7 @@ class SpartanArchive {
       while (readLine() != null
           && !line.substring(0, 3).equals("END")) {
         if (isString) {
-          value = getString("\"");
+          value = getQuotedString("\"");
           vector.add(value);
         } else {
           String tokens2[] = getTokens(line);
@@ -436,7 +436,7 @@ class SpartanArchive {
         .setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
   }
 
-  String getString(String strQuote) {
+  String getQuotedString(String strQuote) {
     int i = line.indexOf(strQuote);
     int j = line.lastIndexOf(strQuote);
     return (j == i ? "" : line.substring(i + 1, j));

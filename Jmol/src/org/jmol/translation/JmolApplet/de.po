@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-10-23 20:16+0200\n"
+"POT-Creation-Date: 2006-10-23 22:35+0200\n"
 "PO-Revision-Date: 2006-04-14 18:00+0100\n"
 "Last-Translator: Sebastian Lisken <sebastianlisken at users.sourceforge."
 "net>\n"
@@ -17,10 +17,6 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-
-#: org/jmol/adapter/smarter/SpartanArchive.java:347
-msgid "\""
-msgstr ""
 
 #: org/jmol/applet/Console.java:39
 #, fuzzy

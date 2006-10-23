@@ -1,5 +1,5 @@
 /*
- * JUnit TestCase for the SmilesParser
+ * JUnit TestCase for the Smarter Adapter
  */
 
 package org.jmol.adapter.smarter;
@@ -35,6 +35,13 @@ public class TestSmarterJmolAdapter extends TestCase {
    */
   public void testAces2() {
     //checkDirectory("aces2", "dat,out", "");
+  }
+  
+  /**
+   * Test for reading files in aminoacids/
+   */
+  public void testAdf() {
+    checkDirectory("adf", "adf", "");
   }
   
   /**
@@ -214,9 +221,9 @@ public class TestSmarterJmolAdapter extends TestCase {
    */
   private void checkDirectory(String directory, String exts, String extsZ) {
     File dir = new File("../Jmol-datafiles", directory);
-    
+
     String message = "";
-    
+
     // Checking uncompressed files
     final String[] ext = exts.split("[,]");
     String[] files = dir.list(new FilenameFilter() {
@@ -229,7 +236,7 @@ public class TestSmarterJmolAdapter extends TestCase {
         }
         return false;
       }
-      
+
     });
     for (int i = 0; i < files.length; i++) {
       try {
@@ -238,10 +245,12 @@ public class TestSmarterJmolAdapter extends TestCase {
           message += error + "\n";
         }
       } catch (Exception e) {
-        message += "Exception " + e.getClass().getName() + ": " + e.getMessage();
+        message += files[i] + " ";
+        message += "Exception " + e.getClass().getName() + ": "
+            + e.getMessage();
       }
     }
-    
+
     // Checking compressed files
     final String[] extZ = extsZ.split("[,]");
     String[] filesZ = dir.list(new FilenameFilter() {
@@ -254,7 +263,7 @@ public class TestSmarterJmolAdapter extends TestCase {
         }
         return false;
       }
-      
+
     });
     for (int i = 0; i < filesZ.length; i++) {
       try {
@@ -263,10 +272,12 @@ public class TestSmarterJmolAdapter extends TestCase {
           message += error + "\n";
         }
       } catch (Exception e) {
-        message += "Exception " + e.getClass().getName() + ": " + e.getMessage();
+        message += files[i] + " ";
+        message += "Exception " + e.getClass().getName() + ": "
+            + e.getMessage();
       }
     }
-    
+
     // Checking error messages
     if (message.length() > 0) {
       System.out.flush();
@@ -293,6 +304,7 @@ public class TestSmarterJmolAdapter extends TestCase {
       SmarterJmolAdapter adapter = new SmarterJmolAdapter(null);
       adapter.logger = new TestLogger(adapter);
       File file = new File(new File("../Jmol-datafiles", directory), filename);
+      System.out.println(file);
       JUnitLogger.setInformation(file.getPath());
       InputStream iStream = new FileInputStream(file);
       BufferedInputStream biStream = new BufferedInputStream(iStream);
@@ -329,6 +341,7 @@ public class TestSmarterJmolAdapter extends TestCase {
       SmarterJmolAdapter adapter = new SmarterJmolAdapter(null);
       adapter.logger = new TestLogger(adapter);
       File file = new File(new File("../Jmol-datafiles", directory), filename);
+      System.out.println(file);
       JUnitLogger.setInformation(file.getPath());
       InputStream iStream = new FileInputStream(file);
       BufferedInputStream biStream = new BufferedInputStream(iStream);

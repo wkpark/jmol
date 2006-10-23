@@ -336,11 +336,11 @@ class Resolver {
   
   final static String[][] containsRecords =
   { xmlRecords, gaussianRecords, mopacRecords, qchemRecords, gamessRecords,
-    spartanRecords, spartanBinaryRecords, mol2Records, adfRecords, 
+    spartanBinaryRecords, spartanRecords, mol2Records, adfRecords, 
   };
 
   final static String[] containsFormats =
-  { "Xml", "Gaussian", "Mopac", "Qchem", "Gamess", "Spartan", "SpartanSmol" , "Mol2", "Adf"};
+  { "Xml", "Gaussian", "Mopac", "Qchem", "Gamess", "SpartanSmol", "Spartan" , "Mol2", "Adf"};
 }
 
 class LimitedLineReader {

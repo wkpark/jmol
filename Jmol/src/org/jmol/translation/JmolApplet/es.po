@@ -447,8 +447,8 @@ msgstr "Sí"
 #: org/jmol/popup/PopupResourceBundle.java:810
 #: org/jmol/popup/PopupResourceBundle.java:811
 #, java-format
-msgid "{0} Å"
-msgstr "{0} Å"
+msgid "{0} &"
+msgstr "{0} &"
 
 #: org/jmol/popup/PopupResourceBundle.java:560
 #: org/jmol/popup/PopupResourceBundle.java:669
@@ -601,7 +601,7 @@ msgstr "Patrón"
 
 #: org/jmol/popup/PopupResourceBundle.java:634
 msgid "Element (CPK)"
-msgstr "Por elemento (CPK)"
+msgstr "por elemento (CPK)"
 
 #: org/jmol/popup/PopupResourceBundle.java:635
 msgid "Alternative Location"
@@ -613,11 +613,11 @@ msgstr "Molécula"
 
 #: org/jmol/popup/PopupResourceBundle.java:637
 msgid "Formal Charge"
-msgstr "Por carga formal"
+msgstr "por carga formal"
 
 #: org/jmol/popup/PopupResourceBundle.java:638
 msgid "Partial Charge"
-msgstr "Por carga parcial"
+msgstr "por carga parcial"
 
 #: org/jmol/popup/PopupResourceBundle.java:640
 msgid "Amino Acid"
@@ -980,12 +980,12 @@ msgstr "molecular"
 #: org/jmol/popup/PopupResourceBundle.java:781
 #, java-format
 msgid "Solvent Surface ({0}-Angstrom probe)"
-msgstr "del disolvente (sonda de {0} Å)"
+msgstr "del disolvente (sonda de {0} &)"
 
 #: org/jmol/popup/PopupResourceBundle.java:783
 #, java-format
 msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
-msgstr "accesible al disolvente (vdW + {0} Å)"
+msgstr "accesible al disolvente (vdW + {0} &)"
 
 #: org/jmol/popup/PopupResourceBundle.java:784
 msgid "Molecular Electrostatic Potential"
@@ -1060,15 +1060,15 @@ msgstr "Compatible Rasmol/Chime"
 
 #: org/jmol/popup/PopupResourceBundle.java:822
 msgid "RasMol Colors"
-msgstr "Colores Rasmol"
+msgstr "Colores de Rasmol"
 
 #: org/jmol/popup/PopupResourceBundle.java:823
 msgid "Axes RasMol/Chime"
-msgstr "Orientación de ejes Rasmol"
+msgstr "Orientación de ejes de Rasmol"
 
 #: org/jmol/popup/PopupResourceBundle.java:824
 msgid "Zero-Based Xyz Rasmol"
-msgstr "Origen XYZ Rasmol"
+msgstr "Origen XYZ de Rasmol"
 
 #: org/jmol/popup/PopupResourceBundle.java:826
 msgid "About Jmol"

@@ -563,7 +563,7 @@ class Compiler {
     int ptE = ichT;
     int factor = 1;
     int exp = 0;
-    boolean isExponential = (ch != 'E' || ch != 'e');
+    boolean isExponential = (ch == 'E' || ch == 'e');
     if (!isExponential || ++ichT == cchScript)
       return Float.NaN;
     ch = script.charAt(ichT);
@@ -585,7 +585,6 @@ class Compiler {
     cchToken = ichT - ichToken;
     double value = Float.valueOf(script.substring(pt0, ptE)).doubleValue(); 
     value *= (isNegative ? -1 : 1) * Math.pow(10, factor * exp);
-    System.out.println("compiler "+ script + "=" + value);
     return (float) value;
   }
 

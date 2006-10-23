@@ -4534,6 +4534,10 @@ class Eval { //implements Runnable {
     Token token = statement[statementLength - 1];
     int tok = token.tok;
     switch (tok) {
+    case Token.on:
+    case Token.normal:
+      str = "ident";
+      break;
     case Token.none:
       str = "off";
       break;
@@ -4553,7 +4557,7 @@ class Eval { //implements Runnable {
     }
     try {
       if (str == null)
-      str = (String)token.value;
+        str = (String) token.value;
     } catch (Exception e) {
       invalidArgument();
     }

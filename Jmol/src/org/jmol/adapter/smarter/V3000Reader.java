@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
+
 import java.io.BufferedReader;
 
 /**
@@ -40,68 +41,63 @@ class V3000Reader extends AtomSetCollectionReader {
   int headerBondCount;
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
-    throws Exception {
+      throws Exception {
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("v3000");
-    boolean startNewAtomSet = false;
-    /*
-      remove code for processing more than one molecular model in
-      a .sdf file as multiple models.
-      we are just going to read the first model
-    String line;
-    while (true) {
-      line = processCtab(reader, startNewAtomSet);
-      if (line == null)
-        break;
-      if (line.equals("$$$$"))
-        startNewAtomSet = true;
+    boolean iHaveAtoms = false;
+    try {
+      while (readLine() != null) {
+        if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
+          if (iHaveAtoms)
+            break;
+          flushLines();
+          continue;
+        }
+        iHaveAtoms = true;
+        processCtab();
+      }
+    } catch (Exception ex) {
+      atomSetCollection.errorMessage = "Could not read file:" + ex;
     }
-    */
-    processCtab(reader, startNewAtomSet);
+
     return atomSetCollection;
   }
 
-  String processCtab(BufferedReader reader,
-                     boolean startNewAtomSet) throws Exception {
-    String line;
-    line = reader.readLine();
-    while (line != null &&
-           ! line.equals("$$$$") &&
+  void processCtab() throws Exception {
+    while (readLine() != null &&
+           ! line.startsWith("$$$$") &&
            ! line.startsWith("M  END")) {
       if (line.startsWith("M  V30 BEGIN ATOM")) {
-        line = processAtomBlock(reader);
+        processAtomBlock();
         continue;
       }
       if (line.startsWith("M  V30 BEGIN BOND")) {
-        line = processBondBlock(reader);
+        processBondBlock();
         continue;
       }
       if (line.startsWith("M  V30 BEGIN CTAB")) {
-        if (startNewAtomSet)
-          atomSetCollection.newAtomSet();
+        newAtomSet("");
       } else if (line.startsWith("M  V30 COUNTS")) {
-        processCounts(line);
+        headerAtomCount = parseInt(line, 13);
+        headerBondCount = parseInt(line, ichNextParse);
       }
-      line = reader.readLine();
     }
-    return line;
-  }
-  
-  void processCounts(String line) {
-    headerAtomCount = parseInt(line, 13);
-    headerBondCount = parseInt(line, ichNextParse);
+    if (line != null && !line.startsWith("$$$$"))
+      flushLines();
   }
 
-  String processAtomBlock(BufferedReader reader) throws Exception {
+  String processAtomBlock() throws Exception {
     for (int i = headerAtomCount; --i >= 0; ) {
-      String line = readLineWithContinuation(reader);
+      readLineWithContinuation();
       if (line == null || (! line.startsWith("M  V30 ")))
         throw new Exception("unrecognized atom");
       Atom atom = new Atom();
-      atom.atomSerial = parseInt(line, 7);
-      atom.elementSymbol = parseToken(line, ichNextParse);
-      atom.x = parseFloat(line, ichNextParse);
-      atom.y = parseFloat(line, ichNextParse);
-      atom.z = parseFloat(line, ichNextParse);
+      String[] tokens = getTokens(line);
+      atom.atomSerial = parseInt(tokens[2]);
+      atom.elementSymbol = tokens[3];
+      atom.x = parseFloat(tokens[4]);
+      atom.y = parseFloat(tokens[5]);
+      atom.z = parseFloat(tokens[6]);
       parseInt(line, ichNextParse); // discard aamap
       while (true) {
         String option = parseToken(line, ichNextParse);
@@ -112,15 +108,15 @@ class V3000Reader extends AtomSetCollectionReader {
       }
       atomSetCollection.addAtomWithMappedSerialNumber(atom);
     }
-    String line = reader.readLine();
+    readLine();
     if (line == null || ! line.startsWith("M  V30 END ATOM"))
       throw new Exception("M  V30 END ATOM not found");
     return line;
   }
 
-  String processBondBlock(BufferedReader reader) throws Exception {
+  void processBondBlock() throws Exception {
     for (int i = headerBondCount; --i >= 0; ) {
-      String line = readLineWithContinuation(reader);
+      readLineWithContinuation();
       if (line == null || (! line.startsWith("M  V30 ")))
         throw new Exception("unrecognized bond");
       /*int bondSerial = */parseInt(line, 7); // currently unused
@@ -131,22 +127,26 @@ class V3000Reader extends AtomSetCollectionReader {
                                                           atomSerial2,
                                                           order);
     }
-    String line = reader.readLine();
+    readLine();
     if (line == null || ! line.startsWith("M  V30 END BOND"))
       throw new Exception("M  V30 END BOND not found");
-    return line;
   }
 
-  String readLineWithContinuation(BufferedReader reader) throws Exception {
-    String line = reader.readLine();
+  void readLineWithContinuation() throws Exception {
+    readLine();
     if (line != null && line.length() > 7) {
       while (line.charAt(line.length() - 1) == '-') {
-        String line2 = reader.readLine();
+        String line2 = readLine();
         if (line2 == null || ! line.startsWith("M  V30 "))
           throw new Exception("Invalid line continuation");
         line += line2.substring(7);
       }
     }
-    return line;
+  }
+  
+  void flushLines() throws Exception {
+    while (readLine() != null && !line.startsWith("$$$$")) {
+      //flush
+    }
   }
 }

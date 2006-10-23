@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
+
 import java.io.BufferedReader;
 import java.util.Vector;
 import java.util.Hashtable;
@@ -41,7 +42,7 @@ class SpartanArchive {
   int shellCount = 0;
   int gaussianCount = 0;
   String calculationType = "";
-
+  BufferedReader reader;
   String line;
 
   JmolAdapter.Logger logger;
@@ -65,32 +66,33 @@ class SpartanArchive {
                           Hashtable moData, String bondData) {
     this.logger = logger;
     this.r = r;
+    this.reader = r.reader;
     this.atomSetCollection = atomSetCollection;
     this.moData = moData;
     moData.put("energyUnits","");
     this.bondData = bondData;
   }
 
-  int readArchive(BufferedReader reader, String infoLine,
+  int readArchive(String infoLine,
                   boolean haveGeometryLine) throws Exception {
     atomCount = setInfo(infoLine);
     line = (haveGeometryLine ? "GEOMETRY" : "");
     try {
       while (line != null) {
         if (line.equals("GEOMETRY")) {
-          readAtoms(reader);
+          readAtoms();
           if (bondData.length() > 0)
             addBonds(bondData);
         } else if (line.indexOf("BASIS") == 0) {
-          readBasis(reader);
+          readBasis();
         } else if (line.indexOf("WAVEFUNC") == 0 || line.indexOf("BETA") == 0) {
-          readMolecularOrbital(reader);
+          readMolecularOrbital();
           atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
         } else if (line.equals("ENDARCHIVE")
             || line.equals("END Compound Document Entry: Archive")) {
           break;
         }
-        line = reader.readLine();
+        readLine();
       }
     } catch (Exception e) {
       Logger.error("Spartan archive reader error on line: " + line, e);
@@ -128,9 +130,9 @@ class SpartanArchive {
     return atomCount;
   }
 
-  void readAtoms(BufferedReader reader) throws Exception {
+  void readAtoms() throws Exception {
     for (int i = 0; i < atomCount; i++) {
-      line = reader.readLine();
+      readLine();
       String tokens[] = getTokens(line);
       float x = parseFloat(tokens[1]);
       float y = parseFloat(tokens[2]);
@@ -177,7 +179,7 @@ class SpartanArchive {
     logger.log(bondCount + " bonds read");
   }
 
-  void readBasis(BufferedReader reader) throws Exception {
+  void readBasis() throws Exception {
     /*
      * standard Gaussian format:
      
@@ -200,7 +202,7 @@ class SpartanArchive {
     float[][] garray = new float[gaussianCount][];
     int[] typeArray = new int[gaussianCount];
     for (int i = 0; i < shellCount; i++) {
-      line = reader.readLine();
+      readLine();
       String[] tokens = getTokens(line);
       Hashtable slater = new Hashtable();
       int iBasis = parseInt(tokens[0]);
@@ -233,8 +235,8 @@ class SpartanArchive {
       sdata.add(slater);
     }
     for (int i = 0; i < gaussianCount; i++) {
-      float alpha = parseFloat(line = reader.readLine());
-      line = reader.readLine();
+      float alpha = parseFloat(readLine());
+      readLine();
       String[] tokens = getTokens(line);
       int nData = tokens.length;
       float[] data = new float[nData + 1];
@@ -262,14 +264,14 @@ class SpartanArchive {
     logger.log(garray.length + " gaussian primitives read");
   }
 
-  void readMolecularOrbital(BufferedReader reader) throws Exception {
+  void readMolecularOrbital() throws Exception {
     int tokenPt = 0;
     String[] tokens = getTokens("");
     float[] energies = new float[moCount];
     float[][] coefficients = new float[moCount][moCount];
     for (int i = 0; i < moCount; i++) {
       if (tokenPt == tokens.length) {
-        tokens = getTokens(line = reader.readLine());
+        tokens = getTokens(readLine());
         tokenPt = 0;
       }
       energies[i] = parseFloat(tokens[tokenPt++]);
@@ -277,7 +279,7 @@ class SpartanArchive {
     for (int i = 0; i < moCount; i++) {
       for (int j = 0; j < moCount; j++) {
         if (tokenPt == tokens.length) {
-          tokens = getTokens(line = reader.readLine());
+          tokens = getTokens(readLine());
           tokenPt = 0;
         }
         coefficients[i][j] = parseFloat(tokens[tokenPt++]);
@@ -294,22 +296,22 @@ class SpartanArchive {
     moData.put("mos", orbitals);
   }
 
-  void readProperties(BufferedReader reader) throws Exception {
+  void readProperties() throws Exception {
     logger.log("Reading PROPARC properties records...");
-    while ((line = reader.readLine()) != null
+    while (readLine() != null
         && (line.length() < 10 || !line.substring(0, 10).equals("ENDPROPARC"))) {
       if (line.length() >= 4 && line.substring(0, 4).equals("PROP"))
-        readProperty(reader);
+        readProperty();
       if (line.length() >= 6 && line.substring(0, 6).equals("DIPOLE"))
-        readDipole(reader);
+        readDipole();
       if (line.length() >= 7 && line.substring(0, 7).equals("VIBFREQ"))
-        readVibFreqs(reader);
+        readVibFreqs();
     }
   }
 
-  void readDipole(BufferedReader reader) throws Exception {
+  void readDipole() throws Exception {
     //fall-back if no other dipole record
-    line = reader.readLine();
+    readLine();
     String tokens[] = getTokens(line);
     if (tokens.length != 3)
       return;
@@ -318,7 +320,7 @@ class SpartanArchive {
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("dipole", dipole);
   }
 
-  void readProperty(BufferedReader reader) throws Exception {
+  void readProperty() throws Exception {
     String tokens[] = getTokens(line);
     if (tokens.length == 0)
       return;
@@ -329,7 +331,7 @@ class SpartanArchive {
     Vector vector = new Vector();
     if (tokens[3].equals("=")) {
       if (isString) {
-        value = getString(line, tokens[4].substring(0, 1));
+        value = getString(tokens[4].substring(0, 1));
       } else {
         value = new Float(parseFloat(tokens[4]));
       }
@@ -339,10 +341,10 @@ class SpartanArchive {
         nValues = 1;
       boolean isArray = (tokens.length == 6);
       Vector atomInfo = new Vector();
-      while ((line = reader.readLine()) != null
+      while (readLine() != null
           && !line.substring(0, 3).equals("END")) {
         if (isString) {
-          value = getString(line, "\"");
+          value = getString("\"");
           vector.add(value);
         } else {
           String tokens2[] = getTokens(line);
@@ -373,8 +375,8 @@ class SpartanArchive {
 
   //Logger.debug("reading property line:" + line);
 
-  void readVibFreqs(BufferedReader reader) throws Exception {
-    line = reader.readLine();
+  void readVibFreqs() throws Exception {
+    readLine();
     String label = "";
     int frequencyCount = parseInt(line);
     Vector vibrations = new Vector();
@@ -385,7 +387,7 @@ class SpartanArchive {
       int atomCount0 = atomSetCollection.atomCount;
       atomSetCollection.cloneLastAtomSet();
       addBonds(bondData, atomCount0);
-      line = reader.readLine();
+      readLine();
       Hashtable info = new Hashtable();
       float freq = parseFloat(line);
       info.put("freq", new Float(freq));
@@ -406,7 +408,7 @@ class SpartanArchive {
     int iatom = atomCount; // add vibrations starting at second atomset
     int nValues = 3;
     float[] atomInfo = new float[3];
-    while ((line = reader.readLine()) != null) {
+    while (readLine() != null) {
       String tokens2[] = getTokens(line);
       for (int i = 0; i < tokens2.length; i++) {
         float f = parseFloat(tokens2[i]);
@@ -434,9 +436,15 @@ class SpartanArchive {
         .setAtomSetCollectionAuxiliaryInfo("vibration", vibrations);
   }
 
-  String getString(String line, String strQuote) {
+  String getString(String strQuote) {
     int i = line.indexOf(strQuote);
     int j = line.lastIndexOf(strQuote);
     return (j == i ? "" : line.substring(i + 1, j));
+  }
+  
+  //because this is NOT an extension of AtomSetCollectionReader
+  String readLine() throws Exception {
+    line = reader.readLine();
+    return line;
   }
 }

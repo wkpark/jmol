@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
+
 import java.io.BufferedReader;
 import java.util.Hashtable;
 
@@ -42,15 +43,15 @@ class OdysseyXMLReader extends AtomSetCollectionReader {
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
-
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("odysseyXML)");
     try {
-      if (discardLinesUntilContains(reader, "<description") != null)
-        readDescription(reader);
-      if (discardLinesUntilContains(reader, "<atoms") != null)
-        readAtoms(reader);
-      if (discardLinesUntilContains(reader, "<bonds") != null)
-        readBonds(reader);
+      if (discardLinesUntilContains("<description") != null)
+        readDescription();
+      if (discardLinesUntilContains("<atoms") != null)
+        readAtoms();
+      if (discardLinesUntilContains("<bonds") != null)
+        readBonds();
     } catch (Exception ex) {
       Logger.error("Could not read file", ex);
       atomSetCollection.errorMessage = "Could not read file:" + ex;
@@ -63,7 +64,7 @@ class OdysseyXMLReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
-  void readDescription(BufferedReader reader) throws Exception {
+  void readDescription() throws Exception {
     /*
  
   <description>
@@ -77,7 +78,7 @@ class OdysseyXMLReader extends AtomSetCollectionReader {
      */
     String title = "";
     String phase = null;
-    while ((line = reader.readLine()) != null && line.indexOf("</description>") < 0) {
+    while (readLine() != null && line.indexOf("</description>") < 0) {
       if (line.indexOf("title")>=0)
         title = line.substring(line.indexOf(">")+1, line.lastIndexOf("<"));
       else if (line.indexOf("phase")>=0)
@@ -86,11 +87,10 @@ class OdysseyXMLReader extends AtomSetCollectionReader {
     modelName = title + (phase != null ? " - " + phase : "");
   }
 
-  void readAtoms(BufferedReader reader) throws Exception {
-    String line;
+  void readAtoms() throws Exception {
     atomCount = 0;
-    while ((line = reader.readLine()) != null && line.indexOf("</atoms>") < 0) {
-      Hashtable xml = readXML(reader, "atom");
+    while (readLine() != null && line.indexOf("</atoms>") < 0) {
+      Hashtable xml = readXML("atom");
       Atom atom = new Atom();
       atom.atomName = (String) xml.get("id");
       atom.elementSymbol = (String) xml.get("element");
@@ -104,10 +104,10 @@ class OdysseyXMLReader extends AtomSetCollectionReader {
     }
   }
 
-  Hashtable readXML(BufferedReader reader, String name) throws Exception {
+  Hashtable readXML(String name) throws Exception {
     // simple unnested XML -- tags must begin and end on own line
     String tag = "<" + name;
-    line = discardLinesUntilContains(reader, tag);
+    line = discardLinesUntilContains(tag);
     tag = "/" + name + ">";
     String tag2 = "/>";
     Hashtable xml = new Hashtable();
@@ -125,16 +125,16 @@ class OdysseyXMLReader extends AtomSetCollectionReader {
         xml.put(key, val);
         System.out.println(">" + key + "<=>" + val + "<");
       }
-      line = reader.readLine();
+      readLine();
       if (line.indexOf(tag) >= 0 || line.indexOf(tag2) >= 0)
         break;
     }
     return xml;
   }
 
-  void readBonds(BufferedReader reader) throws Exception {
-    while ((line = reader.readLine()) != null && line.indexOf("</bonds>") < 0) {
-      Hashtable xml = readXML(reader, "bond");
+  void readBonds() throws Exception {
+    while (readLine() != null && line.indexOf("</bonds>") < 0) {
+      Hashtable xml = readXML("bond");
       int sourceIndex = atomSetCollection.getAtomNameIndex((String) xml
           .get("a"));
       int targetIndex = atomSetCollection.getAtomNameIndex((String) xml

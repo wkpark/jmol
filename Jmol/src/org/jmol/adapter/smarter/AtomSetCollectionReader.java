@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-10-22 14:12:46 -0500 (Sun, 22 Oct 2006) $
+ * $Revision: 5999 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,6 +23,7 @@
  */
 
 package org.jmol.adapter.smarter;
+
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.symmetry.SpaceGroup;
@@ -92,26 +93,26 @@ abstract class AtomSetCollectionReader extends Parser {
 
   String spaceGroup;
   UnitCell unitcell;
-  float[] notionalUnitCell;  //0-5 a b c alpha beta gamma; 6-21 matrix c->f
+  float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
   int[] latticeCells = new int[3];
   int desiredSpaceGroupIndex;
-  
+
   // load options:
-  
+
   boolean doApplySymmetry;
   boolean doConvertToFractional;
   boolean fileCoordinatesAreFractional;
   boolean ignoreFileUnitCell;
   boolean ignoreFileSymmetryOperators;
   boolean ignoreFileSpaceGroupName;
-  
+
   // state variables
   boolean iHaveUnitCell;
   boolean iHaveCartesianToFractionalMatrix;
   boolean iHaveFractionalCoordinates;
   boolean iHaveSymmetryOperators;
   boolean needToApplySymmetry;
-  
+
   abstract AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception;
 
@@ -120,30 +121,6 @@ abstract class AtomSetCollectionReader extends Parser {
     return null;
   }
 
-  String checkLineForScript(String line) {
-    if (line.endsWith("#noautobond")) {
-      line = line.substring(0, line.lastIndexOf('#')).trim();
-      atomSetCollection.setAtomSetCollectionProperty("noautobond", "true");
-    }
-    int pt = line.indexOf("#jmolscript:");
-    if (pt >= 0) {
-      String script = line.substring(pt + 12, line.length());
-      if (script.indexOf("#") >= 0) {
-        script = script.substring(0, script.indexOf("#"));
-      }
-      String previousScript = atomSetCollection
-          .getAtomSetCollectionProperty("jmolscript");
-      if (previousScript == null)
-        previousScript = "";
-      else
-        previousScript += ";";
-      atomSetCollection.setAtomSetCollectionProperty("jmolscript",
-          previousScript + script);
-      line = line.substring(0, pt).trim();
-    }
-    return line;
-  }
- 
   void initialize() {
     // called by the resolver
     modelNumber = 0;
@@ -156,7 +133,7 @@ abstract class AtomSetCollectionReader extends Parser {
 
     ignoreFileUnitCell = false;
     ignoreFileSpaceGroupName = false;
-    ignoreFileSymmetryOperators = false; 
+    ignoreFileSymmetryOperators = false;
     doConvertToFractional = false;
     doApplySymmetry = false;
 
@@ -166,10 +143,10 @@ abstract class AtomSetCollectionReader extends Parser {
     iHaveCartesianToFractionalMatrix = false;
     iHaveFractionalCoordinates = false;
     iHaveSymmetryOperators = false;
-    
+
     initializeSymmetry();
   }
-  
+
   void initialize(int[] params) {
     initialize();
     if (params == null)
@@ -218,7 +195,7 @@ abstract class AtomSetCollectionReader extends Parser {
   private void initializeSymmetry() {
     iHaveUnitCell = ignoreFileUnitCell;
     if (!ignoreFileUnitCell) {
-      notionalUnitCell = new float[22]; 
+      notionalUnitCell = new float[22];
       //0-5 a b c alpha beta gamma; 6-21 m00 m01... m33 cartesian-->fractional
       for (int i = 22; --i >= 0;)
         notionalUnitCell[i] = Float.NaN;
@@ -226,13 +203,13 @@ abstract class AtomSetCollectionReader extends Parser {
     }
     if (!ignoreFileSpaceGroupName)
       spaceGroup = "unspecified";
-    
+
     needToApplySymmetry = false;
   }
-  
+
   void initializeCartesianToFractional() {
     for (int i = 0; i < 16; i++)
-      notionalUnitCell[6 + i] = ((i % 5 == 0 ? 1 : 0)); 
+      notionalUnitCell[6 + i] = ((i % 5 == 0 ? 1 : 0));
   }
 
   void newAtomSet(String name) {
@@ -253,28 +230,30 @@ abstract class AtomSetCollectionReader extends Parser {
   }
 
   void setSymmetryOperator(String jonesFaithful) {
-    if(ignoreFileSymmetryOperators)
+    if (ignoreFileSymmetryOperators)
       return;
     atomSetCollection.setLatticeCells(latticeCells);
-    if(!atomSetCollection.addSymmetry(jonesFaithful))
+    if (!atomSetCollection.addSymmetry(jonesFaithful))
       Logger.warn("Skipping symmetry operation " + jonesFaithful);
     iHaveSymmetryOperators = true;
   }
-  
+
   void setUnitCellItem(int i, float x) {
     if (ignoreFileUnitCell)
       return;
     if (i >= 6 && Float.isNaN(notionalUnitCell[6]))
       initializeCartesianToFractional();
     notionalUnitCell[i] = x;
-    if (logger != null) logger.log("setunitcellitem " + i + " " + x);
+    if (logger != null)
+      logger.log("setunitcellitem " + i + " " + x);
     if (i < 6)
       iHaveUnitCell = checkUnitCell(6);
-    else 
+    else
       iHaveCartesianToFractionalMatrix = checkUnitCell(22);
   }
 
-  void setUnitCell(float a, float b, float c, float alpha, float beta, float gamma) {
+  void setUnitCell(float a, float b, float c, float alpha, float beta,
+                   float gamma) {
     if (ignoreFileUnitCell)
       return;
     notionalUnitCell[UnitCell.INFO_A] = a;
@@ -282,37 +261,40 @@ abstract class AtomSetCollectionReader extends Parser {
     notionalUnitCell[UnitCell.INFO_C] = c;
     notionalUnitCell[UnitCell.INFO_ALPHA] = alpha;
     notionalUnitCell[UnitCell.INFO_BETA] = beta;
-    notionalUnitCell[UnitCell.INFO_GAMMA] = gamma;        
+    notionalUnitCell[UnitCell.INFO_GAMMA] = gamma;
     iHaveUnitCell = checkUnitCell(6);
   }
 
   private boolean checkUnitCell(int n) {
     for (int i = 0; i < n; i++)
-     if (Float.isNaN(notionalUnitCell[i]))
-       return false;
+      if (Float.isNaN(notionalUnitCell[i]))
+        return false;
     unitcell = new UnitCell(notionalUnitCell);
     if (doApplySymmetry)
       doConvertToFractional = !fileCoordinatesAreFractional;
     //if (but not only if) applying symmetry do we force conversion
     return true;
   }
-  
+
   void setFractionalCoordinates(boolean TF) {
     iHaveFractionalCoordinates = fileCoordinatesAreFractional = TF;
   }
-  
+
   void setAtomCoord(Atom atom, float x, float y, float z) {
-    atom.x = x; atom.y = y; atom.z = z;
+    atom.x = x;
+    atom.y = y;
+    atom.z = z;
     setAtomCoord(atom);
   }
 
   void setAtomCoord(Atom atom) {
-    if (doConvertToFractional && !fileCoordinatesAreFractional && unitcell != null) {
+    if (doConvertToFractional && !fileCoordinatesAreFractional
+        && unitcell != null) {
       unitcell.toFractional(atom);
       iHaveFractionalCoordinates = true;
     }
     //if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
-      //Logger.debug(" atom "+atom.atomName + " " + atom.x + " " + atom.y+" "+atom.z);
+    //Logger.debug(" atom "+atom.atomName + " " + atom.x + " " + atom.y+" "+atom.z);
     needToApplySymmetry = true;
   }
 
@@ -341,52 +323,77 @@ abstract class AtomSetCollectionReader extends Parser {
     }
     initializeSymmetry();
   }
-  
+
   static String getElementSymbol(int elementNumber) {
     return JmolConstants.elementSymbolFromNumber(elementNumber);
   }
 
-  void fillDataBlock(BufferedReader reader, String[][] data) throws Exception {
-    int nLines = data.length; 
-    for (int i = 0; i < nLines; i++) {
-      String line = discardLinesUntilNonBlank(reader);
-      data[i] = getTokens(line);
-    }
+  void fillDataBlock(String[][] data) throws Exception {
+    int nLines = data.length;
+    for (int i = 0; i < nLines; i++)
+      data[i] = getTokens(discardLinesUntilNonBlank());
   }
 
-  void discardLines(BufferedReader reader, int nLines) throws Exception {
+  void discardLines(int nLines) throws Exception {
     for (int i = nLines; --i >= 0;)
-      reader.readLine();
+      readLine();
   }
 
-  String discardLinesUntilStartsWith(BufferedReader reader, String startsWith)
-      throws Exception {
-    String line;
-    while ((line = reader.readLine()) != null && !line.startsWith(startsWith)) {
+  String discardLinesUntilStartsWith(String startsWith) throws Exception {
+    while (readLine() != null && !line.startsWith(startsWith)) {
     }
     return line;
   }
 
-  String discardLinesUntilContains(BufferedReader reader, String containsMatch)
-      throws Exception {
-    String line;
-    while ((line = reader.readLine()) != null
-        && line.indexOf(containsMatch) < 0) {
+  String discardLinesUntilContains(String containsMatch) throws Exception {
+    while (readLine() != null && line.indexOf(containsMatch) < 0) {
     }
     return line;
   }
 
-  void discardLinesUntilBlank(BufferedReader reader) throws Exception {
-    String line;
-    while ((line = reader.readLine()) != null && line.trim().length() != 0) {
+  void discardLinesUntilBlank() throws Exception {
+    while (readLine() != null && line.trim().length() != 0) {
     }
   }
 
-  String discardLinesUntilNonBlank(BufferedReader reader) throws Exception {
-    String line;
-    while ((line = reader.readLine()) != null && line.trim().length() == 0) {
+  String discardLinesUntilNonBlank() throws Exception {
+    while (readLine() != null && line.trim().length() == 0) {
     }
     return line;
   }
 
+  void checkLineForScript() {
+    if (line.endsWith("#noautobond")) {
+      line = line.substring(0, line.lastIndexOf('#')).trim();
+      atomSetCollection.setAtomSetCollectionProperty("noautobond", "true");
+    }
+    int pt = line.indexOf("#jmolscript:");
+    if (pt >= 0) {
+      String script = line.substring(pt + 12, line.length());
+      if (script.indexOf("#") >= 0) {
+        script = script.substring(0, script.indexOf("#"));
+      }
+      String previousScript = atomSetCollection
+          .getAtomSetCollectionProperty("jmolscript");
+      if (previousScript == null)
+        previousScript = "";
+      else
+        previousScript += ";";
+      atomSetCollection.setAtomSetCollectionProperty("jmolscript",
+          previousScript + script);
+      line = line.substring(0, pt).trim();
+    }
+  }
+
+  String readLine() throws Exception {
+    line = reader.readLine();
+    return line;
+  }
+
+  String readLineTrimmed() throws Exception {
+    readLine();
+    if (line == null)
+      line = "";
+    return line = line.trim();
+  }
 }

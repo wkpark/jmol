@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-09-12 00:46:22 -0500 (Tue, 12 Sep 2006) $
+ * $Revision: 5501 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  * Copyright (C) 2005  Peter Knowles
@@ -21,6 +21,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.jmol.adapter.smarter;
+
 
 import java.io.BufferedReader;
 import java.util.HashMap;
@@ -51,9 +52,10 @@ class XmlMolproReader extends XmlCmlReader {
 
   XmlMolproReader(XmlReader parent, AtomSetCollection atomSetCollection, BufferedReader reader, XMLReader xmlReader) {
     this.parent = parent;
+    this.reader = reader;
     this.atomSetCollection = atomSetCollection;
     new MolproHandler(xmlReader);
-    parseReaderXML(reader, xmlReader);
+    parseReaderXML(xmlReader);
   }
 
   XmlMolproReader(XmlReader parent, AtomSetCollection atomSetCollection, JSObject DOMNode) {

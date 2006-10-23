@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: nicove $
+ * $Date: 2006-08-30 13:20:20 -0500 (Wed, 30 Aug 2006) $
+ * $Revision: 5447 $
  *
  * Copyright (C) 2004-2005  The Jmol Development Team
  *
@@ -24,8 +24,9 @@
 
 package org.jmol.adapter.smarter;
 
-import java.io.BufferedReader;
 
+import java.io.BufferedReader;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.util.Logger;
 /**
  * A reader for Q-Chem 2.1
@@ -50,20 +51,18 @@ import org.jmol.util.Logger;
 class QchemReader extends AtomSetCollectionReader {
     
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
-
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("qchem");
-
     try {
-      String line;
       int lineNum = 0;
-      while ((line = reader.readLine()) != null) {
+      while (readLine() != null) {
         if (line.indexOf("Standard Nuclear Orientation") >= 0) {
-          readAtoms(reader);
+          readAtoms();
         } else if (line.indexOf("VIBRATIONAL FREQUENCIES") >= 0) {
-          readFrequencies(reader);
+          readFrequencies();
           break;
         } else if (line.indexOf("Mulliken Net Atomic Charges") >= 0){
-          readPartialCharges(reader);
+          readPartialCharges();
         } 
         ++lineNum;
       }
@@ -85,67 +84,57 @@ class QchemReader extends AtomSetCollectionReader {
     1      H       0.000000     0.000000     4.756791
 */
 
-  // offset of coordinates within 'Standard Nuclear Orientation:'
-  int coordinateBase = 16;
-  // number of lines to skip after 'Frequencies:' to get to the vectors
-  int frequencyLineSkipCount = 4;
-
   int atomCount;
 
-  void readAtoms(BufferedReader reader) throws Exception {
+  void readAtoms() throws Exception {
     // we only take the last set of atoms before the frequencies
     atomSetCollection.discardPreviousAtoms();
     atomCount = 0;
-    discardLines(reader, 2);
-    String line;
-    while ((line = reader.readLine()) != null &&
-           !line.startsWith(" --")) {
-    /*String centerNumber = */parseToken(line, 0, 5);
-    String aname = parseToken(line, 6, 12);
-    if (aname.indexOf("X") == 1) {
-      // skip dummy atoms
-      continue;
-    }
-      
+    discardLines(2);
+    String[] tokens;
+    while (readLine() != null && !line.startsWith(" --")) {
+      tokens = getTokens(line);
+      if (tokens.length < 5)
+        continue;
+      String symbol = tokens[1];
+      if (JmolConstants.elementNumberFromSymbol(symbol) < 1)
+        continue;
       //q-chem specific offsets
-      float x = parseFloat(line, coordinateBase     , coordinateBase + 13);
-      float y = parseFloat(line, coordinateBase + 13, coordinateBase + 26);
-      float z = parseFloat(line, coordinateBase + 26, coordinateBase + 39);
+      float x = parseFloat(tokens[2]);
+      float y = parseFloat(tokens[3]);
+      float z = parseFloat(tokens[4]);
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         continue;
       Atom atom = atomSetCollection.addNewAtom();
-      atom.elementSymbol = aname;
-      atom.x = x; atom.y = y; atom.z = z;
+      atom.elementSymbol = symbol;
+      atom.x = x;
+      atom.y = y;
+      atom.z = z;
       ++atomCount;
     }
   }
 
-  void readFrequencies(BufferedReader reader) throws Exception {
+  void readFrequencies() throws Exception {
     int modelNumber = 1;
-    String line;
-    while ((line = reader.readLine()) != null &&
-           ! line.startsWith(" Frequency:")) {
-    }
-    if (line == null)
-      return;
-    do {
-      // FIXME  We'll want to read in the frequency of the vibration
-      // at some point
-      discardLines(reader, frequencyLineSkipCount);
+    discardLinesUntilStartsWith(" Frequency:");
+    while (line != null && line.startsWith(" Frequency:")) {
+      String[] frequencies = getTokens(line);
+      int nModels = frequencies.length - 1;
+      discardLines(4);
       for (int i = 0; i < atomCount; ++i) {
-        line = reader.readLine();
-        for (int j = 0, col = 12; j < 3; ++j, col += 23) {
-          float x = parseFloat(line, col     , col +  5);
-          float y = parseFloat(line, col +  7, col + 12);
-          float z = parseFloat(line, col + 14, col + 19);
-
-          recordAtomVector(modelNumber + j, i+1, x, y, z);
+        readLine();
+        String[] tokens = getTokens(line);
+        for (int j = 0, offset = 0; j < nModels; j++) {
+          float x = parseFloat(tokens[++offset]);
+          float y = parseFloat(tokens[++offset]);
+          float z = parseFloat(tokens[++offset]);
+          recordAtomVector(modelNumber + j, i + 1, x, y, z);
         }
       }
-     discardLines(reader, 1);
-     modelNumber += 3;
-    } while ((line = reader.readLine()) != null &&
-             line.startsWith(" Frequency:"));
+      discardLines(1);
+      modelNumber += 3;
+      readLine();
+    }
   }
 
   void recordAtomVector(int modelNumber, int atomCenterNumber,
@@ -164,12 +153,9 @@ class QchemReader extends AtomSetCollectionReader {
     atom.vectorZ = z;
   }
 
-  void readPartialCharges(BufferedReader reader) throws Exception {
-    discardLines(reader, 3);
-    String line;
-    for (int i = 0;
-         i < atomCount && (line = reader.readLine()) != null;
-         ++i)
-      atomSetCollection.atoms[i].partialCharge = parseFloat(line, 29, 38);
+  void readPartialCharges() throws Exception {
+    discardLines(3);
+    for (int i = 0; i < atomCount && readLine() != null; ++i)
+      atomSetCollection.atoms[i].partialCharge = parseFloat(getTokens(line)[2]);
   }
 }

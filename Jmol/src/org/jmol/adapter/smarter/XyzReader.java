@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-10-22 14:12:46 -0500 (Sun, 22 Oct 2006) $
+ * $Revision: 5999 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
+
 import java.io.BufferedReader;
 
 import org.jmol.viewer.JmolConstants;
@@ -44,22 +45,22 @@ import org.jmol.viewer.JmolConstants;
 class XyzReader extends AtomSetCollectionReader {
     
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
-
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("xyz");
     boolean iHaveAtoms = false;
 
     try {
       int modelAtomCount;
-      while ((modelAtomCount = readAtomCount(reader)) > 0) {
+      while ((modelAtomCount = readAtomCount()) > 0) {
         if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
           if (iHaveAtoms)
             break;
-          skipAtomSet(reader, modelAtomCount);
+          skipAtomSet(modelAtomCount);
           continue;
         }
         iHaveAtoms = true;
-        readAtomSetName(reader);
-        readAtoms(reader, modelAtomCount);
+        readAtomSetName();
+        readAtoms(modelAtomCount);
         applySymmetry();
       }
     } catch (Exception ex) {
@@ -68,14 +69,14 @@ class XyzReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
     
-  void skipAtomSet(BufferedReader reader, int modelAtomCount) throws Exception {
-    reader.readLine(); //comment
+  void skipAtomSet(int modelAtomCount) throws Exception {
+    readLine(); //comment
     for (int i = modelAtomCount; --i >=0; )
-      reader.readLine(); //atoms
+      readLine(); //atoms
   }
   
-  int readAtomCount(BufferedReader reader) throws Exception {
-    String line = reader.readLine();
+  int readAtomCount() throws Exception {
+    readLine();
     if (line != null) {
       int atomCount = parseInt(line);
       if (atomCount > 0)
@@ -84,19 +85,18 @@ class XyzReader extends AtomSetCollectionReader {
     return 0;
   }
 
-  void readAtomSetName(BufferedReader reader) throws Exception {
-    String firstline = reader.readLine().trim();
-    firstline = checkLineForScript(firstline);
-    newAtomSet(firstline);
+  void readAtomSetName() throws Exception {
+    readLineTrimmed();
+    checkLineForScript();
+    newAtomSet(line);
   }
 
   final float[] chargeAndOrVector = new float[4];
   final boolean isNaN[] = new boolean[4];
   
-  void readAtoms(BufferedReader reader,
-                 int modelAtomCount) throws Exception {
+  void readAtoms(int modelAtomCount) throws Exception {
     for (int i = 0; i < modelAtomCount; ++i) {
-      String line = reader.readLine();
+      readLine();
       Atom atom = atomSetCollection.addNewAtom();
       int isotope = parseInt(line);
       String str = parseToken(line);

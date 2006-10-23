@@ -23,6 +23,7 @@
  */
 package org.jmol.adapter.smarter;
 
+
 import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -62,9 +63,10 @@ class XmlChem3dReader extends XmlReader {
 
   XmlChem3dReader(XmlReader parent, AtomSetCollection atomSetCollection, BufferedReader reader, XMLReader xmlReader) {
     this.parent = parent;
+    this.reader = reader;
     this.atomSetCollection = atomSetCollection;
     new Chem3dHandler(xmlReader);
-    parseReaderXML(reader, xmlReader);
+    parseReaderXML(xmlReader);
   }
 
   XmlChem3dReader(XmlReader parent, AtomSetCollection atomSetCollection, JSObject DOMNode) {

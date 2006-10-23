@@ -23,6 +23,7 @@
  */
 package org.jmol.adapter.smarter;
 
+
 import java.io.BufferedReader;
 import java.util.Hashtable;
 
@@ -43,15 +44,12 @@ class CsfReader extends AtomSetCollectionReader {
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("csf");
-    
-    line = reader.readLine();
-    while (line != null) {
+    while (readLine() != null) {
       if (line.startsWith("object_class")) {
         processObjectClass();
         // there is already an unprocessed line in the firing chamber
         continue;
       }
-      line = reader.readLine();
     }
     return atomSetCollection;
   }
@@ -72,12 +70,7 @@ class CsfReader extends AtomSetCollectionReader {
       processVibrationObject();
       return;
     }
-    line = reader.readLine();
-  }
-  
-  void skipTo(String startsWith) throws Exception {
-    while ((line = reader.readLine()) != null && line.indexOf(startsWith) != 0)
-        {}
+    readLine();
   }
   
   int parseLineParameters(String[] fields,
@@ -127,10 +120,10 @@ class CsfReader extends AtomSetCollectionReader {
   void processConnectorObject() throws Exception {
     int[] fieldTypes = new int[100]; // should be enough
     boolean[] propertyReferenced = new boolean[CONNECTOR_PROPERTY_MAX];
-    skipTo("ID");
+    discardLinesUntilStartsWith("ID");
     int fieldCount = parseLineParameters(connectorFields, connectorFieldMap,
         fieldTypes, propertyReferenced);
-    out: for (; (line = reader.readLine()) != null;) {
+    out: for (; readLine() != null;) {
       if (line.startsWith("property_flags:"))
         break;
       String thisAtomID = null;
@@ -205,10 +198,10 @@ class CsfReader extends AtomSetCollectionReader {
     nAtoms = 0;
     int[] fieldTypes = new int[100]; // should be enough
     boolean[] atomPropertyReferenced = new boolean[ATOM_PROPERTY_MAX];
-    skipTo("ID");
+    discardLinesUntilStartsWith("ID");
     int fieldCount = parseLineParameters(atomFields, atomFieldMap, fieldTypes,
         atomPropertyReferenced);
-    for (; (line = reader.readLine()) != null; ) {
+    for (; readLine() != null; ) {
       if (line.startsWith("property_flags:"))
         break;
       String tokens[] = getTokens(line);
@@ -268,12 +261,12 @@ class CsfReader extends AtomSetCollectionReader {
   void processBondObject() throws Exception {
     int[] fieldTypes = new int[100]; // should be enough
     boolean[] propertyReferenced = new boolean[BOND_PROPERTY_MAX];
-    skipTo("ID");
+    discardLinesUntilStartsWith("ID");
     int fieldCount = parseLineParameters(bondFields,
                                          bondFieldMap,
                                          fieldTypes,
                                          propertyReferenced);
-    for (; (line = reader.readLine()) != null; ) {
+    for (; readLine() != null; ) {
       if (line.startsWith("property_flags:"))
         break;
       String thisBondID = null;
@@ -326,13 +319,13 @@ class CsfReader extends AtomSetCollectionReader {
   void processVibrationObject() throws Exception {
     int[] fieldTypes = new int[100]; // should be enough
     boolean[] propertyReferenced = new boolean[VIB_PROPERTY_MAX];
-    skipTo("ID normalMode"); //a bit risky -- could miss it
+    discardLinesUntilStartsWith("ID normalMode"); //a bit risky -- could miss it
     int thisvibID = -1;
     float[] vibXYZ = new float[3];
     int iatom = atomSetCollection.getFirstAtomSetAtomCount();
     int xyzpt = 0;
     Atom[] atoms = atomSetCollection.atoms;
-    for (; (line = reader.readLine()) != null;) {
+    for (; readLine() != null;) {
       if (line.startsWith("property_flags:"))
         break;
       String tokens[] = getTokens(line);
@@ -350,12 +343,12 @@ class CsfReader extends AtomSetCollectionReader {
       }
     }
     
-    skipTo("ID"); //second part
+    discardLinesUntilStartsWith("ID"); //second part
     int fieldCount = parseLineParameters(vibFields,
                                          vibFieldMap,
                                          fieldTypes,
                                          propertyReferenced);
-    for (; (line = reader.readLine()) != null; ) {
+    for (; readLine() != null; ) {
       if (line.startsWith("property_flags:"))
         break;
       String tokens[] = getTokens(line);

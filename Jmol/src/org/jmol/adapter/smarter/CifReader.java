@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-10-20 07:48:25 -0500 (Fri, 20 Oct 2006) $
+ * $Revision: 5991 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -22,6 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.jmol.adapter.smarter;
+
 
 import java.io.BufferedReader;
 import java.util.Hashtable;
@@ -85,7 +86,7 @@ class CifReader extends AtomSetCollectionReader {
     boolean skipping = false;
     while ((key = tokenizer.peekToken()) != null) {
       if (key.indexOf("#jmolscript:") >= 0)
-        checkLineForScript(line);
+        checkLineForScript();
       if (key.startsWith("data_")) {
         if (iHaveDesiredModel)
           break;
@@ -1237,28 +1238,26 @@ class CifReader extends AtomSetCollectionReader {
      * that full multiline string. Uses \1 to indicate that 
      * this is a special quotation. 
      * 
-     * @param reader
      * @return  the next line or null if EOF
      * @throws Exception
      */
-    String setStringNextLine(BufferedReader reader) throws Exception {
-      setString(reader.readLine());
-      if (str == null || str.length() == 0 || str.charAt(0) != ';')
-        return str;
-      String newline;
+    String setStringNextLine() throws Exception {
+      setString(readLine());
+      if (line == null || line.length() == 0 || line.charAt(0) != ';')
+        return line;
       ich = 1;
-      str = '\1' + str.substring(1) + '\n';
-      while ((newline = reader.readLine()) != null) {
-        if (newline.startsWith(";")) {
+      String str = '\1' + line.substring(1) + '\n';
+      while (readLine() != null) {
+        if (line.startsWith(";")) {
           // remove trailing <eol> only, and attach rest of next line
           str = str.substring(0, str.length() - 1)
-            + '\1' + newline.substring(1);
+            + '\1' + line.substring(1);
           break;
         }
-        str += newline + '\n';
+        str += line + '\n';
       }
       setString(str);
-      return str;
+      return line = str;
     }
 
     /**
@@ -1370,7 +1369,7 @@ class CifReader extends AtomSetCollectionReader {
      */
     String getNextToken() throws Exception {
       while (!hasMoreTokens())
-        if ((line = setStringNextLine(reader)) == null)
+        if (setStringNextLine() == null)
           return null;
       return nextToken();
     }
@@ -1387,7 +1386,7 @@ class CifReader extends AtomSetCollectionReader {
      */
     String peekToken() throws Exception {
       while (!hasMoreTokens())
-        if ((line = setStringNextLine(reader)) == null)
+        if (setStringNextLine() == null)
           return null;
       int ich = this.ich;
       strPeeked = nextToken();

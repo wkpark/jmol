@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
+
 import java.io.BufferedReader;
 
 import org.jmol.api.JmolAdapter;
@@ -55,15 +56,16 @@ class Mol2Reader extends AtomSetCollectionReader {
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("mol2");
     setFractionalCoordinates(false);
-    line = reader.readLine();
+    readLine();
     modelNumber = 0;
     while (line != null) {
       if (line.equals("@<TRIPOS>MOLECULE")) {
         if (++modelNumber == desiredModelNumber || desiredModelNumber <= 0) {
           try {
-            processMolecule(reader);
+            processMolecule();
           } catch (Exception e) {
             Logger.error("Could not read file at line: " + line, e);
           }
@@ -72,12 +74,12 @@ class Mol2Reader extends AtomSetCollectionReader {
           continue;
         }
       }
-      line = reader.readLine();
+      readLine();
     }
     return atomSetCollection;
   }
 
-  void processMolecule(BufferedReader reader) throws Exception {
+  void processMolecule() throws Exception {
     /* 4-6 lines:
      ZINC02211856
      55    58     0     0     0
@@ -94,49 +96,49 @@ class Mol2Reader extends AtomSetCollectionReader {
 
      */
 
-    String thisDataSetName = reader.readLine().trim();
-    line = reader.readLine() + " 0 0 0 0 0 0";
+    String thisDataSetName = readLineTrimmed();
+    readLine();
+    line += " 0 0 0 0 0 0";
     int atomCount = parseInt(line);
     int bondCount = parseInt(line, ichNextParse);
     int resCount = parseInt(line, ichNextParse);
-    reader.readLine();//mol_type
-    line = reader.readLine();//charge_type
+    readLine();//mol_type
+    readLine();//charge_type
     boolean iHaveCharges = (line.indexOf("NO_CHARGES") != 0);
-    line = reader.readLine(); //optional SYBYL status
-    if (line != null && (line.length() == 0 || line.charAt(0) != '@')) {
-      line = reader.readLine(); //optional comment
-      if (line != null && line.length() != 0 && line.charAt(0) != '@') {
-        thisDataSetName += ": " + reader.readLine().trim();
-        line = reader.readLine();
+    //optional SYBYL status
+    if (readLine() != null && (line.length() == 0 || line.charAt(0) != '@')) {
+      //optional comment
+      if (readLine() != null && line.length() != 0 && line.charAt(0) != '@') {
+        thisDataSetName += ": " + readLineTrimmed();
+        readLine();
       }
     }
     newAtomSet(thisDataSetName);
     while (line != null && !line.equals("@<TRIPOS>MOLECULE")) {
       if (line.equals("@<TRIPOS>ATOM")) {
-        readAtoms(reader, atomCount, iHaveCharges);
+        readAtoms(atomCount, iHaveCharges);
         atomSetCollection.setAtomSetName(thisDataSetName);
       } else if (line.equals("@<TRIPOS>BOND")) {
-        readBonds(reader, bondCount);
+        readBonds(bondCount);
       } else if (line.equals("@<TRIPOS>SUBSTRUCTURE")) {
-        readResInfo(reader, resCount);
+        readResInfo(resCount);
       } else if (line.equals("@<TRIPOS>CRYSIN")) {
-        readCrystalInfo(reader);
+        readCrystalInfo();
       }
-      line = reader.readLine();
+      readLine();
     }
-    nAtoms+=atomCount;
+    nAtoms += atomCount;
     applySymmetry();
   }
 
-  void readAtoms(BufferedReader reader, int atomCount, boolean iHaveCharges)
+  void readAtoms(int atomCount, boolean iHaveCharges)
       throws Exception {
     //     1 Cs       0.0000   4.1230   0.0000   Cs        1 RES1   0.0000
     //  1 C1          7.0053   11.3096   -1.5429 C.3       1 <0>        -0.1912
     // free format, but no blank lines
     for (int i = 0; i < atomCount; ++i) {
       Atom atom = atomSetCollection.addNewAtom();
-      line = reader.readLine();
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens(readLine());
       //Logger.debug(tokens.length + " -" + tokens[5] + "- " + line);
       setAtomCoord(atom, parseFloat(tokens[2]), parseFloat(tokens[3]),
           parseFloat(tokens[4]));
@@ -153,12 +155,11 @@ class Mol2Reader extends AtomSetCollectionReader {
     }
   }
 
-  void readBonds(BufferedReader reader, int bondCount) throws Exception {
+  void readBonds(int bondCount) throws Exception {
     //     6     1    42    1
     // free format, but no blank lines
     for (int i = 0; i < bondCount; ++i) {
-      String line = reader.readLine();
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens(readLine());
       int atomIndex1 = parseInt(tokens[1]);
       int atomIndex2 = parseInt(tokens[2]);
       int order = parseInt(tokens[3]);
@@ -169,17 +170,17 @@ class Mol2Reader extends AtomSetCollectionReader {
     }
   }
 
-  void readResInfo(BufferedReader reader, int resCount) throws Exception {
+  void readResInfo(int resCount) throws Exception {
     // free format, but no blank lines
     for (int i = 0; i < resCount; ++i) {
-      reader.readLine();
+      readLine();
       //to be determined -- not implemented
     }
   }
 
-  void readCrystalInfo(BufferedReader reader) throws Exception {
+  void readCrystalInfo() throws Exception {
     //    4.1230    4.1230    4.1230   90.0000   90.0000   90.0000   221     1
-    line = reader.readLine();
+    readLine();
     ichNextParse = 0;
     for (int i = 0; i < 6; i++)
       setUnitCellItem(i, parseFloat(line, ichNextParse));

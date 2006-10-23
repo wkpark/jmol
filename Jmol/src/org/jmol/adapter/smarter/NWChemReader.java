@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: nicove $
+ * $Date: 2006-08-30 13:20:20 -0500 (Wed, 30 Aug 2006) $
+ * $Revision: 5447 $
  *
  * Copyright (C) 2004-2005  The Jmol Development Team
  *
@@ -23,6 +23,7 @@
  */
 
 package org.jmol.adapter.smarter;
+
 
 import java.io.BufferedReader;
 
@@ -79,40 +80,39 @@ class NWChemReader extends AtomSetCollectionReader {
   private boolean inInput;
  
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
-
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("nwchem");
     init();
     try {
-      String line;
-      while ((line = reader.readLine()) != null) {
+      while (readLine() != null) {
          if (line.startsWith("          Step")) {
            init();
         } else if (line.startsWith("      Symmetry information")) {
-          readSymmetry(reader);
+          readSymmetry();
         } else if (line.indexOf("Total") >= 0) {
-          readTotal(reader, line);          
+          readTotal();          
         } else if (line.indexOf("@") >= 0) {
-          readAtSign(reader, line);
+          readAtSign();
         } else if (line.startsWith("      Optimization converged")) {
           converged = true;
         } else if (line.indexOf("Output coordinates in angstroms") >= 0) {
           equivalentAtomSets++;
-          readAtoms(reader);
+          readAtoms();
         } else if (line.indexOf("ENERGY GRADIENTS") >=0 ) {
           equivalentAtomSets++;
-          readGradients(reader);
+          readGradients();
         } else if (line.indexOf(
             "NWChem Nuclear Hessian and Frequency Analysis") >=0 ) {
-          readFrequencies(reader);
+          readFrequencies();
         } else if (line.startsWith(" Task  times")) {
           init();
           taskNumber++; // starting a new task
         } else if (line.trim().startsWith("NWChem")) {
-          readNWChemLine(reader, line);
+          readNWChemLine();
         } else if (line.startsWith("  Mulliken analysis of the total density")) {
           // only do this if I have read an atom set in this task/step
           if (equivalentAtomSets > 0)
-            readPartialCharges(reader);
+            readPartialCharges();
         }
       }
     } catch (Exception ex) {
@@ -154,17 +154,18 @@ class NWChemReader extends AtomSetCollectionReader {
 
   /**
    * Read the symmetry information and set the property.
-   * @param reader BufferedReader associated with the NWChem output file.
    * @throws Exception If an error occurs.
    */
-  private void readSymmetry(BufferedReader reader) throws Exception {
-    discardLines(reader,2);
-    String tokens[] = getTokens(reader.readLine());
+  private void readSymmetry() throws Exception {
+    discardLines(2);
+    if (readLine() == null)
+      return;
+    String tokens[] = getTokens(line);
     atomSetCollection.setAtomSetProperties("Symmetry group name",
         tokens[tokens.length-1], equivalentAtomSets);
   }
   
-  private void readNWChemLine(BufferedReader reader, String line) {
+  private void readNWChemLine() {
     // currently only keep track of whether I am in the input module or not.
     inInput = (line.indexOf("NWChem Input Module") >= 0);
   }
@@ -172,10 +173,8 @@ class NWChemReader extends AtomSetCollectionReader {
   /**
    * Interpret a line starting with a line with "Total" in it.
    * <p>Determine whether it reports the energy, if so set the property and name(s)
-   * @param reader BufferedReader associated with the NWChem output file.
-   * @param line IF an exception occurs.
    */
-  private void readTotal(BufferedReader reader, String line) {
+  private void readTotal() {
     String tokens[] = getTokens(line);
     try {
       if (tokens[2].startsWith("energy")) {
@@ -189,10 +188,11 @@ class NWChemReader extends AtomSetCollectionReader {
     }
   }
   
-  private void readAtSign(BufferedReader reader, String line) throws Exception {
+  private void readAtSign() throws Exception {
     if (line.charAt(2)=='S') {
-      discardLines(reader, 1); // skip over the line with the --- in it
-      line = reader.readLine();
+      discardLines(1); // skip over the line with the --- in it
+      if (readLine() == null)
+        return;
     }
     String tokens[] = getTokens(line);
     if (!haveEnergy) { // if didn't already have the energies, set them now
@@ -221,12 +221,10 @@ class NWChemReader extends AtomSetCollectionReader {
 
   /**
    * Reads the output coordinates section into a new AtomSet.
-   * @param reader BufferedReader associated with the NWChem output text.
    * @throws Exception If an error occurs.
    **/
-  private void readAtoms(BufferedReader reader) throws Exception {
-    discardLines(reader, 3); // skip blank line, titles and dashes
-    String line;
+  private void readAtoms() throws Exception {
+    discardLines(3); // skip blank line, titles and dashes
     String tokens[];
     haveEnergy = false;
     atomSetCollection.newAtomSet();
@@ -234,7 +232,7 @@ class NWChemReader extends AtomSetCollectionReader {
         "Task "+taskNumber+
         (inInput?SmarterJmolAdapter.PATH_SEPARATOR+"Input":
          SmarterJmolAdapter.PATH_SEPARATOR+"Geometry"));
-    while ( (line = reader.readLine()).length() > 0) {
+    while (readLine() != null && line.length() > 0) {
       tokens = getTokens(line); // get the tokens in the line
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
@@ -271,12 +269,10 @@ class NWChemReader extends AtomSetCollectionReader {
    * <p>One could consider not adding a new AtomSet for this, but just
    * adding the gradient vectors to the last AtomSet read (if that was
    * indeed the same nuclear arrangement).
-   * @param reader BufferedReader associated with the NWChem output text.
    * @throws Exception If an error occurs.
    **/
-  private void readGradients(BufferedReader reader) throws Exception {
-    discardLines(reader, 3); // skip blank line, titles and dashes
-    String line;
+  private void readGradients() throws Exception {
+    discardLines(3); // skip blank line, titles and dashes
     String tokens[];
     atomSetCollection.newAtomSet();
     if (equivalentAtomSets > 1)
@@ -285,7 +281,7 @@ class NWChemReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
         "Task "+taskNumber+
         SmarterJmolAdapter.PATH_SEPARATOR+"Gradients");
-   while ( (line = reader.readLine()).length() > 0) {
+   while (readLine() != null && line.length() > 0) {
       tokens = getTokens(line); // get the tokens in the line
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
@@ -301,123 +297,119 @@ class NWChemReader extends AtomSetCollectionReader {
     }
  }
 
-// SAMPLE FREQUENCY OUTPUT
-// First the structure. The atom column has real element names (not the tags)
-// units of X Y and Z in a.u.
-/*
- ---------------------------- Atom information ----------------------------
-     atom    #        X              Y              Z            mass
- --------------------------------------------------------------------------
-    O        1  9.5835700E-02  3.1863970E-07  0.0000000E+00  1.5994910E+01
-    H        2 -9.8328438E-01  1.5498085E+00  0.0000000E+00  1.0078250E+00
-    H        3 -9.8328460E-01 -1.5498088E+00  0.0000000E+00  1.0078250E+00
- --------------------------------------------------------------------------
+  // SAMPLE FREQUENCY OUTPUT
+  // First the structure. The atom column has real element names (not the tags)
+  // units of X Y and Z in a.u.
+  /*
+   ---------------------------- Atom information ----------------------------
+   atom    #        X              Y              Z            mass
+   --------------------------------------------------------------------------
+   O        1  9.5835700E-02  3.1863970E-07  0.0000000E+00  1.5994910E+01
+   H        2 -9.8328438E-01  1.5498085E+00  0.0000000E+00  1.0078250E+00
+   H        3 -9.8328460E-01 -1.5498088E+00  0.0000000E+00  1.0078250E+00
+   --------------------------------------------------------------------------
 
-*/
-// NB another header but with subhead (Frequencies expressed in cm-1)
-// is in the output before this....
-/*
-          -------------------------------------------------
-          NORMAL MODE EIGENVECTORS IN CARTESIAN COORDINATES
-          -------------------------------------------------
-             (Projected Frequencies expressed in cm-1)
+   */
+  // NB another header but with subhead (Frequencies expressed in cm-1)
+  // is in the output before this....
+  /*
+   -------------------------------------------------
+   NORMAL MODE EIGENVECTORS IN CARTESIAN COORDINATES
+   -------------------------------------------------
+   (Projected Frequencies expressed in cm-1)
 
-                    1           2           3           4           5           6
- 
- P.Frequency        0.00        0.00        0.00        0.00        0.00        0.00
- 
-           1     0.03302     0.00000     0.00000     0.00000    -0.02102     0.23236
-           2     0.08894     0.00000     0.00000     0.00000     0.22285     0.00752
-           3     0.00000     0.00000     0.25004     0.00000     0.00000     0.00000
-           4     0.52206     0.00000     0.00000     0.00000    -0.33418     0.13454
-           5     0.42946     0.00000     0.00000     0.00000     0.00480    -0.06059
-           6     0.00000     0.99611     0.00000     0.00000     0.00000     0.00000
-           7    -0.45603     0.00000     0.00000     0.00000     0.29214     0.33018
-           8     0.42946     0.00000     0.00000     0.00000     0.00480    -0.06059
-           9     0.00000     0.00000     0.00000     0.99611     0.00000     0.00000
+   1           2           3           4           5           6
+   
+   P.Frequency        0.00        0.00        0.00        0.00        0.00        0.00
+   
+   1     0.03302     0.00000     0.00000     0.00000    -0.02102     0.23236
+   2     0.08894     0.00000     0.00000     0.00000     0.22285     0.00752
+   3     0.00000     0.00000     0.25004     0.00000     0.00000     0.00000
+   4     0.52206     0.00000     0.00000     0.00000    -0.33418     0.13454
+   5     0.42946     0.00000     0.00000     0.00000     0.00480    -0.06059
+   6     0.00000     0.99611     0.00000     0.00000     0.00000     0.00000
+   7    -0.45603     0.00000     0.00000     0.00000     0.29214     0.33018
+   8     0.42946     0.00000     0.00000     0.00000     0.00480    -0.06059
+   9     0.00000     0.00000     0.00000     0.99611     0.00000     0.00000
 
-                    7           8           9
- 
- P.Frequency     1484.76     3460.15     3551.50
- 
-           1    -0.06910    -0.04713     0.00000
-           2     0.00000     0.00000    -0.06994
-           3     0.00000     0.00000     0.00000
-           4     0.54837     0.37401    -0.38643
-           5     0.39688    -0.58189     0.55498
-           6     0.00000     0.00000     0.00000
-           7     0.54837     0.37402     0.38641
-           8    -0.39688     0.58191     0.55496
-           9     0.00000     0.00000     0.00000
-
-
-
- ----------------------------------------------------------------------------
- Normal Eigenvalue ||    Projected Derivative Dipole Moments (debye/angs)
-  Mode   [cm**-1]  ||      [d/dqX]             [d/dqY]           [d/dqZ]
- ------ ---------- || ------------------ ------------------ -----------------
-    1        0.000 ||       0.159               2.123             0.000
-    2        0.000 ||       0.000               0.000             2.480
-    3        0.000 ||       0.000               0.000            -0.044
-    4        0.000 ||       0.000               0.000             2.480
-    5        0.000 ||      -0.101              -0.015             0.000
-    6        0.000 ||       1.116              -0.303             0.000
-    7     1484.764 ||       2.112               0.000             0.000
-    8     3460.151 ||       1.877               0.000             0.000
-    9     3551.497 ||       0.000               3.435             0.000
- ----------------------------------------------------------------------------
+   7           8           9
+   
+   P.Frequency     1484.76     3460.15     3551.50
+   
+   1    -0.06910    -0.04713     0.00000
+   2     0.00000     0.00000    -0.06994
+   3     0.00000     0.00000     0.00000
+   4     0.54837     0.37401    -0.38643
+   5     0.39688    -0.58189     0.55498
+   6     0.00000     0.00000     0.00000
+   7     0.54837     0.37402     0.38641
+   8    -0.39688     0.58191     0.55496
+   9     0.00000     0.00000     0.00000
 
 
 
-  
-  
- ----------------------------------------------------------------------------
- Normal Eigenvalue ||           Projected Infra Red Intensities
-  Mode   [cm**-1]  || [atomic units] [(debye/angs)**2] [(KM/mol)] [arbitrary]
- ------ ---------- || -------------- ----------------- ---------- -----------
-    1        0.000 ||    0.196398           4.531       191.459      10.742
-    2        0.000 ||    0.266537           6.149       259.833      14.578
-    3        0.000 ||    0.000084           0.002         0.081       0.005
-    4        0.000 ||    0.266537           6.149       259.833      14.578
-    5        0.000 ||    0.000452           0.010         0.441       0.025
-    6        0.000 ||    0.057967           1.337        56.509       3.170
-    7     1484.764 ||    0.193384           4.462       188.520      10.577
-    8     3460.151 ||    0.152668           3.522       148.828       8.350
-    9     3551.497 ||    0.511498          11.801       498.633      27.976
- ----------------------------------------------------------------------------
-*/
+   ----------------------------------------------------------------------------
+   Normal Eigenvalue ||    Projected Derivative Dipole Moments (debye/angs)
+   Mode   [cm**-1]  ||      [d/dqX]             [d/dqY]           [d/dqZ]
+   ------ ---------- || ------------------ ------------------ -----------------
+   1        0.000 ||       0.159               2.123             0.000
+   2        0.000 ||       0.000               0.000             2.480
+   3        0.000 ||       0.000               0.000            -0.044
+   4        0.000 ||       0.000               0.000             2.480
+   5        0.000 ||      -0.101              -0.015             0.000
+   6        0.000 ||       1.116              -0.303             0.000
+   7     1484.764 ||       2.112               0.000             0.000
+   8     3460.151 ||       1.877               0.000             0.000
+   9     3551.497 ||       0.000               3.435             0.000
+   ----------------------------------------------------------------------------
+
+
+
+   
+   
+   ----------------------------------------------------------------------------
+   Normal Eigenvalue ||           Projected Infra Red Intensities
+   Mode   [cm**-1]  || [atomic units] [(debye/angs)**2] [(KM/mol)] [arbitrary]
+   ------ ---------- || -------------- ----------------- ---------- -----------
+   1        0.000 ||    0.196398           4.531       191.459      10.742
+   2        0.000 ||    0.266537           6.149       259.833      14.578
+   3        0.000 ||    0.000084           0.002         0.081       0.005
+   4        0.000 ||    0.266537           6.149       259.833      14.578
+   5        0.000 ||    0.000452           0.010         0.441       0.025
+   6        0.000 ||    0.057967           1.337        56.509       3.170
+   7     1484.764 ||    0.193384           4.462       188.520      10.577
+   8     3460.151 ||    0.152668           3.522       148.828       8.350
+   9     3551.497 ||    0.511498          11.801       498.633      27.976
+   ----------------------------------------------------------------------------
+   */
 
   /**
    * Reads the AtomSet and projected frequencies in the frequency section.
    *
    * <p>Attaches the vibration vectors of the projected frequencies to
    * duplicates of the atom information in the frequency section.
-   * @param reader BufferedReader associated with the NWChem output text.
    * @throws Exception If an error occurs.
    **/
-  private void readFrequencies(BufferedReader reader) throws Exception {
-    String line, tokens[];
- 
-    String path = "Task " + taskNumber +
-      SmarterJmolAdapter.PATH_SEPARATOR+"Frequencies";
+  private void readFrequencies() throws Exception {
+    String tokens[];
+
+    String path = "Task " + taskNumber + SmarterJmolAdapter.PATH_SEPARATOR
+        + "Frequencies";
 
     // position myself to read the atom information, i.e., structure
-    discardLinesUntilContains(reader,"Atom information");
-    discardLines(reader, 2);
-    line = reader.readLine();
+    discardLinesUntilContains("Atom information");
+    discardLines(2);
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, path);
-    do {
+    while (readLine() != null && line.indexOf("---") < 0) {
       tokens = getTokens(line);
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[0]);
-//      atom.elementSymbol = tokens[0];
-      atom.x = parseFloat(tokens[2])*AU2ANGSTROM;
-      atom.y = parseFloat(tokens[3])*AU2ANGSTROM;
-      atom.z = parseFloat(tokens[4])*AU2ANGSTROM;
-    } while ( ((line=reader.readLine()) != null) &&
-              (line.indexOf("---") < 0) );  
-    
+      atom.x = parseFloat(tokens[2]) * AU2ANGSTROM;
+      atom.y = parseFloat(tokens[3]) * AU2ANGSTROM;
+      atom.z = parseFloat(tokens[4]) * AU2ANGSTROM;
+    }
+
     // the first atomsetindex for the frequencies needed to add properties later
     int firstFrequencyAtomSetIndex = atomSetCollection.currentAtomSetIndex;
     // the number of frequencies read
@@ -426,48 +418,50 @@ class NWChemReader extends AtomSetCollectionReader {
     int atomCount = atomSetCollection.getLastAtomSetAtomCount();
     // flag for first time: 1 model less to duplicate..
     boolean firstTime = true;
-    
+
     // position myself to start reading the frequencies themselves
-    discardLinesUntilContains(reader, "(Projected Frequencies expressed in cm-1)");
-    discardLines(reader, 3); // step over the line with the numbers
-    
-    while ((line=reader.readLine())!=null && line.indexOf("P.Frequency") >= 0) {
-      
+    discardLinesUntilContains("(Projected Frequencies expressed in cm-1)");
+    discardLines(3); // step over the line with the numbers
+
+    while (readLine() != null && line.indexOf("P.Frequency") >= 0) {
+
       tokens = getTokens(line, 12);
-      
+
       // the number of frequencies to interpret in this set of lines
       int nFreq = tokens.length;
       // clone the last atom set nFreq-1 times the first time, later nFreq times.
-      for (int fIndex=(firstTime?1:0); fIndex < nFreq; fIndex++) {
+      for (int fIndex = (firstTime ? 1 : 0); fIndex < nFreq; fIndex++) {
         atomSetCollection.cloneLastAtomSet();
         atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, path);
       }
       firstTime = false;
-      
+
       // assign the frequency values to each atomset's name and property
-      for (int i=0; i<nFreq; ++i) {
+      for (int i = 0; i < nFreq; ++i) {
         int idx = firstFrequencyAtomSetIndex + totalFrequencies + i;
         String frequencyString = tokens[i] + " cm**-1";
         atomSetCollection.setAtomSetName(frequencyString, idx);
         atomSetCollection.setAtomSetProperty("Frequency", frequencyString, idx);
       }
-      
+
       // firstModelAtom is the index in atomSetCollection.atoms that has the
       // first atom of the first model where the first to be read vibration
       // needs to go
-      int firstModelAtom = atomSetCollection.atomCount - nFreq*atomCount;
-      
-      discardLines(reader, 1);      // skip over empty line
-      
+      int firstModelAtom = atomSetCollection.atomCount - nFreq * atomCount;
+
+      discardLines(1); // skip over empty line
+
       // rows are frequency displacement for all frequencies
       // row index (i) 3n = x, 3n+1 = y, 3n+2=z
-      for (int i = 0; i < atomCount*3; ++i) {
-        line = reader.readLine();
+      for (int i = 0; i < atomCount * 3; ++i) {
+        if (readLine() == null)
+          return;
         tokens = getTokens(line);
         for (int j = 0; j < nFreq; ++j) {
-          Atom atom = atomSetCollection.atoms[firstModelAtom+j*atomCount + i/3];
-          float val = parseFloat(tokens[j+1]);
-          switch (i%3) {
+          Atom atom = atomSetCollection.atoms[firstModelAtom + j * atomCount
+              + i / 3];
+          float val = parseFloat(tokens[j + 1]);
+          switch (i % 3) {
           case 0:
             atom.vectorX = val;
             break;
@@ -480,22 +474,24 @@ class NWChemReader extends AtomSetCollectionReader {
         }
       }
       totalFrequencies += nFreq;
-      discardLines(reader, 3);
+      discardLines(3);
     }
-    
+
     // now set the names and properties of the atomsets associated with
     // the frequencies
     // NB this is not always there: try/catch and possibly set freq value again  
     try {
-      discardLinesUntilContains(reader, "Projected Infra Red Intensities");
-      discardLines(reader, 2);
-      for (int i=totalFrequencies, idx=firstFrequencyAtomSetIndex; --i>=0; idx++) {
-        line = reader.readLine();
+      discardLinesUntilContains("Projected Infra Red Intensities");
+      discardLines(2);
+      for (int i = totalFrequencies, idx = firstFrequencyAtomSetIndex; --i >= 0; idx++) {
+        if (readLine() == null)
+          return;
         tokens = getTokens(line);
         String frequencyString = tokens[1] + " cm**-1";
         atomSetCollection.setAtomSetName(frequencyString, idx);
         atomSetCollection.setAtomSetProperty("Frequency", frequencyString, idx);
-        atomSetCollection.setAtomSetProperty("IR Intensity", tokens[5] + " KM/mol", idx);
+        atomSetCollection.setAtomSetProperty("IR Intensity", tokens[5]
+            + " KM/mol", idx);
         //      atomSetCollection.setAtomSetProperty("vector","frequency");
       }
     } catch (Exception e) {
@@ -505,12 +501,11 @@ class NWChemReader extends AtomSetCollectionReader {
   
   /**
    * Reads partial charges and assigns them only to the last atom set. 
-   * @param reader The reader from which to read the charges
    * @throws Exception When an I/O error or discardlines error occurs
    */
-  void readPartialCharges(BufferedReader reader) throws Exception {
+  void readPartialCharges() throws Exception {
     String tokens[];
-    discardLines(reader, 4);
+    discardLines(4);
     for (int i = atomSetCollection.getLastAtomSetAtomIndex();
     i < atomSetCollection.atomCount;
     ++i) {
@@ -518,7 +513,9 @@ class NWChemReader extends AtomSetCollectionReader {
       while (atomSetCollection.atoms[i].elementNumber == 0)
         ++i;
       // assign the partial charge
-      tokens = getTokens(reader.readLine());
+      if (readLine() == null)
+        return;
+      tokens = getTokens(line);
       atomSetCollection.atoms[i].partialCharge = 
         parseInt(tokens[2]) - parseFloat(tokens[3]);
     }

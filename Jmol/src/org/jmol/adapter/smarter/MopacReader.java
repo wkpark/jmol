@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-08-27 21:07:49 -0500 (Sun, 27 Aug 2006) $
+ * $Revision: 5420 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,6 +23,7 @@
  */
 package org.jmol.adapter.smarter;
 
+
 import java.io.BufferedReader;
 import java.util.Vector;
 import java.util.Hashtable;
@@ -41,38 +42,38 @@ class MopacReader extends AtomSetCollectionReader {
   
   private boolean chargesFound = false;
 
-  AtomSetCollection readAtomSetCollection(BufferedReader input) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+    
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("mopac");
-        
     frameInfo = null;
 
-    String line;
-    while ((line = input.readLine()) != null && ! line.startsWith(" ---")) {
+    while (readLine() != null && ! line.startsWith(" ---")) {
       if (line.indexOf("MOLECULAR POINT GROUP") >= 0) {
           // hasSymmetry = true;
       } else if (line.trim().equals("CARTESIAN COORDINATES")) {
-          processCoordinates(input);
+          processCoordinates();
           atomSetCollection.setAtomSetName("Input Structure");
       }
     }
 
-    while ((line = input.readLine()) != null) {
+    while (readLine() != null) {
       if (line.indexOf("TOTAL ENERGY") >= 0)
-        processTotalEnergy(line);
+        processTotalEnergy();
       else if (line.indexOf("ATOMIC CHARGES") >= 0)
-        processAtomicCharges(input);
+        processAtomicCharges();
       else if (line.trim().equals("CARTESIAN COORDINATES"))
-        processCoordinates(input);
+        processCoordinates();
       else if (line.indexOf("ORIENTATION OF MOLECULE IN FORCE") >= 0) {
-        processCoordinates(input);
+        processCoordinates();
         atomSetCollection.setAtomSetName("Orientation in Force Field");
       } else if (line.indexOf("NORMAL COORDINATE ANALYSIS") >= 0)
-        readFrequencies(input);
+        readFrequencies();
     }
     return atomSetCollection;
   }
     
-  void processTotalEnergy(String line) {
+  void processTotalEnergy() {
     frameInfo = line.trim();
   }
 
@@ -90,16 +91,14 @@ class MopacReader extends AtomSetCollectionReader {
    * They are expected to be found in the file <i>before</i> the 
    * cartesian coordinate section.
    * 
-   * @param input
    * @throws Exception
    */
-void processAtomicCharges(BufferedReader input) throws Exception {
-    discardLines(input, 2);
+void processAtomicCharges() throws Exception {
+    discardLines(2);
     atomSetCollection.newAtomSet(); // charges before coords, see JavaDoc
     baseAtomIndex = atomSetCollection.atomCount;
     int expectedAtomNumber = 0;
-    String line;
-    while ((line = input.readLine()) != null) {
+    while (readLine() != null) {
       int atomNumber = parseInt(line);
       if (atomNumber == Integer.MIN_VALUE) // a blank line
         break;
@@ -136,11 +135,10 @@ void processAtomicCharges(BufferedReader input) throws Exception {
    *  3         H        1.23995160    0.90598439    0.00000000
    * </pre>
    * 
-   * @param input
    * @throws Exception
    */
-  void processCoordinates(BufferedReader input) throws Exception {
-    discardLines(input, 3);
+  void processCoordinates() throws Exception {
+    discardLines(3);
     int expectedAtomNumber = 0;
     if (!chargesFound) {
       atomSetCollection.newAtomSet();
@@ -149,8 +147,7 @@ void processAtomicCharges(BufferedReader input) throws Exception {
       chargesFound = false;
     }
 
-    String line;
-    while ((line = input.readLine()) != null) {
+    while (readLine() != null) {
       int atomNumber = parseInt(line);
       if (atomNumber == Integer.MIN_VALUE) // blank line
         break;
@@ -199,23 +196,20 @@ void processAtomicCharges(BufferedReader input) throws Exception {
    * Frequencies are set as properties for each of the frequency type AtomSet
    * generated.
    * 
-   * @param reader
-   *            BufferedReader associated with the Gaussian output text.
    * @throws Exception
    *             If an I/O error occurs
    */
-  private void readFrequencies(BufferedReader reader) throws Exception {
+  private void readFrequencies() throws Exception {
     Vector freqs = new Vector();
     Vector vibrations = new Vector();
-    String line = "";
     String[][] data;
     int nAtoms = atomSetCollection.getLastAtomSetAtomCount();
-    while ((line = reader.readLine()) != null
+    while (readLine() != null
         && line.indexOf("DESCRIPTION") < 0)
       if (line.indexOf("ROOT") >= 0) {
         int frequencyCount = getTokens(line).length - 2;
         data = new String[nAtoms * 3 + 1][];
-        fillDataBlock(reader, data);
+        fillDataBlock(data);
         for (int i = 0; i < frequencyCount; ++i) {
           float freq = parseFloat(data[0][i]);
           Hashtable info = new Hashtable();

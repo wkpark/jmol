@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-09-11 23:56:13 -0500 (Mon, 11 Sep 2006) $
+ * $Revision: 5499 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,6 +23,7 @@
  */
 
 package org.jmol.adapter.smarter;
+
 
 import java.io.BufferedReader;
 import java.util.Hashtable;
@@ -48,20 +49,21 @@ class SpartanReader extends AtomSetCollectionReader {
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
-
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("spartan");
     String cartesianHeader = "Cartesian Coordinates (Ang";
     try {
-      if (isSpartanArchive(reader, cartesianHeader)) {
+      if (isSpartanArchive(cartesianHeader)) {
         SpartanArchive spartanArchive = new SpartanArchive(this, logger,
             atomSetCollection, moData);
-        atomCount = spartanArchive.readArchive(reader, line, true);
+        atomCount = spartanArchive.readArchive(line, true);
         if (atomCount > 0)
           atomSetCollection.setAtomSetName(modelName);
       } else if (line.indexOf(cartesianHeader)>=0){
-          readAtoms(reader);
-        if (discardLinesUntilContains(reader, "Vibrational Frequencies") != null)
-          readFrequencies(reader);
+          readAtoms();
+          discardLinesUntilContains("Vibrational Frequencies");
+        if (line != null)
+          readFrequencies();
       }
     } catch (Exception ex) {
       Logger.error("Could not read file", ex);
@@ -74,10 +76,10 @@ class SpartanReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
-  boolean isSpartanArchive(BufferedReader reader, String strNotArchive)
+  boolean isSpartanArchive(String strNotArchive)
       throws Exception {
     String lastLine = "";
-    while ((line = reader.readLine()) != null) {
+    while (readLine() != null) {
       if (line.equals("GEOMETRY")) {
         line = lastLine;
         return true;
@@ -89,10 +91,9 @@ class SpartanReader extends AtomSetCollectionReader {
     return false;
   }
 
-  void readAtoms(BufferedReader reader) throws Exception {
-    discardLinesUntilBlank(reader);
-    String line;
-    while ((line = reader.readLine()) != null
+  void readAtoms() throws Exception {
+    discardLinesUntilBlank();
+    while (readLine() != null
         && (/*atomNum = */parseInt(line, 0, 3)) > 0) {
       String elementSymbol = parseToken(line, 4, 6);
       String atomName = parseToken(line, 7, 13);
@@ -108,11 +109,11 @@ class SpartanReader extends AtomSetCollectionReader {
     }
   }
 
-  void readFrequencies(BufferedReader reader) throws Exception {
+  void readFrequencies() throws Exception {
     int totalFrequencyCount = 0;
 
     while (true) {
-      String line = discardLinesUntilNonBlank(reader);
+      discardLinesUntilNonBlank();
       int lineBaseFreqCount = totalFrequencyCount;
       ichNextParse = 16;
       int lineFreqCount;
@@ -127,10 +128,10 @@ class SpartanReader extends AtomSetCollectionReader {
       if (lineFreqCount == 0)
         return;
       Atom[] atoms = atomSetCollection.atoms;
-      discardLines(reader, 2);
+      discardLines(2);
       int firstAtomSetAtomCount = atomSetCollection.getFirstAtomSetAtomCount();
       for (int i = 0; i < firstAtomSetAtomCount; ++i) {
-        line = reader.readLine();
+        readLine();
         for (int j = 0; j < lineFreqCount; ++j) {
           int ichCoords = j * 23 + 10;
           float x = parseFloat(line, ichCoords, ichCoords + 7);

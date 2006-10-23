@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-09-30 10:16:53 -0500 (Sat, 30 Sep 2006) $
+ * $Revision: 5778 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -22,6 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.jmol.adapter.smarter;
+
 
 import java.io.BufferedReader;
 
@@ -56,12 +57,12 @@ import org.jmol.util.ArrayUtil;
 class ShelxReader extends AtomSetCollectionReader {
 
   String[] sfacElementSymbols;
-
   boolean isCmdf = false;
   boolean iHaveAtomSet = false;
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("shelx");
     setFractionalCoordinates(true);
     int lineLength;
@@ -78,11 +79,11 @@ class ShelxReader extends AtomSetCollectionReader {
         isCmdf = false;
         iHaveAtomSet = false;
       }
-      readLine_loop: while ((line = reader.readLine()) != null) {
+      readLine_loop: while (readLine() != null) {
         lineLength = line.trim().length();
         // '=' as last char of line means continue on next line
         while (lineLength > 0 && line.charAt(lineLength - 1) == '=')
-          line = line.substring(0, lineLength - 1) + reader.readLine();
+          line = line.substring(0, lineLength - 1) + readLine();
         if (lineLength >= 3) {
           String command = (line+" ").substring(0, 4).toUpperCase().trim();
           if (command.equals("END")) {
@@ -93,7 +94,7 @@ class ShelxReader extends AtomSetCollectionReader {
             continue;
           }
           if (readThisModel && isCmdf && line.equals("ATOM")) {
-            processCmdfAtoms(reader);
+            processCmdfAtoms();
             break;
           }
           for (int i = unsupportedRecordTypes.length; --i >= 0;)
@@ -102,14 +103,14 @@ class ShelxReader extends AtomSetCollectionReader {
           for (int i = supportedRecordTypes.length; --i >= 0;)
             if (command.equals(supportedRecordTypes[i])) {
               if (readThisModel)
-                processSupportedRecord(i, line);
+                processSupportedRecord(i);
               continue readLine_loop;
             }
           if (readThisModel && !isCmdf && iHaveAtomSet)
-            assumeAtomRecord(line);
+            assumeAtomRecord();
         }
       }
-    } while ((line = reader.readLine()) != null);
+    } while (readLine() != null);
     applySymmetry();
     return atomSetCollection;
   }
@@ -117,7 +118,7 @@ class ShelxReader extends AtomSetCollectionReader {
   final static String[] supportedRecordTypes = { "TITL", "CELL", "SPGR",
       "SFAC", "LATT", "SYMM" };
 
-  void processSupportedRecord(int recordIndex, String line) throws Exception {
+  void processSupportedRecord(int recordIndex) throws Exception {
     //Logger.debug(recordIndex+" "+line);
     if (!iHaveAtomSet)
       atomSetCollection.newAtomSet();
@@ -127,35 +128,35 @@ class ShelxReader extends AtomSetCollectionReader {
       atomSetCollection.setAtomSetName(parseTrimmed(line, 4));
       break;
     case 1: // CELL
-      cell(line);
+      cell();
       setSymmetryOperator("x,y,z");
       break;
     case 2: // SPGR
       setSpaceGroupName(parseTrimmed(line, 4));
       break;
     case 3: // SFAC
-      parseSfacRecord(line);
+      parseSfacRecord();
       break;
     case 4: // LATT
-      parseLattRecord(line);
+      parseLattRecord();
       break;
     case 5: // SYMM
-      parseSymmRecord(line);
+      parseSymmRecord();
       break;
     }
   }
 
-  void parseLattRecord(String line) throws Exception {
+  void parseLattRecord() throws Exception {
     parseToken(line);
     int latt = parseInt(line, ichNextParse);
     atomSetCollection.setLatticeParameter(latt);
   }
 
-  void parseSymmRecord(String line) throws Exception {
+  void parseSymmRecord() throws Exception {
     setSymmetryOperator(parseTrimmed(line, 4));
   }
 
-  void cell(String line) throws Exception {
+  void cell() throws Exception {
     /* example:
      * CELL   wavelngth    a        b         c       alpha   beta   gamma
      * CELL   1.54184   7.11174  21.71704  30.95857  90.000  90.000  90.000
@@ -166,7 +167,7 @@ class ShelxReader extends AtomSetCollectionReader {
      * CELL   7.11174  21.71704  30.95857  90.000  90.000  90.000
      */
 
-    String[] tokens = getTokens(line, 4);
+    String[] tokens = getTokens(line);
     int ioff = 1;
     if (isCmdf) {
       ioff = 0;
@@ -176,10 +177,10 @@ class ShelxReader extends AtomSetCollectionReader {
           new Float(wavelength));
     }
     for (int ipt = 0; ipt < 6; ipt++)
-      setUnitCellItem(ipt, parseFloat(tokens[ipt + ioff]));
+      setUnitCellItem(ipt, parseFloat(tokens[ipt + ioff + 1]));
   }
 
-  void parseSfacRecord(String line) {
+  void parseSfacRecord() {
     // an SFAC record is one of two cases
     // a simple SFAC record contains element names
     // a general SFAC record contains coefficients for a single element
@@ -227,7 +228,7 @@ class ShelxReader extends AtomSetCollectionReader {
     sfacElementSymbols[oldCount] = elementSymbol;
   }
 
-  void assumeAtomRecord(String line) {
+  void assumeAtomRecord() {
     try {
       //Logger.debug("Assumed to contain an atom: " + line);
       // this line gives an atom, because all lines not starting with
@@ -274,9 +275,8 @@ class ShelxReader extends AtomSetCollectionReader {
       "FMAP", "GRID", "PLAN", "MOLE"
       };
 
-  void processCmdfAtoms(BufferedReader reader) throws Exception {
-    String line;
-    while ((line = reader.readLine()) != null && line.length() > 10) {
+  void processCmdfAtoms() throws Exception {
+    while (readLine() != null && line.length() > 10) {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens(line);
       atom.elementSymbol = getSymbol(tokens[0]);

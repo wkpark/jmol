@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-09-16 09:53:18 -0500 (Sat, 16 Sep 2006) $
+ * $Revision: 5561 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -22,6 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.jmol.adapter.smarter;
+
 
 import java.io.BufferedReader;
 import java.util.HashMap;
@@ -128,9 +129,10 @@ public class XmlCmlReader extends XmlReader {
   XmlCmlReader(XmlReader parent, AtomSetCollection atomSetCollection,
       BufferedReader reader, XMLReader xmlReader) {
     this.parent = parent;
+    this.reader = reader;
     this.atomSetCollection = atomSetCollection;
     new CmlHandler(xmlReader);
-    parseReaderXML(reader, xmlReader);
+    parseReaderXML(xmlReader);
   }
 
   XmlCmlReader(XmlReader parent, AtomSetCollection atomSetCollection,

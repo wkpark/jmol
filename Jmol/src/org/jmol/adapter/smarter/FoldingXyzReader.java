@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-09-10 10:36:58 -0500 (Sun, 10 Sep 2006) $
+ * $Revision: 5478 $
  *
  * Copyright (C) 2004-2005  The Jmol Development Team
  *
@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
+
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
@@ -44,18 +45,18 @@ class FoldingXyzReader extends AtomSetCollectionReader {
   private final static boolean useAutoBond = false;
   
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
-
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("Folding@Home");
 
     try {
-      StringTokenizer tokens = new StringTokenizer(reader.readLine(), " \t");
+      StringTokenizer tokens = new StringTokenizer(readLine(), " \t");
       if (tokens.hasMoreTokens()) {
       	int modelAtomCount = Integer.parseInt(tokens.nextToken());
       	atomSetCollection.newAtomSet();
       	if (tokens.hasMoreTokens()) {
       	  atomSetCollection.setAtomSetName("Protein " + tokens.nextToken());
       	}
-      	readAtoms(reader, modelAtomCount);
+      	readAtoms(modelAtomCount);
       }
     } catch (Exception ex) {
       atomSetCollection.errorMessage = "Could not read file:" + ex;
@@ -64,12 +65,10 @@ class FoldingXyzReader extends AtomSetCollectionReader {
   }
 	    
   /**
-   * @param reader
    * @param modelAtomCount
    * @throws Exception
    */
-  void readAtoms(BufferedReader reader,
-                 int modelAtomCount) throws Exception {
+  void readAtoms(int modelAtomCount) throws Exception {
   	// Stores bond informations
   	int[][] bonds = new int[modelAtomCount + 1][];
   	for (int i = 0; i <= modelAtomCount; ++i) {
@@ -77,11 +76,11 @@ class FoldingXyzReader extends AtomSetCollectionReader {
   	}
   	
     for (int i = 0; i <= modelAtomCount; ++i) {
-      String line = reader.readLine();
-      if ((line != null) && (line.length() == 0)) {
-      	line = reader.readLine();
+      readLine();
+      if (line != null && line.length() == 0) {
+      	readLine();
       }
-      if ((line != null) && (line.length() > 0)) {
+      if (line != null && line.length() > 0) {
         //Logger.debug("Line: " + line);
         Atom atom = atomSetCollection.addNewAtom();
         parseInt(line);

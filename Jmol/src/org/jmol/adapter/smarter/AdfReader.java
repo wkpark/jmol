@@ -24,6 +24,7 @@
  */
 package org.jmol.adapter.smarter;
 
+
 import java.io.BufferedReader;
 import org.jmol.viewer.JmolConstants;
 
@@ -66,10 +67,17 @@ public class AdfReader extends AtomSetCollectionReader {
       throws Exception {
     atomSetCollection = new AtomSetCollection("ADF");
     this.reader = reader;
+    boolean iHaveAtoms = false;
     modelNumber = 0;
     try {
-      while ((line = reader.readLine()) != null) {
+      while (readLine() != null) {
         if (line.indexOf("Coordinates (Cartesian)") >= 0) {
+          if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
+            if (iHaveAtoms)
+              break;
+            continue;
+          }
+          iHaveAtoms = true;
           readCoordinates();
         } else if (line.indexOf("Energy:") >= 0) {
           String[] tokens = getTokens(line);
@@ -107,9 +115,11 @@ public class AdfReader extends AtomSetCollectionReader {
      */
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetName("" + energy); // start with an empty name
-    discardLinesUntilStartsWith(reader, " -----");
-    while ((line = reader.readLine()) != null && !line.startsWith(" -----")) {
+    discardLinesUntilStartsWith(" -----");
+    while (readLine() != null && !line.startsWith(" -----")) {
       String[] tokens = getTokens(line);
+      if (tokens.length < 5)
+        continue;
       String symbol = tokens[1];
       if (JmolConstants.elementNumberFromSymbol(symbol) < 1)
         continue;
@@ -148,16 +158,16 @@ public class AdfReader extends AtomSetCollectionReader {
   private void readFrequencies() throws Exception {
     String[] tokens;
     String[] frequencies;
-    line = reader.readLine();
+    readLine();
     int atomCount = atomSetCollection.getLastAtomSetAtomCount();
-    while ((line = reader.readLine()) != null) {
-      while ((line = reader.readLine()) != null && line.indexOf(".") < 0
+    while (readLine() != null) {
+      while (readLine() != null && line.indexOf(".") < 0
           && line.indexOf("====") < 0) {
       }
       if (line == null || line.indexOf(".") < 0)
         return;
       frequencies = getTokens(line);
-      line = reader.readLine(); // -------- -------- --------
+      readLine(); // -------- -------- --------
       int frequencyCount = frequencies.length;
       int firstModelAtom = atomSetCollection.atomCount;
       for (int i = 0; i < frequencyCount; ++i) {
@@ -169,7 +179,7 @@ public class AdfReader extends AtomSetCollectionReader {
             "Frequencies");
       }
       int atomPt = 0;
-      while ((line = reader.readLine()) != null && line.indexOf(".") >= 0) {
+      while (readLine() != null && line.indexOf(".") >= 0) {
         tokens = getTokens(line);
         String symbol = tokens[0].substring(tokens[0].indexOf(".") + 1);
         if (JmolConstants.elementNumberFromSymbol(symbol) < 1)

@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: egonw $
+ * $Date: 2005-11-10 09:52:44 -0600 (Thu, 10 Nov 2005) $
+ * $Revision: 4255 $
  *
  * Copyright (C) 2004-2005  The Jmol Development Team
  *
@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
+
 import org.jmol.api.JmolAdapter;
 import java.io.BufferedReader;
 
@@ -44,10 +45,10 @@ import java.io.BufferedReader;
 class HinReader extends AtomSetCollectionReader {
   
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
-    
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("hin");
     
-    readAtoms(reader);
+    readAtoms();
     if (errorMessage != null)
       atomSetCollection.errorMessage = errorMessage;
     else if (atomSetCollection.atomCount == 0)
@@ -63,40 +64,39 @@ class HinReader extends AtomSetCollectionReader {
 
   final static int MAX_TOKENS = 40; // should be plenty
 
-  void readAtoms(BufferedReader reader) throws Exception {
+  void readAtoms() throws Exception {
 
     tokens = new String[MAX_TOKENS];
     errorMessage = null;
 
-    String line;
-    while (errorMessage == null && (line = reader.readLine()) != null ) {
+    while (errorMessage == null && readLine() != null ) {
       if (line.length() == 0 || line.charAt(0) == ';') // comment
         continue;
       if (line.startsWith("mol ")) // we have reached the start of a molecule
-        processMol(line);
+        processMol();
       else if (line.startsWith("atom "))
-        processAtom(line);
+        processAtom();
       else if (line.startsWith("endmol "))
-        processEndmol(line);
+        processEndmol();
     }
     tokens = null;
   }
 
-  void processMol(String line) {
+  void processMol() {
     atomSetCollection.newAtomSet();
-    String molName = getMolName(line);
+    String molName = getMolName();
     atomSetCollection.setAtomSetName(molName);
     atomIndex = 0;
     baseAtomIndex = atomSetCollection.atomCount;
   }
 
-  String getMolName(String line) {
+  String getMolName() {
     parseToken(line);
     parseToken(line, ichNextParse);
     return parseToken(line, ichNextParse);
   }
 
-  void processAtom(String line) {
+  void processAtom() {
 
     int fileAtomNumber = parseInt(line, 5);
     if (fileAtomNumber - 1 != atomIndex) {
@@ -147,6 +147,6 @@ class HinReader extends AtomSetCollectionReader {
     ++atomIndex;
   }
 
-  void processEndmol(String line) {
+  void processEndmol() {
   }
 }

@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-10-15 17:34:01 -0500 (Sun, 15 Oct 2006) $
+ * $Revision: 5957 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,6 +23,7 @@
  */
 
 package org.jmol.adapter.smarter;
+
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
@@ -67,7 +68,7 @@ class PdbReader extends AtomSetCollectionReader {
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
-
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("pdb");
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
     setFractionalCoordinates(false);
@@ -77,7 +78,7 @@ class PdbReader extends AtomSetCollectionReader {
     boolean iHaveModel = false;
     boolean iHaveModelStatement = false;
     
-    while ((line = reader.readLine()) != null) {
+    while (readLine() != null) {
       lineLength = line.length();
       if (line.startsWith("MODEL ")) {
         iHaveModelStatement = true;
@@ -131,7 +132,7 @@ class PdbReader extends AtomSetCollectionReader {
       }
       if (line.startsWith("REMARK")) {
         Logger.debug(line);
-        checkLineForScript(line);
+        checkLineForScript();
         continue;
       }
       if (line.startsWith("HEADER") && lineLength >= 66) {

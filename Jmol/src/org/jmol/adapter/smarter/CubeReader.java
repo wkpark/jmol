@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-09-26 01:48:23 -0500 (Tue, 26 Sep 2006) $
+ * $Revision: 5729 $
  *
  * Copyright (C) 2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,6 +23,7 @@
  */
 
 package org.jmol.adapter.smarter;
+
 
 import java.io.BufferedReader;
 
@@ -93,13 +94,12 @@ class CubeReader extends AtomSetCollectionReader {
   }
 
   void readTitleLines() throws Exception {
-    line = reader.readLine().trim() + " - ";
-    line += reader.readLine().trim();
-    atomSetCollection.setAtomSetName("" + line);
+    String title = readLineTrimmed() + " - ";
+    atomSetCollection.setAtomSetName(title + readLineTrimmed());
   }
 
   void readAtomCountAndOrigin() throws Exception {
-    line = reader.readLine();
+    readLine();
     atomCount = parseInt(line);
     origin[0] = parseFloat(line, ichNextParse);
     origin[1] = parseFloat(line, ichNextParse);
@@ -117,7 +117,7 @@ class CubeReader extends AtomSetCollectionReader {
   }
 
   void readVoxelVector(int voxelVectorIndex) throws Exception {
-    line = reader.readLine();
+    readLine();
     float[] voxelVector = new float[3];
     voxelVectors[voxelVectorIndex] = voxelVector;
     voxelCounts[voxelVectorIndex] = parseInt(line);
@@ -128,7 +128,7 @@ class CubeReader extends AtomSetCollectionReader {
 
   void readAtoms() throws Exception {
     for (int i = 0; i < atomCount; ++i) {
-      line = reader.readLine();
+      readLine();
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber = (short)parseInt(line); //allowing atomicAndIsotope for JVXL format
       atom.partialCharge = parseFloat(line, ichNextParse);
@@ -140,40 +140,9 @@ class CubeReader extends AtomSetCollectionReader {
 
   void readExtraLine() throws Exception {
     if (negativeAtomCount)
-      line = reader.readLine();
+      readLine();
     int nSurfaces = parseInt(line);
     if (nSurfaces != Integer.MIN_VALUE && nSurfaces < 0)
       atomSetCollection.setFileTypeName("jvxl");
   }
-
-  /*
-
-
-  void readVoxelData() throws Exception {
-    String line = "";
-    ichNextParse = 0;
-    int voxelCountX = voxelCounts[0];
-    int voxelCountY = voxelCounts[1];
-    int voxelCountZ = voxelCounts[2];
-    voxelData = new float[voxelCountX][][];
-    for (int x = 0; x < voxelCountX; ++x) {
-      float[][] plane = new float[voxelCountY][];
-      voxelData[x] = plane;
-      for (int y = 0; y < voxelCountY; ++y) {
-        float[] strip = new float[voxelCountZ];
-        plane[y] = strip;
-        for (int z = 0; z < voxelCountZ; ++z) {
-          float voxelValue = parseFloat(line, ichNextParse);
-          if (Float.isNaN(voxelValue)) {
-            line = reader.readLine();
-            if (line == null || Float.isNaN(voxelValue = parseFloat(line))) {
-              throw new NullPointerException();
-            }
-          }
-          strip[z] = voxelValue;
-        }
-      }
-    }
-  }
-  */
 }

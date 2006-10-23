@@ -23,6 +23,7 @@
  */
 package org.jmol.adapter.smarter;
 
+
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -110,13 +111,14 @@ class XmlReader extends AtomSetCollectionReader {
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
+    this.reader = reader;
     XMLReader xmlReader = getXmlReader();
     if (xmlReader == null) {
       atomSetCollection = new AtomSetCollection("xml");
       atomSetCollection.errorMessage = "No XML reader found";
       return atomSetCollection;
     }
-    processXml(reader, xmlReader);
+    processXml(xmlReader);
     if (atomSetCollection.atomCount == 0) {
       atomSetCollection.errorMessage = "No atoms in file";
     }
@@ -163,7 +165,7 @@ class XmlReader extends AtomSetCollectionReader {
     return xmlr;
   }
 
-  void processXml(BufferedReader reader, XMLReader xmlReader) throws Exception {
+  void processXml(XMLReader xmlReader) throws Exception {
     String xmlType = getXmlType(reader);
     atomSetCollection = new AtomSetCollection(xmlType);
     logger.log("XmlReader thinks", xmlType);
@@ -188,11 +190,11 @@ class XmlReader extends AtomSetCollectionReader {
       return;
     }
     new JmolXmlHandler(xmlReader);
-    parseReaderXML(reader, xmlReader);
+    parseReaderXML(xmlReader);
     return;
   }
 
-  String getReaderHeader(BufferedReader reader, int nBytes) throws Exception {
+  String getReaderHeader(int nBytes) throws Exception {
     reader.mark(nBytes);
     char[] buf = new char[nBytes];
     int cchBuf = reader.read(buf);
@@ -202,7 +204,7 @@ class XmlReader extends AtomSetCollectionReader {
   }
 
   String getXmlType(BufferedReader reader) throws Exception  {
-    String header = getReaderHeader(reader, 5000);
+    String header = getReaderHeader(5000);
     if (header.indexOf("http://www.molpro.net/") >= 0) {
       return "molpro(xml)";
     }
@@ -222,7 +224,7 @@ class XmlReader extends AtomSetCollectionReader {
     return "unidentified cml(xml)";
   }
 
-  void parseReaderXML(BufferedReader reader, XMLReader xmlReader) {
+  void parseReaderXML(XMLReader xmlReader) {
     InputSource is = new InputSource(reader);
     is.setSystemId("foo");
     try {

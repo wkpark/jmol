@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: nicove $
+ * $Date: 2006-08-30 13:20:20 -0500 (Wed, 30 Aug 2006) $
+ * $Revision: 5447 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
+
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
@@ -36,16 +37,15 @@ import org.jmol.util.Logger;
 class JaguarReader extends AtomSetCollectionReader {
     
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
-
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("jaguar");
 
     try {
-      String line;
-      while ((line = reader.readLine()) != null) {
+      while (readLine() != null) {
         if (line.startsWith("  final geometry:")) {
-          readAtoms(reader);
+          readAtoms();
         } else if (line.startsWith("  harmonic frequencies in")) {
-          readFrequencies(reader);
+          readFrequencies();
           break;
         }
       }
@@ -60,13 +60,12 @@ class JaguarReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
-  void readAtoms(BufferedReader reader) throws Exception {
+  void readAtoms() throws Exception {
     // we only take the last set of atoms before the frequencies
     atomSetCollection.discardPreviousAtoms();
     // start parsing the atoms
-    discardLines(reader, 2);
-    String line;
-    while ((line = reader.readLine()) != null &&
+    discardLines(2);
+    while (readLine() != null &&
            line.length() >= 60 &&
            line.charAt(2) != ' ') {
       String atomName = parseToken(line, 2, 7);
@@ -114,11 +113,10 @@ class JaguarReader extends AtomSetCollectionReader {
   */
   int atomCount;
   
-  void readFrequencies(BufferedReader reader) throws Exception {
+  void readFrequencies() throws Exception {
     atomCount = atomSetCollection.getFirstAtomSetAtomCount();
     int modelNumber = 1;
-    String line;
-    while ((line = reader.readLine()) != null &&
+    while (readLine() != null &&
            ! line.startsWith("  frequencies ")) {
     }
     if (line == null)
@@ -126,18 +124,18 @@ class JaguarReader extends AtomSetCollectionReader {
     // determine number of freqs on this line (starting with "frequencies")
     do {
       int freqCount = new StringTokenizer(line).countTokens() - 1;
-      while ((line = reader.readLine()) != null &&
+      while (readLine() != null &&
            ! line.startsWith("  intensities ")) {
       }
       for (int atomCenterNumber = 0; atomCenterNumber < atomCount; atomCenterNumber++) {
         // this assumes that the atoms are given in the same order as their
         // atomic coordinates, and disregards the label which is should use
-        line = reader.readLine();
+        readLine();
         StringTokenizer tokenizerX = new StringTokenizer(line);
         tokenizerX.nextToken(); tokenizerX.nextToken(); // disregard label and X/Y/Z
-        StringTokenizer tokenizerY = new StringTokenizer(reader.readLine());
+        StringTokenizer tokenizerY = new StringTokenizer(readLine());
         tokenizerY.nextToken(); tokenizerY.nextToken();
-        StringTokenizer tokenizerZ = new StringTokenizer(reader.readLine());
+        StringTokenizer tokenizerZ = new StringTokenizer(readLine());
         tokenizerZ.nextToken(); tokenizerZ.nextToken();
         for (int j = 0; j < freqCount; j++) {
           float x = parseFloat(tokenizerX.nextToken());
@@ -146,9 +144,9 @@ class JaguarReader extends AtomSetCollectionReader {
           recordAtomVector(modelNumber + j, atomCenterNumber, x, y, z);
         }
       }
-      discardLines(reader, 1);
+      discardLines(1);
       modelNumber += freqCount;
-    } while ((line = reader.readLine()) != null &&
+    } while (readLine() != null &&
              (line.startsWith("  frequencies ")));
   }
 
@@ -167,10 +165,5 @@ class JaguarReader extends AtomSetCollectionReader {
     atom.vectorX = x;
     atom.vectorY = y;
     atom.vectorZ = z;
-  }
-
-  void discardLines(BufferedReader reader, int nLines) throws Exception {
-    for (int i = nLines; --i >= 0; )
-      reader.readLine();
   }
 }

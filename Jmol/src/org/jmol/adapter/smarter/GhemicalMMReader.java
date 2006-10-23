@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-07-14 15:35:47 -0500 (Fri, 14 Jul 2006) $
+ * $Revision: 5303 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -22,6 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.jmol.adapter.smarter;
+
 
 import java.io.BufferedReader;
 
@@ -66,24 +67,24 @@ import java.io.BufferedReader;
  */
 class GhemicalMMReader extends AtomSetCollectionReader {
     
-  AtomSetCollection readAtomSetCollection(BufferedReader input) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
 
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("ghemicalMM");
 
-    String line;
-    while ((line = input.readLine()) != null) {
+    while (readLine() != null) {
       if (line.startsWith("!Header"))
-        processHeader(line);
+        processHeader();
       else if (line.startsWith("!Info"))
-        processInfo(line);
+        processInfo();
       else if (line.startsWith("!Atoms"))
-        processAtoms(input, line);
+        processAtoms();
       else if (line.startsWith("!Bonds"))
-        processBonds(input, line);
+        processBonds();
       else if (line.startsWith("!Coord"))
-        processCoord(input, line);
+        processCoord();
       else if (line.startsWith("!Charges"))
-        processCharges(input, line);
+        processCharges();
       else if (line.startsWith("!End")) {
         return atomSetCollection;
       }
@@ -92,19 +93,19 @@ class GhemicalMMReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
-  void processHeader(String line) {
+  void processHeader() {
   }
 
-  void processInfo(String line) {
+  void processInfo() {
   }
 
-  void processAtoms(BufferedReader input, String line) throws Exception {
+  void processAtoms() throws Exception {
     int atomCount = parseInt(line, 6);
     //Logger.debug("atomCount=" + atomCount);
     for (int i = 0; i < atomCount; ++i) {
       if (atomSetCollection.atomCount != i)
         throw new Exception("GhemicalMMReader error #1");
-      line = input.readLine();
+      readLine();
       int atomIndex = parseInt(line);
       if (atomIndex != i)
         throw new Exception("bad atom index in !Atoms" +
@@ -115,10 +116,10 @@ class GhemicalMMReader extends AtomSetCollectionReader {
     }
   }
 
-  void processBonds(BufferedReader input, String line) throws Exception {
+  void processBonds() throws Exception {
     int bondCount = parseInt(line, 6);
     for (int i = 0; i < bondCount; ++i) {
-      line = input.readLine();
+      readLine();
       int atomIndex1 = parseInt(line);
       int atomIndex2 = parseInt(line, ichNextParse);
       String orderCode = parseToken(line, ichNextParse);
@@ -138,9 +139,9 @@ class GhemicalMMReader extends AtomSetCollectionReader {
     }
   }
 
-  void processCoord(BufferedReader input, String line) throws Exception {
+  void processCoord() throws Exception {
     for (int i = 0; i < atomSetCollection.atomCount; ++i) {
-      line = input.readLine();
+      readLine();
       int atomIndex = parseInt(line);
       if (atomIndex != i)
         throw new Exception("bad atom index in !Coord" +
@@ -152,9 +153,9 @@ class GhemicalMMReader extends AtomSetCollectionReader {
     }
   }
 
-  void processCharges(BufferedReader input, String line) throws Exception {
+  void processCharges() throws Exception {
     for (int i = 0; i < atomSetCollection.atomCount; ++i) {
-      line = input.readLine();
+      readLine();
       int atomIndex = parseInt(line);
       if (atomIndex != i)
         throw new Exception("bad atom index in !Charges" +

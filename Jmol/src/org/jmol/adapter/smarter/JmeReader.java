@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-09-28 23:13:00 -0500 (Thu, 28 Sep 2006) $
+ * $Revision: 5772 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,6 +23,7 @@
  */
 
 package org.jmol.adapter.smarter;
+
 
 import org.jmol.api.JmolAdapter;
 
@@ -56,10 +57,11 @@ class JmeReader extends AtomSetCollectionReader {
   StringTokenizer tokenizer;
   
   AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("jme");
 
     try {
-      line = reader.readLine();
+      readLine();
       tokenizer = new StringTokenizer(line, "\t ");
       int atomCount = parseInt(tokenizer.nextToken());
       int bondCount = parseInt(tokenizer.nextToken());

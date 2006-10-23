@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-10-22 14:12:46 -0500 (Sun, 22 Oct 2006) $
+ * $Revision: 5999 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,6 +23,7 @@
  */
 
 package org.jmol.adapter.smarter;
+
 
 import org.jmol.api.JmolAdapter;
 
@@ -52,12 +53,10 @@ class MolReader extends AtomSetCollectionReader {
     this.reader = reader;
     boolean iHaveAtoms = false;
     try {
-      while ((line = reader.readLine()) != null) {
+      while (readLine() != null) {
         if (line.startsWith("$MDL")) {
           processRgHeader();
-          //String line;
-          while (!reader.readLine().startsWith("$CTAB")) {
-          }
+          discardLinesUntilStartsWith("$CTAB");
           processCtab();
         } else {
           if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
@@ -109,11 +108,16 @@ class MolReader extends AtomSetCollectionReader {
     String thisDataSetName = line;
     header += line + "\n";
     atomSetCollection.setCollectionName(line);
-    header += reader.readLine() + "\n";
-    //line 3:
-    String comment = reader.readLine();
-    header += comment + "\n";
-    checkLineForScript(comment);
+    readLine();
+    if (line == null)
+      return;
+    header += line + "\n";
+    //line 3: comment
+    readLine();
+    if (line == null)
+      return;
+    header += line + "\n";
+    checkLineForScript();
     atomSetCollection.setAtomSetCollectionProperty("fileHeader", header);
     newAtomSet(thisDataSetName);
   }
@@ -139,18 +143,20 @@ class MolReader extends AtomSetCollectionReader {
      * $END MOL
      */
 
-    while ((line = reader.readLine()) != null && !line.startsWith("$HDR")) {
+    while (readLine() != null && !line.startsWith("$HDR")) {
     }
     if (line == null) {
       logger.log("$HDR not found in MDL RG file");
       return;
     }
-    line = reader.readLine();
+    readLine();
     processMolSdHeader();
   }
 
   void processCtab() throws Exception {
-    line = reader.readLine();
+    readLine();
+    if (line == null)
+      return;
     int atomCount = parseInt(line, 0, 3);
     int bondCount = parseInt(line, 3, 6);
     int atom0 = atomSetCollection.atomCount;
@@ -160,14 +166,14 @@ class MolReader extends AtomSetCollectionReader {
   }
 
   void flushLines() throws Exception {
-    while ((line = reader.readLine()) != null && !line.startsWith("$$$$")) {
+    while (readLine() != null && !line.startsWith("$$$$")) {
       //flush
     }
   }
 
   void readAtoms(int atomCount) throws Exception {
     for (int i = 0; i < atomCount; ++i) {
-      line = reader.readLine();
+      readLine();
       String elementSymbol = "";
       if (line.length() > 34) {
         elementSymbol = line.substring(31, 34).trim().intern();
@@ -193,7 +199,7 @@ class MolReader extends AtomSetCollectionReader {
 
   void readBonds(int atom0, int bondCount) throws Exception {
     for (int i = 0; i < bondCount; ++i) {
-      line = reader.readLine();
+      readLine();
       int atomIndex1 = parseInt(line, 0, 3);
       int atomIndex2 = parseInt(line, 3, 6);
       int order = parseInt(line, 6, 9);

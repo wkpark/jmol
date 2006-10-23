@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
+
 import java.io.BufferedReader;
 import java.util.Hashtable;
 
@@ -42,17 +43,20 @@ class OdysseyReader extends AtomSetCollectionReader {
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
-
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("odyssey)");
     try {
-      readHeader(reader);
-      if (discardLinesUntilContains(reader, "0 1") == null)
+      readHeader();
+      discardLinesUntilContains("0 1");
+      if (line == null)
         return atomSetCollection;
-      readAtoms(reader);
-      if (discardLinesUntilContains(reader, "ATOMLABELS") != null)
-        readAtomNames(reader);
-      if (discardLinesUntilContains(reader, "HESSIAN") != null)
-        readBonds(reader);
+      readAtoms();
+      discardLinesUntilContains("ATOMLABELS");
+      if (line != null)
+        readAtomNames();
+      discardLinesUntilContains("HESSIAN");
+      if (line != null)
+        readBonds();
     } catch (Exception ex) {
       Logger.error("Could not read file", ex);
       atomSetCollection.errorMessage = "Could not read file:" + ex;
@@ -65,18 +69,17 @@ class OdysseyReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
-  void readHeader(BufferedReader reader) throws Exception {
-    while ((line = reader.readLine()) != null
+  void readHeader() throws Exception {
+    while (readLine() != null
         && !line.startsWith(" ")) {}
-    line = reader.readLine();
+    readLine();
     modelName = line + ";";
     modelName = modelName.substring(0, modelName.indexOf(";")).trim();
   }
   
-  void readAtoms(BufferedReader reader) throws Exception {
-    String line;
+  void readAtoms() throws Exception {
     atomCount = 0;
-    while ((line = reader.readLine()) != null
+    while (readLine() != null
         && !line.startsWith("ENDCART")) {
       String[] tokens = getTokens(line);
       int elementNumber = parseInt(tokens[0]);      
@@ -93,15 +96,15 @@ class OdysseyReader extends AtomSetCollectionReader {
     }
   }
 
-  void readAtomNames(BufferedReader reader) throws Exception {
+  void readAtomNames() throws Exception {
     for (int i = 0; i < atomCount; i++) {
-      String line = reader.readLine();
+      readLine();
       atomSetCollection.atoms[i].atomName = line
           .substring(1, line.length() - 1);
     }
   }
   
-  void readBonds(BufferedReader reader) throws Exception {
+  void readBonds() throws Exception {
     int nAtoms = atomCount;
     /*
      <one number per atom>
@@ -112,7 +115,7 @@ class OdysseyReader extends AtomSetCollectionReader {
      1    6    1
      1    7    1
      */
-    while ((line = reader.readLine()) != null && !line.startsWith("ENDHESS")) {
+    while (readLine() != null && !line.startsWith("ENDHESS")) {
       String[] tokens = getTokens(line);
       if (nAtoms == 0) {
         int sourceIndex = parseInt(tokens[0]) - 1;

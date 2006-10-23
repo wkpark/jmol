@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-09-11 23:56:13 -0500 (Mon, 11 Sep 2006) $
+ * $Revision: 5499 $
  *
  * Copyright (C) 2003-2005  Miguel, Jmol Development, www.jmol.org
  *
@@ -23,6 +23,7 @@
  */
 
 package org.jmol.adapter.smarter;
+
 
 import java.io.BufferedReader;
 import java.util.Hashtable;
@@ -46,8 +47,8 @@ class SpartanSmolReader extends AtomSetCollectionReader {
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
-
-    line = reader.readLine();
+    this.reader = reader;
+    readLine();
     isCompoundDocument = (line.indexOf("Compound Document") >= 0);
     atomSetCollection = new AtomSetCollection("spartan "
         + (isCompoundDocument ? "compound document file" : "smol"));
@@ -60,7 +61,7 @@ class SpartanSmolReader extends AtomSetCollectionReader {
           //Logger.debug(line);
         if (line.equals("HESSIAN") && bondData != null) {
           //cache for later if necessary -- this is from the INPUT section
-          while ((line = reader.readLine()) != null
+          while (readLine() != null
               && line.indexOf("ENDHESS") < 0)
             bondData += line + " ";
           //Logger.debug("bonddata:" + bondData);
@@ -70,19 +71,19 @@ class SpartanSmolReader extends AtomSetCollectionReader {
           spartanArchive = new SpartanArchive(this, logger, atomSetCollection,
               moData, bondData);
           bondData = null;
-          String infoLine = readArchiveHeader(reader);
-          atomCount = spartanArchive.readArchive(reader, infoLine, false);
+          readArchiveHeader();
+          atomCount = spartanArchive.readArchive(line, false);
           if (atomCount > 0) {
             atomSetCollection.setAtomSetName(modelName);
           }
         } else if (atomCount > 0 && line.indexOf("BEGINPROPARC") == 0
             || line.equals("BEGIN Compound Document Entry: PropertyArchive")) {
-          spartanArchive.readProperties(reader);
+          spartanArchive.readProperties();
           if (!atomSetCollection
               .setAtomSetCollectionPartialCharges("MULCHARGES"))
             atomSetCollection.setAtomSetCollectionPartialCharges("Q1_CHARGES");
         }
-        line = reader.readLine();
+        readLine();
       }
     } catch (Exception e) {
       Logger.error("Could not read file at line: " + line, e);
@@ -98,15 +99,15 @@ class SpartanSmolReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
-  String readArchiveHeader(BufferedReader reader)
+  void readArchiveHeader()
       throws Exception {
-    String modelInfo = reader.readLine();
+    String modelInfo = readLine();
     logger.log(modelInfo);
     atomSetCollection.setCollectionName(modelInfo);
-    modelName = reader.readLine();
+    modelName = readLine();
     logger.log(modelName);
     //    5  17  11  18   0   1  17   0 RHF      3-21G(d)           NOOPT FREQ
-    return reader.readLine();
+    readLine();
   }
 
 }

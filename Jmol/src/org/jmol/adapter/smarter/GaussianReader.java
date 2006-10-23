@@ -1,7 +1,7 @@
 /* $RCSfile$
- * $Author$
- * $Date$
- * $Revision$
+ * $Author: hansonr $
+ * $Date: 2006-09-12 00:46:22 -0500 (Tue, 12 Sep 2006) $
+ * $Revision: 5501 $
  *
  * Copyright (C) 2004-2005  The Jmol Development Team
  *
@@ -23,6 +23,7 @@
  */
 
 package org.jmol.adapter.smarter;
+
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -111,7 +112,7 @@ class GaussianReader extends AtomSetCollectionReader {
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
-
+    this.reader = reader;
     atomSetCollection = new AtomSetCollection("gaussian");
     boolean iHaveAtoms = false;
 
@@ -120,7 +121,7 @@ class GaussianReader extends AtomSetCollectionReader {
       int lineNum = 0;
       int stepNumber = 0;
 
-      while ((line = reader.readLine()) != null) {
+      while (readLine() != null) {
         if (line.startsWith(" Step number")) {
           equivalentAtomSets = 0;
           stepNumber++;
@@ -147,30 +148,30 @@ class GaussianReader extends AtomSetCollectionReader {
           }
           equivalentAtomSets++;
           logger.log(" model " + modelNumber + " step " + stepNumber+" equivalentAtomSet " + equivalentAtomSets + " calculation " + calculationNumber + " scan point " + scanPoint+line);
-          readAtoms(reader, line);
+          readAtoms();
           iHaveAtoms = true;
         } else if (iHaveAtoms && line.startsWith(" Energy=")) {
-          setEnergy(line);
+          setEnergy();
         } else if (iHaveAtoms && line.startsWith(" SCF Done:")) {
-          readSCFDone(reader, line);
+          readSCFDone();
         } else if (iHaveAtoms && line.startsWith(" Harmonic frequencies")) {
-          readFrequencies(reader);
+          readFrequencies();
         } else if (iHaveAtoms
             && (line.startsWith(" Total atomic charges:") || line
                 .startsWith(" Mulliken atomic charges:"))) {
           // NB this only works for the Standard or Input orientation of
           // the molecule since it does not list the values for the
           // dummy atoms in the z-matrix
-          readPartialCharges(reader);
+          readPartialCharges();
         } else if (iHaveAtoms && line.startsWith(" Standard basis:")) {
           logger.log(line);
           moData.put("energyUnits","");
           moData.put("calculationType", line.substring(17).trim());
         } else if (iHaveAtoms && line.startsWith(" AO basis set:")) {
-          readBasis(reader);
+          readBasis();
           atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
         } else if (iHaveAtoms && line.indexOf("Molecular Orbital Coefficients") >=0) {
-          readMolecularOrbitals(reader);
+          readMolecularOrbitals();
           logger.log(orbitals.size() + " molecular orbitals read");
           moData.put("mos", orbitals);
           atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
@@ -204,11 +205,9 @@ class GaussianReader extends AtomSetCollectionReader {
    * The energy, convergence, -V/T and S**2 values will be set as properties
    * for the atomSet.
    *
-   * @param reader BufferedReader associated with the Gaussian output text.
-   * @param line The input line containing SCF Done:.
    * @throws Exception If an error occurs
    **/
-  private void readSCFDone(BufferedReader reader, String line) throws Exception {
+  private void readSCFDone() throws Exception {
     String tokens[] = getTokens(line,11);
     energyKey = tokens[0];
     energyString = tokens[2]+" "+tokens[3];
@@ -216,19 +215,18 @@ class GaussianReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetNames(energyKey+" = " + energyString, equivalentAtomSets);
     // also set the properties for them
     atomSetCollection.setAtomSetProperties(energyKey, energyString, equivalentAtomSets);
-    tokens = getTokens(reader.readLine());
+    tokens = getTokens(readLine());
     atomSetCollection.setAtomSetProperties(tokens[0], tokens[2], equivalentAtomSets);
     atomSetCollection.setAtomSetProperties(tokens[3], tokens[5], equivalentAtomSets);
-    tokens = getTokens(reader.readLine());
+    tokens = getTokens(readLine());
     atomSetCollection.setAtomSetProperties(tokens[0], tokens[2], equivalentAtomSets);
   }
   
   /**
    * Interpret the Energy= line for non SCF type energy output
    *
-   * @param line The input line containing Energy=
    */
-  private void setEnergy(String line) {
+  private void setEnergy() {
     String tokens[] = getTokens(line);
     energyKey = "Energy";
     energyString = tokens[1];
@@ -262,13 +260,13 @@ class GaussianReader extends AtomSetCollectionReader {
    ---------------------------------------------------------------------
    */
   
-  private void readAtoms(BufferedReader reader, String line) throws Exception {
+  private void readAtoms() throws Exception {
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetName(""); // start with an empty name
     String path = getTokens(line)[0]; // path = type of orientation
-    discardLines(reader, 4);
+    discardLines(4);
     String tokens[];
-    while ((line = reader.readLine()) != null &&
+    while (readLine() != null &&
         !line.startsWith(" --")) {
       tokens = getTokens(line); // get the tokens in the line
       Atom atom = atomSetCollection.addNewAtom();
@@ -314,7 +312,7 @@ class GaussianReader extends AtomSetCollectionReader {
    There are     2 symmetry adapted basis functions of B2  symmetry.
    */
 
-  void readBasis(BufferedReader reader) throws Exception {
+  void readBasis() throws Exception {
     Vector sdata = new Vector();
     Vector gdata = new Vector();
     atomCount = -1;
@@ -322,7 +320,7 @@ class GaussianReader extends AtomSetCollectionReader {
     shellCount = 0;
     String lastAtom = "";
     String[] tokens;
-    while ((line = reader.readLine()) != null && line.startsWith(" Atom")) {
+    while (readLine() != null && line.startsWith(" Atom")) {
       shellCount++;
       tokens = getTokens(line);
       Hashtable slater = new Hashtable();
@@ -337,7 +335,7 @@ class GaussianReader extends AtomSetCollectionReader {
       sdata.add(slater);
       gaussianCount += nGaussians;
       for (int i = 0; i < nGaussians; i++)
-        gdata.add(getTokens(reader.readLine()));
+        gdata.add(getTokens(readLine()));
     }
     if (atomCount == -1)
       atomCount = 0;
@@ -368,24 +366,24 @@ class GaussianReader extends AtomSetCollectionReader {
    6        3S          0.00415   0.43535   0.00000   0.32546   0.00000
 
    */
-  void readMolecularOrbitals(BufferedReader reader) throws Exception {
+  void readMolecularOrbitals() throws Exception {
     Hashtable[] mos = new Hashtable[5];
     Vector[] data = new Vector[5];
     int nThisLine = 0;
-    while ((line = reader.readLine()) != null
+    while (readLine() != null
         && line.toUpperCase().indexOf("DENS") < 0) {
       String[] tokens = getTokens(line);
       int ptData = (line.charAt(5) == ' ' ? 2 : 4);
       if (line.indexOf("                    ") == 0) {
         addMOData(nThisLine, data, mos);
         nThisLine = tokens.length;
-        tokens = getTokens(line = reader.readLine());
+        tokens = getTokens(readLine());
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable();
           data[i] = new Vector();
           mos[i].put("symmetry", tokens[i]);
         }
-        tokens = getTokens(line = reader.readLine());
+        tokens = getTokens(readLine());
         for (int i = 0; i < nThisLine; i++)
           mos[i].put("energy", new Float(tokens[i + 2]));
         continue;
@@ -458,16 +456,14 @@ class GaussianReader extends AtomSetCollectionReader {
    * Only the Frequencies, reduced masses, force constants and IR intensities
    * are set as properties for each of the frequency type AtomSet generated.
    *
-   * @param reader BufferedReader associated with the Gaussian output text.
    * @throws Exception If no frequences were encountered
    * @throws IOException If an I/O error occurs
    **/
-  private void readFrequencies(BufferedReader reader) throws Exception, IOException {
-    String line;
+  private void readFrequencies() throws Exception, IOException {
     String[] tokens; String[] symmetries; String[] frequencies;
     String[] red_masses; String[] frc_consts; String[] intensities;
     
-    while ((line = reader.readLine()) != null &&
+    while (readLine() != null &&
         line.indexOf(":")<0) {
     }
     if (line == null)
@@ -475,18 +471,17 @@ class GaussianReader extends AtomSetCollectionReader {
     
     // G98 ends the frequencies with a line with a space (03 an empty line)
     // so I decided to read till the line is too short
-    while ((line= reader.readLine()) != null &&
+    while ((line= readLine()) != null &&
         line.length() > 15)
     {
       // we now have the line with the vibration numbers in them, but don't need it
-      symmetries = getTokens(reader.readLine()); // read symmetry labels
+      symmetries = getTokens(readLine()); // read symmetry labels
       // TODO I should really read all the properties of the vibrations listed
       // and not limit myself to only IR type ones..
-      frequencies = getTokens(discardLinesUntilStartsWith(reader," Frequencies"), 15);
-      red_masses = getTokens(discardLinesUntilStartsWith(reader," Red. masses"), 15);
-      frc_consts = getTokens(discardLinesUntilStartsWith(reader," Frc consts"), 15);
-      intensities = getTokens(discardLinesUntilStartsWith(reader," IR Inten"), 15);
-      
+      frequencies = getTokens(discardLinesUntilStartsWith(" Frequencies"), 15);
+      red_masses = getTokens(discardLinesUntilStartsWith(" Red. masses"), 15);
+      frc_consts = getTokens(discardLinesUntilStartsWith(" Frc consts"), 15);
+      intensities = getTokens(discardLinesUntilStartsWith(" IR Inten"), 15);
       int frequencyCount = frequencies.length;
       
       for (int i = 0; i < frequencyCount; ++i) {
@@ -517,12 +512,12 @@ class GaussianReader extends AtomSetCollectionReader {
         atomSetCollection.atomCount - frequencyCount * atomCount;
       
       // position to start reading the displacement vectors
-      discardLinesUntilStartsWith(reader, " Atom AN");
+      discardLinesUntilStartsWith(" Atom AN");
       
       // read the displacement vectors for every atom and frequency
       float x, y, z;
       for (int i = 0; i < atomCount; ++i) {
-        tokens = getTokens(reader.readLine());
+        tokens = getTokens(readLine());
         int atomCenterNumber = parseInt(tokens[0]);
         for (int j = 0, offset=FREQ_FIRST_VECTOR_OFFSET;
         j < frequencyCount; ++j) {
@@ -550,13 +545,12 @@ class GaussianReader extends AtomSetCollectionReader {
   
   /**
    * Reads partial charges and assigns them only to the last atom set. 
-   * @param reader The reader from which to read the charges
    * @throws Exception When an I/O error or discardlines error occurs
    */
   // TODO this really should set the charges for the last nOrientations read
   // being careful about the dummy atoms...
-  void readPartialCharges(BufferedReader reader) throws Exception {
-    discardLines(reader, 1);
+  void readPartialCharges() throws Exception {
+    discardLines(1);
     for (int i = atomSetCollection.getLastAtomSetAtomIndex();
     i < atomSetCollection.atomCount;
     ++i) {
@@ -565,7 +559,7 @@ class GaussianReader extends AtomSetCollectionReader {
         ++i;
       // assign the partial charge
       atomSetCollection.atoms[i].partialCharge =
-        parseFloat(getTokens(reader.readLine())[2]);
+        parseFloat(getTokens(readLine())[2]);
     }
   }
 }

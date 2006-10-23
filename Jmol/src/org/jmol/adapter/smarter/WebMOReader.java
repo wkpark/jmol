@@ -24,6 +24,7 @@
 
 package org.jmol.adapter.smarter;
 
+
 import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -47,9 +48,9 @@ class WebMOReader extends AtomSetCollectionReader {
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)
       throws Exception {
-    atomSetCollection = new AtomSetCollection("webmo");
     this.reader = reader;
-    line = reader.readLine();
+    atomSetCollection = new AtomSetCollection("webmo");
+    readLine();
     modelNumber = 0;
     try {
       while (line != null) {
@@ -80,7 +81,7 @@ class WebMOReader extends AtomSetCollectionReader {
           }
           continue;
         }
-        line = reader.readLine();
+        readLine();
       }
     } catch (Exception e) {
       Logger.error("Could not read file at line: " + line, e);
@@ -94,7 +95,7 @@ class WebMOReader extends AtomSetCollectionReader {
   }
 
   void readHeader() throws Exception {
-    while ((line = reader.readLine()) != null && line.length() > 0) {
+    while (readLine() != null && line.length() > 0) {
       moData.put("calculationType", "?");
       String[] tokens = getTokens(line);
       tokens[0] = tokens[0].substring(0, 1).toLowerCase()
@@ -123,7 +124,7 @@ class WebMOReader extends AtomSetCollectionReader {
 
      */
 
-    line = reader.readLine();
+    readLine();
     boolean isAtomicNumber = (parseInt(line) != Integer.MIN_VALUE);
     while (line != null && (line.length() == 0 || line.charAt(0) != '[')) {
       if (line.length() != 0) {
@@ -138,7 +139,7 @@ class WebMOReader extends AtomSetCollectionReader {
         atom.y = parseFloat(tokens[2]) * ANGSTROMS_PER_BOHR;
         atom.z = parseFloat(tokens[3]) * ANGSTROMS_PER_BOHR;
       }
-      line = reader.readLine();
+      readLine();
     }
   }
 
@@ -152,7 +153,7 @@ class WebMOReader extends AtomSetCollectionReader {
 
      */
 
-    while ((line = reader.readLine()) != null
+    while (readLine() != null
         && (line.length() == 0 || line.charAt(0) != '[')) {
       if (line.length() == 0)
         continue;
@@ -172,7 +173,7 @@ class WebMOReader extends AtomSetCollectionReader {
      FOrbitals XXX YYY ZZZ XXY XXZ YYX YYZ ZZX ZZY XYZ
      */
     Hashtable info = new Hashtable();
-    while ((line = reader.readLine()) != null
+    while (readLine() != null
         && (line.length() == 0 || line.charAt(0) != '[')) {
       if (line.length() == 0)
         continue;
@@ -205,7 +206,7 @@ class WebMOReader extends AtomSetCollectionReader {
     int atomIndex = 0;
     int gaussianPtr = 0;
 
-    while ((line = reader.readLine()) != null
+    while (readLine() != null
         && (line.length() == 0 || line.charAt(0) != '[')) {
       String[] tokens = getTokens(line);
       if (tokens.length == 0)
@@ -216,7 +217,7 @@ class WebMOReader extends AtomSetCollectionReader {
       }
       Hashtable slater = new Hashtable();
       atomIndex = parseInt(tokens[0]) - 1;
-      tokens = getTokens(line = reader.readLine());
+      tokens = getTokens(readLine());
       String basisType = tokens[0];
       int nGaussians = parseInt(tokens[1]);
       slater.put("atomIndex", new Integer(atomIndex));
@@ -224,7 +225,7 @@ class WebMOReader extends AtomSetCollectionReader {
       slater.put("nGaussians", new Integer(nGaussians));
       slater.put("gaussianPtr", new Integer(gaussianPtr));
       for (int i = 0; i < nGaussians; i++) {
-        String[] strData = getTokens(line = reader.readLine());
+        String[] strData = getTokens(readLine());
         int nData = strData.length;
         float[] data = new float[nData];
         for (int d = 0; d < nData; d++)
@@ -255,7 +256,7 @@ class WebMOReader extends AtomSetCollectionReader {
     Vector intinfo = new Vector();
     Vector floatinfo = new Vector();
     int ndata = 0;
-    while ((line = reader.readLine()) != null
+    while (readLine() != null
         && (line.length() == 0 || line.charAt(0) != '[')) {
       String[] tokens = getTokens(line);
       if (tokens.length < 7)
@@ -293,9 +294,9 @@ class WebMOReader extends AtomSetCollectionReader {
      */
     Hashtable mo = new Hashtable();
     Vector data = new Vector();
-    float energy = parseFloat(line = reader.readLine());
-    int occupancy = parseInt(line = reader.readLine());
-    while ((line = reader.readLine()) != null
+    float energy = parseFloat(readLine());
+    int occupancy = parseInt(readLine());
+    while (readLine() != null
         && (line.length() == 0 || line.charAt(0) != '[')) {
       if (line.length() == 0)
         continue;

@@ -2290,14 +2290,12 @@ public class Viewer extends JmolViewer {
       String strErrorMessage = eval.getErrorMessage();
       int msWalltime = eval.getExecutionWalltime();
       statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
-      if (isScriptFile) {
-        if (writeInfo != null)
-          createImage(writeInfo);
-        if (autoExit) {
-          System.out.flush();
-          System.exit(0);
-        }
-      }
+      if (isScriptFile && writeInfo != null)
+        createImage(writeInfo);
+    }
+    if (isScriptFile && autoExit) {
+      System.out.flush();
+      System.exit(0);
     }
     if (returnType.equalsIgnoreCase("String"))
       return eval.getErrorMessage();

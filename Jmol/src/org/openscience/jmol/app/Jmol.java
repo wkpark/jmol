@@ -386,6 +386,7 @@ public class Jmol extends JPanel {
     options.addOption("n", "nodisplay", false, GT._("no display (and also exit when done)"));
     options.addOption("i", "silent", false, GT._("silent startup operation"));
     options.addOption("o", "noconsole", false, GT._("no console -- all output to sysout"));
+    options.addOption("x", "exit", false, GT._("exit after script (implicit with -n)"));
     
     OptionBuilder.withLongOpt("script");
     OptionBuilder.withDescription("script file to execute");
@@ -412,11 +413,6 @@ public class Jmol extends JPanel {
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("w"));
 
-    OptionBuilder.withLongOpt("exit");
-    OptionBuilder.withDescription(GT._("exit after script (implicit with -n)"));
-    OptionBuilder.withValueSeparator('=');
-    OptionBuilder.hasArg();
-    options.addOption(OptionBuilder.create("x"));
 
     int startupWidth = 0, startupHeight = 0;
 

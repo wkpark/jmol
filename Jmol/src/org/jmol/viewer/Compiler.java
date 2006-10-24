@@ -154,7 +154,9 @@ class Compiler {
         }
         break;
       }
-      if (tokCommand != Token.nada) {
+      if (tokCommand == Token.nada) {
+        bracketsOpen = false;
+      } else {
         if (lookingAtString()) {
           String str = (tokCommand == Token.load && !iHaveQuotedString ? script
               .substring(ichToken + 1, ichToken + cchToken - 1)
@@ -235,7 +237,7 @@ class Compiler {
           }
         } else {
           ident = ident.toLowerCase();
-          token = (Token) Token.map.get(ident);
+          token = bracketsOpen ? null : (Token) Token.map.get(ident);
         }
         if (token == null)
           token = new Token(Token.identifier, ident);
@@ -665,6 +667,8 @@ class Compiler {
     return true;
   }
 
+  boolean bracketsOpen;
+  
   boolean lookingAtLookupToken() {
     if (ichToken == cchScript)
       return false;
@@ -679,13 +683,17 @@ class Compiler {
     case '{':
     case '}':
     case '$':
-    case '[':
-    case ']':
     case '+':
     case ':':
     case '@':
     case '.':
     case '%':
+      break;
+    case '[':
+      bracketsOpen = true;
+      break;
+    case ']':
+      bracketsOpen = false;
       break;
     case '&':
     case '|':

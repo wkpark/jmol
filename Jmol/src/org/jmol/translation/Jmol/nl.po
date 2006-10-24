@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-09-28 22:03+0200\n"
+"POT-Creation-Date: 2006-10-24 21:08+0200\n"
 "PO-Revision-Date: 2006-04-09 11:48+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -29,7 +29,7 @@ msgstr "Over Jmol"
 msgid "Unable to find url \"{0}\"."
 msgstr "Kan de URL \"{0}\" niet vinden."
 
-#: org/openscience/jmol/app/AboutDialog.java:96
+#: org/openscience/jmol/app/AboutDialog.java:95
 #: org/openscience/jmol/app/HelpDialog.java:105
 #: org/openscience/jmol/app/PreferencesDialog.java:171
 #: org/openscience/jmol/app/WhatsNewDialog.java:95
@@ -144,11 +144,11 @@ msgstr "Ga naar de laatste {0} in de collectie"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Fout tijdens het lezen uit de BufferedReader: {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:229
+#: org/openscience/jmol/app/DisplayPanel.java:227
 msgid "Select Atoms"
 msgstr "Atomen Selecteren"
 
-#: org/openscience/jmol/app/DisplayPanel.java:243
+#: org/openscience/jmol/app/DisplayPanel.java:241
 msgid "Delete Atoms"
 msgstr "Wis Atomen"
 
@@ -244,7 +244,7 @@ msgstr "Eigenscha&ppen..."
 
 #: org/openscience/jmol/app/GuiMap.java:65
 msgid "&Paste"
-msgstr ""
+msgstr "&Plakken"
 
 #: org/openscience/jmol/app/GuiMap.java:68
 msgid "All"
@@ -554,10 +554,9 @@ msgid "What's New"
 msgstr "Wat is Nieuw"
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#: org/openscience/jmol/app/Jmol.java:553
-#, fuzzy
+#: org/openscience/jmol/app/Jmol.java:558
 msgid "Jmol Java Console"
-msgstr "Jmol Console"
+msgstr "Jmol Java Console"
 
 #: org/openscience/jmol/app/GuiMap.java:159
 msgid "Hydrogens"
@@ -576,9 +575,8 @@ msgid "File Preview (needs restarting Jmol)"
 msgstr "Bestands Preview (vereist een herstart van Jmol)"
 
 #: org/openscience/jmol/app/GuiMap.java:166
-#, fuzzy
 msgid "Clear console button (needs restarting Jmol)"
-msgstr "Bestands Preview (vereist een herstart van Jmol)"
+msgstr "Leeg console knop (vereist een herstart van Jmol)"
 
 #: org/openscience/jmol/app/GuiMap.java:167
 #: org/openscience/jmol/app/GuiMap.java:168
@@ -629,150 +627,149 @@ msgstr "Figuurformaat"
 msgid "JPEG Quality"
 msgstr "JPEG-kwaliteit"
 
-#: org/openscience/jmol/app/Jmol.java:127
+#: org/openscience/jmol/app/Jmol.java:125
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Kan Jmol niet starten: de syteemvariabele 'user.home' is not defined."
 
-#: org/openscience/jmol/app/Jmol.java:161
+#: org/openscience/jmol/app/Jmol.java:159
 msgid "Initializing 3D display..."
 msgstr "Initialiseren 3D display..."
 
-#: org/openscience/jmol/app/Jmol.java:186
+#: org/openscience/jmol/app/Jmol.java:184
 msgid "Initializing Preferences..."
 msgstr "Initialiseren Eigenschappen..."
 
-#: org/openscience/jmol/app/Jmol.java:188
+#: org/openscience/jmol/app/Jmol.java:186
 msgid "Initializing Recent Files..."
 msgstr "Initialiseren Recente Bestanden..."
 
-#: org/openscience/jmol/app/Jmol.java:190
+#: org/openscience/jmol/app/Jmol.java:188
 msgid "Initializing Script Window..."
 msgstr "Initialiseren Script-window..."
 
-#: org/openscience/jmol/app/Jmol.java:192
+#: org/openscience/jmol/app/Jmol.java:190
 msgid "Initializing AtomSetChooser Window..."
 msgstr "Initialiseren AtoomSetMenu WIndow...."
 
-#: org/openscience/jmol/app/Jmol.java:202
+#: org/openscience/jmol/app/Jmol.java:200
 msgid "Initializing Measurements..."
 msgstr "Initialiseren Metingen...."
 
-#: org/openscience/jmol/app/Jmol.java:223
+#: org/openscience/jmol/app/Jmol.java:221
 msgid "Building Command Hooks..."
 msgstr "Opbouwen Opdrachten..."
 
-#: org/openscience/jmol/app/Jmol.java:232
+#: org/openscience/jmol/app/Jmol.java:230
 msgid "Building Menubar..."
 msgstr "Opbouwen Menus..."
 
-#: org/openscience/jmol/app/Jmol.java:248
+#: org/openscience/jmol/app/Jmol.java:246
 msgid "Starting display..."
 msgstr "Starten viewer..."
 
-#: org/openscience/jmol/app/Jmol.java:255
+#: org/openscience/jmol/app/Jmol.java:253
 msgid "Setting up File Choosers..."
 msgstr "Make van Bestanskiezer..."
 
-#: org/openscience/jmol/app/Jmol.java:310
+#: org/openscience/jmol/app/Jmol.java:308
 msgid "Setting up Drag-and-Drop..."
 msgstr "Initialiseren van Drag-and-Drop..."
 
-#: org/openscience/jmol/app/Jmol.java:336
+#: org/openscience/jmol/app/Jmol.java:334
 msgid "Launching main frame..."
 msgstr "Starten mainwindow..."
 
-#: org/openscience/jmol/app/Jmol.java:354
+#: org/openscience/jmol/app/Jmol.java:352
 msgid "Creating main window..."
 msgstr "Maken van main window..."
 
-#: org/openscience/jmol/app/Jmol.java:355
+#: org/openscience/jmol/app/Jmol.java:353
 msgid "Initializing Swing..."
 msgstr "Initialiseren Swing..."
 
-#: org/openscience/jmol/app/Jmol.java:367
+#: org/openscience/jmol/app/Jmol.java:365
 msgid "Initializing Jmol..."
 msgstr "Initialiseren Jmol...."
 
-#: org/openscience/jmol/app/Jmol.java:387
+#: org/openscience/jmol/app/Jmol.java:385
 msgid "give this help page"
 msgstr "geef deze help pagina"
 
-#: org/openscience/jmol/app/Jmol.java:388
+#: org/openscience/jmol/app/Jmol.java:386
 msgid "no display (and also exit when done)"
-msgstr ""
+msgstr "geen scherm (en sluit ook af wanneer klaar)"
+
+#: org/openscience/jmol/app/Jmol.java:387
+msgid "silent startup operation"
+msgstr "stille startup"
+
+#: org/openscience/jmol/app/Jmol.java:388
+msgid "no console -- all output to sysout"
+msgstr "geen console -- alle uitvoer naar de command line"
 
 #: org/openscience/jmol/app/Jmol.java:389
-msgid "silent startup operation"
-msgstr ""
+msgid "exit after script (implicit with -n)"
+msgstr "afsluiten na einde script (impliciet met -n)"
 
-#: org/openscience/jmol/app/Jmol.java:390
-msgid "no console -- all output to sysout"
-msgstr ""
-
-#: org/openscience/jmol/app/Jmol.java:398
+#: org/openscience/jmol/app/Jmol.java:397
 msgid "property=value"
 msgstr "eigenschap=waarde"
 
-#: org/openscience/jmol/app/Jmol.java:401
+#: org/openscience/jmol/app/Jmol.java:400
 msgid "supported options are given below"
 msgstr "ondersteunde waarde staan hieronder"
 
-#: org/openscience/jmol/app/Jmol.java:405
-#, fuzzy, java-format
+#: org/openscience/jmol/app/Jmol.java:404
 msgid "window size, e.g. {0}"
-msgstr "windowgrootte 500x500"
+msgstr "windowgrootte, bv. {0}"
 
-#: org/openscience/jmol/app/Jmol.java:411
+#: org/openscience/jmol/app/Jmol.java:410
 #, java-format
 msgid "{0} or {1}:filename"
-msgstr ""
+msgstr "{0} of {1}: bestandsnaam"
 
-#: org/openscience/jmol/app/Jmol.java:418
-msgid "exit after script (implicit with -n)"
-msgstr ""
-
-#: org/openscience/jmol/app/Jmol.java:439
+#: org/openscience/jmol/app/Jmol.java:433
 msgid "For example:"
-msgstr ""
+msgstr "Bijvoorbeeld:"
 
-#: org/openscience/jmol/app/Jmol.java:443
+#: org/openscience/jmol/app/Jmol.java:437
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "De -D opties zijn (standaard waarden tussen haakjes):"
 
-#: org/openscience/jmol/app/Jmol.java:541
+#: org/openscience/jmol/app/Jmol.java:546
 msgid "Executing script..."
 msgstr "Afspelen van script..."
 
-#: org/openscience/jmol/app/Jmol.java:561
+#: org/openscience/jmol/app/Jmol.java:566
 #: org/openscience/jmol/app/ScriptWindow.java:93
 msgid "Clear"
 msgstr "Wissen"
 
-#: org/openscience/jmol/app/Jmol.java:574
+#: org/openscience/jmol/app/Jmol.java:579
 msgid "Could not create ConsoleTextArea: "
 msgstr "Kon geen ConsoleTextArea aanmaken:"
 
-#: org/openscience/jmol/app/Jmol.java:650
+#: org/openscience/jmol/app/Jmol.java:655
 msgid "Closing Jmol..."
 msgstr "Bezig met afsluiten Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:886
+#: org/openscience/jmol/app/Jmol.java:891
 msgid "Macros"
 msgstr "Macro's"
 
-#: org/openscience/jmol/app/Jmol.java:1225
+#: org/openscience/jmol/app/Jmol.java:1230
 msgid "Open URL"
 msgstr "Open URL"
 
-#: org/openscience/jmol/app/Jmol.java:1226
+#: org/openscience/jmol/app/Jmol.java:1231
 msgid "Enter URL of molecular model"
 msgstr "Geef URL van molecuulmodel"
 
-#: org/openscience/jmol/app/Jmol.java:1461
+#: org/openscience/jmol/app/Jmol.java:1466
 msgid "File not loaded"
 msgstr "Bestand niet geladen"
 
-#: org/openscience/jmol/app/Jmol.java:1606
+#: org/openscience/jmol/app/Jmol.java:1625
 msgid "IO Exception:"
 msgstr "IO-fout:"
 
@@ -1080,9 +1077,8 @@ msgid "Open"
 msgstr "Open"
 
 #: org/openscience/jmol/app/ScriptWindow.java:65
-#, fuzzy
 msgid "Jmol Script Console"
-msgstr "Jmol Console"
+msgstr "Jmol Script Console"
 
 #: org/openscience/jmol/app/ScriptWindow.java:84
 msgid "Run"
@@ -1094,7 +1090,7 @@ msgstr "Stoppen"
 
 #: org/openscience/jmol/app/ScriptWindow.java:97
 msgid "History"
-msgstr ""
+msgstr "Geschiedenis"
 
 #: org/openscience/jmol/app/ScriptWindow.java:101
 msgid "Help"
@@ -1107,78 +1103,3 @@ msgstr "Laden..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "Wat is nieuw in Jmol"
-
-#, fuzzy
-#~ msgid "no display"
-#~ msgstr "Weergave"
-
-#, fuzzy
-#~ msgid "atoms selected"
-#~ msgstr "atoomset"
-
-#, fuzzy
-#~ msgid "Jmol executing script ..."
-#~ msgstr "Afspelen van script..."
-
-#~ msgid "Rasmol Scripts"
-#~ msgstr "Rasmol-scripts"
-
-#~ msgid "Wi&reframe Rotation"
-#~ msgstr "D&raadmodelrotatie"
-
-#~ msgid "Wireframe Rotation"
-#~ msgstr "Draadmodelrotatie"
-
-#~ msgid "Colors"
-#~ msgstr "Kleuren"
-
-#~ msgid "Background"
-#~ msgstr "Achtergrond"
-
-#~ msgid "Set the Background Color"
-#~ msgstr "Stel de achtergrondkleur in"
-
-#~ msgid "Background Color"
-#~ msgstr "Achtergrondkleur"
-
-#~ msgid "Picked Atoms"
-#~ msgstr "Geselecteerde Atomen"
-
-#~ msgid "Set the Color for Picked Atoms"
-#~ msgstr "Stel de kleur van de gekozen atomen in"
-
-#~ msgid "Picked Atom Color"
-#~ msgstr "Gekozen Atoomkleur"
-
-#~ msgid "Text"
-#~ msgstr "Tekst"
-
-#~ msgid "Set the Color for Text"
-#~ msgstr "Stel de kleur voor de tekst in"
-
-#~ msgid "Text Color"
-#~ msgstr "Kleur Tekst"
-
-#~ msgid "Set the Color for Bonds"
-#~ msgstr "Stel de kleur voor de bindingen in"
-
-#~ msgid "Bond Color"
-#~ msgstr "Kleur Bindingen"
-
-#~ msgid "Vectors"
-#~ msgstr "Vectoren"
-
-#~ msgid "Set the Vector Color"
-#~ msgstr "Stel de kleur van de vectoren in "
-
-#~ msgid "Vector Color"
-#~ msgstr "Vectorkleur"
-
-#~ msgid "Color for distance, angle, & torsion measurements"
-#~ msgstr "Kleur de afstands-, hoek-, en torsiehoekmetingen."
-
-#~ msgid "Measurements Color"
-#~ msgstr "Kleur Metingen"
-
-#~ msgid "Loading plugins..."
-#~ msgstr "Loading plugins..."

@@ -2734,6 +2734,18 @@ public class Viewer extends JmolViewer {
   public void setBooleanProperty(String key, boolean value) {
     //Eval
     while (true) {
+      if (key.equalsIgnoreCase("labelPointerBackground")) {
+        setLabelPointerBackground(value);
+        break;  
+      }
+      if (key.equalsIgnoreCase("labelPointerNoBox")) {
+        setLabelPointerNoBox(value);
+        break;  
+      }
+      if (key.equalsIgnoreCase("labelPointerBox")) {
+        setLabelPointerBox(value);
+        break;  
+      }
       if (key.equalsIgnoreCase("languageTranslation")) {
         GT.setDoTranslate(value);
         break;  
@@ -3132,6 +3144,30 @@ public class Viewer extends JmolViewer {
 
   private void setHideNameInPopup(boolean hideNameInPopup) {
     global.hideNameInPopup = hideNameInPopup;
+  }
+
+  private void setLabelPointerBackground(boolean TF) {
+    global.labelPointerBackground = TF;
+  }
+
+  boolean getLabelPointerBackground() {
+    return global.labelPointerBackground;
+  }
+
+  private void setLabelPointerNoBox(boolean TF) {
+    global.labelPointerNoBox = TF;
+  }
+
+  boolean getLabelPointerNoBox() {
+    return global.labelPointerNoBox;
+  }
+
+  private void setLabelPointerBox(boolean TF) {
+    global.labelPointerBox = TF;
+  }
+
+  boolean getLabelPointerBox() {
+    return global.labelPointerBox;
   }
 
   void setSsbondsBackbone(boolean TF) {

@@ -238,6 +238,9 @@ class StateManager {
     boolean greyscaleRendering;
     boolean labelsGroupFlag;
     boolean labelsFrontFlag;
+    boolean labelPointerBackground = true;
+    boolean labelPointerBox = true;
+    boolean labelPointerNoBox = false;
     boolean dotsSelectedOnlyFlag;
     boolean dotSurfaceFlag = true;
     boolean displayCellParameters = true;

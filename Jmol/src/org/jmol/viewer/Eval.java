@@ -2768,7 +2768,7 @@ class Eval { //implements Runnable {
     for (int shapeType = JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT; --shapeType >= 0;)
       if (shapeType != JmolConstants.SHAPE_MEASURES)
         viewer.setShapeSize(shapeType, 0);
-
+    viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "delete", null);
     viewer.setLabel(null);
 
     viewer.setBondSelectionModeOr(bondmode);

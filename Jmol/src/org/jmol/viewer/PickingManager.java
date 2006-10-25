@@ -137,15 +137,15 @@ class PickingManager {
       viewer.clearClickCount();
       break;
     case JmolConstants.PICKING_SELECT_MOLECULE:
-      applyMouseStyle("within(molecule, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
+      applyMouseStyle("visible and within(molecule, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
       viewer.clearClickCount();
       break;
     case JmolConstants.PICKING_SELECT_SITE:
-      applyMouseStyle("within(site, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
+      applyMouseStyle("visible and within(site, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
       viewer.clearClickCount();
       break;
     case JmolConstants.PICKING_SELECT_ELEMENT:
-      applyMouseStyle("within(element, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
+      applyMouseStyle("visible and within(element, atomIndex=" + atomIndex+")", shiftKey, alternateKey);
       viewer.clearClickCount();
       break;
     case JmolConstants.PICKING_SPIN:

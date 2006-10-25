@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-10-24 21:08+0200\n"
+"POT-Creation-Date: 2006-10-25 23:11+0200\n"
 "PO-Revision-Date: 2006-04-09 11:48+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -720,6 +720,7 @@ msgid "supported options are given below"
 msgstr "ondersteunde waarde staan hieronder"
 
 #: org/openscience/jmol/app/Jmol.java:404
+#, java-format
 msgid "window size, e.g. {0}"
 msgstr "windowgrootte, bv. {0}"
 

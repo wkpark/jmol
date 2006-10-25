@@ -234,6 +234,7 @@ public final class Frame {
     loadShape(JmolConstants.SHAPE_UCCAGE);
 
     initializeBuild(nAtoms);
+    
     mmset.setModelSetProperties(properties);
     mmset.setModelSetAuxiliaryInfo(info);
 
@@ -569,6 +570,8 @@ public final class Frame {
     if (group3Lists == null)
       return;
     Hashtable info = getModelSetAuxiliaryInfo(); 
+    if (info == null)
+      return;
     info.put("group3Lists", group3Lists);
     info.put("group3Counts", group3Counts);
   }
@@ -669,6 +672,8 @@ public final class Frame {
   }
 
   void countGroup(int modelIndex, String code, String group3) {
+    if (group3Lists == null || group3Lists[modelIndex] == null)
+      return;
     String g3code = (group3 + "   ").substring(0, 3);
     int pt = group3Lists[modelIndex].indexOf(g3code);
     if (pt < 0) {

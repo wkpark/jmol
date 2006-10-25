@@ -98,8 +98,13 @@ class LabelsRenderer extends ShapeRenderer {
         }
       }
       if (isSimple) {
-        Text.renderSimple(g3d, font3d, label, colix, bgcolix, atom.screenX, atom.screenY, zBox,
-            zSlab, Text.getXOffset(offset), Text.getYOffset(offset), ascent, descent);
+        boolean doPointer = (viewer.getLabelPointerBox() && bgcolix != 0 || bgcolix == 0 && viewer
+            .getLabelPointerNoBox());
+        short pointercolix = (viewer.getLabelPointerBackground() && bgcolix != 0 ? bgcolix
+            : colix);
+        Text.renderSimple(g3d, font3d, label, colix, bgcolix, atom.screenX,
+            atom.screenY, zBox, zSlab, Text.getXOffset(offset), Text
+                .getYOffset(offset), ascent, descent, doPointer, pointercolix);
       } else {
         text = new Text(g3d, font3d, label, colix, bgcolix, atom.screenX,
             atom.screenY, zBox, zSlab, textAlign);

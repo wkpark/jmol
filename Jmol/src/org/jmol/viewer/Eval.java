@@ -3147,8 +3147,9 @@ class Eval { //implements Runnable {
     }
     float xTrans = 0;
     float yTrans = 0;
-    if (factor < 5 || factor > Viewer.MAXIMUM_ZOOM_PERCENTAGE)
-      numberOutOfRange(5, Viewer.MAXIMUM_ZOOM_PERCENTAGE);
+    float max = viewer.getMaxZoomPercent();
+    if (factor < 5 || factor > max)
+      numberOutOfRange(5, max);
     if (!viewer.isWindowCentered()) {
       // do a smooth zoom only if not windowCentered
       if (center != null)

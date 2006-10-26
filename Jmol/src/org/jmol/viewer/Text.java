@@ -24,6 +24,7 @@
 package org.jmol.viewer;
 
 import java.awt.FontMetrics;
+import javax.vecmath.Point3f;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
@@ -34,6 +35,7 @@ class Text {
   final static int LEFT = 1;
   final static int CENTER = 2;
   final static int RIGHT = 3;
+  final static int XYZ = 4;
 
   final static int TOP = 1;
   final static int BOTTOM = 2;
@@ -41,8 +43,11 @@ class Text {
 
   boolean atomBased;
   Graphics3D g3d;
+  Point3f xyz;
   String target;
   String text;
+  String thisID;
+  
   String[] lines;
   int align;
   int valign;
@@ -117,6 +122,11 @@ class Text {
     recalc();
   }
 
+  void setXYZ(Point3f xyz) {
+    valign = XYZ;
+    this.xyz = xyz;
+  }
+  
   void setAdjustForWindow(boolean TF) {
     adjustForWindow = TF;
   }
@@ -138,12 +148,12 @@ class Text {
   }
 
   void setMovableX(int x) {
-    valign = XY;
+    valign = (valign == XYZ ? XYZ : XY);
     movableX = x;
   }
 
   void setMovableY(int y) {
-    valign = XY;
+    valign = (valign == XYZ ? XYZ : XY);
     movableY = y;
   }
 
@@ -165,7 +175,7 @@ class Text {
 
   void setPositions() {
     int xLeft, xCenter, xRight;
-    if (valign == XY) {
+    if (valign == XY || valign == XYZ) {
       xLeft = xRight = xCenter = movableX + offsetX;
     } else {
       xLeft = 5;

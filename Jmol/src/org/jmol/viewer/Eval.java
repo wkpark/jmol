@@ -4287,6 +4287,12 @@ class Eval { //implements Runnable {
     if (statementLength < 5)
       badArgumentCount();
     int i = 3;
+    //set echo name {x y z}
+    if (isAtomCenterOrCoordinateNext(i)) {
+      viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, "xyz",
+          atomCenterOrCoordinateParameter(i));
+      return;
+    }
     int pos =intParameter(i++);
     String type;
     propertyValue = new Integer(pos);

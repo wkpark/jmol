@@ -32,6 +32,8 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Enumeration;
 
+import javax.vecmath.Point3f;
+
 class TextShape extends Shape {
 
 
@@ -181,6 +183,12 @@ class TextShape extends Shape {
             * (100 - ((Integer) value).intValue()) / 100);
       return;
     }
-  }
+
+    if ("xyz" == propertyName) {
+      if (currentText != null)
+        currentText.setXYZ((Point3f)value);
+      return;
+    }
+}
 }
 

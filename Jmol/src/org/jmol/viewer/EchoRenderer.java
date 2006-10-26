@@ -24,14 +24,22 @@
 package org.jmol.viewer;
 
 import java.util.Enumeration;
+import javax.vecmath.Point3i;
 
 class EchoRenderer extends ShapeRenderer {
 
   void render() {
     Echo echo = (Echo)shape;
     
+    Point3i pt = new Point3i();
     Enumeration e = echo.texts.elements();
-    while (e.hasMoreElements())
-      ((Text)e.nextElement()).render();
+    while (e.hasMoreElements()) {
+      Text t = (Text)e.nextElement();
+      if (t.valign == Text.XYZ) {
+        viewer.transformPoint(t.xyz, pt);
+        t.setXYZs(pt.x, pt.y, pt.z, pt.z);
+      }
+      t.render();
+    }
   }
 }

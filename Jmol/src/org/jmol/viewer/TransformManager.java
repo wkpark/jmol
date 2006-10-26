@@ -38,6 +38,7 @@ class TransformManager {
 
   Viewer viewer;
 
+
   TransformManager(Viewer viewer) {
     this.viewer = viewer;
   }
@@ -101,6 +102,9 @@ class TransformManager {
   final static float radiansPerDegree = (float) (2 * Math.PI / 360);
   final static float degreesPerRadian = (float) (360 / (2 * Math.PI));
 
+  final static int MAXIMUM_ZOOM_PERCENTAGE = 200000;
+  final static int MAXIMUM_ZOOM_PERSPECTIVE_DEPTH = 10000;
+  
   private void setFixedRotationCenter(Point3f center) {
     if (center == null)
       return;
@@ -468,8 +472,8 @@ class TransformManager {
   private void setZoomParameters() {
     if (zoomPercentSetting < 5)
       zoomPercentSetting = 5;
-    if (zoomPercentSetting > Viewer.MAXIMUM_ZOOM_PERCENTAGE)
-      zoomPercentSetting = Viewer.MAXIMUM_ZOOM_PERCENTAGE;
+    if (zoomPercentSetting > MAXIMUM_ZOOM_PERCENTAGE)
+      zoomPercentSetting = MAXIMUM_ZOOM_PERCENTAGE;
     zoomPercent = (zoomEnabled) ? zoomPercentSetting : 100;
   }
   
@@ -737,8 +741,15 @@ class TransformManager {
     if (z <= 0)
       z = 1;
     float pixelSize = sizeAngstroms * scalePixelsPerAngstrom;
-    if (perspectiveDepth)
-      pixelSize = (pixelSize * cameraDistance) / z;
+    //new idea: phase out perspective depth when zoom is very large.
+    //zoomPercent 1000 or larger starts removing this effect
+    //we can go up to 200000
+    if (perspectiveDepth) {
+      float factor = cameraDistanceFloat / z;
+      if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+        factor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)/(MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH) * (1 - factor);
+      pixelSize *= factor;
+    }
     return pixelSize;
   }
 
@@ -748,8 +759,12 @@ class TransformManager {
     if (milliAngstroms == 0)
       return 0;
     int pixelSize = (int) (milliAngstroms * scalePixelsPerAngstrom / 1000);
-    if (perspectiveDepth)
-      pixelSize = (pixelSize * cameraDistance) / z;
+    if (perspectiveDepth) {
+      float factor = cameraDistanceFloat / z;
+      if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+        factor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)/(MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH) * (1 - factor);
+      pixelSize *= factor;
+    }
     if (pixelSize == 0)
       return 1;
     return (short) pixelSize;
@@ -758,9 +773,12 @@ class TransformManager {
   float scaleToPerspective(int z, float sizeAngstroms) {
     if (z <= 0)
       z = 1;
-    return (perspectiveDepth
-        ? (sizeAngstroms * cameraDistance) / z 
-        : sizeAngstroms);
+    if (!perspectiveDepth)
+      return sizeAngstroms;
+    float factor = cameraDistanceFloat / z;
+    if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+      factor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)/(MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH) * (1 - factor);
+    return sizeAngstroms * factor;
   }
 
   /* ***************************************************************
@@ -926,6 +944,8 @@ class TransformManager {
     point3fScreenTemp.z = z;
     if (perspectiveDepth) {
       float perspectiveFactor = cameraDistanceFloat / z;
+      if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+        perspectiveFactor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)/(MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH) * (1 - perspectiveFactor);
       point3fScreenTemp.x *= perspectiveFactor;
       point3fScreenTemp.y *= perspectiveFactor;
     }

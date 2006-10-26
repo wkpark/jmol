@@ -484,10 +484,11 @@ public class Viewer extends JmolViewer {
   float getZoomPercentSetting() {
     return transformManager.getZoomPercentSetting();
   }
-
-  public final static int MAXIMUM_ZOOM = 2000;
-  public final static int MAXIMUM_ZOOM_PERCENTAGE = MAXIMUM_ZOOM * 100;
-
+  
+  float getMaxZoomPercent() {
+    return TransformManager.MAXIMUM_ZOOM_PERCENTAGE;
+  }
+  
   void zoomToPercent(float percent) {
     transformManager.zoomToPercent(percent);
     refresh(1, "Viewer:zoomToPercent()");
@@ -610,7 +611,7 @@ public class Viewer extends JmolViewer {
   }
 
   short scaleToScreen(int z, int milliAngstroms) {
-    //all shapes
+    //all shapes    
     return transformManager.scaleToScreen(z, milliAngstroms);
   }
 

@@ -80,6 +80,8 @@ class AxesRenderer extends ShapeRenderer {
         renderLabel(label, colix, axes.font3d, axisScreens[i].x,
             axisScreens[i].y, axisScreens[i].z, g3d);
     }
+    if (nPoints == 3) //a b c
+      renderLabel("0", colix, axes.font3d, originScreen.x, originScreen.y, originScreen.z, g3d);
   }
   
   void renderLabel(String str, short colix, Font3D font3d, int x,

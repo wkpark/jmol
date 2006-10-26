@@ -806,7 +806,7 @@ class TransformManager {
     }
     perspectiveOffset.x = xFixedTranslation; 
     perspectiveOffset.y = yFixedTranslation;
-    if (!viewer.isCameraAdjustable())
+    if (windowCentered || !viewer.isCameraAdjustable())
       perspectiveOffset.z = 0;
     /*
      * Note that the effect of this modification is restricted to the 

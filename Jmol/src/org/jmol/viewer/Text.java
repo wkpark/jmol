@@ -345,6 +345,9 @@ class Text {
       boxX += JmolConstants.LABEL_DEFAULT_X_OFFSET;
       boxY -= JmolConstants.LABEL_DEFAULT_Y_OFFSET + 4;
     }
+    if (valign == XYZ) {
+      boxY += ascent/2; 
+    }
     if (!adjustForWindow)
       return;  // labels
     

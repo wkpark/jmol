@@ -54,7 +54,6 @@ class PickingManager {
       if (pickingStyleSelect == JmolConstants.PICKINGSTYLE_SELECT_PFAAT 
           && !shiftKey && !alternateKey) {
         viewer.script("select none");
-        reportSelection();
       }
       if (pickingMode == JmolConstants.PICKING_MEASURE
           || pickingStyleMeasure == JmolConstants.PICKINGSTYLE_MEASURE_ON)
@@ -202,13 +201,8 @@ class PickingManager {
       else
         viewer.script("select " + item);
     }
-    reportSelection();
   }
   
-    void reportSelection() {
-    viewer.reportSelection("" + viewer.getSelectionCount() + " " + GT._("atoms selected"));
-  }
-
   int getPickingMode() {
     return pickingMode;
   }

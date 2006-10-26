@@ -3020,11 +3020,11 @@ class Eval { //implements Runnable {
   }
 
   void hide() throws ScriptException {
-    viewer.hide(statementLength == 1 ? null : expression(statement, 1));
+    viewer.hide(statementLength == 1 ? null : expression(statement, 1), tQuiet);
   }
 
   void display() throws ScriptException {
-    viewer.display(bsAll(), statementLength == 1 ? null : expression(statement, 1));
+    viewer.display(bsAll(), statementLength == 1 ? null : expression(statement, 1), tQuiet);
   }
 
   BitSet bsAll() {
@@ -3037,7 +3037,7 @@ class Eval { //implements Runnable {
   
   void select() throws ScriptException {
     // NOTE this is called by restrict()
-    viewer.select(statementLength == 1 ? null : expression(statement, 1));
+    viewer.select(statementLength == 1 ? null : expression(statement, 1), tQuiet);
   }
 
   void translate() throws ScriptException {
@@ -3435,7 +3435,7 @@ class Eval { //implements Runnable {
     viewer.setShapeSize(JmolConstants.SHAPE_HSTICKS, 0, bsConfigurations);
     if (addHbonds)
       viewer.autoHbond(bsConfigurations, bsConfigurations);
-    viewer.select(bsConfigurations);
+    viewer.select(bsConfigurations, tQuiet);
   }
 
   void vector() throws ScriptException {

@@ -844,20 +844,19 @@ public class Viewer extends JmolViewer {
   // delegated to SelectionManager
   // ///////////////////////////////////////////////////////////////
 
-  void select(BitSet bs) {
+  void select(BitSet bs, boolean isQuiet) {
     //Eval
-    //StateManager
-    selectionManager.select(bs);
+    selectionManager.select(bs, isQuiet);
   }
 
-  void hide(BitSet bs) {
+  void hide(BitSet bs, boolean isQuiet) {
     //Eval
-    selectionManager.hide(bs);
+    selectionManager.hide(bs, isQuiet);
   }
 
-  void display(BitSet bsAll, BitSet bs) {
+  void display(BitSet bsAll, BitSet bs, boolean isQuiet) {
     //Eval
-    selectionManager.display(bsAll, bs);
+    selectionManager.display(bsAll, bs, isQuiet);
   }
 
   BitSet getHiddenSet() {
@@ -1195,7 +1194,7 @@ public class Viewer extends JmolViewer {
     pickingManager.clear();
     modelManager.setClientFile(null, null, null, null);
     selectionManager.clearSelection();
-    selectionManager.hide(null);
+    selectionManager.hide(null, true);
     clearAllMeasurements();
     setStatusFileLoaded(0, null, null, null, null, null);
     refresh(0, "Viewer:clear()");

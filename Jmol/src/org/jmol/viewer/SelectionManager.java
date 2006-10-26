@@ -53,17 +53,18 @@ class SelectionManager {
   boolean hideNotSelected;
   BitSet bsHidden = new BitSet();
   
-  void hide(BitSet bs) {
+  void hide(BitSet bs, boolean isQuiet) {
     bsHidden.and(bsNull);
     if (bs != null)
       bsHidden.or(bs);
     if (viewer.getFrame() != null)
       viewer.getFrame().bsHidden = bsHidden;
-    viewer.reportSelection(
-        GT._("{0} atoms hidden", viewer.cardinalityOf(bsHidden)));
+    if (!isQuiet)
+      viewer.reportSelection(GT._("{0} atoms hidden", viewer
+          .cardinalityOf(bsHidden)));
   }
 
-  void display(BitSet bsAll, BitSet bs) {
+  void display(BitSet bsAll, BitSet bs, boolean isQuiet) {
     bsHidden.or(bsNull);
     if (bs != null) {
       bsHidden.or(bsAll);
@@ -71,8 +72,9 @@ class SelectionManager {
     }
     if (viewer.getFrame() != null)
       viewer.getFrame().bsHidden = bsHidden;
-    viewer.reportSelection(
-        GT._("{0} atoms hidden", viewer.cardinalityOf(bsHidden)));
+    if (!isQuiet)
+      viewer.reportSelection(
+          GT._("{0} atoms hidden", viewer.cardinalityOf(bsHidden)));
   }
 
   BitSet getHiddenSet() {
@@ -94,7 +96,7 @@ class SelectionManager {
     for (int i = viewer.getAtomCount(); --i >= 0;)
       if (!bsSelection.get(i))
         bs.set(i);
-    hide(bs);
+    hide(bs, false);
   }
 
   void removeSelection(int atomIndex) {
@@ -151,7 +153,7 @@ class SelectionManager {
     return true;
   }
 
-  void select(BitSet bs) {
+  void select(BitSet bs, boolean isQuiet) {
     if (bs == null) {
       if (!viewer.getRasmolHydrogenSetting())
         excludeSelectionSet(viewer.getAtomBits("hydrogen"));
@@ -161,8 +163,9 @@ class SelectionManager {
     } else {
       setSelectionSet(bs);
     }
-    viewer.reportSelection(getSelectionCount() + " "
-        + GT._("atoms selected"));
+    if (!isQuiet)
+      viewer.reportSelection(getSelectionCount() + " "
+          + GT._("atoms selected"));
   }
   
   void selectAll() {

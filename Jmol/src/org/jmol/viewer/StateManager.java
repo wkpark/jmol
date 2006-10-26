@@ -62,10 +62,10 @@ class StateManager {
         : lastSelected);
     BitSet bsSelected = (BitSet) saved.get(name);
     if (bsSelected == null) {
-      viewer.select(new BitSet());
+      viewer.select(new BitSet(), false);
       return false;
     }
-    viewer.select(bsSelected);
+    viewer.select(bsSelected, false);
     return true;
   }
    

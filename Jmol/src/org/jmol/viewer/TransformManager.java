@@ -1009,6 +1009,7 @@ class TransformManager {
     float radiansYStep = radiansPerDegreePerStep * dRot.y;
     float radiansZStep = radiansPerDegreePerStep * dRot.z;
     viewer.setInMotion(true);
+    float zoomPercent0 = zoomPercent;
     if (totalSteps == 0)
       totalSteps = 1; // to catch a zero secondsTotal parameter
     for (int i = 1; i <= totalSteps; ++i) {
@@ -1019,7 +1020,7 @@ class TransformManager {
       if (dRot.z != 0)
         rotateZRadians(radiansZStep);
       if (dZoom != 0)
-        zoomToPercent(zoomPercent + dZoom * i / totalSteps);
+        zoomToPercent(zoomPercent0 + dZoom * i / totalSteps);
       if (dTrans.x != 0)
         translateToXPercent(transX + dTrans.x * i / totalSteps);
       if (dTrans.y != 0)

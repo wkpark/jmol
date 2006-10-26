@@ -46,7 +46,7 @@ class Draw extends MeshCollection {
   
   Vector3f offset = new Vector3f();
   Point3f xyz = new Point3f();
-  int ipt;
+  //int ipt;
   int nPoints;
   int nbitsets;
   int ncoord;
@@ -71,11 +71,12 @@ class Draw extends MeshCollection {
 
     if ("init" == propertyName) {
       nPoints = -1;
-      ipt = ncoord = nbitsets = nidentifiers = 0;
+      ncoord = nbitsets = nidentifiers = 0;
       isFixed = isReversed = isRotated45 = isCrossed = false;
       isCurve = isArrow = isPlane = isVertices = isPerpendicular = false;
       isVisible = isValid = true;
       length = Float.MAX_VALUE;
+      bsAllAtoms.clear();
       offset = new Vector3f();
       super.setProperty("thisID", null, null);
       return;
@@ -237,6 +238,10 @@ class Draw extends MeshCollection {
       BitSet bsAllModels = new BitSet();
       if (nbitsets > 0)
         bsAllModels = viewer.getModelBitSet(bsAllAtoms);
+      else if (nidentifiers > 0)
+        for (int i = 0; i < nidentifiers; i++)
+          for (int j = meshes[ptIdentifiers[i]].polygonCount; --j >= 0;)
+            bsAllModels.set(j);
       else
         bsAllModels = viewer.getVisibleFramesBitSet();
       currentMesh.setPolygonCount(modelCount);
@@ -269,11 +274,18 @@ class Draw extends MeshCollection {
       Mesh m = meshes[ptIdentifiers[i]];
       if (isPlane || isPerpendicular || useVertices[i]) {
         if (reversePoints[i]) {
-          for (ipt = m.drawVertexCount; --ipt >= 0;)
-            addPoint(m.vertices[ipt]);
+          for (int ipt = m.drawVertexCount; --ipt >= 0;)
+            if (iModel < 0 || iModel >= m.polygonCount)
+              addPoint(m.vertices[ipt]);
+            else
+              addPoint(m.vertices[m.polygonIndexes[iModel][ipt]]);
         } else {
-          for (ipt = 0; ipt < m.drawVertexCount; ipt++)
-            addPoint(m.vertices[ipt]);
+          for (int ipt = 0; ipt < m.drawVertexCount; ipt++) {
+            if (iModel < 0 || iModel >= m.polygonCount)
+              addPoint(m.vertices[ipt]);
+            else
+              addPoint(m.vertices[m.polygonIndexes[iModel][ipt]]);
+          }
         }
       } else {
         if (iModel < 0 || m.ptCenters == null || m.ptCenters[iModel] == null)

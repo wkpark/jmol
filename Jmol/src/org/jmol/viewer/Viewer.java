@@ -2734,6 +2734,10 @@ public class Viewer extends JmolViewer {
   public void setBooleanProperty(String key, boolean value) {
     //Eval
     while (true) {
+      if (key.equalsIgnoreCase("zoomLarge")) {
+        setZoomLarge(value);
+        break;  
+      }
       if (key.equalsIgnoreCase("labelPointerBackground")) {
         setLabelPointerBackground(value);
         break;  
@@ -3144,6 +3148,15 @@ public class Viewer extends JmolViewer {
 
   private void setHideNameInPopup(boolean hideNameInPopup) {
     global.hideNameInPopup = hideNameInPopup;
+  }
+
+  private void setZoomLarge(boolean TF) {
+    global.zoomLarge = TF;
+    scaleFitToScreen();
+  }
+
+  boolean getZoomLarge() {
+    return global.zoomLarge;
   }
 
   private void setLabelPointerBackground(boolean TF) {

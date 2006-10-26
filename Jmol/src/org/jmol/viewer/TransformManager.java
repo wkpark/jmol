@@ -656,7 +656,8 @@ class TransformManager {
     // switch to finding larger screen dimension
     // find smaller screen dimension
     screenPixelCount = width;
-    if (height > screenPixelCount)
+    boolean isByLarger = viewer.getZoomLarge();
+    if (height != width && (isByLarger && height > width || !isByLarger && height < width))
       screenPixelCount = height;
     // ensure that rotations don't leave some atoms off the screen
     // note that this radius is to the furthest outside edge of an atom

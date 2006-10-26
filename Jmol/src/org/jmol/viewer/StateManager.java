@@ -236,6 +236,7 @@ class StateManager {
     
     boolean enableFullSceneAntialiasing;
     boolean greyscaleRendering;
+    boolean zoomLarge = true; //false would be like Chime
     boolean labelsGroupFlag;
     boolean labelsFrontFlag;
     boolean labelPointerBackground = true;

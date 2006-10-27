@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-10-27 06:16+0200\n"
-"PO-Revision-Date: 2006-10-25 21:30+0100\n"
+"PO-Revision-Date: 2006-10-27 20:26+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -29,7 +29,8 @@ msgstr "Borrar la salida"
 msgid "Clear Input"
 msgstr "Borrar la entrada"
 
-#: org/jmol/applet/Console.java:44 org/jmol/popup/PopupResourceBundle.java:765
+#: org/jmol/applet/Console.java:44
+#: org/jmol/popup/PopupResourceBundle.java:765
 msgid "History"
 msgstr "Historial"
 
@@ -39,9 +40,7 @@ msgstr "Cargar"
 
 #: org/jmol/applet/Console.java:89
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"pulsa Ctrl+Enter para un salto de línea o pega datos de un modelo y pulsa "
-"Cargar"
+msgstr "pulsa Ctrl+Enter para un salto de línea o pega datos de un modelo y pulsa Cargar"
 
 #: org/jmol/applet/Jmol.java:609
 #, java-format
@@ -80,7 +79,8 @@ msgstr "Seleccionar ({0})"
 msgid "All {0} models"
 msgstr "Todos los {0} modelos"
 
-#: org/jmol/popup/JmolPopup.java:366 org/jmol/popup/JmolPopup.java:400
+#: org/jmol/popup/JmolPopup.java:366
+#: org/jmol/popup/JmolPopup.java:400
 msgid "all"
 msgstr "todo"
 
@@ -207,11 +207,11 @@ msgstr "Invertir la selección"
 
 #: org/jmol/popup/PopupResourceBundle.java:482
 msgid "View"
-msgstr "Ver"
+msgstr "Vista"
 
 #: org/jmol/popup/PopupResourceBundle.java:483
 msgid "Front"
-msgstr "Frente"
+msgstr "Frontal"
 
 #: org/jmol/popup/PopupResourceBundle.java:484
 msgid "Left"
@@ -223,15 +223,15 @@ msgstr "Derecha"
 
 #: org/jmol/popup/PopupResourceBundle.java:486
 msgid "Top"
-msgstr "Superior"
+msgstr "Desde arriba"
 
 #: org/jmol/popup/PopupResourceBundle.java:487
 msgid "Bottom"
-msgstr "Inferior"
+msgstr "Desde abajo"
 
 #: org/jmol/popup/PopupResourceBundle.java:488
 msgid "Back"
-msgstr "Atrás"
+msgstr "Desde atrás"
 
 #: org/jmol/popup/PopupResourceBundle.java:490
 msgid "Protein"
@@ -276,7 +276,7 @@ msgstr "Por nombre de residuo"
 
 #: org/jmol/popup/PopupResourceBundle.java:502
 msgid "By HETATM"
-msgstr "Por HETATM"
+msgstr "Por código HETATM"
 
 #: org/jmol/popup/PopupResourceBundle.java:503
 msgid "Nucleic"
@@ -605,11 +605,11 @@ msgstr "por elemento (CPK)"
 
 #: org/jmol/popup/PopupResourceBundle.java:635
 msgid "Alternative Location"
-msgstr "Ubicación alternativa"
+msgstr "por ubicación alternativa"
 
 #: org/jmol/popup/PopupResourceBundle.java:636
 msgid "Molecule"
-msgstr "Molécula"
+msgstr "por molécula"
 
 #: org/jmol/popup/PopupResourceBundle.java:637
 msgid "Formal Charge"
@@ -621,15 +621,15 @@ msgstr "por carga parcial"
 
 #: org/jmol/popup/PopupResourceBundle.java:640
 msgid "Amino Acid"
-msgstr "Aminoácido"
+msgstr "por aminoácido"
 
 #: org/jmol/popup/PopupResourceBundle.java:641
 msgid "Secondary Structure"
-msgstr "Por estructura secundaria"
+msgstr "por estructura secundaria"
 
 #: org/jmol/popup/PopupResourceBundle.java:642
 msgid "Chain"
-msgstr "Por cadena"
+msgstr "por cadena"
 
 #: org/jmol/popup/PopupResourceBundle.java:644
 msgid "Inherit"
@@ -706,12 +706,12 @@ msgstr "Orquídea"
 #: org/jmol/popup/PopupResourceBundle.java:665
 #: org/jmol/popup/PopupResourceBundle.java:786
 msgid "Make Opaque"
-msgstr "opaca"
+msgstr "opaco"
 
 #: org/jmol/popup/PopupResourceBundle.java:666
 #: org/jmol/popup/PopupResourceBundle.java:787
 msgid "Make Translucent"
-msgstr "translúcida"
+msgstr "translúcido"
 
 #: org/jmol/popup/PopupResourceBundle.java:671
 msgid "Structure"
@@ -1091,7 +1091,8 @@ msgstr "demasiados niveles de guión"
 msgid "Too many nested {0} commands"
 msgstr "Demasiadas instrucciones {0} anidadas"
 
-#: org/jmol/viewer/Eval.java:435 org/jmol/viewer/Eval.java:440
+#: org/jmol/viewer/Eval.java:435
+#: org/jmol/viewer/Eval.java:440
 #: org/jmol/viewer/Eval.java:3138
 #, java-format
 msgid "Invalid {0} command"
@@ -1099,8 +1100,7 @@ msgstr "Instrucción {0} no válida"
 
 #: org/jmol/viewer/Eval.java:998
 msgid "atom expression compiler error - stack over/underflow"
-msgstr ""
-"error del compilador con una expresión atómica; desbordamiento de la pila"
+msgstr "error del compilador con una expresión atómica; desbordamiento de la pila"
 
 #: org/jmol/viewer/Eval.java:1067
 msgid "invalid insertion code"
@@ -1114,9 +1114,7 @@ msgstr "No se reconoce el parámetro {0}"
 #: org/jmol/viewer/Eval.java:1594
 #, java-format
 msgid "plane expected -- either three points or atom expressions or {0} or {1}"
-msgstr ""
-"se esperaba un plano, bien en forma de tres puntos o bien de expresiones "
-"atómicas {0} o {1}"
+msgstr "se esperaba un plano, bien en forma de tres puntos o bien de expresiones atómicas {0} o {1}"
 
 #: org/jmol/viewer/Eval.java:1603
 msgid "No unit cell"
@@ -1130,7 +1128,8 @@ msgstr "Alguno de los índices de Miller debe ser distinto de cero"
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "se requiere un nombre de color o de paleta (Jmol, Rasmol)"
 
-#: org/jmol/viewer/Eval.java:1805 org/jmol/viewer/Eval.java:1830
+#: org/jmol/viewer/Eval.java:1805
+#: org/jmol/viewer/Eval.java:1830
 msgid "fractional coordinates are not allowed in this context"
 msgstr "no se permiten coordenadas fraccionarias en este contexto"
 
@@ -1176,13 +1175,13 @@ msgstr "La instrucción {0} no está disponible para la miniaplicación"
 msgid "write what? {0} or {1} \"filename\""
 msgstr "¿qué escribir? {0} o {1} \"nombre de archivo\""
 
-#: org/jmol/viewer/Eval.java:4752 org/jmol/viewer/Eval.java:5383
+#: org/jmol/viewer/Eval.java:4752
+#: org/jmol/viewer/Eval.java:5383
 msgid "MO isosurfaces require that only one model be displayed"
-msgstr ""
-"las isosuperficies de orbital molecular requieren que sólo se esté mostrando "
-"un modelo"
+msgstr "las isosuperficies de orbital molecular requieren que sólo se esté mostrando un modelo"
 
-#: org/jmol/viewer/Eval.java:4756 org/jmol/viewer/Eval.java:5400
+#: org/jmol/viewer/Eval.java:4756
+#: org/jmol/viewer/Eval.java:5400
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "en este modelo no hay datos disponibles de base o coeficientes para MO"
 
@@ -1191,13 +1190,15 @@ msgstr "en este modelo no hay datos disponibles de base o coeficientes para MO"
 msgid "use {0}"
 msgstr "utiliza {0}"
 
-#: org/jmol/viewer/Eval.java:4804 org/jmol/viewer/Eval.java:4807
+#: org/jmol/viewer/Eval.java:4804
+#: org/jmol/viewer/Eval.java:4807
 #: org/jmol/viewer/Eval.java:4810
 #, java-format
 msgid "unrecognized {0} parameter --  use {1}"
 msgstr "no se reconoce el parámetro {0}; utiliza {1}"
 
-#: org/jmol/viewer/Eval.java:4822 org/jmol/viewer/Eval.java:5969
+#: org/jmol/viewer/Eval.java:4822
+#: org/jmol/viewer/Eval.java:5969
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "no se reconoce el parámetro {0}"
@@ -1221,12 +1222,8 @@ msgid "the {0} command requires that only one model be displayed"
 msgstr "la instrucción {0} requiere que sólo se esté mostrando un modelo"
 
 #: org/jmol/viewer/Eval.java:5742
-msgid ""
-"No partial charges were read from the file; Jmol needs these to render the "
-"MEP data."
-msgstr ""
-"No se han podido leer las cargas parciales en el archivo; Jmol las necesita "
-"para trazar los datos de MEP"
+msgid "No partial charges were read from the file; Jmol needs these to render the MEP data."
+msgstr "No se han podido leer las cargas parciales en el archivo; Jmol las necesita para trazar los datos de MEP"
 
 #: org/jmol/viewer/Eval.java:5859
 msgid "unrecognized command"
@@ -1301,7 +1298,8 @@ msgstr "se esperaba un eje x y z"
 msgid "color expected"
 msgstr "se esperaba un color"
 
-#: org/jmol/viewer/Eval.java:5931 org/jmol/viewer/Eval.java:6036
+#: org/jmol/viewer/Eval.java:5931
+#: org/jmol/viewer/Eval.java:6036
 msgid "keyword expected"
 msgstr "se esperaba una palabra clave"
 
@@ -1325,7 +1323,8 @@ msgstr "final imprevisto de la instrucción de guión"
 msgid "bad argument count"
 msgstr "el número de argumentos no es correcto"
 
-#: org/jmol/viewer/Eval.java:5958 org/jmol/viewer/Eval.java:5965
+#: org/jmol/viewer/Eval.java:5958
+#: org/jmol/viewer/Eval.java:5965
 msgid "invalid argument"
 msgstr "el argumento no es válido"
 
@@ -1428,150 +1427,102 @@ msgstr "Jmol ejecutando un guión..."
 
 #~ msgid "Animate"
 #~ msgstr "Animación"
-
 #~ msgid "surfaces require that only one model be displayed"
 #~ msgstr "las superficies requieren que sólo se esté mostrando un modelo"
-
 #~ msgid "Frame"
 #~ msgstr "Fotograma"
-
 #~ msgid "All Frames"
 #~ msgstr "Todos"
-
 #~ msgid "Set Select Mode"
 #~ msgstr "Establecer modo de selección"
-
 #~ msgid "Replace Selection"
 #~ msgstr "Reemplazar selección"
-
 #~ msgid "Add to Selection (OR)"
 #~ msgstr "Añadir a la selección (O)"
-
 #~ msgid "Narrow Selection (AND)"
 #~ msgstr "Restringir la selección (Y)"
-
 #~ msgid "Render"
 #~ msgstr "Estilo"
-
 #~ msgid "Crimson"
 #~ msgstr "Carmesí"
-
 #~ msgid "Dark Red"
 #~ msgstr "Rojo oscuro"
-
 #~ msgid "Firebrick"
 #~ msgstr "Ladrillo"
-
 #~ msgid "Indian Red"
 #~ msgstr "Rojo India"
-
 #~ msgid "Dark Magenta"
 #~ msgstr "Morado"
-
 #~ msgid "Dark Salmon"
 #~ msgstr "Salmón oscuro"
-
 #~ msgid "Light Salmon"
 #~ msgstr "Salmón claro"
-
 #~ msgid "Deep Pink"
 #~ msgstr "Rosado oscuro"
-
 #~ msgid "Light Pink"
 #~ msgstr "Rosado claro"
-
 #~ msgid "Goldenrod"
 #~ msgstr "Oro viejo"
-
 #~ msgid "Lemon Chiffon"
 #~ msgstr "Seda"
-
 #~ msgid "Yellow-Green"
 #~ msgstr "Verde manzana"
-
 #~ msgid "Lime"
 #~ msgstr "Lima"
-
 #~ msgid "Seagreen"
 #~ msgstr "Verde marino"
-
 #~ msgid "Green-Blue"
 #~ msgstr "Verde azulado"
-
 #~ msgid "Spring Green"
 #~ msgstr "Primavera"
-
 #~ msgid "Aqua"
 #~ msgstr "Turquesa"
-
 #~ msgid "Azure"
 #~ msgstr "Celeste"
-
 #~ msgid "Carolina Blue"
 #~ msgstr "Carolina"
-
 #~ msgid "Cadet Blue"
 #~ msgstr "Aviación"
-
 #~ msgid "Cornflower"
 #~ msgstr "Aciano"
-
 #~ msgid "Dark Slate Blue"
 #~ msgstr "Pizarra"
-
 #~ msgid "Light Steel Blue"
 #~ msgstr "Acero"
-
 #~ msgid "Charge"
 #~ msgstr "Por carga"
-
 #~ msgid "Crystal"
 #~ msgstr "Cristal"
-
 #~ msgid "Aquamarine"
 #~ msgstr "Aguamarina"
-
 #~ msgid "Forest Green"
 #~ msgstr "Verde bosque"
-
 #~ msgid "Hot Pink"
 #~ msgstr "Rosado intenso"
-
 #~ msgid "Options"
 #~ msgstr "Opciones"
-
 #~ msgid "Show Selected Atoms"
 #~ msgstr "Resaltar átomos seleccionados"
-
 #~ msgid "Jmol Colors"
 #~ msgstr "Colores Jmol"
-
 #~ msgid "or dotted"
 #~ msgstr "o punteada"
-
 #~ msgid "console ON|OFF"
 #~ msgstr "consola sí/no"
-
 #~ msgid "Calculate what? hbonds?  surface? structure?"
 #~ msgstr "¿qué calcular? ¿enlaces, orientación, selección?"
-
 #~ msgid "save what? bonds? orientation? selection?"
 #~ msgstr "¿qué guardar? ¿enlaces, orientación, selección?"
-
 #~ msgid "restore what? bonds? orientation? selection?"
 #~ msgstr "¿qué restaurar? ¿enlaces, orientación, selección?"
-
 #~ msgid "use \"show ORIENTATION\""
 #~ msgstr "utiliza \"show ORIENTATION\""
-
 #~ msgid "unrecognized SHOW parameter --  use \"getProperty CHAININFO \""
 #~ msgstr "parámetro SHOW no reconocido; utiliza \"getProperty CHAININFO \""
-
 #~ msgid ""
 #~ "unrecognized SHOW parameter --  use \"getProperty ATOMINFO (selected)\""
 #~ msgstr ""
 #~ "parámetro SHOW no reconocido; utiliza \"getProperty ATOMINFO (selected)\""
-
 #~ msgid ""
 #~ "unrecognized SHOW parameter --  use \"getProperty ATOMINFO (atom "
 #~ "expression)\""
@@ -1582,43 +1533,32 @@ msgstr "Jmol ejecutando un guión..."
 #, fuzzy
 #~ msgid "space group "
 #~ msgstr "Grupo espacial"
-
 #~ msgid "Except Solvent"
 #~ msgstr "Excepto disolvente"
-
 #~ msgid "Except Water"
 #~ msgstr "Excepto agua"
-
 #~ msgid "Other"
 #~ msgstr "Otros"
-
 #~ msgid "Lipid"
 #~ msgstr "Lípidos"
-
 #~ msgid "pick "
 #~ msgstr "elige"
-
 #~ msgid "Nanometers"
 #~ msgstr "Nanómetros"
-
 #~ msgid "Angstroms"
 #~ msgstr "Angstroms"
-
 #~ msgid "Picometers"
 #~ msgstr "Picómetros"
-
 #~ msgid "Open"
 #~ msgstr "Abrir"
-
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol, visualización molecular http://www.jmol.org"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotación como alambres"
-
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Miniaplicación Jmol, parte del proyecto OpenScience; para más "
 #~ "información, vea http://www.jmol.org"
+

@@ -465,6 +465,8 @@ class Draw extends MeshCollection {
     for (int i = mesh.polygonCount; --i >= 0;) {
       Point3f center = (mesh.ptCenters == null ? mesh.ptCenter
           : mesh.ptCenters[i]);
+      if (center == null)
+        return;
       iptlast = -1;
       for (int iV = mesh.polygonIndexes[i].length; --iV >= 0;) {
         ipt = mesh.polygonIndexes[i][iV];

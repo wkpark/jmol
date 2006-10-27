@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-10-27 06:16+0200\n"
-"PO-Revision-Date: 2006-10-27 21:41+0100\n"
+"PO-Revision-Date: 2006-10-27 21:42+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -117,7 +117,7 @@ msgstr "{0} polímeros"
 #: org/jmol/popup/JmolPopup.java:452
 #, java-format
 msgid "View {0}"
-msgstr "Ver {0}"
+msgstr "Mostrar {0}"
 
 #: org/jmol/popup/JmolPopup.java:475
 #, java-format

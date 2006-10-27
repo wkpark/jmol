@@ -623,6 +623,8 @@
 	  <code>model</code> into the applet. Note that this is
 	  <i>not</i> the file name ... it is the <i>contents</i> of
 	  the file.
+<br/>
+					<code>model</code> can also be an array of molecular models (between brackets and separated by commas), even in different file formats.
 	</p>
 			</section>
 			<section title="jmolLoadInlineScript">

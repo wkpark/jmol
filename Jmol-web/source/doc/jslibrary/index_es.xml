@@ -626,6 +626,8 @@
 	  Esta instrucción carga directamente el <code>modelo</code> a la 
 	  miniaplicación. Atención: éste <i>no</i> es el nombre del archivo,
 	  sino el <i>contenido</i> del archivo.
+<br/>
+					<code>model</code> puede también ser una matriz de modelos moleculares (entre corchetes y separados por comas), incluso con formatos de archivo diferentes.
 	</p>
 			</section>
 			<section title="jmolLoadInlineScript">

@@ -131,6 +131,10 @@ public class JmolApplet
       ((JmolAppletInterface)wrappedApplet).loadInline(""+strModel, ""+script);
   }
 
+  public void loadInline(String[] strModels) {
+    loadInline(strModels, "");
+  }
+
   public void loadInline(String[] strModels, String script) {
     String[] converted = new String[strModels.length];
     for (int i = strModels.length; --i >= 0;)

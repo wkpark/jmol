@@ -41,8 +41,9 @@ public interface WrappedApplet {
   public String scriptCheck(String script);
   public String scriptWait(String script);
   public void loadInline(String strModel);
+  public void loadInline(String[] strModels);
   public void loadInline(String strModel, String script);
-  public void loadInline(String[] arrayModel, String script);
+  public void loadInline(String[] strModels, String script);
   public void loadNodeId(String nodeId);
   public void loadDOMNode(JSObject DOMNode);
   public Object getProperty(String infoType);

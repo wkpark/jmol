@@ -546,6 +546,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
      * scripts to return prior to full execution 
      * 
      */
+    if (script == null || script.length() == 0)
+      return "";
     switch (processType) {
     case SCRIPT_CHECK:
       return viewer.scriptCheck(script);
@@ -560,25 +562,36 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   public void script(String script) {
+    if (script == null || script.length() == 0)
+      return;
     scriptProcessor(script, null, SCRIPT_NOWAIT);
   }   
   
   public String scriptCheck(String script) {
-    return scriptProcessor(script, null, SCRIPT_CHECK);
+    if (script == null || script.length() == 0)
+      return "";
+   return scriptProcessor(script, null, SCRIPT_CHECK);
   }   
   
   public String scriptNoWait(String script) {
+    if (script == null || script.length() == 0)
+      return "";
     return scriptProcessor(script, null, SCRIPT_NOWAIT);
   }   
   
   public String scriptWait(String script) {
+    if (script == null || script.length() == 0)
+      return "";
     return scriptProcessor(script, null, SCRIPT_WAIT);
   }   
   
   public String scriptWait(String script, String statusParams) {
+    if (script == null || script.length() == 0)
+      return "";
     return scriptProcessor(script, statusParams, SCRIPT_WAIT);
   }   
 
+  // not implemented:
   synchronized public void syncScript(String script) {
     if (script.equalsIgnoreCase("on")) {
       myStatusListener.sendSyncScript("SLAVE",null);
@@ -639,15 +652,19 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     viewer.loadInline(strModel, (char) 0);
   }
   
+  public void loadInline(String[] strModels) {
+    loadInline(strModels, "");
+  }
+  
   public void loadInline(String strModel, String script) {
     loadInline(strModel);
     script(script);
   }
 
-  public void loadInline(String[] arrayModels, String script) {
-    if (arrayModels == null || arrayModels.length == 0)
+  public void loadInline(String[] strModels, String script) {
+    if (strModels == null || strModels.length == 0)
       return;
-    viewer.loadInline(arrayModels);
+    viewer.loadInline(strModels);
     script(script);
   }
   

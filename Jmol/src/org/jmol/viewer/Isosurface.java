@@ -1888,7 +1888,6 @@ class Isosurface extends MeshCollection {
       jvxlWritePrecisionColor = true;
     for (int i = 0; i < vertexCount; i += incr) {
       float value = getVertexColorValue(mesh, i);
-      value += 1;
       if (mesh.firstViewableVertex == 0 || i < mesh.firstViewableVertex) {
         char ch;
         if (jvxlWritePrecisionColor) {

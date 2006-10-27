@@ -988,14 +988,14 @@ class Isosurface extends MeshCollection {
       mappedDataMin = -1;
       mappedDataMax = 1;
     }
-    if (logMessages)
-      Logger.debug("setMapRanges: all mapped data " + mappedDataMin + " to "
-          + mappedDataMax + ", red-blue selected " + valueMappedToRed + " to "
-          + valueMappedToBlue);
     if (mappedDataMin == Float.MAX_VALUE || mappedDataMin == mappedDataMax) {
       mappedDataMin = getMinMappedValue();
       mappedDataMax = getMaxMappedValue();
     }
+    if (logMessages)
+      Logger.debug("setMapRanges: all mapped data " + mappedDataMin + " to "
+          + mappedDataMax + ", red-blue selected " + valueMappedToRed + " to "
+          + valueMappedToBlue);
     if (mappedDataMin == 0 && mappedDataMax == 0) {
       //just set default -1/1 if there is no obvious data
       mappedDataMin = -1;
@@ -1156,6 +1156,7 @@ class Isosurface extends MeshCollection {
   ////////////////////////////////////////////////////////////////
 
   int readVolumetricHeader() {
+    precalculateVoxelData = false;
     try {
       switch (dataType) {
       case SURFACE_SPHERE:

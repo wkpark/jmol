@@ -70,6 +70,7 @@ class FileManager {
   private String fullPathName;
   String fileName;
   String inlineData;
+  String[] inlineDataArray;
   boolean isInline;
   boolean isDOM;
   
@@ -149,6 +150,27 @@ class FileManager {
       fileOpenThread = new FileOpenThread(fullPathName, new StringReader(
           strModel), params);
     fileOpenThread.run();
+  }
+
+  void openStringInline(String[] arrayModels, int[] params) {
+    String sp = "";
+    if (params != null)
+      for (int i = 0; i < params.length; i++)
+        sp += "," + params[i];
+    Logger.info("FileManager.openStringInline(string[]" + sp + ")");
+    openErrorMessage = null;
+    fullPathName = fileName = "string[]";
+    inlineDataArray = arrayModels;
+    isInline = true;
+    isDOM = false;
+    String[] fullPathNames = new String[arrayModels.length];
+    StringReader[] readers = new StringReader[arrayModels.length];
+    for (int i = 0; i < arrayModels.length; i++) {
+      fullPathNames[i] = "string["+i+"]";
+      readers[i] = new StringReader(arrayModels[i]);
+    }
+    filesOpenThread = new FilesOpenThread(fullPathNames, readers);
+    filesOpenThread.run();
   }
 
   void openDOM(Object DOMNode) {

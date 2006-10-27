@@ -131,6 +131,14 @@ public class JmolApplet
       ((JmolAppletInterface)wrappedApplet).loadInline(""+strModel, ""+script);
   }
 
+  public void loadInline(String[] strModels, String script) {
+    String[] converted = new String[strModels.length];
+    for (int i = strModels.length; --i >= 0;)
+      converted[i] = "" + strModels[i];
+    if (wrappedApplet != null)
+      ((JmolAppletInterface)wrappedApplet).loadInline(converted, ""+script);
+  }
+
   public void loadNodeId(String nodeId) {
     if (wrappedApplet != null)
       ((JmolAppletInterface)wrappedApplet).loadNodeId(""+nodeId);

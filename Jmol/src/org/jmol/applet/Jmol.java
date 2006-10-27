@@ -332,9 +332,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       }
       String loadParam;
       String scriptParam = getValue("script", "");
-      if ((loadParam = getValue("loadInline", null)) != null)
-        loadInline(loadParam, (scriptParam.length() > 0 ? scriptParam : null));
-      else {
+      if ((loadParam = getValue("loadInline", null)) != null) {
+        loadInlineSeparated(loadParam, (scriptParam.length() > 0 ? scriptParam : null));
+      } else {
         if ((loadParam = getValue("load", null)) != null)
           scriptParam = "load \"" + loadParam + "\";" + scriptParam;
         if (scriptParam.length() > 0)
@@ -636,7 +636,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   public void loadInline(String strModel) {
     if (strModel == null)
       return;
-    viewer.loadInline(strModel);
+    viewer.loadInline(strModel, (char) 0);
   }
   
   public void loadInline(String strModel, String script) {
@@ -644,8 +644,18 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     script(script);
   }
 
-  public void loadInline(String[] arrayModel, String script) {
-    // not implemented
+  public void loadInline(String[] arrayModels, String script) {
+    if (arrayModels == null || arrayModels.length == 0)
+      return;
+    viewer.loadInline(arrayModels);
+    script(script);
+  }
+  
+  private void loadInlineSeparated(String strModel, String script) {
+    if (strModel == null)
+      return;
+    viewer.loadInline(strModel);
+    script(script);
   }
   
   public void loadDOMNode(JSObject DOMNode) {

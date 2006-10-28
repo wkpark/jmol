@@ -396,4 +396,14 @@ abstract class AtomSetCollectionReader extends Parser {
       line = "";
     return line = line.trim();
   }
+  
+  String[] getStrings(String sinfo, int nFields, int width) {
+    String[] fields = new String[nFields];
+    int pt = 0;
+    for (int i = 0; i < nFields; i++)
+      fields[i] = sinfo.substring(pt, width);
+    return fields;
+  }
+  
+  
 }

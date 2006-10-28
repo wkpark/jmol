@@ -383,9 +383,9 @@ class GaussianReader extends AtomSetCollectionReader {
           data[i] = new Vector();
           mos[i].put("symmetry", tokens[i]);
         }
-        tokens = getTokens(readLine());
+        tokens = getStrings(readLine().substring(21), nThisLine, 10);
         for (int i = 0; i < nThisLine; i++)
-          mos[i].put("energy", new Float(tokens[i + 2]));
+          mos[i].put("energy", new Float(tokens[i]));
         continue;
       }
       try {

@@ -89,21 +89,17 @@ class AxesRenderer extends ShapeRenderer {
     FontMetrics fontMetrics = font3d.fontMetrics;
     int strAscent = fontMetrics.getAscent();
     int strWidth = fontMetrics.stringWidth(str);
-    int xStrCenter, yStrCenter;
     int xCenter = viewer.getBoundBoxCenterX();
     int yCenter = viewer.getBoundBoxCenterY();
     int dx = x - xCenter;
     int dy = y - yCenter;
-    if (dx == 0 && dy == 0) {
-      xStrCenter = x;
-      yStrCenter = y;
-    } else {
-      int dist = (int) Math.sqrt(dx * dx + dy * dy);
-      xStrCenter = xCenter + ((dist + 2 + (strWidth + 1) / 2) * dx / dist);
-      yStrCenter = yCenter + ((dist + 3 + (strAscent + 1) / 2) * dy / dist);
+    if (dx != 0 || dy != 0) {
+      float dist = (float) Math.sqrt(dx * dx + dy * dy);
+      x += (int)((2f + (strWidth + 1) / 2) / dist * dx);
+      y += (int)((3f + (strAscent + 1) / 2) / dist * dy);
     }
-    int xStrBaseline = xStrCenter - strWidth / 2;
-    int yStrBaseline = yStrCenter + strAscent / 2;
+    int xStrBaseline = x - strWidth / 2;
+    int yStrBaseline = y + strAscent / 2;
     g3d.drawString(str, font3d, colix, xStrBaseline, yStrBaseline, z, z);
   }
 }

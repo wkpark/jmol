@@ -3286,7 +3286,7 @@ class Isosurface extends MeshCollection {
     //skipping the dimension designated by the contourType
     if (thePlane == null)
       return;
-    int max = 0;
+    int max = 1;
     for (int i = 0; i < 3; i++) {
       if (i != contourType)
          max = Math.max(max, voxelCounts[i]);

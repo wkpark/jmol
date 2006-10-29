@@ -1098,8 +1098,8 @@ class TransformManager {
     Vector3f axis = new Vector3f(pt);
     initializeMoveTo();
     if (degrees < 0.01f && degrees > -0.01f) {
-      getRotation(matrixEnd);
-      //matrixEnd.setIdentity();
+      //getRotation(matrixEnd);
+      matrixEnd.setIdentity();
     } else {
       if (axis.x == 0 && axis.y == 0 && axis.z == 0) {
         // invalid ... no rotation

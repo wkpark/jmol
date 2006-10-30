@@ -1218,6 +1218,12 @@ class Eval { //implements Runnable {
       case Token.radius:
         propertyValue = atom.getRasMolRadius();
         break;
+      case Token.psi:
+        propertyValue = atom.getGroupPsi();
+        break;
+      case Token.phi:
+        propertyValue = atom.getGroupPhi();
+        break;
       case Token._bondedcount:
         propertyValue = atom.getCovalentBondCount();
         break;

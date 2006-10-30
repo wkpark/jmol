@@ -34,6 +34,7 @@ abstract class Polymer {
   Model model;
   Monomer[] monomers;
   int monomerCount;
+  int structureCount;
 
   private int[] atomIndices;
 

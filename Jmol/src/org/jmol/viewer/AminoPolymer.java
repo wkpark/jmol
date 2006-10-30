@@ -258,7 +258,7 @@ class AminoPolymer extends AlphaPolymer {
    *
    * miguel 2004 06 16
    */
-  
+
   /*
    * New code for assigning secondary structure based on 
    * phi-psi angles instead of hydrogen bond patterns.
@@ -270,86 +270,96 @@ class AminoPolymer extends AlphaPolymer {
    */
 
   void calculateStructures() {
-     //deprecated: calcHydrogenBonds();
+    //deprecated: calcHydrogenBonds();
     char[] structureTags = new char[monomerCount];
 
-    float[] phi_psi = new float[2];
-    for (int i = 0; i < monomerCount-1; ++i) {
-      AminoMonomer leadingResidue = (AminoMonomer)monomers[i];
-      AminoMonomer trailingResidue = (AminoMonomer)monomers[i+1];
-      calcPhiPsiAngles(leadingResidue, trailingResidue, phi_psi);
-      if ( isHelix(phi_psi) ) {
-        structureTags[i] = '4';
-        //structureTags[i+1] = '4';
-      } else if (isSheet(phi_psi)) {
+    for (int i = 0; i < monomerCount - 1; ++i) {
+      AminoMonomer leadingResidue = (AminoMonomer) monomers[i];
+      AminoMonomer trailingResidue = (AminoMonomer) monomers[i + 1];
+      calcPhiPsiAngles(leadingResidue, trailingResidue);
+      if (isHelix(leadingResidue.psi, trailingResidue.phi)) {
+        //this next is just Bob's attempt to separate different helices
+        //it is CONSERVATIVE -- it displays fewer helices than before
+        //thus allowing more turns and (presumably) better rockets.
+
+        structureTags[i] = (trailingResidue.phi < 0 && leadingResidue.psi < 25 ? '4' : '3');
+      } else if (isSheet(leadingResidue.psi, trailingResidue.phi)) {
         structureTags[i] = 's';
-        //structureTags[i+1] = 's';
-      } else if (isTurn(phi_psi)) {
+      } else if (isTurn(leadingResidue.psi, trailingResidue.phi)) {
         structureTags[i] = 't';
-        //structureTags[i+1] = 't';
+      } else {
+        structureTags[i] = 'n';
       }
-      else {
-        structureTags[i] = '\0';
-        //structureTags[i+1] = '\0';      
-      }
+
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+        Logger.debug(this.monomers[0].chain.chainID + " aminopolymer:" + i
+            + " " + trailingResidue.phi + "," + leadingResidue.psi + " " + structureTags[i]);
     }
-    
+
     // build alpha helix stretches
     for (int start = 0; start < monomerCount; ++start) {
-     if (structureTags[start] == '4') {
-       int end;
-       for (end = start + 1;
-            end < monomerCount && structureTags[end] == '4';
-            ++end)
-         {}
-       end--;
-       if (end >= start+3) {
-         addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX,
-                               start, end);
-       }
-       start = end;
-     }
-   }
-   
+      if (structureTags[start] == '4') {
+        int end;
+        for (end = start + 1; end < monomerCount && structureTags[end] == '4'; ++end) {
+        }
+        end--;
+        if (end >= start + 3) {
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, start,
+              end);
+        }
+        start = end;
+      }
+    }
+
+    for (int start = 0; start < monomerCount; ++start) {
+      if (structureTags[start] == '3') {
+        int end;
+        for (end = start + 1; end < monomerCount && structureTags[end] == '3'; ++end) {
+        }
+        end--;
+        if (end >= start + 3) {
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX, start,
+              end);
+        }
+        start = end;
+      }
+    }
+
     // build beta sheet stretches
     for (int start = 0; start < monomerCount; ++start) {
-     if (structureTags[start] == 's') {
-       int end;
-       for (end = start + 1;
-            end < monomerCount && structureTags[end] == 's';
-            ++end)
-         {}
-       end--;
-       if (end >= start+2) {
-         addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_SHEET,
-                               start, end);
-       }
-       start = end;
-     }
-   }
-    
+      if (structureTags[start] == 's') {
+        int end;
+        for (end = start + 1; end < monomerCount && structureTags[end] == 's'; ++end) {
+        }
+        end--;
+        if (end >= start + 2) {
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_SHEET, start,
+              end);
+        }
+        start = end;
+      }
+    }
+
     // build turns
     for (int start = 0; start < monomerCount; ++start) {
-     if (structureTags[start] == 't') {
-       int end;
-       for (end = start + 1;
-            end < monomerCount && structureTags[end] == 't';
-            ++end)
-         {}
-       end--;
-       if (end >= start+2) {
-         addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_TURN,
-                               start, end);
-       }
-       start = end;
-     }
-   }
+      if (structureTags[start] == 't') {
+        int end;
+        for (end = start + 1; end < monomerCount && structureTags[end] == 't'; ++end) {
+        }
+        end--;
+        if (end >= start + 2) {
+          addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_TURN, start,
+              end);
+        }
+        start = end;
+      }
+    }
 
   }
   
   
   void calcPhiPsiAngles(AminoMonomer leadingResidue,
-                        AminoMonomer trailingResidue, float[] phi_psi) {
+                        AminoMonomer trailingResidue) {
     Point3f nitrogen1 = leadingResidue.getNitrogenAtomPoint();
     Point3f alphacarbon1 = leadingResidue.getLeadAtomPoint();
     Point3f carbon1 = leadingResidue.getCarbonylCarbonAtomPoint();
@@ -357,31 +367,31 @@ class AminoPolymer extends AlphaPolymer {
     Point3f alphacarbon2 = trailingResidue.getLeadAtomPoint();
     Point3f carbon2 = trailingResidue.getCarbonylCarbonAtomPoint();
 
-    phi_psi[0] = Measurement.computeTorsion(carbon1, nitrogen2,
+    trailingResidue.phi = Measurement.computeTorsion(carbon1, nitrogen2,
                                             alphacarbon2, carbon2);
-    phi_psi[1] = Measurement.computeTorsion(nitrogen1, alphacarbon1,
+    leadingResidue.psi = Measurement.computeTorsion(nitrogen1, alphacarbon1,
                                             carbon1, nitrogen2);
   }
   
   
-  boolean isHelix(float[] phi_psi) {
-    float phi = phi_psi[0];
-    float psi = phi_psi[1];
+  /**
+   * 
+   * @param psi N-C-CA-N torsion for NEXT group
+   * @param phi C-CA-N-C torsion for THIS group
+   * @return whether this corresponds to a helix
+   */
+  static boolean isHelix(float psi, float phi) {
     return (phi >= -160) && (phi <= 0) && (psi >= -100) && (psi <= 45);
   }
 
-  boolean isSheet(float[] phi_psi) {
-    float phi = phi_psi[0];
-    float psi = phi_psi[1];
+  static boolean isSheet(float psi, float phi) {
     return
       ( (phi >= -180) && (phi <= -10) && (psi >= 70) && (psi <= 180) ) || 
       ( (phi >= -180) && (phi <= -45) && (psi >= -180) && (psi <= -130) ) ||
       ( (phi >= 140) && (phi <= 180) && (psi >= 90) && (psi <= 180) );
   }
 
-  boolean isTurn(float[] phi_psi) {
-    float phi = phi_psi[0];
-    float psi = phi_psi[1];
+  static boolean isTurn(float psi, float phi) {
     return (phi >= 30) && (phi <= 90) && (psi >= -15) && (psi <= 95);
   }
 
@@ -396,10 +406,10 @@ class AminoPolymer extends AlphaPolymer {
 
     findHelixes(structureTags);
     for (int iStart = 0; iStart < monomerCount; ++iStart) {
-      if (structureTags[iStart] != '\0') {
+      if (structureTags[iStart] != 'n') {
         int iMax;
         for (iMax = iStart + 1;
-             iMax < monomerCount && structureTags[iMax] != '\0';
+             iMax < monomerCount && structureTags[iMax] != 'n';
              ++iMax)
           {}
         int iLast = iMax - 1;
@@ -413,7 +423,7 @@ class AminoPolymer extends AlphaPolymer {
     // for some reason if these are not reset, all helices are classified
     // as sheets. - tim 2205 10 12
         for (int i = monomerCount; --i >= 0; )
-          structureTags[i] = '\0';
+          structureTags[i] = 'n';
 
     findSheets(structureTags);
     
@@ -422,10 +432,10 @@ class AminoPolymer extends AlphaPolymer {
         Logger.debug("" + i + ":" + structureTags[i] +
                            " " + min1Indexes[i] + " " + min2Indexes[i]);
     for (int iStart = 0; iStart < monomerCount; ++iStart) {
-      if (structureTags[iStart] != '\0') {
+      if (structureTags[iStart] != 'n') {
         int iMax;
         for (iMax = iStart + 1;
-             iMax < monomerCount && structureTags[iMax] != '\0';
+             iMax < monomerCount && structureTags[iMax] != 'n';
              ++iMax)
           {}
         int iLast = iMax - 1;

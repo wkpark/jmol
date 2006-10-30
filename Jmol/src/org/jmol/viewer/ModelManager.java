@@ -963,14 +963,14 @@ String getAtomInfoChime(int i) {
       info.put("vibVector", new Vector3f(frame.vibrationVectors[i]));
     }
     info.put("bondCount", new Integer(atom.getCovalentBondCount()));
-    info.put("radius", new Float((atom.getRasMolRadius()/120.0)));
+    info.put("radius", new Float((atom.getRasMolRadius() / 120.0)));
     info.put("model", new Integer(atom.getModelTagNumber()));
     info.put("visible", new Boolean(getAtomVisibility(i)));
     info.put("clickabilityFlags", new Integer(atom.clickabilityFlags));
     info.put("visibilityFlags", new Integer(atom.shapeVisibilityFlags));
     info.put("spacefill", new Integer(atom.madAtom >> 3));
     String strColor = viewer.getHexColorFromIndex(atom.colixAtom);
-    if(strColor != null) 
+    if (strColor != null)
       info.put("color", strColor);
     info.put("colix", new Integer(atom.colixAtom));
     boolean isTranslucent = atom.isTranslucent();
@@ -980,25 +980,27 @@ String getAtomInfoChime(int i) {
     info.put("partialCharge", new Float(atom.getPartialCharge()));
     float d = atom.getSurfaceDistance();
     if (d >= 0)
-      info.put("surfaceDistance", new Float(d));      
+      info.put("surfaceDistance", new Float(d));
     if (isPDB(atom.modelIndex)) {
       info.put("resname", atom.getGroup3());
-      info.put("resno", atom.getSeqcodeString());
+      int seqNum = atom.getSeqNumber();
+      char insCode = atom.getInsertionCode();
+      if (seqNum > 0)
+        info.put("resno", new Integer(seqNum));
+      if (insCode != 0)
+        info.put("insertionCode", "" + insCode);
       char chainID = atom.getChainID();
       info.put("name", getAtomName(i));
-      info.put("chain", (chainID == '\0' ? "" : "" + chainID ));
+      info.put("chain", (chainID == '\0' ? "" : "" + chainID));
       info.put("atomID", new Integer(atom.getSpecialAtomID()));
       info.put("groupID", new Integer(atom.getGroupID()));
       if (atom.alternateLocationID != '\0')
-        info.put("altLocation", new String(""+atom.alternateLocationID));
-      char ch = atom.getInsertionCode();
-      if (ch != '\0')
-        info.put("insertionCode", new String(""+ch));
+        info.put("altLocation", new String("" + atom.alternateLocationID));
       info.put("structure", new Integer(atom.getProteinStructureType()));
       info.put("polymerLength", new Integer(atom.getPolymerLength()));
       info.put("occupancy", new Integer(atom.getOccupancy()));
       int temp = atom.getBfactor100();
-      info.put("temp", new Integer((temp<0 ? 0 : temp/100)));
+      info.put("temp", new Integer((temp < 0 ? 0 : temp / 100)));
     }
     return info;
   }  

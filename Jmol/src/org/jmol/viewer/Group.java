@@ -38,6 +38,8 @@ class Group {
   int lastAtomIndex;
   int shapeVisibilityFlags = 0;
   int minZ;
+  float phi = Float.NaN;
+  float psi = Float.NaN;
 
   Group(Chain chain, String group3, int seqcode,
         int firstAtomIndex, int lastAtomIndex) {
@@ -186,6 +188,10 @@ class Group {
 
   final int getSeqcode() {
     return seqcode;
+  }
+
+  final int getSeqNumber() {
+    return seqcode >> 8;
   }
 
   final String getSeqcodeString() {

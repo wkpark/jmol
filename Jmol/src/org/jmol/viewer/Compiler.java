@@ -1145,6 +1145,9 @@ class Compiler {
     if ((tokenComparator.tok & Token.comparator) == 0)
       return comparisonOperatorExpected();
     Token tokenValue = tokenNext();
+    boolean isNegative = (tokenValue.tok == Token.hyphen);
+    if (isNegative)
+      tokenValue = tokenNext();
     int val = Integer.MAX_VALUE;
     if (tokenValue.tok == Token.decimal) {
       float vf = ((Float) tokenValue.value).floatValue();
@@ -1173,7 +1176,7 @@ class Compiler {
     if (val == Integer.MAX_VALUE)
       return numberExpected();
     return addTokenToPostfix(new Token(tokenComparator.tok,
-        tokenAtomProperty.tok, new Integer(val)));
+        tokenAtomProperty.tok, new Integer(val * (isNegative ? -1 : 1))));
   }
 
   boolean clauseCell() {

@@ -345,6 +345,8 @@ class Token {
   final static int surfacedistance = atomproperty | 17;
   final static int atomIndex    = atomproperty | 18;
   final static int formalCharge = atomproperty | 19 | setparam ;
+  final static int phi          = atomproperty | 20;
+  final static int psi          = atomproperty | 21;
 
   final static int opGT         = comparator |  0;
   final static int opGE         = comparator |  1;
@@ -638,6 +640,8 @@ class Token {
     "formalcharge", new Token(formalCharge,    "formalcharge"),
     "charge",       null,
     "partialcharge",new Token(partialCharge,   "partialcharge"),
+    "phi",          new Token(phi,             "phi"),
+    "psi",          new Token(psi,             "psi"),
   
     // show parameters
     "information",  new Token(information,     "information"),

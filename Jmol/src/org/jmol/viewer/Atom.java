@@ -607,6 +607,14 @@ final public class Atom extends Point3fi implements Tuple {
     return madAtom / (1000f * 2);
   }
 
+  float getGroupPhi() {
+    return group.phi;
+  }
+
+  float getGroupPsi() {
+    return group.psi;
+  }
+
   char getChainID() {
     if (group == null)
       return 0;
@@ -771,6 +779,12 @@ final public class Atom extends Point3fi implements Tuple {
     if (group == null)
       return null;
     return group.getSeqcodeString();
+  }
+
+  int getSeqNumber() {
+    if (group == null)
+      return 0;
+    return group.getSeqNumber();
   }
 
   char getInsertionCode() {

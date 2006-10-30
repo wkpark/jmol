@@ -228,18 +228,32 @@ abstract class Monomer extends Group {
 
   Hashtable getMyInfo() {
     Hashtable info = new Hashtable();
-    info.put("seqcode",getSeqcodeString());
+    info.put("chain", ""+chain.chainID);
+
+    int seqNum = getSeqNumber();
+    char insCode = getInsertionCode();
+    if (seqNum > 0)      
+      info.put("sequenceNumber",new Integer(seqNum));
+    if (insCode != 0)      
+      info.put("insertionCode","" + insCode);
     info.put("atomInfo1", chain.frame.atoms[firstAtomIndex].getInfo());
     info.put("atomInfo2", chain.frame.atoms[lastAtomIndex].getInfo());
     info.put("_apt1", new Integer(firstAtomIndex));
     info.put("_apt2", new Integer(lastAtomIndex));
-    info.put("shapeVisibilityFlags", new Integer(shapeVisibilityFlags));
+    if (!Float.isNaN(phi))
+      info.put("phi", new Float(phi));
+    if (!Float.isNaN(psi))
+      info.put("psi", new Float(psi));
     ProteinStructure structure = getProteinStructure();
-    if(structure != null)info.put("structure", getStructureTypeName(structure.type));
+    if(structure != null) {
+      info.put("structureIndex", new Integer(structure.index));
+      info.put("structureType", getStructureTypeName(structure.type));
+    }
+    info.put("shapeVisibilityFlags", new Integer(shapeVisibilityFlags));
     return info;
   }
   
-  String getStructureTypeName(byte type) {
+  static String getStructureTypeName(byte type) {
     switch(type) {
     case JmolConstants.PROTEIN_STRUCTURE_HELIX:
       return "helix";

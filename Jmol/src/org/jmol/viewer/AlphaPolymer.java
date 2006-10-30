@@ -55,14 +55,17 @@ class AlphaPolymer extends Polymer {
     switch(type) {
     case JmolConstants.PROTEIN_STRUCTURE_HELIX:
       proteinstructure = new Helix(this, indexStart, structureCount);
+      proteinstructure.index = ++structureCount;
       break;
     case JmolConstants.PROTEIN_STRUCTURE_SHEET:
       if (this instanceof AminoPolymer)
         proteinstructure = new Sheet((AminoPolymer)this,
                                    indexStart, structureCount);
+      proteinstructure.index = ++structureCount;
       break;
     case JmolConstants.PROTEIN_STRUCTURE_TURN:
       proteinstructure = new Turn(this, indexStart, structureCount);
+      proteinstructure.index = ++structureCount;
       break;
     default:
       Logger.error("unrecognized secondary structure type");

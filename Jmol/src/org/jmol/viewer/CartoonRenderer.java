@@ -184,6 +184,8 @@ class CartoonRenderer extends MpsRenderer {
   void render1Chain() {
     boolean lastWasSheet = false;
     boolean lastWasHelix = false;
+    ProteinStructure previousStructure = null;
+    ProteinStructure thisStructure = null;
     
     // this code is REALLY BAD, I admit. Key structures that must render properly
     // include 1crn and 7hvp
@@ -191,6 +193,12 @@ class CartoonRenderer extends MpsRenderer {
     for (int i = monomerCount; --i >= 0;) {
       // runs backwards, so it can render the heads first
       Monomer group = monomers[i];
+      thisStructure = group.getProteinStructure();
+      if (thisStructure != previousStructure) {
+        lastWasHelix = false;
+        lastWasSheet = false;
+      }
+      previousStructure = thisStructure;
       if ((group.shapeVisibilityFlags & myVisibilityFlag) != 0 &&
         !frame.bsHidden.get(group.getLeadAtomIndex())) {
         short colix = Graphics3D.inheritColix(colixes[i],
@@ -230,14 +238,19 @@ class CartoonRenderer extends MpsRenderer {
     
     if (renderAsRockets && !isNucleicPolymer && !isCarbohydratePolymer) {
       lastWasHelix = false;
+      boolean isVisible;
+      //error here is that one helix might connect with the next helix, in which case 
+      //multiple helixes will be seen as one. That's a SERIOUS problem, because
+      //currently we don't recognize the structure NUMBER only the TYPE
+      
       for (int i = 0; i < monomerCount; ++i) {
-        if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0)
-          continue;
         Monomer group = monomers[i];
-        if ((group.shapeVisibilityFlags & myVisibilityFlag) != 0) {
+        boolean isHelix = isHelixes[i];
+        isVisible = ((group.shapeVisibilityFlags & myVisibilityFlag) != 0 
+            && !frame.bsHidden.get(group.getLeadAtomIndex()));
+        if (isVisible) {
           short colix = Graphics3D.inheritColix(colixes[i],
               group.getLeadAtom().colixAtom);
-          boolean isHelix = isHelixes[i];
           if (isHelix) {
             renderHelixAsRocket(group, colix, mads[i], i > 0 && isHelixes[i-1]);
             if (newRockets &&  i > 0 && !isSpecials[i-1]) {
@@ -253,8 +266,8 @@ class CartoonRenderer extends MpsRenderer {
             renderRopeSegment(colix, mads, i, monomerCount,
                 monomers, screens, isSpecials);
           }
-          lastWasHelix = isHelix;
         }
+          lastWasHelix = isHelix;
       }
       renderPendingRocketSegment(true);
       viewer.freeTempScreens(screens);

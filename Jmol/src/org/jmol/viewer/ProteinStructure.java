@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+import org.jmol.util.Logger;
 
 abstract class ProteinStructure {
 
@@ -36,14 +37,16 @@ abstract class ProteinStructure {
   Point3f axisA, axisB;
   Vector3f axisUnitVector;
   Point3f[] segments;
+  int index;
 
   ProteinStructure(AlphaPolymer apolymer, byte type,
                    int monomerIndex, int monomerCount) {
     this.apolymer = apolymer;
     this.type = type;
     
-    //Logger.debug("Creating ProteinStructure" + type);
-
+    if(Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+      Logger.debug("Creating ProteinStructure" + type + " from " + monomerIndex + " through "+(monomerIndex+monomerCount -1));
+    
     this.monomerIndex = monomerIndex;
     this.monomerCount = monomerCount;
   }

@@ -78,6 +78,7 @@ class Mesh {
   int[][] polygonIndexes = null;
   
   int drawVertexCount;
+  int[] drawVertexCounts;
   float scale = 1;
   Point3f ptCenter = new Point3f(0,0,0);
   Point3f ptCenters[];
@@ -86,6 +87,7 @@ class Mesh {
   String meshType = null;
   Vector3f drawOffset = null;
   
+  final static int DRAW_MULTIPLE = 0;
   final static int DRAW_ARROW = 1;
   final static int DRAW_CIRCLE = 2;
   final static int DRAW_CURVE = 3;
@@ -94,9 +96,13 @@ class Mesh {
   final static int DRAW_POINT = 6;
   final static int DRAW_TRIANGLE = 7;
   int drawType = DRAW_TRIANGLE;
+  int[] drawTypes;
+  
 
   String getDrawType() {
     switch (drawType) {
+    case Mesh.DRAW_MULTIPLE:
+      return "multiple";
     case Mesh.DRAW_ARROW:
       return "arrow";
     case Mesh.DRAW_CIRCLE:
@@ -108,6 +114,7 @@ class Mesh {
     case Mesh.DRAW_LINE:
       return "line";
     case Mesh.DRAW_TRIANGLE:
+      return "triangle";
     case Mesh.DRAW_PLANE:
       return "plane";
     }
@@ -302,37 +309,6 @@ class Mesh {
       ptCenter = center;
     } else {
       ptCenters[iModel] = center;
-    }
-  }
-
-  final Point3f getSpinCenter(int modelIndex) {
-    if (vertices == null)
-      return null;
-    return (ptCenters == null || modelIndex < 0 ? ptCenter : ptCenters[modelIndex]);
-  }
-  
-  final Vector3f getSpinAxis(int modelIndex) {
-    if (vertices == null)
-      return null;
-    return (ptCenters == null || modelIndex < 0 ? axis : axes[modelIndex]);
-  }
-  
-  final void setAxes() {
-    axis = new Vector3f(0, 0, 0);
-    axes = new Vector3f[polygonCount > 0 ? polygonCount : 1];
-    if (vertices == null)
-      return;
-    for (int i = polygonCount; --i >= 0;) {
-      axes[i] = new Vector3f();
-      if(drawVertexCount == 2) {
-        axes[i].sub(vertices[polygonIndexes[i][0]], vertices[polygonIndexes[i][1]]);
-      } else {      
-        Graphics3D.calcNormalizedNormal(vertices[polygonIndexes[i][0]],
-                                 vertices[polygonIndexes[i][1]],
-                                 vertices[polygonIndexes[i][2]],
-                                 axes[i], vAB, vAC);
-      }
-      axis.add(axes[i]);
     }
   }
 }

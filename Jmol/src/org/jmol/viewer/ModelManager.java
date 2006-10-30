@@ -225,7 +225,7 @@ class ModelManager {
     if (meshIndex < 0) {
       return null;
     }
-    return draw.meshes[meshIndex].getSpinCenter(modelIndex);
+    return draw.getSpinCenter(meshIndex, modelIndex);
    }
    
   Vector3f getSpinAxis(String axisID, int modelIndex) {
@@ -236,7 +236,7 @@ class ModelManager {
     if (meshIndex < 0) {
       return null;
     }
-    return draw.meshes[meshIndex].getSpinAxis(modelIndex);
+    return draw.getSpinAxis(meshIndex, modelIndex);
    }
    
   float calcRotationRadius(Point3f center) {

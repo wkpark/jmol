@@ -450,7 +450,7 @@ class PropertyManager {
         str += sep + toReadable(null, ((Vector) info).get(i));
         sep = ",";
       }
-      str += "\n";
+//      str += "\n";
       return packageReadable(infoType, str);
     }
     if (info instanceof Matrix3f) {

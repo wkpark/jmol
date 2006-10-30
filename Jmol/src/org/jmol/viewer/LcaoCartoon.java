@@ -162,7 +162,7 @@ class LcaoCartoon extends Isosurface {
       super.setProperty("colorRGB", lcaoColorPos, null);
     }
     super.setProperty("lcaoType", type, null);
-    super.setProperty("modelIndex", new Integer(viewer.getAtomModelIndex(iAtom)), null);
+    super.setProperty("atomIndex", new Integer(iAtom), null);
 
     Vector3f[] axes = { new Vector3f(), new Vector3f(),
         new Vector3f(frame.atoms[iAtom]) };

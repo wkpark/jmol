@@ -186,7 +186,7 @@ class Isosurface extends MeshCollection {
   Matrix3f eccentricityMatrix;
   Matrix3f eccentricityMatrixInverse;
   
-  int modelIndex;
+  int atomIndex; //for lcaoCartoons
 
   final static int NO_ANISOTROPY = 1 << 5;
   final static int IS_SILENT = 1 << 6;
@@ -409,8 +409,8 @@ class Isosurface extends MeshCollection {
       return;
     }
 
-    if ("modelIndex" == propertyName) {
-      modelIndex = ((Integer) value).intValue();
+    if ("atomIndex" == propertyName) {
+      atomIndex = ((Integer) value).intValue();
       return;
     }
 
@@ -888,7 +888,7 @@ class Isosurface extends MeshCollection {
     fileIndex = 1;
     insideOut = false;
     isFixed = false;
-    modelIndex = -1;
+    atomIndex = -1;
     precalculateVoxelData = false;
     isColorReversed = false;
     iAddGridPoints = false;
@@ -5004,10 +5004,11 @@ class Isosurface extends MeshCollection {
     currentMesh.ptCenter.set(center);
     currentMesh.title = title;
     currentMesh.jvxlDefinitionLine = jvxlGetDefinitionLine(currentMesh);
-    if (modelIndex >= 0) {
-      currentMesh.modelIndex = modelIndex;
+    currentMesh.atomIndex = atomIndex;
+    currentMesh.modelIndex = (atomIndex < 0 ? -1 : viewer
+        .getAtomModelIndex(atomIndex));
+    if (atomIndex >= 0)
       return;
-    }
     int modelCount = viewer.getModelCount();
     if (modelCount < 2)
       isFixed = true;
@@ -5026,7 +5027,9 @@ class Isosurface extends MeshCollection {
     for (int i = meshCount; --i >= 0;) {
       Mesh mesh = meshes[i];
       mesh.visibilityFlags = (mesh.visible
-          && (mesh.modelIndex < 0 || bs.get(mesh.modelIndex)) ? myVisibilityFlag
+          && (mesh.modelIndex < 0 || bs.get(mesh.modelIndex)
+          && (mesh.atomIndex < 0 || !frame.bsHidden.get(mesh.atomIndex))
+          ) ? myVisibilityFlag
           : 0);
     }
   }

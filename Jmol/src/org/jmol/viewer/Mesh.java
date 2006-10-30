@@ -121,6 +121,7 @@ class Mesh {
     return "type is not identified in mesh.getDrawType()";
   }
 
+  int atomIndex = -1;
   int modelIndex = -1;  // for Isosurface
   int visibilityFlags;
   int[] modelFlags = null; //one per POLYGON for DRAW

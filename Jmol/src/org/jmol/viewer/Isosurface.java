@@ -185,6 +185,8 @@ class Isosurface extends MeshCollection {
   float scale;
   Matrix3f eccentricityMatrix;
   Matrix3f eccentricityMatrixInverse;
+  
+  int modelIndex;
 
   final static int NO_ANISOTROPY = 1 << 5;
   final static int IS_SILENT = 1 << 6;
@@ -404,6 +406,11 @@ class Isosurface extends MeshCollection {
     if ("fixed" == propertyName) {
       isFixed = ((Boolean) value).booleanValue();
       setModelIndex();
+      return;
+    }
+
+    if ("modelIndex" == propertyName) {
+      modelIndex = ((Integer) value).intValue();
       return;
     }
 
@@ -881,6 +888,7 @@ class Isosurface extends MeshCollection {
     fileIndex = 1;
     insideOut = false;
     isFixed = false;
+    modelIndex = -1;
     precalculateVoxelData = false;
     isColorReversed = false;
     iAddGridPoints = false;
@@ -4996,6 +5004,10 @@ class Isosurface extends MeshCollection {
     currentMesh.ptCenter.set(center);
     currentMesh.title = title;
     currentMesh.jvxlDefinitionLine = jvxlGetDefinitionLine(currentMesh);
+    if (modelIndex >= 0) {
+      currentMesh.modelIndex = modelIndex;
+      return;
+    }
     int modelCount = viewer.getModelCount();
     if (modelCount < 2)
       isFixed = true;

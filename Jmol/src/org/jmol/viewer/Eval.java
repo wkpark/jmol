@@ -5719,6 +5719,8 @@ class Eval { //implements Runnable {
           int atomIndex = viewer.firstAtomOf(expression(statement, ++i));
           if (atomIndex < 0)
             expressionExpected();
+          viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "modelIndex",
+              new Integer(viewer.getAtomModelIndex(atomIndex)));
           Vector3f[] axes = { new Vector3f(), new Vector3f(),
               new Vector3f(viewer.getAtomPoint3f(atomIndex)) };
           viewer.getPrincipalAxes(atomIndex, axes[0], axes[1], lcaoType, false);

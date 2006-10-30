@@ -56,6 +56,7 @@ class LcaoCartoon extends Isosurface {
       lcaoID = null;
       thisSet = bs;
       isMolecular = false;
+      thisType = null;
       // overide bitset selection
       super.setProperty("init", null, null);
       return;
@@ -161,6 +162,8 @@ class LcaoCartoon extends Isosurface {
       super.setProperty("colorRGB", lcaoColorPos, null);
     }
     super.setProperty("lcaoType", type, null);
+    super.setProperty("modelIndex", new Integer(viewer.getAtomModelIndex(iAtom)), null);
+
     Vector3f[] axes = { new Vector3f(), new Vector3f(),
         new Vector3f(frame.atoms[iAtom]) };
     if (isMolecular) {

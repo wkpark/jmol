@@ -317,6 +317,16 @@ class PropertyManager {
       str += "]";
       return packageJSON(infoType, str);
     }
+    if (info instanceof int[][]) {
+      str = "[";
+      int imax = ((int[][]) info).length;
+      for (int i = 0; i < imax; i++) {
+        str += sep + toJSON(null, ((int[][]) info)[i]);
+        sep = ",";
+      }
+      str += "]";
+      return packageJSON(infoType, str);
+    }
     if (info instanceof float[][]) {
       str = "[";
       int imax = ((float[][]) info).length;
@@ -411,6 +421,16 @@ class PropertyManager {
         sep = ",";
       }
       str += "";
+      return packageReadable(infoType, str);
+    }
+    if (info instanceof int[][]) {
+      str = "[";
+      int imax = ((int[][]) info).length;
+      for (int i = 0; i < imax; i++) {
+        str += sep + toReadable(null, ((int[][]) info)[i]);
+        sep = ",";
+      }
+      str += "]";
       return packageReadable(infoType, str);
     }
     if (info instanceof float[][]) {

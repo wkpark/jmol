@@ -431,7 +431,7 @@ public final class Frame {
       checkNewGroup(atomIndex, atom.modelIndex, '\0', null, 0, '\0');
     else
       checkNewGroup(atomIndex, atom.modelIndex, atom.getChainID(), atom
-          .getGroup3(), atom.getSeqcode(), atom.getInsertionCode());
+          .getGroup3(), atom.getSeqNumber(), atom.getInsertionCode());
   }
   
   void checkNewGroup(int atomIndex, int modelIndex, char chainID, String group3,
@@ -446,6 +446,7 @@ public final class Frame {
       currentChainID = chainID;
       currentChain = currentModel.getOrAllocateChain(chainID);
       currentGroupInsertionCode = '\uFFFF';
+      currentGroupSequenceNumber = -1;
       currentGroup3 = "xxxx";
     }
     if (groupSequenceNumber != currentGroupSequenceNumber

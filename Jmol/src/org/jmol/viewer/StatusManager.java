@@ -144,7 +144,7 @@ class StatusManager {
     setStatusChanged("fileLoaded", ptLoad, fullPathName, false);
     if (errorMsg != null)
       setStatusChanged("fileLoadError", ptLoad, errorMsg, false);
-    if (jmolStatusListener != null)
+    if (jmolStatusListener != null && (ptLoad == -1 || ptLoad == 3))
       jmolStatusListener.notifyFileLoaded(fullPathName, fileName,
              modelName, clientFile, errorMsg);
   }

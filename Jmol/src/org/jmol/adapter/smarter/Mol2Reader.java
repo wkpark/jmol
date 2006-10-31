@@ -140,6 +140,7 @@ class Mol2Reader extends AtomSetCollectionReader {
       Atom atom = atomSetCollection.addNewAtom();
       String[] tokens = getTokens(readLine());
       //Logger.debug(tokens.length + " -" + tokens[5] + "- " + line);
+      atom.atomName = tokens[1];
       setAtomCoord(atom, parseFloat(tokens[2]), parseFloat(tokens[3]),
           parseFloat(tokens[4]));
       String elementSymbol = tokens[5];

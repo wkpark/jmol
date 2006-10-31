@@ -973,6 +973,8 @@ class TransformManager {
     pt.y -= perspectiveOffset.y;
     if (perspectiveDepth) {
       float perspectiveFactor = cameraDistanceFloat / pt.z;
+      if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+        perspectiveFactor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)/(MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH) * (1 - perspectiveFactor);
       pt.x /= perspectiveFactor;
       pt.y /= perspectiveFactor;
     }

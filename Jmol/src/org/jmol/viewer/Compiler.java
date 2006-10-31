@@ -841,39 +841,40 @@ class Compiler {
   }
 
   private boolean compileCommand(Vector ltoken) {
-    Token tokenCommand = (Token)ltoken.firstElement();
+    Token tokenCommand = (Token) ltoken.firstElement();
     //Logger.debug(tokenCommand + script);
     int tokCommand = tokenCommand.tok;
     int size = ltoken.size();
-    if ((tokenCommand.intValue & Token.onDefault1) == Token.onDefault1 &&
-        size == 1)
+    if ((tokenCommand.intValue & Token.onDefault1) == Token.onDefault1
+        && size == 1)
       ltoken.addElement(Token.tokenOn);
     if (tokCommand == Token.set) {
       if (size < 2)
         return badArgumentCount();
       /*
        * miguel 2005 01 01 - setDefaultOn is not used
-      if (size == 2 &&
-          (((Token)ltoken.elementAt(1)).tok & Token.setDefaultOn) != 0)
-        ltoken.addElement(Token.tokenOn);
-      */
+       if (size == 2 &&
+       (((Token)ltoken.elementAt(1)).tok & Token.setDefaultOn) != 0)
+       ltoken.addElement(Token.tokenOn);
+       */
     }
     atokenCommand = new Token[ltoken.size()];
     ltoken.copyInto(atokenCommand);
     int tok = (size == 1 ? Token.nada : atokenCommand[1].tok);
     if (logMessages) {
       for (int i = 0; i < atokenCommand.length; i++)
-        Logger.debug(i+": "+atokenCommand[i]);
+        Logger.debug(i + ": " + atokenCommand[i]);
     }
     if ((tokCommand & Token.colorparam) != 0 && !compileColorParam())
       return false;
-    if (tok == Token.leftbrace || tok == Token.dollarsign) 
-      return true;    // $ or { at beginning disallow expression checking
-    if ((tokCommand & (Token.expressionCommand|Token.embeddedExpression)) != 0
+    if ((tok == Token.leftbrace || tok == Token.dollarsign)
+        && ((tokCommand & Token.coordOrSet) != Token.coordOrSet))
+      return true; // $ or { at beginning disallow expression checking for center command
+    if ((tokCommand & (Token.expressionCommand | Token.embeddedExpression)) != 0
         && !compileExpression())
       return false;
-    if ((tokenCommand.intValue & Token.varArgCount) == 0 &&
-        (tokenCommand.intValue & 0x0F) + 1 != atokenCommand.length)
+    if ((tokenCommand.intValue & Token.varArgCount) == 0
+        && (tokenCommand.intValue & 0x0F) + 1 != atokenCommand.length)
       return badArgumentCount();
     return true;
   }

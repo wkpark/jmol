@@ -85,9 +85,9 @@ class Mesh {
   Vector3f axis = new Vector3f(1,0,0);
   Vector3f axes[];
   String meshType = null;
-  Vector3f drawOffset = null;
   
-  final static int DRAW_MULTIPLE = 0;
+  final static int DRAW_MULTIPLE = -1;
+  final static int DRAW_NONE = 0;
   final static int DRAW_ARROW = 1;
   final static int DRAW_CIRCLE = 2;
   final static int DRAW_CURVE = 3;
@@ -122,7 +122,7 @@ class Mesh {
   }
 
   int atomIndex = -1;
-  int modelIndex = -1;  // for Isosurface
+  int modelIndex = -1;  // for Isosurface and Draw
   int visibilityFlags;
   int[] modelFlags = null; //one per POLYGON for DRAW
   
@@ -162,6 +162,11 @@ class Mesh {
     else
       for (int i = vertexCount; --i >= 0;)
         normixes[i] = g3d.getNormix(vectorSums[i]);
+  }
+
+  void offset(Vector3f offset) {
+    for (int i = vertexCount; --i >= 0;)
+      vertices[i].add(offset);
   }
 
   void allocVertexColixes() {
@@ -280,8 +285,9 @@ class Mesh {
   }
   
  final  boolean isPolygonDisplayable(int index) {
-    return (modelFlags == null ||
-        modelFlags[index] != 0); 
+    return (polygonIndexes[index].length > 0 
+        && (modelIndex == index || modelFlags == null 
+            || modelFlags[index] != 0)); 
   }
   
   final void setCenter(int iModel) {
@@ -301,7 +307,7 @@ class Mesh {
         center.add(vertices[ipt]);
         n++;
       }
-      if (i == iModel || i == 0) {
+      if (n > 0 && (i == iModel || i == 0)) {
         center.scale(1.0f / n);
         break;
       }

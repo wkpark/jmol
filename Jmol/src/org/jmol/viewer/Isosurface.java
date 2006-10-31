@@ -118,7 +118,7 @@ class Isosurface extends MeshCollection {
   boolean logCompression = false;
   boolean logCube = false;
   final static boolean colorByContourOnly = false;
-
+  int nUnnamed;
   int state;
   final static int STATE_INITIALIZED = 1;
   final static int STATE_DATA_READ = 2;
@@ -809,6 +809,8 @@ class Isosurface extends MeshCollection {
         super.setProperty("color", "sets", null);
       }
       setModelIndex();
+      if (currentMesh.thisID == null)
+        currentMesh.thisID = "isosurface"+(++nUnnamed);
       if (logMessages && thePlane == null && !isSilent)
         Logger.debug("\n" + jvxlGetFile(currentMesh, jvxlFileMessage, true, 1));
       discardTempData(jvxlDataIs2dContour);

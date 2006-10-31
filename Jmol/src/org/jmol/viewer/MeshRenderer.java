@@ -49,17 +49,10 @@ abstract class MeshRenderer extends ShapeRenderer {
     vertices = mesh.vertices;
     screens = viewer.allocTempScreens(vertexCount);
     vertexValues = mesh.vertexValues;
-    boolean addOffset = (mesh.drawOffset != null && mesh.drawOffset.length() > 0);
-    if (addOffset)
-      for (int i = vertexCount; --i >= 0;) {
-        ptTemp.add(vertices[i], mesh.drawOffset);
-        viewer.transformPoint(ptTemp, screens[i]);
-      }
-    else
-      for (int i = vertexCount; --i >= 0;)
-        if (vertexValues == null || !Float.isNaN(vertexValues[i])
-            || mesh.hasGridPoints)
-          viewer.transformPoint(vertices[i], screens[i]);
+    for (int i = vertexCount; --i >= 0;)
+      if (vertexValues == null || !Float.isNaN(vertexValues[i])
+          || mesh.hasGridPoints)
+        viewer.transformPoint(vertices[i], screens[i]);
     iShowTriangles = viewer.getTestFlag3();
     iShowNormals = viewer.getTestFlag4();
     iHideBackground = (mesh.jvxlPlane != null && mesh.hideBackground);
@@ -77,25 +70,28 @@ abstract class MeshRenderer extends ShapeRenderer {
             screens[i + 1], screens[i + (i + 2 == mesh.vertexCount ? 1 : 2)]);
         i0 = i;
       }
-      if (drawType == Mesh.DRAW_ARROW) {
-        Point3i pt1 = screens[mesh.vertexCount - 2];
-        Point3i pt2 = screens[mesh.vertexCount - 1];
-        Vector3f tip = new Vector3f(pt2.x - pt1.x, pt2.y - pt1.y, pt2.z - pt1.z);
-        float d = tip.length();
-        if (d > 0) {
-          tip.scale(5 / d);
-          pt0.x = pt2.x - (int) Math.floor(4 * tip.x);
-          pt0.y = pt2.y - (int) Math.floor(4 * tip.y);
-          pt0.z = pt2.z - (int) Math.floor(4 * tip.z);
-          pt3.x = pt2.x + (int) Math.floor(tip.x);
-          pt3.y = pt2.y + (int) Math.floor(tip.y);
-          pt3.z = pt2.z + (int) Math.floor(tip.z);
-          g3d.fillCone(colix, Graphics3D.ENDCAPS_FLAT, 15, pt0, pt3);
-        }
+    }
+    switch (drawType) {
+    case Mesh.DRAW_ARROW:
+      Point3i pt1 = screens[mesh.vertexCount - 2];
+      Point3i pt2 = screens[mesh.vertexCount - 1];
+      Vector3f tip = new Vector3f(pt2.x - pt1.x, pt2.y - pt1.y, pt2.z - pt1.z);
+      float d = tip.length();
+      if (d > 0) {
+        tip.scale(5 / d);
+        pt0.x = pt2.x - (int) Math.floor(4 * tip.x);
+        pt0.y = pt2.y - (int) Math.floor(4 * tip.y);
+        pt0.z = pt2.z - (int) Math.floor(4 * tip.z);
+        pt3.x = pt2.x + (int) Math.floor(tip.x);
+        pt3.y = pt2.y + (int) Math.floor(tip.y);
+        pt3.z = pt2.z + (int) Math.floor(tip.z);
+        g3d.fillCone(colix, Graphics3D.ENDCAPS_FLAT, 15, pt0, pt3);
       }
-    } else if (mesh.drawType == Mesh.DRAW_CIRCLE) {
-      // ?
-    } else {
+      break;
+    case Mesh.DRAW_CIRCLE:
+      //unimplemented
+      break;
+    default:
       if (mesh.showPoints)
         renderPoints(mesh, screens, vertexCount);
       if (iShowNormals)
@@ -120,9 +116,20 @@ abstract class MeshRenderer extends ShapeRenderer {
     case Mesh.DRAW_LINE:
     case Mesh.DRAW_PLANE:
     case Mesh.DRAW_CIRCLE:
-      for (int i = vertexCount; --i >= 0;)
-        g3d.fillScreenedCircleCentered(Graphics3D.GOLD, 10, screens[i].x, screens[i].y, screens[i].z);
-      break;
+    case Mesh.DRAW_MULTIPLE:
+      for (int i = mesh.polygonCount; --i >= 0;) {
+        if (!mesh.isPolygonDisplayable(i))
+          continue;
+        int[] vertexIndexes = mesh.polygonIndexes[i];
+        if (vertexIndexes == null)
+          continue;
+        for (int j = vertexIndexes.length; --j >= 0;) {
+          int k = vertexIndexes[j];
+          g3d.fillScreenedCircleCentered(Graphics3D.GOLD, 10, screens[k].x,
+              screens[k].y, screens[k].z);
+        }
+        break;
+      }
     }
   }
 

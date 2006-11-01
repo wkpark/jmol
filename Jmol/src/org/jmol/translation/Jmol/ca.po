@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-10-25 23:11+0200\n"
-"PO-Revision-Date: 2006-01-30 03:35+0100\n"
+"PO-Revision-Date: 2006-11-01 19:31+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -118,7 +118,7 @@ msgstr "Vés al primer {0} de la col·lecció"
 #: org/openscience/jmol/app/AtomSetChooser.java:366
 #, java-format
 msgid "Go to previous {0} in the collection"
-msgstr "Vés a l''anterior {0} de la col·lecció"
+msgstr "Vés a l'anterior {0} de la col·lecció"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:367
 #, java-format
@@ -173,8 +173,9 @@ msgid "Open &URL"
 msgstr "Obre un &URL"
 
 #: org/openscience/jmol/app/GuiMap.java:48
+#, fuzzy
 msgid "Scrip&t..."
-msgstr "Se&qüència..."
+msgstr "Sc&ript..."
 
 #: org/openscience/jmol/app/GuiMap.java:49
 msgid "AtomSetChooser..."
@@ -232,11 +233,11 @@ msgstr "Selecciona-ho tot"
 
 #: org/openscience/jmol/app/GuiMap.java:62
 msgid "Deselect All"
-msgstr "Tot sense seleccionar"
+msgstr "Desselecciona-ho tot"
 
 #: org/openscience/jmol/app/GuiMap.java:63
 msgid "Copy Image"
-msgstr ""
+msgstr "Còpia la imatge"
 
 #: org/openscience/jmol/app/GuiMap.java:64
 msgid "&Preferences..."
@@ -244,7 +245,7 @@ msgstr "&Preferències..."
 
 #: org/openscience/jmol/app/GuiMap.java:65
 msgid "&Paste"
-msgstr ""
+msgstr "Engan&xa"
 
 #: org/openscience/jmol/app/GuiMap.java:68
 msgid "All"
@@ -300,7 +301,7 @@ msgstr "Hetero"
 
 #: org/openscience/jmol/app/GuiMap.java:80
 msgid "&Display"
-msgstr "&Visualització"
+msgstr "&Visualitza"
 
 #: org/openscience/jmol/app/GuiMap.java:81
 msgid "Atom"
@@ -333,7 +334,7 @@ msgstr "{0} Å"
 
 #: org/openscience/jmol/app/GuiMap.java:93
 msgid "Label"
-msgstr "Etiquetatge"
+msgstr "Etiqueta"
 
 #: org/openscience/jmol/app/GuiMap.java:95
 msgid "Symbol"
@@ -357,7 +358,7 @@ msgstr "Marge superior dret"
 
 #: org/openscience/jmol/app/GuiMap.java:102
 msgid "On"
-msgstr "Sí"
+msgstr "Activat"
 
 #: org/openscience/jmol/app/GuiMap.java:103
 #, java-format
@@ -555,9 +556,8 @@ msgstr "Novetats"
 
 #: org/openscience/jmol/app/GuiMap.java:158
 #: org/openscience/jmol/app/Jmol.java:558
-#, fuzzy
 msgid "Jmol Java Console"
-msgstr "Consola del Jmol"
+msgstr "Consola Java del Jmol"
 
 #: org/openscience/jmol/app/GuiMap.java:159
 msgid "Hydrogens"
@@ -576,9 +576,8 @@ msgid "File Preview (needs restarting Jmol)"
 msgstr "Visualització prèvia del fitxer (cal reiniciar el Jmol)"
 
 #: org/openscience/jmol/app/GuiMap.java:166
-#, fuzzy
 msgid "Clear console button (needs restarting Jmol)"
-msgstr "Visualització prèvia del fitxer (cal reiniciar el Jmol)"
+msgstr "Botó de neteja de la consola (cal reiniciar el Jmol)"
 
 #: org/openscience/jmol/app/GuiMap.java:167
 #: org/openscience/jmol/app/GuiMap.java:168
@@ -649,7 +648,7 @@ msgstr "S'estan inicialitzant els fitxers recents..."
 
 #: org/openscience/jmol/app/Jmol.java:188
 msgid "Initializing Script Window..."
-msgstr "S'està inicialitzant la finestra de seqüències..."
+msgstr "S'està inicialitzant la finestra d'scripts..."
 
 #: org/openscience/jmol/app/Jmol.java:190
 msgid "Initializing AtomSetChooser Window..."
@@ -701,19 +700,19 @@ msgstr "adjunta aquesta pàgina d'ajuda"
 
 #: org/openscience/jmol/app/Jmol.java:386
 msgid "no display (and also exit when done)"
-msgstr ""
+msgstr "no mostris res (i també surt quan s'acabi)"
 
 #: org/openscience/jmol/app/Jmol.java:387
 msgid "silent startup operation"
-msgstr ""
+msgstr "operació d'inici silenciós"
 
 #: org/openscience/jmol/app/Jmol.java:388
 msgid "no console -- all output to sysout"
-msgstr ""
+msgstr "no hi ha consola -- tota lo sortida serà al sistema"
 
 #: org/openscience/jmol/app/Jmol.java:389
 msgid "exit after script (implicit with -n)"
-msgstr ""
+msgstr "surt després de l'script (implícit amb -n)"
 
 #: org/openscience/jmol/app/Jmol.java:397
 msgid "property=value"
@@ -724,18 +723,18 @@ msgid "supported options are given below"
 msgstr "les opcions implementades es descriuen a continuació"
 
 #: org/openscience/jmol/app/Jmol.java:404
-#, fuzzy, java-format
+#, java-format
 msgid "window size, e.g. {0}"
-msgstr "mida de la finestra 500x500"
+msgstr "mida de la finestra, ex. {0}"
 
 #: org/openscience/jmol/app/Jmol.java:410
 #, java-format
 msgid "{0} or {1}:filename"
-msgstr ""
+msgstr "{0} o {1}:nomdelfitxer"
 
 #: org/openscience/jmol/app/Jmol.java:433
 msgid "For example:"
-msgstr ""
+msgstr "Per exemple:"
 
 #: org/openscience/jmol/app/Jmol.java:437
 msgid "The -D options are as follows (defaults in parathesis):"
@@ -745,7 +744,7 @@ msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:546
 msgid "Executing script..."
-msgstr "S'està executant la seqüència..."
+msgstr "S'està executant l'script..."
 
 #: org/openscience/jmol/app/Jmol.java:566
 #: org/openscience/jmol/app/ScriptWindow.java:93
@@ -981,7 +980,7 @@ msgstr "L'ordre en concret que s'executarà"
 #: org/openscience/jmol/app/PovrayDialog.java:481
 #: org/openscience/jmol/app/PovrayDialog.java:753
 msgid "Go!"
-msgstr "Vés!"
+msgstr "Vés-hi!"
 
 #: org/openscience/jmol/app/PovrayDialog.java:483
 msgid "Save file and possibly launch povray"
@@ -1043,7 +1042,7 @@ msgstr "Mida per defecte de l'atom"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:295
 msgid "(percentage of vanDerWaals radius)"
-msgstr "(percentatge de radi de Van der Waals)"
+msgstr "(percentatge de radi de van der Waals)"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:347
 msgid "Compute Bonds"
@@ -1084,9 +1083,8 @@ msgid "Open"
 msgstr "Obre"
 
 #: org/openscience/jmol/app/ScriptWindow.java:65
-#, fuzzy
 msgid "Jmol Script Console"
-msgstr "Consola del Jmol"
+msgstr "Consola script del Jmol"
 
 #: org/openscience/jmol/app/ScriptWindow.java:84
 msgid "Run"
@@ -1098,7 +1096,7 @@ msgstr "Para"
 
 #: org/openscience/jmol/app/ScriptWindow.java:97
 msgid "History"
-msgstr ""
+msgstr "Historial"
 
 #: org/openscience/jmol/app/ScriptWindow.java:101
 msgid "Help"
@@ -1112,20 +1110,17 @@ msgstr "S'està carregant..."
 msgid "What's New in Jmol"
 msgstr "Novetats del Jmol"
 
-#, fuzzy
 #~ msgid "no display"
-#~ msgstr "Visualització"
+#~ msgstr "sense visualització"
 
-#, fuzzy
 #~ msgid "atoms selected"
-#~ msgstr "conjunt d'àtoms"
+#~ msgstr "àtoms seleccionats"
 
-#, fuzzy
 #~ msgid "Jmol executing script ..."
-#~ msgstr "S'està executant la seqüència..."
+#~ msgstr "El Jmol està executant l'script..."
 
 #~ msgid "Rasmol Scripts"
-#~ msgstr "Seqüències de RasMol"
+#~ msgstr "Scripts de RasMol"
 
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "Rotació en mode filfe&rro"

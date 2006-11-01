@@ -1029,9 +1029,8 @@ class Eval { //implements Runnable {
     BitSet bs = lookupValue(identifier, false);
     if (bs != null)    // identifier had been previously defined
       return copyBitSet(bs); 
-    if ((bs = viewer.getAtomBits("IdentifierOrNull", identifier)) == null)
-      undefinedVariable(identifier);
-    return bs;  
+    bs = viewer.getAtomBits("IdentifierOrNull", identifier);
+    return (bs == null ? new BitSet() : bs);
   }
 
   BitSet lookupValue(String variable, boolean plurals) throws ScriptException {

@@ -2047,6 +2047,7 @@ public final class Frame {
     //nam
     //nam45
     //nam45C
+    //nam45^
     //nam45^A
     //nam45^AC -- note, no colon here -- if present, handled separately
 
@@ -2075,11 +2076,9 @@ public final class Frame {
       return null;
     }
     char insertionCode = ' ';
-    if (pt < len && identifier.charAt(pt) == '^') {
-      if (++pt == len)
-        return null;
-      insertionCode = identifier.charAt(pt);
-    }
+    if (pt < len && identifier.charAt(pt) == '^')
+      if (++pt < len)
+        insertionCode = identifier.charAt(pt);
     int seqcode = Group.getSeqcode(seqNumber, insertionCode);
     BitSet bsInsert = getSpecSeqcode(seqcode, false);
     if (bsInsert == null) {
@@ -2091,7 +2090,7 @@ public final class Frame {
       pt++;
     }
     bs.and(bsInsert);
-    if (pt == len)
+    if (pt >= len)
       return bs;
     //
     // look for a chain spec -- no colon

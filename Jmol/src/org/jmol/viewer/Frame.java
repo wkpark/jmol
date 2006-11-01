@@ -772,6 +772,23 @@ public final class Frame {
       mmset.calculateStructures();
     mmset.freeze();
   }
+ 
+  BitSet setConformation(int modelIndex, int conformationIndex) {
+    BitSet bs = new BitSet();
+    String altLocs = getAltLocListInModel(modelIndex);
+    if (altLocs.length() > 0) {
+      BitSet bsConformation = getModelAtomBitSet(modelIndex);
+      if (conformationIndex >= 0)
+        for (int c = getAltLocCountInModel(modelIndex); --c >= 0;)
+          if (c != conformationIndex)
+            bsConformation.andNot(getSpecAlternate(altLocs.substring(c, c + 1)));
+      if (bsConformation.length() > 0) {
+        setConformation(modelIndex, bsConformation);
+        bs.or(bsConformation);
+      }
+    }
+    return bs;
+  }
 
   void setConformation(int modelIndex, BitSet bsConformation) {
     mmset.setConformation(modelIndex, bsConformation);
@@ -1856,6 +1873,13 @@ public final class Frame {
     return null;
   }
 
+  ///// this set of methods is used by Eval
+  
+  /**
+   * general unqualified lookup of atom set type
+   * @param setType
+   * @return BitSet; or null if we mess up the type
+   */
   BitSet getAtomBits(String setType) {
     if (setType.equals("specialPosition"))
       return getSpecialPosition();
@@ -1884,40 +1908,17 @@ public final class Frame {
     return null;
   }
 
-  BitSet getAtomBits(String setType, String specInfo) {
-    if (setType.equals("SpecAtom"))
-      return getSpecAtom(specInfo);
-    if (setType.equals("SpecName"))
-      return getSpecName(specInfo);
-    if (setType.equals("SpecResidueWildcard")) //never called?
-      return getResidueWildcard(specInfo);
-    if (setType.equals("SpecAlternate"))
-      return getSpecAlternate(specInfo);
-    if (setType.equals("SpecModel"))
-      return getSpecModel(specInfo);
-    if (setType.equals("PotentialGroupName"))
-      return lookupPotentialGroupName(specInfo);
-    return null;
+  private BitSet getSpecialPosition() {
+    BitSet bs = new BitSet(atomCount);
+    for (int i = atomCount; --i >= 0;) {
+      BitSet bsSym = atoms[i].getAtomSymmetry();
+      if (bsSym != null && viewer.cardinalityOf(bsSym) > 1)
+        bs.set(i);
+    }
+    return bs;
   }
 
-  BitSet getAtomBits(String setType, int[] specInfo) {
-    if (setType.equals("SpecSeqcodeRange"))
-      return getSpecSeqcodeRange(specInfo[0], specInfo[1]);
-    if (setType.equals("Cell"))
-      return getCellSet(specInfo[0], specInfo[1], specInfo[2]);
-    return null;
-  }
-
-  BitSet getCellSet(int ix, int jy, int kz) {
-    BitSet bsCell = new BitSet();
-    Point3f cell = new Point3f(ix / 1000f, jy / 1000f, kz / 1000f);
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isInLatticeCell(cell))
-        bsCell.set(i);
-    return bsCell;
-  }
-
-  BitSet getUnitCellSet() {
+  private BitSet getUnitCellSet() {
     BitSet bsCell = new BitSet();
     UnitCell unitcell = viewer.getCurrentUnitCell();
     if (unitcell == null)
@@ -1932,25 +1933,7 @@ public final class Frame {
     return bsCell;
   }
 
-  BitSet getHeteroSet() {
-    BitSet bsHetero = new BitSet();
-    for (int i = atomCount; --i >= 0;)
-      if (atoms[i].isHetero())
-        bsHetero.set(i);
-    return bsHetero;
-  }
-
-  BitSet getSpecialPosition() {
-    BitSet bs = new BitSet(atomCount);
-    for (int i = atomCount; --i >= 0;) {
-      BitSet bsSym = atoms[i].getAtomSymmetry();
-      if (bsSym != null && viewer.cardinalityOf(bsSym) > 1)
-        bs.set(i);
-    }
-    return bs;
-  }
-
-  BitSet getSymmetrySet() {
+  private BitSet getSymmetrySet() {
     //presumption here is that one cannot DELETE atoms
     BitSet bs = new BitSet(atomCount);
     for (int i = atomCount; --i >= 0;)
@@ -1966,176 +1949,188 @@ public final class Frame {
     return bs;
   }
 
-  
-  BitSet getHydrogenSet() {
-    BitSet bsHydrogen = new BitSet();
+  private BitSet getHeteroSet() {
+    BitSet bs = new BitSet();
+    for (int i = atomCount; --i >= 0;)
+      if (atoms[i].isHetero())
+        bs.set(i);
+    return bs;
+  }
+
+  private BitSet getHydrogenSet() {
+    BitSet bs = new BitSet();
     for (int i = atomCount; --i >= 0;) {
       if (atoms[i].getElementNumber() == 1)
-        bsHydrogen.set(i);
+        bs.set(i);
     }
-    return bsHydrogen;
+    return bs;
   }
 
-  BitSet getProteinSet() {
-    BitSet bsProtein = new BitSet();
+  private BitSet getProteinSet() {
+    BitSet bs = new BitSet();
     for (int i = atomCount; --i >= 0;)
       if (atoms[i].isProtein())
-        bsProtein.set(i);
-    return bsProtein;
+        bs.set(i);
+    return bs;
   }
 
-  BitSet getCarbohydrateSet() {
-    BitSet bsCHO = new BitSet();
+  private BitSet getCarbohydrateSet() {
+    BitSet bs = new BitSet();
     for (int i = atomCount; --i >= 0;)
       if (atoms[i].isCarbohydrate())
-        bsCHO.set(i);
-    return bsCHO;
+        bs.set(i);
+    return bs;
   }
 
-  BitSet getNucleicSet() {
-    BitSet bsNucleic = new BitSet();
+  private BitSet getNucleicSet() {
+    BitSet bs = new BitSet();
     for (int i = atomCount; --i >= 0;)
       if (atoms[i].isNucleic())
-        bsNucleic.set(i);
-    return bsNucleic;
+        bs.set(i);
+    return bs;
   }
 
-  BitSet getDnaSet() {
-    BitSet bsDna = new BitSet();
+  private BitSet getDnaSet() {
+    BitSet bs = new BitSet();
     for (int i = atomCount; --i >= 0;)
       if (atoms[i].isDna())
-        bsDna.set(i);
-    return bsDna;
+        bs.set(i);
+    return bs;
   }
 
-  BitSet getRnaSet() {
-    BitSet bsRna = new BitSet();
+  private BitSet getRnaSet() {
+    BitSet bs = new BitSet();
     for (int i = atomCount; --i >= 0;)
       if (atoms[i].isRna())
-        bsRna.set(i);
-    return bsRna;
+        bs.set(i);
+    return bs;
   }
 
-  BitSet getPurineSet() {
-    BitSet bsPurine = new BitSet();
+  private BitSet getPurineSet() {
+    BitSet bs = new BitSet();
     for (int i = atomCount; --i >= 0;)
       if (atoms[i].isPurine())
-        bsPurine.set(i);
-    return bsPurine;
+        bs.set(i);
+    return bs;
   }
 
-  BitSet getPyrimidineSet() {
-    BitSet bsPyrimidine = new BitSet();
+  private BitSet getPyrimidineSet() {
+    BitSet bs = new BitSet();
     for (int i = atomCount; --i >= 0;)
       if (atoms[i].isPyrimidine())
-        bsPyrimidine.set(i);
-    return bsPyrimidine;
+        bs.set(i);
+    return bs;
   }
-
-  BitSet getAtomBits(String setType, int specInfo) {
-    if (setType.equals("SpecResid"))
-      return getSpecResid(specInfo);
-    if (setType.equals("SpecSeqcode"))
-      return getSpecSeqcode(specInfo);
-    if (setType.equals("SpecChain"))
-      return getSpecChain((char) specInfo);
-    if (setType.equals("atomno"))
-      return getSpecAtomNumber(specInfo);
+  
+  /**
+   * general lookup for String type
+   * @param setType
+   * @param specInfo
+   * @return BitSet or null in certain cases
+   */
+  BitSet getAtomBits(String setType, String specInfo) {
+    if (setType.equals("IdentifierOrNull"))
+      return getIdentifierOrNull(specInfo);
+    if (setType.equals("SpecAtom"))
+      return getSpecAtom(specInfo, true);
+    if (setType.equals("SpecName"))
+      return getSpecName(specInfo);
+    if (setType.equals("SpecAlternate"))
+      return getSpecAlternate(specInfo);
+    if (setType.equals("SpecModel"))
+      return getSpecModel(specInfo);
     return null;
   }
 
-  BitSet getSpecName(String resNameSpec) {
-    BitSet bsRes = new BitSet();
+  private BitSet getIdentifierOrNull(String identifier) {
+    //a primitive lookup scheme when [ ] are not used
+    //nam
+    //nam45
+    //nam45C
+    //nam45^A
+    //nam45^AC -- note, no colon here -- if present, handled separately
+
+    BitSet bs;
+    int pt = 0;
+    int len = identifier.length();
+    while (pt < len && Character.isLetter(identifier.charAt(pt)))
+      ++pt;
+    if (pt > 3)
+      return null;
+    if ((bs = getSpecGroupNameOrNull(identifier.substring(0, pt))) == null) {
+      if ((bs = getSpecAtom(identifier, false)) != null)
+        return bs;
+      return null;
+    }
+    if (pt == len)
+      return bs;
+    //
+    // look for a sequence code
+    // for now, only support a sequence number
+    //
+    int pt0 = pt;
+    while (pt < len && Character.isDigit(identifier.charAt(pt)))
+      ++pt;
+    int seqNumber = 0;
+    try {
+      seqNumber = Integer.parseInt(identifier.substring(pt0, pt));
+    } catch (NumberFormatException nfe) {
+      return null;
+    }
+    char insertionCode = ' ';
+    if (pt < len && identifier.charAt(pt) == '^') {
+      if (++pt == len)
+        return null;
+      insertionCode = identifier.charAt(pt);
+    }
+    int seqcode = Group.getSeqcode(seqNumber, insertionCode);
+    BitSet bsInsert = getSpecSeqcode(seqcode, false);
+    if (bsInsert == null) {
+      if (insertionCode != ' ')
+        bsInsert = getSpecSeqcode(
+            (identifier.toUpperCase()).charAt(pt), false);
+      if (bsInsert == null)
+        return null;
+      pt++;
+    }
+    bs.and(bsInsert);
+    if (pt == len)
+      return bs;
+    //
+    // look for a chain spec -- no colon
+    //
+    char chainID = identifier.charAt(pt++);
+    bs.and(getSpecChain(chainID));
+    if (pt == len)
+      return bs;
+    //
+    // not applicable
+    //
+    return null;
+  }
+
+  private BitSet getSpecAtom(String atomSpec, boolean returnEmpty) {
+    BitSet bs = new BitSet();
+    boolean isEmpty = true;
+    for (int i = atomCount; --i >= 0;) {
+      if (atoms[i].isAtomNameMatch(atomSpec)) {
+        bs.set(i);
+        isEmpty = false;
+      }
+    }
+    return (!isEmpty || returnEmpty ? bs : null);
+  }
+
+  private BitSet getSpecName(String resNameSpec) {
+    BitSet bs = new BitSet();
     for (int i = atomCount; --i >= 0;) {
       if (atoms[i].isGroup3Match(resNameSpec))
-        bsRes.set(i);
+        bs.set(i);
     }
-    return bsRes;
+    return bs;
   }
 
-  BitSet getSpecAtomNumber(int atomno) {
-    BitSet bsRes = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].getAtomNumber() == atomno)
-        bsRes.set(i);
-    }
-    return bsRes;
-  }
-
-  BitSet getSpecResid(int resid) {
-    BitSet bsRes = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].getGroupID() == resid)
-        bsRes.set(i);
-    }
-    return bsRes;
-  }
-
-  BitSet getSpecSeqcode(int seqcode) {
-    BitSet bsResno = new BitSet();
-    int seqNum = (seqcode >> 8);
-    char insCode = Group.getInsertionCode(seqcode);
-    switch (insCode) {
-    case '?':
-      for (int i = atomCount; --i >= 0;) {
-        int atomSeqcode = atoms[i].getSeqcode();
-        if ((seqNum == 0 || seqNum == (atomSeqcode >> 8))
-            && (atomSeqcode & 0xFF) != 0)
-          bsResno.set(i);
-      }
-      break;
-    default:
-      for (int i = atomCount; --i >= 0;) {
-        int atomSeqcode = atoms[i].getSeqcode();
-        if (seqcode == atomSeqcode || seqNum == 0
-            && seqcode == (atomSeqcode & 0xFF) || insCode == '*'
-            && seqNum == (atomSeqcode >> 8))
-          bsResno.set(i);
-      }
-    }
-    return bsResno;
-  }
-
-  BitSet getSpecChain(char chain) {
-    boolean caseSensitive = viewer.getChainCaseSensitive();
-    if (!caseSensitive)
-      chain = Character.toUpperCase(chain);
-    BitSet bsChain = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      char ch = atoms[i].getChainID();
-      if (!caseSensitive)
-        ch = Character.toUpperCase(ch);
-      if (chain == ch)
-        bsChain.set(i);
-    }
-    return bsChain;
-  }
-
-  BitSet getSpecSeqcodeRange(int seqcodeA, int seqcodeB) {
-    BitSet bsResidue = new BitSet();
-    selectSeqcodeRange(seqcodeA, seqcodeB, bsResidue);
-    return bsResidue;
-  }
-
-  BitSet getSpecAtom(String atomSpec) {
-    BitSet bsAtom = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].isAtomNameMatch(atomSpec))
-        bsAtom.set(i);
-    }
-    return bsAtom;
-  }
-
-  BitSet getResidueWildcard(String strWildcard) {
-    BitSet bsResidue = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].isGroup3Match(strWildcard))
-        bsResidue.set(i);
-    }
-    return bsResidue;
-  }
-
-  BitSet getSpecAlternate(String alternateSpec) {
+  private BitSet getSpecAlternate(String alternateSpec) {
     BitSet bs = new BitSet();
     for (int i = atomCount; --i >= 0;) {
       if (atoms[i].isAlternateLocationMatch(alternateSpec))
@@ -2144,7 +2139,7 @@ public final class Frame {
     return bs;
   }
 
-  BitSet getSpecModel(String modelTag) {
+  private BitSet getSpecModel(String modelTag) {
     int modelNumber = -1;
     try {
       modelNumber = Integer.parseInt(modelTag);
@@ -2153,36 +2148,125 @@ public final class Frame {
     return getModelAtomBitSet(getModelNumberIndex(modelNumber));
   }
 
-  BitSet lookupPotentialGroupName(String potentialGroupName) {
-    BitSet bsResult = null;
+  private BitSet getSpecGroupNameOrNull(String groupName) {
+    BitSet bs = null;
     for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].isGroup3(potentialGroupName)) {
-        if (bsResult == null)
-          bsResult = new BitSet(i + 1);
-        bsResult.set(i);
+      if (atoms[i].isGroup3(groupName)) {
+        if (bs == null)
+          bs = new BitSet(i + 1);
+        bs.set(i);
       }
     }
-    return bsResult;
-  }
-
-  BitSet getVisibleSiteBitSet(int atomIndex) {
-    // only from user picking
-    BitSet bs = getVisibleSet();
-    int atomSite = atoms[atomIndex].atomSite;
-    for (int i = 0; i < atomCount; i++)
-      if (bs.get(i) && (atoms[i].atomSite != atomSite || atoms[i].madAtom == 0))
-        bs.clear(i);
     return bs;
   }
 
-  BitSet getVisibleElementBitSet(int atomIndex) {
-    // only from user picking
-    BitSet bs = getVisibleSet();
-    int n = atoms[atomIndex].getElementNumber();
-    for (int i = 0; i < atomCount; i++)
-      if (bs.get(i)
-          && (atoms[i].getElementNumber() != n || atoms[i].madAtom == 0))
-        bs.clear(i);
+  /**
+   * general lookup for integer type -- from Eval
+   * @param setType   
+   * @param specInfo  
+   * @return bitset; null only if we mess up with name
+   */
+  BitSet getAtomBits(String setType, int specInfo) {
+    if (setType.equals("SpecResid"))
+      return getSpecResid(specInfo);
+    if (setType.equals("SpecSeqcode"))
+      return getSpecSeqcode(specInfo, true);
+    if (setType.equals("SpecChain"))
+      return getSpecChain((char) specInfo);
+    if (setType.equals("atomno"))
+      return getSpecAtomNumber(specInfo);
+    return null;
+  }
+
+  private BitSet getSpecResid(int resid) {
+    BitSet bs = new BitSet();
+    for (int i = atomCount; --i >= 0;) {
+      if (atoms[i].getGroupID() == resid)
+        bs.set(i);
+    }
+    return bs;
+  }
+
+  private BitSet getSpecSeqcode(int seqcode, boolean returnEmpty) {
+    BitSet bs = new BitSet();
+    int seqNum = (seqcode >> 8);
+    boolean isEmpty = true;
+    char insCode = Group.getInsertionCode(seqcode);
+    switch (insCode) {
+    case '?':
+      for (int i = atomCount; --i >= 0;) {
+        int atomSeqcode = atoms[i].getSeqcode();
+        if ((seqNum == 0 || seqNum == (atomSeqcode >> 8))
+            && (atomSeqcode & 0xFF) != 0) {
+          bs.set(i);
+          isEmpty = false;
+        }
+      }
+      break;
+    default:
+      for (int i = atomCount; --i >= 0;) {
+        int atomSeqcode = atoms[i].getSeqcode();
+        if (seqcode == atomSeqcode || seqNum == 0
+            && seqcode == (atomSeqcode & 0xFF) || insCode == '*'
+            && seqNum == (atomSeqcode >> 8)) {
+          bs.set(i);
+          isEmpty = false;
+        }
+      }
+    }
+    return (!isEmpty || returnEmpty ? bs : null);
+  }
+
+  private BitSet getSpecChain(char chain) {
+    boolean caseSensitive = viewer.getChainCaseSensitive();
+    if (!caseSensitive)
+      chain = Character.toUpperCase(chain);
+    BitSet bs = new BitSet();
+    for (int i = atomCount; --i >= 0;) {
+      char ch = atoms[i].getChainID();
+      if (!caseSensitive)
+        ch = Character.toUpperCase(ch);
+      if (chain == ch)
+        bs.set(i);
+    }
+    return bs;
+  }
+
+  private BitSet getSpecAtomNumber(int atomno) {
+    BitSet bs = new BitSet();
+    for (int i = atomCount; --i >= 0;) {
+      if (atoms[i].getAtomNumber() == atomno)
+        bs.set(i);
+    }
+    return bs;
+  }
+
+  /**
+   * general lookup involving a range
+   * @param setType
+   * @param specInfo
+   * @return BitSet; or null if mess up with type
+   */
+  BitSet getAtomBits(String setType, int[] specInfo) {
+    if (setType.equals("SpecSeqcodeRange"))
+      return getSpecSeqcodeRange(specInfo[0], specInfo[1]);
+    if (setType.equals("Cell"))
+      return getCellSet(specInfo[0], specInfo[1], specInfo[2]);
+    return null;
+  }
+
+  private BitSet getSpecSeqcodeRange(int seqcodeA, int seqcodeB) {
+    BitSet bs = new BitSet();
+    mmset.selectSeqcodeRange(seqcodeA, seqcodeB, bs);
+    return bs;
+  }
+
+  private BitSet getCellSet(int ix, int jy, int kz) {
+    BitSet bs = new BitSet();
+    Point3f cell = new Point3f(ix / 1000f, jy / 1000f, kz / 1000f);
+    for (int i = atomCount; --i >= 0;)
+      if (atoms[i].isInLatticeCell(cell))
+        bs.set(i);
     return bs;
   }
 
@@ -2608,22 +2692,6 @@ public final class Frame {
         n += mmset.getModel(i).moleculeCount;
     }
     return n;
-  }
-
-  BitSet getGroupBitSet(int atomIndex) {
-    BitSet bsGroup = new BitSet();
-    atoms[atomIndex].group.selectAtoms(bsGroup);
-    return bsGroup;
-  }
-
-  BitSet getChainBitSet(int atomIndex) {
-    BitSet bsChain = new BitSet();
-    atoms[atomIndex].group.chain.selectAtoms(bsChain);
-    return bsChain;
-  }
-
-  void selectSeqcodeRange(int seqcodeA, int seqcodeB, BitSet bs) {
-    mmset.selectSeqcodeRange(seqcodeA, seqcodeB, bs);
   }
 
   ////////////////////////////////////////////////////////////////

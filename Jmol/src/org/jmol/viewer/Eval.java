@@ -936,29 +936,13 @@ class Eval { //implements Runnable {
       case Token.pyrimidine:
         stack[sp++] = viewer.getAtomBits((String) instruction.value);
         break;
-      case Token.spec_name_pattern:
-        stack[sp++] = viewer
-            .getAtomBits("SpecName", (String) instruction.value);
-        break;
-      case Token.spec_resid:
-        stack[sp++] = viewer.getAtomBits("SpecResid", instruction.intValue);
-        break;
-      case Token.spec_seqcode:
-        stack[sp++] = viewer.getAtomBits("SpecSeqcode", instruction.intValue);
-        break;
-      case Token.spec_seqcode_range:
-        int seqcodeA = instruction.intValue;
-        int seqcodeB = ((Integer) instruction.value).intValue();
-        stack[sp++] = viewer.getAtomBits("SpecSeqcodeRange", new int[] {
-            seqcodeA, seqcodeB });
-        break;
-
-      case Token.spec_chain:
-        stack[sp++] = viewer.getAtomBits("SpecChain", instruction.intValue);
-        break;
       case Token.spec_atom:
         stack[sp++] = viewer
             .getAtomBits("SpecAtom", (String) instruction.value);
+        break;
+      case Token.spec_name_pattern:
+        stack[sp++] = viewer
+            .getAtomBits("SpecName", (String) instruction.value);
         break;
       case Token.spec_alternate:
         stack[sp++] = viewer.getAtomBits("SpecAlternate",
@@ -967,6 +951,21 @@ class Eval { //implements Runnable {
       case Token.spec_model:
         stack[sp++] = viewer.getAtomBits("SpecModel",
             (String) instruction.value);
+        break;
+      case Token.spec_resid:
+        stack[sp++] = viewer.getAtomBits("SpecResid", instruction.intValue);
+        break;
+      case Token.spec_seqcode:
+        stack[sp++] = viewer.getAtomBits("SpecSeqcode", instruction.intValue);
+        break;
+      case Token.spec_chain:
+        stack[sp++] = viewer.getAtomBits("SpecChain", instruction.intValue);
+        break;
+      case Token.spec_seqcode_range:
+        int seqcodeA = instruction.intValue;
+        int seqcodeB = ((Integer) instruction.value).intValue();
+        stack[sp++] = viewer.getAtomBits("SpecSeqcodeRange", new int[] {
+            seqcodeA, seqcodeB });
         break;
       case Token.cell:
         Point3f pt = (Point3f) instruction.value;
@@ -1025,64 +1024,14 @@ class Eval { //implements Runnable {
     // identifiers must be handled as a hack
     // the expression 'select c1a' might be [c]1:a or might be a 'define c1a
     // ...'
-    BitSet bsDefinedSet = lookupValue(identifier, false);
-    if (bsDefinedSet != null)
-      return copyBitSet(bsDefinedSet); // identifier had been previously
-    // defined
-    // Logger.error("undefined & trying specname with:" + identifier);
-    // determine number of leading alpha characters
-    int alphaLen = 0;
-    int len = identifier.length();
-    while (alphaLen < len && Compiler.isAlphabetic(identifier.charAt(alphaLen)))
-      ++alphaLen;
-    if (alphaLen > 3)
+    
+    // defined sets:
+    BitSet bs = lookupValue(identifier, false);
+    if (bs != null)    // identifier had been previously defined
+      return copyBitSet(bs); 
+    if ((bs = viewer.getAtomBits("IdentifierOrNull", identifier)) == null)
       undefinedVariable(identifier);
-    String potentialGroupName = identifier.substring(0, alphaLen);
-    // Logger.debug("potentialGroupName=" + potentialGroupName);
-    // undefinedVariable();
-    BitSet bsName = viewer
-        .getAtomBits("PotentialGroupName", potentialGroupName);
-    if (bsName == null)
-      undefinedVariable(identifier);
-    if (alphaLen == len)
-      return bsName;
-    //
-    // look for a sequence code
-    // for now, only support a sequence number
-    //
-    int seqcodeEnd = alphaLen;
-    while (seqcodeEnd < len && Compiler.isDigit(identifier.charAt(seqcodeEnd)))
-      ++seqcodeEnd;
-    int seqNumber = 0;
-    try {
-      seqNumber = Integer.parseInt(identifier.substring(alphaLen, seqcodeEnd));
-    } catch (NumberFormatException nfe) {
-      undefinedVariable(identifier);
-//      evalError("identifier parser error #373");
-    }
-    char insertionCode = ' ';
-    if (seqcodeEnd < len && identifier.charAt(seqcodeEnd) == '^') {
-      ++seqcodeEnd;
-      if (seqcodeEnd == len)
-        evalError(GT._("invalid insertion code"));
-      insertionCode = identifier.charAt(seqcodeEnd++);
-    }
-    int seqcode = Group.getSeqcode(seqNumber, insertionCode);
-    BitSet bsSequence = viewer.getAtomBits("SpecSeqcode", seqcode);
-    BitSet bsNameSequence = bsName;
-    bsNameSequence.and(bsSequence);
-    if (seqcodeEnd == len)
-      return bsNameSequence;
-    //
-    // look for a chain spec ... also alpha & part of an identifier ... :-(
-    //
-    char chainID = identifier.charAt(seqcodeEnd);
-    if (++seqcodeEnd != len)
-      undefinedVariable(identifier);
-    BitSet bsChain = viewer.getAtomBits("SpecChain", (int) chainID);
-    BitSet bsNameSequenceChain = bsNameSequence;
-    bsNameSequenceChain.and(bsChain);
-    return bsNameSequenceChain;
+    return bs;  
   }
 
   BitSet lookupValue(String variable, boolean plurals) throws ScriptException {

@@ -550,13 +550,13 @@ class Compiler {
     int pt0 = ichT;
     boolean digitSeen = false;
     char ch = 'X';
-    while (ichT < cchScript && isDigit(ch = script.charAt(ichT))) {
+    while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT))) {
       ++ichT;
       digitSeen = true;
     }
     if (ichT < cchScript && ch == '.')
       ++ichT;
-    while (ichT < cchScript && isDigit(ch = script.charAt(ichT))) {
+    while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT))) {
       ++ichT;
       digitSeen = true;
     }    
@@ -578,7 +578,7 @@ class Compiler {
       ichT++;
       factor = (ch == '-'? -1 : 1);
     }    
-    while (ichT < cchScript && isDigit(ch = script.charAt(ichT))) {
+    while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT))) {
       ichT++;
       exp = (exp * 10 + ch - '0');
     }
@@ -598,7 +598,7 @@ class Compiler {
       ++ichT;
     boolean digitSeen = false;
     char ch = 'X';
-    while (ichT < cchScript && isDigit(ch = script.charAt(ichT))) {
+    while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT))) {
       ++ichT;
       digitSeen = true;
     }
@@ -607,28 +607,20 @@ class Compiler {
     // to support 1.ca, let's check the character after the dot
     // to determine if it is an alpha
     if (ch == '.' && (ichT + 1 < cchScript) &&
-        (isAlphabetic(script.charAt(ichT + 1)) || script.charAt(ichT + 1) == '?'))
+        (Character.isLetter(script.charAt(ichT + 1)) || script.charAt(ichT + 1) == '?'))
       return false;
     //well, guess what? we also have to look for 86.1Na, so...
     if (ch == '.' && (ichT + 2 < cchScript) &&
-        (isAlphabetic(script.charAt(ichT + 2)) || script.charAt(ichT + 2) == '?'))
+        (Character.isLetter(script.charAt(ichT + 2)) || script.charAt(ichT + 2) == '?'))
       return false;
 
     ++ichT;
-    while (ichT < cchScript && isDigit(script.charAt(ichT))) {
+    while (ichT < cchScript && Character.isDigit(script.charAt(ichT))) {
       ++ichT;
       digitSeen = true;
     }
     cchToken = ichT - ichToken;
     return digitSeen;
-  }
-
-  static boolean isAlphabetic(char ch) {
-    return (ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z');
-  }
-
-  static boolean isDigit(char ch) {
-    return ch >= '0' && ch <= '9';
   }
 
   boolean lookingAtSeqcode() {
@@ -639,13 +631,13 @@ class Compiler {
       ch = '^';
       ++ichT;
     } else {
-      while (ichT < cchScript && isDigit(ch = script.charAt(ichT)))
+      while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT)))
         ++ichT;
     }
     if (ichT == ichToken || ichT + 2 > cchScript || ch != '^')
       return false;
     ch = script.charAt(++ichT);
-    if (ch != '*' && ch != '?' && !isAlphabetic(ch))
+    if (ch != '*' && ch != '?' && !Character.isLetter(ch))
       return false;
     ++ichT;
     cchToken = ichT - ichToken;
@@ -659,7 +651,7 @@ class Compiler {
     if (allowNegative && script.charAt(ichToken) == '-')
       ++ichT;
     int ichBeginDigits = ichT;
-    while (ichT < cchScript && isDigit(script.charAt(ichT)))
+    while (ichT < cchScript && Character.isDigit(script.charAt(ichT)))
       ++ichT;
     if (ichBeginDigits == ichT)
       return false;
@@ -713,16 +705,15 @@ class Compiler {
         ++ichT;
       break;
     default:
-      if ((ch < 'a' || ch > 'z') && (ch < 'A' && ch > 'Z') && ch != '_')
+      if (!Character.isLetter(ch) && ch != '_')
         return false;
     case '?': // include question marks in identifier for atom expressions
       while (ichT < cchScript &&
-             (isAlphabetic(ch = script.charAt(ichT)) ||
-              isDigit(ch) ||
-              ch == '_' || ch == '?') ||
+             (Character.isLetterOrDigit(ch = script.charAt(ichT))
+                  || ch == '_' || ch == '?') ||
              // hack for insertion codes embedded in an atom expression :-(
              // select c3^a
-             (ch == '^' && ichT > ichToken && isDigit(script.charAt(ichT - 1)))
+             (ch == '^' && ichT > ichToken && Character.isDigit(script.charAt(ichT - 1)))
              )
         ++ichT;
       break;

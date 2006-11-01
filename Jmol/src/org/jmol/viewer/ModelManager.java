@@ -1405,21 +1405,7 @@ String getAtomInfoChime(int i) {
   BitSet setConformation(int modelIndex, int conformationIndex) {
     if (frame == null)
       return null;
-    BitSet bsResult = new BitSet();
-    String altLocs = getAltLocListInModel(modelIndex);
-    if (altLocs.length() > 0) {
-      BitSet bsConformation = getModelAtomBitSet(modelIndex);
-      if (conformationIndex >= 0)
-        for (int c = frame.getAltLocCountInModel(modelIndex); --c >= 0;)
-          if (c != conformationIndex)
-            bsConformation.andNot(frame.getSpecAlternate(altLocs.substring(c,
-                c + 1)));
-      if (bsConformation.length() > 0) {
-        frame.setConformation(modelIndex, bsConformation);
-        bsResult.or(bsConformation);
-      }
-    }
-    return bsResult;
+    return frame.setConformation(modelIndex, conformationIndex);
   }
 
   String getAltLocListInModel(int modelIndex) {

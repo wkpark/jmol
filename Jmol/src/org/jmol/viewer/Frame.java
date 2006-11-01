@@ -2042,6 +2042,12 @@ public final class Frame {
     return null;
   }
 
+  /**
+   * overhauled by RMH Nov 1, 2006.
+   * 
+   * @param identifier
+   * @return null or bs
+   */
   private BitSet getIdentifierOrNull(String identifier) {
     //a primitive lookup scheme when [ ] are not used
     //nam
@@ -2050,16 +2056,34 @@ public final class Frame {
     //nam45^
     //nam45^A
     //nam45^AC -- note, no colon here -- if present, handled separately
+    //na? does NOT match
+    //atom specifiers:
+    //H?
+    //H32
 
-    BitSet bs;
     int pt = 0;
     int len = identifier.length();
     while (pt < len && Character.isLetter(identifier.charAt(pt)))
       ++pt;
-    if (pt > 3)
-      return null;
-    if ((bs = getSpecGroupNameOrNull(identifier.substring(0, pt))) == null)
-      return getSpecAtom(identifier);
+    int pt2 = pt;
+    while (pt2 < len && identifier.charAt(pt2) == '?')
+      ++pt2;
+    BitSet bs;
+    if (pt == pt2) {
+      if (pt > 3)
+        return null;
+      String name = identifier.substring(0, pt);
+      bs = getSpecName(name);
+      //this next is for backward compatibility with 
+      //single file PDB so that "I" and "C" don't return atoms iodine and carbon
+      bs.or(getSpecAtomIfNoGroup3(name));      
+    } else {
+      //if question mark is present, then we don't try to match the group name
+      //because we never allow wildcards there
+      //and we allow any atom name match
+      bs = getSpecAtom(identifier.substring(0, pt2));
+      pt = pt2;
+    }
     if (pt == len)
       return bs;
     //
@@ -2083,8 +2107,8 @@ public final class Frame {
     BitSet bsInsert = getSpecSeqcode(seqcode, false);
     if (bsInsert == null) {
       if (insertionCode != ' ')
-        bsInsert = getSpecSeqcode(
-            (identifier.toUpperCase()).charAt(pt), false);
+        bsInsert = getSpecSeqcode(Character.toUpperCase(identifier.charAt(pt)),
+            false);
       if (bsInsert == null)
         return null;
       pt++;
@@ -2107,8 +2131,20 @@ public final class Frame {
 
   private BitSet getSpecAtom(String atomSpec) {
     BitSet bs = new BitSet();
-   for (int i = atomCount; --i >= 0;) {
+    atomSpec = atomSpec.toUpperCase();
+    for (int i = atomCount; --i >= 0;) {
       if (atoms[i].isAtomNameMatch(atomSpec)) {
+        bs.set(i);
+      }
+    }
+    return bs;
+  }
+
+  private BitSet getSpecAtomIfNoGroup3(String atomSpec) {
+    BitSet bs = new BitSet();
+    atomSpec = atomSpec.toUpperCase();
+    for (int i = atomCount; --i >= 0;) {
+      if (atoms[i].getGroup3().length() == 0 && atoms[i].isAtomNameMatch(atomSpec)) {
         bs.set(i);
       }
     }
@@ -2140,18 +2176,6 @@ public final class Frame {
     } catch (NumberFormatException nfe) {
     }
     return getModelAtomBitSet(getModelNumberIndex(modelNumber));
-  }
-
-  private BitSet getSpecGroupNameOrNull(String groupName) {
-    BitSet bs = null;
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].isGroup3(groupName)) {
-        if (bs == null)
-          bs = new BitSet(i + 1);
-        bs.set(i);
-      }
-    }
-    return bs;
   }
 
   /**

@@ -443,13 +443,18 @@ final public class Atom extends Point3fi implements Tuple {
     return group.getResno();   
   }
   
+  /**
+   * matches atom name possibly with wildcard
+   * @param strPattern  -- for efficiency, upper case already
+   * @return true/false
+   */
   boolean isAtomNameMatch(String strPattern) {
     String atomName = getAtomNameOrNull();
     int cchAtomName = atomName == null ? 0 : atomName.length();
     int cchPattern = strPattern.length();
     int ich;
     for (ich = 0; ich < cchPattern; ++ich) {
-      char charWild = Character.toUpperCase(strPattern.charAt(ich));
+      char charWild = strPattern.charAt(ich);
       if (charWild == '?')
         continue;
       if (ich >= cchAtomName ||

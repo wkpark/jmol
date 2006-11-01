@@ -106,6 +106,7 @@ class GamessReader extends AtomSetCollectionReader {
     readLine(); // discard one line
     String atomName;
     atomSetCollection.newAtomSet();
+    int n = 0;
     while (readLine() != null
         && (atomName = parseToken(line, 1, 6)) != null) {
       float x = parseFloat(line, 17, 37);
@@ -114,7 +115,7 @@ class GamessReader extends AtomSetCollectionReader {
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         break;
       Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = atomName;
+      atom.atomName = atomName + (++n);
       atom.x = x * angstromsPerBohr;
       atom.y = y * angstromsPerBohr;
       atom.z = z * angstromsPerBohr;
@@ -136,6 +137,7 @@ class GamessReader extends AtomSetCollectionReader {
 0123456789012345678901234567890123456789012345678901234567890
 
 */
+    int n = 0;
     while (readLine() != null
         && (atomName = parseToken(line, 1, 6)) != null) {
       float x = parseFloat(line, 16, 31);
@@ -144,7 +146,7 @@ class GamessReader extends AtomSetCollectionReader {
       if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
         break;
       Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = atomName;
+      atom.atomName = atomName + (++n);
       atom.x = x;
       atom.y = y;
       atom.z = z;

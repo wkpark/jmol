@@ -743,7 +743,7 @@ public final class Frame {
 
     ////////////////////////////////////////////////////////////////
     //
-    hackAtomSerialNumbersForAnimations();
+    setAtomNamesAndNumbers();
 
     ////////////////////////////////////////////////////////////////
     // find things for the popup menus
@@ -798,22 +798,30 @@ public final class Frame {
     isZeroBased = isXYZ && viewer.getZeroBasedXyzRasmol();
   }
 
-  void hackAtomSerialNumbersForAnimations() {
+  private void setAtomNamesAndNumbers() {
     // first, validate that all atomSerials are NaN
-    if (atomSerials != null)
-      return;
-    // now, we'll assign 1-based atom numbers within each model
-    int lastModelIndex = Integer.MAX_VALUE;
-    int modelAtomIndex = 0;
-    atomSerials = new int[atomCount];
-    for (int i = 0; i < atomCount; ++i) {
-      Atom atom = atoms[i];
-      if (atom.modelIndex != lastModelIndex) {
-        lastModelIndex = atom.modelIndex;
-        modelAtomIndex = (isZeroBased ? 0 : 1);
+    if (atomSerials == null) {
+      // now, we'll assign 1-based atom numbers within each model
+      int lastModelIndex = Integer.MAX_VALUE;
+      int modelAtomIndex = 0;
+      atomSerials = new int[atomCount];
+      for (int i = 0; i < atomCount; ++i) {
+        Atom atom = atoms[i];
+        if (atom.modelIndex != lastModelIndex) {
+          lastModelIndex = atom.modelIndex;
+          modelAtomIndex = (isZeroBased ? 0 : 1);
+        }
+        atomSerials[i] = modelAtomIndex++;
       }
-      atomSerials[i] = modelAtomIndex++;
     }
+    if (atomNames == null)
+      atomNames = new String[atomCount];
+    for (int i = 0; i < atomCount; ++i)
+      if (atomNames[i] == null) {
+        Atom atom = atoms[i];
+        atomNames[i] = atom.getElementSymbol() + atom.getAtomNumber();
+        System.out.println("atom " + i + " " + atomNames[i]);
+      }
   }
 
   void defineStructure(int modelIndex, String structureType, char startChainID,
@@ -2051,44 +2059,38 @@ public final class Frame {
   private BitSet getIdentifierOrNull(String identifier) {
     //a primitive lookup scheme when [ ] are not used
     //nam
+    //na?
     //nam45
     //nam45C
     //nam45^
     //nam45^A
     //nam45^AC -- note, no colon here -- if present, handled separately
-    //na? does NOT match
+    //nam4? does NOT match anything for PDB files, but might for others
     //atom specifiers:
     //H?
     //H32
+    //H3?
 
-    int pt = 0;
+    //in the case of a ?, we take the whole thing
+
+    BitSet bs = getSpecNameOrNull(identifier);
+    if (bs != null || identifier.indexOf("?") > 0)
+      return bs;
+    
+    int pt = identifier.indexOf("*");
+    if (pt > 0)
+      return getSpecNameOrNull(identifier.substring(0,pt) + "??????????" + identifier.substring(pt + 1));
     int len = identifier.length();
+    pt = 0;
     while (pt < len && Character.isLetter(identifier.charAt(pt)))
       ++pt;
-    int pt2 = pt;
-    while (pt2 < len && identifier.charAt(pt2) == '?')
-      ++pt2;
-    BitSet bs;
-    if (pt == pt2) {
-      if (pt > 3)
-        return null;
-      String name = identifier.substring(0, pt);
-      bs = getSpecName(name);
-      //this next is for backward compatibility with 
-      //single file PDB so that "I" and "C" don't return atoms iodine and carbon
-      bs.or(getSpecAtomIfNoGroup3(name));      
-    } else {
-      //if question mark is present, then we don't try to match the group name
-      //because we never allow wildcards there
-      //and we allow any atom name match
-      bs = getSpecAtom(identifier.substring(0, pt2));
-      pt = pt2;
-    }
+    bs = getSpecNameOrNull(identifier.substring(0, pt));
     if (pt == len)
       return bs;
+    if (bs == null)
+      bs = new BitSet();
     //
-    // look for a sequence code
-    // for now, only support a sequence number
+    // look for a sequence number or sequence number ^ insertion code
     //
     int pt0 = pt;
     while (pt < len && Character.isDigit(identifier.charAt(pt)))
@@ -2140,21 +2142,24 @@ public final class Frame {
     return bs;
   }
 
-  private BitSet getSpecAtomIfNoGroup3(String atomSpec) {
-    BitSet bs = new BitSet();
-    atomSpec = atomSpec.toUpperCase();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].getGroup3().length() == 0 && atoms[i].isAtomNameMatch(atomSpec)) {
-        bs.set(i);
-      }
+  private BitSet getSpecName(String name) {
+    BitSet bs = getSpecNameOrNull(name);
+    if (bs != null)
+      return bs;
+    int pt = name.indexOf("*");
+    if (pt > 0) {
+      bs = getSpecNameOrNull(name.substring(0,pt) + "??????????" + name.substring(pt + 1));
     }
-    return bs;
+    return (bs == null ? new BitSet() : bs);
   }
 
-  private BitSet getSpecName(String resNameSpec) {
-    BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].isGroup3Match(resNameSpec))
+  private BitSet getSpecNameOrNull(String name) {
+    BitSet bs = null;
+    name = name.toUpperCase();
+    for (int i = atomCount; --i >= 0;)
+      if (atoms[i].isGroup3OrNameMatch(name)) {
+        if (bs == null)
+          bs = new BitSet(i + 1);
         bs.set(i);
     }
     return bs;

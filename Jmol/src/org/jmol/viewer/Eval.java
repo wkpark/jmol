@@ -1021,14 +1021,16 @@ class Eval { //implements Runnable {
   }
 
   BitSet lookupIdentifierValue(String identifier) throws ScriptException {
-    // identifiers must be handled as a hack
-    // the expression 'select c1a' might be [c]1:a or might be a 'define c1a
-    // ...'
+    // all variables and possible residue names for PDB
+    // or atom names for non-pdb atoms are processed here.
     
-    // defined sets:
+    // priority is given to a defined variable.
+    
     BitSet bs = lookupValue(identifier, false);
-    if (bs != null)    // identifier had been previously defined
+    if (bs != null)
       return copyBitSet(bs); 
+
+    // next we look for names of groups (PDB) or atoms (non-PDB)
     bs = viewer.getAtomBits("IdentifierOrNull", identifier);
     return (bs == null ? new BitSet() : bs);
   }

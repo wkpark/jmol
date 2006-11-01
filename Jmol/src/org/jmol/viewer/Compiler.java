@@ -711,12 +711,15 @@ class Compiler {
         ++ichT;
       break;
     default:
-      if (!Character.isLetter(ch) && ch != '_')
+      if (!Character.isLetter(ch))
         return false;
+      //fall through
+    case '~':
+    case '_':
     case '?': // include question marks in identifier for atom expressions
       while (ichT < cchScript &&
              (Character.isLetterOrDigit(ch = script.charAt(ichT))
-                  || ch == '_' || ch == '?') ||
+                  || ch == '_' || ch == '?' || ch == '~') ||
              // hack for insertion codes embedded in an atom expression :-(
              // select c3^a
              (ch == '^' && ichT > ichToken && Character.isDigit(script.charAt(ichT - 1)))
@@ -738,16 +741,16 @@ class Compiler {
     return compileError("command expected: " + cmd.substring(0, i));
   }
   private boolean cannotSet(String ident) {
-    return compileError("cannot SET:" + ident);
+    return compileError("cannot SET: " + ident);
   }
   private boolean cannotShow(String ident) {
-    return compileError("cannot SHOW:" + ident);
+    return compileError("cannot SHOW: " + ident);
   }
   private boolean invalidExpressionToken(String ident) {
-    return compileError("invalid expression token:" + ident);
+    return compileError("invalid expression token: " + ident);
   }
   private boolean unrecognizedToken(String ident) {
-    return compileError("unrecognized token" + ident);
+    return compileError("unrecognized token: " + ident);
   }
   private boolean badArgumentCount() {
     return compileError("bad argument count");
@@ -810,7 +813,7 @@ class Compiler {
     return compileError("identifier or residue specification expected");
   }
   private boolean residueSpecificationExpected() {
-    return compileError("3 letter residue specification expected");
+    return compileError("residue specification (ALA, AL?, A*) expected");
   }
   /*
   private boolean resnumSpecificationExpected() {
@@ -1343,9 +1346,14 @@ class Compiler {
     int tok = tokPeek();
     if (tok == Token.asterisk ||
         tok == Token.leftsquare ||
-        tok == Token.identifier ||
-        tok == Token.set) {
-      log("I see a residue name");
+        tok == Token.identifier) {
+      
+      //note: there are many groups that could
+      //in principle be escaped here, for example:
+      //"AND" "SET" and others
+      //rather than do this, just have people
+      //use [AND] [SET], which is no problem.
+      
       if (! clauseResNameSpec())
         return false;
       specSeen = true;
@@ -1355,7 +1363,6 @@ class Compiler {
         tok == Token.hyphen ||
         tok == Token.integer ||
         tok == Token.seqcode) {
-      log("I see a residue number");
       if (! clauseResNumSpec())
         return false;
       specSeen = true;
@@ -1399,121 +1406,46 @@ class Compiler {
   }
 
   boolean clauseResNameSpec() {
-    int tokPeek = tokPeek();
-    if (tokPeek == Token.asterisk) {
+    if (tokPeek() == Token.asterisk) {
       tokenNext();
       return true;
     }
     Token tokenT = tokenNext();
-    if (tokenT == null) 
+    if (tokenT == null)
       return false;
     if (tokenT.tok == Token.leftsquare) {
-      log("I see a left square bracket");
-      // FIXME mth -- maybe need to deal with asterisks here too
-      tokenT = tokenNext(); 
-      if (tokenT == null) 
-        return false;
       String strSpec = "";
-      if (tokenT.tok == Token.plus) {
-        strSpec = "+";
-        tokenT = tokenNext();
-        if (tokenT == null) 
-          return false;
-      }
-      // what a hack :-(
-      int tok = tokenT.tok;
-      if (tok == Token.integer) {
+      int tok = 0;
+      while ((tokenT = tokenNext()) != null && tokenT.tok != Token.rightsquare) {
         strSpec += tokenT.value;
-        tokenT = tokenNext();
-        if (tokenT == null) 
-          return false;
-        tok = tokenT.tok;
       }
-      if (tok == Token.identifier || tok == Token.set) {
-        strSpec += tokenT.value;
-        tokenT = tokenNext();
-        if (tokenT == null) 
-          return false;
-        tok = tokenT.tok;
-      }
+      tok = tokenT.tok;
       if (tok != Token.rightsquare)
         return false;
       if (strSpec == "")
+        return true;
+      int pt;
+      if (strSpec.length() > 0 && (pt = strSpec.indexOf("*")) >= 0
+          && pt != strSpec.length() - 1)
         return residueSpecificationExpected();
       strSpec = strSpec.toUpperCase();
-      int groupID = Group.lookupGroupID(strSpec);
-      if (groupID != -1)
-        generateResidueSpecCode(new Token(Token.spec_resid, groupID, strSpec));
-      else
-        generateResidueSpecCode(new Token(Token.spec_name_pattern, strSpec));
-      return true;
+      return generateResidueSpecCode(new Token(Token.spec_name_pattern, strSpec));
     }
-    return processIdentifier(tokenT);
-  }
 
-  boolean processIdentifier(Token tokenIdent) {
-    // OK, the kludge here is that in the general case, it is not
-    // possible to distinguish between an identifier and an atom expression
-    if (tokenIdent.tok != Token.identifier)
+    // no [ ]:
+
+    if (tokenT.tok != Token.identifier)
       return identifierOrResidueSpecificationExpected();
-    String strToken = (String)tokenIdent.value;
-    log("processing identifier:" + strToken);
-    int cchToken = strToken.length();
 
-    // too short to be an atom specification? 
-    if (cchToken < 3)
-      return generateResidueSpecCode(tokenIdent);
-    // has characters where there should be digits?
-    // but don't look at last character because it could be chain spec
-    for (int i = 3; i < cchToken-1; ++i)
-      if (!Character.isDigit(strToken.charAt(i)))
-        return generateResidueSpecCode(tokenIdent);
-    log("still here looking at:" + strToken);
+    //check for a * in the next token, which
+    //would indicate this must be a name with wildcard
 
-    // still might be an identifier ... so be careful
-    int seqcode = -1;
-    char chain = '?';
-    if (cchToken > 3) {
-      // let's take a look at the last character
-      String strResno;
-      char chLast = strToken.charAt(cchToken-1);
-      log("the last character is:" + chLast);
-      if (Character.isDigit(chLast)) {
-        strResno = strToken.substring(3);
-        log("strResNo=" + strResno);
-      } else {
-        chain = chLast;
-        strResno = strToken.substring(3, cchToken - 1);
-      }
-      try {
-        int sequenceNum = Integer.parseInt(strResno);
-        log("I parsed sequenceNum=" + sequenceNum);
-        seqcode = Group.getSeqcode(sequenceNum, ' ');
-      } catch (NumberFormatException e) {
-        return generateResidueSpecCode(tokenIdent);
-      }
+    if (tokPeek() == Token.asterisk) {
+      tokenNext();
+      return generateResidueSpecCode(new Token(Token.identifier,
+          tokenT.value + "*"));
     }
-    String strUpper3 = strToken.substring(0, 3).toUpperCase();
-    int groupID;
-    if (strUpper3.charAt(0) == '?' ||
-        strUpper3.charAt(1) == '?' ||
-        strUpper3.charAt(2) == '?') {
-      generateResidueSpecCode(new Token(Token.spec_name_pattern, strUpper3));
-    } else if ((groupID = Group.lookupGroupID(strUpper3)) != -1) {
-      generateResidueSpecCode(new Token(Token.spec_resid, groupID, strUpper3));
-    } else {
-      return generateResidueSpecCode(tokenIdent);
-    }
-    log(" I see a residue name:" + strUpper3 +
-                       " seqcode=" + seqcode +
-                       " chain=" + chain);
-
-    if (seqcode != -1)
-      generateResidueSpecCode(new Token(Token.spec_seqcode,
-                                        seqcode, "spec_seqcode"));
-    if (chain != '?')
-      generateResidueSpecCode(new Token(Token.spec_chain, chain, "spec_chain"));
-    return true;
+    return generateResidueSpecCode(tokenT);
   }
 
   boolean clauseResNumSpec() {

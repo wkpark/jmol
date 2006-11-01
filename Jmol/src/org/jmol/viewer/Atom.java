@@ -442,7 +442,12 @@ final public class Atom extends Point3fi implements Tuple {
       return -1;
     return group.getResno();   
   }
-  
+
+  boolean isGroup3OrNameMatch(String strPattern) {
+    return (getGroup3().length() > 0 ? isGroup3Match(strPattern)
+        : isAtomNameMatch(strPattern));
+  }
+
   /**
    * matches atom name possibly with wildcard
    * @param strPattern  -- for efficiency, upper case already
@@ -810,7 +815,9 @@ final public class Atom extends Point3fi implements Tuple {
     if (group.chain.model.isPDB) { 
       try {
         return Integer.parseInt(group.chain.model.modelTag);
-      } finally {}
+      } 
+      catch (Exception e) {
+      }
     }  
     return getModelNumber();
   }

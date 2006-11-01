@@ -684,7 +684,8 @@ class Token {
     "not",          new Token(opNot, "not"),
     "!",            null,
     "xor",          new Token(opXor, "xor"),
-    "~",            null,
+//no-- don't do this; it interferes with define
+//  "~",            null,
     "tog",          new Token(opToggle, "tog"),
     ",|",           null,
     "<",            new Token(opLT, "<"),

@@ -2759,6 +2759,10 @@ public class Viewer extends JmolViewer {
   public void setBooleanProperty(String key, boolean value) {
     //Eval
     while (true) {
+      if (key.equalsIgnoreCase("traceAlpha")) {
+        setTraceAlpha(value);
+        break;
+      }
       if (key.equalsIgnoreCase("zoomLarge")) {
         setZoomLarge(value);
         break;
@@ -3182,6 +3186,14 @@ public class Viewer extends JmolViewer {
 
   boolean getZoomLarge() {
     return global.zoomLarge;
+  }
+
+  private void setTraceAlpha(boolean TF) {
+    global.traceAlpha = TF;
+  }
+
+  boolean getTraceAlpha() {
+    return global.traceAlpha;
   }
 
   private void setLabelPointerBackground(boolean TF) {

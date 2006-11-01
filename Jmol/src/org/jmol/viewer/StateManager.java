@@ -221,11 +221,11 @@ class StateManager {
     //centering and perspective
     
     boolean allowCameraMoveFlag = true;
-    boolean adjustCameraFlag = true;
+    boolean adjustCameraFlag    = true;
 
     //solvent
    
-    boolean solventOn;
+    boolean solventOn = false;
     float solventProbeRadius = 1.2f;
     
     //measurements
@@ -234,58 +234,59 @@ class StateManager {
 
     //rendering
     
-    boolean enableFullSceneAntialiasing;
-    boolean greyscaleRendering;
-    boolean zoomLarge = true; //false would be like Chime
-    boolean labelsGroupFlag;
-    boolean labelsFrontFlag;
-    boolean labelPointerBackground = true;
-    boolean labelPointerBox = true;
-    boolean labelPointerNoBox = false;
-    boolean dotsSelectedOnlyFlag;
-    boolean dotSurfaceFlag = true;
-    boolean displayCellParameters = true;
-    boolean showHiddenSelectionHalos = false;
-    boolean showMeasurements = true;
-    boolean frankOn = false;
+    boolean enableFullSceneAntialiasing = false;
+    boolean greyscaleRendering          = false;
+    boolean zoomLarge                   = true; //false would be like Chime
+    boolean labelsGroupFlag             = false;
+    boolean labelsFrontFlag             = false;
+    boolean labelPointerBackground      = true;
+    boolean labelPointerBox             = true;
+    boolean labelPointerNoBox           = false;
+    boolean dotsSelectedOnlyFlag        = false;
+    boolean dotSurfaceFlag              = true;
+    boolean displayCellParameters       = true;
+    boolean showHiddenSelectionHalos    = false;
+    boolean showMeasurements            = true;
+    boolean frankOn                     = false;
 
     int axesMode = JmolConstants.AXES_MODE_BOUNDBOX;
 
     //atoms and bonds
     
-    boolean bondSelectionModeOr = false;
-    boolean showMultipleBonds = true;
-    boolean showHydrogens = true;
-    boolean ssbondsBackbone = false;
-    boolean hbondsBackbone = false;
-    boolean hbondsSolid = false;
+    boolean bondSelectionModeOr  = false;
+    boolean showMultipleBonds    = true;
+    boolean showHydrogens        = true;
+    boolean ssbondsBackbone      = false;
+    boolean hbondsBackbone       = false;
+    boolean hbondsSolid          = false;
 
     byte modeMultipleBond = JmolConstants.MULTIBOND_NOTSMALL;
 
     //secondary structure + Rasmol
     
     boolean rasmolHydrogenSetting = true;
-    boolean rasmolHeteroSetting = true;
-    boolean cartoonRocketFlag;
-    boolean ribbonBorder;
-    boolean chainCaseSensitive;
-    boolean rangeSelected;
+    boolean rasmolHeteroSetting   = true;
+    boolean cartoonRocketFlag     = false;
+    boolean ribbonBorder          = false;
+    boolean chainCaseSensitive    = false;
+    boolean rangeSelected         = false;
+    boolean traceAlpha            = false; 
 
     //misc
     
-    int pickingSpinRate = 10;
-    boolean hideNameInPopup;
-    boolean disablePopupMenu;
-    String helpPath;
+    int pickingSpinRate      = 10;
+    boolean hideNameInPopup  = false;
+    boolean disablePopupMenu = false;
+    String helpPath          = null;
 
     
     //testing
     
-    boolean debugScript;
-    boolean testFlag1;
-    boolean testFlag2;
-    boolean testFlag3;
-    boolean testFlag4;
+    boolean debugScript = false;
+    boolean testFlag1   = false;
+    boolean testFlag2   = false;
+    boolean testFlag3   = false;
+    boolean testFlag4   = false;
   }
   
   

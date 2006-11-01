@@ -172,7 +172,9 @@ abstract class Mps extends Shape {
     short[] colixes;
     short[] mads;
     
+    Point3f[] leadAtoms;
     Point3f[] leadMidpoints;
+    Point3f[] leadPoints;
     Vector3f[] wingVectors;
 
 
@@ -192,6 +194,7 @@ abstract class Mps extends Shape {
         mads = new short[monomerCount + 1];
         monomers = polymer.monomers;
 
+        leadPoints = polymer.getLeadPoints();
         leadMidpoints = polymer.getLeadMidpoints();
         wingVectors = polymer.getWingVectors();
         //Logger.debug("mps assigning wingVectors and leadMidpoints");

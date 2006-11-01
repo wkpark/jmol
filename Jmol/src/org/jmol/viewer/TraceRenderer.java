@@ -32,19 +32,25 @@ class TraceRenderer extends MpsRenderer {
 
   boolean isNucleicPolymer;
   int myVisibilityFlag;
+  boolean isTraceAlpha;
   
   void renderMpspolymer(Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
     this.myVisibilityFlag = myVisibilityFlag;
-    Trace.Tchain tchain = (Trace.Tchain)mpspolymer;
+    Trace.Tchain tchain = (Trace.Tchain) mpspolymer;
     isNucleicPolymer = tchain.polymer instanceof NucleicPolymer;
     monomerCount = tchain.monomerCount;
     if (monomerCount == 0)
       return;
     monomers = tchain.monomers;
-    leadMidpoints = tchain.leadMidpoints;
-    leadMidpointScreens = calcScreenLeadMidpoints(monomerCount, leadMidpoints);
-    render1Chain(tchain.mads,
-                 tchain.colixes);
+    isTraceAlpha = viewer.getTraceAlpha();
+    if (isTraceAlpha) {
+      leadMidpoints = tchain.leadPoints;
+    } else {
+      leadMidpoints = tchain.leadMidpoints;
+    }
+    leadMidpointScreens = calcScreenLeadMidpoints(monomerCount
+        - (isTraceAlpha ? 1 : 0), leadMidpoints);
+    render1Chain(tchain.mads, tchain.colixes);
     viewer.freeTempScreens(leadMidpointScreens);
   }
 

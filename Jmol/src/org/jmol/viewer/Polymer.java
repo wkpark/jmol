@@ -51,6 +51,7 @@ abstract class Polymer {
   // we probably should have better names for these things
   // holds center points between alpha carbons or sugar phosphoruses
   Point3f[] leadMidpoints;
+  Point3f[] leadPoints;
   // holds the vector that runs across the 'ribbon'
   Vector3f[] wingVectors;
 
@@ -280,6 +281,12 @@ abstract class Polymer {
     return leadMidpoints;
   }
 
+  Point3f[] getLeadPoints() {
+    if (leadPoints == null)
+      calcLeadMidpointsAndWingVectors();
+    return leadPoints;
+  }
+
   final Vector3f[] getWingVectors() {
     if (leadMidpoints == null) // this is correct ... test on leadMidpoints
       calcLeadMidpointsAndWingVectors();
@@ -293,6 +300,7 @@ abstract class Polymer {
     int count = monomerCount;
     if (leadMidpoints == null || getNewPoints) {
       leadMidpoints = new Point3f[count + 1];
+      leadPoints = new Point3f[count + 1];
       wingVectors = new Vector3f[count + 1];
     }
     boolean hasWingPoints = hasWingPoints();
@@ -304,11 +312,11 @@ abstract class Polymer {
     
     Point3f leadPointPrev, leadPoint;
     leadMidpoints[0] = getInitiatorPoint();
-    leadPoint = getLeadPoint(0);
+    leadPoints[0] = leadPoint = getLeadPoint(0);
     Vector3f previousVectorD = null;
     for (int i = 1; i < count; ++i) {
       leadPointPrev = leadPoint;
-      leadPoint = getLeadPoint(i);
+      leadPoints[i] = leadPoint = getLeadPoint(i);
       Point3f midpoint = new Point3f(leadPoint);
       midpoint.add(leadPointPrev);
       midpoint.scale(0.5f);

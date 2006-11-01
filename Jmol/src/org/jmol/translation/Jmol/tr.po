@@ -1,19 +1,20 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# translation of Jmol-tr.po to Turkish.
+# Copyright (C) 1998-2006 The Jmol Development Team
+# This file is distributed under the same license as the Jmol package.
+# Muhammet Kara <muhammet.k@gmail.com>, 2006.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-10-25 23:11+0200\n"
-"PO-Revision-Date: 2006-10-27 04:26+0200\n"
-"Last-Translator: \n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2006-11-01 18:39+0200\n"
+"Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
+"Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Turkish\n"
 
 #: org/openscience/jmol/app/AboutDialog.java:57
 #: org/openscience/jmol/app/GuiMap.java:155
@@ -32,7 +33,7 @@ msgstr "\"{0}\" adresi bulunamadı."
 #: org/openscience/jmol/app/PreferencesDialog.java:171
 #: org/openscience/jmol/app/WhatsNewDialog.java:95
 msgid "OK"
-msgstr "Tamam"
+msgstr "TAMAM"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:163
 msgid "AtomSetChooser"
@@ -140,7 +141,7 @@ msgstr "Koleksiyondaki en son {0} elemanına git"
 #: org/openscience/jmol/app/ConsoleTextArea.java:87
 #, java-format
 msgid "Error reading from BufferedReader: {0}"
-msgstr "ArabellekliOkuyucu'dan okuma sırasında hata: {0}"
+msgstr "TamponlanmışOkuyucudan okuma sırasında bir hata oluştu: {0}"
 
 #: org/openscience/jmol/app/DisplayPanel.java:227
 msgid "Select Atoms"
@@ -168,11 +169,11 @@ msgstr "Aç"
 
 #: org/openscience/jmol/app/GuiMap.java:47
 msgid "Open &URL"
-msgstr "Aç ADRES"
+msgstr "ADRES Aç"
 
 #: org/openscience/jmol/app/GuiMap.java:48
 msgid "Scrip&t..."
-msgstr "Kod..."
+msgstr "Betik..."
 
 #: org/openscience/jmol/app/GuiMap.java:49
 msgid "AtomSetChooser..."
@@ -184,19 +185,20 @@ msgstr "Farklı Kaydet..."
 
 #: org/openscience/jmol/app/GuiMap.java:51
 msgid "&Export"
-msgstr "Dış Ortama Aktar"
+msgstr "Dışa Aktar"
 
 #: org/openscience/jmol/app/GuiMap.java:52
 msgid "Export Image..."
-msgstr "Resmi Dış Ortama Aktar..."
+msgstr "Resmi Dışa Aktar..."
 
 #: org/openscience/jmol/app/GuiMap.java:53
+#, fuzzy
 msgid "Render in pov-ray..."
 msgstr "Pov-ray'de kapla..."
 
 #: org/openscience/jmol/app/GuiMap.java:54
 msgid "Export PDF..."
-msgstr "PDF'e aktar"
+msgstr "PDF'e aktar..."
 
 #: org/openscience/jmol/app/GuiMap.java:55
 msgid "&Print..."
@@ -217,20 +219,20 @@ msgstr "Son Dosyalar..."
 
 #: org/openscience/jmol/app/GuiMap.java:59
 msgid "&Edit"
-msgstr "Düzenle"
+msgstr "Düz&enle"
 
 #: org/openscience/jmol/app/GuiMap.java:60
 msgid "Make crystal..."
-msgstr "Kristal Oluştur..."
+msgstr "Kristal oluştur..."
 
 #: org/openscience/jmol/app/GuiMap.java:61
 #: org/openscience/jmol/app/GuiMap.java:66
 msgid "Select All"
-msgstr "Hepsini Seç"
+msgstr "Tümünü Seç"
 
 #: org/openscience/jmol/app/GuiMap.java:62
 msgid "Deselect All"
-msgstr "Tüm seçimleri kaldır"
+msgstr "Tüm Seçimleri Kaldır"
 
 #: org/openscience/jmol/app/GuiMap.java:63
 msgid "Copy Image"
@@ -242,7 +244,7 @@ msgstr "Seçenekler..."
 
 #: org/openscience/jmol/app/GuiMap.java:65
 msgid "&Paste"
-msgstr "Yapıştır"
+msgstr "Ya&pıştır"
 
 #: org/openscience/jmol/app/GuiMap.java:68
 msgid "All"
@@ -266,7 +268,7 @@ msgstr "Karbon"
 
 #: org/openscience/jmol/app/GuiMap.java:72
 msgid "Nitrogen"
-msgstr "Nitrojen"
+msgstr "Azot"
 
 #: org/openscience/jmol/app/GuiMap.java:73
 msgid "Oxygen"
@@ -339,7 +341,7 @@ msgstr "Sembol"
 
 #: org/openscience/jmol/app/GuiMap.java:96
 msgid "Name"
-msgstr "İsim"
+msgstr "Ad"
 
 #: org/openscience/jmol/app/GuiMap.java:97
 msgid "Number"
@@ -347,7 +349,7 @@ msgstr "Sayı"
 
 #: org/openscience/jmol/app/GuiMap.java:98
 msgid "Centered"
-msgstr "Ortala"
+msgstr "Ortalı"
 
 #: org/openscience/jmol/app/GuiMap.java:99
 msgid "Upper right"
@@ -355,12 +357,12 @@ msgstr "Sağ üst"
 
 #: org/openscience/jmol/app/GuiMap.java:102
 msgid "On"
-msgstr "Aç"
+msgstr "Açık"
 
 #: org/openscience/jmol/app/GuiMap.java:103
 #, java-format
 msgid "{0} pixels"
-msgstr "{0} piksel"
+msgstr "{0} benek (pixel)"
 
 #: org/openscience/jmol/app/GuiMap.java:106
 #: org/openscience/jmol/app/GuiMap.java:107
@@ -387,7 +389,7 @@ msgstr "{0}%"
 #: org/openscience/jmol/app/GuiMap.java:117
 #: org/openscience/jmol/app/GuiMap.java:161
 msgid "Perspective Depth"
-msgstr "Perspektif Derinliği"
+msgstr "Bakış Açısı Derinliği"
 
 #: org/openscience/jmol/app/GuiMap.java:118
 #: org/openscience/jmol/app/GuiMap.java:162
@@ -409,7 +411,7 @@ msgstr "&Vektörler"
 
 #: org/openscience/jmol/app/GuiMap.java:122
 msgid "&Measurements"
-msgstr "Ölçümler"
+msgstr "Ölçü&mler"
 
 #: org/openscience/jmol/app/GuiMap.java:123
 msgid "&View"
@@ -454,7 +456,7 @@ msgstr "Ölçümler..."
 
 #: org/openscience/jmol/app/GuiMap.java:133
 msgid "Distance Units"
-msgstr "Ölçüm Birimleri"
+msgstr "Uzaklık Birimleri"
 
 #: org/openscience/jmol/app/GuiMap.java:134
 msgid "Nanometers 1E-9"
@@ -490,7 +492,7 @@ msgstr "Kristal Özellikleri"
 
 #: org/openscience/jmol/app/GuiMap.java:142
 msgid "Once"
-msgstr "Birkere"
+msgstr "Bir kere"
 
 #: org/openscience/jmol/app/GuiMap.java:143
 msgid "Loop"
@@ -502,7 +504,7 @@ msgstr "Palindrom"
 
 #: org/openscience/jmol/app/GuiMap.java:145
 msgid "Stop animation"
-msgstr "Animasyonu durdur"
+msgstr "Canlandırmayı durdur"
 
 #: org/openscience/jmol/app/GuiMap.java:146
 #: org/openscience/jmol/app/GuiMap.java:177
@@ -512,12 +514,12 @@ msgstr "İlk çerçeveye geri dön"
 #: org/openscience/jmol/app/GuiMap.java:147
 #: org/openscience/jmol/app/GuiMap.java:178
 msgid "Go to next frame"
-msgstr "Bir sonraki çerçeveye geç"
+msgstr "Bir sonraki çerçeveye git"
 
 #: org/openscience/jmol/app/GuiMap.java:148
 #: org/openscience/jmol/app/GuiMap.java:179
 msgid "Go to previous frame"
-msgstr "Bir önceki çerçeveye geç"
+msgstr "Bir önceki çerçeveye git"
 
 #: org/openscience/jmol/app/GuiMap.java:149
 msgid "Start vibration"
@@ -554,7 +556,7 @@ msgstr "Neler Yeni"
 #: org/openscience/jmol/app/GuiMap.java:158
 #: org/openscience/jmol/app/Jmol.java:558
 msgid "Jmol Java Console"
-msgstr "Jmol Java Konsolu"
+msgstr "Jmol Java Uçbirimi"
 
 #: org/openscience/jmol/app/GuiMap.java:159
 msgid "Hydrogens"
@@ -643,7 +645,7 @@ msgstr "Geçmiş dosyalar başlatılıyor..."
 
 #: org/openscience/jmol/app/Jmol.java:188
 msgid "Initializing Script Window..."
-msgstr "Kodlama Penceresi Başlatılıyor..."
+msgstr "Betik Penceresi Başlatılıyor..."
 
 #: org/openscience/jmol/app/Jmol.java:190
 msgid "Initializing AtomSetChooser Window..."
@@ -707,7 +709,7 @@ msgstr "komut arayüzü yok -- bütün çıktılar sysyout'a"
 
 #: org/openscience/jmol/app/Jmol.java:389
 msgid "exit after script (implicit with -n)"
-msgstr "kod işletiminden sonra çık (varsayılan -n ile)"
+msgstr "betik işletiminden sonra çık (varsayılan -n ile)"
 
 #: org/openscience/jmol/app/Jmol.java:397
 msgid "property=value"
@@ -733,13 +735,11 @@ msgstr "Örneğin:"
 
 #: org/openscience/jmol/app/Jmol.java:437
 msgid "The -D options are as follows (defaults in parathesis):"
-msgstr ""
-"-D seçenekleri aşağıda listenenmiştir (parantez içindekiler varsayılan "
-"seçeneklerdir):"
+msgstr "-D seçenekleri aşağıda listenenmiştir (parantez içindekiler varsayılan seçeneklerdir):"
 
 #: org/openscience/jmol/app/Jmol.java:546
 msgid "Executing script..."
-msgstr "Kod yürütülüyor..."
+msgstr "Betik yürütülüyor..."
 
 #: org/openscience/jmol/app/Jmol.java:566
 #: org/openscience/jmol/app/ScriptWindow.java:93
@@ -803,12 +803,8 @@ msgid "Filename Stem"
 msgstr "Dosyaadı kökü"
 
 #: org/openscience/jmol/app/PovrayDialog.java:162
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
-msgstr ""
-"Tek çerçeve: örneğin 'caffine' -> 'caffine.pov'; Çoklu çerçeve: örneğin "
-"'caffine' ->'caffine_1.pov', 'caffine_2.pov'"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgstr "Tek çerçeve: örneğin 'caffine' -> 'caffine.pov'; Çoklu çerçeve: örneğin 'caffine' ->'caffine_1.pov', 'caffine_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:172
 msgid "Working Directory"
@@ -1079,7 +1075,7 @@ msgstr "Aç"
 
 #: org/openscience/jmol/app/ScriptWindow.java:65
 msgid "Jmol Script Console"
-msgstr "Jmol kodlama konsolu"
+msgstr "Jmol Betik Uçbirimi"
 
 #: org/openscience/jmol/app/ScriptWindow.java:84
 msgid "Run"
@@ -1104,3 +1100,4 @@ msgstr "Yükleniyor..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "Jmol'da Neler Yeni"
+

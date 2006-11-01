@@ -1,27 +1,28 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# translation of JmolApplet-tr.po to Turkish.
+# Copyright (C) 1998-2006 The Jmol Development Team
+# This file is distributed under the same license as the JmolApplet package.
+# Muhammet Kara <muhammet.k@gmail.com>, 2006.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2006-11-01 10:03+0100\n"
-"PO-Revision-Date: 2006-10-27 04:31+0200\n"
-"Last-Translator: \n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2006-11-01 18:39+0200\n"
+"Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
+"Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Turkish\n"
 
 #: org/jmol/applet/Console.java:39
 msgid "Jmol Script Console"
-msgstr "Jmol Komut Dosya Konsolu"
+msgstr "Jmol Betik Uçbirimi"
 
 #: org/jmol/applet/Console.java:41
 msgid "Execute"
-msgstr "Yürüt"
+msgstr "Çalıştır"
 
 #: org/jmol/applet/Console.java:42
 msgid "Clear Output"
@@ -42,7 +43,7 @@ msgstr "Yükle"
 #: org/jmol/applet/Console.java:89
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
-"Yeniçizgi için CTRL-ENTER'a basın veya model veri yapıştırın ve Yükle'ye "
+"Yeni satır için CTRL-ENTER'a basın ya da model veri yapıştırın ve Yükle'ye "
 "basın"
 
 #: org/jmol/applet/Jmol.java:622
@@ -58,7 +59,7 @@ msgstr ""
 "\n"
 "Bir OpenScience projesi.\n"
 "\n"
-"Daha fazla bilgi için http://www.jmol.org 'u görün"
+"Daha fazla bilgi için http://www.jmol.org 'u ziyaret ediniz"
 
 #: org/jmol/applet/Jmol.java:755
 msgid "File Error:"
@@ -66,7 +67,7 @@ msgstr "Dosya Hatası:"
 
 #: org/jmol/appletwrapper/AppletWrapper.java:82
 msgid "Loading Jmol applet ..."
-msgstr "Jmol applet yükleniyor ..."
+msgstr "Jmol küçük uygulaması yükleniyor ..."
 
 #: org/jmol/appletwrapper/AppletWrapper.java:143
 #, java-format
@@ -81,16 +82,16 @@ msgstr "Seç ({0})"
 #: org/jmol/popup/JmolPopup.java:362
 #, java-format
 msgid "All {0} models"
-msgstr "Bütün {0} modeller"
+msgstr "Tüm {0} modeller"
 
 #: org/jmol/popup/JmolPopup.java:366 org/jmol/popup/JmolPopup.java:400
 msgid "all"
-msgstr "tüm"
+msgstr "tümü"
 
 #: org/jmol/popup/JmolPopup.java:397
 #, java-format
 msgid "Configurations ({0})"
-msgstr "Yapılanışlar  ({0})"
+msgstr "Ayarlar  ({0})"
 
 #: org/jmol/popup/JmolPopup.java:436
 #, java-format
@@ -144,11 +145,11 @@ msgstr "{0} MB boş"
 #: org/jmol/popup/JmolPopup.java:502
 #, java-format
 msgid "{0} MB maximum"
-msgstr "Maksimum {0} MB"
+msgstr "En yüksek {0} MB"
 
 #: org/jmol/popup/JmolPopup.java:505
 msgid "unknown maximum"
-msgstr "bilinmeyen maksimum"
+msgstr "bilinmeyen en yüksek değer"
 
 #: org/jmol/popup/JmolPopup.java:508
 msgid "1 processor"
@@ -157,23 +158,24 @@ msgstr "1 işlemci"
 #: org/jmol/popup/JmolPopup.java:509
 #, java-format
 msgid "{0} processors"
-msgstr "{0} işlemci"
+msgstr "{0} işlemciler"
 
 #: org/jmol/popup/JmolPopup.java:511
 msgid "unknown processor count"
-msgstr "bilinmeyen işlemci hesabı"
+msgstr "bilinmeyen işlemci sayısı"
 
 #: org/jmol/popup/JmolPopup.java:781
 msgid "Main Menu"
-msgstr ""
+msgstr "Ana Menü"
 
 #: org/jmol/popup/PopupResourceBundle.java:471
+#, fuzzy
 msgid "No atoms loaded"
 msgstr "Hiç atom yüklenmemiş"
 
 #: org/jmol/popup/PopupResourceBundle.java:472
 msgid "Configurations"
-msgstr "Yapılanmalar"
+msgstr "Ayarlar"
 
 #: org/jmol/popup/PopupResourceBundle.java:473
 msgid "Model information"
@@ -192,7 +194,7 @@ msgstr "Element"
 #: org/jmol/popup/PopupResourceBundle.java:504
 #: org/jmol/popup/PopupResourceBundle.java:527
 msgid "All"
-msgstr "Hepsi"
+msgstr "Tümü"
 
 #: org/jmol/popup/PopupResourceBundle.java:478
 #: org/jmol/popup/PopupResourceBundle.java:609
@@ -202,43 +204,39 @@ msgstr "Hiçbiri"
 
 #: org/jmol/popup/PopupResourceBundle.java:479
 msgid "Display Selected Only"
-msgstr "Sadece seçileni göster"
+msgstr "Sadece Seçileni Göster"
 
 #: org/jmol/popup/PopupResourceBundle.java:480
 msgid "Invert Selection"
-msgstr "Seçimi ters çevir"
+msgstr "Seçimi Tersine Çevir"
 
 #: org/jmol/popup/PopupResourceBundle.java:482
-#, fuzzy
 msgid "View"
-msgstr "Görünüm {0}"
+msgstr "Görünüm"
 
 #: org/jmol/popup/PopupResourceBundle.java:483
 msgid "Front"
-msgstr ""
+msgstr "Yazı Tipi"
 
 #: org/jmol/popup/PopupResourceBundle.java:484
 msgid "Left"
-msgstr ""
+msgstr "Sol"
 
 #: org/jmol/popup/PopupResourceBundle.java:485
-#, fuzzy
 msgid "Right"
-msgstr "Yukarı Sağ"
+msgstr "Sağ"
 
 #: org/jmol/popup/PopupResourceBundle.java:486
 msgid "Top"
-msgstr ""
+msgstr "Üst"
 
 #: org/jmol/popup/PopupResourceBundle.java:487
-#, fuzzy
 msgid "Bottom"
-msgstr "Yakınlaştırma"
+msgstr "Aşağı"
 
 #: org/jmol/popup/PopupResourceBundle.java:488
-#, fuzzy
 msgid "Back"
-msgstr "Siyah"
+msgstr "Geri"
 
 #: org/jmol/popup/PopupResourceBundle.java:490
 msgid "Protein"
@@ -319,19 +317,21 @@ msgstr "Hetero"
 
 #: org/jmol/popup/PopupResourceBundle.java:519
 msgid "All PDB \"HETATM\""
-msgstr "Bütün PDB \"HETATM\""
+msgstr "Tüm PDB \"HETATM\""
 
 #: org/jmol/popup/PopupResourceBundle.java:520
+#, fuzzy
 msgid "All Solvent"
-msgstr "Tüm Çözücüler"
+msgstr "Tümü Çözücü"
 
 #: org/jmol/popup/PopupResourceBundle.java:521
+#, fuzzy
 msgid "All Water"
-msgstr "Tüm Sıvılar"
+msgstr "Tümü Su"
 
 #: org/jmol/popup/PopupResourceBundle.java:523
 msgid "Nonaqueous Solvent"
-msgstr "Su İçermeyen Çözücüler"
+msgstr "Su İçermeyen Çözücü"
 
 #: org/jmol/popup/PopupResourceBundle.java:524
 msgid "Nonaqueous HETATM"
@@ -347,7 +347,7 @@ msgstr "Karbonhidrat"
 
 #: org/jmol/popup/PopupResourceBundle.java:529
 msgid "None of the above"
-msgstr "Yukarıdakilerden Hiçbiri"
+msgstr "Yukarıdakilerin hiçbiri"
 
 #: org/jmol/popup/PopupResourceBundle.java:531
 msgid "Model/Frame"
@@ -522,7 +522,7 @@ msgstr "Vektörler"
 #: org/jmol/popup/PopupResourceBundle.java:599
 #, java-format
 msgid "{0} pixels"
-msgstr "{0} piksel"
+msgstr "{0} benek"
 
 #: org/jmol/popup/PopupResourceBundle.java:602
 #: org/jmol/popup/PopupResourceBundle.java:603
@@ -580,7 +580,7 @@ msgstr "Atomdaki Konum Etiketi"
 
 #: org/jmol/popup/PopupResourceBundle.java:624
 msgid "Centered"
-msgstr "Ortala"
+msgstr "Ortalı"
 
 #: org/jmol/popup/PopupResourceBundle.java:625
 msgid "Upper Right"
@@ -596,7 +596,7 @@ msgstr "Yukarı Sol"
 
 #: org/jmol/popup/PopupResourceBundle.java:628
 msgid "Lower Left"
-msgstr "Aşağı sol"
+msgstr "Aşağı Sol"
 
 #: org/jmol/popup/PopupResourceBundle.java:630
 msgid "Color"
@@ -612,13 +612,14 @@ msgstr "Element (CPK)"
 
 #: org/jmol/popup/PopupResourceBundle.java:635
 msgid "Alternative Location"
-msgstr "Alternatif Mevki"
+msgstr "Alternatif Konum"
 
 #: org/jmol/popup/PopupResourceBundle.java:636
 msgid "Molecule"
 msgstr "Molekül"
 
 #: org/jmol/popup/PopupResourceBundle.java:637
+#, fuzzy
 msgid "Formal Charge"
 msgstr "Biçimsel Yük"
 
@@ -640,7 +641,7 @@ msgstr "Zincir"
 
 #: org/jmol/popup/PopupResourceBundle.java:644
 msgid "Inherit"
-msgstr "Kalıt Almak"
+msgstr "Kalıt Al"
 
 #: org/jmol/popup/PopupResourceBundle.java:645
 msgid "Black"
@@ -688,7 +689,7 @@ msgstr "Sarımsı pembe"
 
 #: org/jmol/popup/PopupResourceBundle.java:658
 msgid "Olive"
-msgstr "Yeşil Zeytin Rengi"
+msgstr "Zeytin Yeşili"
 
 #: org/jmol/popup/PopupResourceBundle.java:659
 msgid "Maroon"
@@ -713,12 +714,12 @@ msgstr "Orkide"
 #: org/jmol/popup/PopupResourceBundle.java:665
 #: org/jmol/popup/PopupResourceBundle.java:786
 msgid "Make Opaque"
-msgstr "Donuk yap"
+msgstr "Donuk Yap"
 
 #: org/jmol/popup/PopupResourceBundle.java:666
 #: org/jmol/popup/PopupResourceBundle.java:787
 msgid "Make Translucent"
-msgstr "Yarı şeffaf Yap"
+msgstr "Yarı Şeffaf Yap"
 
 #: org/jmol/popup/PopupResourceBundle.java:671
 msgid "Structure"
@@ -746,11 +747,11 @@ msgstr "Bağlıkutu"
 #: org/jmol/popup/PopupResourceBundle.java:684
 #: org/jmol/popup/PopupResourceBundle.java:798
 msgid "Unitcell"
-msgstr "Tek hücre"
+msgstr "Birimhücre"
 
 #: org/jmol/popup/PopupResourceBundle.java:686
 msgid "Zoom"
-msgstr "Yakınlaştırma"
+msgstr "Yakınlaştır"
 
 #: org/jmol/popup/PopupResourceBundle.java:693
 msgid "Zoom In"
@@ -763,19 +764,19 @@ msgstr "Uzaklaş"
 #: org/jmol/popup/PopupResourceBundle.java:696
 #: org/jmol/popup/PopupResourceBundle.java:759
 msgid "Spin"
-msgstr "Dön"
+msgstr "Dönüş"
 
 #: org/jmol/popup/PopupResourceBundle.java:700
 msgid "Set X Rate"
-msgstr "X Işınını Ayarla"
+msgstr "X Hızını Ayarla"
 
 #: org/jmol/popup/PopupResourceBundle.java:701
 msgid "Set Y Rate"
-msgstr "Y Işınını Ayarla"
+msgstr "Y Hızını Ayarla"
 
 #: org/jmol/popup/PopupResourceBundle.java:702
 msgid "Set Z Rate"
-msgstr "Z Işınını Ayarla"
+msgstr "Z Hızını Ayarla"
 
 #: org/jmol/popup/PopupResourceBundle.java:703
 #: org/jmol/popup/PopupResourceBundle.java:730
@@ -783,13 +784,12 @@ msgid "Set FPS"
 msgstr "FPS'i Ayarla"
 
 #: org/jmol/popup/PopupResourceBundle.java:713
-#, fuzzy
 msgid "Animation"
-msgstr "Canlandırma Modu"
+msgstr "Canlandırma"
 
 #: org/jmol/popup/PopupResourceBundle.java:714
 msgid "Animation Mode"
-msgstr "Canlandırma Modu"
+msgstr "Canlandırma Kipi"
 
 #: org/jmol/popup/PopupResourceBundle.java:715
 msgid "Play Once"
@@ -821,11 +821,11 @@ msgstr "Durdur"
 
 #: org/jmol/popup/PopupResourceBundle.java:723
 msgid "Next Frame"
-msgstr "Bir Sonraki Çerçeve"
+msgstr "Sonraki Kare"
 
 #: org/jmol/popup/PopupResourceBundle.java:724
 msgid "Previous Frame"
-msgstr "Bir Önceki Çerçeve"
+msgstr "Önceki Kare"
 
 #: org/jmol/popup/PopupResourceBundle.java:725
 msgid "Rewind"
@@ -849,15 +849,15 @@ msgstr "Çift tıklama tüm ölçümleri başlatır ve bitirir"
 
 #: org/jmol/popup/PopupResourceBundle.java:739
 msgid "Click for distance measurement"
-msgstr "Ölçüm mesafesi için tıklayın"
+msgstr "Mesafe ölçümü için tıklayın"
 
 #: org/jmol/popup/PopupResourceBundle.java:740
 msgid "Click for angle measurement"
-msgstr "Ölçüm açısı için tıklayın"
+msgstr "Açı ölçümü için tıklayın"
 
 #: org/jmol/popup/PopupResourceBundle.java:741
 msgid "Click for torsion (dihedral) measurement"
-msgstr "Bükülme(iki düzlemli) ölçüm için tıklayın"
+msgstr "Bükülme(iki düzlemli) ölçümü için tıklayın"
 
 #: org/jmol/popup/PopupResourceBundle.java:742
 msgid "Delete measurements"
@@ -909,7 +909,7 @@ msgstr "Grubu seç"
 
 #: org/jmol/popup/PopupResourceBundle.java:757
 msgid "Select molecule"
-msgstr "Modulü seç"
+msgstr "Molekülü seç"
 
 #: org/jmol/popup/PopupResourceBundle.java:758
 msgid "Select site"
@@ -921,11 +921,11 @@ msgstr "Göster"
 
 #: org/jmol/popup/PopupResourceBundle.java:762
 msgid "Console"
-msgstr "Konsol"
+msgstr "Uçbirim"
 
 #: org/jmol/popup/PopupResourceBundle.java:763
 msgid "File Contents"
-msgstr "İçeriği seç"
+msgstr "Dosya İçeriği"
 
 #: org/jmol/popup/PopupResourceBundle.java:764
 msgid "File Header"
@@ -937,7 +937,7 @@ msgstr "Eşyüzey JVXL verisi"
 
 #: org/jmol/popup/PopupResourceBundle.java:767
 msgid "Measure"
-msgstr "Ölçü"
+msgstr "Ölç"
 
 #: org/jmol/popup/PopupResourceBundle.java:768
 msgid "Molecular orbital JVXL data"
@@ -1021,14 +1021,14 @@ msgstr "Noktalanmış"
 
 #: org/jmol/popup/PopupResourceBundle.java:802
 msgid "Pixel Width"
-msgstr "Piksel Genişliği"
+msgstr "Benek (Pixel) Genişliği"
 
 #: org/jmol/popup/PopupResourceBundle.java:802
 #: org/jmol/popup/PopupResourceBundle.java:803
 #: org/jmol/popup/PopupResourceBundle.java:804
 #, java-format
 msgid "{0} px"
-msgstr "{0} piksel"
+msgstr "{0} benek"
 
 #: org/jmol/popup/PopupResourceBundle.java:806
 msgid "Angstrom Width"
@@ -1052,17 +1052,15 @@ msgstr "Ölçümleri Göster"
 
 #: org/jmol/popup/PopupResourceBundle.java:817
 msgid "Perspective Depth"
-msgstr "Perspektif Derinliği"
+msgstr "Bakış Açısı Derinliği"
 
 #: org/jmol/popup/PopupResourceBundle.java:818
-#, fuzzy
 msgid "Bound Box"
-msgstr "Bağlıkutu"
+msgstr "Bağlantı Kutusu"
 
 #: org/jmol/popup/PopupResourceBundle.java:820
-#, fuzzy
 msgid "Unit Cell"
-msgstr "Birim hücre"
+msgstr "Birim Hücre"
 
 #: org/jmol/popup/PopupResourceBundle.java:821
 msgid "RasMol/Chime Settings"
@@ -1094,18 +1092,18 @@ msgstr "Çeviriler"
 
 #: org/jmol/viewer/Eval.java:146
 msgid "too many script levels"
-msgstr "çok fazla komut dosyası düzeyi"
+msgstr "çok fazla betik düzeyi"
 
 #: org/jmol/viewer/Eval.java:430
 #, java-format
 msgid "Too many nested {0} commands"
-msgstr ""
+msgstr "Çok fazla iç içe {0} komut"
 
 #: org/jmol/viewer/Eval.java:435 org/jmol/viewer/Eval.java:440
 #: org/jmol/viewer/Eval.java:3092
-#, fuzzy, java-format
+#, java-format
 msgid "Invalid {0} command"
-msgstr "geçersiz {0} kontrol anahtar sözcüğü"
+msgstr "Geçersiz {0} komut"
 
 #: org/jmol/viewer/Eval.java:997
 msgid "atom expression compiler error - stack over/underflow"
@@ -1128,20 +1126,20 @@ msgstr "Birim hücre yok"
 
 #: org/jmol/viewer/Eval.java:1567
 msgid "Miller indices cannot all be zero."
-msgstr "Öğütücü indekslerin hepsi sıfır olamaz."
+msgstr "Miller dizinlerinin hepsi sıfır olamaz."
 
 #: org/jmol/viewer/Eval.java:1715
 msgid "a color or palette name (Jmol, Rasmol) is required"
-msgstr "bir renk ve ya palet adı (Jmol,Rasmol) gerekli"
+msgstr "bir renk ya da palet adı (Jmol,Rasmol) gerekli"
 
 #: org/jmol/viewer/Eval.java:1759 org/jmol/viewer/Eval.java:1784
 msgid "fractional coordinates are not allowed in this context"
-msgstr "Bu bağlamda kesirli koordinatlara izin verilmiyor"
+msgstr "bu bağlamda kesirli koordinatlara izin verilmiyor"
 
 #: org/jmol/viewer/Eval.java:1823
 #, java-format
 msgid "Currently the {0} command only works for the applet"
-msgstr "Şu anda {0} komutu sadece applet için çalışıyor"
+msgstr "Şu anda {0} komutu sadece küçük uygulama için çalışır"
 
 #: org/jmol/viewer/Eval.java:2513
 #, java-format
@@ -1151,7 +1149,7 @@ msgstr "Uzay grubu {0} bulunamadı."
 #: org/jmol/viewer/Eval.java:3380
 #, java-format
 msgid "{0} not allowed with background model displayed"
-msgstr "{0} arkaplan model gösterimiyle birlikte izin verilmedi"
+msgstr "{0} arkaplan model gösterimiyle birlikte izin verilmez"
 
 #: org/jmol/viewer/Eval.java:3623
 msgid "Calculate what?"
@@ -1178,11 +1176,11 @@ msgstr "{0} komutu applet için kullanılabilir değil."
 #: org/jmol/viewer/Eval.java:4618
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
-msgstr "neyi yaz? {0} veya {1} \"dosyaadı\""
+msgstr "neyi yaz? {0} ya da {1} \"dosyaadı\""
 
 #: org/jmol/viewer/Eval.java:4706 org/jmol/viewer/Eval.java:5337
 msgid "MO isosurfaces require that only one model be displayed"
-msgstr "MO eşyüzeyler sadece bir model gösterilmesine ihtiyaç duyuyor"
+msgstr "MO eşyüzeyler sadece bir model gösterilmesine izin verir"
 
 #: org/jmol/viewer/Eval.java:4710 org/jmol/viewer/Eval.java:5354
 msgid "no MO basis/coefficient data available for this frame"
@@ -1215,7 +1213,7 @@ msgstr "Bu dosyada sadece bir kullanılabilir moleküler orbital var"
 #: org/jmol/viewer/Eval.java:5362
 #, java-format
 msgid "An MO index from 1 to {0} is required"
-msgstr "1'den {0} 'a bir MO dizini gerekli."
+msgstr "1 den {0} 'a bir MO dizini gerekli"
 
 #: org/jmol/viewer/Eval.java:5383
 #, java-format
@@ -1416,9 +1414,9 @@ msgstr "modeli bir eksen etrafında döndürebilmek için iki atom seçin"
 
 #: org/jmol/viewer/SelectionManager.java:63
 #: org/jmol/viewer/SelectionManager.java:77
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms hidden"
-msgstr "atomlar gizli"
+msgstr "{0} atomlar gizli"
 
 #: org/jmol/viewer/SelectionManager.java:168
 msgid "atoms selected"
@@ -1426,10 +1424,10 @@ msgstr "atomlar seçili"
 
 #: org/jmol/viewer/StatusManager.java:182
 msgid "Jmol executing script ..."
-msgstr "Jmol komut dosyasını yürütüyor ..."
+msgstr "Jmol betiği yürütüyor ..."
 
 #~ msgid "invalid insertion code"
-#~ msgstr "Geçersiz giriş kodu"
+#~ msgstr "geçersiz ekleme kodu"
 
 #~ msgid "Animate"
 #~ msgstr "Canlandır"

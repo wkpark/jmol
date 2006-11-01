@@ -2032,7 +2032,7 @@ public final class Frame {
     if (setType.equals("IdentifierOrNull"))
       return getIdentifierOrNull(specInfo);
     if (setType.equals("SpecAtom"))
-      return getSpecAtom(specInfo, true);
+      return getSpecAtom(specInfo);
     if (setType.equals("SpecName"))
       return getSpecName(specInfo);
     if (setType.equals("SpecAlternate"))
@@ -2057,11 +2057,8 @@ public final class Frame {
       ++pt;
     if (pt > 3)
       return null;
-    if ((bs = getSpecGroupNameOrNull(identifier.substring(0, pt))) == null) {
-      if ((bs = getSpecAtom(identifier, false)) != null)
-        return bs;
-      return null;
-    }
+    if ((bs = getSpecGroupNameOrNull(identifier.substring(0, pt))) == null)
+      return getSpecAtom(identifier);
     if (pt == len)
       return bs;
     //
@@ -2109,16 +2106,14 @@ public final class Frame {
     return null;
   }
 
-  private BitSet getSpecAtom(String atomSpec, boolean returnEmpty) {
+  private BitSet getSpecAtom(String atomSpec) {
     BitSet bs = new BitSet();
-    boolean isEmpty = true;
-    for (int i = atomCount; --i >= 0;) {
+   for (int i = atomCount; --i >= 0;) {
       if (atoms[i].isAtomNameMatch(atomSpec)) {
         bs.set(i);
-        isEmpty = false;
       }
     }
-    return (!isEmpty || returnEmpty ? bs : null);
+    return bs;
   }
 
   private BitSet getSpecName(String resNameSpec) {

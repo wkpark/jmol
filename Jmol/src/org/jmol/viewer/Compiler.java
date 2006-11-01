@@ -207,9 +207,12 @@ class Compiler {
           continue;
         }
         if (lookingAtSeqcode()) {
-          int seqNum = (script.charAt(ichToken) == '*' ? 0 : Integer
+          char ch = script.charAt(ichToken);
+          int seqNum = (ch == '*' || ch == '^' ? 0 : Integer
               .parseInt(script.substring(ichToken, ichToken + cchToken - 2)));
           char insertionCode = script.charAt(ichToken + cchToken - 1);
+          if (insertionCode == '^')
+            insertionCode = ' ';
           int seqcode = Group.getSeqcode(seqNum, insertionCode);
           ltoken.addElement(new Token(Token.seqcode, seqcode, "seqcode"));
           continue;
@@ -634,12 +637,15 @@ class Compiler {
       while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT)))
         ++ichT;
     }
-    if (ichT == ichToken || ichT + 2 > cchScript || ch != '^')
+    if (ch != '^')
       return false;
-    ch = script.charAt(++ichT);
-    if (ch != '*' && ch != '?' && !Character.isLetter(ch))
+    ichT++;
+    if (ichT == cchScript)
+      ch = ' ';
+    else
+      ch = script.charAt(ichT++);
+    if (ch != ' ' && ch != '*' && ch != '?' && !Character.isLetter(ch))
       return false;
-    ++ichT;
     cchToken = ichT - ichToken;
     return true;
   }
@@ -1099,6 +1105,7 @@ class Compiler {
     case Token.leftsquare:
     case Token.identifier:
     case Token.colon:
+    case Token.percent:
       if (clauseResidueSpec())
         return true;
     default:

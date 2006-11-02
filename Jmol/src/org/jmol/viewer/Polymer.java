@@ -54,6 +54,7 @@ abstract class Polymer {
   Point3f[] leadPoints;
   // holds the vector that runs across the 'ribbon'
   Vector3f[] wingVectors;
+  Vector3f[] pointVectors;
 
   static Polymer allocatePolymer(Group[] groups, int firstGroupIndex) {
     Monomer[] monomers;
@@ -247,12 +248,22 @@ abstract class Polymer {
     midPoint.set(getLeadPoint(groupIndex));
   }
   
+  void getLeadPoint(int groupIndex, Point3f midPoint) {
+    if (groupIndex == monomerCount)
+      --groupIndex;
+    midPoint.set(getLeadPoint(groupIndex));
+  }
+  
   boolean hasWingPoints() { return false; }
 
   // this might change in the future ... if we calculate a wing point
   // without an atom for an AlphaPolymer
   final Point3f getWingPoint(int polymerIndex) {
     return monomers[polymerIndex].getWingAtomPoint();
+  }
+  
+  final Point3f getPointPoint(int polymerIndex) {
+    return monomers[polymerIndex].getPointAtomPoint();
   }
   
   void addSecondaryStructure(byte type,
@@ -292,6 +303,13 @@ abstract class Polymer {
       calcLeadMidpointsAndWingVectors();
     return wingVectors; // wingVectors might be null ... before autocalc
   }
+
+  final Vector3f[] getPointVectors() {
+    if (leadPoints == null)
+      calcLeadMidpointsAndWingVectors();
+    return pointVectors;
+  }
+
   final void calcLeadMidpointsAndWingVectors() {
     calcLeadMidpointsAndWingVectors(true);
   }
@@ -314,6 +332,16 @@ abstract class Polymer {
     leadMidpoints[0] = getInitiatorPoint();
     leadPoints[0] = leadPoint = getLeadPoint(0);
     Vector3f previousVectorD = null;
+    //proteins:
+    //       C        O (wing)
+    //        \       |
+    //         CA--N--C        O (wing)
+    //      (lead)     \       |    
+    //                  CA--N--C 
+    //               (lead)     \
+    //                           CA--N
+    //                        (lead)
+    // mon#    2         1        0
     for (int i = 1; i < count; ++i) {
       leadPointPrev = leadPoint;
       leadPoints[i] = leadPoint = getLeadPoint(i);
@@ -333,8 +361,8 @@ abstract class Polymer {
         previousVectorD = wingVectors[i] = new Vector3f(vectorD);
       }
     }
-    leadMidpoints[count] = getTerminatorPoint();
-    if (! hasWingPoints) {
+    leadPoints[count] = leadMidpoints[count] = getTerminatorPoint();
+    if (!hasWingPoints) {
       if (count < 3) {
         wingVectors[1] = unitVectorX;
       } else {

@@ -65,6 +65,8 @@ class MeshRibbonRenderer extends MpsRenderer { // not current for Mcp class
     this.myVisibilityFlag = myVisibilityFlag;
     MeshRibbon.Schain strandsChain = (MeshRibbon.Schain)mpspolymer;
 
+    leadMidpoints = (viewer.getTraceAlpha() ? strandsChain.leadPoints : strandsChain.leadMidpoints);
+    wingVectors = strandsChain.wingVectors;
     // no way to do this now that strandCount is part of the strands object
     // strandCount = viewer.getStrandsCount();
     strandCount = 7;
@@ -72,12 +74,12 @@ class MeshRibbonRenderer extends MpsRenderer { // not current for Mcp class
     baseOffset =
       ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
 
-    if (strandsChain.wingVectors != null) {
+    if (wingVectors != null) {
       isNucleicPolymer = strandsChain.polymer instanceof NucleicPolymer;
       render1Chain(strandsChain.monomerCount,
                    strandsChain.monomers,
-                   strandsChain.leadMidpoints,
-                   strandsChain.wingVectors,
+                   leadMidpoints,
+                   wingVectors,
                    strandsChain.mads,
                    strandsChain.colixes);
     }

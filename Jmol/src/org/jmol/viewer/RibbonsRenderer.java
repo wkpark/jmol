@@ -70,10 +70,13 @@ class RibbonsRenderer extends MpsRenderer { // not current for Mcp class
       // isNucleic = strandsChain.polymer.isNucleic();
       ribbonBorder = viewer.getRibbonBorder();
       isNucleic = strandsChain.polymer instanceof NucleicPolymer;
+      leadMidpoints = (viewer.getTraceAlpha() ? strandsChain.leadPoints : strandsChain.leadMidpoints);
+      wingVectors = strandsChain.wingVectors;
+      
       render1Chain(strandsChain.monomerCount,
                    strandsChain.monomers,
-                   strandsChain.leadMidpoints,
-                   strandsChain.wingVectors,
+                   leadMidpoints,
+                   wingVectors,
                    strandsChain.mads,
                    strandsChain.colixes);
     }

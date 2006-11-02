@@ -202,6 +202,10 @@ abstract class Monomer extends Group {
     return getAtomPointFromOffsetIndex(1);
   }
 
+  final Point3f getPointAtomPoint() {
+    return getAtomPointFromOffsetIndex(3);
+  }
+
   Atom getInitiatorAtom() {
     return getLeadAtom();
   }

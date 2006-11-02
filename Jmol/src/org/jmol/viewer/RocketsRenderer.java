@@ -39,10 +39,12 @@ class RocketsRenderer extends MpsRenderer {
 
   Rockets cartoon;
   int myVisibilityFlag;
+  boolean isTraceAlpha;
   
   void renderMpspolymer(Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
     this.myVisibilityFlag = myVisibilityFlag;
     Rockets.Cchain cchain = (Rockets.Cchain)mpspolymer;
+    isTraceAlpha = viewer.getTraceAlpha();
     render1Chain(cchain.polymer, cchain.mads, cchain.colixes);
   }
 
@@ -111,6 +113,8 @@ class RocketsRenderer extends MpsRenderer {
       } else {
         if (proteinstructurePrev != null)
           point.set(proteinstructurePrev.getAxisEndPoint());
+        else if (isTraceAlpha)
+          aminopolymer.getLeadPoint(i, point);
         else
           aminopolymer.getLeadMidPoint(i, point);
         //residuePrev = null;
@@ -120,6 +124,8 @@ class RocketsRenderer extends MpsRenderer {
     point = cordMidPoints[monomerCount];
     if (proteinstructurePrev != null)
       point.set(proteinstructurePrev.getAxisEndPoint());
+    else if (isTraceAlpha)
+      aminopolymer.getLeadPoint(monomerCount, point);
     else
       aminopolymer.getLeadMidPoint(monomerCount, point);
     return cordMidPoints;

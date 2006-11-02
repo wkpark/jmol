@@ -26,8 +26,12 @@ package org.jmol.viewer;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
+import javax.vecmath.Vector3f;
 
 abstract class MpsRenderer extends ShapeRenderer {
+
+  Point3f[] leadMidpoints;
+  Vector3f[] wingVectors;
 
   void render() {
     if (shape == null)

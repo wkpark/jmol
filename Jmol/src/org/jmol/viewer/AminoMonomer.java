@@ -34,7 +34,7 @@ class AminoMonomer extends AlphaMonomer {
     JmolConstants.ATOMID_ALPHA_CARBON,      // 0 CA alpha carbon
     ~JmolConstants.ATOMID_CARBONYL_OXYGEN,   // 1 O wing man
     JmolConstants.ATOMID_AMINO_NITROGEN,    // 2 N
-    JmolConstants.ATOMID_CARBONYL_CARBON,   // 3 C
+    JmolConstants.ATOMID_CARBONYL_CARBON,   // 3 C  point man
     ~JmolConstants.ATOMID_TERMINATING_OXT,  // 4 OXT
     ~JmolConstants.ATOMID_O1,               // 5 O1
   };

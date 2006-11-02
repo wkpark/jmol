@@ -69,11 +69,14 @@ class StrandsRenderer extends MpsRenderer {
       ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
     
     if (schain.wingVectors != null) {
+      leadMidpoints = (viewer.getTraceAlpha() ? schain.leadPoints : schain.leadMidpoints);
+      wingVectors = schain.wingVectors;
+
       isNucleicPolymer = schain.polymer instanceof NucleicPolymer;
       render1Chain(schain.monomerCount,
                    schain.monomers,
-                   schain.leadMidpoints,
-                   schain.wingVectors,
+                   leadMidpoints,
+                   wingVectors,
                    schain.mads,
                    schain.colixes);
     }

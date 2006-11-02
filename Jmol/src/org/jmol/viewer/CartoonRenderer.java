@@ -75,8 +75,6 @@ class CartoonRenderer extends MpsRenderer {
   boolean ribbonBorder = false;
   int monomerCount;
   Monomer[] monomers;
-  Point3f[] leadMidpoints;
-  Vector3f[] wingVectors;
   short[] mads;
   short[] colixes;
 
@@ -86,6 +84,8 @@ class CartoonRenderer extends MpsRenderer {
   Point3i[] ribbonTopScreens;
   Point3i[] ribbonBottomScreens;
 
+  boolean isTraceAlpha;
+  
   int myVisibilityFlag;
   boolean renderAsRockets;
   void renderMpspolymer( Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
@@ -93,11 +93,11 @@ class CartoonRenderer extends MpsRenderer {
     this.myVisibilityFlag = myVisibilityFlag;
     newRockets = true; //!viewer.getTestFlag1();
     renderAsRockets = viewer.getCartoonRocketFlag();
-    
+    isTraceAlpha = viewer.getTraceAlpha();  
     if (strandsChain.wingVectors != null) {
       monomerCount = strandsChain.monomerCount;
       monomers = strandsChain.monomers;
-      leadMidpoints = strandsChain.leadMidpoints;
+      leadMidpoints = (isTraceAlpha ? strandsChain.leadPoints : strandsChain.leadMidpoints);
       wingVectors = strandsChain.wingVectors;
       mads = strandsChain.mads;
       colixes = strandsChain.colixes;
@@ -139,7 +139,10 @@ class CartoonRenderer extends MpsRenderer {
       point = cordMidPoints[i];
       Monomer residue = monomers[i];
       if (isNewStyle) {
-        polymer.getLeadMidPoint(i, point);        
+        if (isTraceAlpha && (isHelixes[i] || !isSpecials[i]))
+          polymer.getLeadPoint(i, point);
+        else
+           polymer.getLeadMidPoint(i, point);        
       } else if (isSpecials[i]) {
         ProteinStructure proteinstructure = residue.getProteinStructure();
         point.set(i - 1 != proteinstructure.getMonomerIndex() ?
@@ -149,16 +152,24 @@ class CartoonRenderer extends MpsRenderer {
       } else {
         if (proteinstructurePrev != null)
           point.set(proteinstructurePrev.getAxisEndPoint());
-        else
-          polymer.getLeadMidPoint(i, point);
+        else {
+          if (isTraceAlpha && (isHelixes[i] || !isSpecials[i]))
+            polymer.getLeadPoint(i, point);
+          else
+            polymer.getLeadMidPoint(i, point);
+        }
         proteinstructurePrev = null;
       }
     }
     point = cordMidPoints[monomerCount];
     if (proteinstructurePrev != null)
       point.set(proteinstructurePrev.getAxisEndPoint());
-    else
-      polymer.getLeadMidPoint(monomerCount, point);
+    else {
+      if (isTraceAlpha)
+        polymer.getLeadPoint(monomerCount, point);
+      else
+        polymer.getLeadMidPoint(monomerCount, point);
+    }
     screens = viewer.allocTempScreens(midPointCount);
     screensf = viewer.allocTempPoints(midPointCount);
     for (int i = midPointCount; --i >= 0; ) {

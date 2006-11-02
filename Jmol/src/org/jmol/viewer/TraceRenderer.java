@@ -48,8 +48,7 @@ class TraceRenderer extends MpsRenderer {
     } else {
       leadMidpoints = tchain.leadMidpoints;
     }
-    leadMidpointScreens = calcScreenLeadMidpoints(monomerCount
-        - (isTraceAlpha ? 1 : 0), leadMidpoints);
+    leadMidpointScreens = calcScreenLeadMidpoints(monomerCount, leadMidpoints);
     render1Chain(tchain.mads, tchain.colixes);
     viewer.freeTempScreens(leadMidpointScreens);
   }

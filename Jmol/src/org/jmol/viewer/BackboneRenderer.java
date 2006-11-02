@@ -29,29 +29,21 @@ import org.jmol.g3d.*;
 
 class BackboneRenderer extends MpsRenderer {
 
-  int myVisibilityFlag;
-  
-  void renderMpspolymer(Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
-    this.myVisibilityFlag = myVisibilityFlag;
+  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
     renderBackboneChain((Backbone.Bbpolymer)mpspolymer);
   }
   
   void renderBackboneChain(Backbone.Bbpolymer bbpolymer) {
-    render1Chain(bbpolymer.monomerCount, bbpolymer.monomers,
-                 bbpolymer.polymer.getLeadAtomIndices(),
-                 bbpolymer.mads, bbpolymer.colixes);
+    render1();
   }
 
-  void render1Chain(int monomerCount, Monomer[] monomers, int[] atomIndices,
-                    short[] mads, short[] colixes) {
+  void render1() {
     for (int i = monomerCount - 1; --i >= 0;) {
-      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0)
+      if (!bsVisible.get(i))
         continue;
-
-      Atom atomA = frame.getAtomAt(atomIndices[i]);
-      Atom atomB = frame.getAtomAt(atomIndices[i + 1]);
+      Atom atomA = frame.getAtomAt(leadAtomIndices[i]);
+      Atom atomB = frame.getAtomAt(leadAtomIndices[i + 1]);
       if (atomA.nBackbonesDisplayed == 0 || atomB.nBackbonesDisplayed == 0
-          || frame.bsHidden.get(atomA.atomIndex)
           || frame.bsHidden.get(atomB.atomIndex))
         continue;
       int xA = atomA.getScreenX(), yA = atomA.getScreenY(), zA = atomA

@@ -28,7 +28,6 @@ import org.jmol.g3d.*;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
-import javax.vecmath.Vector3f;
 
 class CartoonRenderer extends MpsRenderer {
 
@@ -39,96 +38,29 @@ class CartoonRenderer extends MpsRenderer {
    * Bob Hanson 8/2006
    * 
    */
-  final Point3f pointT = new Point3f();
   final static float MIN_CONE_HEIGHT = 0.05f;
   boolean newRockets;
-
-  void calc1Screen(Point3f center, Vector3f vector,
-                   short mad, float offsetFraction, Point3i screen) {
-    pointT.set(vector);
-    float scale = mad * offsetFraction;
-    pointT.scaleAdd(scale, center);
-    viewer.transformPoint(pointT, screen);
-  }
-
-  Point3i[] calcScreens(Point3f[] centers, Vector3f[] vectors,
-                        short[] mads, float offsetFraction) {
-    int count = centers.length;
-    Point3i[] screens = viewer.allocTempScreens(count);
-    if (offsetFraction == 0) {
-      for (int i = count; --i >= 0; )
-        viewer.transformPoint(centers[i], screens[i]);
-    } else {
-      for (int i = count; --i >= 0; ) {
-        pointT.set(vectors[i]);
-        short mad = mads[i];
-        float scale = mad * offsetFraction;
-        pointT.scaleAdd(scale, centers[i]);
-        viewer.transformPoint(pointT, screens[i]);
-      }
-    }
-    return screens;
-  }
-
-  boolean isNucleicPolymer;
-  boolean isCarbohydratePolymer;
-  boolean ribbonBorder = false;
-  int monomerCount;
-  Monomer[] monomers;
-  short[] mads;
-  short[] colixes;
-
-  boolean[] isSpecials;
-  boolean[] isHelixes;
-  Point3i[] leadMidpointScreens;
-  Point3i[] ribbonTopScreens;
-  Point3i[] ribbonBottomScreens;
-
-  boolean isTraceAlpha;
-  
-  int myVisibilityFlag;
   boolean renderAsRockets;
-  void renderMpspolymer( Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
-    Cartoon.Cchain strandsChain = (Cartoon.Cchain)mpspolymer;
-    this.myVisibilityFlag = myVisibilityFlag;
+  
+  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+    Cartoon.Cchain schain = (Cartoon.Cchain) mpspolymer;
+    if (schain.wingVectors == null || isCarbohydrate)
+      return;
     newRockets = true; //!viewer.getTestFlag1();
     renderAsRockets = viewer.getCartoonRocketFlag();
-    isTraceAlpha = viewer.getTraceAlpha();  
-    if (strandsChain.wingVectors != null) {
-      monomerCount = strandsChain.monomerCount;
-      monomers = strandsChain.monomers;
-      leadMidpoints = (isTraceAlpha ? strandsChain.leadPoints : strandsChain.leadMidpoints);
-      wingVectors = strandsChain.wingVectors;
-      mads = strandsChain.mads;
-      colixes = strandsChain.colixes;
-      ribbonBorder = viewer.getRibbonBorder();
-      if (!initializeChain(strandsChain.polymer))
-        return;
-      render1Chain();
-    }
+    calcScreenControlPoints();
+    ribbonTopScreens = calcScreens(isNucleic ? 1f : 0.5f);
+    ribbonBottomScreens = calcScreens(isNucleic ? 0f : -0.5f);
+    if (!isNucleic)
+      calcRopeMidPoints(schain.polymer, newRockets);
+    render1Chain();
+    viewer.freeTempScreens(ribbonTopScreens);
+    viewer.freeTempScreens(ribbonBottomScreens);
   }
 
   Point3i[] screens;
   Point3f[] screensf;
   Point3f[] cordMidPoints;
-
-  boolean initializeChain(Polymer polymer) {
-    isNucleicPolymer = polymer instanceof NucleicPolymer;
-    isCarbohydratePolymer = polymer instanceof CarbohydratePolymer;
-    if (isCarbohydratePolymer)
-      return false;
-    isSpecials = calcIsSpecials(monomerCount, monomers);
-    isHelixes = calcIsHelix(monomerCount, monomers);
-    leadMidpointScreens = calcScreenLeadMidpoints(monomerCount, leadMidpoints);
-    ribbonTopScreens = calcScreens(leadMidpoints, wingVectors, mads,
-        isNucleicPolymer ? 1f / 1000 : 0.5f / 1000);
-    ribbonBottomScreens = calcScreens(leadMidpoints, wingVectors, mads,
-        isNucleicPolymer ? 0f : -0.5f / 1000);
-    if (!isNucleicPolymer)
-      calcRopeMidPoints(polymer, newRockets);
-    clearPending();
-    return true;
-  }
 
   void calcRopeMidPoints(Polymer polymer, boolean isNewStyle) {
     int midPointCount = monomerCount + 1;
@@ -193,6 +125,7 @@ class CartoonRenderer extends MpsRenderer {
   }
   
   void render1Chain() {
+    clearPending();
     boolean lastWasSheet = false;
     boolean lastWasHelix = false;
     ProteinStructure previousStructure = null;
@@ -203,17 +136,14 @@ class CartoonRenderer extends MpsRenderer {
     
     for (int i = monomerCount; --i >= 0;) {
       // runs backwards, so it can render the heads first
-      Monomer group = monomers[i];
-      thisStructure = group.getProteinStructure();
+      thisStructure = monomers[i].getProteinStructure();
       if (thisStructure != previousStructure) {
         lastWasHelix = false;
         lastWasSheet = false;
       }
       previousStructure = thisStructure;
-      if ((group.shapeVisibilityFlags & myVisibilityFlag) != 0 &&
-        !frame.bsHidden.get(group.getLeadAtomIndex())) {
-        short colix = Graphics3D.inheritColix(colixes[i],
-            group.getLeadAtom().colixAtom);
+      if (bsVisible.get(i)) {
+        short colix = getLeadColix(i);
         boolean isHelix = isHelixes[i];
         boolean isSheet = isSpecials[i] && !isHelix;
         boolean isHelixRocket = (renderAsRockets ? isHelix : false);
@@ -221,22 +151,20 @@ class CartoonRenderer extends MpsRenderer {
           // skip helixRockets in this pass
         } else if (isSheet || isHelix) {
           if (lastWasSheet && isSheet || lastWasHelix && isHelix) {
-            render2StrandSegment(monomerCount, group, colix, mads, i);
+            render2StrandSegment(colix, i);
           } else {
-            render2StrandArrowhead(monomerCount, group, colix, mads, i);
+            render2StrandArrowhead(colix, i);
           }
         } else {
           //turn
           if (lastWasHelix && !isHelix && !isSheet) {
-            renderRopeSegment(colix, mads, i, monomerCount, monomers,
-                screens, isSpecials);
+            renderRopeSegment(colix, i, true);
           } else if (!renderAsRockets || i == 0 || !isHelixes[i - 1]) {
-            renderRopeSegment(colix, mads, i, monomerCount, monomers,
-               leadMidpointScreens, isSpecials);
+            renderRopeSegment(colix, i, true);
           }
-          if (isNucleicPolymer)
-            renderNucleicBaseStep((NucleicMonomer) group, colix, mads[i],
-                leadMidpointScreens[i + 1]);
+          if (isNucleic)
+            renderNucleicBaseStep((NucleicMonomer) monomers[i], colix, mads[i],
+                controlPointScreens[i + 1]);
         }
         lastWasSheet = isSheet;
         lastWasHelix = isHelix;
@@ -247,49 +175,36 @@ class CartoonRenderer extends MpsRenderer {
 
     //doing the cylinders separately because we want to connect them if we can.
     
-    if (renderAsRockets && !isNucleicPolymer && !isCarbohydratePolymer) {
+    if (renderAsRockets && !isNucleic && !isCarbohydrate) {
       lastWasHelix = false;
-      boolean isVisible;
       //error here is that one helix might connect with the next helix, in which case 
       //multiple helixes will be seen as one. That's a SERIOUS problem, because
       //currently we don't recognize the structure NUMBER only the TYPE
       
       for (int i = 0; i < monomerCount; ++i) {
-        Monomer group = monomers[i];
         boolean isHelix = isHelixes[i];
-        isVisible = ((group.shapeVisibilityFlags & myVisibilityFlag) != 0 
-            && !frame.bsHidden.get(group.getLeadAtomIndex()));
-        if (isVisible) {
-          short colix = Graphics3D.inheritColix(colixes[i],
-              group.getLeadAtom().colixAtom);
+        if (bsVisible.get(i)) {
+          short colix = getLeadColix(i);
           if (isHelix) {
-            renderHelixAsRocket(group, colix, mads[i], i > 0 && isHelixes[i-1]);
+            renderHelixAsRocket(monomers[i], colix, mads[i], i > 0 && isHelixes[i-1]);
             if (newRockets &&  i > 0 && !isSpecials[i-1]) {
-              renderRopeSegment2(colix, mads, i, i - 1, monomerCount,
-                  monomers, screens, null);
+              renderRopeSegment2(colix, i, i - 1, false);
             }
           } else if (isSpecials[i]) {
             // sheet done above
           } else if (lastWasHelix) {
             if (newRockets)
-              renderRopeSegment2(colix, mads, i-1, i, monomerCount,
-                  monomers, screens, null);
-            renderRopeSegment(colix, mads, i, monomerCount,
-                monomers, screens, isSpecials);
+              renderRopeSegment2(colix, i-1, i, false);
+            renderRopeSegment(colix, i, true);
           }
         }
-          lastWasHelix = isHelix;
+        lastWasHelix = isHelix;
       }
       renderPendingRocketSegment(true);
       viewer.freeTempScreens(screens);
       viewer.freeTempPoints(cordMidPoints);
       viewer.freeTempPoints(screensf);
     }
-    viewer.freeTempScreens(ribbonTopScreens);
-    viewer.freeTempScreens(ribbonBottomScreens);
-    viewer.freeTempScreens(leadMidpointScreens);
-    viewer.freeTempBooleans(isSpecials);
-    viewer.freeTempBooleans(isHelixes);
   }
   
   // this is a hack of the old rocket code that doesn't work properly for mulitple colors.
@@ -374,8 +289,7 @@ class CartoonRenderer extends MpsRenderer {
     lastDiameter = diameter;
   }
 
-  void render2StrandSegment(int monomerCount, Monomer group, short colix,
-                            short[] mads, int i) {
+  void render2StrandSegment(short colix, int i) {
     int iLast = monomerCount;
     int iPrev = i - 1;
     if (iPrev < 0)
@@ -388,7 +302,7 @@ class CartoonRenderer extends MpsRenderer {
       iNext2 = iLast;
 
     //change false -> true to fill in mesh
-    g3d.drawHermite(true, ribbonBorder, colix, isNucleicPolymer ? 4 : 7,
+    g3d.drawHermite(true, ribbonBorder, colix, isNucleic ? 4 : 7,
         ribbonTopScreens[iPrev], ribbonTopScreens[i], ribbonTopScreens[iNext],
         ribbonTopScreens[iNext2], ribbonBottomScreens[iPrev],
         ribbonBottomScreens[i], ribbonBottomScreens[iNext],
@@ -400,8 +314,7 @@ class CartoonRenderer extends MpsRenderer {
   final Point3i screenArrowBot = new Point3i();
   final Point3i screenArrowBotPrev = new Point3i();
 
-  void render2StrandArrowhead(int monomerCount, Monomer group, short colix,
-                              short[] mads, int i) {
+  void render2StrandArrowhead(short colix, int i) {
     int iLast = monomerCount;
     int iPrev = i - 1;
     if (iPrev < 0)
@@ -412,22 +325,22 @@ class CartoonRenderer extends MpsRenderer {
     int iNext2 = i + 2;
     if (iNext2 > iLast)
       iNext2 = iLast;
-    calc1Screen(leadMidpoints[i], wingVectors[i], mads[i], .7f / 1000,
+    calc1Screen(controlPoints[i], wingVectors[i], mads[i], .7f,
         screenArrowTop);
-    calc1Screen(leadMidpoints[iPrev], wingVectors[iPrev], mads[iPrev],
-        1.0f / 1000, screenArrowTopPrev);
-    calc1Screen(leadMidpoints[i], wingVectors[i], mads[i], -.7f / 1000,
+    calc1Screen(controlPoints[iPrev], wingVectors[iPrev], mads[iPrev],
+        1.0f, screenArrowTopPrev);
+    calc1Screen(controlPoints[i], wingVectors[i], mads[i], -.7f,
         screenArrowBot);
-    calc1Screen(leadMidpoints[i], wingVectors[i], mads[i], -1.0f / 1000,
+    calc1Screen(controlPoints[i], wingVectors[i], mads[i], -1.0f,
         screenArrowBotPrev);
     if (ribbonBorder)
       g3d.fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
           screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
           screenArrowBot.x, screenArrowBot.y, screenArrowBot.z);
-    g3d.drawHermite(true, ribbonBorder, colix, isNucleicPolymer ? 4 : 7,
-        screenArrowTopPrev, screenArrowTop, leadMidpointScreens[iNext],
-        leadMidpointScreens[iNext2], screenArrowBotPrev, screenArrowBot,
-        leadMidpointScreens[iNext], leadMidpointScreens[iNext2],
+    g3d.drawHermite(true, ribbonBorder, colix, isNucleic ? 4 : 7,
+        screenArrowTopPrev, screenArrowTop, controlPointScreens[iNext],
+        controlPointScreens[iNext2], screenArrowBotPrev, screenArrowBot,
+        controlPointScreens[iNext], controlPointScreens[iNext2],
         renderAsRockets ? 8 : 0);
   }
 

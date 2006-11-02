@@ -24,151 +24,59 @@
 
 package org.jmol.viewer;
 
-import org.jmol.g3d.Graphics3D;
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 
-
-class MeshRibbonRenderer extends MpsRenderer { // not current for Mcp class
-
-  MeshRibbon strands;
-
-  Point3i[] calcScreens(Point3f[] centers, Vector3f[] vectors,
-                        short[] mads, float offsetFraction) {
-    
-    Point3f pointT = new Point3f();  //DC: made local
-    Point3i[] screens = viewer.allocTempScreens(centers.length);
-    if (offsetFraction == 0) {
-      for (int i = centers.length; --i >= 0; )
-        viewer.transformPoint(centers[i], screens[i]);
-    } else {
-      offsetFraction /= 1000;
-      for (int i = centers.length; --i >= 0; ) {
-        pointT.set(vectors[i]);
-        float scale = mads[i] * offsetFraction;
-        pointT.scaleAdd(scale, centers[i]);
-        viewer.transformPoint(pointT, screens[i]);
-      }
-    }
-    return screens;
-  }
+class MeshRibbonRenderer extends RibbonsRenderer {
 
   int strandCount;
   float strandSeparation;
   float baseOffset;
 
-  boolean isNucleicPolymer;
-  int myVisibilityFlag;
-  
-  void renderMpspolymer( Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
-    this.myVisibilityFlag = myVisibilityFlag;
-    MeshRibbon.Schain strandsChain = (MeshRibbon.Schain)mpspolymer;
-
-    leadMidpoints = (viewer.getTraceAlpha() ? strandsChain.leadPoints : strandsChain.leadMidpoints);
-    wingVectors = strandsChain.wingVectors;
-    // no way to do this now that strandCount is part of the strands object
-    // strandCount = viewer.getStrandsCount();
-    strandCount = 7;
-    strandSeparation = (strandCount <= 1 ) ? 0 : 1f / (strandCount - 1);
-    baseOffset =
-      ((strandCount & 1) == 0) ? strandSeparation / 2 : strandSeparation;
-
-    if (wingVectors != null) {
-      isNucleicPolymer = strandsChain.polymer instanceof NucleicPolymer;
-      render1Chain(strandsChain.monomerCount,
-                   strandsChain.monomers,
-                   leadMidpoints,
-                   wingVectors,
-                   strandsChain.mads,
-                   strandsChain.colixes);
-    }
+  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+    if (wingVectors == null)
+      return;
+    setStrandCount(7);
+    float offset = ((strandCount >> 1) * strandSeparation) + baseOffset;
+    render2Strand(false, offset, offset);
+    render1();
   }
 
+  void setStrandCount(int strandCount) {
+    this.strandCount = strandCount;
+    strandSeparation = (strandCount <= 1) ? 0 : 1f / (strandCount - 1);
+    baseOffset = (strandCount % 2 == 0 ? strandSeparation / 2
+        : strandSeparation);
+  }
 
-  void render1Chain(int monomerCount,
-                    Monomer[] monomers, Point3f[] centers,
-                    Vector3f[] vectors, short[] mads, short[] colixes) {
-    Point3i[] ribbonTopScreens;
-    Point3i[] ribbonBottomScreens;
-
-    int j = strandCount >> 1;
-    float offset = (j * strandSeparation) + baseOffset;
-    ribbonTopScreens = calcScreens(centers, vectors, mads, offset);
-    ribbonBottomScreens = calcScreens(centers, vectors, mads, -offset);
-    render2Strand(monomerCount, monomers, mads, colixes,
-                  ribbonTopScreens, ribbonBottomScreens);
-    viewer.freeTempScreens(ribbonTopScreens);
-    viewer.freeTempScreens(ribbonBottomScreens);
-    
+  void render1() {
     Point3i[] screens;
-    for (int i = strandCount >> 1; --i >= 0; ) {
+    for (int i = strandCount >> 1; --i >= 0;) {
       float f = (i * strandSeparation) + baseOffset;
-      screens = calcScreens(centers, vectors, mads, f);
-      render1Strand(monomerCount, monomers, mads, colixes, screens);
+      screens = calcScreens(f);
+      render1Strand(screens);
       viewer.freeTempScreens(screens);
-      screens = calcScreens(centers, vectors, mads, -f);
-      render1Strand(monomerCount, monomers, mads, colixes, screens);
-      viewer.freeTempScreens(screens);
-    }
-    if ((strandCount & 1) != 0) {
-      screens = calcScreens(centers, vectors, mads, 0f);
-      render1Strand(monomerCount, monomers, mads, colixes, screens);
+      screens = calcScreens(-f);
+      render1Strand(screens);
       viewer.freeTempScreens(screens);
     }
-    
-  }
-
-
-  void render1Strand(int monomerCount, Monomer[] monomers, short[] mads,
-                     short[] colixes, Point3i[] screens) {
-    for (int i = monomerCount; --i >= 0;) {
-      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
-          || frame.bsHidden.get(monomers[i].getLeadAtomIndex()))
-        continue;
-      render1StrandSegment(monomerCount, monomers[i], colixes[i], mads,
-          screens, i);
+    if (strandCount % 2 == 1) {
+      screens = calcScreens(0f);
+      render1Strand(screens);
+      viewer.freeTempScreens(screens);
     }
   }
-  
-  void render1StrandSegment(int monomerCount, Monomer monomer, short colix,
-                            short[] mads, Point3i[] screens, int i) {
-    int iLast = monomerCount;
-    int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
-    int iNext = i + 1; if (iNext > iLast) iNext = iLast;
-    int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
-    colix = Graphics3D.inheritColix(colix, monomer.getLeadAtom().colixAtom);
-    g3d.drawHermite(colix, 7, screens[iPrev], screens[i],
-                    screens[iNext], screens[iNext2]);
+
+  void render1Strand(Point3i[] screens) {
+    for (int i = monomerCount; --i >= 0;)
+      if (bsVisible.get(i))
+        render1StrandSegment(screens, i);
   }
 
-  void render2Strand(int monomerCount, Monomer[] monomers, short[] mads,
-                     short[] colixes, Point3i[] ribbonTopScreens,
-                     Point3i[] ribbonBottomScreens) {
-    for (int i = monomerCount; --i >= 0;) {
-      if (mads[i] == 0 || frame.bsHidden.get(monomers[i].getLeadAtomIndex()))
-        continue;
-      render2StrandSegment(monomerCount, monomers[i], colixes[i], mads,
-          ribbonTopScreens, ribbonBottomScreens, i);
-    }
-  }
-  
-  void render2StrandSegment(int monomerCount, Monomer monomer, short colix,
-                            short[] mads, Point3i[] ribbonTopScreens,
-                            Point3i[] ribbonBottomScreens, int i) {
-    int iLast = monomerCount;
-    int iPrev = i - 1; if (iPrev < 0) iPrev = 0;
-    int iNext = i + 1; if (iNext > iLast) iNext = iLast;
-    int iNext2 = i + 2; if (iNext2 > iLast) iNext2 = iLast;
-    colix = Graphics3D.inheritColix(colix, monomer.getLeadAtom().colixAtom);
-    
-    //change false -> true to fill in mesh
-      
-    g3d.drawHermite(false, true, colix, isNucleicPolymer ? 4 : 7,
-                    ribbonTopScreens[iPrev], ribbonTopScreens[i],
-                    ribbonTopScreens[iNext], ribbonTopScreens[iNext2],
-                    ribbonBottomScreens[iPrev], ribbonBottomScreens[i],
-                    ribbonBottomScreens[iNext], ribbonBottomScreens[iNext2]
-                    );
+  void render1StrandSegment(Point3i[] screens, int i) {
+    int iPrev = Math.max(i - 1, 0);
+    int iNext = Math.min(i + 1, monomerCount);
+    int iNext2 = Math.min(i + 2, monomerCount);
+    g3d.drawHermite(getLeadColix(i), isNucleic ? 4 : 7, screens[iPrev],
+        screens[i], screens[iNext], screens[iNext2]);
   }
 }

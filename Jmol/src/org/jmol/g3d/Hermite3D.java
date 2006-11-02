@@ -43,6 +43,8 @@ import java.util.Vector;
  * <a href='http://www.cubic.org/docs/hermite.htm'>
  * http://www.cubic.org/docs/hermite.htm
  * </a>
+ * 
+ * Technically, Jmol implements a Cardinal spline varient of the Hermitian spline
  *</p>
  *
  * @author Miguel, miguel@jmol.org
@@ -95,6 +97,7 @@ class Hermite3D {
     sRight[0] = 1;
     pRight[0].set(p2);
     sp = 0;
+    int n=0;
     int dDiameterFirstHalf = 0;
     int dDiameterSecondHalf = 0;
     if (tFill) {
@@ -113,6 +116,7 @@ class Hermite3D {
           // mth 2003 10 13
           // I tried drawing short cylinder segments here,
           // but drawing spheres was faster
+          n++;
           float s = sLeft[sp];
           if (tFill) {
             int d =(s < 0.5f
@@ -145,6 +149,7 @@ class Hermite3D {
       pLeft[sp].set(pMid);
       sLeft[sp] = (float)s;
     } while (sp >= 0);
+    System.out.println("midpoints: "+n);
   }
 
   void render2x(boolean fill, short colix, int tension,

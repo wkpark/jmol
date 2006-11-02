@@ -37,57 +37,33 @@ class RocketsRenderer extends MpsRenderer {
   Point3i s3 = new Point3i();
   int diameterBeg, diameterMid, diameterEnd;
 
-  Rockets cartoon;
-  int myVisibilityFlag;
-  boolean isTraceAlpha;
-  
-  void renderMpspolymer(Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
-    this.myVisibilityFlag = myVisibilityFlag;
+  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
     Rockets.Cchain cchain = (Rockets.Cchain)mpspolymer;
-    isTraceAlpha = viewer.getTraceAlpha();
-    render1Chain(cchain.polymer, cchain.mads, cchain.colixes);
+    if (!(cchain.polymer instanceof AminoPolymer))
+      return;
+    calcScreenControlPoints();
+    cordMidPoints = calcRopeMidPoints((AminoPolymer)cchain.polymer);    
+    render1();
+    viewer.freeTempPoints(cordMidPoints);
   }
 
-  void render1Chain(Polymer polymer, short[] mads, short[] colixes) {
-    if (!(polymer instanceof AminoPolymer))
-      return;
-    initializeChain((AminoPolymer) polymer);
+  void render1() {
     clearPending();
     for (int i = 0; i < monomerCount; ++i) {
       Monomer monomer = monomers[i];
-      if ((monomer.shapeVisibilityFlags & myVisibilityFlag) == 0
-          || frame.bsHidden.get(monomer.getLeadAtomIndex()))
+      if (!bsVisible.get(i))
         continue;
-      short colix = Graphics3D.inheritColix(colixes[i],
-          monomer.getLeadAtom().colixAtom);
+      short colix = getLeadColix(i);
       if (monomer.isHelixOrSheet()) {
-        //Logger.debug("renderSpecialSegment[" + i + "]");
         renderSpecialSegment(monomer, colix, mads[i]);
       } else {
-        //Logger.debug("renderRopeSegment[" + i + "]");
-        renderRopeSegment(colix, mads, i, monomerCount, monomers, screens,
-            isSpecials);
+        renderRopeSegment(colix, i, true);
       }
     }
     renderPending();
-    viewer.freeTempScreens(screens);
-    viewer.freeTempPoints(cordMidPoints);
-    viewer.freeTempBooleans(isSpecials);
   }
 
-  int monomerCount;
-  Monomer[] monomers;
-  Point3i[] screens;
-  boolean[] isSpecials;
   Point3f[] cordMidPoints;
-
-  void initializeChain(AminoPolymer aminopolymer) {
-    monomers = aminopolymer.monomers;
-    monomerCount = aminopolymer.monomerCount;
-    isSpecials = calcIsSpecials(monomerCount, monomers);
-    cordMidPoints = calcRopeMidPoints(aminopolymer);
-    screens = getScreens();
-  }
 
   Point3f[] calcRopeMidPoints(AminoPolymer aminopolymer) {
     int midPointCount = monomerCount + 1;
@@ -103,12 +79,6 @@ class RocketsRenderer extends MpsRenderer {
         point.set(i - 1 != proteinstructure.getMonomerIndex()
                   ? proteinstructure.getAxisStartPoint()
                   : proteinstructure.getAxisEndPoint());
-
-        //        if (i != structure.getStartResidueIndex()) {
-        //          point.add(structure.getAxisEndPoint());
-        //          point.scale(0.5f);
-        //        }
-        //residuePrev = residue;
         proteinstructurePrev = proteinstructure;
       } else {
         if (proteinstructurePrev != null)
@@ -117,7 +87,6 @@ class RocketsRenderer extends MpsRenderer {
           aminopolymer.getLeadPoint(i, point);
         else
           aminopolymer.getLeadMidPoint(i, point);
-        //residuePrev = null;
         proteinstructurePrev = null;
       }
     }
@@ -130,17 +99,7 @@ class RocketsRenderer extends MpsRenderer {
       aminopolymer.getLeadMidPoint(monomerCount, point);
     return cordMidPoints;
   }
-
-  Point3i[] getScreens() {
-    int count = monomerCount + 1;
-    Point3i[] screens = viewer.allocTempScreens(count);
-    for (int i = count; --i >= 0; ) {
-      viewer.transformPoint(cordMidPoints[i], screens[i]);
-      //      g3d.fillSphereCentered(Colix.CYAN, 15, screens[i]);
-    }
-    return screens;
-  }
-
+  
   final Point3i screenA = new Point3i();
   Point3i screenB = new Point3i();
   Point3i screenC = new Point3i();
@@ -183,14 +142,6 @@ class RocketsRenderer extends MpsRenderer {
     boolean tEnd = (endIndexPending == proteinstructurePending
         .getMonomerCount() - 1);
 
-    /*
-     Logger.debug("structurePending.getPolymerCount()=" +
-     structurePending.getPolymerCount());
-     Logger.debug("segments.length=" + segments.length);
-     Logger.debug(" startIndexPending=" + startIndexPending +
-     " endIndexPending=" + endIndexPending);
-     Logger.debug("tEnd=" + tEnd);
-     */
     if (proteinstructurePending instanceof Helix)
       renderPendingHelix(segments[startIndexPending],
           segments[endIndexPending], segments[endIndexPending + 1], tEnd);
@@ -277,27 +228,6 @@ class RocketsRenderer extends MpsRenderer {
                             screenCorners[i2],
                             screenCorners[i3]);
     }
-    /*
-    Sheet sheet = (Sheet)structurePending;
-    Vector3f widthUnitVector = sheet.getWidthUnitVector();
-    Vector3f heightUnitVector = sheet.getHeightUnitVector();
-    float widthScale = (madPending + madPending >> 2) / 2 / 1000f;
-
-    pointArrow1.set(widthUnitVector);
-    pointArrow1.scaleAdd(-widthScale, base);
-    viewer.transformPoint(pointArrow1, screenA);
-
-    pointArrow2.set(widthUnitVector);
-    pointArrow2.scaleAdd(widthScale, base);
-    viewer.transformPoint(pointArrow2, screenB);
-
-    viewer.transformPoint(tip, screenC);
-
-    viewer.transformVector(heightUnitVector, vectorNormal);
-
-    g3d.drawfillTriangle(colixPending, vectorNormal,
-                         screenA, screenB, screenC);
-    */
   }
 
   final Vector3f lengthVector = new Vector3f();

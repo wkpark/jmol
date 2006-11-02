@@ -36,7 +36,7 @@ abstract class Polymer {
   int monomerCount;
   int structureCount;
 
-  private int[] atomIndices;
+  private int[] leadAtomIndices;
 
   Polymer(Monomer[] monomers) {
     this.monomers = monomers;
@@ -195,12 +195,12 @@ abstract class Polymer {
   }
 
   int[] getLeadAtomIndices() {
-    if (atomIndices == null) {
-      atomIndices = new int[monomerCount];
+    if (leadAtomIndices == null) {
+      leadAtomIndices = new int[monomerCount];
       for (int i = monomerCount; --i >= 0; )
-        atomIndices[i] = monomers[i].getLeadAtomIndex();
+        leadAtomIndices[i] = monomers[i].getLeadAtomIndex();
     }
-    return atomIndices;
+    return leadAtomIndices;
   }
   
   int getIndex(Monomer monomer) {
@@ -280,7 +280,7 @@ abstract class Polymer {
   void setConformation(BitSet bsSelected, int nAltLocsInModel) {
     for (int i = monomerCount; --i >= 0; )
       monomers[i].updateOffsetsForAlternativeLocations(bsSelected, nAltLocsInModel);
-    atomIndices = null;
+    leadAtomIndices = null;
     getLeadAtomIndices();
     calcLeadMidpointsAndWingVectors(false);
     //calculateStructures();

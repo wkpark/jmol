@@ -24,52 +24,17 @@
 
 package org.jmol.viewer;
 
-import org.jmol.g3d.Graphics3D;
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-
 class TraceRenderer extends MpsRenderer {
 
-  boolean isNucleicPolymer;
-  int myVisibilityFlag;
-  boolean isTraceAlpha;
-  
-  void renderMpspolymer(Mps.Mpspolymer mpspolymer, int myVisibilityFlag) {
-    this.myVisibilityFlag = myVisibilityFlag;
-    Trace.Tchain tchain = (Trace.Tchain) mpspolymer;
-    isNucleicPolymer = tchain.polymer instanceof NucleicPolymer;
-    monomerCount = tchain.monomerCount;
-    if (monomerCount == 0)
-      return;
-    monomers = tchain.monomers;
-    isTraceAlpha = viewer.getTraceAlpha();
-    if (isTraceAlpha) {
-      leadMidpoints = tchain.leadPoints;
-    } else {
-      leadMidpoints = tchain.leadMidpoints;
-    }
-    leadMidpointScreens = calcScreenLeadMidpoints(monomerCount, leadMidpoints);
-    render1Chain(tchain.mads, tchain.colixes);
-    viewer.freeTempScreens(leadMidpointScreens);
+  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+    calcScreenControlPoints();
+    render1();
   }
 
-  int monomerCount;
-
-  Monomer[] monomers;
-  Point3i[] leadMidpointScreens;
-  Point3f[] leadMidpoints;
-
-  void render1Chain(short[] mads, short[] colixes) {
-    for (int i = monomerCount; --i >= 0;) {
-      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
-          || frame.bsHidden.get(monomers[i].getLeadAtomIndex()))
-        continue;
-      short colix = Graphics3D.inheritColix(colixes[i], monomers[i]
-          .getLeadAtom().colixAtom);
-      renderRopeSegment(colix, mads, i, monomerCount, monomers,
-          leadMidpointScreens, null);
-    }
+  void render1() {
+    for (int i = monomerCount; --i >= 0;)
+      if (bsVisible.get(i))
+        renderRopeSegment(getLeadColix(i), i, false);
   }
-
 }
 

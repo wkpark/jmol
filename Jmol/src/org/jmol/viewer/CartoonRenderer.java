@@ -54,12 +54,11 @@ class CartoonRenderer extends MpsRenderer {
     if (!isNucleic)
       calcRopeMidPoints(schain.polymer, newRockets);
     render1Chain();
+    viewer.freeTempPoints(cordMidPoints);
     viewer.freeTempScreens(ribbonTopScreens);
     viewer.freeTempScreens(ribbonBottomScreens);
   }
 
-  Point3i[] screens;
-  Point3f[] screensf;
   Point3f[] cordMidPoints;
 
   void calcRopeMidPoints(Polymer polymer, boolean isNewStyle) {
@@ -101,14 +100,6 @@ class CartoonRenderer extends MpsRenderer {
         polymer.getLeadPoint(monomerCount, point);
       else
         polymer.getLeadMidPoint(monomerCount, point);
-    }
-    screens = viewer.allocTempScreens(midPointCount);
-    screensf = viewer.allocTempPoints(midPointCount);
-    for (int i = midPointCount; --i >= 0; ) {
-      viewer.transformPoint(cordMidPoints[i], screensf[i]);
-      screens[i].x = (int)Math.floor(screensf[i].x);
-      screens[i].y = (int)Math.floor(screensf[i].y);
-      screens[i].z = (int)Math.floor(screensf[i].z);
     }
   }
 
@@ -201,9 +192,6 @@ class CartoonRenderer extends MpsRenderer {
         lastWasHelix = isHelix;
       }
       renderPendingRocketSegment(true);
-      viewer.freeTempScreens(screens);
-      viewer.freeTempPoints(cordMidPoints);
-      viewer.freeTempPoints(screensf);
     }
   }
   

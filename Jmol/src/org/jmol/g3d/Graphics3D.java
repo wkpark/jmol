@@ -778,6 +778,10 @@ final public class Graphics3D {
                      diameterBeg, diameterMid, diameterEnd,
                      s0, s1, s2, s3);
   }
+  
+  public static void getHermiteList(int tension, Point3f s0, Point3f s1, Point3f s2, Point3f s3, Point3f[] list) {
+    Hermite3D.getHermiteList(tension, s0, s1, s2, s3, list);
+  }
 
   /* ***************************************************************
    * triangles

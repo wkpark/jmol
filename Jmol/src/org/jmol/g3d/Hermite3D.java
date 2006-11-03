@@ -451,4 +451,32 @@ class Hermite3D {
     else
       a1.sub(depth);
   }
+  
+  static void getHermiteList(int tension, Point3f p0, Point3f p1, Point3f p2, Point3f p3, Point3f[] list) {
+    //always deliver ONE MORE than one might expect, to provide a normal
+    int nPoints = list.length;
+    float fnPoints = nPoints - 2;
+    float x1 = p1.x, y1 = p1.y, z1 = p1.z;
+    float x2 = p2.x, y2 = p2.y, z2 = p2.z;
+    float xT1 = ((x2 - p0.x) * tension) / 8;
+    float yT1 = ((y2 - p0.y) * tension) / 8;
+    float zT1 = ((z2 - p0.z) * tension) / 8;
+    float xT2 = ((p3.x - x1) * tension) / 8;
+    float yT2 = ((p3.y - y1) * tension) / 8;
+    float zT2 = ((p3.z - z1) * tension) / 8;
+    list[0] = p1;
+    for (int i = 0; i < nPoints; i++) {
+      double s = i / fnPoints;
+      double s2 = s * s;
+      double s3 = s2 * s;
+      double h1 = 2*s3 - 3*s2 + 1;
+      double h2 = -2*s3 + 3*s2;
+      double h3 = s3 - 2*s2 + s;
+      double h4 = s3 - s2;
+      float x = (float)(h1*x1 + h2*x2 + h3*xT1 + h4*xT2);
+      float y = (float) (h1*y1 + h2*y2 + h3*yT1 + h4*yT2);
+      float z = (float) (h1*z1 + h2*z2 + h3*zT1 + h4*zT2);
+      list[i] = new Point3f(x, y, z);
+   }
+  }
 }

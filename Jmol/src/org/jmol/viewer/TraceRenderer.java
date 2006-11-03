@@ -28,13 +28,33 @@ class TraceRenderer extends MpsRenderer {
 
   void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
     calcScreenControlPoints();
-    render1();
+    if (viewer.getTestFlag1())
+      renderMpspolymerMesh(mpspolymer);
+    else
+      render1();
   }
 
   void render1() {
     for (int i = monomerCount; --i >= 0;)
       if (bsVisible.get(i))
         renderHermiteConic(i, false);
+  }
+
+  void renderMpspolymerMesh(Mps.Mpspolymer mpspolymer) {
+    Trace.Tchain chain = (Trace.Tchain) mpspolymer;
+    if (mpspolymer.meshes == null)
+      chain.createMeshes(controlPoints);
+    renderMeshes(chain);
+  }
+
+  void renderMeshes(Trace.Tchain chain) {
+    for (int i = monomerCount; --i >= 0;)
+      if (bsVisible.get(i)) {
+        if (!chain.meshReady[i])
+          chain.createMesh(i, controlPoints);
+        chain.meshes[i].colix = getLeadColix(i);
+        render1(chain.meshes[i]);
+      }
   }
 }
 

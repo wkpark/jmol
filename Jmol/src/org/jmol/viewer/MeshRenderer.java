@@ -51,8 +51,10 @@ abstract class MeshRenderer extends ShapeRenderer {
     vertexValues = mesh.vertexValues;
     for (int i = vertexCount; --i >= 0;)
       if (vertexValues == null || !Float.isNaN(vertexValues[i])
-          || mesh.hasGridPoints)
+          || mesh.hasGridPoints) {
         viewer.transformPoint(vertices[i], screens[i]);
+        //System.out.println(i + " meshRender " + vertices[i] + screens[i]);
+      }
     iShowTriangles = viewer.getTestFlag3();
     iShowNormals = viewer.getTestFlag4();
     iHideBackground = (mesh.jvxlPlane != null && mesh.hideBackground);

@@ -162,6 +162,10 @@ abstract class Mps extends Shape {
   
   abstract class Mpspolymer {
     Polymer polymer;
+    
+    Mesh[] meshes;
+    boolean[] meshReady;
+
     short madOn;
     short madHelixSheet;
     short madTurnRandom;
@@ -277,6 +281,8 @@ abstract class Mps extends Shape {
           mads[i] = mad >= 0 ? mad : getMadSpecial(mad, i);
           monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
           frame.atoms[leadAtomIndex].setShapeVisibility(myVisibilityFlag,isVisible);
+          if (meshes != null)
+            falsifyMesh(i, true);
         }
       }
       if (monomerCount > 1)
@@ -285,12 +291,14 @@ abstract class Mps extends Shape {
 
     void setColix(short colix, String palette, BitSet bsSelected) {
       int[] atomIndices = polymer.getLeadAtomIndices();
-      for (int i = monomerCount; --i >= 0; ) {
+      for (int i = monomerCount; --i >= 0;) {
         int atomIndex = atomIndices[i];
-        if (bsSelected.get(atomIndex))
-          colixes[i] =
-            ((colix != Graphics3D.UNRECOGNIZED) ? colix :
-             viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette));
+        if (bsSelected.get(atomIndex)) {
+          colixes[i] = ((colix != Graphics3D.UNRECOGNIZED) ? colix : viewer
+              .getColixAtomPalette(frame.getAtomAt(atomIndex), palette));
+          if (meshes != null)
+            meshes[i].setColix(colixes[i]);
+        }
       }
     }
 
@@ -298,11 +306,26 @@ abstract class Mps extends Shape {
       int[] atomIndices = polymer.getLeadAtomIndices();
       for (int i = monomerCount; --i >= 0; ) {
         int atomIndex = atomIndices[i];
-        if (bsSelected.get(atomIndex))
+        if (bsSelected.get(atomIndex)) {
           colixes[i] = Graphics3D.setTranslucent(colixes[i], isTranslucent);
+          if (meshes != null)
+            meshes[i].setColix(colixes[i]);
+        }
       }
     }
 
+    void falsifyMesh(int index, boolean andNearby) {
+      if (meshReady == null)
+        return;
+      meshReady[index] = false;
+      if (!andNearby)
+        return;
+      if (index > 0)
+        meshReady[index - 1] = false;
+      if (index < monomerCount - 1)
+        meshReady[index + 1] = false;
+    }
+    
     private final static double eightPiSquared100 = 8 * Math.PI * Math.PI * 100;
     /**
      * Calculates the mean positional displacement in milliAngstroms.

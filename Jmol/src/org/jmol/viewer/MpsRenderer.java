@@ -32,10 +32,11 @@ import org.jmol.g3d.Graphics3D;
 
 import java.util.BitSet;
 
-abstract class MpsRenderer extends ShapeRenderer {
+abstract class MpsRenderer extends MeshRenderer {
 
   int aspectRatio;
   
+  boolean wasTraceAlpha;
   boolean isTraceAlpha; 
   int myVisibilityFlag;
   boolean isNucleic;
@@ -85,14 +86,13 @@ abstract class MpsRenderer extends ShapeRenderer {
     viewer.freeTempBooleans(isHelixes);
   }
   abstract void renderMpspolymer(Mps.Mpspolymer mpspolymer);
-
+  
   ////////////////////////////////////////////////////////////////
   // some utilities
   void initializePolymer(Mps.Mpspolymer schain) {
     ribbonBorder = viewer.getRibbonBorder();
     aspectRatio = viewer.getRibbonAspectRatio();
     isTraceAlpha = viewer.getTraceAlpha();
-
     // note that we are not treating a PhosphorusPolymer
     // as nucleic because we are not calculating the wing
     // vector correctly.
@@ -112,8 +112,12 @@ abstract class MpsRenderer extends ShapeRenderer {
     bsVisible.clear();
     for (int i = monomerCount; --i >= 0;)
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) != 0
-          && !frame.bsHidden.get(leadAtomIndices[i]))
+          && !frame.bsHidden.get(leadAtomIndices[i])) {
         bsVisible.set(i);
+        if (wasTraceAlpha != isTraceAlpha)
+          schain.falsifyMesh(i, false);
+      }
+    wasTraceAlpha = isTraceAlpha;  
   }
   
   void setStructureBooleans() {
@@ -263,5 +267,5 @@ abstract class MpsRenderer extends ShapeRenderer {
         controlPointScreens[iNext2], screenArrowBotPrev, screenArrowBot,
         controlPointScreens[iNext], controlPointScreens[iNext2],
         aspectRatio);
-  }
+  }  
 }

@@ -129,7 +129,9 @@ class Mesh {
   boolean showPoints = false;
   boolean drawTriangles = false;
   boolean fillTriangles = true;
-    
+
+  static int SEED_COUNT = 16;
+  
   Mesh(Viewer viewer, String thisID, Graphics3D g3d, short colix) {
     this.viewer = viewer;
     this.thisID = thisID;
@@ -229,7 +231,7 @@ class Mesh {
 
   int addVertexCopy(Point3f vertex, float value) {
     if (vertexCount == 0)
-      vertexValues = new float[256];
+      vertexValues = new float[SEED_COUNT];
     else if (vertexCount >= vertexValues.length)
       vertexValues = (float[]) ArrayUtil.doubleLength(vertexValues);
     vertexValues[vertexCount] = value;
@@ -238,7 +240,7 @@ class Mesh {
 
   int addVertexCopy(Point3f vertex) {
     if (vertexCount == 0)
-      vertices = new Point3f[256];
+      vertices = new Point3f[SEED_COUNT];
     else if (vertexCount == vertices.length)
       vertices = (Point3f[]) ArrayUtil.doubleLength(vertices);
     vertices[vertexCount] = new Point3f(vertex);
@@ -256,10 +258,18 @@ class Mesh {
     if (Float.isNaN(vertices[vertexA].x)||Float.isNaN(vertices[vertexB].x)||Float.isNaN(vertices[vertexC].x))
       return;
     if (polygonCount == 0)
-      polygonIndexes = new int[256][];
+      polygonIndexes = new int[SEED_COUNT][];
     else if (polygonCount == polygonIndexes.length)
       polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
     polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC};
+  }
+
+  void addQuad(int vertexA, int vertexB, int vertexC, int vertexD) {
+    if (polygonCount == 0)
+      polygonIndexes = new int[SEED_COUNT][];
+    else if (polygonCount == polygonIndexes.length)
+      polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
+    polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC, vertexD};
   }
 
   void setColix(short colix) {

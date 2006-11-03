@@ -820,7 +820,7 @@ public final class Frame {
       if (atomNames[i] == null) {
         Atom atom = atoms[i];
         atomNames[i] = atom.getElementSymbol() + atom.getAtomNumber();
-        System.out.println("atom " + i + " " + atomNames[i]);
+        //System.out.println("atom " + i + " " + atomNames[i]);
       }
   }
 

@@ -123,7 +123,7 @@ class OdysseyXMLReader extends AtomSetCollectionReader {
         ipt0 = line.indexOf("\"", ptQ1 + 1);
         String val = line.substring(ptQ1 + 1, ipt0);
         xml.put(key, val);
-        System.out.println(">" + key + "<=>" + val + "<");
+        //System.out.println(">" + key + "<=>" + val + "<");
       }
       readLine();
       if (line.indexOf(tag) >= 0 || line.indexOf(tag2) >= 0)

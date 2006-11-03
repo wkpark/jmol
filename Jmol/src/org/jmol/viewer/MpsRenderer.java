@@ -76,7 +76,6 @@ abstract class MpsRenderer extends ShapeRenderer {
         }
       }
     }
-    freeTempScreens();
   }
 
   void freeTempScreens() {

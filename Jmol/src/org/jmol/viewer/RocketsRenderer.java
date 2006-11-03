@@ -31,6 +31,10 @@ import javax.vecmath.Vector3f;
 
 class RocketsRenderer extends MpsRenderer {
 
+  final static float MIN_CONE_HEIGHT = 0.05f;
+
+  int aspectRatio = 8; // for rockets and cartoons
+  
   Point3i s0 = new Point3i();
   Point3i s1 = new Point3i();
   Point3i s2 = new Point3i();
@@ -41,7 +45,7 @@ class RocketsRenderer extends MpsRenderer {
     Rockets.Cchain cchain = (Rockets.Cchain)mpspolymer;
     if (!(cchain.polymer instanceof AminoPolymer))
       return;
-    cordMidPoints = calcRopeMidPoints((AminoPolymer)cchain.polymer);    
+    calcRopeMidPoints(false);    
     calcScreenControlPoints(cordMidPoints);
     render1();
     viewer.freeTempPoints(cordMidPoints);
@@ -49,47 +53,48 @@ class RocketsRenderer extends MpsRenderer {
 
   Point3f[] cordMidPoints;
 
-  Point3f[] calcRopeMidPoints(AminoPolymer aminopolymer) {
+  void calcRopeMidPoints(boolean isNewStyle) {
     int midPointCount = monomerCount + 1;
-    Point3f[] cordMidPoints = viewer.allocTempPoints(midPointCount);
-    //Monomer residuePrev = null;
+    cordMidPoints = viewer.allocTempPoints(midPointCount);
     ProteinStructure proteinstructurePrev = null;
     Point3f point;
     for (int i = 0; i < monomerCount; ++i) {
       point = cordMidPoints[i];
       Monomer residue = monomers[i];
-      if (isSpecials[i]) {
+      if (isNewStyle) {
+        point.set(controlPoints[i]);        
+      } else if (isSpecials[i]) {
         ProteinStructure proteinstructure = residue.getProteinStructure();
-        point.set(i - 1 != proteinstructure.getMonomerIndex()
-                  ? proteinstructure.getAxisStartPoint()
-                  : proteinstructure.getAxisEndPoint());
+        point.set(i - 1 != proteinstructure.getMonomerIndex() ?
+            proteinstructure.getAxisStartPoint() :
+            proteinstructure.getAxisEndPoint());
         proteinstructurePrev = proteinstructure;
       } else {
         if (proteinstructurePrev != null)
           point.set(proteinstructurePrev.getAxisEndPoint());
-        else 
-          point.set(controlPoints[i]);
+        else {
+          point.set(controlPoints[i]);        
+        }
         proteinstructurePrev = null;
       }
     }
     point = cordMidPoints[monomerCount];
     if (proteinstructurePrev != null)
       point.set(proteinstructurePrev.getAxisEndPoint());
-    else 
-      point.set(controlPoints[monomerCount]);
-    return cordMidPoints;
+    else {
+      point.set(controlPoints[monomerCount]);        
+    }
   }
-  
+
   void render1() {
     tPending = false;
     for (int i = 0; i < monomerCount; ++i)
       if (bsVisible.get(i)) {
         Monomer monomer = monomers[i];
-        short colix = getLeadColix(i);
         if (monomer.isHelixOrSheet()) {
-          renderSpecialSegment(monomer, colix, mads[i]);
+          renderSpecialSegment(monomer, getLeadColix(i), mads[i]);
         } else {
-          renderRopeSegment(colix, i, true);
+          renderRopeSegment(i, true);
         }
       }
     renderPending();
@@ -128,7 +133,7 @@ class RocketsRenderer extends MpsRenderer {
     boolean tEnd = (endIndexPending == proteinstructurePending
         .getMonomerCount() - 1);
     if (proteinstructurePending instanceof Helix)
-      renderPendingHelix(segments[startIndexPending],
+      renderPendingRocketSegment(segments[startIndexPending],
           segments[endIndexPending], segments[endIndexPending + 1], tEnd);
     else if (proteinstructurePending instanceof Sheet)
       renderPendingSheet(segments[startIndexPending],
@@ -136,30 +141,35 @@ class RocketsRenderer extends MpsRenderer {
     tPending = false;
   }
 
-  final Point3i screenA = new Point3i();
-  Point3i screenB = new Point3i();
-  Point3i screenC = new Point3i();
+  Point3f screenA = new Point3f();
+  Point3f screenB = new Point3f();
+  Point3f screenC = new Point3f();
 
-  void renderPendingHelix(Point3f pointStart, Point3f pointBeforeEnd,
-                          Point3f pointEnd, boolean tEnd) {
+  void renderPendingRocketSegment(Point3f pointStart, Point3f pointBeforeEnd,
+                                  Point3f pointEnd, boolean tEnd) {
     viewer.transformPoint(pointStart, screenA);
     viewer.transformPoint(pointEnd, screenB);
+    int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);
+    int diameter = viewer.scaleToScreen(zMid, madPending);
     if (tEnd) {
       viewer.transformPoint(pointBeforeEnd, screenC);
-      int capDiameter =
-        viewer.scaleToScreen(screenC.z, madPending + (madPending >> 2));
-      g3d.fillCone(colixPending, Graphics3D.ENDCAPS_FLAT, capDiameter,
-                   screenC, screenB);
+      if (pointBeforeEnd.distance(pointEnd) > MIN_CONE_HEIGHT) {
+        int coneDiameter = viewer.scaleToScreen((int) Math.floor(screenC.z),
+            madPending + (madPending >> 2));
+        g3d.fillCone(colixPending, Graphics3D.ENDCAPS_FLAT, coneDiameter,
+            screenC, screenB);
+      } else {
+        g3d.fillCylinderBits(colixPending, Graphics3D.ENDCAPS_FLAT, diameter,
+            screenB, screenC);
+      }
       if (startIndexPending == endIndexPending)
         return;
-      Point3i t = screenB;
+      Point3f t = screenB;
       screenB = screenC;
       screenC = t;
     }
-    int zMid = (screenA.z + screenB.z) / 2;
-    int diameter = viewer.scaleToScreen(zMid, madPending);
-    g3d.fillCylinder(colixPending, Graphics3D.ENDCAPS_FLAT, diameter,
-                     screenA, screenB);
+    g3d.fillCylinderBits(colixPending, Graphics3D.ENDCAPS_FLAT, diameter,
+        screenA, screenB);
   }
 
   void renderPendingSheet(Point3f pointStart, Point3f pointBeforeEnd,

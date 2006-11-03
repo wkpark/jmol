@@ -501,13 +501,12 @@ class Cylinder3D {
   }
 
   private void renderFlatEndcap(boolean tCylinder) {
-    if (dzB == 0 || (!tCylinder && dzB < 0))
+    if (dzB == 0)
       return;
     int xT = xA, yT = yA, zT = zA;
-    if (dzB < 0) {
+    if (tCylinder && dzB < 0) {
       xT += dxB; yT += dyB; zT += dzB;
     }
-
     findMinMaxY();
     for (int y = yMin; y <= yMax; ++y) {
       findMinMaxX(y);
@@ -543,6 +542,14 @@ class Cylinder3D {
         fp8Up >> 8, (int) xUp, (int) yUp, (int) zUp, (int) Math.ceil(xTip
             - xUp), (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp),
         false);
+    line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA,
+        fp8Up >> 8, (int) xUp, (int) yUp + 1, (int) zUp, (int) Math.ceil(xTip
+            - xUp), (int) Math.ceil(yTip - yUp) + 1, (int) Math.ceil(zTip - zUp),
+        false);
+    line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA,
+        fp8Up >> 8, (int) xUp + 1, (int) yUp, (int) zUp, (int) Math.ceil(xTip
+            - xUp) + 1, (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp),
+        false);
     
     if (!(endcaps == Graphics3D.ENDCAPS_FLAT && dzB > 0)) {
       int argb = shadesA[0];
@@ -555,12 +562,11 @@ class Cylinder3D {
   private void calcArgbEndcap(boolean tCylinder) {
     tEndcapOpen = false;
     if ((endcaps == Graphics3D.ENDCAPS_SPHERICAL) ||
-        (dzB == 0) ||
-        (!tCylinder && dzB < 0))
+        (dzB == 0))
       return;
     xEndcap = xA; yEndcap = yA; zEndcap = zA;
     int[] shadesEndcap;
-    if (dzB >= 0) {
+    if (dzB >= 0 || !tCylinder) {
       intensityEndcap = Shade3D.calcIntensity(-dxB, -dyB, dzB);
       colixEndcap = colixA;
       shadesEndcap = shadesA;

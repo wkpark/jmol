@@ -149,7 +149,6 @@ class Hermite3D {
       pLeft[sp].set(pMid);
       sLeft[sp] = (float)s;
     } while (sp >= 0);
-    System.out.println("midpoints: "+n);
   }
 
   void render2x(boolean fill, short colix, int tension,

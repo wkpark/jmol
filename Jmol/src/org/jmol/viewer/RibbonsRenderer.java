@@ -39,25 +39,11 @@ class RibbonsRenderer extends MpsRenderer {
   void render2Strand(boolean doFill, float offsetTop, float offsetBottom) {
     ribbonTopScreens = calcScreens(offsetTop);
     ribbonBottomScreens = calcScreens(-offsetBottom);
-    for (int i = monomerCount; --i >= 0;) {
-      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
-          || frame.bsHidden.get(monomers[i].getLeadAtomIndex()))
-        continue;
-      render2StrandSegment(doFill, i);
-    }
+    for (int i = monomerCount; --i >= 0;)
+      if (bsVisible.get(i))
+        render2StrandSegment(doFill, i, 0);
     viewer.freeTempScreens(ribbonTopScreens);
     viewer.freeTempScreens(ribbonBottomScreens);
   }
 
-  void render2StrandSegment(boolean doFill, int i) {
-    int iPrev = Math.max(i - 1, 0);
-    int iNext = Math.min(i + 1, monomerCount);
-    int iNext2 = Math.min(i + 2, monomerCount);
-    g3d.drawHermite(doFill, ribbonBorder, getLeadColix(i), isNucleic ? 4 : 7,
-                    ribbonTopScreens[iPrev], ribbonTopScreens[i],
-                    ribbonTopScreens[iNext], ribbonTopScreens[iNext2],
-                    ribbonBottomScreens[iPrev], ribbonBottomScreens[i],
-                    ribbonBottomScreens[iNext], ribbonBottomScreens[iNext2]
-                    );
-  }
 }

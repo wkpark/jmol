@@ -177,22 +177,21 @@ abstract class MpsRenderer extends ShapeRenderer {
     return Graphics3D.inheritColix(colixes[i], monomers[i].getLeadAtom().colixAtom);
   }
   
-  final void renderRopeSegment(short colix, int i, boolean isSpecial) {
-    renderRopeSegment2(colix, i, i, isSpecial);    
+  final void renderRopeSegment(int i, boolean isSpecial) {
+    renderRopeSegment2(i, i, isSpecial);    
   }
 
-  final void renderRopeSegment2(short colix, int i, int imad, boolean isSpecial) {
-    int iPrev1 = i - 1; if (iPrev1 < 0) iPrev1 = 0;
-    int iNext1 = i + 1; if (iNext1 > monomerCount) iNext1 = monomerCount;
-    int iNext2 = i + 2; if (iNext2 > monomerCount) iNext2 = monomerCount;
-    
+  final void renderRopeSegment2(int i, int imad, boolean isSpecial) {
+    int iPrev = Math.max(i - 1, 0);
+    int iNext = Math.min(i + 1, monomerCount);
+    int iNext2 = Math.min(i + 2, monomerCount);
     int madThis, madBeg, madEnd;
     madThis = madBeg = madEnd = mads[imad];
     if (isSpecial) {
-      if (! isSpecials[iPrev1])
-        madBeg = (mads[iPrev1] + madThis) / 2;
-      if (! isSpecials[iNext1])
-        madEnd = (mads[iNext1] + madThis) / 2;
+      if (! isSpecials[iPrev])
+        madBeg = (mads[iPrev] + madThis) / 2;
+      if (! isSpecials[iNext])
+        madEnd = (mads[iNext] + madThis) / 2;
     }
     int diameterBeg = 0;
     try{
@@ -202,13 +201,26 @@ abstract class MpsRenderer extends ShapeRenderer {
       System.out.println(i);
     }
     int diameterEnd =
-      viewer.scaleToScreen(controlPointScreens[iNext1].z, madEnd);
+      viewer.scaleToScreen(controlPointScreens[iNext].z, madEnd);
     int diameterMid =
       viewer.scaleToScreen(monomers[i].getLeadAtom().getScreenZ(),
                            madThis);
-    g3d.fillHermite(colix, monomers[i].isNucleic() ? 4 : 7,
+    g3d.fillHermite(getLeadColix(i), isNucleic ? 4 : 7,
                     diameterBeg, diameterMid, diameterEnd,
-                    controlPointScreens[iPrev1], controlPointScreens[i],
-                    controlPointScreens[iNext1], controlPointScreens[iNext2]);
+                    controlPointScreens[iPrev], controlPointScreens[i],
+                    controlPointScreens[iNext], controlPointScreens[iNext2]);
   }
+  
+  void render2StrandSegment(boolean doFill, int i, int aspectRatio) {
+    int iPrev = Math.max(i - 1, 0);
+    int iNext = Math.min(i + 1, monomerCount);
+    int iNext2 = Math.min(i + 2, monomerCount);
+    g3d.drawHermite(doFill, ribbonBorder, getLeadColix(i), isNucleic ? 4 : 7,
+                    ribbonTopScreens[iPrev], ribbonTopScreens[i],
+                    ribbonTopScreens[iNext], ribbonTopScreens[iNext2],
+                    ribbonBottomScreens[iPrev], ribbonBottomScreens[i],
+                    ribbonBottomScreens[iNext], ribbonBottomScreens[iNext2], aspectRatio
+                    );
+  }
+
 }

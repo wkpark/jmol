@@ -736,7 +736,7 @@ final public class Graphics3D {
 
   public void fillCone(short colix, byte endcap, int diameter,
                        Point3i screenBase, Point3i screenTip) {
-    // cartoons, dipoles, mesh, rockets, vectors
+    // dipoles, mesh, vectors
     cylinder3d.renderCone(colix, endcap, diameter,
                           screenBase.x, screenBase.y, screenBase.z,
                           screenTip.x, screenTip.y, screenTip.z);
@@ -744,7 +744,7 @@ final public class Graphics3D {
 
   public void fillCone(short colix, byte endcap, int diameter,
                        Point3f screenBase, Point3f screenTip) {
-    // cartoons, dipoles, mesh, rockets, vectors
+    // cartoons, rockets
     cylinder3d.renderCone(colix, endcap, diameter,
                           screenBase.x, screenBase.y, screenBase.z,
                           screenTip.x, screenTip.y, screenTip.z);

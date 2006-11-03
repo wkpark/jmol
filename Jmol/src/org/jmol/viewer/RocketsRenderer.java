@@ -33,8 +33,6 @@ class RocketsRenderer extends MpsRenderer {
 
   final static float MIN_CONE_HEIGHT = 0.05f;
 
-  int aspectRatio = 8; // for rockets and cartoons
-  
   Point3i s0 = new Point3i();
   Point3i s1 = new Point3i();
   Point3i s2 = new Point3i();

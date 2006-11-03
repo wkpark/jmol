@@ -34,6 +34,8 @@ import java.util.BitSet;
 
 abstract class MpsRenderer extends ShapeRenderer {
 
+  int aspectRatio;
+  
   boolean isTraceAlpha; 
   int myVisibilityFlag;
   boolean isNucleic;
@@ -89,7 +91,9 @@ abstract class MpsRenderer extends ShapeRenderer {
   // some utilities
   void initializePolymer(Mps.Mpspolymer schain) {
     ribbonBorder = viewer.getRibbonBorder();
+    aspectRatio = viewer.getRibbonAspectRatio();
     isTraceAlpha = viewer.getTraceAlpha();
+
     // note that we are not treating a PhosphorusPolymer
     // as nucleic because we are not calculating the wing
     // vector correctly.
@@ -211,7 +215,7 @@ abstract class MpsRenderer extends ShapeRenderer {
                     controlPointScreens[iNext], controlPointScreens[iNext2]);
   }
   
-  void render2StrandSegment(boolean doFill, int i, int aspectRatio) {
+  void render2StrandSegment(boolean doFill, int i) {
     int iPrev = Math.max(i - 1, 0);
     int iNext = Math.min(i + 1, monomerCount);
     int iNext2 = Math.min(i + 2, monomerCount);

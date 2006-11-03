@@ -39,12 +39,10 @@ class RibbonsRenderer extends MpsRenderer {
   void render2Strand(boolean doFill, float offsetTop, float offsetBottom) {
     ribbonTopScreens = calcScreens(offsetTop);
     ribbonBottomScreens = calcScreens(-offsetBottom);
-    int aspectRatio = viewer.getRibbonAspectRatio();
     for (int i = monomerCount; --i >= 0;)
       if (bsVisible.get(i))
-        render2StrandSegment(doFill, i, aspectRatio);
+        render2StrandSegment(doFill, i);
     viewer.freeTempScreens(ribbonTopScreens);
     viewer.freeTempScreens(ribbonBottomScreens);
   }
-
 }

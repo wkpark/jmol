@@ -39,17 +39,16 @@ class CartoonRenderer extends RocketsRenderer {
     if (schain.wingVectors == null || isCarbohydrate)
       return;
     renderAsRockets = viewer.getCartoonRocketFlag();
-    aspectRatio = viewer.getRibbonAspectRatio();
     calcScreenControlPoints();
-    ribbonTopScreens = calcScreens(isNucleic ? 1f : 0.5f);
-    ribbonBottomScreens = calcScreens(isNucleic ? 0f : -0.5f);
     if (isNucleic) {
       renderNucleic();
-    } else {
-      calcRopeMidPoints(newRockets);
-      render1();
-      viewer.freeTempPoints(cordMidPoints);
+      return;
     }
+    ribbonTopScreens = calcScreens(isNucleic ? 1f : 0.5f);
+    ribbonBottomScreens = calcScreens(isNucleic ? 0f : -0.5f);
+    calcRopeMidPoints(newRockets);
+    render1();
+    viewer.freeTempPoints(cordMidPoints);
     viewer.freeTempScreens(ribbonTopScreens);
     viewer.freeTempScreens(ribbonBottomScreens);
   }
@@ -91,7 +90,8 @@ class CartoonRenderer extends RocketsRenderer {
           //next pass
         } else if (isSheet || isHelix) {
           if (lastWasSheet && isSheet || lastWasHelix && isHelix)
-            render2StrandSegment(true, i, aspectRatio);
+            //uses topScreens
+            render2StrandSegment(true, i);
           else
             render2StrandArrowhead(i);
         } else {

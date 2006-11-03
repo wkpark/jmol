@@ -67,6 +67,11 @@ abstract class ProteinStructure {
       Point3f point = segments[i] = new Point3f();
       point.set(segments[i - 1]);
       point.add(axis);
+      //now it's just a constant-distance segmentation. 
+      //there isn't anything significant about seeing the
+      //amino colors in different-sized slices, and (IMHO)
+      //it looks better this way anyway. RMH 11/2006
+      
       //apolymer.getLeadMidPoint(monomerIndex + i, point);
       //projectOntoAxis(point);
     }

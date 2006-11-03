@@ -24,13 +24,7 @@
 
 package org.jmol.viewer;
 
-import javax.vecmath.Point3i;
-
-class MeshRibbonRenderer extends RibbonsRenderer {
-
-  int strandCount;
-  float strandSeparation;
-  float baseOffset;
+class MeshRibbonRenderer extends StrandsRenderer {
 
   void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
     if (wingVectors == null)
@@ -41,34 +35,13 @@ class MeshRibbonRenderer extends RibbonsRenderer {
     render1();
   }
 
-  void setStrandCount(int strandCount) {
-    this.strandCount = strandCount;
-    strandSeparation = (strandCount <= 1) ? 0 : 1f / (strandCount - 1);
-    baseOffset = (strandCount % 2 == 0 ? strandSeparation / 2
-        : strandSeparation);
-  }
-
-  void render1() {
-    Point3i[] screens;
-    for (int i = strandCount >> 1; --i >= 0;) {
-      float f = (i * strandSeparation) + baseOffset;
-      screens = calcScreens(f);
-      render1Strand(screens);
-      viewer.freeTempScreens(screens);
-      screens = calcScreens(-f);
-      render1Strand(screens);
-      viewer.freeTempScreens(screens);
-    }
-    if (strandCount % 2 == 1) {
-      screens = calcScreens(0f);
-      render1Strand(screens);
-      viewer.freeTempScreens(screens);
-    }
-  }
-
-  void render1Strand(Point3i[] screens) {
+  void render2Strand(boolean doFill, float offsetTop, float offsetBottom) {
+    ribbonTopScreens = calcScreens(offsetTop);
+    ribbonBottomScreens = calcScreens(-offsetBottom);
     for (int i = monomerCount; --i >= 0;)
       if (bsVisible.get(i))
-        render1StrandSegment(screens, i);
+        render2StrandSegment(doFill, i);
+    viewer.freeTempScreens(ribbonTopScreens);
+    viewer.freeTempScreens(ribbonBottomScreens);
   }
 }

@@ -24,7 +24,7 @@
 
 package org.jmol.viewer;
 
-class RibbonsRenderer extends MpsRenderer {
+class RibbonsRenderer extends MeshRibbonRenderer {
 
   void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
     if (wingVectors == null)
@@ -34,15 +34,5 @@ class RibbonsRenderer extends MpsRenderer {
 
   void render1(float offsetTop, float offsetBottom) {
     render2Strand(true, offsetTop, offsetBottom);
-  }
-  
-  void render2Strand(boolean doFill, float offsetTop, float offsetBottom) {
-    ribbonTopScreens = calcScreens(offsetTop);
-    ribbonBottomScreens = calcScreens(-offsetBottom);
-    for (int i = monomerCount; --i >= 0;)
-      if (bsVisible.get(i))
-        render2StrandSegment(doFill, i);
-    viewer.freeTempScreens(ribbonTopScreens);
-    viewer.freeTempScreens(ribbonBottomScreens);
-  }
+  }  
 }

@@ -67,6 +67,6 @@ class StrandsRenderer extends MpsRenderer {
   void render1Strand(Point3i[] screens) {
     for (int i = monomerCount; --i >= 0;)
       if (bsVisible.get(i))
-        render1StrandSegment(screens, i);
+        renderHermiteCylinder(screens, i);
   }
 }

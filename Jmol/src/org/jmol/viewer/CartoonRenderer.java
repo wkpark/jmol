@@ -56,7 +56,7 @@ class CartoonRenderer extends RocketsRenderer {
   void renderNucleic() {
     for (int i = monomerCount; --i >= 0;)
       if (bsVisible.get(i)) {
-        renderRopeSegment(i, true);
+        renderHermiteConic(i, true);
         renderNucleicBaseStep((NucleicMonomer) monomers[i], getLeadColix(i), mads[i],
             controlPointScreens[i + 1]);
       }
@@ -91,11 +91,11 @@ class CartoonRenderer extends RocketsRenderer {
         } else if (isSheet || isHelix) {
           if (lastWasSheet && isSheet || lastWasHelix && isHelix)
             //uses topScreens
-            render2StrandSegment(true, i);
+            renderHermiteRibbon(true, i);
           else
-            render2StrandArrowhead(i);
+            renderHermiteArrowHead(i);
         } else {
-          renderRopeSegment(i, true);
+          renderHermiteConic(i, true);
         }
       }
       lastWasSheet = isSheet;

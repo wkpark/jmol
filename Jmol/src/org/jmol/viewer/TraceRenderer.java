@@ -34,7 +34,7 @@ class TraceRenderer extends MpsRenderer {
   void render1() {
     for (int i = monomerCount; --i >= 0;)
       if (bsVisible.get(i))
-        renderRopeSegment(i, false);
+        renderHermiteConic(i, false);
   }
 }
 

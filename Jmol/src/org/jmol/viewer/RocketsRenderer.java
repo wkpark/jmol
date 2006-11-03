@@ -92,7 +92,7 @@ class RocketsRenderer extends MpsRenderer {
         if (monomer.isHelixOrSheet()) {
           renderSpecialSegment(monomer, getLeadColix(i), mads[i]);
         } else {
-          renderRopeSegment(i, true);
+          renderHermiteConic(i, true);
         }
       }
     renderPending();

@@ -40,7 +40,7 @@ class MeshRibbonRenderer extends StrandsRenderer {
     ribbonBottomScreens = calcScreens(-offsetBottom);
     for (int i = monomerCount; --i >= 0;)
       if (bsVisible.get(i))
-        render2StrandSegment(doFill, i);
+        renderHermiteRibbon(doFill, i);
     viewer.freeTempScreens(ribbonTopScreens);
     viewer.freeTempScreens(ribbonBottomScreens);
   }

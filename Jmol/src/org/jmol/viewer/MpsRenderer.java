@@ -147,6 +147,8 @@ abstract class MpsRenderer extends ShapeRenderer {
   final Point3f pointT = new Point3f();
   /**
    * calculate screen points based on control points and wing positions
+   * (cartoon, strand, meshRibbon, and ribbon)
+   * 
    * @param offsetFraction
    * @return Point3i array THAT MUST BE LATER FREED
    */
@@ -154,25 +156,21 @@ abstract class MpsRenderer extends ShapeRenderer {
     int count = controlPoints.length;
     Point3i[] screens = viewer.allocTempScreens(count);
     if (offsetFraction == 0) {
-      for (int i = count; --i >= 0; )
+      for (int i = count; --i >= 0;)
         viewer.transformPoint(controlPoints[i], screens[i]);
     } else {
-      offsetFraction /= 1000f;
-      for (int i = count; --i >= 0; ) {
-        pointT.set(wingVectors[i]);
-        short mad = mads[i];
-        float scale = mad * offsetFraction;
-        pointT.scaleAdd(scale, controlPoints[i]);
-        viewer.transformPoint(pointT, screens[i]);
-      }
+      float offset_1000 = offsetFraction / 1000f;
+      for (int i = count; --i >= 0;)
+        calc1Screen(controlPoints[i], wingVectors[i], mads[i], offset_1000,
+            screens[i]);
     }
     return screens;
   }
-
-  void calc1Screen(Point3f center, Vector3f vector,
-                   short mad, float offsetFraction, Point3i screen) {
+  
+  private void calc1Screen(Point3f center, Vector3f vector,
+                   short mad, float offset_1000, Point3i screen) {
     pointT.set(vector);
-    float scale = mad * offsetFraction / 1000f;
+    float scale = mad * offset_1000;
     pointT.scaleAdd(scale, center);
     viewer.transformPoint(pointT, screen);
   }
@@ -183,7 +181,7 @@ abstract class MpsRenderer extends ShapeRenderer {
   
   //// cardinal hermite constant cylinder (meshRibbon, strands)
   
-  final void render1StrandSegment(Point3i[] screens, int i) {
+  final void renderHermiteCylinder(Point3i[] screens, int i) {
     int iPrev = Math.max(i - 1, 0);
     int iNext = Math.min(i + 1, monomerCount);
     int iNext2 = Math.min(i + 2, monomerCount);
@@ -191,20 +189,14 @@ abstract class MpsRenderer extends ShapeRenderer {
         screens[i], screens[iNext], screens[iNext2]);
   }
 
-  //// cardinal hermite variable cylinder
+  //// cardinal hermite variable conic (cartoons, rockets, trace)
  
-  final void renderRopeSegment(int i, boolean isSpecial) {
-    renderRopeSegment2(i, i, isSpecial);    
-  }
-
-  //// cardinal hermite conical section
-  
-  final void renderRopeSegment2(int i, int imad, boolean isSpecial) {
+  final void renderHermiteConic(int i, boolean isSpecial) {
     int iPrev = Math.max(i - 1, 0);
     int iNext = Math.min(i + 1, monomerCount);
     int iNext2 = Math.min(i + 2, monomerCount);
     int madThis, madBeg, madEnd;
-    madThis = madBeg = madEnd = mads[imad];
+    madThis = madBeg = madEnd = mads[i];
     if (isSpecial) {
       if (! isSpecials[iPrev])
         madBeg = (mads[iPrev] + madThis) / 2;
@@ -229,9 +221,9 @@ abstract class MpsRenderer extends ShapeRenderer {
                     controlPointScreens[iNext], controlPointScreens[iNext2]);
   }
   
-  //// cardinal hermite rectangular box
+  //// cardinal hermite box or flat ribbon or twin strand (cartoons, meshRibbon, ribbon)
 
-  final void render2StrandSegment(boolean doFill, int i) {
+  final void renderHermiteRibbon(boolean doFill, int i) {
     int iPrev = Math.max(i - 1, 0);
     int iNext = Math.min(i + 1, monomerCount);
     int iNext2 = Math.min(i + 2, monomerCount);
@@ -243,26 +235,26 @@ abstract class MpsRenderer extends ShapeRenderer {
         aspectRatio);
   }
 
-  //// cardinal hermite arrow head rendering
+  //// cardinal hermite box or flat arrow head (cartoon)
 
   final Point3i screenArrowTop = new Point3i();
   final Point3i screenArrowTopPrev = new Point3i();
   final Point3i screenArrowBot = new Point3i();
   final Point3i screenArrowBotPrev = new Point3i();
 
-  final void render2StrandArrowhead(int i) {
+  final void renderHermiteArrowHead(int i) {
     short colix = getLeadColix(i);
     int iPrev = Math.max(i - 1, 0);
     int iNext = Math.min(i + 1, monomerCount);
     int iNext2 = Math.min(i + 2, monomerCount);
-    calc1Screen(controlPoints[i], wingVectors[i], mads[i], .7f,
+    calc1Screen(controlPoints[i], wingVectors[i], mads[i], .7f / 1000,
         screenArrowTop);
-    calc1Screen(controlPoints[iPrev], wingVectors[iPrev], mads[iPrev],
-        1.0f, screenArrowTopPrev);
-    calc1Screen(controlPoints[i], wingVectors[i], mads[i], -.7f,
+    calc1Screen(controlPoints[i], wingVectors[i], mads[i], -.7f / 1000,
         screenArrowBot);
-    calc1Screen(controlPoints[i], wingVectors[i], mads[i], -1.0f,
-        screenArrowBotPrev);
+    calc1Screen(controlPoints[iPrev], wingVectors[iPrev], mads[iPrev],
+        1.0f / 1000, screenArrowTopPrev);
+    calc1Screen(controlPoints[iPrev], wingVectors[iPrev], mads[iPrev], 
+        -1.0f / 1000, screenArrowBotPrev);
     if (ribbonBorder)
       g3d.fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
           screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
@@ -273,5 +265,4 @@ abstract class MpsRenderer extends ShapeRenderer {
         controlPointScreens[iNext], controlPointScreens[iNext2],
         aspectRatio);
   }
-
 }

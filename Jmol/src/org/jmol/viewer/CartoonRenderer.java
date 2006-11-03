@@ -39,7 +39,7 @@ class CartoonRenderer extends RocketsRenderer {
     if (schain.wingVectors == null || isCarbohydrate)
       return;
     renderAsRockets = viewer.getCartoonRocketFlag();
-    aspectRatio = viewer.getCartoonAspectRatio();
+    aspectRatio = viewer.getRibbonAspectRatio();
     calcScreenControlPoints();
     ribbonTopScreens = calcScreens(isNucleic ? 1f : 0.5f);
     ribbonBottomScreens = calcScreens(isNucleic ? 0f : -0.5f);

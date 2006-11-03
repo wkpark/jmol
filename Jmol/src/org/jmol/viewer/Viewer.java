@@ -2379,13 +2379,13 @@ public class Viewer extends JmolViewer {
     return styleManager.getStandardLabelFormat();
   }
 
-  int getCartoonAspectRatio() {
-    return global.cartoonAspectRatio;
+  int getRibbonAspectRatio() {
+    return global.ribbonAspectRatio;
   }
 
-  void setCartoonAspectRatio(int ratio) {
+  void setRibbonAspectRatio(int ratio) {
     //Eval
-    global.cartoonAspectRatio = ratio;
+    global.ribbonAspectRatio = ratio;
   }
 
   boolean getSsbondsBackbone() {

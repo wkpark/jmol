@@ -274,7 +274,7 @@ class StateManager {
 
     //misc
     
-    int cartoonAspectRatio   = 0;
+    int ribbonAspectRatio   = 0;
     int pickingSpinRate      = 10;
     boolean hideNameInPopup  = false;
     boolean disablePopupMenu = false;

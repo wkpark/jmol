@@ -324,7 +324,13 @@ class ModelManager {
   }
   
   int getMoleuleCount() {
-    return (frame == null) ? 0 : frame.getMoleculeCount();
+    return (frame == null ? 0 : frame.getMoleculeCount());
+  }
+
+  int makeConnections(float minDistance, float maxDistance, short order,
+                      int connectOperation, BitSet bsA, BitSet bsB) {
+    return (frame == null ? 0 : frame.makeConnections(minDistance, maxDistance,
+        order, connectOperation, bsA, bsB));
   }
 
   boolean autoBond = true;

@@ -1459,16 +1459,17 @@ public final class Frame {
     autoBond(null, null);
   }
 
-  void autoBond(short order, BitSet bsA, BitSet bsB) {
+  int autoBond(short order, BitSet bsA, BitSet bsB) {
     if (order == JmolConstants.BOND_ORDER_NULL)
-      autoBond(bsA, bsB);
+      return autoBond(bsA, bsB);
     else if (order == JmolConstants.BOND_H_REGULAR)
-      autoHbond(bsA, bsB);
+      return autoHbond(bsA, bsB);
     else
       Logger.warn("autoBond() unknown order: " + order);
+    return 0;
   }
   
-  void autoBond(BitSet bsA, BitSet bsB) {
+  int autoBond(BitSet bsA, BitSet bsB) {
     // null values for bitsets means "all"
     if (maxBondingRadius == Float.MIN_VALUE)
       findMaxRadii();
@@ -1479,7 +1480,7 @@ public final class Frame {
     //char chainLast = '?';
     //int indexLastCA = -1;
     //Atom atomLastCA = null;
-
+    int nNew = 0;
     initializeBspf();
 
     long timeBegin = 0;
@@ -1524,8 +1525,10 @@ public final class Frame {
         short order = getBondOrder(atom, myBondingRadius, atomNear, atomNear
             .getBondingRadiusFloat(), iter.foundDistance2(), minBondDistance2,
             bondTolerance);
-        if (order > 0)
+        if (order > 0) {
           checkValencesAndBond(atom, atomNear, order, mad);
+          nNew++;
+        }
       }
       iter.release();
     }
@@ -1534,6 +1537,8 @@ public final class Frame {
       long timeEnd = System.currentTimeMillis();
       Logger.debug("Time to autoBond=" + (timeEnd - timeBegin));
     }
+    
+    return nNew;
   }
 
   private short getBondOrder(Atom atomA, float bondingRadiusA, Atom atomB,
@@ -1582,16 +1587,17 @@ public final class Frame {
 
   boolean useRasMolHbondsCalculation = true;
 
-  void autoHbond(BitSet bsA, BitSet bsB) {
+  int autoHbond(BitSet bsA, BitSet bsB) {
     if (useRasMolHbondsCalculation && bondCount > 0) {
       if (mmset != null)
         mmset.calcHydrogenBonds(bsA, bsB);
-      return;
+      return 0;
     }
     // this method is not enabled and is probably error-prone.
     // it does not take into account anything but distance, 
     // and as such is not really practical. 
     
+    int nNew = 0;
     initializeBspf();
     long timeBegin = 0;
     if (showRebondTimes)
@@ -1616,14 +1622,15 @@ public final class Frame {
         if (atom.isBonded(atomNear))
           continue;
         addBond(bondMutually(atom, atomNear, JmolConstants.BOND_H_REGULAR, (short) 1));
+        nNew++;
       }
       iter.release();
     }
-
     if (showRebondTimes) {
       long timeEnd = System.currentTimeMillis();
       Logger.debug("Time to hbond=" + (timeEnd - timeBegin));
     }
+    return nNew;
   }
 
   void deleteAllBonds() {
@@ -1668,7 +1675,7 @@ public final class Frame {
     bondCount = indexNoncovalent;
   }
 
-  void makeConnections(float minDistance, float maxDistance,
+  int makeConnections(float minDistance, float maxDistance,
                        short order, int connectOperation,
                        BitSet bsA, BitSet bsB) {
     
@@ -1677,12 +1684,10 @@ public final class Frame {
                        "," + bsA + "," + bsB + ")");
     
     if (connectOperation == JmolConstants.DELETE_BONDS) {
-      deleteConnections(minDistance, maxDistance, order, bsA, bsB);
-      return;
+      return deleteConnections(minDistance, maxDistance, order, bsA, bsB);
     }
     if (connectOperation == JmolConstants.AUTO_BOND) {
-      autoBond(order, bsA, bsB);
-      return;
+      return autoBond(order, bsA, bsB);
     }
     if (order == JmolConstants.BOND_ORDER_NULL)
       order = JmolConstants.BOND_COVALENT_SINGLE; // default 
@@ -1690,6 +1695,8 @@ public final class Frame {
     float maxDistanceSquared = maxDistance * maxDistance;
     defaultCovalentMad = viewer.getMadBond();
     short mad = getDefaultMadFromOrder(order);
+    int nNew = 0;
+    int nModified = 0;
     for (int iA = atomCount; --iA >= 0; ) {
       if (! bsA.get(iA))
         continue;
@@ -1715,15 +1722,20 @@ public final class Frame {
         if (distanceSquared < minDistanceSquared ||
             distanceSquared > maxDistanceSquared)
           continue;
-        if (bondAB != null)
+        if (bondAB != null) {
           bondAB.setOrder(order);
-        else
+          nNew++;
+        } else {
           bondAtoms(atomA, atomB, order, mad);
+          nModified++;
+        }
       }
     }
+    Logger.info(nNew + " new bonds; " + nModified + " modified");
+    return nNew + nModified;
   }
 
-  void deleteConnections(float minDistance, float maxDistance, short order,
+  int deleteConnections(float minDistance, float maxDistance, short order,
                          BitSet bsA, BitSet bsB) {
     BitSet bsDelete = new BitSet();
     float minDistanceSquared = minDistance * minDistance;
@@ -1731,6 +1743,7 @@ public final class Frame {
     if (order != JmolConstants.BOND_ORDER_NULL 
         && (order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
       order = JmolConstants.BOND_HYDROGEN_MASK;
+    int nDeleted = 0;
     for (int i = bondCount; --i >= 0; ) {
       Bond bond = bonds[i];
       Atom atom1 = bond.atom1;
@@ -1743,12 +1756,16 @@ public final class Frame {
               distanceSquared <= maxDistanceSquared)
             if (order == JmolConstants.BOND_ORDER_NULL ||
                 order == (bond.order & ~JmolConstants.BOND_SULFUR_MASK) ||
-                (order & bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+                (order & bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
               bsDelete.set(i);
+              nDeleted++;
+            }
         }
       }
     }
     deleteBonds(bsDelete);
+    Logger.info(nDeleted + " bonds deleted");
+    return nDeleted;
   }
 
   /////////////////////////

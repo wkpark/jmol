@@ -3244,6 +3244,14 @@ public class Viewer extends JmolViewer {
   public boolean getAutoBond() {
     return modelManager.autoBond;
   }
+  
+  int makeConnections(float minDistance, float maxDistance, short order,
+                      int connectOperation, BitSet bsA, BitSet bsB) {
+    //eval
+    return modelManager.makeConnections(minDistance, maxDistance, order,
+        connectOperation, bsA, bsB);
+  }
+
 
   // //////////////////////////////////////////////////////////////
   // Graphics3D

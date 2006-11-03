@@ -32,19 +32,6 @@ import java.util.BitSet;
 import org.jmol.g3d.Graphics3D;
 
 class Sticks extends Shape {
-
-  final float[] connectDistances = new float[2];
-  int connectDistanceCount;
-  final BitSet[] connectSets = new BitSet[2];
-  int connectSetCount;
-  // initialized to -1;
-  // for delete this means 'delete all'
-  // for connect this gets turned into 'single'
-  short connectBondOrder;
-  int connectOperation;
-
-  private final static float DEFAULT_MAX_CONNECT_DISTANCE = 100000000f;
-  private final static float DEFAULT_MIN_CONNECT_DISTANCE = 0.1f;
   
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
@@ -65,63 +52,6 @@ class Sticks extends Shape {
     if ("translucency" == propertyName) {
       setTranslucencyBond(value == "translucent",
                           JmolConstants.BOND_COVALENT_MASK, bsSelected);
-      return;
-    }
-    if ("resetConnectParameters" == propertyName) {
-      connectDistanceCount = 0;
-      connectSetCount = 0;
-      connectBondOrder = JmolConstants.BOND_ORDER_NULL;
-      connectOperation = JmolConstants.MODIFY_OR_CREATE;
-      return;
-    }
-    if ("connectDistance" == propertyName) {
-      if (connectDistanceCount < connectDistances.length)
-        connectDistances[connectDistanceCount++] = ((Float)value).floatValue();
-      else
-        Logger.error("too many connect distances specified");
-      return;
-    }
-    if ("connectSet" == propertyName) {
-      if (connectSetCount < connectSets.length)
-        connectSets[connectSetCount++] = (BitSet)value;
-      else
-        Logger.error("too many connect sets specified");
-      return;
-    }
-    if ("connectBondOrder" == propertyName) {
-      connectBondOrder = JmolConstants.getBondOrderFromString((String)value);
-      return;
-    }
-    if ("connectOperation" == propertyName) {
-      connectOperation = JmolConstants.connectOperationFromString((String)value);
-      return;
-    }
-    if ("applyConnectParameters" == propertyName) {
-      if (connectDistanceCount < 2) {
-        if (connectDistanceCount == 0)
-          connectDistances[0] = DEFAULT_MAX_CONNECT_DISTANCE;
-        connectDistances[1] = connectDistances[0];
-        connectDistances[0] = DEFAULT_MIN_CONNECT_DISTANCE;
-      }
-      if (connectSetCount < 2) {
-        if (connectSetCount == 0)
-          connectSets[0] = bsSelected;
-        connectSets[1] = connectSets[0];
-        connectSets[0] = bsSelected;
-      }
-      if (connectOperation >= 0)
-        frame.makeConnections(connectDistances[0], connectDistances[1],
-                        connectBondOrder, connectOperation,
-                        connectSets[0], connectSets[1]);
-      return;
-    }
-    if ("rasmolCompatibleConnect" == propertyName) {
-      // miguel 2006 04 02
-      // use of 'connect', 'connect on', 'connect off' is deprecated
-      // I suggest that support be dropped at some point in the near future
-      frame.deleteAllBonds();
-      // go ahead and test out the autoBond(null, null) code a bit
-      frame.autoBond(null, null);
       return;
     }
     super.setProperty(propertyName, value, bsSelected);

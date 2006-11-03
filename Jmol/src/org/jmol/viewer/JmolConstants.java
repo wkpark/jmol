@@ -56,6 +56,9 @@ final public class JmolConstants {
   public final static int MODIFY_OR_CREATE = 3;
   public final static int AUTO_BOND        = 4;
 
+  public final static float DEFAULT_MAX_CONNECT_DISTANCE = 100000000f;
+  public final static float DEFAULT_MIN_CONNECT_DISTANCE = 0.1f;
+  
   public final static String[] connectOperationStrings =
   { "delete", "modify", "create", "modifyOrCreate", "auto" };
 

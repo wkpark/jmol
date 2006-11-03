@@ -2055,6 +2055,16 @@ class Eval { //implements Runnable {
   }
 
   void connect() throws ScriptException {
+
+    final float[] distances = new float[2];
+    BitSet[] atomSets = new BitSet[2];
+    atomSets[0] = atomSets[1] = viewer.getSelectionSet();
+
+    int distanceCount = 0;
+    int atomSetCount = 0;
+    short bondOrder = JmolConstants.BOND_ORDER_NULL;
+    int operation = JmolConstants.MODIFY_OR_CREATE;
+    boolean isDelete = false;
     boolean haveType = false;
     int nAtomSets = 0;
     int nDistances = 0;
@@ -2064,23 +2074,18 @@ class Eval { //implements Runnable {
      * 
      */
 
-    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
-        "resetConnectParameters", null);
     if (statementLength == 1) {
-      viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
-          "rasmolCompatibleConnect", null);
+      viewer.rebond();
       return;
     }
+
     for (int i = 1; i < statementLength; ++i) {
-      String propertyName = null;
-      Object propertyValue = null;
       switch_tag: switch (statement[i].tok) {
       case Token.on:
       case Token.off:
         if (statementLength != 2)
           badArgumentCount();
-        viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
-            "rasmolCompatibleConnect", null);
+        viewer.rebond();
         return;
       case Token.integer:
       case Token.decimal:
@@ -2088,16 +2093,14 @@ class Eval { //implements Runnable {
           badArgumentCount();
         if (nAtomSets > 0 || haveType)
           invalidParameterOrder();
-        propertyName = "connectDistance";
-        propertyValue = new Float(floatParameter(i));
+        distances[distanceCount++] = floatParameter(i);
         break;
       case Token.expressionBegin:
         if (++nAtomSets > 2)
           badArgumentCount();
         if (haveType)
           invalidParameterOrder();
-        propertyName = "connectSet";
-        propertyValue = expression(statement, i);
+        atomSets[atomSetCount++] = expression(statement, i);
         i = pcLastExpressionInstruction; // the for loop will increment i
         break;
       case Token.identifier:
@@ -2108,8 +2111,7 @@ class Eval { //implements Runnable {
             if (haveType)
               incompatibleArguments();
             cmd = JmolConstants.bondOrderNames[j];
-            propertyName = "connectBondOrder";
-            propertyValue = cmd;
+            bondOrder = JmolConstants.getBondOrderFromString(cmd);
             haveType = true;
             break switch_tag;
           }
@@ -2117,32 +2119,39 @@ class Eval { //implements Runnable {
         if (++i != statementLength)
           invalidParameterOrder();
         if ("modify".equalsIgnoreCase(cmd))
-          propertyValue = "modify";
+          operation = JmolConstants.connectOperationFromString(cmd);
         else if ("create".equalsIgnoreCase(cmd))
-          propertyValue = "create";
+          operation = JmolConstants.connectOperationFromString(cmd);
         else if ("modifyOrCreate".equalsIgnoreCase(cmd))
-          propertyValue = "modifyOrCreate";
+          operation = JmolConstants.connectOperationFromString(cmd);
         else if ("auto".equalsIgnoreCase(cmd))
-          propertyValue = "auto";
+          operation = JmolConstants.connectOperationFromString(cmd);
         else
           unrecognizedSubcommand(cmd);
-        propertyName = "connectOperation";
         break;
       case Token.none:
       case Token.delete:
         if (++i != statementLength)
           invalidParameterOrder();
-        propertyName = "connectOperation";
-        propertyValue = "delete";
+        operation = JmolConstants.connectOperationFromString("delete");
+        isDelete = true;
         break;
       default:
         invalidArgument();
       }
-      viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, propertyName,
-          propertyValue);
     }
-    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS,
-        "applyConnectParameters", null);
+    if (distanceCount < 2) {
+      if (distanceCount == 0)
+        distances[0] = JmolConstants.DEFAULT_MAX_CONNECT_DISTANCE;
+      distances[1] = distances[0];
+      distances[0] = JmolConstants.DEFAULT_MIN_CONNECT_DISTANCE;
+    }
+    int n = viewer.makeConnections(distances[0], distances[1],
+        bondOrder, operation, atomSets[0], atomSets[1]);
+    if (isDelete)
+      viewer.scriptStatus(GT._("{0} connections deleted", n));
+    else
+      viewer.scriptStatus(GT._("{0} connections modified or created", n));
   }
 
   void getProperty() {

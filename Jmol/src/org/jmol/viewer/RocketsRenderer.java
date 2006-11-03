@@ -181,6 +181,24 @@ class RocketsRenderer extends MpsRenderer {
     }
   }
 
+  final static byte[] boxFaces =
+  {
+    0, 1, 3, 2,
+    0, 2, 6, 4,
+    0, 4, 5, 1,
+    7, 5, 4, 6,
+    7, 6, 2, 3,
+    7, 3, 1, 5 };
+
+  final Point3f[] corners = new Point3f[8];
+  final Point3f[] screenCorners = new Point3f[8];
+  {
+    for (int i = 8; --i >= 0; ) {
+      screenCorners[i] = new Point3f();
+      corners[i] = new Point3f();
+    }
+  }
+
   final Point3f pointTipOffset = new Point3f();
   final Point3f pointArrow2 = new Point3f();
   final Vector3f vectorNormal = new Vector3f();
@@ -192,6 +210,66 @@ class RocketsRenderer extends MpsRenderer {
   {0, 1, 3, 2,
    0, 4, 5, 2,
    1, 4, 5, 3};
+
+  void buildBox(Point3f pointCorner, Vector3f scaledWidthVector,
+                Vector3f scaledHeightVector, Vector3f lengthVector) {
+    for (int i = 8; --i >= 0; ) {
+      Point3f corner = corners[i];
+      corner.set(pointCorner);
+      if ((i & 1) != 0)
+        corner.add(scaledWidthVector);
+      if ((i & 2) != 0)
+        corner.add(scaledHeightVector);
+      if ((i & 4) != 0)
+        corner.add(lengthVector);
+      viewer.transformPoint(corner, screenCorners[i]);
+    }
+  }
+
+  void buildArrowHeadBox(Point3f pointCorner, Vector3f scaledWidthVector,
+                         Vector3f scaledHeightVector, Point3f pointTip) {
+    for (int i = 4; --i >= 0; ) {
+      Point3f corner = corners[i];
+      corner.set(pointCorner);
+      if ((i & 1) != 0)
+        corner.add(scaledWidthVector);
+      if ((i & 2) != 0)
+        corner.add(scaledHeightVector);
+      viewer.transformPoint(corner, screenCorners[i]);
+    }
+    corners[4].set(pointTip);
+    viewer.transformPoint(pointTip, screenCorners[4]);
+    corners[5].add(pointTip, scaledHeightVector);
+    viewer.transformPoint(corners[5], screenCorners[5]);
+  }
+
+  final Vector3f lengthVector = new Vector3f();
+  final Point3f pointCorner = new Point3f();
+
+  void drawBox(Point3f pointA, Point3f pointB) {
+    Sheet sheet = (Sheet)proteinstructurePending;
+    float scale = madPending / 1000f;
+    scaledWidthVector.set(sheet.getWidthUnitVector());
+    scaledWidthVector.scale(scale);
+    scaledHeightVector.set(sheet.getHeightUnitVector());
+    scaledHeightVector.scale(scale / 4);
+    pointCorner.add(scaledWidthVector, scaledHeightVector);
+    pointCorner.scaleAdd(-0.5f, pointA);
+    lengthVector.sub(pointB, pointA);
+    buildBox(pointCorner, scaledWidthVector,
+             scaledHeightVector, lengthVector);
+    for (int i = 0; i < 6; ++i) {
+      int i0 = boxFaces[i * 4];
+      int i1 = boxFaces[i * 4 + 1];
+      int i2 = boxFaces[i * 4 + 2];
+      int i3 = boxFaces[i * 4 + 3];
+      g3d.fillQuadrilateral(colixPending,
+                            screenCorners[i0],
+                            screenCorners[i1],
+                            screenCorners[i2],
+                            screenCorners[i3]);
+    }
+  }
 
   void drawArrowHeadBox(Point3f base, Point3f tip) {
     Sheet sheet = (Sheet)proteinstructurePending;
@@ -225,83 +303,5 @@ class RocketsRenderer extends MpsRenderer {
                             screenCorners[i2],
                             screenCorners[i3]);
     }
-  }
-
-  final Vector3f lengthVector = new Vector3f();
-  final Point3f pointCorner = new Point3f();
-
-  void drawBox(Point3f pointA, Point3f pointB) {
-    Sheet sheet = (Sheet)proteinstructurePending;
-    float scale = madPending / 1000f;
-    scaledWidthVector.set(sheet.getWidthUnitVector());
-    scaledWidthVector.scale(scale);
-    scaledHeightVector.set(sheet.getHeightUnitVector());
-    scaledHeightVector.scale(scale / 4);
-    pointCorner.add(scaledWidthVector, scaledHeightVector);
-    pointCorner.scaleAdd(-0.5f, pointA);
-    lengthVector.sub(pointB, pointA);
-    buildBox(pointCorner, scaledWidthVector,
-             scaledHeightVector, lengthVector);
-    for (int i = 0; i < 6; ++i) {
-      int i0 = boxFaces[i * 4];
-      int i1 = boxFaces[i * 4 + 1];
-      int i2 = boxFaces[i * 4 + 2];
-      int i3 = boxFaces[i * 4 + 3];
-      g3d.fillQuadrilateral(colixPending,
-                            screenCorners[i0],
-                            screenCorners[i1],
-                            screenCorners[i2],
-                            screenCorners[i3]);
-    }
-  }
-
-  final static byte[] boxFaces =
-  {
-    0, 1, 3, 2,
-    0, 2, 6, 4,
-    0, 4, 5, 1,
-    7, 5, 4, 6,
-    7, 6, 2, 3,
-    7, 3, 1, 5 };
-
-  final Point3f[] corners = new Point3f[8];
-  final Point3f[] screenCorners = new Point3f[8];
-  {
-    for (int i = 8; --i >= 0; ) {
-      screenCorners[i] = new Point3f();
-      corners[i] = new Point3f();
-    }
-  }
-
-  void buildBox(Point3f pointCorner, Vector3f scaledWidthVector,
-                Vector3f scaledHeightVector, Vector3f lengthVector) {
-    for (int i = 8; --i >= 0; ) {
-      Point3f corner = corners[i];
-      corner.set(pointCorner);
-      if ((i & 1) != 0)
-        corner.add(scaledWidthVector);
-      if ((i & 2) != 0)
-        corner.add(scaledHeightVector);
-      if ((i & 4) != 0)
-        corner.add(lengthVector);
-      viewer.transformPoint(corner, screenCorners[i]);
-    }
-  }
-
-  void buildArrowHeadBox(Point3f pointCorner, Vector3f scaledWidthVector,
-                         Vector3f scaledHeightVector, Point3f pointTip) {
-    for (int i = 4; --i >= 0; ) {
-      Point3f corner = corners[i];
-      corner.set(pointCorner);
-      if ((i & 1) != 0)
-        corner.add(scaledWidthVector);
-      if ((i & 2) != 0)
-        corner.add(scaledHeightVector);
-      viewer.transformPoint(corner, screenCorners[i]);
-    }
-    corners[4].set(pointTip);
-    viewer.transformPoint(pointTip, screenCorners[4]);
-    corners[5].add(pointTip, scaledHeightVector);
-    viewer.transformPoint(corners[5], screenCorners[5]);
   }
 }

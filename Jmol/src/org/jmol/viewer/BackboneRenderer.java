@@ -25,7 +25,7 @@
 
 package org.jmol.viewer;
 
-import org.jmol.g3d.*;
+import org.jmol.g3d.Graphics3D;
 
 class BackboneRenderer extends MpsRenderer {
 

@@ -181,10 +181,24 @@ abstract class MpsRenderer extends ShapeRenderer {
     return Graphics3D.inheritColix(colixes[i], monomers[i].getLeadAtom().colixAtom);
   }
   
+  //// cardinal hermite constant cylinder (meshRibbon, strands)
+  
+  final void render1StrandSegment(Point3i[] screens, int i) {
+    int iPrev = Math.max(i - 1, 0);
+    int iNext = Math.min(i + 1, monomerCount);
+    int iNext2 = Math.min(i + 2, monomerCount);
+    g3d.drawHermite(getLeadColix(i), isNucleic ? 4 : 7, screens[iPrev],
+        screens[i], screens[iNext], screens[iNext2]);
+  }
+
+  //// cardinal hermite variable cylinder
+ 
   final void renderRopeSegment(int i, boolean isSpecial) {
     renderRopeSegment2(i, i, isSpecial);    
   }
 
+  //// cardinal hermite conical section
+  
   final void renderRopeSegment2(int i, int imad, boolean isSpecial) {
     int iPrev = Math.max(i - 1, 0);
     int iNext = Math.min(i + 1, monomerCount);
@@ -215,16 +229,49 @@ abstract class MpsRenderer extends ShapeRenderer {
                     controlPointScreens[iNext], controlPointScreens[iNext2]);
   }
   
-  void render2StrandSegment(boolean doFill, int i) {
+  //// cardinal hermite rectangular box
+
+  final void render2StrandSegment(boolean doFill, int i) {
     int iPrev = Math.max(i - 1, 0);
     int iNext = Math.min(i + 1, monomerCount);
     int iNext2 = Math.min(i + 2, monomerCount);
     g3d.drawHermite(doFill, ribbonBorder, getLeadColix(i), isNucleic ? 4 : 7,
-                    ribbonTopScreens[iPrev], ribbonTopScreens[i],
-                    ribbonTopScreens[iNext], ribbonTopScreens[iNext2],
-                    ribbonBottomScreens[iPrev], ribbonBottomScreens[i],
-                    ribbonBottomScreens[iNext], ribbonBottomScreens[iNext2], aspectRatio
-                    );
+        ribbonTopScreens[iPrev], ribbonTopScreens[i],
+        ribbonTopScreens[iNext], ribbonTopScreens[iNext2],
+        ribbonBottomScreens[iPrev], ribbonBottomScreens[i],
+        ribbonBottomScreens[iNext], ribbonBottomScreens[iNext2],
+        aspectRatio);
+  }
+
+  //// cardinal hermite arrow head rendering
+
+  final Point3i screenArrowTop = new Point3i();
+  final Point3i screenArrowTopPrev = new Point3i();
+  final Point3i screenArrowBot = new Point3i();
+  final Point3i screenArrowBotPrev = new Point3i();
+
+  final void render2StrandArrowhead(int i) {
+    short colix = getLeadColix(i);
+    int iPrev = Math.max(i - 1, 0);
+    int iNext = Math.min(i + 1, monomerCount);
+    int iNext2 = Math.min(i + 2, monomerCount);
+    calc1Screen(controlPoints[i], wingVectors[i], mads[i], .7f,
+        screenArrowTop);
+    calc1Screen(controlPoints[iPrev], wingVectors[iPrev], mads[iPrev],
+        1.0f, screenArrowTopPrev);
+    calc1Screen(controlPoints[i], wingVectors[i], mads[i], -.7f,
+        screenArrowBot);
+    calc1Screen(controlPoints[i], wingVectors[i], mads[i], -1.0f,
+        screenArrowBotPrev);
+    if (ribbonBorder)
+      g3d.fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
+          screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
+          screenArrowBot.x, screenArrowBot.y, screenArrowBot.z);
+    g3d.drawHermite(true, ribbonBorder, colix, isNucleic ? 4 : 7,
+        screenArrowTopPrev, screenArrowTop, controlPointScreens[iNext],
+        controlPointScreens[iNext2], screenArrowBotPrev, screenArrowBot,
+        controlPointScreens[iNext], controlPointScreens[iNext2],
+        aspectRatio);
   }
 
 }

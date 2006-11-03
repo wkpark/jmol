@@ -71,12 +71,4 @@ class MeshRibbonRenderer extends RibbonsRenderer {
       if (bsVisible.get(i))
         render1StrandSegment(screens, i);
   }
-
-  void render1StrandSegment(Point3i[] screens, int i) {
-    int iPrev = Math.max(i - 1, 0);
-    int iNext = Math.min(i + 1, monomerCount);
-    int iNext2 = Math.min(i + 2, monomerCount);
-    g3d.drawHermite(getLeadColix(i), isNucleic ? 4 : 7, screens[iPrev],
-        screens[i], screens[iNext], screens[iNext2]);
-  }
 }

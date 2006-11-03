@@ -24,7 +24,7 @@
 
 package org.jmol.viewer;
 
-import org.jmol.g3d.*;
+import org.jmol.g3d.Graphics3D;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -121,37 +121,6 @@ class CartoonRenderer extends RocketsRenderer {
     renderPending();
   }
   
-  //// cardinal hermite arrow head rendering
-
-  final Point3i screenArrowTop = new Point3i();
-  final Point3i screenArrowTopPrev = new Point3i();
-  final Point3i screenArrowBot = new Point3i();
-  final Point3i screenArrowBotPrev = new Point3i();
-
-  void render2StrandArrowhead(int i) {
-    short colix = getLeadColix(i);
-    int iPrev = Math.max(i - 1, 0);
-    int iNext = Math.min(i + 1, monomerCount);
-    int iNext2 = Math.min(i + 2, monomerCount);
-    calc1Screen(controlPoints[i], wingVectors[i], mads[i], .7f,
-        screenArrowTop);
-    calc1Screen(controlPoints[iPrev], wingVectors[iPrev], mads[iPrev],
-        1.0f, screenArrowTopPrev);
-    calc1Screen(controlPoints[i], wingVectors[i], mads[i], -.7f,
-        screenArrowBot);
-    calc1Screen(controlPoints[i], wingVectors[i], mads[i], -1.0f,
-        screenArrowBotPrev);
-    if (ribbonBorder)
-      g3d.fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
-          screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
-          screenArrowBot.x, screenArrowBot.y, screenArrowBot.z);
-    g3d.drawHermite(true, ribbonBorder, colix, isNucleic ? 4 : 7,
-        screenArrowTopPrev, screenArrowTop, controlPointScreens[iNext],
-        controlPointScreens[iNext2], screenArrowBotPrev, screenArrowBot,
-        controlPointScreens[iNext], controlPointScreens[iNext2],
-        aspectRatio);
-  }
-
   //// nucleic acid base rendering
   
   final Point3f[] ring6Points = new Point3f[6];

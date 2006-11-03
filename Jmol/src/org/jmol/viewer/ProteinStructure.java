@@ -61,10 +61,14 @@ abstract class ProteinStructure {
     segments = new Point3f[monomerCount + 1];
     segments[monomerCount] = axisB;
     segments[0] = axisA;
-    for (int i = monomerCount; --i > 0; ) {
+    Vector3f axis = new Vector3f(axisUnitVector);
+    axis.scale(axisB.distance(axisA) / monomerCount);
+    for (int i = 1; i < monomerCount; i++) {
       Point3f point = segments[i] = new Point3f();
-      apolymer.getLeadMidPoint(monomerIndex + i, point);
-      projectOntoAxis(point);
+      point.set(segments[i - 1]);
+      point.add(axis);
+      //apolymer.getLeadMidPoint(monomerIndex + i, point);
+      //projectOntoAxis(point);
     }
   }
 

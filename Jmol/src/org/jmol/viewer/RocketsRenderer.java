@@ -24,7 +24,7 @@
 
 package org.jmol.viewer;
 
-import org.jmol.g3d.*;
+import org.jmol.g3d.Graphics3D;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
@@ -41,26 +41,10 @@ class RocketsRenderer extends MpsRenderer {
     Rockets.Cchain cchain = (Rockets.Cchain)mpspolymer;
     if (!(cchain.polymer instanceof AminoPolymer))
       return;
-    calcScreenControlPoints();
     cordMidPoints = calcRopeMidPoints((AminoPolymer)cchain.polymer);    
+    calcScreenControlPoints(cordMidPoints);
     render1();
     viewer.freeTempPoints(cordMidPoints);
-  }
-
-  void render1() {
-    clearPending();
-    for (int i = 0; i < monomerCount; ++i) {
-      Monomer monomer = monomers[i];
-      if (!bsVisible.get(i))
-        continue;
-      short colix = getLeadColix(i);
-      if (monomer.isHelixOrSheet()) {
-        renderSpecialSegment(monomer, colix, mads[i]);
-      } else {
-        renderRopeSegment(colix, i, true);
-      }
-    }
-    renderPending();
   }
 
   Point3f[] cordMidPoints;
@@ -83,34 +67,40 @@ class RocketsRenderer extends MpsRenderer {
       } else {
         if (proteinstructurePrev != null)
           point.set(proteinstructurePrev.getAxisEndPoint());
-        else if (isTraceAlpha)
-          aminopolymer.getLeadPoint(i, point);
-        else
-          aminopolymer.getLeadMidPoint(i, point);
+        else 
+          point.set(controlPoints[i]);
         proteinstructurePrev = null;
       }
     }
     point = cordMidPoints[monomerCount];
     if (proteinstructurePrev != null)
       point.set(proteinstructurePrev.getAxisEndPoint());
-    else if (isTraceAlpha)
-      aminopolymer.getLeadPoint(monomerCount, point);
-    else
-      aminopolymer.getLeadMidPoint(monomerCount, point);
+    else 
+      point.set(controlPoints[monomerCount]);
     return cordMidPoints;
   }
   
-  final Point3i screenA = new Point3i();
-  Point3i screenB = new Point3i();
-  Point3i screenC = new Point3i();
+  void render1() {
+    tPending = false;
+    for (int i = 0; i < monomerCount; ++i)
+      if (bsVisible.get(i)) {
+        Monomer monomer = monomers[i];
+        short colix = getLeadColix(i);
+        if (monomer.isHelixOrSheet()) {
+          renderSpecialSegment(monomer, colix, mads[i]);
+        } else {
+          renderRopeSegment(colix, i, true);
+        }
+      }
+    renderPending();
+  }
 
   void renderSpecialSegment(Monomer monomer, short colix, short mad) {
     ProteinStructure proteinstructure = monomer.getProteinStructure();
     if (tPending) {
-      if (proteinstructure == proteinstructurePending &&
-          mad == madPending &&
-          colix == colixPending &&
-          proteinstructure.getIndex(monomer) == endIndexPending + 1) {
+      if (proteinstructure == proteinstructurePending && mad == madPending
+          && colix == colixPending
+          && proteinstructure.getIndex(monomer) == endIndexPending + 1) {
         ++endIndexPending;
         return;
       }
@@ -131,17 +121,12 @@ class RocketsRenderer extends MpsRenderer {
   short colixPending;
   int[] shadesPending;
 
-  void clearPending() {
-    tPending = false;
-  }
-
   void renderPending() {
     if (!tPending)
       return;
     Point3f[] segments = proteinstructurePending.getSegments();
     boolean tEnd = (endIndexPending == proteinstructurePending
         .getMonomerCount() - 1);
-
     if (proteinstructurePending instanceof Helix)
       renderPendingHelix(segments[startIndexPending],
           segments[endIndexPending], segments[endIndexPending + 1], tEnd);
@@ -150,6 +135,10 @@ class RocketsRenderer extends MpsRenderer {
           segments[endIndexPending], segments[endIndexPending + 1], tEnd);
     tPending = false;
   }
+
+  final Point3i screenA = new Point3i();
+  Point3i screenB = new Point3i();
+  Point3i screenC = new Point3i();
 
   void renderPendingHelix(Point3f pointStart, Point3f pointBeforeEnd,
                           Point3f pointEnd, boolean tEnd) {

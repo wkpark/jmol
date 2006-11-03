@@ -128,10 +128,14 @@ abstract class MpsRenderer extends ShapeRenderer {
   }
 
   void calcScreenControlPoints() {
+    calcScreenControlPoints(controlPoints);  
+  }
+  
+  void calcScreenControlPoints(Point3f[] points) {
     int count = monomerCount + 1;
     controlPointScreens = viewer.allocTempScreens(count);
     for (int i = count; --i >= 0; ) {
-      viewer.transformPoint(controlPoints[i], controlPointScreens[i]);
+      viewer.transformPoint(points[i], controlPointScreens[i]);
     }
     haveControlPointScreens = true;
   }

@@ -34,7 +34,6 @@ class StarsRenderer extends ShapeRenderer {
     if (stars.mads == null)
       return;
     Atom[] atoms = frame.atoms;
-    int myVisibilityFlag = stars.myVisibilityFlag;
     for (int i = frame.atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i))

@@ -247,7 +247,7 @@ class NucleicMonomer extends PhosphorusMonomer {
     atom = getLeadAtom();
     if (chain.frame.bsHidden.get(atom.atomIndex))
       return;
-    int cartoonflag = Viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_CARTOON);
+    int cartoonflag = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_CARTOON);
     
     for (int i = 6; --i >= 0; ) {
       atom = getAtomFromOffsetIndex(i + 3);

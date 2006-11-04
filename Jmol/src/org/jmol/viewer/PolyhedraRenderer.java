@@ -29,12 +29,6 @@ class PolyhedraRenderer extends ShapeRenderer {
 
   int drawEdges;
 
-  int myVisibilityFlag;    
-
-  void initRenderer() {
-    myVisibilityFlag = Viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_POLYHEDRA);
-  }
-  
   void render() {
     Polyhedra polyhedra = (Polyhedra) shape;
     Polyhedra.Polyhedron[] polyhedrons = polyhedra.polyhedrons;

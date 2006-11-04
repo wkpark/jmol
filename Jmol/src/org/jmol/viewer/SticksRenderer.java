@@ -52,13 +52,7 @@ class SticksRenderer extends ShapeRenderer {
   int width;
   int bondOrder;
   short madBond;
-  int myVisibilityFlag;
-  
-  void initRenderer() {
-    myVisibilityFlag = Viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_STICKS);
-    
-  }
-  
+
   void render() {
     asBits = viewer.getTestFlag2();
     
@@ -75,9 +69,7 @@ class SticksRenderer extends ShapeRenderer {
     Bond[] bonds = frame.bonds;
     for (int i = frame.bondCount; --i >= 0; ) {
       Bond bond = bonds[i];
-      if ((bond.shapeVisibilityFlags & myVisibilityFlag) != 0
-          && bond.atom1.isModelVisible()
-          && bond.atom2.isModelVisible()) 
+      if ((bond.shapeVisibilityFlags & myVisibilityFlag) != 0) 
         render(bond);
     }
   }
@@ -87,8 +79,14 @@ class SticksRenderer extends ShapeRenderer {
     int order = bond.order;
     Atom atomA = bond.atom1;
     Atom atomB = bond.atom2;
-    if (frame.bsHidden.get(atomA.atomIndex) || frame.bsHidden.get(atomB.atomIndex))
+    if (!bond.atom1.isModelVisible()
+        || !bond.atom2.isModelVisible()
+        || !g3d.isInDisplayRange(atomA.screenX, atomA.screenY)
+        || !g3d.isInDisplayRange(atomB.screenX, atomB.screenY)
+        || frame.bsHidden.get(atomA.atomIndex) 
+        || frame.bsHidden.get(atomB.atomIndex))
       return;
+
     colixA = Graphics3D.inheritColix(bond.colix, atomA.colixAtom);
     colixB = Graphics3D.inheritColix(bond.colix, atomB.colixAtom);
     if (bondsBackbone) {

@@ -31,23 +31,13 @@ import java.util.BitSet;
 
 final public class JmolConstants {
 
-  // this atom flag simply associates an atom with the current model
-  // but doesn't necessarily mean it is visible
-
-  // these atom flags get tainted with scripts and frame changes
-  // and must be reset with setModelVisibility() prior to rendering
- 
-  public final static int ATOM_IN_MODEL    = 1;
-  public final static int ATOM_SLABBED     = 2;
-  
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "10.9.92"; //fixes VERY obscure start-up only bug  
+  public final static String version = "10.9.93"; //smooth cartoons with set hermiteLevel  
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
-  
-  
+    
   public final static boolean officialRelease = false;
 
   public final static int DELETE_BONDS     = 0;
@@ -2294,6 +2284,22 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_MAX        = SHAPE_DRAW + 1;
   //handled in Balls.java: (It's ok that this is SHAPE_MAX)
   
+  // this atom flag simply associates an atom with the current model
+  // but doesn't necessarily mean it is visible
+
+  public final static int ATOM_IN_MODEL    = 1;
+
+  // reserved for future use:
+  
+  public final static int ATOM_SLABBED     = 2;
+
+  // these atom flags get tainted with scripts and frame changes
+  // and must be reset with setModelVisibility() prior to rendering
+ 
+  final static int getShapeVisibilityFlag(int shapeID) {
+    return (4 << shapeID);
+  }
+
   //see Jmol 10.2 for programming information --- pruned from 11.0
   //Bob Hanson 7/17/06
   //public final static int SHAPE_PRUEBA     = 28;

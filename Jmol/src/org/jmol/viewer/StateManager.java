@@ -270,11 +270,13 @@ class StateManager {
     boolean ribbonBorder          = false;
     boolean chainCaseSensitive    = false;
     boolean rangeSelected         = false;
-    boolean traceAlpha            = false; 
+    boolean traceAlpha            = false;
+    boolean highResolutionFlag    = false;
 
     //misc
     
-    int ribbonAspectRatio   = 0;
+    int ribbonAspectRatio   = 16;
+    int hermiteLevel = 4;
     int pickingSpinRate      = 10;
     boolean hideNameInPopup  = false;
     boolean disablePopupMenu = false;

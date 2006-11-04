@@ -4023,6 +4023,10 @@ class Eval { //implements Runnable {
         viewer.setRibbonAspectRatio(intParameter(2));
         break;
       }
+      if (str.equalsIgnoreCase("hermiteLevel")) {
+        viewer.setHermiteLevel(intParameter(2));
+        break;
+      }
       if (str.equalsIgnoreCase("toggleLabel")) {
         viewer.togglePickingLabel(expression(statement, 2));
         break;

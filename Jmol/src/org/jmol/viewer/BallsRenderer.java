@@ -28,11 +28,7 @@ package org.jmol.viewer;
 class BallsRenderer extends ShapeRenderer {
 
   int minX, maxX, minY, maxY, minZ, maxZ;
-  int ballVisibilityFlag;
 
-  void initRenderer() {
-    ballVisibilityFlag = Viewer.getShapeVisibilityFlag(JmolConstants.SHAPE_BALLS);
-  }
   boolean labelsGroup;
   
   void render() {
@@ -61,6 +57,8 @@ class BallsRenderer extends ShapeRenderer {
           int r = atom.screenDiameter / 2;
           if (atom.screenZ < minZ - r || atom.screenZ > maxZ + r)
             continue;
+          if (!g3d.isInDisplayRange(atom.screenX, atom.screenY))
+            continue;
         }
       }
       // note: above transform is required for all other renderings
@@ -71,7 +69,7 @@ class BallsRenderer extends ShapeRenderer {
             atom.group.minZ = Math.max(1,z);
         }
       }
-      if ((atom.shapeVisibilityFlags & ballVisibilityFlag) != 0)
+      if ((atom.shapeVisibilityFlags & myVisibilityFlag) != 0)
         renderBall(atom);
     }
   }

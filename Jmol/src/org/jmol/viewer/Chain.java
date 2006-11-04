@@ -91,17 +91,17 @@ final class Chain {
 
   void selectSeqcodeRange(int seqcodeA, int seqcodeB, BitSet bs) {
     int i = 0;
-    int groupIndexB =  getNextSeqcodeIndex(0, seqcodeB);
-    if (groupIndexB < 0)
+    if (seqcodeB == Integer.MAX_VALUE)
       seqcodeB = getMaxSeqcode();
+    int groupIndexB = getNextSeqcodeIndex(0, seqcodeB);
+    if (groupIndexB < 0)
+      return;
     do {
       int groupIndexA = getNextSeqcodeIndex(i, seqcodeA);
       if (groupIndexA < 0)
         return;
-      if (groupIndexB < 0)
-        groupIndexB = getNextSeqcodeIndex(i, seqcodeB);
-      if (groupIndexB < 0)
-        return;
+      if (groupIndexB < 0 && (groupIndexB = getNextSeqcodeIndex(i, seqcodeB)) < 0)
+          return;
       int indexFirst;
       int indexLast;
       if (groupIndexA <= groupIndexB) {

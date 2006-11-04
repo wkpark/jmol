@@ -85,7 +85,6 @@ class DotsRenderer extends ShapeRenderer {
     Atom[] atoms = frame.atoms;
     int[][] dotsConvexMaps = dots.dotsConvexMaps;
     short[] colixesConvex = dots.colixesConvex;
-    int myVisibilityFlag = dots.myVisibilityFlag;
     boolean isInMotion = (viewer.getInMotion() && dots.dotsConvexMax > 100);
     boolean iShowSolid = dots.isSurface;
     //boolean iShowSolid = (viewer.getTestFlag3()||dots.showSurface) && dots.useBobsAlgorithm;

@@ -85,7 +85,7 @@ class FrameRenderer {
     try {
       Class shapeClass = Class.forName(className);
       ShapeRenderer renderer = (ShapeRenderer)shapeClass.newInstance();
-      renderer.setViewerFrameRenderer(viewer, this, g3d);
+      renderer.setViewerFrameRenderer(viewer, this, g3d, refShape);
       return renderer;
     } catch (Exception e) {
       Logger.error("Could not instantiate renderer:" + classBase, e);

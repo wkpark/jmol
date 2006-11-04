@@ -270,10 +270,6 @@ public class Viewer extends JmolViewer {
     return info;
   }
 
-  final static int getShapeVisibilityFlag(int shapeID) {
-    return (4 << shapeID);
-  }
-
   String getJmolVersion() {
     return JmolConstants.version + "  " + JmolConstants.date;
   }
@@ -2768,6 +2764,10 @@ public class Viewer extends JmolViewer {
   public void setBooleanProperty(String key, boolean value) {
     //Eval
     while (true) {
+      if (key.equalsIgnoreCase("highResolution")) {
+        setHighResolution(value);
+        break;
+      }
       if (key.equalsIgnoreCase("traceAlpha")) {
         setTraceAlpha(value);
         break;
@@ -3203,6 +3203,22 @@ public class Viewer extends JmolViewer {
 
   boolean getTraceAlpha() {
     return global.traceAlpha;
+  }
+
+  int getHermiteLevel() {
+    return global.hermiteLevel;
+  }
+  
+  void setHermiteLevel(int level) {
+    global.hermiteLevel = level;
+  }
+  
+  boolean getHighResolution() {
+    return global.highResolutionFlag;
+  }
+
+  private void setHighResolution(boolean TF) {
+    global.highResolutionFlag = TF;
   }
 
   private void setLabelPointerBackground(boolean TF) {

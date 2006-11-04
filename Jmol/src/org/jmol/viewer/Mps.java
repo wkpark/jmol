@@ -196,7 +196,8 @@ abstract class Mps extends Shape {
         colixes = new short[monomerCount];
         mads = new short[monomerCount + 1];
         monomers = polymer.monomers;
-
+        meshReady = new boolean[monomerCount];
+        meshes = new Mesh[monomerCount];
         leadPoints = polymer.getLeadPoints();
         leadMidpoints = polymer.getLeadMidpoints();
         wingVectors = polymer.getWingVectors();
@@ -281,8 +282,7 @@ abstract class Mps extends Shape {
           mads[i] = mad >= 0 ? mad : getMadSpecial(mad, i);
           monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
           frame.atoms[leadAtomIndex].setShapeVisibility(myVisibilityFlag,isVisible);
-          if (meshes != null)
-            falsifyMesh(i, true);
+          falsifyMesh(i, true);
         }
       }
       if (monomerCount > 1)
@@ -296,8 +296,6 @@ abstract class Mps extends Shape {
         if (bsSelected.get(atomIndex)) {
           colixes[i] = ((colix != Graphics3D.UNRECOGNIZED) ? colix : viewer
               .getColixAtomPalette(frame.getAtomAt(atomIndex), palette));
-          if (meshes != null)
-            meshes[i].setColix(colixes[i]);
         }
       }
     }
@@ -308,8 +306,6 @@ abstract class Mps extends Shape {
         int atomIndex = atomIndices[i];
         if (bsSelected.get(atomIndex)) {
           colixes[i] = Graphics3D.setTranslucent(colixes[i], isTranslucent);
-          if (meshes != null)
-            meshes[i].setColix(colixes[i]);
         }
       }
     }
@@ -415,5 +411,5 @@ abstract class Mps extends Shape {
         group.setModelClickability();
       }
     }
-  }
+  }  
 }

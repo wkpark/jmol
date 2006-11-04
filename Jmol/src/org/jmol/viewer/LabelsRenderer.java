@@ -53,7 +53,6 @@ class LabelsRenderer extends ShapeRenderer {
     if (labelStrings == null)
       return;
     Atom[] atoms = frame.atoms;
-    int myVisibilityFlag = labels.myVisibilityFlag;
     for (int i = labelStrings.length; --i >= 0;) {
       Atom atom = atoms[i];
       if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i))

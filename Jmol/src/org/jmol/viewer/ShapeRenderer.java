@@ -31,13 +31,17 @@ abstract class ShapeRenderer {
 
   Viewer viewer;
   FrameRenderer frameRenderer;
+  int myVisibilityFlag;
+  int shapeID;
 
   final void setViewerFrameRenderer(Viewer viewer,
                                     FrameRenderer frameRenderer,
-                                    Graphics3D g3d) {
+                                    Graphics3D g3d, int refShape) {
     this.viewer = viewer;
     this.frameRenderer = frameRenderer;
     this.g3d = g3d;
+    myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(refShape);
+    shapeID = refShape;
     initRenderer();
   }
 

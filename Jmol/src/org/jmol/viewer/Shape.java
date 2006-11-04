@@ -40,18 +40,15 @@ abstract class Shape {
   int shapeID;
   int myVisibilityFlag;
   
-  final void setViewerG3dFrame(Viewer viewer, Graphics3D g3d, Frame frame) {
+  final void setViewerG3dFrame(Viewer viewer, Graphics3D g3d, Frame frame, int shapeID) {
     this.viewer = viewer;
     this.g3d = g3d;
     this.frame = frame;
+    this.shapeID = shapeID;
+    this.myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(shapeID);
     initShape();
   }
 
-  final void setVisibilityInfo(int shapeID) {
-    this.shapeID = shapeID;
-    this.myVisibilityFlag = Viewer.getShapeVisibilityFlag(shapeID);
-  }
-    
   void initShape() {
   }
 

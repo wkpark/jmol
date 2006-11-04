@@ -1088,8 +1088,7 @@ public final class Frame {
     try {
       Class shapeClass = Class.forName(className);
       Shape shape = (Shape) shapeClass.newInstance();
-      shape.setViewerG3dFrame(viewer, g3d, this);
-      shape.setVisibilityInfo(shapeID);
+      shape.setViewerG3dFrame(viewer, g3d, this, shapeID);
       return shape;
     } catch (Exception e) {
       Logger.error("Could not instantiate shape:" + classBase, e);

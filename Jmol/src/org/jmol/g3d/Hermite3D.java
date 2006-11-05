@@ -453,10 +453,10 @@ class Hermite3D {
       a1.sub(depth);
   }
   
-  static void getHermiteList(int tension, Tuple3f p0, Tuple3f p1, Tuple3f p2, Tuple3f p3, Tuple3f p4, Tuple3f[] list) {
+  static void getHermiteList(int tension, Tuple3f p0, Tuple3f p1, Tuple3f p2, Tuple3f p3, Tuple3f p4, Tuple3f[] list, int n) {
     //always deliver ONE MORE than one might expect, to provide a normal
-    int nPoints = list.length;
-    float fnPoints = nPoints - 2;
+    int nPoints = n + 1;
+    float fnPoints = n - 1;
     float x1 = p1.x, y1 = p1.y, z1 = p1.z;
     float x2 = p2.x, y2 = p2.y, z2 = p2.z;    
     float xT1 = ((x2 - p0.x) * tension) / 8;

@@ -56,7 +56,7 @@ class CartoonRenderer extends RocketsRenderer {
   void renderNucleic() {
     for (int i = monomerCount; --i >= 0;)
       if (bsVisible.get(i)) {
-        renderHermiteConic(i, true);
+        renderHermiteConic(i, false);
         renderNucleicBaseStep((NucleicMonomer) monomers[i], getLeadColix(i), mads[i],
             controlPointScreens[i + 1]);
       }
@@ -82,8 +82,8 @@ class CartoonRenderer extends RocketsRenderer {
         lastWasSheet = false;
       }
       previousStructure = thisStructure;
-      boolean isHelix = isHelixes[i];
-      boolean isSheet = isSpecials[i] && !isHelix;
+      boolean isHelix = isHelix(i);
+      boolean isSheet = isSheet(i);
       boolean isHelixRocket = (renderAsRockets ? isHelix : false);
       if (bsVisible.get(i)) {
         if (isHelixRocket) {
@@ -91,7 +91,7 @@ class CartoonRenderer extends RocketsRenderer {
         } else if (isSheet || isHelix) {
           if (lastWasSheet && isSheet || lastWasHelix && isHelix)
             //uses topScreens
-            renderHermiteRibbon(true, i);
+            renderHermiteRibbon(true, i, true);
           else
             renderHermiteArrowHead(i);
         } else {
@@ -116,7 +116,7 @@ class CartoonRenderer extends RocketsRenderer {
     // the special segments routine takes care of heads
     tPending = false;
     for (int i = 0; i < monomerCount; ++i)
-      if (bsVisible.get(i) && isHelixes[i])
+      if (bsVisible.get(i) && isHelix(i))
         renderSpecialSegment(monomers[i], getLeadColix(i), mads[i]);
     renderPending();
   }

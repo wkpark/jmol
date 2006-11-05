@@ -3512,6 +3512,14 @@ public class Viewer extends JmolViewer {
     tempManager.freeTempBooleans(tempBooleans);
   }
 
+  byte[] allocTempBytes(int size) {
+    return tempManager.allocTempBytes(size);
+  }
+
+  void freeTempBytes(byte[] tempBytes) {
+    tempManager.freeTempBytes(tempBytes);
+  }
+
   // //////////////////////////////////////////////////////////////
   // font stuff
   // //////////////////////////////////////////////////////////////

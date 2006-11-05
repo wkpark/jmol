@@ -80,14 +80,16 @@ abstract class ProteinStructure {
   boolean lowerNeighborIsHelixOrSheet() {
     if (monomerIndex == 0)
       return false;
-    return apolymer.monomers[monomerIndex - 1].isHelixOrSheet();
+    return apolymer.monomers[monomerIndex - 1].isHelix()
+        || apolymer.monomers[monomerIndex - 1].isSheet();
   }
 
   boolean upperNeighborIsHelixOrSheet() {
     int upperNeighborIndex = monomerIndex + monomerCount;
     if (upperNeighborIndex == apolymer.monomerCount)
       return false;
-    return apolymer.monomers[upperNeighborIndex].isHelixOrSheet();
+    return apolymer.monomers[upperNeighborIndex].isHelix()
+        || apolymer.monomers[upperNeighborIndex].isSheet();
   }
 
   final Vector3f vectorProjection = new Vector3f();

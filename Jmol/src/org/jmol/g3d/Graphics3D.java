@@ -785,8 +785,8 @@ final public class Graphics3D {
                      s0, s1, s2, s3);
   }
   
-  public static void getHermiteList(int tension, Tuple3f s0, Tuple3f s1, Tuple3f s2, Tuple3f s3, Tuple3f s4, Tuple3f[] list) {
-    Hermite3D.getHermiteList(tension, s0, s1, s2, s3, s4, list);
+  public static void getHermiteList(int tension, Tuple3f s0, Tuple3f s1, Tuple3f s2, Tuple3f s3, Tuple3f s4, Tuple3f[] list, int n) {
+    Hermite3D.getHermiteList(tension, s0, s1, s2, s3, s4, list, n);
   }
 
   /* ***************************************************************

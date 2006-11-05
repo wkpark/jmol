@@ -23,7 +23,6 @@
  */
 package org.jmol.viewer;
 
-
 import javax.vecmath.*;
 
 class TempManager {
@@ -37,11 +36,10 @@ class TempManager {
   static int findBestFit(int size, short[] lengths) {
     int iFit = -1;
     int fitLength = Integer.MAX_VALUE;
-    
-    for (int i = lengths.length; --i >= 0; ) {
+
+    for (int i = lengths.length; --i >= 0;) {
       int freeLength = lengths[i];
-      if (freeLength >= size &&
-          freeLength < fitLength) {
+      if (freeLength >= size && freeLength < fitLength) {
         fitLength = freeLength;
         iFit = i;
       }
@@ -52,20 +50,20 @@ class TempManager {
   }
 
   static int findShorter(int size, short[] lengths) {
-    for (int i = lengths.length; --i >= 0; )
+    for (int i = lengths.length; --i >= 0;)
       if (lengths[i] == 0) {
-        lengths[i] = (short)size;
+        lengths[i] = (short) size;
         return i;
       }
     int iShortest = 0;
     int shortest = lengths[0];
-    for (int i = lengths.length; --i > 0; )
+    for (int i = lengths.length; --i > 0;)
       if (lengths[i] < shortest) {
         shortest = lengths[i];
         iShortest = i;
       }
     if (shortest < size) {
-      lengths[iShortest] = (short)size;
+      lengths[iShortest] = (short) size;
       return iShortest;
     }
     return -1;
@@ -85,7 +83,7 @@ class TempManager {
       tempPoints = freePoints[iFit];
     } else {
       tempPoints = new Point3f[size];
-      for (int i = size; --i >= 0; )
+      for (int i = size; --i >= 0;)
         tempPoints[i] = new Point3f();
     }
     return tempPoints;
@@ -111,7 +109,7 @@ class TempManager {
       tempScreens = freeScreens[iFit];
     } else {
       tempScreens = new Point3i[size];
-      for (int i = size; --i >= 0; )
+      for (int i = size; --i >= 0;)
         tempScreens[i] = new Point3i();
     }
     return tempScreens;
@@ -145,5 +143,29 @@ class TempManager {
     int iFree = findShorter(tempBooleans.length, lengthsFreeBooleans);
     if (iFree >= 0)
       freeBooleans[iFree] = tempBooleans;
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // temp ints
+  ////////////////////////////////////////////////////////////////
+  final static int freeBytesSize = 2;
+  final short[] lengthsFreeBytes = new short[freeBytesSize];
+  final byte[][] freeBytes = new byte[freeBytesSize][];
+
+  byte[] allocTempBytes(int size) {
+    byte[] tempBytes;
+    int iFit = findBestFit(size, lengthsFreeBytes);
+    if (iFit > 0) {
+      tempBytes = freeBytes[iFit];
+    } else {
+      tempBytes = new byte[size];
+    }
+    return tempBytes;
+  }
+
+  void freeTempBytes(byte[] tempBytes) {
+    int iFree = findShorter(tempBytes.length, lengthsFreeBytes);
+    if (iFree >= 0)
+      freeBytes[iFree] = tempBytes;
   }
 }

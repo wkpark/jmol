@@ -116,7 +116,7 @@ abstract class Monomer extends Group {
   ProteinStructure getProteinStructure() { return null; }
   byte getProteinStructureType() { return 0; }
   boolean isHelix() { return false; }
-  boolean isHelixOrSheet() { return false; }
+  boolean isSheet() { return false; }
 
   ////////////////////////////////////////////////////////////////
 

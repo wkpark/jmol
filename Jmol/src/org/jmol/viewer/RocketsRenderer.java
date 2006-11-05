@@ -26,18 +26,11 @@ package org.jmol.viewer;
 
 import org.jmol.g3d.Graphics3D;
 import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 class RocketsRenderer extends MpsRenderer {
 
   final static float MIN_CONE_HEIGHT = 0.05f;
-
-  Point3i s0 = new Point3i();
-  Point3i s1 = new Point3i();
-  Point3i s2 = new Point3i();
-  Point3i s3 = new Point3i();
-  int diameterBeg, diameterMid, diameterEnd;
 
   void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
     Rockets.Cchain cchain = (Rockets.Cchain)mpspolymer;
@@ -61,7 +54,7 @@ class RocketsRenderer extends MpsRenderer {
       Monomer residue = monomers[i];
       if (isNewStyle) {
         point.set(controlPoints[i]);        
-      } else if (isSpecials[i]) {
+      } else if (isHelix(i) || isSheet(i)) {
         ProteinStructure proteinstructure = residue.getProteinStructure();
         point.set(i - 1 != proteinstructure.getMonomerIndex() ?
             proteinstructure.getAxisStartPoint() :
@@ -89,7 +82,7 @@ class RocketsRenderer extends MpsRenderer {
     for (int i = 0; i < monomerCount; ++i)
       if (bsVisible.get(i)) {
         Monomer monomer = monomers[i];
-        if (monomer.isHelixOrSheet()) {
+        if (isHelix(i) || isSheet(i)) {
           renderSpecialSegment(monomer, getLeadColix(i), mads[i]);
         } else {
           renderHermiteConic(i, true);

@@ -36,6 +36,7 @@ class MeshRibbonRenderer extends StrandsRenderer {
   }
 
   void render2Strand(boolean doFill, float offsetTop, float offsetBottom) {
+    calcScreenControlPoints();
     ribbonTopScreens = calcScreens(offsetTop);
     ribbonBottomScreens = calcScreens(-offsetBottom);
     for (int i = monomerCount; --i >= 0;)

@@ -130,7 +130,7 @@ class Mesh {
   boolean drawTriangles = false;
   boolean fillTriangles = true;
 
-  static int SEED_COUNT = 16;
+  static int SEED_COUNT = 25; //optimized for cartoon mesh hermites
   
   Mesh(Viewer viewer, String thisID, Graphics3D g3d, short colix) {
     this.viewer = viewer;

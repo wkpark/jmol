@@ -124,7 +124,7 @@ class RocketsRenderer extends MpsRenderer {
     boolean tEnd = (endIndexPending == proteinstructurePending
         .getMonomerCount() - 1);
     if (proteinstructurePending instanceof Helix)
-      renderPendingRocketSegment(segments[startIndexPending],
+      renderPendingRocketSegment(endIndexPending, segments[startIndexPending],
           segments[endIndexPending], segments[endIndexPending + 1], tEnd);
     else if (proteinstructurePending instanceof Sheet)
       renderPendingSheet(segments[startIndexPending],
@@ -136,7 +136,7 @@ class RocketsRenderer extends MpsRenderer {
   Point3f screenB = new Point3f();
   Point3f screenC = new Point3f();
 
-  void renderPendingRocketSegment(Point3f pointStart, Point3f pointBeforeEnd,
+  void renderPendingRocketSegment(int i, Point3f pointStart, Point3f pointBeforeEnd,
                                   Point3f pointEnd, boolean tEnd) {
     viewer.transformPoint(pointStart, screenA);
     viewer.transformPoint(pointEnd, screenB);
@@ -145,10 +145,7 @@ class RocketsRenderer extends MpsRenderer {
     if (tEnd) {
       viewer.transformPoint(pointBeforeEnd, screenC);
       if (pointBeforeEnd.distance(pointEnd) > MIN_CONE_HEIGHT) {
-        int coneDiameter = viewer.scaleToScreen((int) Math.floor(screenC.z),
-            madPending + (madPending >> 2));
-        g3d.fillCone(colixPending, Graphics3D.ENDCAPS_FLAT, coneDiameter,
-            screenC, screenB);
+        renderCone(i, pointBeforeEnd, pointEnd, screenB, screenC, colixPending, madPending);
       } else {
         g3d.fillCylinderBits(colixPending, Graphics3D.ENDCAPS_FLAT, diameter,
             screenB, screenC);

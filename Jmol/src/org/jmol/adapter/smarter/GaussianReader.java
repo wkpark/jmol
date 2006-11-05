@@ -143,11 +143,13 @@ class GaussianReader extends AtomSetCollectionReader {
             || line.indexOf("Standard orientation:") >= 0) {
           if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
             if (iHaveAtoms)
-              break;            
+              break;
             continue;
           }
           equivalentAtomSets++;
-          logger.log(" model " + modelNumber + " step " + stepNumber+" equivalentAtomSet " + equivalentAtomSets + " calculation " + calculationNumber + " scan point " + scanPoint+line);
+          logger.log(" model " + modelNumber + " step " + stepNumber
+              + " equivalentAtomSet " + equivalentAtomSets + " calculation "
+              + calculationNumber + " scan point " + scanPoint + line);
           readAtoms();
           iHaveAtoms = true;
         } else if (iHaveAtoms && line.startsWith(" Energy=")) {
@@ -165,12 +167,18 @@ class GaussianReader extends AtomSetCollectionReader {
           readPartialCharges();
         } else if (iHaveAtoms && line.startsWith(" Standard basis:")) {
           logger.log(line);
-          moData.put("energyUnits","");
+          moData.put("energyUnits", "");
           moData.put("calculationType", line.substring(17).trim());
+        } else if (iHaveAtoms
+            && line.startsWith(" General basis read from cards:")) {
+          logger.log(line);
+          moData.put("energyUnits", "");
+          moData.put("calculationType", line.substring(31).trim());
         } else if (iHaveAtoms && line.startsWith(" AO basis set:")) {
           readBasis();
           atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
-        } else if (iHaveAtoms && line.indexOf("Molecular Orbital Coefficients") >=0) {
+        } else if (iHaveAtoms
+            && line.indexOf("Molecular Orbital Coefficients") >= 0) {
           readMolecularOrbitals();
           logger.log(orbitals.size() + " molecular orbitals read");
           moData.put("mos", orbitals);

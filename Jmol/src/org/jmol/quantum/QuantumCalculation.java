@@ -179,6 +179,11 @@ public class QuantumCalculation {
   }
 
   private boolean checkCalculationType() {
+    if (calculationType == null) {
+      Logger
+      .warn("calculation type not identified -- continuing");
+      return true;
+    }
     if (calculationType.indexOf("5D") >= 0) {
       Logger
           .error("QuantumCalculation.checkCalculationType: can't read 5D basis sets yet: "

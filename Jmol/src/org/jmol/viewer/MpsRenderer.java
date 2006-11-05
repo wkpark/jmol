@@ -372,7 +372,7 @@ abstract class MpsRenderer extends MeshRenderer {
         System.out.println("render mesh error: " + e.toString());
       }
     }
-    g3d.fillCone(colix, Graphics3D.ENDCAPS_FLAT, coneDiameter, screenPtEnd,
+    g3d.fillCone(colix, Graphics3D.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
         screenPtEnd);
   }
 

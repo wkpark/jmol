@@ -145,7 +145,7 @@ class RocketsRenderer extends MpsRenderer {
     if (tEnd) {
       viewer.transformPoint(pointBeforeEnd, screenC);
       if (pointBeforeEnd.distance(pointEnd) > MIN_CONE_HEIGHT) {
-        renderCone(i, pointBeforeEnd, pointEnd, screenB, screenC, colixPending, madPending);
+        renderCone(i, pointBeforeEnd, pointEnd, screenC, screenB, colixPending, madPending);
       } else {
         g3d.fillCylinderBits(colixPending, Graphics3D.ENDCAPS_FLAT, diameter,
             screenB, screenC);

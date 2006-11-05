@@ -4551,6 +4551,12 @@
   <fah_proj number="2602" name="p2602_Protein in POPC" public="n"
     server="171.64.65.56" atoms="77373" preferred="4" deadline="12"
     credit="5" frames="100" code="A0" contact="kasson"/>
+  <fah_proj number="2603" name="p2603_Protein in POPC" public="n"
+    server="171.64.65.56" atoms="77373" preferred="4" deadline="12"
+    credit="5" frames="0" code="T" contact="kasson"/>
+  <fah_proj number="2604" name="p2604_Protein in POPC" public="n"
+    server="171.64.65.56" atoms="77373" preferred="9" deadline="15"
+    credit="3610" frames="0" code="T" contact="kasson"/>
 
   <!-- Projects 2700 to 2799 -->
   <fah_proj number="2711" name="p2711_GPUlambda" public="y"

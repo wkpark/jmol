@@ -4548,13 +4548,13 @@
     credit="136" frames="100" code="GB" contact="luttmann"/>
 
   <!-- Projects 2600 to 2699 -->
-  <fah_proj number="2602" name="p2602_Protein in POPC" public="n"
+  <fah_proj number="2602" name="p2602_Protein in POPC" public="n" file="y"
     server="171.64.65.56" atoms="77373" preferred="4" deadline="12"
     credit="5" frames="100" code="A0" contact="kasson"/>
   <fah_proj number="2603" name="p2603_Protein in POPC" public="n"
     server="171.64.65.56" atoms="77373" preferred="4" deadline="12"
     credit="5" frames="0" code="T" contact="kasson"/>
-  <fah_proj number="2604" name="p2604_Protein in POPC" public="n"
+  <fah_proj number="2604" name="p2604_Protein in POPC" public="n" file="y"
     server="171.64.65.56" atoms="77373" preferred="4" deadline="8"
     credit="1210" frames="0" code="T" contact="kasson"/>
 
@@ -4604,7 +4604,7 @@
   <!-- Projects 2900 to 2999 -->
 
   <!-- Projects 3000 to 3099 -->
-  <fah_proj number="3000" name="p3000_SMP-supervillin-beta1" public="n"
+  <fah_proj number="3000" name="p3000_SMP-supervillin-beta1" public="n" file="y"
     server="171.64.65.56" atoms="10066" preferred="4" deadline="12"
     credit="1" frames="100" code="A0" contact="densign"/>
   <fah_proj number="3001" name="p3001_Glycine aRginine prOline Methionine Alanine Cystine Serine"
@@ -4625,7 +4625,7 @@
   <!-- Projects 3200 to 3299 -->
 
   <!-- Projects 3300 to 3399 -->
-  <fah_proj number="3300" name="p3300_riblig" public="n" file="y"
+  <fah_proj number="3300" name="p3300_riblig" public="y" file="y"
     server="171.64.122.127" atoms="2626" preferred="2" deadline="10"
     credit="48" frames="100" code="DG" contact="guha"/>
 </fah_projects>

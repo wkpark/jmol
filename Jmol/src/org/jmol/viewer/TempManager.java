@@ -90,6 +90,9 @@ class TempManager {
   }
 
   void freeTempPoints(Point3f[] tempPoints) {
+    for (int i = 0; i < freePoints.length; i++)
+      if (freePoints[i] == tempPoints)
+        return;
     int iFree = findShorter(tempPoints.length, lengthsFreePoints);
     if (iFree >= 0)
       freePoints[iFree] = tempPoints;
@@ -116,6 +119,9 @@ class TempManager {
   }
 
   void freeTempScreens(Point3i[] tempScreens) {
+    for (int i = 0; i < freeScreens.length; i++)
+      if (freeScreens[i] == tempScreens)
+        return;
     int iFree = findShorter(tempScreens.length, lengthsFreeScreens);
     if (iFree >= 0)
       freeScreens[iFree] = tempScreens;
@@ -140,6 +146,9 @@ class TempManager {
   }
 
   void freeTempBooleans(boolean[] tempBooleans) {
+    for (int i = 0; i < freeBooleans.length; i++)
+      if (freeBooleans[i] == tempBooleans)
+        return;
     int iFree = findShorter(tempBooleans.length, lengthsFreeBooleans);
     if (iFree >= 0)
       freeBooleans[iFree] = tempBooleans;
@@ -164,6 +173,9 @@ class TempManager {
   }
 
   void freeTempBytes(byte[] tempBytes) {
+    for (int i = 0; i < freeBytes.length; i++)
+      if (freeBytes[i] == tempBytes)
+        return;
     int iFree = findShorter(tempBytes.length, lengthsFreeBytes);
     if (iFree >= 0)
       freeBytes[iFree] = tempBytes;

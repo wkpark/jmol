@@ -38,14 +38,19 @@ class CartoonRenderer extends RocketsRenderer {
     Cartoon.Cchain schain = (Cartoon.Cchain) mpspolymer;
     if (schain.wingVectors == null || isCarbohydrate)
       return;
-    renderAsRockets = viewer.getCartoonRocketFlag();
     calcScreenControlPoints();
     if (isNucleic) {
       renderNucleic();
       return;
     }
-    ribbonTopScreens = calcScreens(isNucleic ? 1f : 0.5f);
-    ribbonBottomScreens = calcScreens(isNucleic ? 0f : -0.5f);
+    boolean val = viewer.getCartoonRocketFlag();
+    if (renderAsRockets != val) {
+      for (int i = 0; i < monomerCount; i++)
+        schain.falsifyMesh(i, false);
+      renderAsRockets = val;
+    }
+    ribbonTopScreens = calcScreens(0.5f);
+    ribbonBottomScreens = calcScreens(-0.5f);
     calcRopeMidPoints(newRockets);
     render1();
     viewer.freeTempPoints(cordMidPoints);

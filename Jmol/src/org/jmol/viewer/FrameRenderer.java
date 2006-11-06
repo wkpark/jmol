@@ -62,8 +62,8 @@ class FrameRenderer {
       getRenderer(i, g3d)
           .render(g3d, rectClip, frame, displayModelIndex, shape);
     }
-    if (logTime && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
-      Logger.debug("render time: " + (System.currentTimeMillis() - timeBegin)
+    if (logTime)
+      Logger.info("render time: " + (System.currentTimeMillis() - timeBegin)
           + " ms");
   }
 

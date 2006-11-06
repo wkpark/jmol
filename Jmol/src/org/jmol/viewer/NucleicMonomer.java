@@ -110,9 +110,9 @@ class NucleicMonomer extends PhosphorusMonomer {
 
   boolean isNucleicMonomer() { return true; }
 
-  boolean isDna() { return ! hasRnaO2Prime; }
+  boolean isDna() { return ! hasRnaO2Prime || chain.isDna(); }
 
-  boolean isRna() { return hasRnaO2Prime; }
+  boolean isRna() { return hasRnaO2Prime || chain.isRna(); }
 
   boolean isPurine() { return isPurine; }
 

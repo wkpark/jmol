@@ -29,6 +29,8 @@ class PhosphorusMonomer extends Monomer {
 
   final static byte[] phosphorusOffsets = { 0 };
 
+  static float MAX_ADJACENT_PHOSPHORUS_DISTANCE = 7.5f;
+ 
   static Monomer
     validateAndAllocate(Chain chain, String group3, int seqcode,
                         int firstIndex, int lastIndex,
@@ -49,9 +51,18 @@ class PhosphorusMonomer extends Monomer {
                byte[] offsets) {
     super(chain, group3, seqcode,
           firstAtomIndex, lastAtomIndex, offsets);
+    if (group3.indexOf('T') >= 0)
+      chain.isDna = true;
+    if (group3.indexOf('U') >= 0)
+      chain.isRna = true;
   }
 
   boolean isPhosphorusMonomer() { return true; }
+
+  boolean isDna() { return chain.isDna(); }
+
+  boolean isRna() { return chain.isRna(); }
+
 
   byte getProteinStructureType() {
     return 0;
@@ -75,8 +86,9 @@ class PhosphorusMonomer extends Monomer {
     if (! (possiblyPreviousMonomer instanceof PhosphorusMonomer))
       return false;
     // 1PN8 73:d and 74:d are 7.001 angstroms apart
+    // but some P atoms are up to 7.4 angstroms apart
     float distance =
       getLeadAtomPoint().distance(possiblyPreviousMonomer.getLeadAtomPoint());
-    return distance <= 7.1f;
+    return distance <= MAX_ADJACENT_PHOSPHORUS_DISTANCE;
   }
 }

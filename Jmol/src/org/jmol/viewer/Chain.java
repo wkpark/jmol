@@ -34,6 +34,7 @@ final class Chain {
   char chainID;
   int groupCount;
   int selectedGroupCount;
+  boolean isDna, isRna;
   BitSet bsSelectedGroups;
   private final static BitSet bsNull = new BitSet();
   Group[] groups = new Group[16];
@@ -51,6 +52,9 @@ final class Chain {
     groups = (Group[])ArrayUtil.setLength(groups, groupCount);
   }
   
+  boolean isDna() { return isDna; }
+  boolean isRna() { return isRna; }
+
   void addGroup(Group group) {
     if (groupCount == groups.length)
       groups = (Group[])ArrayUtil.doubleLength(groups);

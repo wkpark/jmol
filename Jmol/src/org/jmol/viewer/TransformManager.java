@@ -1174,13 +1174,13 @@ class TransformManager {
         else
           matrixStep.set(aaStep);
         matrixStep.mul(matrixStart);
-        rotationRadius = startRotationRadius + rotationRadiusDelta * iStep
-            / (totalSteps - 1);
+        float fStep = iStep / (totalSteps - 1f);
+        rotationRadius = startRotationRadius + rotationRadiusDelta * fStep;
         scaleDefaultPixelsPerAngstrom = startPixelScale + pixelScaleDelta
-            * iStep / (totalSteps - 1);
-        zoomToPercent(zoomStart + (zoomDelta * iStep / (totalSteps - 1)));
-        translateToXPercent(xTransStart + (xTransDelta * iStep / (totalSteps -1)));
-        translateToYPercent(yTransStart + (yTransDelta * iStep / (totalSteps-1)));
+            * fStep;
+        zoomToPercent(zoomStart + zoomDelta * fStep);
+        translateToXPercent(xTransStart + xTransDelta * fStep);
+        translateToYPercent(yTransStart + yTransDelta * fStep);
         setRotation(matrixStep);
         if (center != null)
           fixedRotationCenter.add(aaStepCenter);

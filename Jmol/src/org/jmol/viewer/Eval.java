@@ -3123,7 +3123,7 @@ class Eval { //implements Runnable {
       xTrans = viewer.getTranslationXPercent();
       yTrans = viewer.getTranslationYPercent();
     }
-    viewer.moveTo(time, center, new Point3f(0, 0, 0), 0, factor, xTrans,
+    viewer.moveTo(time, center, new Point3f(0, 0, 0), Float.NaN, factor, xTrans,
         yTrans, radius);
   }
 

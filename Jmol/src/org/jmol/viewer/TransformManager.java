@@ -1068,7 +1068,8 @@ class TransformManager {
         }
       }
     }
-    viewer.setInMotion(false);
+    viewer.requestRepaintAndWait();
+//    viewer.setInMotion(false);
   }
 
   AxisAngle4f aaMoveTo;
@@ -1099,7 +1100,9 @@ class TransformManager {
     
     Vector3f axis = new Vector3f(pt);
     initializeMoveTo();
-    if (degrees < 0.01f && degrees > -0.01f) {
+    if (Float.isNaN(degrees)) {
+      getRotation(matrixEnd);
+    } else if(degrees < 0.01f && degrees > -0.01f) {
       //getRotation(matrixEnd);
       matrixEnd.setIdentity();
     } else {

@@ -113,9 +113,9 @@ abstract class MpsRenderer extends MeshRenderer {
     
     val = viewer.getHermiteLevel();
     val = (val <= 0 ? -val : viewer.getInMotion() ? 0 : val);
-    if (val > 0 && val != hermiteLevel)
+    if (val != hermiteLevel && val != 0)
       invalidate = true;
-    hermiteLevel = Math.min(Math.max(0, val), 8);
+    hermiteLevel = Math.min(val, 8);
     if (hermiteLevel == 0)
       aspectRatio = 0;
 

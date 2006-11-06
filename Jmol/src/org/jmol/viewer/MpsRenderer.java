@@ -69,6 +69,7 @@ abstract class MpsRenderer extends MeshRenderer {
   void render() {
     if (shape == null)
       return;
+    frontOnly = viewer.getTestFlag2();
     Mps mcps = (Mps) shape;
     for (int m = mcps.getMpsmodelCount(); --m >= 0;) {
       Mps.Mpsmodel mcpsmodel = mcps.getMpsmodel(m);
@@ -112,6 +113,8 @@ abstract class MpsRenderer extends MeshRenderer {
     val = viewer.getHermiteLevel();
     if (val != hermiteLevel)
       invalidate = true;
+    if (val < 0)
+      val = (viewer.getInMotion() ? 0 : -val);
     hermiteLevel = Math.min(Math.max(0, val), 8);
     if (hermiteLevel == 0)
       aspectRatio = 0;
@@ -507,7 +510,7 @@ abstract class MpsRenderer extends MeshRenderer {
       for (int k = hermiteLevel * 2; --k >= 0;)
         mesh.addQuad(nPoints - k - 1, nPoints - nPer + (nPer - k) % nPer,
             nPoints - nPer + k + 1, nPoints - nPer + k + 2);
-    mesh.initialize();
+    mesh.initialize(false);
     //System.out.println("mesh "+ mesh.thisID + " " + mesh.vertexCount+" "+mesh.vertices.length + " " + mesh.polygonCount + " " + mesh.polygonIndexes.length);
     meshReady[i] = true;
     mesh.visibilityFlags = 1;
@@ -538,7 +541,7 @@ abstract class MpsRenderer extends MeshRenderer {
       mesh.addTriangle((k + 1) % nPer, k, nPer);
     for (int k = level * 2; --k >= 0;)
       mesh.addQuad(k + 2, k + 1, (nPer - k) % nPer, nPer - k - 1);
-    mesh.initialize();
+    mesh.initialize(false);
     meshReady[i] = true;
     mesh.visibilityFlags = 1;
   }

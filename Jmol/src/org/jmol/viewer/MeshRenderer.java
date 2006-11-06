@@ -39,6 +39,8 @@ abstract class MeshRenderer extends ShapeRenderer {
   float[] vertexValues;
   Point3i pt0 = new Point3i();
   Point3i pt3 = new Point3i();
+  boolean frontOnly;
+  Vector3f[] transformedVectors;
 
   boolean render1(Mesh mesh) {
     if (mesh.visibilityFlags == 0 || !mesh.isValid)
@@ -49,6 +51,7 @@ abstract class MeshRenderer extends ShapeRenderer {
     vertices = mesh.vertices;
     screens = viewer.allocTempScreens(vertexCount);
     vertexValues = mesh.vertexValues;
+    transformedVectors = g3d.getTransformedVertexVectors();
     for (int i = vertexCount; --i >= 0;)
       if (vertexValues == null || !Float.isNaN(vertexValues[i])
           || mesh.hasGridPoints) {
@@ -162,7 +165,7 @@ abstract class MeshRenderer extends ShapeRenderer {
   void renderNormals(Mesh mesh, Point3i[] screens, int vertexCount) {
     //Logger.debug("mesh renderPoints: " + vertexCount);
     for (int i = vertexCount; --i >= 0;)
-      if (vertexValues != null && !Float.isNaN(vertexValues[i]))
+      if (true || vertexValues != null && !Float.isNaN(vertexValues[i]))
         if ((i % 3) == 0) { //investigate vertex normixes
           ptTemp.set(mesh.vertices[i]);
           short n = mesh.normixes[i];
@@ -223,9 +226,14 @@ abstract class MeshRenderer extends ShapeRenderer {
             g3d.fillTriangle(screens[iA], colixA, normixes[iA],
                 screens[iB], colixB, normixes[iB], screens[iC], colixC,
                 normixes[iC], 0.1f);
-          else
+          else {
+            if (frontOnly && transformedVectors[normixes[iA]].z < 0 &&
+                transformedVectors[normixes[iB]].z < 0 &&
+                transformedVectors[normixes[iC]].z < 0)
+              continue;
             g3d.fillTriangle(screens[iA], colixA, normixes[iA], screens[iB],
                 colixB, normixes[iB], screens[iC], colixC, normixes[iC]);
+          }
         else
           // FIX ME ... need a drawTriangle routine with multiple colors
           g3d.drawTriangle(colixA, screens[iA], screens[iB], screens[iC]);
@@ -233,11 +241,16 @@ abstract class MeshRenderer extends ShapeRenderer {
       } else if (vertexIndexes.length == 4) {
         int iD = vertexIndexes[3];
         short colixD = vertexColixes != null ? vertexColixes[iD] : colix;
-        if (fill)
+        if (fill) {
+          if (frontOnly && transformedVectors[normixes[iA]].z < 0 &&
+              transformedVectors[normixes[iB]].z < 0 &&
+              transformedVectors[normixes[iC]].z < 0 &&
+              transformedVectors[normixes[iD]].z < 0)
+            continue;
           g3d.fillQuadrilateral(screens[iA], colixA, normixes[iA], screens[iB],
               colixB, normixes[iB], screens[iC], colixC, normixes[iC],
               screens[iD], colixD, normixes[iD]);
-        else
+        } else
           g3d.drawQuadrilateral(colixA, screens[iA], screens[iB], screens[iC],
               screens[iD]);
 

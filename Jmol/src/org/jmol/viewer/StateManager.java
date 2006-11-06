@@ -277,6 +277,7 @@ class StateManager {
     
     int ribbonAspectRatio   = 16;
     int hermiteLevel = 4;
+    float sheetSmoothing = 0; // 0: traceAlpha on alphas for helix, 1 on midpoints
     int pickingSpinRate      = 10;
     boolean hideNameInPopup  = false;
     boolean disablePopupMenu = false;

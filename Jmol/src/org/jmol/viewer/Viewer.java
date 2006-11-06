@@ -2414,6 +2414,15 @@ public class Viewer extends JmolViewer {
     global.ribbonAspectRatio = ratio;
   }
 
+  float getSheetSmoothing() {
+    return global.sheetSmoothing;
+  }
+
+  void setSheetSmoothing(float factor0To1) {
+    //Eval
+    global.sheetSmoothing = factor0To1;
+  }
+
   boolean getSsbondsBackbone() {
     return global.ssbondsBackbone;
   }

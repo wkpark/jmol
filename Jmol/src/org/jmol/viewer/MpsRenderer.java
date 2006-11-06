@@ -41,6 +41,7 @@ abstract class MpsRenderer extends MeshRenderer {
   
   int aspectRatio;
   int hermiteLevel;
+  float sheetSmoothing;
   
   boolean isHighRes;
   boolean isTraceAlpha; 
@@ -79,21 +80,23 @@ abstract class MpsRenderer extends MeshRenderer {
         Mps.Mpspolymer mpspolymer = mcpsmodel.getMpspolymer(c);
         if (mpspolymer.monomerCount >= 2 && initializePolymer(mpspolymer)) {
           renderMpspolymer(mpspolymer);
-          freeTempScreens();
+          freeTempArrays();
         }
       }
     }
   }
 
-  private void freeTempScreens() {
+  private void freeTempArrays() {
     if (haveControlPointScreens)
       viewer.freeTempScreens(controlPointScreens);
     viewer.freeTempBytes(structureTypes);
   }
   abstract void renderMpspolymer(Mps.Mpspolymer mpspolymer);
+
+  Point3f[] tempPoints;
   
   private boolean initializePolymer(Mps.Mpspolymer schain) {
-    
+
     boolean invalidate = false;
     boolean TF = viewer.getHighResolution();
     if (TF != isHighRes)
@@ -110,7 +113,7 @@ abstract class MpsRenderer extends MeshRenderer {
     if (val != aspectRatio && val != 0)
       invalidate = true;
     aspectRatio = val;
-    
+
     val = viewer.getHermiteLevel();
     val = (val <= 0 ? -val : viewer.getInMotion() ? 0 : val);
     if (val != hermiteLevel && val != 0)
@@ -118,6 +121,19 @@ abstract class MpsRenderer extends MeshRenderer {
     hermiteLevel = Math.min(val, 8);
     if (hermiteLevel == 0)
       aspectRatio = 0;
+
+    float fval = viewer.getSheetSmoothing();
+    if (fval != sheetSmoothing && isTraceAlpha) {
+      sheetSmoothing = fval;
+      invalidate = true;
+    }
+    
+    if (!isTraceAlpha)
+      controlPoints = schain.leadMidpoints;
+    else if (sheetSmoothing == 0)
+      controlPoints = schain.leadPoints;
+    else
+      controlPoints = schain.polymer.getTempPoints(sheetSmoothing);
 
     monomerCount = schain.monomerCount;
     monomers = schain.monomers;
@@ -141,7 +157,7 @@ abstract class MpsRenderer extends MeshRenderer {
       return false;
     ribbonBorder = viewer.getRibbonBorder();
     thisChain = schain;
-    
+
     // note that we are not treating a PhosphorusPolymer
     // as nucleic because we are not calculating the wing
     // vector correctly.
@@ -149,7 +165,6 @@ abstract class MpsRenderer extends MeshRenderer {
     // isNucleic = schain.polymer.isNucleic();    
     isNucleic = schain.polymer instanceof NucleicPolymer;
     isCarbohydrate = schain.polymer instanceof CarbohydratePolymer;
-    controlPoints = (isTraceAlpha ? schain.leadPoints : schain.leadMidpoints);
     haveControlPointScreens = false;
     wingVectors = schain.wingVectors;
     meshReady = schain.meshReady;

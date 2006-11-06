@@ -4019,6 +4019,10 @@ class Eval { //implements Runnable {
     case Token.frank:
     case Token.identifier:
       String str = (String) statement[1].value;
+      if (str.equalsIgnoreCase("sheetSmoothing")) {
+        viewer.setSheetSmoothing(floatParameter(2));
+        break;
+      }
       if (str.equalsIgnoreCase("ribbonAspectRatio")) {
         viewer.setRibbonAspectRatio(intParameter(2));
         break;

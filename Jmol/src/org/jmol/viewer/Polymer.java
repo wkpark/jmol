@@ -52,6 +52,7 @@ abstract class Polymer {
   // holds center points between alpha carbons or sugar phosphoruses
   Point3f[] leadMidpoints;
   Point3f[] leadPoints;
+  Point3f[] tempPoints;
   // holds the vector that runs across the 'ribbon'
   Vector3f[] wingVectors;
   Vector3f[] pointVectors;
@@ -298,6 +299,27 @@ abstract class Polymer {
     return leadPoints;
   }
 
+  float sheetSmoothing;
+  Point3f[] getTempPoints(float sheetSmoothing) {
+    if (tempPoints != null && sheetSmoothing == this.sheetSmoothing)
+      return tempPoints;
+    tempPoints = new Point3f[monomerCount + 1];
+    for (int i = 0; i < monomerCount; i++)
+        tempPoints[i] = new Point3f();
+    Vector3f v = new Vector3f();
+    for (int i = 0; i < monomerCount; i++) {
+      if (monomers[i].isSheet()) {
+        v.sub(leadMidpoints[i], leadPoints[i]);
+        v.scale(sheetSmoothing);
+        tempPoints[i].add(leadPoints[i], v);
+      } else {
+        tempPoints[i] = leadPoints[i];
+      }
+    }
+    tempPoints[monomerCount] = tempPoints[monomerCount - 1];
+    this.sheetSmoothing = sheetSmoothing;
+    return tempPoints;
+  }
   final Vector3f[] getWingVectors() {
     if (leadMidpoints == null) // this is correct ... test on leadMidpoints
       calcLeadMidpointsAndWingVectors();
@@ -320,6 +342,7 @@ abstract class Polymer {
       leadMidpoints = new Point3f[count + 1];
       leadPoints = new Point3f[count + 1];
       wingVectors = new Vector3f[count + 1];
+      sheetSmoothing = Float.MIN_VALUE;
     }
     boolean hasWingPoints = hasWingPoints();
     

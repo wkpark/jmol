@@ -38,6 +38,7 @@ class RocketsRenderer extends MpsRenderer {
       return;
     calcRopeMidPoints(false);    
     calcScreenControlPoints(cordMidPoints);
+    controlPoints = cordMidPoints;
     render1();
     viewer.freeTempPoints(cordMidPoints);
   }

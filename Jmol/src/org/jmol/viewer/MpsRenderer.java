@@ -123,6 +123,8 @@ abstract class MpsRenderer extends MeshRenderer {
     bsVisible.clear();
     boolean haveVisible = false;
     for (int i = monomerCount; --i >= 0;) {
+      if (invalidate)
+        schain.falsifyMesh(i, false);
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
           || frame.bsHidden.get(leadAtomIndices[i]))
         continue;
@@ -131,8 +133,6 @@ abstract class MpsRenderer extends MeshRenderer {
         continue;
       bsVisible.set(i);
       haveVisible = true;
-      if (invalidate)
-        schain.falsifyMesh(i, false);
     }
     if (!haveVisible)
       return false;

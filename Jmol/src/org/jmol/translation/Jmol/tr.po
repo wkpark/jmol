@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-10-25 23:11+0200\n"
+"POT-Creation-Date: 2006-11-06 20:29+0100\n"
 "PO-Revision-Date: 2006-11-01 18:39+0200\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -554,8 +554,8 @@ msgid "What's New"
 msgstr "Neler Yeni"
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#: org/openscience/jmol/app/Jmol.java:558
-msgid "Jmol Java Console"
+#, fuzzy
+msgid "Jmol Java &Console"
 msgstr "Jmol Java Uçbirimi"
 
 #: org/openscience/jmol/app/GuiMap.java:159
@@ -735,11 +735,17 @@ msgstr "Örneğin:"
 
 #: org/openscience/jmol/app/Jmol.java:437
 msgid "The -D options are as follows (defaults in parathesis):"
-msgstr "-D seçenekleri aşağıda listenenmiştir (parantez içindekiler varsayılan seçeneklerdir):"
+msgstr ""
+"-D seçenekleri aşağıda listenenmiştir (parantez içindekiler varsayılan "
+"seçeneklerdir):"
 
 #: org/openscience/jmol/app/Jmol.java:546
 msgid "Executing script..."
 msgstr "Betik yürütülüyor..."
+
+#: org/openscience/jmol/app/Jmol.java:558
+msgid "Jmol Java Console"
+msgstr "Jmol Java Uçbirimi"
 
 #: org/openscience/jmol/app/Jmol.java:566
 #: org/openscience/jmol/app/ScriptWindow.java:93
@@ -765,10 +771,6 @@ msgstr "Adresi aç"
 #: org/openscience/jmol/app/Jmol.java:1231
 msgid "Enter URL of molecular model"
 msgstr "Moleküler modelin adresini gir"
-
-#: org/openscience/jmol/app/Jmol.java:1466
-msgid "File not loaded"
-msgstr "Dosya yüklenmedi"
 
 #: org/openscience/jmol/app/Jmol.java:1625
 msgid "IO Exception:"
@@ -803,8 +805,12 @@ msgid "Filename Stem"
 msgstr "Dosyaadı kökü"
 
 #: org/openscience/jmol/app/PovrayDialog.java:162
-msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
-msgstr "Tek çerçeve: örneğin 'caffine' -> 'caffine.pov'; Çoklu çerçeve: örneğin 'caffine' ->'caffine_1.pov', 'caffine_2.pov'"
+msgid ""
+"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
+"'caffine_1.pov', 'caffine_2.pov'"
+msgstr ""
+"Tek çerçeve: örneğin 'caffine' -> 'caffine.pov'; Çoklu çerçeve: örneğin "
+"'caffine' ->'caffine_1.pov', 'caffine_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:172
 msgid "Working Directory"
@@ -1101,3 +1107,5 @@ msgstr "Yükleniyor..."
 msgid "What's New in Jmol"
 msgstr "Jmol'da Neler Yeni"
 
+#~ msgid "File not loaded"
+#~ msgstr "Dosya yüklenmedi"

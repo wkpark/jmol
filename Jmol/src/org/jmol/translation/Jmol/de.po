@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-10-25 23:11+0200\n"
+"POT-Creation-Date: 2006-11-06 20:29+0100\n"
 "PO-Revision-Date: 2006-04-14 18:00+0100\n"
 "Last-Translator: Sebastian Lisken <sebastianlisken at users.sourceforge."
 "net>\n"
@@ -555,9 +555,8 @@ msgid "What's New"
 msgstr "Neuigkeiten"
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#: org/openscience/jmol/app/Jmol.java:558
 #, fuzzy
-msgid "Jmol Java Console"
+msgid "Jmol Java &Console"
 msgstr "Jmol-Konsole"
 
 #: org/openscience/jmol/app/GuiMap.java:159
@@ -746,6 +745,11 @@ msgstr "Folgende -D-Optionen werden unterstützt (Standardwerte in Klammern):"
 msgid "Executing script..."
 msgstr "Skript ausführen..."
 
+#: org/openscience/jmol/app/Jmol.java:558
+#, fuzzy
+msgid "Jmol Java Console"
+msgstr "Jmol-Konsole"
+
 #: org/openscience/jmol/app/Jmol.java:566
 #: org/openscience/jmol/app/ScriptWindow.java:93
 msgid "Clear"
@@ -770,10 +774,6 @@ msgstr "URL öffnen"
 #: org/openscience/jmol/app/Jmol.java:1231
 msgid "Enter URL of molecular model"
 msgstr "URL eines Molekül-Modells eingeben"
-
-#: org/openscience/jmol/app/Jmol.java:1466
-msgid "File not loaded"
-msgstr "Datei wurde nicht geladen"
 
 #: org/openscience/jmol/app/Jmol.java:1625
 msgid "IO Exception:"
@@ -1112,6 +1112,9 @@ msgstr "Lade..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "Neues in Jmol"
+
+#~ msgid "File not loaded"
+#~ msgstr "Datei wurde nicht geladen"
 
 #, fuzzy
 #~ msgid "no display"

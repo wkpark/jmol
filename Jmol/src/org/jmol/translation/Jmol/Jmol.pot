@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-10-25 23:11+0200\n"
+"POT-Creation-Date: 2006-11-06 20:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -553,8 +553,7 @@ msgid "What's New"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#: org/openscience/jmol/app/Jmol.java:558
-msgid "Jmol Java Console"
+msgid "Jmol Java &Console"
 msgstr ""
 
 #: org/openscience/jmol/app/GuiMap.java:159
@@ -740,6 +739,10 @@ msgstr ""
 msgid "Executing script..."
 msgstr ""
 
+#: org/openscience/jmol/app/Jmol.java:558
+msgid "Jmol Java Console"
+msgstr ""
+
 #: org/openscience/jmol/app/Jmol.java:566
 #: org/openscience/jmol/app/ScriptWindow.java:93
 msgid "Clear"
@@ -763,10 +766,6 @@ msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:1231
 msgid "Enter URL of molecular model"
-msgstr ""
-
-#: org/openscience/jmol/app/Jmol.java:1466
-msgid "File not loaded"
 msgstr ""
 
 #: org/openscience/jmol/app/Jmol.java:1625

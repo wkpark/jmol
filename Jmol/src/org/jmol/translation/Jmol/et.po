@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-10-25 23:11+0200\n"
+"POT-Creation-Date: 2006-11-06 20:29+0100\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -554,9 +554,8 @@ msgid "What's New"
 msgstr "Mida on uut?"
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#: org/openscience/jmol/app/Jmol.java:558
 #, fuzzy
-msgid "Jmol Java Console"
+msgid "Jmol Java &Console"
 msgstr "Jmol konsool"
 
 #: org/openscience/jmol/app/GuiMap.java:159
@@ -743,6 +742,11 @@ msgstr "-D valikud on järgnevad (vaikeväärtus on sulgudes):"
 msgid "Executing script..."
 msgstr "Käivitan skripti..."
 
+#: org/openscience/jmol/app/Jmol.java:558
+#, fuzzy
+msgid "Jmol Java Console"
+msgstr "Jmol konsool"
+
 #: org/openscience/jmol/app/Jmol.java:566
 #: org/openscience/jmol/app/ScriptWindow.java:93
 msgid "Clear"
@@ -767,10 +771,6 @@ msgstr "Ava URL"
 #: org/openscience/jmol/app/Jmol.java:1231
 msgid "Enter URL of molecular model"
 msgstr "Sisesta molekulaarmudeli URL"
-
-#: org/openscience/jmol/app/Jmol.java:1466
-msgid "File not loaded"
-msgstr "Fail ei ole loetud"
 
 #: org/openscience/jmol/app/Jmol.java:1625
 msgid "IO Exception:"
@@ -1106,6 +1106,9 @@ msgstr "Laen..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "Mida on uut Jmol'is"
+
+#~ msgid "File not loaded"
+#~ msgstr "Fail ei ole loetud"
 
 #, fuzzy
 #~ msgid "no display"

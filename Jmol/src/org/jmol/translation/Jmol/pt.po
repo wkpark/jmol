@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-10-25 23:11+0200\n"
+"POT-Creation-Date: 2006-11-06 20:29+0100\n"
 "PO-Revision-Date: 2005-12-20 07:33-0000\n"
 "Last-Translator: Metro <portugalfolding@gmail.com>\n"
 "Language-Team: Portugal@Folding <Jmol-developers@lists.sourceforge.net>\n"
@@ -554,9 +554,8 @@ msgid "What's New"
 msgstr "O que há de novo"
 
 #: org/openscience/jmol/app/GuiMap.java:158
-#: org/openscience/jmol/app/Jmol.java:558
 #, fuzzy
-msgid "Jmol Java Console"
+msgid "Jmol Java &Console"
 msgstr "Consola Jmol"
 
 #: org/openscience/jmol/app/GuiMap.java:159
@@ -743,6 +742,11 @@ msgstr "As opções -D são as seguintes (pré-definição em parentesis):"
 msgid "Executing script..."
 msgstr "Executando um script..."
 
+#: org/openscience/jmol/app/Jmol.java:558
+#, fuzzy
+msgid "Jmol Java Console"
+msgstr "Consola Jmol"
+
 #: org/openscience/jmol/app/Jmol.java:566
 #: org/openscience/jmol/app/ScriptWindow.java:93
 msgid "Clear"
@@ -767,10 +771,6 @@ msgstr "Abrir URL"
 #: org/openscience/jmol/app/Jmol.java:1231
 msgid "Enter URL of molecular model"
 msgstr "Escrever URL de um modelo molecular"
-
-#: org/openscience/jmol/app/Jmol.java:1466
-msgid "File not loaded"
-msgstr "Ficheiro não carregado"
 
 #: org/openscience/jmol/app/Jmol.java:1625
 msgid "IO Exception:"
@@ -1108,6 +1108,9 @@ msgstr "Carregando..."
 #: org/openscience/jmol/app/WhatsNewDialog.java:56
 msgid "What's New in Jmol"
 msgstr "O que há de novo no Jmol"
+
+#~ msgid "File not loaded"
+#~ msgstr "Ficheiro não carregado"
 
 #, fuzzy
 #~ msgid "no display"

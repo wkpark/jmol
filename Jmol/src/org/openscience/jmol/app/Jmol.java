@@ -1461,10 +1461,10 @@ public class Jmol extends JPanel {
                                  String modelName, Object clientFile,
                                  String errorMsg) {
       if (errorMsg != null) {
-        JOptionPane.showMessageDialog(null,
-          fullPathName + "\n\n" + errorMsg + "\n\n" ,
-          GT._("File not loaded"),
-          JOptionPane.ERROR_MESSAGE);
+//        JOptionPane.showMessageDialog(null,
+//          fullPathName + "\n\n" + errorMsg + "\n\n" ,
+//          GT._("File not loaded"),
+//          JOptionPane.ERROR_MESSAGE);
         return;
       }
       

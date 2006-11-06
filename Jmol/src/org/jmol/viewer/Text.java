@@ -280,7 +280,7 @@ class Text {
       widths = null;
       return;
     }
-    lines = split(text, '|');
+    lines = split(text, (text.indexOf("\n") > 0 ? '\n' :'|'));
     textWidth = 0;
     widths = new int[lines.length];
     for (int i = lines.length; --i >= 0;) {

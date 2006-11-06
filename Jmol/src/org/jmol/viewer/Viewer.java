@@ -1006,7 +1006,7 @@ public class Viewer extends JmolViewer {
       openStringInline(fileManager.inlineDataArray, params);
       return;
     }
-    clear();
+    zap("loading file:\n" + name);
     long timeBegin = System.currentTimeMillis();
     fileManager.openFile(name, params);
     long ms = System.currentTimeMillis() - timeBegin;
@@ -1020,7 +1020,7 @@ public class Viewer extends JmolViewer {
 
   public void openFiles(String modelName, String[] names) {
     //Eval
-    clear();
+    zap("loading file set:\n" + modelName);
     // keep old screen image while new file is being loaded
     // forceRefresh();
     long timeBegin = System.currentTimeMillis();
@@ -1138,6 +1138,21 @@ public class Viewer extends JmolViewer {
     if (clientFile instanceof String || clientFile == null) {
       String errorMsg = (String) clientFile;
       setStatusFileNotLoaded(fullPathName, errorMsg);
+      if (errorMsg != null) {
+        String msg = errorMsg;
+        int pt = msg.lastIndexOf("/");
+        if (pt > 0)
+          msg = msg.substring(0, pt + 1) + '\n' + msg.substring(pt + 1);
+        pt = msg.lastIndexOf("\\");
+        if (pt > 0)
+          msg = msg.substring(0, pt + 1) + '\n' + msg.substring(pt + 1);
+        for (int i = 0; i < 2; i++) {
+          pt = msg.indexOf(" ");
+          if (pt > 0)
+            msg = msg.substring(0, pt) + '\n' + msg.substring(pt + 1);
+        }
+        zap(msg);
+      }
       return errorMsg;
     }
     openClientFile(fullPathName, fileName, clientFile);
@@ -1212,6 +1227,21 @@ public class Viewer extends JmolViewer {
     initializeModel();
   }
 
+  private void zap(String msg) {
+    zap();
+    echoMessage(msg);
+  }
+  
+  void echoMessage(String msg) {
+    Font3D font3d = getFont3D("SansSerif", "Plain", 9);
+    int iShape = JmolConstants.SHAPE_ECHO;
+    loadShape(iShape);
+    setShapeProperty(iShape, "font", font3d);
+    setShapeProperty(iShape, "target", "top");
+    setShapeProperty(iShape, "target", "left");
+    setShapeProperty(iShape, "text", msg);
+  }
+  
   private void clear() {
     repaintManager.clear();
     transformManager.clear();

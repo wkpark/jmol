@@ -96,25 +96,25 @@ abstract class MpsRenderer extends MeshRenderer {
     
     boolean invalidate = false;
     boolean TF = viewer.getHighResolution();
-    if (isHighRes != TF)
+    if (TF != isHighRes)
       invalidate = true;
     isHighRes = TF;
 
     TF = viewer.getTraceAlpha();
-    if (isTraceAlpha != TF)
+    if (TF != isTraceAlpha)
       invalidate = true;
     isTraceAlpha = TF;
 
     int val = viewer.getRibbonAspectRatio();
-    if (val != aspectRatio && aspectRatio != 0)
+    val = Math.min(Math.max(0, val), 20);
+    if (val != aspectRatio && val != 0)
       invalidate = true;
-    aspectRatio = Math.min(Math.max(0, val), 20);
+    aspectRatio = val;
     
     val = viewer.getHermiteLevel();
-    if (val != hermiteLevel)
+    val = (val <= 0 ? -val : viewer.getInMotion() ? 0 : val);
+    if (val > 0 && val != hermiteLevel)
       invalidate = true;
-    if (val < 0)
-      val = (viewer.getInMotion() ? 0 : -val);
     hermiteLevel = Math.min(Math.max(0, val), 8);
     if (hermiteLevel == 0)
       aspectRatio = 0;

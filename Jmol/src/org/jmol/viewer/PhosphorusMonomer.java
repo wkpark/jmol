@@ -31,6 +31,9 @@ class PhosphorusMonomer extends Monomer {
 
   static float MAX_ADJACENT_PHOSPHORUS_DISTANCE = 7.5f;
  
+  boolean isPurine;
+  boolean isPyrimidine;
+
   static Monomer
     validateAndAllocate(Chain chain, String group3, int seqcode,
                         int firstIndex, int lastIndex,
@@ -53,8 +56,10 @@ class PhosphorusMonomer extends Monomer {
           firstAtomIndex, lastAtomIndex, offsets);
     if (group3.indexOf('T') >= 0)
       chain.isDna = true;
-    if (group3.indexOf('U') >= 0)
-      chain.isRna = true;
+    if (group3.indexOf('U') + group3.indexOf('I') > -2)
+        chain.isRna = true;
+    isPurine = (group3.indexOf('A') + group3.indexOf('G') + group3.indexOf('I') > -3);
+    isPyrimidine = (group3.indexOf('T') + group3.indexOf('C') + group3.indexOf('U') > -3);
   }
 
   boolean isPhosphorusMonomer() { return true; }
@@ -62,6 +67,9 @@ class PhosphorusMonomer extends Monomer {
   boolean isDna() { return chain.isDna(); }
 
   boolean isRna() { return chain.isRna(); }
+
+  boolean isPurine() { return isPurine; }
+  boolean isPyrimidine() { return isPyrimidine; }
 
 
   byte getProteinStructureType() {

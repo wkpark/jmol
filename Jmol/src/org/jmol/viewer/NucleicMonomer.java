@@ -105,8 +105,6 @@ class NucleicMonomer extends PhosphorusMonomer {
   }
 
   boolean hasRnaO2Prime;
-  boolean isPurine;
-  boolean isPyrimidine;
 
   boolean isNucleicMonomer() { return true; }
 

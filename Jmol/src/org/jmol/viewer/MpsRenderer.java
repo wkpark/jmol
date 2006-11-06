@@ -69,15 +69,14 @@ abstract class MpsRenderer extends MeshRenderer {
   void render() {
     if (shape == null)
       return;
-    Mps mcps = (Mps)shape;
-    for (int m = mcps.getMpsmodelCount(); --m >= 0; ) {
+    Mps mcps = (Mps) shape;
+    for (int m = mcps.getMpsmodelCount(); --m >= 0;) {
       Mps.Mpsmodel mcpsmodel = mcps.getMpsmodel(m);
       if ((mcpsmodel.modelVisibilityFlags & myVisibilityFlag) == 0)
         continue;
-      for (int c = mcpsmodel.getMpspolymerCount(); --c >= 0; ) {
+      for (int c = mcpsmodel.getMpspolymerCount(); --c >= 0;) {
         Mps.Mpspolymer mpspolymer = mcpsmodel.getMpspolymer(c);
-        if (mpspolymer.monomerCount >= 2) {
-          initializePolymer(mpspolymer);
+        if (mpspolymer.monomerCount >= 2 && initializePolymer(mpspolymer)) {
           renderMpspolymer(mpspolymer);
           freeTempScreens();
         }
@@ -92,10 +91,9 @@ abstract class MpsRenderer extends MeshRenderer {
   }
   abstract void renderMpspolymer(Mps.Mpspolymer mpspolymer);
   
-  private void initializePolymer(Mps.Mpspolymer schain) {
-    ribbonBorder = viewer.getRibbonBorder();
+  private boolean initializePolymer(Mps.Mpspolymer schain) {
+    
     boolean invalidate = false;
-
     boolean TF = viewer.getHighResolution();
     if (isHighRes != TF)
       invalidate = true;
@@ -118,7 +116,29 @@ abstract class MpsRenderer extends MeshRenderer {
     if (hermiteLevel == 0)
       aspectRatio = 0;
 
+    monomerCount = schain.monomerCount;
+    monomers = schain.monomers;
+    leadAtomIndices = schain.polymer.getLeadAtomIndices();
+
+    bsVisible.clear();
+    boolean haveVisible = false;
+    for (int i = monomerCount; --i >= 0;) {
+      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
+          || frame.bsHidden.get(leadAtomIndices[i]))
+        continue;
+      Atom lead = frame.atoms[leadAtomIndices[i]];
+      if (!g3d.isInDisplayRange(lead.screenX, lead.screenY))
+        continue;
+      bsVisible.set(i);
+      haveVisible = true;
+      if (invalidate)
+        schain.falsifyMesh(i, false);
+    }
+    if (!haveVisible)
+      return false;
+    ribbonBorder = viewer.getRibbonBorder();
     thisChain = schain;
+    
     // note that we are not treating a PhosphorusPolymer
     // as nucleic because we are not calculating the wing
     // vector correctly.
@@ -129,26 +149,12 @@ abstract class MpsRenderer extends MeshRenderer {
     controlPoints = (isTraceAlpha ? schain.leadPoints : schain.leadMidpoints);
     haveControlPointScreens = false;
     wingVectors = schain.wingVectors;
-    monomerCount = schain.monomerCount;
-    monomers = schain.monomers;
     meshReady = schain.meshReady;
     meshes = schain.meshes;
     mads = schain.mads;
     colixes = schain.colixes;
-    leadAtomIndices = schain.polymer.getLeadAtomIndices();
     setStructureTypes();
-    bsVisible.clear();
-    for (int i = monomerCount; --i >= 0;) {
-      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
-          || frame.bsHidden.get(leadAtomIndices[i]))
-        continue;
-      Atom lead = frame.atoms[leadAtomIndices[i]];
-      if (!g3d.isInDisplayRange(lead.screenX, lead.screenY))
-        continue;
-      bsVisible.set(i);
-      if (invalidate)
-        schain.falsifyMesh(i, false);
-    }
+    return true;
   }
 
   private void setStructureTypes() {

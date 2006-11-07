@@ -66,7 +66,7 @@ class Helix extends ProteinStructure {
      * 
      * from which we arrive at:
      * 
-     * V = Vo + (Vo cross M)
+     * V = Vo + (M cross Vo)
      * 
      * Basically, this is just 3D version of a 
      * standard 2D least squares fit to a line, where we would say:
@@ -117,10 +117,7 @@ class Helix extends ProteinStructure {
     axisUnitVector.normalize();
 
     /*
-     * done. Only problem is, we can't guarantee the direction of the vector. 
-     * So, we now find the projections of the endpoints onto the axis and
-     * redefine the axis from those two points.
-     * 
+     * done. We now find the projections of the endpoints onto the axis
      */
     
     Point3f tempA = new Point3f();
@@ -133,8 +130,6 @@ class Helix extends ProteinStructure {
     projectOntoAxis(tempB);
     axisB.set(tempB);
     
-    //axisUnitVector.sub(axisB, axisA);
-    //axisUnitVector.normalize();
   }
 
   void calcCenter() {
@@ -146,9 +141,9 @@ class Helix extends ProteinStructure {
     center.scale(1f / monomerCount);
   }
 
-
   /****************************************************************
-   * see:
+   * see also: 
+   * (not implemented -- I never got around to reading this -- BH)
    * Defining the Axis of a Helix
    * Peter C Kahn
    * Computers Chem. Vol 13, No 3, pp 185-189, 1989
@@ -158,34 +153,4 @@ class Helix extends ProteinStructure {
    * Peter C Kahn
    * Computers Chem. Vol 13, No 3, pp 191-195, 1989
    ****************************************************************/
-
-  /* not implemented -- I never got around to reading this -- BH 
-   * 
-
-  static float length(Point3f point) {
-    return
-      (float)Math.sqrt(point.x*point.x + point.y*point.y + point.z*point.z);
-  }
-
-  float sumXiLi, sumYiLi, sumZiLi;
-  void calcSums(int count, Point3f[] points, float[] lengths) {
-    sumXiLi = sumYiLi = sumZiLi = 0;
-    for (int i = count; --i >= 0; ) {
-      Point3f point = points[i];
-      float length = lengths[i];
-      sumXiLi += point.x * length;
-      sumYiLi += point.y * length;
-      sumZiLi += point.z * length;
-    }
-  }
-  float cosineX, cosineY, cosineZ;
-  void calcDirectionCosines() {
-    float denominator =
-      (float)Math.sqrt(sumXiLi*sumXiLi + sumYiLi*sumYiLi + sumZiLi*sumZiLi);
-    cosineX = sumXiLi / denominator;
-    cosineY = sumYiLi / denominator;
-    cosineZ = sumZiLi / denominator;
-  }
-  
-  */
 }

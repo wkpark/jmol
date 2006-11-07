@@ -270,18 +270,19 @@ class StateManager {
     boolean ribbonBorder          = false;
     boolean chainCaseSensitive    = false;
     boolean rangeSelected         = false;
-    boolean traceAlpha            = false;
-    boolean highResolutionFlag    = false;
 
+    boolean traceAlpha         = true;
+    boolean highResolutionFlag = false;
+    int ribbonAspectRatio      = 16;
+    int hermiteLevel           = 0;
+    float sheetSmoothing       = 1; // 0: traceAlpha on alphas for helix, 1 on midpoints
+    
     //misc
     
-    int ribbonAspectRatio   = 16;
-    int hermiteLevel = 4;
-    float sheetSmoothing = 0; // 0: traceAlpha on alphas for helix, 1 on midpoints
-    int pickingSpinRate      = 10;
-    boolean hideNameInPopup  = false;
-    boolean disablePopupMenu = false;
-    String helpPath          = null;
+    int pickingSpinRate        = 10;
+    boolean hideNameInPopup    = false;
+    boolean disablePopupMenu   = false;
+    String helpPath            = null;
 
     
     //testing

@@ -68,7 +68,7 @@ class Helix extends ProteinStructure {
      * 
      * V = Vo + (M cross Vo)
      * 
-     * Basically, this is just 3D version of a 
+     * Basically, this is just a 3D version of a 
      * standard 2D least squares fit to a line, where we would say:
      * 
      * y = m xi + b

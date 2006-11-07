@@ -38,7 +38,7 @@ class Helix extends ProteinStructure {
       return;
 
     // just a crude starting point.
-    
+
     axisA = new Point3f();
     axisB = new Point3f();
     apolymer.getLeadMidPoint(monomerIndex, axisA);
@@ -87,51 +87,67 @@ class Helix extends ProteinStructure {
      * instead of x we have Vo,
      * instead of multiplication we use cross products
      * 
+     * A bit of iteration is necessary.
+     * 
      * Bob Hanson 11/2006
      * 
      */
-    
+
     calcCenter();
-
     axisA.set(center);
-
-    float sum_Xi2 = 0;
-    Vector3f sumXiYi = new Vector3f();
-    Vector3f vTemp = new Vector3f();
-    Point3f pt = new Point3f();
-    Point3f ptProj = new Point3f();
-
-    for (int i = monomerIndex + monomerCount; --i >= monomerIndex;) {
-      pt.set(apolymer.getLeadPoint(i));
-      ptProj.set(pt);
-      projectOntoAxis(ptProj);
-      vTemp.sub(pt, ptProj);
-      vTemp.cross(vectorProjection, vTemp);
-      sumXiYi.add(vTemp);
-      sum_Xi2 += vectorProjection.lengthSquared();
-    }
-    Vector3f m = new Vector3f(sumXiYi);
-    m.scale(1/sum_Xi2);
-    vTemp.cross(m, axisUnitVector);
-    axisUnitVector.add(vTemp);
-    axisUnitVector.normalize();
-
+    
+    int nTries = 0;
+    while (nTries++ < 4 && findAxis(nTries) > 0.001) {}
     /*
-     * done. We now find the projections of the endpoints onto the axis
+     * Iteration here gets the job done.
+     * We now find the projections of the endpoints onto the axis
+     * 
      */
     
     Point3f tempA = new Point3f();
     apolymer.getLeadMidPoint(monomerIndex, tempA);
     projectOntoAxis(tempA);
     axisA = tempA;
-    
+
     Point3f tempB = new Point3f();
     apolymer.getLeadMidPoint(monomerIndex + monomerCount, tempB);
     projectOntoAxis(tempB);
     axisB.set(tempB);
-    
+
   }
 
+  float findAxis(int nTries) {
+    Vector3f sumXiYi = new Vector3f();
+    Vector3f vTemp = new Vector3f();
+    Point3f pt = new Point3f();
+    Point3f ptProj = new Point3f();
+    Vector3f a = new Vector3f(axisUnitVector);
+
+    float sum_Xi2 = 0;
+    float sum_Yi2 = 0;
+    for (int i = monomerIndex + monomerCount; --i >= monomerIndex;) {
+      pt.set(apolymer.getLeadPoint(i));
+      ptProj.set(pt);
+      projectOntoAxis(ptProj);
+      vTemp.sub(pt, ptProj);
+      sum_Yi2 += vTemp.lengthSquared();
+      vTemp.cross(vectorProjection, vTemp);
+      sumXiYi.add(vTemp);
+      sum_Xi2 += vectorProjection.lengthSquared();
+    }
+    Vector3f m = new Vector3f(sumXiYi);
+    m.scale(1 / sum_Xi2);
+    vTemp.cross(m, axisUnitVector);
+    axisUnitVector.add(vTemp);
+    axisUnitVector.normalize();
+    //check for change in direction by measuring vector difference length
+    vTemp.set(axisUnitVector);
+    vTemp.sub(a);
+    //System.out.println("alpha axis iteration #"+nTries +  " " + monomerIndex + "-" + monomerCount + " " + axisUnitVector + vTemp.length());
+    return vTemp.length();
+  }
+  
+  
   void calcCenter() {
     if (center != null)
       return;

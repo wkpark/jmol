@@ -381,12 +381,13 @@ abstract class MpsRenderer extends MeshRenderer {
         controlPointScreens[iNext], controlPointScreens[iNext2], aspectRatio);
   }
 
+  //  rockets --not satisfactory yet 
   void renderCone(int i, Point3f pointBegin, Point3f pointEnd,
                   Point3f screenPtBegin, Point3f screenPtEnd, short colix,
                   int mad) {
     int coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
         mad + (mad >> 2));
-    if (aspectRatio > 0 && checkDiameter(coneDiameter)) {
+    if (false && aspectRatio > 0 && checkDiameter(coneDiameter)) {
       try {
         if (meshes[i] == null || !meshReady[i])
           createMeshCone(i, pointBegin, pointEnd, mad);

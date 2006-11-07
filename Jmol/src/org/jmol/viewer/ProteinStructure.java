@@ -33,11 +33,11 @@ abstract class ProteinStructure {
   byte type;
   int monomerIndex;
   int monomerCount;
-  Point3f center;
   Point3f axisA, axisB;
   Vector3f axisUnitVector;
   Point3f[] segments;
   int index;
+  Point3f center;
 
   ProteinStructure(AlphaPolymer apolymer, byte type,
                    int monomerIndex, int monomerCount) {
@@ -93,13 +93,13 @@ abstract class ProteinStructure {
   }
 
   final Vector3f vectorProjection = new Vector3f();
-
   void projectOntoAxis(Point3f point) {
     // assumes axisA, axisB, and axisUnitVector are set;
     vectorProjection.sub(point, axisA);
     float projectedLength = vectorProjection.dot(axisUnitVector);
     point.set(axisUnitVector);
     point.scaleAdd(projectedLength, axisA);
+    vectorProjection.sub(point, axisA);
   }
 
   int getMonomerCount() {

@@ -36,15 +36,14 @@ import java.util.BitSet;
 
 abstract class MpsRenderer extends MeshRenderer {
 
-  
   Mps.Mpspolymer thisChain;
-  
+
   int aspectRatio;
   int hermiteLevel;
   float sheetSmoothing;
-  
+
   boolean isHighRes;
-  boolean isTraceAlpha; 
+  boolean isTraceAlpha;
   boolean isNucleic;
   boolean isCarbohydrate;
   boolean ribbonBorder = false;
@@ -66,7 +65,7 @@ abstract class MpsRenderer extends MeshRenderer {
   short[] colixes;
   int[] leadAtomIndices;
   byte[] structureTypes;
-  
+
   void render() {
     if (shape == null)
       return;
@@ -91,10 +90,11 @@ abstract class MpsRenderer extends MeshRenderer {
       viewer.freeTempScreens(controlPointScreens);
     viewer.freeTempBytes(structureTypes);
   }
+
   abstract void renderMpspolymer(Mps.Mpspolymer mpspolymer);
 
   Point3f[] tempPoints;
-  
+
   private boolean initializePolymer(Mps.Mpspolymer schain) {
 
     boolean invalidate = false;
@@ -127,7 +127,7 @@ abstract class MpsRenderer extends MeshRenderer {
       sheetSmoothing = fval;
       invalidate = true;
     }
-    
+
     if (!isTraceAlpha)
       controlPoints = schain.leadMidpoints;
     else if (sheetSmoothing == 0)
@@ -177,7 +177,7 @@ abstract class MpsRenderer extends MeshRenderer {
 
   private void setStructureTypes() {
     structureTypes = viewer.allocTempBytes(monomerCount + 1);
-    for (int i = monomerCount; --i >= 0; ) {
+    for (int i = monomerCount; --i >= 0;) {
       structureTypes[i] = monomers[i].getProteinStructureType();
       if (structureTypes[i] == JmolConstants.PROTEIN_STRUCTURE_TURN)
         structureTypes[i] = JmolConstants.PROTEIN_STRUCTURE_NONE;
@@ -188,25 +188,26 @@ abstract class MpsRenderer extends MeshRenderer {
   boolean isHelix(int i) {
     return structureTypes[i] == JmolConstants.PROTEIN_STRUCTURE_HELIX;
   }
-  
+
   boolean isSheet(int i) {
     return structureTypes[i] == JmolConstants.PROTEIN_STRUCTURE_SHEET;
   }
 
   void calcScreenControlPoints() {
-    calcScreenControlPoints(controlPoints);  
+    calcScreenControlPoints(controlPoints);
   }
-  
+
   void calcScreenControlPoints(Point3f[] points) {
     int count = monomerCount + 1;
     controlPointScreens = viewer.allocTempScreens(count);
-    for (int i = count; --i >= 0; ) {
+    for (int i = count; --i >= 0;) {
       viewer.transformPoint(points[i], controlPointScreens[i]);
     }
     haveControlPointScreens = true;
   }
 
   final Point3f pointT = new Point3f();
+
   /**
    * calculate screen points based on control points and wing positions
    * (cartoon, strand, meshRibbon, and ribbon)
@@ -228,9 +229,9 @@ abstract class MpsRenderer extends MeshRenderer {
     }
     return screens;
   }
-  
-  private void calc1Screen(Point3f center, Vector3f vector,
-                   short mad, float offset_1000, Point3i screen) {
+
+  private void calc1Screen(Point3f center, Vector3f vector, short mad,
+                           float offset_1000, Point3i screen) {
     pointT.set(vector);
     float scale = mad * offset_1000;
     pointT.scaleAdd(scale, center);
@@ -238,11 +239,12 @@ abstract class MpsRenderer extends MeshRenderer {
   }
 
   short getLeadColix(int i) {
-    return Graphics3D.inheritColix(colixes[i], monomers[i].getLeadAtom().colixAtom);
+    return Graphics3D.inheritColix(colixes[i],
+        monomers[i].getLeadAtom().colixAtom);
   }
-  
+
   //// cardinal hermite constant cylinder (meshRibbon, strands)
-  
+
   int iPrev, iNext, iNext2, iNext3;
   int madMid, madBeg, madEnd;
   int diameterBeg, diameterMid, diameterEnd;
@@ -254,7 +256,7 @@ abstract class MpsRenderer extends MeshRenderer {
     iNext2 = Math.min(i + 2, monomerCount);
     iNext3 = Math.min(i + 3, monomerCount);
   }
-  
+
   final void renderHermiteCylinder(Point3i[] screens, int i) {
     setNeighbors(i);
     g3d.drawHermite(getLeadColix(i), isNucleic ? 4 : 7, screens[iPrev],
@@ -289,9 +291,9 @@ abstract class MpsRenderer extends MeshRenderer {
   }
 
   private boolean checkDiameter(int d) {
-    return  (isHighRes & d > ABSOLUTE_MIN_MESH_SIZE || d >= MIN_MESH_RENDER_SIZE);
+    return (isHighRes & d > ABSOLUTE_MIN_MESH_SIZE || d >= MIN_MESH_RENDER_SIZE);
   }
-  
+
   final void renderHermiteConic(int i, boolean thisTypeOnly) {
     setNeighbors(i);
     short colix = getLeadColix(i);
@@ -306,12 +308,11 @@ abstract class MpsRenderer extends MeshRenderer {
         System.out.println("render mesh error: " + e.toString());
       }
     }
-    g3d.fillHermite(colix, isNucleic ? 4 : 7, diameterBeg,
-        diameterMid, diameterEnd, controlPointScreens[iPrev],
-        controlPointScreens[i], controlPointScreens[iNext],
-        controlPointScreens[iNext2]);
+    g3d.fillHermite(colix, isNucleic ? 4 : 7, diameterBeg, diameterMid,
+        diameterEnd, controlPointScreens[iPrev], controlPointScreens[i],
+        controlPointScreens[iNext], controlPointScreens[iNext2]);
   }
-  
+
   //// cardinal hermite box or flat ribbon or twin strand (cartoons, meshRibbon, ribbon)
 
   final void renderHermiteRibbon(boolean doFill, int i, boolean thisTypeOnly) {
@@ -328,14 +329,13 @@ abstract class MpsRenderer extends MeshRenderer {
         } catch (Exception e) {
           System.out.println("render mesh error: " + e.toString());
         }
-      }    
+      }
     }
     g3d.drawHermite(doFill, ribbonBorder, colix, isNucleic ? 4 : 7,
-        ribbonTopScreens[iPrev], ribbonTopScreens[i],
-        ribbonTopScreens[iNext], ribbonTopScreens[iNext2],
-        ribbonBottomScreens[iPrev], ribbonBottomScreens[i],
-        ribbonBottomScreens[iNext], ribbonBottomScreens[iNext2],
-        aspectRatio);
+        ribbonTopScreens[iPrev], ribbonTopScreens[i], ribbonTopScreens[iNext],
+        ribbonTopScreens[iNext2], ribbonBottomScreens[iPrev],
+        ribbonBottomScreens[i], ribbonBottomScreens[iNext],
+        ribbonBottomScreens[iNext2], aspectRatio);
   }
 
   //// cardinal hermite (box or flat) arrow head (cartoon)
@@ -380,12 +380,13 @@ abstract class MpsRenderer extends MeshRenderer {
         controlPointScreens[iNext2], screenArrowBotPrev, screenArrowBot,
         controlPointScreens[iNext], controlPointScreens[iNext2], aspectRatio);
   }
-  
-  void renderCone(int i, Point3f pointBegin, Point3f pointEnd, Point3f screenPtBegin,
-                  Point3f screenPtEnd, short colix, int mad) {
+
+  void renderCone(int i, Point3f pointBegin, Point3f pointEnd,
+                  Point3f screenPtBegin, Point3f screenPtEnd, short colix,
+                  int mad) {
     int coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
         mad + (mad >> 2));
-    if (aspectRatio >  0 && checkDiameter(coneDiameter)) {
+    if (aspectRatio > 0 && checkDiameter(coneDiameter)) {
       try {
         if (meshes[i] == null || !meshReady[i])
           createMeshCone(i, pointBegin, pointEnd, mad);
@@ -401,7 +402,7 @@ abstract class MpsRenderer extends MeshRenderer {
   }
 
   //////////////////////////// mesh 
-  
+
   // Bob Hanson 11/04/2006 - mesh rendering of secondary structure.
   // mesh creation occurs at rendering time, because we don't
   // know what all the options are, and they aren't important,
@@ -413,8 +414,8 @@ abstract class MpsRenderer extends MeshRenderer {
   Point3f[] controlHermites;
   Vector3f[] wingHermites;
   Point3f[] radiusHermites;
-  
-  final Vector3f Z = new Vector3f(0.1345f,0.5426f,0.3675f); //random reference
+
+  final Vector3f Z = new Vector3f(0.1345f, 0.5426f, 0.3675f); //random reference
   Vector3f norm = new Vector3f();
   final Vector3f wing = new Vector3f();
   final Vector3f wing0 = new Vector3f();
@@ -432,10 +433,29 @@ abstract class MpsRenderer extends MeshRenderer {
     setNeighbors(i);
     if (controlPoints[i].distance(controlPoints[iNext]) == 0)
       return;
+    if (isHelix(i)) {
+      ProteinStructure p = ((AlphaMonomer) monomers[i]).proteinStructure;
+      p.calcAxis();
+      /*
+       * 
+      dumpPoint(p.center, Graphics3D.YELLOW);
+      dumpPoint(p.axisA, Graphics3D.YELLOW);
+      dumpPoint(p.axisB, Graphics3D.YELLOW);
+      Vector3f v = new Vector3f(((Helix) p).vTemp);
+      v.scale(1);
+      dumpVector(p.center, v, Graphics3D.GREEN);
+      v.set(((Helix) p).m);
+      v.scale(1);
+      dumpVector(p.center, v, Graphics3D.WHITE);
+      dumpVector(p.center, new Vector3f(1, 1, 1), Graphics3D.BLUE);
+      dumpPoint(controlPoints[i], Graphics3D.WHITE);
+      */
+    }
     boolean isEccentric = (aspectRatio != 1 && wingVectors != null);
     int nHermites = (hermiteLevel + 1) * 2 + 1; // 4 for hermiteLevel = 1
     int nPer = (nHermites - 1) * 2 - 2; // 6 for hermiteLevel 1
-    Mesh mesh = meshes[i] = new Mesh(viewer, "mesh_" + shapeID + "_" + i, g3d, (short) 0);
+    Mesh mesh = meshes[i] = new Mesh(viewer, "mesh_" + shapeID + "_" + i, g3d,
+        (short) 0);
     boolean variableRadius = (madBeg != madMid || madMid != madEnd);
     if (controlHermites == null || controlHermites.length < nHermites + 1) {
       controlHermites = new Point3f[nHermites + 1];
@@ -451,9 +471,9 @@ abstract class MpsRenderer extends MeshRenderer {
       wing.set(wingVectors[iPrev]);
       if (madEnd == 0)
         wing.scale(2.0f); //adds a flair to an arrow
-      Graphics3D.getHermiteList(isNucleic ? 4 : 7, wing,
-          wingVectors[i], wingVectors[iNext], wingVectors[iNext2],
-          wingVectors[iNext3], wingHermites, nHermites);
+      Graphics3D.getHermiteList(isNucleic ? 4 : 7, wing, wingVectors[i],
+          wingVectors[iNext], wingVectors[iNext2], wingVectors[iNext3],
+          wingHermites, nHermites);
     }
     float radius1 = madBeg / 2000f;
     float radius2 = madMid / 2000f;
@@ -526,7 +546,7 @@ abstract class MpsRenderer extends MeshRenderer {
         mesh.addQuad(nPoints - k - 1, nPoints - nPer + (nPer - k) % nPer,
             nPoints - nPer + k + 1, nPoints - nPer + k + 2);
     mesh.initialize(false);
-    //System.out.println("mesh "+ mesh.thisID + " " + mesh.vertexCount+" "+mesh.vertices.length + " " + mesh.polygonCount + " " + mesh.polygonIndexes.length);
+    //System.out.sprintln("mesh "+ mesh.thisID + " " + mesh.vertexCount+" "+mesh.vertices.length + " " + mesh.polygonCount + " " + mesh.polygonIndexes.length);
     meshReady[i] = true;
     mesh.visibilityFlags = 1;
   }
@@ -541,7 +561,8 @@ abstract class MpsRenderer extends MeshRenderer {
     wing.cross(Z, norm);
     wing.normalize();
     wing.scale(mad * 1.2f / 2000f);
-    Mesh mesh = meshes[i] = new Mesh(viewer, "mesh_" + shapeID + "_" + i, g3d, (short) 0);
+    Mesh mesh = meshes[i] = new Mesh(viewer, "mesh_" + shapeID + "_" + i, g3d,
+        (short) 0);
     aa.set(norm, (float) (2 * Math.PI / nPer));
     mat.set(aa);
     pt1.set(pointBegin);
@@ -553,24 +574,33 @@ abstract class MpsRenderer extends MeshRenderer {
     }
     mesh.addVertexCopy(pointEnd);
     for (int k = 0; k < nPer; k++)
-      mesh.addTriangle((k + 1) % nPer, k, nPer);
+      mesh.addTriangle((k + 1) % nPer, nPer, k);
     for (int k = level * 2; --k >= 0;)
       mesh.addQuad(k + 2, k + 1, (nPer - k) % nPer, nPer - k - 1);
     mesh.initialize(false);
     meshReady[i] = true;
     mesh.visibilityFlags = 1;
   }
-  
-  /* implement only if needed for debugging
-   
-  private void dumpVector(Point3f pt, Vector3f v) {
-    Point3f p1 = new Point3f();
-    p1.add(pt, v);
+
+  /*
+  private void dumpPoint(Point3f pt, short color) {
     Point3i pt1 = viewer.transformPoint(pt);
-    Point3i pt2 = viewer.transformPoint(p1);
-    System.out.print("draw pt"+(""+Math.random()).substring(3,10) + " {"+pt.x+" "+pt.y+" "+pt.z+"} {"+p1.x+" "+p1.y+" "+p1.z+"}"+";"+" ");
-    g3d.fillCylinder(Graphics3D.GOLD, Graphics3D.ENDCAPS_FLAT, 5, pt1.x, pt1.y, pt1.z, pt2.x, pt2.y, pt2.z);
-    g3d.fillSphereCentered(Graphics3D.GOLD, 5, pt1);
+    g3d.fillSphereCentered(color, 20, pt1);
+  }
+
+  private void dumpVector(Point3f pt, Vector3f v, short color) {
+    Point3f p1 = new Point3f();
+    Point3i pt1 = new Point3i();
+    Point3i pt2 = new Point3i();
+    p1.add(pt, v);
+    pt1.set(viewer.transformPoint(pt));
+    pt2.set(viewer.transformPoint(p1));
+    System.out.print("draw pt" + ("" + Math.random()).substring(3, 10) + " {"
+        + pt.x + " " + pt.y + " " + pt.z + "} {" + p1.x + " " + p1.y + " "
+        + p1.z + "}" + ";" + " ");
+    g3d.fillCylinder(color, Graphics3D.ENDCAPS_FLAT, 2, pt1.x, pt1.y, pt1.z,
+        pt2.x, pt2.y, pt2.z);
+    g3d.fillSphereCentered(color, 5, pt2);
   }
   */
 }

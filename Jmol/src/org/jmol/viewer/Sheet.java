@@ -53,12 +53,18 @@ class Sheet extends ProteinStructure {
 
     Point3f tempA = new Point3f();
     aminoPolymer.getLeadMidPoint(monomerIndex, tempA);
-    if (! lowerNeighborIsHelixOrSheet())
+    if (lowerNeighborIsHelixOrSheet()) {
+      System.out.println("ok"); 
+    } else {
       projectOntoAxis(tempA);
+    }
     Point3f tempB = new Point3f();
     aminoPolymer.getLeadMidPoint(monomerIndex + monomerCount, tempB);
-    if (! upperNeighborIsHelixOrSheet())
+    if (upperNeighborIsHelixOrSheet()) {
+      System.out.println("ok");       
+    } else {
       projectOntoAxis(tempB);
+    }
     axisA = tempA;
     axisB = tempB;
   }

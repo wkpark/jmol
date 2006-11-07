@@ -907,6 +907,11 @@ class TransformManager {
     pointScreen.set(transformPoint(pointAngstroms));
   }
 
+  /** 
+   * CAUTION! returns a POINTER TO A TEMPORARY VARIABLE
+   * @param pointAngstroms
+   * @return POINTER TO point3iScreenTemp
+   */
   synchronized Point3i transformPoint(Point3f pointAngstroms) {
     matrixTransform.transform(pointAngstroms, point3fScreenTemp);
     return adjustedTemporaryScreenPoint(pointAngstroms);

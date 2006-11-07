@@ -33,35 +33,117 @@ class Helix extends ProteinStructure {
           monomerIndex, monomerCount);
   }
 
-  // copied from sheet -- not correct
   void calcAxis() {
     if (axisA != null)
       return;
 
+    // just a crude starting point.
+    
     axisA = new Point3f();
-    if (lowerNeighborIsHelixOrSheet())
-      apolymer.getLeadMidPoint(monomerIndex, axisA);
-    else
-      apolymer.getLeadMidPoint(monomerIndex + 1, axisA);
-
     axisB = new Point3f();
-    if (upperNeighborIsHelixOrSheet())
-      apolymer.getLeadMidPoint(monomerIndex + monomerCount, axisB);
-    else
-      apolymer.getLeadMidPoint(monomerIndex + monomerCount - 1, axisB);
-
+    apolymer.getLeadMidPoint(monomerIndex, axisA);
+    apolymer.getLeadMidPoint(monomerIndex + monomerCount, axisB);
     axisUnitVector = new Vector3f();
     axisUnitVector.sub(axisB, axisA);
     axisUnitVector.normalize();
 
+    /*
+     * We now calculate the least-squares 3D axis
+     * through the helix alpha carbons starting with Vo
+     * as a first approximation.
+     * 
+     * This uses the simple 0-centered least squares fit:
+     * 
+     * Y = M cross Xi
+     * 
+     * minimizing R^2 = SUM(|Y - Yi|^2) 
+     * 
+     * where Yi is the vector PERPENDICULAR of the point onto axis Vo
+     * and Xi is the vector PROJECTION of the point onto axis Vo
+     * and M is a vector adjustment 
+     * 
+     * M = SUM_(Xi cross Yi) / sum(|Xi|^2)
+     * 
+     * from which we arrive at:
+     * 
+     * V = Vo + (Vo cross M)
+     * 
+     * Basically, this is just 3D version of a 
+     * standard 2D least squares fit to a line, where we would say:
+     * 
+     * y = m xi + b
+     * 
+     * D = n (sum xi^2) - (sum xi)^2
+     * 
+     * m = [(n sum xiyi) - (sum xi)(sum yi)] / D
+     * b = [(sum yi) (sum xi^2) - (sum xi)(sum xiyi)] / D
+     * 
+     * but here we demand that the line go through the center, so we
+     * require (sum xi) = (sum yi) = 0, so b = 0 and
+     * 
+     * m = (sum xiyi) / (sum xi^2)
+     * 
+     * In 3D we do the same but 
+     * instead of x we have Vo,
+     * instead of multiplication we use cross products
+     * 
+     * Bob Hanson 11/2006
+     * 
+     */
+    
+    calcCenter();
+
+    axisA.set(center);
+
+    float sum_Xi2 = 0;
+    Vector3f sumXiYi = new Vector3f();
+    Vector3f vTemp = new Vector3f();
+    Point3f pt = new Point3f();
+    Point3f ptProj = new Point3f();
+
+    for (int i = monomerIndex + monomerCount; --i >= monomerIndex;) {
+      pt.set(apolymer.getLeadPoint(i));
+      ptProj.set(pt);
+      projectOntoAxis(ptProj);
+      vTemp.sub(pt, ptProj);
+      vTemp.cross(vectorProjection, vTemp);
+      sumXiYi.add(vTemp);
+      sum_Xi2 += vectorProjection.lengthSquared();
+    }
+    Vector3f m = new Vector3f(sumXiYi);
+    m.scale(1/sum_Xi2);
+    vTemp.cross(m, axisUnitVector);
+    axisUnitVector.add(vTemp);
+    axisUnitVector.normalize();
+
+    /*
+     * done. Only problem is, we can't guarantee the direction of the vector. 
+     * So, we now find the projections of the endpoints onto the axis and
+     * redefine the axis from those two points.
+     * 
+     */
+    
     Point3f tempA = new Point3f();
     apolymer.getLeadMidPoint(monomerIndex, tempA);
     projectOntoAxis(tempA);
+    axisA = tempA;
+    
     Point3f tempB = new Point3f();
     apolymer.getLeadMidPoint(monomerIndex + monomerCount, tempB);
     projectOntoAxis(tempB);
-    axisA = tempA;
-    axisB = tempB;
+    axisB.set(tempB);
+    
+    //axisUnitVector.sub(axisB, axisA);
+    //axisUnitVector.normalize();
+  }
+
+  void calcCenter() {
+    if (center != null)
+      return;
+    center = new Point3f();
+    for (int i = monomerIndex + monomerCount; --i >= monomerIndex;)
+      center.add(apolymer.getLeadPoint(i));
+    center.scale(1f / monomerCount);
   }
 
 
@@ -77,16 +159,8 @@ class Helix extends ProteinStructure {
    * Computers Chem. Vol 13, No 3, pp 191-195, 1989
    ****************************************************************/
 
-  void calcCenter() {
-    if (center == null) {
-      int i = monomerIndex + monomerCount - 1;
-      center = new Point3f(apolymer.getLeadPoint(i));
-      while (--i >= monomerIndex)
-        center.add(apolymer.getLeadPoint(i));
-      center.scale(1f/monomerCount);
-      //Logger.debug("structure center is at :" + center);
-    }
-  }
+  /* not implemented -- I never got around to reading this -- BH 
+   * 
 
   static float length(Point3f point) {
     return
@@ -104,7 +178,6 @@ class Helix extends ProteinStructure {
       sumZiLi += point.z * length;
     }
   }
-
   float cosineX, cosineY, cosineZ;
   void calcDirectionCosines() {
     float denominator =
@@ -113,5 +186,6 @@ class Helix extends ProteinStructure {
     cosineY = sumYiLi / denominator;
     cosineZ = sumZiLi / denominator;
   }
-
+  
+  */
 }

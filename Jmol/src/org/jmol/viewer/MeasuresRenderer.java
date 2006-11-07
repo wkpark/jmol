@@ -168,6 +168,7 @@ class MeasuresRenderer extends ShapeRenderer {
       pointT.set(measurement.pointArc);
       matrixT.transform(pointT);
       pointT.add(atomB);
+      //CAUTION! screenArc and screenLabel are the SAME OBJECT, TransformManager.point3iScreenTemp
       Point3i screenArc = viewer.transformPoint(pointT);
       int zArc = screenArc.z - zOffset;
       if (zArc < 0) zArc = 0;

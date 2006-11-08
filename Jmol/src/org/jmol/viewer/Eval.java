@@ -1015,8 +1015,6 @@ class Eval { //implements Runnable {
       evalError(GT._("atom expression compiler error - stack over/underflow"));
     if (!isSubsetDefinition && bsSubset != null)
       stack[0].and(bsSubset);
-    System.out.println(StateManager.encodeBitset(stack[0]));
-    System.out.println(StateManager.decodeBitset(StateManager.encodeBitset(stack[0])));
     return stack[0];
   }
 

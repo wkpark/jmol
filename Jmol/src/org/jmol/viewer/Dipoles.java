@@ -205,8 +205,8 @@ class Dipoles extends SelectionIndependentShape {
     if ("color" == propertyName) {
       colix = Graphics3D.getColix(value);
       if (isBond) {
-        setColixDipole(colix, (colix != Graphics3D.UNRECOGNIZED) ? null
-            : (String) value, JmolConstants.BOND_COVALENT_MASK, bs);
+        int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
+        setColixDipole(colix, pid, JmolConstants.BOND_COVALENT_MASK, bs);
       } else if (value != null) {
         if (currentDipole != null)
           currentDipole.colix = colix;
@@ -296,17 +296,15 @@ class Dipoles extends SelectionIndependentShape {
     return (dipoles[i].isBondType());
   }
 
-  private void setColixDipole(short colix, String palette, short bondTypeMask,
+  private void setColixDipole(short colix, int pid, short bondTypeMask,
                               BitSet bs) {
-    if (colix != Graphics3D.UNRECOGNIZED) {
-      BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
-      while (iter.hasNext()) {
-        Dipole d = findBondDipole(iter.next());
-        if (d != null)
-          d.colix = colix;
-      }
-    } else {
-      Logger.debug("setColixDipole called with palette:" + palette);
+    if (colix == Graphics3D.UNRECOGNIZED)
+      return; // not implemented
+    BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
+    while (iter.hasNext()) {
+      Dipole d = findBondDipole(iter.next());
+      if (d != null)
+        d.colix = colix;
     }
   }
 

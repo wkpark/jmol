@@ -24,44 +24,9 @@
 
 package org.jmol.viewer;
 
-
-import java.util.BitSet;
-
-import org.jmol.g3d.Graphics3D;
-
 class Hsticks extends Sticks {
 
-  void setSize(int size, BitSet bsSelected) {
-    //Logger.debug("Hsticks.setSize()");
-    //frame.calcHbonds();
-    short mad = (short)size;
-    setMadBond(mad, JmolConstants.BOND_HYDROGEN_MASK, bsSelected);
-  }
-  
-  void setProperty(String propertyName, Object value,
-                          BitSet bsSelected) {
-    if ("color" == propertyName) {
-      short colix = Graphics3D.getColix(value);
-      if (colix == Graphics3D.UNRECOGNIZED && "type" == (String)value) {
-        BondIterator iter =
-          frame.getBondIterator(JmolConstants.BOND_HYDROGEN_MASK,
-                                bsSelected);
-        while (iter.hasNext()) {
-          Bond bond = iter.next();
-          bond.setColix(viewer.getColixHbondType(bond.order));
-        }
-        return;
-      }
-      setColixBond(colix,
-                   (colix != Graphics3D.UNRECOGNIZED) ? null : (String)value,
-                   JmolConstants.BOND_HYDROGEN_MASK,
-                   bsSelected);
-      return;
-    }
-    if ("translucency" == propertyName) {
-      setTranslucencyBond(value == "translucent",
-                          JmolConstants.BOND_HYDROGEN_MASK, bsSelected);
-      return;
-    }
-  }
+  void initShape() {
+    myMask = JmolConstants.BOND_HYDROGEN_MASK;  
+  }  
 }

@@ -1194,119 +1194,49 @@ String getAtomInfoChime(int i) {
     return returnInfo;
   }
   
-  Hashtable getAllStateInfo(BitSet bs) {
+  Hashtable getAllStateInfo(BitSet bsUnused) {
+    BitSet bs;
+    Hashtable info = new Hashtable();
+    if (frame == null)
+      return info;
+    StringBuffer commands = new StringBuffer();
+    String cmd;
+    Hashtable temp = new Hashtable();
     
-    /*
-     * The idea here is to create a running list that only shows
-     * differences between atoms and bonds, taken sequentially.
-     * This isn't perfect -- but it might be OK.
-     * 
-     * The visibility flags give detailed information 
-     * 
-     */
-    Hashtable stateInfo = new Hashtable();
-    Vector V = new Vector();
-    int atomCount = viewer.getAtomCount();
-    short colix = -1;
-    short lastColix = -1;
-    int shapeVisibilityFlags = 0;
-    int lastVisibilityFlags = -1;
-    int mad = 0;
-    int lastMad = -1;
-    int defaultMadCode = viewer.getMadAtom();
-    boolean isFirst = true;
-    Hashtable elementInfo = new Hashtable();
-    for (int i = 0; i < atomCount; i++) {
-      if (! bs.get(i)) 
-        continue;
-      boolean isChanged = false;
-      Hashtable info = new Hashtable();
-      Atom atom = frame.getAtomAt(i);
-      String element = getElementSymbol(i); 
-      if (!elementInfo.containsKey(element)) {
-        Hashtable Htable = new Hashtable();
-        Htable.put("mad","" + atom.convertEncodedMad(defaultMadCode));  
-        elementInfo.put(element, Htable);
-      }  
-      Hashtable thisElementInfo = (Hashtable)elementInfo.get(element);
-      String value;
-      String str;
-      
-      str = "" + atom.madAtom;
-      value = (String)thisElementInfo.get("mad");
-      if (! str.equals(value)) {
-        thisElementInfo.put("mad",str);
-        info.put("mad", new Integer(atom.madAtom));
-        isChanged = true;
-      }
-      
-      if (atom.colixAtom >= 0) {
-        str = "" + atom.colixAtom;
-        value = (String)thisElementInfo.get("colix");
-        if (! str.equals(value)) {
-          thisElementInfo.put("colix",str);
-          info.put("colix", new Integer(atom.colixAtom));
-          String strColor = viewer.getHexColorFromIndex(atom.colixAtom);
-          if(strColor != null) 
-            info.put("color", strColor);
-          isChanged = true;
-        }
-      }
-
-      shapeVisibilityFlags = atom.shapeVisibilityFlags;
-      if (isFirst || shapeVisibilityFlags != lastVisibilityFlags)
-        info.put("visibilityFlags", new Integer(shapeVisibilityFlags));
-
-      if (!info.isEmpty()) {
-        info.put("element", element);
-        info.put("_ipt", new Integer(i));
-        V.add(info);
-      }
-
-      lastVisibilityFlags = shapeVisibilityFlags;
-      isFirst = false;
-      if (isChanged) {
-        elementInfo.put(element, thisElementInfo);
+    // hidden atoms and displayed frames
+    temp.put("hide selected", viewer.getHiddenSet());
+    cmd = StateManager.getCommands(temp);
+    if (cmd != null)
+      commands.append(cmd);
+    int modelIndex = viewer.getDisplayModelIndex();
+    switch (modelIndex) {
+    case -1:
+      if (frame.modelCount > 1)
+        commands.append("frame all;");
+      break;
+    case -2:
+      commands.append("background model "
+          + getModelNumber(viewer.getBackgroundModelIndex()) + ";");
+    default:
+      commands.append("frame " + getModelNumber(modelIndex) + ";");
+    }
+    // frame range?    
+    info.put("visibilityCommands", commands);
+    
+    // shape construction
+    
+    commands = new StringBuffer();
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+      Shape shape = frame.shapes[i];
+      if (shape != null) {
+        cmd = shape.getShapeState();
+        if (cmd != null)
+          commands.append(cmd);
       }
     }
-    stateInfo.put("atomState",V);
-    
-    isFirst = true;
-    V = new Vector();
-    int bondCount = getBondCountInModel(-1);
-    for (int i = 0; i < bondCount; i++) {
-      if (! bs.get(frame.getBondAt(i).getAtom1().atomIndex) 
-          || bs.get(frame.getBondAt(i).getAtom2().atomIndex))
-        continue;
-      Bond bond = frame.getBondAt(i);
-      Hashtable info = new Hashtable();
-      mad = bond.mad;
-      if (isFirst || mad != lastMad)
-        info.put("mad", new Integer(mad));
-      colix = bond.colix;
-      if (isFirst || colix >= 0 && colix != lastColix) {
-        info.put("colix", new Integer(bond.colix));
-        String strColor = viewer.getHexColorFromIndex(bond.colix);
-        if(strColor != null) 
-          info.put("color", strColor);
-      }
-      if (!info.isEmpty()) {
-        info.put("_ipt", new Integer(i));
-        V.add(info);
-      }
-
-      //not taking into account possible connection changes here
-      
-      lastMad = mad;
-      lastColix = colix;
-      isFirst = false;
-    }
-    stateInfo.put("bondState", V);
-    stateInfo.put("shapeInfo", getShapeInfo());
-    stateInfo.put("modelInfo", getModelInfo());
-    stateInfo.put("animationInfo", viewer.getAnimationInfo());
-    stateInfo.put("polymerInfo",getAllPolymerInfo(bs));
-    return stateInfo;
+    if (commands.length() > 0)
+      info.put("shapeCommands", commands.toString());
+    return info;
   }
   
   Hashtable getBoundBoxInfo() {
@@ -1374,12 +1304,7 @@ String getAtomInfoChime(int i) {
       Shape shape = frame.shapes[i];
       if (shape != null) {
         String shapeType = JmolConstants.shapeClassBases[i];
-        //shapeinfo.put("index", new Integer(i));
-        //shapeinfo.put("myVisibilityFlag", new Integer(shape.myVisibilityFlag));
-        String cmd = shape.getShapeState();
-        if (cmd != null)
-          commands.append(cmd);
-        else if ("Draw,Dipoles,Isosurface,LcaoOrbital,MolecularOrbital".indexOf(shapeType) >= 0) {
+        if ("Draw,Dipoles,Isosurface,LcaoOrbital,MolecularOrbital".indexOf(shapeType) >= 0) {
           Hashtable shapeinfo = new Hashtable();
           shapeinfo.put("obj", shape.getShapeDetail());
           info.put(shapeType, shapeinfo);

@@ -118,7 +118,7 @@ class Balls extends Shape {
     Atom[] atoms = frame.atoms;
     Hashtable temp = new Hashtable();
     for (int i = 0; i < atomCount; i++) {
-      if (bsSizeSet != null && bsSizeSet.get(i))
+      if (bsSizeSet.get(i))
         setStateInfo(temp, i, "spacefill " + (atoms[i].madAtom / 2000f));
       if (bsColixSet != null && bsColixSet.get(i)) {
         setStateInfo(temp, i, "color atoms [x"
@@ -127,6 +127,6 @@ class Balls extends Shape {
           setStateInfo(temp, i, "color translucent");
       }
     }
-    return getShapeCommands(temp);
+    return getShapeCommands(temp, null);
   }  
 }

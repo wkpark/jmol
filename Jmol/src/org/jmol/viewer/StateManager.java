@@ -492,4 +492,35 @@ class StateManager {
       return measureDistanceUnits;
     }
   }
+
+  static String getCommands(Hashtable ht) {
+    return getCommands(ht, null);
+  }
+
+  static String getCommands(Hashtable htDefine, Hashtable htMore) {
+    StringBuffer s = new StringBuffer();
+    String setPrev = getCommands(htDefine, s, null);
+    if (htMore != null)
+      getCommands(htMore, s, setPrev);
+    return s.toString();
+  }
+
+  static String getCommands(Hashtable ht, StringBuffer s, String setPrev) {
+    if (ht == null)
+      return "";
+    Enumeration e = ht.keys();
+    while (e.hasMoreElements()) {
+      String key = (String) e.nextElement();
+      String set = StateManager.encodeBitset((BitSet) ht.get(key));
+      if (!set.equals(setPrev)) {
+        s.append("select (");
+        s.append(set);
+        s.append(");");
+      }
+      setPrev = set;
+      s.append(key + ";");
+    }
+    return setPrev;
+  }
+
 }

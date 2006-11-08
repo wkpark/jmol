@@ -105,19 +105,22 @@ class AtomShape extends Shape {
   }
   
   String getShapeState() {
+    if (bsSizeSet == null)
+      return "";
     Hashtable temp = new Hashtable();
+    Hashtable temp2 = new Hashtable();
     String type = JmolConstants.shapeClassBases[shapeID];
     for (int i = frame.atomCount; --i >= 0;) {
-      if (bsSizeSet != null && bsSizeSet.get(i))
+      if (bsSizeSet.get(i))
         setStateInfo(temp, i, type + " " + (mads[i] / 2000f));
       if (bsColixSet != null && bsColixSet.get(i)) {
-        setStateInfo(temp, i, "color " + type + " [x"
+        setStateInfo(temp2, i, "color " + type + " [x"
             + viewer.getHexColorFromIndex(colixes[i]) + "]");
         if (Graphics3D.isColixTranslucent(colixes[i]))
-          setStateInfo(temp, i, "color " + type + " translucent");
+          setStateInfo(temp2, i, "color " + type + " translucent");
       }
     }
-    return getShapeCommands(temp);
+    return getShapeCommands(temp, temp2);
   }  
 
 }

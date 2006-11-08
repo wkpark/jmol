@@ -2365,9 +2365,9 @@ class Eval { //implements Runnable {
         colorvalue = (argb == 0 ? null : new Integer(argb));
       } else {
         // "cpk" value would be "spacefill"
-        int pid = (tok == Token.cpk ? JmolConstants.PALETTE_CPK :
-          JmolConstants.getPaletteID((String) statement[itoken].value));
-        if (pid < 0)
+        int pid = (tok == Token.cpk ? JmolConstants.PALETTE_CPK 
+            : JmolConstants.getPaletteID((String) statement[itoken].value));
+        if (pid < 0 || pid == JmolConstants.PALETTE_TYPE && shapeType != JmolConstants.SHAPE_HSTICKS)
           invalidArgument();
         colorvalue = new Byte((byte)pid);
       }

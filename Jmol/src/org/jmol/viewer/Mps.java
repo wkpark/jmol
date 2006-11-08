@@ -340,31 +340,27 @@ abstract class Mps extends Shape {
       if (bsSizeSet == null)
         return "";
       Hashtable temp = new Hashtable();
+      Hashtable temp2 = new Hashtable();
       String type = JmolConstants.shapeClassBases[shapeID];
 
       for (int i = 0; i < monomerCount; i++) {
-        int atomIndex = monomers[i].getLeadAtomIndex();
-        if (bsSizeSet.get(i))
-          setStateInfo(temp, atomIndex, type + " " + (mads[i] / 2000f));
-      }
-      String s = getShapeCommands(temp);
-      temp.clear();
-      for (int i = 0; i < monomerCount; i++) {
-        int atomIndex = monomers[i].getLeadAtomIndex();
+        int atomIndex1 = monomers[i].firstAtomIndex;
+        int atomIndex2 = monomers[i].lastAtomIndex;
         if (!bsSizeSet.get(i))
           continue;
+          setStateInfo(temp, atomIndex1, atomIndex2, type + " " + (mads[i] / 2000f));
         if (bsColixSet != null && bsColixSet.get(i)) {
           if (paletteIDs[i] >= 0)
-            setStateInfo(temp, atomIndex, "color " + type + " "
+            setStateInfo(temp2, atomIndex1, atomIndex2, "color " + type + " "
                 + JmolConstants.getPaletteName(paletteIDs[i]));
           else
-            setStateInfo(temp, atomIndex, "color " + type + " [x"
+            setStateInfo(temp2, atomIndex1, atomIndex2, "color " + type + " [x"
                 + viewer.getHexColorFromIndex(colixes[i]) + "]");
           if (Graphics3D.isColixTranslucent(colixes[i]))
-            setStateInfo(temp, atomIndex, "color " + type + " translucent");
+            setStateInfo(temp2, atomIndex1, atomIndex2, "color " + type + " translucent");
         }
       }
-      return s + getShapeCommands(temp);
+      return getShapeCommands(temp, temp2);
     }  
 
     void falsifyMesh(int index, boolean andNearby) {

@@ -33,52 +33,47 @@ import org.jmol.g3d.Graphics3D;
 
 class Sticks extends Shape {
   
-  void setSize(int size, BitSet bsSelected) {
-    short mad = (short)size;
-    setMadBond(mad, JmolConstants.BOND_COVALENT_MASK, bsSelected);
-  }
+  short myMask;
   
-  void setProperty(String propertyName, Object value,
-                          BitSet bsSelected) {
-    Logger.debug(propertyName+" "+value+" "+bsSelected);
-    if ("color" == propertyName) {
-      short colix = Graphics3D.getColix(value);
-      setColixBond(colix,
-                   (colix != Graphics3D.UNRECOGNIZED) ? null : (String)value,
-                   JmolConstants.BOND_COVALENT_MASK,
-                   bsSelected);
-      return;
-    }
-    if ("translucency" == propertyName) {
-      setTranslucencyBond(value == "translucent",
-                          JmolConstants.BOND_COVALENT_MASK, bsSelected);
-      return;
-    }
-    super.setProperty(propertyName, value, bsSelected);
+  void initShape() {
+    myMask = JmolConstants.BOND_COVALENT_MASK;
   }
 
-  void setMadBond(short mad, short bondTypeMask, BitSet bs) {
-    BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
+  void setSize(int size, BitSet bsSelected) {
+    BondIterator iter = frame.getBondIterator(myMask, bsSelected);
+    short mad = (short) size;
     while (iter.hasNext())
       iter.next().setMad(mad);
   }
-
-  void setColixBond(short colix, String palette,
-                    short bondTypeMask, BitSet bs) {
-    if (colix != Graphics3D.UNRECOGNIZED) {
-      BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
+  
+  void setProperty(String propertyName, Object value, BitSet bsSelected) {
+    Logger.debug(propertyName + " " + value + " " + bsSelected);
+    if ("color" == propertyName) {
+      short colix = Graphics3D.getColix(value);
+      int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
+      if (pid == JmolConstants.PALETTE_TYPE) {
+        BondIterator iter = frame.getBondIterator(myMask, bsSelected);
+        while (iter.hasNext()) {
+          Bond bond = iter.next();
+          bond.setColix(viewer.getColixHbondType(bond.order));
+        }
+        return;
+      }
+      if (colix == Graphics3D.UNRECOGNIZED)
+        return; //palettes not implemented for bonds
+      BondIterator iter = frame.getBondIterator(myMask, bsSelected);
       while (iter.hasNext())
         iter.next().setColix(colix);
-    } else {
-      Logger.error("setColixBond called with palette:" + palette);
+      return;
     }
-  }
-
-  void setTranslucencyBond(boolean isTranslucent,
-                           short bondTypeMask, BitSet bs) {
-    BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
-    while (iter.hasNext())
-      iter.next().setTranslucent(isTranslucent);
+    if ("translucency" == propertyName) {
+      boolean isTranslucent = (((String)value).equals("translucent"));
+      BondIterator iter = frame.getBondIterator(myMask, bsSelected);
+      while (iter.hasNext())
+        iter.next().setTranslucent(isTranslucent);
+      return;
+    }
+    super.setProperty(propertyName, value, bsSelected);
   }
 
   void setModelClickability() {
@@ -93,6 +88,4 @@ class Sticks extends Shape {
       bond.atom2.clickabilityFlags |= myVisibilityFlag;
     }
   }
-
 }
-

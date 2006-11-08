@@ -296,29 +296,30 @@ class Labels extends Shape {
   
   String getShapeState() {
     Hashtable temp = new Hashtable();
+    Hashtable temp2 = new Hashtable();
     for (int i = frame.atomCount; --i >= 0;) {
       if (bsSizeSet == null || !bsSizeSet.get(i))
         continue;
       setStateInfo(temp, i, "label " + formats[i]);
       if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp, i, "color label [x"
+        setStateInfo(temp2, i, "color label [x"
             + viewer.getHexColorFromIndex(colixes[i]) + "]");
       if (bsBgColixSet != null && bsBgColixSet.get(i))
-        setStateInfo(temp, i, "background label [x"
+        setStateInfo(temp2, i, "background label [x"
             + viewer.getHexColorFromIndex(bgcolixes[i]) + "]");
       if (offsets != null && offsets.length > i) {
-        setStateInfo(temp, i, "set labelOffset "
+        setStateInfo(temp2, i, "set labelOffset "
             + Text.getXOffset(offsets[i] >> 2) + " "
             + (-Text.getYOffset(offsets[i] >> 2)));
-        setStateInfo(temp, i, "set labelAlignment "
+        setStateInfo(temp2, i, "set labelAlignment "
             + Text.getAlignment(offsets[i]));
       }
       if (bsFontSet != null && bsFontSet.get(i)) {
         Font3D font = Font3D.getFont3D(fids[i]);
-        setStateInfo(temp, i, "font label " + font.fontSize + " "
+        setStateInfo(temp2, i, "font label " + font.fontSize + " "
             + font.fontFace + " " + font.fontStyle);
       }
     }
-    return getShapeCommands(temp);
+    return getShapeCommands(temp, temp2);
   }  
 }

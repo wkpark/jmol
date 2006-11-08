@@ -1157,7 +1157,8 @@ final public class JmolConstants {
    /* 0 */ "none", "cpk", "partialCharge", "formalCharge", "temperature",  
    /* 5 */ "fixedTemperature", "surfaceDistance", "structure", "amino", 
    /* 9 */ "shapely", "chain", "group", "monomer", "molecule", "altloc", 
-   /*15 */ "insertion", "jmol", "rasmol"
+   /*15 */ "insertion", "jmol", "rasmol", 
+   /*18 */ "type" // hbonds only
   };
   
   public final static int PALETTE_NONE = 0;
@@ -1181,6 +1182,7 @@ final public class JmolConstants {
   public final static int PALETTE_INSERTION = 15;
   public final static int PALETTE_JMOL = 16;
   public final static int PALETTE_RASMOL = 17;
+  public final static int PALETTE_TYPE = 18;
     
   private final static int paletteCount = paletteNames.length;
   

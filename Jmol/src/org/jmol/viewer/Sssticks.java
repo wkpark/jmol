@@ -24,44 +24,9 @@
 
 package org.jmol.viewer;
 
-
-import java.util.BitSet;
-
-import org.jmol.g3d.Graphics3D;
-
 class Sssticks extends Sticks {
 
-  void setSize(int size, BitSet bsSelected) {
-    short mad = (short)size;
-    setMadBond(mad, JmolConstants.BOND_SULFUR_MASK, bsSelected);
-  }
-  
-  void setProperty(String propertyName, Object value,
-                          BitSet bsSelected) {
-    if ("color" == propertyName) {
-      short colix = Graphics3D.getColix(value);
-      setColixBond(colix,
-                   (colix != Graphics3D.UNRECOGNIZED) ? null : (String)value,
-                   JmolConstants.BOND_SULFUR_MASK,
-                   bsSelected);
-      return;
-    }
-    if ("translucency" == propertyName) {
-      setTranslucencyBond(value == "translucent",
-                          JmolConstants.BOND_SULFUR_MASK, bsSelected);
-      return;
-    }
-    /*
-      perhaps broken because of elminiation of colorScheme
-    if ("colorScheme" == propertyName) {
-      if (value instanceof String) {
-        if ("cpk" == (String)value) {
-          setColixBond((short)0, JmolConstants.BOND_SULFUR_MASK, bsSelected);
-          return;
-        }
-      }
-      return;
-    }
-    */
-  }
+  void initShape() {
+    myMask = JmolConstants.BOND_SULFUR_MASK;
+  }  
 }

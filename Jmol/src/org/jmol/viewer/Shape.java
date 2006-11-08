@@ -32,7 +32,6 @@ import javax.vecmath.Point3f;
 import java.util.BitSet;
 import java.util.Vector;
 import java.util.Hashtable;
-import java.util.Enumeration;
 
 abstract class Shape {
 
@@ -98,30 +97,23 @@ abstract class Shape {
   void setVisibilityFlags(BitSet bs) {
   }
   
-  static void setStateInfo(Hashtable temp, int i, String key) {
-    if (!temp.containsKey(key)) {
-      BitSet bs = new BitSet();
-      bs.set(i);
-      temp.put(key, bs);
-    }
-    ((BitSet) (temp.get(key))).set(i);
+  static void setStateInfo(Hashtable ht, int i, String key) {
+    setStateInfo(ht, i, i, key);
   }
 
-  static String getShapeCommands(Hashtable temp) {
-    StringBuffer s = new StringBuffer();
-    String setPrev = null;
-    Enumeration e = temp.keys();
-    while (e.hasMoreElements()) {
-      String key = (String) e.nextElement();
-      String set = StateManager.encodeBitset((BitSet) temp.get(key));
-      if (!set.equals(setPrev)) {
-        s.append("select (");
-        s.append(set);
-        s.append(");");
-      }
-      setPrev = set;
-      s.append(key + ";");
+  static void setStateInfo(Hashtable ht, int i1, int i2, String key) {
+    BitSet bs;
+    if (ht.containsKey(key)) {
+      bs = (BitSet) ht.get(key);
+    } else {
+      bs = new BitSet();
+      ht.put(key, bs);
     }
-    return s.toString();
+    for (int i = i1; i<= i2; i++)
+      bs.set(i);
   }
-}
+
+  static String getShapeCommands(Hashtable htDefine, Hashtable htMore) {
+    return StateManager.getCommands(htDefine, htMore);
+  }
+ }

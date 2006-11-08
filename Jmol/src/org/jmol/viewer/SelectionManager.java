@@ -44,6 +44,7 @@ class SelectionManager {
 
   private final BitSet bsNull = new BitSet();
   final BitSet bsSelection = new BitSet();
+  final BitSet bsSubset = new BitSet(); // only a copy of the Eval subset
   // this is a tri-state. the value -1 means unknown
   final static int TRUE = 1;
   final static int FALSE = 0;
@@ -51,7 +52,13 @@ class SelectionManager {
   int empty = TRUE;
 
   boolean hideNotSelected;
-  BitSet bsHidden = new BitSet();
+  final BitSet bsHidden = new BitSet();
+ 
+  void clear() {
+    clearSelection();
+    hide(null, true);
+    setSelectionSubset(null);
+  }
   
   void hide(BitSet bs, boolean isQuiet) {
     bsHidden.and(bsNull);
@@ -198,6 +205,22 @@ class SelectionManager {
     selectionChanged();
   }
 
+  void setSelectionSubset(BitSet bs) {
+    
+    //for informational purposes only
+    //the real copy is in Eval so that eval operations
+    //can all use it directly, and so that all these
+    //operations still work properly on the full set of atoms
+    
+    bsSubset.and(bsNull);
+    if (bs != null)
+      bsSubset.or(bs);
+  }
+
+  boolean isInSelectionSubset(int atomIndex) {
+    return (atomIndex < 0 || bsSubset == null || bsSubset.get(atomIndex));
+  }
+  
   void toggleSelectionSet(BitSet bs) {
     /*
       toggle each one independently
@@ -258,7 +281,7 @@ class SelectionManager {
     int count = 0;
     empty = TRUE;
     for (int i = viewer.getAtomCount(); --i >= 0; )
-      if (bsSelection.get(i))
+      if (bsSelection.get(i) && (bsSubset == null || bsSubset.get(i)))
      ++count;
     if (count > 0)
       empty = FALSE;

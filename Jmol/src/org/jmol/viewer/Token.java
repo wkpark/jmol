@@ -191,10 +191,11 @@ class Token {
   final static int restore      = command | 104;
   final static int selectionHalo = command | 105 | setparam;
   final static int history       = command | 106 | setparam | showparam;
-  final static int display       = command |  107 | setparam | expressionCommand;
+  final static int display       = command | 107 | setparam | expressionCommand;
   final static int ifcmd         = command | 108;
   final static int elsecmd       = command | 109;
   final static int endifcmd      = command | 110;
+  final static int subset        = command | 111 | expressionCommand | predefinedset;
   
   // parameters
   final static int ambient      = setparam |  0;
@@ -590,6 +591,8 @@ class Token {
     "selectionhalo",     new Token(selectionHalo,     onDefault1, "selectionHalos"),
     "selectionhalos",    null,
     "history",           new Token(history,     varArgCount, "history"),
+    "subset",            new Token(subset,      varArgCount, "subset"),
+
 
     // setparams
     "ambient",      new Token(ambient,         "ambient"),

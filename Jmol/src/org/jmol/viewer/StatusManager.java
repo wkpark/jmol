@@ -88,6 +88,10 @@ class StatusManager {
     this.viewer = viewer;
   }
 
+  void clear() {
+    setStatusFileLoaded(null, null, null, null, null, 0);
+  }
+  
   synchronized boolean resetMessageQueue(String statusList) {
     boolean isRemove = (statusList.length() > 0 && statusList.charAt(0) == '-');
     boolean isAdd = (statusList.length() > 0 && statusList.charAt(0) == '+');

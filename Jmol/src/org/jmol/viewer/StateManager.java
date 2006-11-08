@@ -1,4 +1,4 @@
-  /* $RCSfile$
+/* $RCSfile$
  * $Author: egonw $
  * $Date: 2005-11-10 09:52:44 -0600 (Thu, 10 Nov 2005) $
  * $Revision: 4255 $
@@ -29,6 +29,9 @@ import javax.vecmath.Matrix3f;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Enumeration;
+import java.text.DecimalFormat;
+
+//import org.jmol.util.Logger;
 
 class StateManager {
   GlobalSettings globalSettings;
@@ -37,10 +40,85 @@ class StateManager {
   String lastOrientation = "";
   String lastConnections = "";
   String lastSelected = "";
-  
+
   StateManager(Viewer viewer) {
     globalSettings = new GlobalSettings();
     this.viewer = viewer;
+  }
+
+  void clear(GlobalSettings global) {
+    global.clear();
+    //other state clearing? -- place here
+  }
+
+  void setCrystallographicDefaults() {
+    //axes on and mode unitCell; unitCell on; perspective depth off;
+    viewer.setShapeSize(JmolConstants.SHAPE_AXES, 200);
+    viewer.setShapeSize(JmolConstants.SHAPE_UCCAGE, -1);
+    viewer.setAxesModeUnitCell(true);
+    viewer.setPerspectiveDepth(false);
+  }
+
+  void setCommonDefaults() {
+    viewer.zoomToPercent(100);
+    viewer.setPerspectiveDepth(true);
+    viewer.setPercentVdwAtom(JmolConstants.DEFAULT_PERCENT_VDW_ATOM);
+    viewer.setBondTolerance(JmolConstants.DEFAULT_BOND_TOLERANCE);
+    viewer.setMinBondDistance(JmolConstants.DEFAULT_MIN_BOND_DISTANCE);
+    viewer.setMarBond(JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS);
+  }
+
+  void setJmolDefaults() {
+    setCommonDefaults();
+    viewer.setDefaultColors("jmol");
+    viewer.setAxesOrientationRasmol(false);
+    viewer.setZeroBasedXyzRasmol(false);
+  }
+
+  void setRasmolDefaults() {
+    setCommonDefaults();
+    viewer.setDefaultColors("rasmol");
+    viewer.setAxesOrientationRasmol(true);
+    viewer.setZeroBasedXyzRasmol(true);
+    viewer.setPercentVdwAtom(0);
+    viewer.setMarBond((short) 1);
+  }
+
+  private DecimalFormat[] formatters;
+
+  private static String[] formattingStrings = { "0", "0.0", "0.00", "0.000",
+    "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000" };
+
+  String formatDecimal(float value, int decimalDigits) {
+    if (decimalDigits < 0)
+      return "" + value;
+    if (formatters == null)
+      formatters = new DecimalFormat[formattingStrings.length];
+    if (decimalDigits >= formattingStrings.length)
+      decimalDigits = formattingStrings.length - 1;
+    DecimalFormat formatter = formatters[decimalDigits];
+    if (formatter == null)
+      formatter = formatters[decimalDigits] = new DecimalFormat(
+          formattingStrings[decimalDigits]);
+    return formatter.format(value);
+  }
+
+  String getStandardLabelFormat() {
+    // from the RasMol 2.6b2 manual: RasMol uses the label
+    // "%n%r:%c.%a" if the molecule contains more than one chain:
+    // "%e%i" if the molecule has only a single residue (a small molecule) and
+    // "%n%r.%a" otherwise.
+    String strLabel;
+    int modelCount = viewer.getModelCount();
+    if (viewer.getChainCount() > modelCount)
+      strLabel = "[%n]%r:%c.%a";
+    else if (viewer.getGroupCount() <= modelCount)
+      strLabel = "%e%i";
+    else
+      strLabel = "[%n]%r.%a";
+    if (viewer.getModelCount() > 1)
+      strLabel += "/%M";
+    return strLabel;
   }
 
   String listSavedStates() {
@@ -50,13 +128,13 @@ class StateManager {
       names += "\n" + e.nextElement();
     return names;
   }
-  
+
   void saveSelection(String saveName, BitSet bsSelected) {
     saveName = lastSelected = "Selected_" + saveName;
-    BitSet bs = (BitSet)bsSelected.clone();
+    BitSet bs = (BitSet) bsSelected.clone();
     saved.put(saveName, bs);
   }
-  
+
   boolean restoreSelection(String saveName) {
     String name = (saveName.length() > 0 ? "Selected_" + saveName
         : lastSelected);
@@ -68,23 +146,24 @@ class StateManager {
     viewer.select(bsSelected, false);
     return true;
   }
-   
+
   void saveOrientation(String saveName) {
-    Orientation o = new Orientation();  
+    Orientation o = new Orientation();
     o.saveName = lastOrientation = "Orientation_" + saveName;
     saved.put(o.saveName, o);
   }
-  
+
   boolean restoreOrientation(String saveName, float timeSeconds) {
-    String name = (saveName.length() > 0 ? "Orientation_" + saveName : lastOrientation);
+    String name = (saveName.length() > 0 ? "Orientation_" + saveName
+        : lastOrientation);
     Orientation o = (Orientation) saved.get(name);
     if (o == null)
       return false;
     o.restore(timeSeconds);
-//    Logger.info(listSavedStates());
+    //    Logger.info(listSavedStates());
     return true;
   }
-   
+
   class Orientation {
 
     String saveName;
@@ -94,8 +173,8 @@ class StateManager {
     float zoom, rotationRadius;
     Point3f center = new Point3f();
     boolean windowCenteredFlag;
-    
-    Orientation () {
+
+    Orientation() {
       viewer.getRotation(rotationMatrix);
       xTrans = viewer.getTranslationXPercent();
       yTrans = viewer.getTranslationYPercent();
@@ -104,35 +183,37 @@ class StateManager {
       windowCenteredFlag = viewer.isWindowCentered();
       rotationRadius = viewer.getRotationRadius();
     }
-        
+
     void restore(float timeSeconds) {
       viewer.setWindowCentered(windowCenteredFlag);
-      viewer.moveTo(timeSeconds, rotationMatrix, center, zoom, xTrans, yTrans, rotationRadius);
+      viewer.moveTo(timeSeconds, rotationMatrix, center, zoom, xTrans, yTrans,
+          rotationRadius);
     }
   }
 
   void saveBonds(String saveName) {
-    Connections b = new Connections();  
+    Connections b = new Connections();
     b.saveName = lastConnections = "Bonds_" + saveName;
     saved.put(b.saveName, b);
   }
-  
+
   boolean restoreBonds(String saveName) {
-    String name = (saveName.length() > 0 ? "Bonds_" + saveName : lastConnections);
+    String name = (saveName.length() > 0 ? "Bonds_" + saveName
+        : lastConnections);
     Connections c = (Connections) saved.get(name);
     if (c == null)
       return false;
     c.restore();
-//    Logger.info(listSavedStates());
+    //    Logger.info(listSavedStates());
     return true;
   }
-   
+
   class Connections {
 
     String saveName;
     int bondCount;
     Connection[] connections;
-    
+
     Connections() {
       Frame frame = viewer.getFrame();
       if (frame == null)
@@ -146,7 +227,7 @@ class StateManager {
             b.mad, b.colix, b.order, b.shapeVisibilityFlags);
       }
     }
-    
+
     class Connection {
       int atomIndex1;
       int atomIndex2;
@@ -154,7 +235,7 @@ class StateManager {
       short colix;
       short order;
       int shapeVisibilityFlags;
-      
+
       Connection(int atom1, int atom2, short mad, short colix, short order,
           int shapeVisibilityFlags) {
         atomIndex1 = atom1;
@@ -174,14 +255,15 @@ class StateManager {
       for (int i = bondCount; --i >= 0;) {
         Connection c = connections[i];
         if (c.atomIndex1 >= frame.atomCount || c.atomIndex2 >= frame.atomCount)
-          continue;        
-        Bond b = frame.bondAtoms(frame.atoms[c.atomIndex1], frame.atoms[c.atomIndex2], c.order, c.mad);
+          continue;
+        Bond b = frame.bondAtoms(frame.atoms[c.atomIndex1],
+            frame.atoms[c.atomIndex2], c.order, c.mad);
         b.colix = c.colix;
         b.shapeVisibilityFlags = c.shapeVisibilityFlags;
       }
     }
   }
-  
+
   class GlobalSettings {
 
     /*
@@ -200,70 +282,94 @@ class StateManager {
     }
 
     //file loading
-    
-    boolean forceAutoBond;
-    
-    char inlineNewlineChar = '|';
-    String defaultLoadScript = "";
-    Point3f ptDefaultLattice = new Point3f();
-    
+
+    boolean zeroBasedXyzRasmol = false;
+    boolean forceAutoBond      = false;
+
+    char inlineNewlineChar     = '|';
+    String defaultLoadScript   = "";
+    private final Point3f ptDefaultLattice = new Point3f();
+
     void setDefaultLattice(Point3f ptLattice) {
       ptDefaultLattice.set(ptLattice);
     }
-    int[] getDefaultLattice() {
+    
+    Point3f getDefaultLatticePoint() {
+      return ptDefaultLattice;
+    }
+
+    int[] getDefaultLatticeArray() {
       int[] A = new int[4];
       A[1] = (int) ptDefaultLattice.x;
       A[2] = (int) ptDefaultLattice.y;
       A[3] = (int) ptDefaultLattice.z;
       return A;
     }
-    
+
+    void clear() {
+
+      // OK, here is where we would put any 
+      // "global" settings that
+      // need to be reset whenever a file is loaded
+
+    }
+
     //centering and perspective
-    
+
     boolean allowCameraMoveFlag = true;
-    boolean adjustCameraFlag    = true;
+    boolean adjustCameraFlag = true;
 
     //solvent
-   
+
     boolean solventOn = false;
     float solventProbeRadius = 1.2f;
-    
+
     //measurements
-    
+
     boolean measureAllModels;
 
     //rendering
-    
+
     boolean enableFullSceneAntialiasing = false;
     boolean greyscaleRendering          = false;
     boolean zoomLarge                   = true; //false would be like Chime
-    boolean labelsGroupFlag             = false;
-    boolean labelsFrontFlag             = false;
-    boolean labelPointerBackground      = true;
-    boolean labelPointerBox             = true;
-    boolean labelPointerNoBox           = false;
     boolean dotsSelectedOnlyFlag        = false;
     boolean dotSurfaceFlag              = true;
     boolean displayCellParameters       = true;
     boolean showHiddenSelectionHalos    = false;
     boolean showMeasurements            = true;
     boolean frankOn                     = false;
-
-    int axesMode = JmolConstants.AXES_MODE_BOUNDBOX;
-
-    //atoms and bonds
     
-    boolean bondSelectionModeOr  = false;
-    boolean showMultipleBonds    = true;
-    boolean showHydrogens        = true;
-    boolean ssbondsBackbone      = false;
-    boolean hbondsBackbone       = false;
-    boolean hbondsSolid          = false;
+    //atoms and bonds
 
+    boolean bondSelectionModeOr = false;
+    boolean showMultipleBonds   = true;
+    boolean showHydrogens       = true;
+    boolean ssbondsBackbone     = false;
+    boolean hbondsBackbone      = false;
+    boolean hbondsSolid         = false;
+
+    int percentVdwAtom    = JmolConstants.DEFAULT_PERCENT_VDW_ATOM;
+    short marBond         = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
+    float bondTolerance   = JmolConstants.DEFAULT_BOND_TOLERANCE;
+    float minBondDistance = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
     byte modeMultipleBond = JmolConstants.MULTIBOND_NOTSMALL;
+    int defaultVectorMad  = 0;
+
+    //labels
+
+    boolean labelsGroupFlag        = false;
+    boolean labelsFrontFlag        = false;
+    boolean labelPointerBackground = true;
+    boolean labelPointerBox        = true;
+    boolean labelPointerNoBox      = false;
+    
+    int labelOffsetX        = JmolConstants.LABEL_DEFAULT_X_OFFSET;
+    int labelOffsetY        = JmolConstants.LABEL_DEFAULT_Y_OFFSET;
+    int pointsLabelFontSize = JmolConstants.LABEL_DEFAULT_FONTSIZE;
 
     //secondary structure + Rasmol
-    
+
     boolean rasmolHydrogenSetting = true;
     boolean rasmolHeteroSetting   = true;
     boolean cartoonRocketFlag     = false;
@@ -271,28 +377,53 @@ class StateManager {
     boolean chainCaseSensitive    = false;
     boolean rangeSelected         = false;
 
-    boolean traceAlpha         = true;
-    boolean highResolutionFlag = false;
-    int ribbonAspectRatio      = 16;
-    int hermiteLevel           = 0;
-    float sheetSmoothing       = 1; // 0: traceAlpha on alphas for helix, 1 on midpoints
-    
+    boolean traceAlpha            = true;
+    boolean highResolutionFlag    = false;
+    int ribbonAspectRatio         = 16;
+    int hermiteLevel              = 0;
+    float sheetSmoothing          = 1; // 0: traceAlpha on alphas for helix, 1 on midpoints
+
     //misc
-    
-    int pickingSpinRate        = 10;
+
     boolean hideNameInPopup    = false;
     boolean disablePopupMenu   = false;
-    String helpPath            = null;
 
+    int axesMode               = JmolConstants.AXES_MODE_BOUNDBOX;
+    int pickingSpinRate        = 10;
     
+    String helpPath            = null;
+    String defaultHelpPath     = JmolConstants.DEFAULT_HELP_PATH;
+    String propertyStyleString = "";
+
+
     //testing
-    
+
     boolean debugScript = false;
-    boolean testFlag1   = false;
-    boolean testFlag2   = false;
-    boolean testFlag3   = false;
-    boolean testFlag4   = false;
+    boolean testFlag1 = false;
+    boolean testFlag2 = false;
+    boolean testFlag3 = false;
+    boolean testFlag4 = false;
+
+    // measurements
+
+    //controlled access:
+    private String measureDistanceUnits = "nanometers";
+    boolean setMeasureDistanceUnits(String units) {
+      if (units.equalsIgnoreCase("angstroms"))
+        measureDistanceUnits = "angstroms";
+      else if (units.equalsIgnoreCase("nanometers")
+          || units.equalsIgnoreCase("nm"))
+        measureDistanceUnits = "nanometers";
+      else if (units.equalsIgnoreCase("picometers")
+          || units.equalsIgnoreCase("pm"))
+        measureDistanceUnits = "picometers";
+      else
+        return false;
+      return true;
+    }
+    
+    String getMeasureDistanceUnits() {
+      return measureDistanceUnits;
+    }
   }
-  
-  
 }

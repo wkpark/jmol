@@ -64,6 +64,7 @@ class Eval { //implements Runnable {
   Token[] statement;
   int statementLength;
   Viewer viewer;
+  BitSet bsSubset;
 
   //Thread myThread;
 
@@ -287,7 +288,10 @@ class Eval { //implements Runnable {
   }
 
   void clearDefinitionsAndLoadPredefined() {
+    //executed each time a file is loaded; like clear() for the managers
     variables.clear();
+    bsSubset = null;
+    viewer.setSelectionSubset(null);
 
     int cPredef = JmolConstants.predefinedSets.length;
     for (int iPredef = 0; iPredef < cPredef; iPredef++)
@@ -533,6 +537,9 @@ class Eval { //implements Runnable {
         break;
       case Token.restrict:
         restrict();
+        break;
+      case Token.subset:
+        subset();
         break;
       case Token.selectionHalo:
         setSelectionHalo(1);
@@ -841,7 +848,9 @@ class Eval { //implements Runnable {
     Point3f thisCoordinate = null;
     boolean refreshed = false;
     pcLastExpressionInstruction = 1000;
-
+    boolean isSubsetDefinition = (pcStart < 0);
+    if (isSubsetDefinition)
+      pcStart = -pcStart;
     if (logMessages)
       viewer.scriptStatus("start to evaluate expression");
     expression_loop: for (int pc = pcStart;; ++pc) {
@@ -905,6 +914,9 @@ class Eval { //implements Runnable {
         break;
       case Token.selected:
         stack[sp++] = copyBitSet(viewer.getSelectionSet());
+        break;
+      case Token.subset:
+        stack[sp++] = copyBitSet(bsSubset);
         break;
       case Token.hidden:
         stack[sp++] = copyBitSet(viewer.getHiddenSet());
@@ -995,6 +1007,8 @@ class Eval { //implements Runnable {
     }
     if (sp != 1)
       evalError(GT._("atom expression compiler error - stack over/underflow"));
+    if (!isSubsetDefinition && bsSubset != null)
+      stack[0].and(bsSubset);
     return stack[0];
   }
 
@@ -2724,7 +2738,14 @@ class Eval { //implements Runnable {
 
   void restrict() throws ScriptException {
     select();
+    BitSet bsSelected = viewer.getSelectionSet();
     viewer.invertSelection();
+    if (bsSubset != null) {
+      BitSet bs = new BitSet();
+      bs.or(bsSelected);
+      bs.and(bsSubset);
+      viewer.setSelectionSet(bs);
+    }
     boolean bondmode = viewer.getBondSelectionModeOr();
     viewer.setBondSelectionModeOr(true);
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0);
@@ -2737,7 +2758,7 @@ class Eval { //implements Runnable {
     viewer.setLabel(null);
 
     viewer.setBondSelectionModeOr(bondmode);
-    viewer.invertSelection();
+    viewer.setSelectionSet(bsSelected);
   }
 
   void rotate(boolean isSpin) throws ScriptException {
@@ -3005,6 +3026,11 @@ class Eval { //implements Runnable {
     viewer.select(statementLength == 1 ? null : expression(statement, 1), tQuiet);
   }
 
+  void subset() throws ScriptException {
+    bsSubset = (statementLength == 1 ? null : expression(statement, -1));
+    viewer.setSelectionSubset(bsSubset);
+  }
+  
   void translate() throws ScriptException {
     if (statementLength < 3)
       badArgumentCount();

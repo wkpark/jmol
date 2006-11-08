@@ -40,6 +40,17 @@ final public class JmolConstants {
     
   public final static boolean officialRelease = false;
 
+  public final static String DEFAULT_HELP_PATH = "http://www.stolaf.edu/academics/chemapps/jmol/docs/index.htm?search=";
+
+  public final static int DEFAULT_PERCENT_VDW_ATOM = 20;
+  public final static float DEFAULT_BOND_RADIUS = 0.15f;
+  public final static short DEFAULT_BOND_MILLIANGSTROM_RADIUS = (short) (DEFAULT_BOND_RADIUS * 1000);
+  //angstroms of slop ... from OpenBabel ... mth 2003 05 26
+  public final static float DEFAULT_BOND_TOLERANCE = 0.45f;
+  //minimum acceptable bonding distance ... from OpenBabel ... mth 2003 05 26
+  public final static float DEFAULT_MIN_BOND_DISTANCE = 0.4f;
+
+
   public final static int DELETE_BONDS     = 0;
   public final static int MODIFY_ONLY      = 1;
   public final static int CREATE_ONLY      = 2;

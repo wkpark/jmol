@@ -55,15 +55,19 @@ class ModelManager {
   boolean haveFile = false;
   Frame frame;
 
+  void clear() {
+    fullPathName = fileName = modelSetName = null;
+    frame = null;
+    haveFile = false;
+  }
+  
   /*
    * This is the method that starts frame.
    *  
    */
   void setClientFile(String fullPathName, String fileName, JmolAdapter adapter, Object clientFile) {
     if (clientFile == null) {
-      fullPathName = fileName = modelSetName = null;
-      frame = null;
-      haveFile = false;
+      clear();
       return;
     }
     this.fullPathName = fullPathName;

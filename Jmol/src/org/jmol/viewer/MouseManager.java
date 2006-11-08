@@ -253,6 +253,8 @@ abstract class MouseManager {
       return;
 
     int nearestAtomIndex = (drawMode ? -1 : viewer.findNearestAtomIndex(x, y));
+    if (nearestAtomIndex >= 0 && !viewer.isInSelectionSubset(nearestAtomIndex))
+        nearestAtomIndex = -1;
     if (clickCount == 1)
       mouseSingleClick(x, y, modifiers, nearestAtomIndex);
     else if (clickCount == 2)
@@ -403,10 +405,11 @@ abstract class MouseManager {
     hoverOff();
     timeCurrent = mouseMovedTime = time;
     mouseMovedX = xCurrent = x; mouseMovedY = yCurrent = y;
-    if (measurementMode | hoverActive) {
+    if ((measurementMode | hoverActive) && measurementMode) {
       int atomIndex = viewer.findNearestAtomIndex(x, y);
-      if (measurementMode)
-        setAttractiveMeasurementTarget(atomIndex);
+      if (atomIndex >= 0 && viewer.isInSelectionSubset(atomIndex))
+          atomIndex = -1;
+      setAttractiveMeasurementTarget(atomIndex);
     }
   }
 

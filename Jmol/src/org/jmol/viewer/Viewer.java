@@ -37,6 +37,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Component;
 import java.awt.Event;
+import java.text.DecimalFormat;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;
@@ -103,7 +104,6 @@ public class Viewer extends JmolViewer {
   private StateManager stateManager = new StateManager(this);
   private StateManager.GlobalSettings global = stateManager.globalSettings;
   private StatusManager statusManager;
-  private StyleManager styleManager;
   private TempManager tempManager;
   private TransformManager transformManager;
 
@@ -130,7 +130,6 @@ public class Viewer extends JmolViewer {
     jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
     g3d = new Graphics3D(display);
-    eval = new Eval(this);
     statusManager = new StatusManager(this);
     scriptManager = new ScriptManager(this);
     colorManager = new ColorManager(this, g3d);
@@ -143,12 +142,12 @@ public class Viewer extends JmolViewer {
     else
       mouseManager = new MouseManager10(display, this);
     modelManager = new ModelManager(this);
-    styleManager = new StyleManager(this);
     propertyManager = new PropertyManager(this);
     tempManager = new TempManager(this);
     pickingManager = new PickingManager(this);
     fileManager = new FileManager(this, modelAdapter);
     repaintManager = new RepaintManager(this);
+    eval = new Eval(this);
   }
 
   /**
@@ -244,7 +243,7 @@ public class Viewer extends JmolViewer {
     //initializeModel
     transformManager.homePosition();
     if (modelManager.modelsHaveSymmetry())
-      styleManager.setCrystallographicDefaults();
+      stateManager.setCrystallographicDefaults();
     refresh(1, "Viewer:homePosition()");
   }
 
@@ -495,7 +494,7 @@ public class Viewer extends JmolViewer {
   void zoomByPercent(int percent) {
     //Eval.zoom
     //MouseManager.mouseWheel
-    //StyleManager.setCommonDefaults
+    //stateManager.setCommonDefaults
     transformManager.zoomByPercent(percent);
     refresh(1, "Viewer:zoomByPercent()");
   }
@@ -716,7 +715,7 @@ public class Viewer extends JmolViewer {
 
   void setDefaultColors(String colorScheme) {
     //Eval
-    //StyleManager
+    //stateManager
     if (!isSilent)
       Logger.info("setting color scheme to:" + colorScheme);
     colorManager.setDefaultColors(colorScheme);
@@ -866,6 +865,10 @@ public class Viewer extends JmolViewer {
     return selectionManager.isSelected(atomIndex);
   }
 
+  boolean isInSelectionSubset(int atomIndex) {
+    return selectionManager.isInSelectionSubset(atomIndex);
+  }
+
   void reportSelection(String msg) {
     if (modelManager.getSelectionHaloEnabled())
       setTainted(true);
@@ -888,6 +891,10 @@ public class Viewer extends JmolViewer {
     //not used in this project; in jmolViewer interface, though
     selectionManager.setSelectionSet(set);
     refresh(0, "Viewer:setSelectionSet()");
+  }
+
+  void setSelectionSubset(BitSet subset) {
+    selectionManager.setSelectionSubset(subset);
   }
 
   public void setHideNotSelected(boolean TF) {
@@ -1082,7 +1089,7 @@ public class Viewer extends JmolViewer {
         strModel = strModel.substring(i + 1);
       strModel = strModel.replace(newLine, '\n');
     }
-    int[] A = global.getDefaultLattice();
+    int[] A = global.getDefaultLatticeArray();
     openStringInline(strModel, A);
   }
 
@@ -1091,7 +1098,7 @@ public class Viewer extends JmolViewer {
     //loadInline
     if (arrayModels == null || arrayModels.length == 0)
       return;
-    int[] A = global.getDefaultLattice();
+    int[] A = global.getDefaultLatticeArray();
     openStringInline(arrayModels, A);
   }
 
@@ -1246,11 +1253,11 @@ public class Viewer extends JmolViewer {
     repaintManager.clear();
     transformManager.clear();
     pickingManager.clear();
-    modelManager.setClientFile(null, null, null, null);
-    selectionManager.clearSelection();
-    selectionManager.hide(null, true);
+    modelManager.clear();
+    selectionManager.clear();
     clearAllMeasurements();
-    setStatusFileLoaded(0, null, null, null, null, null);
+    statusManager.clear();
+    stateManager.clear(global);
     refresh(0, "Viewer:clear()");
     System.gc();
   }
@@ -1263,7 +1270,7 @@ public class Viewer extends JmolViewer {
       eval.clearDefinitionsAndLoadPredefined();
     // there probably needs to be a better startup mechanism for shapes
     if (modelManager.hasVibrationVectors())
-      setShapeSize(JmolConstants.SHAPE_VECTORS, styleManager.defaultVectorMad);
+      setShapeSize(JmolConstants.SHAPE_VECTORS, global.defaultVectorMad);
     setFrankOn(global.frankOn);
     repaintManager.initializePointers(1);
     setDisplayModelIndex(0);
@@ -1553,20 +1560,26 @@ public class Viewer extends JmolViewer {
 
   public void setBondTolerance(float bondTolerance) {
     //PreferencesDialog
-    styleManager.setBondTolerance(bondTolerance);
+    if (bondTolerance == global.bondTolerance)
+      return;
+    Logger.info("default bond tolerance set to " + bondTolerance);
+    global.bondTolerance = bondTolerance;
   }
 
   public float getBondTolerance() {
-    return styleManager.getBondTolerance();
+    return global.bondTolerance;
   }
 
   public void setMinBondDistance(float minBondDistance) {
     //PreferencesDialog
-    styleManager.setMinBondDistance(minBondDistance);
+    if (minBondDistance == global.minBondDistance)
+      return;
+    Logger.info("default minimum bond distance set to " + minBondDistance);
+    global.minBondDistance = minBondDistance;
   }
 
   public float getMinBondDistance() {
-    return styleManager.getMinBondDistance();
+    return global.minBondDistance;
   }
 
   BitSet getAtomBits(String setType) {
@@ -2402,7 +2415,7 @@ public class Viewer extends JmolViewer {
   }
 
   String getStandardLabelFormat() {
-    return styleManager.getStandardLabelFormat();
+    return stateManager.getStandardLabelFormat();
   }
 
   int getRibbonAspectRatio() {
@@ -2446,8 +2459,10 @@ public class Viewer extends JmolViewer {
   }
 
   public void setMarBond(short marBond) {
-    //StyleManager.setCommonDefaults, setRasmolDefaults
-    styleManager.setMarBond(marBond);
+    //stateManager.setCommonDefaults, setRasmolDefaults
+    if (marBond != global.marBond)
+      Logger.info("default bond radius set to " + (marBond / 1000f));
+    global.marBond = marBond;
     setShapeSize(JmolConstants.SHAPE_STICKS, marBond * 2);
   }
 
@@ -2472,13 +2487,13 @@ public class Viewer extends JmolViewer {
   void setLabel(String strLabel) {
     //Eval
     if (strLabel != null) // force the class to load and display
-      setShapeSize(JmolConstants.SHAPE_LABELS, styleManager.pointsLabelFontSize);
+      setShapeSize(JmolConstants.SHAPE_LABELS, global.pointsLabelFontSize);
     setShapeProperty(JmolConstants.SHAPE_LABELS, "label", strLabel);
   }
 
   void togglePickingLabel(BitSet bs) {
     //eval set toggleLabel (atomset)
-    setShapeSize(JmolConstants.SHAPE_LABELS, styleManager.pointsLabelFontSize);
+    setShapeSize(JmolConstants.SHAPE_LABELS, global.pointsLabelFontSize);
     modelManager.setShapeProperty(JmolConstants.SHAPE_LABELS, "toggleLabel",
         null, bs);
     refresh(0, "Viewer:");
@@ -2502,7 +2517,7 @@ public class Viewer extends JmolViewer {
 
   void setShapeSize(int shapeID, int size) {
     //Eval - many
-    //StyleManager.setCrystallographicDefaults
+    //stateManager.setCrystallographicDefaults
     //Viewer - many
     setShapeSize(shapeID, size, selectionManager.bsSelection);
   }
@@ -2596,6 +2611,8 @@ public class Viewer extends JmolViewer {
   }
 
   void atomPicked(int atomIndex, int modifiers) {
+    if (!isInSelectionSubset(atomIndex))
+      return;
     pickingManager.atomPicked(atomIndex, modifiers);
   }
 
@@ -3120,7 +3137,7 @@ public class Viewer extends JmolViewer {
 
   public void setPerspectiveDepth(boolean perspectiveDepth) {
     //setBooleanProperty                      
-    //StyleManager.setCrystallographicDefaults
+    //stateManager.setCrystallographicDefaults
     //app preferences dialog   
     transformManager.setPerspectiveDepth(perspectiveDepth);
     refresh(0, "Viewer:setPerspectiveDepth()");
@@ -3128,7 +3145,7 @@ public class Viewer extends JmolViewer {
 
   public void setAxesOrientationRasmol(boolean axesOrientationRasmol) {
     //app PreferencesDialog
-    //StyleManager
+    //stateManager
     //setBooleanproperty
     transformManager.setAxesOrientationRasmol(axesOrientationRasmol);
     refresh(0, "Viewer:setAxesOrientationRasmol()");
@@ -3145,7 +3162,7 @@ public class Viewer extends JmolViewer {
   }
 
   void setAxesModeUnitCell(boolean TF) {
-    //StyleManager
+    //stateManager
     //setBooleanproperty
     global.axesMode = (TF ? JmolConstants.AXES_MODE_UNITCELL
         : JmolConstants.AXES_MODE_BOUNDBOX);
@@ -3357,13 +3374,16 @@ public class Viewer extends JmolViewer {
   }
 
   // ///////////////////////////////////////////////////////////////
-  // delegated to StyleManager
+  // delegated to stateManager
   // ///////////////////////////////////////////////////////////////
 
   public void setPercentVdwAtom(int percentVdwAtom) {
     //PreferenceDialog
-    //StyleManager
-    styleManager.setPercentVdwAtom(percentVdwAtom);
+    //stateManager
+    if (percentVdwAtom != global.percentVdwAtom)
+      Logger.info("default percent van der Waal radius set to "
+          + percentVdwAtom);
+    global.percentVdwAtom = percentVdwAtom;
     setShapeSize(JmolConstants.SHAPE_BALLS, -percentVdwAtom);
   }
 
@@ -3378,15 +3398,15 @@ public class Viewer extends JmolViewer {
   }
 
   public int getPercentVdwAtom() {
-    return styleManager.percentVdwAtom;
+    return global.percentVdwAtom;
   }
 
   short getMadAtom() {
-    return (short) -styleManager.percentVdwAtom;
+    return (short) -global.percentVdwAtom;
   }
 
   public short getMadBond() {
-    return (short) (styleManager.marBond * 2);
+    return (short) (global.marBond * 2);
   }
 
   void setModeMultipleBond(byte modeMultipleBond) {
@@ -3402,7 +3422,7 @@ public class Viewer extends JmolViewer {
 
   void setShowMultipleBonds(boolean TF) {
     //Eval.setBonds
-    //StyleManager
+    //stateManager
     global.showMultipleBonds = TF;
     refresh(0, "Viewer:setShowMultipleBonds()");
   }
@@ -3470,57 +3490,59 @@ public class Viewer extends JmolViewer {
   }
 
   boolean setMeasureDistanceUnits(String units) {
-    //StyleManager
+    //stateManager
     //Eval
-    if (!styleManager.setMeasureDistanceUnits(units))
+    if (!global.setMeasureDistanceUnits(units))
       return false;
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "reformatDistances", null);
     return true;
   }
 
   String getMeasureDistanceUnits() {
-    return styleManager.measureDistanceUnits;
+    return global.getMeasureDistanceUnits();
   }
 
   public void setJmolDefaults() {
     //applet, app initApplication, initVariables
-    styleManager.setJmolDefaults();
+    stateManager.setJmolDefaults();
   }
 
   public void setRasmolDefaults() {
     //applet, app initApplication, initVariables
-    styleManager.setRasmolDefaults();
+    stateManager.setRasmolDefaults();
   }
 
   void setZeroBasedXyzRasmol(boolean zeroBasedXyzRasmol) {
-    //StyleManager
+    //stateManager
     //setBooleanProperty
-    styleManager.setZeroBasedXyzRasmol(zeroBasedXyzRasmol);
+    global.zeroBasedXyzRasmol = zeroBasedXyzRasmol;
     modelManager.setZeroBased();
   }
 
   boolean getZeroBasedXyzRasmol() {
-    return styleManager.zeroBasedXyzRasmol;
+    return global.zeroBasedXyzRasmol;
   }
 
   void setLabelFontSize(int points) {
     //not implemented
-    styleManager.setLabelFontSize(points);
+    global.pointsLabelFontSize = (points <= 0 ? JmolConstants.LABEL_DEFAULT_FONTSIZE
+        : points);
     refresh(0, "Viewer:setLabelFontSize()");
   }
 
   void setLabelOffset(int xOffset, int yOffset) {
     //not implemented
-    styleManager.setLabelOffset(xOffset, yOffset);
+    global.labelOffsetX = xOffset;
+    global.labelOffsetY = yOffset;
     refresh(0, "Viewer:setLabelOffset()");
   }
 
   int getLabelOffsetX() {
-    return styleManager.labelOffsetX;
+    return global.labelOffsetX;
   }
 
   int getLabelOffsetY() {
-    return styleManager.labelOffsetY;
+    return global.labelOffsetY;
   }
 
   // //////////////////////////////////////////////////////////////
@@ -3569,6 +3591,25 @@ public class Viewer extends JmolViewer {
 
   Font3D getFont3D(String fontFace, String fontStyle, int fontSize) {
     return g3d.getFont3D(fontFace, fontStyle, fontSize);
+  }
+
+  private DecimalFormat[] formatters;
+
+  private static String[] formattingStrings = { "0", "0.0", "0.00", "0.000",
+    "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000" };
+
+  String formatDecimal(float value, int decimalDigits) {
+    if (decimalDigits < 0)
+      return "" + value;
+    if (formatters == null)
+      formatters = new DecimalFormat[formattingStrings.length];
+    if (decimalDigits >= formattingStrings.length)
+      decimalDigits = formattingStrings.length - 1;
+    DecimalFormat formatter = formatters[decimalDigits];
+    if (formatter == null)
+      formatter = formatters[decimalDigits] = new DecimalFormat(
+          formattingStrings[decimalDigits]);
+    return formatter.format(value);
   }
 
   // //////////////////////////////////////////////////////////////
@@ -3712,10 +3753,6 @@ public class Viewer extends JmolViewer {
 
   public boolean showModelSetDownload() {
     return true;
-  }
-
-  String formatDecimal(float value, int decimalDigits) {
-    return styleManager.formatDecimal(value, decimalDigits);
   }
 
   // /////////////// getProperty /////////////
@@ -3869,7 +3906,7 @@ public class Viewer extends JmolViewer {
   }
 
   Point3f getDefaultLattice() {
-    return global.ptDefaultLattice;
+    return global.getDefaultLatticePoint();
   }
 
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
@@ -3902,12 +3939,12 @@ public class Viewer extends JmolViewer {
 
   void getHelp(String what) {
     if (global.helpPath == null)
-      global.helpPath = styleManager.getDefaultHelpPath();
+      global.helpPath = global.defaultHelpPath;
     showUrl(global.helpPath + what);
   }
 
   // ///////////////////////////////////////////////////////////////
-  // delegated to StyleManager
+  // delegated to stateManager
   // ///////////////////////////////////////////////////////////////
 
   /*

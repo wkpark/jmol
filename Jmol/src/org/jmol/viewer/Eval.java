@@ -919,7 +919,7 @@ class Eval { //implements Runnable {
         stack[sp++] = copyBitSet(viewer.getSelectionSet());
         break;
       case Token.subset:
-        stack[sp++] = copyBitSet(bsSubset);
+        stack[sp++] = copyBitSet(bsSubset == null ? bsAll() : bsSubset);
         break;
       case Token.hidden:
         stack[sp++] = copyBitSet(viewer.getHiddenSet());

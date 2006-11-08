@@ -95,7 +95,7 @@ final public class Atom extends Point3fi implements Tuple {
     this.atomIndex = atomIndex;
     this.atomicAndIsotopeNumber = atomicAndIsotopeNumber;
     setFormalCharge(formalCharge);
-    this.colixAtom = viewer.getColixAtom(this);
+    this.colixAtom = viewer.getColixAtomPalette(this, JmolConstants.PALETTE_CPK);
     this.alternateLocationID = (byte)alternateLocationID;
     setMadAtom(viewer.getMadAtom());
     this.x = x; this.y = y; this.z = z;
@@ -320,8 +320,6 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   void setColixAtom(short colixAtom) {
-    if (colixAtom == 0)
-      colixAtom = group.chain.frame.viewer.getColixAtomPalette(this, "cpk");
     this.colixAtom = colixAtom;
   }
 

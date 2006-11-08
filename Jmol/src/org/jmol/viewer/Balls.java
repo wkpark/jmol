@@ -28,16 +28,21 @@ package org.jmol.viewer;
 import java.util.BitSet;
 
 import org.jmol.g3d.Graphics3D;
+import java.util.Hashtable;
 
 class Balls extends Shape {
+  
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
+    if (bsSizeSet == null)
+      bsSizeSet = new BitSet();
     Atom[] atoms = frame.atoms;
     int bsLength = bsSelected.length();
     for (int i = bsLength; --i >= 0; ) {
       if (bsSelected.get(i)) {
         Atom atom = atoms[i];
         atom.setMadAtom(mad);
+        bsSizeSet.set(i);
       }
     }
   }
@@ -47,19 +52,29 @@ class Balls extends Shape {
     Atom[] atoms = frame.atoms;
     if ("color" == propertyName) {
       short colix = Graphics3D.getColix(value);
-      for (int i = atomCount; --i >= 0; )
+      if (colix == Graphics3D.UNRECOGNIZED)
+        colix = 0; //CPK
+      if (bsColixSet == null)
+        bsColixSet = new BitSet();
+      int pid = (value instanceof Byte ? ((Byte) value).intValue()
+          : JmolConstants.PALETTE_CPK);
+      for (int i = atomCount; --i >= 0;)
         if (bs.get(i)) {
           Atom atom = atoms[i];
-          atom.setColixAtom((colix != Graphics3D.UNRECOGNIZED)
-                            ? colix
-                            : viewer.getColixAtomPalette(atom, (String)value));
+          atom.setColixAtom(colix != 0 ? colix : viewer.getColixAtomPalette(
+              atom, pid));
+          bsColixSet.set(i, colix != 0 || atom.isTranslucent());
         }
       return;
     }
     if ("translucency" == propertyName) {
-      for (int i = atomCount; --i >= 0; )
-        if (bs.get(i))
-          atoms[i].setTranslucent(value == "translucent");
+      boolean isTranslucent = (value == "translucent");
+      for (int i = atomCount; --i >= 0;)
+        if (bs.get(i)) {
+          atoms[i].setTranslucent(isTranslucent);
+          if (isTranslucent)
+            bsColixSet.set(i);
+        }
       return;
     }
   }
@@ -97,4 +112,21 @@ class Balls extends Shape {
       }
     }
   }
+
+  String getShapeState() {
+    int atomCount = frame.atomCount;
+    Atom[] atoms = frame.atoms;
+    Hashtable temp = new Hashtable();
+    for (int i = 0; i < atomCount; i++) {
+      if (bsSizeSet != null && bsSizeSet.get(i))
+        setStateInfo(temp, i, "spacefill " + (atoms[i].madAtom / 2000f));
+      if (bsColixSet != null && bsColixSet.get(i)) {
+        setStateInfo(temp, i, "color atoms [x"
+            + viewer.getHexColorFromIndex(atoms[i].colixAtom) + "]");
+        if (atoms[i].isTranslucent())
+          setStateInfo(temp, i, "color translucent");
+      }
+    }
+    return getShapeCommands(temp);
+  }  
 }

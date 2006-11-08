@@ -167,9 +167,9 @@ class Polyhedra extends SelectionIndependentShape {
       // but from Color we need to identify the centers.
       if ("color" == propertyName || !iHaveCenterBitSet)
         centers = bs;
+      int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
       colix = Graphics3D.getColix(value);
-      setColix(colix, (colix != Graphics3D.UNRECOGNIZED) ? null
-          : (String) value);
+      setColix(colix, pid);
       return;
     }
 
@@ -210,7 +210,7 @@ class Polyhedra extends SelectionIndependentShape {
     }
   }
 
-  void setColix(short colix, String palette) {
+  void setColix(short colix, int pid) {
     for (int i = polyhedronCount; --i >= 0;) {
       Polyhedron p = polyhedrons[i];
       if (p == null)
@@ -218,7 +218,7 @@ class Polyhedra extends SelectionIndependentShape {
       int atomIndex = p.centralAtom.atomIndex;
       if (centers.get(atomIndex)) {
         p.polyhedronColix = ((colix != Graphics3D.UNRECOGNIZED) ? colix
-            : viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), palette));
+            : viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), pid));
       }
     }
   }

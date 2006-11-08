@@ -2247,6 +2247,10 @@ class Eval { //implements Runnable {
     case Token.opaque:
       colorObject(Token.atom, 1);
       return;
+    case Token.jmol:
+    case Token.rasmol:
+      colorObject(Token.atom, 1);
+      return;
     case Token.rubberband:
       viewer.setRubberbandArgb(getArgbParam(2));
       return;
@@ -2355,24 +2359,19 @@ class Eval { //implements Runnable {
       modifier = "Surface";
     }
     if (itoken < statementLength) {
-      colorvalue = statement[itoken].value;
       tok = statement[itoken].tok;
+      if (tok == Token.colorRGB) {
+        int argb = getArgbParam(itoken);
+        colorvalue = (argb == 0 ? null : new Integer(argb));
+      } else {
+        // "cpk" value would be "spacefill"
+        int pid = (tok == Token.cpk ? JmolConstants.PALETTE_CPK :
+          JmolConstants.getPaletteID((String) statement[itoken].value));
+        if (pid < 0)
+          invalidArgument();
+        colorvalue = new Byte((byte)pid);
+      }
       switch (tok) {
-      case Token.cpk:
-        colorvalue = "cpk";
-        break;
-      case Token.none:
-      case Token.formalCharge:
-      case Token.partialCharge:
-      case Token.structure:
-      case Token.amino:
-      case Token.shapely:
-      case Token.chain:
-      case Token.type:
-      case Token.fixedtemp:
-      case Token.altloc:
-      case Token.insertion:
-        break;
       case Token.surfacedistance:
         if (viewer.getFrame().getSurfaceDistanceMax() == 0)
           dots(statementLength, Dots.DOTS_MODE_CALCONLY);
@@ -2390,15 +2389,6 @@ class Eval { //implements Runnable {
       case Token.molecule:
         viewer.calcSelectedMonomersCount();
         break;
-      case Token.user:
-        notImplemented(itoken);
-        return;
-      case Token.colorRGB:
-        int argb = getArgbParam(itoken);
-        colorvalue = argb == 0 ? null : new Integer(argb);
-        break;
-      default:
-        invalidArgument();
       }
       viewer.loadShape(shapeType);
       viewer.setShapeProperty(shapeType, colorOrBgcolor + modifier, colorvalue);

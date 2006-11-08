@@ -821,12 +821,8 @@ public class Viewer extends JmolViewer {
     colorManager.setSpecularPercent(specularPercent);
   }
 
-  short getColixAtom(Atom atom) {
-    return colorManager.getColixAtom(atom);
-  }
-
-  short getColixAtomPalette(Atom atom, String palette) {
-    return colorManager.getColixAtomPalette(atom, palette);
+  short getColixAtomPalette(Atom atom, int pid) {
+    return colorManager.getColixAtomPalette(atom, pid);
   }
 
   short getColixHbondType(short order) {

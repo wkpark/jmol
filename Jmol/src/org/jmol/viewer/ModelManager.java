@@ -1369,19 +1369,25 @@ String getAtomInfoChime(int i) {
     Hashtable info = new Hashtable();
     if (frame == null)
       return info;
+    StringBuffer commands = new StringBuffer();
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];
       if (shape != null) {
         String shapeType = JmolConstants.shapeClassBases[i];
         //shapeinfo.put("index", new Integer(i));
         //shapeinfo.put("myVisibilityFlag", new Integer(shape.myVisibilityFlag));
-        if ("Draw,Dipoles,Isosurface,LcaoOrbital,MolecularOrbital".indexOf(shapeType) >= 0) {
+        String cmd = shape.getShapeState();
+        if (cmd != null)
+          commands.append(cmd);
+        else if ("Draw,Dipoles,Isosurface,LcaoOrbital,MolecularOrbital".indexOf(shapeType) >= 0) {
           Hashtable shapeinfo = new Hashtable();
           shapeinfo.put("obj", shape.getShapeDetail());
           info.put(shapeType, shapeinfo);
         }
       }
     }
+    if (commands.length() > 0)
+      info.put("shapeCommands", commands.toString());
     return info;
   }
   

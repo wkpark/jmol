@@ -1496,6 +1496,8 @@ final public class Graphics3D {
   public final static short getColix(Object obj) {
     if (obj == null)
       return 0;
+    if (obj instanceof Byte)
+      return Graphics3D.UNRECOGNIZED;
     if (obj instanceof Integer)
       return getColix(((Integer)obj).intValue());
     if (obj instanceof String)

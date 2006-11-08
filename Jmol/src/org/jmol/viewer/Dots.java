@@ -232,10 +232,11 @@ class Dots extends Shape {
         return;
       Logger.debug("Dots.setProperty('colorConvex')");
       short colix = Graphics3D.getColix(value);
+      int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i))
           colixesConvex[i] = ((colix != Graphics3D.UNRECOGNIZED) ? colix
-              : viewer.getColixAtomPalette(atoms[i], (String) value));
+              : viewer.getColixAtomPalette(atoms[i], pid));
       return;
     }
   }

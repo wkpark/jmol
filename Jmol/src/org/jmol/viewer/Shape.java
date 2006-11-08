@@ -31,6 +31,8 @@ import org.jmol.g3d.*;
 import javax.vecmath.Point3f;
 import java.util.BitSet;
 import java.util.Vector;
+import java.util.Hashtable;
+import java.util.Enumeration;
 
 abstract class Shape {
 
@@ -39,6 +41,8 @@ abstract class Shape {
   Graphics3D g3d;
   int shapeID;
   int myVisibilityFlag;
+  BitSet bsSizeSet;
+  BitSet bsColixSet;
   
   final void setViewerG3dFrame(Viewer viewer, Graphics3D g3d, Frame frame, int shapeID) {
     this.viewer = viewer;
@@ -87,6 +91,37 @@ abstract class Shape {
     return null;
   }
   
+  String getShapeState() {
+    return null;
+  }
+  
   void setVisibilityFlags(BitSet bs) {
+  }
+  
+  static void setStateInfo(Hashtable temp, int i, String key) {
+    if (!temp.containsKey(key)) {
+      BitSet bs = new BitSet();
+      bs.set(i);
+      temp.put(key, bs);
+    }
+    ((BitSet) (temp.get(key))).set(i);
+  }
+
+  static String getShapeCommands(Hashtable temp) {
+    StringBuffer s = new StringBuffer();
+    String setPrev = null;
+    Enumeration e = temp.keys();
+    while (e.hasMoreElements()) {
+      String key = (String) e.nextElement();
+      String set = StateManager.encodeBitset((BitSet) temp.get(key));
+      if (!set.equals(setPrev)) {
+        s.append("select (");
+        s.append(set);
+        s.append(");");
+      }
+      setPrev = set;
+      s.append(key + ";");
+    }
+    return s.toString();
   }
 }

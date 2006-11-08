@@ -125,49 +125,54 @@ class ColorManager {
   /**
    * black or white, whichever contrasts more with the current background
    *
+   *
    * @return black or white colix value
    */
-  public short getColixBackgroundContrast() {
+  short getColixBackgroundContrast() {
+    //not implemented
     return colixBackgroundContrast;
   }
 
-  short getColixAtom(Atom atom) {
-    return getColixAtomPalette(atom, "cpk");
-  }
-
-  short getColixCpkAtomNumber(short id) {
-  if (id < 256)
-    return g3d.getChangableColix(id, argbsCpk[id]);
-  id = (short) JmolConstants.altElementIndexFromNumber(id);
-  return g3d.getChangableColix(
-      (short) (JmolConstants.elementNumberMax + id), altArgbsCpk[id]);
-  }
-
-  short getColixAtomPalette(Atom atom, String palette) {
+  short getColixAtomPalette(Atom atom, int pid) {
     int argb = 0;
     int index;
+    short id;
     Frame frame;
-    if ("cpk" == palette) {
+    float lo, hi;
+    switch (pid) {
+    case JmolConstants.PALETTE_JMOL:
+      id = atom.getAtomicAndIsotopeNumber();
+      argb = getJmolOrRasmolArgb(id, Token.jmol);
+      break;
+    case JmolConstants.PALETTE_RASMOL:
+      id = atom.getAtomicAndIsotopeNumber();
+      argb = getJmolOrRasmolArgb(id, Token.rasmol);
+      break;
+    case JmolConstants.PALETTE_NONE:
+    case JmolConstants.PALETTE_CPK:
       // Note that CPK colors can be changed based upon user preference
       // therefore, a changable colix is allocated in this case
-      short id = atom.getAtomicAndIsotopeNumber();
-      return getColixCpkAtomNumber(id);
-    }
-    if ("partialcharge" == palette) {
+      id = atom.getAtomicAndIsotopeNumber();
+      if (id < 256)
+        return g3d.getChangableColix(id, argbsCpk[id]);
+      id = (short) JmolConstants.altElementIndexFromNumber(id);
+      return g3d.getChangableColix((short) (JmolConstants.elementNumberMax + id),
+          altArgbsCpk[id]);
+    case JmolConstants.PALETTE_PARTIAL_CHARGE:
       // This code assumes that the range of partial charges is [-1, 1].
       index = quantize(atom.getPartialCharge(), -1, 1,
           JmolConstants.PARTIAL_CHARGE_RANGE_SIZE);
       return g3d.getChangableColix(
           (short) (JmolConstants.PARTIAL_CHARGE_COLIX_RED + index),
           JmolConstants.argbsRwbScale[index]);
-    } else if ("formalcharge" == palette) {
+    case JmolConstants.PALETTE_FORMAL_CHARGE:
       index = atom.getFormalCharge() - JmolConstants.FORMAL_CHARGE_MIN;
       return g3d.getChangableColix(
           (short) (JmolConstants.FORMAL_CHARGE_COLIX_RED + index),
           JmolConstants.argbsFormalCharge[index]);
-    } else if ("temperature" == palette || "fixedtemperature" == palette) {
-      float lo, hi;
-      if ("temperature" == palette) {
+    case JmolConstants.PALETTE_TEMP:
+    case JmolConstants.PALETTE_FIXEDTEMP:
+      if (pid == JmolConstants.PALETTE_TEMP) {
         frame = viewer.getFrame();
         lo = frame.getBfactor100Lo();
         hi = frame.getBfactor100Hi();
@@ -179,25 +184,30 @@ class ColorManager {
           JmolConstants.argbsRwbScale.length);
       index = JmolConstants.argbsRwbScale.length - 1 - index;
       argb = JmolConstants.argbsRwbScale[index];
-    } else if ("surfacedistance" == palette) {
-      float hi = viewer.getFrame().getSurfaceDistanceMax();
+      break;
+    case JmolConstants.PALETTE_SURFACE:
+      hi = viewer.getFrame().getSurfaceDistanceMax();
       index = quantize(atom.getSurfaceDistance(), 0, hi,
           JmolConstants.argbsRwbScale.length);
       //index = JmolConstants.argbsRwbScale.length - 1 - index;
       argb = JmolConstants.argbsRwbScale[index];
-    } else if ("structure" == palette) {
+      break;
+    case JmolConstants.PALETTE_STRUCTURE:
       argb = JmolConstants.argbsStructure[atom.getProteinStructureType()];
-    } else if ("amino" == palette) {
+      break;
+    case JmolConstants.PALETTE_AMINO:
       index = atom.getGroupID();
       if (index < 0 || index >= JmolConstants.GROUPID_AMINO_MAX)
         index = 0;
       argb = JmolConstants.argbsAmino[index];
-    } else if ("shapely" == palette) {
+      break;
+    case JmolConstants.PALETTE_SHAPELY:
       index = atom.getGroupID();
       if (index < 0 || index >= JmolConstants.GROUPID_SHAPELY_MAX)
         index = 0;
       argb = JmolConstants.argbsShapely[index];
-    } else if ("chain" == palette) {
+      break;
+    case JmolConstants.PALETTE_CHAIN:
       int chain = atom.getChainID() & 0x1F;
       if (chain < 0)
         chain = 0;
@@ -205,7 +215,8 @@ class ColorManager {
         chain = chain % JmolConstants.argbsChainAtom.length;
       argb = (atom.isHetero() ? JmolConstants.argbsChainHetero
           : JmolConstants.argbsChainAtom)[chain];
-    } else if ("group" == palette) {
+      break;
+    case JmolConstants.PALETTE_GROUP:
       // viewer.calcSelectedGroupsCount() must be called first ...
       // before we call getSelectedGroupCountWithinChain()
       // or getSelectedGropuIndexWithinChain
@@ -217,20 +228,23 @@ class ColorManager {
           JmolConstants.argbsRoygbScale.length);
       index = JmolConstants.argbsRoygbScale.length - 1 - index;
       argb = JmolConstants.argbsRoygbScale[index];
-    } else if ("monomer" == palette) {
+      break;
+    case JmolConstants.PALETTE_MONOMER:
       // viewer.calcSelectedMonomersCount() must be called first ...
       index = quantize(atom.getSelectedMonomerIndexWithinPolymer(), 0, atom
           .getSelectedMonomerCountWithinPolymer() - 1,
           JmolConstants.argbsRoygbScale.length);
       index = JmolConstants.argbsRoygbScale.length - 1 - index;
       argb = JmolConstants.argbsRoygbScale[index];
-    } else if ("molecule" == palette) {
+      break;
+    case JmolConstants.PALETTE_MOLECULE:
       frame = viewer.getFrame();
       index = quantize(frame.getMoleculeIndex(atom.atomIndex), 0, frame
           .getMoleculeCountInModel(atom.modelIndex) - 1,
           JmolConstants.argbsRoygbScale.length);
       argb = JmolConstants.argbsRoygbScale[index];
-    } else if ("altloc" == palette) {
+      break;
+    case JmolConstants.PALETTE_ALTLOC:
       frame = viewer.getFrame();
       //very inefficient!
       index = quantize(frame.getAltLocIndexInModel(atom.modelIndex,
@@ -238,7 +252,8 @@ class ColorManager {
           .getAltLocCountInModel(atom.modelIndex),
           JmolConstants.argbsRoygbScale.length);
       argb = JmolConstants.argbsRoygbScale[index];
-    } else if ("insertion" == palette) {
+      break;
+    case JmolConstants.PALETTE_INSERTION:
       frame = viewer.getFrame();
       //very inefficient!
       index = quantize(frame.getInsertionCodeIndexInModel(atom.modelIndex, atom
@@ -246,15 +261,9 @@ class ColorManager {
           .getInsertionCountInModel(atom.modelIndex),
           JmolConstants.argbsRoygbScale.length);
       argb = JmolConstants.argbsRoygbScale[index];
-    } else {
-      Logger.error("ColorManager.getColixAtomPalette:"
-          + " unrecognized color palette:" + palette);
-      return Graphics3D.HOTPINK;
+      break;
     }
-    // FIXME I think that we should assert that argb != 0 here
-    if (argb == 0)
-      return Graphics3D.HOTPINK;
-    return Graphics3D.getColix(argb);
+    return (argb == 0 ? Graphics3D.HOTPINK : Graphics3D.getColix(argb));
   }
 
   int quantize(float val, float lo, float hi, int segmentCount) {
@@ -381,30 +390,34 @@ class ColorManager {
     flushCaches();
   }
 
-  void setElementArgb(int id, int argb) {
+  int getJmolOrRasmolArgb(int id, int argb) {
     if (argb == Token.jmol) {
-      if (argbsCpk == JmolConstants.argbsCpk)
-        return;
-      if (id < 256)
-        argb = JmolConstants.argbsCpk[id];
-      else 
-        argb = JmolConstants.altArgbsCpk[JmolConstants.altElementIndexFromNumber(id)];      
-    } else if (argb == Token.rasmol) {
-      if (id < 256) {
-        argb = JmolConstants.argbsCpk[id];
-        for (int i = JmolConstants.argbsCpkRasmol.length; --i >= 0; ) {
-          int argbRasmol = JmolConstants.argbsCpkRasmol[i];
-          int atomNo = argbRasmol >> 24;
-          if (atomNo == id) {
-            argb = argbRasmol | 0xFF000000;
-            break;
-          }
+      return (id < 256 ? JmolConstants.argbsCpk[id]
+          : JmolConstants.altArgbsCpk[JmolConstants
+              .altElementIndexFromNumber(id)]);
+    }
+    if (argb == Token.rasmol) {
+      if (id >= 256)
+        return JmolConstants.altArgbsCpk[JmolConstants
+            .altElementIndexFromNumber(id)];
+      argb = JmolConstants.argbsCpk[id];
+      for (int i = JmolConstants.argbsCpkRasmol.length; --i >= 0;) {
+        int argbRasmol = JmolConstants.argbsCpkRasmol[i];
+        int atomNo = argbRasmol >> 24;
+        if (atomNo == id) {
+          argb = argbRasmol | 0xFF000000;
+          break;
         }
-      } else {
-        argb = JmolConstants.altArgbsCpk[JmolConstants.altElementIndexFromNumber(id)];
       }
-    } else
-      argb |= 0xFF000000;
+      return argb;
+    }
+    return argb |= 0xFF000000;
+  }
+  
+  void setElementArgb(int id, int argb) {
+    if (argb == Token.jmol && argbsCpk == JmolConstants.argbsCpk)
+      return;
+    argb = getJmolOrRasmolArgb(id, argb);
     if (argbsCpk == JmolConstants.argbsCpk)
       copyArgbsCpk();
     if (id < 256) {

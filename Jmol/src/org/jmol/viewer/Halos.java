@@ -27,41 +27,12 @@ package org.jmol.viewer;
 
 import java.util.BitSet;
 
-import org.jmol.g3d.Graphics3D;
-
-class Halos extends Shape {
-
-  short[] mads;
-  short[] colixes;
-
-  void setSize(int size, BitSet bsSelected) {
-    Atom[] atoms = frame.atoms;
-    for (int i = frame.atomCount; --i >= 0;)
-      if (bsSelected.get(i)) {
-        if (mads == null)
-          mads = new short[frame.atomCount];
-        Atom atom = atoms[i];
-        mads[i] = atom.convertEncodedMad(size);
-      }
-  }
+class Halos extends AtomShape {
 
   void setProperty(String propertyName, Object value, BitSet bs) {
-    int atomCount = frame.atomCount;
-    Atom[] atoms = frame.atoms;
-    if ("color" == propertyName) {
-      short colix = Graphics3D.getColix(value);
-      for (int i = atomCount; --i >= 0;)
-        if (bs.get(i)) {
-          if (colixes == null)
-            colixes = new short[atomCount];
-          colixes[i] = ((colix != Graphics3D.UNRECOGNIZED) ? colix : viewer
-              .getColixAtomPalette(atoms[i], (String) value));
-        }
+    if ("translucency" == propertyName)
       return;
-    }
-    if ("translucency" == propertyName) {
-      return;
-    }
+    super.setProperty(propertyName, value, bs);
   }
 
   void setVisibilityFlags() {
@@ -72,16 +43,6 @@ class Halos extends Shape {
       boolean isVisible = bsSelected != null && bsSelected.get(i)
           || (mads != null && mads[i] != 0);
       atom.setShapeVisibility(myVisibilityFlag, isVisible);
-    }
-  }
-
-  void setModelClickability() {
-    if (mads == null)
-      return;
-    for (int i = frame.atomCount; --i >= 0;) {
-      Atom atom = frame.atoms[i];
-      if ((atom.shapeVisibilityFlags & myVisibilityFlag) == 0)
-        atom.clickabilityFlags |= myVisibilityFlag;
     }
   }
 }

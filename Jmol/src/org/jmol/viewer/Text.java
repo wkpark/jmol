@@ -267,6 +267,16 @@ class Text {
     return false;
   }
 
+  static String getAlignment(int align) {
+    switch(align & 3) {
+    case CENTER:
+      return "center";
+    case RIGHT:
+      return "right";
+    }
+    return "left";
+  }
+  
   boolean setAlignment(int align) {
     this.align = align;
     recalc();

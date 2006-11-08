@@ -34,19 +34,22 @@ class Labels extends Shape {
 
   Atom[] atoms;
   String[] strings;
+  String[] formats;
   short[] colixes;
   short[] bgcolixes;
   byte[] fids;
   int[] offsets;
   Hashtable atomLabels = new Hashtable();
   Text text;
+  
+  BitSet bsFontSet, bsBgColixSet;
 
   int defaultOffset;
   byte defaultFontId;
   short defaultColix;
   short defaultBgcolix;
   int defaultAlignment;
-  String defaultPalette;
+  int defaultPaletteID;
 
   byte zeroFontId;
   int zeroOffset;
@@ -68,30 +71,21 @@ class Labels extends Shape {
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
     if ("color" == propertyName) {
       int n = 0;
-      String palette = null;
+      int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
       short colix = Graphics3D.getColix(value);
-      if (colix == Graphics3D.UNRECOGNIZED)
-        palette = (String) value;
       for (int i = frame.atomCount; --i >= 0;)
         if (bsSelected.get(i))
-          setColix(i, colix, palette, n++);
+          setColix(i, colix, pid, n++);
       if (n == 0 || !defaultsOnlyForNone) {
         defaultColix = colix;
-        defaultPalette = palette;
+        defaultPaletteID = pid;
       }
+      return;
     }
-    // no translucency
-    if ("bgcolor" == propertyName) {
-      short bgcolix = Graphics3D.getColix(value);
-      int n = 0;
-      for (int i = frame.atomCount; --i >= 0;)
-        if (bsSelected.get(i))
-          setBgcolix(i, bgcolix, n++);
-      if (n == 0 || !defaultsOnlyForNone)
-        defaultBgcolix = bgcolix;
-    }
-
+    
     if ("label" == propertyName) {
+      if (bsSizeSet == null)
+        bsSizeSet = new BitSet();
       String strLabel = (String) value;
       for (int i = frame.atomCount; --i >= 0;)
         if (bsSelected.get(i)) {
@@ -100,14 +94,18 @@ class Labels extends Shape {
           atom.setShapeVisibility(myVisibilityFlag, label != null);
           if (strings == null || i >= strings.length)
             strings = ArrayUtil.ensureLength(strings, i + 1);
+          if (formats == null || i >= formats.length)
+            formats = ArrayUtil.ensureLength(formats, i + 1);
           strings[i] = label;
+          formats[i] = strLabel;
+          bsSizeSet.set(i, (strLabel != null));
           text = (Text) atomLabels.get(atoms[i]);
           if (text != null)
             text.setText(label);
           if (defaultOffset != zeroOffset)
             setOffsets(i, defaultOffset, -1);
           if (defaultColix != 0)
-            setColix(i, defaultColix, defaultPalette, -1);
+            setColix(i, defaultColix, defaultPaletteID, -1);
           if (defaultBgcolix != 0)
             setBgcolix(i, defaultBgcolix, -1);
           if (defaultFontId != zeroFontId)
@@ -115,6 +113,24 @@ class Labels extends Shape {
         }
       return;
     }
+
+    // no translucency
+    if ("bgcolor" == propertyName) {
+      if (bsBgColixSet == null)
+        bsBgColixSet = new BitSet();
+
+      short bgcolix = Graphics3D.getColix(value);
+      int n = 0;
+      for (int i = frame.atomCount; --i >= 0;)
+        if (bsSelected.get(i))
+          setBgcolix(i, bgcolix, n++);
+      if (n == 0 || !defaultsOnlyForNone)
+        defaultBgcolix = bgcolix;
+      return;
+    }
+
+    if (bsFontSet == null)
+      bsFontSet = new BitSet();
 
     if ("fontsize" == propertyName) {
       int fontsize = ((Integer) value).intValue();
@@ -175,6 +191,7 @@ class Labels extends Shape {
           setAlignment(i, alignment, n++);
       if (n == 0 || !defaultsOnlyForNone)
         defaultAlignment = alignment;
+      return;
     }
 
     if ("toggleLabel" == propertyName) {
@@ -185,25 +202,33 @@ class Labels extends Shape {
           if (strings != null && strings.length > atomIndex
               && strings[atomIndex] != null) {
             strings[atomIndex] = null;
+            formats[atomIndex] = null;
+            bsSizeSet.clear(atomIndex);
           } else {
             String strLabel = viewer.getStandardLabelFormat();
             strings = ArrayUtil.ensureLength(strings, atomIndex + 1);
             strings[atomIndex] = atom.formatLabel(strLabel);
+            formats[atomIndex] = strLabel;
+            bsSizeSet.set(atomIndex);
           }
           atom.setShapeVisibility(myVisibilityFlag, strings[atomIndex] != null);
           return;
         }
+      return;
     }
   }
 
-  void setColix(int i, short colix, String palette, int n) {
+  void setColix(int i, short colix, int pid, int n) {
     if (colixes == null || i >= colixes.length) {
       if (colix == 0)
         return;
       colixes = ArrayUtil.ensureLength(colixes, i + 1);
     }
+    if (bsColixSet == null)
+      bsColixSet = new BitSet();
     colixes[i] = ((colix != Graphics3D.UNRECOGNIZED) ? colix : viewer
-        .getColixAtomPalette(frame.getAtomAt(i), palette));
+        .getColixAtomPalette(frame.getAtomAt(i), pid));
+    bsColixSet.set(i, colixes[i] != 0);
     text = (Text) atomLabels.get(atoms[i]);
     if (text != null)
       text.setColix(colixes[i]);
@@ -216,6 +241,7 @@ class Labels extends Shape {
       bgcolixes = ArrayUtil.ensureLength(bgcolixes, i + 1);
     }
     bgcolixes[i] = bgcolix;
+    bsBgColixSet.set(i, bgcolix != 0);
     text = (Text) atomLabels.get(atoms[i]);
     if (text != null)
       text.setBgColix(bgcolix);
@@ -252,6 +278,7 @@ class Labels extends Shape {
       fids = ArrayUtil.ensureLength(fids, i + 1);
     }
     fids[i] = fid;
+    bsFontSet.set(i);
     text = (Text) atomLabels.get(atoms[i]);
     if (text != null)
       text.setFid(fid);  
@@ -266,4 +293,32 @@ class Labels extends Shape {
         frame.atoms[i].clickabilityFlags |= myVisibilityFlag;
     }
   }
+  
+  String getShapeState() {
+    Hashtable temp = new Hashtable();
+    for (int i = frame.atomCount; --i >= 0;) {
+      if (bsSizeSet == null || !bsSizeSet.get(i))
+        continue;
+      setStateInfo(temp, i, "label " + formats[i]);
+      if (bsColixSet != null && bsColixSet.get(i))
+        setStateInfo(temp, i, "color label [x"
+            + viewer.getHexColorFromIndex(colixes[i]) + "]");
+      if (bsBgColixSet != null && bsBgColixSet.get(i))
+        setStateInfo(temp, i, "background label [x"
+            + viewer.getHexColorFromIndex(bgcolixes[i]) + "]");
+      if (offsets != null && offsets.length > i) {
+        setStateInfo(temp, i, "set labelOffset "
+            + Text.getXOffset(offsets[i] >> 2) + " "
+            + (-Text.getYOffset(offsets[i] >> 2)));
+        setStateInfo(temp, i, "set labelAlignment "
+            + Text.getAlignment(offsets[i]));
+      }
+      if (bsFontSet != null && bsFontSet.get(i)) {
+        Font3D font = Font3D.getFont3D(fids[i]);
+        setStateInfo(temp, i, "font label " + font.fontSize + " "
+            + font.fontFace + " " + font.fontStyle);
+      }
+    }
+    return getShapeCommands(temp);
+  }  
 }

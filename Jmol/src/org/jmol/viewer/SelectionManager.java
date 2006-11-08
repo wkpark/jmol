@@ -44,7 +44,7 @@ class SelectionManager {
 
   private final BitSet bsNull = new BitSet();
   final BitSet bsSelection = new BitSet();
-  final BitSet bsSubset = new BitSet(); // only a copy of the Eval subset
+  BitSet bsSubset; // only a copy of the Eval subset
   // this is a tri-state. the value -1 means unknown
   final static int TRUE = 1;
   final static int FALSE = 0;
@@ -212,9 +212,7 @@ class SelectionManager {
     //can all use it directly, and so that all these
     //operations still work properly on the full set of atoms
     
-    bsSubset.and(bsNull);
-    if (bs != null)
-      bsSubset.or(bs);
+    bsSubset = bs;
   }
 
   boolean isInSelectionSubset(int atomIndex) {

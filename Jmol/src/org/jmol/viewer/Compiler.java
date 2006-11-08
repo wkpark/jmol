@@ -28,6 +28,8 @@ import org.jmol.util.CommandHistory;
 import org.jmol.g3d.Graphics3D;
 
 import java.util.Vector;
+import java.util.BitSet;
+
 import javax.vecmath.Point3f;
 
 class Compiler {
@@ -305,6 +307,7 @@ class Compiler {
           break;
         case Token.restrict:
         case Token.select:
+        case Token.display:
           if (tok != Token.identifier && (tok & Token.expression) == 0)
             return invalidExpressionToken(ident);
           break;
@@ -1127,6 +1130,10 @@ class Compiler {
       if (! tokenNext(Token.rightparen))
         return rightParenthesisExpected();
       return true;
+    case Token.leftbrace:
+      if (! bitset())
+        return false;
+      return true;
     }
     return unrecognizedExpressionToken();
   }
@@ -1141,6 +1148,37 @@ class Compiler {
     return 0;
   }
 
+  boolean bitset() {
+    Token token = tokenNext();
+    int iPrev = -1;
+    BitSet bs = new BitSet();
+    out: while ((token = tokenNext()) != null) {
+      switch (token.tok) {
+        case Token.rightbrace:
+        case Token.integer:
+          if (iPrev >= 0)
+            bs.set(iPrev);
+          if (token.tok == Token.rightbrace)
+            break out;
+          iPrev = token.intValue;
+          break;
+        case Token.colon:
+          if (iPrev >= 0) {
+            token = tokenNext();
+            if (token.tok != Token.integer)
+              return invalidExpressionToken(token.toString());
+            for (int i = token.intValue; i >= iPrev; i--)
+              bs.set(i);
+            break;
+          }
+            // fall through
+          default:
+            return invalidExpressionToken(token.toString());
+      }      
+    }
+    return addTokenToPostfix(new Token(Token.bitset, bs));
+  }  
+  
   boolean clauseComparator() {
     Token tokenAtomProperty = tokenNext();
     Token tokenComparator = tokenNext();

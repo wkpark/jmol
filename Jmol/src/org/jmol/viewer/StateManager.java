@@ -121,6 +121,72 @@ class StateManager {
     return strLabel;
   }
 
+  static String encodeBitset(BitSet bs) {
+    if (bs == null)
+      return "{}";
+    StringBuffer s = new StringBuffer("{");
+    int imax = bs.size();
+    int iLast = -1;
+    int iFirst = -2;
+    int i = -1;
+    while (++i <= imax) {
+      boolean isSet = bs.get(i);
+      if (i == imax || iLast >= 0 && !isSet) {
+        if (iLast >= 0 && iFirst != iLast)
+          s.append(":" + iLast);
+        if (i == imax)
+          return s + " }";
+        iLast = -1;
+      }
+      if (bs.get(i)) {
+        if (iLast < 0) {
+          iFirst = i;
+          s.append(" " + i);
+        }
+        iLast = i;
+      }
+    }
+    return "{}"; // impossible return
+  }
+ 
+  static BitSet decodeBitset (String strBitset) {
+    BitSet bs = new BitSet();
+    int len = strBitset.length();
+    int iPrev = -1;
+    int iThis = -2;
+    char ch;
+    if (len < 3)
+      return bs;
+    for (int i = 0; i < len; i++) {
+      switch (ch = strBitset.charAt(i)) {
+      case '}':
+      case '{':
+      case ' ':
+        if (iThis < 0)
+          break;
+        if (iPrev < 0) 
+          iPrev = iThis;
+        for (int j = iPrev; j<= iThis; j++)
+          bs.set(j);
+        iPrev = -1;
+        iThis = -2;
+        break;
+      case ':':
+        iPrev = iThis;
+        iThis = -2;
+        break;
+      default:
+        if (Character.isDigit(ch)) {
+          if (iThis < 0)
+            iThis = 0;
+          iThis = (iThis << 3) + (iThis << 1) + (ch - '0');
+        }
+      }
+    }
+    System.out.println(bs.toString());
+    return bs;
+  }
+  
   String listSavedStates() {
     String names = "";
     Enumeration e = saved.keys();

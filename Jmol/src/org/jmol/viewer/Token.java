@@ -426,6 +426,7 @@ class Token {
   final static int back         = misc | 68;
   final static int top          = misc | 69;
   final static int bottom       = misc | 70;
+  final static int bitset       = misc | 71;
   
  
   final static int amino       = predefinedset |  0;

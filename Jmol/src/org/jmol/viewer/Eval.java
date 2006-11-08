@@ -800,6 +800,9 @@ class Eval { //implements Runnable {
         strbufLog.append(token.value);
         strbufLog.append(']');
         continue;
+      case Token.bitset:
+        strbufLog.append(StateManager.encodeBitset((BitSet)token.value));
+        continue;
       case Token.spec_atom:
         strbufLog.append('.');
         break;
@@ -956,6 +959,9 @@ class Eval { //implements Runnable {
         stack[sp++] = viewer
             .getAtomBits("SpecName", (String) instruction.value);
         break;
+      case Token.bitset:
+        stack[sp++] = (BitSet)instruction.value;
+        break;
       case Token.spec_alternate:
         stack[sp++] = viewer.getAtomBits("SpecAlternate",
             (String) instruction.value);
@@ -1009,6 +1015,8 @@ class Eval { //implements Runnable {
       evalError(GT._("atom expression compiler error - stack over/underflow"));
     if (!isSubsetDefinition && bsSubset != null)
       stack[0].and(bsSubset);
+    System.out.println(StateManager.encodeBitset(stack[0]));
+    System.out.println(StateManager.decodeBitset(StateManager.encodeBitset(stack[0])));
     return stack[0];
   }
 
@@ -6085,6 +6093,5 @@ class Eval { //implements Runnable {
         str += "\n           File:" + fileName + " Line number:" + linenumber;
       return str;
     }
-  }
-
+  }  
 }

@@ -1655,7 +1655,6 @@ class TransformManager {
     rotationCenterDefault = viewer.getBoundBoxCenter();
     setFixedRotationCenter(rotationCenterDefault);
     rotationRadius = rotationRadiusDefault = viewer.calcRotationRadius(rotationCenterDefault);
-    windowCentered = true;
   }
 
   Point3f getRotationCenter() {

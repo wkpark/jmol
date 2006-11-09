@@ -241,6 +241,7 @@ public class Viewer extends JmolViewer {
   void reset() {
     //Eval.reset()
     //initializeModel
+    setBooleanProperty("windowCentered", true);
     transformManager.homePosition();
     if (modelManager.modelsHaveSymmetry())
       stateManager.setCrystallographicDefaults();
@@ -2967,16 +2968,20 @@ public class Viewer extends JmolViewer {
         break;
       }
       if (key.equalsIgnoreCase("axesWindow")) {
-        setAxesModeMolecular(false);
-        break;
+        setBooleanProperty("axesMolecular", !value);
+        return;
       }
       if (key.equalsIgnoreCase("axesMolecular")) {
+        if (value)
+          setBooleanProperty("axesUnitCell", false);
         setAxesModeMolecular(value);
         break;
       }
       if (key.equalsIgnoreCase("axesUnitCell")) {
+        if (value)
+          setBooleanProperty("axesMolecular", false);
         setAxesModeUnitCell(value);
-        break;
+        return;
       }
       if (key.equalsIgnoreCase("displayCellParameters")) {
         setDisplayCellParameters(value);

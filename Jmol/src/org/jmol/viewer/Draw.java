@@ -731,7 +731,7 @@ class Draw extends MeshCollection {
         continue;
       str.append(getVertexList(mesh, iModel, nVertices));
     }
-    str.append(";" + getColorCommand("draw", mesh.colix)+";");
+    str.append(";\n" + getColorCommand("draw", mesh.colix)+";");
     
     return str.toString();
   }
@@ -749,27 +749,30 @@ class Draw extends MeshCollection {
   }
   
   String getDrawCommand(Mesh mesh, int iModel) {
-    String str = "";
+    StringBuffer str = new StringBuffer();
+    int modelCount = viewer.getModelCount();
     if (iModel < 0) {
-      int modelCount = viewer.getModelCount();
       for (int i = 0; i < modelCount; i++)
-        str += getDrawCommand(mesh, i);
-      return str;
+        str.append(getDrawCommand(mesh, i));
+      return str.toString();
     }
     int nVertices = 0;
-    str += "frame " + viewer.getModelNumber(iModel) + ";draw "
-        + mesh.thisID + "_" + (iModel + 1);
+    int n = viewer.getModelNumber(iModel);
+    if (modelCount > 1)
+      str.append("frame " + n + ";");
+    str.append("draw " + mesh.thisID
+        + (mesh.drawType == Mesh.DRAW_MULTIPLE ? "_" + n : ""));
     switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
     case Mesh.DRAW_NONE:
       return "";
     case Mesh.DRAW_ARROW:
-      str += " ARROW";
+      str.append(" ARROW");
       break;
     case Mesh.DRAW_CIRCLE:
-      str += " CIRCLE"; //not yet implemented
+      str.append(" CIRCLE"); //not yet implemented
       break;
     case Mesh.DRAW_CURVE:
-      str += " CURVE";
+      str.append(" CURVE");
       break;
     case Mesh.DRAW_LINE:
       nVertices++;
@@ -779,8 +782,9 @@ class Draw extends MeshCollection {
     case Mesh.DRAW_TRIANGLE:
     case Mesh.DRAW_PLANE:
     }
-    str += getVertexList(mesh, iModel, nVertices);
-    return str + ";";
+    str.append(getVertexList(mesh, iModel, nVertices));
+    str.append(";\n" + getColorCommand("draw", mesh.colix));
+    return str.toString();
   }
 
   Vector getShapeDetail() {

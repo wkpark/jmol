@@ -37,6 +37,9 @@ import javax.vecmath.Point3f;
 class TextShape extends Shape {
 
 
+  final static int ECHO = 1;
+  final static int HOVER = 2;
+  int myType;
   Hashtable texts = new Hashtable();
   Text currentText;
   Font3D currentFont;
@@ -44,9 +47,6 @@ class TextShape extends Shape {
   Object currentBgColor;
   boolean isAll;
   
-  void initShape() {
-  }
-
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
 
     Logger.debug("TextShape.setProperty(" + propertyName + "," + value + ")");

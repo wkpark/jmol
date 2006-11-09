@@ -1252,12 +1252,10 @@ public class Viewer extends JmolViewer {
   }
   
   void echoMessage(String msg) {
-    Font3D font3d = getFont3D("SansSerif", "Plain", 9);
     int iShape = JmolConstants.SHAPE_ECHO;
     loadShape(iShape);
-    setShapeProperty(iShape, "font", font3d);
-    setShapeProperty(iShape, "target", "top");
-    setShapeProperty(iShape, "target", "left");
+    setShapeProperty(iShape, "font", getFont3D("SansSerif", "Plain", 9));
+    setShapeProperty(iShape, "target", "error");
     setShapeProperty(iShape, "text", msg);
   }
   

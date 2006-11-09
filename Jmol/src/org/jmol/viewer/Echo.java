@@ -29,6 +29,7 @@ import org.jmol.util.Logger;
 import org.jmol.g3d.*;
 
 import java.util.BitSet;
+import java.util.Enumeration;
 
 class Echo extends TextShape {
 
@@ -49,6 +50,7 @@ class Echo extends TextShape {
   private final static short COLOR = Graphics3D.RED;
   
   void initShape() {
+    myType = ECHO;
     setProperty("target", "top", null);
   }
 
@@ -88,6 +90,14 @@ class Echo extends TextShape {
       }
     }
     super.setProperty(propertyName, value, null);
+  }
+  
+  String getShapeState() {
+    StringBuffer s = new StringBuffer();
+    Enumeration e = texts.elements();
+    while (e.hasMoreElements())
+      s.append(((Text) e.nextElement()).getState());
+    return s.toString();
   }
 }
 

@@ -31,11 +31,15 @@ import org.jmol.g3d.Graphics3D;
 
 class Text {
 
+  final static String[] hAlignNames = {"xy", "left", "center", "right", "xyz"};
+
   final static int XY = 0;
   final static int LEFT = 1;
   final static int CENTER = 2;
   final static int RIGHT = 3;
   final static int XYZ = 4;
+
+  final static String[] vAlignNames = {"xy", "top", "bottom", "middle"};
 
   final static int TOP = 1;
   final static int BOTTOM = 2;
@@ -46,7 +50,6 @@ class Text {
   Point3f xyz;
   String target;
   String text;
-  String thisID;
   
   String[] lines;
   int align;
@@ -63,7 +66,7 @@ class Text {
   boolean adjustForWindow;
   int boxX, boxY, boxWidth, boxHeight;
   
-  Font3D font3d;
+  Font3D font;
   FontMetrics fm;
   byte fid;
   int ascent;
@@ -78,30 +81,32 @@ class Text {
   int textHeight;
 
   // for labels and hover
-  Text(Graphics3D g3d, Font3D font3d, String text, short colix,
+  Text(Graphics3D g3d, Font3D font, String text, short colix,
       short bgcolix, int offsetX, int offsetY, int z, int zSlab, int textAlign) {
     windowWidth = g3d.getRenderWidth();
     windowHeight = g3d.getRenderHeight();
     atomBased = true;
     this.g3d = g3d;
-    this.text = text;
+    this.text = fixText(text);
     this.colix = colix;
     this.bgcolix = bgcolix;
     setXYZs(offsetX, offsetY, z, zSlab);
     align = textAlign;
-    setFont(font3d);
+    setFont(font);
   }
 
   // for echo
-  Text(Graphics3D g3d, Font3D font3d, String target, short colix, int valign, int align) {
+  Text(Graphics3D g3d, Font3D font, String target, short colix, int valign, int align) {
     windowWidth = g3d.getRenderWidth();
     windowHeight = g3d.getRenderHeight();
     atomBased = false;
     this.g3d = g3d;
     this.target = target;
+    if (target.equals("error"))
+      valign = TOP; 
     this.align = align;
     this.valign = valign;
-    this.font3d = font3d;
+    this.font = font;
     this.colix = colix;
     this.z = 2;
     this.zSlab = Integer.MIN_VALUE;
@@ -109,7 +114,7 @@ class Text {
   }
 
   void getFontMetrics() {
-    fm = font3d.fontMetrics;
+    fm = font.fontMetrics;
     descent = fm.getDescent();
     ascent = fm.getAscent();
     lineHeight = ascent + descent;
@@ -245,6 +250,7 @@ class Text {
   }
 
   void setText(String text) {
+    text = fixText(text);
     if (this.text != null && this.text.equals(text))
       return;
     this.text = text;
@@ -252,7 +258,7 @@ class Text {
   }
 
   void setFont(Font3D f3d) {
-    font3d = f3d;
+    font = f3d;
     getFontMetrics();
     recalc();
   }
@@ -268,13 +274,7 @@ class Text {
   }
 
   static String getAlignment(int align) {
-    switch(align & 3) {
-    case CENTER:
-      return "center";
-    case RIGHT:
-      return "right";
-    }
-    return "left";
+    return hAlignNames[align & 3];
   }
   
   boolean setAlignment(int align) {
@@ -283,6 +283,15 @@ class Text {
     return true;
   }
 
+  String fixText(String text) {
+    if (text == null)
+      return null;
+    int pt;
+    while ((pt = text.indexOf("\n")) >= 0)
+      text = text.substring(0, pt) + "|" + text.substring(pt + 1);
+    return text;  
+  }
+  
   void recalc() {
     if (text == null) {
       text = null;
@@ -290,7 +299,7 @@ class Text {
       widths = null;
       return;
     }
-    lines = split(text, (text.indexOf("\n") > 0 ? '\n' :'|'));
+    lines = split(text, '|');
     textWidth = 0;
     widths = new int[lines.length];
     for (int i = lines.length; --i >= 0;) {
@@ -337,7 +346,7 @@ class Text {
       case RIGHT:
         x = x0 - widths[i];
       }
-      g3d.drawString(lines[i], font3d, colix, x, y, z, zSlab);
+      g3d.drawString(lines[i], font, colix, x, y, z, zSlab);
       y += lineHeight;
     }
   }
@@ -380,7 +389,7 @@ class Text {
     boxY = y;
   }
 
-  final static void renderSimple(Graphics3D g3d, Font3D font3d,
+  final static void renderSimple(Graphics3D g3d, Font3D font,
                                  String strLabel, short colix, short bgcolix,
                                  int x, int y, int z, int zSlab, int xOffset,
                                  int yOffset, int ascent, int descent,
@@ -391,7 +400,7 @@ class Text {
       return;
     int x0 = x;
     int y0 = y;
-    int boxWidth = font3d.fontMetrics.stringWidth(strLabel) + 8;
+    int boxWidth = font.fontMetrics.stringWidth(strLabel) + 8;
     int boxHeight = ascent + descent + 8;
     int xBoxOffset, yBoxOffset;
     
@@ -432,7 +441,7 @@ class Text {
         g3d.drawLine(pointerColix, x0, y0, zSlab, x + boxWidth, y + boxHeight
             / 2, zSlab);
     }
-    g3d.drawString(strLabel, font3d, colix, x + 4, y + 4 + ascent, z - 1,
+    g3d.drawString(strLabel, font, colix, x + 4, y + 4 + ascent, z - 1,
             zSlab);
   }
   
@@ -459,5 +468,35 @@ class Text {
     }
     lines[pt] = text.substring(i, text.length());
     return lines;
+  }
+  
+  String getState() {
+    StringBuffer s = new StringBuffer();
+    if (text == null || atomBased || target.equals("error"))
+      return "";
+    //set echo top left
+    //set echo myecho x y
+    //echo .....
+    switch (valign) {
+    case XY:
+    case XYZ:
+      String strOff = (valign == XY ? offsetX + " " + (-offsetY) : "{" + xyz.x + " " + xyz.y + " " + xyz.z +"}");
+      s.append("set echo " + target + " " + strOff);
+      if (align != LEFT)
+        s.append("set echo " + target + " " + hAlignNames[align]);      
+      break;
+    default:
+      s.append("set echo " + vAlignNames[valign] + " " +hAlignNames[align]);      
+    }
+    s.append(";echo " + text);
+    s.append(";font echo " + font.fontSize + " "
+          + font.fontFace + " " + font.fontStyle);
+    s.append(";color echo [x"
+          + g3d.getHexColorFromIndex(colix) + "]");
+    if (bgcolix != 0)
+      s.append(";background echo [x"
+          + g3d.getHexColorFromIndex(bgcolix) + "]");
+    s.append(";");
+    return s.toString();
   }
 }

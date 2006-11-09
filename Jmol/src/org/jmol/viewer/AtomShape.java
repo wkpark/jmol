@@ -115,7 +115,7 @@ class AtomShape extends Shape {
         setStateInfo(temp, i, type + " " + (mads[i] / 2000f));
       if (bsColixSet != null && bsColixSet.get(i)) {
         setStateInfo(temp2, i, "color " + type + " [x"
-            + viewer.getHexColorFromIndex(colixes[i]) + "]");
+            + g3d.getHexColorFromIndex(colixes[i]) + "]");
         if (Graphics3D.isColixTranslucent(colixes[i]))
           setStateInfo(temp2, i, "color " + type + " translucent");
       }

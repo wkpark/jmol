@@ -138,7 +138,7 @@ class Sticks extends Shape {
         setStateInfo(temp, i, type + " " + (bond.mad / 2000f));
       if (bsColixSet != null && bsColixSet.get(i)) {
         setStateInfo(temp2, i, "color bonds [x"
-            + viewer.getHexColorFromIndex(bond.colix) + "]");
+            + g3d.getHexColorFromIndex(bond.colix) + "]");
         if (Graphics3D.isColixTranslucent(bond.colix))
           setStateInfo(temp2, i, "color bonds translucent");
       }

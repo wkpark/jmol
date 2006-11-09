@@ -40,6 +40,7 @@ class Hover extends TextShape {
   String labelFormat = "%U";
 
   void initShape() {
+    myType = HOVER;
     Font3D font3d = g3d.getFont3D(FONTFACE, FONTSTYLE, FONTSIZE);
     short bgcolix = Graphics3D.getColix("#FFFFC3"); // 255, 255, 195
     short colix = Graphics3D.BLACK;

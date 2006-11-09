@@ -303,10 +303,10 @@ class Labels extends Shape {
       setStateInfo(temp, i, "label " + formats[i]);
       if (bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp2, i, "color label [x"
-            + viewer.getHexColorFromIndex(colixes[i]) + "]");
+            + g3d.getHexColorFromIndex(colixes[i]) + "]");
       if (bsBgColixSet != null && bsBgColixSet.get(i))
         setStateInfo(temp2, i, "background label [x"
-            + viewer.getHexColorFromIndex(bgcolixes[i]) + "]");
+            + g3d.getHexColorFromIndex(bgcolixes[i]) + "]");
       if (offsets != null && offsets.length > i) {
         setStateInfo(temp2, i, "set labelOffset "
             + Text.getXOffset(offsets[i] >> 2) + " "

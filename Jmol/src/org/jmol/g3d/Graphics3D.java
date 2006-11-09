@@ -1544,7 +1544,7 @@ final public class Graphics3D {
     g = g.substring(g.length() - 2);
     String b  = "00" + Integer.toHexString(argb & 0xFF);
     b = b.substring(b.length() - 2);
-    return "#" + r + g + b;
+    return r + g + b;
   }
 
   /****************************************************************

@@ -4265,9 +4265,9 @@ class Eval { //implements Runnable {
     viewer.loadShape(JmolConstants.SHAPE_ECHO);
     viewer.setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName,
         propertyValue);
-    propertyName = "align";
     if (statementLength == 3)
       return;
+    propertyName = "align";
     // set echo name xxx
     if (statementLength == 4) {
       switch (statement[3].tok) {

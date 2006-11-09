@@ -355,7 +355,7 @@ abstract class Mps extends Shape {
                 + JmolConstants.getPaletteName(paletteIDs[i]));
           else
             setStateInfo(temp2, atomIndex1, atomIndex2, "color " + type + " [x"
-                + viewer.getHexColorFromIndex(colixes[i]) + "]");
+                + g3d.getHexColorFromIndex(colixes[i]) + "]");
           if (Graphics3D.isColixTranslucent(colixes[i]))
             setStateInfo(temp2, atomIndex1, atomIndex2, "color " + type + " translucent");
         }

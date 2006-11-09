@@ -1858,6 +1858,7 @@ public class Viewer extends JmolViewer {
 
   public void clearMeasurements() {
     //depricated but in the API -- use "script" directly
+    //see clearAllMeasurements()
     script("measures delete");
   }
 
@@ -1892,11 +1893,11 @@ public class Viewer extends JmolViewer {
     refresh(0, "Viewer:showMeasurements()");
   }
 
-  public void hideMeasurements(boolean isOFF) {
+  void hideMeasurements(boolean isOFF) {
     //Eval
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "hideAll",
         new Boolean(isOFF));
-    refresh(0, "setShowMeasurements()");
+    refresh(0, "hideMeasurements()");
   }
 
   void toggleMeasurement(int[] atomCountPlusIndices) {
@@ -3357,6 +3358,7 @@ public class Viewer extends JmolViewer {
   int makeConnections(float minDistance, float maxDistance, short order,
                       int connectOperation, BitSet bsA, BitSet bsB) {
     //eval
+    clearAllMeasurements(); // necessary for serialization
     return modelManager.makeConnections(minDistance, maxDistance, order,
         connectOperation, bsA, bsB);
   }

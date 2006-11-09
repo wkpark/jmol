@@ -144,6 +144,6 @@ class Sticks extends Shape {
       }
       setStateInfo(temp2, i, "bondOrder " + JmolConstants.getBondOrderNameFromOrder(bond.order));
     }
-    return getShapeCommands(temp, temp2, -1, "select BONDS") + "select *;";
+    return getShapeCommands(temp, temp2, -1, "select BONDS") + "select *;\n";
   }  
 }

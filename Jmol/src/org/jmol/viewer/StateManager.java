@@ -450,8 +450,8 @@ class StateManager {
       }
       if (bs.get(i)) {
         if (iLast < 0) {
+          s.append((iFirst == -2 ? "" : " ") + i);
           iFirst = i;
-          s.append(" " + i);
         }
         iLast = i;
       }
@@ -526,7 +526,7 @@ class StateManager {
   static String getCommands(Hashtable ht, StringBuffer s, String setPrev, int nAll, String selectCmd) {
     if (ht == null)
       return "";
-    String strAll = "({ 0:"+ (nAll - 1)+ "})";
+    String strAll = "({0:"+ (nAll - 1)+ "})";
    Enumeration e = ht.keys();
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();

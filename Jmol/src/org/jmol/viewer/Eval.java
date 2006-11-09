@@ -2696,6 +2696,20 @@ class Eval { //implements Runnable {
         ptFloat = (ptFloat + 1) % 2;
         rangeMinMax[ptFloat] = atomNumber;
         break;
+      case Token.select:
+        //measures select 
+        if (statementLength == 5 &&  i == 2 && statement[3].tok == Token.bitset) {
+          viewer.setShapeProperty(JmolConstants.SHAPE_MEASURES, "select",statement[3].value);
+          return;
+        }
+        expressionOrIntegerExpected();
+      case Token.hide:
+        //measures hide 
+        if (statementLength == 5 &&  i == 2 && statement[3].tok == Token.bitset) {
+          viewer.setShapeProperty(JmolConstants.SHAPE_MEASURES, "hide",statement[3].value);
+          return;
+        }
+        expressionOrIntegerExpected();
       case Token.expressionBegin:
         isExpression = true;
         bs = expression(statement, i);

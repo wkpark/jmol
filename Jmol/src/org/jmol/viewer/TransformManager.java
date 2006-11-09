@@ -64,6 +64,16 @@ class TransformManager {
     fixedRotationCenter.set(0, 0, 0);
   }
   
+  String getState() {
+    StringBuffer commands = new StringBuffer();
+    commands.append("slab " + slabPercentSetting);
+    commands.append(";depth " + depthPercentSetting);
+    if (slabEnabled)
+      commands.append(";slab on");
+    commands.append(";\n" + getMoveToText(0) + "\n");
+    return commands.toString();
+  }
+  
   final static float twoPI = (float) (2 * Math.PI);
   float spinX, spinY = 30f, spinZ, spinFps = 30f;
   boolean haveNotifiedNaN = false;
@@ -104,17 +114,6 @@ class TransformManager {
 
   final static int MAXIMUM_ZOOM_PERCENTAGE = 200000;
   final static int MAXIMUM_ZOOM_PERSPECTIVE_DEPTH = 10000;
-
-  String getState() {
-    StringBuffer commands = new StringBuffer();
-    commands.append("slab " + slabPercentSetting);
-    commands.append(";depth " + depthPercentSetting);
-    if (slabEnabled)
-      commands.append(";slab on");
-    commands.append(";\n" + getMoveToText(0) + "\n");
-    return commands.toString();
-  }
-  
 
   private void setFixedRotationCenter(Point3f center) {
     if (center == null)

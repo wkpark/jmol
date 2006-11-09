@@ -203,7 +203,7 @@ class Token {
   // background
   final static int backfade     = setparam |  2;
   final static int bondmode     = setparam |  3;
-  final static int bonds        = setparam |  4;
+  final static int bonds        = setparam |  4 | expression;
   final static int boundbox     = setparam |  5 | showparam | command;
   // cartoon
   final static int cisangle     = setparam |  6;

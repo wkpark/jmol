@@ -1270,29 +1270,43 @@ public final class Frame {
     return new SelectedBondIterator(bondType, bsSelected);
   }
 
+  BondIterator getBondIterator(BitSet bsSelected) {
+    return new SelectedBondIterator(bsSelected);
+  }
+
   class SelectedBondIterator implements BondIterator {
 
     short bondType;
     int iBond;
     BitSet bsSelected;
     boolean bondSelectionModeOr;
+    boolean isBondBitSet;
 
     SelectedBondIterator(short bondType, BitSet bsSelected) {
       this.bondType = bondType;
       this.bsSelected = bsSelected;
+      isBondBitSet = false;
       iBond = 0;
       bondSelectionModeOr = viewer.getBondSelectionModeOr();
+    }
+
+    SelectedBondIterator(BitSet bsSelected) {
+      this.bsSelected = bsSelected;
+      iBond = 0;
+      isBondBitSet = true;
     }
 
     public boolean hasNext() {
       for (; iBond < bondCount; ++iBond) {
         Bond bond = bonds[iBond];
-        // mth 2004 10 20
-        // a hack put in here to support bonds of order '0'
-        // during implementation of 'bondOrder' script command
-        if (bondType != JmolConstants.BOND_ALL_MASK
-            && (bond.order & bondType) == 0)
+        if (isBondBitSet) {
+          if (bsSelected.get(iBond))
+            return true;
           continue;
+        } else if (bondType != JmolConstants.BOND_ALL_MASK
+            && (bond.order & bondType) == 0) {
+          continue;
+        }
         boolean isSelected1 = bsSelected.get(bond.atom1.atomIndex);
         boolean isSelected2 = bsSelected.get(bond.atom2.atomIndex);
         if ((!bondSelectionModeOr & isSelected1 & isSelected2)

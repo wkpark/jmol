@@ -161,6 +161,7 @@ class SelectionManager {
   }
 
   void select(BitSet bs, boolean isQuiet) {
+    selectionModeAtoms = true;
     if (bs == null) {
       if (!viewer.getRasmolHydrogenSetting())
         excludeSelectionSet(viewer.getAtomBits("hydrogen"));
@@ -174,6 +175,19 @@ class SelectionManager {
       viewer.reportSelection(getSelectionCount() + " "
           + GT._("atoms selected"));
   }
+
+  boolean selectionModeAtoms = true;
+  
+  final BitSet bsBonds = new BitSet();
+  void selectBonds(BitSet bs) {
+    bsBonds.and(bsNull);
+    bsBonds.or(bs);
+    selectionModeAtoms = false;
+  }
+  
+  BitSet getSelectedAtomsOrBonds() {
+    return (selectionModeAtoms ? bsSelection : bsBonds);
+  }
   
   void selectAll() {
     int count = viewer.getAtomCount();
@@ -184,6 +198,7 @@ class SelectionManager {
   }
 
   void clearSelection() {
+    selectionModeAtoms = true;
     hideNotSelected = false;
     bsSelection.and(bsNull);
     empty = TRUE;
@@ -308,6 +323,7 @@ class SelectionManager {
   }
 
   private void selectionChanged() {
+    selectionModeAtoms = true;
     if (hideNotSelected)
       hideNotSelected();
     for (int i = listeners.length; --i >= 0; ) {
@@ -318,8 +334,8 @@ class SelectionManager {
   }
   
   BitSet getAtomBitSet(String atomExpression) {
-    Eval e = new Eval(viewer);
-    
+    selectionModeAtoms = true;
+    Eval e = new Eval(viewer);    
     BitSet bs = new BitSet();
     try {
       bs = e.getAtomBitSet(atomExpression);

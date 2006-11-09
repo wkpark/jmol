@@ -204,6 +204,18 @@ final public class JmolConstants {
     }
     return BOND_ORDER_NULL;
   }
+  
+  public final static String getBondOrderNameFromOrder(short order) {
+    if ((order & BOND_HYDROGEN_MASK) != 0)
+      return "hbond";
+    if ((order & BOND_SULFUR_MASK) != 0)
+      return "single";
+    for (int i = bondOrderValues.length; --i >= 0; ) {
+      if (bondOrderValues[i] == order)
+        return bondOrderNames[i];
+    }
+    return "?";
+  }
 
 
   /* .cube files need this */

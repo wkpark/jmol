@@ -28,4 +28,8 @@ class SssticksRenderer extends ShapeRenderer {
 
   void render() {
   }
+
+  String getShapeState() {
+    return "";
+  }
 }

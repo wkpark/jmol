@@ -1962,16 +1962,15 @@ class Eval { //implements Runnable {
         invalidArgument();
       break;
     case Token.identifier:
-      if ("aromatic".equalsIgnoreCase((String) tokenArg.value)) {
-        order = JmolConstants.BOND_AROMATIC;
+      order = JmolConstants.getBondOrderFromString((String) tokenArg.value);
+      if (order >= 1)
         break;
-      }
     // fall into
     default:
       invalidArgument();
     }
-    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder", new Short(
-        order));
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder",
+        new Short(order), viewer.getSelectedAtomsOrBonds());
   }
 
   void console() throws ScriptException {
@@ -2391,7 +2390,10 @@ class Eval { //implements Runnable {
         break;
       }
       viewer.loadShape(shapeType);
-      viewer.setShapeProperty(shapeType, colorOrBgcolor + modifier, colorvalue);
+      if (shapeType == JmolConstants.SHAPE_STICKS)
+        viewer.setShapeProperty(shapeType, colorOrBgcolor + modifier, colorvalue, viewer.getSelectedAtomsOrBonds());
+      else
+       viewer.setShapeProperty(shapeType, colorOrBgcolor + modifier, colorvalue);
     }
     if (translucentOrOpaque != null)
       viewer.setShapeProperty(shapeType, "translucency" + modifier,
@@ -3016,9 +3018,13 @@ class Eval { //implements Runnable {
       bs.set(i);
     return bs;
   }
-  
+
   void select() throws ScriptException {
     // NOTE this is called by restrict()
+    if (statementLength == 5 && statement[2].tok == Token.bonds && statement[3].tok == Token.bitset) {
+      viewer.selectBonds((BitSet)statement[3].value);
+      return;
+    }
     viewer.select(statementLength == 1 ? null : expression(statement, 1), tQuiet);
   }
 
@@ -3392,7 +3398,7 @@ class Eval { //implements Runnable {
   }
 
   void wireframe() throws ScriptException {
-    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter());
+    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter(), viewer.getSelectedAtomsOrBonds());
   }
 
   void ssbond() throws ScriptException {

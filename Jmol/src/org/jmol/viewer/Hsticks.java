@@ -29,4 +29,8 @@ class Hsticks extends Sticks {
   void initShape() {
     myMask = JmolConstants.BOND_HYDROGEN_MASK;  
   }  
+
+  String getShapeState() {
+    return "";
+  }
 }

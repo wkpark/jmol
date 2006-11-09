@@ -843,6 +843,22 @@ public class Viewer extends JmolViewer {
     selectionManager.select(bs, isQuiet);
   }
 
+  void selectBonds(BitSet bs) {
+    selectionManager.selectBonds(bs);
+  }
+
+  boolean isBondSelection() {
+    return !selectionManager.selectionModeAtoms;  
+  }
+  
+  BitSet getSelectedAtomsOrBonds() {
+    return selectionManager.getSelectedAtomsOrBonds();
+  }
+
+  BitSet getSelectedBonds() {
+    return selectionManager.bsBonds;
+  }
+  
   void hide(BitSet bs, boolean isQuiet) {
     //Eval
     selectionManager.hide(bs, isQuiet);
@@ -2542,6 +2558,14 @@ public class Viewer extends JmolViewer {
       return; //not applicable
     modelManager.setShapeProperty(shapeID, propertyName, value,
         selectionManager.bsSelection);
+    refresh(0, "Viewer:setShapeProperty()");
+  }
+
+  void setShapeProperty(int shapeID, String propertyName, Object value, BitSet bs) {
+    //Eval color
+    if (shapeID < 0)
+      return; //not applicable
+    modelManager.setShapeProperty(shapeID, propertyName, value, bs);
     refresh(0, "Viewer:setShapeProperty()");
   }
 

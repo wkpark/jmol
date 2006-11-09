@@ -1224,11 +1224,9 @@ String getAtomInfoChime(int i) {
       }
     }
     // frame range?    
-    info.put("visibilityCommands", commands);
 
     // shape construction
 
-    commands = new StringBuffer();
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];
       if (shape != null) {
@@ -1238,7 +1236,7 @@ String getAtomInfoChime(int i) {
       }
     }
     if (commands.length() > 0)
-      info.put("shapeCommands", commands.toString());
+      info.put("commandState", commands.toString());
     return info;
   }
   

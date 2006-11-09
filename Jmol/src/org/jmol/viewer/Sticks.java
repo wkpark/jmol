@@ -29,6 +29,8 @@ import org.jmol.util.Logger;
 
 
 import java.util.BitSet;
+import java.util.Hashtable;
+
 import org.jmol.g3d.Graphics3D;
 
 class Sticks extends Shape {
@@ -39,21 +41,48 @@ class Sticks extends Shape {
     myMask = JmolConstants.BOND_COVALENT_MASK;
   }
 
+  BitSet bsOrderSet;
+  
   void setSize(int size, BitSet bsSelected) {
-    BondIterator iter = frame.getBondIterator(myMask, bsSelected);
+    if (bsSizeSet == null)
+      bsSizeSet = new BitSet();
+    boolean isBonds = viewer.isBondSelection();
+    BondIterator iter = (isBonds ? frame.getBondIterator(bsSelected) : frame
+        .getBondIterator(myMask, bsSelected));
     short mad = (short) size;
-    while (iter.hasNext())
+    while (iter.hasNext()) {
+      bsSizeSet.set(iter.nextIndex());
       iter.next().setMad(mad);
+    }
   }
   
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
     Logger.debug(propertyName + " " + value + " " + bsSelected);
+    boolean isBonds = viewer.isBondSelection();
+    
+    if ("bondOrder" == propertyName) {
+      if (bsOrderSet == null)
+        bsOrderSet = new BitSet();
+      short order = ((Short) value).shortValue();
+      BondIterator iter = (isBonds ? frame.getBondIterator(bsSelected) : frame
+          .getBondIterator(myMask, bsSelected));
+      while (iter.hasNext()) {
+        bsOrderSet.set(iter.nextIndex());
+        iter.next().setOrder(order);
+      }
+      return;      
+    }
+    if (bsColixSet == null)
+      bsColixSet = new BitSet();
     if ("color" == propertyName) {
       short colix = Graphics3D.getColix(value);
       int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
       if (pid == JmolConstants.PALETTE_TYPE) {
-        BondIterator iter = frame.getBondIterator(myMask, bsSelected);
+        //only for hydrogen bonds
+        BondIterator iter = (isBonds ? frame.getBondIterator(bsSelected)
+            : frame.getBondIterator(myMask, bsSelected));
         while (iter.hasNext()) {
+          bsColixSet.set(iter.nextIndex());
           Bond bond = iter.next();
           bond.setColix(viewer.getColixHbondType(bond.order));
         }
@@ -61,18 +90,27 @@ class Sticks extends Shape {
       }
       if (colix == Graphics3D.UNRECOGNIZED)
         return; //palettes not implemented for bonds
-      BondIterator iter = frame.getBondIterator(myMask, bsSelected);
-      while (iter.hasNext())
-        iter.next().setColix(colix);
+      BondIterator iter = (isBonds ? frame.getBondIterator(bsSelected) : frame
+          .getBondIterator(myMask, bsSelected));
+      while (iter.hasNext()) {
+        int iBond = iter.nextIndex();
+        Bond bond = iter.next();
+        bond.setColix(colix);
+        bsColixSet.set(iBond, colix != 0 || bond.isTranslucent());
+      }
       return;
     }
     if ("translucency" == propertyName) {
-      boolean isTranslucent = (((String)value).equals("translucent"));
-      BondIterator iter = frame.getBondIterator(myMask, bsSelected);
-      while (iter.hasNext())
+      boolean isTranslucent = (((String) value).equals("translucent"));
+      BondIterator iter = (isBonds ? frame.getBondIterator(bsSelected) : frame
+          .getBondIterator(myMask, bsSelected));
+      while (iter.hasNext()) {
+        bsColixSet.set(iter.nextIndex());
         iter.next().setTranslucent(isTranslucent);
+      }
       return;
     }
+    //better not be here
     super.setProperty(propertyName, value, bsSelected);
   }
 
@@ -88,4 +126,24 @@ class Sticks extends Shape {
       bond.atom2.clickabilityFlags |= myVisibilityFlag;
     }
   }
+  
+  String getShapeState() {
+    Hashtable temp = new Hashtable();
+    Hashtable temp2 = new Hashtable();
+    Bond[] bonds = frame.bonds;
+    String type = JmolConstants.shapeClassBases[shapeID];
+    for (int i = frame.bondCount; --i >= 0;) {
+      Bond bond = bonds[i];
+      if (bsSizeSet != null && bsSizeSet.get(i))
+        setStateInfo(temp, i, type + " " + (bond.mad / 2000f));
+      if (bsColixSet != null && bsColixSet.get(i)) {
+        setStateInfo(temp2, i, "color bonds [x"
+            + viewer.getHexColorFromIndex(bond.colix) + "]");
+        if (Graphics3D.isColixTranslucent(bond.colix))
+          setStateInfo(temp2, i, "color bonds translucent");
+      }
+      setStateInfo(temp2, i, "bondOrder " + JmolConstants.getBondOrderNameFromOrder(bond.order));
+    }
+    return getShapeCommands(temp, temp2, -1, "select BONDS") + "select *;";
+  }  
 }

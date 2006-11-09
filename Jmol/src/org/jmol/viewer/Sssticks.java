@@ -28,5 +28,9 @@ class Sssticks extends Sticks {
 
   void initShape() {
     myMask = JmolConstants.BOND_SULFUR_MASK;
-  }  
+  }
+  
+  String getShapeState() {
+    return "";
+  }
 }

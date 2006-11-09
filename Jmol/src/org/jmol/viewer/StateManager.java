@@ -498,18 +498,22 @@ class StateManager {
   
 
   static String getCommands(Hashtable ht) {
-    return getCommands(ht, null, -1);
+    return getCommands(ht, null, -1, "select");
   }
 
   static String getCommands(Hashtable htDefine, Hashtable htMore, int nAll) {
+    return getCommands(htDefine, htMore, nAll, "select");
+  }
+
+  static String getCommands(Hashtable htDefine, Hashtable htMore, int nAll, String selectCmd) {
     StringBuffer s = new StringBuffer();
-    String setPrev = getCommands(htDefine, s, null, nAll);
+    String setPrev = getCommands(htDefine, s, null, nAll, selectCmd);
     if (htMore != null)
-      getCommands(htMore, s, setPrev, nAll);
+      getCommands(htMore, s, setPrev, nAll, selectCmd);
     return s.toString();
   }
 
-  static String getCommands(Hashtable ht, StringBuffer s, String setPrev, int nAll) {
+  static String getCommands(Hashtable ht, StringBuffer s, String setPrev, int nAll, String selectCmd) {
     if (ht == null)
       return "";
     String strAll = "{ 0:"+ (nAll - 1)+ "}";
@@ -521,9 +525,11 @@ class StateManager {
         continue;
       if (!set.equals(setPrev)) {
         if (set.equals(strAll)) {
-          s.append("select *;");
+          s.append(selectCmd);
+          s.append(" *;");
         } else {
-        s.append("select (");
+        s.append(selectCmd);
+        s.append(" (");
         s.append(set);
         s.append(");");
         }

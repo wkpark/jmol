@@ -116,4 +116,8 @@ abstract class Shape {
   static String getShapeCommands(Hashtable htDefine, Hashtable htMore, int atomCount) {
     return StateManager.getCommands(htDefine, htMore, atomCount);
   }
- }
+
+  static String getShapeCommands(Hashtable htDefine, Hashtable htMore, int count, String selectCmd) {
+    return StateManager.getCommands(htDefine, htMore, count, selectCmd);
+  }
+}

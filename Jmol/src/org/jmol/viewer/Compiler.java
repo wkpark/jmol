@@ -46,14 +46,14 @@ class Compiler {
   String errorMessage;
   String errorLine;
   boolean preDefining;
-  
+
   boolean logMessages = false;
 
   private void log(String message) {
     if (logMessages)
       Logger.debug(message);
   }
-  
+
   Compiler(Viewer viewer) {
     this.viewer = viewer;
   }
@@ -69,8 +69,8 @@ class Compiler {
     if (compile0())
       return true;
     int icharEnd;
-    if ((icharEnd = script.indexOf('\r', ichCurrentCommand)) == -1 &&
-        (icharEnd = script.indexOf('\n', ichCurrentCommand)) == -1)
+    if ((icharEnd = script.indexOf('\r', ichCurrentCommand)) == -1
+        && (icharEnd = script.indexOf('\n', ichCurrentCommand)) == -1)
       icharEnd = script.length();
     errorLine = script.substring(ichCurrentCommand, icharEnd);
     return false;
@@ -108,6 +108,7 @@ class Compiler {
   int ichCurrentCommand;
 
   boolean iHaveQuotedString = false;
+
   boolean compile0() {
     cchScript = script.length();
     ichToken = 0;
@@ -197,7 +198,7 @@ class Compiler {
         float value;
         if (!Float.isNaN(value = lookingAtExponential())) {
           ltoken.addElement(new Token(Token.decimal, new Float(value)));
-          continue;          
+          continue;
         }
         if (lookingAtDecimal((tokCommand & Token.negnums) != 0)) {
           value =
@@ -210,8 +211,8 @@ class Compiler {
         }
         if (lookingAtSeqcode()) {
           char ch = script.charAt(ichToken);
-          int seqNum = (ch == '*' || ch == '^' ? 0 : Integer
-              .parseInt(script.substring(ichToken, ichToken + cchToken - 2)));
+          int seqNum = (ch == '*' || ch == '^' ? 0 : Integer.parseInt(script
+              .substring(ichToken, ichToken + cchToken - 2)));
           char insertionCode = script.charAt(ichToken + cchToken - 1);
           if (insertionCode == '^')
             insertionCode = ' ';
@@ -330,7 +331,7 @@ class Compiler {
       ichToken++;
     if (script.length() > ichToken && script.charAt(ichToken) == '\n')
       ichToken++;
-    int i = script.indexOf("end \""+key+"\"", ichToken);
+    int i = script.indexOf("end \"" + key + "\"", ichToken);
     if (i < 0)
       i = script.length();
     String str = script.substring(ichToken, i);
@@ -358,8 +359,8 @@ class Compiler {
     char ch;
     int ichEnd = ichToken;
     int ichFirstSharp = -1;
-    while (ichEnd < cchScript &&
-           (ch = script.charAt(ichEnd)) != ';' && ch != '\r' && ch != '\n') {
+    while (ichEnd < cchScript && (ch = script.charAt(ichEnd)) != ';'
+        && ch != '\r' && ch != '\n') {
       if (ch == '#' && ichFirstSharp == -1) {
         ichFirstSharp = ichEnd;
         //Logger.debug("I see a first sharp @ " + ichFirstSharp);
@@ -377,9 +378,9 @@ class Compiler {
      * comments in Jmol
      ****************************************************************/
 
-    if (cchScript - ichFirstSharp >= 3 &&
-        script.charAt(ichFirstSharp + 1) == 'j' &&
-        script.charAt(ichFirstSharp + 2) == 'c') {
+    if (cchScript - ichFirstSharp >= 3
+        && script.charAt(ichFirstSharp + 1) == 'j'
+        && script.charAt(ichFirstSharp + 2) == 'c') {
       // statement contains a #jc before then end ... strip it all
       cchToken = ichEnd - ichToken;
       return true;
@@ -395,10 +396,9 @@ class Compiler {
      * if they put in #jx <newline> then they are not going to
      * execute anything, and the regular code will take care of it
      ****************************************************************/
-    if (cchScript > ichToken + 3 &&
-        script.charAt(ichToken + 1) == 'j' &&
-        script.charAt(ichToken + 2) == 'x' &&
-        isSpaceOrTab(script.charAt(ichToken + 3))) {
+    if (cchScript > ichToken + 3 && script.charAt(ichToken + 1) == 'j'
+        && script.charAt(ichToken + 2) == 'x'
+        && isSpaceOrTab(script.charAt(ichToken + 3))) {
       cchToken = 4; // #jx[\s\t]
       return true;
     }
@@ -417,7 +417,7 @@ class Compiler {
     if (ch == '\r') {
       ++ichT;
       if (ichT < cchScript && script.charAt(ichT) == '\n')
-          ++ichT;
+        ++ichT;
     } else if (ch == '\n') {
       ++ichT;
     } else {
@@ -480,7 +480,7 @@ class Compiler {
           break;
         case 'r':
           ch = '\r';
-          // fall into
+        // fall into
         case '"':
         case '\\':
         case '\'':
@@ -490,7 +490,7 @@ class Compiler {
           int digitCount = ch == 'x' ? 2 : 4;
           if (ich < ichMax) {
             int unicode = 0;
-            for (int k = digitCount; --k >= 0 && ich < ichMax; ) {
+            for (int k = digitCount; --k >= 0 && ich < ichMax;) {
               char chT = script.charAt(ich);
               int hexit = getHexitValue(chT);
               if (hexit < 0)
@@ -499,7 +499,7 @@ class Compiler {
               unicode += hexit;
               ++ich;
             }
-            ch = (char)unicode;
+            ch = (char) unicode;
           }
         }
       }
@@ -520,11 +520,11 @@ class Compiler {
   }
 
   // note that these formats include a space character
-  String[] loadFormats = { "alchemy ", "mol2 ", "mopac ", "nmrpdb ",
-                           "charmm ", "xyz ", "mdl ", "pdb "};
+  String[] loadFormats = { "alchemy ", "mol2 ", "mopac ", "nmrpdb ", "charmm ",
+      "xyz ", "mdl ", "pdb " };
 
   boolean lookingAtLoadFormat() {
-    for (int i = loadFormats.length; --i>=0; ) {
+    for (int i = loadFormats.length; --i >= 0;) {
       String strFormat = loadFormats[i];
       int cchFormat = strFormat.length();
       if (script.regionMatches(true, ichToken, strFormat, 0, cchFormat)) {
@@ -565,9 +565,9 @@ class Compiler {
     while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT))) {
       ++ichT;
       digitSeen = true;
-    }    
+    }
     if (ichT == cchScript || !digitSeen)
-      return Float.NaN;  //integer
+      return Float.NaN; //integer
     int ptE = ichT;
     int factor = 1;
     int exp = 0;
@@ -579,11 +579,11 @@ class Compiler {
     // "2E1" might be a PDB het group by that name. BUT it turns out that
     // any HET group starting with a number is unacceptable and must
     // be given as [nXm], in brackets.
-    
+
     if (ch == '-' || ch == '+') {
       ichT++;
-      factor = (ch == '-'? -1 : 1);
-    }    
+      factor = (ch == '-' ? -1 : 1);
+    }
     while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT))) {
       ichT++;
       exp = (exp * 10 + ch - '0');
@@ -591,7 +591,7 @@ class Compiler {
     if (exp == 0)
       return Float.NaN;
     cchToken = ichT - ichToken;
-    double value = Float.valueOf(script.substring(pt0, ptE)).doubleValue(); 
+    double value = Float.valueOf(script.substring(pt0, ptE)).doubleValue();
     value *= (isNegative ? -1 : 1) * Math.pow(10, factor * exp);
     return (float) value;
   }
@@ -612,12 +612,16 @@ class Compiler {
       return false;
     // to support 1.ca, let's check the character after the dot
     // to determine if it is an alpha
-    if (ch == '.' && (ichT + 1 < cchScript) &&
-        (Character.isLetter(script.charAt(ichT + 1)) || script.charAt(ichT + 1) == '?'))
+    if (ch == '.'
+        && (ichT + 1 < cchScript)
+        && (Character.isLetter(script.charAt(ichT + 1)) || script
+            .charAt(ichT + 1) == '?'))
       return false;
     //well, guess what? we also have to look for 86.1Na, so...
-    if (ch == '.' && (ichT + 2 < cchScript) &&
-        (Character.isLetter(script.charAt(ichT + 2)) || script.charAt(ichT + 2) == '?'))
+    if (ch == '.'
+        && (ichT + 2 < cchScript)
+        && (Character.isLetter(script.charAt(ichT + 2)) || script
+            .charAt(ichT + 2) == '?'))
       return false;
 
     ++ichT;
@@ -669,7 +673,7 @@ class Compiler {
   }
 
   boolean bracketsOpen;
-  
+
   boolean lookingAtLookupToken() {
     if (ichToken == cchScript)
       return false;
@@ -704,8 +708,8 @@ class Compiler {
     case '<':
     case '=':
     case '>':
-      if (ichT < cchScript &&
-          ((ch = script.charAt(ichT)) == '<' || ch == '=' || ch == '>'))
+      if (ichT < cchScript
+          && ((ch = script.charAt(ichT)) == '<' || ch == '=' || ch == '>'))
         ++ichT;
       break;
     case '/':
@@ -716,17 +720,18 @@ class Compiler {
     default:
       if (!Character.isLetter(ch))
         return false;
-      //fall through
+    //fall through
     case '~':
     case '_':
     case '?': // include question marks in identifier for atom expressions
-      while (ichT < cchScript &&
-             (Character.isLetterOrDigit(ch = script.charAt(ichT))
-                  || ch == '_' || ch == '?' || ch == '~') ||
-             // hack for insertion codes embedded in an atom expression :-(
-             // select c3^a
-             (ch == '^' && ichT > ichToken && Character.isDigit(script.charAt(ichT - 1)))
-             )
+      while (ichT < cchScript
+          && (Character.isLetterOrDigit(ch = script.charAt(ichT)) || ch == '_'
+              || ch == '?' || ch == '~')
+          ||
+          // hack for insertion codes embedded in an atom expression :-(
+          // select c3^a
+          (ch == '^' && ichT > ichToken && Character.isDigit(script
+              .charAt(ichT - 1))))
         ++ichT;
       break;
     }
@@ -737,70 +742,86 @@ class Compiler {
   private boolean commandExpected() {
     return compileError("command expected");
   }
+
   private boolean commandExpected(String cmd) {
     int i = cmd.indexOf(" ");
     if (i < 0)
       i = cmd.length();
     return compileError("command expected: " + cmd.substring(0, i));
   }
+
   private boolean cannotSet(String ident) {
     return compileError("cannot SET: " + ident);
   }
+
   private boolean cannotShow(String ident) {
     return compileError("cannot SHOW: " + ident);
   }
+
   private boolean invalidExpressionToken(String ident) {
     return compileError("invalid expression token: " + ident);
   }
+
   private boolean unrecognizedToken(String ident) {
     return compileError("unrecognized token: " + ident);
   }
+
   private boolean badArgumentCount() {
     return compileError("bad argument count");
   }
+
   private boolean endOfExpressionExpected() {
     return compileError("end of expression expected");
   }
+
   private boolean leftParenthesisExpected() {
     return compileError("left parenthesis expected");
   }
+
   private boolean rightParenthesisExpected() {
     return compileError("right parenthesis expected");
   }
+
   private boolean coordinateExpected() {
     return compileError("{number, number, number} expected");
   }
+
   private boolean commaExpected() {
     return compileError("comma expected");
   }
+
   private boolean commaOrCloseExpected() {
     return compileError("comma or right parenthesis expected");
   }
+
   private boolean stringExpected() {
     return compileError("double-quoted string expected");
   }
+
   private boolean unrecognizedExpressionToken() {
     return compileError("unrecognized expression token:" + valuePeek());
   }
+
   /*
-  private boolean integerExpectedAfterHyphen() {
-    return compileError("integer expected after hyphen");
-  }
-  */
+   private boolean integerExpectedAfterHyphen() {
+   return compileError("integer expected after hyphen");
+   }
+   */
   private boolean comparisonOperatorExpected() {
     return compileError("comparison operator expected");
   }
+
   private boolean equalSignExpected() {
     return compileError("equal sign expected");
   }
+
   private boolean integerExpected() {
     return compileError("integer expected");
   }
-  
+
   private boolean nonnegativeIntegerExpected() {
     return compileError("nonnegative integer expected");
   }
-
 
   private boolean numberExpected() {
     return compileError("number expected");
@@ -809,29 +830,35 @@ class Compiler {
   private boolean numberOrKeywordExpected() {
     return compileError("number or keyword expected");
   }
+
   private boolean badRGBColor() {
     return compileError("bad [R,G,B] color");
   }
+
   private boolean identifierOrResidueSpecificationExpected() {
     return compileError("identifier or residue specification expected");
   }
+
   private boolean residueSpecificationExpected() {
     return compileError("residue specification (ALA, AL?, A*) expected");
   }
+
   /*
-  private boolean resnumSpecificationExpected() {
-    return compileError("residue number specification expected");
-  }
-  private boolean invalidResidueNameSpecification(String strResName) {
-    return compileError("invalid residue name specification:" + strResName);
-  }
-  */
+   private boolean resnumSpecificationExpected() {
+   return compileError("residue number specification expected");
+   }
+   private boolean invalidResidueNameSpecification(String strResName) {
+   return compileError("invalid residue name specification:" + strResName);
+   }
+   */
   private boolean invalidChainSpecification() {
     return compileError("invalid chain specification");
   }
+
   private boolean invalidModelSpecification() {
     return compileError("invalid model specification");
   }
+
   private boolean invalidAtomSpecification() {
     return compileError("invalid atom specification");
   }
@@ -883,79 +910,79 @@ class Compiler {
   }
 
   /*
-    mth -- I think I am going to be sick
-    the grammer is not context-free
-    what does the string cys120 mean?
-    if you have previously defined a variable, as in
-      define cys120 carbon
-    then when you use cys120 it refers to the previous definition.
-    however, if cys120 was *not* previously defined, then it refers to
-    the residue of type cys at number 120.
-    what a disaster.
+   mth -- I think I am going to be sick
+   the grammer is not context-free
+   what does the string cys120 mean?
+   if you have previously defined a variable, as in
+   define cys120 carbon
+   then when you use cys120 it refers to the previous definition.
+   however, if cys120 was *not* previously defined, then it refers to
+   the residue of type cys at number 120.
+   what a disaster.
 
-    expression       :: = clauseOr
+   expression       :: = clauseOr
 
-    clauseOr         ::= clauseAnd {OR|XOR|OrNot clauseAnd}*
+   clauseOr         ::= clauseAnd {OR|XOR|OrNot clauseAnd}*
 
-    clauseAnd        ::= clauseNot {AND clauseNot}*
+   clauseAnd        ::= clauseNot {AND clauseNot}*
 
-    clauseNot        ::= NOT clauseNot | clausePrimitive
+   clauseNot        ::= NOT clauseNot | clausePrimitive
 
-    clausePrimitive  ::= clauseComparator |
-                         clauseCell |       // RMH 6/06
-                         clauseWithin |
-                         clauseConnected |  // RMH 3/06
-                         clauseResidueSpec |
-                         none | all |
-                         ( clauseOr )
+   clausePrimitive  ::= clauseComparator |
+   clauseCell |       // RMH 6/06
+   clauseWithin |
+   clauseConnected |  // RMH 3/06
+   clauseResidueSpec |
+   none | all |
+   ( clauseOr )
 
-    clauseComparator ::= atomproperty comparatorop integer
+   clauseComparator ::= atomproperty comparatorop integer
 
-    clauseWithin     ::= WITHIN ( clauseDistance , expression )
+   clauseWithin     ::= WITHIN ( clauseDistance , expression )
 
-    clauseDistance   ::= integer | decimal
+   clauseDistance   ::= integer | decimal
 
-    clauseConnected  ::= CONNECTED ( integer , integer , expression ) |
-                         CONNECTED ( integer , expression ) |
-                         CONNECTED ( integer , integer ) |
-                         CONNECTED ( expression ) |
-                         CONNECTED ( integer ) |
-                         CONNECTED ()
-    
-    clauseResidueSpec::= { clauseResNameSpec }
-                         { clauseResNumSpec }
-                         { clauseChainSpec }
-                         { clauseAtomSpec }
-                         { clauseAlternateSpec }
-                         { clauseModelSpec }
+   clauseConnected  ::= CONNECTED ( integer , integer , expression ) |
+   CONNECTED ( integer , expression ) |
+   CONNECTED ( integer , integer ) |
+   CONNECTED ( expression ) |
+   CONNECTED ( integer ) |
+   CONNECTED ()
+   
+   clauseResidueSpec::= { clauseResNameSpec }
+   { clauseResNumSpec }
+   { clauseChainSpec }
+   { clauseAtomSpec }
+   { clauseAlternateSpec }
+   { clauseModelSpec }
 
-    clauseResNameSpec::= * | [ resNamePattern ] | resNamePattern
+   clauseResNameSpec::= * | [ resNamePattern ] | resNamePattern
 
-    // question marks are part of identifiers
-    // they get split up and dealt with as wildcards at runtime
-    // and the integers which are residue number chains get bundled
-    // in with the identifier and also split out at runtime
-    // iff a variable of that name does not exist
+   // question marks are part of identifiers
+   // they get split up and dealt with as wildcards at runtime
+   // and the integers which are residue number chains get bundled
+   // in with the identifier and also split out at runtime
+   // iff a variable of that name does not exist
 
-    resNamePattern   ::= up to 3 alphanumeric chars with * and ?
+   resNamePattern   ::= up to 3 alphanumeric chars with * and ?
 
-    clauseResNumSpec ::= * | clauseSequenceRange
+   clauseResNumSpec ::= * | clauseSequenceRange
 
-    clauseSequenceRange ::= clauseSequenceCode { - clauseSequenceCode }
+   clauseSequenceRange ::= clauseSequenceCode { - clauseSequenceCode }
 
-    clauseSequenceCode ::= seqcode | {-} integer
+   clauseSequenceCode ::= seqcode | {-} integer
 
-    clauseChainSpec  ::= {:} * | identifier | integer
+   clauseChainSpec  ::= {:} * | identifier | integer
 
-    clauseAtomSpec   ::= . * | . identifier {*}
-    // note that in atom spec context a * is *not* a wildcard
-    // rather, it denotes a 'prime'
+   clauseAtomSpec   ::= . * | . identifier {*}
+   // note that in atom spec context a * is *not* a wildcard
+   // rather, it denotes a 'prime'
 
-    clauseAlternateSpec ::= {%} identifier | integer
+   clauseAlternateSpec ::= {%} identifier | integer
 
-    clauseModelSpec  ::= {:|/} * | integer
+   clauseModelSpec  ::= {:|/} * | integer
 
-  */
+   */
 
   private boolean compileExpression() {
     int tokCommand = atokenCommand[0].tok;
@@ -965,15 +992,15 @@ class Compiler {
       expPtr = 2;
     while (expPtr > 0 && expPtr < atokenCommand.length) {
       if (isMultipleOK)
-        while (expPtr < atokenCommand.length &&
-            atokenCommand[expPtr].tok != Token.leftparen)
+        while (expPtr < atokenCommand.length
+            && atokenCommand[expPtr].tok != Token.leftparen)
           ++expPtr;
       // 0 here means OK; -1 means error;
       // > 0 means pointer to the next expression
-      if (expPtr >= atokenCommand.length 
+      if (expPtr >= atokenCommand.length
           || (expPtr = compileExpression(expPtr)) <= 0)
         break;
-      if (! isMultipleOK)
+      if (!isMultipleOK)
         return endOfExpressionExpected();
     }
     return (expPtr == atokenCommand.length || expPtr == 0);
@@ -982,7 +1009,7 @@ class Compiler {
   Vector ltokenPostfix = null;
   Token[] atokenInfix;
   int itokenInfix;
-                  
+
   boolean addTokenToPostfix(Token token) {
     if (logMessages)
       log("addTokenToPostfix" + token);
@@ -999,16 +1026,16 @@ class Compiler {
     itokenInfix = itoken;
 
     addTokenToPostfix(Token.tokenExpressionBegin);
-    if (! clauseOr())
+    if (!clauseOr())
       return -1;
     addTokenToPostfix(Token.tokenExpressionEnd);
     if (itokenInfix != atokenInfix.length) {
       /*
-      Logger.debug("itokenInfix=" + itokenInfix + " atokenInfix.length="
-                         + atokenInfix.length);
-      for (int i = 0; i < atokenInfix.length; ++i) 
-        Logger.debug("" + i + ":" + atokenInfix[i]);
-      */
+       Logger.debug("itokenInfix=" + itokenInfix + " atokenInfix.length="
+       + atokenInfix.length);
+       for (int i = 0; i < atokenInfix.length; ++i) 
+       Logger.debug("" + i + ":" + atokenInfix[i]);
+       */
       //not a problem! 
       expPtr = ltokenPostfix.size();
       for (int i = itokenInfix; i < atokenInfix.length; ++i)
@@ -1020,14 +1047,15 @@ class Compiler {
   }
 
   int savedPtr;
+
   void savePtr() {
     savedPtr = itokenInfix;
   }
-  
+
   void restorePtr() {
     itokenInfix = savedPtr;
   }
-  
+
   Token tokenNext() {
     if (itokenInfix == atokenInfix.length)
       return null;
@@ -1038,7 +1066,7 @@ class Compiler {
     Token token = tokenNext();
     return (token != null && token.tok == tok);
   }
-  
+
   Object valuePeek() {
     if (itokenInfix == atokenInfix.length)
       return null;
@@ -1058,13 +1086,14 @@ class Compiler {
   }
 
   boolean clauseOr() {
-    if (! clauseAnd())
+    if (!clauseAnd())
       return false;
     //for simplicity, giving XOR (toggle) same precedence as OR
     //OrNot: First OR, but if that makes no change, then NOT (special toggle)
-    while (tokPeek() == Token.opOr || tokPeek() == Token.opXor || tokPeek() == Token.opToggle) {
+    while (tokPeek() == Token.opOr || tokPeek() == Token.opXor
+        || tokPeek() == Token.opToggle) {
       Token tokenOr = tokenNext();
-      if (! clauseAnd())
+      if (!clauseAnd())
         return false;
       addTokenToPostfix(tokenOr);
     }
@@ -1072,11 +1101,11 @@ class Compiler {
   }
 
   boolean clauseAnd() {
-    if (! clauseNot())
+    if (!clauseNot())
       return false;
     while (tokPeek() == Token.opAnd) {
       Token tokenAnd = tokenNext();
-      if (! clauseNot())
+      if (!clauseNot())
         return false;
       addTokenToPostfix(tokenAnd);
     }
@@ -1086,7 +1115,7 @@ class Compiler {
   boolean clauseNot() {
     if (tokPeek() == Token.opNot) {
       Token tokenNot = tokenNext();
-      if (! clauseNot())
+      if (!clauseNot())
         return false;
       return addTokenToPostfix(tokenNot);
     }
@@ -1096,8 +1125,10 @@ class Compiler {
   boolean clausePrimitive() {
     int tok = tokPeek();
     switch (tok) {
+    case Token.bonds:
+      return clauseBond();
     case Token.cell:
-      return clauseCell();      
+      return clauseCell();
     case Token.within:
       return clauseWithin();
     case Token.connected:
@@ -1119,19 +1150,19 @@ class Compiler {
         return clauseComparator();
       if ((tok & Token.predefinedset) != Token.predefinedset)
         break;
-      // fall into the code and below and just add the token
+    // fall into the code and below and just add the token
     case Token.all:
     case Token.none:
       return addTokenToPostfix(tokenNext());
     case Token.leftparen:
       tokenNext();
-      if (! clauseOr())
-          return false;
-      if (! tokenNext(Token.rightparen))
+      if (!clauseOr())
+        return false;
+      if (!tokenNext(Token.rightparen))
         return rightParenthesisExpected();
       return true;
     case Token.leftbrace:
-      if (! bitset())
+      if (!bitset())
         return false;
       return true;
     }
@@ -1143,7 +1174,7 @@ class Compiler {
     case Token.integer:
       return token.intValue;
     case Token.decimal:
-      return  ((Float) token.value).floatValue();
+      return ((Float) token.value).floatValue();
     }
     return 0;
   }
@@ -1154,31 +1185,31 @@ class Compiler {
     BitSet bs = new BitSet();
     out: while ((token = tokenNext()) != null) {
       switch (token.tok) {
-        case Token.rightbrace:
-        case Token.integer:
-          if (iPrev >= 0)
-            bs.set(iPrev);
-          if (token.tok == Token.rightbrace)
-            break out;
-          iPrev = token.intValue;
-          break;
-        case Token.colon:
-          if (iPrev >= 0) {
-            token = tokenNext();
-            if (token.tok != Token.integer)
-              return invalidExpressionToken(token.toString());
-            for (int i = token.intValue; i >= iPrev; i--)
-              bs.set(i);
-            break;
-          }
-            // fall through
-          default:
+      case Token.rightbrace:
+      case Token.integer:
+        if (iPrev >= 0)
+          bs.set(iPrev);
+        if (token.tok == Token.rightbrace)
+          break out;
+        iPrev = token.intValue;
+        break;
+      case Token.colon:
+        if (iPrev >= 0) {
+          token = tokenNext();
+          if (token.tok != Token.integer)
             return invalidExpressionToken(token.toString());
-      }      
+          for (int i = token.intValue; i >= iPrev; i--)
+            bs.set(i);
+          break;
+        }
+      // fall through
+      default:
+        return invalidExpressionToken(token.toString());
+      }
     }
     return addTokenToPostfix(new Token(Token.bitset, bs));
-  }  
-  
+  }
+
   boolean clauseComparator() {
     Token tokenAtomProperty = tokenNext();
     Token tokenComparator = tokenNext();
@@ -1267,15 +1298,35 @@ class Compiler {
     return addTokenToPostfix(new Token(Token.cell, cell));
   }
 
+  /**
+   * used strictly for serialization 
+   * @return true or fail
+   */
+  boolean clauseBond() {
+    if (itokenInfix != 1)
+      return invalidExpressionToken(tokenNext().toString());
+    tokenNext(); // BONDS
+    if (!tokenNext(Token.leftparen)) // (
+      return leftParenthesisExpected();
+    addTokenToPostfix(new Token(Token.bonds));    
+    if (!bitset())
+      return false;
+    if (!tokenNext(Token.rightparen)) // )
+      return rightParenthesisExpected();
+    if (tokenNext() != null)
+      return endOfExpressionExpected();
+    return true;
+  }
+
   boolean clauseWithin() {
-    tokenNext();                             // WITHIN
-    if (! tokenNext(Token.leftparen))  // (
+    tokenNext(); // WITHIN
+    if (!tokenNext(Token.leftparen)) // (
       return leftParenthesisExpected();
     Object distance = null;
-    Token tokenDistance = tokenNext();       // distance
+    Token tokenDistance = tokenNext(); // distance
     if (tokenDistance == null)
       return numberOrKeywordExpected();
-    switch(tokenDistance.tok) {
+    switch (tokenDistance.tok) {
     case Token.integer:
       distance = new Float((tokenDistance.intValue * 4) / 1000f);
       break;
@@ -1292,14 +1343,14 @@ class Compiler {
     default:
       return numberOrKeywordExpected();
     }
-    if (! tokenNext(Token.opOr))       // ,
+    if (!tokenNext(Token.opOr)) // ,
       return commaExpected();
     if (tokPeek() == Token.leftbrace) {
       return addTokenToPostfix(new Token(Token.within, new Float(Float.NaN)));
     }
-    if (! clauseOr())                        // *expression*
+    if (!clauseOr()) // *expression*
       return false;
-    if (! tokenNext(Token.rightparen)) // )T
+    if (!tokenNext(Token.rightparen)) // )T
       return rightParenthesisExpected();
     return addTokenToPostfix(new Token(Token.within, distance));
   }
@@ -1310,14 +1361,14 @@ class Compiler {
     int tok;
     boolean iHaveExpression = false;
     Token token;
-    tokenNext();                     // Connected
+    tokenNext(); // Connected
     while (!iHaveExpression) {
       if (tokPeek() != Token.leftparen)
-        break;      
-      tokenNext();                     // (
+        break;
+      tokenNext(); // (
       tok = tokPeek();
       if (tok == Token.integer) {
-        token = tokenNext();             // minimum # or exact # of bonds (optional)
+        token = tokenNext(); // minimum # or exact # of bonds (optional)
         if (token.intValue < 0)
           return nonnegativeIntegerExpected();
         min = max = token.intValue;
@@ -1325,12 +1376,12 @@ class Compiler {
         tok = token.tok;
         if (tok == Token.rightparen) // )
           break;
-        if (tok != Token.opOr)   // ,
+        if (tok != Token.opOr) // ,
           return commaOrCloseExpected();
         tok = tokPeek();
       }
       if (tok == Token.integer) {
-        token = tokenNext();             // maximum # of bonds (optional)
+        token = tokenNext(); // maximum # of bonds (optional)
         if (token.intValue < 0)
           return nonnegativeIntegerExpected();
         max = token.intValue;
@@ -1338,7 +1389,7 @@ class Compiler {
         tok = token.tok;
         if (tok == Token.rightparen) // )
           break;
-        if (tok != Token.opOr)   // ,
+        if (tok != Token.opOr) // ,
           return commaOrCloseExpected();
         tok = tokPeek();
       }
@@ -1350,20 +1401,19 @@ class Compiler {
         return rightParenthesisExpected();
       iHaveExpression = true;
     }
-    if (! iHaveExpression)
+    if (!iHaveExpression)
       addTokenToPostfix(new Token(Token.all));
-    return addTokenToPostfix(new Token(Token.connected, min,
-        new Integer(max)));
+    return addTokenToPostfix(new Token(Token.connected, min, new Integer(max)));
   }
 
   boolean clauseSubstructure() {
-    tokenNext();                             // substructure
-    if (! tokenNext(Token.leftparen))  // (
+    tokenNext(); // substructure
+    if (!tokenNext(Token.leftparen)) // (
       return leftParenthesisExpected();
-    Token tokenSmiles = tokenNext();         // "smiles"
+    Token tokenSmiles = tokenNext(); // "smiles"
     if (tokenSmiles == null || tokenSmiles.tok != Token.string)
       return stringExpected();
-    if (! tokenNext(Token.rightparen)) // )
+    if (!tokenNext(Token.rightparen)) // )
       return rightParenthesisExpected();
     return addTokenToPostfix(new Token(Token.substructure, tokenSmiles.value));
   }
@@ -1373,44 +1423,39 @@ class Compiler {
   boolean generateResidueSpecCode(Token token) {
     addTokenToPostfix(token);
     if (residueSpecCodeGenerated)
-        addTokenToPostfix(Token.tokenAnd);
+      addTokenToPostfix(Token.tokenAnd);
     residueSpecCodeGenerated = true;
     return true;
   }
 
   boolean clauseResidueSpec() {
     boolean specSeen = false;
-    residueSpecCodeGenerated= false;
+    residueSpecCodeGenerated = false;
     int tok = tokPeek();
-    if (tok == Token.asterisk ||
-        tok == Token.leftsquare ||
-        tok == Token.identifier) {
-      
+    if (tok == Token.asterisk || tok == Token.leftsquare
+        || tok == Token.identifier) {
+
       //note: there are many groups that could
       //in principle be escaped here, for example:
       //"AND" "SET" and others
       //rather than do this, just have people
       //use [AND] [SET], which is no problem.
-      
-      if (! clauseResNameSpec())
+
+      if (!clauseResNameSpec())
         return false;
       specSeen = true;
       tok = tokPeek();
     }
-    if (tok == Token.asterisk ||
-        tok == Token.hyphen ||
-        tok == Token.integer ||
-        tok == Token.seqcode) {
-      if (! clauseResNumSpec())
+    if (tok == Token.asterisk || tok == Token.hyphen || tok == Token.integer
+        || tok == Token.seqcode) {
+      if (!clauseResNumSpec())
         return false;
       specSeen = true;
       tok = tokPeek();
     }
-    if (tok == Token.colon ||
-        tok == Token.asterisk ||
-        tok == Token.identifier ||
-        tok == Token.integer) {
-      if (! clauseChainSpec(tok))
+    if (tok == Token.colon || tok == Token.asterisk || tok == Token.identifier
+        || tok == Token.integer) {
+      if (!clauseChainSpec(tok))
         return false;
       specSeen = true;
       tok = tokPeek();
@@ -1422,14 +1467,13 @@ class Compiler {
       tok = tokPeek();
     }
     if (tok == Token.percent) {
-      if (! clauseAlternateSpec())
+      if (!clauseAlternateSpec())
         return false;
       specSeen = true;
       tok = tokPeek();
     }
-    if (tok == Token.colon ||
-        tok == Token.slash) {
-      if (! clauseModelSpec())
+    if (tok == Token.colon || tok == Token.slash) {
+      if (!clauseModelSpec())
         return false;
       specSeen = true;
       tok = tokPeek();
@@ -1480,8 +1524,8 @@ class Compiler {
 
     if (tokPeek() == Token.asterisk) {
       tokenNext();
-      return generateResidueSpecCode(new Token(Token.identifier,
-          tokenT.value + "*"));
+      return generateResidueSpecCode(new Token(Token.identifier, tokenT.value
+          + "*"));
     }
     return generateResidueSpecCode(tokenT);
   }
@@ -1507,8 +1551,8 @@ class Compiler {
       int seqcodeA = seqcode;
       if (!clauseSequenceCode())
         seqcode = Integer.MAX_VALUE;
-      return generateResidueSpecCode(new Token(Token.spec_seqcode_range, seqcodeA,
-          new Integer(seqcode)));
+      return generateResidueSpecCode(new Token(Token.spec_seqcode_range,
+          seqcodeA, new Integer(seqcode)));
     }
     return generateResidueSpecCode(new Token(Token.spec_seqcode, seqcode,
         "seqcode"));
@@ -1529,8 +1573,7 @@ class Compiler {
     else if (tokPeek == Token.integer) {
       int val = tokenNext().intValue;
       seqcode = Group.getSeqcode(Math.abs(val), ' ');
-    }
-    else
+    } else
       return false;
     if (negative)
       seqcode = -seqcode;
@@ -1541,9 +1584,9 @@ class Compiler {
     if (tok == Token.colon) {
       tokenNext();
       tok = tokPeek();
-      if(isSpecTerminator(tok))
-        return generateResidueSpecCode(new Token(Token.spec_chain,
-            '\0', "spec_chain"));
+      if (isSpecTerminator(tok))
+        return generateResidueSpecCode(new Token(Token.spec_chain, '\0',
+            "spec_chain"));
     }
     if (tok == Token.asterisk) {
       tokenNext();
@@ -1552,21 +1595,21 @@ class Compiler {
     Token tokenChain;
     char chain;
     switch (tok) {
-//    case Token.colon:
-//    case Token.percent:
-//    case Token.nada:
-//    case Token.dot:  I think this was incorrect. :.C?? 
-//      chain = '\0'; 
-//      break;
+    //    case Token.colon:
+    //    case Token.percent:
+    //    case Token.nada:
+    //    case Token.dot:  I think this was incorrect. :.C?? 
+    //      chain = '\0'; 
+    //      break;
     case Token.integer:
       tokenChain = tokenNext();
       if (tokenChain.intValue < 0 || tokenChain.intValue > 9)
         return invalidChainSpecification();
-      chain = (char)('0' + tokenChain.intValue);
+      chain = (char) ('0' + tokenChain.intValue);
       break;
     case Token.identifier:
       tokenChain = tokenNext();
-      String strChain = (String)tokenChain.value;
+      String strChain = (String) tokenChain.value;
       if (strChain.length() != 1)
         return invalidChainSpecification();
       chain = strChain.charAt(0);
@@ -1576,8 +1619,8 @@ class Compiler {
     default:
       return invalidChainSpecification();
     }
-    return generateResidueSpecCode(new Token(Token.spec_chain,
-                                             chain, "spec_chain"));
+    return generateResidueSpecCode(new Token(Token.spec_chain, chain,
+        "spec_chain"));
   }
 
   boolean isSpecTerminator(int tok) {
@@ -1593,14 +1636,14 @@ class Compiler {
     }
     return false;
   }
-  
+
   boolean clauseAlternateSpec() {
     tokenNext();
     int tok = tokPeek();
-    if(isSpecTerminator(tok))
+    if (isSpecTerminator(tok))
       return generateResidueSpecCode(new Token(Token.spec_alternate, null));
     Token tokenAlternate = tokenNext();
-    String alternate = (String)tokenAlternate.value;
+    String alternate = (String) tokenAlternate.value;
     switch (tokenAlternate.tok) {
     case Token.asterisk:
     case Token.string:
@@ -1634,11 +1677,11 @@ class Compiler {
       return invalidModelSpecification();
     }
     return generateResidueSpecCode(new Token(Token.spec_model,
-                                             (String)tokenModel.value));
+        (String) tokenModel.value));
   }
 
   boolean clauseAtomSpec() {
-    if (! tokenNext(Token.dot))
+    if (!tokenNext(Token.dot))
       return invalidAtomSpecification();
     Token tokenAtomSpec = tokenNext();
     if (tokenAtomSpec == null)
@@ -1658,7 +1701,7 @@ class Compiler {
     default:
       return invalidAtomSpecification();
     }
-    atomSpec += (String)tokenAtomSpec.value;
+    atomSpec += (String) tokenAtomSpec.value;
     if (tokPeek() == Token.asterisk) {
       tokenNext();
       // this one is a '*' as a prime, not a wildcard
@@ -1672,12 +1715,12 @@ class Compiler {
       Token token = atokenCommand[i];
       //Logger.debug(token + " atokenCommand: " + atokenCommand.length);
       if (token.tok == Token.leftsquare) {
-        if (! compileRGB(i))
+        if (!compileRGB(i))
           return false;
       } else if (token.tok == Token.dollarsign) {
         i++; // skip identifier
       } else if (token.tok == Token.identifier) {
-        String id = (String)token.value;
+        String id = (String) token.value;
         int argb = Graphics3D.getArgbFromString(id);
         if (argb != 0) {
           token.tok = Token.colorRGB;
@@ -1690,20 +1733,17 @@ class Compiler {
 
   boolean compileRGB(int i) {
     Token[] atoken = atokenCommand;
-    if (atoken.length >= i + 7 &&
-        atoken[i].tok == Token.leftsquare &&
-        atoken[i+1].tok == Token.integer    &&
-        atoken[i+2].tok == Token.opOr       &&
-        atoken[i+3].tok == Token.integer    &&
-        atoken[i+4].tok == Token.opOr       &&
-        atoken[i+5].tok == Token.integer    &&
-        atoken[i+6].tok == Token.rightsquare) {
-      int argb = (0xFF000000 |
-                  atoken[i+1].intValue << 16 |
-                  atoken[i+3].intValue << 8 |
-                  atoken[i+5].intValue);
+    if (atoken.length >= i + 7 && atoken[i].tok == Token.leftsquare
+        && atoken[i + 1].tok == Token.integer
+        && atoken[i + 2].tok == Token.opOr
+        && atoken[i + 3].tok == Token.integer
+        && atoken[i + 4].tok == Token.opOr
+        && atoken[i + 5].tok == Token.integer
+        && atoken[i + 6].tok == Token.rightsquare) {
+      int argb = (0xFF000000 | atoken[i + 1].intValue << 16
+          | atoken[i + 3].intValue << 8 | atoken[i + 5].intValue);
       atoken[i++] = new Token(Token.colorRGB, argb, "[R,G,B]");
-      for (int ipt = i+6; ipt < atoken.length; ipt++)
+      for (int ipt = i + 6; ipt < atoken.length; ipt++)
         atoken[i++] = atoken[ipt];
       Token[] atokenNew = new Token[i];
       System.arraycopy(atoken, 0, atokenNew, 0, i);
@@ -1711,17 +1751,15 @@ class Compiler {
       return true;
     }
     // chime also accepts [xRRGGBB]
-    if (atoken.length >= i + 3 &&
-        atoken[i  ].tok == Token.leftsquare &&
-        atoken[i+1].tok == Token.identifier &&
-        atoken[i+2].tok == Token.rightsquare) {
-      String hex = (String)atoken[i+1].value;
-      if (hex.length() == 7 &&
-          hex.charAt(0) == 'x') {
+    if (atoken.length >= i + 3 && atoken[i].tok == Token.leftsquare
+        && atoken[i + 1].tok == Token.identifier
+        && atoken[i + 2].tok == Token.rightsquare) {
+      String hex = (String) atoken[i + 1].value;
+      if (hex.length() == 7 && hex.charAt(0) == 'x') {
         try {
           int argb = 0xFF000000 | Integer.parseInt(hex.substring(1), 16);
           atoken[i++] = new Token(Token.colorRGB, argb, "[xRRGGBB]");
-          for (int ipt = i+2; ipt < atoken.length; ipt++)
+          for (int ipt = i + 2; ipt < atoken.length; ipt++)
             atoken[i++] = atoken[ipt];
           Token[] atokenNew = new Token[i];
           System.arraycopy(atoken, 0, atokenNew, 0, i);

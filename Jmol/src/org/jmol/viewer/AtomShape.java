@@ -34,16 +34,19 @@ class AtomShape extends Shape {
 
   short[] mads;
   short[] colixes;
+  short[] paletteIDs;
 
   void setSize(int size, BitSet bsSelected) {
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
     Atom[] atoms = frame.atoms;
+    boolean isVisible = (size != 0);
     for (int i = frame.atomCount; --i >= 0;)
       if (bsSelected.get(i)) {
         if (mads == null)
           mads = new short[frame.atomCount];
         Atom atom = atoms[i];
+        atom.setShapeVisibility(myVisibilityFlag, isVisible);
         mads[i] = atom.convertEncodedMad(size);
         bsSizeSet.set(i);
       }
@@ -59,11 +62,14 @@ class AtomShape extends Shape {
       int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
       for (int i = atomCount; --i >= 0; )
         if (bs.get(i)) {
-          if (colixes == null)
+          if (colixes == null) {
             colixes = new short[atomCount];
+            paletteIDs = new short[atomCount];
+          }
           colixes[i] = ((colix != Graphics3D.UNRECOGNIZED)
                         ? colix
                         : viewer.getColixAtomPalette(atoms[i], pid));
+          paletteIDs[i] = (short) pid;
           bsColixSet.set(i, colixes[i] != 0 || atoms[i].isTranslucent());
         }
       return;
@@ -83,17 +89,6 @@ class AtomShape extends Shape {
     }
   }
   
-  void setVisibilityFlags() {
-    BitSet bsSelected = (viewer.getSelectionHaloEnabled() ? viewer
-        .getSelectionSet() : null);
-    for (int i = frame.atomCount; --i >= 0;) {
-      Atom atom = frame.atoms[i];
-      boolean isVisible = bsSelected != null && bsSelected.get(i)
-          || (mads != null && mads[i] != 0);
-      atom.setShapeVisibility(myVisibilityFlag, isVisible);
-    }
-  }
-
   void setModelClickability() {
     if (mads == null)
       return;
@@ -113,12 +108,8 @@ class AtomShape extends Shape {
     for (int i = frame.atomCount; --i >= 0;) {
       if (bsSizeSet != null && bsSizeSet.get(i))
         setStateInfo(temp, i, type + " " + (mads[i] / 2000f));
-      if (bsColixSet != null && bsColixSet.get(i)) {
-        setStateInfo(temp2, i, "color " + type + " [x"
-            + g3d.getHexColorFromIndex(colixes[i]) + "]");
-        if (Graphics3D.isColixTranslucent(colixes[i]))
-          setStateInfo(temp2, i, "color " + type + " translucent");
-      }
+      if (bsColixSet != null && bsColixSet.get(i))
+        setStateInfo(temp2, i, getColorCommand(type, paletteIDs[i], colixes[i]));
     }
     return getShapeCommands(temp, temp2, frame.atomCount);
   }  

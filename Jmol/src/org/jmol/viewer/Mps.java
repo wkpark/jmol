@@ -348,17 +348,11 @@ abstract class Mps extends Shape {
         int atomIndex2 = monomers[i].lastAtomIndex;
         if (!bsSizeSet.get(i)) //shapes MUST have been set with a size
           continue;
-          setStateInfo(temp, atomIndex1, atomIndex2, type + " " + (mads[i] / 2000f));
-        if (bsColixSet != null && bsColixSet.get(i)) {
-          if (paletteIDs[i] >= 0)
-            setStateInfo(temp2, atomIndex1, atomIndex2, "color " + type + " "
-                + JmolConstants.getPaletteName(paletteIDs[i]));
-          else
-            setStateInfo(temp2, atomIndex1, atomIndex2, "color " + type + " [x"
-                + g3d.getHexColorFromIndex(colixes[i]) + "]");
-          if (Graphics3D.isColixTranslucent(colixes[i]))
-            setStateInfo(temp2, atomIndex1, atomIndex2, "color " + type + " translucent");
-        }
+        setStateInfo(temp, atomIndex1, atomIndex2, type + " "
+            + (mads[i] / 2000f));
+        if (bsColixSet != null && bsColixSet.get(i))
+          setStateInfo(temp2, atomIndex1, atomIndex2, getColorCommand(type, 
+              paletteIDs[i], colixes[i]));
       }
       return getShapeCommands(temp, temp2, frame.atomCount);
     }  

@@ -35,6 +35,10 @@ class LcaoCartoon extends Isosurface {
 
   // these are globals, stored here and only passed on when the they are needed. 
 
+  void initShape() {
+    myType = "lcaoCartoon";
+  }
+  
   Integer lcaoColorPos = null;
   Integer lcaoColorNeg = null;
   String thisType;
@@ -191,4 +195,5 @@ class LcaoCartoon extends Isosurface {
     return (lcaoID != null ? lcaoID : "lcao_" + (i + 1) + "_"
         + (thisType != null ? thisType : ""));
   }
+
 }

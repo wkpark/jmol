@@ -39,6 +39,10 @@ class Draw extends MeshCollection {
 
   // bob hanson hansonr@stolaf.edu 3/2006
 
+  void initShape() {
+    myType = "draw";
+  }
+  
   final static int MAX_POINTS = 256; // a few extras here
   Point3f[] ptList = new Point3f[MAX_POINTS];
   int[] ptIdentifiers = new int[MAX_POINTS];
@@ -81,6 +85,8 @@ class Draw extends MeshCollection {
       length = Float.MAX_VALUE;
       bsAllAtoms.clear();
       offset = new Vector3f();
+      if (colix == 0)
+        colix = Graphics3D.GOLD;
       super.setProperty("thisID", null, null);
       return;
     }
@@ -196,8 +202,10 @@ class Draw extends MeshCollection {
       return;
     }
     if ("set" == propertyName) {
-      if (currentMesh == null)
+      if (currentMesh == null) {
         allocMesh(null);
+        currentMesh.colix = colix;
+      }
       currentMesh.isValid = (isValid ? setDrawing() : false);
       if (currentMesh.isValid) {
         scaleDrawing(currentMesh, newScale);
@@ -688,22 +696,22 @@ class Draw extends MeshCollection {
     return (d2 < dmin2 ? d2 : -1);
   }
   
-  String getDrawCommand(Mesh mesh) {
+  private String getDrawCommand(Mesh mesh) {
     int nVertices = 0;
     if (mesh == null)
       return "no current draw object";
-    String str = "draw " + mesh.thisID;
+    StringBuffer str = new StringBuffer("draw " + mesh.thisID);
     switch (mesh.drawType) {
     case Mesh.DRAW_MULTIPLE:
       return getDrawCommand(mesh, -1);
     case Mesh.DRAW_ARROW:
-      str += " ARROW";
+      str.append(" ARROW");
       break;
     case Mesh.DRAW_CIRCLE:
-      str += " CIRCLE"; //not yet implemented
+      str.append(" CIRCLE"); //not yet implemented
       break;
     case Mesh.DRAW_CURVE:
-      str += " CURVE";
+      str.append(" CURVE");
       break;
     case Mesh.DRAW_LINE:
       nVertices++;
@@ -715,15 +723,17 @@ class Draw extends MeshCollection {
     }
     int modelIndex = viewer.getDisplayModelIndex();
     if (modelIndex < 0)
-      return str;
+      return str.toString();
     int modelCount = viewer.getModelCount();
     int mCount = (mesh.modelFlags == null ? 1 : modelCount);
     for (int iModel = 0; iModel < mCount; iModel++) {
       if (mesh.modelFlags != null && mesh.modelFlags[iModel] == 0)
         continue;
-      str += getVertexList(mesh, iModel, nVertices);
+      str.append(getVertexList(mesh, iModel, nVertices));
     }
-    return str + ";";
+    str.append(";" + getColorCommand("draw", mesh.colix)+";");
+    
+    return str.toString();
   }
 
   String getVertexList(Mesh mesh, int iModel, int nVertices) {
@@ -733,7 +743,7 @@ class Draw extends MeshCollection {
     for (int i = 0; i < nVertices; i++) {
       Point3f v = new Point3f();
       v.set(mesh.vertices[mesh.polygonIndexes[iModel][i]]);
-      str += " {" + v.x + " " + v.y + " " + v.z + "}";
+      str += " " + StateManager.encloseCoord(v);
     }
     return str;
   }
@@ -749,7 +759,7 @@ class Draw extends MeshCollection {
     int nVertices = 0;
     str += "frame " + viewer.getModelNumber(iModel) + ";draw "
         + mesh.thisID + "_" + (iModel + 1);
-    switch (mesh.drawTypes[iModel]) {
+    switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
     case Mesh.DRAW_NONE:
       return "";
     case Mesh.DRAW_ARROW:
@@ -830,4 +840,16 @@ class Draw extends MeshCollection {
     return V;
   }
 
+  String getShapeState() {
+    StringBuffer s = new StringBuffer();
+    if (nPoints == 0)
+      return "";
+    for (int i = 0; i < meshCount; i++) {
+      Mesh mesh = meshes[i];
+      if (mesh.vertexCount == 0)
+        continue;
+      s.append(getDrawCommand(mesh, mesh.modelIndex) + "\n");
+    }
+    return s.toString();
+  }
 }

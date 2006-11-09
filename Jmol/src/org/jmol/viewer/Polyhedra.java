@@ -584,9 +584,7 @@ class Polyhedra extends SelectionIndependentShape {
           + (myFaceCenterOffset == DEFAULT_FACECENTEROFFSET ? ""
               : " faceCenterOffset " + myFaceCenterOffset)
           + (collapsed ? " collapsed" : "")
-          + (myColix == 0 ? "" : " [x"
-              + g3d.getHexColorFromIndex(myColix) + "]")
-          + (Graphics3D.isColixTranslucent(myColix) ? " translucent" : "")
+          + " " + encodeTransColor(myColix)
           + " to " + StateManager.encodeBitset(bs) + ";"
           + (visible ? "" : "polyhedra off;") + "\n";
       

@@ -121,10 +121,7 @@ class Balls extends Shape {
       if (bsSizeSet != null && bsSizeSet.get(i))
         setStateInfo(temp, i, "Spacefill " + (atoms[i].madAtom / 2000f));
       if (bsColixSet != null && bsColixSet.get(i)) {
-        setStateInfo(temp, i, "color atoms [x"
-            + g3d.getHexColorFromIndex(atoms[i].colixAtom) + "]");
-        if (atoms[i].isTranslucent())
-          setStateInfo(temp, i, "color translucent");
+        setStateInfo(temp, i, "color atoms " + encodeColor(atoms[i].colixAtom));
       }
     }
     return getShapeCommands(temp, null, atomCount);

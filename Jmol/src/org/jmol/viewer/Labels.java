@@ -302,11 +302,9 @@ class Labels extends Shape {
         continue;
       setStateInfo(temp, i, "label " + formats[i]);
       if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp2, i, "color label [x"
-            + g3d.getHexColorFromIndex(colixes[i]) + "]");
+        setStateInfo(temp2, i, getColorCommand("label", colixes[i]));
       if (bsBgColixSet != null && bsBgColixSet.get(i))
-        setStateInfo(temp2, i, "background label [x"
-            + g3d.getHexColorFromIndex(bgcolixes[i]) + "]");
+        setStateInfo(temp2, i, "background label " + encodeColor(bgcolixes[i]));
       if (offsets != null && offsets.length > i) {
         setStateInfo(temp2, i, "set labelOffset "
             + Text.getXOffset(offsets[i] >> 2) + " "
@@ -314,11 +312,9 @@ class Labels extends Shape {
         setStateInfo(temp2, i, "set labelAlignment "
             + Text.getAlignment(offsets[i]));
       }
-      if (bsFontSet != null && bsFontSet.get(i)) {
-        Font3D font = Font3D.getFont3D(fids[i]);
-        setStateInfo(temp2, i, "font label " + font.fontSize + " "
-            + font.fontFace + " " + font.fontStyle);
-      }
+      if (bsFontSet != null && bsFontSet.get(i))
+        setStateInfo(temp2, i, getFontCommand("label", Font3D
+            .getFont3D(fids[i])));
     }
     return getShapeCommands(temp, temp2, frame.atomCount);
   }  

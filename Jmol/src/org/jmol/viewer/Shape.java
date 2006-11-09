@@ -120,4 +120,43 @@ abstract class Shape {
   static String getShapeCommands(Hashtable htDefine, Hashtable htMore, int count, String selectCmd) {
     return StateManager.getCommands(htDefine, htMore, count, selectCmd);
   }
+  
+  String encodeColor(short colix) {
+    return (Graphics3D.isColixTranslucent(colix) ? "translucent ": "")
+    + " [x" + g3d.getHexColorFromIndex(colix) + "]"; 
+  }
+  
+  String getColorCommand(String type, short colix) {
+    return getColorCommand(type, (short)-1, colix);
+  }
+
+  String getColorCommand(String type, short pid, short colix) {
+    if (pid < 0 && colix == 0)
+      return "";
+    return "color " + type + " " + encodeTransColor(pid, colix) + ";\n";
+  }
+
+  String encodeTransColor(short colix) {
+    return encodeTransColor((short)-1, colix);
+  }
+
+  String encodeTransColor(short pid, short colix) {
+    if (pid < 0 && colix == 0)
+      return "";
+    String s = "";
+    if (Graphics3D.isColixTranslucent(colix))
+      s += "translucent ";
+    if (pid >= 0)
+      s += JmolConstants.getPaletteName(pid);
+    else
+      s += encodeColor(colix);
+    return s;
+  }
+  
+  static String getFontCommand(String type, Font3D font) {
+    if (font == null)
+      return "";
+    return "font " + type + " " + font.fontSize + " "
+        + font.fontFace + " " + font.fontStyle + ";\n";
+  }
 }

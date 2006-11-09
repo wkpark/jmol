@@ -136,12 +136,8 @@ class Sticks extends Shape {
       Bond bond = bonds[i];
       if (bsSizeSet != null && bsSizeSet.get(i))
         setStateInfo(temp, i, type + " " + (bond.mad / 2000f));
-      if (bsColixSet != null && bsColixSet.get(i)) {
-        setStateInfo(temp2, i, "color bonds [x"
-            + g3d.getHexColorFromIndex(bond.colix) + "]");
-        if (Graphics3D.isColixTranslucent(bond.colix))
-          setStateInfo(temp2, i, "color bonds translucent");
-      }
+      if (bsColixSet != null && bsColixSet.get(i))
+        setStateInfo(temp2, i, getColorCommand("bonds", bond.colix));
       setStateInfo(temp2, i, "bondOrder " + JmolConstants.getBondOrderNameFromOrder(bond.order));
     }
     return getShapeCommands(temp, temp2, -1, "select BONDS") + "\n";

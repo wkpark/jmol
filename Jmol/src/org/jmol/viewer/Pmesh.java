@@ -33,6 +33,9 @@ class Pmesh extends MeshCollection {
   boolean isOnePerLine;
   boolean isFixed;  
 
+  void initShape() {
+    myType = "pmesh";
+  }
   
   void setProperty(String propertyName, Object value, BitSet bs) {
     //Logger.debug(propertyName + " "+ value);

@@ -114,6 +114,10 @@ import org.jmol.quantum.MepCalculation;
 
 class Isosurface extends MeshCollection {
 
+  void initShape() {
+    myType = "isosurface";
+  }
+  
   boolean logMessages = false;
   boolean logCompression = false;
   boolean logCube = false;
@@ -5145,5 +5149,9 @@ class Isosurface extends MeshCollection {
     surfaceSet[a].or(surfaceSet[b]);
     surfaceSet[b] = null;
     //System.out.println("merging " + a + " " + b + ":\n"+surfaceSet[a] + '\n'+surfaceSet[b]);
+  }
+
+  String getShapeState() {
+    return "#note - " + myType + " state not recorded\n";
   }
 }

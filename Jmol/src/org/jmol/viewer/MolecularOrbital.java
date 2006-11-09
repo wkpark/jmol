@@ -35,6 +35,7 @@ import org.jmol.util.Logger;
 class MolecularOrbital extends Isosurface {
 
   void initShape() {
+    myType = "molecularOrbital";
     super.setProperty("thisID", "mo", null);
     return;
   }

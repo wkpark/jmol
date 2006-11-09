@@ -406,15 +406,13 @@ class Measures extends Shape {
         bs.set(i);
       }
       if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp, i, "color measure [x"
-            + g3d.getHexColorFromIndex(measurements[i].colix) + "]");
+        setStateInfo(temp, i, getColorCommand("measure", measurements[i].colix));
     }
-    if (n == measurementCount)
+    if (n == measurementCount && n > 0)
       commands.append("measures off; # lines and numbers off\n");
     else if (n > 0)
       commands.append("measures hide " + bs);
-    commands.append("font measures " + font3d.fontSize + " " + font3d.fontFace
-        + " " + font3d.fontStyle + ";\n");
+    commands.append(getFontCommand("measures", font3d));
     commands.append(getShapeCommands(temp, null, -1, "measures select"));
     return commands.toString();
   }

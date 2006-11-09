@@ -64,10 +64,8 @@ abstract class SelectionIndependentShape extends Shape {
     return myType
         + (mad == 0 ? " off" : mad == 1 ? " on" : mad == -1 ? " dotted" 
             : mad < 20 ? " " + mad : " " + (mad / 2000f)) + ";"
-        + (colix != 0 ? "color " + myType + " [x"
-            + g3d.getHexColorFromIndex(colix) + "];" : "")
-        + (font3d != null ? "font " + myType + " " + font3d.fontSize + " "
-            + font3d.fontFace + " " + font3d.fontStyle + ";" : "")
+        + getColorCommand(myType, colix)
+        + getFontCommand(myType, font3d)
         + "\n";
   }
 }

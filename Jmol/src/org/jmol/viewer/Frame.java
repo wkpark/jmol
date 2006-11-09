@@ -1467,8 +1467,9 @@ public final class Frame {
   final static boolean showRebondTimes = true;
 
   void rebond() {
-    // only from app preferences panel
+    // from eval "connect" or from app preferences panel
     deleteAllBonds();
+    stateScripts.add("connect;\n");
     autoBond(null, null);
   }
 
@@ -1688,10 +1689,16 @@ public final class Frame {
     bondCount = indexNoncovalent;
   }
 
+  Vector stateScripts = new Vector();
+  
   int makeConnections(float minDistance, float maxDistance,
                        short order, int connectOperation,
                        BitSet bsA, BitSet bsB) {
-    
+    String stateScript = "connect " + minDistance + " " + maxDistance
+      + " " + StateManager.encodeBitset(bsA) + " " + StateManager.encodeBitset(bsB)
+      + " " + JmolConstants.getBondOrderNameFromOrder(order) 
+      + " " + JmolConstants.connectOperationName(connectOperation) + ";\n";
+    stateScripts.add(stateScript);
     Logger.debug("makeConnections(" + minDistance + "," +
                        maxDistance + "," + order + "," + connectOperation +
                        "," + bsA + "," + bsB + ")");

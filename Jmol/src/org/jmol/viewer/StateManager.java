@@ -431,8 +431,8 @@ class StateManager {
 
   static String encodeBitset(BitSet bs) {
     if (bs == null)
-      return "{}";
-    StringBuffer s = new StringBuffer("{");
+      return "({})";
+    StringBuffer s = new StringBuffer("({");
     int imax = bs.size();
     int iLast = -1;
     int iFirst = -2;
@@ -443,7 +443,7 @@ class StateManager {
         if (iLast >= 0 && iFirst != iLast)
           s.append(":" + iLast);
         if (i == imax) {
-          s.append("}");
+          s.append("})");
           return s.toString();
         }
         iLast = -1;
@@ -456,7 +456,7 @@ class StateManager {
         iLast = i;
       }
     }
-    return "{}"; // impossible return
+    return "({})"; // impossible return
   }
  
   static BitSet decodeBitset (String strBitset) {
@@ -526,12 +526,12 @@ class StateManager {
   static String getCommands(Hashtable ht, StringBuffer s, String setPrev, int nAll, String selectCmd) {
     if (ht == null)
       return "";
-    String strAll = "{ 0:"+ (nAll - 1)+ "}";
+    String strAll = "({ 0:"+ (nAll - 1)+ "})";
    Enumeration e = ht.keys();
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
       String set = encodeBitset((BitSet) ht.get(key));
-      if (set.length() < 3)
+      if (set.length() == 4)
         continue;
       if (!set.equals(setPrev)) {
         if (set.equals(strAll)) {
@@ -539,9 +539,9 @@ class StateManager {
           s.append(" *;");
         } else {
         s.append(selectCmd);
-        s.append(" (");
+        s.append(" ");
         s.append(set);
-        s.append(");\n");
+        s.append(";\n");
         }
       }
       setPrev = set;

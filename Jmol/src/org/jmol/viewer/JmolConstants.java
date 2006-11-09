@@ -60,7 +60,7 @@ final public class JmolConstants {
   public final static float DEFAULT_MAX_CONNECT_DISTANCE = 100000000f;
   public final static float DEFAULT_MIN_CONNECT_DISTANCE = 0.1f;
   
-  public final static String[] connectOperationStrings =
+  private final static String[] connectOperationStrings =
   { "delete", "modify", "create", "modifyOrCreate", "auto" };
 
   public static int connectOperationFromString(String connectOperationString) {
@@ -69,6 +69,10 @@ final public class JmolConstants {
       if (connectOperationStrings[i].equalsIgnoreCase(connectOperationString))
         break;
     return i;
+  }
+  
+  public static String connectOperationName(int i) {
+    return connectOperationStrings[i];
   }
   
   public final static short MAR_DELETED = Short.MIN_VALUE;
@@ -206,6 +210,8 @@ final public class JmolConstants {
   }
   
   public final static String getBondOrderNameFromOrder(short order) {
+    if (order == BOND_ORDER_NULL)
+      return "single";
     if ((order & BOND_HYDROGEN_MASK) != 0)
       return "hbond";
     if ((order & BOND_SULFUR_MASK) != 0)

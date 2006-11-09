@@ -1195,8 +1195,18 @@ String getAtomInfoChime(int i) {
   }
   
   String getState() {
+    if (frame == null)
+      return "";
+    
     StringBuffer commands = new StringBuffer();
     String cmd;
+    
+    // connections
+    
+    for (int i = 0; i < frame.stateScripts.size(); i++) {
+      commands.append(frame.stateScripts.get(i));
+    }
+
     // shape construction
 
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {

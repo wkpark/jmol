@@ -111,7 +111,7 @@ class AtomShape extends Shape {
     Hashtable temp2 = new Hashtable();
     String type = JmolConstants.shapeClassBases[shapeID];
     for (int i = frame.atomCount; --i >= 0;) {
-      if (bsSizeSet.get(i))
+      if (bsSizeSet != null && bsSizeSet.get(i))
         setStateInfo(temp, i, type + " " + (mads[i] / 2000f));
       if (bsColixSet != null && bsColixSet.get(i)) {
         setStateInfo(temp2, i, "color " + type + " [x"
@@ -120,7 +120,7 @@ class AtomShape extends Shape {
           setStateInfo(temp2, i, "color " + type + " translucent");
       }
     }
-    return getShapeCommands(temp, temp2);
+    return getShapeCommands(temp, temp2, frame.atomCount);
   }  
 
 }

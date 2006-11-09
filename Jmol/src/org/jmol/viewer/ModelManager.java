@@ -1202,29 +1202,32 @@ String getAtomInfoChime(int i) {
     StringBuffer commands = new StringBuffer();
     String cmd;
     Hashtable temp = new Hashtable();
-    
+
     // hidden atoms and displayed frames
-    temp.put("hide selected", viewer.getHiddenSet());
+    bs = viewer.getHiddenSet();
+    if (firstAtomOf(bs) >= 0)
+      temp.put("hide selected", bs);
     cmd = StateManager.getCommands(temp);
     if (cmd != null)
       commands.append(cmd);
-    int modelIndex = viewer.getDisplayModelIndex();
-    switch (modelIndex) {
-    case -1:
-      if (frame.modelCount > 1)
+    if (frame.modelCount > 1) {
+      int modelIndex = viewer.getDisplayModelIndex();
+      switch (modelIndex) {
+      case -1:
         commands.append("frame all;");
-      break;
-    case -2:
-      commands.append("background model "
-          + getModelNumber(viewer.getBackgroundModelIndex()) + ";");
-    default:
-      commands.append("frame " + getModelNumber(modelIndex) + ";");
+        break;
+      case -2:
+        commands.append("background model "
+            + getModelNumber(viewer.getBackgroundModelIndex()) + ";");
+      default:
+        commands.append("frame " + getModelNumber(modelIndex) + ";");
+      }
     }
     // frame range?    
     info.put("visibilityCommands", commands);
-    
+
     // shape construction
-    
+
     commands = new StringBuffer();
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];

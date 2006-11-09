@@ -320,6 +320,6 @@ class Labels extends Shape {
             + font.fontFace + " " + font.fontStyle);
       }
     }
-    return getShapeCommands(temp, temp2);
+    return getShapeCommands(temp, temp2, frame.atomCount);
   }  
 }

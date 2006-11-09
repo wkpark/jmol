@@ -113,7 +113,7 @@ abstract class Shape {
       bs.set(i);
   }
 
-  static String getShapeCommands(Hashtable htDefine, Hashtable htMore) {
-    return StateManager.getCommands(htDefine, htMore);
+  static String getShapeCommands(Hashtable htDefine, Hashtable htMore, int atomCount) {
+    return StateManager.getCommands(htDefine, htMore, atomCount);
   }
  }

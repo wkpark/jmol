@@ -301,7 +301,7 @@ abstract class Mps extends Shape {
         int leadAtomIndex = leadAtomIndices[i];
         if (bsSelected.get(leadAtomIndex)) { 
           mads[i] = mad >= 0 ? mad : getMadSpecial(mad, i);
-          bsSizeSet.set(i);
+          bsSizeSet.set(i, isVisible);
           monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
           frame.atoms[leadAtomIndex].setShapeVisibility(myVisibilityFlag,isVisible);
           falsifyMesh(i, true);
@@ -346,7 +346,7 @@ abstract class Mps extends Shape {
       for (int i = 0; i < monomerCount; i++) {
         int atomIndex1 = monomers[i].firstAtomIndex;
         int atomIndex2 = monomers[i].lastAtomIndex;
-        if (!bsSizeSet.get(i))
+        if (!bsSizeSet.get(i)) //shapes MUST have been set with a size
           continue;
           setStateInfo(temp, atomIndex1, atomIndex2, type + " " + (mads[i] / 2000f));
         if (bsColixSet != null && bsColixSet.get(i)) {
@@ -360,7 +360,7 @@ abstract class Mps extends Shape {
             setStateInfo(temp2, atomIndex1, atomIndex2, "color " + type + " translucent");
         }
       }
-      return getShapeCommands(temp, temp2);
+      return getShapeCommands(temp, temp2, frame.atomCount);
     }  
 
     void falsifyMesh(int index, boolean andNearby) {

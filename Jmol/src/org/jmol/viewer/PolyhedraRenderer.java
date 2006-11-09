@@ -47,8 +47,7 @@ class PolyhedraRenderer extends ShapeRenderer {
      Logger.debug("atom "+p.vertices[i].getIdentity());
      }
      */
-    short colix = Graphics3D.inheritColix(p.polyhedronColix,
-        p.centralAtom.colixAtom);
+    short colix = Graphics3D.inheritColix(p.myColix, p.centralAtom.colixAtom);
     Atom[] vertices = p.vertices;
     byte[] planes;
 

@@ -5163,6 +5163,13 @@ class Eval { //implements Runnable {
         if ("to".equalsIgnoreCase(str)) {
           if (nAtomSets > 1)
             invalidParameterOrder();
+          if (statementLength > i + 2 && statement[i + 2].tok == Token.bitset) {
+            propertyName = "toBitSet";
+            propertyValue = statement[i + 2].value;
+            i += 3;
+            needsGenerating = true;
+            break;
+          }
           setPropertyName = "to";
           continue;
         }

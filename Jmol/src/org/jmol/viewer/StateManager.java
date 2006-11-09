@@ -441,7 +441,7 @@ class StateManager {
       boolean isSet = bs.get(i);
       if (i == imax || iLast >= 0 && !isSet) {
         if (iLast >= 0 && iFirst != iLast)
-          s.append(":" + iLast);
+          s.append((iFirst == iLast - 1 ? " " : ":") + iLast);
         if (i == imax) {
           s.append("})");
           return s.toString();

@@ -57,6 +57,7 @@ class Polyhedra extends SelectionIndependentShape {
   boolean iHaveCenterBitSet;
   boolean iHaveVertexBitSet;
   boolean bondedOnly;
+  boolean haveBitSetVertices;
 
   BitSet centers;
   BitSet bsVertices;
@@ -82,13 +83,14 @@ class Polyhedra extends SelectionIndependentShape {
       bsVertexCount = new BitSet();
       bondedOnly = isCollapsed = iHaveCenterBitSet = iHaveVertexBitSet = false;
       drawEdges = EDGES_NONE;
+      haveBitSetVertices = false;
     }
 
     if ("generate" == propertyName) {
       if (!iHaveCenterBitSet)
         centers = bs;
       deletePolyhedra();
-      buildPolyhedra(radius == 0 || bondedOnly);
+      buildPolyhedra();
       return;
     }
 
@@ -115,6 +117,11 @@ class Polyhedra extends SelectionIndependentShape {
 
     if ("to" == propertyName) {
       bsVertices = (BitSet) value;
+    }
+
+    if ("toBitSet" == propertyName) {
+      bsVertices = (BitSet) value;
+      haveBitSetVertices = true;
     }
 
     if ("faceCenterOffset" == propertyName) {
@@ -218,7 +225,7 @@ class Polyhedra extends SelectionIndependentShape {
         continue;
       int atomIndex = p.centralAtom.atomIndex;
       if (centers.get(atomIndex)) {
-        p.polyhedronColix = ((colix != Graphics3D.UNRECOGNIZED) ? colix
+        p.myColix = ((colix != Graphics3D.UNRECOGNIZED) ? colix
             : viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), pid));
       }
     }
@@ -230,7 +237,7 @@ class Polyhedra extends SelectionIndependentShape {
       if (p == null)
         continue;
       if (centers.get(p.centralAtom.atomIndex))
-        p.polyhedronColix = Graphics3D.setTranslucent(p.polyhedronColix,
+        p.myColix = Graphics3D.setTranslucent(p.myColix,
             isTranslucent);
     }
   }
@@ -241,13 +248,18 @@ class Polyhedra extends SelectionIndependentShape {
     polyhedrons[polyhedronCount++] = p;
   }
 
-  void buildPolyhedra(boolean useBondAlgorithm) {
+  void buildPolyhedra() {
+    boolean useBondAlgorithm = radius == 0 || bondedOnly;
     for (int i = frame.atomCount; --i >= 0;) {
       if (centers.get(i)) {
-        Polyhedron p = (useBondAlgorithm ? constructBondsPolyhedron(i)
+        Polyhedron p = (
+            haveBitSetVertices ? constructBitSetPolyhedron(i) 
+            : useBondAlgorithm ? constructBondsPolyhedron(i)
             : constructRadiusPolyhedron(i));
         if (p != null)
           savePolyhedron(p);
+        if (haveBitSetVertices)
+          return;
       }
     }
   }
@@ -274,6 +286,15 @@ class Polyhedra extends SelectionIndependentShape {
     return validatePolyhedronNew(atom, bondCount, otherAtoms);
   }
 
+  Polyhedron constructBitSetPolyhedron(int atomIndex) {
+    int otherAtomCount = 0;
+    for (int i = frame.atomCount; --i >= 0;)
+      if (bsVertices.get(i))
+        otherAtoms[otherAtomCount++] = frame.atoms[i];
+    return validatePolyhedronNew(frame.atoms[atomIndex], otherAtomCount,
+        otherAtoms);
+  }
+  
   Polyhedron constructRadiusPolyhedron(int atomIndex) {
     Atom atom = frame.getAtomAt(atomIndex);
     int otherAtomCount = 0;
@@ -522,15 +543,16 @@ class Polyhedra extends SelectionIndependentShape {
     int nPoints;
     boolean visible;
     final short[] normixes;
-    short polyhedronColix;
+    short myColix;
     byte[] planes;
     int planeCount;
     int visibilityFlags = 0;
     boolean collapsed = false;
+    float myFaceCenterOffset, myDistanceFactor;
 
     Polyhedron(Atom centralAtom, int ptCenter, int nPoints, int planeCount,
         Atom[] otherAtoms, short[] normixes, byte[] planes) {
-      this.polyhedronColix = colix;
+      this.myColix = colix;
       this.collapsed = isCollapsed;
       this.centralAtom = centralAtom;
       this.ptCenter = ptCenter;
@@ -540,12 +562,33 @@ class Polyhedra extends SelectionIndependentShape {
       this.normixes = new short[planeCount];
       this.planeCount = planeCount;
       this.planes = new byte[planeCount * 3];
+      myFaceCenterOffset = faceCenterOffset;
+      myDistanceFactor = distanceFactor;
       for (int i = nPoints; --i >= 0;)
         vertices[i] = otherAtoms[i];
       for (int i = planeCount; --i >= 0;)
         this.normixes[i] = normixes[i];
       for (int i = planeCount * 3; --i >= 0;)
         this.planes[i] = planes[i];
+    }
+    
+    String getState() {
+      BitSet bs = new BitSet();
+      for (int i = 0; i < ptCenter; i++)
+        bs.set(vertices[i].atomIndex);
+      String s = "select ({"
+          + centralAtom.atomIndex
+          + "});polyhedra " + ptCenter + " "
+          + (myDistanceFactor == DEFAULT_DISTANCE_FACTOR ? ""
+              : " distanceFactor " + myDistanceFactor)
+          + (myFaceCenterOffset == DEFAULT_FACECENTEROFFSET ? ""
+              : " faceCenterOffset " + myFaceCenterOffset)
+          + (collapsed ? " collapsed" : "")
+          + (myColix == 0 ? "" : "[x"
+              + g3d.getHexColorFromIndex(myColix) + "]")
+          + (Graphics3D.isColixTranslucent(myColix) ? " translucent" : "")
+          + " to " + StateManager.encodeBitset(bs) + ";\n";
+      return s;
     }
   }
 
@@ -563,6 +606,9 @@ class Polyhedra extends SelectionIndependentShape {
   }
   
   String getShapeState() {
-    return "#polyhedra state not implemented\n";
+    StringBuffer s = new StringBuffer();
+    for (int i = 0; i < polyhedronCount; i++)
+      s.append(polyhedrons[i].getState());
+    return s.toString();
   }
 }

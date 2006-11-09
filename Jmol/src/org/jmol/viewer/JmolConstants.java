@@ -211,7 +211,7 @@ final public class JmolConstants {
   
   public final static String getBondOrderNameFromOrder(short order) {
     if (order == BOND_ORDER_NULL)
-      return "single";
+      return "";
     if ((order & BOND_HYDROGEN_MASK) != 0)
       return "hbond";
     if ((order & BOND_SULFUR_MASK) != 0)

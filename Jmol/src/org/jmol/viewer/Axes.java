@@ -33,7 +33,6 @@ import org.jmol.symmetry.UnitCell;
 
 class Axes extends SelectionIndependentShape {
 
-  
   void setProperty(String propertyName, Object value, BitSet bs) {
     if ("scale" == propertyName) {
       setScale(((Float)value).floatValue());
@@ -62,6 +61,7 @@ class Axes extends SelectionIndependentShape {
 
   final static float MIN_AXIS_LEN = 1.5f;
   void initShape() {
+    myType = "axes";
     font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
     int axesMode = viewer.getAxesMode();
     if (axesMode == JmolConstants.AXES_MODE_UNITCELL && frame.cellInfos != null) {
@@ -105,4 +105,10 @@ class Axes extends SelectionIndependentShape {
     scale = angstroms;
     initShape();
   }
+  
+  String getShapeState() {
+    return ("set axes scale " + scale + ";\n")
+    + super.getShapeState();
+  }
+
 }

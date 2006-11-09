@@ -42,6 +42,8 @@ class Frank extends SelectionIndependentShape {
 
 
   void initShape() {
+    mad = 1;
+    myType = "frank";
     colix = defaultFontColix;
     font3d = g3d.getFont3D(defaultFontName, defaultFontStyle, defaultFontSize);
   }

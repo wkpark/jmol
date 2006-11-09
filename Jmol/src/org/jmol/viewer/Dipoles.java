@@ -53,8 +53,10 @@ class Dipoles extends SelectionIndependentShape {
   int atomIndex1;
 
   void initShape() {
+    myType = "dipoles";
+    mad = 9999;
   }
-
+  
   void setProperty(String propertyName, Object value, BitSet bs) {
 
     Logger.debug("dipoles setProperty " + propertyName + " " + value);
@@ -488,5 +490,9 @@ class Dipoles extends SelectionIndependentShape {
           && dipole.dipoleValue != 0 ? myVisibilityFlag : 0);
     }
     //dumpDipoles("setVis");
+  }
+  
+  String getShapeState() {
+    return "#dipole state not implemented\n";
   }
 }

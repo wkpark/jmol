@@ -24,4 +24,14 @@
 package org.jmol.viewer;
 
 class Uccage extends SelectionIndependentShape {
+  
+  String getShapeState() {
+    if (frame.cellInfos == null)
+      return "";
+    return super.getShapeState();
+  }
+  
+  void initShape() {
+    myType = "unitcell";
+  }
 }

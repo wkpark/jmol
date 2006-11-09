@@ -27,8 +27,7 @@ class FrankRenderer extends ShapeRenderer {
 
   void render() {
     Frank frank = (Frank) shape;
-    short mad = frank.mad;
-    if (mad == 0)
+    if (frank.mad == 0)
       return;
     frank.calcMetrics();
     g3d.drawStringNoSlab(Frank.frankString, frank.font3d, frank.colix,

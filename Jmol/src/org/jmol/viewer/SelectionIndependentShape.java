@@ -35,7 +35,8 @@ abstract class SelectionIndependentShape extends Shape {
   short colix;
   short bgcolix;
   Font3D font3d;
-
+  String myType;
+  
   void setSize(int size, BitSet bsSelected) {
     this.mad = (short)size;
   }
@@ -55,5 +56,18 @@ abstract class SelectionIndependentShape extends Shape {
       bgcolix = Graphics3D.getColix(value);
       return;
     }
+  }
+  
+  String getShapeState() {
+    if (mad == 9999)
+      return "";
+    return myType
+        + (mad == 0 ? " off" : mad == 1 ? " on" : mad == -1 ? " dotted" 
+            : mad < 20 ? " " + mad : " " + (mad / 2000f)) + ";"
+        + (colix != 0 ? "color " + myType + " [x"
+            + g3d.getHexColorFromIndex(colix) + "];" : "")
+        + (font3d != null ? "font " + myType + " " + font3d.fontSize + " "
+            + font3d.fontFace + " " + font3d.fontStyle + ";" : "")
+        + "\n";
   }
 }

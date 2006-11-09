@@ -45,7 +45,6 @@ class Polyhedra extends SelectionIndependentShape {
   final static int FACE_COUNT_MAX = MAX_VERTICES - 3;
   Atom[] otherAtoms = new Atom[MAX_VERTICES];
 
-
   int polyhedronCount;
   Polyhedron[] polyhedrons = new Polyhedron[32];
   float radius;
@@ -58,18 +57,20 @@ class Polyhedra extends SelectionIndependentShape {
   boolean iHaveCenterBitSet;
   boolean iHaveVertexBitSet;
   boolean bondedOnly;
-  
+
   BitSet centers;
   BitSet bsVertices;
   BitSet bsVertexCount;
 
   void initShape() {
+    mad = 9999;
+    myType = "polyhedra";
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
 
     Logger.debug("polyhedra: " + propertyName + " " + value);
-    
+
     if ("init" == propertyName) {
       faceCenterOffset = DEFAULT_FACECENTEROFFSET;
       distanceFactor = DEFAULT_DISTANCE_FACTOR;
@@ -289,7 +290,8 @@ class Polyhedra extends SelectionIndependentShape {
         break;
       otherAtoms[otherAtomCount++] = other;
     }
-    if (otherAtomCount < 3 || nVertices > 0 && !bsVertexCount.get(otherAtomCount))
+    if (otherAtomCount < 3 || nVertices > 0
+        && !bsVertexCount.get(otherAtomCount))
       return null;
     return validatePolyhedronNew(atom, otherAtomCount, otherAtoms);
   }
@@ -483,17 +485,19 @@ class Polyhedra extends SelectionIndependentShape {
 
   Vector3f align1 = new Vector3f();
   Vector3f align2 = new Vector3f();
+
   boolean isAligned(Point3f pt1, Point3f pt2, Point3f pt3) {
     align1.sub(pt1, pt3);
     align2.sub(pt2, pt3);
     float angle = align1.angle(align2);
-    return ( angle < 0.01f || angle > 3.13f);
+    return (angle < 0.01f || angle > 3.13f);
   }
-  
+
   final Vector3f vAB = new Vector3f();
   final Vector3f vAC = new Vector3f();
-  
+
   static float minDistanceForPlanarity = 0.1f;
+
   boolean isPlanar(Point3f pt1, Point3f pt2, Point3f pt3, Point3f ptX) {
     /*
      * what is the quickest way to find out if four points are planar? 
@@ -501,11 +505,13 @@ class Polyhedra extends SelectionIndependentShape {
      * of the fourth
      * 
      */
-      Vector3f plane = new Vector3f();
-      float w = Graphics3D.getPlaneThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
-      float distanceToPlane = Math.abs(plane.x * ptX.x + plane.y * ptX.y + plane.z * ptX.z + w)
-          / (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z * plane.z);
-      boolean isPlanar = (distanceToPlane < minDistanceForPlanarity);
+    Vector3f plane = new Vector3f();
+    float w = Graphics3D.getPlaneThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
+    float distanceToPlane = Math.abs(plane.x * ptX.x + plane.y * ptX.y
+        + plane.z * ptX.z + w)
+        / (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z
+            * plane.z);
+    boolean isPlanar = (distanceToPlane < minDistanceForPlanarity);
     return isPlanar;
   }
 
@@ -554,5 +560,9 @@ class Polyhedra extends SelectionIndependentShape {
       p.visibilityFlags = (p.visible && bs.get(p.centralAtom.modelIndex) ? myVisibilityFlag
           : 0);
     }
+  }
+  
+  String getShapeState() {
+    return "#polyhedra state not implemented\n";
   }
 }

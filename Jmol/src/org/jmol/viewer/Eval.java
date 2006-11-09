@@ -1672,7 +1672,7 @@ class Eval { //implements Runnable {
     case Token.decimal:
       float angstroms = floatParameter(cmdPt);
       if (angstroms < 0 || angstroms >= 2)
-        numberOutOfRange(0f, 1.99999f);
+        numberOutOfRange(0.01f, 1.99f);
       mad = (short) (angstroms * 1000 * 2);
       break;
     case Token.dotted:

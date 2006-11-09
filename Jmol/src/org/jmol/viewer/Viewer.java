@@ -1272,6 +1272,7 @@ public class Viewer extends JmolViewer {
     clearAllMeasurements();
     statusManager.clear();
     stateManager.clear(global);
+    clearPropertyFlags();
     refresh(0, "Viewer:clear()");
     System.gc();
   }
@@ -1731,6 +1732,7 @@ public class Viewer extends JmolViewer {
     s.append(transformManager.getState());
     //  display and selections
     s.append(selectionManager.getState());
+    s.append(getPropertyState());
     return s.toString();
   }
 
@@ -2857,6 +2859,7 @@ public class Viewer extends JmolViewer {
 
   public void setBooleanProperty(String key, boolean value) {
     //Eval
+    boolean isError = false;
     while (true) {
       if (key.equalsIgnoreCase("highResolution")) {
         setHighResolution(value);
@@ -2955,10 +2958,6 @@ public class Viewer extends JmolViewer {
         setAxesOrientationRasmol(value);
         break;
       }
-      if (key.equalsIgnoreCase("zeroBasedXyzRasmol")) {
-        setZeroBasedXyzRasmol(value);
-        return;
-      }
       if (key.equalsIgnoreCase("windowCentered")) {
         setWindowCentered(value);
         break;
@@ -2966,14 +2965,6 @@ public class Viewer extends JmolViewer {
       if (key.equalsIgnoreCase("adjustCamera")) {
         setAdjustCamera(value);
         break;
-      }
-      if (key.equalsIgnoreCase("rangeSelected")) {
-        setRangeSelected(value);
-        return;
-      }
-      if (key.equalsIgnoreCase("cameraMove")) {
-        setAllowCameraMove(value);
-        return;
       }
       if (key.equalsIgnoreCase("axesWindow")) {
         setAxesModeMolecular(false);
@@ -2987,17 +2978,9 @@ public class Viewer extends JmolViewer {
         setAxesModeUnitCell(value);
         break;
       }
-      if (key.equalsIgnoreCase("measureAllModels")) {
-        setMeasureAllModels(value);
-        return;
-      }
       if (key.equalsIgnoreCase("displayCellParameters")) {
         setDisplayCellParameters(value);
         break;
-      }
-      if (key.equalsIgnoreCase("statusReporting")) {
-        setAllowStatusReporting(value);
-        return;
       }
       if (key.equalsIgnoreCase("testFlag1")) {
         setTestFlag1(value);
@@ -3015,10 +2998,6 @@ public class Viewer extends JmolViewer {
         setTestFlag4(value);
         break;
       }
-      if (key.equalsIgnoreCase("chainCaseSensitive")) {
-        setChainCaseSensitive(value);
-        return;
-      }
       if (key.equalsIgnoreCase("ribbonBorder")) {
         setRibbonBorder(value);
         break;
@@ -3026,14 +3005,6 @@ public class Viewer extends JmolViewer {
       if (key.equalsIgnoreCase("cartoonRockets")) {
         setCartoonRocketFlag(value);
         break;
-      }
-      if (key.equalsIgnoreCase("hideNameInPopup")) {
-        setHideNameInPopup(value);
-        return;
-      }
-      if (key.equalsIgnoreCase("autobond")) {
-        setAutoBond(value);
-        return;
       }
       if (key.equalsIgnoreCase("greyscaleRendering")) {
         setGreyscaleRendering(value);
@@ -3047,25 +3018,107 @@ public class Viewer extends JmolViewer {
         setLabelsGroupFlag(value);
         break;
       }
-      if (key.equalsIgnoreCase("disablePopupMenu")) {
-        setDisablePopupMenu(value);
+      // these next return, because there is no need to repaint
+      while (true) {
+        if (key.equalsIgnoreCase("zeroBasedXyzRasmol")) {
+          setZeroBasedXyzRasmol(value);
+          break;
+        }
+        if (key.equalsIgnoreCase("rangeSelected")) {
+          setRangeSelected(value);
+          break;
+        }
+        if (key.equalsIgnoreCase("cameraMove")) {
+          setAllowCameraMove(value);
+          break;
+        }
+        if (key.equalsIgnoreCase("measureAllModels")) {
+          setMeasureAllModels(value);
+          break;
+        }
+        if (key.equalsIgnoreCase("statusReporting")) {
+          setAllowStatusReporting(value);
+          break;
+        }
+        if (key.equalsIgnoreCase("chainCaseSensitive")) {
+          setChainCaseSensitive(value);
+          break;
+        }
+        if (key.equalsIgnoreCase("hideNameInPopup")) {
+          setHideNameInPopup(value);
+          break;
+        }
+        if (key.equalsIgnoreCase("autobond")) {
+          setAutoBond(value);
+          break;
+        }
+        if (key.equalsIgnoreCase("disablePopupMenu")) {
+          setDisablePopupMenu(value);
+          break;
+        }
+        if (key.equalsIgnoreCase("forceAutoBond")) {
+          setForceAutoBond(value);
+          break;
+        }
+        isError = true;
+        break;
+      }
+      if (!isError) {
+        setPropertyFlag(key, value);
         return;
       }
-      if (key.equalsIgnoreCase("forceAutoBond")) {
-        setForceAutoBond(value);
-        return;
-      }
+      isError = true;
+      break;
+    }
+    if (isError) {
       Logger.error("viewer.setBooleanProperty(" + key + "," + value
           + ") - unrecognized SET option");
       scriptStatus("Script ERROR: unrecognized SET option: set " + key);
       return;
     }
+    setPropertyFlag(key, value);
     setTainted(true);
     refresh(0, "viewer.setBooleanProperty");
   }
 
   ////////  flags and settings ////////
 
+  Hashtable htPropertyFlags = new Hashtable();
+  
+  final static String volatileProperties = "indicate all volatile properties here in lower case"
+    + "";
+  final static String unnecessaryProperties = "have no need for saving these"
+    + "setfrank;showaxes;showunitcell;showboundbox;debugscript";
+
+  void setPropertyFlag(String key, boolean value) {
+    key = key.toLowerCase();
+    if (unnecessaryProperties.indexOf(key + ";") < 0)
+      htPropertyFlags.put(key, value ? Boolean.TRUE : Boolean.FALSE);  
+  }
+
+  void clearPropertyFlags() {
+    Enumeration e = htPropertyFlags.keys();
+    while (e.hasMoreElements()) {
+      String key = (String) e.nextElement();
+      if (volatileProperties.indexOf(key) >= 0) 
+        htPropertyFlags.remove(key);
+    }
+  }
+  
+  String getPropertyState() {
+    StringBuffer commands = new StringBuffer();
+    Enumeration e = htPropertyFlags.keys();
+    while (e.hasMoreElements()) {
+      String key = (String) e.nextElement();
+      commands.append("set "
+          + key
+          + " "
+          + (((Boolean) htPropertyFlags.get(key)).booleanValue() ? "true"
+              : "false") + ";\n");
+    }
+    return commands.toString();
+  }
+  
   boolean getDotSurfaceFlag() {
     return global.dotSurfaceFlag;
   }
@@ -3428,7 +3481,7 @@ public class Viewer extends JmolViewer {
   public void setFrankOn(boolean TF) {
     //applet, initializeModel
     global.frankOn = TF;
-    setShapeSize(JmolConstants.SHAPE_FRANK, TF ? -1 : 0);
+    setShapeSize(JmolConstants.SHAPE_FRANK, TF ? 1 : 0);
   }
 
   boolean getFrankOn() {

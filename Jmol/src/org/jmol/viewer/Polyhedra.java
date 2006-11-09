@@ -587,7 +587,9 @@ class Polyhedra extends SelectionIndependentShape {
           + (myColix == 0 ? "" : "[x"
               + g3d.getHexColorFromIndex(myColix) + "]")
           + (Graphics3D.isColixTranslucent(myColix) ? " translucent" : "")
-          + " to " + StateManager.encodeBitset(bs) + ";\n";
+          + " to " + StateManager.encodeBitset(bs) + ";"
+          + (visible ? "" : "polyhedra off;") + "\n";
+      
       return s;
     }
   }

@@ -56,6 +56,8 @@ class Text {
   int valign;
   int movableX;
   int movableY;
+  int movableXPercent = Integer.MAX_VALUE;
+  int movableYPercent = Integer.MAX_VALUE;
   int offsetX;
   int offsetY;
   int z;
@@ -155,13 +157,27 @@ class Text {
   void setMovableX(int x) {
     valign = (valign == XYZ ? XYZ : XY);
     movableX = x;
+    movableXPercent = Integer.MAX_VALUE;
   }
 
   void setMovableY(int y) {
     valign = (valign == XYZ ? XYZ : XY);
     movableY = y;
+    movableYPercent = Integer.MAX_VALUE;
+  }
+  
+  void setMovableXPercent(int x) {
+    valign = (valign == XYZ ? XYZ : XY);
+    movableX = Integer.MAX_VALUE;
+    movableXPercent = x;
   }
 
+  void setMovableYPercent(int y) {
+    valign = (valign == XYZ ? XYZ : XY);
+    movableY = Integer.MAX_VALUE;
+    movableYPercent = y;
+  }
+  
   void setXY(int x, int y) {
     setMovableX(x);
     setMovableY(y);
@@ -181,7 +197,9 @@ class Text {
   void setPositions() {
     int xLeft, xCenter, xRight;
     if (valign == XY || valign == XYZ) {
-      xLeft = xRight = xCenter = movableX + offsetX;
+      int x = (movableXPercent == Integer.MAX_VALUE ?  movableX 
+          : movableXPercent * windowWidth / 100);
+      xLeft = xRight = xCenter = x + offsetX;
     } else {
       xLeft = 5;
       xCenter = windowWidth / 2;
@@ -212,7 +230,9 @@ class Text {
       boxY = windowHeight;
       break;
     default:
-      boxY = movableY + offsetY;
+      int y = (movableYPercent == Integer.MAX_VALUE ?  movableY 
+          : movableYPercent * windowHeight / 100);
+      boxY = (windowHeight - y) + offsetY;
     }
 
     // adjust positions if necessary
@@ -470,26 +490,43 @@ class Text {
     return lines;
   }
   
-  String getState() {
+  String getState(boolean isDefine) {
     StringBuffer s = new StringBuffer();
     if (text == null || atomBased || target.equals("error"))
       return "";
     //set echo top left
     //set echo myecho x y
     //echo .....
+    
+    if (isDefine) {
+    String strOff = null;
     switch (valign) {
     case XY:
+      strOff = (movableXPercent == Integer.MAX_VALUE ? movableX + " " : movableXPercent + "% ");
+      strOff += (movableYPercent == Integer.MAX_VALUE ? movableY + "": movableYPercent + "%");
+      //fall through
     case XYZ:
-      String strOff = (valign == XY ? offsetX + " " + (-offsetY) : "{" + xyz.x + " " + xyz.y + " " + xyz.z +"}");
+      if (strOff == null)
+        strOff = "{" + xyz.x + " " + xyz.y + " " + xyz.z +"}";
       s.append("set echo " + target + " " + strOff);
       if (align != LEFT)
-        s.append("set echo " + target + " " + hAlignNames[align]);      
+        s.append("set echo " + target + " " + hAlignNames[align]);
       break;
     default:
       s.append("set echo " + vAlignNames[valign] + " " +hAlignNames[align]);      
     }
-    s.append(";echo " + text);
-    s.append(";font echo " + font.fontSize + " "
+    s.append(";echo " + text + ";");
+    }
+    //isDefine and target==top: do all
+    //isDefine and target!=top: just start
+    //!isDefine and target==top: do nothing
+    //!isDefine and target!=top: do just this
+    //fluke because top is defined with default font
+    //in initShape(), so we MUST include its font def here
+    if (isDefine != target.equals("top"))
+      return s.toString();
+    // these may not change much:
+    s.append("font echo " + font.fontSize + " "
           + font.fontFace + " " + font.fontStyle);
     s.append(";color echo [x"
           + g3d.getHexColorFromIndex(colix) + "]");

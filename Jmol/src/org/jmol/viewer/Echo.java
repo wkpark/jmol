@@ -94,9 +94,17 @@ class Echo extends TextShape {
   
   String getShapeState() {
     StringBuffer s = new StringBuffer();
+    String lastFormat = "";
     Enumeration e = texts.elements();
-    while (e.hasMoreElements())
-      s.append(((Text) e.nextElement()).getState());
+    while (e.hasMoreElements()) {
+      Text t = (Text) e.nextElement();
+      s.append(t.getState(true));
+      String format = t.getState(false);
+      if (format.equals(lastFormat))
+        continue;
+      lastFormat = format;
+      s.append(format);
+    }
     return s.toString();
   }
 }

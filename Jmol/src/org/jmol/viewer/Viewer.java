@@ -1025,7 +1025,7 @@ public class Viewer extends JmolViewer {
       openStringInline(fileManager.inlineDataArray, params);
       return;
     }
-    zap("loading file:\n" + name);
+    zap();
     long timeBegin = System.currentTimeMillis();
     fileManager.openFile(name, params);
     long ms = System.currentTimeMillis() - timeBegin;
@@ -1039,7 +1039,7 @@ public class Viewer extends JmolViewer {
 
   public void openFiles(String modelName, String[] names) {
     //Eval
-    zap("loading file set:\n" + modelName);
+    zap();
     // keep old screen image while new file is being loaded
     // forceRefresh();
     long timeBegin = System.currentTimeMillis();

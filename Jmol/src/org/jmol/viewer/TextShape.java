@@ -165,22 +165,19 @@ class TextShape extends Shape {
 
     if ("ypos" == propertyName) {
       if (currentText != null)
-        currentText.setMovableY(currentText.windowHeight
-            - ((Integer) value).intValue());
+        currentText.setMovableY(((Integer) value).intValue());
       return;
     }
 
     if ("%xpos" == propertyName) {
       if (currentText != null)
-        currentText.setMovableX(((Integer) value).intValue()
-            * currentText.windowWidth / 100);
+        currentText.setMovableXPercent(((Integer) value).intValue());
       return;
     }
-
+    
     if ("%ypos" == propertyName) {
       if (currentText != null)
-        currentText.setMovableY(currentText.windowHeight
-            * (100 - ((Integer) value).intValue()) / 100);
+        currentText.setMovableYPercent(((Integer) value).intValue());
       return;
     }
 

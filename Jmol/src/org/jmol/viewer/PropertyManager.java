@@ -75,7 +75,7 @@ class PropertyManager {
     "chainInfo"       , "<atom selection>", "visible",
     "polymerInfo"     , "<atom selection>", "visible",
     "moleculeInfo"    , "<atom selection>", "visible",
-    "stateInfo"       , "<atom selection>", "visible",
+    "stateInfo"       , "", "",
     
     "extractModel"    , "<atom selection>", "visible",
     "jmolStatus"      , "statusNameList", "",
@@ -151,7 +151,7 @@ class PropertyManager {
   }
   
   final static String[] readableTypes = {
-    "extractmodel", "filecontents", "fileheader", "image"};
+    "stateinfo", "extractmodel", "filecontents", "fileheader", "image"};
   
   boolean isReadableAsString(String infoType) {
     for (int i = readableTypes.length; --i >= 0; )
@@ -235,7 +235,7 @@ class PropertyManager {
     case PROP_SHAPE_INFO:
       return viewer.getShapeInfo();
     case PROP_STATE_INFO:
-      return viewer.getAllStateInfo(myParam);
+      return viewer.getStateInfo();
     case PROP_TRANSFORM_INFO:
       return viewer.getMatrixRotate();
     case PROP_DATA_INFO:

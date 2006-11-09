@@ -496,7 +496,17 @@ class StateManager {
     return bs;
   }
   
-
+  static String escape(String str) {
+    int pt = -2;
+    while ((pt = str.indexOf("\"", pt + 2)) >= 0)
+      str = str.substring(0, pt) + '\\' + str.substring(pt);
+    return "\"" + str + "\"";
+  }
+  
+  static String encloseCoord(Point3f xyz) {
+    return "{" + xyz.x + " " + xyz.y + " " + xyz.z +"}";
+  }
+  
   static String getCommands(Hashtable ht) {
     return getCommands(ht, null, -1, "select");
   }
@@ -531,11 +541,13 @@ class StateManager {
         s.append(selectCmd);
         s.append(" (");
         s.append(set);
-        s.append(");");
+        s.append(");\n");
         }
       }
       setPrev = set;
+      if (key.indexOf("-") < 0) // - for key means none required
       s.append(key + ";");
+      s.append("\n");
     }
     return setPrev;
   }

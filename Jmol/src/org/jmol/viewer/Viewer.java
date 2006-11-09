@@ -1010,10 +1010,10 @@ public class Viewer extends JmolViewer {
   public void openFile(String name) {
     //Jmol app file dropper, main, OpenUrlAction, RecentFilesAction
     //app Jmol BYPASSES SCRIPTING **
-    openFile(name, null);
+    openFile(name, null, null);
   }
 
-  public void openFile(String name, int[] params) {
+  void openFile(String name, int[] params, String loadScript) {
     //Eval
     if (name == null)
       return;
@@ -1027,7 +1027,7 @@ public class Viewer extends JmolViewer {
     }
     zap();
     long timeBegin = System.currentTimeMillis();
-    fileManager.openFile(name, params);
+    fileManager.openFile(name, params, loadScript);
     long ms = System.currentTimeMillis() - timeBegin;
     setStatusFileLoaded(1, name, "", modelManager.getModelSetName(), null, null);
     String sp = "";
@@ -1038,12 +1038,16 @@ public class Viewer extends JmolViewer {
   }
 
   public void openFiles(String modelName, String[] names) {
+    openFiles(modelName, names, null);
+  }
+  
+  void openFiles(String modelName, String[] names, String loadScript) {
     //Eval
     zap();
     // keep old screen image while new file is being loaded
     // forceRefresh();
     long timeBegin = System.currentTimeMillis();
-    fileManager.openFiles(modelName, names);
+    fileManager.openFiles(modelName, names, loadScript);
     long ms = System.currentTimeMillis() - timeBegin;
     for (int i = 0; i < names.length; i++) {
       setStatusFileLoaded(1, names[i], "", modelManager.getModelSetName(),
@@ -1111,7 +1115,7 @@ public class Viewer extends JmolViewer {
     if (arrayModels == null || arrayModels.length == 0)
       return;
     int[] A = global.getDefaultLatticeArray();
-    openStringInline(arrayModels, A);
+    openStringInline(arrayModels, A); 
   }
 
   public void openDOM(Object DOMNode) {
@@ -1710,9 +1714,24 @@ public class Viewer extends JmolViewer {
     return modelManager.getAllPolymerInfo(bs);
   }
 
-  public Hashtable getAllStateInfo(String atomExpression) {
-    BitSet bs = getAtomBitSet(atomExpression);
-    return modelManager.getAllStateInfo(bs);
+  String loadScript;
+  void setLoadScript(String script) {
+      loadScript = script;
+  }
+  
+  public String getStateInfo() {
+    StringBuffer s = new StringBuffer();
+    //  file line
+    s.append(fileManager.getState());
+    //  atoms, bonds, labels, echos, shapes
+    s.append(modelManager.getState());    
+    //  frame information
+    s.append(repaintManager.getState());
+    //  orientation and slabbing
+    s.append(transformManager.getState());
+    //  display and selections
+    s.append(selectionManager.getState());
+    return s.toString();
   }
 
   static Hashtable dataValues = new Hashtable();
@@ -3341,7 +3360,6 @@ public class Viewer extends JmolViewer {
     return modelManager.makeConnections(minDistance, maxDistance, order,
         connectOperation, bsA, bsB);
   }
-
 
   // //////////////////////////////////////////////////////////////
   // Graphics3D

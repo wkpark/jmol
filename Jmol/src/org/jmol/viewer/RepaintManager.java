@@ -204,6 +204,21 @@ class RepaintManager {
     info.put("animationPaused", new Boolean(animationPaused));
     return info;
   }
+ 
+  String getState() {
+    StringBuffer commands = new StringBuffer();
+    if (modelCount > 1) {
+      if (displayModelIndex >= 0)
+        commands.append("frame " + viewer.getModelNumber(displayModelIndex));
+      else 
+        commands.append("frame all");
+      if (backgroundModelIndex >= 0)
+        commands.append(";background model " + backgroundModelIndex);
+      commands.append(";\n");
+    }
+    // frame range?    
+    return commands.toString();
+  }
   
   int animationDirection = 1;
   int currentDirection = 1;
@@ -411,4 +426,5 @@ class RepaintManager {
       }
     }
   }
+ 
 }

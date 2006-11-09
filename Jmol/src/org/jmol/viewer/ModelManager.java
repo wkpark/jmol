@@ -1194,37 +1194,9 @@ String getAtomInfoChime(int i) {
     return returnInfo;
   }
   
-  Hashtable getAllStateInfo(BitSet bsUnused) {
-    BitSet bs;
-    Hashtable info = new Hashtable();
-    if (frame == null)
-      return info;
+  String getState() {
     StringBuffer commands = new StringBuffer();
     String cmd;
-    Hashtable temp = new Hashtable();
-
-    // hidden atoms and displayed frames
-    bs = viewer.getHiddenSet();
-    if (firstAtomOf(bs) >= 0)
-      temp.put("hide selected", bs);
-    cmd = StateManager.getCommands(temp);
-    if (cmd != null)
-      commands.append(cmd);
-    if (frame.modelCount > 1) {
-      int modelIndex = viewer.getDisplayModelIndex();
-      switch (modelIndex) {
-      case -1:
-        commands.append("frame all;");
-        break;
-      case -2:
-        commands.append("background model "
-            + getModelNumber(viewer.getBackgroundModelIndex()) + ";");
-      default:
-        commands.append("frame " + getModelNumber(modelIndex) + ";");
-      }
-    }
-    // frame range?    
-
     // shape construction
 
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
@@ -1235,9 +1207,7 @@ String getAtomInfoChime(int i) {
           commands.append(cmd);
       }
     }
-    if (commands.length() > 0)
-      info.put("commandState", commands.toString());
-    return info;
+    return commands.toString();
   }
   
   Hashtable getBoundBoxInfo() {

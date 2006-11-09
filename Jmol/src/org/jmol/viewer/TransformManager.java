@@ -104,7 +104,18 @@ class TransformManager {
 
   final static int MAXIMUM_ZOOM_PERCENTAGE = 200000;
   final static int MAXIMUM_ZOOM_PERSPECTIVE_DEPTH = 10000;
+
+  String getState() {
+    StringBuffer commands = new StringBuffer();
+    commands.append("slab " + slabPercentSetting);
+    commands.append(";depth " + depthPercentSetting);
+    if (slabEnabled)
+      commands.append(";slab on");
+    commands.append(";\n" + getMoveToText(0) + "\n");
+    return commands.toString();
+  }
   
+
   private void setFixedRotationCenter(Point3f center) {
     if (center == null)
       return;
@@ -1257,8 +1268,7 @@ class TransformManager {
   }
 
   String getCenterText() {
-    return "{" + fixedRotationCenter.x + " " + fixedRotationCenter.y + " "
-        + fixedRotationCenter.z + "} ";
+    return StateManager.encloseCoord(fixedRotationCenter);
   }
   
   String getMoveToText() {

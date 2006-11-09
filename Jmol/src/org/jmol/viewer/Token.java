@@ -285,6 +285,7 @@ class Token {
   final static int transform    = showparam | 14;
   final static int orientation  = showparam | 15;
   final static int file         = showparam | 16;
+  final static int state        = showparam | 17;
 
   // of the above, only pdbheader, orientation, and file are implemented
   // axisangle is used in the spin command, not the show command
@@ -672,6 +673,7 @@ class Token {
     "transform",    new Token(transform,       "transform"),
     "orientation",  new Token(orientation,     "orientation"),
     "file",         new Token(file,            "file"),
+    "state",        new Token(state,           "state"),
     "url",          new Token(url,             "url"),
 
     // atom expressions

@@ -30,6 +30,7 @@ import org.jmol.api.JmolSelectionListener;
 import org.jmol.i18n.GT;
 
 import java.util.BitSet;
+import java.util.Hashtable;
 import java.util.Vector;
 
 class SelectionManager {
@@ -355,4 +356,25 @@ class SelectionManager {
       if (bs.get(i)) V.add(new Integer(i));
     return V;
   }
+  
+  String getState() {
+    StringBuffer commands = new StringBuffer();
+    String cmd = null;
+    Hashtable temp = new Hashtable();
+    if (viewer.firstAtomOf(bsHidden) >= 0)
+      temp.put("hide selected", bsHidden);
+    cmd = StateManager.getCommands(temp);
+    if (cmd != null)
+      commands.append(cmd);
+    temp = new Hashtable();
+    temp.put("-", bsSelection);
+    cmd = StateManager.getCommands(temp, null, viewer.getAtomCount());
+    if (cmd == null)
+      commands.append("select none;");
+    else
+      commands.append(cmd);
+    commands.append("\n");
+    return commands.toString();
+  }
+
 }

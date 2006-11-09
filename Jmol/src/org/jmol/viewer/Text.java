@@ -497,25 +497,27 @@ class Text {
     //set echo top left
     //set echo myecho x y
     //echo .....
-    
+
     if (isDefine) {
-    String strOff = null;
-    switch (valign) {
-    case XY:
-      strOff = (movableXPercent == Integer.MAX_VALUE ? movableX + " " : movableXPercent + "% ");
-      strOff += (movableYPercent == Integer.MAX_VALUE ? movableY + "": movableYPercent + "%");
+      String strOff = null;
+      switch (valign) {
+      case XY:
+        strOff = (movableXPercent == Integer.MAX_VALUE ? movableX + " "
+            : movableXPercent + "% ");
+        strOff += (movableYPercent == Integer.MAX_VALUE ? movableY + ""
+            : movableYPercent + "%");
       //fall through
-    case XYZ:
-      if (strOff == null)
-        strOff = "{" + xyz.x + " " + xyz.y + " " + xyz.z +"}";
-      s.append("set echo " + target + " " + strOff);
-      if (align != LEFT)
-        s.append("set echo " + target + " " + hAlignNames[align]);
-      break;
-    default:
-      s.append("set echo " + vAlignNames[valign] + " " +hAlignNames[align]);      
-    }
-    s.append(";echo " + text + ";");
+      case XYZ:
+        if (strOff == null)
+          strOff = StateManager.encloseCoord(xyz);
+        s.append("set echo " + target + " " + strOff);
+        if (align != LEFT)
+          s.append("set echo " + target + " " + hAlignNames[align]);
+        break;
+      default:
+        s.append("set echo " + vAlignNames[valign] + " " + hAlignNames[align]);
+      }
+      s.append(";echo " + StateManager.escape(text) + ";\n");
     }
     //isDefine and target==top: do all
     //isDefine and target!=top: just start
@@ -526,14 +528,12 @@ class Text {
     if (isDefine != target.equals("top"))
       return s.toString();
     // these may not change much:
-    s.append("font echo " + font.fontSize + " "
-          + font.fontFace + " " + font.fontStyle);
-    s.append(";color echo [x"
-          + g3d.getHexColorFromIndex(colix) + "]");
+    s.append("font echo " + font.fontSize + " " + font.fontFace + " "
+        + font.fontStyle);
+    s.append(";color echo [x" + g3d.getHexColorFromIndex(colix) + "]");
     if (bgcolix != 0)
-      s.append(";background echo [x"
-          + g3d.getHexColorFromIndex(bgcolix) + "]");
-    s.append(";");
+      s.append(";background echo [x" + g3d.getHexColorFromIndex(bgcolix) + "]");
+    s.append(";\n");
     return s.toString();
   }
 }

@@ -2484,6 +2484,7 @@ class Eval { //implements Runnable {
   }
 
   void load() throws ScriptException {
+    StringBuffer loadScript = new StringBuffer("load");
     int[] params = new int[4];
     Point3f unitCells = viewer.getDefaultLattice();
     params[1] = (int) unitCells.x;
@@ -2505,19 +2506,24 @@ class Eval { //implements Runnable {
       filename = (String) statement[i].value;
       if (i == 0 || filename.length() == 0)
         filename = viewer.getFullPathName();
-      viewer.openFile(filename, params);
+      loadScript.append(" " + StateManager.escape(filename) + ";");
+      viewer.openFile(filename, params, loadScript.toString());
     } else if (statement[i + 1].tok == Token.leftbrace
         || statement[i + 1].tok == Token.integer) {
       filename = (String) statement[i++].value;
       if (filename.length() == 0)
         filename = viewer.getFullPathName();
-      if (statement[i].tok == Token.integer)
+      loadScript.append(" " + StateManager.escape(filename));
+      if (statement[i].tok == Token.integer) {
         params[0] = statement[i++].intValue;
+        loadScript.append(" " + params[0]);
+      }
       if (i < statementLength && statement[i].tok == Token.leftbrace) {
         unitCells = getCoordinate(i, false);
         params[1] = (int) unitCells.x;
         params[2] = (int) unitCells.y;
         params[3] = (int) unitCells.z;
+        loadScript.append(" " + StateManager.encloseCoord(unitCells));
         i = pcLastExpressionInstruction + 1;
         int iGroup = -1;
         int[] p;
@@ -2525,12 +2531,13 @@ class Eval { //implements Runnable {
           ++i;
           String spacegroup = viewer.simpleReplace(stringParameter(i++), "''",
               "\"");
+          loadScript.append(" " + StateManager.escape(spacegroup));          
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
             iGroup = -999;
           } else {
             if (spacegroup.indexOf(",") >= 0) //Jones Faithful
               if ((unitCells.x < 9 && unitCells.y < 9 && unitCells.z == 0))
-                spacegroup+="#doNormalize=0";
+                spacegroup += "#doNormalize=0";
             iGroup = viewer.getSpaceGroupIndexFromName(spacegroup);
             if (iGroup == -1)
               evalError(GT._("space group {0} was not found.", spacegroup));
@@ -2549,21 +2556,30 @@ class Eval { //implements Runnable {
           p[4] = iGroup;
           float[] fparams = new float[6];
           i = floatParameterSet(i, fparams);
-          for (int j = 0; j < 6; j++)
+          loadScript.append(" {");
+          for (int j = 0; j < 6; j++) {
             p[5 + j] = (int) (fparams[j] * 10000f);
+            loadScript.append((j == 0 ? "" : " ") + p[5 + j]);
+          }
+          loadScript.append("}");
           params = p;
         }
       }
-      viewer.openFile(filename, params);
+      loadScript.append(";");
+      viewer.openFile(filename, params, loadScript.toString());
     } else {
       String modelName = (String) statement[i].value;
       i++;
+      loadScript.append(" " + StateManager.escape(modelName));
       String[] filenames = new String[statementLength - i];
       while (i < statementLength) {
-        filenames[filenames.length - statementLength + i] = (String) statement[i].value;
+        modelName = (String) statement[i].value;
+        filenames[filenames.length - statementLength + i] = modelName;
+        loadScript.append(" " + StateManager.escape(modelName));
         i++;
       }
-      viewer.openFiles(modelName, filenames);
+      loadScript.append(";");
+      viewer.openFiles(modelName, filenames, loadScript.toString());
     }
     String errMsg = viewer.getOpenFileError();
     // int millis = (int)(System.currentTimeMillis() - timeBegin);
@@ -4683,6 +4699,9 @@ class Eval { //implements Runnable {
     if (statementLength == 1)
       badArgumentCount();
     switch (statement[1].tok) {
+    case Token.state:
+      showString(viewer.getStateInfo());
+      return;
     case Token.save:
       showString(viewer.listSavedStates());
       return;

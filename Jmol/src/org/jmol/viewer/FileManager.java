@@ -74,6 +74,8 @@ class FileManager {
   boolean isInline;
   boolean isDOM;
   
+  private String loadScript;
+  
   private File file;
 
   private FileOpenThread fileOpenThread;
@@ -86,11 +88,19 @@ class FileManager {
     this.modelAdapter = modelAdapter;
   }
 
+  String getState() {
+    StringBuffer commands = new StringBuffer();
+    commands.append(loadScript);
+    commands.append("\n");
+    return commands.toString();
+  }
+  
   void openFile(String name) {
-    openFile(name, null);
+    openFile(name, null, null);
   }
 
-  void openFile(String name, int[] params) {
+  void openFile(String name, int[] params, String loadScript) {
+    this.loadScript = loadScript;
     String sp = "";
     if (params != null)
       for (int i = 0; i < params.length; i++)
@@ -107,7 +117,8 @@ class FileManager {
     fileOpenThread.run();
   }
 
-  void openFiles(String modelName, String[] names) {
+  void openFiles(String modelName, String[] names, String loadScript) {
+    this.loadScript = loadScript;
     String[] fullPathNames = new String[names.length];
     for (int i = 0; i < names.length; i++) {
       nameAsGiven = names[i];
@@ -133,6 +144,7 @@ class FileManager {
   }
 
   void openStringInline(String strModel, int[] params) {
+    loadScript = "data \"model inline\"" + strModel + "\nend \"model inline\";";
     String sp = "";
     if (params != null)
       for (int i = 0; i < params.length; i++)
@@ -153,6 +165,7 @@ class FileManager {
   }
 
   void openStringInline(String[] arrayModels, int[] params) {
+    this.loadScript = null; // for now
     String sp = "";
     if (params != null)
       for (int i = 0; i < params.length; i++)

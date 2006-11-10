@@ -241,7 +241,6 @@ public class Viewer extends JmolViewer {
   void reset() {
     //Eval.reset()
     //initializeModel
-    setBooleanProperty("windowCentered", true);
     transformManager.homePosition();
     if (modelManager.modelsHaveSymmetry())
       stateManager.setCrystallographicDefaults();
@@ -2968,20 +2967,16 @@ public class Viewer extends JmolViewer {
         break;
       }
       if (key.equalsIgnoreCase("axesWindow")) {
-        setBooleanProperty("axesMolecular", !value);
-        return;
+        setAxesModeMolecular(!value);
+        break;
       }
       if (key.equalsIgnoreCase("axesMolecular")) {
-        if (value)
-          setBooleanProperty("axesUnitCell", false);
         setAxesModeMolecular(value);
         break;
       }
       if (key.equalsIgnoreCase("axesUnitCell")) {
-        if (value)
-          setBooleanProperty("axesMolecular", false);
         setAxesModeUnitCell(value);
-        return;
+        break;
       }
       if (key.equalsIgnoreCase("displayCellParameters")) {
         setDisplayCellParameters(value);
@@ -3093,7 +3088,9 @@ public class Viewer extends JmolViewer {
   final static String volatileProperties = "indicate all volatile properties here in lower case"
     + "";
   final static String unnecessaryProperties = "have no need for saving these"
-    + "setfrank;showaxes;showunitcell;showboundbox;debugscript";
+    + "debugscript;frank;showaxes;showunitcell;showboundbox;"
+    + "axeswindow;axesunitcell;axesmolecular;windowcentered;";
+     
 
   void setPropertyFlag(String key, boolean value) {
     key = key.toLowerCase();
@@ -3121,6 +3118,19 @@ public class Viewer extends JmolViewer {
           + (((Boolean) htPropertyFlags.get(key)).booleanValue() ? "true"
               : "false") + ";\n");
     }
+    switch (global.axesMode) {
+    case JmolConstants.AXES_MODE_UNITCELL:
+      commands.append("set axesUnitcell;\n");
+      break;
+    case JmolConstants.AXES_MODE_BOUNDBOX:
+      commands.append("set axesWindow;\n");
+      break;
+    default:
+      commands.append("set axesMolecular;\n");
+    }
+    if (!isWindowCentered())
+      commands.append("set windowCentered false;\n");
+    
     return commands.toString();
   }
   

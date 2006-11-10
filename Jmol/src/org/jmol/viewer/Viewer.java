@@ -2857,13 +2857,17 @@ public class Viewer extends JmolViewer {
       return getLabelsFrontFlag();
     if (key.equalsIgnoreCase("labelsGroup"))
       return getLabelsGroupFlag();
+    if (htPropertyFlags.containsKey(key)) {
+      return ((Boolean)htPropertyFlags.get(key)).booleanValue();
+    }
+    
     Logger.error("viewer.getBooleanProperty(" + key + ") - unrecognized");
     return false;
   }
 
   public void setBooleanProperty(String key, boolean value) {
     //Eval
-    boolean isError = false;
+    boolean notFound = false;
     while (true) {
       if (key.equalsIgnoreCase("highResolution")) {
         setHighResolution(value);
@@ -3064,23 +3068,27 @@ public class Viewer extends JmolViewer {
           setForceAutoBond(value);
           break;
         }
-        isError = true;
+        notFound = true;
         break;
       }
-      if (!isError) {
+      if (!notFound) {
         setPropertyFlag(key, value);
         return;
       }
-      isError = true;
+      notFound = true;
       break;
     }
-    if (isError) {
+    if (notFound) {
+      if (!value && !htPropertyFlags.containsKey(key)) {
       Logger.error("viewer.setBooleanProperty(" + key + "," + value
           + ") - unrecognized SET option");
       scriptStatus("Script ERROR: unrecognized SET option: set " + key);
       return;
+      }
     }
     setPropertyFlag(key, value);
+    if (notFound)
+      return;
     setTainted(true);
     refresh(0, "viewer.setBooleanProperty");
   }

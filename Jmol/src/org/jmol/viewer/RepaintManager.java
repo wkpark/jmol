@@ -206,17 +206,18 @@ class RepaintManager {
   }
  
   String getState() {
-    StringBuffer commands = new StringBuffer();
-    if (modelCount > 1) {
-      if (displayModelIndex >= 0)
-        commands.append("frame " + viewer.getModelNumber(displayModelIndex));
-      else 
-        commands.append("frame all");
-      if (backgroundModelIndex >= 0)
-        commands.append(";background model " + backgroundModelIndex);
-      commands.append(";\n");
-    }
+    if (modelCount < 2)
+      return "";
+    StringBuffer commands = new StringBuffer("# frame states:\n");
+    if (displayModelIndex >= 0)
+      commands.append("frame " + viewer.getModelNumber(displayModelIndex));
+    else
+      commands.append("frame all");
+    if (backgroundModelIndex >= 0)
+      commands.append(";background model " + backgroundModelIndex);
+    commands.append(";\n");
     // frame range?    
+    commands.append("\n");
     return commands.toString();
   }
   

@@ -337,22 +337,10 @@ class ModelManager {
         order, connectOperation, bsA, bsB));
   }
 
-  boolean autoBond = true;
-
   void rebond() {
     if (frame != null)
       frame.rebond();
   }
-
-  void setAutoBond(boolean ab) {
-    autoBond = ab;
-  }
-
-  /*
-  void deleteAtom(int atomIndex) {
-    frame.deleteAtom(atomIndex);
-  }
-  */
 
   boolean frankClicked(int x, int y) {
     return (getShapeSize(JmolConstants.SHAPE_FRANK) != 0 &&
@@ -1194,17 +1182,22 @@ String getAtomInfoChime(int i) {
     return returnInfo;
   }
   
+  void addStateScript(String script) {
+    if (frame != null)
+      frame.addStateScript(script);  
+  }
+ 
   String getState() {
     if (frame == null)
       return "";
     
-    StringBuffer commands = new StringBuffer();
+    StringBuffer commands = new StringBuffer("# model states:\n");
     String cmd;
     
     // connections
     
     for (int i = 0; i < frame.stateScripts.size(); i++) {
-      commands.append(frame.stateScripts.get(i));
+      commands.append(frame.stateScripts.get(i) + "\n");
     }
 
     // shape construction
@@ -1217,6 +1210,7 @@ String getAtomInfoChime(int i) {
           commands.append(cmd);
       }
     }
+    commands.append("\n");
     return commands.toString();
   }
   
@@ -1524,5 +1518,5 @@ String getAtomInfoChime(int i) {
     if (unitCell == null)
       return;
     unitCell.setOffset(nnn);
-  }  
+  }
 }

@@ -35,14 +35,16 @@ import org.jmol.g3d.Graphics3D;
 
 class Sticks extends Shape {
   
-  short myMask;
+  short myMask;  
+  boolean reportAll;
+  BitSet bsOrderSet;
+  
   
   void initShape() {
     myMask = JmolConstants.BOND_COVALENT_MASK;
+    reportAll = false;
   }
 
-  BitSet bsOrderSet;
-  
   void setSize(int size, BitSet bsSelected) {
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
@@ -59,6 +61,18 @@ class Sticks extends Shape {
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
     Logger.debug(propertyName + " " + value + " " + bsSelected);
     boolean isBonds = viewer.isBondSelection();
+    
+    if ("reportAll" == propertyName) {
+      // when connections are restored, all we can do is report them all
+      reportAll = true;
+    }
+
+    if ("reset" == propertyName) {
+      // all bonds have been deleted -- start over
+      bsOrderSet = null;
+      bsSizeSet = null;
+      bsColixSet = null;
+    }
     
     if ("bondOrder" == propertyName) {
       if (bsOrderSet == null)
@@ -131,14 +145,16 @@ class Sticks extends Shape {
     Hashtable temp = new Hashtable();
     Hashtable temp2 = new Hashtable();
     Bond[] bonds = frame.bonds;
-    String type = JmolConstants.shapeClassBases[shapeID];
     for (int i = frame.bondCount; --i >= 0;) {
       Bond bond = bonds[i];
-      if (bsSizeSet != null && bsSizeSet.get(i))
-        setStateInfo(temp, i, type + " " + (bond.mad / 2000f));
+      if (reportAll) {
+        if (bsSizeSet != null && bsSizeSet.get(i))
+          setStateInfo(temp, i, "wireframe " + (bond.mad / 2000f));
+        setStateInfo(temp2, i, "bondOrder "
+            + JmolConstants.getBondOrderNameFromOrder(bond.order));
+      }
       if (bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp2, i, getColorCommand("bonds", bond.colix));
-      setStateInfo(temp2, i, "bondOrder " + JmolConstants.getBondOrderNameFromOrder(bond.order));
     }
     return getShapeCommands(temp, temp2, -1, "select BONDS") + "\n";
   }  

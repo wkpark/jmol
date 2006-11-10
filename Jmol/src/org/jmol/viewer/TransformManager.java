@@ -65,12 +65,33 @@ class TransformManager {
   }
   
   String getState() {
-    StringBuffer commands = new StringBuffer();
-    commands.append("slab " + slabPercentSetting);
-    commands.append(";depth " + depthPercentSetting);
-    if (slabEnabled)
-      commands.append(";slab on");
-    commands.append(";\n" + getMoveToText(0) + "\n");
+    StringBuffer commands = new StringBuffer("# orientation/center/spin states:\n");
+    if (!isWindowCentered())
+      commands.append("set windowCentered false;\n");
+    commands.append(getMoveToText(0));
+    commands.append("center " + StateManager.encloseCoord(fixedRotationCenter)
+        + ";\n");
+    commands.append("slab " + slabPercentSetting + ";depth "
+        + depthPercentSetting + (slabEnabled ? ";slab on" : "") + ";\n");
+    if (spinOn) {
+      if (isSpinInternal) {
+        Point3f pt = new Point3f(internalRotationCenter);
+        pt.add(rotationAxis);
+        commands.append("spin " + rotationRate + " " 
+            + StateManager.encloseCoord(internalRotationCenter)
+            + " " + StateManager.encloseCoord(pt));
+      } else if (isSpinFixed) {
+        commands.append("spin " + rotationRate + " " + StateManager.encloseCoord(rotationAxis));
+      } else {
+        commands.append("set spin X " + spinX);
+        commands.append(";set spin Y " + spinY);
+        commands.append(";set spin Z " + spinZ);
+        commands.append(";set spin fps " + spinFps);
+        commands.append(";spin on");
+      }
+      commands.append(";\n");
+    }
+    commands.append("\n");
     return commands.toString();
   }
   
@@ -126,20 +147,27 @@ class TransformManager {
     translateCenterTo(newCenterScreen.x, newCenterScreen.y);
   }
 
+  Vector3f rotationAxis = new Vector3f();
+  float rotationRate = 0;
+  
   float setRotateInternal(Point3f center, Vector3f axis, float degrees) {
     internalRotationCenter.set(center);
+    rotationAxis.set(axis);
     if (internalRotationAxis == null)
       internalRotationAxis = new AxisAngle4f();
     float radians = degrees * radiansPerDegree;
+    rotationRate = degrees;
     internalRotationAxis.set(axis, radians);
     return radians;
   }
 
   float setRotateFixed(Point3f center, Vector3f axis, float degrees) {
     setFixedRotationCenter(center);
+    rotationAxis.set(axis);
     if (fixedRotationAxis == null)
       fixedRotationAxis = new AxisAngle4f();
     float radians = degrees * radiansPerDegree;
+    rotationRate = degrees;
     fixedRotationAxis.set(axis, radians);
     return radians;
   }

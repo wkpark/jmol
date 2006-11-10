@@ -58,6 +58,7 @@ public final class ScriptWindow extends JDialog
   private JButton haltButton;
   private JButton clearButton;
   private JButton historyButton;
+  private JButton stateButton;
   private JButton helpButton;
   JmolViewer viewer;
   
@@ -97,6 +98,10 @@ public final class ScriptWindow extends JDialog
     historyButton = new JButton(GT._("History"));
     historyButton.addActionListener(this);
     buttonPanel.add(historyButton);
+
+    stateButton = new JButton(GT._("State"));
+    stateButton.addActionListener(this);
+    buttonPanel.add(stateButton);
 
     helpButton = new JButton(GT._("Help"));
     helpButton.addActionListener(this);
@@ -237,6 +242,8 @@ public final class ScriptWindow extends JDialog
       console.clearContent();
     } else if (source == historyButton) {
       console.clearContent(viewer.getSetHistory(Integer.MAX_VALUE));
+    } else if (source == stateButton) {
+      console.clearContent(viewer.getStateInfo());
     } else if (source == haltButton) {
       viewer.haltScriptExecution();
     } else if (source == helpButton) {
@@ -312,7 +319,7 @@ class ConsoleTextPane extends JTextPane {
     */
     
    /**
-    * Custom key event processing for command history implementation.
+    * Custom key event processing for command 0 implementation.
     * 
     * Captures key up and key down strokes to call command history
     * and redefines the same events with control down to allow

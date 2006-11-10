@@ -63,9 +63,8 @@ abstract class SelectionIndependentShape extends Shape {
       return "";
     return myType
         + (mad == 0 ? " off" : mad == 1 ? " on" : mad == -1 ? " dotted" 
-            : mad < 20 ? " " + mad : " " + (mad / 2000f)) + ";"
+            : mad < 20 ? " " + mad : " " + (mad / 2000f)) + ";\n"
         + getColorCommand(myType, colix)
-        + getFontCommand(myType, font3d)
-        + "\n";
+        + getFontCommand(myType, font3d);
   }
 }

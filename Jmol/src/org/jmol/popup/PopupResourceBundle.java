@@ -395,7 +395,7 @@ class PopupResourceBundle {
           "showMenu",
           "showHistory showFile showFileHeader - "
               + "showOrient showMeasure - "
-              + "showSpacegroup SYMMETRYshowSymmetry showUnitCell - showIsosurface showMo - extractMOL" },
+              + "showSpacegroup showState SYMMETRYshowSymmetry showUnitCell - showIsosurface showMo - extractMOL" },
       { "showConsole", "console" },
       { "showFile", "console on;show file" },
       { "showFileHeader", "console on;getProperty FileHeader" },
@@ -406,6 +406,7 @@ class PopupResourceBundle {
       { "showModel", "console on;show model" },
       { "showOrient", "console on;show orientation" },
       { "showSpacegroup", "console on;show spacegroup" },
+      { "showState", "console on;show state" },
       { "SYMMETRYshowSymmetry", "console on;show symmetry" },
       { "showUnitCell", "console on;show unitcell" },
       { "extractMOL", "console on;getproperty extractModel \"visible\" " },
@@ -770,6 +771,7 @@ class PopupResourceBundle {
       { "showOrient", GT._("Orientation", true) },
       { "showSpacegroup", GT._("Space group", true) },
       { "SYMMETRYshowSymmetry", GT._("Symmetry", true) },
+      { "showState", GT._("Current state", true) },
       { "SYMMETRYComputedMenu", GT._("Symmetry", true) },
       { "showUnitCell", GT._("Unit cell", true) },
       { "extractMOL", GT._("Extract MOL data", true) },

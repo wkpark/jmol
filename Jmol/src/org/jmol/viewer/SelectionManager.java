@@ -358,7 +358,7 @@ class SelectionManager {
   }
   
   String getState() {
-    StringBuffer commands = new StringBuffer();
+    StringBuffer commands = new StringBuffer("# selection states:\n");
     String cmd = null;
     Hashtable temp = new Hashtable();
     if (viewer.firstAtomOf(bsHidden) >= 0)

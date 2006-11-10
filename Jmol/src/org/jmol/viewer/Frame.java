@@ -1469,7 +1469,6 @@ public final class Frame {
   void rebond() {
     // from eval "connect" or from app preferences panel
     deleteAllBonds();
-    stateScripts.add("connect;\n");
     autoBond(null, null);
   }
 
@@ -1485,6 +1484,8 @@ public final class Frame {
   
   int autoBond(BitSet bsA, BitSet bsB) {
     // null values for bitsets means "all"
+    if (bsA == null && bsB == null)
+      stateScripts.add("connect;");
     if (maxBondingRadius == Float.MIN_VALUE)
       findMaxRadii();
     float bondTolerance = viewer.getBondTolerance();
@@ -1648,6 +1649,8 @@ public final class Frame {
   }
 
   void deleteAllBonds() {
+    stateScripts.clear();
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "reset", null);
     for (int i = bondCount; --i >= 0;) {
       bonds[i].deleteAtomReferences();
       bonds[i] = null;
@@ -1690,14 +1693,24 @@ public final class Frame {
   }
 
   Vector stateScripts = new Vector();
-  
+  int thisFrame = 0;
+
+  void addStateScript(String script) {
+    int iFrame = viewer.getDisplayModelIndex();
+    if (thisFrame != iFrame) {
+      thisFrame = iFrame;
+      script = "frame " + this.getModelNumber(iFrame) +";\n" + script;      
+    }
+    stateScripts.add(script);
+  }
+
   int makeConnections(float minDistance, float maxDistance,
                        short order, int connectOperation,
                        BitSet bsA, BitSet bsB) {
     String stateScript = "connect " + minDistance + " " + maxDistance
       + " " + StateManager.encodeBitset(bsA) + " " + StateManager.encodeBitset(bsB)
       + " " + JmolConstants.getBondOrderNameFromOrder(order) 
-      + " " + JmolConstants.connectOperationName(connectOperation) + ";\n";
+      + " " + JmolConstants.connectOperationName(connectOperation) + ";";
     stateScripts.add(stateScript);
     Logger.debug("makeConnections(" + minDistance + "," +
                        maxDistance + "," + order + "," + connectOperation +

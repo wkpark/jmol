@@ -107,8 +107,7 @@ class Axes extends SelectionIndependentShape {
   }
   
   String getShapeState() {
-    return ("set axes scale " + scale + ";\n")
-    + super.getShapeState();
+    return super.getShapeState() + "set axes scale " + scale + ";\n";
   }
 
 }

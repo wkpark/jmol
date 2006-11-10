@@ -42,6 +42,7 @@ class Console implements ActionListener, WindowListener {
   final JButton clearOutButton = new JButton(GT._("Clear Output"));
   final JButton clearInButton = new JButton(GT._("Clear Input"));
   final JButton historyButton = new JButton(GT._("History"));
+  final JButton stateButton = new JButton(GT._("State"));
   final JButton loadButton = new JButton(GT._("Load"));
 
   final SimpleAttributeSet attributesCommand = new SimpleAttributeSet();
@@ -82,6 +83,7 @@ class Console implements ActionListener, WindowListener {
     c2.add(clearInButton);
     c2.add(clearOutButton);
     c2.add(historyButton);
+    c2.add(stateButton);
     c2.add(Box.createGlue());
     c.add(c2);
 
@@ -95,9 +97,10 @@ class Console implements ActionListener, WindowListener {
     clearInButton.addActionListener(this);
     clearOutButton.addActionListener(this);
     historyButton.addActionListener(this);
+    stateButton.addActionListener(this);
     loadButton.addActionListener(this);
 
-    jf.setSize(500, 400);
+    jf.setSize(550, 400);
     jf.addWindowListener(this);
   }
 
@@ -157,6 +160,9 @@ class Console implements ActionListener, WindowListener {
     }
     if (source == historyButton) {
       output.setText(viewer.getSetHistory(Integer.MAX_VALUE));
+    }
+    if (source == stateButton) {
+      output.setText(viewer.getStateInfo());
     }
     if (source == loadButton) {
       viewer.loadInline(input.getText());

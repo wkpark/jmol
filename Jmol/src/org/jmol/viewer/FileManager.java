@@ -89,9 +89,9 @@ class FileManager {
   }
 
   String getState() {
-    StringBuffer commands = new StringBuffer();
+    StringBuffer commands = new StringBuffer("# file loading states:\n");
     commands.append(loadScript);
-    commands.append("\n");
+    commands.append("\n\n");
     return commands.toString();
   }
   
@@ -99,8 +99,12 @@ class FileManager {
     openFile(name, null, null);
   }
 
+  void setLoadScript(String script) {
+    loadScript = viewer.getLoadState() + script;
+  }
+
   void openFile(String name, int[] params, String loadScript) {
-    this.loadScript = loadScript;
+    setLoadScript(loadScript);
     String sp = "";
     if (params != null)
       for (int i = 0; i < params.length; i++)
@@ -118,7 +122,7 @@ class FileManager {
   }
 
   void openFiles(String modelName, String[] names, String loadScript) {
-    this.loadScript = loadScript;
+    setLoadScript(loadScript);
     String[] fullPathNames = new String[names.length];
     for (int i = 0; i < names.length; i++) {
       nameAsGiven = names[i];
@@ -145,6 +149,7 @@ class FileManager {
 
   void openStringInline(String strModel, int[] params) {
     loadScript = "data \"model inline\"" + strModel + "\nend \"model inline\";";
+    setLoadScript(loadScript);
     String sp = "";
     if (params != null)
       for (int i = 0; i < params.length; i++)
@@ -165,7 +170,7 @@ class FileManager {
   }
 
   void openStringInline(String[] arrayModels, int[] params) {
-    this.loadScript = null; // for now
+    loadScript = ""; // for now
     String sp = "";
     if (params != null)
       for (int i = 0; i < params.length; i++)

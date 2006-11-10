@@ -2926,7 +2926,6 @@ class Eval { //implements Runnable {
       case Token.opOr:
         break;
       case Token.integer:
-        statement[i].value = new Float(token.intValue);
       case Token.decimal:
         //spin: degrees per second followed by final value
         //rotate: end degrees followed by degrees per second
@@ -3451,9 +3450,12 @@ class Eval { //implements Runnable {
     BitSet bsConfigurations;
     if (statementLength == 1) {
       bsConfigurations = viewer.setConformation();
+      viewer.addStateScript("configuration;");
     } else {
       checkLength2();
-      bsConfigurations = viewer.setConformation(intParameter(1) - 1);
+      int n = intParameter(1);
+      bsConfigurations = viewer.setConformation(n - 1);
+      viewer.addStateScript("configuration " + n + ";");
     }
     boolean addHbonds = viewer.hbondsAreVisible();
     viewer.setShapeSize(JmolConstants.SHAPE_HSTICKS, 0, bsConfigurations);

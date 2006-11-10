@@ -215,6 +215,8 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public String getAltLocListInModel(int modelIndex);
 
+  abstract public String getStateInfo();
+
   // not really implemented:
   
   abstract public void setSyncDriver(int syncMode);

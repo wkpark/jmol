@@ -24,6 +24,7 @@
 package org.jmol.viewer;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Tuple3f;
 import javax.vecmath.Matrix3f;
 
 import java.util.Hashtable;
@@ -258,9 +259,9 @@ class StateManager {
           continue;
         Bond b = frame.bondAtoms(frame.atoms[c.atomIndex1],
             frame.atoms[c.atomIndex2], c.order, c.mad);
-        b.colix = c.colix;
         b.shapeVisibilityFlags = c.shapeVisibilityFlags;
       }
+      viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "reportAll", null);
     }
   }
 
@@ -283,11 +284,23 @@ class StateManager {
 
     //file loading
 
+    char inlineNewlineChar     = '|';    //pseudo static
+
     boolean zeroBasedXyzRasmol = false;
     boolean forceAutoBond      = false;
-
-    char inlineNewlineChar     = '|';
+    boolean autoBond           = true;
     String defaultLoadScript   = "";
+
+    String getLoadState() {
+      String str = "";
+      if (defaultLoadScript.length() > 0)
+        str = "set defaultLoadScript " + escape(defaultLoadScript) + ";\n";
+      str += "set autobond           " + autoBond + ";\n"
+           + "set forceAutoBond      " + forceAutoBond + ";\n"
+           + "set zeroBasedXyzRasmol " + zeroBasedXyzRasmol + ";\n";
+      return str;
+    }
+
     private final Point3f ptDefaultLattice = new Point3f();
 
     void setDefaultLattice(Point3f ptLattice) {
@@ -497,13 +510,15 @@ class StateManager {
   }
   
   static String escape(String str) {
+    if (str == null)
+      return "\"\"";
     int pt = -2;
     while ((pt = str.indexOf("\"", pt + 2)) >= 0)
       str = str.substring(0, pt) + '\\' + str.substring(pt);
     return "\"" + str + "\"";
   }
   
-  static String encloseCoord(Point3f xyz) {
+  static String encloseCoord(Tuple3f xyz) {
     return "{" + xyz.x + " " + xyz.y + " " + xyz.z +"}";
   }
   

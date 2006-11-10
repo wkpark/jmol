@@ -1233,6 +1233,10 @@ public class Viewer extends JmolViewer {
   // delegated to ModelManager
   // ///////////////////////////////////////////////////////////////
 
+  void addStateScript(String script) {
+    modelManager.addStateScript(script);  
+  }
+  
   public boolean getEchoStateActive() {
     return modelManager.getEchoStateActive();
   }
@@ -3108,7 +3112,7 @@ public class Viewer extends JmolViewer {
   }
   
   String getPropertyState() {
-    StringBuffer commands = new StringBuffer();
+    StringBuffer commands = new StringBuffer("# parameter states:\n");
     Enumeration e = htPropertyFlags.keys();
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
@@ -3128,9 +3132,7 @@ public class Viewer extends JmolViewer {
     default:
       commands.append("set axesMolecular;\n");
     }
-    if (!isWindowCentered())
-      commands.append("set windowCentered false;\n");
-    
+    commands.append("\n");
     return commands.toString();
   }
   
@@ -3412,15 +3414,18 @@ public class Viewer extends JmolViewer {
     global.ssbondsBackbone = TF;
   }
 
-  public void setAutoBond(boolean ab) {
+  String getLoadState() {
+    return global.getLoadState();
+  }
+  
+  public void setAutoBond(boolean TF) {
     //app PreferencesDialog
     //setBooleanProperties
-    modelManager.setAutoBond(ab);
-    refresh(0, "Viewer:setAutoBond()");
+    global.autoBond = TF;
   }
 
   public boolean getAutoBond() {
-    return modelManager.autoBond;
+    return global.autoBond;
   }
   
   int makeConnections(float minDistance, float maxDistance, short order,

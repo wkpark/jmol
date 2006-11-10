@@ -1497,7 +1497,7 @@ final public class Graphics3D {
     if (obj == null)
       return 0;
     if (obj instanceof Byte)
-      return Graphics3D.UNRECOGNIZED;
+      return (((Byte)obj).byteValue() == 0 ? 0 : Graphics3D.UNRECOGNIZED);
     if (obj instanceof Integer)
       return getColix(((Integer)obj).intValue());
     if (obj instanceof String)

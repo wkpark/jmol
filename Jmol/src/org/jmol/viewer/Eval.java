@@ -460,6 +460,7 @@ class Eval { //implements Runnable {
         break;
       case Token.define:
         define();
+        viewer.addStateScript(getCommand());
         break;
       case Token.echo:
         echo();
@@ -750,12 +751,15 @@ class Eval { //implements Runnable {
         && (ichEnd = script.indexOf('\n', ichBegin)) == -1)
       ichEnd = script.length();
     return script.substring(ichBegin, ichEnd);
+    
   }
 
   String getCommand() {
     int ichBegin = lineIndices[pc];
-    int ichEnd = (pc + 1 == lineIndices.length ? script.length() : lineIndices[pc + 1]);
-    return script.substring(ichBegin, ichEnd);    
+    int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script.length() : lineIndices[pc + 1]);
+    while ("\n\r;".indexOf(script.charAt(ichEnd - 1)) >= 0)
+        ichEnd--;
+    return script.substring(ichBegin, ichEnd) + ";";    
   }
   
   final StringBuffer strbufLog = new StringBuffer(80);

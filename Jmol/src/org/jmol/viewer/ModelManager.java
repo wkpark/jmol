@@ -1190,25 +1190,25 @@ String getAtomInfoChime(int i) {
   String getState() {
     if (frame == null)
       return "";
-    
-    StringBuffer commands = new StringBuffer("# model states:\n");
-    String cmd;
-    
-    // connections
-    
-    for (int i = 0; i < frame.stateScripts.size(); i++) {
-      commands.append(frame.stateScripts.get(i) + "\n");
-    }
 
+    StringBuffer commands = new StringBuffer("# defined states:\n");
+    String cmd;
+
+    // connections
+
+    Vector fs = frame.stateScripts;
+    int len = fs.size();
+    for (int i = 0; i < len; i++)
+      commands.append(fs.get(i) + "\n");
+
+    commands.append("\n# model states:\n");
     // shape construction
 
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];
-      if (shape != null) {
-        cmd = shape.getShapeState();
-        if (cmd != null)
-          commands.append(cmd);
-      }
+      if (shape != null && (cmd = shape.getShapeState()) != null
+          && cmd.length() > 1)
+        commands.append(cmd);
     }
     commands.append("\n");
     return commands.toString();

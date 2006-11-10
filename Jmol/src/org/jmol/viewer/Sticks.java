@@ -143,19 +143,19 @@ class Sticks extends Shape {
   
   String getShapeState() {
     Hashtable temp = new Hashtable();
-    Hashtable temp2 = new Hashtable();
     Bond[] bonds = frame.bonds;
     for (int i = frame.bondCount; --i >= 0;) {
       Bond bond = bonds[i];
       if (reportAll) {
         if (bsSizeSet != null && bsSizeSet.get(i))
           setStateInfo(temp, i, "wireframe " + (bond.mad / 2000f));
-        setStateInfo(temp2, i, "bondOrder "
+        if (bsOrderSet != null && bsOrderSet.get(i))
+          setStateInfo(temp, i, "bondOrder "
             + JmolConstants.getBondOrderNameFromOrder(bond.order));
       }
       if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp2, i, getColorCommand("bonds", bond.colix));
+        setStateInfo(temp, i, getColorCommand("bonds", bond.colix));
     }
-    return getShapeCommands(temp, temp2, -1, "select BONDS") + "\n";
+    return getShapeCommands(temp, null, -1, "select BONDS") + "\n";
   }  
 }

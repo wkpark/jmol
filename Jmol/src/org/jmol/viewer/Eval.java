@@ -3428,6 +3428,7 @@ class Eval { //implements Runnable {
 
   void wireframe() throws ScriptException {
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter(), viewer.getSelectedAtomsOrBonds());
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "reportAll", null);
   }
 
   void ssbond() throws ScriptException {

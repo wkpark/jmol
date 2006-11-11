@@ -1282,12 +1282,23 @@ public class Jmol extends JPanel {
     public void actionPerformed(ActionEvent e) {
 
       ImageTyper it = new ImageTyper(exportChooser);
-
       exportChooser.setAccessory(it);
+      
+      String fileName = viewer.getModelSetFileName();
+      String pathName = viewer.getModelSetPathName();
+      File file = null;
+      if ((fileName != null) && (pathName != null)) {
+        int extensionStart = fileName.lastIndexOf('.');
+        if (extensionStart != -1) {
+          fileName = fileName.substring(0, extensionStart) + "." + it.getExtension();
+        }
+        file = new File(pathName, fileName);
+        exportChooser.setSelectedFile(file);
+      }
 
       int retval = exportChooser.showSaveDialog(Jmol.this);
       if (retval == 0) {
-        File file = exportChooser.getSelectedFile();
+        file = exportChooser.getSelectedFile();
         if (file != null) {
           ImageCreator c = new ImageCreator(viewer, status);
           c.createImage(file.getAbsolutePath(), it.getType(), it.getQuality());

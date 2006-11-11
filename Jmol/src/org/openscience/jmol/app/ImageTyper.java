@@ -33,15 +33,20 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.io.File;
+
 import org.jmol.i18n.GT;
 
 public class ImageTyper extends JPanel {
 
-  private String[] Choices = { "JPEG", "PNG", "PPM" };
+  private final String[] Choices = { "JPEG", "PNG", "PPM" };
+  final String[] Extensions = { "jpg", "png", "ppm" };
   private int def = 0;
   String result = Choices[def];
+  String extension = Extensions[def];
   JSlider qSlider;
   private JComboBox cb;
+  JFileChooser fileChooser;
 
   /**
    * A simple panel with a combo box for allowing the user to choose
@@ -50,7 +55,7 @@ public class ImageTyper extends JPanel {
    * @param fc the file chooser
    */
   public ImageTyper(JFileChooser fc) {
-
+    fileChooser = fc;
     setLayout(new BorderLayout());
 
     JPanel cbPanel = new JPanel();
@@ -73,6 +78,17 @@ public class ImageTyper extends JPanel {
         } else {
           qSlider.setEnabled(false);
         }
+        File selectedFile = fileChooser.getSelectedFile();
+        if ((selectedFile != null) &&
+            (selectedFile.getName() != null) &&
+            (selectedFile.getName().endsWith("." + extension))) {
+          String name = selectedFile.getName();
+          name = name.substring(0, name.length() - extension.length());
+          name += Extensions[source.getSelectedIndex()];
+          File newFile = new File(selectedFile.getPath(), name);
+          fileChooser.setSelectedFile(newFile);
+        }
+        extension = Extensions[source.getSelectedIndex()];
       }
     });
 
@@ -99,6 +115,13 @@ public class ImageTyper extends JPanel {
     return result;
   }
 
+  /**
+   * @return The file extension which contains the user's choice
+   */
+  public String getExtension() {
+    return extension;
+  }
+  
   /**
    * @return The quality (on a scale from 0 to 10) of the JPEG
    * image that is to be generated.  Returns -1 if choice was not JPEG.

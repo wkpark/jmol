@@ -4551,15 +4551,15 @@
   <fah_proj number="2602" name="p2602_Protein in POPC" public="n" file="y"
     server="171.64.65.56" atoms="77373" preferred="4" deadline="12"
     credit="5" frames="100" code="A0" contact="kasson"/>
-  <fah_proj number="2603" name="p2603_Protein in POPC" public="n"
+  <fah_proj number="2603" name="p2603_Protein in POPC" public="n" file="y"
     server="171.64.65.56" atoms="77373" preferred="4" deadline="12"
-    credit="5" frames="0" code="T" contact="kasson"/>
+    credit="5" frames="0" code="GS" contact="kasson"/>
   <fah_proj number="2604" name="p2604_Protein in POPC" public="n" file="y"
     server="171.64.65.56" atoms="77373" preferred="4" deadline="8"
-    credit="1210" frames="0" code="T" contact="kasson"/>
-  <fah_proj number="2605" name="p2605_Protein in POPC" public="n"
+    credit="1210" frames="0" code="GS" contact="kasson"/>
+  <fah_proj number="2605" name="p2605_Protein in POPC" public="n" file="y"
     server="171.64.65.56" atoms="77373" preferred="3" deadline="4"
-    credit="710" frames="0" code="T" contact="kasson"/>
+    credit="1760" frames="0" code="GS" contact="kasson"/>
 
   <!-- Projects 2700 to 2799 -->
   <fah_proj number="2711" name="p2711_GPUlambda" public="y"
@@ -4617,11 +4617,14 @@
   <fah_proj number="3002" name="p3002_Glycine aRginine prOline Methionine Alanine Cystine Serine"
     public="n"
     server="171.64.65.56" atoms="10066" preferred="4" deadline="12"
-    credit="1" frames="100" code="A0" contact="densign"/>
+    credit="117" frames="100" code="GS" contact="densign"/>
   <fah_proj number="3003" name="p3003_Glycine aRginine prOline Methionine Alanine Cystine Serine"
     public="n"
     server="171.64.65.56" atoms="10066" preferred="4" deadline="12"
     credit="1" frames="100" code="A0" contact="densign"/>
+  <fah_proj number="3007" name="p3007_SMP-msv-03" public="n"
+    server="171.64.65.56" atoms="10066" preferred="4" deadline="12"
+    credit="587" frames="" code="GS" contact="densign"/>
 
   <!-- Projects 3100 to 3199 -->
 

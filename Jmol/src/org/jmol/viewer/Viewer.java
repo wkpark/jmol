@@ -1350,6 +1350,7 @@ public class Viewer extends JmolViewer {
   public void calculateStructures() {
     //Eval
     modelManager.calculateStructures();
+    addStateScript("calculate structure");
   }
 
   void clearBfactorRange() {
@@ -1796,6 +1797,7 @@ public class Viewer extends JmolViewer {
     //Eval
     BitSet bs = getSelectionSet();
     autoHbond(bs, bs);
+    addStateScript("calculate hbonds");
   }
 
   public void autoHbond(BitSet bsFrom, BitSet bsTo) {

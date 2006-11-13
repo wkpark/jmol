@@ -3700,6 +3700,7 @@ class Eval { //implements Runnable {
     switch (statement[1].tok) {
     case Token.surface:
       dots(2, Dots.DOTS_MODE_CALCONLY);
+      viewer.addStateScript("calculate surface");
       return;
     case Token.hbond:
       viewer.autoHbond();

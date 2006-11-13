@@ -312,6 +312,11 @@ class Text {
     this.pointer = pointer;
   }
   
+  static String getPointer(int pointer) {
+    return ((pointer & POINTER_ON) == 0 ? ""
+        : (pointer & POINTER_BACKGROUND) > 0 ? "background" : "on");
+  }
+  
   String fixText(String text) {
     if (text == null)
       return null;

@@ -92,35 +92,17 @@ class ColorManager {
   }
 
   
-  short colixSelection = Graphics3D.UNRECOGNIZED;
-  void setSelectionArgb(int argb) {
-    colixSelection = (argb == 0 ? 0 : Graphics3D.getColix(argb));
-  }
-
-  short getColixSelection() {
-    return colixSelection;
-  }
-
   short colixRubberband = Graphics3D.HOTPINK;
   void setRubberbandArgb(int argb) {
     colixRubberband = (argb == 0 ? 0 : Graphics3D.getColix(argb));
   }
 
-  int argbBackground;
   short colixBackgroundContrast;
-  void setBackgroundArgb(int argb) {
-    argbBackground = argb;
-    g3d.setBackgroundArgb(argb);
+  void setColixBackgroundContrast(int argb) {
     colixBackgroundContrast =
       ((Graphics3D.calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128
        ? Graphics3D.WHITE : Graphics3D.BLACK);
   }
-
-  void setColorBackground(String colorName) {
-    if (colorName != null && colorName.length() > 0)
-      setBackgroundArgb(Graphics3D.getArgbFromString(colorName));
-  }
-
 
   /**
    * black or white, whichever contrasts more with the current background

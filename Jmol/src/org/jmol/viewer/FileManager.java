@@ -61,8 +61,7 @@ class FileManager {
   // for applet proxy
   URL appletDocumentBase = null;
   URL appletCodeBase = null;
-  String appletProxy = null;
-  String defaultDirectory = null;
+  String appletProxy;
 
   // for expanding names into full path names
   //private boolean isURL;
@@ -74,8 +73,7 @@ class FileManager {
   boolean isInline;
   boolean isDOM;
   
-  private String loadScript;
-  
+  private String loadScript;  
   private File file;
 
   private FileOpenThread fileOpenThread;
@@ -311,12 +309,6 @@ class FileManager {
     this.appletProxy = (appletProxy ==  null || appletProxy.length() == 0 ? null : appletProxy);
   }
   
-  void setDefaultDirectory(String defaultDirectory) {
-   if(appletDocumentBase == null)
-     return; // applet only (for now)!
-    this.defaultDirectory = (defaultDirectory ==  null || defaultDirectory.length() == 0 ? null : defaultDirectory);
-  }
-  
   void dumpDocumentBase(String documentBase) {
     Logger.info("dumpDocumentBase:" + documentBase);
     Object inputStreamOrError =
@@ -350,6 +342,7 @@ class FileManager {
     if (appletDocumentBase != null) {
       // This code is only for the applet
       //isURL = true;
+      String defaultDirectory = viewer.getDefaultDirectory();
       try {
         if (defaultDirectory != null && name.indexOf(":/") < 0)
           name = defaultDirectory + "/" + name;
@@ -394,6 +387,7 @@ class FileManager {
     boolean isApplet = (appletDocumentBase != null);
     InputStream in;
     int length;
+    String defaultDirectory = viewer.getDefaultDirectory();
     try {
       if (isApplet || isURL) {
         if (isApplet && isURL && appletProxy != null)

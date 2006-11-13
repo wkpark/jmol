@@ -2030,9 +2030,11 @@ class Eval { //implements Runnable {
     for (int i = 1; i < statementLength; ++i) {
       switch (statement[i].tok) {
       case Token.on:
+        checkLength2();
         stereoMode = JmolConstants.STEREO_DOUBLE;
         break;
       case Token.off:
+        checkLength2();
         stereoMode = JmolConstants.STEREO_NONE;
         break;
       case Token.colorRGB:
@@ -2071,10 +2073,11 @@ class Eval { //implements Runnable {
       }
     }
     viewer.setFloatProperty("stereoDegrees", degrees);
-    if (colorpt > 0) 
-      viewer.setStereoMode(colors);
-    else
-      viewer.setIntProperty("stereoMode", stereoMode);
+    if (colorpt > 0) {
+      viewer.setStereoMode(colors, "[x"+Graphics3D.getHexColorFromRGB(colors[0]) + "] [x"+Graphics3D.getHexColorFromRGB(colors[1]) + "]");
+    } else {
+      viewer.setStereoMode(stereoMode, (String)statement[1].value);
+    }
   }
 
   void connect() throws ScriptException {
@@ -2263,7 +2266,7 @@ class Eval { //implements Runnable {
     case Token.selectionHalo:
       argb = getArgbOrNoneParam(2);
       viewer.loadShape(JmolConstants.SHAPE_HALOS);
-      viewer.setSelectionArgb(argb);
+      viewer.setShapeProperty(JmolConstants.SHAPE_HALOS, "argbSelection", new Integer(argb));
       return;
     case Token.identifier:
     case Token.hydrogen:
@@ -3993,14 +3996,20 @@ class Eval { //implements Runnable {
     case Token.fontsize:
       setFontsize();
       break;
+    case Token.hbond:
+      setHbond();
+      break;
     case Token.history:
       history(2);
       break;
     case Token.monitor:
       setMonitor(2);
       break;
-    case Token.property:
+    case Token.property:  // huh? why?
       setProperty();
+      break;
+    case Token.scale3d:
+      setScale3d();
       break;
     case Token.strands:
       setStrands();
@@ -4010,12 +4019,6 @@ class Eval { //implements Runnable {
       break;
     case Token.ssbond:
       setSsbond();
-      break;
-    case Token.hbond:
-      setHbond();
-      break;
-    case Token.scale3d:
-      setScale3d();
       break;
     case Token.unitcell:
       setUnitcell(2);
@@ -4136,9 +4139,6 @@ class Eval { //implements Runnable {
       }
       viewer.setBooleanProperty((String) statement[1].value, booleanParameter(2));
       break;
-    case Token.background:
-    case Token.stereo:
-      setspecialShouldNotBeHere();
     default:
       unrecognizedSetParameter();
     }
@@ -4612,7 +4612,7 @@ class Eval { //implements Runnable {
         }
       }
     }
-    evalError(GT._("save what?") + " bonds? orientation? selection?");
+    evalError(GT._("save what?") + " bonds? orientation? selection? state?");
   }
   
   void restore() throws ScriptException {

@@ -31,7 +31,6 @@ import java.awt.Rectangle;
 
 class SticksRenderer extends ShapeRenderer {
 
-  short colixSelection;
   boolean showMultipleBonds;
   byte modeMultipleBond;
   boolean showHydrogens;
@@ -57,7 +56,6 @@ class SticksRenderer extends ShapeRenderer {
     asBits = viewer.getTestFlag2();
     
     endcaps = Graphics3D.ENDCAPS_SPHERICAL;
-    colixSelection = viewer.getColixSelection();
     showMultipleBonds = viewer.getShowMultipleBonds();
     modeMultipleBond = viewer.getModeMultipleBond();
 

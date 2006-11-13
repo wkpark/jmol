@@ -340,10 +340,13 @@ class Labels extends Shape {
         setStateInfo(temp2, i, "background label " + encodeColor(bgcolixes[i]));
       if (offsets != null && offsets.length > i) {
         setStateInfo(temp2, i, "set labelOffset "
-            + Text.getXOffset(offsets[i] >> 2) + " "
-            + (-Text.getYOffset(offsets[i] >> 2)));
+            + Text.getXOffset(offsets[i] >> 4) + " "
+            + (-Text.getYOffset(offsets[i] >> 4)));
         setStateInfo(temp2, i, "set labelAlignment "
-            + Text.getAlignment(offsets[i]));
+            + Text.getAlignment(offsets[i] >> 2));
+        String pointer = Text.getPointer(offsets[i]);
+        if (pointer.length() > 0)
+          setStateInfo(temp2, i, "set labelPointer " + pointer);
       }
       if (bsFontSet != null && bsFontSet.get(i))
         setStateInfo(temp2, i, getFontCommand("label", Font3D

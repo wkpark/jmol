@@ -27,11 +27,20 @@ package org.jmol.viewer;
 
 import java.util.BitSet;
 
+import org.jmol.g3d.Graphics3D;
+
 class Halos extends AtomShape {
+
+  short colixSelection = Graphics3D.UNRECOGNIZED;
 
   void setProperty(String propertyName, Object value, BitSet bs) {
     if ("translucency" == propertyName)
       return;
+    if ("argbSelection" == propertyName) {
+      int argb = ((Integer)value).intValue();
+      colixSelection = (argb == 0 ? 0 : Graphics3D.getColix(argb));
+      return;
+    }
     super.setProperty(propertyName, value, bs);
   }
 
@@ -45,4 +54,11 @@ class Halos extends AtomShape {
       atom.setShapeVisibility(myVisibilityFlag, isVisible);
     }
   }
+  
+  String getShapeState() {
+    return super.getShapeState()
+        + (colixSelection == Graphics3D.UNRECOGNIZED ? "" : getColorCommand(
+            "selectionHalos", colixSelection));
+  }
+
 }

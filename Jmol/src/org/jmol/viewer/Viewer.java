@@ -346,20 +346,20 @@ public class Viewer extends JmolViewer {
   }
 
   void setCenter(String relativeTo, Point3f pt) {
-    //Eval ??????
+    //Eval ???
     transformManager.setCenter(relativeTo, pt);
     refresh(0, "Viewer:setCenter(" + relativeTo + ")");
   }
 
   void setCenterBitSet(BitSet bsCenter, boolean doScale) {
-    //Eval ??????
+    //Eval ???
     //setCenterSelected
     transformManager.setCenterBitSet(bsCenter, doScale);
     refresh(0, "Viewer:setCenterBitSet()");
   }
 
   void setNewRotationCenter(String axisID) {
-    //eval for center [line1] ??????
+    //eval for center [line1] ???
     Point3f center = getDrawObjectCenter(axisID);
     if (center == null)
       return;
@@ -367,7 +367,7 @@ public class Viewer extends JmolViewer {
   }
 
   void setNewRotationCenter(Point3f center) {
-    // eval ??????
+    // eval ???
     transformManager.setNewRotationCenter(center, true);
     refresh(0, "Viewer:setCenterBitSet()");
   }
@@ -739,18 +739,8 @@ public class Viewer extends JmolViewer {
     colorManager.setDefaultColors(colorScheme);
   }
 
-  void setSelectionArgb(int argb) {
-    //eval ???? 
-    colorManager.setSelectionArgb(argb);
-    refresh(0, "Viewer:setSelectionArgb()");
-  }
-
   int getColixArgb(short colix) {
     return g3d.getColixArgb(colix);
-  }
-
-  short getColixSelection() {
-    return colorManager.getColixSelection();
   }
 
   void setRubberbandArgb(int argb) {
@@ -786,18 +776,20 @@ public class Viewer extends JmolViewer {
   }
 
   void setBackgroundArgb(int argb) {
-    //Eval ?????
-    colorManager.setBackgroundArgb(argb);
+    // Eval
+    global.argbBackground = argb;
+    g3d.setBackgroundArgb(argb);
+    colorManager.setColixBackgroundContrast(argb);
     refresh(0, "Viewer:setBackgroundArgb()");
   }
 
   public int getBackgroundArgb() {
-    return colorManager.argbBackground;
+    return global.argbBackground;
   }
 
   private void setColorBackground(String colorName) {
-    colorManager.setColorBackground(colorName);
-    refresh(0, "Viewer:setColorBackground()");
+    if (colorName != null && colorName.length() > 0)
+      setBackgroundArgb(Graphics3D.getArgbFromString(colorName));
   }
 
   short getColixBackgroundContrast() {
@@ -944,7 +936,6 @@ public class Viewer extends JmolViewer {
   }
 
   void setFormalCharges(int formalCharge) {
-    //Eval  ????? 
     modelManager.setFormalCharges(selectionManager.bsSelection, formalCharge);
   }
 
@@ -1006,9 +997,12 @@ public class Viewer extends JmolViewer {
     return (htmlName.length() > 0);
   }
 
-  private void setDefaultDirectory(String defaultDirectory) {
-    //Eval
-    fileManager.setDefaultDirectory(defaultDirectory);
+  private void setDefaultDirectory(String dir) {
+    global.defaultDirectory = (dir == null || dir.length() == 0 ? null : dir);
+  }
+  
+  String getDefaultDirectory() {
+    return global.defaultDirectory;
   }
 
   Object getInputStreamOrErrorMessageFromName(String name) {
@@ -1258,7 +1252,6 @@ public class Viewer extends JmolViewer {
   }
 
   void setEchoStateActive(boolean TF) {
-    //Eval ?????
     modelManager.setEchoStateActive(TF);
   }
 
@@ -1737,7 +1730,9 @@ public class Viewer extends JmolViewer {
   
   public String getStateInfo() {
     StringBuffer s = new StringBuffer("# Jmol state version " + getJmolVersion() + "\n\n");
-    //  file line
+    //  window state
+    s.append(global.getWindowState());
+    //  file state
     s.append(fileManager.getState());
     //  numerical values
     s.append(global.getState());
@@ -1825,14 +1820,17 @@ public class Viewer extends JmolViewer {
   }
 
   void setCurrentUnitCellOffset(int offset) {
-    //Eval ???
-    global.setParameterValue("set unitcell", offset);
-    modelManager.setUnitCellOffset(getDisplayModelIndex(), offset);
+    int modelIndex = getDisplayModelIndex();
+    if (modelManager.setUnitCellOffset(modelIndex, offset))
+      global.setParameterValue("_frame " + getModelNumber(modelIndex)
+          + "; set unitcell", offset);
   }
 
   void setCurrentUnitCellOffset(Point3f pt) {
-    global.setParameterValue("set unitcell", StateManager.encloseCoord(pt));
-    modelManager.setUnitCellOffset(getDisplayModelIndex(), pt);
+    int modelIndex = getDisplayModelIndex();
+    if (modelManager.setUnitCellOffset(modelIndex, pt))
+      global.setParameterValue("_frame " + getModelNumber(modelIndex)
+          + "; set unitcell", StateManager.encloseCoord(pt));
   }
 
   /* ****************************************************************************
@@ -3057,10 +3055,6 @@ public class Viewer extends JmolViewer {
         setHermiteLevel(value);
         break;
       }
-      if (key.equalsIgnoreCase("stereoMode")) {
-        setStereoMode(value);
-        break;
-      }
       if (value != 0 || value != 1 || !setBooleanProperty(key, false, false))
         setFloatProperty(key, (float)value); 
       return;
@@ -3991,14 +3985,16 @@ public class Viewer extends JmolViewer {
   // stereo support
   // //////////////////////////////////////////////////////////////
 
-  private void setStereoMode(int stereoMode) {
+  void setStereoMode(int stereoMode, String state) {
     //Eval
+    global.stereoState = state;
     transformManager.setStereoMode(stereoMode);
     setBooleanProperty("greyscaleRendering", stereoMode > JmolConstants.STEREO_DOUBLE);
   }
 
-  void setStereoMode(int[] twoColors) {
-    //Eval ??????
+  void setStereoMode(int[] twoColors, String state) {
+    //Eval
+    global.stereoState = state;
     transformManager.setStereoMode(twoColors);
     setBooleanProperty("greyscaleRendering", true);
   }

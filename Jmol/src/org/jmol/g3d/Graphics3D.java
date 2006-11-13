@@ -1535,7 +1535,7 @@ final public class Graphics3D {
     return getHexColorFromRGB(argb);
   }
   
-  public String getHexColorFromRGB(int argb) {
+  public static String getHexColorFromRGB(int argb) {
     if (argb == 0)
       return null;
     String r  = "00" + Integer.toHexString((argb >> 16) & 0xFF);
@@ -2040,20 +2040,20 @@ final public class Graphics3D {
 
   public static int getArgbFromString(String strColor) {
     if (strColor != null) {
+      if (strColor.length() == 9 && strColor.indexOf("[x") == 0
+          && strColor.indexOf("]") == 8)
+        strColor = "#" + strColor.substring(2, 8);
       if (strColor.length() == 7 && strColor.charAt(0) == '#') {
         try {
           int red = Integer.parseInt(strColor.substring(1, 3), 16);
           int grn = Integer.parseInt(strColor.substring(3, 5), 16);
           int blu = Integer.parseInt(strColor.substring(5, 7), 16);
-          return (0xFF000000 |
-                  (red & 0xFF) << 16 |
-                  (grn & 0xFF) << 8  |
-                  (blu & 0xFF));
+          return (0xFF000000 | (red & 0xFF) << 16 | (grn & 0xFF) << 8 | (blu & 0xFF));
         } catch (NumberFormatException e) {
         }
       } else {
-        Integer boxedArgb =
-          (Integer)mapJavaScriptColors.get(strColor.toLowerCase());
+        Integer boxedArgb = (Integer) mapJavaScriptColors.get(strColor
+            .toLowerCase());
         if (boxedArgb != null)
           return boxedArgb.intValue();
       }

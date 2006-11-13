@@ -32,6 +32,7 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.text.DecimalFormat;
 
+import org.jmol.g3d.Graphics3D;
 import org.jmol.util.CommandHistory;
 
 //import org.jmol.util.Logger;
@@ -321,16 +322,19 @@ class StateManager {
     float bondTolerance   = JmolConstants.DEFAULT_BOND_TOLERANCE;
     float minBondDistance = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
     String defaultLoadScript   = "";
+    String defaultDirectory    = null;
 
     String getLoadState() {
       String str = "";
+      if (defaultDirectory != null)
+        str += "set defaultDirectory " + escape(defaultDirectory) + ";\n";
       str += "set autoBond " + autoBond + ";\n"
            + "set forceAutoBond " + forceAutoBond + ";\n"
            + "set zeroBasedXyzRasmol " + zeroBasedXyzRasmol + ";\n"
-           + "set percentVdwAtom " + percentVdwAtom +";\n"
-           + "set bondRadiusMilliAngstroms " + marBond +";\n"
-           + "set minBondDistance " + minBondDistance +";\n"
-           + "set bondTolerance " + bondTolerance +";\n";
+           + "set percentVdwAtom " + percentVdwAtom + ";\n"
+           + "set bondRadiusMilliAngstroms " + marBond + ";\n"
+           + "set minBondDistance " + minBondDistance + ";\n"
+           + "set bondTolerance " + bondTolerance + ";\n";
       if (defaultLoadScript.length() > 0)
         str += "set defaultLoadScript " + escape(defaultLoadScript) + ";\n";
       return str;
@@ -428,6 +432,21 @@ class StateManager {
 
     boolean hideNameInPopup    = false;
     boolean disablePopupMenu   = false;
+    
+    // window
+    
+    int argbBackground = 0xFF000000;
+    String stereoState = null;
+
+    String getWindowState() {
+      String str = "# window state (height=" + viewer.getScreenHeight()
+          + " width=" + viewer.getScreenWidth() + ")\n";
+      str += "background [x" + Graphics3D.getHexColorFromRGB(argbBackground)
+          + "];\n";
+      if (stereoState != null)
+        str += "stereo " + stereoState + ";\n";
+      return str + "\n";
+    }
 
     int axesMode               = JmolConstants.AXES_MODE_BOUNDBOX;
     int pickingSpinRate        = 10;
@@ -478,8 +497,9 @@ class StateManager {
     
     final static String unnecessaryProperties = 
       //these are handled individually
-      "defaults;backgroundmodel;"
-      + "percentvdwatom;zerobasedxyzrasmol;bondradiusmilliangstroms;bondtolerance;minbonddistance;autobond;"
+      "defaults;backgroundmodel;backgroundcolor;"
+      + "stereo;defaultdirectory;percentvdwatom;zerobasedxyzrasmol;"
+      + "bondradiusmilliangstroms;bondtolerance;minbonddistance;autobond;"
       + "debugscript;frank;showaxes;showunitcell;showboundbox;"
       + "axeswindow;axesunitcell;axesmolecular;windowcentered;";
        
@@ -547,11 +567,20 @@ class StateManager {
           commands.append("set " + key + " " + htPropertyFlags.get(key)+ ";\n");
       }
       //nondefault, nonvariables
+      //save as _xxxx if you don't want "set" to be there first
       e = htParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
-        if (key.indexOf("default") < 0 && key.charAt(0) != '@')
-        commands.append("set " + key + " " + htParameterValues.get(key)+ ";\n");
+        if (key.indexOf("default") < 0 && key.charAt(0) != '@') {
+          Object value = htParameterValues.get(key);
+          if (value instanceof String)
+            value = escape((String) value);
+          if (key.charAt(0) == '_')
+            key = key.substring(1);
+          else
+            key = "set " + key;
+          commands.append(key + " " + value + ";\n");
+        }
       }
       switch (axesMode) {
       case JmolConstants.AXES_MODE_UNITCELL:

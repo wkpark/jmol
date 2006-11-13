@@ -57,13 +57,14 @@ class Balls extends Shape {
       if (bsColixSet == null)
         bsColixSet = new BitSet();
       int pid = (value instanceof Byte ? ((Byte) value).intValue()
-          : JmolConstants.PALETTE_CPK);
+          : -1);
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i)) {
           Atom atom = atoms[i];
           atom.setColixAtom(colix != 0 ? colix : viewer.getColixAtomPalette(
               atom, pid));
-          bsColixSet.set(i, colix != 0 || atom.isTranslucent());
+          bsColixSet.set(i, colix != 0 || pid > 0 || atom.isTranslucent());
+          atom.setPaletteID((short) pid);
         }
       return;
     }
@@ -121,7 +122,9 @@ class Balls extends Shape {
       if (bsSizeSet != null && bsSizeSet.get(i))
         setStateInfo(temp, i, "Spacefill " + (atoms[i].madAtom / 2000f));
       if (bsColixSet != null && bsColixSet.get(i)) {
-        setStateInfo(temp, i, "color atoms " + encodeColor(atoms[i].colixAtom));
+        short pid = atoms[i].getPaletteID();
+        if (pid != JmolConstants.PALETTE_CPK)
+          setStateInfo(temp, i, getColorCommand("atoms", pid, atoms[i].colixAtom));
       }
     }
     return getShapeCommands(temp, null, atomCount);

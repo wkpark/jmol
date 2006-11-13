@@ -1478,18 +1478,20 @@ String getAtomInfoChime(int i) {
     return unitCell.getCartesianOffset();
   }
 
-  void setUnitCellOffset(int modelIndex, Point3f pt) {
+  boolean setUnitCellOffset(int modelIndex, Point3f pt) {
     // from "unitcell {i j k}" via uccage
     UnitCell unitCell = getUnitCell(modelIndex);
     if (unitCell == null)
-      return;
+      return false;
     unitCell.setOffset(pt);
+    return true;
   }
 
-  void setUnitCellOffset(int modelIndex, int nnn) {
+  boolean setUnitCellOffset(int modelIndex, int nnn) {
     UnitCell unitCell = getUnitCell(modelIndex);
     if (unitCell == null)
-      return;
+      return false;
     unitCell.setOffset(nnn);
+    return true;
   }
 }

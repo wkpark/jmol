@@ -52,7 +52,7 @@ class HalosRenderer extends ShapeRenderer {
         if (mad == 0)
           mad = -1; // unsized
         if (colix == 0)
-          colix = viewer.getColixSelection();
+          colix = halos.colixSelection;
         if (colix == Graphics3D.UNRECOGNIZED)
           colix = Graphics3D.GOLD;
       } else if (isHidden) {

@@ -66,6 +66,7 @@ class TransformManager {
   
   String getState() {
     StringBuffer commands = new StringBuffer("# orientation/center/spin states:\n");
+    commands.append("set refreshing false;\n");
     if (!isWindowCentered())
       commands.append("set windowCentered false;\n");
     commands.append(getMoveToText(0));
@@ -91,6 +92,7 @@ class TransformManager {
       }
       commands.append(";\n");
     }
+    commands.append("set refreshing true;\n");
     commands.append("\n");
     return commands.toString();
   }
@@ -1551,7 +1553,7 @@ class TransformManager {
     } else {
       this.vibrationPeriod = period;
       this.vibrationPeriodMs = (int) (period * 1000);
-      setVibrationOn(true);
+      setVibrationOn(viewer.modelHasVibrationVectors(viewer.getCurrentModelIndex()));
     }
   }
 
@@ -1633,13 +1635,11 @@ class TransformManager {
   void setStereoMode(int[] twoColors) {
     stereoMode = JmolConstants.STEREO_CUSTOM;
     stereoColors = twoColors;
-    viewer.setGreyscaleRendering(true);
   }
   
   void setStereoMode(int stereoMode) {
     stereoColors = null;
     this.stereoMode = stereoMode;
-    viewer.setGreyscaleRendering(stereoMode >= JmolConstants.STEREO_REDCYAN);
   }
 
   float stereoDegrees = 5;

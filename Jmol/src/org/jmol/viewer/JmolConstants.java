@@ -126,13 +126,18 @@ final public class JmolConstants {
   public final static int PICKING_MEASURE_ANGLE    = 16;
   public final static int PICKING_MEASURE_TORSION  = 17;
 
-  public final static String[] pickingModeNames = {
+  private final static String[] pickingModeNames = {
     "off", "ident", "label", "center", "draw", "spin",
     "coord NOT IMPLEMENTED", "bond NOT IMPLEMENTED", 
     "atom", "group", "chain", "molecule", "site", "element", 
     "measure", "distance", "angle", "torsion"
   };
  
+  public final static String getPickingModeName(int pickingMode) {
+    return (pickingMode < 0 || pickingMode >= pickingModeNames.length ? "off"
+        : pickingModeNames[pickingMode]);
+  }
+  
   public final static int GetPickingMode(String str) {
     for (int i = pickingModeNames.length; --i >= 0; )
       if (str.equalsIgnoreCase(pickingModeNames[i]))
@@ -149,11 +154,16 @@ final public class JmolConstants {
   public final static int PICKINGSTYLE_MEASURE_ON = 3;
   public final static int PICKINGSTYLE_MEASURE_OFF = 4;
   
-  public final static String[] pickingStyleNames = {
+  private final static String[] pickingStyleNames = {
     "toggle", "selectOrToggle", "extendedSelect", 
     "measure", "measureoff"
   };
 
+  public final static String getPickingStyleName(int pickingStyle) {
+    return (pickingStyle < 0 || pickingStyle >= pickingStyleNames.length ? "toggle"
+        : pickingModeNames[pickingStyle]);
+  }
+  
   public final static int GetPickingStyle(String str) {
     for (int i = pickingStyleNames.length; --i >= 0; )
       if (str.equalsIgnoreCase(pickingStyleNames[i]))

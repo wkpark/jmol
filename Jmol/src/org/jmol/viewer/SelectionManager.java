@@ -168,7 +168,6 @@ class SelectionManager {
         excludeSelectionSet(viewer.getAtomBits("hydrogen"));
       if (!viewer.getRasmolHeteroSetting())
         excludeSelectionSet(viewer.getAtomBits("hetero"));
-
     } else {
       setSelectionSet(bs);
     }

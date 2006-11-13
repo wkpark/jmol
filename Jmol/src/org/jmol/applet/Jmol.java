@@ -264,18 +264,18 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
       emulate = getValueLowerCase("emulate", "jmol");
       if (emulate.equals("chime")) {
-        viewer.setRasmolDefaults();
+        viewer.setStringProperty("defaults", "RasMol");
       } else {
-        viewer.setJmolDefaults();
+        viewer.setStringProperty("defaults", "Jmol");
       }
       String bgcolor = getValue("boxbgcolor", "black");
       bgcolor = getValue("bgcolor", bgcolor);
-      viewer.setColorBackground(bgcolor);
+      viewer.setStringProperty("backgroundColor", bgcolor);
 
       // loadInline(getValue("loadInline", null));
       loadNodeId(getValue("loadNodeId", null));
 
-      viewer.setFrankOn(true);
+      viewer.setBooleanProperty("frank", true);
       animFrameCallback = getValue("AnimFrameCallback", null);
       loadStructCallback = getValue("LoadStructCallback", null);
       messageCallback = getValue("MessageCallback", null);

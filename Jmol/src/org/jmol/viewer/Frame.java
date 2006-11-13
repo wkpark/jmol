@@ -908,10 +908,6 @@ public final class Frame {
     return hasVibrationVectors;
   }
 
-  boolean hasVibrationVectors() {
-    return hasVibrationVectors;
-  }
-
   boolean modelHasVibrationVectors(int modelIndex) {
     if (vibrationVectors != null)
       for (int i = atomCount; --i >= 0;)
@@ -1468,6 +1464,7 @@ public final class Frame {
 
   void rebond() {
     // from eval "connect" or from app preferences panel
+    stateScripts.add("connect;");
     deleteAllBonds();
     autoBond(null, null);
   }
@@ -1482,10 +1479,8 @@ public final class Frame {
     return 0;
   }
   
-  int autoBond(BitSet bsA, BitSet bsB) {
+  private int autoBond(BitSet bsA, BitSet bsB) {
     // null values for bitsets means "all"
-    if (bsA == null && bsB == null)
-      stateScripts.add("connect;");
     if (maxBondingRadius == Float.MIN_VALUE)
       findMaxRadii();
     float bondTolerance = viewer.getBondTolerance();
@@ -2964,10 +2959,12 @@ public final class Frame {
     Logger.info(str + pt);
   }
 
+  boolean reportFormalCharges = false;
   void setFormalCharges(BitSet bs, int formalCharge) {    
     for (int i = 0; i < atomCount; i++) 
       if (bs.get(i))
         atoms[i].setFormalCharge(formalCharge);
+    reportFormalCharges = true;
   }
   
   void setAtomCoord(int atomIndex, float x, float y, float z) {
@@ -3280,5 +3277,36 @@ public final class Frame {
   
   public void setEchoStateActive(boolean TF) {
     echoShapeActive = TF;
-  }  
+  }
+  
+  String getState() {
+    StringBuffer commands = new StringBuffer("# special commands:\n");
+    String cmd;
+    if (reportFormalCharges) {
+      Hashtable ht = new Hashtable();
+      for (int i = 0; i < atomCount; i++)
+        StateManager.setStateInfo(ht, i, i, "set formalCharge " + atoms[i].getFormalCharge());
+      commands.append(StateManager.getCommands(ht));
+    }
+
+    // connections
+
+    Vector fs = stateScripts;
+    int len = fs.size();
+    for (int i = 0; i < len; i++)
+      commands.append(fs.get(i) + "\n");
+
+    commands.append("\n# model states:\n");
+    // shape construction
+
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+      Shape shape = shapes[i];
+      if (shape != null && (cmd = shape.getShapeState()) != null
+          && cmd.length() > 1)
+        commands.append(cmd);
+    }
+    commands.append("\n");
+    return commands.toString();
+  }
+  
 }

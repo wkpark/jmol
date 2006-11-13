@@ -460,7 +460,6 @@ class Eval { //implements Runnable {
         break;
       case Token.define:
         define();
-        viewer.addStateScript(getCommand());
         break;
       case Token.echo:
         echo();
@@ -1325,6 +1324,11 @@ class Eval { //implements Runnable {
       badArgumentCount();
   }
 
+  void checkLength23() throws ScriptException {
+    if (statementLength < 2 || statementLength > 3)
+      badArgumentCount();
+  }
+
   void checkLength2() throws ScriptException {
     checkStatementLength(2);
   }
@@ -1337,6 +1341,11 @@ class Eval { //implements Runnable {
     checkStatementLength(4);
   }
 
+  String parameterAsString(int i) {
+    return (statementLength <= i ? "" : statement[i].tok == Token.integer ? ""
+        + statement[i].intValue : "" + statement[i].value);
+  }
+  
   int intParameter(int index) throws ScriptException {
     if (index >= statementLength || statement[index].tok != Token.integer)
       integerExpected();
@@ -1476,10 +1485,6 @@ class Eval { //implements Runnable {
       numberExpected();
     }
     return -1; //impossible return
-  }
-
-  boolean getSetBoolean() throws ScriptException {
-    return booleanParameter(2);
   }
 
   boolean booleanParameter(int i) throws ScriptException {
@@ -1846,14 +1851,9 @@ class Eval { //implements Runnable {
 
   void help() throws ScriptException {
     if (!viewer.isApplet())
-      evalError(GT._("Currently the {0} command only works for the applet",                    "help"));
+      evalError(GT._("Currently the {0} command only works for the applet", "help"));
     String what = (statementLength == 1 ? "" : stringParameter(1));
     viewer.getHelp(what);
-  }
-  
-  void setHelp() throws ScriptException {
-    checkLength3();
-    viewer.setHelpPath(stringParameter(2));
   }
   
   void moveto() throws ScriptException {
@@ -2070,11 +2070,11 @@ class Eval { //implements Runnable {
         booleanOrNumberExpected();
       }
     }
-    viewer.setStereoDegrees(degrees);
+    viewer.setFloatProperty("stereoDegrees", degrees);
     if (colorpt > 0) 
       viewer.setStereoMode(colors);
     else
-      viewer.setStereoMode(stereoMode);
+      viewer.setIntProperty("stereoMode", stereoMode);
   }
 
   void connect() throws ScriptException {
@@ -2439,16 +2439,17 @@ class Eval { //implements Runnable {
       return;
     }
   }
+
   void define() throws ScriptException {
     if (statementLength == 1)
       keywordExpected();
+    // note that this definition depends upon the 
+    // current state. 
     String variable = (String) statement[1].value;
-    variables.put(variable, (expression(statement, 2)));
-  }
-
-  void predefine(Token[] statement) {
-    String variable = (String) statement[1].value;
-    variables.put(variable, statement);
+    BitSet bs = expression(statement, 2);
+    variables.put(variable, bs);
+    //viewer.addStateScript("#" + getCommand());
+    viewer.setStringProperty("@" + variable, StateManager.encodeBitset(bs));
   }
 
   void echo() {
@@ -2779,7 +2780,7 @@ class Eval { //implements Runnable {
       viewer.setSelectionSet(bs);
     }
     boolean bondmode = viewer.getBondSelectionModeOr();
-    viewer.setBondSelectionModeOr(true);
+    viewer.setBooleanProperty("bondSelelectionModeOr", true);
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0);
 
     // also need to turn off backbones, ribbons, strands, cartoons
@@ -2789,7 +2790,7 @@ class Eval { //implements Runnable {
     viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "delete", null);
     viewer.setLabel(null);
 
-    viewer.setBondSelectionModeOr(bondmode);
+    viewer.setBooleanProperty("bondSelelectionModeOr", bondmode);
     viewer.setSelectionSet(bsSelected);
   }
 
@@ -3108,17 +3109,17 @@ class Eval { //implements Runnable {
         viewer.moveTo(1, null, new Point3f(0, 0, 0), 0, viewer
             .getZoomPercentFloat() * 2f, 0, 0, 0);
       else
-        viewer.setZoomEnabled(true);
+        viewer.setBooleanProperty("zoom", true);
       return;
     }
     //zoom on|off
     if (!isZoomTo)
       switch (statement[1].tok) {
       case Token.on:
-        viewer.setZoomEnabled(true);
+        viewer.setBooleanProperty("zoom", true);
         return;
       case Token.off:
-        viewer.setZoomEnabled(false);
+        viewer.setBooleanProperty("zoom", false);
         return;
       }
     float time = (isZoomTo ? 1f : 0f);
@@ -3257,10 +3258,10 @@ class Eval { //implements Runnable {
     }
     switch (statement[1].tok) {
     case Token.on:
-      viewer.setSlabEnabled(true);
+      viewer.setBooleanProperty("slab", true);
       break;
     case Token.off:
-      viewer.setSlabEnabled(false);
+      viewer.setBooleanProperty("slab", false);
       break;
     default:
       booleanOrPercentExpected();
@@ -3497,7 +3498,7 @@ class Eval { //implements Runnable {
           float scale = floatParameter(2);
           if (scale < -10 || scale > 10)
             numberOutOfRange(-10f, 10f);
-          viewer.setVectorScale(scale);
+          viewer.setFloatProperty("vectorScale", scale);
           return;
         }
         unrecognizedSubcommand(cmd);
@@ -3665,7 +3666,7 @@ class Eval { //implements Runnable {
     default:
       unrecognizedSubcommand(token.toString());
     }
-    viewer.setVibrationPeriod(period);
+    viewer.setFloatProperty("vibrationPeriod", period);
   }
 
   void vibrationScale() throws ScriptException {
@@ -3673,7 +3674,7 @@ class Eval { //implements Runnable {
     float scale = floatParameter(2);
     if (scale < -10 || scale > 10)
       numberOutOfRange(-10f, 10f);
-    viewer.setVibrationScale(scale);
+    viewer.setFloatProperty("vibrationScale", scale);
   }
 
   void animationDirection() throws ScriptException {
@@ -3818,7 +3819,7 @@ class Eval { //implements Runnable {
       String str = (String) statement[1].value;
       if (str.equalsIgnoreCase("fps")) {
         checkLength3();
-        viewer.setAnimationFps(intParameter(2));
+        viewer.setIntProperty("animationFps", intParameter(2));
         break;
       }
     default:
@@ -3969,28 +3970,21 @@ class Eval { //implements Runnable {
 
   void set() throws ScriptException {
     switch (statement[1].tok) {
-    case Token.help:
-      setHelp();
-      break;
     case Token.axes:
       setAxes(2);
       break;
     case Token.bondmode:
       setBondmode();
       break;
-    case Token.bonds:
-      setBonds();
-      break;
     case Token.boundbox:
       setBoundbox(2);
       break;
     case Token.color:
-    // fall into
     case Token.defaultColors:
       setDefaultColors();
       break;
+    case Token.display://deprecated
     case Token.selectionHalo:
-    case Token.display: //deprecated  
       setSelectionHalo(2);
       break;
     case Token.echo:
@@ -3999,14 +3993,8 @@ class Eval { //implements Runnable {
     case Token.fontsize:
       setFontsize();
       break;
-    case Token.hetero:
-      setHetero();
-      break;
     case Token.history:
       history(2);
-      break;
-    case Token.hydrogen:
-      setHydrogen();
       break;
     case Token.labeloffset:
       setLabelOffset();
@@ -4020,26 +4008,8 @@ class Eval { //implements Runnable {
     case Token.property:
       setProperty();
       break;
-    case Token.solvent:
-      setSolvent();
-      break;
-    case Token.radius:
-      setRadius();
-      break;
     case Token.strands:
       setStrands();
-      break;
-    case Token.specular:
-      setSpecular();
-      break;
-    case Token.specpower:
-      setSpecPower();
-      break;
-    case Token.ambient:
-      setAmbient();
-      break;
-    case Token.diffuse:
-      setDiffuse();
       break;
     case Token.spin:
       setSpin();
@@ -4080,35 +4050,26 @@ class Eval { //implements Runnable {
     case Token.write:
       // fall through to identifier
       
+    case Token.ambient:
+    case Token.bonds:
     case Token.debugscript:
+    case Token.diffuse:
     case Token.frank:
+    case Token.help:
+    case Token.hetero:
+    case Token.hydrogen:
     case Token.identifier:
+    case Token.radius:
+    case Token.solvent:
+    case Token.specular:
+    case Token.specpower:
       String str = (String) statement[1].value;
-      if (str.equalsIgnoreCase("sheetSmoothing")) {
-        viewer.setSheetSmoothing(floatParameter(2));
-        break;
-      }
-      if (str.equalsIgnoreCase("ribbonAspectRatio")) {
-        viewer.setRibbonAspectRatio(intParameter(2));
-        break;
-      }
-      if (str.equalsIgnoreCase("hermiteLevel")) {
-        viewer.setHermiteLevel(intParameter(2));
-        break;
-      }
       if (str.equalsIgnoreCase("toggleLabel")) {
         viewer.togglePickingLabel(expression(statement, 2));
         break;
       }
       if (str.equalsIgnoreCase("measurementNumbers")) {
         setMonitor(2);
-        break;
-      }
-      if (str.toLowerCase().indexOf("callback") >= 0) {
-        String func = stringParameter(2);
-        if (func.equalsIgnoreCase("none"))
-          func = null;
-        viewer.setCallbackFunction(str,func);
         break;
       }
       if (str.equalsIgnoreCase("historyLevel")) {
@@ -4128,27 +4089,12 @@ class Eval { //implements Runnable {
         viewer.setDefaultLattice(pt);
         break;
       }
-      if (str.equalsIgnoreCase("defaultLoadScript")) {
-        checkLength3();
-        viewer.setDefaultLoadScript(stringParameter(2));
-        break;
-      }
-      if (str.equalsIgnoreCase("appletProxy")) {
-        checkLength3();
-        viewer.setAppletProxy(stringParameter(2));
-        break;
-      }
-      if (str.equalsIgnoreCase("defaultDirectory")) {
-        checkLength3();
-        viewer.setDefaultDirectory(stringParameter(2));
-        break;
-      }
       if (str.equalsIgnoreCase("dipoleScale")) {
         checkLength3();
         float scale = floatParameter(2);
         if (scale < -10 || scale > 10)
           numberOutOfRange(-10f, 10f);
-        viewer.setDipoleScale(scale);
+        viewer.setFloatProperty("dipoleScale", scale);
         break;
       }
       if (str.equalsIgnoreCase("logLevel")) {
@@ -4164,12 +4110,25 @@ class Eval { //implements Runnable {
         Logger.info("logging level set to " + ilevel);
         break;
       }
-      if (str.equalsIgnoreCase("backgroundModel")) {
-        int modelIndex = viewer.getModelNumberIndex(intParameter(2));
-        viewer.setBackgroundModelIndex(modelIndex);
+      if (statementLength == 2) {
+        viewer.setBooleanProperty((String) statement[1].value, booleanParameter(2));
         break;
       }
-      viewer.setBooleanProperty((String) statement[1].value, getSetBoolean());
+      checkLength3();
+      int tok = statement[2].tok;
+      if (tok != Token.on && tok != Token.off && statement[2].value instanceof String) {
+        viewer.setStringProperty((String) statement[1].value, (String) statement[2].value);
+        break;
+      }
+      if (tok == Token.decimal) {
+        viewer.setFloatProperty((String) statement[1].value, ((Float)statement[2].value).floatValue());
+        break;
+      }
+      if (tok == Token.integer) {
+        viewer.setIntProperty((String) statement[1].value, statement[2].intValue);
+        break;
+      }
+      viewer.setBooleanProperty((String) statement[1].value, booleanParameter(2));
       break;
     case Token.background:
     case Token.stereo:
@@ -4221,7 +4180,7 @@ class Eval { //implements Runnable {
     switch (statement[2].tok) {
     case Token.rasmol:
     case Token.jmol:
-      viewer.setDefaultColors((String) statement[2].value);
+      viewer.setStringProperty("defaultColorScheme", (String) statement[2].value);
       break;
     default:
       invalidArgument();
@@ -4240,16 +4199,12 @@ class Eval { //implements Runnable {
     default:
       invalidArgument();
     }
-    viewer.setBondSelectionModeOr(bondmodeOr);
-  }
-
-  void setBonds() throws ScriptException {
-    viewer.setBooleanProperty("showMultipleBonds", getSetBoolean());
+    viewer.setBooleanProperty("bondSelelectionModeOr", bondmodeOr);
   }
 
   void setSelectionHalo(int pt) throws ScriptException {
     if (pt == statementLength) {
-      viewer.setSelectionHaloEnabled(true);
+      viewer.setBooleanProperty("selectionHalos", true);
       return;
     }
     if (pt + 1 < statementLength)
@@ -4262,7 +4217,7 @@ class Eval { //implements Runnable {
     case Token.off:
     case Token.none:
     case Token.normal:
-      viewer.setSelectionHaloEnabled(showHalo);
+      viewer.setBooleanProperty("selectionHalos", showHalo);
       break;
     default:
       keywordExpected();
@@ -4393,14 +4348,6 @@ class Eval { //implements Runnable {
         statement[2].value);
   }
 
-  void setHetero() throws ScriptException {
-    viewer.setRasmolHeteroSetting(getSetBoolean());
-  }
-
-  void setHydrogen() throws ScriptException {
-    viewer.setRasmolHydrogenSetting(getSetBoolean());
-  }
-
   void setMonitor(int cmdPt) throws ScriptException {
     //on off here incompatible with "monitor on/off" so this is just a SET option.
     //cmdPt will be 2 here.
@@ -4423,6 +4370,10 @@ class Eval { //implements Runnable {
   }
 
   void setProperty() throws ScriptException {
+    //what possible good is this? 
+    //set property foo bar  is identical to
+    //set foo bar
+    
     checkLength4();
     if (statement[2].tok != Token.identifier)
       propertyNameExpected();
@@ -4435,21 +4386,17 @@ class Eval { //implements Runnable {
       viewer.setBooleanProperty(propertyName, false);
       break;
     case Token.integer:
+      viewer.setIntProperty(propertyName, statement[3].intValue);
+      break;
     case Token.decimal:
+      viewer.setFloatProperty(propertyName, floatParameter(3));
+      break;
     case Token.string:
-      notImplemented(3);
+      viewer.setStringProperty(propertyName, stringParameter(3));
+      break;     
     default:
       unrecognizedSetParameter();
     }
-  }
-
-  void setSolvent() throws ScriptException {
-    viewer.setSolventOn(getSetBoolean());
-  }
-
-  void setRadius() throws ScriptException {
-    checkLength3();
-    viewer.setSolventProbeRadius(getRasmolAngstroms(2));
   }
 
   void setStrands() throws ScriptException {
@@ -4463,29 +4410,6 @@ class Eval { //implements Runnable {
     }
     viewer.setShapeProperty(JmolConstants.SHAPE_STRANDS, "strandCount",
         new Integer(strandCount));
-  }
-
-  void setSpecular() throws ScriptException {
-    checkLength3();
-    if (statement[2].tok == Token.integer)
-      viewer.setSpecularPercent(intParameter(2));
-    else
-      viewer.setSpecular(getSetBoolean());
-  }
-
-  void setSpecPower() throws ScriptException {
-    checkLength3();
-    viewer.setSpecularPower(intParameter(2));
-  }
-
-  void setAmbient() throws ScriptException {
-    checkLength3();
-    viewer.setAmbientPercent(intParameter(2));
-  }
-
-  void setDiffuse() throws ScriptException {
-    checkLength3();
-    viewer.setDiffusePercent(intParameter(2));
   }
 
   void setSpin() throws ScriptException {
@@ -4526,7 +4450,7 @@ class Eval { //implements Runnable {
     default:
       invalidArgument();
     }
-    viewer.setSsbondsBackbone(ssbondsBackbone);
+    viewer.setBooleanProperty("ssbondsBackbone", ssbondsBackbone);
   }
 
   void setHbond() throws ScriptException {
@@ -4537,13 +4461,13 @@ class Eval { //implements Runnable {
       bool = true;
     // fall into
     case Token.sidechain:
-      viewer.setHbondsBackbone(bool);
+      viewer.setBooleanProperty("hbondsBackbone", bool);
       break;
     case Token.solid:
       bool = true;
     // falll into
     case Token.dotted:
-      viewer.setHbondsSolid(bool);
+      viewer.setBooleanProperty("hbondsSolid", bool);
       break;
     default:
       invalidArgument();
@@ -4552,29 +4476,26 @@ class Eval { //implements Runnable {
 
   void setScale3d() throws ScriptException {
     checkLength3();
-    float angstromsPerInch = 0;
     switch (statement[2].tok) {
     case Token.decimal:
-      angstromsPerInch = ((Float) statement[2].value).floatValue();
-      break;
     case Token.integer:
-      angstromsPerInch = statement[2].intValue;
       break;
     default:
       numberExpected();
     }
-    viewer.setScaleAngstromsPerInch(angstromsPerInch);
+    viewer.setFloatProperty("scaleAngstromsPerInch", floatParameter(2));
   }
 
   void setPicking() throws ScriptException {
     if (statementLength == 2) {
-      viewer.setPickingMode(JmolConstants.PICKING_IDENT);
+      viewer.setStringProperty("picking", "ident");
       return;
     }
     checkLength34();
     switch (statement[2].tok) {
     case Token.select:
     case Token.monitor:
+    case Token.spin:
       break;
     default:
       checkLength3();
@@ -4593,7 +4514,7 @@ class Eval { //implements Runnable {
     case Token.select:
       str = "atom";
       break;
-    case Token.bonds:
+    case Token.bonds:  //not implemented
       str = "bond";
       break;
     case Token.spin:
@@ -4601,19 +4522,16 @@ class Eval { //implements Runnable {
       if (statementLength == 4) {
         rate = intParameter(3);
       }
-      viewer.setPickingSpinRate(rate);
-      break;
+      viewer.setIntProperty("pickingSpinRate", rate);
+      return;
     }
-    try {
-      if (str == null)
+    if (token.value instanceof String)
         str = (String) token.value;
-    } catch (Exception e) {
+    else
       invalidArgument();
-    }
-    int pickingMode;
-    if ((pickingMode = JmolConstants.GetPickingMode(str)) < 0)
+    if (JmolConstants.GetPickingMode(str) < 0)
       invalidArgument();
-    viewer.setPickingMode(pickingMode);
+    viewer.setStringProperty("picking", str);
   }
 
   void setPickingStyle() throws ScriptException {
@@ -4639,10 +4557,9 @@ class Eval { //implements Runnable {
     } catch (Exception e) {
       invalidArgument();
     }
-    int pickingStyle;
-    if ((pickingStyle = JmolConstants.GetPickingStyle(str)) < 0)
+    if (JmolConstants.GetPickingStyle(str) < 0)
       invalidArgument();
-    viewer.setPickingStyle(pickingStyle);
+    viewer.setStringProperty("pickingStyle", str);
   }
   /* ****************************************************************************
    * ==============================================================
@@ -4652,7 +4569,7 @@ class Eval { //implements Runnable {
 
   void save() throws ScriptException {
     if (statementLength > 1) {
-      String saveName = (statementLength > 2 ? "" + statement[2].value : "");
+      String saveName = parameterAsString(2);
       switch (statement[1].tok) {
       case Token.orientation:
         viewer.saveOrientation(saveName);
@@ -4660,8 +4577,11 @@ class Eval { //implements Runnable {
       case Token.bonds:
         viewer.saveBonds(saveName);
         return;
+      case Token.state:
+        viewer.saveState(saveName);
+        return;
       case Token.identifier:
-        if (((String)statement[1].value).equalsIgnoreCase("selection")) {
+        if (((String) statement[1].value).equalsIgnoreCase("selection")) {
           viewer.saveSelection(saveName);
           return;
         }
@@ -4672,7 +4592,7 @@ class Eval { //implements Runnable {
   
   void restore() throws ScriptException {
     if (statementLength > 1) {
-      String saveName = (statementLength > 2 ? "" + statement[2].value : "");
+      String saveName = parameterAsString(2);
       switch (statement[1].tok) {
       case Token.orientation:
         float timeSeconds = (statementLength > 3 ? floatParameter(3) : 0);
@@ -4680,6 +4600,9 @@ class Eval { //implements Runnable {
         return;
       case Token.bonds:
         viewer.restoreBonds(saveName);
+        return;
+      case Token.state:
+        viewer.restoreState(saveName);
         return;
       case Token.identifier:
         if (((String)statement[1].value).equalsIgnoreCase("selection")) {
@@ -4721,7 +4644,12 @@ class Eval { //implements Runnable {
       badArgumentCount();
     switch (statement[1].tok) {
     case Token.state:
-      showString(viewer.getStateInfo());
+      checkLength23();
+      if(statementLength == 2) {
+        showString(viewer.getStateInfo());
+        return;
+      }
+      showString(viewer.getSavedState(parameterAsString(2)));
       return;
     case Token.save:
       showString(viewer.listSavedStates());

@@ -32,21 +32,26 @@ import java.util.BitSet;
 import java.util.Enumeration;
 import java.text.DecimalFormat;
 
+import org.jmol.util.CommandHistory;
+
 //import org.jmol.util.Logger;
 
 class StateManager {
-  GlobalSettings globalSettings;
   Viewer viewer;
   Hashtable saved = new Hashtable();
   String lastOrientation = "";
   String lastConnections = "";
   String lastSelected = "";
+  String lastState = "";
 
   StateManager(Viewer viewer) {
-    globalSettings = new GlobalSettings();
     this.viewer = viewer;
   }
 
+  GlobalSettings getGlobalSettings() {
+    return new GlobalSettings();  
+  }
+  
   void clear(GlobalSettings global) {
     global.clear();
     //other state clearing? -- place here
@@ -57,32 +62,31 @@ class StateManager {
     viewer.setShapeSize(JmolConstants.SHAPE_AXES, 200);
     viewer.setShapeSize(JmolConstants.SHAPE_UCCAGE, -1);
     viewer.setAxesModeUnitCell(true);
-    viewer.setPerspectiveDepth(false);
+    viewer.setBooleanProperty("perspectiveDepth", false);
   }
 
   void setCommonDefaults() {
-    viewer.zoomToPercent(100);
-    viewer.setPerspectiveDepth(true);
-    viewer.setPercentVdwAtom(JmolConstants.DEFAULT_PERCENT_VDW_ATOM);
-    viewer.setBondTolerance(JmolConstants.DEFAULT_BOND_TOLERANCE);
-    viewer.setMinBondDistance(JmolConstants.DEFAULT_MIN_BOND_DISTANCE);
-    viewer.setMarBond(JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS);
+    viewer.setBooleanProperty("perspectiveDepth", true);
+    viewer.setIntProperty("percentVdwAtom", JmolConstants.DEFAULT_PERCENT_VDW_ATOM);
+    viewer.setFloatProperty("bondTolerance", JmolConstants.DEFAULT_BOND_TOLERANCE);
+    viewer.setFloatProperty("minBondDistance", JmolConstants.DEFAULT_MIN_BOND_DISTANCE);
+    viewer.setIntProperty("bondRadiusMilliAngstroms", JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS);
   }
 
   void setJmolDefaults() {
     setCommonDefaults();
-    viewer.setDefaultColors("jmol");
-    viewer.setAxesOrientationRasmol(false);
-    viewer.setZeroBasedXyzRasmol(false);
+    viewer.setStringProperty("defaultColorScheme", "Jmol");
+    viewer.setBooleanProperty("axesOrientationRasmol", false);
+    viewer.setBooleanProperty("zeroBasedXyzRasmol", false);
   }
 
-  void setRasmolDefaults() {
+  void setRasMolDefaults() {
     setCommonDefaults();
-    viewer.setDefaultColors("rasmol");
-    viewer.setAxesOrientationRasmol(true);
-    viewer.setZeroBasedXyzRasmol(true);
-    viewer.setPercentVdwAtom(0);
-    viewer.setMarBond((short) 1);
+    viewer.setStringProperty("defaultColorScheme", "RasMol");
+    viewer.setBooleanProperty("axesOrientationRasmol", true);
+    viewer.setBooleanProperty("zeroBasedXyzRasmol", true);
+    viewer.setIntProperty("percentVdwAtom", 0);
+    viewer.setIntProperty("bondRadiusMilliAngstroms", 1);
   }
 
   private DecimalFormat[] formatters;
@@ -148,6 +152,29 @@ class StateManager {
     return true;
   }
 
+  void saveState(String saveName) {
+    saveName = lastState = "State_" + saveName;
+    saved.put(saveName, viewer.getStateInfo());
+  }
+
+  String getSavedState(String saveName) {
+    String name = (saveName.length() > 0 ? "State_" + saveName
+        : lastState);
+    String script = (String) saved.get(name);
+    return (script == null ? "" : script); 
+  }
+  
+  boolean restoreState(String saveName) {
+    String name = (saveName.length() > 0 ? "State_" + saveName
+        : lastState);
+    String script = (String) saved.get(name);
+    if (script == null)
+      return false;
+    viewer.resetAllParameters();
+    viewer.script(script + CommandHistory.NOHISTORYATALL_FLAG);
+    return true;
+  }
+
   void saveOrientation(String saveName) {
     Orientation o = new Orientation();
     o.saveName = lastOrientation = "Orientation_" + saveName;
@@ -186,7 +213,7 @@ class StateManager {
     }
 
     void restore(float timeSeconds) {
-      viewer.setWindowCentered(windowCenteredFlag);
+      viewer.setBooleanProperty("windowCentered", windowCenteredFlag);
       viewer.moveTo(timeSeconds, rotationMatrix, center, zoom, xTrans, yTrans,
           rotationRadius);
     }
@@ -289,15 +316,23 @@ class StateManager {
     boolean zeroBasedXyzRasmol = false;
     boolean forceAutoBond      = false;
     boolean autoBond           = true;
+    int percentVdwAtom    = JmolConstants.DEFAULT_PERCENT_VDW_ATOM;
+    short marBond         = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
+    float bondTolerance   = JmolConstants.DEFAULT_BOND_TOLERANCE;
+    float minBondDistance = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
     String defaultLoadScript   = "";
 
     String getLoadState() {
       String str = "";
+      str += "set autoBond " + autoBond + ";\n"
+           + "set forceAutoBond " + forceAutoBond + ";\n"
+           + "set zeroBasedXyzRasmol " + zeroBasedXyzRasmol + ";\n"
+           + "set percentVdwAtom " + percentVdwAtom +";\n"
+           + "set bondRadiusMilliAngstroms " + marBond +";\n"
+           + "set minBondDistance " + minBondDistance +";\n"
+           + "set bondTolerance " + bondTolerance +";\n";
       if (defaultLoadScript.length() > 0)
-        str = "set defaultLoadScript " + escape(defaultLoadScript) + ";\n";
-      str += "set autobond           " + autoBond + ";\n"
-           + "set forceAutoBond      " + forceAutoBond + ";\n"
-           + "set zeroBasedXyzRasmol " + zeroBasedXyzRasmol + ";\n";
+        str += "set defaultLoadScript " + escape(defaultLoadScript) + ";\n";
       return str;
     }
 
@@ -362,10 +397,6 @@ class StateManager {
     boolean hbondsBackbone      = false;
     boolean hbondsSolid         = false;
 
-    int percentVdwAtom    = JmolConstants.DEFAULT_PERCENT_VDW_ATOM;
-    short marBond         = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
-    float bondTolerance   = JmolConstants.DEFAULT_BOND_TOLERANCE;
-    float minBondDistance = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
     byte modeMultipleBond = JmolConstants.MULTIBOND_NOTSMALL;
     int defaultVectorMad  = 0;
 
@@ -438,6 +469,114 @@ class StateManager {
     String getMeasureDistanceUnits() {
       return measureDistanceUnits;
     }
+    
+    Hashtable htParameterValues = new Hashtable();
+    Hashtable htPropertyFlags = new Hashtable();
+    
+    final static String volatileProperties = 
+      //indicate all properties here in lower case
+      //followed by ";" that should be reset upon file load
+      //currently none
+      "";
+    
+    final static String unnecessaryProperties = 
+      //these are handled individually
+      "defaults;backgroundmodel;"
+      + "percentvdwatom;zerobasedxyzrasmol;bondradiusmilliangstroms;bondtolerance;minbonddistance;autobond;"
+      + "debugscript;frank;showaxes;showunitcell;showboundbox;"
+      + "axeswindow;axesunitcell;axesmolecular;windowcentered;";
+       
+    void clearPropertyFlags() {
+      Enumeration e;
+      e = htPropertyFlags.keys();
+      while (e.hasMoreElements()) {
+        String key = (String) e.nextElement();
+        if (volatileProperties.indexOf(key) >= 0 || key.charAt(0) == '@') 
+          htPropertyFlags.remove(key);
+      }
+      e = htParameterValues.keys();
+      while (e.hasMoreElements()) {
+        String key = (String) e.nextElement();
+        if (volatileProperties.indexOf(key) >= 0 || key.charAt(0) == '@') 
+          htParameterValues.remove(key);
+      }
+    }
+
+    void setPropertyFlag(String key, boolean value) {
+      key = key.toLowerCase();
+      if (doRegister(key))
+        htPropertyFlags.put(key, value ? Boolean.TRUE : Boolean.FALSE);  
+    }
+
+    void setParameterValue(String name, int value) {
+      name = name.toLowerCase();
+      if (doRegister(name))
+        htParameterValues.put(name, new Integer(value));
+    }
+    
+    void setParameterValue(String name, float value) {
+      name = name.toLowerCase();
+      if (doRegister(name))
+        htParameterValues.put(name, new Float(value));
+    }
+    
+    void setParameterValue(String name, String value) {
+      name = name.toLowerCase();
+      if (doRegister(name))
+        htParameterValues.put(name, value);
+    }
+    
+    boolean doRegister(String name) {
+      return (unnecessaryProperties.indexOf(name + ";") < 0);
+    }
+    
+    String getState() {
+      StringBuffer commands = new StringBuffer("# settings:\n");
+      Enumeration e;
+      //two rounds here because default settings 
+      //must be declared first
+      String key;
+      //defaults
+      e = htParameterValues.keys();
+      while (e.hasMoreElements()) {
+        key = (String) e.nextElement();
+        if (key.indexOf("default") >= 0 && key.charAt(0) != '@')
+        commands.append("set " + key + " " + htParameterValues.get(key)+ ";\n");
+      }
+      //booleans
+      e = htPropertyFlags.keys();
+      while (e.hasMoreElements()) {
+        key = (String) e.nextElement();
+          commands.append("set " + key + " " + htPropertyFlags.get(key)+ ";\n");
+      }
+      //nondefault, nonvariables
+      e = htParameterValues.keys();
+      while (e.hasMoreElements()) {
+        key = (String) e.nextElement();
+        if (key.indexOf("default") < 0 && key.charAt(0) != '@')
+        commands.append("set " + key + " " + htParameterValues.get(key)+ ";\n");
+      }
+      switch (axesMode) {
+      case JmolConstants.AXES_MODE_UNITCELL:
+        commands.append("set axesUnitcell;\n");
+        break;
+      case JmolConstants.AXES_MODE_BOUNDBOX:
+        commands.append("set axesWindow;\n");
+        break;
+      default:
+        commands.append("set axesMolecular;\n");
+      }
+      //variables only:
+      e = htParameterValues.keys();
+      while (e.hasMoreElements()) {
+        key = (String) e.nextElement();
+        if (key.charAt(0) == '@')
+        commands.append(key + " " + htParameterValues.get(key)+ ";\n");
+      }
+      commands.append("\n");
+      return commands.toString();
+    }
+
   }
 
   ///////// state serialization 
@@ -522,6 +661,18 @@ class StateManager {
     return "{" + xyz.x + " " + xyz.y + " " + xyz.z +"}";
   }
   
+  static void setStateInfo(Hashtable ht, int i1, int i2, String key) {
+    BitSet bs;
+    if (ht.containsKey(key)) {
+      bs = (BitSet) ht.get(key);
+    } else {
+      bs = new BitSet();
+      ht.put(key, bs);
+    }
+    for (int i = i1; i <= i2; i++)
+      bs.set(i);
+  }
+
   static String getCommands(Hashtable ht) {
     return getCommands(ht, null, -1, "select");
   }
@@ -565,5 +716,5 @@ class StateManager {
       s.append("\n");
     }
     return setPrev;
-  }
+  } 
 }

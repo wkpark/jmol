@@ -61,4 +61,9 @@ class Strands extends Mps {
       super(polymer, -2, 3000, 800, 5000);
     }
   }
+  
+  String getShapeState() {
+    return "set strandCount " + strandCount + ";\n"
+      + super.getShapeState();
+  }
 }

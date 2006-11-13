@@ -137,8 +137,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public int getPolymerCountInModel(int modelIndex);
 
   abstract public int getSelectionCount();
-  abstract public void setModeMouse(int modeMouse); //only MOUSEMODE_NONE
-  abstract public void setSelectionHalos(boolean haloEnabled);
 
   abstract public void addSelectionListener(JmolSelectionListener listener);
   abstract public void removeSelectionListener(JmolSelectionListener listener);
@@ -166,8 +164,6 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public int getBackgroundArgb();
   
-  abstract public void setColorBackground(String colorName);
-
   abstract public float getAtomRadius(int atomIndex);
   abstract public Point3f getAtomPoint3f(int atomIndex);
   abstract public int getAtomArgb(int atomIndex);
@@ -223,54 +219,70 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   
   abstract public int getSyncMode();
 
+  //viewer.script("set " + propertyName + " " + value);
+
+  //but NOTE that if you use the following, you are
+  //bypassing the script history:
+  abstract public void setBooleanProperty(String propertyName, boolean value);
+  abstract public void setIntProperty(String propertyName, int value);
+  abstract public void setFloatProperty(String propertyName, float value);
+  abstract public void setStringProperty(String propertyName, String value);
+
+  abstract public void setModeMouse(int modeMouse); //only MOUSEMODE_NONE, prior to nulling viewer
+
+  //alright, all the following are gone. This is because we need to 
+  //access Viewer states ONLY via setXXXProperty()
+  
+  //abstract public void setColorBackground(String colorName);
+  
   //these are still used by preferences dialog
-  abstract public void setShowHydrogens(boolean showHydrogens);
-  abstract public void setShowMeasurements(boolean showMeasurements);
-  abstract public void setPerspectiveDepth(boolean perspectiveDepth);
-  abstract public void setShowAxes(boolean showAxes);
-  abstract public void setShowBbcage(boolean showBbcage);
-  abstract public void setJmolDefaults();
-  abstract public void setRasmolDefaults();
-  abstract public void setAutoBond(boolean autoBond);
-  abstract public void setMarBond(short marBond);
-  abstract public void setBondTolerance(float bondTolerance);
-  abstract public void setMinBondDistance(float minBondDistance);
-  abstract public void setAxesOrientationRasmol(boolean axesMessedUp);
-  abstract public void setPercentVdwAtom(int percentVdwAtom);
+  //abstract public void setShowHydrogens(boolean showHydrogens);
+  //abstract public void setShowMeasurements(boolean showMeasurements);
+  //abstract public void setPerspectiveDepth(boolean perspectiveDepth);
+  //abstract public void setShowAxes(boolean showAxes);
+  //abstract public void setShowBbcage(boolean showBbcage);
+  //abstract public void setJmolDefaults();
+  //abstract public void setRasmolDefaults();
+  //abstract public void setAutoBond(boolean autoBond);
+  //abstract public void setMarBond(short marBond);
+  //abstract public void setBondTolerance(float bondTolerance);
+  //abstract public void setMinBondDistance(float minBondDistance);
+  //abstract public void setAxesOrientationRasmol(boolean axesMessedUp);
+  //abstract public void setPercentVdwAtom(int percentVdwAtom);
   
 //unused in Jmol.java; DO NOT USE if you want a complete command history:
 //for each of these the script equivalent is shown  
-  abstract public void setAnimationFps(int framesPerSecond);
+  //abstract public void setAnimationFps(int framesPerSecond);
   //viewer.script("animation fps x.x")
-  abstract public void setFrankOn(boolean frankOn);
+  //abstract public void setFrankOn(boolean frankOn);
   //viewer.script("frank on")
-  abstract public void setDebugScript(boolean debugScript);
+  //abstract public void setDebugScript(boolean debugScript);
   //viewer.script("set logLevel 5/4")
   //viewer.script("set debugScript on/off")
-  abstract public void deleteMeasurement(int i);
+  //abstract public void deleteMeasurement(int i);
   //viewer.script("measures delete " + (i + 1));
-  abstract public void clearMeasurements();
+  //abstract public void clearMeasurements();
   //viewer.script("measures delete");
-  abstract public void setVectorScale(float vectorScaleValue);
+  //abstract public void setVectorScale(float vectorScaleValue);
   //viewer.script("vector scale " + vectorScaleValue);
-  abstract public void setVibrationScale(float vibrationScaleValue);
+  //abstract public void setVibrationScale(float vibrationScaleValue);
   //viewer.script("vibration scale " + vibrationScaleValue);
-  abstract public void setVibrationPeriod(float vibrationPeriod);
+  //abstract public void setVibrationPeriod(float vibrationPeriod);
   //viewer.script("vibration " + vibrationPeriod);
-  abstract public void selectAll();
+  //abstract public void selectAll();
   //viewer.script("select all");
-  abstract public void clearSelection();
+  //abstract public void clearSelection();
   //viewer.script("select none");
-  abstract public void rotateFront();
-  //viewer.script("moveTo 2.0 Front");
-  abstract public void setCenterSelected();
-  //viewer.script("center (selected)");
-  abstract public void setBooleanProperty(String propertyName, boolean value);
-  //viewer.script("set " + propertyName + " " + value);
+  //viewer.script("select ({2 3:6})");
+  //abstract public void setSelectionSet(BitSet newSelection);
 
-  //no direct script equivalent, but you should not need them anyway:
+  //implemented as script equivalents:
+  abstract public void setSelectionHalos(boolean haloEnabled);
+  abstract public void setCenterSelected(); 
+
+  //not used:
   
-  abstract public void setSelectionSet(BitSet newSelection);
+  abstract public void rotateFront();
   abstract public void rotateToX(int degrees);
   abstract public void rotateToY(int degrees);
   abstract public void rotateToX(float radians);

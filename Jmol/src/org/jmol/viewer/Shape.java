@@ -102,15 +102,7 @@ abstract class Shape {
   }
 
   static void setStateInfo(Hashtable ht, int i1, int i2, String key) {
-    BitSet bs;
-    if (ht.containsKey(key)) {
-      bs = (BitSet) ht.get(key);
-    } else {
-      bs = new BitSet();
-      ht.put(key, bs);
-    }
-    for (int i = i1; i<= i2; i++)
-      bs.set(i);
+    StateManager.setStateInfo(ht, i1, i2, key);
   }
 
   static String getShapeCommands(Hashtable htDefine, Hashtable htMore, int atomCount) {

@@ -49,16 +49,16 @@ class ColorManager {
   }
   
   void setDefaultColors(String colorScheme) {
-    if (colorScheme.equals("jmol")) {
+    if (colorScheme.equalsIgnoreCase("Jmol")) {
       isDefaultColorRasmol = false;
       argbsCpk = JmolConstants.argbsCpk;
-      viewer.setColorBackground("black");
+      viewer.setStringProperty("backgroundColor", "black");
       //must be a very old idea -- clear dots color with
       //default color reset, but that makes no sense now.
       //viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, 0);
       //if colors are reset with dots or labels or anything else
       //defined, they are automatically reset.
-    } else if (colorScheme.equals("rasmol")) {
+    } else if (colorScheme.equalsIgnoreCase("RasMol")) {
       isDefaultColorRasmol = true;
       copyArgbsCpk();
       int argb = JmolConstants.argbsCpkRasmol[0] | 0xFF000000;
@@ -70,7 +70,7 @@ class ColorManager {
         argb |= 0xFF000000;
         argbsCpk[atomNo] = argb;
       }
-      viewer.setColorBackground("black");
+      viewer.setStringProperty("backgroundColor", "black");
       //viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, 0);
     } else {
       Logger.error("unrecognized color scheme");

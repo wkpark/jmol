@@ -217,10 +217,6 @@ class ModelManager {
     return (frame == null) ? -1 : frame.getModelNumberIndex(modelNumber);
   }
 
-  boolean hasVibrationVectors() {
-    return frame.hasVibrationVectors();
-  }
-
   Point3f getSpinCenter(String axisID, int modelIndex) {
     Draw draw = (Draw) frame.shapes[JmolConstants.SHAPE_DRAW];
     if (draw == null) 
@@ -886,7 +882,7 @@ String getAtomInfoChime(int i) {
     info.put("modelSetName",getModelSetName());
     info.put("modelCount",new Integer(modelCount));
     info.put("modelSetHasVibrationVectors", 
-        new Boolean(viewer.modelSetHasVibrationVectors()));
+        new Boolean(modelSetHasVibrationVectors()));
     Properties props = viewer.getModelSetProperties();
     if(props != null)
       info.put("modelSetProperties",props);
@@ -896,7 +892,7 @@ String getAtomInfoChime(int i) {
       model.put("_ipt",new Integer(i));
       model.put("num",new Integer(viewer.getModelNumber(i)));
       model.put("name",viewer.getModelName(i));
-      model.put("vibrationVectors", new Boolean(viewer.modelHasVibrationVectors(i)));
+      model.put("vibrationVectors", new Boolean(modelHasVibrationVectors(i)));
       model.put("atomCount",new Integer(getAtomCountInModel(i)));
       model.put("bondCount",new Integer(getBondCountInModel(i)));
       model.put("groupCount",new Integer(getGroupCountInModel(i)));
@@ -1188,30 +1184,7 @@ String getAtomInfoChime(int i) {
   }
  
   String getState() {
-    if (frame == null)
-      return "";
-
-    StringBuffer commands = new StringBuffer("# defined states:\n");
-    String cmd;
-
-    // connections
-
-    Vector fs = frame.stateScripts;
-    int len = fs.size();
-    for (int i = 0; i < len; i++)
-      commands.append(fs.get(i) + "\n");
-
-    commands.append("\n# model states:\n");
-    // shape construction
-
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = frame.shapes[i];
-      if (shape != null && (cmd = shape.getShapeState()) != null
-          && cmd.length() > 1)
-        commands.append(cmd);
-    }
-    commands.append("\n");
-    return commands.toString();
+    return (frame == null ? "" : frame.getState());
   }
   
   Hashtable getBoundBoxInfo() {

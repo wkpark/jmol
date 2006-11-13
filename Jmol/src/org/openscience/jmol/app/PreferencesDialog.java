@@ -308,7 +308,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         percentVdwAtom = source.getValue();
-        viewer.setPercentVdwAtom(percentVdwAtom);
+        viewer.setIntProperty("PercentVdwAtom", percentVdwAtom);
         currentProperties.put("percentVdwAtom", "" + percentVdwAtom);
       }
     });
@@ -357,14 +357,14 @@ public class PreferencesDialog extends JDialog implements ActionListener {
     abYes.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
-        viewer.setAutoBond(true);
+        viewer.setBooleanProperty("autoBond", true);
       }
     });
 
     abNo.addActionListener(new ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
-        viewer.setAutoBond(false);
+        viewer.setBooleanProperty("autoBond", false);
       }
     });
 
@@ -397,7 +397,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         marBond = (short)source.getValue();
-        viewer.setMarBond(marBond);
+        viewer.setIntProperty("bondRadiusMilliAngstroms", marBond);
         currentProperties.put("marBond", "" + marBond);
       }
     });
@@ -448,7 +448,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         bondTolerance = source.getValue() / 100f;
-        viewer.setBondTolerance(bondTolerance);
+        viewer.setFloatProperty("bondTolerance", bondTolerance);
         currentProperties.put("bondTolerance", "" + bondTolerance);
         viewer.rebond();
       }
@@ -499,7 +499,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
 
         JSlider source = (JSlider) e.getSource();
         minBondDistance = source.getValue() / 100f;
-        viewer.setMinBondDistance(minBondDistance);
+        viewer.setFloatProperty("minBondDistance", minBondDistance);
         currentProperties.put("minBondDistance", "" + minBondDistance);
         viewer.rebond();
       }
@@ -622,21 +622,21 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       Integer.parseInt(currentProperties.getProperty("percentVdwAtom"));
 
     if (Boolean.getBoolean("jmolDefaults"))
-      viewer.setJmolDefaults();
+      viewer.setStringProperty("defaults", "Jmol");
     else
-      viewer.setRasmolDefaults();
+      viewer.setStringProperty("defaults", "RasMol");
 
-    viewer.setPercentVdwAtom(percentVdwAtom);
-    viewer.setMarBond(marBond);
-    viewer.setMinBondDistance(minBondDistance);
-    viewer.setBondTolerance(bondTolerance);
-    viewer.setAutoBond(autoBond);
-    viewer.setShowHydrogens(showHydrogens);
-    viewer.setShowMeasurements(showMeasurements);
-    viewer.setPerspectiveDepth(perspectiveDepth);
-    viewer.setShowAxes(showAxes);
-    viewer.setShowBbcage(showBoundingBox);
-    viewer.setAxesOrientationRasmol(axesOrientationRasmol);
+    viewer.setIntProperty("percentVdwAtom", percentVdwAtom);
+    viewer.setIntProperty("bondRadiusMilliAngstroms", marBond);
+    viewer.setFloatProperty("minBondDistance", minBondDistance);
+    viewer.setFloatProperty("BondTolerance", bondTolerance);
+    viewer.setBooleanProperty("autoBond", autoBond);
+    viewer.setBooleanProperty("showHydrogens", showHydrogens);
+    viewer.setBooleanProperty("showMeasurements", showMeasurements);
+    viewer.setBooleanProperty("perspectiveDepth", perspectiveDepth);
+    viewer.setBooleanProperty("showAxes", showAxes);
+    viewer.setBooleanProperty("showBoundBox", showBoundingBox);
+    viewer.setBooleanProperty("axesOrientationRasmol", axesOrientationRasmol);
   }
 
   class PrefsAction extends AbstractAction {
@@ -675,27 +675,27 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       String strSelected = isSelected ? "true" : "false";
       if (key.equals("Prefs.showHydrogens")) {
         showHydrogens = isSelected;
-        viewer.setShowHydrogens(showHydrogens);
+        viewer.setBooleanProperty("showHydrogens", showHydrogens);
         currentProperties.put("showHydrogens", strSelected);
       } else if (key.equals("Prefs.showMeasurements")) {
         showMeasurements = isSelected;
-        viewer.setShowMeasurements(showMeasurements);
+        viewer.setBooleanProperty("showMeasurements", showMeasurements);
         currentProperties.put("showMeasurements", strSelected);
       } else if (key.equals("Prefs.perspectiveDepth")) {
         perspectiveDepth = isSelected;
-        viewer.setPerspectiveDepth(perspectiveDepth);
+        viewer.setBooleanProperty("perspectiveDepth", perspectiveDepth);
         currentProperties.put("perspectiveDepth", strSelected);
       } else if (key.equals("Prefs.showAxes")) {
         showAxes = isSelected;
-        viewer.setShowAxes(isSelected);
+        viewer.setBooleanProperty("showAxes", isSelected);
         currentProperties.put("showAxes", strSelected);
       } else if (key.equals("Prefs.showBoundingBox")) {
         showBoundingBox = isSelected;
-        viewer.setShowBbcage(isSelected);
+        viewer.setBooleanProperty("showBoundBox", isSelected);
         currentProperties.put("showBoundingBox", strSelected);
       } else if (key.equals("Prefs.axesOrientationRasmol")) {
         axesOrientationRasmol = isSelected;
-        viewer.setAxesOrientationRasmol(isSelected);
+        viewer.setBooleanProperty("axesOrientationRasmol", isSelected);
         currentProperties.put("axesOrientationRasmol", strSelected);
       } else if (key.equals("Prefs.openFilePreview")) {
       	openFilePreview = isSelected;

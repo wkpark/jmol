@@ -136,7 +136,7 @@ class RepaintManager {
     }
   }
 
-  synchronized void repaintView() {
+  synchronized void repaintDone() {
     repaintPending = false;
     notify(); // to cancel any wait in requestRepaintAndWait()
   }

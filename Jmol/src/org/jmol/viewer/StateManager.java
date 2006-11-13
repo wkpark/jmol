@@ -441,7 +441,7 @@ class StateManager {
     String getWindowState() {
       String str = "# window state (height=" + viewer.getScreenHeight()
           + " width=" + viewer.getScreenWidth() + ")\n";
-      str += "background [x" + Graphics3D.getHexColorFromRGB(argbBackground)
+      str += "zap;\nbackground [x" + Graphics3D.getHexColorFromRGB(argbBackground)
           + "];\n";
       if (stereoState != null)
         str += "stereo " + stereoState + ";\n";

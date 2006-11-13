@@ -70,10 +70,11 @@ abstract class Mps extends Shape {
   }
 
   String getShapeState() {
-    StringBuffer s = new StringBuffer();
+    Hashtable temp = new Hashtable();
+    Hashtable temp2 = new Hashtable();
     for (int m = mpsmodels.length; --m >= 0; )
-      s.append(mpsmodels[m].getShapeState());
-    return s.toString();
+      mpsmodels[m].setShapeState(temp, temp2);
+    return getShapeCommands(temp, temp2, frame.atomCount);
   }
 
   abstract Mpspolymer allocateMpspolymer(Polymer polymer);
@@ -142,14 +143,12 @@ abstract class Mps extends Shape {
       }
     }
 
-    String getShapeState() {
-      StringBuffer s = new StringBuffer();
+    void setShapeState(Hashtable temp, Hashtable temp2) {
       for (int i = mpspolymers.length; --i >= 0; ) {
         Mpspolymer polymer = mpspolymers[i];
         if (polymer.monomerCount > 0)
-          s.append(polymer.getShapeState());
+          polymer.setShapeState(temp, temp2);
       }
-      return s.toString();
     }
 
     int getMpspolymerCount() {
@@ -336,17 +335,15 @@ abstract class Mps extends Shape {
       }
     }
 
-    String getShapeState() {
+    void setShapeState(Hashtable temp, Hashtable temp2) {
       if (bsSizeSet == null)
-        return "";
-      Hashtable temp = new Hashtable();
-      Hashtable temp2 = new Hashtable();
+        return;
       String type = JmolConstants.shapeClassBases[shapeID];
 
       for (int i = 0; i < monomerCount; i++) {
         int atomIndex1 = monomers[i].firstAtomIndex;
         int atomIndex2 = monomers[i].lastAtomIndex;
-        if (!bsSizeSet.get(i)) //shapes MUST have been set with a size
+        if (mads[i] == 0) //shapes MUST have been set with a size
           continue;
         setStateInfo(temp, atomIndex1, atomIndex2, type + " "
             + (mads[i] / 2000f));
@@ -354,7 +351,6 @@ abstract class Mps extends Shape {
           setStateInfo(temp2, atomIndex1, atomIndex2, getColorCommand(type, 
               paletteIDs[i], colixes[i]));
       }
-      return getShapeCommands(temp, temp2, frame.atomCount);
     }  
 
     void falsifyMesh(int index, boolean andNearby) {

@@ -592,9 +592,6 @@ class Eval { //implements Runnable {
       case Token.ribbon:
         proteinShape(JmolConstants.SHAPE_RIBBONS);
         break;
-      //case Token.prueba:
-      //  proteinShape(JmolConstants.SHAPE_PRUEBA);
-      //  break;
       case Token.trace:
         proteinShape(JmolConstants.SHAPE_TRACE);
         break;

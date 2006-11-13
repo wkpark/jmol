@@ -342,8 +342,9 @@ class Labels extends Shape {
         setStateInfo(temp2, i, "set labelOffset "
             + Text.getXOffset(offsets[i] >> 4) + " "
             + (-Text.getYOffset(offsets[i] >> 4)));
-        setStateInfo(temp2, i, "set labelAlignment "
-            + Text.getAlignment(offsets[i] >> 2));
+        String align = Text.getAlignment(offsets[i] >> 2);
+        if (align.length() > 0)
+          setStateInfo(temp2, i, "set labelAlignment " + align);
         String pointer = Text.getPointer(offsets[i]);
         if (pointer.length() > 0)
           setStateInfo(temp2, i, "set labelPointer " + pointer);

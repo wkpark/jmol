@@ -35,7 +35,7 @@ class Text {
   final static int POINTER_ON = 1;
   final static int POINTER_BACKGROUND = 2;
   
-  final static String[] hAlignNames = {"xy", "left", "center", "right", "xyz"};
+  final static String[] hAlignNames = {"", "left", "center", "right", ""};
 
   final static int XY = 0;
   final static int LEFT = 1;

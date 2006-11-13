@@ -295,11 +295,11 @@ abstract class Mps extends Shape {
       if (bsSizeSet == null)
         bsSizeSet = new BitSet();
       int[] leadAtomIndices = polymer.getLeadAtomIndices();
-      boolean isVisible = (mad != 0);
       for (int i = monomerCount; --i >= 0; ) {
         int leadAtomIndex = leadAtomIndices[i];
         if (bsSelected.get(leadAtomIndex)) { 
           mads[i] = mad >= 0 ? mad : getMadSpecial(mad, i);
+          boolean isVisible = (mads[i] > 0);
           bsSizeSet.set(i, isVisible);
           monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
           frame.atoms[leadAtomIndex].setShapeVisibility(myVisibilityFlag,isVisible);
@@ -343,7 +343,7 @@ abstract class Mps extends Shape {
       for (int i = 0; i < monomerCount; i++) {
         int atomIndex1 = monomers[i].firstAtomIndex;
         int atomIndex2 = monomers[i].lastAtomIndex;
-        if (mads[i] == 0) //shapes MUST have been set with a size
+        if (!bsSizeSet.get(i)) //shapes MUST have been set with a size
           continue;
         setStateInfo(temp, atomIndex1, atomIndex2, type + " "
             + (mads[i] / 2000f));

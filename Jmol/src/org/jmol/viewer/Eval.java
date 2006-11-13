@@ -4125,16 +4125,16 @@ class Eval { //implements Runnable {
       }
       checkLength3();
       int tok = statement[2].tok;
-      if (tok != Token.on && tok != Token.off && statement[2].value instanceof String) {
-        viewer.setStringProperty((String) statement[1].value, (String) statement[2].value);
-        break;
-      }
       if (tok == Token.decimal) {
         viewer.setFloatProperty((String) statement[1].value, ((Float)statement[2].value).floatValue());
         break;
       }
       if (tok == Token.integer) {
         viewer.setIntProperty((String) statement[1].value, statement[2].intValue);
+        break;
+      }
+      if (tok != Token.on && tok != Token.off && statement[2].value instanceof String) {
+        viewer.setStringProperty((String) statement[1].value, (String) statement[2].value);
         break;
       }
       viewer.setBooleanProperty((String) statement[1].value, booleanParameter(2));

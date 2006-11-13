@@ -357,11 +357,13 @@ class SelectionManager {
   }
   
   String getState() {
-    StringBuffer commands = new StringBuffer("# selection states:\n");
+    StringBuffer commands = new StringBuffer("# selection state:\n");
     String cmd = null;
     Hashtable temp = new Hashtable();
     if (viewer.firstAtomOf(bsHidden) >= 0)
       temp.put("hide selected", bsHidden);
+    if (viewer.firstAtomOf(bsSubset) >= 0)
+      temp.put("subset selected", bsSubset);
     cmd = StateManager.getCommands(temp);
     if (cmd != null)
       commands.append(cmd);
@@ -372,6 +374,7 @@ class SelectionManager {
       commands.append("select none;");
     else
       commands.append(cmd);
+    
     commands.append("\n");
     return commands.toString();
   }

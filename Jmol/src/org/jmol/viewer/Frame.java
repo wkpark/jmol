@@ -1909,6 +1909,8 @@ public final class Frame {
   }
 
   int firstAtomOf(BitSet bs) {
+    if (bs == null)
+      return -1;
     for (int i = 0; i < atomCount; i++)
       if (bs.get(i)) {
         return i;

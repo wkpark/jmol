@@ -32,6 +32,9 @@ import java.util.Hashtable;
 
 class Balls extends Shape {
   
+  BitSet bsSizeSet;
+  BitSet bsColixSet;
+
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
     if (bsSizeSet == null)

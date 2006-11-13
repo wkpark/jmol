@@ -28,8 +28,6 @@ package org.jmol.viewer;
 class BallsRenderer extends ShapeRenderer {
 
   int minX, maxX, minY, maxY, minZ, maxZ;
-
-  boolean labelsGroup;
   
   void render() {
     minX = rectClip.x;

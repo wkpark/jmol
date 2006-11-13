@@ -110,9 +110,7 @@ class MeasuresRenderer extends ShapeRenderer {
     int zB = atomB.getScreenZ() - atomB.getScreenD() - 10;
     int radius = drawSegment(atomA.getScreenX(), atomA.getScreenY(), zA, atomB
         .getScreenX(), atomB.getScreenY(), zB, colix);
-    int z = (viewer.getLabelsFrontFlag() ? 1
-        : viewer.getLabelsGroupFlag() ? Math.min(atomA.group.minZ,
-            atomB.group.minZ) : (zA + zB) / 2);
+    int z = (zA + zB) / 2;
     if (z < 1)
       z = 1;
     paintMeasurementString((atomA.getScreenX() + atomB.getScreenX()) / 2,

@@ -33,6 +33,9 @@ import java.util.Hashtable;
 
 class Measures extends Shape {
 
+  BitSet bsSizeSet;
+  BitSet bsColixSet;
+
   final static int measurementGrowthIncrement = 16;
   int measurementCount = 0;
   Measurement[] measurements = new Measurement[measurementGrowthIncrement];

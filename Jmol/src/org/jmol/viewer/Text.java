@@ -31,6 +31,10 @@ import org.jmol.g3d.Graphics3D;
 
 class Text {
 
+  final static int POINTER_NONE = 0;
+  final static int POINTER_ON = 1;
+  final static int POINTER_BACKGROUND = 2;
+  
   final static String[] hAlignNames = {"xy", "left", "center", "right", "xyz"};
 
   final static int XY = 0;
@@ -54,6 +58,7 @@ class Text {
   String[] lines;
   int align;
   int valign;
+  int pointer;
   int movableX;
   int movableY;
   int movableXPercent = Integer.MAX_VALUE;
@@ -232,7 +237,7 @@ class Text {
     default:
       int y = (movableYPercent == Integer.MAX_VALUE ?  movableY 
           : movableYPercent * windowHeight / 100);
-      boxY = (windowHeight - y) + offsetY;
+      boxY = (atomBased ? y : (windowHeight - y)) + offsetY;
     }
 
     // adjust positions if necessary
@@ -303,6 +308,10 @@ class Text {
     return true;
   }
 
+  void setPointer(int pointer) {
+    this.pointer = pointer;
+  }
+  
   String fixText(String text) {
     if (text == null)
       return null;
@@ -343,7 +352,6 @@ class Text {
       drawBox();
     
     // now set x and y positions for text from (new?) box position
-
     
     int x0 = boxX + 4;
     switch (align) {
@@ -368,6 +376,17 @@ class Text {
       }
       g3d.drawString(lines[i], font, colix, x, y, z, zSlab);
       y += lineHeight;
+    }
+    
+    // now daw the pointer, if requested
+        
+    if ((pointer & POINTER_ON) != 0) {
+      short pointerColix = ((pointer & POINTER_BACKGROUND) != 0 && bgcolix != 0 ? bgcolix : colix);
+      if (boxX > movableX)
+        g3d.drawLine(pointerColix, movableX, movableY, zSlab, boxX, boxY + boxHeight / 2, zSlab);
+      else if (boxX + boxWidth < movableX)
+        g3d.drawLine(pointerColix, movableX, movableY, zSlab, boxX + boxWidth, boxY + boxHeight
+            / 2, zSlab);
     }
   }
 
@@ -454,7 +473,6 @@ class Text {
     }
     
     if (doPointer) {
-      //just a little pointer -- only for the simplest of labels
       if (xOffset > 0)
         g3d.drawLine(pointerColix, x0, y0, zSlab, x, y + boxHeight / 2, zSlab);
       else if (xOffset < 0)

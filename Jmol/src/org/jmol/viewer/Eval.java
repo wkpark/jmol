@@ -3996,12 +3996,6 @@ class Eval { //implements Runnable {
     case Token.history:
       history(2);
       break;
-    case Token.labeloffset:
-      setLabelOffset();
-      break;
-    case Token.labelalignment:
-      setLabelAlignment();
-      break;
     case Token.monitor:
       setMonitor(2);
       break;
@@ -4064,6 +4058,18 @@ class Eval { //implements Runnable {
     case Token.specular:
     case Token.specpower:
       String str = (String) statement[1].value;
+      if (str.equalsIgnoreCase("labelOffset")) {
+        setLabelOffset();
+        break;
+      }
+      if (str.equalsIgnoreCase("labelAlignment")) {
+        setLabelAlignment();
+        break;
+      }      
+      if (str.equalsIgnoreCase("labelPointer")) {
+        setLabelPointer();
+        break;
+      }      
       if (str.equalsIgnoreCase("toggleLabel")) {
         viewer.togglePickingLabel(expression(statement, 2));
         break;
@@ -4335,6 +4341,8 @@ class Eval { //implements Runnable {
     checkLength4();
     int xOffset = intParameter(2);
     int yOffset = intParameter(3);
+    if (xOffset > 100 || yOffset > 100 || xOffset < -100 || yOffset < -100)
+      numberOutOfRange(-100, 100);
     int offset = ((xOffset & 0xFF) << 8) | (yOffset & 0xFF);
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
     viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "offset", new Integer(
@@ -4346,6 +4354,23 @@ class Eval { //implements Runnable {
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
     viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "align", 
         statement[2].value);
+  }
+
+  void setLabelPointer() throws ScriptException {
+    checkLength3();
+    int flags = Text.POINTER_NONE;
+    switch (statement[2].tok) {
+    case Token.off:
+    case Token.none:
+      break;
+    case Token.background:
+      flags |= Text.POINTER_BACKGROUND;
+    case Token.on:
+      flags |= Text.POINTER_ON;
+    }
+    viewer.loadShape(JmolConstants.SHAPE_LABELS);
+    viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "pointer", new Integer(
+        flags));
   }
 
   void setMonitor(int cmdPt) throws ScriptException {

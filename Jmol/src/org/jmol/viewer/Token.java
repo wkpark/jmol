@@ -244,12 +244,10 @@ class Token {
   // jmol extensions
   final static int property     = setparam | 29;
   final static int diffuse      = setparam | 30;
-  final static int labeloffset  = setparam | 31;
-  final static int frank        = setparam | 32 | command;
-  final static int partialCharge= setparam | 34;
-  final static int pickingStyle = setparam | 35;
-  final static int spacegroup   = setparam | 36 | showparam;
-  final static int labelalignment = setparam | 37;
+  final static int frank        = setparam | 31 | command;
+  final static int partialCharge= setparam | 32;
+  final static int pickingStyle = setparam | 33;
+  final static int spacegroup   = setparam | 34 | showparam;
 
 
   final static int information  = showparam |  0;
@@ -638,8 +636,6 @@ class Token {
     // jmol extensions
     "property",     new Token(property,        "property"),
     "diffuse",      new Token(diffuse,         "diffuse"),
-    "labeloffset",  new Token(labeloffset,     "labeloffset"),
-    "labelalignment", new Token(labelalignment, "labelalignment"),
     "frank",        new Token(frank, onDefault1, "frank"),
     // must be lower case - see comment above
     "formalcharge", new Token(formalCharge,    "formalcharge"),

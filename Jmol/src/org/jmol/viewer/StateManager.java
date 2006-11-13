@@ -404,9 +404,6 @@ class StateManager {
 
     boolean labelsGroupFlag        = false;
     boolean labelsFrontFlag        = false;
-    boolean labelPointerBackground = true;
-    boolean labelPointerBox        = true;
-    boolean labelPointerNoBox      = false;
     
     int labelOffsetX        = JmolConstants.LABEL_DEFAULT_X_OFFSET;
     int labelOffsetY        = JmolConstants.LABEL_DEFAULT_Y_OFFSET;

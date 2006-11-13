@@ -49,6 +49,7 @@ class Labels extends Shape {
   short defaultColix;
   short defaultBgcolix;
   int defaultAlignment;
+  int defaultPointer;
   int defaultPaletteID;
 
   byte zeroFontId;
@@ -104,6 +105,10 @@ class Labels extends Shape {
             text.setText(label);
           if (defaultOffset != zeroOffset)
             setOffsets(i, defaultOffset, -1);
+          if (defaultAlignment != Text.LEFT)
+            setAlignment(i, defaultAlignment, -1);
+          if (defaultPointer != Text.POINTER_NONE)
+            setPointer(i, defaultPointer, -1);
           if (defaultColix != 0)
             setColix(i, defaultColix, defaultPaletteID, -1);
           if (defaultBgcolix != 0)
@@ -194,6 +199,17 @@ class Labels extends Shape {
       return;
     }
 
+    if ("pointer" == propertyName) {
+      int pointer = ((Integer)value).intValue();
+      int n = 0;
+      for (int i = frame.atomCount; --i >= 0;)
+        if (bsSelected.get(i))
+          setPointer(i, pointer, n++);
+      if (n == 0 || !defaultsOnlyForNone)
+        defaultPointer = pointer;
+      return;
+    }
+
     if ("toggleLabel" == propertyName) {
       // toggle
       for (int atomIndex = frame.atomCount; --atomIndex >= 0;)
@@ -248,12 +264,17 @@ class Labels extends Shape {
   }
   
   void setOffsets(int i, int offset, int n) {
+    // xxxxxxxxyyyyyyyyaabp
+    // x-align y-align | ||_pointer on
+    //                 | |_background pointer color
+    //                 |_text alignment 
+    //                   
     if (offsets == null || i >= offsets.length) {
       if (offset == 0)
         return;
       offsets = ArrayUtil.ensureLength(offsets, i + 1);
     }
-    offsets[i] = (offsets[i] & 3) + (offset << 2);
+    offsets[i] = (offsets[i] & 0xF) + (offset << 4);
     text = (Text) atomLabels.get(atoms[i]);
     if (text != null)
       text.setOffset(offset);
@@ -265,10 +286,22 @@ class Labels extends Shape {
         return;
       offsets = ArrayUtil.ensureLength(offsets, i + 1);
     }
-    offsets[i] = (offsets[i] & ~3) + alignment;
+    offsets[i] = (offsets[i] & ~0xC) + (alignment << 2);
     text = (Text) atomLabels.get(atoms[i]);
     if (text != null)
       text.setAlignment(alignment);
+  }
+  
+  void setPointer(int i, int pointer, int n) {
+    if (offsets == null || i >= offsets.length) {
+      if (pointer == Text.POINTER_NONE)
+        return;
+      offsets = ArrayUtil.ensureLength(offsets, i + 1);
+    }
+    offsets[i] = (offsets[i] & ~0x3) + pointer;
+    text = (Text) atomLabels.get(atoms[i]);
+    if (text != null)
+      text.setPointer(pointer);
   }
   
   void setFont(int i, byte fid, int n) {

@@ -67,8 +67,9 @@ class LabelsRenderer extends ShapeRenderer {
       byte fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId
           : fids[i]);
       int offsetFull = (offsets == null || i >= offsets.length ? 0 : offsets[i]);
-      int offset = offsetFull >> 2;
-      int textAlign = offsetFull & 3;
+      int offset = offsetFull >> 4;
+      int textAlign = (offsetFull >> 2) & 3;
+      int pointer = offsetFull & 3;
       int zSlab = atom.getScreenZ() - atom.getScreenD() / 2 - 2;
       if (zSlab < 1)
         zSlab = 1;
@@ -97,10 +98,11 @@ class LabelsRenderer extends ShapeRenderer {
         }
       }
       if (isSimple) {
-        boolean doPointer = (viewer.getLabelPointerBox() && bgcolix != 0 || bgcolix == 0 && viewer
-            .getLabelPointerNoBox());
-        short pointercolix = (viewer.getLabelPointerBackground() && bgcolix != 0 ? bgcolix
-            : colix);
+        boolean doPointer = ((pointer & Text.POINTER_ON) != 0);
+        //(viewer.getLabelPointerBox() && bgcolix != 0 || bgcolix == 0 && viewer.getLabelPointerNoBox());
+        //short pointercolix = (viewer.getLabelPointerBackground() && bgcolix != 0 ? bgcolix : colix);
+        short pointercolix = ((pointer & Text.POINTER_BACKGROUND) != 0 
+            && bgcolix != 0 ? bgcolix : colix);
         Text.renderSimple(g3d, font3d, label, colix, bgcolix, atom.screenX,
             atom.screenY, zBox, zSlab, Text.getXOffset(offset), Text
                 .getYOffset(offset), ascent, descent, doPointer, pointercolix);

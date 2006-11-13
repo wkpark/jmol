@@ -1458,6 +1458,7 @@ public final class Frame {
         && getModelSetProperty("noautobond") == null) {
       autoBond(null, null);
     }
+    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "reset", null);
   }
 
   final static boolean showRebondTimes = true;

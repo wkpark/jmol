@@ -2780,7 +2780,7 @@ class Eval { //implements Runnable {
       viewer.setSelectionSet(bs);
     }
     boolean bondmode = viewer.getBondSelectionModeOr();
-    viewer.setBooleanProperty("bondSelelectionModeOr", true);
+    viewer.setBooleanProperty("bondModeOr", true);
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0);
 
     // also need to turn off backbones, ribbons, strands, cartoons
@@ -2790,7 +2790,7 @@ class Eval { //implements Runnable {
     viewer.setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "delete", null);
     viewer.setLabel(null);
 
-    viewer.setBooleanProperty("bondSelelectionModeOr", bondmode);
+    viewer.setBooleanProperty("bondModeOr", bondmode);
     viewer.setSelectionSet(bsSelected);
   }
 
@@ -3433,7 +3433,6 @@ class Eval { //implements Runnable {
 
   void wireframe() throws ScriptException {
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter(), viewer.getSelectedAtomsOrBonds());
-    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "reportAll", null);
   }
 
   void ssbond() throws ScriptException {

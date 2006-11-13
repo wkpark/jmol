@@ -146,13 +146,11 @@ class Sticks extends Shape {
     Bond[] bonds = frame.bonds;
     for (int i = frame.bondCount; --i >= 0;) {
       Bond bond = bonds[i];
-      if (reportAll) {
-        if (bsSizeSet != null && bsSizeSet.get(i))
-          setStateInfo(temp, i, "wireframe " + (bond.mad / 2000f));
-        if (bsOrderSet != null && bsOrderSet.get(i))
+      if (reportAll || bsSizeSet != null && bsSizeSet.get(i))
+        setStateInfo(temp, i, "wireframe " + (bond.mad / 2000f));
+      if (reportAll || bsOrderSet != null && bsOrderSet.get(i))
           setStateInfo(temp, i, "bondOrder "
-            + JmolConstants.getBondOrderNameFromOrder(bond.order));
-      }
+              + JmolConstants.getBondOrderNameFromOrder(bond.order));
       if (bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp, i, getColorCommand("bonds", bond.colix));
     }

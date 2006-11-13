@@ -35,6 +35,8 @@ class AtomShape extends Shape {
   short[] mads;
   short[] colixes;
   short[] paletteIDs;
+  BitSet bsSizeSet;
+  BitSet bsColixSet;
 
   void setSize(int size, BitSet bsSelected) {
     if (bsSizeSet == null)

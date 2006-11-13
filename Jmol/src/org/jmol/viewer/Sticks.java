@@ -38,7 +38,8 @@ class Sticks extends Shape {
   short myMask;  
   boolean reportAll;
   BitSet bsOrderSet;
-  
+  BitSet bsSizeSet;
+  BitSet bsColixSet;
   
   void initShape() {
     myMask = JmolConstants.BOND_COVALENT_MASK;

@@ -36,9 +36,13 @@ class Labels extends Shape {
   String[] strings;
   String[] formats;
   short[] colixes;
+  short[] paletteIDs;
   short[] bgcolixes;
   byte[] fids;
   int[] offsets;
+  BitSet bsSizeSet;
+  BitSet bsColixSet;
+
   Hashtable atomLabels = new Hashtable();
   Text text;
   
@@ -109,7 +113,7 @@ class Labels extends Shape {
             setAlignment(i, defaultAlignment, -1);
           if (defaultPointer != Text.POINTER_NONE)
             setPointer(i, defaultPointer, -1);
-          if (defaultColix != 0)
+          if (defaultColix != 0 || defaultPaletteID != 0)
             setColix(i, defaultColix, defaultPaletteID, -1);
           if (defaultBgcolix != 0)
             setBgcolix(i, defaultBgcolix, -1);
@@ -239,11 +243,13 @@ class Labels extends Shape {
       if (colix == 0)
         return;
       colixes = ArrayUtil.ensureLength(colixes, i + 1);
+      paletteIDs = ArrayUtil.ensureLength(paletteIDs, i + 1);
     }
     if (bsColixSet == null)
       bsColixSet = new BitSet();
     colixes[i] = ((colix != Graphics3D.UNRECOGNIZED) ? colix : viewer
         .getColixAtomPalette(frame.getAtomAt(i), pid));
+    paletteIDs[i] = (short)pid;
     bsColixSet.set(i, colixes[i] != 0);
     text = (Text) atomLabels.get(atoms[i]);
     if (text != null)
@@ -335,7 +341,7 @@ class Labels extends Shape {
         continue;
       setStateInfo(temp, i, "label " + formats[i]);
       if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp2, i, getColorCommand("label", colixes[i]));
+        setStateInfo(temp2, i, getColorCommand("label", paletteIDs[i], colixes[i]));
       if (bsBgColixSet != null && bsBgColixSet.get(i))
         setStateInfo(temp2, i, "background label " + encodeColor(bgcolixes[i]));
       if (offsets != null && offsets.length > i) {

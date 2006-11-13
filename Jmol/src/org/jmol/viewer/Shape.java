@@ -40,8 +40,6 @@ abstract class Shape {
   Graphics3D g3d;
   int shapeID;
   int myVisibilityFlag;
-  BitSet bsSizeSet;
-  BitSet bsColixSet;
   
   final void setViewerG3dFrame(Viewer viewer, Graphics3D g3d, Frame frame, int shapeID) {
     this.viewer = viewer;

@@ -404,15 +404,6 @@ class StateManager {
     byte modeMultipleBond = JmolConstants.MULTIBOND_NOTSMALL;
     int defaultVectorMad  = 0;
 
-    //labels
-
-    boolean labelsGroupFlag        = false;
-    boolean labelsFrontFlag        = false;
-    
-    int labelOffsetX        = JmolConstants.LABEL_DEFAULT_X_OFFSET;
-    int labelOffsetY        = JmolConstants.LABEL_DEFAULT_Y_OFFSET;
-    int pointsLabelFontSize = JmolConstants.LABEL_DEFAULT_FONTSIZE;
-
     //secondary structure + Rasmol
 
     boolean rasmolHydrogenSetting = true;
@@ -491,30 +482,30 @@ class StateManager {
     
     final static String volatileProperties = 
       //indicate all properties here in lower case
-      //followed by ";" that should be reset upon file load
-      //currently none
-      "";
+      //surrounded by ";" that should be reset upon file load
+      //a frame property, so it gets reset:
+        ";selectionhalos;";
     
     final static String unnecessaryProperties = 
       //these are handled individually
-      "defaults;backgroundmodel;backgroundcolor;"
-      + "stereo;defaultdirectory;percentvdwatom;zerobasedxyzrasmol;"
-      + "bondradiusmilliangstroms;bondtolerance;minbonddistance;autobond;"
-      + "debugscript;frank;showaxes;showunitcell;showboundbox;"
-      + "axeswindow;axesunitcell;axesmolecular;windowcentered;";
+        ";defaults;backgroundmodel;backgroundcolor;"
+      + ";stereo;defaultdirectory;percentvdwatom;zerobasedxyzrasmol;"
+      + ";bondradiusmilliangstroms;bondtolerance;minbonddistance;autobond;"
+      + ";debugscript;frank;showaxes;showunitcell;showboundbox;"
+      + ";axeswindow;axesunitcell;axesmolecular;windowcentered;";
        
     void clearPropertyFlags() {
       Enumeration e;
       e = htPropertyFlags.keys();
       while (e.hasMoreElements()) {
         String key = (String) e.nextElement();
-        if (volatileProperties.indexOf(key) >= 0 || key.charAt(0) == '@') 
+        if (volatileProperties.indexOf(";" + key + ";") >= 0 || key.charAt(0) == '@') 
           htPropertyFlags.remove(key);
       }
       e = htParameterValues.keys();
       while (e.hasMoreElements()) {
         String key = (String) e.nextElement();
-        if (volatileProperties.indexOf(key) >= 0 || key.charAt(0) == '@') 
+        if (volatileProperties.indexOf(";" + key + ";") >= 0 || key.charAt(0) == '@') 
           htParameterValues.remove(key);
       }
     }
@@ -544,7 +535,7 @@ class StateManager {
     }
     
     boolean doRegister(String name) {
-      return (unnecessaryProperties.indexOf(name + ";") < 0);
+      return (unnecessaryProperties.indexOf(";" + name + ";") < 0);
     }
     
     String getState() {

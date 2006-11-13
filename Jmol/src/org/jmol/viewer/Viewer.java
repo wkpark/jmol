@@ -2548,13 +2548,13 @@ public class Viewer extends JmolViewer {
   void setLabel(String strLabel) {
     //Eval
     if (strLabel != null) // force the class to load and display
-      setShapeSize(JmolConstants.SHAPE_LABELS, global.pointsLabelFontSize);
+      setShapeSize(JmolConstants.SHAPE_LABELS, 0);
     setShapeProperty(JmolConstants.SHAPE_LABELS, "label", strLabel);
   }
 
   void togglePickingLabel(BitSet bs) {
     //eval set toggleLabel (atomset)
-    setShapeSize(JmolConstants.SHAPE_LABELS, global.pointsLabelFontSize);
+    setShapeSize(JmolConstants.SHAPE_LABELS, 0);
     modelManager.setShapeProperty(JmolConstants.SHAPE_LABELS, "toggleLabel",
         null, bs);
     refresh(0, "Viewer:");
@@ -2884,10 +2884,7 @@ public class Viewer extends JmolViewer {
       return getGreyscaleRendering();
     if (key.equalsIgnoreCase("disablePopupMenu"))
       return getDisablePopupMenu();
-    if (key.equalsIgnoreCase("labelsFront"))
-      return getLabelsFrontFlag();
-    if (key.equalsIgnoreCase("labelsGroup"))
-      return getLabelsGroupFlag();
+
     if (global.htPropertyFlags.containsKey(key)) {
       return ((Boolean)global.htPropertyFlags.get(key)).booleanValue();
     }
@@ -3077,6 +3074,10 @@ public class Viewer extends JmolViewer {
         setRefreshing(value);
         break;
       }
+      if (key.equalsIgnoreCase("ssBondsBackbone")) {
+        setSsbondsBackbone(value);
+        break;
+      }
       if (key.equalsIgnoreCase("hbondsBackbone")) {
         setHbondsBackbone(value);
         break;
@@ -3099,10 +3100,6 @@ public class Viewer extends JmolViewer {
       }
       if (key.equalsIgnoreCase("solvent")) {
         setSolventOn(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("ssBondsBackbone")) {
-        setSsbondsBackbone(value);
         break;
       }
       if (key.equalsIgnoreCase("highResolution")) {
@@ -3158,7 +3155,7 @@ public class Viewer extends JmolViewer {
         break;
       }
       if (key.equalsIgnoreCase("selectionHalos")) {
-        setSelectionHaloEnabled(value);
+        setSelectionHaloEnabled(value); //volatile
         break;
       }
       if (key.equalsIgnoreCase("debugScript")) {
@@ -3247,14 +3244,6 @@ public class Viewer extends JmolViewer {
       }
       if (key.equalsIgnoreCase("greyscaleRendering")) {
         setGreyscaleRendering(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("labelsFront")) {
-        setLabelsFrontFlag(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("labelsGroup")) {
-        setLabelsGroupFlag(value);
         break;
       }
       //these next are deprecated because they don't 
@@ -3638,22 +3627,6 @@ public class Viewer extends JmolViewer {
     return global.greyscaleRendering;
   }
 
-  private void setLabelsFrontFlag(boolean labelsFrontFlag) {
-    global.labelsFrontFlag = labelsFrontFlag;
-  }
-
-  boolean getLabelsFrontFlag() {
-    return global.labelsFrontFlag;
-  }
-
-  private void setLabelsGroupFlag(boolean labelsGroupFlag) {
-    global.labelsGroupFlag = labelsGroupFlag;
-  }
-
-  boolean getLabelsGroupFlag() {
-    return global.labelsGroupFlag;
-  }
-
   private void setDisablePopupMenu(boolean disablePopupMenu) {
     global.disablePopupMenu = disablePopupMenu;
   }
@@ -3804,28 +3777,6 @@ public class Viewer extends JmolViewer {
 
   boolean getZeroBasedXyzRasmol() {
     return global.zeroBasedXyzRasmol;
-  }
-
-  void setLabelFontSize(int points) {
-    //not implemented
-    global.pointsLabelFontSize = (points <= 0 ? JmolConstants.LABEL_DEFAULT_FONTSIZE
-        : points);
-    refresh(0, "Viewer:setLabelFontSize()");
-  }
-
-  void setLabelOffset(int xOffset, int yOffset) {
-    //not implemented
-    global.labelOffsetX = xOffset;
-    global.labelOffsetY = yOffset;
-    refresh(0, "Viewer:setLabelOffset()");
-  }
-
-  int getLabelOffsetX() {
-    return global.labelOffsetX;
-  }
-
-  int getLabelOffsetY() {
-    return global.labelOffsetY;
   }
 
   // //////////////////////////////////////////////////////////////

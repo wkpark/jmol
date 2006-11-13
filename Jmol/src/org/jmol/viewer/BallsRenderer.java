@@ -41,11 +41,9 @@ class BallsRenderer extends ShapeRenderer {
       minZ = g3d.getSlab();
       maxZ = g3d.getDepth();
     }
-    labelsGroup = viewer.getLabelsGroupFlag() && !viewer.getLabelsFrontFlag();
     Atom[] atoms = frame.atoms;
-    if (labelsGroup)
-      for (int i = frame.groupCount; --i >= 0;)
-        frame.groups[i].minZ = Integer.MAX_VALUE;
+    for (int i = frame.groupCount; --i >= 0;)
+      frame.groups[i].minZ = Integer.MAX_VALUE;
     for (int i = frame.atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) == 0)
@@ -62,12 +60,10 @@ class BallsRenderer extends ShapeRenderer {
         }
       }
       // note: above transform is required for all other renderings
-      if (labelsGroup) {
-        if (atom.group != null) {
-          int z = atom.getScreenZ() - atom.getScreenD() / 2 - 2;
-          if (z < atom.group.minZ)
-            atom.group.minZ = Math.max(1,z);
-        }
+      if (atom.group != null) {
+        int z = atom.getScreenZ() - atom.getScreenD() / 2 - 2;
+        if (z < atom.group.minZ)
+          atom.group.minZ = Math.max(1, z);
       }
       if ((atom.shapeVisibilityFlags & myVisibilityFlag) != 0)
         renderBall(atom);

@@ -36,15 +36,12 @@ class LabelsRenderer extends ShapeRenderer {
   int ascent;
   int descent;
   int msgWidth;
-  boolean labelsFront;
-  boolean labelsGroup;
 
   void render() {
     fidPrevious = 0;
-    labelsFront = viewer.getLabelsFrontFlag();
-    labelsGroup = viewer.getLabelsGroupFlag();
 
     Labels labels = (Labels) shape;
+
     String[] labelStrings = labels.strings;
     short[] colixes = labels.colixes;
     short[] bgcolixes = labels.bgcolixes;
@@ -67,7 +64,9 @@ class LabelsRenderer extends ShapeRenderer {
       byte fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId
           : fids[i]);
       int offsetFull = (offsets == null || i >= offsets.length ? 0 : offsets[i]);
-      int offset = offsetFull >> 4;
+      boolean labelsFront = ((offsetFull & Labels.FRONT_FLAG) != 0);
+      boolean labelsGroup = ((offsetFull & Labels.GROUP_FLAG) != 0);
+      int offset = offsetFull >> 6;
       int textAlign = (offsetFull >> 2) & 3;
       int pointer = offsetFull & 3;
       int zSlab = atom.getScreenZ() - atom.getScreenD() / 2 - 2;

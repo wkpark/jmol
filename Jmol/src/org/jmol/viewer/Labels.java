@@ -55,13 +55,20 @@ class Labels extends Shape {
   int defaultAlignment;
   int defaultPointer;
   int defaultPaletteID;
-
+  int defaultZpos;
   byte zeroFontId;
   int zeroOffset;
 
   boolean defaultsOnlyForNone = true;
   
 
+  //labels
+  
+  int labelOffsetX        = JmolConstants.LABEL_DEFAULT_X_OFFSET;
+  int labelOffsetY        = JmolConstants.LABEL_DEFAULT_Y_OFFSET;
+  int pointsLabelFontSize = JmolConstants.LABEL_DEFAULT_FONTSIZE;
+
+  
   void initShape() {
     defaultFontId = zeroFontId = g3d.getFont3D(JmolConstants.DEFAULT_FONTFACE,
                                   JmolConstants.DEFAULT_FONTSTYLE,
@@ -214,6 +221,28 @@ class Labels extends Shape {
       return;
     }
 
+    if ("front" == propertyName) {
+      boolean TF = ((Boolean)value).booleanValue();
+      int n = 0;
+      for (int i = frame.atomCount; --i >= 0;)
+        if (bsSelected.get(i))
+          setFront(i, TF, n++);
+      if (n == 0 || !defaultsOnlyForNone)
+        defaultZpos = TF ? FRONT_FLAG : 0;
+      return;
+    }
+
+    if ("group" == propertyName) {
+      boolean TF = ((Boolean)value).booleanValue();
+      int n = 0;
+      for (int i = frame.atomCount; --i >= 0;)
+        if (bsSelected.get(i))
+          setGroup(i, TF, n++);
+      if (n == 0 || !defaultsOnlyForNone)
+        defaultZpos = TF ? GROUP_FLAG : 0;
+      return;
+    }
+
     if ("toggleLabel" == propertyName) {
       // toggle
       for (int atomIndex = frame.atomCount; --atomIndex >= 0;)
@@ -269,18 +298,26 @@ class Labels extends Shape {
       text.setBgColix(bgcolix);
   }
   
+  final static int ZPOS_FLAGS = 0x30;
+  final static int FRONT_FLAG = 0x20;
+  final static int GROUP_FLAG = 0x10;
+  final static int POINTER_FLAGS = 0x3;
+  final static int ALIGN_FLAGS = 0xC;
+  final static int FLAGS = 0x3F;
+  
   void setOffsets(int i, int offset, int n) {
-    // xxxxxxxxyyyyyyyyaabp
-    // x-align y-align | ||_pointer on
-    //                 | |_background pointer color
-    //                 |_text alignment 
-    //                   
+    // xxxxxxxxyyyyyyyyfgaabp
+    // x-align y-align ||| ||_pointer on
+    //                 ||| |_background pointer color
+    //                 |||_text alignment 0xC 
+    //                 ||_labels group 0x10
+    //                 |_labels front  0x20
     if (offsets == null || i >= offsets.length) {
       if (offset == 0)
         return;
       offsets = ArrayUtil.ensureLength(offsets, i + 1);
     }
-    offsets[i] = (offsets[i] & 0xF) + (offset << 4);
+    offsets[i] = (offsets[i] & FLAGS) + (offset << 6);
     text = (Text) atomLabels.get(atoms[i]);
     if (text != null)
       text.setOffset(offset);
@@ -292,7 +329,7 @@ class Labels extends Shape {
         return;
       offsets = ArrayUtil.ensureLength(offsets, i + 1);
     }
-    offsets[i] = (offsets[i] & ~0xC) + (alignment << 2);
+    offsets[i] = (offsets[i] & ~ALIGN_FLAGS) + (alignment << 2);
     text = (Text) atomLabels.get(atoms[i]);
     if (text != null)
       text.setAlignment(alignment);
@@ -304,10 +341,28 @@ class Labels extends Shape {
         return;
       offsets = ArrayUtil.ensureLength(offsets, i + 1);
     }
-    offsets[i] = (offsets[i] & ~0x3) + pointer;
+    offsets[i] = (offsets[i] & ~POINTER_FLAGS) + pointer;
     text = (Text) atomLabels.get(atoms[i]);
     if (text != null)
       text.setPointer(pointer);
+  }
+  
+  void setFront(int i, boolean TF, int n) {
+    if (offsets == null || i >= offsets.length) {
+      if (!TF)
+        return;
+      offsets = ArrayUtil.ensureLength(offsets, i + 1);
+    }
+    offsets[i] = (offsets[i] & ~ZPOS_FLAGS) + (TF? FRONT_FLAG : 0);
+  }
+  
+  void setGroup(int i, boolean TF, int n) {
+    if (offsets == null || i >= offsets.length) {
+      if (!TF)
+        return;
+      offsets = ArrayUtil.ensureLength(offsets, i + 1);
+    }
+    offsets[i] = (offsets[i] & ~ZPOS_FLAGS) + (TF? GROUP_FLAG : 0);
   }
   
   void setFont(int i, byte fid, int n) {
@@ -345,15 +400,20 @@ class Labels extends Shape {
       if (bsBgColixSet != null && bsBgColixSet.get(i))
         setStateInfo(temp2, i, "background label " + encodeColor(bgcolixes[i]));
       if (offsets != null && offsets.length > i) {
+        int offset = offsets[i];
         setStateInfo(temp2, i, "set labelOffset "
-            + Text.getXOffset(offsets[i] >> 4) + " "
-            + (-Text.getYOffset(offsets[i] >> 4)));
-        String align = Text.getAlignment(offsets[i] >> 2);
+            + Text.getXOffset(offset >> 6) + " "
+            + (-Text.getYOffset(offset >> 6)));
+        String align = Text.getAlignment(offset >> 2);
         if (align.length() >= 5) // disallows "left"
           setStateInfo(temp2, i, "set labelAlignment " + align);
-        String pointer = Text.getPointer(offsets[i]);
+        String pointer = Text.getPointer(offset);
         if (pointer.length() > 0)
           setStateInfo(temp2, i, "set labelPointer " + pointer);
+        if ((offset & FRONT_FLAG) != 0)
+          setStateInfo(temp2, i, "set labelFront");
+        if ((offset & GROUP_FLAG) != 0)
+          setStateInfo(temp2, i, "set labelGroup");
       }
       if (bsFontSet != null && bsFontSet.get(i))
         setStateInfo(temp2, i, getFontCommand("label", Font3D

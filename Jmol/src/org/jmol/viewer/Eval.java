@@ -4058,18 +4058,10 @@ class Eval { //implements Runnable {
     case Token.specular:
     case Token.specpower:
       String str = (String) statement[1].value;
-      if (str.equalsIgnoreCase("labelOffset")) {
-        setLabelOffset();
+      if (str.indexOf("label") == 0) {
+        setLabel(str.substring(5));
         break;
       }
-      if (str.equalsIgnoreCase("labelAlignment")) {
-        setLabelAlignment();
-        break;
-      }      
-      if (str.equalsIgnoreCase("labelPointer")) {
-        setLabelPointer();
-        break;
-      }      
       if (str.equalsIgnoreCase("toggleLabel")) {
         viewer.togglePickingLabel(expression(statement, 2));
         break;
@@ -4334,40 +4326,66 @@ class Eval { //implements Runnable {
         new Integer(rasmolSize));
   }
 
-  void setLabelOffset() throws ScriptException {
-    checkLength4();
-    int xOffset = intParameter(2);
-    int yOffset = intParameter(3);
-    if (xOffset > 100 || yOffset > 100 || xOffset < -100 || yOffset < -100)
-      numberOutOfRange(-100, 100);
-    int offset = ((xOffset & 0xFF) << 8) | (yOffset & 0xFF);
+  void setLabel(String str) throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
-    viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "offset", new Integer(
-        offset));
-  }
-
-  void setLabelAlignment() throws ScriptException {
-    checkLength3();
-    viewer.loadShape(JmolConstants.SHAPE_LABELS);
-    viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "align", 
-        statement[2].value);
-  }
-
-  void setLabelPointer() throws ScriptException {
-    checkLength3();
-    int flags = Text.POINTER_NONE;
-    switch (statement[2].tok) {
-    case Token.off:
-    case Token.none:
-      break;
-    case Token.background:
-      flags |= Text.POINTER_BACKGROUND;
-    case Token.on:
-      flags |= Text.POINTER_ON;
+    if (str.equalsIgnoreCase("Offset")) {
+      checkLength4();
+      int xOffset = intParameter(2);
+      int yOffset = intParameter(3);
+      if (xOffset > 100 || yOffset > 100 || xOffset < -100 || yOffset < -100)
+        numberOutOfRange(-100, 100);
+      int offset = ((xOffset & 0xFF) << 8) | (yOffset & 0xFF);
+      viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "offset",
+          new Integer(offset));
+      return;
     }
-    viewer.loadShape(JmolConstants.SHAPE_LABELS);
-    viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "pointer", new Integer(
-        flags));
+    if (str.equalsIgnoreCase("Alignment")) {
+      checkLength3();
+      switch (statement[2].tok) {
+      case Token.left:
+      case Token.right:
+      case Token.center:
+        viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "align",
+            statement[2].value);
+        return;
+      }
+      invalidArgument();
+    }
+    if (str.equalsIgnoreCase("Pointer")) {
+      checkLength3();
+      int flags = Text.POINTER_NONE;
+      switch (statement[2].tok) {
+      case Token.off:
+      case Token.none:
+        break;
+      case Token.background:
+        flags |= Text.POINTER_BACKGROUND;
+      case Token.on:
+        flags |= Text.POINTER_ON;
+      default:
+        invalidArgument();
+      }
+      viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "pointer",
+          new Integer(flags));
+      return;
+    }
+    checkLength2();
+    if (str.equalsIgnoreCase("Atom")) {
+      viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "front",
+          Boolean.FALSE);
+      return;
+    }
+    if (str.equalsIgnoreCase("Front")) {
+      viewer
+          .setShapeProperty(JmolConstants.SHAPE_LABELS, "front", Boolean.TRUE);
+      return;
+    }
+    if (str.equalsIgnoreCase("Group")) {
+      viewer
+          .setShapeProperty(JmolConstants.SHAPE_LABELS, "group", Boolean.TRUE);
+      return;
+    }
+    invalidArgument();
   }
 
   void setMonitor(int cmdPt) throws ScriptException {

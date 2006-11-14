@@ -41,6 +41,8 @@ class Dipole extends Shape {
 
   String dipoleInfo = "";
   float dipoleValue;
+  
+  boolean isUserValue;
   float offsetSide;
   float offsetAngstroms;
   int offsetPercent;
@@ -49,8 +51,11 @@ class Dipole extends Shape {
 
   boolean visible;
   boolean noCross;
+  boolean haveAtoms;
+  boolean isValid;
 
   Atom[] atoms = new Atom[2]; //for reference only
+  Point3f[] coords = new Point3f[2]; //for reference only
   Bond bond;
 
   final static short DIPOLE_TYPE_UNKNOWN = 0;
@@ -89,16 +94,18 @@ class Dipole extends Shape {
   }
 
   void set(String thisID, String dipoleInfo, Atom[] atoms, float dipoleValue,
-           short mad, float offsetAngstroms, float offsetSide, Point3f origin, Vector3f vector) {
+           short mad, float offsetAngstroms, int offsetPercent, float offsetSide, Point3f origin, Vector3f vector) {
     this.thisID = thisID;
     this.dipoleInfo = dipoleInfo;
     this.dipoleValue = dipoleValue;
     this.mad = mad;
     this.offsetAngstroms = offsetAngstroms;
+    this.offsetPercent = offsetPercent;
     this.offsetSide = offsetSide;
     this.vector = new Vector3f(vector);
     this.origin = new Point3f(origin);
-    if (atoms[0] != null) {
+    this.haveAtoms = (atoms[0] != null);
+    if (haveAtoms) {
       this.atoms[0] = atoms[0];
       this.atoms[1] = atoms[1];
       centerDipole();
@@ -106,6 +113,10 @@ class Dipole extends Shape {
   }
 
   private void set(Point3f pt1, Point3f pt2) {
+    coords[0] = new Point3f(pt1);
+    coords[1] = new Point3f(pt2);
+    isValid = (coords[0].distance(coords[1]) > 0.1f);
+    
     if (dipoleValue < 0) { 
       origin = new Point3f(pt2);
       vector = new Vector3f(pt1);
@@ -126,6 +137,8 @@ class Dipole extends Shape {
   void set(float value) {
     float d = dipoleValue;
     dipoleValue = value;
+    if (value == 0)
+      isValid = false;
     if (vector == null)
       return;
     vector.scale(dipoleValue / vector.length());
@@ -155,10 +168,14 @@ class Dipole extends Shape {
     mad = Dipoles.DEFAULT_MAD;
     atoms[0] = atom1;
     atoms[1] = atom2;
+    haveAtoms = true;
     centerDipole();
   }
 
   void centerDipole() {
+    isValid = (atoms[0] != atoms[1] && dipoleValue != 0);
+    if (!isValid)
+      return;
     float f = atoms[0].distance(atoms[1]) / (2 * dipoleValue)
         - 0.5f;
     origin.scaleAdd(f, vector, atoms[0]);
@@ -170,5 +187,36 @@ class Dipole extends Shape {
   
   boolean isBondType() {
     return (type == Dipole.DIPOLE_TYPE_ATOMS || type == Dipole.DIPOLE_TYPE_BOND);
+  }
+  
+  String getShapeState() {
+    if (!isValid)
+      return "";
+    StringBuffer s = new StringBuffer();
+    s.append("dipole " + thisID);
+    if (isUserValue)
+      s.append(" value " + dipoleValue);
+    if (haveAtoms)
+      s.append(" ({" + atoms[0].atomIndex + " " + atoms[1].atomIndex + "})");
+    else if (coords[0] == null)
+      return "";
+    else
+      s.append(" " + StateManager.encloseCoord(coords[0]) + " "
+          + StateManager.encloseCoord(coords[1]));
+    if (mad != Dipoles.DEFAULT_MAD)
+      s.append(" width " + (mad / 1000f));
+    if (offsetAngstroms != 0)
+      s.append(" offset " + offsetAngstroms);
+    else if (offsetPercent != 0)
+      s.append(" offset " + offsetPercent);
+    if (offsetSide != Dipoles.DEFAULT_OFFSETSIDE)
+      s.append(" offsetSide " + offsetSide);
+    if (noCross)
+      s.append(" nocross");
+    if (!visible)
+      s.append(" off");
+    s.append(";\n");
+    s.append(getColorCommand("dipole", colix));
+    return s.toString();
   }
 }

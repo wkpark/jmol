@@ -84,6 +84,11 @@ class DipolesRenderer extends ShapeRenderer {
       offset.scale(-0.5f * dipoleVectorScale);
       points[cylinderBase].set(dipole.center);
       points[cylinderBase].add(offset);    
+      if (dipole.offsetAngstroms != 0) { 
+        offset.set(vector);
+        offset.scale(dipole.offsetAngstroms / dipole.dipoleValue);
+        points[cylinderBase].add(offset);       
+      }
     }
     
     points[cross].scaleAdd(dipoleVectorScale * crossOffset, vector,

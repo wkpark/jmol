@@ -3552,9 +3552,14 @@ class Eval { //implements Runnable {
         propertyValue = new Float(floatParameter(i));
         break;
       case Token.expressionBegin:
-        propertyValue = expression(statement, i);
+        if (statement[i+1].tok == Token.bitset) {
+          propertyName = "atomBitset";
+          propertyValue = statement[i].value;
+        } else {
+          propertyName = (iHaveAtoms || iHaveCoord ? "endSet" : "startSet");
+          propertyValue = expression(statement, i);
+        }
         i = pcLastExpressionInstruction;
-        propertyName = (iHaveAtoms || iHaveCoord ? "endSet" : "startSet");
         iHaveAtoms = true;
         break;
       case Token.leftbrace:

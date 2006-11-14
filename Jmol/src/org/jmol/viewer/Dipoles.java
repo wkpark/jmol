@@ -48,9 +48,13 @@ class Dipoles extends SelectionIndependentShape {
   Point3f startCoord = new Point3f();
   Point3f endCoord = new Point3f();
   float dipoleValue;
+  boolean isUserValue;
   boolean isBond;
   boolean iHaveTwoEnds;
+  boolean iHaveTwoAtoms;
+  boolean isValid;
   int atomIndex1;
+  int atomIndex2;
 
   void initShape() {
     myType = "dipoles";
@@ -68,8 +72,7 @@ class Dipoles extends SelectionIndependentShape {
       atomIndex1 = -1;
       tempDipole.modelIndex = -1;
       dipoleValue = 0;
-      isBond = false;
-      iHaveTwoEnds = false;
+      isValid = isUserValue = isBond = iHaveTwoEnds = iHaveTwoAtoms = false;
       if (currentDipole != null)
         Logger.debug("current dipole: " + currentDipole.thisID);
       return;
@@ -239,12 +242,23 @@ class Dipoles extends SelectionIndependentShape {
       return;
     }
 
+    if ("atomBitSet" == propertyName) {
+      BitSet atomset = (BitSet) value;
+      atomIndex1 = viewer.firstAtomOf(atomset);
+      startCoord = frame.atoms[atomIndex1];
+      atomset.clear(atomIndex1);
+      value = atomset;
+      propertyName = "endSet";
+      //passes to endSet
+    }
+    
     if ("endSet" == propertyName) {
       iHaveTwoEnds = true;
+      iHaveTwoAtoms = true;
       BitSet atomset = (BitSet) value;
       if (atomIndex1 >= 0 && viewer.cardinalityOf(atomset) == 1) {
-        tempDipole.set(frame.atoms[atomIndex1], frame.atoms[viewer
-            .firstAtomOf(atomset)], 1);
+        atomIndex2 = viewer.firstAtomOf(atomset);
+        tempDipole.set(frame.atoms[atomIndex1], frame.atoms[atomIndex2], 1);
         currentDipole = findDipole(tempDipole.thisID, tempDipole.dipoleInfo);
         tempDipole.thisID = currentDipole.thisID;
         if (isSameAtoms(currentDipole, tempDipole.dipoleInfo)) {
@@ -276,6 +290,7 @@ class Dipoles extends SelectionIndependentShape {
 
     if ("dipoleValue" == propertyName) {
       dipoleValue = ((Float) value).floatValue();
+      isUserValue = true;
       tempDipole.set(dipoleValue);
       if (tempDipole.offsetPercent != 0)
         tempDipole.offsetAngstroms = tempDipole.offsetPercent / 100f
@@ -286,6 +301,7 @@ class Dipoles extends SelectionIndependentShape {
     if ("set" == propertyName) {
       if (isBond || !iHaveTwoEnds)
         return;
+      isValid = true;
       setDipole();
       setModelIndex();
       return;
@@ -315,8 +331,9 @@ class Dipoles extends SelectionIndependentShape {
       currentDipole = allocDipole("", "");
     currentDipole.set(tempDipole.thisID, tempDipole.dipoleInfo,
         tempDipole.atoms, tempDipole.dipoleValue, tempDipole.mad,
-        tempDipole.offsetAngstroms, tempDipole.offsetSide, tempDipole.origin,
+        tempDipole.offsetAngstroms, tempDipole.offsetPercent, tempDipole.offsetSide, tempDipole.origin,
         tempDipole.vector);
+    currentDipole.isUserValue = isUserValue;
   }
 
   private int getDipoleIndex(String dipoleInfo, String thisID) {
@@ -493,6 +510,19 @@ class Dipoles extends SelectionIndependentShape {
   }
   
   String getShapeState() {
-    return "#dipole state not implemented\n";
+    if (dipoleCount == 0)
+      return "";
+    StringBuffer s = new StringBuffer();
+    int thisModel = -1;
+    int modelCount = frame.modelCount;
+    for (int i = 0; i < dipoleCount; i++)
+      if (dipoles[i].isValid) {
+        if (modelCount > 1 && dipoles[i].modelIndex != thisModel)
+          s.append("frame "
+              + viewer.getModelName(thisModel = dipoles[i].modelIndex) + ";\n");
+        s.append(dipoles[i].getShapeState());
+      }
+    s.append("set dipoleScale " + dipoleVectorScale + ";\n");
+    return s.toString();
   }
 }

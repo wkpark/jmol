@@ -70,14 +70,16 @@ class MolecularOrbital extends Isosurface {
     if ("init" == propertyName) {
       myColorPt = 0;
       moDebug = false;
-      strID = getId(((Integer)value).intValue());
+      strID = getId(((Integer) value).intValue());
       // overide bitset selection
       super.setProperty("init", null, null);
       if (htModels == null)
         htModels = new Hashtable();
       if (!htModels.containsKey(strID))
         htModels.put(strID, new Hashtable());
-      thisModel = (Hashtable)htModels.get(strID);
+      thisModel = (Hashtable) htModels.get(strID);
+      moNumber = (thisModel == null ? 0 : ((Integer) thisModel.get("moNumber"))
+          .intValue());
       return;
     }
 
@@ -102,7 +104,7 @@ class MolecularOrbital extends Isosurface {
       thisModel.put("moResolution", value);
       return;
     }
-    
+
     if ("titleFormat" == propertyName) {
       moTitleFormat = (String) value;
       return;
@@ -147,6 +149,9 @@ class MolecularOrbital extends Isosurface {
   }
   
   Object getProperty(String propertyName, int param) {
+    if (propertyName == "moNumber") {
+      return (moNumber == 0 ? null : new Integer(moNumber));
+    }
     if (propertyName == "showMO") {
       StringBuffer str = new StringBuffer();
       String infoType = "jvxlFileData";
@@ -169,9 +174,6 @@ class MolecularOrbital extends Isosurface {
           super.setProperty("delete", "mo_show", null);
         }
       return "" + str;
-    }
-    if (propertyName == "moNumber") {
-      return (qm_moNumber == 0 ? null : new Integer(qm_moNumber));
     }
     return null;
   }

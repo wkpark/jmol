@@ -433,8 +433,8 @@ class StateManager {
     String getWindowState() {
       String str = "# window state (height=" + viewer.getScreenHeight()
           + " width=" + viewer.getScreenWidth() + ")\n";
-      str += "initialize;set refreshing false;\nbackground [x" + Graphics3D.getHexColorFromRGB(argbBackground)
-          + "];\n";
+      str += "initialize;\nset refreshing false;\nbackground [x"
+          + Graphics3D.getHexColorFromRGB(argbBackground) + "];\n";
       if (stereoState != null)
         str += "stereo " + stereoState + ";\n";
       return str + "\n";
@@ -536,7 +536,7 @@ class StateManager {
     }
     
     String getState() {
-      StringBuffer commands = new StringBuffer("# settings:\n");
+      StringBuffer commands = new StringBuffer("# settings:\nset refreshing false;");
       Enumeration e;
       //two rounds here because default settings 
       //must be declared first

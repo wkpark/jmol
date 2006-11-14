@@ -3300,7 +3300,7 @@ public final class Frame {
     for (int i = 0; i < len; i++)
       commands.append(fs.get(i) + "\n");
 
-    commands.append("\n# model states:\n");
+    commands.append("\n# model state:\n");
     // shape construction
 
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {

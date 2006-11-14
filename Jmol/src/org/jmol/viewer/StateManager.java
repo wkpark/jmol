@@ -166,12 +166,12 @@ class StateManager {
   }
   
   boolean restoreState(String saveName) {
+    //not used -- more efficient just to run the script 
     String name = (saveName.length() > 0 ? "State_" + saveName
         : lastState);
     String script = (String) saved.get(name);
     if (script == null)
       return false;
-    viewer.resetAllParameters();
     viewer.script(script + CommandHistory.NOHISTORYATALL_FLAG);
     return true;
   }
@@ -364,6 +364,7 @@ class StateManager {
       // "global" settings that
       // need to be reset whenever a file is loaded
 
+      clearVolatileProperties();
     }
 
     //centering and perspective
@@ -432,7 +433,7 @@ class StateManager {
     String getWindowState() {
       String str = "# window state (height=" + viewer.getScreenHeight()
           + " width=" + viewer.getScreenWidth() + ")\n";
-      str += "zap;\nbackground [x" + Graphics3D.getHexColorFromRGB(argbBackground)
+      str += "initialize;set refreshing false;\nbackground [x" + Graphics3D.getHexColorFromRGB(argbBackground)
           + "];\n";
       if (stereoState != null)
         str += "stereo " + stereoState + ";\n";
@@ -483,18 +484,18 @@ class StateManager {
     final static String volatileProperties = 
       //indicate all properties here in lower case
       //surrounded by ";" that should be reset upon file load
-      //a frame property, so it gets reset:
+      //frame properties and such:
         ";selectionhalos;";
     
     final static String unnecessaryProperties = 
       //these are handled individually
-        ";defaults;backgroundmodel;backgroundcolor;"
+        ";refreshing;defaults;backgroundmodel;backgroundcolor;"
       + ";stereo;defaultdirectory;percentvdwatom;zerobasedxyzrasmol;"
       + ";bondradiusmilliangstroms;bondtolerance;minbonddistance;autobond;"
       + ";debugscript;frank;showaxes;showunitcell;showboundbox;"
       + ";axeswindow;axesunitcell;axesmolecular;windowcentered;";
        
-    void clearPropertyFlags() {
+    void clearVolatileProperties() {
       Enumeration e;
       e = htPropertyFlags.keys();
       while (e.hasMoreElements()) {
@@ -512,25 +513,21 @@ class StateManager {
 
     void setPropertyFlag(String key, boolean value) {
       key = key.toLowerCase();
-      if (doRegister(key))
         htPropertyFlags.put(key, value ? Boolean.TRUE : Boolean.FALSE);  
     }
 
     void setParameterValue(String name, int value) {
       name = name.toLowerCase();
-      if (doRegister(name))
         htParameterValues.put(name, new Integer(value));
     }
     
     void setParameterValue(String name, float value) {
       name = name.toLowerCase();
-      if (doRegister(name))
         htParameterValues.put(name, new Float(value));
     }
     
     void setParameterValue(String name, String value) {
       name = name.toLowerCase();
-      if (doRegister(name))
         htParameterValues.put(name, value);
     }
     
@@ -548,13 +545,14 @@ class StateManager {
       e = htParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
-        if (key.indexOf("default") >= 0 && key.charAt(0) != '@')
+        if (key.indexOf("default") >= 0 && key.charAt(0) != '@' && doRegister(key))
         commands.append("set " + key + " " + htParameterValues.get(key)+ ";\n");
       }
       //booleans
       e = htPropertyFlags.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
+        if (doRegister(key))
           commands.append("set " + key + " " + htPropertyFlags.get(key)+ ";\n");
       }
       //nondefault, nonvariables
@@ -562,14 +560,15 @@ class StateManager {
       e = htParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
-        if (key.indexOf("default") < 0 && key.charAt(0) != '@') {
+        if (key.indexOf("default") < 0 && key.charAt(0) != '@'  && doRegister(key)) {
           Object value = htParameterValues.get(key);
-          if (value instanceof String)
-            value = escape((String) value);
-          if (key.charAt(0) == '_')
+          if (key.charAt(0) == '_') {
             key = key.substring(1);
-          else
+          } else {
             key = "set " + key;
+            if (value instanceof String)
+              value = escape((String) value);
+          }
           commands.append(key + " " + value + ";\n");
         }
       }
@@ -676,6 +675,10 @@ class StateManager {
   
   static String encloseCoord(Tuple3f xyz) {
     return "{" + xyz.x + " " + xyz.y + " " + xyz.z +"}";
+  }
+  
+  static String encodeColor(int argb) {
+    return "[x" + Graphics3D.getHexColorFromRGB(argb) + "]";
   }
   
   static void setStateInfo(Hashtable ht, int i1, int i2, String key) {

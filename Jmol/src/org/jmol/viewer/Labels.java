@@ -418,6 +418,9 @@ class Labels extends Shape {
       if (bsFontSet != null && bsFontSet.get(i))
         setStateInfo(temp2, i, getFontCommand("label", Font3D
             .getFont3D(fids[i])));
+      
+     // need defaults here as well
+     // set label none;.....
     }
     return getShapeCommands(temp, temp2, frame.atomCount);
   }  

@@ -65,8 +65,7 @@ class TransformManager {
   }
   
   String getState() {
-    StringBuffer commands = new StringBuffer("# orientation/center/spin states:\n");
-    commands.append("set refreshing false;\n");
+    StringBuffer commands = new StringBuffer("# orientation/center/spin state:\n");
     if (!isWindowCentered())
       commands.append("set windowCentered false;\n");
     commands.append(getMoveToText(0));
@@ -92,7 +91,6 @@ class TransformManager {
       }
       commands.append(";\n");
     }
-    commands.append("set refreshing true;\n");
     commands.append("\n");
     return commands.toString();
   }

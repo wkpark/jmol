@@ -62,10 +62,11 @@ class Sticks extends Shape {
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
     Logger.debug(propertyName + " " + value + " " + bsSelected);
     boolean isBonds = viewer.isBondSelection();
-    
+
     if ("reportAll" == propertyName) {
       // when connections are restored, all we can do is report them all
       reportAll = true;
+      return;
     }
 
     if ("reset" == propertyName) {
@@ -73,8 +74,9 @@ class Sticks extends Shape {
       bsOrderSet = null;
       bsSizeSet = null;
       bsColixSet = null;
+      return;
     }
-    
+
     if ("bondOrder" == propertyName) {
       if (bsOrderSet == null)
         bsOrderSet = new BitSet();
@@ -85,11 +87,11 @@ class Sticks extends Shape {
         bsOrderSet.set(iter.nextIndex());
         iter.next().setOrder(order);
       }
-      return;      
+      return;
     }
-    if (bsColixSet == null)
-      bsColixSet = new BitSet();
     if ("color" == propertyName) {
+      if (bsColixSet == null)
+        bsColixSet = new BitSet();
       short colix = Graphics3D.getColix(value);
       int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
       if (pid == JmolConstants.PALETTE_TYPE) {

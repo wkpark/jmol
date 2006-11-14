@@ -130,12 +130,11 @@ public class Viewer extends JmolViewer {
     jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
     stateManager = new StateManager(this);
-    resetAllParameters();
-
     g3d = new Graphics3D(display);
+    colorManager = new ColorManager(this, g3d);
+    resetAllParameters();
     statusManager = new StatusManager(this);
     scriptManager = new ScriptManager(this);
-    colorManager = new ColorManager(this, g3d);
     transformManager = new TransformManager(this);
     selectionManager = new SelectionManager(this);
     if (jvm14orGreater)
@@ -280,8 +279,13 @@ public class Viewer extends JmolViewer {
   // delegated to StateManager
   // ///////////////////////////////////////////////////////////////
 
+  void initialize() {
+    resetAllParameters();
+  }
+  
   void resetAllParameters() {
     global = stateManager.getGlobalSettings();
+    colorManager.resetElementColors();
   }
   
   String listSavedStates() {
@@ -754,6 +758,9 @@ public class Viewer extends JmolViewer {
 
   void setElementArgb(int elementNumber, int argb) {
     //Eval
+    global.setParameterValue("_color "
+        + JmolConstants.elementNameFromNumber(elementNumber), StateManager
+        .encodeColor(argb));
     colorManager.setElementArgb(elementNumber, argb);
   }
 
@@ -1285,7 +1292,6 @@ public class Viewer extends JmolViewer {
     clearAllMeasurements();
     statusManager.clear();
     stateManager.clear(global);
-    global.clearPropertyFlags();
     setRefreshing(true);
     refresh(0, "Viewer:clear()");
     System.gc();
@@ -1745,6 +1751,7 @@ public class Viewer extends JmolViewer {
     s.append(transformManager.getState());
     //  display and selections
     s.append(selectionManager.getState());
+    s.append("set refreshing true;\n");
     return s.toString();
   }
 
@@ -2209,7 +2216,7 @@ public class Viewer extends JmolViewer {
   private Image getImage(boolean isDouble, boolean antialias) {
     Matrix3f matrixRotate = transformManager.getStereoRotationMatrix(isDouble);
     g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
-        matrixRotate, antialias);
+        matrixRotate, antialias); 
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
         repaintManager.displayModelIndex);
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
@@ -4043,8 +4050,8 @@ public class Viewer extends JmolViewer {
   boolean isTainted = true;
 
   void setTainted(boolean TF) {
-    isTainted = TF;
-    axesAreTainted = TF;
+    isTainted = TF && refreshing;
+    axesAreTainted = TF && refreshing;
   }
 
   void checkObjectClicked(int x, int y, int modifiers) {

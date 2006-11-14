@@ -93,7 +93,7 @@ class Eval { //implements Runnable {
   Thread currentThread = null;
   
   public void runEval() { // only one reference now -- in Viewer
-    refresh();
+    //refresh();
     viewer.pushHoldRepaint();
     interruptExecution = Boolean.FALSE;
     executionPaused = Boolean.FALSE;
@@ -488,6 +488,9 @@ class Eval { //implements Runnable {
         break;
       case Token.refresh:
         refresh();
+        break;
+      case Token.initialize:
+        initialize();
         break;
       case Token.reset:
         reset();
@@ -2071,7 +2074,7 @@ class Eval { //implements Runnable {
     }
     viewer.setFloatProperty("stereoDegrees", degrees);
     if (colorpt > 0) {
-      viewer.setStereoMode(colors, "[x"+Graphics3D.getHexColorFromRGB(colors[0]) + "] [x"+Graphics3D.getHexColorFromRGB(colors[1]) + "]");
+      viewer.setStereoMode(colors, StateManager.encodeColor(colors[0]) + " " + StateManager.encodeColor(colors[1]));
     } else {
       viewer.setStereoMode(stereoMode, (String)statement[1].value);
     }
@@ -2267,6 +2270,7 @@ class Eval { //implements Runnable {
       return;
     case Token.identifier:
     case Token.hydrogen:
+      //color element
       argb = getArgbOrPaletteParam(2);
       String str = (String) statement[1].value;
       for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
@@ -2769,6 +2773,11 @@ class Eval { //implements Runnable {
     viewer.reset();
   }
 
+  void initialize() {
+    viewer.initialize();
+    zap();
+  }
+
   void restrict() throws ScriptException {
     select();
     BitSet bsSelected = viewer.getSelectionSet();
@@ -3100,6 +3109,7 @@ class Eval { //implements Runnable {
 
   void zap() {
     viewer.zap();
+    refresh();
   }
 
   void zoom(boolean isZoomTo) throws ScriptException {
@@ -4058,7 +4068,7 @@ class Eval { //implements Runnable {
     case Token.specular:
     case Token.specpower:
       String str = (String) statement[1].value;
-      if (str.indexOf("label") == 0) {
+      if (str.toLowerCase().indexOf("label") == 0) {
         setLabel(str.substring(5));
         break;
       }
@@ -4328,7 +4338,7 @@ class Eval { //implements Runnable {
 
   void setLabel(String str) throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
-    if (str.equalsIgnoreCase("Offset")) {
+    if (str.equals("offset")) {
       checkLength4();
       int xOffset = intParameter(2);
       int yOffset = intParameter(3);
@@ -4339,7 +4349,7 @@ class Eval { //implements Runnable {
           new Integer(offset));
       return;
     }
-    if (str.equalsIgnoreCase("Alignment")) {
+    if (str.equals("alignment")) {
       checkLength3();
       switch (statement[2].tok) {
       case Token.left:
@@ -4351,7 +4361,7 @@ class Eval { //implements Runnable {
       }
       invalidArgument();
     }
-    if (str.equalsIgnoreCase("Pointer")) {
+    if (str.equals("pointer")) {
       checkLength3();
       int flags = Text.POINTER_NONE;
       switch (statement[2].tok) {
@@ -4362,6 +4372,7 @@ class Eval { //implements Runnable {
         flags |= Text.POINTER_BACKGROUND;
       case Token.on:
         flags |= Text.POINTER_ON;
+        break;
       default:
         invalidArgument();
       }
@@ -4370,17 +4381,17 @@ class Eval { //implements Runnable {
       return;
     }
     checkLength2();
-    if (str.equalsIgnoreCase("Atom")) {
+    if (str.equals("atom")) {
       viewer.setShapeProperty(JmolConstants.SHAPE_LABELS, "front",
           Boolean.FALSE);
       return;
     }
-    if (str.equalsIgnoreCase("Front")) {
+    if (str.equals("front")) {
       viewer
           .setShapeProperty(JmolConstants.SHAPE_LABELS, "front", Boolean.TRUE);
       return;
     }
-    if (str.equalsIgnoreCase("Group")) {
+    if (str.equals("group")) {
       viewer
           .setShapeProperty(JmolConstants.SHAPE_LABELS, "group", Boolean.TRUE);
       return;
@@ -4642,7 +4653,10 @@ class Eval { //implements Runnable {
         viewer.restoreBonds(saveName);
         return;
       case Token.state:
-        viewer.restoreState(saveName);
+        String state = viewer.getSavedState(saveName);
+        if (state == null)
+          invalidArgument();
+        runScript(state);
         return;
       case Token.identifier:
         if (((String)statement[1].value).equalsIgnoreCase("selection")) {

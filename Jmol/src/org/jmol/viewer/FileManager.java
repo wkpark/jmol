@@ -98,7 +98,7 @@ class FileManager {
   }
 
   void setLoadScript(String script) {
-    loadScript = viewer.getLoadState() + script;
+    loadScript = viewer.getLoadState() + script + "\nset refreshing false;\n";
   }
 
   void openFile(String name, int[] params, String loadScript) {

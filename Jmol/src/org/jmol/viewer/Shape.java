@@ -58,7 +58,7 @@ abstract class Shape {
   
   void setProperty(String propertyName, Object value,
                           BitSet bsSelected) {
-    Logger.warn("unassigned property:" + propertyName + ":" + value);
+    Logger.warn("unassigned shape setProperty:" + propertyName + ":" + value);
   }
 
   Object getProperty(String property, int index) {

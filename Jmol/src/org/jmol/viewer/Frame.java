@@ -1481,6 +1481,8 @@ public final class Frame {
   }
   
   private int autoBond(BitSet bsA, BitSet bsB) {
+    if (atomCount == 0)
+      return 0;
     // null values for bitsets means "all"
     if (maxBondingRadius == Float.MIN_VALUE)
       findMaxRadii();
@@ -1543,7 +1545,6 @@ public final class Frame {
       }
       iter.release();
     }
-
     if (showRebondTimes) {
       long timeEnd = System.currentTimeMillis();
       Logger.debug("Time to autoBond=" + (timeEnd - timeBegin));

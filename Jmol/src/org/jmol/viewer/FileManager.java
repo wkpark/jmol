@@ -168,7 +168,15 @@ class FileManager {
   }
 
   void openStringInline(String[] arrayModels, int[] params) {
-    loadScript = ""; // for now
+    loadScript = "set dataSeparator \"~~~next file~~~\";\ndata \"model inline\"";
+    for (int i = 0; i < arrayModels.length; i++) {
+      if (i > 0)
+        loadScript += "~~~next file~~~";
+      loadScript += arrayModels[i];
+    }
+    loadScript += "end \"model inline\";";
+    setLoadScript(loadScript);
+
     String sp = "";
     if (params != null)
       for (int i = 0; i < params.length; i++)

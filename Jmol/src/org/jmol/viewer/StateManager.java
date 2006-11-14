@@ -534,6 +534,10 @@ class StateManager {
       return (unnecessaryProperties.indexOf(";" + name + ";") < 0);
     }
     
+    Object getParameter(String name) {
+      return htParameterValues.get(name);
+    }
+    
     String getState() {
       StringBuffer commands = new StringBuffer("# settings:\nset refreshing false;\n");
       Enumeration e;

@@ -130,7 +130,7 @@ public class CoreType {
   static public final CoreType GBGROMACS   = new CoreType("GBGromacs", "GB"); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GROGPU      = new CoreType("GroGPU", "GG");  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GROMACS     = new CoreType("Gromacs", "G");  //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType GROMACS_SMP = new CoreType("Gromacs-SMP", "GS");  //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GROMACS_SMP = new CoreType("Gro-SMP", "GS");  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType QMD         = new CoreType("QMD", "Q"); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType TINKER      = new CoreType("Tinker", "T");   //$NON-NLS-1$//$NON-NLS-2$
 

@@ -134,12 +134,13 @@ abstract class Shape {
     if (pid < 0 && colix == 0)
       return "";
     String s = "";
-    if (Graphics3D.isColixTranslucent(colix))
-      s += "translucent ";
-    if (pid >= 0)
+    if (pid >= 0) {
+      if (Graphics3D.isColixTranslucent(colix))
+        s += "translucent ";
       s += JmolConstants.getPaletteName(pid);
-    else
+    } else {
       s += encodeColor(colix);
+    }
     return s;
   }
   

@@ -3335,7 +3335,7 @@
     credit="166" frames="0" code="A0" contact="kasson"/>
   <fah_proj number="1486" name="p1486_hafp_fus" public="y" file="y"
     server="171.65.103.68" atoms="33209" preferred="50" deadline="200"
-    credit="300" frames="0" code="A0" contact="kasson"/>
+    credit="300" frames="100" code="A0" contact="kasson"/>
   <fah_proj number="1487" name="p1487_DPPC_DOPC_CHOL" public="y" file="y"
     server="171.65.103.68" atoms="87920" preferred="47" deadline="150"
     credit="1161" frames="100" code="A0" contact="kasson"/>
@@ -3344,7 +3344,7 @@
     credit="459" frames="0" code="A0" contact="kasson"/>
   <fah_proj number="1489" name="p1489_Protein_POPC" public="y" file="y"
     server="171.65.103.68" atoms="18462" preferred="32" deadline="47"
-    credit="165" frames="0" code="A0" contact="kasson"/>
+    credit="165" frames="100" code="A0" contact="kasson"/>
   <fah_proj number="1490" name="p1490_Membrane" public="n" file="y"
     server="171.65.103.68" deadline="4"
     credit="12" frames="100" code="A0" contact="kasson"/>
@@ -3353,7 +3353,7 @@
     credit="12" frames="100" code="A0" contact="kasson"/>
   <fah_proj number="1492" name="p1492_membrane_protein" public="y" file="y"
     server="171.65.103.68" atoms="18894" preferred="33" deadline="48"
-    credit="170" frames="0" code="A0" contact="kasson"/>
+    credit="170" frames="100" code="A0" contact="kasson"/>
   <fah_proj number="1493" name="p1493_Protein" public="y" file="y"
     server="171.65.103.68" atoms="23442" preferred="33" deadline="59"
     credit="210" frames="0" code="A0" contact="kasson"/>
@@ -4556,13 +4556,13 @@
     credit="5" frames="100" code="A0" contact="kasson"/>
   <fah_proj number="2603" name="p2603_Protein in POPC" public="y" file="y"
     server="171.64.65.56" atoms="77373" preferred="4" deadline="12"
-    credit="5" frames="0" code="GS" contact="kasson"/>
+    credit="5" frames="100" code="GS" contact="kasson"/>
   <fah_proj number="2604" name="p2604_Protein in POPC" public="y" file="y"
     server="171.64.65.56" atoms="77373" preferred="4" deadline="8"
-    credit="1210" frames="0" code="GS" contact="kasson"/>
+    credit="1210" frames="100" code="GS" contact="kasson"/>
   <fah_proj number="2605" name="p2605_Protein in POPC" public="y" file="y"
     server="171.64.65.56" atoms="77373" preferred="3" deadline="4"
-    credit="1760" frames="0" code="GS" contact="kasson"/>
+    credit="1760" frames="100" code="GS" contact="kasson"/>
 
   <!-- Projects 2700 to 2799 -->
   <fah_proj number="2711" name="p2711_GPUlambda" public="y"
@@ -4627,16 +4627,16 @@
     credit="1" frames="100" code="A0" contact="densign"/>
   <fah_proj number="3006" name="p3006_SMP-msv-99p" public="y"
     server="171.64.65.56" atoms="10066" preferred="4" deadline="12"
-    credit="587" frames="" code="GS" contact="densign"/>
+    credit="587" frames="100" code="GS" contact="densign"/>
   <fah_proj number="3007" name="p3007_SMP-msv-03" public="y" file="y"
     server="171.64.65.56" atoms="10066" preferred="4" deadline="12"
     credit="587" frames="100" code="GS" contact="densign"/>
   <fah_proj number="3008" name="p3008_SMP-nsv-99p" public="y"
     server="171.64.65.56" atoms="10066" preferred="4" deadline="12"
-    credit="587" frames="" code="GS" contact="densign"/>
+    credit="587" frames="100" code="GS" contact="densign"/>
   <fah_proj number="3009" name="p3009_SMP-nsv-03" public="y" file="y"
     server="171.64.65.56" atoms="10066" preferred="4" deadline="12"
-    credit="587" frames="" code="GS" contact="densign"/>
+    credit="587" frames="100" code="GS" contact="densign"/>
 
   <!-- Projects 3100 to 3199 -->
 

@@ -78,7 +78,7 @@ class MolecularOrbital extends Isosurface {
       if (!htModels.containsKey(strID))
         htModels.put(strID, new Hashtable());
       thisModel = (Hashtable) htModels.get(strID);
-      moNumber = (thisModel == null ? 0 : ((Integer) thisModel.get("moNumber"))
+      moNumber = (thisModel == null || !thisModel.containsKey("moNumber")? 0 : ((Integer) thisModel.get("moNumber"))
           .intValue());
       return;
     }
@@ -160,7 +160,7 @@ class MolecularOrbital extends Isosurface {
       if (nOrb == 0)
         return "";
       int thisMO = param;
-      int currentMO = qm_moNumber;
+      int currentMO = moNumber;
       if (currentMO == 0)
         thisMO = 0;
       int nTotal = (thisMO > 0 ? 1 : nOrb);

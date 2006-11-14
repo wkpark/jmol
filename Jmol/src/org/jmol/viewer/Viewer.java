@@ -1112,8 +1112,17 @@ public class Viewer extends JmolViewer {
     //loadInline
     if (strModel == null)
       return;
-    int[] A = global.getDefaultLatticeArray();
     int i;
+    int[] A = global.getDefaultLatticeArray();
+    Logger.debug(strModel);
+    if (newLine != 0 && newLine != '\n') {
+      int len = strModel.length();
+      for (i = 0; i < len && strModel.charAt(i) == ' '; ++i) {
+      }
+      if (i < len && strModel.charAt(i) == newLine)
+        strModel = strModel.substring(i + 1);
+      strModel = simpleReplace(strModel, ""+newLine, "\n");
+    }
     String datasep = (String) global.getParameter("dataseparator");
     if (datasep != null && (i = strModel.indexOf(datasep)) >= 0) {
       int n = 2;
@@ -1130,15 +1139,6 @@ public class Viewer extends JmolViewer {
       }
       openStringInline(strModels, A);
       return;
-    }
-    Logger.debug(strModel);
-    if (newLine != 0) {
-      int len = strModel.length();
-      for (i = 0; i < len && strModel.charAt(i) == ' '; ++i) {
-      }
-      if (i < len && strModel.charAt(i) == newLine)
-        strModel = strModel.substring(i + 1);
-      strModel = strModel.replace(newLine, '\n');
     }
     openStringInline(strModel, A);
   }

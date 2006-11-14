@@ -535,7 +535,7 @@ class StateManager {
     }
     
     String getState() {
-      StringBuffer commands = new StringBuffer("# settings:\nset refreshing false;");
+      StringBuffer commands = new StringBuffer("# settings:\nset refreshing false;\n");
       Enumeration e;
       //two rounds here because default settings 
       //must be declared first

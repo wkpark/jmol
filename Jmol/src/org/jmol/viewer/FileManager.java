@@ -146,7 +146,7 @@ class FileManager {
   }
 
   void openStringInline(String strModel, int[] params) {
-    loadScript = "data \"model inline\"" + strModel + "\nend \"model inline\";";
+    loadScript = "data \"model inline\"" + strModel + "end \"model inline\";";
     setLoadScript(loadScript);
     String sp = "";
     if (params != null)

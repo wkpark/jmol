@@ -4465,7 +4465,7 @@ class Eval { //implements Runnable {
 
   void setSpin() throws ScriptException {
     checkLength4();
-    int value = intParameter(3);
+    int value = (int) floatParameter(3);
     if (statement[2].tok == Token.identifier) {
       String str = (String) statement[2].value;
       if (str.equalsIgnoreCase("x")) {

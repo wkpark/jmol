@@ -68,12 +68,16 @@ class TransformManager {
     StringBuffer commands = new StringBuffer("# orientation/center/spin state:\nset refreshing false;\n");
     if (!isWindowCentered())
       commands.append("set windowCentered false;\n");
+    commands.append("center " + StateManager.encloseCoord(fixedRotationCenter) + ";\n");
     commands.append(getMoveToText(0));
-    commands.append("center " + StateManager.encloseCoord(fixedRotationCenter)
-        + ";\n");
     commands.append("slab " + slabPercentSetting + ";depth "
         + depthPercentSetting + (slabEnabled ? ";slab on" : "") + ";\n");
+    commands.append("set spin X " + (int)spinX);
+    commands.append(";set spin Y " + (int)spinY);
+    commands.append(";set spin Z " + (int)spinZ);
+    commands.append(";set spin fps " + (int)spinFps + "\n");
     if (spinOn) {
+      commands.append("set refreshing true;refresh;\n");
       if (isSpinInternal) {
         Point3f pt = new Point3f(internalRotationCenter);
         pt.add(rotationAxis);
@@ -81,13 +85,9 @@ class TransformManager {
             + StateManager.encloseCoord(internalRotationCenter)
             + " " + StateManager.encloseCoord(pt));
       } else if (isSpinFixed) {
-        commands.append("spin " + rotationRate + " " + StateManager.encloseCoord(rotationAxis));
+        commands.append("spin axisangle " + StateManager.encloseCoord(rotationAxis) + " " + rotationRate);
       } else {
-        commands.append("set spin X " + spinX);
-        commands.append(";set spin Y " + spinY);
-        commands.append(";set spin Z " + spinZ);
-        commands.append(";set spin fps " + spinFps);
-        commands.append(";spin on");
+        commands.append("spin on");
       }
       commands.append(";\n");
     }
@@ -1478,6 +1478,7 @@ class TransformManager {
     }
     public void run() {
       float myFps = spinFps;
+      viewer.setBooleanProperty("isSpinning", true);
       int i = 0;
       long timeBegin = System.currentTimeMillis();
       while (!isInterrupted()) {
@@ -1530,6 +1531,7 @@ class TransformManager {
           }
         }
       }
+      viewer.setBooleanProperty("isSpinning", false);
     }
   }
 

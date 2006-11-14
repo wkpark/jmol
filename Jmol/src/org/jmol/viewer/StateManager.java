@@ -325,19 +325,19 @@ class StateManager {
     String defaultDirectory    = null;
 
     String getLoadState() {
-      String str = "";
+      StringBuffer str = new StringBuffer();
       if (defaultDirectory != null)
-        str += "set defaultDirectory " + escape(defaultDirectory) + ";\n";
-      str += "set autoBond " + autoBond + ";\n"
-           + "set forceAutoBond " + forceAutoBond + ";\n"
-           + "set zeroBasedXyzRasmol " + zeroBasedXyzRasmol + ";\n"
-           + "set percentVdwAtom " + percentVdwAtom + ";\n"
-           + "set bondRadiusMilliAngstroms " + marBond + ";\n"
-           + "set minBondDistance " + minBondDistance + ";\n"
-           + "set bondTolerance " + bondTolerance + ";\n";
+        appendCmd(str, "set defaultDirectory " + escape(defaultDirectory));
+      appendCmd(str, "set autoBond " + autoBond);
+      appendCmd(str, "set forceAutoBond " + forceAutoBond);
+      appendCmd(str, "set zeroBasedXyzRasmol " + zeroBasedXyzRasmol);
+      appendCmd(str, "set percentVdwAtom " + percentVdwAtom);
+      appendCmd(str, "set bondRadiusMilliAngstroms " + marBond);
+      appendCmd(str, "set minBondDistance " + minBondDistance);
+      appendCmd(str, "set bondTolerance " + bondTolerance);
       if (defaultLoadScript.length() > 0)
-        str += "set defaultLoadScript " + escape(defaultLoadScript) + ";\n";
-      return str;
+        appendCmd(str, "set defaultLoadScript " + escape(defaultLoadScript));
+      return str + "\n";
     }
 
     private final Point3f ptDefaultLattice = new Point3f();
@@ -431,11 +431,13 @@ class StateManager {
     String stereoState = null;
 
     String getWindowState() {
-      String str = "# window state (height=" + viewer.getScreenHeight()
-          + " width=" + viewer.getScreenWidth() + ")\n";
-      str += "initialize;\nset refreshing false;\nbackground " + encodeColor(argbBackground) + ";\n";
+      StringBuffer str = new StringBuffer("# window state (height=" + viewer.getScreenHeight()
+          + " width=" + viewer.getScreenWidth() + ")\n");
+      appendCmd(str, "initialize");
+      appendCmd(str, "set refreshing false");
+      appendCmd(str, "background " + encodeColor(argbBackground));
       if (stereoState != null)
-        str += "stereo " + stereoState + ";\n";
+        appendCmd(str, "stereo " + stereoState);
       return str + "\n";
     }
 
@@ -539,7 +541,8 @@ class StateManager {
     }
     
     String getState() {
-      StringBuffer commands = new StringBuffer("# settings:\nset refreshing false;\n");
+      StringBuffer commands = new StringBuffer("# settings:\n");
+      appendCmd(commands, "set refreshing false");
       Enumeration e;
       //two rounds here because default settings 
       //must be declared first
@@ -549,14 +552,14 @@ class StateManager {
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
         if (key.indexOf("default") >= 0 && key.charAt(0) != '@' && doRegister(key))
-        commands.append("set " + key + " " + htParameterValues.get(key)+ ";\n");
+        appendCmd(commands, "set " + key + " " + htParameterValues.get(key));
       }
       //booleans
       e = htPropertyFlags.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
         if (doRegister(key))
-          commands.append("set " + key + " " + htPropertyFlags.get(key)+ ";\n");
+          appendCmd(commands, "set " + key + " " + htPropertyFlags.get(key));
       }
       //nondefault, nonvariables
       //save as _xxxx if you don't want "set" to be there first
@@ -572,28 +575,27 @@ class StateManager {
             if (value instanceof String)
               value = escape((String) value);
           }
-          commands.append(key + " " + value + ";\n");
+          appendCmd(commands, key + " " + value);
         }
       }
       switch (axesMode) {
       case JmolConstants.AXES_MODE_UNITCELL:
-        commands.append("set axesUnitcell;\n");
+        appendCmd(commands, "set axesUnitcell");
         break;
       case JmolConstants.AXES_MODE_BOUNDBOX:
-        commands.append("set axesWindow;\n");
+        appendCmd(commands, "set axesWindow");
         break;
       default:
-        commands.append("set axesMolecular;\n");
+        appendCmd(commands, "set axesMolecular");
       }
       //variables only:
       e = htParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
         if (key.charAt(0) == '@')
-        commands.append(key + " " + htParameterValues.get(key)+ ";\n");
+        appendCmd(commands, key + " " + htParameterValues.get(key));
       }
-      commands.append("\n");
-      return commands.toString();
+      return commands + "\n";
     }
 
   }
@@ -712,32 +714,29 @@ class StateManager {
     return s.toString();
   }
 
-  static String getCommands(Hashtable ht, StringBuffer s, String setPrev, int nAll, String selectCmd) {
+  static String getCommands(Hashtable ht, StringBuffer s, String setPrev,
+                            int nAll, String selectCmd) {
     if (ht == null)
       return "";
-    String strAll = "({0:"+ (nAll - 1)+ "})";
-   Enumeration e = ht.keys();
+    String strAll = "({0:" + (nAll - 1) + "})";
+    Enumeration e = ht.keys();
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
       String set = encodeBitset((BitSet) ht.get(key));
-      if (set.length() == 4)
+      if (set.length() < 5) // nothing selected
         continue;
-      if (!set.equals(setPrev)) {
-        if (set.equals(strAll)) {
-          s.append(selectCmd);
-          s.append(" *;");
-        } else {
-        s.append(selectCmd);
-        s.append(" ");
-        s.append(set);
-        s.append(";\n");
-        }
-      }
+      if (!set.equals(setPrev))
+        appendCmd(s, selectCmd + " " + (set.equals(strAll) ? "*" : set));
       setPrev = set;
       if (key.indexOf("-") < 0) // - for key means none required
-      s.append(key + ";");
-      s.append("\n");
+        appendCmd(s, key);
     }
     return setPrev;
   } 
+
+  static void appendCmd(StringBuffer s, String cmd) {
+    if (cmd.length() == 0)
+      return;
+    s.append(cmd + ";\n");
+  }
 }

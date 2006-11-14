@@ -69,13 +69,13 @@ class TransformManager {
     if (!isWindowCentered())
       commands.append("set windowCentered false;\n");
     commands.append("center " + StateManager.encloseCoord(fixedRotationCenter) + ";\n");
-    commands.append(getMoveToText(0));
+    commands.append(getMoveToText(0) + ";\n");
     commands.append("slab " + slabPercentSetting + ";depth "
         + depthPercentSetting + (slabEnabled ? ";slab on" : "") + ";\n");
     commands.append("set spin X " + (int)spinX);
     commands.append(";set spin Y " + (int)spinY);
     commands.append(";set spin Z " + (int)spinZ);
-    commands.append(";set spin fps " + (int)spinFps + "\n");
+    commands.append(";set spin fps " + (int)spinFps + ";\n");
     if (spinOn) {
       commands.append("set refreshing true;refresh;\n");
       if (isSpinInternal) {

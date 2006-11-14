@@ -518,11 +518,11 @@ class Dipoles extends SelectionIndependentShape {
     for (int i = 0; i < dipoleCount; i++)
       if (dipoles[i].isValid) {
         if (modelCount > 1 && dipoles[i].modelIndex != thisModel)
-          s.append("frame "
-              + viewer.getModelName(thisModel = dipoles[i].modelIndex) + ";\n");
+          appendCmd(s, "frame "
+              + viewer.getModelName(thisModel = dipoles[i].modelIndex));
         s.append(dipoles[i].getShapeState());
       }
-    s.append("set dipoleScale " + dipoleVectorScale + ";\n");
+    appendCmd(s, "set dipoleScale " + dipoleVectorScale);
     return s.toString();
   }
 }

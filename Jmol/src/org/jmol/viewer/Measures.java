@@ -399,7 +399,7 @@ class Measures extends Shape {
       commands.append(getState(i));
     if (!showMeasurementNumbers)
       commands.append("set measures off; # numbers off\n");
-    commands.append("set measures " + viewer.getMeasureDistanceUnits() + ";\n");
+    appendCmd(commands, "set measures " + viewer.getMeasureDistanceUnits());
     int n = 0;
     Hashtable temp = new Hashtable();
     BitSet bs = new BitSet(measurementCount);

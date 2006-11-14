@@ -371,6 +371,20 @@ abstract class MeshCollection extends SelectionIndependentShape {
     return value;
   }
 
+  String getMeshState(Mesh mesh, String type) {
+    StringBuffer s = new StringBuffer();
+    if (mesh == null)
+      return "";
+    if (Graphics3D.isColixTranslucent(mesh.colix))
+      appendCmd(s, type + " off");
+    if (mesh.showPoints)
+      appendCmd(s, type + " dots");
+    if (mesh.drawTriangles)
+      appendCmd(s, type + " mesh");
+    if (!mesh.fillTriangles)
+      appendCmd(s, type + " nofill");
+    return s.toString();
+  }
 }
 
  

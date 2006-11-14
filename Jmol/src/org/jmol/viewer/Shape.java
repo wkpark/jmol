@@ -150,4 +150,11 @@ abstract class Shape {
     return "font " + type + " " + font.fontSize + " "
         + font.fontFace + " " + font.fontStyle + ";\n";
   }
+  
+  static void appendCmd(StringBuffer s, String cmd) {
+    if (cmd.length() == 0)
+      return;
+    s.append(cmd + ";\n");
+  }
+  
 }

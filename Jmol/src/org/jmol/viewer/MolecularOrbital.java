@@ -31,6 +31,7 @@ import java.util.Vector;
 import javax.vecmath.Point4f;
 
 import org.jmol.util.Logger;
+import java.util.Hashtable;
 
 class MolecularOrbital extends Isosurface {
 
@@ -49,14 +50,16 @@ class MolecularOrbital extends Isosurface {
   Float moScale = null;
   Integer moColorPos = null;
   Integer moColorNeg = null;
-  Float moRed = null;
-  Float moBlue = null;
+  boolean moIsPositiveOnly = false;
   String moTitleFormat = null;
   boolean moDebug;
-  boolean moIsPositiveOnly = false;
   int myColorPt;
   String strID;
-
+  int moNumber;
+  Hashtable htModels;
+  Hashtable thisModel;
+  Mesh thisMesh;
+  
   void setProperty(String propertyName, Object value, BitSet bs) {
 
     Logger.debug("MolecularOrbital.setProperty " + propertyName + " " + value);
@@ -67,31 +70,36 @@ class MolecularOrbital extends Isosurface {
     if ("init" == propertyName) {
       myColorPt = 0;
       moDebug = false;
-      strID = (String) value;
+      strID = getId(((Integer)value).intValue());
       // overide bitset selection
       super.setProperty("init", null, null);
+      if (htModels == null)
+        htModels = new Hashtable();
+      if (!htModels.containsKey(strID))
+        htModels.put(strID, new Hashtable());
+      thisModel = (Hashtable)htModels.get(strID);
       return;
     }
 
     if ("cutoff" == propertyName) {
-      moCutoff = (Float) value;
-      moIsPositiveOnly = false;
+      thisModel.put("moCutoff", value);
+      thisModel.put("moIsPositiveOnly", Boolean.FALSE);
       return;
     }
 
     if ("scale" == propertyName) {
-      moScale = (Float) value;  // box only
+      thisModel.put("moScale", moScale);
       return;
     }
 
     if ("cutoffPositive" == propertyName) {
-      moCutoff = (Float) value;
-      moIsPositiveOnly = true;
+      thisModel.put("moCutoff", value);
+      thisModel.put("moIsPositiveOnly", Boolean.TRUE);
       return;
     }
 
     if ("resolution" == propertyName) {
-      moResolution = (Float) value;
+      thisModel.put("moResolution", value);
       return;
     }
     
@@ -104,25 +112,38 @@ class MolecularOrbital extends Isosurface {
       moColorPos = (Integer) value;
       if (myColorPt++ == 0)
         moColorNeg = moColorPos;
+      thisModel.put("moColorNeg", moColorNeg);
+      thisModel.put("moColorPos", moColorPos);
       return;
     }
 
     if ("plane" == propertyName) {
-      moPlane = (Point4f) value;
+      thisModel.put("moPlane", value);
       return;
     }
 
     if ("molecularOrbital" == propertyName) {
-      setOrbital(((Integer) value).intValue());
+      moNumber = ((Integer) value).intValue();
+      thisModel.put("moNumber", value);
+      setOrbital(moNumber);
       return;
     }
 
     if ("translucency" == propertyName) {
-      moTranslucency = (String) value;
+      thisModel.put("moTranslucency", value);
+      //pass through
+    }
+    if ("delete" == propertyName) {
+      htModels.remove(strID);
+      //pass through
     }
 
     super.setProperty(propertyName, value, bs);
 
+  }
+
+  String getId(int modelIndex) {
+    return "mo_model" + viewer.getModelNumber(modelIndex);
   }
   
   Object getProperty(String propertyName, int param) {
@@ -155,10 +176,31 @@ class MolecularOrbital extends Isosurface {
     return null;
   }
   
+  boolean getSettings(String strID) {
+    thisModel = (Hashtable)htModels.get(strID);
+    if (thisModel == null)
+      return false;
+    moTranslucency = (String)thisModel.get("moTranslucency");
+    moPlane = (Point4f)thisModel.get("moPlane");
+    moCutoff = (Float )thisModel.get("moCutoff");
+    if (moCutoff == null)
+      moCutoff = new Float(Isosurface.defaultQMOrbitalCutoff);
+    moResolution = (Float)thisModel.get("moResolution");
+    moScale = (Float)thisModel.get("moScale");
+    moColorPos = (Integer)thisModel.get("moColorPos");
+    moColorNeg = (Integer)thisModel.get("moColorNeg");
+    moNumber = ((Integer)thisModel.get("moNumber")).intValue();
+    Object b = thisModel.get("moIsPositiveOnly");
+    moIsPositiveOnly = (b != null  && ((Boolean)(b)).booleanValue());
+    thisMesh = (Mesh)thisModel.get("mesh");
+    return true;
+  }
+ 
   void setOrbital(int moNumber) {
     super.setProperty("reset", strID, null);
     if (moDebug)
       super.setProperty("debug", Boolean.TRUE, null);
+    getSettings(strID);
     if (moScale != null)
       super.setProperty("scale", moScale, null);
     if (moResolution != null)
@@ -182,6 +224,43 @@ class MolecularOrbital extends Isosurface {
     super.setProperty("molecularOrbital", new Integer(moNumber), null);
     if (moTranslucency != null)
       super.setProperty("translucency", moTranslucency, null);
+    thisModel.put("mesh", currentMesh);
     return;
+  }
+ 
+  String getShapeState() {
+    if (htModels == null)
+      return "";
+    StringBuffer s = new StringBuffer();
+    int modelCount = viewer.getModelCount();
+    for (int i = 0; i < modelCount; i++)
+      s.append(getMoState(i));
+    return s.toString();
+  }
+  
+  String getMoState(int modelIndex) {
+    strID = getId(modelIndex);
+    if (!getSettings(strID))
+      return "";
+    StringBuffer s = new StringBuffer();
+    if (viewer.getModelCount() > 1)
+      appendCmd(s, "frame " + viewer.getModelNumber(modelIndex));
+    getSettings(strID);
+    if (moCutoff != null)
+      appendCmd(s, "mo cutoff " + (isPositiveOnly ? "+" : "") + moCutoff);
+    if (moScale != null)
+      appendCmd(s, "mo scale " + moScale);
+    if (moResolution != null)
+      appendCmd(s, "mo resolution " + moResolution);
+    if (moPlane != null)
+      appendCmd(s, "mo plane {" + moPlane.x + " " + moPlane.y + " " + moPlane.z + " " + moPlane.w + "}");
+    if (moTitleFormat != null)
+      appendCmd(s, "mo titleFormat " + StateManager.escape(moTitleFormat));
+    if (moColorNeg != null)
+      appendCmd(s, "mo color " + StateManager.encodeColor(moColorNeg.intValue())
+          + (moColorNeg == moColorPos ? "" : StateManager.encodeColor(moColorNeg.intValue())));
+    appendCmd(s, "mo " + moNumber);
+    appendCmd(s, super.getMeshState(currentMesh, "mo"));
+    return s.toString();
   }
 }

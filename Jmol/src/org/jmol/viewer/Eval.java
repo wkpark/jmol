@@ -5314,8 +5314,11 @@ class Eval { //implements Runnable {
   int lastMoNumber = 0;
 
   void mo() throws ScriptException {
+    int modelIndex = viewer.getDisplayModelIndex();
+    if (modelIndex < 0)
+      evalError(GT._("MO isosurfaces require that only one model be displayed"));
     viewer.loadShape(JmolConstants.SHAPE_MO);
-    viewer.setShapeProperty(JmolConstants.SHAPE_MO, "init", "mo_model" + (viewer.getDisplayModelIndex() + 1));
+    viewer.setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(modelIndex));
     Integer index = null;
     String title = null;
     try {

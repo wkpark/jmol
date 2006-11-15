@@ -50,7 +50,6 @@ class Draw extends MeshCollection {
   boolean[] useVertices = new boolean[MAX_POINTS];
   BitSet[] ptBitSets = new BitSet[MAX_POINTS];
   BitSet bsAllAtoms = new BitSet();
-  int nUnnamed;
   Vector3f offset = new Vector3f();
   Point3f xyz = new Point3f();
   //int ipt;
@@ -63,7 +62,6 @@ class Draw extends MeshCollection {
   boolean isCurve;
   boolean isArrow;
   boolean isCircle;
-  boolean isFixed;
   boolean isVisible;
   boolean isPerpendicular;
   boolean isVertices;
@@ -237,7 +235,6 @@ class Draw extends MeshCollection {
     if (nPoints == 0)
       return false;
     int nPoly = 0;
-    int modelCount = viewer.getModelCount();
     if (isFixed || isArrow || isCurve || modelCount == 1) {
       // make just ONE copy 
       // arrows and curves simply can't be handled as
@@ -268,7 +265,7 @@ class Draw extends MeshCollection {
       currentMesh.modelFlags = new int[modelCount];
       currentMesh.drawTypes = new int[modelCount];
       currentMesh.drawVertexCounts = new int[modelCount];
-      
+
       for (int iModel = 0; iModel < modelCount; iModel++) {
         if (bsAllModels.get(iModel)) {
           addModelPoints(iModel);
@@ -287,7 +284,7 @@ class Draw extends MeshCollection {
     }
     currentMesh.setCenter(-1);
     if (currentMesh.thisID == null) {
-      currentMesh.thisID = currentMesh.getDrawType()+(++nUnnamed);
+      currentMesh.thisID = currentMesh.getDrawType() + (++nUnnamed);
     }
     return true;
   }
@@ -564,7 +561,6 @@ class Draw extends MeshCollection {
      * that this is NOT done with atoms and bonds, because they have mads. When
      * you say "frame 0" it is just turning on all the mads.
      */
-    int modelCount = viewer.getModelCount();
     for (int i = 0; i < meshCount; i++) {
       Mesh m = meshes[i];
       m.visibilityFlags = (m.isValid && m.visible ? myVisibilityFlag : 0);
@@ -659,7 +655,6 @@ class Draw extends MeshCollection {
   }
 
   boolean findPickedObject(int x, int y, boolean isPicking) {
-    int modelCount = viewer.getModelCount();
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
     pickedModel = 0;
     pickedVertex = 0;
@@ -724,7 +719,6 @@ class Draw extends MeshCollection {
     int modelIndex = viewer.getDisplayModelIndex();
     if (modelIndex < 0)
       return str.toString();
-    int modelCount = viewer.getModelCount();
     int mCount = (mesh.modelFlags == null ? 1 : modelCount);
     for (int iModel = 0; iModel < mCount; iModel++) {
       if (mesh.modelFlags != null && mesh.modelFlags[iModel] == 0)
@@ -750,7 +744,6 @@ class Draw extends MeshCollection {
   
   String getDrawCommand(Mesh mesh, int iModel) {
     StringBuffer str = new StringBuffer();
-    int modelCount = viewer.getModelCount();
     if (iModel < 0) {
       for (int i = 0; i < modelCount; i++)
         str.append(getDrawCommand(mesh, i));
@@ -801,7 +794,6 @@ class Draw extends MeshCollection {
       info.put("drawType", mesh.getDrawType());
       info.put("scale", new Float(mesh.scale));
       if (mesh.drawType == Mesh.DRAW_MULTIPLE) {
-        int modelCount = viewer.getModelCount();
         Vector m = new Vector();
         for (int k = 0; k < modelCount; k++) {
           if (mesh.ptCenters[k] == null)

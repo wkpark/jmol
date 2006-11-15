@@ -38,15 +38,9 @@ class PolyhedraRenderer extends ShapeRenderer {
   }
 
   void render1(Polyhedra.Polyhedron p) {
-    if ((p.visibilityFlags & myVisibilityFlag) == 0
-        || frame.bsHidden.get(p.centralAtom.atomIndex))
+    if (p.visibilityFlags == 0)
       return;
 
-    /*Logger.debug("\npolynomialrenderer" + p.planeCount+" "+p.centralAtom.getIdentity());
-     for (int i = 0; i < p.vertices.length; i++) {
-     Logger.debug("atom "+p.vertices[i].getIdentity());
-     }
-     */
     short colix = Graphics3D.inheritColix(p.myColix, p.centralAtom.colixAtom);
     Atom[] vertices = p.vertices;
     byte[] planes;
@@ -89,11 +83,6 @@ class PolyhedraRenderer extends ShapeRenderer {
 
   void fillFace(short colix, short normix,
                   Atom atomA, Atom atomB, Atom atomC) {
-    /*
-     * Logger.debug("fillFace "+atomA.screenX+" "+ atomA.screenY+" "+ atomA.screenZ+" "+
-        atomB.screenX+" "+ atomB.screenY+" "+ atomB.screenZ+" "+
-        atomC.screenX+" "+ atomC.screenY+" "+ atomC.screenZ);
-    */
     g3d.fillTriangle(colix, normix,
                      atomA.screenX, atomA.screenY, atomA.screenZ,
                      atomB.screenX, atomB.screenY, atomB.screenZ,

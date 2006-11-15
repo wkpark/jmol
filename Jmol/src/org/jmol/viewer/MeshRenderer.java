@@ -43,7 +43,7 @@ abstract class MeshRenderer extends ShapeRenderer {
   Vector3f[] transformedVectors;
 
   boolean render1(Mesh mesh) {
-    if (mesh.visibilityFlags == 0 || !mesh.isValid)
+    if (mesh.visibilityFlags == 0)
       return false;
     int vertexCount = mesh.vertexCount;
     if (vertexCount == 0)

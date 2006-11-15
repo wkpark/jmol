@@ -234,7 +234,6 @@ class MolecularOrbital extends Isosurface {
     if (htModels == null)
       return "";
     StringBuffer s = new StringBuffer();
-    int modelCount = viewer.getModelCount();
     for (int i = 0; i < modelCount; i++)
       s.append(getMoState(i));
     return s.toString();
@@ -245,7 +244,7 @@ class MolecularOrbital extends Isosurface {
     if (!getSettings(strID))
       return "";
     StringBuffer s = new StringBuffer();
-    if (viewer.getModelCount() > 1)
+    if (modelCount > 1)
       appendCmd(s, "frame " + viewer.getModelNumber(modelIndex));
     getSettings(strID);
     if (moCutoff != null)

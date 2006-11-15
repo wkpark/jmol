@@ -122,7 +122,6 @@ class Isosurface extends MeshCollection {
   boolean logCompression = false;
   boolean logCube = false;
   final static boolean colorByContourOnly = false;
-  int nUnnamed;
   int state;
   final static int STATE_INITIALIZED = 1;
   final static int STATE_DATA_READ = 2;
@@ -151,7 +150,6 @@ class Isosurface extends MeshCollection {
       .getArgbFromString("orange");
   final static float defaultSolventRadius = 1.2f;
 
-  String script;
   String[] title = null;
   String colorScheme;
   short defaultColix;
@@ -279,13 +277,13 @@ class Isosurface extends MeshCollection {
   boolean isCutoffAbsolute;
   boolean isPositiveOnly;
   boolean isSilent;
-  boolean isFixed;
 
   BufferedReader br;
   Hashtable surfaceInfo;
   BitSet bsSelected;
   BitSet bsIgnore;
   boolean iHaveBitSets;
+  boolean iUseBitSets;
 
   void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -917,6 +915,8 @@ class Isosurface extends MeshCollection {
       return script;
     if (script.charAt(0) == ' ')
       return myType + " " + currentMesh.thisID + script;
+    if (!iUseBitSets)
+      return script;
     return script + "# "
         + (bsSelected == null ? "({null})" : StateManager
             .encodeBitset(bsSelected)) + " "
@@ -964,6 +964,7 @@ class Isosurface extends MeshCollection {
     isBicolorMap = isCutoffAbsolute = isPositiveOnly = false;
     precalculateVoxelData = false;
     bsIgnore = null;
+    iUseBitSets = false;
     solventExtendedAtomRadius = 0;
     solventAtomRadiusFactor = 1;
     solventAtomRadiusAbsolute = 0;
@@ -4213,6 +4214,7 @@ class Isosurface extends MeshCollection {
     int iAtom = 0;
     int nSelected = 0;
     int nAtoms = viewer.getAtomCount();
+    iUseBitSets = true;
     for (int i = 0; i < nAtoms; i++)
       if (atoms[i].modelIndex == modelIndex) {
         ++iAtom;
@@ -4331,6 +4333,7 @@ class Isosurface extends MeshCollection {
     int modelIndex = viewer.getDisplayModelIndex();
     int iAtom = 0;
     int nSelected = 0;
+    iUseBitSets = true;
     int nAtoms = viewer.getAtomCount();
     for (int i = 0; i < nAtoms; i++)
       if (atoms[i].modelIndex == modelIndex) {
@@ -4460,6 +4463,7 @@ class Isosurface extends MeshCollection {
     int iAtom = 0;
     int nAtoms = viewer.getAtomCount();
     int nSelected = 0;
+    iUseBitSets = true;
     if (bsIgnore == null) {
       bsIgnore = new BitSet();
     }
@@ -5038,46 +5042,12 @@ class Isosurface extends MeshCollection {
     setProperty("lobe", lcaoDir, null);
   }
 
-  ////  visibility methods
-
   void setModelIndex() {
-    if (currentMesh == null)
-      return;
-    currentMesh.visible = true;
+    script = fixScript();
+    setModelIndex(atomIndex);
     currentMesh.ptCenter.set(center);
     currentMesh.title = title;
     currentMesh.jvxlDefinitionLine = jvxlGetDefinitionLine(currentMesh);
-    currentMesh.atomIndex = atomIndex;
-    currentMesh.modelIndex = (atomIndex < 0 ? -1 : viewer
-        .getAtomModelIndex(atomIndex));
-    if (atomIndex >= 0)
-      return;
-    int modelCount = viewer.getModelCount();
-    if (modelCount < 2)
-      isFixed = true;
-    if (isFixed) {
-      currentMesh.modelIndex = -1;
-    } else {
-      currentMesh.modelIndex = viewer.getDisplayModelIndex();
-    }
-    if (currentMesh.thisID == null)
-      currentMesh.thisID = "isosurface"+(++nUnnamed);
-    currentMesh.scriptCommand = fixScript();
-  }
-
-  void setVisibilityFlags(BitSet bs) {
-    /*
-     * set all fixed objects visible; others based on model being displayed
-     * 
-     */
-    for (int i = meshCount; --i >= 0;) {
-      Mesh mesh = meshes[i];
-      mesh.visibilityFlags = (mesh.visible
-          && (mesh.modelIndex < 0 || bs.get(mesh.modelIndex)
-          && (mesh.atomIndex < 0 || !frame.bsHidden.get(mesh.atomIndex))
-          ) ? myVisibilityFlag
-          : 0);
-    }
   }
 
   Vector getShapeDetail() {

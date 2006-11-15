@@ -31,9 +31,6 @@ import javax.vecmath.Point3f;
 class Pmesh extends MeshCollection {
 
   boolean isOnePerLine;
-  boolean isFixed;  
-  String script;
-  int nUnnamed;
 
   void initShape() {
     myType = "pmesh";
@@ -53,7 +50,7 @@ class Pmesh extends MeshCollection {
 
     if ("fixed" == propertyName) {
       isFixed = ((Boolean) value).booleanValue();
-      setModelIndex();
+      setModelIndex(-1);
       return;
     }
 
@@ -72,7 +69,7 @@ class Pmesh extends MeshCollection {
         currentMesh.initialize();
         currentMesh.visible = true;
       }
-      setModelIndex();
+      setModelIndex(-1);
     }
     
     super.setProperty(propertyName, value, bs);
@@ -164,39 +161,5 @@ class Pmesh extends MeshCollection {
       throw new NullPointerException();
     }
     return vertices;
-  }
-  
-  void setModelIndex() {
-    if (currentMesh == null)
-      return;
-    currentMesh.visible = true;
-    int modelCount = viewer.getModelCount();
-    if (modelCount < 2)
-      isFixed = true;
-    int modelIndex = -1;
-    if (!isFixed) {
-      modelIndex = viewer.getDisplayModelIndex();
-      if (modelIndex < -1)
-        modelIndex = -2 - modelIndex;
-    }
-    currentMesh.modelIndex = modelIndex;
-    if (currentMesh.thisID == null)
-      currentMesh.thisID = "pmesh"+(++nUnnamed);
-    currentMesh.scriptCommand = script;
-  }
-
-
-  void setVisibilityFlags(BitSet bs) {
-    /*
-     * set all fixed objects visible; others based on model being displayed
-     * 
-     */
-    for (int i = meshCount; --i >= 0;) {
-      Mesh mesh = meshes[i];
-      mesh.visibilityFlags = (mesh.visible
-          && (mesh.modelIndex < 0 || bs.get(mesh.modelIndex)) ? myVisibilityFlag
-          : 0);
-    }
-  }
-  
+  }  
 }

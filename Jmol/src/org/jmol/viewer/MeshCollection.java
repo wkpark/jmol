@@ -35,11 +35,16 @@ abstract class MeshCollection extends SelectionIndependentShape {
   int meshCount;
   Mesh[] meshes = new Mesh[4];
   Mesh currentMesh;
+  int modelCount;
+  boolean isFixed;  
+  String script;
+  int nUnnamed;
 
   void initShape() {
     mad = 9999;
     myType = "meshCollection";
     colix = Graphics3D.ORANGE;
+    modelCount = viewer.getModelCount();
   }
   
   void setProperty(String propertyName, Object value, BitSet bs) {
@@ -371,10 +376,27 @@ abstract class MeshCollection extends SelectionIndependentShape {
     return value;
   }
 
+  void setModelIndex(int atomIndex) {
+    if (currentMesh == null)
+      return;
+    currentMesh.visible = true; 
+    if (modelCount < 2)
+      isFixed = true;
+    if ((currentMesh.atomIndex = atomIndex) >= 0)
+      currentMesh.modelIndex = (atomIndex < 0 ? -1 : viewer
+          .getAtomModelIndex(atomIndex));
+    else if (isFixed)
+      currentMesh.modelIndex = -1;
+    else
+      currentMesh.modelIndex = viewer.getCurrentModelIndex();
+    if (currentMesh.thisID == null)
+      currentMesh.thisID = myType + (++nUnnamed);
+    currentMesh.scriptCommand = script;
+  }
+
   String getShapeState() {
     StringBuffer s = new StringBuffer();
-    int modelCount = viewer.getModelCount();
-    for (int i = meshCount; --i >= 0;) {
+    for (int i = 0; i < meshCount; i++) {
       String cmd = meshes[i].scriptCommand;
       if (cmd == null)
         continue;
@@ -406,6 +428,21 @@ abstract class MeshCollection extends SelectionIndependentShape {
     if (!mesh.visible)
       appendCmd(s, type + " off");
     return s.toString();
+  }
+  
+  void setVisibilityFlags(BitSet bs) {
+    /*
+     * set all fixed objects visible; others based on model being displayed
+     * 
+     */
+    for (int i = meshCount; --i >= 0;) {
+      Mesh mesh = meshes[i];
+      mesh.visibilityFlags = (mesh.visible && mesh.isValid
+          && (mesh.modelIndex < 0 || bs.get(mesh.modelIndex)
+          && (mesh.atomIndex < 0 || !frame.bsHidden.get(mesh.atomIndex))
+          ) ? myVisibilityFlag
+          : 0);
+    }
   }
 }
 

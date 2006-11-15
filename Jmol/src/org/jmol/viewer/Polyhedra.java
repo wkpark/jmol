@@ -600,8 +600,9 @@ class Polyhedra extends SelectionIndependentShape {
      */
     for (int i = polyhedronCount; --i >= 0;) {
       Polyhedron p = polyhedrons[i];
-      p.visibilityFlags = (p.visible && bs.get(p.centralAtom.modelIndex) ? myVisibilityFlag
-          : 0);
+      p.visibilityFlags = (p.visible && bs.get(p.centralAtom.modelIndex) 
+          && !frame.bsHidden.get(p.centralAtom.atomIndex)
+          ? myVisibilityFlag : 0);
     }
   }
   

@@ -366,6 +366,7 @@ class Dots extends Shape {
     if (newSet) {
       dotsConvexMax = 0;
       dotsConvexMaps = null;
+      mads = null;
       radiusP = 0;
       diameterP = 2 * radiusP;
       lastSolventRadius = addRadius;
@@ -755,6 +756,8 @@ class Dots extends Shape {
   }
   
   String getShapeState() {
+    if (dotsConvexMaps == null)
+      return "";
     StringBuffer s = new StringBuffer();
     int atomCount = viewer.getAtomCount();
     String type = (isSurface ? "geoSurface " : "dots ");

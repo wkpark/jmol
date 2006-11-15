@@ -85,17 +85,20 @@ class DotsRenderer extends ShapeRenderer {
 
     Atom[] atoms = frame.atoms;
     BitSet[] dotsConvexMaps = dots.dotsConvexMaps;
+    if (dotsConvexMaps == null)
+      return;
     short[] colixesConvex = dots.colixesConvex;
     boolean isInMotion = (viewer.getInMotion() && dots.dotsConvexMax > 100);
     boolean iShowSolid = dots.isSurface;
     //boolean iShowSolid = (viewer.getTestFlag3()||dots.showSurface) && dots.useBobsAlgorithm;
-    for (int i = dots.dotsConvexMax; --i >= 0;) {
-      Atom atom = atoms[i];
-      if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i))
-        continue;
-      renderConvex(dots, atom, colixesConvex[i], dotsConvexMaps[i], iShowSolid,
-          isInMotion);
-    }
+      for (int i = dots.dotsConvexMax; --i >= 0;) {
+        Atom atom = atoms[i];
+        if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i)
+            ||!g3d.isInDisplayRange(atom.screenX, atom.screenY))
+          continue;
+        renderConvex(dots, atom, colixesConvex[i], dotsConvexMaps[i], iShowSolid,
+            isInMotion);
+      }
     dots.timeEndExecution = System.currentTimeMillis();
     //Logger.debug("dots rendering time = "+ dots.getExecutionWalltime());
   }

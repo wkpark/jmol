@@ -3118,11 +3118,11 @@ public class Viewer extends JmolViewer {
         setSpecular(value);
         break;
       }
-      if (key.equalsIgnoreCase("slab")) {
+      if (key.equalsIgnoreCase("slabEnabled")) {
         setSlabEnabled(value);
         break;
       }
-      if (key.equalsIgnoreCase("zoom")) {
+      if (key.equalsIgnoreCase("zoomEnabled")) {
         setZoomEnabled(value);
         break;
       }

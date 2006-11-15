@@ -3119,17 +3119,17 @@ class Eval { //implements Runnable {
         viewer.moveTo(1, null, new Point3f(0, 0, 0), 0, viewer
             .getZoomPercentFloat() * 2f, 0, 0, 0);
       else
-        viewer.setBooleanProperty("zoom", true);
+        viewer.setBooleanProperty("zoomEnabled", true);
       return;
     }
     //zoom on|off
     if (!isZoomTo)
       switch (statement[1].tok) {
       case Token.on:
-        viewer.setBooleanProperty("zoom", true);
+        viewer.setBooleanProperty("zoomEnabled", true);
         return;
       case Token.off:
-        viewer.setBooleanProperty("zoom", false);
+        viewer.setBooleanProperty("zoomEnabled", false);
         return;
       }
     float time = (isZoomTo ? 1f : 0f);
@@ -3268,10 +3268,10 @@ class Eval { //implements Runnable {
     }
     switch (statement[1].tok) {
     case Token.on:
-      viewer.setBooleanProperty("slab", true);
+      viewer.setBooleanProperty("slabEnabled", true);
       break;
     case Token.off:
-      viewer.setBooleanProperty("slab", false);
+      viewer.setBooleanProperty("slabEnabled", false);
       break;
     default:
       booleanOrPercentExpected();

@@ -91,6 +91,11 @@ class LcaoCartoon extends Isosurface {
       return;
     }
 
+    if ("atomSet" == propertyName) {
+      thisSet = (BitSet)value;
+      return;
+    }
+
     if ("select" == propertyName) {
       thisType = (String) value;
       return;

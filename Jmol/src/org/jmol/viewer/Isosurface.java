@@ -539,22 +539,36 @@ class Isosurface extends MeshCollection {
       isSilent = !logMessages;
       setEccentricity(new Point4f(0, 0, 1, 1));
       cutoff = Float.MIN_VALUE;
+      currentMesh.scriptCommand = "isosurface "
+        + currentMesh.thisID
+        + " center " + StateManager.encloseCoord(center) 
+        + " SPHERE " + sphere_radiusAngstroms;
       propertyName = "getSurface";
     }
 
     if ("ellipsoid" == propertyName) {
-      setEccentricity((Point4f) value);
+      Point4f v = (Point4f) value;
+      setEccentricity(v);
       dataType = SURFACE_ELLIPSOID;
       sphere_radiusAngstroms = 1.0f;
       cutoff = Float.MIN_VALUE;
       propertyName = "getSurface";
+      currentMesh.scriptCommand = myType + " "
+        + currentMesh.thisID
+        + " center " + StateManager.encloseCoord(center) 
+        + " ELLIPSOID {" + v.x + " " + v.y + " " + v.z + " " + v.w + "}";
     }
 
     if ("lobe" == propertyName) {
-      setEccentricity((Point4f) value);
+      Point4f v = (Point4f) value;
+      setEccentricity(v);
       dataType = SURFACE_LOBE;
       if (cutoff == Float.MAX_VALUE)
         cutoff = defaultOrbitalCutoff;
+      currentMesh.scriptCommand = myType + " "
+        + currentMesh.thisID
+        + " center " + StateManager.encloseCoord(center) 
+        + " LOBE {" + v.x + " " + v.y + " " + v.z + " " + v.w + "}";
       propertyName = "getSurface";
     }
 
@@ -4989,7 +5003,7 @@ class Isosurface extends MeshCollection {
 
   void createLcaoLobe(Vector3f lobeAxis, float factor) {
     initState();
-    Logger.info("creating isosurface " + currentMesh.thisID);
+    Logger.debug("creating isosurface " + currentMesh.thisID);
     if (lobeAxis == null) {
       setProperty("sphere", new Float(factor / 2f), null);
       return;
@@ -5143,15 +5157,21 @@ class Isosurface extends MeshCollection {
   }
   
   void mergeSets(int a, int b) {
-    //for (int i = 0; i < nSets; i++)
-      //if (surfaceSet[i] != null)
-        //System.out.println("set " + i + surfaceSet[i]);
     surfaceSet[a].or(surfaceSet[b]);
     surfaceSet[b] = null;
-    //System.out.println("merging " + a + " " + b + ":\n"+surfaceSet[a] + '\n'+surfaceSet[b]);
   }
 
   String getShapeState() {
-    return "#note - " + myType + " state not recorded\n";
+    StringBuffer s = new StringBuffer();
+    for (int i = meshCount; --i >= 0;) {
+      String cmd = meshes[i].scriptCommand;
+      if (cmd == null)
+        continue;
+      Mesh mesh = meshes[i];
+      appendCmd(s, cmd);
+      appendCmd(s, getMeshState(mesh, myType));
+      s.append(getColorCommand(myType, mesh.colix));
+    }
+    return s.toString();
   }
 }

@@ -185,7 +185,7 @@ class Token {
   final static int dipole       = command | 97 | coordOrSet;
   final static int configuration = command | 98;
   final static int mo           = command | 99 | showparam | colorparam | negnums;
-  final static int lcaocartoon  = command | 100| colorparam;
+  final static int lcaocartoon  = command | 100| colorparam | embeddedExpression;
   final static int message      = command | 101 | specialstring;
   final static int translateSelected = command | 102 | negnums;
   final static int calculate    = command | 103;

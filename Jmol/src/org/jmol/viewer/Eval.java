@@ -650,7 +650,7 @@ class Eval { //implements Runnable {
         centerAt();
         break;
       case Token.isosurface:
-        isosurface();
+        isosurface(JmolConstants.SHAPE_ISOSURFACE);
         break;
       case Token.lcaocartoon:
         lcaoCartoon();
@@ -3552,13 +3552,9 @@ class Eval { //implements Runnable {
         propertyValue = new Float(floatParameter(i));
         break;
       case Token.expressionBegin:
-        if (statement[i+1].tok == Token.bitset) {
-          propertyName = "atomBitset";
-          propertyValue = statement[i].value;
-        } else {
-          propertyName = (iHaveAtoms || iHaveCoord ? "endSet" : "startSet");
-          propertyValue = expression(statement, i);
-        }
+        propertyName = (statement[i + 1].tok == Token.bitset ? "atomBitset"
+            : iHaveAtoms || iHaveCoord ? "endSet" : "startSet");
+        propertyValue = expression(statement, i);
         i = pcLastExpressionInstruction;
         iHaveAtoms = true;
         break;
@@ -3575,7 +3571,7 @@ class Eval { //implements Runnable {
         propertyName = "bonds";
         break;
       case Token.calculate:
-        continue;  // ignored
+        continue; // ignored
       case Token.identifier:
         String cmd = (String) token.value;
         if (cmd.equalsIgnoreCase("cross")) {
@@ -5240,10 +5236,17 @@ class Eval { //implements Runnable {
   }
 
   void lcaoCartoon() throws ScriptException {
+    if (statementLength > 3 && statement[2].tok == Token.center) {
+      //serialized lcaoCartoon in isosurface format
+      isosurface(JmolConstants.SHAPE_LCAOCARTOON);
+      return;
+    }
     viewer.loadShape(JmolConstants.SHAPE_LCAOCARTOON);
     viewer.setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "init", null);
-    if (statementLength == 1)
-      endOfStatementUnexpected();
+    if (statementLength == 1) {
+      viewer.setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "lcaoID", null);
+      return;
+    }
     for (int i = 1; i < statementLength; i++) {
       Token token = statement[i];
       int tok = token.tok;
@@ -5264,6 +5267,11 @@ class Eval { //implements Runnable {
         propertyName = "scale";
         propertyValue = new Float(floatParameter(++i));
         break;
+      case Token.expressionBegin:
+        propertyName = "atomSet";
+        propertyValue = expression(statement, ++i);
+        i = pcLastExpressionInstruction;
+        break;
       case Token.color:
         if (++i < statementLength && statement[i].tok == Token.colorRGB) {
           viewer.setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "colorRGB",
@@ -5277,10 +5285,12 @@ class Eval { //implements Runnable {
       case Token.string:
         propertyName = "create";
         propertyValue = stringParameter(i);
-        if (i+1 < statementLength 
-            && statement[i + 1].tok == Token.identifier 
-            && ((String)(statement[i + 1].value)).equalsIgnoreCase("molecular")) {
-          viewer.setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "molecular", null);
+        if (i + 1 < statementLength
+            && statement[i + 1].tok == Token.identifier
+            && ((String) (statement[i + 1].value))
+                .equalsIgnoreCase("molecular")) {
+          viewer.setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "molecular",
+              null);
         }
         break;
       case Token.select:
@@ -5455,10 +5465,10 @@ class Eval { //implements Runnable {
     viewer.setShapeProperty(shape, "molecularOrbital", new Integer(moNumber));
   }
 
-  void isosurface() throws ScriptException {
-    viewer.loadShape(JmolConstants.SHAPE_ISOSURFACE);
-    viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "init", null);
-    viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "title",
+  void isosurface(int iShape) throws ScriptException {
+    viewer.loadShape(iShape);
+    viewer.setShapeProperty(iShape, "init", null);
+    viewer.setShapeProperty(iShape, "title",
         new String[] { script });
     int colorRangeStage = 0;
     int signPt = 0;
@@ -5747,7 +5757,7 @@ class Eval { //implements Runnable {
       case Token.lcaocartoon:
         surfaceObjectSeen = true;
         String lcaoType = stringParameter(++i);
-        viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "lcaoType",
+        viewer.setShapeProperty(iShape, "lcaoType",
             lcaoType);
         switch (statement[++i].tok) {
         case Token.expressionBegin:
@@ -5755,7 +5765,7 @@ class Eval { //implements Runnable {
           int atomIndex = viewer.firstAtomOf(expression(statement, ++i));
           if (atomIndex < 0)
             expressionExpected();
-          viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "modelIndex",
+          viewer.setShapeProperty(iShape, "modelIndex",
               new Integer(viewer.getAtomModelIndex(atomIndex)));
           Vector3f[] axes = { new Vector3f(), new Vector3f(),
               new Vector3f(viewer.getAtomPoint3f(atomIndex)) };
@@ -5772,7 +5782,7 @@ class Eval { //implements Runnable {
         if (++i == statementLength)
           badArgumentCount();
         int moNumber = intParameter(i);
-        setMoData(JmolConstants.SHAPE_ISOSURFACE, moNumber, null);
+        setMoData(iShape, moNumber, null);
         surfaceObjectSeen = true;
         continue;
       case Token.mep:
@@ -5823,7 +5833,7 @@ class Eval { //implements Runnable {
         }
         surfaceObjectSeen = true;
         if (i + 1 < statementLength && statement[i + 1].tok == Token.integer)
-          viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "fileIndex",
+          viewer.setShapeProperty(iShape, "fileIndex",
               new Integer(intParameter(++i)));
         Object t = viewer
             .getUnzippedBufferedReaderOrErrorMessageFromName(filename);
@@ -5833,15 +5843,15 @@ class Eval { //implements Runnable {
         propertyValue = t;
         break;
       default:
-        if (!setMeshDisplayProperty(JmolConstants.SHAPE_ISOSURFACE, token.tok))
+        if (!setMeshDisplayProperty(iShape, token.tok))
           invalidArgument(i, statement[i] + " not recognized");
       }
       if (propertyName != null)
-        viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, propertyName,
+        viewer.setShapeProperty(iShape, propertyName,
             propertyValue);
     }
     if (planeSeen && !surfaceObjectSeen) {
-      viewer.setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "nomap", new Float(0));
+      viewer.setShapeProperty(iShape, "nomap", new Float(0));
     }
   }
 

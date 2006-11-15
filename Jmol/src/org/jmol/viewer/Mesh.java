@@ -41,6 +41,7 @@ class Mesh {
   String[] title = null;
   String thisID;
   boolean isValid = true;
+  String scriptCommand;
   String jvxlFileHeader;
   String jvxlExtraLine;
   int jvxlCompressionRatio;

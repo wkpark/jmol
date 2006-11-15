@@ -828,9 +828,6 @@ class Isosurface extends MeshCollection {
         super.setProperty("color", "sets", null);
       }
       setModelIndex();
-      if (currentMesh.thisID == null)
-        currentMesh.thisID = "isosurface"+(++nUnnamed);
-      currentMesh.scriptCommand = fixScript();
       if (logMessages && thePlane == null && !isSilent)
         Logger.debug("\n" + jvxlGetFile(currentMesh, jvxlFileMessage, true, 1));
       discardTempData(jvxlDataIs2dContour);
@@ -5063,6 +5060,9 @@ class Isosurface extends MeshCollection {
     } else {
       currentMesh.modelIndex = viewer.getDisplayModelIndex();
     }
+    if (currentMesh.thisID == null)
+      currentMesh.thisID = "isosurface"+(++nUnnamed);
+    currentMesh.scriptCommand = fixScript();
   }
 
   void setVisibilityFlags(BitSet bs) {

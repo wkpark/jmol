@@ -415,7 +415,7 @@ class Measures extends Shape {
       commands.append("measures off; # lines and numbers off\n");
     else if (n > 0)
       commands.append("measures hide " + bs);
-    commands.append(getFontCommand("measures", font3d));
+    appendCmd(commands, getFontCommand("measures", font3d));
     commands.append(getShapeCommands(temp, null, -1, "measures select"));
     return commands.toString();
   }

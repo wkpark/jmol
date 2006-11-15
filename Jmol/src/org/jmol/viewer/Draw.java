@@ -775,8 +775,8 @@ class Draw extends MeshCollection {
     case Mesh.DRAW_TRIANGLE:
     case Mesh.DRAW_PLANE:
     }
-    str.append(getVertexList(mesh, iModel, nVertices));
-    str.append(";\n" + getColorCommand("draw", mesh.colix));
+    appendCmd(str, getVertexList(mesh, iModel, nVertices));
+    appendCmd(str, getColorCommand("draw", mesh.colix));
     return str.toString();
   }
 

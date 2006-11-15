@@ -61,10 +61,12 @@ abstract class SelectionIndependentShape extends Shape {
   String getShapeState() {
     if (mad == 9999)
       return "";
-    return myType
+    StringBuffer s = new StringBuffer();
+    appendCmd(s, myType
         + (mad == 0 ? " off" : mad == 1 ? " on" : mad == -1 ? " dotted" 
-            : mad < 20 ? " " + mad : " " + (mad / 2000f)) + ";\n"
-        + getColorCommand(myType, colix)
-        + getFontCommand(myType, font3d);
+            : mad < 20 ? " " + mad : " " + (mad / 2000f)));
+    appendCmd(s, getColorCommand(myType, colix));
+    appendCmd(s, getFontCommand(myType, font3d));
+    return s.toString();
   }
 }

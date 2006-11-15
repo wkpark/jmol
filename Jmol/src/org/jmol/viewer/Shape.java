@@ -111,9 +111,17 @@ abstract class Shape {
     return StateManager.getCommands(htDefine, htMore, count, selectCmd);
   }
   
-  String encodeColor(short colix) {
-    return (Graphics3D.isColixTranslucent(colix) ? "translucent ": "")
-    + " [x" + g3d.getHexColorFromIndex(colix) + "]"; 
+  static void appendCmd(StringBuffer s, String cmd) {
+    if (cmd.length() == 0)
+      return;
+    s.append(cmd + ";\n");
+  }
+  
+  static String getFontCommand(String type, Font3D font) {
+    if (font == null)
+      return "";
+    return "font " + type + " " + font.fontSize + " "
+        + font.fontFace + " " + font.fontStyle;
   }
   
   String getColorCommand(String type, short colix) {
@@ -123,7 +131,7 @@ abstract class Shape {
   String getColorCommand(String type, short pid, short colix) {
     if (pid < 0 && colix == 0)
       return "";
-    return "color " + type + " " + encodeTransColor(pid, colix) + ";\n";
+    return "color " + type + " " + encodeTransColor(pid, colix);
   }
 
   String encodeTransColor(short colix) {
@@ -135,7 +143,7 @@ abstract class Shape {
       return "";
     String s = "";
     if (pid >= 0) {
-      if (Graphics3D.isColixTranslucent(colix))
+      if (Graphics3D.isColixInherentlyTranslucent(colix))
         s += "translucent ";
       s += JmolConstants.getPaletteName(pid);
     } else {
@@ -144,17 +152,10 @@ abstract class Shape {
     return s;
   }
   
-  static String getFontCommand(String type, Font3D font) {
-    if (font == null)
-      return "";
-    return "font " + type + " " + font.fontSize + " "
-        + font.fontFace + " " + font.fontStyle + ";\n";
-  }
-  
-  static void appendCmd(StringBuffer s, String cmd) {
-    if (cmd.length() == 0)
-      return;
-    s.append(cmd + ";\n");
+  String encodeColor(short colix) {
+    String color = g3d.getHexColorFromIndex(colix);
+    return (Graphics3D.isColixInherentlyTranslucent(colix) ? "translucent": "")
+    + (color == null ? " none" : " [x" + color + "]"); 
   }
   
 }

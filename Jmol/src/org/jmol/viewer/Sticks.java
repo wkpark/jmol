@@ -118,6 +118,8 @@ class Sticks extends Shape {
       return;
     }
     if ("translucency" == propertyName) {
+      if (bsColixSet == null)
+        bsColixSet = new BitSet();
       boolean isTranslucent = (((String) value).equals("translucent"));
       BondIterator iter = (isBonds ? frame.getBondIterator(bsSelected) : frame
           .getBondIterator(myMask, bsSelected));

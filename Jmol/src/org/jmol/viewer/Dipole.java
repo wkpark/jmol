@@ -216,7 +216,7 @@ class Dipole extends Shape {
     if (!visible)
       s.append(" off");
     s.append(";\n");
-    s.append(getColorCommand("dipole", colix));
+    appendCmd(s, getColorCommand("dipole", colix));
     return s.toString();
   }
 }

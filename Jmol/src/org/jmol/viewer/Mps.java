@@ -322,17 +322,20 @@ abstract class Mps extends Shape {
           colixes[i] = ((colix != Graphics3D.UNRECOGNIZED) ? colix : viewer
               .getColixAtomPalette(frame.getAtomAt(atomIndex), pid));
           paletteIDs[i] = (short) pid;
-          bsColixSetMps.set(i, colixes[i] != 0 || Graphics3D.isColixTranslucent(colixes[i]));
+          bsColixSetMps.set(i, colixes[i] != 0);
         }
       }
     }
 
     void setTranslucent(boolean isTranslucent, BitSet bsSelected) {
       int[] atomIndices = polymer.getLeadAtomIndices();
+      if (bsColixSetMps == null)
+        bsColixSetMps = new BitSet();
       for (int i = monomerCount; --i >= 0; ) {
         int atomIndex = atomIndices[i];
         if (bsSelected.get(atomIndex)) {
           colixes[i] = Graphics3D.setTranslucent(colixes[i], isTranslucent);
+          bsColixSetMps.set(i, colixes[i] != 0);
         }
       }
     }

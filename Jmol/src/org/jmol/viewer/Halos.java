@@ -57,8 +57,8 @@ class Halos extends AtomShape {
   
   String getShapeState() {
     return super.getShapeState()
-        + (colixSelection == Graphics3D.UNRECOGNIZED ? "" : getColorCommand(
-            "selectionHalos", colixSelection));
+        + (colixSelection == Graphics3D.UNRECOGNIZED ? "" 
+            : getColorCommand("selectionHalos", colixSelection) + ";\n");
   }
 
 }

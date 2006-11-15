@@ -551,7 +551,7 @@ class Text {
     if (isDefine != target.equals("top"))
       return s.toString();
     // these may not change much:
-    s.append(Shape.getFontCommand("echo", font));
+    s.append(Shape.getFontCommand("echo", font) + ";\n");
     s.append("color echo [x" + g3d.getHexColorFromIndex(colix) + "]");
     if (bgcolix != 0)
       s.append(";background echo [x" + g3d.getHexColorFromIndex(bgcolix) + "]");

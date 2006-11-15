@@ -407,7 +407,7 @@ abstract class MeshCollection extends SelectionIndependentShape {
       if (cmd.charAt(0) != '#') {
         s.append(getMeshState(mesh, myType));
         if (mesh.vertexColixes == null)
-          s.append(getColorCommand("$" + mesh.thisID, mesh.colix));
+          appendCmd(s, getColorCommand("$" + mesh.thisID, mesh.colix));
       }
     }
     return s.toString();

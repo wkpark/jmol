@@ -285,6 +285,7 @@ class Isosurface extends MeshCollection {
   Hashtable surfaceInfo;
   BitSet bsSelected;
   BitSet bsIgnore;
+  boolean iHaveBitSets;
 
   void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -292,8 +293,10 @@ class Isosurface extends MeshCollection {
         + " = " + value);
 
     if ("init" == propertyName) {
-      bsSelected = bs; //THIS MAY BE NULL
+      script = (String)value;
       initializeIsosurface();
+      if (!(iHaveBitSets = getScriptBitSets()))
+        bsSelected = bs; //THIS MAY BE NULL
       super.setProperty("thisID", null, null);
       return;
     }
@@ -336,12 +339,14 @@ class Isosurface extends MeshCollection {
     }
 
     if ("select" == propertyName) {
-      bsSelected = (BitSet) value;
+      if (!iHaveBitSets)
+        bsSelected = (BitSet) value;
       return;
     }
 
     if ("ignore" == propertyName) {
-      bsIgnore = (BitSet) value;
+      if (!iHaveBitSets)
+        bsIgnore = (BitSet) value;
       return;
     }
 
@@ -539,9 +544,7 @@ class Isosurface extends MeshCollection {
       isSilent = !logMessages;
       setEccentricity(new Point4f(0, 0, 1, 1));
       cutoff = Float.MIN_VALUE;
-      currentMesh.scriptCommand = "isosurface "
-        + currentMesh.thisID
-        + " center " + StateManager.encloseCoord(center) 
+      script = " center " + StateManager.encloseCoord(center) 
         + " SPHERE " + sphere_radiusAngstroms;
       propertyName = "getSurface";
     }
@@ -553,9 +556,7 @@ class Isosurface extends MeshCollection {
       sphere_radiusAngstroms = 1.0f;
       cutoff = Float.MIN_VALUE;
       propertyName = "getSurface";
-      currentMesh.scriptCommand = myType + " "
-        + currentMesh.thisID
-        + " center " + StateManager.encloseCoord(center) 
+      script = " center " + StateManager.encloseCoord(center) 
         + (Float.isNaN(scale) ? "" : " scale " + scale)
         + " ELLIPSOID {" + v.x + " " + v.y + " " + v.z + " " + v.w + "}";
     }
@@ -566,9 +567,7 @@ class Isosurface extends MeshCollection {
       dataType = SURFACE_LOBE;
       if (cutoff == Float.MAX_VALUE)
         cutoff = defaultOrbitalCutoff;
-      currentMesh.scriptCommand = myType + " "
-        + currentMesh.thisID
-        + " center " + StateManager.encloseCoord(center)
+      script = " center " + StateManager.encloseCoord(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale)
         + " LOBE {" + v.x + " " + v.y + " " + v.z + " " + v.w + "}";
       propertyName = "getSurface";
@@ -831,6 +830,7 @@ class Isosurface extends MeshCollection {
       setModelIndex();
       if (currentMesh.thisID == null)
         currentMesh.thisID = "isosurface"+(++nUnnamed);
+      currentMesh.scriptCommand = fixScript();
       if (logMessages && thePlane == null && !isSilent)
         Logger.debug("\n" + jvxlGetFile(currentMesh, jvxlFileMessage, true, 1));
       discardTempData(jvxlDataIs2dContour);
@@ -902,6 +902,30 @@ class Isosurface extends MeshCollection {
     return super.getProperty(property, index);
   }
 
+  boolean getScriptBitSets() {
+    int i;
+    if ((i = script.indexOf("# ({")) < 0)
+      return false;
+    int j = script.indexOf("})", i);
+    bsSelected = StateManager.decodeBitset(script.substring(i + 3, j + 1));
+    if ((i = script.indexOf("({", j)) < 0)
+      return false;
+    j = script.indexOf("})", i);
+    bsIgnore = StateManager.decodeBitset(script.substring(i + 1, j + 1));
+    return true;
+  }
+  
+  String fixScript() {
+    if (script.indexOf("# ({") >= 0)
+      return script;
+    if (script.charAt(0) == ' ')
+      return myType + " " + currentMesh.thisID + script;
+    return script + "# "
+        + (bsSelected == null ? "({null})" : StateManager
+            .encodeBitset(bsSelected)) + " "
+        + (bsIgnore == null ? "({null})" : StateManager.encodeBitset(bsIgnore));
+  }
+  
   void initializeIsosurface() {
     logMessages = Logger.isActiveLevel(Logger.LEVEL_DEBUG);
     logCube = logCompression = false;
@@ -5170,9 +5194,11 @@ class Isosurface extends MeshCollection {
       if (cmd == null)
         continue;
       Mesh mesh = meshes[i];
-      appendCmd(s, cmd);
-      s.append(getMeshState(mesh, myType));
-      s.append(getColorCommand("$" + mesh.thisID, mesh.colix));
+      s.append(cmd + "\n");
+      if (cmd.charAt(0) != '#') {
+        s.append(getMeshState(mesh, myType));
+        s.append(getColorCommand("$" + mesh.thisID, mesh.colix));
+      }
     }
     return s.toString();
   }

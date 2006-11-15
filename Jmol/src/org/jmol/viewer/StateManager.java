@@ -633,6 +633,8 @@ class StateManager {
   }
  
   static BitSet decodeBitset (String strBitset) {
+    if (strBitset == "{null}")
+      return null;
     BitSet bs = new BitSet();
     int len = strBitset.length();
     int iPrev = -1;

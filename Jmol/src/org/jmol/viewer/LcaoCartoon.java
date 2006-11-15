@@ -42,7 +42,7 @@ class LcaoCartoon extends Isosurface {
   Integer lcaoColorPos = null;
   Integer lcaoColorNeg = null;
   String thisType;
-  Float lcaoScale = null;
+  Float lcaoScale = null; //actually, we need to reset this one.
   int myColorPt;
   String lcaoID;
   BitSet thisSet = null;
@@ -61,13 +61,15 @@ class LcaoCartoon extends Isosurface {
       thisSet = bs;
       isMolecular = false;
       thisType = null;
+      lcaoScale = null;
       // overide bitset selection
       super.setProperty("init", null, null);
       return;
     }
 
     if ("molecular" == propertyName) {
-      isMolecular = true;
+      isMolecular = (thisType != null && (thisType.indexOf("px") >= 0
+          || thisType.indexOf("py") >= 0 || thisType.indexOf("pz") >= 0));
       return;
     }
 
@@ -91,32 +93,32 @@ class LcaoCartoon extends Isosurface {
       return;
     }
 
-    if ("atomSet" == propertyName) {
-      thisSet = (BitSet)value;
+    if ("selectType" == propertyName) {
+      thisType = (String) value;
       return;
     }
 
-    if ("select" == propertyName) {
+    if ("create" == propertyName) {
       thisType = (String) value;
+      createLcaoCartoon();
       return;
     }
 
     if ("scale" == propertyName) {
       lcaoScale = (Float) value;
-      return;
+      //pass through
     }
 
     if ("colorRGB" == propertyName) {
       lcaoColorPos = (Integer) value;
       if (myColorPt++ == 0)
         lcaoColorNeg = lcaoColorPos;
-      return;
-
+      //pass through
     }
 
-    if ("create" == propertyName) {
-      createLcaoCartoon((String) value);
-      return;
+    if ("select" == propertyName) {
+      thisSet = (BitSet)value;
+      //pass through
     }
 
     super.setProperty(propertyName,value,bs);
@@ -130,7 +132,7 @@ class LcaoCartoon extends Isosurface {
   }
 
   void setLcaoOn(int iAtom, boolean TF) {
-    String id = getID(iAtom);
+    String id = getID(lcaoID, iAtom);
     for (int i = meshCount; --i >=0;)
       if (meshes[i].thisID.indexOf(id) == 0)
         meshes[i].visible = TF;
@@ -144,21 +146,21 @@ class LcaoCartoon extends Isosurface {
   }
 
   void deleteLcaoCartoon(int iAtom) {
-    String id = getID(iAtom);
+    String id = getID(lcaoID, iAtom);
     for (int i = meshCount; --i >=0;)
       if (meshes[i].thisID.indexOf(id) == 0)
         deleteMesh(i);
   }
     
-  void createLcaoCartoon(String type) {
+  void createLcaoCartoon() {
     int atomCount = viewer.getAtomCount();
     for (int i = atomCount; --i >= 0;)
       if (thisSet.get(i))
-        createLcaoCartoon(type, i);
+        createLcaoCartoon(i);
   }
 
-  void createLcaoCartoon(String type, int iAtom) {
-    String id = "lcao_" + (iAtom + 1) + "_" + type;
+  void createLcaoCartoon(int iAtom) {
+    String id = getID(null, iAtom);
     for (int i = meshCount; --i >= 0;)
       if (meshes[i].thisID.indexOf(id) == 0)
         deleteMesh(i);
@@ -170,35 +172,34 @@ class LcaoCartoon extends Isosurface {
       super.setProperty("colorRGB", lcaoColorNeg, null);
       super.setProperty("colorRGB", lcaoColorPos, null);
     }
-    super.setProperty("lcaoType", type, null);
+    super.setProperty("lcaoType", thisType, null);
     super.setProperty("atomIndex", new Integer(iAtom), null);
 
     Vector3f[] axes = { new Vector3f(), new Vector3f(),
         new Vector3f(frame.atoms[iAtom]) };
     if (isMolecular) {
-      if (type.indexOf("px") >= 0) {
+      if (thisType.indexOf("px") >= 0) {
         axes[0].set(0, -1, 0);
         axes[1].set(1, 0, 0);
-      } else if (type.indexOf("py") >= 0) {
+      } else if (thisType.indexOf("py") >= 0) {
         axes[0].set(-1, 0, 0);
         axes[1].set(0, 0, 1);
-      } else if (type.indexOf("pz") >= 0) {
+      } else if (thisType.indexOf("pz") >= 0) {
         axes[0].set(0, 0, 1);
         axes[1].set(1, 0, 0);
-      } else
-        isMolecular = false;
-      if (isMolecular && type.indexOf("-") == 0) {
+      }
+      if (isMolecular && thisType.indexOf("-") == 0) {
         axes[0].scale(-1);
       }
     }
-    if (isMolecular || type.equalsIgnoreCase("s")
-        || viewer.getPrincipalAxes(iAtom, axes[0], axes[1], type, true))
+    if (isMolecular || thisType.equalsIgnoreCase("s")
+        || viewer.getPrincipalAxes(iAtom, axes[0], axes[1], thisType, true))
       super.setProperty("lcaoCartoon", axes, null);
   }
     
-  String getID(int i) {
-    return (lcaoID != null ? lcaoID : "lcao_" + (i + 1) + "_"
-        + (thisType != null ? thisType : ""));
+  String getID(String id, int i) {
+    return (id != null ? id : "lcao_" + (i + 1)
+        + (thisType == null ? "" : viewer.simpleReplace(thisType, "-", "_")));
   }
 
 }

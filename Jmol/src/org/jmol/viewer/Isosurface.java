@@ -556,6 +556,7 @@ class Isosurface extends MeshCollection {
       currentMesh.scriptCommand = myType + " "
         + currentMesh.thisID
         + " center " + StateManager.encloseCoord(center) 
+        + (Float.isNaN(scale) ? "" : " scale " + scale)
         + " ELLIPSOID {" + v.x + " " + v.y + " " + v.z + " " + v.w + "}";
     }
 
@@ -567,7 +568,8 @@ class Isosurface extends MeshCollection {
         cutoff = defaultOrbitalCutoff;
       currentMesh.scriptCommand = myType + " "
         + currentMesh.thisID
-        + " center " + StateManager.encloseCoord(center) 
+        + " center " + StateManager.encloseCoord(center)
+        + (Float.isNaN(scale) ? "" : " scale " + scale)
         + " LOBE {" + v.x + " " + v.y + " " + v.z + " " + v.w + "}";
       propertyName = "getSurface";
     }

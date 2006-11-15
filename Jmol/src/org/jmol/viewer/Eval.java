@@ -5236,11 +5236,6 @@ class Eval { //implements Runnable {
   }
 
   void lcaoCartoon() throws ScriptException {
-    if (statementLength > 3 && statement[2].tok == Token.center) {
-      //serialized lcaoCartoon in isosurface format
-      isosurface(JmolConstants.SHAPE_LCAOCARTOON);
-      return;
-    }
     viewer.loadShape(JmolConstants.SHAPE_LCAOCARTOON);
     viewer.setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "init", null);
     if (statementLength == 1) {
@@ -5253,6 +5248,10 @@ class Eval { //implements Runnable {
       String propertyName = null;
       Object propertyValue = null;
       switch (tok) {
+      case Token.center:
+        //serialized lcaoCartoon in isosurface format
+        isosurface(JmolConstants.SHAPE_LCAOCARTOON);
+        return;
       case Token.on:
         propertyName = "on";
         break;
@@ -5268,7 +5267,7 @@ class Eval { //implements Runnable {
         propertyValue = new Float(floatParameter(++i));
         break;
       case Token.expressionBegin:
-        propertyName = "atomSet";
+        propertyName = "select";
         propertyValue = expression(statement, ++i);
         i = pcLastExpressionInstruction;
         break;
@@ -5294,7 +5293,7 @@ class Eval { //implements Runnable {
         }
         break;
       case Token.select:
-        propertyName = "select";
+        propertyName = "selectType";
         propertyValue = stringParameter(++i);
         break;
       case Token.identifier:

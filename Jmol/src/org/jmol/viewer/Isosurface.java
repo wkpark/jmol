@@ -5189,15 +5189,19 @@ class Isosurface extends MeshCollection {
 
   String getShapeState() {
     StringBuffer s = new StringBuffer();
+    int modelCount = viewer.getModelCount();
     for (int i = meshCount; --i >= 0;) {
       String cmd = meshes[i].scriptCommand;
       if (cmd == null)
         continue;
       Mesh mesh = meshes[i];
+      if (mesh.modelIndex > 0 && modelCount > 1)
+        appendCmd(s, "frame " + viewer.getModelNumber(mesh.modelIndex));
       s.append(cmd + "\n");
       if (cmd.charAt(0) != '#') {
         s.append(getMeshState(mesh, myType));
-        s.append(getColorCommand("$" + mesh.thisID, mesh.colix));
+        if (mesh.vertexColixes == null)
+          s.append(getColorCommand("$" + mesh.thisID, mesh.colix));
       }
     }
     return s.toString();

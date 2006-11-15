@@ -52,9 +52,9 @@ class Labels extends Shape {
   byte defaultFontId;
   short defaultColix;
   short defaultBgcolix;
+  short defaultPaletteID;
   int defaultAlignment;
   int defaultPointer;
-  int defaultPaletteID;
   int defaultZpos;
   byte zeroFontId;
   int zeroOffset;
@@ -90,7 +90,7 @@ class Labels extends Shape {
           setColix(i, colix, pid, n++);
       if (n == 0 || !defaultsOnlyForNone) {
         defaultColix = colix;
-        defaultPaletteID = pid;
+        defaultPaletteID = (short) pid;
       }
       return;
     }
@@ -306,6 +306,7 @@ class Labels extends Shape {
   final static int FLAGS = 0x3F;
   
   void setOffsets(int i, int offset, int n) {
+    //entry is just xxxxxxxxyyyyyyyy
     // xxxxxxxxyyyyyyyyfgaabp
     // x-align y-align ||| ||_pointer on
     //                 ||| |_background pointer color
@@ -388,6 +389,25 @@ class Labels extends Shape {
     }
   }
   
+  void getShapeState(StringBuffer s) {
+    appendCmd(s, "\n# label defaults:\nselect none");
+    appendCmd(s, getColorCommand("label", (short) defaultPaletteID,
+        defaultColix));
+    appendCmd(s, "background label " + encodeColor(defaultBgcolix));
+    appendCmd(s, "set labelOffset " + Text.getXOffset(defaultOffset) + " "
+        + (-Text.getYOffset(defaultOffset)));
+    String align = Text.getAlignment(defaultAlignment);
+    appendCmd(s, "set labelAlignment " + (align.length() < 5 ? "left" : align));
+    String pointer = Text.getPointer(defaultPointer);
+    appendCmd(s, "set labelPointer "
+        + (pointer.length() == 0 ? "off" : pointer));
+    if ((defaultOffset & FRONT_FLAG) != 0)
+      appendCmd(s, "set labelFront");
+    if ((defaultOffset & GROUP_FLAG) != 0)
+      appendCmd(s, "set labelGroup");
+    appendCmd(s, getFontCommand("label", Font3D.getFont3D(defaultFontId)));
+  }  
+
   String getShapeState() {
     Hashtable temp = new Hashtable();
     Hashtable temp2 = new Hashtable();
@@ -396,7 +416,8 @@ class Labels extends Shape {
         continue;
       setStateInfo(temp, i, "label " + formats[i]);
       if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp2, i, getColorCommand("label", paletteIDs[i], colixes[i]));
+        setStateInfo(temp2, i, getColorCommand("label", paletteIDs[i],
+            colixes[i]));
       if (bsBgColixSet != null && bsBgColixSet.get(i))
         setStateInfo(temp2, i, "background label " + encodeColor(bgcolixes[i]));
       if (offsets != null && offsets.length > i) {
@@ -418,9 +439,6 @@ class Labels extends Shape {
       if (bsFontSet != null && bsFontSet.get(i))
         setStateInfo(temp2, i, getFontCommand("label", Font3D
             .getFont3D(fids[i])));
-      
-     // need defaults here as well
-     // set label none;.....
     }
     return getShapeCommands(temp, temp2, frame.atomCount);
   }  

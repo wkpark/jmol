@@ -3694,7 +3694,6 @@ class Eval { //implements Runnable {
       negative = true;
     else if (statement[2].tok != Token.plus)
       invalidArgument();
-
     if (statement[3].tok != Token.integer)
       invalidArgument();
     int direction = statement[3].intValue;

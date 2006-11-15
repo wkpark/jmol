@@ -94,6 +94,8 @@ class TransformManager {
       }
       commands.append(";\n");
     }
+    if (vibrationOn)
+      commands.append("vibration on;\n");
     commands.append("\n");
     return commands.toString();
   }

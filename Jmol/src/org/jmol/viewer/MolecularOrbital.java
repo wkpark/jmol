@@ -36,9 +36,9 @@ import java.util.Hashtable;
 class MolecularOrbital extends Isosurface {
 
   void initShape() {
+    super.initShape();
     myType = "molecularOrbital";
     super.setProperty("thisID", "mo", null);
-    return;
   }
 
   // these are globals, stored here and only passed on when the they are needed. 

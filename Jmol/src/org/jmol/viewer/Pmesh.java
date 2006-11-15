@@ -33,6 +33,7 @@ class Pmesh extends MeshCollection {
   boolean isOnePerLine;
 
   void initShape() {
+    super.initShape();
     myType = "pmesh";
   }
   

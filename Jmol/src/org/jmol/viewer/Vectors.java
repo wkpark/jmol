@@ -25,6 +25,7 @@
 package org.jmol.viewer;
 
 import java.util.BitSet;
+import java.util.Hashtable;
 
 import org.jmol.g3d.Graphics3D;
 
@@ -33,6 +34,8 @@ class Vectors extends Shape {
   String[] strings;
   short[] mads;
   short[] colixes;
+  BitSet bsSizeSet;
+  BitSet bsColixSet;
 
   void initShape() {
     if (frame.hasVibrationVectors) {
@@ -43,14 +46,17 @@ class Vectors extends Shape {
 
   void setSize(int size, BitSet bsSelected) {
     if (frame.hasVibrationVectors) {
-      short mad = (short)size;
+      if (bsSizeSet == null)
+        bsSizeSet = new BitSet();
+      short mad = (short) size;
       //Atom[] atoms = frame.atoms;
-      for (int i = frame.atomCount; --i >= 0; ) {
+      boolean isVisible = (mad != 0);
+      for (int i = frame.atomCount; --i >= 0;)
         if (bsSelected.get(i)) {
           mads[i] = mad;
-          frame.atoms[i].setShapeVisibility(myVisibilityFlag, (mad != 0));
+          frame.atoms[i].setShapeVisibility(myVisibilityFlag, isVisible);
+          bsSizeSet.set(i, isVisible);
         }
-      }
     }
   }
 
@@ -59,10 +65,12 @@ class Vectors extends Shape {
     if (frame.hasVibrationVectors) {
       //Atom[] atoms = frame.atoms;
       if ("color" == propertyName) {
+        if (bsColixSet == null)
+          bsColixSet = new BitSet();
         short colix = Graphics3D.getColix(value);
         for (int i = frame.atomCount; --i >= 0; )
           if (bsSelected.get(i))
-            colixes[i] = colix;
+            bsColixSet.set(i, (colixes[i] = colix) != 0);
       }
     } 
   }
@@ -78,4 +86,16 @@ class Vectors extends Shape {
     }
   }
 
+  String getShapeState() {
+    Hashtable temp = new Hashtable();
+    Hashtable temp2 = new Hashtable();
+    for (int i = frame.atomCount; --i >= 0;) {
+      if (bsSizeSet == null || !bsSizeSet.get(i))
+        continue;
+      setStateInfo(temp, i, "vector " + (mads[i] / 1000f));
+      if (bsColixSet != null && bsColixSet.get(i))
+        setStateInfo(temp2, i, getColorCommand("vector", colixes[i]));
+    }
+    return getShapeCommands(temp, temp2, frame.atomCount);
+  }  
 }

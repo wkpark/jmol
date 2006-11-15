@@ -40,6 +40,7 @@ class Draw extends MeshCollection {
   // bob hanson hansonr@stolaf.edu 3/2006
 
   void initShape() {
+    super.initShape();
     myType = "draw";
   }
   

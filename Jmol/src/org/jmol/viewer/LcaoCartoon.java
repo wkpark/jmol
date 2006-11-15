@@ -36,6 +36,7 @@ class LcaoCartoon extends Isosurface {
   // these are globals, stored here and only passed on when the they are needed. 
 
   void initShape() {
+    super.initShape();
     myType = "lcaoCartoon";
   }
   

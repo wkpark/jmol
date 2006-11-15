@@ -3300,6 +3300,9 @@ public final class Frame {
     for (int i = 0; i < len; i++)
       commands.append(fs.get(i) + "\n");
 
+    viewer.loadShape(JmolConstants.SHAPE_LABELS);
+    ((Labels)shapes[JmolConstants.SHAPE_LABELS]).getShapeState(commands);
+
     commands.append("\n# model state:\n");
     // shape construction
 

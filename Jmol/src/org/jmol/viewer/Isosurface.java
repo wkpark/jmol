@@ -115,6 +115,7 @@ import org.jmol.quantum.MepCalculation;
 class Isosurface extends MeshCollection {
 
   void initShape() {
+    super.initShape();
     myType = "isosurface";
   }
   
@@ -898,8 +899,10 @@ class Isosurface extends MeshCollection {
   }
 
   boolean getScriptBitSets() {
-    int i;
-    if ((i = script.indexOf("# ({")) < 0)
+    if (script == null)
+      return false;
+    int i = script.indexOf("# ({");
+    if (i < 0)
       return false;
     int j = script.indexOf("})", i);
     bsSelected = StateManager.decodeBitset(script.substring(i + 3, j + 1));
@@ -5043,7 +5046,8 @@ class Isosurface extends MeshCollection {
   }
 
   void setModelIndex() {
-    script = fixScript();
+    if (script != null)
+      script = fixScript();
     setModelIndex(atomIndex);
     currentMesh.ptCenter.set(center);
     currentMesh.title = title;

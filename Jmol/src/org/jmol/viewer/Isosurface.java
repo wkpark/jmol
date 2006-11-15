@@ -5046,12 +5046,12 @@ class Isosurface extends MeshCollection {
   }
 
   void setModelIndex() {
-    if (script != null)
-      script = fixScript();
     setModelIndex(atomIndex);
     currentMesh.ptCenter.set(center);
     currentMesh.title = title;
     currentMesh.jvxlDefinitionLine = jvxlGetDefinitionLine(currentMesh);
+    if (script != null)
+      currentMesh.scriptCommand = fixScript();
   }
 
   Vector getShapeDetail() {

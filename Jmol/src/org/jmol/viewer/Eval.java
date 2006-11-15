@@ -3724,8 +3724,8 @@ class Eval { //implements Runnable {
   
   void dots(int ipt, int dotsMode) throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_DOTS);
-    viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "init",
-        new Integer(dotsMode));
+    viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "init", new Integer(
+        dotsMode));
     if (statementLength == ipt) {
       viewer.setShapeSize(JmolConstants.SHAPE_DOTS, 1);
       return;
@@ -3756,6 +3756,21 @@ class Eval { //implements Runnable {
       break;
     case Token.integer:
       int dotsParam = intParameter(ipt);
+      if (statementLength > ipt + 1 && statement[ipt + 1].tok == Token.radius) {
+        viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "atom", new Integer(dotsParam));
+        ipt++;
+        viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "radius", new Float(
+            floatParameter(++ipt)));
+        if (statementLength > ipt + 1 && statement[++ipt].tok == Token.color)
+          viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "colorRGB",
+              new Integer(getArgbParam(++ipt)));
+        if (statement[++ipt].tok != Token.bitset)
+          invalidArgument();
+        viewer.setShapeProperty(JmolConstants.SHAPE_DOTS, "dots",
+            statement[ipt].value);
+        return;
+      }
+
       if (dotsParam < 0 || dotsParam > 1000)
         numberOutOfRange(0, 1000);
       mad = (short) (dotsParam == 0 ? 0 : dotsParam + 1);

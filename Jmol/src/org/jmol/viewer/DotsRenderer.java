@@ -28,6 +28,7 @@ import org.jmol.g3d.Graphics3D;
 import java.util.Hashtable;
 import javax.vecmath.*;
 import org.jmol.util.Logger;
+import java.util.BitSet;
 
 class DotsRenderer extends ShapeRenderer {
 
@@ -37,7 +38,7 @@ class DotsRenderer extends ShapeRenderer {
 
   Geodesic geodesic, geodesicSolvent, g1, g2;
 
-  final static int[] mapNull = Dots.mapNull;
+  final static BitSet mapNull = Dots.mapNull;
   final Point3f[] vertexTest = new Point3f[12];
   final Vector3f[] vectorTest = new Vector3f[12];
 
@@ -83,7 +84,7 @@ class DotsRenderer extends ShapeRenderer {
     dots.timeBeginExecution = System.currentTimeMillis();
 
     Atom[] atoms = frame.atoms;
-    int[][] dotsConvexMaps = dots.dotsConvexMaps;
+    BitSet[] dotsConvexMaps = dots.dotsConvexMaps;
     short[] colixesConvex = dots.colixesConvex;
     boolean isInMotion = (viewer.getInMotion() && dots.dotsConvexMax > 100);
     boolean iShowSolid = dots.isSurface;
@@ -100,7 +101,7 @@ class DotsRenderer extends ShapeRenderer {
   }
 
   int[] mapAtoms = null; 
-  void renderConvex(Dots dots, Atom atom, short colix, int[] visibilityMap,
+  void renderConvex(Dots dots, Atom atom, short colix, BitSet visibilityMap,
                     boolean iShowSolid, boolean isInMotion) {
     colix = Graphics3D.inheritColix(colix, atom.colixAtom);
     if (mapAtoms == null)
@@ -123,13 +124,13 @@ class DotsRenderer extends ShapeRenderer {
   Point3i facePt2 = new Point3i();
   Point3i facePt3 = new Point3i();
   
-  void renderGeodesicFragment(short colix, Geodesic g, int[] points, int[] map,
+  void renderGeodesicFragment(short colix, Geodesic g, BitSet points, int[] map,
                               int dotCount) {
     short[] faces = (g.screenLevel == 1 ? g1.faceIndices
         : g.screenLevel == 2 ? g2.faceIndices : g.faceIndices);
     int[] coords = g.screenCoordinates;
     short p1, p2, p3;
-    int mapMax = (points.length << 5);
+    int mapMax = points.size();//(points.length << 5);
     //Logger.debug("geod frag "+mapMax+" "+dotCount);
     if (dotCount < mapMax)
       mapMax = dotCount;
@@ -274,7 +275,7 @@ class DotsRenderer extends ShapeRenderer {
     int screenDotCount;
     int screenCenterX, screenCenterY, screenCenterZ;
     
-    void calcScreenPoints(int[] visibilityMap, float radius, int x, int y,
+    void calcScreenPoints(BitSet visibilityMap, float radius, int x, int y,
                           int z, int[] coordMap, boolean isSolid) {
       int dotCount;
       if (isSolid) {
@@ -309,12 +310,13 @@ class DotsRenderer extends ShapeRenderer {
       scaledRadius = viewer.scaleToPerspective(z, radius);
       int icoordinates = 0;
       //      int iintensities = 0;
-      int iDot = visibilityMap.length << 5;
+      int iDot = visibilityMap.size();//.length << 5;
       screenCoordinateCount = 0;
       if (iDot > dotCount)
         iDot = dotCount;
       while (--iDot >= 0) {
-        if (!getBit(visibilityMap, iDot))
+//        if (!getBit(visibilityMap, iDot))
+          if (!visibilityMap.get(iDot))
           continue;
         //        intensities[iintensities++] = intensitiesTransformed[iDot];
         Vector3f vertex = verticesTransformed[iDot];

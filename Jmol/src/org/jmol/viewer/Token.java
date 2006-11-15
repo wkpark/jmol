@@ -113,7 +113,7 @@ class Token {
   final static int connect      = command |  7 | embeddedExpression;
   final static int data         = command |  8 | showparam;
   final static int define       = command |  9 | expressionCommand;
-  final static int dots         = command | 10 | bool;
+  final static int dots         = command | 10 | embeddedExpression | bool;
   final static int echo         = command | 11 | setparam | specialstring;
   final static int exit         = command | 12;
   final static int hbond        = command | 13 | setparam | bool;
@@ -172,7 +172,7 @@ class Token {
   final static int meshRibbon   = command | 84;
   final static int halo         = command | 85;
   final static int rocket       = command | 86;
-  final static int geosurface   = command | 87;
+  final static int geosurface   = command | 87 | embeddedExpression;
   final static int moveto       = command | 88 | negnums | embeddedExpression;
   final static int bondorder    = command | 89;
   final static int console      = command | 90;

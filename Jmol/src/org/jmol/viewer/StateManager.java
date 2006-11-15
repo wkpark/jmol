@@ -494,7 +494,7 @@ class StateManager {
       + ";stereo;defaultdirectory;percentvdwatom;zerobasedxyzrasmol;"
       + ";bondradiusmilliangstroms;bondtolerance;minbonddistance;autobond;"
       + ";debugscript;frank;showaxes;showunitcell;showboundbox;"
-      + ";axeswindow;axesunitcell;axesmolecular;windowcentered;";
+      + ";slab;depth;zoom;axeswindow;axesunitcell;axesmolecular;windowcentered;";
        
     void clearVolatileProperties() {
       Enumeration e;

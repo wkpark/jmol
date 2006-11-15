@@ -523,7 +523,9 @@ class TransformManager {
   private void calcScale(String from) {
     setZoomParameters();
     scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomPercent / 100;
+    System.out.println(from + " " + scalePixelsPerAngstrom + " " + rotationRadius);
   }
+  
 
   void setZoomEnabled(boolean zoomEnabled) {
     if (this.zoomEnabled != zoomEnabled) {
@@ -662,6 +664,7 @@ class TransformManager {
       return;
     float backupDistance = cameraDistance - minimumZ + 1f;
     rotationRadius += backupDistance / scalePixelsPerAngstrom;
+    System.out.println("checkcameraldistance"+rotationRadius);
   }
 
   /* ***************************************************************
@@ -728,6 +731,8 @@ class TransformManager {
      * of any calculation that would change the rotation radius.  hansonr
      * 
      */
+    System.out.println("defaultscale "+radius + (screenPixelCount / 2f / radius
+        * cameraScaleFactor()));
     return screenPixelCount / 2f / radius
         * cameraScaleFactor();
   }
@@ -976,7 +981,9 @@ class TransformManager {
               + " -> z=" + z);
           haveNotifiedCamera = true;
         }
-        increaseRotationRadius = true;
+        //increaseRotationRadius = true;
+        //the above removed because it messes up state restoration of isosurfaces
+        //-- just let it be! 
         if (z < minimumZ)
           minimumZ = z;
         if (z <= 0) {
@@ -1286,9 +1293,9 @@ class TransformManager {
     }
     float tX = getTranslationXPercent();
     float tY = getTranslationYPercent();
-    if (zoomPercent != 100 || tX != 0 || tY != 0) {
+    if (true || zoomPercent != 100 || tX != 0 || tY != 0) {
       truncate1(sb, zoomPercent);
-      if (tX != 0 || tY != 0) {
+      if (true || tX != 0 || tY != 0) {
         truncate1(sb, tX);
         truncate1(sb, tY);
       }

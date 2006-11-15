@@ -198,8 +198,12 @@ class LcaoCartoon extends Isosurface {
   }
     
   String getID(String id, int i) {
+    // remove "-" from "-px" "-py" "-pz" because we never want to have
+    // both "pz" and "-pz" on the same atom
+    // but we can have "-sp3a" and "sp3a"
     return (id != null ? id : "lcao_" + (i + 1)
-        + (thisType == null ? "" : viewer.simpleReplace(thisType, "-", "_")));
+        + (thisType == null ? "" : viewer.simpleReplace(thisType, "-",
+            (thisType.indexOf("-p") == 0 ? "" : "_"))));
   }
 
 }

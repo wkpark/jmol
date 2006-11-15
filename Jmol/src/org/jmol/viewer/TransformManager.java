@@ -659,14 +659,6 @@ class TransformManager {
     return perspectiveDepth;
   }
 
-  void checkCameraDistance() {
-    if (!increaseRotationRadius || !windowCentered)
-      return;
-    float backupDistance = cameraDistance - minimumZ + 1f;
-    rotationRadius += backupDistance / scalePixelsPerAngstrom;
-    System.out.println("checkcameraldistance"+rotationRadius);
-  }
-
   /* ***************************************************************
    * SCREEN SCALING
    ****************************************************************/
@@ -851,18 +843,12 @@ class TransformManager {
     this.axesOrientationRasmol = axesOrientationRasmol;
   }
 
-  boolean increaseRotationRadius;
-  float minimumZ;
-
   private final Vector3f perspectiveOffset = new Vector3f(0, 0, 0);
 
   synchronized void finalizeTransformParameters() {
     calcTransformMatrix();
     calcSlabAndDepthValues();
-    increaseRotationRadius = false;
-    minimumZ = Float.MAX_VALUE;
     haveNotifiedNaN = false;
-    haveNotifiedCamera = false;
     // lock in the perspective so that when you change
     // centers there is no jump
     if(windowCentered) {
@@ -974,33 +960,18 @@ class TransformManager {
           Logger.debug("NaN seen in TransformPoint");
         haveNotifiedNaN = true;
         z = 1;
-      } else {
-        if (!spinOn && !haveNotifiedCamera) {
-          Logger.debug("need to back up the camera");
-          Logger.debug("point3fScreenTemp.z=" + point3fScreenTemp.z
-              + " -> z=" + z);
-          haveNotifiedCamera = true;
-        }
-        //increaseRotationRadius = true;
-        //the above removed because it messes up state restoration of isosurfaces
-        //-- just let it be! 
-        if (z < minimumZ)
-          minimumZ = z;
-        if (z <= 0) {
-          if (!spinOn && !haveNotifiedCamera) {
-            Logger.debug("WARNING! DANGER! z <= 0! transformPoint()"
-                + " point=" + pointAngstroms + "  ->  " + point3fScreenTemp);
-            haveNotifiedCamera = true;
-          }
-          z = 1;
-        }
+      } else if (z <= 0) {
+        //just don't let z go past 1  BH 11/15/06
+        z = 1;
       }
     }
     point3fScreenTemp.z = z;
     if (perspectiveDepth) {
       float perspectiveFactor = cameraDistanceFloat / z;
       if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
-        perspectiveFactor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)/(MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH) * (1 - perspectiveFactor);
+        perspectiveFactor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+            / (MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+            * (1 - perspectiveFactor);
       point3fScreenTemp.x *= perspectiveFactor;
       point3fScreenTemp.y *= perspectiveFactor;
     }
@@ -1017,7 +988,7 @@ class TransformManager {
     point3iScreenTemp.x = (int) point3fScreenTemp.x;
     point3iScreenTemp.y = (int) point3fScreenTemp.y;
     point3iScreenTemp.z = (int) point3fScreenTemp.z;
-    
+
     return point3iScreenTemp;
   }
 

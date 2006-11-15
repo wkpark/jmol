@@ -151,7 +151,6 @@ class RepaintManager {
   void render(Graphics3D g3d, Rectangle rectClip,
                      Frame frame, int displayModelID) {
     frameRenderer.render(g3d, rectClip, frame, displayModelID);
-    viewer.checkCameraDistance();
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null)
       g3d.drawRect(viewer.getColixRubberband(),

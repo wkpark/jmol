@@ -648,13 +648,6 @@ public class Viewer extends JmolViewer {
     transformManager.scaleFitToScreen();
   }
 
-  void checkCameraDistance() {
-    //RepaintManager
-    if (!allowCameraMove())
-      return;
-    transformManager.checkCameraDistance();
-  }
-
   private void setScaleAngstromsPerInch(float angstromsPerInch) {
     //Eval.setScale3d
     transformManager.setScaleAngstromsPerInch(angstromsPerInch);

@@ -4879,7 +4879,7 @@ class Eval { //implements Runnable {
 
   void pmesh() throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_PMESH);
-    viewer.setShapeProperty(JmolConstants.SHAPE_PMESH, "init", null);
+    viewer.setShapeProperty(JmolConstants.SHAPE_PMESH, "init", getCommand());
     Object t;
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;

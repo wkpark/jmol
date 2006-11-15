@@ -32,6 +32,8 @@ class Pmesh extends MeshCollection {
 
   boolean isOnePerLine;
   boolean isFixed;  
+  String script;
+  int nUnnamed;
 
   void initShape() {
     myType = "pmesh";
@@ -43,6 +45,8 @@ class Pmesh extends MeshCollection {
     if ("init" == propertyName) {
       isFixed = false;
       isOnePerLine = false;
+      script = (String)value;
+      
       super.setProperty("thisID", null, null);
       return;
     }
@@ -176,6 +180,9 @@ class Pmesh extends MeshCollection {
         modelIndex = -2 - modelIndex;
     }
     currentMesh.modelIndex = modelIndex;
+    if (currentMesh.thisID == null)
+      currentMesh.thisID = "pmesh"+(++nUnnamed);
+    currentMesh.scriptCommand = script;
   }
 
 
@@ -191,4 +198,5 @@ class Pmesh extends MeshCollection {
           : 0);
     }
   }
+  
 }

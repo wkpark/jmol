@@ -5171,8 +5171,8 @@ class Isosurface extends MeshCollection {
         continue;
       Mesh mesh = meshes[i];
       appendCmd(s, cmd);
-      appendCmd(s, getMeshState(mesh, myType));
-      s.append(getColorCommand(myType, mesh.colix));
+      s.append(getMeshState(mesh, myType));
+      s.append(getColorCommand("$" + mesh.thisID, mesh.colix));
     }
     return s.toString();
   }

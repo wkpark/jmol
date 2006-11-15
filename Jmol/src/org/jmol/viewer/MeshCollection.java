@@ -376,13 +376,15 @@ abstract class MeshCollection extends SelectionIndependentShape {
     if (mesh == null)
       return "";
     if (Graphics3D.isColixTranslucent(mesh.colix))
-      appendCmd(s, type + " off");
+      appendCmd(s, type + " translucent");
     if (mesh.showPoints)
       appendCmd(s, type + " dots");
     if (mesh.drawTriangles)
       appendCmd(s, type + " mesh");
     if (!mesh.fillTriangles)
       appendCmd(s, type + " nofill");
+    if (!mesh.visible)
+      appendCmd(s, type + " off");
     return s.toString();
   }
 }

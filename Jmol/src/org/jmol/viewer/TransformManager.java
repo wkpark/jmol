@@ -71,7 +71,10 @@ class TransformManager {
     commands.append("center " + StateManager.encloseCoord(fixedRotationCenter) + ";\n");
     commands.append(getMoveToText(0) + ";\n");
     commands.append("slab " + slabPercentSetting + ";depth "
-        + depthPercentSetting + (slabEnabled ? ";slab on" : "") + ";\n");
+        + depthPercentSetting 
+        + (slabEnabled ? ";slab on" : "") 
+        + (!zoomEnabled ? ";zoom off" : "")
+        + ";\n");
     commands.append("set spin X " + (int)spinX);
     commands.append(";set spin Y " + (int)spinY);
     commands.append(";set spin Z " + (int)spinZ);

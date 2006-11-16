@@ -1318,23 +1318,36 @@ final public class Graphics3D {
    * ***************************************************************/
 
   /* entries 0 through 3 are reserved and are special
-     TRANSLUCENT and OPAQUE are used to inherit
+     INHERIT_TRANSLUCENT and INHERIT_OPAQUE are used to inherit
      the underlying color, but change the translucency
 
      Note that colors are not actually translucent. Rather,
      they are 'screened' where every-other pixel is turned
      on. 
+     
+     0x8000 changable flag
+     0x4000 translucent flag
+     0x0000 inherit color and translucency
+     0x0001 inherit color; make opaque
+     0x4001 inherit color; make translucent
+     0x0002 special palette ("group", "structure", etc.); opaque 
+     0x4002 special palette ("group", "structure", etc.); translucent 
+     0x0004 black...
+       ....
+     0x0017  ...gold
+     0x00?? [elements]
   */
   final static short TRANSLUCENT_MASK = 0x4000;
   final static short OPAQUE_MASK  = ~TRANSLUCENT_MASK;
   final static short CHANGABLE_MASK = (short)0x8000; // negative
   final static short UNMASK_CHANGABLE_TRANSLUCENT = 0x3FFF;
 
-  public final static short NULL_COLIX   = 0;
-  public final static short TRANSLUCENT  = 1;
-  public final static short OPAQUE       = 2;
-  public final static short UNRECOGNIZED = 3;
-  public final static short SPECIAL_COLIX_MAX = 4;
+  public final static short INHERIT              = 0;
+  public final static short INHERIT_OPAQUE       = 1;
+  public final static short INHERIT_TRANSLUCENT  = 1 | TRANSLUCENT_MASK;
+  public final static short USE_PALETTE          = 2;
+  public final static short UNUSED_OPTION        = 3;
+  public final static short SPECIAL_COLIX_MAX    = 4;
 
   public final static short BLACK       = 4;
   public final static short ORANGE      = 5;
@@ -1440,10 +1453,6 @@ final public class Graphics3D {
     return (colix & TRANSLUCENT_MASK) != 0;
   }
 
-  public final static boolean isColixInherentlyTranslucent(short colix) {
-    return (colix & TRANSLUCENT_MASK) != 0 || colix == TRANSLUCENT;
-  }
-
   public final static short getTranslucentColix(short colix,
                                                 boolean translucent) {
     return (short)(translucent ?
@@ -1472,16 +1481,11 @@ final public class Graphics3D {
                                                UNMASK_CHANGABLE_TRANSLUCENT]);
   }
 
-  public final static short setTranslucent(short colix,
-                                           boolean isTranslucent) {
-    if (isTranslucent) {
-      if (colix >= 0 && colix < SPECIAL_COLIX_MAX)
-        return TRANSLUCENT;
-      return (short)(colix | TRANSLUCENT_MASK);
-    }
-    if (colix >= 0 && colix < SPECIAL_COLIX_MAX)
-      return OPAQUE;
-    return (short)(colix & OPAQUE_MASK);
+  public final static short setTranslucent(short colix, boolean isTranslucent) {
+    if (colix == INHERIT)
+      colix = INHERIT_OPAQUE;
+    return (short) (isTranslucent ? colix | TRANSLUCENT_MASK : colix
+        & OPAQUE_MASK);
   }
 
   public final static short getColix(String colorName) {
@@ -1489,34 +1493,35 @@ final public class Graphics3D {
     if (argb != 0)
       return getColix(argb);
     if ("none".equalsIgnoreCase(colorName))
-      return 0;
+      return INHERIT;
     if ("translucent".equalsIgnoreCase(colorName))
-      return TRANSLUCENT;
+      return INHERIT_TRANSLUCENT;
     if ("opaque".equalsIgnoreCase(colorName))
-      return OPAQUE;
-    return UNRECOGNIZED;
+      return INHERIT_OPAQUE;
+    return USE_PALETTE;
   }
 
   public final static short getColix(Object obj) {
     if (obj == null)
-      return 0;
+      return INHERIT;
     if (obj instanceof Byte)
-      return (((Byte)obj).byteValue() == 0 ? 0 : Graphics3D.UNRECOGNIZED);
+      return (((Byte) obj).byteValue() == 0 ? INHERIT
+          : Graphics3D.USE_PALETTE);
     if (obj instanceof Integer)
-      return getColix(((Integer)obj).intValue());
+      return getColix(((Integer) obj).intValue());
     if (obj instanceof String)
-      return getColix((String)obj);
+      return getColix((String) obj);
     Logger.debug("?? getColix(" + obj + ")");
     return HOTPINK;
   }
 
   public final static short inheritColix(short myColix, short parentColix) {
     switch (myColix) {
-    case 0:
+    case INHERIT:
       return parentColix;
-    case TRANSLUCENT:
+    case INHERIT_TRANSLUCENT:
       return (short)(parentColix | TRANSLUCENT_MASK);
-    case OPAQUE:
+    case INHERIT_OPAQUE:
       return (short)(parentColix & OPAQUE_MASK);
     default:
       return myColix;
@@ -1526,7 +1531,7 @@ final public class Graphics3D {
   public final static short inheritColix(short myColix,
                                          short parentColix,
                                          short grandParentColix) {
-    if (myColix >= SPECIAL_COLIX_MAX)
+    if ((myColix & OPAQUE_MASK) >= SPECIAL_COLIX_MAX)
       return myColix;
     parentColix = inheritColix(parentColix, grandParentColix);
     if (myColix == 0)

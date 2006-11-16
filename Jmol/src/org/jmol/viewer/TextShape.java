@@ -144,8 +144,8 @@ class TextShape extends Shape {
     }
 
     if ("target" == propertyName) {
-      String target = (String)value;
-      isAll = ((String)value).equals("all");
+      String target = (String) value;
+      isAll = ((String) value).equals("all");
       if (isAll || target.equals("none"))
         currentText = null;
       //handled by individual types -- echo or hover
@@ -174,7 +174,7 @@ class TextShape extends Shape {
         currentText.setMovableXPercent(((Integer) value).intValue());
       return;
     }
-    
+
     if ("%ypos" == propertyName) {
       if (currentText != null)
         currentText.setMovableYPercent(((Integer) value).intValue());
@@ -183,9 +183,9 @@ class TextShape extends Shape {
 
     if ("xyz" == propertyName) {
       if (currentText != null)
-        currentText.setXYZ((Point3f)value);
+        currentText.setXYZ((Point3f) value);
       return;
     }
-}
+  }
 }
 

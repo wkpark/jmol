@@ -26,11 +26,11 @@ package org.jmol.viewer;
 
 class Rockets extends Mps {
 
-  Mps.Mpspolymer allocateMpspolymer(Polymer polymer) {
+  Mps.MpsShape allocateMpspolymer(Polymer polymer) {
     return new Cchain(polymer);
   }
 
-  class Cchain extends Mps.Mpspolymer {
+  class Cchain extends Mps.MpsShape {
 
     Cchain(Polymer polymer) {
       super(polymer, -2, 3000, 500, 5000);

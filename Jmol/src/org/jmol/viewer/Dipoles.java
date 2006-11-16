@@ -316,7 +316,7 @@ class Dipoles extends SelectionIndependentShape {
 
   private void setColixDipole(short colix, int pid, short bondTypeMask,
                               BitSet bs) {
-    if (colix == Graphics3D.UNRECOGNIZED)
+    if (colix == Graphics3D.USE_PALETTE)
       return; // not implemented
     BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
     while (iter.hasNext()) {
@@ -515,13 +515,16 @@ class Dipoles extends SelectionIndependentShape {
     StringBuffer s = new StringBuffer();
     int thisModel = -1;
     int modelCount = frame.modelCount;
-    for (int i = 0; i < dipoleCount; i++)
-      if (dipoles[i].isValid) {
-        if (modelCount > 1 && dipoles[i].modelIndex != thisModel)
+    for (int i = 0; i < dipoleCount; i++) {
+      Dipole dipole = dipoles[i];
+      if (dipole.isValid) {
+        if (modelCount > 1 && dipole.modelIndex != thisModel)
           appendCmd(s, "frame "
-              + viewer.getModelName(thisModel = dipoles[i].modelIndex));
-        s.append(dipoles[i].getShapeState());
+              + viewer.getModelName(thisModel = dipole.modelIndex));
+        s.append(dipole.getShapeState());
+        appendCmd(s, getColorCommand("dipole", dipole.colix));
       }
+    }
     appendCmd(s, "set dipoleScale " + dipoleVectorScale);
     return s.toString();
   }

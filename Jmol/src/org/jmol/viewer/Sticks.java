@@ -105,7 +105,7 @@ class Sticks extends Shape {
         }
         return;
       }
-      if (colix == Graphics3D.UNRECOGNIZED)
+      if (colix == Graphics3D.USE_PALETTE)
         return; //palettes not implemented for bonds
       BondIterator iter = (isBonds ? frame.getBondIterator(bsSelected) : frame
           .getBondIterator(myMask, bsSelected));
@@ -113,7 +113,7 @@ class Sticks extends Shape {
         int iBond = iter.nextIndex();
         Bond bond = iter.next();
         bond.setColix(colix);
-        bsColixSet.set(iBond, colix != 0 || bond.isTranslucent());
+        bsColixSet.set(iBond, colix != Graphics3D.INHERIT);
       }
       return;
     }

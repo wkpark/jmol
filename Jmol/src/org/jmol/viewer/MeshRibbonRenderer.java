@@ -26,7 +26,7 @@ package org.jmol.viewer;
 
 class MeshRibbonRenderer extends StrandsRenderer {
 
-  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+  void renderMpspolymer(Mps.MpsShape mpspolymer) {
     if (wingVectors == null)
       return;
     setStrandCount(7);

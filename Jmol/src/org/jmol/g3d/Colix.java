@@ -41,7 +41,7 @@ import org.jmol.util.Logger;
  *</p>
  *<p>
  * The value 1 is used to indicate TRANSLUCENT, but with the color
- * coming from the parent. The value 2 indicates OPAQUE, but with the
+ * coming from the parent. The value 2 indicates INHERIT_OPAQUE, but with the
  * color coming from the parent.
  *</p>
  *

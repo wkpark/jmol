@@ -32,7 +32,7 @@ class RocketsRenderer extends MpsRenderer {
 
   final static float MIN_CONE_HEIGHT = 0.05f;
 
-  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+  void renderMpspolymer(Mps.MpsShape mpspolymer) {
     Rockets.Cchain cchain = (Rockets.Cchain)mpspolymer;
     if (!(cchain.polymer instanceof AminoPolymer))
       return;

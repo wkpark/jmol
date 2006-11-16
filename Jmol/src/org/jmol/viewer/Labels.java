@@ -30,18 +30,13 @@ import org.jmol.util.ArrayUtil;
 import java.util.Hashtable;
 import java.util.BitSet;
 
-class Labels extends Shape {
+class Labels extends AtomShape {
 
-  Atom[] atoms;
   String[] strings;
   String[] formats;
-  short[] colixes;
-  short[] paletteIDs;
   short[] bgcolixes;
   byte[] fids;
   int[] offsets;
-  BitSet bsSizeSet;
-  BitSet bsColixSet;
 
   Hashtable atomLabels = new Hashtable();
   Text text;
@@ -77,7 +72,7 @@ class Labels extends Shape {
     defaultBgcolix = 0; //"none" -- off
     defaultOffset = zeroOffset = (JmolConstants.LABEL_DEFAULT_X_OFFSET << 8)
          | JmolConstants.LABEL_DEFAULT_Y_OFFSET;
-    atoms = frame.atoms;
+    super.initShape();
   }
 
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
@@ -85,7 +80,7 @@ class Labels extends Shape {
       int n = 0;
       int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
       short colix = Graphics3D.getColix(value);
-      for (int i = frame.atomCount; --i >= 0;)
+      for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
           setColix(i, colix, pid, n++);
       if (n == 0 || !defaultsOnlyForNone) {
@@ -99,7 +94,7 @@ class Labels extends Shape {
       if (bsSizeSet == null)
         bsSizeSet = new BitSet();
       String strLabel = (String) value;
-      for (int i = frame.atomCount; --i >= 0;)
+      for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i)) {
           Atom atom = atoms[i];
           String label = atom.formatLabel(strLabel);
@@ -137,7 +132,7 @@ class Labels extends Shape {
 
       short bgcolix = Graphics3D.getColix(value);
       int n = 0;
-      for (int i = frame.atomCount; --i >= 0;)
+      for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
           setBgcolix(i, bgcolix, n++);
       if (n == 0 || !defaultsOnlyForNone)
@@ -156,7 +151,7 @@ class Labels extends Shape {
       }
       byte fid = g3d.getFontFid(fontsize);
       int n = 0;
-      for (int i = frame.atomCount; --i >= 0;)
+      for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
           setFont(i, fid, n++);
       if (n == 0 || !defaultsOnlyForNone)
@@ -167,7 +162,7 @@ class Labels extends Shape {
     if ("font" == propertyName) {
       byte fid = ((Font3D) value).fid;
       int n = 0;
-      for (int i = frame.atomCount; --i >= 0;)
+      for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
           setFont(i, fid, n++);
       if (n == 0 || !defaultsOnlyForNone)
@@ -186,7 +181,7 @@ class Labels extends Shape {
       else if (offset == zeroOffset)
         offset = 0;
       int n = 0;
-      for (int i = frame.atomCount; --i >= 0;)
+      for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
           setOffsets(i, offset, n++);
       if (n == 0 || !defaultsOnlyForNone)
@@ -202,7 +197,7 @@ class Labels extends Shape {
       else if (type.equalsIgnoreCase("center"))
         alignment = Text.CENTER;
       int n = 0;
-      for (int i = frame.atomCount; --i >= 0;)
+      for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
           setAlignment(i, alignment, n++);
       if (n == 0 || !defaultsOnlyForNone)
@@ -213,7 +208,7 @@ class Labels extends Shape {
     if ("pointer" == propertyName) {
       int pointer = ((Integer)value).intValue();
       int n = 0;
-      for (int i = frame.atomCount; --i >= 0;)
+      for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
           setPointer(i, pointer, n++);
       if (n == 0 || !defaultsOnlyForNone)
@@ -224,7 +219,7 @@ class Labels extends Shape {
     if ("front" == propertyName) {
       boolean TF = ((Boolean)value).booleanValue();
       int n = 0;
-      for (int i = frame.atomCount; --i >= 0;)
+      for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
           setFront(i, TF, n++);
       if (n == 0 || !defaultsOnlyForNone)
@@ -235,7 +230,7 @@ class Labels extends Shape {
     if ("group" == propertyName) {
       boolean TF = ((Boolean)value).booleanValue();
       int n = 0;
-      for (int i = frame.atomCount; --i >= 0;)
+      for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
           setGroup(i, TF, n++);
       if (n == 0 || !defaultsOnlyForNone)
@@ -245,7 +240,7 @@ class Labels extends Shape {
 
     if ("toggleLabel" == propertyName) {
       // toggle
-      for (int atomIndex = frame.atomCount; --atomIndex >= 0;)
+      for (int atomIndex = atomCount; --atomIndex >= 0;)
         if (bsSelected.get(atomIndex)) {
           Atom atom = atoms[atomIndex];
           if (strings != null && strings.length > atomIndex
@@ -268,18 +263,7 @@ class Labels extends Shape {
   }
 
   void setColix(int i, short colix, int pid, int n) {
-    if (colixes == null || i >= colixes.length) {
-      if (colix == 0)
-        return;
-      colixes = ArrayUtil.ensureLength(colixes, i + 1);
-      paletteIDs = ArrayUtil.ensureLength(paletteIDs, i + 1);
-    }
-    if (bsColixSet == null)
-      bsColixSet = new BitSet();
-    colixes[i] = ((colix != Graphics3D.UNRECOGNIZED) ? colix : viewer
-        .getColixAtomPalette(frame.getAtomAt(i), pid));
-    paletteIDs[i] = (short)pid;
-    bsColixSet.set(i, colixes[i] != 0);
+    setColixAndPalette(colix, pid, i);
     text = (Text) atomLabels.get(atoms[i]);
     if (text != null)
       text.setColix(colixes[i]);
@@ -411,7 +395,7 @@ class Labels extends Shape {
   String getShapeState() {
     Hashtable temp = new Hashtable();
     Hashtable temp2 = new Hashtable();
-    for (int i = frame.atomCount; --i >= 0;) {
+    for (int i = atomCount; --i >= 0;) {
       if (bsSizeSet == null || !bsSizeSet.get(i))
         continue;
       setStateInfo(temp, i, "label " + formats[i]);
@@ -440,6 +424,6 @@ class Labels extends Shape {
         setStateInfo(temp2, i, getFontCommand("label", Font3D
             .getFont3D(fids[i])));
     }
-    return getShapeCommands(temp, temp2, frame.atomCount);
+    return getShapeCommands(temp, temp2, atomCount);
   }  
 }

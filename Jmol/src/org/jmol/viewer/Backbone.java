@@ -29,11 +29,11 @@ import java.util.BitSet;
 
 class Backbone extends Mps {
 
-  Mps.Mpspolymer allocateMpspolymer(Polymer polymer) {
+  Mps.MpsShape allocateMpspolymer(Polymer polymer) {
     return new Bbpolymer(polymer);
   }
 
-  class Bbpolymer extends Mps.Mpspolymer {
+  class Bbpolymer extends Mps.MpsShape {
 
     Bbpolymer(Polymer polymer) {
       super(polymer, 1, 1500, 500, 2000);

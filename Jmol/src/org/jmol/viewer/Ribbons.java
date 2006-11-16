@@ -26,11 +26,11 @@ package org.jmol.viewer;
 
 class Ribbons extends Mps {
 
-  Mps.Mpspolymer allocateMpspolymer(Polymer polymer) {
+  Mps.MpsShape allocateMpspolymer(Polymer polymer) {
     return new Schain(polymer);
   }
 
-  class Schain extends Mps.Mpspolymer {
+  class Schain extends Mps.MpsShape {
     Schain(Polymer polymer) {
       super(polymer, -2, 3000, 800, 5000);
     }

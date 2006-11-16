@@ -30,16 +30,12 @@ import java.util.BitSet;
 import org.jmol.g3d.Graphics3D;
 import java.util.Hashtable;
 
-class Balls extends Shape {
+class Balls extends AtomShape {
   
-  BitSet bsSizeSet;
-  BitSet bsColixSet;
-
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
-    Atom[] atoms = frame.atoms;
     int bsLength = bsSelected.length();
     for (int i = bsLength; --i >= 0; ) {
       if (bsSelected.get(i)) {
@@ -51,12 +47,10 @@ class Balls extends Shape {
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
-    int atomCount = frame.atomCount;
-    Atom[] atoms = frame.atoms;
     if ("color" == propertyName) {
       short colix = Graphics3D.getColix(value);
-      if (colix == Graphics3D.UNRECOGNIZED)
-        colix = 0; //CPK
+      if (colix == Graphics3D.INHERIT)
+        colix = Graphics3D.USE_PALETTE;
       if (bsColixSet == null)
         bsColixSet = new BitSet();
       int pid = (value instanceof Byte ? ((Byte) value).intValue()
@@ -64,15 +58,16 @@ class Balls extends Shape {
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i)) {
           Atom atom = atoms[i];
-          atom.setColixAtom(colix != 0 ? colix : viewer.getColixAtomPalette(
-              atom, pid));
-          bsColixSet.set(i, colix != 0 || pid > 0 || atom.isTranslucent());
+          atom.setColixAtom(setColix(colix, pid, atom));
+          bsColixSet.set(i, colix != Graphics3D.USE_PALETTE || pid > 0);
           atom.setPaletteID((short) pid);
         }
       return;
     }
     if ("translucency" == propertyName) {
       boolean isTranslucent = (value == "translucent");
+      if (bsColixSet == null)
+        bsColixSet = new BitSet();
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i)) {
           atoms[i].setTranslucent(isTranslucent);
@@ -84,8 +79,7 @@ class Balls extends Shape {
   }
 
   void setModelClickability() {
-    Atom[] atoms = frame.atoms;
-    for (int i = frame.atomCount; --i >= 0;) {
+    for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       atom.clickabilityFlags = 0;
       if ((atom.shapeVisibilityFlags & myVisibilityFlag) == 0
@@ -96,11 +90,10 @@ class Balls extends Shape {
   }
   
   void setVisibilityFlags(BitSet bs) {
-    Atom[] atoms = frame.atoms;
     int displayModelIndex = viewer.getDisplayModelIndex();
     boolean isOneFrame = (displayModelIndex >= 0); 
     boolean showHydrogens = viewer.getShowHydrogens();
-    for (int i = frame.atomCount; --i >= 0; ) {
+    for (int i = atomCount; --i >= 0; ) {
       Atom atom = atoms[i];
       atom.shapeVisibilityFlags &= (
           ~JmolConstants.ATOM_IN_MODEL
@@ -118,8 +111,6 @@ class Balls extends Shape {
   }
 
   String getShapeState() {
-    int atomCount = frame.atomCount;
-    Atom[] atoms = frame.atoms;
     Hashtable temp = new Hashtable();
     for (int i = 0; i < atomCount; i++) {
       if (bsSizeSet != null && bsSizeSet.get(i))

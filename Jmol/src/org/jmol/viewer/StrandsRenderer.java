@@ -32,7 +32,7 @@ class StrandsRenderer extends MpsRenderer {
   float strandSeparation;
   float baseOffset;
 
-  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+  void renderMpspolymer(Mps.MpsShape mpspolymer) {
     if (wingVectors == null)
       return;
     setStrandCount(((Strands) shape).strandCount);

@@ -224,10 +224,8 @@ class Polyhedra extends SelectionIndependentShape {
       if (p == null)
         continue;
       int atomIndex = p.centralAtom.atomIndex;
-      if (centers.get(atomIndex)) {
-        p.myColix = ((colix != Graphics3D.UNRECOGNIZED) ? colix
-            : viewer.getColixAtomPalette(frame.getAtomAt(atomIndex), pid));
-      }
+      if (centers.get(atomIndex))
+        p.myColix = setColix(colix, pid, atomIndex);
     }
   }
 
@@ -250,7 +248,7 @@ class Polyhedra extends SelectionIndependentShape {
 
   void buildPolyhedra() {
     boolean useBondAlgorithm = radius == 0 || bondedOnly;
-    for (int i = frame.atomCount; --i >= 0;) {
+    for (int i = frame.atomCount; --i >= 0;)
       if (centers.get(i)) {
         Polyhedron p = (
             haveBitSetVertices ? constructBitSetPolyhedron(i) 
@@ -261,7 +259,6 @@ class Polyhedra extends SelectionIndependentShape {
         if (haveBitSetVertices)
           return;
       }
-    }
   }
 
   Polyhedron constructBondsPolyhedron(int atomIndex) {

@@ -34,7 +34,7 @@ class CartoonRenderer extends RocketsRenderer {
   boolean newRockets = true;
   boolean renderAsRockets;
   
-  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+  void renderMpspolymer(Mps.MpsShape mpspolymer) {
     Cartoon.Cchain schain = (Cartoon.Cchain) mpspolymer;
     if (schain.wingVectors == null || isCarbohydrate)
       return;

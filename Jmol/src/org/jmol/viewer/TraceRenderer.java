@@ -26,7 +26,7 @@ package org.jmol.viewer;
 
 class TraceRenderer extends MpsRenderer {
 
-  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+  void renderMpspolymer(Mps.MpsShape mpspolymer) {
     calcScreenControlPoints();
     render1();
   }

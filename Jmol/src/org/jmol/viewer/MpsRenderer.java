@@ -36,7 +36,7 @@ import java.util.BitSet;
 
 abstract class MpsRenderer extends MeshRenderer {
 
-  Mps.Mpspolymer thisChain;
+  Mps.MpsShape thisChain;
 
   int aspectRatio;
   int hermiteLevel;
@@ -76,7 +76,7 @@ abstract class MpsRenderer extends MeshRenderer {
       if ((mcpsmodel.modelVisibilityFlags & myVisibilityFlag) == 0)
         continue;
       for (int c = mcpsmodel.getMpspolymerCount(); --c >= 0;) {
-        Mps.Mpspolymer mpspolymer = mcpsmodel.getMpspolymer(c);
+        Mps.MpsShape mpspolymer = mcpsmodel.getMpspolymer(c);
         if (mpspolymer.monomerCount >= 2 && initializePolymer(mpspolymer)) {
           renderMpspolymer(mpspolymer);
           freeTempArrays();
@@ -91,11 +91,11 @@ abstract class MpsRenderer extends MeshRenderer {
     viewer.freeTempBytes(structureTypes);
   }
 
-  abstract void renderMpspolymer(Mps.Mpspolymer mpspolymer);
+  abstract void renderMpspolymer(Mps.MpsShape mpspolymer);
 
   Point3f[] tempPoints;
 
-  private boolean initializePolymer(Mps.Mpspolymer schain) {
+  private boolean initializePolymer(Mps.MpsShape schain) {
 
     boolean invalidate = false;
     boolean TF = viewer.getHighResolution();

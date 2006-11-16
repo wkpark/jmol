@@ -26,7 +26,7 @@ package org.jmol.viewer;
 
 class RibbonsRenderer extends MeshRibbonRenderer {
 
-  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+  void renderMpspolymer(Mps.MpsShape mpspolymer) {
     if (wingVectors == null)
       return;
     render1(isNucleic ? 1f : 0.5f, isNucleic ? 0f : 0.5f);

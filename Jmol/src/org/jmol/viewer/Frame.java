@@ -227,12 +227,6 @@ public final class Frame {
     frameRenderer = viewer.getFrameRenderer();
     g3d = viewer.getGraphics3D();
 
-    loadShape(JmolConstants.SHAPE_BALLS);
-    loadShape(JmolConstants.SHAPE_STICKS);
-    loadShape(JmolConstants.SHAPE_HSTICKS);
-    loadShape(JmolConstants.SHAPE_MEASURES);
-    loadShape(JmolConstants.SHAPE_UCCAGE);
-
     initializeBuild(nAtoms);
     
     mmset.setModelSetProperties(properties);
@@ -256,18 +250,18 @@ public final class Frame {
     Logger.info("frame: haveSymmetry:" + someModelsHaveSymmetry
         + " haveUnitcells:" + someModelsHaveUnitcells + " haveFractionalCoord:"
         + someModelsHaveFractionalCoordinates);
-    if (modelCount > 0 && adapter != null)
-      Logger
-          .info(modelCount
-              + " model"
-              + (modelCount == 1 ? "" : "s")
-              + " in this collection. Use getProperty \"modelInfo\" or"
-              + " getProperty \"auxiliaryInfo\" to inspect them.");
-
     currentModelIndex = -1;
     if (adapter == null) {
       mmset.setModelNameNumberProperties(0, "", 1, null, null, false);
     } else {
+      if (modelCount > 0)
+        Logger
+            .info(modelCount
+                + " model"
+                + (modelCount == 1 ? "" : "s")
+                + " in this collection. Use getProperty \"modelInfo\" or"
+                + " getProperty \"auxiliaryInfo\" to inspect them.");
+
       group3Lists = new String[modelCount + 1];
       group3Counts = new int[modelCount + 1][];
       for (int i = 0; i < modelCount; ++i) {
@@ -349,6 +343,12 @@ public final class Frame {
      * crystal cell must come first, in case atom coordinates
      * need to be transformed to fit in the crystal cell
      ****************************************************************/
+
+    loadShape(JmolConstants.SHAPE_BALLS);
+    loadShape(JmolConstants.SHAPE_STICKS);
+    loadShape(JmolConstants.SHAPE_HSTICKS);
+    loadShape(JmolConstants.SHAPE_MEASURES);
+    loadShape(JmolConstants.SHAPE_UCCAGE);
 
     doUnitcellStuff();
     doAutobond();

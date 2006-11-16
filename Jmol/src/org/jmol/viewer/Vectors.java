@@ -29,73 +29,62 @@ import java.util.Hashtable;
 
 import org.jmol.g3d.Graphics3D;
 
-class Vectors extends Shape {
+class Vectors extends AtomShape {
 
   String[] strings;
-  short[] mads;
-  short[] colixes;
-  BitSet bsSizeSet;
-  BitSet bsColixSet;
+  boolean isApplicable;
 
   void initShape() {
-    if (frame.hasVibrationVectors) {
-      mads = new short[frame.atomCount];
-      colixes = new short[frame.atomCount];
-    }
+    isApplicable = frame.hasVibrationVectors;
+    if (!isApplicable)
+      return;
+    super.initShape();
   }
 
   void setSize(int size, BitSet bsSelected) {
-    if (frame.hasVibrationVectors) {
-      if (bsSizeSet == null)
-        bsSizeSet = new BitSet();
-      short mad = (short) size;
-      //Atom[] atoms = frame.atoms;
-      boolean isVisible = (mad != 0);
-      for (int i = frame.atomCount; --i >= 0;)
-        if (bsSelected.get(i)) {
-          mads[i] = mad;
-          frame.atoms[i].setShapeVisibility(myVisibilityFlag, isVisible);
-          bsSizeSet.set(i, isVisible);
-        }
-    }
+    if (!isApplicable)
+      return;
+    if (bsSizeSet == null)
+      bsSizeSet = new BitSet();
+    short mad = (short) size;
+    boolean isVisible = (mad != 0);
+    for (int i = atomCount; --i >= 0;)
+      if (bsSelected.get(i)) {
+        if (mads == null)
+          mads = new short[atomCount];
+        mads[i] = mad;
+        bsSizeSet.set(i, isVisible);
+        atoms[i].setShapeVisibility(myVisibilityFlag, isVisible);
+      }
   }
 
-  void setProperty(String propertyName, Object value,
-                          BitSet bsSelected) {
-    if (frame.hasVibrationVectors) {
-      //Atom[] atoms = frame.atoms;
-      if ("color" == propertyName) {
-        if (bsColixSet == null)
-          bsColixSet = new BitSet();
-        short colix = Graphics3D.getColix(value);
-        for (int i = frame.atomCount; --i >= 0; )
-          if (bsSelected.get(i))
-            bsColixSet.set(i, (colixes[i] = colix) != 0);
-      }
-    } 
-  }
-  
-  void setModelClickability() {
-    if (mads == null)
+  void setProperty(String propertyName, Object value, BitSet bsSelected) {
+    if (!isApplicable)
       return;
-    Atom[] atoms = frame.atoms;
-    for (int i = frame.atomCount; --i >= 0; ) {
-      Atom atom = atoms[i];
-      if ((atom.shapeVisibilityFlags & myVisibilityFlag) != 0)
-        atom.clickabilityFlags |= myVisibilityFlag;
+    if ("color" == propertyName) {
+      if (bsColixSet == null)
+        bsColixSet = new BitSet();
+      int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
+      short colix = Graphics3D.getColix(value);
+      for (int i = atomCount; --i >= 0;)
+        if (bsSelected.get(i))
+          setColixAndPalette(colix, pid, i);
     }
   }
 
   String getShapeState() {
+    if (!isApplicable)
+      return "";
     Hashtable temp = new Hashtable();
     Hashtable temp2 = new Hashtable();
-    for (int i = frame.atomCount; --i >= 0;) {
+    for (int i = atomCount; --i >= 0;) {
       if (bsSizeSet == null || !bsSizeSet.get(i))
         continue;
       setStateInfo(temp, i, "vector " + (mads[i] / 1000f));
       if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp2, i, getColorCommand("vector", colixes[i]));
+        setStateInfo(temp2, i, getColorCommand("vector", paletteIDs[i],
+            colixes[i]));
     }
-    return getShapeCommands(temp, temp2, frame.atomCount);
-  }  
+    return getShapeCommands(temp, temp2, atomCount);
+  }
 }

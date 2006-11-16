@@ -26,11 +26,11 @@ package org.jmol.viewer;
 
 class Trace extends Mps {
 
-  Mps.Mpspolymer allocateMpspolymer(Polymer polymer) {
+  Mps.MpsShape allocateMpspolymer(Polymer polymer) {
     return new Tchain(polymer);
   }
 
-  class Tchain extends Mps.Mpspolymer {
+  class Tchain extends Mps.MpsShape {
     Tchain(Polymer polymer) {
       super(polymer, 600, 1500, 500, 1500);
     }    

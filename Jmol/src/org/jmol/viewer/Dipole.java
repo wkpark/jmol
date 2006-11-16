@@ -29,7 +29,10 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Point3f;
 import org.jmol.g3d.Graphics3D;
 
-class Dipole extends Shape {
+class Dipole {
+  
+  Viewer viewer;
+  Graphics3D g3d;
   String thisID = "";
   short mad;
   short colix = 0;
@@ -216,7 +219,6 @@ class Dipole extends Shape {
     if (!visible)
       s.append(" off");
     s.append(";\n");
-    appendCmd(s, getColorCommand("dipole", colix));
     return s.toString();
   }
 }

@@ -29,6 +29,7 @@ import java.util.BitSet;
 import java.util.Hashtable;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.ArrayUtil;
 
 class AtomShape extends Shape {
 
@@ -37,26 +38,30 @@ class AtomShape extends Shape {
   short[] paletteIDs;
   BitSet bsSizeSet;
   BitSet bsColixSet;
-
+  int atomCount;
+  Atom[] atoms;
+  
+  void initShape() {
+    atomCount = frame.atomCount;
+    atoms = frame.atoms;  
+  }
+  
   void setSize(int size, BitSet bsSelected) {
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
-    Atom[] atoms = frame.atoms;
     boolean isVisible = (size != 0);
-    for (int i = frame.atomCount; --i >= 0;)
+    for (int i = atomCount; --i >= 0;)
       if (bsSelected.get(i)) {
         if (mads == null)
-          mads = new short[frame.atomCount];
+          mads = new short[atomCount];
         Atom atom = atoms[i];
-        atom.setShapeVisibility(myVisibilityFlag, isVisible);
         mads[i] = atom.convertEncodedMad(size);
         bsSizeSet.set(i);
+        atom.setShapeVisibility(myVisibilityFlag, isVisible);
       }
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
-    int atomCount = frame.atomCount;
-    Atom[] atoms = frame.atoms;
     if ("color" == propertyName) {
       short colix = Graphics3D.getColix(value);
       if (bsColixSet == null)
@@ -68,11 +73,9 @@ class AtomShape extends Shape {
             colixes = new short[atomCount];
             paletteIDs = new short[atomCount];
           }
-          colixes[i] = ((colix != Graphics3D.UNRECOGNIZED)
-                        ? colix
-                        : viewer.getColixAtomPalette(atoms[i], pid));
+          colixes[i] = setColix(colix, pid, atoms[i]);
           paletteIDs[i] = (short) pid;
-          bsColixSet.set(i, colixes[i] != 0 || atoms[i].isTranslucent());
+          bsColixSet.set(i, colixes[i] != Graphics3D.INHERIT);
         }
       return;
     }
@@ -85,35 +88,45 @@ class AtomShape extends Shape {
           colixes[i] = Graphics3D.setTranslucent(colixes[i], isTranslucent);
           if (isTranslucent)
             bsColixSet.set(i);
-
         }
       return;
     }
+  }
+
+  void setColixAndPalette(short colix, int paletteID, int atomIndex) {
+    if (colixes == null || atomIndex >= colixes.length) {
+      if (colix == 0)
+        return;
+      colixes = ArrayUtil.ensureLength(colixes, atomIndex + 1);
+      paletteIDs = ArrayUtil.ensureLength(paletteIDs, atomIndex + 1);
+    }
+    if (bsColixSet == null)
+      bsColixSet = new BitSet();
+    bsColixSet.set(atomIndex, colix != Graphics3D.INHERIT || paletteID > 0);    
+    colixes[atomIndex] = setColix(colix, paletteID, atomIndex);
+    paletteIDs[atomIndex] = (short) paletteID;
   }
   
   void setModelClickability() {
     if (mads == null)
       return;
-    for (int i = frame.atomCount; --i >= 0;) {
-      Atom atom = frame.atoms[i];
-      if ((atom.shapeVisibilityFlags & myVisibilityFlag) == 0)
-        atom.clickabilityFlags |= myVisibilityFlag;
-    }
+    for (int i = atomCount; --i >= 0; )
+      if ((atoms[i].shapeVisibilityFlags & myVisibilityFlag) != 0)
+        atoms[i].clickabilityFlags |= myVisibilityFlag;
   }
-  
+
   String getShapeState() {
     if (bsSizeSet == null)
       return "";
     Hashtable temp = new Hashtable();
     Hashtable temp2 = new Hashtable();
     String type = JmolConstants.shapeClassBases[shapeID];
-    for (int i = frame.atomCount; --i >= 0;) {
+    for (int i = atomCount; --i >= 0;) {
       if (bsSizeSet != null && bsSizeSet.get(i))
         setStateInfo(temp, i, type + " " + (mads[i] / 2000f));
       if (bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp2, i, getColorCommand(type, paletteIDs[i], colixes[i]));
     }
-    return getShapeCommands(temp, temp2, frame.atomCount);
-  }  
-
+    return getShapeCommands(temp, temp2, atomCount);
+  }
 }

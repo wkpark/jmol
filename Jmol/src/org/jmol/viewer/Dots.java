@@ -208,7 +208,6 @@ class Dots extends Shape {
     Logger.debug("Dots.setProperty: " + propertyName + " " + value);
 
     int atomCount = frame.atomCount;
-    Atom[] atoms = frame.atoms;
 
     if ("init" == propertyName) {
       int mode = ((Integer) value).intValue();
@@ -229,8 +228,7 @@ class Dots extends Shape {
       boolean isTranslucent = ("translucent" == value);
       surfaceColix = Graphics3D.setTranslucent(surfaceColix, isTranslucent);
       return;
-    }
-    
+    }    
     
     if ("radius" == propertyName) {
       radiusI = ((Float)value).floatValue();
@@ -280,8 +278,7 @@ class Dots extends Shape {
       int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i))
-          colixesConvex[i] = ((colix != Graphics3D.UNRECOGNIZED) ? colix
-              : viewer.getColixAtomPalette(atoms[i], pid));
+          colixesConvex[i] = setColix(colix, pid, i);
       return;
     }
   }

@@ -31,14 +31,13 @@ import org.jmol.g3d.Graphics3D;
 
 class Halos extends AtomShape {
 
-  short colixSelection = Graphics3D.UNRECOGNIZED;
+  short colixSelection = Graphics3D.USE_PALETTE;
 
   void setProperty(String propertyName, Object value, BitSet bs) {
     if ("translucency" == propertyName)
       return;
     if ("argbSelection" == propertyName) {
-      int argb = ((Integer)value).intValue();
-      colixSelection = (argb == 0 ? 0 : Graphics3D.getColix(argb));
+      colixSelection = Graphics3D.getColix(((Integer)value).intValue());
       return;
     }
     super.setProperty(propertyName, value, bs);
@@ -47,17 +46,16 @@ class Halos extends AtomShape {
   void setVisibilityFlags() {
     BitSet bsSelected = (viewer.getSelectionHaloEnabled() ? viewer
         .getSelectionSet() : null);
-    for (int i = frame.atomCount; --i >= 0;) {
-      Atom atom = frame.atoms[i];
+    for (int i = atomCount; --i >= 0;) {
       boolean isVisible = bsSelected != null && bsSelected.get(i)
           || (mads != null && mads[i] != 0);
-      atom.setShapeVisibility(myVisibilityFlag, isVisible);
+      atoms[i].setShapeVisibility(myVisibilityFlag, isVisible);
     }
   }
   
   String getShapeState() {
     return super.getShapeState()
-        + (colixSelection == Graphics3D.UNRECOGNIZED ? "" 
+        + (colixSelection == Graphics3D.USE_PALETTE ? "" 
             : getColorCommand("selectionHalos", colixSelection) + ";\n");
   }
 

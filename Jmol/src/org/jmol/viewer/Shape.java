@@ -40,7 +40,7 @@ abstract class Shape {
   Graphics3D g3d;
   int shapeID;
   int myVisibilityFlag;
-  
+
   final void setViewerG3dFrame(Viewer viewer, Graphics3D g3d, Frame frame, int shapeID) {
     this.viewer = viewer;
     this.g3d = g3d;
@@ -82,6 +82,15 @@ abstract class Shape {
   }
 
   void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY, int modifiers) {
+  }
+
+  short setColix(short colix, int paletteID, int atomIndex) {
+    return setColix(colix, paletteID, frame.getAtomAt(atomIndex));
+  }
+  
+  short setColix(short colix, int paletteID, Atom atom) {
+    return (colix == Graphics3D.USE_PALETTE ? viewer.getColixAtomPalette(atom,
+        paletteID) : colix);
   }
 
   Vector getShapeDetail() {
@@ -143,7 +152,7 @@ abstract class Shape {
       return "";
     String s = "";
     if (pid >= 0) {
-      if (Graphics3D.isColixInherentlyTranslucent(colix))
+      if (Graphics3D.isColixTranslucent(colix))
         s += "translucent ";
       s += JmolConstants.getPaletteName(pid);
     } else {
@@ -154,7 +163,7 @@ abstract class Shape {
   
   String encodeColor(short colix) {
     String color = g3d.getHexColorFromIndex(colix);
-    return (Graphics3D.isColixInherentlyTranslucent(colix) ? "translucent": "")
+    return (Graphics3D.isColixTranslucent(colix) ? "translucent": "")
     + (color == null ? " none" : " [x" + color + "]"); 
   }
   

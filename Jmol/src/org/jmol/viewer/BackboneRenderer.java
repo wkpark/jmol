@@ -29,7 +29,7 @@ import org.jmol.g3d.Graphics3D;
 
 class BackboneRenderer extends MpsRenderer {
 
-  void renderMpspolymer(Mps.Mpspolymer mpspolymer) {
+  void renderMpspolymer(Mps.MpsShape mpspolymer) {
     renderBackboneChain((Backbone.Bbpolymer)mpspolymer);
   }
   

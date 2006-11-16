@@ -77,7 +77,7 @@ abstract class Mps extends Shape {
     return getShapeCommands(temp, temp2, frame.atomCount);
   }
 
-  abstract Mpspolymer allocateMpspolymer(Polymer polymer);
+  abstract MpsShape allocateMpspolymer(Polymer polymer);
 
   void initialize() {
     if (mpsmodels == null) {
@@ -108,20 +108,22 @@ abstract class Mps extends Shape {
   }
 
   class Mpsmodel {
-    Mpspolymer[] mpspolymers;
+    MpsShape[] mpspolymers;
     int modelIndex;
     int modelVisibilityFlags = 0;
     
     Mpsmodel(Model model) {
-      mpspolymers = new Mpspolymer[model.getPolymerCount()];
+      mpspolymers = new MpsShape[model.getPolymerCount()];
       this.modelIndex = model.modelIndex;
-      for (int i = mpspolymers.length; --i >= 0; )
-        mpspolymers[i] = allocateMpspolymer(model.getPolymer(i));
+      for (int i = mpspolymers.length; --i >= 0;) {
+        (mpspolymers[i] = allocateMpspolymer(model.getPolymer(i)))
+            .setViewerG3dFrame(viewer, g3d, frame, shapeID);
+      }
     }
     
     void setMad(short mad, BitSet bsSelected) {
       for (int i = mpspolymers.length; --i >= 0; ) {
-        Mpspolymer polymer = mpspolymers[i];
+        MpsShape polymer = mpspolymers[i];
         if (polymer.monomerCount > 0)
           polymer.setMad(mad, bsSelected);
       }
@@ -129,7 +131,7 @@ abstract class Mps extends Shape {
 
     void setColix(short colix, int pid, BitSet bsSelected) {
       for (int i = mpspolymers.length; --i >= 0; ) {
-        Mpspolymer polymer = mpspolymers[i];
+        MpsShape polymer = mpspolymers[i];
         if (polymer.monomerCount > 0)
           polymer.setColix(colix, pid, bsSelected);
       }
@@ -137,7 +139,7 @@ abstract class Mps extends Shape {
 
     void setTranslucent(boolean isTranslucent, BitSet bsSelected) {
       for (int i = mpspolymers.length; --i >= 0; ) {
-        Mpspolymer polymer = mpspolymers[i];
+        MpsShape polymer = mpspolymers[i];
         if (polymer.monomerCount > 0)
           polymer.setTranslucent(isTranslucent, bsSelected);
       }
@@ -145,7 +147,7 @@ abstract class Mps extends Shape {
 
     void setShapeState(Hashtable temp, Hashtable temp2) {
       for (int i = mpspolymers.length; --i >= 0; ) {
-        Mpspolymer polymer = mpspolymers[i];
+        MpsShape polymer = mpspolymers[i];
         if (polymer.monomerCount > 0)
           polymer.setShapeState(temp, temp2);
       }
@@ -155,7 +157,7 @@ abstract class Mps extends Shape {
       return mpspolymers.length;
     }
 
-    Mpspolymer getMpspolymer(int i) {
+    MpsShape getMpspolymer(int i) {
       return mpspolymers[i];
     }
 
@@ -176,7 +178,7 @@ abstract class Mps extends Shape {
   }
 
   
-  abstract class Mpspolymer {
+  abstract class MpsShape extends AtomShape {
     Polymer polymer;
     
     Mesh[] meshes;
@@ -189,28 +191,19 @@ abstract class Mps extends Shape {
 
     int monomerCount;
     Monomer[] monomers;
-    short[] colixes;
-    short[] mads;
-    short[] paletteIDs;
-    
+
     Point3f[] leadMidpoints;
     Point3f[] leadPoints;
     Vector3f[] wingVectors;
 
-    BitSet bsSizeSetMps;
-    BitSet bsColixSetMps;
-
-    Mpspolymer(Polymer polymer, int madOn,
+    MpsShape(Polymer polymer, int madOn,
               int madHelixSheet, int madTurnRandom, int madDnaRna) {
       this.polymer = polymer;
       this.madOn = (short)madOn;
       this.madHelixSheet = (short)madHelixSheet;
       this.madTurnRandom = (short)madTurnRandom;
       this.madDnaRna = (short)madDnaRna;
-      // FIXME
-      // I don't think that polymer can ever be null for this thing
-      // so stop checking for null and see if it explodes
-      monomerCount = polymer == null ? 0 : polymer.monomerCount;
+      monomerCount = polymer.monomerCount;
       if (monomerCount > 0) {
         colixes = new short[monomerCount];
         paletteIDs = new short[monomerCount];
@@ -294,17 +287,17 @@ abstract class Mps extends Shape {
     }
 
     void setMad(short mad, BitSet bsSelected) {
-      if (bsSizeSetMps == null)
-        bsSizeSetMps = new BitSet();
+      if (bsSizeSet == null)
+        bsSizeSet = new BitSet();
       int[] leadAtomIndices = polymer.getLeadAtomIndices();
       for (int i = monomerCount; --i >= 0; ) {
         int leadAtomIndex = leadAtomIndices[i];
         if (bsSelected.get(leadAtomIndex)) { 
           mads[i] = mad >= 0 ? mad : getMadSpecial(mad, i);
           boolean isVisible = (mads[i] > 0);
-          bsSizeSetMps.set(i, isVisible);
+          bsSizeSet.set(i, isVisible);
           monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
-          frame.atoms[leadAtomIndex].setShapeVisibility(myVisibilityFlag,isVisible);
+          atoms[leadAtomIndex].setShapeVisibility(myVisibilityFlag,isVisible);
           falsifyMesh(i, true);
         }
       }
@@ -314,45 +307,44 @@ abstract class Mps extends Shape {
 
     void setColix(short colix, int pid, BitSet bsSelected) {
       int[] atomIndices = polymer.getLeadAtomIndices();
-      if (bsColixSetMps == null)
-        bsColixSetMps = new BitSet();
+      if (bsColixSet == null)
+        bsColixSet = new BitSet();
       for (int i = monomerCount; --i >= 0;) {
         int atomIndex = atomIndices[i];
         if (bsSelected.get(atomIndex)) {
-          colixes[i] = ((colix != Graphics3D.UNRECOGNIZED) ? colix : viewer
-              .getColixAtomPalette(frame.getAtomAt(atomIndex), pid));
+          colixes[i] = setColix(colix, pid, atomIndex);
           paletteIDs[i] = (short) pid;
-          bsColixSetMps.set(i, colixes[i] != 0);
+          bsColixSet.set(i, colix != Graphics3D.INHERIT || pid > 0);
         }
       }
     }
 
     void setTranslucent(boolean isTranslucent, BitSet bsSelected) {
       int[] atomIndices = polymer.getLeadAtomIndices();
-      if (bsColixSetMps == null)
-        bsColixSetMps = new BitSet();
+      if (bsColixSet == null)
+        bsColixSet = new BitSet();
       for (int i = monomerCount; --i >= 0; ) {
         int atomIndex = atomIndices[i];
         if (bsSelected.get(atomIndex)) {
           colixes[i] = Graphics3D.setTranslucent(colixes[i], isTranslucent);
-          bsColixSetMps.set(i, colixes[i] != 0);
+          bsColixSet.set(i, colixes[i] != 0);
         }
       }
     }
 
     void setShapeState(Hashtable temp, Hashtable temp2) {
-      if (bsSizeSetMps == null)
+      if (bsSizeSet == null)
         return;
       String type = JmolConstants.shapeClassBases[shapeID];
 
       for (int i = 0; i < monomerCount; i++) {
         int atomIndex1 = monomers[i].firstAtomIndex;
         int atomIndex2 = monomers[i].lastAtomIndex;
-        if (!bsSizeSetMps.get(i)) //shapes MUST have been set with a size
+        if (!bsSizeSet.get(i)) //shapes MUST have been set with a size
           continue;
         setStateInfo(temp, atomIndex1, atomIndex2, type + " "
             + (mads[i] / 2000f));
-        if (bsColixSetMps != null && bsColixSetMps.get(i))
+        if (bsColixSet != null && bsColixSet.get(i))
           setStateInfo(temp2, atomIndex1, atomIndex2, getColorCommand(type, 
               paletteIDs[i], colixes[i]));
       }

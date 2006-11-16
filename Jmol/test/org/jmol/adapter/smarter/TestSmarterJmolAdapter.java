@@ -15,6 +15,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.util.JUnitLogger;
+import org.jmol.util.Logger;
 
 import junit.framework.TestCase;
 
@@ -91,6 +92,13 @@ public class TestSmarterJmolAdapter extends TestCase {
    */
   public void testFolding() {
     checkDirectory("folding", "xyz", "xyz.gz");
+  }
+
+  /**
+   * Test for reading files in folding/
+   */
+  public void testFoldingAtHome() {
+    checkDirectory("../Jmol-FAH/projects", "xyz", "xyz.gz");
   }
 
   /**
@@ -238,16 +246,20 @@ public class TestSmarterJmolAdapter extends TestCase {
       }
 
     });
-    for (int i = 0; i < files.length; i++) {
-      try {
-        String error = checkOpenFile(directory, files[i]);
-        if (error != null) {
-          message += error + "\n";
+    if (files == null) {
+      Logger.warn("No files in directory [" + directory + "] for extensions [" + exts + "]");
+    } else {
+      for (int i = 0; i < files.length; i++) {
+        try {
+          String error = checkOpenFile(directory, files[i]);
+          if (error != null) {
+            message += error + "\n";
+          }
+        } catch (Exception e) {
+          message += files[i] + " ";
+          message += "Exception " + e.getClass().getName() + ": "
+              + e.getMessage();
         }
-      } catch (Exception e) {
-        message += files[i] + " ";
-        message += "Exception " + e.getClass().getName() + ": "
-            + e.getMessage();
       }
     }
 
@@ -265,16 +277,20 @@ public class TestSmarterJmolAdapter extends TestCase {
       }
 
     });
-    for (int i = 0; i < filesZ.length; i++) {
-      try {
-        String error = checkOpenFileGzip(directory, filesZ[i]);
-        if (error != null) {
-          message += error + "\n";
+    if (files == null) {
+      Logger.warn("No files in directory [" + directory + "] for extensions [" + exts + "]");
+    } else {
+      for (int i = 0; i < filesZ.length; i++) {
+        try {
+          String error = checkOpenFileGzip(directory, filesZ[i]);
+          if (error != null) {
+            message += error + "\n";
+          }
+        } catch (Exception e) {
+          message += files[i] + " ";
+          message += "Exception " + e.getClass().getName() + ": "
+              + e.getMessage();
         }
-      } catch (Exception e) {
-        message += files[i] + " ";
-        message += "Exception " + e.getClass().getName() + ": "
-            + e.getMessage();
       }
     }
 
@@ -304,7 +320,7 @@ public class TestSmarterJmolAdapter extends TestCase {
       SmarterJmolAdapter adapter = new SmarterJmolAdapter(null);
       adapter.logger = new TestLogger(adapter);
       File file = new File(new File("../Jmol-datafiles", directory), filename);
-      System.out.println(file);
+      Logger.info(file.toString());
       JUnitLogger.setInformation(file.getPath());
       InputStream iStream = new FileInputStream(file);
       BufferedInputStream biStream = new BufferedInputStream(iStream);
@@ -341,7 +357,7 @@ public class TestSmarterJmolAdapter extends TestCase {
       SmarterJmolAdapter adapter = new SmarterJmolAdapter(null);
       adapter.logger = new TestLogger(adapter);
       File file = new File(new File("../Jmol-datafiles", directory), filename);
-      System.out.println(file);
+      Logger.info(file.toString());
       JUnitLogger.setInformation(file.getPath());
       InputStream iStream = new FileInputStream(file);
       BufferedInputStream biStream = new BufferedInputStream(iStream);

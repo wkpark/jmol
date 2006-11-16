@@ -49,7 +49,7 @@ class GuiMap {
       labels.put("atomsetchooser", GT._("AtomSetChooser..."));
       labels.put("saveas", GT._("&Save As..."));
       labels.put("exportMenu", GT._("&Export"));
-      labels.put("export", GT._("Export Image..."));
+      labels.put("export", GT._("Export Image or Script..."));
       labels.put("povray", GT._("Render in pov-ray..."));
       labels.put("pdf", GT._("Export PDF..."));
       labels.put("print", GT._("&Print..."));
@@ -61,6 +61,7 @@ class GuiMap {
       labels.put("selectall", GT._("Select All"));
       labels.put("deselectall", GT._("Deselect All"));
       labels.put("copyImage", GT._("Copy Image"));
+      labels.put("copyScript", GT._("Copy Script"));
       labels.put("prefs", GT._("&Preferences..."));
       labels.put("pasteClipboard", GT._("&Paste"));
       labels.put("editSelectAllScript", GT._("Select All"));
@@ -167,7 +168,7 @@ class GuiMap {
       labels.put("Prefs.isLabelAtomColor", GT._("Use Atom Color"));
       labels.put("Prefs.isBondAtomColor", GT._("Use Atom Color"));
       labels.put("openTip", GT._("Open a file."));
-      labels.put("exportTip", GT._("Export view to an image file."));
+      labels.put("exportTip", GT._("Export view to an image or script file."));
       labels.put("povrayTip", GT._("Render in pov-ray."));
       labels.put("printTip", GT._("Print view."));
       labels.put("rotateTip", GT._("Rotate molecule."));

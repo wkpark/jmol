@@ -4685,19 +4685,50 @@ class Eval { //implements Runnable {
   void write() throws ScriptException {
     if (viewer.isApplet())
       evalError(GT._("The {0} command is not available for the applet.", "WRITE"));
-    int tok = (statementLength == 1 ? 0 : statement[1].tok);
-    if (statementLength == 1 || tok == Token.clipboard) {
-      viewer.createImage(null, "CLIP", 100);
+    int tok = (statementLength == 1 ? Token.clipboard : statement[1].tok);
+    int pt = 1;
+    String type = "SPT";
+    switch (tok) {
+    case Token.script:
+      pt++;
+      break;
+    case Token.identifier:
+      type = ((String)statement[1].value).toLowerCase();
+      if (type.equals("image"))
+        pt++;
+      else
+        type = "image";
+      break;
+    }
+    if (pt == statementLength)
+      badArgumentCount();
+ 
+    //write [image|script] clipboard
+
+    if ((tok = statement[pt].tok) == Token.clipboard) {
+      viewer.createImage(null, type, 100);
       return;
     }
-    checkLength3();
-    String type = (tok == Token.identifier ? (String) statement[1].value
-        : stringParameter(1));
-    if (";JPEG;JPG64;JPG;PDF;PNG;".indexOf((";"+type+";").toUpperCase()) < 0)
-      evalError(GT._("write what? {0} or {1} \"filename\"",
-                     new Object[] { "CLIPBOARD", "JPG|JPG64|PNG|PPM" }));
-    String fileName = (statement[2].tok == Token.identifier ? (String) statement[2].value
-        : stringParameter(2));
+
+    //write [optional image|script] [JPG|JPG64|PNG|PPM|SPT] "filename"
+    //write script "filename"
+
+    if (pt + 2 == statementLength) {
+      type = ((tok == Token.identifier ? (String) statement[pt].value
+          : stringParameter(pt))).toUpperCase();
+      if (";JPEG;JPG64;JPG;PDF;PNG;SPT;".indexOf(";"+type+";") < 0)
+        evalError(GT._("write what? {0} or {1} \"filename\"",
+                       new Object[] { "SCRIPT|IMAGE CLIPBOARD", "JPG|JPG64|PNG|PPM|SPT" }));
+    }
+    String fileName = null;
+    switch(statement[statementLength - 1].tok) {
+    case Token.identifier:
+    case Token.string:
+      fileName = (String) statement[statementLength - 1].value;
+      break;
+      default:
+        invalidArgument();
+    }    
     viewer.createImage(fileName, type, 100);
   }
   

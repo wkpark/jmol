@@ -44,6 +44,8 @@ public class ImageSelection implements Transferable {
    * The image to transfer into the clipboard.
    */
   private Image image;
+  private String text;
+  boolean isText;
   
   /**
    * Transfers <code>image</code> into the clipboard.
@@ -54,7 +56,18 @@ public class ImageSelection implements Transferable {
     ImageSelection sel = new ImageSelection(image);
     Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, null);
   }
+
+  /**
+   * Transfers <code>text</code> into the clipboard.
+   * 
+   * @param text to transfer into the clipboard.
+   */
+  public static void setClipboard(String text) {
+    ImageSelection sel = new ImageSelection(text);
+    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(sel, null);
+  }
   
+
   /**
    * Constructs a <code>ImageSelection</code>.
    * 
@@ -64,11 +77,22 @@ public class ImageSelection implements Transferable {
     this.image = image;
   }
   
+  /**
+   * Constructs a <code>ImageSelection</code>.
+   * 
+   * @param text The text to transfer
+   */
+  public ImageSelection(String text) {
+    this.text = text;
+  }
+
   /* (non-Javadoc)
    * @see java.awt.datatransfer.Transferable#getTransferDataFlavors()
    */
   public DataFlavor[] getTransferDataFlavors() {
-    return new DataFlavor[]{ DataFlavor.imageFlavor };
+    return (text == null ? 
+        new DataFlavor[]{ DataFlavor.imageFlavor }
+      : new DataFlavor[]{ DataFlavor.stringFlavor });
   }
 
   /* (non-Javadoc)
@@ -83,10 +107,12 @@ public class ImageSelection implements Transferable {
    */
   public Object getTransferData(DataFlavor flavor)
       throws UnsupportedFlavorException, IOException {
-    if (!DataFlavor.imageFlavor.equals(flavor)) {
-      throw new UnsupportedFlavorException(flavor);
+    if (DataFlavor.imageFlavor.equals(flavor)) {
+      return image;
+    } else     if (DataFlavor.stringFlavor.equals(flavor)) {
+      return text;
     }
-    return image;
+    throw new UnsupportedFlavorException(flavor);
   }
 
   /**

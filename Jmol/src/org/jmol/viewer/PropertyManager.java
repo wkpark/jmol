@@ -184,7 +184,7 @@ class PropertyManager {
                                                   String paramInfo) {
     //Logger.debug("getPropertyAsObject(\"" + infoType+"\", \"" + paramInfo + "\")");
     int id = getPropertyNumber(infoType);
-    boolean iHaveParameter = (paramInfo.length() > 0);
+    boolean iHaveParameter = (paramInfo != null && paramInfo.length() > 0);
     String myParam = (iHaveParameter ? paramInfo : getDefaultParam(id));
     switch (id) {
     case PROP_APPLET_INFO:

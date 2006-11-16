@@ -1034,6 +1034,7 @@ public class Jmol extends JPanel {
   private static final String scriptAction = "script";
   private static final String atomsetchooserAction = "atomsetchooser";
   private static final String copyImageActionProperty = "copyImage";
+  private static final String copyScriptActionProperty = "copyScript";
   private static final String pasteClipboardActionProperty = "pasteClipboard";
 
 
@@ -1044,6 +1045,7 @@ public class Jmol extends JPanel {
   private PdfAction pdfAction = new PdfAction();
   private PrintAction printAction = new PrintAction();
   private CopyImageAction copyImageAction = new CopyImageAction();
+  private CopyScriptAction copyScriptAction = new CopyScriptAction();
   private PasteClipboardAction pasteClipboardAction = new PasteClipboardAction();
   private ViewMeasurementTableAction viewMeasurementTableAction
     = new ViewMeasurementTableAction();
@@ -1055,7 +1057,7 @@ public class Jmol extends JPanel {
   private Action[] defaultActions = {
     new NewAction(), new NewwinAction(), new OpenAction(),
     new OpenUrlAction(), printAction, exportAction,
-    new CloseAction(), new ExitAction(), copyImageAction,
+    new CloseAction(), new ExitAction(), copyImageAction, copyScriptAction,
     pasteClipboardAction,
     new AboutAction(), new WhatsNewAction(),
     new UguideAction(), new ConsoleAction(),
@@ -1164,7 +1166,19 @@ public class Jmol extends JPanel {
 
     public void actionPerformed(ActionEvent e) {
       ImageCreator c = new ImageCreator(viewer, status);
-      c.clipImage();
+      c.clipImage(null);
+    }
+  }
+
+  class CopyScriptAction extends AbstractAction {
+
+    public CopyScriptAction() {
+      super(copyScriptActionProperty);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      ImageCreator c = new ImageCreator(viewer, status);
+      c.clipImage((String) viewer.getProperty("string","stateInfo", null));
     }
   }
 
@@ -1593,19 +1607,32 @@ class ImageCreator {
     this.status = status;
   }
  
-  void clipImage() {
-    Image eImage = viewer.getScreenImage();
-    ImageSelection.setClipboard(eImage);
-    viewer.releaseScreenImage();    
+  void clipImage(String script) {
+    if (script == null) {
+      Image eImage = viewer.getScreenImage();
+      ImageSelection.setClipboard(eImage);
+      viewer.releaseScreenImage();
+      return;
+    }
+    ImageSelection.setClipboard(script);
   }
   
   void createImage(String fileName, String type, int quality) {
+    boolean isScript = type.equals("SPT");
+    String script = (isScript ? (String)viewer.getProperty("string", "stateInfo", null) : null);
+    if (fileName == null) {
+      clipImage(script);
+      return;
+    }
     try {
-      if (type.equalsIgnoreCase("CLIP")) {
-        clipImage();
+      FileOutputStream os = new FileOutputStream(fileName);
+      if (isScript) {
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os), 8192);
+        bw.write(script);
+        bw.close();
+        os = null;
       } else {
         Image eImage = viewer.getScreenImage();
-        FileOutputStream os = new FileOutputStream(fileName);
         if (type.equalsIgnoreCase("JPEG") || type.equalsIgnoreCase("JPG")) {
           JpegEncoder jc = new JpegEncoder(eImage, quality, os);
           jc.Compress();

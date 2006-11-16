@@ -4274,7 +4274,7 @@ public class Viewer extends JmolViewer {
   // image export
   // ///////////////////////////////////////////////////////////////
 
-  void createImage(String type_name) {
+  void createImage(String type_name) {  // or script now
     if (type_name == null)
       return;
     if (type_name.length() == 0)

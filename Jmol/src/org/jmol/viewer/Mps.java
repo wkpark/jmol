@@ -208,6 +208,7 @@ abstract class Mps extends Shape {
     Point3f[] leadMidpoints;
     Point3f[] leadPoints;
     Vector3f[] wingVectors;
+    int[] leadAtomIndices;
 
     MpsShape(Polymer polymer, int madOn,
               int madHelixSheet, int madTurnRandom, int madDnaRna) {
@@ -227,6 +228,7 @@ abstract class Mps extends Shape {
         leadPoints = polymer.getLeadPoints();
         leadMidpoints = polymer.getLeadMidpoints();
         wingVectors = polymer.getWingVectors();
+        leadAtomIndices = polymer.getLeadAtomIndices();
         //Logger.debug("mps assigning wingVectors and leadMidpoints");
       }
     }
@@ -235,53 +237,6 @@ abstract class Mps extends Shape {
       this.shape = shape;
     }
     
-    short getMadSpecial(short mad, int groupIndex) {
-      switch (mad) {
-      case -1: // trace on
-        if (madOn >= 0)
-          return madOn;
-        if (madOn != -2) {
-          Logger.error("not supported?");
-          return 0;
-        }
-        // fall into;
-      case -2: // trace structure
-        switch (monomers[groupIndex].getProteinStructureType()) {
-        case JmolConstants.PROTEIN_STRUCTURE_SHEET:
-        case JmolConstants.PROTEIN_STRUCTURE_HELIX:
-          return madHelixSheet;
-        case JmolConstants.PROTEIN_STRUCTURE_DNA:
-        case JmolConstants.PROTEIN_STRUCTURE_RNA:
-          return madDnaRna;
-        default:
-          return madTurnRandom;
-        }
-      case -3: // trace temperature
-        {
-          if (! hasBfactorRange)
-            calcBfactorRange();
-          Atom atom = monomers[groupIndex].getLeadAtom();
-          int bfactor100 = atom.getBfactor100(); // scaled by 1000
-          int scaled = bfactor100 - bfactorMin;
-          if (range == 0)
-            return (short)0;
-          float percentile = scaled / floatRange;
-          if (percentile < 0 || percentile > 1)
-            Logger.error("Que ha ocurrido? " + percentile);
-          return (short)((1750 * percentile) + 250);
-        }
-      case -4: // trace displacement
-        {
-          Atom atom = monomers[groupIndex].getLeadAtom();
-          return // double it ... we are returning a diameter
-            (short)(2 * calcMeanPositionalDisplacement(atom.getBfactor100()));
-        }
-      }
-      Logger.error("unrecognized Mps.getSpecial(" +
-                         mad + ")");
-      return 0;
-    }
-
     boolean hasBfactorRange = false;
     int bfactorMin, bfactorMax;
     int range;
@@ -377,27 +332,10 @@ abstract class Mps extends Shape {
       polymer.findNearestAtomIndex(xMouse, yMouse, closest, mads, myVisibilityFlag);
     }
 
-    void setModelClickability() {
-      if (wingVectors == null)
-        return;
-      boolean isNucleicPolymer = polymer instanceof NucleicPolymer;
-      if (!isNucleicPolymer)
-        return;
-      for (int i = monomerCount; --i >= 0;) {
-        if (mads[i] <= 0)
-          continue;
-        NucleicMonomer group = (NucleicMonomer) monomers[i];
-        if (frame.bsHidden.get(group.getLeadAtomIndex()))
-          continue;
-        group.setModelClickability();
-      }
-    }
-
     void setMad(short mad, BitSet bsSelected) {
       isActive = true;
       if (bsSizeSet == null)
         bsSizeSet = new BitSet();
-      int[] leadAtomIndices = polymer.getLeadAtomIndices();
       for (int i = monomerCount; --i >= 0; ) {
         int leadAtomIndex = leadAtomIndices[i];
         if (bsSelected.get(leadAtomIndex)) { 
@@ -413,13 +351,71 @@ abstract class Mps extends Shape {
         mads[monomerCount] = mads[monomerCount - 1];
     }
 
+    short getMadSpecial(short mad, int groupIndex) {
+      //undocumented
+      switch (mad) {
+      case -1: // trace on
+        if (madOn >= 0)
+          return madOn;
+        if (madOn != -2) {
+          Logger.error("not supported?");
+          return 0;
+        }
+        // fall into;
+      case -2: // trace structure
+        switch (monomers[groupIndex].getProteinStructureType()) {
+        case JmolConstants.PROTEIN_STRUCTURE_SHEET:
+        case JmolConstants.PROTEIN_STRUCTURE_HELIX:
+          return madHelixSheet;
+        case JmolConstants.PROTEIN_STRUCTURE_DNA:
+        case JmolConstants.PROTEIN_STRUCTURE_RNA:
+          return madDnaRna;
+        default:
+          return madTurnRandom;
+        }
+      case -3: // trace temperature
+        {
+          if (! hasBfactorRange)
+            calcBfactorRange();
+          Atom atom = monomers[groupIndex].getLeadAtom();
+          int bfactor100 = atom.getBfactor100(); // scaled by 1000
+          int scaled = bfactor100 - bfactorMin;
+          if (range == 0)
+            return (short)0;
+          float percentile = scaled / floatRange;
+          if (percentile < 0 || percentile > 1)
+            Logger.error("Que ha ocurrido? " + percentile);
+          return (short)((1750 * percentile) + 250);
+        }
+      case -4: // trace displacement
+        {
+          Atom atom = monomers[groupIndex].getLeadAtom();
+          return // double it ... we are returning a diameter
+            (short)(2 * calcMeanPositionalDisplacement(atom.getBfactor100()));
+        }
+      }
+      Logger.error("unrecognized Mps.getSpecial(" + mad + ")");
+      return 0;
+    }
+
+    void falsifyMesh(int index, boolean andNearby) {
+      if (meshReady == null)
+        return;
+      meshReady[index] = false;
+      if (!andNearby)
+        return;
+      if (index > 0)
+        meshReady[index - 1] = false;
+      if (index < monomerCount - 1)
+        meshReady[index + 1] = false;
+    }    
+
     void setColix(short colix, int pid, BitSet bsSelected) {
       isActive = true;
-      int[] atomIndices = polymer.getLeadAtomIndices();
       if (bsColixSet == null)
         bsColixSet = new BitSet();
       for (int i = monomerCount; --i >= 0;) {
-        int atomIndex = atomIndices[i];
+        int atomIndex = leadAtomIndices[i];
         if (bsSelected.get(atomIndex)) {
           colixes[i] = shape.setColix(colix, pid, atomIndex);
           paletteIDs[i] = (short) pid;
@@ -430,15 +426,12 @@ abstract class Mps extends Shape {
     
     void setTranslucent(boolean isTranslucent, BitSet bsSelected) {
       isActive = true;
-      int[] atomIndices = polymer.getLeadAtomIndices();
       if (bsColixSet == null)
         bsColixSet = new BitSet();
-      for (int i = monomerCount; --i >= 0; ) {
-        int atomIndex = atomIndices[i];
-        if (bsSelected.get(atomIndex)) {
+      for (int i = monomerCount; --i >= 0; )
+        if (bsSelected.get(leadAtomIndices[i])) {
           colixes[i] = Graphics3D.getColixTranslucent(colixes[i], isTranslucent);
-          bsColixSet.set(i, colixes[i] != 0);
-        }
+          bsColixSet.set(i, colixes[i] != Graphics3D.INHERIT);
       }
     }
 
@@ -459,16 +452,20 @@ abstract class Mps extends Shape {
       }
     }  
 
-    void falsifyMesh(int index, boolean andNearby) {
-      if (meshReady == null)
+    void setModelClickability() {
+      if (!isActive || wingVectors == null)
         return;
-      meshReady[index] = false;
-      if (!andNearby)
+      boolean isNucleicPolymer = polymer instanceof NucleicPolymer;
+      if (!isNucleicPolymer)
         return;
-      if (index > 0)
-        meshReady[index - 1] = false;
-      if (index < monomerCount - 1)
-        meshReady[index + 1] = false;
-    }    
+      for (int i = monomerCount; --i >= 0;) {
+        if (mads[i] <= 0)
+          continue;
+        NucleicMonomer group = (NucleicMonomer) monomers[i];
+        if (frame.bsHidden.get(leadAtomIndices[i]))
+          continue;
+        group.setModelClickability();
+      }
+    }
   }  
 }

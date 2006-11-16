@@ -23,10 +23,13 @@
  */
 
 package org.jmol.viewer;
-import org.jmol.g3d.*;
+import org.jmol.g3d.Graphics3D;
+import org.jmol.g3d.Font3D;
 import java.awt.FontMetrics;
 
-class Frank extends SelectionIndependentShape {
+class Frank extends FontLineShape {
+  
+  // Axes, Bbcage, Frank, Uccage
 
   final static String frankString = "Jmol";
   final static String defaultFontName = "SansSerif";

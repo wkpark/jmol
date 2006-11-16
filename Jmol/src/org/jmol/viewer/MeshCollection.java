@@ -30,8 +30,10 @@ import java.util.BitSet;
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 
-abstract class MeshCollection extends SelectionIndependentShape {
+abstract class MeshCollection extends Shape {
 
+  // Draw, Isosurface(LcaoCartoon MolecularOrbital), Pmesh
+  
   int meshCount;
   Mesh[] meshes = new Mesh[4];
   Mesh currentMesh;
@@ -39,10 +41,10 @@ abstract class MeshCollection extends SelectionIndependentShape {
   boolean isFixed;  
   String script;
   int nUnnamed;
+  short colix;
+  String myType;
 
   void initShape() {
-    mad = 9999;
-    myType = "meshCollection";
     colix = Graphics3D.ORANGE;
     modelCount = viewer.getModelCount();
   }
@@ -417,8 +419,6 @@ abstract class MeshCollection extends SelectionIndependentShape {
     StringBuffer s = new StringBuffer();
     if (mesh == null)
       return "";
-    if (Graphics3D.isColixTranslucent(mesh.colix))
-      appendCmd(s, type + " translucent");
     if (mesh.showPoints)
       appendCmd(s, type + " dots");
     if (mesh.drawTriangles)

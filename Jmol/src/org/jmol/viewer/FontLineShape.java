@@ -29,13 +29,16 @@ import org.jmol.g3d.Graphics3D;
 
 import java.util.BitSet;
 
-abstract class SelectionIndependentShape extends Shape {
+abstract class FontLineShape extends Shape {
 
   short mad;
   short colix;
   short bgcolix;
   Font3D font3d;
   String myType;
+
+  void initShape() {
+  }
   
   void setSize(int size, BitSet bsSelected) {
     this.mad = (short)size;
@@ -59,8 +62,6 @@ abstract class SelectionIndependentShape extends Shape {
   }
   
   String getShapeState() {
-    if (mad == 9999)
-      return "";
     StringBuffer s = new StringBuffer();
     appendCmd(s, myType
         + (mad == 0 ? " off" : mad == 1 ? " on" : mad == -1 ? " dotted" 

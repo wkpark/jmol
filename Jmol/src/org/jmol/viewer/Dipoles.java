@@ -35,7 +35,7 @@ import java.util.Hashtable;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-class Dipoles extends SelectionIndependentShape {
+class Dipoles extends Shape {
 
   final static short DEFAULT_MAD = 5;
   final static float DEFAULT_OFFSETSIDE = 0.40f;
@@ -55,11 +55,7 @@ class Dipoles extends SelectionIndependentShape {
   boolean isValid;
   int atomIndex1;
   int atomIndex2;
-
-  void initShape() {
-    myType = "dipoles";
-    mad = 9999;
-  }
+  short colix;
   
   void setProperty(String propertyName, Object value, BitSet bs) {
 

@@ -31,7 +31,7 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.symmetry.UnitCell;
 
-class Axes extends SelectionIndependentShape {
+class Axes extends FontLineShape {
 
   void setProperty(String propertyName, Object value, BitSet bs) {
     if ("scale" == propertyName) {

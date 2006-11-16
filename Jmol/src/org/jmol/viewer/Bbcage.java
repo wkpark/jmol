@@ -23,7 +23,7 @@
  */
 package org.jmol.viewer;
 
-class Bbcage extends SelectionIndependentShape {
+class Bbcage extends FontLineShape {
 
   // by XORing each of the three bits of my index
   final static byte edges[] =

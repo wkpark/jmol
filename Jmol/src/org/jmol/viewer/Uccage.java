@@ -23,7 +23,7 @@
  */
 package org.jmol.viewer;
 
-class Uccage extends SelectionIndependentShape {
+class Uccage extends FontLineShape {
   
   String getShapeState() {
     if (frame.cellInfos == null)

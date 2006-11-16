@@ -28,13 +28,14 @@ import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 
 import java.util.BitSet;
+import java.util.Hashtable;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 
-class Polyhedra extends SelectionIndependentShape {
+class Polyhedra extends AtomShape {
 
   final static float DEFAULT_DISTANCE_FACTOR = 1.85f;
   final static float DEFAULT_FACECENTEROFFSET = 0.25f;
@@ -58,15 +59,12 @@ class Polyhedra extends SelectionIndependentShape {
   boolean iHaveVertexBitSet;
   boolean bondedOnly;
   boolean haveBitSetVertices;
+  
+  short colix;
 
   BitSet centers;
   BitSet bsVertices;
   BitSet bsVertexCount;
-
-  void initShape() {
-    mad = 9999;
-    myType = "polyhedra";
-  }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -248,7 +246,7 @@ class Polyhedra extends SelectionIndependentShape {
 
   void buildPolyhedra() {
     boolean useBondAlgorithm = radius == 0 || bondedOnly;
-    for (int i = frame.atomCount; --i >= 0;)
+    for (int i = atomCount; --i >= 0;)
       if (centers.get(i)) {
         Polyhedron p = (
             haveBitSetVertices ? constructBitSetPolyhedron(i) 
@@ -262,7 +260,7 @@ class Polyhedra extends SelectionIndependentShape {
   }
 
   Polyhedron constructBondsPolyhedron(int atomIndex) {
-    Atom atom = frame.getAtomAt(atomIndex);
+    Atom atom = atoms[atomIndex];
     Bond[] bonds = atom.bonds;
     if (bonds == null)
       return null;
@@ -285,15 +283,15 @@ class Polyhedra extends SelectionIndependentShape {
 
   Polyhedron constructBitSetPolyhedron(int atomIndex) {
     int otherAtomCount = 0;
-    for (int i = frame.atomCount; --i >= 0;)
+    for (int i = atomCount; --i >= 0;)
       if (bsVertices.get(i))
-        otherAtoms[otherAtomCount++] = frame.atoms[i];
-    return validatePolyhedronNew(frame.atoms[atomIndex], otherAtomCount,
+        otherAtoms[otherAtomCount++] = atoms[i];
+    return validatePolyhedronNew(atoms[atomIndex], otherAtomCount,
         otherAtoms);
   }
   
   Polyhedron constructRadiusPolyhedron(int atomIndex) {
-    Atom atom = frame.getAtomAt(atomIndex);
+    Atom atom = atoms[atomIndex];
     int otherAtomCount = 0;
     AtomIterator withinIterator = frame.getWithinModelIterator(atom, radius);
     while (withinIterator.hasNext()) {
@@ -426,13 +424,12 @@ class Polyhedra extends SelectionIndependentShape {
           boolean isFaceCentered = (faceCatalog.indexOf(faceId(i, j, k)) >= 0);
           // if center is on the face, then we need a different point to 
           // define the normal
-          if (isFaceCentered) {
+          if (isFaceCentered)
             Graphics3D.getNormalFromCenter(randomPoint, points[i], points[j],
                 points[k], false, normal);
-          } else {
+          else
             Graphics3D.getNormalFromCenter(points[ptCenter], points[i],
                 points[j], points[k], true, normal);
-          }
           normal.scale(isCollapsed && !isFaceCentered ? faceCenterOffset
               : 0.001f);
           int nRef = nPoints;
@@ -569,7 +566,7 @@ class Polyhedra extends SelectionIndependentShape {
         this.planes[i] = planes[i];
     }
     
-    String getState() {
+    String getState(Hashtable temp) {
       BitSet bs = new BitSet();
       for (int i = 0; i < ptCenter; i++)
         bs.set(vertices[i].atomIndex);
@@ -583,7 +580,7 @@ class Polyhedra extends SelectionIndependentShape {
           + (collapsed ? " collapsed" : "")
           + " to " + StateManager.encodeBitset(bs) + ";"
           + (visible ? "" : "polyhedra off;");
-      s += getColorCommand("polyhedra",myColix) + ";\n";
+      Shape.setStateInfo(temp, centralAtom.atomIndex, getColorCommand("polyhedra",myColix));
       return s;
     }
   }
@@ -603,13 +600,15 @@ class Polyhedra extends SelectionIndependentShape {
   }
   
   String getShapeState() {
+    Hashtable temp = new Hashtable();
     StringBuffer s = new StringBuffer();
     for (int i = 0; i < polyhedronCount; i++)
-      s.append(polyhedrons[i].getState());
+      s.append(polyhedrons[i].getState(temp));
     if (drawEdges == EDGES_FRONT)
       appendCmd(s, "polyhedra frontedges");
     else if (drawEdges == EDGES_ALL)
       appendCmd(s, "polyhedra edges");
+    s.append(getShapeCommands(temp, null, atomCount));
     return s.toString();
   }
 }

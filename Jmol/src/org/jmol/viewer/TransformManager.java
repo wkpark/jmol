@@ -1581,7 +1581,7 @@ class TransformManager {
 
   void clearVibration() {
     setVibrationOn(false);
-    
+    vibrationScale = 0;
   }
 
   class VibrationThread extends Thread implements Runnable {

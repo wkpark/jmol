@@ -422,8 +422,11 @@ class StateManager {
 
     //misc
 
-    boolean hideNameInPopup    = false;
-    boolean disablePopupMenu   = false;
+    boolean hideNameInPopup      = false;
+    boolean disablePopupMenu     = false;
+    float defaultVibrationScale  = 1f;
+    float defaultVibrationPeriod = 1f;
+    float defaultVectorScale     = 1f;
     
     // window
     
@@ -494,7 +497,8 @@ class StateManager {
       + ";stereo;defaultdirectory;percentvdwatom;zerobasedxyzrasmol;"
       + ";bondradiusmilliangstroms;bondtolerance;minbonddistance;autobond;"
       + ";debugscript;frank;showaxes;showunitcell;showboundbox;"
-      + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;";
+      + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;"
+      + ";vibrationscale;vibrationperiod;";
        
     void clearVolatileProperties() {
       Enumeration e;

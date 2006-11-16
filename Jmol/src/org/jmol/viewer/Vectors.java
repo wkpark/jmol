@@ -25,66 +25,29 @@
 package org.jmol.viewer;
 
 import java.util.BitSet;
-import java.util.Hashtable;
-
-import org.jmol.g3d.Graphics3D;
 
 class Vectors extends AtomShape {
 
-  String[] strings;
-  boolean isApplicable;
-
+  float scale = Float.NaN;
+  
   void initShape() {
-    isApplicable = frame.hasVibrationVectors;
-    if (!isApplicable)
-      return;
     super.initShape();
-  }
-
-  void setSize(int size, BitSet bsSelected) {
-    if (!isApplicable)
+    if (!(isActive = frame.hasVibrationVectors))
       return;
-    if (bsSizeSet == null)
-      bsSizeSet = new BitSet();
-    short mad = (short) size;
-    boolean isVisible = (mad != 0);
-    for (int i = atomCount; --i >= 0;)
-      if (bsSelected.get(i)) {
-        if (mads == null)
-          mads = new short[atomCount];
-        mads[i] = mad;
-        bsSizeSet.set(i, isVisible);
-        atoms[i].setShapeVisibility(myVisibilityFlag, isVisible);
-      }
   }
 
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
-    if (!isApplicable)
+    if (!isActive)
       return;
-    if ("color" == propertyName) {
-      if (bsColixSet == null)
-        bsColixSet = new BitSet();
-      int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
-      short colix = Graphics3D.getColix(value);
-      for (int i = atomCount; --i >= 0;)
-        if (bsSelected.get(i))
-          setColixAndPalette(colix, pid, i);
+    if (propertyName == "scale") {
+      scale = ((Float)value).floatValue();
     }
   }
-
+  
   String getShapeState() {
-    if (!isApplicable)
+    if (!isActive)
       return "";
-    Hashtable temp = new Hashtable();
-    Hashtable temp2 = new Hashtable();
-    for (int i = atomCount; --i >= 0;) {
-      if (bsSizeSet == null || !bsSizeSet.get(i))
-        continue;
-      setStateInfo(temp, i, "vector " + (mads[i] / 1000f));
-      if (bsColixSet != null && bsColixSet.get(i))
-        setStateInfo(temp2, i, getColorCommand("vector", paletteIDs[i],
-            colixes[i]));
-    }
-    return getShapeCommands(temp, temp2, atomCount);
+    return super.getShapeState() 
+    + (Float.isNaN(scale) ? "" : "vector scale " + scale +";\n");
   }
 }

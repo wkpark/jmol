@@ -31,17 +31,16 @@ import javax.vecmath.*;
 class VectorsRenderer extends ShapeRenderer {
 
   void render() {
-    if (!frame.hasVibrationVectors)
-      return;
-    Atom[] atoms = frame.atoms;
     Vectors vectors = (Vectors) shape;
+    if (!vectors.isActive)
+      return;
     short[] mads = vectors.mads;
     if (mads == null)
       return;
+    Atom[] atoms = vectors.atoms;
     short[] colixes = vectors.colixes;
     for (int i = frame.atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      //Logger.debug("vector render"+atom.shapeVisibilityFlags + " " + vectors.myVisibilityFlag);
       if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) == 0
           || (atom.shapeVisibilityFlags & vectors.myVisibilityFlag) == 0
           || frame.bsHidden.get(i))
@@ -49,8 +48,12 @@ class VectorsRenderer extends ShapeRenderer {
       Vector3f vibrationVector = atom.getVibrationVector();
       if (vibrationVector == null)
         continue;
+      vectorScale = vectors.scale;
+      if (Float.isNaN(vectorScale)) {
+        vectorScale = vectors.scale = viewer.getDefaultVectorScale();
+      }
       if (transform(mads[i], atom, vibrationVector))
-        renderVector(colixes[i], atom);
+        renderVector((colixes == null ? Graphics3D.INHERIT : colixes[i]), atom);
     }
   }
 
@@ -58,47 +61,37 @@ class VectorsRenderer extends ShapeRenderer {
   final Point3f pointArrowHead = new Point3f();
   final Point3i screenVectorEnd = new Point3i();
   final Point3i screenArrowHead = new Point3i();
-  final Vector3f vibrationVectorScaled = new Vector3f();
+  final Vector3f headOffsetVector = new Vector3f();
   int diameter;
   float headWidthAngstroms;
   int headWidthPixels;
+  float vectorScale;
+  float headScale;
+  boolean doShaft;
+  final static float arrowHeadOffset = -0.2f;
 
-  final static float arrowHeadBase = 0.8f;
 
   boolean transform(short mad, Atom atom, Vector3f vibrationVector) {
     if (atom.madAtom == JmolConstants.MAR_DELETED)
       return false;
 
-    // to have the vectors stay in the the same spot
-    /*
-    float vectorScale = viewer.getVectorScale();
-    pointVectorEnd.scaleAdd(vectorScale, atom.vibrationVector, atom.point3f);
-    viewer.transformPoint(pointVectorEnd, screenVectorEnd);
-    diameter = (mad <= 20)
-      ? mad
-      : viewer.scaleToScreen(screenVectorEnd.z, mad);
-    pointArrowHead.scaleAdd(vectorScale * arrowHeadBase,
-                            atom.vibrationVector, atom.point3f);
-    viewer.transformPoint(pointArrowHead, screenArrowHead);
-    headWidthPixels = diameter * 3 / 2;
-    if (headWidthPixels < diameter + 2)
-      headWidthPixels = diameter + 2;
-    return true;
-    */
-
+    float len = vibrationVector.length();
     // to have the vectors move when vibration is turned on
-    float vectorScale = viewer.getVectorScale();
+    if (Math.abs(len * vectorScale) < 0.01)
+      return false;
+    headScale = arrowHeadOffset;
+    if (vectorScale < 0)
+      headScale = -headScale;
+    doShaft = (0.1 + Math.abs(headScale/len) < Math.abs(vectorScale));
+    headOffsetVector.set(vibrationVector);
+    headOffsetVector.scale(headScale / len);
     pointVectorEnd.scaleAdd(vectorScale, vibrationVector, atom);
-    viewer.transformPoint(pointVectorEnd, vibrationVector,
-                          screenVectorEnd);
-    diameter = (mad <= 20)
-      ? mad
-      : viewer.scaleToScreen(screenVectorEnd.z, mad);
-    pointArrowHead.scaleAdd(vectorScale * arrowHeadBase,
-                            vibrationVector, atom);
-    viewer.transformPoint(pointArrowHead, vibrationVector,
-                          screenArrowHead);
-    headWidthPixels = diameter * 3 / 2;
+    pointArrowHead.set(pointVectorEnd);
+    pointArrowHead.add(headOffsetVector);
+    viewer.transformPoint(pointArrowHead, vibrationVector, screenArrowHead);
+    viewer.transformPoint(pointVectorEnd, vibrationVector, screenVectorEnd);
+    diameter = (mad < 5 ? 5 : mad <= 20 ? mad : viewer.scaleToScreen(screenVectorEnd.z, mad));
+    headWidthPixels = (int)(diameter * 1.5f);
     if (headWidthPixels < diameter + 2)
       headWidthPixels = diameter + 2;
     return true;
@@ -106,6 +99,7 @@ class VectorsRenderer extends ShapeRenderer {
   
   void renderVector(short colix, Atom atom) {
     colix = Graphics3D.getColixInherited(colix, atom.colixAtom);
+    if (doShaft)
     g3d.fillCylinder(colix, Graphics3D.ENDCAPS_OPEN, diameter,
                  atom.getScreenX(), atom.getScreenY(), atom.getScreenZ(),
                  screenArrowHead.x, screenArrowHead.y, screenArrowHead.z);

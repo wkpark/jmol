@@ -39,11 +39,13 @@ import org.jmol.util.Logger;
 abstract class Mps extends Shape {
 
   Mmset mmset;
-
+  Atom[] atoms;
+  
   Mpsmodel[] mpsmodels;
 
   final void initShape() {
     mmset = frame.mmset;
+    atoms = frame.atoms;
   }
 
   void setSize(int size, BitSet bsSelected) {
@@ -85,7 +87,7 @@ abstract class Mps extends Shape {
       Model[] models = mmset.getModels();
       mpsmodels = new Mpsmodel[modelCount];
       for (int i = modelCount; --i >= 0; )
-        mpsmodels[i] = new Mpsmodel(models[i]);
+        mpsmodels[i] = new Mpsmodel(this, models[i]);
     }
   }
 
@@ -112,12 +114,12 @@ abstract class Mps extends Shape {
     int modelIndex;
     int modelVisibilityFlags = 0;
     
-    Mpsmodel(Model model) {
+    Mpsmodel(Mps shape, Model model) {
       mpspolymers = new MpsShape[model.getPolymerCount()];
       this.modelIndex = model.modelIndex;
       for (int i = mpspolymers.length; --i >= 0;) {
         (mpspolymers[i] = allocateMpspolymer(model.getPolymer(i)))
-            .setViewerG3dFrame(viewer, g3d, frame, shapeID);
+            .setShape(shape);
       }
     }
     
@@ -178,7 +180,10 @@ abstract class Mps extends Shape {
   }
 
   
-  abstract class MpsShape extends AtomShape {
+  abstract class MpsShape {
+       
+    Mps shape;
+    
     Polymer polymer;
     
     Mesh[] meshes;
@@ -188,7 +193,15 @@ abstract class Mps extends Shape {
     short madHelixSheet;
     short madTurnRandom;
     short madDnaRna;
+    
+    short[] mads;
+    short[] colixes;
+    short[] paletteIDs;
 
+    BitSet bsColixSet;
+    BitSet bsSizeSet;
+    boolean isActive;
+    
     int monomerCount;
     Monomer[] monomers;
 
@@ -218,6 +231,10 @@ abstract class Mps extends Shape {
       }
     }
 
+    void setShape(Mps shape) {
+      this.shape = shape;
+    }
+    
     short getMadSpecial(short mad, int groupIndex) {
       switch (mad) {
       case -1: // trace on
@@ -286,82 +303,6 @@ abstract class Mps extends Shape {
       hasBfactorRange = true;
     }
 
-    void setMad(short mad, BitSet bsSelected) {
-      if (bsSizeSet == null)
-        bsSizeSet = new BitSet();
-      int[] leadAtomIndices = polymer.getLeadAtomIndices();
-      for (int i = monomerCount; --i >= 0; ) {
-        int leadAtomIndex = leadAtomIndices[i];
-        if (bsSelected.get(leadAtomIndex)) { 
-          mads[i] = mad >= 0 ? mad : getMadSpecial(mad, i);
-          boolean isVisible = (mads[i] > 0);
-          bsSizeSet.set(i, isVisible);
-          monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
-          atoms[leadAtomIndex].setShapeVisibility(myVisibilityFlag,isVisible);
-          falsifyMesh(i, true);
-        }
-      }
-      if (monomerCount > 1)
-        mads[monomerCount] = mads[monomerCount - 1];
-    }
-
-    void setColix(short colix, int pid, BitSet bsSelected) {
-      int[] atomIndices = polymer.getLeadAtomIndices();
-      if (bsColixSet == null)
-        bsColixSet = new BitSet();
-      for (int i = monomerCount; --i >= 0;) {
-        int atomIndex = atomIndices[i];
-        if (bsSelected.get(atomIndex)) {
-          colixes[i] = setColix(colix, pid, atomIndex);
-          paletteIDs[i] = (short) pid;
-          bsColixSet.set(i, colix != Graphics3D.INHERIT || pid > 0);
-        }
-      }
-    }
-
-    void setTranslucent(boolean isTranslucent, BitSet bsSelected) {
-      int[] atomIndices = polymer.getLeadAtomIndices();
-      if (bsColixSet == null)
-        bsColixSet = new BitSet();
-      for (int i = monomerCount; --i >= 0; ) {
-        int atomIndex = atomIndices[i];
-        if (bsSelected.get(atomIndex)) {
-          colixes[i] = Graphics3D.getColixTranslucent(colixes[i], isTranslucent);
-          bsColixSet.set(i, colixes[i] != 0);
-        }
-      }
-    }
-
-    void setShapeState(Hashtable temp, Hashtable temp2) {
-      if (bsSizeSet == null)
-        return;
-      String type = JmolConstants.shapeClassBases[shapeID];
-
-      for (int i = 0; i < monomerCount; i++) {
-        int atomIndex1 = monomers[i].firstAtomIndex;
-        int atomIndex2 = monomers[i].lastAtomIndex;
-        if (!bsSizeSet.get(i)) //shapes MUST have been set with a size
-          continue;
-        setStateInfo(temp, atomIndex1, atomIndex2, type + " "
-            + (mads[i] / 2000f));
-        if (bsColixSet != null && bsColixSet.get(i))
-          setStateInfo(temp2, atomIndex1, atomIndex2, getColorCommand(type, 
-              paletteIDs[i], colixes[i]));
-      }
-    }  
-
-    void falsifyMesh(int index, boolean andNearby) {
-      if (meshReady == null)
-        return;
-      meshReady[index] = false;
-      if (!andNearby)
-        return;
-      if (index > 0)
-        meshReady[index - 1] = false;
-      if (index < monomerCount - 1)
-        meshReady[index + 1] = false;
-    }
-    
     private final static double eightPiSquared100 = 8 * Math.PI * Math.PI * 100;
     /**
      * Calculates the mean positional displacement in milliAngstroms.
@@ -451,5 +392,83 @@ abstract class Mps extends Shape {
         group.setModelClickability();
       }
     }
+
+    void setMad(short mad, BitSet bsSelected) {
+      isActive = true;
+      if (bsSizeSet == null)
+        bsSizeSet = new BitSet();
+      int[] leadAtomIndices = polymer.getLeadAtomIndices();
+      for (int i = monomerCount; --i >= 0; ) {
+        int leadAtomIndex = leadAtomIndices[i];
+        if (bsSelected.get(leadAtomIndex)) { 
+          mads[i] = mad >= 0 ? mad : getMadSpecial(mad, i);
+          boolean isVisible = (mads[i] > 0);
+          bsSizeSet.set(i, isVisible);
+          monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
+          atoms[leadAtomIndex].setShapeVisibility(myVisibilityFlag,isVisible);
+          falsifyMesh(i, true);
+        }
+      }
+      if (monomerCount > 1)
+        mads[monomerCount] = mads[monomerCount - 1];
+    }
+
+    void setColix(short colix, int pid, BitSet bsSelected) {
+      isActive = true;
+      int[] atomIndices = polymer.getLeadAtomIndices();
+      if (bsColixSet == null)
+        bsColixSet = new BitSet();
+      for (int i = monomerCount; --i >= 0;) {
+        int atomIndex = atomIndices[i];
+        if (bsSelected.get(atomIndex)) {
+          colixes[i] = shape.setColix(colix, pid, atomIndex);
+          paletteIDs[i] = (short) pid;
+          bsColixSet.set(i, colix != Graphics3D.INHERIT || pid > 0);
+        }
+      }
+    }
+    
+    void setTranslucent(boolean isTranslucent, BitSet bsSelected) {
+      isActive = true;
+      int[] atomIndices = polymer.getLeadAtomIndices();
+      if (bsColixSet == null)
+        bsColixSet = new BitSet();
+      for (int i = monomerCount; --i >= 0; ) {
+        int atomIndex = atomIndices[i];
+        if (bsSelected.get(atomIndex)) {
+          colixes[i] = Graphics3D.getColixTranslucent(colixes[i], isTranslucent);
+          bsColixSet.set(i, colixes[i] != 0);
+        }
+      }
+    }
+
+    void setShapeState(Hashtable temp, Hashtable temp2) {
+      if (!isActive)
+        return;
+      String type = JmolConstants.shapeClassBases[shapeID];
+      for (int i = 0; i < monomerCount; i++) {
+        int atomIndex1 = monomers[i].firstAtomIndex;
+        int atomIndex2 = monomers[i].lastAtomIndex;
+        if (!bsSizeSet.get(i)) //shapes MUST have been set with a size
+          continue;
+        setStateInfo(temp, atomIndex1, atomIndex2, type + " "
+            + (mads[i] / 2000f));
+        if (bsColixSet != null && bsColixSet.get(i))
+          setStateInfo(temp2, atomIndex1, atomIndex2, getColorCommand(type, 
+              paletteIDs[i], colixes[i]));
+      }
+    }  
+
+    void falsifyMesh(int index, boolean andNearby) {
+      if (meshReady == null)
+        return;
+      meshReady[index] = false;
+      if (!andNearby)
+        return;
+      if (index > 0)
+        meshReady[index - 1] = false;
+      if (index < monomerCount - 1)
+        meshReady[index + 1] = false;
+    }    
   }  
 }

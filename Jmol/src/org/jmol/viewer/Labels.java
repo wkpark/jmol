@@ -76,7 +76,9 @@ class Labels extends AtomShape {
   }
 
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
+    isActive = true;
     if ("color" == propertyName) {
+      isActive = true;
       int n = 0;
       int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
       short colix = Graphics3D.getColix(value);
@@ -91,6 +93,7 @@ class Labels extends AtomShape {
     }
     
     if ("label" == propertyName) {
+      isActive = true;
       if (bsSizeSet == null)
         bsSizeSet = new BitSet();
       String strLabel = (String) value;
@@ -127,9 +130,9 @@ class Labels extends AtomShape {
 
     // no translucency
     if ("bgcolor" == propertyName) {
+      isActive = true;
       if (bsBgColixSet == null)
         bsBgColixSet = new BitSet();
-
       short bgcolix = Graphics3D.getColix(value);
       int n = 0;
       for (int i = atomCount; --i >= 0;)
@@ -140,6 +143,8 @@ class Labels extends AtomShape {
       return;
     }
 
+    // the rest require bsFontSet setting
+    
     if (bsFontSet == null)
       bsFontSet = new BitSet();
 
@@ -256,7 +261,6 @@ class Labels extends AtomShape {
             bsSizeSet.set(atomIndex);
           }
           atom.setShapeVisibility(myVisibilityFlag, strings[atomIndex] != null);
-          return;
         }
       return;
     }
@@ -393,6 +397,8 @@ class Labels extends AtomShape {
   }  
 
   String getShapeState() {
+    if (!isActive)
+      return "";
     Hashtable temp = new Hashtable();
     Hashtable temp2 = new Hashtable();
     for (int i = atomCount; --i >= 0;) {

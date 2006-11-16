@@ -3507,7 +3507,8 @@ class Eval { //implements Runnable {
           float scale = floatParameter(2);
           if (scale < -10 || scale > 10)
             numberOutOfRange(-10f, 10f);
-          viewer.setFloatProperty("vectorScale", scale);
+          viewer.loadShape(JmolConstants.SHAPE_VECTORS);
+          viewer.setShapeProperty(JmolConstants.SHAPE_VECTORS, "scale", new Float(scale));
           return;
         }
         unrecognizedSubcommand(cmd);
@@ -3659,8 +3660,10 @@ class Eval { //implements Runnable {
     Token token = statement[1];
     float period = 0;
     switch (token.tok) {
-    case Token.off:
     case Token.on:
+      period = viewer.getDefaultVibrationPeriod();
+      break;
+    case Token.off:
     case Token.integer:
       period = token.intValue;
       break;
@@ -3670,21 +3673,17 @@ class Eval { //implements Runnable {
     case Token.identifier:
       String cmd = (String) statement[1].value;
       if (cmd.equalsIgnoreCase("scale")) {
-        vibrationScale();
+        checkLength3();
+        float scale = floatParameter(2);
+        if (scale < -10 || scale > 10)
+          numberOutOfRange(-10f, 10f);
+        viewer.setFloatProperty("vibrationScale", scale);
         return;
       }
     default:
       unrecognizedSubcommand(token.toString());
     }
     viewer.setFloatProperty("vibrationPeriod", period);
-  }
-
-  void vibrationScale() throws ScriptException {
-    checkLength3();
-    float scale = floatParameter(2);
-    if (scale < -10 || scale > 10)
-      numberOutOfRange(-10f, 10f);
-    viewer.setFloatProperty("vibrationScale", scale);
   }
 
   void animationDirection() throws ScriptException {

@@ -34,6 +34,7 @@ class Balls extends AtomShape {
   
   void setSize(int size, BitSet bsSelected) {
     short mad = (short)size;
+    isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
     int bsLength = bsSelected.length();
@@ -41,7 +42,7 @@ class Balls extends AtomShape {
       if (bsSelected.get(i)) {
         Atom atom = atoms[i];
         atom.setMadAtom(mad);
-        bsSizeSet.set(i);
+        bsSizeSet.set(i, mad != 0);
       }
     }
   }

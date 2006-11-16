@@ -33,6 +33,8 @@ import org.jmol.util.ArrayUtil;
 
 class AtomShape extends Shape {
 
+  // Balls, Halos, Labels, MpsShapes, Stars, Vectors
+  
   short[] mads;
   short[] colixes;
   short[] paletteIDs;
@@ -40,6 +42,7 @@ class AtomShape extends Shape {
   BitSet bsColixSet;
   int atomCount;
   Atom[] atoms;
+  boolean isActive;
   
   void initShape() {
     atomCount = frame.atomCount;
@@ -47,6 +50,8 @@ class AtomShape extends Shape {
   }
   
   void setSize(int size, BitSet bsSelected) {
+    //Halos Stars Vectors only
+    isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
     boolean isVisible = (size != 0);
@@ -56,13 +61,14 @@ class AtomShape extends Shape {
           mads = new short[atomCount];
         Atom atom = atoms[i];
         mads[i] = atom.convertEncodedMad(size);
-        bsSizeSet.set(i);
+        bsSizeSet.set(i, isVisible);
         atom.setShapeVisibility(myVisibilityFlag, isVisible);
       }
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {
     if ("color" == propertyName) {
+      isActive = true;
       short colix = Graphics3D.getColix(value);
       if (bsColixSet == null)
         bsColixSet = new BitSet();
@@ -80,6 +86,7 @@ class AtomShape extends Shape {
       return;
     }
     if ("translucency" == propertyName) {
+      isActive = true;
       boolean isTranslucent = ("translucent" == value);
       for (int i = atomCount; --i >= 0; )
         if (bs.get(i)) {
@@ -116,7 +123,7 @@ class AtomShape extends Shape {
   }
 
   String getShapeState() {
-    if (bsSizeSet == null)
+    if (!isActive)
       return "";
     Hashtable temp = new Hashtable();
     Hashtable temp2 = new Hashtable();

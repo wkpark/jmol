@@ -94,8 +94,13 @@ class TransformManager {
       }
       commands.append(";\n");
     }
-    if (vibrationOn)
-      commands.append("vibration on;\n");
+    
+    if (viewer.modelSetHasVibrationVectors()) {
+      commands.append("vibration scale " + vibrationScale + ";\n");
+      if (vibrationOn)
+        commands.append("vibration " + vibrationPeriod + ";\n");
+    }
+
     commands.append("\n");
     return commands.toString();
   }
@@ -948,10 +953,10 @@ class TransformManager {
    */
   synchronized Point3i transformPoint(Point3f pointAngstroms) {
     matrixTransform.transform(pointAngstroms, point3fScreenTemp);
-    return adjustedTemporaryScreenPoint(pointAngstroms);
+    return adjustedTemporaryScreenPoint();
   }
   
-  Point3i adjustedTemporaryScreenPoint(Point3f pointAngstroms) {
+  Point3i adjustedTemporaryScreenPoint() {
     float z = (point3fScreenTemp.z - perspectiveOffset.z);
     if (z < cameraDistance) {
       if (Float.isNaN(point3fScreenTemp.z)) {
@@ -1015,7 +1020,7 @@ class TransformManager {
     //used solely by RocketsRenderer
     
     matrixTransform.transform(pointAngstroms, point3fScreenTemp);
-    adjustedTemporaryScreenPoint(pointAngstroms);
+    adjustedTemporaryScreenPoint();
     screen.set(point3fScreenTemp);
   }
 
@@ -1027,7 +1032,7 @@ class TransformManager {
           pointAngstroms);
       matrixTransform.transform(point3fVibrationTemp, point3fScreenTemp);
     }
-    return adjustedTemporaryScreenPoint(pointAngstroms);
+    return adjustedTemporaryScreenPoint();
   }
 
   void transformPoint(Point3f pointAngstroms, Vector3f vibrationVector,
@@ -1527,12 +1532,17 @@ class TransformManager {
   int vibrationPeriodMs;
   float vibrationAmplitude;
   float vibrationRadians;
+  float vibrationScale;
 
+  void setVibrationScale(float scale) {
+    vibrationScale = scale;
+  }
+  
   void setVibrationPeriod(float period) {
     if (period <= 0) {
       this.vibrationPeriod = 0;
       this.vibrationPeriodMs = 0;
-      clearVibration();
+      setVibrationOn(false);
     } else {
       this.vibrationPeriod = period;
       this.vibrationPeriodMs = (int) (period * 1000);
@@ -1542,21 +1552,9 @@ class TransformManager {
 
   void setVibrationT(float t) {
     vibrationRadians = t * twoPI;
+    if (vibrationScale == 0)
+      vibrationScale = viewer.getDefaultVibrationScale();
     vibrationAmplitude = (float) Math.cos(vibrationRadians) * vibrationScale;
-  }
-
-  float vectorScale = 1f;
-
-  void setVectorScale(float scale) {
-    if (scale >= -10 && scale <= 10)
-      vectorScale = scale;
-  }
-
-  float vibrationScale = 1f;
-
-  void setVibrationScale(float scale) {
-    if (scale >= -10 && scale <= 10)
-      vibrationScale = scale;
   }
 
   VibrationThread vibrationThread;
@@ -1583,6 +1581,7 @@ class TransformManager {
 
   void clearVibration() {
     setVibrationOn(false);
+    
   }
 
   class VibrationThread extends Thread implements Runnable {

@@ -58,5 +58,4 @@ class Halos extends AtomShape {
         + (colixSelection == Graphics3D.USE_PALETTE ? "" 
             : getColorCommand("selectionHalos", colixSelection) + ";\n");
   }
-
 }

@@ -653,11 +653,6 @@ public class Viewer extends JmolViewer {
     transformManager.setScaleAngstromsPerInch(angstromsPerInch);
   }
 
-  private void setVibrationPeriod(float period) {
-    //Eval
-    transformManager.setVibrationPeriod(period);
-  }
-
   void setSpinX(int value) {
     //Eval
     transformManager.setSpinX(value);
@@ -757,13 +752,28 @@ public class Viewer extends JmolViewer {
     colorManager.setElementArgb(elementNumber, argb);
   }
 
-  float getVectorScale() {
-    return transformManager.vectorScale;
+  float getDefaultVectorScale() {
+    return global.defaultVectorScale;
   }
 
-  private void setVectorScale(float scale) {
-    //Eval
-    transformManager.setVectorScale(scale);
+  private void setDefaultVectorScale(float scale) {
+    global.defaultVectorScale = scale;
+  }
+
+  float getDefaultVibrationScale() {
+    return global.defaultVibrationScale;
+  }
+
+  private void setDefaultVibrationScale(float scale) {
+    global.defaultVibrationScale = scale;
+  }
+
+  float getDefaultVibrationPeriod() {
+    return global.defaultVibrationPeriod;
+  }
+
+  private void setDefaultVibrationPeriod(float period) {
+    global.defaultVibrationPeriod = period;
   }
 
   private void setVibrationScale(float scale) {
@@ -771,8 +781,9 @@ public class Viewer extends JmolViewer {
     transformManager.setVibrationScale(scale);
   }
 
-  float getVibrationScale() {
-    return transformManager.vibrationScale;
+  private void setVibrationPeriod(float period) {
+    //Eval
+    transformManager.setVibrationPeriod(period);
   }
 
   void setBackgroundArgb(int argb) {
@@ -2982,8 +2993,16 @@ public class Viewer extends JmolViewer {
         setStereoDegrees(value);
         break;
       }
-      if (key.equalsIgnoreCase("vectorScale")) {
-        setVectorScale(value);
+      if (key.equalsIgnoreCase("defaultVectorScale")) {
+        setDefaultVectorScale(value);
+        break;
+      }
+      if (key.equalsIgnoreCase("defaultVibrationPeriod")) {
+        setDefaultVibrationPeriod(value);
+        break;
+      }
+      if (key.equalsIgnoreCase("defaultVibrationScale")) {
+        setDefaultVibrationScale(value);
         break;
       }
       if (key.equalsIgnoreCase("vibrationPeriod")) {

@@ -528,7 +528,6 @@ class TransformManager {
   private void calcScale(String from) {
     setZoomParameters();
     scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomPercent / 100;
-    System.out.println(from + " " + scalePixelsPerAngstrom + " " + rotationRadius);
   }
   
 
@@ -728,8 +727,6 @@ class TransformManager {
      * of any calculation that would change the rotation radius.  hansonr
      * 
      */
-    System.out.println("defaultscale "+radius + (screenPixelCount / 2f / radius
-        * cameraScaleFactor()));
     return screenPixelCount / 2f / radius
         * cameraScaleFactor();
   }

@@ -97,6 +97,10 @@ class FileManager {
     openFile(name, null, null);
   }
 
+  void clear() {
+    setLoadScript("");
+  }
+  
   void setLoadScript(String script) {
     loadScript = viewer.getLoadState() + script + "\n";
   }

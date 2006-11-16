@@ -1294,6 +1294,7 @@ public class Viewer extends JmolViewer {
   }
   
   private void clear() {
+    fileManager.clear();
     repaintManager.clear();
     transformManager.clear();
     pickingManager.clear();

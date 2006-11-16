@@ -136,11 +136,22 @@ public class JmolApplet
   }
 
   public void loadInline(String[] strModels, String script) {
-    String[] converted = new String[strModels.length];
-    for (int i = strModels.length; --i >= 0;)
-      converted[i] = "" + strModels[i];
-    if (wrappedApplet != null)
-      ((JmolAppletInterface)wrappedApplet).loadInline(converted, ""+script);
+    if (strModels.length == 0 || wrappedApplet == null)
+      return;
+    String s = "" + strModels[0];
+    if (s.indexOf('\n') >= 0 || s.indexOf('\r') >= 0) {
+      String[] converted = new String[strModels.length];
+      for (int i = strModels.length; --i >= 0;)
+        converted[i] = "" + strModels[i];
+      ((JmolAppletInterface) wrappedApplet).loadInline(converted, "" + script);
+      return;
+    }
+    StringBuffer sb = new StringBuffer();
+    for (int i = strModels.length; --i >= 0;) {
+      sb.append(strModels[i]);
+      sb.append('\n');
+    }
+    ((JmolAppletInterface) wrappedApplet).loadInline(sb.toString(), "" + script);
   }
 
   public void loadNodeId(String nodeId) {

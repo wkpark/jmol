@@ -4625,7 +4625,7 @@
     public="n"
     server="171.64.65.56" atoms="10066" preferred="4" deadline="12"
     credit="1" frames="100" code="A0" contact="densign"/>
-  <fah_proj number="3006" name="p3006_SMP-msv-99p" public="y"
+  <fah_proj number="3006" name="p3006_SMP-msv-99p" public="y" file="y"
     server="171.64.65.56" atoms="10066" preferred="4" deadline="12"
     credit="587" frames="100" code="GS" contact="densign"/>
   <fah_proj number="3007" name="p3007_SMP-msv-03" public="y" file="y"

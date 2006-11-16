@@ -67,7 +67,8 @@ final class Model {
    */
   
   Mmset mmset;
-  int modelIndex;
+  int modelIndex;   // our 0-based reference
+  int modelNumber;  // what the user works with
   String modelTag;
   int preSymmetryAtomIndex = -1;
   int preSymmetryAtomCount;
@@ -82,9 +83,10 @@ final class Model {
   private Polymer[] polymers = new Polymer[8];
 
 
-  Model(Mmset mmset, int modelIndex, String modelTag) {
+  Model(Mmset mmset, int modelIndex, int modelNumber, String modelTag) {
     this.mmset = mmset;
     this.modelIndex = modelIndex;
+    this.modelNumber = modelNumber;
     this.modelTag = modelTag;
   }
 

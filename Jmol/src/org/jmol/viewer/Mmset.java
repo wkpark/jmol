@@ -40,8 +40,6 @@ final class Mmset {
   Hashtable modelSetAuxiliaryInfo;
 
   private int modelCount = 0;
-  private String[] modelNames = new String[1];
-  private int[] modelNumbers = new int[1];
   private Properties[] modelProperties = new Properties[1];
   private Hashtable[] modelAuxiliaryInfo = new Hashtable[1];
   private Model[] models = new Model[1];
@@ -152,8 +150,6 @@ final class Mmset {
       throw new NullPointerException();
     this.modelCount = modelCount;
     models = (Model[]) ArrayUtil.setLength(models, modelCount);
-    modelNames = ArrayUtil.setLength(modelNames, modelCount);
-    modelNumbers = ArrayUtil.setLength(modelNumbers, modelCount);
     modelProperties = (Properties[]) ArrayUtil
         .setLength(modelProperties, modelCount);
     modelAuxiliaryInfo = (Hashtable[]) ArrayUtil.setLength(modelAuxiliaryInfo,
@@ -174,11 +170,11 @@ final class Mmset {
   }
 
   String getModelName(int modelIndex) {
-    return modelNames[modelIndex];
+    return models[modelIndex].modelTag;
   }
 
   int getModelNumber(int modelIndex) {
-    return modelNumbers[modelIndex];
+    return models[modelIndex].modelNumber;
   }
 
   Properties getModelProperties(int modelIndex) {
@@ -225,7 +221,7 @@ final class Mmset {
 
   int getModelNumberIndex(int modelNumber) {
     int i;
-    for (i = modelCount; --i >= 0 && modelNumbers[i] != modelNumber;) {
+    for (i = modelCount; --i >= 0 && models[i].modelNumber != modelNumber;) {
     }
     return i;
   }
@@ -243,12 +239,9 @@ final class Mmset {
                                     Properties modelProperties,
                                     Hashtable modelAuxiliaryInfo, boolean isPDB) {
     
-
-    modelNames[modelIndex] = modelName;
-    modelNumbers[modelIndex] = modelNumber;
     this.modelProperties[modelIndex] = modelProperties;
     this.modelAuxiliaryInfo[modelIndex] = modelAuxiliaryInfo;
-    models[modelIndex] = new Model(this, modelIndex, modelName);
+    models[modelIndex] = new Model(this, modelIndex, modelNumber, modelName);
     String codes = (String) getModelAuxiliaryInfo(modelIndex, "altLocs");
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
     codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");

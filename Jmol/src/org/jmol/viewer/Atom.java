@@ -344,26 +344,6 @@ final public class Atom extends Point3fi implements Tuple {
     return vibrationVectors == null ? null : vibrationVectors[atomIndex];
   }
 
-  void setLabel(String strLabel) {
-    if (group == null)
-      return;
-    group.chain.frame.setLabel(strLabel, atomIndex);
-  }
-
-  // miguel 2006 03 25
-  // not sure what we should do here
-  // current implementation of g3d uses a short for the zbuffer coordinate
-  // we could consider turning that into an int, but that would have
-  // significant implications
-  //
-  // actually, I think that it might work out just fine. we should use
-  // an int in this world, but let g3d deal with the problem of
-  // something having a depth that is more than 32K ... in the same
-  // sense that g3d will clip if something is not on the screen
-
-  //  final static int MIN_Z = 100;
-  //  final static int MAX_Z = 32766;
-
   void transform(Viewer viewer) {
     Point3i screen;
     Vector3f[] vibrationVectors;
@@ -757,7 +737,7 @@ final public class Atom extends Point3fi implements Tuple {
   }
   
   int getModelNumber() {
-    return group.chain.frame.getModelNumber(modelIndex);
+    return group.chain.model.modelNumber;
   }
   
   // THIS is ridiculous! It means that we cannot close the adapter

@@ -42,7 +42,7 @@ class Balls extends AtomShape {
       if (bsSelected.get(i)) {
         Atom atom = atoms[i];
         atom.setMadAtom(mad);
-        bsSizeSet.set(i, mad != 0);
+        bsSizeSet.set(i);
       }
     }
   }

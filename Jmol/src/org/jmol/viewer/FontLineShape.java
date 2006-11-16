@@ -30,6 +30,8 @@ import org.jmol.g3d.Graphics3D;
 import java.util.BitSet;
 
 abstract class FontLineShape extends Shape {
+  
+  // Axes, Bbcage, Frank, Uccage
 
   short mad;
   short colix;

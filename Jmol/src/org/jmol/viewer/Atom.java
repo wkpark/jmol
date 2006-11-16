@@ -757,7 +757,7 @@ final public class Atom extends Point3fi implements Tuple {
   }
   
   int getModelNumber() {
-    return modelIndex + 1;
+    return group.chain.frame.getModelNumber(modelIndex);
   }
   
   // THIS is ridiculous! It means that we cannot close the adapter

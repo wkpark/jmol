@@ -226,7 +226,7 @@ class Dots extends Shape {
     }
     if ("translucencySurface" == propertyName) {
       boolean isTranslucent = ("translucent" == value);
-      surfaceColix = Graphics3D.setTranslucent(surfaceColix, isTranslucent);
+      surfaceColix = Graphics3D.getColixTranslucent(surfaceColix, isTranslucent);
       return;
     }    
     

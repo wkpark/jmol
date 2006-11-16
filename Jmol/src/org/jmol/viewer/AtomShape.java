@@ -85,7 +85,7 @@ class AtomShape extends Shape {
         if (bs.get(i)) {
           if (colixes == null)
             colixes = new short[atomCount];
-          colixes[i] = Graphics3D.setTranslucent(colixes[i], isTranslucent);
+          colixes[i] = Graphics3D.getColixTranslucent(colixes[i], isTranslucent);
           if (isTranslucent)
             bsColixSet.set(i);
         }

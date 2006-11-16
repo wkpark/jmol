@@ -85,8 +85,8 @@ class SticksRenderer extends ShapeRenderer {
         || frame.bsHidden.get(atomB.atomIndex))
       return;
 
-    colixA = Graphics3D.inheritColix(bond.colix, atomA.colixAtom);
-    colixB = Graphics3D.inheritColix(bond.colix, atomB.colixAtom);
+    colixA = Graphics3D.getColixInherited(bond.colix, atomA.colixAtom);
+    colixB = Graphics3D.getColixInherited(bond.colix, atomB.colixAtom);
     if (bondsBackbone) {
       if (ssbondsBackbone &&
           (order & JmolConstants.BOND_SULFUR_MASK) != 0) {

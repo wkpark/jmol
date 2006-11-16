@@ -326,7 +326,7 @@ abstract class Mps extends Shape {
       for (int i = monomerCount; --i >= 0; ) {
         int atomIndex = atomIndices[i];
         if (bsSelected.get(atomIndex)) {
-          colixes[i] = Graphics3D.setTranslucent(colixes[i], isTranslucent);
+          colixes[i] = Graphics3D.getColixTranslucent(colixes[i], isTranslucent);
           bsColixSet.set(i, colixes[i] != 0);
         }
       }

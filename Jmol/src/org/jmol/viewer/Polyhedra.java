@@ -235,7 +235,7 @@ class Polyhedra extends SelectionIndependentShape {
       if (p == null)
         continue;
       if (centers.get(p.centralAtom.atomIndex))
-        p.myColix = Graphics3D.setTranslucent(p.myColix,
+        p.myColix = Graphics3D.getColixTranslucent(p.myColix,
             isTranslucent);
     }
   }
@@ -581,10 +581,9 @@ class Polyhedra extends SelectionIndependentShape {
           + (myFaceCenterOffset == DEFAULT_FACECENTEROFFSET ? ""
               : " faceCenterOffset " + myFaceCenterOffset)
           + (collapsed ? " collapsed" : "")
-          + " " + encodeTransColor(myColix)
           + " to " + StateManager.encodeBitset(bs) + ";"
-          + (visible ? "" : "polyhedra off;") + "\n";
-      
+          + (visible ? "" : "polyhedra off;");
+      s += getColorCommand("polyhedra",myColix) + ";\n";
       return s;
     }
   }
@@ -607,6 +606,10 @@ class Polyhedra extends SelectionIndependentShape {
     StringBuffer s = new StringBuffer();
     for (int i = 0; i < polyhedronCount; i++)
       s.append(polyhedrons[i].getState());
+    if (drawEdges == EDGES_FRONT)
+      appendCmd(s, "polyhedra frontedges");
+    else if (drawEdges == EDGES_ALL)
+      appendCmd(s, "polyhedra edges");
     return s.toString();
   }
 }

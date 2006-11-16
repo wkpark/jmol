@@ -105,7 +105,7 @@ class VectorsRenderer extends ShapeRenderer {
   }
   
   void renderVector(short colix, Atom atom) {
-    colix = Graphics3D.inheritColix(colix, atom.colixAtom);
+    colix = Graphics3D.getColixInherited(colix, atom.colixAtom);
     g3d.fillCylinder(colix, Graphics3D.ENDCAPS_OPEN, diameter,
                  atom.getScreenX(), atom.getScreenY(), atom.getScreenZ(),
                  screenArrowHead.x, screenArrowHead.y, screenArrowHead.z);

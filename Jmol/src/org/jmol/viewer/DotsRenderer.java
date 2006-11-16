@@ -103,7 +103,7 @@ class DotsRenderer extends ShapeRenderer {
   int[] mapAtoms = null; 
   void renderConvex(Dots dots, Atom atom, short colix, int[] visibilityMap,
                     boolean iShowSolid, boolean isInMotion) {
-    colix = Graphics3D.inheritColix(colix, atom.colixAtom);
+    colix = Graphics3D.getColixInherited(colix, atom.colixAtom);
     if (mapAtoms == null)
       mapAtoms = new int[geodesic.vertices.length];
     boolean isSolid = (iShowSolid && !isInMotion);

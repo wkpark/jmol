@@ -50,8 +50,8 @@ class BackboneRenderer extends MpsRenderer {
           .getScreenZ();
       int xB = atomB.getScreenX(), yB = atomB.getScreenY(), zB = atomB
           .getScreenZ();
-      short colixA = Graphics3D.inheritColix(colixes[i], atomA.colixAtom);
-      short colixB = Graphics3D.inheritColix(colixes[i + 1], atomB.colixAtom);
+      short colixA = Graphics3D.getColixInherited(colixes[i], atomA.colixAtom);
+      short colixB = Graphics3D.getColixInherited(colixes[i + 1], atomB.colixAtom);
       if (mads[i] < 0) {
         g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
       } else {

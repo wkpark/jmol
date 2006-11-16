@@ -82,7 +82,7 @@ class HalosRenderer extends ShapeRenderer {
     int haloDiameter = diameter + 2 * halowidth;
     if (haloDiameter <= 0)
       return;
-    colix = Graphics3D.inheritColix(colix, atom.colixAtom);
+    colix = Graphics3D.getColixInherited(colix, atom.colixAtom);
     g3d.fillScreenedCircleCentered(colix, haloDiameter, atom.screenX,
         atom.screenY, atom.screenZ);
   }

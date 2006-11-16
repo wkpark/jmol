@@ -58,7 +58,7 @@ class LabelsRenderer extends ShapeRenderer {
       if (label == null || label.length() == 0)
         continue;
       short colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
-      colix = Graphics3D.inheritColix(colix, atom.colixAtom);
+      colix = Graphics3D.getColixInherited(colix, atom.colixAtom);
       short bgcolix = (bgcolixes == null || i >= bgcolixes.length) ? 0
           : bgcolixes[i];
       byte fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId

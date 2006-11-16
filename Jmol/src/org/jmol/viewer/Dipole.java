@@ -93,7 +93,7 @@ class Dipole {
   }
 
   void setTranslucent(boolean isTranslucent) {
-    colix = Graphics3D.setTranslucent(colix, isTranslucent);
+    colix = Graphics3D.getColixTranslucent(colix, isTranslucent);
   }
 
   void set(String thisID, String dipoleInfo, Atom[] atoms, float dipoleValue,

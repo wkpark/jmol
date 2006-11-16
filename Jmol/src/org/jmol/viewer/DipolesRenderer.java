@@ -131,11 +131,11 @@ class DipolesRenderer extends ShapeRenderer {
 
   void renderDipoleVector(Dipole dipole) {
     short colixA = (dipole.bond == null ? dipole.colix : Graphics3D
-        .inheritColix(dipole.colix, dipole.bond.colix));
+        .getColixInherited(dipole.colix, dipole.bond.colix));
     short colixB = colixA;
     if (dipole.atoms[0] != null) {
-      colixA = Graphics3D.inheritColix(colixA, dipole.atoms[0].colixAtom);
-      colixB = Graphics3D.inheritColix(colixB, dipole.atoms[1].colixAtom);
+      colixA = Graphics3D.getColixInherited(colixA, dipole.atoms[0].colixAtom);
+      colixB = Graphics3D.getColixInherited(colixB, dipole.atoms[1].colixAtom);
     }
     if (colixA == 0)
       colixA = Graphics3D.ORANGE;

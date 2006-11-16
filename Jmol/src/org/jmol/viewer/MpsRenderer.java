@@ -239,7 +239,7 @@ abstract class MpsRenderer extends MeshRenderer {
   }
 
   short getLeadColix(int i) {
-    return Graphics3D.inheritColix(colixes[i],
+    return Graphics3D.getColixInherited(colixes[i],
         monomers[i].getLeadAtom().colixAtom);
   }
 

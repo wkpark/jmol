@@ -103,7 +103,7 @@ class Bond {
   }
 
   void setTranslucent(boolean isTranslucent) {
-    colix = Graphics3D.setTranslucent(colix, isTranslucent);
+    colix = Graphics3D.getColixTranslucent(colix, isTranslucent);
   }
   
   boolean isTranslucent() {
@@ -147,7 +147,7 @@ class Bond {
   }
 
   short getColix1() {
-    return Graphics3D.inheritColix(colix, atom1.colixAtom);
+    return Graphics3D.getColixInherited(colix, atom1.colixAtom);
   }
 
   int getArgb1() {
@@ -155,7 +155,7 @@ class Bond {
   }
 
   short getColix2() {
-    return Graphics3D.inheritColix(colix, atom2.colixAtom);
+    return Graphics3D.getColixInherited(colix, atom2.colixAtom);
   }
 
   int getArgb2() {

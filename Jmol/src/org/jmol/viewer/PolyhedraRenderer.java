@@ -41,7 +41,7 @@ class PolyhedraRenderer extends ShapeRenderer {
     if (p.visibilityFlags == 0)
       return;
 
-    short colix = Graphics3D.inheritColix(p.myColix, p.centralAtom.colixAtom);
+    short colix = Graphics3D.getColixInherited(p.myColix, p.centralAtom.colixAtom);
     Atom[] vertices = p.vertices;
     byte[] planes;
 
@@ -73,7 +73,7 @@ class PolyhedraRenderer extends ShapeRenderer {
   void drawFace(short colix, short normix,
                 Atom atomA, Atom atomB, Atom atomC, boolean isAll, boolean isFrontOnly) {
     if (isAll || isFrontOnly && g3d.isDirectedTowardsCamera(normix)) {
-      g3d.drawCylinderTriangle(Graphics3D.getOpaqueColix(colix),
+      g3d.drawCylinderTriangle(Graphics3D.getColixTranslucent(colix, false),
                                atomA.screenX, atomA.screenY, atomA.screenZ,
                                atomB.screenX, atomB.screenY, atomB.screenZ,
                                atomC.screenX, atomC.screenY, atomC.screenZ,

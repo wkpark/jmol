@@ -1427,6 +1427,44 @@ final public class Graphics3D {
     return greyRgb;
   }
 
+  public final static short getColix(int argb) {
+    return Colix.getColix(argb);
+  }
+
+  public final static short getColix(String colorName) {
+    int argb = getArgbFromString(colorName);
+    if (argb != 0)
+      return Colix.getColix(argb);
+    if ("none".equalsIgnoreCase(colorName))
+      return INHERIT;
+    if ("translucent".equalsIgnoreCase(colorName))
+      return INHERIT_TRANSLUCENT;
+    if ("opaque".equalsIgnoreCase(colorName))
+      return INHERIT_OPAQUE;
+    return USE_PALETTE;
+  }
+
+  public final static short getColix(Object obj) {
+    if (obj == null)
+      return INHERIT;
+    if (obj instanceof Byte)
+      return (((Byte) obj).byteValue() == 0 ? INHERIT
+          : Graphics3D.USE_PALETTE);
+    if (obj instanceof Integer)
+      return Colix.getColix(((Integer) obj).intValue());
+    if (obj instanceof String)
+      return getColix((String) obj);
+    Logger.debug("?? getColix(" + obj + ")");
+    return HOTPINK;
+  }
+
+  public final static short getColixTranslucent(short colix, boolean isTranslucent) {
+    if (colix == INHERIT)
+      colix = INHERIT_OPAQUE;
+    return (short) (isTranslucent ? colix | TRANSLUCENT_MASK : colix
+        & OPAQUE_MASK);
+  }
+
   public int getColixArgb(short colix) {
     if (colix < 0)
       colix = changableColixMap[colix & UNMASK_CHANGABLE_TRANSLUCENT];
@@ -1450,72 +1488,10 @@ final public class Graphics3D {
   }
 
   public final static boolean isColixTranslucent(short colix) {
-    return (colix & TRANSLUCENT_MASK) != 0;
+    return ((colix & TRANSLUCENT_MASK) != 0);
   }
 
-  public final static short getTranslucentColix(short colix,
-                                                boolean translucent) {
-    return (short)(translucent ?
-                   (colix | TRANSLUCENT_MASK) :
-                   (colix & OPAQUE_MASK));
-  }
-
-  public final static short getTranslucentColix(short colix) {
-    return (short)(colix | TRANSLUCENT_MASK);
-  }
-
-  public final static short getOpaqueColix(short colix) {
-    return (short)(colix & OPAQUE_MASK);
-  }
-
-  public final static short getColix(int argb) {
-    return Colix.getColix(argb);
-  }
-
-  public final short getColixMix(short colixA, short colixB) {
-    return Colix.getColixMix(colixA >= 0 ? colixA :
-                             changableColixMap[colixA &
-                                               UNMASK_CHANGABLE_TRANSLUCENT],
-                             colixB >= 0 ? colixB :
-                             changableColixMap[colixB &
-                                               UNMASK_CHANGABLE_TRANSLUCENT]);
-  }
-
-  public final static short setTranslucent(short colix, boolean isTranslucent) {
-    if (colix == INHERIT)
-      colix = INHERIT_OPAQUE;
-    return (short) (isTranslucent ? colix | TRANSLUCENT_MASK : colix
-        & OPAQUE_MASK);
-  }
-
-  public final static short getColix(String colorName) {
-    int argb = getArgbFromString(colorName);
-    if (argb != 0)
-      return getColix(argb);
-    if ("none".equalsIgnoreCase(colorName))
-      return INHERIT;
-    if ("translucent".equalsIgnoreCase(colorName))
-      return INHERIT_TRANSLUCENT;
-    if ("opaque".equalsIgnoreCase(colorName))
-      return INHERIT_OPAQUE;
-    return USE_PALETTE;
-  }
-
-  public final static short getColix(Object obj) {
-    if (obj == null)
-      return INHERIT;
-    if (obj instanceof Byte)
-      return (((Byte) obj).byteValue() == 0 ? INHERIT
-          : Graphics3D.USE_PALETTE);
-    if (obj instanceof Integer)
-      return getColix(((Integer) obj).intValue());
-    if (obj instanceof String)
-      return getColix((String) obj);
-    Logger.debug("?? getColix(" + obj + ")");
-    return HOTPINK;
-  }
-
-  public final static short inheritColix(short myColix, short parentColix) {
+  public final static short getColixInherited(short myColix, short parentColix) {
     switch (myColix) {
     case INHERIT:
       return parentColix;
@@ -1528,15 +1504,24 @@ final public class Graphics3D {
     }
   }
 
-  public final static short inheritColix(short myColix,
+  public final static short getColixInherited(short myColix,
                                          short parentColix,
                                          short grandParentColix) {
     if ((myColix & OPAQUE_MASK) >= SPECIAL_COLIX_MAX)
       return myColix;
-    parentColix = inheritColix(parentColix, grandParentColix);
+    parentColix = getColixInherited(parentColix, grandParentColix);
     if (myColix == 0)
       return parentColix;
-    return inheritColix(myColix, parentColix);
+    return getColixInherited(myColix, parentColix);
+  }
+
+  public final short getColixMix(short colixA, short colixB) {
+    return Colix.getColixMix(colixA >= 0 ? colixA :
+                             changableColixMap[colixA &
+                                               UNMASK_CHANGABLE_TRANSLUCENT],
+                             colixB >= 0 ? colixB :
+                             changableColixMap[colixB &
+                                               UNMASK_CHANGABLE_TRANSLUCENT]);
   }
 
   public String getHexColorFromIndex(short colix) {
@@ -1572,13 +1557,13 @@ final public class Graphics3D {
       changableColixMap = t;
     }
     if (changableColixMap[id] == 0)
-      changableColixMap[id] = getColix(argb);
+      changableColixMap[id] = Colix.getColix(argb);
     return (short)(id | CHANGABLE_MASK);
   }
 
   public void changeColixArgb(short id, int argb) {
     if (id < changableColixMap.length && changableColixMap[id] != 0)
-      changableColixMap[id] = getColix(argb);
+      changableColixMap[id] = Colix.getColix(argb);
   }
 
   /* ***************************************************************

@@ -1440,6 +1440,10 @@ final public class Graphics3D {
     return (colix & TRANSLUCENT_MASK) != 0;
   }
 
+  public final static boolean isColixInherentlyTranslucent(short colix) {
+    return (colix & TRANSLUCENT_MASK) != 0 || colix == TRANSLUCENT;
+  }
+
   public final static short getTranslucentColix(short colix,
                                                 boolean translucent) {
     return (short)(translucent ?

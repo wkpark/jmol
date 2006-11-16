@@ -132,10 +132,6 @@ final class Colix {
     return argbsGreyscale[colix & Graphics3D.OPAQUE_MASK];
   }
 
-  final static boolean isTranslucent(short colix) {
-    return (colix & Graphics3D.TRANSLUCENT_MASK) != 0;
-  }
-
   final static int[] getShades(short colix) {
     colix &= Graphics3D.OPAQUE_MASK;
     int[] shades = ashades[colix];

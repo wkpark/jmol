@@ -54,13 +54,13 @@ class Balls extends AtomShape {
         colix = Graphics3D.USE_PALETTE;
       if (bsColixSet == null)
         bsColixSet = new BitSet();
-      int pid = (value instanceof Byte ? ((Byte) value).intValue()
-          : -1);
+      int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i)) {
           Atom atom = atoms[i];
           atom.setColixAtom(setColix(colix, pid, atom));
-          bsColixSet.set(i, colix != Graphics3D.USE_PALETTE || pid > 0);
+          bsColixSet.set(i, colix != Graphics3D.USE_PALETTE
+              || pid != JmolConstants.PALETTE_NONE);
           atom.setPaletteID((short) pid);
         }
       return;

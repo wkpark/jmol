@@ -163,7 +163,7 @@ abstract class Shape {
   }
 
   String getColorCommand(String type, short pid, short colix) {
-    if (pid < 0 && colix == 0)
+    if (pid == JmolConstants.PALETTE_UNKNOWN && colix == Graphics3D.INHERIT)
       return "";
     return "color " + type + " " + encodeTransColor(pid, colix);
   }
@@ -173,7 +173,7 @@ abstract class Shape {
   }
 
   String encodeTransColor(short pid, short colix) {
-    if (pid < 0 && colix == 0)
+    if (pid == JmolConstants.PALETTE_UNKNOWN && colix == Graphics3D.INHERIT)
       return "";
     String s = "";
     /* nuance here is that some palettes depend upon a
@@ -184,7 +184,7 @@ abstract class Shape {
      * Serialization of the palette name is just a convenience
      * anyway. 
      */
-    if (pid >= 0 && !JmolConstants.isPaletteVariable(pid)) {
+    if (pid != JmolConstants.PALETTE_UNKNOWN && !JmolConstants.isPaletteVariable(pid)) {
       if (Graphics3D.isColixTranslucent(colix))
         s += "translucent ";
       s += JmolConstants.getPaletteName(pid);

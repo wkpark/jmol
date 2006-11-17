@@ -2328,8 +2328,7 @@ class Eval { //implements Runnable {
     colorShape(getShapeType(tokObject), itoken);
   }
 
-  void colorShape(int shapeType, int itoken)
-      throws ScriptException {
+  void colorShape(int shapeType, int itoken) throws ScriptException {
     if (itoken >= statementLength)
       badArgumentCount();
     String translucentOrOpaque = null;
@@ -2358,16 +2357,18 @@ class Eval { //implements Runnable {
         colorvalue = (argb == 0 ? null : new Integer(argb));
       } else {
         // "cpk" value would be "spacefill"
-        int pid = (tok == Token.cpk ? JmolConstants.PALETTE_CPK 
+        byte pid = (tok == Token.cpk ? JmolConstants.PALETTE_CPK
             : JmolConstants.getPaletteID((String) statement[itoken].value));
-        if (pid < 0 || pid == JmolConstants.PALETTE_TYPE && shapeType != JmolConstants.SHAPE_HSTICKS)
+        if (pid == JmolConstants.PALETTE_UNKNOWN
+            || pid == JmolConstants.PALETTE_TYPE
+            && shapeType != JmolConstants.SHAPE_HSTICKS)
           invalidArgument();
-        colorvalue = new Byte((byte)pid);
+        colorvalue = new Byte((byte) pid);
       }
       //ok, the following five options require precalculation.
       //the state must not save them as paletteIDs, only as pure
       //color values. 
-      
+
       switch (tok) {
       case Token.surfacedistance:
         if (viewer.getFrame().getSurfaceDistanceMax() == 0)
@@ -2389,9 +2390,11 @@ class Eval { //implements Runnable {
       }
       viewer.loadShape(shapeType);
       if (shapeType == JmolConstants.SHAPE_STICKS)
-        viewer.setShapeProperty(shapeType, colorOrBgcolor + modifier, colorvalue, viewer.getSelectedAtomsOrBonds());
+        viewer.setShapeProperty(shapeType, colorOrBgcolor + modifier,
+            colorvalue, viewer.getSelectedAtomsOrBonds());
       else
-       viewer.setShapeProperty(shapeType, colorOrBgcolor + modifier, colorvalue);
+        viewer.setShapeProperty(shapeType, colorOrBgcolor + modifier,
+            colorvalue);
     }
     if (translucentOrOpaque != null)
       viewer.setShapeProperty(shapeType, "translucency" + modifier,

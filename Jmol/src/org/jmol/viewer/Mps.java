@@ -419,7 +419,7 @@ abstract class Mps extends Shape {
         if (bsSelected.get(atomIndex)) {
           colixes[i] = shape.setColix(colix, pid, atomIndex);
           paletteIDs[i] = (short) pid;
-          bsColixSet.set(i, colix != Graphics3D.INHERIT || pid > 0);
+          bsColixSet.set(i, colixes[i] != Graphics3D.INHERIT);
         }
       }
     }

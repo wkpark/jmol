@@ -2364,6 +2364,10 @@ class Eval { //implements Runnable {
           invalidArgument();
         colorvalue = new Byte((byte)pid);
       }
+      //ok, the following five options require precalculation.
+      //the state must not save them as paletteIDs, only as pure
+      //color values. 
+      
       switch (tok) {
       case Token.surfacedistance:
         if (viewer.getFrame().getSurfaceDistanceMax() == 0)
@@ -2380,7 +2384,7 @@ class Eval { //implements Runnable {
         viewer.calcSelectedMonomersCount();
         break;
       case Token.molecule:
-        viewer.calcSelectedMonomersCount();
+        viewer.calcSelectedMoleculesCount();
         break;
       }
       viewer.loadShape(shapeType);

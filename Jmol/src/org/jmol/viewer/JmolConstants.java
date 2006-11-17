@@ -1178,50 +1178,78 @@ final public class JmolConstants {
   // All bonding is done by distances
   // this is only here for truly pathological cases
   public final static int MAXIMUM_AUTO_BOND_COUNT = 20;
-
-
   
-  private final static String[] paletteNames = {
-   /* 0 */ "none", "cpk", "partialCharge", "formalCharge", "temperature",  
-   /* 5 */ "fixedTemperature", "surfaceDistance", "structure", "amino", 
-   /* 9 */ "shapely", "chain", "group", "monomer", "molecule", "altloc", 
-   /*15 */ "insertion", "jmol", "rasmol", 
-   /*18 */ "type" // hbonds only
-  };
-  
+  public final static int PALETTE_VARIABLE = 0x40; 
   public final static int PALETTE_NONE = 0;
   public final static int PALETTE_CPK = 1;
   public final static int PALETTE_PARTIAL_CHARGE = 2;
   public final static int PALETTE_FORMAL_CHARGE = 3;
-  public final static int PALETTE_TEMP = 4;
+  public final static int PALETTE_TEMP = 4 | PALETTE_VARIABLE;
   
   public final static int PALETTE_FIXEDTEMP = 5;
-  public final static int PALETTE_SURFACE = 6;
+  public final static int PALETTE_SURFACE = 6 | PALETTE_VARIABLE;
   public final static int PALETTE_STRUCTURE = 7;
   public final static int PALETTE_AMINO = 8;
   
   public final static int PALETTE_SHAPELY = 9;
   public final static int PALETTE_CHAIN = 10;
-  public final static int PALETTE_GROUP = 11;
-  public final static int PALETTE_MONOMER = 12;
-  public final static int PALETTE_MOLECULE = 13;
+  public final static int PALETTE_GROUP = 11 | PALETTE_VARIABLE;
+  public final static int PALETTE_MONOMER = 12 | PALETTE_VARIABLE;
+  public final static int PALETTE_MOLECULE = 13 | PALETTE_VARIABLE;
   public final static int PALETTE_ALTLOC = 14;
   
   public final static int PALETTE_INSERTION = 15;
   public final static int PALETTE_JMOL = 16;
   public final static int PALETTE_RASMOL = 17;
-  public final static int PALETTE_TYPE = 18;
-    
+  public final static int PALETTE_TYPE = 18;  //b0001 0010
+  
+  private final static String[] paletteNames = {
+    /* 0 */ "none", "cpk", "partialCharge", "formalCharge", "temperature",  
+    /* 5 */ "fixedTemperature", "surfaceDistance", "structure", "amino", 
+    /* 9 */ "shapely", "chain", "group", "monomer", "molecule", "altloc", 
+    /*15 */ "insertion", "jmol", "rasmol", 
+    /*18 */ "type" // hbonds only
+   };
+   
+  private final static int[] paletteIDs = {
+    PALETTE_NONE, 
+    PALETTE_CPK,    
+    PALETTE_PARTIAL_CHARGE, 
+    PALETTE_FORMAL_CHARGE,    
+    PALETTE_TEMP,
+
+    PALETTE_FIXEDTEMP,
+    PALETTE_SURFACE,
+    PALETTE_STRUCTURE,
+    PALETTE_AMINO,
+
+    PALETTE_SHAPELY,
+    PALETTE_CHAIN,
+    PALETTE_GROUP,
+    PALETTE_MONOMER,
+    PALETTE_MOLECULE,
+    PALETTE_ALTLOC,
+
+    PALETTE_INSERTION,
+    PALETTE_JMOL,
+    PALETTE_RASMOL,
+    PALETTE_TYPE };
+   
   private final static int paletteCount = paletteNames.length;
+  
+  public static boolean isPaletteVariable(int pid) {
+    return ((pid & PALETTE_VARIABLE) != 0);  
+  }
   
   public final static int getPaletteID(String paletteName) {
     for (int i = 0; i < paletteCount; i++)
       if (paletteNames[i].equalsIgnoreCase(paletteName))
-        return i;
+        return paletteIDs[i];
     return -1;
   }
   
   public final static String getPaletteName(int pid) {
+    pid = pid & ~PALETTE_VARIABLE;
     return (pid < 0 || pid >= paletteNames.length ? null : paletteNames[pid]);
   }
   

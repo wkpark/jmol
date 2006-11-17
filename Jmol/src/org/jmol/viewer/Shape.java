@@ -176,7 +176,7 @@ abstract class Shape {
     if (pid < 0 && colix == 0)
       return "";
     String s = "";
-    if (pid >= 0) {
+    if (pid >= 0 && !JmolConstants.isPaletteVariable(pid)) {
       if (Graphics3D.isColixTranslucent(colix))
         s += "translucent ";
       s += JmolConstants.getPaletteName(pid);

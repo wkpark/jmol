@@ -93,7 +93,7 @@ class Sticks extends Shape {
       if (bsColixSet == null)
         bsColixSet = new BitSet();
       short colix = Graphics3D.getColix(value);
-      int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
+      byte pid = JmolConstants.pidOf(value);
       if (pid == JmolConstants.PALETTE_TYPE) {
         //only for hydrogen bonds
         BondIterator iter = (isBonds ? frame.getBondIterator(bsSelected)

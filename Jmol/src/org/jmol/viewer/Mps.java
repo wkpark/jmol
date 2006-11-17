@@ -58,7 +58,7 @@ abstract class Mps extends Shape {
   void setProperty(String propertyName, Object value, BitSet bs) {
     initialize();
     if ("color" == propertyName) {
-      int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
+      byte pid = JmolConstants.pidOf(value);
       short colix = Graphics3D.getColix(value);
       for (int m = mpsmodels.length; --m >= 0; )
         mpsmodels[m].setColix(colix, pid, bs);
@@ -131,7 +131,7 @@ abstract class Mps extends Shape {
       }
     }
 
-    void setColix(short colix, int pid, BitSet bsSelected) {
+    void setColix(short colix, byte pid, BitSet bsSelected) {
       for (int i = mpspolymers.length; --i >= 0; ) {
         MpsShape polymer = mpspolymers[i];
         if (polymer.monomerCount > 0)
@@ -196,7 +196,7 @@ abstract class Mps extends Shape {
     
     short[] mads;
     short[] colixes;
-    short[] paletteIDs;
+    byte[] paletteIDs;
 
     BitSet bsColixSet;
     BitSet bsSizeSet;
@@ -220,7 +220,7 @@ abstract class Mps extends Shape {
       monomerCount = polymer.monomerCount;
       if (monomerCount > 0) {
         colixes = new short[monomerCount];
-        paletteIDs = new short[monomerCount];
+        paletteIDs = new byte[monomerCount];
         mads = new short[monomerCount + 1];
         monomers = polymer.monomers;
         meshReady = new boolean[monomerCount];
@@ -410,7 +410,7 @@ abstract class Mps extends Shape {
         meshReady[index + 1] = false;
     }    
 
-    void setColix(short colix, int pid, BitSet bsSelected) {
+    void setColix(short colix, byte pid, BitSet bsSelected) {
       isActive = true;
       if (bsColixSet == null)
         bsColixSet = new BitSet();
@@ -418,7 +418,7 @@ abstract class Mps extends Shape {
         int atomIndex = leadAtomIndices[i];
         if (bsSelected.get(atomIndex)) {
           colixes[i] = shape.setColix(colix, pid, atomIndex);
-          paletteIDs[i] = (short) pid;
+          paletteIDs[i] = pid;
           bsColixSet.set(i, colixes[i] != Graphics3D.INHERIT);
         }
       }

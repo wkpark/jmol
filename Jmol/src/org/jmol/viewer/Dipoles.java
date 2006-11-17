@@ -206,8 +206,7 @@ class Dipoles extends Shape {
     if ("color" == propertyName) {
       colix = Graphics3D.getColix(value);
       if (isBond) {
-        int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
-        setColixDipole(colix, pid, JmolConstants.BOND_COVALENT_MASK, bs);
+        setColixDipole(colix, JmolConstants.BOND_COVALENT_MASK, bs);
       } else if (value != null) {
         if (currentDipole != null)
           currentDipole.colix = colix;
@@ -310,8 +309,7 @@ class Dipoles extends Shape {
     return (dipoles[i].isBondType());
   }
 
-  private void setColixDipole(short colix, int pid, short bondTypeMask,
-                              BitSet bs) {
+  private void setColixDipole(short colix, short bondTypeMask, BitSet bs) {
     if (colix == Graphics3D.USE_PALETTE)
       return; // not implemented
     BondIterator iter = frame.getBondIterator(bondTypeMask, bs);

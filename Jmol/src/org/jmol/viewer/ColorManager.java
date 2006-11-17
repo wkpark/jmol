@@ -119,7 +119,7 @@ class ColorManager {
     return colixBackgroundContrast;
   }
 
-  short getColixAtomPalette(Atom atom, int pid) {
+  short getColixAtomPalette(Atom atom, byte pid) {
     int argb = 0;
     int index;
     short id;

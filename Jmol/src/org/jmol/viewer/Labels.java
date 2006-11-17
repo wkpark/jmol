@@ -47,7 +47,7 @@ class Labels extends AtomShape {
   byte defaultFontId;
   short defaultColix;
   short defaultBgcolix;
-  short defaultPaletteID;
+  byte defaultPaletteID;
   int defaultAlignment;
   int defaultPointer;
   int defaultZpos;
@@ -80,14 +80,14 @@ class Labels extends AtomShape {
     if ("color" == propertyName) {
       isActive = true;
       int n = 0;
-      int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
+      byte pid = JmolConstants.pidOf(value);
       short colix = Graphics3D.getColix(value);
       for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
           setColix(i, colix, pid, n++);
       if (n == 0 || !defaultsOnlyForNone) {
         defaultColix = colix;
-        defaultPaletteID = (short) pid;
+        defaultPaletteID = pid;
       }
       return;
     }
@@ -266,7 +266,7 @@ class Labels extends AtomShape {
     }
   }
 
-  void setColix(int i, short colix, int pid, int n) {
+  void setColix(int i, short colix, byte pid, int n) {
     setColixAndPalette(colix, pid, i);
     text = (Text) atomLabels.get(atoms[i]);
     if (text != null)
@@ -379,7 +379,7 @@ class Labels extends AtomShape {
   
   void getShapeState(StringBuffer s) {
     appendCmd(s, "\n# label defaults:\nselect none");
-    appendCmd(s, getColorCommand("label", (short) defaultPaletteID,
+    appendCmd(s, getColorCommand("label", defaultPaletteID,
         defaultColix));
     appendCmd(s, "background label " + encodeColor(defaultBgcolix));
     appendCmd(s, "set labelOffset " + Text.getXOffset(defaultOffset) + " "

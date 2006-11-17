@@ -840,7 +840,7 @@ public class Viewer extends JmolViewer {
     colorManager.setSpecularPercent(specularPercent);
   }
 
-  short getColixAtomPalette(Atom atom, int pid) {
+  short getColixAtomPalette(Atom atom, byte pid) {
     return colorManager.getColixAtomPalette(atom, pid);
   }
 

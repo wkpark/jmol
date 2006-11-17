@@ -1179,7 +1179,13 @@ final public class JmolConstants {
   // this is only here for truly pathological cases
   public final static int MAXIMUM_AUTO_BOND_COUNT = 20;
   
+  static byte pidOf(Object value) {
+    return (value instanceof Byte ? ((Byte) value).byteValue()
+        : PALETTE_UNKNOWN);
+  }
+
   public final static byte PALETTE_VARIABLE = 0x40; 
+  public final static byte PALETTE_STATIC = 0x3F;
   public final static byte PALETTE_UNKNOWN = (byte) 0xFF; 
   
   public final static byte PALETTE_NONE = 0;
@@ -1239,7 +1245,7 @@ final public class JmolConstants {
    
   private final static int paletteCount = paletteNames.length;
   
-  public static boolean isPaletteVariable(int pid) {
+  public static boolean isPaletteVariable(byte pid) {
     return ((pid & PALETTE_VARIABLE) != 0);  
   }
   
@@ -1250,11 +1256,13 @@ final public class JmolConstants {
     return PALETTE_UNKNOWN;
   }
   
-  public final static String getPaletteName(int pid) {
+  public final static String getPaletteName(byte pid) {
     if (pid == PALETTE_UNKNOWN)
       return null;
-    pid = pid & ~PALETTE_VARIABLE;
-    return (pid >= paletteNames.length ? null : paletteNames[pid]);
+    for (int i = 0; i < paletteCount; i++)
+      if (paletteIDs[i] == pid)
+        return paletteNames[i];
+    return null;
   }
   
   /**

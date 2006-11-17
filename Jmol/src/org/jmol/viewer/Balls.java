@@ -54,14 +54,14 @@ class Balls extends AtomShape {
         colix = Graphics3D.USE_PALETTE;
       if (bsColixSet == null)
         bsColixSet = new BitSet();
-      int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
+      byte pid = JmolConstants.pidOf(value);
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i)) {
           Atom atom = atoms[i];
           atom.setColixAtom(setColix(colix, pid, atom));
           bsColixSet.set(i, colix != Graphics3D.USE_PALETTE
               || pid != JmolConstants.PALETTE_NONE);
-          atom.setPaletteID((short) pid);
+          atom.setPaletteID(pid);
         }
       return;
     }
@@ -117,7 +117,7 @@ class Balls extends AtomShape {
       if (bsSizeSet != null && bsSizeSet.get(i))
         setStateInfo(temp, i, "Spacefill " + (atoms[i].madAtom / 2000f));
       if (bsColixSet != null && bsColixSet.get(i)) {
-        short pid = atoms[i].getPaletteID();
+        byte pid = atoms[i].getPaletteID();
         if (pid != JmolConstants.PALETTE_CPK)
           setStateInfo(temp, i, getColorCommand("atoms", pid, atoms[i].colixAtom));
       }

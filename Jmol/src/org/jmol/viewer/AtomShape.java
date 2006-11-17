@@ -37,7 +37,7 @@ class AtomShape extends Shape {
   
   short[] mads;
   short[] colixes;
-  short[] paletteIDs;
+  byte[] paletteIDs;
   BitSet bsSizeSet;
   BitSet bsColixSet;
   int atomCount;
@@ -72,7 +72,7 @@ class AtomShape extends Shape {
       short colix = Graphics3D.getColix(value);
       if (bsColixSet == null)
         bsColixSet = new BitSet();
-      int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
+      byte pid = JmolConstants.pidOf(value);
       for (int i = atomCount; --i >= 0; )
         if (bs.get(i))
           setColixAndPalette(colix, pid, i);
@@ -85,7 +85,7 @@ class AtomShape extends Shape {
         if (bs.get(i)) {
           if (colixes == null) {
             colixes = new short[atomCount];
-            paletteIDs = new short[atomCount];
+            paletteIDs = new byte[atomCount];
           }
           colixes[i] = Graphics3D.getColixTranslucent(colixes[i], isTranslucent);
           if (isTranslucent)
@@ -95,7 +95,7 @@ class AtomShape extends Shape {
     }
   }
 
-  void setColixAndPalette(short colix, int paletteID, int atomIndex) {
+  void setColixAndPalette(short colix, byte paletteID, int atomIndex) {
     if (colixes == null || atomIndex >= colixes.length) {
       if (colix == Graphics3D.INHERIT)
         return;
@@ -106,7 +106,7 @@ class AtomShape extends Shape {
       bsColixSet = new BitSet();
     colixes[atomIndex] = colix = setColix(colix, paletteID, atomIndex);
     bsColixSet.set(atomIndex, colix != Graphics3D.INHERIT);    
-    paletteIDs[atomIndex] = (short) paletteID;
+    paletteIDs[atomIndex] = paletteID;
   }
   
   void setModelClickability() {

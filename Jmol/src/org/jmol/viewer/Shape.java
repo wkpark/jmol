@@ -59,14 +59,15 @@ import java.util.Hashtable;
  *    
  */
 abstract class Shape {
-  
+
   Viewer viewer;
   Frame frame;
   Graphics3D g3d;
   int shapeID;
   int myVisibilityFlag;
 
-  final void setViewerG3dFrame(Viewer viewer, Graphics3D g3d, Frame frame, int shapeID) {
+  final void setViewerG3dFrame(Viewer viewer, Graphics3D g3d, Frame frame,
+                               int shapeID) {
     this.viewer = viewer;
     this.g3d = g3d;
     this.frame = frame;
@@ -80,9 +81,8 @@ abstract class Shape {
 
   void setSize(int size, BitSet bsSelected) {
   }
-  
-  void setProperty(String propertyName, Object value,
-                          BitSet bsSelected) {
+
+  void setProperty(String propertyName, Object value, BitSet bsSelected) {
     Logger.warn("unassigned shape setProperty:" + propertyName + ":" + value);
   }
 
@@ -106,14 +106,15 @@ abstract class Shape {
   void checkObjectClicked(int x, int y, int modifiers) {
   }
 
-  void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY, int modifiers) {
+  void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
+                          int modifiers) {
   }
 
-  short setColix(short colix, int paletteID, int atomIndex) {
+  short setColix(short colix, byte paletteID, int atomIndex) {
     return setColix(colix, paletteID, frame.getAtomAt(atomIndex));
   }
-  
-  short setColix(short colix, int paletteID, Atom atom) {
+
+  short setColix(short colix, byte paletteID, Atom atom) {
     return (colix == Graphics3D.USE_PALETTE ? viewer.getColixAtomPalette(atom,
         paletteID) : colix);
   }
@@ -121,14 +122,14 @@ abstract class Shape {
   Vector getShapeDetail() {
     return null;
   }
-  
+
   String getShapeState() {
     return null;
   }
-  
+
   void setVisibilityFlags(BitSet bs) {
   }
-  
+
   static void setStateInfo(Hashtable ht, int i, String key) {
     setStateInfo(ht, i, i, key);
   }
@@ -137,42 +138,44 @@ abstract class Shape {
     StateManager.setStateInfo(ht, i1, i2, key);
   }
 
-  static String getShapeCommands(Hashtable htDefine, Hashtable htMore, int atomCount) {
+  static String getShapeCommands(Hashtable htDefine, Hashtable htMore,
+                                 int atomCount) {
     return StateManager.getCommands(htDefine, htMore, atomCount);
   }
 
-  static String getShapeCommands(Hashtable htDefine, Hashtable htMore, int count, String selectCmd) {
+  static String getShapeCommands(Hashtable htDefine, Hashtable htMore,
+                                 int count, String selectCmd) {
     return StateManager.getCommands(htDefine, htMore, count, selectCmd);
   }
-  
+
   static void appendCmd(StringBuffer s, String cmd) {
     if (cmd.length() == 0)
       return;
     s.append(cmd + ";\n");
   }
-  
+
   static String getFontCommand(String type, Font3D font) {
     if (font == null)
       return "";
-    return "font " + type + " " + font.fontSize + " "
-        + font.fontFace + " " + font.fontStyle;
-  }
-  
-  String getColorCommand(String type, short colix) {
-    return getColorCommand(type, (short)-1, colix);
+    return "font " + type + " " + font.fontSize + " " + font.fontFace + " "
+        + font.fontStyle;
   }
 
-  String getColorCommand(String type, short pid, short colix) {
+  String getColorCommand(String type, short colix) {
+    return getColorCommand(type, JmolConstants.PALETTE_UNKNOWN, colix);
+  }
+
+  String getColorCommand(String type, byte pid, short colix) {
     if (pid == JmolConstants.PALETTE_UNKNOWN && colix == Graphics3D.INHERIT)
       return "";
     return "color " + type + " " + encodeTransColor(pid, colix);
   }
 
   String encodeTransColor(short colix) {
-    return encodeTransColor((short)-1, colix);
+    return encodeTransColor(JmolConstants.PALETTE_UNKNOWN, colix);
   }
 
-  String encodeTransColor(short pid, short colix) {
+  String encodeTransColor(byte pid, short colix) {
     if (pid == JmolConstants.PALETTE_UNKNOWN && colix == Graphics3D.INHERIT)
       return "";
     String s = "";
@@ -184,7 +187,8 @@ abstract class Shape {
      * Serialization of the palette name is just a convenience
      * anyway. 
      */
-    if (pid != JmolConstants.PALETTE_UNKNOWN && !JmolConstants.isPaletteVariable(pid)) {
+    if (pid != JmolConstants.PALETTE_UNKNOWN
+        && !JmolConstants.isPaletteVariable(pid)) {
       if (Graphics3D.isColixTranslucent(colix))
         s += "translucent ";
       s += JmolConstants.getPaletteName(pid);
@@ -193,11 +197,11 @@ abstract class Shape {
     }
     return s;
   }
-  
+
   String encodeColor(short colix) {
     String color = g3d.getHexColorFromIndex(colix);
-    return (Graphics3D.isColixTranslucent(colix) ? "translucent": "")
-    + (color == null ? " none" : " [x" + color + "]"); 
+    return (Graphics3D.isColixTranslucent(colix) ? "translucent" : "")
+        + (color == null ? " none" : " [x" + color + "]");
   }
-  
+
 }

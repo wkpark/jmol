@@ -53,7 +53,7 @@ final public class Atom extends Point3fi implements Tuple {
   byte alternateLocationID;
   short madAtom;
   short colixAtom;
-  short paletteID = JmolConstants.PALETTE_CPK;
+  byte paletteID = JmolConstants.PALETTE_CPK;
 
   Bond[] bonds;
   int nBondsDisplayed = 0;
@@ -325,7 +325,7 @@ final public class Atom extends Point3fi implements Tuple {
     this.colixAtom = colixAtom;
   }
 
-  void setPaletteID(short paletteID) {
+  void setPaletteID(byte paletteID) {
     this.paletteID = paletteID;
   }
 
@@ -591,7 +591,7 @@ final public class Atom extends Point3fi implements Tuple {
     return colixAtom;
   }
 
-  short getPaletteID() {
+  byte getPaletteID() {
     return paletteID;
   }
 

@@ -44,16 +44,17 @@ import java.awt.Rectangle;
 class ModelManager {
 
   final Viewer viewer;
-
-  ModelManager(Viewer viewer) {
-    this.viewer = viewer;
-  }
+  Frame frame;
 
   String fullPathName;
   String fileName;
   String modelSetName;
-  boolean haveFile = false;
-  Frame frame;
+  boolean haveFile;
+
+
+  ModelManager(Viewer viewer) {
+    this.viewer = viewer;
+  }
 
   void clear() {
     fullPathName = fileName = modelSetName = null;
@@ -61,10 +62,12 @@ class ModelManager {
     haveFile = false;
   }
   
-  /*
-   * This is the method that starts frame.
-   *  
-   */
+  void zap() {
+    fullPathName = fileName = modelSetName = "zapped";
+    frame = new Frame(viewer, "empty");
+    haveFile = false;
+  }
+  
   void setClientFile(String fullPathName, String fileName, JmolAdapter adapter, Object clientFile) {
     if (clientFile == null) {
       clear();
@@ -103,7 +106,7 @@ class ModelManager {
   }
 
   JmolAdapter getExportJmolAdapter() {
-    return (frame == null) ? null : frame.getExportJmolAdapter();
+    return frame.getExportJmolAdapter();
   }
 
   String getModelSetName() {
@@ -119,43 +122,43 @@ class ModelManager {
   }
 
   Properties getModelSetProperties() {
-    return frame == null ? null : frame.getModelSetProperties();
+    return frame.getModelSetProperties();
   }
 
   String getModelSetProperty(String propertyName) {
-    return frame == null ? null : frame.getModelSetProperty(propertyName);
+    return frame.getModelSetProperty(propertyName);
   }
 
   Hashtable getModelSetAuxiliaryInfo() {
-    return frame == null ? null : frame.getModelSetAuxiliaryInfo();
+    return frame.getModelSetAuxiliaryInfo();
   }
 
   Object getModelSetAuxiliaryInfo(String keyName) {
-    return frame == null ? null : frame.getModelSetAuxiliaryInfo(keyName);
+    return frame.getModelSetAuxiliaryInfo(keyName);
   }
 
   boolean modelSetHasVibrationVectors() {
-    return frame == null ? false : frame.modelSetHasVibrationVectors();
+    return frame.modelSetHasVibrationVectors();
   }
 
   boolean modelHasVibrationVectors(int modelIndex) {
-    return frame == null ? false : frame.modelHasVibrationVectors(modelIndex);
+    return frame.modelHasVibrationVectors(modelIndex);
   }
 
   String getModelSetTypeName() {
-    return frame == null ? null : frame.getModelSetTypeName();
+    return frame.getModelSetTypeName();
   }
 
   boolean isPDB() {
-    return frame == null ? false : frame.isPDB;
+    return frame.isPDB;
   }
 
   boolean isPDB(int modelIndex) {
-    return frame == null ? false : frame.mmset.getModel(modelIndex).isPDB;
+    return frame.mmset.getModel(modelIndex).isPDB;
   }
 
   int getModelCount() {
-    return (frame == null) ? 0 : frame.getModelCount();
+    return frame.getModelCount();
   }
 
   String getModelInfoAsString() {
@@ -176,8 +179,6 @@ class ModelManager {
   }
   
   String getSymmetryInfoAsString() {
-    if (frame == null)
-      return "";
     int modelCount = getModelCount();
     String str = "Symmetry Information:";
     for (int i = 0; i < modelCount; ++i) {
@@ -188,33 +189,33 @@ class ModelManager {
   }
   
   String getModelName(int modelIndex) {
-    return (frame == null) ? null : frame.getModelName(modelIndex);
+    //necessary for status manager frame change?
+    return frame == null ? null : frame.getModelName(modelIndex);
   }
 
   int getModelNumber(int modelIndex) {
-    return (frame == null) ? -1 : frame.getModelNumber(modelIndex);
+    return frame.getModelNumber(modelIndex);
   }
 
   Properties getModelProperties(int modelIndex) {
-    return frame == null ? null : frame.getModelProperties(modelIndex);
+    return frame.getModelProperties(modelIndex);
   }
 
   String getModelProperty(int modelIndex, String propertyName) {
-    return frame == null ? null : frame.getModelProperty(modelIndex,
-                                                         propertyName);
+    return frame.getModelProperty(modelIndex, propertyName);
   }
 
   Hashtable getModelAuxiliaryInfo(int modelIndex) {
-    return frame == null ? null : frame.getModelAuxiliaryInfo(modelIndex);
+    return frame.getModelAuxiliaryInfo(modelIndex);
   }
 
   Object getModelAuxiliaryInfo(int modelIndex, String keyName) {
-    return frame == null ? null : frame.getModelAuxiliaryInfo(modelIndex,
+    return frame.getModelAuxiliaryInfo(modelIndex,
         keyName);
   }
 
   int getModelNumberIndex(int modelNumber) {
-    return (frame == null) ? -1 : frame.getModelNumberIndex(modelNumber);
+    return frame.getModelNumberIndex(modelNumber);
   }
 
   Point3f getSpinCenter(String axisID, int modelIndex) {
@@ -240,102 +241,101 @@ class ModelManager {
    }
    
   float calcRotationRadius(Point3f center) {
-    return (frame == null) ? 1f : frame.calcRotationRadius(center);
+    return frame.calcRotationRadius(center);
   }
 
   Point3f getBoundBoxCenter() {
-    return (frame == null) ? null : frame.getBoundBoxCenter();
+    return frame.getBoundBoxCenter();
   }
 
   Point3f getAverageAtomPoint() {
-    return (frame == null) ? null : frame.getAverageAtomPoint();
+    return frame.getAverageAtomPoint();
   }
 
   Vector3f getBoundBoxCornerVector() {
-    return (frame == null) ? null : frame.getBoundBoxCornerVector();
+    return frame.getBoundBoxCornerVector();
   }
 
   Point3f getAtomSetCenter(BitSet bs) {
-    return (frame == null) ? null : frame.getAtomSetCenter(bs);
+    return frame.getAtomSetCenter(bs);
   }
 
   int firstAtomOf(BitSet bs) {
-    return (frame == null) ? -1 : frame.firstAtomOf(bs);
+    return frame.firstAtomOf(bs);
   }
 
   BitSet getAtomBits(String setType) {
-    return (frame == null) ? null : frame.getAtomBits(setType);
+    return frame.getAtomBits(setType);
   }
 
   BitSet getAtomBits(String setType, String specInfo) {
-    return (frame == null) ? null : frame.getAtomBits(setType, specInfo);
+    return frame.getAtomBits(setType, specInfo);
   }
 
   BitSet getAtomBits(String setType, int specInfo) {
-    return (frame == null) ? null : frame.getAtomBits(setType, specInfo);
+    return frame.getAtomBits(setType, specInfo);
   }
 
   BitSet getAtomBits(String setType, int[] specInfo) {
-    return (frame == null) ? null : frame.getAtomBits(setType, specInfo);
+    return frame.getAtomBits(setType, specInfo);
   }
 
   int getAtomCount() {
-    return (frame == null) ? 0 : frame.getAtomCount();
+    return frame.getAtomCount();
   }
 
   int getAtomCountInModel(int modelIndex) {
-    return (frame == null) ? 0 : modelIndex < 0 ? getAtomCount() : frame
+    return modelIndex < 0 ? getAtomCount() : frame
         .getAtomCountInModel(modelIndex);
   }
 
   int getBondCount() {
-    return (frame == null) ? 0 : frame.getBondCount();
+    return frame.getBondCount();
   }
 
   int getBondCountInModel(int modelIndex) {
-    return (frame == null) ? 0 : frame.getBondCountInModel(modelIndex);
+    return frame.getBondCountInModel(modelIndex);
   }
 
   int getGroupCount() {
-    return (frame == null) ? 0 : frame.getGroupCount();
+    return frame.getGroupCount();
   }
 
   int getGroupCountInModel(int modelIndex) {
-    return (frame == null) ? 0 : modelIndex < 0 ? getGroupCount() : frame
+    return modelIndex < 0 ? getGroupCount() : frame
         .getGroupCountInModel(modelIndex);
   }
   
   int getChainCount() {
-    return (frame == null) ? 0 : frame.getChainCount();
+    return frame.getChainCount();
   }
 
   int getChainCountInModel(int modelIndex) {
-    return (frame == null) ? 0 : modelIndex < 0 ? getChainCount() : frame
+    return modelIndex < 0 ? getChainCount() : frame
         .getChainCountInModel(modelIndex);
   }
   
   int getPolymerCount() {
-    return (frame == null) ? 0 : frame.getPolymerCount();
+    return frame.getPolymerCount();
   }
 
   int getPolymerCountInModel(int modelIndex) {
-    return (frame == null) ? 0 : modelIndex < 0 ? getPolymerCount() : frame
+    return modelIndex < 0 ? getPolymerCount() : frame
         .getPolymerCountInModel(modelIndex);
   }
   
   int getMoleuleCount() {
-    return (frame == null ? 0 : frame.getMoleculeCount());
+    return (frame.getMoleculeCount());
   }
 
   int makeConnections(float minDistance, float maxDistance, short order,
                       int connectOperation, BitSet bsA, BitSet bsB) {
-    return (frame == null ? 0 : frame.makeConnections(minDistance, maxDistance,
+    return (frame.makeConnections(minDistance, maxDistance,
         order, connectOperation, bsA, bsB));
   }
 
   void rebond() {
-    if (frame != null)
-      frame.rebond();
+    frame.rebond();
   }
 
   boolean frankClicked(int x, int y) {
@@ -344,7 +344,7 @@ class ModelManager {
   }
 
   int findNearestAtomIndex(int x, int y) {
-    return (frame == null) ? -1 : frame.findNearestAtomIndex(x, y);
+    return frame.findNearestAtomIndex(x, y);
   }
 
   BitSet findAtomsInRectangle(Rectangle rectRubber) {
@@ -359,14 +359,12 @@ class ModelManager {
  // Hashtable[] shapeProperties = new Hashtable[JmolConstants.SHAPE_MAX];
 
   void loadShape(int shapeID) {
-    if (frame != null)
-      frame.loadShape(shapeID);
+    frame.loadShape(shapeID);
   }
   
   void setShapeSize(int shapeType, int size, BitSet bsSelected) {
     shapeSizes[shapeType] = size;
-    if (frame != null)
-      frame.setShapeSize(shapeType, size, bsSelected);
+    frame.setShapeSize(shapeType, size, bsSelected);
   }
   
   int getShapeSize(int shapeType) {
@@ -375,21 +373,18 @@ class ModelManager {
   
   void setShapeProperty(int shapeType, String propertyName,
                                Object value, BitSet bsSelected) {
-    if (frame == null)
-      return;
-    frame.setShapeProperty(shapeType, propertyName.intern(), value, bsSelected);
+    // this one is necessary, because we do try to load some shapes
+    // while the frame itself is loading.
+   // if (frame != null)
+      frame.setShapeProperty(shapeType, propertyName.intern(), value, bsSelected);
   }
 
   Object getShapeProperty(int shapeType, String propertyName,
                                  int index) {
-    if (frame == null)
-      return null;
     return frame.getShapeProperty(shapeType, propertyName, index);
   }
 
   int getShapeIdFromObjectName(String objectName) {
-    if (frame == null)
-      return -1;
     int i;
     for (i = JmolConstants.SHAPE_MIN_MESH_COLLECTION; 
         i < JmolConstants.SHAPE_MAX; ++i) {
@@ -400,56 +395,52 @@ class ModelManager {
     i = JmolConstants.SHAPE_DIPOLES;
     Dipoles dipoles = (Dipoles) frame.shapes[i];
     if (dipoles != null && dipoles.getIndexFromName(objectName) >= 0)
-      return i;
-    
+      return i;    
     return -1;
   }
 
   int getAtomIndexFromAtomNumber(int atomNumber) {
-    return (frame == null) ? -1 : frame.getAtomIndexFromAtomNumber(atomNumber);
+    return frame.getAtomIndexFromAtomNumber(atomNumber);
   }
 
   BitSet getElementsPresentBitSet() {
-    return (frame == null) ? null : frame.getElementsPresentBitSet();
+    return frame.getElementsPresentBitSet();
   }
 
   public Hashtable getHeteroList(int modelIndex) {
-    return (frame == null) ? null : frame.mmset.getHeteroList(modelIndex);
+    return frame.mmset.getHeteroList(modelIndex);
   }
 
   BitSet getVisibleSet() {
-    return (frame == null) ? null : frame.getVisibleSet();
+    return frame.getVisibleSet();
   }
 
   BitSet getClickableSet() {
-    return (frame == null) ? null : frame.getClickableSet();
+    return frame.getClickableSet();
   }
 
   BitSet getModelAtomBitSet(int modelIndex) {
-    return (frame == null) ? null : frame.getModelAtomBitSet(modelIndex);
+    return frame.getModelAtomBitSet(modelIndex);
   }
 
   BitSet getModelBitSet(BitSet atomList) {
-    return (frame == null) ? null : frame.getModelBitSet(atomList);
+    return frame.getModelBitSet(atomList);
   }
 
   BitSet getMoleculeBitSet(int modelIndex) {
-    return (frame == null) ? null : frame.getMoleculeBitSet(modelIndex);
+    return frame.getMoleculeBitSet(modelIndex);
   }
 
   void calcSelectedGroupsCount(BitSet bsSelected) {
-    if (frame != null)
-      frame.calcSelectedGroupsCount(bsSelected);
+    frame.calcSelectedGroupsCount(bsSelected);
   }
 
   void calcSelectedMonomersCount(BitSet bsSelected) {
-    if (frame != null)
-      frame.calcSelectedMonomersCount(bsSelected);
+    frame.calcSelectedMonomersCount(bsSelected);
   }
 
   void calcSelectedMoleculesCount(BitSet bsSelected) {
-    if (frame != null)
-      frame.calcSelectedGroupsCount(bsSelected);
+    frame.calcSelectedGroupsCount(bsSelected);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -501,19 +492,19 @@ String getAtomInfoChime(int i) {
   }
 
   float getAtomX(int i) {
-    return frame.getAtomAt(i).getAtomX();
+    return frame.getAtomAt(i).x;
   }
 
   float getAtomY(int i) {
-    return frame.getAtomAt(i).getAtomY();
+    return frame.getAtomAt(i).y;
   }
 
   float getAtomZ(int i) {
-    return frame.getAtomAt(i).getAtomZ();
+    return frame.getAtomAt(i).z;
   }
 
   Point3f getAtomPoint3f(int i) {
-    return frame.getAtomAt(i).getPoint3f();
+    return frame.getAtomAt(i);
   }
 
   float getAtomRadius(int i) {
@@ -537,11 +528,11 @@ String getAtomInfoChime(int i) {
   }
   
   Point3f getBondPoint3f1(int i) {
-    return frame.getBondAt(i).getAtom1().getPoint3f();
+    return frame.getBondAt(i).getAtom1();
   }
 
   Point3f getBondPoint3f2(int i) {
-    return frame.getBondAt(i).getAtom2().getPoint3f();
+    return frame.getBondAt(i).getAtom2();
   }
 
   float getBondRadius(int i) {
@@ -590,16 +581,12 @@ String getAtomInfoChime(int i) {
   }
 
   BitSet getAtomsWithin(String withinWhat, String specInfo, BitSet bs) {
-    if (frame == null)
-      return null;
     if (withinWhat.equals("sequence"))
       return withinSequence(specInfo, bs);
     return null;
   }
   
   BitSet getAtomsWithin(String withinWhat, BitSet bs) {
-    if (frame == null)
-      return null;
     if (withinWhat.equals("group"))
       return withinGroup(bs);
     if (withinWhat.equals("chain"))
@@ -718,8 +705,6 @@ String getAtomInfoChime(int i) {
   }
 
   BitSet getAtomsWithin(float distance, BitSet bs) {
-    if (frame == null)
-      return null;
     BitSet bsResult = new BitSet();
     for (int i = frame.getAtomCount(); --i >= 0;) {
       if (bs.get(i)) {
@@ -734,8 +719,6 @@ String getAtomInfoChime(int i) {
   }
 
   BitSet getAtomsWithin(float distance, Point3f coord) {
-    if (frame == null)
-      return null;
     BitSet bsResult = new BitSet();
     for (int i = frame.getAtomCount(); --i >= 0;) {
       Atom atom = frame.getAtomAt(i);
@@ -876,8 +859,6 @@ String getAtomInfoChime(int i) {
 
   Hashtable getModelInfo() {
     Hashtable info = new Hashtable();
-    if (frame == null)
-      return info;
     int modelCount = viewer.getModelCount();
     info.put("modelSetName",getModelSetName());
     info.put("modelCount",new Integer(modelCount));
@@ -909,8 +890,6 @@ String getAtomInfoChime(int i) {
 
   Hashtable getAuxiliaryInfo() {
     Hashtable info = new Hashtable();
-    if (frame == null)
-      return info;
     info = getModelSetAuxiliaryInfo();
     if (info == null)
       return info;
@@ -1179,12 +1158,11 @@ String getAtomInfoChime(int i) {
   }
   
   void addStateScript(String script) {
-    if (frame != null)
-      frame.addStateScript(script);  
+    frame.addStateScript(script);  
   }
  
   String getState() {
-    return (frame == null ? "" : frame.getState());
+    return frame.getState();
   }
   
   Hashtable getBoundBoxInfo() {
@@ -1195,8 +1173,6 @@ String getAtomInfoChime(int i) {
   }
   
   void setModelVisibility() {
-    if (frame == null)
-      return;
     
     //named objects must be set individually
     //in the future, we might include here a BITSET of models rather than just a modelIndex
@@ -1222,8 +1198,6 @@ String getAtomInfoChime(int i) {
   }
  
   void checkObjectClicked(int x, int y, int modifiers) {
-    if (frame == null)
-      return;
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];
       if (shape != null) {
@@ -1233,8 +1207,6 @@ String getAtomInfoChime(int i) {
   }
  
   void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY, int modifiers) {
-    if (frame == null)
-      return;
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];
       if (shape != null) {
@@ -1245,8 +1217,6 @@ String getAtomInfoChime(int i) {
 
   Hashtable getShapeInfo() {
     Hashtable info = new Hashtable();
-    if (frame == null)
-      return info;
     StringBuffer commands = new StringBuffer();
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];
@@ -1273,17 +1243,15 @@ String getAtomInfoChime(int i) {
   }
 
   Vector3f getModelDipole() {
-    return frame == null ? null : frame.getModelDipole();
+    return frame.getModelDipole();
   }
 
   void getBondDipoles() {
-    if (frame == null)
-      return;
     frame.getBondDipoles();
   }
 
   boolean modelsHaveSymmetry() {
-    return (frame == null ? false : frame.someModelsHaveSymmetry);
+    return (frame.someModelsHaveSymmetry);
   }
 
   BitSet setConformation(int modelIndex, BitSet bsConformation) {
@@ -1292,26 +1260,20 @@ String getAtomInfoChime(int i) {
   }
   
   BitSet setConformation(int modelIndex, int conformationIndex) {
-    if (frame == null)
-      return null;
     return frame.setConformation(modelIndex, conformationIndex);
   }
 
   String getAltLocListInModel(int modelIndex) {
-    if (frame == null || modelIndex < 0)
+    if (modelIndex < 0)
       return "";
     return frame.getAltLocListInModel(modelIndex);
   }
   
   void autoHbond(BitSet bsFrom, BitSet bsTo) {
-    if (frame == null)
-      return;
     frame.autoHbond(bsFrom, bsTo);
   }
 
   boolean hbondsAreVisible(int modelIndex) {
-    if (frame == null)
-      return false;
     int bondCount = getBondCount();
     Bond[] bonds = frame.bonds;
     for (int i = bondCount; --i >= 0;)
@@ -1327,52 +1289,36 @@ String getAtomInfoChime(int i) {
   }
   
   void clearBfactorRange(){
-    if (frame == null)
-      return;
     frame.clearBfactorRange();
   }
   
   void setZeroBased() {
-    if (frame == null)
-      return;
     frame.setZeroBased();
   }
 
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
-    if (frame == null)
-      return;
     frame.setAtomCoord(atomIndex,x,y,z);
   }
 
   void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
-    if (frame == null)
-      return;
     frame.setAtomCoordRelative(atomIndex,x,y,z);
   }
 
   void setAtomCoordRelative(Point3f offset, BitSet bs) {
-    if (frame == null)
-      return;
     frame.setAtomCoordRelative(bs, offset.x, offset.y, offset.z);
   }
 
   boolean getPrincipalAxes(int atomIndex, Vector3f z, Vector3f x,
                            String lcaoType, boolean hybridizationCompatible) {
-    if (frame == null)
-      return false;
     return frame.getPrincipalAxes(atomIndex, z, x, lcaoType,
         hybridizationCompatible);
   }
   
   Point3f[] getAdditionalHydrogens(BitSet atomSet) {
-    if (frame == null)
-      return null;
     return frame.getAdditionalHydrogens(atomSet);
   }
 
   String getUnitCellInfoText() {
-    if (frame == null)
-      return null;
     int modelIndex = viewer.getDisplayModelIndex();
     if (modelIndex < 0)
       return "no single current model";
@@ -1382,8 +1328,6 @@ String getAtomInfoChime(int i) {
   }
 
   String getSpaceGroupInfoText(String spaceGroup) {
-    if (spaceGroup == null && frame == null)
-      return null;
     SpaceGroup sg;
     String strOperations = "";
     int modelIndex = viewer.getDisplayModelIndex();
@@ -1419,53 +1363,34 @@ String getAtomInfoChime(int i) {
   }
 
   public void setSelectionHaloEnabled(boolean selectionHaloEnabled) {
-    if (frame == null)
-      return;
     frame.setSelectionHaloEnabled(selectionHaloEnabled);
   }
 
   boolean getSelectionHaloEnabled() {
-    if (frame == null)
-      return false;
     return frame.getSelectionHaloEnabled();
   }
 
   void calculateStructures() {
-    if (frame == null)
-      return;
     frame.calculateStructures(true);
   }
   
-  void zap() {
-    setClientFile(null, null, null, null);
-    fullPathName = fileName = modelSetName = "zapped";
-    frame = new Frame(viewer, "empty");
-    haveFile = false;
-  }
-  
   boolean getEchoStateActive() {
-    if (frame == null)
-      return false;
     return frame.getEchoStateActive();
   }
   void setEchoStateActive(boolean TF) {
-    if (frame == null)
-      return;
     frame.setEchoStateActive(TF);
   }
 
   boolean havePartialCharges() {
-    return frame != null && frame.partialCharges != null;
+    return frame.partialCharges != null;
   }
 
   void setFormalCharges(BitSet bs, int formalCharge) {    
-    if (frame == null)
-      return;
     frame.setFormalCharges(bs, formalCharge);
   }
 
   UnitCell getUnitCell(int modelIndex) {
-    if (frame == null || modelIndex < 0)
+    if (modelIndex < 0)
       return null;
     return (frame.cellInfos == null ? null : frame.cellInfos[modelIndex].unitCell);
   }

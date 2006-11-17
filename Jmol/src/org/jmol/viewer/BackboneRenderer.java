@@ -46,10 +46,10 @@ class BackboneRenderer extends MpsRenderer {
       if (atomA.nBackbonesDisplayed == 0 || atomB.nBackbonesDisplayed == 0
           || frame.bsHidden.get(atomB.atomIndex))
         continue;
-      int xA = atomA.getScreenX(), yA = atomA.getScreenY(), zA = atomA
-          .getScreenZ();
-      int xB = atomB.getScreenX(), yB = atomB.getScreenY(), zB = atomB
-          .getScreenZ();
+      int xA = atomA.screenX, yA = atomA.screenY, zA = atomA
+          .screenZ;
+      int xB = atomB.screenX, yB = atomB.screenY, zB = atomB
+          .screenZ;
       short colixA = Graphics3D.getColixInherited(colixes[i], atomA.colixAtom);
       short colixB = Graphics3D.getColixInherited(colixes[i + 1], atomB.colixAtom);
       if (mads[i] < 0) {

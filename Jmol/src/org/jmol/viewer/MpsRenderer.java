@@ -283,7 +283,7 @@ abstract class MpsRenderer extends MeshRenderer {
     doCap1 = (iNext == iNext2 || thisTypeOnly
         && structureTypes[i] != structureTypes[iNext]);
     diameterBeg = viewer.scaleToScreen(controlPointScreens[i].z, madBeg);
-    diameterMid = viewer.scaleToScreen(monomers[i].getLeadAtom().getScreenZ(),
+    diameterMid = viewer.scaleToScreen(monomers[i].getLeadAtom().screenZ,
         madMid);
     diameterEnd = viewer.scaleToScreen(controlPointScreens[iNext].z, madEnd);
     return (aspectRatio > 0 && (checkDiameter(diameterBeg)

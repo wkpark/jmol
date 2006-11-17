@@ -75,14 +75,13 @@ final public class Atom extends Point3fi implements Tuple {
     madAtom = 0;
   }
   
-  Atom(Viewer viewer,
-       Frame frame,
+  Atom(Frame frame,
        int modelIndex,
        int atomIndex,
        BitSet atomSymmetry,
        int atomSite,
        short atomicAndIsotopeNumber,
-       String atomName,
+       String atomName, short mad,
        int formalCharge, float partialCharge,
        int occupancy,
        float bfactor,
@@ -91,15 +90,16 @@ final public class Atom extends Point3fi implements Tuple {
        float vibrationX, float vibrationY, float vibrationZ,
        char alternateLocationID,
        Object clientAtomReference) {
+    this.group = frame.nullGroup;
     this.modelIndex = (short)modelIndex;
     this.atomSymmetry = atomSymmetry;
     this.atomSite = atomSite;
     this.atomIndex = atomIndex;
     this.atomicAndIsotopeNumber = atomicAndIsotopeNumber;
     setFormalCharge(formalCharge);
-    this.colixAtom = viewer.getColixAtomPalette(this, JmolConstants.PALETTE_CPK);
+    this.colixAtom = frame.viewer.getColixAtomPalette(this, JmolConstants.PALETTE_CPK);
     this.alternateLocationID = (byte)alternateLocationID;
-    setMadAtom(viewer.getMadAtom());
+    setMadAtom(mad);
     this.x = x; this.y = y; this.z = z;
     if (isHetero)
       formalChargeAndFlags |= IS_HETERO_FLAG;
@@ -162,6 +162,44 @@ final public class Atom extends Point3fi implements Tuple {
         frame.clientAtomReferences = new Object[frame.atoms.length];
       frame.clientAtomReferences[atomIndex] = clientAtomReference;
     }
+    //System.out.println(this + " " + getIdentity());
+  }
+
+  private static Hashtable htAtom = new Hashtable();
+  static {
+    for (int i = JmolConstants.specialAtomNames.length; --i >= 0; ) {
+      String specialAtomName = JmolConstants.specialAtomNames[i];
+      if (specialAtomName != null) {
+        Integer boxedI = new Integer(i);
+        htAtom.put(specialAtomName, boxedI);
+      }
+    }
+  }
+
+  /*
+  static String generateStarredAtomName(String primedAtomName) {
+    int primeIndex = primedAtomName.indexOf('\'');
+    if (primeIndex < 0)
+      return null;
+    return primedAtomName.replace('\'', '*');
+  }
+  */
+
+  static String generatePrimeAtomName(String starredAtomName) {
+    int starIndex = starredAtomName.indexOf('*');
+    if (starIndex < 0)
+      return starredAtomName;
+    return starredAtomName.replace('*', '\'');
+  }
+
+  byte lookupSpecialAtomID(String atomName) {
+    if (atomName != null) {
+      atomName = generatePrimeAtomName(atomName);
+      Integer boxedAtomID = (Integer)htAtom.get(atomName);
+      if (boxedAtomID != null)
+        return (byte)(boxedAtomID.intValue());
+    }
+    return 0;
   }
 
   final void setShapeVisibility(int shapeVisibilityFlag, boolean isVisible) {
@@ -177,10 +215,6 @@ final public class Atom extends Point3fi implements Tuple {
     formalChargeAndFlags = (byte)((formalChargeAndFlags & FORMALCHARGE_FLAGS) | (charge << 3));
   }
   
-  void setGroup(Group group) {
-    this.group = group;
-  }
-
   boolean isBonded(Atom atomOther) {
     if (bonds != null)
       for (int i = bonds.length; --i >= 0;)
@@ -336,27 +370,6 @@ final public class Atom extends Point3fi implements Tuple {
   boolean isTranslucent() {
     return Graphics3D.isColixTranslucent(colixAtom);
   }
-  
-  Vector3f getVibrationVector() {
-    if (group == null)
-      return null;
-    Vector3f[] vibrationVectors = group.chain.frame.vibrationVectors;
-    return vibrationVectors == null ? null : vibrationVectors[atomIndex];
-  }
-
-  void transform(Viewer viewer) {
-    Point3i screen;
-    Vector3f[] vibrationVectors;
-    if ((formalChargeAndFlags & VIBRATION_VECTOR_FLAG) == 0 ||
-        (vibrationVectors = group.chain.frame.vibrationVectors) == null)
-      screen = viewer.transformPoint(this);
-    else 
-      screen = viewer.transformPoint(this, vibrationVectors[atomIndex]);
-    screenX = screen.x;
-    screenY = screen.y;
-    screenZ = screen.z;
-    screenDiameter = viewer.scaleToScreen(screenZ, madAtom);
-  }
 
   short getElementNumber() {
     return (short) (atomicAndIsotopeNumber % 128);
@@ -374,85 +387,6 @@ final public class Atom extends Point3fi implements Tuple {
     return JmolConstants.elementSymbolFromNumber(atomicAndIsotopeNumber);
   }
 
-  String getAtomNameOrNull() {
-    if (group == null)
-      return null;
-    String[] atomNames = group.chain.frame.atomNames;
-    return atomNames == null ? null : atomNames[atomIndex];
-  }
-
-  String getAtomName() {
-    String atomName = getAtomNameOrNull();
-    return (atomName != null ? atomName : getElementSymbol());
-  }
-  
-  String getPdbAtomName4() {
-    String atomName = getAtomNameOrNull();
-    return atomName != null ? atomName : "";
-  }
-
-  String getGroup3() {
-    if (group == null)
-      return null;
-    return group.getGroup3();
-  }
-
-  String getGroup1() {
-    if (group == null)
-      return null;
-    return group.getGroup1();
-  }
-
-  boolean isGroup3(String group3) {
-    if (group == null)
-      return false;
-    return group.isGroup3(group3);
-  }
-
-  boolean isGroup3Match(String strWildcard) {
-    if (group == null)
-      return false;
-    return group.isGroup3Match(strWildcard);
-  }
-
-  int getSeqcode() {
-    if (group == null)
-      return -1;
-    return group.getSeqcode();
-  }
-
-  int getResno() {
-    if (group == null)
-      return -1;
-    return group.getResno();   
-  }
-
-  boolean isGroup3OrNameMatch(String strPattern) {
-    return (getGroup3().length() > 0 ? isGroup3Match(strPattern)
-        : isAtomNameMatch(strPattern));
-  }
-
-  /**
-   * matches atom name possibly with wildcard
-   * @param strPattern  -- for efficiency, upper case already
-   * @return true/false
-   */
-  boolean isAtomNameMatch(String strPattern) {
-    String atomName = getAtomNameOrNull();
-    int cchAtomName = atomName == null ? 0 : atomName.length();
-    int cchPattern = strPattern.length();
-    int ich;
-    for (ich = 0; ich < cchPattern; ++ich) {
-      char charWild = strPattern.charAt(ich);
-      if (charWild == '?')
-        continue;
-      if (ich >= cchAtomName ||
-          charWild != Character.toUpperCase(atomName.charAt(ich)))
-        return false;
-    }
-    return ich >= cchAtomName;
-  }
-
   boolean isAlternateLocationMatch(String strPattern) {
     if (strPattern == null)
       return (alternateLocationID == 0);
@@ -464,62 +398,12 @@ final public class Atom extends Point3fi implements Tuple {
         || alternateLocationID == ch);
   }
 
-  int getAtomNumber() {
-    if (group == null)
-      return 1;
-    int[] atomSerials = group.chain.frame.atomSerials;
-    if (atomSerials != null)
-      return atomSerials[atomIndex];
-    if (group.chain.frame.isZeroBased)
-      return atomIndex;
-    return atomIndex + 1;
-  }
-
   boolean isHetero() {
     return (formalChargeAndFlags & IS_HETERO_FLAG) != 0;
   }
 
   int getFormalCharge() {
     return formalChargeAndFlags >> 3;
-  }
-
-  boolean isClickable() {
-    //hidden won't show up here
-    if (!isModelVisible())
-      return false;
-    int flags = shapeVisibilityFlags;
-    if (group != null) flags |= group.shapeVisibilityFlags;
-    return ((flags & clickabilityFlags) != 0);
-  }
-
-  boolean isVisible() {
-    if (!isModelVisible() || group.chain.frame.bsHidden.get(atomIndex))
-      return false;
-    int flags = shapeVisibilityFlags;
-    if (group != null)
-      flags |= group.shapeVisibilityFlags;
-    // in model AND something to show for it or its group is visible
-    return ((flags & ~JmolConstants.ATOM_IN_MODEL) != 0);
-  }
-
-  boolean isModelVisible() {
-    return ((shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) != 0);
-  }
-
-  boolean isShapeVisible(int shapeVisibilityFlag) {
-    return (isModelVisible() 
-        && (shapeVisibilityFlags & shapeVisibilityFlag) != 0);
-  }
-
-  float getPartialCharge() {
-    if (group == null)
-      return 0;
-    float[] partialCharges = group.chain.frame.partialCharges;
-    return partialCharges == null ? 0 : partialCharges[atomIndex];
-  }
-
-  Point3f getPoint3f() {
-    return this;
   }
 
   float getAtomX() {
@@ -595,14 +479,432 @@ final public class Atom extends Point3fi implements Tuple {
     return paletteID;
   }
 
-  int getArgb() {
-    return group.chain.frame.viewer.getColixArgb(colixAtom);
-  }
-
   float getRadius() {
     if (madAtom == JmolConstants.MAR_DELETED)
       return 0;
     return madAtom / (1000f * 2);
+  }
+
+  int getAtomIndex() {
+    return atomIndex;
+  }
+
+  int getAtomSite() {
+    return atomSite;
+  }
+
+  BitSet getAtomSymmetry() {
+    return atomSymmetry;
+  }
+
+  boolean isInLatticeCell(Point3f cell) {
+    return isInLatticeCell(cell, 0.02f);
+   }
+
+   boolean isInLatticeCell(Point3f cell, float slop) {
+     Point3f pt = getFractionalCoord();
+     // {1 1 1} here is the original cell
+     if (pt.x < cell.x - 1f - slop || pt.x > cell.x + slop)
+       return false;
+     if (pt.y < cell.y - 1f - slop || pt.y > cell.y + slop)
+       return false;
+     if (pt.z < cell.z - 1f - slop || pt.z > cell.z + slop)
+       return false;
+     return true;
+   }
+
+   void setGroup(Group group) {
+     this.group = group;
+   }
+
+   Group getGroup() {
+     return group;
+   }
+   
+   // the following methods will work anytime, since we now have
+   // a dummy group and chain
+
+   Vector3f getVibrationVector() {
+     Vector3f[] vibrationVectors = group.chain.frame.vibrationVectors;
+     return vibrationVectors == null ? null : vibrationVectors[atomIndex];
+   }
+
+   void transform(Viewer viewer) {
+     Point3i screen;
+     Vector3f[] vibrationVectors;
+     if ((formalChargeAndFlags & VIBRATION_VECTOR_FLAG) == 0 ||
+         (vibrationVectors = group.chain.frame.vibrationVectors) == null)
+       screen = viewer.transformPoint(this);
+     else 
+       screen = viewer.transformPoint(this, vibrationVectors[atomIndex]);
+     screenX = screen.x;
+     screenY = screen.y;
+     screenZ = screen.z;
+     screenDiameter = viewer.scaleToScreen(screenZ, madAtom);
+   }
+
+   String getAtomNameOrNull() {
+     String[] atomNames = group.chain.frame.atomNames;
+     return atomNames == null ? null : atomNames[atomIndex];
+   }
+
+   String getAtomName() {
+     String atomName = getAtomNameOrNull();
+     return (atomName != null ? atomName : getElementSymbol());
+   }
+   
+   String getPdbAtomName4() {
+     String atomName = getAtomNameOrNull();
+     return atomName != null ? atomName : "";
+   }
+
+   /**
+    * matches atom name possibly with wildcard
+    * @param strPattern  -- for efficiency, upper case already
+    * @return true/false
+    */
+   boolean isAtomNameMatch(String strPattern) {
+     String atomName = getAtomNameOrNull();
+     int cchAtomName = atomName == null ? 0 : atomName.length();
+     int cchPattern = strPattern.length();
+     int ich;
+     for (ich = 0; ich < cchPattern; ++ich) {
+       char charWild = strPattern.charAt(ich);
+       if (charWild == '?')
+         continue;
+       if (ich >= cchAtomName ||
+           charWild != Character.toUpperCase(atomName.charAt(ich)))
+         return false;
+     }
+     return ich >= cchAtomName;
+   }
+   
+   int getAtomNumber() {
+     int[] atomSerials = group.chain.frame.atomSerials;
+     if (atomSerials != null)
+       return atomSerials[atomIndex];
+     if (group.chain.frame.isZeroBased)
+       return atomIndex;
+     return atomIndex + 1;
+   }
+
+   boolean isModelVisible() {
+     return ((shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) != 0);
+   }
+
+   boolean isShapeVisible(int shapeVisibilityFlag) {
+     return (isModelVisible() 
+         && (shapeVisibilityFlags & shapeVisibilityFlag) != 0);
+   }
+
+   float getPartialCharge() {
+     float[] partialCharges = group.chain.frame.partialCharges;
+     return partialCharges == null ? 0 : partialCharges[atomIndex];
+   }
+
+   int getArgb() {
+     return group.chain.frame.viewer.getColixArgb(colixAtom);
+   }
+
+   // a percentage value in the range 0-100
+   int getOccupancy() {
+     byte[] occupancies = group.chain.frame.occupancies;
+     return occupancies == null ? 100 : occupancies[atomIndex];
+   }
+
+   // This is called bfactor100 because it is stored as an integer
+   // 100 times the bfactor(temperature) value
+   int getBfactor100() {
+     short[] bfactor100s = group.chain.frame.bfactor100s;
+     if (bfactor100s == null)
+       return 0;
+     return bfactor100s[atomIndex];
+   }
+
+   int getSymmetryTranslation(int symop) {
+     Frame.CellInfo[] c = group.chain.frame.cellInfos;
+     if (c == null)
+       return 0;
+     Vector3f pt0 = new Vector3f(getFractionalCoord());
+     pt0.sub(group.chain.frame.getSymmetryBaseAtom(modelIndex, atomSite, symop)
+         .getFractionalCoord());
+     return ((int) (pt0.x + 5.01)) * 100 + ((int) (pt0.y + 5.01)) * 10
+         + ((int) (pt0.z + 5.01));
+   }
+   
+   String getSymmetryOperatorList() {
+     String str = "";
+     if (atomSymmetry == null)
+       return str;
+     for (int i = 0; i < atomSymmetry.size(); i++)
+       if (atomSymmetry.get(i))
+         str += "," + (i + 1);
+     return str.substring(1);
+   }
+   
+   int getModelIndex() {
+     return modelIndex;
+   }
+   
+   int getMoleculeNumber() {
+     return (group.chain.frame.getMoleculeIndex(atomIndex) + 1);
+   }
+   
+   String getClientAtomStringProperty(String propertyName) {
+     Object[] clientAtomReferences = group.chain.frame.clientAtomReferences;
+     return
+       ((clientAtomReferences==null || clientAtomReferences.length<=atomIndex)
+        ? null
+        : (group.chain.frame.viewer.
+           getClientAtomStringProperty(clientAtomReferences[atomIndex],
+                                       propertyName)));
+   }
+
+   boolean isDeleted() {
+     return madAtom == JmolConstants.MAR_DELETED;
+   }
+
+   byte getSpecialAtomID() {
+     byte[] specialAtomIDs = group.chain.frame.specialAtomIDs;
+     return specialAtomIDs == null ? 0 : specialAtomIDs[atomIndex];
+   }
+   
+   private float getFractionalCoord(char ch) {
+     Point3f pt = getFractionalCoord();
+     return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
+  }
+    
+  Point3f getFractionalCoord() {
+    Frame.CellInfo[] c = group.chain.frame.cellInfos;
+    if (c == null)
+      return this;
+    Point3f pt = new Point3f(this);
+    c[modelIndex].toFractional(pt);
+    return pt;
+  }
+  
+  boolean isCursorOnTopOfClickableAtom(int xCursor, int yCursor,
+                                     int minRadius, Atom competitor) {
+    return (isClickable() &&
+            isCursorOnTop(xCursor, yCursor, minRadius, competitor));
+  }
+
+  boolean isCursorOnTop(int xCursor, int yCursor,
+                        int minRadius, Atom competitor) {
+    int r = screenDiameter / 2;
+    if (r < minRadius)
+      r = minRadius;
+    int r2 = r * r;
+    int dx = screenX - xCursor;
+    int dx2 = dx * dx;
+    if (dx2 > r2)
+      return false;
+    int dy = screenY - yCursor;
+    int dy2 = dy * dy;
+    int dz2 = r2 - (dx2 + dy2);
+    if (dz2 < 0)
+      return false;
+    if (competitor == null)
+      return true;
+    int z = screenZ;
+    int zCompetitor = competitor.screenZ;
+    int rCompetitor = competitor.screenDiameter / 2;
+    if (z < zCompetitor - rCompetitor)
+      return true;
+    int dxCompetitor = competitor.screenX - xCursor;
+    int dx2Competitor = dxCompetitor * dxCompetitor;
+    int dyCompetitor = competitor.screenY - yCursor;
+    int dy2Competitor = dyCompetitor * dyCompetitor;
+    int r2Competitor = rCompetitor * rCompetitor;
+    int dz2Competitor = r2Competitor - (dx2Competitor + dy2Competitor);
+    return (z - Math.sqrt(dz2) < zCompetitor - Math.sqrt(dz2Competitor));
+  }
+
+  /* ***************************************************************
+    * disabled until I (Miguel) figure out how to generate pretty names
+    * without breaking inorganic compounds
+
+   // this requires a 4 letter name, in PDB format
+   // only here for transition purposes
+   static String calcPrettyName(String name) {
+     if (name.length() < 4)
+       return name;
+     char chBranch = name.charAt(3);
+     char chRemote = name.charAt(2);
+     switch (chRemote) {
+     case 'A':
+       chRemote = '\u03B1';
+       break;
+     case 'B':
+       chRemote = '\u03B2';
+       break;
+     case 'C':
+     case 'G':
+       chRemote = '\u03B3';
+       break;
+     case 'D':
+       chRemote = '\u03B4';
+       break;
+     case 'E':
+       chRemote = '\u03B5';
+       break;
+     case 'Z':
+       chRemote = '\u03B6';
+       break;
+     case 'H':
+       chRemote = '\u03B7';
+     }
+     String pretty = name.substring(0, 2).trim();
+     if (chBranch != ' ')
+       pretty += "" + chRemote + chBranch;
+     else
+       pretty += chRemote;
+     return pretty;
+   }
+   
+   */
+   
+  /*
+   *  DEVELOPER NOTE (BH):
+   *  
+   *  The following methods may not return 
+   *  correct values until after frame.finalizeGroupBuild()
+   *  
+   */
+   
+  String getInfo() {
+    return getIdentity();
+  }
+
+  String getInfoXYZ() {
+    return getIdentity() + " " + x + " " + y + " " + z;
+  }
+
+  String getIdentity() {
+    StringBuffer info = new StringBuffer();
+    String group3 = getGroup3();
+    String seqcodeString = getSeqcodeString();
+    char chainID = getChainID();
+    if (group3 != null && group3.length() > 0) {
+      info.append("[");
+      info.append(group3);
+      info.append("]");
+    }
+    if (seqcodeString != null)
+      info.append(seqcodeString);
+    if (chainID != 0 && chainID != ' ') {
+      info.append(":");
+      info.append(chainID);
+    }
+    String atomName = getAtomNameOrNull();
+    if (atomName != null) {
+      if (info.length() > 0)
+        info.append(".");
+      info.append(atomName);
+    }
+    if (info.length() == 0) {
+      info.append(getElementSymbol());
+      info.append(" ");
+      info.append(getAtomNumber());
+    }
+    if (alternateLocationID > 0) {
+      info.append("%");
+      info.append((char) alternateLocationID);
+    }
+    if (group.chain.frame.getModelCount() > 1) {
+      info.append("/");
+      info.append(getModelTagNumber());
+    }
+    info.append(" #");
+    info.append(getAtomNumber());
+    return "" + info;
+  }
+
+  String getGroup3() {
+    return group.getGroup3();
+  }
+
+  String getGroup1() {
+    return group.getGroup1();
+  }
+
+  boolean isGroup3(String group3) {
+    return group.isGroup3(group3);
+  }
+
+  boolean isGroup3Match(String strWildcard) {
+    return group.isGroup3Match(strWildcard);
+  }
+
+
+  boolean isProtein() {
+    return group.isProtein();
+  }
+
+  boolean isCarbohydrate() {
+    return group.isCarbohydrate();
+  }
+
+  boolean isNucleic() {
+    return group.isNucleic();
+  }
+
+  boolean isDna() {
+    return group.isDna();
+  }
+  
+  boolean isRna() {
+    return group.isRna();
+  }
+
+  boolean isPurine() {
+    return group.isPurine();
+  }
+
+  boolean isPyrimidine() {
+    return group.isPyrimidine();
+  }
+
+  int getSeqcode() {
+    return group.getSeqcode();
+  }
+
+  int getResno() {
+    return group.getResno();   
+  }
+
+  boolean isGroup3OrNameMatch(String strPattern) {
+    return (getGroup3().length() > 0 ? isGroup3Match(strPattern)
+        : isAtomNameMatch(strPattern));
+  }
+
+  boolean isClickable() {
+    // certainly if it is not visible, then it can't be clickable
+    if (!isVisible())
+      return false;
+    int flags = shapeVisibilityFlags | group.shapeVisibilityFlags;
+    return ((flags & clickabilityFlags) != 0);
+  }
+
+  /**
+   * determine if an atom or its PDB group is visible
+   * @return true if the atom is in the "select visible" set
+   */
+  boolean isVisible() {
+    // Is the atom's model visible? Is the atom NOT hidden?
+    if (!isModelVisible() || group.chain.frame.bsHidden.get(atomIndex))
+      return false;
+    // Is any shape associated with this atom visible? 
+    int flags = shapeVisibilityFlags;
+    // Is its PDB group visible in any way (cartoon, e.g.)?
+    //  An atom is considered visible if its PDB group is visible, even
+    //  if it does not show up itself as part of the structure
+    //  (this will be a difference in terms of *clickability*).
+    flags |= group.shapeVisibilityFlags;
+    // We know that (flags & AIM), so now we must remove that flag
+    // and check to see if any others are remaining.
+    // Only then is the atom considered visible.
+    return ((flags & ~JmolConstants.ATOM_IN_MODEL) != 0);
   }
 
   float getGroupPhi() {
@@ -614,61 +916,26 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   char getChainID() {
-    if (group == null)
-      return 0;
     return group.chain.chainID;
   }
 
-  // a percentage value in the range 0-100
-  int getOccupancy() {
-    if (group == null)
-      return 100;
-    byte[] occupancies = group.chain.frame.occupancies;
-    return occupancies == null ? 100 : occupancies[atomIndex];
-  }
-
-  // This is called bfactor100 because it is stored as an integer
-  // 100 times the bfactor(temperature) value
-  int getBfactor100() {
-    if (group == null)
-      return 0;
-    short[] bfactor100s = group.chain.frame.bfactor100s;
-    if (bfactor100s == null)
-      return 0;
-    return bfactor100s[atomIndex];
-  }
-
   float getSurfaceDistance() {
-    if (group == null)
-      return -1;
     return group.chain.frame.getSurfaceDistance(atomIndex);
   }
 
-  Group getGroup() {
-    return group;
-  }
-
   int getPolymerLength() {
-    if (group == null)
-      return 0;
     return group.getPolymerLength();
   }
 
   int getPolymerIndex() {
-    if (group == null)
-      return -1;
     return group.getPolymerIndex();
   }
 
   int getSelectedGroupCountWithinChain() {
-    if (group == null)
-      return 0;
     return group.chain.getSelectedGroupCount();
   }
 
   int getSelectedGroupIndexWithinChain() {
-    if (group == null)
-      return -1;
     return group.chain.getSelectedGroupIndex(group);
   }
 
@@ -687,119 +954,23 @@ final public class Atom extends Point3fi implements Tuple {
     return -1;
   }
 
-  int getAtomIndex() {
-    return atomIndex;
-  }
-
-  int getAtomSite() {
-    return atomSite;
-  }
-
-  BitSet getAtomSymmetry() {
-    return atomSymmetry;
-  }
-
-  int getSymmetryTranslation(int symop) {
-    Frame.CellInfo[] c = group.chain.frame.cellInfos;
-    if (c == null)
-      return 0;
-    Vector3f pt0 = new Vector3f(getFractionalCoord());
-    pt0.sub(group.chain.frame.getSymmetryBaseAtom(modelIndex, atomSite, symop)
-        .getFractionalCoord());
-    return ((int) (pt0.x + 5.01)) * 100 + ((int) (pt0.y + 5.01)) * 10
-        + ((int) (pt0.z + 5.01));
-  }
-  
-  String getSymmetryOperatorList() {
-    String str = "";
-    if (atomSymmetry == null)
-      return str;
-    for (int i = 0; i < atomSymmetry.size(); i++)
-      if (atomSymmetry.get(i))
-        str += "," + (i + 1);
-    return str.substring(1);
-  }
-  
   Chain getChain() {
-    if (group == null)
-      return null;
     return group.chain;
   }
 
   Model getModel() {
-    if (group == null)
-      return null;
     return group.chain.model;
   }
 
-  int getModelIndex() {
-    return modelIndex;
-  }
-  
   int getModelNumber() {
     return group.chain.model.modelNumber;
   }
   
-  // THIS is ridiculous! It means that we cannot close the adapter
-  // In fact, this is a call to group.chain.frame.viewer.modelmanager.adapter
-  // which is just the adapter passed to it by viewer anyway. 
-  // which is the same adapter passed to frame -- now I have made that
-  // nonglobal, so 
-  String getClientAtomStringProperty(String propertyName) {
-    if (group == null)
-      return null;
-    Object[] clientAtomReferences = group.chain.frame.clientAtomReferences;
-    return
-      ((clientAtomReferences==null || clientAtomReferences.length<=atomIndex)
-       ? null
-       : (group.chain.frame.viewer.
-          getClientAtomStringProperty(clientAtomReferences[atomIndex],
-                                      propertyName)));
-  }
-
-  boolean isDeleted() {
-    return madAtom == JmolConstants.MAR_DELETED;
-  }
-
-  byte getProteinStructureType() {
-    if (group == null)
-      return 0;
-    return group.getProteinStructureType();
-  }
-
-  short getGroupID() {
-    if (group == null)
-      return -1;
-    return group.groupID;
-  }
-
-  String getSeqcodeString() {
-    if (group == null)
-      return null;
-    return group.getSeqcodeString();
-  }
-
-  int getSeqNumber() {
-    if (group == null)
-      return 0;
-    return group.getSeqNumber();
-  }
-
-  char getInsertionCode() {
-    if (group == null)
-      return '\0';
-    return group.getInsertionCode();
-  }
-
   String getModelTag() {
-    if (group == null)
-      return null;
     return group.chain.model.modelTag;
   }
 
   int getModelTagNumber() {
-    if (group == null)
-      return 0;
     if (group.chain.model.isPDB) { 
       try {
         return Integer.parseInt(group.chain.model.modelTag);
@@ -810,96 +981,24 @@ final public class Atom extends Point3fi implements Tuple {
     return getModelNumber();
   }
   
-  byte getSpecialAtomID() {
-    if (group == null)
-      return 0;
-    byte[] specialAtomIDs = group.chain.frame.specialAtomIDs;
-    return specialAtomIDs == null ? 0 : specialAtomIDs[atomIndex];
+  byte getProteinStructureType() {
+    return group.getProteinStructureType();
   }
 
-  void demoteSpecialAtomImposter() {
-    //not referenced in project
-    if (group == null)
-      return;
-    group.chain.frame.specialAtomIDs[atomIndex] = 0;
-  }
-  
-  /* ***************************************************************
-   * disabled until I figure out how to generate pretty names
-   * without breaking inorganic compounds
-
-  // this requires a 4 letter name, in PDB format
-  // only here for transition purposes
-  static String calcPrettyName(String name) {
-    if (name.length() < 4)
-      return name;
-    char chBranch = name.charAt(3);
-    char chRemote = name.charAt(2);
-    switch (chRemote) {
-    case 'A':
-      chRemote = '\u03B1';
-      break;
-    case 'B':
-      chRemote = '\u03B2';
-      break;
-    case 'C':
-    case 'G':
-      chRemote = '\u03B3';
-      break;
-    case 'D':
-      chRemote = '\u03B4';
-      break;
-    case 'E':
-      chRemote = '\u03B5';
-      break;
-    case 'Z':
-      chRemote = '\u03B6';
-      break;
-    case 'H':
-      chRemote = '\u03B7';
-    }
-    String pretty = name.substring(0, 2).trim();
-    if (chBranch != ' ')
-      pretty += "" + chRemote + chBranch;
-    else
-      pretty += chRemote;
-    return pretty;
-  }
-  */
-  
-  private static Hashtable htAtom = new Hashtable();
-  static {
-    for (int i = JmolConstants.specialAtomNames.length; --i >= 0; ) {
-      String specialAtomName = JmolConstants.specialAtomNames[i];
-      if (specialAtomName != null) {
-        Integer boxedI = new Integer(i);
-        htAtom.put(specialAtomName, boxedI);
-      }
-    }
+  short getGroupID() {
+    return group.groupID;
   }
 
-  static String generateStarredAtomName(String primedAtomName) {
-    int primeIndex = primedAtomName.indexOf('\'');
-    if (primeIndex < 0)
-      return null;
-    return primedAtomName.replace('\'', '*');
+  String getSeqcodeString() {
+    return group.getSeqcodeString();
   }
 
-  static String generatePrimeAtomName(String starredAtomName) {
-    int starIndex = starredAtomName.indexOf('*');
-    if (starIndex < 0)
-      return starredAtomName;
-    return starredAtomName.replace('*', '\'');
+  int getSeqNumber() {
+    return group.getSeqNumber();
   }
 
-  byte lookupSpecialAtomID(String atomName) {
-    if (atomName != null) {
-      atomName = generatePrimeAtomName(atomName);
-      Integer boxedAtomID = (Integer)htAtom.get(atomName);
-      if (boxedAtomID != null)
-        return (byte)(boxedAtomID.intValue());
-    }
-    return 0;
+  char getInsertionCode() {
+    return group.getInsertionCode();
   }
 
   String formatLabel(String strFormat) {
@@ -1138,161 +1237,4 @@ final public class Atom extends Point3fi implements Tuple {
       sb.append(isNeg ? padChar + value.substring(1) : value);
     return "" + sb;
   }
-
-  private float getFractionalCoord(char ch) {
-     Point3f pt = getFractionalCoord();
-     return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
-  }
-    
-  Point3f getFractionalCoord() {
-    Frame.CellInfo[] c = group.chain.frame.cellInfos;
-    if (c == null)
-      return this;
-    Point3f pt = new Point3f(this);
-    c[modelIndex].toFractional(pt);
-    return pt;
-  }
-  
-  boolean isInLatticeCell(Point3f cell) {
-   return isInLatticeCell(cell, 0.02f);
-  }
-
-  boolean isInLatticeCell(Point3f cell, float slop) {
-    Point3f pt = getFractionalCoord();
-    // {1 1 1} here is the original cell
-    if (pt.x < cell.x - 1f - slop || pt.x > cell.x + slop)
-      return false;
-    if (pt.y < cell.y - 1f - slop || pt.y > cell.y + slop)
-      return false;
-    if (pt.z < cell.z - 1f - slop || pt.z > cell.z + slop)
-      return false;
-    return true;
-  }
-
-  String getInfo() {
-    return getIdentity();
-  }
-
-  String getInfoXYZ() {
-    return getIdentity() + " " + x + " " + y + " " + z;
-  }
-
-  String getIdentity() {
-    StringBuffer info = new StringBuffer();
-    String group3 = getGroup3();
-    String seqcodeString = getSeqcodeString();
-    char chainID = getChainID();
-    if (group3 != null && group3.length() > 0) {
-      info.append("[");
-      info.append(group3);
-      info.append("]");
-    }
-    if (seqcodeString != null)
-      info.append(seqcodeString);
-    if (chainID != 0 && chainID != ' ') {
-      info.append(":");
-      info.append(chainID);
-    }
-    String atomName = getAtomNameOrNull();
-    if (atomName != null) {
-      if (info.length() > 0)
-        info.append(".");
-      info.append(atomName);
-    }
-    if (info.length() == 0) {
-      info.append(getElementSymbol());
-      info.append(" ");
-      info.append(getAtomNumber());
-    }
-    if (alternateLocationID > 0) {
-      info.append("%");
-      info.append((char) alternateLocationID);
-    }
-    if (group != null && group.chain != null 
-        && group.chain.frame.getModelCount() > 1) {
-      info.append("/");
-      info.append(getModelTagNumber());
-    }
-    info.append(" #");
-    info.append(getAtomNumber());
-    return "" + info;
-  }
-
-  int getMoleculeNumber() {
-    return (group.chain.frame.getMoleculeIndex(atomIndex)+1);
-  }
-  
-  boolean isCursorOnTopOfClickableAtom(int xCursor, int yCursor,
-                                     int minRadius, Atom competitor) {
-    return (isClickable() &&
-            isCursorOnTop(xCursor, yCursor, minRadius, competitor));
-  }
-
-  boolean isCursorOnTop(int xCursor, int yCursor,
-                        int minRadius, Atom competitor) {
-    int r = screenDiameter / 2;
-    if (r < minRadius)
-      r = minRadius;
-    int r2 = r * r;
-    int dx = screenX - xCursor;
-    int dx2 = dx * dx;
-    if (dx2 > r2)
-      return false;
-    int dy = screenY - yCursor;
-    int dy2 = dy * dy;
-    int dz2 = r2 - (dx2 + dy2);
-    if (dz2 < 0)
-      return false;
-    if (competitor == null)
-      return true;
-    int z = screenZ;
-    int zCompetitor = competitor.screenZ;
-    int rCompetitor = competitor.screenDiameter / 2;
-    if (z < zCompetitor - rCompetitor)
-      return true;
-    int dxCompetitor = competitor.screenX - xCursor;
-    int dx2Competitor = dxCompetitor * dxCompetitor;
-    int dyCompetitor = competitor.screenY - yCursor;
-    int dy2Competitor = dyCompetitor * dyCompetitor;
-    int r2Competitor = rCompetitor * rCompetitor;
-    int dz2Competitor = r2Competitor - (dx2Competitor + dy2Competitor);
-    return (z - Math.sqrt(dz2) < zCompetitor - Math.sqrt(dz2Competitor));
-  }
-
-  ////////////////////////////////////////////////////////////////
-  int getScreenX() { return screenX; }
-  int getScreenY() { return screenY; }
-  int getScreenZ() { return screenZ; }
-  int getScreenD() { return screenDiameter; }
-
-  ////////////////////////////////////////////////////////////////
-
-  boolean isProtein() {
-    return group.isProtein();
-  }
-
-  boolean isCarbohydrate() {
-    return group.isCarbohydrate();
-  }
-
-  boolean isNucleic() {
-    return group.isNucleic();
-  }
-
-  boolean isDna() {
-    return group.isDna();
-  }
-  
-  boolean isRna() {
-    return group.isRna();
-  }
-
-  boolean isPurine() {
-    return group.isPurine();
-  }
-
-  boolean isPyrimidine() {
-    return group.isPyrimidine();
-  }
-
 }

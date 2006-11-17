@@ -217,7 +217,8 @@ public final class Frame {
       dumpAtomSetNameDiagnostics(adapter, clientFile);
   }
 
-  void initializeFrame(String name, int nAtoms, Properties properties, Hashtable info) {
+  void initializeFrame(String name, int nAtoms, Properties properties,
+                       Hashtable info) {
     //long timeBegin = System.currentTimeMillis();
     modelSetTypeName = name;
     isXYZ = (modelSetTypeName == "xyz");
@@ -228,7 +229,7 @@ public final class Frame {
     g3d = viewer.getGraphics3D();
 
     initializeBuild(nAtoms);
-    
+
     mmset.setModelSetProperties(properties);
     mmset.setModelSetAuxiliaryInfo(info);
 
@@ -241,7 +242,10 @@ public final class Frame {
     someModelsHaveFractionalCoordinates = mmset
         .getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
     fileHasHbonds = false;
-}
+  }
+
+  Chain nullChain;
+  Group nullGroup;
 
   void initializeModel(JmolAdapter adapter, Object clientFile) {
     modelCount = (adapter == null ? 1 : adapter.getAtomSetCount(clientFile));
@@ -254,13 +258,17 @@ public final class Frame {
     if (adapter == null) {
       mmset.setModelNameNumberProperties(0, "", 1, null, null, false);
     } else {
-      if (modelCount > 0)
+      if (modelCount > 0) {
         Logger
             .info(modelCount
                 + " model"
                 + (modelCount == 1 ? "" : "s")
                 + " in this collection. Use getProperty \"modelInfo\" or"
                 + " getProperty \"auxiliaryInfo\" to inspect them.");
+
+        nullChain = new Chain(this, mmset.getModel(0), ' ');
+        nullGroup = new Group(nullChain, "", 0, -1, -1);
+      }
 
       group3Lists = new String[modelCount + 1];
       group3Counts = new int[modelCount + 1][];
@@ -285,6 +293,10 @@ public final class Frame {
         }
       }
 
+      // atom is created, but not all methods are safe, because it
+      // has no group -- this is only an issue for debugging
+      
+      short mad = viewer.getMadAtom();
       for (JmolAdapter.AtomIterator iterAtom = adapter
           .getAtomIterator(clientFile); iterAtom.hasNext();) {
         short elementNumber = (short) iterAtom.getElementNumber();
@@ -294,7 +306,7 @@ public final class Frame {
         char alternateLocation = iterAtom.getAlternateLocationID();
         addAtom(iterAtom.getAtomSetIndex(), iterAtom.getAtomSymmetry(),
             iterAtom.getAtomSite(), iterAtom.getUniqueID(), elementNumber,
-            iterAtom.getAtomName(), iterAtom.getFormalCharge(), iterAtom
+            iterAtom.getAtomName(), mad, iterAtom.getFormalCharge(), iterAtom
                 .getPartialCharge(), iterAtom.getOccupancy(), iterAtom
                 .getBfactor(), iterAtom.getX(), iterAtom.getY(), iterAtom
                 .getZ(), iterAtom.getIsHetero(), iterAtom.getAtomSerial(),
@@ -350,9 +362,12 @@ public final class Frame {
     loadShape(JmolConstants.SHAPE_MEASURES);
     loadShape(JmolConstants.SHAPE_UCCAGE);
 
-    doUnitcellStuff();
-    doAutobond();
+    if (adapter != null) {
+      doUnitcellStuff();
+      doAutobond();
+    }
     finalizeGroupBuild(); // set group offsets and build monomers
+    //only now can we access all of the atom's properties
     saveGroup3Info();
     buildPolymers();
     freeze();
@@ -403,7 +418,7 @@ public final class Frame {
 
   void addAtom(int modelIndex, BitSet atomSymmetry, int atomSite,
                Object atomUid, short atomicAndIsotopeNumber, String atomName,
-               int formalCharge, float partialCharge, int occupancy,
+               short mad, int formalCharge, float partialCharge, int occupancy,
                float bfactor, float x, float y, float z, boolean isHetero,
                int atomSerial, char chainID, String group3,
                int groupSequenceNumber, char groupInsertionCode, float vectorX,
@@ -415,9 +430,10 @@ public final class Frame {
     if (atomCount == atoms.length)
       growAtomArrays(ATOM_GROWTH_INCREMENT);
 
-    Atom atom = new Atom(viewer, this, currentModelIndex, atomCount,
-        atomSymmetry, atomSite, atomicAndIsotopeNumber, atomName, formalCharge,
-        partialCharge, occupancy, bfactor, x, y, z, isHetero, atomSerial,
+    Atom atom = new Atom(this, currentModelIndex, atomCount,
+        atomSymmetry, atomSite, atomicAndIsotopeNumber, atomName,
+        mad, formalCharge, partialCharge, occupancy, 
+        bfactor, x, y, z, isHetero, atomSerial,
         chainID, group3, vectorX, vectorY, vectorZ, alternateLocationID,
         clientAtomReference);
     atoms[atomCount] = atom;
@@ -670,6 +686,7 @@ public final class Frame {
 
     for (int i = maxAtomIndex; --i >= firstAtomIndex;)
       atoms[i].setGroup(group);
+    
   }
 
   void countGroup(int modelIndex, String code, String group3) {
@@ -1256,7 +1273,7 @@ public final class Frame {
     bsFoundRectangle.and(bsEmpty);
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      if (rect.contains(atom.getScreenX(), atom.getScreenY()))
+      if (rect.contains(atom.screenX, atom.screenY))
         bsFoundRectangle.set(i);
     }
     return bsFoundRectangle;

@@ -41,6 +41,7 @@ class ColorManager {
     altArgbsCpk = new int[JmolConstants.altArgbsCpk.length];
     for (int i = JmolConstants.altArgbsCpk.length; --i >= 0; )
       altArgbsCpk[i] = JmolConstants.altArgbsCpk[i];
+    resetElementColors();
   }
 
   boolean isDefaultColorRasmol;
@@ -74,7 +75,6 @@ class ColorManager {
         argb |= 0xFF000000;
         argbsCpk[atomNo] = argb;
       }
-      //viewer.setStringProperty("backgroundColor", "black");
       //viewer.setShapeColorProperty(JmolConstants.SHAPE_DOTS, 0);
     } else {
       Logger.error("unrecognized color scheme");

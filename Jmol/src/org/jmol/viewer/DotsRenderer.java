@@ -108,7 +108,7 @@ class DotsRenderer extends ShapeRenderer {
       mapAtoms = new int[geodesic.vertices.length];
     boolean isSolid = (iShowSolid && !isInMotion);
     geodesic.calcScreenPoints(visibilityMap, dots.getAppropriateRadius(atom),
-        atom.getScreenX(), atom.getScreenY(), atom.getScreenZ(), mapAtoms,
+        atom.screenX, atom.screenY, atom.screenZ, mapAtoms,
         isSolid);
     if (geodesic.screenCoordinateCount == 0)
       return;

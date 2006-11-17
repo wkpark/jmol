@@ -130,9 +130,10 @@ public class Viewer extends JmolViewer {
     jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
     stateManager = new StateManager(this);
+    global = stateManager.getGlobalSettings();
     g3d = new Graphics3D(display);
     colorManager = new ColorManager(this, g3d);
-    resetAllParameters();
+    setStringProperty("backgroundColor", "black");
     statusManager = new StatusManager(this);
     scriptManager = new ScriptManager(this);
     transformManager = new TransformManager(this);
@@ -791,7 +792,6 @@ public class Viewer extends JmolViewer {
     global.argbBackground = argb;
     g3d.setBackgroundArgb(argb);
     colorManager.setColixBackgroundContrast(argb);
-    refresh(0, "Viewer:setBackgroundArgb()");
   }
 
   public int getBackgroundArgb() {
@@ -1305,13 +1305,15 @@ public class Viewer extends JmolViewer {
   }
   
   private void clear() {
+    if (modelManager.getFrame() == null)
+      return;
     fileManager.clear();
     repaintManager.clear();
     transformManager.clear();
     pickingManager.clear();
-    modelManager.clear();
     selectionManager.clear();
     clearAllMeasurements();
+    modelManager.clear();
     statusManager.clear();
     stateManager.clear(global);
     setRefreshing(true);

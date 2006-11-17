@@ -84,6 +84,7 @@ class FileManager {
   FileManager(Viewer viewer, JmolAdapter modelAdapter) {
     this.viewer = viewer;
     this.modelAdapter = modelAdapter;
+    clear();
   }
 
   String getState() {

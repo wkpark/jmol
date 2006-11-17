@@ -106,15 +106,15 @@ class MeasuresRenderer extends ShapeRenderer {
   }
 
   void renderDistance(Atom atomA, Atom atomB, short colix) {
-    int zA = atomA.getScreenZ() - atomA.getScreenD() - 10;
-    int zB = atomB.getScreenZ() - atomB.getScreenD() - 10;
-    int radius = drawSegment(atomA.getScreenX(), atomA.getScreenY(), zA, atomB
-        .getScreenX(), atomB.getScreenY(), zB, colix);
+    int zA = atomA.screenZ - atomA.screenDiameter - 10;
+    int zB = atomB.screenZ - atomB.screenDiameter - 10;
+    int radius = drawSegment(atomA.screenX, atomA.screenY, zA, atomB
+        .screenX, atomB.screenY, zB, colix);
     int z = (zA + zB) / 2;
     if (z < 1)
       z = 1;
-    paintMeasurementString((atomA.getScreenX() + atomB.getScreenX()) / 2,
-        (atomA.getScreenY() + atomB.getScreenY()) / 2, z, radius, colix);
+    paintMeasurementString((atomA.screenX + atomB.screenX) / 2,
+        (atomA.screenY + atomB.screenY) / 2, z, radius, colix);
   }
                            
 
@@ -132,15 +132,15 @@ class MeasuresRenderer extends ShapeRenderer {
   void renderAngle(Atom atomA, Atom atomB, Atom atomC,
                    short colix, boolean renderArcs) {
     g3d.setColix(colix);
-    int zA = atomA.getScreenZ() - atomA.getScreenD() - 10;
-    int zB = atomB.getScreenZ() - atomB.getScreenD() - 10;
-    int zC = atomC.getScreenZ() - atomC.getScreenD() - 10;
+    int zA = atomA.screenZ - atomA.screenDiameter - 10;
+    int zB = atomB.screenZ - atomB.screenDiameter - 10;
+    int zC = atomC.screenZ - atomC.screenDiameter - 10;
     int zOffset = (zA + zB + zC) / 3;
-    int radius = drawSegment(atomA.getScreenX(), atomA.getScreenY(), zA,
-                             atomB.getScreenX(), atomB.getScreenY(), zB,
+    int radius = drawSegment(atomA.screenX, atomA.screenY, zA,
+                             atomB.screenX, atomB.screenY, zB,
                              colix);
-    radius += drawSegment(atomB.getScreenX(), atomB.getScreenY(), zB,
-                          atomC.getScreenX(), atomC.getScreenY(), zC, colix);
+    radius += drawSegment(atomB.screenX, atomB.screenY, zB,
+                          atomC.screenX, atomC.screenY, zC, colix);
     radius = (radius + 1) / 2;
 
     if (! renderArcs)
@@ -152,7 +152,7 @@ class MeasuresRenderer extends ShapeRenderer {
     // should probably be some percentage of the smaller distance
     AxisAngle4f aa = measurement.aa;
     if (aa == null) { // 180 degrees
-      paintMeasurementString(atomB.getScreenX() + 5, atomB.getScreenY() - 5,
+      paintMeasurementString(atomB.screenX + 5, atomB.screenY - 5,
                              zB, radius, colix);
       return;
     }
@@ -195,17 +195,17 @@ class MeasuresRenderer extends ShapeRenderer {
 
   void renderTorsion(Atom atomA, Atom atomB, Atom atomC, Atom atomD,
                      short colix, boolean renderArcs) {
-    int zA = atomA.getScreenZ() - atomA.getScreenD() - 10;
-    int zB = atomB.getScreenZ() - atomB.getScreenD() - 10;
-    int zC = atomC.getScreenZ() - atomC.getScreenD() - 10;
-    int zD = atomD.getScreenZ() - atomD.getScreenD() - 10;
-    int radius = drawSegment(atomA.getScreenX(), atomA.getScreenY(), zA, atomB.getScreenX(), atomB.getScreenY(), zB,
+    int zA = atomA.screenZ - atomA.screenDiameter - 10;
+    int zB = atomB.screenZ - atomB.screenDiameter - 10;
+    int zC = atomC.screenZ - atomC.screenDiameter - 10;
+    int zD = atomD.screenZ - atomD.screenDiameter - 10;
+    int radius = drawSegment(atomA.screenX, atomA.screenY, zA, atomB.screenX, atomB.screenY, zB,
                              colix);
-    radius += drawSegment(atomB.getScreenX(), atomB.getScreenY(), zB, atomC.getScreenX(), atomC.getScreenY(), zC, colix);
-    radius += drawSegment(atomC.getScreenX(), atomC.getScreenY(), zC, atomD.getScreenX(), atomD.getScreenY(), zD, colix);
+    radius += drawSegment(atomB.screenX, atomB.screenY, zB, atomC.screenX, atomC.screenY, zC, colix);
+    radius += drawSegment(atomC.screenX, atomC.screenY, zC, atomD.screenX, atomD.screenY, zD, colix);
     radius /= 3;
-    paintMeasurementString((atomA.getScreenX() + atomB.getScreenX() + atomC.getScreenX() + atomD.getScreenX()) / 4,
-                           (atomA.getScreenY() + atomB.getScreenY() + atomC.getScreenY() + atomD.getScreenY()) / 4,
+    paintMeasurementString((atomA.screenX + atomB.screenX + atomC.screenX + atomD.screenX) / 4,
+                           (atomA.screenY + atomB.screenY + atomC.screenY + atomD.screenY) / 4,
                            (zA + zB + zC + zD) / 4, radius, colix);
   }
 
@@ -244,8 +244,8 @@ class MeasuresRenderer extends ShapeRenderer {
       renderMeasurement(count - 1, pendingMeasurement, colixRubberband, false);
     Atom atomLast = frame.getAtomAt(pendingMeasurement.
                                     countPlusIndices[count - 1]);
-    int lastZ = atomLast.getScreenZ() - atomLast.getScreenD() - 10;
-    drawSegment(atomLast.getScreenX(), atomLast.getScreenY(), lastZ,
+    int lastZ = atomLast.screenZ - atomLast.screenDiameter - 10;
+    drawSegment(atomLast.screenX, atomLast.screenY, lastZ,
                 viewer.getCursorX(), viewer.getCursorY(), 0, colixRubberband);
   }
 }

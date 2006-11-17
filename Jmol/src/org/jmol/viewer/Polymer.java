@@ -434,7 +434,8 @@ abstract class Polymer {
   void findNearestAtomIndex(int xMouse, int yMouse,
                             Closest closest, short[] mads, int myVisibilityFlag) {
     for (int i = monomerCount; --i >= 0; ) {
-      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0)
+      if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
+          || this.model.mmset.frame.bsHidden.get(monomers[i].getLeadAtomIndex()))
         continue;  
       if (mads[i] > 0 || mads[i + 1] > 0)
         monomers[i].findNearestAtomIndex(xMouse, yMouse, closest,

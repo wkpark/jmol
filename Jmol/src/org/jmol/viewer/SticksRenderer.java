@@ -354,8 +354,8 @@ class SticksRenderer extends ShapeRenderer {
     Atom atomC = findAromaticNeighbor(bond);
     if (atomC == null)
       return 1;
-    int dxAC = atomC.getScreenX() - xA;
-    int dyAC = atomC.getScreenY() - yA;
+    int dxAC = atomC.screenX - xA;
+    int dyAC = atomC.screenY - yA;
     return (dx * dyAC - dy * dxAC) >= 0 ? 2 : 1;
   }
 

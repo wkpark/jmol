@@ -59,7 +59,7 @@ class BallsRenderer extends ShapeRenderer {
       }
       // note: above transform is required for all other renderings
       if (atom.group != null) {
-        int z = atom.getScreenZ() - atom.getScreenD() / 2 - 2;
+        int z = atom.screenZ - atom.screenDiameter / 2 - 2;
         if (z < atom.group.minZ)
           atom.group.minZ = Math.max(1, z);
       }

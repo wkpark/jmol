@@ -69,7 +69,7 @@ class LabelsRenderer extends ShapeRenderer {
       int offset = offsetFull >> 6;
       int textAlign = (offsetFull >> 2) & 3;
       int pointer = offsetFull & 3;
-      int zSlab = atom.getScreenZ() - atom.getScreenD() / 2 - 2;
+      int zSlab = atom.screenZ - atom.screenDiameter / 2 - 2;
       if (zSlab < 1)
         zSlab = 1;
       int zBox = (labelsFront ? 1

@@ -33,6 +33,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.g3d.Graphics3D;
 
 import java.util.BitSet;
+import java.util.Hashtable;
 
 /* ***************************************************************
  * 
@@ -114,7 +115,7 @@ import java.util.BitSet;
  *
  ****************************************************************/
 
-class Dots extends Shape {
+class Dots extends AtomShape {
 
   DotsRenderer dotsRenderer;
 
@@ -131,8 +132,6 @@ class Dots extends Shape {
   int[][] dotsConvexMaps;
   final int nArcPoints = 9;  
   
-  short[] mads;
-  short[] colixesConvex;
   Vector3f[] geodesicVertices;
   int geodesicCount;
   int[] geodesicMap;
@@ -147,15 +146,6 @@ class Dots extends Shape {
   
   int argb;
 
-  /* //out
-   * 
-  int cavityCount;
-  Cavity[] cavities;
-  int torusCount;
-  Torus[] tori;
-  Hashtable htTori;
-  */
-  
   BitSet bsSurface; 
   boolean calcDistanceOnly;
   boolean useVanderwaalsRadius;
@@ -168,18 +158,7 @@ class Dots extends Shape {
   float radiusP, diameterP;
   float radiiIP2, radiiJP2, radiiKP2;
   float distanceIJ2;
-  /*  //out/
-   
-  Torus torusIJ, torusIK;
-  final Point3f baseIJK = new Point3f();
-  final Point3f probeIJK = new Point3f();
-  float heightIJK;
-
-  boolean useBobsAlgorithm = true;
-  */
-  
   final Point3f pointT = new Point3f();
-  //final Point3f pointT1 = new Point3f();
   boolean TIMINGS = true;
   
   long timeBeginExecution;
@@ -198,6 +177,7 @@ class Dots extends Shape {
     geodesicSolventCount = geodesicSolventVertices.length;
     geodesicSolventMap = allocateBitmap(geodesicSolventCount);
     mapT = allocateBitmap(geodesicSolventCount);
+    super.initShape();
   }
 
   boolean isSurface;
@@ -207,8 +187,6 @@ class Dots extends Shape {
 
     Logger.debug("Dots.setProperty: " + propertyName + " " + value);
 
-    int atomCount = frame.atomCount;
-
     if ("init" == propertyName) {
       int mode = ((Integer) value).intValue();
       isSurface = (mode == DOTS_MODE_SURFACE);
@@ -216,10 +194,16 @@ class Dots extends Shape {
       argb = 0;
       return;
     }
+    
     if ("color" == propertyName) {
-      setProperty("colorConvex", value, bs);
+      super.setProperty(propertyName, value, bs);
       return;
     }
+    
+    if ("translucency" == propertyName) {
+      return;  // no translucent dots
+    }
+
     if ("colorSurface" == propertyName) {
       surfaceColix = Graphics3D.getColix(value);
       return;
@@ -229,7 +213,8 @@ class Dots extends Shape {
       surfaceColix = Graphics3D.getColixTranslucent(surfaceColix, isTranslucent);
       return;
     }    
-    
+
+    // next four are for serialization
     if ("radius" == propertyName) {
       radiusI = ((Float)value).floatValue();
       return;
@@ -241,11 +226,11 @@ class Dots extends Shape {
     if ("atom" == propertyName) {
       indexI = ((Integer)value).intValue();
       dotsConvexMax = Math.max(indexI + 1, dotsConvexMax);
-      frame.atoms[indexI].setShapeVisibility(myVisibilityFlag, true);
+      atoms[indexI].setShapeVisibility(myVisibilityFlag, true);
       return;  
     }
-    
     if ("dots" == propertyName) {
+      isActive = true;
       bs = (BitSet)value;
       setAllBits(geodesicMap, geodesicCount);
       for (int iDot = geodesicCount; --iDot >= 0;)
@@ -261,31 +246,19 @@ class Dots extends Shape {
       }
       dotsConvexMaps[indexI] = map;
       if (mads == null)
-        mads = new short[frame.atomCount];
+        mads = new short[atomCount];
       mads[indexI] = (short) (radiusI * 1000f);
-      if (colixesConvex == null)
-        colixesConvex = new short[frame.atomCount];
-      colixesConvex[indexI] = Graphics3D.getColix(argb);
+      if (colixes == null) {
+        colixes = new short[atomCount];
+        paletteIDs = new short[atomCount];
+      }
+      colixes[indexI] = Graphics3D.getColix(argb);
       //all done!
-      return;
-    }
-
-    if ("colorConvex" == propertyName) {
-      if (colixesConvex == null)
-        return;
-      Logger.debug("Dots.setProperty('colorConvex')");
-      short colix = Graphics3D.getColix(value);
-      int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
-      for (int i = atomCount; --i >= 0;)
-        if (bs.get(i))
-          colixesConvex[i] = setColix(colix, pid, i);
       return;
     }
   }
 
   void setSize(int size, BitSet bsSelected) {
-    // miguel 9 Sep 2005
-    // this is a hack ...
     // if mad == 0 then turn it off
     //    1           van der Waals (dots) or +1.2, calconly)
     //   -1           ionic/covalent
@@ -294,15 +267,10 @@ class Dots extends Shape {
 
     Logger.debug("Dots.setSize " + size);
 
-/*    if (size == Integer.MIN_VALUE) {
-      size = 1;
-      calcDistanceOnly = true;
-    }
-*/
-
     bsSurface = new BitSet();
     boolean isVisible = true;
 
+    isActive = true;
     short mad = (short) size;
     if (mad == 1 && isCalcOnly)
       mad = 1200 + 11002;
@@ -340,12 +308,8 @@ class Dots extends Shape {
     float solventRadius = viewer.getCurrentSolventProbeRadius();
     if (addRadius == Float.MAX_VALUE)
       addRadius = (solventRadius != 0 ? solventRadius : 0);
-//    if (showSurface) //done here -- rest is for renderer
-  //    return;
 
     timeBeginExecution = System.currentTimeMillis();
-
-    int atomCount = frame.atomCount;
 
     // combine current and selected set
     boolean newSet = (lastSolventRadius != addRadius || mad != 0
@@ -368,7 +332,7 @@ class Dots extends Shape {
     
     if (!isCalcOnly)
       for (int i = atomCount; --i >= 0;)
-        frame.atoms[i].setShapeVisibility(myVisibilityFlag, bsOn.get(i));
+        atoms[i].setShapeVisibility(myVisibilityFlag, bsOn.get(i));
     if (newSet) {
       dotsConvexMax = 0;
       dotsConvexMaps = null;
@@ -390,20 +354,16 @@ class Dots extends Shape {
       lastMad = mad;
       if (dotsConvexMaps == null) {
         dotsConvexMaps = new int[atomCount][];
-        colixesConvex = new short[atomCount];
+        colixes = new short[atomCount];
+        paletteIDs = new short[atomCount];
       }
       disregardNeighbors = (viewer.getDotSurfaceFlag() == false);
       onlySelectedDots = (viewer.getDotsSelectedOnlyFlag() == true);
       for (int i = atomCount; --i >= 0;)
         if (bsOn.get(i)) {
-          //if (calcDistanceOnly)
-            //setDistance(i, -1);
           setAtomI(i);
           getNeighbors();
           calcConvexMap();
-          
-          //if (calcDistanceOnly)
-            //checkSurfaceAtom();
         }
     }
     if (dotsConvexMaps == null)
@@ -421,50 +381,10 @@ class Dots extends Shape {
       dotsConvexMax = 0;
       dotsConvexMaps = null;
     }
-
-
-/*    if (calcDistanceOnly) {
-      Point3f vertex = new Point3f();
-      for (int iAtom1 = dotsConvexMax; --iAtom1 >= 0;) {
-        setAtomI(iAtom1);
-        float combinedRadii = radiusI + radiusP;
-        int[] map = dotsConvexMaps[iAtom1];
-        for (int iPt = 12; --iPt >= 0;) {
-          if (getBit(map, iPt)) {
-            vertex.set(geodesicVertices[iPt]);
-            vertex.scaleAdd(combinedRadii, centerI);
-            for (int iAtom2 = 0; iAtom2 < atomCount; iAtom2++)
-              if (!bsSurface.get(iAtom2)) {
-                float d = frame.atoms[iAtom2].distance(vertex);
-                setDistance(iAtom2, d);
-              }
-          }
-        }
-      }
-    }
-*/
     timeEndExecution = System.currentTimeMillis();
     Logger.debug("dots generation time = " + getExecutionWalltime());
   }
 
-  void setDistance(int iAtom, float distance) {
-    if (distance < 0) {
-      frame.bfactor100s[iAtom] = 30000;
-    } else {
-      frame.bfactor100s[iAtom] = (short) (int) Math.min(
-          frame.bfactor100s[iAtom], distance * 10000);
-    }
-  }
-
-/*  void checkSurfaceAtom() {
-    for (int i = 0; i < geodesicCount; i++)
-      if (getBit(geodesicMap, i)) {
-        setDistance(i, getAppropriateRadius(atomI));
-        bsSurface.set(indexI);
-        break;
-      }
-  }
-*/
   float getAppropriateRadius(Atom atom) {
     if (mads != null)
       return mads[atom.atomIndex] / 1000f;
@@ -476,31 +396,12 @@ class Dots extends Shape {
 
   void setAtomI(int indexI) {
     this.indexI = indexI;
-    atomI = frame.atoms[indexI];
+    atomI = atoms[indexI];
     centerI = atomI;
     radiusI = getAppropriateRadius(atomI);
     radiiIP2 = radiusI + radiusP;
     radiiIP2 *= radiiIP2;
   }
-  
-  void setNeighborJ(int indexNeighbor) {
-    indexJ = neighborIndices[indexNeighbor];
-    atomJ = neighbors[indexNeighbor];
-    radiusJ = getAppropriateRadius(atomJ);
-    radiiJP2 = neighborPlusProbeRadii2[indexNeighbor];
-    centerJ = neighborCenters[indexNeighbor];
-    distanceIJ2 = centerI.distanceSquared(centerJ);
-  }
-
-  void setNeighborK(int indexNeighbor) {
-    indexK = neighborIndices[indexNeighbor];
-    centerK = neighborCenters[indexNeighbor];
-    atomK = neighbors[indexNeighbor];
-    radiusK = getAppropriateRadius(atomK);
-    radiiKP2 = neighborPlusProbeRadii2[indexNeighbor];
-  }
-      
-  
   
   void calcConvexMap() {
     calcConvexBits();
@@ -564,7 +465,6 @@ class Dots extends Shape {
         setBit(points, i);
     }
   }
-
 
   Point3f centerT;
   void calcConvexBits() {
@@ -644,11 +544,6 @@ class Dots extends Shape {
   float[] neighborRadii2 = new float[16];
   
   void getNeighbors() {
-    /*
-    Logger.debug("Dots.getNeighbors radiusI=" + radiusI +
-                       " diameterP=" + diameterP +
-                       " maxVdw=" + frame.getMaxVanderwaalsRadius());
-    */
     neighborCount = 0;
     if (disregardNeighbors)
       return;
@@ -713,7 +608,7 @@ class Dots extends Shape {
     for (int i = bitmap.length; --i >= 0; )
       bitmap[i] = 0;
   }
-  
+ /* 
   String showMap(int[] map) {
     String s = "showMap";
     int n = 0;
@@ -726,10 +621,10 @@ class Dots extends Shape {
     s = n + " points:" + s;
     return s;
   }
-
+*/
   void setModelClickability() {
-    for (int i = frame.atomCount; --i >= 0;) {
-      Atom atom = frame.atoms[i];
+    for (int i = atomCount; --i >= 0;) {
+      Atom atom = atoms[i];
       if ((atom.shapeVisibilityFlags & myVisibilityFlag) == 0
           || frame.bsHidden.get(i))
         continue;
@@ -741,11 +636,14 @@ class Dots extends Shape {
     if (dotsConvexMaps == null)
       return "";
     StringBuffer s = new StringBuffer();
+    Hashtable temp = new Hashtable();
     int atomCount = viewer.getAtomCount();
     String type = (isSurface ? "geoSurface " : "dots ");
     for (int i = 0; i < atomCount; i++) {
       if (dotsConvexMaps[i] == null)
         continue;
+      if (!isSurface && bsColixSet != null && bsColixSet.get(i))
+          setStateInfo(temp, i, getColorCommand(type, paletteIDs[i], colixes[i]));
       BitSet bs = new BitSet();
       int[] map = dotsConvexMaps[i];
       int iDot = map.length << 5;
@@ -753,13 +651,13 @@ class Dots extends Shape {
         if (getBit(map, iDot))
           bs.set(iDot);
       appendCmd(s, type + i + " radius "
-          + getAppropriateRadius(frame.atoms[i])
-          + (colixesConvex[i] != 0 && !isSurface ? " color "
-              + StateManager.encodeColor(colixesConvex[i]) : "") + " "
+          + getAppropriateRadius(atoms[i]) + " "
           + StateManager.encodeBitset(bs));
     }
     if (isSurface)
       appendCmd(s, getColorCommand("geoSurface", surfaceColix));
+    else
+      s.append(getShapeCommands(temp, null, atomCount));
     return s.toString();
   }
 }

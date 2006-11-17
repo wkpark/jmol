@@ -580,7 +580,7 @@ class Polyhedra extends AtomShape {
           + (collapsed ? " collapsed" : "")
           + " to " + StateManager.encodeBitset(bs) + ";"
           + (visible ? "" : "polyhedra off;");
-      Shape.setStateInfo(temp, centralAtom.atomIndex, getColorCommand("polyhedra",myColix));
+      setStateInfo(temp, centralAtom.atomIndex, getColorCommand("polyhedra",myColix));
       return s;
     }
   }

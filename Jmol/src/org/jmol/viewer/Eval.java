@@ -2308,22 +2308,6 @@ class Eval { //implements Runnable {
           }
         }
       }
-      argb = getArgbOrNoneParam(2);
-      if (str.equalsIgnoreCase("dotsConvex")) {
-        viewer.setShapePropertyArgb(JmolConstants.SHAPE_DOTS, "colorConvex",
-            argb);
-        return;
-      }
-      if (str.equalsIgnoreCase("dotsConcave")) {
-        viewer.setShapePropertyArgb(JmolConstants.SHAPE_DOTS, "colorConcave",
-            argb);
-        return;
-      }
-      if (str.equalsIgnoreCase("dotsSaddle")) {
-        viewer.setShapePropertyArgb(JmolConstants.SHAPE_DOTS, "colorSaddle",
-            argb);
-        return;
-      }
       invalidArgument();
     default:
       if (tok == Token.bond) // special hack for bond/bonds confusion

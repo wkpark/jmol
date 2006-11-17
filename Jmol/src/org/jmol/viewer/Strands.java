@@ -42,21 +42,13 @@ class Strands extends Mps {
   void setProperty(String propertyName, Object value, BitSet bs) {
     initialize();
     if ("strandCount" == propertyName) {
-      if (value instanceof Integer) {
-        int count = ((Integer)value).intValue();
-        if (count < 0)
-          count = 0;
-        else if (count > 20)
-          count = 20;
-        strandCount = count;
-        return;
-      }
+      strandCount = Math.min(20, Math.max(0, ((Integer) value).intValue()));
+      return;
     }
     super.setProperty(propertyName, value, bs);
   }
 
   class Schain extends Mps.MpsShape {
-
     Schain(Polymer polymer) {
       super(polymer, -2, 3000, 800, 5000);
     }

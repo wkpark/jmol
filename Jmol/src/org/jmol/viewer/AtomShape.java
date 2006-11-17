@@ -33,7 +33,7 @@ import org.jmol.util.ArrayUtil;
 
 class AtomShape extends Shape {
 
-  // Balls, Halos, Labels, MpsShapes, Stars, Vectors
+  // Balls, Dots, Halos, Labels, Polyhedra, Stars, Vectors
   
   short[] mads;
   short[] colixes;
@@ -115,11 +115,15 @@ class AtomShape extends Shape {
   }
   
   void setModelClickability() {
-    if (mads == null)
+    if (!isActive)
       return;
-    for (int i = atomCount; --i >= 0; )
-      if ((atoms[i].shapeVisibilityFlags & myVisibilityFlag) != 0)
-        atoms[i].clickabilityFlags |= myVisibilityFlag;
+    for (int i = atomCount; --i >= 0;) {
+      Atom atom = atoms[i];
+      if ((atom.shapeVisibilityFlags & myVisibilityFlag) == 0
+          || frame.bsHidden.get(i))
+        continue;
+      atom.clickabilityFlags |= myVisibilityFlag;
+    }
   }
 
   String getShapeState() {

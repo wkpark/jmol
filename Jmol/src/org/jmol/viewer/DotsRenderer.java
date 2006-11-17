@@ -84,7 +84,7 @@ class DotsRenderer extends ShapeRenderer {
 
     Atom[] atoms = frame.atoms;
     int[][] dotsConvexMaps = dots.dotsConvexMaps;
-    short[] colixesConvex = dots.colixesConvex;
+    short[] colixes = dots.colixes;
     boolean isInMotion = (viewer.getInMotion() && dots.dotsConvexMax > 100);
     boolean iShowSolid = dots.isSurface;
     //boolean iShowSolid = (viewer.getTestFlag3()||dots.showSurface) && dots.useBobsAlgorithm;
@@ -93,7 +93,7 @@ class DotsRenderer extends ShapeRenderer {
       if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i)
           ||!g3d.isInDisplayRange(atom.screenX, atom.screenY))
         continue;
-      renderConvex(dots, atom, colixesConvex[i], dotsConvexMaps[i], iShowSolid,
+      renderConvex(dots, atom, colixes[i], dotsConvexMaps[i], iShowSolid,
           isInMotion);
     }
     dots.timeEndExecution = System.currentTimeMillis();
@@ -108,16 +108,16 @@ class DotsRenderer extends ShapeRenderer {
       mapAtoms = new int[geodesic.vertices.length];
     boolean isSolid = (iShowSolid && !isInMotion);
     geodesic.calcScreenPoints(visibilityMap, dots.getAppropriateRadius(atom),
-        atom.getScreenX(), atom.getScreenY(), atom.getScreenZ(), mapAtoms, isSolid);
+        atom.getScreenX(), atom.getScreenY(), atom.getScreenZ(), mapAtoms,
+        isSolid);
     if (geodesic.screenCoordinateCount == 0)
       return;
-    if (isSolid) {
-      colix = dots.surfaceColix; //for now
-      renderGeodesicFragment(colix, geodesic, visibilityMap, mapAtoms, geodesic.screenDotCount);
-    } else {
+    if (isSolid)
+      renderGeodesicFragment(dots.surfaceColix, geodesic, visibilityMap,
+          mapAtoms, geodesic.screenDotCount);
+    else
       g3d.drawPoints(colix, geodesic.screenCoordinateCount,
           geodesic.screenCoordinates);
-    }
   }
 
   Point3i facePt1 = new Point3i();
@@ -184,6 +184,7 @@ class DotsRenderer extends ShapeRenderer {
     11, 10, 9,
   };
 
+  
   /****************************************************************
    * This code constructs a geodesic sphere which is used to
    * represent the vanderWaals and Connolly dot surfaces
@@ -315,7 +316,7 @@ class DotsRenderer extends ShapeRenderer {
       if (iDot > dotCount)
         iDot = dotCount;
       while (--iDot >= 0) {
-        if (!getBit(visibilityMap, iDot))
+        if (!Dots.getBit(visibilityMap, iDot))
           continue;
         //        intensities[iintensities++] = intensitiesTransformed[iDot];
         Vector3f vertex = verticesTransformed[iDot];
@@ -421,7 +422,7 @@ class DotsRenderer extends ShapeRenderer {
       vertices[iVertexNew] = vertexNew;
       return iVertexNew++;
     }
-    
+ /*   
     String showMap(int[] map) {
       String s = "showMap";
       int n = 0;
@@ -434,10 +435,7 @@ class DotsRenderer extends ShapeRenderer {
       s = n + " points:" + s;
       return s;
     }
-  }
-  
-  final static boolean getBit(int[] bitmap, int i) {
-    return (bitmap[(i >> 5)] << (i & 31)) < 0;
+ */ 
   }
 }
 

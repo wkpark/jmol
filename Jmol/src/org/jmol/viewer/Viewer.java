@@ -4210,6 +4210,10 @@ public class Viewer extends JmolViewer {
     return statusManager.functionXY(functionName, x, y);
   }
 
+  String eval(String strEval) {
+    return statusManager.eval(strEval);
+  }
+
   Point3f[] getAdditionalHydrogens(BitSet atomSet) {
     return modelManager.getAdditionalHydrogens(atomSet);
   }

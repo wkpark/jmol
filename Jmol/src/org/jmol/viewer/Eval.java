@@ -225,6 +225,8 @@ class Eval { //implements Runnable {
   }
 
   boolean loadScriptFileInternal(String filename) {
+    if (filename.toLowerCase().indexOf("javascript:") == 0)
+      return loadScript(filename, viewer.eval(filename.substring(11)));
     Object t = viewer.getInputStreamOrErrorMessageFromName(filename);
     if (!(t instanceof InputStream))
       return loadError((String) t);
@@ -1455,10 +1457,9 @@ class Eval { //implements Runnable {
   String stringParameter(int index) throws ScriptException {
     if (index >= statementLength)
       badArgumentCount();
-    if (statement[index].tok == Token.string)
-      return (String) statement[index].value;
-    stringExpected();
-    return null; //impossible return
+    if (statement[index].tok != Token.string)
+      stringExpected();
+    return (String) statement[index].value;
   }
 
   String objectNameParameter(int index) throws ScriptException {
@@ -3003,7 +3004,7 @@ class Eval { //implements Runnable {
     if (statement[1].tok != Token.string)
       filenameExpected();
     pushContext();
-    String filename = (String) statement[1].value;
+    String filename = stringParameter(1);
     if (!loadScriptFileInternal(filename))
       errorLoadingScript(errorMessage);
     instructionDispatchLoop();

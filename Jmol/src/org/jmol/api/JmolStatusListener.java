@@ -66,6 +66,8 @@ public interface JmolStatusListener {
   
   public float functionXY(String functionName, int x, int y);
   
+  public String eval(String strEval);
+  
   public void setCallbackFunction(String callbackType, String callbackFunction);
   
   public void createImage(String file, String type, int quality);

@@ -1473,6 +1473,10 @@ public class Jmol extends JPanel {
 
   class MyStatusListener implements JmolStatusListener {
     
+    public String eval(String strEval) {
+      return "# 'eval' is implemented only for the applet.";
+    }
+    
     public void createImage(String file, String type, int quality) {
       ImageCreator c = new ImageCreator(viewer, status);
       c.createImage(file, type, quality);

@@ -351,6 +351,10 @@ class StatusManager {
       jmolStatusListener.functionXY(functionName, x, y));
   }
   
+  String eval(String strEval) {
+    return (jmolStatusListener == null ? "" : jmolStatusListener.eval(strEval));
+  }
+
   public void createImage(String file, String type, int quality) {
     if (jmolStatusListener == null)
       return;

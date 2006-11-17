@@ -744,6 +744,15 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
   class MyStatusListener implements JmolStatusListener {
 
+    public String eval(String strEval) {
+      try {
+        return "" + jsoDocument.eval(strEval);
+      } catch (Exception e) {
+        Logger.error("# error evaluating " + strEval + ":" + e.toString());
+      }
+      return "";
+    }
+    
     public void createImage(String file, String type, int quality) {
       // application-only  
     }

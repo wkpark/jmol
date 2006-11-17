@@ -60,8 +60,6 @@ class Polyhedra extends AtomShape {
   boolean bondedOnly;
   boolean haveBitSetVertices;
   
-  short colix;
-
   BitSet centers;
   BitSet bsVertices;
   BitSet bsVertexCount;
@@ -77,7 +75,6 @@ class Polyhedra extends AtomShape {
       nVertices = 0;
       bsVertices = null;
       centers = null;
-      colix = 0;
       bsVertexCount = new BitSet();
       bondedOnly = isCollapsed = iHaveCenterBitSet = iHaveVertexBitSet = false;
       drawEdges = EDGES_NONE;
@@ -171,23 +168,21 @@ class Polyhedra extends AtomShape {
     if (propertyName.indexOf("color") == 0) {
       // from polyhedra command, we may not be using the prior select
       // but from Color we need to identify the centers.
-      if ("color" == propertyName || !iHaveCenterBitSet)
-        centers = bs;
-      int pid = (value instanceof Byte ? ((Byte) value).intValue() : -1);
-      colix = Graphics3D.getColix(value);
-      setColix(colix, pid);
+      if ("colorThis" == propertyName && iHaveCenterBitSet)
+        bs = centers;
+      super.setProperty("color", value, bs);
       return;
     }
 
     if (propertyName.indexOf("translucency") == 0) {
       // from polyhedra command, we may not be using the prior select
       // but from Color we need to identify the centers.
-      if ("translucency" == propertyName || !iHaveCenterBitSet)
-        centers = bs;
-      colix = Graphics3D.getColix(value);
-      setTranslucent("translucent" == value);
+      if ("translucencyThis" == propertyName && iHaveCenterBitSet)
+        bs = centers;
+      super.setProperty("translucency", value, bs);
       return;
     }
+    
     if ("radius" == propertyName) {
       radius = ((Float) value).floatValue();
       return;
@@ -213,28 +208,6 @@ class Polyhedra extends AtomShape {
         continue;
       if (centers.get(p.centralAtom.atomIndex))
         p.visible = visible;
-    }
-  }
-
-  void setColix(short colix, int pid) {
-    for (int i = polyhedronCount; --i >= 0;) {
-      Polyhedron p = polyhedrons[i];
-      if (p == null)
-        continue;
-      int atomIndex = p.centralAtom.atomIndex;
-      if (centers.get(atomIndex))
-        p.myColix = setColix(colix, pid, atomIndex);
-    }
-  }
-
-  void setTranslucent(boolean isTranslucent) {
-    for (int i = polyhedronCount; --i >= 0;) {
-      Polyhedron p = polyhedrons[i];
-      if (p == null)
-        continue;
-      if (centers.get(p.centralAtom.atomIndex))
-        p.myColix = Graphics3D.getColixTranslucent(p.myColix,
-            isTranslucent);
     }
   }
 
@@ -537,7 +510,6 @@ class Polyhedra extends AtomShape {
     int nPoints;
     boolean visible;
     final short[] normixes;
-    short myColix;
     byte[] planes;
     int planeCount;
     int visibilityFlags = 0;
@@ -546,7 +518,6 @@ class Polyhedra extends AtomShape {
 
     Polyhedron(Atom centralAtom, int ptCenter, int nPoints, int planeCount,
         Atom[] otherAtoms, short[] normixes, byte[] planes) {
-      this.myColix = colix;
       this.collapsed = isCollapsed;
       this.centralAtom = centralAtom;
       this.ptCenter = ptCenter;
@@ -570,17 +541,14 @@ class Polyhedra extends AtomShape {
       BitSet bs = new BitSet();
       for (int i = 0; i < ptCenter; i++)
         bs.set(vertices[i].atomIndex);
-      String s = "select ({"
-          + centralAtom.atomIndex
-          + "});polyhedra " + ptCenter + " "
+      String s = "select ({" + centralAtom.atomIndex + "});polyhedra " + ptCenter 
           + (myDistanceFactor == DEFAULT_DISTANCE_FACTOR ? ""
               : " distanceFactor " + myDistanceFactor)
           + (myFaceCenterOffset == DEFAULT_FACECENTEROFFSET ? ""
               : " faceCenterOffset " + myFaceCenterOffset)
-          + (collapsed ? " collapsed" : "")
-          + " to " + StateManager.encodeBitset(bs) + ";"
-          + (visible ? "" : "polyhedra off;");
-      setStateInfo(temp, centralAtom.atomIndex, getColorCommand("polyhedra",myColix));
+          + (collapsed ? " collapsed" : "") + " to "
+          + StateManager.encodeBitset(bs) + ";"
+          + (visible ? "" : "polyhedra off;") + "\n";
       return s;
     }
   }
@@ -608,7 +576,7 @@ class Polyhedra extends AtomShape {
       appendCmd(s, "polyhedra frontedges");
     else if (drawEdges == EDGES_ALL)
       appendCmd(s, "polyhedra edges");
-    s.append(getShapeCommands(temp, null, atomCount));
+    s.append(super.getShapeState());
     return s.toString();
   }
 }

@@ -33,15 +33,17 @@ class PolyhedraRenderer extends ShapeRenderer {
     Polyhedra polyhedra = (Polyhedra) shape;
     Polyhedra.Polyhedron[] polyhedrons = polyhedra.polyhedrons;
     drawEdges = polyhedra.drawEdges;
-    for (int i = polyhedra.polyhedronCount; --i >= 0;)
-      render1(polyhedrons[i]);
+    for (int i = polyhedra.polyhedronCount; --i >= 0;) {
+      short colix = polyhedra.colixes == null ? 0
+          : polyhedra.colixes[polyhedrons[i].centralAtom.atomIndex];
+      render1(polyhedrons[i], colix);
+    }
   }
 
-  void render1(Polyhedra.Polyhedron p) {
+  void render1(Polyhedra.Polyhedron p, short colix) {
     if (p.visibilityFlags == 0)
       return;
-
-    short colix = Graphics3D.getColixInherited(p.myColix, p.centralAtom.colixAtom);
+    colix = Graphics3D.getColixInherited(colix, p.centralAtom.colixAtom);
     Atom[] vertices = p.vertices;
     byte[] planes;
 

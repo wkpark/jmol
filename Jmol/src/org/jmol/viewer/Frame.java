@@ -3301,7 +3301,7 @@ public final class Frame {
   }
   
   String getState() {
-    StringBuffer commands = new StringBuffer("# special commands:\n");
+    StringBuffer commands = new StringBuffer("# connections;\n");
     String cmd;
     if (reportFormalCharges) {
       Hashtable ht = new Hashtable();
@@ -3320,7 +3320,7 @@ public final class Frame {
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
     ((Labels)shapes[JmolConstants.SHAPE_LABELS]).getShapeState(commands);
 
-    commands.append("\n# model state:\n");
+    commands.append("\n# model state;\n");
     // shape construction
 
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {

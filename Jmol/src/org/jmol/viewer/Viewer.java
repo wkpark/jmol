@@ -1760,7 +1760,7 @@ public class Viewer extends JmolViewer {
   }
   
   public String getStateInfo() {
-    StringBuffer s = new StringBuffer("# Jmol state version " + getJmolVersion() + "\n\n");
+    StringBuffer s = new StringBuffer("# Jmol state version " + getJmolVersion() + ";\n\n");
     //  window state
     s.append(global.getWindowState());
     //  file state

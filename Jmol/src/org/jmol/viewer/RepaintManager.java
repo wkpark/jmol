@@ -207,9 +207,9 @@ class RepaintManager {
   String getState() {
     if (modelCount < 2)
       return "";
-    StringBuffer commands = new StringBuffer("# frame states: (modelCount="
-        + modelCount + " first=" + viewer.getModelNumber(0) + " last="
-        + viewer.getModelNumber(modelCount - 1) + ")\n");
+    StringBuffer commands = new StringBuffer("# frame state;\n# modelCount "
+        + modelCount + ";\n# first " + viewer.getModelNumber(0) + ";\n# last "
+        + viewer.getModelNumber(modelCount - 1) + ";\n");
     if (backgroundModelIndex >= 0)
       commands.append("background model " + backgroundModelIndex + ";\n");
     if (displayModelIndex >= 0) {

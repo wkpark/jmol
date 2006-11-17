@@ -65,7 +65,7 @@ class TransformManager {
   }
   
   String getState() {
-    StringBuffer commands = new StringBuffer("# orientation/center/spin state:\nset refreshing false;\n");
+    StringBuffer commands = new StringBuffer("# orientation/center/spin state;\nset refreshing false;\n");
     if (!isWindowCentered())
       commands.append("set windowCentered false;\n");
     commands.append("center " + StateManager.encloseCoord(fixedRotationCenter) + ";\n");

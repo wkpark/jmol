@@ -378,7 +378,7 @@ class Labels extends AtomShape {
   }
   
   void getShapeState(StringBuffer s) {
-    appendCmd(s, "\n# label defaults:\nselect none");
+    appendCmd(s, "\n# label defaults;\nselect none");
     appendCmd(s, getColorCommand("label", defaultPaletteID,
         defaultColix));
     appendCmd(s, "background label " + encodeColor(defaultBgcolix));

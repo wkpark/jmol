@@ -88,7 +88,7 @@ class FileManager {
   }
 
   String getState() {
-    StringBuffer commands = new StringBuffer("# file state:\n");
+    StringBuffer commands = new StringBuffer("# file state;\n");
     commands.append(loadScript);
     commands.append("\n\n");
     return commands.toString();

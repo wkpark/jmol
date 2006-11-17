@@ -434,8 +434,8 @@ class StateManager {
     String stereoState = null;
 
     String getWindowState() {
-      StringBuffer str = new StringBuffer("# window state (height=" + viewer.getScreenHeight()
-          + " width=" + viewer.getScreenWidth() + ")\n");
+      StringBuffer str = new StringBuffer("# window state;\n# height " + viewer.getScreenHeight()
+          + ";\n# width " + viewer.getScreenWidth() + ";\n");
       appendCmd(str, "initialize");
       appendCmd(str, "set refreshing false");
       appendCmd(str, "background " + encodeColor(argbBackground));
@@ -545,7 +545,7 @@ class StateManager {
     }
     
     String getState() {
-      StringBuffer commands = new StringBuffer("# settings:\n");
+      StringBuffer commands = new StringBuffer("# settings;\n");
       appendCmd(commands, "set refreshing false");
       Enumeration e;
       //two rounds here because default settings 

@@ -846,8 +846,9 @@ class Eval { //implements Runnable {
    */
 
   int pcLastExpressionInstruction;
-
+  boolean isExpressionBitSet;
   BitSet expression(Token[] code, int pcStart) throws ScriptException {
+    isExpressionBitSet = false;
     BitSet bs;
     BitSet[] stack = new BitSet[10];
     int sp = 0;
@@ -964,6 +965,7 @@ class Eval { //implements Runnable {
         break;
       case Token.bitset:
         stack[sp++] = (BitSet)instruction.value;
+        isExpressionBitSet = true;
         break;
       case Token.spec_alternate:
         stack[sp++] = viewer.getAtomBits("SpecAlternate",
@@ -3052,7 +3054,7 @@ class Eval { //implements Runnable {
       viewer.selectBonds((BitSet)statement[3].value);
       return;
     }
-    viewer.select(statementLength == 1 ? null : expression(statement, 1), tQuiet);
+    viewer.select(statementLength == 1 ? null : expression(statement, 1), tQuiet || isExpressionBitSet);
   }
 
   void subset() throws ScriptException {

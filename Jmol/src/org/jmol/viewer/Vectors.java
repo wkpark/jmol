@@ -41,7 +41,9 @@ class Vectors extends AtomShape {
       return;
     if (propertyName == "scale") {
       scale = ((Float)value).floatValue();
+      return;
     }
+    super.setProperty(propertyName, value, bsSelected);
   }
   
   String getShapeState() {

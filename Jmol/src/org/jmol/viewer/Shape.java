@@ -176,6 +176,14 @@ abstract class Shape {
     if (pid < 0 && colix == 0)
       return "";
     String s = "";
+    /* nuance here is that some palettes depend upon a
+     * point-in-time calculation that takes into account
+     * some aspect of the current state, such as what groups
+     * are selected in the case of "color group". So we have
+     * to identify these and NOT use them in serialization.
+     * Serialization of the palette name is just a convenience
+     * anyway. 
+     */
     if (pid >= 0 && !JmolConstants.isPaletteVariable(pid)) {
       if (Graphics3D.isColixTranslucent(colix))
         s += "translucent ";

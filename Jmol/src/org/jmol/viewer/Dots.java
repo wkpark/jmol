@@ -250,7 +250,7 @@ class Dots extends AtomShape {
       mads[indexI] = (short) (radiusI * 1000f);
       if (colixes == null) {
         colixes = new short[atomCount];
-        paletteIDs = new short[atomCount];
+        paletteIDs = new byte[atomCount];
       }
       colixes[indexI] = Graphics3D.getColix(argb);
       //all done!
@@ -355,7 +355,7 @@ class Dots extends AtomShape {
       if (dotsConvexMaps == null) {
         dotsConvexMaps = new int[atomCount][];
         colixes = new short[atomCount];
-        paletteIDs = new short[atomCount];
+        paletteIDs = new byte[atomCount];
       }
       disregardNeighbors = (viewer.getDotSurfaceFlag() == false);
       onlySelectedDots = (viewer.getDotsSelectedOnlyFlag() == true);

@@ -33,27 +33,28 @@ import java.util.Vector;
 class Measurement {
 
   Frame frame;
+  Viewer viewer;
   int count;
   int[] countPlusIndices;
   String strMeasurement;
+  String strFormat;
   float value;
   boolean isVisible = true;
   boolean isHidden = false;
   short colix;
+  int index;
   
   AxisAngle4f aa;
   Point3f pointArc;
   
-  Measurement(Frame frame, int[] atomCountPlusIndices, short colix) {
+  Measurement(Frame frame, int[] atomCountPlusIndices, float value,
+      short colix, String strFormat, int index) {
+    //value Float.isNaN ==> pending
     this.frame = frame;
+    this.viewer = frame.viewer;
     this.colix = colix;
-    setInfo(frame, atomCountPlusIndices, Float.MAX_VALUE);
-  }
-
-  Measurement(Frame frame, int[] atomCountPlusIndices, float value, short colix) {
-    this.frame = frame;
-    this.colix = colix;
-    setInfo(frame, atomCountPlusIndices, value);
+    this.strFormat = strFormat;
+    setInfo(frame, atomCountPlusIndices, value, index);
   }   
 
   /**
@@ -70,8 +71,11 @@ class Measurement {
     return str;  
   }
   
-
-  void setInfo(Frame frame, int[] atomCountPlusIndices, float value) {
+  void setIndex(int index) {
+    this.index = index;
+  }
+  
+  void setInfo(Frame frame, int[] atomCountPlusIndices, float value, int index) {
     if (atomCountPlusIndices == null)
       count = 0;
     else {
@@ -79,16 +83,26 @@ class Measurement {
       this.countPlusIndices = new int[count + 1];
       System.arraycopy(atomCountPlusIndices, 0, countPlusIndices, 0, count+1);
     }
-    if (countPlusIndices != null && value == Float.MAX_VALUE) 
+    if (countPlusIndices != null && Float.isNaN(value)) 
       value = frame.getMeasurement(countPlusIndices);
     
     this.value = value;
+    this.index = index;
+    formatMeasurement();
+  }
+
+  void setFormat(String strFormat) {
+   this.strFormat = strFormat; 
+  }
+
+  void formatMeasurement(String strFormat) {
+    setFormat(strFormat);
     formatMeasurement();
   }
 
   void formatMeasurement() {
     strMeasurement = null;
-    if (value == Float.MAX_VALUE || count == 0) {
+    if (Float.isNaN(value) || count == 0) {
       strMeasurement = null;
       return;
     }
@@ -143,18 +157,41 @@ class Measurement {
 
   String formatDistance(float dist) {
     int nDist = (int)(dist * 100 + 0.5f);
+    float value = nDist;
     String units = frame.viewer.getMeasureDistanceUnits();
-    if (units == "nanometers")
-      return "" + (nDist / 1000.0) + " nm";
-    if (units == "picometers")
-      return "" + nDist + " pm";
-    return "" + (nDist / 100.0) + '\u00C5'; // angstroms
+    if (units == "nanometers") {
+      units = "nm";
+      value = nDist / 1000f;
+    } else if (units == "picometers") {
+      units = "pm";
+      value = nDist;
+    } else {
+      units = "\u00C5"; // angstroms
+      value = nDist / 100f;
+    }
+    return formatString(value, units);
   }
 
   String formatAngle(float angle) {
     angle = (int)(angle * 10 + (angle >= 0 ? 0.5f : -0.5f));
     angle /= 10;
-    return "" + angle + '\u00B0';
+    return formatString(angle, "\u00B0");
+  }
+
+  String formatString(float value, String units) {
+    String label = (strFormat != null ? strFormat : viewer
+        .getDefaultMeasurementLabel(countPlusIndices[0]));
+    if (label.indexOf("%_") >= 0)
+      label = viewer.simpleReplace(label, "%_", "" + (index + 1));
+    for (int i = countPlusIndices[0]; --i >= 1;) {
+      if (label.indexOf("%") < 0)
+        break;
+      label = frame.atoms[countPlusIndices[i]].formatLabel(label, (char)('0' + i),
+          value, units);
+    }
+    if (label == null)
+      return "";
+    return label;
   }
 
   boolean sameAs(int[] atomCountPlusIndices) {

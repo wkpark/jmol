@@ -120,7 +120,7 @@ class Token {
   final static int help         = command | 14 | setparam | specialstring;
   final static int label        = command | 15 | specialstring;
   final static int load         = command | 16 | negnums;
-  final static int monitor      = command | 18 | setparam | showparam | bool | embeddedExpression;
+  final static int monitor      = command | 18 | setparam | showparam | bool | embeddedExpression | expression;
   final static int pause        = command | 19 | misc;
   final static int print        = command | 20;
   final static int quit         = command | 21;

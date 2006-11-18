@@ -652,7 +652,7 @@ class Dots extends AtomShape {
           bs.set(iDot);
       appendCmd(s, type + i + " radius "
           + getAppropriateRadius(atoms[i]) + " "
-          + StateManager.encodeBitset(bs));
+          + StateManager.escape(bs));
     }
     if (isSurface)
       appendCmd(s, getColorCommand("geoSurface", surfaceColix));

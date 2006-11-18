@@ -543,7 +543,7 @@ class Isosurface extends MeshCollection {
       isSilent = !logMessages;
       setEccentricity(new Point4f(0, 0, 1, 1));
       cutoff = Float.MIN_VALUE;
-      script = " center " + StateManager.encloseCoord(center) 
+      script = " center " + StateManager.escape(center) 
         + " SPHERE " + sphere_radiusAngstroms;
       propertyName = "getSurface";
     }
@@ -555,7 +555,7 @@ class Isosurface extends MeshCollection {
       sphere_radiusAngstroms = 1.0f;
       cutoff = Float.MIN_VALUE;
       propertyName = "getSurface";
-      script = " center " + StateManager.encloseCoord(center) 
+      script = " center " + StateManager.escape(center) 
         + (Float.isNaN(scale) ? "" : " scale " + scale)
         + " ELLIPSOID {" + v.x + " " + v.y + " " + v.z + " " + v.w + "}";
     }
@@ -566,7 +566,7 @@ class Isosurface extends MeshCollection {
       dataType = SURFACE_LOBE;
       if (cutoff == Float.MAX_VALUE)
         cutoff = defaultOrbitalCutoff;
-      script = " center " + StateManager.encloseCoord(center)
+      script = " center " + StateManager.escape(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale)
         + " LOBE {" + v.x + " " + v.y + " " + v.z + " " + v.w + "}";
       propertyName = "getSurface";
@@ -905,11 +905,11 @@ class Isosurface extends MeshCollection {
     if (i < 0)
       return false;
     int j = script.indexOf("})", i);
-    bsSelected = StateManager.decodeBitset(script.substring(i + 3, j + 1));
+    bsSelected = StateManager.unescapeBitset(script.substring(i + 3, j + 1));
     if ((i = script.indexOf("({", j)) < 0)
       return false;
     j = script.indexOf("})", i);
-    bsIgnore = StateManager.decodeBitset(script.substring(i + 1, j + 1));
+    bsIgnore = StateManager.unescapeBitset(script.substring(i + 1, j + 1));
     return true;
   }
   
@@ -922,8 +922,8 @@ class Isosurface extends MeshCollection {
       return script;
     return script + "# "
         + (bsSelected == null ? "({null})" : StateManager
-            .encodeBitset(bsSelected)) + " "
-        + (bsIgnore == null ? "({null})" : StateManager.encodeBitset(bsIgnore));
+            .escape(bsSelected)) + " "
+        + (bsIgnore == null ? "({null})" : StateManager.escape(bsIgnore));
   }
   
   void initializeIsosurface() {

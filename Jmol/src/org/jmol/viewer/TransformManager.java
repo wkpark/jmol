@@ -68,7 +68,7 @@ class TransformManager {
     StringBuffer commands = new StringBuffer("# orientation/center/spin state;\nset refreshing false;\n");
     if (!isWindowCentered())
       commands.append("set windowCentered false;\n");
-    commands.append("center " + StateManager.encloseCoord(fixedRotationCenter) + ";\n");
+    commands.append("center " + StateManager.escape(fixedRotationCenter) + ";\n");
     commands.append(getMoveToText(0) + ";\n");
     commands.append("slab " + slabPercentSetting + ";depth "
         + depthPercentSetting 
@@ -85,10 +85,10 @@ class TransformManager {
         Point3f pt = new Point3f(internalRotationCenter);
         pt.add(rotationAxis);
         commands.append("spin " + rotationRate + " " 
-            + StateManager.encloseCoord(internalRotationCenter)
-            + " " + StateManager.encloseCoord(pt));
+            + StateManager.escape(internalRotationCenter)
+            + " " + StateManager.escape(pt));
       } else if (isSpinFixed) {
-        commands.append("spin axisangle " + StateManager.encloseCoord(rotationAxis) + " " + rotationRate);
+        commands.append("spin axisangle " + StateManager.escape(rotationAxis) + " " + rotationRate);
       } else {
         commands.append("spin on");
       }
@@ -1280,7 +1280,7 @@ class TransformManager {
   }
 
   String getCenterText() {
-    return StateManager.encloseCoord(fixedRotationCenter);
+    return StateManager.escape(fixedRotationCenter);
   }
   
   String getMoveToText() {

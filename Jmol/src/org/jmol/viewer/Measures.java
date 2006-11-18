@@ -35,17 +35,18 @@ class Measures extends Shape {
 
   BitSet bsSizeSet;
   BitSet bsColixSet;
+  BitSet bsSelected;
 
   final static int measurementGrowthIncrement = 16;
   int measurementCount = 0;
   Measurement[] measurements = new Measurement[measurementGrowthIncrement];
   PendingMeasurement pendingMeasurement;
-
+  String[] formats = new String[5];
   short mad = (short)-1;
   short colix; // default to none in order to contrast with background
+  String strFormat;
   boolean showMeasurementNumbers = true;
   boolean isAllConnected = false;
-  BitSet bsSelected;
   
   Font3D font3d;
   float[] rangeMinMax = {Float.MAX_VALUE, Float.MAX_VALUE};
@@ -59,59 +60,80 @@ class Measures extends Shape {
     mad = (short)size;
   }
 
-  void setProperty(String propertyName, Object value,
-                          BitSet bsSelected){
-   //Logger.debug("Measures " + propertyName  + " " + value);
-    if (bsColixSet == null)
-      bsColixSet = new BitSet();
-    if ("color".equals(propertyName)) {
-      colix = (value == null ? Graphics3D.INHERIT : Graphics3D.getColix(value));
+  void setProperty(String propertyName, Object value, BitSet bsIgnored) {
+    //Logger.debug("Measures " + propertyName  + " " + value);
+    
+    // the following can be used with "select measures ({bitset})"
+    if ("select".equals(propertyName)) {
+      BitSet bs = (BitSet) value;
+      if (bs == null) {
+        bsSelected = null;
+      } else {
+        bsSelected = new BitSet();
+        bsSelected.or(bs);
+      }
+      return;
+    } else if ("color".equals(propertyName)) {
+      if (bsColixSet == null)
+        bsColixSet = new BitSet();
+        short colix = (value == null ? Graphics3D.INHERIT : Graphics3D.getColix(value));
+        if (bsSelected == null)
+          this.colix = colix;
       for (int i = 0; i < measurements.length; i++)
-        if (measurements[i] != null 
-            && (bsSelected.get(i) || bsSelected == null && 
-                (colix == Graphics3D.INHERIT || measurements[i].colix == Graphics3D.INHERIT))) {
-            measurements[i].colix = colix;
-            bsColixSet.set(i);
+        if (measurements[i] != null
+            && (bsSelected != null && bsSelected.get(i) || bsSelected == null
+                && (colix == Graphics3D.INHERIT || measurements[i].colix == Graphics3D.INHERIT))) {
+          measurements[i].colix = colix;
+          bsColixSet.set(i);
         }
-      bsSelected = null;
-      return; 
+      return;
+    } else if ("delete".equals(propertyName)) {
+      delete(value);
+      setIndices();
+      return;
+    } else if ("hideAll".equals(propertyName)) {
+      showHide(((Boolean) value).booleanValue());
+      return;
+    } else if ("setFormats".equals(propertyName)) {
+      setFormats((String) value);
+      return;
     }
-    if ("select".equals(propertyName))
-    { bsSelected = (BitSet)value;}
-    if ("font".equals(propertyName))
-      { font3d = (Font3D)value; }
-    else if ("delete".equals(propertyName))
-      { delete(value); }
-    else if ("toggle".equals(propertyName))
-      { toggle((int[])value); }
-    else if ("deleteVector".equals(propertyName))
-      { define((Vector)value, true, false, false); }
-    else if ("defineVector".equals(propertyName))
-      { define((Vector)value, false, false, false); }
-    else if ("showVector".equals(propertyName))
-      { define((Vector)value, false, true, false); }
-    else if ("hideVector".equals(propertyName))
-      { define((Vector)value, false, false, true); }
-    else if ("setRange".equals(propertyName))
-      { setRange((float[])value); }
-    else if ("setConnected".equals(propertyName))
-      { setConnected(((Boolean)value).booleanValue()); }
-    else if ("pending".equals(propertyName))
-      { pending((int[])value); }
-    else if ("clear".equals(propertyName))
-      { clear(); }
-    else if ("hideAll".equals(propertyName))
-      { showHide(((Boolean)value).booleanValue()); }
-    else if ("hideBs".equals(propertyName))
-    { hide((BitSet)value); }
-    else if ("show".equals(propertyName))
-      { showHide((int[])value, false); }
-    else if ("hide".equals(propertyName))
-      { showHide((int[])value, true); }
-    else if ("showMeasurementNumbers".equals(propertyName))
-      { showMeasurementNumbers = ((Boolean)value).booleanValue(); }
-    else if ("reformatDistances".equals(propertyName))
-      { reformatDistances(); }
+
+    //any one of the following clears the "select measures" business
+    
+    bsSelected = null;
+    if ("hide".equals(propertyName)) {
+      showHide((int[]) value, true);
+    } else if ("show".equals(propertyName)) {
+      showHide((int[]) value, false);
+    } else if ("setRange".equals(propertyName)) {
+      setRange((float[]) value);
+    } else if ("setFormat".equals(propertyName)) {
+      strFormat = (String) value;
+    } else if ("setConnected".equals(propertyName)) {
+      setConnected(((Boolean) value).booleanValue());
+    } else if ("defineVector".equals(propertyName)) {
+      define((Vector) value, false, false, false);
+    } else if ("deleteVector".equals(propertyName)) {
+      define((Vector) value, true, false, false);
+      setIndices();
+    } else if ("hideVector".equals(propertyName)) {
+      define((Vector) value, false, false, true);
+    } else if ("showVector".equals(propertyName)) {
+      define((Vector) value, false, true, false);
+    } else if ("toggle".equals(propertyName)) {
+      toggle((int[]) value);
+    } else if ("pending".equals(propertyName)) {
+      pending((int[]) value);
+    } else if ("font".equals(propertyName)) {
+      font3d = (Font3D) value;
+    } else if ("clear".equals(propertyName)) {
+      clear();
+    } else if ("showMeasurementNumbers".equals(propertyName)) {
+      showMeasurementNumbers = ((Boolean) value).booleanValue();
+    } else if ("reformatDistances".equals(propertyName)) {
+      reformatDistances();
+    }
   }
 
   Object getProperty(String property, int index) {
@@ -158,6 +180,7 @@ class Measures extends Shape {
       define(atomCountPlusIndices, true, false);
     else // define OR turn on if measureAllModels
       define(atomCountPlusIndices, false, true);
+    setIndices();
   }
 
   private void delete(Object value) {
@@ -191,6 +214,11 @@ class Measures extends Shape {
         isOneToOne ? -1 : 0, isDelete, isShow, isHide);
   }
 
+  private void setIndices() {
+    for (int i = 0; i < measurementCount; i++)
+      measurements[i].setIndex(i);
+  }
+  
   private void define(int[] atomCountPlusIndices, boolean isDelete, boolean isShow) {
     if (viewer.getMeasureAllModelsFlag()) {
       if (isShow) { // make sure all like this are deleted, not just hidden
@@ -213,7 +241,11 @@ class Measures extends Shape {
   private void define(int[] atomCountPlusIndices, boolean isDelete) {
     int i = defined(atomCountPlusIndices);
     //Logger.debug("define " + isDelete + " " + i + " [" + atomCountPlusIndices[0] + " " + atomCountPlusIndices[1] + " " + atomCountPlusIndices[2] + " " + atomCountPlusIndices[3] + " " + atomCountPlusIndices[4] + "]");
-    if (i < 0 && isDelete)
+    // nothing to delete and no A-A, A-B-A, A-B-C-B
+    if (i < 0 && isDelete ||
+        atomCountPlusIndices[1] == atomCountPlusIndices[2] ||
+        atomCountPlusIndices[1] == atomCountPlusIndices[3] ||
+        atomCountPlusIndices[2] == atomCountPlusIndices[4])
       return;
     float value;
     value = frame.getMeasurement(atomCountPlusIndices);
@@ -233,7 +265,7 @@ class Measures extends Shape {
       return;
     }
     Measurement measureNew = new Measurement(frame, atomCountPlusIndices,
-        value, colix);
+        value, colix, strFormat, measurementCount);
     if (measurementCount == measurements.length) {
       measurements = (Measurement[]) ArrayUtil.setLength(measurements,
           measurementCount + measurementGrowthIncrement);
@@ -252,14 +284,9 @@ class Measures extends Shape {
   
   private void showHide(boolean isHide) {
     for (int i = measurementCount; --i >= 0; )
-      measurements[i].isHidden = isHide;
+      if (bsSelected == null || bsSelected.get(i))
+        measurements[i].isHidden = isHide;
   }
-
-  private void hide(BitSet bs) {
-    for (int i = measurementCount; --i >= 0; )
-      measurements[i].isHidden = bs.get(i);
-  }
-
 
   private void nextMeasure(int thispt, int nPoints, Vector monitorExpressions,
                    int[] atomCountPlusIndices, int thisModel, boolean isDelete,
@@ -279,12 +306,15 @@ class Measures extends Shape {
           }
         }
         atomCountPlusIndices[thispt + 1] = i;
+        int iThis;
         if (thispt == nPoints - 1) {
           if (isAllConnected && !isConnected(atomCountPlusIndices))
             continue;
-          if (defined(atomCountPlusIndices) >= 0) {
+          if ((iThis = defined(atomCountPlusIndices)) >= 0) {
             if (isDelete)
               define(atomCountPlusIndices, true);
+            else if (strFormat != null)
+              measurements[iThis].formatMeasurement(strFormat);
             else
               showHide(atomCountPlusIndices, isHide);
             continue;
@@ -326,6 +356,14 @@ class Measures extends Shape {
   private void reformatDistances() {
     for (int i = measurementCount; --i >= 0; )
       measurements[i].reformatDistanceIfSelected();    
+  }
+  
+  private void setFormats(String format) {
+    if (format != null && format.length() == 0)
+      format = null;
+    for (int i = measurementCount; --i >= 0;)
+      if (bsSelected == null || bsSelected.get(i))
+        measurements[i].formatMeasurement(format);
   }
   
   private Vector getAllInfo() {
@@ -400,6 +438,7 @@ class Measures extends Shape {
     if (!showMeasurementNumbers)
       commands.append("set measures off; # numbers off\n");
     appendCmd(commands, "set measures " + viewer.getMeasureDistanceUnits());
+    appendCmd(commands, getFontCommand("measures", font3d));
     int n = 0;
     Hashtable temp = new Hashtable();
     BitSet bs = new BitSet(measurementCount);
@@ -410,13 +449,22 @@ class Measures extends Shape {
       }
       if (bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp, i, getColorCommand("measure", measurements[i].colix));
+      if (measurements[i].strFormat != null)
+        setStateInfo(temp, i, "measure "
+            + StateManager.escape(measurements[i].strFormat));
     }
-    if (n == measurementCount && n > 0)
-      commands.append("measures off; # lines and numbers off\n");
-    else if (n > 0)
-      commands.append("measures hide " + bs);
-    appendCmd(commands, getFontCommand("measures", font3d));
-    commands.append(getShapeCommands(temp, null, -1, "measures select"));
+    if (n > 0)
+      if (n == measurementCount)
+        commands.append("measures off; # lines and numbers off\n");
+      else
+        for (int i = 0; i < measurementCount; i++)
+          if (measurements[i].isHidden)
+            setStateInfo(temp, i, "measure off");
+    String s = getShapeCommands(temp, null, -1, "select measures");
+    if (s != null) {
+      commands.append(s);
+      appendCmd(commands, "select measures ({null})");
+    }
     return commands.toString();
   }
   

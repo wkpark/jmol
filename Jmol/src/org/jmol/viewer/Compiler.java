@@ -1126,7 +1126,8 @@ class Compiler {
     int tok = tokPeek();
     switch (tok) {
     case Token.bonds:
-      return clauseBond();
+    case Token.monitor:
+      return clauseSpecial(tok);
     case Token.cell:
       return clauseCell();
     case Token.within:
@@ -1185,6 +1186,11 @@ class Compiler {
     BitSet bs = new BitSet();
     out: while ((token = tokenNext()) != null) {
       switch (token.tok) {
+      case Token.none:
+        bs = null;
+        if (tokenNext().tok != Token.rightbrace || iPrev >= 0)
+          return endOfExpressionExpected();
+        break out;
       case Token.rightbrace:
       case Token.integer:
         if (iPrev >= 0)
@@ -1299,16 +1305,18 @@ class Compiler {
   }
 
   /**
-   * used strictly for serialization 
+   * used strictly for serialization
+   * @param tok Token.bonds or Token.measure 
    * @return true or fail
    */
-  boolean clauseBond() {
+  
+   boolean clauseSpecial(int tok) {
     if (itokenInfix != 1)
       return invalidExpressionToken(tokenNext().toString());
     tokenNext(); // BONDS
     if (!tokenNext(Token.leftparen)) // (
       return leftParenthesisExpected();
-    addTokenToPostfix(new Token(Token.bonds));    
+    addTokenToPostfix(new Token(tok));    
     if (!bitset())
       return false;
     if (!tokenNext(Token.rightparen)) // )

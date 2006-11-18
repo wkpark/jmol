@@ -36,13 +36,14 @@ class MeasuresRenderer extends ShapeRenderer {
   short measurementMad;
   Font3D font3d;
   Measurement measurement;
-
+  boolean doJustify;
+  
   void render() {
     if (!viewer.getShowMeasurements())
       return;
 
     Measures measures = (Measures) shape;
-
+    doJustify = viewer.getJustifyMeasurements();
     measurementMad = measures.mad;
     font3d = measures.font3d;
     showMeasurementNumbers = measures.showMeasurementNumbers;
@@ -56,7 +57,6 @@ class MeasuresRenderer extends ShapeRenderer {
         colix = measures.colix;
       if (colix == 0)
         colix = viewer.getColixBackgroundContrast();
-
       renderMeasurement(measures.measurements[i], colix);
     }
     renderPendingMeasurement(measures.pendingMeasurement);
@@ -113,8 +113,9 @@ class MeasuresRenderer extends ShapeRenderer {
     int z = (zA + zB) / 2;
     if (z < 1)
       z = 1;
-    paintMeasurementString((atomA.screenX + atomB.screenX) / 2,
-        (atomA.screenY + atomB.screenY) / 2, z, radius, colix);
+    int x = (atomA.screenX + atomB.screenX) / 2;
+    int y = (atomA.screenY + atomB.screenY) / 2;
+    paintMeasurementString(x, y, z, radius, colix, (x - atomA.screenX)*(y-atomA.screenY) > 0, 0);
   }
                            
 
@@ -153,7 +154,7 @@ class MeasuresRenderer extends ShapeRenderer {
     AxisAngle4f aa = measurement.aa;
     if (aa == null) { // 180 degrees
       paintMeasurementString(atomB.screenX + 5, atomB.screenY - 5,
-                             zB, radius, colix);
+                             zB, radius, colix, false, 0);
       return;
     }
     int dotCount = (int)((aa.angle / (2 * Math.PI)) * 64);
@@ -179,7 +180,7 @@ class MeasuresRenderer extends ShapeRenderer {
         Point3i screenLabel = viewer.transformPoint(pointT);
         int zLabel = screenLabel.z - zOffset;
         paintMeasurementString(screenLabel.x, screenLabel.y, zLabel,
-                               radius, colix);
+                               radius, colix, screenLabel.x < atomB.screenX, atomB.screenY);
       }
     }
   }
@@ -206,17 +207,27 @@ class MeasuresRenderer extends ShapeRenderer {
     radius /= 3;
     paintMeasurementString((atomA.screenX + atomB.screenX + atomC.screenX + atomD.screenX) / 4,
                            (atomA.screenY + atomB.screenY + atomC.screenY + atomD.screenY) / 4,
-                           (zA + zB + zC + zD) / 4, radius, colix);
+                           (zA + zB + zC + zD) / 4, radius, colix, false, 0);
   }
 
-  void paintMeasurementString(int x, int y, int z, int radius, short colix) {
-    if (! showMeasurementNumbers)
+  void paintMeasurementString(int x, int y, int z, int radius, short colix,
+                              boolean rightJustify, int yRef) {
+    if (!showMeasurementNumbers)
       return;
+    if (!doJustify) {
+      rightJustify = false;
+      yRef = y;
+    }
     String strMeasurement = measurement.strMeasurement;
     if (strMeasurement == null)
       return;
-    int xT = x + radius/2 + 2;
-    int yT = y - radius/2;
+    int xT = x;
+    if (rightJustify)
+      xT -= radius / 2 + 2 + font3d.fontMetrics.stringWidth(strMeasurement);
+    else
+      xT += radius / 2 + 2;
+    int yT = y
+        + (yRef == 0 || yRef < y ? font3d.fontMetrics.getAscent() : -radius / 2);
     int zT = z - radius - 2;
     if (zT < 1)
       zT = 1;

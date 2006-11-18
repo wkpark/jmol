@@ -342,7 +342,7 @@ class StateManager {
       appendCmd(str, "set bondRadiusMilliAngstroms " + marBond);
       appendCmd(str, "set minBondDistance " + minBondDistance);
       appendCmd(str, "set bondTolerance " + bondTolerance);
-      appendCmd(str, "set defaultLattice " + encloseCoord(ptDefaultLattice));
+      appendCmd(str, "set defaultLattice " + escape(ptDefaultLattice));
       if (defaultLoadScript.length() > 0)
         appendCmd(str, "set defaultLoadScript " + escape(defaultLoadScript));
       return str + "\n";
@@ -387,7 +387,11 @@ class StateManager {
 
     //measurements
 
-    boolean measureAllModels;
+    boolean measureAllModels    = false;
+    boolean justifyMeasurements = false;
+    String defaultDistanceLabel = "%v %u"; //also %_ and %a1 %a2 %m1 %m2, etc.
+    String defaultAngleLabel    = "%v %u";
+    String defaultTorsionLabel  = "%v %u";
 
     //rendering
 
@@ -446,7 +450,7 @@ class StateManager {
           + ";\n# width " + viewer.getScreenWidth() + ";\n");
       appendCmd(str, "initialize");
       appendCmd(str, "set refreshing false");
-      appendCmd(str, "background " + encodeColor(argbBackground));
+      appendCmd(str, "background " + escapeColor(argbBackground));
       if (stereoState != null)
         appendCmd(str, "stereo " + stereoState);
       return str + "\n";
@@ -616,7 +620,7 @@ class StateManager {
 
   ///////// state serialization 
 
-  static String encodeBitset(BitSet bs) {
+  static String escape(BitSet bs) {
     if (bs == null)
       return "({})";
     StringBuffer s = new StringBuffer("({");
@@ -646,7 +650,7 @@ class StateManager {
     return "({})"; // impossible return
   }
  
-  static BitSet decodeBitset (String strBitset) {
+  static BitSet unescapeBitset(String strBitset) {
     if (strBitset == "{null}")
       return null;
     BitSet bs = new BitSet();
@@ -694,11 +698,11 @@ class StateManager {
     return "\"" + str + "\"";
   }
   
-  static String encloseCoord(Tuple3f xyz) {
+  static String escape(Tuple3f xyz) {
     return "{" + xyz.x + " " + xyz.y + " " + xyz.z +"}";
   }
   
-  static String encodeColor(int argb) {
+  static String escapeColor(int argb) {
     return "[x" + Graphics3D.getHexColorFromRGB(argb) + "]";
   }
   
@@ -738,7 +742,7 @@ class StateManager {
     Enumeration e = ht.keys();
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
-      String set = encodeBitset((BitSet) ht.get(key));
+      String set = escape((BitSet) ht.get(key));
       if (set.length() < 5) // nothing selected
         continue;
       if (!set.equals(setPrev))

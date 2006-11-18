@@ -806,7 +806,7 @@ class Eval { //implements Runnable {
         strbufLog.append(']');
         continue;
       case Token.bitset:
-        strbufLog.append(StateManager.encodeBitset((BitSet)token.value));
+        strbufLog.append(StateManager.escape((BitSet)token.value));
         continue;
       case Token.spec_atom:
         strbufLog.append('.');
@@ -2077,7 +2077,7 @@ class Eval { //implements Runnable {
     }
     viewer.setFloatProperty("stereoDegrees", degrees);
     if (colorpt > 0) {
-      viewer.setStereoMode(colors, StateManager.encodeColor(colors[0]) + " " + StateManager.encodeColor(colors[1]));
+      viewer.setStereoMode(colors, StateManager.escapeColor(colors[0]) + " " + StateManager.escapeColor(colors[1]));
     } else {
       viewer.setStereoMode(stereoMode, (String)statement[1].value);
     }
@@ -2447,7 +2447,7 @@ class Eval { //implements Runnable {
     BitSet bs = expression(statement, 2);
     variables.put(variable, bs);
     //viewer.addStateScript("#" + getCommand());
-    viewer.setStringProperty("@" + variable, StateManager.encodeBitset(bs));
+    viewer.setStringProperty("@" + variable, StateManager.escape(bs));
   }
 
   void echo() {
@@ -2526,7 +2526,7 @@ class Eval { //implements Runnable {
         params[1] = (int) unitCells.x;
         params[2] = (int) unitCells.y;
         params[3] = (int) unitCells.z;
-        loadScript.append(" " + StateManager.encloseCoord(unitCells));
+        loadScript.append(" " + StateManager.escape(unitCells));
         i = pcLastExpressionInstruction + 1;
         int iGroup = -1;
         int[] p;
@@ -2611,23 +2611,33 @@ class Eval { //implements Runnable {
   void monitor() throws ScriptException {
     int[] countPlusIndexes = new int[5];
     float[] rangeMinMax = new float[2];
-    switch (statementLength) {
-    case 1:
+    Token token;
+    if (statementLength == 1) {
       viewer.hideMeasurements(false);
-      return;
+      return; 
+    }
+    token = getToken(1);
+    switch (statementLength) {
     case 2:
-      if (statement[1].tok == Token.on)
+      switch (token.tok) {
+      case Token.on:
         viewer.hideMeasurements(false);
-      else if (statement[1].tok == Token.off)
+        return;
+      case Token.off:
         viewer.hideMeasurements(true);
-      else if (statement[1].tok == Token.delete)
+        return;
+      case Token.delete:
         viewer.clearAllMeasurements();
-      else
+        return;
+      case Token.string:
+        viewer.setMeasurementFormats((String) token.value);
+        return;
+      default:
         keywordExpected("ON, OFF, or DELETE");
-      return;
+      }
     case 3: //measure delete N
-      if (statement[1].tok == Token.delete) {
-        if (statement[1].tok == Token.all) 
+      if (token.tok == Token.delete) {
+        if (statement[2].tok == Token.all)
           viewer.clearAllMeasurements();
         else
           viewer.deleteMeasurement(intParameter(2) - 1);
@@ -2649,12 +2659,13 @@ class Eval { //implements Runnable {
     boolean isRange = true;
     boolean isON = false;
     boolean isOFF = false;
+    String strFormat = null;
     Vector monitorExpressions = new Vector();
 
     BitSet bs = new BitSet();
 
     for (int i = 1; i <= argCount; ++i) {
-      Token token = getToken(i);
+      token = getToken(i);
       switch (token.tok) {
       case Token.on:
         if (isON || isOFF || isDelete)
@@ -2699,17 +2710,15 @@ class Eval { //implements Runnable {
         ptFloat = (ptFloat + 1) % 2;
         rangeMinMax[ptFloat] = atomNumber;
         break;
-      case Token.select:
-        //measures select 
-        if (statementLength == 5 &&  i == 2 && statement[3].tok == Token.bitset) {
-          viewer.setShapeProperty(JmolConstants.SHAPE_MEASURES, "select",statement[3].value);
-          return;
-        }
-        expressionOrIntegerExpected();
+      case Token.string:
+        //measures "%a1 %a2 %v %u"
+        strFormat = (String) token.value;
+        break;
       case Token.hide:
         //measures hide 
-        if (statementLength == 5 &&  i == 2 && statement[3].tok == Token.bitset) {
-          viewer.setShapeProperty(JmolConstants.SHAPE_MEASURES, "hide",statement[3].value);
+        if (statementLength == 5 && i == 2 && statement[3].tok == Token.bitset) {
+          viewer.setShapeProperty(JmolConstants.SHAPE_MEASURES, "hide",
+              statement[3].value);
           return;
         }
         expressionOrIntegerExpected();
@@ -2722,7 +2731,7 @@ class Eval { //implements Runnable {
       default:
         expressionOrIntegerExpected();
       }
-      if (atomIndex == -1)
+      if (atomIndex == -1 && strFormat == null)
         badAtomNumber();
       if (isAll) {
         if (bs == null || bs.size() == 0)
@@ -2730,9 +2739,7 @@ class Eval { //implements Runnable {
         if (++expressionCount > 4)
           badArgumentCount();
         monitorExpressions.add(bs);
-      } else {
-        if (atomIndex == -1)
-          badAtomNumber();
+      } else if (strFormat == null) {
         if (++countPlusIndexes[0] > 4)
           badArgumentCount();
         countPlusIndexes[countPlusIndexes[0]] = atomIndex;
@@ -2747,7 +2754,7 @@ class Eval { //implements Runnable {
             : -200F);
       }
       viewer.defineMeasurement(monitorExpressions, rangeMinMax, isDelete,
-          isAllConnected, isON || isOFF, isOFF);
+          isAllConnected, isON || isOFF, isOFF, strFormat);
     } else if (isDelete)
       viewer.deleteMeasurement(countPlusIndexes);
     else if (isON)
@@ -2755,7 +2762,7 @@ class Eval { //implements Runnable {
     else if (isOFF)
       viewer.showMeasurement(countPlusIndexes, false);
     else
-      viewer.toggleMeasurement(countPlusIndexes);
+      viewer.toggleMeasurement(countPlusIndexes, strFormat);
   }
 
   void refresh() {
@@ -3062,6 +3069,13 @@ class Eval { //implements Runnable {
       viewer.selectBonds((BitSet)statement[3].value);
       return;
     }
+    
+    if (statementLength == 5 && statement[2].tok == Token.monitor && statement[3].tok == Token.bitset) {
+      viewer.setShapeProperty(JmolConstants.SHAPE_MEASURES, "select",
+          statement[3].value);
+      return;
+    }
+
     viewer.select(statementLength == 1 ? null : expression(statement, 1), tQuiet || isExpressionBitSet);
   }
 

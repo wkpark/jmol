@@ -1000,12 +1000,16 @@ final public class Atom extends Point3fi implements Tuple {
   char getInsertionCode() {
     return group.getInsertionCode();
   }
-
   String formatLabel(String strFormat) {
-    if (strFormat == null || strFormat.equals(""))
+    return formatLabel(strFormat, '\0', 0, "");
+  }
+
+  String formatLabel(String strFormat, char chAtom, float thisValue,
+                     String units) {
+    if (strFormat == null || strFormat.length() == 0)
       return null;
     String strLabel = "";
-    //int cch = strFormat.length();
+    int cch = strFormat.length();
     int ich, ichPercent;
     for (ich = 0; (ichPercent = strFormat.indexOf('%', ich)) != -1;) {
       if (ich != ichPercent)
@@ -1013,8 +1017,7 @@ final public class Atom extends Point3fi implements Tuple {
       ich = ichPercent + 1;
       try {
         String strT = "";
-        float floatT = 0;
-        boolean floatIsSet = false;
+        float floatT = Float.NaN;
         boolean alignLeft = false;
         if (strFormat.charAt(ich) == '-') {
           alignLeft = true;
@@ -1066,8 +1069,9 @@ final public class Atom extends Point3fi implements Tuple {
          case 's': strand (chain)
          case 't': temperature factor
          case 'U': identity
-         case 'u': sUrface distance
+         case 'u': sUrface distance or provided units
          case 'V': van der Waals
+         case 'v': provided value
          case 'x': x coord
          case 'X': fractional X coord
          case 'y': y coord
@@ -1076,7 +1080,16 @@ final public class Atom extends Point3fi implements Tuple {
          case 'Z': fractional Z coord
 
          */
-        switch (ch = strFormat.charAt(ich++)) {
+        char ch0 = ch = strFormat.charAt(ich++);
+
+        if (chAtom != '\0' && ich < cch && ch != 'v' && ch != 'u') {
+          if (strFormat.charAt(ich) == chAtom)
+            strFormat = strFormat.substring(0, ich)
+                + strFormat.substring(ich + 1);
+          else
+            ch = '\0'; //skip if not for this atom
+        }
+        switch (ch) {
         case 'i':
           strT = "" + getAtomNumber();
           break;
@@ -1092,21 +1105,17 @@ final public class Atom extends Point3fi implements Tuple {
           break;
         case 'x':
           floatT = x;
-          floatIsSet = true;
           break;
         case 'y':
           floatT = y;
-          floatIsSet = true;
           break;
         case 'z':
           floatT = z;
-          floatIsSet = true;
           break;
         case 'X':
         case 'Y':
         case 'Z':
           floatT = getFractionalCoord(ch);
-          floatIsSet = true;
           break;
         case 'D':
           strT = "" + atomIndex;
@@ -1125,20 +1134,19 @@ final public class Atom extends Point3fi implements Tuple {
           break;
         case 'P':
           floatT = getPartialCharge();
-          floatIsSet = true;
           break;
         case 'V':
           floatT = getVanderwaalsRadiusFloat();
-          floatIsSet = true;
+          break;
+        case 'v':
+          floatT = thisValue;
           break;
         case 'I':
           floatT = getBondingRadiusFloat();
-          floatIsSet = true;
           break;
         case 'b': // these two are the same
         case 't':
           floatT = getBfactor100() / 100f;
-          floatIsSet = true;
           break;
         case 'q':
           strT = "" + getOccupancy();
@@ -1169,8 +1177,11 @@ final public class Atom extends Point3fi implements Tuple {
           strT = getIdentity();
           break;
         case 'u':
-          floatT = getSurfaceDistance();
-          floatIsSet = true;
+          if (chAtom == '\0') {
+            floatT = getSurfaceDistance();
+          } else {
+            strT = units;
+          }
           break;
         case 'N':
           strT = "" + getMoleculeNumber();
@@ -1190,13 +1201,12 @@ final public class Atom extends Point3fi implements Tuple {
           }
         // malformed will fall into
         default:
-          strT = "%" + ch;
+          strT = "%" + ch0;
         }
-        if (floatIsSet) {
+        if (!Float.isNaN(floatT))
           strLabel += format(floatT, width, precision, alignLeft, zeroPad);
-        } else if (strT != null) {
+        else if (strT != null)
           strLabel += format(strT, width, precision, alignLeft, zeroPad);
-        }
       } catch (IndexOutOfBoundsException ioobe) {
         ich = ichPercent;
         break;

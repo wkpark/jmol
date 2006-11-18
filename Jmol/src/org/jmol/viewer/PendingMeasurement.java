@@ -28,7 +28,7 @@ class PendingMeasurement extends Measurement {
   boolean isActive = false;
 
   PendingMeasurement(Frame frame) {
-    super(frame, null, (short) 0);
+    super(frame, null, Float.NaN, (short) 0, null, 0);
     this.countPlusIndices = new int[5];
   }
 

@@ -749,7 +749,7 @@ public class Viewer extends JmolViewer {
     //Eval
     global.setParameterValue("_color "
         + JmolConstants.elementNameFromNumber(elementNumber), StateManager
-        .encodeColor(argb));
+        .escapeColor(argb));
     colorManager.setElementArgb(elementNumber, argb);
   }
 
@@ -1863,13 +1863,35 @@ public class Viewer extends JmolViewer {
     int modelIndex = getDisplayModelIndex();
     if (modelManager.setUnitCellOffset(modelIndex, pt))
       global.setParameterValue("_frame " + getModelNumber(modelIndex)
-          + "; set unitcell", StateManager.encloseCoord(pt));
+          + "; set unitcell", StateManager.escape(pt));
   }
 
   /* ****************************************************************************
    * delegated to MeasurementManager
    ****************************************************************************/
 
+  String getDefaultMeasurementLabel(int nPoints) {
+    switch (nPoints) {
+    case 2:
+      return global.defaultDistanceLabel;
+    case 3:
+      return global.defaultAngleLabel;
+    default:
+      return global.defaultTorsionLabel;
+    }
+  }
+  
+  private void setDefaultMeasurementLabel(int nPoints, String format) {
+    switch(nPoints) {
+    case 2:
+      global.defaultDistanceLabel = format;
+    case 3:
+      global.defaultAngleLabel = format;
+    case 4:
+      global.defaultTorsionLabel = format;
+    }
+  }
+  
   public int getMeasurementCount() {
     int count = getShapePropertyAsInt(JmolConstants.SHAPE_MEASURES, "count");
     return count <= 0 ? 0 : count;
@@ -1912,13 +1934,26 @@ public class Viewer extends JmolViewer {
     script("measures delete");
   }
 
+  private void setJustifyMeasurements(boolean TF) {
+    global.justifyMeasurements = TF;  
+  }
+  
+  boolean getJustifyMeasurements() {
+    return global.justifyMeasurements;
+  }
+  
+  void setMeasurementFormats(String strFormat) {
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormats", strFormat);
+  }
+
   void defineMeasurement(Vector monitorExpressions, float[] rangeMinMax,
                          boolean isDelete, boolean isAllConnected,
-                         boolean isShowHide, boolean isHidden) {
+                         boolean isShowHide, boolean isHidden, String strFormat) {
     //Eval.monitor()
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "setConnected", new Boolean(
         isAllConnected));
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "setRange", rangeMinMax);
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormat", strFormat);
     setShapeProperty(JmolConstants.SHAPE_MEASURES, isDelete ? "deleteVector"
         : isShowHide ? (isHidden ? "hideVector" : "showVector")
             : "defineVector", monitorExpressions);
@@ -1950,8 +1985,10 @@ public class Viewer extends JmolViewer {
     refresh(0, "hideMeasurements()");
   }
 
-  void toggleMeasurement(int[] atomCountPlusIndices) {
+  void toggleMeasurement(int[] atomCountPlusIndices, String strFormat) {
     //Eval
+    if (strFormat != null)
+      setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormat", strFormat);
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "toggle",
         atomCountPlusIndices);
   }
@@ -2927,8 +2964,16 @@ public class Viewer extends JmolViewer {
   public void setStringProperty(String key, String value) {
     //Eval
     while (true) {
-      if (key.toLowerCase().indexOf("callback") >= 0) {
-        setCallbackFunction(key,value);
+      if (key.equalsIgnoreCase("defaultDistanceLabel")) {
+        setDefaultMeasurementLabel(2, value);
+        break;
+      }
+      if (key.equalsIgnoreCase("defaultAngleLabel")) {
+        setDefaultMeasurementLabel(3, value);
+        break;
+      }
+      if (key.equalsIgnoreCase("defaultTorsionLabel")) {
+        setDefaultMeasurementLabel(4, value);
         break;
       }
       if (key.equalsIgnoreCase("defaultLoadScript")) {
@@ -2969,6 +3014,10 @@ public class Viewer extends JmolViewer {
       }
       if (key.equalsIgnoreCase("dataSeparator")) {
         //just saving this
+        break;
+      }
+      if (key.toLowerCase().indexOf("callback") >= 0) {
+        setCallbackFunction(key,value);
         break;
       }
       //not found
@@ -3119,6 +3168,10 @@ public class Viewer extends JmolViewer {
     while (true) {
       if (key.equalsIgnoreCase("refreshing")) {
         setRefreshing(value);
+        break;
+      }
+      if (key.equalsIgnoreCase("justifyMeasurements")) {
+        setJustifyMeasurements(value);
         break;
       }
       if (key.equalsIgnoreCase("ssBondsBackbone")) {

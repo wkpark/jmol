@@ -204,8 +204,8 @@ class Dipole {
     else if (coords[0] == null)
       return "";
     else
-      s.append(" " + StateManager.encloseCoord(coords[0]) + " "
-          + StateManager.encloseCoord(coords[1]));
+      s.append(" " + StateManager.escape(coords[0]) + " "
+          + StateManager.escape(coords[1]));
     if (mad != Dipoles.DEFAULT_MAD)
       s.append(" width " + (mad / 1000f));
     if (offsetAngstroms != 0)

@@ -1722,7 +1722,7 @@ public final class Frame {
                        short order, int connectOperation,
                        BitSet bsA, BitSet bsB) {
     String stateScript = "connect " + minDistance + " " + maxDistance
-      + " " + StateManager.encodeBitset(bsA) + " " + StateManager.encodeBitset(bsB)
+      + " " + StateManager.escape(bsA) + " " + StateManager.escape(bsB)
       + " " + JmolConstants.getBondOrderNameFromOrder(order) 
       + " " + JmolConstants.connectOperationName(connectOperation) + ";";
     stateScripts.add(stateScript);

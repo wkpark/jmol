@@ -547,7 +547,7 @@ class Polyhedra extends AtomShape {
           + (myFaceCenterOffset == DEFAULT_FACECENTEROFFSET ? ""
               : " faceCenterOffset " + myFaceCenterOffset)
           + (collapsed ? " collapsed" : "") + " to "
-          + StateManager.encodeBitset(bs) + ";"
+          + StateManager.escape(bs) + ";"
           + (visible ? "" : "polyhedra off;") + "\n";
       return s;
     }

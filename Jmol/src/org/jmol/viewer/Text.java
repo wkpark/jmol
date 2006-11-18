@@ -532,7 +532,7 @@ class Text {
       //fall through
       case XYZ:
         if (strOff == null)
-          strOff = StateManager.encloseCoord(xyz);
+          strOff = StateManager.escape(xyz);
         s.append("set echo " + target + " " + strOff);
         if (align != LEFT)
           s.append("set echo " + target + " " + hAlignNames[align]);

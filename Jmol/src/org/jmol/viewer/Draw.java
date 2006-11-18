@@ -738,7 +738,7 @@ class Draw extends MeshCollection {
     for (int i = 0; i < nVertices; i++) {
       Point3f v = new Point3f();
       v.set(mesh.vertices[mesh.polygonIndexes[iModel][i]]);
-      str += " " + StateManager.encloseCoord(v);
+      str += " " + StateManager.escape(v);
     }
     return str;
   }

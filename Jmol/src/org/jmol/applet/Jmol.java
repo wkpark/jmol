@@ -746,6 +746,13 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
     public String eval(String strEval) {
       try {
+        if(((Boolean)jsoDocument.eval("!!_jmol.noEval")).booleanValue())
+          return "NO EVAL ALLOWED";
+      } catch (Exception e) {
+        Logger.error("# no _jmol in evaluating " + strEval + ":" + e.toString());
+        return "";
+      }
+      try {
         return "" + jsoDocument.eval(strEval);
       } catch (Exception e) {
         Logger.error("# error evaluating " + strEval + ":" + e.toString());

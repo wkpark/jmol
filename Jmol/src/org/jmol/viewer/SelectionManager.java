@@ -68,8 +68,9 @@ class SelectionManager {
     if (viewer.getFrame() != null)
       viewer.getFrame().bsHidden = bsHidden;
     if (!isQuiet)
-      viewer.reportSelection(GT._("{0} atoms hidden", viewer
-          .cardinalityOf(bsHidden)));
+      viewer.reportSelection(GT._(
+          "{0} atoms hidden",
+          "" + viewer.cardinalityOf(bsHidden)));
   }
 
   void display(BitSet bsAll, BitSet bs, boolean isQuiet) {
@@ -81,8 +82,9 @@ class SelectionManager {
     if (viewer.getFrame() != null)
       viewer.getFrame().bsHidden = bsHidden;
     if (!isQuiet)
-      viewer.reportSelection(
-          GT._("{0} atoms hidden", viewer.cardinalityOf(bsHidden)));
+      viewer.reportSelection(GT._(
+          "{0} atoms hidden",
+          "" + viewer.cardinalityOf(bsHidden)));
   }
 
   BitSet getHiddenSet() {
@@ -172,8 +174,9 @@ class SelectionManager {
       setSelectionSet(bs);
     }
     if (!isQuiet)
-      viewer.reportSelection(getSelectionCount() + " "
-          + GT._("atoms selected"));
+      viewer.reportSelection(GT._(
+          "{0} atoms selected",
+          "" + getSelectionCount()));
   }
 
   boolean selectionModeAtoms = true;

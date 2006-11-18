@@ -1174,6 +1174,9 @@ String getAtomInfoChime(int i) {
   
   void setModelVisibility() {
     
+    if (frame == null) //necessary for file chooser
+      return;
+      
     //named objects must be set individually
     //in the future, we might include here a BITSET of models rather than just a modelIndex
     

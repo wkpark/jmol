@@ -4629,7 +4629,7 @@
     server="171.64.65.56" atoms="10066" preferred="4" deadline="12"
     credit="587" frames="100" code="GS" contact="densign"/>
   <fah_proj number="3007" name="p3007_SMP-msv-03" public="y" file="y"
-    server="171.64.65.56" atoms="10066" preferred="4" deadline="12"
+    server="171.64.65.56" atoms="10066" preferred="1" deadline="12"
     credit="587" frames="100" code="GS" contact="densign"/>
   <fah_proj number="3008" name="p3008_SMP-nsv-99p" public="y"
     server="171.64.65.56" atoms="10066" preferred="4" deadline="12"

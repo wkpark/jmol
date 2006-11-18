@@ -2500,7 +2500,7 @@ public class Viewer extends JmolViewer {
     eval.pauseExecution();
   }
 
-  void setDefaultLoadScript(String script) {
+  private void setDefaultLoadScript(String script) {
     //Eval
     global.defaultLoadScript = script;
   }
@@ -2929,6 +2929,10 @@ public class Viewer extends JmolViewer {
     while (true) {
       if (key.toLowerCase().indexOf("callback") >= 0) {
         setCallbackFunction(key,value);
+        break;
+      }
+      if (key.equalsIgnoreCase("defaultLoadScript")) {
+        setDefaultLoadScript(value);
         break;
       }
       if (key.equalsIgnoreCase("appletProxy")) {

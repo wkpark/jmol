@@ -324,6 +324,13 @@ class StateManager {
     String defaultLoadScript   = "";
     String defaultDirectory    = null;
 
+    /**
+     *  these settings are determined when the file is loaded and are
+     *  kept even though they might later change. So we list them here
+     *  and ALSO let them be defined in the settings. 10.9.98 missed this. 
+     *  
+     * @return script command
+     */
     String getLoadState() {
       StringBuffer str = new StringBuffer();
       if (defaultDirectory != null)
@@ -335,6 +342,7 @@ class StateManager {
       appendCmd(str, "set bondRadiusMilliAngstroms " + marBond);
       appendCmd(str, "set minBondDistance " + minBondDistance);
       appendCmd(str, "set bondTolerance " + bondTolerance);
+      appendCmd(str, "set defaultLattice " + encloseCoord(ptDefaultLattice));
       if (defaultLoadScript.length() > 0)
         appendCmd(str, "set defaultLoadScript " + escape(defaultLoadScript));
       return str + "\n";
@@ -493,13 +501,15 @@ class StateManager {
     
     final static String unnecessaryProperties = 
       //these are handled individually
-        ";refreshing;defaults;backgroundmodel;backgroundcolor;"
-      + ";stereo;defaultdirectory;percentvdwatom;zerobasedxyzrasmol;"
-      + ";bondradiusmilliangstroms;bondtolerance;minbonddistance;autobond;"
+      //NOT EXCLUDING the load state settings, because although we
+      //handle these specially for the CURRENT FILE, their current
+      //settings won't be reflected in the load state, which is determined
+      //earlier, when the file loads. 
+        ";refreshing;defaults;backgroundmodel;backgroundcolor;stereo;"
       + ";debugscript;frank;showaxes;showunitcell;showboundbox;"
       + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;"
       + ";vibrationscale;vibrationperiod;";
-       
+
     void clearVolatileProperties() {
       Enumeration e;
       e = htPropertyFlags.keys();

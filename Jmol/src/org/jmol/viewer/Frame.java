@@ -3278,6 +3278,9 @@ public final class Frame {
     return hAtoms;
   }
   
+  
+  //leaving this one here, because it is volatile -- 
+  //it will be reset when a new frame is instantiated
   boolean selectionHaloEnabled = false;
 
   public void setSelectionHaloEnabled(boolean selectionHaloEnabled) {

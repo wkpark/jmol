@@ -3309,7 +3309,7 @@ public class Viewer extends JmolViewer {
       }
       // these next return, because there is no need to repaint
       while (true) {
-        if (key.equalsIgnoreCase("bondModeOr")) { //deprecated -- see "selectionHalos"
+        if (key.equalsIgnoreCase("bondModeOr")) {
           setBondSelectionModeOr(value);
           break;
         }
@@ -3548,8 +3548,8 @@ public class Viewer extends JmolViewer {
   }
 
   private void setSelectionHaloEnabled(boolean selectionHaloEnabled) {
-    //setBooleanProperty
     loadShape(JmolConstants.SHAPE_HALOS);
+    //a frame property, so it is automatically reset
     modelManager.setSelectionHaloEnabled(selectionHaloEnabled);
   }
 
@@ -3662,9 +3662,7 @@ public class Viewer extends JmolViewer {
   // Graphics3D
   // //////////////////////////////////////////////////////////////
 
-  void setGreyscaleRendering(boolean greyscaleRendering) {
-    //TranformManager (set stereomode)
-    //setBooleanProperty
+  private void setGreyscaleRendering(boolean greyscaleRendering) {
     global.greyscaleRendering = greyscaleRendering;
     g3d.setGreyscaleMode(greyscaleRendering);
     refresh(0, "Viewer:setGreyscaleRendering()");
@@ -3725,18 +3723,20 @@ public class Viewer extends JmolViewer {
     return global.marBond;
   }
 
+  /*
   void setModeMultipleBond(byte modeMultipleBond) {
     //not implemented
     global.modeMultipleBond = modeMultipleBond;
     refresh(0, "Viewer:setModeMultipleBond()");
   }
+ */
 
   byte getModeMultipleBond() {
     //sticksRenderer
     return global.modeMultipleBond;
   }
 
-  void setShowMultipleBonds(boolean TF) {
+  private void setShowMultipleBonds(boolean TF) {
     //Eval.setBonds
     //stateManager
     global.showMultipleBonds = TF;
@@ -3986,14 +3986,14 @@ public class Viewer extends JmolViewer {
   // //////////////////////////////////////////////////////////////
 
   void setStereoMode(int stereoMode, String state) {
-    //Eval
+    //Eval -- ok; this is set specially
     global.stereoState = state;
     transformManager.setStereoMode(stereoMode);
     setBooleanProperty("greyscaleRendering", stereoMode > JmolConstants.STEREO_DOUBLE);
   }
 
   void setStereoMode(int[] twoColors, String state) {
-    //Eval
+    //Eval -- also set specially
     global.stereoState = state;
     transformManager.setStereoMode(twoColors);
     setBooleanProperty("greyscaleRendering", true);
@@ -4037,7 +4037,7 @@ public class Viewer extends JmolViewer {
   }
 
   public boolean showModelSetDownload() {
-    return true;
+    return true; //deprecated
   }
 
   // /////////////// getProperty /////////////
@@ -4083,7 +4083,7 @@ public class Viewer extends JmolViewer {
   //////////////////////////////////////////////////
 
   void setModelVisibility() {
-    //Eval
+    //Eval -- ok - handled specially
     modelManager.setModelVisibility();
   }
 
@@ -4186,7 +4186,7 @@ public class Viewer extends JmolViewer {
   }
 
   void setDefaultLattice(Point3f ptLattice) {
-    //Eval
+    //Eval -- handled separately
     global.setDefaultLattice(ptLattice);
   }
 
@@ -4196,7 +4196,7 @@ public class Viewer extends JmolViewer {
 
   //these functions will throw off the state.
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
-    //not implemented
+    //not implemented -- no script equivalent
     modelManager.setAtomCoord(atomIndex, x, y, z);
   }
 
@@ -4223,7 +4223,7 @@ public class Viewer extends JmolViewer {
   }
 
   private void setHelpPath(String url) {
-    //Eval
+    //Eval 
     global.helpPath = url;
   }
 

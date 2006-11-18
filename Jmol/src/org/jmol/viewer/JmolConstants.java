@@ -34,7 +34,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "10.9.100"; //some minor bug fixes; adds script "javascript:..."; fully implemented serialization: show/save/restore state  
+  public final static String version = "10.9.101"; //  
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
     

@@ -203,4 +203,8 @@ class MyStatusListener implements JmolStatusListener {
   public void setCallbackFunction(String callbackType, String callbackFunction) {
     //
   }
+
+  public String eval(String strEval) {
+    return null;
+  }
 }

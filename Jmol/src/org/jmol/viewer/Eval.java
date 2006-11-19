@@ -2774,8 +2774,7 @@ class Eval { //implements Runnable {
 
   void restrict() throws ScriptException {
     select();
-    BitSet bsSelected = new BitSet();
-    bsSelected.or(viewer.getSelectionSet());
+    BitSet bsSelected = copyBitSet(viewer.getSelectionSet());
     viewer.invertSelection();
     if (bsSubset != null) {
       BitSet bs = new BitSet();

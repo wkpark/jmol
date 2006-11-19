@@ -197,6 +197,7 @@ abstract class MouseManager {
     if (logMouseEvents)
       Logger.debug("mouseReleased("+x+","+y+","+modifiers+")");
     viewer.setInMotion(false);
+    viewer.getAwtComponent().setCursor(Cursor.getDefaultCursor());
   }
 
   int previousClickX, previousClickY;
@@ -334,7 +335,8 @@ abstract class MouseManager {
 
   void mouseSinglePressDrag(int deltaX, int deltaY, int modifiers) {
     //viewer.setStatusUserAction("mouseSinglePressDrag: " + modifiers);
-
+    viewer.getAwtComponent().setCursor(
+        Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case LEFT:
       viewer.rotateXYBy(deltaX, deltaY);
@@ -343,7 +345,8 @@ abstract class MouseManager {
     case ALT_LEFT:
     case ALT_SHIFT_LEFT:
       if (drawMode) {
-        viewer.checkObjectDragged(previousDragX, previousDragY, deltaX, deltaY, modifiers);
+        viewer.checkObjectDragged(previousDragX, previousDragY, deltaX, deltaY,
+            modifiers);
         break;
       }
     case MIDDLE:

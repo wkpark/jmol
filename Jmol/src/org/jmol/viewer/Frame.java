@@ -360,6 +360,7 @@ public final class Frame {
     loadShape(JmolConstants.SHAPE_STICKS);
     loadShape(JmolConstants.SHAPE_HSTICKS);
     loadShape(JmolConstants.SHAPE_MEASURES);
+    loadShape(JmolConstants.SHAPE_BBCAGE);
     loadShape(JmolConstants.SHAPE_UCCAGE);
 
     if (adapter != null) {

@@ -403,9 +403,16 @@ public class Viewer extends JmolViewer {
     return transformManager.getMoveToText(timespan);
   }
 
+  boolean pointToCenter = false;
+
+  boolean getPointToCenter() {
+    return pointToCenter;
+  }
+  
   void rotateXYBy(int xDelta, int yDelta) {
     //mouseSinglePressDrag
     transformManager.rotateXYBy(xDelta, yDelta);
+    //just an idea. Nah... pointToCenter = global.centerPointer;
     refresh(1, "Viewer:rotateXYBy()");
   }
 

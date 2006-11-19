@@ -404,6 +404,7 @@ class StateManager {
     boolean showHiddenSelectionHalos    = false;
     boolean showMeasurements            = true;
     boolean frankOn                     = false;
+    boolean centerPointer               = true;
     
     //atoms and bonds
 

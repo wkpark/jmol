@@ -2697,6 +2697,10 @@ class Eval { //implements Runnable {
         atomIndex = -1;
         isAll = true;
         continue;
+      case Token.string:
+        //measures "%a1 %a2 %v %u"
+        strFormat = (String) token.value;
+        continue;
       case Token.decimal:
         isAll = true;
         isRange = true;
@@ -2710,18 +2714,6 @@ class Eval { //implements Runnable {
         ptFloat = (ptFloat + 1) % 2;
         rangeMinMax[ptFloat] = atomNumber;
         break;
-      case Token.string:
-        //measures "%a1 %a2 %v %u"
-        strFormat = (String) token.value;
-        break;
-      case Token.hide:
-        //measures hide 
-        if (statementLength == 5 && i == 2 && statement[3].tok == Token.bitset) {
-          viewer.setShapeProperty(JmolConstants.SHAPE_MEASURES, "hide",
-              statement[3].value);
-          return;
-        }
-        expressionOrIntegerExpected();
       case Token.expressionBegin:
         isExpression = true;
         bs = expression(statement, i);
@@ -2731,7 +2723,8 @@ class Eval { //implements Runnable {
       default:
         expressionOrIntegerExpected();
       }
-      if (atomIndex == -1 && strFormat == null)
+      //only here for point definition
+      if (atomIndex == -1)
         badAtomNumber();
       if (isAll) {
         if (bs == null || bs.size() == 0)
@@ -2739,7 +2732,7 @@ class Eval { //implements Runnable {
         if (++expressionCount > 4)
           badArgumentCount();
         monitorExpressions.add(bs);
-      } else if (strFormat == null) {
+      } else {
         if (++countPlusIndexes[0] > 4)
           badArgumentCount();
         countPlusIndexes[countPlusIndexes[0]] = atomIndex;

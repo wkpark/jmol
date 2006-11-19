@@ -2544,7 +2544,7 @@ public final class Frame {
   ////////////////////////////////////////////////////////////////
 
   float getMeasurement(int[] countPlusIndices) {
-    float value = Float.MAX_VALUE;
+    float value = Float.NaN;
     if (countPlusIndices == null)
       return value;
     int count = countPlusIndices[0];

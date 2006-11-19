@@ -405,9 +405,9 @@ abstract class MouseManager {
     hoverOff();
     timeCurrent = mouseMovedTime = time;
     mouseMovedX = xCurrent = x; mouseMovedY = yCurrent = y;
-    if ((measurementMode | hoverActive) && measurementMode) {
+    if (measurementMode || hoverActive) {
       int atomIndex = viewer.findNearestAtomIndex(x, y);
-      if (atomIndex >= 0 && viewer.isInSelectionSubset(atomIndex))
+      if (!measurementMode && atomIndex >= 0 && viewer.isInSelectionSubset(atomIndex))
           atomIndex = -1;
       setAttractiveMeasurementTarget(atomIndex);
     }

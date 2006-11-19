@@ -1710,7 +1710,7 @@ public final class Frame {
   int thisFrame = 0;
 
   void addStateScript(String script) {
-    int iFrame = viewer.getDisplayModelIndex();
+    int iFrame = viewer.getCurrentModelIndex();
     if (thisFrame != iFrame) {
       thisFrame = iFrame;
       script = "frame " + this.getModelNumber(iFrame) +";\n" + script;      

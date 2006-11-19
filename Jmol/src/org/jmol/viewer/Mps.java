@@ -169,7 +169,7 @@ abstract class Mps extends Shape {
     }
 
     void setModelClickability() {
-      int displayModelIndex = viewer.getDisplayModelIndex();
+      int displayModelIndex = viewer.getCurrentModelIndex();
       modelVisibilityFlags = 
         (displayModelIndex >= 0 && displayModelIndex != modelIndex
             ? 0 : myVisibilityFlag);

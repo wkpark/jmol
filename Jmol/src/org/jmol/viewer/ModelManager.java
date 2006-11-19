@@ -1322,7 +1322,7 @@ String getAtomInfoChime(int i) {
   }
 
   String getUnitCellInfoText() {
-    int modelIndex = viewer.getDisplayModelIndex();
+    int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
       return "no single current model";
     if (frame.cellInfos == null)
@@ -1333,7 +1333,7 @@ String getAtomInfoChime(int i) {
   String getSpaceGroupInfoText(String spaceGroup) {
     SpaceGroup sg;
     String strOperations = "";
-    int modelIndex = viewer.getDisplayModelIndex();
+    int modelIndex = viewer.getCurrentModelIndex();
     if (spaceGroup == null) {
       if (modelIndex < 0)
         return "no single current model";

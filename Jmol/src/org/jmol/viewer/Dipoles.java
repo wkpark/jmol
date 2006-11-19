@@ -481,7 +481,7 @@ class Dipoles extends Shape {
     if (currentDipole == null)
       return;
     currentDipole.visible = true;
-    currentDipole.modelIndex = viewer.getDisplayModelIndex();
+    currentDipole.modelIndex = viewer.getCurrentModelIndex();
   }
 
   void setVisibilityFlags(BitSet bs) {

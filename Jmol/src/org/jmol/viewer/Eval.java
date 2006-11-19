@@ -3462,10 +3462,12 @@ class Eval { //implements Runnable {
   void configuration() throws ScriptException {
     if (viewer.getDisplayModelIndex() <= -2)
       evalError(GT._("{0} not allowed with background model displayed",
-                      "\"CONFIGURATION\""));
+          "\"CONFIGURATION\""));
     BitSet bsConfigurations;
     if (statementLength == 1) {
       bsConfigurations = viewer.setConformation();
+      viewer.addStateScript("select "
+          + StateManager.escape(viewer.getSelectionSet()));
       viewer.addStateScript("configuration;");
     } else {
       checkLength2();
@@ -3903,13 +3905,13 @@ class Eval { //implements Runnable {
       if (offset == statementLength - 1) {
         if (isAll) {
           viewer.setAnimationRange(-1, -1);
-          viewer.setDisplayModelIndex(-1);
+          viewer.setCurrentModelIndex(-1);
           return;
         }
         int modelIndex = (useModelNumber ? viewer
             .getModelNumberIndex(frameNumber) : frameNumber - 1);
         if (!isPlay && !isRange || modelIndex >= 0) {
-          viewer.setDisplayModelIndex(modelIndex);
+          viewer.setCurrentModelIndex(modelIndex);
         }
         if (isPlay || isRange) {
           if (isRange || frameNumber2 >= 0) {

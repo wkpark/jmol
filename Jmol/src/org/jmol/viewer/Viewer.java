@@ -1332,7 +1332,7 @@ public class Viewer extends JmolViewer {
       setShapeSize(JmolConstants.SHAPE_VECTORS, global.defaultVectorMad);
     setFrankOn(global.frankOn);
     repaintManager.initializePointers(1);
-    setDisplayModelIndex(0);
+    setCurrentModelIndex(0);
     setBackgroundModelIndex(-1);
     setTainted(true);
   }
@@ -1602,7 +1602,7 @@ public class Viewer extends JmolViewer {
   }
 
   void convertFractionalCoordinates(Point3f pt) {
-    int modelIndex = getDisplayModelIndex();
+    int modelIndex = getCurrentModelIndex();
     if (modelIndex < 0)
       return;
     modelManager.convertFractionalCoordinates(modelIndex, pt);
@@ -1820,7 +1820,7 @@ public class Viewer extends JmolViewer {
 
   // AKA "configuration"
   public BitSet setConformation(int conformationIndex) {
-    return modelManager.setConformation(getDisplayModelIndex(),
+    return modelManager.setConformation(getCurrentModelIndex(),
         conformationIndex);
   }
 
@@ -1837,7 +1837,7 @@ public class Viewer extends JmolViewer {
   }
 
   boolean hbondsAreVisible() {
-    return modelManager.hbondsAreVisible(getDisplayModelIndex());
+    return modelManager.hbondsAreVisible(getCurrentModelIndex());
   }
 
   public boolean havePartialCharges() {
@@ -1853,14 +1853,14 @@ public class Viewer extends JmolViewer {
   }
 
   void setCurrentUnitCellOffset(int offset) {
-    int modelIndex = getDisplayModelIndex();
+    int modelIndex = getCurrentModelIndex();
     if (modelManager.setUnitCellOffset(modelIndex, offset))
       global.setParameterValue("_frame " + getModelNumber(modelIndex)
           + "; set unitcell", offset);
   }
 
   void setCurrentUnitCellOffset(Point3f pt) {
-    int modelIndex = getDisplayModelIndex();
+    int modelIndex = getCurrentModelIndex();
     if (modelManager.setUnitCellOffset(modelIndex, pt))
       global.setParameterValue("_frame " + getModelNumber(modelIndex)
           + "; set unitcell", StateManager.escape(pt));
@@ -2102,19 +2102,19 @@ public class Viewer extends JmolViewer {
     refresh(0, "Viewer:rewindAnimation()");
   }
 
-  void setDisplayModelIndex(int modelIndex) {
+  void setCurrentModelIndex(int modelIndex) {
     //Eval
     //initializeModel
-    repaintManager.setDisplayModelIndex(modelIndex);
+    repaintManager.setCurrentModelIndex(modelIndex);
   }
 
   int getCurrentModelIndex() {
-    return repaintManager.displayModelIndex;
+    return repaintManager.currentModelIndex;
   }
 
   public int getDisplayModelIndex() {
     // modified to indicate if there is also a background model index
-    int modelIndex = repaintManager.displayModelIndex;
+    int modelIndex = repaintManager.currentModelIndex;
     int backgroundIndex = getBackgroundModelIndex();
     return (backgroundIndex >= 0 ? -2 - modelIndex : modelIndex);
   }
@@ -2279,7 +2279,7 @@ public class Viewer extends JmolViewer {
     g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         matrixRotate, antialias); 
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-        repaintManager.displayModelIndex);
+        repaintManager.currentModelIndex);
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized.
@@ -2291,13 +2291,13 @@ public class Viewer extends JmolViewer {
     g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         transformManager.getStereoRotationMatrix(true), antialias);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-        repaintManager.displayModelIndex);
+        repaintManager.currentModelIndex);
     g3d.endRendering();
     g3d.snapshotAnaglyphChannelBytes();
     g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         transformManager.getStereoRotationMatrix(false), antialias);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-        repaintManager.displayModelIndex);
+        repaintManager.currentModelIndex);
     g3d.endRendering();
     switch (stereoMode) {
     case JmolConstants.STEREO_REDCYAN:
@@ -4211,11 +4211,11 @@ public class Viewer extends JmolViewer {
   }
 
   Point3f getDrawObjectCenter(String axisID) {
-    return modelManager.getSpinCenter(axisID, repaintManager.displayModelIndex);
+    return modelManager.getSpinCenter(axisID, repaintManager.currentModelIndex);
   }
 
   Vector3f getDrawObjectAxis(String axisID) {
-    return modelManager.getSpinAxis(axisID, repaintManager.displayModelIndex);
+    return modelManager.getSpinAxis(axisID, repaintManager.currentModelIndex);
   }
 
   Vector3f getModelDipole() {

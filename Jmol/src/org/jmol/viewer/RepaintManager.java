@@ -41,16 +41,16 @@ class RepaintManager {
     frameRenderer = new FrameRenderer(viewer);
   }
 
-  int displayModelIndex = 0;
-  void setDisplayModelIndex(int modelIndex) {
+  int currentModelIndex = 0;
+  void setCurrentModelIndex(int modelIndex) {
     Frame frame = viewer.getFrame();
     if (frame == null ||
         modelIndex < 0 ||
         modelIndex >= frame.getModelCount())
-      displayModelIndex = -1;
+      currentModelIndex = -1;
     else
-      displayModelIndex = modelIndex;
-    if (displayModelIndex == -1)
+      currentModelIndex = modelIndex;
+    if (currentModelIndex == -1)
       setBackgroundModelIndex(-1);    
     viewer.setTainted(true);
     setStatusFrameChanged();
@@ -58,7 +58,7 @@ class RepaintManager {
   }
 
   void setStatusFrameChanged() {
-    viewer.setStatusFrameChanged(animationOn ? -2 - displayModelIndex : displayModelIndex);
+    viewer.setStatusFrameChanged(animationOn ? -2 - currentModelIndex : currentModelIndex);
   }
   
   int backgroundModelIndex = -1;
@@ -66,7 +66,7 @@ class RepaintManager {
     // no background unless only a SINGLE model is being displayed (for now)
     Frame frame = viewer.getFrame();
     if (frame == null || modelIndex < 0 || modelIndex >= frame.getModelCount() ||
-        displayModelIndex == -1)
+        currentModelIndex == -1)
       modelIndex = -1;
     backgroundModelIndex = modelIndex;
     viewer.setTainted(true);
@@ -80,8 +80,8 @@ class RepaintManager {
   
   private void setFrameRangeVisible() {
     bsVisibleFrames.clear();
-    if (displayModelIndex >= 0) {
-      bsVisibleFrames.set(displayModelIndex);
+    if (currentModelIndex >= 0) {
+      bsVisibleFrames.set(currentModelIndex);
       if (backgroundModelIndex >= 0)
         bsVisibleFrames.set(backgroundModelIndex);
       return;
@@ -179,7 +179,7 @@ class RepaintManager {
   
   void clearAnimation() {
     setAnimationOn(false);
-    setDisplayModelIndex(0);
+    setCurrentModelIndex(0);
     setAnimationDirection(1);
     setAnimationFps(10);
     setAnimationReplayMode(0, 0, 0);
@@ -192,9 +192,9 @@ class RepaintManager {
     info.put("lastModelIndex", new Integer(lastModelIndex));
     info.put("animationDirection", new Integer(animationDirection));
     info.put("currentDirection", new Integer(currentDirection));
-    info.put("displayModelIndex", new Integer(displayModelIndex));
-    info.put("displayModelNumber", new Integer(displayModelIndex >=0 ? viewer.getModelNumber(displayModelIndex) : 0));
-    info.put("displayModelName", (displayModelIndex >=0 ? viewer.getModelName(displayModelIndex) : ""));
+    info.put("displayModelIndex", new Integer(currentModelIndex));
+    info.put("displayModelNumber", new Integer(currentModelIndex >=0 ? viewer.getModelNumber(currentModelIndex) : 0));
+    info.put("displayModelName", (currentModelIndex >=0 ? viewer.getModelName(currentModelIndex) : ""));
     info.put("animationFps", new Integer(animationFps));
     info.put("animationReplayMode", new Integer(animationReplayMode));
     info.put("firstFrameDelay", new Float(firstFrameDelay));
@@ -212,7 +212,7 @@ class RepaintManager {
         + viewer.getModelNumber(modelCount - 1) + ";\n");
     if (backgroundModelIndex >= 0)
       commands.append("background model " + backgroundModelIndex + ";\n");
-    if (displayModelIndex >= 0) {
+    if (currentModelIndex >= 0) {
       commands.append("frame RANGE " + viewer.getModelNumber(firstModelIndex)
           + " " + viewer.getModelNumber(lastModelIndex) + ";\n");
       commands.append("animation DIRECTION "
@@ -220,7 +220,7 @@ class RepaintManager {
       commands.append("animation " + (animationOn ? "ON" : "OFF") + ";\n");
       if (animationOn && animationPaused)
         commands.append("animation PAUSE;\n");
-      commands.append("frame " + viewer.getModelNumber(displayModelIndex) + ";\n");
+      commands.append("frame " + viewer.getModelNumber(currentModelIndex) + ";\n");
     } else {
       commands.append("frame ALL;\n");
     }
@@ -309,7 +309,7 @@ class RepaintManager {
   
   int intAnimThread = 0;
   void resumeAnimation() {
-    if(displayModelIndex < 0)
+    if(currentModelIndex < 0)
       setAnimationRange(firstModelIndex, lastModelIndex);
     if (modelCount <= 1) {
       animationOn = false;
@@ -329,7 +329,7 @@ class RepaintManager {
   }
 
   void rewindAnimation() {
-    setDisplayModelIndex(animationDirection > 0 ? firstModelIndex : lastModelIndex);
+    setCurrentModelIndex(animationDirection > 0 ? firstModelIndex : lastModelIndex);
     currentDirection = 1;
   }
   
@@ -339,7 +339,7 @@ class RepaintManager {
 
   boolean setAnimationRelative(int direction) {
     int frameStep = this.frameStep * direction * currentDirection;
-    int modelIndexNext = displayModelIndex + frameStep;
+    int modelIndexNext = currentModelIndex + frameStep;
     boolean isDone = (modelIndexNext > firstModelIndex && modelIndexNext > lastModelIndex 
                       || modelIndexNext < firstModelIndex && modelIndexNext < lastModelIndex);
 
@@ -372,7 +372,7 @@ class RepaintManager {
     //Logger.debug("next="+modelIndexNext+" dir="+currentDirection+" isDone="+isDone);
     if (modelIndexNext < 0 || modelIndexNext >= modelCount)
       return false;
-    setDisplayModelIndex(modelIndexNext);
+    setCurrentModelIndex(modelIndexNext);
     return true;
   }
 
@@ -398,14 +398,14 @@ class RepaintManager {
         if (sleepTime > 0)
           Thread.sleep(sleepTime);
         while (! isInterrupted()) {
-          if (displayModelIndex == framePointer) {
+          if (currentModelIndex == framePointer) {
             targetTime += firstFrameDelayMs;
             sleepTime =
               targetTime - (int)(System.currentTimeMillis() - timeBegin);
             if (sleepTime > 0)
               Thread.sleep(sleepTime);
           }
-          if (displayModelIndex == framePointer2) {
+          if (currentModelIndex == framePointer2) {
             targetTime += lastFrameDelayMs;
             sleepTime =
               targetTime - (int)(System.currentTimeMillis() - timeBegin);

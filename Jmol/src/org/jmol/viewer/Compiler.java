@@ -1187,6 +1187,7 @@ class Compiler {
     out: while ((token = tokenNext()) != null) {
       switch (token.tok) {
       case Token.none:
+      case Token.all:
         bs = null;
         if (tokenNext().tok != Token.rightbrace || iPrev >= 0)
           return endOfExpressionExpected();

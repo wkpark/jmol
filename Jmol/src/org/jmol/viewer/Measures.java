@@ -66,7 +66,7 @@ class Measures extends Shape {
     // the following can be used with "select measures ({bitset})"
     if ("select".equals(propertyName)) {
       BitSet bs = (BitSet) value;
-      if (bs == null) {
+      if (bs == null || viewer.cardinalityOf(bs) == 0) {
         bsSelected = null;
       } else {
         bsSelected = new BitSet();

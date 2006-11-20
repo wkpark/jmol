@@ -30,6 +30,7 @@ import org.jmol.util.Logger;
 import org.jmol.viewer.Frame.CellInfo;
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.i18n.GT;
 
 import java.util.BitSet;
 import java.util.Enumeration;
@@ -63,7 +64,7 @@ class ModelManager {
   }
   
   void zap() {
-    fullPathName = fileName = modelSetName = "zapped";
+    fullPathName = fileName = modelSetName = GT._("zapped");
     frame = new Frame(viewer, "empty");
     haveFile = false;
   }

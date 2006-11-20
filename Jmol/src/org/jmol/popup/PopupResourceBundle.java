@@ -726,7 +726,7 @@ class PopupResourceBundle {
       { "rewind", GT._("Rewind", true) },
 
       { "playrev", GT._("Reverse", true) },
-      { "animOn", GT._("Restart", true) },
+      { "restart", GT._("Restart", true) },
 
       { "FRAMESanimFpsMenu", GT._("Set FPS", true) },
       { "animfps5", "5" },

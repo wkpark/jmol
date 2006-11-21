@@ -56,6 +56,7 @@ class TransformManager {
     setZoomEnabled(true);
     zoomToPercent(100);
     scaleFitToScreen();
+    navigationCenter.set(fixedRotationCenter);
   }
 
   void clear() {
@@ -140,6 +141,7 @@ class TransformManager {
   final Vector3f vectorT2 = new Vector3f();
   final Point3f pointT = new Point3f();
   final Point3f pointT2 = new Point3f();
+  final Point3f pointT3 = new Point3f();
   final static float radiansPerDegree = (float) (2 * Math.PI / 360);
   final static float degreesPerRadian = (float) (360 / (2 * Math.PI));
 
@@ -184,8 +186,14 @@ class TransformManager {
 
   void rotateXYBy(int xDelta, int yDelta) {
     // from mouse action
-    rotateXRadians(yDelta * radiansPerDegree);
-    rotateYRadians(xDelta * radiansPerDegree);
+    float f = 1;
+    if (isNavigationMode) {
+      xDelta = -xDelta;
+      yDelta = -yDelta;
+      f = 0.2f;
+    }
+    rotateXRadians(yDelta * radiansPerDegree * f);
+    rotateYRadians(xDelta * radiansPerDegree * f);
   }
 
   void rotateZBy(int zDelta) {
@@ -390,6 +398,10 @@ class TransformManager {
     // mouse action only
     xFixedTranslation += xDelta;
     yFixedTranslation += yDelta;
+    if (isNavigationMode) {
+      moveNavigationCenter(xDelta,yDelta,Integer.MAX_VALUE);
+      return;
+    }
   }
 
   void translateToXPercent(float percent) {
@@ -489,9 +501,30 @@ class TransformManager {
     if (deltaPercent == 0)
       deltaPercent = (pixels > 0 ? 1 : (deltaPercent < 0 ? -1 : 0));
     float percent = deltaPercent + zoomPercentSetting;
+    if (isNavigationMode) {
+      moveNavigationCenter(0,0,-pixels * 50);
+      return;
+    }
     zoomToPercent(percent);
   }
 
+  void moveNavigationCenter(int dx, int dy, int z) {
+//    System.out.println("old nav center:" + navigationCenter);
+    boolean p = perspectiveDepth;
+    perspectiveDepth = false;
+    transformPoint(navigationCenter);
+    point3iScreenTemp.x += dx;
+    point3iScreenTemp.y += dy;
+    if (z != Integer.MAX_VALUE)
+      point3iScreenTemp.z = z;
+    unTransformPoint(point3iScreenTemp, navigationCenter);
+  //  System.out
+    //    .println("new nav center:" + point3iScreenTemp + navigationCenter);
+    transformPoint(navigationCenter);
+ //   System.out
+   //     .println("new nav center:" + point3iScreenTemp + navigationCenter);
+    perspectiveDepth = p;
+  }
   int getZoomPercent() {
     return (int) zoomPercent;
   }
@@ -711,10 +744,11 @@ class TransformManager {
     // recalculated when the vdw radius settings are changed
     // leave a very small margin - only 1 on top and 1 on bottom
     if (screenPixelCount > 2)
-      screenPixelCount -= 2;    
+      screenPixelCount -= 2;
+    cameraScaleFactor = Float.MAX_VALUE;
   }
   
-  float defaultScaleToScreen(float radius) {
+  private float defaultScaleToScreen(float radius) {
     /* 
      * 
      * the presumption here is that the rotation center is at pixel
@@ -728,10 +762,21 @@ class TransformManager {
      * 
      */
     return screenPixelCount / 2f / radius
-        * cameraScaleFactor();
+        * getCameraScaleFactor(cameraDepth);
   }
 
-  private float cameraScaleFactor() {
+  Point3f navigationCenter = new Point3f();
+  boolean isNavigationMode = false;
+  void setNavigationMode(boolean TF) {
+    isNavigationMode = TF;
+    cameraScaleFactor = Float.NaN;
+    if (TF)
+      getCameraScaleFactor(0.1f);
+    navigationCenter.set(fixedRotationCenter);
+  }
+  
+  float cameraScaleFactor = Float.MAX_VALUE;
+  private float getCameraScaleFactor(float depth) {
     if (!perspectiveDepth)
       return 1;
     /*
@@ -757,16 +802,18 @@ class TransformManager {
      *  hansonr
      */
 
-    cameraDistance = (int) (cameraDepth * screenPixelCount);
-    cameraDistanceFloat = cameraDistance;
-    float scaleFactor = (cameraDistance + screenPixelCount / 2)
-        / cameraDistanceFloat;
-    // mth - for some reason, I can make the scaleFactor bigger in this
-    // case. I do not know why, but there is extra space around the edges.
-    // I have looked at it three times and still cannot figure it out
-    // so just bump it up a bit.
-    scaleFactor += 0.02;
-    return scaleFactor;
+    if (cameraScaleFactor == Float.MAX_VALUE) {
+      cameraDistance = (int) (depth * screenPixelCount);
+      cameraDistanceFloat = cameraDistance;
+      cameraScaleFactor = (cameraDistance + screenPixelCount / 2)
+          / cameraDistanceFloat;
+      // mth - for some reason, I can make the scaleFactor bigger in this
+      // case. I do not know why, but there is extra space around the edges.
+      // I have looked at it three times and still cannot figure it out
+      // so just bump it up a bit.
+      cameraScaleFactor += 0.02;
+    }
+    return cameraScaleFactor;
   }
     
   void scaleFitToScreen() {
@@ -856,12 +903,18 @@ class TransformManager {
     if(windowCentered) {
       matrixTransform.transform(rotationCenterDefault, pointT);
       matrixTransform.transform(fixedRotationCenter, pointT2);
+      matrixTransform.transform(navigationCenter, pointT3);
       perspectiveOffset.sub(pointT, pointT2);
     }
     perspectiveOffset.x = xFixedTranslation; 
     perspectiveOffset.y = yFixedTranslation;
     if (windowCentered || !viewer.isCameraAdjustable())
       perspectiveOffset.z = 0;
+    if (windowCentered && isNavigationMode) {
+      if (pointT3.z > 10)
+        perspectiveOffset.z = pointT3.z;
+      //System.out.println("pers: "+navigationCenter+perspectiveOffset);
+    }
     /*
      * Note that the effect of this modification is restricted to the 
      * (undocumented) specialized circumstances when both

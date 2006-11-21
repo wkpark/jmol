@@ -403,7 +403,7 @@ public class Viewer extends JmolViewer {
     return transformManager.getMoveToText(timespan);
   }
 
-  boolean pointToCenter = false;
+  boolean pointToCenter = true;
 
   boolean getPointToCenter() {
     return pointToCenter;
@@ -3177,6 +3177,10 @@ public class Viewer extends JmolViewer {
         setRefreshing(value);
         break;
       }
+      if (key.equalsIgnoreCase("navigationMode")) {
+        setNavigationMode(value);
+        break;
+      }
       if (key.equalsIgnoreCase("justifyMeasurements")) {
         setJustifyMeasurements(value);
         break;
@@ -3659,6 +3663,15 @@ public class Viewer extends JmolViewer {
     global.hideNameInPopup = hideNameInPopup;
   }
 
+  private void setNavigationMode(boolean TF) {
+    global.navigationMode = TF;
+    transformManager.setNavigationMode(TF);
+  }
+  
+  boolean getNavigationMode() {
+    return global.navigationMode;
+  }
+  
   private void setZoomLarge(boolean TF) {
     global.zoomLarge = TF;
     scaleFitToScreen();

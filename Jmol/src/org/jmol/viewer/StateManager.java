@@ -445,6 +445,7 @@ class StateManager {
     
     int argbBackground = 0xFF000000;
     String stereoState = null;
+    boolean navigationMode = false;
 
     String getWindowState() {
       StringBuffer str = new StringBuffer("# window state;\n# height " + viewer.getScreenHeight()

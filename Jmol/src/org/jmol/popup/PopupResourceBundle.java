@@ -724,7 +724,6 @@ class PopupResourceBundle {
       { "nextframe", GT._("Next Frame", true) },
       { "prevframe", GT._("Previous Frame", true) },
       { "rewind", GT._("Rewind", true) },
-
       { "playrev", GT._("Reverse", true) },
       { "restart", GT._("Restart", true) },
 
@@ -793,7 +792,7 @@ class PopupResourceBundle {
       { "oneUnitCell", GT._("Reload {0}", "{1 1 1}", true) },
       { "nineUnitCells", GT._("Reload {0}", "{444 666 1}", true) },
       { "nineUnitCellsRestricted", GT._("Reload {0}", "{444 666 1};display 555", true) },
-      { "nineUnitCellsPoly", GT._("Reload {0}", "+ Polyhedra", true) },
+      { "nineUnitCellsPoly", GT._("Reload + Polyhedra", true) },
       
 
       { "_AxesMenu", GT._("Axes", true) }, { "_BoundBoxMenu", GT._("Boundbox", true) },

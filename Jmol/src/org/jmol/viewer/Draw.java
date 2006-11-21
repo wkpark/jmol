@@ -243,6 +243,8 @@ class Draw extends MeshCollection {
       currentMesh.modelIndex = viewer.getDisplayModelIndex();
       if (currentMesh.modelIndex < 0)
         currentMesh.modelIndex = 0;
+      if (isFixed && !isArrow && !isCurve && modelCount > 1)
+        currentMesh.modelIndex = -1;
       currentMesh.setPolygonCount(1);
       currentMesh.ptCenters = null;
       currentMesh.modelFlags = null;

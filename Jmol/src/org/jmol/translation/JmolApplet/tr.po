@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-11-21 20:01+0100\n"
+"POT-Creation-Date: 2006-11-22 21:12+0100\n"
 "PO-Revision-Date: 2006-11-01 18:39+0200\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -79,97 +79,97 @@ msgstr "Jmol küçük uygulaması yükleniyor ..."
 msgid "  {0} seconds"
 msgstr "  {0} saniye"
 
-#: org/jmol/popup/JmolPopup.java:158
+#: org/jmol/popup/JmolPopup.java:163
 #, java-format
 msgid "Select ({0})"
 msgstr "Seç ({0})"
 
-#: org/jmol/popup/JmolPopup.java:362
+#: org/jmol/popup/JmolPopup.java:363
 #, java-format
 msgid "All {0} models"
 msgstr "Tüm {0} modeller"
 
-#: org/jmol/popup/JmolPopup.java:366 org/jmol/popup/JmolPopup.java:400
+#: org/jmol/popup/JmolPopup.java:367 org/jmol/popup/JmolPopup.java:401
 msgid "all"
 msgstr "tümü"
 
-#: org/jmol/popup/JmolPopup.java:397
+#: org/jmol/popup/JmolPopup.java:398
 #, java-format
 msgid "Configurations ({0})"
 msgstr "Ayarlar  ({0})"
 
-#: org/jmol/popup/JmolPopup.java:436
+#: org/jmol/popup/JmolPopup.java:430
 #, java-format
 msgid "atoms: {0}"
 msgstr "atomlar: {0}"
 
-#: org/jmol/popup/JmolPopup.java:438
+#: org/jmol/popup/JmolPopup.java:431
 #, java-format
 msgid "bonds: {0}"
 msgstr "bağlar: {0}"
 
-#: org/jmol/popup/JmolPopup.java:442
+#: org/jmol/popup/JmolPopup.java:435
 #, java-format
 msgid "groups: {0}"
 msgstr "gruplar: {0}"
 
-#: org/jmol/popup/JmolPopup.java:444
+#: org/jmol/popup/JmolPopup.java:437
 #, java-format
 msgid "chains: {0}"
 msgstr "zincirler: {0}"
 
-#: org/jmol/popup/JmolPopup.java:446
+#: org/jmol/popup/JmolPopup.java:439
 #, java-format
 msgid "polymers: {0}"
 msgstr "polimerler: {0}"
 
-#: org/jmol/popup/JmolPopup.java:452
+#: org/jmol/popup/JmolPopup.java:445
 #, java-format
 msgid "View {0}"
 msgstr "Görünüm {0}"
 
-#: org/jmol/popup/JmolPopup.java:475
+#: org/jmol/popup/JmolPopup.java:468
 #, java-format
 msgid "model {0}"
 msgstr "model {0}"
 
-#: org/jmol/popup/JmolPopup.java:491
+#: org/jmol/popup/JmolPopup.java:484
 msgid "Java memory usage"
 msgstr "Java hafıza kullanımı"
 
-#: org/jmol/popup/JmolPopup.java:497
+#: org/jmol/popup/JmolPopup.java:490
 #, java-format
 msgid "{0} MB total"
 msgstr "Toplam {0} MB "
 
-#: org/jmol/popup/JmolPopup.java:499
+#: org/jmol/popup/JmolPopup.java:492
 #, java-format
 msgid "{0} MB free"
 msgstr "{0} MB boş"
 
-#: org/jmol/popup/JmolPopup.java:502
+#: org/jmol/popup/JmolPopup.java:495
 #, java-format
 msgid "{0} MB maximum"
 msgstr "En yüksek {0} MB"
 
-#: org/jmol/popup/JmolPopup.java:505
+#: org/jmol/popup/JmolPopup.java:498
 msgid "unknown maximum"
 msgstr "bilinmeyen en yüksek değer"
 
-#: org/jmol/popup/JmolPopup.java:508
+#: org/jmol/popup/JmolPopup.java:501
 msgid "1 processor"
 msgstr "1 işlemci"
 
-#: org/jmol/popup/JmolPopup.java:509
+#: org/jmol/popup/JmolPopup.java:502
 #, java-format
 msgid "{0} processors"
 msgstr "{0} işlemciler"
 
-#: org/jmol/popup/JmolPopup.java:511
+#: org/jmol/popup/JmolPopup.java:504
 msgid "unknown processor count"
 msgstr "bilinmeyen işlemci sayısı"
 
-#: org/jmol/popup/JmolPopup.java:781
+#: org/jmol/popup/JmolPopup.java:775
 msgid "Main Menu"
 msgstr "Ana Menü"
 
@@ -1426,10 +1426,6 @@ msgstr "uyumsuz bağımsız değişkenler"
 #: org/jmol/viewer/Eval.java:6157
 msgid "insufficient arguments"
 msgstr "yetersiz bağımsız değişken"
-
-#: org/jmol/viewer/ModelManager.java:67
-msgid "zapped"
-msgstr ""
 
 #: org/jmol/viewer/PickingManager.java:164
 msgid "pick one more atom in order to spin the model around an axis"

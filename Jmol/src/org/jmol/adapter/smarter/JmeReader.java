@@ -34,7 +34,8 @@ class JmeReader extends AtomSetCollectionReader {
 /*
  *  see http://www.molinspiration.com/jme/doc/jme_functions.html
  *
- * not fully supported
+ * deprecated and not recognized. This is a 2D file type that
+ * interferes with proper file/script discrimination
  * 
  * the format of the JME String is as follows
  * natoms nbonds (atomic_symbol x_coord y_coord) for all atoms 

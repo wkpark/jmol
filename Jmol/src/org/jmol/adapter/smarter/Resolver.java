@@ -37,18 +37,24 @@ class Resolver {
     return resolve(name, bufferedReader, logger, null);
   }
 
+  static String getFileType(BufferedReader br) {
+    try {
+      return determineAtomSetCollectionReader(br);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+  
   static Object resolve(String name, BufferedReader bufferedReader,
                         JmolAdapter.Logger logger, int[] params) throws Exception {
     AtomSetCollectionReader atomSetCollectionReader;
     String atomSetCollectionReaderName =
-      determineAtomSetCollectionReader(bufferedReader, logger);
+      determineAtomSetCollectionReader(bufferedReader);
+    if (atomSetCollectionReaderName == null)
+      return "unrecognized file format for file " + name;
     logger.log("The Resolver thinks", atomSetCollectionReaderName);
     String className =
       "org.jmol.adapter.smarter." + atomSetCollectionReaderName + "Reader";
-
-    if (atomSetCollectionReaderName == null)
-      return "unrecognized file format for file " + name;
-
     try {
       Class atomSetCollectionReaderClass = Class.forName(className);
       atomSetCollectionReader =
@@ -86,8 +92,7 @@ class Resolver {
     return atomSetCollection;
   }
 
-  static String determineAtomSetCollectionReader(BufferedReader bufferedReader,
-                                                 JmolAdapter.Logger logger)
+  static String determineAtomSetCollectionReader(BufferedReader bufferedReader)
     throws Exception {
     String[] lines = new String[16];
     LimitedLineReader llr = new LimitedLineReader(bufferedReader, 16384);
@@ -137,11 +142,11 @@ class Resolver {
       }
     }
 
-    if (lines[1] == null || lines[1].trim().length() == 0)
-      return "Jme"; // this is really quite broken :-)
+    //if (lines[1] == null || lines[1].trim().length() == 0)
+      //return "Jme"; // this is really quite broken :-)
     
-    for (int i = 0; i < lines.length; ++i)
-      lines[i] = llr.readLineWithNewline();
+    //for (int i = 0; i < lines.length; ++i)
+      //lines[i] = llr.readLineWithNewline();
 
     return null;
   }

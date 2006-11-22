@@ -53,7 +53,8 @@ class RepaintManager {
     if (currentModelIndex == -1)
       setBackgroundModelIndex(-1);    
     viewer.setTainted(true);
-    setStatusFrameChanged();
+    if (frame != null)
+      setStatusFrameChanged();
     setFrameRangeVisible(); 
   }
 

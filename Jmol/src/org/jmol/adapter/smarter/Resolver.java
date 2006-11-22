@@ -32,11 +32,6 @@ import org.jmol.util.Logger;
 
 class Resolver {
 
-  static Object resolve(String name, BufferedReader bufferedReader,
-                        JmolAdapter.Logger logger) throws Exception {
-    return resolve(name, bufferedReader, logger, null);
-  }
-
   static String getFileType(BufferedReader br) {
     try {
       return determineAtomSetCollectionReader(br);
@@ -45,6 +40,11 @@ class Resolver {
     }
   }
   
+  static Object resolve(String name, BufferedReader bufferedReader,
+                        JmolAdapter.Logger logger) throws Exception {
+    return resolve(name, bufferedReader, logger, null);
+  }
+
   static Object resolve(String name, BufferedReader bufferedReader,
                         JmolAdapter.Logger logger, int[] params) throws Exception {
     AtomSetCollectionReader atomSetCollectionReader;
@@ -69,6 +69,7 @@ class Resolver {
     AtomSetCollection atomSetCollection =
       atomSetCollectionReader.readAtomSetCollection(bufferedReader);
     bufferedReader.close();
+    bufferedReader = null;
     return finalize(atomSetCollection, "file " + name);
   }
 
@@ -102,6 +103,11 @@ class Resolver {
       if (lines[i].length() > 0)
         nLines++;
     }
+
+    if (nLines == 1 && lines[0].length() > 0
+        && Character.isDigit(lines[0].charAt(0)))
+      return "Jme"; //only one line, and that line starts with a number 
+
     if (checkV3000(lines))
       return "V3000";
     if (checkMol(lines))
@@ -145,10 +151,6 @@ class Resolver {
           return containsFormats[i];
       }
     }
-
-    if (nLines == 1 && lines[0].length() > 0
-        && Character.isDigit(lines[0].charAt(0)))
-      return "Jme"; //only one line, and that line starts with a number 
 
     return null;
   }

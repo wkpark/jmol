@@ -52,6 +52,11 @@ public class SmarterJmolAdapter extends JmolAdapter {
   }
 
   public Object openBufferedReader(String name,
+                                   BufferedReader bufferedReader) {
+    return openBufferedReader(name, bufferedReader, (int[]) null);
+  }
+
+  public Object openBufferedReader(String name,
                                    BufferedReader bufferedReader, int[] params) {
     try {
       Object atomSetCollectionOrErrorMessage =
@@ -68,28 +73,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
       return "unknown reader error";
     } catch (Exception e) {
       org.jmol.util.Logger.error(null, e);
-      return "" + e;
-    }
-  }
-
-
-  public Object openBufferedReader(String name,
-                                   BufferedReader bufferedReader) {
-    try {
-      Object atomSetCollectionOrErrorMessage =
-        Resolver.resolve(name, bufferedReader, logger);
-      if (atomSetCollectionOrErrorMessage instanceof String)
-        return atomSetCollectionOrErrorMessage;
-      if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {
-        AtomSetCollection atomSetCollection =
-          (AtomSetCollection)atomSetCollectionOrErrorMessage;
-        if (atomSetCollection.errorMessage != null)
-          return atomSetCollection.errorMessage;
-        return atomSetCollection;
-      }
-      return "unknown reader error";
-    } catch (Exception e) {
-      org.jmol.util.Logger.error(null, e);
+      bufferedReader = null;
       return "" + e;
     }
   }
@@ -225,18 +209,6 @@ public class SmarterJmolAdapter extends JmolAdapter {
     return b;
   }
   
-/*
-  // not redefined for the smarterJmolAdapter, but we probably 
-  // should do something similar like that. This would required
-  // us to add a Properties to the Atom, I guess...
-  public String getClientAtomStringProperty(Object clientAtom,
-                                            String propertyName) {
-    return null;
-    
-    "Property" is not the right class for this; numeric data are involved. RMH 
-  }
-*/
-
   ////////////////////////////////////////////////////////////////
 
   public JmolAdapter.AtomIterator

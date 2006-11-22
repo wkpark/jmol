@@ -251,14 +251,14 @@ public final class Frame {
     modelCount = (adapter == null ? 1 : adapter.getAtomSetCount(clientFile));
     mmset.setModelCount(modelCount);
 
-    Logger.info("frame: haveSymmetry:" + someModelsHaveSymmetry
-        + " haveUnitcells:" + someModelsHaveUnitcells + " haveFractionalCoord:"
-        + someModelsHaveFractionalCoordinates);
     currentModelIndex = -1;
     if (adapter == null) {
       mmset.setModelNameNumberProperties(0, "", 1, null, null, false);
     } else {
       if (modelCount > 0) {
+        Logger.info("frame: haveSymmetry:" + someModelsHaveSymmetry
+            + " haveUnitcells:" + someModelsHaveUnitcells + " haveFractionalCoord:"
+            + someModelsHaveFractionalCoordinates);
         Logger
             .info(modelCount
                 + " model"
@@ -1010,6 +1010,8 @@ public final class Frame {
   }
 
   int getAtomCountInModel(int modelIndex) {
+    if (modelIndex < 0)
+      return atomCount;
     int n = 0;
     for (int i = atomCount; --i >= 0;)
       if (atoms[i].modelIndex == modelIndex)

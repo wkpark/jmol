@@ -289,10 +289,14 @@ final class Mmset {
   }
 
   int getPolymerCountInModel(int modelIndex) {
+    if (modelIndex < 0)
+      return getPolymerCount();
     return models[modelIndex].getPolymerCount();
   }
 
   int getChainCountInModel(int modelIndex) {
+    if (modelIndex < 0)
+      return getChainCount();
     return models[modelIndex].getChainCount();
   }
 
@@ -308,6 +312,8 @@ final class Mmset {
   }
 
   int getGroupCountInModel(int modelIndex) {
+    if (modelIndex < 0)
+      return getGroupCount();
     return models[modelIndex].getGroupCount();
   }
 

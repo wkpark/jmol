@@ -309,23 +309,18 @@ public class Jmol extends JPanel {
     FileDropper dropper = new FileDropper ();
     final JFrame f = frame;
     dropper.addPropertyChangeListener (new PropertyChangeListener () {
-        
-        public void propertyChange (PropertyChangeEvent evt) {
-            //System.out.println("Drop triggered...");
-            f.setCursor (Cursor.getPredefinedCursor (Cursor.WAIT_CURSOR));
-            
-            if (evt.getPropertyName ().equals (FileDropper.FD_PROPERTY_FILENAME)) {
-                final String filename = evt.getNewValue ().toString ();
-                
-                viewer.openFile(filename);
-                viewer.getOpenFileError();
-            } else if (evt.getPropertyName ().equals (FileDropper.FD_PROPERTY_INLINE)) {
-                final String inline = evt.getNewValue().toString();
-                viewer.openStringInline(inline);
-            }
-            
-            f.setCursor (Cursor.getDefaultCursor ());
+      public void propertyChange(PropertyChangeEvent evt) {
+        //System.out.println("Drop triggered...");
+        f.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        if (evt.getPropertyName().equals(FileDropper.FD_PROPERTY_FILENAME)) {
+          final String filename = evt.getNewValue().toString();
+          viewer.openFile(filename);
+        } else if (evt.getPropertyName().equals(FileDropper.FD_PROPERTY_INLINE)) {
+          final String inline = evt.getNewValue().toString();
+          viewer.openStringInline(inline);
         }
+        f.setCursor(Cursor.getDefaultCursor());
+      }
     });
     
     this.setDropTarget(new DropTarget (this, dropper));
@@ -1225,7 +1220,7 @@ public class Jmol extends JPanel {
       int retval = openChooser.showOpenDialog(Jmol.this);
       if (retval == 0) {
         File file = openChooser.getSelectedFile();
-        viewer.evalStringQuiet("load \"" + file.getAbsolutePath() +"\"");
+        viewer.openFile(file.getAbsolutePath());
         return;
       }
       historyFile.addWindowInfo(

@@ -93,6 +93,13 @@ class FileManager {
     commands.append("\n\n");
     return commands.toString();
   }
+
+  String getFileTypeName(String fileName) {
+    Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName);
+    if (! (br instanceof BufferedReader))
+      return null;
+    return modelAdapter.getFileTypeName((BufferedReader) br);
+  }
   
   void openFile(String name) {
     openFile(name, null, null);
@@ -164,11 +171,11 @@ class FileManager {
     isInline = true;
     isDOM = false;
     if (params == null)
-      fileOpenThread = new FileOpenThread(fullPathName, new StringReader(
-          strModel));
+      fileOpenThread = new FileOpenThread(fullPathName, new BufferedReader(new StringReader(
+          strModel)));
     else
-      fileOpenThread = new FileOpenThread(fullPathName, new StringReader(
-          strModel), params);
+      fileOpenThread = new FileOpenThread(fullPathName, new BufferedReader(new StringReader(
+          strModel)), params);
     fileOpenThread.run();
   }
 
@@ -213,6 +220,10 @@ class FileManager {
   }
 
   void openReader(String fullPathName, String name, Reader reader) {
+    openBufferedReader(fullPathName, name, new BufferedReader(reader));
+  }
+
+  void openBufferedReader(String fullPathName, String name, BufferedReader reader) {
     openErrorMessage = null;
     this.fullPathName = fullPathName;
     fileName = name;
@@ -249,7 +260,7 @@ class FileManager {
       BufferedInputStream bis = new BufferedInputStream((InputStream) t, 8192);
       InputStream is = bis;
       if (isCompoundDocument(is)) {
-        CompoundDocument doc = new CompoundDocument(name, bis);
+        CompoundDocument doc = new CompoundDocument(bis);
         return "" + doc.getAllData();
       } else if (isGzip(is)) {
         is = new GZIPInputStream(bis);
@@ -326,9 +337,7 @@ class FileManager {
     Logger.info("dumpDocumentBase:" + documentBase);
     Object inputStreamOrError =
       getInputStreamOrErrorMessageFromName(documentBase);
-    if (inputStreamOrError == null) {
-      Logger.error("?Que? ?null?");
-    } else if (inputStreamOrError instanceof String) {
+    if (inputStreamOrError instanceof String) {
       Logger.error("Error:" + inputStreamOrError);
     } else {
       BufferedReader br =
@@ -437,7 +446,7 @@ class FileManager {
       BufferedInputStream bis = new BufferedInputStream((InputStream)t, 8192);
       InputStream is = bis;
       if (isCompoundDocument(is)) {
-        CompoundDocument doc = new CompoundDocument(name, bis);
+        CompoundDocument doc = new CompoundDocument(bis);
         return getBufferedReaderForString("" + doc.getAllData());
       } else if (isGzip(is)) {
         is = new GZIPInputStream(bis);
@@ -471,7 +480,7 @@ class FileManager {
     String fullPathNameInThread;
     String nameAsGivenInThread;
     Object clientFile;
-    Reader reader;
+    BufferedReader reader;
     int[] params;
 
     FileOpenThread(String fullPathName, String nameAsGiven) {
@@ -486,59 +495,39 @@ class FileManager {
       this.params = params;
     }
 
-    FileOpenThread(String name, Reader reader, int[] params) {
+    FileOpenThread(String name, BufferedReader reader, int[] params) {
       nameAsGivenInThread = fullPathNameInThread = name;
       this.reader = reader;
       this.params = params;
     }
 
-    FileOpenThread(String name, Reader reader) {
+    FileOpenThread(String name, BufferedReader reader) {
       nameAsGivenInThread = fullPathNameInThread = name;
       this.reader = reader;
     }
 
     public void run() {
       if (reader != null) {
-        openReader(reader);
+        openBufferedReader(reader);
       } else {
-        Object t = getInputStreamOrErrorMessageFromName(nameAsGivenInThread);
-        if (! (t instanceof InputStream)) {
+        Object t = getUnzippedBufferedReaderOrErrorMessageFromName(nameAsGivenInThread);
+        if (t instanceof BufferedReader)
+          openBufferedReader((BufferedReader) t);
+        else
           errorMessage = (t == null
                           ? "error opening:" + nameAsGivenInThread
                           : (String)t);
-        } else {
-          openInputStream(fullPathNameInThread, fileName, (InputStream) t);
-        }
       }
       if (errorMessage != null)
         Logger.error("error opening " + fullPathNameInThread + "\n" + errorMessage);
       terminated = true;
     }
 
-    private void openInputStream(String fullPathName, String fileName,
-                                 InputStream istream) {
-      BufferedInputStream bis = new BufferedInputStream(istream, 8192);
-      InputStream is = bis;
-      try {
-        if (isCompoundDocument(is)) {
-          CompoundDocument doc = new CompoundDocument(fullPathName, bis);
-          openReader(new StringReader("" + doc.getAllData()));
-          return;
-        } else if (isGzip(is)) {
-          is = new GZIPInputStream(bis);
-        }
-        openReader(new InputStreamReader(is));
-      } catch (Exception ioe) {
-        errorMessage = ioe.getMessage();
-      }
-    }
-
-    private void openReader(Reader reader) {
-      Object clientFile =
-        modelAdapter.openBufferedReader(fullPathNameInThread,
-                                        new BufferedReader(reader), params);
+    private void openBufferedReader(BufferedReader reader) {
+      Object clientFile = modelAdapter.openBufferedReader(fullPathNameInThread,
+          reader, params);
       if (clientFile instanceof String)
-        errorMessage = (String)clientFile;
+        errorMessage = (String) clientFile;
       else
         this.clientFile = clientFile;
     }
@@ -578,22 +567,21 @@ class FileManager {
           }
           istream[i] = (InputStream) t;
         }
-        openInputStream(fullPathNameInThread, istream);
+        openInputStream(istream);
       }
       if (errorMessage != null)
         Logger.error("error opening " + fullPathNameInThread + "\n" + errorMessage);
       terminated = true;
     }
 
-    private void openInputStream(String[] fullPathName,
-                                 InputStream[] istream) {
+    private void openInputStream(InputStream[] istream) {
       Reader[] zistream = new Reader[istream.length];
       for (int i = 0; i < istream.length; i++) {
         BufferedInputStream bis = new BufferedInputStream(istream[i], 8192);
         InputStream is = bis;
         try {
           if (isCompoundDocument(is)) {
-            CompoundDocument doc = new CompoundDocument(fullPathName[i], bis);
+            CompoundDocument doc = new CompoundDocument(bis);
             zistream[i] = new StringReader("" + doc.getAllData());
           } else if (isGzip(is)) {
             zistream[i] = new InputStreamReader(new GZIPInputStream(bis));

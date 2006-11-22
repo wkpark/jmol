@@ -58,7 +58,7 @@ public class CompoundDocument extends BinaryDocument {
   int nIntPerSector;
   int nDirEntriesperSector;
 
-  public CompoundDocument(String fileName, BufferedInputStream bis) {
+  public CompoundDocument(BufferedInputStream bis) {
 
     /*    try {
      file = new RandomAccessFile(fileName, "r");

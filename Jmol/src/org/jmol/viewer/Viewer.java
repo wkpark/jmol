@@ -176,6 +176,10 @@ public class Viewer extends JmolViewer {
   boolean haveDisplay = true;
   boolean mustRender = true;
 
+  public boolean isApplet() {
+    return (htmlName.length() > 0);
+  }
+
   public void setAppletContext(String htmlName, URL documentBase, URL codeBase,
                                String appletProxyOrCommandOptions) {
     this.htmlName = htmlName;
@@ -1011,10 +1015,6 @@ public class Viewer extends JmolViewer {
     fileManager.setAppletProxy(appletProxy);
   }
 
-  public boolean isApplet() {
-    return (htmlName.length() > 0);
-  }
-
   private void setDefaultDirectory(String dir) {
     global.defaultDirectory = (dir == null || dir.length() == 0 ? null : dir);
   }
@@ -1037,8 +1037,11 @@ public class Viewer extends JmolViewer {
 
   public void openFile(String name) {
     //Jmol app file dropper, main, OpenUrlAction, RecentFilesAction
-    //app Jmol BYPASSES SCRIPTING **
-    openFile(name, null, null);
+    String type = fileManager.getFileTypeName(name);
+    checkHalt("exit");
+    // assumes a Jmol script file if no other file type
+    script((type == null ? "script " : "load ")
+        + StateManager.escape(simpleReplace(name, "\\", "/")));
   }
 
   void openFile(String name, int[] params, String loadScript) {

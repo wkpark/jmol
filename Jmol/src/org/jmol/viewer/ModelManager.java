@@ -64,7 +64,7 @@ class ModelManager {
   }
   
   void zap() {
-    fullPathName = fileName = modelSetName = GT._("zapped");
+    fullPathName = fileName = modelSetName = "zapped";
     frame = new Frame(viewer, "empty");
     haveFile = false;
   }

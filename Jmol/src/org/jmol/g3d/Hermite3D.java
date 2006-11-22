@@ -85,6 +85,8 @@ class Hermite3D {
   void render(boolean tFill, short colix, int tension,
                      int diameterBeg, int diameterMid, int diameterEnd,
                      Point3i p0, Point3i p1, Point3i p2, Point3i p3) {
+    if (p0.z == 1 ||p1.z == 1 ||p2.z == 1 ||p3.z == 1)
+      return;
     int x1 = p1.x, y1 = p1.y, z1 = p1.z;
     int x2 = p2.x, y2 = p2.y, z2 = p2.z;
     int xT1 = ((x2 - p0.x) * tension) / 8;
@@ -138,6 +140,8 @@ class Hermite3D {
       double h2 = -2*s3 + 3*s2;
       double h3 = s3 - 2*s2 + s;
       double h4 = s3 - s2;
+      if (sp >= 15)
+        break;
       Point3i pMid = pRight[sp+1];
       pMid.x = (int) (h1*x1 + h2*x2 + h3*xT1 + h4*xT2);
       pMid.y = (int) (h1*y1 + h2*y2 + h3*yT1 + h4*yT2);
@@ -242,6 +246,8 @@ class Hermite3D {
            double h2 = -2 * s3 + 3 * s2;
            double h3 = s3 - 2 * s2 + s;
            double h4 = s3 - s2;
+           if (sp >= 15)
+             break;
            Point3i pMid = pRight[sp + 1];
            pMid.x = (int) (h1 * x1 + h2 * x2 + h3 * xT1 + h4 * xT2);
            pMid.y = (int) (h1 * y1 + h2 * y2 + h3 * yT1 + h4 * yT2);
@@ -312,6 +318,8 @@ class Hermite3D {
                       //bottom strand segment
                       Point3i p4, Point3i p5, Point3i p6, Point3i p7,
                       int aspectRatio) {
+    if (p0.z == 1 ||p1.z == 1 ||p2.z == 1 ||p3.z == 1 ||p4.z == 1 ||p5.z == 1 ||p6.z == 1 ||p7.z == 1)
+      return;
     if (!fill) {
       render2x(fill, colix, tension, p0, p1, p2, p3, p4, p5, p6, p7);
       return;
@@ -403,6 +411,8 @@ class Hermite3D {
       double h3 = s3 - 2 * s2 + s;
       double h4 = s3 - s2;
 
+      if (sp >= 15)
+        break;
       int spNext = sp + 1;
       Point3f pMidTop = pTopRight[spNext];
       pMidTop.x = (float) (h1 * x1 + h2 * x2 + h3 * xT1 + h4 * xT2);

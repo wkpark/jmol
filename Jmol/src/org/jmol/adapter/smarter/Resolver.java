@@ -96,8 +96,12 @@ class Resolver {
       throws Exception {
     String[] lines = new String[16];
     LimitedLineReader llr = new LimitedLineReader(bufferedReader, 16384);
-    for (int i = 0; i < lines.length; ++i)
+    int nLines = 0;
+    for (int i = 0; i < lines.length; ++i) {
       lines[i] = llr.readLineWithNewline();
+      if (lines[i].length() > 0)
+        nLines++;
+    }
     if (checkV3000(lines))
       return "V3000";
     if (checkMol(lines))
@@ -142,7 +146,7 @@ class Resolver {
       }
     }
 
-    if (lines[1] == null && lines[0] != null && lines[0].length() > 0
+    if (nLines == 1 && lines[0].length() > 0
         && Character.isDigit(lines[0].charAt(0)))
       return "Jme"; //only one line, and that line starts with a number 
 

@@ -179,7 +179,7 @@ public final class ScriptWindow extends JDialog
       execThread.start();
     }
   }
-  
+
   void executeCommand(String strCommand) {
     boolean doWait;
     setError(false);
@@ -368,6 +368,15 @@ class ConsoleTextPane extends JTextPane {
       else
       {
          super.processKeyEvent(ke);
+         //check command for compiler-identifyable syntax issues
+         //this may have to be taken out if people start complaining
+         //that only some of the commands are being checked
+         //that is -- that the script itself is not being fully checked
+         
+         //not perfect -- help here?
+         if (ke.getID() == KeyEvent.KEY_RELEASED
+             && (ke.getKeyCode() > KeyEvent.VK_DOWN) || ke.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+           checkCommand();
       }
    }
 
@@ -392,6 +401,17 @@ class ConsoleTextPane extends JTextPane {
       e.printStackTrace();
     }
   }  
+
+   void checkCommand() {
+    String strCommand = consoleDoc.getCommandString();
+    if (strCommand.length() == 0)
+      return;
+    consoleDoc
+        .colorCommand(viewer.scriptCheck(strCommand) == null ? consoleDoc.attUserInput
+            : consoleDoc.attError);
+  }
+   
+
 }
 
 class ConsoleDocument extends DefaultStyledDocument {
@@ -547,8 +567,9 @@ class ConsoleDocument extends DefaultStyledDocument {
     String strCommand = "";
     try {
       int cmdStart = positionAfterPrompt.getOffset();
-      // skip unnecessary leading spaces in the command.
-      strCommand =  getText(cmdStart, getLength() - cmdStart).trim();
+      strCommand =  getText(cmdStart, getLength() - cmdStart);
+      while (strCommand.length() > 0 && strCommand.charAt(0) == ' ')
+        strCommand = strCommand.substring(1);
     } catch (BadLocationException e) {
       e.printStackTrace();
     }
@@ -595,6 +616,12 @@ class ConsoleDocument extends DefaultStyledDocument {
       return;
     replace(offsetAfterPrompt, getLength() - offsetAfterPrompt, newCommand,
         isError ? attError : attUserInput);
+  }
+
+  void colorCommand(SimpleAttributeSet att) {
+    if (positionAfterPrompt == positionBeforePrompt)
+      return;
+    setCharacterAttributes(offsetAfterPrompt, getLength() - offsetAfterPrompt, att, true);
   }
 }
 

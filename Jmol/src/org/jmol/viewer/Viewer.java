@@ -175,7 +175,8 @@ public class Viewer extends JmolViewer {
   String writeInfo;
   boolean haveDisplay = true;
   boolean mustRender = true;
-
+  boolean checkScriptOnly = false;
+  
   public boolean isApplet() {
     return (htmlName.length() > 0);
   }
@@ -190,6 +191,9 @@ public class Viewer extends JmolViewer {
       if (str.indexOf("-i") >= 0) {
         setLogLevel(3); //no info, but warnings and errors
         isSilent = true;
+      }
+      if (str.indexOf("-c") >= 0) {
+        checkScriptOnly = true;
       }
       if (str.indexOf("-x") >= 0) {
         autoExit = true;
@@ -287,12 +291,12 @@ public class Viewer extends JmolViewer {
   void initialize() {
     resetAllParameters();
   }
-  
+
   void resetAllParameters() {
     global = stateManager.getGlobalSettings();
     colorManager.resetElementColors();
   }
-  
+
   String listSavedStates() {
     return stateManager.listSavedStates();
   }
@@ -325,7 +329,7 @@ public class Viewer extends JmolViewer {
   String getSavedState(String saveName) {
     return stateManager.getSavedState(saveName);
   }
-  
+
   boolean restoreState(String saveName) {
     //from Eval
     return stateManager.restoreState(saveName);
@@ -412,7 +416,7 @@ public class Viewer extends JmolViewer {
   boolean getPointToCenter() {
     return pointToCenter;
   }
-  
+
   void rotateXYBy(int xDelta, int yDelta) {
     //mouseSinglePressDrag
     transformManager.rotateXYBy(xDelta, yDelta);
@@ -878,9 +882,9 @@ public class Viewer extends JmolViewer {
   }
 
   boolean isBondSelection() {
-    return !selectionManager.selectionModeAtoms;  
+    return !selectionManager.selectionModeAtoms;
   }
-  
+
   BitSet getSelectedAtomsOrBonds() {
     return selectionManager.getSelectedAtomsOrBonds();
   }
@@ -888,7 +892,7 @@ public class Viewer extends JmolViewer {
   BitSet getSelectedBonds() {
     return selectionManager.bsBonds;
   }
-  
+
   void hide(BitSet bs, boolean isQuiet) {
     //Eval
     selectionManager.hide(bs, isQuiet);
@@ -1018,7 +1022,7 @@ public class Viewer extends JmolViewer {
   private void setDefaultDirectory(String dir) {
     global.defaultDirectory = (dir == null || dir.length() == 0 ? null : dir);
   }
-  
+
   String getDefaultDirectory() {
     return global.defaultDirectory;
   }
@@ -1071,7 +1075,7 @@ public class Viewer extends JmolViewer {
   public void openFiles(String modelName, String[] names) {
     openFiles(modelName, names, null);
   }
-  
+
   void openFiles(String modelName, String[] names, String loadScript) {
     //Eval
     zap();
@@ -1135,7 +1139,7 @@ public class Viewer extends JmolViewer {
       }
       if (i < len && strModel.charAt(i) == newLine)
         strModel = strModel.substring(i + 1);
-      strModel = simpleReplace(strModel, ""+newLine, "\n");
+      strModel = simpleReplace(strModel, "" + newLine, "\n");
     }
     String datasep = (String) global.getParameter("dataseparator");
     if (datasep != null && (i = strModel.indexOf(datasep)) >= 0) {
@@ -1163,7 +1167,7 @@ public class Viewer extends JmolViewer {
     if (arrayModels == null || arrayModels.length == 0)
       return;
     int[] A = global.getDefaultLatticeArray();
-    openStringInline(arrayModels, A); 
+    openStringInline(arrayModels, A);
   }
 
   public void openDOM(Object DOMNode) {
@@ -1282,9 +1286,9 @@ public class Viewer extends JmolViewer {
   // ///////////////////////////////////////////////////////////////
 
   void addStateScript(String script) {
-    modelManager.addStateScript(script);  
+    modelManager.addStateScript(script);
   }
-  
+
   public boolean getEchoStateActive() {
     return modelManager.getEchoStateActive();
   }
@@ -1305,7 +1309,7 @@ public class Viewer extends JmolViewer {
     zap();
     echoMessage(msg);
   }
-  
+
   void echoMessage(String msg) {
     int iShape = JmolConstants.SHAPE_ECHO;
     loadShape(iShape);
@@ -1313,7 +1317,7 @@ public class Viewer extends JmolViewer {
     setShapeProperty(iShape, "target", "error");
     setShapeProperty(iShape, "text", msg);
   }
-  
+
   private void clear() {
     if (modelManager.getFrame() == null)
       return;
@@ -1765,12 +1769,14 @@ public class Viewer extends JmolViewer {
   }
 
   String loadScript;
+
   void setLoadScript(String script) {
-      loadScript = script;
+    loadScript = script;
   }
-  
+
   public String getStateInfo() {
-    StringBuffer s = new StringBuffer("# Jmol state version " + getJmolVersion() + ";\n\n");
+    StringBuffer s = new StringBuffer("# Jmol state version "
+        + getJmolVersion() + ";\n\n");
     //  window state
     s.append(global.getWindowState());
     //  file state
@@ -1778,7 +1784,7 @@ public class Viewer extends JmolViewer {
     //  numerical values
     s.append(global.getState());
     //  definitions, connections, atoms, bonds, labels, echos, shapes
-    s.append(modelManager.getState());    
+    s.append(modelManager.getState());
     //  frame information
     s.append(repaintManager.getState());
     //  orientation and slabbing
@@ -1890,9 +1896,9 @@ public class Viewer extends JmolViewer {
       return global.defaultTorsionLabel;
     }
   }
-  
+
   private void setDefaultMeasurementLabel(int nPoints, String format) {
-    switch(nPoints) {
+    switch (nPoints) {
     case 2:
       global.defaultDistanceLabel = format;
     case 3:
@@ -1901,7 +1907,7 @@ public class Viewer extends JmolViewer {
       global.defaultTorsionLabel = format;
     }
   }
-  
+
   public int getMeasurementCount() {
     int count = getShapePropertyAsInt(JmolConstants.SHAPE_MEASURES, "count");
     return count <= 0 ? 0 : count;
@@ -1945,13 +1951,13 @@ public class Viewer extends JmolViewer {
   }
 
   private void setJustifyMeasurements(boolean TF) {
-    global.justifyMeasurements = TF;  
+    global.justifyMeasurements = TF;
   }
-  
+
   boolean getJustifyMeasurements() {
     return global.justifyMeasurements;
   }
-  
+
   void setMeasurementFormats(String strFormat) {
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormats", strFormat);
   }
@@ -2128,13 +2134,13 @@ public class Viewer extends JmolViewer {
     int backgroundIndex = getBackgroundModelIndex();
     return (backgroundIndex >= 0 ? -2 - modelIndex : modelIndex);
   }
-  
+
   private void setBackgroundModel(int modelNumber) {
     //Eval
     int modelIndex = getModelNumberIndex(modelNumber);
     setBackgroundModelIndex(modelIndex);
   }
-  
+
   private void setBackgroundModelIndex(int modelIndex) {
     //initializeModel
     repaintManager.setBackgroundModelIndex(modelIndex);
@@ -2178,12 +2184,12 @@ public class Viewer extends JmolViewer {
     repaintManager.popHoldRepaint();
   }
 
-
   private boolean refreshing;
+
   private void setRefreshing(boolean TF) {
     refreshing = TF;
   }
-  
+
   public void refresh() {
     //Draw, pauseScriptExecution
     repaintManager.refresh();
@@ -2287,7 +2293,7 @@ public class Viewer extends JmolViewer {
   private Image getImage(boolean isDouble, boolean antialias) {
     Matrix3f matrixRotate = transformManager.getStereoRotationMatrix(isDouble);
     g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
-        matrixRotate, antialias); 
+        matrixRotate, antialias);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
         repaintManager.currentModelIndex);
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
@@ -2422,10 +2428,16 @@ public class Viewer extends JmolViewer {
     if (str.startsWith("exit")) {
       haltScriptExecution();
       clearScriptQueue();
+      if (checkScriptOnly)
+        Logger.info("exit -- stops script checking");
+      checkScriptOnly = false;
       return str.equals("exit");
     }
     if (str.startsWith("quit")) {
       haltScriptExecution();
+      if (checkScriptOnly)
+        Logger.info("quit -- stops script checking");
+      checkScriptOnly = false;
       return str.equals("quit");
     }
     return false;
@@ -2492,8 +2504,12 @@ public class Viewer extends JmolViewer {
         .loadScriptFile(strScript, isQuiet) : eval.loadScriptString(strScript,
         isQuiet));
     if (isOK) {
-      eval.runEval();
+      if (checkScriptOnly)
+        Logger.info("--checking script (use 'exit' to stop checking):\n" + eval.script);
+      eval.runEval(checkScriptOnly);
       String strErrorMessage = eval.getErrorMessage();
+      if (checkScriptOnly && strErrorMessage == null)
+        Logger.info("--script check ok");
       int msWalltime = eval.getExecutionWalltime();
       statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
       if (isScriptFile && writeInfo != null)
@@ -2515,19 +2531,16 @@ public class Viewer extends JmolViewer {
   synchronized public String scriptCheck(String strScript) {
     if (strScript == null)
       return null;
-    Object obj = eval.checkScript(strScript);
+    Object obj = eval.checkScriptSilent(strScript);
     if (obj instanceof String)
       return (String) obj;
-    return "";
+    return null;
   }
 
   synchronized public Object compileInfo(String strScript) {
     if (strScript == null)
       return null;
-    Object obj = eval.checkScript(strScript);
-    if (obj instanceof String)
-      return (String) obj;
-    return obj;
+    return eval.checkScriptSilent(strScript);
   }
 
   public boolean isScriptExecuting() {
@@ -2688,7 +2701,8 @@ public class Viewer extends JmolViewer {
     refresh(0, "Viewer:setShapeProperty()");
   }
 
-  void setShapeProperty(int shapeID, String propertyName, Object value, BitSet bs) {
+  void setShapeProperty(int shapeID, String propertyName, Object value,
+                        BitSet bs) {
     //Eval color
     if (shapeID < 0)
       return; //not applicable
@@ -2964,9 +2978,9 @@ public class Viewer extends JmolViewer {
       return getDisablePopupMenu();
 
     if (global.htPropertyFlags.containsKey(key)) {
-      return ((Boolean)global.htPropertyFlags.get(key)).booleanValue();
+      return ((Boolean) global.htPropertyFlags.get(key)).booleanValue();
     }
-    
+
     Logger.error("viewer.getBooleanProperty(" + key + ") - unrecognized");
     return false;
   }
@@ -3009,7 +3023,7 @@ public class Viewer extends JmolViewer {
       if (key.equalsIgnoreCase("defaults")) {
         setDefaults(value);
         break;
-      }      
+      }
       if (key.equalsIgnoreCase("defaultColorScheme")) {
         setDefaultColors(value);
         break;
@@ -3027,7 +3041,7 @@ public class Viewer extends JmolViewer {
         break;
       }
       if (key.toLowerCase().indexOf("callback") >= 0) {
-        setCallbackFunction(key,value);
+        setCallbackFunction(key, value);
         break;
       }
       //not found
@@ -3042,7 +3056,7 @@ public class Viewer extends JmolViewer {
     }
     global.setParameterValue(key, value);
   }
-  
+
   public void setFloatProperty(String key, float value) {
     //Eval
     while (true) {
@@ -3153,7 +3167,7 @@ public class Viewer extends JmolViewer {
         break;
       }
       if (key.equalsIgnoreCase("bondRadiusMilliAngstroms")) {
-        setMarBond((short)value);
+        setMarBond((short) value);
         break;
       }
       if (key.equalsIgnoreCase("hermiteLevel")) {
@@ -3161,7 +3175,7 @@ public class Viewer extends JmolViewer {
         break;
       }
       if (value != 0 || value != 1 || !setBooleanProperty(key, false, false))
-        setFloatProperty(key, (float)value); 
+        setFloatProperty(key, (float) value);
       return;
     }
     if (defineNew)
@@ -3172,8 +3186,7 @@ public class Viewer extends JmolViewer {
     setBooleanProperty(key, value, true);
   }
 
-  boolean setBooleanProperty(String key, boolean value,
-                                     boolean defineNew) {
+  boolean setBooleanProperty(String key, boolean value, boolean defineNew) {
     boolean notFound = false;
     while (true) {
       if (key.equalsIgnoreCase("refreshing")) {
@@ -3291,7 +3304,7 @@ public class Viewer extends JmolViewer {
       if (key.equalsIgnoreCase("defaultSelectHetero")) {
         setRasmolHeteroSetting(value);
         break;
-      }      
+      }
       if (key.equalsIgnoreCase("showMultipleBonds")) {
         setShowMultipleBonds(value);
         break;
@@ -3424,7 +3437,7 @@ public class Viewer extends JmolViewer {
         break;
       }
       if (!defineNew)
-        return ! notFound;
+        return !notFound;
       if (!notFound) {
         global.setPropertyFlag(key, value);
         return true;
@@ -3433,8 +3446,8 @@ public class Viewer extends JmolViewer {
       break;
     }
     if (!defineNew)
-      return ! notFound;
-     if (notFound) {
+      return !notFound;
+    if (notFound) {
       if (!value && !global.htPropertyFlags.containsKey(key)) {
         Logger.error("viewer.setBooleanProperty(" + key + "," + value
             + ") - unrecognized SET option");
@@ -3452,7 +3465,7 @@ public class Viewer extends JmolViewer {
 
   ////////  flags and settings ////////
 
-   boolean getDotSurfaceFlag() {
+  boolean getDotSurfaceFlag() {
     return global.dotSurfaceFlag;
   }
 
@@ -3670,11 +3683,11 @@ public class Viewer extends JmolViewer {
     global.navigationMode = TF;
     transformManager.setNavigationMode(TF);
   }
-  
+
   boolean getNavigationMode() {
     return global.navigationMode;
   }
-  
+
   private void setZoomLarge(boolean TF) {
     global.zoomLarge = TF;
     scaleFitToScreen();
@@ -3695,11 +3708,11 @@ public class Viewer extends JmolViewer {
   int getHermiteLevel() {
     return global.hermiteLevel;
   }
-  
+
   private void setHermiteLevel(int level) {
     global.hermiteLevel = level;
   }
-  
+
   boolean getHighResolution() {
     return global.highResolutionFlag;
   }
@@ -3716,7 +3729,7 @@ public class Viewer extends JmolViewer {
   String getLoadState() {
     return global.getLoadState();
   }
-  
+
   private void setAutoBond(boolean TF) {
     //setBooleanProperties
     global.autoBond = TF;
@@ -3725,7 +3738,7 @@ public class Viewer extends JmolViewer {
   public boolean getAutoBond() {
     return global.autoBond;
   }
-  
+
   int makeConnections(float minDistance, float maxDistance, short order,
                       int connectOperation, BitSet bsA, BitSet bsB) {
     //eval
@@ -3800,12 +3813,12 @@ public class Viewer extends JmolViewer {
   }
 
   /*
-  void setModeMultipleBond(byte modeMultipleBond) {
-    //not implemented
-    global.modeMultipleBond = modeMultipleBond;
-    refresh(0, "Viewer:setModeMultipleBond()");
-  }
- */
+   void setModeMultipleBond(byte modeMultipleBond) {
+   //not implemented
+   global.modeMultipleBond = modeMultipleBond;
+   refresh(0, "Viewer:setModeMultipleBond()");
+   }
+   */
 
   byte getModeMultipleBond() {
     //sticksRenderer
@@ -3870,13 +3883,11 @@ public class Viewer extends JmolViewer {
     return global.measureAllModels;
   }
 
-  boolean setMeasureDistanceUnits(String units) {
+  void setMeasureDistanceUnits(String units) {
     //stateManager
     //Eval
-    if (!global.setMeasureDistanceUnits(units))
-      return false;
+    global.setMeasureDistanceUnits(units);
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "reformatDistances", null);
-    return true;
   }
 
   String getMeasureDistanceUnits() {
@@ -3953,7 +3964,7 @@ public class Viewer extends JmolViewer {
   private DecimalFormat[] formatters;
 
   private static String[] formattingStrings = { "0", "0.0", "0.00", "0.000",
-    "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000" };
+      "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000" };
 
   String formatDecimal(float value, int decimalDigits) {
     if (decimalDigits < 0)
@@ -4065,7 +4076,8 @@ public class Viewer extends JmolViewer {
     //Eval -- ok; this is set specially
     global.stereoState = state;
     transformManager.setStereoMode(stereoMode);
-    setBooleanProperty("greyscaleRendering", stereoMode > JmolConstants.STEREO_DOUBLE);
+    setBooleanProperty("greyscaleRendering",
+        stereoMode > JmolConstants.STEREO_DOUBLE);
   }
 
   void setStereoMode(int[] twoColors, String state) {
@@ -4360,7 +4372,7 @@ public class Viewer extends JmolViewer {
   // image export
   // ///////////////////////////////////////////////////////////////
 
-  void createImage(String type_name) {  // or script now
+  void createImage(String type_name) { // or script now
     if (type_name == null)
       return;
     if (type_name.length() == 0)

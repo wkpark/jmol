@@ -46,6 +46,7 @@ class Compiler {
   String errorMessage;
   String errorLine;
   boolean preDefining;
+  boolean isSilent;
 
   boolean logMessages = false;
 
@@ -57,9 +58,13 @@ class Compiler {
   Compiler(Viewer viewer) {
     this.viewer = viewer;
   }
-
   boolean compile(String filename, String script, boolean isPredefining) {
+    return compile(filename, script, isPredefining, false); 
+  }
+
+  boolean compile(String filename, String script, boolean isPredefining, boolean isSilent) {
     this.filename = filename;
+    this.isSilent = isSilent;
     this.script = script;
     logMessages = (!isPredefining && Logger.isActiveLevel(Logger.LEVEL_DEBUG));
     lineNumbers = lineIndices = null;
@@ -94,7 +99,8 @@ class Compiler {
     if (filename != null)
       strError += filename;
     strError += " line#" + lineCurrent;
-    viewer.addCommand(errorLine + CommandHistory.ERROR_FLAG);
+    if (!isSilent)
+      viewer.addCommand(errorLine + CommandHistory.ERROR_FLAG);
     return strError;
   }
 
@@ -161,6 +167,8 @@ class Compiler {
         bracketsOpen = false;
       } else {
         if (lookingAtString()) {
+          if (cchToken < 0)
+            return rightParenthesisExpected();
           String str = (tokCommand == Token.load && !iHaveQuotedString ? script
               .substring(ichToken + 1, ichToken + cchToken - 1)
               : getUnescapedStringLiteral());
@@ -444,17 +452,20 @@ class Compiler {
     //    char chFirst = script.charAt(ichToken);
     //    if (chFirst != '"' && chFirst != '\'')
     //      return false;
-    int ichT = ichToken + 1;
+    int ichT = ichToken;
     //    while (ichT < cchScript && script.charAt(ichT++) != chFirst)
     char ch;
     boolean previousCharBackslash = false;
-    while (ichT < cchScript) {
-      ch = script.charAt(ichT++);
+    while (++ichT < cchScript) {
+      ch = script.charAt(ichT);
       if (ch == '"' && !previousCharBackslash)
         break;
       previousCharBackslash = ch == '\\' ? !previousCharBackslash : false;
     }
-    cchToken = ichT - ichToken;
+    if (ichT == cchScript)
+      cchToken = -1;
+    else
+      cchToken = ++ichT - ichToken;
     return true;
   }
 
@@ -864,7 +875,8 @@ class Compiler {
   }
 
   private boolean compileError(String errorMessage) {
-    Logger.error("compileError(" + errorMessage + ")");
+    if (!isSilent)
+      Logger.error("compileError(" + errorMessage + ")");
     error = true;
     this.errorMessage = errorMessage;
     return false;
@@ -1220,13 +1232,17 @@ class Compiler {
   boolean clauseComparator() {
     Token tokenAtomProperty = tokenNext();
     Token tokenComparator = tokenNext();
-    if ((tokenComparator.tok & Token.comparator) == 0)
+    if (tokenComparator == null || (tokenComparator.tok & Token.comparator) == 0)
       return comparisonOperatorExpected();
     Token tokenValue = tokenNext();
+    if (tokenValue == null)
+      return numberExpected();
     boolean isNegative = (tokenValue.tok == Token.hyphen);
     if (isNegative)
       tokenValue = tokenNext();
     int val = Integer.MAX_VALUE;
+    if (tokenValue == null)
+      return numberExpected();
     if (tokenValue.tok == Token.decimal) {
       float vf = ((Float) tokenValue.value).floatValue();
       switch (tokenAtomProperty.tok) {
@@ -1510,6 +1526,8 @@ class Compiler {
       while ((tokenT = tokenNext()) != null && tokenT.tok != Token.rightsquare) {
         strSpec += tokenT.value;
       }
+      if (tokenT == null)
+        return false;
       tok = tokenT.tok;
       if (tok != Token.rightsquare)
         return false;

@@ -1,4 +1,4 @@
- /* $RCSfile$
+/* $RCSfile$
  * $Author$
  * $Date$
  * $Revision$
@@ -379,6 +379,7 @@ public class Jmol extends JPanel {
     Options options = new Options();
     options.addOption("h", "help", false, GT._("give this help page"));
     options.addOption("n", "nodisplay", false, GT._("no display (and also exit when done)"));
+    options.addOption("c", "check", false, GT._("check script syntax only"));
     options.addOption("i", "silent", false, GT._("silent startup operation"));
     options.addOption("o", "noconsole", false, GT._("no console -- all output to sysout"));
     options.addOption("x", "exit", false, GT._("exit after script (implicit with -n)"));
@@ -471,6 +472,11 @@ public class Jmol extends JPanel {
       // this ensures that noDisplay also exits
       commandOptions += "-n-x";
       haveDisplay = Boolean.FALSE;
+    }
+
+    if (line.hasOption("c")) {
+      // this ensures that noDisplay also exits
+      commandOptions += "-c";
     }
 
     if (line.hasOption("s")) {

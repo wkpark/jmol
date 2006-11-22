@@ -293,6 +293,11 @@ class StateManager {
     }
   }
 
+  static boolean isMeasurementUnit(String units) {
+    String u = ";" + units.toLowerCase() + ";";
+    return (";angstroms;nanometers;nm;picometers;pm;".indexOf(u) >= 0);
+  }
+  
   class GlobalSettings {
 
     /*
@@ -465,7 +470,6 @@ class StateManager {
     String defaultHelpPath     = JmolConstants.DEFAULT_HELP_PATH;
     String propertyStyleString = "";
 
-
     //testing
 
     boolean debugScript = false;
@@ -477,8 +481,9 @@ class StateManager {
     // measurements
 
     //controlled access:
+
     private String measureDistanceUnits = "nanometers";
-    boolean setMeasureDistanceUnits(String units) {
+    void setMeasureDistanceUnits(String units) {
       if (units.equalsIgnoreCase("angstroms"))
         measureDistanceUnits = "angstroms";
       else if (units.equalsIgnoreCase("nanometers")
@@ -487,9 +492,6 @@ class StateManager {
       else if (units.equalsIgnoreCase("picometers")
           || units.equalsIgnoreCase("pm"))
         measureDistanceUnits = "picometers";
-      else
-        return false;
-      return true;
     }
     
     String getMeasureDistanceUnits() {

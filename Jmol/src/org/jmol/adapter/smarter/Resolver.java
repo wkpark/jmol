@@ -93,7 +93,7 @@ class Resolver {
   }
 
   static String determineAtomSetCollectionReader(BufferedReader bufferedReader)
-    throws Exception {
+      throws Exception {
     String[] lines = new String[16];
     LimitedLineReader llr = new LimitedLineReader(bufferedReader, 16384);
     for (int i = 0; i < lines.length; ++i)
@@ -118,7 +118,7 @@ class Resolver {
       for (int j = 0; j < recordTags.length; ++j) {
         String recordTag = recordTags[j];
         if (lines[0].startsWith(recordTag))
-            return fileStartsWithFormats[i];
+          return fileStartsWithFormats[i];
       }
     }
     for (int i = 0; i < lineStartsWithRecords.length; ++i) {
@@ -131,7 +131,7 @@ class Resolver {
         }
       }
     }
-    
+
     String header = llr.getHeader();
     for (int i = 0; i < containsRecords.length; ++i) {
       String[] recordTags = containsRecords[i];
@@ -142,11 +142,9 @@ class Resolver {
       }
     }
 
-    //if (lines[1] == null || lines[1].trim().length() == 0)
-      //return "Jme"; // this is really quite broken :-)
-    
-    //for (int i = 0; i < lines.length; ++i)
-      //lines[i] = llr.readLineWithNewline();
+    if (lines[1] == null && lines[0] != null && lines[0].length() > 0
+        && Character.isDigit(lines[0].charAt(0)))
+      return "Jme"; //only one line, and that line starts with a number 
 
     return null;
   }

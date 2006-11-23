@@ -834,12 +834,14 @@ class Eval { //implements Runnable {
 
   String getCommand() {
     //pc has been incremented
-    int ichBegin = lineIndices[pc];
+    int ichBegin = lineIndices[pc - 1];
     int ichEnd = (pc == lineIndices.length || lineIndices[pc] == 0 ? script
         .length()
         : lineIndices[pc]);
-    while ("\n\r;".indexOf(script.charAt(ichEnd - 1)) >= 0)
+    while (ichEnd > 0 && "\n\r;".indexOf(script.charAt(ichEnd - 1)) >= 0)
       ichEnd--;
+    if (ichBegin < 0)
+      System.out.println("GETCOMMAND ? ichBegin=" + ichBegin + " " + pc + " " + lineIndices[pc - 1] + " " + lineIndices[pc]);
     return script.substring(ichBegin, ichEnd) + ";";
   }
 

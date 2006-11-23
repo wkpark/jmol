@@ -1151,7 +1151,7 @@ class Eval { //implements Runnable {
     if (value != null) {
       if (value instanceof Token[]) {
         value = expression((Token[]) value, -2);
-        //variables.put("@" + variable, value);
+        variables.put(variable, value);
       }
       return (BitSet) value;
     }

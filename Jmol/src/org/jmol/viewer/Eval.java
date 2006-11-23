@@ -1936,8 +1936,9 @@ class Eval { //implements Runnable {
       badArgumentCount();
     if (statementLength == 2 && isFloatParameter(1)) {
       refresh();
-      viewer.moveTo(floatParameter(1), null, new Point3f(0, 0, 1), 0, 100, 0,
-          0, 0);
+      if (!isSyntaxCheck)
+        viewer.moveTo(floatParameter(1), null, new Point3f(0, 0, 1), 0, 100, 0,
+            0, 0);
       return;
     }
     Point3f pt = new Point3f();
@@ -2008,8 +2009,9 @@ class Eval { //implements Runnable {
         rotationRadius = floatParameter(i++);
     }
     refresh();
-    viewer.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans, yTrans,
-        rotationRadius);
+    if (!isSyntaxCheck)
+      viewer.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans,
+          yTrans, rotationRadius);
   }
 
   void bondorder() throws ScriptException {

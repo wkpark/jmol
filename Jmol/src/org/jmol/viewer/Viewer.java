@@ -2505,11 +2505,13 @@ public class Viewer extends JmolViewer {
         isQuiet));
     if (isOK) {
       if (checkScriptOnly)
-        Logger.info("--checking script (use 'exit' to stop checking):\n" + eval.script);
+        Logger.info("--checking script:\n" + eval.script);
       eval.runEval(checkScriptOnly);
       String strErrorMessage = eval.getErrorMessage();
       if (checkScriptOnly)
-        Logger.info(strErrorMessage == null ? "--script check ok" : strErrorMessage);
+        Logger.info((strErrorMessage == null ? "--script check ok"
+            : "--script check error\n"+strErrorMessage)
+            + "\n(use 'exit' to stop checking)\n");
       int msWalltime = eval.getExecutionWalltime();
       statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
       if (isScriptFile && writeInfo != null)

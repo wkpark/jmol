@@ -532,6 +532,9 @@ class Eval { //implements Runnable {
       case Token.message:
         message();
         break;
+      case Token.resume:
+        // just needed for script checking
+        break;
       case Token.exit: // flush the queue and...
         if (!isSyntaxCheck && pc > 1)
           viewer.clearScriptQueue();
@@ -1539,7 +1542,7 @@ class Eval { //implements Runnable {
   int setShapeByNameParameter(int index) throws ScriptException {
     String objectName = objectNameParameter(index);
     int shapeType = viewer.getShapeIdFromObjectName(objectName);
-    if (shapeType < 0)
+    if (!isSyntaxCheck && shapeType < 0)
       objectNameExpected();
     setShapeProperty(shapeType, "thisID", objectName);
     return shapeType;
@@ -2881,6 +2884,8 @@ class Eval { //implements Runnable {
   }
 
   void refresh() {
+    if (isSyntaxCheck)
+      return;
     viewer.setTainted(true);
     viewer.requestRepaintAndWait();
   }

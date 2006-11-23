@@ -3256,7 +3256,9 @@ class Eval { //implements Runnable {
     if (isSyntaxCheck)
       return;
     viewer.setSelectionSubset(bsSubset);
-    viewer.select(bsSubset, false);
+    //I guess we do not want to select, because that could 
+    //throw off picking in a strange way
+    // viewer.select(bsSubset, false);
   }
 
   void translate() throws ScriptException {

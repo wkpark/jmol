@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-11-17 06:21+0100\n"
+"POT-Creation-Date: 2006-11-23 21:04+0100\n"
 "PO-Revision-Date: 2006-04-09 11:48+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
@@ -649,134 +649,138 @@ msgstr "Initialiseren Eigenschappen..."
 msgid "Initializing Recent Files..."
 msgstr "Initialiseren Recente Bestanden..."
 
-#: org/openscience/jmol/app/Jmol.java:188
+#: org/openscience/jmol/app/Jmol.java:189
 msgid "Initializing Script Window..."
 msgstr "Initialiseren Script-window..."
 
-#: org/openscience/jmol/app/Jmol.java:190
+#: org/openscience/jmol/app/Jmol.java:191
 msgid "Initializing AtomSetChooser Window..."
 msgstr "Initialiseren AtoomSetMenu WIndow...."
 
-#: org/openscience/jmol/app/Jmol.java:200
+#: org/openscience/jmol/app/Jmol.java:199
 msgid "Initializing Measurements..."
 msgstr "Initialiseren Metingen...."
 
-#: org/openscience/jmol/app/Jmol.java:221
+#: org/openscience/jmol/app/Jmol.java:220
 msgid "Building Command Hooks..."
 msgstr "Opbouwen Opdrachten..."
 
-#: org/openscience/jmol/app/Jmol.java:230
+#: org/openscience/jmol/app/Jmol.java:229
 msgid "Building Menubar..."
 msgstr "Opbouwen Menus..."
 
-#: org/openscience/jmol/app/Jmol.java:246
+#: org/openscience/jmol/app/Jmol.java:245
 msgid "Starting display..."
 msgstr "Starten viewer..."
 
-#: org/openscience/jmol/app/Jmol.java:253
+#: org/openscience/jmol/app/Jmol.java:250
 msgid "Setting up File Choosers..."
 msgstr "Make van Bestanskiezer..."
 
-#: org/openscience/jmol/app/Jmol.java:308
+#: org/openscience/jmol/app/Jmol.java:303
 msgid "Setting up Drag-and-Drop..."
 msgstr "Initialiseren van Drag-and-Drop..."
 
-#: org/openscience/jmol/app/Jmol.java:334
+#: org/openscience/jmol/app/Jmol.java:324
 msgid "Launching main frame..."
 msgstr "Starten mainwindow..."
 
-#: org/openscience/jmol/app/Jmol.java:352
+#: org/openscience/jmol/app/Jmol.java:342
 msgid "Creating main window..."
 msgstr "Maken van main window..."
 
-#: org/openscience/jmol/app/Jmol.java:353
+#: org/openscience/jmol/app/Jmol.java:343
 msgid "Initializing Swing..."
 msgstr "Initialiseren Swing..."
 
-#: org/openscience/jmol/app/Jmol.java:365
+#: org/openscience/jmol/app/Jmol.java:355
 msgid "Initializing Jmol..."
 msgstr "Initialiseren Jmol...."
 
-#: org/openscience/jmol/app/Jmol.java:385
+#: org/openscience/jmol/app/Jmol.java:375
 msgid "give this help page"
 msgstr "geef deze help pagina"
 
-#: org/openscience/jmol/app/Jmol.java:386
+#: org/openscience/jmol/app/Jmol.java:376
 msgid "no display (and also exit when done)"
 msgstr "geen scherm (en sluit ook af wanneer klaar)"
 
-#: org/openscience/jmol/app/Jmol.java:387
+#: org/openscience/jmol/app/Jmol.java:377
+msgid "check script syntax only"
+msgstr ""
+
+#: org/openscience/jmol/app/Jmol.java:378
 msgid "silent startup operation"
 msgstr "stille startup"
 
-#: org/openscience/jmol/app/Jmol.java:388
+#: org/openscience/jmol/app/Jmol.java:379
 msgid "no console -- all output to sysout"
 msgstr "geen console -- alle uitvoer naar de command line"
 
-#: org/openscience/jmol/app/Jmol.java:389
+#: org/openscience/jmol/app/Jmol.java:380
 msgid "exit after script (implicit with -n)"
 msgstr "afsluiten na einde script (impliciet met -n)"
 
-#: org/openscience/jmol/app/Jmol.java:397
+#: org/openscience/jmol/app/Jmol.java:388
 msgid "property=value"
 msgstr "eigenschap=waarde"
 
-#: org/openscience/jmol/app/Jmol.java:400
+#: org/openscience/jmol/app/Jmol.java:391
 msgid "supported options are given below"
 msgstr "ondersteunde waarde staan hieronder"
 
-#: org/openscience/jmol/app/Jmol.java:404
+#: org/openscience/jmol/app/Jmol.java:395
 #, java-format
 msgid "window size, e.g. {0}"
 msgstr "windowgrootte, bv. {0}"
 
-#: org/openscience/jmol/app/Jmol.java:410
+#: org/openscience/jmol/app/Jmol.java:401
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr "{0} of {1}: bestandsnaam"
 
-#: org/openscience/jmol/app/Jmol.java:433
+#: org/openscience/jmol/app/Jmol.java:424
 msgid "For example:"
 msgstr "Bijvoorbeeld:"
 
-#: org/openscience/jmol/app/Jmol.java:437
+#: org/openscience/jmol/app/Jmol.java:428
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "De -D opties zijn (standaard waarden tussen haakjes):"
 
-#: org/openscience/jmol/app/Jmol.java:546
+#: org/openscience/jmol/app/Jmol.java:542
 msgid "Executing script..."
 msgstr "Afspelen van script..."
 
-#: org/openscience/jmol/app/Jmol.java:558
+#: org/openscience/jmol/app/Jmol.java:554
 msgid "Jmol Java Console"
 msgstr "Jmol Java Console"
 
-#: org/openscience/jmol/app/Jmol.java:566
+#: org/openscience/jmol/app/Jmol.java:562
 #: org/openscience/jmol/app/ScriptWindow.java:94
 msgid "Clear"
 msgstr "Wissen"
 
-#: org/openscience/jmol/app/Jmol.java:579
+#: org/openscience/jmol/app/Jmol.java:575
 msgid "Could not create ConsoleTextArea: "
 msgstr "Kon geen ConsoleTextArea aanmaken:"
 
-#: org/openscience/jmol/app/Jmol.java:655
+#: org/openscience/jmol/app/Jmol.java:652
 msgid "Closing Jmol..."
 msgstr "Bezig met afsluiten Jmol..."
 
-#: org/openscience/jmol/app/Jmol.java:891
+#: org/openscience/jmol/app/Jmol.java:888
 msgid "Macros"
 msgstr "Macro's"
 
-#: org/openscience/jmol/app/Jmol.java:1244
+#: org/openscience/jmol/app/Jmol.java:1241
 msgid "Open URL"
 msgstr "Open URL"
 
-#: org/openscience/jmol/app/Jmol.java:1245
+#: org/openscience/jmol/app/Jmol.java:1242
 msgid "Enter URL of molecular model"
 msgstr "Geef URL van molecuulmodel"
 
-#: org/openscience/jmol/app/Jmol.java:1663
+#: org/openscience/jmol/app/Jmol.java:1667
 msgid "IO Exception:"
 msgstr "IO-fout:"
 

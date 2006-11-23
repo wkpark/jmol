@@ -66,7 +66,7 @@ class Eval { //implements Runnable {
   Viewer viewer;
   BitSet bsSubset;
 
-  boolean isSyntaxCheck;
+  boolean isSyntaxCheck, isScriptCheck;
 
   //Thread myThread;
 
@@ -102,7 +102,7 @@ class Eval { //implements Runnable {
     executionPaused = Boolean.FALSE;
     isExecuting = true;
     currentThread = Thread.currentThread();
-    isSyntaxCheck = checkScriptOnly;
+    isSyntaxCheck = isScriptCheck = checkScriptOnly;
     timeBeginExecution = System.currentTimeMillis();
     try {
       instructionDispatchLoop();
@@ -115,12 +115,9 @@ class Eval { //implements Runnable {
 
     if (errorMessage == null && interruptExecution.booleanValue())
       errorMessage = "execution interrupted";
-    //    if (errorMessage != null)
-    //      viewer.scriptStatus("script ERROR: " + errorMessage);
-    else if (!tQuiet)
+    else if (!tQuiet && !isSyntaxCheck)
       viewer.scriptStatus("Script completed");
-    isExecuting = false;
-    isSyntaxCheck = false;
+    isExecuting = isSyntaxCheck = isScriptCheck = false;
     viewer.setTainted(true);
     viewer.popHoldRepaint();
 
@@ -157,11 +154,15 @@ class Eval { //implements Runnable {
     context.aatoken = aatoken;
     context.pc = pc;
     stack[scriptLevel++] = context;
+    if (isScriptCheck)
+      Logger.info("-->>-------------".substring(0, scriptLevel + 5) + filename);
   }
 
   void popContext() throws ScriptException {
+    if (isScriptCheck)
+      Logger.info("--<<-------------".substring(0, scriptLevel + 5) + filename);
     if (scriptLevel == 0)
-      evalError("RasMol virtual machine error - stack underflow");
+      evalError("Jmol virtual machine error - stack underflow");
     Context context = stack[--scriptLevel];
     stack[scriptLevel] = null;
     filename = context.filename;
@@ -485,8 +486,12 @@ class Eval { //implements Runnable {
       //viewer.getSetHistory(-2); //just clear -- no, this is very useful
       statement = aatoken[pc++];
       statementLength = statement.length;
-      if (isSyntaxCheck && statementLength == 1)
-        continue;
+      if (isSyntaxCheck) {
+        if (isScriptCheck)
+          Logger.info(getCommand());
+        if (statementLength == 1)
+          continue;
+      }
       if (logMessages)
         logDebugScript();
       Logger.debug(token.toString());
@@ -502,7 +507,8 @@ class Eval { //implements Runnable {
       case Token.elsecmd:
         if (ifLevel < 1)
           evalError(GT._("Invalid {0} command", "ELSE"));
-        ifs[ifLevel] = !ifs[ifLevel];
+        if (!isSyntaxCheck)
+          ifs[ifLevel] = !ifs[ifLevel];
         break;
       case Token.endifcmd:
         if (--ifLevel < 0)
@@ -804,6 +810,8 @@ class Eval { //implements Runnable {
     }
     if (i == statementLength)
       badArgumentCount();
+    if (isSyntaxCheck)
+      return true;
     String str = (String) statement[i].value;
     value = viewer.getBooleanProperty(str);
     return (isNot ? !value : value);
@@ -1006,7 +1014,7 @@ class Eval { //implements Runnable {
         stack[sp++] = invertBitSet(viewer.getHiddenSet());
         break;
       case Token.visible:
-        if (!refreshed)
+        if (!isSyntaxCheck && !refreshed)
           viewer.setModelVisibility();
         refreshed = true;
         stack[sp++] = viewer.getVisibleSet();
@@ -1364,12 +1372,16 @@ class Eval { //implements Runnable {
   }
 
   BitSet connected(Token instruction, BitSet bs) {
+    if (isSyntaxCheck)
+      return new BitSet();
     int min = instruction.intValue;
     int max = ((Integer) instruction.value).intValue();
     return viewer.getAtomsConnected(min, max, bs);
   }
 
   BitSet getSubstructureSet(String smiles) throws ScriptException {
+    if (isSyntaxCheck)
+      return new BitSet();
     PatternMatcher matcher = new PatternMatcher(viewer);
     try {
       return matcher.getSubstructureSet(smiles);
@@ -1928,7 +1940,8 @@ class Eval { //implements Runnable {
       evalError(GT._("Currently the {0} command only works for the applet",
           "help"));
     String what = (statementLength == 1 ? "" : stringParameter(1));
-    viewer.getHelp(what);
+    if (!isSyntaxCheck)
+      viewer.getHelp(what);
   }
 
   void moveto() throws ScriptException {
@@ -1939,8 +1952,9 @@ class Eval { //implements Runnable {
       badArgumentCount();
     if (statementLength == 2 && isFloatParameter(1)) {
       refresh();
+      float f = floatParameter(1);
       if (!isSyntaxCheck)
-        viewer.moveTo(floatParameter(1), null, new Point3f(0, 0, 1), 0, 100, 0,
+        viewer.moveTo(f, null, new Point3f(0, 0, 1), 0, 100, 0,
             0, 0);
       return;
     }
@@ -2058,9 +2072,12 @@ class Eval { //implements Runnable {
   void console() throws ScriptException {
     switch (statement[1].tok) {
     case Token.off:
-      viewer.showConsole(false);
+      if (!isSyntaxCheck)
+        viewer.showConsole(false);
       break;
     case Token.on:
+      if (isSyntaxCheck)
+        break;
       viewer.showConsole(true);
       viewer.clearConsole();
       break;
@@ -2095,7 +2112,8 @@ class Eval { //implements Runnable {
     } else if (statement[2].tok == Token.leftbrace) {
       pt = getCoordinate(2, true);
     }
-    viewer.setCenter(relativeTo, pt);
+    if (!isSyntaxCheck)
+      viewer.setCenter(relativeTo, pt);
   }
 
   void stereo() throws ScriptException {
@@ -2151,6 +2169,8 @@ class Eval { //implements Runnable {
       }
     }
     setFloatProperty("stereoDegrees", degrees);
+    if (isSyntaxCheck)
+      return;
     if (colorpt > 0) {
       viewer.setStereoMode(colors, StateManager.escapeColor(colors[0]) + " "
           + StateManager.escapeColor(colors[1]));
@@ -2190,7 +2210,8 @@ class Eval { //implements Runnable {
       case Token.off:
         if (statementLength != 2)
           badArgumentCount();
-        viewer.rebond();
+        if (!isSyntaxCheck)
+          viewer.rebond();
         return;
       case Token.integer:
       case Token.decimal:
@@ -2223,15 +2244,7 @@ class Eval { //implements Runnable {
         }
         if (++i != statementLength)
           invalidParameterOrder();
-        if ("modify".equalsIgnoreCase(cmd))
-          operation = JmolConstants.connectOperationFromString(cmd);
-        else if ("create".equalsIgnoreCase(cmd))
-          operation = JmolConstants.connectOperationFromString(cmd);
-        else if ("modifyOrCreate".equalsIgnoreCase(cmd))
-          operation = JmolConstants.connectOperationFromString(cmd);
-        else if ("auto".equalsIgnoreCase(cmd))
-          operation = JmolConstants.connectOperationFromString(cmd);
-        else
+        if ((operation = JmolConstants.connectOperationFromString(cmd)) < 0)
           unrecognizedSubcommand(cmd);
         break;
       case Token.none:
@@ -2245,6 +2258,8 @@ class Eval { //implements Runnable {
         invalidArgument();
       }
     }
+    if (isSyntaxCheck)
+      return;
     if (distanceCount < 2) {
       if (distanceCount == 0)
         distances[0] = JmolConstants.DEFAULT_MAX_CONNECT_DISTANCE;
@@ -2260,6 +2275,8 @@ class Eval { //implements Runnable {
   }
 
   void getProperty() {
+    if (!isSyntaxCheck)
+      return;
     String retValue = "";
     String property = (statementLength < 2 ? "" : (String) statement[1].value);
     String param = (statementLength < 3 ? "" : (String) statement[2].value);
@@ -2531,8 +2548,6 @@ class Eval { //implements Runnable {
     dataLabelString = new String[2];
     dataLabelString[0] = dataLabel;
     dataLabelString[1] = dataString;
-    if (isSyntaxCheck)
-      return;
     viewer.setData(dataType, dataLabelString);
     if (dataType.equalsIgnoreCase("model")) {
       // only if first character is "|" do we consider "|" to be new line
@@ -2568,8 +2583,6 @@ class Eval { //implements Runnable {
   }
 
   void message() {
-    if (isSyntaxCheck)
-      return;
     String text = (statementLength == 1 ? "" : (String) statement[1].value);
     viewer.scriptStatus(text);
   }
@@ -3454,8 +3467,9 @@ class Eval { //implements Runnable {
   }
 
   void depth() throws ScriptException {
+    int d = intParameter(1);
     if (!isSyntaxCheck)
-      viewer.depthToPercent(intParameter(1));
+      viewer.depthToPercent(d);
   }
 
   void star() throws ScriptException {
@@ -4298,8 +4312,9 @@ class Eval { //implements Runnable {
         break;
       }
       if (str.equalsIgnoreCase("toggleLabel")) {
+        BitSet bs = expression(statement, 2);
         if (!isSyntaxCheck)
-          viewer.togglePickingLabel(expression(statement, 2));
+          viewer.togglePickingLabel(bs);
         break;
       }
       if (str.equalsIgnoreCase("measurementNumbers")) {
@@ -4307,8 +4322,9 @@ class Eval { //implements Runnable {
         break;
       }
       if (str.equalsIgnoreCase("historyLevel")) {
+        int iLevel = intParameter(2);
         if (!isSyntaxCheck)
-          commandHistoryLevelMax = intParameter(2);
+          commandHistoryLevelMax = iLevel;
         break;
       }
       if (str.equalsIgnoreCase("defaultLattice")) {

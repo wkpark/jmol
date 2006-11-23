@@ -138,18 +138,18 @@ public class Jmol extends JPanel {
   static Boolean haveDisplay = Boolean.TRUE;
   
   
-  Jmol(Splash splash, JFrame frame, Jmol parent,
-       int startupWidth, int startupHeight, String commandOptions) {
+  Jmol(Splash splash, JFrame frame, Jmol parent, int startupWidth,
+      int startupHeight, String commandOptions) {
     super(true);
     this.frame = frame;
     this.startupWidth = startupWidth;
     this.startupHeight = startupHeight;
     numWindows++;
-    
+
     frame.setTitle("Jmol");
     frame.setBackground(Color.lightGray);
     frame.getContentPane().setLayout(new BorderLayout());
-    
+
     this.splash = splash;
 
     setBorder(BorderFactory.createEtchedBorder());
@@ -158,9 +158,10 @@ public class Jmol extends JPanel {
     status = (StatusBar) createStatusBar();
     say(GT._("Initializing 3D display..."));
     //
-    display = new DisplayPanel(status, guimap, haveDisplay.booleanValue(), startupWidth, startupHeight);
+    display = new DisplayPanel(status, guimap, haveDisplay.booleanValue(),
+        startupWidth, startupHeight);
     JmolAdapter modelAdapter;
-    String adapter= System.getProperty("model");
+    String adapter = System.getProperty("model");
     if (adapter == null || adapter.length() == 0)
       adapter = "smarter";
     if (adapter.equals("smarter")) {
@@ -171,8 +172,7 @@ public class Jmol extends JPanel {
       // modelAdapter = new CdkJmolAdapter(null);
       modelAdapter = new SmarterJmolAdapter(null);
     } else {
-      report("unrecognized model adapter:" + adapter +
-                         " -- using Smarter");
+      report("unrecognized model adapter:" + adapter + " -- using Smarter");
       modelAdapter = new SmarterJmolAdapter(null);
     }
 
@@ -180,22 +180,21 @@ public class Jmol extends JPanel {
     viewer.setAppletContext("", null, null, commandOptions);
 
     display.setViewer(viewer);
-    
+
     say(GT._("Initializing Preferences..."));
     preferencesDialog = new PreferencesDialog(frame, guimap, viewer);
     say(GT._("Initializing Recent Files..."));
     recentFiles = new RecentFilesDialog(frame);
-    say(GT._("Initializing Script Window..."));
-    scriptWindow = new ScriptWindow(viewer, frame);
-    say(GT._("Initializing AtomSetChooser Window..."));
-    if (haveDisplay.booleanValue())
+    if (haveDisplay.booleanValue()) {
+      say(GT._("Initializing Script Window..."));
+      scriptWindow = new ScriptWindow(viewer, frame);
+      say(GT._("Initializing AtomSetChooser Window..."));
       atomSetChooser = new AtomSetChooser(viewer, frame);
+    }
 
     MyStatusListener myStatusListener;
     myStatusListener = new MyStatusListener();
     viewer.setJmolStatusListener(myStatusListener);
-
-
 
     say(GT._("Initializing Measurements..."));
     measurementTable = new MeasurementTable(viewer, frame);
@@ -246,69 +245,65 @@ public class Jmol extends JPanel {
     say(GT._("Starting display..."));
     display.start();
 
-    
     if (haveDisplay.booleanValue()) {
-      
-      
-    say(GT._("Setting up File Choosers..."));
-    openChooser = new FileChooser();
-    openChooser.setCurrentDirectory(currentDir);
-    String previewProperty = System.getProperty("openFilePreview", "true");
-    if (Boolean.valueOf(previewProperty).booleanValue()) {
-    	new FilePreview(openChooser, modelAdapter);
+
+      say(GT._("Setting up File Choosers..."));
+      openChooser = new FileChooser();
+      openChooser.setCurrentDirectory(currentDir);
+      String previewProperty = System.getProperty("openFilePreview", "true");
+      if (Boolean.valueOf(previewProperty).booleanValue()) {
+        new FilePreview(openChooser, modelAdapter);
+      }
+      saveChooser = new JFileChooser();
+      fileTyper = new FileTyper();
+      saveChooser.addPropertyChangeListener(fileTyper);
+      saveChooser.setAccessory(fileTyper);
+      saveChooser.setCurrentDirectory(currentDir);
+      exportChooser = new JFileChooser();
+      exportChooser.setCurrentDirectory(currentDir);
+
+      pcs.addPropertyChangeListener(chemFileProperty, exportAction);
+      pcs.addPropertyChangeListener(chemFileProperty, povrayAction);
+      pcs.addPropertyChangeListener(chemFileProperty, pdfAction);
+      pcs.addPropertyChangeListener(chemFileProperty, printAction);
+      pcs.addPropertyChangeListener(chemFileProperty,
+          viewMeasurementTableAction);
+      pcs.addPropertyChangeListener(chemFileProperty, atomSetChooser);
+
+      jmolpopup = JmolPopup.newJmolPopup(viewer);
+
     }
-    saveChooser = new JFileChooser();
-    fileTyper = new FileTyper();
-    saveChooser.addPropertyChangeListener(fileTyper);
-    saveChooser.setAccessory(fileTyper);
-    saveChooser.setCurrentDirectory(currentDir);
-    exportChooser = new JFileChooser();
-    exportChooser.setCurrentDirectory(currentDir);
 
-    pcs.addPropertyChangeListener(chemFileProperty, exportAction);
-    pcs.addPropertyChangeListener(chemFileProperty, povrayAction);
-    pcs.addPropertyChangeListener(chemFileProperty, pdfAction);
-    pcs.addPropertyChangeListener(chemFileProperty, printAction);
-    pcs.addPropertyChangeListener(chemFileProperty,
-                                  viewMeasurementTableAction);
-    pcs.addPropertyChangeListener(chemFileProperty, atomSetChooser);
-
-    jmolpopup = JmolPopup.newJmolPopup(viewer);
-
-  }
-  
     // prevent new Jmol from covering old Jmol
     if (parent != null) {
-        Point location = parent.frame.getLocationOnScreen();
-        int maxX = screenSize.width - 50;
-        int maxY = screenSize.height - 50;
-        
-        location.x += 40;
-        location.y += 40;
-        if ((location.x > maxX) || (location.y > maxY))
-        {
-            location.setLocation(0, 0);
-        }
-        frame.setLocation(location);
+      Point location = parent.frame.getLocationOnScreen();
+      int maxX = screenSize.width - 50;
+      int maxY = screenSize.height - 50;
+
+      location.x += 40;
+      location.y += 40;
+      if ((location.x > maxX) || (location.y > maxY)) {
+        location.setLocation(0, 0);
+      }
+      frame.setLocation(location);
     }
 
     frame.getContentPane().add("Center", this);
     frame.addWindowListener(new Jmol.AppCloser());
     frame.pack();
     frame.setSize(startupWidth, startupHeight);
-    ImageIcon jmolIcon =
-      JmolResourceHandler.getIconX("icon");
+    ImageIcon jmolIcon = JmolResourceHandler.getIconX("icon");
     Image iconImage = jmolIcon.getImage();
     frame.setIconImage(iconImage);
 
     // Repositionning windows
-    if (haveDisplay.booleanValue())
+    if (scriptWindow != null)
       historyFile.repositionWindow(SCRIPT_WINDOW_NAME, scriptWindow);
-    
+
     say(GT._("Setting up Drag-and-Drop..."));
-    FileDropper dropper = new FileDropper ();
+    FileDropper dropper = new FileDropper();
     final JFrame f = frame;
-    dropper.addPropertyChangeListener (new PropertyChangeListener () {
+    dropper.addPropertyChangeListener(new PropertyChangeListener() {
       public void propertyChange(PropertyChangeEvent evt) {
         //System.out.println("Drop triggered...");
         f.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -322,8 +317,8 @@ public class Jmol extends JPanel {
         f.setCursor(Cursor.getDefaultCursor());
       }
     });
-    
-    this.setDropTarget(new DropTarget (this, dropper));
+
+    this.setDropTarget(new DropTarget(this, dropper));
     this.setEnabled(true);
 
     say(GT._("Launching main frame..."));
@@ -647,7 +642,8 @@ public class Jmol extends JPanel {
       if (historyFile != null) {
         historyFile.addWindowInfo(JMOL_WINDOW_NAME, this.frame);
         //historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
-        historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, scriptWindow);
+        if (scriptWindow != null)
+          historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, scriptWindow);
       }
       
       // Close Jmol
@@ -1347,6 +1343,7 @@ public class Jmol extends JPanel {
     }
 
     public void actionPerformed(ActionEvent e) {
+      if (scriptWindow != null)
       scriptWindow.show();
     }
   }
@@ -1578,6 +1575,8 @@ public class Jmol extends JPanel {
     }
 
     public void showConsole(boolean showConsole) {
+      if (scriptWindow == null)
+        return;
       if (showConsole)
         scriptWindow.show();
       else

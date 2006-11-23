@@ -365,7 +365,12 @@ public final class Frame {
 
     if (adapter != null) {
       doUnitcellStuff();
-      doAutobond();
+      // perform bonding if necessary
+      boolean doBond = (bondCount == 0 || isMultiFile || isPDB && bondCount < atomCount / 2);
+      if (viewer.getForceAutoBond() || doBond && viewer.getAutoBond()
+          && getModelSetProperty("noautobond") == null) {
+        autoBond(null, null);
+      }
     }
     finalizeGroupBuild(); // set group offsets and build monomers
     //only now can we access all of the atom's properties
@@ -1471,16 +1476,6 @@ public final class Frame {
   ////////////////////////////////////////////////////////////////
   // autobonding/connection stuff
   ////////////////////////////////////////////////////////////////
-  void doAutobond() {
-    // perform bonding if necessary
-    boolean doBond = (bondCount == 0 || isMultiFile || isPDB && bondCount < atomCount / 2);
-    if (viewer.getForceAutoBond() || doBond && viewer.getAutoBond()
-        && getModelSetProperty("noautobond") == null) {
-      autoBond(null, null);
-    }
-    viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "reset", null);
-  }
-
   final static boolean showRebondTimes = true;
 
   void rebond() {
@@ -1733,12 +1728,10 @@ public final class Frame {
                        maxDistance + "," + order + "," + connectOperation +
                        "," + bsA + "," + bsB + ")");
     
-    if (connectOperation == JmolConstants.DELETE_BONDS) {
+    if (connectOperation == JmolConstants.DELETE_BONDS)
       return deleteConnections(minDistance, maxDistance, order, bsA, bsB);
-    }
-    if (connectOperation == JmolConstants.AUTO_BOND) {
+    if (connectOperation == JmolConstants.AUTO_BOND)
       return autoBond(order, bsA, bsB);
-    }
     if (order == JmolConstants.BOND_ORDER_NULL)
       order = JmolConstants.BOND_COVALENT_SINGLE; // default 
     float minDistanceSquared = minDistance * minDistance;

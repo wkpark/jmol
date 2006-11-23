@@ -2500,7 +2500,7 @@ public class Viewer extends JmolViewer {
     String oldStatusList = statusManager.statusList;
     getProperty("String", "jmolStatus", statusList);
     if (checkScriptOnly)
-      Logger.info("--checking script:\n" + eval.script);
+      Logger.info("--checking script:\n" + eval.script + "\n----\n");
     boolean isOK = (tokenInfo != null ? eval
         .loadTokenInfo(strScript, tokenInfo) : isScriptFile ? eval
         .loadScriptFile(strScript, isQuiet) : eval.loadScriptString(strScript,

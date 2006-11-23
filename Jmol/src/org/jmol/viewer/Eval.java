@@ -2550,13 +2550,16 @@ class Eval { //implements Runnable {
     dataLabelString = new String[2];
     dataLabelString[0] = dataLabel;
     dataLabelString[1] = dataString;
-    viewer.setData(dataType, dataLabelString);
-    if (dataType.equalsIgnoreCase("model")) {
+    boolean isModel = dataType.equalsIgnoreCase("model");
+    if (!isSyntaxCheck || isScriptCheck && isModel)
+      viewer.setData(dataType, dataLabelString);
+    if (isModel) {
       // only if first character is "|" do we consider "|" to be new line
       char newLine = viewer.getInlineChar();
       if (dataString.length() > 0 && dataString.charAt(0) != newLine)
         newLine = '\0';
-      viewer.loadInline(dataString, newLine);
+      if (!isSyntaxCheck || isScriptCheck)
+        viewer.loadInline(dataString, newLine);
       return;
     }
   }
@@ -2637,7 +2640,8 @@ class Eval { //implements Runnable {
       if (i == 0 || filename.length() == 0)
         filename = viewer.getFullPathName();
       loadScript.append(" " + StateManager.escape(filename) + ";");
-      viewer.openFile(filename, params, loadScript.toString());
+      if (!isSyntaxCheck || isScriptCheck)
+        viewer.openFile(filename, params, loadScript.toString());
     } else if (statement[i + 1].tok == Token.leftbrace
         || statement[i + 1].tok == Token.integer) {
       filename = (String) statement[i++].value;
@@ -2696,7 +2700,8 @@ class Eval { //implements Runnable {
         }
       }
       loadScript.append(";");
-      viewer.openFile(filename, params, loadScript.toString());
+      if (!isSyntaxCheck || isScriptCheck)
+        viewer.openFile(filename, params, loadScript.toString());
     } else {
       String modelName = (String) statement[i].value;
       i++;
@@ -2709,8 +2714,11 @@ class Eval { //implements Runnable {
         i++;
       }
       loadScript.append(";");
-      viewer.openFiles(modelName, filenames, loadScript.toString());
+      if (!isSyntaxCheck || isScriptCheck)
+        viewer.openFiles(modelName, filenames, loadScript.toString());
     }
+    if (isSyntaxCheck && !isScriptCheck)
+      return;
     String errMsg = viewer.getOpenFileError();
     // int millis = (int)(System.currentTimeMillis() - timeBegin);
     // Logger.debug("!!!!!!!!! took " + millis + " ms");

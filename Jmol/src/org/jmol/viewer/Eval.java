@@ -2929,8 +2929,7 @@ class Eval { //implements Runnable {
     BitSet bsSelected = copyBitSet(viewer.getSelectionSet());
     viewer.invertSelection();
     if (bsSubset != null) {
-      BitSet bs = new BitSet();
-      bs.or(bsSelected);
+      BitSet bs = copyBitSet(viewer.getSelectionSet());
       bs.and(bsSubset);
       viewer.setSelectionSet(bs);
     }
@@ -3254,8 +3253,10 @@ class Eval { //implements Runnable {
 
   void subset() throws ScriptException {
     bsSubset = (statementLength == 1 ? null : expression(statement, -1));
-    if (!isSyntaxCheck)
-      viewer.setSelectionSubset(bsSubset);
+    if (isSyntaxCheck)
+      return;
+    viewer.setSelectionSubset(bsSubset);
+    viewer.select(bsSubset, false);
   }
 
   void translate() throws ScriptException {

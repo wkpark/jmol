@@ -30,7 +30,6 @@ import org.jmol.util.Logger;
 import org.jmol.viewer.Frame.CellInfo;
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.i18n.GT;
 
 import java.util.BitSet;
 import java.util.Enumeration;

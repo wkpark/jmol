@@ -2499,24 +2499,25 @@ public class Viewer extends JmolViewer {
     //flush list
     String oldStatusList = statusManager.statusList;
     getProperty("String", "jmolStatus", statusList);
+    if (checkScriptOnly)
+      Logger.info("--checking script:\n" + eval.script);
     boolean isOK = (tokenInfo != null ? eval
         .loadTokenInfo(strScript, tokenInfo) : isScriptFile ? eval
         .loadScriptFile(strScript, isQuiet) : eval.loadScriptString(strScript,
         isQuiet));
+    String strErrorMessage = eval.getErrorMessage();
     if (isOK) {
-      if (checkScriptOnly)
-        Logger.info("--checking script:\n" + eval.script);
       eval.runEval(checkScriptOnly);
-      String strErrorMessage = eval.getErrorMessage();
-      if (checkScriptOnly)
-        Logger.info((strErrorMessage == null ? "--script check ok"
-            : "--script check error\n"+strErrorMessage)
-            + "\n(use 'exit' to stop checking)\n");
       int msWalltime = eval.getExecutionWalltime();
+      strErrorMessage = eval.getErrorMessage();
       statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
       if (isScriptFile && writeInfo != null)
         createImage(writeInfo);
     }
+    if (checkScriptOnly)
+      Logger.info((strErrorMessage == null ? "--script check ok"
+          : "--script check error\n"+strErrorMessage)
+          + "\n(use 'exit' to stop checking)\n");
     if (isScriptFile && autoExit) {
       System.out.flush();
       System.exit(0);

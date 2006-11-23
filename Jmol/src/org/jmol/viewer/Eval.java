@@ -938,8 +938,8 @@ class Eval { //implements Runnable {
     Point3f thisCoordinate = null;
     boolean refreshed = false;
     pcLastExpressionInstruction = 1000;
-    boolean isSubsetDefinition = (pcStart < 0);
-    if (isSubsetDefinition)
+    boolean ignoreSubset = (pcStart < 0);
+    if (ignoreSubset)
       pcStart = -pcStart;
     if (logMessages)
       viewer.scriptStatus("start to evaluate expression");
@@ -1102,7 +1102,7 @@ class Eval { //implements Runnable {
     }
     if (sp != 1)
       evalError(GT._("atom expression compiler error - stack over/underflow"));
-    if (!isSubsetDefinition && bsSubset != null)
+    if (!ignoreSubset && bsSubset != null)
       stack[0].and(bsSubset);
     return stack[0];
   }
@@ -1150,8 +1150,8 @@ class Eval { //implements Runnable {
     Object value = variables.get(variable);
     if (value != null) {
       if (value instanceof Token[]) {
-        value = expression((Token[]) value, 2);
-        variables.put(variable, value);
+        value = expression((Token[]) value, -2);
+        //variables.put("@" + variable, value);
       }
       return (BitSet) value;
     }

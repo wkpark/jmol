@@ -840,8 +840,6 @@ class Eval { //implements Runnable {
         : lineIndices[pc]);
     while (ichEnd > 0 && "\n\r;".indexOf(script.charAt(ichEnd - 1)) >= 0)
       ichEnd--;
-    if (ichBegin < 0)
-      System.out.println("GETCOMMAND ? ichBegin=" + ichBegin + " " + pc + " " + lineIndices[pc - 1] + " " + lineIndices[pc]);
     return script.substring(ichBegin, ichEnd) + ";";
   }
 

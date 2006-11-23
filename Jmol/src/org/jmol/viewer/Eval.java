@@ -2275,7 +2275,7 @@ class Eval { //implements Runnable {
   }
 
   void getProperty() {
-    if (!isSyntaxCheck)
+    if (isSyntaxCheck)
       return;
     String retValue = "";
     String property = (statementLength < 2 ? "" : (String) statement[1].value);

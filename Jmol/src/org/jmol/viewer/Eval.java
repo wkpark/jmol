@@ -822,7 +822,8 @@ class Eval { //implements Runnable {
   }
 
   String getLine() {
-    int ichBegin = lineIndices[pc];
+    //pc has been incremented
+    int ichBegin = lineIndices[pc - 1];
     int ichEnd;
     if ((ichEnd = script.indexOf('\r', ichBegin)) == -1
         && (ichEnd = script.indexOf('\n', ichBegin)) == -1)
@@ -832,10 +833,11 @@ class Eval { //implements Runnable {
   }
 
   String getCommand() {
+    //pc has been incremented
     int ichBegin = lineIndices[pc];
-    int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
+    int ichEnd = (pc == lineIndices.length || lineIndices[pc] == 0 ? script
         .length()
-        : lineIndices[pc + 1]);
+        : lineIndices[pc]);
     while ("\n\r;".indexOf(script.charAt(ichEnd - 1)) >= 0)
       ichEnd--;
     return script.substring(ichBegin, ichEnd) + ";";

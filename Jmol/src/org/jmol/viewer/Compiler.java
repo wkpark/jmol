@@ -1097,13 +1097,19 @@ class Compiler {
     return atokenInfix[itokenInfix].tok;
   }
 
+  boolean tokPeek(int tok) {
+    if (itokenInfix == atokenInfix.length)
+      return false;
+    return (atokenInfix[itokenInfix].tok == tok);
+  }
+
   boolean clauseOr() {
     if (!clauseAnd())
       return false;
     //for simplicity, giving XOR (toggle) same precedence as OR
     //OrNot: First OR, but if that makes no change, then NOT (special toggle)
-    while (tokPeek() == Token.opOr || tokPeek() == Token.opXor
-        || tokPeek() == Token.opToggle) {
+    while (tokPeek(Token.opOr) || tokPeek(Token.opXor)
+        || tokPeek(Token.opToggle)) {
       Token tokenOr = tokenNext();
       if (!clauseAnd())
         return false;
@@ -1115,7 +1121,7 @@ class Compiler {
   boolean clauseAnd() {
     if (!clauseNot())
       return false;
-    while (tokPeek() == Token.opAnd) {
+    while (tokPeek(Token.opAnd)) {
       Token tokenAnd = tokenNext();
       if (!clauseNot())
         return false;
@@ -1125,7 +1131,7 @@ class Compiler {
   }
 
   boolean clauseNot() {
-    if (tokPeek() == Token.opNot) {
+    if (tokPeek(Token.opNot)) {
       Token tokenNot = tokenNext();
       if (!clauseNot())
         return false;
@@ -1201,7 +1207,7 @@ class Compiler {
       case Token.none:
       case Token.all:
         bs = null;
-        if (tokenNext().tok != Token.rightbrace || iPrev >= 0)
+        if (!tokenNext(Token.rightbrace) || iPrev >= 0)
           return endOfExpressionExpected();
         break out;
       case Token.rightbrace:
@@ -1215,7 +1221,7 @@ class Compiler {
       case Token.colon:
         if (iPrev >= 0) {
           token = tokenNext();
-          if (token.tok != Token.integer)
+          if (token == null || token.tok != Token.integer)
             return invalidExpressionToken(token.toString());
           for (int i = token.intValue; i >= iPrev; i--)
             bs.set(i);
@@ -1279,6 +1285,8 @@ class Compiler {
     if (!tokenNext(Token.opEQ)) // =
       return equalSignExpected();
     Token coord = tokenNext(); // 555 == {1 1 1}
+    if (coord == null)
+      return coordinateExpected();
     if (coord.tok == Token.integer) {
       int nnn = coord.intValue;
       cell.x = nnn / 100 - 4;
@@ -1296,7 +1304,7 @@ class Compiler {
       cell.x = coord.intValue;
     else
       cell.x = ((Float) coord.value).floatValue();
-    if (tokPeek() == Token.opOr) // ,
+    if (tokPeek(Token.opOr)) // ,
       tokenNext();
     coord = tokenNext(); // j
     if (coord == null || coord.tok != Token.integer
@@ -1306,7 +1314,7 @@ class Compiler {
       cell.y = coord.intValue;
     else
       cell.y = ((Float) coord.value).floatValue();
-    if (tokPeek() == Token.opOr) // ,
+    if (tokPeek(Token.opOr)) // ,
       tokenNext();
     coord = tokenNext(); // k
     if (coord == null || coord.tok != Token.integer
@@ -1370,7 +1378,7 @@ class Compiler {
     }
     if (!tokenNext(Token.opOr)) // ,
       return commaExpected();
-    if (tokPeek() == Token.leftbrace) {
+    if (tokPeek(Token.leftbrace)) {
       return addTokenToPostfix(new Token(Token.within, new Float(Float.NaN)));
     }
     if (!clauseOr()) // *expression*
@@ -1388,7 +1396,7 @@ class Compiler {
     Token token;
     tokenNext(); // Connected
     while (!iHaveExpression) {
-      if (tokPeek() != Token.leftparen)
+      if (!tokPeek(Token.leftparen))
         break;
       tokenNext(); // (
       tok = tokPeek();
@@ -1398,6 +1406,8 @@ class Compiler {
           return nonnegativeIntegerExpected();
         min = max = token.intValue;
         token = tokenNext();
+        if (token == null)
+          return commaOrCloseExpected();
         tok = token.tok;
         if (tok == Token.rightparen) // )
           break;
@@ -1407,10 +1417,12 @@ class Compiler {
       }
       if (tok == Token.integer) {
         token = tokenNext(); // maximum # of bonds (optional)
-        if (token.intValue < 0)
+       if (token.intValue < 0)
           return nonnegativeIntegerExpected();
         max = token.intValue;
         token = tokenNext();
+        if (token == null)
+          return commaOrCloseExpected();
         tok = token.tok;
         if (tok == Token.rightparen) // )
           break;
@@ -1513,7 +1525,7 @@ class Compiler {
   }
 
   boolean clauseResNameSpec() {
-    if (tokPeek() == Token.asterisk) {
+    if (tokPeek(Token.asterisk)) {
       tokenNext();
       return true;
     }
@@ -1549,7 +1561,7 @@ class Compiler {
     //check for a * in the next token, which
     //would indicate this must be a name with wildcard
 
-    if (tokPeek() == Token.asterisk) {
+    if (tokPeek(Token.asterisk)) {
       tokenNext();
       return generateResidueSpecCode(new Token(Token.identifier, tokenT.value
           + "*"));
@@ -1559,7 +1571,7 @@ class Compiler {
 
   boolean clauseResNumSpec() {
     log("clauseResNumSpec()");
-    if (tokPeek() == Token.asterisk) {
+    if (tokPeek(Token.asterisk)) {
       tokenNext();
       return true;
     }
@@ -1688,7 +1700,7 @@ class Compiler {
     int tok = tokPeek();
     if (tok == Token.colon || tok == Token.slash)
       tokenNext();
-    if (tokPeek() == Token.asterisk) {
+    if (tokPeek(Token.asterisk)) {
       tokenNext();
       return true;
     }
@@ -1729,7 +1741,7 @@ class Compiler {
       return invalidAtomSpecification();
     }
     atomSpec += (String) tokenAtomSpec.value;
-    if (tokPeek() == Token.asterisk) {
+    if (tokPeek(Token.asterisk)) {
       tokenNext();
       // this one is a '*' as a prime, not a wildcard
       atomSpec += "*";

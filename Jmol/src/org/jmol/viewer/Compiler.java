@@ -242,11 +242,9 @@ class Compiler {
         // if an identifier is a single character long, then
         // allocate a new Token with the original character preserved
         if (ident.length() == 1) {
-          token = (Token) Token.map.get(ident);
-          if (token == null) {
+          if ((token = (Token) Token.map.get(ident)) == null) {
             String lowerCaseIdent = ident.toLowerCase();
-            token = (Token) Token.map.get(lowerCaseIdent);
-            if (token != null)
+            if ((token = (Token) Token.map.get(lowerCaseIdent)) != null)
               token = new Token(token.tok, token.intValue, ident);
           }
         } else {
@@ -1238,17 +1236,19 @@ class Compiler {
   boolean clauseComparator() {
     Token tokenAtomProperty = tokenNext();
     Token tokenComparator = tokenNext();
-    if (tokenComparator == null || (tokenComparator.tok & Token.comparator) == 0)
+    if (tokenComparator == null
+        || (tokenComparator.tok & Token.comparator) == 0)
       return comparisonOperatorExpected();
     Token tokenValue = tokenNext();
     if (tokenValue == null)
       return numberExpected();
     boolean isNegative = (tokenValue.tok == Token.hyphen);
-    if (isNegative)
+    if (isNegative) {
       tokenValue = tokenNext();
+      if (tokenValue == null)
+        return numberExpected();
+    }
     int val = Integer.MAX_VALUE;
-    if (tokenValue == null)
-      return numberExpected();
     if (tokenValue.tok == Token.decimal) {
       float vf = ((Float) tokenValue.value).floatValue();
       switch (tokenAtomProperty.tok) {
@@ -1401,12 +1401,10 @@ class Compiler {
       tokenNext(); // (
       tok = tokPeek();
       if (tok == Token.integer) {
-        token = tokenNext(); // minimum # or exact # of bonds (optional)
-        if (token.intValue < 0)
+        min = max = tokenNext().intValue; // minimum # or exact # of bonds (optional)
+        if (min < 0)
           return nonnegativeIntegerExpected();
-        min = max = token.intValue;
-        token = tokenNext();
-        if (token == null)
+        if ((token = tokenNext()) == null)
           return commaOrCloseExpected();
         tok = token.tok;
         if (tok == Token.rightparen) // )
@@ -1416,12 +1414,10 @@ class Compiler {
         tok = tokPeek();
       }
       if (tok == Token.integer) {
-        token = tokenNext(); // maximum # of bonds (optional)
-       if (token.intValue < 0)
+        max = tokenNext().intValue; // maximum # of bonds (optional)
+       if (max < 0)
           return nonnegativeIntegerExpected();
-        max = token.intValue;
-        token = tokenNext();
-        if (token == null)
+        if ((token = tokenNext()) == null)
           return commaOrCloseExpected();
         tok = token.tok;
         if (tok == Token.rightparen) // )
@@ -1534,14 +1530,11 @@ class Compiler {
       return false;
     if (tokenT.tok == Token.leftsquare) {
       String strSpec = "";
-      int tok = 0;
-      while ((tokenT = tokenNext()) != null && tokenT.tok != Token.rightsquare) {
+      while ((tokenT = tokenNext()) != null && tokenT.tok != Token.rightsquare)
         strSpec += tokenT.value;
-      }
       if (tokenT == null)
         return false;
-      tok = tokenT.tok;
-      if (tok != Token.rightsquare)
+      if (tokenT.tok != Token.rightsquare)
         return false;
       if (strSpec == "")
         return true;
@@ -1728,8 +1721,7 @@ class Compiler {
     String atomSpec = "";
     if (tokenAtomSpec.tok == Token.integer) {
       atomSpec += "" + tokenAtomSpec.intValue;
-      tokenAtomSpec = tokenNext();
-      if (tokenAtomSpec == null)
+      if ((tokenAtomSpec = tokenNext()) == null)
         return invalidAtomSpecification();
     }
     switch (tokenAtomSpec.tok) {

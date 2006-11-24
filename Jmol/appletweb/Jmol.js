@@ -641,7 +641,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     if (isIEWin || useHtml4Object) {
       visitJava =
         "<p style='background-color:yellow;" +
-        "width:" + sz[0] + "px;height:" + sz[1] + ";px" + 
+        "width:" + sz[0] + "px;height:" + sz[1] + "px;" + 
         // why doesn't this vertical-align work?
 	"text-align:center;vertical-align:middle;'>\n" +
         "You do not have Java applets<br />\n" +

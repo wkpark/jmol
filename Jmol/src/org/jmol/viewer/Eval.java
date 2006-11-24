@@ -480,12 +480,10 @@ class Eval { //implements Runnable {
       viewer.addCommand(script);
     while (pc < aatoken.length) {      
       Token token = aatoken[pc][0];
-      //if (token.tok == Token.load)
-      //viewer.getSetHistory(-2); //just clear -- no, this is very useful
       statement = aatoken[pc++];
+      statementLength = statement.length;
       if (!checkContinue())
         break;
-      statementLength = statement.length;
       if (isSyntaxCheck) {
         if (isScriptCheck)
           Logger.info(getCommand());

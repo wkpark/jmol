@@ -120,7 +120,10 @@ class MolecularOrbital extends Isosurface {
     }
 
     if ("plane" == propertyName) {
-      thisModel.put("moPlane", value);
+      if (value == null)
+        thisModel.remove("moPlane");
+      else
+        thisModel.put("moPlane", value);
       return;
     }
 

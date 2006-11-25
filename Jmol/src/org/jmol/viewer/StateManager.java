@@ -560,6 +560,7 @@ class StateManager {
     }
     
     Object getParameter(String name) {
+      name = name.toLowerCase();
       if (htParameterValues.containsKey(name))
         return StateManager.escape(htParameterValues.get(name));
       if (htPropertyFlags.containsKey(name))

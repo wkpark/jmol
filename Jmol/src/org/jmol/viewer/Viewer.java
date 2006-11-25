@@ -2940,6 +2940,10 @@ public class Viewer extends JmolViewer {
    *         between strings
    ****************************************************************************/
 
+  String getParameter(String key) {
+   return key + global.getParameter(key);  
+  }
+  
   public boolean getBooleanProperty(String key) {
     //JmolPopup
     if (key.equalsIgnoreCase("hideNotSelected"))

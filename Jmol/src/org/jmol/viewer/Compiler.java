@@ -58,14 +58,22 @@ class Compiler {
   Compiler(Viewer viewer) {
     this.viewer = viewer;
   }
-  boolean compile(String filename, String script, boolean isPredefining) {
-    return compile(filename, script, isPredefining, false); 
-  }
 
+  static String cleanScriptComments(String script) {
+    int pt, pt1;
+    while ((pt = script.indexOf("/*")) >= 0) {
+      pt1 = script.indexOf("*/", pt + 2);
+      if (pt1 < 0)
+        break;
+      script = script.substring(0, pt) + script.substring(pt1 + 2);
+    }
+    return script;
+  }
+  
   boolean compile(String filename, String script, boolean isPredefining, boolean isSilent) {
     this.filename = filename;
     this.isSilent = isSilent;
-    this.script = script;
+    this.script = cleanScriptComments(script);
     logMessages = (!isPredefining && Logger.isActiveLevel(Logger.LEVEL_DEBUG));
     lineNumbers = lineIndices = null;
     aatokenCompiled = null;
@@ -824,10 +832,6 @@ class Compiler {
     return compileError("equal sign expected");
   }
 
-  private boolean integerExpected() {
-    return compileError("integer expected");
-  }
-
   private boolean nonnegativeIntegerExpected() {
     return compileError("nonnegative integer expected");
   }
@@ -1056,20 +1060,49 @@ class Compiler {
     return expPtr;
   }
 
-  int savedPtr;
-
-  void savePtr() {
-    savedPtr = itokenInfix;
-  }
-
-  void restorePtr() {
-    itokenInfix = savedPtr;
-  }
-
+  /**
+   * increments the pointer; does NOT set theToken or theValue
+   * @return the next token
+   */
   Token tokenNext() {
     if (itokenInfix == atokenInfix.length)
       return null;
     return atokenInfix[itokenInfix++];
+  }
+  
+  void returnToken() {
+    itokenInfix--;
+  }
+
+  Token theToken;
+  Object theValue;
+  
+  /**
+   * gets the next token and sets global theToken and theValue
+   * @return the next token
+   */
+  Token getToken() {
+    theValue = ((theToken = tokenNext()) == null ? null : theToken.value);
+    return theToken;
+  }
+  
+  boolean getNumericalToken() {
+    return (getToken() != null 
+        && (isToken(Token.integer) || isToken(Token.decimal)));
+  }
+  
+  boolean isToken(int tok) {
+    return theToken != null && theToken.tok == tok;
+  }
+  
+  float floatValue() {
+    switch (theToken.tok) {
+    case Token.integer:
+      return theToken.intValue;
+    case Token.decimal:
+      return ((Float) theValue).floatValue();
+    }
+    return 0;
   }
 
   boolean tokenNext(int tok) {
@@ -1091,7 +1124,7 @@ class Compiler {
 
   int tokPeek() {
     if (itokenInfix == atokenInfix.length)
-      return 0;
+      return Token.nada;
     return atokenInfix[itokenInfix].tok;
   }
 
@@ -1186,22 +1219,12 @@ class Compiler {
     return unrecognizedExpressionToken();
   }
 
-  float floatValue(Token token) {
-    switch (token.tok) {
-    case Token.integer:
-      return token.intValue;
-    case Token.decimal:
-      return ((Float) token.value).floatValue();
-    }
-    return 0;
-  }
-
   boolean bitset() {
-    Token token = tokenNext();
+    getToken();
     int iPrev = -1;
     BitSet bs = new BitSet();
-    out: while ((token = tokenNext()) != null) {
-      switch (token.tok) {
+    out: while (getToken() != null) {
+      switch (theToken.tok) {
       case Token.none:
       case Token.all:
         bs = null;
@@ -1212,22 +1235,21 @@ class Compiler {
       case Token.integer:
         if (iPrev >= 0)
           bs.set(iPrev);
-        if (token.tok == Token.rightbrace)
+        if (theToken.tok == Token.rightbrace)
           break out;
-        iPrev = token.intValue;
+        iPrev = theToken.intValue;
         break;
       case Token.colon:
         if (iPrev >= 0) {
-          token = tokenNext();
-          if (token == null || token.tok != Token.integer)
-            return invalidExpressionToken(token.toString());
-          for (int i = token.intValue; i >= iPrev; i--)
+          if (getToken() == null || !isToken(Token.integer))
+            return invalidExpressionToken(theToken.toString());
+          for (int i = theToken.intValue; i >= iPrev; i--)
             bs.set(i);
           break;
         }
       // fall through
       default:
-        return invalidExpressionToken(token.toString());
+        return invalidExpressionToken(theToken.toString());
       }
     }
     return addTokenToPostfix(new Token(Token.bitset, bs));
@@ -1239,42 +1261,51 @@ class Compiler {
     if (tokenComparator == null
         || (tokenComparator.tok & Token.comparator) == 0)
       return comparisonOperatorExpected();
-    Token tokenValue = tokenNext();
-    if (tokenValue == null)
+    if (getToken() == null)
       return numberExpected();
-    boolean isNegative = (tokenValue.tok == Token.hyphen);
-    if (isNegative) {
-      tokenValue = tokenNext();
-      if (tokenValue == null)
-        return numberExpected();
-    }
-    int val = Integer.MAX_VALUE;
-    if (tokenValue.tok == Token.decimal) {
-      float vf = ((Float) tokenValue.value).floatValue();
+    boolean isNegative = (isToken(Token.hyphen));
+    if (isNegative && getToken() == null)
+      return numberExpected();
+    int val = 0;
+    switch (theToken.tok) {
+    case Token.integer:
+      val = theToken.intValue;
+      // Most integer values are what they mean or, for example, in 
+      // the case of occupancy, a percentage value or in the
+      // case of a radius, in "RasMol units"
+      // Others are really decimals without the decimal point;
+      // they must be multiplied by 100, just as their decimal equiv.
       switch (tokenAtomProperty.tok) {
+      case Token.partialCharge:
+      case Token.psi:
+      case Token.phi:
+      case Token.surfacedistance:
+      case Token.temperature:
+        // int = decimal here, but comparator has to use decmimal * 100
+        val *= 100; 
+        // fall through
       case Token.radius:
-        val = (int) (vf * 250);
-        break;
       case Token.occupancy:
-      case Token.temperature:
-        val = (int) (vf * 100);
-      }
-    } else if (tokenValue.tok == Token.integer) {
-      switch (tokenAtomProperty.tok) {
-      case Token.temperature:
-        val = tokenValue.intValue * 100;
-        break;
       default:
-        val = tokenValue.intValue;
+        break;
       }
+      break;
+    case Token.decimal:
+      // all decimals must be multiplied by a factor to make them
+      // integers. Most use 100; RasMol "radius" uses Angstroms * 250
+      float vf = floatValue() * 100f;
+      if (tokenAtomProperty.tok == Token.radius)
+        vf *= 2.5; //for RasMol compatibility
+      val = (int) vf;
+      break;
+    default:
+      return numberExpected();
     }
     // note that a comparator instruction is a complicated instruction
     // int intValue is the tok of the property you are comparing
-    // the value against which you are comparing is stored as an Integer or Float
+    // the value against which you are comparing is stored as an Integer
     // in the object value
-
-    if (val == Integer.MAX_VALUE)
-      return numberExpected();
+    // all floats are multiplied by either 100 (standard) or 250 (RasMol units)
     return addTokenToPostfix(new Token(tokenComparator.tok,
         tokenAtomProperty.tok, new Integer(val * (isNegative ? -1 : 1))));
   }
@@ -1284,48 +1315,30 @@ class Compiler {
     tokenNext(); // CELL
     if (!tokenNext(Token.opEQ)) // =
       return equalSignExpected();
-    Token coord = tokenNext(); // 555 == {1 1 1}
-    if (coord == null)
+    if (getToken() == null)
       return coordinateExpected();
-    if (coord.tok == Token.integer) {
-      int nnn = coord.intValue;
+    // 555 = {1 1 1}
+    //Token coord = tokenNext(); // 555 == {1 1 1}
+    if (isToken(Token.integer)) {
+      int nnn = theToken.intValue;
       cell.x = nnn / 100 - 4;
       cell.y = (nnn % 100) / 10 - 4;
       cell.z = (nnn % 10) - 4;
       return addTokenToPostfix(new Token(Token.cell, cell));
     }
-    if (coord.tok != Token.leftbrace) // {
-      return coordinateExpected();
-    coord = tokenNext(); // i
-    if (coord == null || coord.tok != Token.integer
-        && coord.tok != Token.decimal)
-      return integerExpected();
-    if (coord.tok == Token.integer)
-      cell.x = coord.intValue;
-    else
-      cell.x = ((Float) coord.value).floatValue();
+    if (!isToken(Token.leftbrace) || !getNumericalToken())
+      return coordinateExpected(); // i
+    cell.x = floatValue();
     if (tokPeek(Token.opOr)) // ,
       tokenNext();
-    coord = tokenNext(); // j
-    if (coord == null || coord.tok != Token.integer
-        && coord.tok != Token.decimal)
-      return integerExpected();
-    if (coord.tok == Token.integer)
-      cell.y = coord.intValue;
-    else
-      cell.y = ((Float) coord.value).floatValue();
+    if (!getNumericalToken())
+      return coordinateExpected(); // j
+    cell.y = floatValue();
     if (tokPeek(Token.opOr)) // ,
       tokenNext();
-    coord = tokenNext(); // k
-    if (coord == null || coord.tok != Token.integer
-        && coord.tok != Token.decimal)
-      return integerExpected();
-    if (coord.tok == Token.integer)
-      cell.z = coord.intValue;
-    else
-      cell.z = ((Float) coord.value).floatValue();
-    if (!tokenNext(Token.rightbrace)) // }
-      return coordinateExpected();
+    if (!getNumericalToken() || !tokenNext(Token.rightbrace))
+      return coordinateExpected(); // k
+    cell.z = floatValue();
     return addTokenToPostfix(new Token(Token.cell, cell));
   }
 
@@ -1356,12 +1369,11 @@ class Compiler {
     if (!tokenNext(Token.leftparen)) // (
       return leftParenthesisExpected();
     Object distance = null;
-    Token tokenDistance = tokenNext(); // distance
-    if (tokenDistance == null)
+    if (getToken() == null)
       return numberOrKeywordExpected();
-    switch (tokenDistance.tok) {
+    switch (theToken.tok) {
     case Token.integer:
-      distance = new Float((tokenDistance.intValue * 4) / 1000f);
+      distance = new Float(theToken.intValue * 4 / 1000f);
       break;
     case Token.decimal:
     case Token.group:
@@ -1371,16 +1383,15 @@ class Compiler {
     case Token.site:
     case Token.element:
     case Token.string:
-      distance = tokenDistance.value; // really "group" "chain" etc.
+      distance = theToken.value; // really "group" "chain" etc.
       break;
     default:
       return numberOrKeywordExpected();
     }
     if (!tokenNext(Token.opOr)) // ,
       return commaExpected();
-    if (tokPeek(Token.leftbrace)) {
+    if (tokPeek(Token.leftbrace))
       return addTokenToPostfix(new Token(Token.within, new Float(Float.NaN)));
-    }
     if (!clauseOr()) // *expression*
       return false;
     if (!tokenNext(Token.rightparen)) // )T
@@ -1391,43 +1402,38 @@ class Compiler {
   boolean clauseConnected() {
     int min = 1;
     int max = 100;
-    int tok;
     boolean iHaveExpression = false;
-    Token token;
     tokenNext(); // Connected
     while (!iHaveExpression) {
       if (!tokPeek(Token.leftparen))
         break;
       tokenNext(); // (
-      tok = tokPeek();
-      if (tok == Token.integer) {
-        min = max = tokenNext().intValue; // minimum # or exact # of bonds (optional)
-        if (min < 0)
+      getToken();
+      if (isToken(Token.integer)) {
+        // minimum # or exact # of bonds (optional)
+        if ((min = max = theToken.intValue) < 0)
           return nonnegativeIntegerExpected();
-        if ((token = tokenNext()) == null)
+        if (getToken() == null || !isToken(Token.rightparen)
+            && !isToken(Token.opOr))
           return commaOrCloseExpected();
-        tok = token.tok;
-        if (tok == Token.rightparen) // )
+        if (isToken(Token.rightparen)) // )
           break;
-        if (tok != Token.opOr) // ,
-          return commaOrCloseExpected();
-        tok = tokPeek();
+        getToken(); // ,
+        if (isToken(Token.integer)) {
+          // maximum # of bonds (optional)
+          if ((max = theToken.intValue) < 0)
+            return nonnegativeIntegerExpected();
+          if (getToken() == null || !isToken(Token.rightparen)
+              && !isToken(Token.opOr))
+            return commaOrCloseExpected();
+          if (isToken(Token.rightparen)) // )
+            break;
+          getToken();  // ,
+        }
       }
-      if (tok == Token.integer) {
-        max = tokenNext().intValue; // maximum # of bonds (optional)
-       if (max < 0)
-          return nonnegativeIntegerExpected();
-        if ((token = tokenNext()) == null)
-          return commaOrCloseExpected();
-        tok = token.tok;
-        if (tok == Token.rightparen) // )
-          break;
-        if (tok != Token.opOr) // ,
-          return commaOrCloseExpected();
-        tok = tokPeek();
-      }
-      if (tok == Token.rightparen) // )
+      if (isToken(Token.rightparen)) // )
         break;
+      returnToken();
       if (!clauseOr()) // *expression*
         return false;
       if (!tokenNext(Token.rightparen)) // )T
@@ -1443,12 +1449,11 @@ class Compiler {
     tokenNext(); // substructure
     if (!tokenNext(Token.leftparen)) // (
       return leftParenthesisExpected();
-    Token tokenSmiles = tokenNext(); // "smiles"
-    if (tokenSmiles == null || tokenSmiles.tok != Token.string)
+    if (getToken() == null || !isToken(Token.string)) // "smiles"
       return stringExpected();
     if (!tokenNext(Token.rightparen)) // )
       return rightParenthesisExpected();
-    return addTokenToPostfix(new Token(Token.substructure, tokenSmiles.value));
+    return addTokenToPostfix(new Token(Token.substructure, theValue));
   }
 
   boolean residueSpecCodeGenerated;
@@ -1521,20 +1526,14 @@ class Compiler {
   }
 
   boolean clauseResNameSpec() {
-    if (tokPeek(Token.asterisk)) {
-      tokenNext();
-      return true;
-    }
-    Token tokenT = tokenNext();
-    if (tokenT == null)
-      return false;
-    if (tokenT.tok == Token.leftsquare) {
+    getToken();
+    if (isToken(Token.asterisk) || isToken(Token.nada))
+      return (!isToken(Token.nada));
+    if (isToken(Token.leftsquare)) {
       String strSpec = "";
-      while ((tokenT = tokenNext()) != null && tokenT.tok != Token.rightsquare)
-        strSpec += tokenT.value;
-      if (tokenT == null)
-        return false;
-      if (tokenT.tok != Token.rightsquare)
+      while (getToken() != null && !isToken(Token.rightsquare))
+        strSpec += theValue;
+      if (!isToken(Token.rightsquare))
         return false;
       if (strSpec == "")
         return true;
@@ -1548,26 +1547,24 @@ class Compiler {
 
     // no [ ]:
 
-    if (tokenT.tok != Token.identifier)
+    if (!isToken(Token.identifier))
       return identifierOrResidueSpecificationExpected();
 
     //check for a * in the next token, which
     //would indicate this must be a name with wildcard
 
     if (tokPeek(Token.asterisk)) {
-      tokenNext();
-      return generateResidueSpecCode(new Token(Token.identifier, tokenT.value
-          + "*"));
+      String res = theValue + "*";
+      getToken();
+      return generateResidueSpecCode(new Token(Token.identifier, res));
     }
-    return generateResidueSpecCode(tokenT);
+    return generateResidueSpecCode(theToken);
   }
 
   boolean clauseResNumSpec() {
     log("clauseResNumSpec()");
-    if (tokPeek(Token.asterisk)) {
-      tokenNext();
-      return true;
-    }
+    if (tokPeek(Token.asterisk))
+      return (getToken() != null);
     return clauseSequenceRange();
   }
 
@@ -1620,11 +1617,9 @@ class Compiler {
         return generateResidueSpecCode(new Token(Token.spec_chain, '\0',
             "spec_chain"));
     }
-    if (tok == Token.asterisk) {
-      tokenNext();
-      return true;
-    }
-    Token tokenChain;
+    if (tok == Token.asterisk)
+      return (getToken() != null);
+    //Token tokenChain;
     char chain;
     switch (tok) {
     //    case Token.colon:
@@ -1634,14 +1629,14 @@ class Compiler {
     //      chain = '\0'; 
     //      break;
     case Token.integer:
-      tokenChain = tokenNext();
-      if (tokenChain.intValue < 0 || tokenChain.intValue > 9)
+      getToken();
+      int val = theToken.intValue;
+      if (val < 0 || val > 9)
         return invalidChainSpecification();
-      chain = (char) ('0' + tokenChain.intValue);
+      chain = (char) ('0' + val);
       break;
     case Token.identifier:
-      tokenChain = tokenNext();
-      String strChain = (String) tokenChain.value;
+      String strChain = (String) getToken().value;
       if (strChain.length() != 1)
         return invalidChainSpecification();
       chain = strChain.charAt(0);
@@ -1674,9 +1669,8 @@ class Compiler {
     int tok = tokPeek();
     if (isSpecTerminator(tok))
       return generateResidueSpecCode(new Token(Token.spec_alternate, null));
-    Token tokenAlternate = tokenNext();
-    String alternate = (String) tokenAlternate.value;
-    switch (tokenAlternate.tok) {
+    String alternate = (String) getToken().value;
+    switch (theToken.tok) {
     case Token.asterisk:
     case Token.string:
     case Token.integer:
@@ -1690,17 +1684,14 @@ class Compiler {
   }
 
   boolean clauseModelSpec() {
-    int tok = tokPeek();
-    if (tok == Token.colon || tok == Token.slash)
-      tokenNext();
-    if (tokPeek(Token.asterisk)) {
-      tokenNext();
+    getToken();
+    if (isToken(Token.colon) || isToken(Token.slash))
+      getToken();
+    if (isToken(Token.asterisk))
       return true;
-    }
-    Token tokenModel = tokenNext();
-    if (tokenModel == null)
+    if (isToken(Token.nada))
       return invalidModelSpecification();
-    switch (tokenModel.tok) {
+    switch (theToken.tok) {
     case Token.string:
     case Token.integer:
     case Token.identifier:
@@ -1708,23 +1699,21 @@ class Compiler {
     default:
       return invalidModelSpecification();
     }
-    return generateResidueSpecCode(new Token(Token.spec_model,
-        (String) tokenModel.value));
+    return generateResidueSpecCode(new Token(Token.spec_model, theValue));
   }
 
   boolean clauseAtomSpec() {
     if (!tokenNext(Token.dot))
       return invalidAtomSpecification();
-    Token tokenAtomSpec = tokenNext();
-    if (tokenAtomSpec == null)
+    if (getToken() == null)
       return true;
     String atomSpec = "";
-    if (tokenAtomSpec.tok == Token.integer) {
-      atomSpec += "" + tokenAtomSpec.intValue;
-      if ((tokenAtomSpec = tokenNext()) == null)
+    if (isToken(Token.integer)) {
+      atomSpec += "" + theToken.intValue;
+      if (getToken() == null)
         return invalidAtomSpecification();
     }
-    switch (tokenAtomSpec.tok) {
+    switch (theToken.tok) {
     case Token.asterisk:
       return true;
     case Token.identifier:
@@ -1732,7 +1721,7 @@ class Compiler {
     default:
       return invalidAtomSpecification();
     }
-    atomSpec += (String) tokenAtomSpec.value;
+    atomSpec += theValue;
     if (tokPeek(Token.asterisk)) {
       tokenNext();
       // this one is a '*' as a prime, not a wildcard
@@ -1743,19 +1732,19 @@ class Compiler {
 
   boolean compileColorParam() {
     for (int i = 1; i < atokenCommand.length; ++i) {
-      Token token = atokenCommand[i];
+      theToken = atokenCommand[i];
       //Logger.debug(token + " atokenCommand: " + atokenCommand.length);
-      if (token.tok == Token.leftsquare) {
+      if (isToken(Token.leftsquare)) {
         if (!compileRGB(i))
           return false;
-      } else if (token.tok == Token.dollarsign) {
+      } else if (isToken(Token.dollarsign)) {
         i++; // skip identifier
-      } else if (token.tok == Token.identifier) {
-        String id = (String) token.value;
+      } else if (isToken(Token.identifier)) {
+        String id = (String) theToken.value;
         int argb = Graphics3D.getArgbFromString(id);
         if (argb != 0) {
-          token.tok = Token.colorRGB;
-          token.intValue = argb;
+          theToken.tok = Token.colorRGB;
+          theToken.intValue = argb;
         }
       }
     }

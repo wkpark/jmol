@@ -176,13 +176,13 @@ class Eval { //implements Runnable {
   boolean loadScript(String filename, String script) {
     //use runScript, not loadScript from within Eval
     this.filename = filename;
-    this.script = script;
-    if (!compiler.compile(filename, script, false)) {
+    if (!compiler.compile(filename, script, false, false)) {
       error = true;
       errorMessage = compiler.getErrorMessage();
       viewer.scriptStatus("script compiler ERROR: " + errorMessage);
       return false;
     }
+    this.script = compiler.script;
     pc = 0;
     aatoken = compiler.getAatokenCompiled();
     linenumbers = compiler.getLineNumbers();
@@ -219,6 +219,7 @@ class Eval { //implements Runnable {
     if (err != null)
       return err;
     Vector info = new Vector();
+    info.add(compiler.script);
     info.add(compiler.getAatokenCompiled());
     info.add(compiler.getLineNumbers());
     info.add(compiler.getLineIndices());
@@ -267,12 +268,14 @@ class Eval { //implements Runnable {
     } catch (IOException e) {
       try {
         reader.close();
+        reader = null;
       } catch (IOException ioe) {
       }
       return ioError(filename);
     }
     try {
       reader.close();
+      reader = null;
     } catch (IOException ioe) {
     }
     return loadScript(filename, script.toString());
@@ -360,7 +363,7 @@ class Eval { //implements Runnable {
   }
 
   void predefine(String script) {
-    if (compiler.compile("#predefine", script, true)) {
+    if (compiler.compile("#predefine", script, true, false)) {
       Token[][] aatoken = compiler.getAatokenCompiled();
       if (aatoken.length != 1) {
         viewer
@@ -484,11 +487,15 @@ class Eval { //implements Runnable {
       statementLength = statement.length;
       if (!checkContinue())
         break;
+      int nSecDelay = viewer.getScriptDelay();
       if (isSyntaxCheck) {
         if (isScriptCheck)
           Logger.info(getCommand());
         if (statementLength == 1)
           continue;
+      } else if (nSecDelay > 0) {
+        delay((long)nSecDelay * 1000);
+        Logger.info(getCommand());
       }
       if (logMessages)
         logDebugScript();
@@ -1171,7 +1178,7 @@ class Eval { //implements Runnable {
       throws ScriptException {
     int comparator = instruction.tok;
     int property = instruction.intValue;
-    float propertyValue = Float.NaN;
+    int propertyValue = Integer.MAX_VALUE;//Float.NaN;
     int comparisonValue = ((Integer) instruction.value).intValue();
     BitSet propertyBitSet = null;
     int bitsetComparator = comparator;
@@ -1198,6 +1205,9 @@ class Eval { //implements Runnable {
         break;
       case Token.formalCharge:
         propertyValue = atom.getFormalCharge();
+        break;
+      case Token.partialCharge:
+        propertyValue = (int) (atom.getPartialCharge() * 100);
         break;
       case Token.site:
         propertyValue = atom.getAtomSite();
@@ -1242,7 +1252,7 @@ class Eval { //implements Runnable {
       case Token.surfacedistance:
         if (frame.getSurfaceDistanceMax() == 0)
           dots(statementLength, Dots.DOTS_MODE_CALCONLY);
-        propertyValue = atom.getSurfaceDistance();
+        propertyValue = atom.getSurfaceDistance100();
         if (propertyValue < 0)
           continue;
         break;
@@ -1276,10 +1286,10 @@ class Eval { //implements Runnable {
         propertyValue = atom.getRasMolRadius();
         break;
       case Token.psi:
-        propertyValue = atom.getGroupPsi();
+        propertyValue = (int) (atom.getGroupPsi() * 100f);
         break;
       case Token.phi:
-        propertyValue = atom.getGroupPhi();
+        propertyValue = (int) (atom.getGroupPhi() * 100f);
         break;
       case Token._bondedcount:
         propertyValue = atom.getCovalentBondCount();
@@ -1327,7 +1337,7 @@ class Eval { //implements Runnable {
             break;
           }
         }
-        if (!match || Float.isNaN(propertyValue))
+        if (!match || propertyValue == Integer.MAX_VALUE)
           comparator = Token.none;
       }
       switch (comparator) {
@@ -1937,8 +1947,9 @@ class Eval { //implements Runnable {
 
   void help() throws ScriptException {
     if (!viewer.isApplet())
-      evalError(GT._("Currently the {0} command only works for the applet",
-          "help"));
+      return;
+//      evalError(GT._("Currently the {0} command only works for the applet",
+  //        "help"));
     String what = (statementLength == 1 ? "" : stringParameter(1));
     if (!isSyntaxCheck)
       viewer.getHelp(what);
@@ -3156,6 +3167,8 @@ class Eval { //implements Runnable {
     // token allows for only 1 parameter
     if (statement[1].tok != Token.string)
       filenameExpected();
+    if (isSyntaxCheck && !isScriptCheck)
+      return;
     pushContext();
     String filename = stringParameter(1);
     if (!loadScriptFileInternal(filename))
@@ -4328,6 +4341,10 @@ class Eval { //implements Runnable {
           viewer.togglePickingLabel(bs);
         break;
       }
+      if (str.equalsIgnoreCase("defaultColorScheme")) {
+        setDefaultColors();
+        break;
+      }
       if (str.equalsIgnoreCase("measurementNumbers")) {
         setMonitor(2);
         break;
@@ -4446,14 +4463,10 @@ class Eval { //implements Runnable {
 
   void setDefaultColors() throws ScriptException {
     checkLength3();
-    switch (statement[2].tok) {
-    case Token.rasmol:
-    case Token.jmol:
-      setStringProperty("defaultColorScheme", (String) statement[2].value);
-      break;
-    default:
+    String type = "" + statement[2].value;
+    if (!type.equalsIgnoreCase("rasmol") && !type.equalsIgnoreCase("jmol"))
       invalidArgument();
-    }
+    setStringProperty("defaultColorScheme", type);
   }
 
   void setBondmode() throws ScriptException {
@@ -4839,10 +4852,12 @@ class Eval { //implements Runnable {
       setIntProperty("pickingSpinRate", rate);
       return;
     }
-    if (token.value instanceof String)
-      str = (String) token.value;
-    else
-      invalidArgument();
+    if (str == null) {
+      if (token.value instanceof String)
+        str = (String) token.value;
+      else
+        invalidArgument();
+    }
     if (JmolConstants.GetPickingMode(str) < 0)
       invalidArgument();
     setStringProperty("picking", str);

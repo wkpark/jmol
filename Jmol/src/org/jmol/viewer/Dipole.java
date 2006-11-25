@@ -110,6 +110,8 @@ class Dipole {
       this.atoms[0] = atoms[0];
       this.atoms[1] = atoms[1];
       centerDipole();
+    } else {
+      center = null;
     }
   }
 

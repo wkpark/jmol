@@ -77,6 +77,7 @@ class Draw extends MeshCollection {
 
     if ("init" == propertyName) {
       nPoints = -1;
+      newScale = 0;
       ncoord = nbitsets = nidentifiers = 0;
       isFixed = isReversed = isRotated45 = isCrossed = false;
       isCurve = isArrow = isPlane = isVertices = isPerpendicular = false;
@@ -207,6 +208,8 @@ class Draw extends MeshCollection {
       }
       currentMesh.isValid = (isValid ? setDrawing() : false);
       if (currentMesh.isValid) {
+        if (currentMesh.vertexCount > 2 && length != Float.MAX_VALUE && newScale == 1)
+          newScale = length;
         scaleDrawing(currentMesh, newScale);
         currentMesh.initialize();
         setAxes(currentMesh);

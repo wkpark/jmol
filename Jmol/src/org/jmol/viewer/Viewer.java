@@ -1020,7 +1020,8 @@ public class Viewer extends JmolViewer {
   }
 
   private void setDefaultDirectory(String dir) {
-    global.defaultDirectory = (dir == null || dir.length() == 0 ? null : dir);
+    global.defaultDirectory = (dir == null || dir.length() == 0 ? null
+        : simpleReplace(dir, "\\", "/"));
   }
 
   String getDefaultDirectory() {
@@ -1344,10 +1345,10 @@ public class Viewer extends JmolViewer {
     // there probably needs to be a better startup mechanism for shapes
     if (modelSetHasVibrationVectors())
       setShapeSize(JmolConstants.SHAPE_VECTORS, global.defaultVectorMad);
-    setFrankOn(global.frankOn);
     repaintManager.initializePointers(1);
     setCurrentModelIndex(0);
     setBackgroundModelIndex(-1);
+    setFrankOn(global.frankOn);
     setTainted(true);
   }
 
@@ -2891,6 +2892,14 @@ public class Viewer extends JmolViewer {
     statusManager.setScriptStatus(strStatus);
   }
 
+  private void setScriptDelay(int nSec) {
+    global.scriptDelay = nSec;  
+  }
+  
+  int getScriptDelay() {
+    return global.scriptDelay;
+  }
+  
   public void showUrl(String urlString) {
     //applet.Jmol
     //app Jmol
@@ -3133,6 +3142,10 @@ public class Viewer extends JmolViewer {
 
   void setIntProperty(String key, int value, boolean defineNew) {
     while (true) {
+      if (key.equalsIgnoreCase("scriptDelay")) {
+        setScriptDelay(value);
+        break;
+      }
       if (key.equalsIgnoreCase("backgroundModel")) {
         setBackgroundModel(value);
         break;
@@ -3451,10 +3464,10 @@ public class Viewer extends JmolViewer {
     if (!defineNew)
       return !notFound;
     if (notFound) {
-      if (!value && !global.htPropertyFlags.containsKey(key)) {
+      if (!value && !global.htPropertyFlags.containsKey(key.toLowerCase())) {
         Logger.error("viewer.setBooleanProperty(" + key + "," + value
             + ") - unrecognized SET option");
-        scriptStatus("Script ERROR: unrecognized SET option: set " + key);
+        scriptStatus("Script WARNING: unrecognized SET option: set " + key);
         return false;
       }
     }

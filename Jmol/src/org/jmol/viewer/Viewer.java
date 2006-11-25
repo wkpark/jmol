@@ -2941,7 +2941,7 @@ public class Viewer extends JmolViewer {
    ****************************************************************************/
 
   String getParameter(String key) {
-   return key + global.getParameter(key);  
+   return key + " " + global.getParameter(key);  
   }
   
   public boolean getBooleanProperty(String key) {

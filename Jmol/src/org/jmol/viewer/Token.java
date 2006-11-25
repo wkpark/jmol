@@ -76,7 +76,7 @@ class Token {
   final static int expressionCommand = (1 <<  9); // expression command
   final static int embeddedExpression= (1 << 10); // embedded expression
   final static int setparam          = (1 << 11); // parameter to set command
-  final static int showparam         = (1 << 12); // parameter to show command
+  final static int showparam         = (1 << 12); // no longer necessary in general
   final static int bool              = (1 << 13);
   final static int misc              = (1 << 14); // misc parameter
   final static int expression        = (1 << 15); /// expression term
@@ -107,11 +107,11 @@ class Token {
   final static int background   = command |  1 | colorparam | setspecial;
   final static int bond         = command |  2 | setparam | bool;
   final static int cartoon      = command |  3 | setparam;
-  final static int center       = command |  4 | setparam | showparam | expressionCommand;
+  final static int center       = command |  4 | setparam | expressionCommand;
   final static int clipboard    = command |  5;
   final static int color        = command |  6 | colorparam | setparam;
   final static int connect      = command |  7 | embeddedExpression;
-  final static int data         = command |  8 | showparam;
+  final static int data         = command |  8;
   final static int define       = command |  9 | expressionCommand;
   final static int dots         = command | 10 | embeddedExpression | bool;
   final static int echo         = command | 11 | setparam | specialstring;
@@ -120,7 +120,7 @@ class Token {
   final static int help         = command | 14 | setparam | specialstring;
   final static int label        = command | 15 | specialstring;
   final static int load         = command | 16 | negnums;
-  final static int monitor      = command | 18 | setparam | showparam | bool | embeddedExpression | expression;
+  final static int monitor      = command | 18 | setparam | bool | embeddedExpression | expression;
   final static int pause        = command | 19 | misc;
   final static int print        = command | 20;
   final static int quit         = command | 21;
@@ -130,7 +130,7 @@ class Token {
   final static int restrict     = command | 25 | expressionCommand;
   final static int ribbon       = command | 26 | bool;
   final static int rotate       = command | 27 | bool | coordOrSet;
-  final static int save         = command | 28 | showparam;
+  final static int save         = command | 28;
   final static int script       = command | 29 | specialstring;
   final static int select       = command | 30 | expressionCommand;
   final static int set          = command | 31 | bool | negnums | embeddedExpression;
@@ -147,8 +147,8 @@ class Token {
   final static int wireframe    = command | 44 | bool;
   final static int write        = command | 45 | setparam;
   final static int zap          = command | 46;
-  final static int zoom         = command | 47 | showparam | negnums | embeddedExpression;
-  final static int zoomTo       = command | 48 | showparam | negnums | embeddedExpression;
+  final static int zoom         = command | 47 | negnums | embeddedExpression;
+  final static int zoomTo       = command | 48 | negnums | embeddedExpression;
   final static int initialize   = command | 49;
   // openrasmol commands
   final static int depth        = command | 50;
@@ -158,8 +158,8 @@ class Token {
   final static int loop         = command | 61;
   final static int move         = command | 62 | negnums;
   final static int view         = command | 63;
-  final static int spin         = command | 64 | setparam | showparam | bool | coordOrSet;
-  final static int list         = command | 65 | showparam;
+  final static int spin         = command | 64 | setparam | bool | coordOrSet;
+  final static int list         = command | 65;
   final static int display3d    = command | 66;
   final static int animation    = command | 67;
   final static int frame        = command | 68;
@@ -179,19 +179,19 @@ class Token {
   final static int pmesh        = command | 91;
   final static int polyhedra    = command | 92 | embeddedExpression | colorparam;
   final static int centerAt     = command | 93;
-  final static int isosurface   = command | 94 | showparam | colorparam | coordOrSet;
-  final static int draw         = command | 95 | coordOrSet | showparam | colorparam;
+  final static int isosurface   = command | 94 | colorparam | coordOrSet;
+  final static int draw         = command | 95 | coordOrSet | colorparam;
   final static int getproperty  = command | 96;
   final static int dipole       = command | 97 | coordOrSet;
   final static int configuration = command | 98;
-  final static int mo           = command | 99 | showparam | colorparam | negnums;
+  final static int mo           = command | 99 | colorparam | negnums;
   final static int lcaocartoon  = command | 100| colorparam | embeddedExpression;
   final static int message      = command | 101 | specialstring;
   final static int translateSelected = command | 102 | negnums;
   final static int calculate    = command | 103;
   final static int restore      = command | 104;
   final static int selectionHalo = command | 105 | setparam;
-  final static int history       = command | 106 | setparam | showparam;
+  final static int history       = command | 106 | setparam;
   final static int display       = command | 107 | setparam | expressionCommand;
   final static int ifcmd         = command | 108;
   final static int elsecmd       = command | 109;
@@ -205,7 +205,7 @@ class Token {
   final static int backfade     = setparam |  2;
   final static int bondmode     = setparam |  3;
   final static int bonds        = setparam |  4 | expression;
-  final static int boundbox     = setparam |  5 | showparam | command;
+  final static int boundbox     = setparam |  5 | command;
   // cartoon
   final static int cisangle     = setparam |  6;
   final static int fontsize     = setparam |  8;
@@ -228,7 +228,7 @@ class Token {
   // stereo
   // strands
   final static int transparent  = setparam | 19;
-  final static int unitcell     = setparam | 20 | expression | predefinedset | showparam | command;
+  final static int unitcell     = setparam | 20 | expression | predefinedset | command;
   final static int vectps       = setparam | 21;
   
   // write
@@ -238,7 +238,7 @@ class Token {
   final static int gaussian     = setparam | 23;
   // load
   final static int mep          = setparam | 24;
-  final static int mlp          = setparam | 25 | showparam;
+  final static int mlp          = setparam | 25;
   final static int molsurface   = setparam | 26;
   final static int debugscript  = setparam | 27;
   final static int scale3d      = setparam | 28;
@@ -247,7 +247,7 @@ class Token {
   final static int diffuse      = setparam | 30;
   final static int frank        = setparam | 31 | command;
   final static int pickingStyle = setparam | 33;
-  final static int spacegroup   = setparam | 34 | showparam;
+  final static int spacegroup   = setparam | 34;
 
 
   final static int information  = showparam |  0;
@@ -307,7 +307,7 @@ class Token {
   final static int substructure = expression | 16;
   final static int leftbrace    = expression | 17;
   final static int rightbrace   = expression | 18;
-  final static int dollarsign   = objectid   | 19 | showparam;
+  final static int dollarsign   = objectid   | 19;
   final static int connected    = expression | 20;
   final static int altloc       = expression | 21;
   final static int insertion    = expression | 22;
@@ -328,7 +328,7 @@ class Token {
   final static int resno        = atomproperty | 2;
   final static int radius       = atomproperty | 3 | setparam;
   final static int temperature  = atomproperty | 4;
-  final static int model        = atomproperty | 5 | showparam | command;
+  final static int model        = atomproperty | 5 | command;
   
   final static int _bondedcount = atomproperty | 6;
   final static int _groupID     = atomproperty | 7;
@@ -432,7 +432,7 @@ class Token {
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
   final static int hydrogen    = predefinedset |  2 | setparam;
-  final static int selected    = predefinedset |  3 | showparam;
+  final static int selected    = predefinedset |  3;
   final static int solvent     = predefinedset |  4 | setparam;
   final static int sidechain   = predefinedset |  5;
   final static int protein     = predefinedset |  6;

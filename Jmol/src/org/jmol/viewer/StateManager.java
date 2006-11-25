@@ -560,7 +560,11 @@ class StateManager {
     }
     
     Object getParameter(String name) {
-      return htParameterValues.get(name);
+      if (htParameterValues.containsKey(name))
+        return StateManager.escape(htParameterValues.get(name));
+      if (htPropertyFlags.containsKey(name))
+        return htPropertyFlags.get(name);
+      return "<not set>";
     }
     
     String getState() {
@@ -631,6 +635,12 @@ class StateManager {
 
   ///////// state serialization 
 
+  static String escape(Object x) {
+    if (x instanceof String)
+      return escape("" + x);
+    return x.toString();
+  }
+  
   static String escape(BitSet bs) {
     if (bs == null)
       return "({})";

@@ -283,8 +283,8 @@ class Compiler {
           }
           break;
         case Token.show:
-          if ((tok & Token.showparam) == 0 && ptrToken == 2)
-            return cannotShow(ident);
+          //if ((tok & Token.showparam) == 0 && ptrToken == 2)
+            //return cannotShow(ident);
           break;
         case Token.define:
           if (ltoken.size() == 1) {
@@ -769,10 +769,6 @@ class Compiler {
 
   private boolean cannotSet(String ident) {
     return compileError("cannot SET: " + ident);
-  }
-
-  private boolean cannotShow(String ident) {
-    return compileError("cannot SHOW: " + ident);
   }
 
   private boolean invalidExpressionToken(String ident) {

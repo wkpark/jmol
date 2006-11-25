@@ -5181,6 +5181,9 @@ class Eval { //implements Runnable {
     case Token.atom:
       evalError(GT._("unrecognized {0} parameter --  use {1}", new Object[] {
           "SHOW", "\"getProperty ATOMINFO (atom expression)\"" }));
+    case Token.identifier:
+      showString(viewer.getParameter((String)statement[1].value));
+      break;
     case Token.spin:
     case Token.list:
     case Token.mlp:

@@ -1592,17 +1592,33 @@ final public class Graphics3D {
   public void setSpecularPower(int specularPower) {
     Shade3D.setSpecularPower(specularPower);
   }
+  
+  public String getSpecularState() {
+    return Shade3D.getSpecularState();
+  }
 
   public void setAmbientPercent(int ambientPercent) {
     Shade3D.setAmbientPercent(ambientPercent);
+  }
+
+  public int getAmbientPercent() {
+    return Shade3D.getAmbientPercent();
   }
 
   public void setDiffusePercent(int diffusePercent) {
     Shade3D.setDiffusePercent(diffusePercent);
   }
 
+  public int getDiffusePercent() {
+    return Shade3D.getDiffusePercent();
+  }
+
   public void setSpecularPercent(int specularPercent) {
     Shade3D.setSpecularPercent(specularPercent);
+  }
+
+  public int getSpecularPercent() {
+    return Shade3D.getSpecularPercent();
   }
 
   public void setLightsourceZ(float dist) {

@@ -92,6 +92,8 @@ abstract class Mps extends Shape {
   }
 
   int getMpsmodelCount() {
+    if (mpsmodels == null)
+      return 0;
     return mpsmodels.length;
   }
 
@@ -105,6 +107,8 @@ abstract class Mps extends Shape {
   }
 
   void setModelClickability() {
+    if (mpsmodels == null)
+      return;
     for (int i = mpsmodels.length; --i >= 0; )
       mpsmodels[i].setModelClickability();
   }

@@ -355,6 +355,10 @@ class ColorManager {
     g3d.setSpecularPower(specularPower);
     flushCaches();
   }
+  
+  String getSpecularState() {
+    return g3d.getSpecularState();
+  }
 
   void setAmbientPercent(int ambientPercent) {
     g3d.setAmbientPercent(ambientPercent);
@@ -369,6 +373,18 @@ class ColorManager {
   void setSpecularPercent(int specularPercent) {
     g3d.setSpecularPercent(specularPercent);
     flushCaches();
+  }
+
+  int getAmbientPercent() {
+    return g3d.getAmbientPercent();
+  }
+
+  int getSpecularPercent() {
+    return g3d.getSpecularPercent();
+  }
+
+  int getDiffusePercent() {
+    return g3d.getDiffusePercent();
   }
 
   void setLightsourceZ(float dist) {

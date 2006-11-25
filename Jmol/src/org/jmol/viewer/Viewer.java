@@ -241,6 +241,14 @@ public class Viewer extends JmolViewer {
       Logger.setActiveLevel(i, (Logger.NB_LEVELS - i) <= ilevel);
   }
 
+  static int getLogLevel() {
+    for (int i = 0; i < Logger.NB_LEVELS; i++)
+      if (Logger.isActiveLevel(i))
+        return Logger.NB_LEVELS - i;
+    return 0;
+  }
+
+  
   public Component getAwtComponent() {
     return display;
   }
@@ -674,6 +682,10 @@ public class Viewer extends JmolViewer {
     transformManager.setSpinX(value);
   }
 
+  String getSpinState() {
+    return transformManager.getSpinState(false);
+  }
+  
   float getSpinX() {
     return transformManager.spinX;
   }
@@ -840,9 +852,17 @@ public class Viewer extends JmolViewer {
     colorManager.setSpecularPower(specularPower);
   }
 
+  String getSpecularState() {
+    return colorManager.getSpecularState();
+  }
+  
   private void setAmbientPercent(int ambientPercent) {
     //Eval
     colorManager.setAmbientPercent(ambientPercent);
+  }
+
+  int getAmbientPercent() {
+    return colorManager.getAmbientPercent();
   }
 
   private void setDiffusePercent(int diffusePercent) {
@@ -850,9 +870,17 @@ public class Viewer extends JmolViewer {
     colorManager.setDiffusePercent(diffusePercent);
   }
 
+  int getDiffusePercent() {
+    return colorManager.getDiffusePercent();
+  }
+
   private void setSpecularPercent(int specularPercent) {
     //Eval
     colorManager.setSpecularPercent(specularPercent);
+  }
+
+  int getSpecularPercent() {
+    return colorManager.getSpecularPercent();
   }
 
   short getColixAtomPalette(Atom atom, byte pid) {

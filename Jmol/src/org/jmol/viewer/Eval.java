@@ -481,7 +481,7 @@ class Eval { //implements Runnable {
     }
     if (!isSyntaxCheck && scriptLevel <= commandHistoryLevelMax)
       viewer.addCommand(script);
-    while (pc < aatoken.length) {      
+    while (pc < aatoken.length) {
       Token token = aatoken[pc][0];
       statement = aatoken[pc++];
       statementLength = statement.length;
@@ -493,16 +493,18 @@ class Eval { //implements Runnable {
           Logger.info(getCommand());
         if (statementLength == 1)
           continue;
-      } else if (nSecDelay > 0) {
-        delay((long)nSecDelay * 1000);
-        Logger.info(getCommand());
+      } else {
+        if (nSecDelay > 0) {
+          delay((long) nSecDelay * 1000);
+          Logger.info(getCommand());
+        }
+        if (logMessages)
+          logDebugScript();
+        Logger.debug(token.toString());
+        if (ifLevel > 0 && !ifs[ifLevel] && token.tok != Token.endifcmd
+            && token.tok != Token.ifcmd && token.tok != Token.elsecmd)
+          continue;
       }
-      if (logMessages)
-        logDebugScript();
-      Logger.debug(token.toString());
-      if (ifLevel > 0 && !ifs[ifLevel] && token.tok != Token.endifcmd
-          && token.tok != Token.ifcmd && token.tok != Token.elsecmd)
-        continue;
       switch (token.tok) {
       case Token.ifcmd:
         if (++ifLevel == MAX_IF_DEPTH)
@@ -5018,7 +5020,94 @@ class Eval { //implements Runnable {
   void show() throws ScriptException {
     if (statementLength == 1)
       badArgumentCount();
+    Object value = null;
+    String str = (String) statement[1].value;
     switch (statement[1].tok) {
+    case Token.axes:
+      switch (viewer.getAxesMode()) {
+      case JmolConstants.AXES_MODE_UNITCELL:
+        value = "axesUnitcell";
+        break;
+      case JmolConstants.AXES_MODE_BOUNDBOX:
+        value = "axesWindow";
+        break;
+      default:
+        value = "axesMolecular";
+      }
+      str = "";
+      break;
+    case Token.bondmode:
+      value = "bondMode " + (viewer.getBondSelectionModeOr() ? "OR" : "AND");
+      str = "";
+      break;
+    case Token.defaultColors:
+      str = "defaultColorScheme";
+      break;
+    case Token.scale3d:
+      str = "scaleAngstromsPerInch";
+      break;
+    case Token.strands:
+      viewer.loadShape(JmolConstants.SHAPE_STRANDS);
+      value = viewer.getShapeProperty(JmolConstants.SHAPE_STRANDS,
+          "strandCount");
+      str = "set strands";
+      break;
+    case Token.spin:
+      value = viewer.getSpinState();
+      str = "";
+      break;
+    case Token.hbond:
+      value = "set hbondsBackbone " + viewer.getHbondsBackbone() + ";set hbondsSolid "
+          + viewer.getHbondsSolid();
+      str = "";
+      break;
+    case Token.ssbond:
+      value = "set ssbondsBackbone " + viewer.getSsbondsBackbone();
+      str = "";
+      break;
+    case Token.debugscript:
+      value = "" + viewer.getDebugScript();
+      break;
+    case Token.display://deprecated
+    case Token.selectionHalo:
+      value = "set SelectionHalosEnabled " + viewer.getSelectionHaloEnabled();
+      str = "";
+      break;
+    case Token.hetero:
+      value = "set defaultSelectHetero " + viewer.getRasmolHeteroSetting();
+      str = "";
+      break;
+    case Token.hydrogen:
+      value = "set defaultSelectHydrogens " + viewer.getRasmolHydrogenSetting();
+      str = "";
+      break;
+    case Token.ambient:
+      value = "set ambient " + viewer.getAmbientPercent();
+      str = "";
+      break;
+    case Token.diffuse:
+      value = "set diffuse " + viewer.getDiffusePercent();
+      str = "";
+      break;
+    case Token.specular:
+      value = "set specular " + viewer.getSpecular();
+      str = "";
+      break;
+    case Token.specpower:
+      // strange! two values! 
+      value = viewer.getSpecularState();
+      str = "";
+      break;      
+    case Token.echo:
+    case Token.fontsize:
+    case Token.property: // huh? why?
+    case Token.bonds:
+    case Token.frank:
+    case Token.help:
+    case Token.radius:
+    case Token.solvent:
+      value = "?";
+      break;
     case Token.state:
       checkLength23();
       if (statementLength == 2) {
@@ -5068,12 +5157,12 @@ class Eval { //implements Runnable {
                 : "command")));
       return;
     case Token.boundbox:
-        showString("boundbox " + viewer.getBoundBoxCenter() + " "
-            + viewer.getBoundBoxCornerVector());
+      showString("boundbox " + viewer.getBoundBoxCenter() + " "
+          + viewer.getBoundBoxCornerVector());
       return;
     case Token.center:
       Point3f pt = viewer.getRotationCenter();
-        showString("center {" + pt.x + " " + pt.y + " " + pt.z + "}");
+      showString("center {" + pt.x + " " + pt.y + " " + pt.z + "}");
       return;
     case Token.draw:
       if (!isSyntaxCheck)
@@ -5135,16 +5224,16 @@ class Eval { //implements Runnable {
         showString(viewer.getMeasurementInfoAsString());
       return;
     case Token.orientation:
-        showString(viewer.getOrientationText());
+      showString(viewer.getOrientationText());
       return;
     case Token.pdbheader:
       showString(viewer.getPDBHeader());
       return;
     case Token.symmetry:
-        showString(viewer.getSymmetryInfoAsString());
+      showString(viewer.getSymmetryInfoAsString());
       return;
     case Token.transform:
-        showString("transform:\n" + viewer.getTransformText());
+      showString("transform:\n" + viewer.getTransformText());
       return;
     case Token.url:
       // in a new window
@@ -5161,9 +5250,9 @@ class Eval { //implements Runnable {
       }
       invalidArgument();
     case Token.zoom:
-        showString("zoom "
-            + (viewer.getZoomEnabled() ? ("" + viewer.getZoomPercentSetting())
-                : "off"));
+      showString("zoom "
+          + (viewer.getZoomEnabled() ? ("" + viewer.getZoomPercentSetting())
+              : "off"));
       return;
     // not implemented
     case Token.translation:
@@ -5182,20 +5271,29 @@ class Eval { //implements Runnable {
       evalError(GT._("unrecognized {0} parameter --  use {1}", new Object[] {
           "SHOW", "\"getProperty ATOMINFO (atom expression)\"" }));
     case Token.identifier:
-      showString(viewer.getParameter((String)statement[1].value));
+      if (str.equalsIgnoreCase("historyLevel")) {
+        showString("historyLevel " + commandHistoryLevelMax);
+        return;
+      }
+      if (str.equalsIgnoreCase("defaultLattice")) {
+        showString("defaultLattice "
+            + StateManager.escape(viewer.getDefaultLattice()));
+        return;
+      }
+      if (str.equalsIgnoreCase("logLevel")) {
+        value = "" + Viewer.getLogLevel();
+        break;
+      }
       break;
-    case Token.spin:
-    case Token.list:
-    case Token.mlp:
-    case Token.information:
-    case Token.phipsi:
-    case Token.ramprint:
-    case Token.all:
-      notImplemented(1);
-      break;
-    default:
-      evalError(GT._("unrecognized {0} parameter", "SHOW"));
     }
+    if (statementLength != 2)
+      badArgumentCount();
+    if (value != null) {
+      showString((str.length() > 0 ? "set " + str + " " : "") + value);
+      return;
+    }
+    if (str != null)
+      showString("set " + viewer.getParameter(str));
   }
 
   void showString(String str) {

@@ -277,21 +277,39 @@ final class Shade3D {
     dump();
   }
 
+  static String getSpecularState() {
+    return "set specPower " + (-specularExponent) + "; set specPower "
+        + (int) (intenseFraction * 100);
+  }
+  
   static void setAmbientPercent(int ambientPercent) {
     ambientFraction = ambientPercent / 100f;
     dump();
   }
+
+  static int getAmbientPercent() {
+    return (int) (ambientFraction * 100);
+  }
+  
 
   static void setDiffusePercent(int diffusePercent) {
     intensityDiffuse = diffusePercent / 100f;
     dump();
   }
 
+  static int getDiffusePercent() {
+    return (int) (intensityDiffuse * 100);
+  }
+  
   static void setSpecularPercent(int specularPercent) {
     intensitySpecular = specularPercent / 100f;
     dump();
   }
 
+  static int getSpecularPercent() {
+    return (int) (intensitySpecular * 100);
+  }
+  
   static void dump() {
     Logger.debug("\n ambientPercent=" + ambientFraction +
                        "\n diffusePercent=" + intensityDiffuse +

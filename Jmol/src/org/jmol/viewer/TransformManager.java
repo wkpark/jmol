@@ -76,26 +76,7 @@ class TransformManager {
         + (slabEnabled ? ";slab on" : "") 
         + (!zoomEnabled ? ";zoom off" : "")
         + ";\n");
-    commands.append("set spin X " + (int)spinX);
-    commands.append(";set spin Y " + (int)spinY);
-    commands.append(";set spin Z " + (int)spinZ);
-    commands.append(";set spin fps " + (int)spinFps + ";\n");
-    if (spinOn) {
-      commands.append("set refreshing true;refresh;\n");
-      if (isSpinInternal) {
-        Point3f pt = new Point3f(internalRotationCenter);
-        pt.add(rotationAxis);
-        commands.append("spin " + rotationRate + " " 
-            + StateManager.escape(internalRotationCenter)
-            + " " + StateManager.escape(pt));
-      } else if (isSpinFixed) {
-        commands.append("spin axisangle " + StateManager.escape(rotationAxis) + " " + rotationRate);
-      } else {
-        commands.append("spin on");
-      }
-      commands.append(";\n");
-    }
-    
+    commands.append(getSpinState(true) + "\n");    
     if (viewer.modelSetHasVibrationVectors()) {
       commands.append("vibration scale " + vibrationScale + ";\n");
       if (vibrationOn)
@@ -104,6 +85,30 @@ class TransformManager {
 
     commands.append("\n");
     return commands.toString();
+  }
+  
+  String getSpinState(boolean isAll) {
+    String s = "set spin X " + (int)spinX
+    +";set spin Y " + (int)spinY
+    +";set spin Z " + (int)spinZ
+    +";set spin fps " + (int)spinFps + ";";
+    if (spinOn) {
+      if (isAll)
+        s+="set refreshing true;refresh;";
+      if (isSpinInternal) {
+        Point3f pt = new Point3f(internalRotationCenter);
+        pt.add(rotationAxis);
+        s+="spin " + rotationRate + " " 
+            + StateManager.escape(internalRotationCenter)
+            + " " + StateManager.escape(pt);
+      } else if (isSpinFixed) {
+        s+="spin axisangle " + StateManager.escape(rotationAxis) + " " + rotationRate;
+      } else {
+        s+="spin on";
+      }
+      s+=";";
+    }
+   return s;  
   }
   
   final static float twoPI = (float) (2 * Math.PI);

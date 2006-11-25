@@ -48,6 +48,13 @@ class Strands extends Mps {
     super.setProperty(propertyName, value, bs);
   }
 
+  Object getProperty(String propertyName, int ignored) {
+    if ("strandCount" == propertyName) {
+      return new Integer(strandCount);
+    }
+    return "";
+  }
+  
   class Schain extends Mps.MpsShape {
     Schain(Polymer polymer) {
       super(polymer, -2, 3000, 800, 5000);

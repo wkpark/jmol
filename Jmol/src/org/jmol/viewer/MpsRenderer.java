@@ -301,11 +301,14 @@ abstract class MpsRenderer extends MeshRenderer {
       try {
         if (meshes[i] == null || !meshReady[i])
           createMeshCylinder(i, madBeg, madMid, madEnd, 1);
-        meshes[i].colix = colix;
-        render1(meshes[i]);
+        if (meshes[i] != null) {
+          meshes[i].colix = colix;
+          render1(meshes[i]);
+        }
         return;
       } catch (Exception e) {
-        System.out.println("render mesh error: " + e.toString());
+        System.out.println("render mesh error hermiteConic: " + e.toString());
+        //e.printStackTrace();
       }
     }
     g3d.fillHermite(colix, isNucleic ? 4 : 7, diameterBeg, diameterMid,
@@ -327,7 +330,8 @@ abstract class MpsRenderer extends MeshRenderer {
           render1(meshes[i]);
           return;
         } catch (Exception e) {
-          System.out.println("render mesh error: " + e.toString());
+          System.out.println("render mesh error hermiteRibbon: " + e.toString());
+          //e.printStackTrace();
         }
       }
     }
@@ -359,7 +363,8 @@ abstract class MpsRenderer extends MeshRenderer {
         render1(meshes[i]);
         return;
       } catch (Exception e) {
-        System.out.println("render mesh error: " + e.toString());
+        System.out.println("render mesh error hermiteArrowHead: " + e.toString());
+        //e.printStackTrace();
       }
     }
 
@@ -395,7 +400,8 @@ abstract class MpsRenderer extends MeshRenderer {
         render1(meshes[i]);
         return;
       } catch (Exception e) {
-        System.out.println("render mesh error: " + e.toString());
+        System.out.println("render mesh error: renderCone" + e.toString());
+        //e.printStackTrace();
       }
     }
     g3d.fillCone(colix, Graphics3D.ENDCAPS_FLAT, coneDiameter, screenPtBegin,

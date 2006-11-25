@@ -96,6 +96,9 @@ abstract class MeshRenderer extends ShapeRenderer {
     case Mesh.DRAW_CIRCLE:
       //unimplemented
       break;
+    case Mesh.DRAW_CURVE:
+      //unnecessary
+      break;
     default:
       if (mesh.showPoints)
         renderPoints(mesh, screens, vertexCount);

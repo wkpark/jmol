@@ -246,7 +246,6 @@ class Token {
   final static int property     = setparam | 29;
   final static int diffuse      = setparam | 30;
   final static int frank        = setparam | 31 | command;
-  final static int partialCharge= setparam | 32;
   final static int pickingStyle = setparam | 33;
   final static int spacegroup   = setparam | 34 | showparam;
 
@@ -337,18 +336,19 @@ class Token {
   final static int _structure   = atomproperty | 9;
   final static int occupancy    = atomproperty | 10;
   
-  final static int polymerLength= atomproperty | 11;
-  final static int molecule     = atomproperty | 12 | command;
-  final static int cell         = atomproperty | 13;
-  final static int site         = atomproperty | 14;
-  final static int element      = atomproperty | 15;
-  final static int symop        = atomproperty | 16;
+  final static int polymerLength   = atomproperty | 11;
+  final static int molecule        = atomproperty | 12 | command;
+  final static int cell            = atomproperty | 13;
+  final static int site            = atomproperty | 14;
+  final static int element         = atomproperty | 15;
+  final static int symop           = atomproperty | 16;
   final static int surfacedistance = atomproperty | 17;
-  final static int atomIndex    = atomproperty | 18;
-  final static int formalCharge = atomproperty | 19 | setparam ;
-  final static int phi          = atomproperty | 20;
-  final static int psi          = atomproperty | 21;
-
+  final static int atomIndex       = atomproperty | 18;
+  final static int formalCharge    = atomproperty | 19 | setparam;
+  final static int phi             = atomproperty | 20;
+  final static int psi             = atomproperty | 21;
+  final static int partialCharge   = atomproperty | 22;
+  
   final static int opGT         = comparator |  0;
   final static int opGE         = comparator |  1;
   final static int opLE         = comparator |  2;

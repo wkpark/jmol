@@ -75,6 +75,7 @@ class XmlArgusReader extends XmlReader {
     this.parent = parent;
     this.reader = reader;
     this.atomSetCollection = atomSetCollection;
+    this.logger = parent.logger;
     new ArgusHandler(xmlReader);
     parseReaderXML(xmlReader);
   }

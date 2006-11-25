@@ -131,6 +131,7 @@ public class XmlCmlReader extends XmlReader {
     this.parent = parent;
     this.reader = reader;
     this.atomSetCollection = atomSetCollection;
+    this.logger = parent.logger;
     new CmlHandler(xmlReader);
     parseReaderXML(xmlReader);
   }

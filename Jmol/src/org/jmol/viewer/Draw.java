@@ -208,7 +208,8 @@ class Draw extends MeshCollection {
       }
       currentMesh.isValid = (isValid ? setDrawing() : false);
       if (currentMesh.isValid) {
-        if (currentMesh.vertexCount > 2 && length != Float.MAX_VALUE && newScale == 1)
+        if (currentMesh.vertexCount > 2 && length != Float.MAX_VALUE
+            && newScale == 1)
           newScale = length;
         scaleDrawing(currentMesh, newScale);
         currentMesh.initialize();

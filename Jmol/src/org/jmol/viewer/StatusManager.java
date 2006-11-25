@@ -154,6 +154,8 @@ class StatusManager {
   }
 
   synchronized void setStatusFrameChanged(int frameNo) {
+    if (viewer.getFrame() == null)
+      return;
     boolean isAnimationRunning = (frameNo <= -2);
     int f = frameNo;
     if (isAnimationRunning)

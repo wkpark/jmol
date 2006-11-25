@@ -74,7 +74,7 @@ class DipolesRenderer extends ShapeRenderer {
   boolean transform(Dipole dipole) {
     Vector3f vector = dipole.vector;
     offset.set(vector);
-    if (dipole.center == null) { 
+    if (dipole. () == null) { 
       offset.scale(dipole.offsetAngstroms / dipole.dipoleValue);
       if (dipoleVectorScale < 0)
         offset.add(vector);

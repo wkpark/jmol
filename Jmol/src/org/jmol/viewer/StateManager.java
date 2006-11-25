@@ -445,6 +445,7 @@ class StateManager {
     float defaultVibrationScale  = 1f;
     float defaultVibrationPeriod = 1f;
     float defaultVectorScale     = 1f;
+    int scriptDelay              = 0;
     
     // window
     
@@ -573,8 +574,13 @@ class StateManager {
       e = htParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
-        if (key.indexOf("default") >= 0 && key.charAt(0) != '@' && doRegister(key))
-        appendCmd(commands, "set " + key + " " + htParameterValues.get(key));
+        if (key.indexOf("default") >= 0 && key.charAt(0) != '@'
+            && doRegister(key)) {
+          Object value = htParameterValues.get(key);
+          if (value instanceof String)
+            value = escape((String) value);
+          appendCmd(commands, "set " + key + " " + value);
+        }
       }
       //booleans
       e = htPropertyFlags.keys();
@@ -588,7 +594,8 @@ class StateManager {
       e = htParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
-        if (key.indexOf("default") < 0 && key.charAt(0) != '@'  && doRegister(key)) {
+        if (key.indexOf("default") < 0 && key.charAt(0) != '@'
+            && doRegister(key)) {
           Object value = htParameterValues.get(key);
           if (key.charAt(0) == '_') {
             key = key.substring(1);
@@ -615,7 +622,7 @@ class StateManager {
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
         if (key.charAt(0) == '@')
-        appendCmd(commands, key + " " + htParameterValues.get(key));
+          appendCmd(commands, key + " " + htParameterValues.get(key));
       }
       return commands + "\n";
     }

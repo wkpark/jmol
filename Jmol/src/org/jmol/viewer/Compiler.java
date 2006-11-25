@@ -74,7 +74,7 @@ class Compiler {
     this.filename = filename;
     this.isSilent = isSilent;
     this.script = cleanScriptComments(script);
-    logMessages = (!isPredefining && Logger.isActiveLevel(Logger.LEVEL_DEBUG));
+    logMessages = (!isSilent && !isPredefining && Logger.isActiveLevel(Logger.LEVEL_DEBUG));
     lineNumbers = lineIndices = null;
     aatokenCompiled = null;
     errorMessage = errorLine = null;

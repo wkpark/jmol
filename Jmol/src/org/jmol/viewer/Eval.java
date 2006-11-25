@@ -5068,7 +5068,7 @@ class Eval { //implements Runnable {
                 : "command")));
       return;
     case Token.boundbox:
-        showString("boundbox: " + viewer.getBoundBoxCenter() + " "
+        showString("boundbox " + viewer.getBoundBoxCenter() + " "
             + viewer.getBoundBoxCornerVector());
       return;
     case Token.center:

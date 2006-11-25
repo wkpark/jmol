@@ -82,7 +82,7 @@ public final class Frame {
   byte[] occupancies;
   short[] bfactor100s;
   float[] partialCharges;
-  float[] surfaceDistances;
+  int[] surfaceDistance100s;
   int[] surfaceAtoms;
   String[] atomNames;
   int[] atomSerials;
@@ -2432,7 +2432,7 @@ public final class Frame {
   BitSet bsSurfaceSet;
   void setSurfaceAtoms(BitSet bsSurface, BitSet bsEnclosed) {
     bsSurfaceSet = (BitSet) bsEnclosed.clone();
-    surfaceDistances = null;
+    surfaceDistance100s = null;
     int n = viewer.cardinalityOf(bsSurface);
     if (n == 0) {
       surfaceAtoms = null;
@@ -2444,17 +2444,17 @@ public final class Frame {
         surfaceAtoms[pt++] = i;
   }
   
-  float getSurfaceDistance(int atomIndex) {
+  int getSurfaceDistance100(int atomIndex) {
     if (surfaceAtoms == null)
       return -1;
-    if (surfaceDistances == null)
+    if (surfaceDistance100s == null)
       calcSurfaceDistances();
-    return surfaceDistances[atomIndex]; 
+    return surfaceDistance100s[atomIndex]; 
   }
   
-  float surfaceDistanceMax;
-  float getSurfaceDistanceMax() {
-    if (surfaceDistances == null)
+  int surfaceDistanceMax;
+  int getSurfaceDistanceMax() {
+    if (surfaceDistance100s == null)
       calcSurfaceDistances();
     return surfaceDistanceMax;
   }
@@ -2463,9 +2463,9 @@ public final class Frame {
     surfaceDistanceMax = 0;
     if (bsSurfaceSet == null)
       return;
-    surfaceDistances = new float[atomCount];
+    surfaceDistance100s = new int[atomCount];
     for (int i = 0; i < atomCount; i++) {
-      surfaceDistances[i] = -1;
+      surfaceDistance100s[i] = -1;
       if (bsSurfaceSet.get(i)) {
         float dMin = Float.MAX_VALUE;
         Atom atom = atoms[i];
@@ -2473,8 +2473,8 @@ public final class Frame {
           float d = atoms[surfaceAtoms[j]].distance(atom);
           dMin = Math.min(d, dMin);
         }
-        surfaceDistances[i] = dMin;
-        surfaceDistanceMax = Math.max(surfaceDistanceMax, dMin);
+        int d = surfaceDistance100s[i] = (int) (dMin * 100);
+        surfaceDistanceMax = Math.max(surfaceDistanceMax, d);
       }
     }
   }

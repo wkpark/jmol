@@ -951,7 +951,7 @@ String getAtomInfoChime(int i) {
       info.put("translucent", new Boolean(isTranslucent));
     info.put("formalCharge", new Integer(atom.getFormalCharge()));
     info.put("partialCharge", new Float(atom.getPartialCharge()));
-    float d = atom.getSurfaceDistance();
+    float d = atom.getSurfaceDistance100() / 100f;
     if (d >= 0)
       info.put("surfaceDistance", new Float(d));
     if (isPDB(atom.modelIndex)) {

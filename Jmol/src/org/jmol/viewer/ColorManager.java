@@ -173,7 +173,7 @@ class ColorManager {
       break;
     case JmolConstants.PALETTE_SURFACE:
       hi = viewer.getFrame().getSurfaceDistanceMax();
-      index = quantize(atom.getSurfaceDistance(), 0, hi,
+      index = quantize(atom.getSurfaceDistance100(), 0, hi,
           JmolConstants.argbsRwbScale.length);
       //index = JmolConstants.argbsRwbScale.length - 1 - index;
       argb = JmolConstants.argbsRwbScale[index];

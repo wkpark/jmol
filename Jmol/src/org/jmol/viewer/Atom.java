@@ -919,8 +919,8 @@ final public class Atom extends Point3fi implements Tuple {
     return group.chain.chainID;
   }
 
-  float getSurfaceDistance() {
-    return group.chain.frame.getSurfaceDistance(atomIndex);
+  int getSurfaceDistance100() {
+    return group.chain.frame.getSurfaceDistance100(atomIndex);
   }
 
   int getPolymerLength() {
@@ -1178,7 +1178,7 @@ final public class Atom extends Point3fi implements Tuple {
           break;
         case 'u':
           if (chAtom == '\0') {
-            floatT = getSurfaceDistance();
+            floatT = getSurfaceDistance100() / 100f;
           } else {
             strT = units;
           }

@@ -90,12 +90,7 @@ class Polyhedra extends AtomShape {
     }
 
     if ("collapsed" == propertyName) {
-      isCollapsed = true;
-      return;
-    }
-
-    if ("flat" == propertyName) {
-      isCollapsed = false;
+      isCollapsed = ((Boolean) value).booleanValue();
       return;
     }
 
@@ -546,8 +541,10 @@ class Polyhedra extends AtomShape {
               : " distanceFactor " + myDistanceFactor)
           + (myFaceCenterOffset == DEFAULT_FACECENTEROFFSET ? ""
               : " faceCenterOffset " + myFaceCenterOffset)
-          + (collapsed ? " collapsed" : "") + " to "
-          + StateManager.escape(bs) + ";"
+          + " to "
+          + StateManager.escape(bs)
+          + (collapsed ? " collapsed" : "")
+          + ";"
           + (visible ? "" : "polyhedra off;") + "\n";
       return s;
     }

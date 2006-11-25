@@ -358,15 +358,13 @@ class FileManager {
   final String[] urlPrefixes = {"http:", "https:", "ftp:", "file:"};
 
   private void classifyName(String name) {
-    //isURL = false;
     if (name == null)
       return;
+    String defaultDirectory = viewer.getDefaultDirectory();
     if (appletDocumentBase != null) {
       // This code is only for the applet
-      //isURL = true;
-      String defaultDirectory = viewer.getDefaultDirectory();
       try {
-        if (defaultDirectory != null && name.indexOf(":/") < 0)
+        if (defaultDirectory != null && name.indexOf(":") < 0)
           name = defaultDirectory + "/" + name;
         URL url = new URL(appletDocumentBase, name);
         fullPathName = url.toString();
@@ -381,7 +379,6 @@ class FileManager {
     // This code is for the app
     for (int i = 0; i < urlPrefixes.length; ++i) {
       if (name.startsWith(urlPrefixes[i])) {
-        //isURL = true;
         try {
           URL url = new URL(name);
           fullPathName = url.toString();
@@ -393,7 +390,8 @@ class FileManager {
         return;
       }
     }
-    //isURL = false;
+    if (name.indexOf(":") < 0 && defaultDirectory != null)
+      name = defaultDirectory + "/" + name;
     file = new File(name);
     fullPathName = file.getAbsolutePath();
     fileName = file.getName();
@@ -422,6 +420,8 @@ class FileManager {
         length = conn.getContentLength();
         in = conn.getInputStream();
       } else {
+        if (!isURL && name.indexOf(":") < 0 && defaultDirectory != null)
+          name = defaultDirectory + "/" + name;
         Logger.info("FileManager opening " + name);
         File file = new File(name);
         length = (int) file.length();

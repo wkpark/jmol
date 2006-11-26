@@ -24,7 +24,7 @@
 
 package org.jmol.g3d;
 
-import org.jmol.util.Logger;
+//import org.jmol.util.Logger;
 
 /**
  *<p>
@@ -63,6 +63,8 @@ final class Shade3D {
 
   // the viewer vector is always 0,0,1
 
+  // the following six settings are actually set in StateManager
+  
   // set specular on|off
   static boolean specularOn = true;
   // set specular 0-100
@@ -253,7 +255,7 @@ final class Shade3D {
 
   static void setSpecular(boolean specular) {
     specularOn = specular;
-    dump();
+    //dump();
   }
 
   static boolean getSpecular() {
@@ -266,7 +268,7 @@ final class Shade3D {
       (float)Math.sqrt(xLightsource * xLightsource +
                        yLightsource * yLightsource +
                        zLightsource * zLightsource);
-    dump();
+    //dump();
   }
 
   static void setSpecularPower(int specularPower) {
@@ -274,17 +276,12 @@ final class Shade3D {
       intenseFraction = specularPower / 100f;
     else
       specularExponent = -specularPower;
-    dump();
+    //dump();
   }
 
-  static String getSpecularState() {
-    return "set specPower " + (-specularExponent) + "; set specPower "
-        + (int) (intenseFraction * 100);
-  }
-  
   static void setAmbientPercent(int ambientPercent) {
     ambientFraction = ambientPercent / 100f;
-    dump();
+    //dump();
   }
 
   static int getAmbientPercent() {
@@ -294,7 +291,7 @@ final class Shade3D {
 
   static void setDiffusePercent(int diffusePercent) {
     intensityDiffuse = diffusePercent / 100f;
-    dump();
+    //dump();
   }
 
   static int getDiffusePercent() {
@@ -303,13 +300,13 @@ final class Shade3D {
   
   static void setSpecularPercent(int specularPercent) {
     intensitySpecular = specularPercent / 100f;
-    dump();
+    //dump();
   }
 
   static int getSpecularPercent() {
     return (int) (intensitySpecular * 100);
   }
-  
+/*  
   static void dump() {
     Logger.debug("\n ambientPercent=" + ambientFraction +
                        "\n diffusePercent=" + intensityDiffuse +
@@ -320,4 +317,5 @@ final class Shade3D {
                        "\n zLightsource=" + zLightsource +
                        "\n shadeNormal=" + shadeNormal);
   }
+*/
 }

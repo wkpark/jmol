@@ -1593,10 +1593,6 @@ final public class Graphics3D {
     Shade3D.setSpecularPower(specularPower);
   }
   
-  public String getSpecularState() {
-    return Shade3D.getSpecularState();
-  }
-
   public void setAmbientPercent(int ambientPercent) {
     Shade3D.setAmbientPercent(ambientPercent);
   }

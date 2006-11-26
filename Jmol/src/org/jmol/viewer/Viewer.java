@@ -130,10 +130,9 @@ public class Viewer extends JmolViewer {
     jvm12orGreater = (strJavaVersion.compareTo("1.2") >= 0);
     jvm14orGreater = (strJavaVersion.compareTo("1.4") >= 0);
     stateManager = new StateManager(this);
-    global = stateManager.getGlobalSettings();
     g3d = new Graphics3D(display);
     colorManager = new ColorManager(this, g3d);
-    setStringProperty("backgroundColor", "black");
+    initialize();
     statusManager = new StatusManager(this);
     scriptManager = new ScriptManager(this);
     transformManager = new TransformManager(this);
@@ -303,6 +302,13 @@ public class Viewer extends JmolViewer {
   void resetAllParameters() {
     global = stateManager.getGlobalSettings();
     colorManager.resetElementColors();
+    setStringProperty("backgroundColor", "black");
+    setAmbientPercent(global.ambientPercent);
+    setDiffusePercent(global.diffusePercent);
+    setSpecular(global.specular);
+    setSpecularPercent(global.specularPercent);
+    setSpecularExponent(global.specularExponent);
+    setSpecularPower(global.specularPower);
   }
 
   String listSavedStates() {
@@ -841,6 +847,7 @@ public class Viewer extends JmolViewer {
   private void setSpecular(boolean specular) {
     //Eval
     colorManager.setSpecular(specular);
+    global.specular = specular;
   }
 
   boolean getSpecular() {
@@ -849,16 +856,24 @@ public class Viewer extends JmolViewer {
 
   private void setSpecularPower(int specularPower) {
     //Eval
-    colorManager.setSpecularPower(specularPower);
+    colorManager.setSpecularPower(Math.abs(specularPower));
+    global.specularPower = specularPower;
+  }
+
+  private void setSpecularExponent(int specularExponent) {
+    //Eval
+    colorManager.setSpecularPower(-Math.abs(specularExponent));
+    global.specularExponent = specularExponent;
   }
 
   String getSpecularState() {
-    return colorManager.getSpecularState();
+    return global.getSpecularState();
   }
   
   private void setAmbientPercent(int ambientPercent) {
     //Eval
     colorManager.setAmbientPercent(ambientPercent);
+    global.ambientPercent = ambientPercent;
   }
 
   int getAmbientPercent() {
@@ -868,6 +883,7 @@ public class Viewer extends JmolViewer {
   private void setDiffusePercent(int diffusePercent) {
     //Eval
     colorManager.setDiffusePercent(diffusePercent);
+    global.diffusePercent = diffusePercent;
   }
 
   int getDiffusePercent() {
@@ -877,6 +893,7 @@ public class Viewer extends JmolViewer {
   private void setSpecularPercent(int specularPercent) {
     //Eval
     colorManager.setSpecularPercent(specularPercent);
+    global.specularPercent = specularPercent;
   }
 
   int getSpecularPercent() {
@@ -3182,22 +3199,39 @@ public class Viewer extends JmolViewer {
         setBackgroundModel(value);
         break;
       }
-      if (key.equalsIgnoreCase("specPower")) {
+      if (key.equalsIgnoreCase("specularPower")) {
         setSpecularPower(value);
         break;
       }
-      if (key.equalsIgnoreCase("specular")) {
-        setSpecularPercent(value);
+      if (key.equalsIgnoreCase("specularExponent")) {
+        setSpecularExponent(value);
         break;
       }
+      if (key.equalsIgnoreCase("specular")) {
+        setIntProperty("specularPercent", value);
+        return;
+      }
       if (key.equalsIgnoreCase("diffuse")) {
-        setDiffusePercent(value);
+        setIntProperty("diffusePercent", value);
         break;
       }
       if (key.equalsIgnoreCase("ambient")) {
+        setIntProperty("ambientPercent", value);
+        break;
+      }
+      if (key.equalsIgnoreCase("specularPercent")) {
+        setSpecularPercent(value);
+        break;
+      }
+      if (key.equalsIgnoreCase("diffusePercent")) {
+        setDiffusePercent(value);
+        break;
+      }
+      if (key.equalsIgnoreCase("ambientPercent")) {
         setAmbientPercent(value);
         break;
       }
+
       if (key.equalsIgnoreCase("ribbonAspectRatio")) {
         setRibbonAspectRatio(value);
         break;

@@ -315,6 +315,15 @@ class StateManager {
       //
     }
 
+    //lighting (see Graphics3D.Shade3D
+    
+    boolean specular     = true;
+    int specularPercent  = 22;
+    int specularExponent = 6;
+    int specularPower    = 40;
+    int diffusePercent   = 84;
+    int ambientPercent   = 45;
+
     //file loading
 
     char inlineNewlineChar     = '|';    //pseudo static
@@ -459,11 +468,23 @@ class StateManager {
       appendCmd(str, "initialize");
       appendCmd(str, "set refreshing false");
       appendCmd(str, "background " + escapeColor(argbBackground));
+      str.append(getSpecularState());
       if (stereoState != null)
         appendCmd(str, "stereo " + stereoState);
       return str + "\n";
     }
 
+    String getSpecularState() {
+      StringBuffer str = new StringBuffer("");
+      appendCmd(str, "set ambientPercent " + ambientPercent);
+      appendCmd(str, "set diffusePercent " + diffusePercent);
+      appendCmd(str, "set specular " + specular);
+      appendCmd(str, "set specularPercent " + specularPercent);
+      appendCmd(str, "set specularPower " + specularPower);
+      appendCmd(str, "set specularExponent " + specularExponent);
+      return str.toString();
+    }
+    
     int axesMode               = JmolConstants.AXES_MODE_BOUNDBOX;
     int pickingSpinRate        = 10;
     
@@ -515,6 +536,7 @@ class StateManager {
       //settings won't be reflected in the load state, which is determined
       //earlier, when the file loads. 
         ";refreshing;defaults;backgroundmodel;backgroundcolor;stereo;"
+      + ";ambientpercent;diffusepercent;specular;specularexponent;specularpower;specularpercent;"
       + ";debugscript;frank;showaxes;showunitcell;showboundbox;"
       + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;"
       + ";vibrationscale;vibrationperiod;";

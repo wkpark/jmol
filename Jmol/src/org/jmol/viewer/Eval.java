@@ -4242,6 +4242,7 @@ class Eval { //implements Runnable {
    */
 
   void set() throws ScriptException {
+    int val = 0;
     switch (statement[1].tok) {
     case Token.axes:
       setAxes(2);
@@ -4304,7 +4305,42 @@ class Eval { //implements Runnable {
       if (!isSyntaxCheck)
         viewer.setFormalCharges(n);
       break;
-
+    case Token.specular:
+      if (statementLength == 2 || statement[2].tok != Token.integer) {
+        setBooleanProperty("specular", booleanParameter(2));
+        break;
+      }
+      //fall through
+    case Token.ambient:
+    case Token.diffuse:
+    case Token.specpercent:
+      checkLength3();
+      val = intParameter(2);
+      if (val > 100 || val < 0)
+        numberOutOfRange(0, 100);
+      setIntProperty((String)statement[1].value, val);
+      break;
+    case Token.specpower:
+      checkLength3();
+      val = intParameter(2);
+      if (val > 100)
+        numberOutOfRange(0, 100);
+      if (val >= 0) {
+        setIntProperty((String)statement[1].value, val);
+        break;
+      }
+      if (val < -10 || val > -1)
+        numberOutOfRange(-10, -1);
+      setIntProperty("specularExponent", -val);        
+      break;
+    case Token.specexponent:
+      checkLength3();
+      if (val == 0)
+        val = intParameter(2);
+      if (val > 10 || val < 1)
+        numberOutOfRange(1, 10);
+      setIntProperty("specularExponent", val);        
+      break;
     // not implemented
     case Token.backfade:
     case Token.cartoon:
@@ -4319,10 +4355,8 @@ class Eval { //implements Runnable {
     case Token.write:
     // fall through to identifier
 
-    case Token.ambient:
     case Token.bonds:
     case Token.debugscript:
-    case Token.diffuse:
     case Token.frank:
     case Token.help:
     case Token.hetero:
@@ -4330,8 +4364,7 @@ class Eval { //implements Runnable {
     case Token.identifier:
     case Token.radius:
     case Token.solvent:
-    case Token.specular:
-    case Token.specpower:
+      
       String str = (String) statement[1].value;
       if (str.toLowerCase().indexOf("label") == 0) {
         setLabel(str.substring(5));
@@ -5082,19 +5115,10 @@ class Eval { //implements Runnable {
       str = "";
       break;
     case Token.ambient:
-      value = "set ambient " + viewer.getAmbientPercent();
-      str = "";
-      break;
     case Token.diffuse:
-      value = "set diffuse " + viewer.getDiffusePercent();
-      str = "";
-      break;
     case Token.specular:
-      value = "set specular " + viewer.getSpecular();
-      str = "";
-      break;
     case Token.specpower:
-      // strange! two values! 
+    case Token.specexponent:
       value = viewer.getSpecularState();
       str = "";
       break;      

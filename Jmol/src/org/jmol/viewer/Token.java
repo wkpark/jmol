@@ -208,44 +208,46 @@ class Token {
   final static int boundbox     = setparam |  5 | command;
   // cartoon
   final static int cisangle     = setparam |  6;
-  final static int fontsize     = setparam |  8;
-  final static int fontstroke   = setparam |  9;
+  final static int fontsize     = setparam |  7;
+  final static int fontstroke   = setparam |  8;
   // hbonds
   // hetero
-  final static int hourglass    = setparam | 10;
+  final static int hourglass    = setparam |  9;
   // hydrogen
-  final static int kinemage     = setparam | 11;
-  final static int menus        = setparam | 12;
+  final static int kinemage     = setparam | 10;
+  final static int menus        = setparam | 11;
   // monitor
-  final static int mouse        = setparam | 13;
-  final static int picking      = setparam | 14;
-  final static int shadow       = setparam | 15;
-  final static int slabmode     = setparam | 16;
+  final static int mouse        = setparam | 12;
+  final static int picking      = setparam | 13;
+  final static int shadow       = setparam | 14;
+  final static int slabmode     = setparam | 15;
   // solvent
-  final static int specular     = setparam | 17;
+  final static int specular     = setparam | 16;
+  final static int specpercent  = setparam | 17;  
   final static int specpower    = setparam | 18;
+  final static int specexponent = setparam | 19;
   // ssbonds
   // stereo
   // strands
-  final static int transparent  = setparam | 19;
-  final static int unitcell     = setparam | 20 | expression | predefinedset | command;
-  final static int vectps       = setparam | 21;
+  final static int transparent  = setparam | 20;
+  final static int unitcell     = setparam | 21 | expression | predefinedset | command;
+  final static int vectps       = setparam | 22;
   
   // write
 
   // chime set parameters
-  final static int clear        = setparam | 22;
-  final static int gaussian     = setparam | 23;
+  final static int clear        = setparam | 23;
+  final static int gaussian     = setparam | 24;
   // load
-  final static int mep          = setparam | 24;
-  final static int mlp          = setparam | 25;
-  final static int molsurface   = setparam | 26;
-  final static int debugscript  = setparam | 27;
-  final static int scale3d      = setparam | 28;
+  final static int mep          = setparam | 25;
+  final static int mlp          = setparam | 26;
+  final static int molsurface   = setparam | 27;
+  final static int debugscript  = setparam | 28;
+  final static int scale3d      = setparam | 29;
   // jmol extensions
-  final static int property     = setparam | 29;
-  final static int diffuse      = setparam | 30;
-  final static int frank        = setparam | 31 | command;
+  final static int property     = setparam | 30;
+  final static int diffuse      = setparam | 31;
+  final static int frank        = setparam | 32 | command;
   final static int pickingStyle = setparam | 33;
   final static int spacegroup   = setparam | 34;
 
@@ -595,9 +597,20 @@ class Token {
     "history",           new Token(history,     varArgCount, "history"),
     "subset",            new Token(subset,      varArgCount, "subset"),
 
+    // lighting
+    
+    "ambient",          new Token(ambient,      "ambientPercent"),
+    "ambientpercent",   null,
+    "diffuse",          new Token(diffuse,      "diffusePercent"),
+    "diffusepercent",   null,
+    "specular",         new Token(specular,     "specular"),
+    "specularpercent",  new Token(specpercent,  "specularPercent"),
+    "specularpower",    new Token(specpower,    "specularPower"),
+    "specpower",        null,
+    "specularExponent", new Token(specexponent, "specularExponent"),
+
 
     // setparams
-    "ambient",      new Token(ambient,         "ambient"),
     "axes",         new Token(axes, varArgCount,    "axes"),
     "backfade",     new Token(backfade,        "backfade"),
     "bondmode",     new Token(bondmode,        "bondmode"),
@@ -619,8 +632,6 @@ class Token {
     "shadow",       new Token(shadow,          "shadow"),
     "slabmode",     new Token(slabmode,        "slabmode"),
     // solvent
-    "specular",     new Token(specular,        "specular"),
-    "specpower",    new Token(specpower,       "specpower"),
     "transparent",  new Token(transparent,     "transparent"),
     "unitcell",     new Token(unitcell, onDefault1, "unitcell"),
     "cell",         new Token(cell,            "cell"),
@@ -637,7 +648,6 @@ class Token {
 
     // jmol extensions
     "property",     new Token(property,        "property"),
-    "diffuse",      new Token(diffuse,         "diffuse"),
     "frank",        new Token(frank, onDefault1, "frank"),
     // must be lower case - see comment above
     "formalcharge", new Token(formalCharge,    "formalcharge"),

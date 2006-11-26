@@ -41,7 +41,6 @@ class ColorManager {
     altArgbsCpk = new int[JmolConstants.altArgbsCpk.length];
     for (int i = JmolConstants.altArgbsCpk.length; --i >= 0; )
       altArgbsCpk[i] = JmolConstants.altArgbsCpk[i];
-    resetElementColors();
   }
 
   boolean isDefaultColorRasmol;
@@ -339,7 +338,6 @@ class ColorManager {
 
   private void flushCaches() {
     g3d.flushShadesAndImageCaches();
-    viewer.refresh(0, "ColorManager:flushCaches()");
   }
 
   void setSpecular(boolean specular) {
@@ -356,10 +354,6 @@ class ColorManager {
     flushCaches();
   }
   
-  String getSpecularState() {
-    return g3d.getSpecularState();
-  }
-
   void setAmbientPercent(int ambientPercent) {
     g3d.setAmbientPercent(ambientPercent);
     flushCaches();

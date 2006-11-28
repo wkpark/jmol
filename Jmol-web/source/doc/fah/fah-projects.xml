@@ -4640,6 +4640,12 @@
   <fah_proj number="3015" name="p3015_SMP-ensv-03" public="n"
     server="171.64.65.63" atoms="9684" preferred="8" deadline="12"
     credit="1" frames="100" code="GS" contact="densign"/>
+  <fah_proj number="3016" name="p3016_SMP-ensv-03" public="n"
+    server="171.64.65.56" atoms="9684" preferred="1" deadline="2"
+    credit="1" frames="100" code="GS" contact="densign"/>
+  <fah_proj number="3017" name="p3017_SMP-sv-03" public="n"
+    server="171.64.65.63" atoms="9684" preferred="0.07" deadline="0.09"
+    credit="1" frames="100" code="GS" contact="densign"/>
 
   <!-- Projects 3100 to 3199 -->
 

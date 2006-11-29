@@ -116,6 +116,10 @@ public final class Frame {
   int bfactor100Hi;
 
 
+  public void finalize() {
+    //System.out.println(modelSetTypeName+" frame finalized "+this);  
+  }
+  
   class Molecule {
     int moleculeIndex;
     int modelIndex;
@@ -221,6 +225,7 @@ public final class Frame {
                        Hashtable info) {
     //long timeBegin = System.currentTimeMillis();
     modelSetTypeName = name;
+    //System.out.println(modelSetTypeName + " frame initialized "+this);  
     isXYZ = (modelSetTypeName == "xyz");
     isArrayOfFiles = (modelSetTypeName == "array");
     setZeroBased();

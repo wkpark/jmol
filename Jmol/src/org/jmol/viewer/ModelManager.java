@@ -58,14 +58,20 @@ class ModelManager {
 
   void clear() {
     fullPathName = fileName = modelSetName = null;
-    frame = null;
     haveFile = false;
+    clearFrame();
   }
-  
+
+  void clearFrame() {
+    //just a bit cleaner -- never two frames in memory,
+    //even if one would always be "empty"
+    frame = null;
+    System.gc();
+  }
   void zap() {
+    clear();
     fullPathName = fileName = modelSetName = "zapped";
     frame = new Frame(viewer, "empty");
-    haveFile = false;
   }
   
   void setClientFile(String fullPathName, String fileName, JmolAdapter adapter, Object clientFile) {
@@ -83,6 +89,7 @@ class ModelManager {
     }
     if (modelSetName == null)
       modelSetName = reduceFilename(fileName);
+    clearFrame();
     frame = new Frame(viewer, adapter, clientFile);
     haveFile = true;
     if (frame.atomCount == 0)

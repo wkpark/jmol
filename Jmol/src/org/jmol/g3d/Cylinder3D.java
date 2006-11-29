@@ -68,9 +68,9 @@ class Cylinder3D {
   int sampleCount;
   boolean notClipped;
 
-  void render(short colixA, short colixB, byte endcaps, int diameter,
-              int xA, int yA, int zA, int xB, int yB, int zB) {
-    
+  void render(short colixA, short colixB, byte endcaps, int diameter, int xA,
+              int yA, int zA, int xB, int yB, int zB) {
+
     int r = diameter / 2 + 1;
     int codeMinA = line3d.clipCode(xA - r, yA - r, zA - r);
     int codeMaxA = line3d.clipCode(xA + r, yA + r, zA + r);
@@ -81,16 +81,20 @@ class Cylinder3D {
     //any two bits same in all cases --> fully clipped
     if ((codeMinA & codeMaxB & codeMaxA & codeMinB) != 0)
       return; // fully clipped;
-    dxB = xB - xA; dyB = yB - yA; dzB = zB - zA;
-    
+    dxB = xB - xA;
+    dyB = yB - yA;
+    dzB = zB - zA;
+
     if (diameter <= 1) {
-      line3d.plotLineDelta(g3d.getColixArgb(colixA), 
-          Graphics3D.isColixTranslucent(colixA), g3d.getColixArgb(colixB), 
-          Graphics3D.isColixTranslucent(colixB), xA, yA, zA, dxB, dyB, dzB, notClipped);
+      line3d.plotLineDelta(g3d.getColixArgb(colixA), Graphics3D
+          .isColixTranslucent(colixA), g3d.getColixArgb(colixB), Graphics3D
+          .isColixTranslucent(colixB), xA, yA, zA, dxB, dyB, dzB, notClipped);
       return;
     }
     this.diameter = diameter;
-    this.xA = xA; this.yA = yA; this.zA = zA;
+    this.xA = xA;
+    this.yA = yA;
+    this.zA = zA;
     this.shadesA = g3d.getShades(this.colixA = colixA);
     this.shadesB = g3d.getShades(this.colixB = colixB);
     this.isScreenedA = (colixA & Graphics3D.TRANSLUCENT_MASK) != 0;
@@ -103,36 +107,41 @@ class Cylinder3D {
 
     if (endcaps == Graphics3D.ENDCAPS_FLAT)
       renderFlatEndcap(true);
-    for (int i = rasterCount; --i >= 0; )
+    for (int i = rasterCount; --i >= 0;)
       plotRaster(i);
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL)
       renderSphericalEndcaps();
   }
 
   void renderBits(short colixA, short colixB, byte endcaps, int diameter,
-              float xA, float yA, float zA, float xB, float yB, float zB) {
-    
+                  float xA, float yA, float zA, float xB, float yB, float zB) {
+
     // oops -- problem here if diameter < 0 is that we may have already clipped it!
     int r = diameter / 2 + 1;
-    int codeMinA = line3d.clipCode((int)xA - r, (int)yA - r, (int)zA - r);
-    int codeMaxA = line3d.clipCode((int)xA + r, (int)yA + r, (int)zA + r);
-    int codeMinB = line3d.clipCode((int)xB - r, (int)yB - r, (int)zB - r);
-    int codeMaxB = line3d.clipCode((int)xB + r, (int)yB + r, (int)zB + r);
+    int codeMinA = line3d.clipCode((int) xA - r, (int) yA - r, (int) zA - r);
+    int codeMaxA = line3d.clipCode((int) xA + r, (int) yA + r, (int) zA + r);
+    int codeMinB = line3d.clipCode((int) xB - r, (int) yB - r, (int) zB - r);
+    int codeMaxB = line3d.clipCode((int) xB + r, (int) yB + r, (int) zB + r);
     //all bits 0 --> no clipping
     notClipped = ((codeMinA | codeMaxA | codeMinB | codeMaxB) == 0);
     //any two bits same in all cases --> fully clipped
     if ((codeMinA & codeMaxB & codeMaxA & codeMinB) != 0)
       return; // fully clipped;
-    dxBf = xB - xA; dyBf = yB - yA; dzBf = zB - zA;
-    if (diameter ==0 || diameter == 1) {
-      line3d.plotLineDelta(g3d.getColixArgb(colixA), 
-          Graphics3D.isColixTranslucent(colixA), g3d.getColixArgb(colixB), 
-          Graphics3D.isColixTranslucent(colixB), (int)xA, (int)yA, (int)zA, (int)dxB, (int)dyB, (int)dzB, notClipped);
+    dxBf = xB - xA;
+    dyBf = yB - yA;
+    dzBf = zB - zA;
+    if (diameter == 0 || diameter == 1) {
+      line3d.plotLineDelta(g3d.getColixArgb(colixA), Graphics3D
+          .isColixTranslucent(colixA), g3d.getColixArgb(colixB), Graphics3D
+          .isColixTranslucent(colixB), (int) xA, (int) yA, (int) zA, (int) dxB,
+          (int) dyB, (int) dzB, notClipped);
       return;
     }
     if (diameter > 0) {
       this.diameter = diameter;
-      this.xAf = xA; this.yAf = yA; this.zAf = zA;
+      this.xAf = xA;
+      this.yAf = yA;
+      this.zAf = zA;
     }
     this.xA = (int) xAf;
     this.yA = (int) yAf;
@@ -140,7 +149,7 @@ class Cylinder3D {
     this.dxB = (int) dxBf;
     this.dyB = (int) dyBf;
     this.dzB = (int) dzBf;
-    
+
     this.shadesA = g3d.getShades(this.colixA = colixA);
     this.shadesB = g3d.getShades(this.colixB = colixB);
     this.isScreenedA = (colixA & Graphics3D.TRANSLUCENT_MASK) != 0;
@@ -153,7 +162,7 @@ class Cylinder3D {
     if (endcaps == Graphics3D.ENDCAPS_FLAT)
       renderFlatEndcap(true);
     line3d.setLineBits(this.dxBf, this.dyBf);
-    for (int i = rasterCount; --i >= 0; )
+    for (int i = rasterCount; --i >= 0;)
       plotRasterBits(i);
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL)
       renderSphericalEndcaps();
@@ -169,31 +178,33 @@ class Cylinder3D {
     int z = zRaster[i];
     if (tEndcapOpen) {
       if (notClipped) {
-        g3d.plotPixelUnclipped(argbEndcap, xEndcap+x,  yEndcap+y, zEndcap-z-1);
-        g3d.plotPixelUnclipped(argbEndcap, xEndcap-x,  yEndcap-y, zEndcap+z-1);
-      }else {
-        g3d.plotPixelClipped(argbEndcap, xEndcap+x,  yEndcap+y, zEndcap-z-1);
-        g3d.plotPixelClipped(argbEndcap, xEndcap-x,  yEndcap-y, zEndcap+z-1);        
+        g3d.plotPixelUnclipped(argbEndcap, xEndcap + x, yEndcap + y, zEndcap
+            - z - 1);
+        g3d.plotPixelUnclipped(argbEndcap, xEndcap - x, yEndcap - y, zEndcap
+            + z - 1);
+      } else {
+        g3d.plotPixelClipped(argbEndcap, xEndcap + x, yEndcap + y, zEndcap - z
+            - 1);
+        g3d.plotPixelClipped(argbEndcap, xEndcap - x, yEndcap - y, zEndcap + z
+            - 1);
       }
     }
-    line3d.plotLineDeltaBits(shadesA, isScreenedA, shadesB, isScreenedB, fp8Up >> 8, 
-                      xA + x, yA + y, zA - z, dxB, dyB, dzB, notClipped);
+    line3d.plotLineDeltaBits(shadesA, isScreenedA, shadesB, isScreenedB,
+        fp8Up >> 8, xA + x, yA + y, zA - z, dxB, dyB, dzB, notClipped);
     if (endcaps == Graphics3D.ENDCAPS_OPEN) {
-      line3d.plotLineDelta(shadesA[0], isScreenedA, shadesB[0], isScreenedB,
-                        xA - x, yA - y, zA + z, dxB, dyB, dzB, notClipped);
+      line3d.plotLineDelta(shadesA[0], isScreenedA, shadesB[0], isScreenedB, xA
+          - x, yA - y, zA + z, dxB, dyB, dzB, notClipped);
     }
   }
 
-
   float xTip, yTip, zTip;
 
-  void renderCone(short colix, byte endcap, int diameter,
-                         float xA, float yA, float zA,
-                         float xTip, float yTip, float zTip) {
+  void renderCone(short colix, byte endcap, int diameter, float xA, float yA,
+                  float zA, float xTip, float yTip, float zTip) {
     dxBf = (xTip) - (xAf = xA);
     dyBf = (yTip) - (yAf = yA);
     dzBf = (zTip) - (zAf = zA);
-    this.xA = (int)Math.floor(xAf);
+    this.xA = (int) Math.floor(xAf);
     this.yA = (int) Math.floor(yAf);
     this.zA = (int) Math.floor(zAf);
     this.dxB = (int) Math.floor(dxBf);
@@ -202,19 +213,19 @@ class Cylinder3D {
     this.xTip = xTip;
     this.yTip = yTip;
     this.zTip = zTip;
-    
-    
+
     this.colixA = colix;
     this.shadesA = g3d.getShades(colix);
     this.isScreenedA = (colixA & Graphics3D.TRANSLUCENT_MASK) != 0;
     int intensityTip = Shade3D.calcIntensity(dxB, dyB, -dzB);
-    g3d.plotPixelClipped(shadesA[intensityTip], isScreenedA, (int)xTip, (int)yTip, (int)zTip);
+    g3d.plotPixelClipped(shadesA[intensityTip], isScreenedA, (int) xTip,
+        (int) yTip, (int) zTip);
 
     this.diameter = diameter;
     if (diameter <= 1) {
       if (diameter == 1)
-        line3d.plotLineDelta(colixA, isScreenedA, colixA, isScreenedA,
-                          this.xA, this.yA, this.zA, dxB, dyB, dzB, notClipped);
+        line3d.plotLineDelta(colixA, isScreenedA, colixA, isScreenedA, this.xA,
+            this.yA, this.zA, dxB, dyB, dzB, notClipped);
       return;
     }
     //float r2 = dxB*dxB + dyB*dyB + dzB*dzB;
@@ -224,7 +235,7 @@ class Cylinder3D {
     generateBaseEllipsePrecisely();
     if (endcaps == Graphics3D.ENDCAPS_FLAT)
       renderFlatEndcap(false);
-    for (int i = rasterCount; --i >= 0; )
+    for (int i = rasterCount; --i >= 0;)
       plotRasterCone(i);
   }
 
@@ -232,23 +243,23 @@ class Cylinder3D {
     tEvenDiameter = (diameter & 1) == 0;
     //Logger.debug("diameter=" + diameter);
     radius = diameter / 2.0f;
-    radius2 = radius*radius;
-    int mag2d2 = dxB*dxB + dyB*dyB;
+    radius2 = radius * radius;
+    int mag2d2 = dxB * dxB + dyB * dyB;
     if (mag2d2 == 0) {
       cosTheta = 1;
       cosPhi = 1;
       sinPhi = 0;
     } else {
-      float mag2d = (float)Math.sqrt(mag2d2);
-      float mag3d = (float)Math.sqrt(mag2d2 + dzB*dzB);
+      float mag2d = (float) Math.sqrt(mag2d2);
+      float mag3d = (float) Math.sqrt(mag2d2 + dzB * dzB);
       cosTheta = dzB / mag3d;
       cosPhi = dxB / mag2d;
       sinPhi = dyB / mag2d;
     }
-    
-    calcRotatedPoint(  0f, 0, false);
+
+    calcRotatedPoint(0f, 0, false);
     calcRotatedPoint(0.5f, 1, false);
-    calcRotatedPoint(  1f, 2, false);
+    calcRotatedPoint(1f, 2, false);
     rasterCount = 3;
     interpolate(0, 1);
     interpolate(1, 2);
@@ -258,30 +269,30 @@ class Cylinder3D {
     tEvenDiameter = (diameter & 1) == 0;
     //Logger.debug("diameter=" + diameter);
     radius = diameter / 2.0f;
-    radius2 = radius*radius;
-    float mag2d2 = dxBf*dxBf + dyBf*dyBf;
+    radius2 = radius * radius;
+    float mag2d2 = dxBf * dxBf + dyBf * dyBf;
     if (mag2d2 == 0) {
       cosTheta = 1;
       cosPhi = 1;
       sinPhi = 0;
     } else {
-      float mag2d = (float)Math.sqrt(mag2d2);
-      float mag3d = (float)Math.sqrt(mag2d2 + dzBf*dzBf);
+      float mag2d = (float) Math.sqrt(mag2d2);
+      float mag3d = (float) Math.sqrt(mag2d2 + dzBf * dzBf);
       cosTheta = dzBf / mag3d;
       cosPhi = dxBf / mag2d;
       sinPhi = dyBf / mag2d;
     }
-    
-    calcRotatedPoint(  0f, 0, true);
+
+    calcRotatedPoint(0f, 0, true);
     calcRotatedPoint(0.5f, 1, true);
-    calcRotatedPoint(  1f, 2, true);
+    calcRotatedPoint(1f, 2, true);
     rasterCount = 3;
     interpolatePrecisely(0, 1);
     interpolatePrecisely(1, 2);
     for (int i = 0; i < rasterCount; i++) {
-      xRaster[i] = (int)Math.floor(txRaster[i]);
-      yRaster[i] = (int)Math.floor(tyRaster[i]);
-      zRaster[i] = (int)Math.floor(tzRaster[i]);
+      xRaster[i] = (int) Math.floor(txRaster[i]);
+      yRaster[i] = (int) Math.floor(tyRaster[i]);
+      zRaster[i] = (int) Math.floor(tzRaster[i]);
     }
   }
 
@@ -335,18 +346,16 @@ class Cylinder3D {
     float tLower = tRaster[iLower];
     float tUpper = tRaster[iUpper];
     int iMid = allocRaster(false);
-    for (int j = 4; --j >= 0; ) {
+    for (int j = 4; --j >= 0;) {
       float tMid = (tLower + tUpper) / 2;
       calcRotatedPoint(tMid, iMid, false);
-      if ((xRaster[iMid] == xRaster[iLower]) &&
-          (yRaster[iMid] == yRaster[iLower])) {
-        fp8IntensityUp[iLower] =
-          (fp8IntensityUp[iLower] + fp8IntensityUp[iMid]) / 2;
+      if ((xRaster[iMid] == xRaster[iLower])
+          && (yRaster[iMid] == yRaster[iLower])) {
+        fp8IntensityUp[iLower] = (fp8IntensityUp[iLower] + fp8IntensityUp[iMid]) / 2;
         tLower = tMid;
-      } else if ((xRaster[iMid] == xRaster[iUpper]) &&
-               (yRaster[iMid] == yRaster[iUpper])) {
-        fp8IntensityUp[iUpper] =
-          (fp8IntensityUp[iUpper] + fp8IntensityUp[iMid]) / 2;
+      } else if ((xRaster[iMid] == xRaster[iUpper])
+          && (yRaster[iMid] == yRaster[iUpper])) {
+        fp8IntensityUp[iUpper] = (fp8IntensityUp[iUpper] + fp8IntensityUp[iMid]) / 2;
         tUpper = tMid;
       } else {
         interpolate(iLower, iMid);
@@ -359,10 +368,12 @@ class Cylinder3D {
   }
 
   private void interpolatePrecisely(int iLower, int iUpper) {
-    int dx = (int)Math.floor(txRaster[iUpper]) - (int)Math.floor(txRaster[iLower]);
+    int dx = (int) Math.floor(txRaster[iUpper])
+        - (int) Math.floor(txRaster[iLower]);
     if (dx < 0)
       dx = -dx;
-    float dy = (int)Math.floor(tyRaster[iUpper]) - (int)Math.floor(tyRaster[iLower]);
+    float dy = (int) Math.floor(tyRaster[iUpper])
+        - (int) Math.floor(tyRaster[iLower]);
     if (dy < 0)
       dy = -dy;
     if ((dx + dy) <= 1)
@@ -370,18 +381,20 @@ class Cylinder3D {
     float tLower = tRaster[iLower];
     float tUpper = tRaster[iUpper];
     int iMid = allocRaster(true);
-    for (int j = 4; --j >= 0; ) {
+    for (int j = 4; --j >= 0;) {
       float tMid = (tLower + tUpper) / 2;
       calcRotatedPoint(tMid, iMid, true);
-      if (((int)Math.floor(txRaster[iMid]) == (int)Math.floor(txRaster[iLower])) &&
-          ((int)Math.floor(tyRaster[iMid]) == (int)Math.floor(tyRaster[iLower]))) {
-        fp8IntensityUp[iLower] =
-          (fp8IntensityUp[iLower] + fp8IntensityUp[iMid]) / 2;
+      if (((int) Math.floor(txRaster[iMid]) == (int) Math
+          .floor(txRaster[iLower]))
+          && ((int) Math.floor(tyRaster[iMid]) == (int) Math
+              .floor(tyRaster[iLower]))) {
+        fp8IntensityUp[iLower] = (fp8IntensityUp[iLower] + fp8IntensityUp[iMid]) / 2;
         tLower = tMid;
-      } else if (((int)Math.floor(txRaster[iMid]) == (int)Math.floor(txRaster[iUpper])) &&
-               ((int)Math.floor(tyRaster[iMid]) == (int)Math.floor(tyRaster[iUpper]))) {
-        fp8IntensityUp[iUpper] =
-          (fp8IntensityUp[iUpper] + fp8IntensityUp[iMid]) / 2;
+      } else if (((int) Math.floor(txRaster[iMid]) == (int) Math
+          .floor(txRaster[iUpper]))
+          && ((int) Math.floor(tyRaster[iMid]) == (int) Math
+              .floor(tyRaster[iUpper]))) {
+        fp8IntensityUp[iUpper] = (fp8IntensityUp[iUpper] + fp8IntensityUp[iMid]) / 2;
         tUpper = tMid;
       } else {
         interpolatePrecisely(iLower, iMid);
@@ -400,18 +413,22 @@ class Cylinder3D {
     int z = zRaster[i];
     if (tEndcapOpen) {
       if (notClipped) {
-        g3d.plotPixelUnclipped(argbEndcap, xEndcap+x,  yEndcap+y, zEndcap-z-1);
-        g3d.plotPixelUnclipped(argbEndcap, xEndcap-x,  yEndcap-y, zEndcap+z-1);
-      }else {
-        g3d.plotPixelClipped(argbEndcap, xEndcap+x,  yEndcap+y, zEndcap-z-1);
-        g3d.plotPixelClipped(argbEndcap, xEndcap-x,  yEndcap-y, zEndcap+z-1);        
+        g3d.plotPixelUnclipped(argbEndcap, xEndcap + x, yEndcap + y, zEndcap
+            - z - 1);
+        g3d.plotPixelUnclipped(argbEndcap, xEndcap - x, yEndcap - y, zEndcap
+            + z - 1);
+      } else {
+        g3d.plotPixelClipped(argbEndcap, xEndcap + x, yEndcap + y, zEndcap - z
+            - 1);
+        g3d.plotPixelClipped(argbEndcap, xEndcap - x, yEndcap - y, zEndcap + z
+            - 1);
       }
     }
-    line3d.plotLineDelta(shadesA, isScreenedA, shadesB, isScreenedB, fp8Up >> 8, 
-                      xA + x, yA + y, zA - z, dxB, dyB, dzB, notClipped);
+    line3d.plotLineDelta(shadesA, isScreenedA, shadesB, isScreenedB,
+        fp8Up >> 8, xA + x, yA + y, zA - z, dxB, dyB, dzB, notClipped);
     if (endcaps == Graphics3D.ENDCAPS_OPEN) {
-      line3d.plotLineDelta(shadesA[0], isScreenedA, shadesB[0], isScreenedB,
-                        xA - x, yA - y, zA + z, dxB, dyB, dzB, notClipped);
+      line3d.plotLineDelta(shadesA[0], isScreenedA, shadesB[0], isScreenedB, xA
+          - x, yA - y, zA + z, dxB, dyB, dzB, notClipped);
     }
   }
 
@@ -453,7 +470,7 @@ class Cylinder3D {
 
   private void findMinMaxY() {
     yMin = yMax = yRaster[0];
-    for (int i = rasterCount; --i > 0; ) {
+    for (int i = rasterCount; --i > 0;) {
       int y = yRaster[i];
       if (y < yMin)
         yMin = y;
@@ -472,7 +489,7 @@ class Cylinder3D {
   private void findMinMaxX(int y) {
     xMin = Integer.MAX_VALUE;
     xMax = Integer.MIN_VALUE;
-    for (int i = rasterCount; --i >= 0; ) {
+    for (int i = rasterCount; --i >= 0;) {
       if (yRaster[i] == y) {
         int x = xRaster[i];
         if (x < xMin) {
@@ -505,16 +522,17 @@ class Cylinder3D {
       return;
     int xT = xA, yT = yA, zT = zA;
     if (tCylinder && dzB < 0) {
-      xT += dxB; yT += dyB; zT += dzB;
+      xT += dxB;
+      yT += dyB;
+      zT += dzB;
     }
     findMinMaxY();
     for (int y = yMin; y <= yMax; ++y) {
       findMinMaxX(y);
       int count = xMax - xMin + 1;
       g3d.setColorNoisy(colixEndcap, intensityEndcap);
-      g3d.plotPixelsClipped(count,
-                            xT + xMin,  yT + y, zT - zXMin - 1,
-                            zT - zXMax - 1, null, null);
+      g3d.plotPixelsClipped(count, xT + xMin, yT + y, zT - zXMin - 1, zT
+          - zXMax - 1, null, null);
     }
   }
 
@@ -537,20 +555,20 @@ class Cylinder3D {
           (int) zDn);
     }
     int fp8Up = fp8IntensityUp[i];
-    
+
     line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA,
-        fp8Up >> 8, (int) xUp, (int) yUp, (int) zUp, (int) Math.ceil(xTip
-            - xUp), (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp),
-        false);
+        fp8Up >> 8, (int) xUp, (int) yUp, (int) zUp, (int) Math
+            .ceil(xTip - xUp), (int) Math.ceil(yTip - yUp), (int) Math
+            .ceil(zTip - zUp), false);
     line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA,
         fp8Up >> 8, (int) xUp, (int) yUp + 1, (int) zUp, (int) Math.ceil(xTip
-            - xUp), (int) Math.ceil(yTip - yUp) + 1, (int) Math.ceil(zTip - zUp),
-        false);
+            - xUp), (int) Math.ceil(yTip - yUp) + 1, (int) Math
+            .ceil(zTip - zUp), false);
     line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA,
         fp8Up >> 8, (int) xUp + 1, (int) yUp, (int) zUp, (int) Math.ceil(xTip
-            - xUp) + 1, (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp),
-        false);
-    
+            - xUp) + 1, (int) Math.ceil(yTip - yUp), (int) Math
+            .ceil(zTip - zUp), false);
+
     if (!(endcaps == Graphics3D.ENDCAPS_FLAT && dzB > 0)) {
       int argb = shadesA[0];
       line3d.plotLineDelta(argb, isScreenedA, argb, isScreenedA, (int) xDn,
@@ -561,10 +579,11 @@ class Cylinder3D {
 
   private void calcArgbEndcap(boolean tCylinder) {
     tEndcapOpen = false;
-    if ((endcaps == Graphics3D.ENDCAPS_SPHERICAL) ||
-        (dzB == 0))
+    if ((endcaps == Graphics3D.ENDCAPS_SPHERICAL) || (dzB == 0))
       return;
-    xEndcap = xA; yEndcap = yA; zEndcap = zA;
+    xEndcap = xA;
+    yEndcap = yA;
+    zEndcap = zA;
     int[] shadesEndcap;
     if (dzB >= 0 || !tCylinder) {
       intensityEndcap = Shade3D.calcIntensity(-dxB, -dyB, dzB);
@@ -575,7 +594,9 @@ class Cylinder3D {
       intensityEndcap = Shade3D.calcIntensity(dxB, dyB, -dzB);
       colixEndcap = colixB;
       shadesEndcap = shadesB;
-      xEndcap += dxB; yEndcap += dyB; zEndcap += dzB;
+      xEndcap += dxB;
+      yEndcap += dyB;
+      zEndcap += dzB;
       //Logger.debug("endcap is B");
     }
     // limit specular glare on endcap

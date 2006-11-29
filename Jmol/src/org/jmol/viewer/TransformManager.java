@@ -835,9 +835,14 @@ class TransformManager {
     //new idea: phase out perspective depth when zoom is very large.
     //zoomPercent 1000 or larger starts removing this effect
     //we can go up to 200000
+    //trouble with navitationMode is that it allows
+    //z to go less than cameraDistance, thus producing
+    //x-y EXPANSIONS rather than contractions. 
+    
     float factor = (z <= 0? cameraDistanceFloat : cameraDistanceFloat / z);
     if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
       factor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)/(MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH) * (1 - factor);
+    //System.out.println(z+" "+cameraDistanceFloat + " " + factor);
     return factor;  
   }
   

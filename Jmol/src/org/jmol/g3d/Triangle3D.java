@@ -29,7 +29,6 @@ import javax.vecmath.Point3i;
 
 import org.jmol.util.Logger;
 
-
 /**
  * renders triangles
  *<p>
@@ -47,7 +46,7 @@ class Triangle3D {
   final int[] ax = new int[3];
   final int[] ay = new int[3];
   final int[] az = new int[3];
-  
+
   Rgb16[] rgb16sGouraud;
 
   private final static boolean VERIFY = false;
@@ -56,7 +55,7 @@ class Triangle3D {
     this.g3d = g3d;
     this.line3d = g3d.line3d;
     rgb16sGouraud = new Rgb16[3];
-    for (int i = 3; --i >= 0; )
+    for (int i = 3; --i >= 0;)
       rgb16sGouraud[i] = new Rgb16();
   }
 
@@ -67,10 +66,10 @@ class Triangle3D {
       t[i] = new Rgb16();
     return t;
   }
-  
+
   final Rgb16 rgb16t1 = new Rgb16();
   final Rgb16 rgb16t2 = new Rgb16();
-  
+
   void setGouraud(int rgbA, int rgbB, int rgbC) {
     rgb16sGouraud[0].set(rgbA);
     rgb16sGouraud[1].set(rgbB);
@@ -154,7 +153,6 @@ class Triangle3D {
     fillTriangle(useGouraud);
   }
 
-
   void fillTriangle(Point3i screenA, Point3i screenB, Point3i screenC,
                     float factor, boolean useGouraud) {
     ax[0] = screenA.x;
@@ -190,11 +188,17 @@ class Triangle3D {
       }
     }
     int iMinY = 0;
-    if (ay[1] < ay[0]) iMinY = 1;
-    if (ay[2] < ay[iMinY]) iMinY = 2;
+    if (ay[1] < ay[0])
+      iMinY = 1;
+    if (ay[2] < ay[iMinY])
+      iMinY = 2;
     int iMidY = (iMinY + 1) % 3;
     int iMaxY = (iMinY + 2) % 3;
-    if (ay[iMidY] > ay[iMaxY]) { int t = iMidY; iMidY = iMaxY; iMaxY = t; }
+    if (ay[iMidY] > ay[iMaxY]) {
+      int t = iMidY;
+      iMidY = iMaxY;
+      iMaxY = t;
+    }
     int yMin = ay[iMinY];
     int yMid = ay[iMidY];
     int yMax = ay[iMaxY];
@@ -204,18 +208,24 @@ class Triangle3D {
 
     Rgb16[] gouraudW = useGouraud ? rgb16sW : null;
     Rgb16[] gouraudE = useGouraud ? rgb16sE : null;
-    
+
     int dyMidMin = yMid - yMin;
     if (dyMidMin == 0) {
       // flat top
-      if (ax[iMidY] < ax[iMinY])
-        { int t = iMidY; iMidY = iMinY; iMinY = t; }
+      if (ax[iMidY] < ax[iMinY]) {
+        int t = iMidY;
+        iMidY = iMinY;
+        iMinY = t;
+      }
       generateRaster(nLines, iMinY, iMaxY, axW, azW, 0, gouraudW);
       generateRaster(nLines, iMidY, iMaxY, axE, azE, 0, gouraudE);
     } else if (yMid == yMax) {
       // flat bottom
-      if (ax[iMaxY] < ax[iMidY])
-        { int t = iMidY; iMidY = iMaxY; iMaxY = t; }
+      if (ax[iMaxY] < ax[iMidY]) {
+        int t = iMidY;
+        iMidY = iMaxY;
+        iMaxY = t;
+      }
       generateRaster(nLines, iMinY, iMidY, axW, azW, 0, gouraudW);
       generateRaster(nLines, iMinY, iMaxY, axE, azE, 0, gouraudE);
     } else {
@@ -223,17 +233,18 @@ class Triangle3D {
       //int dzMaxMin = az[iMaxY] - az[iMinY];
       int roundFactor;
       roundFactor = nLines / 2;
-      if (dxMaxMin < 0) roundFactor = -roundFactor;
+      if (dxMaxMin < 0)
+        roundFactor = -roundFactor;
       int axSplit = ax[iMinY] + (dxMaxMin * dyMidMin + roundFactor) / nLines;
       if (axSplit < ax[iMidY]) {
         generateRaster(nLines, iMinY, iMaxY, axW, azW, 0, gouraudW);
         generateRaster(dyMidMin, iMinY, iMidY, axE, azE, 0, gouraudE);
-        generateRaster(nLines-dyMidMin, iMidY, iMaxY, axE, azE, dyMidMin,
-                       gouraudE);
+        generateRaster(nLines - dyMidMin, iMidY, iMaxY, axE, azE, dyMidMin,
+            gouraudE);
       } else {
         generateRaster(dyMidMin, iMinY, iMidY, axW, azW, 0, gouraudW);
-        generateRaster(nLines-dyMidMin, iMidY, iMaxY, axW, azW, dyMidMin,
-                       gouraudW);
+        generateRaster(nLines - dyMidMin, iMidY, iMaxY, axW, azW, dyMidMin,
+            gouraudW);
         generateRaster(nLines, iMinY, iMaxY, axE, azE, 0, gouraudE);
       }
     }
@@ -248,7 +259,7 @@ class Triangle3D {
   {
     rgb16sW = new Rgb16[DEFAULT];
     rgb16sE = new Rgb16[DEFAULT];
-    for (int i = DEFAULT; --i >= 0; ) {
+    for (int i = DEFAULT; --i >= 0;) {
       rgb16sW[i] = new Rgb16();
       rgb16sE[i] = new Rgb16();
     }
@@ -264,14 +275,13 @@ class Triangle3D {
     rgb16sE = reallocRgb16s(rgb16sE, n);
   }
 
-  private void generateRaster(int dy, int iN, int iS,
-                      int[] axRaster, int[] azRaster, int iRaster,
-                      Rgb16[] gouraud) {
+  private void generateRaster(int dy, int iN, int iS, int[] axRaster,
+                              int[] azRaster, int iRaster, Rgb16[] gouraud) {
     /*
-    Logger.debug("generateRaster\n" +
-                       "N="+ax[iN]+","+ay[iN]+","+az[iN]+"\n" +
-                       "S="+ax[iS]+","+ay[iS]+","+az[iS]+"\n");
-    */
+     Logger.debug("generateRaster\n" +
+     "N="+ax[iN]+","+ay[iN]+","+az[iN]+"\n" +
+     "S="+ax[iS]+","+ay[iS]+","+az[iS]+"\n");
+     */
     int xN = ax[iN], zN = az[iN];
     int xS = ax[iS], zS = az[iS];
     int dx = xS - xN, dz = zS - zN;
@@ -288,12 +298,14 @@ class Triangle3D {
     }
 
     /*
-    Logger.debug("xN=" + xN + " xS=" + xS + " dy=" + dy + " dz=" + dz);
-    */
+     Logger.debug("xN=" + xN + " xS=" + xS + " dy=" + dy + " dz=" + dz);
+     */
     int zCurrentScaled = (zN << 10) + (1 << 9);
     int roundingFactor;
-    roundingFactor = dy/2; if (dz < 0) roundingFactor = -roundingFactor;
-    int zIncrementScaled =((dz << 10) + roundingFactor) / dy;
+    roundingFactor = dy / 2;
+    if (dz < 0)
+      roundingFactor = -roundingFactor;
+    int zIncrementScaled = ((dz << 10) + roundingFactor) / dy;
 
     int xMajorIncrement;
     int xMajorError;
@@ -304,9 +316,7 @@ class Triangle3D {
       xMajorIncrement = dx / dy;
       xMajorError = width % dy;
     }
-    for (int y = 0, i = iRaster;
-         y < dy;
-         zCurrentScaled += zIncrementScaled, ++i, ++y) {
+    for (int y = 0, i = iRaster; y < dy; zCurrentScaled += zIncrementScaled, ++i, ++y) {
       axRaster[i] = xCurrent;
       azRaster[i] = zCurrentScaled >> 10;
       //Logger.debug("z=" + azRaster[y]);
@@ -328,21 +338,21 @@ class Triangle3D {
       Rgb16 generated = gouraud[iRaster];
       if (VERIFY) {
         if (north.getArgb() != generated.getArgb()) {
-          Logger.debug("north=" + north +
-                             "\ngenerated=" + generated);
+          Logger.debug("north=" + north + "\ngenerated=" + generated);
           throw new NullPointerException();
         }
         /*
-        if (rgb16Base.getArgb() != rgb16sGouraud[iS].getArgb())
-          throw new NullPointerException();
-        */
+         if (rgb16Base.getArgb() != rgb16sGouraud[iS].getArgb())
+         throw new NullPointerException();
+         */
       }
     }
   }
 
   private static int bar;
 
-  private void fillRaster(int y, int numLines, boolean useGouraud, boolean isClipped) {
+  private void fillRaster(int y, int numLines, boolean useGouraud,
+                          boolean isClipped) {
     //Logger.debug("fillRaster("+y+","+numLines+","+paintFirstLine);
     int i = 0;
     ++bar;
@@ -354,16 +364,15 @@ class Triangle3D {
     if (y + numLines > g3d.height)
       numLines = g3d.height - y;
     if (isClipped) {
-      for ( ; --numLines >= 0; ++y, ++i) {
+      for (; --numLines >= 0; ++y, ++i) {
         int xW = axW[i];
         int pixelCount = axE[i] - xW + 1;
         if (pixelCount > 0)
           g3d.plotPixelsClipped(pixelCount, xW, y, azW[i], azE[i],
-                                useGouraud ? rgb16sW[i] : null,
-                                useGouraud ? rgb16sE[i] : null);
+              useGouraud ? rgb16sW[i] : null, useGouraud ? rgb16sE[i] : null);
       }
     } else {
-      for ( ; --numLines >= 0; ++y, ++i) {
+      for (; --numLines >= 0; ++y, ++i) {
         int xW = axW[i];
         int pixelCount = axE[i] - xW + 1;
         // miguel 2005 01 13
@@ -372,8 +381,7 @@ class Triangle3D {
         // something must be going wrong with the scaled addition
         if (pixelCount > 0)
           g3d.plotPixelsUnclipped(pixelCount, xW, y, azW[i], azE[i],
-                                  useGouraud ? rgb16sW[i] : null,
-                                  useGouraud ? rgb16sE[i] : null);
+              useGouraud ? rgb16sW[i] : null, useGouraud ? rgb16sE[i] : null);
       }
     }
   }

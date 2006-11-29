@@ -70,7 +70,8 @@ class Cylinder3D {
 
   void render(short colixA, short colixB, byte endcaps, int diameter, int xA,
               int yA, int zA, int xB, int yB, int zB) {
-
+    if (diameter > g3d.height * 3)
+      return;
     int r = diameter / 2 + 1;
     int codeMinA = line3d.clipCode(xA - r, yA - r, zA - r);
     int codeMaxA = line3d.clipCode(xA + r, yA + r, zA + r);
@@ -115,6 +116,8 @@ class Cylinder3D {
 
   void renderBits(short colixA, short colixB, byte endcaps, int diameter,
                   float xA, float yA, float zA, float xB, float yB, float zB) {
+    if (diameter > g3d.height * 3)
+      return;
 
     // oops -- problem here if diameter < 0 is that we may have already clipped it!
     int r = diameter / 2 + 1;
@@ -201,6 +204,8 @@ class Cylinder3D {
 
   void renderCone(short colix, byte endcap, int diameter, float xA, float yA,
                   float zA, float xTip, float yTip, float zTip) {
+    if (diameter > g3d.height * 3)
+      return;
     dxBf = (xTip) - (xAf = xA);
     dyBf = (yTip) - (yAf = yA);
     dzBf = (zTip) - (zAf = zA);

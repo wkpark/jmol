@@ -203,6 +203,8 @@ class Triangle3D {
     int yMid = ay[iMidY];
     int yMax = ay[iMaxY];
     int nLines = yMax - yMin + 1;
+    if (nLines > g3d.height*3)
+      return;
     if (nLines > axW.length)
       reallocRasterArrays(nLines);
 

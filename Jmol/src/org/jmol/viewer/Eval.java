@@ -4516,7 +4516,7 @@ class Eval { //implements Runnable {
     default:
       invalidArgument();
     }
-    setBooleanProperty("bondSelelectionModeOr", bondmodeOr);
+    setBooleanProperty("bondModeOr", bondmodeOr);
   }
 
   void setSelectionHalo(int pt) throws ScriptException {

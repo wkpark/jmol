@@ -829,7 +829,7 @@ class TransformManager {
     calcScale("scaleFitToScreen rotrad=" + rotationRadius);
   }
 
-  float perspectiveFactor(int z) {
+  float perspectiveFactor(float z) {
     // all z's SHOULD be >= 0
     // so the more positive z is, the smaller the screen scale
     //new idea: phase out perspective depth when zoom is very large.
@@ -1008,11 +1008,7 @@ class TransformManager {
     }
     point3fScreenTemp.z = z;
     if (perspectiveDepth) {
-      float perspectiveFactor = cameraDistanceFloat / z;
-      if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
-        perspectiveFactor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
-            / (MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
-            * (1 - perspectiveFactor);
+      float perspectiveFactor = perspectiveFactor(z);
       point3fScreenTemp.x *= perspectiveFactor;
       point3fScreenTemp.y *= perspectiveFactor;
     }
@@ -1039,9 +1035,7 @@ class TransformManager {
     pt.x -= perspectiveOffset.x;
     pt.y -= perspectiveOffset.y;
     if (perspectiveDepth) {
-      float perspectiveFactor = cameraDistanceFloat / pt.z;
-      if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
-        perspectiveFactor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)/(MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH) * (1 - perspectiveFactor);
+      float perspectiveFactor = perspectiveFactor(pt.z);
       pt.x /= perspectiveFactor;
       pt.y /= perspectiveFactor;
     }

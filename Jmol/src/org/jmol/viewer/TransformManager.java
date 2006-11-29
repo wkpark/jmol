@@ -829,50 +829,31 @@ class TransformManager {
     calcScale("scaleFitToScreen rotrad=" + rotationRadius);
   }
 
-  float scaleToScreen(int z, float sizeAngstroms) {
-    // all z's are >= 0
+  float perspectiveFactor(int z) {
+    // all z's SHOULD be >= 0
     // so the more positive z is, the smaller the screen scale
-    if (z <= 0)
-      z = 1;
-    float pixelSize = sizeAngstroms * scalePixelsPerAngstrom;
     //new idea: phase out perspective depth when zoom is very large.
     //zoomPercent 1000 or larger starts removing this effect
     //we can go up to 200000
-    if (perspectiveDepth) {
-      float factor = cameraDistanceFloat / z;
-      if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
-        factor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)/(MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH) * (1 - factor);
-      pixelSize *= factor;
-    }
-    return pixelSize;
+    float factor = (z <= 0? cameraDistanceFloat : cameraDistanceFloat / z);
+    if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+      factor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)/(MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH) * (1 - factor);
+    return factor;  
   }
-
+  
   short scaleToScreen(int z, int milliAngstroms) {
-    if (z <= 0)
-      z = 1;
     if (milliAngstroms == 0)
       return 0;
     int pixelSize = (int) (milliAngstroms * scalePixelsPerAngstrom / 1000);
-    if (perspectiveDepth) {
-      float factor = cameraDistanceFloat / z;
-      if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
-        factor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)/(MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH) * (1 - factor);
-      pixelSize *= factor;
-    }
-    if (pixelSize == 0)
-      return 1;
-    return (short) pixelSize;
+    if (perspectiveDepth)
+      pixelSize *= perspectiveFactor(z);
+    return (short) (pixelSize > 0 ? pixelSize : 1);
   }
 
   float scaleToPerspective(int z, float sizeAngstroms) {
-    if (z <= 0)
-      z = 1;
-    if (!perspectiveDepth)
-      return sizeAngstroms;
-    float factor = cameraDistanceFloat / z;
-    if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
-      factor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)/(MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH) * (1 - factor);
-    return sizeAngstroms * factor;
+    //DotsRenderer only
+    return (perspectiveDepth ? sizeAngstroms * perspectiveFactor(z)
+        : sizeAngstroms);
   }
 
   /* ***************************************************************

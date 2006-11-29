@@ -301,12 +301,12 @@ class SticksRenderer extends ShapeRenderer {
     g3d.drawDashedLine(colixA, colixB, 8, 4, xA, yA, zA, xB, yB, zB);
   }*/
 
-  private static float wideWidthAngstroms = 0.4f;
+  private static int wideWidthMilliAngstroms = 400;
 
   private void renderTriangle(Bond bond) {
     // for now, always solid
     int mag2d = (int)Math.sqrt(dx*dx + dy*dy);
-    int wideWidthPixels = (int)viewer.scaleToScreen(zB, wideWidthAngstroms);
+    int wideWidthPixels = viewer.scaleToScreen(zB, wideWidthMilliAngstroms);
     int dxWide, dyWide;
     if (mag2d == 0) {
       dxWide = 0;

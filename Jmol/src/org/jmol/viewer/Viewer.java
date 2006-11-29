@@ -658,11 +658,6 @@ public class Viewer extends JmolViewer {
     return transformManager.scalePixelsPerAngstrom;
   }
 
-  float scaleToScreen(int z, float sizeAngstroms) {
-    //Sticks renderer
-    return transformManager.scaleToScreen(z, sizeAngstroms);
-  }
-
   short scaleToScreen(int z, int milliAngstroms) {
     //all shapes    
     return transformManager.scaleToScreen(z, milliAngstroms);

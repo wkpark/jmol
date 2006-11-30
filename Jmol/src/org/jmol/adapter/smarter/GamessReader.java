@@ -287,20 +287,38 @@ class GamessReader extends AtomSetCollectionReader {
     float[] xComponents = new float[5];
     float[] yComponents = new float[5];
     float[] zComponents = new float[5];
-
+    float[] frequencies = new float[5];
     discardLinesUntilContains("FREQUENCY:");
     while (line != null && line.indexOf("FREQUENCY:") >= 0) {
       int lineBaseFreqCount = totalFrequencyCount;
-      ichNextParse = 17;
-      int lineFreqCount;
-      for (lineFreqCount = 0; lineFreqCount < 5; ++lineFreqCount) {
-        float frequency = parseFloat(line, ichNextParse);
-        //Logger.debug("frequency=" + frequency);
+      int lineFreqCount = 0;
+      String[] tokens = getTokens(line);
+      for (int i = 0; i < tokens.length; i++) {
+        float frequency = parseFloat(tokens[i]);
+        if (tokens[i].equals("I"))
+          frequencies[lineFreqCount - 1] = -frequencies[lineFreqCount - 1];
         if (Float.isNaN(frequency))
+          continue; // may be "I" for imaginary
+        frequencies[lineFreqCount] = frequency;
+        lineFreqCount++;
+        Logger.debug(totalFrequencyCount + " frequency=" + frequency);
+        if (lineFreqCount == 5)
           break;
+      }
+      String[] red_masses = getTokens(discardLinesUntilContains("REDUCED MASS:"));
+      String[] intensities = getTokens(discardLinesUntilContains("IR INTENSITY:"));
+      for (int i = 0; i < lineFreqCount; i++) {
         ++totalFrequencyCount;
         if (totalFrequencyCount > 1)
           atomSetCollection.cloneFirstAtomSet();
+        atomSetCollection.setAtomSetName(frequencies[i] + " cm-1");
+        atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
+            + " cm-1");
+        atomSetCollection.setAtomSetProperty("Reduced Mass", red_masses[i + 2]
+            + " AMU");
+        atomSetCollection.setAtomSetProperty("IR Intensity", intensities[i + 2]
+            + " D^2/AMU-Angstrom^2");
+
       }
       Atom[] atoms = atomSetCollection.atoms;
       discardLinesUntilBlank();

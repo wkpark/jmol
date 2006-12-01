@@ -5055,7 +5055,7 @@ class Eval { //implements Runnable {
     }
     if (type.equals("image")) {
       if (fileName != null && fileName.indexOf(".") >= 0)
-        type = filename.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
+        type = fileName.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
       else
         type = "JPG";    
     }

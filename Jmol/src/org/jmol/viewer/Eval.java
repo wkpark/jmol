@@ -5059,7 +5059,7 @@ class Eval { //implements Runnable {
       else
         type = "JPG";    
     }
-    if (";JPEG;JPG64;JPG;PDF;PNG;SPT;HIS;".indexOf(";" + type + ";") < 0)
+    if (";JPEG;JPG64;JPG;PPM;PNG;SPT;HIS;".indexOf(";" + type + ";") < 0)
       evalError(GT._("write what? {0} or {1} \"filename\"", new Object[] {
           "STATE|HISTORY|IMAGE CLIPBOARD", "JPG|JPG64|PNG|PPM|SPT" }));
     if (!isSyntaxCheck)

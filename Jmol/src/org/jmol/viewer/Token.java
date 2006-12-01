@@ -167,7 +167,7 @@ class Token {
   final static int hide         = command | 79 | expressionCommand;
   final static int font         = command | 80;
   final static int hover        = command | 81 | specialstring;
-  final static int vibration    = command | 82;
+  final static int vibration    = command | 82 | negnums;
   final static int vector       = command | 83 | negnums;
   final static int meshRibbon   = command | 84;
   final static int halo         = command | 85;

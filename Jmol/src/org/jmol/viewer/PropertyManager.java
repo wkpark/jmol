@@ -61,7 +61,7 @@ class PropertyManager {
   
     "animationInfo"   , "", "",
     "modelInfo"       , "", "",
-    "X -vibrationInfo", "", "",  //not implemented -- see auxiliaryInfo
+    "X -vibrationInfo", "", "",  //not implemented -- see modelInfo
     "shapeInfo"       , "", "",
     "measurementInfo" , "", "",
     

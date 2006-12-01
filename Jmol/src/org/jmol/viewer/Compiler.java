@@ -136,14 +136,14 @@ class Compiler {
     Vector ltoken = new Vector();
     //Token tokenCommand = null;
     int tokCommand = Token.nada;
-    for (int ptrToken = 0; true; ichToken += cchToken, ptrToken++) {
+    for (int nTokens = 0; true; ichToken += cchToken) {
       if (lookingAtLeadingWhitespace())
         continue;
+      nTokens++;
       if (lookingAtComment())
         continue;
       boolean endOfLine = lookingAtEndOfLine();
       if (endOfLine || lookingAtEndOfStatement()) {
-        ptrToken = 0;
         if (tokCommand != Token.nada) {
           if (!compileCommand(ltoken))
             return false;
@@ -163,6 +163,7 @@ class Compiler {
           ltoken.setSize(0);
           tokCommand = Token.nada;
           iHaveQuotedString = false;
+          nTokens = 0;
         }
         if (ichToken < cchScript) {
           if (endOfLine)
@@ -203,6 +204,22 @@ class Compiler {
             ltoken.addElement(new Token(Token.string, str));
             iHaveQuotedString = true;
             continue;
+          }
+        }
+        if (tokCommand == Token.write) {
+          int pt = cchToken;
+          //write image spt filename
+          //write script filename
+          //write spt filename
+          //write jpg filename
+          if (nTokens > 2 && !iHaveQuotedString && lookingAtSpecialString()) {
+            String str = script.substring(ichToken, ichToken + cchToken).trim();
+            if (str.indexOf(" ") < 0) {
+              ltoken.addElement(new Token(Token.string, str));
+              iHaveQuotedString = true;
+              continue;
+            }
+            cchToken = pt;
           }
         }
         if (((tokCommand & Token.specialstring) != 0)
@@ -263,6 +280,7 @@ class Compiler {
           token = new Token(Token.identifier, ident);
         int tok = token.tok;
         switch (tokCommand) {
+        // special cases
         case Token.nada:
           ichCurrentCommand = ichToken;
           //tokenCommand = token;
@@ -281,10 +299,6 @@ class Compiler {
             if ((tok & Token.setparam) == 0 && tok != Token.identifier)
               return cannotSet(ident);
           }
-          break;
-        case Token.show:
-          //if ((tok & Token.showparam) == 0 && ptrToken == 2)
-            //return cannotShow(ident);
           break;
         case Token.define:
           if (ltoken.size() == 1) {

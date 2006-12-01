@@ -3901,18 +3901,25 @@ class Eval { //implements Runnable {
       period = floatParameter(1);
       break;
     case Token.identifier:
+      checkLength3();
       String cmd = (String) statement[1].value;
       if (cmd.equalsIgnoreCase("scale")) {
-        checkLength3();
         float scale = floatParameter(2);
         if (scale < -10 || scale > 10)
           numberOutOfRange(-10f, 10f);
         setFloatProperty("vibrationScale", scale);
         return;
       }
+      if (cmd.equalsIgnoreCase("period")) {
+        period = floatParameter(2);
+        setFloatProperty("vibrationPeriod", -period);
+        return;
+      }
     default:
       unrecognizedSubcommand(token.toString());
     }
+    if (period < 0)
+      invalidArgument();
     setFloatProperty("vibrationPeriod", period);
   }
 
@@ -4999,7 +5006,12 @@ class Eval { //implements Runnable {
     int pt = 1;
     String type = "SPT";
     switch (tok) {
+    case Token.state:
     case Token.script:
+      pt++;
+      break;
+    case Token.history:
+      type = "HIS";
       pt++;
       break;
     case Token.identifier:
@@ -5013,26 +5025,27 @@ class Eval { //implements Runnable {
     if (pt == statementLength)
       badArgumentCount();
 
-    //write [image|script] clipboard
-
-    if ((tok = statement[pt].tok) == Token.clipboard) {
+    //write [image|history|state] clipboard
+    tok = statement[pt].tok;
+    String val = "" + statement[pt].value;
+    if (val.equalsIgnoreCase("clipboard")) {
       if (!isSyntaxCheck)
         viewer.createImage(null, type, 100);
       return;
     }
 
-    //write [optional image|script] [JPG|JPG64|PNG|PPM|SPT] "filename"
+    //write [optional image|history|state] [JPG|JPG64|PNG|PPM|SPT] "filename"
     //write script "filename"
 
     if (pt + 2 == statementLength) {
       type = ((tok == Token.identifier ? (String) statement[pt].value
           : stringParameter(pt))).toUpperCase();
-      if (";JPEG;JPG64;JPG;PDF;PNG;SPT;".indexOf(";" + type + ";") < 0)
-        evalError(GT._("write what? {0} or {1} \"filename\"", new Object[] {
-            "SCRIPT|IMAGE CLIPBOARD", "JPG|JPG64|PNG|PPM|SPT" }));
+      pt++;
     }
+    if (pt + 1 != statementLength)
+      badArgumentCount();
     String fileName = null;
-    switch (statement[statementLength - 1].tok) {
+    switch (statement[pt].tok) {
     case Token.identifier:
     case Token.string:
       fileName = (String) statement[statementLength - 1].value;
@@ -5040,6 +5053,15 @@ class Eval { //implements Runnable {
     default:
       invalidArgument();
     }
+    if (type.equals("image")) {
+      if (fileName != null && fileName.indexOf(".") >= 0)
+        type = filename.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
+      else
+        type = "JPG";    
+    }
+    if (";JPEG;JPG64;JPG;PDF;PNG;SPT;HIS;".indexOf(";" + type + ";") < 0)
+      evalError(GT._("write what? {0} or {1} \"filename\"", new Object[] {
+          "STATE|HISTORY|IMAGE CLIPBOARD", "JPG|JPG64|PNG|PPM|SPT" }));
     if (!isSyntaxCheck)
       viewer.createImage(fileName, type, 100);
   }

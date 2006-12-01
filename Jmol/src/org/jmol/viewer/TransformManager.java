@@ -81,6 +81,8 @@ class TransformManager {
       commands.append("vibration scale " + vibrationScale + ";\n");
       if (vibrationOn)
         commands.append("vibration " + vibrationPeriod + ";\n");
+      else
+        commands.append("vibration period " + vibrationPeriod + ";\n");
     }
 
     commands.append("\n");
@@ -822,7 +824,7 @@ class TransformManager {
   }
     
   void scaleFitToScreen() {
-    if (width == 0 || height == 0 || !viewer.haveFrame())
+    if (width == 0 || height == 0)
       return;
     setTranslationCenterToScreen();
     scaleDefaultPixelsPerAngstrom = defaultScaleToScreen(rotationRadius);
@@ -1060,12 +1062,12 @@ class TransformManager {
   }
 
   Point3i transformPoint(Point3f pointAngstroms, Vector3f vibrationVector) {
-    if (!vibrationOn || vibrationVector == null)
-      matrixTransform.transform(pointAngstroms, point3fScreenTemp);
-    else {
+    if (vibrationOn && vibrationVector != null) {
       point3fVibrationTemp.scaleAdd(vibrationAmplitude, vibrationVector,
           pointAngstroms);
       matrixTransform.transform(point3fVibrationTemp, point3fScreenTemp);
+    } else {
+      matrixTransform.transform(pointAngstroms, point3fScreenTemp);
     }
     return adjustedTemporaryScreenPoint();
   }
@@ -1573,16 +1575,29 @@ class TransformManager {
     vibrationScale = scale;
   }
   
+  /**
+   * sets the period of vibration
+   * -- period > 0: sets the period and turns vibration on
+   * -- period < 0: sets the period but does not turn vibration on
+   * -- period = 0: sets the period to zero and turns vibration off
+   * -- period Float.NaN: uses current setting (frame change)
+   * 
+   * @param period 
+   */
   void setVibrationPeriod(float period) {
-    if (period <= 0) {
-      this.vibrationPeriod = 0;
-      this.vibrationPeriodMs = 0;
-      setVibrationOn(false);
-    } else {
-      this.vibrationPeriod = period;
-      this.vibrationPeriodMs = (int) (period * 1000);
-      setVibrationOn(viewer.modelHasVibrationVectors(viewer.getCurrentModelIndex()));
+    if (Float.isNaN(period)) {
+      // NaN -- new frame check
+      period = vibrationPeriod;      
+    } else if (period == 0) {
+      vibrationPeriod = 0;
+      vibrationPeriodMs = 0;
+    } else if (period != 0){
+      vibrationPeriod = Math.abs(period);
+      vibrationPeriodMs = (int) (vibrationPeriod * 1000);
+      if (period < 0)
+        return;
     }
+    setVibrationOn(period > 0 && viewer.modelHasVibrationVectors(viewer.getCurrentModelIndex()));
   }
 
   void setVibrationT(float t) {
@@ -1595,7 +1610,7 @@ class TransformManager {
   VibrationThread vibrationThread;
 
   private void setVibrationOn(boolean vibrationOn) {
-    if (!vibrationOn || !viewer.haveFrame()) {
+    if (!vibrationOn) {
       if (vibrationThread != null) {
         vibrationThread.interrupt();
         vibrationThread = null;

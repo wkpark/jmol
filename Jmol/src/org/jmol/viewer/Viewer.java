@@ -2426,7 +2426,7 @@ public class Viewer extends JmolViewer {
   // ///////////////////////////////////////////////////////////////
 
   public String evalFile(String strFilename) {
-    // from app only
+    // deprecated -- just use openFile(fileName)
     return scriptManager.addScript(strFilename, true, false);
   }
 
@@ -2911,6 +2911,7 @@ public class Viewer extends JmolViewer {
   }
 
   void setStatusFrameChanged(int frameNo) {
+    transformManager.setVibrationPeriod(Float.NaN);
     statusManager.setStatusFrameChanged(frameNo);
   }
 

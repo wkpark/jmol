@@ -4604,6 +4604,12 @@
   <fah_proj number="2731" name="p2731_GPUlambda" public="y"
     server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
     credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2732" name="p2732_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2733" name="p2733_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
 
   <!-- Projects 2800 to 2899 -->
   <fah_proj number="2800" name="p2800_jrz_apo" public="y" file="y"

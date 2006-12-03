@@ -181,8 +181,8 @@ class Measurement {
   String formatString(float value, String units) {
     String label = (strFormat != null ? strFormat : viewer
         .getDefaultMeasurementLabel(countPlusIndices[0]));
-    if (label.indexOf("%_") >= 0)
-      label = viewer.simpleReplace(label, "%_", "" + (index + 1));
+    if (label.indexOf("%=") >= 0)
+      label = viewer.simpleReplace(label, "%=", "" + (index + 1));
     for (int i = countPlusIndices[0]; --i >= 1;) {
       if (label.indexOf("%") < 0)
         break;

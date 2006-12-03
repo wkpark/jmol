@@ -1009,8 +1009,8 @@ final public class Atom extends Point3fi implements Tuple {
     if (strFormat == null || strFormat.length() == 0)
       return null;
     String strLabel = "";
-    boolean isSubscript = false;
-    boolean isSuperscript = false;
+    //boolean isSubscript = false;
+    //boolean isSuperscript = false;
     int cch = strFormat.length();
     int ich, ichPercent;
     for (ich = 0; (ichPercent = strFormat.indexOf('%', ich)) != -1;) {

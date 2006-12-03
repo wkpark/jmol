@@ -70,8 +70,9 @@ abstract class MeshRenderer extends ShapeRenderer {
     short colix = mesh.colix;
     if ((drawType == Mesh.DRAW_CURVE || drawType == Mesh.DRAW_ARROW)
         && mesh.vertexCount >= 2) {
+      int diameter = (mesh.diameter > 0 ? mesh.diameter : 3);
       for (int i = 0, i0 = 0; i < mesh.vertexCount - 1; i++) {
-        g3d.fillHermite(colix, 5, 3, 3, 3, screens[i0], screens[i],
+        g3d.fillHermite(colix, 5, diameter, diameter, diameter, screens[i0], screens[i],
             screens[i + 1], screens[i + (i + 2 == mesh.vertexCount ? 1 : 2)]);
         i0 = i;
       }
@@ -81,6 +82,7 @@ abstract class MeshRenderer extends ShapeRenderer {
       Point3i pt1 = screens[mesh.vertexCount - 2];
       Point3i pt2 = screens[mesh.vertexCount - 1];
       Vector3f tip = new Vector3f(pt2.x - pt1.x, pt2.y - pt1.y, pt2.z - pt1.z);
+      int diameter = (mesh.diameter > 0 ? mesh.diameter : 3);        
       float d = tip.length();
       if (d > 0) {
         tip.scale(5 / d);
@@ -90,7 +92,7 @@ abstract class MeshRenderer extends ShapeRenderer {
         pt3.x = pt2.x + (int) Math.floor(tip.x);
         pt3.y = pt2.y + (int) Math.floor(tip.y);
         pt3.z = pt2.z + (int) Math.floor(tip.z);
-        g3d.fillCone(colix, Graphics3D.ENDCAPS_FLAT, 15, pt0, pt3);
+        g3d.fillCone(colix, Graphics3D.ENDCAPS_FLAT, diameter * 5, pt0, pt3);
       }
       break;
     case Mesh.DRAW_CIRCLE:

@@ -800,9 +800,15 @@ class Draw extends MeshCollection {
     case Mesh.DRAW_TRIANGLE:
     case Mesh.DRAW_PLANE:
     }
-    appendCmd(str, getVertexList(mesh, iModel, nVertices));
+    String s = getVertexList(mesh, iModel, nVertices);
     if (mesh.diameter > 0)
-      str.append (" diameter " + mesh.diameter);
+      s += " diameter " + mesh.diameter;
+    if (mesh.drawTriangles)
+      s += " mesh";
+    if (!mesh.fillTriangles)
+      s += " nofill";
+    
+    appendCmd(str, s);
     appendCmd(str, getColorCommand("draw", mesh.colix));
     return str.toString();
   }

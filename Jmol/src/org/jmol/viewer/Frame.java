@@ -2974,7 +2974,7 @@ public final class Frame {
   void convertFractionalCoordinates(int modelIndex, Point3f pt) {
     if (modelIndex < 0)
       modelIndex = 0;
-    if (modelIndex >= cellInfos.length || cellInfos[modelIndex] == null)
+    if (cellInfos == null || modelIndex >= cellInfos.length || cellInfos[modelIndex] == null)
       return;
     String str = "Frame convertFractional " + pt + "--->";
     cellInfos[modelIndex].toCartesian(pt);

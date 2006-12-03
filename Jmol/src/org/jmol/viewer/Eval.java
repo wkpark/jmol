@@ -3311,7 +3311,7 @@ class Eval { //implements Runnable {
   }
 
   void zap() {
-    viewer.zap();
+    viewer.zap(true);
     refresh();
   }
 

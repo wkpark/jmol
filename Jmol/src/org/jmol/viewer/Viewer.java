@@ -224,7 +224,7 @@ public class Viewer extends JmolViewer {
     if (isApplet)
       fileManager.setAppletContext(documentBase, codeBase,
           appletProxyOrCommandOptions);
-    zap(); //here to allow echos
+    zap(false); //here to allow echos
   }
 
   String getHtmlName() {
@@ -1101,7 +1101,7 @@ public class Viewer extends JmolViewer {
       openStringInline(fileManager.inlineDataArray, params);
       return;
     }
-    zap();
+    zap(false);
     long timeBegin = System.currentTimeMillis();
     fileManager.openFile(name, params, loadScript);
     long ms = System.currentTimeMillis() - timeBegin;
@@ -1119,7 +1119,7 @@ public class Viewer extends JmolViewer {
 
   void openFiles(String modelName, String[] names, String loadScript) {
     //Eval
-    zap();
+    zap(false);
     // keep old screen image while new file is being loaded
     // forceRefresh();
     long timeBegin = System.currentTimeMillis();
@@ -1338,7 +1338,7 @@ public class Viewer extends JmolViewer {
     modelManager.setEchoStateActive(TF);
   }
 
-  public void zap() {
+  void zap() {
     //Eval
     //setAppletContext
     clear();
@@ -1346,8 +1346,14 @@ public class Viewer extends JmolViewer {
     initializeModel();
   }
 
-  private void zap(String msg) {
+  void zap(boolean notify) {
     zap();
+    if (notify)
+      setStatusFileLoaded(0, null, null, null, null, null);
+  }
+  
+  private void zap(String msg) {
+    zap(true);
     echoMessage(msg);
   }
 

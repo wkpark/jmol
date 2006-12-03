@@ -5430,6 +5430,8 @@ class Eval { //implements Runnable {
     boolean havePoints = false;
     boolean idSeen = false;
     boolean isInitialized = false;
+    boolean isTranslucent = false;
+    int colorArgb = Integer.MIN_VALUE;
     int intScale = 0;
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
@@ -5507,6 +5509,11 @@ class Eval { //implements Runnable {
             numberExpected();
           }
         }
+        if (str.equalsIgnoreCase("DIAMETER")) {
+          propertyValue = new Float(floatParameter(++i));
+          propertyName = "diameter";
+          break;
+        }
         if (str.equalsIgnoreCase("LENGTH")) {
           propertyValue = new Float(floatParameter(++i));
           propertyName = "length";
@@ -5524,9 +5531,17 @@ class Eval { //implements Runnable {
         havePoints = true;
         break;
       case Token.color:
-        if (++i < statementLength && statement[i].tok == Token.colorRGB) {
+        isTranslucent = false;
+        if (++i < statementLength && statement[i].tok == Token.translucent) {
+          isTranslucent = true;
+          i++;
+        }
+        if (i < statementLength && statement[i].tok == Token.colorRGB) {
+          colorArgb = getArgbParam(i);
           setShapeProperty(JmolConstants.SHAPE_DRAW, "colorRGB", new Integer(
-              getArgbParam(i)));
+              colorArgb));
+          continue;
+        } else if (isTranslucent) {
           continue;
         }
         invalidArgument();
@@ -5552,6 +5567,9 @@ class Eval { //implements Runnable {
         i = pcLastExpressionInstruction;
         havePoints = true;
         break;
+      case Token.translucent:
+        isTranslucent = true;
+        break;
       default:
         if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, tok))
           invalidArgument();
@@ -5568,6 +5586,10 @@ class Eval { //implements Runnable {
     if (havePoints) {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "set", null);
     }
+    if (colorArgb != 0)
+      setShapeProperty(JmolConstants.SHAPE_DRAW, "colorRGB", new Integer(colorArgb));
+    if (isTranslucent)
+      setShapeProperty(JmolConstants.SHAPE_DRAW, "translucency", "translucent");
     if (intScale != 0) {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "scale", new Integer(intScale));
     }

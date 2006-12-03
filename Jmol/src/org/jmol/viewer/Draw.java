@@ -58,6 +58,8 @@ class Draw extends MeshCollection {
   int nbitsets;
   int ncoord;
   int nidentifiers;
+  int diameter;
+  Integer rgb;
   float newScale;
   float length;
   boolean isCurve;
@@ -76,6 +78,7 @@ class Draw extends MeshCollection {
     Logger.debug("draw " + propertyName + " " + value);
 
     if ("init" == propertyName) {
+      colix = Graphics3D.ORANGE;
       nPoints = -1;
       newScale = 0;
       ncoord = nbitsets = nidentifiers = 0;
@@ -83,7 +86,9 @@ class Draw extends MeshCollection {
       isCurve = isArrow = isPlane = isVertices = isPerpendicular = false;
       isVisible = isValid = true;
       length = Float.MAX_VALUE;
+      diameter = 0;
       bsAllAtoms.clear();
+      rgb = null;
       offset = new Vector3f();
       if (colix == 0)
         colix = Graphics3D.GOLD;
@@ -91,6 +96,11 @@ class Draw extends MeshCollection {
       return;
     }
 
+    if ("colorRGB" == propertyName) {
+      rgb = (Integer) value;
+      return;
+    }
+    
     if ("length" == propertyName) {
       length = ((Float) value).floatValue();
       return;
@@ -158,6 +168,11 @@ class Draw extends MeshCollection {
         scaleDrawing(currentMesh, newScale);
         currentMesh.initialize();
       }
+      return;
+    }
+
+    if ("diameter" == propertyName) {
+      diameter = ((Float) value).intValue();
       return;
     }
 
@@ -254,6 +269,9 @@ class Draw extends MeshCollection {
       currentMesh.modelFlags = null;
       currentMesh.drawTypes = null;
       currentMesh.drawVertexCounts = null;
+      currentMesh.diameter = diameter;
+      if (rgb != null)
+        super.setProperty("color", rgb, null);
       addModelPoints(-1);
       nPoly = setPolygons(nPoly);
     } else {
@@ -783,6 +801,8 @@ class Draw extends MeshCollection {
     case Mesh.DRAW_PLANE:
     }
     appendCmd(str, getVertexList(mesh, iModel, nVertices));
+    if (mesh.diameter > 0)
+      str.append (" diameter " + mesh.diameter);
     appendCmd(str, getColorCommand("draw", mesh.colix));
     return str.toString();
   }
@@ -799,6 +819,8 @@ class Draw extends MeshCollection {
       info.put("fixed", mesh.ptCenters == null ? Boolean.TRUE : Boolean.FALSE);
       info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
       info.put("drawType", mesh.getDrawType());
+      if (mesh.diameter > 0)
+        info.put("diameter", new Integer(mesh.diameter));
       info.put("scale", new Float(mesh.scale));
       if (mesh.drawType == Mesh.DRAW_MULTIPLE) {
         Vector m = new Vector();

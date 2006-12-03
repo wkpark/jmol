@@ -81,6 +81,7 @@ class Mesh {
   int drawVertexCount;
   int[] drawVertexCounts;
   float scale = 1;
+  int diameter;
   Point3f ptCenter = new Point3f(0,0,0);
   Point3f ptCenters[];
   Vector3f axis = new Vector3f(1,0,0);

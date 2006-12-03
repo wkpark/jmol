@@ -221,8 +221,9 @@ abstract class MeshRenderer extends ShapeRenderer {
           colixC = backgroundColix;
       }
       if (iB == iC) {
-        g3d.fillCylinder(colixA, Graphics3D.ENDCAPS_SPHERICAL, (iA == iB ? 6
-            : 3), screens[iA], screens[iB]);
+        int diameter = (mesh.diameter> 0 ? mesh.diameter : iA == iB ? 6
+            : 3);
+        g3d.fillCylinder(colixA, Graphics3D.ENDCAPS_SPHERICAL, diameter, screens[iA], screens[iB]);
       } else if (vertexIndexes.length == 3) {
         if (fill)
           if (iShowTriangles)

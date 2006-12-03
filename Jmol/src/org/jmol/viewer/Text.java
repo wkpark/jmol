@@ -237,7 +237,7 @@ class Text {
     default:
       int y = (movableYPercent == Integer.MAX_VALUE ?  movableY 
           : movableYPercent * windowHeight / 100);
-      boxY = (atomBased ? y : (windowHeight - y)) + offsetY;
+      boxY = (atomBased|| xyz != null ? y : (windowHeight - y)) + offsetY;
     }
 
     // adjust positions if necessary

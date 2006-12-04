@@ -2231,7 +2231,7 @@ public class Viewer extends JmolViewer {
     repaintManager.popHoldRepaint();
   }
 
-  private boolean refreshing;
+  private boolean refreshing = true;
 
   private void setRefreshing(boolean TF) {
     refreshing = TF;

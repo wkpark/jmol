@@ -3794,7 +3794,7 @@
   <fah_proj number="1815" name="p1815_Collagen_Brodsky_refolding" public="y" file="y"
     server="171.65.103.158" atoms="1125" preferred="30" deadline="44"
     credit="153" frames="100" code="A" contact="spark7"/>
-  <fah_proj number="1816" name="p1816_COL1" public="n"
+  <fah_proj number="1816" name="p1816_COL1" public="n" file="y"
     server="171.65.103.158" atoms="76522" preferred="62" deadline="92"
     credit="330" frames="100" code="A0" contact="spark"/>
   <fah_proj number="1850" name="p1850_Myosin6_PT_US" public="y" file="y"

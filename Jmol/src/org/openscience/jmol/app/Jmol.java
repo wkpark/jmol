@@ -527,6 +527,9 @@ public class Jmol extends JPanel {
        */
 
       Point b = historyFile.getWindowBorder(JMOL_WINDOW_NAME);
+      //first one is just approximate, but this is set in doClose()
+      //so it will reset properly -- still, not perfect
+      //since it is always one step behind.
       if (b == null)
         border = new Point(12, 116);
       else

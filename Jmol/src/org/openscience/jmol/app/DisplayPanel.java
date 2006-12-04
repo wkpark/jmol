@@ -101,6 +101,10 @@ public class DisplayPanel extends JPanel
       startPaintClock();
     g.getClipBounds(rectClip);
     viewer.renderScreenImage(g, dimSize, rectClip);
+    if (Jmol.border == null)
+      Jmol.border = new Point();
+    Jmol.border.x = startupDimension.width - dimSize.width;
+    Jmol.border.y = startupDimension.height - dimSize.height;
     if (showPaintTime)
       stopPaintClock();
   }

@@ -91,6 +91,7 @@ public class Jmol extends JPanel {
   private final static String SCRIPT_WINDOW_NAME = "Script";
   private final static String FILE_OPEN_WINDOW_NAME = "FileOpen";
 
+  static Point border;
   /**
    * The current file.
    */
@@ -395,22 +396,13 @@ public class Jmol extends JPanel {
     options.addOption(OptionBuilder.create("D"));
 
     OptionBuilder.withLongOpt("geometry");
-    OptionBuilder.withDescription(GT._("overall window width x height, e.g. {0}", "-g512x616"));
+    // OptionBuilder.withDescription(GT._("overall window width x height, e.g. {0}", "-g512x616"));
+    OptionBuilder.withDescription(GT._("window width x height, e.g. {0}",
+        "-g500x500"));
     OptionBuilder.withValueSeparator();
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("g"));
 
-/*
- * 
-    OptionBuilder.withLongOpt("geometryFrame");
-    OptionBuilder.withDescription(GT._("inner frame width x height, e.g. {0}", "-G500x500"));
-    OptionBuilder.withValueSeparator();
-    OptionBuilder.hasArg();
-    options.addOption(OptionBuilder.create("G"));
-    
-    still working on this
-    
- */
     OptionBuilder.withLongOpt("write");
     OptionBuilder.withDescription(GT._("{0} or {1}:filename", new Object[] {
         "CLIP", "JPG|JPG64|PNG|PPM" }));
@@ -523,36 +515,38 @@ public class Jmol extends JPanel {
       }
 
       //OUTER window dimensions
+      /*
+       if (line.hasOption("g") && haveDisplay.booleanValue()) {
+       String geometry = line.getOptionValue("g");
+       int indexX = geometry.indexOf('x');
+       if (indexX > 0) {
+       startupWidth = parseInt(geometry.substring(0, indexX));
+       startupHeight = parseInt(geometry.substring(indexX + 1));
+       }
+       }
+       */
+
+      Point b = historyFile.getWindowBorder(JMOL_WINDOW_NAME);
+      if (b == null)
+        border = new Point(12, 116);
+      else
+        border = new Point(b.x, b.y);
+      //note -- the first time this is run after changes it will not work
+      //because there is a bootstrap problem.
+      
+      //INNER frame dimensions
       if (line.hasOption("g") && haveDisplay.booleanValue()) {
         String geometry = line.getOptionValue("g");
         int indexX = geometry.indexOf('x');
         if (indexX > 0) {
-          startupWidth = parseInt(geometry.substring(0, indexX));
-          startupHeight = parseInt(geometry.substring(indexX + 1));
+          startupWidth = parseInt(geometry.substring(0, indexX)) + border.x;
+          startupHeight = parseInt(geometry.substring(indexX + 1)) + border.y;
         }
       }
-      
-      /*
-       *
-      //INNER frame dimensions
-      if (line.hasOption("G") && haveDisplay.booleanValue()) {
-        String geometry = line.getOptionValue("G");
-        int indexX = geometry.indexOf('x');
-        if (indexX > 0) {
-          startupWidth = parseInt(geometry.substring(0, indexX)) + 12;
-          startupHeight = parseInt(geometry.substring(indexX + 1)) + 116;
-        }
-      }
-      
-      */
       if (startupWidth <= 0 || startupHeight <= 0) {
-        startupWidth = 500 + 12;
-        startupHeight = 500 + 116;
+        startupWidth = 500 + border.x;
+        startupHeight = 500 + border.y;
       }
-      
-      report("window -g" + startupWidth + "x" + startupHeight + "\nframe  -G"
-          + (startupWidth - 12) + "x" + (startupHeight - 116));
-
       JFrame jmolFrame = new JFrame();
       Point jmolPosition = historyFile.getWindowPosition(JMOL_WINDOW_NAME);
       if (jmolPosition != null) {
@@ -674,10 +668,10 @@ public class Jmol extends JPanel {
   void doClose() {
       // Save window positions and status in the history
       if (historyFile != null) {
-        historyFile.addWindowInfo(JMOL_WINDOW_NAME, this.frame);
+        historyFile.addWindowInfo(JMOL_WINDOW_NAME, this.frame, border);
         //historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
         if (scriptWindow != null)
-          historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, scriptWindow);
+          historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, scriptWindow, null);
       }
       
       // Close Jmol
@@ -1259,9 +1253,8 @@ public class Jmol extends JPanel {
         viewer.openFile(file.getAbsolutePath());
         return;
       }
-      historyFile.addWindowInfo(
-        FILE_OPEN_WINDOW_NAME,
-		openChooser.getDialog());
+      historyFile.addWindowInfo(FILE_OPEN_WINDOW_NAME, 
+          openChooser.getDialog(), null);
     }
   }
 

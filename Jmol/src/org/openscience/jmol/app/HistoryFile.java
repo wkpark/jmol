@@ -143,6 +143,26 @@ class HistoryFile {
   }
 
   /**
+   * @param name window name
+   * @return window border stored in the history file
+   */
+  Point getWindowBorder(String name) {
+    Point result = null;
+      try {
+        String x = getProperty("Jmol.windowBorder."+name+".x", null);
+        String y = getProperty("Jmol.windowBorder."+name+".y", null);
+        if ((x != null) && (y != null)) {
+          int X = Integer.parseInt(x);
+          int Y = Integer.parseInt(y);
+          result = new Point(X, Y);
+        }
+      } catch (Exception e) {
+        //ust return a null result
+      }
+    return result;
+  }
+
+  /**
    * @param name Window name
    * @return Size of the window stored in the history file
    */
@@ -184,7 +204,7 @@ class HistoryFile {
   }
 
   /**
-   * Adds the window positon to the history.
+   * Adds the window position to the history.
    * If it existed previously, it will be replaced.
    * 
    * @param name Window name
@@ -198,6 +218,24 @@ class HistoryFile {
         modified |= addProperty("Jmol.window." + name + ".x", "" + position.x);
         modified |= addProperty("Jmol.window." + name + ".y", "" + position.y);
       }
+    }
+    return modified;
+  }
+
+
+  /**
+   * Adds the window border to the history.
+   * If it existed previously, it will be replaced.
+   * 
+   * @param name window name
+   * @param border Window border
+   * @return Tells if the properties are modified
+   */
+  private boolean addWindowBorder(String name, Point border) {
+    boolean modified = false;
+    if (name != null && border != null) {
+      modified |= addProperty("Jmol.windowBorder." + name + ".x", "" + border.x);
+      modified |= addProperty("Jmol.windowBorder." + name + ".y", "" + border.y);
     }
     return modified;
   }
@@ -243,12 +281,14 @@ class HistoryFile {
    * 
    * @param name Window name
    * @param window Window
+   * @param border Point border
    */
-  void addWindowInfo(String name, Component window) {
+  void addWindowInfo(String name, Component window, Point border) {
     if (window != null) {
       boolean modified = false;
       modified |= addWindowPosition(name, window.getLocation());
       modified |= addWindowSize(name, window.getSize());
+      modified |= addWindowBorder(name, border);
       modified |= addWindowVisibility(name, window.isVisible());
       if (modified) {
         save();

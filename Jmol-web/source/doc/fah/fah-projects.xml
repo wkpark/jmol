@@ -2868,10 +2868,10 @@
   <fah_proj number="1165" name="p1165_RIBO_H2O_flex" public="y" file="y"
     server="171.65.103.156" atoms="91787" preferred="7" deadline="87"
     credit="622" frames="100" code="G" contact="dlucent"/>
-  <fah_proj number="1166" name="p1166_ribo_flex_100K" public="n"
+  <fah_proj number="1166" name="p1166_ribo_flex_100K" public="n" file="y"
     server="171.65.103.161" atoms="91787" preferred="10" deadline="80"
     credit="574" frames="100" code="G" contact="dlucent"/>
-  <fah_proj number="1167" name="p1167_ribo_nocharge" public="n"
+  <fah_proj number="1167" name="p1167_ribo_nocharge" public="n" file="y"
     server="171.65.103.161" atoms="92677" preferred="10" deadline="69"
     credit="494" frames="100" code="G" contact="dlucent"/>
 

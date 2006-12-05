@@ -420,6 +420,11 @@ abstract class MouseManager {
   final static float wheelClickFractionDown = 1/wheelClickFractionUp;
 
   void mouseWheel(long time, int rotation, int modifiers) {
+    if (!viewer.getAwtComponent().hasFocus())
+      return;  
+    // sun bug? noted by Charles Xie that wheeling on a Java page
+    // effected inappropriate wheeling on this Java component
+    
     hoverOff();
     timeCurrent = time;
     //Logger.debug("mouseWheel time:" + time + " rotation:" + rotation + " modifiers:" + modifiers);

@@ -6139,6 +6139,11 @@ class Eval { //implements Runnable {
           propertyValue = Boolean.TRUE;
           break;
         }
+        if (str.equalsIgnoreCase("BLOCKDATA")) {
+          propertyName = "blockData";
+          propertyValue = Boolean.TRUE;
+          break;
+        }
         if (str.equalsIgnoreCase("MODELBASED")) {
           propertyName = "fixed";
           propertyValue = Boolean.FALSE;

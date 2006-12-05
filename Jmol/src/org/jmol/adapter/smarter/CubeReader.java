@@ -37,24 +37,19 @@ import org.jmol.util.Logger;
  * http://ftp.ccl.net/cca/software/SOURCES/C/scarecrow/gcube2plt.c
  *
  * http://www.nersc.gov/nusers/resources/software/apps/chemistry/gaussian/g98/00000430.htm
- * this contains some erroneous info
- * http://astronomy.swin.edu.au/~pbourke/geomformats/cube/
- * Miguel 2005 07 04
- * BUT, the files that I have do not comply with this format
- * because they have a negative atom count and an extra line
- * We will assume that there was a file format change, denoted by
- * the negative atom count.
  *
- * seems that distances are in Bohrs
+ * distances are in Bohrs because we are reading Gaussian cube OUTPUT files
+ * not Gaussian cube INPUT files. 
  *
  * Miguel 2005 07 17
- * first two URLs above explain that a negative atom count means
+ * a negative atom count means
  * that it is molecular orbital (MO) data
  * with MO data, the extra line contains the number
  * of orbitals and the orbital number
- * we only support # of orbitals == 1
- * if # of orbitals were > 1 then there would be multiple data
- * points in each cell
+ * 
+ * these orbitals are interspersed -- all orbital values are
+ * given together for each coordinate point.
+ * 
  */
 
 class CubeReader extends AtomSetCollectionReader {

@@ -118,7 +118,7 @@ class Isosurface extends MeshCollection {
     super.initShape();
     myType = "isosurface";
   }
-  
+
   boolean logMessages = false;
   boolean logCompression = false;
   boolean logCube = false;
@@ -151,6 +151,9 @@ class Isosurface extends MeshCollection {
       .getArgbFromString("orange");
   final static float defaultSolventRadius = 1.2f;
 
+  boolean blockCubeData;
+  int nSurfaces;
+
   String[] title = null;
   String colorScheme;
   short defaultColix;
@@ -166,7 +169,7 @@ class Isosurface extends MeshCollection {
   boolean insideOut; //no longer does anything now that we are forcing 2-sided triangles
 
   float[] mepCharges;
-  
+
   int qmOrbitalType;
   int qmOrbitalCount;
   final static int QM_TYPE_UNKNOWN = 0;
@@ -188,7 +191,7 @@ class Isosurface extends MeshCollection {
   float scale;
   Matrix3f eccentricityMatrix;
   Matrix3f eccentricityMatrixInverse;
-  
+
   int atomIndex; //for lcaoCartoons
 
   final static int NO_ANISOTROPY = 1 << 5;
@@ -214,15 +217,14 @@ class Isosurface extends MeshCollection {
   final static int SURFACE_SASURFACE = 12 | IS_SOLVENTTYPE | NO_ANISOTROPY;
   final static int SURFACE_MOLECULARORBITAL = 13 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_ATOMICORBITAL = 14;
-  final static int SURFACE_MEP =16 | NO_ANISOTROPY | HAS_MAXGRID;
+  final static int SURFACE_MEP = 16 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_FILE = 17;
   final static int SURFACE_INFO = 18;
   final static int SURFACE_MOLECULAR = 19 | IS_SOLVENTTYPE | NO_ANISOTROPY;
-  
+
   // mapColor only:
-  
+
   final static int SURFACE_NOMAP = 20 | IS_SOLVENTTYPE | NO_ANISOTROPY;
-  
 
   float solventRadius;
   float solventExtendedAtomRadius;
@@ -292,7 +294,7 @@ class Isosurface extends MeshCollection {
         + " = " + value);
 
     if ("init" == propertyName) {
-      script = (String)value;
+      script = (String) value;
       initializeIsosurface();
       if (!(iHaveBitSets = getScriptBitSets()))
         bsSelected = bs; //THIS MAY BE NULL
@@ -334,6 +336,13 @@ class Isosurface extends MeshCollection {
       logMessages = TF;
       //logCompression = TF;
       logCube = TF;
+      return;
+    }
+
+    if ("blockData" == propertyName) {
+      boolean TF = ((Boolean) value).booleanValue();
+      //Logger.setActiveLevel(Logger.LEVEL_DEBUG, TF);
+      blockCubeData = TF;
       return;
     }
 
@@ -543,8 +552,8 @@ class Isosurface extends MeshCollection {
       isSilent = !logMessages;
       setEccentricity(new Point4f(0, 0, 1, 1));
       cutoff = Float.MIN_VALUE;
-      script = " center " + StateManager.escape(center) 
-        + " SPHERE " + sphere_radiusAngstroms;
+      script = " center " + StateManager.escape(center) + " SPHERE "
+          + sphere_radiusAngstroms;
       propertyName = "getSurface";
     }
 
@@ -555,9 +564,9 @@ class Isosurface extends MeshCollection {
       sphere_radiusAngstroms = 1.0f;
       cutoff = Float.MIN_VALUE;
       propertyName = "getSurface";
-      script = " center " + StateManager.escape(center) 
-        + (Float.isNaN(scale) ? "" : " scale " + scale)
-        + " ELLIPSOID {" + v.x + " " + v.y + " " + v.z + " " + v.w + "}";
+      script = " center " + StateManager.escape(center)
+          + (Float.isNaN(scale) ? "" : " scale " + scale) + " ELLIPSOID {"
+          + v.x + " " + v.y + " " + v.z + " " + v.w + "}";
     }
 
     if ("lobe" == propertyName) {
@@ -567,8 +576,8 @@ class Isosurface extends MeshCollection {
       if (cutoff == Float.MAX_VALUE)
         cutoff = defaultOrbitalCutoff;
       script = " center " + StateManager.escape(center)
-        + (Float.isNaN(scale) ? "" : " scale " + scale)
-        + " LOBE {" + v.x + " " + v.y + " " + v.z + " " + v.w + "}";
+          + (Float.isNaN(scale) ? "" : " scale " + scale) + " LOBE {" + v.x
+          + " " + v.y + " " + v.z + " " + v.w + "}";
       propertyName = "getSurface";
     }
 
@@ -619,16 +628,18 @@ class Isosurface extends MeshCollection {
       return;
     }
 
-    if ("molecular" == propertyName || "solvent" == propertyName || "sasurface" == propertyName
-        || "nomap" == propertyName) {
+    if ("molecular" == propertyName || "solvent" == propertyName
+        || "sasurface" == propertyName || "nomap" == propertyName) {
       // plain plane
       isEccentric = isAnisotropic = false;
       //anisotropy[0] = anisotropy[1] = anisotropy[2] = 1f;
       solventRadius = ((Float) value).floatValue();
       if (solventRadius < 0)
         solventRadius = defaultSolventRadius;
-      dataType = ("nomap" == propertyName ? SURFACE_NOMAP : "molecular" == propertyName ? SURFACE_MOLECULAR : "sasurface" == propertyName || solventRadius == 0f ? SURFACE_SASURFACE
-          : SURFACE_SOLVENT);
+      dataType = ("nomap" == propertyName ? SURFACE_NOMAP
+          : "molecular" == propertyName ? SURFACE_MOLECULAR
+              : "sasurface" == propertyName || solventRadius == 0f ? SURFACE_SASURFACE
+                  : SURFACE_SOLVENT);
       switch (dataType) {
       case SURFACE_NOMAP:
         solventExtendedAtomRadius = solventRadius;
@@ -637,8 +648,7 @@ class Isosurface extends MeshCollection {
         break;
       case SURFACE_MOLECULAR:
         solventExtendedAtomRadius = 0f;
-        Logger.info("creating molecular surface with radius "
-            + solventRadius);
+        Logger.info("creating molecular surface with radius " + solventRadius);
         break;
       case SURFACE_SOLVENT:
         solventExtendedAtomRadius = 0f;
@@ -912,7 +922,7 @@ class Isosurface extends MeshCollection {
     bsIgnore = StateManager.unescapeBitset(script.substring(i + 1, j + 1));
     return true;
   }
-  
+
   String fixScript() {
     if (script.indexOf("# ({") >= 0)
       return script;
@@ -921,14 +931,14 @@ class Isosurface extends MeshCollection {
     if (!iUseBitSets)
       return script;
     return script + "# "
-        + (bsSelected == null ? "({null})" : StateManager
-            .escape(bsSelected)) + " "
-        + (bsIgnore == null ? "({null})" : StateManager.escape(bsIgnore));
+        + (bsSelected == null ? "({null})" : StateManager.escape(bsSelected))
+        + " " + (bsIgnore == null ? "({null})" : StateManager.escape(bsIgnore));
   }
-  
+
   void initializeIsosurface() {
     logMessages = Logger.isActiveLevel(Logger.LEVEL_DEBUG);
     logCube = logCompression = false;
+    blockCubeData = false; // Gaussian standard, but we allow for multiple surfaces one per data block
     isSilent = false;
     title = null;
     fileIndex = 1;
@@ -1078,9 +1088,8 @@ class Isosurface extends MeshCollection {
     if (viewer.getTestFlag4()) // turn off 2-sided if showing normals
       force2SidedTriangles = false;
     if (logMessages) {
-      Logger
-          .debug("Isosurface using testflag4: no 2-sided triangles = "
-              + !force2SidedTriangles);
+      Logger.debug("Isosurface using testflag4: no 2-sided triangles = "
+          + !force2SidedTriangles);
       Logger.debug("Isosurface using testflag2: no associative grouping = "
           + !associateNormals);
       Logger.debug("IsosurfaceRenderer using testflag3: separated triangles = "
@@ -1151,7 +1160,7 @@ class Isosurface extends MeshCollection {
     isJvxl = false;
     endOfData = false;
     mappedDataMin = Float.MAX_VALUE;
-    int nSurfaces = readVolumetricHeader();
+    nSurfaces = readVolumetricHeader();
     if (nSurfaces < fileIndex) {
       Logger.warn("not enough surfaces in file -- resetting fileIndex to "
           + nSurfaces);
@@ -1357,35 +1366,31 @@ class Isosurface extends MeshCollection {
   }
 
   int readExtraLine() throws Exception {
-    int nSurfaces;
     edgeFractionBase = defaultEdgeFractionBase;
     edgeFractionRange = defaultEdgeFractionRange;
     colorFractionBase = defaultColorFractionBase;
     colorFractionRange = defaultColorFractionRange;
-    if (negativeAtomCount) {
-      line = br.readLine();
-      Logger.info("Reading extra orbital/JVXL information line: " + line);
-      nSurfaces = parseInt(line);
-      isJvxl = (nSurfaces < 0);
-      if (isJvxl) {
-        nSurfaces = -nSurfaces;
-        Logger.info("jvxl file surfaces: " + nSurfaces);
-        int ich;
-        if ((ich = parseInt()) == Integer.MIN_VALUE) {
-          Logger.info("using default edge fraction base and range");
-        } else {
-          edgeFractionBase = ich;
-          edgeFractionRange = parseInt();
-        }
-        if ((ich = parseInt()) == Integer.MIN_VALUE) {
-          Logger.info("using default color fraction base and range");
-        } else {
-          colorFractionBase = ich;
-          colorFractionRange = parseInt();
-        }
-      }
+    if (!negativeAtomCount)
+      return 1;
+    line = br.readLine();
+    Logger.info("Reading extra orbital/JVXL information line: " + line);
+    int nSurfaces = parseInt(line);
+    if (!(isJvxl = (nSurfaces < 0)))
+      return nSurfaces;
+    nSurfaces = -nSurfaces;
+    Logger.info("jvxl file surfaces: " + nSurfaces);
+    int ich;
+    if ((ich = parseInt()) == Integer.MIN_VALUE) {
+      Logger.info("using default edge fraction base and range");
     } else {
-      nSurfaces = 1;
+      edgeFractionBase = ich;
+      edgeFractionRange = parseInt();
+    }
+    if ((ich = parseInt()) == Integer.MIN_VALUE) {
+      Logger.info("using default color fraction base and range");
+    } else {
+      colorFractionBase = ich;
+      colorFractionRange = parseInt();
     }
     return nSurfaces;
   }
@@ -1405,6 +1410,8 @@ class Isosurface extends MeshCollection {
      * jvxl file no color data (single pass)
      * jvxl file with color data (single pass)
      * jvxl file with plane (single pass)
+     * 
+     * cube file with multiple MO data will be interspersed 
      * 
      * 
      */
@@ -1431,7 +1438,7 @@ class Isosurface extends MeshCollection {
     nPointsY = voxelCounts[1];
     nPointsZ = voxelCounts[2];
     int nPoints = nPointsX * nPointsY * nPointsZ;
-    if (nPointsX <=0 || nPointsY <=0 || nPointsZ <=0)
+    if (nPointsX <= 0 || nPointsY <= 0 || nPointsZ <= 0)
       return;
     if (!isSilent)
       Logger.debug("entering readVoxelData for fileIndex = " + fileIndex + "; "
@@ -1444,7 +1451,7 @@ class Isosurface extends MeshCollection {
     thisInside = (!isJvxl || !isContoured);
     if (insideOut)
       thisInside = !thisInside;
-    
+
     if (thePlane != null) {
       setPlaneParameters(thePlane);
       cutoff = 0f;
@@ -1457,8 +1464,8 @@ class Isosurface extends MeshCollection {
     boolean justDefiningPlane = (!isMapData && thePlane != null);
     boolean isPrecalculation = (precalculateVoxelData && !justDefiningPlane);
     if (dataType == SURFACE_INFO) {
-      if(justDefiningPlane) {
-        voxelData = new float[nPointsX][][];        
+      if (justDefiningPlane) {
+        voxelData = new float[nPointsX][][];
       } else {
         voxelData = tempVoxelData;
         tempVoxelData = null;
@@ -1762,6 +1769,20 @@ class Isosurface extends MeshCollection {
       --nThisValue;
       return (thisInside ? 1f : 0f);
     }
+    float voxelValue = 0;
+    if (nSurfaces > 1 && !blockCubeData) {
+      for (int i = 1; i < fileIndex; i++)
+        nextVoxel();
+      voxelValue = nextVoxel();
+      for (int i = fileIndex; i < nSurfaces; i++)
+        nextVoxel();
+    } else {
+      voxelValue = nextVoxel();
+    }
+    return voxelValue;
+  }
+
+  float nextVoxel() throws Exception {
     float voxelValue = parseFloat();
     if (Float.isNaN(voxelValue)) {
       line = br.readLine();
@@ -1787,7 +1808,7 @@ class Isosurface extends MeshCollection {
             + jvxlSurfaceDataCount + " jvxlEdgeDataCount=" + jvxlEdgeDataCount
             + " jvxlDataIsColorMapped=" + jvxlDataIsColorMapped);
         jvxlSkipData(nPoints, true);
-      } else {
+      } else if (blockCubeData) {
         skipData(nPoints, true);
       }
     if (isJvxl)
@@ -2553,7 +2574,9 @@ class Isosurface extends MeshCollection {
       Logger.info("cutoff=" + cutoff + " voxel cubes=" + cubeCountX + ","
           + cubeCountY + "," + cubeCountZ + "," + " total="
           + (cubeCountX * cubeCountY * cubeCountZ));
-      Logger.info("resolutions(x,y,z)="+1/volumetricVectors[0].length()+","+1/volumetricVectors[1].length()+","+1/volumetricVectors[2].length());
+      Logger.info("resolutions(x,y,z)=" + 1 / volumetricVectors[0].length()
+          + "," + 1 / volumetricVectors[1].length() + "," + 1
+          / volumetricVectors[2].length());
     }
 
     int[][] isoPointIndexes = new int[cubeCountY * cubeCountZ][12];
@@ -2609,8 +2632,8 @@ class Isosurface extends MeshCollection {
     }
     fractionData.append('\n'); //from generateSurfaceData
     if (!isSilent || logMessages)
-      Logger.info("insideCount=" + insideCount + " outsideCount=" + outsideCount + " surfaceCount="
-          + surfaceCount + " total="
+      Logger.info("insideCount=" + insideCount + " outsideCount="
+          + outsideCount + " surfaceCount=" + surfaceCount + " total="
           + (insideCount + outsideCount + surfaceCount));
   }
 
@@ -3250,7 +3273,8 @@ class Isosurface extends MeshCollection {
     if (contourVertexes == null)
       contourVertexes = new ContourVertex[256];
     if (contourVertexCount == contourVertexes.length)
-      contourVertexes = (ContourVertex[]) ArrayUtil.doubleLength(contourVertexes);
+      contourVertexes = (ContourVertex[]) ArrayUtil
+          .doubleLength(contourVertexes);
     x += offsets.x;
     y += offsets.y;
     z += offsets.z;
@@ -3344,15 +3368,15 @@ class Isosurface extends MeshCollection {
     int max = 1;
     for (int i = 0; i < 3; i++) {
       if (i != contourType)
-         max = Math.max(max, voxelCounts[i]);
+        max = Math.max(max, voxelCounts[i]);
     }
     pixelCounts[0] = pixelCounts[1] = max;
     // just use the maximum value -- this isn't too critical,
     // but we want to have enough, and there were
     // problems with hkl = 110
-    
-//    if (logMessages)
-      Logger.info("getPixelCounts " + pixelCounts[0] + "," + pixelCounts[1]);
+
+    //    if (logMessages)
+    Logger.info("getPixelCounts " + pixelCounts[0] + "," + pixelCounts[1]);
   }
 
   void createPlanarSquares() {
@@ -3906,8 +3930,8 @@ class Isosurface extends MeshCollection {
   }
 
   String jvxlGetVolumeHeader(int nAtoms) {
-    String str = (-nAtoms) + " " + (volumetricOrigin.x / ANGSTROMS_PER_BOHR) + " "
-        + (volumetricOrigin.y / ANGSTROMS_PER_BOHR) + " "
+    String str = (-nAtoms) + " " + (volumetricOrigin.x / ANGSTROMS_PER_BOHR)
+        + " " + (volumetricOrigin.y / ANGSTROMS_PER_BOHR) + " "
         + (volumetricOrigin.z / ANGSTROMS_PER_BOHR) + "\n";
     for (int i = 0; i < 3; i++)
       str += voxelCounts[i] + " "
@@ -3929,15 +3953,15 @@ class Isosurface extends MeshCollection {
   float getDefaultResolution() {
     return Float.MAX_VALUE;
     // for popup menu?
- /* maybe....
-    int nAtoms = viewer.getAtomCount();
-    float res = 0;
-    if (nAtoms < 200)
-      res = 4;
-    else if (nAtoms < 2000)
-      res = 1;
-    return res;
-*/
+    /* maybe....
+     int nAtoms = viewer.getAtomCount();
+     float res = 0;
+     if (nAtoms < 200)
+     res = 4;
+     else if (nAtoms < 2000)
+     res = 1;
+     return res;
+     */
   }
 
   /////// spheres and ellipsoids //////
@@ -4205,7 +4229,6 @@ class Isosurface extends MeshCollection {
     title[iLine] = (line.length() > 1 && line.charAt(0) == '?' ? line
         .substring(1) : line);
   }
-  
 
   void setupQMOrbital() {
     Atom[] atoms = frame.atoms;
@@ -4416,8 +4439,7 @@ class Isosurface extends MeshCollection {
     float[] origin = { volumetricOrigin.x, volumetricOrigin.y,
         volumetricOrigin.z };
     MepCalculation m = new MepCalculation(mep_atoms, mepCharges);
-    m.createMepCube(voxelData, voxelCounts, origin,
-        volumetricVectorLengths);
+    m.createMepCube(voxelData, voxelCounts, origin, volumetricVectorLengths);
   }
 
   ///// solvent-accessible, solvent-excluded surface //////
@@ -4471,8 +4493,7 @@ class Isosurface extends MeshCollection {
       bsIgnore = new BitSet();
     }
     for (int i = 0; i < nAtoms; i++) {
-      if (bsSelected.get(i) 
-          && (!bsIgnore.get(i))) {
+      if (bsSelected.get(i) && (!bsIgnore.get(i))) {
         if (solvent_quickPlane
             && thePlane != null
             && Math.abs(distancePointToPlane(atoms[i], thePlane)) > 2 * solventWorkingRadius(atoms[i])) {
@@ -4567,8 +4588,7 @@ class Isosurface extends MeshCollection {
       if (atomSet.get(i) || bsIgnore.get(i))
         continue;
       float rA = solventWorkingRadius(atoms[i]);
-      if (solvent_quickPlane
-          && thePlane != null
+      if (solvent_quickPlane && thePlane != null
           && Math.abs(distancePointToPlane(atoms[i], thePlane)) > 2 * rA)
         continue;
       pt = atoms[i];
@@ -4621,9 +4641,9 @@ class Isosurface extends MeshCollection {
 
   float solventWorkingRadius(Atom atom) {
     float r = (solventAtomRadiusAbsolute > 0 ? solventAtomRadiusAbsolute
-        : atom == null ? JmolConstants.vanderwaalsMars[1] / 1000f 
-        : useIonic ? atom.getBondingRadiusFloat() 
-        : atom.getVanderwaalsRadiusFloat());
+        : atom == null ? JmolConstants.vanderwaalsMars[1] / 1000f
+            : useIonic ? atom.getBondingRadiusFloat() : atom
+                .getVanderwaalsRadiusFloat());
     r *= solventAtomRadiusFactor;
     r += solventExtendedAtomRadius + solventAtomRadiusOffset;
     if (r < 0.1)
@@ -4637,7 +4657,8 @@ class Isosurface extends MeshCollection {
     Point3f ptA;
     Point3f ptY0 = new Point3f(), ptZ0 = new Point3f();
     Point3i pt0 = new Point3i(), pt1 = new Point3i();
-    float maxValue = (dataType == SURFACE_NOMAP ? Float.MAX_VALUE : Float.MAX_VALUE);
+    float maxValue = (dataType == SURFACE_NOMAP ? Float.MAX_VALUE
+        : Float.MAX_VALUE);
     for (int x = 0; x < nPointsX; ++x)
       for (int y = 0; y < nPointsY; ++y)
         for (int z = 0; z < nPointsZ; ++z)
@@ -4670,7 +4691,8 @@ class Isosurface extends MeshCollection {
         ptXyzTemp.add(volumetricVectors[0]);
       }
     }
-    if ((dataType == SURFACE_SOLVENT || dataType == SURFACE_MOLECULAR) && solventRadius > 0) {
+    if ((dataType == SURFACE_SOLVENT || dataType == SURFACE_MOLECULAR)
+        && solventRadius > 0) {
       Point3i ptA0 = new Point3i();
       Point3i ptB0 = new Point3i();
       Point3i ptA1 = new Point3i();
@@ -4743,7 +4765,7 @@ class Isosurface extends MeshCollection {
     }
     Logger.debug("solvent surface time:" + (System.currentTimeMillis() - time));
   }
-  
+
   void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0, Point3i pt1) {
     xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);
     pt0.x -= 1;
@@ -4766,11 +4788,11 @@ class Isosurface extends MeshCollection {
     if (pt1.z >= nPointsZ)
       pt1.z = nPointsZ;
   }
-  
+
   float getSolventValue(int x, int y, int z) {
 
     // old method -- not used 
-    
+
     solvent_voxel.setValue(x, y, z, Float.MAX_VALUE);
     float rA, rB;
     Point3f ptA, ptB;
@@ -4805,8 +4827,8 @@ class Isosurface extends MeshCollection {
 
   final Point3f ptS = new Point3f();
 
-  float checkSpecialVoxel(Point3f ptA, float rAS, Point3f ptB,
-                         float rBS, float dAB, Point3f ptV) {
+  float checkSpecialVoxel(Point3f ptA, float rAS, Point3f ptB, float rBS,
+                          float dAB, Point3f ptV) {
     /*
      * Checking here for voxels that are in the situation:
      * 
@@ -4906,20 +4928,21 @@ class Isosurface extends MeshCollection {
   }
 
   //////// file-based data already in Hashtable /////////
-  
+
   float[][][] tempVoxelData;
+
   void setupSurfaceInfo() {
-    volumetricOrigin.set((Point3f)surfaceInfo.get("volumetricOrigin"));
-    Vector3f[] v = (Vector3f[])surfaceInfo.get("volumetricVectors");
+    volumetricOrigin.set((Point3f) surfaceInfo.get("volumetricOrigin"));
+    Vector3f[] v = (Vector3f[]) surfaceInfo.get("volumetricVectors");
     for (int i = 0; i < 3; i++) {
       volumetricVectors[i].set(v[i]);
       volumetricVectorLengths[i] = volumetricVectors[i].length();
       unitVolumetricVectors[i].normalize(volumetricVectors[i]);
     }
-    int[] counts = (int[])surfaceInfo.get("voxelCounts");
+    int[] counts = (int[]) surfaceInfo.get("voxelCounts");
     for (int i = 0; i < 3; i++)
       voxelCounts[i] = counts[i];
-    tempVoxelData = voxelData = (float[][][])surfaceInfo.get("voxelData");
+    tempVoxelData = voxelData = (float[][][]) surfaceInfo.get("voxelData");
     precalculateVoxelData = true;
   }
 
@@ -5077,7 +5100,8 @@ class Isosurface extends MeshCollection {
 
   BitSet[] surfaceSet;
   int nSets = 0;
-  boolean setsSuccessful; 
+  boolean setsSuccessful;
+
   BitSet[] getSurfaceSet(int level) {
     if (currentMesh == null)
       return null;
@@ -5131,7 +5155,7 @@ class Isosurface extends MeshCollection {
       getSurfaceSet(++level);
     return surfaceSet;
   }
-  
+
   int findSet(int vertex) {
     for (int i = 0; i < nSets; i++)
       if (surfaceSet[i] != null && surfaceSet[i].get(vertex))
@@ -5155,7 +5179,7 @@ class Isosurface extends MeshCollection {
     surfaceSet[i].set(v2);
     surfaceSet[i].set(v3);
   }
-  
+
   void mergeSets(int a, int b) {
     surfaceSet[a].or(surfaceSet[b]);
     surfaceSet[b] = null;

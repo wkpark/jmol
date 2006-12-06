@@ -167,14 +167,20 @@ class MolecularOrbital extends Isosurface {
       if (currentMO == 0)
         thisMO = 0;
       int nTotal = (thisMO > 0 ? 1 : nOrb);
-      for (int i = 1; i <= nOrb; i++)
+      int i0 = (nTotal == 1 && currentMO > 0 ? currentMO : 1);
+      for (int i = i0; i <= nOrb; i++)
         if (thisMO == 0 || thisMO == i || thisMO == Integer.MAX_VALUE
             && i == currentMO) {
-          super.setProperty("init", "mo_show", null);
-          setOrbital(i);
+          if (thisMO != Integer.MAX_VALUE) {
+            super.setProperty("init", "mo_show", null);
+            setOrbital(i);
+          }
           str.append(super.getProperty(infoType, nTotal));
           infoType = "jvxlSurfaceData";
-          super.setProperty("delete", "mo_show", null);
+          if (thisMO != Integer.MAX_VALUE)
+            super.setProperty("delete", "mo_show", null);
+          if (nTotal == 1)
+            break;
         }
       return "" + str;
     }

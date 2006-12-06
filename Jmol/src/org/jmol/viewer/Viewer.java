@@ -4471,9 +4471,15 @@ public class Viewer extends JmolViewer {
     createImage(file, type, 100);
   }
 
-  public void createImage(String file, String type, int quality) {
+  /**
+   * 
+   * @param file filename or null for clipboard
+   * @param type_text = data type if quality < Integer.MAX_VALUE; otherwise text
+   * @param quality up to 100 for JPG quality; Integer.MAX_VALUE for text
+   */
+  public void createImage(String file, String type_text, int quality) {
     setModelVisibility();
-    statusManager.createImage(file, type, quality);
+    statusManager.createImage(file, type_text, quality);
   }
 
   //////////unimplemented

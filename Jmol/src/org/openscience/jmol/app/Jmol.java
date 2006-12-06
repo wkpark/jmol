@@ -1642,46 +1642,42 @@ class ImageCreator {
     this.status = status;
   }
  
-  void clipImage(String script) {
-    if (script == null) {
+  void clipImage(String text) {
+    if (text == null) {
       Image eImage = viewer.getScreenImage();
       ImageSelection.setClipboard(eImage);
       viewer.releaseScreenImage();
       return;
     }
-    ImageSelection.setClipboard(script);
+    ImageSelection.setClipboard(text);
   }
   
-  void createImage(String fileName, String type, int quality) {
-    String script = null;
-    boolean isScript = type.equals("SPT") || type.equals("HIS");
-    if (isScript)
-      script = (type.equals("SPT") ? (String)viewer.getProperty("string", "stateInfo", null) 
-          : viewer.getSetHistory(Integer.MAX_VALUE));
+  void createImage(String fileName, String type_or_text, int quality) {
+    boolean isText = (quality == Integer.MIN_VALUE);
     if (fileName == null) {
-      clipImage(script);
+      clipImage(type_or_text);
       return;
     }
     try {
       FileOutputStream os = new FileOutputStream(fileName);
-      if (isScript) {
+      if (isText) {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os), 8192);
-        bw.write(script);
+        bw.write(type_or_text);
         bw.close();
         os = null;
       } else {
         Image eImage = viewer.getScreenImage();
-        if (type.equalsIgnoreCase("JPEG") || type.equalsIgnoreCase("JPG")) {
+        if (type_or_text.equalsIgnoreCase("JPEG") || type_or_text.equalsIgnoreCase("JPG")) {
           JpegEncoder jc = new JpegEncoder(eImage, quality, os);
           jc.Compress();
-        } else if (type.equalsIgnoreCase("PPM")) {
+        } else if (type_or_text.equalsIgnoreCase("PPM")) {
           PpmEncoder pc = new PpmEncoder(eImage, os);
           pc.encode();
-        } else if (type.equalsIgnoreCase("PNG")) {
+        } else if (type_or_text.equalsIgnoreCase("PNG")) {
           PngEncoder png = new PngEncoder(eImage);
           byte[] pngbytes = png.pngEncode();
           os.write(pngbytes);
-        } else if (type.equalsIgnoreCase("JPG64")) {
+        } else if (type_or_text.equalsIgnoreCase("JPG64")) {
           ByteArrayOutputStream osb = new ByteArrayOutputStream();
           JpegEncoder jc = new JpegEncoder(eImage, quality, osb);
           jc.Compress();

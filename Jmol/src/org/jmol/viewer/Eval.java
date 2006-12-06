@@ -4999,15 +4999,21 @@ class Eval { //implements Runnable {
   }
 
   void write() throws ScriptException {
-    if (viewer.isApplet())
-      evalError(GT._("The {0} command is not available for the applet.",
-          "WRITE"));
+    boolean isApplet = viewer.isApplet();
     int tok = (statementLength == 1 ? Token.clipboard : statement[1].tok);
     int pt = 1;
     String type = "SPT";
     switch (tok) {
     case Token.state:
     case Token.script:
+      pt++;
+      break;
+    case Token.mo:
+      type = "MO";
+      pt++;
+      break;
+    case Token.isosurface:
+      type = "ISO";
       pt++;
       break;
     case Token.history:
@@ -5029,8 +5035,12 @@ class Eval { //implements Runnable {
     tok = statement[pt].tok;
     String val = "" + statement[pt].value;
     if (val.equalsIgnoreCase("clipboard")) {
-      if (!isSyntaxCheck)
-        viewer.createImage(null, type, 100);
+      if (isSyntaxCheck)
+        return;
+      if (isApplet)
+        evalError(GT._("The {0} command is not available for the applet.",
+            "WRITE CLIPBOARD"));
+      viewer.createImage(null, type, 100);
       return;
     }
 
@@ -5057,13 +5067,31 @@ class Eval { //implements Runnable {
       if (fileName != null && fileName.indexOf(".") >= 0)
         type = fileName.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
       else
-        type = "JPG";    
+        type = "JPG";
     }
-    if (";JPEG;JPG64;JPG;PPM;PNG;SPT;HIS;".indexOf(";" + type + ";") < 0)
+    boolean isImage = (";JPEG;JPG64;JPG;PPM;PNG;".indexOf(";" + type + ";") >= 0);
+    if (!isImage && ";SPT;HIS;MO;ISO;".indexOf(";" + type + ";") < 0)
       evalError(GT._("write what? {0} or {1} \"filename\"", new Object[] {
-          "STATE|HISTORY|IMAGE CLIPBOARD", "JPG|JPG64|PNG|PPM|SPT" }));
-    if (!isSyntaxCheck)
-      viewer.createImage(fileName, type, 100);
+          "STATE|HISTORY|IMAGE|ISOSURFACE|MO CLIPBOARD",
+          "JPG|JPG64|PNG|PPM|SPT|JVXL" }));
+    if (isSyntaxCheck)
+      return;
+    if (isImage && isApplet)
+      evalError(GT._("The {0} command is not available for the applet.",
+          "WRITE image"));
+    int quality = Integer.MIN_VALUE;
+    if (type == "SPT")
+      type = (String) viewer.getProperty("string", "stateInfo", null);
+    else if (type == "HIS")
+      type = viewer.getSetHistory(Integer.MAX_VALUE);
+    else if (type == "MO")
+      type = getMoJvxl(Integer.MAX_VALUE);
+    else if (type == "ISO") {
+      if ((type = getIsosurfaceJvxl()) == null)
+        evalError(GT._("No data available"));
+    } else
+      quality = 100;
+    viewer.createImage(fileName, type, quality);
   }
 
   /* ****************************************************************************
@@ -5197,10 +5225,12 @@ class Eval { //implements Runnable {
       invalidArgument();
     case Token.dollarsign:
       int shapeType = setShapeByNameParameter(2);
-      if (!isSyntaxCheck)
-        showString((String) viewer.getShapeProperty(shapeType,
-            (shapeType == JmolConstants.SHAPE_ISOSURFACE ? "jvxlFileData"
-                : "command")));
+      if (isSyntaxCheck)
+        return;
+        if (shapeType == JmolConstants.SHAPE_ISOSURFACE)
+          showString(getIsosurfaceJvxl());
+        else
+          showString((String) viewer.getShapeProperty(shapeType, "command"));
       return;
     case Token.boundbox:
       showString("boundbox " + viewer.getBoundBoxCenter() + " "
@@ -5247,19 +5277,7 @@ class Eval { //implements Runnable {
       int ptMO = (statementLength > 2 ? intParameter(2) : Integer.MAX_VALUE);
       if (isSyntaxCheck)
         return;
-      // 0: all; Integer.MAX_VALUE: current;
-      viewer.loadShape(JmolConstants.SHAPE_MO);
-      int modelIndex = viewer.getDisplayModelIndex();
-      if (modelIndex < 0)
-        evalError(GT
-            ._("MO isosurfaces require that only one model be displayed"));
-      Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
-          "moData");
-      if (moData == null)
-        evalError(GT._("no MO basis/coefficient data available for this frame"));
-      setShapeProperty(JmolConstants.SHAPE_MO, "moData", moData);
-      showString((String) viewer.getShapeProperty(JmolConstants.SHAPE_MO,
-          "showMO", ptMO));
+      showString(getMoJvxl(ptMO));
       return;
     case Token.model:
       if (!isSyntaxCheck)
@@ -5349,6 +5367,26 @@ class Eval { //implements Runnable {
     viewer.scriptEcho(str);
   }
 
+  String getIsosurfaceJvxl() {
+    return (String) viewer.getShapeProperty(
+        JmolConstants.SHAPE_ISOSURFACE, "jvxlFileData");  
+  }
+  
+  String getMoJvxl(int ptMO) throws ScriptException {
+    // 0: all; Integer.MAX_VALUE: current;
+    viewer.loadShape(JmolConstants.SHAPE_MO);
+    int modelIndex = viewer.getDisplayModelIndex();
+    if (modelIndex < 0)
+      evalError(GT
+          ._("MO isosurfaces require that only one model be displayed"));
+    Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
+        "moData");
+    if (moData == null)
+      evalError(GT._("no MO basis/coefficient data available for this frame"));
+    setShapeProperty(JmolConstants.SHAPE_MO, "moData", moData);
+    return (String) viewer.getShapeProperty(JmolConstants.SHAPE_MO,
+        "showMO", ptMO);
+  }
   /* ****************************************************************************
    * ============================================================== 
    * MESH implementations

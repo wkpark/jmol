@@ -761,8 +761,10 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       return "";
     }
     
-    public void createImage(String file, String type, int quality) {
-      // application-only  
+    public void createImage(String file, String type_or_text, int quality) {
+      if (quality == Integer.MAX_VALUE)
+        consoleMessage(type_or_text);
+      // application-only if not text 
     }
     
     public void notifyFileLoaded(String fullPathName, String fileName,

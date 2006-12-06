@@ -24,7 +24,6 @@
 
 package org.jmol.adapter.smarter;
 
-
 import java.io.BufferedReader;
 import java.util.Hashtable;
 import java.util.Vector;

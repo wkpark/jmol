@@ -165,6 +165,8 @@ class Measurement {
     } else if (units == "picometers") {
       units = "pm";
       value = nDist;
+    } else if (units == "au") {
+      value = (int) (dist / JmolConstants.ANGSTROMS_PER_BOHR * 1000 + 0.5f) / 1000f;
     } else {
       units = "\u00C5"; // angstroms
       value = nDist / 100f;

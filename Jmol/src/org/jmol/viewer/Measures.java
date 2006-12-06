@@ -242,10 +242,10 @@ class Measures extends Shape {
     int i = defined(atomCountPlusIndices);
     //Logger.debug("define " + isDelete + " " + i + " [" + atomCountPlusIndices[0] + " " + atomCountPlusIndices[1] + " " + atomCountPlusIndices[2] + " " + atomCountPlusIndices[3] + " " + atomCountPlusIndices[4] + "]");
     // nothing to delete and no A-A, A-B-A, A-B-C-B
-    if (i < 0 && isDelete ||
+    if (i < 0 && isDelete || atomCountPlusIndices[0] > 2 && ( 
         atomCountPlusIndices[1] == atomCountPlusIndices[2] ||
         atomCountPlusIndices[1] == atomCountPlusIndices[3] ||
-        atomCountPlusIndices[2] == atomCountPlusIndices[4])
+        atomCountPlusIndices[2] == atomCountPlusIndices[4]))
       return;
     float value;
     value = frame.getMeasurement(atomCountPlusIndices);

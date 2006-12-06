@@ -295,7 +295,7 @@ class StateManager {
 
   static boolean isMeasurementUnit(String units) {
     String u = ";" + units.toLowerCase() + ";";
-    return (";angstroms;nanometers;nm;picometers;pm;".indexOf(u) >= 0);
+    return (";angstroms;au;bohr;nanometers;nm;picometers;pm;".indexOf(u) >= 0);
   }
   
   class GlobalSettings {
@@ -514,6 +514,9 @@ class StateManager {
       else if (units.equalsIgnoreCase("picometers")
           || units.equalsIgnoreCase("pm"))
         measureDistanceUnits = "picometers";
+      else if (units.equalsIgnoreCase("bohr")
+          || units.equalsIgnoreCase("au"))
+        measureDistanceUnits = "au";
     }
     
     String getMeasureDistanceUnits() {

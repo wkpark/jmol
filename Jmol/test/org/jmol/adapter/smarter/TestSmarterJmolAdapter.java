@@ -67,6 +67,13 @@ public class TestSmarterJmolAdapter extends TestCase {
   }
 
   /**
+   * Test for reading files in c3xml/ 
+   */
+  public void testC3xml() {
+    checkDirectory("c3xml", "c3xml", "");
+  }
+
+  /**
    * Test for reading files in cml/ 
    */
   public void testCml() {
@@ -151,6 +158,13 @@ public class TestSmarterJmolAdapter extends TestCase {
   }
 
   /**
+   * Test for reading files in mol2/ 
+   */
+  public void testMol2() {
+    checkDirectory("mol2", "mol2", "");
+  }
+
+  /**
    * Test for reading files in molpro/
    */
   public void testMolpro() {
@@ -204,6 +218,13 @@ public class TestSmarterJmolAdapter extends TestCase {
    */
   public void testSpartan() {
     checkDirectory("spartan", "smol,txt", "");
+  }
+
+  /**
+   * Test for reading files in sparchive/
+   */
+  public void testSparchive() {
+    checkDirectory("sparchive", "sparchive", "");
   }
 
   /**

@@ -209,13 +209,9 @@ class Resolver {
    */
   static boolean checkFoldingXyz(String[] lines) {
     // Checking first line: <number of atoms> <protein name>
-    if ((lines == null) || (lines.length < 2) || (lines[0] == null)) {
-      return false;
-    }
     StringTokenizer tokens = new StringTokenizer(lines[0].trim(), " \t");
-    if ((tokens == null) || (tokens.countTokens() < 2)) {
+    if (tokens.countTokens() < 2)
       return false;
-    }
     try {
       Integer.parseInt(tokens.nextToken().trim());
     } catch (NumberFormatException nfe) {
@@ -223,26 +219,37 @@ class Resolver {
     }
     
     // Checking second line: <atom number> ...
-    String secondLine = lines[1];
-    if ((secondLine == null) || (secondLine.trim().length() == 0)) {
-      if (lines.length > 2) {
-        secondLine = lines[2];
-      }
-    }
-    if ((secondLine == null) || (secondLine.trim().length() == 0)) {
+    String secondLine = lines[1].trim();
+    if (secondLine.length() == 0)
+        secondLine = lines[2].trim();
+    tokens = new StringTokenizer(secondLine, " \t");
+    if (tokens.countTokens() == 0)
       return false;
-    }
-    tokens = new StringTokenizer(secondLine.trim(), " \t");
-    if ((tokens == null) || (tokens.countTokens() < 1)) {
-      return false;
-    }
     try {
       Integer.parseInt(tokens.nextToken().trim());
     } catch (NumberFormatException nfe) {
       return false;
     }
-
     return true;
+  }
+
+
+  static boolean checkFoldingXyzxx(String[] lines) {
+    try {
+      StringTokenizer tokens = new StringTokenizer(lines[0].trim(), " \t");
+      if ((tokens != null) && (tokens.countTokens() >= 2)) {
+        Integer.parseInt(tokens.nextToken().trim());
+        tokens = new StringTokenizer(lines[1].trim(), " \t");
+        if ((tokens != null) && (tokens.countTokens() == 0))
+          tokens = new StringTokenizer(lines[2].trim(), " \t");
+        if ((tokens != null) && (tokens.countTokens() >= 2)) {
+          Integer.parseInt(tokens.nextToken().trim());
+          return true;
+        }
+      }
+    } catch (NumberFormatException nfe) {
+    }
+    return false;
   }
 
   static boolean checkCube(String[] lines) {
@@ -373,13 +380,16 @@ class Resolver {
   final static String[] adfRecords =
   { "Amsterdam Density Functional" };
   
+  final static String[] psiRecords =
+  {"    PSI  3"};
+  
   final static String[][] containsRecords =
   { xmlRecords, gaussianRecords, mopacRecords, qchemRecords, gamessRecords,
-    spartanBinaryRecords, spartanRecords, mol2Records, adfRecords, 
+    spartanBinaryRecords, spartanRecords, mol2Records, adfRecords, psiRecords,
   };
 
   final static String[] containsFormats =
-  { "Xml", "Gaussian", "Mopac", "Qchem", "Gamess", "SpartanSmol", "Spartan" , "Mol2", "Adf"};
+  { "Xml", "Gaussian", "Mopac", "Qchem", "Gamess", "SpartanSmol", "Spartan" , "Mol2", "Adf", "Psi"};
 }
 
 class LimitedLineReader {

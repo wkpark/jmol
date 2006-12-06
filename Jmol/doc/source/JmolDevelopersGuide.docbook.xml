@@ -83,7 +83,7 @@
 		The current development version of the Jmol source code can be checked out using:
 		<screen>
 			<prompt>~/workspace$</prompt>
-			svn checkout https://svn.sourceforge.net/svnroot/jmol/trunk/Jmol
+			svn checkout https://jmol.svn.sourceforge.net/svnroot/jmol/trunk/Jmol
 		</screen>
 	</para>
 	<para>

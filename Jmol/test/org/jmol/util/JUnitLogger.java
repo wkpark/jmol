@@ -85,21 +85,21 @@ public class JUnitLogger implements LoggerInterface {
    * @see org.jmol.util.LoggerInterface#debug(java.lang.String)
    */
   public void debug(String txt) {
-    //
+    System.out.println(txt);
   }
 
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#info(java.lang.String)
    */
   public void info(String txt) {
-    //
+    System.out.println(txt);
   }
 
   /* (non-Javadoc)
    * @see org.jmol.util.LoggerInterface#warn(java.lang.String)
    */
   public void warn(String txt) {
-    //
+    System.out.println(txt);
   }
 
   /* (non-Javadoc)

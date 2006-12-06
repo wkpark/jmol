@@ -570,7 +570,7 @@ public class Jmol extends JPanel {
         report("Executing script: " + scriptFilename);
         if (haveDisplay.booleanValue())
           jmol.splash.showStatus(GT._("Executing script..."));
-        jmol.viewer.openFile(scriptFilename); //now the same interface
+        jmol.viewer.evalFile(scriptFilename);
       }
     } catch (Throwable t) {
       System.out.println("uncaught exception: " + t);

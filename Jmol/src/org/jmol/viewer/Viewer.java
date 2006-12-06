@@ -2432,7 +2432,7 @@ public class Viewer extends JmolViewer {
   // ///////////////////////////////////////////////////////////////
 
   public String evalFile(String strFilename) {
-    // deprecated -- just use openFile(fileName)
+    //app -s flag
     return scriptManager.addScript(strFilename, true, false);
   }
 

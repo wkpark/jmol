@@ -3,7 +3,7 @@
 <title>Jmol Interactive Examples</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" type="text/css" href="styles.css" />
-<script type="text/javascript" src="Jmol-11.js"></script>
+<script type="text/javascript" src="Jmol.js"></script>
 <script type="text/javascript" src="new.js"></script>
 <script type="text/javascript">
 //<![CDATA[
@@ -68,7 +68,7 @@ Scripts=new Array(" "
 	,'load NaCl.mol; select *'
 	,'polyhedra 6 3.0 (chlorine) to (sodium) collapsed edges;'
 	,'connect 3.0 (*)'
-	,'polyhedra (chlorine) collapsed 6 edges; color polyhedra yellow'
+	,'polyhedra 6 (chlorine) collapsed edges; color polyhedra yellow'
 	,'select *; wireframe off; spacefill off;'
 	,'select connected(6); spacefill 0.5;'
 
@@ -77,28 +77,28 @@ Scripts=new Array(" "
 	,'draw line1 150 (atomno=2) (atomno=17)'
 	,'spin internal $line1 30'
 	,'spin off'
-	,'polyhedra (silicon) to (oxygen) collapsed edges'
+	,'polyhedra 4 (silicon) to (oxygen) collapsed edges'
 	,'polyhedra 4;color polyhedra red'
 	,'polyhedra edges;'
-	,'load P4O10.mol;polyhedra collapsed 4 edges'
+	,'load P4O10.mol;polyhedra 4 collapsed edges'
 	,'draw line2 150 (atomno=2 or atomno=11 or atomno=3) (atomno=13)'
 	,'spin internal $line2'
 	,'spin off'
 
 ,'### faceCenterOffset for collapsed polyhedra ###'
 	,'load ZNQUKROD.mol;'
-	,'select zinc;polyhedra bonds solid edges;'
+	,'select zinc;polyhedra bonds flat edges;'
 	,'select zinc;polyhedra bonds collapsed edges;'
 	,'select carbon;polyhedra faceCenterOffset 0.4 collapsed edges;'
 	,'draw line2 150 (atomno=40) (atomno=35)'
 	,'spin internal $line2'
 	,'spin off'
 	,'load TCBEWREA.mol'
-	,'select not nitrogen;polyhedra faceCenterOffset 0.0 collapsed edges'
-	,'select not nitrogen;polyhedra faceCenterOffset 0.25 collapsed edges'
-	,'select not nitrogen;polyhedra faceCenterOffset 0.5 collapsed edges'
-	,'select not nitrogen;polyhedra faceCenterOffset 0.9 collapsed edges'
-	,'select not nitrogen;polyhedra faceCenterOffset 1.2 collapsed edges'
+	,'select not nitrogen;polyhedra bonds faceCenterOffset 0.0 collapsed edges'
+	,'select not nitrogen;polyhedra bonds faceCenterOffset 0.25 collapsed edges'
+	,'select not nitrogen;polyhedra bonds faceCenterOffset 0.5 collapsed edges'
+	,'select not nitrogen;polyhedra bonds faceCenterOffset 0.9 collapsed edges'
+	,'select not nitrogen;polyhedra bonds 	faceCenterOffset 1.2 collapsed edges'
 
 ,'### polyhedra extending beyond the unit cell ###'
 	,'# first we load nine unit cells'
@@ -115,7 +115,7 @@ Scripts=new Array(" "
 	,'# and we hide the bonds. Voila!'
 	,'select *;wireframe 0;'
 	,'# finally, if we wish, we can close that final side:'
-	,'polyhedra bonds (copper and (connected(4) or connected(5)) and visible) maxfactor 2.0'
+	,'polyhedra bonds (copper and (connected(4) or connected(5)) and visible) distanceFactor 2.0'
 	,'# fractional offset, same idea:'
 	,'load "y1237.cif" {2 2 2};restrict cell={1.5 1.5 1.5};set unitcell {1/2 1/2 1/2};axes off;color unitcell white;center visible;moveto 1.0 -971 195 138 78.9 175;'
 	,'connect (copper) (copper) delete;connect (yttrium) (*) delete;'

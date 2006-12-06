@@ -3,7 +3,7 @@
 <title>Jmol Interactive Examples</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" type="text/css" href="styles.css" />
-<script type="text/javascript" src="Jmol-11.js"></script>
+<script type="text/javascript" src="Jmol.js"></script>
 <script type="text/javascript" src="new.js"></script>
 <script type="text/javascript">
 
@@ -96,6 +96,19 @@ Scripts=new Array(" "
 ,'select (atomno=10);lcaoCartoon delete create "sp3d"'
 ,'select (atomno=10);lcaoCartoon color red create "sp3a" color green create "sp3b" color white create "sp3c" color blue create "sp3d"'
 
+,'# You can selectively target each lobe of an lcaoCartoon.'
+,'load caffeine.xyz;moveto 1.0 930 274 -244 107.0;'
+,'select (carbon and connected(nitrogen));lcaocartoon create "pz"'
+,'color $lcao_5pza red'
+,'color $lcao_5pzb translucent white'
+
+,'# Note that when more than one model are present, select atoms carefully.'
+,'load cyclohexane_movie.xyz;select atomno=5;lcaocartoon "sp3a" #35 atoms'
+,'animation on'
+,'frame 0'
+,'display */1 or */3'
+,'frame 1'
+,'# And do NOT mix vibration with lcaoCartoons'
 ,'load C6H6.smol;frame 3;moveto 1.0 -992 -120 38 55.3;'
 ,'select (carbon and */3);lcaocartoon "pz"'
 ,'vibration on # It\'s not that fancy. Don\'t do this!'

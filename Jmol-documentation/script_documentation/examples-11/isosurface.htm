@@ -3,7 +3,7 @@
 <title>Jmol Interactive Examples</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <link rel="stylesheet" type="text/css" href="styles.css" />
-<script type="text/javascript" src="Jmol-11.js"></script>
+<script type="text/javascript" src="Jmol.js"></script>
 <script type="text/javascript" src="new.js"></script>
 <script type="text/javascript">
 //<![CDATA[
@@ -102,8 +102,54 @@ Scripts=new Array(" "
 
 ,'### see also <a href=new.htm>new.htm</a> ###'
 
+,'###slices through a molecular surface and new way to define plane <br><img src=img/molslice.jpg width=100 height=100 />###'
+,'# Jmol uses a unique algorithm to calculate surfaces. Each position in space is given a value that is its distance from the nearest surface point. What this means is that a "surface" is really an "isosurface with cutoff 0". And what that means is that a surface is no different in terms of visualization from a molecular orbital or other atom-based spacial property. Jmol 10.9.71 allows you to generate slices through a surface.'
+,'load 2ptn.cif;slab 35;slab on;refresh;restrict clickable;slab off;center visible;moveto 1.0 -976 76 204 77.4 213;isosurface "2ptn-molecular_slice1.jvxl";moveto 3.0 -308 401 863 108.1 213;'
+,'# generated from the following command (which takes several seconds on my machine). Note the new way to define a plane simply in terms of three points -- (atom)s or {coordinate}s'
+,'load 2ptn.cif;isosurface plane {1 0 10} {0 1 10} {1 1 10} ignore(solvent) molecular'
+,'# and, yes, of course, with JVXL you can show as many planes as you like:'
+,'load 2ptn.cif;isosurface "2ptn-molecular_slice2.jvxl";moveto 1.0 -976 76 204 77.4 100;isosurface "2ptn-molecular_slice3.jvxl"'
+
+
+,'###isosurface hkl -- planar slices using Miller indices <br><img src=img/xtalslice.jpg width=100 height=100 />###'
+,'# Jmol 10.9.72 introduces the "hkl" keyword indicates that the next three numbers in braces are Miller indices. Note that all coordinates are implicitly fractional. A faster alternative is to use "solvent 0" instead of "molecular".'
+,'load nacl.cif {2 2 2};unitcell off;axes 0.2;boundbox on;moveto 1.0 489 872 9 24.9;'
+,'select *;isosurface delete hkl {1 1 1} resolution 4 solvent 0;moveto 1.0 268 -953 -141 88.0;delay 3;restrict none;'
+,'select *;isosurface delete hkl {1/2 1/2 1/2} resolution 4 solvent 0;'
+,'select *;isosurface delete hkl {1 1 0} resolution 4 solvent 0;'
+,'select *;isosurface delete hkl {1 0 1} resolution 4 solvent 0;'
+,'select *;isosurface delete hkl {1 0 0} resolution 4 solvent 0;'
+
+
+,'###select symop=nijk ###'
+,'# Jmol 10.9.71/79 allows you to select the exact lattice translation for a given symmetry operation. The reference point is the untransformed, untranslated file atoms - Jones-Faithful x,y,z - which are always designated n555.'
+,'load maleic.cif 7 {2 1 1};moveto 1.0 -995 89 43 71.8;selectionHalos on;select none;'
+,'select symop=1'
+,'select symop=2'
+,'select symop=3'
+,'# The extension to lattice translations is to move the symmetry operation number over three digits and add the selected translation ijk:'
+,'select symop=1555'
+,'select symop=1655'
+,'select symop=2555'
+,'select symop=2655'
+,'select symop=3555'
+,'select symop=3655'
+,'select symop=4555'
+,'select symop=4655'
+,'# Note that you can use other comparisons -- !=, &lt;, >, &lt;=, and >=. If you use any of these comparisons with a simple symmetry operation, the usual comparison will be returned. If you use this new nijk syntax, then the atom must match the given symmetry operation; the comparison is ONLY for the ijk part.' 
+,'select symop>1555'
+,'# Note that the following two are not the same:' 
+,'select symop!=2555'
+,'select not symop=2555'
+
+
+,'###faster solvent/molecular surfaces and isosurface colorscheme "sets" <br><img src=img/2ptn.jpg width=114 height=100>###'
+,'# Jmol 10.9.71 has significantly more capability in the area of solvent/molecular surface visualization.'
+,'load 2ptn.cif;moveto 1.0 245 959 140 66.2;'
+,'isosurface ignore(solvent) sasurface'
+,'isosurface ignore(solvent) molecular colorscheme "sets" '
 ,'###molecular electrostatic potentials###'
-,' Jmol 10.9.63 introduces <b>isosurface MEP</b>, with which you can display molecular electrostatic potentials. These potentials are calculated from partial charge data present in a file; Jmol cannot calculate these charges.'
+,'# Jmol 10.9.63 introduces <b>isosurface MEP</b>, with which you can display molecular electrostatic potentials. These potentials are calculated from partial charge data present in a file; Jmol cannot calculate these charges.'
 ,'# Just the MEP:'
 ,'load CH3F.smol;isosurface delete resolution 6 mep'
 ,'load C6H6.smol;isosurface delete resolution 6 mep'
@@ -123,7 +169,7 @@ Scripts=new Array(" "
 ,'# NOTE -- in testing 10.x.19 and writing up documentation I have changed some of the isosurface parameters. Namely, "fileindex n" is gone. One simply indicates the surface number after the quoted filename similarly to the way you can indicate a model number after a quoted filename in a "load" command. In addition, I have simplified the command syntax by allowing ALL construction/color parameters up front. See also <a target=_blank href=isosurface.txt>isosurface.txt</a>'
 
 ,'### the JVXL file format ###'
-,'Jmol 10.x.09 introduces VERY compact orbitals and other molecular properties as isosurfaces.  These files are generated by Jmol from Gaussian CUBE files with compression ratios on the order of 400 to 600:1. This is possible because JVXL files do not allow for variable cutoffs. check out the new "Jmol Voxel File" format at <a href=data/ch3cl.jvxl target=_blank >ch3cl.jvxl</a>. For a discussion see <a href=../misc/JVXL-format.pdf>JVXL-format.pdf</a>. Many examples follow. '
+,'# Jmol 10.x.09 introduces VERY compact orbitals and other molecular properties as isosurfaces.  These files are generated by Jmol from Gaussian CUBE files with compression ratios on the order of 400 to 600:1. This is possible because JVXL files do not allow for variable cutoffs. check out the new "Jmol Voxel File" format at <a href=data/ch3cl.jvxl target=_blank >ch3cl.jvxl</a>. For a discussion see <a href=../misc/JVXL-format.pdf>JVXL-format.pdf</a>. Many examples follow. '
 
 ,'### hydrogen-like orbitals calculated using the Schroedinger equation ###<br><img src=img/orbital.jpg width=100 height=100>'
 ,'# orbitals are defined by three required quantum numbers (n, l, m) and two additional optional numbers: Zeff(effective nuclear charge, default 6), and an optional resolution in the form of a number of points per angstrom (default 10). In addition, you can specify a cutoff'
@@ -465,6 +511,8 @@ Scripts=new Array(" "
 ,'# for enzymes, a very low resolution may still be suitable'
 ,'load 1crn.pdb;select 4-10;isosurface ~pdb color white resolution 1 solvent translucent'
 ,'# this next one takes a few seconds. Be patient:'
+,'load 1crn.pdb;isosurface ~pdb solvent'
+,'# lower resolution, mesh only:'
 ,'load 1crn.pdb;isosurface ~pdb resolution 0.5 solvent mesh nofill'
 ,'# It may take several seconds to create a solvent surface, but the JVXL file option provides a way of doing this calculation once, then just delivering the data to users.'
 ,'load 1crn.pdb;isosurface "1crn.jvxl"'
@@ -478,7 +526,7 @@ Scripts=new Array(" "
 ,'load C6H6.smol;zoom 70;isosurface ~benzene sasurface translucent'
 ,'load caffeine.xyz;zoom 70;isosurface ~caffeine color red  sasurface translucent '
 ,'load caffeine.xyz;zoom 70;isosurface ~caffeine color yellow sasurface mesh nofill translucent'
-,'a lower resolution may work here'
+,'# a lower resolution may work here'
 ,'load caffeine.xyz;moveto 1.0 -824 -413 -387 85.6 70;isosurface ~caffeine resolution 1 color yellow sasurface mesh nofill translucent'
 
 
@@ -560,7 +608,7 @@ Scripts=new Array(" "
 ,'isosurface nodots fill'
 
 ,'### obtaining JVXL file data ###'
-,'The SHOW ISOSURFACE command delivers the jvxl equivalent of an isosurface to the message queue.'
+,'# The SHOW ISOSURFACE command delivers the jvxl equivalent of an isosurface to the message queue.'
 ,'show isosurface # goes to the message queue'
 
 ,'### Files containing multiple isosurfaces ###'

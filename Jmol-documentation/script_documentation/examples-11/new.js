@@ -80,7 +80,7 @@ woptions="menubar=yes,scrollbars,alwaysRaised,width=700,height=600,left=50"
 loadscript=";"
 docsearch = document.location.search.substring(1)
 iscript = (docsearch.indexOf("scriptno=")>=0 ? parseInt(docsearch.split("scriptno=")[1].split("&")[0]) : 0)
-
+listScripts = (docsearch.indexOf("LISTONLY")>=0)
 function showref(n){
  if(n==250)alert("Integer distances in Jmol indicate Rasmol units (0.004 Angstrom), now deprecated.")
 }
@@ -101,6 +101,8 @@ function getapplet(name, model, codebase, height, width, script, msgcallback,ani
   if(force_useIEObject)_jmol.useIEObject=1
   isinitialized = 1
   jmolSetDocument(0)
+
+//  jmolSetTranslation(true)
 
   jmolSetLogLevel(logLevel);
 
@@ -123,7 +125,7 @@ function getinfo(){
 theref = (model.length==8 && model.indexOf(".pdb")==4?"<a target=_blank href=http://www.rcsb.org/pdb/files/"+model+">["+model.substring(0,4)+"]</a>":
 model.indexOf('"')<0?"<a target=_blank href="+model.split(";")[0]+">"+model+"</a>":model)
 
- if(model)s+=" The model used in this case is "+theref+"."
+ if(model)s+=" The script run in this case was <b>load "+theref+"</b>."
  if(defaultloadscript != "")s+=" The default load script used here is \""+defaultloadscript+"\"."
  return "<p>"+s+"</p><table><tr height=1000><td></td></tr></table>"
 }
@@ -140,7 +142,8 @@ function getscriptlink(i,isul){
  for(var j=0;j<S.length;j++){
 	if(S.length>1)s+="\n<td"+(td2width && S.length<=ntd?" width='"+td2width+"'":"")+" valign='top'"+(isNaN(parseInt(S[j]))?">":" colspan='"+parseInt(S[j])+"'")+(isul?"<ul>":"")
 	if(S[j].indexOf("###")>=0){
-		S[j]=S[j].replace(/\#\#\#/,"<h3><span>").replace(/\#\#\#/,"</span></h3>")
+		nTopics--;
+		S[j]=S[j].replace(/\#\#\#/,"<h3><span>" + (nTopics < nFirst ? "<a name=\"topic"+nTopics+"\">"+ nTopics + ".</a>" : "")).replace(/\#\#\#/,"</span></h3>")
 		if(S[j].indexOf("<br>")>=0)
 			S[j]="<table width=450><tr><td>"+S[j].split("<br>")[0]+"</td><td width=210 align=right>"+S[j].split("<br>")[1]+"</td></tr></table>"
 		s+="<br>"
@@ -157,13 +160,22 @@ function getscriptlink(i,isul){
 		+(S[j].indexOf("load")>=0?"</font>":"")
 		+"</a>")
 	+(isul?"</li>":"")
+
+	if (S[j].indexOf("<span")<0 && S[j].indexOf("<a href")<0)scriptList+=S[j]+"\n"
 	if(S.length>1)s+=(isul?"\n</ul>":"")+"\n</td>"
  }
  if(S.length>1)s+="\n</tr></tbody></table>"+(isul?"\n<ul>":"")
  return s
 }
 
+nTopics=0;
+nFirst=0;
+scriptList = ""
 function getscripts(){
+ nTopics = 1;
+ for (var i=1;i<Scripts.length;i++)if(Scripts[i].indexOf("###")>=0)nTopics++;
+ nFirst=nTopics-2;
+ 
  var s=""
  var isul=true
  for (var i=1;i<Scripts.length;i++){
@@ -323,7 +335,12 @@ function getpage(){
 	+'<a href=javascript:getRCSBfile() title="any CIF from RCSB via St. Olaf AJAX server"><u>STOLAF-RCSB/CIF</u></a> &nbsp;&nbsp;&nbsp; '
 	+'<a href=javascript:getMSAfile() title="a mineral from the Mineralogical Society of America via MSA AJAX server"><u>MSA/CIF</u></a> &nbsp;&nbsp;&nbsp; '
 	+'<a href=javascript:getANYfile() title="any URL on the WEB via St. Olaf AJAX server"><u>STOLAF-ANY</u></a> &nbsp;&nbsp;&nbsp; '
-	+'<a href=javascript:showOrientation()>show orientation</a><br />'
+	+'<br />show <a href=javascript:showOrientation()>orientation</a> '
+	+'<a href="javascript:void(open(\'getimage.htm\',\'_blank\'))">image</a> '
+	+'<a href="javascript:void(open(\'getstereo.htm\',\'_blank\'))">stereo</a> '
+	+'(images not available with MSIE)<br />'
+	+'<a href="javascript:jmolScript(\'save state\')">save</a>/<a href="javascript:jmolScript(\'console;show state\')">show</a>/<a href="javascript:jmolScript(\'restore state\')">restore</a> state<br/>'
+
 	+'\n<center>Java Console Log level: '+jmolGetLogLevelRadios()+'</center>'
 	+'\n</p><form action="javascript:showcmd()"><p>'
 	+'\n<br />cmd: <input autocomplete="off" id="cmd" type="text" size="50" value="" />'
@@ -334,6 +351,7 @@ function getpage(){
 	+'\n</p></form>'
 	+'\n</div>'
  if(isxhtmltest)s=s.replace(/\</g,"<br />&lt;")
+ if(listScripts)s="<pre>"+scriptList+"</pre>"
  return s
 }
 

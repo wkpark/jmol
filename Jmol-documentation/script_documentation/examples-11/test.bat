@@ -1,5 +1,6 @@
-copy c:\jmol-dev\workspace\jmol\*.jar .
+copy c:\jmol-dev\workspace\jmol\build\*.jar .
 
+if %1x == x goto exit
 goto OK
 
 
@@ -22,4 +23,6 @@ start new.htm
 
 :OK
 
-start new.htm
+start %1.htm
+
+:exit

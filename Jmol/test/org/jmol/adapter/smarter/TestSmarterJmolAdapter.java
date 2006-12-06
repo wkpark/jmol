@@ -42,7 +42,7 @@ public class TestSmarterJmolAdapter extends TestCase {
    * Test for reading files in aminoacids/
    */
   public void testAdf() {
-    checkDirectory("adf", "adf", "");
+    checkDirectory("adf", "adf", "", "Adf");
   }
   
   /**
@@ -56,7 +56,7 @@ public class TestSmarterJmolAdapter extends TestCase {
    * Test for reading files in animations/ 
    */
   public void testAnimations() {
-    checkDirectory("animations", "cml,pdb,xyz", "pdb.gz");
+    checkDirectory("animations", "cml,pdb,xyz", "pdb.gz", "Xml");
   }
   
   /**
@@ -70,14 +70,14 @@ public class TestSmarterJmolAdapter extends TestCase {
    * Test for reading files in c3xml/ 
    */
   public void testC3xml() {
-    checkDirectory("c3xml", "c3xml", "");
+    checkDirectory("c3xml", "c3xml", "","Xml");
   }
 
   /**
    * Test for reading files in cml/ 
    */
   public void testCml() {
-    checkDirectory("cml", "cml", "");
+    checkDirectory("cml", "cml", "","Xml");
   }
 
   /**
@@ -105,7 +105,7 @@ public class TestSmarterJmolAdapter extends TestCase {
    * Test for reading files in folding/
    */
   public void testFoldingAtHome() {
-    checkDirectory("../Jmol-FAH/projects", "xyz", "xyz.gz");
+//    checkDirectory("../Jmol-FAH/projects", "xyz", "xyz.gz");
   }
 
   /**
@@ -126,7 +126,7 @@ public class TestSmarterJmolAdapter extends TestCase {
    * Test for reading files in ghemical/
    */
   public void testGhemical() {
-    checkDirectory("ghemical", "gpr", "");
+    checkDirectory("ghemical", "gpr", "", "ghemicalMM");
   }
 
   /**
@@ -200,6 +200,13 @@ public class TestSmarterJmolAdapter extends TestCase {
   }
 
   /**
+   * Test for reading files in psi3/
+   */
+  public void testPsi3() {
+    checkDirectory("psi3", "out", "");
+  }
+
+  /**
    * Test for reading files in qchem/
    */
   public void testQchem() {
@@ -217,14 +224,14 @@ public class TestSmarterJmolAdapter extends TestCase {
    * Test for reading files in spartan/
    */
   public void testSpartan() {
-    checkDirectory("spartan", "smol,txt", "");
+    checkDirectory("spartan", "smol,txt", "", "spartanSmol");
   }
 
   /**
    * Test for reading files in sparchive/
    */
   public void testSparchive() {
-    checkDirectory("sparchive", "sparchive", "");
+    checkDirectory("sparchive", "sparchive", "", "spartan");
   }
 
   /**
@@ -249,9 +256,24 @@ public class TestSmarterJmolAdapter extends TestCase {
    * @param extsZ Comma separated list of extensions (compressed files)
    */
   private void checkDirectory(String directory, String exts, String extsZ) {
+    checkDirectory(directory, exts, extsZ, "");
+  }
+
+  /**
+   * Check that files in a directory can be read.
+   * 
+   * @param directory Directory where the files are (relative to Jmol-datafiles)
+   * @param exts Comma separated list of extensions
+   * @param extsZ Comma separated list of extensions (compressed files)
+   * @param fileType additional options for file type
+   */
+  private void checkDirectory(String directory, String exts, String extsZ,
+                              String fileType) {
     File dir = new File("../Jmol-datafiles", directory);
 
     String message = "";
+
+    String typesAllowed = (directory + exts + fileType).toLowerCase();
 
     // Checking uncompressed files
     final String[] ext = exts.split("[,]");
@@ -268,11 +290,12 @@ public class TestSmarterJmolAdapter extends TestCase {
 
     });
     if (files == null) {
-      Logger.warn("No files in directory [" + directory + "] for extensions [" + exts + "]");
+      Logger.warn("No files in directory [" + directory + "] for extensions ["
+          + exts + "]");
     } else {
       for (int i = 0; i < files.length; i++) {
         try {
-          String error = checkOpenFile(directory, files[i]);
+          String error = checkOpenFile(directory, files[i], typesAllowed);
           if (error != null) {
             message += error + "\n";
           }
@@ -299,11 +322,12 @@ public class TestSmarterJmolAdapter extends TestCase {
 
     });
     if (files == null) {
-      Logger.warn("No files in directory [" + directory + "] for extensions [" + exts + "]");
+      Logger.warn("No files in directory [" + directory + "] for extensions ["
+          + exts + "]");
     } else {
       for (int i = 0; i < filesZ.length; i++) {
         try {
-          String error = checkOpenFileGzip(directory, filesZ[i]);
+          String error = checkOpenFileGzip(directory, filesZ[i], typesAllowed);
           if (error != null) {
             message += error + "\n";
           }
@@ -329,10 +353,11 @@ public class TestSmarterJmolAdapter extends TestCase {
    * 
    * @param directory Directory where the file is (relative to Jmol-datafiles)
    * @param filename File name
+   * @param typesAllowed string that must contain the determined file type
    * @return Error message or null if OK
    */
-  private String checkOpenFile(String directory, String filename) {
-    
+  private String checkOpenFile(String directory, String filename, String typesAllowed) {
+
     // Open file
     JUnitLogger.setInformation(null);
     Object result = null;
@@ -341,16 +366,21 @@ public class TestSmarterJmolAdapter extends TestCase {
       SmarterJmolAdapter adapter = new SmarterJmolAdapter(null);
       adapter.logger = new TestLogger(adapter);
       File file = new File(new File("../Jmol-datafiles", directory), filename);
-      Logger.info(file.toString());
       JUnitLogger.setInformation(file.getPath());
       InputStream iStream = new FileInputStream(file);
       BufferedInputStream biStream = new BufferedInputStream(iStream);
-      BufferedReader bReader = new BufferedReader(new InputStreamReader(biStream));
+      BufferedReader bReader = new BufferedReader(new InputStreamReader(
+          biStream));
+      String fileType = (adapter.getFileTypeName(bReader)+"").toLowerCase();
+      Logger.info(fileType + ":" + file.getPath());
+      if (typesAllowed.indexOf(fileType) < 0)
+        return "checkFile (" + directory + "/" + filename + "): type error -- " + fileType;
       result = adapter.openBufferedReader(filename, bReader);
     } catch (Exception e) {
-      return "checkFile (" + directory + "/" + filename + "): " + e.getMessage();
+      return "checkFile (" + directory + "/" + filename + "): "
+          + e.getMessage();
     }
-    
+
     // Check result
     if (result == null) {
       return "checkFile (" + directory + "/" + filename + "): returns null";
@@ -358,7 +388,7 @@ public class TestSmarterJmolAdapter extends TestCase {
     if (result instanceof String) {
       return "checkFile (" + directory + "/" + filename + ") :" + result;
     }
-    
+
     return null;
   }
 
@@ -367,9 +397,10 @@ public class TestSmarterJmolAdapter extends TestCase {
    * 
    * @param directory Directory where the file is (relative to Jmol-datafiles)
    * @param filename File name
+   * @param typesAllowed string that must contain the determined file type
    * @return Error message or null if OK
    */
-  private String checkOpenFileGzip(String directory, String filename) {
+  private String checkOpenFileGzip(String directory, String filename, String typesAllowed) {
     
     // Open file
     JUnitLogger.setInformation(null);
@@ -378,11 +409,14 @@ public class TestSmarterJmolAdapter extends TestCase {
       SmarterJmolAdapter adapter = new SmarterJmolAdapter(null);
       adapter.logger = new TestLogger(adapter);
       File file = new File(new File("../Jmol-datafiles", directory), filename);
-      Logger.info(file.toString());
       JUnitLogger.setInformation(file.getPath());
       InputStream iStream = new FileInputStream(file);
       BufferedInputStream biStream = new BufferedInputStream(iStream);
       BufferedReader bReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(biStream)));
+      String fileType = (adapter.getFileTypeName(bReader) + "").toLowerCase();
+      Logger.info(fileType + ":" + file.getPath());
+      if (typesAllowed.indexOf(fileType) < 0)
+        return "checkFile (" + directory + "/" + filename + "): type error -- " + fileType;
       result = adapter.openBufferedReader(filename, bReader);
     } catch (Exception e) {
       return "checkFile (" + directory + "/" + filename + "): " + e.getMessage();
@@ -395,7 +429,6 @@ public class TestSmarterJmolAdapter extends TestCase {
     if (result instanceof String) {
       return "checkFile (" + directory + "/" + filename + ") :" + result;
     }
-    
     result = null;
     System.gc();
     

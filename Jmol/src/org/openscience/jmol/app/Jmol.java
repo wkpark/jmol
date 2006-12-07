@@ -1677,6 +1677,7 @@ class ImageCreator {
           pc.encode();
         } else if (type_or_text.equalsIgnoreCase("PNG")) {
           PngEncoder png = new PngEncoder(eImage);
+          png.setCompressionLevel(2); //reasonable? 500x500 is 38K
           byte[] pngbytes = png.pngEncode();
           os.write(pngbytes);
         } else if (type_or_text.equalsIgnoreCase("JPG64")) {

@@ -24,11 +24,12 @@
 
 package org.jmol.viewer;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
 import org.jmol.util.Logger;
 
-import java.util.Hashtable;
 
-class Token {
+public class Token {
 
   int tok;
   Object value;
@@ -95,6 +96,7 @@ class Token {
   // but not for hbonds nor ssbonds
   final static int setspecial        = (1 << 22);
   final static int objectid          = (1 << 23);
+  final static int unimplemented     = (1 << 24);
   
   final static int coordOrSet = negnums | embeddedExpression; 
 
@@ -105,10 +107,10 @@ class Token {
   // rasmol commands
   final static int backbone     = command |  0 | bool | predefinedset;
   final static int background   = command |  1 | colorparam | setspecial;
-  final static int bond         = command |  2 | setparam | bool;
+  final static int bond         = command |  2 | unimplemented | setparam | bool;
   final static int cartoon      = command |  3 | setparam;
   final static int center       = command |  4 | setparam | expressionCommand;
-  final static int clipboard    = command |  5;
+  final static int clipboard    = command |  5 | unimplemented;
   final static int color        = command |  6 | colorparam | setparam;
   final static int connect      = command |  7 | embeddedExpression;
   final static int data         = command |  8;
@@ -122,10 +124,10 @@ class Token {
   final static int load         = command | 16 | negnums;
   final static int monitor      = command | 18 | setparam | bool | embeddedExpression | expression;
   final static int pause        = command | 19 | misc;
-  final static int print        = command | 20;
+  final static int print        = command | 20 | unimplemented;
   final static int quit         = command | 21;
   final static int refresh      = command | 22;
-  final static int renumber     = command | 23 | negnums;
+  final static int renumber     = command | 23 | unimplemented;
   final static int reset        = command | 24;
   final static int restrict     = command | 25 | expressionCommand;
   final static int ribbon       = command | 26 | bool;
@@ -136,14 +138,14 @@ class Token {
   final static int set          = command | 31 | bool | negnums | embeddedExpression;
   final static int show         = command | 32;
   final static int slab         = command | 33 | bool;
-  final static int cpk          = command | 35 | setparam | bool | negnums;
+  final static int spacefill    = command | 35 | setparam | bool | negnums;
   final static int ssbond       = command | 36 | setparam | bool;
   final static int stereo       = command | 38 | colorparam | negnums;// | setspecial | bool | negnums ;
   final static int strands      = command | 39 | setparam | bool;
-  final static int structure    = command | 40;
+  final static int structure    = command | 40 | unimplemented;
   final static int trace        = command | 41 | bool;
   final static int translate    = command | 42 | negnums;
-  final static int unbond       = command | 43;
+  final static int unbond       = command | 43 | unimplemented;
   final static int wireframe    = command | 44 | bool;
   final static int write        = command | 45 | setparam;
   final static int zap          = command | 46;
@@ -157,10 +159,10 @@ class Token {
   final static int delay        = command | 60;
   final static int loop         = command | 61;
   final static int move         = command | 62 | negnums;
-  final static int view         = command | 63;
   final static int spin         = command | 64 | setparam | bool | coordOrSet;
-  final static int list         = command | 65;
-  final static int display3d    = command | 66;
+  final static int list         = command | 65 | unimplemented;
+  final static int display3d    = command | 66 | unimplemented;
+  final static int view         = command | 63 | unimplemented;
   final static int animation    = command | 67;
   final static int frame        = command | 68;
   // jmol commands
@@ -197,15 +199,19 @@ class Token {
   final static int elsecmd       = command | 109;
   final static int endifcmd      = command | 110;
   final static int subset        = command | 111 | expressionCommand | predefinedset;
+  final static int axes          = command | 112 | setparam;
+  final static int boundbox      = command | 113 | setparam;
+  final static int unitcell      = command | 114 | setparam | expression | predefinedset;
+  final static int frank         = command | 115 | setparam;
+  final static int model         = command | 116 | atomproperty;
+  final static int molecule      = command | 117 | unimplemented | atomproperty;
   
   // parameters
   final static int ambient      = setparam |  0;
-  final static int axes         = setparam |  1 | command;
   // background
   final static int backfade     = setparam |  2;
   final static int bondmode     = setparam |  3;
   final static int bonds        = setparam |  4 | expression;
-  final static int boundbox     = setparam |  5 | command;
   // cartoon
   final static int cisangle     = setparam |  6;
   final static int fontsize     = setparam |  7;
@@ -230,7 +236,6 @@ class Token {
   // stereo
   // strands
   final static int transparent  = setparam | 20;
-  final static int unitcell     = setparam | 21 | expression | predefinedset | command;
   final static int vectps       = setparam | 22;
   
   // write
@@ -247,7 +252,6 @@ class Token {
   // jmol extensions
   final static int property     = setparam | 30;
   final static int diffuse      = setparam | 31;
-  final static int frank        = setparam | 32 | command;
   final static int pickingStyle = setparam | 33;
   final static int spacegroup   = setparam | 34;
 
@@ -330,7 +334,6 @@ class Token {
   final static int resno        = atomproperty | 2;
   final static int radius       = atomproperty | 3 | setparam;
   final static int temperature  = atomproperty | 4;
-  final static int model        = atomproperty | 5 | command;
   
   final static int _bondedcount = atomproperty | 6;
   final static int _groupID     = atomproperty | 7;
@@ -339,7 +342,6 @@ class Token {
   final static int occupancy    = atomproperty | 10;
   
   final static int polymerLength   = atomproperty | 11;
-  final static int molecule        = atomproperty | 12 | command;
   final static int cell            = atomproperty | 13;
   final static int site            = atomproperty | 14;
   final static int element         = atomproperty | 15;
@@ -498,12 +500,12 @@ class Token {
     "altlocs",           null,
     "insertion",         new Token(insertion, "insertion"),
     "insertions",        null,
-    "monitor",           new Token(monitor,  varArgCount, "measure"),
-    "monitors",          null,
-    "measure",           null,
+    "measure",           new Token(monitor,  varArgCount, "measure"),
     "measures",          null,
     "measurement",       null,
     "measurements",      null,
+    "monitor",           null,
+    "monitors",          null,
     "pause",             new Token(pause,              0, "pause"),
     "wait",              null,
     "print",             new Token(print,              0, "print"),
@@ -524,8 +526,8 @@ class Token {
     "set",               new Token(set,      varArgCount, "set"),
     "show",              new Token(show,     varArgCount, "show"),
     "slab",              new Token(slab,      onDefault1, "slab"),
-    "cpk",               new Token(cpk,      varArgCount, "spacefill"),
-    "spacefill",         null,
+    "spacefill",         new Token(spacefill, varArgCount, "spacefill"),
+    "cpk",               null,
     "ssbond",            new Token(ssbond,    onDefault1, "ssbond"),
     "ssbonds",           null,
     "stereo",            new Token(stereo,   varArgCount, "stereo"),
@@ -694,7 +696,7 @@ class Token {
     "or",           new Token(opOr, "or"),
     ",",            null,
     "|",            null,
-    "||",            null,
+    "||",           null,
     "not",          new Token(opNot, "not"),
     "!",            null,
     "xor",          new Token(opXor, "xor"),
@@ -768,8 +770,6 @@ class Token {
     "coord",        new Token(coord, "coord"),
     "shapely",      new Token(shapely,         "shapely"),
 
-//    "restore",           new Token(restore,    "restore"),
-  
     "amino",        new Token(amino,           "amino"),
     "hetero",       new Token(hetero,          "hetero"),
     "hydrogen",     new Token(hydrogen,        "hydrogen"),
@@ -855,5 +855,45 @@ class Token {
       "-" + tok +
       ((intValue == Integer.MAX_VALUE) ? "" : ":" + intValue) +
       ((value == null) ? "" : ":" + value) + "]";
+  }
+  
+  ////////command sets ///////
+
+  /**
+   * retrieves an unsorted list of viable commands that could be
+   * completed by this initial set of characters. If fewer than
+   * two characters are given, then only the "preferred" command
+   * is given (measure, not monitor, for example), and in all cases
+   * if both a singular and a plural might be returned, only the
+   * singular is returned.
+   * 
+   * @param strBegin initial characters of the command, or null
+   * @return UNSORTED semicolon-separated string of viable commands
+   */
+  public static String getCommandSet(String strBegin) {
+    String cmds = "";
+    Hashtable htSet = new Hashtable();
+    int nCmds = 0;
+    String s = (strBegin == null || strBegin.length() == 0 ? null : strBegin
+        .toLowerCase());
+    boolean isMultiCharacter = (s != null && s.length() > 1);
+    Enumeration e = map.keys();
+    while (e.hasMoreElements()) {
+      String name = (String) e.nextElement();
+      Token token = (Token) map.get(name);
+      if ((token.tok & Token.command) != 0
+          && (token.tok & Token.unimplemented) == 0
+          && (s == null || name.indexOf(s) == 0)
+          && (isMultiCharacter || ((String) token.value).equals(name)))
+        htSet.put(name, Boolean.TRUE);
+    }
+    e = htSet.keys();
+    while (e.hasMoreElements()) {
+      String name = (String) e.nextElement();
+      if (name.charAt(name.length() - 1) != 's'
+          || !htSet.containsKey(name.substring(0, name.length() - 1)))
+        cmds += (nCmds++ == 0 ? "" : ";") + name;
+    }
+    return cmds;
   }
 }

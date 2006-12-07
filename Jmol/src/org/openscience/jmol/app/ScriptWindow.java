@@ -23,8 +23,6 @@
  */
 package org.openscience.jmol.app;
 
-import org.jmol.api.*;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -45,9 +43,11 @@ import javax.swing.text.StyleConstants;
 import javax.swing.JScrollPane;
 import java.util.Vector;
 
+import org.jmol.api.JmolViewer;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
+//import org.jmol.viewer.Token;
 
 public final class ScriptWindow extends JDialog
     implements ActionListener, EnterListener{
@@ -404,6 +404,7 @@ class ConsoleTextPane extends JTextPane {
 
    void checkCommand() {
     String strCommand = consoleDoc.getCommandString();
+    //System.out.println(Token.getCommandSet(strCommand));
     if (strCommand.length() == 0)
       return;
     consoleDoc

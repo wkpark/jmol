@@ -491,7 +491,7 @@ class Eval { //implements Runnable {
       if (isSyntaxCheck) {
         if (isScriptCheck)
           Logger.info(getCommand());
-        if (statementLength == 1)
+        if (statementLength == 1 && (token.tok & Token.unimplemented) == 0)
           continue;
       } else {
         if (nSecDelay > 0) {
@@ -645,7 +645,7 @@ class Eval { //implements Runnable {
       case Token.halo:
         halo();
         break;
-      case Token.cpk:
+      case Token.spacefill:
         spacefill();
         break;
       case Token.wireframe:
@@ -780,25 +780,15 @@ class Eval { //implements Runnable {
       case Token.pause: //resume is done differently
         pauseExecution();
         break;
-
-      // not implemented
-      case Token.structure:
-      case Token.bond:
-      case Token.clipboard:
-      case Token.molecule:
-      case Token.print:
-      case Token.renumber:
-      case Token.unbond:
-      // chime extended commands
-      case Token.view:
-      case Token.list:
-      case Token.display3d:
-        viewer.scriptStatus("script ERROR: command not implemented:"
-            + token.value);
-        break;
       default:
+        if ((token.tok & Token.unimplemented) != 0) {
+          String s = GT._("command ignored (not implemented): {0}", token.value.toString());
+          if (isSyntaxCheck)
+            evalError(s);
+          evalWarning(s);
+          break;
+        }
         unrecognizedCommand(token);
-        return;
       }
     }
   }
@@ -2352,7 +2342,7 @@ class Eval { //implements Runnable {
       return;
     case Token.colorRGB:
     case Token.none:
-    case Token.cpk:
+    case Token.spacefill:
     case Token.amino:
     case Token.chain:
     case Token.group:
@@ -2487,7 +2477,7 @@ class Eval { //implements Runnable {
         colorvalue = (argb == 0 ? null : new Integer(argb));
       } else {
         // "cpk" value would be "spacefill"
-        byte pid = (tok == Token.cpk ? JmolConstants.PALETTE_CPK
+        byte pid = (tok == Token.spacefill ? JmolConstants.PALETTE_CPK
             : JmolConstants.getPaletteID((String) statement[itoken].value));
         if (pid == JmolConstants.PALETTE_UNKNOWN
             || pid == JmolConstants.PALETTE_TYPE
@@ -6484,6 +6474,10 @@ class Eval { //implements Runnable {
     throw new ScriptException(message, getLine(), filename, getLinenumber());
   }
 
+  void evalWarning(String message) {
+    new ScriptException(message, getLine(), filename, getLinenumber());
+  }
+  
   void unrecognizedCommand(Token token) throws ScriptException {
     evalError(GT._("unrecognized command") + ": " + token.value);
   }

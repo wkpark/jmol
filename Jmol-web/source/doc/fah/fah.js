@@ -278,6 +278,8 @@ function showProjectInfo(value) {
     document.fahForm.infoCode.value = "Gromacs GPU";
   } else if (code == "GS") {
     document.fahForm.infoCode.value = "Gromacs SMP";
+  } else if (code == "GT") {
+    document.fahForm.infoCode.value = "Gromacs ST";
   } else if (code == "Q") {
     document.fahForm.infoCode.value = "QMD";
   } else if (code == "T") {

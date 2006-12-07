@@ -92,6 +92,8 @@ public class Jmol extends JPanel {
   private final static String FILE_OPEN_WINDOW_NAME = "FileOpen";
 
   static Point border;
+  static Boolean haveBorder = Boolean.FALSE;
+  
   /**
    * The current file.
    */

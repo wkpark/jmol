@@ -94,6 +94,7 @@ public class DisplayPanel extends JPanel
   private void updateSize() {
     viewer.setScreenDimension(haveDisplay? getSize(dimSize) : startupDimension);
     setRotateMode();
+    viewer.refresh(0, "updateSize");
   }
 
   public void paint(Graphics g) {
@@ -103,8 +104,11 @@ public class DisplayPanel extends JPanel
     viewer.renderScreenImage(g, dimSize, rectClip);
     if (Jmol.border == null)
       Jmol.border = new Point();
-    Jmol.border.x = startupDimension.width - dimSize.width;
-    Jmol.border.y = startupDimension.height - dimSize.height;
+    if (!Jmol.haveBorder.booleanValue()) {
+      Jmol.border.x = startupDimension.width - dimSize.width;
+      Jmol.border.y = startupDimension.height - dimSize.height;
+    }
+    Jmol.haveBorder = Boolean.TRUE;
     if (showPaintTime)
       stopPaintClock();
   }
@@ -355,7 +359,6 @@ public class DisplayPanel extends JPanel
     public void actionPerformed(ActionEvent e) {
       viewer.evalStringQuiet("center (selected)");
       setRotateMode();
-      viewer.setSelectionHalos(false);
     }
   }
 

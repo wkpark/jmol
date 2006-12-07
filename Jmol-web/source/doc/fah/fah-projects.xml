@@ -4620,7 +4620,7 @@
     credit="214" frames="100" code="A0" contact="mobley"/>
 
   <!-- Projects 2900 to 2999 -->
-  <fah_proj number="2903" name="p2903_BBA5" public="n"
+  <fah_proj number="2903" name="p2903_BBA5" public="n" file="y"
     server="171.65.103.163" atoms="12200" preferred="26" deadline="38"
     credit="132" frames="100" code="GT" contact="huangx"/>
 
@@ -4673,7 +4673,7 @@
   <fah_proj number="3300" name="p3300_riblig" public="y" file="y"
     server="171.64.122.127" atoms="2626" preferred="2" deadline="10"
     credit="48" frames="100" code="DG" contact="guha"/>
-  <fah_proj number="3301" name="p3301_ribcomp" public="n"
+  <fah_proj number="3301" name="p3301_ribcomp" public="n" file="y"
     server="171.64.65.83" atoms="24802" preferred="4" deadline="12"
     credit="47" frames="100" code="DG" contact="guha"/>
 

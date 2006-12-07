@@ -59,6 +59,9 @@ public class CoreType {
       if (code.equalsIgnoreCase(GROMACS_SMP._code)) {
     	return GROMACS_SMP;
       }
+      if (code.equalsIgnoreCase(GROMACS_ST._code)) {
+      	return GROMACS_ST;
+        }
       if (code.equalsIgnoreCase(QMD._code)) {
         return QMD;
       }
@@ -98,6 +101,9 @@ public class CoreType {
       if (name.equalsIgnoreCase(GROMACS_SMP._name)) {
     	return GROMACS_SMP;
       }
+      if (name.equalsIgnoreCase(GROMACS_ST._name)) {
+      	return GROMACS_ST;
+        }
       if (name.equalsIgnoreCase(QMD._name)) {
         return QMD;
       }
@@ -131,6 +137,7 @@ public class CoreType {
   static public final CoreType GROGPU      = new CoreType("GroGPU", "GG");  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GROMACS     = new CoreType("Gromacs", "G");  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType GROMACS_SMP = new CoreType("Gro-SMP", "GS");  //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GROMACS_ST  = new CoreType("GroST", "GT");  //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType QMD         = new CoreType("QMD", "Q"); //$NON-NLS-1$ //$NON-NLS-2$
   static public final CoreType TINKER      = new CoreType("Tinker", "T");   //$NON-NLS-1$//$NON-NLS-2$
 

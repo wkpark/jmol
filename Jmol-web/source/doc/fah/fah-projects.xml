@@ -3775,10 +3775,10 @@
     credit="19" frames="100" code="A" contact="spark7"/>
   <fah_proj number="1808" name="p1808_Collagen_Brodsky_refolding" public="y" file="y"
     server="171.65.103.158" atoms="1125" preferred="30" deadline="44"
-    credit="153" frames="100" code="A" contact="spark7"/>
+    credit="153" frames="100" code="A" contact="spark"/>
   <fah_proj number="1809" name="p1809_Collagen_POG10new_refolding" public="y" file="y"
     server="171.65.103.158" atoms="1116" preferred="30" deadline="44"
-    credit="153" frames="100" code="A" contact="spark7"/>
+    credit="153" frames="100" code="A" contact="spark"/>
   <fah_proj number="1811" name="p1811_COL1_121_fragments" public="y" file="y"
     server="171.65.103.158" atoms="57328" preferred="95" deadline="141"
     credit="512" frames="100" code="G" contact="spark"/>
@@ -3790,11 +3790,11 @@
     credit="19" frames="100" code="A" contact="spark7"/>
   <fah_proj number="1814" name="p1814_Collagen_POG10more_refolding" public="y" file="y"
     server="171.65.103.158" atoms="1116" preferred="30" deadline="44"
-    credit="153" frames="100" code="A" contact="spark7"/>
+    credit="153" frames="100" code="A" contact="spark"/>
   <fah_proj number="1815" name="p1815_Collagen_Brodsky_refolding" public="y" file="y"
     server="171.65.103.158" atoms="1125" preferred="30" deadline="44"
-    credit="153" frames="100" code="A" contact="spark7"/>
-  <fah_proj number="1816" name="p1816_COL1" public="n" file="y"
+    credit="153" frames="100" code="A" contact="spark"/>
+  <fah_proj number="1816" name="p1816_COL1" public="y" file="y"
     server="171.65.103.158" atoms="76522" preferred="62" deadline="92"
     credit="330" frames="100" code="A0" contact="spark"/>
   <fah_proj number="1850" name="p1850_Myosin6_PT_US" public="y" file="y"
@@ -4664,6 +4664,9 @@
   <fah_proj number="3020" name="p3020_SMP-nsv-03" public="y" file="y"
     server="171.64.65.56" atoms="9684" preferred="1" deadline="2"
     credit="587" frames="100" code="GS" contact="densign"/>
+  <fah_proj number="3023" name="p3023_SMP-water-box" public="y" file="y"
+    server="171.64.65.56" atoms="9642" preferred="1" deadline="2"
+    credit="587" frames="100" code="GS" contact="densign"/>
 
   <!-- Projects 3100 to 3199 -->
 
@@ -4673,9 +4676,9 @@
   <fah_proj number="3300" name="p3300_riblig" public="y" file="y"
     server="171.64.122.127" atoms="2626" preferred="2" deadline="10"
     credit="48" frames="100" code="DG" contact="guha"/>
-  <fah_proj number="3301" name="p3301_ribcomp" public="n" file="y"
+  <fah_proj number="3301" name="p3301_ribcomp" public="y" file="y"
     server="171.64.65.83" atoms="24802" preferred="4" deadline="12"
-    credit="47" frames="100" code="DG" contact="guha"/>
+    credit="47" frames="50" code="DG" contact="guha"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9999" name="p9999_SMP-sv-melting-99p" public="n"

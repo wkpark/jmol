@@ -73,6 +73,7 @@ class Draw extends MeshCollection {
   boolean isRotated45;
   boolean isCrossed;
   boolean isValid;
+  String title;
 
   void setProperty(String propertyName, Object value, BitSet bs) {
     Logger.debug("draw " + propertyName + " " + value);
@@ -89,6 +90,7 @@ class Draw extends MeshCollection {
       diameter = 0;
       bsAllAtoms.clear();
       rgb = null;
+      title = null;
       offset = new Vector3f();
       if (colix == 0)
         colix = Graphics3D.GOLD;
@@ -118,6 +120,13 @@ class Draw extends MeshCollection {
 
     if ("plane" == propertyName) {
       isPlane = true;
+      return;
+    }
+
+    if ("title" == propertyName) {
+      title = (String) value;
+      if (title.length() == 0)
+        title = null;
       return;
     }
 
@@ -229,7 +238,8 @@ class Draw extends MeshCollection {
         scaleDrawing(currentMesh, newScale);
         currentMesh.initialize();
         setAxes(currentMesh);
-        currentMesh.visible = isVisible;
+        currentMesh.title = (title == null ? null : new String[] {title});
+        currentMesh.visible = isVisible; 
       }
       nPoints = -1; // for later scaling
       return;
@@ -607,13 +617,41 @@ class Draw extends MeshCollection {
   int pickedVertex;
   final Point3i ptXY = new Point3i();
   
-  synchronized void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
+  boolean checkObjectClicked(int x, int y, int modifiers) {
+    if (viewer.getPickingMode() == JmolConstants.PICKING_DRAW)
+      return false;
+    if (!findPickedObject(x, y, false))
+      return false;
+    if (pickedVertex == 0) {
+      viewer.startSpinningAxis(
+          pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
+          pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][1]],
+          ((modifiers & MouseManager.SHIFT) != 0));
+    } else {
+      viewer.startSpinningAxis(
+          pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][1]],
+          pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
+          ((modifiers & MouseManager.SHIFT) != 0));
+    }
+    return true;
+  }
+
+  boolean checkObjectHovered(int x, int y) {
+    if (viewer.getPickingMode() == JmolConstants.PICKING_DRAW)
+      return false;
+    if (!findPickedObject(x, y, false))
+      return false;
+    viewer.hoverOn(x, y, (pickedMesh.title == null ? pickedMesh.thisID
+        : pickedMesh.title[0]));
+    return true;
+  }
+
+  synchronized boolean checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
                           int modifiers) {
-    boolean isPicking = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
-    if (!isPicking)
-      return;
+    if (viewer.getPickingMode() != JmolConstants.PICKING_DRAW)
+      return false;
     if (!findPickedObject(prevX, prevY, true))
-      return;
+      return false;
     boolean moveAll = false;
     switch (modifiers & MouseManager.BUTTON_MODIFIER_MASK) {
     case MouseManager.SHIFT_LEFT:
@@ -625,8 +663,9 @@ class Draw extends MeshCollection {
       break;
     case MouseManager.ALT_SHIFT_LEFT:
       // reserved -- constrained move?
-      break;
+      return false;
     }
+    return true;
   }
   
   void move2D(Mesh mesh, int[] vertexes, int iVertex, int x, int y,
@@ -660,25 +699,6 @@ class Draw extends MeshCollection {
     viewer.refresh();
   }
   
-  void checkObjectClicked(int x, int y, int modifiers) {
-    boolean isPicking = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
-    if (isPicking)
-      return;
-    if (!findPickedObject(x, y, false))
-      return;
-    if (pickedVertex == 0) {
-      viewer.startSpinningAxis(
-          pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
-          pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][1]],
-          ((modifiers & MouseManager.SHIFT) != 0));
-      return;
-    }
-    viewer.startSpinningAxis(
-        pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][1]],
-        pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],
-        ((modifiers & MouseManager.SHIFT) != 0));
-  }
-
   boolean findPickedObject(int x, int y, boolean isPicking) {
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
     pickedModel = 0;

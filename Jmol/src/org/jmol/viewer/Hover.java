@@ -28,6 +28,7 @@ import org.jmol.g3d.*;
 import org.jmol.util.Logger;
 
 import java.util.BitSet;
+import javax.vecmath.Point3i;
 
 class Hover extends TextShape {
 
@@ -37,6 +38,8 @@ class Hover extends TextShape {
 
   Text hoverText;
   int atomIndex = -1;
+  Point3i xy;
+  String text;
   String labelFormat = "%U";
 
   void initShape() {
@@ -63,6 +66,18 @@ class Hover extends TextShape {
       }
       return;
     }
+    
+    if ("text" == propertyName) {
+      text = (String) value;
+      if (text != null && text.length() == 0)
+        text = null;
+      return;
+    }
+    
+    if ("xy" == propertyName) {
+      xy = (Point3i) value;
+    }
+    
     if ("label" == propertyName) {
       labelFormat = (String) value;
       if (labelFormat != null && labelFormat.length() == 0)

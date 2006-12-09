@@ -2669,20 +2669,46 @@ public class Viewer extends JmolViewer {
   }
 
   int hoverAtomIndex = -1;
+  String hoverText;
 
   void hoverOn(int atomIndex) {
-    if ((eval == null || !isScriptExecuting()) && atomIndex != hoverAtomIndex) {
-      loadShape(JmolConstants.SHAPE_HOVER);
-      setShapeProperty(JmolConstants.SHAPE_HOVER, "target", new Integer(
-          atomIndex));
-      hoverAtomIndex = atomIndex;
-    }
+    if (eval != null && isScriptExecuting() || atomIndex == hoverAtomIndex || global.hoverDelayMs == 0)
+      return;
+    loadShape(JmolConstants.SHAPE_HOVER);
+    setShapeProperty(JmolConstants.SHAPE_HOVER, "target",
+        new Integer(atomIndex));
+    setShapeProperty(JmolConstants.SHAPE_HOVER, "text", null);
+    hoverText = null;
+    hoverAtomIndex = atomIndex;
+  }
+
+  int getHoverDelay() {
+    return global.hoverDelayMs;
+  }
+  
+  private void setHoverDelay(int milliSec) {
+    global.hoverDelayMs = milliSec;
+  }
+ 
+  void hoverOn(int x, int y, String text) {
+    if (eval != null && isScriptExecuting())
+      return;
+    loadShape(JmolConstants.SHAPE_HOVER);
+    setShapeProperty(JmolConstants.SHAPE_HOVER, "xy", new Point3i(x, y, 0));
+    setShapeProperty(JmolConstants.SHAPE_HOVER, "target", null);
+    setShapeProperty(JmolConstants.SHAPE_HOVER, "text", text);
+    hoverAtomIndex = -1;
+    hoverText = text;
   }
 
   void hoverOff() {
     if (hoverAtomIndex >= 0) {
       setShapeProperty(JmolConstants.SHAPE_HOVER, "target", null);
       hoverAtomIndex = -1;
+    }
+    if (hoverText != null) {
+      setShapeProperty(JmolConstants.SHAPE_HOVER, "text", null);
+      hoverText = null;
     }
   }
 
@@ -2851,6 +2877,14 @@ public class Viewer extends JmolViewer {
     pickingManager.setPickingStyle(pickingStyle);
   }
 
+  void setDrawHover(boolean TF) {
+    pickingManager.setDrawHover(TF);  
+  }
+  
+  boolean getDrawHover() {
+    return pickingManager.getDrawHover();
+  }
+  
   public String getAtomInfo(int atomIndex) {
     return modelManager.getAtomInfo(atomIndex);
   }
@@ -3197,6 +3231,10 @@ public class Viewer extends JmolViewer {
         setScriptDelay(value);
         break;
       }
+      if (key.equalsIgnoreCase("hoverDelay")) {
+        setHoverDelay(value);
+        break;
+      }
       if (key.equalsIgnoreCase("backgroundModel")) {
         setBackgroundModel(value);
         break;
@@ -3275,6 +3313,10 @@ public class Viewer extends JmolViewer {
     while (true) {
       if (key.equalsIgnoreCase("refreshing")) {
         setRefreshing(value);
+        break;
+      }
+      if (key.equalsIgnoreCase("drawHover")) {
+        setDrawHover(value);
         break;
       }
       if (key.equalsIgnoreCase("navigationMode")) {
@@ -4268,6 +4310,10 @@ public class Viewer extends JmolViewer {
 
   void checkObjectClicked(int x, int y, int modifiers) {
     modelManager.checkObjectClicked(x, y, modifiers);
+  }
+
+  void checkObjectHovered(int x, int y) {
+    modelManager.checkObjectHovered(x, y);
   }
 
   void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,

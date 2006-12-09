@@ -35,6 +35,8 @@ class PickingManager {
   int pickingStyleSelect = JmolConstants.PICKINGSTYLE_SELECT_CHIME;
   int pickingStyleMeasure = JmolConstants.PICKINGSTYLE_MEASURE_OFF;
 
+  boolean drawHover = false;
+  
   int queuedAtomCount = 0;
   int[] queuedAtomIndexes = new int[4];
 
@@ -45,6 +47,7 @@ class PickingManager {
 
   void clear() {
     pickingMode = JmolConstants.PICKING_IDENT;
+    drawHover = false;
   }
   
   void atomPicked(int atomIndex, int modifiers) {
@@ -220,6 +223,14 @@ class PickingManager {
     } else {
       pickingStyleSelect = pickingStyle;
     }
+  }
+  
+  void setDrawHover(boolean TF) {
+    drawHover = TF;
+  }
+  
+  boolean getDrawHover() {
+    return drawHover;
   }
 
   void queueAtom(int atomIndex) {

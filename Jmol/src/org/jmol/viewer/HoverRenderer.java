@@ -25,13 +25,18 @@ package org.jmol.viewer;
 
 class HoverRenderer extends ShapeRenderer {
   void render() {
-    Hover hover = (Hover)shape;
-    if (hover.atomIndex == -1 || hover.labelFormat == null)
-      return;
-    Text text = hover.hoverText;
-    Atom atom = frame.getAtomAt(hover.atomIndex);
-    text.setText(atom.formatLabel(hover.labelFormat));
-    text.setXY(atom.screenX, atom.screenY);
-    text.render();
+    Hover hover = (Hover) shape;
+    if (hover.atomIndex >= 0 && hover.labelFormat != null) {
+      Text text = hover.hoverText;
+      Atom atom = frame.getAtomAt(hover.atomIndex);
+      text.setText(atom.formatLabel(hover.labelFormat));
+      text.setXY(atom.screenX, atom.screenY);
+      text.render();
+    } else if (hover.text != null) {
+      Text text = hover.hoverText;
+      text.setText(hover.text);
+      text.setXY(hover.xy.x, hover.xy.y);
+      text.render();
+    }
   }
 }

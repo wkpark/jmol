@@ -1210,18 +1210,26 @@ String getAtomInfoChime(int i) {
   void checkObjectClicked(int x, int y, int modifiers) {
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];
-      if (shape != null) {
-        shape.checkObjectClicked(x, y, modifiers);
-      }
+      if (shape != null && shape.checkObjectClicked(x, y, modifiers))
+        break;
     }
   }
  
-  void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY, int modifiers) {
+  void checkObjectHovered(int x, int y) {
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];
-      if (shape != null) {
-        shape.checkObjectDragged(prevX, prevY, deltaX, deltaY, modifiers);
-      }
+      if (shape != null && shape.checkObjectHovered(x, y))
+        break;
+    }
+  }
+ 
+  void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
+                          int modifiers) {
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+      Shape shape = frame.shapes[i];
+      if (shape != null
+          && shape.checkObjectDragged(prevX, prevY, deltaX, deltaY, modifiers))
+        break;
     }
   }
 

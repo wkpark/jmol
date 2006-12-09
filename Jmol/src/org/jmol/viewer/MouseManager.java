@@ -31,8 +31,6 @@ import org.jmol.util.Logger;
 
 abstract class MouseManager {
 
-  final static int HOVER_TIME = 1000;
-
   Viewer viewer;
 
   Thread hoverWatcherThread;
@@ -529,16 +527,19 @@ abstract class MouseManager {
       Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
       while (true) {
         try {
-          Thread.sleep(1000);
-          if (xCurrent == mouseMovedX &&
-              yCurrent == mouseMovedY &&
-              timeCurrent == mouseMovedTime) { // the last event was mouse move
+          int hoverDelay = viewer.getHoverDelay();
+          Thread.sleep(hoverDelay);
+          if (xCurrent == mouseMovedX && yCurrent == mouseMovedY
+              && timeCurrent == mouseMovedTime) { // the last event was mouse move
             long currentTime = System.currentTimeMillis();
-            int howLong = (int)(currentTime - mouseMovedTime);
-            if (howLong > HOVER_TIME) {
+            int howLong = (int) (currentTime - mouseMovedTime);
+            if (howLong > hoverDelay) {
               int atomIndex = viewer.findNearestAtomIndex(xCurrent, yCurrent);
-              if (atomIndex != -1)
+              if (atomIndex >= 0) {
                 hoverOn(atomIndex);
+              } else if (viewer.getDrawHover()) {
+                viewer.checkObjectHovered(xCurrent, yCurrent);
+              }
             }
           }
         } catch (InterruptedException ie) {

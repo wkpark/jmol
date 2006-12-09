@@ -103,11 +103,17 @@ abstract class Shape {
   void setModelClickability() {
   }
 
-  void checkObjectClicked(int x, int y, int modifiers) {
+  boolean checkObjectClicked(int x, int y, int modifiers) {
+    return false;
   }
 
-  void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
+  boolean checkObjectHovered(int x, int y) {
+    return false;
+  }
+
+  boolean checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
                           int modifiers) {
+    return false;
   }
 
   short setColix(short colix, byte paletteID, int atomIndex) {

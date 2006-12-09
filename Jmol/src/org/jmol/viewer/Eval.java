@@ -1879,7 +1879,7 @@ class Eval { //implements Runnable {
     pt.x = coordinateValue(i);
     pt.y = coordinateValue(++pcLastExpressionInstruction);
     pt.z = coordinateValue(++pcLastExpressionInstruction);
-    if (statement[++pcLastExpressionInstruction].tok != Token.rightbrace)
+    if (getToken(++pcLastExpressionInstruction).tok != Token.rightbrace)
       coordinateExpected();
     if (coordinatesAreFractional && doConvert)
       viewer.convertFractionalCoordinates(pt);
@@ -1905,7 +1905,7 @@ class Eval { //implements Runnable {
     pt.y = coordinateValue(++pcLastExpressionInstruction);
     pt.z = coordinateValue(++pcLastExpressionInstruction);
     pt.w = coordinateValue(++pcLastExpressionInstruction);
-    if (statement[++pcLastExpressionInstruction].tok != Token.rightbrace)
+    if (getToken(++pcLastExpressionInstruction).tok != Token.rightbrace)
       coordinateExpected();
     return pt;
   }
@@ -2608,7 +2608,7 @@ class Eval { //implements Runnable {
   void hover() {
     if (isSyntaxCheck)
       return;
-    String strLabel = (String) statement[1].value;
+    String strLabel = (statementLength == 1 ? "on" : (String) statement[1].value);
     if (strLabel.equalsIgnoreCase("on"))
       strLabel = "%U";
     else if (strLabel.equalsIgnoreCase("off"))
@@ -5466,6 +5466,10 @@ class Eval { //implements Runnable {
       Object propertyValue = null;
       int tok = statement[i].tok;
       switch (tok) {
+      case Token.string:
+          propertyValue = stringParameter(i);
+          propertyName = "title";
+          break;
       case Token.identifier:
         propertyValue = statement[i].value;
         String str = (String) propertyValue;

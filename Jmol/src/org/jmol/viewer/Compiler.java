@@ -1699,7 +1699,7 @@ class Compiler {
       getToken();
     if (isToken(Token.asterisk))
       return true;
-    if (isToken(Token.nada))
+    if (isToken(Token.nada) || theToken == null)
       return invalidModelSpecification();
     switch (theToken.tok) {
     case Token.string:

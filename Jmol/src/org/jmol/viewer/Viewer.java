@@ -2675,9 +2675,9 @@ public class Viewer extends JmolViewer {
     if (eval != null && isScriptExecuting() || atomIndex == hoverAtomIndex || global.hoverDelayMs == 0)
       return;
     loadShape(JmolConstants.SHAPE_HOVER);
+    setShapeProperty(JmolConstants.SHAPE_HOVER, "text", null);
     setShapeProperty(JmolConstants.SHAPE_HOVER, "target",
         new Integer(atomIndex));
-    setShapeProperty(JmolConstants.SHAPE_HOVER, "text", null);
     hoverText = null;
     hoverAtomIndex = atomIndex;
   }
@@ -2712,6 +2712,10 @@ public class Viewer extends JmolViewer {
     }
   }
 
+  void setAtomHoverLabel(String text) {
+    setShapeProperty(JmolConstants.SHAPE_HOVER, "atomLabel", text);      
+  }
+  
   void setLabel(String strLabel) {
     //Eval
     if (strLabel != null) // force the class to load and display
@@ -3085,6 +3089,10 @@ public class Viewer extends JmolViewer {
   public void setStringProperty(String key, String value) {
     //Eval
     while (true) {
+      if (key.equalsIgnoreCase("hoverLabel")) {
+        setAtomHoverLabel(value);
+        break;
+      }
       if (key.equalsIgnoreCase("defaultDistanceLabel")) {
         setDefaultMeasurementLabel(2, value);
         break;

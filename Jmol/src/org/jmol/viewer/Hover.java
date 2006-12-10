@@ -28,6 +28,8 @@ import org.jmol.g3d.*;
 import org.jmol.util.Logger;
 
 import java.util.BitSet;
+import java.util.Hashtable;
+
 import javax.vecmath.Point3i;
 
 class Hover extends TextShape {
@@ -41,6 +43,7 @@ class Hover extends TextShape {
   Point3i xy;
   String text;
   String labelFormat = "%U";
+  String[] atomFormats;
 
   void initShape() {
     myType = HOVER;
@@ -74,6 +77,19 @@ class Hover extends TextShape {
       return;
     }
     
+    if ("atomLabel" == propertyName) {
+      String text = (String) value;
+      if (text != null && text.length() == 0)
+        text = null;
+      int count = viewer.getAtomCount();
+      if (atomFormats == null)
+        atomFormats = new String[count];
+      for (int i = count; --i >= 0; ) 
+      if (bsSelected.get(i))
+        atomFormats[i] = text;
+      return;
+    }
+    
     if ("xy" == propertyName) {
       xy = (Point3i) value;
     }
@@ -84,6 +100,19 @@ class Hover extends TextShape {
         labelFormat = null;
       return;
     }
+
     super.setProperty(propertyName, value, null);
+    
   }
+
+  String getShapeState() {
+    Hashtable temp = new Hashtable();
+    int atomCount = viewer.getAtomCount();
+    if (atomFormats != null)
+      for (int i = atomCount; --i >= 0;)
+        if (atomFormats[i] != null)
+          setStateInfo(temp, i, "set hover "
+              + StateManager.escape(atomFormats[i]));
+    return getShapeCommands(temp, null, atomCount);
+  }  
 }

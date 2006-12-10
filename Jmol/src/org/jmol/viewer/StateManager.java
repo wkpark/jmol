@@ -455,7 +455,7 @@ class StateManager {
     float defaultVibrationPeriod = 1f;
     float defaultVectorScale     = 1f;
     int scriptDelay              = 0;
-    int hoverDelayMs              = 1000;
+    int hoverDelayMs             = 500;
     
     // window
     

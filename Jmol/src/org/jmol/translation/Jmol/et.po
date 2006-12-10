@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2006-11-23 21:04+0100\n"
+"POT-Creation-Date: 2006-12-10 12:35+0100\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -144,11 +144,11 @@ msgstr "Mine kollektsiooni viimasele {0}"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Viga lugemisel BufferedReader'ist: {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:227
+#: org/openscience/jmol/app/DisplayPanel.java:235
 msgid "Select Atoms"
 msgstr "Vali aatomid"
 
-#: org/openscience/jmol/app/DisplayPanel.java:241
+#: org/openscience/jmol/app/DisplayPanel.java:249
 msgid "Delete Atoms"
 msgstr "Kustuta aatomid"
 
@@ -635,155 +635,155 @@ msgstr "Pildi tüüp"
 msgid "JPEG Quality"
 msgstr "JPEG kvaliteet"
 
-#: org/openscience/jmol/app/Jmol.java:125
+#: org/openscience/jmol/app/Jmol.java:128
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Jmol käivitamise viga: 'user.home' omadus kirjeldamata."
 
-#: org/openscience/jmol/app/Jmol.java:159
+#: org/openscience/jmol/app/Jmol.java:162
 msgid "Initializing 3D display..."
 msgstr "Algväärtustan 3D ekraani..."
 
-#: org/openscience/jmol/app/Jmol.java:184
+#: org/openscience/jmol/app/Jmol.java:187
 msgid "Initializing Preferences..."
 msgstr "Algväärtustan eelistusi..."
 
-#: org/openscience/jmol/app/Jmol.java:186
+#: org/openscience/jmol/app/Jmol.java:189
 msgid "Initializing Recent Files..."
 msgstr "Algväärtustan hiljutisi faile..."
 
-#: org/openscience/jmol/app/Jmol.java:189
+#: org/openscience/jmol/app/Jmol.java:192
 msgid "Initializing Script Window..."
 msgstr "Algväärtustan skripti akent..."
 
-#: org/openscience/jmol/app/Jmol.java:191
+#: org/openscience/jmol/app/Jmol.java:194
 msgid "Initializing AtomSetChooser Window..."
 msgstr "Algväärtustan AtomSetChooser akent..."
 
-#: org/openscience/jmol/app/Jmol.java:199
+#: org/openscience/jmol/app/Jmol.java:202
 msgid "Initializing Measurements..."
 msgstr "Algväärtustan mõõted..."
 
-#: org/openscience/jmol/app/Jmol.java:220
+#: org/openscience/jmol/app/Jmol.java:223
 msgid "Building Command Hooks..."
 msgstr "Koostan Command Hooks..."
 
-#: org/openscience/jmol/app/Jmol.java:229
+#: org/openscience/jmol/app/Jmol.java:232
 msgid "Building Menubar..."
 msgstr "Koostan menüüriba..."
 
-#: org/openscience/jmol/app/Jmol.java:245
+#: org/openscience/jmol/app/Jmol.java:248
 msgid "Starting display..."
 msgstr "Käivitan ekraani..."
 
-#: org/openscience/jmol/app/Jmol.java:250
+#: org/openscience/jmol/app/Jmol.java:253
 msgid "Setting up File Choosers..."
 msgstr "Seadistan failivalijat..."
 
-#: org/openscience/jmol/app/Jmol.java:303
+#: org/openscience/jmol/app/Jmol.java:306
 msgid "Setting up Drag-and-Drop..."
 msgstr "Seadistan Drag-ja-Drop'i..."
 
-#: org/openscience/jmol/app/Jmol.java:324
+#: org/openscience/jmol/app/Jmol.java:327
 msgid "Launching main frame..."
 msgstr "Käivitan peafreimi..."
 
-#: org/openscience/jmol/app/Jmol.java:342
+#: org/openscience/jmol/app/Jmol.java:345
 msgid "Creating main window..."
 msgstr "Loon peaakna..."
 
-#: org/openscience/jmol/app/Jmol.java:343
+#: org/openscience/jmol/app/Jmol.java:346
 msgid "Initializing Swing..."
 msgstr "Algväärtustan Swing'i..."
 
-#: org/openscience/jmol/app/Jmol.java:355
+#: org/openscience/jmol/app/Jmol.java:358
 msgid "Initializing Jmol..."
 msgstr "Algväärtustan Jmol'i..."
 
-#: org/openscience/jmol/app/Jmol.java:375
+#: org/openscience/jmol/app/Jmol.java:378
 msgid "give this help page"
 msgstr "anna see abileht"
 
-#: org/openscience/jmol/app/Jmol.java:376
+#: org/openscience/jmol/app/Jmol.java:380
 msgid "no display (and also exit when done)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:377
+#: org/openscience/jmol/app/Jmol.java:381
 msgid "check script syntax only"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:378
+#: org/openscience/jmol/app/Jmol.java:382
 msgid "silent startup operation"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:379
+#: org/openscience/jmol/app/Jmol.java:384
 msgid "no console -- all output to sysout"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:380
+#: org/openscience/jmol/app/Jmol.java:386
 msgid "exit after script (implicit with -n)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:388
+#: org/openscience/jmol/app/Jmol.java:394
 msgid "property=value"
 msgstr "omadus=väärtus"
 
-#: org/openscience/jmol/app/Jmol.java:391
+#: org/openscience/jmol/app/Jmol.java:397
 msgid "supported options are given below"
 msgstr "lubatud valikud on eespool"
 
-#: org/openscience/jmol/app/Jmol.java:395
+#: org/openscience/jmol/app/Jmol.java:402
 #, fuzzy, java-format
-msgid "window size, e.g. {0}"
+msgid "window width x height, e.g. {0}"
 msgstr "akna suurus 500x500"
 
-#: org/openscience/jmol/app/Jmol.java:401
+#: org/openscience/jmol/app/Jmol.java:409
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:424
+#: org/openscience/jmol/app/Jmol.java:431
 msgid "For example:"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:428
+#: org/openscience/jmol/app/Jmol.java:437
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "-D valikud on järgnevad (vaikeväärtus on sulgudes):"
 
-#: org/openscience/jmol/app/Jmol.java:542
+#: org/openscience/jmol/app/Jmol.java:574
 msgid "Executing script..."
 msgstr "Käivitan skripti..."
 
-#: org/openscience/jmol/app/Jmol.java:554
+#: org/openscience/jmol/app/Jmol.java:586
 #, fuzzy
 msgid "Jmol Java Console"
 msgstr "Jmol konsool"
 
-#: org/openscience/jmol/app/Jmol.java:562
+#: org/openscience/jmol/app/Jmol.java:594
 #: org/openscience/jmol/app/ScriptWindow.java:94
 msgid "Clear"
 msgstr "Puhasta"
 
-#: org/openscience/jmol/app/Jmol.java:575
+#: org/openscience/jmol/app/Jmol.java:608
 msgid "Could not create ConsoleTextArea: "
 msgstr "Ei saa luua ConsoleTextArea: "
 
-#: org/openscience/jmol/app/Jmol.java:652
+#: org/openscience/jmol/app/Jmol.java:685
 msgid "Closing Jmol..."
 msgstr "Jmol sulgemine..."
 
-#: org/openscience/jmol/app/Jmol.java:888
+#: org/openscience/jmol/app/Jmol.java:921
 msgid "Macros"
 msgstr "Makrod"
 
-#: org/openscience/jmol/app/Jmol.java:1241
+#: org/openscience/jmol/app/Jmol.java:1273
 msgid "Open URL"
 msgstr "Ava URL"
 
-#: org/openscience/jmol/app/Jmol.java:1242
+#: org/openscience/jmol/app/Jmol.java:1274
 msgid "Enter URL of molecular model"
 msgstr "Sisesta molekulaarmudeli URL"
 
-#: org/openscience/jmol/app/Jmol.java:1667
+#: org/openscience/jmol/app/Jmol.java:1700
 msgid "IO Exception:"
 msgstr "IO eriolukord:"
 

@@ -26,6 +26,8 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 import java.util.Hashtable;
+
+import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
 /**
@@ -130,7 +132,7 @@ class CifReader extends AtomSetCollectionReader {
       }
 */
       if (key.indexOf("_") != 0) {
-        logger.log("CIF ERROR ? should be an underscore: " + key);
+        Logger.warn("CIF ERROR ? should be an underscore: " + key);
         tokenizer.getTokenPeeked();
       } else if (!getData()) {
         continue;
@@ -186,7 +188,7 @@ class CifReader extends AtomSetCollectionReader {
         atomSetCollection.setCollectionName(thisDataSetName);
       }
     }
-    logger.log(key);
+    Logger.debug(key);
   }
   
   /**
@@ -203,7 +205,7 @@ class CifReader extends AtomSetCollectionReader {
       thisStructuralFormula = data = tokenizer.fullTrim(data);
     else if (type.equals("formula"))
       thisFormula = data = tokenizer.fullTrim(data);
-    logger.log(type + " = " + data);
+    Logger.debug(type + " = " + data);
   }
 
   /**
@@ -298,7 +300,7 @@ class CifReader extends AtomSetCollectionReader {
     key = tokenizer.getTokenPeeked();
     data = tokenizer.getNextToken();
     if (data == null) {
-      logger.log("CIF ERROR ? end of file; data missing: " + key);
+      Logger.warn("CIF ERROR ? end of file; data missing: " + key);
       return false;
     }
     return (data.length() == 0 || data.charAt(0) != '\0');
@@ -358,7 +360,7 @@ class CifReader extends AtomSetCollectionReader {
     if (str.startsWith("_symmetry_equiv_pos")
         || str.startsWith("space_group_symop")) {
       if (ignoreFileSymmetryOperators) {
-        logger.log("ignoring file-based symmetry operators");
+        Logger.warn("ignoring file-based symmetry operators");
         skipLoop();
       } else {
         processSymmetryOperationsLoopBlock();
@@ -540,7 +542,7 @@ class CifReader extends AtomSetCollectionReader {
             atom.formalCharge = (int) (charge + (charge < 0 ? -0.5 : 0.5));
             //because otherwise -1.6 is rounded UP to -1, and  1.6 is rounded DOWN to 1
             if (Math.abs(atom.formalCharge - charge) > 0.1)
-              logger.log("CIF charge on " + field + " was " + charge
+             Logger.debug("CIF charge on " + field + " was " + charge
                   + "; rounded to " + atom.formalCharge);
           }
           break;
@@ -573,8 +575,7 @@ class CifReader extends AtomSetCollectionReader {
           break;
         case ASYM_ID:
           if (field.length() > 1)
-            logger.log("Don't know how to deal with chains more than 1 char",
-                field);
+            Logger.warn("Don't know how to deal with chains more than 1 char: " + field);
           atom.chainID = firstChar;
           break;
         case SEQ_ID:
@@ -610,8 +611,7 @@ class CifReader extends AtomSetCollectionReader {
         }
       }
       if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
-        logger
-            .log("atom " + atom.atomName + " has invalid/unknown coordinates");
+        Logger.warn("atom " + atom.atomName + " has invalid/unknown coordinates");
       } else {
         setAtomCoord(atom);
         atomSetCollection.addAtomWithMappedName(atom);
@@ -656,7 +656,7 @@ class CifReader extends AtomSetCollectionReader {
     parseLoopParameters(geomBondFields);
     for (int i = propertyCount; --i >= 0;)
       if (!propertyReferenced[i]) {
-        logger.log("?que? missing _geom_bond property:" + i);
+        Logger.warn("?que? missing _geom_bond property:" + i);
         skipLoop();
         return;
       }
@@ -811,12 +811,12 @@ class CifReader extends AtomSetCollectionReader {
   }
 
   void addHetero(String groupName, String hetName) {
-  if (!JmolConstants.isHetero(groupName))
-    return;
-  if (htHetero == null)
-    htHetero = new Hashtable();
-  htHetero.put(groupName, hetName);
-  logger.log("hetero: "+groupName+" = "+hetName);
+    if (!JmolConstants.isHetero(groupName))
+      return;
+    if (htHetero == null)
+      htHetero = new Hashtable();
+    htHetero.put(groupName, hetName);
+    Logger.debug("hetero: " + groupName + " = " + hetName);
   }
   
   ////////////////////////////////////////////////////////////////
@@ -850,7 +850,7 @@ class CifReader extends AtomSetCollectionReader {
     parseLoopParameters(structConfFields);
     for (int i = propertyCount; --i >= 0;)
       if (!propertyReferenced[i]) {
-        logger.log("?que? missing _struct_conf property:" + i);
+        Logger.warn("?que? missing _struct_conf property:" + i);
         skipLoop();
         return;
       }
@@ -922,7 +922,7 @@ class CifReader extends AtomSetCollectionReader {
     parseLoopParameters(structSheetRangeFields);
     for (int i = propertyCount; --i >= 0;)
       if (!propertyReferenced[i]) {
-        logger.log("?que? missing _struct_conf property:" + i);
+        Logger.warn("?que? missing _struct_conf property:" + i);
         skipLoop();
         return;
       }
@@ -985,8 +985,7 @@ class CifReader extends AtomSetCollectionReader {
       if (propertyReferenced[i])
         nRefs++;
     if (nRefs != 1) {
-      logger
-          .log("?que? _symmetry_equiv or _space_group_symop property not found");
+      Logger.warn("?que? _symmetry_equiv or _space_group_symop property not found");
       skipLoop();
       return;
     }

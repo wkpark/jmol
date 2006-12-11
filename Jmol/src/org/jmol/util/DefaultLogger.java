@@ -40,7 +40,7 @@ public class DefaultLogger implements LoggerInterface {
    * @param txt Text to log.
    * @param e Exception.
    */
-  public static void log(PrintStream out, int level, String txt, Throwable e) {
+  protected void log(PrintStream out, int level, String txt, Throwable e) {
     if ((out != null) && ((txt != null) || (e != null))) {
       txt = (txt != null ? txt : "");
       out.println(

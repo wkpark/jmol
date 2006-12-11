@@ -372,7 +372,7 @@ public class TestSmarterJmolAdapter extends TestCase {
       BufferedReader bReader = new BufferedReader(new InputStreamReader(
           biStream));
       String fileType = (adapter.getFileTypeName(bReader)+"").toLowerCase();
-      Logger.info(fileType + ":" + file.getPath());
+      Logger.debug(fileType + ":" + file.getPath());
       if (typesAllowed.indexOf(fileType) < 0)
         return "checkFile (" + directory + "/" + filename + "): type error -- " + fileType;
       result = adapter.openBufferedReader(filename, bReader);
@@ -414,7 +414,7 @@ public class TestSmarterJmolAdapter extends TestCase {
       BufferedInputStream biStream = new BufferedInputStream(iStream);
       BufferedReader bReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(biStream)));
       String fileType = (adapter.getFileTypeName(bReader) + "").toLowerCase();
-      Logger.info(fileType + ":" + file.getPath());
+      Logger.debug(fileType + ":" + file.getPath());
       if (typesAllowed.indexOf(fileType) < 0)
         return "checkFile (" + directory + "/" + filename + "): type error -- " + fileType;
       result = adapter.openBufferedReader(filename, bReader);

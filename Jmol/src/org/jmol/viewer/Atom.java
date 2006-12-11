@@ -683,13 +683,7 @@ final public class Atom extends Point3fi implements Tuple {
     return pt;
   }
   
-  boolean isCursorOnTopOfClickableAtom(int xCursor, int yCursor,
-                                     int minRadius, Atom competitor) {
-    return (isClickable() &&
-            isCursorOnTop(xCursor, yCursor, minRadius, competitor));
-  }
-
-  boolean isCursorOnTop(int xCursor, int yCursor,
+  boolean isCursorOnTopOf(int xCursor, int yCursor,
                         int minRadius, Atom competitor) {
     int r = screenDiameter / 2;
     if (r < minRadius)

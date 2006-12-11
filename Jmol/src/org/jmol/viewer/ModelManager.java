@@ -351,6 +351,8 @@ class ModelManager {
   }
 
   int findNearestAtomIndex(int x, int y) {
+    if (frame == null)
+      return -1;
     return frame.findNearestAtomIndex(x, y);
   }
 
@@ -1216,6 +1218,8 @@ String getAtomInfoChime(int i) {
   }
  
   void checkObjectHovered(int x, int y) {
+    if (frame == null)
+      return;
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];
       if (shape != null && shape.checkObjectHovered(x, y))

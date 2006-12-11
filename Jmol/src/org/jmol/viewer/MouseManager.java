@@ -546,7 +546,7 @@ abstract class MouseManager {
           Logger.debug("Hover InterruptedException!");
           return;
         } catch (Exception ie) {
-          Logger.debug("Hover Exception!" + ie);
+          Logger.error("Hover Exception!" + ie);
           return;
         }
       }

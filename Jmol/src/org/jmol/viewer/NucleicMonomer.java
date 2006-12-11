@@ -222,7 +222,7 @@ class NucleicMonomer extends PhosphorusMonomer {
 
   void findNearestAtomIndex(int x, int y, Closest closest,
                             short madBegin, short madEnd) {
-    Viewer viewer = chain.frame.viewer;
+    Frame frame = chain.frame;
     Atom competitor = closest.atom;
     Atom lead = getLeadAtom();
     Atom o5prime = getO5PrimeAtom();
@@ -230,14 +230,13 @@ class NucleicMonomer extends PhosphorusMonomer {
     short mar = (short)(madBegin / 2);
     if (mar < 1900)
       mar = 1900;
-    int radius = viewer.scaleToScreen(lead.screenZ, mar);
+    int radius = frame.viewer.scaleToScreen(lead.screenZ, mar);
     if (radius < 4)
       radius = 4;
-    if (lead.isCursorOnTop(x, y, radius, competitor) ||
-        o5prime.isCursorOnTop(x, y, radius, competitor) ||
-        c3prime.isCursorOnTop(x, y, radius, competitor)) {
+    if (frame.isCursorOnTopOf(lead, x, y, radius, competitor)
+        || frame.isCursorOnTopOf(o5prime, x, y, radius, competitor)
+        || frame.isCursorOnTopOf(c3prime, x, y, radius, competitor))
       closest.atom = lead;
-    }
   }
   
   void setModelClickability() {

@@ -1236,13 +1236,9 @@ public final class Frame {
     closest.atom = null;
     findNearestAtomIndex(x, y, closest);
 
-    for (int i = 0; i < shapes.length; ++i) {
-      if (closest.atom != null)
-        break;
-      Shape shape = shapes[i];
-      if (shape != null)
-        shape.findNearestAtomIndex(x, y, closest);
-    }
+    for (int i = 0; i < shapes.length && closest.atom == null; ++i)
+      if (shapes[i] != null)
+        shapes[i].findNearestAtomIndex(x, y, closest);
     int closestIndex = (closest.atom == null ? -1 : closest.atom.atomIndex);
     closest.atom = null;
     return closestIndex;
@@ -1268,13 +1264,29 @@ public final class Frame {
     //int championIndex = -1;
     for (int i = atomCount; --i >= 0;) {
       Atom contender = atoms[i];
-      if (contender.isCursorOnTopOfClickableAtom(x, y,
-          minimumPixelSelectionRadius, champion)) {
+      if (contender.isClickable()
+          && isCursorOnTopOf(contender, x, y, minimumPixelSelectionRadius,
+              champion))
         champion = contender;
-        //championIndex = i;
-      }
     }
     closest.atom = champion;
+  }
+  
+  /**
+   * used by Frame and AminoMonomer and NucleicMonomer -- does NOT check for clickability
+   * @param contender
+   * @param x
+   * @param y
+   * @param radius
+   * @param champion
+   * @return true if user is pointing to this atom
+   */
+  boolean isCursorOnTopOf(Atom contender, int x, int y, int radius, Atom champion) {
+    return contender.screenZ > 1
+    && !g3d.isClippedZ(contender.screenZ)
+    && g3d.isInDisplayRange(contender.screenX, contender.screenY)
+    && contender.isCursorOnTopOf(x, y,
+        radius, champion); 
   }
 
   // jvm < 1.4 does not have a BitSet.clear();

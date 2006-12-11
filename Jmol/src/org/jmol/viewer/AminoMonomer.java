@@ -147,29 +147,29 @@ class AminoMonomer extends AlphaMonomer {
 
   void findNearestAtomIndex(int x, int y, Closest closest,
                             short madBegin, short madEnd) {
-    Viewer viewer = chain.frame.viewer;
+    Frame frame = chain.frame;
     Atom competitor = closest.atom;
     Atom nitrogen = getNitrogenAtom();
-    short marBegin = (short)(madBegin / 2);
+    short marBegin = (short) (madBegin / 2);
     if (marBegin < 1200)
       marBegin = 1200;
     if (nitrogen.screenZ == 0)
       return;
-    int radiusBegin = viewer.scaleToScreen(nitrogen.screenZ, marBegin);
+    int radiusBegin = frame.viewer.scaleToScreen(nitrogen.screenZ, marBegin);
     if (radiusBegin < 4)
       radiusBegin = 4;
     Atom ccarbon = getCarbonylCarbonAtom();
-    short marEnd = (short)(madEnd / 2);
+    short marEnd = (short) (madEnd / 2);
     if (marEnd < 1200)
       marEnd = 1200;
-    int radiusEnd =  viewer.scaleToScreen(nitrogen.screenZ, marEnd);
+    int radiusEnd = frame.viewer.scaleToScreen(nitrogen.screenZ, marEnd);
     if (radiusEnd < 4)
       radiusEnd = 4;
     Atom alpha = getLeadAtom();
-    if (alpha.isCursorOnTop(x, y,
-                            (radiusBegin + radiusEnd) / 2, competitor) ||
-        nitrogen.isCursorOnTop(x, y, radiusBegin, competitor) ||
-        ccarbon.isCursorOnTop(x, y, radiusEnd, competitor))
+    if (frame.isCursorOnTopOf(alpha, x, y, (radiusBegin + radiusEnd) / 2,
+        competitor)
+        || frame.isCursorOnTopOf(nitrogen, x, y, radiusBegin, competitor)
+        || frame.isCursorOnTopOf(ccarbon, x, y, radiusEnd, competitor))
       closest.atom = alpha;
   }
 }

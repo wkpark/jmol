@@ -561,7 +561,7 @@ class StateManager {
       }
     }
 
-    void setPropertyFlag(String key, boolean value) {
+    void setParameterValue(String key, boolean value) {
       key = key.toLowerCase();
         htPropertyFlags.put(key, value ? Boolean.TRUE : Boolean.FALSE);  
     }

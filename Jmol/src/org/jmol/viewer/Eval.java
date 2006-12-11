@@ -3721,9 +3721,7 @@ class Eval { //implements Runnable {
           float scale = floatParameter(2);
           if (scale < -10 || scale > 10)
             numberOutOfRange(-10f, 10f);
-          viewer.loadShape(JmolConstants.SHAPE_VECTORS);
-          setShapeProperty(JmolConstants.SHAPE_VECTORS, "scale", new Float(
-              scale));
+          viewer.setVectorScale(scale);
           return;
         }
         unrecognizedSubcommand(cmd);

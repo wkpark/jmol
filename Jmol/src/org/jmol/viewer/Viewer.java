@@ -805,14 +805,22 @@ public class Viewer extends JmolViewer {
     global.defaultVibrationPeriod = period;
   }
 
-  private void setVibrationScale(float scale) {
+  public void setVibrationScale(float scale) {
     //Eval
+    global.setParameterValue("vibrationScale", scale);
     transformManager.setVibrationScale(scale);
   }
 
-  private void setVibrationPeriod(float period) {
+  public void setVibrationPeriod(float period) {
     //Eval
+    global.setParameterValue("vibrationPeriod", period);
     transformManager.setVibrationPeriod(period);
+  }
+  
+  public void setVectorScale(float scale) {
+    loadShape(JmolConstants.SHAPE_VECTORS);
+    setShapeProperty(JmolConstants.SHAPE_VECTORS, "scale", new Float(
+        scale));
   }
 
   void setBackgroundArgb(int argb) {
@@ -826,9 +834,11 @@ public class Viewer extends JmolViewer {
     return global.argbBackground;
   }
 
-  private void setColorBackground(String colorName) {
-    if (colorName != null && colorName.length() > 0)
-      setBackgroundArgb(Graphics3D.getArgbFromString(colorName));
+  public void setColorBackground(String colorName) {
+    if (colorName == null || colorName.length() <= 0)
+      return;
+    global.setParameterValue("backgroundColor", colorName);
+    setBackgroundArgb(Graphics3D.getArgbFromString(colorName));    
   }
 
   short getColixBackgroundContrast() {
@@ -1532,10 +1542,7 @@ public class Viewer extends JmolViewer {
   }
 
   int getBoundBoxCenterX() {
-    // FIXME mth 2003 05 31
     // used by the labelRenderer for rendering labels away from the center
-    // for now this is returning the center of the screen
-    // need to transform the center of the bounding box and return that point
     return dimScreen.width / 2;
   }
 
@@ -1671,7 +1678,7 @@ public class Viewer extends JmolViewer {
 
   public void setCenterSelected() {
     //depricated
-    script("center (selected)");
+    setCenterBitSet(selectionManager.bsSelection, true);
   }
 
   public void rebond() {
@@ -1680,7 +1687,8 @@ public class Viewer extends JmolViewer {
     refresh(0, "Viewer:rebond()");
   }
 
-  private void setBondTolerance(float bondTolerance) {
+  public void setBondTolerance(float bondTolerance) {
+    global.setParameterValue("bondTolerance", bondTolerance);
     global.bondTolerance = bondTolerance;
   }
 
@@ -1688,8 +1696,9 @@ public class Viewer extends JmolViewer {
     return global.bondTolerance;
   }
 
-  private void setMinBondDistance(float minBondDistance) {
+  public void setMinBondDistance(float minBondDistance) {
     //PreferencesDialog
+    global.setParameterValue("minBondDistance", minBondDistance);
     global.minBondDistance = minBondDistance;
   }
 
@@ -2083,7 +2092,8 @@ public class Viewer extends JmolViewer {
     return repaintManager.getAnimationInfo();
   }
 
-  private void setAnimationFps(int fps) {
+  public void setAnimationFps(int fps) {
+    global.setParameterValue("animationFps", fps);
     //Eval
     //app AtomSetChooser
     repaintManager.setAnimationFps(fps);
@@ -2663,8 +2673,9 @@ public class Viewer extends JmolViewer {
     return global.hbondsSolid;
   }
 
-  private void setMarBond(short marBond) {
+  public void setMarBond(short marBond) {
     global.marBond = marBond;
+    global.setParameterValue("bondRadiusMilliAngstroms", marBond);
     setShapeSize(JmolConstants.SHAPE_STICKS, marBond * 2);
   }
 
@@ -2846,8 +2857,9 @@ public class Viewer extends JmolViewer {
     return global.debugScript;
   }
 
-  private void setDebugScript(boolean debugScript) {
+  public void setDebugScript(boolean debugScript) {
     global.debugScript = debugScript;
+    global.setParameterValue("debugScript", debugScript);
     Logger.setActiveLevel(Logger.LEVEL_DEBUG, debugScript);
   }
 
@@ -3297,7 +3309,7 @@ public class Viewer extends JmolViewer {
         break;
       }
       if (key.equalsIgnoreCase("bondRadiusMilliAngstroms")) {
-        setMarBond((short) value);
+        setMarBond((short)value);
         break;
       }
       if (key.equalsIgnoreCase("hermiteLevel")) {
@@ -3404,11 +3416,11 @@ public class Viewer extends JmolViewer {
         break;
       }
       if (key.equalsIgnoreCase("showAxes")) { //deprecated --  see "axes" command
-        setShapeShow(JmolConstants.SHAPE_AXES, value);
+        setShowAxes(value);
         break;
       }
       if (key.equalsIgnoreCase("showBoundBox")) { //deprecated -- see "boundBox"
-        setShapeShow(JmolConstants.SHAPE_BBCAGE, value);
+        setShowBbcage(value);
         break;
       }
       if (key.equalsIgnoreCase("showUnitcell")) { //deprecated -- see "unitcell"
@@ -3416,7 +3428,7 @@ public class Viewer extends JmolViewer {
         break;
       }
       if (key.equalsIgnoreCase("selectionHalos")) {
-        setSelectionHaloEnabled(value); //volatile
+        setSelectionHalos(value); //volatile
         break;
       }
       if (key.equalsIgnoreCase("debugScript")) {
@@ -3573,7 +3585,7 @@ public class Viewer extends JmolViewer {
       if (!defineNew)
         return !notFound;
       if (!notFound) {
-        global.setPropertyFlag(key, value);
+        global.setParameterValue(key, value);
         return true;
       }
       notFound = true;
@@ -3589,7 +3601,7 @@ public class Viewer extends JmolViewer {
         return false;
       }
     }
-    global.setPropertyFlag(key, value);
+    global.setParameterValue(key, value);
     if (notFound)
       return false;
     setTainted(true);
@@ -3706,18 +3718,20 @@ public class Viewer extends JmolViewer {
     global.testFlag4 = value;
   }
 
-  private void setPerspectiveDepth(boolean perspectiveDepth) {
+  public void setPerspectiveDepth(boolean perspectiveDepth) {
     //setBooleanProperty                      
     //stateManager.setCrystallographicDefaults
     //app preferences dialog   
+    global.setParameterValue("perspectiveDepth", perspectiveDepth);
     transformManager.setPerspectiveDepth(perspectiveDepth);
     refresh(0, "Viewer:setPerspectiveDepth()");
   }
 
-  private void setAxesOrientationRasmol(boolean axesOrientationRasmol) {
+  public void setAxesOrientationRasmol(boolean axesOrientationRasmol) {
     //app PreferencesDialog
     //stateManager
     //setBooleanproperty
+    global.setParameterValue("axesOrientationRasmol", axesOrientationRasmol);
     transformManager.setAxesOrientationRasmol(axesOrientationRasmol);
     refresh(0, "Viewer:setAxesOrientationRasmol()");
   }
@@ -3757,14 +3771,12 @@ public class Viewer extends JmolViewer {
   }
 
   public void setSelectionHalos(boolean TF) {
-    if (getSelectionHaloEnabled() != TF)
-      script("selectionHalos " + TF);
-  }
-
-  private void setSelectionHaloEnabled(boolean selectionHaloEnabled) {
+    if (TF == getSelectionHaloEnabled())
+      return;
+    global.setParameterValue("selectionHalos", TF);
     loadShape(JmolConstants.SHAPE_HALOS);
     //a frame property, so it is automatically reset
-    modelManager.setSelectionHaloEnabled(selectionHaloEnabled);
+    modelManager.setSelectionHaloEnabled(TF);
   }
 
   boolean getSelectionHaloEnabled() {
@@ -3864,8 +3876,9 @@ public class Viewer extends JmolViewer {
     return global.getLoadState();
   }
 
-  private void setAutoBond(boolean TF) {
+  public void setAutoBond(boolean TF) {
     //setBooleanProperties
+    global.setParameterValue("autobond", TF);
     global.autoBond = TF;
   }
 
@@ -3915,12 +3928,13 @@ public class Viewer extends JmolViewer {
   // delegated to stateManager
   // ///////////////////////////////////////////////////////////////
 
-  private void setPercentVdwAtom(int percentVdwAtom) {
+  public void setPercentVdwAtom(int percentVdwAtom) {
+    global.setParameterValue("percentVdwAtom", percentVdwAtom);
     global.percentVdwAtom = percentVdwAtom;
     setShapeSize(JmolConstants.SHAPE_BALLS, -percentVdwAtom);
   }
 
-  private void setFrankOn(boolean TF) {
+  public void setFrankOn(boolean TF) {
     //initializeModel
     global.frankOn = TF;
     setShapeSize(JmolConstants.SHAPE_FRANK, TF ? 1 : 0);
@@ -3970,9 +3984,10 @@ public class Viewer extends JmolViewer {
     return global.showMultipleBonds;
   }
 
-  private void setShowHydrogens(boolean TF) {
+  public void setShowHydrogens(boolean TF) {
     //PreferencesDialog
     //setBooleanProperty
+    global.setParameterValue("showHydrogens", TF);
     global.showHydrogens = TF;
     refresh(0, "Viewer:setShowHydrogens()");
   }
@@ -3995,12 +4010,22 @@ public class Viewer extends JmolViewer {
     return getShapeShow(JmolConstants.SHAPE_BBCAGE);
   }
 
+  public void setShowBbcage(boolean value) {
+    setShapeShow(JmolConstants.SHAPE_BBCAGE, value);
+  }
+  
   public boolean getShowAxes() {
     return getShapeShow(JmolConstants.SHAPE_AXES);
   }
 
-  private void setShowMeasurements(boolean TF) {
+  public void setShowAxes(boolean value) {
+    setShapeShow(JmolConstants.SHAPE_AXES, value);
+  }
+  
+
+  public void setShowMeasurements(boolean TF) {
     //setbooleanProperty
+    global.setParameterValue("showMeasurements", TF);
     global.showMeasurements = TF;
     refresh(0, "setShowMeasurements()");
   }
@@ -4028,6 +4053,14 @@ public class Viewer extends JmolViewer {
     return global.getMeasureDistanceUnits();
   }
 
+  public void setRasmolDefaults() {
+    setDefaults("RasMol");
+  }
+  
+  public void setJmolDefaults() {
+    setDefaults("Jmol");
+  }
+  
   private void setDefaults(String type) {
     if (type.equalsIgnoreCase("RasMol")) {
       stateManager.setRasMolDefaults();

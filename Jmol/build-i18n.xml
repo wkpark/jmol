@@ -31,6 +31,9 @@
   <property name="gettext.msgmerge" value="${gettext.path}msgmerge" />
   <property name="gettext.msgfmt"   value="${gettext.path}msgfmt" />
 
+  <!-- Properties that can be useful to change the build -->
+  <property name="do.create.pot" value="false" />
+  <property name="do.create.po" value="false" />
 
   <!-- Filesets for the rest of the build -->
   <fileset id="Jmol.java.files" dir="${basedir}/${src.dir}">
@@ -76,59 +79,67 @@
   <target name="create-application-pot" id="create-application-pot"
           depends="check-executables,check-uptodate-application-pot"
           if="exist_xgettext" unless="uptodate-application-pot">
-    <echo message="Generating Jmol.pot (gettext PO-template) file in ${Jmol.po.dir} ..."/>
-    <delete file="${Jmol.po.dir}/tstamp.Jmol.pot"/>
-    <!-- generate new Jmol.pot -->
-    <mkdir dir="${Jmol.po.dir}/tmp"/>
-    <apply executable="${gettext.xgettext}" dir="${basedir}/${src.dir}" parallel="true"
-           verbose="true" relative="true" forwardslash="true">
-      <arg value="-kGT._" />
-      <arg value="--language=Java" />
-      <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
-      <arg value="--output-dir=${basedir}/${Jmol.po.dir}/tmp" />
-      <arg value="--output=Jmol.pot" />
-      <fileset refid="Jmol.java.files" />
-    </apply>
     <if>
-      <and>
-        <available file="${Jmol.po.dir}/Jmol.pot"/>
-        <available file="${Jmol.po.dir}/tmp/Jmol.pot"/>
-      </and>
+      <istrue value="${do.create.pot}" />
       <then>
-        <!-- compare both Jmol.pot files -->
-        <copy file="${Jmol.po.dir}/Jmol.pot"
-              tofile="${Jmol.po.dir}/tmp/Jmol.old.pot"/>
-        <antcall target="shrink-pot-file">
-          <param name="remove_pot_file" value="${Jmol.po.dir}/tmp/Jmol.old.pot"/>
-        </antcall>
-        <copy file="${Jmol.po.dir}/tmp/Jmol.pot"
-              tofile="${Jmol.po.dir}/tmp/Jmol.new.pot"/>
-        <antcall target="shrink-pot-file">
-          <param name="remove_pot_file" value="${Jmol.po.dir}/tmp/Jmol.new.pot"/>
-        </antcall>
+        <echo message="Generating Jmol.pot (gettext PO-template) file in ${Jmol.po.dir} ..."/>
+        <delete file="${Jmol.po.dir}/tstamp.Jmol.pot"/>
+        <!-- generate new Jmol.pot -->
+        <mkdir dir="${Jmol.po.dir}/tmp"/>
+        <apply executable="${gettext.xgettext}" dir="${basedir}/${src.dir}" parallel="true"
+               verbose="true" relative="true" forwardslash="true">
+          <arg value="-kGT._" />
+          <arg value="--language=Java" />
+          <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
+          <arg value="--output-dir=${basedir}/${Jmol.po.dir}/tmp" />
+          <arg value="--output=Jmol.pot" />
+          <fileset refid="Jmol.java.files" />
+        </apply>
         <if>
-          <not>
-            <filesmatch file1="${Jmol.po.dir}/tmp/Jmol.old.pot"
-                        file2="${Jmol.po.dir}/tmp/Jmol.new.pot"/>
-          </not>
+          <and>
+            <available file="${Jmol.po.dir}/Jmol.pot"/>
+            <available file="${Jmol.po.dir}/tmp/Jmol.pot"/>
+          </and>
           <then>
+            <!-- compare both Jmol.pot files -->
+            <copy file="${Jmol.po.dir}/Jmol.pot"
+                  tofile="${Jmol.po.dir}/tmp/Jmol.old.pot"/>
+            <antcall target="shrink-pot-file">
+              <param name="remove_pot_file" value="${Jmol.po.dir}/tmp/Jmol.old.pot"/>
+            </antcall>
             <copy file="${Jmol.po.dir}/tmp/Jmol.pot"
-                  tofile="${Jmol.po.dir}/Jmol.pot"/>
+                  tofile="${Jmol.po.dir}/tmp/Jmol.new.pot"/>
+            <antcall target="shrink-pot-file">
+              <param name="remove_pot_file" value="${Jmol.po.dir}/tmp/Jmol.new.pot"/>
+            </antcall>
+            <if>
+              <not>
+                <filesmatch file1="${Jmol.po.dir}/tmp/Jmol.old.pot"
+                            file2="${Jmol.po.dir}/tmp/Jmol.new.pot"/>
+              </not>
+              <then>
+                <copy file="${Jmol.po.dir}/tmp/Jmol.pot"
+                      tofile="${Jmol.po.dir}/Jmol.pot"/>
+              </then>
+            </if>
           </then>
+          <else>
+            <if>
+              <available file="${Jmol.po.dir}/tmp/Jmol.pot"/>
+              <then>
+                <copy file="${Jmol.po.dir}/tmp/Jmol.pot"
+                      tofile="${Jmol.po.dir}/Jmol.pot"/>
+              </then>
+            </if>
+          </else>
         </if>
+        <touch file="${Jmol.po.dir}/tstamp.Jmol.pot"/>
+        <delete dir="${Jmol.po.dir}/tmp"/>
       </then>
       <else>
-        <if>
-          <available file="${Jmol.po.dir}/tmp/Jmol.pot"/>
-          <then>
-            <copy file="${Jmol.po.dir}/tmp/Jmol.pot"
-                  tofile="${Jmol.po.dir}/Jmol.pot"/>
-          </then>
-        </if>
+        <echo message="Skipping generation of Jmol.pot (gettext PO-template)" />
       </else>
     </if>
-    <touch file="${Jmol.po.dir}/tstamp.Jmol.pot"/>
-    <delete dir="${Jmol.po.dir}/tmp"/>
   </target>
   
   <!-- create JmolApplet.pot -->
@@ -144,64 +155,72 @@
   <target name="create-applet-pot" id="create-applet-pot"
           depends="check-executables,check-uptodate-applet-pot"
           if="exist_xgettext" unless="uptodate-applet-pot">
-    <echo message="Generating JmolApplet.pot (gettext PO-template) file in ${JmolApplet.po.dir} ..."/>
-    <delete file="${JmolApplet.po.dir}/tstamp.JmolApplet.pot"/>
-    <!-- generate new JmolApplet.pot -->
-    <mkdir dir="${JmolApplet.po.dir}/tmp"/>
-    <apply executable="${gettext.xgettext}" dir="${basedir}/${src.dir}" parallel="true"
-           verbose="true" relative="true" forwardslash="true">
-      <arg value="-kGT._" />
-      <arg value="--language=Java" />
-      <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
-      <arg value="--output-dir=${basedir}/${JmolApplet.po.dir}/tmp" />
-      <arg value="--output=JmolApplet.pot" />
-        <fileset dir="${basedir}/${src.dir}">
-          <include name="JmolApplet*.java"/>
-          <include name="org/jmol/**/*.java"/>
-          <exclude name="org/jmol/**/cdk/*.java"/>
-          <include name="org/openscience/jmol/ui/*.java"/>
-        </fileset>
-    </apply>
     <if>
-      <and>
-        <available file="${JmolApplet.po.dir}/JmolApplet.pot"/>
-        <available file="${JmolApplet.po.dir}/tmp/JmolApplet.pot"/>
-      </and>
+      <istrue value="${do.create.pot}" />
       <then>
-        <!-- compare both JmolApplet.pot files -->
-        <copy file="${JmolApplet.po.dir}/JmolApplet.pot"
-              tofile="${JmolApplet.po.dir}/tmp/JmolApplet.old.pot"/>
-        <antcall target="shrink-pot-file">
-          <param name="remove_pot_file" value="${JmolApplet.po.dir}/tmp/JmolApplet.old.pot"/>
-        </antcall>
-        <copy file="${JmolApplet.po.dir}/tmp/JmolApplet.pot"
-              tofile="${JmolApplet.po.dir}/tmp/JmolApplet.new.pot"/>
-        <antcall target="shrink-pot-file">
-          <param name="remove_pot_file" value="${JmolApplet.po.dir}/tmp/JmolApplet.new.pot"/>
-        </antcall>
+        <echo message="Generating JmolApplet.pot (gettext PO-template) file in ${JmolApplet.po.dir} ..."/>
+        <delete file="${JmolApplet.po.dir}/tstamp.JmolApplet.pot"/>
+        <!-- generate new JmolApplet.pot -->
+        <mkdir dir="${JmolApplet.po.dir}/tmp"/>
+        <apply executable="${gettext.xgettext}" dir="${basedir}/${src.dir}" parallel="true"
+               verbose="true" relative="true" forwardslash="true">
+          <arg value="-kGT._" />
+          <arg value="--language=Java" />
+          <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
+          <arg value="--output-dir=${basedir}/${JmolApplet.po.dir}/tmp" />
+          <arg value="--output=JmolApplet.pot" />
+            <fileset dir="${basedir}/${src.dir}">
+              <include name="JmolApplet*.java"/>
+              <include name="org/jmol/**/*.java"/>
+              <exclude name="org/jmol/**/cdk/*.java"/>
+              <include name="org/openscience/jmol/ui/*.java"/>
+            </fileset>
+        </apply>
         <if>
-          <not>
-            <filesmatch file1="${JmolApplet.po.dir}/tmp/JmolApplet.old.pot"
-                        file2="${JmolApplet.po.dir}/tmp/JmolApplet.new.pot"/>
-          </not>
+          <and>
+            <available file="${JmolApplet.po.dir}/JmolApplet.pot"/>
+            <available file="${JmolApplet.po.dir}/tmp/JmolApplet.pot"/>
+          </and>
           <then>
+            <!-- compare both JmolApplet.pot files -->
+            <copy file="${JmolApplet.po.dir}/JmolApplet.pot"
+                  tofile="${JmolApplet.po.dir}/tmp/JmolApplet.old.pot"/>
+            <antcall target="shrink-pot-file">
+              <param name="remove_pot_file" value="${JmolApplet.po.dir}/tmp/JmolApplet.old.pot"/>
+            </antcall>
             <copy file="${JmolApplet.po.dir}/tmp/JmolApplet.pot"
-                  tofile="${JmolApplet.po.dir}/JmolApplet.pot"/>
+                  tofile="${JmolApplet.po.dir}/tmp/JmolApplet.new.pot"/>
+            <antcall target="shrink-pot-file">
+              <param name="remove_pot_file" value="${JmolApplet.po.dir}/tmp/JmolApplet.new.pot"/>
+            </antcall>
+            <if>
+              <not>
+                <filesmatch file1="${JmolApplet.po.dir}/tmp/JmolApplet.old.pot"
+                            file2="${JmolApplet.po.dir}/tmp/JmolApplet.new.pot"/>
+              </not>
+              <then>
+                <copy file="${JmolApplet.po.dir}/tmp/JmolApplet.pot"
+                      tofile="${JmolApplet.po.dir}/JmolApplet.pot"/>
+              </then>
+            </if>
           </then>
+          <else>
+            <if>
+              <available file="${JmolApplet.po.dir}/tmp/JmolApplet.pot"/>
+              <then>
+                <copy file="${JmolApplet.po.dir}/tmp/JmolApplet.pot"
+                      tofile="${JmolApplet.po.dir}/JmolApplet.pot"/>
+              </then>
+            </if>
+          </else>
         </if>
+        <touch file="${JmolApplet.po.dir}/tstamp.JmolApplet.pot"/>
+        <delete dir="${JmolApplet.po.dir}/tmp"/>
       </then>
       <else>
-        <if>
-          <available file="${JmolApplet.po.dir}/tmp/JmolApplet.pot"/>
-          <then>
-            <copy file="${JmolApplet.po.dir}/tmp/JmolApplet.pot"
-                  tofile="${JmolApplet.po.dir}/JmolApplet.pot"/>
-          </then>
-        </if>
+        <echo message="Skipping generation of JmolApplet.pot (gettext PO-template)" />
       </else>
     </if>
-    <touch file="${JmolApplet.po.dir}/tstamp.JmolApplet.pot"/>
-    <delete dir="${JmolApplet.po.dir}/tmp"/>
   </target>
 
   <!-- update po files using newly created .pot files -->
@@ -212,14 +231,22 @@
   <!-- update Jmol po files using newly created Jmol.pot file -->
   <target name="update-application-po" id="update-application-po"
           depends="check-executables" if="exist_msgmerge">
-    <for list="${all.Jmol.languages}" delimiter=","
-         param="current.Jmol.language">
-      <sequential>
-        <antcall target="update-application-po-lang">
-          <param name="Jmol_lang_value" value="@{current.Jmol.language}"/>
-        </antcall>
-      </sequential>
-    </for>
+    <if>
+      <istrue value="${do.create.po}" />
+      <then>
+        <for list="${all.Jmol.languages}" delimiter=","
+             param="current.Jmol.language">
+          <sequential>
+            <antcall target="update-application-po-lang">
+              <param name="Jmol_lang_value" value="@{current.Jmol.language}"/>
+            </antcall>
+          </sequential>
+        </for>
+      </then>
+      <else>
+        <echo message="Skipping generation of .po gettext files for Jmol" />
+      </else>
+    </if>
   </target>  
 
   <target name="check-uptodate-application-po">
@@ -245,15 +272,23 @@
   <!-- update JmolApplet po files using newly created JmolApplet.pot file -->
   <target name="update-applet-po" id="update-applet-po"
           depends="check-executables" if="exist_msgmerge">
-    <for list="${all.JmolApplet.languages}" delimiter=","
-         param="current.JmolApplet.language">
-      <sequential>
-        <antcall target="update-applet-po-lang">
-          <param name="JmolApplet_lang_value"
-                 value="@{current.JmolApplet.language}"/>
-        </antcall>
-      </sequential>
-    </for>
+    <if>
+      <istrue value="${do.create.po}" />
+      <then>
+        <for list="${all.JmolApplet.languages}" delimiter=","
+             param="current.JmolApplet.language">
+          <sequential>
+            <antcall target="update-applet-po-lang">
+              <param name="JmolApplet_lang_value"
+                     value="@{current.JmolApplet.language}"/>
+            </antcall>
+          </sequential>
+        </for>
+      </then>
+      <else>
+        <echo message="Skipping generation of .po gettext files for JmolApplet" />
+      </else>
+    </if>
   </target>  
   
   <target name="check-uptodate-applet-po">

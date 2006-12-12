@@ -650,7 +650,7 @@ public class Viewer extends JmolViewer {
     transformManager.transformVector(vectorAngstroms, vectorTransformed);
   }
 
-  void unTransformPoint(Point3i pointScreen, Point3f pointAngstroms) {
+  void unTransformPoint(Point3f pointScreen, Point3f pointAngstroms) {
     //called by Draw.move2D
     transformManager.unTransformPoint(pointScreen, pointAngstroms);
   }
@@ -2907,7 +2907,7 @@ public class Viewer extends JmolViewer {
   }
 
   public String getAtomInfoXYZ(int atomIndex) {
-    return modelManager.getAtomInfoXYZ(atomIndex);
+    return modelManager.getAtomInfoXYZ(atomIndex, getTestFlag1());
   }
 
   // //////////////status manager dispatch//////////////

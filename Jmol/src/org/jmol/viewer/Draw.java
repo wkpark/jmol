@@ -672,7 +672,7 @@ class Draw extends MeshCollection {
               boolean moveAll) {
     if (vertexes == null || vertexes.length == 0)
       return;
-    Point3i pt = new Point3i();
+    Point3f pt = new Point3f();
     Point3f coord = new Point3f();
     Point3f newcoord = new Point3f();
     Vector3f move = new Vector3f();

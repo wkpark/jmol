@@ -460,8 +460,8 @@ class ModelManager {
     return frame.getAtomAt(i).getInfo();
   }
 
-  String getAtomInfoXYZ(int i) {
-    return frame.getAtomAt(i).getInfoXYZ();
+  String getAtomInfoXYZ(int i, boolean withScreens) {
+    return frame.getAtomAt(i).getInfoXYZ(withScreens);
   }
 
 /*

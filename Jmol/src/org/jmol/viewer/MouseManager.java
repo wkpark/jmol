@@ -28,8 +28,9 @@ import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.Event;
 import org.jmol.util.Logger;
+import java.awt.event.*;
 
-abstract class MouseManager {
+abstract class MouseManager implements KeyListener {
 
   Viewer viewer;
 
@@ -57,6 +58,7 @@ abstract class MouseManager {
     this.viewer = viewer;
     hoverWatcherThread = new Thread(new HoverWatcher());
     hoverWatcherThread.start();
+    viewer.getAwtComponent().addKeyListener(this);
   }
 
   void removeMouseListeners11() {}
@@ -67,7 +69,41 @@ abstract class MouseManager {
       hoverWatcherThread.interrupt();
       removeMouseListeners11();
       removeMouseListeners14();
+      viewer.getAwtComponent().removeKeyListener(this);
     }
+  }
+
+  public void keyTyped(KeyEvent ke) {
+  }
+
+  public void keyPressed(KeyEvent ke) {
+    if (!viewer.getNavigationMode())
+      return;
+    int i;
+    switch(i = ke.getKeyCode()) {
+    case KeyEvent.VK_UP:
+    case KeyEvent.VK_DOWN:
+    case KeyEvent.VK_LEFT:
+    case KeyEvent.VK_RIGHT:
+      viewer.navigate(i);
+      break;
+    }
+  }
+  
+  public void keyReleased(KeyEvent ke) {
+    if (!viewer.getNavigationMode())
+      return;
+    switch(ke.getKeyCode()) {
+    case KeyEvent.VK_UP:
+    case KeyEvent.VK_DOWN:
+    case KeyEvent.VK_LEFT:
+    case KeyEvent.VK_RIGHT:
+      viewer.navigate(0);
+      break;
+    }
+  }
+    
+  protected void processKeyEvent(KeyEvent ke) {
   }
 
   Rectangle getRubberBand() {
@@ -403,6 +439,7 @@ abstract class MouseManager {
     if (logMouseEvents)
       Logger.debug("mouseMoved("+x+","+y+","+modifiers"+)");
     */
+    viewer.getAwtComponent().requestFocusInWindow();
     hoverOff();
     timeCurrent = mouseMovedTime = time;
     mouseMovedX = xCurrent = x; mouseMovedY = yCurrent = y;

@@ -95,7 +95,7 @@ public class Viewer extends JmolViewer {
   private Eval eval;
   private FileManager fileManager;
   private ModelManager modelManager;
-  private MouseManager mouseManager;
+  public MouseManager mouseManager;
   private PickingManager pickingManager;
   private PropertyManager propertyManager;
   private RepaintManager repaintManager;
@@ -651,6 +651,7 @@ public class Viewer extends JmolViewer {
   }
 
   void unTransformPoint(Point3i pointScreen, Point3f pointAngstroms) {
+    //called by Draw.move2D
     transformManager.unTransformPoint(pointScreen, pointAngstroms);
   }
 
@@ -3832,6 +3833,15 @@ public class Viewer extends JmolViewer {
 
   boolean getNavigationMode() {
     return global.navigationMode;
+  }
+  
+  void navigate(int keyWhere) {
+    transformManager.navigate(keyWhere);
+    refresh(1, "Viewer:navigate()");
+  }
+  
+  Point3f getNavigationCenter() {
+    return transformManager.getNavigationCenter();
   }
 
   private void setZoomLarge(boolean TF) {

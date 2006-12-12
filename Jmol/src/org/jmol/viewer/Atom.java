@@ -771,7 +771,7 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   String getInfoXYZ() {
-    return getIdentity() + " " + x + " " + y + " " + z;
+    return getIdentity() + " " + x + " " + y + " " + z ;// " ### " + screenX + " " + screenY + " " + screenZ ;
   }
 
   String getIdentity() {

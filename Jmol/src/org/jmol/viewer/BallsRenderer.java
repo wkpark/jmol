@@ -25,6 +25,8 @@
 
 package org.jmol.viewer;
 
+import org.jmol.g3d.*;
+import javax.vecmath.*;
 class BallsRenderer extends ShapeRenderer {
 
   int minX, maxX, minY, maxY, minZ, maxZ;
@@ -65,6 +67,16 @@ class BallsRenderer extends ShapeRenderer {
       }
       if ((atom.shapeVisibilityFlags & myVisibilityFlag) != 0)
         renderBall(atom);
+    }
+
+    if (frame.atomCount > 0 && viewer.getNavigationMode()) {
+      //testing here
+      Point3i S = new Point3i();
+      viewer.transformPoint(viewer.getNavigationCenter(), S);
+      System.out.println("ballsrend atom1, navCenter:" + atoms[0].screenX + " "
+          + atoms[0].screenY + " " + atoms[0].screenZ + " "
+          + viewer.getNavigationCenter() + S);
+      g3d.fillSphereCentered(Graphics3D.GOLD, 6, S.x, S.y, S.z);
     }
   }
 

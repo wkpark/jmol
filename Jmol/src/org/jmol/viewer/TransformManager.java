@@ -867,6 +867,10 @@ class TransformManager {
     unsetNavigationPoint(true);
   }
   
+  boolean getNavigating () {
+    return navigating;
+  }
+  
   Point3f fixedNavigationOffset = new Point3f();
   synchronized void navigate(int keyWhere, int modifiers) {
     if (!isNavigationMode || !navigating && keyWhere == 0)

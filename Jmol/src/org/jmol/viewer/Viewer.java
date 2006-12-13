@@ -3844,6 +3844,10 @@ public class Viewer extends JmolViewer {
     return transformManager.getNavigationCenter();
   }
 
+  boolean getNavigating() {
+    return transformManager.getNavigating();
+  }
+  
   private void setZoomLarge(boolean TF) {
     global.zoomLarge = TF;
     scaleFitToScreen();

@@ -3267,9 +3267,7 @@ class Eval { //implements Runnable {
   void translate() throws ScriptException {
     if (statementLength < 3)
       badArgumentCount();
-    if (statement[2].tok != Token.integer)
-      integerExpected();
-    int percent = statement[2].intValue;
+    float percent = floatParameter(2);
     if (percent > 100 || percent < -100)
       numberOutOfRange(-100, 100);
     if (statement[1].tok == Token.identifier) {

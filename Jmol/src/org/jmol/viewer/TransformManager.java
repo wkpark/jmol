@@ -891,7 +891,7 @@ class TransformManager {
       if ((modifiers & InputEvent.CTRL_MASK) > 0)
         fixedNavigationOffset.y -= 2;
       else if ((modifiers & InputEvent.ALT_MASK) > 0)
-        rotateXRadians(radiansPerDegree * -.2f);
+        rotateXRadians(radiansPerDegree * .2f);
       else
         zoomBy(1);
       break;
@@ -899,7 +899,7 @@ class TransformManager {
       if ((modifiers & InputEvent.CTRL_MASK) > 0)
         fixedNavigationOffset.y += 2;
       else if ((modifiers & InputEvent.ALT_MASK) > 0)
-        rotateXRadians(radiansPerDegree * .2f);
+        rotateXRadians(radiansPerDegree * -.2f);
       else
         zoomBy(-1);
       break;

@@ -904,8 +904,8 @@ class TransformManager {
     case KeyEvent.VK_LEFT:
       if ((modifiers & InputEvent.CTRL_MASK) > 0)
         fixedNavigationOffset.x -= 2;
-      //else
-        //rotateYRadians(radiansPerDegree * 3 * -.2f);
+      else
+        rotateYRadians(radiansPerDegree * 3 * -.2f);
       break;
     case KeyEvent.VK_RIGHT:
       if ((modifiers & InputEvent.CTRL_MASK) > 0)

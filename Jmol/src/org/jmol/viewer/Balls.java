@@ -123,5 +123,15 @@ class Balls extends AtomShape {
       }
     }
     return getShapeCommands(temp, null, atomCount);
-  }  
+  }
+  
+  boolean checkObjectHovered(int x, int y) {
+    //just for debugging
+    if (!viewer.getNavigationMode())
+      return false;
+    viewer.hoverOn(x, y, x + " " + y);
+    return true;
+  }
+
+
 }

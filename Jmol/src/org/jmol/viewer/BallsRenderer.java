@@ -69,7 +69,7 @@ class BallsRenderer extends ShapeRenderer {
         renderBall(atom);
     }
 
-    if (frame.atomCount > 0 && viewer.getNavigating()) {
+    if (frame.atomCount > 0){// && viewer.getNavigating()) {
       //testing here
       Point3f T = new Point3f(viewer.getNavigationCenter());
       g3d.fillSphereCentered(Graphics3D.GOLD, 6, (int)T.x, (int)T.y,(int)T.z);
@@ -95,5 +95,4 @@ class BallsRenderer extends ShapeRenderer {
     g3d.fillSphereCentered(atom.colixAtom, atom.screenDiameter,
                            atom.screenX, atom.screenY, atom.screenZ);
   }
-
 }

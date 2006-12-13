@@ -3835,8 +3835,8 @@ public class Viewer extends JmolViewer {
     return global.navigationMode;
   }
   
-  void navigate(int keyWhere) {
-    transformManager.navigate(keyWhere);
+  void navigate(int keyWhere, int modifiers) {
+    transformManager.navigate(keyWhere, modifiers);
     refresh(1, "Viewer:navigate()");
   }
   

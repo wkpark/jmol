@@ -85,7 +85,7 @@ abstract class MouseManager implements KeyListener {
     case KeyEvent.VK_DOWN:
     case KeyEvent.VK_LEFT:
     case KeyEvent.VK_RIGHT:
-      viewer.navigate(i);
+      viewer.navigate(i, ke.getModifiers());
       break;
     }
   }
@@ -98,7 +98,7 @@ abstract class MouseManager implements KeyListener {
     case KeyEvent.VK_DOWN:
     case KeyEvent.VK_LEFT:
     case KeyEvent.VK_RIGHT:
-      viewer.navigate(0);
+      viewer.navigate(0, 0);
       break;
     }
   }

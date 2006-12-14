@@ -194,13 +194,13 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public void refresh(int isOrientationChange, String strWhy);
 
-  abstract public boolean getBooleanProperty(String propertyName);
-  
-
   abstract public boolean showModelSetDownload();
   
   abstract public void repaintView();
 
+  abstract public boolean getBooleanProperty(String propertyName);
+  abstract public boolean getBooleanProperty(String key, boolean doICare);
+  abstract public Object getParameter(String name);
   abstract public Object getProperty(String returnType, String infoType, String paramInfo);
 
   abstract public String getSetHistory(int howFarBack);

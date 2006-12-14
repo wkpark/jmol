@@ -32,6 +32,7 @@ import javax.vecmath.Vector3f;
 
 import netscape.javascript.JSObject;
 
+import org.jmol.util.Logger;
 import org.xml.sax.*;
 
 /**
@@ -64,7 +65,6 @@ class XmlChem3dReader extends XmlReader {
     this.parent = parent;
     this.reader = reader;
     this.atomSetCollection = atomSetCollection;
-    this.logger = parent.logger;
     new Chem3dHandler(xmlReader);
     parseReaderXML(xmlReader);
   }
@@ -176,7 +176,7 @@ In Chem3D, all grid data in following format:
       surfaceInfo.put("nCubeData", new Integer(nData));
       surfaceInfo.put("voxelData", voxelData);
       atomSetCollection.setAtomSetAuxiliaryInfo("jmolSurfaceInfo", surfaceInfo);
-      logger.log("Chem3D molecular orbital data displayable using:  isosurface sign \"\" ");
+      Logger.debug("Chem3D molecular orbital data displayable using:  isosurface sign \"\" ");
       return;
     }
   }

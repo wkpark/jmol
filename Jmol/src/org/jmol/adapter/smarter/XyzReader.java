@@ -27,6 +27,7 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 
+import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
 /**
@@ -112,7 +113,7 @@ class XyzReader extends AtomSetCollectionReader {
       atom.y = parseFloat(line, ichNextParse);
       atom.z = parseFloat(line, ichNextParse);
       if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
-        logger.log("line cannot be read for XYZ atom data: " + line);
+        Logger.warn("line cannot be read for XYZ atom data: " + line);
         atom.x = 0;
         atom.y = 0;
         atom.z = 0;

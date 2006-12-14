@@ -169,14 +169,14 @@ public class Jmol extends JPanel {
       adapter = "smarter";
     if (adapter.equals("smarter")) {
       report("using Smarter Model Adapter");
-      modelAdapter = new SmarterJmolAdapter(null);
+      modelAdapter = new SmarterJmolAdapter();
     } else if (adapter.equals("cdk")) {
       report("the CDK Model Adapter is currently no longer supported. Check out http://bioclipse.net/. -- using Smarter");
       // modelAdapter = new CdkJmolAdapter(null);
-      modelAdapter = new SmarterJmolAdapter(null);
+      modelAdapter = new SmarterJmolAdapter();
     } else {
       report("unrecognized model adapter:" + adapter + " -- using Smarter");
-      modelAdapter = new SmarterJmolAdapter(null);
+      modelAdapter = new SmarterJmolAdapter();
     }
 
     viewer = JmolViewer.allocateViewer(display, modelAdapter);

@@ -168,7 +168,7 @@ class XmlReader extends AtomSetCollectionReader {
   void processXml(XMLReader xmlReader) throws Exception {
     String xmlType = getXmlType(reader);
     atomSetCollection = new AtomSetCollection(xmlType);
-    logger.log("XmlReader thinks", xmlType);
+    Logger.debug("XmlReader thinks " + xmlType);
     if (xmlType.indexOf("cml(xml)") >= 0) {
       subReader = new XmlCmlReader(this, atomSetCollection, reader, xmlReader);
       return;
@@ -249,7 +249,7 @@ class XmlReader extends AtomSetCollectionReader {
     if (DOMNode == null)
       throw new RuntimeException("Not a node");
     String xmlType = getXmlType(DOMNode);
-    logger.log("XmlReader thinks", xmlType);
+    Logger.debug("XmlReader thinks " + xmlType);
     atomSetCollection = new AtomSetCollection(xmlType);
     if (xmlType.indexOf("cml(DOM)") >= 0) {
       subReader = new XmlCmlReader(this, atomSetCollection, DOMNode);

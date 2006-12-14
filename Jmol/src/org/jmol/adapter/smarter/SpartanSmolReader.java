@@ -68,7 +68,7 @@ class SpartanSmolReader extends AtomSetCollectionReader {
         }
         if (line.equals("BEGINARCHIVE")
             || line.equals("BEGIN Compound Document Entry: Archive")) {
-          spartanArchive = new SpartanArchive(this, logger, atomSetCollection,
+          spartanArchive = new SpartanArchive(this, atomSetCollection,
               moData, bondData);
           bondData = null;
           readArchiveHeader();
@@ -102,10 +102,10 @@ class SpartanSmolReader extends AtomSetCollectionReader {
   void readArchiveHeader()
       throws Exception {
     String modelInfo = readLine();
-    logger.log(modelInfo);
+    Logger.debug(modelInfo);
     atomSetCollection.setCollectionName(modelInfo);
     modelName = readLine();
-    logger.log(modelName);
+    Logger.debug(modelName);
     //    5  17  11  18   0   1  17   0 RHF      3-21G(d)           NOOPT FREQ
     readLine();
   }

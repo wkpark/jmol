@@ -65,11 +65,9 @@ public abstract class JmolAdapter {
 
 
   String adapterName;
-  public Logger logger;
 
-  public JmolAdapter(String adapterName, Logger logger) {
+  public JmolAdapter(String adapterName) {
     this.adapterName = adapterName;
-    this.logger = (logger == null ? new Logger() : logger);
   }
 
   
@@ -95,20 +93,7 @@ public abstract class JmolAdapter {
    */
   public Object openBufferedReader(String name,
                                    BufferedReader bufferedReader) {
-    return openBufferedReader(name, bufferedReader, null, null);
-  }
-
-  /**
-   * @param name File name, String or URL acting as the source of the reader
-   * @param bufferedReader The BufferedReader
-   * @param logger The logger
-   * @return The clientFile or String with an error message
-   * @see #openBufferedReader(String, BufferedReader)
-   */
-  public Object openBufferedReader(String name,
-                                   BufferedReader bufferedReader,
-                                   Logger logger) {
-    return openBufferedReader(name, bufferedReader, null, null);
+    return openBufferedReader(name, bufferedReader, null);
   }
 
   /**
@@ -120,19 +105,6 @@ public abstract class JmolAdapter {
    */
   public Object openBufferedReader(String name,
                                    BufferedReader bufferedReader, int[] params) {
-    return openBufferedReader(name, bufferedReader, null, params);
-  }
-
-  /**
-   * @param name File name, String or URL acting as the source of the reader
-   * @param bufferedReader The BufferedReader
-   * @param logger The logger
-   * @param params Optional integer parameters
-   * @return The clientFile or String with an error message
-   * @see #openBufferedReader(String, BufferedReader)
-   */
-  public Object openBufferedReader(String name,
-                                   BufferedReader bufferedReader, Logger logger, int[] params) {
     return null;
   }
 
@@ -160,27 +132,10 @@ public abstract class JmolAdapter {
    */
   public Object openBufferedReaders(String[] name,
                                     BufferedReader[] bufferedReader) {
-    return openBufferedReaders(name, bufferedReader, null);
-  }
-
-  /**
-   * @param name File names, String or URL acting as the source of each reader
-   * @param bufferedReader The array of BufferedReader
-   * @param logger The logger
-   * @return The clientFile or String with an error message
-   * @see #openBufferedReaders(String[], BufferedReader[])
-   */
-  public Object openBufferedReaders(String[] name,
-                                    BufferedReader[] bufferedReader,
-                                    Logger logger) {
     return null;
   }
 
   public Object openDOMReader(Object DOMNode) {
-    return openDOMReader(DOMNode, null);
-  }
-
-  public Object openDOMReader(Object DOMNode, Logger logger) {
     return null;
   }
 
@@ -444,23 +399,6 @@ public abstract class JmolAdapter {
     public abstract char getEndInsertionCode();
   }
   
-  /**
-   * Logger that writes to stdout
-   */
-  public class Logger { // default logger will log to stdout
-    public boolean isLogging() { return true; }
-    public void log(String str1) {
-      org.jmol.util.Logger.info(adapterName + ":" + str1);
-    }
-    public void log(String str1, Object obj1) {
-      org.jmol.util.Logger.info(adapterName + ":" + str1 + ":" + obj1);
-    }
-    public void log(String str1, Object obj1, Object obj2) {
-      org.jmol.util.Logger.info(adapterName + ":" + str1 + ":"
-                         + obj1 + ":" + obj2);
-    }
-  }
-
   //////////////////////////////////////////////////////////////////
   // range-checking routines
   /////////////////////////////////////////////////////////////////

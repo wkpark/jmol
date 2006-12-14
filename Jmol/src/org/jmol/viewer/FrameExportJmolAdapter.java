@@ -33,7 +33,7 @@ final public class FrameExportJmolAdapter extends JmolAdapter {
   Frame frame;
 
   FrameExportJmolAdapter(Viewer viewer, Frame frame) {
-    super("FrameExportJmolAdapter", null);
+    super("FrameExportJmolAdapter");
     this.viewer = viewer;
     this.frame = frame;
   }

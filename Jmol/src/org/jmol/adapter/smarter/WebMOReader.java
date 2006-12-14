@@ -85,10 +85,8 @@ class WebMOReader extends AtomSetCollectionReader {
       }
     } catch (Exception e) {
       Logger.error("Could not read file at line: " + line, e);
-      //TODO: Why this?
-      //new NullPointerException();
     }
-    logger.log(orbitals.size() + " molecular orbitals read");
+    Logger.debug(orbitals.size() + " molecular orbitals read");
     moData.put("mos", orbitals);
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
     return atomSetCollection;
@@ -212,8 +210,7 @@ class WebMOReader extends AtomSetCollectionReader {
       if (tokens.length == 0)
         continue;
       if (tokens.length != 1) {
-        logger.log("Error reading GTOs: missing atom index");
-        new NullPointerException();
+        Logger.error("Error reading GTOs: missing atom index");
       }
       Hashtable slater = new Hashtable();
       atomIndex = parseInt(tokens[0]) - 1;
@@ -240,8 +237,8 @@ class WebMOReader extends AtomSetCollectionReader {
       garray[i]=(float[])gdata.get(i);
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
-    logger.log(sdata.size() + " slater shells read");
-    logger.log(garray.length + " gaussian primitives read");
+    Logger.debug(sdata.size() + " slater shells read");
+    Logger.debug(garray.length + " gaussian primitives read");
   }
 
   void readSlaterBasis() throws Exception {

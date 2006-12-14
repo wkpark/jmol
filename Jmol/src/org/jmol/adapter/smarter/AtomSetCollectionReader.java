@@ -24,8 +24,6 @@
 
 package org.jmol.adapter.smarter;
 
-
-import org.jmol.api.JmolAdapter;
 import org.jmol.symmetry.SpaceGroup;
 import org.jmol.symmetry.UnitCell;
 import org.jmol.util.Logger;
@@ -77,15 +75,10 @@ import java.io.BufferedReader;
 
 abstract class AtomSetCollectionReader extends Parser {
   AtomSetCollection atomSetCollection;
-  JmolAdapter.Logger logger;
   BufferedReader reader;
   String line;
 
   final static float ANGSTROMS_PER_BOHR = 0.5291772f;
-
-  void setLogger(JmolAdapter.Logger logger) {
-    this.logger = logger;
-  }
 
   int desiredModelNumber;
   int modelNumber;
@@ -220,7 +213,7 @@ abstract class AtomSetCollectionReader extends Parser {
     } else {
       atomSetCollection.setCollectionName(name);
     }
-    logger.log(name);
+    Logger.debug(name);
   }
 
   void setSpaceGroupName(String name) {
@@ -244,8 +237,7 @@ abstract class AtomSetCollectionReader extends Parser {
     if (i >= 6 && Float.isNaN(notionalUnitCell[6]))
       initializeCartesianToFractional();
     notionalUnitCell[i] = x;
-    if (logger != null)
-      logger.log("setunitcellitem " + i + " " + x);
+    Logger.debug("setunitcellitem " + i + " " + x);
     if (i < 6)
       iHaveUnitCell = checkUnitCell(6);
     else

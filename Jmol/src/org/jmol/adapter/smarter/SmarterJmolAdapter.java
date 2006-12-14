@@ -33,8 +33,8 @@ import java.util.BitSet;
 
 public class SmarterJmolAdapter extends JmolAdapter {
 
-  public SmarterJmolAdapter(Logger logger) {
-    super("SmarterJmolAdapter", logger);
+  public SmarterJmolAdapter() {
+    super("SmarterJmolAdapter");
   }
 
   /* **************************************************************
@@ -60,7 +60,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
                                    BufferedReader bufferedReader, int[] params) {
     try {
       Object atomSetCollectionOrErrorMessage =
-        Resolver.resolve(name, bufferedReader, logger, params);
+        Resolver.resolve(name, bufferedReader, params);
       if (atomSetCollectionOrErrorMessage instanceof String)
         return atomSetCollectionOrErrorMessage;
       if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {
@@ -85,7 +85,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     for (int i = 0; i < size; i++) {
       try {
         Object atomSetCollectionOrErrorMessage =
-          Resolver.resolve(name[i], bufferedReader[i], logger);
+          Resolver.resolve(name[i], bufferedReader[i]);
         if (atomSetCollectionOrErrorMessage instanceof String)
           return atomSetCollectionOrErrorMessage;
         if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {
@@ -111,7 +111,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
   public Object openDOMReader(Object DOMNode) {
     try {
       Object atomSetCollectionOrErrorMessage = 
-        Resolver.DOMResolve(DOMNode, logger);
+        Resolver.DOMResolve(DOMNode);
       if (atomSetCollectionOrErrorMessage instanceof String)
         return atomSetCollectionOrErrorMessage;
       if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {

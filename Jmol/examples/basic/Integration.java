@@ -90,7 +90,7 @@ public class Integration {
     JmolSimpleViewer viewer;
     JmolAdapter adapter;
     JmolPanel() {
-      adapter = new SmarterJmolAdapter(null);
+      adapter = new SmarterJmolAdapter();
       viewer = JmolSimpleViewer.allocateSimpleViewer(this, adapter);
     }
 

@@ -45,7 +45,7 @@ public class JmolScreensaver extends SimpleScreensaver
   public void init() {
     ScreensaverContext context = getContext();
     Component c = context.getComponent();
-    adapter = new SmarterJmolAdapter(null);
+    adapter = new SmarterJmolAdapter();
     viewer = JmolViewer.allocateViewer(c, adapter);
     viewer.evalStringQuiet(
         "load C:\\Program Files\\Folding@Home\\v1\\work\\current.xyz");

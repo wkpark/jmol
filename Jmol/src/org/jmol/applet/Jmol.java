@@ -155,8 +155,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
     // to enable CDK
     // viewer = new JmolViewer(this, new CdkJmolAdapter(null));
-    viewer = JmolViewer.allocateViewer(appletWrapper, new SmarterJmolAdapter(
-        null));
+    viewer = JmolViewer.allocateViewer(appletWrapper, new SmarterJmolAdapter());
     viewer.setAppletContext(htmlName, appletWrapper.getDocumentBase(), appletWrapper
         .getCodeBase(), getValue("JmolAppletProxy", null));
     myStatusListener = new MyStatusListener();

@@ -80,10 +80,7 @@ class GamessReader extends AtomSetCollectionReader {
         readLine();
       }
     } catch (Exception e) {
-      logger.log(e + " at line: " + line);
-      Logger.error(null, e);
-      //TODO: Why this ?
-      //new NullPointerException();
+      Logger.error("Error at line: " + line, e);
     }
     if (atomSetCollection.atomCount == 0) {
       atomSetCollection.errorMessage = "No atoms in file";
@@ -223,8 +220,8 @@ class GamessReader extends AtomSetCollectionReader {
     }
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
-    logger.log(shellCount + " slater shells read");
-    logger.log(gaussianCount + " gaussian primitives read");
+    Logger.debug(shellCount + " slater shells read");
+    Logger.debug(gaussianCount + " gaussian primitives read");
   }
 
   /*
@@ -277,7 +274,7 @@ class GamessReader extends AtomSetCollectionReader {
       for (int i = 0; i < nThisLine; i++)
         data[i].add(tokens[i + 4]);
     }
-    logger.log(orbitals.size() + " molecular orbitals read in model " + modelNumber);
+    Logger.debug(orbitals.size() + " molecular orbitals read in model " + modelNumber);
   }
 
   void readFrequencies() throws Exception {

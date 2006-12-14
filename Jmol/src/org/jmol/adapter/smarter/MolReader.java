@@ -26,6 +26,7 @@ package org.jmol.adapter.smarter;
 
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.Logger;
 
 import java.io.BufferedReader;
 
@@ -146,7 +147,7 @@ class MolReader extends AtomSetCollectionReader {
     while (readLine() != null && !line.startsWith("$HDR")) {
     }
     if (line == null) {
-      logger.log("$HDR not found in MDL RG file");
+      Logger.warn("$HDR not found in MDL RG file");
       return;
     }
     readLine();

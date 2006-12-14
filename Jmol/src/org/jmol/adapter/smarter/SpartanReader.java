@@ -54,7 +54,7 @@ class SpartanReader extends AtomSetCollectionReader {
     String cartesianHeader = "Cartesian Coordinates (Ang";
     try {
       if (isSpartanArchive(cartesianHeader)) {
-        SpartanArchive spartanArchive = new SpartanArchive(this, logger,
+        SpartanArchive spartanArchive = new SpartanArchive(this,
             atomSetCollection, moData);
         atomCount = spartanArchive.readArchive(line, true);
         if (atomCount > 0)

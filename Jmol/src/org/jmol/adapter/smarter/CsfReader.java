@@ -27,6 +27,8 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 import java.util.Hashtable;
 
+import org.jmol.util.Logger;
+
 /**
  * CSF file reader based on CIF idea -- fluid property fields.
  *
@@ -209,7 +211,7 @@ class CsfReader extends AtomSetCollectionReader {
       for (int i = 0; i < fieldCount; i++) {
         String field = tokens[i];
         if (field == null)
-          logger.log("field == null in " + line);
+          Logger.warn("field == null in " + line);
         switch (fieldTypes[i]) {
         case NONE:
           break;
@@ -230,10 +232,9 @@ class CsfReader extends AtomSetCollectionReader {
           break;
         }
       }
-      if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z))
-        logger
-            .log("atom " + atom.atomName + " has invalid/unknown coordinates");
-      else {
+      if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
+        Logger.warn("atom " + atom.atomName + " has invalid/unknown coordinates");
+      } else {
         nAtoms++;
         atomSetCollection.addAtomWithMappedName(atom);
       }
@@ -288,7 +289,7 @@ class CsfReader extends AtomSetCollectionReader {
           else if (field.equals("triple"))
             order = 3;
           else
-            logger.log("unknown CSF bond order: " + field);
+            Logger.warn("unknown CSF bond order: " + field);
           String[] connect = (String[]) connectors.get(thisBondID);
           Bond bond = new Bond();
           bond.atomIndex1 = atomSetCollection.getAtomNameIndex(connect[0]);

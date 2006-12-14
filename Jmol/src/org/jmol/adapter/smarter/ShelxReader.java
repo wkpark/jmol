@@ -27,6 +27,7 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Logger;
 
 /**
  * A reader for SHELX output (RES) files. It does not read all information.
@@ -249,7 +250,7 @@ class ShelxReader extends AtomSetCollectionReader {
       }
       setAtomCoord(atom, a, b, c);
     } catch (Exception ex) {
-      logger.log("Exception", ex, line);
+      Logger.error("Exception at line: " + line, ex);
     }
   }
 

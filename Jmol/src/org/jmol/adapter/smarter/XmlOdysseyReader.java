@@ -58,7 +58,6 @@ class XmlOdysseyReader extends XmlReader {
     this.parent = parent;
     this.reader = reader;
     this.atomSetCollection = atomSetCollection;
-    this.logger = parent.logger;
     new OdysseyHandler(xmlReader);
     parseReaderXML(xmlReader);
   }

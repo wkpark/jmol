@@ -230,7 +230,7 @@ class JmolPanel extends JPanel {
     JmolViewer viewer;
     JmolAdapter adapter;
     JmolPanel() {
-        adapter = new SmarterJmolAdapter(null);
+        adapter = new SmarterJmolAdapter();
         viewer = JmolViewer.allocateViewer(this, adapter);
     }
 

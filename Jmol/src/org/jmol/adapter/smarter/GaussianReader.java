@@ -147,7 +147,7 @@ class GaussianReader extends AtomSetCollectionReader {
             continue;
           }
           equivalentAtomSets++;
-          logger.log(" model " + modelNumber + " step " + stepNumber
+          Logger.debug(" model " + modelNumber + " step " + stepNumber
               + " equivalentAtomSet " + equivalentAtomSets + " calculation "
               + calculationNumber + " scan point " + scanPoint + line);
           readAtoms();
@@ -166,12 +166,12 @@ class GaussianReader extends AtomSetCollectionReader {
           // dummy atoms in the z-matrix
           readPartialCharges();
         } else if (iHaveAtoms && line.startsWith(" Standard basis:")) {
-          logger.log(line);
+          Logger.debug(line);
           moData.put("energyUnits", "");
           moData.put("calculationType", line.substring(17).trim());
         } else if (iHaveAtoms
             && line.startsWith(" General basis read from cards:")) {
-          logger.log(line);
+          Logger.debug(line);
           moData.put("energyUnits", "");
           moData.put("calculationType", line.substring(31).trim());
         } else if (iHaveAtoms && line.startsWith(" AO basis set:")) {
@@ -180,7 +180,7 @@ class GaussianReader extends AtomSetCollectionReader {
         } else if (iHaveAtoms
             && line.indexOf("Molecular Orbital Coefficients") >= 0) {
           readMolecularOrbitals();
-          logger.log(orbitals.size() + " molecular orbitals read");
+          Logger.debug(orbitals.size() + " molecular orbitals read");
           moData.put("mos", orbitals);
           atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
         } else if (line.startsWith(" Normal termination of Gaussian")) {
@@ -356,8 +356,8 @@ class GaussianReader extends AtomSetCollectionReader {
     }
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
-    logger.log(shellCount + " slater shells read");
-    logger.log(gaussianCount + " gaussian primitives read");
+    Logger.debug(shellCount + " slater shells read");
+    Logger.debug(gaussianCount + " gaussian primitives read");
   }
   
   /*

@@ -54,7 +54,6 @@ class XmlMolproReader extends XmlCmlReader {
     this.parent = parent;
     this.reader = reader;
     this.atomSetCollection = atomSetCollection;
-    this.logger = parent.logger;
     new MolproHandler(xmlReader);
     parseReaderXML(xmlReader);
   }

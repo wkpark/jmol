@@ -24,9 +24,6 @@
 
 package org.jmol.adapter.smarter;
 
-
-import org.jmol.api.JmolAdapter;
-
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
 import org.jmol.util.Logger;
@@ -41,19 +38,18 @@ class Resolver {
     }
   }
   
-  static Object resolve(String name, BufferedReader bufferedReader,
-                        JmolAdapter.Logger logger) throws Exception {
-    return resolve(name, bufferedReader, logger, null);
+  static Object resolve(String name, BufferedReader bufferedReader) throws Exception {
+    return resolve(name, bufferedReader, null);
   }
 
   static Object resolve(String name, BufferedReader bufferedReader,
-                        JmolAdapter.Logger logger, int[] params) throws Exception {
+                        int[] params) throws Exception {
     AtomSetCollectionReader atomSetCollectionReader;
     String atomSetCollectionReaderName =
       determineAtomSetCollectionReader(bufferedReader);
     if (atomSetCollectionReaderName == null)
       return "unrecognized file format for file " + name;
-    logger.log("The Resolver thinks", atomSetCollectionReaderName);
+    Logger.debug("The Resolver thinks " + atomSetCollectionReaderName);
     String className =
       "org.jmol.adapter.smarter." + atomSetCollectionReaderName + "Reader";
     try {
@@ -62,10 +58,9 @@ class Resolver {
         (AtomSetCollectionReader)atomSetCollectionReaderClass.newInstance();
     } catch (Exception e) {
       String err = "Could not instantiate:" + className;
-      logger.log(err);
+      Logger.error(err, e);
       return err;
     }
-    atomSetCollectionReader.setLogger(logger);
     atomSetCollectionReader.initialize(params);
     AtomSetCollection atomSetCollection =
       atomSetCollectionReader.readAtomSetCollection(bufferedReader);
@@ -74,10 +69,9 @@ class Resolver {
     return finalize(atomSetCollection, "file " + name);
   }
 
-  static Object DOMResolve(Object DOMNode, JmolAdapter.Logger logger) throws Exception {
+  static Object DOMResolve(Object DOMNode) throws Exception {
     AtomSetCollectionReader atomSetCollectionReader = new XmlReader();
 
-    atomSetCollectionReader.setLogger(logger);
     atomSetCollectionReader.initialize();
 
     AtomSetCollection atomSetCollection =

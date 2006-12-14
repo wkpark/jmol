@@ -269,7 +269,7 @@ class PdbReader extends AtomSetCollectionReader {
       }
 
     } catch (NumberFormatException e) {
-      logger.log("bad record", "" + line);
+      Logger.warn("bad record at line:" + line);
     }
   }
 
@@ -484,7 +484,7 @@ class PdbReader extends AtomSetCollectionReader {
     if (htName != null)
       return;
     htHetero.put(groupName, hetName);
-    logger.log("het: "+groupName);
+    Logger.debug("het: "+groupName);
   }
   
   void hetnam() {
@@ -496,7 +496,7 @@ class PdbReader extends AtomSetCollectionReader {
     if (htName != null)
       hetName = htName + hetName;
     htHetero.put(groupName, hetName);
-    logger.log("hetero: "+groupName+" "+hetName);
+    Logger.debug("hetero: "+groupName+" "+hetName);
   }
   
   void applySymmetry() {

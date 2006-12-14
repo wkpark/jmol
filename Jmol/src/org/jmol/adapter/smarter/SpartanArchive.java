@@ -24,13 +24,11 @@
 
 package org.jmol.adapter.smarter;
 
-
 import java.io.BufferedReader;
 import java.util.Vector;
 import java.util.Hashtable;
 import javax.vecmath.Vector3f;
 
-import org.jmol.api.JmolAdapter;
 import org.jmol.util.Logger;
 
 class SpartanArchive {
@@ -45,26 +43,24 @@ class SpartanArchive {
   BufferedReader reader;
   String line;
 
-  JmolAdapter.Logger logger;
   AtomSetCollection atomSetCollection;
   AtomSetCollectionReader r;
   Hashtable moData;
   Vector orbitals = new Vector();
 
-  SpartanArchive(AtomSetCollectionReader r, JmolAdapter.Logger logger,
+  SpartanArchive(AtomSetCollectionReader r,
       AtomSetCollection atomSetCollection, Hashtable moData) {
-    initialize(r, logger, atomSetCollection, moData, "");
+    initialize(r, atomSetCollection, moData, "");
   }
 
-  SpartanArchive(AtomSetCollectionReader r, JmolAdapter.Logger logger,
+  SpartanArchive(AtomSetCollectionReader r,
       AtomSetCollection atomSetCollection, Hashtable moData, String bondData) {
-    initialize(r, logger, atomSetCollection, moData, bondData);
+    initialize(r, atomSetCollection, moData, bondData);
   }
 
-  private void initialize(AtomSetCollectionReader r, JmolAdapter.Logger logger,
+  private void initialize(AtomSetCollectionReader r,
                           AtomSetCollection atomSetCollection,
                           Hashtable moData, String bondData) {
-    this.logger = logger;
     this.r = r;
     this.reader = r.reader;
     this.atomSetCollection = atomSetCollection;
@@ -96,8 +92,6 @@ class SpartanArchive {
       }
     } catch (Exception e) {
       Logger.error("Spartan archive reader error on line: " + line, e);
-      //TODO: Why this?
-      //new Exception(e);
     }
     return atomCount;
   }
@@ -119,7 +113,7 @@ class SpartanArchive {
     //    0   1  2   3    4   5   6   7  8        9
 
     String[] tokens = getTokens(info);
-    logger.log("reading Spartan archive info :" + info);
+    Logger.debug("reading Spartan archive info :" + info);
     atomCount = parseInt(tokens[0]);
     moCount = parseInt(tokens[1]);
     shellCount = parseInt(tokens[2]);
@@ -144,7 +138,7 @@ class SpartanArchive {
       atom.y = y * AtomSetCollectionReader.ANGSTROMS_PER_BOHR;
       atom.z = z * AtomSetCollectionReader.ANGSTROMS_PER_BOHR;
     }
-    logger.log(atomCount + " atoms read");
+    Logger.debug(atomCount + " atoms read");
   }
 
   void addBonds(String data) {
@@ -176,7 +170,7 @@ class SpartanArchive {
         bondCount++;
       }
     }
-    logger.log(bondCount + " bonds read");
+    Logger.debug(bondCount + " bonds read");
   }
 
   void readBasis() throws Exception {
@@ -260,8 +254,8 @@ class SpartanArchive {
     }
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
-    logger.log(sdata.size() + " slater shells read");
-    logger.log(garray.length + " gaussian primitives read");
+    Logger.debug(sdata.size() + " slater shells read");
+    Logger.debug(garray.length + " gaussian primitives read");
   }
 
   void readMolecularOrbital() throws Exception {
@@ -292,12 +286,12 @@ class SpartanArchive {
       mo.put("coefficients", coefficients[i]);
       orbitals.add(mo);
     }
-    logger.log(orbitals.size() + " molecular orbitals read");
+    Logger.debug(orbitals.size() + " molecular orbitals read");
     moData.put("mos", orbitals);
   }
 
   void readProperties() throws Exception {
-    logger.log("Reading PROPARC properties records...");
+    Logger.debug("Reading PROPARC properties records...");
     while (readLine() != null
         && (line.length() < 10 || !line.substring(0, 10).equals("ENDPROPARC"))) {
       if (line.length() >= 4 && line.substring(0, 4).equals("PROP"))
@@ -364,7 +358,7 @@ class SpartanArchive {
       }
       value = null;
     } else {
-      logger.log(" Skipping property line " + line);
+      Logger.debug(" Skipping property line " + line);
     }
     //Logger.debug(keyName + " = " + value + " ; " + vector);
     if (value != null)
@@ -381,7 +375,7 @@ class SpartanArchive {
     int frequencyCount = parseInt(line);
     Vector vibrations = new Vector();
     Vector freqs = new Vector();
-    logger.log("reading VIBFREQ vibration records: frequencyCount = "
+    Logger.debug("reading VIBFREQ vibration records: frequencyCount = "
         + frequencyCount);
     for (int i = 0; i < frequencyCount; ++i) {
       int atomCount0 = atomSetCollection.atomCount;

@@ -402,17 +402,17 @@ class TransformManager {
     // mouse action only
     fixedTranslation.x += xDelta;
     fixedTranslation.y += yDelta;
-    unsetNavigationPoint(false);
+    //unsetNavigationPoint(false);
   }
 
   void translateToXPercent(float percent) {
     fixedTranslation.x = (width / 2) + width * percent / 100;
-    unsetNavigationPoint(false);
+    //unsetNavigationPoint(false);
   }
 
   void translateToYPercent(float percent) {
     fixedTranslation.y = (height / 2) + height * percent / 100;
-    unsetNavigationPoint(false);
+    //unsetNavigationPoint(false);
   }
 
   void translateToZPercent(float percent) {
@@ -444,7 +444,7 @@ class TransformManager {
 
   void translateCenterTo(int x, int y) {
     fixedTranslation.set(x, y, 0);
-    unsetNavigationPoint(false);
+    //unsetNavigationPoint(false);
   }
 
   String getOrientationText() {
@@ -507,7 +507,7 @@ class TransformManager {
     zoomToPercent(percent);
   }
 
-  Point3f getNavigationCenter() {
+  Point3f getNavigationOffset() {
     return fixedNavigationOffset;
   }
   
@@ -810,7 +810,6 @@ class TransformManager {
     float factor = (z <= 0? cameraDistanceFloat : cameraDistanceFloat / z);
     if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
       factor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)/(MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH) * (1 - factor);
-    //System.out.println(z+" "+cameraDistanceFloat + " " + factor);
     return factor;  
   }
   
@@ -866,50 +865,54 @@ class TransformManager {
   }
   
   Point3f fixedNavigationOffset = new Point3f();
+  Point3f newNavigationOffset = new Point3f();
+  
   synchronized void navigate(int keyWhere, int modifiers) {
     if (!isNavigationMode)
       return;
     if (keyWhere == 0) {
       if (!navigating)
         return;
-      
-      transformPoint(fixedRotationCenter, fixedTranslation);
-      System.out.println("setting xyfixed to" + fixedTranslation);
       navigating = false;
       return;
     }
     if (!navigating) {
-      if (Float.isNaN(ptNav.y)) {
+      if (Float.isNaN(ptNav.x)) {
         transformPoint(fixedRotationCenter, fixedNavigationOffset);
-        System.out.println("now navigationOffset is" + point3fScreenTemp);
       }
     }
+    boolean isOffsetShifted = ((modifiers & InputEvent.SHIFT_MASK) > 0);
+    newNavigationOffset.set(fixedNavigationOffset);
     switch (keyWhere) {
     case KeyEvent.VK_UP:
-      if ((modifiers & InputEvent.CTRL_MASK) > 0)
-        fixedNavigationOffset.y -= 2;
+      if (isOffsetShifted)
+        newNavigationOffset.y -= 2;
       else if ((modifiers & InputEvent.ALT_MASK) > 0)
         rotateXRadians(radiansPerDegree * .2f);
-      else
+      else {
+        ptNav.z = Float.NaN;
         zoomBy(1);
+      }
       break;
     case KeyEvent.VK_DOWN:
-      if ((modifiers & InputEvent.CTRL_MASK) > 0)
-        fixedNavigationOffset.y += 2;
+      if (isOffsetShifted)
+        newNavigationOffset.y += 2;
       else if ((modifiers & InputEvent.ALT_MASK) > 0)
         rotateXRadians(radiansPerDegree * -.2f);
-      else
+      else {
+        ptNav.z = Float.NaN;
         zoomBy(-1);
+      }
       break;
     case KeyEvent.VK_LEFT:
-      if ((modifiers & InputEvent.CTRL_MASK) > 0)
-        fixedNavigationOffset.x -= 2;
+      if (isOffsetShifted)
+        newNavigationOffset.x -= 2;
       else
         rotateYRadians(radiansPerDegree * 3 * -.2f);
       break;
     case KeyEvent.VK_RIGHT:
-      if ((modifiers & InputEvent.CTRL_MASK) > 0)
-        fixedNavigationOffset.x += 2;
+      if (isOffsetShifted)
+        newNavigationOffset.x += 2;
       else
         rotateYRadians(radiansPerDegree * 3 * .2f);
       break;
@@ -917,71 +920,92 @@ class TransformManager {
       navigating = false;
       return;
     }
+    if (isOffsetShifted)
+      ptNav.y = Float.NaN;
     navigating = true;
   }
 
   void unsetNavigationPoint(boolean getNew) {
-    if(getNew)
-      ptNav.y = Float.NaN;
-    else
-      ptNav.x = Float.NaN;
-    //unnecessary
+    ptNav.x = Float.NaN;
   }
   
   void recenterNavigationPoint() {
     //find rotationRadius in screen coordinates at z of fixedRotationCenter
-    isNavigationMode = false;
-    boolean isReset = Float.isNaN(ptNav.y);
-    //boolean isNew = Float.isNaN(ptNav.y) || Float.isNaN(ptNav.x);
-    transformPoint(fixedRotationCenter);
-    if (isReset)
-      fixedNavigationOffset.set(point3fScreenTemp);
-    int x = scaleToScreen(point3iScreenTemp.z, (int) (rotationRadius * 1000));
-    //calculate the apparent z viewing position
-    float calc = (2f * viewer.getScreenWidth() - x / 4) / x;
-    if (calc < 0)
-      calc = 1 - (float) Math.exp(-calc * 3);
-    //calculate the viewing vector, and new z position
-    ptNav.set(point3fScreenTemp);
-    ptNav.z += 1000;
-    unTransformPoint(ptNav, pointT);
-    vectorT.sub(fixedRotationCenter, pointT);
-    vectorT.normalize();
-    vectorT.scale(rotationRadius);
-    vectorT.scale(calc);
-    pointT.set(fixedRotationCenter);
-    pointT.add(vectorT);
-    transformPoint(pointT);
-    fixedNavigationOffset.z = point3fScreenTemp.z;
-    isNavigationMode = true;
+    boolean isReset = Float.isNaN(ptNav.x);
+    boolean isNewXY = Float.isNaN(ptNav.y);
+    boolean isNewZ = Float.isNaN(ptNav.z);
+    if (isReset || isNewZ) {
+      isNavigationMode = false;
+      transformPoint(fixedRotationCenter, ptNav);
+      int x = scaleToScreen(point3iScreenTemp.z, (int) (rotationRadius * 1000));
+      //calculate the apparent z viewing position
+      float calc = (2f * viewer.getScreenWidth() - x / 4) / x;
+      if (calc < 0)
+        calc = 1 - (float) Math.exp(-calc * 3);
+      //calculate the viewing vector, and new z position
+      ptNav.z += 1000;
+      unTransformPoint(ptNav, pointT);
+      vectorT.sub(fixedRotationCenter, pointT);
+      vectorT.normalize();
+      vectorT.scale(rotationRadius);
+      vectorT.scale(calc);
+      pointT.set(fixedRotationCenter);
+      pointT.add(vectorT);
+      transformPoint(pointT);
+      ptNav.z = point3fScreenTemp.z;
+      if (isNewZ) {
+        fixedNavigationOffset.z = ptNav.z;
+      } else {
+        fixedNavigationOffset.set(ptNav);
+      }
+      findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
+      isNavigationMode = true;
+    } else if (isNewXY || !navigating) {
+      if (isNewXY)
+        fixedNavigationOffset.set(newNavigationOffset);
+      findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
+    }
+    ptNav.set(0,0,0);
+    matrixTransform.transform(navigationCenter, referenceOffset);
+    transformPoint(fixedRotationCenter, fixedTranslation);
   }  
 
+  void findCenterAt(Point3f screenXYZ, Point3f modelXYZ, Point3f center) {
+    //we do not want the fixed navigation offset to change
+    //the fixed rotation center is at fixedTranslation
+    //this means that the navigationCenter must be recalculated
+    //based on its former offset in the new context.
+    //alas, we have two points, N(navigation) and R(rotation).
+    //we know where they ARE: fixedNavigationOffset and fixedTranslation
+    //from these we must derive navigationCenter
+    //1) get the Z value of the fixed rotation center and 
+    //   transfer it to a copy of the fixedNavigationOffset
+    isNavigationMode = false;
+    transformPoint(modelXYZ, pointT);
+    pointT.x -= screenXYZ.x;
+    pointT.y -= screenXYZ.y;
+    float f = -perspectiveFactor(pointT.z);
+    pointT.x /= f;
+    pointT.y /= f;
+    pointT.z = screenXYZ.z;
+    matrixTemp.invert(matrixTransform);
+    matrixTemp.transform(pointT, center);
+    isNavigationMode = true;
+  }
+  
   private final Point3f fixedRotationOffset = new Point3f();
   private final Point3f referenceOffset = new Point3f();
+  private final Point3f navigationCenter = new Point3f();
+  
   
   synchronized void finalizeTransformParameters() {
     haveNotifiedNaN = false;
     calcTransformMatrix();
     calcSlabAndDepthValues();
     fixedRotationOffset.set(fixedTranslation);
-    System.out.println("xFixed/yFixed: " + fixedRotationOffset);
+    matrixTransform.transform(navigationCenter,pointT);
     if (isNavigationMode) {
       recenterNavigationPoint();
-      referenceOffset.set(0, 0, 0);
-      fixedRotationOffset.set(0, 0, 0);
-      transformPoint(fixedRotationCenter, referenceOffset);
-      fixedRotationOffset.set(fixedNavigationOffset);
-      fixedRotationOffset.sub(referenceOffset);
-      referenceOffset.set(fixedNavigationOffset);
-      referenceOffset.sub(fixedTranslation);
-      System.out.println("navigating = " + navigating);
-      System.out.println("navigCenter persp offset: " + fixedRotationOffset);
-      System.out.println("fixedCenter refer offset: " + referenceOffset);
-      System.out.println("recenter navigationCenter maps to "
-          + fixedNavigationOffset);
-      transformPoint(fixedRotationCenter);
-      System.out.println("recenter fixedRotationCenter maps to "
-          + point3fScreenTemp);
     }
   }
  
@@ -1081,14 +1105,15 @@ class TransformManager {
     // is either the fixed rotation center or the navigation center
 
     // at this point coordinates are centered on rotation center
+
+    
     if (perspectiveDepth) {
       perspectiveFactor = perspectiveFactor(z);
       if (isNavigationMode) {
-        // move 
+        // move nav center to 0; refOffset = ptNav - ptFixedRot 
         point3fScreenTemp.x -= referenceOffset.x;
         point3fScreenTemp.y -= referenceOffset.y;
       }
-      //System.out.println("perspectiveFactor=" + perspectiveFactor);
       point3fScreenTemp.x *= perspectiveFactor;
       point3fScreenTemp.y *= perspectiveFactor;
     }
@@ -1104,6 +1129,7 @@ class TransformManager {
       point3fScreenTemp.x += fixedRotationOffset.x;
       point3fScreenTemp.y += fixedRotationOffset.y;
     }
+
     if (Float.isNaN(point3fScreenTemp.x) && !haveNotifiedNaN) {
       Logger.debug("NaN found in transformPoint ");
       haveNotifiedNaN = true;
@@ -1112,7 +1138,6 @@ class TransformManager {
     point3iScreenTemp.x = (int) point3fScreenTemp.x;
     point3iScreenTemp.y = (int) point3fScreenTemp.y;
     point3iScreenTemp.z = (int) point3fScreenTemp.z;
-    //System.out.println(cameraDistance + " now " + point3fScreenTemp +"\n");
 
     return point3iScreenTemp;
   }
@@ -1121,7 +1146,7 @@ class TransformManager {
     //draw move2D
     Point3f pt = new Point3f(screenPt.x, screenPt.y, screenPt.z);
     if (isNavigationMode) {
-      //not used (or not correct!)
+      //not used
       pt.x -= fixedNavigationOffset.x;
       pt.y -= fixedNavigationOffset.y; 
     }else {
@@ -1137,9 +1162,8 @@ class TransformManager {
       pt.x += referenceOffset.x;
       pt.y += referenceOffset.y;
     }
-    Matrix4f m = new Matrix4f();
-    m.invert(matrixTransform);
-    m.transform(pt, coordPt);
+    matrixTemp.invert(matrixTransform);
+    matrixTemp.transform(pt, coordPt);
   }
   
   void transformPoint(Point3f pointAngstroms, Point3f screen) {

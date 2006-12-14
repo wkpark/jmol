@@ -3840,8 +3840,8 @@ public class Viewer extends JmolViewer {
     refresh(1, "Viewer:navigate()");
   }
   
-  Point3f getNavigationCenter() {
-    return transformManager.getNavigationCenter();
+  Point3f getNavigationOffset() {
+    return transformManager.getNavigationOffset();
   }
 
   boolean getNavigating() {

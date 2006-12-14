@@ -69,15 +69,16 @@ class BallsRenderer extends ShapeRenderer {
         renderBall(atom);
     }
 
-    if (frame.atomCount > 0){// && viewer.getNavigating()) {
+    if (frame.atomCount > 0 && viewer.getNavigating()) {
       //testing here
-      Point3f T = new Point3f(viewer.getNavigationCenter());
+      Point3f T = new Point3f(viewer.getNavigationOffset());
       g3d.fillSphereCentered(Graphics3D.GOLD, 6, (int)T.x, (int)T.y,(int)T.z);
       //System.out.println("ballsrend navCenter="
-        //  + viewer.getNavigationCenter() + S);
+        //  + viewer.getNavigationOffset() + T);
       Point3i S = new Point3i();
       viewer.transformPoint(viewer.getRotationCenter(), S);
       g3d.fillSphereCentered(Graphics3D.RED, 8, S.x, S.y, S.z);
+      //System.out.println("ballsrend rotCenter="+S);
       //Point3f P = new Point3f();
       //T.set(S.x, S.y, S.z);
       //int x = viewer.scaleToScreen(S.z, (int)(viewer.getRotationRadius()*1000/4));

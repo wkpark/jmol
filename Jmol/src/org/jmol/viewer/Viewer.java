@@ -3027,22 +3027,22 @@ public class Viewer extends JmolViewer {
     statusManager.clearConsole();
   }
 
+  public Object getParameter(String key) {
+   return global.getParameter(key);  
+  }
+
+  public boolean getBooleanProperty(String key) {
+    return getBooleanProperty(key, true);
+  }
+
   /*****************************************************************************
-   * mth 2003 05 31 - needs more work this should be implemented using
-   * properties or as a hashtable using boxed/wrapped values so that the values
-   * could be shared
-   * 
    * @param key
+   * @param doICare  true if you want an error message if it doesn't exist 
    * @return the boolean property mth 2005 06 24 and/or these property names
    *         should be interned strings so that we can just do == comparisions
    *         between strings
    ****************************************************************************/
-
-  String getParameter(String key) {
-   return key + " " + global.getParameter(key);  
-  }
-  
-  public boolean getBooleanProperty(String key) {
+  public boolean getBooleanProperty(String key, boolean doICare) {
     //JmolPopup
     if (key.equalsIgnoreCase("hideNotSelected"))
       return selectionManager.getHideNotSelected();
@@ -3091,11 +3091,12 @@ public class Viewer extends JmolViewer {
     if (key.equalsIgnoreCase("disablePopupMenu"))
       return getDisablePopupMenu();
 
+    key = key.toLowerCase();
     if (global.htPropertyFlags.containsKey(key)) {
       return ((Boolean) global.htPropertyFlags.get(key)).booleanValue();
     }
-
-    Logger.error("viewer.getBooleanProperty(" + key + ") - unrecognized");
+    if (doICare)
+      Logger.error("viewer.getBooleanProperty(" + key + ") - unrecognized");
     return false;
   }
 
@@ -3610,6 +3611,10 @@ public class Viewer extends JmolViewer {
     return true;
   }
 
+  String getAllSettings() {
+    return global.getAllSettings();
+  }
+
   ////////  flags and settings ////////
 
   boolean getDotSurfaceFlag() {
@@ -3745,6 +3750,8 @@ public class Viewer extends JmolViewer {
     global.axesMode = (TF ? JmolConstants.AXES_MODE_MOLECULAR
         : JmolConstants.AXES_MODE_BOUNDBOX);
     axesAreTainted = true;
+    global.removeParameter("axesunitcell");
+    global.removeParameter(TF ? "axeswindow" : "axesmolecular");
   }
 
   void setAxesModeUnitCell(boolean TF) {
@@ -3753,6 +3760,8 @@ public class Viewer extends JmolViewer {
     global.axesMode = (TF ? JmolConstants.AXES_MODE_UNITCELL
         : JmolConstants.AXES_MODE_BOUNDBOX);
     axesAreTainted = true;
+    global.removeParameter("axesmolecular");
+    global.removeParameter(TF ? "axeswindow" : "axesunitcell");
   }
 
   int getAxesMode() {

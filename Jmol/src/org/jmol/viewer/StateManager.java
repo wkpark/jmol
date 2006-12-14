@@ -561,6 +561,15 @@ class StateManager {
       }
     }
 
+    void removeParameter(String key) {
+      if (htPropertyFlags.containsKey(key)) {
+        htPropertyFlags.remove(key);
+        return;
+      }
+      if (htParameterValues.containsKey(key))
+          htParameterValues.remove(key);
+    }
+
     void setParameterValue(String key, boolean value) {
       key = key.toLowerCase();
         htPropertyFlags.put(key, value ? Boolean.TRUE : Boolean.FALSE);  
@@ -592,6 +601,30 @@ class StateManager {
       if (htPropertyFlags.containsKey(name))
         return htPropertyFlags.get(name);
       return "<not set>";
+    }
+    
+    String getAllSettings() {
+      StringBuffer commands = new StringBuffer("");
+      Enumeration e;
+      String key;
+      //booleans
+      e = htPropertyFlags.keys();
+      while (e.hasMoreElements()) {
+        key = (String) e.nextElement();
+        appendCmd(commands, "set " + key + " " + htPropertyFlags.get(key));
+      }
+      //save as _xxxx if you don't want "set" to be there first
+      e = htParameterValues.keys();
+      while (e.hasMoreElements()) {
+        key = (String) e.nextElement();
+        if (key.charAt(0) != '@' && key.charAt(0) != '_') {
+          Object value = htParameterValues.get(key);
+            if (value instanceof String)
+              value = escape((String) value);
+          appendCmd(commands, "set " + key + " " + value);
+        }
+      }
+      return commands + "\n";
     }
     
     String getState() {
@@ -657,7 +690,6 @@ class StateManager {
       }
       return commands + "\n";
     }
-
   }
 
   ///////// state serialization 

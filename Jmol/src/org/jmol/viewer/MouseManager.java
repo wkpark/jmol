@@ -79,13 +79,16 @@ abstract class MouseManager implements KeyListener {
   public void keyPressed(KeyEvent ke) {
     if (!viewer.getNavigationMode())
       return;
-    int i;
-    switch(i = ke.getKeyCode()) {
+    int i = ke.getKeyCode();
+    int m = ke.getModifiers();
+    if (viewer.getBooleanProperty("showKeyStrokes", false))
+      viewer.script("set echo bottom left;echo " + (i == 0 ? "" : i + " " + m));
+    switch (i) {
     case KeyEvent.VK_UP:
     case KeyEvent.VK_DOWN:
     case KeyEvent.VK_LEFT:
     case KeyEvent.VK_RIGHT:
-      viewer.navigate(i, ke.getModifiers());
+      viewer.navigate(i, m);
       break;
     }
   }
@@ -93,7 +96,10 @@ abstract class MouseManager implements KeyListener {
   public void keyReleased(KeyEvent ke) {
     if (!viewer.getNavigationMode())
       return;
-    switch(ke.getKeyCode()) {
+    if (viewer.getBooleanProperty("showKeyStrokes", false))
+      viewer.script("set echo bottom left;echo;");
+    int i = ke.getKeyCode();
+    switch (i) {
     case KeyEvent.VK_UP:
     case KeyEvent.VK_DOWN:
     case KeyEvent.VK_LEFT:
@@ -104,6 +110,7 @@ abstract class MouseManager implements KeyListener {
   }
     
   protected void processKeyEvent(KeyEvent ke) {
+    System.out.println("processKeyEvent"+ke);
   }
 
   Rectangle getRubberBand() {

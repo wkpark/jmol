@@ -1954,11 +1954,12 @@ class Eval { //implements Runnable {
     if (statementLength < 2)
       badArgumentCount();
     if (statementLength == 2 && isFloatParameter(1)) {
-      refresh();
       float f = floatParameter(1);
-      if (!isSyntaxCheck)
-        viewer.moveTo(f, null, new Point3f(0, 0, 1), 0, 100, 0,
-            0, 0);
+      if (isSyntaxCheck)
+        return;
+      if (f > 0)
+        refresh();
+      viewer.moveTo(f, null, new Point3f(0, 0, 1), 0, 100, 0, 0, 0);
       return;
     }
     Point3f pt = new Point3f();
@@ -5092,6 +5093,9 @@ class Eval { //implements Runnable {
     Object value = null;
     String str = (String) statement[1].value;
     switch (statement[1].tok) {
+    case Token.set:
+      showString(viewer.getAllSettings());
+      return;
     case Token.axes:
       switch (viewer.getAxesMode()) {
       case JmolConstants.AXES_MODE_UNITCELL:
@@ -5343,7 +5347,7 @@ class Eval { //implements Runnable {
       return;
     }
     if (str != null)
-      showString("set " + viewer.getParameter(str));
+      showString("set " + str + " " + viewer.getParameter(str));
   }
 
   void showString(String str) {

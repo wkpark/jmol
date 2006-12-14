@@ -33,6 +33,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.awt.datatransfer.Clipboard;
 
+import org.jmol.util.Logger;
+
 /**
  * This class is used to transfer an {@link Image} into the clipboard.
  * 
@@ -132,10 +134,10 @@ public class ImageSelection implements Transferable {
         result = (String) contents.getTransferData(DataFlavor.stringFlavor);
       } catch (UnsupportedFlavorException ex) {
         //highly unlikely since we are using a standard DataFlavor
-        System.out.println(ex);
+        Logger.error("Clipboard problem", ex);
         ex.printStackTrace();
       } catch (IOException ex) {
-        System.out.println(ex);
+        Logger.error("Clipboard problem", ex);
         ex.printStackTrace();
       }
     }

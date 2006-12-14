@@ -32,6 +32,7 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JCheckBox;
 
 import org.jmol.i18n.GT;
+import org.jmol.util.Logger;
 
 class GuiMap {
 
@@ -190,7 +191,7 @@ class GuiMap {
     if (label == null)
     // Use the previous system as backup
     if (label == null) {
-      System.out.println("Missing i18n menu resource, trying old scheme for: " +key);
+      Logger.warn("Missing i18n menu resource, trying old scheme for: " +key);
       JmolResourceHandler.getStringX(key+"Label");
     }
     return label;

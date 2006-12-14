@@ -330,7 +330,7 @@ public class Jmol extends JPanel {
   static void report(String str) {
     if (isSilent.booleanValue())
       return;
-    System.out.println(str);
+    Logger.info(str);
   }
   
   public static Jmol getJmol(JFrame frame, int startupWidth, int startupHeight,
@@ -932,7 +932,7 @@ public class Jmol extends JPanel {
               // loop over these files and load them
               String macroName = macros[i].getName();
               if (macroName.endsWith(".macro")) {
-                  System.out.println("Possible macro found: " + macroName);
+                  Logger.debug("Possible macro found: " + macroName);
                   try {
                       FileInputStream macro = new FileInputStream(macros[i]);
                       Properties macroProps = new Properties();
@@ -1235,7 +1235,7 @@ public class Jmol extends JPanel {
       try {
         job.print();
       } catch (PrinterException e) {
-        System.out.println("" + e);
+        Logger.error("Error while printing", e);
       }
     }
   }
@@ -1700,7 +1700,7 @@ class ImageCreator {
           status.setStatus(1, GT._("IO Exception:"));
           status.setStatus(2, exc.toString());
         }
-        System.out.println(exc.toString());
+        Logger.error("IO Exception", exc);
       }
     }
   }

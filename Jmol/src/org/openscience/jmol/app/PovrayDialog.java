@@ -25,6 +25,7 @@ package org.openscience.jmol.app;
 
 import org.jmol.api.*;
 import org.jmol.i18n.GT;
+import org.jmol.util.Logger;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -552,7 +553,7 @@ public class PovrayDialog extends JDialog {
                 viewer, os, allFrames, width, height);
         povs.writeFile();
       } catch (FileNotFoundException fnf) {
-        System.out.println("Povray Dialog FileNotFoundException:" + theFile);
+        Logger.error("Povray Dialog FileNotFoundException: " + theFile, fnf);
         return;
       }
     }
@@ -567,10 +568,10 @@ public class PovrayDialog extends JDialog {
         saveIni(os);
         os.close();
       } catch (FileNotFoundException fnf) {
-        System.out.println("Povray Dialog FileNotFoundException:" + theFile);
+        Logger.error("Povray Dialog FileNotFoundException: " + theFile, fnf);
         return;
       } catch (IOException ioe) {
-        System.out.println("Povray Dialog IOException:" + theFile);
+        Logger.error("Povray Dialog IOException: " + theFile, ioe);
         return;
       }
     }
@@ -592,10 +593,10 @@ public class PovrayDialog extends JDialog {
       try {
         Runtime.getRuntime().exec(commandLineArgs);
       } catch (java.io.IOException e) {
-        System.out.println("Caught IOException in povray exec: " + e);
-        System.out.println("CmdLine:");
+        Logger.error("Caught IOException in povray exec", e);
+        Logger.error("CmdLine:");
         for (int i = 0; i < commandLineArgs.length; i++) {
-          System.out.println("  <" + commandLineArgs[i] + ">");
+          Logger.error("  <" + commandLineArgs[i] + ">");
         }
       }
     }

@@ -46,6 +46,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import org.jmol.i18n.GT;
+import org.jmol.util.Logger;
 
 public class WhatsNewDialog extends JDialog implements HyperlinkListener {
 
@@ -70,9 +71,9 @@ public class WhatsNewDialog extends JDialog implements HyperlinkListener {
       html.setEditable(false);
       html.addHyperlinkListener(this);
     } catch (MalformedURLException e) {
-      System.out.println("Malformed URL: " + e);
+      Logger.error("Malformed URL", e);
     } catch (IOException e) {
-      System.out.println("IOException: " + e);
+      Logger.error("IOException", e);
     }
     JScrollPane scroller = new JScrollPane() {
 

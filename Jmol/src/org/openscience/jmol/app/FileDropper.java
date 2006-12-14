@@ -54,162 +54,163 @@ import org.jmol.util.Logger;
  * @author Billy <simon.tyrrell@virgin.net>
  */
 public class FileDropper implements DropTargetListener {
-		private String fd_oldFileName;
-		private PropertyChangeSupport fd_propSupport;
+  private String fd_oldFileName;
+  private PropertyChangeSupport fd_propSupport;
 
-		static public final String FD_PROPERTY_FILENAME = "filename";
-		static public final String FD_PROPERTY_INLINE   = "inline";
+  static public final String FD_PROPERTY_FILENAME = "filename";
+  static public final String FD_PROPERTY_INLINE   = "inline";
 
-		public FileDropper () {
-			fd_oldFileName = "";
-			fd_propSupport = new PropertyChangeSupport (this);
+  public FileDropper() {
+    fd_oldFileName = "";
+    fd_propSupport = new PropertyChangeSupport(this);
+  }
+
+  public synchronized void addPropertyChangeListener(PropertyChangeListener l) {
+    fd_propSupport.addPropertyChangeListener(l);
+  }
+
+  public synchronized void removePropertyChangeListener(PropertyChangeListener l) {
+    fd_propSupport.removePropertyChangeListener(l);
+  }
+
+  public void dragOver(DropTargetDragEvent dtde) {
+    Logger.debug("DropOver detected...");
 		}
 
-		public synchronized void addPropertyChangeListener (PropertyChangeListener l) {
-			fd_propSupport.addPropertyChangeListener (l);
-		}
+  public void dragEnter(DropTargetDragEvent dtde) {
+    Logger.debug("DropEnter detected...");
+    dtde.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
+  }
 
-		public synchronized void removePropertyChangeListener (PropertyChangeListener l) {
-			fd_propSupport.removePropertyChangeListener (l);
-		}
+  public void dragExit(DropTargetEvent dtde) {
+    Logger.debug("DropExit detected...");
+  }
 
-		public void dragOver(DropTargetDragEvent dtde) {
-            System.out.println("DropOver detected...");
-		}
+  public void dropActionChanged(DropTargetDragEvent dtde) {		}
 
-		public void dragEnter(DropTargetDragEvent dtde) {
-            System.out.println("DropEnter detected...");
-			dtde.acceptDrag (DnDConstants.ACTION_COPY_OR_MOVE);
-		}
+  public void drop (DropTargetDropEvent dtde) {
+    Logger.debug("Drop detected...");
+    Transferable t = dtde.getTransferable();
+    if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+      dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+      Object o = null;
 
-		public void dragExit(DropTargetEvent dtde) {
-            System.out.println("DropExit detected...");
-		}
+      try {
+        o = t.getTransferData(DataFlavor.javaFileListFlavor);
+      } catch (UnsupportedFlavorException ufe) {
+        Logger.error(null, ufe);
+      } catch (IOException ioe) {
+        Logger.error(null, ioe);
+      }
 
-		public void dropActionChanged(DropTargetDragEvent dtde) {
-		}
+      // if o is still null we had an exception
+      if ((o != null) && (o instanceof List)) {
+        List  fileList = (List) o;
+        final int length = fileList.size ();
 
-		public void drop (DropTargetDropEvent dtde) {
-            System.out.println("Drop detected...");
-			Transferable t = dtde.getTransferable ();
-            if (t.isDataFlavorSupported (DataFlavor.javaFileListFlavor)) {
-				dtde.acceptDrop (DnDConstants.ACTION_COPY_OR_MOVE);
-				Object o = null;
+        for (int i = 0; i < length; ++ i) {
+          File f = (File) fileList.get(i);
+          PropertyChangeEvent pce = new PropertyChangeEvent(
+              this, FD_PROPERTY_FILENAME, fd_oldFileName, f.getAbsolutePath());
+          fd_propSupport.firePropertyChange(pce);
+        }
 
-				try {
-					o = t.getTransferData (DataFlavor.javaFileListFlavor);
-				} catch (UnsupportedFlavorException ufe) {
-          Logger.error(null, ufe);
-				} catch (IOException ioe) {
-          Logger.error(null, ioe);
-				}
+        dtde.getDropTargetContext().dropComplete(true);
+      }
+    } else {
+      Logger.debug("browsing supported flavours to find something useful...");
+      DataFlavor [] df = t.getTransferDataFlavors ();
 
-				// if o is still null we had an exception
-				if ((o != null) && (o instanceof List)) {
-					List  fileList = (List) o;
-					final int length = fileList.size ();
+      if ((df != null) && (df.length > 0)) {
+        for (int i = 0; i < df.length; ++ i) {
+          DataFlavor flavor = df[i];
+          Logger.debug("df " + i + " flavor " + flavor);
+          Logger.debug("  class: " + flavor.getRepresentationClass().getName());
+          Logger.debug("  mime : " + flavor.getMimeType());
 
-					for (int i = 0; i < length; ++ i) {
-						File f = (File) fileList.get (i);
-						PropertyChangeEvent pce = new PropertyChangeEvent (this, FD_PROPERTY_FILENAME, fd_oldFileName, f.getAbsolutePath ());
-						fd_propSupport.firePropertyChange (pce);
-					}
+          if (flavor.getMimeType().startsWith("text/uri-list") &&
+              flavor.getRepresentationClass().getName().equals("java.lang.String")) {
 
-					dtde.getDropTargetContext ().dropComplete (true);
-				}
-			} else {
-				System.out.println ("browsing supported flavours to find something useful...");
-				DataFlavor [] df = t.getTransferDataFlavors ();
+            /* This is one of the (many) flavors that KDE provides:
+               df 2 flavour java.awt.datatransfer.DataFlavor[mimetype=text/uri-list;representationclass=java.lang.String]
+               java.lang.String
+               String: file:/home/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/samples/cml/methanol2.cml
 
-				if ((df != null) && (df.length > 0)) {
-					for (int i = 0; i < df.length; ++ i) {
+               A later KDE version gave me the following. Note the mime!! hence the startsWith above
 
-                        DataFlavor flavor = df[i];
-                        System.out.println ("df " + i + " flavor " + flavor);
-                        System.out.println ("  class: " + flavor.getRepresentationClass().getName());
-                        System.out.println ("  mime : " + flavor.getMimeType());
+               df 3 flavor java.awt.datatransfer.DataFlavor[mimetype=text/uri-list;representationclass=java.lang.String]
+               class: java.lang.String
+               mime : text/uri-list; class=java.lang.String; charset=Unicode
+            */
 
-                        if (flavor.getMimeType().startsWith("text/uri-list") &&
-                            flavor.getRepresentationClass().getName().equals("java.lang.String")) {
+            dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+            Object o = null;
 
-                            /* This is one of the (many) flavors that KDE provides:
+            try {
+              o = t.getTransferData(flavor);
+            } catch (UnsupportedFlavorException ufe) {
+              Logger.error(null, ufe);
+            } catch (IOException ioe) {
+              Logger.error(null, ioe);
+            }
 
-                               df 2 flavour java.awt.datatransfer.DataFlavor[mimetype=text/uri-list;representationclass=java.lang.String]
-                                 java.lang.String
-                                 String: file:/home/egonw/data/Projects/SourceForge/Jmol/Jmol-HEAD/samples/cml/methanol2.cml
-                                 
-                               A later KDE version gave me the following. Note the mime!! hence the startsWith above
-                               
-                               df 3 flavor java.awt.datatransfer.DataFlavor[mimetype=text/uri-list;representationclass=java.lang.String]
-                                 class: java.lang.String
-                                 mime : text/uri-list; class=java.lang.String; charset=Unicode
-                            */
+            if ((o != null) && (o instanceof String)) {
+              Logger.debug("  String: " + o.toString());
 
-                            dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-                            Object o = null;
+              PropertyChangeEvent pce = new PropertyChangeEvent(
+                  this, FD_PROPERTY_FILENAME, fd_oldFileName, o.toString());
+              fd_propSupport.firePropertyChange(pce);
+              dtde.getDropTargetContext().dropComplete(true);
+            }
+            return;
+          } else if (flavor.getMimeType().equals("application/x-java-serialized-object; class=java.lang.String")) {
 
-                            try {
-                                o = t.getTransferData(flavor);
-                            } catch (UnsupportedFlavorException ufe) {
-                                Logger.error(null, ufe);
-                            } catch (IOException ioe) {
-                                Logger.error(null, ioe);
-                            }
+            /* This is one of the flavors that jEdit provides:
 
-                            if ((o != null) && (o instanceof String)) {
-                                System.out.println("  String: " + o.toString());
+               df 0 flavor java.awt.datatransfer.DataFlavor[mimetype=application/x-java-serialized-object;representationclass=java.lang.String]
+               class: java.lang.String
+               mime : application/x-java-serialized-object; class=java.lang.String
+               String: <molecule title="benzene.mol" xmlns="http://www.xml-cml.org/schema/cml2/core"
 
-                                PropertyChangeEvent pce = new PropertyChangeEvent(this, FD_PROPERTY_FILENAME, fd_oldFileName, o.toString());
-                                fd_propSupport.firePropertyChange(pce);
-                                dtde.getDropTargetContext().dropComplete(true);
-                            }
-                            return;
-                        } else if (flavor.getMimeType().equals("application/x-java-serialized-object; class=java.lang.String")) {
+               But KDE also provides:
 
-                            /* This is one of the flavors that jEdit provides:
-                            
-                               df 0 flavor java.awt.datatransfer.DataFlavor[mimetype=application/x-java-serialized-object;representationclass=java.lang.String]
-                                 class: java.lang.String
-                                 mime : application/x-java-serialized-object; class=java.lang.String
-                                 String: <molecule title="benzene.mol" xmlns="http://www.xml-cml.org/schema/cml2/core"
-                                 
-                               But KDE also provides:
-                               
-                               df 24 flavor java.awt.datatransfer.DataFlavor[mimetype=application/x-java-serialized-object;representationclass=java.lang.String]
-                                 class: java.lang.String
-                                 mime : application/x-java-serialized-object; class=java.lang.String
-                                 String: file:/home/egonw/Desktop/1PN8.pdb
-                            */
+               df 24 flavor java.awt.datatransfer.DataFlavor[mimetype=application/x-java-serialized-object;representationclass=java.lang.String]
+               class: java.lang.String
+               mime : application/x-java-serialized-object; class=java.lang.String
+               String: file:/home/egonw/Desktop/1PN8.pdb
+            */
 
-                            dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-                            Object o = null;
+            dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+            Object o = null;
 
-                            try {
-                                o = t.getTransferData(df[i]);
-                            } catch (UnsupportedFlavorException ufe) {
-                                Logger.error(null, ufe);
-                            } catch (IOException ioe) {
-                                Logger.error(null, ioe);
-                            }
+            try {
+              o = t.getTransferData(df[i]);
+            } catch (UnsupportedFlavorException ufe) {
+              Logger.error(null, ufe);
+            } catch (IOException ioe) {
+              Logger.error(null, ioe);
+            }
 
-                            if ((o != null) && (o instanceof String)) {
-                                String content = (String)o;
-                                System.out.println("  String: " + content);
-                                if (content.startsWith("file:/")) {
-                                    PropertyChangeEvent pce = new PropertyChangeEvent(this, FD_PROPERTY_FILENAME, fd_oldFileName, content);
-                                    fd_propSupport.firePropertyChange(pce);
-                                } else {
-                                    PropertyChangeEvent pce = new PropertyChangeEvent(this, FD_PROPERTY_INLINE, fd_oldFileName, content);
-                                    fd_propSupport.firePropertyChange(pce);
-                                }
-                                dtde.getDropTargetContext().dropComplete(true);
-                            }
-                            return;
-                        }
-					}
-				}
+            if ((o != null) && (o instanceof String)) {
+              String content = (String)o;
+              Logger.debug("  String: " + content);
+              if (content.startsWith("file:/")) {
+                PropertyChangeEvent pce = new PropertyChangeEvent(
+                    this, FD_PROPERTY_FILENAME, fd_oldFileName, content);
+                fd_propSupport.firePropertyChange(pce);
+              } else {
+                PropertyChangeEvent pce = new PropertyChangeEvent(
+                    this, FD_PROPERTY_INLINE, fd_oldFileName, content);
+                fd_propSupport.firePropertyChange(pce);
+              }
+              dtde.getDropTargetContext().dropComplete(true);
+            }
+            return;
+          }
+        }
+      }
 
-				dtde.rejectDrop();
-			}
+      dtde.rejectDrop();
+    }
 	}
 }

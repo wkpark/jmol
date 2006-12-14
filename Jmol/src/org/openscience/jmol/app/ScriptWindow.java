@@ -458,11 +458,11 @@ class ConsoleDocument extends DefaultStyledDocument {
    * Removes all content of the script window, and add a new prompt.
    */
   void clearContent() {
-      try {
-          super.remove(0, getLength());
-      } catch (BadLocationException exception) {
-          System.out.println("Could not clear script window content: " + exception.getMessage());
-      }
+    try {
+      super.remove(0, getLength());
+    } catch (BadLocationException exception) {
+      Logger.error("Could not clear script window content", exception);
+    }
   }
   
   void setPrompt() {

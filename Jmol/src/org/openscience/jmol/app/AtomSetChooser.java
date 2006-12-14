@@ -489,7 +489,7 @@ ActionListener, ChangeListener, Runnable {
           } else if (FF.equals(cmd)) {
             findFrequency(indexes.length-1,-1);
           } else if (SAVE.equals(cmd)) {
-            System.out.println("Not implemented");
+            Logger.warn("Not implemented");
             // since I can not get to the vectors, I can't output this one (yet)
             // saveXYZVector();
           }
@@ -506,7 +506,7 @@ ActionListener, ChangeListener, Runnable {
   public void saveXYZCollection() {
     int nidx = indexes.length;
     if (nidx==0) {
-      System.out.println("No collection selected.");
+      Logger.warn("No collection selected.");
       return;
     }
 

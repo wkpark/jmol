@@ -25,6 +25,8 @@ package org.openscience.jmol.app;
 
 import org.jmol.api.*;
 import org.jmol.i18n.GT;
+import org.jmol.util.Logger;
+
 import java.awt.GridLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -568,7 +570,7 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       currentProperties.store(fileOutputStream, "Jmol");
       fileOutputStream.close();
     } catch (Exception e) {
-      System.out.println("Error saving preferences" + e);
+      Logger.error("Error saving preferences", e);
     }
     viewer.refresh(0, "PreferencesDialog:save()");
   }

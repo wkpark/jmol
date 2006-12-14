@@ -91,7 +91,7 @@ public class JpegEncoder extends Frame
     try {
       outStream.flush();
     } catch (IOException e) {
-      System.out.println("IO Error: " + e.getMessage());
+      Logger.error("IO Error", e);
     }
   }
   
@@ -320,7 +320,7 @@ public class JpegEncoder extends Frame
     try {
       out.write(data, 0, 2);
     } catch (IOException e) {
-      System.out.println("IO Error: " + e.getMessage());
+      Logger.error("IO Error", e);
     }
   }
   
@@ -330,7 +330,7 @@ public class JpegEncoder extends Frame
       length = ((data[2] & 0xFF) << 8) + (data[3] & 0xFF) + 2;
       out.write(data, 0, length);
     } catch (IOException e) {
-      System.out.println("IO Error: " + e.getMessage());
+      Logger.error("IO Error", e);
     }
   }
 }
@@ -977,7 +977,7 @@ class Huffman
         outStream.write(c);
       }
       catch (IOException e) {
-        System.out.println("IO Error: " + e.getMessage());
+        Logger.error("IO Error", e);
       }
       if (c == 0xFF) {
         try
@@ -985,7 +985,7 @@ class Huffman
           outStream.write(0);
         }
         catch (IOException e) {
-          System.out.println("IO Error: " + e.getMessage());
+          Logger.error("IO Error", e);
         }
       }
       PutBuffer <<= 8;
@@ -1006,14 +1006,14 @@ class Huffman
         outStream.write(c);
       }
       catch (IOException e) {
-        System.out.println("IO Error: " + e.getMessage());
+        Logger.error("IO Error", e);
       }
       if (c == 0xFF) {
         try {
           outStream.write(0);
         }
         catch (IOException e) {
-          System.out.println("IO Error: " + e.getMessage());
+          Logger.error("IO Error", e);
         }
       }
       PutBuffer <<= 8;
@@ -1026,7 +1026,7 @@ class Huffman
         outStream.write(c);
       }
       catch (IOException e) {
-        System.out.println("IO Error: " + e.getMessage());
+        Logger.error("IO Error", e);
       }
     }
   }

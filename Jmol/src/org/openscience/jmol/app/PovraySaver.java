@@ -24,6 +24,7 @@
 package org.openscience.jmol.app;
 
 import org.jmol.api.*;
+import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
 import java.util.Date;
@@ -220,7 +221,7 @@ public class PovraySaver {
       writeFrame();
       bw.close();
     } catch (IOException e) {
-      System.out.println("Got IOException " + e + " trying to write frame.");
+      Logger.error("Got IOException trying to write frame.", e);
     }
   }
 

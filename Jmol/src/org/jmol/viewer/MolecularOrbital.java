@@ -58,7 +58,6 @@ class MolecularOrbital extends Isosurface {
   int moNumber;
   Hashtable htModels;
   Hashtable thisModel;
-  Mesh thisMesh;
   
   void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -203,7 +202,6 @@ class MolecularOrbital extends Isosurface {
     moNumber = ((Integer)thisModel.get("moNumber")).intValue();
     Object b = thisModel.get("moIsPositiveOnly");
     moIsPositiveOnly = (b != null  && ((Boolean)(b)).booleanValue());
-    thisMesh = (Mesh)thisModel.get("mesh");
     return true;
   }
  

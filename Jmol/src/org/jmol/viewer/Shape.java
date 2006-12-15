@@ -45,8 +45,13 @@ import java.util.Hashtable;
  *   Axes, Bbcage, Frank, Uccage
  * 
  * MeshCollection
- *    Draw, Isosurface, Pmesh
- *               |______________ LcaoCartoon, MolecularOrbital
+ *   |       |
+ * Draw    MeshFileCollection  (adds parser code)
+ *             |        |
+ *            Pmesh   IsosurfaceMeshCollection (adds JVXL code)
+ *                      |
+ *                  Isosurface
+ *                      |________ LcaoCartoon, MolecularOrbital
  * 
  * Mps
  *   Backbone, Cartoon, MeshRibbon, Ribbons, Rockets, Strands, Trace

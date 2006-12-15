@@ -3310,27 +3310,20 @@ class Eval { //implements Runnable {
   }
 
   void zoom(boolean isZoomTo) throws ScriptException {
-    //zoom
-    if (statementLength == 1) {
-      if (isZoomTo)
-        viewer.moveTo(1, null, new Point3f(0, 0, 0), 0, viewer
-            .getZoomPercentFloat() * 2f, 0, 0, 0);
-      else
-        setBooleanProperty("zoomEnabled", true);
-      return;
-    }
-    //zoom on|off
-    if (!isZoomTo)
-      switch (statement[1].tok) {
+    if (!isZoomTo) {
+      //zoom
+      //zoom on|off
+      int tok = (statementLength > 0 ? statement[1].tok : Token.on);
+      switch (tok) {
       case Token.on:
-        if (!isSyntaxCheck)
-          setBooleanProperty("zoomEnabled", true);
-        return;
       case Token.off:
+        if (statementLength > 2)
+          badArgumentCount();
         if (!isSyntaxCheck)
-          setBooleanProperty("zoomEnabled", false);
+          setBooleanProperty("zoomEnabled", tok == Token.on);
         return;
       }
+    }
     float time = (isZoomTo ? 1f : 0f);
     float zoom = viewer.getZoomPercentFloat();
     float factor = 0;
@@ -3375,10 +3368,10 @@ class Eval { //implements Runnable {
         }
       } else if (isZoomTo) {
         // no factor -- check for no center (zoom out) or same center (zoom in)
-        if (center == null)
-          factor /= 2;
-        else if (isSameAtom)
+        if (statementLength == 1 || isSameAtom)
           factor *= 2;
+        else if (center == null)
+          factor /= 2;
       }
     }
     float xTrans = 0;

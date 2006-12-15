@@ -33,6 +33,7 @@ abstract class MeshRenderer extends ShapeRenderer {
   boolean iShowTriangles;
   boolean iShowNormals;
   boolean iHideBackground;
+  boolean isContoured;
   short backgroundColix;
   Point3f[] vertices;
   Point3i[] screens;
@@ -43,8 +44,13 @@ abstract class MeshRenderer extends ShapeRenderer {
   Vector3f[] transformedVectors;
 
   boolean render1(Mesh mesh) {
+    return renderMesh(mesh, false, false);
+  }
+  
+  boolean renderMesh(Mesh mesh, boolean isPlane, boolean isContoured) {
     if (mesh.visibilityFlags == 0)
       return false;
+    this.isContoured = isContoured;
     int vertexCount = mesh.vertexCount;
     if (vertexCount == 0)
       return false;
@@ -60,7 +66,7 @@ abstract class MeshRenderer extends ShapeRenderer {
       }
     iShowTriangles = viewer.getTestFlag3();
     iShowNormals = viewer.getTestFlag4();
-    iHideBackground = (mesh.jvxlPlane != null && mesh.hideBackground);
+    iHideBackground = (isPlane && mesh.hideBackground);
     if (iHideBackground) {
       backgroundColix = Graphics3D.getColix(viewer.getBackgroundArgb());
     }
@@ -156,7 +162,7 @@ abstract class MeshRenderer extends ShapeRenderer {
     if (mesh.hasGridPoints)
       for (int i = 0; i < iFirst; i++)
         g3d.fillSphereCentered(Graphics3D.GRAY, 2, screens[i]);
-    if (mesh.hasGridPoints && !mesh.isContoured) {
+    if (mesh.hasGridPoints && !isContoured) {
       for (int i = 1; i < vertexCount; i += 3) {
         g3d.fillCylinder(Graphics3D.GRAY, Graphics3D.ENDCAPS_SPHERICAL, 1,
             screens[i], screens[i + 1]);

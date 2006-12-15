@@ -112,7 +112,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.quantum.QuantumCalculation;
 import org.jmol.quantum.MepCalculation;
 
-class Isosurface extends MeshCollection {
+class Isosurface extends IsosurfaceMeshCollection {
 
   void initShape() {
     super.initShape();
@@ -487,8 +487,8 @@ class Isosurface extends MeshCollection {
 
     if ("setColorScheme" == propertyName) {
       colorScheme = ((String) value);
-      if (currentMesh != null && colorScheme.equals("sets")) {
-        currentMesh.surfaceSet = getSurfaceSet(0);
+      if (thisMesh != null && colorScheme.equals("sets")) {
+        thisMesh.surfaceSet = getSurfaceSet(0);
         super.setProperty("color", "sets", null);
       }
       return;
@@ -526,14 +526,14 @@ class Isosurface extends MeshCollection {
       if (state == STATE_DATA_READ) {
         dataType = surfaceType;
         state = STATE_DATA_COLORED;
-        if (currentMesh != null)
-          applyColorScale(currentMesh);
+        if (thisMesh != null)
+          applyColorScale(thisMesh);
       }
       return;
     }
 
     if ("map" == propertyName) {
-      if (currentMesh != null)
+      if (thisMesh != null)
         state = STATE_DATA_READ;
       return;
     }
@@ -826,19 +826,19 @@ class Isosurface extends MeshCollection {
       }
       if (jvxlDataIs2dContour)
         colorIsosurface();
-      currentMesh.nBytes = nBytes;
+      thisMesh.nBytes = nBytes;
       if (colorByPhase || colorBySign) {
         state = STATE_DATA_COLORED;
         mappingType = dataType;
-        applyColorScale(currentMesh);
+        applyColorScale(thisMesh);
       }
       if (colorScheme.equals("sets")) {
-        currentMesh.surfaceSet = getSurfaceSet(0);
+        thisMesh.surfaceSet = getSurfaceSet(0);
         super.setProperty("color", "sets", null);
       }
       setModelIndex();
       if (logMessages && thePlane == null && !isSilent)
-        Logger.debug("\n" + jvxlGetFile(currentMesh, jvxlFileMessage, true, 1));
+        Logger.debug("\n" + jvxlGetFile(thisMesh, jvxlFileMessage, true, 1));
       discardTempData(jvxlDataIs2dContour);
       dataType = SURFACE_NONE;
       mappedDataMin = Float.MAX_VALUE;
@@ -872,14 +872,14 @@ class Isosurface extends MeshCollection {
       } else {
         readData(true);
         if (jvxlDataIsColorMapped) {
-          jvxlReadColorData(currentMesh);
+          jvxlReadColorData(thisMesh);
         } else {
           colorIsosurface();
         }
       }
-      currentMesh.nBytes = nBytes;
+      thisMesh.nBytes = nBytes;
       if (logMessages && !isSilent)
-        Logger.debug("\n" + jvxlGetFile(currentMesh, jvxlFileMessage, true, 1));
+        Logger.debug("\n" + jvxlGetFile(thisMesh, jvxlFileMessage, true, 1));
       setModelIndex();
       discardTempData(true);
       dataType = SURFACE_NONE;
@@ -887,7 +887,7 @@ class Isosurface extends MeshCollection {
     }
 
     if ("delete" == propertyName) {
-      if (currentMesh == null)
+      if (thisMesh == null)
         nLCAO = 0;
       // fall through to meshCollection
     }
@@ -899,12 +899,12 @@ class Isosurface extends MeshCollection {
   Object getProperty(String property, int index) {
     if (property == "moNumber")
       return new Integer(qm_moNumber);
-    if (currentMesh == null)
+    if (thisMesh == null)
       return "no current isosurface";
     if (property == "jvxlFileData")
-      return jvxlGetFile(currentMesh, "", true, index);
+      return jvxlGetFile(thisMesh, "", true, index);
     if (property == "jvxlSurfaceData")
-      return jvxlGetFile(currentMesh, "", false, 1);
+      return jvxlGetFile(thisMesh, "", false, 1);
     return super.getProperty(property, index);
   }
 
@@ -927,7 +927,7 @@ class Isosurface extends MeshCollection {
     if (script.indexOf("# ({") >= 0)
       return script;
     if (script.charAt(0) == ' ')
-      return myType + " " + currentMesh.thisID + script;
+      return myType + " " + thisMesh.thisID + script;
     if (!iUseBitSets)
       return script;
     return script + "# "
@@ -1043,11 +1043,11 @@ class Isosurface extends MeshCollection {
       generateContourData(jvxlDataIs2dContour);
       initializeMesh(true);
       if (!colorByContourOnly)
-        applyColorScale(currentMesh);
+        applyColorScale(thisMesh);
     } else {
-      applyColorScale(currentMesh);
+      applyColorScale(thisMesh);
     }
-    currentMesh.jvxlExtraLine = jvxlExtraLine(1);
+    thisMesh.jvxlExtraLine = jvxlExtraLine(1);
     jvxlFileMessage = "mapped: min = " + valueMappedToRed + "; max = "
         + valueMappedToBlue;
   }
@@ -1081,10 +1081,10 @@ class Isosurface extends MeshCollection {
     if (logMessages)
       Logger.debug("setMapRanges: " + mappedDataMin + " " + mappedDataMax + " "
           + valueMappedToRed + " " + valueMappedToBlue);
-    currentMesh.valueMappedToRed = valueMappedToRed;
-    currentMesh.valueMappedToBlue = valueMappedToBlue;
-    currentMesh.mappedDataMin = mappedDataMin;
-    currentMesh.mappedDataMax = mappedDataMax;
+    thisMesh.valueMappedToRed = valueMappedToRed;
+    thisMesh.valueMappedToBlue = valueMappedToBlue;
+    thisMesh.mappedDataMin = mappedDataMin;
+    thisMesh.mappedDataMax = mappedDataMax;
   }
 
   void checkFlags() {
@@ -1117,37 +1117,37 @@ class Isosurface extends MeshCollection {
     } catch (Exception e) {
       return false;
     }
-    currentMesh.jvxlFileHeader = "" + jvxlFileHeader;
-    currentMesh.cutoff = (isJvxl ? jvxlCutoff : cutoff);
-    currentMesh.jvxlColorData = "";
-    currentMesh.jvxlEdgeData = "" + fractionData;
-    currentMesh.isBicolorMap = isBicolorMap;
-    currentMesh.isContoured = isContoured;
-    currentMesh.nContours = nContours;
+    thisMesh.jvxlFileHeader = "" + jvxlFileHeader;
+    thisMesh.cutoff = (isJvxl ? jvxlCutoff : cutoff);
+    thisMesh.jvxlColorData = "";
+    thisMesh.jvxlEdgeData = "" + fractionData;
+    thisMesh.isBicolorMap = isBicolorMap;
+    thisMesh.isContoured = isContoured;
+    thisMesh.nContours = nContours;
     if (jvxlDataIsColorMapped)
-      jvxlReadColorData(currentMesh);
-    currentMesh.colix = getDefaultColix();
-    currentMesh.jvxlExtraLine = jvxlExtraLine(1);
+      jvxlReadColorData(thisMesh);
+    thisMesh.colix = getDefaultColix();
+    thisMesh.jvxlExtraLine = jvxlExtraLine(1);
     if (thePlane != null && iAddGridPoints)
       addGridPointCube();
     return true;
   }
 
   void resetIsosurface() {
-    if (currentMesh == null)
+    if (thisMesh == null)
       allocMesh(null);
-    currentMesh.clear("isosurface");
+    thisMesh.clear("isosurface");
     contourVertexCount = 0;
-    currentMesh.firstViewableVertex = 0;
+    thisMesh.firstViewableVertex = 0;
     if (iAddGridPoints) {
-      currentMesh.showPoints = true;
-      currentMesh.hasGridPoints = true;
+      thisMesh.showPoints = true;
+      thisMesh.hasGridPoints = true;
     }
     if (cutoff == Float.MAX_VALUE)
       cutoff = defaultCutoff;
-    currentMesh.jvxlSurfaceData = "";
-    currentMesh.jvxlEdgeData = "";
-    currentMesh.jvxlColorData = "";
+    thisMesh.jvxlSurfaceData = "";
+    thisMesh.jvxlEdgeData = "";
+    thisMesh.jvxlColorData = "";
     edgeCount = 0;
   }
 
@@ -1588,8 +1588,8 @@ class Isosurface extends MeshCollection {
     if (!isJvxl)
       surfaceData += " " + dataCount + "\n";
     if (!isMapData) {
-      currentMesh.jvxlSurfaceData = (thePlane == null ? surfaceData : "");
-      currentMesh.jvxlPlane = thePlane;
+      thisMesh.jvxlSurfaceData = (thePlane == null ? surfaceData : "");
+      thisMesh.jvxlPlane = thePlane;
     }
     if (!isSilent)
       Logger.debug("Successfully read " + nPointsX + " x " + nPointsY + " x "
@@ -1886,7 +1886,7 @@ class Isosurface extends MeshCollection {
 
   int addVertexCopy(Point3f vertex, float value, boolean iHaveAssociation,
                     String sKey) {
-    int vPt = currentMesh.addVertexCopy(vertex, value);
+    int vPt = thisMesh.addVertexCopy(vertex, value);
     if (associateNormals && iHaveAssociation) {
       assocGridPointMap.put(new Integer(vPt), sKey);
       if (!assocGridPointNormals.containsKey(sKey))
@@ -1896,7 +1896,7 @@ class Isosurface extends MeshCollection {
   }
 
   void initializeMesh(boolean use2Sided) {
-    int vertexCount = currentMesh.vertexCount;
+    int vertexCount = thisMesh.vertexCount;
     Vector3f[] vectorSums = new Vector3f[vertexCount];
 
     if (!isSilent)
@@ -1915,7 +1915,7 @@ class Isosurface extends MeshCollection {
 
     for (int i = vertexCount; --i >= 0;)
       vectorSums[i] = new Vector3f();
-    currentMesh.sumVertexNormals(vectorSums);
+    thisMesh.sumVertexNormals(vectorSums);
     Enumeration e = ((Hashtable) assocGridPointMap).keys();
     while (e.hasMoreElements()) {
       Integer I = (Integer) e.nextElement();
@@ -1928,7 +1928,7 @@ class Isosurface extends MeshCollection {
       vectorSums[I.intValue()] = ((Vector3f) assocGridPointNormals
           .get(assocGridPointMap.get(I)));
     }
-    short[] norm = currentMesh.normixes = new short[vertexCount];
+    short[] norm = thisMesh.normixes = new short[vertexCount];
     if (use2Sided)
       for (int i = vertexCount; --i >= 0;)
         norm[i] = g3d.get2SidedNormix(vectorSums[i]);
@@ -1943,7 +1943,7 @@ class Isosurface extends MeshCollection {
 
   String remainderString;
 
-  void applyColorScale(Mesh mesh) {
+  void applyColorScale(IsosurfaceMesh mesh) {
     // ONLY the current mesh now. Previous was just too weird.
     if (colorPhase == 0 && dataType != SURFACE_ATOMICORBITAL)
       colorPhase = 1;
@@ -2071,11 +2071,11 @@ class Isosurface extends MeshCollection {
   }
 
   float getMinMappedValue() {
-    if (currentMesh != null)
-      return getMinMappedValue(currentMesh);
+    if (thisMesh != null)
+      return getMinMappedValue(thisMesh);
     float min = Float.MAX_VALUE;
     for (int i = meshCount; --i >= 0;) {
-      float challenger = getMinMappedValue(meshes[i]);
+      float challenger = getMinMappedValue(isomeshes[i]);
       if (challenger < min)
         min = challenger;
     }
@@ -2103,11 +2103,11 @@ class Isosurface extends MeshCollection {
   }
 
   float getMaxMappedValue() {
-    if (currentMesh != null)
-      return getMaxMappedValue(currentMesh);
+    if (thisMesh != null)
+      return getMaxMappedValue(thisMesh);
     float max = -Float.MAX_VALUE;
     for (int i = meshCount; --i >= 0;) {
-      float challenger = getMaxMappedValue(meshes[i]);
+      float challenger = getMaxMappedValue(isomeshes[i]);
       if (challenger > max)
         max = challenger;
     }
@@ -2195,7 +2195,7 @@ class Isosurface extends MeshCollection {
   float contourPlaneMinimumValue;
   float contourPlaneMaximumValue;
 
-  void jvxlReadColorData(Mesh mesh) {
+  void jvxlReadColorData(IsosurfaceMesh mesh) {
 
     // standard jvxl file read for color 
 
@@ -2372,7 +2372,7 @@ class Isosurface extends MeshCollection {
     //0.9e adds color contours for planes and min/max range, contour settings
   }
 
-  String jvxlGetFile(Mesh mesh, String msg, boolean includeHeader, int nSurfaces) {
+  String jvxlGetFile(IsosurfaceMesh mesh, String msg, boolean includeHeader, int nSurfaces) {
     String data = "";
     if (includeHeader) {
       data = mesh.jvxlFileHeader
@@ -2405,10 +2405,11 @@ class Isosurface extends MeshCollection {
     data += compressedData;
     if (msg != null)
       data += "#-------end of jvxl file data-------\n";
+    data += mesh.jvxlInfoLine + "\n";
     return data;
   }
 
-  String jvxlGetDefinitionLine(Mesh mesh) {
+  String jvxlGetDefinitionLine(IsosurfaceMesh mesh, boolean isInfo) {
     String definitionLine = mesh.cutoff + " ";
 
     // cutoff        param1              param2         param3
@@ -2424,33 +2425,45 @@ class Isosurface extends MeshCollection {
     int nSurfaceData = mesh.jvxlSurfaceData.length();
     int nEdgeData = (mesh.jvxlEdgeData.length() - 1);
     int nColorData = (mesh.jvxlColorData.length() - 1);
+    String info = "# nSurfaceData = " + nSurfaceData + "; nEdgeData = "
+        + nEdgeData;
     if (mesh.jvxlPlane == null) {
-      if (mesh.isContoured)
+      if (mesh.isContoured) {
         definitionLine += (-nSurfaceData) + " " + nEdgeData;
-      else if (mesh.isBicolorMap)
+        info += "; contoured";
+      } else if (mesh.isBicolorMap) {
         definitionLine += (nSurfaceData) + " " + (-nEdgeData);
-      else
-        definitionLine += nSurfaceData + " " + nEdgeData;
-      definitionLine += " "
-          + (mesh.isJvxlPrecisionColor && nColorData != -1 ? -nColorData
-              : nColorData);
+        info += "; bicolor map";
+      } else {
+        definitionLine += nSurfaceData
+            + " "
+            + nEdgeData
+            + " "
+            + (mesh.isJvxlPrecisionColor && nColorData != -1 ? -nColorData
+                : nColorData);
+        info += (mesh.isJvxlPrecisionColor && nColorData != -1 ? "; precision colored"
+            : nColorData > 0 ? "; colormapped" : "");
+      }
     } else {
-      definitionLine += "-1 -2 " + (-nColorData) + " " + mesh.jvxlPlane.x + " "
-          + mesh.jvxlPlane.y + " " + mesh.jvxlPlane.z + " " + mesh.jvxlPlane.w;
+      String s = " " + mesh.jvxlPlane.x + " " + mesh.jvxlPlane.y + " "
+          + mesh.jvxlPlane.z + " " + mesh.jvxlPlane.w;
+      definitionLine += "-1 -2 " + (-nColorData) + s;
+      info += "; " + (nColorData > 0 ? "color mapped " : "") + "plane: {" + s
+          + " }";
     }
-    if (mesh.isContoured)
+    if (mesh.isContoured) {
       definitionLine += " " + mesh.nContours;
-
+      info += "; " + mesh.nContours + " contours";
+    }
     // ...  mappedDataMin  mappedDataMax  valueMappedToRed  valueMappedToBlue ... 
     definitionLine += " " + mesh.mappedDataMin + " " + mesh.mappedDataMax + " "
         + mesh.valueMappedToRed + " " + mesh.valueMappedToBlue;
-    // ... information only ...
-    if (mesh.jvxlPlane != null)
-      definitionLine += " CONTOUR PLANE " + mesh.jvxlPlane;
+    info += "\n# data mimimum = " + mesh.mappedDataMin + "; data maximum = " + mesh.mappedDataMax + " "
+    + "\n# value mapped to red = " + mesh.valueMappedToRed + "; value mapped to blue = " + mesh.valueMappedToBlue;
     if (mesh.jvxlCompressionRatio > 0)
-      definitionLine += " approximate compressionRatio="
-          + mesh.jvxlCompressionRatio + ":1";
-    return definitionLine;
+      info += "; approximate compressionRatio=" + mesh.jvxlCompressionRatio
+          + ":1";
+    return (isInfo ? info : definitionLine);
   }
 
   String jvxlCompressString(String data) {
@@ -2626,7 +2639,7 @@ class Isosurface extends MeshCollection {
                 || checkCutoff(voxelPointIndexes[triangles[i]],
                     voxelPointIndexes[triangles[i + 1]],
                     voxelPointIndexes[triangles[i + 2]]))
-              currentMesh.addTriangle(voxelPointIndexes[triangles[i]],
+              thisMesh.addTriangle(voxelPointIndexes[triangles[i]],
                   voxelPointIndexes[triangles[i + 1]],
                   voxelPointIndexes[triangles[i + 2]]);
           }
@@ -2649,9 +2662,9 @@ class Isosurface extends MeshCollection {
     // where we are using |psi| instead of psi for the surface generation.
     if (v1 < 0 || v2 < 0 || v3 < 0)
       return false;
-    float val1 = currentMesh.vertexValues[v1];
-    float val2 = currentMesh.vertexValues[v2];
-    float val3 = currentMesh.vertexValues[v3];
+    float val1 = thisMesh.vertexValues[v1];
+    float val2 = thisMesh.vertexValues[v2];
+    float val3 = thisMesh.vertexValues[v3];
     return (val1 * val2 >= 0 && val2 * val3 >= 0);
   }
 
@@ -3265,7 +3278,7 @@ class Isosurface extends MeshCollection {
       this.value = value;
       voxelData[voxelLocation.x][voxelLocation.y][voxelLocation.z] = value;
       if (Math.abs(value) < 0.0000001)
-        currentMesh.invalidateVertex(vertexIndex);
+        thisMesh.invalidateVertex(vertexIndex);
 
     }
 
@@ -3289,8 +3302,8 @@ class Isosurface extends MeshCollection {
     contourVertexes[contourVertexCount++] = new ContourVertex(x, y, z,
         vertexXYZ, vPt);
     if (Math.abs(value) < 0.0000001)
-      currentMesh.invalidateVertex(vPt);
-    currentMesh.firstViewableVertex = currentMesh.vertexCount;
+      thisMesh.invalidateVertex(vPt);
+    thisMesh.firstViewableVertex = thisMesh.vertexCount;
     if (logMessages)
       Logger.info("addCountourdata " + x + " " + y + " " + z + offsets
           + vertexXYZ + value);
@@ -3639,7 +3652,7 @@ class Isosurface extends MeshCollection {
   }
 
   void triangulateContours() {
-    currentMesh.vertexColixes = new short[currentMesh.vertexCount];
+    thisMesh.vertexColixes = new short[thisMesh.vertexCount];
 
     for (int i = 0; i < nContours; i++) {
       if (thisContour <= 0 || thisContour == i + 1)
@@ -3735,7 +3748,7 @@ class Isosurface extends MeshCollection {
   void createTriangleSet(int nVertex) {
     int k = triangleVertexList[1];
     for (int i = 2; i < nVertex; i++) {
-      currentMesh.addTriangle(triangleVertexList[0], k, triangleVertexList[i]);
+      thisMesh.addTriangle(triangleVertexList[0], k, triangleVertexList[i]);
       k = triangleVertexList[i];
     }
   }
@@ -4995,34 +5008,34 @@ class Isosurface extends MeshCollection {
     colorNeg = colorNegLCAO;
     int sense = (isReverse ? -1 : 1);
     y.cross(z, x);
-    String id = (currentMesh == null ? "lcao" + (++nLCAO) + "_" + lcaoCartoon
-        : currentMesh.thisID);
-    if (currentMesh == null)
+    String id = (thisMesh == null ? "lcao" + (++nLCAO) + "_" + lcaoCartoon
+        : thisMesh.thisID);
+    if (thisMesh == null)
       allocMesh(id);
     defaultColix = Graphics3D.getColix(colorPos);
 
     if (lcaoCartoon.equals("px")) {
-      currentMesh.thisID += "a";
+      thisMesh.thisID += "a";
       createLcaoLobe(x, sense);
       setProperty("thisID", id + "b", null);
       createLcaoLobe(x, -sense);
-      currentMesh.colix = Graphics3D.getColix(colorNeg);
+      thisMesh.colix = Graphics3D.getColix(colorNeg);
       return;
     }
     if (lcaoCartoon.equals("py")) {
-      currentMesh.thisID += "a";
+      thisMesh.thisID += "a";
       createLcaoLobe(y, sense);
       setProperty("thisID", id + "b", null);
       createLcaoLobe(y, -sense);
-      currentMesh.colix = Graphics3D.getColix(colorNeg);
+      thisMesh.colix = Graphics3D.getColix(colorNeg);
       return;
     }
     if (lcaoCartoon.equals("pz")) {
-      currentMesh.thisID += "a";
+      thisMesh.thisID += "a";
       createLcaoLobe(z, sense);
       setProperty("thisID", id + "b", null);
       createLcaoLobe(z, -sense);
-      currentMesh.colix = Graphics3D.getColix(colorNeg);
+      thisMesh.colix = Graphics3D.getColix(colorNeg);
       return;
     }
     if (lcaoCartoon.equals("pxa")) {
@@ -5063,7 +5076,7 @@ class Isosurface extends MeshCollection {
 
   void createLcaoLobe(Vector3f lobeAxis, float factor) {
     initState();
-    Logger.debug("creating isosurface " + currentMesh.thisID);
+    Logger.debug("creating isosurface " + thisMesh.thisID);
     if (lobeAxis == null) {
       setProperty("sphere", new Float(factor / 2f), null);
       return;
@@ -5077,18 +5090,19 @@ class Isosurface extends MeshCollection {
 
   void setModelIndex() {
     setModelIndex(atomIndex);
-    currentMesh.ptCenter.set(center);
-    currentMesh.title = title;
-    currentMesh.jvxlDefinitionLine = jvxlGetDefinitionLine(currentMesh);
+    thisMesh.ptCenter.set(center);
+    thisMesh.title = title;
+    thisMesh.jvxlDefinitionLine = jvxlGetDefinitionLine(thisMesh, false);
+    thisMesh.jvxlInfoLine = jvxlGetDefinitionLine(thisMesh, true);
     if (script != null)
-      currentMesh.scriptCommand = fixScript();
+      thisMesh.scriptCommand = fixScript();
   }
 
   Vector getShapeDetail() {
     Vector V = new Vector();
     for (int i = 0; i < meshCount; i++) {
       Hashtable info = new Hashtable();
-      Mesh mesh = meshes[i];
+      IsosurfaceMesh mesh = isomeshes[i];
       if (mesh == null)
         continue;
       info.put("ID", (mesh.thisID == null ? "<noid>" : mesh.thisID));
@@ -5110,15 +5124,15 @@ class Isosurface extends MeshCollection {
   boolean setsSuccessful;
 
   BitSet[] getSurfaceSet(int level) {
-    if (currentMesh == null)
+    if (thisMesh == null)
       return null;
     if (level == 0) {
       surfaceSet = new BitSet[100];
       nSets = 0;
     }
     setsSuccessful = true;
-    for (int i = 0; i < currentMesh.polygonCount; i++) {
-      int[] p = currentMesh.polygonIndexes[i];
+    for (int i = 0; i < thisMesh.polygonCount; i++) {
+      int[] p = thisMesh.polygonIndexes[i];
       int pt0 = findSet(p[0]);
       int pt1 = findSet(p[1]);
       int pt2 = findSet(p[2]);

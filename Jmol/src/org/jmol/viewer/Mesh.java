@@ -32,7 +32,6 @@ import java.util.Hashtable;
 import org.jmol.g3d.*;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
@@ -42,24 +41,6 @@ class Mesh {
   String thisID;
   boolean isValid = true;
   String scriptCommand;
-  String jvxlFileHeader;
-  String jvxlExtraLine;
-  int jvxlCompressionRatio;
-  String jvxlSurfaceData;
-  String jvxlEdgeData;
-  String jvxlColorData;
-  boolean isJvxlPrecisionColor;
-  Point4f jvxlPlane;
-  String jvxlDefinitionLine;
-  boolean isContoured;
-  boolean isBicolorMap;
-  float mappedDataMin;
-  float mappedDataMax;
-  float valueMappedToRed;
-  float valueMappedToBlue;
-  float cutoff;
-  int nBytes;
-  int nContours;
   boolean hasGridPoints;
   boolean hideBackground;
   BitSet[] surfaceSet;
@@ -133,6 +114,8 @@ class Mesh {
   boolean fillTriangles = true;
 
   static int SEED_COUNT = 25; //optimized for cartoon mesh hermites
+  
+  Mesh() {}
   
   Mesh(Viewer viewer, String thisID, Graphics3D g3d, short colix) {
     this.viewer = viewer;

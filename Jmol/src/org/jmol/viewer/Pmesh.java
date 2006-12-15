@@ -28,7 +28,7 @@ import java.util.BitSet;
 import java.io.BufferedReader;
 import javax.vecmath.Point3f;
 
-class Pmesh extends MeshCollection {
+class Pmesh extends MeshFileCollection {
 
   boolean isOnePerLine;
 

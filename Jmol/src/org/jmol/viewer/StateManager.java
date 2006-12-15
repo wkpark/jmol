@@ -828,7 +828,7 @@ class StateManager {
       if (!set.equals(setPrev))
         appendCmd(s, selectCmd + " " + (set.equals(strAll) ? "*" : set));
       setPrev = set;
-      if (key.indexOf("-") < 0) // - for key means none required
+      if (key.indexOf("-") != 0) // - for key means none required
         appendCmd(s, key);
     }
     return setPrev;

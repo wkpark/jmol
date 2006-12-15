@@ -37,6 +37,7 @@ class Backbone extends Mps {
 
     Bbpolymer(Polymer polymer) {
       super(polymer, 1, 1500, 500, 2000);
+      isActive = true;
     }
 
     void setMad(short mad, BitSet bsSelected) {
@@ -60,6 +61,9 @@ class Backbone extends Mps {
             atomA.addDisplayedBackbone(myVisibilityFlag, isVisible);
             atomB.addDisplayedBackbone(myVisibilityFlag, isVisible);
           }
+          if (bsSizeSet == null)
+            bsSizeSet = new BitSet();
+          bsSizeSet.set(i, isVisible);
           mads[i] = mad;
         }
       }
@@ -73,6 +77,6 @@ class Backbone extends Mps {
           atom.clickabilityFlags |= myVisibilityFlag;
       }
     }
+    
   }
-  
 }

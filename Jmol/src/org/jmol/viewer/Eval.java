@@ -825,8 +825,12 @@ class Eval { //implements Runnable {
     if ((ichEnd = script.indexOf('\r', ichBegin)) == -1
         && (ichEnd = script.indexOf('\n', ichBegin)) == -1)
       ichEnd = script.length();
+    try {
     return script.substring(ichBegin, ichEnd);
-
+    } catch (Exception e) {
+      System.out.println("getLine errpr?? ps=" + pc + " beg="+ichBegin + " end=" + ichEnd);
+    }
+    return "";
   }
 
   String getCommand() {
@@ -4226,6 +4230,7 @@ class Eval { //implements Runnable {
       badArgumentCount();
     }
     Font3D font3d = viewer.getFont3D(fontface, fontstyle, fontsize);
+    viewer.loadShape(shapeType);
     setShapeProperty(shapeType, "font", font3d);
   }
 
@@ -4874,12 +4879,11 @@ class Eval { //implements Runnable {
       str = "bond";
       break;
     case Token.spin:
-      int rate = 10;
       if (statementLength == 4) {
-        rate = intParameter(3);
+        setIntProperty("pickingSpinRate", intParameter(3));
       }
-      setIntProperty("pickingSpinRate", rate);
-      return;
+      str = "spin";
+      break;
     }
     if (str == null) {
       if (token.value instanceof String)

@@ -165,7 +165,7 @@ class Labels extends AtomShape {
     }
 
     if ("font" == propertyName) {
-      byte fid = ((Font3D) value).fid;
+      byte fid =  ((Font3D) value).fid;
       int n = 0;
       for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
@@ -356,7 +356,7 @@ class Labels extends AtomShape {
   
   void setFont(int i, byte fid, int n) {
     if (fids == null || i >= fids.length) {
-      if (fid == defaultFontId)
+      if (fid == zeroFontId)
         return;
       fids = ArrayUtil.ensureLength(fids, i + 1);
     }

@@ -3179,6 +3179,10 @@ public class Viewer extends JmolViewer {
   public void setFloatProperty(String key, float value) {
     //Eval
     while (true) {
+      if (key.equalsIgnoreCase("cameraDepth")) {
+        setCameraDepth(value);
+        break;
+      }
       if (key.equalsIgnoreCase("sheetSmoothing")) {
         setSheetSmoothing(value);
         break;
@@ -3650,6 +3654,11 @@ public class Viewer extends JmolViewer {
     transformManager.setWindowCentered(TF);
   }
 
+  public void setCameraDepth(float screenMultiples) {
+    transformManager.setCameraDepth(screenMultiples);     
+    refresh(1, "set cameraDepth");
+  }
+  
   boolean isCameraAdjustable() {
     return global.adjustCameraFlag;
   }

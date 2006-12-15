@@ -95,6 +95,8 @@ public class DisplayPanel extends JPanel
   private void updateSize() {
     viewer.setScreenDimension(haveDisplay? getSize(dimSize) : startupDimension);
     setRotateMode();
+    if (haveDisplay)
+      status.setStatus(2, dimSize.width + " x " + dimSize.height);
     viewer.refresh(0, "updateSize");
   }
 

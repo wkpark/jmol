@@ -838,7 +838,6 @@ public class Viewer extends JmolViewer {
   public void setColorBackground(String colorName) {
     if (colorName == null || colorName.length() <= 0)
       return;
-    global.setParameterValue("backgroundColor", colorName);
     setBackgroundArgb(Graphics3D.getArgbFromString(colorName));    
   }
 
@@ -2589,9 +2588,11 @@ public class Viewer extends JmolViewer {
     return info;
   }
 
-  synchronized public String scriptCheck(String strScript) {
-    if (strScript == null)
+  boolean checking;
+  public String scriptCheck(String strScript) {
+    if (strScript == null || checking)
       return null;
+    checking = true;
     Object obj = eval.checkScriptSilent(strScript);
     if (obj instanceof String)
       return (String) obj;
@@ -4612,4 +4613,18 @@ public class Viewer extends JmolViewer {
   public int getSyncMode() {
     return statusManager.getSyncMode();
   }
+  
+  /*  
+  void debugStack(String msg) {
+    //what's the right way to do this?
+    try {
+      Logger.error(msg);
+      String t = null;
+      t.substring(3);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+  */
+
 }

@@ -1662,6 +1662,7 @@ class Eval { //implements Runnable {
           return new Point4f(0, 0, 1, -floatParameter(i));
         }
       default:
+        ++i;
         break;
       }
     }

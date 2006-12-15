@@ -198,6 +198,7 @@ class Isosurface extends MeshCollection {
   final static int IS_SILENT = 1 << 6;
   final static int IS_SOLVENTTYPE = 1 << 7;
   final static int HAS_MAXGRID = 1 << 8;
+  final static int CAN_CONTOUR = 1 << 9;
   int dataType;
   int surfaceType;
   int mappingType;
@@ -210,7 +211,7 @@ class Isosurface extends MeshCollection {
   final static int SURFACE_LOBE = 3 | IS_SILENT;
   final static int SURFACE_LCAOCARTOON = 4 | IS_SILENT;
 
-  final static int SURFACE_FUNCTIONXY = 5;
+  final static int SURFACE_FUNCTIONXY = 5 | CAN_CONTOUR;
 
   // getSurface or mapColor:
   final static int SURFACE_SOLVENT = 11 | IS_SOLVENTTYPE | NO_ANISOTROPY;
@@ -218,8 +219,8 @@ class Isosurface extends MeshCollection {
   final static int SURFACE_MOLECULARORBITAL = 13 | NO_ANISOTROPY | HAS_MAXGRID;
   final static int SURFACE_ATOMICORBITAL = 14;
   final static int SURFACE_MEP = 16 | NO_ANISOTROPY | HAS_MAXGRID;
-  final static int SURFACE_FILE = 17;
-  final static int SURFACE_INFO = 18;
+  final static int SURFACE_FILE = 17 | CAN_CONTOUR;
+  final static int SURFACE_INFO = 18 | CAN_CONTOUR;
   final static int SURFACE_MOLECULAR = 19 | IS_SOLVENTTYPE | NO_ANISOTROPY;
 
   // mapColor only:
@@ -644,7 +645,6 @@ class Isosurface extends MeshCollection {
       case SURFACE_NOMAP:
         solventExtendedAtomRadius = solventRadius;
         solventRadius = 0f;
-        isContoured = false;
         break;
       case SURFACE_MOLECULAR:
         solventExtendedAtomRadius = 0f;
@@ -1031,6 +1031,13 @@ class Isosurface extends MeshCollection {
   }
 
   void colorIsosurface() {
+    if (isContoured &&
+        !(jvxlDataIs2dContour 
+            || (dataType & CAN_CONTOUR) != 0
+            || thePlane != null)) {
+      Logger.error("Isosurface error: Cannot contour this type of data.");
+      return;
+    }
     setMapRanges();
     if (isContoured) { //did NOT work here.
       generateContourData(jvxlDataIs2dContour);

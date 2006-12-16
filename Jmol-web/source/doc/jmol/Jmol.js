@@ -1,4 +1,4 @@
-/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 11:58 AM 9/14/2006
+/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 11:06 AM 10/13/2006
 
     based on:
  *
@@ -45,7 +45,10 @@ try{if(typeof(_jmol)!="undefined")exit()
 //            -- renamed Jmol-11.js from Jmol-new.js; JmolApplet.jar from JmolAppletProto.jar
 //	 	 renamed Jmol.js for Jmol 11 distribution
 //            -- modified jmolRestoreOrientation() to be immediate, no 1-second delay
-
+// bob hanson -- jmolScriptWait always returns a string -- 11:23 AM 9/16/2006
+// bh         -- jmolCommandInput()
+// bh         -- jmolSetTranslation(TF) -- forces translation even if there might be message callback issues
+	
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
 
@@ -79,6 +82,10 @@ function jmolInitialize(codebaseDirectory, fileNameOrUseSignedApplet) {
   _jmol.initialized = true;
 }
 
+function jmolSetTranslation(TF) {
+  _jmol.params.doTranslate = ''+TF;
+}
+
 function _jmolGetJarFilename(fileNameOrFlag) {
   _jmol.archivePath =
     (typeof(fileNameOrFlag) == "string"  ? fileNameOrFlag : (fileNameOrFlag ?  "JmolAppletSigned" : "JmolApplet") + "0.jar");
@@ -90,19 +97,19 @@ function jmolSetDocument(doc) {
 
 function jmolSetAppletColor(boxbgcolor, boxfgcolor, progresscolor) {
   _jmolInitCheck();
-  _jmol.boxbgcolor = boxbgcolor;
+  _jmol.params.boxbgcolor = boxbgcolor;
   if (boxfgcolor)
-    _jmol.boxfgcolor = boxfgcolor
+    _jmol.params.boxfgcolor = boxfgcolor
   else if (boxbgcolor == "white" || boxbgcolor == "#FFFFFF")
-    _jmol.boxfgcolor = "black";
+    _jmol.params.boxfgcolor = "black";
   else
-    _jmol.boxfgcolor = "white";
+    _jmol.params.boxfgcolor = "white";
   if (progresscolor)
-    _jmol.progresscolor = progresscolor;
+    _jmol.params.progresscolor = progresscolor;
   if (_jmol.debugAlert)
-    alert(" boxbgcolor=" + _jmol.boxbgcolor +
-          " boxfgcolor=" + _jmol.boxfgcolor +
-          " progresscolor=" + _jmol.progresscolor);
+    alert(" boxbgcolor=" + _jmol.params.boxbgcolor +
+          " boxfgcolor=" + _jmol.params.boxfgcolor +
+          " progresscolor=" + _jmol.params.progresscolor);
 }
 
 function jmolApplet(size, script, nameSuffix) {
@@ -235,6 +242,22 @@ function jmolLink(script, label, id, title) {
   return _jmolDocumentWrite(t);
 }
 
+function jmolCommandInput(label, size, id, title) {
+  _jmolInitCheck();
+  if (id == undefined || id == null)
+    id = "jmolCmd" + _jmol.linkCount;
+  if (label == undefined || label == null)
+    label = "Execute";
+  if (size == undefined || isNaN(size))
+    size = 60;
+  ++_jmol.linkCount;
+  var t = "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><input name='" + id + "' id='" + id + 
+          "' size='"+size+"'><input type=button value = '"+label+"' onClick=\"javascript:jmolScript(document.getElementById('"+id+"').value)\"/></span>";
+  if (_jmol.debugAlert)
+    alert(t);
+  return _jmolDocumentWrite(t);
+}
+
 function jmolMenu(arrayOfMenuItems, size, id, title) {
   _jmolInitCheck();
   if (id == undefined || id == null)
@@ -333,6 +356,13 @@ function jmolLoadInlineScript(model, script, targetSuffix) {
   if (applet)applet.loadInline(model, script);
 }
 
+function jmolLoadInlineArray(ModelArray, script, targetSuffix) {
+  if (!model)return
+  if (!script)script=""
+  var applet=_jmolGetApplet(targetSuffix);
+  if (applet)applet.loadInlineArray(ModelArray, script);
+}
+
 function jmolCheckBrowser(action, urlOrMessage, nowOrLater) {
   if (typeof action == "string") {
     action = action.toLowerCase();
@@ -410,11 +440,6 @@ var _jmol = {
   currentDocument: document,
 
   debugAlert: false,
-  bgcolor: "black",
-  progresscolor: "blue",
-  boxbgcolor: "black",
-  boxfgcolor: "white",
-  boxmessage: "Downloading JmolApplet ...",
   
   codebase: ".",
   modelbase: ".",
@@ -444,11 +469,14 @@ var _jmol = {
   
   targetSuffix: 0,
   targetText: "",
-  logLevel: 4,
-  defaultLogLevel: 4,
   scripts: [""],
-  callbacks: {"ReadyCallback":"_jmolReadyCallback"},
-  
+  params: {
+	progressbar: "true",
+	progresscolor: "blue",
+	boxbgcolor: "black",
+	boxfgcolor: "white",
+	boxmessage: "Downloading JmolApplet ...",
+  },
   ua: navigator.userAgent.toLowerCase(),
   uaVersion: parseFloat(navigator.appVersion),
   
@@ -558,14 +586,17 @@ with (_jmol) {
    (os != "mac" && browser == "mozilla" && browserVersion >= 5) ||
    (os == "win" && browser == "opera" && browserVersion >= 8) ||
    (os == "mac" && browser == "safari" && browserVersion >= 412.2);
+
+ doTranslate = true;
+ haveSetTranslate = false;
 }
 
 function jmolSetCallback(callbackName,funcName) {
-  _jmol.callbacks[callbackName] = funcName
+  _jmol.params[callbackName] = funcName
 }
 
 function jmolSetLogLevel(n) {
-  _jmol.logLevel = n;
+  _jmol.params.logLevel = ''+n;
 }
 
 function _jmolApplet(size, inlineModel, script, nameSuffix) {
@@ -581,20 +612,19 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
 
     var tHeader, tFooter;
 
+    if (useIEObject || useHtml4Object) {
+      params.name = 'jmolApplet' + nameSuffix;
+      params.archive = archivePath;
+      params.mayscript = 'true';
+      params.codebase = codebase;
+    }
     if (useIEObject) { // use MSFT IE6 object tag with .cab file reference
-      var winCodebase = "";
-      if (windowsCabUrl)
-         winCodebase = " codebase='" + windowsCabUrl + "'\n";
+      winCodebase = (windowsCabUrl ? " codebase='" + windowsCabUrl + "'\n" : "");
       tHeader = 
         "<object name='jmolApplet" + nameSuffix +
         "' id='jmolApplet" + nameSuffix + "' " + appletCssText + "\n" +
-	" classid='" + windowsClassId + "'\n" +
-        winCodebase + widthAndHeight + ">\n" +
-        "  <param name='name' value='jmolApplet" + nameSuffix + "' />\n" +
-        "  <param name='code' value='JmolApplet' />\n" +
-        "  <param name='archive' value='" + archivePath + "' />\n" +
-        "  <param name='mayscript' value='true' />\n" +
-        "  <param name='codebase' value='" + codebase + "' />\n";
+	" classid='" + windowsClassId + "'\n" + winCodebase + widthAndHeight + ">\n";
+        params.code = 'JmolApplet';
       tFooter = "</object>";
     } else if (useHtml4Object) { // use HTML4 object tag
       tHeader = 
@@ -602,11 +632,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
         "' id='jmolApplet" + nameSuffix + "' " + appletCssText + "\n" +
 	" classid='java:JmolApplet'\n" +
         " type='application/x-java-applet'\n" +
-        widthAndHeight + ">\n" +
-        "  <param name='name' value='jmolApplet" + nameSuffix + "' />\n" +
-        "  <param name='archive' value='" + archivePath + "' />\n" +
-        "  <param name='mayscript' value='true' />\n" +
-        "  <param name='codebase' value='" + codebase + "' />\n";
+        widthAndHeight + ">\n";
       tFooter = "</object>";
     } else { // use applet tag
       tHeader = 
@@ -619,28 +645,12 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
         "' mayscript='true'>\n";
       tFooter = "</applet>";
     }
-    var tParams =
-      (logLevel != defaultLogLevel ? "  <param name='logLevel' value='"+logLevel+"' />\n":"") +
-      "  <param name='progressbar' value='true' />\n" +
-      "  <param name='progresscolor' value='" +
-      progresscolor + "' />\n" +
-      "  <param name='boxmessage' value='" +
-      boxmessage + "' />\n" +
-      "  <param name='boxbgcolor' value='" +
-      boxbgcolor + "' />\n" +
-      "  <param name='boxfgcolor' value='" +
-      boxfgcolor + "' />\n"
-    
-    if (inlineModel)
-      tParams += "  <param name='loadInline' value='" + inlineModel + "' />\n";
-    if (script)
-      tParams += "  <param name='script' value='" +
-                 _jmolSterilizeScript(script) + "' />\n";
+        
     var visitJava;
     if (isIEWin || useHtml4Object) {
       visitJava =
         "<p style='background-color:yellow;" +
-        "width:" + sz[0] + ";height:" + sz[1] + ";" + 
+        "width:" + sz[0] + "px;height:" + sz[1] + "px;" + 
         // why doesn't this vertical-align work?
 	"text-align:center;vertical-align:middle;'>\n" +
         "You do not have Java applets<br />\n" +
@@ -660,8 +670,9 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
         "Visit <a href='http://www.java.com'>www.java.com</a>" +
         "</td></tr></table>";
     }
-    tParams = _jmolAddCallbacks(tParams);
-    var t = tHeader + tParams + visitJava + tFooter;
+    params.loadInline = (inlineModel ? inlineModel : "");
+    params.script = (script ? _jmolSterilizeScript(script) : "");
+    var t = tHeader + _jmolParams() + visitJava + tFooter;
     jmolSetTarget(nameSuffix);
     ready["jmolApplet" + nameSuffix] = false;
     if (_jmol.debugAlert)
@@ -670,10 +681,11 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
   }
 }
 
-function _jmolAddCallbacks(t) {
- for (i in _jmol.callbacks)
-	if(_jmol.callbacks[i]!="")
-		 t+="  <param name='"+i+"' value='"+_jmol.callbacks[i]+"' />\n";
+function _jmolParams() {
+ var t = "";
+ for (i in _jmol.params)
+	if(_jmol.params[i]!="")
+		 t+="  <param name='"+i+"' value='"+_jmol.params[i]+"' />\n";
  return t
 }
 
@@ -776,8 +788,8 @@ function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, 
   if (! separatorHtml)
     separatorHtml = "";
   var scriptIndex = _jmolAddScript(script);
-  return "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><input name='" + groupName +
-         " id='"+id+"' type='radio' onClick='_jmolClick(" +
+  return "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><input name='" 
+	+ groupName + "' id='"+id+"' type='radio' onClick='_jmolClick(" +
          scriptIndex + _jmol.targetText +
          ");return true;' onMouseover='_jmolMouseOver(" +
          scriptIndex +
@@ -1052,10 +1064,12 @@ function jmolDecodeJSON(s) {
 
 function jmolScriptWait(script, targetSuffix) {
   if(!targetSuffix)targetSuffix="0"
-  var ret=jmolScriptWaitAsArray(script, targetSuffix)
-//  if(typeof ret == "object" && ret.length > 0 
-//	&& ret[0].length > 0 && ret[0][0].length > 3)return ret[0][0][3];
-  return ret
+  var Ret=jmolScriptWaitAsArray(script, targetSuffix)
+  var s = ""
+  for(i=Ret.length;--i>=0;)
+  for(j=0;j< Ret[i].length;j++)
+	s+=Ret[i][j]+"\n"
+  return s
 }
 
 function jmolScriptWaitAsArray(script, targetSuffix) {
@@ -1064,22 +1078,15 @@ function jmolScriptWaitAsArray(script, targetSuffix) {
   jmolGetStatus("scriptEcho,scriptMessage,scriptStatus,scriptError",targetSuffix)
   if (script) {
     _jmolCheckBrowser();
-    if (targetSuffix == "all") {
-      with (_jmol) {
-	for (var i = 0; i < appletSuffixes.length; ++i) {
-	  var applet = _jmolGetApplet(appletSuffixes[i]);
-          if (applet) ret += applet.scriptWait(script);
-        }
-      }
-    } else {
-      var applet=_jmolGetApplet(targetSuffix);
-      if (applet) ret += applet.scriptWait(script);
-    }
+    var applet=_jmolGetApplet(targetSuffix);
+    if (applet) ret += applet.scriptWait(script);
+    ret = _jmolEvalJSON(ret,"jmolStatus")
+    if(typeof ret == "object")
+	return ret
   }
-  return _jmolEvalJSON(ret,"jmolStatus")
  }catch(e){
-  return ""
  }
+  return [[ret]]
 }
 
 

@@ -958,7 +958,7 @@ class TransformManager {
       else {
         ptNav.z = Float.NaN;
         zoomBy(1);
-        //newNavigationOffset.z -= 2;
+        newNavigationOffset.z = -2;
         //navZOffset -= 2;
       }
       break;
@@ -970,7 +970,7 @@ class TransformManager {
       else {
         ptNav.z = Float.NaN;
         zoomBy(-1);
-        //newNavigationOffset.z += 2;
+        newNavigationOffset.z = 2;
         //navZOffset += 2;
       }
       break;
@@ -1005,9 +1005,27 @@ class TransformManager {
     boolean isNewXY = Float.isNaN(ptNav.y);
     boolean isNewZ = Float.isNaN(ptNav.z);
     calcCameraFactors();
-    if (isReset || isNewZ) {
+    if (isNewZ) {
+      transformPoint(navigationCenter, ptNav);
+      int x = scaleToScreen(point3iScreenTemp.z, (int) (rotationRadius * 1000));
+      //calculate the apparent z viewing position
+      float calc = (2f * viewer.getScreenWidth() - x / 4) / x;
+      if (calc < 0)
+        calc = 1 - (float) Math.exp(-calc * 3);
+      //calculate the viewing vector, and new z position
+      ptNav.z += (newNavigationOffset.z < 0 ? 100 : -100);
+      unTransformPoint(ptNav, pointT);
+      vectorT.sub(navigationCenter, pointT);
+      vectorT.normalize();
+      vectorT.scale(rotationRadius);
+      vectorT.scale(calc);
+      pointT.set(navigationCenter);
+      pointT.add(vectorT);
+      transformPoint(pointT);
+      ptNav.z = point3fScreenTemp.z;
+      unTransformPoint(ptNav, navigationCenter);
+    } else if (isReset) {
       isNavigationMode = false;
-      navZOffset = 0;
       transformPoint(fixedRotationCenter, ptNav);
       int x = scaleToScreen(point3iScreenTemp.z, (int) (rotationRadius * 1000));
       //calculate the apparent z viewing position
@@ -1025,14 +1043,8 @@ class TransformManager {
       pointT.add(vectorT);
       transformPoint(pointT);
       ptNav.z = point3fScreenTemp.z;
-      if (isNewZ) {
-        fixedNavigationOffset.z = ptNav.z;
-        isNavigationMode = true;
-        unTransformPoint(fixedNavigationOffset, navigationCenter);
-      } else {
         fixedNavigationOffset.set(ptNav);
         findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
-      }
       isNavigationMode = true;
     } else if (isNewXY || !navigating) {
       if (navigating)

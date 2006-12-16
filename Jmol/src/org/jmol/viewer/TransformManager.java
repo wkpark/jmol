@@ -644,9 +644,8 @@ class TransformManager {
       // a slab percentage of 0 should map to -diameter
       float radius = rotationRadius * scalePixelsPerAngstrom;
       float center = cameraDistance + screenPixelCount / 2f;
-//          * (100 - zoomPercent) / 100f;
       if (slabPercentSetting == 100 && isNavigationMode)
-        slabValue = (int) fixedNavigationOffset.z;// + navZOffset;
+        slabValue = (int)navZOffset;
       else
         slabValue = (int) (((50 - slabPercentSetting) * radius / 50) + center);
       depthValue = (int) (((50 - depthPercentSetting) * radius / 50) + center);
@@ -931,7 +930,7 @@ class TransformManager {
 
   Point3f fixedNavigationOffset = new Point3f();
   Point3f newNavigationOffset = new Point3f();
-  int navZOffset;
+  float navZOffset;
 
   synchronized void navigate(int keyWhere, int modifiers) {
     if (!isNavigationMode)
@@ -959,7 +958,7 @@ class TransformManager {
         ptNav.z = Float.NaN;
         zoomBy(1);
         newNavigationOffset.z = -2;
-        //navZOffset -= 2;
+        navZOffset -= 1;
       }
       break;
     case KeyEvent.VK_DOWN:
@@ -971,7 +970,7 @@ class TransformManager {
         ptNav.z = Float.NaN;
         zoomBy(-1);
         newNavigationOffset.z = 2;
-        //navZOffset += 2;
+        navZOffset += 1;
       }
       break;
     case KeyEvent.VK_LEFT:
@@ -1005,31 +1004,12 @@ class TransformManager {
     boolean isNewXY = Float.isNaN(ptNav.y);
     boolean isNewZ = Float.isNaN(ptNav.z);
     calcCameraFactors();
-    if (isNewZ) {
-      transformPoint(navigationCenter, ptNav);
-      int x = scaleToScreen(point3iScreenTemp.z, (int) (rotationRadius * 1000));
-      //calculate the apparent z viewing position
-      float calc = (2f * viewer.getScreenWidth() - x / 4) / x;
-      if (calc < 0)
-        calc = 1 - (float) Math.exp(-calc * 3);
-      //calculate the viewing vector, and new z position
-      ptNav.z += (newNavigationOffset.z < 0 ? 100 : -100);
-      unTransformPoint(ptNav, pointT);
-      vectorT.sub(navigationCenter, pointT);
-      vectorT.normalize();
-      vectorT.scale(rotationRadius);
-      vectorT.scale(calc);
-      pointT.set(navigationCenter);
-      pointT.add(vectorT);
-      transformPoint(pointT);
-      ptNav.z = point3fScreenTemp.z;
-      unTransformPoint(ptNav, navigationCenter);
-    } else if (isReset) {
+    if (isReset) {
       isNavigationMode = false;
       transformPoint(fixedRotationCenter, ptNav);
       int x = scaleToScreen(point3iScreenTemp.z, (int) (rotationRadius * 1000));
       //calculate the apparent z viewing position
-      float calc = (2f * viewer.getScreenWidth() - x / 4) / x;
+      float calc = (2f * viewer.getScreenWidth() - x / 4) / x * cameraDepth/3;
       if (calc < 0)
         calc = 1 - (float) Math.exp(-calc * 3);
       //calculate the viewing vector, and new z position
@@ -1046,10 +1026,48 @@ class TransformManager {
         fixedNavigationOffset.set(ptNav);
         findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
       isNavigationMode = true;
+      System.out.println("reset:"+navigationCenter + fixedRotationCenter);
+      navZOffset = ptNav.z; 
+    } else if (isNewZ) {
+      /*
+       * First, I know this is a hack. What I'm trying to do is define
+       * a forward movement of the navigation point based on the zoom
+       * 
+       * Actually, maybe all it is is an adjustment to the CLIPPING point.
+       * The question is: what do we do that so that it is clipping at
+       * just the right place? I really don't know how to do this.
+       * 
+       * Every thing else is OK, I think.
+       * 
+       */
+      /*
+      System.out.println("Z1:"+navigationCenter + fixedRotationCenter);
+      transformPoint(navigationCenter, ptNav);
+      int x = scaleToScreen(point3iScreenTemp.z, (int) (rotationRadius * 1000));
+      //calculate the apparent z viewing position
+      float calc = (2f * screenPixelCount - x / 4) / x * cameraDepth/3;
+      if (calc < 0)
+        calc = 1 - (float) Math.exp(-calc * 3);
+      //calculate the viewing vector, and new z position
+      ptNav.z += (newNavigationOffset.z < 0 ? 100 : -100);
+      unTransformPoint(ptNav, pointT);
+      vectorT.sub(navigationCenter, pointT);
+      vectorT.normalize();
+      vectorT.scale(rotationRadius);
+      vectorT.scale(calc);
+      pointT.set(navigationCenter);
+      pointT.add(vectorT);
+      transformPoint(pointT);
+      ptNav.z = point3fScreenTemp.z;
+      unTransformPoint(ptNav, pointT);
+      navigationCenter.set(pointT);
+      System.out.println("Z2:"+navigationCenter);
+      */
     } else if (isNewXY || !navigating) {
       if (navigating)
         fixedNavigationOffset.set(newNavigationOffset);
       findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
+      System.out.println("not:"+navigationCenter + fixedRotationCenter);
     }
     //System.out.println("nav:" + navigationCenter + " rot:" + fixedRotationCenter + " dist:" + navigationCenter.distance(fixedRotationCenter));
     ptNav.set(0, 0, 0);
@@ -1282,7 +1300,6 @@ class TransformManager {
       pt.x += referenceOffset.x;
       pt.y += referenceOffset.y;
     }
-    //pt.z -= screenCenterOffset;// - navZOffset;
     matrixUnTransform(pt, coordPt);
   }
 

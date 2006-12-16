@@ -30,7 +30,6 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.InputEvent;
 import java.util.BitSet;
@@ -639,17 +638,19 @@ class TransformManager {
   private void calcSlabAndDepthValues() {
     slabValue = 0;
     depthValue = Integer.MAX_VALUE;
+    //System.out.println("calcSlab " + slabEnabled);
     if (slabEnabled) {
       // a slab percentage of 100 should map to zero
       // a slab percentage of 0 should map to -diameter
       float radius = rotationRadius * scalePixelsPerAngstrom;
-      float center = cameraDistance + screenPixelCount / 2f
-          * (100 - zoomPercent) / 100f;
-      if (slabPercentSetting == 0 && isNavigationMode)
-        slabValue = (int) fixedNavigationOffset.z;
+      float center = cameraDistance + screenPixelCount / 2f;
+//          * (100 - zoomPercent) / 100f;
+      if (slabPercentSetting == 100 && isNavigationMode)
+        slabValue = (int) fixedNavigationOffset.z;// + navZOffset;
       else
-        slabValue = (int) (((100 - slabPercentSetting) * 2 * radius / 100) + center);
-      depthValue = (int) (((100 - depthPercentSetting) * 2 * radius / 100) + center);
+        slabValue = (int) (((50 - slabPercentSetting) * radius / 50) + center);
+      depthValue = (int) (((50 - depthPercentSetting) * radius / 50) + center);
+      //System.out.println("sv=" + slabValue + ","+slabPercentSetting+" dv=" + depthValue +","+depthPercentSetting+ " cent=" + center + " cdist=" + cameraDistance + " ps="+ perspectiveScale+" cdepth=" + cameraDepth + " radius="+radius );
     }
   }
 
@@ -784,7 +785,7 @@ class TransformManager {
       return;
     cameraDepth = screenMultiples;
   }
-    
+ 
   /* ***************************************************************
    * SCREEN SCALING
    ****************************************************************/
@@ -930,6 +931,7 @@ class TransformManager {
 
   Point3f fixedNavigationOffset = new Point3f();
   Point3f newNavigationOffset = new Point3f();
+  int navZOffset;
 
   synchronized void navigate(int keyWhere, int modifiers) {
     if (!isNavigationMode)
@@ -956,6 +958,8 @@ class TransformManager {
       else {
         ptNav.z = Float.NaN;
         zoomBy(1);
+        //newNavigationOffset.z -= 2;
+        //navZOffset -= 2;
       }
       break;
     case KeyEvent.VK_DOWN:
@@ -966,6 +970,8 @@ class TransformManager {
       else {
         ptNav.z = Float.NaN;
         zoomBy(-1);
+        //newNavigationOffset.z += 2;
+        //navZOffset += 2;
       }
       break;
     case KeyEvent.VK_LEFT:
@@ -998,8 +1004,10 @@ class TransformManager {
     boolean isReset = Float.isNaN(ptNav.x);
     boolean isNewXY = Float.isNaN(ptNav.y);
     boolean isNewZ = Float.isNaN(ptNav.z);
+    calcCameraFactors();
     if (isReset || isNewZ) {
       isNavigationMode = false;
+      navZOffset = 0;
       transformPoint(fixedRotationCenter, ptNav);
       int x = scaleToScreen(point3iScreenTemp.z, (int) (rotationRadius * 1000));
       //calculate the apparent z viewing position
@@ -1007,7 +1015,7 @@ class TransformManager {
       if (calc < 0)
         calc = 1 - (float) Math.exp(-calc * 3);
       //calculate the viewing vector, and new z position
-      ptNav.z += 1000;
+      ptNav.z += 100;
       unTransformPoint(ptNav, pointT);
       vectorT.sub(fixedRotationCenter, pointT);
       vectorT.normalize();
@@ -1019,18 +1027,21 @@ class TransformManager {
       ptNav.z = point3fScreenTemp.z;
       if (isNewZ) {
         fixedNavigationOffset.z = ptNav.z;
+        isNavigationMode = true;
+        unTransformPoint(fixedNavigationOffset, navigationCenter);
       } else {
         fixedNavigationOffset.set(ptNav);
+        findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
       }
-      findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
       isNavigationMode = true;
     } else if (isNewXY || !navigating) {
-      if (isNewXY)
+      if (navigating)
         fixedNavigationOffset.set(newNavigationOffset);
       findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
     }
+    //System.out.println("nav:" + navigationCenter + " rot:" + fixedRotationCenter + " dist:" + navigationCenter.distance(fixedRotationCenter));
     ptNav.set(0, 0, 0);
-    matrixTransform.transform(navigationCenter, referenceOffset);
+    matrixTransform(navigationCenter, referenceOffset);
     transformPoint(fixedRotationCenter, fixedTranslation);
   }
 
@@ -1052,8 +1063,7 @@ class TransformManager {
     pointT.x /= f;
     pointT.y /= f;
     pointT.z = screenXYZ.z;
-    matrixTemp.invert(matrixTransform);
-    matrixTemp.transform(pointT, center);
+    matrixUnTransform(pointT, center);
     isNavigationMode = true;
   }
 
@@ -1063,22 +1073,30 @@ class TransformManager {
 
   private float cameraScaleFactor;
   private float perspectiveScale;
+  private float screenCenterOffset;
   
   
   synchronized void finalizeTransformParameters() {
     haveNotifiedNaN = false;
-    cameraDistance = cameraDepth * screenPixelCount;
-    cameraScaleFactor = 1 + 0.5f / cameraDepth;
-    perspectiveScale = cameraDistance * cameraScaleFactor;
+    calcCameraFactors();
     calcTransformMatrix();
-    calcSlabAndDepthValues();
     fixedRotationOffset.set(fixedTranslation);
-    matrixTransform.transform(navigationCenter, pointT);
+    matrixTransform(navigationCenter, pointT);
     if (isNavigationMode) {
       recenterNavigationPoint();
     }
+    transformPoint(navigationCenter, fixedNavigationOffset);
+    //System.out.println("finalize nav pt,offset:"+navigationCenter + fixedNavigationOffset);
+    calcSlabAndDepthValues();
   }
 
+  void calcCameraFactors() {
+    cameraDistance = cameraDepth * screenPixelCount;
+    screenCenterOffset = cameraDistance + screenPixelCount /2f;
+    cameraScaleFactor = 1 + 0.5f / cameraDepth;
+    perspectiveScale = cameraDistance * cameraScaleFactor;
+  }
+  
   synchronized private void calcTransformMatrix() {
 
     matrixTransform.setIdentity();
@@ -1101,7 +1119,7 @@ class TransformManager {
       vectorTemp.z = (cameraDistance + screenPixelCount / 2f * zoomPercent / 100f)
           / scalePixelsPerAngstrom;
     matrixTemp.setZero();
-    matrixTemp.setTranslation(vectorTemp);
+//    matrixTemp.setTranslation(vectorTemp);
     if (axesOrientationRasmol)
       matrixTransform.add(matrixTemp); // make all z positive
     else
@@ -1117,8 +1135,8 @@ class TransformManager {
     // note that the image is still centered at 0, 0 in the xy plane
     // all z coordinates are (should be) >= 0
     // translations come later (to deal with perspective)
-    //System.out.println(" calculating matrix with scale "
-      //  + scalePixelsPerAngstrom + " " + cameraDistance+" "+screenCenterOffset + "\n"+viewer.getTestFlag2()+" "+perspectiveDepth+matrixTransform);
+    //System.out.println(" calculating matrix with scale="
+      //  + scalePixelsPerAngstrom + " cdist=" + cameraDistance+" "+ "\n"+matrixTransform);
   }
 
   Matrix4f getUnscaledTransformMatrix() {
@@ -1149,11 +1167,27 @@ class TransformManager {
    * @return POINTER TO point3iScreenTemp
    */
   synchronized Point3i transformPoint(Point3f pointAngstroms) {
-    matrixTransform.transform(pointAngstroms, point3fScreenTemp);
+    matrixTransform(pointAngstroms, point3fScreenTemp);
     //System.out.println(pointAngstroms+" "+point3fScreenTemp);
     return adjustedTemporaryScreenPoint();
   }
 
+  void matrixTransform(Point3f angstroms, Point3f screen) {
+    matrixTransform.transform(angstroms, screen);
+    screen.z += screenCenterOffset;
+  }
+  
+  void matrixTransform(Vector3f angstroms, Vector3f screen) {
+    matrixTransform.transform(angstroms, screen);
+    screen.z += screenCenterOffset;
+  }
+
+  void matrixUnTransform(Point3f screen, Point3f angstroms) {
+   screen.z -= screenCenterOffset;
+   matrixTemp.invert(matrixTransform);
+   matrixTemp.transform(screen, angstroms);   
+  }
+  
   Point3i adjustedTemporaryScreenPoint() {
 
     //fixedRotation point is at the origin initially
@@ -1236,15 +1270,15 @@ class TransformManager {
       pt.x += referenceOffset.x;
       pt.y += referenceOffset.y;
     }
-    matrixTemp.invert(matrixTransform);
-    matrixTemp.transform(pt, coordPt);
+    //pt.z -= screenCenterOffset;// - navZOffset;
+    matrixUnTransform(pt, coordPt);
   }
 
   void transformPoint(Point3f pointAngstroms, Point3f screen) {
 
     //used solely by RocketsRenderer
 
-    matrixTransform.transform(pointAngstroms, point3fScreenTemp);
+    matrixTransform(pointAngstroms, point3fScreenTemp);
     adjustedTemporaryScreenPoint();
     screen.set(point3fScreenTemp);
   }
@@ -1253,9 +1287,9 @@ class TransformManager {
     if (vibrationOn && vibrationVector != null) {
       point3fVibrationTemp.scaleAdd(vibrationAmplitude, vibrationVector,
           pointAngstroms);
-      matrixTransform.transform(point3fVibrationTemp, point3fScreenTemp);
+      matrixTransform(point3fVibrationTemp, point3fScreenTemp);
     } else {
-      matrixTransform.transform(pointAngstroms, point3fScreenTemp);
+      matrixTransform(pointAngstroms, point3fScreenTemp);
     }
     return adjustedTemporaryScreenPoint();
   }
@@ -1266,7 +1300,7 @@ class TransformManager {
   }
 
   void transformVector(Vector3f vectorAngstroms, Vector3f vectorTransformed) {
-    matrixTransform.transform(vectorAngstroms, vectorTransformed);
+    matrixTransform(vectorAngstroms, vectorTransformed);
   }
 
   /* ***************************************************************

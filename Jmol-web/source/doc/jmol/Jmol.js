@@ -475,7 +475,7 @@ var _jmol = {
 	progresscolor: "blue",
 	boxbgcolor: "black",
 	boxfgcolor: "white",
-	boxmessage: "Downloading JmolApplet ...",
+	boxmessage: "Downloading JmolApplet ..."
   },
   ua: navigator.userAgent.toLowerCase(),
   uaVersion: parseFloat(navigator.appVersion),

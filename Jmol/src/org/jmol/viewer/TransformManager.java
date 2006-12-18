@@ -640,15 +640,15 @@ class TransformManager {
     depthValue = Integer.MAX_VALUE;
     //System.out.println("calcSlab " + slabEnabled);
     if (slabEnabled) {
-      if (perspectiveDepth && visualRange > 0) {
+      float radius = rotationRadius * scalePixelsPerAngstrom;
+      float center = cameraDistance + screenPixelCount / 2f;
+      if (perspectiveDepth && visualRange > 0 && slabPercentSetting == 100) {
         slabValue = (int) fixedNavigationOffset.z - 1;
         depthValue = Integer.MAX_VALUE;
         return; 
       }
       // a slab percentage of 100 should map to zero
       // a slab percentage of 0 should map to -diameter
-      float radius = rotationRadius * scalePixelsPerAngstrom;
-      float center = cameraDistance + screenPixelCount / 2f;
       slabValue = (int) (((50 - slabPercentSetting) * radius / 50) + center);
       depthValue = (int) (((50 - depthPercentSetting) * radius / 50) + center);
       //System.out.println("sv=" + slabValue + ","+slabPercentSetting+" dv=" + depthValue +","+depthPercentSetting+ " cent=" + center + " cdist=" + cameraDistance + " ps="+ perspectiveScale+" cdepth=" + cameraDepth + " radius="+radius );

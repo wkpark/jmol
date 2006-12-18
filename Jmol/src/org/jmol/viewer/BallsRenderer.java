@@ -72,23 +72,21 @@ class BallsRenderer extends ShapeRenderer {
     if (frame.atomCount > 0 && viewer.getNavigating()) {
       //testing here
       Point3f T = new Point3f(viewer.getNavigationOffset());
-      g3d.fillSphereCentered(Graphics3D.GOLD, 6, (int)T.x, (int)T.y,(int)T.z);
-      //System.out.println("ballsrend navCenter="
-        //  + viewer.getNavigationOffset() + T);
-      Point3i S = new Point3i();
-      viewer.transformPoint(viewer.getRotationCenter(), S);
-      g3d.fillSphereCentered(Graphics3D.RED, 8, S.x, S.y, S.z);
-      //System.out.println("ballsrend rotCenter="+S);
-      //Point3f P = new Point3f();
-      //T.set(S.x, S.y, S.z);
-      //int x = viewer.scaleToScreen(S.z, (int)(viewer.getRotationRadius()*1000/4));
-      //T.x += x;
-      //float calc = (2*viewer.getScreenWidth()-x)/(4f*x);
-      //if (calc < 0)
-        //calc = 1-(float)Math.exp(-calc * 3);
-      //P.set(S.x, S.y, S.z);
-      //g3d.fillCylinderBits(Graphics3D.WHITE,Graphics3D.ENDCAPS_FLAT,5,T,P);
-      //System.out.println("ballsrend rotCenter="+viewer.getRotationCenter() + S+" rad=" + viewer.getRotationRadius() + "\n scalePixPerAng=" + viewer.getScalePixelsPerAngstrom() + " w="+viewer.getScreenWidth() + " x=" + x + "  calc="+calc);
+      int x = (int)T.x;
+      int y = (int)T.y;
+      int z = (int)T.z;
+      short colix = Graphics3D.GOLD;
+      g3d.drawLine(colix, colix, x-10, y, z, x+10, y, z);
+      g3d.drawLine(colix, colix, x, y-10, z, x, y+10, z);
+      g3d.drawLine(colix, colix, x-4, y-4, z, x+6, y-4, z);
+      g3d.drawLine(colix, colix, x+4, y-4, z, x+4, y+6, z);
+      g3d.drawLine(colix, colix, x+4, y+4, z, x-6, y+4, z);
+      g3d.drawLine(colix, colix, x-4, y+4, z, x-4, y-6, z);
+
+//      g3d.fillSphereCentered(colix, 6, (int)T.x, (int)T.y,(int)T.z);
+//      Point3i S = new Point3i();
+  //    viewer.transformPoint(viewer.getRotationCenter(), S);
+    //  g3d.fillSphereCentered(Graphics3D.RED, 8, S.x, S.y, S.z);
     }
   }
 

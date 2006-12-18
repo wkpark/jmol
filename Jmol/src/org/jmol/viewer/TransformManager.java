@@ -642,7 +642,7 @@ class TransformManager {
     if (slabEnabled) {
       float radius = rotationRadius * scalePixelsPerAngstrom;
       float center = cameraDistance + screenPixelCount / 2f;
-      if (perspectiveDepth && visualRange > 0 && slabPercentSetting == 100) {
+      if (perspectiveDepth && visualRange > 0 && slabPercentSetting == 0) {
         slabValue = (int) fixedNavigationOffset.z - 1;
         depthValue = Integer.MAX_VALUE;
         return; 

@@ -1022,23 +1022,24 @@ class TransformManager {
     boolean isReset = Float.isNaN(ptNav.x);
     boolean isNewXY = Float.isNaN(ptNav.y);
     boolean isNewZ = Float.isNaN(ptNav.z);
+    ptNav.set(0, 0, 0);
     if (isReset) {
       isNavigationMode = false;
       navigationCenter.set(fixedRotationCenter);
       transformPoint(navigationCenter, fixedNavigationOffset);
       fixedNavigationOffset.z = findZFromVisualRange();
       findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
-    } else if (isNewZ) {
-      fixedNavigationOffset.z = findZFromVisualRange();
     } else if (isNewXY || !navigating) {
       if (navigating)
         fixedNavigationOffset.set(newNavigationOffset);
-      findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);      
+      findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
     }
-    ptNav.set(0, 0, 0);
     matrixTransform(navigationCenter, referenceOffset);
     transformPoint(fixedRotationCenter, fixedTranslation);
-    transformPoint(navigationCenter, fixedNavigationOffset);
+    if (isNewZ)
+      fixedNavigationOffset.z = findZFromVisualRange();
+    else
+      transformPoint(navigationCenter, fixedNavigationOffset);
   }
 
   /**

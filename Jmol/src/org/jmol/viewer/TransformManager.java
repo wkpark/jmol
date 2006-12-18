@@ -617,7 +617,7 @@ class TransformManager {
 
   void slabToPercent(int percentSlab) {
     slabPercentSetting = percentSlab < 0 ? 0 : percentSlab > 100 ? 100
-        : percentSlab;
+        :   percentSlab;
     if (depthPercentSetting >= slabPercentSetting)
       depthPercentSetting = slabPercentSetting - 1;
   }
@@ -1029,17 +1029,16 @@ class TransformManager {
       fixedNavigationOffset.z = findZFromVisualRange();
       findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
     } else if (isNewZ) {
+      fixedNavigationOffset.z = findZFromVisualRange();
     } else if (isNewXY || !navigating) {
       if (navigating)
         fixedNavigationOffset.set(newNavigationOffset);
-      findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
-      
+      findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);      
     }
     ptNav.set(0, 0, 0);
     matrixTransform(navigationCenter, referenceOffset);
     transformPoint(fixedRotationCenter, fixedTranslation);
     transformPoint(navigationCenter, fixedNavigationOffset);
-    fixedNavigationOffset.z = findZFromVisualRange();
   }
 
   /**

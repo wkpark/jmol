@@ -585,8 +585,8 @@ class TransformManager {
 
   void slabByPercentagePoints(int percentage) {
     slabPercentSetting += percentage;
-    if (slabPercentSetting < 1)
-      slabPercentSetting = 1;
+    if (slabPercentSetting < 0)
+      slabPercentSetting = 0;
     else if (slabPercentSetting > 100)
       slabPercentSetting = 100;
     if (depthPercentSetting >= slabPercentSetting)
@@ -616,7 +616,7 @@ class TransformManager {
   }
 
   void slabToPercent(int percentSlab) {
-    slabPercentSetting = percentSlab < 1 ? 1 : percentSlab > 100 ? 100
+    slabPercentSetting = percentSlab < 0 ? 0 : percentSlab > 100 ? 100
         : percentSlab;
     if (depthPercentSetting >= slabPercentSetting)
       depthPercentSetting = slabPercentSetting - 1;

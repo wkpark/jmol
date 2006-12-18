@@ -640,19 +640,40 @@ class TransformManager {
     depthValue = Integer.MAX_VALUE;
     //System.out.println("calcSlab " + slabEnabled);
     if (slabEnabled) {
+      if (perspectiveDepth && visualRange > 0) {
+        slabValue = (int) fixedNavigationOffset.z - 1;
+        depthValue = Integer.MAX_VALUE;
+        return; 
+      }
       // a slab percentage of 100 should map to zero
       // a slab percentage of 0 should map to -diameter
       float radius = rotationRadius * scalePixelsPerAngstrom;
       float center = cameraDistance + screenPixelCount / 2f;
-      if (slabPercentSetting == 100 && isNavigationMode)
-        slabValue = (int)navZOffset;
-      else
-        slabValue = (int) (((50 - slabPercentSetting) * radius / 50) + center);
+      slabValue = (int) (((50 - slabPercentSetting) * radius / 50) + center);
       depthValue = (int) (((50 - depthPercentSetting) * radius / 50) + center);
       //System.out.println("sv=" + slabValue + ","+slabPercentSetting+" dv=" + depthValue +","+depthPercentSetting+ " cent=" + center + " cdist=" + cameraDistance + " ps="+ perspectiveScale+" cdepth=" + cameraDepth + " radius="+radius );
     }
   }
 
+  /**
+   * determines the vertical plane screen Z value that corresponds to a
+   * specific screen range in Angstroms
+   * 
+   * @return vertical plane Z value
+   */
+  float findZFromVisualRange() {
+    if (visualRange <= 0)
+      return 1;
+    
+    // perspective Scale f = (c+0.5)/(c+p) = screenAngstroms / visualRange
+
+    float screenAngstroms = screenPixelCount / scalePixelsPerAngstrom;
+    float f = screenAngstroms / visualRange;
+    float p = (cameraDepth + 0.5f) / f - cameraDepth;
+    float z = cameraDistance + screenPixelCount * p;
+    return z;
+  }
+  
   /* ***************************************************************
    * PERSPECTIVE
    ****************************************************************/
@@ -710,6 +731,7 @@ class TransformManager {
       
       cameraScaleFactor = (cameraDepth + 0.5) / cameraDepth
       perspectiveScale = cameraDistance * cameraScaleFactor
+                       = (cameraDepth + 0.5) * screenPixelCount
       
    and the overall scaling as a function of distance from the camera is simply:
    
@@ -717,14 +739,10 @@ class TransformManager {
       
    and thus:
 
-      perspectiveFactor = cameraScaleFactor * cameraDistance / z
-        = cameraScaleFactor * cameraDepth * screenPixelCount 
-                   / (cameraDepth * screenPixelCount + p * screenPixelCount)
-        = cameraScaleFactor * cameradDepth / (cameraDepth + p)
-        
-   this simply reduces to:
-   
-      perspectiveFactor = (cameraDepth + 0.5) / (cameraDepth + p)
+      perspectiveFactor = (cameraDepth + 0.5) * screenPixelCount / z
+        = (cameraDepth + 0.5) * screenPixelCount
+            / (cameraDepth * screenPixelCount + p * screenPixelCount)
+        = (cameraDepth + 0.5) / (cameraDepth + p)
 
    Thus:
 
@@ -765,8 +783,9 @@ class TransformManager {
    */
 
   private boolean perspectiveDepth = true;
-  private float cameraDepth = 3;
-  private float cameraDistance = 1000; // prevent divide by zero on startup
+  private float cameraDepth = 3f;
+  private float visualRange = 5f;
+  private float cameraDistance = 1000f; // prevent divide by zero on startup
 
   void setPerspectiveDepth(boolean perspectiveDepth) {
     if (this.perspectiveDepth == perspectiveDepth)
@@ -784,7 +803,10 @@ class TransformManager {
       return;
     cameraDepth = screenMultiples;
   }
- 
+
+  void setVisualRange(float angstroms) {
+    visualRange = angstroms;
+  }
   /* ***************************************************************
    * SCREEN SCALING
    ****************************************************************/
@@ -930,7 +952,6 @@ class TransformManager {
 
   Point3f fixedNavigationOffset = new Point3f();
   Point3f newNavigationOffset = new Point3f();
-  float navZOffset;
 
   synchronized void navigate(int keyWhere, int modifiers) {
     if (!isNavigationMode)
@@ -957,8 +978,7 @@ class TransformManager {
       else {
         ptNav.z = Float.NaN;
         zoomBy(1);
-        newNavigationOffset.z = -2;
-        navZOffset -= 1;
+        newNavigationOffset.z = -1;
       }
       break;
     case KeyEvent.VK_DOWN:
@@ -969,8 +989,7 @@ class TransformManager {
       else {
         ptNav.z = Float.NaN;
         zoomBy(-1);
-        newNavigationOffset.z = 2;
-        navZOffset += 1;
+        newNavigationOffset.z = 1;
       }
       break;
     case KeyEvent.VK_LEFT:
@@ -1003,78 +1022,32 @@ class TransformManager {
     boolean isReset = Float.isNaN(ptNav.x);
     boolean isNewXY = Float.isNaN(ptNav.y);
     boolean isNewZ = Float.isNaN(ptNav.z);
-    calcCameraFactors();
     if (isReset) {
       isNavigationMode = false;
-      transformPoint(fixedRotationCenter, ptNav);
-      int x = scaleToScreen(point3iScreenTemp.z, (int) (rotationRadius * 1000));
-      //calculate the apparent z viewing position
-      float calc = (2f * viewer.getScreenWidth() - x / 4) / x * cameraDepth/3;
-      if (calc < 0)
-        calc = 1 - (float) Math.exp(-calc * 3);
-      //calculate the viewing vector, and new z position
-      ptNav.z += 100;
-      unTransformPoint(ptNav, pointT);
-      vectorT.sub(fixedRotationCenter, pointT);
-      vectorT.normalize();
-      vectorT.scale(rotationRadius);
-      vectorT.scale(calc);
-      pointT.set(fixedRotationCenter);
-      pointT.add(vectorT);
-      transformPoint(pointT);
-      ptNav.z = point3fScreenTemp.z;
-        fixedNavigationOffset.set(ptNav);
-        findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
-      isNavigationMode = true;
-      System.out.println("reset:"+navigationCenter + fixedRotationCenter);
-      navZOffset = ptNav.z; 
+      navigationCenter.set(fixedRotationCenter);
+      transformPoint(navigationCenter, fixedNavigationOffset);
+      fixedNavigationOffset.z = findZFromVisualRange();
+      findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
     } else if (isNewZ) {
-      /*
-       * First, I know this is a hack. What I'm trying to do is define
-       * a forward movement of the navigation point based on the zoom
-       * 
-       * Actually, maybe all it is is an adjustment to the CLIPPING point.
-       * The question is: what do we do that so that it is clipping at
-       * just the right place? I really don't know how to do this.
-       * 
-       * Every thing else is OK, I think.
-       * 
-       */
-      /*
-      System.out.println("Z1:"+navigationCenter + fixedRotationCenter);
-      transformPoint(navigationCenter, ptNav);
-      int x = scaleToScreen(point3iScreenTemp.z, (int) (rotationRadius * 1000));
-      //calculate the apparent z viewing position
-      float calc = (2f * screenPixelCount - x / 4) / x * cameraDepth/3;
-      if (calc < 0)
-        calc = 1 - (float) Math.exp(-calc * 3);
-      //calculate the viewing vector, and new z position
-      ptNav.z += (newNavigationOffset.z < 0 ? 100 : -100);
-      unTransformPoint(ptNav, pointT);
-      vectorT.sub(navigationCenter, pointT);
-      vectorT.normalize();
-      vectorT.scale(rotationRadius);
-      vectorT.scale(calc);
-      pointT.set(navigationCenter);
-      pointT.add(vectorT);
-      transformPoint(pointT);
-      ptNav.z = point3fScreenTemp.z;
-      unTransformPoint(ptNav, pointT);
-      navigationCenter.set(pointT);
-      System.out.println("Z2:"+navigationCenter);
-      */
     } else if (isNewXY || !navigating) {
       if (navigating)
         fixedNavigationOffset.set(newNavigationOffset);
       findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
-      System.out.println("not:"+navigationCenter + fixedRotationCenter);
+      
     }
-    //System.out.println("nav:" + navigationCenter + " rot:" + fixedRotationCenter + " dist:" + navigationCenter.distance(fixedRotationCenter));
     ptNav.set(0, 0, 0);
     matrixTransform(navigationCenter, referenceOffset);
     transformPoint(fixedRotationCenter, fixedTranslation);
+    transformPoint(navigationCenter, fixedNavigationOffset);
+    fixedNavigationOffset.z = findZFromVisualRange();
   }
 
+  /**
+   * 
+   * @param screenXYZ 
+   * @param modelXYZ
+   * @param center
+   */
   void findCenterAt(Point3f screenXYZ, Point3f modelXYZ, Point3f center) {
     //we do not want the fixed navigation offset to change
     //the fixed rotation center is at fixedTranslation
@@ -1112,10 +1085,11 @@ class TransformManager {
     calcTransformMatrix();
     fixedRotationOffset.set(fixedTranslation);
     matrixTransform(navigationCenter, pointT);
-    if (isNavigationMode) {
+    if (isNavigationMode)
       recenterNavigationPoint();
-    }
-    transformPoint(navigationCenter, fixedNavigationOffset);
+    else
+      fixedNavigationOffset.z = findZFromVisualRange();
+    unTransformPoint(fixedNavigationOffset, navigationCenter);
     //System.out.println("finalize nav pt,offset:"+navigationCenter + fixedNavigationOffset);
     calcSlabAndDepthValues();
   }

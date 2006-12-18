@@ -3180,6 +3180,10 @@ public class Viewer extends JmolViewer {
   public void setFloatProperty(String key, float value) {
     //Eval
     while (true) {
+      if (key.equalsIgnoreCase("visualRange")) {
+        setVisualRange(value);
+        break;
+      }
       if (key.equalsIgnoreCase("cameraDepth")) {
         setCameraDepth(value);
         break;
@@ -3658,6 +3662,11 @@ public class Viewer extends JmolViewer {
   public void setCameraDepth(float screenMultiples) {
     transformManager.setCameraDepth(screenMultiples);     
     refresh(1, "set cameraDepth");
+  }
+  
+  public void setVisualRange(float angstroms) {
+    transformManager.setVisualRange(angstroms);     
+    refresh(1, "set visualRange");
   }
   
   boolean isCameraAdjustable() {

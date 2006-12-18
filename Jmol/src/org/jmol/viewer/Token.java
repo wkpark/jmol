@@ -205,6 +205,7 @@ public class Token {
   final static int frank         = command | 115 | setparam;
   final static int model         = command | 116 | atomproperty;
   final static int molecule      = command | 117 | unimplemented | atomproperty;
+  final static int navigate      = command | 118 | negnums | embeddedExpression;
   
   // parameters
   final static int ambient      = setparam |  0;
@@ -496,6 +497,8 @@ public class Token {
     "load",              new Token(load,     varArgCount, "load"),
     "molecule",          new Token(molecule, "molecule"),
     "molecules",         null,
+    "navigate",          new Token(navigate, "navigate"),
+    "nav",               null,
     "altloc",            new Token(altloc, "altloc"),
     "altlocs",           null,
     "insertion",         new Token(insertion, "insertion"),

@@ -425,6 +425,10 @@ public class Viewer extends JmolViewer {
     return transformManager.getMoveToText(timespan);
   }
 
+  void navigate(float timeSeconds, Point3f[] path) {
+    transformManager.navigate(timeSeconds, path);
+  }
+  
   boolean pointToCenter = true;
 
   boolean getPointToCenter() {

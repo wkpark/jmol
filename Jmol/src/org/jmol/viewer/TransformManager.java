@@ -263,6 +263,10 @@ class TransformManager {
       matrixRotate.set(axisAngle);
   }
 
+  void navigate(float seconds, Point3f[] path) {
+    
+  }
+  
   /* ***************************************************************
    * *THE* TWO VIEWER INTERFACE METHODS
    ****************************************************************/
@@ -528,16 +532,12 @@ class TransformManager {
     calcScale("zoomByPercent");
   }
 
-  private void setZoomParameters() {
+  private void calcScale(String from) {
     if (zoomPercentSetting < 5)
       zoomPercentSetting = 5;
     if (zoomPercentSetting > MAXIMUM_ZOOM_PERCENTAGE)
       zoomPercentSetting = MAXIMUM_ZOOM_PERCENTAGE;
     zoomPercent = (zoomEnabled) ? zoomPercentSetting : 100;
-  }
-
-  private void calcScale(String from) {
-    setZoomParameters();
     scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomPercent / 100;
   }
 
@@ -638,7 +638,7 @@ class TransformManager {
   private void calcSlabAndDepthValues() {
     slabValue = 0;
     depthValue = Integer.MAX_VALUE;
-    //System.out.println("calcSlab " + slabEnabled);
+    System.out.println("calcSlab " + slabEnabled + " " + slabPercentSetting + " " + visualRange);
     if (slabEnabled) {
       float radius = rotationRadius * scalePixelsPerAngstrom;
       float center = cameraDistance + screenPixelCount / 2f;
@@ -683,7 +683,10 @@ class TransformManager {
 
    DEFAULT SCALE -- (zoom == 100) 
 
-     scalePixelsPerAngstrom = screenPixelCount / (2 * rotationRadius)
+   We start by defining a fixedRotationCenter and a rotationRadius that encompasses 
+   the model. Then: 
+
+     defaultScalePixelsPerAngstrom = screenPixelCount / (2 * rotationRadius)
 
    where:
 
@@ -694,7 +697,14 @@ class TransformManager {
    This pretty much makes a model span the window.
 
    This is applied as part of the matrixTransform.
-
+   
+   ADDING ZOOM
+   
+   For zoom, we just apply a zoom factor to the default scaling:
+   
+     scalePixelsPerAngstrom = zoom * defaultScalePixelsPerAngstrom
+     
+    
    ADDING PERSPECTIVE
    
    Imagine an old fashioned plate camera. The film surface is in front of the model 
@@ -708,24 +718,30 @@ class TransformManager {
    
    The atom position is transformed into screen-based coordinates as:
  
-     z = cameraDistance + (rotationRadius + atom.z) * scalePixelsPerAngstrom
+     Z = screenCenterOffset + atom.z * zoom * defaultScalePixelsPerAngstrom
 
-   (z is adjusted for zoom such that the center of the model stays in the same
-   absolute z location = cameraDistance + screenPixelCount/2.)
+   where 
+   
+     screenCenterOffset = cameraDistance + screenPixelCount / 2
      
-   or, using the definition of scalePixelsPerAngstrom, above, we have:
+   Z is thus adjusted for zoom such that the center of the model stays in the same position.     
+   Defining the position of a vertical plane p as:
    
-      z = cameraDistance + [(rotationRadius + atom.z)/(2*rotationRadius)] * screenPixelCount
+     p = (rotationRadius + zoom * atom.z) / (2 * rotationRadius)
 
-   If we were to define the position of the point relative to the front of the model as
-   that piece in brackets, then we have:
- 
-      z = cameraDistance + p * screenPixelCount
-   
+   and using the definitions above, we have:
+
+     Z = cameraDistance + screenPixelCount / 2
+         + zoom * atom.z * screenPixelCount / (2 * rotationRadius)
+      
+   or, more simply:      
+         
+     Z = cameraDistance + p * screenPixelCount
+       
    This will prove convenient for this discussion (but is never done in code).
    
    All perspective is, is the multiplication of the x and y coordinates by a scaling
-   factor that depends upon this z coordinate.
+   factor that depends upon this screen-based Z coordinate.
    
    We define:
       
@@ -735,15 +751,18 @@ class TransformManager {
       
    and the overall scaling as a function of distance from the camera is simply:
    
-      perspectiveFactor = perspectiveScale / z
+      f = perspectiveFactor = perspectiveScale / Z
       
-   and thus:
+   and thus using c for cameraDepth:
 
-      perspectiveFactor = (cameraDepth + 0.5) * screenPixelCount / z
-        = (cameraDepth + 0.5) * screenPixelCount
-            / (cameraDepth * screenPixelCount + p * screenPixelCount)
-        = (cameraDepth + 0.5) / (cameraDepth + p)
-
+      f = (c + 0.5) * screenPixelCount / Z
+        = (c + 0.5) * screenPixelCount
+            / (c * screenPixelCount + p * screenPixelCount)
+   
+   and we simply have:
+   
+      f = (c + 0.5) / (c + p)
+ 
    Thus:
 
    when p = 0,   (front plane) the scale is cameraScaleFactor.
@@ -753,14 +772,46 @@ class TransformManager {
    as p approaches infinity, perspectiveFactor goes to 0; 
    if p goes negative, we ignore it. Those points won't be rendered.
 
-
-   ADDING ZOOM
+   GRAPHICAL INTERPRETATION 
    
-   Zoom is added as part of the matrix transform from model coordinates:   
- 
-     x = x0 * zoom
-     y = y0 * zoom
-     z = cameraDistance + (rotationRadius + z0 * zoom) * scalePixelsPerAngstrom
+   The simplest way to see what is happening is to consider 1/f instead of f:
+   
+   1/f = (c + p) / (c + 0.5) = c / (c + 0.5) + p / (c + 0.5)
+   
+   This is a linear function of p, with 1/f=0 at p = -c, the camera position:
+   
+   
+   
+    \----------------0----------------/    midplane, p = 0.5, 1/f = 1
+     \        model center           /     viewingRange = screenPixelCount
+      \                             /
+       \                           /
+        \                         /
+         \-----------------------/   front plane, p = 0, 1/f = c / (c + 0.5)
+          \                     /    viewingRange = screenPixelCount / f
+           \                   /
+            \                 /
+             \               /   The distance across is the distance that is viewable
+              \             /    for this Z position. Just magnify a model and place its
+               \           /     center at 0. Whatever part of the model is within the
+                \         /      triangle will be viewed, scaling each distance so that
+                 \       /       it ends up screenWidthPixels wide.
+                  \     /
+                   \   /
+                    \ /
+                     X  camera position, p = -c, 1/f = 0
+                        viewingRange = 0
+
+   VISUAL RANGE
+   
+   We simply define a fixed visual range that can be seen by the observer. 
+   That range defines a clipping plane. Any point ahead of this clipping plane is not shown. 
+   Jmol is set up so that if you specify 
+   
+    slab on; slab 0
+    
+   then this automatic clipping based on visual range is enabled.
+     
 
 
    In Jmol 10.2 there was a much more complicated formula for perspectiveFactor, namely
@@ -1111,24 +1162,11 @@ class TransformManager {
     matrixTemp.setZero();
     matrixTemp.setTranslation(vectorTemp);
     matrixTransform.sub(matrixTemp);
-    // now, multiply by angular rotations
+    // multiply by angular rotations
     // this is *not* the same as  matrixTransform.mul(matrixRotate);
     matrixTemp.set(stereoFrame ? matrixStereo : matrixRotate);
     matrixTransform.mul(matrixTemp, matrixTransform);
-    // we want all z coordinates >= 0, with larger coordinates further away
-    // this is important for scaling, and is the way our zbuffer works
-    // so first, translate an make all z coordinates negative
-    vectorTemp.x = 0;
-    vectorTemp.y = 0;
-      vectorTemp.z = (cameraDistance + screenPixelCount / 2f * zoomPercent / 100f)
-          / scalePixelsPerAngstrom;
-    matrixTemp.setZero();
-//    matrixTemp.setTranslation(vectorTemp);
-    if (axesOrientationRasmol)
-      matrixTransform.add(matrixTemp); // make all z positive
-    else
-      matrixTransform.sub(matrixTemp); // make all z negative
-    // now scale to screen coordinates
+    // cale to screen coordinates
     matrixTemp.setZero();
     matrixTemp.set(scalePixelsPerAngstrom);
     if (!axesOrientationRasmol) {
@@ -1136,11 +1174,13 @@ class TransformManager {
       matrixTemp.m11 = matrixTemp.m22 = -scalePixelsPerAngstrom;
     }
     matrixTransform.mul(matrixTemp, matrixTransform);
+    //z-translate to set rotation center at midplane
+    matrixTransform.m23 += screenCenterOffset;
+
+    System.out.println("zoom:" + zoomPercent + "\n" + matrixTransform);
+
     // note that the image is still centered at 0, 0 in the xy plane
-    // all z coordinates are (should be) >= 0
-    // translations come later (to deal with perspective)
-    //System.out.println(" calculating matrix with scale="
-      //  + scalePixelsPerAngstrom + " cdist=" + cameraDistance+" "+ "\n"+matrixTransform);
+
   }
 
   Matrix4f getUnscaledTransformMatrix() {
@@ -1178,16 +1218,14 @@ class TransformManager {
 
   void matrixTransform(Point3f angstroms, Point3f screen) {
     matrixTransform.transform(angstroms, screen);
-    screen.z += screenCenterOffset;
+    //System.out.println("mTransf:"+angstroms+" "+screen);
   }
   
   void matrixTransform(Vector3f angstroms, Vector3f screen) {
     matrixTransform.transform(angstroms, screen);
-    screen.z += screenCenterOffset;
   }
 
   void matrixUnTransform(Point3f screen, Point3f angstroms) {
-   screen.z -= screenCenterOffset;
    matrixTemp.invert(matrixTransform);
    matrixTemp.transform(screen, angstroms);   
   }
@@ -1885,6 +1923,29 @@ class TransformManager {
           float t = (float) (elapsed % vibrationPeriodMs) / vibrationPeriodMs;
           setVibrationT(t);
           viewer.refresh(0, "TransformationManager:VibrationThread:run()");
+        } while (!isInterrupted());
+      } catch (InterruptedException ie) {
+      }
+    }
+  }
+
+  class NavigationThread extends Thread implements Runnable {
+
+    public void run() {
+      long startTime = System.currentTimeMillis();
+      long lastRepaintTime = startTime;
+      try {
+        do {
+          long currentTime = System.currentTimeMillis();
+          int elapsed = (int) (currentTime - lastRepaintTime);
+          int sleepTime = 33 - elapsed;
+          if (sleepTime > 0)
+            Thread.sleep(sleepTime);
+          //
+          lastRepaintTime = currentTime = System.currentTimeMillis();
+          elapsed = (int) (currentTime - startTime);
+          //what here?
+          viewer.refresh(1, "TransformationManager:NavigationThread:run()");
         } while (!isInterrupted());
       } catch (InterruptedException ie) {
       }

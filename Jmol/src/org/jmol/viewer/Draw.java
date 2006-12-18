@@ -255,9 +255,17 @@ class Draw extends MeshCollection {
   Object getProperty(String property, int index) {
     if (property == "command")
       return getDrawCommand(currentMesh);
+    if (property == "vertices")
+      return getPath(currentMesh);
     return super.getProperty(property, index);
   }
 
+  Object getPath(Mesh mesh) {
+    if (mesh == null)
+      return null;
+    return mesh.vertices;
+  }
+  
   boolean setDrawing() {
     if (currentMesh == null)
       allocMesh(null);
@@ -903,4 +911,5 @@ class Draw extends MeshCollection {
     }
     return s.toString();
   }
+
 }

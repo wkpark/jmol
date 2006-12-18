@@ -711,6 +711,9 @@ class Eval { //implements Runnable {
       case Token.moveto:
         moveto();
         break;
+      case Token.navigate:
+        navigate();
+        break;
       case Token.bondorder:
         bondorder();
         break;
@@ -2038,6 +2041,28 @@ class Eval { //implements Runnable {
     if (!isSyntaxCheck)
       viewer.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans,
           yTrans, rotationRadius);
+  }
+
+  void navigate() throws ScriptException {
+    //navigate time $drawObject(for now)
+    if (statementLength < 3)
+      badArgumentCount();
+    float timeSec = floatParameter(1);
+    if (statement[2].tok == Token.dollarsign) {
+      //center $ id
+      String pathID = objectNameParameter(3);
+      if (isSyntaxCheck)
+        return;
+      setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", pathID);
+      Point3f[] path = (Point3f[]) viewer.getShapeProperty(
+          JmolConstants.SHAPE_DRAW, "path");
+      refresh();
+      if (path == null)
+        invalidArgument();
+      viewer.navigate(timeSec, path);
+      return;
+    }
+    invalidArgument();
   }
 
   void bondorder() throws ScriptException {

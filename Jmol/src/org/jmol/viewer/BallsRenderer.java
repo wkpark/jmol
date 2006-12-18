@@ -69,24 +69,26 @@ class BallsRenderer extends ShapeRenderer {
         renderBall(atom);
     }
 
-    if (frame.atomCount > 0 && viewer.getNavigating()) {
+    if (frame.atomCount > 0
+        && (viewer.getNavigating() || viewer.getNavigationMode()
+            && viewer.getInMotion())) {
       //testing here
       Point3f T = new Point3f(viewer.getNavigationOffset());
-      int x = (int)T.x;
-      int y = (int)T.y;
-      int z = (int)T.z;
+      int x = (int) T.x;
+      int y = (int) T.y;
+      int z = (int) T.z;
       short colix = Graphics3D.GOLD;
-      g3d.drawLine(colix, colix, x-10, y, z, x+10, y, z);
-      g3d.drawLine(colix, colix, x, y-10, z, x, y+10, z);
-      g3d.drawLine(colix, colix, x-4, y-4, z, x+6, y-4, z);
-      g3d.drawLine(colix, colix, x+4, y-4, z, x+4, y+6, z);
-      g3d.drawLine(colix, colix, x+4, y+4, z, x-6, y+4, z);
-      g3d.drawLine(colix, colix, x-4, y+4, z, x-4, y-6, z);
+      g3d.drawLine(colix, colix, x - 10, y, z, x + 10, y, z);
+      g3d.drawLine(colix, colix, x, y - 10, z, x, y + 10, z);
+      g3d.drawLine(colix, colix, x - 4, y - 4, z, x + 6, y - 4, z);
+      g3d.drawLine(colix, colix, x + 4, y - 4, z, x + 4, y + 6, z);
+      g3d.drawLine(colix, colix, x + 4, y + 4, z, x - 6, y + 4, z);
+      g3d.drawLine(colix, colix, x - 4, y + 4, z, x - 4, y - 6, z);
 
-//      g3d.fillSphereCentered(colix, 6, (int)T.x, (int)T.y,(int)T.z);
-//      Point3i S = new Point3i();
-  //    viewer.transformPoint(viewer.getRotationCenter(), S);
-    //  g3d.fillSphereCentered(Graphics3D.RED, 8, S.x, S.y, S.z);
+      //      g3d.fillSphereCentered(colix, 6, (int)T.x, (int)T.y,(int)T.z);
+      //      Point3i S = new Point3i();
+      //    viewer.transformPoint(viewer.getRotationCenter(), S);
+      //  g3d.fillSphereCentered(Graphics3D.RED, 8, S.x, S.y, S.z);
     }
   }
 

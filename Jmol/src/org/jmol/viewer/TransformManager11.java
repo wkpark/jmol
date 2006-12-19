@@ -64,8 +64,7 @@ class TransformManager11 extends TransformManager {
     cameraScaleFactor = 1; //unitless
 
     // vertical screen plane of the observer where objects will be clipped
-    observerOffset = visualRange * scaleDefaultPixelsPerAngstrom / screenPixelCount
-        * perspectiveScale; //(s)
+    observerOffset = visualRange / (2 * rotationRadius) * perspectiveScale; //(s)
   }
 
   protected void calcSlabAndDepthValues() {

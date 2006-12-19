@@ -35,16 +35,18 @@ class TransformManager10 extends TransformManager {
   // older Jmol 10 method 
   // -- applies cameraScaleFactor to scalePixelsPerAngstrom
   // -- no navigation 
-  
+
   protected void calcCameraFactors() {
     cameraDistance = cameraDepth * screenPixelCount;
     cameraScaleFactor = 1.02f + 0.5f / cameraDepth;
-    scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomPercent / 100 * cameraScaleFactor;
-    screenCenterOffset = cameraDistance + rotationRadius * scalePixelsPerAngstrom;
+    scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomPercent / 100
+        * cameraScaleFactor;
+    screenCenterOffset = cameraDistance + rotationRadius
+        * scalePixelsPerAngstrom;
     perspectiveScale = cameraDistance;
     //screenCenterOffset same as perspectiveScale, by the way
   }
-  
+
   protected void calcSlabAndDepthValues() {
     slabValue = 0;
     depthValue = Integer.MAX_VALUE;
@@ -62,12 +64,12 @@ class TransformManager10 extends TransformManager {
     //fixedRotation point is at the origin initially
 
     float z = point3fScreenTemp.z;
-    
+
     //this could easily go negative -- behind the screen --
     //but we don't care. In fact, that just makes it easier, 
     //because it means we won't render it.
     //we should probably assign z = 0 as "unrenderable"
-    
+
     if (Float.isNaN(z)) {
       if (!haveNotifiedNaN)
         Logger.debug("NaN seen in TransformPoint");

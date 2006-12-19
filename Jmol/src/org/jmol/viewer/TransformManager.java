@@ -33,13 +33,13 @@ import java.util.BitSet;
 import java.util.Hashtable;
 
 abstract class TransformManager {
-  
+
   Viewer viewer;
 
   protected float cameraScaleFactor;
   protected float screenCenterOffset;
   protected float perspectiveScale;
-  
+
   protected final Point3f fixedRotationOffset = new Point3f();
   protected final Point3f fixedNavigationOffset = new Point3f();
 
@@ -50,10 +50,10 @@ abstract class TransformManager {
   protected final Vector3f vectorTemp = new Vector3f();
 
   abstract protected void calcCameraFactors();
-  abstract protected void calcSlabAndDepthValues();
-  abstract Point3i adjustedTemporaryScreenPoint();
-  
 
+  abstract protected void calcSlabAndDepthValues();
+
+  abstract Point3i adjustedTemporaryScreenPoint();
 
   TransformManager(Viewer viewer) {
     this.viewer = viewer;
@@ -74,7 +74,7 @@ abstract class TransformManager {
     if (isNavigationMode)
       setNavigationMode(true);
   }
-  
+
   void clear() {
     clearVibration();
     clearSpin();
@@ -279,7 +279,6 @@ abstract class TransformManager {
       matrixRotate.set(axisAngle);
   }
 
-  
   /* ***************************************************************
    * *THE* TWO VIEWER INTERFACE METHODS
    ****************************************************************/
@@ -624,7 +623,7 @@ abstract class TransformManager {
 
   void slabToPercent(int percentSlab) {
     slabPercentSetting = percentSlab < 0 ? 0 : percentSlab > 100 ? 100
-        :   percentSlab;
+        : percentSlab;
     if (depthPercentSetting >= slabPercentSetting)
       depthPercentSetting = slabPercentSetting - 1;
   }
@@ -654,7 +653,7 @@ abstract class TransformManager {
    We start by defining a fixedRotationCenter and a rotationRadius that encompasses 
    the model. Then: 
 
-     defaultScalePixelsPerAngstrom = screenPixelCount / (2 * rotationRadius)
+   defaultScalePixelsPerAngstrom = screenPixelCount / (2 * rotationRadius)
 
    where:
 
@@ -670,67 +669,67 @@ abstract class TransformManager {
    
    For zoom, we just apply a zoom factor to the default scaling:
    
-     scalePixelsPerAngstrom = zoom * defaultScalePixelsPerAngstrom
-     
-    
+   scalePixelsPerAngstrom = zoom * defaultScalePixelsPerAngstrom
+   
+   
    ADDING PERSPECTIVE
    
    Imagine an old fashioned plate camera. The film surface is in front of the model 
    some distance. Lines of perspective go from the plate (our screen) to infinity 
    behind the model. We define:
    
-     cameraDistance  -- the distance of the camera in pixels from the FRONT of the model.
-     
-     cameraDepth     -- a more scalable version of cameraDistance, 
-                        measured in multiples of screenPixelCount.
+   cameraDistance  -- the distance of the camera in pixels from the FRONT of the model.
+   
+   cameraDepth     -- a more scalable version of cameraDistance, 
+   measured in multiples of screenPixelCount.
    
    The atom position is transformed into screen-based coordinates as:
- 
-     Z = screenCenterOffset + atom.z * zoom * defaultScalePixelsPerAngstrom
+   
+   Z = screenCenterOffset + atom.z * zoom * defaultScalePixelsPerAngstrom
 
    where 
    
-     screenCenterOffset = cameraDistance + screenPixelCount / 2
-     
+   screenCenterOffset = cameraDistance + screenPixelCount / 2
+   
    Z is thus adjusted for zoom such that the center of the model stays in the same position.     
    Defining the position of a vertical plane p as:
    
-     p = (rotationRadius + zoom * atom.z) / (2 * rotationRadius)
+   p = (rotationRadius + zoom * atom.z) / (2 * rotationRadius)
 
    and using the definitions above, we have:
 
-     Z = cameraDistance + screenPixelCount / 2
-         + zoom * atom.z * screenPixelCount / (2 * rotationRadius)
-      
+   Z = cameraDistance + screenPixelCount / 2
+   + zoom * atom.z * screenPixelCount / (2 * rotationRadius)
+   
    or, more simply:      
-         
-     Z = cameraDistance + p * screenPixelCount
-       
+   
+   Z = cameraDistance + p * screenPixelCount
+   
    This will prove convenient for this discussion (but is never done in code).
    
    All perspective is, is the multiplication of the x and y coordinates by a scaling
    factor that depends upon this screen-based Z coordinate.
    
    We define:
-      
-      cameraScaleFactor = (cameraDepth + 0.5) / cameraDepth
-      perspectiveScale = cameraDistance * cameraScaleFactor
-                       = (cameraDepth + 0.5) * screenPixelCount
-      
+   
+   cameraScaleFactor = (cameraDepth + 0.5) / cameraDepth
+   perspectiveScale = cameraDistance * cameraScaleFactor
+   = (cameraDepth + 0.5) * screenPixelCount
+   
    and the overall scaling as a function of distance from the camera is simply:
    
-      f = perspectiveFactor = perspectiveScale / Z
-      
+   f = perspectiveFactor = perspectiveScale / Z
+   
    and thus using c for cameraDepth:
 
-      f = (c + 0.5) * screenPixelCount / Z
-        = (c + 0.5) * screenPixelCount
-            / (c * screenPixelCount + p * screenPixelCount)
+   f = (c + 0.5) * screenPixelCount / Z
+   = (c + 0.5) * screenPixelCount
+   / (c * screenPixelCount + p * screenPixelCount)
    
    and we simply have:
    
-      f = (c + 0.5) / (c + p)
- 
+   f = (c + 0.5) / (c + p)
+   
    Thus:
 
    when p = 0,   (front plane) the scale is cameraScaleFactor.
@@ -750,25 +749,25 @@ abstract class TransformManager {
    
    
    
-    \----------------0----------------/    midplane, p = 0.5, 1/f = 1
-     \        model center           /     viewingRange = screenPixelCount
-      \                             /
-       \                           /
-        \                         /
-         \-----------------------/   front plane, p = 0, 1/f = c / (c + 0.5)
-          \                     /    viewingRange = screenPixelCount / f
-           \                   /
-            \                 /
-             \               /   The distance across is the distance that is viewable
-              \             /    for this Z position. Just magnify a model and place its
-               \           /     center at 0. Whatever part of the model is within the
-                \         /      triangle will be viewed, scaling each distance so that
-                 \       /       it ends up screenWidthPixels wide.
-                  \     /
-                   \   /
-                    \ /
-                     X  camera position, p = -c, 1/f = 0
-                        viewingRange = 0
+   \----------------0----------------/    midplane, p = 0.5, 1/f = 1
+   \        model center           /     viewingRange = screenPixelCount
+   \                             /
+   \                           /
+   \                         /
+   \-----------------------/   front plane, p = 0, 1/f = c / (c + 0.5)
+   \                     /    viewingRange = screenPixelCount / f
+   \                   /
+   \                 /
+   \               /   The distance across is the distance that is viewable
+   \             /    for this Z position. Just magnify a model and place its
+   \           /     center at 0. Whatever part of the model is within the
+   \         /      triangle will be viewed, scaling each distance so that
+   \       /       it ends up screenWidthPixels wide.
+   \     /
+   \   /
+   \ /
+   X  camera position, p = -c, 1/f = 0
+   viewingRange = 0
 
    VISUAL RANGE
    
@@ -776,18 +775,18 @@ abstract class TransformManager {
    That range defines a clipping plane. Any point ahead of this clipping plane is not shown. 
    Jmol is set up so that if you specify 
    
-    slab on; slab 0
-    
+   slab on; slab 0
+   
    then this automatic clipping based on visual range is enabled.
-     
+   
 
 
    In Jmol 10.2 there was a much more complicated formula for perspectiveFactor, namely
    (where "c" is the cameraDepth):
    
-      cameraScaleFactor(old) = 1 + 0.5 / c + 0.02
-      z = cameraDistance
-           + (rotationRadius + z0) * scalePixelsPerAngstrom * cameraScaleFactor * zoom
+   cameraScaleFactor(old) = 1 + 0.5 / c + 0.02
+   z = cameraDistance
+   + (rotationRadius + z0) * scalePixelsPerAngstrom * cameraScaleFactor * zoom
 
    Note that the zoom was being applied in such a way that changing the zoom also changed the
    model midplane position and that the camera scaling factor was being applied in the 
@@ -826,7 +825,7 @@ abstract class TransformManager {
   void setVisualRange(float angstroms) {
     visualRange = angstroms;
   }
-  
+
   Matrix4f getUnscaledTransformMatrix() {
     //for povray only
     Matrix4f unscaled = new Matrix4f();
@@ -839,7 +838,6 @@ abstract class TransformManager {
     unscaled.mul(matrixTemp, unscaled);
     return unscaled;
   }
-
 
   /* ***************************************************************
    * SCREEN SCALING
@@ -939,10 +937,10 @@ abstract class TransformManager {
   float scaleToPerspective(int z, float sizeAngstroms) {
     //DotsRenderer only
     //old: return (perspectiveDepth ? sizeAngstroms * perspectiveFactor(z)
-        //: sizeAngstroms);
+    //: sizeAngstroms);
 
     return (perspectiveDepth ? sizeAngstroms * getPerspectiveFactor(z)
-         : sizeAngstroms);
+        : sizeAngstroms);
 
   }
 
@@ -1040,7 +1038,7 @@ abstract class TransformManager {
     //adjustedTemporaryScreenPoint();
     //System.out.println(point3iScreenTemp);
     return adjustedTemporaryScreenPoint();
-    
+
   }
 
   void unTransformPoint(Point3f screenPt, Point3f coordPt) {
@@ -1067,15 +1065,14 @@ abstract class TransformManager {
 
   protected void matrixUnTransform(Point3f screen, Point3f angstroms) {
     matrixTemp.invert(matrixTransform);
-    matrixTemp.transform(screen, angstroms);   
-   }
-  
+    matrixTemp.transform(screen, angstroms);
+  }
 
   protected void matrixTransform(Point3f angstroms, Point3f screen) {
     matrixTransform.transform(angstroms, screen);
     //System.out.println("mTransf:"+angstroms+" "+screen);
   }
-  
+
   protected void matrixTransform(Vector3f angstroms, Vector3f screen) {
     matrixTransform.transform(angstroms, screen);
   }
@@ -1694,7 +1691,6 @@ abstract class TransformManager {
     }
   }
 
-
   ////////////////////////////////////////////////////////////////
   // stereo support
   ////////////////////////////////////////////////////////////////
@@ -1829,22 +1825,22 @@ abstract class TransformManager {
     setRotationCenterAndRadiusXYZ(relativeTo, pt);
     scaleFitToScreen();
   }
-  
+
   /////// navigation defaults (none)
-  
-  boolean canNavigate () {
+
+  boolean canNavigate() {
     return false;
   }
 
   synchronized void navigate(int keyWhere, int modifiers) {
   }
 
-  void navigate(float seconds, Point3f[] path) {  
+  void navigate(float seconds, Point3f[] path) {
   }
 
   protected void calcNavigationPoint() {
   }
-  
+
   protected void unsetNavigationPoint(boolean getNew) {
   }
 

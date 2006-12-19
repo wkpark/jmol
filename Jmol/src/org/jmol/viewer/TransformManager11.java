@@ -43,23 +43,24 @@ class TransformManager11 extends TransformManager {
 
   protected void calcCameraFactors() {
     cameraDistance = cameraDepth * screenPixelCount;
-    screenCenterOffset = cameraDistance + screenPixelCount /2f;
+    screenCenterOffset = cameraDistance + screenPixelCount / 2f;
     perspectiveScale = screenCenterOffset;
     cameraScaleFactor = 1;
     scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomPercent / 100;
   }
-  
+
   protected void calcSlabAndDepthValues() {
     slabValue = 0;
     depthValue = Integer.MAX_VALUE;
-    System.out.println("calcSlab " + slabEnabled + " " + slabPercentSetting + " " + visualRange);
+    System.out.println("calcSlab " + slabEnabled + " " + slabPercentSetting
+        + " " + visualRange);
     if (slabEnabled) {
       float radius = rotationRadius * scalePixelsPerAngstrom;
       float center = cameraDistance + screenPixelCount / 2f;
       if (perspectiveDepth && visualRange > 0 && slabPercentSetting == 0) {
         slabValue = (int) fixedNavigationOffset.z - 1;
         depthValue = Integer.MAX_VALUE;
-        return; 
+        return;
       }
       // a slab percentage of 100 should map to zero
       // a slab percentage of 0 should map to -diameter
@@ -68,18 +69,18 @@ class TransformManager11 extends TransformManager {
       //System.out.println("sv=" + slabValue + ","+slabPercentSetting+" dv=" + depthValue +","+depthPercentSetting+ " cent=" + center + " cdist=" + cameraDistance + " ps="+ perspectiveScale+" cdepth=" + cameraDepth + " radius="+radius );
     }
   }
-  
+
   protected Point3i adjustedTemporaryScreenPoint() {
 
     //fixedRotation point is at the origin initially
 
     float z = point3fScreenTemp.z;
-    
+
     //this could easily go negative -- behind the screen --
     //but we don't care. In fact, that just makes it easier, 
     //because it means we won't render it.
     //we should probably assign z = 0 as "unrenderable"
-    
+
     if (Float.isNaN(z)) {
       if (!haveNotifiedNaN)
         Logger.debug("NaN seen in TransformPoint");
@@ -133,7 +134,7 @@ class TransformManager11 extends TransformManager {
 
   // navigation
 
-  boolean canNavigate () {
+  boolean canNavigate() {
     return true;
   }
 
@@ -200,8 +201,8 @@ class TransformManager11 extends TransformManager {
     navigating = true;
   }
 
-  void navigate(float seconds, Point3f[] path) {  
-     // TODO
+  void navigate(float seconds, Point3f[] path) {
+    // TODO
   }
 
   protected void calcNavigationPoint() {
@@ -212,7 +213,7 @@ class TransformManager11 extends TransformManager {
       fixedNavigationOffset.z = findZFromVisualRange();
     unTransformPoint(fixedNavigationOffset, navigationCenter);
   }
-  
+
   protected void unsetNavigationPoint(boolean getNew) {
     ptNav.x = Float.NaN;
   }
@@ -251,7 +252,7 @@ class TransformManager11 extends TransformManager {
   private float findZFromVisualRange() {
     if (visualRange <= 0)
       return 1;
-    
+
     // perspective Scale f = (c+0.5)/(c+p) = screenAngstroms / visualRange
 
     float screenAngstroms = screenPixelCount / scalePixelsPerAngstrom;
@@ -260,7 +261,7 @@ class TransformManager11 extends TransformManager {
     float z = cameraDistance + screenPixelCount * p;
     return z;
   }
-  
+
   /**
    * 
    * @param screenXYZ 

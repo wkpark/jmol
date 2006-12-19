@@ -44,15 +44,29 @@ abstract class TransformManager {
   protected final Point3f fixedNavigationOffset = new Point3f();
 
   protected final Point3f referenceOffset = new Point3f();
-  protected final Point3f navigationCenter = new Point3f();
 
   protected final Matrix4f matrixTemp = new Matrix4f();
   protected final Vector3f vectorTemp = new Vector3f();
 
+  /**
+   * sets all camera and scale factors needed by 
+   * the specific perspective model instantiated
+   *
+   */
   abstract protected void calcCameraFactors();
 
+  /**
+   * sets slab and depth, possibly using visual range considerations
+   * for setting the slab-clipping plane. (slab on; slab 0)
+   *
+   */
   abstract protected void calcSlabAndDepthValues();
 
+  /**
+   * adjusts the temporary point for perspective and offsets
+   * 
+   * @return POINTER TO TEMPORARY VARIABLE (caution!) point3iScreenTemp
+   */
   abstract Point3i adjustedTemporaryScreenPoint();
 
   TransformManager(Viewer viewer) {
@@ -404,7 +418,7 @@ abstract class TransformManager {
   /* ***************************************************************
    * TRANSLATIONS
    ****************************************************************/
-  final Point3f fixedTranslation = new Point3f();
+  protected final Point3f fixedTranslation = new Point3f();
 
   void translateXYBy(int xDelta, int yDelta) {
     // mouse action only
@@ -538,14 +552,12 @@ abstract class TransformManager {
     zoomPercentSetting += delta;
   }
 
-  private void calcScale() {
+  private void calcZoom() {
     if (zoomPercentSetting < 5)
       zoomPercentSetting = 5;
     if (zoomPercentSetting > MAXIMUM_ZOOM_PERCENTAGE)
       zoomPercentSetting = MAXIMUM_ZOOM_PERCENTAGE;
     zoomPercent = (zoomEnabled) ? zoomPercentSetting : 100;
-    calcCameraFactors();
-    // one of the differences is that navigation mode uses cameraScaleFactor = 1
   }
 
   void setZoomEnabled(boolean zoomEnabled) {
@@ -750,24 +762,24 @@ abstract class TransformManager {
    
    
    \----------------0----------------/    midplane, p = 0.5, 1/f = 1
-   \        model center           /     viewingRange = screenPixelCount
-   \                             /
-   \                           /
-   \                         /
-   \-----------------------/   front plane, p = 0, 1/f = c / (c + 0.5)
-   \                     /    viewingRange = screenPixelCount / f
-   \                   /
-   \                 /
-   \               /   The distance across is the distance that is viewable
-   \             /    for this Z position. Just magnify a model and place its
-   \           /     center at 0. Whatever part of the model is within the
-   \         /      triangle will be viewed, scaling each distance so that
-   \       /       it ends up screenWidthPixels wide.
-   \     /
-   \   /
-   \ /
-   X  camera position, p = -c, 1/f = 0
-   viewingRange = 0
+    \        model center           /     viewingRange = screenPixelCount
+     \                             /
+      \                           /
+       \                         /
+        \-----------------------/   front plane, p = 0, 1/f = c / (c + 0.5)
+         \                     /    viewingRange = screenPixelCount / f
+          \                   /
+           \                 /
+            \               /   The distance across is the distance that is viewable
+             \             /    for this Z position. Just magnify a model and place its
+              \           /     center at 0. Whatever part of the model is within the
+               \         /      triangle will be viewed, scaling each distance so that
+                \       /       it ends up screenWidthPixels wide.
+                 \     /
+                  \   /
+                   \ /
+                    X  camera position, p = -c, 1/f = 0
+                       viewingRange = 0
 
    VISUAL RANGE
    
@@ -803,6 +815,7 @@ abstract class TransformManager {
   protected boolean perspectiveDepth = true;
   protected float cameraDepth = 3f;
   protected float visualRange = 5f;
+  protected float visualDepth;
   protected float cameraDistance = 1000f; // prevent divide by zero on startup
 
   void setPerspectiveDepth(boolean perspectiveDepth) {
@@ -978,15 +991,16 @@ abstract class TransformManager {
 
   synchronized void finalizeTransformParameters() {
     haveNotifiedNaN = false;
-    calcScale();
-    calcTransformMatrix();
     fixedRotationOffset.set(fixedTranslation);
+    calcZoom();
+    calcCameraFactors();
+    calcTransformMatrix();
     calcNavigationPoint();
     //System.out.println("finalize nav pt,offset:"+navigationCenter + fixedNavigationOffset);
     calcSlabAndDepthValues();
   }
 
-  synchronized private void calcTransformMatrix() {
+  synchronized protected void calcTransformMatrix() {
 
     matrixTransform.setIdentity();
 
@@ -1835,9 +1849,12 @@ abstract class TransformManager {
   synchronized void navigate(int keyWhere, int modifiers) {
   }
 
-  void navigate(float seconds, Point3f[] path) {
+  void navigate(float seconds, Point3f[] path, float[] theta) {
   }
 
+  /**
+   *  
+   */
   protected void calcNavigationPoint() {
   }
 

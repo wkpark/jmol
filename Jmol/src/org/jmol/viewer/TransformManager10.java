@@ -37,16 +37,37 @@ class TransformManager10 extends TransformManager {
   // -- no navigation 
 
   protected void calcCameraFactors() {
-    cameraDistance = cameraDepth * screenPixelCount;
-    cameraScaleFactor = 1.02f + 0.5f / cameraDepth;
-    scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomPercent / 100
-        * cameraScaleFactor;
-    screenCenterOffset = cameraDistance + rotationRadius
-        * scalePixelsPerAngstrom;
-    perspectiveScale = cameraDistance;
-    //screenCenterOffset same as perspectiveScale, by the way
-  }
+    //(m) model coordinates
+    //(s) screen coordinates = (m) * screenPixelsPerAngstrom
+    //(p) plane coordinates = (s) / screenPixelCount
+    
+    // distance from the front plane of the model at zoom=100, where p=0 
+    cameraDistance = cameraDepth * screenPixelCount; //(s)
 
+    // factor to apply as part of the transform
+    // -- note -- in this model 0.02 was added empirically
+    cameraScaleFactor = 1.02f + 0.5f / cameraDepth; //(unitless)
+
+    // conversion factor Angstroms --> pixels
+    // -- note -- in this model, it depends upon camera position
+    scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomPercent / 100
+        * cameraScaleFactor; //(s/m)
+    
+    // screen offset to fixed rotation center
+    // -- note -- in this model, it floats with zoom and camera position
+    screenCenterOffset = cameraDistance + rotationRadius
+        * scalePixelsPerAngstrom; //(s)
+
+    // factor to apply based on screen Z
+    // -- note -- in this model, plane 0 is "standard" plane
+    // so that all normal adjustments scale DOWN
+    perspectiveScale = cameraDistance; //(s)
+
+    // vertical screen plane of the observer where objects will be clipped
+    // -- note -- in this model, it is not used because there is no navigation
+    visualDepth = 0; //(p)
+  }
+  
   protected void calcSlabAndDepthValues() {
     slabValue = 0;
     depthValue = Integer.MAX_VALUE;
@@ -91,8 +112,6 @@ class TransformManager10 extends TransformManager {
       point3fScreenTemp.x *= factor;
       point3fScreenTemp.y *= factor;
     }
-
-    //higher resolution here for spin control. 
 
     //now move the center point to where it needs to be
 

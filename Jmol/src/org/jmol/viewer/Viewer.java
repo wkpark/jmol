@@ -427,7 +427,7 @@ public class Viewer extends JmolViewer {
   }
 
   void navigate(float timeSeconds, Point3f[] path) {
-    transformManager.navigate(timeSeconds, path);
+    transformManager.navigate(timeSeconds, path, null);
   }
   
   boolean pointToCenter = true;

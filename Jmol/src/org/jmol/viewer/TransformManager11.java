@@ -185,11 +185,10 @@ class TransformManager11 extends TransformManager {
         newNavigationOffset.y -= 2;
       else if (isAltKey)
         rotateXRadians(radiansPerDegree * -.2f);
-      else if (isNavigationDistant()) {
+      else if (isNavigationDistant())
         zoomBy(1);
-      } else {
+      else
         navigationZOffset -= 5;
-      }
       ptNav.z = Float.NaN;
       break;
     case KeyEvent.VK_DOWN:
@@ -197,11 +196,10 @@ class TransformManager11 extends TransformManager {
         newNavigationOffset.y += 2;
       else if (isAltKey)
         rotateXRadians(radiansPerDegree * .2f);
-      else if (isNavigationDistant()) {
+      else if (isNavigationDistant())
         zoomBy(-1);
-      } else {
+      else
         navigationZOffset += 5;
-      }
       ptNav.z = Float.NaN;
       break;
     case KeyEvent.VK_LEFT:
@@ -251,13 +249,7 @@ class TransformManager11 extends TransformManager {
     // TODO
   }
 
-  protected void calcNavigationPoint() {
-    if (isNavigationMode)
-      recenterNavigationPoint();
-    unTransformPoint(fixedNavigationOffset, navigationCenter);
-  }
-
-  protected void unsetNavigationPoint(boolean getNew) {
+  protected void unsetNavigationPoint() {
     ptNav.x = Float.NaN;
   }
 
@@ -265,7 +257,7 @@ class TransformManager11 extends TransformManager {
    * All the magic happens here.
    *
    */
-  private void recenterNavigationPoint() {
+  protected void calcNavigationPoint() {
     boolean isReset = Float.isNaN(ptNav.x);
     boolean isNewXY = Float.isNaN(ptNav.y);
     boolean isNewZ = Float.isNaN(ptNav.z);
@@ -353,6 +345,10 @@ class TransformManager11 extends TransformManager {
       } catch (InterruptedException ie) {
       }
     }
+  }
+
+  protected String getNavigationState() {
+    return "";
   }
 
 }

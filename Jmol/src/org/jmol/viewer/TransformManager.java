@@ -94,7 +94,7 @@ abstract class TransformManager {
     clearSpin();
     fixedRotationCenter.set(0, 0, 0);
     navigating = false;
-    unsetNavigationPoint(true);
+    unsetNavigationPoint();
   }
 
   String getState() {
@@ -118,6 +118,7 @@ abstract class TransformManager {
     }
 
     commands.append("\n");
+    commands.append(getNavigationState());
     return commands.toString();
   }
 
@@ -886,7 +887,7 @@ abstract class TransformManager {
   private void setTranslationCenterToScreen() {
     // translate to the middle of the screen
     translateCenterTo(width / 2, height / 2);
-    unsetNavigationPoint(true);
+    unsetNavigationPoint();
     // 2005 02 22
     // switch to finding larger screen dimension
     // find smaller screen dimension
@@ -982,7 +983,7 @@ abstract class TransformManager {
 
   void setNavigationMode(boolean TF) {
     isNavigationMode = (TF && canNavigate());
-    unsetNavigationPoint(true);
+    unsetNavigationPoint();
   }
 
   boolean getNavigating() {
@@ -995,8 +996,8 @@ abstract class TransformManager {
     calcZoom();
     calcCameraFactors();
     calcTransformMatrix();
-    calcNavigationPoint();
-    //System.out.println("finalize nav pt,offset:"+navigationCenter + fixedNavigationOffset);
+    if (isNavigationMode)
+      calcNavigationPoint();
     calcSlabAndDepthValues();
   }
 
@@ -1757,7 +1758,7 @@ abstract class TransformManager {
 
   void setWindowCentered(boolean TF) {
     windowCentered = TF;
-    unsetNavigationPoint(true);
+    unsetNavigationPoint();
   }
 
   void setDefaultRotation() {
@@ -1778,7 +1779,7 @@ abstract class TransformManager {
 
   private void setRotationCenterAndRadiusXYZ(Point3f newCenterOfRotation,
                                              boolean andRadius) {
-    unsetNavigationPoint(true);
+    unsetNavigationPoint();
     if (newCenterOfRotation == null) {
       setFixedRotationCenter(rotationCenterDefault);
       rotationRadius = rotationRadiusDefault;
@@ -1846,19 +1847,45 @@ abstract class TransformManager {
     return false;
   }
 
-  synchronized void navigate(int keyWhere, int modifiers) {
+  /**
+   * keyboard entry point for navigation
+   * 
+   * @param keyCode
+   * @param modifiers
+   */
+  synchronized void navigate(int keyCode, int modifiers) {
   }
 
+  /**
+   * scripted entry point for navigation
+   * 
+   * @param seconds
+   * @param path
+   * @param theta
+   */
   void navigate(float seconds, Point3f[] path, float[] theta) {
   }
 
   /**
-   *  
+   *  all navigation effects go through this method
+   *
    */
   protected void calcNavigationPoint() {
   }
 
-  protected void unsetNavigationPoint(boolean getNew) {
+  /**
+   * something has arisen that requires resetting of the navigation point. 
+   */
+  protected void unsetNavigationPoint() {
+  }
+  
+  /**
+   *
+   * @return the script that defines the current navigation state
+   * 
+   */
+  protected String getNavigationState() {
+    return "";
   }
 
 }

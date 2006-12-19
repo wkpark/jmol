@@ -64,8 +64,8 @@ class TransformManager11 extends TransformManager {
     cameraScaleFactor = 1; //unitless
 
     // vertical screen plane of the observer where objects will be clipped
-    visualDepth = visualRange * scaleDefaultPixelsPerAngstrom / screenPixelCount
-        * perspectiveScale / screenPixelCount; //(p)
+    observerOffset = visualRange * scaleDefaultPixelsPerAngstrom / screenPixelCount
+        * perspectiveScale; //(s)
   }
 
   protected void calcSlabAndDepthValues() {
@@ -77,7 +77,7 @@ class TransformManager11 extends TransformManager {
       float radius = rotationRadius * scalePixelsPerAngstrom;
       float center = cameraDistance + screenPixelCount / 2f;
       if (perspectiveDepth && visualRange > 0 && slabPercentSetting == 0) {
-        slabValue = (int) (visualDepth * screenPixelCount);
+        slabValue = (int) observerOffset;
         depthValue = Integer.MAX_VALUE;
         System.out.println("fixedNavigationOffset=" + fixedNavigationOffset + " navigationZOffset="+navigationZOffset);
         return;
@@ -235,7 +235,7 @@ class TransformManager11 extends TransformManager {
    */
   private boolean isNavigationDistant() {
     return (fixedRotationOffset.z - rotationRadius * scalePixelsPerAngstrom 
-        > visualDepth * screenPixelCount);
+        > observerOffset);
   }
 
   /** 
@@ -278,7 +278,7 @@ class TransformManager11 extends TransformManager {
       calcTransformMatrix();
       isNavigationMode = false;
       transformPoint(fixedRotationCenter, fixedNavigationOffset);
-      fixedNavigationOffset.z = visualDepth * screenPixelCount;
+      fixedNavigationOffset.z = observerOffset;
       findCenterAt(fixedRotationCenter, fixedNavigationOffset, navigationCenter);
     } else if (isNewXY || !navigating) {
       // redefine the navigation center based on its new or old screen position
@@ -293,7 +293,7 @@ class TransformManager11 extends TransformManager {
       // but we center it by moving the rotation center instead
       matrixTransform(navigationCenter, ptNav);
       matrixTransform(fixedRotationCenter, pointT);
-      navigationZOffset = visualDepth * screenPixelCount 
+      navigationZOffset = observerOffset 
          + (pointT.z - ptNav.z) - perspectiveScale;
       calcCameraFactors();
       calcTransformMatrix();

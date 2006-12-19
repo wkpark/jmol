@@ -815,7 +815,7 @@ abstract class TransformManager {
   protected boolean perspectiveDepth = true;
   protected float cameraDepth = 3f;
   protected float visualRange = 5f;
-  protected float visualDepth;
+  protected float observerOffset;
   protected float cameraDistance = 1000f; // prevent divide by zero on startup
 
   void setPerspectiveDepth(boolean perspectiveDepth) {

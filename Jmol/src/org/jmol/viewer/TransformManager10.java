@@ -65,7 +65,7 @@ class TransformManager10 extends TransformManager {
 
     // vertical screen plane of the observer where objects will be clipped
     // -- note -- in this model, it is not used because there is no navigation
-    visualDepth = 0; //(p)
+    observerOffset = 0; //(s)
   }
   
   protected void calcSlabAndDepthValues() {

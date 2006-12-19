@@ -37,9 +37,7 @@ class TransformManager11 extends TransformManager {
   }
 
   TransformManager11(Viewer viewer, int width, int height) {
-    super(viewer);
-    setScreenDimension(width, height);
-    scaleFitToScreen();
+    super(viewer, width, height);
   }
 
   protected void calcCameraFactors() {
@@ -348,7 +346,9 @@ class TransformManager11 extends TransformManager {
   }
 
   protected String getNavigationState() {
-    return "";
+    StringBuffer commands = new StringBuffer("");
+    
+    return commands.toString();
   }
 
 }

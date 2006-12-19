@@ -3109,10 +3109,12 @@ public class Viewer extends JmolViewer {
   public void setStringProperty(String key, String value) {
     //Eval
     while (true) {
+      ///11.1///
       if (key.equalsIgnoreCase("hoverLabel")) {
         setAtomHoverLabel(value);
         break;
       }
+      ///11.0///
       if (key.equalsIgnoreCase("defaultDistanceLabel")) {
         setDefaultMeasurementLabel(2, value);
         break;
@@ -3185,6 +3187,7 @@ public class Viewer extends JmolViewer {
   public void setFloatProperty(String key, float value) {
     //Eval
     while (true) {
+      ///11.1///
       if (key.equalsIgnoreCase("visualRange")) {
         setVisualRange(value);
         break;
@@ -3193,6 +3196,11 @@ public class Viewer extends JmolViewer {
         setCameraDepth(value);
         break;
       }
+      if (key.equalsIgnoreCase("hoverDelay")) {
+        setHoverDelay((int)(value * 1000));
+        break;
+      }
+      ///11.0///
       if (key.equalsIgnoreCase("sheetSmoothing")) {
         setSheetSmoothing(value);
         break;
@@ -3263,14 +3271,16 @@ public class Viewer extends JmolViewer {
 
   void setIntProperty(String key, int value, boolean defineNew) {
     while (true) {
+      ///11.1///
+      if (key.equalsIgnoreCase("perspectiveStyle")) {
+        setPerspectiveStyle(value);
+        break;
+      }
       if (key.equalsIgnoreCase("scriptDelay")) {
         setScriptDelay(value);
         break;
       }
-      if (key.equalsIgnoreCase("hoverDelay")) {
-        setHoverDelay(value);
-        break;
-      }
+      ////11.0///
       if (key.equalsIgnoreCase("backgroundModel")) {
         setBackgroundModel(value);
         break;
@@ -3347,16 +3357,18 @@ public class Viewer extends JmolViewer {
   boolean setBooleanProperty(String key, boolean value, boolean defineNew) {
     boolean notFound = false;
     while (true) {
-      if (key.equalsIgnoreCase("refreshing")) {
-        setRefreshing(value);
-        break;
-      }
+      ///11.1///
       if (key.equalsIgnoreCase("drawHover")) {
         setDrawHover(value);
         break;
       }
       if (key.equalsIgnoreCase("navigationMode")) {
         setNavigationMode(value);
+        break;
+      }
+      ///11.0///
+      if (key.equalsIgnoreCase("refreshing")) {
+        setRefreshing(value);
         break;
       }
       if (key.equalsIgnoreCase("justifyMeasurements")) {
@@ -3866,6 +3878,19 @@ public class Viewer extends JmolViewer {
       reset();
     }
     transformManager.setNavigationMode(TF);
+  }
+
+  private void setPerspectiveStyle(int mode) {
+    switch (mode) {
+    case 10:
+      transformManager = new TransformManager10(this, dimScreen.width,
+          dimScreen.height);
+      break;
+    default:
+      transformManager = new TransformManager11(this, dimScreen.width,
+          dimScreen.height);
+    }
+    reset();
   }
 
   boolean getNavigationMode() {

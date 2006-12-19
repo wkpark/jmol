@@ -32,6 +32,10 @@ class TransformManager10 extends TransformManager {
     super(viewer);
   }
 
+  TransformManager10(Viewer viewer, int width, int height) {
+    super(viewer, width, height);
+  }
+
   // older Jmol 10 method 
   // -- applies cameraScaleFactor to scalePixelsPerAngstrom
   // -- no navigation 

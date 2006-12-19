@@ -73,6 +73,11 @@ abstract class TransformManager {
     this.viewer = viewer;
   }
 
+  TransformManager(Viewer viewer, int width, int height) {
+    setScreenDimension(width, height);
+    scaleFitToScreen();
+  }
+
   /* ***************************************************************
    * GENERAL METHODS
    ***************************************************************/

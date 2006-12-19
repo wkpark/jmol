@@ -43,8 +43,9 @@ class TransformManager11 extends TransformManager {
 
   protected void calcCameraFactors() {
     cameraDistance = cameraDepth * screenPixelCount;
-    screenCenterOffset = cameraDistance + screenPixelCount / 2f;
-    perspectiveScale = screenCenterOffset;
+    screenCenterOffset = cameraDistance + screenPixelCount / 2f
+        + navigationZOffset;
+    perspectiveScale = cameraDistance + screenPixelCount / 2f;
     cameraScaleFactor = 1;
     scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomPercent / 100;
   }
@@ -138,6 +139,7 @@ class TransformManager11 extends TransformManager {
     return true;
   }
 
+  private int navigationZOffset = 0;
   private Point3f ptNav = new Point3f();
   private final Point3f newNavigationOffset = new Point3f();
 
@@ -165,8 +167,7 @@ class TransformManager11 extends TransformManager {
         rotateXRadians(radiansPerDegree * -.2f);
       else {
         ptNav.z = Float.NaN;
-        zoomBy(1);
-        newNavigationOffset.z = -1;
+        navigationZOffset-=5;
       }
       break;
     case KeyEvent.VK_DOWN:
@@ -176,8 +177,7 @@ class TransformManager11 extends TransformManager {
         rotateXRadians(radiansPerDegree * .2f);
       else {
         ptNav.z = Float.NaN;
-        zoomBy(-1);
-        newNavigationOffset.z = 1;
+        navigationZOffset+=5;
       }
       break;
     case KeyEvent.VK_LEFT:
@@ -225,6 +225,7 @@ class TransformManager11 extends TransformManager {
     boolean isNewZ = Float.isNaN(ptNav.z);
     ptNav.set(0, 0, 0);
     if (isReset) {
+      navigationZOffset = 0;
       isNavigationMode = false;
       navigationCenter.set(fixedRotationCenter);
       transformPoint(navigationCenter, fixedNavigationOffset);
@@ -234,6 +235,8 @@ class TransformManager11 extends TransformManager {
       if (navigating)
         fixedNavigationOffset.set(newNavigationOffset);
       findCenterAt(fixedNavigationOffset, fixedRotationCenter, navigationCenter);
+    } else if (isNewZ) {
+      
     }
     matrixTransform(navigationCenter, referenceOffset);
     transformPoint(fixedRotationCenter, fixedTranslation);

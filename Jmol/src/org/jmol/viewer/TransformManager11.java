@@ -34,7 +34,7 @@ class TransformManager11 extends TransformManager {
 
   private float navigationZOffset = 0;
   private final Point3f navigationCenter = new Point3f();
-  private final Point3f ptNav = new Point3f();
+  private final Point3f ptNav = new Point3f(Float.NaN, Float.NaN, Float.NaN);
   private final Point3f newNavigationOffset = new Point3f();
 
   TransformManager11(Viewer viewer) {
@@ -74,14 +74,15 @@ class TransformManager11 extends TransformManager {
     slabValue = 0;
     depthValue = Integer.MAX_VALUE;
     //System.out.println("calcSlab " + slabEnabled + " " + slabPercentSetting
-      //  + " " + visualRange);
+    //  + " " + visualRange);
     if (slabEnabled) {
       float radius = rotationRadius * scalePixelsPerAngstrom;
       float center = cameraDistance + screenPixelCount / 2f;
       if (perspectiveDepth && visualRange > 0 && slabPercentSetting == 0) {
         slabValue = (int) observerOffset;
         depthValue = Integer.MAX_VALUE;
-        System.out.println("fixedNavigationOffset=" + fixedNavigationOffset + " navigationZOffset="+navigationZOffset);
+        System.out.println("fixedNavigationOffset=" + fixedNavigationOffset
+            + " navigationZOffset=" + navigationZOffset);
         return;
       }
       // a slab percentage of 100 should map to zero
@@ -153,7 +154,6 @@ class TransformManager11 extends TransformManager {
   }
 
   // navigation
-
 
   boolean canNavigate() {
     return true;
@@ -230,8 +230,7 @@ class TransformManager11 extends TransformManager {
    * @return whether it is appropriate to zoom
    */
   private boolean isNavigationDistant() {
-    return (fixedRotationOffset.z - rotationRadius * scalePixelsPerAngstrom 
-        > observerOffset);
+    return (fixedRotationOffset.z - rotationRadius * scalePixelsPerAngstrom > observerOffset);
   }
 
   /** 
@@ -285,8 +284,8 @@ class TransformManager11 extends TransformManager {
       // but we center it by moving the rotation center instead
       matrixTransform(navigationCenter, ptNav);
       matrixTransform(fixedRotationCenter, pointT);
-      navigationZOffset = observerOffset 
-         + (pointT.z - ptNav.z) - perspectiveScale;
+      navigationZOffset = observerOffset + (pointT.z - ptNav.z)
+          - perspectiveScale;
       calcCameraFactors();
       calcTransformMatrix();
     }
@@ -308,7 +307,8 @@ class TransformManager11 extends TransformManager {
    * @param fixedModelXYZ
    * @param center
    */
-  private void findCenterAt(Point3f fixedModelXYZ, Point3f fixedScreenXYZ, Point3f center) {
+  private void findCenterAt(Point3f fixedModelXYZ, Point3f fixedScreenXYZ,
+                            Point3f center) {
     isNavigationMode = false;
     //get the rotation center's Z offset and move X and Y to 0,0
     transformPoint(fixedModelXYZ, pointT);
@@ -350,7 +350,7 @@ class TransformManager11 extends TransformManager {
 
   protected String getNavigationState() {
     StringBuffer commands = new StringBuffer("");
-    
+
     return commands.toString();
   }
 

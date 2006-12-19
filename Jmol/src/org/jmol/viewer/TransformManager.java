@@ -74,6 +74,7 @@ abstract class TransformManager {
   }
 
   TransformManager(Viewer viewer, int width, int height) {
+    this.viewer = viewer;
     setScreenDimension(width, height);
     scaleFitToScreen();
   }

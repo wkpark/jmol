@@ -32,6 +32,11 @@ import java.awt.event.InputEvent;
 
 class TransformManager11 extends TransformManager {
 
+  private float navigationZOffset = 0;
+  private final Point3f navigationCenter = new Point3f();
+  private final Point3f ptNav = new Point3f();
+  private final Point3f newNavigationOffset = new Point3f();
+
   TransformManager11(Viewer viewer) {
     super(viewer);
   }
@@ -149,10 +154,6 @@ class TransformManager11 extends TransformManager {
 
   // navigation
 
-  private float navigationZOffset = 0;
-  private final Point3f navigationCenter = new Point3f();
-  private final Point3f ptNav = new Point3f();
-  private final Point3f newNavigationOffset = new Point3f();
 
   boolean canNavigate() {
     return true;
@@ -248,6 +249,8 @@ class TransformManager11 extends TransformManager {
   }
 
   protected void unsetNavigationPoint() {
+    if (ptNav == null)
+      return;
     ptNav.x = Float.NaN;
   }
 

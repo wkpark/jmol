@@ -3375,6 +3375,9 @@
   <fah_proj number="1498" name="p1498_TETHERED VESICLES" public="y" file="y"
     server="171.64.122.128" atoms="308047" preferred="38" deadline="76"
     credit="542" frames="100" code="G" contact="kasson" contrib="Ivoshiee"/>
+  <fah_proj number="1499" name="p1499_tet_1499" public="n" file="y"
+    server="171.64.122.134" atoms="126006" preferred="20" deadline="40"
+    credit="364" frames="100" code="G" contact="kasson" contrib="P5-133XL,Synanjin"/>
 
   <!-- Projects 1500 to 1599 -->
   <fah_proj number="1500" name="p1500_FSnat_273_dd19_lowv" public="y" file="y"
@@ -4664,19 +4667,19 @@
   <fah_proj number="3020" name="p3020_SMP-nsv-03" public="y" file="y"
     server="171.64.65.56" atoms="9684" preferred="1" deadline="2"
     credit="587" frames="100" code="GS" contact="densign" contrib="dreederocuk"/>
-  <fah_proj number="3022" name="p3022_SMP-msv-2003" public="n" file="y"
+  <fah_proj number="3022" name="p3022_SMP-msv-2003" public="y" file="y"
     server="171.64.65.63" atoms="9684" preferred="1" deadline="2"
     credit="658" frames="100" code="GS" contact="densign" contrib="Ivoshiee"/>
   <fah_proj number="3023" name="p3023_SMP-water-box" public="y" file="y"
     server="171.64.65.56" atoms="9642" preferred="1" deadline="2"
     credit="587" frames="100" code="GS" contact="densign" contrib="dreederocuk"/>
-  <fah_proj number="3024" name="p3024_SMP-msv-2003" public="n" file="y"
+  <fah_proj number="3024" name="p3024_SMP-msv-2003" public="y" file="y"
     server="171.64.65.63" atoms="9684" preferred="1" deadline="2"
     credit="652" frames="100" code="GS" contact="densign" contrib="dreederocuk"/>
   <fah_proj number="3025" name="p3025_SMP-nsv-03" public="y" file="y"
     server="171.64.65.56" atoms="9684" preferred="1" deadline="2"
     credit="587" frames="100" code="GS" contact="densign" contrib="dreederocuk"/>
-  <fah_proj number="3026" name="p3026_SMP-msv-2003" public="n" file="y"
+  <fah_proj number="3026" name="p3026_SMP-msv-2003" public="y" file="y"
     server="171.64.65.63" atoms="9684" preferred="1" deadline="2"
     credit="691" frames="100" code="GS" contact="densign" contrib="dreederocuk"/>
   <fah_proj number="3027" name="p3027_SMP-nsv-03" public="y" file="y"

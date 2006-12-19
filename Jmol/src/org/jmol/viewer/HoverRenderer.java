@@ -25,6 +25,8 @@ package org.jmol.viewer;
 
 class HoverRenderer extends ShapeRenderer {
   void render() {
+    if (viewer.getNavigating())
+      return;
     Hover hover = (Hover) shape;
     if (hover.atomIndex >= 0) {
       Atom atom = frame.getAtomAt(hover.atomIndex);

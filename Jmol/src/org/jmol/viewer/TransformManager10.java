@@ -59,7 +59,7 @@ class TransformManager10 extends TransformManager {
     
     // screen offset to fixed rotation center
     // -- note -- in this model, it floats with zoom and camera position
-    screenCenterOffset = cameraDistance + rotationRadius
+    modelCenterOffset = cameraDistance + rotationRadius
         * scalePixelsPerAngstrom; //(s)
 
     // factor to apply based on screen Z

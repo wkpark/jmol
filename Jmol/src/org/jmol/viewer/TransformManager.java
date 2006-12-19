@@ -37,11 +37,11 @@ abstract class TransformManager {
   Viewer viewer;
 
   protected float cameraScaleFactor;
-  protected float screenCenterOffset;
+  protected float modelCenterOffset;
   protected float perspectiveScale;
 
   protected final Point3f fixedRotationOffset = new Point3f();
-  protected final Point3f fixedNavigationOffset = new Point3f();
+  protected final Point3f navigationOffset = new Point3f();
 
   protected final Point3f referenceOffset = new Point3f();
 
@@ -533,7 +533,7 @@ abstract class TransformManager {
   }
 
   Point3f getNavigationOffset() {
-    return fixedNavigationOffset;
+    return navigationOffset;
   }
 
   int getZoomPercent() {
@@ -704,11 +704,11 @@ abstract class TransformManager {
    
    The atom position is transformed into screen-based coordinates as:
    
-   Z = screenCenterOffset + atom.z * zoom * defaultScalePixelsPerAngstrom
+   Z = modelCenterOffset + atom.z * zoom * defaultScalePixelsPerAngstrom
 
    where 
    
-   screenCenterOffset = cameraDistance + screenPixelCount / 2
+   modelCenterOffset = cameraDistance + screenPixelCount / 2
    
    Z is thus adjusted for zoom such that the center of the model stays in the same position.     
    Defining the position of a vertical plane p as:
@@ -1031,7 +1031,7 @@ abstract class TransformManager {
     }
     matrixTransform.mul(matrixTemp, matrixTransform);
     //z-translate to set rotation center at midplane (Nav) or front plane (V10)
-    matrixTransform.m23 += screenCenterOffset;
+    matrixTransform.m23 += modelCenterOffset;
 
     System.out.println("zoom:" + zoomPercent + "\n" + matrixTransform);
 
@@ -1066,8 +1066,8 @@ abstract class TransformManager {
     //draw move2D
     Point3f pt = new Point3f(screenPt.x, screenPt.y, screenPt.z);
     if (isNavigationMode) {
-      pt.x -= fixedNavigationOffset.x;
-      pt.y -= fixedNavigationOffset.y;
+      pt.x -= navigationOffset.x;
+      pt.y -= navigationOffset.y;
     } else {
       pt.x -= fixedRotationOffset.x;
       pt.y -= fixedRotationOffset.y;

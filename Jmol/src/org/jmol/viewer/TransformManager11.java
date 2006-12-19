@@ -57,7 +57,7 @@ class TransformManager11 extends TransformManager {
     cameraDistance = cameraDepth * screenPixelCount; //(s)
 
     // screen offset to fixed rotation center
-    screenCenterOffset = cameraDistance + screenPixelCount / 2f
+    modelCenterOffset = cameraDistance + screenPixelCount / 2f
         + navigationZOffset; //(s)
 
     // factor to apply based on screen Z
@@ -81,7 +81,7 @@ class TransformManager11 extends TransformManager {
       if (perspectiveDepth && visualRange > 0 && slabPercentSetting == 0) {
         slabValue = (int) observerOffset;
         depthValue = Integer.MAX_VALUE;
-        System.out.println("fixedNavigationOffset=" + fixedNavigationOffset
+        System.out.println("fixedNavigationOffset=" + navigationOffset
             + " navigationZOffset=" + navigationZOffset);
         return;
       }
@@ -134,8 +134,8 @@ class TransformManager11 extends TransformManager {
 
     //now move the center point to where it needs to be
     if (isNavigationMode) {
-      point3fScreenTemp.x += fixedNavigationOffset.x;
-      point3fScreenTemp.y += fixedNavigationOffset.y;
+      point3fScreenTemp.x += navigationOffset.x;
+      point3fScreenTemp.y += navigationOffset.y;
     } else {
       point3fScreenTemp.x += fixedRotationOffset.x;
       point3fScreenTemp.y += fixedRotationOffset.y;
@@ -176,7 +176,7 @@ class TransformManager11 extends TransformManager {
     }
     boolean isOffsetShifted = ((modifiers & InputEvent.SHIFT_MASK) > 0);
     boolean isAltKey = ((modifiers & InputEvent.ALT_MASK) > 0);
-    newNavigationOffset.set(fixedNavigationOffset);
+    newNavigationOffset.set(navigationOffset);
     ptNav.set(0, 0, 0);
     switch (keyCode) {
     case KeyEvent.VK_UP:
@@ -268,14 +268,14 @@ class TransformManager11 extends TransformManager {
       calcCameraFactors();
       calcTransformMatrix();
       isNavigationMode = false;
-      transformPoint(fixedRotationCenter, fixedNavigationOffset);
-      fixedNavigationOffset.z = observerOffset;
-      findCenterAt(fixedRotationCenter, fixedNavigationOffset, navigationCenter);
+      transformPoint(fixedRotationCenter, navigationOffset);
+      navigationOffset.z = observerOffset;
+      findCenterAt(fixedRotationCenter, navigationOffset, navigationCenter);
     } else if (isNewXY || !navigating) {
       // redefine the navigation center based on its new or old screen position
       if (navigating)
-        fixedNavigationOffset.set(newNavigationOffset);
-      findCenterAt(fixedRotationCenter, fixedNavigationOffset, navigationCenter);
+        navigationOffset.set(newNavigationOffset);
+      findCenterAt(fixedRotationCenter, navigationOffset, navigationCenter);
     } else if (isNewZ) {
       // nothing special to do -- navigationZOffset has changed.
     } else {

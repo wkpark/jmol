@@ -456,6 +456,8 @@ class StateManager {
     float defaultVectorScale     = 1f;
     int scriptDelay              = 0;
     int hoverDelayMs             = 500;
+    boolean hideNavigationPoint  = false;
+    boolean showNavigationPointAlways = false;
     
     // window
     

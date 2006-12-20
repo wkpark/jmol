@@ -380,18 +380,13 @@ public class Viewer extends JmolViewer {
   }
 
   void setCenterBitSet(BitSet bsCenter, boolean doScale) {
-    //Eval ???
+    //Eval 
     //setCenterSelected
-    transformManager.setCenterBitSet(bsCenter, doScale);
+    
+    Point3f center = (bsCenter != null && cardinalityOf(bsCenter) > 0 ? 
+        getAtomSetCenter(bsCenter) : null);
+    transformManager.setNewRotationCenter(center, doScale);
     refresh(0, "Viewer:setCenterBitSet()");
-  }
-
-  void setNewRotationCenter(String axisID) {
-    //eval for center [line1] ???
-    Point3f center = getDrawObjectCenter(axisID);
-    if (center == null)
-      return;
-    setNewRotationCenter(center);
   }
 
   void setNewRotationCenter(Point3f center) {
@@ -426,8 +421,24 @@ public class Viewer extends JmolViewer {
     return transformManager.getMoveToText(timespan);
   }
 
-  void navigate(float timeSeconds, Point3f[] path) {
-    transformManager.navigate(timeSeconds, path, null);
+  void navigate(float timeSeconds, Point3f[] path, float[] theta) {
+    transformManager.navigate(timeSeconds, path, theta);
+    refresh(1, "navigate");
+  }
+  
+  void navigate(float timeSeconds, Point3f center) {
+    transformManager.navigate(timeSeconds, center);
+    refresh(1, "navigate");
+  }
+  
+  void navTranslate(float timeSeconds, Point3f center) {
+    transformManager.navTranslate(timeSeconds, center);
+    refresh(1, "navigate");
+  }
+  
+  void navTranslatePercent(float timeSeconds, float x, float y) {
+    transformManager.navTranslatePercent(timeSeconds, x, y);
+    refresh(1, "navigate");
   }
   
   boolean pointToCenter = true;
@@ -3366,6 +3377,14 @@ public class Viewer extends JmolViewer {
         setNavigationMode(value);
         break;
       }
+      if (key.equalsIgnoreCase("hideNavigationPoint")) {
+        setHideNavigationPoint(value);
+        break;
+      }
+      if (key.equalsIgnoreCase("showNavigationPointAlways")) {
+        setShowNavigationPointAlways(value);
+        break;
+      }
       ///11.0///
       if (key.equalsIgnoreCase("refreshing")) {
         setRefreshing(value);
@@ -3676,9 +3695,29 @@ public class Viewer extends JmolViewer {
     transformManager.setWindowCentered(TF);
   }
 
-  public void setCameraDepth(float screenMultiples) {
-    transformManager.setCameraDepth(screenMultiples);     
+  private void setCameraDepth(float percent) {
+    transformManager.setCameraDepthPercent(percent);     
     refresh(1, "set cameraDepth");
+  }
+  
+  void setNavigationDepthPercent(float percent) {
+    transformManager.setNavigationDepthPercent(percent);     
+    refresh(1, "set navigationdDepth");
+  }
+  
+  private void setShowNavigationPointAlways(boolean TF) {
+    global.showNavigationPointAlways = TF;
+  }
+  
+  private void setHideNavigationPoint(boolean TF) {
+    global.hideNavigationPoint = TF;
+  }
+  
+  boolean getShowNavigationPoint() {
+    if (!global.navigationMode)
+      return false;
+    return (getNavigating() && !global.hideNavigationPoint
+        || global.showNavigationPointAlways || getInMotion());
   }
   
   public void setVisualRange(float angstroms) {

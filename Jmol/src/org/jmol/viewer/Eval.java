@@ -1615,6 +1615,27 @@ class Eval { //implements Runnable {
     return null;
   }
 
+  Point3f centerParameter(int i) throws ScriptException {
+    Point3f center = null;
+    switch (statement[i].tok) {
+    case Token.dollarsign:
+      String id = objectNameParameter(++i);
+      center = viewer.getDrawObjectCenter(id);
+      pcLastExpressionInstruction = i;
+      if (!isSyntaxCheck && center == null)
+        drawObjectNotDefined(id);
+      break;
+    case Token.expressionBegin:
+    case Token.leftbrace:
+      center = atomCenterOrCoordinateParameter(i);
+      break;
+    default:
+      coordinateOrNameOrExpressionRequired();
+    }
+    i = pcLastExpressionInstruction;
+    return center;
+  }
+
   Point4f planeParameter(int i) throws ScriptException {
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
@@ -2044,27 +2065,99 @@ class Eval { //implements Runnable {
   }
 
   void navigate() throws ScriptException {
-    //navigate time $drawObject(for now)
-    if (statementLength < 3)
-      badArgumentCount();
-    float timeSec = floatParameter(1);
-    if (statement[2].tok == Token.dollarsign) {
-      //center $ id
-      String pathID = objectNameParameter(3);
-      if (isSyntaxCheck)
-        return;
-      setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", pathID);
-      Point3f[] path = (Point3f[]) viewer.getShapeProperty(
-          JmolConstants.SHAPE_DRAW, "path");
-      refresh();
-      if (path == null)
-        invalidArgument();
-      viewer.navigate(timeSec, path);
+    /*
+     navigation on/off
+     navigation depth p # would be as a depth value, like slab, in percent, but could be negative
+     navigation nSec translate X Y  # could be percentages
+     navigation nSec translate $object # could be a draw object
+     navigation nSec translate (atom selection) #average of values
+     navigation nSec center {x y z}
+     navigation nSec center $object
+     navigation nSec center (atom selection)
+     navigation nSec path $object 
+     navigation nSec path {x y z theta} {x y z theta}{x y z theta}{x y z theta}...
+     */
+    if (statementLength == 1) {
+      setBooleanProperty("navigationMode", true);
       return;
     }
-    invalidArgument();
+    int tok;
+    Point3f pt;
+    if (statementLength == 2) {
+      switch (tok = statement[1].tok) {
+      case Token.on:
+      case Token.off:
+        setBooleanProperty("navigationMode", tok == Token.on);
+      default:
+        invalidArgument();
+      }
+    }
+    int i = 1;
+    float timeSec = (isFloatParameter(i) ? floatParameter(i++) : 0);
+    if (statementLength < i + 2)
+      badArgumentCount();
+    switch (statement[i].tok) {
+    case Token.depth:
+      float depth = floatParameter(++i);
+      if (!isSyntaxCheck)
+        viewer.setNavigationDepthPercent(depth);
+      break;
+    case Token.center:
+      pt = centerParameter(++i);
+      if (!isSyntaxCheck)
+        viewer.navigate(timeSec, pt);
+      break;
+    case Token.translate:
+      i++;
+      if (statementLength == i)
+        badArgumentCount();
+      float x = Float.NaN;
+      float y = Float.NaN;
+      if (isFloatParameter(i)) {
+        x = floatParameter(i);
+        y = floatParameter(i + 1);
+      } else if (statement[i].tok == Token.identifier) {
+        String str = (String) statement[i++].value;
+        if (str.equalsIgnoreCase("x"))
+          x = floatParameter(i);
+        else if (str.equalsIgnoreCase("y"))
+          y = floatParameter(i);
+        else
+          invalidArgument();
+      } else {
+        pt = centerParameter(i);
+        if (!isSyntaxCheck)
+          viewer.navTranslate(timeSec, pt);
+        break;
+      }
+      if (!isSyntaxCheck)
+        viewer.navTranslatePercent(timeSec, x, y);
+      break;
+    case Token.identifier:
+      if (((String) statement[2].value).equalsIgnoreCase("path")) {
+        if (statement[3].tok == Token.dollarsign) {
+          //center $ id
+          String pathID = objectNameParameter(3);
+          if (isSyntaxCheck)
+            return;
+          setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", pathID);
+          Point3f[] path = (Point3f[]) viewer.getShapeProperty(
+              JmolConstants.SHAPE_DRAW, "path");
+          refresh();
+          if (path == null)
+            invalidArgument();
+          if (!isSyntaxCheck)
+            viewer.navigate(timeSec, path, null); // for now, no orientation
+          return;
+        }
+        //possibility here of multiple coord4
+      }
+    //fall through;
+    default:
+      invalidArgument();
+    }
   }
-
+  
   void bondorder() throws ScriptException {
     Token tokenArg = statement[1];
     short order = 0;
@@ -2338,28 +2431,14 @@ class Eval { //implements Runnable {
   void center(int i) throws ScriptException {
     // from center (atom) or from zoomTo under conditions of not windowCentered()
     if (statementLength == 1) {
-      viewer.setCenterBitSet(null, true);
+      viewer.setNewRotationCenter((Point3f) null);
       return;
     }
-
-    if (statement[i].tok == Token.dollarsign) {
-      //center $ id
-      String axisID = objectNameParameter(i + 1);
-      if (!isSyntaxCheck)
-        viewer.setNewRotationCenter(axisID);
-      return;
-    }
-
-    if (statement[i].tok == Token.leftbrace) {
-      //center { x y z } 
-      Point3f pt = getCoordinate(i, true);
-      if (!isSyntaxCheck)
-        viewer.setNewRotationCenter(pt);
-      return;
-    }
-    BitSet bs = expression(statement, i);
+    Point3f center = centerParameter(i);
+    if (center == null)
+      invalidArgument();
     if (!isSyntaxCheck)
-      viewer.setCenterBitSet(bs, true);
+      viewer.setNewRotationCenter(center);
   }
 
   void color() throws ScriptException {
@@ -6070,21 +6149,8 @@ class Eval { //implements Runnable {
         break;
       case Token.center:
         propertyName = "center";
-        switch (statement[++i].tok) {
-        case Token.dollarsign:
-          String id = objectNameParameter(++i);
-          propertyValue = viewer.getDrawObjectCenter(id);
-          if (!isSyntaxCheck && propertyValue == null)
-            drawObjectNotDefined(id);
-          break;
-        case Token.expressionBegin:
-        case Token.leftbrace:
-          propertyValue = atomCenterOrCoordinateParameter(i);
-          i = pcLastExpressionInstruction;
-          break;
-        default:
-          coordinateOrNameOrExpressionRequired();
-        }
+        propertyValue = centerParameter(i + 1);
+        i = pcLastExpressionInstruction;
         break;
       case Token.color:
         /* 

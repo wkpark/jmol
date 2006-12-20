@@ -77,7 +77,6 @@ class TransformManager11 extends TransformManager {
     //  + " " + visualRange);
     if (slabEnabled) {
       float radius = rotationRadius * scalePixelsPerAngstrom;
-      float center = cameraDistance + screenPixelCount / 2f;
       if (perspectiveDepth && visualRange > 0 && slabPercentSetting == 0) {
         slabValue = (int) observerOffset;
         depthValue = Integer.MAX_VALUE;
@@ -87,8 +86,8 @@ class TransformManager11 extends TransformManager {
       }
       // a slab percentage of 100 should map to zero
       // a slab percentage of 0 should map to -diameter
-      slabValue = (int) (((50 - slabPercentSetting) * radius / 50) + center);
-      depthValue = (int) (((50 - depthPercentSetting) * radius / 50) + center);
+      slabValue = (int) (((50 - slabPercentSetting) * radius / 50) + modelCenterOffset);
+      depthValue = (int) (((50 - depthPercentSetting) * radius / 50) + modelCenterOffset);
       //System.out.println("sv=" + slabValue + ","+slabPercentSetting+" dv=" + depthValue +","+depthPercentSetting+ " cent=" + center + " cdist=" + cameraDistance + " ps="+ perspectiveScale+" cdepth=" + cameraDepth + " radius="+radius );
     }
   }
@@ -159,21 +158,36 @@ class TransformManager11 extends TransformManager {
     return true;
   }
 
-  /**
-   * entry point for keyboard-based navigation
-   * 
-   * @param keyCode  0 indicates key released    
-   * @param modifiers shift,alt,ctrl
-   */
+  void setNavigationDepthPercent(float percent) {
+    // navigation depth 0 # place user at front plane of the model
+    // navigation depth 100 # place user at rear plane of the model
+
+    // scalePixelsPerAngstrom takes into account any zoom
+    
+    // perspectiveScale + navigationZOffset = observerOffset + dz
+    
+    calcCameraFactors(); //current
+    float dz = ((50 - percent) / 100) * rotationRadius * scalePixelsPerAngstrom;
+    navigationZOffset = observerOffset + dz - perspectiveScale;
+    calcCameraFactors(); //updated
+  }
+
+  int nHits;
+  int multiplier = 1;
   synchronized void navigate(int keyCode, int modifiers) {
     if (!isNavigationMode)
       return;
     if (keyCode == 0) {
+      nHits = 0;
+      multiplier = 1;
       if (!navigating)
         return;
       navigating = false;
       return;
     }
+    nHits++;
+    if (nHits % 10 == 0)
+      multiplier *= (multiplier == 8 ? 1 : 2);
     boolean isOffsetShifted = ((modifiers & InputEvent.SHIFT_MASK) > 0);
     boolean isAltKey = ((modifiers & InputEvent.ALT_MASK) > 0);
     newNavigationOffset.set(navigationOffset);
@@ -181,44 +195,46 @@ class TransformManager11 extends TransformManager {
     switch (keyCode) {
     case KeyEvent.VK_UP:
       if (isOffsetShifted)
-        newNavigationOffset.y -= 2;
+        newNavigationOffset.y -= 2 * multiplier;
       else if (isAltKey)
-        rotateXRadians(radiansPerDegree * -.2f);
+        rotateXRadians(radiansPerDegree * -.2f * multiplier);
       else if (isNavigationDistant())
-        zoomBy(1);
+        zoomBy(multiplier);
       else
-        navigationZOffset -= 5;
+        navigationZOffset -= 5 * multiplier;
       ptNav.z = Float.NaN;
       break;
     case KeyEvent.VK_DOWN:
       if (isOffsetShifted)
-        newNavigationOffset.y += 2;
+        newNavigationOffset.y += 2 * multiplier;
       else if (isAltKey)
-        rotateXRadians(radiansPerDegree * .2f);
+        rotateXRadians(radiansPerDegree * .2f * multiplier);
       else if (isNavigationDistant())
-        zoomBy(-1);
+        zoomBy(-multiplier);
       else
-        navigationZOffset += 5;
+        navigationZOffset += 5 * multiplier;
       ptNav.z = Float.NaN;
       break;
     case KeyEvent.VK_LEFT:
       if (isOffsetShifted)
-        newNavigationOffset.x -= 2;
+        newNavigationOffset.x -= 2 * multiplier;
       else
-        rotateYRadians(radiansPerDegree * 3 * -.2f);
+        rotateYRadians(radiansPerDegree * 3 * -.2f * multiplier);
       break;
     case KeyEvent.VK_RIGHT:
       if (isOffsetShifted)
-        newNavigationOffset.x += 2;
+        newNavigationOffset.x += 2 * multiplier;
       else
-        rotateYRadians(radiansPerDegree * 3 * .2f);
+        rotateYRadians(radiansPerDegree * 3 * .2f * multiplier);
       break;
     default:
       navigating = false;
       return;
     }
-    if (isOffsetShifted)
+    if (isOffsetShifted) {
+      navigationOffset.set(newNavigationOffset);
       ptNav.y = Float.NaN;
+    }
     navigating = true;
   }
 
@@ -233,24 +249,41 @@ class TransformManager11 extends TransformManager {
     return (fixedRotationOffset.z - rotationRadius * scalePixelsPerAngstrom > observerOffset);
   }
 
-  /** 
-   * scripted navigation
-   * 
-   * @param seconds  number of seconds to allow for total movement, like moveTo
-   * @param path     sequence of points to turn into a hermetian path
-   * @param theta    orientation angle along path (0 aligns with window Y axis) 
-   *                 [or Z axis if path is vertical] 
-   *                 
-   *                 not implemented yet
-   */
+  synchronized void navTranslate(float seconds, Point3f pt) {
+    //seconds unimplemented
+    transformPoint(pt, pointT);
+    transformPoint(navigationCenter, navigationOffset);
+    navigationOffset.x = pointT.x;
+    navigationOffset.y = pointT.y;
+    ptNav.set(0, Float.NaN, 0);
+  }
+
+  synchronized void navTranslatePercent(float seconds, float x, float y) {
+    //seconds unimplemented
+    transformPoint(navigationCenter, navigationOffset);
+    if (!Float.isNaN(x))
+      navigationOffset.x = (width / 2) + width * x / 100;
+    if (!Float.isNaN(y))
+      navigationOffset.y = (height / 2) + height * y / 100;
+    ptNav.set(0, Float.NaN, 0);
+  }
+
+  void navigate(float seconds, Point3f pt) {
+    //seconds unimplemented
+    navigationCenter.set(pt);
+    transformPoint(pt, navigationOffset);
+  }
+
   void navigate(float seconds, Point3f[] path, float[] theta) {
     // TODO
   }
 
-  protected void unsetNavigationPoint() {
+  protected void resetNavigationPoint() {
     if (ptNav == null)
-      return;
+      return; //just initializing subclass
     ptNav.x = Float.NaN;
+    slabPercentSetting = (isNavigationMode ? 0 : 100);
+    slabEnabled = isNavigationMode;
   }
 
   /**
@@ -272,9 +305,7 @@ class TransformManager11 extends TransformManager {
       navigationOffset.z = observerOffset;
       findCenterAt(fixedRotationCenter, navigationOffset, navigationCenter);
     } else if (isNewXY || !navigating) {
-      // redefine the navigation center based on its new or old screen position
-      if (navigating)
-        navigationOffset.set(newNavigationOffset);
+      // redefine the navigation center based on its old screen position
       findCenterAt(fixedRotationCenter, navigationOffset, navigationCenter);
     } else if (isNewZ) {
       // nothing special to do -- navigationZOffset has changed.

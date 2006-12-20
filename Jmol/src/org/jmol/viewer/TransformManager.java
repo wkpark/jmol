@@ -29,7 +29,6 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
-import java.util.BitSet;
 import java.util.Hashtable;
 
 abstract class TransformManager {
@@ -100,7 +99,7 @@ abstract class TransformManager {
     clearSpin();
     fixedRotationCenter.set(0, 0, 0);
     navigating = false;
-    unsetNavigationPoint();
+    resetNavigationPoint();
   }
 
   String getState() {
@@ -836,8 +835,15 @@ abstract class TransformManager {
     return perspectiveDepth;
   }
 
-  void setCameraDepth(float screenMultiples) {
-    if (screenMultiples <= 0)
+  /**
+   * either as a percent -300, or as a float 3.0
+   * note this percent is of zoom=100 size of model
+   * 
+   * @param percent
+   */
+  void setCameraDepthPercent(float percent) {
+    float screenMultiples = (percent < 0 ? -percent / 100 : percent);
+    if (screenMultiples == 0)
       return;
     cameraDepth = screenMultiples;
   }
@@ -893,7 +899,7 @@ abstract class TransformManager {
   private void setTranslationCenterToScreen() {
     // translate to the middle of the screen
     translateCenterTo(width / 2, height / 2);
-    unsetNavigationPoint();
+    resetNavigationPoint();
     // 2005 02 22
     // switch to finding larger screen dimension
     // find smaller screen dimension
@@ -989,7 +995,7 @@ abstract class TransformManager {
 
   void setNavigationMode(boolean TF) {
     isNavigationMode = (TF && canNavigate());
-    unsetNavigationPoint();
+    resetNavigationPoint();
   }
 
   boolean getNavigating() {
@@ -1764,7 +1770,7 @@ abstract class TransformManager {
 
   void setWindowCentered(boolean TF) {
     windowCentered = TF;
-    unsetNavigationPoint();
+    resetNavigationPoint();
   }
 
   void setDefaultRotation() {
@@ -1785,7 +1791,7 @@ abstract class TransformManager {
 
   private void setRotationCenterAndRadiusXYZ(Point3f newCenterOfRotation,
                                              boolean andRadius) {
-    unsetNavigationPoint();
+    resetNavigationPoint();
     if (newCenterOfRotation == null) {
       setFixedRotationCenter(rotationCenterDefault);
       rotationRadius = rotationRadiusDefault;
@@ -1807,18 +1813,11 @@ abstract class TransformManager {
     setRotationCenterAndRadiusXYZ(pointT, true);
   }
 
-  //from ModelManager:
-
-  void setCenterBitSet(BitSet bsCenter, boolean doScale) {
-    Point3f center = (bsCenter != null && viewer.cardinalityOf(bsCenter) > 0 ? viewer
-        .getAtomSetCenter(bsCenter)
-        : rotationCenterDefault);
-    setNewRotationCenter(center, doScale);
-  }
-
   void setNewRotationCenter(Point3f center, boolean doScale) {
     // once we have the center, we need to optionally move it to 
     // the proper XY position and possibly scale
+    if (center == null)
+      center = rotationCenterDefault;
     if (windowCentered) {
       translateToXPercent(0);
       translateToYPercent(0);///CenterTo(0, 0);
@@ -1854,10 +1853,10 @@ abstract class TransformManager {
   }
 
   /**
-   * keyboard entry point for navigation
+   * entry point for keyboard-based navigation
    * 
-   * @param keyCode
-   * @param modifiers
+   * @param keyCode  0 indicates key released    
+   * @param modifiers shift,alt,ctrl
    */
   synchronized void navigate(int keyCode, int modifiers) {
   }
@@ -1866,10 +1865,44 @@ abstract class TransformManager {
    * scripted entry point for navigation
    * 
    * @param seconds
-   * @param path
-   * @param theta
+   * @param pt
+   */
+  synchronized void navigate(float seconds, Point3f pt) {
+    //unimplemented
+  }
+
+  /** 
+   * scripted navigation
+   * 
+   * @param seconds  number of seconds to allow for total movement, like moveTo
+   * @param path     sequence of points to turn into a hermetian path
+   * @param theta    orientation angle along path (0 aligns with window Y axis) 
+   *                 [or Z axis if path is vertical] 
+   *                 
+   *                 not implemented yet
    */
   void navigate(float seconds, Point3f[] path, float[] theta) {
+  }
+
+  /**
+   * scripted entry point for navigation
+   * 
+   * @param seconds
+   * @param pt
+   */
+  synchronized void navTranslate(float seconds, Point3f pt) {
+    //unimplemented
+  }
+
+  /**
+   * scripted entry point for navigation
+   * 
+   * @param seconds
+   * @param x
+   * @param y
+   */
+  synchronized void navTranslatePercent(float seconds, float x, float y) {
+    //unimplemented
   }
 
   /**
@@ -1882,7 +1915,7 @@ abstract class TransformManager {
   /**
    * something has arisen that requires resetting of the navigation point. 
    */
-  protected void unsetNavigationPoint() {
+  protected void resetNavigationPoint() {
   }
   
   /**
@@ -1892,6 +1925,15 @@ abstract class TransformManager {
    */
   protected String getNavigationState() {
     return "";
+  }
+
+  /**
+   * sets the position of the navigation offset relative 
+   * to the model (50% center; 0% rear, 100% front; can be <0 or >100)
+   * 
+   * @param percent
+   */
+  void setNavigationDepthPercent(float percent) {
   }
 
 }

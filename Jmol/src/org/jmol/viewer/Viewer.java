@@ -2269,7 +2269,7 @@ public class Viewer extends JmolViewer {
   }
 
   public void refresh(int isOrientationChange, String strWhy) {
-    System.out.println("refresh: " +strWhy);
+    //System.out.println("refresh: " +strWhy);
     repaintManager.refresh();
     statusManager.setStatusViewerRefreshed(isOrientationChange, strWhy);
   }

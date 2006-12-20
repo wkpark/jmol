@@ -3941,7 +3941,8 @@ public class Viewer extends JmolViewer {
   
   void navigate(int keyWhere, int modifiers) {
     transformManager.navigate(keyWhere, modifiers);
-    refresh(1, "Viewer:navigate()");
+    if (!transformManager.vibrationOn)
+      refresh(1, "Viewer:navigate()");
   }
   
   Point3f getNavigationOffset() {

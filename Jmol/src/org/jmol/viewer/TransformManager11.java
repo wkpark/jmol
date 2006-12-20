@@ -80,8 +80,8 @@ class TransformManager11 extends TransformManager {
       if (perspectiveDepth && visualRange > 0 && slabPercentSetting == 0) {
         slabValue = (int) observerOffset;
         depthValue = Integer.MAX_VALUE;
-        System.out.println("fixedNavigationOffset=" + navigationOffset
-            + " navigationZOffset=" + navigationZOffset);
+        //System.out.println("fixedNavigationOffset=" + navigationOffset
+          //  + " navigationZOffset=" + navigationZOffset);
         return;
       }
       // a slab percentage of 100 should map to zero
@@ -186,8 +186,11 @@ class TransformManager11 extends TransformManager {
       navigating = false;
       return;
     }
+   // if (!haveFinalized)
+     // return;
+    //haveFinalized = false;
     nHits++;
-    if (nHits % 10 == 0)
+    if (nHits % 10 == 0 && !vibrationOn)
       multiplier *= (multiplier == 8 ? 1 : 2);
     boolean isOffsetShifted = ((modifiers & InputEvent.SHIFT_MASK) > 0);
     boolean isAltKey = ((modifiers & InputEvent.ALT_MASK) > 0);
@@ -203,6 +206,7 @@ class TransformManager11 extends TransformManager {
         zoomBy(multiplier);
       else
         navigationZOffset -= 5 * multiplier;
+      //System.out.println(zoomPercentSetting + " "  + navigationZOffset + " " + scalePixelsPerAngstrom);
       ptNav.z = Float.NaN;
       break;
     case KeyEvent.VK_DOWN:
@@ -221,12 +225,14 @@ class TransformManager11 extends TransformManager {
         newNavigationOffset.x -= 2 * multiplier;
       else
         rotateYRadians(radiansPerDegree * 3 * -.2f * multiplier);
+      ptNav.y = ptNav.z = Float.NaN;
       break;
     case KeyEvent.VK_RIGHT:
       if (isOffsetShifted)
         newNavigationOffset.x += 2 * multiplier;
       else
         rotateYRadians(radiansPerDegree * 3 * .2f * multiplier);
+      ptNav.y = ptNav.z = Float.NaN;
       break;
     default:
       navigating = false;
@@ -235,8 +241,12 @@ class TransformManager11 extends TransformManager {
     if (isOffsetShifted) {
       navigationOffset.set(newNavigationOffset);
       ptNav.y = Float.NaN;
+      ptNav.z = 0;
     }
     navigating = true;
+    //you might think that at this point we should use
+    //finalizeTransformParameters(), but it turns out that is a BAD idea, because
+    //the effect needs to be produced at rendering time only. 
   }
 
   /**
@@ -257,6 +267,7 @@ class TransformManager11 extends TransformManager {
     navigationOffset.x = pointT.x;
     navigationOffset.y = pointT.y;
     ptNav.set(0, Float.NaN, 0);
+    finalizeTransformParameters();
   }
 
   synchronized void navTranslatePercent(float seconds, float x, float y) {
@@ -267,12 +278,14 @@ class TransformManager11 extends TransformManager {
     if (!Float.isNaN(y))
       navigationOffset.y = (height / 2) + height * y / 100;
     ptNav.set(0, Float.NaN, 0);
+    finalizeTransformParameters();
   }
 
   void navigate(float seconds, Point3f pt) {
     //seconds unimplemented
     navigationCenter.set(pt);
     transformPoint(pt, navigationOffset);
+    finalizeTransformParameters();
   }
 
   void navigate(float seconds, Point3f[] path, float[] theta) {
@@ -295,6 +308,7 @@ class TransformManager11 extends TransformManager {
     boolean isReset = Float.isNaN(ptNav.x);
     boolean isNewXY = Float.isNaN(ptNav.y);
     boolean isNewZ = Float.isNaN(ptNav.z);
+    boolean isNewXYZ = isNewXY && isNewZ;
     ptNav.set(0, 0, 0);
     if (isReset) {
       //simply place the navigation center in front of the fixed rotation center
@@ -305,12 +319,7 @@ class TransformManager11 extends TransformManager {
       transformPoint(fixedRotationCenter, navigationOffset);
       navigationOffset.z = observerOffset;
       findCenterAt(fixedRotationCenter, navigationOffset, navigationCenter);
-    } else if (isNewXY || !navigating) {
-      // redefine the navigation center based on its old screen position
-      findCenterAt(fixedRotationCenter, navigationOffset, navigationCenter);
-    } else if (isNewZ) {
-      // nothing special to do -- navigationZOffset has changed.
-    } else {
+    } else if (isNewXYZ) {
       // must just be (not so!) simple navigation
       // navigation center will initially move
       // but we center it by moving the rotation center instead
@@ -320,6 +329,11 @@ class TransformManager11 extends TransformManager {
           - perspectiveScale;
       calcCameraFactors();
       calcTransformMatrix();
+    } else if (isNewXY || !navigating) {
+      // redefine the navigation center based on its old screen position
+      findCenterAt(fixedRotationCenter, navigationOffset, navigationCenter);
+    } else if (isNewZ) {
+      // nothing special to do -- navigationZOffset has changed.
     }
     matrixTransform(navigationCenter, referenceOffset);
     transformPoint(fixedRotationCenter, fixedTranslation);

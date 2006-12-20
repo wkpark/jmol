@@ -153,6 +153,7 @@ abstract class TransformManager {
   final static float twoPI = (float) (2 * Math.PI);
   float spinX, spinY = 30f, spinZ, spinFps = 30f;
   boolean haveNotifiedNaN = false;
+  boolean haveFinalized = false;
   boolean isSpinInternal = false;
   boolean isSpinFixed = false;
 
@@ -558,12 +559,13 @@ abstract class TransformManager {
     zoomPercentSetting += delta;
   }
 
-  private void calcZoom() {
+  protected void calcZoom() {
     if (zoomPercentSetting < 5)
       zoomPercentSetting = 5;
     if (zoomPercentSetting > MAXIMUM_ZOOM_PERCENTAGE)
       zoomPercentSetting = MAXIMUM_ZOOM_PERCENTAGE;
     zoomPercent = (zoomEnabled) ? zoomPercentSetting : 100;
+    //System.out.println("calczoom" + zoomPercent);
   }
 
   void setZoomEnabled(boolean zoomEnabled) {
@@ -1011,6 +1013,7 @@ abstract class TransformManager {
     if (isNavigationMode)
       calcNavigationPoint();
     calcSlabAndDepthValues();
+    haveFinalized = true;
   }
 
   synchronized protected void calcTransformMatrix() {
@@ -1039,7 +1042,7 @@ abstract class TransformManager {
     //z-translate to set rotation center at midplane (Nav) or front plane (V10)
     matrixTransform.m23 += modelCenterOffset;
 
-    System.out.println("zoom:" + zoomPercent + "\n" + matrixTransform);
+    //System.out.println("zoom:" + zoomPercent + "\n" + matrixTransform);
 
     // note that the image is still centered at 0, 0 in the xy plane
 
@@ -1126,10 +1129,12 @@ abstract class TransformManager {
 
   void transformPoint(Point3f pointAngstroms, Vector3f vibrationVector,
                       Point3i pointScreen) {
+    //vibration vectors renderer only
     pointScreen.set(transformPoint(pointAngstroms, vibrationVector));
   }
 
   void transformVector(Vector3f vectorAngstroms, Vector3f vectorTransformed) {
+    //dots renderer, geodesic only
     matrixTransform(vectorAngstroms, vectorTransformed);
   }
 
@@ -1661,6 +1666,7 @@ abstract class TransformManager {
   }
 
   void setVibrationT(float t) {
+    //System.out.println("setVibrationT");if(true)return;
     vibrationRadians = t * twoPI;
     if (vibrationScale == 0)
       vibrationScale = viewer.getDefaultVibrationScale();
@@ -1670,8 +1676,6 @@ abstract class TransformManager {
   VibrationThread vibrationThread;
 
   private void setVibrationOn(boolean vibrationOn) {
-    if (isNavigationMode)
-      vibrationOn = false; //incompatible modes
     if (!vibrationOn) {
       if (vibrationThread != null) {
         vibrationThread.interrupt();

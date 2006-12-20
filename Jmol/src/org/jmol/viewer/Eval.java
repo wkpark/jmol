@@ -1994,7 +1994,9 @@ class Eval { //implements Runnable {
     Point3f pt = new Point3f();
     Point3f center = null;
     int i = 1;
-    float floatSecondsTotal = (isFloatParameter(1) ? floatParameter(i++) : 2.0f);
+    float floatSecondsTotal = (isFloatParameter(i) ? floatParameter(i++) : 2.0f);
+    if (floatSecondsTotal < 0)
+      invalidArgument();
     float zoom = 100;
     float xTrans = 0;
     float yTrans = 0;
@@ -2082,6 +2084,7 @@ class Eval { //implements Runnable {
       return;
     }
     int tok;
+    Vector3f rotAxis = new Vector3f(0, 1, 0);
     Point3f pt;
     if (statementLength == 2) {
       switch (tok = statement[1].tok) {
@@ -2093,7 +2096,9 @@ class Eval { //implements Runnable {
       }
     }
     int i = 1;
-    float timeSec = (isFloatParameter(i) ? floatParameter(i++) : 0);
+    float timeSec = (isFloatParameter(i) ? floatParameter(i++) : 2f);
+    if (timeSec < 0)
+      invalidArgument();
     if (statementLength < i + 2)
       badArgumentCount();
     switch (statement[i].tok) {
@@ -2106,6 +2111,28 @@ class Eval { //implements Runnable {
       pt = centerParameter(++i);
       if (!isSyntaxCheck)
         viewer.navigate(timeSec, pt);
+      break;
+    case Token.rotate:
+      switch (getToken(++i).tok) {
+      case Token.identifier:
+        String str = (String) statement[i++].value;
+        if (str.equalsIgnoreCase("x")) {
+          rotAxis.set(1, 0, 0);
+          break;
+        }
+        if (str.equalsIgnoreCase("y")) {
+          rotAxis.set(0, 1, 0);
+          break;
+        }
+        if (str.equalsIgnoreCase("z")) {
+          rotAxis.set(0, 0, 1);
+          break;
+        }
+        invalidArgument(); // for now
+      }
+      float degrees = (isFloatParameter(i) ? floatParameter(i) : 10f);
+      if (!isSyntaxCheck)
+        viewer.navigate(timeSec, rotAxis, degrees);
       break;
     case Token.translate:
       i++;
@@ -3428,16 +3455,16 @@ class Eval { //implements Runnable {
         return;
       }
     }
-    float time = (isZoomTo ? 1f : 0f);
     float zoom = viewer.getZoomPercentFloat();
-    float factor = 0;
     float radius = viewer.getRotationRadius();
     Point3f center = null;
     Point3f currentCenter = viewer.getRotationCenter();
     int i = 1;
     //zoomTo time-sec 
-    if (isFloatParameter(i) && isZoomTo)
-      time = floatParameter(i++);
+    float time = (isZoomTo ? (isFloatParameter(i) ? floatParameter(i++) : 2f)
+        : 0f);
+    if (time < 0)
+      invalidArgument();
     //zoom {x y z} or (atomno=3)
     int ptCenter = 0;
     if (isAtomCenterOrCoordinateNext(i)) {
@@ -3449,8 +3476,7 @@ class Eval { //implements Runnable {
     boolean isSameAtom = (center != null && currentCenter.distance(center) < 0.1);
 
     //zoom/zoomTo percent|-factor|+factor|*factor|/factor 
-    if (isFloatParameter(i))
-      factor = floatParameter(i++);
+    float factor = (isFloatParameter(i) ? floatParameter(i++) : 0f);
     if (factor < 0)
       factor += zoom;
     if (factor == 0) {
@@ -5064,6 +5090,8 @@ class Eval { //implements Runnable {
       switch (statement[1].tok) {
       case Token.orientation:
         float timeSeconds = (statementLength > 3 ? floatParameter(3) : 0);
+        if (timeSeconds < 0)
+          invalidArgument();
         if (!isSyntaxCheck)
           viewer.restoreOrientation(saveName, timeSeconds);
         return;

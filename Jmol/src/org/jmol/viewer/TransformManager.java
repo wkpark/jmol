@@ -1201,15 +1201,15 @@ abstract class TransformManager {
     //    viewer.setInMotion(false);
   }
 
-  private final AxisAngle4f aaMoveTo = new AxisAngle4f();
-  private final AxisAngle4f aaStep = new AxisAngle4f();
-  private final AxisAngle4f aaTotal = new AxisAngle4f();
-  private final Matrix3f matrixStart = new Matrix3f();
-  private final Matrix3f matrixInverse = new Matrix3f();
-  private final Matrix3f matrixStep = new Matrix3f();
-  private final Matrix3f matrixEnd = new Matrix3f();
-  private final Vector3f aaStepCenter = new Vector3f();
-  private Point3f ptMoveToCenter;
+  protected final AxisAngle4f aaMoveTo = new AxisAngle4f();
+  protected final AxisAngle4f aaStep = new AxisAngle4f();
+  protected final AxisAngle4f aaTotal = new AxisAngle4f();
+  protected final Matrix3f matrixStart = new Matrix3f();
+  protected final Matrix3f matrixInverse = new Matrix3f();
+  protected final Matrix3f matrixStep = new Matrix3f();
+  protected final Matrix3f matrixEnd = new Matrix3f();
+  protected final Vector3f aaStepCenter = new Vector3f();
+  protected Point3f ptMoveToCenter;
 
   void moveTo(float floatSecondsTotal, Point3f center, Point3f pt,
               float degrees, float zoom, float xTrans, float yTrans,
@@ -1860,10 +1860,19 @@ abstract class TransformManager {
    * scripted entry point for navigation
    * 
    * @param seconds
-   * @param pt
+   * @param center
    */
-  synchronized void navigate(float seconds, Point3f pt) {
-    //unimplemented
+  void navigate(float seconds, Point3f center) {
+  }
+
+  /**
+   * scripted entry point for navigation
+   * 
+   * @param seconds
+   * @param rotAxis
+   * @param degrees
+   */
+  void navigate(float seconds, Vector3f rotAxis, float degrees) {
   }
 
   /** 
@@ -1885,8 +1894,7 @@ abstract class TransformManager {
    * @param seconds
    * @param pt
    */
-  synchronized void navTranslate(float seconds, Point3f pt) {
-    //unimplemented
+  void navTranslate(float seconds, Point3f pt) {
   }
 
   /**
@@ -1896,8 +1904,7 @@ abstract class TransformManager {
    * @param x
    * @param y
    */
-  synchronized void navTranslatePercent(float seconds, float x, float y) {
-    //unimplemented
+  void navTranslatePercent(float seconds, float x, float y) {
   }
 
   /**

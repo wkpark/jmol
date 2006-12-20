@@ -113,9 +113,10 @@ class SticksRenderer extends ShapeRenderer {
     xA = atomA.screenX; yA = atomA.screenY; zA = atomA.screenZ;
     this.atomB = atomB;
     xB = atomB.screenX; yB = atomB.screenY; zB = atomB.screenZ;
+    if (zA ==1 || zB == 1)
+      return;
     dx = xB - xA;
     dy = yB - yA;
-    
     width = viewer.scaleToScreen((zA + zB)/2, bond.mad);
     bondOrder = getRenderBondOrder(bond.order);
     switch(bondOrder) {

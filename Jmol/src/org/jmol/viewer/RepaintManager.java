@@ -142,12 +142,15 @@ class RepaintManager {
     notify(); // to cancel any wait in requestRepaintAndWait()
   }
 
+  /*
   final Rectangle rectOversample = new Rectangle();
   boolean tOversample;
 
   void setOversample(boolean tOversample) {
+    //not implemented --
     this.tOversample = tOversample;
   }
+  */
 
   void render(Graphics3D g3d, Rectangle rectClip,
                      Frame frame, int displayModelID) {

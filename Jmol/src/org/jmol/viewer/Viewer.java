@@ -431,6 +431,11 @@ public class Viewer extends JmolViewer {
     refresh(1, "navigate");
   }
   
+  void navigate(float timeSeconds, Vector3f rotAxis, float degrees) {
+    transformManager.navigate(timeSeconds, rotAxis, degrees);
+    refresh(1, "navigate");
+  }
+  
   void navTranslate(float timeSeconds, Point3f center) {
     transformManager.navTranslate(timeSeconds, center);
     refresh(1, "navigate");

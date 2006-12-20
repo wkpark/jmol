@@ -125,12 +125,13 @@ final public class JmolConstants {
   public final static int PICKING_MEASURE_DISTANCE = 15;
   public final static int PICKING_MEASURE_ANGLE    = 16;
   public final static int PICKING_MEASURE_TORSION  = 17;
+  public final static int PICKING_NAVIGATE         = 18;
 
   private final static String[] pickingModeNames = {
     "off", "ident", "label", "center", "draw", "spin",
     "coord NOT IMPLEMENTED", "bond NOT IMPLEMENTED", 
     "atom", "group", "chain", "molecule", "site", "element", 
-    "measure", "distance", "angle", "torsion"
+    "measure", "distance", "angle", "torsion", "navigate"
   };
  
   public final static String getPickingModeName(int pickingMode) {

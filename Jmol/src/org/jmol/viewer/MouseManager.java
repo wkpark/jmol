@@ -315,6 +315,12 @@ abstract class MouseManager implements KeyListener {
         viewer.popupMenu(-x, y);
         return;
       }
+      if (viewer.getPickingMode() == JmolConstants.PICKING_NAVIGATE) {
+        if (viewer.getNavigationMode())
+          viewer.navTranslatePercent(0f, x * 100f / viewer.getScreenWidth()
+              - 50f, y * 100f / viewer.getScreenHeight() - 50f);
+        return;
+      }
       if (!drawMode)
         viewer.atomPicked(nearestAtomIndex, modifiers);
       if (measurementMode) {

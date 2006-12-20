@@ -4976,6 +4976,9 @@ class Eval { //implements Runnable {
     case Token.bonds: //not implemented
       str = "bond";
       break;
+    case Token.navigate:
+      str = "navigate";
+      break;
     case Token.spin:
       if (statementLength == 4) {
         setIntProperty("pickingSpinRate", intParameter(3));

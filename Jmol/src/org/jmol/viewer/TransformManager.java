@@ -153,7 +153,6 @@ abstract class TransformManager {
   final static float twoPI = (float) (2 * Math.PI);
   float spinX, spinY = 30f, spinZ, spinFps = 30f;
   boolean haveNotifiedNaN = false;
-  boolean haveFinalized = false;
   boolean isSpinInternal = false;
   boolean isSpinFixed = false;
 
@@ -872,19 +871,23 @@ abstract class TransformManager {
    ****************************************************************/
   boolean tOversample;
   int width, height;
-  int width1, height1, width4, height4;
+  int width1, height1;//, width4, height4;
   int screenPixelCount;
   float scalePixelsPerAngstrom;
   float scaleDefaultPixelsPerAngstrom;
 
   void setScreenDimension(int width, int height) {
     this.width1 = this.width = width;
-    this.width4 = width + width;
+   // this.width4 = width + width;
     this.height1 = this.height = height;
-    this.height4 = height + height;
+  //  this.height4 = height + height;
   }
 
+
+  /* see also repaintManager - not implemented
+   * 
   void setOversample(boolean tOversample) {
+    // not implemented
     if (this.tOversample == tOversample)
       return;
     this.tOversample = tOversample;
@@ -897,7 +900,8 @@ abstract class TransformManager {
     }
     scaleFitToScreen();
   }
-
+  */
+  
   private void setTranslationCenterToScreen() {
     // translate to the middle of the screen
     translateCenterTo(width / 2, height / 2);
@@ -976,10 +980,11 @@ abstract class TransformManager {
    * TRANSFORMATIONS
    ****************************************************************/
 
-  final Matrix4f matrixTransform = new Matrix4f();
-  private final Point3f point3fVibrationTemp = new Point3f();
+  protected final Matrix4f matrixTransform = new Matrix4f();
   protected final Point3f point3fScreenTemp = new Point3f();
   protected final Point3i point3iScreenTemp = new Point3i();
+
+  private final Point3f point3fVibrationTemp = new Point3f();
 
   /* ***************************************************************
    * RasMol has the +Y axis pointing down
@@ -992,8 +997,8 @@ abstract class TransformManager {
     this.axesOrientationRasmol = axesOrientationRasmol;
   }
 
-  boolean navigating = false;
-  boolean isNavigationMode = false;
+  protected boolean navigating = false;
+  protected boolean isNavigationMode = false;
 
   void setNavigationMode(boolean TF) {
     isNavigationMode = (TF && canNavigate());
@@ -1013,7 +1018,6 @@ abstract class TransformManager {
     if (isNavigationMode)
       calcNavigationPoint();
     calcSlabAndDepthValues();
-    haveFinalized = true;
   }
 
   synchronized protected void calcTransformMatrix() {
@@ -1197,35 +1201,21 @@ abstract class TransformManager {
     //    viewer.setInMotion(false);
   }
 
-  AxisAngle4f aaMoveTo;
-  AxisAngle4f aaStep;
-  AxisAngle4f aaTotal;
-  Matrix3f matrixStart;
-  Matrix3f matrixInverse;
-  Matrix3f matrixStep;
-  Matrix3f matrixEnd;
-  Vector3f aaStepCenter;
-  Point3f ptCenter;
-
-  void initializeMoveTo() {
-    if (aaMoveTo != null)
-      return;
-    aaMoveTo = new AxisAngle4f();
-    aaStep = new AxisAngle4f();
-    aaTotal = new AxisAngle4f();
-    matrixStart = new Matrix3f();
-    matrixEnd = new Matrix3f();
-    matrixStep = new Matrix3f();
-    matrixInverse = new Matrix3f();
-    aaStepCenter = new Vector3f();
-  }
+  private final AxisAngle4f aaMoveTo = new AxisAngle4f();
+  private final AxisAngle4f aaStep = new AxisAngle4f();
+  private final AxisAngle4f aaTotal = new AxisAngle4f();
+  private final Matrix3f matrixStart = new Matrix3f();
+  private final Matrix3f matrixInverse = new Matrix3f();
+  private final Matrix3f matrixStep = new Matrix3f();
+  private final Matrix3f matrixEnd = new Matrix3f();
+  private final Vector3f aaStepCenter = new Vector3f();
+  private Point3f ptMoveToCenter;
 
   void moveTo(float floatSecondsTotal, Point3f center, Point3f pt,
               float degrees, float zoom, float xTrans, float yTrans,
               float newRotationRadius) {
 
     Vector3f axis = new Vector3f(pt);
-    initializeMoveTo();
     if (Float.isNaN(degrees)) {
       getRotation(matrixEnd);
     } else if (degrees < 0.01f && degrees > -0.01f) {
@@ -1252,10 +1242,9 @@ abstract class TransformManager {
 
   void moveTo(float floatSecondsTotal, Matrix3f end, Point3f center,
               float zoom, float xTrans, float yTrans, float newRotationRadius) {
-    initializeMoveTo();
     if (end != null)
       matrixEnd.set(end);
-    ptCenter = (center == null ? fixedRotationCenter : center);
+    ptMoveToCenter = (center == null ? fixedRotationCenter : center);
     float startRotationRadius = rotationRadius;
     float targetRotationRadius = (center == null ? rotationRadius
         : newRotationRadius <= 0 ? viewer.calcRotationRadius(center)
@@ -1281,7 +1270,7 @@ abstract class TransformManager {
       float xTransDelta = xTrans - xTransStart;
       float yTransStart = getTranslationYPercent();
       float yTransDelta = yTrans - yTransStart;
-      aaStepCenter.set(ptCenter);
+      aaStepCenter.set(ptMoveToCenter);
       aaStepCenter.sub(fixedRotationCenter);
       aaStepCenter.scale(1f / totalSteps);
       float pixelScaleDelta = (targetPixelScale - startPixelScale);
@@ -1378,15 +1367,15 @@ abstract class TransformManager {
     return "" + sb + ";";
   }
 
-  String getCenterText() {
+  private String getCenterText() {
     return StateManager.escape(fixedRotationCenter);
   }
 
-  String getMoveToText() {
+  private String getMoveToText() {
     return getMoveToText(1);
   }
 
-  String getRotateXyzText() {
+  private String getRotateXyzText() {
     StringBuffer sb = new StringBuffer();
     float m20 = matrixRotate.m20;
     float rY = -(float) Math.asin(m20) * degreesPerRadian;
@@ -1436,7 +1425,7 @@ abstract class TransformManager {
     return "" + sb;
   }
 
-  String getRotateZyzText(boolean iAddComment) {
+  private String getRotateZyzText(boolean iAddComment) {
     StringBuffer sb = new StringBuffer();
     float m22 = matrixRotate.m22;
     float rY = (float) Math.acos(m22) * degreesPerRadian;
@@ -1485,12 +1474,12 @@ abstract class TransformManager {
     return "" + sb;
   }
 
-  static void truncate0(StringBuffer sb, float val) {
+  static private void truncate0(StringBuffer sb, float val) {
     sb.append(' ');
     sb.append(Math.round(val));
   }
 
-  static void truncate1(StringBuffer sb, float val) {
+  static private void truncate1(StringBuffer sb, float val) {
     sb.append(' ');
     sb.append(Math.round(val * 10) / 10f);
   }
@@ -1525,7 +1514,7 @@ abstract class TransformManager {
     spinFps = value;
   }
 
-  void clearSpin() {
+  private void clearSpin() {
     setSpinOn(false);
     isSpinInternal = false;
     isSpinFixed = false;
@@ -1533,13 +1522,13 @@ abstract class TransformManager {
   }
 
   boolean spinOn;
-  SpinThread spinThread;
+  private SpinThread spinThread;
 
   void setSpinOn(boolean spinOn) {
     setSpinOn(spinOn, Float.MAX_VALUE);
   }
 
-  void setSpinOn(boolean spinOn, float endDegrees) {
+  private void setSpinOn(boolean spinOn, float endDegrees) {
     this.spinOn = spinOn;
     if (spinOn) {
       if (spinThread == null) {
@@ -1554,7 +1543,7 @@ abstract class TransformManager {
     }
   }
 
-  class SpinThread extends Thread implements Runnable {
+  private class SpinThread extends Thread implements Runnable {
     float endDegrees;
     float nDegrees = 0;
 
@@ -1629,11 +1618,11 @@ abstract class TransformManager {
    ****************************************************************/
 
   boolean vibrationOn;
-  float vibrationPeriod;
-  int vibrationPeriodMs;
-  float vibrationAmplitude;
-  float vibrationRadians;
-  float vibrationScale;
+  private float vibrationPeriod;
+  public int vibrationPeriodMs;
+  private float vibrationAmplitude;
+  private float vibrationRadians;
+  private float vibrationScale;
 
   void setVibrationScale(float scale) {
     vibrationScale = scale;
@@ -1665,7 +1654,7 @@ abstract class TransformManager {
         && viewer.modelHasVibrationVectors(viewer.getCurrentModelIndex()));
   }
 
-  void setVibrationT(float t) {
+  protected void setVibrationT(float t) {
     //System.out.println("setVibrationT");if(true)return;
     vibrationRadians = t * twoPI;
     if (vibrationScale == 0)
@@ -1673,7 +1662,7 @@ abstract class TransformManager {
     vibrationAmplitude = (float) Math.cos(vibrationRadians) * vibrationScale;
   }
 
-  VibrationThread vibrationThread;
+  private VibrationThread vibrationThread;
 
   private void setVibrationOn(boolean vibrationOn) {
     if (!vibrationOn) {
@@ -1695,12 +1684,12 @@ abstract class TransformManager {
     this.vibrationOn = true;
   }
 
-  void clearVibration() {
+  private void clearVibration() {
     setVibrationOn(false);
     vibrationScale = 0;
   }
 
-  class VibrationThread extends Thread implements Runnable {
+  private class VibrationThread extends Thread implements Runnable {
 
     public void run() {
       long startTime = System.currentTimeMillis();

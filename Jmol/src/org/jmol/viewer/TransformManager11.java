@@ -186,11 +186,8 @@ class TransformManager11 extends TransformManager {
       navigating = false;
       return;
     }
-   // if (!haveFinalized)
-     // return;
-    //haveFinalized = false;
     nHits++;
-    if (nHits % 10 == 0 && !vibrationOn)
+    if (nHits % 10 == 0)
       multiplier *= (multiplier == 8 ? 1 : 2);
     boolean isOffsetShifted = ((modifiers & InputEvent.SHIFT_MASK) > 0);
     boolean isAltKey = ((modifiers & InputEvent.ALT_MASK) > 0);
@@ -244,9 +241,7 @@ class TransformManager11 extends TransformManager {
       ptNav.z = 0;
     }
     navigating = true;
-    //you might think that at this point we should use
-    //finalizeTransformParameters(), but it turns out that is a BAD idea, because
-    //the effect needs to be produced at rendering time only. 
+    finalizeTransformParameters();
   }
 
   /**

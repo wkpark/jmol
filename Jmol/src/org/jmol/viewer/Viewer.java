@@ -3701,8 +3701,8 @@ public class Viewer extends JmolViewer {
     refresh(1, "set cameraDepth");
   }
   
-  void setNavigationDepthPercent(float percent) {
-    transformManager.setNavigationDepthPercent(percent);     
+  void setNavigationDepthPercent(float timeSec, float percent) {
+    transformManager.setNavigationDepthPercent(timeSec, percent);     
     refresh(1, "set navigationdDepth");
   }
   

@@ -158,7 +158,7 @@ class TransformManager11 extends TransformManager {
     return true;
   }
 
-  void setNavigationDepthPercent(float percent) {
+  void setNavigationDepthPercent(float timeSec, float percent) {
     // navigation depth 0 # place user at front plane of the model
     // navigation depth 100 # place user at rear plane of the model
 
@@ -166,6 +166,7 @@ class TransformManager11 extends TransformManager {
     
     // perspectiveScale + navigationZOffset = observerOffset + dz
     
+    //time not implemented
     calcCameraFactors(); //current
     float dz = ((50 - percent) / 100) * rotationRadius * scalePixelsPerAngstrom;
     navigationZOffset = observerOffset + dz - perspectiveScale;

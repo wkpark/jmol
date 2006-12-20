@@ -1933,9 +1933,10 @@ abstract class TransformManager {
    * sets the position of the navigation offset relative 
    * to the model (50% center; 0% rear, 100% front; can be <0 or >100)
    * 
+   * @param timeSec
    * @param percent
    */
-  void setNavigationDepthPercent(float percent) {
+  void setNavigationDepthPercent(float timeSec, float percent) {
   }
 
 }

@@ -2100,7 +2100,7 @@ class Eval { //implements Runnable {
     case Token.depth:
       float depth = floatParameter(++i);
       if (!isSyntaxCheck)
-        viewer.setNavigationDepthPercent(depth);
+        viewer.setNavigationDepthPercent(timeSec, depth);
       break;
     case Token.center:
       pt = centerParameter(++i);

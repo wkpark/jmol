@@ -2269,6 +2269,7 @@ public class Viewer extends JmolViewer {
   }
 
   public void refresh(int isOrientationChange, String strWhy) {
+    System.out.println("refresh: " +strWhy);
     repaintManager.refresh();
     statusManager.setStatusViewerRefreshed(isOrientationChange, strWhy);
   }
@@ -3913,6 +3914,7 @@ public class Viewer extends JmolViewer {
   private void setNavigationMode(boolean TF) {
     global.navigationMode = TF;
     if (TF && !transformManager.canNavigate()) {
+      setVibrationPeriod(0);
       transformManager = new TransformManager11(this, dimScreen.width, dimScreen.height);
       reset();
     }
@@ -3920,6 +3922,7 @@ public class Viewer extends JmolViewer {
   }
 
   private void setPerspectiveStyle(int mode) {
+    setVibrationPeriod(0);
     switch (mode) {
     case 10:
       transformManager = new TransformManager10(this, dimScreen.width,

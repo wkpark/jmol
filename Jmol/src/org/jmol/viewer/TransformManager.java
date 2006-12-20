@@ -1670,6 +1670,8 @@ abstract class TransformManager {
   VibrationThread vibrationThread;
 
   private void setVibrationOn(boolean vibrationOn) {
+    if (isNavigationMode)
+      vibrationOn = false; //incompatible modes
     if (!vibrationOn) {
       if (vibrationThread != null) {
         vibrationThread.interrupt();

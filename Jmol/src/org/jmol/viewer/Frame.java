@@ -940,7 +940,7 @@ public final class Frame {
     if (vibrationVectors != null)
       for (int i = atomCount; --i >= 0;)
         if ((modelIndex < 0 || atoms[i].modelIndex == modelIndex)
-            && vibrationVectors[i] != null)
+            && vibrationVectors[i] != null && vibrationVectors[i].length() > 0)
           return true;
     return false;
   }

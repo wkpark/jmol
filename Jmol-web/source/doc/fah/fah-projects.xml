@@ -3375,7 +3375,7 @@
   <fah_proj number="1498" name="p1498_TETHERED VESICLES" public="y" file="y"
     server="171.64.122.128" atoms="308047" preferred="38" deadline="76"
     credit="542" frames="100" code="G" contact="kasson" contrib="Ivoshiee"/>
-  <fah_proj number="1499" name="p1499_tet_1499" public="n" file="y"
+  <fah_proj number="1499" name="p1499_tet_1499" public="y" file="y"
     server="171.64.122.134" atoms="126006" preferred="20" deadline="40"
     credit="364" frames="100" code="G" contact="kasson" contrib="P5-133XL,Synanjin"/>
 
@@ -4268,6 +4268,9 @@
   <fah_proj number="2143" name="p2143_halr-wt, CN inhib, NADP+ in water" public="y" file="y"
     server="171.64.122.141" atoms="86986" preferred="45" deadline="65"
     credit="478" frames="100" code="G" contact="densign" contrib="P5-133XL"/>
+  <fah_proj number="2145" name="p2145_haldr_T113A" public="y"
+    server="171.64.122.141" atoms="86982" preferred="45" deadline="65"
+    credit="478" frames="100" code="G" contact="densign"/>
 
   <!-- Projects 2200 to 2299 -->
   <fah_proj number="2200" name="p2200_ProteinA" public="y" file="y"
@@ -4613,6 +4616,15 @@
   <fah_proj number="2733" name="p2733_GPUlambda" public="y"
     server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
     credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2734" name="p2734_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2735" name="p2735_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2736" name="p2736_GPUlambda" public="n"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
 
   <!-- Projects 2800 to 2899 -->
   <fah_proj number="2800" name="p2800_jrz_apo" public="y" file="y"
@@ -4626,6 +4638,9 @@
   <fah_proj number="2903" name="p2903_BBA5" public="n" file="y"
     server="171.65.103.163" atoms="12200" preferred="26" deadline="38"
     credit="132" frames="100" code="GT" contact="huangx" contrib="Idan"/>
+  <fah_proj number="2904" name="p2904_BBA5" public="n"
+    server="171.65.103.163" atoms="12200" preferred="26" deadline="38"
+    credit="132" frames="100" code="GT" contact="huangx"/>
 
   <!-- Projects 3000 to 3099 -->
   <fah_proj number="3000" name="p3000_SMP-supervillin-beta1" public="n" file="y"

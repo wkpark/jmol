@@ -369,13 +369,17 @@ public class Viewer extends JmolViewer {
     return transformManager.getRotationRadius();
   }
 
+  public void setRotationRadius(float angstroms) {
+    transformManager.setRotationRadius(angstroms);
+  }
+
   Point3f getRotationCenter() {
     return transformManager.getRotationCenter();
   }
 
-  void setCenter(String relativeTo, Point3f pt) {
-    //Eval ???
-    transformManager.setCenter(relativeTo, pt);
+  void setCenterAt(String relativeTo, Point3f pt) {
+    //Eval centerAt boundbox|absolute|average {pt}
+    transformManager.setCenterAt(relativeTo, pt);
     refresh(0, "Viewer:setCenter(" + relativeTo + ")");
   }
 
@@ -395,26 +399,52 @@ public class Viewer extends JmolViewer {
     refresh(0, "Viewer:setCenterBitSet()");
   }
 
+  Point3f getNavigationCenter() {
+    return transformManager.getNavigationCenter();
+  }
+  
+  float getNavigationDepthPercent() {
+    return transformManager.getNavigationDepthPercent();
+  }
+  
+  void navigate(int keyWhere, int modifiers) {
+    transformManager.navigate(keyWhere, modifiers);
+    if (!transformManager.vibrationOn)
+      refresh(1, "Viewer:navigate()");
+  }
+  
+  Point3f getNavigationOffset() {
+    return transformManager.getNavigationOffset();
+  }
+
+  float getNavigationOffsetPercent(char XorY) {
+    return transformManager.getNavigationOffsetPercent(XorY);
+  }
+  
+  boolean getNavigating() {
+    return transformManager.getNavigating();
+  }
+  
   void move(Vector3f dRot, int dZoom, Vector3f dTrans, int dSlab,
             float floatSecondsTotal, int fps) {
     //from Eval
     transformManager.move(dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
   }
 
-  public void moveTo(float floatSecondsTotal, Point3f center, Point3f pt,
+  void moveTo(float floatSecondsTotal, Point3f center, Point3f pt,
                      float degrees, float zoom, float xTrans, float yTrans,
-                     float rotationRadius) {
+                     float rotationRadius, Point3f navCenter, float xNav, float yNav, float navDepth) {
     //from Eval
     transformManager.moveTo(floatSecondsTotal, center, pt, degrees, zoom,
-        xTrans, yTrans, rotationRadius);
+        xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
   }
 
-  public void moveTo(float floatSecondsTotal, Matrix3f rotationMatrix,
+  void moveTo(float floatSecondsTotal, Matrix3f rotationMatrix,
                      Point3f center, float zoom, float xTrans, float yTrans,
-                     float rotationRadius) {
+                     float rotationRadius, Point3f navCenter, float xNav, float yNav, float navDepth) {
     //from StateManager
     transformManager.moveTo(floatSecondsTotal, rotationMatrix, center, zoom,
-        xTrans, yTrans, rotationRadius);
+        xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
   }
 
   String getMoveToText(float timespan) {
@@ -3213,6 +3243,10 @@ public class Viewer extends JmolViewer {
         setCameraDepth(value);
         break;
       }
+      if (key.equalsIgnoreCase("rotationRadius")) {
+        setRotationRadius(value);
+        break;
+      }
       if (key.equalsIgnoreCase("hoverDelay")) {
         setHoverDelay((int)(value * 1000));
         break;
@@ -3818,7 +3852,6 @@ public class Viewer extends JmolViewer {
     //app PreferencesDialog
     //stateManager
     //setBooleanproperty
-    global.setParameterValue("axesOrientationRasmol", axesOrientationRasmol);
     transformManager.setAxesOrientationRasmol(axesOrientationRasmol);
     refresh(0, "Viewer:setAxesOrientationRasmol()");
   }
@@ -3926,6 +3959,10 @@ public class Viewer extends JmolViewer {
     transformManager.setNavigationMode(TF);
   }
 
+  boolean getNavigationMode() {
+    return global.navigationMode;
+  }
+  
   private void setPerspectiveStyle(int mode) {
     setVibrationPeriod(0);
     switch (mode) {
@@ -3940,24 +3977,6 @@ public class Viewer extends JmolViewer {
     reset();
   }
 
-  boolean getNavigationMode() {
-    return global.navigationMode;
-  }
-  
-  void navigate(int keyWhere, int modifiers) {
-    transformManager.navigate(keyWhere, modifiers);
-    if (!transformManager.vibrationOn)
-      refresh(1, "Viewer:navigate()");
-  }
-  
-  Point3f getNavigationOffset() {
-    return transformManager.getNavigationOffset();
-  }
-
-  boolean getNavigating() {
-    return transformManager.getNavigating();
-  }
-  
   private void setZoomLarge(boolean TF) {
     global.zoomLarge = TF;
     scaleFitToScreen();

@@ -39,6 +39,7 @@ abstract class TransformManager {
   protected float modelCenterOffset;
   protected float perspectiveScale;
 
+  protected final Point3f navigationCenter = new Point3f();
   protected final Point3f fixedRotationOffset = new Point3f();
   protected final Point3f navigationOffset = new Point3f();
 
@@ -114,9 +115,13 @@ abstract class TransformManager {
         "# orientation/center/spin state;\nset refreshing false;\n");
     if (!isWindowCentered())
       commands.append("set windowCentered false;\n");
+    commands.append("set cameraDepth " + cameraDepth + ";\n");
+    if (isNavigationMode)
+      commands.append("set navigationMode;\n");
     commands.append("center " + StateManager.escape(fixedRotationCenter)
         + ";\n");
     commands.append(getMoveToText(0) + ";\n");
+    if (!isNavigationMode)
     commands.append("slab " + slabPercentSetting + ";depth "
         + depthPercentSetting + (slabEnabled ? ";slab on" : "")
         + (!zoomEnabled ? ";zoom off" : "") + ";\n");
@@ -130,7 +135,8 @@ abstract class TransformManager {
     }
 
     commands.append("\n");
-    commands.append(getNavigationState());
+    if (isNavigationMode)
+      commands.append(getNavigationState());
     return commands.toString();
   }
 
@@ -491,6 +497,16 @@ abstract class TransformManager {
     info.put("transXPercent", new Float(getTranslationXPercent()));
     info.put("transYPercent", new Float(getTranslationYPercent()));
     info.put("zoom", new Float(zoomPercent));
+    info.put("rotationRadius", new Float(rotationRadius));
+    if (isNavigationMode) {
+      info.put("navigationCenter", "navigate center "
+          + StateManager.escape(navigationCenter));
+      info.put("navigationOffsetXPercent", new Float(
+          getNavigationOffsetPercent('X')));
+      info.put("navigationOffsetYPercent", new Float(
+          getNavigationOffsetPercent('Y')));
+      info.put("navigationDepthPercent", new Float(getNavigationDepthPercent()));
+    }
     return info;
   }
 
@@ -556,10 +572,6 @@ abstract class TransformManager {
           / (MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
           * (1 - factor);
     return factor;
-  }
-
-  Point3f getNavigationOffset() {
-    return navigationOffset;
   }
 
   int getZoomPercent() {
@@ -1015,6 +1027,8 @@ abstract class TransformManager {
 
   void setNavigationMode(boolean TF) {
     isNavigationMode = (TF && canNavigate());
+    if (isNavigationMode)
+      zoomEnabled = true;
     resetNavigationPoint();
   }
 
@@ -1222,11 +1236,12 @@ abstract class TransformManager {
   protected final Matrix3f matrixStep = new Matrix3f();
   protected final Matrix3f matrixEnd = new Matrix3f();
   protected final Vector3f aaStepCenter = new Vector3f();
+  protected final Vector3f aaStepNavCenter = new Vector3f();
   protected Point3f ptMoveToCenter;
 
   void moveTo(float floatSecondsTotal, Point3f center, Point3f pt,
               float degrees, float zoom, float xTrans, float yTrans,
-              float newRotationRadius) {
+              float newRotationRadius, Point3f navCenter, float xNav, float yNav, float navDepth) {
 
     Vector3f axis = new Vector3f(pt);
     if (Float.isNaN(degrees)) {
@@ -1250,11 +1265,12 @@ abstract class TransformManager {
       matrixEnd.set(aaMoveTo);
     }
     moveTo(floatSecondsTotal, null, center, zoom, xTrans, yTrans,
-        newRotationRadius);
+        newRotationRadius, navCenter, xNav, yNav, navDepth);
   }
 
   void moveTo(float floatSecondsTotal, Matrix3f end, Point3f center,
-              float zoom, float xTrans, float yTrans, float newRotationRadius) {
+              float zoom, float xTrans, float yTrans, float newRotationRadius,
+              Point3f navCenter, float xNav, float yNav, float navDepth) {
     if (end != null)
       matrixEnd.set(end);
     ptMoveToCenter = (center == null ? fixedRotationCenter : center);
@@ -1288,6 +1304,17 @@ abstract class TransformManager {
       aaStepCenter.scale(1f / totalSteps);
       float pixelScaleDelta = (targetPixelScale - startPixelScale);
       float rotationRadiusDelta = (targetRotationRadius - startRotationRadius);
+      if (navCenter != null && isNavigationMode) {
+        aaStepNavCenter.set(navCenter);
+        aaStepNavCenter.sub(navigationCenter);
+        aaStepNavCenter.scale(1f / totalSteps);
+      }
+      float xNavTransStart = getNavigationOffsetPercent('X');
+      float xNavTransDelta = xNav - xNavTransStart;
+      float yNavTransStart = getNavigationOffsetPercent('Y');
+      float yNavTransDelta = yNav - yNavTransStart;
+      float navDepthStart = getNavigationDepthPercent();
+      float navDepthDelta = navDepth - navDepthStart;
 
       for (int iStep = 1; iStep < totalSteps; ++iStep) {
 
@@ -1313,6 +1340,15 @@ abstract class TransformManager {
         setRotation(matrixStep);
         if (center != null)
           fixedRotationCenter.add(aaStepCenter);
+        if (navCenter != null && isNavigationMode) {
+          navigationCenter.add(aaStepNavCenter);
+          navigate(0, navigationCenter);
+          if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
+            navTranslatePercent(0, xNavTransStart + xNavTransDelta * fStep,
+                yNavTransStart + yNavTransDelta * fStep);
+          if (!Float.isNaN(navDepth))
+            setNavigationDepthPercent(0, navDepthStart + navDepthDelta * fStep);
+        }
         targetTime += frameTimeMillis;
         if (System.currentTimeMillis() < targetTime) {
           viewer.requestRepaintAndWait();
@@ -1336,7 +1372,7 @@ abstract class TransformManager {
         }
       }
     }
-    rotationRadius = targetRotationRadius;
+    setRotationRadius(targetRotationRadius);
     scaleDefaultPixelsPerAngstrom = targetPixelScale;
     if (center != null)
       moveRotationCenter(center, !windowCentered);
@@ -1344,6 +1380,13 @@ abstract class TransformManager {
     translateToXPercent(xTrans);
     translateToYPercent(yTrans);
     setRotation(matrixEnd);
+    if (navCenter != null && isNavigationMode) {
+      navigationCenter.set(navCenter);
+      if (!Float.isNaN(xNav) && !Float.isNaN(yNav))
+        navTranslatePercent(0, xNav, yNav);
+      if (!Float.isNaN(navDepth))
+        setNavigationDepthPercent(0, navDepth);
+    }
     viewer.setInMotion(false);
   }
 
@@ -1351,7 +1394,7 @@ abstract class TransformManager {
     axisangleT.set(matrixRotate);
     float degrees = axisangleT.angle * degreesPerRadian;
     StringBuffer sb = new StringBuffer();
-    sb.append("moveto " + timespan);
+    sb.append("moveto /* time, axisAngle */ " + timespan);
     if (degrees < 0.01f) {
       sb.append(" {0 0 1 0}");
     } else {
@@ -1365,18 +1408,15 @@ abstract class TransformManager {
       truncate1(sb, degrees);
       sb.append("}");
     }
-    float tX = getTranslationXPercent();
-    float tY = getTranslationYPercent();
-    if (true || zoomPercent != 100 || tX != 0 || tY != 0) {
-      truncate1(sb, zoomPercent);
-      if (true || tX != 0 || tY != 0) {
-        truncate1(sb, tX);
-        truncate1(sb, tY);
-      }
-    }
+    sb.append(" /* zoom, translation */ ");
+    truncate1(sb, zoomPercent);
+    truncate1(sb, getTranslationXPercent());
+    truncate1(sb, getTranslationYPercent());
     sb.append(" ");
+    sb.append(" /* center, rotationRadius */ ");
     sb.append(getCenterText());
     truncate1(sb, rotationRadius);
+    sb.append(getNavigationText());
     return "" + sb + ";";
   }
 
@@ -1418,26 +1458,45 @@ abstract class TransformManager {
       truncate1(sb, rZ);
     }
     sb.append(";");
+    addZoomTranslationNavigationText(sb);
+    return sb.toString();
+  }
+
+  private void addZoomTranslationNavigationText(StringBuffer sb) {
     if (zoomPercent != 100) {
-      sb.append(" zoom ");
+      sb.append(" zoom");
       truncate1(sb, zoomPercent);
       sb.append(";");
     }
     float tX = getTranslationXPercent();
     if (tX != 0) {
-      sb.append(" translate x ");
-      sb.append(tX);
+      sb.append(" translate x");
+      truncate1(sb, tX);
       sb.append(";");
     }
     float tY = getTranslationYPercent();
     if (tY != 0) {
-      sb.append(" translate y ");
-      sb.append(tY);
+      sb.append(" translate y");
+      truncate1(sb, tY);
       sb.append(";");
     }
-    return "" + sb;
+    if (rotationRadius != rotationRadiusDefault) {
+      sb.append("set rotationRadius");
+      truncate1(sb, rotationRadius);
+      sb.append(";");
+    }      
+    if (isNavigationMode) {
+      sb.append("navigate 0 center "
+          + StateManager.escape(navigationCenter));
+      sb.append(";navigate 0 translate");
+      truncate1(sb, getNavigationOffsetPercent('X'));
+      truncate1(sb, getNavigationOffsetPercent('Y'));
+      sb.append(";navigate 0 depth ");
+      truncate1(sb, getNavigationDepthPercent());
+      sb.append(";");
+    }
   }
-
+  
   private String getRotateZyzText(boolean iAddComment) {
     StringBuffer sb = new StringBuffer();
     float m22 = matrixRotate.m22;
@@ -1469,22 +1528,8 @@ abstract class TransformManager {
       sb.append("; rotate z");
       truncate1(sb, rZ2);
     }
-    if (zoomPercent != 100) {
-      sb.append("; zoom");
-      truncate1(sb, zoomPercent);
-    }
-    float tX = (int) (getTranslationXPercent() * 100) / 100f;
-    if (tX != 0) {
-      sb.append("; translate x ");
-      sb.append(tX);
-    }
-    float tY = (int) (getTranslationYPercent() * 100) / 100f;
-    if (tY != 0) {
-      sb.append("; translate y ");
-      sb.append(tY);
-    }
-    sb.append(';');
-    return "" + sb;
+    addZoomTranslationNavigationText(sb);
+    return sb.toString();
   }
 
   static private void truncate0(StringBuffer sb, float val) {
@@ -1784,8 +1829,8 @@ abstract class TransformManager {
   void setDefaultRotation() {
     rotationCenterDefault = viewer.getBoundBoxCenter();
     setFixedRotationCenter(rotationCenterDefault);
-    rotationRadius = rotationRadiusDefault = viewer
-        .calcRotationRadius(rotationCenterDefault);
+    rotationRadiusDefault = setRotationRadius(viewer
+        .calcRotationRadius(rotationCenterDefault));
     windowCentered = true;
   }
 
@@ -1797,6 +1842,11 @@ abstract class TransformManager {
     return rotationRadius;
   }
 
+  float setRotationRadius(float angstroms) {
+    return (rotationRadius = (angstroms <= 0 ? viewer
+        .calcRotationRadius(fixedRotationCenter) : angstroms));
+  }
+  
   private void setRotationCenterAndRadiusXYZ(Point3f newCenterOfRotation,
                                              boolean andRadius) {
     resetNavigationPoint();
@@ -1849,7 +1899,7 @@ abstract class TransformManager {
     setRotationCenterAndRadiusXYZ(fixedRotationCenter, true);
   }
 
-  void setCenter(String relativeTo, Point3f pt) {
+  void setCenterAt(String relativeTo, Point3f pt) {
     setRotationCenterAndRadiusXYZ(relativeTo, pt);
     scaleFitToScreen();
   }
@@ -1957,4 +2007,23 @@ abstract class TransformManager {
   void setNavigationDepthPercent(float timeSec, float percent) {
   }
 
+  Point3f getNavigationCenter() {
+    return null;
+  }
+  
+  Point3f getNavigationOffset() {
+    return null;
+  }
+  
+  float getNavigationDepthPercent() {
+    return Float.NaN;
+  }
+  
+  float getNavigationOffsetPercent(char XorY) {
+    return 0;
+  }
+  
+  String getNavigationText() {
+    return "";
+  }
 }

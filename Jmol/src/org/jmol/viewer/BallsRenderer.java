@@ -72,9 +72,9 @@ class BallsRenderer extends ShapeRenderer {
     if (frame.atomCount > 0 && viewer.getShowNavigationPoint()) {
       //testing here
       Point3f T = new Point3f(viewer.getNavigationOffset());
-      int x = (int) T.x;
-      int y = (int) T.y;
-      int z = (int) T.z;
+      int x = Math.max(Math.min(viewer.getScreenWidth(),(int) T.x),0);
+      int y = Math.max(Math.min(viewer.getScreenHeight(),(int) T.y),0);
+      int z = (int) T.z + 1;
       short colix = Graphics3D.GOLD;
       g3d.drawLine(colix, colix, x - 10, y, z, x + 10, y, z);
       g3d.drawLine(colix, colix, x, y - 10, z, x, y + 10, z);

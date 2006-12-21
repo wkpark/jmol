@@ -201,7 +201,12 @@ class StateManager {
     float xTrans, yTrans;
     float zoom, rotationRadius;
     Point3f center = new Point3f();
+    Point3f navCenter = new Point3f();
+    float xNav = Float.NaN;
+    float yNav = Float.NaN;
+    float navDepth = Float.NaN;
     boolean windowCenteredFlag;
+    boolean navigationMode;
 
     Orientation() {
       viewer.getRotation(rotationMatrix);
@@ -211,12 +216,21 @@ class StateManager {
       center.set(viewer.getRotationCenter());
       windowCenteredFlag = viewer.isWindowCentered();
       rotationRadius = viewer.getRotationRadius();
+      navigationMode = viewer.getNavigationMode(); 
+      if (navigationMode) {
+        navCenter = viewer.getNavigationOffset();
+        xNav = viewer.getNavigationOffsetPercent('X');
+        yNav = viewer.getNavigationOffsetPercent('Y');
+        navDepth = viewer.getNavigationDepthPercent();
+        navCenter = viewer.getNavigationCenter();
+      }     
     }
 
     void restore(float timeSeconds) {
       viewer.setBooleanProperty("windowCentered", windowCenteredFlag);
+      viewer.setBooleanProperty("navigationMode", navigationMode);
       viewer.moveTo(timeSeconds, rotationMatrix, center, zoom, xTrans, yTrans,
-          rotationRadius);
+          rotationRadius, navCenter, xNav, yNav, navDepth);
     }
   }
 
@@ -351,7 +365,6 @@ class StateManager {
         appendCmd(str, "set defaultDirectory " + escape(defaultDirectory));
       appendCmd(str, "set autoBond " + autoBond);
       appendCmd(str, "set forceAutoBond " + forceAutoBond);
-      appendCmd(str, "set zeroBasedXyzRasmol " + zeroBasedXyzRasmol);
       appendCmd(str, "set percentVdwAtom " + percentVdwAtom);
       appendCmd(str, "set bondRadiusMilliAngstroms " + marBond);
       appendCmd(str, "set minBondDistance " + minBondDistance);
@@ -359,6 +372,11 @@ class StateManager {
       appendCmd(str, "set defaultLattice " + escape(ptDefaultLattice));
       if (defaultLoadScript.length() > 0)
         appendCmd(str, "set defaultLoadScript " + escape(defaultLoadScript));
+      if (viewer.getAxesOrientationRasmol())
+        appendCmd(str, "set axesOrientationRasmol");
+      if (zeroBasedXyzRasmol)
+        appendCmd(str, "set zeroBasedXyzRasmol");
+      
       return str + "\n";
     }
 
@@ -545,7 +563,9 @@ class StateManager {
       + ";ambientpercent;diffusepercent;specular;specularexponent;specularpower;specularpercent;"
       + ";debugscript;frank;showaxes;showunitcell;showboundbox;"
       + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;"
-      + ";vibrationscale;vibrationperiod;";
+      + ";vibrationscale;vibrationperiod;"
+      + ";cameradepth;navigationmode;rotationradius;"
+      + ";zerobasedxyzrasmol;axesorientationrasmol;";
 
     void clearVolatileProperties() {
       Enumeration e;

@@ -37,7 +37,6 @@ import org.jmol.g3d.Graphics3D;
 class TransformManager11 extends TransformManager {
 
   private float navigationZOffset = 0;
-  private final Point3f navigationCenter = new Point3f();
 
   TransformManager11(Viewer viewer) {
     super(viewer);
@@ -68,7 +67,9 @@ class TransformManager11 extends TransformManager {
       if (navigating)
         return;
       navMode = NAV_MODE_NEWZ;
+      navigating = true;
       finalizeTransformParameters();
+      navigating = false;
       return;
     }
     zoomByPixels(pixels);
@@ -111,7 +112,7 @@ class TransformManager11 extends TransformManager {
             +"\nmodelTrailingEdge: "+(modelCenterOffset + radius)
             +"\nmodelCenterOffset: "+modelCenterOffset+" radius: "+radius
             +"\nmodelLeadingEdge: "+(modelCenterOffset - radius)
-            +"\nobserverOffset: "+ observerOffset+" zoom: "+zoomPercent + " navigationZOffset: "+navigationZOffset
+            +"\nobserverOffset: "+ observerOffset+" zoom: "+zoomPercent + " navX/navY: " + navigationOffset.x + "/" + navigationOffset.y + " navigationZOffset: "+navigationZOffset
             );
         return;
       }
@@ -193,16 +194,17 @@ class TransformManager11 extends TransformManager {
   int nHits;
   int multiplier = 1;
   
-  int navMode;
-  
   final static int NAV_MODE_NONE = 0;
   final static int NAV_MODE_RESET = 1;
   final static int NAV_MODE_NEWXY = 2;
   final static int NAV_MODE_NEWXYZ = 3;
   final static int NAV_MODE_NEWZ = 4;
   
+  int navMode = NAV_MODE_RESET;
+  
   protected void resetNavigationPoint() {
-    navMode = NAV_MODE_RESET;
+    if (isNavigationMode)
+      navMode = NAV_MODE_RESET;
     slabPercentSetting = (isNavigationMode ? 0 : 100);
     slabEnabled = isNavigationMode;
   }
@@ -297,7 +299,9 @@ class TransformManager11 extends TransformManager {
     }
     navigationCenter.set(pt);
     navMode = NAV_MODE_NEWXYZ;
+    navigating = true;
     finalizeTransformParameters();
+    navigating = false;
   }
 
   void navigate(float seconds, Vector3f rotAxis, float degrees) {
@@ -312,7 +316,9 @@ class TransformManager11 extends TransformManager {
     if (rotAxis.z != 0)
       rotateZRadians((float) Math.PI / 180 * degrees);
     navMode = NAV_MODE_NEWXYZ;
+    navigating = true;
     finalizeTransformParameters();
+    navigating = false;
   }
 
   void setNavigationDepthPercent(float timeSec, float percent) {
@@ -335,13 +341,6 @@ class TransformManager11 extends TransformManager {
     calcCameraFactors(); //updated
   }
 
-  private float getNavigationDepthPercent() {
-    calcCameraFactors(); //current
-    float radius = rotationRadius * scalePixelsPerAngstrom;
-    float dz = navigationZOffset - observerOffset + perspectiveScale; 
-    return 50 + dz * 50 / radius;
-  }
-  
   void navTranslate(float seconds, Point3f pt) {
     transformPoint(pt, pointT);
     if (seconds > 0) {
@@ -371,7 +370,9 @@ class TransformManager11 extends TransformManager {
     if (!Float.isNaN(y))
       navigationOffset.y = y;
     navMode = NAV_MODE_NEWXY;
+    navigating = true;
     finalizeTransformParameters();
+    navigating = false;
   }
 
   /**
@@ -379,7 +380,7 @@ class TransformManager11 extends TransformManager {
    *
    */
   protected void calcNavigationPoint() {
-    if (!navigating && navMode != NAV_MODE_RESET && navMode != NAV_MODE_NEWZ)
+    if (!navigating && navMode != NAV_MODE_RESET)
       navMode = NAV_MODE_NONE;
     switch(navMode) {
     case NAV_MODE_RESET:
@@ -476,6 +477,7 @@ class TransformManager11 extends TransformManager {
       Point3f centerStart = new Point3f(navigationCenter);
       for (int iStep = 1; iStep < totalSteps; ++iStep) {
 
+        navigating = true;
         float fStep = iStep / (totalSteps - 1f);
         if (!Float.isNaN(degrees))
           navigate(0, axis, degreeStep);        
@@ -496,6 +498,7 @@ class TransformManager11 extends TransformManager {
         if (!Float.isNaN(depthPercent)) {
           setNavigationDepthPercent(0, depthStart + depthDelta * fStep);
         }
+        navigating = false;
         targetTime += frameTimeMillis;
         if (System.currentTimeMillis() < targetTime) {
           viewer.requestRepaintAndWait();
@@ -526,12 +529,6 @@ class TransformManager11 extends TransformManager {
     if (!Float.isNaN(depthPercent))
       setNavigationDepthPercent(0, depthPercent);
     viewer.setInMotion(false);
-  }
-
-  protected String getNavigationState() {
-    StringBuffer commands = new StringBuffer("");
-    //TODO
-    return commands.toString();
   }
 
   void navigate(float seconds, Point3f[] path, float[] theta, int indexStart,
@@ -582,4 +579,48 @@ class TransformManager11 extends TransformManager {
       }
     }
   }
+  
+  void setNavigationCenter(Point3f center) {
+    navigate(0, center);
+  }
+  
+  Point3f getNavigationCenter() {
+    return navigationCenter;
+  }
+  
+  Point3f getNavigationOffset() {
+    transformPoint(navigationCenter, navigationOffset);
+    return navigationOffset;
+  }
+  
+  float getNavigationDepthPercent() {
+    calcCameraFactors(); //current
+    float radius = rotationRadius * scalePixelsPerAngstrom;
+    float dz = navigationZOffset - observerOffset + perspectiveScale; 
+    return 50 + dz * 50 / radius;
+  }
+  
+  float getNavigationOffsetPercent(char XorY) {
+    transformPoint(navigationCenter, navigationOffset);
+    return (XorY == 'X' ? (navigationOffset.x - width / 2) * 100 / width
+        : (navigationOffset.y - height / 2) * 100 / height);
+  }
+  
+  protected String getNavigationText() {
+    transformPoint(navigationCenter, navigationOffset);
+    return " /* navigation center, translation, depth */ "
+        + StateManager.escape(navigationCenter) + " " + getNavigationOffsetPercent('X')
+        + " " + getNavigationOffsetPercent('Y') + " " + getNavigationDepthPercent();
+  }
+  
+  protected String getNavigationState() {
+    if (!isNavigationMode)
+      return "";
+    return "# navigation state;\nnavigate 0 center " + StateManager.escape(getNavigationCenter())
+          + ";\nnavigate 0 translate " + getNavigationOffsetPercent('X')
+          + " "+getNavigationOffsetPercent('Y')
+          + ";\nnavigate 0 depth " + getNavigationDepthPercent() + ";\n\n";
+  }
+
+
 }

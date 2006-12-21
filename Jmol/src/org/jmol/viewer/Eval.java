@@ -1990,7 +1990,7 @@ class Eval { //implements Runnable {
 
   void moveto() throws ScriptException {
     //moveto time
-    //moveto [time] { x y z deg} zoom xTrans yTrans
+    //moveto [time] { x y z deg} zoom xTrans yTrans (rotCenter) rotationRadius (navCenter) xNav yNav navDepth    
     //moveto [time] front|back|left|right|top|bottom
     if (statementLength < 2)
       badArgumentCount();
@@ -2000,7 +2000,7 @@ class Eval { //implements Runnable {
         return;
       if (f > 0)
         refresh();
-      viewer.moveTo(f, null, new Point3f(0, 0, 1), 0, 100, 0, 0, 0);
+      viewer.moveTo(f, null, new Point3f(0, 0, 1), 0, 100, 0, 0, 0, null, Float.NaN, Float.NaN, Float.NaN);
       return;
     }
     Point3f pt = new Point3f();
@@ -2059,6 +2059,7 @@ class Eval { //implements Runnable {
           floatParameter(i++));
       degrees = floatParameter(i++);
     }
+    //zoom xTrans yTrans (center) rotationRadius 
     if (i != statementLength && !isAtomCenterOrCoordinateNext(i))
       zoom = floatParameter(i++);
     if (i != statementLength && !isAtomCenterOrCoordinateNext(i)) {
@@ -2069,13 +2070,32 @@ class Eval { //implements Runnable {
     if (i != statementLength) {
       center = atomCenterOrCoordinateParameter(i);
       i = pcLastExpressionInstruction + 1;
-      if (i != statementLength)
+      if (i != statementLength && !isAtomCenterOrCoordinateNext(i))
         rotationRadius = floatParameter(i++);
     }
-    refresh();
-    if (!isSyntaxCheck)
+    // (navCenter) xNav yNav navDepth 
+ 
+    Point3f navCenter = null;
+    float xNav = Float.NaN;
+    float yNav = Float.NaN;
+    float navDepth = Float.NaN;
+    
+    if (i != statementLength) {
+      navCenter = atomCenterOrCoordinateParameter(i);
+      i = pcLastExpressionInstruction + 1;
+      if (i != statementLength) {
+        xNav = floatParameter(i++);
+        yNav = floatParameter(i++);
+      }
+      if (i != statementLength)
+        navDepth = floatParameter(i++);
+    }
+
+    if (!isSyntaxCheck) {
+      refresh();
       viewer.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans,
-          yTrans, rotationRadius);
+          yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
+    }
   }
 
   void navigate() throws ScriptException {
@@ -2107,113 +2127,119 @@ class Eval { //implements Runnable {
         invalidArgument();
       }
     }
-    int i = 1;
-    float timeSec = (isFloatParameter(i) ? floatParameter(i++) : 2f);
-    if (timeSec < 0)
-      invalidArgument();
-    if (statementLength < i + 2)
-      badArgumentCount();
-    switch (statement[i].tok) {
-    case Token.depth:
-      float depth = floatParameter(++i);
-      if (!isSyntaxCheck)
-        viewer.setNavigationDepthPercent(timeSec, depth);
-      break;
-    case Token.center:
-      pt = centerParameter(++i);
-      if (!isSyntaxCheck)
-        viewer.navigate(timeSec, pt);
-      break;
-    case Token.rotate:
-      switch (getToken(++i).tok) {
-      case Token.identifier:
-        String str = (String) statement[i++].value;
-        if (str.equalsIgnoreCase("x")) {
-          rotAxis.set(1, 0, 0);
-          break;
-        }
-        if (str.equalsIgnoreCase("y")) {
-          rotAxis.set(0, 1, 0);
-          break;
-        }
-        if (str.equalsIgnoreCase("z")) {
-          rotAxis.set(0, 0, 1);
-          break;
-        }
-        invalidArgument(); // for now
-      }
-      float degrees = (isFloatParameter(i) ? floatParameter(i) : 10f);
-      if (!isSyntaxCheck)
-        viewer.navigate(timeSec, rotAxis, degrees);
-      break;
-    case Token.translate:
-      i++;
-      if (statementLength == i)
+
+    for (int i = 1; i < statementLength; i++) {
+      float timeSec = (isFloatParameter(i) ? floatParameter(i++) : 2f);
+      if (timeSec < 0)
+        invalidArgument();
+      if (statementLength < i + 2)
         badArgumentCount();
-      float x = Float.NaN;
-      float y = Float.NaN;
-      if (isFloatParameter(i)) {
-        x = floatParameter(i);
-        y = floatParameter(i + 1);
-      } else if (statement[i].tok == Token.identifier) {
-        String str = (String) statement[i++].value;
-        if (str.equalsIgnoreCase("x"))
-          x = floatParameter(i);
-        else if (str.equalsIgnoreCase("y"))
-          y = floatParameter(i);
-        else
-          invalidArgument();
-      } else {
-        pt = centerParameter(i);
+      switch (statement[i].tok) {
+      case Token.depth:
+        float depth = floatParameter(++i);
         if (!isSyntaxCheck)
-          viewer.navTranslate(timeSec, pt);
-        break;
-      }
-      if (!isSyntaxCheck)
-        viewer.navTranslatePercent(timeSec, x, y);
-      break;
-    case Token.identifier:
-      Point3f[] path;
-      float[] theta = null; //orientation; null for now
-      if (((String) statement[i].value).equalsIgnoreCase("path")) {
-        if ((tok = getToken(++i).tok) == Token.dollarsign) {
-          //navigate timeSeconds path $id indexStart indexEnd
-          String pathID = objectNameParameter(++i);
-          if (isSyntaxCheck)
-            return;
-          setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", pathID);
-          path = (Point3f[]) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
-              "vertices");
-          refresh();
-          if (path == null)
-            invalidArgument();
-          i++;
-          int indexStart = (int) (isFloatParameter(i) ? floatParameter(i++) : 0);
-          int indexEnd = (int) (isFloatParameter(i) ? floatParameter(i++)
-              : Integer.MAX_VALUE);
-          if (!isSyntaxCheck)
-            viewer.navigate(timeSec, path, theta, indexStart, indexEnd);
-          return;
-        }
-        Vector v = new Vector();
-        while (isCenterParameter(i)) {
-          v.add(centerParameter(i));
-          i = pcLastExpressionInstruction + 1;
-        }
-        if (v.size() > 0) {
-          path = new Point3f[v.size()];
-          for (int j = 0; j < v.size(); j++) {
-            path[j] = (Point3f) v.get(j);
+          viewer.setNavigationDepthPercent(timeSec, depth);
+        continue;
+      case Token.center:
+        pt = centerParameter(++i);
+        if (!isSyntaxCheck)
+          viewer.navigate(timeSec, pt);
+        i = pcLastExpressionInstruction;
+        continue;
+      case Token.rotate:
+        switch (getToken(++i).tok) {
+        case Token.identifier:
+          String str = (String) statement[i++].value;
+          if (str.equalsIgnoreCase("x")) {
+            rotAxis.set(1, 0, 0);
+            break;
           }
-          if (!isSyntaxCheck)
-            viewer.navigate(timeSec, path, theta, 0, Integer.MAX_VALUE);
-          return;
+          if (str.equalsIgnoreCase("y")) {
+            rotAxis.set(0, 1, 0);
+            break;
+          }
+          if (str.equalsIgnoreCase("z")) {
+            rotAxis.set(0, 0, 1);
+            break;
+          }
+          invalidArgument(); // for now
         }
-        //possibility here of multiple coord4s?
+        float degrees = floatParameter(i);
+        if (!isSyntaxCheck)
+          viewer.navigate(timeSec, rotAxis, degrees);
+        continue;
+      case Token.translate:
+        if (++i == statementLength)
+          badArgumentCount();
+        float x = Float.NaN;
+        float y = Float.NaN;
+        if (isFloatParameter(i)) {
+          x = floatParameter(i);
+          y = floatParameter(++i);
+        } else if (statement[i].tok == Token.identifier) {
+          String str = (String) statement[i].value;
+          if (str.equalsIgnoreCase("x"))
+            x = floatParameter(++i);
+          else if (str.equalsIgnoreCase("y"))
+            y = floatParameter(++i);
+          else
+            invalidArgument();
+        } else {
+          pt = centerParameter(i);
+          i = pcLastExpressionInstruction;
+          if (!isSyntaxCheck)
+            viewer.navTranslate(timeSec, pt);
+          continue;
+        }
+        if (!isSyntaxCheck)
+          viewer.navTranslatePercent(timeSec, x, y);
+        continue;
+      case Token.slash:
+        continue;
+      case Token.identifier:
+        Point3f[] path;
+        float[] theta = null; //orientation; null for now
+        if (((String) statement[i].value).equalsIgnoreCase("path")) {
+          if ((tok = getToken(i + 1).tok) == Token.dollarsign) {
+            i++;
+            //navigate timeSeconds path $id indexStart indexEnd
+            String pathID = objectNameParameter(++i);
+            if (isSyntaxCheck)
+              return;
+            setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", pathID);
+            path = (Point3f[]) viewer.getShapeProperty(
+                JmolConstants.SHAPE_DRAW, "vertices");
+            refresh();
+            if (path == null)
+              invalidArgument();
+            int indexStart = (int) (isFloatParameter(i+1) ? floatParameter(++i)
+                : 0);
+            int indexEnd = (int) (isFloatParameter(i+1) ? floatParameter(++i)
+                : Integer.MAX_VALUE);
+            if (!isSyntaxCheck)
+              viewer.navigate(timeSec, path, theta, indexStart, indexEnd);
+            continue;
+          }
+          Vector v = new Vector();
+          while (isCenterParameter(i + 1)) {
+            v.add(centerParameter(i + 1));
+            i = pcLastExpressionInstruction;
+          }
+          if (v.size() > 0) {
+            path = new Point3f[v.size()];
+            for (int j = 0; j < v.size(); j++) {
+              path[j] = (Point3f) v.get(j);
+            }
+            if (!isSyntaxCheck)
+              viewer.navigate(timeSec, path, theta, 0, Integer.MAX_VALUE);
+            continue;
+          }
+          //possibility here of multiple coord4s?
+        }
+      //fall through;
+      default:
+        invalidArgument();
       }
-    //fall through;
-    default:
-      invalidArgument();
     }
   }
   
@@ -2295,11 +2321,11 @@ class Eval { //implements Runnable {
       pt.x = floatParameter(2);
       pt.y = floatParameter(3);
       pt.z = floatParameter(4);
-    } else if (statement[2].tok == Token.leftbrace) {
-      pt = getCoordinate(2, true);
+    } else if (isCenterParameter(2)) {
+      pt = centerParameter(2);
     }
     if (!isSyntaxCheck)
-      viewer.setCenter(relativeTo, pt);
+      viewer.setCenterAt(relativeTo, pt);
   }
 
   void stereo() throws ScriptException {
@@ -3554,7 +3580,7 @@ class Eval { //implements Runnable {
     }
     if (!isSyntaxCheck)
       viewer.moveTo(time, center, new Point3f(0, 0, 0), Float.NaN, factor,
-          xTrans, yTrans, radius);
+          xTrans, yTrans, radius, null, Float.NaN, Float.NaN, Float.NaN);
   }
 
   void delay() throws ScriptException {

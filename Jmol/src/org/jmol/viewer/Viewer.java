@@ -607,6 +607,7 @@ public class Viewer extends JmolViewer {
   }
 
   private void setZoomEnabled(boolean zoomEnabled) {
+    global.setParameterValue("zoomEnabled", zoomEnabled);
     transformManager.setZoomEnabled(zoomEnabled);
     refresh(1, "Viewer:setZoomEnabled()");
   }
@@ -3957,6 +3958,10 @@ public class Viewer extends JmolViewer {
       reset();
     }
     transformManager.setNavigationMode(TF);
+    if (TF) {
+      setPerspectiveDepth(true);
+      setZoomEnabled(true);
+    }
   }
 
   boolean getNavigationMode() {

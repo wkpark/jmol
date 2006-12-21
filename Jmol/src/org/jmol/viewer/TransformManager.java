@@ -1027,8 +1027,6 @@ abstract class TransformManager {
 
   void setNavigationMode(boolean TF) {
     isNavigationMode = (TF && canNavigate());
-    if (isNavigationMode)
-      zoomEnabled = true;
     resetNavigationPoint();
   }
 

@@ -3240,6 +3240,10 @@ public class Viewer extends JmolViewer {
         setVisualRange(value);
         break;
       }
+      if (key.equalsIgnoreCase("navigationDepth")) {
+        setNavigationDepthPercent(0, value);
+        break;
+      }
       if (key.equalsIgnoreCase("cameraDepth")) {
         setCameraDepth(value);
         break;
@@ -3743,7 +3747,7 @@ public class Viewer extends JmolViewer {
   
   void setNavigationDepthPercent(float timeSec, float percent) {
     transformManager.setNavigationDepthPercent(timeSec, percent);     
-    refresh(1, "set navigationdDepth");
+    refresh(1, "set navigationDepth");
   }
   
   private void setShowNavigationPointAlways(boolean TF) {

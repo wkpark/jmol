@@ -63,6 +63,8 @@ class Sphere3D {
 
   void render(int[] shades, boolean tScreened, int diameter,
               int x, int y, int z) {
+    if (z == 1)
+      return;
     if (diameter > maxOddSizeSphere)
       diameter &= ~1;
     int radius = (diameter + 1) >> 1;

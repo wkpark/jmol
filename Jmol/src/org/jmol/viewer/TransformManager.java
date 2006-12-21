@@ -48,6 +48,13 @@ abstract class TransformManager {
   protected final Vector3f vectorTemp = new Vector3f();
 
   /**
+   * response to user mouse action for zooming
+   * 
+   * @param pixels
+   */
+  abstract void zoomBy(int pixels);
+    
+  /**
    * sets all camera and scale factors needed by 
    * the specific perspective model instantiated
    *
@@ -519,7 +526,13 @@ abstract class TransformManager {
   // if zoom is not enabled then the two values will be different
   float zoomPercentSetting = 100;
 
-  void zoomBy(int pixels) {
+  /**
+   * standard response to user mouse vertical shift-drag
+   * now called by zoomBy(int pixels) in managers
+   * 
+   * @param pixels
+   */
+  protected void zoomByPixels(int pixels) {
     if (pixels > 20)
       pixels = 20;
     else if (pixels < -20)
@@ -529,6 +542,20 @@ abstract class TransformManager {
       deltaPercent = (pixels > 0 ? 1 : (deltaPercent < 0 ? -1 : 0));
     float percent = deltaPercent + zoomPercentSetting;
     zoomToPercent(percent);
+  }
+
+  protected float getPerspectiveFactor(float z) {
+    // all z's SHOULD be >= 0
+    // so the more positive z is, the smaller the screen scale
+    //new idea: phase out perspective depth when zoom is very large.
+    //zoomPercent 1000 or larger starts removing this effect
+    //we can go up to 200000
+    float factor = (z <= 0 ? perspectiveScale : perspectiveScale / z);
+    if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+      factor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+          / (MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+          * (1 - factor);
+    return factor;
   }
 
   Point3f getNavigationOffset() {
@@ -941,20 +968,6 @@ abstract class TransformManager {
       return;
     setTranslationCenterToScreen();
     scaleDefaultPixelsPerAngstrom = defaultScaleToScreen(rotationRadius);
-  }
-
-  protected float getPerspectiveFactor(float z) {
-    // all z's SHOULD be >= 0
-    // so the more positive z is, the smaller the screen scale
-    //new idea: phase out perspective depth when zoom is very large.
-    //zoomPercent 1000 or larger starts removing this effect
-    //we can go up to 200000
-    float factor = (z <= 0 ? perspectiveScale : perspectiveScale / z);
-    if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
-      factor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
-          / (MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
-          * (1 - factor);
-    return factor;
   }
 
   short scaleToScreen(int z, int milliAngstroms) {
@@ -1841,7 +1854,10 @@ abstract class TransformManager {
     scaleFitToScreen();
   }
 
-  /////// navigation defaults (none)
+  /* ***************************************************************
+   * Navigation support
+   ****************************************************************/
+
 
   boolean canNavigate() {
     return false;
@@ -1881,11 +1897,13 @@ abstract class TransformManager {
    * @param seconds  number of seconds to allow for total movement, like moveTo
    * @param path     sequence of points to turn into a hermetian path
    * @param theta    orientation angle along path (0 aligns with window Y axis) 
-   *                 [or Z axis if path is vertical] 
+   *                 [or Z axis if path is vertical]
+   * @param indexStart   index of first "station"
+   * @param indexEnd     index of last "station"  
    *                 
    *                 not implemented yet
    */
-  void navigate(float seconds, Point3f[] path, float[] theta) {
+  void navigate(float seconds, Point3f[] path, float[] theta, int indexStart, int indexEnd) {
   }
 
   /**

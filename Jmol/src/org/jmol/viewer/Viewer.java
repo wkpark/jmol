@@ -421,8 +421,8 @@ public class Viewer extends JmolViewer {
     return transformManager.getMoveToText(timespan);
   }
 
-  void navigate(float timeSeconds, Point3f[] path, float[] theta) {
-    transformManager.navigate(timeSeconds, path, theta);
+  void navigate(float timeSeconds, Point3f[] path, float[] theta, int indexStart, int indexEnd) {
+    transformManager.navigate(timeSeconds, path, theta, indexStart, indexEnd);
     refresh(1, "navigate");
   }
   

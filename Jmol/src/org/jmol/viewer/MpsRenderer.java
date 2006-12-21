@@ -469,7 +469,7 @@ abstract class MpsRenderer extends MeshRenderer {
     }
     Graphics3D.getHermiteList(isNucleic ? 4 : 7, controlPoints[iPrev],
         controlPoints[i], controlPoints[iNext], controlPoints[iNext2],
-        controlPoints[iNext3], controlHermites, nHermites);
+        controlPoints[iNext3], controlHermites, 0, nHermites);
     //System.out.println("create mesh " + thisChain + " mesh_" + shapeID + "_"+i+controlPoints[i] + controlPoints[iNext]);
     if (isEccentric) {
       if (wingHermites == null || wingHermites.length < nHermites + 1) {
@@ -480,7 +480,7 @@ abstract class MpsRenderer extends MeshRenderer {
         wing.scale(2.0f); //adds a flair to an arrow
       Graphics3D.getHermiteList(isNucleic ? 4 : 7, wing, wingVectors[i],
           wingVectors[iNext], wingVectors[iNext2], wingVectors[iNext3],
-          wingHermites, nHermites);
+          wingHermites, 0, nHermites);
     }
     float radius1 = madBeg / 2000f;
     float radius2 = madMid / 2000f;
@@ -496,7 +496,7 @@ abstract class MpsRenderer extends MeshRenderer {
       ptNext.set(radius3, radius3, 0);
       // two for the price of one!
       Graphics3D.getHermiteList(4, ptPrev, pt, pt1, ptNext, ptNext,
-          radiusHermites, (nHermites + 1) >> 1);
+          radiusHermites, 0, (nHermites + 1) >> 1);
     }
     if (!isEccentric) {
       norm.sub(controlHermites[1], controlHermites[0]);

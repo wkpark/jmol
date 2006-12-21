@@ -1615,9 +1615,21 @@ class Eval { //implements Runnable {
     return null;
   }
 
+  boolean isCenterParameter(int i) {
+    if (i >= statementLength)
+      return false;
+    switch (statement[i].tok) {
+    case Token.dollarsign:
+    case Token.expressionBegin:
+    case Token.leftbrace:
+      return true;
+    }
+    return false;
+  }
+  
   Point3f centerParameter(int i) throws ScriptException {
     Point3f center = null;
-    switch (statement[i].tok) {
+    switch (getToken(i).tok) {
     case Token.dollarsign:
       String id = objectNameParameter(++i);
       center = viewer.getDrawObjectCenter(id);
@@ -2161,23 +2173,43 @@ class Eval { //implements Runnable {
         viewer.navTranslatePercent(timeSec, x, y);
       break;
     case Token.identifier:
-      if (((String) statement[2].value).equalsIgnoreCase("path")) {
-        if (statement[3].tok == Token.dollarsign) {
-          //center $ id
-          String pathID = objectNameParameter(3);
+      Point3f[] path;
+      float[] theta = null; //orientation; null for now
+      if (((String) statement[i].value).equalsIgnoreCase("path")) {
+        if ((tok = getToken(++i).tok) == Token.dollarsign) {
+          //navigate timeSeconds path $id indexStart indexEnd
+          String pathID = objectNameParameter(++i);
           if (isSyntaxCheck)
             return;
           setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", pathID);
-          Point3f[] path = (Point3f[]) viewer.getShapeProperty(
-              JmolConstants.SHAPE_DRAW, "path");
+          path = (Point3f[]) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
+              "vertices");
           refresh();
           if (path == null)
             invalidArgument();
+          i++;
+          int indexStart = (int) (isFloatParameter(i) ? floatParameter(i++) : 0);
+          int indexEnd = (int) (isFloatParameter(i) ? floatParameter(i++)
+              : Integer.MAX_VALUE);
           if (!isSyntaxCheck)
-            viewer.navigate(timeSec, path, null); // for now, no orientation
+            viewer.navigate(timeSec, path, theta, indexStart, indexEnd);
           return;
         }
-        //possibility here of multiple coord4
+        Vector v = new Vector();
+        while (isCenterParameter(i)) {
+          v.add(centerParameter(i));
+          i = pcLastExpressionInstruction + 1;
+        }
+        if (v.size() > 0) {
+          path = new Point3f[v.size()];
+          for (int j = 0; j < v.size(); j++) {
+            path[j] = (Point3f) v.get(j);
+          }
+          if (!isSyntaxCheck)
+            viewer.navigate(timeSec, path, theta, 0, Integer.MAX_VALUE);
+          return;
+        }
+        //possibility here of multiple coord4s?
       }
     //fall through;
     default:

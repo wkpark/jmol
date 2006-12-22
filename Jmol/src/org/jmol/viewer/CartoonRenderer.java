@@ -58,13 +58,22 @@ class CartoonRenderer extends RocketsRenderer {
     viewer.freeTempScreens(ribbonBottomScreens);
   }
 
+  Point3i ptConnect = new Point3i();
   void renderNucleic() {
-    for (int i = monomerCount; --i >= 0;)
-      if (bsVisible.get(i)) {
-        renderHermiteConic(i, false);
-        renderNucleicBaseStep((NucleicMonomer) monomers[i], getLeadColix(i), mads[i],
-            controlPointScreens[i]);
-      }
+    boolean isTraceAlpha = viewer.getTraceAlpha();
+      for (int i = monomerCount; --i >= 0;)
+        if (bsVisible.get(i)) {
+          if (isTraceAlpha) {
+            ptConnect.set((controlPointScreens[i].x + controlPointScreens[i + 1].x)/2,
+                (controlPointScreens[i].y + controlPointScreens[i + 1].y)/2,
+                (controlPointScreens[i].z + controlPointScreens[i + 1].z)/2);
+          } else {
+            ptConnect.set(controlPointScreens[i + 1]);
+          }
+          renderHermiteConic(i, false);
+          renderNucleicBaseStep((NucleicMonomer) monomers[i], getLeadColix(i), mads[i],
+              ptConnect);
+        }
   }
 
   void render1() {
@@ -151,9 +160,9 @@ class CartoonRenderer extends RocketsRenderer {
     if (hasRing5) {
       viewer.transformPoints(ring5Points, ring5Screens);
       renderRing5();
-      stepScreen = ring5Screens[2];
+      stepScreen = ring5Screens[3];//was 2
     } else {
-      stepScreen = ring6Screens[1];
+      stepScreen = ring6Screens[2];//was 1
     }
     g3d.fillCylinder(colix, Graphics3D.ENDCAPS_SPHERICAL,
                      viewer.scaleToScreen(backboneScreen.z,

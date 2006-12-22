@@ -63,7 +63,7 @@ class CartoonRenderer extends RocketsRenderer {
       if (bsVisible.get(i)) {
         renderHermiteConic(i, false);
         renderNucleicBaseStep((NucleicMonomer) monomers[i], getLeadColix(i), mads[i],
-            controlPointScreens[i + 1]);
+            controlPointScreens[i]);
       }
   }
 

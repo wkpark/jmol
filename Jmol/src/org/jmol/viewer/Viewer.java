@@ -2915,7 +2915,7 @@ public class Viewer extends JmolViewer {
   public void setDebugScript(boolean debugScript) {
     global.debugScript = debugScript;
     global.setParameterValue("debugScript", debugScript);
-    Logger.setActiveLevel(Logger.LEVEL_DEBUG, debugScript);
+    //Logger.setActiveLevel(Logger.LEVEL_DEBUG, debugScript);
   }
 
   void atomPicked(int atomIndex, int modifiers) {

@@ -498,7 +498,7 @@ class Eval { //implements Runnable {
           delay((long) nSecDelay * 1000);
           Logger.info(getCommand());
         }
-        if (logMessages)
+        if (logMessages || viewer.getDebugScript())
           logDebugScript();
         Logger.debug(token.toString());
         if (ifLevel > 0 && !ifs[ifLevel] && token.tok != Token.endifcmd
@@ -852,10 +852,8 @@ class Eval { //implements Runnable {
   void logDebugScript() {
     strbufLog.setLength(0);
     Logger.debug(statement[0].toString());
-    for (int i = 1; i < statementLength; ++i) {
-      strbufLog.append(statement[i] + "\n");
+    for (int i = 1; i < statementLength; ++i)
       Logger.debug(statement[i].toString());
-    }
     strbufLog.append(statement[0].value.toString());
     for (int i = 1; i < statementLength; ++i) {
       strbufLog.append(' ');
@@ -914,11 +912,14 @@ class Eval { //implements Runnable {
         Point3f pt = (Point3f) token.value;
         strbufLog.append("cell={" + pt.x + " " + pt.y + " " + pt.z + "}");
         continue;
+      case Token.identifier:
+        break;
       case Token.string:
         strbufLog.append("\"" + token.value + "\"");
         continue;
       default:
         strbufLog.append(token.toString());
+        continue;
       }
       strbufLog.append("" + token.value);
     }

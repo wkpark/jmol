@@ -63,9 +63,8 @@ class TransformManager11 extends TransformManager {
     perspectiveScale = cameraDistance + screenPixelCount / 2f; //(s)
 
     // screen offset to fixed rotation center
-    modelCenterOffset = cameraDistance + screenPixelCount / 2f
-        + navigationZOffset; //(s)
-
+    modelCenterOffset = perspectiveScale + navigationZOffset; //(s)
+    
     // factor to apply as part of the transform (not used here)
     cameraScaleFactor = 1; //unitless
 

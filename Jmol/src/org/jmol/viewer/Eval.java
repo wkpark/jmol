@@ -72,6 +72,7 @@ class Eval { //implements Runnable {
 
   boolean tQuiet;
   boolean logMessages = false;
+  boolean debugScript = false;
 
   Eval(Viewer viewer) {
     compiler = new Compiler(viewer);
@@ -473,7 +474,8 @@ class Eval { //implements Runnable {
     long timeBegin = 0;
     int ifLevel = 0;
     ifs[0] = true;
-    logMessages = (!isSyntaxCheck && Logger.isActiveLevel(Logger.LEVEL_DEBUG));
+    debugScript = (!isSyntaxCheck && viewer.getDebugScript());
+    logMessages = (debugScript && Logger.isActiveLevel(Logger.LEVEL_DEBUG));
     if (logMessages) {
       timeBegin = System.currentTimeMillis();
       viewer.scriptStatus("Eval.instructionDispatchLoop():" + timeBegin);
@@ -498,9 +500,10 @@ class Eval { //implements Runnable {
           delay((long) nSecDelay * 1000);
           Logger.info(getCommand());
         }
-        if (logMessages || viewer.getDebugScript())
+        if (debugScript)
           logDebugScript();
-        Logger.debug(token.toString());
+        if (logMessages)
+          Logger.debug(token.toString());
         if (ifLevel > 0 && !ifs[ifLevel] && token.tok != Token.endifcmd
             && token.tok != Token.ifcmd && token.tok != Token.elsecmd)
           continue;
@@ -851,9 +854,11 @@ class Eval { //implements Runnable {
 
   void logDebugScript() {
     strbufLog.setLength(0);
-    Logger.debug(statement[0].toString());
-    for (int i = 1; i < statementLength; ++i)
-      Logger.debug(statement[i].toString());
+    if (logMessages) {
+      Logger.debug(statement[0].toString());
+      for (int i = 1; i < statementLength; ++i)
+        Logger.debug(statement[i].toString());
+    }
     strbufLog.append(statement[0].value.toString());
     for (int i = 1; i < statementLength; ++i) {
       strbufLog.append(' ');
@@ -918,6 +923,8 @@ class Eval { //implements Runnable {
         strbufLog.append("\"" + token.value + "\"");
         continue;
       default:
+        if (!logMessages)
+          break;
         strbufLog.append(token.toString());
         continue;
       }

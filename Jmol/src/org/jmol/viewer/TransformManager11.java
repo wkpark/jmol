@@ -51,7 +51,7 @@ class TransformManager11 extends TransformManager {
     //(s) screen coordinates = (m) * screenPixelsPerAngstrom
     //(p) plane coordinates = (s) / screenPixelCount
 
-    if (zoomPercent > MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+    if (isNavigationMode && zoomPercent > MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
       zoomPercent = MAXIMUM_ZOOM_PERSPECTIVE_DEPTH;
     // conversion factor Angstroms --> pixels
     scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomPercent / 100; //(s/m)
@@ -370,6 +370,7 @@ class TransformManager11 extends TransformManager {
      if (zoomPercent != navZoom) {
        navigationOffset.z = observerOffset;
        unTransformPoint(navigationOffset, navigationCenter);
+       //so the navigation center moves
      }
       fixedRotationOffset.set(fixedTranslation);
       //fall through

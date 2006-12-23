@@ -3962,10 +3962,6 @@ public class Viewer extends JmolViewer {
       reset();
     }
     transformManager.setNavigationMode(TF);
-    if (TF) {
-      setPerspectiveDepth(true);
-      setZoomEnabled(true);
-    }
   }
 
   boolean getNavigationMode() {

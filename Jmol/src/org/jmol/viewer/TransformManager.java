@@ -47,14 +47,7 @@ abstract class TransformManager {
 
   protected final Matrix4f matrixTemp = new Matrix4f();
   protected final Vector3f vectorTemp = new Vector3f();
-
-  /**
-   * response to user mouse action for zooming
-   * 
-   * @param pixels
-   */
-  abstract void zoomBy(int pixels);
-    
+   
   /**
    * sets all camera and scale factors needed by 
    * the specific perspective model instantiated
@@ -544,11 +537,10 @@ abstract class TransformManager {
 
   /**
    * standard response to user mouse vertical shift-drag
-   * now called by zoomBy(int pixels) in managers
    * 
    * @param pixels
    */
-  protected void zoomByPixels(int pixels) {
+  protected void zoomBy(int pixels) {
     if (pixels > 20)
       pixels = 20;
     else if (pixels < -20)
@@ -985,9 +977,7 @@ abstract class TransformManager {
   short scaleToScreen(int z, int milliAngstroms) {
     if (milliAngstroms == 0)
       return 0;
-    int pixelSize = (int) (milliAngstroms * scalePixelsPerAngstrom / 1000);
-    if (perspectiveDepth)
-      pixelSize *= getPerspectiveFactor(z);
+    int pixelSize = (int) scaleToPerspective(z, milliAngstroms * scalePixelsPerAngstrom / 1000);      
     return (short) (pixelSize > 0 ? pixelSize : 1);
   }
 
@@ -1028,6 +1018,9 @@ abstract class TransformManager {
   void setNavigationMode(boolean TF) {
     isNavigationMode = (TF && canNavigate());
     resetNavigationPoint();
+    if (isNavigationMode)
+      setPerspectiveDepth(true);
+    setZoomEnabled(!isNavigationMode);
   }
 
   boolean getNavigating() {
@@ -1745,7 +1738,7 @@ abstract class TransformManager {
     vibrationScale = 0;
   }
 
-  class VibrationThread extends Thread implements Runnable {
+  private class VibrationThread extends Thread implements Runnable {
 
     public void run() {
       long startTime = System.currentTimeMillis();

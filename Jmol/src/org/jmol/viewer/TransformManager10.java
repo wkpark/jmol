@@ -40,10 +40,6 @@ class TransformManager10 extends TransformManager {
   // -- applies cameraScaleFactor to scalePixelsPerAngstrom
   // -- no navigation 
 
-  void zoomBy(int pixels) {
-    zoomByPixels(pixels);
-  }
-
   protected void calcCameraFactors() {
     //(m) model coordinates
     //(s) screen coordinates = (m) * screenPixelsPerAngstrom

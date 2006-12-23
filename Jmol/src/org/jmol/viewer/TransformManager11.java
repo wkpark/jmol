@@ -46,58 +46,35 @@ class TransformManager11 extends TransformManager {
     super(viewer, width, height);
   }
 
-  void zoomBy(int pixels) {
-    /* 
-     * ZOOM and navigation:
-     * 
-     * Because we are now allowing the center of rotation to
-     * go to negative Z values -- behind the camera, we get an 
-     * odd effect -- standard zooming actually results in a more
-     * DISTANT picture. In effect, the expansion of the effective
-     * radius results in the model going BACK at such a rate as
-     * to reveal more, not less, of the structure. So we simply
-     * check to see where we are in the scheme of things. If close
-     * in, then we instead move the model. This works because 
-     * zooming and moving the center are (nearly) identical operations.
-     * 
-     */
-    
-    if (isNavigationMode && !isNavigationDistant()) {
-      navigationZOffset -= 5 * pixels;
-      if (navigating)
-        return;
-      navMode = NAV_MODE_NEWZ;
-      navigating = true;
-      finalizeTransformParameters();
-      navigating = false;
-      return;
-    }
-    zoomByPixels(pixels);
-  }
-
   protected void calcCameraFactors() {
     //(m) model coordinates
     //(s) screen coordinates = (m) * screenPixelsPerAngstrom
     //(p) plane coordinates = (s) / screenPixelCount
 
+    if (zoomPercent > MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+      zoomPercent = MAXIMUM_ZOOM_PERSPECTIVE_DEPTH;
     // conversion factor Angstroms --> pixels
     scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomPercent / 100; //(s/m)
 
     // distance from the front plane of the model at zoom=100, where p=0 
     cameraDistance = cameraDepth * screenPixelCount; //(s)
 
+    // factor to apply based on screen Z
+    perspectiveScale = cameraDistance + screenPixelCount / 2f; //(s)
+
     // screen offset to fixed rotation center
     modelCenterOffset = cameraDistance + screenPixelCount / 2f
         + navigationZOffset; //(s)
-
-    // factor to apply based on screen Z
-    perspectiveScale = cameraDistance + screenPixelCount / 2f; //(s)
 
     // factor to apply as part of the transform (not used here)
     cameraScaleFactor = 1; //unitless
 
     // vertical screen plane of the observer where objects will be clipped
-    observerOffset = visualRange / (2 * rotationRadius) * perspectiveScale; //(s)
+    // based on the ratio:
+    // observerOffset / (visualRange * scalePixelsPerAngstrom)
+    //   = perspectiveScale / screenPixelCount 
+    observerOffset = (visualRange * scalePixelsPerAngstrom) * perspectiveScale
+        / screenPixelCount; //(s)
   }
 
   protected void calcSlabAndDepthValues() {
@@ -109,10 +86,13 @@ class TransformManager11 extends TransformManager {
         slabValue = (int) observerOffset;
         depthValue = Integer.MAX_VALUE;
         System.out.println("\n"
+            +"\nperspectiveScale: "+perspectiveScale + " screenPixelCount: "+screenPixelCount
             +"\nmodelTrailingEdge: "+(modelCenterOffset + radius)
             +"\nmodelCenterOffset: "+modelCenterOffset+" radius: "+radius
             +"\nmodelLeadingEdge: "+(modelCenterOffset - radius)
-            +"\nobserverOffset: "+ observerOffset+" zoom: "+zoomPercent + " navX/navY: " + navigationOffset.x + "/" + navigationOffset.y + " navigationZOffset: "+navigationZOffset
+            +"\nzoom: "+zoomPercent+" observerOffset/navDepth: "+ observerOffset+"/"+(((int)(100*getNavigationDepthPercent()))/100f) + " visualRange: "+visualRange 
+            +"\nnavX/Y/Z: " + navigationOffset.x + "/" + navigationOffset.y + "/"+navigationOffset.z+"/"+navigationZOffset+" navCenter:" + navigationCenter
+            
             );
         return;
       }
@@ -202,6 +182,8 @@ class TransformManager11 extends TransformManager {
   
   int navMode = NAV_MODE_RESET;
   
+  float navZoom;
+  
   protected void resetNavigationPoint() {
     if (isNavigationMode)
       navMode = NAV_MODE_RESET;
@@ -237,7 +219,8 @@ class TransformManager11 extends TransformManager {
         navMode = NAV_MODE_NEWXYZ;
         break;
       }
-      zoomBy(multiplier);
+      navigationZOffset -= (zoomPercent < 20 ? 20 : zoomPercent) / 20
+          * multiplier;
       navMode = NAV_MODE_NEWZ;
       break;
     case KeyEvent.VK_DOWN:
@@ -251,7 +234,8 @@ class TransformManager11 extends TransformManager {
         navMode = NAV_MODE_NEWXYZ;
         break;
       }
-      zoomBy(-multiplier);
+      navigationZOffset += (zoomPercent < 20 ? 20 : zoomPercent) / 20
+          * multiplier;
       navMode = NAV_MODE_NEWZ;
       break;
     case KeyEvent.VK_LEFT:
@@ -279,17 +263,6 @@ class TransformManager11 extends TransformManager {
     }
     navigating = true;
     finalizeTransformParameters();
-  }
-
-  /**
-   * determines whether the visualRange plane is outside the nominal
-   * model radius, in which case we should just zoom and not move the center
-   * any closer
-   * 
-   * @return whether it is appropriate to zoom
-   */
-  private boolean isNavigationDistant() {
-    return (fixedRotationOffset.z - rotationRadius * scalePixelsPerAngstrom > observerOffset);
   }
 
   void navigate(float seconds, Point3f pt) {
@@ -393,7 +366,13 @@ class TransformManager11 extends TransformManager {
       navigationOffset.z = observerOffset;
       findCenterAt(fixedRotationCenter, navigationOffset, navigationCenter);
       break;
-    case NAV_MODE_NONE:
+   case NAV_MODE_NONE:
+     if (zoomPercent != navZoom) {
+       navigationOffset.z = observerOffset;
+       unTransformPoint(navigationOffset, navigationCenter);
+     }
+      fixedRotationOffset.set(fixedTranslation);
+      //fall through
     case NAV_MODE_NEWXY:
       // redefine the navigation center based on its old screen position
       findCenterAt(fixedRotationCenter, navigationOffset, navigationCenter);
@@ -409,15 +388,21 @@ class TransformManager11 extends TransformManager {
           - perspectiveScale;
       calcCameraFactors();
       calcTransformMatrix();
+      
       break;
     case NAV_MODE_NEWZ:
       // nothing special to do -- navigationZOffset has changed.
+      navigationOffset.z = observerOffset;
+      unTransformPoint(navigationOffset, navigationCenter);
       break;
     }
     matrixTransform(navigationCenter, referenceOffset);
     transformPoint(fixedRotationCenter, fixedTranslation);
     fixedRotationOffset.set(fixedTranslation);
+    transformPoint(navigationCenter, navigationOffset);
+    navigationOffset.z = observerOffset;
     navMode = NAV_MODE_NONE;
+    navZoom = zoomPercent;
   }
 
   /**

@@ -208,13 +208,18 @@ class TransformManager11 extends TransformManager {
   int navMode = NAV_MODE_RESET;
 
   protected void resetNavigationPoint() {
+    
+    //no release from navigation mode if too far zoomed in!
+    
+    if (zoomPercent < 5 && !isNavigationMode) {
+      isNavigationMode = true;
+      return;
+    }
     if (isNavigationMode) {
       navMode = NAV_MODE_RESET;
       slabPercentSetting = 0;
     } else {
       slabPercentSetting = 100;
-      if (zoomPercent < 0)
-        zoomPercent = MAXIMUM_ZOOM_PERSPECTIVE_DEPTH;
     }
     slabEnabled = isNavigationMode;
     zoomFactor = Float.MAX_VALUE;

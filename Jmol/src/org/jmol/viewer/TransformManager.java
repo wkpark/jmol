@@ -1010,9 +1010,8 @@ abstract class TransformManager {
   void setNavigationMode(boolean TF) {
     isNavigationMode = (TF && canNavigate());
     resetNavigationPoint();
-    if (isNavigationMode) {
+    if (isNavigationMode)
       setPerspectiveDepth(true);
-    }
   }
 
   boolean getNavigating() {

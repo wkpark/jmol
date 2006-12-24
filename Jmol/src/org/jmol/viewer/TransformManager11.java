@@ -628,7 +628,7 @@ class TransformManager11 extends TransformManager {
     return "# navigation state;\nnavigate 0 center "
         + StateManager.escape(getNavigationCenter())
         + ";\nnavigate 0 translate " + getNavigationOffsetPercent('X') + " "
-        + getNavigationOffsetPercent('Y') + ";\nnavigate 0 depth "
+        + getNavigationOffsetPercent('Y') + ";\nset navigationDepth "
         + getNavigationDepthPercent() + ";\n\n";
   }
 

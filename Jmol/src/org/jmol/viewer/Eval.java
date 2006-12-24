@@ -2118,6 +2118,7 @@ class Eval { //implements Runnable {
      navigation nSec center (atom selection)
      navigation nSec path $object 
      navigation nSec path {x y z theta} {x y z theta}{x y z theta}{x y z theta}...
+     navigation nSec trace (atom selection) 
      */
     if (statementLength == 1) {
       setBooleanProperty("navigationMode", true);
@@ -2204,6 +2205,23 @@ class Eval { //implements Runnable {
         continue;
       case Token.slash:
         continue;
+      case Token.trace:
+        Point3f[][] pathGuide;
+        Vector vp = new Vector();
+        BitSet bs = expression(statement, ++i);
+        i = pcLastExpressionInstruction;
+        if (isSyntaxCheck)
+          return;
+        viewer.getPolymerPointsAndVectors(bs, vp);
+        if (vp.size() > 0) {
+          pathGuide = new Point3f[vp.size()][];
+          for (int j = 0; j < vp.size(); j++) {
+            pathGuide[j] = (Point3f[]) vp.get(j);
+          }
+          viewer.navigate(timeSec, pathGuide);
+          continue;
+        }
+        break;
       case Token.identifier:
         Point3f[] path;
         float[] theta = null; //orientation; null for now

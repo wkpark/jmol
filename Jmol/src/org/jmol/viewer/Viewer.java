@@ -461,6 +461,11 @@ public class Viewer extends JmolViewer {
     refresh(1, "navigate");
   }
   
+  void navigate(float timeSeconds, Point3f[][] pathGuide) {
+    transformManager.navigate(timeSeconds, pathGuide);
+    refresh(1, "navigate");
+  }
+  
   void navigate(float timeSeconds, Vector3f rotAxis, float degrees) {
     transformManager.navigate(timeSeconds, rotAxis, degrees);
     refresh(1, "navigate");
@@ -1475,6 +1480,10 @@ public class Viewer extends JmolViewer {
 
   public int getSpaceGroupIndexFromName(String spaceGroup) {
     return modelManager.getSpaceGroupIndexFromName(spaceGroup);
+  }
+
+  void getPolymerPointsAndVectors(BitSet bs, Vector vList) {
+    modelManager.getPolymerPointsAndVectors(bs, vList);
   }
 
   public String getModelSetProperty(String strProp) {

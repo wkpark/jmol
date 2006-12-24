@@ -1939,6 +1939,14 @@ abstract class TransformManager {
   }
 
   /**
+   * follows a path guided by orientation and offset vectors (as Point3fs)
+   * @param timeSeconds
+   * @param pathGuide
+   */
+  void navigate(float timeSeconds, Point3f[][] pathGuide) {
+  }
+
+  /**
    * scripted entry point for navigation
    * 
    * @param seconds

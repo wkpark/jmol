@@ -540,13 +540,25 @@ class TransformManager11 extends TransformManager {
     viewer.setInMotion(false);
   }
 
+  void navigate(float seconds, Point3f[][] pathGuide) {
+    navigate(seconds, pathGuide, null, null, 0, Integer.MAX_VALUE);
+  }
+
   void navigate(float seconds, Point3f[] path, float[] theta, int indexStart,
                 int indexEnd) {
+    navigate(seconds, null, path, theta, indexStart, indexEnd);
+  }
+
+  void navigate(float seconds, Point3f[][] pathGuide, Point3f[] path,
+                float[] theta, int indexStart, int indexEnd) {
     if (seconds <= 0) // PER station
       seconds = 2;
-    int nSegments = Math.min(path.length - 1, indexEnd);
-    while (nSegments > 0 && path[nSegments] == null)
-      nSegments--;
+    boolean isPathGuide = (pathGuide != null);
+    int nSegments = Math.min(
+        (isPathGuide ? pathGuide.length : path.length) - 1, indexEnd);
+    if (!isPathGuide)
+      while (nSegments > 0 && path[nSegments] == null)
+        nSegments--;
     nSegments -= indexStart;
     if (nSegments < 1)
       return;
@@ -560,8 +572,14 @@ class TransformManager11 extends TransformManager {
       iNext = Math.min(i + 1, nSegments) + indexStart;
       iNext2 = Math.min(i + 2, nSegments) + indexStart;
       iNext3 = Math.min(i + 3, nSegments) + indexStart;
-      Graphics3D.getHermiteList(7, path[iPrev], path[pt], path[iNext],
-          path[iNext2], path[iNext3], points, i * nPer, nPer + 1);
+      if (isPathGuide) {
+        Graphics3D.getHermiteList(7, pathGuide[iPrev][0], pathGuide[pt][0],
+            pathGuide[iNext][0], pathGuide[iNext2][0], pathGuide[iNext3][0],
+            points, i * nPer, nPer + 1);
+      } else {
+        Graphics3D.getHermiteList(7, path[iPrev], path[pt], path[iNext],
+            path[iNext2], path[iNext3], points, i * nPer, nPer + 1);
+      }
     }
     int fps = 10;
     int totalSteps = nSteps;

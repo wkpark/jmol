@@ -128,13 +128,7 @@ abstract class MpsRenderer extends MeshRenderer {
       invalidate = true;
     }
 
-    if (!isTraceAlpha)
-      controlPoints = schain.leadMidpoints;
-    else if (sheetSmoothing == 0)
-      controlPoints = schain.leadPoints;
-    else
-      controlPoints = schain.polymer.getTempPoints(sheetSmoothing);
-
+    controlPoints = schain.polymer.getControlPoints(isTraceAlpha, sheetSmoothing);
     monomerCount = schain.monomerCount;
     monomers = schain.monomers;
     leadAtomIndices = schain.polymer.getLeadAtomIndices();

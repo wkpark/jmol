@@ -55,7 +55,6 @@ abstract class Polymer {
   Point3f[] tempPoints;
   // holds the vector that runs across the 'ribbon'
   Vector3f[] wingVectors;
-  Vector3f[] pointVectors;
 
   static Polymer allocatePolymer(Group[] groups, int firstGroupIndex) {
     Monomer[] monomers;
@@ -299,11 +298,20 @@ abstract class Polymer {
     return leadPoints;
   }
 
+  Point3f[] getControlPoints(boolean isTraceAlpha, float sheetSmoothing) {
+    if (!isTraceAlpha)
+      return leadMidpoints;
+    else if (sheetSmoothing == 0)
+      return leadPoints;
+    return getTempPoints(sheetSmoothing);
+  }
+
   float sheetSmoothing;
   Point3f[] getTempPoints(float sheetSmoothing) {
     if (tempPoints != null && sheetSmoothing == this.sheetSmoothing)
       return tempPoints;
     tempPoints = new Point3f[monomerCount + 1];
+    getLeadPoints();
     for (int i = 0; i < monomerCount; i++)
         tempPoints[i] = new Point3f();
     Vector3f v = new Vector3f();
@@ -324,12 +332,6 @@ abstract class Polymer {
     if (leadMidpoints == null) // this is correct ... test on leadMidpoints
       calcLeadMidpointsAndWingVectors();
     return wingVectors; // wingVectors might be null ... before autocalc
-  }
-
-  final Vector3f[] getPointVectors() {
-    if (leadPoints == null)
-      calcLeadMidpointsAndWingVectors();
-    return pointVectors;
   }
 
   final void calcLeadMidpointsAndWingVectors() {

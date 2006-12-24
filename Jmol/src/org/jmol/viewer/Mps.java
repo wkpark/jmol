@@ -142,7 +142,7 @@ abstract class Mps extends Shape {
           polymer.setColix(colix, pid, bsSelected);
       }
     }
-
+    
     void setTranslucent(boolean isTranslucent, BitSet bsSelected) {
       for (int i = mpspolymers.length; --i >= 0; ) {
         MpsShape polymer = mpspolymers[i];
@@ -335,7 +335,7 @@ abstract class Mps extends Shape {
     void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {
       polymer.findNearestAtomIndex(xMouse, yMouse, closest, mads, myVisibilityFlag);
     }
-
+    
     void setMad(short mad, BitSet bsSelected) {
       isActive = true;
       if (bsSizeSet == null)

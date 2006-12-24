@@ -66,7 +66,7 @@ public class PovraySaver {
   public void writeFrame() throws IOException {
     float zoom = viewer.getRotationRadius() * 2;
     zoom *= 1.1f; // for some reason I need a little more margin
-    zoom /= viewer.getZoomPercent() / 100f;
+    zoom /= viewer.getZoomPercentFloat() / 100f;
 
     transformMatrix = viewer.getUnscaledTransformMatrix();
     if ((screenWidth <= 0) || (screenHeight <= 0)) {

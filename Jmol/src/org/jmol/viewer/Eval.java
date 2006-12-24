@@ -5504,7 +5504,7 @@ class Eval { //implements Runnable {
       invalidArgument();
     case Token.zoom:
       showString("zoom "
-          + (viewer.getZoomEnabled() ? ("" + viewer.getZoomPercentSetting())
+          + (viewer.getZoomEnabled() ? ("" + viewer.getZoomPercentFloat())
               : "off"));
       return;
     // not implemented

@@ -578,15 +578,12 @@ public class Viewer extends JmolViewer {
   }
 
   public int getZoomPercent() {
-    return transformManager.getZoomPercent();
+    //deprecated 
+    return (int) getZoomPercentFloat();
   }
 
-  float getZoomPercentFloat() {
+  public float getZoomPercentFloat() {
     return transformManager.getZoomPercentFloat();
-  }
-
-  float getZoomPercentSetting() {
-    return transformManager.getZoomPercentSetting();
   }
 
   float getMaxZoomPercent() {

@@ -159,7 +159,8 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public float getRotationRadius();
 
-  abstract public int getZoomPercent();
+  abstract public int getZoomPercent(); //deprecated
+  abstract public float getZoomPercentFloat();
   abstract public Matrix4f getUnscaledTransformMatrix();
 
   abstract public int getBackgroundArgb();

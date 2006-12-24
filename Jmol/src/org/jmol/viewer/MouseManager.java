@@ -479,7 +479,7 @@ abstract class MouseManager implements KeyListener {
     if (rotation == 0)
       return;
     if ((modifiers & BUTTON_MODIFIER_MASK) == 0) {
-      float zoomLevel = viewer.getZoomPercentSetting() / 100f;
+      float zoomLevel = viewer.getZoomPercentFloat() / 100f;
       if (rotation > 0) {
         while (--rotation >= 0)
           zoomLevel *= wheelClickFractionUp;

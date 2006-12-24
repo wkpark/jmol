@@ -566,16 +566,8 @@ abstract class TransformManager {
     return factor;
   }
 
-  int getZoomPercent() {
-    return (int) zoomPercent;
-  }
-
   float getZoomPercentFloat() {
     return zoomPercent;
-  }
-
-  float getZoomPercentSetting() {
-    return zoomPercentSetting;
   }
 
   void zoomToPercent(float percentZoom) {
@@ -594,7 +586,7 @@ abstract class TransformManager {
       zoomPercentSetting = 5;
     if (zoomPercentSetting > MAXIMUM_ZOOM_PERCENTAGE)
       zoomPercentSetting = MAXIMUM_ZOOM_PERCENTAGE;
-    zoomPercent = (zoomEnabled) ? zoomPercentSetting : 100;
+    zoomPercent = (zoomEnabled || isNavigationMode ? zoomPercentSetting : 100);
     //System.out.println("calczoom" + zoomPercent);
   }
 
@@ -1018,9 +1010,9 @@ abstract class TransformManager {
   void setNavigationMode(boolean TF) {
     isNavigationMode = (TF && canNavigate());
     resetNavigationPoint();
-    if (isNavigationMode)
+    if (isNavigationMode) {
       setPerspectiveDepth(true);
-    setZoomEnabled(!isNavigationMode);
+    }
   }
 
   boolean getNavigating() {

@@ -367,9 +367,12 @@ class AtomSetCollection extends Parser {
   
   void setLatticeCells(int[] latticeCells) {
     //set when unit cell is determined
-    //large numbers for x or y indicate that z is 0 (don't normalize) or 1 (normalize)
+    // x <= 555 and y >= 555 indicate a range of cells to load
+    // AROUND the central cell 555 and that
+    // we should normalize (z = 1) or not (z = 0)
     this.latticeCells = latticeCells;
-    doNormalize = (latticeCells[0] < 9 && latticeCells[1] < 9 || latticeCells[2] != 0);
+    isLatticeRange = (latticeCells[2] == 0 || latticeCells[2] == 1) && (latticeCells[0] <= 555  && latticeCells[1] >= 555);
+    doNormalize = (!isLatticeRange || latticeCells[2] == 1);
   }
   
   boolean setNotionalUnitCell(float[] info) {
@@ -412,6 +415,7 @@ class AtomSetCollection extends Parser {
    }
 
    boolean doNormalize = true;
+   boolean isLatticeRange = false;
    
    void applySymmetry(int maxX, int maxY, int maxZ) {
     if (!coordinatesAreFractional || spaceGroup == null)
@@ -426,7 +430,9 @@ class AtomSetCollection extends Parser {
     int minX = 0;
     int minY = 0;
     int minZ = 0;
-    if (maxX > 9 || maxY > 9) {
+    if (isLatticeRange) {
+      //alternative format for indicating a range of cells:
+      //{111 666}
       //555 --> {0 0 0}
       minX = (maxX / 100) - 5;
       minY = (maxX % 100) / 10 - 5;

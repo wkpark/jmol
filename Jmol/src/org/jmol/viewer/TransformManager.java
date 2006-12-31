@@ -29,6 +29,9 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
+
+import org.jmol.util.Logger;
+
 import java.util.Hashtable;
 
 abstract class TransformManager {
@@ -54,6 +57,13 @@ abstract class TransformManager {
    *
    */
   abstract protected void calcCameraFactors();
+
+  /**
+   * calculate the perspective factor based on z
+   * @param z
+   * @return perspectiveFactor
+   */
+  abstract protected float getPerspectiveFactor(float z);
 
   /**
    * sets slab and depth, possibly using visual range considerations
@@ -90,6 +100,7 @@ abstract class TransformManager {
     matrixRotate.setIdentity(); // no rotations
     setZoomEnabled(true);
     zoomToPercent(100);
+    zoomPercent = zoomPercentSetting;
     scaleFitToScreen();
     if (isNavigationMode)
       setNavigationMode(true);
@@ -552,20 +563,6 @@ abstract class TransformManager {
     zoomToPercent(percent);
   }
 
-  protected float getPerspectiveFactor(float z) {
-    // all z's SHOULD be >= 0
-    // so the more positive z is, the smaller the screen scale
-    //new idea: phase out perspective depth when zoom is very large.
-    //zoomPercent 1000 or larger starts removing this effect
-    //we can go up to 200000
-    float factor = (z <= 0 ? perspectiveScale : perspectiveScale / z);
-    if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
-      factor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
-          / (MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
-          * (1 - factor);
-    return factor;
-  }
-
   float getZoomPercentFloat() {
     return zoomPercent;
   }
@@ -843,7 +840,8 @@ abstract class TransformManager {
    */
 
   protected boolean perspectiveDepth = true;
-  protected float cameraDepth = 3f;
+  protected float cameraDepth = Float.NaN;
+  protected float cameraDepthSetting = 3f;
   protected float visualRange = 5f;
   protected float observerOffset;
   protected float cameraDistance = 1000f; // prevent divide by zero on startup
@@ -866,10 +864,12 @@ abstract class TransformManager {
    * @param percent
    */
   void setCameraDepthPercent(float percent) {
+    resetNavigationPoint();
     float screenMultiples = (percent < 0 ? -percent / 100 : percent);
     if (screenMultiples == 0)
       return;
-    cameraDepth = screenMultiples;
+    cameraDepthSetting = screenMultiples;
+    cameraDepth = Float.NaN;
   }
 
   void setVisualRange(float angstroms) {
@@ -967,7 +967,7 @@ abstract class TransformManager {
   }
 
   short scaleToScreen(int z, int milliAngstroms) {
-    if (milliAngstroms == 0)
+    if (milliAngstroms == 0 || z < 2)
       return 0;
     int pixelSize = (int) scaleToPerspective(z, milliAngstroms * scalePixelsPerAngstrom / 1000);      
     return (short) (pixelSize > 0 ? pixelSize : 1);
@@ -1010,8 +1010,6 @@ abstract class TransformManager {
   void setNavigationMode(boolean TF) {
     isNavigationMode = (TF && canNavigate());
     resetNavigationPoint();
-    if (isNavigationMode)
-      setPerspectiveDepth(true);
   }
 
   boolean getNavigating() {
@@ -1058,6 +1056,9 @@ abstract class TransformManager {
     //System.out.println("zoom:" + zoomPercent + "\n" + matrixTransform);
 
     // note that the image is still centered at 0, 0 in the xy plane
+
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+      Logger.debug("modelCenterOffset + matrixTransform: " +modelCenterOffset+matrixTransform); 
 
   }
 
@@ -1729,7 +1730,7 @@ abstract class TransformManager {
     vibrationScale = 0;
   }
 
-  /*private*/ class VibrationThread extends Thread implements Runnable {
+  private class VibrationThread extends Thread implements Runnable {
 
     public void run() {
       long startTime = System.currentTimeMillis();

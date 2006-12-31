@@ -53,7 +53,7 @@ class SticksRenderer extends ShapeRenderer {
   short madBond;
 
   void render() {
-    asBits = viewer.getTestFlag2();
+    asBits = false;//viewer.getTestFlag2();
     
     endcaps = Graphics3D.ENDCAPS_SPHERICAL;
     showMultipleBonds = viewer.getShowMultipleBonds();
@@ -63,7 +63,6 @@ class SticksRenderer extends ShapeRenderer {
     hbondsBackbone = viewer.getHbondsBackbone();
     bondsBackbone = hbondsBackbone | ssbondsBackbone;
     hbondsSolid = viewer.getHbondsSolid();
-
     Bond[] bonds = frame.bonds;
     for (int i = frame.bondCount; --i >= 0; ) {
       Bond bond = bonds[i];
@@ -198,9 +197,9 @@ class SticksRenderer extends ShapeRenderer {
       } else {
         if (lineBond)
           g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
-        else if (asBits) // time test shows bitset method to be slower
-          g3d.fillCylinderBits(colixA, colixB, endcaps,
-              width, xA, yA, zA, xB, yB, zB);
+      //  else if (asBits) // time test shows bitset method to be slower
+        //  g3d.fillCylinderBits(colixA, colixB, endcaps,
+          //    width, xA, yA, zA, xB, yB, zB);
         else
           g3d.fillCylinder(colixA, colixB, endcaps,
                            width, xA, yA, zA, xB, yB, zB);

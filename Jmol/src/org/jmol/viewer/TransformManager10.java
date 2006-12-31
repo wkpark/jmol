@@ -45,6 +45,10 @@ class TransformManager10 extends TransformManager {
     //(s) screen coordinates = (m) * screenPixelsPerAngstrom
     //(p) plane coordinates = (s) / screenPixelCount
     
+    if (Float.isNaN(cameraDepth)) {
+      cameraDepth = cameraDepthSetting;
+    }
+
     // distance from the front plane of the model at zoom=100, where p=0 
     cameraDistance = cameraDepth * screenPixelCount; //(s)
 
@@ -72,6 +76,20 @@ class TransformManager10 extends TransformManager {
     observerOffset = 0; //(s)
   }
   
+  protected float getPerspectiveFactor(float z) {
+    // all z's SHOULD be >= 0
+    // so the more positive z is, the smaller the screen scale
+    //new idea: phase out perspective depth when zoom is very large.
+    //zoomPercent 1000 or larger starts removing this effect
+    //we can go up to 200000
+    float factor = (z <= 0 ? perspectiveScale : perspectiveScale / z);
+    if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+      factor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+          / (MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
+          * (1 - factor);
+    return factor;
+  }
+
   protected void calcSlabAndDepthValues() {
     slabValue = 0;
     depthValue = Integer.MAX_VALUE;

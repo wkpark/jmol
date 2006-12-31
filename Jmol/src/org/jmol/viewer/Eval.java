@@ -1304,6 +1304,15 @@ class Eval { //implements Runnable {
       case Token.model:
         propertyValue = atom.getModelTagNumber();
         break;
+      case Token.atomX:
+        propertyValue = (int)(atom.x * 100);
+        break;
+      case Token.atomY:
+        propertyValue = (int)(atom.y * 100);
+        break;
+      case Token.atomZ:
+        propertyValue = (int)(atom.z * 100);
+        break;
       default:
         unrecognizedAtomProperty(property);
       }
@@ -1748,9 +1757,9 @@ class Eval { //implements Runnable {
     } else if (pt.z == 0) {
       pt3.set(pt1.x, 0, 1);
     }
-    viewer.convertFractionalCoordinates(pt1);
-    viewer.convertFractionalCoordinates(pt2);
-    viewer.convertFractionalCoordinates(pt3);
+    viewer.toCartesian(pt1);
+    viewer.toCartesian(pt2);
+    viewer.toCartesian(pt3);
     pt1.add(offset);
     pt2.add(offset);
     pt3.add(offset);
@@ -1931,7 +1940,7 @@ class Eval { //implements Runnable {
     if (getToken(++pcLastExpressionInstruction).tok != Token.rightbrace)
       coordinateExpected();
     if (coordinatesAreFractional && doConvert)
-      viewer.convertFractionalCoordinates(pt);
+      viewer.toCartesian(pt);
     return pt;
   }
 

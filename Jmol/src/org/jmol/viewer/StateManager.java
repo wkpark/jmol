@@ -437,6 +437,7 @@ class StateManager {
     boolean showMeasurements            = true;
     boolean frankOn                     = false;
     boolean centerPointer               = true;
+    boolean zShade                      = false;
     
     //atoms and bonds
 
@@ -479,9 +480,11 @@ class StateManager {
     
     // window
     
-    int argbBackground = 0xFF000000;
-    String stereoState = null;
-    boolean navigationMode = false;
+    int argbBackground         = 0xFF000000;
+    String stereoState         = null;
+    boolean navigationMode     = false;
+    boolean navigationPeriodic = false;
+    boolean navigationCentered = false;
 
     String getWindowState() {
       StringBuffer str = new StringBuffer("# window state;\n# height " + viewer.getScreenHeight()

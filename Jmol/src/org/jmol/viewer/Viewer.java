@@ -310,6 +310,7 @@ public class Viewer extends JmolViewer {
     setSpecularPercent(global.specularPercent);
     setSpecularExponent(global.specularExponent);
     setSpecularPower(global.specularPower);
+    setZShade(false);
   }
 
   String listSavedStates() {
@@ -670,7 +671,7 @@ public class Viewer extends JmolViewer {
     //FrameRenderer
     transformManager.finalizeTransformParameters();
     g3d.setSlabAndDepthValues(transformManager.slabValue,
-        transformManager.depthValue);
+        transformManager.depthValue, global.zShade);
   }
 
   Point3i transformPoint(Point3f pointAngstroms) {
@@ -927,6 +928,14 @@ public class Viewer extends JmolViewer {
 
   String getSpecularState() {
     return global.getSpecularState();
+  }
+  
+  private void setZShade(boolean TF) {
+    global.zShade = TF;
+  }
+  
+  boolean getZShade() {
+    return global.zShade;
   }
   
   private void setAmbientPercent(int ambientPercent) {
@@ -1727,11 +1736,18 @@ public class Viewer extends JmolViewer {
     return modelManager.findAtomsInRectangle(rectRubberBand);
   }
 
-  void convertFractionalCoordinates(Point3f pt) {
+  void toCartesian(Point3f pt) {
     int modelIndex = getCurrentModelIndex();
     if (modelIndex < 0)
       return;
-    modelManager.convertFractionalCoordinates(modelIndex, pt);
+    modelManager.toCartesian(modelIndex, pt);
+  }
+
+  void toUnitCell(Point3f pt, Point3f offset) {
+    int modelIndex = getCurrentModelIndex();
+    if (modelIndex < 0)
+      return;
+    modelManager.toUnitCell(modelIndex, pt, offset);
   }
 
   public void setCenterSelected() {
@@ -3420,6 +3436,18 @@ public class Viewer extends JmolViewer {
     boolean notFound = false;
     while (true) {
       ///11.1///
+      if (key.equalsIgnoreCase("navigationCentered")) {
+        setNavigationCentered(value);
+        break;
+      }
+      if (key.equalsIgnoreCase("navigationPeriodic")) {
+        setNavigationPeriodic(value);
+        break;
+      }
+      if (key.equalsIgnoreCase("zShade")) {
+        setZShade(value);
+        break;
+      }
       if (key.equalsIgnoreCase("drawHover")) {
         setDrawHover(value);
         break;
@@ -3960,6 +3988,22 @@ public class Viewer extends JmolViewer {
     global.hideNameInPopup = hideNameInPopup;
   }
 
+  private void setNavigationPeriodic(boolean TF) {
+    global.navigationPeriodic = TF;
+  }
+
+  boolean getNavigationPeriodic() {
+    return global.navigationPeriodic;
+  }
+  
+  private void setNavigationCentered(boolean TF) {
+    global.navigationCentered = TF;
+  }
+
+  boolean getNavigationCentered() {
+    return global.navigationCentered;
+  }
+  
   private void setNavigationMode(boolean TF) {
     global.navigationMode = TF;
     if (TF && !transformManager.canNavigate()) {

@@ -30,13 +30,14 @@ import javax.vecmath.*;
 class BallsRenderer extends ShapeRenderer {
 
   int minX, maxX, minY, maxY, minZ, maxZ;
-  
+  boolean isNav;
   void render() {
     minX = rectClip.x;
     maxX = minX + rectClip.width;
     minY = rectClip.y;
     maxY = minY + rectClip.height;
     boolean slabbing = viewer.getSlabEnabled();
+    isNav = viewer.getNavigationMode();
     if (slabbing) {
       minZ = g3d.getSlab();
       maxZ = g3d.getDepth();
@@ -52,6 +53,11 @@ class BallsRenderer extends ShapeRenderer {
       if (slabbing) {
         if (g3d.isClippedZ(atom.screenZ)) {
           atom.clickabilityFlags = 0;
+          //note that in the case of navigation, 
+          //maxZ is set to Integer.MAX_VALUE.
+          
+          if (isNav)
+            continue;
           int r = atom.screenDiameter / 2;
           if (atom.screenZ < minZ - r || atom.screenZ > maxZ + r)
             continue;
@@ -91,7 +97,8 @@ class BallsRenderer extends ShapeRenderer {
   }
 
   void renderBall(Atom atom) {
-    g3d.fillSphereCentered(atom.colixAtom, atom.screenDiameter,
+    short colix = atom.colixAtom;
+    g3d.fillSphereCentered(colix, atom.screenDiameter,
                            atom.screenX, atom.screenY, atom.screenZ);
   }
 }

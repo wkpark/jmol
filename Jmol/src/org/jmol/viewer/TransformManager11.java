@@ -53,6 +53,11 @@ class TransformManager11 extends TransformManager {
     //(s) screen coordinates = (m) * screenPixelsPerAngstrom
     //(p) plane coordinates = (s) / screenPixelCount
 
+    if (Float.isNaN(cameraDepth)) {
+      cameraDepth = cameraDepthSetting;
+      zoomFactor = Float.NaN;
+    }
+    
     // factor to apply as part of the transform (not used here)
     cameraScaleFactor = 1; //unitless
 
@@ -98,6 +103,10 @@ class TransformManager11 extends TransformManager {
     }
   }
 
+  protected float getPerspectiveFactor(float z) {
+    return (z <= 0 ? perspectiveScale : perspectiveScale / z);
+  }
+
   protected void calcSlabAndDepthValues() {
     slabValue = 0;
     depthValue = Integer.MAX_VALUE;
@@ -106,9 +115,10 @@ class TransformManager11 extends TransformManager {
       if (perspectiveDepth && visualRange > 0 && slabPercentSetting == 0) {
         slabValue = (int) observerOffset;
         depthValue = Integer.MAX_VALUE;
+        depthValue = (int)(radius + modelCenterOffset);
         if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
           Logger.debug("\n" + "\nperspectiveScale: " + perspectiveScale
-              + " screenPixelCount: " + screenPixelCount
+              + " screenPixelCount: " + screenPixelCount 
               + "\nmodelTrailingEdge: " + (modelCenterOffset + radius)
               + "\nmodelCenterOffset: " + modelCenterOffset + " radius: "
               + radius + "\nmodelLeadingEdge: " + (modelCenterOffset - radius)
@@ -212,12 +222,13 @@ class TransformManager11 extends TransformManager {
     //no release from navigation mode if too far zoomed in!
     
     if (zoomPercent < 5 && !isNavigationMode) {
-      isNavigationMode = true;
+      isNavigationMode = perspectiveDepth = true;
       return;
     }
     if (isNavigationMode) {
       navMode = NAV_MODE_RESET;
       slabPercentSetting = 0;
+      perspectiveDepth = true;
     } else {
       slabPercentSetting = 100;
     }
@@ -254,7 +265,7 @@ class TransformManager11 extends TransformManager {
         navMode = NAV_MODE_NEWXYZ;
         break;
       }
-      navigationZOffset -= 5 * multiplier;
+      navigationZOffset -= 5 *(viewer.getNavigationPeriodic() ? 1 : multiplier);
       navMode = NAV_MODE_NEWZ;
       break;
     case KeyEvent.VK_DOWN:
@@ -268,7 +279,7 @@ class TransformManager11 extends TransformManager {
         navMode = NAV_MODE_NEWXYZ;
         break;
       }
-      navigationZOffset += 5 * multiplier;
+      navigationZOffset += 5 *(viewer.getNavigationPeriodic() ? 1 : multiplier);
       navMode = NAV_MODE_NEWZ;
       break;
     case KeyEvent.VK_LEFT:
@@ -398,7 +409,7 @@ class TransformManager11 extends TransformManager {
     case NAV_MODE_NONE:
       //update fixed rotation offset and find the new 3D navigation center
       fixedRotationOffset.set(fixedTranslation);
-      //fall through
+    //fall through
     case NAV_MODE_NEWXY:
       // redefine the navigation center based on its old screen position
       findCenterAt(fixedRotationCenter, navigationOffset, navigationCenter);
@@ -420,12 +431,39 @@ class TransformManager11 extends TransformManager {
       unTransformPoint(navigationOffset, navigationCenter);
       break;
     }
+    if (viewer.getNavigationCentered()) {
+      fixedRotationOffset.set(navigationCenter);
+    }
     matrixTransform(navigationCenter, referenceOffset);
+    if (viewer.getNavigationPeriodic()) {
+      // but if periodic, then the navigationCenter may have to be moved back a notch
+      viewer.toUnitCell(navigationCenter, null);
+      if (pointT.distance(navigationCenter) > 0.01) {
+        matrixTransform(navigationCenter, pointT);
+        float dz = referenceOffset.z - pointT.z;
+        //the new navigation center determines the navigationZOffset
+        navigationZOffset += dz;
+        calcCameraFactors();
+        calcTransformMatrix();
+        matrixTransform(navigationCenter, referenceOffset);
+      }
+    }
     transformPoint(fixedRotationCenter, fixedTranslation);
+    /*
+    if (viewer.getNavigationCentered()) {
+      fixedRotationCenter.set(navigationCenter);
+      navigationZOffset -= referenceOffset.z;
+      calcCameraFactors();
+      calcTransformMatrix();
+      matrixTransform(navigationCenter, referenceOffset);
+      transformPoint(fixedRotationCenter, fixedTranslation);
+    }
+    */
     fixedRotationOffset.set(fixedTranslation);
     transformPoint(navigationCenter, navigationOffset);
     navigationOffset.z = observerOffset;
     navMode = NAV_MODE_NONE;
+
   }
 
   /**

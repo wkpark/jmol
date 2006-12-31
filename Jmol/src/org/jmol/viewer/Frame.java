@@ -2972,6 +2972,10 @@ public final class Frame {
       unitCell.toFractional(pt);
     }
     
+    void toUnitCell(Point3f pt, Point3f offset) {
+      unitCell.toUnitCell(pt, offset);  
+    }
+    
     void showInfo() {
       if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
         Logger.debug("cellInfos[" + modelIndex + "]:\n" + unitCell.dumpInfo(true));
@@ -2983,7 +2987,7 @@ public final class Frame {
     }
   }
   
-  void convertFractionalCoordinates(int modelIndex, Point3f pt) {
+  void toCartesian(int modelIndex, Point3f pt) {
     if (modelIndex < 0)
       modelIndex = 0;
     if (cellInfos == null || modelIndex >= cellInfos.length || cellInfos[modelIndex] == null)
@@ -2991,6 +2995,14 @@ public final class Frame {
     String str = "Frame convertFractional " + pt + "--->";
     cellInfos[modelIndex].toCartesian(pt);
     Logger.info(str + pt);
+  }
+
+  void toUnitCell(int modelIndex, Point3f pt, Point3f offset) {
+    if (modelIndex < 0)
+      return;
+    if (cellInfos == null || modelIndex >= cellInfos.length || cellInfos[modelIndex] == null)
+      return;
+    cellInfos[modelIndex].toUnitCell(pt, offset);
   }
 
   boolean reportFormalCharges = false;

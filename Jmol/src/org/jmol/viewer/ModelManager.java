@@ -1322,8 +1322,13 @@ String getAtomInfoChime(int i) {
     return false;
   }
 
-  void convertFractionalCoordinates(int modelIndex, Point3f pt) {
-    frame.convertFractionalCoordinates(modelIndex, pt);
+  void toCartesian(int modelIndex, Point3f pt) {
+    frame.toCartesian(modelIndex, pt);
+    return;
+  }
+
+  void toUnitCell(int modelIndex, Point3f pt, Point3f offset) {
+    frame.toUnitCell(modelIndex, pt, offset);
     return;
   }
   

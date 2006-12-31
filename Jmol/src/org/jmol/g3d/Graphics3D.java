@@ -71,6 +71,7 @@ final public class Graphics3D {
   int width, height;
   int displayMinX, displayMaxX, displayMinY, displayMaxY;
   int slab, depth;
+  boolean zShade;
   int xLast, yLast;
   int[] pbuf;
   int[] zbuf;
@@ -222,16 +223,21 @@ final public class Graphics3D {
    *<p>
    * @param slabValue front clipping percentage [0,100]
    * @param depthValue rear clipping percentage [0,100]
+   * @param zShade whether to shade along z front to back
    */
-  public void setSlabAndDepthValues(int slabValue, int depthValue) {
-    slab =
-      slabValue < 0 ? 0
-      : slabValue > ZBUFFER_BACKGROUND ? ZBUFFER_BACKGROUND : slabValue;
-    depth =
-      depthValue < 0 ? 0
-      : depthValue > ZBUFFER_BACKGROUND ? ZBUFFER_BACKGROUND : depthValue;
+  public void setSlabAndDepthValues(int slabValue, int depthValue,
+                                    boolean zShade) {
+    slab = slabValue < 0 ? 0
+        : slabValue > ZBUFFER_BACKGROUND ? ZBUFFER_BACKGROUND : slabValue;
+    depth = depthValue < 0 ? 0
+        : depthValue > ZBUFFER_BACKGROUND ? ZBUFFER_BACKGROUND : depthValue;
+    this.zShade = zShade;
   }
 
+  int getZShift(int z) {
+    return (zShade ? (z - slab) * 5 / (depth - slab): 0);
+  }
+  
   /**
    * used internally when oversampling is enabled
    */
@@ -344,6 +350,7 @@ final public class Graphics3D {
                       diameter, x, y, z);
     }
   }
+
 
   /**
    * fills a solid sphere

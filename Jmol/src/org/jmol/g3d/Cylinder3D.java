@@ -68,6 +68,8 @@ class Cylinder3D {
   int sampleCount;
   boolean notClipped;
 
+  private int zShift;
+
   void render(short colixA, short colixB, byte endcaps, int diameter, int xA,
               int yA, int zA, int xB, int yB, int zB) {
     if (diameter > g3d.height * 3)
@@ -85,6 +87,8 @@ class Cylinder3D {
     dxB = xB - xA;
     dyB = yB - yA;
     dzB = zB - zA;
+    
+    zShift = g3d.getZShift((zA + zB) >> 1); 
 
     if (diameter <= 1) {
       line3d.plotLineDelta(g3d.getColixArgb(colixA), Graphics3D
@@ -96,12 +100,12 @@ class Cylinder3D {
     this.xA = xA;
     this.yA = yA;
     this.zA = zA;
-    this.shadesA = g3d.getShades(this.colixA = colixA);
-    this.shadesB = g3d.getShades(this.colixB = colixB);
-    this.isScreenedA = (colixA & Graphics3D.TRANSLUCENT_MASK) != 0;
-    this.isScreenedB = (colixB & Graphics3D.TRANSLUCENT_MASK) != 0;
-
     this.endcaps = endcaps;
+    shadesA = g3d.getShades(this.colixA = colixA);
+    shadesB = g3d.getShades(this.colixB = colixB);
+    isScreenedA = (colixA & Graphics3D.TRANSLUCENT_MASK) != 0;
+    isScreenedB = (colixB & Graphics3D.TRANSLUCENT_MASK) != 0;
+
     calcArgbEndcap(true);
 
     generateBaseEllipse();
@@ -175,7 +179,7 @@ class Cylinder3D {
   }
 
   private void plotRasterBits(int i) {
-    int fp8Up = fp8IntensityUp[i];
+    int fpz = fp8IntensityUp[i] >> (8 + zShift);
     int x = xRaster[i];
     int y = yRaster[i];
     int z = zRaster[i];
@@ -193,7 +197,7 @@ class Cylinder3D {
       }
     }
     line3d.plotLineDeltaBits(shadesA, isScreenedA, shadesB, isScreenedB,
-        fp8Up >> 8, xA + x, yA + y, zA - z, dxB, dyB, dzB, notClipped);
+        fpz, xA + x, yA + y, zA - z, dxB, dyB, dzB, notClipped);
     if (endcaps == Graphics3D.ENDCAPS_OPEN) {
       line3d.plotLineDelta(shadesA[0], isScreenedA, shadesB[0], isScreenedB, xA
           - x, yA - y, zA + z, dxB, dyB, dzB, notClipped);
@@ -219,9 +223,9 @@ class Cylinder3D {
     this.yTip = yTip;
     this.zTip = zTip;
 
-    this.colixA = colix;
-    this.shadesA = g3d.getShades(colix);
-    this.isScreenedA = (colixA & Graphics3D.TRANSLUCENT_MASK) != 0;
+    colixA = colix;
+    shadesA = g3d.getShades(colix);
+    isScreenedA = (colixA & Graphics3D.TRANSLUCENT_MASK) != 0;
     int intensityTip = Shade3D.calcIntensity(dxB, dyB, -dzB);
     g3d.plotPixelClipped(shadesA[intensityTip], isScreenedA, (int) xTip,
         (int) yTip, (int) zTip);
@@ -412,7 +416,7 @@ class Cylinder3D {
   }
 
   private void plotRaster(int i) {
-    int fp8Up = fp8IntensityUp[i];
+    int fpz = fp8IntensityUp[i] >> (8 + zShift);
     int x = xRaster[i];
     int y = yRaster[i];
     int z = zRaster[i];
@@ -430,7 +434,7 @@ class Cylinder3D {
       }
     }
     line3d.plotLineDelta(shadesA, isScreenedA, shadesB, isScreenedB,
-        fp8Up >> 8, xA + x, yA + y, zA - z, dxB, dyB, dzB, notClipped);
+        fpz, xA + x, yA + y, zA - z, dxB, dyB, dzB, notClipped);
     if (endcaps == Graphics3D.ENDCAPS_OPEN) {
       line3d.plotLineDelta(shadesA[0], isScreenedA, shadesB[0], isScreenedB, xA
           - x, yA - y, zA + z, dxB, dyB, dzB, notClipped);
@@ -559,18 +563,18 @@ class Cylinder3D {
       g3d.plotPixelClipped(argbEndcap, isScreenedA, (int) xDn, (int) yDn,
           (int) zDn);
     }
-    int fp8Up = fp8IntensityUp[i];
+    int fpz = fp8IntensityUp[i] >> (8 + zShift);
 
     line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA,
-        fp8Up >> 8, (int) xUp, (int) yUp, (int) zUp, (int) Math
+        fpz, (int) xUp, (int) yUp, (int) zUp, (int) Math
             .ceil(xTip - xUp), (int) Math.ceil(yTip - yUp), (int) Math
             .ceil(zTip - zUp), false);
     line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA,
-        fp8Up >> 8, (int) xUp, (int) yUp + 1, (int) zUp, (int) Math.ceil(xTip
+        fpz, (int) xUp, (int) yUp + 1, (int) zUp, (int) Math.ceil(xTip
             - xUp), (int) Math.ceil(yTip - yUp) + 1, (int) Math
             .ceil(zTip - zUp), false);
     line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA,
-        fp8Up >> 8, (int) xUp + 1, (int) yUp, (int) zUp, (int) Math.ceil(xTip
+        fpz, (int) xUp + 1, (int) yUp, (int) zUp, (int) Math.ceil(xTip
             - xUp) + 1, (int) Math.ceil(yTip - yUp), (int) Math
             .ceil(zTip - zUp), false);
 

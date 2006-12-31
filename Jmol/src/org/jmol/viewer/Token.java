@@ -354,6 +354,10 @@ public class Token {
   final static int psi             = atomproperty | 21;
   final static int partialCharge   = atomproperty | 22;
   
+  final static int atomX       = atomproperty | 23;
+  final static int atomY       = atomproperty | 24;
+  final static int atomZ       = atomproperty | 25;
+
   final static int opGT         = comparator |  0;
   final static int opGE         = comparator |  1;
   final static int opLE         = comparator |  2;
@@ -754,9 +758,9 @@ public class Token {
 
     "dash",         new Token(dash, "dash"),
     "user",         new Token(user, "user"),
-//    "x",            new Token(x, "x"),
-//    "y",            new Token(y, "y"),
-//    "z",            new Token(z, "z"),
+    "atomx",            new Token(atomX, "atomx"),
+    "atomy",            new Token(atomY, "atomy"),
+    "atomz",            new Token(atomZ, "atomz"),
     "*",            new Token(asterisk, "*"),
     "all",          tokenAll,
     "none",         new Token(none, "none"),

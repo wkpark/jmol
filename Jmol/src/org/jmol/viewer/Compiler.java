@@ -1291,6 +1291,9 @@ class Compiler {
       case Token.phi:
       case Token.surfacedistance:
       case Token.temperature:
+      case Token.atomX:
+      case Token.atomY:
+      case Token.atomZ:
         // int = decimal here, but comparator has to use decmimal * 100
         val *= 100; 
         // fall through

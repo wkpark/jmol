@@ -157,7 +157,7 @@ class Pmesh extends MeshFileCollection {
     int extraVertex = parseInt(br.readLine());
     if (extraVertex != vertices[0]) {
 //Logger.debug("?Que? polygon is not complete");
-      viewer.scriptStatus("pmesh Error: last polygon point reference (" + extraVertex + ") is not the same as the first (" + vertices[0] + ")");
+      viewer.scriptStatus("pmesh ERROR: last polygon point reference (" + extraVertex + ") is not the same as the first (" + vertices[0] + ")");
       currentMesh.isValid = false;
       throw new NullPointerException();
     }

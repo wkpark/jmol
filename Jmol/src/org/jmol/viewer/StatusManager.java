@@ -226,7 +226,7 @@ class StatusManager {
 
     if (isError || strStatus.equals("Script completed"))
       setStatusChanged("scriptTerminated", 1, "Jmol script terminated"
-          + (isError ? " unsuccesscully: " + strStatus : " successfully"), false);
+          + (isError ? " unsuccessfully: " + strStatus : " successfully"), false);
 
     if (jmolStatusListener != null)
       jmolStatusListener.sendConsoleMessage(strStatus);

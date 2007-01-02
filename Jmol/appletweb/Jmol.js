@@ -1,4 +1,4 @@
-/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 11:06 AM 10/13/2006
+/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 11:13 AM 1/2/2007
 
     based on:
  *
@@ -48,7 +48,8 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bob hanson -- jmolScriptWait always returns a string -- 11:23 AM 9/16/2006
 // bh         -- jmolCommandInput()
 // bh         -- jmolSetTranslation(TF) -- forces translation even if there might be message callback issues
-	
+// bh         -- minor fixes suggested by Angel
+	  	
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
 
@@ -201,7 +202,7 @@ function jmolRadioGroup(arrayOfRadioButtons, separatorHtml, groupName, id, title
     var radio = arrayOfRadioButtons[i];
     type = typeof radio;
     if (type == "object") {
-      t += _jmolRadio(radio[0], radio[1], radio[2], separatorHtml, groupName, (radio.length > 3 ? radio[3]: (id ? id : groupName)+"_"+i), (radio.length > 4 ? radio[4] : 0));
+      t += _jmolRadio(radio[0], radio[1], radio[2], separatorHtml, groupName, (radio.length > 3 ? radio[3]: (id ? id : groupName)+"_"+i), (radio.length > 4 ? radio[4] : 0), title);
     } else {
       t += _jmolRadio(radio, null, null, separatorHtml, groupName, (id ? id : groupName)+"_"+i, title);
     }
@@ -435,7 +436,6 @@ function jmolSetMenuCssClass(menuCssClass) {
 // functions for INTERNAL USE ONLY which are subject to change
 // use at your own risk ... you have been WARNED!
 ////////////////////////////////////////////////////////////////
-
 var _jmol = {
   currentDocument: document,
 

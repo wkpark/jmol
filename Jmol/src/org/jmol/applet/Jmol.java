@@ -632,10 +632,10 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   public String getPropertyAsString(String infoType) {
-    return viewer.getProperty("String", infoType, "").toString();
+    return viewer.getProperty("readable", infoType, "").toString();
   }
   public String getPropertyAsString(String infoType, String paramInfo) {
-    return viewer.getProperty("String",infoType, paramInfo).toString();
+    return viewer.getProperty("readable", infoType, paramInfo).toString();
   }
 
   public String getPropertyAsJSON(String infoType) {

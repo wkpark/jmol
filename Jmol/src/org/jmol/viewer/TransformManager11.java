@@ -327,12 +327,7 @@ class TransformManager11 extends TransformManager {
           Float.NaN);
       return;
     }
-    if (rotAxis.x != 0)
-      rotateXRadians((float) Math.PI / 180 * degrees);
-    if (rotAxis.y != 0)
-      rotateYRadians((float) Math.PI / 180 * degrees);
-    if (rotAxis.z != 0)
-      rotateZRadians((float) Math.PI / 180 * degrees);
+    rotateAxisAngle(rotAxis, degrees / degreesPerRadian);
     navMode = NAV_MODE_NEWXYZ;
     navigating = true;
     finalizeTransformParameters();
@@ -603,6 +598,7 @@ class TransformManager11 extends TransformManager {
     int nPer = (int) (10 * seconds); //?
     int nSteps = nSegments * nPer + 1;
     Point3f[] points = new Point3f[nSteps + 2];
+    Point3f[] pointGuides = new Point3f[isPathGuide ? nSteps + 2 : 0];
     int iPrev, iNext, iNext2, iNext3, pt;
     for (int i = 0; i < nSegments; i++) {
       iPrev = Math.max(i - 1, 0) + indexStart;
@@ -614,6 +610,9 @@ class TransformManager11 extends TransformManager {
         Graphics3D.getHermiteList(7, pathGuide[iPrev][0], pathGuide[pt][0],
             pathGuide[iNext][0], pathGuide[iNext2][0], pathGuide[iNext3][0],
             points, i * nPer, nPer + 1);
+        Graphics3D.getHermiteList(7, pathGuide[iPrev][1], pathGuide[pt][1],
+            pathGuide[iNext][1], pathGuide[iNext2][1], pathGuide[iNext3][1],
+            pointGuides, i * nPer, nPer + 1);
       } else {
         Graphics3D.getHermiteList(7, path[iPrev], path[pt], path[iNext],
             path[iNext2], path[iNext3], points, i * nPer, nPer + 1);
@@ -625,9 +624,10 @@ class TransformManager11 extends TransformManager {
     int frameTimeMillis = 1000 / fps;
     long targetTime = System.currentTimeMillis();
     for (int iStep = 0; iStep < totalSteps; ++iStep) {
-      navigating = true;
       navigate(0, points[iStep]);
-      navigating = false;
+      if (isPathGuide) {
+        alignZX(points[iStep], points[iStep + 1], pointGuides[iStep]);
+      }
       targetTime += frameTimeMillis;
       if (System.currentTimeMillis() < targetTime) {
         viewer.requestRepaintAndWait();
@@ -644,6 +644,46 @@ class TransformManager11 extends TransformManager {
     }
   }
 
+  /**
+   * brings pt0-pt1 vector to [0 0 -1], then rotates
+   * about [0 0 1] until ptVectorWing is in xz plane
+   * @param pt0
+   * @param pt1
+   * @param ptVectorWing
+   */
+  void alignZX(Point3f pt0, Point3f pt1, Point3f ptVectorWing) {
+    Point3f pt0s = new Point3f();
+    Point3f pt1s = new Point3f();
+    matrixRotate.transform(pt0,pt0s);
+    matrixRotate.transform(pt1,pt1s);
+    Vector3f vPath = new Vector3f(pt0s);
+    vPath.sub(pt1s);
+    Vector3f v = new Vector3f(0, 0, 1);
+    float angle = vPath.angle(v);
+    v.cross(vPath, v);
+    if (angle != 0)
+      navigate(0, v, angle * degreesPerRadian);
+    matrixRotate.transform(pt0,pt0s);
+    Point3f pt2 = new Point3f(ptVectorWing);
+    pt2.add(pt0);
+    Point3f pt2s = new Point3f();
+    matrixRotate.transform(pt2,pt2s);
+    vPath.set(pt2s);
+    vPath.sub(pt0s);
+    vPath.z = 0; // just use projection
+    v.set(-1,0,0); // puts alpha helix sidechain above
+    angle = vPath.angle(v);
+    if (vPath.y < 0)
+      angle = -angle;
+    v.set(0,0,1);
+    if (angle != 0)
+      navigate(0, v, angle * degreesPerRadian);
+    matrixRotate.transform(pt0,pt0s);
+    matrixRotate.transform(pt1,pt1s);
+    matrixRotate.transform(ptVectorWing,pt2s);
+ }
+  
+  
   void setNavigationCenter(Point3f center) {
     navigate(0, center);
   }

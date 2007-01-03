@@ -2144,12 +2144,16 @@ class Eval { //implements Runnable {
       default:
         invalidArgument();
       }
+      return;
     }
-
+    if (!viewer.getNavigationMode())
+      setBooleanProperty("navigationMode", true);
     for (int i = 1; i < statementLength; i++) {
       float timeSec = (isFloatParameter(i) ? floatParameter(i++) : 2f);
       if (timeSec < 0)
         invalidArgument();
+      if (!isSyntaxCheck && timeSec > 0)
+        refresh();
       if (statementLength < i + 2)
         badArgumentCount();
       switch (statement[i].tok) {
@@ -2181,6 +2185,12 @@ class Eval { //implements Runnable {
             break;
           }
           invalidArgument(); // for now
+        case Token.leftbrace:
+          rotAxis.set(getCoordinate(i, true));
+          i = pcLastExpressionInstruction + 1;
+          break;
+        default:
+          invalidArgument();
         }
         float degrees = floatParameter(i);
         if (!isSyntaxCheck)
@@ -2222,9 +2232,10 @@ class Eval { //implements Runnable {
         if (isSyntaxCheck)
           return;
         viewer.getPolymerPointsAndVectors(bs, vp);
-        if (vp.size() > 0) {
-          pathGuide = new Point3f[vp.size()][];
-          for (int j = 0; j < vp.size(); j++) {
+        int n;
+        if ((n = vp.size()) > 0) {
+          pathGuide = new Point3f[n][];
+          for (int j = 0; j < n; j++) {
             pathGuide[j] = (Point3f[]) vp.get(j);
           }
           viewer.navigate(timeSec, pathGuide);
@@ -2247,9 +2258,9 @@ class Eval { //implements Runnable {
             refresh();
             if (path == null)
               invalidArgument();
-            int indexStart = (int) (isFloatParameter(i+1) ? floatParameter(++i)
+            int indexStart = (int) (isFloatParameter(i + 1) ? floatParameter(++i)
                 : 0);
-            int indexEnd = (int) (isFloatParameter(i+1) ? floatParameter(++i)
+            int indexEnd = (int) (isFloatParameter(i + 1) ? floatParameter(++i)
                 : Integer.MAX_VALUE);
             if (!isSyntaxCheck)
               viewer.navigate(timeSec, path, theta, indexStart, indexEnd);

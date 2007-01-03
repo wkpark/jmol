@@ -4012,6 +4012,7 @@ public class Viewer extends JmolViewer {
       reset();
     }
     transformManager.setNavigationMode(TF);
+    refresh(1,"set navigationMode");
   }
 
   boolean getNavigationMode() {

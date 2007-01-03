@@ -218,7 +218,7 @@ abstract class MpsRenderer extends MeshRenderer {
     } else {
       float offset_1000 = offsetFraction / 1000f;
       for (int i = count; --i >= 0;)
-        calc1Screen(controlPoints[i], wingVectors[i], mads[i], offset_1000,
+        calc1Screen(controlPoints[i], wingVectors[i], (mads[i] == 0 && i > 0 ? mads[i-1] : mads[i]), offset_1000,
             screens[i]);
     }
     return screens;
@@ -264,13 +264,15 @@ abstract class MpsRenderer extends MeshRenderer {
     if (isTraceAlpha) {
       if (!thisTypeOnly || structureTypes[i] == structureTypes[iNext]) {
         madEnd = mads[iNext];
+        if (madEnd == 0)
+          madEnd = madBeg;
         madMid = (madBeg + madEnd) >> 1;
       }
     } else {
       if (!thisTypeOnly || structureTypes[i] == structureTypes[iPrev])
-        madBeg = (mads[iPrev] + madMid) >> 1;
+        madBeg = ((mads[iPrev] == 0 ? madMid : mads[iPrev]) + madMid) >> 1;
       if (!thisTypeOnly || structureTypes[i] == structureTypes[iNext])
-        madEnd = (mads[iNext] + madMid) >> 1;
+        madEnd = ((mads[iNext] == 0 ? madMid : mads[iNext]) + madMid) >> 1;
     }
     doCap0 = (i == iPrev || thisTypeOnly
         && structureTypes[i] != structureTypes[iPrev]);

@@ -1072,15 +1072,25 @@ String getAtomInfoChime(int i) {
     int modelCount = viewer.getModelCount();
     boolean isTraceAlpha = viewer.getTraceAlpha();
     float sheetSmoothing = viewer.getSheetSmoothing();
+    int last = Integer.MAX_VALUE - 1;
     for (int i = 0; i < modelCount; ++i) {
       int polymerCount = getPolymerCountInModel(i);
       for (int ip = 0; ip < polymerCount; ip++) {
         Polymer polymer = frame.mmset.getModel(i).getPolymer(ip);
-        Point3f[] points = polymer.getControlPoints(isTraceAlpha, sheetSmoothing);
+        Point3f[] points = polymer.getControlPoints(isTraceAlpha,
+            sheetSmoothing);
         Vector3f[] vectors = polymer.wingVectors;
         for (int j = 0; j < polymer.monomerCount; j++)
-          if (bs.get(polymer.monomers[j].getLeadAtomIndex()))
+          if (bs.get(polymer.monomers[j].getLeadAtomIndex())) {
             vList.add(new Point3f[] { points[j], new Point3f(vectors[j]) });
+            last = j;
+          } else if (last != Integer.MAX_VALUE - 1) {
+            vList.add(new Point3f[] { points[j], new Point3f(vectors[j]) });
+            last = Integer.MAX_VALUE - 1;
+          }
+        if (last + 1 < polymer.monomerCount)
+          vList.add(new Point3f[] { points[last + 1],
+              new Point3f(vectors[last + 1]) });
       }
     }
   }

@@ -286,9 +286,8 @@ abstract class TransformManager {
     matrixRotate.mul(matrixTemp3, matrixRotate);
   }
 
-  void rotateAxisAngle(Vector3f rotAxis, int degrees) {
-    //not used 
-    axisangleT.set(rotAxis, degrees * radiansPerDegree);
+  protected void rotateAxisAngle(Vector3f rotAxis, float radians) {
+    axisangleT.set(rotAxis, radians);
     rotateAxisAngle(axisangleT);
   }
 

@@ -87,6 +87,8 @@ class Hermite3D {
                      Point3i p0, Point3i p1, Point3i p2, Point3i p3) {
     if (p0.z == 1 ||p1.z == 1 ||p2.z == 1 ||p3.z == 1)
       return;
+    if (g3d.isClippedZ(p1.z) || g3d.isClippedZ(p2.z))
+      return;
     int x1 = p1.x, y1 = p1.y, z1 = p1.z;
     int x2 = p2.x, y2 = p2.y, z2 = p2.z;
     int xT1 = ((x2 - p0.x) * tension) / 8;

@@ -3266,6 +3266,10 @@ public class Viewer extends JmolViewer {
         setNavigationDepthPercent(0, value);
         break;
       }
+      if (key.equalsIgnoreCase("navigationSlab")) {
+        setNavigationSlabOffset(value);
+        break;
+      }
       if (key.equalsIgnoreCase("cameraDepth")) {
         setCameraDepth(value);
         break;
@@ -3436,10 +3440,6 @@ public class Viewer extends JmolViewer {
     boolean notFound = false;
     while (true) {
       ///11.1///
-      if (key.equalsIgnoreCase("navigationCentered")) {
-        setNavigationCentered(value);
-        break;
-      }
       if (key.equalsIgnoreCase("navigationPeriodic")) {
         setNavigationPeriodic(value);
         break;
@@ -3996,14 +3996,6 @@ public class Viewer extends JmolViewer {
     return global.navigationPeriodic;
   }
   
-  private void setNavigationCentered(boolean TF) {
-    global.navigationCentered = TF;
-  }
-
-  boolean getNavigationCentered() {
-    return global.navigationCentered;
-  }
-  
   private void setNavigationMode(boolean TF) {
     global.navigationMode = TF;
     if (TF && !transformManager.canNavigate()) {
@@ -4012,13 +4004,17 @@ public class Viewer extends JmolViewer {
       reset();
     }
     transformManager.setNavigationMode(TF);
-    refresh(1,"set navigationMode");
+    //refresh(1,"set navigationMode");
   }
 
   boolean getNavigationMode() {
     return global.navigationMode;
   }
   
+  private void setNavigationSlabOffset(float percent) {
+     transformManager.setNavigationSlabOffset(percent);
+  }
+
   private void setPerspectiveStyle(int mode) {
     setVibrationPeriod(0);
     switch (mode) {

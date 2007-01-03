@@ -36,6 +36,7 @@ import org.jmol.g3d.Graphics3D;
 class TransformManager11 extends TransformManager {
 
   private float navigationZOffset;
+  private float navigationSlabOffset;
   private float zoomFactor = Float.MAX_VALUE;
 
   TransformManager11(Viewer viewer) {
@@ -47,7 +48,7 @@ class TransformManager11 extends TransformManager {
   }
 
   private float prevZoomSetting;
-  
+
   protected void calcCameraFactors() {
     //(m) model coordinates
     //(s) screen coordinates = (m) * screenPixelsPerAngstrom
@@ -55,9 +56,9 @@ class TransformManager11 extends TransformManager {
 
     if (Float.isNaN(cameraDepth)) {
       cameraDepth = cameraDepthSetting;
-      zoomFactor = Float.NaN;
+      zoomFactor = Float.MAX_VALUE;
     }
-    
+
     // factor to apply as part of the transform (not used here)
     cameraScaleFactor = 1; //unitless
 
@@ -85,8 +86,12 @@ class TransformManager11 extends TransformManager {
           zoomPercent = MAXIMUM_ZOOM_PERSPECTIVE_DEPTH;
         navigationZOffset = perspectiveScale * (100 / zoomPercent - 1);
       } else if (prevZoomSetting != zoomPercentSetting) {
-        //continuing; zoom changed by user
-        navigationZOffset += (1 - prevZoomSetting / zoomPercentSetting) * observerOffset;
+        if (zoomRatio == 0) //scripted change zoom xxx
+          navigationZOffset = perspectiveScale * (100 / zoomPercentSetting - 1);
+        else
+          // fractional change by script or mouse
+          navigationZOffset += (1 - zoomRatio) * observerOffset;
+        navMode = NAV_MODE_ZOOMED;
       }
       prevZoomSetting = zoomPercentSetting;
       // screen offset to fixed rotation center
@@ -113,12 +118,13 @@ class TransformManager11 extends TransformManager {
     if (slabEnabled) {
       float radius = rotationRadius * scalePixelsPerAngstrom;
       if (perspectiveDepth && visualRange > 0 && slabPercentSetting == 0) {
-        slabValue = (int) observerOffset;
+        slabValue = (int) (observerOffset - navigationSlabOffset / 100f
+            * screenPixelCount);
         depthValue = Integer.MAX_VALUE;
-        depthValue = (int)(radius + modelCenterOffset);
+        depthValue = (int) (radius + modelCenterOffset);
         if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
           Logger.debug("\n" + "\nperspectiveScale: " + perspectiveScale
-              + " screenPixelCount: " + screenPixelCount 
+              + " screenPixelCount: " + screenPixelCount
               + "\nmodelTrailingEdge: " + (modelCenterOffset + radius)
               + "\nmodelCenterOffset: " + modelCenterOffset + " radius: "
               + radius + "\nmodelLeadingEdge: " + (modelCenterOffset - radius)
@@ -206,21 +212,22 @@ class TransformManager11 extends TransformManager {
     return true;
   }
 
-  int nHits;
-  int multiplier = 1;
+  private int nHits;
+  private int multiplier = 1;
 
-  final static int NAV_MODE_NONE = 0;
-  final static int NAV_MODE_RESET = 1;
-  final static int NAV_MODE_NEWXY = 2;
-  final static int NAV_MODE_NEWXYZ = 3;
-  final static int NAV_MODE_NEWZ = 4;
+  final private static int NAV_MODE_ZOOMED = -1;
+  final private static int NAV_MODE_NONE = 0;
+  final private static int NAV_MODE_RESET = 1;
+  final private static int NAV_MODE_NEWXY = 2;
+  final private static int NAV_MODE_NEWXYZ = 3;
+  final private static int NAV_MODE_NEWZ = 4;
 
-  int navMode = NAV_MODE_RESET;
+  private int navMode = NAV_MODE_RESET;
 
   protected void resetNavigationPoint() {
-    
+
     //no release from navigation mode if too far zoomed in!
-    
+
     if (zoomPercent < 5 && !isNavigationMode) {
       isNavigationMode = perspectiveDepth = true;
       return;
@@ -265,7 +272,7 @@ class TransformManager11 extends TransformManager {
         navMode = NAV_MODE_NEWXYZ;
         break;
       }
-      navigationZOffset -= 5 *(viewer.getNavigationPeriodic() ? 1 : multiplier);
+      navigationZOffset -= 5 * (viewer.getNavigationPeriodic() ? 1 : multiplier);
       navMode = NAV_MODE_NEWZ;
       break;
     case KeyEvent.VK_DOWN:
@@ -279,7 +286,7 @@ class TransformManager11 extends TransformManager {
         navMode = NAV_MODE_NEWXYZ;
         break;
       }
-      navigationZOffset += 5 *(viewer.getNavigationPeriodic() ? 1 : multiplier);
+      navigationZOffset += 5 * (viewer.getNavigationPeriodic() ? 1 : multiplier);
       navMode = NAV_MODE_NEWZ;
       break;
     case KeyEvent.VK_LEFT:
@@ -352,6 +359,7 @@ class TransformManager11 extends TransformManager {
     float dz = ((50 - percent) * radius / 50);
     navigationZOffset = observerOffset - dz - perspectiveScale;
     calcCameraFactors(); //updated
+    navMode = NAV_MODE_ZOOMED;
   }
 
   void navTranslate(float seconds, Point3f pt) {
@@ -388,13 +396,21 @@ class TransformManager11 extends TransformManager {
     navigating = false;
   }
 
+  boolean isNavigationCentered;
+
   /**
    * All the magic happens here.
    *
    */
   protected void calcNavigationPoint() {
-    if (!navigating && navMode != NAV_MODE_RESET)
-      navMode = NAV_MODE_NONE;
+    isNavigationCentered = (getNavigationDepthPercent() < 100);
+    if (!navigating && navMode != NAV_MODE_RESET) {
+      // rotations are different from zoom changes
+      if (isNavigationCentered && navMode != NAV_MODE_ZOOMED)
+        navMode = NAV_MODE_NEWXYZ;
+      else
+        navMode = NAV_MODE_NONE;
+    }
     switch (navMode) {
     case NAV_MODE_RESET:
       //simply place the navigation center front and center
@@ -402,6 +418,7 @@ class TransformManager11 extends TransformManager {
       findCenterAt(fixedRotationCenter, navigationOffset, navigationCenter);
       break;
     case NAV_MODE_NONE:
+    case NAV_MODE_ZOOMED:
       //update fixed rotation offset and find the new 3D navigation center
       fixedRotationOffset.set(fixedTranslation);
     //fall through
@@ -426,9 +443,6 @@ class TransformManager11 extends TransformManager {
       unTransformPoint(navigationOffset, navigationCenter);
       break;
     }
-    if (viewer.getNavigationCentered()) {
-      fixedRotationOffset.set(navigationCenter);
-    }
     matrixTransform(navigationCenter, referenceOffset);
     if (viewer.getNavigationPeriodic()) {
       // but if periodic, then the navigationCenter may have to be moved back a notch
@@ -444,16 +458,6 @@ class TransformManager11 extends TransformManager {
       }
     }
     transformPoint(fixedRotationCenter, fixedTranslation);
-    /*
-    if (viewer.getNavigationCentered()) {
-      fixedRotationCenter.set(navigationCenter);
-      navigationZOffset -= referenceOffset.z;
-      calcCameraFactors();
-      calcTransformMatrix();
-      matrixTransform(navigationCenter, referenceOffset);
-      transformPoint(fixedRotationCenter, fixedTranslation);
-    }
-    */
     fixedRotationOffset.set(fixedTranslation);
     transformPoint(navigationCenter, navigationOffset);
     navigationOffset.z = observerOffset;
@@ -654,8 +658,8 @@ class TransformManager11 extends TransformManager {
   void alignZX(Point3f pt0, Point3f pt1, Point3f ptVectorWing) {
     Point3f pt0s = new Point3f();
     Point3f pt1s = new Point3f();
-    matrixRotate.transform(pt0,pt0s);
-    matrixRotate.transform(pt1,pt1s);
+    matrixRotate.transform(pt0, pt0s);
+    matrixRotate.transform(pt1, pt1s);
     Vector3f vPath = new Vector3f(pt0s);
     vPath.sub(pt1s);
     Vector3f v = new Vector3f(0, 0, 1);
@@ -663,33 +667,36 @@ class TransformManager11 extends TransformManager {
     v.cross(vPath, v);
     if (angle != 0)
       navigate(0, v, angle * degreesPerRadian);
-    matrixRotate.transform(pt0,pt0s);
+    matrixRotate.transform(pt0, pt0s);
     Point3f pt2 = new Point3f(ptVectorWing);
     pt2.add(pt0);
     Point3f pt2s = new Point3f();
-    matrixRotate.transform(pt2,pt2s);
+    matrixRotate.transform(pt2, pt2s);
     vPath.set(pt2s);
     vPath.sub(pt0s);
     vPath.z = 0; // just use projection
-    v.set(-1,0,0); // puts alpha helix sidechain above
+    v.set(-1, 0, 0); // puts alpha helix sidechain above
     angle = vPath.angle(v);
     if (vPath.y < 0)
       angle = -angle;
-    v.set(0,0,1);
+    v.set(0, 0, 1);
     if (angle != 0)
       navigate(0, v, angle * degreesPerRadian);
-    matrixRotate.transform(pt0,pt0s);
-    matrixRotate.transform(pt1,pt1s);
-    matrixRotate.transform(ptVectorWing,pt2s);
- }
-  
-  
+    matrixRotate.transform(pt0, pt0s);
+    matrixRotate.transform(pt1, pt1s);
+    matrixRotate.transform(ptVectorWing, pt2s);
+  }
+
   void setNavigationCenter(Point3f center) {
     navigate(0, center);
   }
 
   Point3f getNavigationCenter() {
     return navigationCenter;
+  }
+
+  void setNavigationSlabOffset(float offset) {
+    navigationSlabOffset = offset;
   }
 
   Point3f getNavigationOffset() {

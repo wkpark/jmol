@@ -2189,8 +2189,6 @@ class Eval { //implements Runnable {
           rotAxis.set(getCoordinate(i, true));
           i = pcLastExpressionInstruction + 1;
           break;
-        default:
-          invalidArgument();
         }
         float degrees = floatParameter(i);
         if (!isSyntaxCheck)
@@ -2245,7 +2243,8 @@ class Eval { //implements Runnable {
       case Token.identifier:
         Point3f[] path;
         float[] theta = null; //orientation; null for now
-        if (((String) statement[i].value).equalsIgnoreCase("path")) {
+        String str = (String) statement[i].value;
+        if (str.equalsIgnoreCase("path")) {
           if ((tok = getToken(i + 1).tok) == Token.dollarsign) {
             i++;
             //navigate timeSeconds path $id indexStart indexEnd

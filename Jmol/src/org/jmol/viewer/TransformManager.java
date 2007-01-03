@@ -544,6 +544,7 @@ abstract class TransformManager {
   // zoomPercentSetting is the current setting of zoom
   // if zoom is not enabled then the two values will be different
   float zoomPercentSetting = 100;
+  float zoomRatio;
 
   /**
    * standard response to user mouse vertical shift-drag
@@ -558,8 +559,8 @@ abstract class TransformManager {
     float deltaPercent = pixels * zoomPercentSetting / 50;
     if (deltaPercent == 0)
       deltaPercent = (pixels > 0 ? 1 : (deltaPercent < 0 ? -1 : 0));
-    float percent = deltaPercent + zoomPercentSetting;
-    zoomToPercent(percent);
+    zoomRatio = (deltaPercent+ zoomPercentSetting) / zoomPercentSetting;
+    zoomPercentSetting += deltaPercent;
   }
 
   float getZoomPercentFloat() {
@@ -568,13 +569,15 @@ abstract class TransformManager {
 
   void zoomToPercent(float percentZoom) {
     zoomPercentSetting = percentZoom;
+    zoomRatio = 0;
   }
 
   void zoomByPercent(float percentZoom) {
-    float delta = percentZoom * zoomPercentSetting / 100;
-    if (delta == 0)
-      delta = (percentZoom < 0) ? -1 : 1;
-    zoomPercentSetting += delta;
+    float deltaPercent = percentZoom * zoomPercentSetting / 100;
+    if (deltaPercent == 0)
+      deltaPercent = (percentZoom < 0) ? -1 : 1;
+    zoomRatio = (deltaPercent + zoomPercentSetting) / zoomPercentSetting;
+    zoomPercentSetting += deltaPercent;
   }
 
   protected void calcZoom() {
@@ -1057,7 +1060,8 @@ abstract class TransformManager {
     // note that the image is still centered at 0, 0 in the xy plane
 
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
-      Logger.debug("modelCenterOffset + matrixTransform: " +modelCenterOffset+matrixTransform); 
+      Logger.debug("modelCenterOffset + matrixTransform: " + modelCenterOffset
+          + matrixTransform);
 
   }
 
@@ -2016,4 +2020,8 @@ abstract class TransformManager {
   String getNavigationText() {
     return "";
   }
+  
+  void setNavigationSlabOffset(float offset) {
+ }
+  
 }

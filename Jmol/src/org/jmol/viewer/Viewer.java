@@ -404,6 +404,10 @@ public class Viewer extends JmolViewer {
     return transformManager.getNavigationCenter();
   }
   
+  boolean getNavigationCentered() {
+    return transformManager.isNavigationCentered();
+  }
+  
   float getNavigationDepthPercent() {
     return transformManager.getNavigationDepthPercent();
   }

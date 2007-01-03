@@ -2022,6 +2022,10 @@ abstract class TransformManager {
   }
   
   void setNavigationSlabOffset(float offset) {
- }
+  }
+  
+  boolean isNavigationCentered() {
+    return false;
+  }
   
 }

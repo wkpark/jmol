@@ -120,8 +120,8 @@ class TransformManager11 extends TransformManager {
       if (perspectiveDepth && visualRange > 0 && slabPercentSetting == 0) {
         slabValue = (int) (observerOffset - navigationSlabOffset / 100f
             * screenPixelCount);
-        depthValue = Integer.MAX_VALUE;
-        depthValue = (int) (radius + modelCenterOffset);
+        float depth = getNavigationDepthPercent();
+        depthValue = (depth > 0 ? (int) (radius + modelCenterOffset) : Integer.MAX_VALUE);
         if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
           Logger.debug("\n" + "\nperspectiveScale: " + perspectiveScale
               + " screenPixelCount: " + screenPixelCount
@@ -130,7 +130,7 @@ class TransformManager11 extends TransformManager {
               + radius + "\nmodelLeadingEdge: " + (modelCenterOffset - radius)
               + "\nzoom: " + zoomPercent + " observerOffset/navDepth: "
               + observerOffset + "/"
-              + (((int) (100 * getNavigationDepthPercent())) / 100f)
+              + ((int) (100 * depth) / 100f)
               + " visualRange: " + visualRange + "\nnavX/Y/Z: "
               + navigationOffset.x + "/" + navigationOffset.y + "/"
               + navigationOffset.z + "/" + navigationZOffset + " navCenter:"
@@ -403,7 +403,8 @@ class TransformManager11 extends TransformManager {
    *
    */
   protected void calcNavigationPoint() {
-    isNavigationCentered = (getNavigationDepthPercent() < 100);
+    float depth = getNavigationDepthPercent();
+    isNavigationCentered = (depth < 100 && depth > 0);
     if (!navigating && navMode != NAV_MODE_RESET) {
       // rotations are different from zoom changes
       if (isNavigationCentered && navMode != NAV_MODE_ZOOMED)
@@ -695,6 +696,10 @@ class TransformManager11 extends TransformManager {
     return navigationCenter;
   }
 
+  boolean isNavigationCentered() {
+    return isNavigationCentered;
+  }
+  
   void setNavigationSlabOffset(float offset) {
     navigationSlabOffset = offset;
   }
@@ -732,7 +737,8 @@ class TransformManager11 extends TransformManager {
         + StateManager.escape(getNavigationCenter())
         + ";\nnavigate 0 translate " + getNavigationOffsetPercent('X') + " "
         + getNavigationOffsetPercent('Y') + ";\nset navigationDepth "
-        + getNavigationDepthPercent() + ";\n\n";
+        + getNavigationDepthPercent() + ";\nset navigationSlab "
+        + navigationSlabOffset+ ";\n\n";
   }
 
 }

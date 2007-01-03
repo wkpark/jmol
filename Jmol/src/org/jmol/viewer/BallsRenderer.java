@@ -81,7 +81,7 @@ class BallsRenderer extends ShapeRenderer {
       int x = Math.max(Math.min(viewer.getScreenWidth(),(int) T.x),0);
       int y = Math.max(Math.min(viewer.getScreenHeight(),(int) T.y),0);
       int z = (int) T.z + 1;
-      short colix = Graphics3D.GOLD;
+      short colix = (viewer.getNavigationCentered() ? Graphics3D.GOLD : Graphics3D.RED);
       g3d.drawLine(colix, colix, x - 10, y, z, x + 10, y, z);
       g3d.drawLine(colix, colix, x, y - 10, z, x, y + 10, z);
       g3d.drawLine(colix, colix, x - 4, y - 4, z, x + 6, y - 4, z);

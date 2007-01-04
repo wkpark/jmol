@@ -43,7 +43,9 @@ class Context {
   short[] linenumbers;
   short[] lineIndices;
   Token[][] aatoken;
+  Token[] statement;
   int pc;
+  int iToken;
 }
 
 class Eval { //implements Runnable {
@@ -82,7 +84,7 @@ class Eval { //implements Runnable {
   }
 
   BitSet getAtomBitSet(String atomExpression) throws ScriptException {
-    //SelectionManager -- must NOT be run from within Eval!
+    //SelectionManager 
     BitSet bs = new BitSet();
     pushContext();
     if (loadScript(null, "select (" + atomExpression + ")")) {
@@ -122,8 +124,8 @@ class Eval { //implements Runnable {
       instructionDispatchLoop();
     } catch (ScriptException e) {
       error = true;
-      errorMessage = "" + e;
-      viewer.scriptStatus("script ERROR: " + errorMessage);
+      setErrorMessage(e.toString());
+      viewer.scriptStatus(errorMessage);
     }
     timeEndExecution = System.currentTimeMillis();
 
@@ -145,6 +147,12 @@ class Eval { //implements Runnable {
     return errorMessage;
   }
 
+  void setErrorMessage(String err) {
+    if (errorMessage == null) //there could be a compiler error from a script command
+      errorMessage = "script ERROR: ";
+    errorMessage += err;
+  }
+  
   int getExecutionWalltime() {
     return (int) (timeEndExecution - timeBeginExecution);
   }
@@ -158,7 +166,6 @@ class Eval { //implements Runnable {
   }
 
   void pushContext() throws ScriptException {
-    iToken = 0;
     if (scriptLevel == scriptLevelMax)
       evalError(GT._("too many script levels"));
     Context context = new Context();
@@ -167,18 +174,19 @@ class Eval { //implements Runnable {
     context.linenumbers = linenumbers;
     context.lineIndices = lineIndices;
     context.aatoken = aatoken;
+    context.statement = statement;
     context.pc = pc;
+    context.iToken = iToken;
     stack[scriptLevel++] = context;
     if (isScriptCheck)
       Logger.info("-->>-------------".substring(0, scriptLevel + 5) + filename);
   }
 
-  void popContext() throws ScriptException {
-    iToken = 0;
+  void popContext() {
     if (isScriptCheck)
       Logger.info("--<<-------------".substring(0, scriptLevel + 5) + filename);
     if (scriptLevel == 0)
-      evalError("Jmol virtual machine error - stack underflow");
+      return;
     Context context = stack[--scriptLevel];
     stack[scriptLevel] = null;
     filename = context.filename;
@@ -186,6 +194,8 @@ class Eval { //implements Runnable {
     linenumbers = context.linenumbers;
     lineIndices = context.lineIndices;
     aatoken = context.aatoken;
+    statement = context.statement;
+    iToken = context.iToken;
     pc = context.pc;
   }
 
@@ -195,7 +205,6 @@ class Eval { //implements Runnable {
     if (!compiler.compile(filename, script, false, false)) {
       error = true;
       errorMessage = compiler.getErrorMessage();
-      viewer.scriptStatus("script compiler ERROR: " + errorMessage);
       return false;
     }
     this.script = compiler.script;
@@ -221,7 +230,7 @@ class Eval { //implements Runnable {
     if (!compiler.compile(null, script, false, true))
       return compiler.getErrorMessage();
     isSyntaxCheck = true;
-    String err = null;
+    errorMessage = null;
     pc = 0;
     aatoken = compiler.getAatokenCompiled();
     linenumbers = compiler.getLineNumbers();
@@ -229,11 +238,11 @@ class Eval { //implements Runnable {
     try {
       instructionDispatchLoop();
     } catch (ScriptException e) {
-      err = "" + e;
+        setErrorMessage(e.toString());
     }
     isSyntaxCheck = false;
-    if (err != null)
-      return err;
+    if (errorMessage != null)
+      return errorMessage;
     Vector info = new Vector();
     info.add(compiler.script);
     info.add(compiler.getAatokenCompiled());
@@ -825,6 +834,7 @@ class Eval { //implements Runnable {
       i++;
       isNot = true;
     }
+    checkStatementLength(i + 1);
     String str = parameterAsString(i);
     if (isSyntaxCheck)
       return true;
@@ -872,7 +882,7 @@ class Eval { //implements Runnable {
         Logger.debug(statement[i].toString());
     }
     iToken = -2;
-    statementAsString(strbufLog);
+    strbufLog.append(statementAsString());
     viewer.scriptStatus(strbufLog.toString());
   }
 
@@ -1352,15 +1362,15 @@ class Eval { //implements Runnable {
     Object withinSpec = instruction.value;
     if (withinSpec instanceof Float)
       return viewer.getAtomsWithin(((Float) withinSpec).floatValue(), bs);
+    String withinStr = "" + withinSpec;
     if (withinSpec instanceof String) {
-      String withinStr = (String) withinSpec;
       if (withinStr.equals("element") || withinStr.equals("site")
           || withinStr.equals("group") || withinStr.equals("chain")
           || withinStr.equals("molecule") || withinStr.equals("model"))
         return viewer.getAtomsWithin(withinStr, bs);
       return viewer.getAtomsWithin("sequence", withinStr, bs);
     }
-    evalError(GT._("Unrecognized {0} parameter", "WITHIN") + ":" + withinSpec);
+    unrecognizedParameter("WITHIN", withinStr);
     return null; //can't get here
   }
 
@@ -1424,15 +1434,19 @@ class Eval { //implements Runnable {
     checkStatementLength(4);
   }
 
-  String parameterAsString(int i) throws ScriptException {
+  String optParameterAsString(int i) throws ScriptException {
     if (i >= statementLength)
       return "";
+    return parameterAsString(i);
+  }
+
+  String parameterAsString(int i) throws ScriptException {
     Token token = getToken(i);
     return (token.tok == Token.integer ? "" + token.intValue : "" + token.value);
   }
 
   int intParameter(int index) throws ScriptException {
-    if ((iToken = index) < statementLength)
+    if (checkToken(index))
       if (getToken(index).tok == Token.integer)
         return statement[index].intValue;
     return integerExpected();
@@ -1450,7 +1464,7 @@ class Eval { //implements Runnable {
   }
 
   float floatParameter(int index) throws ScriptException {
-    if ((iToken = index) < statementLength) {
+    if (checkToken(index)) {
       Token token = getToken(index);
       switch (token.tok) {
       case Token.integer:
@@ -1473,14 +1487,14 @@ class Eval { //implements Runnable {
   }
 
   String stringParameter(int index) throws ScriptException {
-    if ((iToken = index) < statementLength)
+    if (checkToken(index))
       if (getToken(index).tok == Token.string)
         return (String) statement[index].value;
     return stringExpected();
   }
 
   String objectNameParameter(int index) throws ScriptException {
-    if ((iToken = index) < statementLength)
+    if (checkToken(index))
       if (getToken(index).tok == Token.identifier)
         return parameterAsString(index);
     return objectNameExpected();
@@ -1507,7 +1521,7 @@ class Eval { //implements Runnable {
    * @throws ScriptException
    */
   float radiusParameter(int index, float defaultValue) throws ScriptException {
-    if ((iToken = index) >= statementLength) {
+    if (!checkToken(index)) {
       if (Float.isNaN(defaultValue))
         numberExpected();
       return defaultValue;        
@@ -1560,7 +1574,7 @@ class Eval { //implements Runnable {
   }
 
   float getRasmolAngstroms(int i) throws ScriptException {
-    if ((iToken = i) < statementLength) {
+    if (checkToken(i)) {
       switch (getToken(i).tok) {
       case Token.integer:
         return intParameter(i) / 250f;
@@ -1617,7 +1631,7 @@ class Eval { //implements Runnable {
   
   Point3f centerParameter(int i) throws ScriptException {
     Point3f center = null;
-    if ((iToken = i) < statementLength) {
+    if (checkToken(i)) {
       switch (getToken(i).tok) {
       case Token.dollarsign:
         String id = objectNameParameter(++i);
@@ -1668,17 +1682,17 @@ class Eval { //implements Runnable {
           return new Point4f(1, 0, 0, 0);
         iToken += 2;
         if (str.equalsIgnoreCase("x")) {
-          if ((iToken = ++i) == statementLength || getToken(i++).tok != Token.opEQ)
+          if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
             evalError("x=?");
           return new Point4f(1, 0, 0, -floatParameter(i));
         }
         if (str.equalsIgnoreCase("y")) {
-          if ((iToken = ++i) == statementLength || getToken(i++).tok != Token.opEQ)
+          if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
             evalError("y=?");
           return new Point4f(0, 1, 0, -floatParameter(i));
         }
         if (str.equalsIgnoreCase("z")) {
-          if ((iToken = ++i) == statementLength || getToken(i++).tok != Token.opEQ)
+          if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
             evalError("z=?");
           return new Point4f(0, 0, 1, -floatParameter(i));
         }
@@ -1814,7 +1828,7 @@ class Eval { //implements Runnable {
   }
 
   int getArgbParam(int index) throws ScriptException {
-    if ((iToken = index) < statementLength) {
+    if (checkToken(index)) {
       Token token = getToken(index);
       if (token.tok == Token.colorRGB)
         return token.intValue;
@@ -1825,7 +1839,7 @@ class Eval { //implements Runnable {
 }
 
   int getArgbOrNoneParam(int index) throws ScriptException {
-    if ((iToken = index) < statementLength) {
+    if (checkToken(index)) {
       Token token = getToken(index);
       if (token.tok == Token.colorRGB)
         return token.intValue;
@@ -1838,7 +1852,7 @@ class Eval { //implements Runnable {
   }
 
   int getArgbOrPaletteParam(int index) throws ScriptException {
-    if ((iToken = index) < statementLength) {
+    if (checkToken(index)) {
       Token token = getToken(index);
       switch (token.tok) {
       case Token.colorRGB:
@@ -1880,7 +1894,7 @@ class Eval { //implements Runnable {
     // denominator of 1 can be implied;
     // commas not necessary if denominator is present or not a fraction
     coordinatesAreFractional = implicitFractional;
-    if ((iToken = i) >= statementLength || getToken(i++).tok != Token.leftbrace)
+    if (!checkToken(i) || getToken(i++).tok != Token.leftbrace)
       coordinateExpected();
     Point3f pt = new Point3f();
     out: for (int j = i; j + 1 < statementLength; j++) {
@@ -1905,7 +1919,7 @@ class Eval { //implements Runnable {
 
   Point4f getPoint4f(int i) throws ScriptException {
     coordinatesAreFractional = false;
-    if ((iToken = i) >= statementLength || getToken(i++).tok != Token.leftbrace)
+    if (!checkToken(i) || getToken(i++).tok != Token.leftbrace)
       coordinateExpected();
     Point4f pt = new Point4f();
     out: for (int j = i; j + 1 < statementLength; j++) {
@@ -1943,11 +1957,15 @@ class Eval { //implements Runnable {
   }
 
   Token getToken(int i) throws ScriptException {
-    if ((iToken = i) >= statementLength)
+    if (!checkToken(i))
       endOfStatementUnexpected();
     return statement[i];
   }
 
+  boolean checkToken(int i) {
+    return (iToken = i) < statementLength;
+  }
+  
   /* ****************************************************************************
    * ==============================================================
    * command implementations
@@ -2062,6 +2080,9 @@ class Eval { //implements Runnable {
       if (i != statementLength)
         navDepth = floatParameter(i++);
     }
+    
+    if (i != statementLength)
+      badArgumentCount();
 
     if (!isSyntaxCheck) {
       refresh();
@@ -2316,6 +2337,9 @@ class Eval { //implements Runnable {
       pt.z = floatParameter(4);
     } else if (isCenterParameter(2)) {
       pt = centerParameter(2);
+      checkStatementLength(iToken);
+    } else {
+      checkLength2();
     }
     if (!isSyntaxCheck)
       viewer.setCenterAt(relativeTo, pt);
@@ -2324,19 +2348,25 @@ class Eval { //implements Runnable {
   void stereo() throws ScriptException {
     int stereoMode = JmolConstants.STEREO_DOUBLE;
     // see www.usm.maine.edu/~rhodes/0Help/StereoViewing.html
+    // stereo on/off
+    // stereo color1 color2 6 
+    // stereo redgreen 5
+    
     float degrees = -5;
     boolean degreesSeen = false;
     int[] colors = new int[2];
     int colorpt = 0;
+    String state = "";
     for (int i = 1; i < statementLength; ++i) {
       switch (getToken(i).tok) {
       case Token.on:
         checkLength2();
-        stereoMode = JmolConstants.STEREO_DOUBLE;
+        state = " on";
         break;
       case Token.off:
         checkLength2();
         stereoMode = JmolConstants.STEREO_NONE;
+        state = " off";
         break;
       case Token.colorRGB:
         if (colorpt > 1)
@@ -2346,14 +2376,17 @@ class Eval { //implements Runnable {
         colors[colorpt++] = getArgbParam(i);
         if (colorpt == 1)
           colors[colorpt] = ~colors[0];
+        state += " " + StateManager.escapeColor(colors[colorpt - 1]);
         break;
       case Token.integer:
       case Token.decimal:
         degrees = floatParameter(i);
         degreesSeen = true;
+        state += " " + degrees;
         break;
       case Token.identifier:
         String id = parameterAsString(i);
+        state += " " + id;
         if (!degreesSeen)
           degrees = 3;
         if (id.equalsIgnoreCase("redblue")) {
@@ -2370,17 +2403,16 @@ class Eval { //implements Runnable {
         }
       // fall into
       default:
-        booleanOrNumberExpected();
+        invalidArgument();
       }
     }
     setFloatProperty("stereoDegrees", degrees);
     if (isSyntaxCheck)
       return;
     if (colorpt > 0) {
-      viewer.setStereoMode(colors, StateManager.escapeColor(colors[0]) + " "
-          + StateManager.escapeColor(colors[1]));
+      viewer.setStereoMode(colors, state);
     } else {
-      viewer.setStereoMode(stereoMode, parameterAsString(1));
+      viewer.setStereoMode(stereoMode, state);
     }
   }
 
@@ -2482,14 +2514,25 @@ class Eval { //implements Runnable {
     if (isSyntaxCheck)
       return;
     String retValue = "";
-    String property = (statementLength < 2 ? "" : parameterAsString(1));
-    String param = (statementLength < 3 ? "" : parameterAsString(2));
-    retValue = (String) viewer.getProperty("readable", property, param);
+    String property = optParameterAsString(1);
+    String param = optParameterAsString(2);
+    BitSet bs = (statementLength > 2
+        && getToken(2).tok == Token.expressionBegin ? expression(2) : null);
+    int propertyID = PropertyManager.getPropertyNumber(property);
+    if (property.length() > 0 && propertyID < 0) {
+      property = ""; // produces a list from Property Manager
+      param = "";
+    } else if (propertyID >= 0 && statementLength < 3) {
+      param = PropertyManager.getDefaultParam(propertyID);
+      if (param.equals("(visible)"))
+        bs = viewer.getVisibleSet();
+    }
+    retValue = (String) viewer.getProperty("readable", property,
+        (bs == null ? (Object) param : (Object) bs));
     showString(retValue);
   }
 
   void background() throws ScriptException {
-    checkLength23();
     int tok = getToken(1).tok;
     int argb;
     if (tok == Token.colorRGB || tok == Token.none) {
@@ -2519,8 +2562,6 @@ class Eval { //implements Runnable {
 
   void color() throws ScriptException {
     int argb;
-    if (statementLength > 5)
-      badArgumentCount();
     int tok = getToken(1).tok;
     switch (tok) {
     case Token.dollarsign:
@@ -2712,7 +2753,6 @@ class Eval { //implements Runnable {
     String dataString = null;
     String dataLabel = null;
     switch (iToken = statementLength) {
-    case 4:
     case 3:
       dataString = parameterAsString(2);
       //fall through
@@ -2785,14 +2825,14 @@ class Eval { //implements Runnable {
   void echo() throws ScriptException {
     if (isSyntaxCheck)
       return;
-    String text = (statementLength == 1 ? "" : parameterAsString(1));
+    String text = optParameterAsString(1);
     if (viewer.getEchoStateActive())
       setShapeProperty(JmolConstants.SHAPE_ECHO, "text", text);
     viewer.scriptEcho(text);
   }
 
   void message() throws ScriptException {
-    String text = (statementLength == 1 ? "" : parameterAsString(1));
+    String text = parameterAsString(1);
     viewer.scriptStatus(text);
   }
 
@@ -2811,7 +2851,7 @@ class Eval { //implements Runnable {
   void hover() throws ScriptException {
     if (isSyntaxCheck)
       return;
-    String strLabel = (statementLength == 1 ? "on" : parameterAsString(1));
+    String strLabel = parameterAsString(1);
     if (strLabel.equalsIgnoreCase("on"))
       strLabel = "%U";
     else if (strLabel.equalsIgnoreCase("off"))
@@ -3354,19 +3394,20 @@ class Eval { //implements Runnable {
 
   void script() throws ScriptException {
     // token allows for only 1 parameter
-    if (statement[1].tok != Token.string)
+    if (getToken(1).tok != Token.string)
       filenameExpected();
     if (isSyntaxCheck && !isScriptCheck)
       return;
     pushContext();
     String filename = stringParameter(1);
     if (!loadScriptFileInternal(filename))
-      errorLoadingScript(errorMessage);
+      errorLoadingScript();
     instructionDispatchLoop();
     popContext();
   }
 
   void history(int pt) throws ScriptException {
+    //history or set history
     if (statementLength == 1) {
       //show it
       showString(viewer.getSetHistory(Integer.MAX_VALUE));
@@ -3665,10 +3706,9 @@ class Eval { //implements Runnable {
       viewer.depthToPercent(d);
   }
 
-  int intPercentToken23() throws ScriptException {
+  int diameterToken() throws ScriptException {
     if (statementLength == 1)
       return Token.on;
-    checkLength23();
     switch (statementLength) {
     case 2:
       break;
@@ -3683,7 +3723,7 @@ class Eval { //implements Runnable {
   }
   void star() throws ScriptException {
     short mad = 0; // means back to selection business
-    switch (intPercentToken23()) {
+    switch (diameterToken()) {
     case Token.on:
     case Token.vanderwaals:
       mad = -100; // cpk with no args goes to 100%
@@ -3724,7 +3764,7 @@ class Eval { //implements Runnable {
 
   void halo() throws ScriptException {
     short mad = 0;
-    switch (intPercentToken23()) {
+    switch (diameterToken()) {
     case Token.on:
       mad = -20; // on goes to 25%
       break;
@@ -3770,7 +3810,7 @@ class Eval { //implements Runnable {
     short mad = 0;
     boolean isSolventAccessibleSurface = false;
     int i = 1;
-    switch (intPercentToken23()) {
+    switch (diameterToken()) {
     case Token.on:
     case Token.vanderwaals:
       mad = -100; // cpk with no args goes to 100%
@@ -3898,8 +3938,6 @@ class Eval { //implements Runnable {
         return;
       }
       invalidArgument();
-    default:
-      badArgumentCount();
     }
     setShapeSize(JmolConstants.SHAPE_VECTORS, mad);
   }
@@ -4046,29 +4084,32 @@ class Eval { //implements Runnable {
     float period = 0;
     switch (getToken(1).tok) {
     case Token.on:
+      checkLength2();
       period = viewer.getDefaultVibrationPeriod();
       break;
     case Token.off:
     case Token.integer:
+      checkLength2();
       period = intParameter(1);
       break;
     case Token.decimal:
+      checkLength2();
       period = floatParameter(1);
       break;
     case Token.identifier:
-      checkLength3();
-      String cmd = parameterAsString(1);
+      String cmd = optParameterAsString(1);
       if (cmd.equalsIgnoreCase("scale")) {
         float scale = floatParameter(2);
         if (scale < -10 || scale > 10)
           numberOutOfRange(-10f, 10f);
         setFloatProperty("vibrationScale", scale);
         return;
-      }
-      if (cmd.equalsIgnoreCase("period")) {
+      } else if (cmd.equalsIgnoreCase("period")) {
         period = floatParameter(2);
         setFloatProperty("vibrationPeriod", -period);
         return;
+      } else {
+        invalidArgument();
       }
     default:
       period = -1;
@@ -4101,13 +4142,15 @@ class Eval { //implements Runnable {
       case Token.surface:
         dots(2, Dots.DOTS_MODE_CALCONLY);
         if (!isSyntaxCheck)
-          viewer.addStateScript("calculate surface");
+          viewer.addStateScript(getCommand());
         return;
       case Token.hbond:
+        checkLength2();
         if (!isSyntaxCheck)
           viewer.autoHbond();
         return;
       case Token.structure:
+        checkLength2();
         if (!isSyntaxCheck)
           viewer.calculateStructures();
         return;
@@ -4396,6 +4439,10 @@ class Eval { //implements Runnable {
    */
 
   void set() throws ScriptException {
+    if (statementLength == 1) {
+      showString(viewer.getAllSettings());
+      return;
+    }
     int val = 0;
     switch (getToken(1).tok) {
     case Token.axes:
@@ -4868,7 +4915,7 @@ class Eval { //implements Runnable {
     case Token.identifier:
       String units = (String) statement[index].value;
       if (!StateManager.isMeasurementUnit(units))
-          unrecognizedSetParameter();
+          unrecognizedParameter("SET MEASUREMENTS", units);
       if (!isSyntaxCheck)
         viewer.setMeasureDistanceUnits(units);
       return;
@@ -4880,12 +4927,11 @@ class Eval { //implements Runnable {
     //what possible good is this? 
     //set property foo bar  is identical to
     //set foo bar
-
     checkLength4();
-    if (statement[2].tok != Token.identifier)
+    if (getToken(2).tok != Token.identifier)
       propertyNameExpected();
     String propertyName = parameterAsString(2);
-    switch (statement[3].tok) {
+    switch (getToken(3).tok) {
     case Token.on:
       setBooleanProperty(propertyName, true);
       break;
@@ -4902,7 +4948,7 @@ class Eval { //implements Runnable {
       setStringProperty(propertyName, stringParameter(3));
       break;
     default:
-      unrecognizedSetParameter();
+      unrecognizedParameter("SET " + propertyName.toUpperCase(), parameterAsString(3));
     }
   }
 
@@ -4918,7 +4964,7 @@ class Eval { //implements Runnable {
   void setSpin() throws ScriptException {
     checkLength4();
     int value = (int) floatParameter(3);
-    if (statement[2].tok == Token.identifier) {
+    if (getToken(2).tok == Token.identifier) {
       String str = parameterAsString(2).toLowerCase();
       int pt = "x y z f fp fps".indexOf(str);
       //        0 2 4      11
@@ -4938,7 +4984,7 @@ class Eval { //implements Runnable {
           return;
         }
     }
-    unrecognizedSetParameter();
+    unrecognizedParameter("SET SPIN", parameterAsString(2));
   }
 
   void setSsbond() throws ScriptException {
@@ -4995,19 +5041,26 @@ class Eval { //implements Runnable {
       setStringProperty("picking", "ident");
       return;
     }
-    checkLength34();
-    switch (statement[2].tok) {
+    int i = 2;
+    String type = "SELECT";
+    switch (getToken(2).tok) {
     case Token.select:
     case Token.monitor:
     case Token.spin:
+      checkLength34();
+      if (statementLength == 4) {
+        type = parameterAsString(2).toUpperCase();
+        if (type.equals("SPIN"))
+          setIntProperty("pickingSpinRate", intParameter(3));
+        else
+          i = 3;
+      }
       break;
     default:
       checkLength3();
     }
-    String str = null;
-    Token token = statement[statementLength - 1];
-    int tok = token.tok;
-    switch (tok) {
+    String str = parameterAsString(i);
+    switch (getToken(i).tok) {
     case Token.on:
     case Token.normal:
       str = "ident";
@@ -5021,52 +5074,41 @@ class Eval { //implements Runnable {
     case Token.bonds: //not implemented
       str = "bond";
       break;
-    case Token.navigate:
-      str = "navigate";
-      break;
-    case Token.spin:
-      if (statementLength == 4) {
-        setIntProperty("pickingSpinRate", intParameter(3));
-      }
-      str = "spin";
-      break;
-    }
-    if (str == null) {
-      if (token.value instanceof String)
-        str = (String) token.value;
-      else
-        invalidArgument();
     }
     if (JmolConstants.GetPickingMode(str) < 0)
-      invalidArgument();
+      unrecognizedParameter("SET PICKING " + type, str);
     setStringProperty("picking", str);
   }
 
   void setPickingStyle() throws ScriptException {
-    checkLength34();
-    boolean isMeasure = (statement[2].tok == Token.monitor);
-    String str = null;
-    Token token = statement[statementLength - 1];
-    int tok = token.tok;
-    switch (tok) {
+    int i = 2;
+    boolean isMeasure = false;
+    String type = "SELECT";
+    switch (getToken(2).tok) {
+    case Token.monitor:
+      isMeasure = true;
+      type = "MEASURE";
+    case Token.select:
+      checkLength34();
+      if (statementLength == 4)
+          i = 3;
+      break;
+    default:
+      checkLength3();
+    }
+    String str = parameterAsString(i);
+    switch (getToken(i).tok) {
     case Token.none:
     case Token.off:
       str = (isMeasure ? "measureoff" : "toggle");
       break;
     case Token.on:
-      if (!isMeasure)
-        invalidArgument();
-      str = "measure";
+      if (isMeasure)
+        str = "measure";
       break;
     }
-    try {
-      if (str == null)
-        str = (String) token.value;
-    } catch (Exception e) {
-      invalidArgument();
-    }
     if (JmolConstants.GetPickingStyle(str) < 0)
-      invalidArgument();
+      unrecognizedParameter("SET PICKINGSTYLE " + type, str);
     setStringProperty("pickingStyle", str);
   }
 
@@ -5078,7 +5120,7 @@ class Eval { //implements Runnable {
 
   void save() throws ScriptException {
     if (statementLength > 1) {
-      String saveName = parameterAsString(2);
+      String saveName = optParameterAsString(2);
       switch (statement[1].tok) {
       case Token.orientation:
         if (!isSyntaxCheck)
@@ -5104,9 +5146,12 @@ class Eval { //implements Runnable {
   }
 
   void restore() throws ScriptException {
+    //restore orientation name time
     if (statementLength > 1) {
-      String saveName = parameterAsString(2);
-      switch (statement[1].tok) {
+      String saveName = optParameterAsString(2);
+      if (getToken(1).tok != Token.orientation)
+        checkLength3();
+      switch (getToken(1).tok) {
       case Token.orientation:
         float timeSeconds = (statementLength > 3 ? floatParameter(3) : 0);
         if (timeSeconds < 0)
@@ -5170,9 +5215,11 @@ class Eval { //implements Runnable {
     if (pt == statementLength)
       badArgumentCount();
 
-    //write [image|history|state] clipboard
     tok = statement[pt].tok;
     String val = parameterAsString(pt);
+
+    //write [image|history|state] clipboard
+    
     if (val.equalsIgnoreCase("clipboard")) {
       if (isSyntaxCheck)
         return;
@@ -5187,8 +5234,7 @@ class Eval { //implements Runnable {
     //write script "filename"
 
     if (pt + 2 == statementLength) {
-      type = ((tok == Token.identifier ? parameterAsString(pt)
-          : stringParameter(pt))).toUpperCase();
+      type = val.toUpperCase();
       pt++;
     }
     if (pt + 1 != statementLength)
@@ -5240,8 +5286,6 @@ class Eval { //implements Runnable {
    */
 
   void show() throws ScriptException {
-    if (statementLength == 1)
-      badArgumentCount();
     Object value = null;
     String str = parameterAsString(1);
     switch (getToken(1).tok) {
@@ -5358,7 +5402,7 @@ class Eval { //implements Runnable {
         return;
       }
       if (statementLength == 3 && getToken(2).tok == Token.string) {
-        String sg = viewer.simpleReplace(parameterAsString(2), "''",
+        String sg = viewer.simpleReplace(stringParameter(2), "''",
             "\"");
         if (!isSyntaxCheck)
           showString(viewer.getSpaceGroupInfoText(sg));
@@ -5395,7 +5439,7 @@ class Eval { //implements Runnable {
         return;
       }
       if (statementLength == 3 && getToken(2).tok == Token.string) {
-        String fileName = parameterAsString(2);
+        String fileName = stringParameter(2);
         if (!isSyntaxCheck)
           showString(viewer.getFileAsString(fileName));
         return;
@@ -5449,7 +5493,7 @@ class Eval { //implements Runnable {
         return;
       }
       if (statementLength == 3 && statement[2].tok == Token.string) {
-        String fileName = parameterAsString(2);
+        String fileName = stringParameter(2);
         if (!isSyntaxCheck)
           viewer.showUrl(fileName);
         return;
@@ -5463,19 +5507,16 @@ class Eval { //implements Runnable {
     // not implemented
     case Token.translation:
     case Token.rotation:
-      evalError(GT._("use {0}") + "\"show ORIENTATION\"");
+      unrecognizedShowParameter("show ORIENTATION");
     case Token.chain:
     case Token.group:
     case Token.sequence:
     case Token.residue:
-      evalError(GT._("unrecognized {0} parameter --  use {1}", new Object[] {
-          "SHOW", "\"getProperty CHAININFO\"" }));
+      unrecognizedShowParameter("getProperty CHAININFO (atom expression)");
     case Token.selected:
-      evalError(GT._("unrecognized {0} parameter --  use {1}", new Object[] {
-          "SHOW", "\"getProperty ATOMINFO (selected)\"" }));
+      unrecognizedShowParameter("getProperty ATOMINFO (selected)");
     case Token.atom:
-      evalError(GT._("unrecognized {0} parameter --  use {1}", new Object[] {
-          "SHOW", "\"getProperty ATOMINFO (atom expression)\"" }));
+      unrecognizedShowParameter("getProperty ATOMINFO (atom expression)");
     case Token.identifier:
       if (str.equalsIgnoreCase("historyLevel")) {
         showString("historyLevel " + commandHistoryLevelMax);
@@ -5564,7 +5605,7 @@ class Eval { //implements Runnable {
         propertyName = "thisID";
         break;
       case Token.string:
-        String filename = parameterAsString(i);
+        String filename = stringParameter(i);
         propertyName = "bufferedReader";
         if (filename.equalsIgnoreCase("inline")) {
           if (i + 1 < statementLength && statement[i + 1].tok == Token.string) {
@@ -6496,6 +6537,7 @@ class Eval { //implements Runnable {
       case Token.sasurface:
       case Token.solvent:
         surfaceObjectSeen = true;
+        setShapeProperty(iShape, "bsSolvent", lookupIdentifierValue("solvent"));
         propertyName = (token.tok == Token.sasurface ? "sasurface" : "solvent");
         float radius = (isFloatParameter(i + 1) ? floatParameter(++i) : viewer
             .getSolventProbeRadius());
@@ -6606,11 +6648,11 @@ class Eval { //implements Runnable {
       String s = viewer.removeCommand();
       viewer.addCommand(s + CommandHistory.ERROR_FLAG);
     }
-    throw new ScriptException(message, getLine(), filename, getLinenumber());
+    throw new ScriptException(message);
   }
 
   void evalWarning(String message) {
-    new ScriptException(message, getLine(), filename, getLinenumber());
+    new ScriptException(message);
   }
   
   void unrecognizedCommand() throws ScriptException {
@@ -6712,8 +6754,12 @@ class Eval { //implements Runnable {
     evalError(GT._("invalid argument"));
   }
 
-  void unrecognizedSetParameter() throws ScriptException {
-    evalError(GT._("unrecognized {0} parameter", "SET"));
+  void unrecognizedParameter(String kind, String param) throws ScriptException {
+    evalError(GT._("unrecognized {0} parameter", kind) + ": " + param);
+  }
+  
+  void unrecognizedShowParameter(String use) throws ScriptException {
+    evalError(GT._("unrecognized SHOW parameter --  use {0}", use));
   }
 
   void setspecialShouldNotBeHere() throws ScriptException {
@@ -6743,8 +6789,9 @@ class Eval { //implements Runnable {
     evalError(GT._("bad atom number"));
   }
 
-  void errorLoadingScript(String msg) throws ScriptException {
-    evalError(GT._("error loading script") + " -> " + msg);
+  void errorLoadingScript() throws ScriptException {
+    popContext();
+    evalError(null);
   }
 
   void fileNotFoundException(String filename) throws ScriptException {
@@ -6788,11 +6835,13 @@ class Eval { //implements Runnable {
     evalError(GT._("insufficient arguments"));
   }
 
-  void statementAsString(StringBuffer sb) {
+  String statementAsString() {
+    StringBuffer sb = new StringBuffer();
     for (int i = 0; i < statementLength; ++i) {
       if (iToken == i - 1)
         sb.append(" <<");
-      sb.append(' ');
+      if (i != 0)
+        sb.append(' ');
       if (iToken == i)
         sb.append(">> ");
       Token token = statement[i];
@@ -6834,8 +6883,7 @@ class Eval { //implements Runnable {
       case Token.spec_seqcode_range:
         sb.append(Group.getSeqcodeString(token.intValue));
         sb.append('-');
-        sb.append(Group.getSeqcodeString(((Integer) token.value)
-            .intValue()));
+        sb.append(Group.getSeqcodeString(((Integer) token.value).intValue()));
         break;
       case Token.within:
         sb.append("within ");
@@ -6865,34 +6913,43 @@ class Eval { //implements Runnable {
     }
     if (iToken >= statementLength - 1)
       sb.append(" <<");
+    return sb.toString();
+  }
+
+  String contextTrace() {
+    StringBuffer sb = new StringBuffer();
+    for (;;) {
+      sb.append(setErrorLineMessage(filename, getLinenumber(),
+          statementAsString()));
+      if (scriptLevel > 0)
+        popContext();
+      else
+        break;
+    }
+    return sb.toString();
+  }
+
+  static String setErrorLineMessage(String filename, int lineCurrent, String lineInfo) {
+    String err = "\n----";
+    if (filename != null)
+      err += "line " + lineCurrent + " of file " + filename + ":";
+    err += "\n         " + lineInfo;
+    return err;
   }
   
   class ScriptException extends Exception {
 
     String message;
-    String line;
-    String fileName;
-    int linenumber;
 
-    ScriptException(String message, String line, String filename, int linenumber) {
-      this.message = message;
-      this.line = line;
-      this.fileName = filename;
-      this.linenumber = linenumber;
+    ScriptException(String message) {
+      this.message = (message == null ? "" : message) + contextTrace();
       if (!isSyntaxCheck)
         Logger.error(toString());
     }
 
-    
     public String toString() {
-      StringBuffer sb = new StringBuffer("ScriptException:" + message);
-      if (line != null && linenumber > 1)
-        sb.append("\n    Script line:" + line);
-      if (fileName != null)
-        sb.append("\n           File:" + fileName + " Line number:" + linenumber);
-        sb.append("\n        Command:");
-      statementAsString(sb);
-      return sb.toString();
+      return message;
     }
   }
+    
 }

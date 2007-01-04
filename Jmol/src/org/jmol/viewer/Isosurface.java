@@ -285,7 +285,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   BufferedReader br;
   Hashtable surfaceInfo;
   BitSet bsSelected;
-  BitSet bsIgnore;
+  BitSet bsIgnore, bsSolvent;
   boolean iHaveBitSets;
   boolean iUseBitSets;
 
@@ -356,6 +356,11 @@ class Isosurface extends IsosurfaceMeshCollection {
     if ("ignore" == propertyName) {
       if (!iHaveBitSets)
         bsIgnore = (BitSet) value;
+      return;
+    }
+
+    if ("bsSolvent" == propertyName) {
+        bsSolvent = (BitSet) value;
       return;
     }
 
@@ -653,7 +658,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       case SURFACE_SOLVENT:
         solventExtendedAtomRadius = 0f;
         if (bsIgnore == null)
-          bsIgnore = viewer.getAtomBitSet("(solvent)");
+          bsIgnore = bsSolvent;
         Logger.info("creating solvent-excluded surface with radius "
             + solventRadius);
         break;
@@ -661,7 +666,7 @@ class Isosurface extends IsosurfaceMeshCollection {
         solventExtendedAtomRadius = solventRadius;
         solventRadius = 0f;
         if (bsIgnore == null)
-          bsIgnore = viewer.getAtomBitSet("(solvent)");
+          bsIgnore = bsSolvent;
         Logger.info("creating solvent-accessible surface with radius "
             + solventExtendedAtomRadius);
         break;
@@ -977,6 +982,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     isBicolorMap = isCutoffAbsolute = isPositiveOnly = false;
     precalculateVoxelData = false;
     bsIgnore = null;
+    bsSolvent = null;
     iUseBitSets = false;
     solventExtendedAtomRadius = 0;
     solventAtomRadiusFactor = 1;

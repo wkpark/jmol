@@ -102,6 +102,10 @@ public class Token {
 
   // These are unrelated
   final static int varArgCount       = (1 << 4);
+  final static int maxArg1           = (1 << 4) | 1;
+  final static int maxArg2           = (1 << 4) | 2;
+  final static int maxArg3           = (1 << 4) | 3;
+  final static int maxArg4           = (1 << 4) | 4;
   final static int onDefault1        = (1 << 5) | 1;
   
   // rasmol commands
@@ -183,7 +187,7 @@ public class Token {
   final static int centerAt     = command | 93;
   final static int isosurface   = command | 94 | colorparam | coordOrSet;
   final static int draw         = command | 95 | coordOrSet | colorparam;
-  final static int getproperty  = command | 96;
+  final static int getproperty  = command | 96 | embeddedExpression;
   final static int dipole       = command | 97 | coordOrSet;
   final static int configuration = command | 98;
   final static int mo           = command | 99 | colorparam | negnums;
@@ -477,34 +481,26 @@ public class Token {
   final static Object[] arrayPairs  = {
     // commands
     "backbone",          new Token(backbone,  onDefault1, "backbone"),
-    "background",      new Token(background, varArgCount, "background"),
-    "bond",              new Token(bond,     varArgCount, "bond"),
+    "background",        new Token(background,   maxArg2, "background"),
     "cartoon",           new Token(cartoon,   onDefault1, "cartoon"),
     "cartoons",          null,
     "center",            new Token(center,   varArgCount, "center"),
     "centre",            null,
-    "clipboard",         new Token(clipboard,          0, "clipboard"),
-    "color",             new Token(color,    varArgCount, "color"),
+    "color",             new Token(color,        maxArg4, "color"),
     "colour",            null,
     "connect",           new Token(connect,  varArgCount, "connect"),
-    "data",              new Token(data,     varArgCount, "data"),
+    "data",              new Token(data,         maxArg2, "data"),
     "define",            new Token(define,   varArgCount, "define"),
     "@",                 null,
     "dots",              new Token(dots,     varArgCount, "dots"),
-    "echo",              new Token(echo,     varArgCount, "echo"),
+    "echo",              new Token(echo,         maxArg1, "echo"),
     "exit",              new Token(exit,               0, "exit"),
     "hbond",             new Token(hbond,     onDefault1, "hbond"),
     "hbonds",            null,
-    "help",              new Token(help,     varArgCount, "help"),
+    "help",              new Token(help,         maxArg1, "help"),
     "label",             new Token(label,     onDefault1, "label"),
     "labels",            null,
     "load",              new Token(load,     varArgCount, "load"),
-    "molecule",          new Token(molecule, "molecule"),
-    "molecules",         null,
-    "altloc",            new Token(altloc, "altloc"),
-    "altlocs",           null,
-    "insertion",         new Token(insertion, "insertion"),
-    "insertions",        null,
     "measure",           new Token(monitor,  varArgCount, "measure"),
     "measures",          null,
     "measurement",       null,
@@ -513,66 +509,74 @@ public class Token {
     "monitors",          null,
     "pause",             new Token(pause,              0, "pause"),
     "wait",              null,
-    "print",             new Token(print,              0, "print"),
     "quit",              new Token(quit,               0, "quit"),
     "refresh",           new Token(refresh,            0, "refresh"),
-    "renumber",          new Token(renumber,  onDefault1, "renumber"),
     "reset",             new Token(reset,              0, "reset"),
-    "restore",           new Token(restore,  varArgCount, "restore"),
+    "restore",           new Token(restore,      maxArg3, "restore"),
     "restrict",          new Token(restrict, varArgCount, "restrict"),
     "hide",              new Token(hide,     varArgCount, "hide"),
     "ribbon",            new Token(ribbon,    onDefault1, "ribbon"),
     "ribbons",           null,
     "rotate",            new Token(rotate,   varArgCount, "rotate"),
-    "save",              new Token(save,     varArgCount, "save"),
+    "save",              new Token(save,         maxArg3, "save"),
     "script",            new Token(script,             1, "script"),
     "source",            null,
     "select",            new Token(select,   varArgCount, "select"),
     "set",               new Token(set,      varArgCount, "set"),
-    "show",              new Token(show,     varArgCount, "show"),
+    "show",              new Token(show,         maxArg2, "show"),
     "slab",              new Token(slab,      onDefault1, "slab"),
-    "spacefill",         new Token(spacefill, varArgCount, "spacefill"),
+    "spacefill",         new Token(spacefill,    maxArg2, "spacefill"),
     "cpk",               null,
     "ssbond",            new Token(ssbond,    onDefault1, "ssbond"),
     "ssbonds",           null,
-    "stereo",            new Token(stereo,   varArgCount, "stereo"),
+    "stereo",            new Token(stereo,       maxArg3, "stereo"),
     "strand",            new Token(strands,   onDefault1, "strand"),
     "strands",           null,
-    "structure",         new Token(structure,          0, "structure"),
     "trace",             new Token(trace,     onDefault1, "trace"),
-    "translate",         new Token(translate,varArgCount, "translate"),
-    "unbond",            new Token(unbond,   varArgCount, "unbond"),
+    "translate",         new Token(translate,          2, "translate"),
     "wireframe",         new Token(wireframe, onDefault1, "wireframe"),
-    "write",             new Token(write,    varArgCount, "write"),
+    "write",             new Token(write,        maxArg3, "write"),
     "zap",               new Token(zap,                0, "zap"),
     "zoom",              new Token(zoom,     varArgCount, "zoom"),
     "zoomto",            new Token(zoomTo,   varArgCount, "zoomTo"),
     "initialize",        new Token(initialize,         0, "initialize"),
     // openrasmol commands
     "depth",             new Token(depth,              1, "depth"),
-    "star",              new Token(star,     varArgCount, "star"),
+    "star",              new Token(star,         maxArg2, "star"),
     "stars",             null,
+    
     // chime commands
+
     "delay",             new Token(delay,     onDefault1, "delay"),
     "loop",              new Token(loop,      onDefault1, "loop"),
     "move",              new Token(move,     varArgCount, "move"),
-    "view",              new Token(view,     varArgCount, "view"),
     "spin",              new Token(spin,     varArgCount, "spin"),
-    "list",              new Token(list,     varArgCount, "list"),
-    "display3d",         new Token(display3d,  "display3d"),
-    "animation",         new Token(animation,  "animation"),
     "anim",              null,
     "frame",             new Token(frame,      "frame"),
+    
+    // unimplemented
+    
+    "bond",              new Token(bond, "bond"),
+    "clipboard",         new Token(clipboard, "clipboard"),
+    "print",             new Token(print, "print"),
+    "renumber",          new Token(renumber, "renumber"),
+    "structure",         new Token(structure, "structure"),
+    "unbond",            new Token(unbond, "unbond"),
+    "view",              new Token(view, "view"),
+    "list",              new Token(list, "list"),
+    "display3d",         new Token(display3d,  "display3d"),
+    "animation",         new Token(animation,  "animation"),
+
     // jmol commands
     "centerat",          new Token(centerAt, varArgCount, "centerat"),
-    "font",              new Token(font,       "font"),
-    "hover",             new Token(hover,      "hover"),
-    "vibration",         new Token(vibration,  "vibration"),
-    "vector",            new Token(vector,   varArgCount, "vector"),
+    "font",              new Token(font,     varArgCount, "font"),
+    "hover",             new Token(hover,     onDefault1, "hover"),
+    "vibration",         new Token(vibration,    maxArg2, "vibration"),
+    "vector",            new Token(vector,       maxArg2, "vector"),
     "vectors",           null,
     "meshribbon",        new Token(meshRibbon,onDefault1, "meshribbon"),
     "meshribbons",       null,
-    "halo",              new Token(halo,     varArgCount, "halo"),
+    "halo",              new Token(halo,         maxArg2, "halo"),
     "halos",             null,
     "rocket",            new Token(rocket,    onDefault1, "rocket"),
     "rockets",           null,
@@ -595,7 +599,7 @@ public class Token {
     "conformation",      null,
     "lcaocartoon",       new Token(lcaocartoon,varArgCount, "lcaocartoon"),
     "lcaocartoons",      null,
-    "message",           new Token(message,     varArgCount, "message"),
+    "message",           new Token(message,               1, "message"),
     "if",                new Token(ifcmd,       varArgCount, "if"),
     "else",              new Token(elsecmd,               0, "else"),
     "endif",             new Token(endifcmd,              0, "endif"),
@@ -603,21 +607,8 @@ public class Token {
     "calculate",         new Token(calculate,varArgCount, "calculate"),
     "selectionhalo",     new Token(selectionHalo,     onDefault1, "selectionHalos"),
     "selectionhalos",    null,
-    "history",           new Token(history,     varArgCount, "history"),
+    "history",           new Token(history,         maxArg2, "history"),
     "subset",            new Token(subset,      varArgCount, "subset"),
-
-    // lighting
-    
-    "ambient",          new Token(ambient,      "ambientPercent"),
-    "ambientpercent",   null,
-    "diffuse",          new Token(diffuse,      "diffusePercent"),
-    "diffusepercent",   null,
-    "specular",         new Token(specular,     "specular"),
-    "specularpercent",  new Token(specpercent,  "specularPercent"),
-    "specularpower",    new Token(specpower,    "specularPower"),
-    "specpower",        null,
-    "specularExponent", new Token(specexponent, "specularExponent"),
-
 
     // setparams
     "axes",         new Token(axes, varArgCount,    "axes"),
@@ -665,6 +656,19 @@ public class Token {
     "phi",          new Token(phi,             "phi"),
     "psi",          new Token(psi,             "psi"),
   
+    // lighting
+    
+    "ambient",          new Token(ambient,      "ambientPercent"),
+    "ambientpercent",   null,
+    "diffuse",          new Token(diffuse,      "diffusePercent"),
+    "diffusepercent",   null,
+    "specular",         new Token(specular,     "specular"),
+    "specularpercent",  new Token(specpercent,  "specularPercent"),
+    "specularpower",    new Token(specpower,    "specularPower"),
+    "specpower",        null,
+    "specularExponent", new Token(specexponent, "specularExponent"),
+
+
     // show parameters
     "information",  new Token(information,     "information"),
     "info",         null,
@@ -731,6 +735,12 @@ public class Token {
     "$",            new Token(dollarsign, "$"),
     ":",            new Token(colon, ":"),
     "/",            new Token(slash, "/"),
+    "molecule",          new Token(molecule, "molecule"),
+    "molecules",         null,
+    "altloc",            new Token(altloc, "altloc"),
+    "altlocs",           null,
+    "insertion",         new Token(insertion, "insertion"),
+    "insertions",        null,
     "substructure", new Token(substructure, "substructure"),
     "connected",    new Token(connected, "connected"),
     "atomindex",    new Token(atomIndex, "atomIndex"),
@@ -758,9 +768,9 @@ public class Token {
 
     "dash",         new Token(dash, "dash"),
     "user",         new Token(user, "user"),
-    "atomx",            new Token(atomX, "atomx"),
-    "atomy",            new Token(atomY, "atomy"),
-    "atomz",            new Token(atomZ, "atomz"),
+    "atomx",        new Token(atomX, "atomx"),
+    "atomy",        new Token(atomY, "atomy"),
+    "atomz",        new Token(atomZ, "atomz"),
     "*",            new Token(asterisk, "*"),
     "all",          tokenAll,
     "none",         new Token(none, "none"),

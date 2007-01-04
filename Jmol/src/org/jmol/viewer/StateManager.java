@@ -494,7 +494,7 @@ class StateManager {
       appendCmd(str, "background " + escapeColor(argbBackground));
       str.append(getSpecularState());
       if (stereoState != null)
-        appendCmd(str, "stereo " + stereoState);
+        appendCmd(str, "stereo" + stereoState);
       return str + "\n";
     }
 

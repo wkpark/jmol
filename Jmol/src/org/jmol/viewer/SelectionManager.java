@@ -336,21 +336,23 @@ class SelectionManager {
     }
   }
   
-  BitSet getAtomBitSet(String atomExpression) {
+  BitSet getAtomBitSet(Object atomExpression) {
+    if (atomExpression instanceof BitSet)
+      return (BitSet) atomExpression;
     selectionModeAtoms = true;
-    Eval e = new Eval(viewer);    
+    Eval e = new Eval(viewer);
     BitSet bs = new BitSet();
     try {
-      bs = e.getAtomBitSet(atomExpression);
+      bs = e.getAtomBitSet(atomExpression.toString());
     } catch (Exception ex) {
       Logger.error("SelectionManager.getAtomBitSet " + atomExpression);
-      Logger.error(""+ex);
+      Logger.error("" + ex);
       return bs;
     }
-    return bs;  
+    return bs;
   }
 
-  Vector getAtomBitSetVector(String atomExpression) {
+  Vector getAtomBitSetVector(Object atomExpression) {
     Vector V = new Vector();
     BitSet bs = getAtomBitSet(atomExpression);
     int atomCount = viewer.getAtomCount();

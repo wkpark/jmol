@@ -1090,7 +1090,7 @@ public class Viewer extends JmolViewer {
     selectionManager.addListener(listener);
   }
 
-  BitSet getAtomBitSet(String atomExpression) {
+  BitSet getAtomBitSet(Object atomExpression) {
     return selectionManager.getAtomBitSet(atomExpression);
   }
 
@@ -1102,7 +1102,7 @@ public class Viewer extends JmolViewer {
     return modelManager.getAtomSetCenter(bs);
   }
 
-  Vector getAtomBitSetVector(String atomExpression) {
+  Vector getAtomBitSetVector(Object atomExpression) {
     return selectionManager.getAtomBitSetVector(atomExpression);
   }
 
@@ -1877,27 +1877,27 @@ public class Viewer extends JmolViewer {
     return modelManager.getShapeIdFromObjectName(objectName);
   }
 
-  Vector getAllAtomInfo(String atomExpression) {
+  Vector getAllAtomInfo(Object atomExpression) {
     BitSet bs = getAtomBitSet(atomExpression);
     return modelManager.getAllAtomInfo(bs);
   }
 
-  Vector getAllBondInfo(String atomExpression) {
+  Vector getAllBondInfo(Object atomExpression) {
     BitSet bs = getAtomBitSet(atomExpression);
     return modelManager.getAllBondInfo(bs);
   }
 
-  Vector getMoleculeInfo(String atomExpression) {
+  Vector getMoleculeInfo(Object atomExpression) {
     BitSet bs = getAtomBitSet(atomExpression);
     return modelManager.getMoleculeInfo(bs);
   }
 
-  public Hashtable getAllChainInfo(String atomExpression) {
+  public Hashtable getAllChainInfo(Object atomExpression) {
     BitSet bs = getAtomBitSet(atomExpression);
     return modelManager.getAllChainInfo(bs);
   }
 
-  public Hashtable getAllPolymerInfo(String atomExpression) {
+  public Hashtable getAllPolymerInfo(Object atomExpression) {
     BitSet bs = getAtomBitSet(atomExpression);
     return modelManager.getAllPolymerInfo(bs);
   }
@@ -2649,6 +2649,8 @@ public class Viewer extends JmolViewer {
       statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
       if (isScriptFile && writeInfo != null)
         createImage(writeInfo);
+    } else {
+      scriptStatus(strErrorMessage);
     }
     if (checkScriptOnly)
       Logger.info((strErrorMessage == null ? "--script check ok"
@@ -2673,6 +2675,7 @@ public class Viewer extends JmolViewer {
       return null;
     checking = true;
     Object obj = eval.checkScriptSilent(strScript);
+    checking = false;
     if (obj instanceof String)
       return (String) obj;
     return null;
@@ -4497,12 +4500,17 @@ public class Viewer extends JmolViewer {
   // /////////////// getProperty /////////////
 
   public Object getProperty(String returnType, String infoType, String paramInfo) {
+    return getProperty(returnType, infoType, (Object) paramInfo);
+  }
+
+  public Object getProperty(String returnType, String infoType, Object paramInfo) {
+    // accepts a BitSet paramInfo
     // return types include "JSON", "string", "readable", and anything else returns the Java object.
     return propertyManager.getProperty(returnType, infoType, paramInfo);
   }
 
-  String getModelExtract(String atomExpression) {
-    BitSet bs = selectionManager.getAtomBitSet(atomExpression);
+  String getModelExtract(Object atomExpression) {
+    BitSet bs = getAtomBitSet(atomExpression);
     return fileManager.getFullPathName() + "\nJmol version " + getJmolVersion()
         + "\nEXTRACT: " + atomExpression + "\n"
         + modelManager.getModelExtract(bs);

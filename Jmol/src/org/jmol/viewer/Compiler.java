@@ -26,6 +26,7 @@ package org.jmol.viewer;
 import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.i18n.GT;
 
 import java.util.Vector;
 import java.util.BitSet;
@@ -70,27 +71,18 @@ class Compiler {
     return script;
   }
   
-  boolean compile(String filename, String script, boolean isPredefining, boolean isSilent) {
+  boolean compile(String filename, String script, boolean isPredefining,
+                  boolean isSilent) {
     this.filename = filename;
     this.isSilent = isSilent;
     this.script = cleanScriptComments(script);
-    logMessages = (!isSilent && !isPredefining && Logger.isActiveLevel(Logger.LEVEL_DEBUG));
+    logMessages = (!isSilent && !isPredefining && Logger
+        .isActiveLevel(Logger.LEVEL_DEBUG));
     lineNumbers = lineIndices = null;
     aatokenCompiled = null;
     errorMessage = errorLine = null;
     preDefining = (filename == "#predefine");
-    if (compile0())
-      return true;
-    int icharEnd;
-    if ((icharEnd = script.indexOf('\r', ichCurrentCommand)) == -1
-        && (icharEnd = script.indexOf('\n', ichCurrentCommand)) == -1)
-      icharEnd = script.length();
-    errorLine = script.substring(ichCurrentCommand, icharEnd);
-    if (ichToken < errorLine.length())
-      errorLine = errorLine.substring(0, ichToken) + " >>>> " + errorLine.substring(ichToken);
-    else
-      errorLine += " <<<<";
-    return false;
+    return (compile0() ? true : handleError());
   }
 
   short[] getLineNumbers() {
@@ -103,17 +95,6 @@ class Compiler {
 
   Token[][] getAatokenCompiled() {
     return aatokenCompiled;
-  }
-
-  String getErrorMessage() {
-    String strError = errorMessage;
-    strError += " : " + errorLine + "\n";
-    if (filename != null)
-      strError += filename;
-    strError += " line#" + lineCurrent;
-    if (!isSilent)
-      viewer.addCommand(errorLine + CommandHistory.ERROR_FLAG);
-    return strError;
   }
 
   int cchScript;
@@ -290,7 +271,7 @@ class Compiler {
           //tokenCommand = token;
           tokCommand = tok;
           if ((tokCommand & Token.command) == 0)
-            return commandExpected(script.substring(ichCurrentCommand));
+            return commandExpected();
           break;
         case Token.set:
           if (ltoken.size() == 1) {
@@ -301,7 +282,7 @@ class Compiler {
               break;
             }
             if ((tok & Token.setparam) == 0 && tok != Token.identifier)
-              return cannotSet(ident);
+              return unrecognizedParameter("SET", ident);
           }
           break;
         case Token.define:
@@ -774,130 +755,6 @@ class Compiler {
     return true;
   }
 
-  private boolean commandExpected() {
-    return compileError("command expected");
-  }
-
-  private boolean commandExpected(String cmd) {
-    int i = cmd.indexOf(" ");
-    if (i < 0)
-      i = cmd.length();
-    return compileError("command expected: " + cmd.substring(0, i));
-  }
-
-  private boolean cannotSet(String ident) {
-    return compileError("cannot SET: " + ident);
-  }
-
-  private boolean invalidExpressionToken(String ident) {
-    return compileError("invalid expression token: " + ident);
-  }
-
-  private boolean unrecognizedToken(String ident) {
-    return compileError("unrecognized token: " + ident);
-  }
-
-  private boolean badArgumentCount() {
-    return compileError("bad argument count");
-  }
-
-  private boolean endOfExpressionExpected() {
-    return compileError("end of expression expected");
-  }
-
-  private boolean leftParenthesisExpected() {
-    return compileError("left parenthesis expected");
-  }
-
-  private boolean rightParenthesisExpected() {
-    return compileError("right parenthesis expected");
-  }
-
-  private boolean coordinateExpected() {
-    return compileError("{number, number, number} expected");
-  }
-
-  private boolean commaExpected() {
-    return compileError("comma expected");
-  }
-
-  private boolean commaOrCloseExpected() {
-    return compileError("comma or right parenthesis expected");
-  }
-
-  private boolean stringExpected() {
-    return compileError("double-quoted string expected");
-  }
-
-  private boolean unrecognizedExpressionToken() {
-    return compileError("unrecognized expression token:" + valuePeek());
-  }
-
-  /*
-   private boolean integerExpectedAfterHyphen() {
-   return compileError("integer expected after hyphen");
-   }
-   */
-  private boolean comparisonOperatorExpected() {
-    return compileError("comparison operator expected");
-  }
-
-  private boolean equalSignExpected() {
-    return compileError("equal sign expected");
-  }
-
-  private boolean nonnegativeIntegerExpected() {
-    return compileError("nonnegative integer expected");
-  }
-
-  private boolean numberExpected() {
-    return compileError("number expected");
-  }
-
-  private boolean numberOrKeywordExpected() {
-    return compileError("number or keyword expected");
-  }
-
-  private boolean badRGBColor() {
-    return compileError("bad [R,G,B] color");
-  }
-
-  private boolean identifierOrResidueSpecificationExpected() {
-    return compileError("identifier or residue specification expected");
-  }
-
-  private boolean residueSpecificationExpected() {
-    return compileError("residue specification (ALA, AL?, A*) expected");
-  }
-
-  /*
-   private boolean resnumSpecificationExpected() {
-   return compileError("residue number specification expected");
-   }
-   private boolean invalidResidueNameSpecification(String strResName) {
-   return compileError("invalid residue name specification:" + strResName);
-   }
-   */
-  private boolean invalidChainSpecification() {
-    return compileError("invalid chain specification");
-  }
-
-  private boolean invalidModelSpecification() {
-    return compileError("invalid model specification");
-  }
-
-  private boolean invalidAtomSpecification() {
-    return compileError("invalid atom specification");
-  }
-
-  private boolean compileError(String errorMessage) {
-    if (!isSilent)
-      Logger.error("compileError(" + errorMessage + ")");
-    error = true;
-    this.errorMessage = errorMessage;
-    return false;
-  }
-
   private boolean compileCommand(Vector ltoken) {
     Token tokenCommand = (Token) ltoken.firstElement();
     //Logger.debug(tokenCommand + script);
@@ -906,34 +763,42 @@ class Compiler {
     if ((tokenCommand.intValue & Token.onDefault1) == Token.onDefault1
         && size == 1)
       ltoken.addElement(Token.tokenOn);
-    if (tokCommand == Token.set) {
-      if (size < 2)
-        return badArgumentCount();
-      /*
-       * miguel 2005 01 01 - setDefaultOn is not used
-       if (size == 2 &&
-       (((Token)ltoken.elementAt(1)).tok & Token.setDefaultOn) != 0)
-       ltoken.addElement(Token.tokenOn);
-       */
-    }
     atokenCommand = new Token[ltoken.size()];
     ltoken.copyInto(atokenCommand);
-    int tok = (size == 1 ? Token.nada : atokenCommand[1].tok);
     if (logMessages) {
       for (int i = 0; i < atokenCommand.length; i++)
         Logger.debug(i + ": " + atokenCommand[i]);
     }
+
+    //compile color parameters
+
     if ((tokCommand & Token.colorparam) != 0 && !compileColorParam())
       return false;
-    if ((tok == Token.leftbrace || tok == Token.dollarsign)
-        && ((tokCommand & Token.coordOrSet) != Token.coordOrSet))
-      return true; // $ or { at beginning disallow expression checking for center command
-    if ((tokCommand & (Token.expressionCommand | Token.embeddedExpression)) != 0
-        && !compileExpression())
+
+    //compile expressions
+
+    boolean checkExpression = ((tokCommand & (Token.expressionCommand | Token.embeddedExpression)) != 0);
+    if ((tokCommand & Token.coordOrSet) != Token.coordOrSet) {
+      // $ or { at beginning disallow expression checking for center command
+      int firstTok = (size == 1 ? Token.nada : atokenCommand[1].tok);
+      if ((firstTok == Token.leftbrace || firstTok == Token.dollarsign))
+        checkExpression = false;
+    }
+    if (checkExpression && !compileExpression())
       return false;
-    if ((tokenCommand.intValue & Token.varArgCount) == 0
-        && (tokenCommand.intValue & 0x0F) + 1 != atokenCommand.length)
+
+    //check statement length
+
+    int allowedLen = (tokenCommand.intValue & 0x0F) + 1;
+    if ((tokenCommand.intValue & Token.varArgCount) == 0) {
+      if (size > allowedLen)
+        return badArgumentCount();
+      if (size < allowedLen)
+        return endOfCommandUnexpected();
+    } else if (allowedLen > 1 && size > allowedLen) {
+      // max2, max3, max4, etc.
       return badArgumentCount();
+    }
     return true;
   }
 
@@ -1188,6 +1053,8 @@ class Compiler {
   boolean clausePrimitive() {
     int tok = tokPeek();
     switch (tok) {
+    case Token.nada:
+      return endOfCommandUnexpected();
     case Token.bonds:
     case Token.monitor:
       return clauseSpecial(tok);
@@ -1387,7 +1254,7 @@ class Compiler {
       return leftParenthesisExpected();
     Object distance = null;
     if (getToken() == null)
-      return numberOrKeywordExpected();
+      return endOfCommandUnexpected();
     switch (theToken.tok) {
     case Token.integer:
       distance = new Float(theToken.intValue * 4 / 1000f);
@@ -1403,7 +1270,7 @@ class Compiler {
       distance = theToken.value; // really "group" "chain" etc.
       break;
     default:
-      return numberOrKeywordExpected();
+      return unrecognizedParameter("WITHIN", "" + theToken.value);
     }
     if (!tokenNext(Token.opOr)) // ,
       return commaExpected();
@@ -1807,5 +1674,140 @@ class Compiler {
       }
     }
     return badRGBColor();
+  }
+  
+  /// error handling
+  
+  private boolean commandExpected() {
+    return compileError(GT._("command expected"));
+  }
+
+  private boolean invalidExpressionToken(String ident) {
+    return compileError(GT._("invalid expression token: {0}", ident));
+  }
+
+  private boolean unrecognizedToken(String ident) {
+    return compileError(GT._("unrecognized token: {0}", ident));
+  }
+
+  private boolean endOfCommandUnexpected() {
+    return compileError(GT._("unexpected end of script command"));
+  }
+
+  private boolean badArgumentCount() {
+    return compileError(GT._("bad argument count"));
+  }
+
+  private boolean endOfExpressionExpected() {
+    return compileError(GT._("end of expression expected"));
+  }
+
+  private boolean leftParenthesisExpected() {
+    return compileError(GT._("left parenthesis expected"));
+  }
+
+  private boolean rightParenthesisExpected() {
+    return compileError(GT._("right parenthesis expected"));
+  }
+
+  private boolean coordinateExpected() {
+    return compileError(GT._("{ number number number } expected"));
+  }
+
+  private boolean commaExpected() {
+    return compileError(GT._("comma expected"));
+  }
+
+  private boolean commaOrCloseExpected() {
+    return compileError(GT._("comma or right parenthesis expected"));
+  }
+
+  private boolean stringExpected() {
+    return compileError(GT._("quoted string expected"));
+  }
+
+  private boolean unrecognizedExpressionToken() {
+    return compileError(GT._("unrecognized expression token: {0}", "" + valuePeek()));
+  }
+
+  private boolean comparisonOperatorExpected() {
+    return compileError(GT._("comparison operator expected"));
+  }
+
+  private boolean equalSignExpected() {
+    return compileError(GT._("equal sign expected"));
+  }
+
+  private boolean nonnegativeIntegerExpected() {
+    return compileError(GT._("nonnegative integer expected"));
+  }
+
+  private boolean numberExpected() {
+    return compileError(GT._("number expected"));
+  }
+
+  private boolean unrecognizedParameter(String kind, String param) {
+    return compileError(GT._("unrecognized {0} parameter", kind) + ": " + param);
+  }
+  
+  private boolean badRGBColor() {
+    return compileError(GT._("bad [R,G,B] color"));
+  }
+
+  private boolean identifierOrResidueSpecificationExpected() {
+    return compileError(GT._("identifier or residue specification expected"));
+  }
+
+  private boolean residueSpecificationExpected() {
+    return compileError(GT._("residue specification (ALA, AL?, A*) expected"));
+  }
+
+  /*
+   private boolean resnumSpecificationExpected() {
+   return compileError("residue number specification expected");
+   }
+   private boolean invalidResidueNameSpecification(String strResName) {
+   return compileError("invalid residue name specification:" + strResName);
+   }
+   */
+  private boolean invalidChainSpecification() {
+    return compileError(GT._("invalid chain specification"));
+  }
+
+  private boolean invalidModelSpecification() {
+    return compileError(GT._("invalid model specification"));
+  }
+
+  private boolean invalidAtomSpecification() {
+    return compileError(GT._("invalid atom specification"));
+  }
+
+  private boolean compileError(String errorMessage) {
+    error = true;
+    this.errorMessage = errorMessage;
+    return false;
+  }
+
+  String getErrorMessage() {
+    return errorMessage;
+  }
+  
+  boolean handleError() {
+    int icharEnd;
+    if ((icharEnd = script.indexOf('\r', ichCurrentCommand)) == -1
+        && (icharEnd = script.indexOf('\n', ichCurrentCommand)) == -1)
+      icharEnd = script.length();
+    errorLine = script.substring(ichCurrentCommand, icharEnd);
+    if (!isSilent) {
+      Logger.error("compileError(" + errorMessage + ")");
+      viewer.addCommand(errorLine + CommandHistory.ERROR_FLAG);
+    }
+    String lineInfo = (ichToken < errorLine.length() ? errorLine.substring(0,
+        ichToken)
+        + " >>>> " + errorLine.substring(ichToken) : errorLine)
+        + " <<<<";
+    errorMessage = "script compiler ERROR: " + errorMessage
+        + Eval.setErrorLineMessage(filename, lineCurrent, lineInfo);
+    return false;
   }
 }

@@ -86,6 +86,10 @@ class Compiler {
         && (icharEnd = script.indexOf('\n', ichCurrentCommand)) == -1)
       icharEnd = script.length();
     errorLine = script.substring(ichCurrentCommand, icharEnd);
+    if (ichToken < errorLine.length())
+      errorLine = errorLine.substring(0, ichToken) + " >>>> " + errorLine.substring(ichToken);
+    else
+      errorLine += " <<<<";
     return false;
   }
 

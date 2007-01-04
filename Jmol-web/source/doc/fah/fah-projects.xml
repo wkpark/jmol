@@ -4641,6 +4641,9 @@
   <fah_proj number="2904" name="p2904_BBA5" public="y" file="y"
     server="171.65.103.163" atoms="12200" preferred="26" deadline="38"
     credit="132" frames="100" code="GT" contact="huangx" contrib="MichaelB"/>
+  <fah_proj number="2905" name="p2905_GCAA_TETRALOOP_HAIRPIN_SREM" public="n"
+    server="171.65.103.163" atoms="12229" preferred="63" deadline="93"
+    credit="333" frames="100" code="GT" contact="huangx"/>
 
   <!-- Projects 3000 to 3099 -->
   <fah_proj number="3000" name="p3000_SMP-supervillin-beta1" public="n" file="y"
@@ -4683,19 +4686,19 @@
     server="171.64.65.56" atoms="9684" preferred="1" deadline="2"
     credit="587" frames="100" code="GS" contact="densign" contrib="dreederocuk"/>
   <fah_proj number="3022" name="p3022_SMP-msv-2003" public="y" file="y"
-    server="171.64.65.63" atoms="9684" preferred="1" deadline="2"
+    server="171.64.65.63" atoms="9684" preferred="0.75" deadline="1.5"
     credit="658" frames="100" code="GS" contact="densign" contrib="Ivoshiee"/>
   <fah_proj number="3023" name="p3023_SMP-water-box" public="y" file="y"
     server="171.64.65.56" atoms="9642" preferred="1" deadline="2"
     credit="587" frames="100" code="GS" contact="densign" contrib="dreederocuk"/>
   <fah_proj number="3024" name="p3024_SMP-msv-2003" public="y" file="y"
-    server="171.64.65.63" atoms="9684" preferred="1" deadline="2"
+    server="171.64.65.63" atoms="9684" preferred="0.75" deadline="1.5"
     credit="652" frames="100" code="GS" contact="densign" contrib="dreederocuk"/>
   <fah_proj number="3025" name="p3025_SMP-nsv-03" public="y" file="y"
     server="171.64.65.56" atoms="9684" preferred="1" deadline="2"
     credit="587" frames="100" code="GS" contact="densign" contrib="dreederocuk"/>
   <fah_proj number="3026" name="p3026_SMP-msv-2003" public="y" file="y"
-    server="171.64.65.63" atoms="9684" preferred="1" deadline="2"
+    server="171.64.65.63" atoms="9684" preferred="0.75" deadline="1.5"
     credit="691" frames="100" code="GS" contact="densign" contrib="dreederocuk"/>
   <fah_proj number="3027" name="p3027_SMP-nsv-03" public="y" file="y"
     server="171.64.65.56" atoms="9684" preferred="1" deadline="2"

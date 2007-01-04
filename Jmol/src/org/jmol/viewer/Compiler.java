@@ -763,6 +763,7 @@ class Compiler {
     if ((tokenCommand.intValue & Token.onDefault1) == Token.onDefault1
         && size == 1)
       ltoken.addElement(Token.tokenOn);
+
     atokenCommand = new Token[ltoken.size()];
     ltoken.copyInto(atokenCommand);
     if (logMessages) {
@@ -788,6 +789,8 @@ class Compiler {
       return false;
 
     //check statement length
+
+    size = atokenCommand.length;
 
     int allowedLen = (tokenCommand.intValue & 0x0F) + 1;
     if ((tokenCommand.intValue & Token.varArgCount) == 0) {

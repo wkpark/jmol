@@ -39,6 +39,12 @@ public class Token {
     this.tok = tok;
     this.intValue = intValue;
     this.value = value;
+/*
+    if ((intValue & varArgCount) == 0 && (tok & command) != 0) {
+      if ((tok & expressionCommand) != 0)
+        System.out.println("ERROR for " + (tok & 127));
+    }
+*/    
   }
 
   Token(int tok, int intValue) {

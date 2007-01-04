@@ -67,6 +67,7 @@ class Cylinder3D {
 
   int sampleCount;
   boolean notClipped;
+  private boolean drawBackside;
 
   private int zShift;
 
@@ -87,7 +88,6 @@ class Cylinder3D {
     dxB = xB - xA;
     dyB = yB - yA;
     dzB = zB - zA;
-    
     zShift = g3d.getZShift((zA + zB) >> 1); 
 
     if (diameter <= 1) {
@@ -96,6 +96,7 @@ class Cylinder3D {
           .isColixTranslucent(colixB), xA, yA, zA, dxB, dyB, dzB, notClipped);
       return;
     }
+    drawBackside = (!notClipped || endcaps == Graphics3D.ENDCAPS_FLAT);
     this.diameter = diameter;
     this.xA = xA;
     this.yA = yA;
@@ -150,6 +151,7 @@ class Cylinder3D {
       this.yAf = yA;
       this.zAf = zA;
     }
+    drawBackside = (!notClipped || endcaps == Graphics3D.ENDCAPS_FLAT);
     this.xA = (int) xAf;
     this.yA = (int) yAf;
     this.zA = (int) zAf;
@@ -180,6 +182,7 @@ class Cylinder3D {
 
   private void plotRasterBits(int i) {
     int fpz = fp8IntensityUp[i] >> (8 + zShift);
+    int fpzBack = fpz >> 1;
     int x = xRaster[i];
     int y = yRaster[i];
     int z = zRaster[i];
@@ -198,8 +201,8 @@ class Cylinder3D {
     }
     line3d.plotLineDeltaBits(shadesA, isScreenedA, shadesB, isScreenedB,
         fpz, xA + x, yA + y, zA - z, dxB, dyB, dzB, notClipped);
-    if (endcaps == Graphics3D.ENDCAPS_OPEN) {
-      line3d.plotLineDelta(shadesA[0], isScreenedA, shadesB[0], isScreenedB, xA
+    if (drawBackside) {
+      line3d.plotLineDelta(shadesA[fpzBack], isScreenedA, shadesB[fpzBack], isScreenedB, xA
           - x, yA - y, zA + z, dxB, dyB, dzB, notClipped);
     }
   }
@@ -417,6 +420,7 @@ class Cylinder3D {
 
   private void plotRaster(int i) {
     int fpz = fp8IntensityUp[i] >> (8 + zShift);
+    int fpzBack = fpz >> 1;
     int x = xRaster[i];
     int y = yRaster[i];
     int z = zRaster[i];
@@ -435,8 +439,8 @@ class Cylinder3D {
     }
     line3d.plotLineDelta(shadesA, isScreenedA, shadesB, isScreenedB,
         fpz, xA + x, yA + y, zA - z, dxB, dyB, dzB, notClipped);
-    if (endcaps == Graphics3D.ENDCAPS_OPEN) {
-      line3d.plotLineDelta(shadesA[0], isScreenedA, shadesB[0], isScreenedB, xA
+    if (drawBackside) {
+      line3d.plotLineDelta(shadesA[fpzBack], isScreenedA, shadesB[fpzBack], isScreenedB, xA
           - x, yA - y, zA + z, dxB, dyB, dzB, notClipped);
     }
   }

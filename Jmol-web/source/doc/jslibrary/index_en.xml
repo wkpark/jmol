@@ -207,7 +207,11 @@
 	    informative textarea will show instead, if you 
 	    place "?NOAPPLET" (uppercase) 
 	    at the end of the URL in the browser. 
+		<br/>
 	    This can be used for testing the action of buttons and other controls.
+		They still work, but instead of effecting script commands, they display
+		in the textarea the command that would have been sent to the applet if the
+		applet had been there.
 	  </i>
 				</p>
 			</section>
@@ -223,6 +227,10 @@
 	  will default to jmolButton0, jmolButton1, etc. 
 	</p>
 				<p>
+	If the page contains several Jmol applets, commands in the <code>script</code> will be applied to
+	the immediately previous applet, or to that specified by a previous <code>jmolSetTarget</code> command.
+	</p>
+				<p>
 					<i>
 	  Advanced: 
 	  In addition, the button will be included in a <code>&lt;span&gt;</code> 
@@ -235,22 +243,59 @@
 	  </i>
 				</p>
 			</section>
+			<section title="jmolLink">
+				<code>jmolLink(script, {text}, {id}, {title})</code>
+				<p>
+					<code>text</code> is written to the page as a link. If it is
+	  not specified, it defaults to the first 32 characters of <code>script</code>. 
+	<code>script</code> is run when the user clicks on the link.
+	</p>
+				<p>
+					<code>id</code> will be set as both the HTML id and HTML name. It
+	  will default to jmolLink0, jmolLink1, etc. 
+	</p>
+				<p>
+	If the page contains several Jmol applets, commands in the <code>script</code> will be applied to
+	the immediately previous applet, or to that specified by a previous <code>jmolSetTarget</code> command.
+	</p>
+				<p>
+					<i>
+	  Advanced: 
+	  In addition, the link text will be included in a <code>&lt;span&gt;</code> 
+	  element that will have 
+	  an HTML id of "span_" plus the given <code>id</code>, 
+	  and an HTML title of the given <code>title</code>.
+	  <br/>
+	  Browsers will hence show <code>title</code> as a tooltip when mouse pointer 
+	  stays over the link. 
+	  </i>
+				</p>
+			</section>
 			<section title="jmolCheckbox">
 				<code>
 	  jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
 	  labelHtml, {isChecked}, {id}, {title})
 	</code>
 				<p>
-	  Displays a checkbox. <code>scriptWhenChecked</code> is run when
-	  the checkbox is checked by the user. <code>scriptWhenUnchecked</code>
-	  is run when the user unchecks the checkbox. <code>labelHtml</code> is
-	  placed immediately after the checkbox. <code>isChecked</code> should
+	  Displays a checkbox, followed immediately by <code>labelHtml</code>.
+	<br/>
+					<code>scriptWhenChecked</code> is run when
+	  the checkbox is checked by the user. 
+	<br/>
+					<code>scriptWhenUnchecked</code>
+	  is run when the user unchecks the checkbox. 
+	<br/>
+					<code>isChecked</code> should
 	  be set to a non-false value if you want the checkbox to be checked 
 	  upon page loading.
 	</p>
 				<p>
 					<code>id</code> will be set as both the HTML id and HTML name. It
 	  will default to jmolCheckbox0, jmolCheckbox1, etc. 
+	</p>
+				<p>
+	If the page contains several Jmol applets, commands in the <code>scripts</code> will be applied to
+	the immediately previous applet, or to that specified by a previous <code>jmolSetTarget</code> command.
 	</p>
 				<p>
 					<i>
@@ -293,6 +338,10 @@
 	  jmolRadioGroup1, etc. 
 	</p>
 				<p>
+	If the page contains several Jmol applets, commands in the scripts will be applied to
+	the immediately previous applet, or to that specified by a previous <code>jmolSetTarget</code> command.
+	</p>
+				<p>
 					<i>
 	  Advanced:
 	  The whole group of radio buttons will be included in a <code>&lt;span&gt;</code> 
@@ -302,29 +351,6 @@
 	  as its HTML id "span_" plus the group's id plus an underscore plus 
 	  a sequential number (starting at zero),
 	  and as its HTML title, the common <code>title</code>.
-	  </i>
-				</p>
-			</section>
-			<section title="jmolLink">
-				<code>jmolLink(script, text, {id}, {title})</code>
-				<p>
-					<code>text</code> is written as a link. <code>script</code> is run
-	  when the user clicks on the link.
-	</p>
-				<p>
-					<code>id</code> will be set as both the HTML id and HTML name. It
-	  will default to jmolLink0, jmolLink1, etc. 
-	</p>
-				<p>
-					<i>
-	  Advanced: 
-	  In addition, the link text will be included in a <code>&lt;span&gt;</code> 
-	  element that will have 
-	  an HTML id of "span_" plus the given <code>id</code>, 
-	  and an HTML title of the given <code>title</code>.
-	  <br/>
-	  Browsers will hence show <code>title</code> as a tooltip when mouse pointer 
-	  stays over the link. 
 	  </i>
 				</p>
 			</section>
@@ -353,6 +379,10 @@
 	  will default to jmolMenu0, jmolMenu1, etc. 
 	</p>
 				<p>
+	If the page contains several Jmol applets, commands in the scripts will be applied to
+	the immediately previous applet, or to that specified by a previous <code>jmolSetTarget</code> command.
+	</p>
+				<p>
 					<i>
 	  Advanced: 
 	  In addition, the menu will be included in a <code>&lt;span&gt;</code> 
@@ -371,31 +401,38 @@
 				<code>
 	  jmolSetAppletColor(boxbgcolor, {boxfgcolor}, {progresscolor})
 	</code>
+				<p>
 	Used to set the background color of the applet. Colors are
-	specified using HTML "#RRGGBB" notation or as one of the 
+	specified using HTML "#RRGGBB" notation (Red, Green, Blue, hexadecimal values) or as one of the 
 	<a href="http://www.mywebsite.force9.co.uk/web-colors/color-guide.htm" target="colors140">
-	  140 JavaScript color names
-	</a>.
-	<p>
+	  140 JavaScript color names</a>.
+	</p>
+				<p>This command must be issued before <code>jmolApplet</code>.
+	</p>
+				<p>
 					<i>Advanced: The text color and progress bar
 	  color for the Java Plug-in can optionally be set.</i>
 				</p>
 			</section>
 			<section title="jmolHtml">
-				<code>jmolHtml(html)</code>
+				<code>jmolHtml(htmlText)</code>
 				<p>
 	  Allows you to pass arbitrary text, possibly containing html tags,
-	  directly to the page ... sometimes this is more convenient than
+	  directly to the page; sometimes this is more convenient than
 	  closing and reopening the <code>script</code> tags. The effect is
 	  exactly the same as:<br/>
-					<code>&lt;/script&gt;<i>html</i>&lt;script&gt;</code>
+					<code>&lt;/script&gt;<i>htmlText</i>&lt;script&gt;</code>
+					<br/>or
+				<code>document.write(<i>htmlText</i>)</code>
 				</p>
 			</section>
 			<section title="jmolBr">
 				<code>jmolBr()</code>
 				<p>
-	  The same as <code>jmolHtml("&lt;br /&gt;")</code> which is the
-	  same as <code>&lt;/script&gt;&lt;br /&gt;&lt;script&gt;</code>
+	  Inserts a newline break into the page. It is equivalent to 
+	<br/><code>jmolHtml("&lt;br /&gt;")</code>, or
+	<br/><code>&lt;/script&gt;&lt;br /&gt;&lt;script&gt;</code>, or
+	<br/><code>document.write("&lt;br /&gt;")</code>.
 				</p>
 			</section>
 			<section title="jmolScript">
@@ -403,70 +440,138 @@
 				<p>
 	  Use this if you want to construct your own UI controls or to
 	  execute <code>script</code> based upon JavaScript events.
-	  The UI controls above are essentially implemented using
-	  this <code>jmolScript</code> function.
+	<br/>
+	  (This <code>jmolScript</code> function is used internally to
+	implement the UI controls above.)
 	</p>
 				<p>
 	  When more than one JmolApplet is being displayed,
-	  <code>targetSuffix</code> is used to identify a particular
-	  instance. Default <code>targetSuffix</code> is "0".
+	  <code>targetSuffix</code> is used to specify on which one the 
+	script will be applied. Default <code>targetSuffix</code> is "0".
+	<br/><i>Special case:</i> if "all" is used for <code>targetSuffix</code>,
+	the <code>script</code> will be applied to all JmolApplets present.
 	</p>
 			</section>
 			<section title="jmolScriptWait">
 				<code>jmolScriptWait(script, {targetSuffix})</code>
 				<p>
-	  (...needs documentation)
-	</p>
+	  This function adds two improvements over <code>jmolScript</code>:
+	<br/>1) it waits until the script has completed running before returning control (thus stopping 
+	javascript from continuing with other tasks)
+	<br/>2) if assigned to a variable, it returns in that variable status messages that can be used to detect errors
+	or diagnose problems.
+				</p>
+				<p>
+					<i>Examples: 
+	<ul>
+							<li><code>result = jmolScriptWait("load myFile.mol")	</code>
+		loads the model and puts into the "result" variable a string with the status messages, 
+		which for example contains, among other things, "FileNotFoundException" 
+		if <code>myFile.mol</code> file is not found.
+		</li>
+							<li><code>result = jmolScriptWait("show orientation")</code>
+		puts into the "result" variable the instructions needed to restore the current orientation 
+		(although the returned string may need parsing to be useful as a command).
+		</li>
+						</ul>
+					</i>
+				</p>
+				<p>See also <code>jmolScriptWaitAsArray</code>, below.</p>
 				<p>
 	  When more than one JmolApplet is being displayed,
-	  <code>targetSuffix</code> is used to identify a particular
-	  instance. Default <code>targetSuffix</code> is "0".
+	  <code>targetSuffix</code> is used to specify on which one the 
+	script will be applied. Default <code>targetSuffix</code> is "0".
 	</p>
 			</section>
 			<section title="jmolScriptWaitAsArray">
-				<code>jmolScriptWaitAsArray(script, targetSuffix)</code>
+				<code>jmolScriptWaitAsArray(script, {targetSuffix})</code>
 				<p>
-	  (...needs documentation)
-	</p>
+	  This function adds two improvements over <code>jmolScript</code>:
+	<br/>1) it waits until the script has completed running before returning control (thus stopping 
+	javascript from continuing with other tasks)
+	<br/>2) if assigned to a variable, it returns in that variable an array of status messages that can be used to detect errors or diagnose problems.
+				</p>
+				<p>
+					<i>See also <code>jmolScriptWait</code> above, 
+	which returns a single text string instead of an array.
+	(Actually, it works by calling <code>jmolScriptWaitAsArray</code> 
+	and concatenating its array elements with newline characters.)</i>
+				</p>
 				<p>
 	  When more than one JmolApplet is being displayed,
-	  <code>targetSuffix</code> is used to identify a particular
-	  instance. Default <code>targetSuffix</code> is "0".
+	  <code>targetSuffix</code> is used to specify on which one the 
+	script will be applied. Default <code>targetSuffix</code> is "0".
 	</p>
+			</section>
+			<section title="jmolCommandInput">
+				<code>jmolCommandInput({label}, {size}, {id}, {title})</code>
+				<p>
+	  Displays an empty one-line textbox followed by a button labeled with text <code>label</code>. 
+	When the user presses the button, any script written in the textbox will be executed on the applet.
+	(Thus, this gives a sort of command-line console.)
+	<br/>If no <code>label</code> is given, "Execute" will be used by default. 
+	<code>size</code> is the width of the textbox (as number of characters; default is 60).
+	</p>
+				<p>
+					<code>id</code> will be set as both the HTML id and HTML name. It
+	  will default to jmolCmd0, jmolCmd1, etc. 
+	</p>
+				<!-- Needs confirmation :
+	<p>
+	If the page contains several Jmol applets, 
+	commands in the textbox will be applied to
+	the immediately previous applet, or to that specified by a previous <code>jmolSetTarget</code> command.
+	</p -->
+				<p>
+					<i>
+	  Advanced: 
+	  In addition, the textbox + button will be included in a <code>&lt;span&gt;</code> 
+	  element that will have 
+	  an HTML id of "span_" plus the given <code>id</code>, 
+	  and an HTML title of the given <code>title</code>.
+	  <br/>
+	  Browsers will hence show <code>title</code> as a tooltip when mouse pointer 
+	  stays over the textbox or the button. 
+	  </i>
+				</p>
 			</section>
 			<section title="jmolSaveOrientation">
 				<code>jmolSaveOrientation(id, {targetSuffix})</code>
 				<p>
-	  (...needs documentation)
+	Allows to save the current orientation of the model into an internal variable identified 
+	by <code>id</code>, so that it can be recovered later by calling 
+	<code>jmolRestoreOrientation</code> with the same <code>id</code>.
 	</p>
 				<p>
 	  When more than one JmolApplet is being displayed,
-	  <code>targetSuffix</code> is used to identify a particular
-	  instance. Default <code>targetSuffix</code> is "0".
+	  <code>targetSuffix</code> is used to specify on which one to act (default is "0").
 	</p>
 			</section>
 			<section title="jmolRestoreOrientation">
 				<code>jmolRestoreOrientation(id, {targetSuffix})</code>
 				<p>
-	  (...needs documentation)
+	Allows to return the model to an orientation previously saved 
+	by using <code>jmolSaveOrientation</code> with the same <code>id</code>.
+	</p>
+				<p>The reorientation is done instantaneously. For a timed reorientation, use 
+	<code>jmolRestoreOrientationDelayed</code>.
 	</p>
 				<p>
 	  When more than one JmolApplet is being displayed,
-	  <code>targetSuffix</code> is used to identify a particular
-	  instance. Default <code>targetSuffix</code> is "0".
+	  <code>targetSuffix</code> is used to specify on which one to act (default is "0").
 	</p>
 			</section>
 			<section title="jmolRestoreOrientationDelayed">
 				<code>jmolRestoreOrientationDelayed(id, {delay}, {targetSuffix})</code>
 				<p>
-	  (...needs documentation)
+	Allows to return the model to an orientation previously saved 
+	by using <code>jmolSaveOrientation</code> with the same <code>id</code>.
+	</p>
+				<p>The reorientation extends along <code>delay</code> seconds (default is 1 second).
 	</p>
 				<p>
-	  Default <code>delay</code> is 1 second.
-	  <br/>
 	  When more than one JmolApplet is being displayed,
-	  <code>targetSuffix</code> is used to identify a particular
-	  instance. Default <code>targetSuffix</code> is "0".
+	  <code>targetSuffix</code> is used to specify on which one to act (default is "0").
 	</p>
 			</section>
 		</section>
@@ -491,30 +596,31 @@
 				<p>
 	  (...needs documentation)
 	</p>
+				<p>
+	  When more than one JmolApplet is being displayed,
+	  <code>targetSuffix</code> is used to specify on which one to act (default is "0").
+	</p>
 			</section>
 			<section title="jmolSetTarget">
 				<code>jmolSetTarget(targetSuffix)</code>
 				<p>
-	  Do not use this unless you are displaying multiple applets
-	  at the same time <i>and</i> your Jmol.js UI controls
-	  are not sequentially following their associated
-	  <code>jmolApplet</code> invocations.
+	  This specifies upon which JmolApplet the following UI controls must act.
+	  It is only needed if you are displaying multiple applets
+	  on the same page and your <code>jmolButton, jmolLink, jmolCheckbox,
+	  jmolRadioGroup,  jmolMenu, jmolRadio</code>
+	controls are not sequentially following the instance of 
+	  <code>jmolApplet</code> to which they must be associated.
 	</p>
 				<p>
-	  If you understood the previous sentence then you can
-	  probably figure out what <code>jmolSetTarget</code> does. 
-	</p>
-				<p>
-	  All JmolApplets which are generated by the Jmol.js library
-	  start with the name/id <code>jmolApplet</code>. By default
-	  they are numbered sequentially starting from 0. So, both
-	  the name and id of the first and second applets on the
-	  page default to <code>jmolApplet0</code> and
-	  <code>jmolApplet1</code>, and will be addressed with
+	  All JmolApplets which are generated by the Jmol.js library receive an 
+	internal identifier, by default a sequential number starting from 0. 
+	 So, to address the first and second applets on the
+	  page you must use 
 	  <code>jmolSetTarget(0)</code> and <code>jmolSetTarget(1)</code>.
-	  You are encouraged to provide
+	<br/>
+	  Instead of leaving the default numbers, you are encouraged to provide
 	  your own suffixes in your calls to <code>jmolApplet</code>
-	  and use those suffixes in <code>jmolSetTarget</code>.
+	  and hence use those suffixes in <code>jmolSetTarget</code>.
 	</p>
 			</section>
 			<section title="jmolRadio">
@@ -525,9 +631,19 @@
 				<p>
 	  First, try very hard to use <code>jmolRadioGroup</code>.
 	  If your layout does not allow you to do that, then
-	  use this to allocate individual radio buttons. Radio
-	  buttons will be assigned to the same group until
-	  you call <code>jmolStartNewRadioGroup</code>.
+	  use this to allocate individual radio buttons. 
+	<br/>Radio
+	  buttons will be assigned to the group specified by <code>groupName</code>.
+	In other words, linked radio buttons (those mutually exclusive in their checked state) will 
+	be those that share the same value of <code>groupName</code>.
+	<br/>
+	If you don't want to use a <code>groupName</code>, all buttons will be assigned to
+	the same group (with an automatically assigned name) until you call 	
+	<code>jmolStartNewRadioGroup</code> to start a new group.
+	</p>
+				<p>
+	If the page contains several Jmol applets, commands in the <code>script</code> will be applied to
+	the immediately previous applet, or to that specified by a previous <code>jmolSetTarget</code> command.
 	</p>
 				<p>
 					<i>
@@ -535,6 +651,7 @@
 	  The radio button plus its label will have 
 	  as their HTML id "span_" plus the given <code>id</code>,
 	  and as their HTML title, the given <code>title</code>.
+	In addition, the radio buttom itself will have the given <code>id</code> as its HTML id.
 	  </i>
 				</p>
 			</section>
@@ -544,6 +661,7 @@
 	  Do not use this unless you are working with multiple
 	  radio groups whose layout is so complicated that you cannot
 	  use <code>jmolRadioGroup</code>.
+	<br/>Read <code>jmolRadio</code> for an explanation of how to use this function.
 	</p>
 			</section>
 			<section title="jmolCheckBrowser">
@@ -635,46 +753,238 @@
 	</p>
 			</section>
 			<section title="jmolSetCallback">
-				<code>jmolSetCallback(callbackName,functionName)</code>
+				<code>jmolSetCallback(callbackName, functionName)</code>
 				<p>
-	  (...needs documentation)
+	Sets which JavaScript function to be called by Jmol for the specified 
+	callback type, as listed below. In each case, the first parameter 
+	returned to <code>functionName</code> is the applet HTML name (usually 
+	"jmolApplet0"), and the second parameter holds the information 
+	(in the case of <code>pickCallback</code> and <code>hoverCallback</code>, 
+	a third parameter holds further information). 
+	If <code>functionName</code> is "alert", then only the second parameter is sent to the user
+	via a JavaScript alert() call, and no additional function on the webpage
+	is necessary. 
 	</p>
+				<p><code>jmolSetCallback</code> must be invoked before <code>jmolApplet</code>.
+	For setting callback functions anytime after Jmol applet
+	loading, use the "set xxxxCallback" script command, where "xxxx" is one of
+	"animFrame", "hover", "loadStruct", "message", or "pick".
+				</p>
+				<p>Callback types (values of <code>callbackName</code>) are:
+				</p>
+				<section title="animFrameCallback">
+					<p>
+						<i>Called:</i> when the frame is changed. (Applicable to multi-model files 
+	and to multiple files loaded.)
+	<br/><i>Returned 2nd parameter:</i> the frame index number (starting with 0) 
+	<br/><i>Note:</i> This function will be called four times during 
+	successful file loading but only three times if file
+	loading was unsuccessful. Note that the frame index number is not the
+	number that one would use in the "frame" script command. Frame index 0 is always
+	the first frame, 1 the next, etc. If multiple files have been loaded, the
+	third frame in the first file has index 2 but is accessed in scripts by
+	"frame 1003".
+				</p>
+				</section>
+				<section title="hoverCallback">
+					<p>
+						<i>Called:</i> when the user hovers over an atom.
+	<br/><i>Returned 2nd parameter:</i> a string that depends upon the setting of 
+	the hover label for the hovered atom (see below).
+	<br/><i>Returned 3rd parameter:</i> atom index, starting with 0.
+	</p>
+					<p>
+	If the operation of the function includes a jmolScript command that sets the
+	hover text, then the applet page can control on the fly what is displayed
+	whenever any atom is hovered over. For example:
+	<pre>
+	function myfunc(a,mess) {
+	  var msg
+	  var s = mess + "" // NEVER operate on the 2nd parameter itself
+	  if (s.charAt(0) == 'C')
+	    msg = "yes, that is a carbon."
+	  else
+	    msg = "no, that is not a carbon. The carbons are grey."
+	  jmolScript('hover "'+msg+'"')
+	} </pre>
+	sets the message that will be displayed depending upon the atom 
+	hovered over. 
+	</p>
+				</section>
+				<section title="loadStructCallback">
+					<p>
+						<i>Called:</i> upon successful file loading. 
+	<br/><i>Returned 2nd parameter:</i> the URL of the loaded file.
+	<br/><i>Note:</i> When multiple files are loaded with the same load command, 
+	only the URL of the last-loaded file is returned.
+				</p>
+				</section>
+				<section title="messageCallback">
+					<p>
+						<i>Called:</i>  whenever a Jmol status message is generated. 
+	<br/><i>Returned 2nd parameter:</i> the status message.
+	<br/><i>Note:</i> Messages are generated:
+		<br/>1) by the "message" script command
+		<br/>2) by the "echo" script command (even if no message is displayed)
+		<br/>3) by the "history", "show", and "getProperty" script commands
+		<br/>4) by the "connect" script command
+		<br/>5) by the "set xxxxCallback" script command, if "xxxx" is not one of
+		"animFrame", "hover", "loadStruct", "message", or "pick" 
+		<br/>6) by user measuring, provided "set picking measure" has been issued 
+		<br/>7) when the user has picked the first atom, provided "set picking spin" has been issued 
+		<br/>8) whenever the number of selected atoms is changed 
+		<br/>9) due to errors during the execution of various commands, including "pmesh", "set"
+		<br/>10) upon script completion ("Script completed") unless there is a compiler error 
+		("script compiler ERROR:...") 
+		<br/>11) upon script execution error ("script ERROR:..."), provided there is no compiler error 
+		<br/>12) at a variety of points, provided either "set debugScript" or 
+		"set loglevel 5" has been issued.
+		<br/>
+		(The distinction between compiler error and execution error is subtle.
+		With a compiler error, no portion of the script was executed; with an
+		execution error, the script has been executed up to the point of the
+		error. Only a portion of the allowed command syntax is checked during
+		compilation.)
+				</p>
+				</section>
+				<section title="pickCallback">
+					<p>
+						<i>Called:</i> when the user clicks an atom.
+	<br/><i>Returned 2nd parameter:</i> atom id, atom number, and xyz coordinates in the form:
+	<br/>C6 #6 -0.30683374 -1.6836332 -0.716934 
+	<br/><i>Returned 3rd parameter:</i> atom index, starting with 0.
+				</p>
+				</section>
+				<section title="statusForm, statusText, statusTextarea">
+					<p>
+						<i>Called:</i> anytime a message for the document status line is sent.
+	<br/><i>Returned 2nd parameter:</i> status message.
+	<br/><i>Note:</i> Not actually function callbacks, these options allow for 
+	writing status information into text and textarea elements on the page.
+	Before <code>jmolApplet</code>, use
+	<pre>
+	jmolSetCallback("statusForm", "some_form_name")
+	jmolSetCallback("statusText", "some_text_name")</pre>
+	or
+	<pre>
+	jmolSetCallback("statusForm", "some_form_name")
+	jmolSetCallback("statusTextarea", "some_textarea_name")	</pre>
+	The difference is that <code>statusText</code> replaces that element's value
+	with the message and <code>statusTextarea</code> appends the message 
+	to the existing value.
+	So with a typical successful script, <code>statusText</code> replaces the text with 
+	"Jmol script terminated". If there is an error, the text area will end up
+	blank. In contrast, <code>statusTextarea</code> appends messages, so a full report is
+	delivered there.
+	<br/><i>(These aren't well tested. Maybe useful more for debugging than anything else. See 
+	http://www.stolaf.edu/academics/chemapps/jmol/docs/examples-11/simple2.htm
+	for an example of their use.)</i>
+					</p>
+				</section>
 			</section>
 			<section title="jmolAppletAddParam">
-				<code>jmolAppletAddParam(appletCode,name,value)</code>
+				<code>jmolAppletAddParam(appletCode, name, value)</code>
 				<p>
-	  (...needs documentation)
-	</p>
+	Adds parameter data to an applet definition HTML string previously 
+	created using:
+	<pre>
+	jmolSetDocument(0)
+	var appletCode = jmolApplet(....)
+	appletCode = jmolAppletAddParam(appletCode, name, value)</pre>
+	for later writing to the web page using
+	<pre>document.write(appletCode)</pre>
+				</p>
 			</section>
 			<section title="jmolGetPropertyAsArray">
-				<code>jmolGetPropertyAsArray(sKey,sValue,targetSuffix)</code>
+				<code>jmolGetPropertyAsArray(sKey, sValue, targetSuffix)</code>
 				<p>
-	  (...needs documentation)
-	</p>
+	Returns applet information in the form of a JavaScript array, when 
+	applicable, and a JavaScript string when not. 
+	<!--See the script 
+	documentation for a full discussion of key options and their return 
+	values.-->
+	One example:
+	<pre>
+	var atoms = jmolGetPropertyAsArray("atomInfo","all")
+	var atom1 = atoms[0]
+	var x = atom1.x
+	var info = atom1.info </pre>
+				</p>
 			</section>
 			<section title="jmolGetPropertyAsString">
-				<code>jmolGetPropertyAsString(sKey,sValue,targetSuffix)</code>
+				<code>jmolGetPropertyAsString(sKey, sValue, targetSuffix)</code>
 				<p>
-	  (...needs documentation)
+	Returns data as per <code>jmolGetPropertyAsArray</code>, but always as a JavaScript
+	string. In the case of arrayed data, this string is tab/line-delimited for
+	easier reading.
 	</p>
 			</section>
 			<section title="jmolGetPropertyAsJSON">
-				<code>jmolGetPropertyAsJSON(sKey,sValue,targetSuffix)</code>
+				<code>jmolGetPropertyAsJSON(sKey, sValue, targetSuffix)</code>
 				<p>
-	  (...needs documentation)
+	Returns data as per <code>jmolGetPropertyAsArray</code>, but always as a JavaScript
+	string in JavaScript Object Notation. This string can then be surrounded
+	by parentheses and evaluated to create array content. For example:
+	<pre>var info = jmolGetPropertyAsJSON("filename")</pre>
+	sets the <code>info</code> variable to be
+	<pre>{"filename": "file:/C:/data/caffeine.xyz"}</pre>
+	Then
+	<pre>var Info = eval("(" + info + ")")</pre>
+	results in a new JavaScript array <code>Info</code> having the element 
+	<code>Info.filename</code> with the value "file:/C:/data/caffeine.xyz"
 	</p>
 			</section>
 			<section title="jmolGetPropertyAsJavaObject">
-				<code>jmolGetPropertyAsJavaObject(sKey,sValue,targetSuffix)</code>
+				<code>jmolGetPropertyAsJavaObject(sKey, sValue, targetSuffix)</code>
 				<p>
-	  (...needs documentation)
+	Returns the property as a Java (not JavaScript) object. This function is
+	for advanced users only and is not generally recommended, as it delivers a
+	pointer to the Java object itself, not a copy of it. This pointer may or
+	may not be valid indefinitely and may or may not be properly
+	garbage-collected by all browsers. Not tested extensively on a variety of
+	platforms. The principal use of this function is for access to public
+	Viewer methods that are not generally available via the applet interface.
+	For example:
+	<pre>
+	var viewer = jmolGetPropertyAsJavaObject("jmolViewer")
+	var radius = viewer.getRotationRadius() </pre>
+	Most of these public methods are listed in 
+	http://svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/api/JmolViewer.java?view=markup
 	</p>
 			</section>
 			<section title="jmolDecodeJSON">
-				<code>jmolDecodeJSON(s</code>
+				<code>jmolDecodeJSON(s)</code>
 				<p>
-	  (...needs documentation)
-	</p>
+	Decodes a JavaScript Object Notation string into a JavaScript string that
+	can be read by humans or executed as JavaScript. For example:
+	<pre>
+	var info = jmolGetPropertyAsJSON("atominfo", "atomno=1")
+	alert(jmolDecodeJSON(info)) </pre>
+	displays:
+	<pre>
+	atominfo=new Array()
+	atominfo[0]=new Array()
+	atominfo[0].element="hydrogen"
+	atominfo[0].visible=true
+	atominfo[0].model=1
+	atominfo[0].radius=0.5
+	atominfo[0].visibilityFlags=13
+	atominfo[0].clickabilityFlags=12
+	atominfo[0].bondCount=1
+	atominfo[0].atomno=1
+	atominfo[0].elemno=1
+	atominfo[0].z=0.5733036
+	atominfo[0].y=-1.1272367
+	atominfo[0].x=-3.380413
+	atominfo[0].partialCharge=0
+	atominfo[0].sym="H"
+	atominfo[0].colix=-32767
+	atominfo[0].spacefill=60
+	atominfo[0].color="ffffff"
+	atominfo[0].info="H1 #1"
+	atominfo[0]._ipt=0
+	atominfo[0].formalCharge=0 	</pre>
+				</p>
 			</section>
 		</section>
 		<section title="Cascading Style Sheet support">

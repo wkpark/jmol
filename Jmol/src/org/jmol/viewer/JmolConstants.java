@@ -595,7 +595,7 @@ final public class JmolConstants {
    */
   public final static String altIsotopeSymbolFromIndex(int i) {
     int code = altElementNumbers[i]; 
-    return (code >> 8) + elementSymbolFromNumber(code );
+    return (code >> 7) + elementSymbolFromNumber(code & 127);
   }
   
   /**

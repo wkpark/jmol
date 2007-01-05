@@ -846,7 +846,6 @@ abstract class TransformManager {
   protected float cameraDepth = Float.NaN;
   protected float cameraDepthSetting = 3f;
   protected float visualRange = 5f;
-  protected float observerOffset;
   protected float cameraDistance = 1000f; // prevent divide by zero on startup
 
   void setPerspectiveDepth(boolean perspectiveDepth) {
@@ -1086,7 +1085,6 @@ abstract class TransformManager {
     //adjustedTemporaryScreenPoint();
     //System.out.println(point3iScreenTemp);
     return adjustedTemporaryScreenPoint();
-
   }
 
   void unTransformPoint(Point3f screenPt, Point3f coordPt) {

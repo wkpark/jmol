@@ -73,9 +73,6 @@ class TransformManager10 extends TransformManager {
 
     perspectiveFactor0 = 1;
     
-    // vertical screen plane of the observer where objects will be clipped
-    // -- note -- in this model, it is not used because there is no navigation
-    observerOffset = 0; //(s)
   }
   
   protected float getPerspectiveFactor(float z) {

@@ -47,7 +47,7 @@ class TransformManager11 extends TransformManager {
     super(viewer, width, height);
   }
 
-  private float prevZoomSetting;
+  private float prevZoomSetting, previousX, previousY;
 
   protected void calcCameraFactors() {
     //(m) model coordinates
@@ -407,7 +407,10 @@ class TransformManager11 extends TransformManager {
     isNavigationCentered = (depth < 100 && depth > 0);
     if (!navigating && navMode != NAV_MODE_RESET) {
       // rotations are different from zoom changes
-      if (isNavigationCentered && navMode != NAV_MODE_ZOOMED)
+      if (isNavigationCentered
+          && previousX == fixedTranslation.x 
+             && previousY == fixedTranslation.y 
+             && navMode != NAV_MODE_ZOOMED)
         navMode = NAV_MODE_NEWXYZ;
       else
         navMode = NAV_MODE_NONE;
@@ -460,6 +463,8 @@ class TransformManager11 extends TransformManager {
     }
     transformPoint(fixedRotationCenter, fixedTranslation);
     fixedRotationOffset.set(fixedTranslation);
+    previousX = fixedTranslation.x;
+    previousY = fixedTranslation.y;
     transformPoint(navigationCenter, navigationOffset);
     navigationOffset.z = observerOffset;
     navMode = NAV_MODE_NONE;

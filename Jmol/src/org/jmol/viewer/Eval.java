@@ -4672,12 +4672,14 @@ class Eval { //implements Runnable {
   }
 
   void setUnitcell(int index) throws ScriptException {
+    if (statementLength == 1) {
+      setShapeSize(JmolConstants.SHAPE_UCCAGE, 1);
+      return;
+    }
     if (statementLength == index + 1) {
-      if (statement[index].tok == Token.integer
-          && intParameter(index) >= 111) {
-        int ijk = intParameter(index);
+      if (getToken(index).tok == Token.integer && intParameter(index) >= 111) {
         if (!isSyntaxCheck)
-          viewer.setCurrentUnitCellOffset(ijk);
+          viewer.setCurrentUnitCellOffset(intParameter(index));
       } else {
         setShapeSize(JmolConstants.SHAPE_UCCAGE, getSetAxesTypeMad(index));
       }

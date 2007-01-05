@@ -41,7 +41,8 @@ abstract class TransformManager {
   protected float cameraScaleFactor;
   protected float modelCenterOffset;
   protected float perspectiveScale;
-
+  protected float perspectiveFactor0;
+  
   protected final Point3f navigationCenter = new Point3f();
   protected final Point3f fixedRotationOffset = new Point3f();
   protected final Point3f navigationOffset = new Point3f();
@@ -980,8 +981,8 @@ abstract class TransformManager {
     //old: return (perspectiveDepth ? sizeAngstroms * perspectiveFactor(z)
     //: sizeAngstroms);
 
-    return (perspectiveDepth ? sizeAngstroms * getPerspectiveFactor(z)
-        : sizeAngstroms);
+    return (perspectiveDepth ? sizeAngstroms
+        * getPerspectiveFactor(z / perspectiveFactor0) : sizeAngstroms);
 
   }
 
@@ -1099,9 +1100,10 @@ abstract class TransformManager {
       pt.y -= fixedRotationOffset.y;
     }
     if (perspectiveDepth) {
-      float perspectiveFactor = getPerspectiveFactor(pt.z);
-      pt.x /= perspectiveFactor;
-      pt.y /= perspectiveFactor;
+      pt.z /= perspectiveFactor0;
+      float factor = getPerspectiveFactor(pt.z);
+      pt.x /= factor;
+      pt.y /= factor;
     }
     if (isNavigationMode) {
       pt.x += referenceOffset.x;

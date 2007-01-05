@@ -71,6 +71,8 @@ class TransformManager10 extends TransformManager {
     // so that all normal adjustments scale DOWN
     perspectiveScale = cameraDistance; //(s)
 
+    perspectiveFactor0 = 1;
+    
     // vertical screen plane of the observer where objects will be clipped
     // -- note -- in this model, it is not used because there is no navigation
     observerOffset = 0; //(s)

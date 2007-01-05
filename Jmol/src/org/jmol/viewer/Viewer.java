@@ -3811,7 +3811,7 @@ public class Viewer extends JmolViewer {
   }
   
   boolean getShowNavigationPoint() {
-    if (!global.navigationMode)
+    if (!global.navigationMode || !transformManager.canNavigate())
       return false;
     return (getNavigating() && !global.hideNavigationPoint
         || global.showNavigationPointAlways || getInMotion());

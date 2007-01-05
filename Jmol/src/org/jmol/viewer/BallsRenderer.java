@@ -75,7 +75,7 @@ class BallsRenderer extends ShapeRenderer {
         renderBall(atom);
     }
 
-    if (frame.atomCount > 0 && viewer.getNavigating() && viewer.getShowNavigationPoint()) {
+    if (frame.atomCount > 0 && viewer.getShowNavigationPoint()) {
       //testing here
       Point3f T = new Point3f(viewer.getNavigationOffset());
       int x = Math.max(Math.min(viewer.getScreenWidth(),(int) T.x),0);

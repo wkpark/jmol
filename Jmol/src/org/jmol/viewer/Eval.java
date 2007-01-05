@@ -5150,7 +5150,7 @@ class Eval { //implements Runnable {
     if (statementLength > 1) {
       String saveName = optParameterAsString(2);
       if (getToken(1).tok != Token.orientation)
-        checkLength3();
+        checkLength23();
       switch (getToken(1).tok) {
       case Token.orientation:
         float timeSeconds = (statementLength > 3 ? floatParameter(3) : 0);

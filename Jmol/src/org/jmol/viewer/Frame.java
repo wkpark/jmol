@@ -2973,6 +2973,8 @@ public final class Frame {
     }
     
     void toUnitCell(Point3f pt, Point3f offset) {
+      if (!coordinatesAreFractional || symmetryOperations == null)
+        return;
       unitCell.toUnitCell(pt, offset);  
     }
     

@@ -79,7 +79,7 @@ class TransformManager11 extends TransformManager {
     observerOffset = (visualRange * scalePixelsPerAngstrom) * perspectiveScale
         / screenPixelCount; //(s)
 
-    perspectiveFactor0 = (viewer.getTestFlag1() ? perspectiveScale / observerOffset : 1);
+    perspectiveFactor0 = perspectiveScale / observerOffset;
     
     float f = zoomPercent / 100;
     if (isNavigationMode) {

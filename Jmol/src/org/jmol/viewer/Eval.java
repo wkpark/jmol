@@ -2973,7 +2973,7 @@ class Eval { //implements Runnable {
     if (defaultScript.length() > 0)
       msg += "\nUsing defaultLoadScript: " + defaultScript;
     String script = viewer.getModelSetProperty("jmolscript");
-    if (script != null) {
+    if (script != null && viewer.getAllowEmbeddedScripts()) {
       msg += "\nAdding embedded #jmolscript: " + script;
       defaultScript += ";" + script;
     }

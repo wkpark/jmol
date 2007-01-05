@@ -345,6 +345,7 @@ class StateManager {
     boolean zeroBasedXyzRasmol = false;
     boolean forceAutoBond      = false;
     boolean autoBond           = true;
+    boolean allowEmbeddedScripts = true;
     int percentVdwAtom    = JmolConstants.DEFAULT_PERCENT_VDW_ATOM;
     short marBond         = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
     float bondTolerance   = JmolConstants.DEFAULT_BOND_TOLERANCE;
@@ -370,12 +371,21 @@ class StateManager {
       appendCmd(str, "set minBondDistance " + minBondDistance);
       appendCmd(str, "set bondTolerance " + bondTolerance);
       appendCmd(str, "set defaultLattice " + escape(ptDefaultLattice));
-      if (defaultLoadScript.length() > 0)
-        appendCmd(str, "set defaultLoadScript " + escape(defaultLoadScript));
+      appendCmd(str, "set allowEmbeddedScripts false");
+      appendCmd(str, "set defaultLoadScript \"\"");
       if (viewer.getAxesOrientationRasmol())
         appendCmd(str, "set axesOrientationRasmol");
       if (zeroBasedXyzRasmol)
         appendCmd(str, "set zeroBasedXyzRasmol");
+
+      // this next commands register flags so that they will be 
+      // restored in a saved state definition, but will not execute
+      // now so that there is no chance any embedded scripts or
+      // default load scripts will run and slow things down.
+      if (allowEmbeddedScripts)
+        setParameterValue("allowEmbeddedScripts", true);
+      if (defaultLoadScript.length() > 0)
+        setParameterValue("defaultLoadScript", defaultLoadScript);
       
       return str + "\n";
     }

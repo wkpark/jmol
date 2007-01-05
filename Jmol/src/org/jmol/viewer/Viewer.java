@@ -2520,6 +2520,13 @@ public class Viewer extends JmolViewer {
   // routines for script support
   // ///////////////////////////////////////////////////////////////
 
+  private void setAllowEmbeddedScripts(boolean TF) {
+    global.allowEmbeddedScripts = TF;
+  }
+  
+  boolean getAllowEmbeddedScripts() {
+    return global.allowEmbeddedScripts;
+  }
   public String evalFile(String strFilename) {
     //app -s flag
     return scriptManager.addScript(strFilename, true, false);
@@ -3447,6 +3454,10 @@ public class Viewer extends JmolViewer {
     boolean notFound = false;
     while (true) {
       ///11.1///
+      if (key.equalsIgnoreCase("allowEmbeddedScripts")) {
+        setAllowEmbeddedScripts(value);
+        break;
+      }
       if (key.equalsIgnoreCase("navigationPeriodic")) {
         setNavigationPeriodic(value);
         break;

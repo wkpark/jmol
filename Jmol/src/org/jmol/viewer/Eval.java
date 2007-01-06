@@ -2833,7 +2833,8 @@ class Eval { //implements Runnable {
 
   void message() throws ScriptException {
     String text = parameterAsString(1);
-    viewer.scriptStatus(text);
+    if (!isSyntaxCheck)
+      viewer.scriptStatus(text);
   }
 
   void label() throws ScriptException {

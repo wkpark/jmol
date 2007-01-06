@@ -53,6 +53,7 @@ class TransformManager10 extends TransformManager {
     cameraDistance = cameraDepth * screenPixelCount; //(s)
 
     // factor to apply as part of the transform
+    // 1/f = (cameraDepth + 0.5)/cameraDepth
     // -- note -- in this model 0.02 was added empirically
     cameraScaleFactor = 1.02f + 0.5f / cameraDepth; //(unitless)
 
@@ -60,19 +61,18 @@ class TransformManager10 extends TransformManager {
     // -- note -- in this model, it depends upon camera position
     scalePixelsPerAngstrom = scaleDefaultPixelsPerAngstrom * zoomPercent / 100
         * cameraScaleFactor; //(s/m)
-    
+
+    // model radius in pixels, for slab calculation
+    modelRadiusPixels = modelRadius * scalePixelsPerAngstrom;
+
     // screen offset to fixed rotation center
     // -- note -- in this model, it floats with zoom and camera position
-    modelCenterOffset = cameraDistance + rotationRadius
-        * scalePixelsPerAngstrom; //(s)
+    modelCenterOffset = cameraDistance + modelRadiusPixels; //(s)
 
     // factor to apply based on screen Z
     // -- note -- in this model, plane 0 is "standard" plane
     // so that all normal adjustments scale DOWN
-    perspectiveScale = cameraDistance; //(s)
-
-    perspectiveFactor0 = 1;
-    
+    referencePlaneOffset = cameraDistance; //(s)
   }
   
   protected float getPerspectiveFactor(float z) {
@@ -81,24 +81,12 @@ class TransformManager10 extends TransformManager {
     //new idea: phase out perspective depth when zoom is very large.
     //zoomPercent 1000 or larger starts removing this effect
     //we can go up to 200000
-    float factor = (z <= 0 ? perspectiveScale : perspectiveScale / z);
+    float factor = (z <= 0 ? referencePlaneOffset : referencePlaneOffset / z);
     if (zoomPercent >= MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
       factor += (zoomPercent - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
           / (MAXIMUM_ZOOM_PERCENTAGE - MAXIMUM_ZOOM_PERSPECTIVE_DEPTH)
           * (1 - factor);
     return factor;
-  }
-
-  protected void calcSlabAndDepthValues() {
-    slabValue = 0;
-    depthValue = Integer.MAX_VALUE;
-    if (slabEnabled) {
-      // a slab percentage of 100 should map to zero
-      // a slab percentage of 0 should map to -diameter
-      int radius = (int) (rotationRadius * scalePixelsPerAngstrom);
-      slabValue = (int) (((100 - slabPercentSetting) * 2 * radius / 100) + cameraDistance);
-      depthValue = (int) (((100 - depthPercentSetting) * 2 * radius / 100) + cameraDistance);
-    }
   }
 
   protected Point3i adjustedTemporaryScreenPoint() {

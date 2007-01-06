@@ -3280,6 +3280,10 @@ public class Viewer extends JmolViewer {
         setNavigationDepthPercent(0, value);
         break;
       }
+      if (key.equalsIgnoreCase("navigationSpeed")) {
+        setNavigationSpeed(value);
+        break;
+      }
       if (key.equalsIgnoreCase("navigationSlab")) {
         setNavigationSlabOffset(value);
         break;
@@ -3802,6 +3806,14 @@ public class Viewer extends JmolViewer {
     refresh(1, "set navigationDepth");
   }
   
+  private void setNavigationSpeed(float value) {
+    global.navigationSpeed = value;
+  }
+  
+  float getNavigationSpeed() {
+    return global.navigationSpeed;
+  }
+  
   private void setShowNavigationPointAlways(boolean TF) {
     global.showNavigationPointAlways = TF;
   }
@@ -4030,7 +4042,7 @@ public class Viewer extends JmolViewer {
   }
   
   private void setNavigationSlabOffset(float percent) {
-     transformManager.setNavigationSlabOffset(percent);
+     transformManager.setNavigationSlabOffsetPercent(percent);
   }
 
   private void setPerspectiveStyle(int mode) {

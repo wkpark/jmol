@@ -495,6 +495,7 @@ class StateManager {
     boolean navigationMode     = false;
     boolean navigationPeriodic = false;
     boolean navigationCentered = false;
+    float navigationSpeed      = 5;
 
     String getWindowState() {
       StringBuffer str = new StringBuffer("# window state;\n# height " + viewer.getScreenHeight()

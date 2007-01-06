@@ -56,8 +56,8 @@ class BallsRenderer extends ShapeRenderer {
           //note that in the case of navigation, 
           //maxZ is set to Integer.MAX_VALUE.
           
-          if (isNav)
-            continue;
+          //if (isNav)
+            //continue;
           int r = atom.screenDiameter / 2;
           if (atom.screenZ < minZ - r || atom.screenZ > maxZ + r)
             continue;

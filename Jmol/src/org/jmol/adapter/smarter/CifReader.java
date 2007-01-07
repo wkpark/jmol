@@ -87,8 +87,6 @@ class CifReader extends AtomSetCollectionReader {
     line = "";
     boolean skipping = false;
     while ((key = tokenizer.peekToken()) != null) {
-      if (key.indexOf("#jmolscript:") >= 0)
-        checkLineForScript();
       if (key.startsWith("data_")) {
         if (iHaveDesiredModel)
           break;
@@ -1269,6 +1267,8 @@ class CifReader extends AtomSetCollectionReader {
       char ch = '#';
       while (ich < cch && ((ch = str.charAt(ich)) == ' ' || ch == '\t'))
         ++ich;
+      if (str.indexOf("#jmolscript:") >= 0)
+        checkLineForScript();
       return (ich < cch && ch != '#');
     }
 

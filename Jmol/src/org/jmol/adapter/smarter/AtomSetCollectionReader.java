@@ -371,6 +371,7 @@ abstract class AtomSetCollectionReader extends Parser {
         previousScript = "";
       else
         previousScript += ";";
+      Logger.info("#jmolScript: " + script);
       atomSetCollection.setAtomSetCollectionProperty("jmolscript",
           previousScript + script);
       line = line.substring(0, pt).trim();

@@ -2977,6 +2977,7 @@ class Eval { //implements Runnable {
     if (script != null && viewer.getAllowEmbeddedScripts()) {
       msg += "\nAdding embedded #jmolscript: " + script;
       defaultScript += ";" + script;
+      defaultScript = "set allowEmbeddedScripts false;" + defaultScript + ";set allowEmbeddedScripts true;";
     }
     if (msg.length() > 0)
       Logger.info(msg);

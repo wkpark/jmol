@@ -82,6 +82,7 @@ class TransformManager11 extends TransformManager {
       modelCenterOffset = referencePlaneOffset;
       //now factor the scale by distance from camera and zoom
       scalePixelsPerAngstrom *= (modelCenterOffset / offset100) * zoomPercent / 100; //(s/m)
+      modelRadiusPixels = modelRadius * scalePixelsPerAngstrom; //(s)
       return;
     }
     

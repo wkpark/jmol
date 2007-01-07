@@ -3682,8 +3682,10 @@ class Eval { //implements Runnable {
 
   void slab(boolean isDepth) throws ScriptException {
     boolean TF = false;
+    Point4f plane;
     switch (getToken(1).tok) {
     case Token.integer:
+      checkLength2();
       int percent = intParameter(1);
       if (!isSyntaxCheck)
         if (isDepth)
@@ -3692,20 +3694,55 @@ class Eval { //implements Runnable {
           viewer.slabToPercent(percent);
       return;
     case Token.on:
+      checkLength2();
       TF = true;
       // fall through
     case Token.off:
+      checkLength2();
       setBooleanProperty("slabEnabled", TF);
+      return;
+    case Token.reset:
+      checkLength2();
+      if (isSyntaxCheck)
+        return;
+      viewer.slabReset();
+      setBooleanProperty("slabEnabled", true);
+      return;
+    case Token.set:
+      checkLength2();
+      if (isSyntaxCheck)
+        return;
+      plane = viewer.getSlabPlane(false);
+      Point4f plane2;
+      int slab = viewer.getSlabPercentSetting();
+      int depth = viewer.getDepthPercentSetting();
+      if (isDepth) {
+        plane = viewer.getDepthPlane(false);
+        plane2 = viewer.getSlabPlane(true);
+        viewer.slabReset();
+        viewer.slabToPercent(slab);
+        viewer.slabInternal(plane, true);
+        viewer.slabInternal(plane2, false);
+      } else {
+        plane = viewer.getSlabPlane(false);
+        plane2 = viewer.getDepthPlane(true);
+        viewer.slabReset();
+        viewer.depthToPercent(depth);
+        viewer.slabInternal(plane, false);
+        viewer.slabInternal(plane2, true);
+      }
+      viewer.slabInternalReference(null);
+      setBooleanProperty("slabEnabled", true);      
       return;
     case Token.identifier:
       if (parameterAsString(1).equalsIgnoreCase("plane")) {
-        Point4f plane = (getToken(2).tok == Token.none ? null : planeParameter(2));
+        plane = (getToken(2).tok == Token.none ? null : planeParameter(2));
         if (!isSyntaxCheck)
           viewer.slabInternal(plane, isDepth);
         return;
       }
       if (parameterAsString(1).equalsIgnoreCase("hkl")) {
-        Point4f plane = (getToken(2).tok == Token.none ? null : hklParameter(2));
+        plane = (getToken(2).tok == Token.none ? null : hklParameter(2));
         if (!isSyntaxCheck)
           viewer.slabInternal(plane, isDepth);
         return;

@@ -620,6 +620,10 @@ public class Viewer extends JmolViewer {
     refresh(1, "Viewer:setZoomEnabled()");
   }
 
+  void slabReset() {
+    transformManager.slabReset();
+  }
+  
   boolean getZoomEnabled() {
     return transformManager.zoomEnabled;
   }
@@ -630,6 +634,10 @@ public class Viewer extends JmolViewer {
 
   int getSlabPercentSetting() {
     return transformManager.slabPercentSetting;
+  }
+
+  int getDepthPercentSetting() {
+    return transformManager.depthPercentSetting;
   }
 
   void slabByPixels(int pixels) {
@@ -660,8 +668,20 @@ public class Viewer extends JmolViewer {
     transformManager.slabInternal(plane, isDepth);
   }
   
+  Point4f getDepthPlane(boolean isInternal) {
+    return transformManager.getDepthPlane(isInternal);
+  }
+  
+  Point4f getSlabPlane(boolean isInternal) {
+    return transformManager.getSlabPlane(isInternal);
+  }
+  
   void slabInternalReference(Point3f ptRef) {
     transformManager.slabInternalReference(ptRef);
+  }
+
+  Point3f getSlabInternalReference() {
+    return transformManager.slabRef;
   }
 
   void depthToPercent(int percentDepth) {

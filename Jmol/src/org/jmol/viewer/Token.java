@@ -163,7 +163,7 @@ public class Token {
   final static int zoomTo       = command | 48 | negnums | embeddedExpression;
   final static int initialize   = command | 49;
   // openrasmol commands
-  final static int depth        = command | 50;
+  final static int depth        = command | 50| bool | negnums | embeddedExpression;
   final static int star         = command | 51;
   // chime commands
   final static int delay        = command | 60;
@@ -547,7 +547,7 @@ public class Token {
     "zoomto",            new Token(zoomTo,   varArgCount, "zoomTo"),
     "initialize",        new Token(initialize,         0, "initialize"),
     // openrasmol commands
-    "depth",             new Token(depth,              1, "depth"),
+    "depth",             new Token(depth,    varArgCount, "depth"),
     "star",              new Token(star,         maxArg2, "star"),
     "stars",             null,
     

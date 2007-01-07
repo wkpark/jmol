@@ -662,10 +662,10 @@ class Eval { //implements Runnable {
         set();
         break;
       case Token.slab:
-        slab();
+        slab(false);
         break;
       case Token.depth:
-        depth();
+        slab(true);
         break;
       case Token.star:
         star();
@@ -3680,15 +3680,16 @@ class Eval { //implements Runnable {
     viewer.move(dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
   }
 
-  void slab() throws ScriptException {
+  void slab(boolean isDepth) throws ScriptException {
     boolean TF = false;
     switch (getToken(1).tok) {
     case Token.integer:
       int percent = intParameter(1);
-      if (percent < 0 || percent > 100)
-        numberOutOfRange(0, 100);
       if (!isSyntaxCheck)
-        viewer.slabToPercent(percent);
+        if (isDepth)
+          viewer.depthToPercent(percent);
+        else
+          viewer.slabToPercent(percent);
       return;
     case Token.on:
       TF = true;
@@ -3700,13 +3701,13 @@ class Eval { //implements Runnable {
       if (parameterAsString(1).equalsIgnoreCase("plane")) {
         Point4f plane = (getToken(2).tok == Token.none ? null : planeParameter(2));
         if (!isSyntaxCheck)
-          viewer.slabInternal(plane);
+          viewer.slabInternal(plane, isDepth);
         return;
       }
       if (parameterAsString(1).equalsIgnoreCase("hkl")) {
         Point4f plane = (getToken(2).tok == Token.none ? null : hklParameter(2));
         if (!isSyntaxCheck)
-          viewer.slabInternal(plane);
+          viewer.slabInternal(plane, isDepth);
         return;
       }
       if (parameterAsString(1).equalsIgnoreCase("reference")) {
@@ -3718,12 +3719,6 @@ class Eval { //implements Runnable {
     default:
       invalidArgument();
     }
-  }
-
-  void depth() throws ScriptException {
-    int d = intParameter(1);
-    if (!isSyntaxCheck)
-      viewer.depthToPercent(d);
   }
 
   int diameterToken() throws ScriptException {

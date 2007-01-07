@@ -608,10 +608,7 @@ abstract class TransformManager {
 
   int slabValue;
   int depthValue;
-  Point4f slabPlane = null;
-  Point3f slabRef = new Point3f(0, 0, 0);
-  float slabRefDistance;
-  
+
   int getSlabPercentSetting() {
     return slabPercentSetting;
   }
@@ -655,8 +652,17 @@ abstract class TransformManager {
       depthPercentSetting = slabPercentSetting - 1;
   }
 
-  void slabInternal(Point4f plane) {
-    slabPlane = plane;
+  Point4f slabPlane = null;
+  Point4f depthPlane = null;
+  Point3f slabRef = new Point3f(0, 0, 0);
+  float slabRefDistance, depthRefDistance;
+  
+  void slabInternal(Point4f plane, boolean isDepth) {
+    if (isDepth) {
+      depthPlane = plane;
+    } else {
+      slabPlane = plane;
+    }
     slabRef = new Point3f(0, 0, 0);
     slabRefDistance = Float.NaN;
   }
@@ -666,20 +672,27 @@ abstract class TransformManager {
     slabRefDistance = Float.NaN;
   }
   
-  boolean isSlabbedInternal(Point3f pt) {
+  boolean checkInternalSlab(Point3f pt) {
+     return (slabPlane != null && isSlabbedInternal(pt, false)
+       || depthPlane != null && !isSlabbedInternal(pt, true));
+  }
+  
+  boolean isSlabbedInternal(Point3f pt, boolean isDepth) {
+    //could be easily expanded to any number of planes
     if (Float.isNaN(slabRefDistance)) {
       if ((slabRefDistance = distanceToPlane(slabPlane, slabRef)) == 0) {
-        slabRef.x -= 1;
+        slabRef.x -= 0.12334;
         if ((slabRefDistance = distanceToPlane(slabPlane, slabRef)) == 0) {
-          slabRef.y -= 1;
+          slabRef.y -= 0.12334;
         }
         if ((slabRefDistance = distanceToPlane(slabPlane, slabRef)) == 0) {
-          slabRef.z -= 1;
+          slabRef.z -= 0.12334;
           slabRefDistance = distanceToPlane(slabPlane, slabRef);
         }
+        depthRefDistance = distanceToPlane(depthPlane, slabRef);
       }      
     }
-    float d = distanceToPlane(slabPlane, pt);
+    float d = distanceToPlane(isDepth ? depthPlane : slabPlane, pt);
     return (slabRefDistance < 0 && d > 0 || slabRefDistance > 0 && d < 0);
   }
 
@@ -1125,7 +1138,7 @@ abstract class TransformManager {
   synchronized Point3i transformPoint(Point3f pointAngstroms) {
     matrixTransform(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
-    if (slabEnabled && slabPlane != null && isSlabbedInternal(pointAngstroms))
+    if (slabEnabled && checkInternalSlab(pointAngstroms))
       point3iScreenTemp.z = 1;
     return point3iScreenTemp;
   }
@@ -1142,7 +1155,7 @@ abstract class TransformManager {
           pointAngstroms);
     matrixTransform(point3fVibrationTemp, point3fScreenTemp);
     adjustTemporaryScreenPoint();
-    if (slabEnabled && slabPlane != null && isSlabbedInternal(point3fVibrationTemp))
+    if (slabEnabled && checkInternalSlab(pointAngstroms))
       point3iScreenTemp.z = 1;
     return point3iScreenTemp;
   }
@@ -1153,7 +1166,7 @@ abstract class TransformManager {
 
     matrixTransform(pointAngstroms, point3fScreenTemp);
     adjustTemporaryScreenPoint();
-    if (slabEnabled && slabPlane != null && isSlabbedInternal(pointAngstroms))
+    if (slabEnabled && checkInternalSlab(pointAngstroms))
       point3fScreenTemp.z = 1;
     screen.set(point3fScreenTemp);
   }

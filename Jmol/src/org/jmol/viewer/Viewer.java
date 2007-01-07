@@ -656,8 +656,8 @@ public class Viewer extends JmolViewer {
     refresh(0, "Viewer:slabToPercent()");
   }
 
-  void slabInternal(Point4f plane) {
-    transformManager.slabInternal(plane);
+  void slabInternal(Point4f plane, boolean isDepth) {
+    transformManager.slabInternal(plane, isDepth);
   }
   
   void slabInternalReference(Point3f ptRef) {

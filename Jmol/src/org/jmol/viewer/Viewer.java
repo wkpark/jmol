@@ -45,6 +45,7 @@ import java.util.Vector;
 import java.util.Enumeration;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Matrix3f;
@@ -655,6 +656,14 @@ public class Viewer extends JmolViewer {
     refresh(0, "Viewer:slabToPercent()");
   }
 
+  void slabInternal(Point4f plane) {
+    transformManager.slabInternal(plane);
+  }
+  
+  void slabInternalReference(Point3f ptRef) {
+    transformManager.slabInternalReference(ptRef);
+  }
+
   void depthToPercent(int percentDepth) {
     //Eval.depth
     transformManager.depthToPercent(percentDepth);
@@ -684,12 +693,6 @@ public class Viewer extends JmolViewer {
 
   Point3i transformPoint(Point3f pointAngstroms, Vector3f vibrationVector) {
     return transformManager.transformPoint(pointAngstroms, vibrationVector);
-  }
-
-  void transformPoint(Point3f pointAngstroms, Vector3f vibrationVector,
-                      Point3i pointScreen) {
-    transformManager.transformPoint(pointAngstroms, vibrationVector,
-        pointScreen);
   }
 
   void transformPoint(Point3f pointAngstroms, Point3i pointScreen) {

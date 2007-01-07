@@ -147,7 +147,7 @@ public class Token {
   final static int select       = command | 30 | expressionCommand;
   final static int set          = command | 31 | bool | negnums | embeddedExpression;
   final static int show         = command | 32;
-  final static int slab         = command | 33 | bool;
+  final static int slab         = command | 33 | bool | negnums | embeddedExpression;
   final static int spacefill    = command | 35 | setparam | bool | negnums;
   final static int ssbond       = command | 36 | setparam | bool;
   final static int stereo       = command | 38 | colorparam | negnums;// | setspecial | bool | negnums ;
@@ -530,7 +530,7 @@ public class Token {
     "select",            new Token(select,   varArgCount, "select"),
     "set",               new Token(set,      varArgCount, "set"),
     "show",              new Token(show,         maxArg2, "show"),
-    "slab",              new Token(slab,      onDefault1, "slab"),
+    "slab",              new Token(slab,     varArgCount, "slab"),
     "spacefill",         new Token(spacefill,    maxArg2, "spacefill"),
     "cpk",               null,
     "ssbond",            new Token(ssbond,    onDefault1, "ssbond"),

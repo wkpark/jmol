@@ -24,6 +24,7 @@
 package org.jmol.viewer;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix4f;
@@ -72,9 +73,8 @@ abstract class TransformManager {
   /**
    * adjusts the temporary point for perspective and offsets
    * 
-   * @return POINTER TO TEMPORARY VARIABLE (caution!) point3iScreenTemp
    */
-  abstract Point3i adjustedTemporaryScreenPoint();
+  abstract void adjustTemporaryScreenPoint();
 
   TransformManager(Viewer viewer) {
     this.viewer = viewer;
@@ -608,7 +608,10 @@ abstract class TransformManager {
 
   int slabValue;
   int depthValue;
-
+  Point4f slabPlane = null;
+  Point3f slabRef = new Point3f(0, 0, 0);
+  float slabRefDistance;
+  
   int getSlabPercentSetting() {
     return slabPercentSetting;
   }
@@ -652,6 +655,40 @@ abstract class TransformManager {
       depthPercentSetting = slabPercentSetting - 1;
   }
 
+  void slabInternal(Point4f plane) {
+    slabPlane = plane;
+    slabRef = new Point3f(0, 0, 0);
+    slabRefDistance = Float.NaN;
+  }
+  
+  void slabInternalReference(Point3f ptRef) {
+    slabRef = ptRef;
+    slabRefDistance = Float.NaN;
+  }
+  
+  boolean isSlabbedInternal(Point3f pt) {
+    if (Float.isNaN(slabRefDistance)) {
+      if ((slabRefDistance = distanceToPlane(slabPlane, slabRef)) == 0) {
+        slabRef.x -= 1;
+        if ((slabRefDistance = distanceToPlane(slabPlane, slabRef)) == 0) {
+          slabRef.y -= 1;
+        }
+        if ((slabRefDistance = distanceToPlane(slabPlane, slabRef)) == 0) {
+          slabRef.z -= 1;
+          slabRefDistance = distanceToPlane(slabPlane, slabRef);
+        }
+      }      
+    }
+    float d = distanceToPlane(slabPlane, pt);
+    return (slabRefDistance < 0 && d > 0 || slabRefDistance > 0 && d < 0);
+  }
+
+  static float distanceToPlane(Point4f plane, Point3f pt) {
+    return (plane.x * pt.x + plane.y * pt.y + plane.z * pt.z + plane.w)
+        / (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z
+            * plane.z);
+  }
+  
   void setSlabEnabled(boolean slabEnabled) {
     this.slabEnabled = slabEnabled;
   }
@@ -1087,10 +1124,43 @@ abstract class TransformManager {
    */
   synchronized Point3i transformPoint(Point3f pointAngstroms) {
     matrixTransform(pointAngstroms, point3fScreenTemp);
-    //System.out.print(pointAngstroms+" "+point3fScreenTemp);
-    //adjustedTemporaryScreenPoint();
-    //System.out.println(point3iScreenTemp);
-    return adjustedTemporaryScreenPoint();
+    adjustTemporaryScreenPoint();
+    if (slabEnabled && slabPlane != null && isSlabbedInternal(pointAngstroms))
+      point3iScreenTemp.z = 1;
+    return point3iScreenTemp;
+  }
+
+  /**
+   * @param pointAngstroms
+   * @param vibrationVector
+   * @return POINTER TO TEMPORARY VARIABLE (caution!) point3iScreenTemp
+   */
+  Point3i transformPoint(Point3f pointAngstroms, Vector3f vibrationVector) {
+    point3fVibrationTemp.set(pointAngstroms);
+    if (vibrationOn && vibrationVector != null)
+      point3fVibrationTemp.scaleAdd(vibrationAmplitude, vibrationVector,
+          pointAngstroms);
+    matrixTransform(point3fVibrationTemp, point3fScreenTemp);
+    adjustTemporaryScreenPoint();
+    if (slabEnabled && slabPlane != null && isSlabbedInternal(point3fVibrationTemp))
+      point3iScreenTemp.z = 1;
+    return point3iScreenTemp;
+  }
+
+  void transformPoint(Point3f pointAngstroms, Point3f screen) {
+
+    //used solely by RocketsRenderer
+
+    matrixTransform(pointAngstroms, point3fScreenTemp);
+    adjustTemporaryScreenPoint();
+    if (slabEnabled && slabPlane != null && isSlabbedInternal(pointAngstroms))
+      point3fScreenTemp.z = 1;
+    screen.set(point3fScreenTemp);
+  }
+
+  void transformVector(Vector3f vectorAngstroms, Vector3f vectorTransformed) {
+    //dots renderer, geodesic only
+    matrixTransform(vectorAngstroms, vectorTransformed);
   }
 
   void unTransformPoint(Point3f screenPt, Point3f coordPt) {
@@ -1127,37 +1197,6 @@ abstract class TransformManager {
 
   protected void matrixTransform(Vector3f angstroms, Vector3f screen) {
     matrixTransform.transform(angstroms, screen);
-  }
-
-  void transformPoint(Point3f pointAngstroms, Point3f screen) {
-
-    //used solely by RocketsRenderer
-
-    matrixTransform(pointAngstroms, point3fScreenTemp);
-    adjustedTemporaryScreenPoint();
-    screen.set(point3fScreenTemp);
-  }
-
-  Point3i transformPoint(Point3f pointAngstroms, Vector3f vibrationVector) {
-    if (vibrationOn && vibrationVector != null) {
-      point3fVibrationTemp.scaleAdd(vibrationAmplitude, vibrationVector,
-          pointAngstroms);
-      matrixTransform(point3fVibrationTemp, point3fScreenTemp);
-    } else {
-      matrixTransform(pointAngstroms, point3fScreenTemp);
-    }
-    return adjustedTemporaryScreenPoint();
-  }
-
-  void transformPoint(Point3f pointAngstroms, Vector3f vibrationVector,
-                      Point3i pointScreen) {
-    //vibration vectors renderer only
-    pointScreen.set(transformPoint(pointAngstroms, vibrationVector));
-  }
-
-  void transformVector(Vector3f vectorAngstroms, Vector3f vectorTransformed) {
-    //dots renderer, geodesic only
-    matrixTransform(vectorAngstroms, vectorTransformed);
   }
 
   /* ***************************************************************

@@ -24,7 +24,6 @@
 package org.jmol.viewer;
 
 import org.jmol.util.Logger;
-import javax.vecmath.Point3i;
 
 class TransformManager10 extends TransformManager {
 
@@ -89,7 +88,7 @@ class TransformManager10 extends TransformManager {
     return factor;
   }
 
-  protected Point3i adjustedTemporaryScreenPoint() {
+  protected void adjustTemporaryScreenPoint() {
 
     //fixedRotation point is at the origin initially
 
@@ -131,12 +130,8 @@ class TransformManager10 extends TransformManager {
       Logger.debug("NaN found in transformPoint ");
       haveNotifiedNaN = true;
     }
-
-    point3iScreenTemp.x = (int) point3fScreenTemp.x;
-    point3iScreenTemp.y = (int) point3fScreenTemp.y;
-    point3iScreenTemp.z = (int) point3fScreenTemp.z;
-
-    return point3iScreenTemp;
+    point3iScreenTemp.set((int) point3fScreenTemp.x, (int) point3fScreenTemp.y,
+        (int) point3fScreenTemp.z);
   }
   
   /* ***************************************************************

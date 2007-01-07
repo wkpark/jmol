@@ -3681,7 +3681,6 @@ class Eval { //implements Runnable {
   }
 
   void slab() throws ScriptException {
-    //token has ondefault1
     boolean TF = false;
     switch (getToken(1).tok) {
     case Token.integer:
@@ -3697,8 +3696,27 @@ class Eval { //implements Runnable {
     case Token.off:
       setBooleanProperty("slabEnabled", TF);
       return;
+    case Token.identifier:
+      if (parameterAsString(1).equalsIgnoreCase("plane")) {
+        Point4f plane = (getToken(2).tok == Token.none ? null : planeParameter(2));
+        if (!isSyntaxCheck)
+          viewer.slabInternal(plane);
+        return;
+      }
+      if (parameterAsString(1).equalsIgnoreCase("hkl")) {
+        Point4f plane = (getToken(2).tok == Token.none ? null : hklParameter(2));
+        if (!isSyntaxCheck)
+          viewer.slabInternal(plane);
+        return;
+      }
+      if (parameterAsString(1).equalsIgnoreCase("reference")) {
+        Point3f pt = getCoordinate(2, true);
+        if (!isSyntaxCheck)
+          viewer.slabInternalReference(pt);
+        return;
+      }
     default:
-      booleanOrPercentExpected();
+      invalidArgument();
     }
   }
 

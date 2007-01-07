@@ -26,7 +26,6 @@ package org.jmol.viewer;
 import org.jmol.util.Logger;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import java.awt.event.KeyEvent;
@@ -111,7 +110,7 @@ class TransformManager11 extends TransformManager {
     return (z <= 0 ? referencePlaneOffset : referencePlaneOffset / z);
   }
 
-  protected Point3i adjustedTemporaryScreenPoint() {
+  protected void adjustTemporaryScreenPoint() {
 
     //fixedRotation point is at the origin initially
 
@@ -164,16 +163,10 @@ class TransformManager11 extends TransformManager {
       haveNotifiedNaN = true;
     }
 
-    point3iScreenTemp.x = (int) point3fScreenTemp.x;
-    point3iScreenTemp.y = (int) point3fScreenTemp.y;
-    point3iScreenTemp.z = (int) point3fScreenTemp.z;
-
-//    unTransformPoint(point3fScreenTemp, pointTest);
-//    System.out.println(point3iScreenTemp + " " + pointTest);
-    return point3iScreenTemp;
+    point3iScreenTemp.set((int) point3fScreenTemp.x, (int) point3fScreenTemp.y,
+        (int) point3fScreenTemp.z);
   }
 
-  Point3f pointTest = new Point3f();
   /* ***************************************************************
    * Navigation support
    ****************************************************************/

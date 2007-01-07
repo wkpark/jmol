@@ -3375,8 +3375,8 @@ public class Viewer extends JmolViewer {
   void setIntProperty(String key, int value, boolean defineNew) {
     while (true) {
       ///11.1///
-      if (key.equalsIgnoreCase("perspectiveStyle")) {
-        setPerspectiveStyle(value);
+      if (key.equalsIgnoreCase("perspectiveModel")) {
+        setPerspectiveModel(value);
         break;
       }
       if (key.equalsIgnoreCase("scriptDelay")) {
@@ -4048,7 +4048,7 @@ public class Viewer extends JmolViewer {
      transformManager.setNavigationSlabOffsetPercent(percent);
   }
 
-  private void setPerspectiveStyle(int mode) {
+  private void setPerspectiveModel(int mode) {
     setVibrationPeriod(0);
     switch (mode) {
     case 10:

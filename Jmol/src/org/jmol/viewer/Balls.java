@@ -66,7 +66,7 @@ class Balls extends AtomShape {
       return;
     }
     if ("translucency" == propertyName) {
-      boolean isTranslucent = (value == "translucent");
+      boolean isTranslucent = (((String)value).equals("translucent"));
       if (bsColixSet == null)
         bsColixSet = new BitSet();
       for (int i = atomCount; --i >= 0;)

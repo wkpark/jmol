@@ -82,17 +82,9 @@ class BallsRenderer extends ShapeRenderer {
       int y = Math.max(Math.min(viewer.getScreenHeight(),(int) T.y),0);
       int z = (int) T.z + 1;
       short colix = (viewer.getNavigationCentered() ? Graphics3D.GOLD : Graphics3D.RED);
-      g3d.drawLine(colix, colix, x - 10, y, z, x + 10, y, z);
-      g3d.drawLine(colix, colix, x, y - 10, z, x, y + 10, z);
-      g3d.drawLine(colix, colix, x - 4, y - 4, z, x + 6, y - 4, z);
-      g3d.drawLine(colix, colix, x + 4, y - 4, z, x + 4, y + 6, z);
-      g3d.drawLine(colix, colix, x + 4, y + 4, z, x - 6, y + 4, z);
-      g3d.drawLine(colix, colix, x - 4, y + 4, z, x - 4, y - 6, z);
-
-      //      g3d.fillSphereCentered(colix, 6, (int)T.x, (int)T.y,(int)T.z);
-      //      Point3i S = new Point3i();
-      //    viewer.transformPoint(viewer.getRotationCenter(), S);
-      //  g3d.fillSphereCentered(Graphics3D.RED, 8, S.x, S.y, S.z);
+      g3d.drawRect(colix, x - 10, y, z, 0, 20, 1);
+      g3d.drawRect(colix, x, y - 10, z, 0, 1, 20);
+      g3d.drawRect(colix, x - 4, y -4, z, 0, 10, 10);
     }
   }
 

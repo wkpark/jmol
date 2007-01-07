@@ -177,6 +177,8 @@ class Triangle3D {
   }
 
   void fillTriangle(boolean useGouraud) {
+    if (az[0] <= 1 || az[1] <= 1 || az[2] <= 1)
+      return;
     int cc0 = line3d.clipCode(ax[0], ay[0], az[0]);
     int cc1 = line3d.clipCode(ax[1], ay[1], az[1]);
     int cc2 = line3d.clipCode(ax[2], ay[2], az[2]);
@@ -369,9 +371,10 @@ class Triangle3D {
       for (; --numLines >= 0; ++y, ++i) {
         int xW = axW[i];
         int pixelCount = axE[i] - xW + 1;
-        if (pixelCount > 0)
+        if (pixelCount > 0) {
           g3d.plotPixelsClipped(pixelCount, xW, y, azW[i], azE[i],
               useGouraud ? rgb16sW[i] : null, useGouraud ? rgb16sE[i] : null);
+        }
       }
     } else {
       for (; --numLines >= 0; ++y, ++i) {
@@ -381,9 +384,11 @@ class Triangle3D {
         // not sure exactly why we are getting pixel counts of 0 here
         // it means that the east/west lines are crossing by 1
         // something must be going wrong with the scaled addition
-        if (pixelCount > 0)
+        if (pixelCount > 0) {
           g3d.plotPixelsUnclipped(pixelCount, xW, y, azW[i], azE[i],
               useGouraud ? rgb16sW[i] : null, useGouraud ? rgb16sE[i] : null);
+
+        }
       }
     }
   }

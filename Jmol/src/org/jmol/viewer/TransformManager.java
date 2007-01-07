@@ -108,6 +108,8 @@ abstract class TransformManager {
     clearSpin();
     fixedRotationCenter.set(0, 0, 0);
     navigating = false;
+    slabPlane = null;
+    depthPlane = null;
     resetNavigationPoint();
   }
 
@@ -122,10 +124,16 @@ abstract class TransformManager {
     commands.append("center " + StateManager.escape(fixedRotationCenter)
         + ";\n");
     commands.append(getMoveToText(0) + ";\n");
-    if (!isNavigationMode)
+    if (!isNavigationMode && !zoomEnabled)
+      commands.append("zoom off;\n");
     commands.append("slab " + slabPercentSetting + ";depth "
-        + depthPercentSetting + (slabEnabled ? ";slab on" : "")
-        + (!zoomEnabled ? ";zoom off" : "") + ";\n");
+        + depthPercentSetting + (slabEnabled && !isNavigationMode ? ";slab on" : "") + ";\n");
+    if (slabPlane != null)
+      commands.append("slab plane {"+slabPlane.x+" "+slabPlane.y+" "+slabPlane.z+" "+slabPlane.w+" };\n");
+    if (depthPlane != null)
+      commands.append("depth plane {"+depthPlane.x+" "+depthPlane.y+" "+depthPlane.z+" "+depthPlane.w+" };\n");
+    if (depthPlane != null || slabPlane != null)
+      commands.append("slab reference "+StateManager.escape(slabRef)+ (slabEnabled || isNavigationMode? ";slab on" : "")+";\n");
     commands.append(getSpinState(true) + "\n");
     if (viewer.modelSetHasVibrationVectors()) {
       commands.append("vibration scale " + vibrationScale + ";\n");
@@ -615,40 +623,43 @@ abstract class TransformManager {
 
   void slabByPercentagePoints(int percentage) {
     slabPercentSetting += percentage;
+    /*
     if (slabPercentSetting < 0)
       slabPercentSetting = 0;
     else if (slabPercentSetting > 100)
       slabPercentSetting = 100;
-    if (depthPercentSetting >= slabPercentSetting)
+*/    if (depthPercentSetting >= slabPercentSetting)
       depthPercentSetting = slabPercentSetting - 1;
   }
 
   void depthByPercentagePoints(int percentage) {
     depthPercentSetting += percentage;
+/*    
     if (depthPercentSetting < 0)
       depthPercentSetting = 0;
     else if (depthPercentSetting > 99)
       depthPercentSetting = 99;
-    if (slabPercentSetting <= depthPercentSetting)
+*/    if (slabPercentSetting <= depthPercentSetting)
       slabPercentSetting = depthPercentSetting + 1;
   }
 
   void slabDepthByPercentagePoints(int percentage) {
-    if (percentage > 0) {
+/*    if (percentage > 0) {
       if (slabPercentSetting + percentage > 100)
         percentage = 100 - slabPercentSetting;
     } else {
       if (depthPercentSetting + percentage < 0)
         percentage = 0 - depthPercentSetting;
     }
-    slabPercentSetting += percentage;
+*/    slabPercentSetting += percentage;
     depthPercentSetting += percentage;
   }
 
   void slabToPercent(int percentSlab) {
-    slabPercentSetting = percentSlab < 0 ? 0 : percentSlab > 100 ? 100
+    slabPercentSetting = percentSlab;
+/*    < 0 ? 0 : percentSlab > 100 ? 100
         : percentSlab;
-    if (depthPercentSetting >= slabPercentSetting)
+*/    if (depthPercentSetting >= slabPercentSetting)
       depthPercentSetting = slabPercentSetting - 1;
   }
 
@@ -709,8 +720,9 @@ abstract class TransformManager {
   // depth is an extension added by OpenRasMol
   // it represents the 'back' of the slab plane
   void depthToPercent(int percentDepth) {
-    depthPercentSetting = percentDepth < 0 ? 0 : percentDepth > 99 ? 99
-        : percentDepth;
+    depthPercentSetting = percentDepth;
+    /*< 0 ? 0 : percentDepth > 99 ? 99
+        : percentDepth;*/
     if (slabPercentSetting <= depthPercentSetting)
       slabPercentSetting = depthPercentSetting + 1;
   }

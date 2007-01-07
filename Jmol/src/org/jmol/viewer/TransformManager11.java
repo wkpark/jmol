@@ -256,9 +256,7 @@ class TransformManager11 extends TransformManager {
     if (!slabEnabled)
       return;
     slabValue = (int) (referencePlaneOffset - navigationSlabOffset);
-    float depth = getNavigationDepthPercent();
-    depthValue = (depth > 0 ? (int) (modelRadiusPixels + modelCenterOffset)
-        : Integer.MAX_VALUE);
+    depthValue = (int) ((1 - depthPercentSetting / 50f) * modelRadiusPixels + modelCenterOffset);
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug("\n" + "\nperspectiveScale: " + referencePlaneOffset
           + " screenPixelCount: " + screenPixelCount 
@@ -268,7 +266,7 @@ class TransformManager11 extends TransformManager {
           + " modelRadiusPixels: " + modelRadiusPixels + "\nmodelLeadingEdge: "
           + (modelCenterOffset - modelRadiusPixels) + " slabValue: "
           + slabValue + "\nzoom: " + zoomPercent + " navDepth: "
-          + ((int) (100 * depth) / 100f) + " visualRange: " + visualRange
+          + ((int) (100 * getNavigationDepthPercent()) / 100f) + " visualRange: " + visualRange
           + "\nnavX/Y/Z/modelCenterOffset: " + navigationOffset.x + "/"
           + navigationOffset.y + "/" + navigationOffset.z + "/"
           + modelCenterOffset + " navCenter:" + navigationCenter);

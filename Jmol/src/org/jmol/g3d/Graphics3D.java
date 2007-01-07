@@ -387,8 +387,8 @@ final public class Graphics3D {
    * @param rHeight pixel count
    */
   public void drawRect(short colix, int x, int y, int z, int zSlab, int rWidth, int rHeight) {
-    // labels (and rubberband, not implemented)
-    if (isClippedZ(zSlab))
+    // labels (and rubberband, not implemented) and navigation cursor
+    if (zSlab != 0 && isClippedZ(zSlab))
       return;
     int w = rWidth - 1;
     int h = rHeight - 1;
@@ -1092,7 +1092,8 @@ final public class Graphics3D {
     // cylinder3d.renderFlatEndcap, triangle3d.fillRaster
     if (count <= 0 || y < 0 || y >= height || x >= width ||
         (zAtLeft < slab && zPastRight < slab) ||
-        (zAtLeft > depth && zPastRight > depth))
+        (zAtLeft > depth && zPastRight > depth)
+        )
       return;
     int seed = (x << 16) + (y << 1) ^ 0x33333333;
     // scale the z coordinates;

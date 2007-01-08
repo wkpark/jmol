@@ -3712,26 +3712,7 @@ class Eval { //implements Runnable {
       checkLength2();
       if (isSyntaxCheck)
         return;
-      plane = viewer.getSlabPlane(false);
-      Point4f plane2;
-      int slab = viewer.getSlabPercentSetting();
-      int depth = viewer.getDepthPercentSetting();
-      if (isDepth) {
-        plane = viewer.getDepthPlane(false);
-        plane2 = viewer.getSlabPlane(true);
-        viewer.slabReset();
-        viewer.slabToPercent(slab);
-        viewer.slabInternal(plane, true);
-        viewer.slabInternal(plane2, false);
-      } else {
-        plane = viewer.getSlabPlane(false);
-        plane2 = viewer.getDepthPlane(true);
-        viewer.slabReset();
-        viewer.depthToPercent(depth);
-        viewer.slabInternal(plane, false);
-        viewer.slabInternal(plane2, true);
-      }
-      viewer.slabInternalReference(null);
+      viewer.setSlabDepthInternal(isDepth);
       setBooleanProperty("slabEnabled", true);      
       return;
     case Token.identifier:
@@ -3748,7 +3729,7 @@ class Eval { //implements Runnable {
         return;
       }
       if (parameterAsString(1).equalsIgnoreCase("reference")) {
-        Point3f pt = getCoordinate(2, true);
+        Point3f pt = centerParameter(2);
         if (!isSyntaxCheck)
           viewer.slabInternalReference(pt);
         return;

@@ -696,8 +696,11 @@ abstract class TransformManager {
   }
 
   Point4f getDepthPlane(boolean isInternal) {
+    // eval "slab set"
     if (isInternal)
       return depthPlane;
+    if (!slabEnabled)
+      return null;
     pointT.set(0, 0, 0);
     transformPoint(pointT, pointT2);
     pointT2.z = depthValue;
@@ -708,8 +711,11 @@ abstract class TransformManager {
   }
   
   Point4f getSlabPlane(boolean isInternal) {
+    // eval "slab set"
     if (isInternal)
       return slabPlane;
+    if (!slabEnabled)
+      return null;
     pointT.set(0, 0, 0);
     transformPoint(pointT, pointT2);
     pointT2.z = slabValue;
@@ -728,6 +734,35 @@ abstract class TransformManager {
     slabRefDistance = Float.NaN;
   }
   
+  /**
+   * set internal slab or depth from screen-based slab or depth
+   * @param isDepth
+   */
+  void setSlabDepthInternal(boolean isDepth) {
+    setSlabDepthInternal(isDepth);
+    Point4f plane = getSlabPlane(false);
+    Point4f plane2;
+    int slab = slabPercentSetting;
+    int depth = depthPercentSetting;
+    if (isDepth) {
+      plane = getDepthPlane(false);
+      plane2 = getSlabPlane(true);
+      slabReset();
+      slabToPercent(slab);
+      slabInternal(plane, true);
+      slabInternal(plane2, false);
+    } else {
+      plane = getSlabPlane(false);
+      plane2 = getDepthPlane(true);
+      slabReset();
+      depthToPercent(depth);
+      slabInternal(plane, false);
+      slabInternal(plane2, true);
+    }
+    slabInternalReference(null);
+  }
+  
+
   void slabInternalReference(Point3f ptRef) {
     slabRef = ptRef;
     if (ptRef == null) {
@@ -748,6 +783,8 @@ abstract class TransformManager {
         pt2.sub(slabRef);
         slabRef.set(-slabRef.x + 2 * pt2.x, -slabRef.y + 2 * pt2.y, -slabRef.z
             + 2 * pt2.z);
+      } else {
+        // nothing to do if neither is defined
       }
     }
     slabRefDistance = Float.NaN;

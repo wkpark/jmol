@@ -632,14 +632,6 @@ public class Viewer extends JmolViewer {
     return transformManager.slabEnabled;
   }
 
-  int getSlabPercentSetting() {
-    return transformManager.slabPercentSetting;
-  }
-
-  int getDepthPercentSetting() {
-    return transformManager.depthPercentSetting;
-  }
-
   void slabByPixels(int pixels) {
     //MouseManager.mouseSinglePressDrag
     transformManager.slabByPercentagePoints(pixels);
@@ -696,6 +688,10 @@ public class Viewer extends JmolViewer {
     refresh(0, "Viewer:setSlabEnabled()");
   }
 
+  void setSlabDepthInternal(boolean isDepth) {
+    transformManager.setSlabDepthInternal(isDepth);
+  }
+  
   public Matrix4f getUnscaledTransformMatrix() {
     return transformManager.getUnscaledTransformMatrix();
   }

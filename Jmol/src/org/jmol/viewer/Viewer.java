@@ -2266,6 +2266,12 @@ public class Viewer extends JmolViewer {
       refresh(0, "Viewer:setAnimationPrevious()");
   }
 
+  void setAnimationLast() {
+    //Eval
+    repaintManager.setAnimationLast();
+    refresh(0, "Viewer:setAnimationLast()");
+  }
+
   void rewindAnimation() {
     //Eval
     repaintManager.rewindAnimation();

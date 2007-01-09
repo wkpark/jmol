@@ -4401,6 +4401,7 @@ class Eval { //implements Runnable {
       case Token.next:
       case Token.prev:
       case Token.rewind:
+      case Token.last:
         return;
       }
     else
@@ -4422,6 +4423,9 @@ class Eval { //implements Runnable {
         return;
       case Token.rewind:
         viewer.rewindAnimation();
+        return;
+      case Token.last:
+        viewer.setAnimationLast();
         return;
       }
     evalError(GT._("invalid {0} control keyword", "frame") + ": "

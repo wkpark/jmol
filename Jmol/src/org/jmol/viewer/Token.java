@@ -446,6 +446,7 @@ public class Token {
   final static int top          = misc | 69;
   final static int bottom       = misc | 70;
   final static int bitset       = misc | 71;
+  final static int last         = misc | 72;
   
  
   final static int amino       = predefinedset |  0;
@@ -843,6 +844,7 @@ public class Token {
     "prev",         new Token(prev,            "previous"),
     "previous",     null,
     "rewind",       new Token(rewind,          "rewind"),
+    "last",         new Token(last,            "last"),
     "playrev",      new Token(playrev,         "playrev"),
     "play",         new Token(play,            "play"),
     "range",        new Token(range,           "range"),

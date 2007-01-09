@@ -332,6 +332,10 @@ class RepaintManager {
     return setAnimationRelative(animationDirection);
   }
 
+  void setAnimationLast() {
+    setCurrentModelIndex(animationDirection > 0 ? lastModelIndex : firstModelIndex);
+  }
+
   void rewindAnimation() {
     setCurrentModelIndex(animationDirection > 0 ? firstModelIndex : lastModelIndex);
     currentDirection = 1;

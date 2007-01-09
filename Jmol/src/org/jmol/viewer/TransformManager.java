@@ -739,7 +739,6 @@ abstract class TransformManager {
    * @param isDepth
    */
   void setSlabDepthInternal(boolean isDepth) {
-    setSlabDepthInternal(isDepth);
     Point4f plane = getSlabPlane(false);
     Point4f plane2;
     int slab = slabPercentSetting;
@@ -773,8 +772,10 @@ abstract class TransformManager {
       float d1 = distanceToPlane(slabPlane, slabRef);
       float d2 = distanceToPlane(depthPlane, slabRef);
       if (slabPlane != null && depthPlane != null && (d1 <= 0 || d2 >= 0)) {
-        pt1.add(pt2);
-        slabRef.set(pt1.x / 2, pt1.y / 2, pt1.z / 2);
+        pt2.sub(pt1);
+        pt2.scale(2);
+        pt2.add(pt1);
+        slabRef.set(pt2);
       } else if (slabPlane != null && d1 <= 0) {
         pt1.sub(slabRef);
         slabRef.set(-slabRef.x + 2 * pt1.x, -slabRef.y + 2 * pt1.y, -slabRef.z

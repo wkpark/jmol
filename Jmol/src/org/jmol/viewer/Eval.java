@@ -44,6 +44,7 @@ class Context {
   short[] lineIndices;
   Token[][] aatoken;
   Token[] statement;
+  int statementLength;
   int pc;
   int iToken;
 }
@@ -175,6 +176,7 @@ class Eval { //implements Runnable {
     context.lineIndices = lineIndices;
     context.aatoken = aatoken;
     context.statement = statement;
+    context.statementLength = statementLength;
     context.pc = pc;
     context.iToken = iToken;
     stack[scriptLevel++] = context;
@@ -195,6 +197,7 @@ class Eval { //implements Runnable {
     lineIndices = context.lineIndices;
     aatoken = context.aatoken;
     statement = context.statement;
+    statementLength = context.statementLength;
     iToken = context.iToken;
     pc = context.pc;
   }
@@ -3682,7 +3685,7 @@ class Eval { //implements Runnable {
 
   void slab(boolean isDepth) throws ScriptException {
     boolean TF = false;
-    Point4f plane;
+    Point4f plane = null;
     switch (getToken(1).tok) {
     case Token.integer:
       checkLength2();
@@ -3696,7 +3699,7 @@ class Eval { //implements Runnable {
     case Token.on:
       checkLength2();
       TF = true;
-      // fall through
+    // fall through
     case Token.off:
       checkLength2();
       setBooleanProperty("slabEnabled", TF);
@@ -3713,11 +3716,46 @@ class Eval { //implements Runnable {
       if (isSyntaxCheck)
         return;
       viewer.setSlabDepthInternal(isDepth);
-      setBooleanProperty("slabEnabled", true);      
+      setBooleanProperty("slabEnabled", true);
       return;
     case Token.identifier:
       if (parameterAsString(1).equalsIgnoreCase("plane")) {
-        plane = (getToken(2).tok == Token.none ? null : planeParameter(2));
+        switch (getToken(2).tok) {
+        case Token.none:
+          break;
+        case Token.dollarsign:
+          String id = objectNameParameter(3);
+          if (isSyntaxCheck)
+            return;
+          int shapeType = viewer.getShapeIdFromObjectName(id);
+          switch (shapeType) {
+          case JmolConstants.SHAPE_DRAW:
+            setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", id);
+            Point3f[] points = (Point3f[]) viewer.getShapeProperty(
+                JmolConstants.SHAPE_DRAW, "vertices");
+            if (points == null || points.length < 3)
+              invalidArgument();
+            Vector3f vAB = new Vector3f();
+            Vector3f vAC = new Vector3f();
+            Vector3f pv = new Vector3f();
+            float w = Graphics3D.getPlaneThroughPoints(points[0], points[1],
+                points[2], pv, vAB, vAC);
+            plane = new Point4f(pv.x, pv.y, pv.z, w);
+            break;
+          case JmolConstants.SHAPE_ISOSURFACE:
+            setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID", id);
+            plane = (Point4f) viewer.getShapeProperty(
+                JmolConstants.SHAPE_ISOSURFACE, "plane");
+            if (plane != null)
+              break;
+          //fall through
+          default:
+            invalidArgument();
+          }
+          break;
+        default:
+          plane = planeParameter(2);
+        }
         if (!isSyntaxCheck)
           viewer.slabInternal(plane, isDepth);
         return;

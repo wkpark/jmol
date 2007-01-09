@@ -906,6 +906,8 @@ class Isosurface extends IsosurfaceMeshCollection {
       return new Integer(qm_moNumber);
     if (thisMesh == null)
       return "no current isosurface";
+    if (property == "plane")
+      return ((IsosurfaceMesh)currentMesh).jvxlPlane;
     if (property == "jvxlFileData")
       return jvxlGetFile(thisMesh, "", true, index);
     if (property == "jvxlSurfaceData")

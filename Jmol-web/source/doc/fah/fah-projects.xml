@@ -4641,7 +4641,7 @@
   <fah_proj number="2904" name="p2904_BBA5" public="y" file="y"
     server="171.65.103.163" atoms="12200" preferred="26" deadline="38"
     credit="132" frames="100" code="GT" contact="huangx" contrib="MichaelB"/>
-  <fah_proj number="2905" name="p2905_GCAA_TETRALOOP_HAIRPIN_SREM" public="n"
+  <fah_proj number="2905" name="p2905_GCAA_TETRALOOP_HAIRPIN_SREM" public="y"
     server="171.65.103.163" atoms="12229" preferred="63" deadline="93"
     credit="333" frames="100" code="GT" contact="huangx"/>
 
@@ -4703,6 +4703,9 @@
   <fah_proj number="3027" name="p3027_SMP-nsv-03" public="y" file="y"
     server="171.64.65.56" atoms="9684" preferred="1" deadline="2"
     credit="716" frames="100" code="GS" contact="densign" contrib="dreederocuk"/>
+  <fah_proj number="3030" name="p3030_supervillin-03" public="y"
+    server="171.65.103.160" atoms="9684" preferred="0.75" deadline="1.5"
+    credit="691" frames="100" code="G" contact="dan"/>
 
   <!-- Projects 3100 to 3199 -->
 
@@ -4715,6 +4718,9 @@
   <fah_proj number="3301" name="p3301_ribcomp" public="y" file="y"
     server="171.64.65.83" atoms="24802" preferred="4" deadline="12"
     credit="47" frames="50" code="DG" contact="guha" contrib="Synanjin"/>
+  <fah_proj number="3302" name="p3302_ribcompHT" public="y"
+    server="171.64.65.83" atoms="24802" preferred="7" deadline="24"
+    credit="94" frames="100" code="DG" contact="guha"/>
 
   <!-- Projects 9900 to 9999 -->
   <fah_proj number="9999" name="p9999_SMP-sv-melting-99p" public="n"

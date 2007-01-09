@@ -558,7 +558,6 @@ public class Token {
     "loop",              new Token(loop,      onDefault1, "loop"),
     "move",              new Token(move,     varArgCount, "move"),
     "spin",              new Token(spin,     varArgCount, "spin"),
-    "anim",              null,
     "frame",             new Token(frame,      "frame"),
     
     // unimplemented
@@ -573,6 +572,7 @@ public class Token {
     "list",              new Token(list, "list"),
     "display3d",         new Token(display3d,  "display3d"),
     "animation",         new Token(animation,  "animation"),
+    "anim",              null,
 
     // jmol commands
     "centerat",          new Token(centerAt, varArgCount, "centerat"),

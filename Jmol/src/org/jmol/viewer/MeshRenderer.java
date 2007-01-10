@@ -243,8 +243,13 @@ abstract class MeshRenderer extends ShapeRenderer {
                 transformedVectors[normixes[iB]].z < 0 &&
                 transformedVectors[normixes[iC]].z < 0)
               continue;
+            try{
             g3d.fillTriangle(screens[iA], colixA, normixes[iA], screens[iB],
                 colixB, normixes[iB], screens[iC], colixC, normixes[iC]);
+            }catch(Exception e) {
+              //TODO  I can't track this one down -- happened once, not second time, with script running to create isosurface plane for slabbing
+              System.out.println("MeshRenderer bug?"+ e);
+            }
           }
         else
           // FIX ME ... need a drawTriangle routine with multiple colors

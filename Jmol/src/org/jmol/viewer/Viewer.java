@@ -3146,6 +3146,10 @@ public class Viewer extends JmolViewer {
    return global.getParameter(key);  
   }
 
+  Object getParameterValue(String key) {
+    return global.getParameterValue(key);  
+   }
+
   public boolean getBooleanProperty(String key) {
     return getBooleanProperty(key, true);
   }
@@ -3382,7 +3386,7 @@ public class Viewer extends JmolViewer {
       if (!global.htParameterValues.containsKey(key)) {
         Logger.warn("viewer.setFloatProperty(" + key + "," + value
             + ") - new SET option");
-        return;
+        break;
       }
       break;
     }

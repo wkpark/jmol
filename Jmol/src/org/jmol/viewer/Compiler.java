@@ -778,13 +778,15 @@ class Compiler {
 
     //compile expressions
 
+    isIfCmd = (tokCommand == Token.ifcmd);
     boolean checkExpression = ((tokCommand & (Token.expressionCommand | Token.embeddedExpression)) != 0);
-    if ((tokCommand & Token.coordOrSet) != Token.coordOrSet) {
+    if (!isIfCmd && (tokCommand & Token.coordOrSet) != Token.coordOrSet) {
       // $ or { at beginning disallow expression checking for center command
       int firstTok = (size == 1 ? Token.nada : atokenCommand[1].tok);
       if ((firstTok == Token.leftbrace || firstTok == Token.dollarsign))
         checkExpression = false;
     }
+    isBitSetExpression = !isIfCmd;
     if (checkExpression && !compileExpression())
       return false;
 
@@ -882,13 +884,13 @@ class Compiler {
 
   private boolean compileExpression() {
     int tokCommand = atokenCommand[0].tok;
-    boolean isMultipleOK = ((tokCommand & Token.embeddedExpression) != 0);
+    boolean isMultipleOK = (isIfCmd || (tokCommand & Token.embeddedExpression) != 0);
     int expPtr = 1;
     if (tokCommand == Token.define)
       expPtr = 2;
     while (expPtr > 0 && expPtr < atokenCommand.length) {
       if (isMultipleOK)
-        while (expPtr < atokenCommand.length
+        while (!isIfCmd && expPtr < atokenCommand.length
             && atokenCommand[expPtr].tok != Token.leftparen)
           ++expPtr;
       // 0 here means OK; -1 means error;
@@ -896,7 +898,7 @@ class Compiler {
       if (expPtr >= atokenCommand.length
           || (expPtr = compileExpression(expPtr)) <= 0)
         break;
-      if (!isMultipleOK)
+      if (!isIfCmd && !isMultipleOK)
         return endOfExpressionExpected();
     }
     return (expPtr == atokenCommand.length || expPtr == 0);
@@ -1016,6 +1018,9 @@ class Compiler {
     return (atokenInfix[itokenInfix].tok == tok);
   }
 
+  boolean isIfCmd;
+  boolean isBitSetExpression;
+  
   boolean clauseOr() {
     if (!clauseAnd())
       return false;
@@ -1077,13 +1082,17 @@ class Compiler {
     case Token.identifier:
     case Token.colon:
     case Token.percent:
-      if (clauseResidueSpec())
+      if (isBitSetExpression && clauseResidueSpec())
         return true;
     default:
-      if ((tok & Token.atomproperty) == Token.atomproperty)
-        return clauseComparator();
-      if ((tok & Token.predefinedset) != Token.predefinedset)
-        break;
+      if (isBitSetExpression) {
+        if ((tok & Token.atomproperty) == Token.atomproperty)
+          return clauseComparator();
+        if ((tok & Token.predefinedset) != Token.predefinedset)
+          break;
+      } else {
+        return clauseComparator();        
+      }
     // fall into the code and below and just add the token
     case Token.all:
     case Token.none:
@@ -1096,7 +1105,20 @@ class Compiler {
         return rightParenthesisExpected();
       return true;
     case Token.leftbrace:
-      if (!bitset())
+      if (isIfCmd) {
+        if (isBitSetExpression)
+          break;
+        isBitSetExpression = true;
+        tokenNext();
+        addTokenToPostfix(Token.tokenExpressionBegin);
+        if (!clauseOr())
+          return false;
+        addTokenToPostfix(Token.tokenExpressionEnd);
+        if (tokPeek() != Token.rightbrace)
+          return rightBraceExpected();
+        isBitSetExpression = false;
+        return clauseComparator();        
+      } else if (!bitset())
         return false;
       return true;
     }
@@ -1140,11 +1162,27 @@ class Compiler {
   }
 
   boolean clauseComparator() {
+    boolean haveAtomProperty = (tokPeek() != Token.rightbrace);
     Token tokenAtomProperty = tokenNext();
     Token tokenComparator = tokenNext();
-    if (tokenComparator == null
-        || (tokenComparator.tok & Token.comparator) == 0)
-      return comparisonOperatorExpected();
+    boolean isUnary = (tokenComparator == null || (tokenComparator.tok & Token.comparator) != Token.comparator);
+    if (isUnary) {
+      if (isBitSetExpression || tokenAtomProperty == null)
+        return comparisonOperatorExpected();
+      if (tokenComparator != null)
+        returnToken();
+      if ((tokenAtomProperty.tok & Token.comparator) != 0) {
+        tokenComparator = tokenAtomProperty;
+        haveAtomProperty = false;
+      } else {
+        addTokenToPostfix(tokenAtomProperty);
+        return addTokenToPostfix(new Token(Token.opEQ, tokenAtomProperty.tok,
+            new Integer(1)));
+      }
+    }
+    int tok = (isBitSetExpression ? tokenAtomProperty.tok : Token.atompropertyfloat);
+    if (!isBitSetExpression && haveAtomProperty)
+      addTokenToPostfix(tokenAtomProperty);
     if (getToken() == null)
       return numberExpected();
     boolean isNegative = (isToken(Token.hyphen));
@@ -1159,23 +1197,8 @@ class Compiler {
       // case of a radius, in "RasMol units"
       // Others are really decimals without the decimal point;
       // they must be multiplied by 100, just as their decimal equiv.
-      switch (tokenAtomProperty.tok) {
-      case Token.partialCharge:
-      case Token.psi:
-      case Token.phi:
-      case Token.surfacedistance:
-      case Token.temperature:
-      case Token.atomX:
-      case Token.atomY:
-      case Token.atomZ:
-        // int = decimal here, but comparator has to use decmimal * 100
-        val *= 100; 
-        // fall through
-      case Token.radius:
-      case Token.occupancy:
-      default:
-        break;
-      }
+      if ((tok & Token.atompropertyfloat) == Token.atompropertyfloat)
+        val *= 100;
       break;
     case Token.decimal:
       // all decimals must be multiplied by a factor to make them
@@ -1185,6 +1208,10 @@ class Compiler {
         vf *= 2.5; //for RasMol compatibility
       val = (int) vf;
       break;
+    case Token.identifier:
+      val = Integer.MAX_VALUE;
+      addTokenToPostfix(theToken);
+      break;
     default:
       return numberExpected();
     }
@@ -1193,8 +1220,9 @@ class Compiler {
     // the value against which you are comparing is stored as an Integer
     // in the object value
     // all floats are multiplied by either 100 (standard) or 250 (RasMol units)
+    tok = (isBitSetExpression ? tokenAtomProperty.tok : theToken.tok);
     return addTokenToPostfix(new Token(tokenComparator.tok,
-        tokenAtomProperty.tok, new Integer(val * (isNegative ? -1 : 1))));
+        tok, new Integer(val * (isNegative ? -1 : 1))));
   }
 
   boolean clauseCell() {
@@ -1711,6 +1739,10 @@ class Compiler {
 
   private boolean rightParenthesisExpected() {
     return compileError(GT._("right parenthesis expected"));
+  }
+
+  private boolean rightBraceExpected() {
+    return compileError(GT._("right brace expected"));
   }
 
   private boolean coordinateExpected() {

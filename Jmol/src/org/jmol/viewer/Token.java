@@ -89,6 +89,7 @@ public class Token {
   final static int expression        = (1 << 15); /// expression term
   // every property is also valid in an expression context
   final static int atomproperty      = (1 << 16) | expression;
+  final static int atompropertyfloat = atomproperty | 1 << 5;
   // every predefined is also valid in an expression context
   final static int comparator        = (1 << 17) | expression;
   final static int predefinedset     = (1 << 18) | expression;
@@ -205,7 +206,7 @@ public class Token {
   final static int selectionHalo = command | 105 | setparam;
   final static int history       = command | 106 | setparam;
   final static int display       = command | 107 | setparam | expressionCommand;
-  final static int ifcmd         = command | 108;
+  final static int ifcmd         = command | 108 | expressionCommand;
   final static int elsecmd       = command | 109;
   final static int endifcmd      = command | 110;
   final static int subset        = command | 111 | expressionCommand | predefinedset;
@@ -344,7 +345,7 @@ public class Token {
   final static int elemno       = atomproperty | 1;
   final static int resno        = atomproperty | 2;
   final static int radius       = atomproperty | 3 | setparam;
-  final static int temperature  = atomproperty | 4;
+  final static int temperature  = atompropertyfloat | 4;
   
   final static int _bondedcount = atomproperty | 6;
   final static int _groupID     = atomproperty | 7;
@@ -357,16 +358,16 @@ public class Token {
   final static int site            = atomproperty | 14;
   final static int element         = atomproperty | 15;
   final static int symop           = atomproperty | 16;
-  final static int surfacedistance = atomproperty | 17;
+  final static int surfacedistance = atompropertyfloat | 17;
   final static int atomIndex       = atomproperty | 18;
   final static int formalCharge    = atomproperty | 19 | setparam;
-  final static int phi             = atomproperty | 20;
-  final static int psi             = atomproperty | 21;
-  final static int partialCharge   = atomproperty | 22;
+  final static int phi             = atompropertyfloat | 20;
+  final static int psi             = atompropertyfloat | 21;
+  final static int partialCharge   = atompropertyfloat | 22;
   
-  final static int atomX       = atomproperty | 23;
-  final static int atomY       = atomproperty | 24;
-  final static int atomZ       = atomproperty | 25;
+  final static int atomX       = atompropertyfloat | 23;
+  final static int atomY       = atompropertyfloat | 24;
+  final static int atomZ       = atompropertyfloat | 25;
 
   final static int opGT         = comparator |  0;
   final static int opGE         = comparator |  1;
@@ -725,7 +726,7 @@ public class Token {
     "<",            new Token(opLT, "<"),
     "<=",           new Token(opLE, "<="),
     ">=",           new Token(opGE, ">="),
-    ">",            new Token(opGT, ">="),
+    ">",            new Token(opGT, ">"),
     "==",           new Token(opEQ, "=="),
     "=",            null,
     "!=",           new Token(opNE, "!="),

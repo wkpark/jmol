@@ -639,6 +639,15 @@ class StateManager {
       return "<not set>";
     }
     
+    Object getParameterValue(String name) {
+      name = name.toLowerCase();
+      if (htParameterValues.containsKey(name))
+        return htParameterValues.get(name);
+      if (htPropertyFlags.containsKey(name))
+        return htPropertyFlags.get(name);
+      return "";
+    }
+    
     String getAllSettings() {
       StringBuffer commands = new StringBuffer("");
       Enumeration e;

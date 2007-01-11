@@ -556,7 +556,7 @@ class Eval { //implements Runnable {
         proteinShape(JmolConstants.SHAPE_BACKBONE);
         break;
       case Token.background:
-        background();
+        background(1);
         break;
       case Token.center:
         center(1);
@@ -2666,16 +2666,16 @@ class Eval { //implements Runnable {
     showString(retValue);
   }
 
-  void background() throws ScriptException {
-    int tok = getToken(1).tok;
+  void background(int i) throws ScriptException {
+    int tok = getToken(i).tok;
     int argb;
     if (tok == Token.colorRGB || tok == Token.none) {
-      argb = getArgbOrNoneParam(1);
+      argb = getArgbOrNoneParam(i);
       if (!isSyntaxCheck)
         viewer.setBackgroundArgb(argb);
       return;
     }
-    argb = getArgbOrNoneParam(2);
+    argb = getArgbOrNoneParam(i + 1);
     int iShape = getShapeType(tok);
     if (!isSyntaxCheck)
       viewer.setShapePropertyArgb(iShape, "bgcolor", argb);
@@ -4656,6 +4656,9 @@ class Eval { //implements Runnable {
     switch (getToken(1).tok) {
     case Token.axes:
       setAxes(2);
+      return;
+    case Token.background:
+      background(2);
       return;
     case Token.bondmode:
       setBondmode();
@@ -6982,10 +6985,6 @@ class Eval { //implements Runnable {
 
   void unrecognizedShowParameter(String use) throws ScriptException {
     evalError(GT._("unrecognized SHOW parameter --  use {0}", use));
-  }
-
-  void setspecialShouldNotBeHere() throws ScriptException {
-    evalError(GT._("interpreter error - setspecial should not be here"));
   }
 
   void numberOutOfRange() throws ScriptException {

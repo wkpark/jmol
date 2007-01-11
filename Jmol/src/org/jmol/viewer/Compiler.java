@@ -275,12 +275,7 @@ class Compiler {
           break;
         case Token.set:
           if (ltoken.size() == 1) {
-            if (tokAttr(tok, Token.setspecial)) {
-              // set unitcell, for example, becomes just unitcell
-              tokCommand = tok;
-              ltoken.remove(0);
-              break;
-            } else if (tok == Token.opEQ) {
+            if (tok == Token.opEQ) {
               token = (Token) ltoken.get(0);
               ltoken.remove(0);
               ltoken.add(new Token(Token.set, Token.varArgCount, "set"));
@@ -982,15 +977,15 @@ class Compiler {
         && (isToken(Token.integer) || isToken(Token.decimal)));
   }
   
-  boolean tokAttr(int a, int b) {
+ static  boolean tokAttr(int a, int b) {
     return (a & b) == b;
   }
   
-  boolean tokAttrOr(int a, int b1, int b2) {
+  static boolean tokAttrOr(int a, int b1, int b2) {
     return (a & b1) == b1 || (a & b2) == b2;
   }
   
-  boolean tokenAttr(Token token, int tok) {
+  static boolean tokenAttr(Token token, int tok) {
     return token != null && (token.tok & tok) == tok;
   }
   

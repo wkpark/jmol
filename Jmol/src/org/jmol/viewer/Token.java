@@ -98,12 +98,8 @@ public class Token {
   // generally, the minus sign is used to denote atom ranges
   // this property is used for the few commands which allow negative integers
   final static int negnums           = (1 << 21);
-  // for some commands the 'set' is optional
-  // so, just delete the set command from the token list
-  // but not for hbonds nor ssbonds
-  final static int setspecial        = (1 << 22);
-  final static int objectid          = (1 << 23);
-  final static int unimplemented     = (1 << 24);
+  final static int objectid          = (1 << 22);
+  final static int unimplemented     = (1 << 23);
   
   final static int coordOrSet = negnums | embeddedExpression; 
 
@@ -117,7 +113,7 @@ public class Token {
   
   // rasmol commands
   final static int backbone     = command |  0 | bool | predefinedset;
-  final static int background   = command |  1 | colorparam | setspecial;
+  final static int background   = command |  1 | colorparam | setparam;
   final static int bond         = command |  2 | unimplemented | setparam | bool;
   final static int cartoon      = command |  3 | setparam;
   final static int center       = command |  4 | setparam | expressionCommand;
@@ -146,12 +142,12 @@ public class Token {
   final static int save         = command | 28;
   final static int script       = command | 29 | specialstring;
   final static int select       = command | 30 | expressionCommand;
-  final static int set          = command | 31 | bool | negnums | embeddedExpression;
+  final static int set          = command | 31 | bool | negnums | embeddedExpression | colorparam;
   final static int show         = command | 32;
   final static int slab         = command | 33 | bool | negnums | embeddedExpression;
   final static int spacefill    = command | 35 | setparam | bool | negnums;
   final static int ssbond       = command | 36 | setparam | bool;
-  final static int stereo       = command | 38 | colorparam | negnums;// | setspecial | bool | negnums ;
+  final static int stereo       = command | 38 | colorparam | negnums;
   final static int strands      = command | 39 | setparam | bool;
   final static int structure    = command | 40 | unimplemented;
   final static int trace        = command | 41 | bool;
@@ -727,8 +723,8 @@ public class Token {
     "<=",           new Token(opLE, "<="),
     ">=",           new Token(opGE, ">="),
     ">",            new Token(opGT, ">"),
-    "==",           new Token(opEQ, "=="),
-    "=",            null,
+    "=",            new Token(opEQ, "="),
+    "==",           null,
     "!=",           new Token(opNE, "!="),
     "<>",           null,
     "/=",           null,

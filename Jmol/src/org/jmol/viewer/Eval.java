@@ -832,12 +832,12 @@ class Eval { //implements Runnable {
     if (isSyntaxCheck)
       return true;
     // (exp.....)
-    float floatValue = Float.NaN;
-    iToken = 1000;
     int sp = 0;
     boolean[] stack = new boolean[10];
     boolean bValue;
-    float comparisonValue = Float.NaN;
+    int intValue = Integer.MAX_VALUE;
+    float floatValue = Float.NaN;
+    String stringValue = null;
     Object val;
     if (logMessages)
       viewer.scriptStatus("start to evaluate IF expression");
@@ -849,9 +849,14 @@ class Eval { //implements Runnable {
       case Token.expressionBegin:
       case Token.expressionEnd:
         break;
-      case Token.decimal:
       case Token.integer:
+        floatValue = intValue = intParameter(i);
+        break;
+      case Token.decimal:
         floatValue = floatParameter(i);
+        break;
+      case Token.string:
+        stringValue = parameterAsString(i).toLowerCase();
         break;
       case Token.leftbrace:
         floatValue = viewer.cardinalityOf(expression(i + 1));
@@ -861,13 +866,14 @@ class Eval { //implements Runnable {
         break;
       case Token.identifier:
         val = viewer.getParameterValue(parameterAsString(i));
-        floatValue = Float.NaN;
         if (val instanceof Boolean)
           stack[sp++] = ((Boolean) val).booleanValue();
         else if (val instanceof Integer)
-          floatValue = ((Integer) val).intValue();
+          floatValue = intValue = ((Integer) val).intValue();
         else if (val instanceof Float)
           floatValue = ((Float) val).floatValue();
+        else if (val instanceof String)
+          stringValue = ((String) val).toLowerCase();
         else
           invalidArgument();
         break;
@@ -892,49 +898,85 @@ class Eval { //implements Runnable {
       case Token.opGT:
       case Token.opEQ:
       case Token.opNE:
+        float comparisonValue = Float.NaN;
+        String comparisonString = null;
+        int comparisonInt = Integer.MAX_VALUE;
         boolean isNegative = (parameterAsString(i).indexOf("-") >= 0);
-        if (getToken(++i).tok == Token.leftbrace) {
+        int tok = getToken(++i).tok;
+        if (tok == Token.leftbrace) {
           comparisonValue = viewer.cardinalityOf(expression(i + 1));
           i = iToken;
         } else {
+          boolean isIdentifier = (tok == Token.identifier);
           val = statement[i].value;
-          comparisonValue = statement[i].intValue;
-          boolean isIdentifier = (statement[i].tok == Token.identifier);
+          comparisonValue = comparisonInt = statement[i].intValue;
           if (isIdentifier)
             val = viewer.getParameterValue((String) val);
-          if (val instanceof Integer)
-            comparisonValue = ((Integer) val).intValue();
+          if (tok == Token.integer)
+            comparisonValue = comparisonInt = statement[i].intValue;
+          else if (val instanceof Integer)
+            comparisonValue = comparisonInt = ((Integer) val).intValue();
           else if (val instanceof Float)
             comparisonValue = ((Float) val).floatValue();
           else if (val instanceof Boolean)
-            comparisonValue = (((Boolean) val).booleanValue() ? 1 : 0);
-          else if (isIdentifier)
+            comparisonValue = comparisonInt = (((Boolean) val).booleanValue() ? 1
+                : 0);
+          else if (tok == Token.string || isIdentifier && val instanceof String)
+            comparisonString = (String) val;
+          else
             invalidArgument();
-          if (isNegative)
+          if (isNegative && !Float.isNaN(comparisonValue))
             comparisonValue = -comparisonValue;
         }
-        if (Float.isNaN(floatValue))
+        if (Float.isNaN(floatValue) && stringValue == null)
           floatValue = (stack[--sp] ? 1 : 0);
-        switch (instruction.tok) {
-        case Token.opLT:
-          stack[sp++] = floatValue < comparisonValue;
-          break;
-        case Token.opLE:
-          stack[sp++] = floatValue <= comparisonValue;
-          break;
-        case Token.opGE:
-          stack[sp++] = floatValue >= comparisonValue;
-          break;
-        case Token.opGT:
-          stack[sp++] = floatValue > comparisonValue;
-          break;
-        case Token.opEQ:
-          stack[sp++] = floatValue == comparisonValue;
-          break;
-        case Token.opNE:
-          stack[sp++] = floatValue != comparisonValue;
-          break;
+        if (comparisonString != null && stringValue == null)
+          stringValue = (intValue == Integer.MAX_VALUE ? "" + floatValue : "" + intValue);
+        else if (comparisonString == null && stringValue != null)
+          comparisonString = (comparisonInt == Integer.MAX_VALUE ? comparisonValue + ""
+                  : comparisonInt + "");
+        if (comparisonString == null) {
+          switch (instruction.tok) {
+          case Token.opLT:
+            stack[sp++] = floatValue < comparisonValue;
+            break;
+          case Token.opLE:
+            stack[sp++] = floatValue <= comparisonValue;
+            break;
+          case Token.opGE:
+            stack[sp++] = floatValue >= comparisonValue;
+            break;
+          case Token.opGT:
+            stack[sp++] = floatValue > comparisonValue;
+            break;
+          case Token.opEQ:
+            stack[sp++] = floatValue == comparisonValue;
+            break;
+          case Token.opNE:
+            stack[sp++] = floatValue != comparisonValue;
+            break;
+          }
+        } else {
+          comparisonString = comparisonString.toLowerCase();
+          switch (instruction.tok) {
+          case Token.opLT:
+          case Token.opLE:
+          case Token.opGE:
+          case Token.opGT:
+            iToken--;
+            invalidArgument();
+            break;
+          case Token.opEQ:
+            stack[sp++] = stringValue.equals(comparisonString);
+            break;
+          case Token.opNE:
+            stack[sp++] = !stringValue.equals(comparisonString);
+            break;
+          }
         }
+        intValue = Integer.MAX_VALUE;
+        floatValue = Float.NaN;
+        stringValue = null;
         break;
       default:
         unrecognizedExpression();

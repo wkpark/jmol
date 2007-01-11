@@ -1202,6 +1202,7 @@ class Compiler {
     case Token.decimal:
     case Token.identifier:
       break;
+    case Token.string:
     case Token.leftbrace:
       if (!isBitSetExpression)
         break;

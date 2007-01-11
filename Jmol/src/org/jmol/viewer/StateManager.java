@@ -34,8 +34,7 @@ import java.text.DecimalFormat;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.CommandHistory;
-
-//import org.jmol.util.Logger;
+import java.util.Arrays;
 
 class StateManager {
   Viewer viewer;
@@ -665,11 +664,13 @@ class StateManager {
       StringBuffer commands = new StringBuffer("");
       Enumeration e;
       String key;
+      String[] list = new String[htPropertyFlags.size() + htParameterValues.size()];
       //booleans
+      int n = 0;
       e = htPropertyFlags.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
-        appendCmd(commands, "set " + key + " " + htPropertyFlags.get(key));
+        list[n++] = key + " = " + htPropertyFlags.get(key);
       }
       //save as _xxxx if you don't want "set" to be there first
       e = htParameterValues.keys();
@@ -679,9 +680,13 @@ class StateManager {
           Object value = htParameterValues.get(key);
             if (value instanceof String)
               value = escape((String) value);
-          appendCmd(commands, "set " + key + " " + value);
+            list[n++] = key + " = " + value;
         }
       }
+      Arrays.sort(list, 0, n);
+      for (int i = 0; i < n; i++)
+        if (list[i] != null)
+          appendCmd(commands, list[i]);
       return commands + "\n";
     }
     

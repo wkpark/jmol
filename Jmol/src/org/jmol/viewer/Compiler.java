@@ -119,7 +119,6 @@ class Compiler {
 
     Vector lltoken = new Vector();
     Vector ltoken = new Vector();
-    //Token tokenCommand = null;
     int tokCommand = Token.nada;
     for (int nTokens = 0; true; ichToken += cchToken) {
       if (lookingAtLeadingWhitespace())
@@ -207,8 +206,7 @@ class Compiler {
             cchToken = pt;
           }
         }
-        if (((tokCommand & Token.specialstring) != 0)
-            && lookingAtSpecialString()) {
+        if (tokAttr(tokCommand, Token.specialstring) && lookingAtSpecialString()) {
           String str = script.substring(ichToken, ichToken + cchToken);
           ltoken.addElement(new Token(Token.string, str));
           continue;
@@ -218,7 +216,7 @@ class Compiler {
           ltoken.addElement(new Token(Token.decimal, new Float(value)));
           continue;
         }
-        if (lookingAtDecimal((tokCommand & Token.negnums) != 0)) {
+        if (lookingAtDecimal(tokAttr(tokCommand, Token.negnums))) {
           value =
           // can't use parseFloat with jvm 1.1
           // Float.parseFloat(script.substring(ichToken, ichToken + cchToken));
@@ -238,7 +236,7 @@ class Compiler {
           ltoken.addElement(new Token(Token.seqcode, seqcode, "seqcode"));
           continue;
         }
-        if (lookingAtInteger((tokCommand & Token.negnums) != 0)) {
+        if (lookingAtInteger(tokAttr(tokCommand, Token.negnums))) {
           String intString = script.substring(ichToken, ichToken + cchToken);
           int val = Integer.parseInt(intString);
           ltoken.addElement(new Token(Token.integer, val, intString));
@@ -268,20 +266,28 @@ class Compiler {
         // special cases
         case Token.nada:
           ichCurrentCommand = ichToken;
-          //tokenCommand = token;
           tokCommand = tok;
-          if ((tokCommand & Token.command) == 0)
+          if (tokAttr(tokCommand, Token.command))
+            break;
+          if (!tokAttr(tok, Token.identifier))
             return commandExpected();
+          tokCommand = Token.set;
           break;
         case Token.set:
           if (ltoken.size() == 1) {
-            if ((tok & Token.setspecial) != 0) {
-              //tokenCommand = token;
+            if (tokAttr(tok, Token.setspecial)) {
+              // set unitcell, for example, becomes just unitcell
               tokCommand = tok;
-              ltoken.removeAllElements();
+              ltoken.remove(0);
               break;
+            } else if (tok == Token.opEQ) {
+              token = (Token) ltoken.get(0);
+              ltoken.remove(0);
+              ltoken.add(new Token(Token.set, Token.varArgCount, "set"));
+              tok = token.tok;
+              tokCommand = Token.set;
             }
-            if ((tok & Token.setparam) == 0 && tok != Token.identifier)
+            if (tok != Token.identifier && !tokAttr(tok, Token.setparam))
               return unrecognizedParameter("SET", ident);
           }
           break;
@@ -290,7 +296,7 @@ class Compiler {
             // we are looking at the variable name
 
             if (!preDefining && tok != Token.identifier) {
-              if ((tok & Token.predefinedset) != Token.predefinedset) {
+              if (!tokAttr(tok, Token.predefinedset)) {
                 Logger.warn("WARNING: redefining " + ident + "; was " + token);
                 tok = token.tok = Token.identifier;
                 Token.map.put(ident, token);
@@ -304,25 +310,24 @@ class Compiler {
               }
             }
 
-            if (tok != Token.identifier
-                && (tok & Token.predefinedset) != Token.predefinedset)
+            if (tok != Token.identifier && !tokAttr(tok, Token.predefinedset))
               return invalidExpressionToken(ident);
           } else {
             // we are looking at the expression
-            if (tok != Token.identifier && tok != Token.set
-                && (tok & (Token.expression | Token.predefinedset)) == 0)
+            if (tok != Token.identifier && tok != Token.set 
+                && !(tokAttrOr(tok, Token.expression, Token.predefinedset)))
               return invalidExpressionToken(ident);
           }
           break;
         case Token.center:
           if (tok != Token.identifier && tok != Token.dollarsign
-              && (tok & Token.expression) == 0)
+              && !tokAttr(tok, Token.expression))
             return invalidExpressionToken(ident);
           break;
         case Token.restrict:
         case Token.select:
         case Token.display:
-          if (tok != Token.identifier && (tok & Token.expression) == 0)
+          if (tok != Token.identifier && !tokAttr(tok, Token.expression))
             return invalidExpressionToken(ident);
           break;
         }
@@ -757,13 +762,10 @@ class Compiler {
 
   private boolean compileCommand(Vector ltoken) {
     Token tokenCommand = (Token) ltoken.firstElement();
-    //Logger.debug(tokenCommand + script);
     int tokCommand = tokenCommand.tok;
     int size = ltoken.size();
-    if ((tokenCommand.intValue & Token.onDefault1) == Token.onDefault1
-        && size == 1)
+    if (tokAttr(tokenCommand.intValue, Token.onDefault1) && size == 1)
       ltoken.addElement(Token.tokenOn);
-
     atokenCommand = new Token[ltoken.size()];
     ltoken.copyInto(atokenCommand);
     if (logMessages) {
@@ -773,17 +775,16 @@ class Compiler {
 
     //compile color parameters
 
-    if ((tokCommand & Token.colorparam) != 0 && !compileColorParam())
+    if (tokAttr(tokCommand, Token.colorparam) && !compileColorParam())
       return false;
 
     //compile expressions
 
     isSetExpression = (tokCommand == Token.set && size > 3 && atokenCommand[2].tok == Token.leftbrace);
     isNumericExpression = (tokCommand == Token.ifcmd || isSetExpression);
-//    isSetExpression = ((tokCommand == Token.set && size > 3 && (atokenCommand[2].tok == Token.leftbrace || atokenCommand[2].tok == Token.leftparen)));
-    boolean checkExpression = (isNumericExpression || (tokCommand & (Token.expressionCommand | Token.embeddedExpression)) != 0);
-    if (!isNumericExpression
-        && (tokCommand & Token.coordOrSet) != Token.coordOrSet) {
+    boolean checkExpression = (isNumericExpression || tokAttrOr(tokCommand,
+        Token.expressionCommand, Token.embeddedExpression));
+    if (!isNumericExpression && !tokAttr(tokCommand, Token.coordOrSet)) {
       // $ or { at beginning disallow expression checking for center command
       int firstTok = (size == 1 ? Token.nada : atokenCommand[1].tok);
       if ((firstTok == Token.leftbrace || firstTok == Token.dollarsign))
@@ -798,7 +799,7 @@ class Compiler {
     size = atokenCommand.length;
 
     int allowedLen = (tokenCommand.intValue & 0x0F) + 1;
-    if ((tokenCommand.intValue & Token.varArgCount) == 0) {
+    if (!tokAttr(tokenCommand.intValue, Token.varArgCount)) {
       if (size > allowedLen)
         return badArgumentCount();
       if (size < allowedLen)
@@ -887,7 +888,7 @@ class Compiler {
 
   private boolean compileExpression() {
     int tokCommand = atokenCommand[0].tok;
-    boolean isMultipleOK = (isNumericExpression || (tokCommand & Token.embeddedExpression) != 0);
+    boolean isMultipleOK = (isNumericExpression || tokAttr(tokCommand, Token.embeddedExpression));
     int expPtr = 1;
     if (tokCommand == Token.define || tokCommand == Token.set)
       expPtr = 2;
@@ -979,6 +980,18 @@ class Compiler {
   boolean getNumericalToken() {
     return (getToken() != null 
         && (isToken(Token.integer) || isToken(Token.decimal)));
+  }
+  
+  boolean tokAttr(int a, int b) {
+    return (a & b) == b;
+  }
+  
+  boolean tokAttrOr(int a, int b1, int b2) {
+    return (a & b1) == b1 || (a & b2) == b2;
+  }
+  
+  boolean tokenAttr(Token token, int tok) {
+    return token != null && (token.tok & tok) == tok;
   }
   
   boolean isToken(int tok) {
@@ -1093,9 +1106,9 @@ class Compiler {
         return true;
     default:
       if (isBitSetExpression) {
-        if ((tok & Token.atomproperty) == Token.atomproperty)
+        if (tokAttr(tok, Token.atomproperty))
           return clauseComparator();
-        if ((tok & Token.predefinedset) != Token.predefinedset)
+        if (!tokAttr(tok, Token.predefinedset))
           break;
       } else {
         return clauseComparator();        
@@ -1115,20 +1128,14 @@ class Compiler {
       if (isNumericExpression) {
         if (isBitSetExpression)
           break;
+        addTokenToPostfix(tokenNext());
         isBitSetExpression = true;
-        tokenNext();
-        addTokenToPostfix(Token.tokenExpressionBegin);
         if (!clauseOr())
           return false;
-        addTokenToPostfix(Token.tokenExpressionEnd);
+        isBitSetExpression = false;
         if (tokPeek() != Token.rightbrace)
           return rightBraceExpected();
-        isBitSetExpression = false;
-        if (isSetExpression) {
-          getToken();
-          return true;
-        }
-        return clauseComparator();        
+        return (isSetExpression ? addTokenToPostfix(tokenNext()) : clauseComparator());        
       } else if (!bitset())
         return false;
       return true;
@@ -1173,26 +1180,23 @@ class Compiler {
   }
 
   boolean clauseComparator() {
-    boolean haveAtomProperty = (tokPeek() != Token.rightbrace);
     Token tokenAtomProperty = tokenNext();
     Token tokenComparator = tokenNext();
-    boolean isUnary = (tokenComparator == null || (tokenComparator.tok & Token.comparator) != Token.comparator);
-    if (isUnary) {
+    if (!tokenAttr(tokenComparator, Token.comparator)) {
+      // atom property has already been loaded, or this really is unary = 
       if (isBitSetExpression || tokenAtomProperty == null)
         return comparisonOperatorExpected();
       if (tokenComparator != null)
         returnToken();
-      if ((tokenAtomProperty.tok & Token.comparator) != 0) {
-        tokenComparator = tokenAtomProperty;
-        haveAtomProperty = false;
-      } else {
+      if (!tokAttr(tokenAtomProperty.tok, Token.comparator)) {
         addTokenToPostfix(tokenAtomProperty);
-        addTokenToPostfix(new Token(Token.opEQ, tokenAtomProperty.tok));
+        addTokenToPostfix(new Token(Token.opEQ, tokenAtomProperty.tok, "=="));
         return addTokenToPostfix(new Token(Token.integer, new Integer(1)));
       }
-    }
-    if (!isBitSetExpression && haveAtomProperty)
+      tokenComparator = tokenAtomProperty;
+    } else if (!isBitSetExpression) {
       addTokenToPostfix(tokenAtomProperty);
+    }
     if (getToken() == null)
       return unrecognizedExpressionToken();
     boolean isNegative = (isToken(Token.hyphen));
@@ -1203,14 +1207,20 @@ class Compiler {
     case Token.decimal:
     case Token.identifier:
       break;
+    case Token.leftbrace:
+      if (!isBitSetExpression)
+        break;
     default:
       return numberOrVariableNameExpected();
     }
     addTokenToPostfix(new Token(tokenComparator.tok,
         isBitSetExpression ? tokenAtomProperty.tok : Token.nada,
-        isNegative ? Boolean.TRUE : Boolean.FALSE));
-    addTokenToPostfix(theToken);
-    return true;
+        tokenComparator.value + (isNegative ? " -" : "")));
+    if (isToken(Token.leftbrace)) {
+      returnToken();
+      return clausePrimitive();
+    }
+    return addTokenToPostfix(theToken);
   }
 
   boolean clauseCell() {

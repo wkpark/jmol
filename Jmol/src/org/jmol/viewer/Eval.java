@@ -841,19 +841,23 @@ class Eval { //implements Runnable {
     Object val;
     if (logMessages)
       viewer.scriptStatus("start to evaluate IF expression");
-    for (int i = 2; i < statementLength; i++) {
+    for (int i = 1; i < statementLength; i++) {
       Token instruction = getToken(i);
       if (logMessages)
         viewer.scriptStatus("instruction=" + instruction);
       switch (instruction.tok) {
       case Token.expressionBegin:
-        floatValue = viewer.cardinalityOf(expression(i));
+      case Token.expressionEnd:
+        break;
+      case Token.decimal:
+      case Token.integer:
+        floatValue = floatParameter(i);
+        break;
+      case Token.leftbrace:
+        floatValue = viewer.cardinalityOf(expression(i + 1));
         i = iToken;
         if (logMessages)
           viewer.scriptStatus("expression evaluates to " + floatValue);
-        break;
-      case Token.expressionEnd:
-        i++;
         break;
       case Token.identifier:
         val = viewer.getParameterValue(parameterAsString(i));
@@ -888,19 +892,27 @@ class Eval { //implements Runnable {
       case Token.opGT:
       case Token.opEQ:
       case Token.opNE:
-        boolean isNegative = ((Boolean) statement[i].value).booleanValue();
-        val = getToken(++i).value;
-        comparisonValue = statement[i].intValue;
-        if (statement[i].tok == Token.identifier)
-          val = viewer.getParameterValue((String) val);
-        if (val instanceof Integer)
-          comparisonValue = ((Integer) val).intValue();
-        else if (val instanceof Float)
-          comparisonValue = ((Float) val).floatValue();
-        else if (val instanceof Boolean)
-          comparisonValue = (((Boolean) val).booleanValue() ? 1 : 0);
-        if (isNegative)
-          comparisonValue = -comparisonValue;
+        boolean isNegative = (parameterAsString(i).indexOf("-") >= 0);
+        if (getToken(++i).tok == Token.leftbrace) {
+          comparisonValue = viewer.cardinalityOf(expression(i + 1));
+          i = iToken;
+        } else {
+          val = statement[i].value;
+          comparisonValue = statement[i].intValue;
+          boolean isIdentifier = (statement[i].tok == Token.identifier);
+          if (isIdentifier)
+            val = viewer.getParameterValue((String) val);
+          if (val instanceof Integer)
+            comparisonValue = ((Integer) val).intValue();
+          else if (val instanceof Float)
+            comparisonValue = ((Float) val).floatValue();
+          else if (val instanceof Boolean)
+            comparisonValue = (((Boolean) val).booleanValue() ? 1 : 0);
+          else if (isIdentifier)
+            invalidArgument();
+          if (isNegative)
+            comparisonValue = -comparisonValue;
+        }
         if (Float.isNaN(floatValue))
           floatValue = (stack[--sp] ? 1 : 0);
         switch (instruction.tok) {
@@ -1028,6 +1040,7 @@ class Eval { //implements Runnable {
       case Token.expressionBegin:
         break;
       case Token.expressionEnd:
+      case Token.rightbrace:
         break expression_loop;
       case Token.leftbrace:
         thisCoordinate = getCoordinate(pc, true);
@@ -1170,23 +1183,24 @@ class Eval { //implements Runnable {
       case Token.opEQ:
       case Token.opNE:
         bs = stack[sp++] = new BitSet();
-        boolean isNegative = ((Boolean) instruction.value).booleanValue();
+        boolean isNegative = (((String)instruction.value).indexOf("-") >= 0);
         Object val = code[++pc].value;
         comparisonValue = code[pc].intValue;
         if (isSyntaxCheck)
           break;
-        if (code[pc].tok== Token.identifier){
+        boolean isIdentifier = (code[pc].tok == Token.identifier);
+        if (isIdentifier) {
           val = viewer.getParameterValue((String) val);
           if (val instanceof Integer)
             comparisonValue = ((Integer) val).intValue();
         }
-        if (comparisonValue != Integer.MAX_VALUE)
+        if (val instanceof Integer || code[pc].tok == Token.integer)
           comparisonValue *= ((instruction.intValue & Token.atompropertyfloat) == Token.atompropertyfloat ? 100
               : 1);
         else if (val instanceof Float)
           comparisonValue = (int) (((Float) val).floatValue() * (instruction.intValue == Token.radius ? 250f
               : 100f));
-        else
+        else 
           invalidArgument();
         if (isNegative)
           comparisonValue = -comparisonValue;
@@ -3095,8 +3109,8 @@ class Eval { //implements Runnable {
     if (script != null && viewer.getAllowEmbeddedScripts()) {
       msg += "\nAdding embedded #jmolscript: " + script;
       defaultScript += ";" + script;
-      defaultScript = "set allowEmbeddedScripts false;" + defaultScript
-          + ";set allowEmbeddedScripts true;";
+      defaultScript = "allowEmbeddedScripts = false;" + defaultScript
+          + ";allowEmbeddedScripts = true;";
     }
     if (msg.length() > 0)
       Logger.info(msg);
@@ -4836,10 +4850,10 @@ class Eval { //implements Runnable {
         setIntProperty(key, intParameter(2));
         return;
       case Token.expressionBegin:
-        n = viewer.cardinalityOf(expression(2));
+        n = viewer.cardinalityOf(expression(getToken(3).tok == Token.leftbrace ? 4 : 3));
         setIntProperty(key, n);
         if (!isSyntaxCheck)
-          viewer.scriptEcho("set " + key + " " + n);
+          viewer.scriptEcho(key + " = " + n);
         return;
       case Token.on:
       case Token.off:
@@ -5745,7 +5759,7 @@ class Eval { //implements Runnable {
       return;
     }
     if (!isSyntaxCheck && str != null)
-      showString("set " + str + " " + viewer.getParameter(str));
+      showString(str + " = " + viewer.getParameter(str));
   }
 
   void showString(String str) {
@@ -7043,9 +7057,6 @@ class Eval { //implements Runnable {
 
   String statementAsString() {
     StringBuffer sb = new StringBuffer();
-    boolean isIfCmd = (statement[0].tok == Token.ifcmd);
-    boolean skipBrace = true;
-
     for (int i = 0; i < statementLength; ++i) {
       if (iToken == i - 1)
         sb.append(" <<");
@@ -7056,13 +7067,7 @@ class Eval { //implements Runnable {
       Token token = statement[i];
       switch (token.tok) {
       case Token.expressionBegin:
-        if (isIfCmd && !skipBrace)
-          sb.append("{");
-        skipBrace = false;
-        continue;
       case Token.expressionEnd:
-        if (!skipBrace)
-          sb.append("}");
         continue;
       case Token.integer:
         sb.append(token.intValue);
@@ -7116,28 +7121,16 @@ class Eval { //implements Runnable {
         Point3f pt = (Point3f) token.value;
         sb.append("cell={" + pt.x + " " + pt.y + " " + pt.z + "}");
         continue;
-      case Token.identifier:
-        break;
       case Token.string:
         sb.append("\"" + token.value + "\"");
         continue;
       case Token.opEQ:
-        sb.append("=");
-        break;
       case Token.opLE:
-        sb.append("<=");
-        break;
       case Token.opGE:
-        sb.append(">=");
-        break;
       case Token.opGT:
-        sb.append(">");
-        break;
       case Token.opLT:
-        sb.append("<");
-        break;
       case Token.opNE:
-        sb.append("!=");
+      case Token.identifier:
         break;
       default:
         if (!logMessages)

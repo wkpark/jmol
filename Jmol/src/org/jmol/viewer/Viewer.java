@@ -3305,11 +3305,12 @@ public class Viewer extends JmolViewer {
       if (key.charAt(0) != '@') {
         if (!global.htParameterValues.containsKey(key)) {
             if (global.htPropertyFlags.containsKey(key)) {
-              Logger.warn("cannot set boolean flag to string value");
+              Logger.error("cannot set boolean flag to string value");
+              scriptEcho("script WARNING: cannot set boolean flag to string value");
               return;
             }
           Logger.warn("viewer.setStringProperty(" + key + "," + value
-              + ") - new SET option");
+              + ") - string variable defined");
           break;
         }
       }
@@ -3411,11 +3412,12 @@ public class Viewer extends JmolViewer {
         return false;
       if (!global.htParameterValues.containsKey(key)) {
         if (global.htPropertyFlags.containsKey(key)) {
-          Logger.warn("cannot set boolean flag to numeric value");
+          Logger.error("cannot set boolean flag to numeric value");
+          scriptEcho("script WARNING: cannot set boolean flag to numeric value");
           return true;
         }
         Logger.warn("viewer.setFloatProperty(" + key + "," + value
-            + ") - new SET option");
+            + ") - float variable defined");
         break;
       }
       break;
@@ -3509,11 +3511,12 @@ public class Viewer extends JmolViewer {
           return;
         if (!global.htParameterValues.containsKey(key)) {
           if (global.htPropertyFlags.containsKey(key)) {
-            Logger.warn("cannot set boolean flag to numeric value");
+            Logger.error("cannot set boolean flag to numeric value");
+            scriptEcho("script WARNING: cannot set boolean flag to numeric value");
             return;
           }
           Logger.warn("viewer.setIntProperty(" + key + "," + value
-              + ") - new SET option");
+              + ") - integer variable defined");
           break;
         }
         break;
@@ -3817,10 +3820,8 @@ public class Viewer extends JmolViewer {
       return !notFound;
     if (notFound) {
       if (!value && !global.htPropertyFlags.containsKey(key.toLowerCase())) {
-        Logger.error("viewer.setBooleanProperty(" + key + "," + value
-            + ") - unrecognized SET option");
-        scriptStatus("Script WARNING: unrecognized SET option: set " + key);
-        return false;
+        Logger.warn("viewer.setBooleanProperty(" + key + "," + value
+            + ") - boolean variable defined");
       }
     }
     global.setParameterValue(key, value);

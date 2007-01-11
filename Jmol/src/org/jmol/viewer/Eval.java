@@ -2658,8 +2658,10 @@ class Eval { //implements Runnable {
       param = "";
     } else if (propertyID >= 0 && statementLength < 3) {
       param = PropertyManager.getDefaultParam(propertyID);
-      if (param.equals("(visible)"))
+      if (param.equals("(visible)")) {
+        viewer.setModelVisibility();
         bs = viewer.getVisibleSet();
+      }
     }
     retValue = (String) viewer.getProperty("readable", property,
         (bs == null ? (Object) param : (Object) bs));

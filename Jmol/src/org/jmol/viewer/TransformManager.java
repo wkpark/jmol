@@ -1910,7 +1910,8 @@ abstract class TransformManager {
     vibrationScale = 0;
   }
 
-  private class VibrationThread extends Thread implements Runnable {
+  /*private -- removed for fixing warning*/
+  class VibrationThread extends Thread implements Runnable {
 
     public void run() {
       long startTime = System.currentTimeMillis();

@@ -2962,13 +2962,13 @@ class Eval { //implements Runnable {
     String text = optParameterAsString(1);
     if (viewer.getEchoStateActive())
       setShapeProperty(JmolConstants.SHAPE_ECHO, "text", text);
-    viewer.scriptEcho(viewer.formatText(text));
+    showString(viewer.formatText(text));
   }
 
   void message() throws ScriptException {
     String text = parameterAsString(1);
     if (!isSyntaxCheck)
-      viewer.scriptEcho(viewer.formatText(text));
+      showString(viewer.formatText(text));
   }
 
   void label() throws ScriptException {
@@ -4858,7 +4858,7 @@ class Eval { //implements Runnable {
         n = viewer.cardinalityOf(expression(getToken(3).tok == Token.leftbrace ? 4 : 3));
         setIntProperty(key, n);
         if (!isSyntaxCheck)
-          viewer.scriptEcho(key + " = " + n);
+          showString(key + " = " + n);
         return;
       case Token.on:
       case Token.off:

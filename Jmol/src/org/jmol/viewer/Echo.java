@@ -74,7 +74,7 @@ class Echo extends TextShape {
           } else if ("bottom" == target) {
             valign = Text.BOTTOM;
           }
-          text = new Text(g3d, g3d.getFont3D(FONTFACE, FONTSIZE), target,
+          text = new Text(viewer, g3d, g3d.getFont3D(FONTFACE, FONTSIZE), target,
               COLOR, valign, halign);
           text.setAdjustForWindow(true); // when a box is around it
           texts.put(target, text);

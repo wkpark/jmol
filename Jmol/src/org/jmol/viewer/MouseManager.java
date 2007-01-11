@@ -597,7 +597,6 @@ abstract class MouseManager implements KeyListener {
           return;
         } catch (Exception ie) {
           Logger.error("Hover Exception!" + ie);
-          return;
         }
       }
     }

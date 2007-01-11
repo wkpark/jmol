@@ -778,15 +778,18 @@ class Compiler {
 
     //compile expressions
 
-    isIfCmd = (tokCommand == Token.ifcmd);
-    boolean checkExpression = ((tokCommand & (Token.expressionCommand | Token.embeddedExpression)) != 0);
-    if (!isIfCmd && (tokCommand & Token.coordOrSet) != Token.coordOrSet) {
+    isSetExpression = (tokCommand == Token.set && size > 3 && atokenCommand[2].tok == Token.leftbrace);
+    isNumericExpression = (tokCommand == Token.ifcmd || isSetExpression);
+//    isSetExpression = ((tokCommand == Token.set && size > 3 && (atokenCommand[2].tok == Token.leftbrace || atokenCommand[2].tok == Token.leftparen)));
+    boolean checkExpression = (isNumericExpression || (tokCommand & (Token.expressionCommand | Token.embeddedExpression)) != 0);
+    if (!isNumericExpression
+        && (tokCommand & Token.coordOrSet) != Token.coordOrSet) {
       // $ or { at beginning disallow expression checking for center command
       int firstTok = (size == 1 ? Token.nada : atokenCommand[1].tok);
       if ((firstTok == Token.leftbrace || firstTok == Token.dollarsign))
         checkExpression = false;
     }
-    isBitSetExpression = !isIfCmd;
+    isBitSetExpression = !isNumericExpression;
     if (checkExpression && !compileExpression())
       return false;
 
@@ -884,21 +887,24 @@ class Compiler {
 
   private boolean compileExpression() {
     int tokCommand = atokenCommand[0].tok;
-    boolean isMultipleOK = (isIfCmd || (tokCommand & Token.embeddedExpression) != 0);
+    boolean isMultipleOK = (isNumericExpression || (tokCommand & Token.embeddedExpression) != 0);
     int expPtr = 1;
-    if (tokCommand == Token.define)
+    if (tokCommand == Token.define || tokCommand == Token.set)
       expPtr = 2;
+    if (tokCommand == Token.set && expPtr >= atokenCommand.length)
+      return true;
     while (expPtr > 0 && expPtr < atokenCommand.length) {
       if (isMultipleOK)
-        while (!isIfCmd && expPtr < atokenCommand.length
+        while (!isNumericExpression && expPtr < atokenCommand.length
             && atokenCommand[expPtr].tok != Token.leftparen)
           ++expPtr;
       // 0 here means OK; -1 means error;
       // > 0 means pointer to the next expression
-      if (expPtr >= atokenCommand.length
-          || (expPtr = compileExpression(expPtr)) <= 0)
+      if (expPtr >= atokenCommand.length)
+          break;
+      if ((expPtr = compileExpression(expPtr)) <= 0)
         break;
-      if (!isIfCmd && !isMultipleOK)
+      if (!isNumericExpression && !isMultipleOK)
         return endOfExpressionExpected();
     }
     return (expPtr == atokenCommand.length || expPtr == 0);
@@ -1018,8 +1024,9 @@ class Compiler {
     return (atokenInfix[itokenInfix].tok == tok);
   }
 
-  boolean isIfCmd;
+  boolean isNumericExpression;
   boolean isBitSetExpression;
+  boolean isSetExpression;
   
   boolean clauseOr() {
     if (!clauseAnd())
@@ -1105,7 +1112,7 @@ class Compiler {
         return rightParenthesisExpected();
       return true;
     case Token.leftbrace:
-      if (isIfCmd) {
+      if (isNumericExpression) {
         if (isBitSetExpression)
           break;
         isBitSetExpression = true;
@@ -1117,6 +1124,10 @@ class Compiler {
         if (tokPeek() != Token.rightbrace)
           return rightBraceExpected();
         isBitSetExpression = false;
+        if (isSetExpression) {
+          getToken();
+          return true;
+        }
         return clauseComparator();        
       } else if (!bitset())
         return false;
@@ -1176,53 +1187,30 @@ class Compiler {
         haveAtomProperty = false;
       } else {
         addTokenToPostfix(tokenAtomProperty);
-        return addTokenToPostfix(new Token(Token.opEQ, tokenAtomProperty.tok,
-            new Integer(1)));
+        addTokenToPostfix(new Token(Token.opEQ, tokenAtomProperty.tok));
+        return addTokenToPostfix(new Token(Token.integer, new Integer(1)));
       }
     }
-    int tok = (isBitSetExpression ? tokenAtomProperty.tok : Token.atompropertyfloat);
     if (!isBitSetExpression && haveAtomProperty)
       addTokenToPostfix(tokenAtomProperty);
     if (getToken() == null)
-      return numberExpected();
+      return unrecognizedExpressionToken();
     boolean isNegative = (isToken(Token.hyphen));
     if (isNegative && getToken() == null)
       return numberExpected();
-    int val = 0;
     switch (theToken.tok) {
     case Token.integer:
-      val = theToken.intValue;
-      // Most integer values are what they mean or, for example, in 
-      // the case of occupancy, a percentage value or in the
-      // case of a radius, in "RasMol units"
-      // Others are really decimals without the decimal point;
-      // they must be multiplied by 100, just as their decimal equiv.
-      if ((tok & Token.atompropertyfloat) == Token.atompropertyfloat)
-        val *= 100;
-      break;
     case Token.decimal:
-      // all decimals must be multiplied by a factor to make them
-      // integers. Most use 100; RasMol "radius" uses Angstroms * 250
-      float vf = floatValue() * 100f;
-      if (tokenAtomProperty.tok == Token.radius)
-        vf *= 2.5; //for RasMol compatibility
-      val = (int) vf;
-      break;
     case Token.identifier:
-      val = Integer.MAX_VALUE;
-      addTokenToPostfix(theToken);
       break;
     default:
-      return numberExpected();
+      return numberOrVariableNameExpected();
     }
-    // note that a comparator instruction is a complicated instruction
-    // int intValue is the tok of the property you are comparing
-    // the value against which you are comparing is stored as an Integer
-    // in the object value
-    // all floats are multiplied by either 100 (standard) or 250 (RasMol units)
-    tok = (isBitSetExpression ? tokenAtomProperty.tok : theToken.tok);
-    return addTokenToPostfix(new Token(tokenComparator.tok,
-        tok, new Integer(val * (isNegative ? -1 : 1))));
+    addTokenToPostfix(new Token(tokenComparator.tok,
+        isBitSetExpression ? tokenAtomProperty.tok : Token.nada,
+        isNegative ? Boolean.TRUE : Boolean.FALSE));
+    addTokenToPostfix(theToken);
+    return true;
   }
 
   boolean clauseCell() {
@@ -1779,6 +1767,10 @@ class Compiler {
 
   private boolean numberExpected() {
     return compileError(GT._("number expected"));
+  }
+
+  private boolean numberOrVariableNameExpected() {
+    return compileError(GT._("number or variable name expected"));
   }
 
   private boolean unrecognizedParameter(String kind, String param) {

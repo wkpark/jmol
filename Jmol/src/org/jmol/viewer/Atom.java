@@ -656,7 +656,7 @@ final public class Atom extends Point3fi implements Tuple {
      Object[] clientAtomReferences = group.chain.frame.clientAtomReferences;
      return
        ((clientAtomReferences==null || clientAtomReferences.length<=atomIndex)
-        ? null
+        ? group.chain.frame.viewer.getParameterValue(propertyName).toString()
         : (group.chain.frame.viewer.
            getClientAtomStringProperty(clientAtomReferences[atomIndex],
                                        propertyName)));
@@ -1045,7 +1045,7 @@ final public class Atom extends Point3fi implements Tuple {
          * the list:
          * 
          *      case '%':
-         case '{':
+         case '{': parameter value
          case 'A': alternate location identifier
          case 'a': atom name
          case 'b': temperature factor ("b factor")

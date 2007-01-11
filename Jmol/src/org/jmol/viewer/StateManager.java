@@ -606,22 +606,35 @@ class StateManager {
           htParameterValues.remove(key);
     }
 
-    void setParameterValue(String key, boolean value) {
-      key = key.toLowerCase();
-        htPropertyFlags.put(key, value ? Boolean.TRUE : Boolean.FALSE);  
+    void setParameterValue(String name, boolean value) {
+      name = name.toLowerCase();
+      if (htParameterValues.containsKey(name))
+        return; // don't allow setting boolean of a numeric
+      htPropertyFlags.put(name, value ? Boolean.TRUE : Boolean.FALSE);  
     }
 
     void setParameterValue(String name, int value) {
       name = name.toLowerCase();
-        htParameterValues.put(name, new Integer(value));
+      if (htPropertyFlags.containsKey(name))
+        return; // don't allow setting numeric of a boolean
+      htParameterValues.put(name, new Integer(value));
     }
     
     void setParameterValue(String name, float value) {
       name = name.toLowerCase();
-        htParameterValues.put(name, new Float(value));
+      if (Float.isNaN(value)) {
+        htParameterValues.remove(name);
+        htPropertyFlags.remove(name);
+        return;
+      }
+      if (htPropertyFlags.containsKey(name))
+        return; // don't allow setting numeric of a boolean
+      htParameterValues.put(name, new Float(value));
     }
     
     void setParameterValue(String name, String value) {
+      if (htPropertyFlags.containsKey(name))
+        return; // don't allow setting string of a boolean
       name = name.toLowerCase();
         htParameterValues.put(name, value);
     }

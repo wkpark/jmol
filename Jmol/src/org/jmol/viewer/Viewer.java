@@ -1569,10 +1569,10 @@ public class Viewer extends JmolViewer {
   }
 
   // this is a problem. SmarterJmolAdapter doesn't implement this;
-  // it can only return null. Do we need it?
+  // it can only return null. 
 
   String getClientAtomStringProperty(Object clientAtom, String propertyName) {
-    if (modelAdapter == null)
+    if (modelAdapter == null || propertyName == null || propertyName.length() == 0)
       return null;
     return modelAdapter.getClientAtomStringProperty(clientAtom, propertyName);
   }
@@ -3150,6 +3150,23 @@ public class Viewer extends JmolViewer {
     return global.getParameterValue(key);  
    }
 
+  String formatText(String text) {
+    int i0 = -1;
+    int i;
+    while ((i = text.indexOf("%{")) >= 0) {
+      i0 = i + 2;
+      i = text.indexOf("}", i0);
+      String name = text.substring(i0, i);
+      text = text.substring(0, i0 - 2) + getParameterValue(name).toString()
+          + text.substring(i + 1);
+    }
+    return text;
+  }
+  
+  void unsetProperty(String name) {
+    global.setParameterValue(name, Float.NaN);
+  }
+  
   public boolean getBooleanProperty(String key) {
     return getBooleanProperty(key, true);
   }
@@ -3280,24 +3297,31 @@ public class Viewer extends JmolViewer {
         //just saving this
         break;
       }
-      if (key.toLowerCase().indexOf("callback") >= 0) {
+      if (  key.toLowerCase().indexOf("callback") >= 0) {
         setCallbackFunction(key, value);
         break;
       }
-      //not found
+      //not found -- @ is a silent mode indicator
       if (key.charAt(0) != '@') {
         if (!global.htParameterValues.containsKey(key)) {
+            if (global.htPropertyFlags.containsKey(key)) {
+              Logger.warn("cannot set boolean flag to string value");
+              return;
+            }
           Logger.warn("viewer.setStringProperty(" + key + "," + value
               + ") - new SET option");
-          return;
+          break;
         }
       }
       break;
     }
     global.setParameterValue(key, value);
   }
-
   public void setFloatProperty(String key, float value) {
+    setFloatProperty(key, value, false);
+  }
+
+  private boolean setFloatProperty(String key, float value, boolean isInt) {
     //Eval
     while (true) {
       ///11.1///
@@ -3326,7 +3350,7 @@ public class Viewer extends JmolViewer {
         break;
       }
       if (key.equalsIgnoreCase("hoverDelay")) {
-        setHoverDelay((int)(value * 1000));
+        setHoverDelay((int) (value * 1000));
         break;
       }
       ///11.0///
@@ -3380,10 +3404,16 @@ public class Viewer extends JmolViewer {
       }
       if (key.equalsIgnoreCase("radius")) { //deprecated
         setFloatProperty("solventProbeRadius", value);
-        return;
+        return true;
       }
       // not found
+      if (isInt)
+        return false;
       if (!global.htParameterValues.containsKey(key)) {
+        if (global.htPropertyFlags.containsKey(key)) {
+          Logger.warn("cannot set boolean flag to numeric value");
+          return true;
+        }
         Logger.warn("viewer.setFloatProperty(" + key + "," + value
             + ") - new SET option");
         break;
@@ -3391,6 +3421,7 @@ public class Viewer extends JmolViewer {
       break;
     }
     global.setParameterValue(key, value);
+    return true;
   }
 
   public void setIntProperty(String key, int value) {
@@ -3398,7 +3429,7 @@ public class Viewer extends JmolViewer {
     setIntProperty(key, value, true);
   }
 
-  void setIntProperty(String key, int value, boolean defineNew) {
+  private void setIntProperty(String key, int value, boolean defineNew) {
     while (true) {
       ///11.1///
       if (key.equalsIgnoreCase("perspectiveModel")) {
@@ -3428,11 +3459,11 @@ public class Viewer extends JmolViewer {
       }
       if (key.equalsIgnoreCase("diffuse")) {
         setIntProperty("diffusePercent", value);
-        break;
+        return;
       }
       if (key.equalsIgnoreCase("ambient")) {
         setIntProperty("ambientPercent", value);
-        break;
+        return;
       }
       if (key.equalsIgnoreCase("specularPercent")) {
         setSpecularPercent(value);
@@ -3464,16 +3495,30 @@ public class Viewer extends JmolViewer {
         break;
       }
       if (key.equalsIgnoreCase("bondRadiusMilliAngstroms")) {
-        setMarBond((short)value);
+        setMarBond((short) value);
         break;
       }
       if (key.equalsIgnoreCase("hermiteLevel")) {
         setHermiteLevel(value);
         break;
       }
-      if (value != 0 || value != 1 || !setBooleanProperty(key, false, false))
-        setFloatProperty(key, (float) value);
-      return;
+      //not found
+      if ((value != 0 && value != 1)
+          || !setBooleanProperty(key, value == 1, false)) {
+        if (setFloatProperty(key, value, true))
+          return;
+        if (!global.htParameterValues.containsKey(key)) {
+          if (global.htPropertyFlags.containsKey(key)) {
+            Logger.warn("cannot set boolean flag to numeric value");
+            return;
+          }
+          Logger.warn("viewer.setIntProperty(" + key + "," + value
+              + ") - new SET option");
+          break;
+        }
+        break;
+      }
+      break;
     }
     if (defineNew)
       global.setParameterValue(key, value);

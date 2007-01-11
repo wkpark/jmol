@@ -857,25 +857,15 @@ class Eval { //implements Runnable {
         break;
       case Token.identifier:
         val = viewer.getParameterValue(parameterAsString(i));
-        boolean isComparison = !Float.isNaN(floatValue);
-        comparisonValue = Float.NaN;
-        if (!isComparison)
-          floatValue = Float.NaN;
-        float f = Float.NaN;
+        floatValue = Float.NaN;
         if (val instanceof Boolean)
           stack[sp++] = ((Boolean) val).booleanValue();
         else if (val instanceof Integer)
-          f = ((Integer) val).intValue() * 100;
+          floatValue = ((Integer) val).intValue();
         else if (val instanceof Float)
-          f = ((Float) val).floatValue();
+          floatValue = ((Float) val).floatValue();
         else
           invalidArgument();
-        if (!Float.isNaN(f)) {
-          if (isComparison)
-            comparisonValue = f;
-          else
-            floatValue = f;
-        }
         break;
       case Token.opOr:
         bValue = stack[--sp];
@@ -898,14 +888,21 @@ class Eval { //implements Runnable {
       case Token.opGT:
       case Token.opEQ:
       case Token.opNE:
-        if (statement[i].intValue == Token.identifier) {
-          if (Float.isNaN(comparisonValue))
-            comparisonValue = (stack[--sp] ? 0.01f : 0); 
-        } else {
-          comparisonValue = ((Integer) instruction.value).intValue() / 100f;
-        }
+        boolean isNegative = ((Boolean) statement[i].value).booleanValue();
+        val = getToken(++i).value;
+        comparisonValue = statement[i].intValue;
+        if (statement[i].tok == Token.identifier)
+          val = viewer.getParameterValue((String) val);
+        if (val instanceof Integer)
+          comparisonValue = ((Integer) val).intValue();
+        else if (val instanceof Float)
+          comparisonValue = ((Float) val).floatValue();
+        else if (val instanceof Boolean)
+          comparisonValue = (((Boolean) val).booleanValue() ? 1 : 0);
+        if (isNegative)
+          comparisonValue = -comparisonValue;
         if (Float.isNaN(floatValue))
-          floatValue = (stack[--sp] ? 0.01f : 0);
+          floatValue = (stack[--sp] ? 1 : 0);
         switch (instruction.tok) {
         case Token.opLT:
           stack[sp++] = floatValue < comparisonValue;
@@ -926,7 +923,6 @@ class Eval { //implements Runnable {
           stack[sp++] = floatValue != comparisonValue;
           break;
         }
-        floatValue = Float.NaN;
         break;
       default:
         unrecognizedExpression();
@@ -1160,23 +1156,6 @@ class Eval { //implements Runnable {
             (int) (pt.x * 1000), (int) (pt.y * 1000), (int) (pt.z * 1000) });
         break;
       case Token.identifier:
-        if (pc + 1 < code.length && (code[pc + 1].tok & Token.comparator) == Token.comparator) {
-          Object val = viewer.getParameterValue((String)code[pc].value);
-          if (val instanceof Boolean)
-            comparisonValue = (((Boolean) val).booleanValue() ? 1 : 0);
-          else if (val instanceof Integer)
-            comparisonValue = ((Integer) val).intValue() * 100;
-          else if (val instanceof Float)
-            comparisonValue = (int)(((Float) val).floatValue() * 100);
-          else
-            invalidArgument();
-          int tok = code[pc + 1].intValue;
-          if (tok == Token.radius)
-            comparisonValue *= 2.5; //radius = n uses float equivalent -- radius = 3.0, not radius  = 3
-          else if ((tok & Token.atompropertyfloat) != Token.atompropertyfloat)
-            comparisonValue /= 100;
-          break;
-        }
       case Token.amino:
       case Token.backbone:
       case Token.solvent:
@@ -1191,8 +1170,27 @@ class Eval { //implements Runnable {
       case Token.opEQ:
       case Token.opNE:
         bs = stack[sp++] = new BitSet();
+        boolean isNegative = ((Boolean) instruction.value).booleanValue();
+        Object val = code[++pc].value;
+        comparisonValue = code[pc].intValue;
+        if (isSyntaxCheck)
+          break;
+        if (code[pc].tok== Token.identifier){
+          val = viewer.getParameterValue((String) val);
+          if (val instanceof Integer)
+            comparisonValue = ((Integer) val).intValue();
+        }
+        if (comparisonValue != Integer.MAX_VALUE)
+          comparisonValue *= ((instruction.intValue & Token.atompropertyfloat) == Token.atompropertyfloat ? 100
+              : 1);
+        else if (val instanceof Float)
+          comparisonValue = (int) (((Float) val).floatValue() * (instruction.intValue == Token.radius ? 250f
+              : 100f));
+        else
+          invalidArgument();
+        if (isNegative)
+          comparisonValue = -comparisonValue;
         comparatorInstruction(instruction, bs, comparisonValue);
-        comparisonValue = Integer.MAX_VALUE;
         break;
       default:
         unrecognizedExpression();
@@ -1284,8 +1282,6 @@ class Eval { //implements Runnable {
     int comparator = instruction.tok;
     int property = instruction.intValue;
     int propertyValue = Integer.MAX_VALUE;//Float.NaN;
-    if (comparisonValue == Integer.MAX_VALUE)
-      comparisonValue = ((Integer) instruction.value).intValue();
     BitSet propertyBitSet = null;
     int bitsetComparator = comparator;
     int bitsetBaseValue = comparisonValue;
@@ -2950,13 +2946,13 @@ class Eval { //implements Runnable {
     String text = optParameterAsString(1);
     if (viewer.getEchoStateActive())
       setShapeProperty(JmolConstants.SHAPE_ECHO, "text", text);
-    viewer.scriptEcho(text);
+    viewer.scriptEcho(viewer.formatText(text));
   }
 
   void message() throws ScriptException {
     String text = parameterAsString(1);
     if (!isSyntaxCheck)
-      viewer.scriptStatus(text);
+      viewer.scriptEcho(viewer.formatText(text));
   }
 
   void label() throws ScriptException {
@@ -4640,6 +4636,7 @@ class Eval { //implements Runnable {
       return;
     }
     int val = 0;
+    int n = 0;
     switch (getToken(1).tok) {
     case Token.axes:
       setAxes(2);
@@ -4698,7 +4695,7 @@ class Eval { //implements Runnable {
       setPickingStyle();
       return;
     case Token.formalCharge:
-      int n = intParameter(2);
+      n = intParameter(2);
       if (!isSyntaxCheck)
         viewer.setFormalCharges(n);
       return;
@@ -4761,32 +4758,32 @@ class Eval { //implements Runnable {
     case Token.identifier:
     case Token.radius:
     case Token.solvent:
-      String str = parameterAsString(1);
-      if (str.toLowerCase().indexOf("label") == 0) {
-        setLabel(str.substring(5));
+      String key = parameterAsString(1);
+      if (key.toLowerCase().indexOf("label") == 0) {
+        setLabel(key.substring(5));
         return;
       }
-      if (str.equalsIgnoreCase("toggleLabel")) {
+      if (key.equalsIgnoreCase("toggleLabel")) {
         BitSet bs = expression(2);
         if (!isSyntaxCheck)
           viewer.togglePickingLabel(bs);
         return;
       }
-      if (str.equalsIgnoreCase("defaultColorScheme")) {
+      if (key.equalsIgnoreCase("defaultColorScheme")) {
         setDefaultColors();
         return;
       }
-      if (str.equalsIgnoreCase("measurementNumbers")) {
+      if (key.equalsIgnoreCase("measurementNumbers")) {
         setMonitor(2);
         return;
       }
-      if (str.equalsIgnoreCase("historyLevel")) {
+      if (key.equalsIgnoreCase("historyLevel")) {
         int iLevel = intParameter(2);
         if (!isSyntaxCheck)
           commandHistoryLevelMax = iLevel;
         return;
       }
-      if (str.equalsIgnoreCase("defaultLattice")) {
+      if (key.equalsIgnoreCase("defaultLattice")) {
         Point3f pt;
         if (getToken(2).tok == Token.integer) {
           int i = intParameter(2);
@@ -4798,7 +4795,7 @@ class Eval { //implements Runnable {
           viewer.setDefaultLattice(pt);
         return;
       }
-      if (str.equalsIgnoreCase("dipoleScale")) {
+      if (key.equalsIgnoreCase("dipoleScale")) {
         checkLength3();
         float scale = floatParameter(2);
         if (scale < -10 || scale > 10)
@@ -4806,7 +4803,7 @@ class Eval { //implements Runnable {
         setFloatProperty("dipoleScale", scale);
         return;
       }
-      if (str.equalsIgnoreCase("logLevel")) {
+      if (key.equalsIgnoreCase("logLevel")) {
         // set logLevel n
         // we have 5 levels 0 - 4 debug -- error
         // n = 0 -- no messages -- turn all off
@@ -4821,22 +4818,32 @@ class Eval { //implements Runnable {
         }
         return;
       }
-      String key = parameterAsString(1);
       if (statementLength == 2) {
         setBooleanProperty(key, true);
         return;
       }
-      checkLength3();
+      if (getToken(2).tok != Token.expressionBegin)
+        checkLength3();
       switch (getToken(2).tok) {
+      case Token.none:
+        if (!isSyntaxCheck)
+          viewer.unsetProperty(key);
+        return;
       case Token.decimal:
         setFloatProperty(key, floatParameter(2));
         return;
       case Token.integer:
         setIntProperty(key, intParameter(2));
         return;
+      case Token.expressionBegin:
+        n = viewer.cardinalityOf(expression(2));
+        setIntProperty(key, n);
+        if (!isSyntaxCheck)
+          viewer.scriptEcho("set " + key + " " + n);
+        return;
       case Token.on:
       case Token.off:
-        break;
+        break;        
       default:
         if (statement[2].value instanceof String) {
           setStringProperty(key, stringParameter(2));
@@ -5737,7 +5744,7 @@ class Eval { //implements Runnable {
       showString((str.length() > 0 ? "set " + str + " " : "") + value);
       return;
     }
-    if (str != null)
+    if (!isSyntaxCheck && str != null)
       showString("set " + str + " " + viewer.getParameter(str));
   }
 

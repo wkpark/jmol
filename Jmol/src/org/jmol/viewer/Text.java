@@ -50,10 +50,12 @@ class Text {
   final static int MIDDLE = 3;
 
   boolean atomBased;
+  Viewer viewer;
   Graphics3D g3d;
   Point3f xyz;
   String target;
-  String text;
+  String text, textUnformatted;
+  boolean doFormatText;
   
   String[] lines;
   int align;
@@ -90,11 +92,12 @@ class Text {
   // for labels and hover
   Text(Graphics3D g3d, Font3D font, String text, short colix,
       short bgcolix, int offsetX, int offsetY, int z, int zSlab, int textAlign) {
+    this.viewer = null;
+    this.g3d = g3d;
     windowWidth = g3d.getRenderWidth();
     windowHeight = g3d.getRenderHeight();
     atomBased = true;
-    this.g3d = g3d;
-    this.text = fixText(text);
+    setText(text);
     this.colix = colix;
     this.bgcolix = bgcolix;
     setXYZs(offsetX, offsetY, z, zSlab);
@@ -103,11 +106,12 @@ class Text {
   }
 
   // for echo
-  Text(Graphics3D g3d, Font3D font, String target, short colix, int valign, int align) {
+  Text(Viewer viewer, Graphics3D g3d, Font3D font, String target, short colix, int valign, int align) {
+    this.viewer = viewer;
+    this.g3d = g3d;
     windowWidth = g3d.getRenderWidth();
     windowHeight = g3d.getRenderHeight();
     atomBased = false;
-    this.g3d = g3d;
     this.target = target;
     if (target.equals("error"))
       valign = TOP; 
@@ -279,7 +283,10 @@ class Text {
     if (this.text != null && this.text.equals(text))
       return;
     this.text = text;
-    recalc();
+    textUnformatted = text;
+    doFormatText = (viewer != null && text.indexOf("%{") >= 0);
+    if (!doFormatText)
+      recalc();
   }
 
   void setFont(Font3D f3d) {
@@ -323,7 +330,7 @@ class Text {
     int pt;
     while ((pt = text.indexOf("\n")) >= 0)
       text = text.substring(0, pt) + "|" + text.substring(pt + 1);
-    return text;  
+    return text;
   }
   
   void recalc() {
@@ -345,19 +352,27 @@ class Text {
     boxHeight = textHeight + 8;
   }
 
+  void formatText() {
+    text = (viewer == null ? textUnformatted : 
+      viewer.formatText(textUnformatted));
+    recalc();
+  }
+  
   void render() {
     if (text == null)
       return;
 
+    if (doFormatText)
+      formatText();
     setPositions();
 
     // draw the box if necessary
-    
+
     if (bgcolix != 0)
       drawBox();
-    
+
     // now set x and y positions for text from (new?) box position
-    
+
     int x0 = boxX + 4;
     switch (align) {
     case CENTER:
@@ -366,9 +381,9 @@ class Text {
     case RIGHT:
       x0 = boxX + boxWidth - 4;
     }
-    
+
     // now write properly aligned text
-    
+
     int x = x0;
     int y = boxY + ascent + 4;
     for (int i = 0; i < lines.length; i++) {
@@ -382,16 +397,18 @@ class Text {
       g3d.drawString(lines[i], font, colix, x, y, z, zSlab);
       y += lineHeight;
     }
-    
+
     // now daw the pointer, if requested
-        
+
     if ((pointer & POINTER_ON) != 0) {
-      short pointerColix = ((pointer & POINTER_BACKGROUND) != 0 && bgcolix != 0 ? bgcolix : colix);
+      short pointerColix = ((pointer & POINTER_BACKGROUND) != 0 && bgcolix != 0 ? bgcolix
+          : colix);
       if (boxX > movableX)
-        g3d.drawLine(pointerColix, movableX, movableY, zSlab, boxX, boxY + boxHeight / 2, zSlab);
+        g3d.drawLine(pointerColix, movableX, movableY, zSlab, boxX, boxY
+            + boxHeight / 2, zSlab);
       else if (boxX + boxWidth < movableX)
-        g3d.drawLine(pointerColix, movableX, movableY, zSlab, boxX + boxWidth, boxY + boxHeight
-            / 2, zSlab);
+        g3d.drawLine(pointerColix, movableX, movableY, zSlab, boxX + boxWidth,
+            boxY + boxHeight / 2, zSlab);
     }
   }
 

@@ -2547,7 +2547,7 @@ public final class Frame {
   BitSet getClickableSet() {
     BitSet bs = new BitSet();
     for (int i = atomCount; --i >= 0;)
-      if (atoms[i].clickabilityFlags != 0)
+      if (atoms[i].isClickable())
         bs.set(i);
     return bs;
   }

@@ -177,7 +177,7 @@ public class Viewer extends JmolViewer {
   boolean haveDisplay = true;
   boolean mustRender = true;
   boolean checkScriptOnly = false;
-  
+
   public boolean isApplet() {
     return (htmlName.length() > 0);
   }
@@ -249,7 +249,6 @@ public class Viewer extends JmolViewer {
     return 0;
   }
 
-  
   public Component getAwtComponent() {
     return display;
   }
@@ -388,9 +387,9 @@ public class Viewer extends JmolViewer {
   void setCenterBitSet(BitSet bsCenter, boolean doScale) {
     //Eval 
     //setCenterSelected
-    
-    Point3f center = (bsCenter != null && cardinalityOf(bsCenter) > 0 ? 
-        getAtomSetCenter(bsCenter) : null);
+
+    Point3f center = (bsCenter != null && cardinalityOf(bsCenter) > 0 ? getAtomSetCenter(bsCenter)
+        : null);
     transformManager.setNewRotationCenter(center, doScale);
     refresh(0, "Viewer:setCenterBitSet()");
   }
@@ -404,21 +403,21 @@ public class Viewer extends JmolViewer {
   Point3f getNavigationCenter() {
     return transformManager.getNavigationCenter();
   }
-  
+
   boolean getNavigationCentered() {
     return transformManager.isNavigationCentered();
   }
-  
+
   float getNavigationDepthPercent() {
     return transformManager.getNavigationDepthPercent();
   }
-  
+
   void navigate(int keyWhere, int modifiers) {
     transformManager.navigate(keyWhere, modifiers);
     if (!transformManager.vibrationOn)
       refresh(1, "Viewer:navigate()");
   }
-  
+
   Point3f getNavigationOffset() {
     return transformManager.getNavigationOffset();
   }
@@ -426,11 +425,11 @@ public class Viewer extends JmolViewer {
   float getNavigationOffsetPercent(char XorY) {
     return transformManager.getNavigationOffsetPercent(XorY);
   }
-  
+
   boolean getNavigating() {
     return transformManager.getNavigating();
   }
-  
+
   void move(Vector3f dRot, int dZoom, Vector3f dTrans, int dSlab,
             float floatSecondsTotal, int fps) {
     //from Eval
@@ -438,16 +437,17 @@ public class Viewer extends JmolViewer {
   }
 
   void moveTo(float floatSecondsTotal, Point3f center, Point3f pt,
-                     float degrees, float zoom, float xTrans, float yTrans,
-                     float rotationRadius, Point3f navCenter, float xNav, float yNav, float navDepth) {
+              float degrees, float zoom, float xTrans, float yTrans,
+              float rotationRadius, Point3f navCenter, float xNav, float yNav,
+              float navDepth) {
     //from Eval
     transformManager.moveTo(floatSecondsTotal, center, pt, degrees, zoom,
         xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
   }
 
-  void moveTo(float floatSecondsTotal, Matrix3f rotationMatrix,
-                     Point3f center, float zoom, float xTrans, float yTrans,
-                     float rotationRadius, Point3f navCenter, float xNav, float yNav, float navDepth) {
+  void moveTo(float floatSecondsTotal, Matrix3f rotationMatrix, Point3f center,
+              float zoom, float xTrans, float yTrans, float rotationRadius,
+              Point3f navCenter, float xNav, float yNav, float navDepth) {
     //from StateManager
     transformManager.moveTo(floatSecondsTotal, rotationMatrix, center, zoom,
         xTrans, yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
@@ -457,36 +457,37 @@ public class Viewer extends JmolViewer {
     return transformManager.getMoveToText(timespan);
   }
 
-  void navigate(float timeSeconds, Point3f[] path, float[] theta, int indexStart, int indexEnd) {
+  void navigate(float timeSeconds, Point3f[] path, float[] theta,
+                int indexStart, int indexEnd) {
     transformManager.navigate(timeSeconds, path, theta, indexStart, indexEnd);
     refresh(1, "navigate");
   }
-  
+
   void navigate(float timeSeconds, Point3f center) {
     transformManager.navigate(timeSeconds, center);
     refresh(1, "navigate");
   }
-  
+
   void navigate(float timeSeconds, Point3f[][] pathGuide) {
     transformManager.navigate(timeSeconds, pathGuide);
     refresh(1, "navigate");
   }
-  
+
   void navigate(float timeSeconds, Vector3f rotAxis, float degrees) {
     transformManager.navigate(timeSeconds, rotAxis, degrees);
     refresh(1, "navigate");
   }
-  
+
   void navTranslate(float timeSeconds, Point3f center) {
     transformManager.navTranslate(timeSeconds, center);
     refresh(1, "navigate");
   }
-  
+
   void navTranslatePercent(float timeSeconds, float x, float y) {
     transformManager.navTranslatePercent(timeSeconds, x, y);
     refresh(1, "navigate");
   }
-  
+
   boolean pointToCenter = true;
 
   boolean getPointToCenter() {
@@ -623,7 +624,7 @@ public class Viewer extends JmolViewer {
   void slabReset() {
     transformManager.slabReset();
   }
-  
+
   boolean getZoomEnabled() {
     return transformManager.zoomEnabled;
   }
@@ -659,15 +660,15 @@ public class Viewer extends JmolViewer {
   void slabInternal(Point4f plane, boolean isDepth) {
     transformManager.slabInternal(plane, isDepth);
   }
-  
+
   Point4f getDepthPlane(boolean isInternal) {
     return transformManager.getDepthPlane(isInternal);
   }
-  
+
   Point4f getSlabPlane(boolean isInternal) {
     return transformManager.getSlabPlane(isInternal);
   }
-  
+
   void slabInternalReference(Point3f ptRef) {
     transformManager.slabInternalReference(ptRef);
   }
@@ -691,7 +692,7 @@ public class Viewer extends JmolViewer {
   void setSlabDepthInternal(boolean isDepth) {
     transformManager.setSlabDepthInternal(isDepth);
   }
-  
+
   public Matrix4f getUnscaledTransformMatrix() {
     return transformManager.getUnscaledTransformMatrix();
   }
@@ -765,7 +766,7 @@ public class Viewer extends JmolViewer {
   String getSpinState() {
     return transformManager.getSpinState(false);
   }
-  
+
   float getSpinX() {
     return transformManager.spinX;
   }
@@ -895,11 +896,10 @@ public class Viewer extends JmolViewer {
     global.setParameterValue("vibrationPeriod", period);
     transformManager.setVibrationPeriod(period);
   }
-  
+
   public void setVectorScale(float scale) {
     loadShape(JmolConstants.SHAPE_VECTORS);
-    setShapeProperty(JmolConstants.SHAPE_VECTORS, "scale", new Float(
-        scale));
+    setShapeProperty(JmolConstants.SHAPE_VECTORS, "scale", new Float(scale));
   }
 
   void setBackgroundArgb(int argb) {
@@ -916,7 +916,7 @@ public class Viewer extends JmolViewer {
   public void setColorBackground(String colorName) {
     if (colorName == null || colorName.length() <= 0)
       return;
-    setBackgroundArgb(Graphics3D.getArgbFromString(colorName));    
+    setBackgroundArgb(Graphics3D.getArgbFromString(colorName));
   }
 
   short getColixBackgroundContrast() {
@@ -952,15 +952,15 @@ public class Viewer extends JmolViewer {
   String getSpecularState() {
     return global.getSpecularState();
   }
-  
+
   private void setZShade(boolean TF) {
     global.zShade = TF;
   }
-  
+
   boolean getZShade() {
     return global.zShade;
   }
-  
+
   private void setAmbientPercent(int ambientPercent) {
     //Eval
     colorManager.setAmbientPercent(ambientPercent);
@@ -1447,7 +1447,7 @@ public class Viewer extends JmolViewer {
     if (notify)
       setStatusFileLoaded(0, null, null, null, null, null);
   }
-  
+
   private void zap(String msg) {
     zap(true);
     echoMessage(msg);
@@ -1572,7 +1572,8 @@ public class Viewer extends JmolViewer {
   // it can only return null. 
 
   String getClientAtomStringProperty(Object clientAtom, String propertyName) {
-    if (modelAdapter == null || propertyName == null || propertyName.length() == 0)
+    if (modelAdapter == null || propertyName == null
+        || propertyName.length() == 0)
       return null;
     return modelAdapter.getClientAtomStringProperty(clientAtom, propertyName);
   }
@@ -2548,10 +2549,11 @@ public class Viewer extends JmolViewer {
   private void setAllowEmbeddedScripts(boolean TF) {
     global.allowEmbeddedScripts = TF;
   }
-  
+
   boolean getAllowEmbeddedScripts() {
     return global.allowEmbeddedScripts;
   }
+
   public String evalFile(String strFilename) {
     //app -s flag
     return scriptManager.addScript(strFilename, true, false);
@@ -2686,7 +2688,7 @@ public class Viewer extends JmolViewer {
     }
     if (checkScriptOnly)
       Logger.info((strErrorMessage == null ? "--script check ok"
-          : "--script check error\n"+strErrorMessage)
+          : "--script check error\n" + strErrorMessage)
           + "\n(use 'exit' to stop checking)\n");
     if (isScriptFile && autoExit) {
       System.out.flush();
@@ -2702,6 +2704,7 @@ public class Viewer extends JmolViewer {
   }
 
   boolean checking;
+
   public String scriptCheck(String strScript) {
     if (strScript == null || checking)
       return null;
@@ -2799,7 +2802,8 @@ public class Viewer extends JmolViewer {
   String hoverText;
 
   void hoverOn(int atomIndex) {
-    if (eval != null && isScriptExecuting() || atomIndex == hoverAtomIndex || global.hoverDelayMs == 0)
+    if (eval != null && isScriptExecuting() || atomIndex == hoverAtomIndex
+        || global.hoverDelayMs == 0)
       return;
     loadShape(JmolConstants.SHAPE_HOVER);
     setShapeProperty(JmolConstants.SHAPE_HOVER, "text", null);
@@ -2812,11 +2816,11 @@ public class Viewer extends JmolViewer {
   int getHoverDelay() {
     return global.hoverDelayMs;
   }
-  
+
   private void setHoverDelay(int milliSec) {
     global.hoverDelayMs = milliSec;
   }
- 
+
   void hoverOn(int x, int y, String text) {
     if (eval != null && isScriptExecuting())
       return;
@@ -2840,9 +2844,9 @@ public class Viewer extends JmolViewer {
   }
 
   void setAtomHoverLabel(String text) {
-    setShapeProperty(JmolConstants.SHAPE_HOVER, "atomLabel", text);      
+    setShapeProperty(JmolConstants.SHAPE_HOVER, "atomLabel", text);
   }
-  
+
   void setLabel(String strLabel) {
     //Eval
     if (strLabel != null) // force the class to load and display
@@ -3010,13 +3014,13 @@ public class Viewer extends JmolViewer {
   }
 
   void setDrawHover(boolean TF) {
-    pickingManager.setDrawHover(TF);  
+    pickingManager.setDrawHover(TF);
   }
-  
+
   boolean getDrawHover() {
     return pickingManager.getDrawHover();
   }
-  
+
   public String getAtomInfo(int atomIndex) {
     return modelManager.getAtomInfo(atomIndex);
   }
@@ -3106,13 +3110,13 @@ public class Viewer extends JmolViewer {
   }
 
   private void setScriptDelay(int nSec) {
-    global.scriptDelay = nSec;  
+    global.scriptDelay = nSec;
   }
-  
+
   int getScriptDelay() {
     return global.scriptDelay;
   }
-  
+
   public void showUrl(String urlString) {
     //applet.Jmol
     //app Jmol
@@ -3143,30 +3147,17 @@ public class Viewer extends JmolViewer {
   }
 
   public Object getParameter(String key) {
-   return global.getParameter(key);  
+    return global.getParameter(key);
   }
 
   Object getParameterValue(String key) {
-    return global.getParameterValue(key);  
-   }
-
-  String formatText(String text) {
-    int i0 = -1;
-    int i;
-    while ((i = text.indexOf("%{")) >= 0) {
-      i0 = i + 2;
-      i = text.indexOf("}", i0);
-      String name = text.substring(i0, i);
-      text = text.substring(0, i0 - 2) + getParameterValue(name).toString()
-          + text.substring(i + 1);
-    }
-    return text;
+    return global.getParameterValue(key);
   }
-  
+
   void unsetProperty(String name) {
     global.setParameterValue(name, Float.NaN);
   }
-  
+
   public boolean getBooleanProperty(String key) {
     return getBooleanProperty(key, true);
   }
@@ -3297,18 +3288,19 @@ public class Viewer extends JmolViewer {
         //just saving this
         break;
       }
-      if (  key.toLowerCase().indexOf("callback") >= 0) {
+      if (key.toLowerCase().indexOf("callback") >= 0) {
         setCallbackFunction(key, value);
         break;
       }
       //not found -- @ is a silent mode indicator
       if (key.charAt(0) != '@') {
+        key = key.toLowerCase();
         if (!global.htParameterValues.containsKey(key)) {
-            if (global.htPropertyFlags.containsKey(key)) {
-              Logger.error("cannot set boolean flag to string value");
-              scriptEcho("script WARNING: cannot set boolean flag to string value");
-              return;
-            }
+          if (global.htPropertyFlags.containsKey(key)) {
+            Logger.error("cannot set boolean flag to string value");
+            scriptEcho("script WARNING: cannot set boolean flag to string value");
+            return;
+          }
           Logger.warn("viewer.setStringProperty(" + key + "," + value
               + ") - string variable defined");
           break;
@@ -3318,6 +3310,7 @@ public class Viewer extends JmolViewer {
     }
     global.setParameterValue(key, value);
   }
+
   public void setFloatProperty(String key, float value) {
     setFloatProperty(key, value, false);
   }
@@ -3410,6 +3403,7 @@ public class Viewer extends JmolViewer {
       // not found
       if (isInt)
         return false;
+      key = key.toLowerCase();
       if (!global.htParameterValues.containsKey(key)) {
         if (global.htPropertyFlags.containsKey(key)) {
           Logger.error("cannot set boolean flag to numeric value");
@@ -3509,6 +3503,7 @@ public class Viewer extends JmolViewer {
           || !setBooleanProperty(key, value == 1, false)) {
         if (setFloatProperty(key, value, true))
           return;
+        key = key.toLowerCase();
         if (!global.htParameterValues.containsKey(key)) {
           if (global.htPropertyFlags.containsKey(key)) {
             Logger.error("cannot set boolean flag to numeric value");
@@ -3819,7 +3814,8 @@ public class Viewer extends JmolViewer {
     if (!defineNew)
       return !notFound;
     if (notFound) {
-      if (!value && !global.htPropertyFlags.containsKey(key.toLowerCase())) {
+      key = key.toLowerCase();
+      if (!value && !global.htPropertyFlags.containsKey(key)) {
         Logger.warn("viewer.setBooleanProperty(" + key + "," + value
             + ") - boolean variable defined");
       }
@@ -3872,43 +3868,43 @@ public class Viewer extends JmolViewer {
   }
 
   private void setCameraDepth(float percent) {
-    transformManager.setCameraDepthPercent(percent);     
+    transformManager.setCameraDepthPercent(percent);
     refresh(1, "set cameraDepth");
   }
-  
+
   void setNavigationDepthPercent(float timeSec, float percent) {
-    transformManager.setNavigationDepthPercent(timeSec, percent);     
+    transformManager.setNavigationDepthPercent(timeSec, percent);
     refresh(1, "set navigationDepth");
   }
-  
+
   private void setNavigationSpeed(float value) {
     global.navigationSpeed = value;
   }
-  
+
   float getNavigationSpeed() {
     return global.navigationSpeed;
   }
-  
+
   private void setShowNavigationPointAlways(boolean TF) {
     global.showNavigationPointAlways = TF;
   }
-  
+
   private void setHideNavigationPoint(boolean TF) {
     global.hideNavigationPoint = TF;
   }
-  
+
   boolean getShowNavigationPoint() {
     if (!global.navigationMode || !transformManager.canNavigate())
       return false;
     return (getNavigating() && !global.hideNavigationPoint
         || global.showNavigationPointAlways || getInMotion());
   }
-  
+
   public void setVisualRange(float angstroms) {
-    transformManager.setVisualRange(angstroms);     
+    transformManager.setVisualRange(angstroms);
     refresh(1, "set visualRange");
   }
-  
+
   boolean isCameraAdjustable() {
     return global.adjustCameraFlag;
   }
@@ -4100,12 +4096,13 @@ public class Viewer extends JmolViewer {
   boolean getNavigationPeriodic() {
     return global.navigationPeriodic;
   }
-  
+
   private void setNavigationMode(boolean TF) {
     global.navigationMode = TF;
     if (TF && !transformManager.canNavigate()) {
       setVibrationPeriod(0);
-      transformManager = new TransformManager11(this, dimScreen.width, dimScreen.height);
+      transformManager = new TransformManager11(this, dimScreen.width,
+          dimScreen.height);
       reset();
     }
     transformManager.setNavigationMode(TF);
@@ -4115,9 +4112,9 @@ public class Viewer extends JmolViewer {
   boolean getNavigationMode() {
     return global.navigationMode;
   }
-  
+
   private void setNavigationSlabOffset(float percent) {
-     transformManager.setNavigationSlabOffsetPercent(percent);
+    transformManager.setNavigationSlabOffsetPercent(percent);
   }
 
   private void setPerspectiveModel(int mode) {
@@ -4313,7 +4310,7 @@ public class Viewer extends JmolViewer {
   public void setShowBbcage(boolean value) {
     setShapeShow(JmolConstants.SHAPE_BBCAGE, value);
   }
-  
+
   public boolean getShowAxes() {
     return getShapeShow(JmolConstants.SHAPE_AXES);
   }
@@ -4321,7 +4318,6 @@ public class Viewer extends JmolViewer {
   public void setShowAxes(boolean value) {
     setShapeShow(JmolConstants.SHAPE_AXES, value);
   }
-  
 
   public void setShowMeasurements(boolean TF) {
     //setbooleanProperty
@@ -4356,11 +4352,11 @@ public class Viewer extends JmolViewer {
   public void setRasmolDefaults() {
     setDefaults("RasMol");
   }
-  
+
   public void setJmolDefaults() {
     setDefaults("Jmol");
   }
-  
+
   private void setDefaults(String type) {
     if (type.equalsIgnoreCase("RasMol")) {
       stateManager.setRasMolDefaults();
@@ -4446,6 +4442,23 @@ public class Viewer extends JmolViewer {
           formattingStrings[decimalDigits]);
     return formatter.format(value);
   }
+
+  String formatText(String text) {
+    int i0 = -1;
+    int i;
+    while ((i = text.indexOf("%{")) >= 0) {
+      i0 = i + 2;
+      i = text.indexOf("}", i0);
+      String name = text.substring(i0, i);
+      text = text.substring(0, i0 - 2) + 
+        (name.length() == 0 ? ""  : name.charAt(0) == '(' 
+          ? "" + cardinalityOf(getAtomBitSet(name))             
+            :  getParameterValue(name).toString())
+          + text.substring(i + 1);
+    }
+    return text;
+  }
+  
 
   // //////////////////////////////////////////////////////////////
   // Access to atom properties for clients
@@ -4885,18 +4898,18 @@ public class Viewer extends JmolViewer {
   public int getSyncMode() {
     return statusManager.getSyncMode();
   }
-  
+
   /*  
-  void debugStack(String msg) {
-    //what's the right way to do this?
-    try {
-      Logger.error(msg);
-      String t = null;
-      t.substring(3);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
-  */
+   void debugStack(String msg) {
+   //what's the right way to do this?
+   try {
+   Logger.error(msg);
+   String t = null;
+   t.substring(3);
+   } catch (Exception e) {
+   e.printStackTrace();
+   }
+   }
+   */
 
 }

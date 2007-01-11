@@ -84,13 +84,13 @@ class Eval { //implements Runnable {
     clearDefinitionsAndLoadPredefined();
   }
 
-  BitSet getAtomBitSet(String atomExpression) throws ScriptException {
+    BitSet getAtomBitSet(String atomExpression) throws ScriptException {
     //SelectionManager 
     BitSet bs = new BitSet();
     pushContext();
     if (loadScript(null, "select (" + atomExpression + ")")) {
       statement = aatoken[0];
-      bs = expression(1);
+      bs = expression(statement, 1, false);
     }
     popContext();
     return bs;
@@ -1004,10 +1004,10 @@ class Eval { //implements Runnable {
   Token[] tempStatement;
 
   BitSet expression(int index) throws ScriptException {
-    return expression(statement, index);
+    return expression(statement, index, true);
   }
 
-  BitSet expression(Token[] code, int pcStart) throws ScriptException {
+  BitSet expression(Token[] code, int pcStart, boolean allowRefresh) throws ScriptException {
     //note that this is general -- NOT just statement[]
     //errors reported would improperly access statement/line context
     //there should be no errors anyway, because this is for 
@@ -1111,7 +1111,9 @@ class Eval { //implements Runnable {
         stack[sp++] = viewer.getVisibleSet();
         break;
       case Token.clickable:
-        refresh();
+        // a bit different, because it requires knowing what got slabbed
+        if (!isSyntaxCheck && allowRefresh)
+          refresh();
         stack[sp++] = viewer.getClickableSet();
         break;
       case Token.specialposition:
@@ -1270,7 +1272,7 @@ class Eval { //implements Runnable {
     if (value != null) {
       if (value instanceof Token[]) {
         pushContext(); 
-        value = expression((Token[]) value, -2);
+        value = expression((Token[]) value, -2, true);
         popContext();
         if (!isDynamic)
           variables.put(variable, value);

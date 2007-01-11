@@ -50,6 +50,7 @@ class RepaintManager {
       currentModelIndex = -1;
     else
       currentModelIndex = modelIndex;
+    viewer.setIntProperty("_modelNumber", viewer.getModelNumber(currentModelIndex));
     if (currentModelIndex == -1)
       setBackgroundModelIndex(-1);    
     viewer.setTainted(true);

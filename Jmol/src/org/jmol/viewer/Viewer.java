@@ -4449,6 +4449,8 @@ public class Viewer extends JmolViewer {
     while ((i = text.indexOf("%{")) >= 0) {
       i0 = i + 2;
       i = text.indexOf("}", i0);
+      if (i < 0)
+        return text;
       String name = text.substring(i0, i);
       text = text.substring(0, i0 - 2) + 
         (name.length() == 0 ? ""  : name.charAt(0) == '(' 

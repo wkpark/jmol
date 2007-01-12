@@ -4697,6 +4697,7 @@ class Eval { //implements Runnable {
     }
     int val = 0;
     int n = 0;
+    String key;
     switch (getToken(1).tok) {
     case Token.axes:
       setAxes(2);
@@ -4821,7 +4822,7 @@ class Eval { //implements Runnable {
     case Token.identifier:
     case Token.radius:
     case Token.solvent:
-      String key = parameterAsString(1);
+      key = parameterAsString(1);
       if (key.toLowerCase().indexOf("label") == 0) {
         setLabel(key.substring(5));
         return;
@@ -4832,6 +4833,14 @@ class Eval { //implements Runnable {
           viewer.togglePickingLabel(bs);
         return;
       }
+      if (key.equalsIgnoreCase("defaults")) {
+        key = parameterAsString(2).toLowerCase();
+        if (!key.equals("jmol") && !key.equals("rasmol"))
+          invalidArgument();
+        setStringProperty("defaults", key);  
+        return;  
+      }
+      
       if (key.equalsIgnoreCase("defaultColorScheme")) {
         setDefaultColors();
         return;
@@ -4881,39 +4890,190 @@ class Eval { //implements Runnable {
         }
         return;
       }
-      if (statementLength == 2) {
+      switch (statementLength) {
+      case 2:
         setBooleanProperty(key, true);
         return;
-      }
-      if (getToken(2).tok != Token.expressionBegin)
-        checkLength3();
-      switch (getToken(2).tok) {
-      case Token.none:
-        if (!isSyntaxCheck)
-          viewer.unsetProperty(key);
-        return;
-      case Token.decimal:
-        setFloatProperty(key, floatParameter(2));
-        return;
-      case Token.integer:
-        setIntProperty(key, intParameter(2));
-        return;
-      case Token.expressionBegin:
-        n = viewer.cardinalityOf(expression(getToken(3).tok == Token.leftbrace ? 4 : 3));
-        setIntProperty(key, n);
-        if (!isSyntaxCheck)
-          showString(key + " = " + n);
-        return;
-      case Token.on:
-      case Token.off:
-        break;        
-      default:
-        if (statement[2].value instanceof String) {
-          setStringProperty(key, stringParameter(2));
+      case 3:
+        switch (statement[2].tok) {
+        case Token.none:
+          if (!isSyntaxCheck)
+            viewer.unsetProperty(key);
           return;
+        case Token.on:
+          setBooleanProperty(key, true);
+          return;
+        case Token.off:
+          setBooleanProperty(key, false);
         }
       }
-      setBooleanProperty(key, booleanParameter(2));
+
+      //initialize
+      int intValue = Integer.MAX_VALUE;
+      float floatValue = Float.NaN;
+      String strValue = null;
+      boolean bValue = false;
+      boolean haveBoolean = false;
+      int opAdd = 1;
+      int opOr = 1;//or
+      boolean isNot = false;
+      int mode = 0;
+      int modePrev = 0;
+
+      for (int i = 2; i < statementLength; i++) {
+
+        //operators
+        switch (getToken(i).tok) {
+        case Token.plus:
+          opAdd = 1;
+          opOr = 1;
+          continue;
+        case Token.hyphen:
+          opAdd = (opAdd == -1 ? 1 : -1);
+          opOr = -1;
+          continue;
+        case Token.opOr:
+          opOr = 1;
+          continue;
+        case Token.opAnd:
+          opOr = -1;
+          continue;
+        case Token.opNot:
+          isNot = true;
+          continue;
+        }
+
+        //values
+
+        modePrev = mode;
+        int iv = Integer.MAX_VALUE;
+        float fv = Float.NaN;
+        String sv = null;
+        boolean bv = true;
+        switch (getToken(i).tok) {
+        case Token.off:
+          bv = false;
+          break;
+        case Token.on:
+          bv = true;
+          break;
+        case Token.identifier:
+          Object v = viewer.getParameterValue(parameterAsString(i));
+          if (v instanceof Boolean) {
+            bv = ((Boolean) v).booleanValue();
+          } else if (v instanceof Integer) {
+            iv = ((Integer) v).intValue();
+            mode = Math.max(mode, 1);
+          } else if (v instanceof Float) {
+            fv = ((Float) v).floatValue();
+            mode = Math.max(mode, 2);
+          } else if (v instanceof String) {
+            sv = ((String) v).toLowerCase();
+            mode = 3;
+          } else {
+            invalidArgument();
+          }
+          break;
+        case Token.integer:
+          iv = intParameter(i);
+          mode = Math.max(mode, 1);
+          break;
+        case Token.decimal:
+          fv = floatParameter(i);
+          mode = Math.max(mode, 2);
+          break;
+        case Token.expressionBegin:
+          iv = viewer
+              .cardinalityOf(expression(getToken(i).tok == Token.leftbrace ? i + 1
+                  : i));
+          i = iToken;
+          mode = Math.max(mode, 1);
+          break;
+        default:
+          if (!(statement[i].value instanceof String))
+            invalidArgument();
+          sv = stringParameter(i);
+          mode = 3;
+        }
+
+        //apply NOT
+
+        if (isNot)
+          if (mode > 0)
+            invalidArgument();
+          else
+            bv = !bv;
+
+        switch (mode) {
+        case 0:
+          if (opOr == 0)
+            invalidArgument();
+          if (!haveBoolean)
+            bValue = bv;
+          else if (opOr == 1 && bv || opOr == -1 && !bv)
+            bValue = bv;
+          else if (opOr == -1)
+            bValue &= bv;
+          haveBoolean = true;
+          break;
+        case 1:
+          switch (modePrev) {
+          case 0:
+            intValue = (bValue ? 1 : 0);
+          }
+          intValue += opAdd * (iv != Integer.MAX_VALUE ? iv : bv ? 1 : 0);
+          break;
+        case 2:
+          if (opAdd == 0)
+            invalidArgument();
+          switch (modePrev) {
+          case 0:
+            intValue = (bValue ? 1 : 0);
+          case 1:
+            floatValue = intValue;
+          }
+          floatValue += opAdd
+              * (!Float.isNaN(fv) ? fv : iv != Integer.MAX_VALUE ? (float) iv
+                  : bv ? 1 : 0);
+          break;
+        case 3:
+          if (opAdd < 1)
+            invalidArgument();
+          switch (modePrev) {
+          case 0:
+            strValue = (!haveBoolean ? "" : bValue ? "true" : "false");
+            break;
+          case 1:
+            strValue = "" + intValue;
+            break;
+          case 2:
+            strValue = "" + floatValue;
+          }
+          strValue += (sv != null ? sv : !Float.isNaN(fv) ? "" + fv
+              : iv != Integer.MAX_VALUE ? "" + iv : (bv ? "true" : "false"));
+        }
+        opOr = 0;
+        opAdd = 0;
+        isNot = false;
+      }
+
+      // all done - save property of designated type
+
+      switch (mode) {
+      case 0:
+        setBooleanProperty(key, bValue);
+        break;
+      case 1:
+        setIntProperty(key, intValue);
+        break;
+      case 2:
+        setFloatProperty(key, floatValue);
+        break;
+      case 3:
+        setStringProperty(key, strValue);
+      }
+      if (!isSyntaxCheck)
+        showString(key + " = " + viewer.getParameter(key));
     }
   }
 

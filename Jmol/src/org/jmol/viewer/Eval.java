@@ -1006,7 +1006,7 @@ class Eval { //implements Runnable {
     try {
       return script.substring(ichBegin, ichEnd);
     } catch (Exception e) {
-      System.out.println("getLine errpr?? ps=" + pc + " beg=" + ichBegin
+      System.out.println("getLine error?? ps=" + pc + " beg=" + ichBegin
           + " end=" + ichEnd);
     }
     return "";
@@ -1230,8 +1230,6 @@ class Eval { //implements Runnable {
         boolean isNegative = (((String)instruction.value).indexOf("-") >= 0);
         Object val = code[++pc].value;
         comparisonValue = code[pc].intValue;
-        if (isSyntaxCheck)
-          break;
         boolean isIdentifier = (code[pc].tok == Token.identifier);
         if (isIdentifier) {
           val = viewer.getParameterValue((String) val);
@@ -1303,6 +1301,8 @@ class Eval { //implements Runnable {
   }
 
   BitSet lookupValue(String variable, boolean plurals) throws ScriptException {
+    if (isSyntaxCheck)
+      return new BitSet();
     if (logMessages)
       viewer.scriptStatus("lookupValue(" + variable + ")");
     Object value = variables.get(variable);
@@ -4837,10 +4837,10 @@ class Eval { //implements Runnable {
         key = parameterAsString(2).toLowerCase();
         if (!key.equals("jmol") && !key.equals("rasmol"))
           invalidArgument();
-        setStringProperty("defaults", key);  
-        return;  
+        setStringProperty("defaults", key);
+        return;
       }
-      
+
       if (key.equalsIgnoreCase("defaultColorScheme")) {
         setDefaultColors();
         return;
@@ -4914,23 +4914,36 @@ class Eval { //implements Runnable {
       String strValue = null;
       boolean bValue = false;
       boolean haveBoolean = false;
-      int opAdd = 1;
-      int opOr = 1;//or
+      int opAdd = -2;
+      int opOr = -2;
+      int opMul = -2;
       boolean isNot = false;
       int mode = 0;
       int modePrev = 0;
-
+      int nOp = 0;
       for (int i = 2; i < statementLength; i++) {
 
         //operators
+
+        if (nOp > 1)
+          invalidArgument();
+
+        nOp++;
+
         switch (getToken(i).tok) {
         case Token.plus:
           opAdd = 1;
-          opOr = 1;
           continue;
         case Token.hyphen:
+          if (opAdd != 0)
+            nOp--;
           opAdd = (opAdd == -1 ? 1 : -1);
-          opOr = -1;
+          continue;
+        case Token.asterisk:
+          opMul = 1;
+          continue;
+        case Token.slash:
+          opMul = -1;
           continue;
         case Token.opOr:
           opOr = 1;
@@ -4939,9 +4952,12 @@ class Eval { //implements Runnable {
           opOr = -1;
           continue;
         case Token.opNot:
-          isNot = true;
+          isNot = !isNot;
+          nOp--;
           continue;
         }
+
+        nOp--;
 
         //values
 
@@ -4999,15 +5015,17 @@ class Eval { //implements Runnable {
         //apply NOT
 
         if (isNot)
-          if (mode > 0)
-            invalidArgument();
-          else
-            bv = !bv;
+          bv = !bv;
 
+        if (mode == 0 && (opAdd == 1 || opAdd == -1 || opOr == 0)
+            ||(mode < 1 || mode > 2) && (opMul == 1 || opMul == -1)
+            || mode > 0 && (isNot || opOr == 1 || opOr == -1)
+            || mode == 3 && (opAdd == -1 || opAdd == 0)
+            || (mode == 1 || mode == 2) && (opAdd == 0 && opMul == 0))
+          invalidArgument();
+          
         switch (mode) {
         case 0:
-          if (opOr == 0)
-            invalidArgument();
           if (!haveBoolean)
             bValue = bv;
           else if (opOr == 1 && bv || opOr == -1 && !bv)
@@ -5021,24 +5039,44 @@ class Eval { //implements Runnable {
           case 0:
             intValue = (bValue ? 1 : 0);
           }
-          intValue += opAdd * (iv != Integer.MAX_VALUE ? iv : bv ? 1 : 0);
+          if (iv == Integer.MAX_VALUE)
+            iv = (bv ? 1 : 0);
+          if (opAdd == -2 && opMul == -2)
+            opAdd = 1;
+          else if (opAdd == -2)
+            opAdd = 0;
+          else if (opMul == -2)
+            opMul = 1;
+          if (opAdd != 0)
+            intValue += opAdd * iv;
+          else if (opMul == 1)
+            intValue *= iv;
+          else if (opMul == -1)
+            intValue /= iv;
           break;
         case 2:
-          if (opAdd == 0)
-            invalidArgument();
           switch (modePrev) {
           case 0:
             intValue = (bValue ? 1 : 0);
           case 1:
             floatValue = intValue;
           }
-          floatValue += opAdd
-              * (!Float.isNaN(fv) ? fv : iv != Integer.MAX_VALUE ? (float) iv
-                  : bv ? 1 : 0);
+          if (Float.isNaN(fv))
+            fv = (iv != Integer.MAX_VALUE ? (float) iv : bv ? 1 : 0);
+          if (opAdd == -2 && opMul == -2)
+            opAdd = 1;
+          else if (opAdd == -2)
+            opAdd = 0;
+          else if (opMul == -2)
+            opMul = 1;
+          if (opAdd != 0)
+            floatValue += opAdd * fv;
+          else if (opMul == 1)
+            floatValue *= fv;
+          else if (opMul == -1)
+            floatValue /= fv;
           break;
         case 3:
-          if (opAdd < 1)
-            invalidArgument();
           switch (modePrev) {
           case 0:
             strValue = (!haveBoolean ? "" : bValue ? "true" : "false");
@@ -5052,8 +5090,7 @@ class Eval { //implements Runnable {
           strValue += (sv != null ? sv : !Float.isNaN(fv) ? "" + fv
               : iv != Integer.MAX_VALUE ? "" + iv : (bv ? "true" : "false"));
         }
-        opOr = 0;
-        opAdd = 0;
+        nOp = opOr = opAdd = opMul = 0;
         isNot = false;
       }
 

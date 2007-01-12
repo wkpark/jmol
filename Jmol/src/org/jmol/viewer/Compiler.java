@@ -105,9 +105,10 @@ class Compiler {
   Token[] atokenCommand;
 
   int ichCurrentCommand;
+  boolean isNewSet;
 
   boolean iHaveQuotedString = false;
-
+  
   boolean compile0() {
     cchScript = script.length();
     ichToken = 0;
@@ -116,6 +117,7 @@ class Compiler {
     lineNumbers = new short[lnLength];
     lineIndices = new short[lnLength];
     error = false;
+    isNewSet = false;
 
     Vector lltoken = new Vector();
     Vector ltoken = new Vector();
@@ -269,9 +271,11 @@ class Compiler {
           tokCommand = tok;
           if (tokAttr(tokCommand, Token.command))
             break;
+          isNewSet = false;
           if (!tokAttr(tok, Token.identifier))
             return commandExpected();
           tokCommand = Token.set;
+          isNewSet = true;
           break;
         case Token.set:
           if (ltoken.size() == 1) {
@@ -283,7 +287,7 @@ class Compiler {
               tokCommand = Token.set;
             }
             if (tok != Token.identifier && !tokAttr(tok, Token.setparam))
-              return unrecognizedParameter("SET", ident);
+              return isNewSet ? commandExpected() : unrecognizedParameter("SET", ident);
           }
           break;
         case Token.define:
@@ -329,7 +333,7 @@ class Compiler {
         ltoken.addElement(token);
         continue;
       }
-      if (ltoken.size() == 0)
+      if (ltoken.size() == 0 || isNewSet && ltoken.size() == 1)
         return commandExpected();
       return unrecognizedToken(script);
     }
@@ -759,7 +763,7 @@ class Compiler {
     Token tokenCommand = (Token) ltoken.firstElement();
     int tokCommand = tokenCommand.tok;
     int size = ltoken.size();
-    if (tokAttr(tokenCommand.intValue, Token.onDefault1) && size == 1)
+    if (size == 1 && tokenCommand.intValue != Integer.MAX_VALUE && tokAttr(tokenCommand.intValue, Token.onDefault1))
       ltoken.addElement(Token.tokenOn);
     atokenCommand = new Token[ltoken.size()];
     ltoken.copyInto(atokenCommand);
@@ -803,6 +807,8 @@ class Compiler {
       // max2, max3, max4, etc.
       return badArgumentCount();
     }
+    if (isNewSet && size < 3)
+      return commandExpected();
     return true;
   }
 

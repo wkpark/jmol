@@ -3011,8 +3011,11 @@ class Eval { //implements Runnable {
 
   void message() throws ScriptException {
     String text = parameterAsString(1);
-    if (!isSyntaxCheck)
-      showString(viewer.formatText(text));
+    if (isSyntaxCheck)
+      return;
+    String s = viewer.formatText(text);
+    Logger.warn(s);
+    viewer.scriptStatus(s);
   }
 
   void label() throws ScriptException {

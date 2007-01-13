@@ -1,49 +1,51 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   Spanish translation 
-  Translated from default version (...)_en.xml (v 1.1)
+  Translated from default version index_en.xml
 -->
 <document>
-  <body>
-    <title>Documentación de Jmol</title>
-    
-    <header>
-    </header>
-    
-    <section title="Guía de Jmol">
-      <p>
+	<body>
+		<title>Documentación de Jmol</title>
+		<header>
+		</header>
+		<section title="Guía de Jmol">
+			<p>
         Describe la aplicación -o programa autónomo- Jmol; 
         <a href="JmolUserGuide/">Jmol Guide</a>
-      </p>
-    </section>
-
-    <section title="Guía de la miniaplicación Jmol">
-      <p>
+			</p>
+		</section>
+		<section title="Guía de la miniaplicación Jmol">
+			<p>
         Describe la miniaplicación Jmol; 
         <a href="JmolAppletGuide.html">Jmol Applet Guide</a>
-      </p>
-    </section>
-
-    <section title="Documentación en línea para instrucciones en guiones">
-      <p>
+			</p>
+		</section>
+		<section title="Documentación en línea para instrucciones en guiones">
+			<p>
 	Esta documentación interactiva en línea describe el lenguaje de
 	instrucciones en guiones para Jmol. Proporciona excelentes
 	demostraciones y ejemplos.
       </p>
-      <p>
-	<a href="http://www.stolaf.edu/academics/chemapps/jmol/docs">
+			<p>
+				<a href="http://www.stolaf.edu/academics/chemapps/jmol/docs">
 	  Jmol Interactive Online Scripting Documentation
 	</a> (en inglés)
       </p>
-    </section>
-
-    <section title="Guía para desarrolladores de Jmol">
-      <p>
+			<section title="Documentación de superficies">
+				<p>
+	Esta documentación describe y compara las diversas opciones 
+	disponibles en Jmol (v.11)  para la generación de superficies, 
+	bien basadas en la molécula o bien geométricas. 
+	También proporciona una página de pruebas y demostración.
+	Por ahora, sólo está en inglés: <a href="surface/">Surface Documentation</a>
+				</p>
+			</section>
+		</section>
+		<section title="Guía para desarrolladores de Jmol">
+			<p>
         Describe los procedimientos de desarrollo de Jmol; 
         <a href="JmolDevelopersGuide.html">Jmol Developers Guide</a>
-	  </p>
-    </section>
-    
-  </body>
+			</p>
+		</section>
+	</body>
 </document>
-

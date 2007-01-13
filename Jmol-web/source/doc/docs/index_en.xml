@@ -1,46 +1,46 @@
 <?xml version="1.0"?>
 <document>
-  <body>
-    <title>Jmol Documentation</title>
-    
-    <header>
-    </header>
-
-
-    <section title="The Jmol Guide">
-      <p>
+	<body>
+		<title>Jmol Documentation</title>
+		<header>
+		</header>
+		<section title="The Jmol Guide">
+			<p>
         The <a href="JmolUserGuide/">Jmol Guide</a>
 	describes the Jmol application.
       </p>
-    </section>
-
-    <section title="The Jmol Applet Guide">
-      <p>
+		</section>
+		<section title="The Jmol Applet Guide">
+			<p>
         The <a href="JmolAppletGuide.html">Jmol Applet Guide</a>
 	describes the Jmol applet.
       </p>
-    </section>
-	
-	<section title="Interactive Online Scripting Documentation">
-      <p>
+		</section>
+		<section title="Interactive Online Scripting Documentation">
+			<p>
 	This interactive online documentation describes the
 	Jmol scripting language. It provides excellent
 	demonstrations and examples.
       </p>
-      <p>
-	<a href="http://www.stolaf.edu/academics/chemapps/jmol/docs">
+			<p>
+				<a href="http://www.stolaf.edu/academics/chemapps/jmol/docs">
 	  Jmol Interactive Online Scripting Documentation
 	</a>
+			</p>
+			<section title="Surface Documentation">
+				<p>
+	This <a href="surface/">documentation</a>
+	describes and compares the different options available in Jmol (v.11) 
+	for generating surfaces, either based on the molecule or geometric. 
+	It also provides a testing and demonstration page.
       </p>
-    </section>
-
-    <section title="The Jmol Developers Guide">
-      <p>
+			</section>
+		</section>
+		<section title="The Jmol Developers Guide">
+			<p>
         The <a href="JmolDevelopersGuide.html">Jmol Developers Guide</a>
 	describes Jmol development procedures.
       </p>
-    </section>
-
-  </body>
+		</section>
+	</body>
 </document>
-

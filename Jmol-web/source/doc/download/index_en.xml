@@ -1,73 +1,66 @@
 <?xml version="1.0"?>
 <document>
-  <body>
-    <title>Download Jmol</title>
-    
-    <section title="Downloading Jmol">
-      <p>The current official release is version $VERSION$.</p>
-      <p>It can be downloaded from SourceForge using the following link:
-      <ul>
-          <li>
-            <a href="http://sourceforge.net/project/showfiles.php?group_id=23629">jmol v$VERSION$</a>
-          </li>
-      </ul>
-      Some prerelease tests versions are also available from time-to-time at the same place.
+	<body>
+		<title>Download Jmol</title>
+		<section title="Downloading Jmol">
+			<p>The current official release is version $VERSION$.</p>
+			<p>It can be downloaded from SourceForge using the following link:
+			<a href="http://sourceforge.net/project/showfiles.php?group_id=23629">Jmol downloads page</a>.
       </p>
-      <p>
-        Information about binary packages for Linux can be found in
-        <a href="http://wiki.jmol.org/index.php/Support/Linux">Jmol's Wiki</a>.
+			<p>
+      Some prerelease tests versions are also available from time to time at the same place.
       </p>
-    </section>
-
-    <section title="Subversion Access">
-      <p>
+			<p>
+	There is specific information for running Jmol under different operating systems in
+        <a href="http://wiki.jmol.org/index.php/Support">Jmol's Wiki</a>, including
+        information about binary packages for Linux.
+      </p>
+		</section>
+		<section title="Subversion Access">
+			<p>
         You can browse the latest source code online or anonymously
         checkout the project contained in the
 	<a href="http://subversion.tigris.org/">Subversion</a> (SVN)
 	repository.
       </p>
-      <p>
-	      <a href="http://svn.sourceforge.net/viewcvs.cgi/jmol/">
+			<p>
+				<a href="http://svn.sourceforge.net/viewcvs.cgi/jmol/">
 	  Browse the SVN repository
 	</a>
-      </p>
-
-      <p>
+			</p>
+			<p>
         To checkout the source code use the following command:
       </p>
-      <p>
-	<tt>
+			<p>
+				<tt>
 		svn co https://svn.sourceforge.net/svnroot/jmol/trunk/Jmol
 	</tt>
-      </p>
-      <p>
+			</p>
+			<p>
 	This will check out to the <code>Jmol</code> subdirectory on your
 	system.
       </p>
-      <p>
+			<p>
 	You can update the source code from withing your Jmol <i>sandbox</i>
 	by saying:
 	<tt>
 	  svn update
 	</tt>
-      </p>
-    </section>
-
-    <section title="Requirements">
-      <p>
+			</p>
+		</section>
+		<section title="Requirements">
+			<p>
 	The Jmol web browser applet runs on most browser Java Virtual
 	Machines, including the Microsoft and Netscape 4.7* implementations
 	of the Java 1.1 JVM. 
       </p>
-
-      <p>
+			<p>
 	If you are running Microsoft Internet Explorer on the Windows
 	operating system you should upgrade to the Sun
 	Java Virtual Machine by visiting
 	<a href="http://www.java.com/">www.java.com</a>.
       </p>
-
-      <p>
+			<p>
 	The standalone Jmol application requires Java 1.4 or higher.
 	The latest
 	<a href="http://java.sun.com/j2se/">
@@ -75,8 +68,6 @@
 	</a>
 	is recommended.
       </p>
-      
-    </section>
-
-  </body>
+		</section>
+	</body>
 </document>

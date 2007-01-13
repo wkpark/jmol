@@ -12,7 +12,32 @@
 	el desarrollo de páginas web que incluyan la miniaplicación JmolApplet.
       </p>
 		</header>
-		<section title="¿Por qué usar Jmol.js?">
+		<section title="¿Qué hace Jmol.js?">
+			<p>
+	La biblioteca Jmol.js proporciona dos tipos de prestaciones que pretenden facilitar
+	la preparación de páginas web que usen miniaplicaciones Jmol:
+			</p>
+			<ul>
+				<li>Proporciona funciones para insertar la
+	miniaplicación Jmol en la página web y para controlar el aspecto
+	html y css de la mniaplicación y de sus controles en la página web. 
+	Aunque prefieras escribir tu propio código css, las instrucciones javascript 
+	básicas que muestran la miniaplicación son muy recomendables. 
+		</li>
+				<li>También genera controles de interfaz de usuario 
+	(botones, botones radio, casillas de verificación, listas desplegables, etc.)
+	 que interaccionan con la mniaplicación Jmol 
+	en la página web. Puedes preparar una página que cargue una molécula de interés y
+	que proporcione tales controles para permitir que el usuario cambie características
+	concretas de cómo se presenta la molécula, su fondo, que la hagan rotar,
+	etc. (Esto es posible gracias a una tecnología llamada LiveConnect
+	que permite que las páginas web interaccionen con las miniaplicaciones mediante javascript.) 
+	La alternativa es dejar que el usuario  
+	manipule la molécula usando el menú emergente de la miniaplicación
+	y los gestos con el ratón, o bien mediante instrucciones en la consola, todo lo cual sólo es
+	realmente apropiado para usuarios familiarizados con Jmol. 
+		</li>
+			</ul>
 			<p>
 	Recomendamos encarecidamente que uses Jmol.js para construir tus 
 	páginas web. Se automatiza la generación de muchas etiquetas HTML, 
@@ -23,13 +48,13 @@
 	La biblioteca Jmol.js debería funcionar correctamente con la mayoría de
 	los navegadores web recientes (de este siglo). Además, en los sistemas
 	Windows (Win32) generalmente funciona bien con la serie de navegadores
-	Netscape 4.* (que pertenece al siglo pasado).
+	Netscape 4.x (que pertenece al siglo pasado).
       </p>
 			<p>
 				<i>Advertencia: en Mac OS X, Internet Explorer </i>no<i> es
 	compatible porque no proporciona la comunicación LiveConnect
-	entre JavaScript y Java.
-	Por otro lado, la familia de navegadores Mozilla (que incluye
+	entre javascript y las miniaplicaciones Java.
+	Por otro lado, algunas versiones de la familia de navegadores Mozilla (que incluye
 	Firefox y Camino) puede requerir su configuración para utilizar Java 1.4.2
 	mediante </i>
 				<a href="http://javaplugin.sourceforge.net">
@@ -48,6 +73,12 @@
 	biblioteca Jmol.js. Si no estás seguro, utiliza la biblioteca Jmol.js. 
       </p>
 		</section>
+		<section title="Cómo conseguir Jmol.js">
+			<p>
+	Jmol.js está incluido en el paquete Jmol que se descarga 
+	(<a href="http://sourceforge.net/project/showfiles.php?group_id=23629">página de descargas de Jmol</a>).
+      </p>
+		</section>
 		<section title="Páginas HTML de ejemplo que usan Jmol.js">
 			<p>Visita las páginas de demostración (hay un enlace en el 
       menú superior derecho) para ver algunas páginas de ejemplo 
@@ -59,24 +90,29 @@
 		<section title="Recomendaciones generales">
 			<ul>
 				<li>
-	  Debes crear una carpeta en tu servidor web que contenga
+	  Debes crear un directorio o carpeta en tu servidor web que contenga
 	  Jmol.js, JmolApplet(0 a 6).jar, JmolApplet_i18n.jar, 
 	  y cualesquiera otros archivos específicos de Jmol.
 	  A los efectos de esta discusión, la llamaremos
-	  <code>../tu-carpeta-Jmol</code>.
+	  <code>CarpetaJmol</code>.
 	  <br/>Si pretendes ejecutar tus páginas web desde un
 	  disco local (disco duro, CD-ROM...), se imponen
 	  ciertas restricciones respecto a dónde puedes situar
-	  <code>../tu-carpeta-Jmol</code>; por favor, consulta
+	  <code>CarpetaJmol</code>; por favor, consulta
 	  <a href="http://wiki.jmol.org/index.php/Jmol_Applet_Deployment_Local">esta página</a>.
 	</li>
 				<li>
-	  Cada página web que forme parte del sitio web debe hacer referencia 
-	  a <code>../tu-carpeta-Jmol</code> usando una ruta URL relativa.
-	  Debes utilizar <i>siempre</i> rutas relativas que comiencen con . o ..
-	  En circunstancias especiales, <i>pueden</i> ser aceptables rutas relativas al
-	  servidor, que comiencen con / .
-	  <b>Nunca</b> debes usar rutas absolutas, que comiencen con <code>http://</code>. 
+	  Cada página web que forme parte del sitio web e incluya 
+	miniaplicaciones o controles Jmol debe hacer referencia 
+	  a <code>CarpetaJmol</code>; para ello, se recomienda que  
+	uses una ruta URL <i>relativa</i> (por ej., una que comience con <code>.</code> 
+	  o <code>..</code>.
+	  En circunstancias especiales, pueden ser aceptables rutas <i>relativas al
+	  servidor</i>, que comiencen con <code>/</code>.
+	  Las rutas <i>absolutas</i> (las que comienzan con <code>http://</code>) deben usarse
+	sólo en situaciones especiales en las que es imposible sustituirlas por 
+	referencias relativas a la página que las invoca
+	(por ej., cuando las páginas se generan sobre la marcha a partir de <i>servlets</i>).	 
 	</li>
 				<li>
 	  Cada página debe contener la siguiente instrucción HTML dentro de la
@@ -85,14 +121,14 @@
 					<pre><![CDATA[
   <head>
     ...
-    <script type="text/javascript" src="../tu-carpeta-Jmol/Jmol.js"></script>
+    <script type="text/javascript" src="CarpetaJmol/Jmol.js"></script>
     ...
   </head>
 ]]></pre>
 				</li>
 				<li>
 	  La primera llamada a la biblioteca Jmol.js en cada página debe ser
-	  <code>jmolInitialize("../tu-carpeta-Jmol")</code>.
+	  <code>jmolInitialize("CarpetaJmol")</code>.
 	</li>
 				<li>
 	  Aunque ya no es necesario, puede ser conveniente que
@@ -118,23 +154,25 @@
 		<section title="Instrucciones básicas">
     (Los parámetros entre llaves <code>{}</code> son  opcionales)
       <section title="jmolInitialize">
-				<code>
-	  jmolInitialize(directorioBase, usarSignedApplet)
-	</code>
+				<p>
+					<code>jmolInitialize(CarpetaJmol, usarSignedApplet)</code>
+				</p>
+				<p>
 	Initializa la biblioteca JavaScript Jmol.js. La llamada a
 	<code>jmolInitialize()</code> debe estar dentro del cuerpo  
 	(<code>&lt;body&gt;</code>) de la página web. 
-	El primer parámetro, <code>directorioBase</code>, es indispensable e indica la 
-	ruta relativa a la carpeta que contiene los archivos de la miniaplicación Jmol
-	(lo que antes hemos llamado <code>../tu-carpeta-Jmol</code>).
-      
-	<p>
+	El primer parámetro, <code>CarpetaJmol</code>, es indispensable e indica 
+	(entre comillas) la 
+	ruta relativa a la carpeta que contiene los archivos de la miniaplicación Jmol.
+	</p>
+				<p>
 					<i>
 	    Avanzado: el segundo parámtero, <code>usarSignedApplet</code>,
 	    debe especificarse como "true" (verdadero) si quieres que se
 	    utilice la miniaplicación firmada (o confiable), que 
 	    aplica menos restricciones de seguridad en Java que la 
-	    miniaplicación normal, no firmada.
+	    miniaplicación no firmada. Si se omite este parámetro,
+	se asumirá "false" y se usará la miniaplicación no firmada.
 		<br/>
 		Con la miniaplicación firmada, puedes poner los archivos de la miniaplicación, 
 		los de los modelos y los de las páginas donde quieras y ejecutarlos desde un 
@@ -153,10 +191,8 @@
 				</p>
 				<p>
 					<i>Avanzado: 
-	  También puedes indicar que se use tu propio archivo jar personalizado usando:
-	  	<code>
-		jmolInitialize(directorioBase, "miArchivoJar.jar")
-		</code>
+	  También puedes indicar que se use tu propio archivo <code>jar</code> personalizado usando:
+	  	<code>jmolInitialize(CarpetaJmol, "miArchivoJar.jar")</code>
 		Si el segundo parámetro es un texto, se interpretará de este modo;
 		si no, se interpretará como un valor lógico (verdadero/falso) para 
 		<code>usarSignedApplet</code>.
@@ -164,12 +200,17 @@
 				</p>
 			</section>
 			<section title="jmolApplet">
-				<code>jmolApplet(tamaño, {guión}, {sufijoNombre})</code>
-	Define una miniaplicación JmolApplet. <code>tamaño</code> debe normalmente ser un 
-	número entero de píxeles entre 100 y 800.
+				<p>
+					<code>jmolApplet(tamaño, {guión}, {sufijoNombre})</code>
+				</p>
+				<p>
+	Define e inserta en la página una miniaplicación JmolApplet. 
+	<code>tamaño</code> debe ser un 
+	número entero de píxeles (entre 25 y 2000).
 	<code>guión</code> es un guión, o conjunto de instrucciones, que se deberá
 	ejecutar. Normalmente, se usa para cargar un modelo molecular y aplicarle algún estilo.
-	<p>
+	</p>
+				<p>
 					<i>
 	    Avanzado: <code>sufijoNombre</code> sólo se debe especificar
 	    si quieres controlar específcamente los atributos
@@ -195,7 +236,7 @@
 	    corchetes de javascript para matrices de constantes:
 	    <code>[400, 200]</code>.
 	    El tamaño debe ser fijo; no se permiten porcentajes, pues con ellos
-	    muchos navegadores se bloquean al redimensionar la ventana del navegador. 
+	    muchos navegadores se bloquean o se cierran al redimensionar la ventana del navegador. 
 	  </i>
 				</p>
 				<p>

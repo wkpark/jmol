@@ -8,7 +8,31 @@
 	development of web pages that include the JmolApplet.
       </p>
 		</header>
-		<section title="Why should you use Jmol.js?">
+		<section title="What does Jmol.js do?">
+			<p>
+	The Jmol.js library provides two sets of utilities intended to make 
+	easier the preparation of web pages using Jmol applets:
+			</p>
+			<ul>
+				<li>It provides functions to insert the Jmol applet into 
+	the web page and to control the
+	html and css layout of the applet and its controls on the web page. 
+	Even if you prefer to write your own css, the basic javascript 
+	for displaying the applet is highly recommended. 
+		</li>
+				<li>It also generates user interface controls 
+	(buttons, radio buttons, checkboxes, drop-down menus, etc.) 
+	that interact with the Jmol applet on
+	the web page. You can set up a page to load a molecule of  interest and
+	then provide such controls to allow the user to  change specific
+	features of the appearance of the molecule, its background, cause it to
+	rotate etc. (This is possible through a  technology called LiveConnect
+	that allows web pages to interact with applets via JavaScript.) The alternative is to
+	leave the user to manipulate the molecule through the applet's pop-up menu
+	and mouse gestures, or through console commands,  which are only really 
+	suitable for users familiar with Jmol. 
+		</li>
+			</ul>
 			<p>
 	We strongly recommend that you use Jmol.js to build your
 	web pages. It automates the generation of many HTML tag
@@ -18,15 +42,15 @@
 			<p>
 	The Jmol.js library should work well with most web browsers
 	released this century. In addition, on Win32 platforms
-	it generally works fine	with the Netscape 4.* series of
+	it generally works fine with the Netscape 4.x series of
 	browsers (from the previous century).
       </p>
 			<p>
 				<i>Note that on Mac OS X, Internet Explorer is </i>not<i>
 	supported because it does not provide LiveConnect
 	communications between JavaScript and Java applets.
-	Also note that the Mozilla family of browsers (including
-	FireFox and Camino) may need to be configured to use Java 1.4.2
+	Also note that some versions in the Mozilla family of browsers (including
+	Firefox and Camino) may need to be configured to use Java 1.4.2
 	using </i>
 				<a href="http://javaplugin.sourceforge.net">
 	  javaplugin.sourceforge.net
@@ -45,6 +69,12 @@
 	Jmol.js library. 
       </p>
 		</section>
+		<section title="How to obtain Jmol.js">
+			<p>
+	Jmol.js is included in the Jmol downloadable package 
+	(<a href="http://sourceforge.net/project/showfiles.php?group_id=23629">Jmol downloads page</a>).
+      </p>
+		</section>
 		<section title="Sample HTML pages using Jmol.js">
 			<p>Visit the demonstration pages (link on top-right menu)
 	  to see some sample pages using Jmol applet and the different 
@@ -55,27 +85,27 @@
 		<section title="General Recommendations">
 			<ul>
 				<li>
-	  You must be create a directory on your web server that contains
+	  You must create a directory or folder on your web server that contains
 	  Jmol.js, JmolApplet(0 to 6).jar, JmolApplet_i18n.jar, 
 	  and any other Jmol-specific
 	  files. For the purposes of this discussion we will
-	  call this directory <code>../your-Jmol-directory</code>.
+	  call this directory <code>JmolFolder</code>.
 	  <br/>If you intend to run your web pages from a local disk 
 	  (hard disk, CD-ROM...), certain restrictions 
-	  apply to where <code>your-Jmol-directory</code> can be; please read
+	  apply to where <code>JmolFolder</code> can be; please read
 	  <a href="http://wiki.jmol.org/index.php/Jmol_Applet_Deployment_Local">this page</a>.
 	</li>
 				<li>
-	  Every web page within your site should refer to
-	  <code>../your-jmol-directory</code> using a relative
-	  url. Directory relative paths which start with <code>.</code> 
-	  or <code>..</code>
-	  should <i>always</i> be used. 
-	  Server relative paths which start with <code>/</code>
-					<i>might</i> be
-	  acceptable in special circumstances.
-	  Absolute URLs which start with <code>http://</code> are <b>evil</b> and
-	  should never be used.
+	  Every web page within your site that uses Jmol applets or controls should refer to
+	  <code>JmolFolder</code>; to do so, it is recommended that you 
+	use a <i>relative</i> URL (i.e., one that starts with <code>.</code> 
+	  or <code>..</code>). 
+	  <i>Server relative</i> paths which start with <code>/</code>
+	might be acceptable in special circumstances.
+	<i>Absolute</i> URLs (those starting with <code>http://</code>) 
+	should only be used in special circumstances where it is impossible to 
+	substitute them by references relative to the calling page 
+	(e.g. when pages are generated on the fly from servlets).
 	</li>
 				<li>
 	  Every page must contain the
@@ -84,14 +114,14 @@
 					<pre><![CDATA[
   <head>
     ...
-    <script type="text/javascript" src="../your-Jmol-directory/Jmol.js"></script>
+    <script type="text/javascript" src="JmolFolder/Jmol.js"></script>
     ...
   </head>
 ]]></pre>
 				</li>
 				<li>
 	  Every page must contain (but see note below) a call to
-	  <code>jmolInitialize("../your-Jmol-directory")</code>
+	  <code>jmolInitialize("JmolFolder")</code>
 	  as the first call into the Jmol.js library. 
 	</li>
 				<li>
@@ -116,24 +146,25 @@
 		<section title="Basic Scripting Commands">
     (Parameters between braces <code>{}</code> are optional)
       <section title="jmolInitialize">
-				<code>
-	  jmolInitialize(codebaseDirectory, useSignedApplet)
-	</code>
+				<p>
+					<code>jmolInitialize(JmolFolder, useSignedApplet)</code>
+				</p>
 				<p>
 	Initializes the Jmol.js JavaScript library. The call to
 	<code>jmolInitialize()</code> must be within the
 	<code>&lt;body&gt;</code> of the HTML page. 
-	The first parameter, <code>codebaseDirectory</code>, is compulsory and specifies
-	the relative path of the directory containing the Jmol applet
-	files (what we called <code>../your-Jmol-directory</code> above).
+	The first parameter, <code>JmolFolder</code>, is compulsory and specifies
+	(between quotes)
+	the relative path of the directory (folder) containing the Jmol applet
+	files.
 	</p>
 				<p>
 					<i>
 	    Advanced: the second parameter, <code>useSignedApplet</code>, must 
 	    be specified as "true" if you want to use the signed
-	    applet, that has less Java security restrictions than the 
-		standard, unsigned applet. If this parameter is omitted, it 
-		defaults to "false".
+	    applet (which has less Java security restrictions than the 
+		unsigned applet). If this parameter is omitted, it 
+		defaults to "false", i.e. use the unsigned applet.
 		<br/>
 		With the signed applet, you can put applet files, model 
 		files and page files wherever you want to and run them 
@@ -153,10 +184,8 @@
 				</p>
 				<p>
 					<i>Advanced: 
-	  You can also specify the use of your own, custom, jar file by using:
-	  	<code>
-		jmolInitialize(codebaseDirectory, "myJarFile.jar")
-		</code>
+	  You can also specify the use of your own, custom, <code>jar</code> file by using:
+	  	<code>jmolInitialize(JmolFolder, "myJarFile.jar")</code>
 		If the second parameter is a string, if will be interpreted in this way;
 		if not, it will be interpreted as a logical (true/false) value for 
 		<code>useSignedApplet</code>.
@@ -164,12 +193,16 @@
 				</p>
 			</section>
 			<section title="jmolApplet">
-				<code>jmolApplet(size, {script}, {nameSuffix})</code>
-	Allocates an JmolApplet. <code>size</code> should generally be an
-	integer	pixel count in the range 100 to 800.
+				<p>
+					<code>jmolApplet(size, {script}, {nameSuffix})</code>
+				</p>
+				<p>
+	Allocates a JmolApplet. <code>size</code> should be an
+	integer pixel count (between 25 and 2000).
 	<code>script</code> is a script that will be run;
 	this usually loads a model and then modifies its rendering.
-	<p>
+	</p>
+				<p>
 					<i>
 	    Advanced: <code>nameSuffix</code> should
 	    only be specified if you want to explicitly control the
@@ -191,12 +224,12 @@
 	    Advanced: JmolApplet instances should generally be square.
 	    If your application requires a rectangular JmolApplet,
 	    then the <code>size</code> parameter may be specified
-	    as an array containing two elements ... width and height
+	    as an array containing two elements, width and height,
 	    specified in pixel counts. This is usually easiest to
-	    specify using JavaScript square bracket notation for
-	    array constants ... as in <code>[400, 200]</code>.
+	    do using JavaScript square bracket notation for
+	    array constants, as in <code>[400, 200]</code>.
 	    The size must be fixed; percentages are not allowed.
-	    Otherwise, many browsers die when the browser window
+	    Otherwise, many browsers lock or quit when the browser window
 	    is resized. 
 	  </i>
 				</p>

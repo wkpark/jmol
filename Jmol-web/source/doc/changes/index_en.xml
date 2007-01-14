@@ -1,24 +1,22 @@
 <?xml version="1.0"?>
-<!DOCTYPE history
-[
+<!DOCTYPE history [
 <!ENTITY contributors SYSTEM "contributors.xml">
 <!ENTITY changes      SYSTEM "changes.xml">
-]
->
+]>
 <document>
-  <body>
-    <title>Jmol Changes</title>
-      <section title="Contributors">
-        &contributors;
-      </section>
-      <section title="Recent changes">
-	 <p>Changes in Jmol 10.9 (11beta): <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/examples-11/new.htm">list and demo</a></p>
-	 <p>Changes in Jmol 10.3: <a href="http://www.stolaf.edu/people/hansonr/jmol/test/10.3/new.htm">list and demo</a></p>
-	 <p>Changes in Jmol 10.2: <a href="http://www.stolaf.edu/people/hansonr/jmol/test/10.2/new.htm">list and demo</a>  </p>
-    </section>
-      
-      <section title="Changes">
-        &changes;
-    </section>
-  </body>
+	<body>
+		<title>Jmol Changes</title>
+		<section title="Contributors">
+			&contributors;
+		</section>
+		<section title="Recent changes">
+			<p>Changes in forthcoming Jmol 11.2: <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/examples-11/new.htm">list and demo</a></p>
+			<p>Changes in Jmol 11.0: <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/examples-11/new0.htm">list and demo</a></p>
+			<p>Changes in Jmol 10.2: <a href="http://www.stolaf.edu/people/hansonr/jmol/test/10.2/new.htm">list and demo</a>
+			</p>
+		</section>
+		<section title="Changes">
+			&changes;
+		</section>
+	</body>
 </document>

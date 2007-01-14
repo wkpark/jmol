@@ -1,64 +1,50 @@
 <?xml version="1.0"?>
 <!--
   French translation 
-  Translated from default version : index_en.xml (v 1.1)
+  Translated from default version : index_en.xml
 -->
 <document>
-  <body>
-    <title>Listes de diffusion mail Jmol</title>
-    
-    <section title="La liste de diffusion jmol-users">
-      <p>
-        La liste de diffusion <code>jmol-users@lists.sf.net</code> est
-        pour les discussions g&#x00E9;n&#x00E9;rales au sujet de Jmol.
+	<body>
+		<title>Listes de diffusion mail Jmol</title>
+		<section title="La liste de diffusion jmol-users">
+			<p>
+        La liste de diffusion <code>jmol-users@lists.sourceforge.net</code> est
+        pour les discussions générales au sujet de Jmol.
         Seuls les membres peuvent poster dans cette liste.
       </p>
-      <p>
-        <a href="http://lists.sourceforge.net/lists/listinfo/jmol-users">
-          Cliquer ici
-        </a>
-        pour s'abonner ou se d&#x00E9;sabonner &#x00E0;
-        <code>jmol-users@lists.sf.net</code>
+			<p>
+				<a href="http://lists.sourceforge.net/lists/listinfo/jmol-users">Cliquer ici</a>
+        pour s'abonner ou se désabonner à cette liste.
+			</p>
+			<p>
+        Pour un historique des messages qui ont été
+        postés vous pouvez parcourir les
+        <a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-users">archives 
+	de la liste de diffusion <code>jmol-users</code></a>.
+			</p>
+		</section>
+		<section title="La liste de diffusion jmol-developers">
+			<p>
+        La liste de diffusion <code>jmol-developers@lists.sourceforge.net</code>
+        est pour les discussions spécifiques sur le
+        développement logiciel de Jmol.
       </p>
-      <p>
-        Pour un historique des messages qui ont &#x00E9;t&#x00E9;
-        post&#x00E9;s vous pouvez parcourir les
-        <a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-users">
-          archives de la liste de diffusion
-        </a>
-        <code>jmol-users@lists.sf.net</code>
+			<p>
+        Nous supposons que tous les abonnés à <code>jmol-developers</code>
+        sont aussi abonnés à <code>jmol-users</code>. En
+        conséquence, les messages ne doivent pas être
+        postés à la fois sur les deux.
       </p>
-    </section>
-
-    <section title="La liste de diffusion jmol-developers">
-      <p>
-        La liste de diffusion <code>jmol-developers@lists.sf.net</code>
-        est pour les discussions sp&#x00E9;cifiques sur le
-        d&#x00E9;veloppement logiciel de Jmol.
-      </p>
-      <p>
-        Nous supposons que tous les abonn&#x00E9;s &#x00E0; jmol-developers
-        sont aussi abonn&#x00E9;s &#x00E0; jmol-users. En
-        cons&#x00E9;quence, les messages ne doivent pas &#x00EA;tre
-        post&#x00E9;s &#x00E0; la fois sur <code>jmol-developers</code>
-        et <code>jmol-users</code>.
-      </p>
-      <p>
-        <a href="http://lists.sourceforge.net/lists/listinfo/jmol-developers">
-          Cliquer ici
-        </a>
-        pour s'abonner ou se d&#x00E9;sabonner &#x00E0;
-        <code>jmol-developers@lists.sf.net</code>
-      </p>
-      <p>
-        Pour un historique des messages qui ont &#x00E9;t&#x00E9;
-        post&#x00E9;s vous pouvez parcourir les
-        <a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-developers">
-          archives de la liste de diffusion
-        </a>
-        <code>jmol-developers@lists.sf.net</code>
-      </p>
-    </section>
-
-  </body>
+			<p>
+				<a href="http://lists.sourceforge.net/lists/listinfo/jmol-developers">Cliquer ici</a>
+        pour s'abonner ou se désabonner à cette liste.
+			</p>
+			<p>
+        Pour un historique des messages qui ont été
+        postés vous pouvez parcourir les
+        <a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-developers">archives 
+	de la liste de diffusion <code>jmol-developers</code></a>.
+			</p>
+		</section>
+	</body>
 </document>

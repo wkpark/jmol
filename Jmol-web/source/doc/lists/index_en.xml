@@ -1,56 +1,43 @@
 <?xml version="1.0"?>
 <document>
-  <body>
-    <title>Jmol mailing lists</title>
-    
-    <section title="The jmol-users mailing list">
-      <p>
-	The <code>jmol-users@lists.sf.net</code> mailing list is for general
+	<body>
+		<title>Jmol mailing lists</title>
+		<section title="The jmol-users mailing list">
+			<p>
+	The <code>jmol-users@lists.sourceforge.net</code> mailing list is for general
 	discussion of Jmol issues. Only list members may post to the list.
       </p>
-      <p>
-	<a href="http://lists.sourceforge.net/lists/listinfo/jmol-users">
-	  Click here
-	</a>
-	to subscribe or unsubscribe to <code>jmol-users@lists.sf.net</code>
-      </p>
-      <p>
+			<p>
+				<a href="http://lists.sourceforge.net/lists/listinfo/jmol-users">Click here</a>
+	to subscribe or unsubscribe to this list.
+			</p>
+			<p>
 	For a history of messages that have been posted you may
-	browse the <code>jmol-users@lists.sf.net</code>
-	<a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-users"
-	   >
-	  mailing list archives.
-	</a>
-      </p>
-    </section>
-
-    <section title="The jmol-developers mailing list">
-      <p>
-	The <code>jmol-developers@lists.sf.net</code> mailing list is for specific
+	browse the 
+	<a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-users"><code>jmol-users</code>
+	mailing list archives.</a>
+			</p>
+		</section>
+		<section title="The jmol-developers mailing list">
+			<p>
+	The <code>jmol-developers@lists.sourceforge.net</code> mailing list is for specific
 	discussion of Jmol software development issues.
       </p>
-      <p>
-	We assume that all subscribers to jmol-developers are also
-	subscribers to jmol-users. Therefore, messages should not
-	be posted to both <code>jmol-developers</code> and
-	<code>jmol-users</code>.
+			<p>
+	We assume that all subscribers to <code>jmol-developers</code> are also
+	subscribers to <code>jmol-users</code>. Therefore, messages should not
+	be posted to both lists.
       </p>
-      <p>
-	<a href="http://lists.sourceforge.net/lists/listinfo/jmol-developers">
-	  Click here
-	</a>
-	to subscribe or unsubscribe to
-	<code>jmol-developers@lists.sf.net</code>
-      </p>
-      <p>
+			<p>
+				<a href="http://lists.sourceforge.net/lists/listinfo/jmol-developers">Click here</a>
+	to subscribe or unsubscribe to this list.
+			</p>
+			<p>
 	For a history of messages that have been posted you may
-	browse the <code>jmol-developers@lists.sf.net</code>
-	<a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-developers">
-	  mailing list archives.
-	</a>
-      </p>
-    </section>
-
-  </body>
+	browse the 
+	<a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-developers"><code>jmol-developers</code>
+	  mailing list archives.</a>
+			</p>
+		</section>
+	</body>
 </document>
-

@@ -4703,15 +4703,15 @@
   <fah_proj number="3027" name="p3027_SMP-nsv-03" public="y" file="y"
     server="171.64.65.56" atoms="9684" preferred="1" deadline="2"
     credit="716" frames="100" code="GS" contact="densign" contrib="dreederocuk"/>
-  <fah_proj number="3028" name="p3028_SMP-ensv-03" public="n"
-    server="171.64.65.63" atoms="9684" preferred="2" deadline="3"
-    credit="1440" frames="100" code="GS" contact="densign"/>
-  <fah_proj number="3029" name="p3029_SMP-emsv-03" public="n" file="y"
+  <fah_proj number="3028" name="p3028_SMP-ensv-03" public="y" file="y"
     server="171.64.65.63" atoms="9684" preferred="2" deadline="3"
     credit="1440" frames="100" code="GS" contact="densign" contrib="dreederocuk"/>
-  <fah_proj number="3030" name="p3030_supervillin-03" public="y"
-    server="171.65.103.160" atoms="9684" preferred="0.75" deadline="1.5"
-    credit="691" frames="100" code="G" contact="dan"/>
+  <fah_proj number="3029" name="p3029_SMP-emsv-03" public="y" file="y"
+    server="171.64.65.63" atoms="9684" preferred="2" deadline="3"
+    credit="1440" frames="100" code="GS" contact="densign" contrib="dreederocuk"/>
+  <fah_proj number="3030" name="p3030_supervillin-03" public="y" file="y"
+    server="171.65.103.160" atoms="9684" preferred="36" deadline="53"
+    credit="186" frames="100" code="G" contact="densign" contrib="Rum@NoV"/>
 
   <!-- Projects 3100 to 3199 -->
 

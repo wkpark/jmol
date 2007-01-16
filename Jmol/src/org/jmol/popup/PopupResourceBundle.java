@@ -250,8 +250,8 @@ class PopupResourceBundle {
       { "stereoRedCyan", "stereo redcyan 3" },
       { "stereoRedBlue", "stereo redblue 3" },
       { "stereoRedGreen", "stereo redgreen 3" },
-      { "stereoCrossEyed", "stereo -5" },
-      { "stereoWallEyed", "stereo 5" },
+      { "stereoCrossEyed", "stereo 5" },
+      { "stereoWallEyed", "stereo -5" },
 
       {
           "labelMenu",

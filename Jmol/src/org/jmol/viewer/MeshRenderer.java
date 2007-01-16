@@ -48,6 +48,8 @@ abstract class MeshRenderer extends ShapeRenderer {
   }
   
   boolean renderMesh(Mesh mesh, boolean isPlane, boolean isContoured) {
+    if (mesh == null)
+      return false;
     if (mesh.visibilityFlags == 0)
       return false;
     this.isContoured = isContoured;

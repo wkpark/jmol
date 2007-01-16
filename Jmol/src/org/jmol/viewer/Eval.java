@@ -6675,7 +6675,7 @@ class Eval { //implements Runnable {
 
   void isosurface(int iShape) throws ScriptException {
     viewer.loadShape(iShape);
-    setShapeProperty(iShape, "init", getCommand());
+    setShapeProperty(iShape, "init", isScriptCheck ? "" : getCommand());
     setShapeProperty(iShape, "title", new String[] { script });
     int colorRangeStage = 0;
     int signPt = 0;

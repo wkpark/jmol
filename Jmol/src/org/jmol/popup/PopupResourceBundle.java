@@ -423,9 +423,9 @@ class PopupResourceBundle {
           "isosurface delete resolution 0 sasurface 1.4 translucent" },
       { "CHARGEsurfMEP",
           "isosurface delete resolution 0 molecular map MEP translucent" },
-      { "surfOpaque", "isosurface opaque" },
-      { "surfTranslucent", "isosurface translucent" },
-      { "surfOff", "isosurface delete;select *;dots off" },
+      { "surfOpaque", "mo opaque;isosurface opaque" },
+      { "surfTranslucent", "mo translucent;isosurface translucent" },
+      { "surfOff", "mo delete;isosurface delete;select *;dots off" },
 
       { "SYMMETRYunitCellMenu",
           "oneUnitCell nineUnitCells nineUnitCellsRestricted nineUnitCellsPoly" },

@@ -38,6 +38,8 @@ class MolecularOrbitalRenderer extends IsosurfaceRenderer {
   }
 
   void renderInfo(Mesh mesh) {
+    if (mesh == null)
+      return;
     if (nf == null) {
       nf = NumberFormat.getInstance();
       fid = g3d.getFontFid("Monospaced", 14);

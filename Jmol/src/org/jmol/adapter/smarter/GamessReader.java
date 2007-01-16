@@ -178,7 +178,7 @@ class GamessReader extends AtomSetCollectionReader {
     shellCount = 0;
     String thisShell = "0";
     String[] tokens;
-    discardLinesUntilContains("SHELL TYPE PRIMITIVE");
+    discardLinesUntilContains("SHELL TYPE");
     readLine();
     Hashtable slater = null;
     while (readLine() != null && line.indexOf("TOTAL") < 0) {

@@ -235,7 +235,7 @@ function jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, t
 function jmolLink(script, label, id, title) {
   _jmolInitCheck();
   if (id == undefined || id == null)
-    id = "jmolLink" + _jmol.cmdCount;
+    id = "jmolLink" + _jmol.linkCount;
   if (label == undefined || label == null)
     label = script.substring(0, 32);
   ++_jmol.linkCount;

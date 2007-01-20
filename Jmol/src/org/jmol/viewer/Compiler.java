@@ -122,6 +122,7 @@ class Compiler {
     Vector lltoken = new Vector();
     Vector ltoken = new Vector();
     int tokCommand = Token.nada;
+    isNewSet = false;
     for (int nTokens = 0; true; ichToken += cchToken) {
       if (lookingAtLeadingWhitespace())
         continue;
@@ -160,6 +161,7 @@ class Compiler {
       }
       if (tokCommand == Token.nada) {
         bracketsOpen = false;
+        isNewSet = false;
       } else {
         if (lookingAtString()) {
           if (cchToken < 0)
@@ -271,7 +273,6 @@ class Compiler {
           tokCommand = tok;
           if (tokAttr(tokCommand, Token.command))
             break;
-          isNewSet = false;
           if (!tokAttr(tok, Token.identifier))
             return commandExpected();
           tokCommand = Token.set;
@@ -1710,7 +1711,7 @@ class Compiler {
   /// error handling
   
   private boolean commandExpected() {
-    return compileError(GT._("command expected"));
+    greturn compileError(GT._("command expected"));
   }
 
   private boolean invalidExpressionToken(String ident) {

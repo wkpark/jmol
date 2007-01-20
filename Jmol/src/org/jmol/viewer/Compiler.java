@@ -1711,7 +1711,7 @@ class Compiler {
   /// error handling
   
   private boolean commandExpected() {
-    greturn compileError(GT._("command expected"));
+    return compileError(GT._("command expected"));
   }
 
   private boolean invalidExpressionToken(String ident) {

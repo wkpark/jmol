@@ -495,20 +495,19 @@
 	or diagnose problems.
 				</p>
 				<p>
-					<i>Examples: 
-	<ul>
-							<li><code>result = jmolScriptWait("load myFile.mol")	</code>
+					<i>Examples:</i>
+				</p>
+				<ul>
+					<li><i><code>result = jmolScriptWait("load myFile.mol")	</code>
 		loads the model and puts into the "result" variable a string with the status messages, 
 		which for example contains, among other things, "FileNotFoundException" 
-		if <code>myFile.mol</code> file is not found.
-		</li>
-							<li><code>result = jmolScriptWait("show orientation")</code>
+		if <code>myFile.mol</code> file is not found.</i>
+					</li>
+					<li><i><code>result = jmolScriptWait("show orientation")</code>
 		puts into the "result" variable the instructions needed to restore the current orientation 
-		(although the returned string may need parsing to be useful as a command).
-		</li>
-						</ul>
-					</i>
-				</p>
+		(although the returned string may need parsing to be useful as a command).</i>
+					</li>
+				</ul>
 				<p>See also <code>jmolScriptWaitAsArray</code>, below.</p>
 				<p>
 	  When more than one JmolApplet is being displayed,
@@ -548,13 +547,12 @@
 				<p>
 					<code>id</code> will be set as both the HTML id and HTML name. It
 	  will default to jmolCmd0, jmolCmd1, etc. 
-	</p>
-				<!-- Needs confirmation :
-	<p>
-	If the page contains several Jmol applets, 
-	commands in the textbox will be applied to
-	the immediately previous applet, or to that specified by a previous <code>jmolSetTarget</code> command.
-	</p -->
+				</p>
+				<p>
+	If the page contains several Jmol applets, commands in the textbox will be 
+	applied to the immediately previous applet, or to that specified by a 
+	previous <code>jmolSetTarget</code> command.
+				</p>
 				<p>
 					<i>
 	  Advanced: 
@@ -696,6 +694,46 @@
 	  use <code>jmolRadioGroup</code>.
 	<br/>Read <code>jmolRadio</code> for an explanation of how to use this function.
 	</p>
+			</section>
+			<section title="jmolSetCheckboxGroup">
+				<code>jmolSetCheckboxGroup(chkMaster,chkBox)</code>
+				<p>
+	Starting with previously inserted checkboxes (using <code>jmolCheckbox</code>), allows to establish 
+	a relation between one "parent" or "leader" checkbox and one or more "child" or "follower" checkboxes,
+	according to these rules:
+				</p>
+				<ul>
+					<li>Whenever the leader is checked, all its followers get automatically checked.
+	</li>
+					<li>Whenever the leader is unchecked, all its followers get automatically unchecked.
+	</li>
+					<li>Whenever one of the followers is checked or unchecked, its siblings are examined; if all have the same state,
+	the leader will be checked or unchecked accordingly.
+	</li>
+				</ul>
+				<p>
+					<code>chkMaster</code> is the ID given to the checkbox that will act as leader. This ID may have been 
+	specified in its <code>jmolCheckbox</code> definition, or may be a number 
+	(if ID was not specified, sequential numeric IDs are assigned by default, starting from zero).
+				</p>
+				<p>
+					<code>chkBox</code> is one or more IDs or numbers (separated by commas), pointing to the 
+	checkboxes that will act as followers.
+				</p>
+				<p>
+	Any number of groups can be set in a page, with any number of component checkboxes,
+	Nesting groups within other groups is also possible (i.e., a follower in one group may be the leader for an inner group).
+				</p>
+				<p>
+					<i>Examples:
+	<pre>jmolSetCheckboxGroup(0, 1, 4)</pre>
+	Sets 1st checkbox in the page as leader, 2nd and 5th as followers.
+	<pre>jmolSetCheckboxGroup(4, 5, "chkH")</pre>
+	Sets 5th checkbox as leader, 6th and that identifed as "chkH" as followers.
+	<pre>jmolSetCheckboxGroup("chkH", "chkMethine", "chkMethyl")</pre>
+	Sets "chkH" checkbox as leader, those identifed as "chkMethine" and "chkMethyl" as followers.
+	</i>
+				</p>
 			</section>
 			<section title="jmolCheckBrowser">
 				<code>jmolCheckBrowser(action, urlOrMessage, nowOrOnClick)</code>

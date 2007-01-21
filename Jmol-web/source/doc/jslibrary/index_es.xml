@@ -566,14 +566,13 @@
 				<p>
 					<code>id</code> se usará para los valores de los parámetros de HTML "id" y "name".
 	  Toma por defecto los valores jmolCmd0, jmolCmd1, etc. 
-	</p>
-				<!-- Necesita confirmación:
+				</p>
 				<p>
-	Si en la página hay varias miniaplicaciones Jmol, ??????
+	Si en la página hay varias miniaplicaciones Jmol, 
 	las instrucciones de la caja de texto se aplicarán a la miniaplicación
-	inmediatamente anterior o a la que haya sido especificada mediante una instrucción 
-	<code>jmolSetTarget</code> previa.
-	</p -->
+	inmediatamente anterior o a la que haya sido especificada mediante una 
+	instrucción <code>jmolSetTarget</code> previa.
+				</p>
 				<p>
 					<i>
 	  Avanzado: 
@@ -726,6 +725,49 @@
 	  no puedas usar <code>jmolRadioGroup</code>.
 	<br/>Lee <code>jmolRadio</code>, donde se explica cómo usar esta función.
 	</p>
+			</section>
+			<section title="jmolSetCheckboxGroup">
+				<code>jmolSetCheckboxGroup(chkMaster,chkBox)</code>
+				<p>
+	A partir de casillas de selección insertadas previamente (mediante <code>jmolCheckbox</code>), 
+	permite establecer una relación entre una casilla "madre" o "líder" y una o varias
+	casillas "hijas" o "seguidoras", de acuerdo a estas reglas:
+				</p>
+				<ul>
+					<li>Cuando se marque la líder, todas sus seguidoras se marcarán automáticamente.
+	</li>
+					<li>Cuando se quite la marca en la líder, todas sus seguidoras perderán su marca automáticamente.
+	</li>
+					<li>Cuando una de las seguidoras se marque o se quite su marca, se examina el estado de sus 
+	compañeras; si es el mismo en todas, automáticamente la líder se marcará o perderá la marca.
+	</li>
+				</ul>
+				<p>
+					<code>chkMaster</code> es el identificador (ID) asignado a la casilla que hará de líder. 
+	Este identificador puede haber sido asignado cuando se introdujo el <code>jmolCheckbox</code>,
+	o bien puede ser un número. (Si no se especificó un ID, por defecto se asignan identificadores 
+	numéricos secuenciales, comenzando por cero.)
+				</p>
+				<p>
+					<code>chkBox</code> es uno o más identificadores o números (separados por comas), indicando 
+	las casillas que harán de seguidoras.
+				</p>
+				<p>
+	Se puede establecer cualquier número de grupos en una página, conteniendo cualquier
+	número de casillas.
+	También es posible anidar unos grupos dentro de otros (es decir, una casilla seguidora en un grupo 
+	puede ser a su vez líder de un grupo interior).
+				</p>
+				<p>
+					<i>Ejemplos:
+	<pre>jmolSetCheckboxGroup(0, 1, 4)</pre>
+	Define la 1ª casilla de la página como líder, la 2ª y la 5ª como seguidoras.
+	<pre>jmolSetCheckboxGroup(4, 5, "chkH")</pre>
+	Define la 5ª casilla como líder, la 6ª y la identificada con "chkH" como seguidoras.
+	<pre>jmolSetCheckboxGroup("chkH", "chkMetino", "chkMetil")</pre>
+	Define la casilla "chkH" como líder, las identificadas con "chkMetino" y "chkMetil" como seguidoras.
+	</i>
+				</p>
 			</section>
 			<section title="jmolCheckBrowser">
 				<code>jmolCheckBrowser(acción, URLoMensaje, ahoraOalClic)</code>

@@ -232,8 +232,9 @@ class NWChemReader extends AtomSetCollectionReader {
         "Task "+taskNumber+
         (inInput?SmarterJmolAdapter.PATH_SEPARATOR+"Input":
          SmarterJmolAdapter.PATH_SEPARATOR+"Geometry"));
-    while (readLine() != null && line.length() > 0) {
+    while (readLine() != null && (line.trim()).length() > 0) {
       tokens = getTokens(line); // get the tokens in the line
+ //     if (tokens.length < 6) break; // if don't have enough of them: done
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
       atom.x = parseFloat(tokens[3]);
@@ -283,6 +284,7 @@ class NWChemReader extends AtomSetCollectionReader {
         SmarterJmolAdapter.PATH_SEPARATOR+"Gradients");
    while (readLine() != null && line.length() > 0) {
       tokens = getTokens(line); // get the tokens in the line
+      if (tokens.length < 8) break; // make sure I have enough tokens
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
       atom.x = parseFloat(tokens[2])*AU2ANGSTROM;

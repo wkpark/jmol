@@ -54,6 +54,21 @@ public class XMLValue {
   }
 
   /**
+   * Get a String value from a child of a node
+   * 
+   * @param parent Parent node
+   * @param name Name of child
+   * @param value Default value
+   * @return String value of the attribute
+   */
+  public static String getString(Node parent, String name, String value) {
+    if ((parent != null) && (name != null)) {
+      value = getChildNodeValue(parent, name);
+    }
+    return value;
+  }
+
+  /**
    * Get an Integer value from a group of attributes
    * 
    * @param map Group of attributes
@@ -66,6 +81,27 @@ public class XMLValue {
       if (node != null) {
         try {
           return Integer.valueOf(node.getNodeValue());
+        } catch (NumberFormatException e) {
+          //
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get an Integer value from a child of a node
+   * 
+   * @param parent Parent node
+   * @param name Name of child
+   * @return Integer value of the attribute
+   */
+  public static Integer getInteger(Node parent, String name) {
+    if ((parent != null) && (name != null)) {
+      String value = getChildNodeValue(parent, name);
+      if (value != null) {
+        try {
+          return Integer.valueOf(value);
         } catch (NumberFormatException e) {
           //
         }
@@ -98,6 +134,29 @@ public class XMLValue {
   }
 
   /**
+   * Get an Integer value from a child of a node
+   * 
+   * @param parent Parent node
+   * @param name Name of child
+   * @param mult Multiplicative factor
+   * @return Integer value of the attribute
+   */
+  public static Integer getInteger(Node parent, String name, int mult) {
+    if ((parent != null) && (name != null)) {
+      String value = getChildNodeValue(parent, name);
+      if (value != null) {
+        try {
+          double dValue = Double.parseDouble(value);
+          return new Integer((int)(dValue * mult));
+        } catch (NumberFormatException e) {
+          //
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
    * Get a double value from a group of attributes
    * 
    * @param map Group of attributes
@@ -110,6 +169,27 @@ public class XMLValue {
       if (node != null) {
         try {
           return Double.valueOf(node.getNodeValue());
+        } catch (NumberFormatException e) {
+          //
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get a double value from a child of a node
+   * 
+   * @param parent Parent node
+   * @param name Name of child
+   * @return Integer value of the attribute
+   */
+  public static Double getDouble(Node parent, String name) {
+    if ((parent != null) && (name != null)) {
+      String value = getChildNodeValue(parent, name);
+      if (value != null) {
+        try {
+          return Double.valueOf(value);
         } catch (NumberFormatException e) {
           //
         }
@@ -201,6 +281,60 @@ public class XMLValue {
         return Boolean.TRUE;
       } else if (text.equals("n")) { //$NON-NLS-1$
         return Boolean.FALSE;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Find a child node of a node
+   * 
+   * @param node Parent node
+   * @param name Name of the child
+   * @return Child
+   */
+  public static Node getChildNode(Node node, String name) {
+    if ((node != null) && (name != null)) {
+      Node child = node.getFirstChild();
+      while (child != null) {
+        if ((child.getLocalName() != null) &&
+            (child.getLocalName().equalsIgnoreCase(name))) {
+          return child;
+        }
+        child = child.getNextSibling();
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Find a child node value of a node
+   * 
+   * @param node Parent node
+   * @param name Name of the child
+   * @return Value
+   */
+  public static String getChildNodeValue(Node node, String name) {
+    Node child = getChildNode(node, name);
+    if (child != null) {
+      return getNodeValue(child);
+    }
+    return null;
+  }
+
+  /**
+   * Find the value of a node
+   * 
+   * @param node Node
+   * @return Value
+   */
+  public static String getNodeValue(Node node) {
+    if (node != null) {
+      switch (node.getNodeType()) {
+      case Node.TEXT_NODE:
+    	return node.getNodeValue();
+      case Node.ELEMENT_NODE:
+        return getNodeValue(node.getFirstChild());
       }
     }
     return null;

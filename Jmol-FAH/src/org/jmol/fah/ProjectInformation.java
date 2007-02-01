@@ -27,6 +27,7 @@ package org.jmol.fah;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -75,10 +76,11 @@ public class ProjectInformation {
   private static ProjectInformation _info = null;
 
   // Texts for the different sources of information
-  private final static String       _txtEM = "(EM) "; //$NON-NLS-1$
-  private final static String       _txtPS = "(PS) "; //$NON-NLS-1$
-  private final static String       _txtQD = "(QD) "; //$NON-NLS-1$
-  private final static String       _txtS  = "(S) "; //$NON-NLS-1$
+  private final static String       _txtEM  = "(EM) "; //$NON-NLS-1$
+  private final static String       _txtFCI = "(FCI) "; //$NON-NLS-1$
+  private final static String       _txtPS  = "(PS) "; //$NON-NLS-1$
+  private final static String       _txtQD  = "(QD) "; //$NON-NLS-1$
+  private final static String       _txtS   = "(S) "; //$NON-NLS-1$
 
   // Informations about EM (emprotz.dat)
   private long                      _emDate;
@@ -223,6 +225,7 @@ public class ProjectInformation {
     addPSCInformation();
     addPSInformation();
     addQDInformation();
+    addFCIInformation();
   }
 
   /**
@@ -518,6 +521,121 @@ public class ProjectInformation {
   }
 
   /**
+   * Add information from FCI
+   */
+  private void addFCIInformation() {
+    if (_local == true) {
+      return;
+    }
+
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setNamespaceAware(true);
+
+    try {
+        //Load document
+      InputStream stream = null;
+      if (_local == true) {
+    	stream = new FileInputStream("project-summary.xml"); //$NON-NLS-1$
+      } else {
+        StringBuffer urlName = new StringBuffer();
+        urlName.append("http://fci.fatalerrorgroup.com/xml-data/"); //$NON-NLS-1$
+        urlName.append("project-summary.xml"); //$NON-NLS-1$
+        try {
+          URL url = new URL(urlName.toString());
+          stream = url.openStream();
+        } catch (MalformedURLException mue) {
+          mue.printStackTrace();
+        }
+      }
+      DocumentBuilder builder = factory.newDocumentBuilder();
+      Document document = builder.parse(stream);
+
+      //Parse document
+      Node node = document.getFirstChild();
+      while (node != null) {
+        if (node.getLocalName().equalsIgnoreCase("project_summary")) { //$NON-NLS-1$
+          Node child = node.getFirstChild();
+          while (child != null) {
+
+            //Get project information
+            if (child.getNodeName().equalsIgnoreCase("project")) { //$NON-NLS-1$
+              addFCINode(child);
+            }
+
+            child = child.getNextSibling();
+          }
+        }
+        node = node.getNextSibling();
+      }
+    } catch (SAXException e) {
+      //Empty
+    } catch (ParserConfigurationException e) {
+      //Empty
+    } catch (IOException e) {
+      //Empty
+    }
+  }
+
+  /**
+   * Add information about a project from FCI
+   * 
+   * @param node Node for project
+   */
+  private void addFCINode(Node node) {
+
+    //Project number
+    Integer project = XMLValue.getInteger(node, "number"); //$NON-NLS-1$
+    if (project == null) {
+      return;
+    }
+
+    //Retrieve element
+    Information info = getInfo(project.intValue());
+    if (info == null) {
+      info = createInfo(project.intValue());
+    }
+
+    if (info != null) {
+      info._fciAtoms = XMLValue.getInteger(node, "atoms"); //$NON-NLS-1$
+      String core = XMLValue.getString(node, "code", null); //$NON-NLS-1$
+      if (core != null) {
+        if ("AMBER".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.AMBER;
+        } else if ("DGROMACS".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.DGROMACS;
+        } else if ("GBGROMACS".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.GBGROMACS;
+        } else if ("GROGPU".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.GROGPU;
+        } else if ("GROMACS".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.GROMACS;
+        } else if ("GROMACS33".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.A0GROMACS;
+        } else if ("GROMACS-SMP".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.GROMACS_SMP;
+        } else if ("GRO-SMP".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.GROMACS_SMP;
+        } else if ("GROST".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.GROMACS_ST;
+        } else if ("QMD".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.QMD;
+        } else if ("TINKER".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.TINKER;
+        } else {
+          outputTextLn("FCI Core unknown: " + core);
+        }
+      }
+      info._fciContact = XMLValue.getString(node, "contact", null); //$NON-NLS-1$
+      info._fciValue = XMLValue.getDouble(node, "credit"); //$NON-NLS-1$
+      info._fciDeadline = XMLValue.getInteger(node, "deadline", 86400); //$NON-NLS-1$
+      info._fciFrames = XMLValue.getInteger(node, "frames"); //$NON-NLS-1$
+      info._fciName = XMLValue.getString(node, "name", null); //$NON-NLS-1$
+      info._fciPreferred = XMLValue.getInteger(node, "preferred", 86400); //$NON-NLS-1$
+      info._fciServer = XMLValue.getString(node, "server", null); //$NON-NLS-1$
+    }
+  }
+
+  /**
    * Add static information (hard coded)
    */
   private void addStaticInformation() {
@@ -611,6 +729,14 @@ public class ProjectInformation {
       this._emDeadline = null;
       this._emFrames = null;
       this._emValue = null;
+      this._fciAtoms = null;
+      this._fciCore = null;
+      this._fciDeadline = null;
+      this._fciFrames = null;
+      this._fciName = null;
+      this._fciPreferred = null;
+      this._fciServer = null;
+      this._fciValue = null;
       this._psAtoms = null;
       this._psCore = null;
       this._psDeadline = null;
@@ -638,6 +764,17 @@ public class ProjectInformation {
     Integer  _emFrames;
     Double   _emValue;
 
+    // FCI informations
+    Integer  _fciAtoms;
+    String   _fciContact;
+    CoreType _fciCore;
+    Integer  _fciDeadline;
+    Integer  _fciFrames;
+    String   _fciName;
+    Integer  _fciPreferred;
+    String   _fciServer;
+    Double   _fciValue;
+
     // PSummary informations
     Integer  _psAtoms;
     String   _psContact;
@@ -652,7 +789,7 @@ public class ProjectInformation {
 
     // QD informations
     Double   _qdValue;
-        
+
     // Static informations
     Integer  _staticAtoms;
     String   _staticContact;
@@ -1096,6 +1233,53 @@ public class ProjectInformation {
       different = true;
     }
 
+    //Check for differences with FCI
+    if ((info._psAtoms == null) &&
+        (info._staticAtoms == null) &&
+        (info._fciAtoms != null)) {
+      different = true;
+    }
+    if ((info._psContact == null) &&
+        (info._staticContact == null) &&
+        (info._fciContact != null)) {
+      different = true;
+    }
+    if ((info._psCore == null) &&
+        (info._staticCore == null) &&
+        (info._fciCore != null)) {
+      different = true;
+    }
+    if ((info._psDeadline == null) &&
+        (info._staticDeadline == null) &&
+        (info._fciDeadline != null)) {
+      different = true;
+    }
+    if ((info._psFrames == null) &&
+        (info._staticFrames == null) &&
+        (info._fciFrames != null)) {
+      different = true;
+    }
+    if ((info._psName == null) &&
+        (info._staticName == null) &&
+        (info._fciName != null)) {
+      different = true;
+    }
+    if ((info._psPreferred == null) &&
+        (info._staticPreferred == null) &&
+        (info._fciPreferred != null)) {
+      different = true;
+    }
+    if ((info._psServer == null) &&
+        (info._staticServer == null) &&
+        (info._fciServer != null)) {
+      different = true;
+    }
+    if ((info._psValue == null) &&
+        (info._staticValue == null) &&
+        (info._fciValue != null)) {
+      different = true;
+    }
+
     //Check for differences with PS
     if ((info._psAtoms != null) && (!info._psAtoms.equals(info._staticAtoms))) {
       different = true;
@@ -1214,6 +1398,16 @@ public class ProjectInformation {
   }
 
   /**
+   * Output FCI information
+   * 
+   * @param object Object to output
+   * @param separator Indicate if a separator is to be outputed before
+   */
+  private void outputInfoFCI(Object object, boolean separator) {
+    outputInfo(_txtFCI, object, separator);
+  }
+
+  /**
    * Output QD information
    * 
    * @param object Object to output
@@ -1239,11 +1433,25 @@ public class ProjectInformation {
     outputTextLn(Integer.toString(projectNumber));
 
     //Print names difference
-    if ((info._psName != null) && (!info._psName.equals(info._staticName))) {
+    boolean nameDifferent = false;
+    if (info._psName != null) {
+      if (!info._psName.equals(info._staticName)) {
+        nameDifferent = true;
+      }
+    } else if (info._staticName == null) {
+      if (info._fciName != null) {
+        nameDifferent = true;
+      }
+    }
+    if (nameDifferent) {
       outputText("  Name: "); //$NON-NLS-1$
       boolean separator = false;
       if (info._staticName != null) {
         outputInfoS(info._staticName, separator);
+        separator = true;
+      }
+      if (info._fciName != null) {
+        outputInfoFCI(info._fciName, separator);
         separator = true;
       }
       if (info._psName != null) {
@@ -1254,12 +1462,25 @@ public class ProjectInformation {
     }
 
     //Print server difference
-    if ((info._psServer != null) &&
-        (!info._psServer.equals(info._staticServer))) {
+    boolean serverDifferent = false;
+    if (info._psServer != null) {
+      if (!info._psServer.equals(info._staticServer)) {
+        serverDifferent = true;
+      }
+    } else if (info._staticServer == null) {
+      if (info._fciServer != null) {
+        serverDifferent = true;
+      }
+    }
+    if (serverDifferent) {
       outputText("  Server: "); //$NON-NLS-1$
       boolean separator = false;
       if (info._staticServer != null) {
         outputInfoS(info._staticServer, separator);
+        separator = true;
+      }
+      if (info._fciServer != null) {
+        outputInfoFCI(info._fciServer, separator);
         separator = true;
       }
       if (info._psServer != null) {
@@ -1270,11 +1491,25 @@ public class ProjectInformation {
     }
 
     //Print atoms difference
-    if ((info._psAtoms != null) && (!info._psAtoms.equals(info._staticAtoms))) {
+    boolean atomsDifferent = false;
+    if (info._psAtoms != null) {
+      if (!info._psAtoms.equals(info._staticAtoms)) {
+        atomsDifferent = true;
+      }
+    } else if (info._staticAtoms == null) {
+      if (info._fciAtoms != null) {
+        atomsDifferent = true;
+      }
+    }
+    if (atomsDifferent) {
       outputText("  Atoms: "); //$NON-NLS-1$
       boolean separator = false;
       if (info._staticAtoms != null) {
         outputInfoS(info._staticAtoms, separator);
+        separator = true;
+      }
+      if (info._fciAtoms != null) {
+        outputInfoFCI(info._fciAtoms, separator);
         separator = true;
       }
       if (info._psAtoms != null) {
@@ -1287,13 +1522,14 @@ public class ProjectInformation {
     //Print preferred difference
     boolean preferredDifferent = false;
     if (info._psPreferred != null) {
-        if (!info._psPreferred.equals(info._staticPreferred)) {
-            preferredDifferent = true;
-        }
+      if (!info._psPreferred.equals(info._staticPreferred)) {
+        preferredDifferent = true;
+      }
     } else if (info._staticPreferred == null) {
-        if (info._emDeadline != null) {
-            preferredDifferent = true;
-        }
+      if ((info._emDeadline != null) ||
+          (info._fciPreferred != null)) {
+        preferredDifferent = true;
+      }
     }
     if (preferredDifferent) {
       outputText("  Preferred: "); //$NON-NLS-1$
@@ -1306,6 +1542,10 @@ public class ProjectInformation {
         outputInfoEM(info._emDeadline, separator);
         separator = true;
       }
+      if (info._fciPreferred != null) {
+        outputInfoFCI(info._fciPreferred, separator);
+        separator = true;
+      }
       if (info._psPreferred != null) {
         outputInfoPS(info._psPreferred, separator);
         outputText(" "); //$NON-NLS-1$
@@ -1316,12 +1556,25 @@ public class ProjectInformation {
     }
 
     //Print deadline difference
-    if ((info._psDeadline != null) &&
-        (!info._psDeadline.equals(info._staticDeadline))) {
+    boolean deadlineDifferent = false;
+    if (info._psDeadline != null) {
+      if (!info._psDeadline.equals(info._staticDeadline)) {
+        deadlineDifferent = true;
+      }
+    } else if (info._staticDeadline == null) {
+      if (info._fciDeadline != null) {
+        deadlineDifferent = true;
+      }
+    }
+    if (deadlineDifferent) {
       outputText("  Deadline: "); //$NON-NLS-1$
       boolean separator = false;
       if (info._staticDeadline != null) {
         outputInfoS(info._staticDeadline, separator);
+        separator = true;
+      }
+      if (info._fciDeadline != null) {
+        outputInfoFCI(info._fciDeadline, separator);
         separator = true;
       }
       if (info._psDeadline != null) {
@@ -1336,14 +1589,15 @@ public class ProjectInformation {
     //Print points difference
     boolean pointsDifferent = false;
     if (info._psValue != null) {
-        if (!info._psValue.equals(info._staticValue)) {
-            pointsDifferent = true;
-        }
+      if (!info._psValue.equals(info._staticValue)) {
+        pointsDifferent = true;
+      }
     } else if (info._staticValue == null) {
-        if ((info._emValue != null) ||
-            (info._qdValue != null)) {
-            pointsDifferent = true;
-        }
+      if ((info._emValue != null) ||
+          (info._fciValue != null) ||
+          (info._qdValue != null)) {
+        pointsDifferent = true;
+      }
     }
     if (pointsDifferent) {
       outputText("  Points: "); //$NON-NLS-1$
@@ -1354,6 +1608,10 @@ public class ProjectInformation {
       }
       if (info._emValue != null) {
         outputInfoEM(info._emValue, separator);
+        separator = true;
+      }
+      if (info._fciValue != null) {
+        outputInfoFCI(info._fciValue, separator);
         separator = true;
       }
       if (info._psValue != null) {
@@ -1370,13 +1628,14 @@ public class ProjectInformation {
     //Print frames difference
     boolean framesDifferent = false;
     if (info._psFrames != null) {
-        if (!info._psFrames.equals(info._staticFrames)) {
-            framesDifferent = true;
-        }
+      if (!info._psFrames.equals(info._staticFrames)) {
+        framesDifferent = true;
+      }
     } else if (info._staticFrames == null) {
-        if (info._emFrames != null) {
-            framesDifferent = true;
-        }
+      if ((info._emFrames != null) ||
+          (info._fciFrames != null)) {
+        framesDifferent = true;
+      }
     }
     if (framesDifferent) {
       outputText("  Frames: "); //$NON-NLS-1$
@@ -1389,6 +1648,10 @@ public class ProjectInformation {
         outputInfoEM(info._emFrames, separator);
         separator = true;
       }
+      if (info._fciFrames != null) {
+        outputInfoFCI(info._fciFrames, separator);
+        separator = true;
+      }
       if (info._psFrames != null) {
         outputInfoPS(info._psFrames, separator);
         separator = true;
@@ -1397,13 +1660,26 @@ public class ProjectInformation {
     }
 
     //Print core difference
-    if ((info._psCore != null) &&
-        (info._psCore != info._staticCore)) {
+    boolean coreDifferent = false;
+    if (info._psCore != null) {
+      if (!info._psCore.equals(info._staticCore)) {
+        coreDifferent = true;
+      }
+    } else if (info._staticCore == null) {
+      if (info._fciCore != null) {
+        coreDifferent = true;
+      }
+    }
+    if (coreDifferent) {
       outputText("  Core: "); //$NON-NLS-1$
       boolean separator = false;
       if ((info._staticCore != null) &&
           (info._staticCore != CoreType.UNKNOWN)) {
         outputInfoS(info._staticCore.getName(), separator);
+        separator = true;
+      }
+      if (info._fciCore != null) {
+        outputInfoFCI(info._fciCore.getName(), separator);
         separator = true;
       }
       if (info._psCore != null) {
@@ -1414,9 +1690,18 @@ public class ProjectInformation {
     }
 
     //Print contact difference
-    if ((info._psContact != null) &&
-        (!info._psContact.equals("NA")) && //$NON-NLS-1$
-        (!info._psContact.equals(info._staticContact))) {
+    boolean contactDifferent = false;
+    if (info._psContact != null) {
+      if ((!info._psContact.equals("NA")) && //$NON-NLS-1$
+          (!info._psContact.equals(info._staticContact))) {
+        contactDifferent = true;
+      }
+    } else if (info._staticContact == null) {
+      if (info._fciContact != null) {
+        contactDifferent = true;
+      }
+    }
+    if (contactDifferent) {
       outputText("  Contact: "); //$NON-NLS-1$
       boolean separator = false;
       if (info._staticContact != null) {

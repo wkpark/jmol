@@ -623,7 +623,7 @@ public class Token {
     "bondmode",     new Token(bondmode,        "bondmode"),
     "bonds",        new Token(bonds,           "bonds"),
     "cisangle",     new Token(cisangle,        "cisangle"),
-    "display",      new Token(display,         "display"),
+    "display",      new Token(display, varArgCount,  "display"),
     "fontsize",     new Token(fontsize,        "fontsize"),
     "fontstroke",   new Token(fontstroke,      "fontstroke"),
     // hetero

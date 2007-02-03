@@ -120,7 +120,7 @@ public class GT {
   }
 
   public static void ignoreApplicationBundle() {
-    Logger.warn("Ignore");
+    //Logger.warn("Ignore");
     ignoreApplicationBundle = true;
   }
 

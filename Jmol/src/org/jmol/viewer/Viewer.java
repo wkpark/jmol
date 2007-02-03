@@ -1994,16 +1994,16 @@ public class Viewer extends JmolViewer {
         conformationIndex);
   }
 
-  public void autoHbond() {
+  int autoHbond(BitSet bsBonds) {
     //Eval
     BitSet bs = getSelectionSet();
-    autoHbond(bs, bs);
     addStateScript("calculate hbonds");
+    return autoHbond(bs, bs, bsBonds);
   }
 
-  public void autoHbond(BitSet bsFrom, BitSet bsTo) {
+  int autoHbond(BitSet bsFrom, BitSet bsTo, BitSet bsBonds) {
     //Eval
-    modelManager.autoHbond(bsFrom, bsTo);
+    return modelManager.autoHbond(bsFrom, bsTo, bsBonds);
   }
 
   boolean hbondsAreVisible() {
@@ -4184,11 +4184,11 @@ public class Viewer extends JmolViewer {
   }
 
   int makeConnections(float minDistance, float maxDistance, short order,
-                      int connectOperation, BitSet bsA, BitSet bsB) {
+                      int connectOperation, BitSet bsA, BitSet bsB, BitSet bsBonds) {
     //eval
     clearAllMeasurements(); // necessary for serialization
     return modelManager.makeConnections(minDistance, maxDistance, order,
-        connectOperation, bsA, bsB);
+        connectOperation, bsA, bsB, bsBonds);
   }
 
   // //////////////////////////////////////////////////////////////

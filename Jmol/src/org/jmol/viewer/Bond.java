@@ -35,6 +35,7 @@ class Bond {
   short order;
   short mad;
   short colix;
+  int index = -1;
   int shapeVisibilityFlags;
   final static int myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_STICKS);
 

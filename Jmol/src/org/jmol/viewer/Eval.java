@@ -2597,15 +2597,21 @@ class Eval { //implements Runnable {
     final float[] distances = new float[2];
     BitSet[] atomSets = new BitSet[2];
     atomSets[0] = atomSets[1] = viewer.getSelectionSet();
-
+    float radius = Float.NaN;
+    int color = Integer.MIN_VALUE;
     int distanceCount = 0;
     int atomSetCount = 0;
     short bondOrder = JmolConstants.BOND_ORDER_NULL;
     int operation = JmolConstants.MODIFY_OR_CREATE;
     boolean isDelete = false;
     boolean haveType = false;
+    boolean haveOperation = false;
+    boolean isTranslucentOrOpaque = false;
+    String translucency = null;
+    boolean isColorOrRadius = false;
     int nAtomSets = 0;
     int nDistances = 0;
+    BitSet bsBonds = new BitSet();
     /*
      * connect [<=2 distance parameters] [<=2 atom sets] 
      *             [<=1 bond type] [<=1 operation]
@@ -2629,14 +2635,14 @@ class Eval { //implements Runnable {
       case Token.decimal:
         if (++nDistances > 2)
           badArgumentCount();
-        if (nAtomSets > 0 || haveType)
+        if (nAtomSets > 0 || haveType || isColorOrRadius)
           invalidParameterOrder();
         distances[distanceCount++] = floatParameter(i);
         break;
       case Token.expressionBegin:
         if (++nAtomSets > 2)
           badArgumentCount();
-        if (haveType)
+        if (haveType || isColorOrRadius)
           invalidParameterOrder();
         atomSets[atomSetCount++] = expression(i);
         i = iToken; // the for loop will increment i
@@ -2658,12 +2664,30 @@ class Eval { //implements Runnable {
           invalidParameterOrder();
         if ((operation = JmolConstants.connectOperationFromString(cmd)) < 0)
           invalidArgument();
+        haveOperation = true;
+        break;
+      case Token.translucent:
+      case Token.opaque:
+        if (isTranslucentOrOpaque)
+          invalidArgument();
+        isColorOrRadius = isTranslucentOrOpaque = true;
+        translucency = parameterAsString(i);
+        break;
+      case Token.radius:
+        radius = floatParameter(++i);
+        isColorOrRadius = true;
+        break;
+      case Token.colorRGB:
+        color = getArgbParam(i);
+        isColorOrRadius = true;
         break;
       case Token.none:
       case Token.delete:
         if (++i != statementLength)
           invalidParameterOrder();
         operation = JmolConstants.connectOperationFromString("delete");
+        if (isColorOrRadius)
+          invalidArgument();
         isDelete = true;
         break;
       default:
@@ -2678,12 +2702,31 @@ class Eval { //implements Runnable {
       distances[1] = distances[0];
       distances[0] = JmolConstants.DEFAULT_MIN_CONNECT_DISTANCE;
     }
+    if (isTranslucentOrOpaque || !Float.isNaN(radius) || color != Integer.MIN_VALUE) {
+      if (!haveType)
+        bondOrder = JmolConstants.BOND_ORDER_ANY;
+      if (!haveOperation)
+        operation = JmolConstants.MODIFY_ONLY;
+    }
     int n = viewer.makeConnections(distances[0], distances[1], bondOrder,
-        operation, atomSets[0], atomSets[1]);
-    if (isDelete)
+        operation, atomSets[0], atomSets[1], bsBonds);
+    if (isDelete) {
       viewer.scriptStatus(GT._("{0} connections deleted", n));
-    else
-      viewer.scriptStatus(GT._("{0} connections modified or created", n));
+      return;
+    }
+    if(isColorOrRadius) {
+      viewer.selectBonds(bsBonds);
+      if(!Float.isNaN(radius))
+        viewer.setShapeSize(JmolConstants.SHAPE_STICKS, (int)(radius * 2000), bsBonds);
+      if(color != Integer.MIN_VALUE)
+          viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "color",
+              new Integer(color), bsBonds);
+      if(isTranslucentOrOpaque)
+        viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "translucency",
+            translucency, bsBonds);
+      viewer.selectBonds(null);
+    }
+    viewer.scriptStatus(GT._("{0} connections modified or created", n));
   }
 
   void getProperty() throws ScriptException {
@@ -4119,8 +4162,10 @@ class Eval { //implements Runnable {
 
   void hbond(boolean isCommand) throws ScriptException {
     if (statementLength == 2 && statement[1].tok == Token.calculate) {
-      if (!isSyntaxCheck)
-        viewer.autoHbond();
+      if (isSyntaxCheck)
+        return;
+      int n = viewer.autoHbond(null);
+      viewer.scriptStatus(GT._("{0} hydrogen bonds", n));
       return;
     }
     setShapeSize(JmolConstants.SHAPE_HSTICKS, getMadParameter());
@@ -4147,7 +4192,7 @@ class Eval { //implements Runnable {
     boolean addHbonds = viewer.hbondsAreVisible();
     viewer.setShapeSize(JmolConstants.SHAPE_HSTICKS, 0, bsConfigurations);
     if (addHbonds)
-      viewer.autoHbond(bsConfigurations, bsConfigurations);
+      viewer.autoHbond(bsConfigurations, bsConfigurations, null);
     viewer.select(bsConfigurations, tQuiet);
   }
 
@@ -4397,8 +4442,9 @@ class Eval { //implements Runnable {
         return;
       case Token.hbond:
         checkLength2();
-        if (!isSyntaxCheck)
-          viewer.autoHbond();
+        if (isSyntaxCheck)
+          return;
+        viewer.autoHbond(null);
         return;
       case Token.structure:
         checkLength2();
@@ -7302,6 +7348,7 @@ class Eval { //implements Runnable {
 
   String statementAsString() {
     StringBuffer sb = new StringBuffer();
+    boolean addParens = ((statement[0].tok & Token.embeddedExpression) != 0);
     for (int i = 0; i < statementLength; ++i) {
       if (iToken == i - 1)
         sb.append(" <<");
@@ -7312,7 +7359,12 @@ class Eval { //implements Runnable {
       Token token = statement[i];
       switch (token.tok) {
       case Token.expressionBegin:
+        if (addParens)
+          sb.append("(");
+        continue;
       case Token.expressionEnd:
+        if (addParens)
+          sb.append(")");
         continue;
       case Token.integer:
         sb.append(token.intValue);

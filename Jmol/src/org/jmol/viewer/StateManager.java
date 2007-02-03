@@ -299,9 +299,12 @@ class StateManager {
         if (c.atomIndex1 >= frame.atomCount || c.atomIndex2 >= frame.atomCount)
           continue;
         Bond b = frame.bondAtoms(frame.atoms[c.atomIndex1],
-            frame.atoms[c.atomIndex2], c.order, c.mad);
+            frame.atoms[c.atomIndex2], c.order, c.mad, null);
+        b.colix = c.colix;
         b.shapeVisibilityFlags = c.shapeVisibilityFlags;
       }
+      for (int i = bondCount; --i >= 0;)
+        frame.bonds[i].index = i;
       viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "reportAll", null);
     }
   }

@@ -336,9 +336,9 @@ class ModelManager {
   }
 
   int makeConnections(float minDistance, float maxDistance, short order,
-                      int connectOperation, BitSet bsA, BitSet bsB) {
+                      int connectOperation, BitSet bsA, BitSet bsB, BitSet bsBonds) {
     return (frame.makeConnections(minDistance, maxDistance,
-        order, connectOperation, bsA, bsB));
+        order, connectOperation, bsA, bsB, bsBonds));
   }
 
   void rebond() {
@@ -1318,8 +1318,8 @@ String getAtomInfoChime(int i) {
     return frame.getAltLocListInModel(modelIndex);
   }
   
-  void autoHbond(BitSet bsFrom, BitSet bsTo) {
-    frame.autoHbond(bsFrom, bsTo);
+  int autoHbond(BitSet bsFrom, BitSet bsTo, BitSet bsBonds) {
+    return frame.autoHbond(bsFrom, bsTo, bsBonds);
   }
 
   boolean hbondsAreVisible(int modelIndex) {

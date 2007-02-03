@@ -183,6 +183,10 @@ class SelectionManager {
   
   final BitSet bsBonds = new BitSet();
   void selectBonds(BitSet bs) {
+    if (bs == null) {
+      selectionModeAtoms = true;
+      return;
+    }
     bsBonds.and(bsNull);
     bsBonds.or(bs);
     selectionModeAtoms = false;

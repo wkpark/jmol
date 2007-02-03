@@ -176,6 +176,7 @@ final public class JmolConstants {
    * Extended Bond Definition Types
    *
    */
+  public final static short BOND_ORDER_ANY      = -2;
   public final static short BOND_ORDER_NULL      = -1;
   public final static short BOND_COVALENT_SINGLE = 1;
   public final static short BOND_COVALENT_DOUBLE = 2;
@@ -221,7 +222,7 @@ final public class JmolConstants {
   }
   
   public final static String getBondOrderNameFromOrder(short order) {
-    if (order == BOND_ORDER_NULL)
+    if (order == BOND_ORDER_NULL || order == BOND_ORDER_ANY)
       return "";
     if ((order & BOND_HYDROGEN_MASK) != 0)
       return "hbond";

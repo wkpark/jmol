@@ -125,7 +125,7 @@ public class Token {
   final static int dots         = command | 10 | embeddedExpression | bool;
   final static int echo         = command | 11 | setparam | specialstring;
   final static int exit         = command | 12;
-  final static int hbond        = command | 13 | setparam | bool;
+  final static int hbond        = command | 13 | setparam | bool | expression;
   final static int help         = command | 14 | setparam | specialstring;
   final static int label        = command | 15 | specialstring;
   final static int load         = command | 16 | negnums;

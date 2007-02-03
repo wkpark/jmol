@@ -1553,9 +1553,11 @@ class Eval { //implements Runnable {
   BitSet connected(Token instruction, BitSet bs) {
     if (isSyntaxCheck)
       return new BitSet();
-    int min = instruction.intValue;
+    int intType = instruction.intValue;
     int max = ((Integer) instruction.value).intValue();
-    return viewer.getAtomsConnected(min, max, bs);
+    int min = max >> 8;
+    max = max & 0xFF;
+    return viewer.getAtomsConnected(min, max, intType, bs);
   }
 
   BitSet getSubstructureSet(String smiles) throws ScriptException {

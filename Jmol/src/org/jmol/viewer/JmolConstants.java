@@ -178,6 +178,7 @@ final public class JmolConstants {
    */
   public final static short BOND_ORDER_ANY      = -2;
   public final static short BOND_ORDER_NULL      = -1;
+  public final static short BOND_ORDER_UNSPECIFIED = 0;
   public final static short BOND_COVALENT_SINGLE = 1;
   public final static short BOND_COVALENT_DOUBLE = 2;
   public final static short BOND_COVALENT_TRIPLE = 3;

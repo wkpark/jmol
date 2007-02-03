@@ -1318,9 +1318,10 @@ class Compiler {
   boolean clauseConnected() {
     int min = 1;
     int max = 100;
+    int intType = JmolConstants.BOND_ORDER_NULL;
     boolean iHaveExpression = false;
     tokenNext(); // Connected
-    while (!iHaveExpression) {
+    while (true) {
       if (!tokPeek(Token.leftparen))
         break;
       tokenNext(); // (
@@ -1347,18 +1348,27 @@ class Compiler {
           getToken();  // ,
         }
       }
-      if (isToken(Token.rightparen)) // )
-        break;
+      intType = JmolConstants.getBondOrderFromString((String)theValue);
+      if (intType < JmolConstants.BOND_COVALENT_SINGLE) {
+        intType = JmolConstants.BOND_ORDER_UNSPECIFIED;
+      } else {
+        if (getToken() == null || !isToken(Token.rightparen)
+            && !isToken(Token.opOr))
+          return commaOrCloseExpected();
+        if (isToken(Token.rightparen)) // )
+          break;
+        getToken();  //,
+      }
       returnToken();
-      if (!clauseOr()) // *expression*
+      if (!(iHaveExpression = clauseOr())) // *expression*
         return false;
       if (!tokenNext(Token.rightparen)) // )T
         return rightParenthesisExpected();
-      iHaveExpression = true;
+      break;
     }
     if (!iHaveExpression)
       addTokenToPostfix(new Token(Token.all));
-    return addTokenToPostfix(new Token(Token.connected, min, new Integer(max)));
+    return addTokenToPostfix(new Token(Token.connected, intType, new Integer((min << 8) + max)));
   }
 
   boolean clauseSubstructure() {

@@ -737,23 +737,33 @@ String getAtomInfoChime(int i) {
     return bsResult;
   }
 
-  BitSet getAtomsConnected(float min, float max, BitSet bs) {
+  BitSet getAtomsConnected(float min, float max, int intType, BitSet bs) {
     BitSet bsResult = new BitSet();
     int atomCount = getAtomCount();
     int[] nBonded = new int[atomCount];
     int bondCount = getBondCount();
+    int i;
     for (int ibond = 0; ibond < bondCount; ibond++) {
       Bond bond = frame.bonds[ibond];
-      if (bond.order > 0) {
-        if (bs.get(bond.atom1.atomIndex))
-          nBonded[bond.atom2.atomIndex]++;
-        if (bs.get(bond.atom2.atomIndex))
-          nBonded[bond.atom1.atomIndex]++;
+      if (bond.order > 0 && (intType == 0 || bond.order == intType)) {
+        if (bs.get(bond.atom1.atomIndex)) {
+          nBonded[i = bond.atom2.atomIndex]++;
+          bsResult.set(i);
+        }
+        if (bs.get(bond.atom2.atomIndex)) {
+          nBonded[i = bond.atom1.atomIndex]++;
+          bsResult.set(i);
+        }
       }
     }
-    for (int i = atomCount; --i >= 0;)
-      if (nBonded[i] >= min && nBonded[i] <= max)
+    boolean nonbonded = (min == 0 && max == 0);
+    for (i = atomCount; --i >= 0;) {
+      int n = nBonded[i];
+      if (n < min || n > max)
+        bsResult.clear(i);
+      else if (nonbonded && n == 0)
         bsResult.set(i);
+    }
     return bsResult;
   }
 

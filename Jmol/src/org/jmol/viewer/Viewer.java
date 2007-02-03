@@ -1837,8 +1837,8 @@ public class Viewer extends JmolViewer {
     return modelManager.getAtomsWithin(distance, bs);
   }
 
-  BitSet getAtomsConnected(float min, float max, BitSet bs) {
-    return modelManager.getAtomsConnected(min, max, bs);
+  BitSet getAtomsConnected(float min, float max, int intType, BitSet bs) {
+    return modelManager.getAtomsConnected(min, max, intType, bs);
   }
 
   int getAtomIndexFromAtomNumber(int atomNumber) {

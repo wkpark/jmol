@@ -4386,6 +4386,9 @@ class Eval { //implements Runnable {
       period = viewer.getDefaultVibrationPeriod();
       break;
     case Token.off:
+      checkLength2();
+      period = 0;
+      break;
     case Token.integer:
       checkLength2();
       period = intParameter(1);

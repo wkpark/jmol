@@ -1577,7 +1577,7 @@ class Isosurface extends IsosurfaceMeshCollection {
           // update surfaceData
 
           if (logCube)
-            if (x < 20 && y < 20 && z < 20) {
+            if (x < 5 && y < 5 && z < 5) {
               voxelPtToXYZ(x, y, z, ptXyzTemp);
               Logger.info("voxelData[" + x + "][" + y + "][" + z
                   + "] xyz(Angstroms)=" + ptXyzTemp + " value=" + voxelValue);

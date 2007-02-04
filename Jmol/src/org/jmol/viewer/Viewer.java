@@ -1662,6 +1662,8 @@ public class Viewer extends JmolViewer {
   }
 
   public int getModelNumber(int modelIndex) {
+    if (modelIndex < 0)
+      return modelIndex;
     return modelManager.getModelNumber(modelIndex);
   }
 

@@ -167,6 +167,19 @@ class GamessReader extends AtomSetCollectionReader {
    2   L    4             3.6649800      -.395895162119       .236459946619
    2   L    5              .7705450      1.215834355681       .860618805716
 
+OR:
+
+ SHELL TYPE PRIM    EXPONENT          CONTRACTION COEFFICIENTS
+
+ C         
+
+   1   S    1      71.616837    2.707814 (  0.154329) 
+   1   S    2      13.045096    2.618880 (  0.535328) 
+   1   S    3       3.530512    0.816191 (  0.444635) 
+
+   2   L    4       2.941249   -0.160017 ( -0.099967)     0.856045 (  0.155916) 
+   2   L    5       0.683483    0.214036 (  0.399513)     0.538304 (  0.607684) 
+   2   L    6       0.222290    0.161536 (  0.700115)     0.085276 (  0.391957) 
 
    */
   void readGaussianBasis() throws Exception {
@@ -204,7 +217,20 @@ class GamessReader extends AtomSetCollectionReader {
         }
         ++nGaussians;
         ++gaussianCount;
-        gdata.add(tokens);
+        if (line.indexOf("(") >= 0) {
+          String[] s = new String[4 + (tokens.length - 4)/3];
+          int j = 0;
+          for (int i = 0; i < tokens.length; i++) {
+            s[j] = tokens[i];
+            if (s[j].indexOf(")") >= 0)
+              s[j] = s[j].substring(0, s[j].indexOf(")"));
+            if (i >= 3)i += 2;
+            j++;
+          }
+          gdata.add(s);
+        } else {
+          gdata.add(tokens);
+        }
       }
     }
     if (slater != null) {

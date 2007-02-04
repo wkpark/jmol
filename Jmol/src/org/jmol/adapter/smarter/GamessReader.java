@@ -272,7 +272,7 @@ OR:
     while (readLine() != null
         && line.indexOf("--") < 0 && line.indexOf(".....") < 0) {
       String[] tokens = getTokens(line);
-      System.out.println(tokens.length + " --- " + line);
+      Logger.debug(tokens.length + " --- " + line);
       if (line.length() == 0) {
         for (int i = 0; i < nThisLine; i++) {
           float[] coefs = new float[data[i].size()];

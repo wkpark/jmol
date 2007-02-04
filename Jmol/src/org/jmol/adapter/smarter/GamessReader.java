@@ -332,7 +332,16 @@ OR:
         if (lineFreqCount == 5)
           break;
       }
-      String[] intensities = getTokens(discardLinesUntilContains("INTENSITY:"));
+      String[] red_masses = null;
+      String[] intensities = null;
+      readLine();
+      if (line.indexOf("MASS") >= 0) {
+        red_masses = getTokens(line);
+        readLine();
+      }
+      if (line.indexOf("INTENS") >= 0) {
+        intensities = getTokens(line);
+      }
       for (int i = 0; i < lineFreqCount; i++) {
         ++totalFrequencyCount;
         if (totalFrequencyCount > 1)
@@ -340,9 +349,12 @@ OR:
         atomSetCollection.setAtomSetName(frequencies[i] + " cm-1");
         atomSetCollection.setAtomSetProperty("Frequency", frequencies[i]
             + " cm-1");
-        atomSetCollection.setAtomSetProperty("IR Intensity",
-            intensities[intensities.length - frequencies.length + i]
-                + " D^2/AMU-Angstrom^2");
+        if (red_masses != null)
+          atomSetCollection.setAtomSetProperty("Reduced Mass", red_masses[i + 2]
+            + " AMU");
+        if (intensities != null)
+          atomSetCollection.setAtomSetProperty("IR Intensity", intensities[i + 2]
+            + " D^2/AMU-Angstrom^2");
 
       }
       Atom[] atoms = atomSetCollection.atoms;

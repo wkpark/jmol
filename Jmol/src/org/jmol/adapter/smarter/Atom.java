@@ -55,7 +55,7 @@ class Atom extends Point3f implements Cloneable {
   Atom cloneAtom() {
     try {
       return (Atom)super.clone();
-    } catch (CloneNotSupportedException cnse) {
+    } catch (Exception cnse) {
       return null;
     }
   }

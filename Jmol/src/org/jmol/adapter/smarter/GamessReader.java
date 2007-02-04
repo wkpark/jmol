@@ -239,14 +239,14 @@ class GamessReader extends AtomSetCollectionReader {
    */
 
   void readMolecularOrbitals() throws Exception {
-    Hashtable[] mos = new Hashtable[5];
-    Vector[] data = new Vector[5];
+    Hashtable[] mos = null;
+    Vector[] data = null;
     readLine(); // -------
     int nThisLine = 0;
     while (readLine() != null
         && line.indexOf("--") < 0 && line.indexOf(".....") < 0) {
       String[] tokens = getTokens(line);
-      //Logger.debug(tokens.length + line);
+      System.out.println(tokens.length + " --- " + line);
       if (line.length() == 0) {
         for (int i = 0; i < nThisLine; i++) {
           float[] coefs = new float[data[i].size()];
@@ -261,6 +261,10 @@ class GamessReader extends AtomSetCollectionReader {
       if (nThisLine == 0) {
         nThisLine = tokens.length;
         tokens = getTokens(readLine());
+        if (mos == null || nThisLine > mos.length) {
+           mos = new Hashtable[nThisLine];
+           data = new Vector[nThisLine];
+        }
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable();
           data[i] = new Vector();
@@ -271,8 +275,9 @@ class GamessReader extends AtomSetCollectionReader {
           mos[i].put("symmetry", tokens[i]);
         continue;
       }
+      int nSkip = tokens.length - nThisLine;
       for (int i = 0; i < nThisLine; i++)
-        data[i].add(tokens[i + 4]);
+        data[i].add(tokens[i + nSkip]);
     }
     Logger.debug(orbitals.size() + " molecular orbitals read in model " + modelNumber);
   }

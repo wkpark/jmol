@@ -827,15 +827,33 @@
 				<code>jmolSetCallback(callbackName, functionName)</code>
 				<p>
 	Sets which JavaScript function to be called by Jmol for the specified 
-	callback type, as listed below. In each case, the first parameter 
-	returned to <code>functionName</code> is the applet HTML name (usually 
-	"jmolApplet0"), and the second parameter holds the information 
-	(in the case of <code>pickCallback</code> and <code>hoverCallback</code>, 
-	a third parameter holds further information). 
-	If <code>functionName</code> is "alert", then only the second parameter is sent to the user
-	via a JavaScript alert() call, and no additional function on the webpage
-	is necessary. 
-	</p>
+	callback type, as listed below. 
+				</p>
+				<p>
+	In each case, several parameters are returned and passed to <code>functionName</code>:
+				</p>
+				<ol>
+					<li>the first parameter returned is the applet HTML name (usually "jmolApplet0");</li>
+					<li>the second parameter holds the information;</li>
+					<li>only in the case of <code>pickCallback</code> and <code>hoverCallback</code>, 
+	a third parameter is returned, holding additional information. </li>
+				</ol>
+				<p>
+	Please, note that all these parameters are returned in the form of Java strings, 
+	and as a general rule it is safer to convert them into JavaScript strings before 
+	using them within the function. This can be done in this way:
+				</p>
+				<pre>  function functionName(a,b,c)
+	{
+	   aa = "" + a
+	   bb = "" + b
+	   cc = "" + c
+	   ...(here go desired actions, using  aa, bb and cc instead of a, b, c)...
+	}</pre>
+				<p>
+	Special case: if <code>functionName</code> is "alert", then only the second parameter is sent to the user
+	via a JavaScript alert() call, and no additional function on the webpage is necessary. 
+				</p>
 				<p><code>jmolSetCallback</code> must be invoked before <code>jmolApplet</code>.
 	For setting callback functions anytime after Jmol applet
 	loading, use the "set xxxxCallback" script command, where "xxxx" is one of

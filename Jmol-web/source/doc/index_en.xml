@@ -21,9 +21,9 @@
 			<center>
 				<table border="1" width="600" bgcolor="#FFFAF0" cellpadding="10">
 					<tr>
-						<td>
+						<td width="320">
 							<div id="JmolPromo">
-								<img src="images/promo.jpg"/>
+								<img src="images/promo.jpg" width="300" height="300"/>
 							</div>
 						</td>
 						<td>

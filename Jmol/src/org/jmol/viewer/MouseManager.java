@@ -280,6 +280,8 @@ abstract class MouseManager implements KeyListener {
         (time - previousClickTime) < MAX_DOUBLE_CLICK_MILLIS) {
       clickCount = previousClickCount + 1;
     }
+    if (!viewer.getAwtComponent().hasFocus())
+      viewer.getAwtComponent().requestFocusInWindow();
     hoverOff();
     xCurrent = previousClickX = x; yCurrent = previousClickY = y;
     previousClickModifiers = modifiers;
@@ -452,7 +454,6 @@ abstract class MouseManager implements KeyListener {
     if (logMouseEvents)
       Logger.debug("mouseMoved("+x+","+y+","+modifiers"+)");
     */
-    viewer.getAwtComponent().requestFocusInWindow();
     hoverOff();
     timeCurrent = mouseMovedTime = time;
     mouseMovedX = xCurrent = x; mouseMovedY = yCurrent = y;

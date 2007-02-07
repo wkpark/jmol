@@ -210,7 +210,8 @@ class Compiler {
             cchToken = pt;
           }
         }
-        if (tokAttr(tokCommand, Token.specialstring) && lookingAtSpecialString()) {
+        if (tokAttr(tokCommand, Token.specialstring)
+            && lookingAtSpecialString()) {
           String str = script.substring(ichToken, ichToken + cchToken);
           ltoken.addElement(new Token(Token.string, str));
           continue;
@@ -226,7 +227,8 @@ class Compiler {
           // Float.parseFloat(script.substring(ichToken, ichToken + cchToken));
           Float.valueOf(script.substring(ichToken, ichToken + cchToken))
               .floatValue();
-          ltoken.addElement(new Token(Token.decimal, new Float(value)));
+          int intValue = (value > 0 ? modelValue(script.substring(ichToken, ichToken + cchToken)) : 0);
+          ltoken.addElement(new Token(Token.decimal, intValue, new Float(value)));
           continue;
         }
         if (lookingAtSeqcode()) {
@@ -288,7 +290,8 @@ class Compiler {
               tokCommand = Token.set;
             }
             if (tok != Token.identifier && !tokAttr(tok, Token.setparam))
-              return isNewSet ? commandExpected() : unrecognizedParameter("SET", ident);
+              return isNewSet ? commandExpected() : unrecognizedParameter(
+                  "SET", ident);
           }
           break;
         case Token.define:
@@ -314,7 +317,7 @@ class Compiler {
               return invalidExpressionToken(ident);
           } else {
             // we are looking at the expression
-            if (tok != Token.identifier && tok != Token.set 
+            if (tok != Token.identifier && tok != Token.set
                 && !(tokAttrOr(tok, Token.expression, Token.predefinedset)))
               return invalidExpressionToken(ident);
           }
@@ -343,6 +346,19 @@ class Compiler {
     return true;
   }
 
+  int modelValue(String strDecimal) {
+    int pt = strDecimal.indexOf(".");
+    if (pt < 0)
+      return 0;
+    int i = 0;
+    int j = 0;
+    if (pt > 0)
+      i = Integer.parseInt(strDecimal.substring(0, pt)) * 1000;
+    if (pt < strDecimal.length() - 1)
+      j = Integer.parseInt(strDecimal.substring(pt + 1));
+    return  i + j;
+  }
+  
   void getData(Vector ltoken, String key) {
     ichToken += key.length() + 2;
     if (script.length() > ichToken && script.charAt(ichToken) == '\r')
@@ -1096,6 +1112,9 @@ class Compiler {
       return clauseConnected();
     case Token.substructure:
       return clauseSubstructure();
+    case Token.decimal:
+      addTokenToPostfix(new Token(Token.all));
+      return generateResidueSpecCode(new Token(Token.spec_model, getToken().intValue, null));
     case Token.hyphen: // selecting a negative residue spec
     case Token.integer:
     case Token.seqcode:
@@ -1618,14 +1637,19 @@ class Compiler {
     if (isToken(Token.nada) || theToken == null)
       return invalidModelSpecification();
     switch (theToken.tok) {
-    case Token.string:
+    case Token.decimal:
+      return generateResidueSpecCode(new Token(Token.spec_model, theToken.intValue, null));
     case Token.integer:
-    case Token.identifier:
+//    case Token.string:  -- what was THIS all about? */modelname ? Never implemented in Eval as far as I can tell. -BH
+//    case Token.identifier:
+      if (viewer.getModelNumber(0) > 1000 && theToken.intValue < 1000)
+        return generateResidueSpecCode(new Token(Token.spec_model, theToken.intValue * 1000, null));        
       break;
     default:
       return invalidModelSpecification();
     }
-    return generateResidueSpecCode(new Token(Token.spec_model, theValue));
+    //integer implies could be model number
+    return generateResidueSpecCode(new Token(Token.spec_model, new Integer(theToken.intValue)));
   }
 
   boolean clauseAtomSpec() {

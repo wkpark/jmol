@@ -981,8 +981,8 @@ public final class Frame {
     return mmset.getModel(modelIndex);
   }
 
-  int getModelNumberIndex(int modelNumber) {
-    return mmset.getModelNumberIndex(modelNumber);
+  int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
+    return mmset.getModelNumberIndex(modelNumber, useModelNumber);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -2154,8 +2154,6 @@ public final class Frame {
       return getSpecName(specInfo);
     if (setType.equals("SpecAlternate"))
       return getSpecAlternate(specInfo);
-    if (setType.equals("SpecModel"))
-      return getSpecModel(specInfo);
     return null;
   }
 
@@ -2283,15 +2281,6 @@ public final class Frame {
     return bs;
   }
 
-  private BitSet getSpecModel(String modelTag) {
-    int modelNumber = -1;
-    try {
-      modelNumber = Integer.parseInt(modelTag);
-    } catch (NumberFormatException nfe) {
-    }
-    return getModelAtomBitSet(getModelNumberIndex(modelNumber));
-  }
-
   /**
    * general lookup for integer type -- from Eval
    * @param setType   
@@ -2307,6 +2296,8 @@ public final class Frame {
       return getSpecChain((char) specInfo);
     if (setType.equals("atomno"))
       return getSpecAtomNumber(specInfo);
+    if (setType.equals("SpecModel"))
+      return getSpecModel(specInfo);
     return null;
   }
 
@@ -2371,6 +2362,10 @@ public final class Frame {
         bs.set(i);
     }
     return bs;
+  }
+
+  private BitSet getSpecModel(int modelNumber) {
+    return getModelAtomBitSet(getModelNumberIndex(modelNumber, true));
   }
 
   /**

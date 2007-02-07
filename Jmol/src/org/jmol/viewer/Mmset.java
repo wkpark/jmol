@@ -219,11 +219,31 @@ final class Mmset {
     return models[modelIndex];
   }
 
-  int getModelNumberIndex(int modelNumber) {
-    int i;
-    for (i = modelCount; --i >= 0 && models[i].modelNumber != modelNumber;) {
+  int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
+    if (useModelNumber) {
+      for (int i = 0; i < modelCount; i++)
+        if (models[i].modelNumber == modelNumber)
+          return i;
+      return -1;
     }
-    return i;
+    //new decimal format:   frame 1.2 1.3 1.4
+    int nFile = -1;
+    int thisFile = 0;
+    int thisModel = 0;
+    int modelFile = modelNumber / 1000;
+    int modelPtr = modelNumber % 1000;
+    for (int i = 0; i < modelCount; i++) {
+      thisFile = models[i].modelNumber / 1000;
+      if (thisFile == nFile) {
+        thisModel++;
+      } else {
+        thisModel = 1;
+        nFile = thisFile;
+      }
+      if (modelFile == thisFile && modelPtr == thisModel)
+        return i;
+    }
+    return -1;
   }
 
   int getNAltLocs(int modelIndex) {

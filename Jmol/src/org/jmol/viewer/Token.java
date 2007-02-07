@@ -555,7 +555,7 @@ public class Token {
     "loop",              new Token(loop,      onDefault1, "loop"),
     "move",              new Token(move,     varArgCount, "move"),
     "spin",              new Token(spin,     varArgCount, "spin"),
-    "frame",             new Token(frame,      "frame"),
+    "frame",             new Token(frame,    varArgCount, "frame"),
     
     // unimplemented
     
@@ -690,7 +690,7 @@ public class Token {
     "translation",  new Token(translation,     "translation"),
     // chime show parameters
     "residue",      new Token(residue,         "residue"),
-    "model",        new Token(model,           "model"),
+    "model",        new Token(model,           varArgCount, "model"),
     "models",       null,
     "pdbheader",    new Token(pdbheader,       "pdbheader"),
 

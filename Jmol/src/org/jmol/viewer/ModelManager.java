@@ -221,8 +221,8 @@ class ModelManager {
         keyName);
   }
 
-  int getModelNumberIndex(int modelNumber) {
-    return frame.getModelNumberIndex(modelNumber);
+  int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
+    return frame.getModelNumberIndex(modelNumber, useModelNumber);
   }
 
   Point3f getSpinCenter(String axisID, int modelIndex) {

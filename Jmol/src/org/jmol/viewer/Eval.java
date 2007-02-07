@@ -1189,8 +1189,12 @@ class Eval { //implements Runnable {
             (String) instruction.value);
         break;
       case Token.spec_model:
+        if (instruction.intValue != Integer.MAX_VALUE) {
+          stack[sp++] = bitSetForModelNumberSet(new int[]{instruction.intValue}, 1); 
+        } else {
         stack[sp++] = viewer.getAtomBits("SpecModel",
-            (String) instruction.value);
+            ((Integer) instruction.value).intValue());
+        }
         break;
       case Token.spec_resid:
         stack[sp++] = viewer.getAtomBits("SpecResid", instruction.intValue);
@@ -4584,7 +4588,7 @@ class Eval { //implements Runnable {
         break;
       }
     default:
-      frameControl(statement[1], true);
+      frameControl(1, true);
     }
   }
 
@@ -4592,6 +4596,7 @@ class Eval { //implements Runnable {
     useModelNumber = true;
     // for now -- as before -- remove to implement
     // frame/model difference
+
     if (getToken(offset).tok == Token.hyphen) {
       ++offset;
       checkStatementLength(offset + 1);
@@ -4601,26 +4606,32 @@ class Eval { //implements Runnable {
         viewer.setAnimationPrevious();
       return;
     }
-    int frameNumber = -1;
-    int frameNumber2 = -1;
     boolean isPlay = false;
     boolean isRange = false;
     boolean isAll = false;
-    while (offset < statementLength) {
-      Token cmd = getToken(offset);
-      switch (cmd.tok) {
+    int[] frameList = new int[2];
+    int nFrames = 0;
+    for (int i = offset; i < statementLength; i++) {
+      switch (getToken(i).tok) {
       case Token.all:
-        isAll = true;
       case Token.asterisk:
+        checkStatementLength(offset + 1);
+        isAll = true;
         break;
       case Token.none:
+        checkStatementLength(offset + 1);
         break;
+      case Token.opOr:
+        if (nFrames == 0 || (statement[i - 1].tok != Token.integer && statement[i -1].tok != Token.decimal))
+          invalidArgument();
+        break;
+      case Token.decimal:
+        useModelNumber = false;
+        //fall through
       case Token.integer:
-        if (frameNumber == -1) {
-          frameNumber = cmd.intValue;
-        } else {
-          frameNumber2 = cmd.intValue;
-        }
+        if (nFrames == 2)
+          invalidArgument();
+        frameList[nFrames++] = statement[i].intValue;
         break;
       case Token.play:
         isPlay = true;
@@ -4629,40 +4640,75 @@ class Eval { //implements Runnable {
         isRange = true;
         break;
       default:
-        frameControl(cmd, false);
+        checkStatementLength(offset + 1);
+        frameControl(i, false);
         return;
       }
-      if (isSyntaxCheck)
-        return;
-      if (offset == statementLength - 1) {
-        if (isAll) {
-          viewer.setAnimationRange(-1, -1);
-          viewer.setCurrentModelIndex(-1);
-          return;
-        }
-        int modelIndex = (useModelNumber ? viewer
-            .getModelNumberIndex(frameNumber) : frameNumber - 1);
-        if (!isPlay && !isRange || modelIndex >= 0) {
-          viewer.setCurrentModelIndex(modelIndex);
-        }
-        if (isPlay || isRange) {
-          if (isRange || frameNumber2 >= 0) {
-            int modelIndex2 = (useModelNumber ? viewer
-                .getModelNumberIndex(frameNumber2) : frameNumber2 - 1);
-            viewer.setAnimationDirection(1);
-            viewer.setAnimationRange(modelIndex, modelIndex2);
-          }
-          if (isPlay)
-            viewer.resumeAnimation();
-        }
-      }
-      offset++;
     }
+    if ((isPlay || isRange) && nFrames > 2 || isRange && nFrames < 2)
+      invalidArgument();
+    boolean haveFileSet = (viewer.getModelNumber(0) > 1000);
+    if ((isPlay || isRange) && haveFileSet && useModelNumber)
+      invalidArgument();
+    if (isSyntaxCheck)
+      return;
+    if (isAll) {
+      viewer.setAnimationRange(-1, -1);
+      viewer.setCurrentModelIndex(-1);
+      return;
+    }
+    if (haveFileSet)
+      useModelNumber = false;
+    else
+      for (int i = 0; i < nFrames; i++)
+        frameList[i] %= 1000;
+    int modelIndex = viewer.getModelNumberIndex(frameList[0], useModelNumber);
+    int modelIndex2 = -1;
+    if (!isPlay && !isRange || modelIndex >= 0) {
+      viewer.setCurrentModelIndex(modelIndex);
+    }
+    if (isPlay && nFrames == 2 || isRange) {
+      modelIndex2 = viewer.getModelNumberIndex(frameList[1], useModelNumber);
+      viewer.setAnimationDirection(1);
+      viewer.setAnimationRange(modelIndex, modelIndex2);
+      viewer.setCurrentModelIndex(modelIndex);
+    }
+    if (isPlay)
+      viewer.resumeAnimation();
   }
 
-  void frameControl(Token token, boolean isSubCmd) throws ScriptException {
+  BitSet bitSetForModelNumberSet(int[] frameList, int nFrames) {
+    BitSet bs = new BitSet();
+    int modelCount = viewer.getModelCount();
+    boolean haveFileSet = (viewer.getModelNumber(0) > 1000);
+    for (int i = 0; i < nFrames; i++) {
+      int m = frameList[i];
+      if (m < 1000 && haveFileSet)
+        m *= 1000;
+      int pt = m % 1000;
+      if (pt == 0) {
+        int model1 = viewer.getModelNumberIndex(m + 1, false);
+        int model2 = viewer.getModelNumberIndex(m + 1001, false);
+        if (model1 < 0)
+          model1 = 0;
+        if (model2 < 0)
+          model2 = modelCount;
+        for (int j = model1; j < model2; j++)
+          bs.or(viewer.getModelAtomBitSet(j));        
+      } else {
+        if (!haveFileSet && m > 1000)
+          m = pt;
+        bs.or(viewer.getModelAtomBitSet(viewer.getModelNumberIndex(m, false)));
+      }
+    }
+    return bs;
+  }
+  
+  void frameControl(int i, boolean isSubCmd) throws ScriptException {
+    checkStatementLength(i + 1);
+    int tok = getToken(i).tok;
     if (isSyntaxCheck)
-      switch (token.tok) {
+      switch (tok) {
       case Token.playrev:
       case Token.play:
       case Token.resume:
@@ -4674,7 +4720,7 @@ class Eval { //implements Runnable {
         return;
       }
     else
-      switch (token.tok) {
+      switch (tok) {
       case Token.playrev:
         viewer.reverseAnimation();
       case Token.play:
@@ -4697,8 +4743,7 @@ class Eval { //implements Runnable {
         viewer.setAnimationLast();
         return;
       }
-    evalError(GT._("invalid {0} control keyword", "frame") + ": "
-        + token.toString());
+    evalError(GT._("invalid {0} control keyword", "frame"));
   }
 
   int getShapeType(int tok) throws ScriptException {
@@ -7387,8 +7432,16 @@ class Eval { //implements Runnable {
         break;
       case Token.spec_model:
         sb.append("/");
-        sb.append("" + token.value);
-        break;
+      case Token.decimal:
+        if (token.intValue < Integer.MAX_VALUE) {
+          int iv = token.intValue;
+          sb.append("" + (iv / 1000));
+          sb.append(".");
+          sb.append("" + (iv % 1000));
+        } else {
+          sb.append("" + token.value);
+        }
+        continue;
       case Token.spec_resid:
         sb.append('[');
         sb.append(Group.getGroup3((short) token.intValue));

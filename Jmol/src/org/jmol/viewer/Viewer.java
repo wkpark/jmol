@@ -1687,8 +1687,8 @@ public class Viewer extends JmolViewer {
     return modelManager.getModelAuxiliaryInfo(modelIndex, keyName);
   }
 
-  int getModelNumberIndex(int modelNumber) {
-    return modelManager.getModelNumberIndex(modelNumber);
+  int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
+    return modelManager.getModelNumberIndex(modelNumber, useModelNumber);
   }
 
   boolean modelSetHasVibrationVectors() {
@@ -2300,7 +2300,7 @@ public class Viewer extends JmolViewer {
 
   private void setBackgroundModel(int modelNumber) {
     //Eval
-    int modelIndex = getModelNumberIndex(modelNumber);
+    int modelIndex = getModelNumberIndex(modelNumber, true);
     setBackgroundModelIndex(modelIndex);
   }
 

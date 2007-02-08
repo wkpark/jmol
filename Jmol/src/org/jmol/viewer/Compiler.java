@@ -1113,7 +1113,7 @@ class Compiler {
     case Token.substructure:
       return clauseSubstructure();
     case Token.decimal:
-      return addTokenToPostfix(new Token(Token.spec_model, getToken().intValue, null));
+      return addTokenToPostfix(new Token(Token.spec_model2, getToken().intValue, null));
     case Token.hyphen: // selecting a negative residue spec
     case Token.integer:
     case Token.seqcode:

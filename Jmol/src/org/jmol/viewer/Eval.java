@@ -1191,6 +1191,7 @@ class Eval { //implements Runnable {
             (String) instruction.value);
         break;
       case Token.spec_model:
+      case Token.spec_model2:
         if (instruction.intValue != Integer.MAX_VALUE) {
           stack[sp++] = bitSetForModelNumberSet(new int[]{instruction.intValue}, 1); 
         } else {
@@ -7432,6 +7433,8 @@ class Eval { //implements Runnable {
         break;
       case Token.spec_model:
         sb.append("/");
+        //fall through
+      case Token.spec_model2:
       case Token.decimal:
         if (token.intValue < Integer.MAX_VALUE) {
           int iv = token.intValue;

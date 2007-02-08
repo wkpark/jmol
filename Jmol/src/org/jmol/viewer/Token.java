@@ -444,6 +444,7 @@ public class Token {
   final static int bottom       = misc | 70;
   final static int bitset       = misc | 71;
   final static int last         = misc | 72;
+  final static int spec_model2  = misc | 73;
   
  
   final static int amino       = predefinedset |  0;

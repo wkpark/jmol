@@ -581,7 +581,9 @@ class StateManager {
       + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;"
       + ";vibrationscale;vibrationperiod;"
       + ";cameradepth;navigationmode;rotationradius;"
-      + ";zerobasedxyzrasmol;axesorientationrasmol;";
+      + ";zerobasedxyzrasmol;axesorientationrasmol;"
+      + ";_modelnumber;"
+      + "";
 
     void clearVolatileProperties() {
       Enumeration e;

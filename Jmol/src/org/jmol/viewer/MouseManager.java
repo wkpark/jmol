@@ -375,6 +375,9 @@ abstract class MouseManager implements KeyListener {
     timeCurrent = time;
     xCurrent = previousDragX = x; yCurrent = previousDragY = y;
     wasDragged = true;
+    if (!viewer.getInMotion())
+      viewer.getAwtComponent().setCursor(
+          Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
     viewer.setInMotion(true);
     if (pressedCount == 1)
       mouseSinglePressDrag(deltaX, deltaY, modifiers);
@@ -384,8 +387,6 @@ abstract class MouseManager implements KeyListener {
 
   void mouseSinglePressDrag(int deltaX, int deltaY, int modifiers) {
     //viewer.setStatusUserAction("mouseSinglePressDrag: " + modifiers);
-    viewer.getAwtComponent().setCursor(
-        Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
     switch (modifiers & BUTTON_MODIFIER_MASK) {
     case LEFT:
       viewer.rotateXYBy(deltaX, deltaY);

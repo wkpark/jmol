@@ -34,7 +34,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "11.1.8"; //connect radius/color     
+  public final static String version = "11.1.9"; //select 2.3  #file.model     
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);
     

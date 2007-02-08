@@ -1046,6 +1046,8 @@ class Eval { //implements Runnable {
   Token[] tempStatement;
 
   BitSet expression(int index) throws ScriptException {
+    if (!checkToken(index))
+      badArgumentCount();
     return expression(statement, index, true);
   }
 
@@ -4609,25 +4611,21 @@ class Eval { //implements Runnable {
     boolean isPlay = false;
     boolean isRange = false;
     boolean isAll = false;
-    int[] frameList = new int[2];
+    int[] frameList = new int[] { -1, -1 };
     int nFrames = 0;
     for (int i = offset; i < statementLength; i++) {
       switch (getToken(i).tok) {
       case Token.all:
       case Token.asterisk:
-        checkStatementLength(offset + 1);
+        checkStatementLength(offset + (isRange ? 2 : 1));
         isAll = true;
         break;
       case Token.none:
         checkStatementLength(offset + 1);
         break;
-      case Token.opOr:
-        if (nFrames == 0 || (statement[i - 1].tok != Token.integer && statement[i -1].tok != Token.decimal))
-          invalidArgument();
-        break;
       case Token.decimal:
         useModelNumber = false;
-        //fall through
+      //fall through
       case Token.integer:
         if (nFrames == 2)
           invalidArgument();
@@ -4645,23 +4643,24 @@ class Eval { //implements Runnable {
         return;
       }
     }
-    if ((isPlay || isRange) && nFrames > 2 || isRange && nFrames < 2)
-      invalidArgument();
     boolean haveFileSet = (viewer.getModelNumber(0) > 1000);
     if ((isPlay || isRange) && haveFileSet && useModelNumber)
       invalidArgument();
     if (isSyntaxCheck)
       return;
     if (isAll) {
+      viewer.setAnimationOn(false);
       viewer.setAnimationRange(-1, -1);
-      viewer.setCurrentModelIndex(-1);
+      if (!isRange)
+        viewer.setCurrentModelIndex(-1);
       return;
     }
     if (haveFileSet)
       useModelNumber = false;
     else
       for (int i = 0; i < nFrames; i++)
-        frameList[i] %= 1000;
+        if (frameList[i] >= 0)
+          frameList[i] %= 1000;
     int modelIndex = viewer.getModelNumberIndex(frameList[0], useModelNumber);
     int modelIndex2 = -1;
     if (!isPlay && !isRange || modelIndex >= 0) {
@@ -4669,9 +4668,10 @@ class Eval { //implements Runnable {
     }
     if (isPlay && nFrames == 2 || isRange) {
       modelIndex2 = viewer.getModelNumberIndex(frameList[1], useModelNumber);
+      viewer.setAnimationOn(false);
       viewer.setAnimationDirection(1);
       viewer.setAnimationRange(modelIndex, modelIndex2);
-      viewer.setCurrentModelIndex(modelIndex);
+      viewer.setCurrentModelIndex(modelIndex >= 0 ? modelIndex : 0);
     }
     if (isPlay)
       viewer.resumeAnimation();
@@ -4926,7 +4926,7 @@ class Eval { //implements Runnable {
         setLabel(key.substring(5));
         return;
       }
-      if (key.equalsIgnoreCase("toggleLabel")) {
+      if (key.equalsIgnoreCase("toggleLabel")) { //from PickingManager
         BitSet bs = expression(2);
         if (!isSyntaxCheck)
           viewer.togglePickingLabel(bs);

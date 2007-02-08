@@ -796,7 +796,7 @@ class Compiler {
 
     //compile expressions
 
-    isSetExpression = (tokCommand == Token.set && size > 3 && atokenCommand[2].tok == Token.leftbrace);
+    isSetExpression = false;//(tokCommand == Token.set && size > 3 && atokenCommand[2].tok == Token.leftbrace);
     isNumericExpression = (tokCommand == Token.ifcmd || isSetExpression);
     boolean checkExpression = (isNumericExpression || tokAttrOr(tokCommand,
         Token.expressionCommand, Token.embeddedExpression));

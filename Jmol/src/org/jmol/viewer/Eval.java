@@ -2522,7 +2522,7 @@ class Eval { //implements Runnable {
       pt.z = floatParameter(4);
     } else if (isCenterParameter(2)) {
       pt = centerParameter(2);
-      checkStatementLength(iToken);
+      checkStatementLength(iToken + 1);
     } else {
       checkLength2();
     }

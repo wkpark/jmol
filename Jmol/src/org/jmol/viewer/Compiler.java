@@ -221,7 +221,7 @@ class Compiler {
           ltoken.addElement(new Token(Token.decimal, new Float(value)));
           continue;
         }
-        if (lookingAtDecimal(tokAttr(tokCommand, Token.negnums))) {
+        if (lookingAtDecimal()) {
           value =
           // can't use parseFloat with jvm 1.1
           // Float.parseFloat(script.substring(ichToken, ichToken + cchToken));
@@ -393,8 +393,7 @@ class Compiler {
     char ch;
     int ichEnd = ichToken;
     int ichFirstSharp = -1;
-    while (ichEnd < cchScript && (ch = script.charAt(ichEnd)) != ';'
-        && ch != '\r' && ch != '\n') {
+    while (ichEnd < cchScript && !eol(ch = script.charAt(ichEnd))) {
       if (ch == '#' && ichFirstSharp == -1) {
         ichFirstSharp = ichEnd;
         //Logger.debug("I see a first sharp @ " + ichFirstSharp);
@@ -442,6 +441,10 @@ class Compiler {
     return true;
   }
 
+  boolean eol(char ch) {
+    return (ch == ';' || ch == '\r' || ch == '\n');  
+  }
+  
   boolean lookingAtEndOfLine() {
     //log("lookingAtEndOfLine");
     if (ichToken >= cchScript)
@@ -574,9 +577,7 @@ class Compiler {
 
   boolean lookingAtSpecialString() {
     int ichT = ichToken;
-    char ch;
-    while (ichT < cchScript && (ch = script.charAt(ichT)) != ';' && ch != '\r'
-        && ch != '\n')
+    while (ichT < cchScript && !eol(script.charAt(ichT)))
       ++ichT;
     cchToken = ichT - ichToken;
     log("lookingAtSpecialString cchToken=" + cchToken);
@@ -633,7 +634,7 @@ class Compiler {
     return (float) value;
   }
 
-  boolean lookingAtDecimal(boolean allowNegative) {
+  boolean lookingAtDecimal() {
     if (ichToken == cchScript)
       return false;
     int ichT = ichToken;
@@ -641,27 +642,24 @@ class Compiler {
       ++ichT;
     boolean digitSeen = false;
     char ch = 'X';
-    while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT))) {
-      ++ichT;
+    while (ichT < cchScript && Character.isDigit(ch = script.charAt(ichT++)))
       digitSeen = true;
-    }
-    if (ichT == cchScript || ch != '.')
+    if (ch != '.')
       return false;
+    // only here if  "dddd."
+
     // to support 1.ca, let's check the character after the dot
     // to determine if it is an alpha
-    if (ch == '.'
-        && (ichT + 1 < cchScript)
-        && (Character.isLetter(script.charAt(ichT + 1)) || script
-            .charAt(ichT + 1) == '?'))
-      return false;
-    //well, guess what? we also have to look for 86.1Na, so...
-    if (ch == '.'
-        && (ichT + 2 < cchScript)
-        && (Character.isLetter(script.charAt(ichT + 2)) || script
-            .charAt(ichT + 2) == '?'))
-      return false;
-
-    ++ichT;
+    char ch1;
+    if (ichT < cchScript && !eol(ch1 = script.charAt(ichT))) {
+      if (Character.isLetter(ch1) || ch1 == '?')
+        return false;
+      //well, guess what? we also have to look for 86.1Na, so...
+      //watch out for moveto..... 56.;refresh...
+      if (ichT + 1 < cchScript
+          && (Character.isLetter(ch1 = script.charAt(ichT + 1)) || ch1 == '?'))
+        return false;
+    }
     while (ichT < cchScript && Character.isDigit(script.charAt(ichT))) {
       ++ichT;
       digitSeen = true;

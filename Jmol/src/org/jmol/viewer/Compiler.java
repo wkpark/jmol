@@ -839,6 +839,11 @@ class Compiler {
    however, if cys120 was *not* previously defined, then it refers to
    the residue of type cys at number 120.
    what a disaster.
+   
+   rmh -- Note that these syntax rules have not been recently updated.
+   Newer features such as if/else/endif, aa = xxx variation of set aa xxx,
+   using file.model instead of * /model, being able to express bitsets within
+   expressions, new CONNECTED syntax, among other things are not represented here. 
 
    expression       :: = clauseOr
 
@@ -900,7 +905,7 @@ class Compiler {
 
    clauseAlternateSpec ::= {%} identifier | integer
 
-   clauseModelSpec  ::= {:|/} * | integer
+   clauseModelSpec  ::= {:|/} * | integer | decimal
 
    */
 

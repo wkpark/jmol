@@ -25,6 +25,7 @@ package org.jmol.applet;
 
 import org.jmol.api.*;
 import java.awt.*;
+import org.jmol.util.Logger;
 
 class Jvm12 {
 
@@ -48,17 +49,29 @@ class Jvm12 {
   }
 
   void showConsole(boolean showConsole) {
-    System.out.println("Jvm12.showConsole(" + showConsole + ")");
-    if (! showConsole) {
+    if (!showConsole) {
       if (console != null) {
         console.setVisible(false);
         console = null;
       }
       return;
     }
-    if (console == null)
-      console = new Console(awtComponent, viewer, this);
-    console.setVisible(true);
+    if (console == null) {
+      Logger.debug("Jvm12.showConsole(" + showConsole + ")");
+      try {
+        console = new Console(awtComponent, viewer, this);
+      } catch (Exception e) {
+        Logger.debug("Jvm12/console exception");
+      }
+    }
+    if (console == null) {
+      try { //try again -- Java 1.6.0 bug? When "console" is given in a script, but not the menu
+        console = new Console(awtComponent, viewer, this);
+      } catch (Exception e) {
+      }
+    }
+    if (console != null)
+      console.setVisible(true);
   }
 
   void consoleMessage(String message) {

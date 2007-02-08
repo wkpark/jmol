@@ -55,23 +55,12 @@ class ScriptManager {
   public Object addScript(String returnType, String strScript,
                           String statusList, boolean isScriptFile,
                           boolean isQuiet) {
-    Object tokenInfo = null;
-    /*
-     * just an idea -- precompile
-     *  
-     if (!isScriptFile) {
-      tokenInfo = viewer.compileInfo(strScript);
-      if (tokenInfo instanceof String)
-        return tokenInfo;
-    }
-    */
     Vector scriptItem = new Vector();
     scriptItem.add(strScript);
     scriptItem.add(statusList);
     scriptItem.add(returnType);
     scriptItem.add(isScriptFile ? Boolean.TRUE : Boolean.FALSE);
     scriptItem.add(isQuiet ? Boolean.TRUE : Boolean.FALSE);
-    scriptItem.add(tokenInfo);
     
     if (!useQueue) {
       clearQueue();
@@ -113,11 +102,10 @@ class ScriptManager {
     String returnType = (String) scriptItem.get(2);
     boolean isScriptFile = ((Boolean) scriptItem.get(3)).booleanValue();
     boolean isQuiet = ((Boolean) scriptItem.get(4)).booleanValue();
-    Vector tokenInfo = (Vector) scriptItem.get(5);
     Logger.debug(scriptQueue.size() + " scripts; running: " + script);
     scriptQueue.remove(0);
     Object returnInfo = runScript(returnType, script, statusList, isScriptFile,
-        isQuiet, tokenInfo);
+        isQuiet);
     if (scriptQueue.size() == 0) // might have been cleared with an exit
       return null;
     return returnInfo;
@@ -126,9 +114,9 @@ class ScriptManager {
     
   private Object runScript(String returnType, String strScript,
                            String statusList, boolean isScriptFile,
-                           boolean isQuiet, Vector tokenInfo) {
+                           boolean isQuiet) {
     return viewer.evalStringWaitStatus(returnType, strScript, statusList,
-        isScriptFile, isQuiet, tokenInfo);
+        isScriptFile, isQuiet);
   }
 
   private void startScriptQueue() {

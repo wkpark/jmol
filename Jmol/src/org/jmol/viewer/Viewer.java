@@ -2631,7 +2631,7 @@ public class Viewer extends JmolViewer {
     GT.setDoTranslate(false);
     String str = (String) evalStringWaitStatus("JSON", strScript,
         "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated", false,
-        false, null);
+        false);
     GT.setDoTranslate(doTranslateTemp);
     return str;
   }
@@ -2641,7 +2641,7 @@ public class Viewer extends JmolViewer {
     boolean doTranslateTemp = GT.getDoTranslate();
     GT.setDoTranslate(false);
     Object ret = evalStringWaitStatus("object", strScript, statusList, false,
-        false, null);
+        false);
     GT.setDoTranslate(doTranslateTemp);
     return ret;
   }
@@ -2650,13 +2650,12 @@ public class Viewer extends JmolViewer {
                                      String statusList) {
     scriptManager.waitForQueue();
     return evalStringWaitStatus(returnType, strScript, statusList, false,
-        false, null);
+        false);
   }
 
   synchronized Object evalStringWaitStatus(String returnType, String strScript,
                                            String statusList,
-                                           boolean isScriptFile,
-                                           boolean isQuiet, Vector tokenInfo) {
+                                           boolean isScriptFile, boolean isQuiet) {
     // from the scriptManager only!
     if (checkResume(strScript))
       return "script processing resumed"; //be very odd if this fired
@@ -2673,10 +2672,8 @@ public class Viewer extends JmolViewer {
     getProperty("String", "jmolStatus", statusList);
     if (checkScriptOnly)
       Logger.info("--checking script:\n" + eval.script + "\n----\n");
-    boolean isOK = (tokenInfo != null ? eval
-        .loadTokenInfo(strScript, tokenInfo) : isScriptFile ? eval
-        .loadScriptFile(strScript, isQuiet) : eval.loadScriptString(strScript,
-        isQuiet));
+    boolean isOK = (isScriptFile ? eval.loadScriptFile(strScript, isQuiet)
+        : eval.loadScriptString(strScript, isQuiet));
     String strErrorMessage = eval.getErrorMessage();
     if (isOK) {
       eval.runEval(checkScriptOnly);
@@ -4718,6 +4715,11 @@ public class Viewer extends JmolViewer {
     if (rate < 1)
       rate = 1;
     global.pickingSpinRate = rate;
+  }
+
+  int getPickingSpinRate() {
+    //PickingManager
+    return global.pickingSpinRate;
   }
 
   void startSpinningAxis(int atomIndex1, int atomIndex2, boolean isClockwise) {

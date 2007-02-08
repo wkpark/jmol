@@ -168,7 +168,7 @@ class PickingManager {
             GT._("pick two atoms in order to spin the model around an axis"));
         break;
       }
-      viewer.script("spin (atomindex="+queuedAtomIndexes[0]+") (atomIndex="+atomIndex+")");
+      viewer.script("spin (atomindex="+queuedAtomIndexes[0]+") (atomIndex="+atomIndex+") "+viewer.getPickingSpinRate());
     }
   }
 

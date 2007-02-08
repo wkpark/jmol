@@ -40,7 +40,7 @@ class Compiler {
   String script;
 
   short[] lineNumbers;
-  short[] lineIndices;
+  int[] lineIndices;
   Token[][] aatokenCompiled;
 
   boolean error;
@@ -78,7 +78,8 @@ class Compiler {
     this.script = cleanScriptComments(script);
     logMessages = (!isSilent && !isPredefining && Logger
         .isActiveLevel(Logger.LEVEL_DEBUG));
-    lineNumbers = lineIndices = null;
+    lineNumbers = null;
+    lineIndices = null;
     aatokenCompiled = null;
     errorMessage = errorLine = null;
     preDefining = (filename == "#predefine");
@@ -89,7 +90,7 @@ class Compiler {
     return lineNumbers;
   }
 
-  short[] getLineIndices() {
+  int[] getLineIndices() {
     return lineIndices;
   }
 
@@ -115,7 +116,7 @@ class Compiler {
     lineCurrent = 1;
     int lnLength = 8;
     lineNumbers = new short[lnLength];
-    lineIndices = new short[lnLength];
+    lineIndices = new int[lnLength];
     error = false;
     isNewSet = false;
 
@@ -140,9 +141,9 @@ class Compiler {
             short[] lnT = new short[lnLength * 2];
             System.arraycopy(lineNumbers, 0, lnT, 0, lnLength);
             lineNumbers = lnT;
-            lnT = new short[lnLength * 2];
-            System.arraycopy(lineIndices, 0, lnT, 0, lnLength);
-            lineIndices = lnT;
+            int[] lnI = new int[lnLength * 2];
+            System.arraycopy(lineIndices, 0, lnI, 0, lnLength);
+            lineIndices = lnI;
             lnLength *= 2;
           }
           lineNumbers[iCommand] = lineCurrent;

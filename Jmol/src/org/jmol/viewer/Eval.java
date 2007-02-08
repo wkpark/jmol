@@ -41,7 +41,7 @@ class Context {
   String filename;
   String script;
   short[] linenumbers;
-  short[] lineIndices;
+  int[] lineIndices;
   Token[][] aatoken;
   Token[] statement;
   int statementLength;
@@ -57,7 +57,7 @@ class Eval { //implements Runnable {
   String filename;
   String script;
   short[] linenumbers;
-  short[] lineIndices;
+  int[] lineIndices;
   Token[][] aatoken;
   int pc; // program counter
   long timeBeginExecution;
@@ -215,17 +215,6 @@ class Eval { //implements Runnable {
     aatoken = compiler.getAatokenCompiled();
     linenumbers = compiler.getLineNumbers();
     lineIndices = compiler.getLineIndices();
-    return true;
-  }
-
-  boolean loadTokenInfo(String script, Vector tokenInfo) {
-    this.filename = null;
-    this.script = script;
-    errorMessage = null;
-    pc = 0;
-    aatoken = (Token[][]) tokenInfo.get(0);
-    linenumbers = (short[]) tokenInfo.get(1);
-    lineIndices = (short[]) tokenInfo.get(2);
     return true;
   }
 

@@ -506,16 +506,18 @@ class Eval { //implements Runnable {
       iToken = 0;
       if (!checkContinue())
         break;
-      int nSecDelay = viewer.getScriptDelay();
+      int milliSecDelay = viewer.getScriptDelay();
       if (isSyntaxCheck) {
         if (isScriptCheck)
           Logger.info(getCommand());
         if (statementLength == 1 && (token.tok & Token.unimplemented) == 0)
           continue;
       } else {
-        if (nSecDelay > 0) {
-          delay((long) nSecDelay * 1000);
-          Logger.info(getCommand());
+        if (milliSecDelay > 0 && scriptLevel > 0) {
+          delay((long) milliSecDelay);
+          String cmd = getCommand();
+          Logger.info(cmd);
+          viewer.scriptEcho("$["+scriptLevel+"." + pc+"] "+cmd);
         }
         if (debugScript)
           logDebugScript();
@@ -1002,10 +1004,12 @@ class Eval { //implements Runnable {
   }
 
   String getCommand() {
-    //pc has been incremented
-    int ichBegin = lineIndices[pc - 1];
-    int ichEnd = (pc == lineIndices.length || lineIndices[pc] == 0 ? script
-        .length() : lineIndices[pc]);
+    //pc has been incremented, but that's OK, because
+    //the lineIndices and linenumbers arrays are off by one as well.
+    int ichBegin = lineIndices[pc];
+    int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
+        .length()
+        : lineIndices[pc + 1]);
     while (ichEnd > 0 && "\n\r;".indexOf(script.charAt(ichEnd - 1)) >= 0)
       ichEnd--;
     return script.substring(ichBegin, ichEnd) + ";";

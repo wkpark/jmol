@@ -2982,6 +2982,14 @@ public class Viewer extends JmolViewer {
     //Logger.setActiveLevel(Logger.LEVEL_DEBUG, debugScript);
   }
 
+  boolean getDebugCommand() {
+    return global.debugCommand;
+  }
+
+  void setDebugCommand(boolean TF) {
+    global.debugScript = TF;
+  }
+
   void atomPicked(int atomIndex, int modifiers) {
     if (!isInSelectionSubset(atomIndex))
       return;
@@ -3431,7 +3439,7 @@ public class Viewer extends JmolViewer {
         setPerspectiveModel(value);
         break;
       }
-      if (key.equalsIgnoreCase("scriptDelay")) {
+      if (key.equalsIgnoreCase("showScript")) {
         setScriptDelay(value);
         break;
       }
@@ -3528,6 +3536,10 @@ public class Viewer extends JmolViewer {
   boolean setBooleanProperty(String key, boolean value, boolean defineNew) {
     boolean notFound = false;
     while (true) {
+      if (key.equalsIgnoreCase("showScript")) {
+        setIntProperty("showScript", value ? 1 : 0);
+        return true;
+      }
       ///11.1///
       if (key.equalsIgnoreCase("allowEmbeddedScripts")) {
         setAllowEmbeddedScripts(value);
@@ -3652,6 +3664,10 @@ public class Viewer extends JmolViewer {
       }
       if (key.equalsIgnoreCase("debugScript")) {
         setDebugScript(value);
+        break;
+      }
+      if (key.equalsIgnoreCase("debugCommand")) {
+        setDebugCommand(value);
         break;
       }
       if (key.equalsIgnoreCase("frank")) {

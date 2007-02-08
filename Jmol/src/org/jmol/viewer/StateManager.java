@@ -531,6 +531,7 @@ class StateManager {
 
     //testing
 
+    boolean debugCommand = false;
     boolean debugScript = false;
     boolean testFlag1 = false;
     boolean testFlag2 = false;

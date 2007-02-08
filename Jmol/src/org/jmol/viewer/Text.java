@@ -340,6 +340,8 @@ class Text {
       widths = null;
       return;
     }
+    if (fm == null)
+      return;
     lines = split(text, '|');
     textWidth = 0;
     widths = new int[lines.length];

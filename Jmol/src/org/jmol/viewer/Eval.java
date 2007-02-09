@@ -56,6 +56,7 @@ class Eval { //implements Runnable {
   Context[] stack = new Context[scriptLevelMax];
   String filename;
   String script;
+  String thisCommand;
   short[] linenumbers;
   int[] lineIndices;
   Token[][] aatoken;
@@ -469,7 +470,7 @@ class Eval { //implements Runnable {
     if (!interruptExecution.booleanValue()) {
       if (!executionPaused.booleanValue())
         return true;
-      Logger.debug("script execution paused at this command: " + getCommand());
+      Logger.debug("script execution paused at this command: " + thisCommand);
       try {
         while (executionPaused.booleanValue())
           Thread.sleep(100);
@@ -502,6 +503,7 @@ class Eval { //implements Runnable {
     while (pc < aatoken.length) {
       Token token = aatoken[pc][0];
       statement = aatoken[pc++];
+      thisCommand = getCommand();
       statementLength = statement.length;
       iToken = 0;
       if (!checkContinue())
@@ -509,15 +511,14 @@ class Eval { //implements Runnable {
       int milliSecDelay = viewer.getScriptDelay();
       if (isSyntaxCheck) {
         if (isScriptCheck)
-          Logger.info(getCommand());
+          Logger.info(thisCommand);
         if (statementLength == 1 && (token.tok & Token.unimplemented) == 0)
           continue;
       } else {
         if (milliSecDelay > 0 && scriptLevel > 0) {
           delay((long) milliSecDelay);
-          String cmd = getCommand();
-          Logger.info(cmd);
-          viewer.scriptEcho("$["+scriptLevel+"." + pc+"] "+cmd);
+          Logger.info(thisCommand);
+          viewer.scriptEcho("$["+scriptLevel+"." + pc+"] "+thisCommand);
         }
         if (debugScript)
           logDebugScript();
@@ -1010,9 +1011,15 @@ class Eval { //implements Runnable {
     int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
         .length()
         : lineIndices[pc + 1]);
-    while (ichEnd > 0 && "\n\r;".indexOf(script.charAt(ichEnd - 1)) >= 0)
-      ichEnd--;
-    return script.substring(ichBegin, ichEnd) + ";";
+    String s = script.substring(ichBegin, ichEnd);
+    int i;
+    if ((i = s.indexOf("\n")) >= 0)
+      s = s.substring(0, i);
+    if ((i = s.indexOf("\r")) >= 0)
+      s = s.substring(0, i);
+    if (!s.endsWith(";"))
+      s += ";";
+    return s;
   }
 
   final StringBuffer strbufLog = new StringBuffer(80);
@@ -3038,7 +3045,7 @@ class Eval { //implements Runnable {
       for (int i = statementLength; --i >= 0;)
         code[i] = statement[i];
       variables.put("!" + variable.substring(8), code);
-      viewer.addStateScript(getCommand());
+      viewer.addStateScript(thisCommand);
     } else {
       variables.put(variable, bs);
       setStringProperty("@" + variable, StateManager.escape(bs));
@@ -4443,7 +4450,7 @@ class Eval { //implements Runnable {
       case Token.surface:
         dots(2, Dots.DOTS_MODE_CALCONLY);
         if (!isSyntaxCheck)
-          viewer.addStateScript(getCommand());
+          viewer.addStateScript(thisCommand);
         return;
       case Token.hbond:
         checkLength2();
@@ -6136,7 +6143,7 @@ class Eval { //implements Runnable {
 
   void pmesh() throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_PMESH);
-    setShapeProperty(JmolConstants.SHAPE_PMESH, "init", getCommand());
+    setShapeProperty(JmolConstants.SHAPE_PMESH, "init", thisCommand);
     Object t;
     boolean idSeen = false;
     for (int i = 1; i < statementLength; ++i) {
@@ -6765,8 +6772,8 @@ class Eval { //implements Runnable {
 
   void isosurface(int iShape) throws ScriptException {
     viewer.loadShape(iShape);
-    setShapeProperty(iShape, "init", isScriptCheck ? "" : getCommand());
-    setShapeProperty(iShape, "title", new String[] { script });
+    setShapeProperty(iShape, "init", isScriptCheck ? "" : thisCommand);
+    setShapeProperty(iShape, "title", new String[] { thisCommand });
     int colorRangeStage = 0;
     int signPt = 0;
     boolean surfaceObjectSeen = false;

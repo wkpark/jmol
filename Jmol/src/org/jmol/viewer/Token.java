@@ -213,6 +213,7 @@ public class Token {
   final static int model         = command | 116 | atomproperty;
   final static int molecule      = command | 117 | unimplemented | atomproperty;
   final static int navigate      = command | 118 | negnums | embeddedExpression;
+  final static int gotocmd       = command | 119;
   
   // parameters
   final static int ambient      = setparam |  0;
@@ -553,8 +554,7 @@ public class Token {
     // chime commands (except GOTO)
 
     "delay",             new Token(delay,     onDefault1, "delay"),
-    "goto",              new Token(loop,         maxArg2, "goto"),
-    "loop",              null,
+    "loop",              new Token(loop,      onDefault1, "loop"),
     "move",              new Token(move,     varArgCount, "move"),
     "spin",              new Token(spin,     varArgCount, "spin"),
     "frame",             new Token(frame,    varArgCount, "frame"),
@@ -606,6 +606,7 @@ public class Token {
     "if",                new Token(ifcmd,         varArgCount, "if"),
     "else",              new Token(elsecmd,                 0, "else"),
     "endif",             new Token(endifcmd,                0, "endif"),
+    "goto",              new Token(gotocmd,                 1, "goto"),
     "calculate",         new Token(calculate,     varArgCount, "calculate"),
     "history",           new Token(history,           maxArg2, "history"),
     "subset",            new Token(subset,        varArgCount, "subset"),

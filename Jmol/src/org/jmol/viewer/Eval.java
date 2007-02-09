@@ -633,7 +633,12 @@ class Eval { //implements Runnable {
         delay();
         break;
       case Token.loop:
-        loop();
+        delay();
+        if (!isSyntaxCheck)
+          pc = -1;
+        break;
+      case Token.gotocmd:
+        gotocmd();
         break;
       case Token.move:
         move();
@@ -3873,37 +3878,31 @@ class Eval { //implements Runnable {
           xTrans, yTrans, radius, null, Float.NaN, Float.NaN, Float.NaN);
   }
 
-  void loop() throws ScriptException {
-    delay(); // a loop is just a delay followed by ...
+  void gotocmd() throws ScriptException {
     String strTo = null;
-    if (statementLength == 3)
-      strTo = parameterAsString(2);
+    strTo = parameterAsString(1);
     int pcTo = -1;
-    if (strTo != null) {
-      for (int i = 0; i < aatoken.length; i++) {
-        Token[] tokens = aatoken[i];
-        if (tokens[0].tok == Token.message)
-          if (tokens[1].value.toString().equalsIgnoreCase(strTo)) {
-            pcTo = i;
-            break;
-          }
-      }
-      if (pcTo < 0)
-        invalidArgument();
-      --pcTo;
+    for (int i = 0; i < aatoken.length; i++) {
+      Token[] tokens = aatoken[i];
+      if (tokens[0].tok == Token.message)
+        if (tokens[1].value.toString().equalsIgnoreCase(strTo)) {
+          pcTo = i;
+          break;
+        }
     }
+    if (pcTo < 0)
+      invalidArgument();
     if (!isSyntaxCheck)
-      pc = pcTo; // ... resetting the program counter
+      pc = pcTo - 1; // ... resetting the program counter
   }
   
   void delay() throws ScriptException {
     long millis = 0;
-    switch (statementLength == 1 ? Token.nada : getToken(1).tok) {
-    case Token.nada:
+    switch (getToken(1).tok) {
+    case Token.on: // this is auto-provided as a default
       millis = 1;
       break;
     case Token.integer:
-    case Token.on: // this is auto-provided as a default
       millis = intParameter(1) * 1000;
       break;
     case Token.decimal:

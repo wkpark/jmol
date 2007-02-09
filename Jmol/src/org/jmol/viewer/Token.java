@@ -553,7 +553,7 @@ public class Token {
     // chime commands
 
     "delay",             new Token(delay,     onDefault1, "delay"),
-    "loop",              new Token(loop,      onDefault1, "loop"),
+    "loop",              new Token(loop,         maxArg2, "loop"),
     "move",              new Token(move,     varArgCount, "move"),
     "spin",              new Token(spin,     varArgCount, "spin"),
     "frame",             new Token(frame,    varArgCount, "frame"),

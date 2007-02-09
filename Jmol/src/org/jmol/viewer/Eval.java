@@ -633,9 +633,7 @@ class Eval { //implements Runnable {
         delay();
         break;
       case Token.loop:
-        delay(); // a loop is just a delay followed by ...
-        if (!isSyntaxCheck)
-          pc = -1; // ... resetting the program counter
+        loop();
         break;
       case Token.move:
         move();
@@ -3053,7 +3051,9 @@ class Eval { //implements Runnable {
       return;
     String s = viewer.formatText(text);
     Logger.warn(s);
-    viewer.scriptStatus(s);
+    if (!s.startsWith("_"))
+  
+      viewer.scriptStatus(s);
   }
 
   void label() throws ScriptException {
@@ -3873,9 +3873,35 @@ class Eval { //implements Runnable {
           xTrans, yTrans, radius, null, Float.NaN, Float.NaN, Float.NaN);
   }
 
+  void loop() throws ScriptException {
+    delay(); // a loop is just a delay followed by ...
+    String strTo = null;
+    if (statementLength == 3)
+      strTo = parameterAsString(2);
+    int pcTo = -1;
+    if (strTo != null) {
+      for (int i = 0; i < aatoken.length; i++) {
+        Token[] tokens = aatoken[i];
+        if (tokens[0].tok == Token.message)
+          if (tokens[1].value.toString().equalsIgnoreCase(strTo)) {
+            pcTo = i;
+            break;
+          }
+      }
+      if (pcTo < 0)
+        invalidArgument();
+      --pcTo;
+    }
+    if (!isSyntaxCheck)
+      pc = pcTo; // ... resetting the program counter
+  }
+  
   void delay() throws ScriptException {
     long millis = 0;
-    switch (getToken(1).tok) {
+    switch (statementLength == 1 ? Token.nada : getToken(1).tok) {
+    case Token.nada:
+      millis = 1;
+      break;
     case Token.integer:
     case Token.on: // this is auto-provided as a default
       millis = intParameter(1) * 1000;

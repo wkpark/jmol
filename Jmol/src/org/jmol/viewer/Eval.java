@@ -3206,7 +3206,7 @@ class Eval { //implements Runnable {
     }
     if (msg.length() > 0)
       Logger.info(msg);
-    if (defaultScript.length() > 0)
+    if (defaultScript.length() > 0 && !isScriptCheck) //NOT checking embedded scripts here
       runScript(defaultScript);
   }
 

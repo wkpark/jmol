@@ -147,7 +147,7 @@ class Compiler {
             lnLength *= 2;
           }
           lineNumbers[iCommand] = lineCurrent;
-          lineIndices[iCommand] = (short) ichCurrentCommand;
+          lineIndices[iCommand] = ichCurrentCommand;
           ltoken.setSize(0);
           tokCommand = Token.nada;
           iHaveQuotedString = false;

@@ -503,7 +503,8 @@ class Eval { //implements Runnable {
     while (pc < aatoken.length) {
       Token token = aatoken[pc][0];
       statement = aatoken[pc++];
-      thisCommand = getCommand();
+      if (!isSyntaxCheck)
+        thisCommand = getCommand();
       statementLength = statement.length;
       iToken = 0;
       if (!checkContinue())
@@ -1007,10 +1008,12 @@ class Eval { //implements Runnable {
   String getCommand() {
     //pc has been incremented, but that's OK, because
     //the lineIndices and linenumbers arrays are off by one as well.
-    int ichBegin = lineIndices[pc];
+     int ichBegin = lineIndices[pc];
     int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
         .length()
         : lineIndices[pc + 1]);
+    if (ichEnd < ichBegin)
+      System.out.println("huh?");
     String s = script.substring(ichBegin, ichEnd);
     int i;
     if ((i = s.indexOf("\n")) >= 0)

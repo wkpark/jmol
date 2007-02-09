@@ -2430,6 +2430,8 @@ class Isosurface extends IsosurfaceMeshCollection {
     //   when        < -1      &&    >  0 ==> contourable functionXY
     //   when        > 0       &&    <  0 ==> jvxlDataisBicolorMap
 
+    if (mesh.jvxlSurfaceData == null)
+      return "";
     int nSurfaceData = mesh.jvxlSurfaceData.length();
     int nEdgeData = (mesh.jvxlEdgeData.length() - 1);
     int nColorData = (mesh.jvxlColorData.length() - 1);

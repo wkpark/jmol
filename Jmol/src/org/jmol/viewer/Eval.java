@@ -3645,6 +3645,8 @@ class Eval { //implements Runnable {
       checkLength2();
     if (isSyntaxCheck && !isScriptCheck)
       return;
+    if (isScriptCheck)
+      isCheck = true;
     boolean wasSyntaxCheck = isSyntaxCheck;
     boolean wasScriptCheck = isScriptCheck;
     if (isCheck) 

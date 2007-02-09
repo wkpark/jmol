@@ -135,7 +135,7 @@ abstract class MeshCollection extends Shape {
     }
     
     if ("color" == propertyName) {
-      if (((String)value).equals("sets")) {
+      if (value instanceof String && ((String)value).equals("sets")) {
         currentMesh.allocVertexColixes();
         for (int i = 0; i < currentMesh.surfaceSet.length; i++)
           for (int j = 0; j < currentMesh.vertexCount; j++)

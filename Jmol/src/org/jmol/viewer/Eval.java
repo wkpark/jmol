@@ -3255,7 +3255,6 @@ class Eval { //implements Runnable {
       }
     }
     countPlusIndexes[0] = 0;
-    int argCount = statementLength - 1;
     int expressionCount = 0;
     int atomIndex = -1;
     int atomNumber = 0;
@@ -3274,7 +3273,7 @@ class Eval { //implements Runnable {
 
     BitSet bs = new BitSet();
 
-    for (int i = 1; i <= argCount; ++i) {
+    for (int i = 1; i < statementLength; ++i) {
       switch (getToken(i).tok) {
       case Token.on:
         if (isON || isOFF || isDelete)
@@ -3333,11 +3332,14 @@ class Eval { //implements Runnable {
         expressionOrIntegerExpected();
       }
       //only here for point definition
-      if (atomIndex == -1)
-        badAtomNumber();
+      if (atomIndex == -1 || isAll && (bs == null || bs.size() == 0)) {
+        if (!isSyntaxCheck) {
+          if (isExpression)
+            return; //there's just nothing to measure
+          evalError(GT._("bad atom number"));
+        }
+      }
       if (isAll) {
-        if (bs == null || bs.size() == 0)
-          badAtomNumber();
         if (++expressionCount > 4)
           badArgumentCount();
         monitorExpressions.add(bs);
@@ -7383,10 +7385,6 @@ class Eval { //implements Runnable {
   void numberMustBe(int a, int b) throws ScriptException {
     evalError(GT._("number must be ({0} or {1})", new Object[] {
         new Integer(a), new Integer(b) }));
-  }
-
-  void badAtomNumber() throws ScriptException {
-    evalError(GT._("bad atom number"));
   }
 
   void errorLoadingScript() throws ScriptException {

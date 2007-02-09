@@ -48,6 +48,7 @@ class Compiler {
   String errorLine;
   boolean preDefining;
   boolean isSilent;
+  boolean isShowScriptOutput;
 
   boolean logMessages = false;
 
@@ -119,6 +120,7 @@ class Compiler {
     lineIndices = new int[lnLength];
     error = false;
     isNewSet = false;
+    isShowScriptOutput = false;
 
     Vector lltoken = new Vector();
     Vector ltoken = new Vector();
@@ -128,6 +130,8 @@ class Compiler {
       if (lookingAtLeadingWhitespace())
         continue;
       nTokens++;
+      if (tokCommand == Token.nada)
+        ichCurrentCommand = ichToken;
       if (lookingAtComment())
         continue;
       boolean endOfLine = lookingAtEndOfLine();
@@ -404,19 +408,44 @@ class Compiler {
     return cchToken > 0;
   }
 
+  boolean isShowCommand;
+  
   boolean lookingAtComment() {
     //log ("lookingAtComment ichToken=" + ichToken + " cchToken=" + cchToken);
     // first, find the end of the statement and scan for # (sharp) signs
-    char ch;
+    char ch = 'X';
     int ichEnd = ichToken;
     int ichFirstSharp = -1;
-    while (ichEnd < cchScript && !eol(ch = script.charAt(ichEnd))) {
-      if (ch == '#' && ichFirstSharp == -1) {
-        ichFirstSharp = ichEnd;
-        //Logger.debug("I see a first sharp @ " + ichFirstSharp);
+
+    /*
+     * New in Jmol 11.1.9: we allow for output from the
+     * set showScript command to be used as input. These lines
+     * start with $ and have a [...] phrase after them. 
+     * Their presence switches us to this new mode where we
+     * use those statements as our commands and any line WITHOUT
+     * those as comments. 
+     */
+    if (ichToken == ichCurrentCommand && ichToken < cchScript && script.charAt(ichToken) == '$') {
+      isShowScriptOutput = true;
+      while (ch != ']' && ichEnd < cchScript
+          && !eol(ch = script.charAt(ichEnd)))
+        ++ichEnd;
+      cchToken = ichEnd - ichToken;
+      isShowCommand = true;
+      System.out.println(script.substring(ichToken,ichToken+cchToken)+"<<");
+      return true;
+    } else if (isShowScriptOutput) {
+      if (!isShowCommand)
+        ichFirstSharp = ichToken;
+      if (ichToken >= cchScript || eol(script.charAt(ichToken))) {
+        isShowCommand = false;
+        return false;
       }
-      ++ichEnd;
     }
+
+    for (; ichEnd < cchScript && !eol(ch = script.charAt(ichEnd)); ichEnd++)
+      if (ch == '#' && ichFirstSharp == -1)
+        ichFirstSharp = ichEnd;
     if (ichFirstSharp == -1) // there were no sharps found
       return false;
 

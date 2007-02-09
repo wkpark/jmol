@@ -135,7 +135,7 @@ abstract class MeshCollection extends Shape {
     }
     
     if ("color" == propertyName) {
-      if (value == "sets") {
+      if (((String)value).equals("sets")) {
         currentMesh.allocVertexColixes();
         for (int i = 0; i < currentMesh.surfaceSet.length; i++)
           for (int j = 0; j < currentMesh.vertexCount; j++)
@@ -159,7 +159,7 @@ abstract class MeshCollection extends Shape {
       return;
     }
     if ("translucency" == propertyName) {
-      boolean isTranslucent = ("translucent" == value);
+      boolean isTranslucent = (((String)value).equals("translucent"));
       if (currentMesh != null)
         currentMesh.setTranslucent(isTranslucent);
       else {

@@ -46,6 +46,8 @@ class Context {
   Token[] statement;
   int statementLength;
   int pc;
+  int pcEnd = Integer.MAX_VALUE;
+  int lineEnd = Integer.MAX_VALUE;
   int iToken;
 }
 
@@ -61,6 +63,8 @@ class Eval { //implements Runnable {
   int[] lineIndices;
   Token[][] aatoken;
   int pc; // program counter
+  int lineEnd;
+  int pcEnd;
   long timeBeginExecution;
   long timeEndExecution;
   boolean error;
@@ -179,6 +183,8 @@ class Eval { //implements Runnable {
     context.statement = statement;
     context.statementLength = statementLength;
     context.pc = pc;
+    context.lineEnd = lineEnd;
+    context.pcEnd = pcEnd;    
     context.iToken = iToken;
     stack[scriptLevel++] = context;
     if (isScriptCheck)
@@ -201,6 +207,8 @@ class Eval { //implements Runnable {
     statementLength = context.statementLength;
     iToken = context.iToken;
     pc = context.pc;
+    lineEnd = context.lineEnd;
+    pcEnd = context.pcEnd;
   }
 
   boolean loadScript(String filename, String script) {
@@ -500,9 +508,15 @@ class Eval { //implements Runnable {
     }
     if (!isSyntaxCheck && scriptLevel <= commandHistoryLevelMax)
       viewer.addCommand(script);
-    for (; pc < aatoken.length; pc++) {
+    if (pcEnd == 0)
+      pcEnd = Integer.MAX_VALUE;
+    if (lineEnd == 0)
+      lineEnd = Integer.MAX_VALUE;
+    for (; pc < aatoken.length && pc < pcEnd; pc++) {
       Token token = aatoken[pc][0];
       statement = aatoken[pc];
+      if (linenumbers[pc] > lineEnd)
+        break;
       thisCommand = getCommand();
       statementLength = statement.length;
       iToken = 0;
@@ -3626,38 +3640,57 @@ class Eval { //implements Runnable {
     if (getToken(1).tok != Token.string)
       filenameExpected();
     int lineNumber = 0;
-    int pcount = 0;
+    int pc = 0;
+    int lineEnd = 0;
+    int pcEnd = 0;
+    int i = 2;
+    String option = null;
     boolean isCheck = false;
-    if (statementLength == 4) {
-      String lineOrCommand = parameterAsString(2);
-      if (lineOrCommand.equalsIgnoreCase("line"))
-        lineNumber = Math.max(intParameter(3), 0);
-      else if (lineOrCommand.equalsIgnoreCase("command"))
-        pcount = Math.max(intParameter(3) - 1, 0);
-      else
-        invalidArgument();
-    } else if (statementLength == 3) {
-      if (parameterAsString(2).equalsIgnoreCase("check"))
-        isCheck = true;
-      else
-        invalidArgument();
-    } else
-      checkLength2();
+    option = optParameterAsString(i);
+    if (option.equalsIgnoreCase("check")) {
+      isCheck = true;
+      option = optParameterAsString(++i);
+    }
+    if (option.equalsIgnoreCase("line") || option.equalsIgnoreCase("lines")) {
+      i++;
+      lineEnd = lineNumber = Math.max(intParameter(i++), 0);
+      if (checkToken(i))
+        if (getToken(i++).tok == Token.hyphen)
+          lineEnd = (checkToken(i) ? intParameter(i++) : 0);
+        else
+          invalidArgument();
+    } else if (option.equalsIgnoreCase("command")
+        || option.equalsIgnoreCase("commands")) {
+      i++;
+      pc = Math.max(intParameter(i++) - 1, 0);
+      pcEnd = pc + 1;
+      if (checkToken(i))
+        if (getToken(i++).tok == Token.hyphen)
+          pcEnd = (checkToken(i) ? intParameter(i++) : 0);
+        else
+          invalidArgument();
+    }
+    checkStatementLength(i);
     if (isSyntaxCheck && !isScriptCheck)
       return;
     if (isScriptCheck)
       isCheck = true;
     boolean wasSyntaxCheck = isSyntaxCheck;
     boolean wasScriptCheck = isScriptCheck;
-    if (isCheck) 
+    if (isCheck)
       isSyntaxCheck = isScriptCheck = true;
     pushContext();
     String filename = stringParameter(1);
     if (!loadScriptFileInternal(filename))
       errorLoadingScript();
-    pc = pcount;
+    this.pcEnd = pcEnd;
+    this.lineEnd = lineEnd;
     while (pc < linenumbers.length && linenumbers[pc] < lineNumber)
       pc++;
+    this.pc = pc;
+    System.out.println("script pc line lineend pcend" + pc + " " + lineNumber
+        + " " + lineEnd + " " + pcEnd);
+
     instructionDispatchLoop(isCheck);
     isSyntaxCheck = wasSyntaxCheck;
     isScriptCheck = wasScriptCheck;

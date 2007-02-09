@@ -140,7 +140,7 @@ public class Token {
   final static int ribbon       = command | 26 | bool;
   final static int rotate       = command | 27 | bool | coordOrSet;
   final static int save         = command | 28;
-  final static int script       = command | 29 | specialstring;
+  final static int script       = command | 29;
   final static int select       = command | 30 | expressionCommand;
   final static int set          = command | 31 | bool | negnums | embeddedExpression | colorparam;
   final static int show         = command | 32;
@@ -524,7 +524,7 @@ public class Token {
     "ribbons",           null,
     "rotate",            new Token(rotate,   varArgCount, "rotate"),
     "save",              new Token(save,         maxArg3, "save"),
-    "script",            new Token(script,       maxArg2, "script"),
+    "script",            new Token(script,   varArgCount, "script"),
     "source",            null,
     "select",            new Token(select,   varArgCount, "select"),
     "set",               new Token(set,      varArgCount, "set"),

@@ -135,7 +135,6 @@ class Compiler {
         if (tokCommand != Token.nada) {
           if (!compileCommand(ltoken))
             return false;
-          lltoken.addElement(atokenCommand);
           int iCommand = lltoken.size();
           if (iCommand == lnLength) {
             short[] lnT = new short[lnLength * 2];
@@ -148,6 +147,7 @@ class Compiler {
           }
           lineNumbers[iCommand] = lineCurrent;
           lineIndices[iCommand] = ichCurrentCommand;
+          lltoken.addElement(atokenCommand);
           ltoken.setSize(0);
           tokCommand = Token.nada;
           iHaveQuotedString = false;
@@ -166,7 +166,7 @@ class Compiler {
       } else {
         if (lookingAtString()) {
           if (cchToken < 0)
-            return rightParenthesisExpected();
+            return endOfCommandUnexpected();
           String str = ((tokCommand == Token.load || tokCommand == Token.script)
               && !iHaveQuotedString ? script.substring(ichToken + 1, ichToken
               + cchToken - 1) : getUnescapedStringLiteral());
@@ -183,6 +183,19 @@ class Compiler {
             //ltoken.addElement(new Token(Token.identifier, strFormat));
             continue;
           }
+          if (!iHaveQuotedString && lookingAtSpecialString()) {
+            String str = script.substring(ichToken, ichToken + cchToken).trim();
+            int pt = str.indexOf(" ");
+            if (pt > 0) {
+              cchToken = pt;
+              str = str.substring(0, pt);
+            }
+            ltoken.addElement(new Token(Token.string, str));
+            iHaveQuotedString = true;
+            continue;
+          }
+        }
+        if (tokCommand == Token.script) {
           if (!iHaveQuotedString && lookingAtSpecialString()) {
             String str = script.substring(ichToken, ichToken + cchToken).trim();
             int pt = str.indexOf(" ");

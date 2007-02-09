@@ -123,7 +123,7 @@ class Eval { //implements Runnable {
     isSyntaxCheck = isScriptCheck = checkScriptOnly;
     timeBeginExecution = System.currentTimeMillis();
     try {
-      instructionDispatchLoop(0);
+      instructionDispatchLoop(false);
     } catch (ScriptException e) {
       error = true;
       setErrorMessage(e.toString());
@@ -163,7 +163,7 @@ class Eval { //implements Runnable {
     //load, restore
     pushContext();
     if (loadScript(null, script))
-      instructionDispatchLoop(0);
+      instructionDispatchLoop(false);
     popContext();
   }
 
@@ -229,7 +229,7 @@ class Eval { //implements Runnable {
     linenumbers = compiler.getLineNumbers();
     lineIndices = compiler.getLineIndices();
     try {
-      instructionDispatchLoop(0);
+      instructionDispatchLoop(false);
     } catch (ScriptException e) {
       setErrorMessage(e.toString());
     }
@@ -487,7 +487,7 @@ class Eval { //implements Runnable {
   final static int MAX_IF_DEPTH = 10; //should be plenty
   boolean[] ifs = new boolean[MAX_IF_DEPTH + 1];
 
-  void instructionDispatchLoop(int lineNumber) throws ScriptException {
+  void instructionDispatchLoop(boolean doList) throws ScriptException {
     long timeBegin = 0;
     int ifLevel = 0;
     ifs[0] = true;
@@ -500,27 +500,27 @@ class Eval { //implements Runnable {
     }
     if (!isSyntaxCheck && scriptLevel <= commandHistoryLevelMax)
       viewer.addCommand(script);
-    while (pc < aatoken.length && linenumbers[pc] < lineNumber)
-      pc++;
-    while (pc < aatoken.length) {
+    for (; pc < aatoken.length; pc++) {
       Token token = aatoken[pc][0];
-      statement = aatoken[pc++];
+      statement = aatoken[pc];
       thisCommand = getCommand();
       statementLength = statement.length;
       iToken = 0;
       if (!checkContinue())
         break;
       int milliSecDelay = viewer.getScriptDelay();
-      if (isSyntaxCheck) {
+      if (isSyntaxCheck && !doList) {
         if (isScriptCheck)
           Logger.info(thisCommand);
         if (statementLength == 1 && (token.tok & Token.unimplemented) == 0)
           continue;
       } else {
-        if (milliSecDelay > 0 && scriptLevel > 0) {
-          delay((long) milliSecDelay);
+        if (milliSecDelay > 0 && scriptLevel > 0 || doList) {
+          if (milliSecDelay > 0)
+            delay((long) milliSecDelay);
           Logger.info(thisCommand);
-          viewer.scriptEcho("$["+scriptLevel+"." + linenumbers[pc] + "." + pc+"] "+thisCommand);
+          viewer.scriptEcho("$[" + scriptLevel + "." + linenumbers[pc] + "."
+              + (pc + 1) + "] " + thisCommand);
         }
         if (debugScript)
           logDebugScript();
@@ -574,11 +574,11 @@ class Eval { //implements Runnable {
         // just needed for script checking
         break;
       case Token.exit: // flush the queue and...
-        if (!isSyntaxCheck && pc > 1)
+        if (!isSyntaxCheck && pc > 0)
           viewer.clearScriptQueue();
       case Token.quit: // quit this only if it isn't the first command
         if (!isSyntaxCheck)
-          interruptExecution = ((pc > 1 || !viewer.usingScriptQueue()) ? Boolean.TRUE
+          interruptExecution = ((pc > 0 || !viewer.usingScriptQueue()) ? Boolean.TRUE
               : Boolean.FALSE);
         break;
       case Token.label:
@@ -635,7 +635,7 @@ class Eval { //implements Runnable {
       case Token.loop:
         delay(); // a loop is just a delay followed by ...
         if (!isSyntaxCheck)
-          pc = 0; // ... resetting the program counter
+          pc = -1; // ... resetting the program counter
         break;
       case Token.move:
         move();
@@ -991,8 +991,6 @@ class Eval { //implements Runnable {
   }
 
   String getCommand() {
-    //pc has been incremented, but that's OK, because
-    //the lineIndices and linenumbers arrays are off by one as well.
      int ichBegin = lineIndices[pc];
     int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
         .length()
@@ -3620,18 +3618,40 @@ class Eval { //implements Runnable {
     // token allows for only 1 or 2 parameters
     if (getToken(1).tok != Token.string)
       filenameExpected();
-    int lineNumber = 1;
-    if (statementLength == 3)
-      lineNumber = intParameter(2);
-    else
+    int lineNumber = 0;
+    int pcount = 0;
+    boolean isCheck = false;
+    if (statementLength == 4) {
+      String lineOrCommand = parameterAsString(2);
+      if (lineOrCommand.equalsIgnoreCase("line"))
+        lineNumber = Math.max(intParameter(3), 0);
+      else if (lineOrCommand.equalsIgnoreCase("command"))
+        pcount = Math.max(intParameter(3) - 1, 0);
+      else
+        invalidArgument();
+    } else if (statementLength == 3) {
+      if (parameterAsString(2).equalsIgnoreCase("check"))
+        isCheck = true;
+      else
+        invalidArgument();
+    } else
       checkLength2();
     if (isSyntaxCheck && !isScriptCheck)
       return;
+    boolean wasSyntaxCheck = isSyntaxCheck;
+    boolean wasScriptCheck = isScriptCheck;
+    if (isCheck) 
+      isSyntaxCheck = isScriptCheck = true;
     pushContext();
     String filename = stringParameter(1);
     if (!loadScriptFileInternal(filename))
       errorLoadingScript();
-    instructionDispatchLoop(lineNumber);
+    pc = pcount;
+    while (pc < linenumbers.length && linenumbers[pc] < lineNumber)
+      pc++;
+    instructionDispatchLoop(isCheck);
+    isSyntaxCheck = wasSyntaxCheck;
+    isScriptCheck = wasScriptCheck;
     popContext();
   }
 

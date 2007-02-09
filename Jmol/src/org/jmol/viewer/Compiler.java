@@ -167,9 +167,9 @@ class Compiler {
         if (lookingAtString()) {
           if (cchToken < 0)
             return rightParenthesisExpected();
-          String str = (tokCommand == Token.load && !iHaveQuotedString ? script
-              .substring(ichToken + 1, ichToken + cchToken - 1)
-              : getUnescapedStringLiteral());
+          String str = ((tokCommand == Token.load || tokCommand == Token.script)
+              && !iHaveQuotedString ? script.substring(ichToken + 1, ichToken
+              + cchToken - 1) : getUnescapedStringLiteral());
           ltoken.addElement(new Token(Token.string, str));
           iHaveQuotedString = true;
           if (tokCommand == Token.data)
@@ -211,7 +211,8 @@ class Compiler {
             cchToken = pt;
           }
         }
-        if (tokAttr(tokCommand, Token.specialstring)
+        if (!(tokCommand == Token.script && iHaveQuotedString)
+            && tokAttr(tokCommand, Token.specialstring)
             && lookingAtSpecialString()) {
           String str = script.substring(ichToken, ichToken + cchToken);
           ltoken.addElement(new Token(Token.string, str));
@@ -228,8 +229,10 @@ class Compiler {
           // Float.parseFloat(script.substring(ichToken, ichToken + cchToken));
           Float.valueOf(script.substring(ichToken, ichToken + cchToken))
               .floatValue();
-          int intValue = (value > 0 ? modelValue(script.substring(ichToken, ichToken + cchToken)) : 0);
-          ltoken.addElement(new Token(Token.decimal, intValue, new Float(value)));
+          int intValue = (value > 0 ? modelValue(script.substring(ichToken,
+              ichToken + cchToken)) : 0);
+          ltoken
+              .addElement(new Token(Token.decimal, intValue, new Float(value)));
           continue;
         }
         if (lookingAtSeqcode()) {

@@ -524,7 +524,7 @@ public class Token {
     "ribbons",           null,
     "rotate",            new Token(rotate,   varArgCount, "rotate"),
     "save",              new Token(save,         maxArg3, "save"),
-    "script",            new Token(script,             1, "script"),
+    "script",            new Token(script,       maxArg2, "script"),
     "source",            null,
     "select",            new Token(select,   varArgCount, "select"),
     "set",               new Token(set,      varArgCount, "set"),

@@ -123,7 +123,7 @@ class Eval { //implements Runnable {
     isSyntaxCheck = isScriptCheck = checkScriptOnly;
     timeBeginExecution = System.currentTimeMillis();
     try {
-      instructionDispatchLoop();
+      instructionDispatchLoop(0);
     } catch (ScriptException e) {
       error = true;
       setErrorMessage(e.toString());
@@ -163,7 +163,7 @@ class Eval { //implements Runnable {
     //load, restore
     pushContext();
     if (loadScript(null, script))
-      instructionDispatchLoop();
+      instructionDispatchLoop(0);
     popContext();
   }
 
@@ -229,7 +229,7 @@ class Eval { //implements Runnable {
     linenumbers = compiler.getLineNumbers();
     lineIndices = compiler.getLineIndices();
     try {
-      instructionDispatchLoop();
+      instructionDispatchLoop(0);
     } catch (ScriptException e) {
       setErrorMessage(e.toString());
     }
@@ -487,7 +487,7 @@ class Eval { //implements Runnable {
   final static int MAX_IF_DEPTH = 10; //should be plenty
   boolean[] ifs = new boolean[MAX_IF_DEPTH + 1];
 
-  void instructionDispatchLoop() throws ScriptException {
+  void instructionDispatchLoop(int lineNumber) throws ScriptException {
     long timeBegin = 0;
     int ifLevel = 0;
     ifs[0] = true;
@@ -500,6 +500,8 @@ class Eval { //implements Runnable {
     }
     if (!isSyntaxCheck && scriptLevel <= commandHistoryLevelMax)
       viewer.addCommand(script);
+    while (pc < aatoken.length && linenumbers[pc] < lineNumber)
+      pc++;
     while (pc < aatoken.length) {
       Token token = aatoken[pc][0];
       statement = aatoken[pc++];
@@ -518,7 +520,7 @@ class Eval { //implements Runnable {
         if (milliSecDelay > 0 && scriptLevel > 0) {
           delay((long) milliSecDelay);
           Logger.info(thisCommand);
-          viewer.scriptEcho("$["+scriptLevel+"." + pc+"] "+thisCommand);
+          viewer.scriptEcho("$["+scriptLevel+"." + linenumbers[pc] + "." + pc+"] "+thisCommand);
         }
         if (debugScript)
           logDebugScript();
@@ -986,22 +988,6 @@ class Eval { //implements Runnable {
 
   int getLinenumber() {
     return linenumbers[pc];
-  }
-
-  String getLine() {
-    //pc has been incremented
-    int ichBegin = lineIndices[pc - 1];
-    int ichEnd;
-    if ((ichEnd = script.indexOf('\r', ichBegin)) == -1
-        && (ichEnd = script.indexOf('\n', ichBegin)) == -1)
-      ichEnd = script.length();
-    try {
-      return script.substring(ichBegin, ichEnd);
-    } catch (Exception e) {
-      System.out.println("getLine error?? ps=" + pc + " beg=" + ichBegin
-          + " end=" + ichEnd);
-    }
-    return "";
   }
 
   String getCommand() {
@@ -3631,16 +3617,21 @@ class Eval { //implements Runnable {
   }
 
   void script() throws ScriptException {
-    // token allows for only 1 parameter
+    // token allows for only 1 or 2 parameters
     if (getToken(1).tok != Token.string)
       filenameExpected();
+    int lineNumber = 1;
+    if (statementLength == 3)
+      lineNumber = intParameter(2);
+    else
+      checkLength2();
     if (isSyntaxCheck && !isScriptCheck)
       return;
     pushContext();
     String filename = stringParameter(1);
     if (!loadScriptFileInternal(filename))
       errorLoadingScript();
-    instructionDispatchLoop();
+    instructionDispatchLoop(lineNumber);
     popContext();
   }
 

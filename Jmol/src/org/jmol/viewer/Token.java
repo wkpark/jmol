@@ -550,10 +550,11 @@ public class Token {
     "star",              new Token(star,         maxArg2, "star"),
     "stars",             null,
     
-    // chime commands
+    // chime commands (except GOTO)
 
     "delay",             new Token(delay,     onDefault1, "delay"),
-    "loop",              new Token(loop,         maxArg2, "loop"),
+    "goto",              new Token(loop,         maxArg2, "goto"),
+    "loop",              null,
     "move",              new Token(move,     varArgCount, "move"),
     "spin",              new Token(spin,     varArgCount, "spin"),
     "frame",             new Token(frame,    varArgCount, "frame"),

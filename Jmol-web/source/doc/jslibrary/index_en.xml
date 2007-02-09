@@ -824,19 +824,20 @@
 	</p>
 			</section>
 			<section title="jmolSetCallback">
-				<code>jmolSetCallback(callbackName, functionName)</code>
+				<code>jmolSetCallback(callbackName, "functionName")</code>
 				<p>
 	Sets which JavaScript function to be called by Jmol for the specified 
 	callback type, as listed below. 
 				</p>
 				<p>
-	In each case, several parameters are returned and passed to <code>functionName</code>:
+					<code>functionName</code> must be enclosed in double quotes.
+	In each case, several parameters are returned and passed to the function:
 				</p>
 				<ol>
 					<li>the first parameter returned is the applet HTML name (usually "jmolApplet0");</li>
 					<li>the second parameter holds the information;</li>
-					<li>only in the case of <code>pickCallback</code> and <code>hoverCallback</code>, 
-	a third parameter is returned, holding additional information. </li>
+					<li>a third parameter is returned only in the case of <code>pickCallback</code> 
+					and <code>hoverCallback</code>, and holds additional information. </li>
 				</ol>
 				<p>
 	Please, note that all these parameters are returned in the form of Java strings, 
@@ -845,19 +846,22 @@
 				</p>
 				<pre>  function functionName(a,b,c)
 	{
-	   aa = "" + a
-	   bb = "" + b
-	   cc = "" + c
+	   var aa = "" + a
+	   var bb = "" + b
+	   var cc = "" + c
 	   ...(here go desired actions, using  aa, bb and cc instead of a, b, c)...
 	}</pre>
 				<p>
-	Special case: if <code>functionName</code> is "alert", then only the second parameter is sent to the user
+	Special case: if <code>functionName</code> is <code>alert</code>, then only the second parameter is sent to the user
 	via a JavaScript alert() call, and no additional function on the webpage is necessary. 
 				</p>
 				<p><code>jmolSetCallback</code> must be invoked before <code>jmolApplet</code>.
-	For setting callback functions anytime after Jmol applet
-	loading, use the "set xxxxCallback" script command, where "xxxx" is one of
-	"animFrame", "hover", "loadStruct", "message", or "pick".
+	For setting callback functions anytime after Jmol applet loading, use the 
+	<code>set animFrameCallback</code>, <code>set hoverCallback</code>,
+	<code>set loadStructCallback</code>, <code>set messageCallback</code>, or
+	<code>set pickCallback</code> script commands [see details on
+	<a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/#setcallback">Interactive Scripting Documentation</a>].
+	<br/>For canceling callback detection, use <code>set animFrameCallback none</code> etc.
 				</p>
 				<p>Callback types (values of <code>callbackName</code>) are:
 				</p>
@@ -872,7 +876,7 @@
 	number that one would use in the "frame" script command. Frame index 0 is always
 	the first frame, 1 the next, etc. If multiple files have been loaded, the
 	third frame in the first file has index 2 but is accessed in scripts by
-	"frame 1003".
+	"frame 1003" or "frame 1.3".
 				</p>
 				</section>
 				<section title="hoverCallback">
@@ -889,7 +893,7 @@
 	<pre>
 	function myfunc(a,mess) {
 	  var msg
-	  var s = mess + "" // NEVER operate on the 2nd parameter itself
+	  var s = mess + "" // convert the 2nd parameter to a JavaScript string
 	  if (s.charAt(0) == 'C')
 	    msg = "yes, that is a carbon."
 	  else

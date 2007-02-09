@@ -850,20 +850,21 @@
 	</p>
 			</section>
 			<section title="jmolSetCallback">
-				<code>jmolSetCallback(nombreCallback, nombreFunción)</code>
+				<code>jmolSetCallback(nombreCallback, "nombreFunción")</code>
 				<p>
 	Indica qué función javascript debe llamarse desde Jmol cuando se genere una retrollamada
 	("callback") del tipo indicado --a continuación hay una lista--. 
 				</p>
 				<p>
-	En cada caso, se devuelven y se pasan a <code>nombreFunción</code> varios parámetros:
+	El <code>nombreFunción</code> debe ir entre comillas dobles. En cada caso, se devuelven 
+	varios parámetros que se pasan a la función:
 				</p>
 				<ol>
 					<li>el primer parámetro devuelto es el nombre HTML de la miniaplicación 
 	(habitualmente, "jmolApplet0");</li>
 					<li>el segundo parámetro contiene la información;</li>
-					<li>sólo en el caso de <code>pickCallback</code> y <code>hoverCallback</code>, 
-	se devuelve un tercer parámetro, que contiene información adicional.</li>
+					<li>un tercer parámetro, sólo en el caso de <code>pickCallback</code> 
+					y <code>hoverCallback</code>, contiene información adicional.</li>
 				</ol>
 				<p>
 	Ten en cuenta que todos estos parámetros se devuelven en forma de texto Java, 
@@ -872,19 +873,23 @@
 				</p>
 				<pre>  function nombreFunción(a,b,c)
 	{
-	   aa = "" + a
-	   bb = "" + b
-	   cc = "" + c
+	   var aa = "" + a
+	   var bb = "" + b
+	   var cc = "" + c
 	   ...(aquí van las acciones deseadas, usando aa, bb y cc en lugar de a, b, c)...
 	}</pre>
 				<p>
-	Caso especial: si <code>nombreFunción</code> es "alert", sólo se envía al usuario el segundo parámetro,
+	Caso especial: si <code>nombreFunción</code> es <code>alert</code>, sólo se envía al usuario el segundo parámetro,
 	mediante una llamada javascript alert(), y no es precisa una función en la página web. 
 	</p>
 				<p><code>jmolSetCallback</code> debe invocarse antes de <code>jmolApplet</code>.
 	Para definir funciones de retrollamada en cualquier momento tras la carga de la miniaplicación
-	Jmol, utiliza la instrucción de guiones  "set xxxxCallback", siendo "xxxx" uno de éstos:
-	"animFrame", "hover", "loadStruct", "message" o "pick".
+	Jmol, utiliza las instrucciones de guiones 
+	<code>set animFrameCallback</code>, <code>set hoverCallback</code>,
+	<code>set loadStructCallback</code>, <code>set messageCallback</code> o
+	<code>set pickCallback</code> [véanse detalles en la
+	<a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/#setcallback">Documentación de guiones interactivos</a>].
+	<br/>Para cancelar la detección de retrollamadas, utiliza <code>set animFrameCallback none</code> etc.
 				</p>
 				<p>Tipos de retrollamada ("callback"), o valores de <code>nombreCallback</code>:
 				</p>
@@ -899,7 +904,7 @@
 	en una instrucción "frame" de guiones. El índice 0 es siempre
 	el primer fotograma, el 1 el siguiente, etc. Si se cargan varios archivos, el tercer
 	fotograma del primer archivo tiene índice 2 pero se accede en un guión mediante
-	"frame 1003".
+	"frame 1003" o "frame 1.3".
 				</p>
 				</section>
 				<section title="hoverCallback">

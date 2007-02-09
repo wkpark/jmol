@@ -503,8 +503,7 @@ class Eval { //implements Runnable {
     while (pc < aatoken.length) {
       Token token = aatoken[pc][0];
       statement = aatoken[pc++];
-      if (!isSyntaxCheck)
-        thisCommand = getCommand();
+      thisCommand = getCommand();
       statementLength = statement.length;
       iToken = 0;
       if (!checkContinue())

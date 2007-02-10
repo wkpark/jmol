@@ -113,7 +113,11 @@ abstract class AtomSetCollectionReader extends Parser {
   }
 
   AtomSetCollection setError(Exception e) {
-    atomSetCollection.errorMessage = "Error reading file at line: " + line + "\n" + e;
+    if (line == null)
+      atomSetCollection.errorMessage = "Unexpected end of file";
+    else
+      atomSetCollection.errorMessage = "Error reading file at line: " + line
+          + "\n" + e;
     return atomSetCollection;
   }
   

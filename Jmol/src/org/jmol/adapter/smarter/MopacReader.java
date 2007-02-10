@@ -42,33 +42,36 @@ class MopacReader extends AtomSetCollectionReader {
   
   private boolean chargesFound = false;
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
-    
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("mopac");
     frameInfo = null;
-
-    while (readLine() != null && ! line.startsWith(" ---")) {
-      if (line.indexOf("MOLECULAR POINT GROUP") >= 0) {
+    try {
+      while (readLine() != null && !line.startsWith(" ---")) {
+        if (line.indexOf("MOLECULAR POINT GROUP") >= 0) {
           // hasSymmetry = true;
-      } else if (line.trim().equals("CARTESIAN COORDINATES")) {
+        } else if (line.trim().equals("CARTESIAN COORDINATES")) {
           processCoordinates();
           atomSetCollection.setAtomSetName("Input Structure");
+        }
       }
-    }
 
-    while (readLine() != null) {
-      if (line.indexOf("TOTAL ENERGY") >= 0)
-        processTotalEnergy();
-      else if (line.indexOf("ATOMIC CHARGES") >= 0)
-        processAtomicCharges();
-      else if (line.trim().equals("CARTESIAN COORDINATES"))
-        processCoordinates();
-      else if (line.indexOf("ORIENTATION OF MOLECULE IN FORCE") >= 0) {
-        processCoordinates();
-        atomSetCollection.setAtomSetName("Orientation in Force Field");
-      } else if (line.indexOf("NORMAL COORDINATE ANALYSIS") >= 0)
-        readFrequencies();
+      while (readLine() != null) {
+        if (line.indexOf("TOTAL ENERGY") >= 0)
+          processTotalEnergy();
+        else if (line.indexOf("ATOMIC CHARGES") >= 0)
+          processAtomicCharges();
+        else if (line.trim().equals("CARTESIAN COORDINATES"))
+          processCoordinates();
+        else if (line.indexOf("ORIENTATION OF MOLECULE IN FORCE") >= 0) {
+          processCoordinates();
+          atomSetCollection.setAtomSetName("Orientation in Force Field");
+        } else if (line.indexOf("NORMAL COORDINATE ANALYSIS") >= 0)
+          readFrequencies();
+      }
+    } catch (Exception e) {
+      return setError(e);
     }
     return atomSetCollection;
   }

@@ -46,13 +46,12 @@ class WebMOReader extends AtomSetCollectionReader {
   Hashtable moData = new Hashtable();
   Vector orbitals = new Vector();
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader)  {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("webmo");
-    readLine();
     modelNumber = 0;
     try {
+      readLine();
       while (line != null) {
         if (line.equals("[HEADER]")) {
           readHeader();
@@ -84,7 +83,7 @@ class WebMOReader extends AtomSetCollectionReader {
         readLine();
       }
     } catch (Exception e) {
-      Logger.error("Could not read file at line: " + line, e);
+      return setError(e);
     }
     Logger.debug(orbitals.size() + " molecular orbitals read");
     moData.put("mos", orbitals);

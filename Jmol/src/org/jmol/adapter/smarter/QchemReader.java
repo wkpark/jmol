@@ -27,7 +27,7 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.util.Logger;
+
 /**
  * A reader for Q-Chem 2.1
  * Q-Chem  is a quantum chemistry program developed
@@ -50,7 +50,7 @@ import org.jmol.util.Logger;
 
 class QchemReader extends AtomSetCollectionReader {
     
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader)  {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("qchem");
     try {
@@ -66,13 +66,8 @@ class QchemReader extends AtomSetCollectionReader {
         } 
         ++lineNum;
       }
-    } catch (Exception ex) {
-      Logger.error("Could not read file", ex);
-      atomSetCollection.errorMessage = "Could not read file:" + ex;
-      return atomSetCollection;
-    }
-    if (atomSetCollection.atomCount == 0) {
-      atomSetCollection.errorMessage = "No atoms in file";
+    } catch (Exception e) {
+      return setError(e);
     }
     return atomSetCollection;
   }
@@ -138,7 +133,7 @@ class QchemReader extends AtomSetCollectionReader {
   }
 
   void recordAtomVector(int modelNumber, int atomCenterNumber,
-                        float x, float y, float z) {
+                        float x, float y, float z) throws Exception {
     if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
       return; // no data found
     if (atomCenterNumber <= 0 || atomCenterNumber > atomCount)

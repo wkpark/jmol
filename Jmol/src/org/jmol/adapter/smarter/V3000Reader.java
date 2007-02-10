@@ -40,8 +40,7 @@ class V3000Reader extends AtomSetCollectionReader {
   int headerAtomCount;
   int headerBondCount;
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("v3000");
     boolean iHaveAtoms = false;
@@ -56,10 +55,9 @@ class V3000Reader extends AtomSetCollectionReader {
         iHaveAtoms = true;
         processCtab();
       }
-    } catch (Exception ex) {
-      atomSetCollection.errorMessage = "Could not read file:" + ex;
+    } catch (Exception e) {
+      return setError(e);
     }
-
     return atomSetCollection;
   }
 

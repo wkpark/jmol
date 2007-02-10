@@ -109,8 +109,7 @@ class XmlReader extends AtomSetCollectionReader {
 
   /////////////// file reader option //////////////
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     XMLReader xmlReader = getXmlReader();
     if (xmlReader == null) {
@@ -118,9 +117,10 @@ class XmlReader extends AtomSetCollectionReader {
       atomSetCollection.errorMessage = "No XML reader found";
       return atomSetCollection;
     }
-    processXml(xmlReader);
-    if (atomSetCollection.atomCount == 0) {
-      atomSetCollection.errorMessage = "No atoms in file";
+    try {
+      processXml(xmlReader);
+    } catch (Exception e) {
+      atomSetCollection.errorMessage = "XML reader error: " + e;
     }
     return atomSetCollection;
   }
@@ -147,7 +147,7 @@ class XmlReader extends AtomSetCollectionReader {
       xmlr = saxParser.getXMLReader();
       Logger.debug("Using JAXP/SAX XML parser.");
     } catch (Exception e) {
-      Logger.error("Could not instantiate JAXP/SAX XML reader: "
+      Logger.debug("Could not instantiate JAXP/SAX XML reader: "
           + e.getMessage());
     }
     return xmlr;
@@ -160,7 +160,7 @@ class XmlReader extends AtomSetCollectionReader {
           "gnu.xml.aelfred2.XmlReader").newInstance();
       Logger.debug("Using Aelfred2 XML parser.");
     } catch (Exception e) {
-      Logger.error("Could not instantiate Aelfred2 XML reader!");
+      Logger.debug("Could not instantiate Aelfred2 XML reader!");
     }
     return xmlr;
   }
@@ -230,18 +230,15 @@ class XmlReader extends AtomSetCollectionReader {
     try {
       xmlReader.parse(is);
     } catch (Exception e) {
-      Logger.error("ERROR IN XmlReader.parseReaderXML", e);
+      atomSetCollection.errorMessage = "XML parsing error: " + e;
     }
   }
 
   /////////////// DOM option //////////////
 
-  AtomSetCollection readAtomSetCollectionFromDOM(Object Node) throws Exception {
+  AtomSetCollection readAtomSetCollectionFromDOM(Object Node) {
     JSObject DOMNode = (JSObject) Node;
     processXml(DOMNode);
-    if (atomSetCollection.atomCount == 0) {
-      atomSetCollection.errorMessage = "No atoms in file";
-    }
     return atomSetCollection;
   }
 

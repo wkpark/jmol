@@ -45,17 +45,15 @@ class SpartanSmolReader extends AtomSetCollectionReader {
 
   Hashtable moData = new Hashtable();
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    readLine();
-    isCompoundDocument = (line.indexOf("Compound Document") >= 0);
-    atomSetCollection = new AtomSetCollection("spartan "
-        + (isCompoundDocument ? "compound document file" : "smol"));
-
     String bondData = "";
     SpartanArchive spartanArchive = null;
     try {
+      readLine();
+      isCompoundDocument = (line.indexOf("Compound Document") >= 0);
+      atomSetCollection = new AtomSetCollection("spartan "
+          + (isCompoundDocument ? "compound document file" : "smol"));
       while (line != null) {
         //if (atomCount == 0)
           //Logger.debug(line);
@@ -86,16 +84,13 @@ class SpartanSmolReader extends AtomSetCollectionReader {
         readLine();
       }
     } catch (Exception e) {
-      Logger.error("Could not read file at line: " + line, e);
+      Logger.error("Could not read Spartan file at line: " + line, e);
       //TODO: Why this?
       //new NullPointerException();
     }
     // info out of order -- still a chance, at least for first model
     if (atomCount > 0 && spartanArchive != null && bondData != null)
       spartanArchive.addBonds(bondData);
-    if (atomSetCollection.atomCount == 0) {
-      atomSetCollection.errorMessage = "No atoms in file";
-    }
     return atomSetCollection;
   }
 

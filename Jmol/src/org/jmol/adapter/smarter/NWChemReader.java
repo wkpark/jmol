@@ -27,8 +27,6 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 
-import org.jmol.util.Logger;
-
 /**
  * A reader for NWChem 4.6
  * NWChem is a quantum chemistry program developed at
@@ -79,7 +77,7 @@ class NWChemReader extends AtomSetCollectionReader {
   private boolean haveAt;
   private boolean inInput;
  
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader)  {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("nwchem");
     init();
@@ -115,13 +113,8 @@ class NWChemReader extends AtomSetCollectionReader {
             readPartialCharges();
         }
       }
-    } catch (Exception ex) {
-      Logger.error("Could not read file", ex);
-      atomSetCollection.errorMessage = "Could not read file:" + ex;
-      return atomSetCollection;
-    }
-    if (atomSetCollection.atomCount == 0) {
-      atomSetCollection.errorMessage = "No atoms in file";
+    } catch (Exception e) {
+      return setError(e);
     }
     return atomSetCollection;
   }

@@ -28,7 +28,6 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.util.Logger;
 
 /**
  * A minimal multi-file reader for TRIPOS SYBYL mol2 files.
@@ -54,27 +53,26 @@ class Mol2Reader extends AtomSetCollectionReader {
 
   int nAtoms = 0;
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("mol2");
-    setFractionalCoordinates(false);
-    readLine();
-    modelNumber = 0;
-    while (line != null) {
-      if (line.equals("@<TRIPOS>MOLECULE")) {
-        if (++modelNumber == desiredModelNumber || desiredModelNumber <= 0) {
-          try {
-            processMolecule();
-          } catch (Exception e) {
-            Logger.error("Could not read file at line: " + line, e);
-          }
-          if (desiredModelNumber > 0)
-            break;
-          continue;
-        }
-      }
+    try {
+      setFractionalCoordinates(false);
       readLine();
+      modelNumber = 0;
+      while (line != null) {
+        if (line.equals("@<TRIPOS>MOLECULE")) {
+          if (++modelNumber == desiredModelNumber || desiredModelNumber <= 0) {
+            processMolecule();
+            if (desiredModelNumber > 0)
+              break;
+            continue;
+          }
+        }
+        readLine();
+      }
+    } catch (Exception e) {
+      return setError(e);
     }
     return atomSetCollection;
   }

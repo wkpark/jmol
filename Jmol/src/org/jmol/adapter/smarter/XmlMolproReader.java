@@ -73,7 +73,13 @@ class XmlMolproReader extends XmlCmlReader {
       //int atomCount = atomSetCollection.getLastAtomSetAtomCount();
       String wavenumber = "";
       String units = "";
-      atomSetCollection.cloneLastAtomSet();
+      try {
+        atomSetCollection.cloneLastAtomSet();
+      } catch (Exception e) {
+        atomSetCollection.errorMessage = "Error processing normalCoordinate: " + e;
+        frequencyCount = 0;
+        return;
+      }
       frequencyCount++;
       if (atts.containsKey("wavenumber")) {
         wavenumber = (String) atts.get("wavenumber");

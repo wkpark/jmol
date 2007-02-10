@@ -44,20 +44,17 @@ import java.io.BufferedReader;
  */
 class HinReader extends AtomSetCollectionReader {
   
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("hin");
-    
-    readAtoms();
-    if (errorMessage != null)
-      atomSetCollection.errorMessage = errorMessage;
-    else if (atomSetCollection.atomCount == 0)
-      atomSetCollection.errorMessage = "No atoms in file";
+    try {
+      readAtoms();
+    } catch (Exception e) {
+      return setError(e);
+    }
     return atomSetCollection;
   }
   
-  String errorMessage;
-
   int atomIndex;
   int baseAtomIndex;
   String[] tokens;
@@ -67,9 +64,7 @@ class HinReader extends AtomSetCollectionReader {
   void readAtoms() throws Exception {
 
     tokens = new String[MAX_TOKENS];
-    errorMessage = null;
-
-    while (errorMessage == null && readLine() != null ) {
+    while (readLine() != null ) {
       if (line.length() == 0 || line.charAt(0) == ';') // comment
         continue;
       if (line.startsWith("mol ")) // we have reached the start of a molecule
@@ -82,7 +77,7 @@ class HinReader extends AtomSetCollectionReader {
     tokens = null;
   }
 
-  void processMol() {
+  void processMol() throws Exception {
     atomSetCollection.newAtomSet();
     String molName = getMolName();
     atomSetCollection.setAtomSetName(molName);
@@ -96,13 +91,12 @@ class HinReader extends AtomSetCollectionReader {
     return parseToken(line, ichNextParse);
   }
 
-  void processAtom() {
+  void processAtom() throws Exception {
 
     int fileAtomNumber = parseInt(line, 5);
     if (fileAtomNumber - 1 != atomIndex) {
-      errorMessage = "bad atom number sequence ... expected:" +
-        (atomIndex + 1) + " found:" + fileAtomNumber;
-      return;
+      throw new Exception ("bad atom number sequence ... expected:" +
+        (atomIndex + 1) + " found:" + fileAtomNumber);
     }
 
     Atom atom = atomSetCollection.addNewAtom();
@@ -136,9 +130,8 @@ class HinReader extends AtomSetCollectionReader {
         bondOrder = JmolAdapter.ORDER_AROMATIC;
         break;
       default:
-        errorMessage = "unrecognized bond type:" + bondTypeToken +
-          " atom #" + fileAtomNumber;
-        return;
+        throw new Exception ("unrecognized bond type:" + bondTypeToken +
+          " atom #" + fileAtomNumber);
       }
       atomSetCollection.addNewBond(baseAtomIndex + atomIndex,
                        baseAtomIndex + otherAtomNumber - 1,

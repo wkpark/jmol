@@ -67,30 +67,33 @@ import java.io.BufferedReader;
  */
 class GhemicalMMReader extends AtomSetCollectionReader {
     
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
 
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("ghemicalMM");
 
-    while (readLine() != null) {
-      if (line.startsWith("!Header"))
-        processHeader();
-      else if (line.startsWith("!Info"))
-        processInfo();
-      else if (line.startsWith("!Atoms"))
-        processAtoms();
-      else if (line.startsWith("!Bonds"))
-        processBonds();
-      else if (line.startsWith("!Coord"))
-        processCoord();
-      else if (line.startsWith("!Charges"))
-        processCharges();
-      else if (line.startsWith("!End")) {
-        return atomSetCollection;
+    try {
+      while (readLine() != null) {
+        if (line.startsWith("!Header"))
+          processHeader();
+        else if (line.startsWith("!Info"))
+          processInfo();
+        else if (line.startsWith("!Atoms"))
+          processAtoms();
+        else if (line.startsWith("!Bonds"))
+          processBonds();
+        else if (line.startsWith("!Coord"))
+          processCoord();
+        else if (line.startsWith("!Charges"))
+          processCharges();
+        else if (line.startsWith("!End")) {
+          return atomSetCollection;
+        }
       }
+    } catch (Exception e) {
+      return setError(e);
     }
-    atomSetCollection.errorMessage = "unexpected end of file";
-    return atomSetCollection;
+    return setError(new Exception("unexpected end of file"));
   }
 
   void processHeader() {

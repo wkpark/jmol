@@ -42,15 +42,12 @@ class GamessReader extends AtomSetCollectionReader {
   Hashtable moData = new Hashtable();
   Vector orbitals = new Vector();
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("gamess");
-
-    readLine();
-    boolean iHaveAtoms = false;
-
     try {
+      readLine();
+      boolean iHaveAtoms = false;
       while (line != null) {
         if (line.indexOf("COORDINATES (BOHR)") >= 0 || line.indexOf("COORDINATES OF ALL ATOMS ARE (ANGS)") >= 0) {
           if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
@@ -80,10 +77,7 @@ class GamessReader extends AtomSetCollectionReader {
         readLine();
       }
     } catch (Exception e) {
-      Logger.error("Error at line: " + line, e);
-    }
-    if (atomSetCollection.atomCount == 0) {
-      atomSetCollection.errorMessage = "No atoms in file";
+      return setError(e);
     }
     return atomSetCollection;
   }

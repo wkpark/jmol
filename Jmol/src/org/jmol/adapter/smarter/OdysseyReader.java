@@ -41,8 +41,7 @@ class OdysseyReader extends AtomSetCollectionReader {
   int atomCount, bondCount;
   Hashtable moData = new Hashtable();
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("odyssey)");
     try {
@@ -57,14 +56,10 @@ class OdysseyReader extends AtomSetCollectionReader {
       discardLinesUntilContains("HESSIAN");
       if (line != null)
         readBonds();
-    } catch (Exception ex) {
-      Logger.error("Could not read file", ex);
-      atomSetCollection.errorMessage = "Could not read file:" + ex;
-      return atomSetCollection;
+    } catch (Exception e) {
+      return setError(e);
     }
-    if (atomSetCollection.atomCount == 0)
-      atomSetCollection.errorMessage = "No atoms in file";
-    else
+    if (atomSetCollection.atomCount > 0)
       atomSetCollection.setAtomSetName(modelName);
     return atomSetCollection;
   }

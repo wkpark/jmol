@@ -36,7 +36,7 @@ import org.jmol.util.Logger;
  */
 class JaguarReader extends AtomSetCollectionReader {
     
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("jaguar");
 
@@ -49,13 +49,8 @@ class JaguarReader extends AtomSetCollectionReader {
           break;
         }
       }
-    } catch (Exception ex) {
-      Logger.error("Could not read file", ex);
-      atomSetCollection.errorMessage = "Could not read file:" + ex;
-      return atomSetCollection;
-    }
-    if (atomSetCollection.atomCount == 0) {
-      atomSetCollection.errorMessage = "No atoms in file";
+    } catch (Exception e) {
+      return setError(e);
     }
     return atomSetCollection;
   }
@@ -151,7 +146,7 @@ class JaguarReader extends AtomSetCollectionReader {
   }
 
   void recordAtomVector(int modelNumber, int atomCenterNumber,
-                        float x, float y, float z) {
+                        float x, float y, float z) throws Exception {
     if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
       return; // line is too short -- no data found
     if (atomCenterNumber <= 0 || atomCenterNumber > atomCount)

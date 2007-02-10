@@ -106,14 +106,17 @@ abstract class AtomSetCollectionReader extends Parser {
   boolean iHaveSymmetryOperators;
   boolean needToApplySymmetry;
 
-  abstract AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception;
+  abstract AtomSetCollection readAtomSetCollection(BufferedReader reader);
 
-  AtomSetCollection readAtomSetCollectionFromDOM(Object DOMNode)
-      throws Exception {
+  AtomSetCollection readAtomSetCollectionFromDOM(Object DOMNode) {
     return null;
   }
 
+  AtomSetCollection setError(Exception e) {
+    atomSetCollection.errorMessage = "Error reading file at line: " + line + "\n" + e;
+    return atomSetCollection;
+  }
+  
   void initialize() {
     // called by the resolver
     modelNumber = 0;
@@ -290,7 +293,7 @@ abstract class AtomSetCollectionReader extends Parser {
     needToApplySymmetry = true;
   }
 
-  void applySymmetry() {
+  void applySymmetry() throws Exception {
     if (!needToApplySymmetry || !iHaveUnitCell) {
       initializeSymmetry();
       return;

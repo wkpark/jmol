@@ -65,8 +65,7 @@ class CifReader extends AtomSetCollectionReader {
   
   Hashtable htHetero;
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     int nAtoms = 0;
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("cif");
@@ -86,83 +85,88 @@ class CifReader extends AtomSetCollectionReader {
      */
     line = "";
     boolean skipping = false;
-    while ((key = tokenizer.peekToken()) != null) {
-      if (key.startsWith("data_")) {
-        if (iHaveDesiredModel)
-          break;
-        skipping = (++modelNumber != desiredModelNumber && desiredModelNumber > 0);
-        if (skipping) {
+    try {
+      while ((key = tokenizer.peekToken()) != null) {
+        if (key.startsWith("data_")) {
+          if (iHaveDesiredModel)
+            break;
+          skipping = (++modelNumber != desiredModelNumber && desiredModelNumber > 0);
+          if (skipping) {
+            tokenizer.getTokenPeeked();
+          } else {
+            chemicalName = "";
+            thisStructuralFormula = "";
+            thisFormula = "";
+            if (nAtoms == atomSetCollection.atomCount)
+              // we found no atoms -- must revert
+              atomSetCollection.removeAtomSet();
+            else
+              applySymmetry();
+            processDataParameter();
+            iHaveDesiredModel = (desiredModelNumber > 0);
+            nAtoms = atomSetCollection.atomCount;
+          }
+          continue;
+        }
+        if (key.startsWith("loop_")) {
+          if (skipping) {
+            tokenizer.getTokenPeeked();
+          } else {
+            processLoopBlock();
+          }
+          continue;
+        }
+        // global_ and stop_ are reserved STAR keywords
+        // see http://www.iucr.org/iucr-top/lists/comcifs-l/msg00252.html
+        // http://www.iucr.org/iucr-top/cif/spec/version1.1/cifsyntax.html#syntax
+
+        // stop_ is not allowed, because nested loop_ is not allowed
+        // global_ is a reserved STAR word; not allowed in CIF
+        // ah, heck, let's just flag them as CIF ERRORS
+        /*      
+         if (key.startsWith("global_") || key.startsWith("stop_")) {
+         tokenizer.getTokenPeeked();
+         continue;
+         }
+         */
+        if (key.indexOf("_") != 0) {
+          Logger.warn("CIF ERROR ? should be an underscore: " + key);
           tokenizer.getTokenPeeked();
-        } else {
-          chemicalName = "";
-          thisStructuralFormula = "";
-          thisFormula = "";
-          if (nAtoms == atomSetCollection.atomCount)
-            // we found no atoms -- must revert
-            atomSetCollection.removeAtomSet();
-          else 
-            applySymmetry();
-          processDataParameter();
-          iHaveDesiredModel = (desiredModelNumber > 0);
-          nAtoms = atomSetCollection.atomCount;
+        } else if (!getData()) {
+          continue;
         }
-        continue;
-      }
-      if (key.startsWith("loop_")) {
-        if (skipping) {
-          tokenizer.getTokenPeeked();
-        } else {
-          processLoopBlock();
-        }
-        continue;
-      }
-      // global_ and stop_ are reserved STAR keywords
-      // see http://www.iucr.org/iucr-top/lists/comcifs-l/msg00252.html
-      // http://www.iucr.org/iucr-top/cif/spec/version1.1/cifsyntax.html#syntax
- 
-      // stop_ is not allowed, because nested loop_ is not allowed
-      // global_ is a reserved STAR word; not allowed in CIF
-      // ah, heck, let's just flag them as CIF ERRORS
-/*      
-      if (key.startsWith("global_") || key.startsWith("stop_")) {
-        tokenizer.getTokenPeeked();
-        continue;
-      }
-*/
-      if (key.indexOf("_") != 0) {
-        Logger.warn("CIF ERROR ? should be an underscore: " + key);
-        tokenizer.getTokenPeeked();
-      } else if (!getData()) {
-        continue;
-      }
-      if (!skipping) {
-        if (key.startsWith("_chemical_name")) {
-          processChemicalInfo("name");
-        } else if (key.startsWith("_chemical_formula_structural")) {
-          processChemicalInfo("structuralFormula");
-        } else if (key.startsWith("_chemical_formula_sum")) {
-          processChemicalInfo("formula");
-        } else if (key.startsWith("_cell_") || key.startsWith("_cell.")) {
-          processCellParameter();
-        } else if (key.startsWith("_symmetry_space_group_name_H-M")
-            || key.startsWith("_symmetry.space_group_name_H-M")
-            || key.startsWith("_symmetry_space_group_name_Hall")
-            || key.startsWith("_symmetry.space_group_name_Hall")) {
-          processSymmetrySpaceGroupName();
-        } else if (key.startsWith("_atom_sites.fract_tran")
-            || key.startsWith("_atom_sites.fract_tran")) {
-          processUnitCellTransformMatrix();
-        } else if (key.startsWith("_pdbx_entity_nonpoly")) {
-          processNonpolyData();
+        if (!skipping) {
+          if (key.startsWith("_chemical_name")) {
+            processChemicalInfo("name");
+          } else if (key.startsWith("_chemical_formula_structural")) {
+            processChemicalInfo("structuralFormula");
+          } else if (key.startsWith("_chemical_formula_sum")) {
+            processChemicalInfo("formula");
+          } else if (key.startsWith("_cell_") || key.startsWith("_cell.")) {
+            processCellParameter();
+          } else if (key.startsWith("_symmetry_space_group_name_H-M")
+              || key.startsWith("_symmetry.space_group_name_H-M")
+              || key.startsWith("_symmetry_space_group_name_Hall")
+              || key.startsWith("_symmetry.space_group_name_Hall")) {
+            processSymmetrySpaceGroupName();
+          } else if (key.startsWith("_atom_sites.fract_tran")
+              || key.startsWith("_atom_sites.fract_tran")) {
+            processUnitCellTransformMatrix();
+          } else if (key.startsWith("_pdbx_entity_nonpoly")) {
+            processNonpolyData();
+          }
         }
       }
+
+      if (atomSetCollection.atomCount == nAtoms)
+        atomSetCollection.removeAtomSet();
+      else
+        applySymmetry();
+      atomSetCollection.setCollectionName("<collection of "
+          + atomSetCollection.atomSetCount + " models>");
+    } catch (Exception e) {
+      return setError(e);
     }
-    
-    if (atomSetCollection.atomCount == nAtoms)
-      atomSetCollection.removeAtomSet();
-    else
-      applySymmetry();
-    atomSetCollection.setCollectionName("<collection of " + atomSetCollection.atomSetCount + " models>");
     return atomSetCollection;
   }
 

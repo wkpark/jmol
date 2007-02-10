@@ -27,7 +27,6 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 
 import org.jmol.util.ArrayUtil;
-import org.jmol.util.Logger;
 
 /**
  * A reader for SHELX output (RES) files. It does not read all information.
@@ -61,58 +60,61 @@ class ShelxReader extends AtomSetCollectionReader {
   boolean isCmdf = false;
   boolean iHaveAtomSet = false;
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("shelx");
-    setFractionalCoordinates(true);
-    int lineLength;
-    boolean modelRead = false;
-    do {
-      if (modelRead && desiredModelNumber > 0)
-        break;
-      boolean readThisModel = (++modelNumber == desiredModelNumber || desiredModelNumber <= 0);
-      if (readThisModel) {
-        modelRead = true;
-        sfacElementSymbols = null;
-        applySymmetry();
-        setFractionalCoordinates(true);
-        isCmdf = false;
-        iHaveAtomSet = false;
-      }
-      readLine_loop: while (readLine() != null) {
-        lineLength = line.trim().length();
-        // '=' as last char of line means continue on next line
-        while (lineLength > 0 && line.charAt(lineLength - 1) == '=')
-          line = line.substring(0, lineLength - 1) + readLine();
-        if (lineLength >= 3) {
-          String command = (line+" ").substring(0, 4).toUpperCase().trim();
-          if (command.equals("END")) {
-            break;
-          } else if (line.equals("NOTE")) {
-            isCmdf = true;
-            atomSetCollection.fileTypeName = "cmdf";
-            continue;
-          }
-          if (readThisModel && isCmdf && line.equals("ATOM")) {
-            processCmdfAtoms();
-            break;
-          }
-          for (int i = unsupportedRecordTypes.length; --i >= 0;)
-            if (command.equals(unsupportedRecordTypes[i]))
-              continue readLine_loop;
-          for (int i = supportedRecordTypes.length; --i >= 0;)
-            if (command.equals(supportedRecordTypes[i])) {
-              if (readThisModel)
-                processSupportedRecord(i);
-              continue readLine_loop;
-            }
-          if (readThisModel && !isCmdf && iHaveAtomSet)
-            assumeAtomRecord();
+    try {
+      setFractionalCoordinates(true);
+      int lineLength;
+      boolean modelRead = false;
+      do {
+        if (modelRead && desiredModelNumber > 0)
+          break;
+        boolean readThisModel = (++modelNumber == desiredModelNumber || desiredModelNumber <= 0);
+        if (readThisModel) {
+          modelRead = true;
+          sfacElementSymbols = null;
+          applySymmetry();
+          setFractionalCoordinates(true);
+          isCmdf = false;
+          iHaveAtomSet = false;
         }
-      }
-    } while (readLine() != null);
-    applySymmetry();
+        readLine_loop: while (readLine() != null) {
+          lineLength = line.trim().length();
+          // '=' as last char of line means continue on next line
+          while (lineLength > 0 && line.charAt(lineLength - 1) == '=')
+            line = line.substring(0, lineLength - 1) + readLine();
+          if (lineLength >= 3) {
+            String command = (line + " ").substring(0, 4).toUpperCase().trim();
+            if (command.equals("END")) {
+              break;
+            } else if (line.equals("NOTE")) {
+              isCmdf = true;
+              atomSetCollection.fileTypeName = "cmdf";
+              continue;
+            }
+            if (readThisModel && isCmdf && line.equals("ATOM")) {
+              processCmdfAtoms();
+              break;
+            }
+            for (int i = unsupportedRecordTypes.length; --i >= 0;)
+              if (command.equals(unsupportedRecordTypes[i]))
+                continue readLine_loop;
+            for (int i = supportedRecordTypes.length; --i >= 0;)
+              if (command.equals(supportedRecordTypes[i])) {
+                if (readThisModel)
+                  processSupportedRecord(i);
+                continue readLine_loop;
+              }
+            if (readThisModel && !isCmdf && iHaveAtomSet)
+              assumeAtomRecord();
+          }
+        }
+      } while (readLine() != null);
+      applySymmetry();
+    } catch (Exception e) {
+      return setError(e);
+    }
     return atomSetCollection;
   }
 
@@ -229,29 +231,24 @@ class ShelxReader extends AtomSetCollectionReader {
     sfacElementSymbols[oldCount] = elementSymbol;
   }
 
-  void assumeAtomRecord() {
-    try {
-      //Logger.debug("Assumed to contain an atom: " + line);
-      // this line gives an atom, because all lines not starting with
-      // a SHELX command is an atom
-      String atomName = parseToken(line);
-      int scatterFactor = parseInt(line, ichNextParse);
-      float a = parseFloat(line, ichNextParse);
-      float b = parseFloat(line, ichNextParse);
-      float c = parseFloat(line, ichNextParse);
-      // skip the rest
+  void assumeAtomRecord() throws Exception {
+    // this line gives an atom, because any line not starting with
+    // a SHELX command is an atom
+    String atomName = parseToken(line);
+    int scatterFactor = parseInt(line, ichNextParse);
+    float a = parseFloat(line, ichNextParse);
+    float b = parseFloat(line, ichNextParse);
+    float c = parseFloat(line, ichNextParse);
+    // skip the rest
 
-      Atom atom = atomSetCollection.addNewAtom();
-      atom.atomName = atomName;
-      if (sfacElementSymbols != null) {
-        int elementIndex = scatterFactor - 1;
-        if (elementIndex >= 0 && elementIndex < sfacElementSymbols.length)
-          atom.elementSymbol = sfacElementSymbols[elementIndex];
-      }
-      setAtomCoord(atom, a, b, c);
-    } catch (Exception ex) {
-      Logger.error("Exception at line: " + line, ex);
+    Atom atom = atomSetCollection.addNewAtom();
+    atom.atomName = atomName;
+    if (sfacElementSymbols != null) {
+      int elementIndex = scatterFactor - 1;
+      if (elementIndex >= 0 && elementIndex < sfacElementSymbols.length)
+        atom.elementSymbol = sfacElementSymbols[elementIndex];
     }
+    setAtomCoord(atom, a, b, c);
   }
 
   final static String[] unsupportedRecordTypes = {

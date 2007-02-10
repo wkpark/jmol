@@ -34,6 +34,8 @@ import netscape.javascript.JSObject;
 import org.jmol.api.JmolAdapter;
 import org.xml.sax.XMLReader;
 
+import org.jmol.util.Logger;
+
 /**
  * A CML2 Reader - 
  * If passed a bufferedReader (from a file or inline string), we
@@ -409,7 +411,12 @@ public class XmlCmlReader extends XmlReader {
     case MOLECULE:
       if (name.equals("molecule")) {
         if (--moleculeNesting == 0) {
-          parent.applySymmetry();
+          try {
+            parent.applySymmetry();
+          } catch (Exception e) {
+            e.printStackTrace();
+            Logger.error("applySymmetry failed: " + e);
+          }
           state = START;
         } else {
           state = MOLECULE;

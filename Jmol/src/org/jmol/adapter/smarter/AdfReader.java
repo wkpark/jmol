@@ -28,8 +28,6 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 import org.jmol.viewer.JmolConstants;
 
-import org.jmol.util.Logger;
-
 /**
  * A reader for ADF output.
  * Amsterdam Density Functional (ADF) is a quantum chemistry program
@@ -61,10 +59,8 @@ public class AdfReader extends AtomSetCollectionReader {
    *
    * @param reader  input stream
    * @return a ChemFile with the coordinates, energies, and vibrations.
-   * @exception Exception if an I/O error occurs
    */
-  AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     atomSetCollection = new AtomSetCollection("ADF");
     this.reader = reader;
     boolean iHaveAtoms = false;
@@ -87,9 +83,7 @@ public class AdfReader extends AtomSetCollectionReader {
         }
       }
     } catch (Exception e) {
-      Logger.error("Could not read file at line: " + line, e);
-      //TODO: Why this?
-      //new NullPointerException();
+      return setError(e);
     }
     return atomSetCollection;
   }

@@ -44,7 +44,7 @@ class FoldingXyzReader extends AtomSetCollectionReader {
   // Enable / Disable features of the reader
   private final static boolean useAutoBond = false;
   
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("Folding@Home");
 
@@ -58,8 +58,8 @@ class FoldingXyzReader extends AtomSetCollectionReader {
       	}
       	readAtoms(modelAtomCount);
       }
-    } catch (Exception ex) {
-      atomSetCollection.errorMessage = "Could not read file:" + ex;
+    } catch (Exception e) {
+      return setError(e);
     }
     return atomSetCollection;
   }

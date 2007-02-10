@@ -27,8 +27,6 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 
-import org.jmol.util.Logger;
-
 /**
  * Gaussian cube file format
  * 
@@ -62,9 +60,7 @@ class CubeReader extends AtomSetCollectionReader {
   final float[][] voxelVectors = new float[3][];
   float[][][] voxelData;
   
-  AtomSetCollection readAtomSetCollection(BufferedReader br)
-    throws Exception {
-    
+  AtomSetCollection readAtomSetCollection(BufferedReader br) {
     reader = br;
     atomSetCollection = new AtomSetCollection("cube");
     try {
@@ -81,9 +77,8 @@ class CubeReader extends AtomSetCollectionReader {
       atomSetCollection.volumetricSurfaceVectors = voxelVectors;
       atomSetCollection.volumetricSurfaceData = voxelData;
       */
-    } catch (Exception ex) {
-      atomSetCollection.errorMessage = "Could not read Cube file:" + ex + "\n line:\n" + line;
-      Logger.error("Could not read Cube file line " + line, ex);
+    } catch (Exception e) {
+      return setError(e);
     }
     return atomSetCollection;
   }

@@ -56,19 +56,15 @@ class PsiReader extends AtomSetCollectionReader {
    *
    * @param reader BufferedReader associated with the Gaussian output text.
    * @return The AtomSetCollection representing the interpreted Gaussian text.
-   * @throws Exception If an error occurs
    **/
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("psi");
     boolean iHaveAtoms = false;
+    int lineNum = 0;
 
     try {
-
-      int lineNum = 0;
-
       while (readLine() != null) {
         if (line
             .indexOf("-Geometry after Center-of-Mass shift and reorientation (a.u.):") >= 0) {
@@ -95,13 +91,8 @@ class PsiReader extends AtomSetCollectionReader {
         }
         lineNum++;
       }
-    } catch (Exception ex) {
-      Logger.error("Could not read file", ex);
-      atomSetCollection.errorMessage = "Could not read file:" + ex;
-      return atomSetCollection;
-    }
-    if (atomSetCollection.atomCount == 0) {
-      atomSetCollection.errorMessage = "No atoms in file";
+    } catch (Exception e) {
+      return setError(e);
     }
     return atomSetCollection;
   }
@@ -361,7 +352,7 @@ Orbital energies (a.u.):
         for (int i = 0; i < nThisLine; i++)
           data[i].add(tokens[i + ptData]);
       } catch (Exception e) {
-        Logger.error("Error reading Gaussian file Molecular Orbitals at line: "
+        Logger.error("Error reading Psi3 file molecular orbitals at line: "
             + line);
         break;
       }

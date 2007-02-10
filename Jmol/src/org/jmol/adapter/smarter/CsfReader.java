@@ -43,15 +43,19 @@ class CsfReader extends AtomSetCollectionReader {
 
   int nAtoms = 0;
   
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("csf");
-    while (readLine() != null) {
-      if (line.startsWith("object_class")) {
-        processObjectClass();
-        // there is already an unprocessed line in the firing chamber
-        continue;
+    try {
+      while (readLine() != null) {
+        if (line.startsWith("object_class")) {
+          processObjectClass();
+          // there is already an unprocessed line in the firing chamber
+          continue;
+        }
       }
+    } catch (Exception e) {
+      return setError(e);
     }
     return atomSetCollection;
   }

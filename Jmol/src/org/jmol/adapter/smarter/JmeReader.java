@@ -26,7 +26,6 @@ package org.jmol.adapter.smarter;
 
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.util.Logger;
 
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
@@ -58,7 +57,7 @@ class JmeReader extends AtomSetCollectionReader {
 
   StringTokenizer tokenizer;
   
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("jme");
 
@@ -70,9 +69,8 @@ class JmeReader extends AtomSetCollectionReader {
       atomSetCollection.setCollectionName("JME");
       readAtoms(atomCount);
       readBonds(bondCount);
-    } catch (Exception ex) {
-      atomSetCollection.errorMessage = "Could not read file:" + ex;
-      Logger.error(atomSetCollection.errorMessage, ex);
+    } catch (Exception e) {
+      return setError(e);
     }
     return atomSetCollection;
   }

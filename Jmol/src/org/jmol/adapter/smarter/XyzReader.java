@@ -45,7 +45,7 @@ import org.jmol.viewer.JmolConstants;
 
 class XyzReader extends AtomSetCollectionReader {
     
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader)  {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("xyz");
     boolean iHaveAtoms = false;
@@ -64,8 +64,8 @@ class XyzReader extends AtomSetCollectionReader {
         readAtoms(modelAtomCount);
         applySymmetry();
       }
-    } catch (Exception ex) {
-      atomSetCollection.errorMessage = "Could not read file:" + ex;
+    } catch (Exception e) {
+      return setError(e);
     }
     return atomSetCollection;
   }

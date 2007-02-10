@@ -107,20 +107,16 @@ class GaussianReader extends AtomSetCollectionReader {
    *
    * @param reader BufferedReader associated with the Gaussian output text.
    * @return The AtomSetCollection representing the interpreted Gaussian text.
-   * @throws Exception If an error occurs
    **/
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("gaussian");
     boolean iHaveAtoms = false;
+    int lineNum = 0;
+    int stepNumber = 0;
 
     try {
-
-      int lineNum = 0;
-      int stepNumber = 0;
-
       while (readLine() != null) {
         if (line.startsWith(" Step number")) {
           equivalentAtomSets = 0;
@@ -193,15 +189,9 @@ class GaussianReader extends AtomSetCollectionReader {
         }
         lineNum++;
       }
-    } catch (Exception ex) {
-      Logger.error("Could not read file", ex);
-      atomSetCollection.errorMessage = "Could not read file:" + ex;
-      return atomSetCollection;
+    } catch (Exception e) {
+      return setError(e);
     }
-    if (atomSetCollection.atomCount == 0) {
-      atomSetCollection.errorMessage = "No atoms in file";
-    }
-
     return atomSetCollection;
   }
   

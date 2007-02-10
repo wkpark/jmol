@@ -47,8 +47,7 @@ class SpartanReader extends AtomSetCollectionReader {
   int atomCount;
   Hashtable moData = new Hashtable();
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("spartan");
     String cartesianHeader = "Cartesian Coordinates (Ang";
@@ -65,13 +64,8 @@ class SpartanReader extends AtomSetCollectionReader {
         if (line != null)
           readFrequencies();
       }
-    } catch (Exception ex) {
-      Logger.error("Could not read file", ex);
-      atomSetCollection.errorMessage = "Could not read file:" + ex;
-      return atomSetCollection;
-    }
-    if (atomSetCollection.atomCount == 0) {
-      atomSetCollection.errorMessage = "No atoms in file";
+    } catch (Exception e) {
+      return setError(e);
     }
     return atomSetCollection;
   }

@@ -98,6 +98,7 @@ class AtomSetCollection extends Parser {
    * 
    * @param array Array of AtomSetCollection
    */
+  
   AtomSetCollection(AtomSetCollection[] array) {
     this("Array");
     setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.TRUE);
@@ -139,7 +140,11 @@ class AtomSetCollection extends Parser {
         }
       }
       for (int atomNum = 0; atomNum < collection.atomSetAtomCounts[atomSetNum]; atomNum++) {
-        newCloneAtom(collection.atoms[clonedAtoms]);
+        try {
+          newCloneAtom(collection.atoms[clonedAtoms]);
+        } catch (Exception e) {
+          errorMessage = "appendAtomCollection error: " + e;
+        }
         clonedAtoms++;
       }
 
@@ -218,7 +223,7 @@ class AtomSetCollection extends Parser {
     atomSetCount--;
   }
   
-  Atom newCloneAtom(Atom atom) {
+  Atom newCloneAtom(Atom atom) throws Exception {
     //Logger.debug("newCloneAtom()");
     Atom clone = atom.cloneAtom();
     addAtom(clone);
@@ -228,13 +233,13 @@ class AtomSetCollection extends Parser {
   // FIX ME This should really also clone the other things pertaining
   // to an atomSet, like the bonds (which probably should be remade...)
   // but also the atomSetProperties and atomSetName...
-  void cloneFirstAtomSet() {
+  void cloneFirstAtomSet() throws Exception {
     newAtomSet();
     for (int i = 0, firstCount = atomSetAtomCounts[0]; i < firstCount; ++i)
       newCloneAtom(atoms[i]);
   }
 
-  void cloneFirstAtomSetWithBonds(int nBonds) {
+  void cloneFirstAtomSetWithBonds(int nBonds) throws Exception {
     cloneFirstAtomSet();
     int firstCount = atomSetAtomCounts[0];
     for (int bondNum = 0; bondNum < nBonds; bondNum++) {
@@ -245,7 +250,7 @@ class AtomSetCollection extends Parser {
 
   }
 
-  void cloneLastAtomSet() {
+  void cloneLastAtomSet() throws Exception {
     //Logger.debug("cloneLastAtomSet");
     //Logger.debug("b4 atomCount=" + atomCount);
     //Logger.debug("atomSetCount=" + atomSetCount);
@@ -403,12 +408,12 @@ class AtomSetCollection extends Parser {
     spaceGroup.setLattice(latt);
   }
   
-   void applySymmetry() {
+   void applySymmetry() throws Exception {
      //parameters are counts of unit cells as [a b c]
      applySymmetry(latticeCells[0], latticeCells[1], latticeCells[2]);
    }
 
-   void applySymmetry(SpaceGroup spaceGroup) {
+   void applySymmetry(SpaceGroup spaceGroup) throws Exception {
      this.spaceGroup = spaceGroup;
      //parameters are counts of unit cells as [a b c]
      applySymmetry(latticeCells[0], latticeCells[1], latticeCells[2]);
@@ -417,7 +422,7 @@ class AtomSetCollection extends Parser {
    boolean doNormalize = true;
    boolean isLatticeRange = false;
    
-   void applySymmetry(int maxX, int maxY, int maxZ) {
+   void applySymmetry(int maxX, int maxY, int maxZ) throws Exception {
     if (!coordinatesAreFractional || spaceGroup == null)
       return;
     int count = getLastAtomSetAtomCount();
@@ -476,7 +481,7 @@ class AtomSetCollection extends Parser {
   
   Point3f[] cartesians;
   int symmetryAddAtoms(SymmetryOperation[] finalOperations, int atomIndex,
-                        int count, int transX, int transY, int transZ, int pt) {
+                        int count, int transX, int transY, int transZ, int pt) throws Exception {
     boolean isBaseCell = (transX == 0 && transY == 0 && transZ == 0);
     int nOperations = finalOperations.length;
     if (isBaseCell)

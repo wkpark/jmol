@@ -48,8 +48,7 @@ import java.io.BufferedReader;
 class MolReader extends AtomSetCollectionReader {
 
   String header = "";
-  AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     atomSetCollection = new AtomSetCollection("mol");
     this.reader = reader;
     boolean iHaveAtoms = false;
@@ -72,8 +71,8 @@ class MolReader extends AtomSetCollectionReader {
         }
         flushLines();
       }
-    } catch (Exception ex) {
-      atomSetCollection.errorMessage = "Could not read file:" + ex;
+    } catch (Exception e) {
+      return setError(e);
     }
     return atomSetCollection;
   }

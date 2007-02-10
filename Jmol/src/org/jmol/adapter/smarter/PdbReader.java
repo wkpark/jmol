@@ -66,8 +66,7 @@ class PdbReader extends AtomSetCollectionReader {
   String currentGroup3;
   Hashtable htElementsInCurrentGroup;
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader)
-      throws Exception {
+  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("pdb");
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
@@ -77,199 +76,197 @@ class PdbReader extends AtomSetCollectionReader {
     isNMRdata = false;
     boolean iHaveModel = false;
     boolean iHaveModelStatement = false;
-    
-    while (readLine() != null) {
-      lineLength = line.length();
-      if (line.startsWith("MODEL ")) {
-        iHaveModelStatement = true;
-        if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
-          if (iHaveModel)
-            break;
+    try {
+      while (readLine() != null) {
+        lineLength = line.length();
+        if (line.startsWith("MODEL ")) {
+          iHaveModelStatement = true;
+          if (++modelNumber != desiredModelNumber && desiredModelNumber > 0) {
+            if (iHaveModel)
+              break;
+            continue;
+          }
+          iHaveModel = true;
+          applySymmetry();
+          //supposedly MODEL is only for NMR
+          model();
           continue;
         }
-        iHaveModel = true;
+        if (line.startsWith("HELIX ") || line.startsWith("SHEET ")
+            || line.startsWith("TURN  ")) {
+          structure();
+          continue;
+        }
+        if (line.startsWith("HET   ")) {
+          het();
+          continue;
+        }
+        if (line.startsWith("HETNAM")) {
+          hetnam();
+          continue;
+        }
+        if (line.startsWith("CRYST1")) {
+          cryst1();
+          continue;
+        }
+        if (line.startsWith("SCALE1")) {
+          scale(1);
+          continue;
+        }
+        if (line.startsWith("SCALE2")) {
+          scale(2);
+          continue;
+        }
+        if (line.startsWith("SCALE3")) {
+          scale(3);
+          continue;
+        }
+        if (line.startsWith("EXPDTA")) {
+          expdta();
+          continue;
+        }
+        if (line.startsWith("FORMUL")) {
+          formul();
+          continue;
+        }
+        if (line.startsWith("REMARK")) {
+          Logger.debug(line);
+          checkLineForScript();
+          continue;
+        }
+        if (line.startsWith("HEADER") && lineLength >= 66) {
+          atomSetCollection.setCollectionName(line.substring(62, 66));
+          continue;
+        }
+        /*
+         * OK, the PDB file format is messed up here, because the 
+         * above commands are all OUTSIDE of the Model framework. 
+         * Of course, different models might have different 
+         * secondary structures, but it is not clear that PDB actually
+         * supports this. So you can't concatinate PDB files the way
+         * you can CIF files. --Bob Hanson 8/30/06
+         */
+        if (iHaveModelStatement && !iHaveModel)
+          continue;
+        if (line.startsWith("ATOM  ") || line.startsWith("HETATM")) {
+          atom();
+          continue;
+        }
+        if (line.startsWith("CONECT")) {
+          conect();
+          continue;
+        }
+      }
+      serialMap = null;
+      if (!isNMRdata)
         applySymmetry();
-        //supposedly MODEL is only for NMR
-        model();
-        continue;
-      }
-      if (line.startsWith("HELIX ") || line.startsWith("SHEET ")
-          || line.startsWith("TURN  ")) {
-        structure();
-        continue;
-      }
-      if (line.startsWith("HET   ")) {
-        het();
-        continue;
-      }
-      if (line.startsWith("HETNAM")) {
-        hetnam();
-        continue;
-      }
-      if (line.startsWith("CRYST1")) {
-        cryst1();
-        continue;
-      }
-      if (line.startsWith("SCALE1")) {
-        scale(1);
-        continue;
-      }
-      if (line.startsWith("SCALE2")) {
-        scale(2);
-        continue;
-      }
-      if (line.startsWith("SCALE3")) {
-        scale(3);
-        continue;
-      }
-      if (line.startsWith("EXPDTA")) {
-        expdta();
-        continue;
-      }
-      if (line.startsWith("FORMUL")) {
-        formul();
-        continue;
-      }
-      if (line.startsWith("REMARK")) {
-        Logger.debug(line);
-        checkLineForScript();
-        continue;
-      }
-      if (line.startsWith("HEADER") && lineLength >= 66) {
-        atomSetCollection.setCollectionName(line.substring(62, 66));
-        continue;
-      }
-      /*
-       * OK, the PDB file format is messed up here, because the 
-       * above commands are all OUTSIDE of the Model framework. 
-       * Of course, different models might have different 
-       * secondary structures, but it is not clear that PDB actually
-       * supports this. So you can't concatinate PDB files the way
-       * you can CIF files. --Bob Hanson 8/30/06
-       */
-      if (iHaveModelStatement && !iHaveModel)
-        continue;
-      if (line.startsWith("ATOM  ") || line.startsWith("HETATM")) {
-        atom();
-        continue;
-      }
-      if (line.startsWith("CONECT")) {
-        conect();
-        continue;
-      }
+    } catch (Exception e) {
+      return setError(e);
     }
-    serialMap = null;
-    if (!isNMRdata)
-      applySymmetry();
     return atomSetCollection;
   }
 
   void atom() {
     boolean isHetero = line.startsWith("HETATM");
-    try {
-      char charAlternateLocation = line.charAt(16);
-      
-      // get the group so that we can check the formul
-      int serial = parseInt(line, 6, 11);
-      char chainID = line.charAt(21);
-      int sequenceNumber = parseInt(line, 22, 26);
-      char insertionCode = line.charAt(26);
-      String group3 = parseToken(line, 17, 20);
-      if (group3 == null) {
-        currentGroup3 = group3;
-        htElementsInCurrentGroup = null;
-      } else if (! group3.equals(currentGroup3)) {
-        currentGroup3 = group3;
-        htElementsInCurrentGroup = (Hashtable)htFormul.get(group3);
+    char charAlternateLocation = line.charAt(16);
+
+    // get the group so that we can check the formul
+    int serial = parseInt(line, 6, 11);
+    char chainID = line.charAt(21);
+    int sequenceNumber = parseInt(line, 22, 26);
+    char insertionCode = line.charAt(26);
+    String group3 = parseToken(line, 17, 20);
+    if (group3 == null) {
+      currentGroup3 = group3;
+      htElementsInCurrentGroup = null;
+    } else if (!group3.equals(currentGroup3)) {
+      currentGroup3 = group3;
+      htElementsInCurrentGroup = (Hashtable) htFormul.get(group3);
+    }
+
+    ////////////////////////////////////////////////////////////////
+    // extract elementSymbol
+    String elementSymbol = deduceElementSymbol();
+
+    /****************************************************************
+     * atomName
+     ****************************************************************/
+    String rawAtomName = line.substring(12, 16);
+    // confusion|concern about the effect this will have on
+    // atom expressions
+    // but we have to do it to support mmCIF
+    String atomName = rawAtomName.trim();
+    /****************************************************************
+     * calculate the charge from cols 79 & 80 (1-based)
+     * 2+, 3-, etc
+     ****************************************************************/
+    int charge = 0;
+    if (lineLength >= 80) {
+      char chMagnitude = line.charAt(78);
+      char chSign = line.charAt(79);
+      if (chSign >= '0' && chSign <= '7') {
+        char chT = chSign;
+        chSign = chMagnitude;
+        chMagnitude = chT;
       }
-
-      ////////////////////////////////////////////////////////////////
-      // extract elementSymbol
-      String elementSymbol = deduceElementSymbol();
-
-      /****************************************************************
-       * atomName
-       ****************************************************************/
-      String rawAtomName = line.substring(12, 16);
-      // confusion|concern about the effect this will have on
-      // atom expressions
-      // but we have to do it to support mmCIF
-      String atomName = rawAtomName.trim();
-      /****************************************************************
-       * calculate the charge from cols 79 & 80 (1-based)
-       * 2+, 3-, etc
-       ****************************************************************/
-      int charge = 0;
-      if (lineLength >= 80) {
-        char chMagnitude = line.charAt(78);
-        char chSign = line.charAt(79);
-        if (chSign >= '0' && chSign <= '7') {
-          char chT = chSign;
-          chSign = chMagnitude;
-          chMagnitude = chT;
-        }
-        if ((chSign == '+' || chSign == '-' || chSign == ' ') &&
-            chMagnitude >= '0' && chMagnitude <= '7') {
-          charge = chMagnitude - '0';
-          if (chSign == '-')
-            charge = -charge;
-        }
+      if ((chSign == '+' || chSign == '-' || chSign == ' ')
+          && chMagnitude >= '0' && chMagnitude <= '7') {
+        charge = chMagnitude - '0';
+        if (chSign == '-')
+          charge = -charge;
       }
+    }
 
-      /****************************************************************
-       * read the bfactor from cols 61-66 (1-based)
-       ****************************************************************/
-      float bfactor = parseFloat(line, 60, 66);
+    /****************************************************************
+     * read the bfactor from cols 61-66 (1-based)
+     ****************************************************************/
+    float bfactor = parseFloat(line, 60, 66);
 
-      /****************************************************************
-       * read the occupancy from cols 55-60 (1-based)
-       * should be in the range 0.00 - 1.00
-       ****************************************************************/
-      int occupancy = 100;
-      float floatOccupancy = parseFloat(line, 54, 60);
-      if (floatOccupancy != Float.NaN)
-        occupancy = (int)(floatOccupancy * 100);
-      
-      /****************************************************************/
+    /****************************************************************
+     * read the occupancy from cols 55-60 (1-based)
+     * should be in the range 0.00 - 1.00
+     ****************************************************************/
+    int occupancy = 100;
+    float floatOccupancy = parseFloat(line, 54, 60);
+    if (floatOccupancy != Float.NaN)
+      occupancy = (int) (floatOccupancy * 100);
 
-      /****************************************************************
-       * coordinates
-       ****************************************************************/
-      float x = parseFloat(line, 30, 38);
-      float y = parseFloat(line, 38, 46);
-      float z = parseFloat(line, 46, 54);
-      /****************************************************************/
-      if (serial >= serialMap.length)
-        serialMap = ArrayUtil.setLength(serialMap, serial + 500);
-      Atom atom = new Atom();
-      atom.elementSymbol = elementSymbol;
-      atom.atomName = atomName;
-      if (charAlternateLocation != ' ')
-        atom.alternateLocationID = charAlternateLocation;
-      atom.formalCharge = charge;
-      atom.occupancy = occupancy;
-      atom.bfactor = bfactor;
-      setAtomCoord(atom, x, y, z);
-      atom.isHetero = isHetero;
-      atom.chainID = chainID;
-      atom.atomSerial = serial;
-      atom.group3 = currentGroup3;
-      atom.sequenceNumber = sequenceNumber;
-      atom.insertionCode = JmolAdapter.canonizeInsertionCode(insertionCode);
+    /****************************************************************/
 
-      atomSetCollection.addAtom(atom);
-      // note that values are +1 in this serial map
-      serialMap[serial] = atomSetCollection.atomCount;
-      
-      if (isHetero) {
-        if (htHetero != null) {
+    /****************************************************************
+     * coordinates
+     ****************************************************************/
+    float x = parseFloat(line, 30, 38);
+    float y = parseFloat(line, 38, 46);
+    float z = parseFloat(line, 46, 54);
+    /****************************************************************/
+    if (serial >= serialMap.length)
+      serialMap = ArrayUtil.setLength(serialMap, serial + 500);
+    Atom atom = new Atom();
+    atom.elementSymbol = elementSymbol;
+    atom.atomName = atomName;
+    if (charAlternateLocation != ' ')
+      atom.alternateLocationID = charAlternateLocation;
+    atom.formalCharge = charge;
+    atom.occupancy = occupancy;
+    atom.bfactor = bfactor;
+    setAtomCoord(atom, x, y, z);
+    atom.isHetero = isHetero;
+    atom.chainID = chainID;
+    atom.atomSerial = serial;
+    atom.group3 = currentGroup3;
+    atom.sequenceNumber = sequenceNumber;
+    atom.insertionCode = JmolAdapter.canonizeInsertionCode(insertionCode);
+
+    atomSetCollection.addAtom(atom);
+    // note that values are +1 in this serial map
+    serialMap[serial] = atomSetCollection.atomCount;
+
+    if (isHetero) {
+      if (htHetero != null) {
         atomSetCollection.setAtomSetAuxiliaryInfo("hetNames", htHetero);
         htHetero = null;
-        }
       }
-
-    } catch (NumberFormatException e) {
-      Logger.warn("bad record at line:" + line);
     }
   }
 
@@ -332,6 +329,7 @@ class PdbReader extends AtomSetCollectionReader {
                                ? 1 : JmolAdapter.ORDER_HBOND));
       }
     } catch (Exception e) {
+      //ignore connection errors
     }
   }
 
@@ -414,18 +412,14 @@ class PdbReader extends AtomSetCollectionReader {
       atomSetCollection.newAtomSet();
       atomSetCollection.setAtomSetNumber(modelNumber);
     } catch (NumberFormatException e) {
+      //ingore model number errors
     }
   }
 
-  void cryst1() {
-    try {
-      setUnitCell(getFloat(6, 9), getFloat(15, 9), getFloat(24, 9)
-          , getFloat(33, 7), getFloat(40, 7), getFloat(47, 7));
-      setSpaceGroupName(parseTrimmed(line, 55, 66));
-    } catch (Exception e) {
-      Logger.error("error in cryst1 line");
-      return;
-    }
+  void cryst1() throws Exception {
+    setUnitCell(getFloat(6, 9), getFloat(15, 9), getFloat(24, 9), getFloat(33,
+        7), getFloat(40, 7), getFloat(47, 7));
+    setSpaceGroupName(parseTrimmed(line, 55, 66));
   }
 
   float getFloat(int ich, int cch) throws Exception {
@@ -499,7 +493,7 @@ class PdbReader extends AtomSetCollectionReader {
     Logger.debug("hetero: "+groupName+" "+hetName);
   }
   
-  void applySymmetry() {
+  void applySymmetry() throws Exception {
     if (needToApplySymmetry) {
       // problem with PDB is that they don't give origins, 
       // so we must force the issue

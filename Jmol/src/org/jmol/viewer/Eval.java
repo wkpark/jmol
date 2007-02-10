@@ -1823,8 +1823,11 @@ class Eval { //implements Runnable {
       case Token.dollarsign:
         String id = objectNameParameter(++i);
         center = viewer.getDrawObjectCenter(id);
-        if (!isSyntaxCheck && center == null)
-          drawObjectNotDefined(id);
+        if (center == null)
+          if (isSyntaxCheck)
+            center = new Point3f();
+          else
+            drawObjectNotDefined(id);
         break;
       case Token.expressionBegin:
       case Token.leftbrace:
@@ -3562,7 +3565,10 @@ class Eval { //implements Runnable {
         rotCenter = viewer.getDrawObjectCenter(axisID);
         rotAxis = viewer.getDrawObjectAxis(axisID);
         if (rotCenter == null)
-          drawObjectNotDefined(axisID);
+          if (isSyntaxCheck)
+            rotCenter = new Point3f();
+          else
+            drawObjectNotDefined(axisID);
         points[nPoints++].set(rotCenter);
         break;
       case Token.opOr:
@@ -3592,7 +3598,7 @@ class Eval { //implements Runnable {
         invalidArgument();
       }
       if (nPoints >= 3) //only 2 allowed for rotation -- for now
-        tooManyRotationPoints();
+        evalError(GT._("too many rotation points were specified"));
     }
     if (nPoints < 2 && !isInternal) {
       // simple, standard fixed-frame rotation
@@ -3626,8 +3632,8 @@ class Eval { //implements Runnable {
       // rotate 10 (atom1) {x y z}
     }
 
-    if (points[0].distance(points[1]) == 0)
-      rotationPointsIdentical();
+    if (!isSyntaxCheck && points[0].distance(points[1]) == 0)
+      evalError(GT._("rotation points cannot be identical"));
     if (degrees == Float.MIN_VALUE)
       degrees = 10;
     if (!isSyntaxCheck)
@@ -7336,10 +7342,6 @@ class Eval { //implements Runnable {
     evalError(GT._("valid (atom expression) expected"));
   }
 
-  void rotationPointsIdentical() throws ScriptException {
-    evalError(GT._("rotation points cannot be identical"));
-  }
-
   int integerExpected() throws ScriptException {
     evalError(GT._("integer expected"));
     return 0;
@@ -7446,10 +7448,6 @@ class Eval { //implements Runnable {
 
   void coordinateOrNameOrExpressionRequired() throws ScriptException {
     evalError(GT._(" {x y z} or $name or (atom expression) required"));
-  }
-
-  void tooManyRotationPoints() throws ScriptException {
-    evalError(GT._("too many rotation points were specified"));
   }
 
   void keywordExpected(String what) throws ScriptException {
@@ -7559,6 +7557,9 @@ class Eval { //implements Runnable {
       case Token.opGT:
       case Token.opLT:
       case Token.opNE:
+        sb.append(Token.getAtomPropertyName(token.intValue));
+        sb.append(" ");
+        break;
       case Token.identifier:
         break;
       default:

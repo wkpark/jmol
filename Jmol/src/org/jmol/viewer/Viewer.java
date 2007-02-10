@@ -1440,6 +1440,16 @@ public class Viewer extends JmolViewer {
     clear();
     modelManager.zap();
     initializeModel();
+    Runtime runtime = Runtime.getRuntime();
+    runtime.gc();
+    long bTotal = runtime.totalMemory();
+    long bFree = runtime.freeMemory();
+    long bMax = 0;
+    try {
+      bMax = runtime.maxMemory();
+    } catch (Exception e) {
+    }
+    Logger.error("ZAP memory inuse, total, free, max: "+(bTotal - bFree) + " " + bTotal+" " + bFree + " " + bMax);
   }
 
   void zap(boolean notify) {

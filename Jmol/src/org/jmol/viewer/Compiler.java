@@ -487,7 +487,7 @@ class Compiler {
     return true;
   }
 
-  boolean eol(char ch) {
+  static boolean eol(char ch) {
     return (ch == ';' || ch == '\r' || ch == '\n');  
   }
   

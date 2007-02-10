@@ -210,8 +210,9 @@ public class Token {
   final static int boundbox      = command | 113 | setparam;
   final static int unitcell      = command | 114 | setparam | expression | predefinedset;
   final static int frank         = command | 115 | setparam;
-  final static int model         = command | 116 | atomproperty;
-  final static int molecule      = command | 117 | unimplemented | atomproperty;
+ // model and molecule are listed with atomproperty because they must be registered as atom property names
+  //final static int model         = command | 116 | atomproperty;
+  //final static int molecule      = command | 117 | unimplemented | atomproperty;
   final static int navigate      = command | 118 | negnums | embeddedExpression;
   final static int gotocmd       = command | 119;
   
@@ -343,14 +344,15 @@ public class Token {
   final static int resno        = atomproperty | 2;
   final static int radius       = atomproperty | 3 | setparam;
   final static int temperature  = atompropertyfloat | 4;
-  
+  final static int model        = atomproperty | 5 | command;
   final static int _bondedcount = atomproperty | 6;
   final static int _groupID     = atomproperty | 7;
   final static int _atomID      = atomproperty | 8;
   final static int _structure   = atomproperty | 9;
   final static int occupancy    = atomproperty | 10;
-  
+
   final static int polymerLength   = atomproperty | 11;
+  final static int molecule        = atomproperty | 12 | command | unimplemented;
   final static int cell            = atomproperty | 13;
   final static int site            = atomproperty | 14;
   final static int element         = atomproperty | 15;
@@ -361,10 +363,25 @@ public class Token {
   final static int phi             = atompropertyfloat | 20;
   final static int psi             = atompropertyfloat | 21;
   final static int partialCharge   = atompropertyfloat | 22;
-  
+
   final static int atomX       = atompropertyfloat | 23;
   final static int atomY       = atompropertyfloat | 24;
   final static int atomZ       = atompropertyfloat | 25;
+
+
+  final static String[] atomPropertyNames = {
+    "atomno", "elemno", "resno", "radius", "temperature", "model",
+    "_bondedCount", "_groupID", "_atomID", "_structure",
+    "occupancy", "polymerLength", "molecule", "cell", "site", 
+    "element", "symop", "surfaceDistance", "atomIndex", 
+    "formalCharge", "phi", "psi", "partialCharge",
+    "atomX", "atomY", "atomZ"};
+
+  final static int ATOM_PROPERTY_MASK = 0xFF;  
+
+  final static String getAtomPropertyName(int i) {
+    return atomPropertyNames[i & ATOM_PROPERTY_MASK];
+  }
 
   final static int opGT         = comparator |  0;
   final static int opGE         = comparator |  1;
@@ -476,7 +493,6 @@ public class Token {
   final static Token tokenExpressionEnd =
     new Token(expressionEnd, "expressionEnd");
   
-
   /*
     Note that the Jmol scripting language is case-insensitive.
     So, the compiler turns all identifiers to lower-case before

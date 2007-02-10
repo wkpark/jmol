@@ -879,7 +879,7 @@ class Eval { //implements Runnable {
           viewer.scriptStatus("expression evaluates to " + floatValue);
         break;
       case Token.identifier:
-        val = viewer.getParameterValue(parameterAsString(i));
+        val = viewer.getParameter(parameterAsString(i));
         if (val instanceof Boolean)
           stack[sp++] = ((Boolean) val).booleanValue();
         else if (val instanceof Integer)
@@ -925,7 +925,7 @@ class Eval { //implements Runnable {
           val = statement[i].value;
           comparisonValue = comparisonInt = statement[i].intValue;
           if (isIdentifier)
-            val = viewer.getParameterValue((String) val);
+            val = viewer.getParameter((String) val);
           if (tok == Token.integer)
             comparisonValue = comparisonInt = statement[i].intValue;
           else if (val instanceof Integer)
@@ -1246,7 +1246,7 @@ class Eval { //implements Runnable {
         comparisonValue = code[pc].intValue;
         boolean isIdentifier = (code[pc].tok == Token.identifier);
         if (isIdentifier) {
-          val = viewer.getParameterValue((String) val);
+          val = viewer.getParameter((String) val);
           if (val instanceof Integer)
             comparisonValue = ((Integer) val).intValue();
         }
@@ -5179,7 +5179,7 @@ class Eval { //implements Runnable {
           bv = true;
           break;
         case Token.identifier:
-          Object v = viewer.getParameterValue(parameterAsString(i));
+          Object v = viewer.getParameter(parameterAsString(i));
           if (v instanceof Boolean) {
             bv = ((Boolean) v).booleanValue();
           } else if (v instanceof Integer) {
@@ -5315,7 +5315,7 @@ class Eval { //implements Runnable {
         setStringProperty(key, strValue);
       }
       if (!isSyntaxCheck)
-        showString(key + " = " + viewer.getParameter(key));
+        showString(key + " = " + viewer.getParameterEscaped(key));
     }
   }
 
@@ -6210,7 +6210,7 @@ class Eval { //implements Runnable {
       return;
     }
     if (!isSyntaxCheck && str != null)
-      showString(str + " = " + viewer.getParameter(str));
+      showString(str + " = " + viewer.getParameterEscaped(str));
   }
 
   void showString(String str) {

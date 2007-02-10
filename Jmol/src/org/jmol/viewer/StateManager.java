@@ -33,6 +33,8 @@ import java.util.Enumeration;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.CommandHistory;
+import org.jmol.util.Parser;
+
 import java.util.Arrays;
 
 class StateManager {
@@ -628,21 +630,24 @@ class StateManager {
       return (unnecessaryProperties.indexOf(";" + name + ";") < 0);
     }
     
-    Object getParameter(String name) {
+    String getParameterEscaped(String name) {
       name = name.toLowerCase();
-      if (name.equals("_memory"))
-        viewer.setMemory();
       if (htParameterValues.containsKey(name))
         return StateManager.escape(htParameterValues.get(name));
       if (htPropertyFlags.containsKey(name))
-        return htPropertyFlags.get(name);
+        return htPropertyFlags.get(name).toString();
       return "<not set>";
     }
     
-    Object getParameterValue(String name) {
+    Object getParameter(String name) {
       name = name.toLowerCase();
-      if (name.equals("_memory"))
-        viewer.setMemory();
+      if (name.equals("_memory")) {
+        Runtime runtime = Runtime.getRuntime();
+        float bTotal = runtime.totalMemory() / 1000000f;
+        float bFree = runtime.freeMemory() / 1000000f;
+        return Parser.formatDecimal(bTotal - bFree, 1) + "/"
+            + Parser.formatDecimal(bTotal, 1);
+      }
       if (htParameterValues.containsKey(name))
         return htParameterValues.get(name);
       if (htPropertyFlags.containsKey(name))

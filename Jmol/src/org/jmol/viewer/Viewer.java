@@ -29,7 +29,6 @@ import org.jmol.i18n.GT;
 import org.jmol.api.*;
 import org.jmol.g3d.*;
 import org.jmol.util.CommandHistory;
-import org.jmol.util.Parser;
 import org.jmol.util.Logger;
 import org.jmol.util.Base64;
 import org.jmol.util.JpegEncoder;
@@ -222,11 +221,9 @@ public class Viewer extends JmolViewer {
       Logger.info(JmolConstants.copyright + "\nJmol Version "
           + getJmolVersion() + "\njava.vendor:" + strJavaVendor
           + "\njava.version:" + strJavaVersion + "\nos.name:" + strOSName
-          + "\n" + htmlName);
+          + "\n" + htmlName + "\nmemory:" + getParameter("_memory"));
     }
 
-    setMemory();
-    
     setIntProperty("_version", getJmolVersionInt());    
     if (isApplet)
       fileManager.setAppletContext(documentBase, codeBase,
@@ -234,14 +231,6 @@ public class Viewer extends JmolViewer {
     zap(false); //here to allow echos
   }
 
-  void setMemory() {
-    Runtime runtime = Runtime.getRuntime();
-    float bTotal = runtime.totalMemory() / 1000000f;
-    float bFree = runtime.freeMemory() / 1000000f;
-    setStringProperty("_memory", Parser.formatDecimal(bTotal - bFree, 1) + "/"
-        + Parser.formatDecimal(bTotal, 1));
-  }
-  
   String getHtmlName() {
     return htmlName;
   }
@@ -3173,12 +3162,12 @@ public class Viewer extends JmolViewer {
     statusManager.clearConsole();
   }
 
-  public Object getParameter(String key) {
-    return global.getParameter(key);
+  Object getParameterEscaped(String key) {
+    return global.getParameterEscaped(key);
   }
 
-  Object getParameterValue(String key) {
-    return global.getParameterValue(key);
+  public Object getParameter(String key) {
+    return global.getParameter(key);
   }
 
   void unsetProperty(String name) {
@@ -4471,7 +4460,7 @@ public class Viewer extends JmolViewer {
       text = text.substring(0, i0 - 2) + 
         (name.length() == 0 ? ""  : name.charAt(0) == '(' 
           ? "" + cardinalityOf(getAtomBitSet(name))             
-            :  getParameterValue(name).toString())
+            :  getParameter(name).toString())
           + text.substring(i + 1);
     }
     return text;

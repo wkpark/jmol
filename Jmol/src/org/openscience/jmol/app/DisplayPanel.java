@@ -512,7 +512,10 @@ public class DisplayPanel extends JPanel
     if (displaySpeed.equalsIgnoreCase("fps")) {
         status.setStatus(3, fmt(1000/timeLast) + "FPS : " + fmt(1000/timeAverage) + "FPS");
     } else {
-        status.setStatus(3, fmt(timeLast) + "ms : " + fmt(timeAverage) + "ms");
+      Runtime runtime = Runtime.getRuntime();
+      float bTotal = ((int)(runtime.totalMemory() / 100000))/10;
+      float bFree = ((int) (runtime.freeMemory()/100000))/10;
+      status.setStatus(3, timeLast + "ms," + timeAverage + "ms;Mb:" + (bTotal-bFree) + "/" + bTotal);
     }
   }
 }

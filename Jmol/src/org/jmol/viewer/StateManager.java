@@ -583,7 +583,7 @@ class StateManager {
       + ";vibrationscale;vibrationperiod;"
       + ";cameradepth;navigationmode;rotationradius;"
       + ";zerobasedxyzrasmol;axesorientationrasmol;"
-      + ";_modelnumber;"
+      + ";_modelnumber;_version;_memory;"
       + "";
 
     void clearVolatileProperties() {
@@ -659,6 +659,8 @@ class StateManager {
     
     Object getParameterValue(String name) {
       name = name.toLowerCase();
+      if (name.equals("_memory"))
+        viewer.setMemory();
       if (htParameterValues.containsKey(name))
         return htParameterValues.get(name);
       if (htPropertyFlags.containsKey(name))

@@ -234,9 +234,10 @@ public class Viewer extends JmolViewer {
 
   void setMemory() {
     Runtime runtime = Runtime.getRuntime();
-    float bTotal = ((int) (runtime.totalMemory() / 100000)) / 10f;
-    float bFree = ((int) (runtime.freeMemory() / 100000)) / 10f;
-    setStringProperty("_memory", formatDecimal(bTotal - bFree,1) + "/" + formatDecimal(bTotal,1));
+    float bTotal = runtime.totalMemory() / 1000000f;
+    float bFree = runtime.freeMemory() / 1000000f;
+    setStringProperty("_memory", formatDecimal(bTotal - bFree, 1) + "/"
+        + formatDecimal(bTotal, 1));
   }
   
   String getHtmlName() {
@@ -2458,7 +2459,6 @@ public class Viewer extends JmolViewer {
     isTainted = false;
     if (size != null)
       setScreenDimension(size);
-    setMemory();
     setRectClip(null);
     int stereoMode = getStereoMode();
     switch (stereoMode) {

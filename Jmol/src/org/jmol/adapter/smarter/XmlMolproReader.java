@@ -76,7 +76,8 @@ class XmlMolproReader extends XmlCmlReader {
       try {
         atomSetCollection.cloneLastAtomSet();
       } catch (Exception e) {
-        atomSetCollection.errorMessage = "Error processing normalCoordinate: " + e;
+        e.printStackTrace();
+        atomSetCollection.errorMessage = "Error processing normalCoordinate: " + e.getMessage();
         frequencyCount = 0;
         return;
       }

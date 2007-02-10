@@ -120,7 +120,8 @@ class XmlReader extends AtomSetCollectionReader {
     try {
       processXml(xmlReader);
     } catch (Exception e) {
-      atomSetCollection.errorMessage = "XML reader error: " + e;
+      e.printStackTrace();
+      atomSetCollection.errorMessage = "XML reader error: " + e.getMessage();
     }
     return atomSetCollection;
   }
@@ -230,7 +231,8 @@ class XmlReader extends AtomSetCollectionReader {
     try {
       xmlReader.parse(is);
     } catch (Exception e) {
-      atomSetCollection.errorMessage = "XML parsing error: " + e;
+      e.printStackTrace();
+      atomSetCollection.errorMessage = "XML parsing error: " + e.getMessage();
     }
   }
 

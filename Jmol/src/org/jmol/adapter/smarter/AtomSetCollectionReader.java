@@ -76,7 +76,8 @@ import java.io.BufferedReader;
 abstract class AtomSetCollectionReader extends Parser {
   AtomSetCollection atomSetCollection;
   BufferedReader reader;
-  String line;
+  String line, prevline;
+  
 
   final static float ANGSTROMS_PER_BOHR = 0.5291772f;
 
@@ -114,9 +115,9 @@ abstract class AtomSetCollectionReader extends Parser {
 
   AtomSetCollection setError(Exception e) {
     if (line == null)
-      atomSetCollection.errorMessage = "Unexpected end of file";
+      atomSetCollection.errorMessage = "Unexpected end of file after line:\n" + prevline + "\n";
     else
-      atomSetCollection.errorMessage = "Error reading file at line: " + line
+      atomSetCollection.errorMessage = "Error reading file at line:\n" + line
           + "\n" + e;
     return atomSetCollection;
   }
@@ -386,6 +387,7 @@ abstract class AtomSetCollectionReader extends Parser {
   }
 
   String readLine() throws Exception {
+    prevline = line;
     line = reader.readLine();
     return line;
   }

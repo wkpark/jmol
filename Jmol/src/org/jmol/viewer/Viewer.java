@@ -232,6 +232,26 @@ public class Viewer extends JmolViewer {
     zap(false); //here to allow echos
   }
 
+  static String getJmolVersion() {
+    return JmolConstants.version + "  " + JmolConstants.date;
+  }
+
+  static int getJmolVersionInt() {
+    String s = JmolConstants.version;
+    //11.9.999 --> 1109999
+    int i = s.indexOf(".");
+    int v = Integer.parseInt(s.substring(0, i));
+    s = s.substring(i + 1);
+    i = s.indexOf(".");
+    int subv = Integer.parseInt(s.substring(0, i));
+    s = s.substring(i + 1);
+    i = 0;
+    while (i < s.length() && Character.isDigit(s.charAt(i)))
+      i++;
+    int subsubv = (i == 0 ? 0 : Integer.parseInt(s.substring(0, i)));
+    return v * 100000 + subv * 1000 + subsubv;
+  }
+
   String getHtmlName() {
     return htmlName;
   }
@@ -289,26 +309,6 @@ public class Viewer extends JmolViewer {
     info.put("javaVersion", strJavaVersion);
     info.put("operatingSystem", strOSName);
     return info;
-  }
-
-  String getJmolVersion() {
-    return JmolConstants.version + "  " + JmolConstants.date;
-  }
-
-  int getJmolVersionInt() {
-    String s = JmolConstants.version;
-    //11.9.999 --> 1109999
-    int i = s.indexOf(".");
-    int v = Integer.parseInt(s.substring(0, i));
-    s = s.substring(i + 1);
-    i = s.indexOf(".");
-    int subv = Integer.parseInt(s.substring(0, i));
-    s = s.substring(i + 1);
-    i = 0;
-    while (i < s.length() && Character.isDigit(s.charAt(i)))
-      i++;
-    int subsubv = (i == 0 ? 0 : Integer.parseInt(s.substring(0, i)));
-    return v * 100000 + subv * 1000 + subsubv;
   }
 
   // ///////////////////////////////////////////////////////////////

@@ -546,6 +546,7 @@ public class Jmol extends JPanel {
         if (indexX > 0) {
           startupWidth = parseInt(geometry.substring(0, indexX)) + border.x;
           startupHeight = parseInt(geometry.substring(indexX + 1)) + border.y;
+          //System.out.println("setting geometry to " + geometry + " " + border + " " + startupWidth + startupHeight);
         }
       }
       if (startupWidth <= 0 || startupHeight <= 0) {
@@ -674,6 +675,7 @@ public class Jmol extends JPanel {
       // Save window positions and status in the history
       if (historyFile != null) {
         historyFile.addWindowInfo(JMOL_WINDOW_NAME, this.frame, border);
+        //System.out.println("doClose border: " + border);
         //historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
         if (scriptWindow != null)
           historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, scriptWindow, null);

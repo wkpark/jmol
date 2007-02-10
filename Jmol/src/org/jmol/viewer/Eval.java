@@ -3619,7 +3619,7 @@ class Eval { //implements Runnable {
             isSpin);
       return;
     }
-    if (nPoints < 2) {
+    if (nPoints < 2 && !isSyntaxCheck) {
       // rotate MOLECULAR
       // rotate MOLECULAR (atom1)
       // rotate MOLECULAR x 10 (atom1)

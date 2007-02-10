@@ -3694,8 +3694,8 @@ class Eval { //implements Runnable {
     while (pc < linenumbers.length && linenumbers[pc] < lineNumber)
       pc++;
     this.pc = pc;
-    System.out.println("script pc line lineend pcend" + pc + " " + lineNumber
-        + " " + lineEnd + " " + pcEnd);
+    //System.out.println("script pc line lineend pcend" + pc + " " + lineNumber
+      //  + " " + lineEnd + " " + pcEnd);
 
     instructionDispatchLoop(isCheck);
     isSyntaxCheck = wasSyntaxCheck;

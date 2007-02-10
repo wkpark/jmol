@@ -28,6 +28,7 @@ package org.jmol.viewer;
 import org.jmol.vecmath.Point3fi;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.bspt.Tuple;
+import org.jmol.util.Parser;
 
 import java.util.Hashtable;
 import java.util.BitSet;
@@ -1220,7 +1221,7 @@ final public class Atom extends Point3fi implements Tuple {
 
   String format(float value, int width, int precision,
                 boolean alignLeft, boolean zeroPad) {
-    return format(group.chain.frame.viewer.formatDecimal(value, precision),
+    return format(Parser.formatDecimal(value, precision),
                   width, 0, alignLeft, zeroPad);
   }
 

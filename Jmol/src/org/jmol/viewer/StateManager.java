@@ -30,7 +30,6 @@ import javax.vecmath.Matrix3f;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Enumeration;
-import java.text.DecimalFormat;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.CommandHistory;
@@ -87,25 +86,6 @@ class StateManager {
     viewer.setBooleanProperty("zeroBasedXyzRasmol", true);
     viewer.setIntProperty("percentVdwAtom", 0);
     viewer.setIntProperty("bondRadiusMilliAngstroms", 1);
-  }
-
-  private DecimalFormat[] formatters;
-
-  private static String[] formattingStrings = { "0", "0.0", "0.00", "0.000",
-    "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000" };
-
-  String formatDecimal(float value, int decimalDigits) {
-    if (decimalDigits < 0)
-      return "" + value;
-    if (formatters == null)
-      formatters = new DecimalFormat[formattingStrings.length];
-    if (decimalDigits >= formattingStrings.length)
-      decimalDigits = formattingStrings.length - 1;
-    DecimalFormat formatter = formatters[decimalDigits];
-    if (formatter == null)
-      formatter = formatters[decimalDigits] = new DecimalFormat(
-          formattingStrings[decimalDigits]);
-    return formatter.format(value);
   }
 
   String getStandardLabelFormat() {
@@ -650,6 +630,8 @@ class StateManager {
     
     Object getParameter(String name) {
       name = name.toLowerCase();
+      if (name.equals("_memory"))
+        viewer.setMemory();
       if (htParameterValues.containsKey(name))
         return StateManager.escape(htParameterValues.get(name));
       if (htPropertyFlags.containsKey(name))

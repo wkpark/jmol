@@ -24,12 +24,15 @@
 package org.jmol.viewer;
 
 import org.jmol.symmetry.UnitCell;
-import org.jmol.util.*;
 import org.jmol.i18n.GT;
 
 import org.jmol.api.*;
 import org.jmol.g3d.*;
 import org.jmol.util.CommandHistory;
+import org.jmol.util.Parser;
+import org.jmol.util.Logger;
+import org.jmol.util.Base64;
+import org.jmol.util.JpegEncoder;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -37,7 +40,6 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Component;
 import java.awt.Event;
-import java.text.DecimalFormat;
 import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;
@@ -236,8 +238,8 @@ public class Viewer extends JmolViewer {
     Runtime runtime = Runtime.getRuntime();
     float bTotal = runtime.totalMemory() / 1000000f;
     float bFree = runtime.freeMemory() / 1000000f;
-    setStringProperty("_memory", formatDecimal(bTotal - bFree, 1) + "/"
-        + formatDecimal(bTotal, 1));
+    setStringProperty("_memory", Parser.formatDecimal(bTotal - bFree, 1) + "/"
+        + Parser.formatDecimal(bTotal, 1));
   }
   
   String getHtmlName() {
@@ -4455,25 +4457,6 @@ public class Viewer extends JmolViewer {
 
   Font3D getFont3D(String fontFace, String fontStyle, int fontSize) {
     return g3d.getFont3D(fontFace, fontStyle, fontSize);
-  }
-
-  private DecimalFormat[] formatters;
-
-  private static String[] formattingStrings = { "0", "0.0", "0.00", "0.000",
-      "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000" };
-
-  String formatDecimal(float value, int decimalDigits) {
-    if (decimalDigits < 0)
-      return "" + value;
-    if (formatters == null)
-      formatters = new DecimalFormat[formattingStrings.length];
-    if (decimalDigits >= formattingStrings.length)
-      decimalDigits = formattingStrings.length - 1;
-    DecimalFormat formatter = formatters[decimalDigits];
-    if (formatter == null)
-      formatter = formatters[decimalDigits] = new DecimalFormat(
-          formattingStrings[decimalDigits]);
-    return formatter.format(value);
   }
 
   String formatText(String text) {

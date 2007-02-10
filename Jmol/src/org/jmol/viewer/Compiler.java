@@ -104,6 +104,7 @@ class Compiler {
 
   int ichToken;
   int cchToken;
+  int iCommand;
   Token[] atokenCommand;
 
   int ichCurrentCommand;
@@ -115,6 +116,7 @@ class Compiler {
     cchScript = script.length();
     ichToken = 0;
     lineCurrent = 1;
+    iCommand = 0;
     int lnLength = 8;
     lineNumbers = new short[lnLength];
     lineIndices = new int[lnLength];
@@ -139,7 +141,7 @@ class Compiler {
         if (tokCommand != Token.nada) {
           if (!compileCommand(ltoken))
             return false;
-          int iCommand = lltoken.size();
+          iCommand = lltoken.size();
           if (iCommand == lnLength) {
             short[] lnT = new short[lnLength * 2];
             System.arraycopy(lineNumbers, 0, lnT, 0, lnLength);
@@ -1920,16 +1922,16 @@ class Compiler {
         && (icharEnd = script.indexOf('\n', ichCurrentCommand)) == -1)
       icharEnd = script.length();
     errorLine = script.substring(ichCurrentCommand, icharEnd);
-    if (!isSilent) {
-      Logger.error("compileError(" + errorMessage + ")");
-      viewer.addCommand(errorLine + CommandHistory.ERROR_FLAG);
-    }
     String lineInfo = (ichToken < errorLine.length() ? errorLine.substring(0,
         ichToken)
         + " >>>> " + errorLine.substring(ichToken) : errorLine)
         + " <<<<";
     errorMessage = "script compiler ERROR: " + errorMessage
-        + Eval.setErrorLineMessage(filename, lineCurrent, lineInfo);
+         + Eval.setErrorLineMessage(filename, lineCurrent, iCommand, lineInfo);
+    if (!isSilent) {
+      viewer.addCommand(errorLine + CommandHistory.ERROR_FLAG);
+      Logger.error(errorMessage);
+    }
     return false;
   }
 }

@@ -7578,7 +7578,7 @@ class Eval { //implements Runnable {
   String contextTrace() {
     StringBuffer sb = new StringBuffer();
     for (;;) {
-      sb.append(setErrorLineMessage(filename, getLinenumber(),
+      sb.append(setErrorLineMessage(filename, getLinenumber(), pc,
           statementAsString()));
       if (scriptLevel > 0)
         popContext();
@@ -7588,11 +7588,11 @@ class Eval { //implements Runnable {
     return sb.toString();
   }
 
-  static String setErrorLineMessage(String filename, int lineCurrent,
+  static String setErrorLineMessage(String filename, int lineCurrent, int pcCurrent,
                                     String lineInfo) {
     String err = "\n----";
     if (filename != null)
-      err += "line " + lineCurrent + " of file " + filename + ":";
+      err += "line " + lineCurrent + " command " + pcCurrent + " of file " + filename + ":";
     err += "\n         " + lineInfo;
     return err;
   }
@@ -7604,7 +7604,7 @@ class Eval { //implements Runnable {
     ScriptException(String message) {
       this.message = (message == null ? "" : message) + contextTrace();
       if (!isSyntaxCheck)
-        Logger.error("ERROR: " + toString());
+        Logger.error("eval ERROR: " + toString());
     }
 
     public String toString() {

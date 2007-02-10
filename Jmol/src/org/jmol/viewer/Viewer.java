@@ -223,12 +223,22 @@ public class Viewer extends JmolViewer {
           + "\n" + htmlName);
     }
 
+    setMemory();
+    
+    setIntProperty("_version", getJmolVersionInt());    
     if (isApplet)
       fileManager.setAppletContext(documentBase, codeBase,
           appletProxyOrCommandOptions);
     zap(false); //here to allow echos
   }
 
+  void setMemory() {
+    Runtime runtime = Runtime.getRuntime();
+    float bTotal = ((int) (runtime.totalMemory() / 100000)) / 10f;
+    float bFree = ((int) (runtime.freeMemory() / 100000)) / 10f;
+    setStringProperty("_memory", formatDecimal(bTotal - bFree,1) + "/" + formatDecimal(bTotal,1));
+  }
+  
   String getHtmlName() {
     return htmlName;
   }
@@ -290,6 +300,21 @@ public class Viewer extends JmolViewer {
 
   String getJmolVersion() {
     return JmolConstants.version + "  " + JmolConstants.date;
+  }
+
+  int getJmolVersionInt() {
+    String s = JmolConstants.version;
+    //11.9.999 --> 1109999
+    int i = s.indexOf(".");
+    int v = Integer.parseInt(s.substring(0,i));
+    s = s.substring(i + 1);
+    i = s.indexOf(".");
+    int subv = Integer.parseInt(s.substring(0,i));
+    s = s.substring(i + 1);
+    while (i < s.length() && Character.isDigit(s.charAt(i)))
+      i++;
+    int subsubv = Integer.parseInt(s.substring(0, i));
+    return v * 100000 + subv * 1000 + subsubv;
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -2433,6 +2458,7 @@ public class Viewer extends JmolViewer {
     isTainted = false;
     if (size != null)
       setScreenDimension(size);
+    setMemory();
     setRectClip(null);
     int stereoMode = getStereoMode();
     switch (stereoMode) {

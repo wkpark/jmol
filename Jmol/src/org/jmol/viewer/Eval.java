@@ -7604,7 +7604,7 @@ class Eval { //implements Runnable {
     ScriptException(String message) {
       this.message = (message == null ? "" : message) + contextTrace();
       if (!isSyntaxCheck)
-        Logger.error(toString());
+        Logger.error("ERROR: " + toString());
     }
 
     public String toString() {

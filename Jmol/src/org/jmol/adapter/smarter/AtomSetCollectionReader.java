@@ -115,12 +115,13 @@ abstract class AtomSetCollectionReader extends Parser {
   }
 
   AtomSetCollection setError(Exception e) {
+    e.printStackTrace();
     if (line == null)
       atomSetCollection.errorMessage = "Unexpected end of file after line "
           + --ptLine + ":\n" + prevline;
     else
       atomSetCollection.errorMessage = "Error reading file at line " + ptLine
-          + ":\n" + line + "\n" + e;
+          + ":\n" + line + "\n" + e.getMessage();
     return atomSetCollection;
   }
   

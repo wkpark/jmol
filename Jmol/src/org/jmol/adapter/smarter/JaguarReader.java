@@ -28,8 +28,6 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
-import org.jmol.util.Logger;
-
 /**
  * Jaguar reader tested for the two samples files in CVS. Both
  * these files were created with Jaguar version 4.0, release 20.

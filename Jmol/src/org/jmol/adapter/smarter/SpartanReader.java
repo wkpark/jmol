@@ -28,8 +28,6 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 import java.util.Hashtable;
 
-import org.jmol.util.Logger;
-
 /*
  * perhaps unnecessary ? I think this was for when all you had was 
  * a piece of the archive file that started with:

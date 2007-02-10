@@ -7474,9 +7474,9 @@ class Eval { //implements Runnable {
         sb.append(" <<");
       if (i != 0)
         sb.append(' ');
-      if (iToken == i)
-        sb.append(">> ");
       Token token = statement[i];
+      if (iToken == i && token.tok != Token.expressionEnd)
+        sb.append(">> ");
       switch (token.tok) {
       case Token.expressionBegin:
         if (addParens)

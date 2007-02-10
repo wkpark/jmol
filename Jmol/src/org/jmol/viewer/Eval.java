@@ -82,6 +82,7 @@ class Eval { //implements Runnable {
   boolean tQuiet;
   boolean logMessages = false;
   boolean debugScript = false;
+  boolean fileOpenCheck = true;
 
   Eval(Viewer viewer) {
     compiler = new Compiler(viewer);
@@ -231,6 +232,7 @@ class Eval { //implements Runnable {
     if (!compiler.compile(null, script, false, true))
       return compiler.getErrorMessage();
     isSyntaxCheck = true;
+    isScriptCheck = false;
     errorMessage = null;
     pc = 0;
     aatoken = compiler.getAatokenCompiled();
@@ -273,7 +275,7 @@ class Eval { //implements Runnable {
     return loadScriptFileInternal(filename);
   }
 
-  boolean loadScriptFileInternal(String filename) {
+  private boolean loadScriptFileInternal(String filename) {
     //from "script" command, with push/pop surrounding or viewer
     if (filename.toLowerCase().indexOf("javascript:") == 0)
       return loadScript(filename, viewer.eval(filename.substring(11)));
@@ -522,20 +524,21 @@ class Eval { //implements Runnable {
       iToken = 0;
       if (!checkContinue())
         break;
-      int milliSecDelay = viewer.getScriptDelay();
-      if (isSyntaxCheck && !doList) {
-        if (isScriptCheck)
-          Logger.info(thisCommand);
-        if (statementLength == 1 && (token.tok & Token.unimplemented) == 0)
-          continue;
-      } else {
-        if (milliSecDelay > 0 && scriptLevel > 0 || doList) {
+      if (doList || !isSyntaxCheck) {
+        int milliSecDelay = viewer.getScriptDelay();
+        if (doList || milliSecDelay > 0 && scriptLevel > 0) {
           if (milliSecDelay > 0)
             delay((long) milliSecDelay);
-          Logger.info(thisCommand);
           viewer.scriptEcho("$[" + scriptLevel + "." + linenumbers[pc] + "."
               + (pc + 1) + "] " + thisCommand);
         }
+      }
+      if (isSyntaxCheck) {
+        if (isScriptCheck)
+          Logger.info(thisCommand);          
+        if (statementLength == 1 && (token.tok & Token.unimplemented) == 0)
+          continue;
+      } else {
         if (debugScript)
           logDebugScript();
         if (logMessages)
@@ -1237,8 +1240,9 @@ class Eval { //implements Runnable {
       case Token.opEQ:
       case Token.opNE:
         bs = stack[sp++] = new BitSet();
-        boolean isNegative = (((String)instruction.value).indexOf("-") >= 0);
         Object val = code[++pc].value;
+        if (isSyntaxCheck)
+          break;
         comparisonValue = code[pc].intValue;
         boolean isIdentifier = (code[pc].tok == Token.identifier);
         if (isIdentifier) {
@@ -1254,7 +1258,7 @@ class Eval { //implements Runnable {
               : 100f));
         else 
           invalidArgument();
-        if (isNegative)
+        if (((String)instruction.value).indexOf("-") >= 0)
           comparisonValue = -comparisonValue;
         comparatorInstruction(instruction, bs, comparisonValue);
         break;
@@ -1902,7 +1906,10 @@ class Eval { //implements Runnable {
   Point4f hklParameter(int i) throws ScriptException {
     Point3f offset = viewer.getCurrentUnitCellOffset();
     if (offset == null)
-      evalError(GT._("No unit cell"));
+      if (isSyntaxCheck)
+        offset = new Point3f();
+      else
+        evalError(GT._("No unit cell"));
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
     Point3f pt = getCoordinate(i, true, false, true);
@@ -2996,7 +3003,7 @@ class Eval { //implements Runnable {
       dataLabel = parameterAsString(1);
       if (dataLabel.equalsIgnoreCase("clear")) {
         if (!isSyntaxCheck)
-          viewer.setData(null, null);
+          Viewer.setData(null, null);
         return;
       }
       if (statementLength > 2)
@@ -3010,16 +3017,14 @@ class Eval { //implements Runnable {
     dataLabelString[0] = dataLabel;
     dataLabelString[1] = dataString;
     boolean isModel = dataType.equalsIgnoreCase("model");
-    if (!isSyntaxCheck || isScriptCheck && isModel)
-      viewer.setData(dataType, dataLabelString);
-    if (isModel) {
+    if (!isSyntaxCheck || isScriptCheck && isModel && fileOpenCheck)
+      Viewer.setData(dataType, dataLabelString);
+    if (isModel && (!isSyntaxCheck || isScriptCheck && fileOpenCheck)) {
       // only if first character is "|" do we consider "|" to be new line
       char newLine = viewer.getInlineChar();
       if (dataString.length() > 0 && dataString.charAt(0) != newLine)
         newLine = '\0';
-      if (!isSyntaxCheck || isScriptCheck)
-        viewer.loadInline(dataString, newLine);
-      return;
+      viewer.loadInline(dataString, newLine);
     }
   }
 
@@ -3125,7 +3130,7 @@ class Eval { //implements Runnable {
       if (i == 0 || (filename = parameterAsString(i)).length() == 0)
         filename = viewer.getFullPathName();
       loadScript.append(" " + StateManager.escape(filename) + ";");
-      if (!isSyntaxCheck || isScriptCheck)
+      if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
         viewer.openFile(filename, params, loadScript.toString());
     } else if (statement[i + 1].tok == Token.leftbrace
         || statement[i + 1].tok == Token.integer) {
@@ -3184,7 +3189,7 @@ class Eval { //implements Runnable {
         }
       }
       loadScript.append(";");
-      if (!isSyntaxCheck || isScriptCheck)
+      if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
         viewer.openFile(filename, params, loadScript.toString());
     } else {
       String modelName = parameterAsString(i);
@@ -3198,15 +3203,15 @@ class Eval { //implements Runnable {
         i++;
       }
       loadScript.append(";");
-      if (!isSyntaxCheck || isScriptCheck)
+      if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
         viewer.openFiles(modelName, filenames, loadScript.toString());
     }
-    if (isSyntaxCheck && !isScriptCheck)
+    if (isSyntaxCheck && !(isScriptCheck && fileOpenCheck))
       return;
     String errMsg = viewer.getOpenFileError();
     // int millis = (int)(System.currentTimeMillis() - timeBegin);
     // Logger.debug("!!!!!!!!! took " + millis + " ms");
-    if (errMsg != null)
+    if (errMsg != null && !isScriptCheck)
       evalError(errMsg);
     if (logMessages)
       viewer.scriptStatus("Successfully loaded:" + filename);
@@ -3542,9 +3547,11 @@ class Eval { //implements Runnable {
           break;
         }
         if (str.equalsIgnoreCase("internal")
-            || str.equalsIgnoreCase("molecular"))
+            || str.equalsIgnoreCase("molecular")) {
           isInternal = true;
-        break;
+          break;
+        }
+        invalidArgument();
       case Token.leftbrace:
         // {X, Y, Z}
         Point3f pt = getCoordinate(i, true);
@@ -3650,11 +3657,15 @@ class Eval { //implements Runnable {
     int lineEnd = 0;
     int pcEnd = 0;
     int i = 2;
-    String option = null;
-    boolean isCheck = false;
-    option = optParameterAsString(i);
+    boolean loadCheck = true; 
+    boolean isCheck = false;   
+    String option = optParameterAsString(i);
     if (option.equalsIgnoreCase("check")) {
       isCheck = true;
+      option = optParameterAsString(++i);
+    }
+    if (option.equalsIgnoreCase("noload")) {
+      loadCheck = false;
       option = optParameterAsString(++i);
     }
     if (option.equalsIgnoreCase("line") || option.equalsIgnoreCase("lines")) {
@@ -3687,20 +3698,33 @@ class Eval { //implements Runnable {
       isSyntaxCheck = isScriptCheck = true;
     pushContext();
     String filename = stringParameter(1);
-    if (!loadScriptFileInternal(filename))
-      errorLoadingScript();
-    this.pcEnd = pcEnd;
-    this.lineEnd = lineEnd;
-    while (pc < linenumbers.length && linenumbers[pc] < lineNumber)
-      pc++;
-    this.pc = pc;
-    //System.out.println("script pc line lineend pcend" + pc + " " + lineNumber
+    if (loadScriptFileInternal(filename)) {
+      this.pcEnd = pcEnd;
+      this.lineEnd = lineEnd;
+      while (pc < linenumbers.length && linenumbers[pc] < lineNumber)
+        pc++;
+      this.pc = pc;
+      //System.out.println("script pc line lineend pcend" + pc + " " + lineNumber
       //  + " " + lineEnd + " " + pcEnd);
 
-    instructionDispatchLoop(isCheck);
+      boolean saveLoadCheck = fileOpenCheck;
+      fileOpenCheck = fileOpenCheck && loadCheck;
+      instructionDispatchLoop(isCheck);
+      fileOpenCheck = saveLoadCheck;
+      popContext();
+    } else {
+      Logger.error("script ERROR: " + errorMessage);
+      popContext();
+      if (wasScriptCheck) {
+        error = false;
+        errorMessage = null;
+      } else {
+        evalError(null);
+      }
+    }
+
     isSyntaxCheck = wasSyntaxCheck;
     isScriptCheck = wasScriptCheck;
-    popContext();
   }
 
   void history(int pt) throws ScriptException {
@@ -7145,12 +7169,18 @@ class Eval { //implements Runnable {
           BitSet bs = expression(++i);
           i = iToken;
           int atomIndex = viewer.firstAtomOf(bs);
-          if (!isSyntaxCheck && atomIndex < 0)
-            expressionExpected();
-          setShapeProperty(iShape, "modelIndex", new Integer(viewer
-              .getAtomModelIndex(atomIndex)));
-          Vector3f[] axes = { new Vector3f(), new Vector3f(),
-              new Vector3f(viewer.getAtomPoint3f(atomIndex)) };
+          modelIndex = 0;
+          Point3f pt;
+          if (atomIndex < 0) {
+            if (!isSyntaxCheck)
+              expressionExpected();
+            pt = new Point3f();
+          } else {
+            modelIndex = viewer.getAtomModelIndex(atomIndex);
+            pt = viewer.getAtomPoint3f(atomIndex);
+          }
+          setShapeProperty(iShape, "modelIndex", new Integer(modelIndex));
+          Vector3f[] axes = { new Vector3f(), new Vector3f(), new Vector3f(pt) };
           if (!isSyntaxCheck)
             viewer.getPrincipalAxes(atomIndex, axes[0], axes[1], lcaoType,
                 false);
@@ -7422,11 +7452,6 @@ class Eval { //implements Runnable {
   void numberMustBe(int a, int b) throws ScriptException {
     evalError(GT._("number must be ({0} or {1})", new Object[] {
         new Integer(a), new Integer(b) }));
-  }
-
-  void errorLoadingScript() throws ScriptException {
-    popContext();
-    evalError(null);
   }
 
   void fileNotFoundException(String filename) throws ScriptException {

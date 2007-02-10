@@ -1963,7 +1963,7 @@ public class Viewer extends JmolViewer {
 
   static Hashtable dataValues = new Hashtable();
 
-  public void setData(String type, String[] data) {
+  static void setData(String type, String[] data) {
     //Eval
     if (type == null) {
       dataValues.clear();
@@ -2715,6 +2715,7 @@ public class Viewer extends JmolViewer {
   boolean checking;
 
   public String scriptCheck(String strScript) {
+    // from ConsoleTextPane.checkCommand() and applet Jmol.scriptProcessor()
     if (strScript == null || checking)
       return null;
     checking = true;
@@ -2723,12 +2724,6 @@ public class Viewer extends JmolViewer {
     if (obj instanceof String)
       return (String) obj;
     return null;
-  }
-
-  synchronized public Object compileInfo(String strScript) {
-    if (strScript == null)
-      return null;
-    return eval.checkScriptSilent(strScript);
   }
 
   public boolean isScriptExecuting() {

@@ -124,7 +124,7 @@ class FileManager {
     openErrorMessage = fullPathName = fileName = null;
     classifyName(name);
     if (openErrorMessage != null) {
-      Logger.error("openErrorMessage=" + openErrorMessage);
+      Logger.error("file ERROR: " + openErrorMessage);
       return;
     }
     fileOpenThread = new FileOpenThread(fullPathName, name, params);
@@ -139,7 +139,7 @@ class FileManager {
       openErrorMessage = fullPathName = fileName = null;
       classifyName(names[i]);
       if (openErrorMessage != null) {
-        Logger.error("openErrorMessage=" + openErrorMessage);
+        Logger.error("file ERROR: " + openErrorMessage);
         return;
       }
       fullPathNames[i] = fullPathName;
@@ -338,7 +338,7 @@ class FileManager {
     Object inputStreamOrError =
       getInputStreamOrErrorMessageFromName(documentBase);
     if (inputStreamOrError instanceof String) {
-      Logger.error("Error:" + inputStreamOrError);
+      Logger.error("file ERROR:" + inputStreamOrError);
     } else {
       BufferedReader br =
         new BufferedReader(new
@@ -519,7 +519,7 @@ class FileManager {
                           : (String)t);
       }
       if (errorMessage != null)
-        Logger.error("error opening " + fullPathNameInThread + "\n" + errorMessage);
+        Logger.error("file ERROR: " + fullPathNameInThread + "\n" + errorMessage);
       terminated = true;
     }
 
@@ -570,7 +570,7 @@ class FileManager {
         openInputStream(istream);
       }
       if (errorMessage != null)
-        Logger.error("error opening " + fullPathNameInThread + "\n" + errorMessage);
+        Logger.error("file ERROR: " + fullPathNameInThread + "\n" + errorMessage);
       terminated = true;
     }
 

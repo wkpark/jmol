@@ -1201,7 +1201,7 @@ public class Viewer extends JmolViewer {
     long timeBegin = System.currentTimeMillis();
     fileManager.openFile(name, params, loadScript);
     long ms = System.currentTimeMillis() - timeBegin;
-    setStatusFileLoaded(1, name, "", modelManager.getModelSetName(), null, null);
+    setStatusFileLoaded(1, name, "", getModelSetName(), null, null);
     String sp = "";
     if (params != null)
       for (int i = 0; i < params.length; i++)
@@ -1222,7 +1222,7 @@ public class Viewer extends JmolViewer {
     fileManager.openFiles(modelName, names, loadScript);
     long ms = System.currentTimeMillis() - timeBegin;
     for (int i = 0; i < names.length; i++) {
-      setStatusFileLoaded(1, names[i], "", modelManager.getModelSetName(),
+      setStatusFileLoaded(1, names[i], "", getModelSetName(),
           null, null);
     }
     Logger.info("openFiles(" + names.length + ") " + ms + " ms");
@@ -1239,7 +1239,7 @@ public class Viewer extends JmolViewer {
     fileManager.openStringInline(strModel, params);
     String errorMsg = getOpenFileError();
     if (errorMsg == null)
-      setStatusFileLoaded(1, "string", "", modelManager.getModelSetName(),
+      setStatusFileLoaded(1, "string", "", getModelSetName(),
           null, null);
   }
 
@@ -1249,7 +1249,7 @@ public class Viewer extends JmolViewer {
     fileManager.openStringInline(arrayModels, params);
     String errorMsg = getOpenFileError();
     if (errorMsg == null)
-      setStatusFileLoaded(1, "string[]", "", modelManager.getModelSetName(),
+      setStatusFileLoaded(1, "string[]", "", getModelSetName(),
           null, null);
   }
 
@@ -1314,7 +1314,7 @@ public class Viewer extends JmolViewer {
     fileManager.openDOM(DOMNode);
     long ms = System.currentTimeMillis() - timeBegin;
     Logger.info("openDOM " + ms + " ms");
-    setStatusFileLoaded(1, "JSNode", "", modelManager.getModelSetName(), null,
+    setStatusFileLoaded(1, "JSNode", "", getModelSetName(), null,
         getOpenFileError());
   }
 
@@ -1350,21 +1350,8 @@ public class Viewer extends JmolViewer {
     if (clientFile instanceof String || clientFile == null) {
       String errorMsg = (String) clientFile;
       setStatusFileNotLoaded(fullPathName, errorMsg);
-      if (errorMsg != null) {
-        String msg = errorMsg;
-        int pt = msg.lastIndexOf("/");
-        if (pt > 0)
-          msg = msg.substring(0, pt + 1) + '\n' + msg.substring(pt + 1);
-        pt = msg.lastIndexOf("\\");
-        if (pt > 0)
-          msg = msg.substring(0, pt + 1) + '\n' + msg.substring(pt + 1);
-        for (int i = 0; i < 2; i++) {
-          pt = msg.indexOf(" ");
-          if (pt > 0)
-            msg = msg.substring(0, pt) + '\n' + msg.substring(pt + 1);
-        }
-        zap(msg);
-      }
+      if (errorMsg != null)
+        zap(errorMsg);
       return errorMsg;
     }
     openClientFile(fullPathName, fileName, clientFile);

@@ -82,9 +82,9 @@ class Resolver {
   static Object finalize(AtomSetCollection atomSetCollection, String filename) {
     atomSetCollection.freeze();
     if (atomSetCollection.errorMessage != null)
-      return atomSetCollection.errorMessage + " for " + filename + " of type " + atomSetCollection.fileTypeName;
+      return atomSetCollection.errorMessage + "\nfor " + filename + "\ntype " + atomSetCollection.fileTypeName;
     if (atomSetCollection.atomCount == 0)
-      return "No atoms found for " + filename  + " of type " + atomSetCollection.fileTypeName;
+      return "No atoms found\nfor " + filename  + "\ntype " + atomSetCollection.fileTypeName;
     return atomSetCollection;
   }
 

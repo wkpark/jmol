@@ -56,7 +56,7 @@ class Atom extends Point3f implements Cloneable {
     try {
       return (Atom)super.clone();
     } catch (Exception cnse) {
-      throw new Exception(cnse.getMessage());
+      throw new Exception("cloneAtom error: " + cnse);
     }
   }
 

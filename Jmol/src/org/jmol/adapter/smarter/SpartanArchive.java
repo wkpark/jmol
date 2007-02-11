@@ -69,29 +69,24 @@ class SpartanArchive {
     this.bondData = bondData;
   }
 
-  int readArchive(String infoLine,
-                  boolean haveGeometryLine) throws Exception {
+  int readArchive(String infoLine, boolean haveGeometryLine) throws Exception {
     atomCount = setInfo(infoLine);
     line = (haveGeometryLine ? "GEOMETRY" : "");
-    try {
-      while (line != null) {
-        if (line.equals("GEOMETRY")) {
-          readAtoms();
-          if (bondData.length() > 0)
-            addBonds(bondData);
-        } else if (line.indexOf("BASIS") == 0) {
-          readBasis();
-        } else if (line.indexOf("WAVEFUNC") == 0 || line.indexOf("BETA") == 0) {
-          readMolecularOrbital();
-          atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
-        } else if (line.equals("ENDARCHIVE")
-            || line.equals("END Compound Document Entry: Archive")) {
-          break;
-        }
-        readLine();
+    while (line != null) {
+      if (line.equals("GEOMETRY")) {
+        readAtoms();
+        if (bondData.length() > 0)
+          addBonds(bondData);
+      } else if (line.indexOf("BASIS") == 0) {
+        readBasis();
+      } else if (line.indexOf("WAVEFUNC") == 0 || line.indexOf("BETA") == 0) {
+        readMolecularOrbital();
+        atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+      } else if (line.equals("ENDARCHIVE")
+          || line.equals("END Compound Document Entry: Archive")) {
+        break;
       }
-    } catch (Exception e) {
-      Logger.error("Spartan archive reader error on line: " + line, e);
+      readLine();
     }
     return atomCount;
   }

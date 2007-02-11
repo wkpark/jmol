@@ -208,9 +208,8 @@ class WebMOReader extends AtomSetCollectionReader {
       String[] tokens = getTokens(line);
       if (tokens.length == 0)
         continue;
-      if (tokens.length != 1) {
-        Logger.error("Error reading GTOs: missing atom index");
-      }
+      if (tokens.length != 1) // VERY unlikely event -- might as well note it, though.
+        throw new Exception("Error reading GTOs: missing atom index");
       Hashtable slater = new Hashtable();
       atomIndex = parseInt(tokens[0]) - 1;
       tokens = getTokens(readLine());

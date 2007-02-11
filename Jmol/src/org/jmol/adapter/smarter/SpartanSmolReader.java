@@ -84,9 +84,7 @@ class SpartanSmolReader extends AtomSetCollectionReader {
         readLine();
       }
     } catch (Exception e) {
-      Logger.error("Could not read Spartan file at line: " + line, e);
-      //TODO: Why this?
-      //new NullPointerException();
+      return setError(e);
     }
     // info out of order -- still a chance, at least for first model
     if (atomCount > 0 && spartanArchive != null && bondData != null)

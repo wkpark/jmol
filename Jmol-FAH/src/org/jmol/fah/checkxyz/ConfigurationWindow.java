@@ -167,10 +167,12 @@ public class ConfigurationWindow extends JDialog implements ActionListener {
     GridBagLayout layout = new GridBagLayout();
     panel.setLayout(layout);
     panel.setBorder(new TitledBorder("Settings"));
+    panel.setMinimumSize(new Dimension(150, 200));
+    panel.setMaximumSize(new Dimension(200, 800));
 
     // Constraints
     GridBagConstraints constraints = new GridBagConstraints();
-    constraints.fill = GridBagConstraints.NONE;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
     constraints.gridheight = 1;
     constraints.gridwidth = 1;
     constraints.gridx = 0;
@@ -184,12 +186,14 @@ public class ConfigurationWindow extends JDialog implements ActionListener {
     // User name
     JLabel labelUser = new JLabel("User name :", SwingConstants.RIGHT);
     constraints.gridx = 0;
+    constraints.weightx = 0;
     constraints.anchor = GridBagConstraints.EAST;
     panel.add(labelUser, constraints);
 
     textUser = new JTextField(configuration.getUserName(), 15);
     textUser.setToolTipText("The User Name that will be credited for the .xyz files");
     constraints.gridx++;
+    constraints.weightx = 1;
     constraints.anchor = GridBagConstraints.WEST;
     panel.add(textUser, constraints);
 
@@ -198,12 +202,14 @@ public class ConfigurationWindow extends JDialog implements ActionListener {
     // Mail server
     JLabel labelMailServer = new JLabel("Mail server :", SwingConstants.RIGHT);
     constraints.gridx = 0;
+    constraints.weightx = 0;
     constraints.anchor = GridBagConstraints.EAST;
     panel.add(labelMailServer, constraints);
 
     textMailServer = new JTextField(configuration.getMailServer(), 15);
     textMailServer.setToolTipText("Your mail server, maybe something like smtp....");
     constraints.gridx++;
+    constraints.weightx = 1;
     constraints.anchor = GridBagConstraints.WEST;
     panel.add(textMailServer, constraints);
 
@@ -212,12 +218,14 @@ public class ConfigurationWindow extends JDialog implements ActionListener {
     // User mail
     JLabel labelUserMail = new JLabel("Mail address :", SwingConstants.RIGHT);
     constraints.gridx = 0;
+    constraints.weightx = 0;
     constraints.anchor = GridBagConstraints.EAST;
     panel.add(labelUserMail, constraints);
 
     textUserMail = new JTextField(configuration.getUserMail(), 15);
     textUserMail.setToolTipText("Your email address");
     constraints.gridx++;
+    constraints.weightx = 1;
     constraints.anchor = GridBagConstraints.WEST;
     panel.add(textUserMail, constraints);
 
@@ -226,12 +234,14 @@ public class ConfigurationWindow extends JDialog implements ActionListener {
     // User login
     JLabel labelUserLogin = new JLabel("Login :", SwingConstants.RIGHT);
     constraints.gridx = 0;
+    constraints.weightx = 0;
     constraints.anchor = GridBagConstraints.EAST;
     panel.add(labelUserLogin, constraints);
 
     textUserLogin = new JTextField(configuration.getLogin(), 15);
     textUserLogin.setToolTipText("You only need to fill this field if your mail server requires authentication.");
     constraints.gridx++;
+    constraints.weightx = 1;
     constraints.anchor = GridBagConstraints.WEST;
     panel.add(textUserLogin, constraints);
 
@@ -240,12 +250,14 @@ public class ConfigurationWindow extends JDialog implements ActionListener {
     // User password
     JLabel labelUserPassword = new JLabel("Password :", SwingConstants.RIGHT);
     constraints.gridx = 0;
+    constraints.weightx = 0;
     constraints.anchor = GridBagConstraints.EAST;
     panel.add(labelUserPassword, constraints);
 
     textUserPassword = new JPasswordField(configuration.getPassword(), 15);
     textUserPassword.setToolTipText("You only need to fill this field if your mail server requires authentication.");
     constraints.gridx++;
+    constraints.weightx = 1;
     constraints.anchor = GridBagConstraints.WEST;
     panel.add(textUserPassword, constraints);
 
@@ -256,9 +268,12 @@ public class ConfigurationWindow extends JDialog implements ActionListener {
     buttonTestMail.setActionCommand(actionTestMail);
     buttonTestMail.addActionListener(this);
     constraints.gridx = 0;
+    constraints.weightx = 1;
     constraints.gridwidth = 2;
     constraints.anchor = GridBagConstraints.CENTER;
     panel.add(buttonTestMail, constraints);
+
+    constraints.gridy++;
 
     // Filler
     JLabel labelFiller = new JLabel();
@@ -291,9 +306,9 @@ public class ConfigurationWindow extends JDialog implements ActionListener {
     }
     listDirectories.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     listDirectories.setLayoutOrientation(JList.VERTICAL);
-    listDirectories.setMinimumSize(new Dimension(200, 100));
+    //listDirectories.setMinimumSize(new Dimension(200, 100));
     JScrollPane listScroller = new JScrollPane(listDirectories);
-    listScroller.setMinimumSize(new Dimension(200, 100));
+    listScroller.setPreferredSize(new Dimension(200, 200));
     listScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
     listScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
     panel.add(listScroller);

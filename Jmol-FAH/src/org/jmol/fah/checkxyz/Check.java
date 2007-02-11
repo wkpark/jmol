@@ -73,7 +73,9 @@ public class Check {
         return false;
       }
     };
-    availableProjects = new File(new File(new File(System.getProperty("user.home")), ".jmol"), "availableProjects");
+    File configDirectory = new File(new File(System.getProperty("user.home")), ".jmol");
+    configDirectory.mkdirs();
+    availableProjects = new File(configDirectory, "availableProjects");
   }
 
   /**
@@ -273,7 +275,6 @@ public class Check {
     if (availableFilesDownloaded) {
       return;
     }
-    System.err.println("Downloading file");
     OutputStream os = null;
     InputStream is = null;
     try {

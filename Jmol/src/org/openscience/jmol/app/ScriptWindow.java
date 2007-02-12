@@ -405,14 +405,12 @@ class ConsoleTextPane extends JTextPane {
    void checkCommand() {
     String strCommand = consoleDoc.getCommandString();
     //System.out.println(Token.getCommandSet(strCommand));
-    if (strCommand.length() == 0)
+    if (strCommand.length() == 0 || viewer.isScriptExecuting())
       return;
     consoleDoc
         .colorCommand(viewer.scriptCheck(strCommand) == null ? consoleDoc.attUserInput
             : consoleDoc.attError);
   }
-   
-
 }
 
 class ConsoleDocument extends DefaultStyledDocument {
@@ -506,7 +504,11 @@ class ConsoleDocument extends DefaultStyledDocument {
       Position caretPosition = createPosition(pt);
       pt = positionBeforePrompt.getOffset();
       super.insertString(pt, str+"\n", attribute);
-      setOffsetPositions();
+      //setOffsetPositions();
+      offsetAfterPrompt += str.length() + 1;
+      positionBeforePrompt = createPosition(offsetAfterPrompt - 2);
+      positionAfterPrompt = createPosition(offsetAfterPrompt - 1);
+      
       pt = caretPosition.getOffset();
       consoleTextPane.setCaretPosition(pt);
     } catch (BadLocationException e) {

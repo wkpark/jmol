@@ -1562,6 +1562,9 @@ public class Jmol extends JPanel {
     }
 
     public void notifyScriptStart(String statusMessage, String additionalInfo) {
+      if (scriptWindow != null)
+        scriptWindow.notifyScriptStart(statusMessage);
+     
       //System.out.println("notifyScriptStart:" + statusMessage + (additionalInfo == "" ? "" : additionalInfo));
     }
     

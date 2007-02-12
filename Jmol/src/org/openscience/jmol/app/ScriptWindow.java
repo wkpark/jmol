@@ -114,10 +114,8 @@ public final class ScriptWindow extends JDialog
   }
 
   public void sendConsoleEcho(String strEcho) {
-    if (strEcho != null && !isError) {
-      
+    if (strEcho != null && !isError) {      
       console.outputEcho(strEcho);
-      
     }
     setError(false);
   }
@@ -125,8 +123,6 @@ public final class ScriptWindow extends JDialog
   boolean isError = false;
   void setError(boolean TF) {
     isError = TF;
-    //if (isError)
-      //console.recallCommand(true);
   }
   
   public void sendConsoleMessage(String strStatus) {
@@ -135,25 +131,27 @@ public final class ScriptWindow extends JDialog
       console.outputStatus("");
     } else if (strStatus.indexOf("ERROR:") >= 0) {
       console.outputError(strStatus);
-      isError = true;
+      setError(true);
+      runButton.setEnabled(true);
+      haltButton.setEnabled(false);
     } else if (!isError) {
       console.outputStatus(strStatus);
     }
   }
 
+  public void notifyScriptStart(String strMsg) {
+    runButton.setEnabled(true);
+    haltButton.setEnabled(true);
+  }
+
   public void notifyScriptTermination(String strMsg, int msWalltime) {
-    if (strMsg != null && strMsg.indexOf("ERROR") >= 0) {
-      console.outputError(strMsg);
-    }
     runButton.setEnabled(true);
     haltButton.setEnabled(false);
   }
 
   public void enterPressed() {
     runButton.doClick(100);
-    //    executeCommand();
   }
-
   
   class ExecuteCommandThread extends Thread {
 
@@ -226,7 +224,7 @@ public final class ScriptWindow extends JDialog
       if (strErrorMessage.length() > 0) {
         console.outputError(strErrorMessage);
       } else {
-        //runButton.setEnabled(false);
+        runButton.setEnabled(true);
         haltButton.setEnabled(true);
         viewer.script(strCommand);
       }
@@ -514,8 +512,9 @@ class ConsoleDocument extends DefaultStyledDocument {
       
       pt = caretPosition.getOffset();
       consoleTextPane.setCaretPosition(pt);
-    } catch (BadLocationException e) {
+    } catch (Exception e) {
       e.printStackTrace();
+      consoleTextPane.setCaretPosition(getLength());
     }
   }
 

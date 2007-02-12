@@ -30,8 +30,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.jmol.api.*;
-import org.jmol.i18n.GT;
-
 /**
  * 
  * The StatusManager class handles all details of status reporting, including:
@@ -82,7 +80,6 @@ class StatusManager {
   Hashtable messageQueue = new Hashtable();
   int statusPtr = 0;
   static int MAXIMUM_QUEUE_LENGTH = 16;
-  String compileError;
   
   StatusManager(Viewer viewer) {
     this.viewer = viewer;
@@ -181,22 +178,14 @@ class StatusManager {
       jmolStatusListener.notifyNewDefaultModeMeasurement(count, status + ": " + strMeasure);
   }
   
-  synchronized void setStatusScriptStarted(int iscript, String script,
-                                           String compileError) {
-    this.compileError = compileError;
-    if (compileError == null)
-      compileError = GT._("Jmol executing script ...");
-    else
-      compileError = "Script ERROR: " + compileError;
+  synchronized void setStatusScriptStarted(int iscript, String script) {
     setStatusChanged("scriptStarted", iscript, script, false);
-    setStatusChanged("scriptMessage", 0, compileError, false);
     if (jmolStatusListener != null)
-      jmolStatusListener.notifyScriptStart(compileError, script);
+      jmolStatusListener.notifyScriptStart("script " + iscript + " started", script);
   }
 
   synchronized void setStatusScriptTermination(String statusMessage, int msWalltime){
-    statusMessage = "Jmol script terminated" + (compileError == null ? "" : " ERROR: " + compileError);
-    //UNRELIABLE setStatusChanged("scriptTerminated", msWalltime, statusMessage, false);
+    statusMessage = "Jmol script terminated";// + (statusMessage != null ? ": " + statusMessage : "");
     if (jmolStatusListener == null)
       return;
     jmolStatusListener.notifyScriptTermination(statusMessage, msWalltime);

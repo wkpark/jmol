@@ -2686,6 +2686,8 @@ public class Viewer extends JmolViewer {
         false);
   }
 
+  int scriptIndex;
+  
   synchronized Object evalStringWaitStatus(String returnType, String strScript,
                                            String statusList,
                                            boolean isScriptFile, boolean isQuiet) {
@@ -2709,6 +2711,7 @@ public class Viewer extends JmolViewer {
         : eval.loadScriptString(strScript, isQuiet));
     String strErrorMessage = eval.getErrorMessage();
     if (isOK) {
+      statusManager.setStatusScriptStarted(++scriptIndex, strScript);
       eval.runEval(checkScriptOnly);
       int msWalltime = eval.getExecutionWalltime();
       strErrorMessage = eval.getErrorMessage();
@@ -3098,8 +3101,8 @@ public class Viewer extends JmolViewer {
     statusManager.setStatusNewDefaultModeMeasurement(status, count, strMeasure);
   }
 
-  void setStatusScriptStarted(int iscript, String script, String strError) {
-    statusManager.setStatusScriptStarted(iscript, script, strError);
+  void setStatusScriptStarted(int iscript, String script) {
+    statusManager.setStatusScriptStarted(iscript, script);
   }
 
   void setStatusUserAction(String info) {

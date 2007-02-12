@@ -130,7 +130,7 @@ public class Token {
   final static int label        = command | 15 | specialstring;
   final static int load         = command | 16 | negnums;
   final static int monitor      = command | 18 | setparam | bool | embeddedExpression | expression;
-  final static int pause        = command | 19 | misc;
+  final static int pause        = command | 19 | misc | specialstring;
   final static int print        = command | 20 | unimplemented;
   final static int quit         = command | 21;
   final static int refresh      = command | 22;
@@ -529,7 +529,7 @@ public class Token {
     "measurements",      null,
     "monitor",           null,
     "monitors",          null,
-    "pause",             new Token(pause,              0, "pause"),
+    "pause",             new Token(pause,        maxArg1, "pause"),
     "wait",              null,
     "quit",              new Token(quit,               0, "quit"),
     "refresh",           new Token(refresh,            0, "refresh"),

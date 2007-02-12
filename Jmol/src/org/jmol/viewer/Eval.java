@@ -840,8 +840,7 @@ class Eval { //implements Runnable {
         write();
         break;
       case Token.pause: //resume is done differently
-        pauseExecution();
-        viewer.scriptStatus("script execution paused -- type RESUME to continue.");
+        pause();
         break;
       default:
         if ((token.tok & Token.unimplemented) != 0) {
@@ -3097,6 +3096,16 @@ class Eval { //implements Runnable {
       viewer.scriptStatus(s);
   }
 
+  void pause() throws ScriptException {
+    pauseExecution();
+    String msg = optParameterAsString(1);
+    if (msg.length() == 0)
+      msg = ": RESUME to continue.";
+    else
+      msg = ": " + viewer.formatText(msg);
+    viewer.scriptStatus("script execution paused" + msg);  
+  }
+  
   void label() throws ScriptException {
     if (isSyntaxCheck)
       return;

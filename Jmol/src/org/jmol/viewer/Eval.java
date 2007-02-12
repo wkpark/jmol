@@ -49,11 +49,14 @@ class Context {
   int pcEnd = Integer.MAX_VALUE;
   int lineEnd = Integer.MAX_VALUE;
   int iToken;
+  boolean ifs[];
 }
 
 class Eval { //implements Runnable {
-  Compiler compiler;
   final static int scriptLevelMax = 10;
+  final static int MAX_IF_DEPTH = 10; //should be plenty
+
+  Compiler compiler;
   int scriptLevel;
   Context[] stack = new Context[scriptLevelMax];
   String filename;
@@ -74,7 +77,7 @@ class Eval { //implements Runnable {
   Viewer viewer;
   BitSet bsSubset;
   int iToken;
-
+  boolean[] ifs;
   boolean isSyntaxCheck, isScriptCheck;
 
   //Thread myThread;
@@ -187,6 +190,7 @@ class Eval { //implements Runnable {
     context.lineEnd = lineEnd;
     context.pcEnd = pcEnd;    
     context.iToken = iToken;
+    context.ifs = ifs;
     stack[scriptLevel++] = context;
     if (isScriptCheck)
       Logger.info("-->>-------------".substring(0, scriptLevel + 5) + filename);
@@ -206,10 +210,11 @@ class Eval { //implements Runnable {
     aatoken = context.aatoken;
     statement = context.statement;
     statementLength = context.statementLength;
-    iToken = context.iToken;
     pc = context.pc;
     lineEnd = context.lineEnd;
     pcEnd = context.pcEnd;
+    iToken = context.iToken;
+    ifs = context.ifs;
   }
 
   boolean loadScript(String filename, String script) {
@@ -516,12 +521,10 @@ class Eval { //implements Runnable {
 
   int commandHistoryLevelMax = 0;
 
-  final static int MAX_IF_DEPTH = 10; //should be plenty
-  boolean[] ifs = new boolean[MAX_IF_DEPTH + 1];
-
   void instructionDispatchLoop(boolean doList) throws ScriptException {
     long timeBegin = 0;
     int ifLevel = 0;
+    ifs = new boolean[MAX_IF_DEPTH + 1];
     ifs[0] = true;
     debugScript = (!isSyntaxCheck && viewer.getDebugScript());
     logMessages = (debugScript && Logger.isActiveLevel(Logger.LEVEL_DEBUG));

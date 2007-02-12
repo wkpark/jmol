@@ -49,7 +49,7 @@ class Context {
   int pcEnd = Integer.MAX_VALUE;
   int lineEnd = Integer.MAX_VALUE;
   int iToken;
-  boolean ifs[];
+  int ifs[];
 }
 
 class Eval { //implements Runnable {
@@ -77,7 +77,7 @@ class Eval { //implements Runnable {
   Viewer viewer;
   BitSet bsSubset;
   int iToken;
-  boolean[] ifs;
+  int[] ifs;
   boolean isSyntaxCheck, isScriptCheck;
 
   //Thread myThread;
@@ -524,8 +524,8 @@ class Eval { //implements Runnable {
   void instructionDispatchLoop(boolean doList) throws ScriptException {
     long timeBegin = 0;
     int ifLevel = 0;
-    ifs = new boolean[MAX_IF_DEPTH + 1];
-    ifs[0] = true;
+    ifs = new int[MAX_IF_DEPTH + 1];
+    ifs[0] = 0;
     debugScript = (!isSyntaxCheck && viewer.getDebugScript());
     logMessages = (debugScript && Logger.isActiveLevel(Logger.LEVEL_DEBUG));
     if (logMessages) {
@@ -563,7 +563,7 @@ class Eval { //implements Runnable {
       }
       if (isSyntaxCheck) {
         if (isScriptCheck)
-          Logger.info(thisCommand);          
+          Logger.info(thisCommand);
         if (statementLength == 1 && (token.tok & Token.unimplemented) == 0)
           continue;
       } else {
@@ -571,21 +571,27 @@ class Eval { //implements Runnable {
           logDebugScript();
         if (logMessages)
           Logger.debug(token.toString());
-        if (ifLevel > 0 && !ifs[ifLevel] && token.tok != Token.endifcmd
+        if (ifLevel > 0 && ifs[ifLevel] < 0 && token.tok != Token.endifcmd
             && token.tok != Token.ifcmd && token.tok != Token.elsecmd)
           continue;
       }
       switch (token.tok) {
       case Token.ifcmd:
+        System.out.println("IF at " + pc + " " + ifLevel);
+        for (int i = 1; i <= ifLevel; i++)
+          if (ifs[ifLevel] == pc || ifs[ifLevel] == -1 - pc) {
+            ifLevel = i - 1;
+            break;
+          }
         if (++ifLevel == MAX_IF_DEPTH)
           evalError(GT._("Too many nested {0} commands", "IF"));
-        ifs[ifLevel] = (ifs[ifLevel - 1] && ifCmd());
+        ifs[ifLevel] = (ifs[ifLevel - 1] >= 0 && ifCmd() ? pc : -1 - pc);
         break;
       case Token.elsecmd:
         if (ifLevel < 1)
           evalError(GT._("Invalid {0} command", "ELSE"));
         if (!isSyntaxCheck)
-          ifs[ifLevel] = !ifs[ifLevel];
+          ifs[ifLevel] = -1 - ifs[ifLevel];
         break;
       case Token.endifcmd:
         if (--ifLevel < 0)

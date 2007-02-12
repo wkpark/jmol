@@ -841,6 +841,7 @@ class Eval { //implements Runnable {
         break;
       case Token.pause: //resume is done differently
         pauseExecution();
+        viewer.scriptStatus("script execution paused -- type RESUME to continue.");
         break;
       default:
         if ((token.tok & Token.unimplemented) != 0) {
@@ -3093,7 +3094,6 @@ class Eval { //implements Runnable {
     String s = viewer.formatText(text);
     Logger.warn(s);
     if (!s.startsWith("_"))
-  
       viewer.scriptStatus(s);
   }
 

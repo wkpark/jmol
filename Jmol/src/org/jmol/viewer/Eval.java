@@ -491,11 +491,22 @@ class Eval { //implements Runnable {
           String script = viewer.getInterruptScript();
           if (script != "") {
             resumePausedExecution();
-            runScript(script);
+            error = false;
+            pc--; // in case there is an error, we point to the PAUSE command
+            try {
+              runScript(script);
+            } catch (Exception e) {
+              error = true;
+              errorMessage = e.toString();
+            }
+            pc++;
+            if (error)
+              viewer.scriptStatus(errorMessage);
             pauseExecution();
           }
         }
       } catch (Exception e) {
+        
       }
       Logger.debug("script execution resumed");
     }
@@ -526,6 +537,8 @@ class Eval { //implements Runnable {
     if (lineEnd == 0)
       lineEnd = Integer.MAX_VALUE;
     for (; pc < aatoken.length && pc < pcEnd; pc++) {
+      if (!checkContinue())
+        break;
       Token token = aatoken[pc][0];
       statement = aatoken[pc];
       if (linenumbers[pc] > lineEnd)
@@ -533,8 +546,6 @@ class Eval { //implements Runnable {
       thisCommand = getCommand();
       statementLength = statement.length;
       iToken = 0;
-      if (!checkContinue())
-        break;
       String script = viewer.getInterruptScript();
       if (script != "")
         runScript(script);
@@ -5121,6 +5132,8 @@ class Eval { //implements Runnable {
       switch (statementLength) {
       case 2:
         setBooleanProperty(key, true);
+        if (!isSyntaxCheck)
+          showString(key + " = " + viewer.getParameterEscaped(key));
         return;
       case 3:
         switch (statement[2].tok) {

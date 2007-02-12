@@ -471,6 +471,10 @@ class Eval { //implements Runnable {
     delay(100);
     executionPaused = Boolean.TRUE;
   }
+  
+  boolean isExecutionPaused() {
+    return executionPaused.booleanValue();
+  }
 
   void resumePausedExecution() {
     executionPaused = Boolean.FALSE;
@@ -482,8 +486,15 @@ class Eval { //implements Runnable {
         return true;
       Logger.debug("script execution paused at this command: " + thisCommand);
       try {
-        while (executionPaused.booleanValue())
+        while (executionPaused.booleanValue()) {
           Thread.sleep(100);
+          String script = viewer.getInterruptScript();
+          if (script != "") {
+            resumePausedExecution();
+            runScript(script);
+            pauseExecution();
+          }
+        }
       } catch (Exception e) {
       }
       Logger.debug("script execution resumed");
@@ -524,6 +535,9 @@ class Eval { //implements Runnable {
       iToken = 0;
       if (!checkContinue())
         break;
+      String script = viewer.getInterruptScript();
+      if (script != "")
+        runScript(script);
       if (doList || !isSyntaxCheck) {
         int milliSecDelay = viewer.getScriptDelay();
         if (doList || milliSecDelay > 0 && scriptLevel > 0) {

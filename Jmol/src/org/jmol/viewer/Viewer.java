@@ -2581,11 +2581,28 @@ public class Viewer extends JmolViewer {
     return evalString(strScript);
   }
 
+  String interruptScript = "";
+  String getInterruptScript() {
+    String s = interruptScript;
+    interruptScript = "";
+    if (s != "")
+      System.out.println("interrupt: " + s);
+    return s;
+  }
+  
   public String evalString(String strScript) {
+    getInterruptScript();
+    boolean isInterrupt = (strScript.length() > 0 && strScript.charAt(0) == '!');
+    if (isInterrupt)
+      strScript = strScript.substring(1);
     if (checkResume(strScript))
       return "script processing resumed";
     if (checkHalt(strScript))
       return "script execution halted";
+    if (isScriptExecuting() && (isInterrupt || eval.isExecutionPaused())) {
+      interruptScript = strScript;
+      return "!" + strScript;
+    }
     return scriptManager.addScript(strScript, false, false);
   }
 

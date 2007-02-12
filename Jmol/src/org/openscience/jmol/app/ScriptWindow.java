@@ -185,48 +185,50 @@ public final class ScriptWindow extends JDialog
     setError(false);
     console.appendNewline();
     console.setPrompt();
-    if (strCommand.length() > 0) {
-      String strErrorMessage = null;
-      doWait = (strCommand.indexOf("WAIT ") == 0);
-      if (doWait) { //for testing, mainly
-        // demonstrates using the statusManager system.
-        runButton.setEnabled(false);
-        haltButton.setEnabled(true);
+    if (strCommand.length() == 0) {
+      console.grabFocus();
+      return;
+    }
+    String strErrorMessage = null;
+    doWait = (strCommand.indexOf("WAIT ") == 0);
+    if (doWait) { //for testing, mainly
+      // demonstrates using the statusManager system.
+      runButton.setEnabled(false);
+      haltButton.setEnabled(true);
 
-        Vector info = (Vector) viewer
-            .scriptWaitStatus(strCommand.substring(5),
-                "+fileLoaded,+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated");
-        runButton.setEnabled(true);
-        haltButton.setEnabled(false);
-        /*
-         * info = [ statusRecortSet0, statusRecortSet1, statusRecortSet2, ...]
-         * statusRecordSet = [ statusRecord0, statusRecord1, statusRecord2, ...]
-         * statusRecord = [int msgPtr, String statusName, int intInfo, String msg]    
-         */
-        for (int i = 0; i < info.size(); i++) {
-          Vector statusRecordSet = (Vector) info.get(i);
-          for (int j = 0; j < statusRecordSet.size(); j++) {
-            Vector statusRecord = (Vector) statusRecordSet.get(j);
-            Logger.info("msg#=" + statusRecord.get(0) + " "
-                + statusRecord.get(1) + " intInfo=" + statusRecord.get(2)
-                + " stringInfo=" + statusRecord.get(3));
-          }
+      Vector info = (Vector) viewer
+          .scriptWaitStatus(strCommand.substring(5),
+              "+fileLoaded,+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated");
+      runButton.setEnabled(true);
+      haltButton.setEnabled(false);
+      /*
+       * info = [ statusRecortSet0, statusRecortSet1, statusRecortSet2, ...]
+       * statusRecordSet = [ statusRecord0, statusRecord1, statusRecord2, ...]
+       * statusRecord = [int msgPtr, String statusName, int intInfo, String msg]    
+       */
+      for (int i = 0; i < info.size(); i++) {
+        Vector statusRecordSet = (Vector) info.get(i);
+        for (int j = 0; j < statusRecordSet.size(); j++) {
+          Vector statusRecord = (Vector) statusRecordSet.get(j);
+          Logger.info("msg#=" + statusRecord.get(0) + " " + statusRecord.get(1)
+              + " intInfo=" + statusRecord.get(2) + " stringInfo="
+              + statusRecord.get(3));
         }
-        console.appendNewline();
+      }
+      console.appendNewline();
+    } else {
+      boolean isScriptExecuting = viewer.isScriptExecuting();
+      strErrorMessage = "";
+      if (viewer.checkHalt(strCommand))
+        strErrorMessage = (isScriptExecuting ? "string execution halted with "
+            + strCommand : "no script was executing");
+      //the problem is that scriptCheck is synchronized, so these might get backed up. 
+      if (strErrorMessage.length() > 0) {
+        console.outputError(strErrorMessage);
       } else {
-        boolean isScriptExecuting = viewer.isScriptExecuting();
-        if (viewer.checkHalt(strCommand))
-          strErrorMessage = (isScriptExecuting ? "string execution halted with " + strCommand : "no script was executing");
-        else
-          strErrorMessage = "";//viewer.scriptCheck(strCommand);
-        //the problem is that scriptCheck is synchronized, so these might get backed up. 
-        if (strErrorMessage != null && strErrorMessage.length() > 0) {
-          console.outputError(strErrorMessage);
-        } else {
-          //runButton.setEnabled(false);
-          haltButton.setEnabled(true);
-          viewer.script(strCommand);
-        }
+        //runButton.setEnabled(false);
+        haltButton.setEnabled(true);
+        viewer.script(strCommand);
       }
     }
     console.grabFocus();
@@ -405,7 +407,8 @@ class ConsoleTextPane extends JTextPane {
    void checkCommand() {
     String strCommand = consoleDoc.getCommandString();
     //System.out.println(Token.getCommandSet(strCommand));
-    if (strCommand.length() == 0 || viewer.isScriptExecuting())
+    if (strCommand.length() == 0 || strCommand.charAt(0) == '!'
+        || viewer.isScriptExecuting())
       return;
     consoleDoc
         .colorCommand(viewer.scriptCheck(strCommand) == null ? consoleDoc.attUserInput

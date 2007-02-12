@@ -577,7 +577,6 @@ class Eval { //implements Runnable {
       }
       switch (token.tok) {
       case Token.ifcmd:
-        System.out.println("IF at " + pc + " " + ifLevel);
         for (int i = 1; i <= ifLevel; i++)
           if (ifs[ifLevel] == pc || ifs[ifLevel] == -1 - pc) {
             ifLevel = i - 1;

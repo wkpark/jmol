@@ -1262,7 +1262,7 @@ class Compiler {
       if (!tokAttr(tokenAtomProperty.tok, Token.comparator)) {
         addTokenToPostfix(tokenAtomProperty);
         addTokenToPostfix(new Token(Token.opEQ, tokenAtomProperty.tok, "=="));
-        return addTokenToPostfix(new Token(Token.integer, new Integer(1)));
+        return addTokenToPostfix(new Token(Token.integer, 1, new Integer(1)));
       }
       tokenComparator = tokenAtomProperty;
     } else if (!isBitSetExpression) {

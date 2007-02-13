@@ -38,7 +38,9 @@ final public class JmolConstants {
   //app fix for console entry messing up cursor position; 
   //allows for scripting during pause or interrupt of running script using ! as first character of script
   //new: within(x.x,plane,$plane1)
-  //fix for draw off state not recorded
+  //fix for "draw off" not recorded in save state
+  //fix for within(integer,...) bug using RasMol units
+  
   
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);

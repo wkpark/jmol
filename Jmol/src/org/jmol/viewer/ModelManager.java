@@ -749,7 +749,7 @@ String getAtomInfoChime(int i) {
       if (distance > 0 && distance >= d
           || distance < 0 && distance <= d
           || distance == 0 && Math.abs(d) < 0.01)
-        bsResult.set(atom.atomIndex);4
+        bsResult.set(atom.atomIndex);
     }
     return bsResult;
   }

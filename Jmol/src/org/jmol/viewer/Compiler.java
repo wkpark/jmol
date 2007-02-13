@@ -1365,6 +1365,7 @@ class Compiler {
     boolean isNegative = (theToken.tok == Token.hyphen);
     if (isNegative)
       getToken();
+    String key = "";
     switch (theToken.tok) {
     case Token.integer:
       distance = new Float(theToken.intValue * (isNegative ? -1 : 1));
@@ -1379,38 +1380,48 @@ class Compiler {
     case Token.string:
       distance = theToken.value; // really "group" "chain" etc.
       break;
+    case Token.identifier:
+      distance = key = ((String) theToken.value).toLowerCase();
+      break;
     default:
       return unrecognizedParameter("WITHIN", "" + theToken.value);
     }
     if (!tokenNext(Token.opOr)) // ,
       return commaExpected();
-    boolean isCoordOrPlane = false;
-    if (tokPeek(Token.identifier)
-        && ((String) valuePeek()).equalsIgnoreCase("plane")) {
-      addTokenToPostfix(new Token(Token.within, "plane"));
+    if (distance instanceof Float && tokPeek(Token.identifier))
+      key = ((String) valuePeek()).toLowerCase();
+    boolean isCoordOrPlane = (key != null && (key.equals("plane") || key
+        .equals("hkl")));
+    if (isCoordOrPlane) {
+      if (distance instanceof String) {
+        distance = new Float(0);
+      } else {
+        getToken();
+        if (!tokenNext(Token.opOr)) // ,
+          return commaExpected();
+      }
+      addTokenToPostfix(new Token(Token.within, key));
       addTokenToPostfix(new Token(Token.decimal, distance));
-      getToken();
-      if (!tokenNext(Token.opOr)) // ,
-        return commaExpected();
       isCoordOrPlane = true;
-    } else     if (tokPeek(Token.identifier)
-        && ((String) valuePeek()).equalsIgnoreCase("hkl")) {
-      addTokenToPostfix(new Token(Token.within, "hkl"));
-      addTokenToPostfix(new Token(Token.decimal, distance));
-      getToken();
-      if (!tokenNext(Token.opOr)) // ,
-        return commaExpected();
-      isCoordOrPlane = true;
-    } else if (tokPeek(Token.leftbrace)) {
+    } else if (distance instanceof Float && tokPeek(Token.leftbrace)) {
       addTokenToPostfix(new Token(Token.within, "coord"));
       addTokenToPostfix(new Token(Token.decimal, distance));
       isCoordOrPlane = true;
     }
     if (isCoordOrPlane) {
       while (!tokPeek(Token.rightparen)) {
-        if (getToken() == null)
+        switch (tokPeek()) {
+        case Token.nada:
           return endOfCommandUnexpected();
-        addTokenToPostfix(theToken);
+        case Token.leftparen:
+          addTokenToPostfix(Token.tokenExpressionBegin);
+          if (!clauseOr())
+            return unrecognizedParameter("WITHIN", "?");
+          addTokenToPostfix(Token.tokenExpressionEnd);
+          break;
+        default:
+          addTokenToPostfix(getToken());
+        }
       }
     } else if (!clauseOr()) {// *expression*
       return false;

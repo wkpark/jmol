@@ -1048,7 +1048,7 @@ class Eval { //implements Runnable {
     int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
         .length()
         : lineIndices[pc + 1]);
-    if (ichEnd > script.length())
+    if (ichEnd > script.length() || ichEnd < ichBegin)
       ichEnd = script.length();
     String s = script.substring(ichBegin, ichEnd);
     int i;
@@ -1919,10 +1919,6 @@ class Eval { //implements Runnable {
             return plane;
         }
         break;
-      case Token.leftbrace:
-        if (!isCoordinate3(i))
-          return getPoint4f(i);
-        break;
       case Token.identifier:
       case Token.string:
         String str = parameterAsString(i);
@@ -1949,31 +1945,28 @@ class Eval { //implements Runnable {
           return new Point4f(0, 0, 1, -floatParameter(i));
         }
         break;
+      case Token.leftbrace:
+        if (!isCoordinate3(i))
+          return getPoint4f(i);
+        //fall through
       case Token.expressionBegin:
-        if (!allowExpression)
-          break;
         Point3f pt1 = atomCenterOrCoordinateParameter(i);
         Point3f pt2 = atomCenterOrCoordinateParameter(++iToken);
         Point3f pt3 = atomCenterOrCoordinateParameter(++iToken);
         i = iToken;
         Vector3f plane = new Vector3f();
-        float w = Graphics3D.getPlaneThroughPoints(pt1, pt2, pt3, plane, vAB,
-            vAC);
+        float w = Graphics3D
+            .getPlaneThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
         Point4f p = new Point4f(plane.x, plane.y, plane.z, w);
-        Logger.info("defined plane: " + p);
+        Logger.debug("points: " + pt1 + pt2 + pt3 + " defined plane: " + p);
         return p;
       }
-    if (allowExpression) 
     evalError(GT
-        ._(
-            "plane expected -- either three points or atom expressions or {0} or {1} or {2}",
-            new Object[] { "{a b c d}", "\"xy\" \"xz\" \"yz\" \"x=...\" \"y=...\" \"z=...\"", "$xxxxx" }));
-    else
-      evalError(GT
           ._(
-              "plane expected -- either three points or {0} or {1} or {2}",
-              new Object[] { "{a b c d}", "\"xy\" \"xz\" \"yz\" \"x=...\" \"y=...\" \"z=...\"","$xxxxx" }));
-      
+              "plane expected -- either three points or atom expressions or {0} or {1} or {2}",
+              new Object[] { "{a b c d}",
+                  "\"xy\" \"xz\" \"yz\" \"x=...\" \"y=...\" \"z=...\"",
+                  "$xxxxx" }));
     //impossible return
     return null;
   }

@@ -63,6 +63,12 @@ class Compiler {
 
   static String cleanScriptComments(String script) {
     int pt, pt1;
+    while ((pt = script.indexOf("/**")) >= 0) {
+      pt1 = script.indexOf("**/", pt + 3);
+      if (pt1 < 0)
+        break;
+      script = script.substring(0, pt) + script.substring(pt1 + 3);
+    }
     while ((pt = script.indexOf("/*")) >= 0) {
       pt1 = script.indexOf("*/", pt + 2);
       if (pt1 < 0)
@@ -1356,9 +1362,12 @@ class Compiler {
     Object distance = null;
     if (getToken() == null)
       return endOfCommandUnexpected();
+    boolean isNegative = (theToken.tok == Token.hyphen);
+    if (isNegative)
+      getToken();
     switch (theToken.tok) {
     case Token.integer:
-      distance = new Float(theToken.intValue * 4 / 1000f);
+      distance = new Float(theToken.intValue * (isNegative ? -1 : 1));
       break;
     case Token.decimal:
     case Token.group:

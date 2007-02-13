@@ -1048,10 +1048,8 @@ class Eval { //implements Runnable {
     int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
         .length()
         : lineIndices[pc + 1]);
-    if (ichEnd < ichBegin || ichEnd > script.length()) {
-      System.out.println("huh? pc=" + pc + " " +script + " ichBegin="+ichBegin+" "  + " ichEnd="+ichEnd+" len=" +script.length());
-      
-    }
+    if (ichEnd > script.length())
+      ichEnd = script.length();
     String s = script.substring(ichBegin, ichEnd);
     int i;
     if ((i = s.indexOf("\n")) >= 0)

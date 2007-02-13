@@ -170,7 +170,49 @@ final class Mmset {
   }
 
   String getModelName(int modelIndex) {
+    if (modelIndex < 0)
+      return getModelNumberDotted(-1 - modelIndex);
     return models[modelIndex].modelTag;
+  }
+
+  String getModelNumberDotted(int modelIndex) {
+    if (modelCount < 1)
+      return "";
+    int filenumber = models[modelIndex].modelNumber / 1000; 
+    if (filenumber == 0)
+      return "" + getModelNumber(modelIndex);
+    int modelnumber = (models[modelIndex].modelNumber % 1000);
+    //if only one file, just return the integer file number
+    if (modelnumber == 1 && (modelIndex + 1 == modelCount || models[modelIndex+1].modelNumber / 1000 != filenumber))
+      return filenumber + "";
+    return filenumber + "." + modelnumber;    
+  }
+  
+  int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
+    if (useModelNumber) {
+      for (int i = 0; i < modelCount; i++)
+        if (models[i].modelNumber == modelNumber)
+          return i;
+      return -1;
+    }
+    //new decimal format:   frame 1.2 1.3 1.4
+    int nFile = -1;
+    int thisFile = 0;
+    int thisModel = 0;
+    int modelFile = modelNumber / 1000;
+    int modelPtr = modelNumber % 1000;
+    for (int i = 0; i < modelCount; i++) {
+      thisFile = models[i].modelNumber / 1000;
+      if (thisFile == nFile) {
+        thisModel++;
+      } else {
+        thisModel = 1;
+        nFile = thisFile;
+      }
+      if (modelFile == thisFile && modelPtr == thisModel)
+        return i;
+    }
+    return -1;
   }
 
   int getModelNumber(int modelIndex) {
@@ -217,33 +259,6 @@ final class Mmset {
 
   Model getModel(int modelIndex) {
     return models[modelIndex];
-  }
-
-  int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
-    if (useModelNumber) {
-      for (int i = 0; i < modelCount; i++)
-        if (models[i].modelNumber == modelNumber)
-          return i;
-      return -1;
-    }
-    //new decimal format:   frame 1.2 1.3 1.4
-    int nFile = -1;
-    int thisFile = 0;
-    int thisModel = 0;
-    int modelFile = modelNumber / 1000;
-    int modelPtr = modelNumber % 1000;
-    for (int i = 0; i < modelCount; i++) {
-      thisFile = models[i].modelNumber / 1000;
-      if (thisFile == nFile) {
-        thisModel++;
-      } else {
-        thisModel = 1;
-        nFile = thisFile;
-      }
-      if (modelFile == thisFile && modelPtr == thisModel)
-        return i;
-    }
-    return -1;
   }
 
   int getNAltLocs(int modelIndex) {

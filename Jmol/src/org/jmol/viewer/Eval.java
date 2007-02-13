@@ -1934,6 +1934,7 @@ class Eval { //implements Runnable {
             evalError("x=?");
           return new Point4f(1, 0, 0, -floatParameter(i));
         }
+        
         if (str.equalsIgnoreCase("y")) {
           if (!checkToken(++i) || getToken(i++).tok != Token.opEQ)
             evalError("y=?");
@@ -5075,6 +5076,8 @@ class Eval { //implements Runnable {
     case Token.radius:
     case Token.solvent:
       key = parameterAsString(1);
+      if (key.charAt(0) =='_') //these cannot be set by user
+        invalidArgument();
       if (key.toLowerCase().indexOf("label") == 0) {
         setLabel(key.substring(5));
         return;

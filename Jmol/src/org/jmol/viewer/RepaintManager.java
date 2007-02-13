@@ -44,19 +44,20 @@ class RepaintManager {
   int currentModelIndex = 0;
   void setCurrentModelIndex(int modelIndex) {
     Frame frame = viewer.getFrame();
-    if (frame == null ||
-        modelIndex < 0 ||
-        modelIndex >= frame.getModelCount())
+    if (frame == null || modelIndex < 0 || modelIndex >= frame.getModelCount())
       currentModelIndex = -1;
     else
       currentModelIndex = modelIndex;
-    viewer.setIntProperty("_modelNumber", viewer.getModelNumber(currentModelIndex));
+    viewer.setStringProperty("_modelNumber", (currentModelIndex < 0 ? ""
+        + currentModelIndex : viewer.getModelName(-1 - currentModelIndex)));
+    viewer.setStringProperty("_modelName", (currentModelIndex < 0 ? "" : viewer
+        .getModelName(currentModelIndex)));
     if (currentModelIndex == -1)
-      setBackgroundModelIndex(-1);    
+      setBackgroundModelIndex(-1);
     viewer.setTainted(true);
     if (frame != null)
       setStatusFrameChanged();
-    setFrameRangeVisible(); 
+    setFrameRangeVisible();
   }
 
   void setStatusFrameChanged() {

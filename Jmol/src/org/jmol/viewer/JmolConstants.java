@@ -40,7 +40,7 @@ final public class JmolConstants {
   //new: within(x.x,plane,$plane1)
   //fix for "draw off" not recorded in save state
   //fix for within(integer,...) bug using RasMol units
-  
+  //fix for _modelnumber showing up as 2001
   
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);

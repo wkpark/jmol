@@ -38,6 +38,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 import java.awt.Rectangle;
 
@@ -735,6 +736,29 @@ String getAtomInfoChime(int i) {
         bsResult.set(atom.atomIndex);
     }
     return bsResult;
+  }
+
+  BitSet getAtomsWithin(float distance, Point4f plane) {
+    // "within" means "on the opposite side of the plane or within this distance of the plane"
+    // in this way we can use two operations to exclude any set of atoms
+    
+    BitSet bsResult = new BitSet();
+    for (int i = frame.getAtomCount(); --i >= 0;) {
+      Atom atom = frame.getAtomAt(i);
+      float d = distanceToPlane(plane, atom);
+      System.out.println(d);
+      if (distance >= 0 &&  d <= distance
+          || distance < 0 && d >= distance)
+        bsResult.set(atom.atomIndex);
+    }
+    return bsResult;
+  }
+  
+  static float distanceToPlane(Point4f plane, Point3f pt) {
+    return (plane == null ? Float.NaN 
+        : (plane.x * pt.x + plane.y * pt.y + plane.z * pt.z + plane.w)
+        / (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z
+            * plane.z));
   }
 
   BitSet getAtomsConnected(float min, float max, int intType, BitSet bs) {

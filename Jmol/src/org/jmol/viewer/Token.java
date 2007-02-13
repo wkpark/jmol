@@ -323,7 +323,7 @@ public class Token {
   final static int substructure = expression | 16;
   final static int leftbrace    = expression | 17;
   final static int rightbrace   = expression | 18;
-  final static int dollarsign   = objectid   | 19;
+  final static int dollarsign   = expression | 19 | objectid;
   final static int connected    = expression | 20;
   final static int altloc       = expression | 21;
   final static int insertion    = expression | 22;

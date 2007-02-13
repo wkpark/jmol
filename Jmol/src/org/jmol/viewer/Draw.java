@@ -907,7 +907,9 @@ class Draw extends MeshCollection {
       Mesh mesh = meshes[i];
       if (mesh.vertexCount == 0)
         continue;
-      s.append(getDrawCommand(mesh, mesh.modelIndex) + "\n");
+      s.append(getDrawCommand(mesh, mesh.modelIndex));
+      if (!mesh.visible)
+        s.append("draw off;\n");
     }
     return s.toString();
   }

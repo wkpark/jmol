@@ -406,7 +406,7 @@ class RepaintManager {
         sleepTime = targetTime - (int)(System.currentTimeMillis() - timeBegin);
         if (sleepTime > 0)
           Thread.sleep(sleepTime);
-        while (! isInterrupted()) {
+        while (! isInterrupted() && animationOn) {
           if (currentModelIndex == framePointer) {
             targetTime += firstFrameDelayMs;
             sleepTime =

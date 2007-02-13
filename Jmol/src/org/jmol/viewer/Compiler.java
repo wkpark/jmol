@@ -1375,10 +1375,29 @@ class Compiler {
     }
     if (!tokenNext(Token.opOr)) // ,
       return commaExpected();
-    if (tokPeek(Token.leftbrace))
-      return addTokenToPostfix(new Token(Token.within, new Float(Float.NaN)));
-    if (!clauseOr()) // *expression*
+    boolean isCoordOrPlane = false;
+    if (tokPeek(Token.identifier)
+        && ((String) valuePeek()).equalsIgnoreCase("plane")) {
+      addTokenToPostfix(new Token(Token.within, "plane"));
+      addTokenToPostfix(new Token(Token.decimal, distance));
+      getToken();
+      if (!tokenNext(Token.opOr)) // ,
+        return commaExpected();
+      isCoordOrPlane = true;
+    } else if (tokPeek(Token.leftbrace)) {
+      addTokenToPostfix(new Token(Token.within, "coord"));
+      addTokenToPostfix(new Token(Token.decimal, distance));
+      isCoordOrPlane = true;
+    }
+    if (isCoordOrPlane) {
+      while (!tokPeek(Token.rightparen)) {
+        if (getToken() == null)
+          return endOfCommandUnexpected();
+        addTokenToPostfix(theToken);
+      }
+    } else if (!clauseOr()) {// *expression*
       return false;
+    }
     if (!tokenNext(Token.rightparen)) // )T
       return rightParenthesisExpected();
     return addTokenToPostfix(new Token(Token.within, distance));

@@ -1843,8 +1843,11 @@ public class Viewer extends JmolViewer {
   }
 
   BitSet getAtomsWithin(float distance, Point3f coord) {
-    //select within(distance, coord) not compilable at the present time
     return modelManager.getAtomsWithin(distance, coord);
+  }
+
+  BitSet getAtomsWithin(float distance, Point4f plane) {
+    return modelManager.getAtomsWithin(distance, plane);
   }
 
   BitSet getAtomsWithin(String withinWhat, String specInfo, BitSet bs) {

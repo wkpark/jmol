@@ -118,7 +118,7 @@ class Balls extends AtomShape {
         setStateInfo(temp, i, "Spacefill " + (atoms[i].madAtom / 2000f));
       if (bsColixSet != null && bsColixSet.get(i)) {
         byte pid = atoms[i].getPaletteID();
-        if (pid != JmolConstants.PALETTE_CPK)
+        if (pid != JmolConstants.PALETTE_CPK || atoms[i].isTranslucent())
           setStateInfo(temp, i, getColorCommand("atoms", pid, atoms[i].colixAtom));
       }
     }

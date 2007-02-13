@@ -1048,7 +1048,7 @@ class Eval { //implements Runnable {
     int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
         .length()
         : lineIndices[pc + 1]);
-    if (ichEnd < ichBegin)
+    if (ichEnd < ichBegin || ichEnd > script.length())
       System.out.println("huh?");
     String s = script.substring(ichBegin, ichEnd);
     int i;
@@ -1090,7 +1090,8 @@ class Eval { //implements Runnable {
     return expression(statement, index, true);
   }
 
-  BitSet expression(Token[] code, int pcStart, boolean allowRefresh) throws ScriptException {
+  BitSet expression(Token[] code, int pcStart, boolean allowRefresh)
+      throws ScriptException {
     //note that this is general -- NOT just statement[]
     //errors reported would improperly access statement/line context
     //there should be no errors anyway, because this is for 
@@ -1105,7 +1106,6 @@ class Eval { //implements Runnable {
     BitSet bs;
     BitSet[] stack = new BitSet[10];
     int sp = 0;
-    Point3f thisCoordinate = null;
     int comparisonValue = Integer.MAX_VALUE;
     boolean refreshed = false;
     iToken = 1000;
@@ -1125,10 +1125,6 @@ class Eval { //implements Runnable {
       case Token.expressionEnd:
       case Token.rightbrace:
         break expression_loop;
-      case Token.leftbrace:
-        thisCoordinate = getCoordinate(pc, true);
-        pc = iToken;
-        break;
       case Token.all:
         bs = stack[sp++] = bsAll();
         break;
@@ -1156,19 +1152,29 @@ class Eval { //implements Runnable {
         toggle(stack[sp - 1], bs);
         break;
       case Token.within:
-        if (thisCoordinate != null) {
-          Object withinSpec = instruction.value;
-          if (!(withinSpec instanceof Float))
-            numberExpected();
-          stack[sp++] = viewer.getAtomsWithin(
-              ((Float) withinSpec).floatValue(), thisCoordinate);
-          thisCoordinate = null;
-          break;
+        float distance;
+        Object withinSpec = instruction.value;
+        if (withinSpec instanceof String) {
+          if (withinSpec.equals("plane")) {
+            distance = floatParameter(++pc);
+            Point4f thisPlane = planeParameter(++pc, false);
+            pc = iToken + 1;
+            stack[sp++] = viewer.getAtomsWithin(distance, thisPlane);
+            break;
+          } else if (withinSpec.equals("coord")) {
+            distance = floatParameter(++pc);
+            Point3f thisCoordinate = getCoordinate(++pc, true);
+            pc = iToken + 1;
+            stack[sp++] = viewer.getAtomsWithin(distance, thisCoordinate);
+            break;
+          }
         }
         bs = stack[sp - 1];
         stack[sp - 1] = within(instruction, bs);
         break;
       case Token.connected:
+        if (((Integer)instruction.value).intValue() == Integer.MAX_VALUE)
+          break;
         bs = stack[sp - 1];
         stack[sp - 1] = connected(instruction, bs);
         break;
@@ -1232,10 +1238,11 @@ class Eval { //implements Runnable {
       case Token.spec_model:
       case Token.spec_model2:
         if (instruction.intValue != Integer.MAX_VALUE) {
-          stack[sp++] = bitSetForModelNumberSet(new int[]{instruction.intValue}, 1); 
+          stack[sp++] = bitSetForModelNumberSet(
+              new int[] { instruction.intValue }, 1);
         } else {
-        stack[sp++] = viewer.getAtomBits("SpecModel",
-            ((Integer) instruction.value).intValue());
+          stack[sp++] = viewer.getAtomBits("SpecModel",
+              ((Integer) instruction.value).intValue());
         }
         break;
       case Token.spec_resid:
@@ -1289,9 +1296,9 @@ class Eval { //implements Runnable {
         else if (val instanceof Float)
           comparisonValue = (int) (((Float) val).floatValue() * (instruction.intValue == Token.radius ? 250f
               : 100f));
-        else 
+        else
           invalidArgument();
-        if (((String)instruction.value).indexOf("-") >= 0)
+        if (((String) instruction.value).indexOf("-") >= 0)
           comparisonValue = -comparisonValue;
         comparatorInstruction(instruction, bs, comparisonValue);
         break;
@@ -1877,27 +1884,39 @@ class Eval { //implements Runnable {
     return center;
   }
 
-  Point4f planeParameter(int i) throws ScriptException {
+  Point4f planeParameter(int i, boolean allowExpression) throws ScriptException {
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
-    while (true) {
-      if (i >= statementLength)
-        break;
+    if (i < statementLength)
       switch (statement[i].tok) {
+      case Token.dollarsign:
+        String id = objectNameParameter(++i);
+        if (isSyntaxCheck)
+          return new Point4f();
+        int shapeType = viewer.getShapeIdFromObjectName(id);
+        switch (shapeType) {
+        case JmolConstants.SHAPE_DRAW:
+          setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", id);
+          Point3f[] points = (Point3f[]) viewer.getShapeProperty(
+              JmolConstants.SHAPE_DRAW, "vertices");
+          if (points == null || points.length < 3)
+            break;
+          Vector3f pv = new Vector3f();
+          float w = Graphics3D.getPlaneThroughPoints(points[0], points[1],
+              points[2], pv, vAB, vAC);
+          return new Point4f(pv.x, pv.y, pv.z, w);
+        case JmolConstants.SHAPE_ISOSURFACE:
+          setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID", id);
+          Point4f plane = (Point4f) viewer.getShapeProperty(
+              JmolConstants.SHAPE_ISOSURFACE, "plane");
+          if (plane != null)
+            return plane;
+        }
+        break;
       case Token.leftbrace:
         if (!isCoordinate3(i))
           return getPoint4f(i);
-      case Token.expressionBegin:
-        Point3f pt1 = atomCenterOrCoordinateParameter(i);
-        Point3f pt2 = atomCenterOrCoordinateParameter(++iToken);
-        Point3f pt3 = atomCenterOrCoordinateParameter(++iToken);
-        i = iToken;
-        Vector3f plane = new Vector3f();
-        float w = Graphics3D.getPlaneThroughPoints(pt1, pt2, pt3, plane, vAB,
-            vAC);
-        Point4f p = new Point4f(plane.x, plane.y, plane.z, w);
-        Logger.info("defined plane: " + p);
-        return p;
+        break;
       case Token.identifier:
       case Token.string:
         String str = parameterAsString(i);
@@ -1923,15 +1942,32 @@ class Eval { //implements Runnable {
             evalError("z=?");
           return new Point4f(0, 0, 1, -floatParameter(i));
         }
-      default:
-        ++i;
         break;
+      case Token.expressionBegin:
+        if (!allowExpression)
+          break;
+        Point3f pt1 = atomCenterOrCoordinateParameter(i);
+        Point3f pt2 = atomCenterOrCoordinateParameter(++iToken);
+        Point3f pt3 = atomCenterOrCoordinateParameter(++iToken);
+        i = iToken;
+        Vector3f plane = new Vector3f();
+        float w = Graphics3D.getPlaneThroughPoints(pt1, pt2, pt3, plane, vAB,
+            vAC);
+        Point4f p = new Point4f(plane.x, plane.y, plane.z, w);
+        Logger.info("defined plane: " + p);
+        return p;
       }
-    }
+    if (allowExpression) 
     evalError(GT
         ._(
-            "plane expected -- either three points or atom expressions or {0} or {1}",
-            new Object[] { "{a b c d}", "\"xy\" \"xz\" \"yz\"" }));
+            "plane expected -- either three points or atom expressions or {0} or {1} or {2}",
+            new Object[] { "{a b c d}", "\"xy\" \"xz\" \"yz\" \"x=...\" \"y=...\" \"z=...\"", "$xxxxx" }));
+    else
+      evalError(GT
+          ._(
+              "plane expected -- either three points or {0} or {1} or {2}",
+              new Object[] { "{a b c d}", "\"xy\" \"xz\" \"yz\" \"x=...\" \"y=...\" \"z=...\"","$xxxxx" }));
+      
     //impossible return
     return null;
   }
@@ -4101,38 +4137,8 @@ class Eval { //implements Runnable {
         switch (getToken(2).tok) {
         case Token.none:
           break;
-        case Token.dollarsign:
-          String id = objectNameParameter(3);
-          if (isSyntaxCheck)
-            return;
-          int shapeType = viewer.getShapeIdFromObjectName(id);
-          switch (shapeType) {
-          case JmolConstants.SHAPE_DRAW:
-            setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", id);
-            Point3f[] points = (Point3f[]) viewer.getShapeProperty(
-                JmolConstants.SHAPE_DRAW, "vertices");
-            if (points == null || points.length < 3)
-              invalidArgument();
-            Vector3f vAB = new Vector3f();
-            Vector3f vAC = new Vector3f();
-            Vector3f pv = new Vector3f();
-            float w = Graphics3D.getPlaneThroughPoints(points[0], points[1],
-                points[2], pv, vAB, vAC);
-            plane = new Point4f(pv.x, pv.y, pv.z, w);
-            break;
-          case JmolConstants.SHAPE_ISOSURFACE:
-            setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID", id);
-            plane = (Point4f) viewer.getShapeProperty(
-                JmolConstants.SHAPE_ISOSURFACE, "plane");
-            if (plane != null)
-              break;
-          //fall through
-          default:
-            invalidArgument();
-          }
-          break;
         default:
-          plane = planeParameter(2);
+          plane = planeParameter(2, true);
         }
         if (!isSyntaxCheck)
           viewer.slabInternal(plane, isDepth);
@@ -6859,7 +6865,7 @@ class Eval { //implements Runnable {
       if (str.equalsIgnoreCase("plane")) {
         // plane {X, Y, Z, W}
         propertyName = "plane";
-        propertyValue = planeParameter(2);
+        propertyValue = planeParameter(2, true);
         break;
       }
       if (str.equalsIgnoreCase("noplane")) {
@@ -7128,7 +7134,7 @@ class Eval { //implements Runnable {
           // plane {X, Y, Z, W}
           planeSeen = true;
           propertyName = "plane";
-          propertyValue = planeParameter(++i);
+          propertyValue = planeParameter(++i, true);
           i = iToken;
           break;
         }

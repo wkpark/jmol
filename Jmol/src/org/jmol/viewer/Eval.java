@@ -1048,8 +1048,10 @@ class Eval { //implements Runnable {
     int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
         .length()
         : lineIndices[pc + 1]);
-    if (ichEnd < ichBegin || ichEnd > script.length())
-      System.out.println("huh?");
+    if (ichEnd < ichBegin || ichEnd > script.length()) {
+      System.out.println("huh? pc=" + pc + " " +script + " ichBegin="+ichBegin+" "  + " ichEnd="+ichEnd+" len=" +script.length());
+      
+    }
     String s = script.substring(ichBegin, ichEnd);
     int i;
     if ((i = s.indexOf("\n")) >= 0)
@@ -1161,6 +1163,12 @@ class Eval { //implements Runnable {
             pc = iToken + 1;
             stack[sp++] = viewer.getAtomsWithin(distance, thisPlane);
             break;
+          } else if (withinSpec.equals("hkl")) {
+            distance = floatParameter(++pc);
+            Point4f thisPlane = hklParameter(++pc);
+            pc = iToken + 1;
+            stack[sp++] = viewer.getAtomsWithin(distance, thisPlane);
+            break;
           } else if (withinSpec.equals("coord")) {
             distance = floatParameter(++pc);
             Point3f thisCoordinate = getCoordinate(++pc, true);
@@ -1173,7 +1181,7 @@ class Eval { //implements Runnable {
         stack[sp - 1] = within(instruction, bs);
         break;
       case Token.connected:
-        if (((Integer)instruction.value).intValue() == Integer.MAX_VALUE)
+        if (((Integer) instruction.value).intValue() == Integer.MAX_VALUE)
           break;
         bs = stack[sp - 1];
         stack[sp - 1] = connected(instruction, bs);

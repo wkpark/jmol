@@ -1384,6 +1384,14 @@ class Compiler {
       if (!tokenNext(Token.opOr)) // ,
         return commaExpected();
       isCoordOrPlane = true;
+    } else     if (tokPeek(Token.identifier)
+        && ((String) valuePeek()).equalsIgnoreCase("hkl")) {
+      addTokenToPostfix(new Token(Token.within, "hkl"));
+      addTokenToPostfix(new Token(Token.decimal, distance));
+      getToken();
+      if (!tokenNext(Token.opOr)) // ,
+        return commaExpected();
+      isCoordOrPlane = true;
     } else if (tokPeek(Token.leftbrace)) {
       addTokenToPostfix(new Token(Token.within, "coord"));
       addTokenToPostfix(new Token(Token.decimal, distance));

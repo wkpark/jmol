@@ -746,10 +746,10 @@ String getAtomInfoChime(int i) {
     for (int i = frame.getAtomCount(); --i >= 0;) {
       Atom atom = frame.getAtomAt(i);
       float d = distanceToPlane(plane, atom);
-      System.out.println(d);
-      if (distance >= 0 &&  d <= distance
-          || distance < 0 && d >= distance)
-        bsResult.set(atom.atomIndex);
+      if (distance > 0 && distance >= d
+          || distance < 0 && distance <= d
+          || distance == 0 && Math.abs(d) < 0.01)
+        bsResult.set(atom.atomIndex);4
     }
     return bsResult;
   }

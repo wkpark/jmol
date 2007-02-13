@@ -1608,7 +1608,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   float thePlaneNormalMag;
 
   void setPlaneParameters(Point4f plane) {
-    if (plane.x + plane.y + plane.z == 0)
+    if (plane.x == 0 && plane.y == 0 && plane.z == 0)
       plane.z = 1; //{0 0 0 w} becomes {0 0 1 w}
     thePlaneNormal.set(plane.x, plane.y, plane.z);
     thePlaneNormalMag = thePlaneNormal.length();
@@ -2578,11 +2578,10 @@ class Isosurface extends IsosurfaceMeshCollection {
     dotX *= dotX;
     dotY *= dotY;
     dotZ *= dotZ;
-    float max = dotX;
-    if (max < dotY)
-      max = dotY;
+    float max = Math.max(dotX, dotY);
     int iType = (max < dotZ ? 2 : max == dotY ? 1 : 0);
-    Logger.info("contouring planar pixel subset " + iType);
+    if (logMessages)
+      Logger.info("contouring planar pixel subset " + iType + " dot products: " + dotX + " " + dotY + " " + dotZ);
     return iType;
   }
 

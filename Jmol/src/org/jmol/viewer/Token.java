@@ -377,9 +377,11 @@ public class Token {
     "formalCharge", "phi", "psi", "partialCharge",
     "atomX", "atomY", "atomZ"};
 
-  final static int ATOM_PROPERTY_MASK = 0xFF;  
+  final static int ATOM_PROPERTY_MASK = 0x1F;  
 
   final static String getAtomPropertyName(int i) {
+    if (i == Integer.MAX_VALUE)
+      return "?";
     return atomPropertyNames[i & ATOM_PROPERTY_MASK];
   }
 

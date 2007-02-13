@@ -45,7 +45,7 @@ import java.util.Properties;
 import java.util.Vector;
 import java.awt.Rectangle;
 
-public final class Frame {  
+public final class Frame {
   Viewer viewer;
   FrameRenderer frameRenderer;
   private String modelSetTypeName;
@@ -64,7 +64,7 @@ public final class Frame {
   int atomCount;
   public Atom[] atoms;
   int bondCount;
-  Bond[] bonds;  
+  Bond[] bonds;
   int groupCount;
   Group[] groups;
   //note: Molecules is set up to only be calculated WHEN NEEDED
@@ -86,14 +86,13 @@ public final class Frame {
   int[] surfaceAtoms;
   String[] atomNames;
   int[] atomSerials;
-  byte[] specialAtomIDs;  
+  byte[] specialAtomIDs;
   String[] group3Lists;
   int[][] group3Counts;
-  
-  BitSet bsHidden = new BitSet();
-  
-  ////////////////////////////////////////////////////////////////
 
+  BitSet bsHidden = new BitSet();
+
+  ////////////////////////////////////////////////////////////////
 
   private final static int growthIncrement = 250;
 
@@ -115,11 +114,10 @@ public final class Frame {
   int bfactor100Lo;
   int bfactor100Hi;
 
-
   public void finalize() {
     //System.out.println(modelSetTypeName+" frame finalized "+this);  
   }
-  
+
   class Molecule {
     int moleculeIndex;
     int modelIndex;
@@ -136,7 +134,7 @@ public final class Frame {
     Hashtable getInfo() {
       Hashtable info = new Hashtable();
       info.put("number", new Integer(moleculeIndex + 1)); //for now
-      info.put("modelNumber", new Integer(modelIndex + 1)); //for now
+      info.put("modelNumber", new String(getModelName(-1 - modelIndex)));
       info.put("numberInModel", new Integer(indexInModel + 1));
       info.put("nAtoms", new Integer(nAtoms));
       info.put("nElements", new Integer(nElements));
@@ -172,7 +170,7 @@ public final class Frame {
             n = JmolConstants.altElementIndexFromNumber(n);
             altElementCounts[n]++;
             if (altElementCounts[n] == 1)
-              nElements++;            
+              nElements++;
             altElementMax = Math.max(altElementMax, n);
           }
         }
@@ -205,10 +203,10 @@ public final class Frame {
 
   Frame(Viewer viewer, String name) {
     this.viewer = viewer;
-    initializeFrame(name, 1, null, null);    
+    initializeFrame(name, 1, null, null);
     initializeModel(null, null);
   }
-  
+
   Frame(Viewer viewer, JmolAdapter adapter, Object clientFile) {
     this.viewer = viewer;
     initializeFrame(adapter.getFileTypeName(clientFile).toLowerCase().intern(),
@@ -262,14 +260,11 @@ public final class Frame {
     } else {
       if (modelCount > 0) {
         Logger.info("frame: haveSymmetry:" + someModelsHaveSymmetry
-            + " haveUnitcells:" + someModelsHaveUnitcells + " haveFractionalCoord:"
-            + someModelsHaveFractionalCoordinates);
-        Logger
-            .info(modelCount
-                + " model"
-                + (modelCount == 1 ? "" : "s")
-                + " in this collection. Use getProperty \"modelInfo\" or"
-                + " getProperty \"auxiliaryInfo\" to inspect them.");
+            + " haveUnitcells:" + someModelsHaveUnitcells
+            + " haveFractionalCoord:" + someModelsHaveFractionalCoordinates);
+        Logger.info(modelCount + " model" + (modelCount == 1 ? "" : "s")
+            + " in this collection. Use getProperty \"modelInfo\" or"
+            + " getProperty \"auxiliaryInfo\" to inspect them.");
 
         nullChain = new Chain(this, mmset.getModel(0), ' ');
         nullGroup = new Group(nullChain, "", 0, -1, -1);
@@ -286,8 +281,8 @@ public final class Frame {
             .getAtomSetProperties(clientFile, i);
         Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
             clientFile, i);
-        boolean isPDBModel = mmset.setModelNameNumberProperties(i, modelName, modelNumber,
-            modelProperties, modelAuxiliaryInfo, isPDB);
+        boolean isPDBModel = mmset.setModelNameNumberProperties(i, modelName,
+            modelNumber, modelProperties, modelAuxiliaryInfo, isPDB);
         if (isPDBModel) {
           group3Lists[i] = JmolConstants.group3List;
           group3Counts[i] = new int[JmolConstants.group3Count + 10];
@@ -300,7 +295,7 @@ public final class Frame {
 
       // atom is created, but not all methods are safe, because it
       // has no group -- this is only an issue for debugging
-      
+
       short mad = viewer.getMadAtom();
       for (JmolAdapter.AtomIterator iterAtom = adapter
           .getAtomIterator(clientFile); iterAtom.hasNext();) {
@@ -371,7 +366,8 @@ public final class Frame {
     if (adapter != null) {
       doUnitcellStuff();
       // perform bonding if necessary
-      boolean doBond = (bondCount == 0 || isMultiFile || isPDB && bondCount < atomCount / 2);
+      boolean doBond = (bondCount == 0 || isMultiFile || isPDB
+          && bondCount < atomCount / 2);
       if (viewer.getForceAutoBond() || doBond && viewer.getAutoBond()
           && getModelSetProperty("noautobond") == null) {
         autoBond(null, null, null);
@@ -386,7 +382,7 @@ public final class Frame {
     calcAverageAtomPoint();
     calcBoundBoxDimensions();
   }
-  
+
   void dumpAtomSetNameDiagnostics(JmolAdapter adapter, Object clientFile) {
     int frameModelCount = getModelCount();
     int adapterAtomSetCount = adapter.getAtomSetCount(clientFile);
@@ -435,16 +431,16 @@ public final class Frame {
                int groupSequenceNumber, char groupInsertionCode, float vectorX,
                float vectorY, float vectorZ, char alternateLocationID,
                Object clientAtomReference) {
-    
-    checkNewGroup(atomCount, modelIndex, chainID, group3, groupSequenceNumber, groupInsertionCode);
+
+    checkNewGroup(atomCount, modelIndex, chainID, group3, groupSequenceNumber,
+        groupInsertionCode);
 
     if (atomCount == atoms.length)
       growAtomArrays(ATOM_GROWTH_INCREMENT);
 
-    Atom atom = new Atom(this, currentModelIndex, atomCount,
-        atomSymmetry, atomSite, atomicAndIsotopeNumber, atomName,
-        mad, formalCharge, partialCharge, occupancy, 
-        bfactor, x, y, z, isHetero, atomSerial,
+    Atom atom = new Atom(this, currentModelIndex, atomCount, atomSymmetry,
+        atomSite, atomicAndIsotopeNumber, atomName, mad, formalCharge,
+        partialCharge, occupancy, bfactor, x, y, z, isHetero, atomSerial,
         chainID, group3, vectorX, vectorY, vectorZ, alternateLocationID,
         clientAtomReference);
     atoms[atomCount] = atom;
@@ -460,9 +456,10 @@ public final class Frame {
       checkNewGroup(atomIndex, atom.modelIndex, atom.getChainID(), atom
           .getGroup3(), atom.getSeqNumber(), atom.getInsertionCode());
   }
-  
-  void checkNewGroup(int atomIndex, int modelIndex, char chainID, String group3,
-                     int groupSequenceNumber, char groupInsertionCode) {
+
+  void checkNewGroup(int atomIndex, int modelIndex, char chainID,
+                     String group3, int groupSequenceNumber,
+                     char groupInsertionCode) {
     String group3i = (group3 == null ? null : group3.intern());
     if (modelIndex != currentModelIndex) {
       currentModel = mmset.getModel(modelIndex);
@@ -486,8 +483,9 @@ public final class Frame {
           atomIndex);
     }
   }
-  
+
   short defaultCovalentMad;
+
   void bondAtoms(Object atomUid1, Object atomUid2, short order) {
     if (defaultCovalentMad == 0)
       defaultCovalentMad = viewer.getMadBond();
@@ -518,8 +516,8 @@ public final class Frame {
     int newLength = atomCount + byHowMuch;
     atoms = (Atom[]) ArrayUtil.setLength(atoms, newLength);
     if (clientAtomReferences != null)
-      clientAtomReferences = (Object[]) ArrayUtil.setLength(clientAtomReferences,
-          newLength);
+      clientAtomReferences = (Object[]) ArrayUtil.setLength(
+          clientAtomReferences, newLength);
     if (vibrationVectors != null)
       vibrationVectors = (Vector3f[]) ArrayUtil.setLength(vibrationVectors,
           newLength);
@@ -597,13 +595,13 @@ public final class Frame {
   void saveGroup3Info() {
     if (group3Lists == null)
       return;
-    Hashtable info = getModelSetAuxiliaryInfo(); 
+    Hashtable info = getModelSetAuxiliaryInfo();
     if (info == null)
       return;
     info.put("group3Lists", group3Lists);
     info.put("group3Counts", group3Counts);
   }
-  
+
   void distinguishAndPropagateGroup(int groupIndex, Chain chain, String group3,
                                     int seqcode, int firstAtomIndex,
                                     int maxAtomIndex) {
@@ -628,63 +626,63 @@ public final class Frame {
 
     if (group3 != null) {
       int distinguishingBits = 0;
-    
-    // clear previous specialAtomIndexes
-    for (int i = JmolConstants.ATOMID_MAX; --i >= 0;)
-      specialAtomIndexes[i] = Integer.MIN_VALUE;
 
-    if (specialAtomIDs != null) {
-      // go last to first so that FIRST confirmation is default
-      for (int i = maxAtomIndex; --i >= firstAtomIndex;) {
-        int specialAtomID = specialAtomIDs[i];
-        if (specialAtomID > 0) {
-          if (specialAtomID < JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX) {
-            int bit = 1 << specialAtomID;
-/*
- * save for future option -- turns out the 1jsa bug was in relation to an author using the same group number for two different groups
- * 
-            System.out.println( i + " " + atoms[i].getIdentity() + " " + specialAtomID);
-            if ((distinguishingBits & bit) != 0) {
-            
-              //bh 9/21/2006:
-              // "if the group has two of the same, that cannot be right."
-              // Thus, for example, two C's doth not make a protein "carbonyl C"
-              distinguishingBits = 0;
-              break;
+      // clear previous specialAtomIndexes
+      for (int i = JmolConstants.ATOMID_MAX; --i >= 0;)
+        specialAtomIndexes[i] = Integer.MIN_VALUE;
+
+      if (specialAtomIDs != null) {
+        // go last to first so that FIRST confirmation is default
+        for (int i = maxAtomIndex; --i >= firstAtomIndex;) {
+          int specialAtomID = specialAtomIDs[i];
+          if (specialAtomID > 0) {
+            if (specialAtomID < JmolConstants.ATOMID_DISTINGUISHING_ATOM_MAX) {
+              int bit = 1 << specialAtomID;
+              /*
+               * save for future option -- turns out the 1jsa bug was in relation to an author using the same group number for two different groups
+               * 
+               System.out.println( i + " " + atoms[i].getIdentity() + " " + specialAtomID);
+               if ((distinguishingBits & bit) != 0) {
+               
+               //bh 9/21/2006:
+               // "if the group has two of the same, that cannot be right."
+               // Thus, for example, two C's doth not make a protein "carbonyl C"
+               distinguishingBits = 0;
+               break;
+               }
+               */
+              distinguishingBits |= bit;
             }
-*/
-            distinguishingBits |= bit;
+            specialAtomIndexes[specialAtomID] = i;
           }
-          specialAtomIndexes[specialAtomID] = i;
         }
       }
-    }
 
-    if (lastAtomIndex < firstAtomIndex)
-      throw new NullPointerException();
+      if (lastAtomIndex < firstAtomIndex)
+        throw new NullPointerException();
 
-    if ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) == JmolConstants.ATOMID_PROTEIN_MASK) {
-      group = AminoMonomer.validateAndAllocate(chain, group3, seqcode,
-          firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-      countGroup(atoms[firstAtomIndex].modelIndex, "p>", group3);
-    } else if (distinguishingBits == JmolConstants.ATOMID_ALPHA_ONLY_MASK) {
-      group = AlphaMonomer.validateAndAllocate(chain, group3, seqcode,
-          firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-      countGroup(atoms[firstAtomIndex].modelIndex, "p>", group3);
-    } else if (((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) == JmolConstants.ATOMID_NUCLEIC_MASK)) {
-      group = NucleicMonomer.validateAndAllocate(chain, group3, seqcode,
-          firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-      countGroup(atoms[firstAtomIndex].modelIndex, "n>", group3);
-    } else if (distinguishingBits == JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK) {
-      group = PhosphorusMonomer.validateAndAllocate(chain, group3, seqcode,
-          firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-      countGroup(atoms[firstAtomIndex].modelIndex, "n>", group3);
-    } else if (JmolConstants.checkCarbohydrate(group3)) {
-      group = CarbohydrateMonomer.validateAndAllocate(chain, group3, seqcode,
-          firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
-      countGroup(atoms[firstAtomIndex].modelIndex, "c>", group3);
-    }
-    
+      if ((distinguishingBits & JmolConstants.ATOMID_PROTEIN_MASK) == JmolConstants.ATOMID_PROTEIN_MASK) {
+        group = AminoMonomer.validateAndAllocate(chain, group3, seqcode,
+            firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
+        countGroup(atoms[firstAtomIndex].modelIndex, "p>", group3);
+      } else if (distinguishingBits == JmolConstants.ATOMID_ALPHA_ONLY_MASK) {
+        group = AlphaMonomer.validateAndAllocate(chain, group3, seqcode,
+            firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
+        countGroup(atoms[firstAtomIndex].modelIndex, "p>", group3);
+      } else if (((distinguishingBits & JmolConstants.ATOMID_NUCLEIC_MASK) == JmolConstants.ATOMID_NUCLEIC_MASK)) {
+        group = NucleicMonomer.validateAndAllocate(chain, group3, seqcode,
+            firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
+        countGroup(atoms[firstAtomIndex].modelIndex, "n>", group3);
+      } else if (distinguishingBits == JmolConstants.ATOMID_PHOSPHORUS_ONLY_MASK) {
+        group = PhosphorusMonomer.validateAndAllocate(chain, group3, seqcode,
+            firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
+        countGroup(atoms[firstAtomIndex].modelIndex, "n>", group3);
+      } else if (JmolConstants.checkCarbohydrate(group3)) {
+        group = CarbohydrateMonomer.validateAndAllocate(chain, group3, seqcode,
+            firstAtomIndex, lastAtomIndex, specialAtomIndexes, atoms);
+        countGroup(atoms[firstAtomIndex].modelIndex, "c>", group3);
+      }
+
     }
     if (group == null) {
       group = new Group(chain, group3, seqcode, firstAtomIndex, lastAtomIndex);
@@ -697,7 +695,7 @@ public final class Frame {
 
     for (int i = maxAtomIndex; --i >= firstAtomIndex;)
       atoms[i].setGroup(group);
-    
+
   }
 
   void countGroup(int modelIndex, String code, String group3) {
@@ -721,7 +719,7 @@ public final class Frame {
     if (modelIndex < modelCount)
       countGroup(modelCount, code, group3);
   }
-  
+
   ////////////////////////////////////////////////////////////////
 
   void buildPolymers() {
@@ -745,6 +743,7 @@ public final class Frame {
       }
     }
   }
+
   ////////////////////////////////////////////////////////////////
   FrameExportJmolAdapter exportJmolAdapter;
 
@@ -776,7 +775,7 @@ public final class Frame {
     ////////////////////////////////////////////////////////////////
     // find things for the popup menus
     findElementsPresent();
-    
+
     ////////////////////////////////////////////////////////////////
     // finalize all group business
     calculateStructures(false);
@@ -800,7 +799,7 @@ public final class Frame {
       mmset.calculateStructures();
     mmset.freeze();
   }
- 
+
   BitSet setConformation(int modelIndex, int conformationIndex) {
     BitSet bs = new BitSet();
     String altLocs = getAltLocListInModel(modelIndex);
@@ -809,7 +808,8 @@ public final class Frame {
       if (conformationIndex >= 0)
         for (int c = getAltLocCountInModel(modelIndex); --c >= 0;)
           if (c != conformationIndex)
-            bsConformation.andNot(getSpecAlternate(altLocs.substring(c, c + 1)));
+            bsConformation
+                .andNot(getSpecAlternate(altLocs.substring(c, c + 1)));
       if (bsConformation.length() > 0) {
         setConformation(modelIndex, bsConformation);
         bs.or(bsConformation);
@@ -898,14 +898,15 @@ public final class Frame {
     String str = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
     return (str == null ? "" : str);
   }
-  
+
   String getModelSymmetryList(int modelIndex) {
-    String[] list = (String[]) getModelAuxiliaryInfo(modelIndex, "symmetryOperations");
+    String[] list = (String[]) getModelAuxiliaryInfo(modelIndex,
+        "symmetryOperations");
     String str = "";
     if (list != null)
       for (int i = 0; i < list.length; i++)
         str += "\n" + list[i];
-    return str; 
+    return str;
   }
 
   int getAltLocCountInModel(int modelIndex) {
@@ -1067,27 +1068,30 @@ public final class Frame {
   Bond getBondAt(int bondIndex) {
     return bonds[bondIndex];
   }
-  
+
   /**
    * When creating a new bond, determine bond diameter from order 
    * @param order
    * @return if hydrogen bond, default to 1; otherwise 0 (general default) 
    */
   short getDefaultMadFromOrder(short order) {
-    return (short)((order & JmolConstants.BOND_HYDROGEN_MASK) > 0 ? 1 : defaultCovalentMad);
+    return (short) ((order & JmolConstants.BOND_HYDROGEN_MASK) > 0 ? 1
+        : defaultCovalentMad);
   }
 
   Bond bondAtoms(Atom atom1, Atom atom2, short order, short mad, BitSet bsBonds) {
     return getOrAddBond(atom1, atom2, order, mad, bsBonds);
   }
 
-  private Bond getOrAddBond(Atom atom, Atom atomOther, short order, short mad, BitSet bsBonds) {
+  private Bond getOrAddBond(Atom atom, Atom atomOther, short order, short mad,
+                            BitSet bsBonds) {
     int i;
     if (atom.isBonded(atomOther)) {
       i = atom.getBond(atomOther).index;
-    }else{
+    } else {
       if (bondCount == bonds.length)
-       bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount + growthIncrement);
+        bonds = (Bond[]) ArrayUtil
+            .setLength(bonds, bondCount + growthIncrement);
       if (order < 0)
         order = 1;
       i = setBond(bondCount++, bondMutually(atom, atomOther, order, mad)).index;
@@ -1096,7 +1100,7 @@ public final class Frame {
       bsBonds.set(i);
     return bonds[i];
   }
-  
+
   private Bond bondMutually(Atom atom, Atom atomOther, short order, short mad) {
     Bond bond = new Bond(atom, atomOther, order, mad, (short) 0);
     addBondToAtom(atom, bond);
@@ -1105,6 +1109,7 @@ public final class Frame {
   }
 
   BitSet bsPseudoHBonds;
+
   /**
    * These are not actual hydrogen bonds. They are N-O bonds in proteins and nucleic acids
    * The method is called by AminoPolymer and NucleicPolymer methods,
@@ -1116,7 +1121,8 @@ public final class Frame {
    * @param bsA
    * @param bsB
    */
-  void addHydrogenBond(Atom atom1, Atom atom2, short order, BitSet bsA, BitSet bsB) {
+  void addHydrogenBond(Atom atom1, Atom atom2, short order, BitSet bsA,
+                       BitSet bsB) {
     boolean atom1InSetA = bsA == null || bsA.get(atom1.atomIndex);
     boolean atom1InSetB = bsB == null || bsB.get(atom1.atomIndex);
     boolean atom2InSetA = bsA == null || bsA.get(atom2.atomIndex);
@@ -1184,7 +1190,7 @@ public final class Frame {
   Vector3f getBoundBoxCornerVector() {
     return boundBoxCornerVector;
   }
-  
+
   private void calcAverageAtomPoint() {
     Point3f average = averageAtomPoint;
     average.set(0, 0, 0);
@@ -1218,7 +1224,7 @@ public final class Frame {
     }
   }
 
- float calcRotationRadius(Point3f center) {
+  float calcRotationRadius(Point3f center) {
     float maxRadius = 0;
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
@@ -1289,7 +1295,7 @@ public final class Frame {
     }
     closest.atom = champion;
   }
-  
+
   /**
    * used by Frame and AminoMonomer and NucleicMonomer -- does NOT check for clickability
    * @param contender
@@ -1299,12 +1305,11 @@ public final class Frame {
    * @param champion
    * @return true if user is pointing to this atom
    */
-  boolean isCursorOnTopOf(Atom contender, int x, int y, int radius, Atom champion) {
-    return contender.screenZ > 1
-    && !g3d.isClippedZ(contender.screenZ)
-    && g3d.isInDisplayRange(contender.screenX, contender.screenY)
-    && contender.isCursorOnTopOf(x, y,
-        radius, champion); 
+  boolean isCursorOnTopOf(Atom contender, int x, int y, int radius,
+                          Atom champion) {
+    return contender.screenZ > 1 && !g3d.isClippedZ(contender.screenZ)
+        && g3d.isInDisplayRange(contender.screenX, contender.screenY)
+        && contender.isCursorOnTopOf(x, y, radius, champion);
   }
 
   // jvm < 1.4 does not have a BitSet.clear();
@@ -1529,7 +1534,7 @@ public final class Frame {
       Logger.warn("autoBond() unknown order: " + order);
     return 0;
   }
-  
+
   private int autoBond(BitSet bsA, BitSet bsB, BitSet bsBonds) {
     if (atomCount == 0)
       return 0;
@@ -1599,7 +1604,7 @@ public final class Frame {
       long timeEnd = System.currentTimeMillis();
       Logger.debug("Time to autoBond=" + (timeEnd - timeBegin));
     }
-    
+
     return nNew;
   }
 
@@ -1620,7 +1625,9 @@ public final class Frame {
   }
 
   boolean haveWarned = false;
-  void checkValencesAndBond(Atom atomA, Atom atomB, short order, short mad, BitSet bsBonds) {
+
+  void checkValencesAndBond(Atom atomA, Atom atomB, short order, short mad,
+                            BitSet bsBonds) {
     if (atomA.getCurrentBondCount() > JmolConstants.MAXIMUM_AUTO_BOND_COUNT
         || atomB.getCurrentBondCount() > JmolConstants.MAXIMUM_AUTO_BOND_COUNT) {
       if (!haveWarned)
@@ -1685,8 +1692,8 @@ public final class Frame {
           continue;
         if (atom.isBonded(atomNear))
           continue;
-        getOrAddBond(atom, atomNear,
-            JmolConstants.BOND_H_REGULAR, (short) 1, bsPseudoHBonds);
+        getOrAddBond(atom, atomNear, JmolConstants.BOND_H_REGULAR, (short) 1,
+            bsPseudoHBonds);
         nNew++;
       }
       iter.release();
@@ -1743,9 +1750,9 @@ public final class Frame {
 
   Bond setBond(int index, Bond bond) {
     bond.index = index;
-    return bonds[index] = bond;  
+    return bonds[index] = bond;
   }
-  
+
   Vector stateScripts = new Vector();
   int thisFrame = 0;
 
@@ -1753,7 +1760,8 @@ public final class Frame {
     int iFrame = viewer.getCurrentModelIndex();
     if (thisFrame != iFrame) {
       thisFrame = iFrame;
-      script = "frame " + this.getModelNumber(iFrame) +";\n" + script;      
+      script = "frame " + (iFrame < 0 ? "" + iFrame : getModelName(-iFrame))
+          + ";\n" + script;
     }
     stateScripts.add(script);
   }
@@ -1810,7 +1818,8 @@ public final class Frame {
         if (bondAB != null) {
           if (order >= 0 && !isAdjustOnly)
             bondAB.setOrder(order);
-          if (!isAdjustOnly || order == bondAB.order || order == JmolConstants.BOND_ORDER_ANY
+          if (!isAdjustOnly || order == bondAB.order
+              || order == JmolConstants.BOND_ORDER_ANY
               || order == JmolConstants.BOND_H_REGULAR && bondAB.isHydrogen()) {
             bsBonds.set(bondAB.index);
             nModified++;
@@ -1826,27 +1835,27 @@ public final class Frame {
   }
 
   int deleteConnections(float minDistance, float maxDistance, short order,
-                         BitSet bsA, BitSet bsB) {
+                        BitSet bsA, BitSet bsB) {
     BitSet bsDelete = new BitSet();
     float minDistanceSquared = minDistance * minDistance;
     float maxDistanceSquared = maxDistance * maxDistance;
-    if (order != JmolConstants.BOND_ORDER_NULL 
+    if (order != JmolConstants.BOND_ORDER_NULL
         && (order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
       order = JmolConstants.BOND_HYDROGEN_MASK;
     int nDeleted = 0;
-    for (int i = bondCount; --i >= 0; ) {
+    for (int i = bondCount; --i >= 0;) {
       Bond bond = bonds[i];
       Atom atom1 = bond.atom1;
       Atom atom2 = bond.atom2;
-      if (bsA.get(atom1.atomIndex) && bsB.get(atom2.atomIndex) ||
-          bsA.get(atom2.atomIndex) && bsB.get(atom1.atomIndex)) {
+      if (bsA.get(atom1.atomIndex) && bsB.get(atom2.atomIndex)
+          || bsA.get(atom2.atomIndex) && bsB.get(atom1.atomIndex)) {
         if (bond.atom1.isBonded(bond.atom2)) {
           float distanceSquared = atom1.distanceSquared(atom2);
-          if (distanceSquared >= minDistanceSquared &&
-              distanceSquared <= maxDistanceSquared)
-            if (order == JmolConstants.BOND_ORDER_NULL ||
-                order == (bond.order & ~JmolConstants.BOND_SULFUR_MASK) ||
-                (order & bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
+          if (distanceSquared >= minDistanceSquared
+              && distanceSquared <= maxDistanceSquared)
+            if (order == JmolConstants.BOND_ORDER_NULL
+                || order == (bond.order & ~JmolConstants.BOND_SULFUR_MASK)
+                || (order & bond.order & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
               bsDelete.set(i);
               nDeleted++;
             }
@@ -1861,7 +1870,7 @@ public final class Frame {
   /////////////////////////
 
   // for Dots only
-  
+
   float getMaxVanderwaalsRadius() {
     if (maxVanderwaalsRadius == Float.MIN_VALUE)
       findMaxRadii();
@@ -1915,8 +1924,8 @@ public final class Frame {
 
   void calcAtomsMinMax(Point3f pointMin, Point3f pointMax) {
     if (atomCount < 2) {
-      pointMin.set(-10,-10, -10);
-      pointMax.set(10,10, 10);
+      pointMin.set(-10, -10, -10);
+      pointMax.set(10, 10, 10);
       return;
     }
     pointMin.set(atoms[0]);
@@ -1991,7 +2000,7 @@ public final class Frame {
   }
 
   ///// this set of methods is used by Eval
-  
+
   /**
    * general unqualified lookup of atom set type
    * @param setType
@@ -2138,7 +2147,7 @@ public final class Frame {
         bs.set(i);
     return bs;
   }
-  
+
   /**
    * general lookup for String type
    * @param setType
@@ -2183,10 +2192,11 @@ public final class Frame {
     BitSet bs = getSpecNameOrNull(identifier);
     if (bs != null || identifier.indexOf("?") > 0)
       return bs;
-    
+
     int pt = identifier.indexOf("*");
     if (pt > 0)
-      return getSpecNameOrNull(identifier.substring(0,pt) + "??????????" + identifier.substring(pt + 1));
+      return getSpecNameOrNull(identifier.substring(0, pt) + "??????????"
+          + identifier.substring(pt + 1));
     int len = identifier.length();
     pt = 0;
     while (pt < len && Character.isLetter(identifier.charAt(pt)))
@@ -2255,7 +2265,8 @@ public final class Frame {
       return bs;
     int pt = name.indexOf("*");
     if (pt > 0) {
-      bs = getSpecNameOrNull(name.substring(0,pt) + "??????????" + name.substring(pt + 1));
+      bs = getSpecNameOrNull(name.substring(0, pt) + "??????????"
+          + name.substring(pt + 1));
     }
     return (bs == null ? new BitSet() : bs);
   }
@@ -2268,7 +2279,7 @@ public final class Frame {
         if (bs == null)
           bs = new BitSet(i + 1);
         bs.set(i);
-    }
+      }
     return bs;
   }
 
@@ -2472,6 +2483,7 @@ public final class Frame {
   }
 
   BitSet bsSurfaceSet;
+
   void setSurfaceAtoms(BitSet bsSurface, BitSet bsEnclosed) {
     bsSurfaceSet = (BitSet) bsEnclosed.clone();
     surfaceDistance100s = null;
@@ -2481,20 +2493,21 @@ public final class Frame {
       return;
     }
     surfaceAtoms = new int[n];
-    for (int i = atomCount, pt = 0; --i >= 0;) 
+    for (int i = atomCount, pt = 0; --i >= 0;)
       if (bsSurface.get(i))
         surfaceAtoms[pt++] = i;
   }
-  
+
   int getSurfaceDistance100(int atomIndex) {
     if (surfaceAtoms == null)
       return -1;
     if (surfaceDistance100s == null)
       calcSurfaceDistances();
-    return surfaceDistance100s[atomIndex]; 
+    return surfaceDistance100s[atomIndex];
   }
-  
+
   int surfaceDistanceMax;
+
   int getSurfaceDistanceMax() {
     if (surfaceDistance100s == null)
       calcSurfaceDistances();
@@ -2520,7 +2533,7 @@ public final class Frame {
       }
     }
   }
-  
+
   void calcBfactorRange() {
     calcBfactorRange(null);
   }
@@ -2689,7 +2702,6 @@ public final class Frame {
 
   ////////////////////////////////////////////////////////////////
 
-  
   BitSet getMoleculeBitSet(int atomIndex) {
     if (moleculeCount == 0)
       getMolecules();
@@ -2738,7 +2750,8 @@ public final class Frame {
         bs = getConnectedBitSet(i);
         atomlist.or(bs);
         if (moleculeCount == molecules.length)
-          molecules = (Molecule[]) ArrayUtil.setLength(molecules, moleculeCount * 2);
+          molecules = (Molecule[]) ArrayUtil.setLength(molecules,
+              moleculeCount * 2);
         molecules[moleculeCount] = new Molecule(moleculeCount, bs,
             thisModelIndex, indexInModel);
         mmset.getModel(thisModelIndex).moleculeCount = moleculeCount
@@ -2841,7 +2854,7 @@ public final class Frame {
       atom.bonds = addToBonds(bond, atom.bonds);
     }
   }
-  
+
   Bond[] addToBonds(Bond newBond, Bond[] oldBonds) {
     Bond[] newBonds;
     if (oldBonds == null) {
@@ -2879,8 +2892,7 @@ public final class Frame {
   Point3f getAveragePosition(int atomIndex1, int atomIndex2) {
     Atom atom1 = atoms[atomIndex1];
     Atom atom2 = atoms[atomIndex2];
-    return new Point3f((atom1.x + atom2.x) / 2,
-        (atom1.y + atom2.y) / 2,
+    return new Point3f((atom1.x + atom2.x) / 2, (atom1.y + atom2.y) / 2,
         (atom1.z + atom2.z) / 2);
   }
 
@@ -2915,8 +2927,7 @@ public final class Frame {
       float c2 = partialCharges[atom2.atomIndex];
       if (c1 != c2) {
         Dipole dipole = dipoles.findDipole(atom1, atom2, true);
-        float value = (c1 - c2) / 2f * atom1.distance(atom2)
-            / E_ANG_PER_DEBYE;
+        float value = (c1 - c2) / 2f * atom1.distance(atom2) / E_ANG_PER_DEBYE;
         if (value < 0) {
           dipole.set(atom2, atom1, -value);
         } else {
@@ -2949,10 +2960,10 @@ public final class Frame {
     String[] symmetryOperations;
     String symmetryInfoString;
     UnitCell unitCell;
-    
+
     CellInfo(int modelIndex, boolean doPdbScale) {
       notionalUnitcell = (float[]) mmset.getModelAuxiliaryInfo(modelIndex,
-      "notionalUnitcell");
+          "notionalUnitcell");
       this.modelIndex = modelIndex;
       spaceGroup = (String) getModelAuxiliaryInfo(modelIndex, "spaceGroup");
       if (spaceGroup == null || spaceGroup == "")
@@ -2982,42 +2993,44 @@ public final class Frame {
     }
 
     UnitCell getUnitCell() {
-      return unitCell;  
+      return unitCell;
     }
 
     float[] getNotionalUnitCell() {
-      return (unitCell == null ? null : unitCell.getNotionalUnitCell());  
+      return (unitCell == null ? null : unitCell.getNotionalUnitCell());
     }
-    
+
     void toCartesian(Point3f pt) {
       unitCell.toCartesian(pt);
     }
-    
+
     void toFractional(Point3f pt) {
       unitCell.toFractional(pt);
     }
-    
+
     void toUnitCell(Point3f pt, Point3f offset) {
       if (!coordinatesAreFractional || symmetryOperations == null)
         return;
-      unitCell.toUnitCell(pt, offset);  
+      unitCell.toUnitCell(pt, offset);
     }
-    
+
     void showInfo() {
       if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
-        Logger.debug("cellInfos[" + modelIndex + "]:\n" + unitCell.dumpInfo(true));
+        Logger.debug("cellInfos[" + modelIndex + "]:\n"
+            + unitCell.dumpInfo(true));
     }
-    
+
     String getUnitCellInfo() {
-      return (unitCell == null ? "no unit cell information" : 
-        unitCell.dumpInfo(false));
+      return (unitCell == null ? "no unit cell information" : unitCell
+          .dumpInfo(false));
     }
   }
-  
+
   void toCartesian(int modelIndex, Point3f pt) {
     if (modelIndex < 0)
       modelIndex = 0;
-    if (cellInfos == null || modelIndex >= cellInfos.length || cellInfos[modelIndex] == null)
+    if (cellInfos == null || modelIndex >= cellInfos.length
+        || cellInfos[modelIndex] == null)
       return;
     String str = "Frame convertFractional " + pt + "--->";
     cellInfos[modelIndex].toCartesian(pt);
@@ -3027,19 +3040,21 @@ public final class Frame {
   void toUnitCell(int modelIndex, Point3f pt, Point3f offset) {
     if (modelIndex < 0)
       return;
-    if (cellInfos == null || modelIndex >= cellInfos.length || cellInfos[modelIndex] == null)
+    if (cellInfos == null || modelIndex >= cellInfos.length
+        || cellInfos[modelIndex] == null)
       return;
     cellInfos[modelIndex].toUnitCell(pt, offset);
   }
 
   boolean reportFormalCharges = false;
-  void setFormalCharges(BitSet bs, int formalCharge) {    
-    for (int i = 0; i < atomCount; i++) 
+
+  void setFormalCharges(BitSet bs, int formalCharge) {
+    for (int i = 0; i < atomCount; i++)
       if (bs.get(i))
         atoms[i].setFormalCharge(formalCharge);
     reportFormalCharges = true;
   }
-  
+
   void setAtomCoord(int atomIndex, float x, float y, float z) {
     if (atomIndex < 0 || atomIndex >= atomCount)
       return;
@@ -3329,8 +3344,7 @@ public final class Frame {
       }
     return hAtoms;
   }
-  
-  
+
   //leaving this one here, because it is volatile -- 
   //it will be reset when a new frame is instantiated
   boolean selectionHaloEnabled = false;
@@ -3346,22 +3360,23 @@ public final class Frame {
   }
 
   boolean echoShapeActive = false;
-  
+
   boolean getEchoStateActive() {
     return echoShapeActive;
   }
-  
+
   public void setEchoStateActive(boolean TF) {
     echoShapeActive = TF;
   }
-  
+
   String getState() {
     StringBuffer commands = new StringBuffer("# connections;\n");
     String cmd;
     if (reportFormalCharges) {
       Hashtable ht = new Hashtable();
       for (int i = 0; i < atomCount; i++)
-        StateManager.setStateInfo(ht, i, i, "set formalCharge " + atoms[i].getFormalCharge());
+        StateManager.setStateInfo(ht, i, i, "set formalCharge "
+            + atoms[i].getFormalCharge());
       commands.append(StateManager.getCommands(ht));
     }
 
@@ -3373,7 +3388,7 @@ public final class Frame {
       commands.append(fs.get(i) + "\n");
 
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
-    ((Labels)shapes[JmolConstants.SHAPE_LABELS]).getShapeState(commands);
+    ((Labels) shapes[JmolConstants.SHAPE_LABELS]).getShapeState(commands);
 
     commands.append("\n# model state;\n");
     // shape construction
@@ -3387,5 +3402,5 @@ public final class Frame {
     commands.append("\n");
     return commands.toString();
   }
-  
+
 }

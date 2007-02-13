@@ -1242,14 +1242,22 @@ class Eval { //implements Runnable {
             (String) instruction.value);
         break;
       case Token.spec_model:
+        //1002 is equivalent to 1.2 when more than one file is present
       case Token.spec_model2:
-        if (instruction.intValue != Integer.MAX_VALUE) {
-          stack[sp++] = bitSetForModelNumberSet(
-              new int[] { instruction.intValue }, 1);
-        } else {
-          stack[sp++] = viewer.getAtomBits("SpecModel",
-              ((Integer) instruction.value).intValue());
+        int iModel = instruction.intValue; 
+        if (iModel == Integer.MAX_VALUE) {
+          iModel = ((Integer) instruction.value).intValue();
+          if (!viewer.haveFileSet()) {
+            stack[sp++] = viewer.getAtomBits("SpecModel", iModel);
+            break;
+          }
+          if (iModel < 1000)
+            iModel = iModel * 1000000;
+          else
+            iModel = (iModel / 1000) * 1000000 + iModel % 1000;
         }
+        stack[sp++] = bitSetForModelNumberSet(
+            new int[] { iModel }, 1);
         break;
       case Token.spec_resid:
         stack[sp++] = viewer.getAtomBits("SpecResid", instruction.intValue);
@@ -4765,6 +4773,7 @@ class Eval { //implements Runnable {
     boolean isPlay = false;
     boolean isRange = false;
     boolean isAll = false;
+    boolean isHyphen = false;
     int[] frameList = new int[] { -1, -1 };
     int nFrames = 0;
     for (int i = offset; i < statementLength; i++) {
@@ -4774,16 +4783,28 @@ class Eval { //implements Runnable {
         checkStatementLength(offset + (isRange ? 2 : 1));
         isAll = true;
         break;
+      case Token.hyphen:  //ignore
+        if (nFrames != 1)
+          invalidArgument();
+        isHyphen = true;
+        break;
       case Token.none:
         checkStatementLength(offset + 1);
         break;
       case Token.decimal:
         useModelNumber = false;
+        if (floatParameter(i) < 0)
+          isHyphen = true;
       //fall through
       case Token.integer:
         if (nFrames == 2)
           invalidArgument();
-        frameList[nFrames++] = statement[i].intValue;
+        int iFrame = statement[i].intValue;
+        if (iFrame >= 1000 && iFrame < 1000000)
+          iFrame = (iFrame / 1000) * 1000000 + (iFrame % 1000);
+        if (iFrame > 1000)
+          useModelNumber = false;
+        frameList[nFrames++] = iFrame;
         break;
       case Token.play:
         isPlay = true;
@@ -4797,11 +4818,11 @@ class Eval { //implements Runnable {
         return;
       }
     }
-    boolean haveFileSet = (viewer.getModelNumber(0) > 1000);
-    if ((isPlay || isRange) && haveFileSet && useModelNumber)
-      invalidArgument();
+    boolean haveFileSet = viewer.haveFileSet();
     if (isSyntaxCheck)
       return;
+    if (isRange && nFrames == 0)
+      isAll = true;
     if (isAll) {
       viewer.setAnimationOn(false);
       viewer.setAnimationRange(-1, -1);
@@ -4809,23 +4830,48 @@ class Eval { //implements Runnable {
         viewer.setCurrentModelIndex(-1);
       return;
     }
+    if (nFrames == 2 && !isRange)
+      isHyphen = true;
     if (haveFileSet)
       useModelNumber = false;
     else
       for (int i = 0; i < nFrames; i++)
         if (frameList[i] >= 0)
-          frameList[i] %= 1000;
+          frameList[i] %= 1000000;
     int modelIndex = viewer.getModelNumberIndex(frameList[0], useModelNumber);
     int modelIndex2 = -1;
+    if (haveFileSet && nFrames == 1 && modelIndex < 0 && frameList[0] != 0) {
+      // may have frame 2.0 or frame 2 meaning the range of models in file 2
+      if (frameList[0] < 1000000)
+        frameList[0] *= 1000000;
+      if (frameList[0] % 1000000 == 0) {
+        frameList[0]++;
+        modelIndex = viewer.getModelNumberIndex(frameList[0], false);
+        if (modelIndex >= 0) {
+          modelIndex2 = viewer.getModelNumberIndex(frameList[0] + 1000000,
+              false);
+          if (modelIndex2 < 0)
+            modelIndex2 = viewer.getModelCount();
+          modelIndex2--;
+          if (isRange)
+            nFrames = 2;
+          else if (!isHyphen && modelIndex2 != modelIndex)
+            isHyphen = true;
+          isRange = (!isHyphen && modelIndex2 != modelIndex);
+        }
+      }
+    }
+
     if (!isPlay && !isRange || modelIndex >= 0) {
       viewer.setCurrentModelIndex(modelIndex);
     }
-    if (isPlay && nFrames == 2 || isRange) {
-      modelIndex2 = viewer.getModelNumberIndex(frameList[1], useModelNumber);
+    if (isPlay && nFrames == 2 || isRange || isHyphen) {
+      if (modelIndex2 < 0)
+        modelIndex2 = viewer.getModelNumberIndex(frameList[1], useModelNumber);
       viewer.setAnimationOn(false);
       viewer.setAnimationDirection(1);
       viewer.setAnimationRange(modelIndex, modelIndex2);
-      viewer.setCurrentModelIndex(modelIndex >= 0 ? modelIndex : 0);
+      viewer.setCurrentModelIndex(isHyphen && !isRange ? -1 : modelIndex >= 0 ? modelIndex : 0);
     }
     if (isPlay)
       viewer.resumeAnimation();
@@ -4833,16 +4879,18 @@ class Eval { //implements Runnable {
 
   BitSet bitSetForModelNumberSet(int[] frameList, int nFrames) {
     BitSet bs = new BitSet();
+    if (isSyntaxCheck)
+      return bs;
     int modelCount = viewer.getModelCount();
-    boolean haveFileSet = (viewer.getModelNumber(0) > 1000);
+    boolean haveFileSet = viewer.haveFileSet();
     for (int i = 0; i < nFrames; i++) {
       int m = frameList[i];
-      if (m < 1000 && haveFileSet)
-        m *= 1000;
-      int pt = m % 1000;
+      if (m < 1000000 && haveFileSet)
+        m *= 1000000;
+      int pt = m % 1000000;
       if (pt == 0) {
         int model1 = viewer.getModelNumberIndex(m + 1, false);
-        int model2 = viewer.getModelNumberIndex(m + 1001, false);
+        int model2 = viewer.getModelNumberIndex(m + 1000001, false);
         if (model1 < 0)
           model1 = 0;
         if (model2 < 0)
@@ -4850,7 +4898,7 @@ class Eval { //implements Runnable {
         for (int j = model1; j < model2; j++)
           bs.or(viewer.getModelAtomBitSet(j));        
       } else {
-        if (!haveFileSet && m > 1000)
+        if (!haveFileSet && m > 1000000)
           m = pt;
         bs.or(viewer.getModelAtomBitSet(viewer.getModelNumberIndex(m, false)));
       }
@@ -5108,6 +5156,12 @@ class Eval { //implements Runnable {
         int iLevel = intParameter(2);
         if (!isSyntaxCheck)
           commandHistoryLevelMax = iLevel;
+        return;
+      }
+      if (key.equalsIgnoreCase("backgroundModel")) {
+        checkLength3();
+        if (!isSyntaxCheck)
+          viewer.setBackgroundModel(statement[2].intValue);
         return;
       }
       if (key.equalsIgnoreCase("defaultLattice")) {
@@ -5967,6 +6021,11 @@ class Eval { //implements Runnable {
     case Token.identifier:
     case Token.string:
       fileName = parameterAsString(pt);
+      //write filename.xxx  gets separated as filename .spt
+      if (fileName.charAt(0) == '.') {
+        fileName = val + fileName;
+        type = "image";
+      }
       break;
     default:
       invalidArgument();
@@ -5988,18 +6047,20 @@ class Eval { //implements Runnable {
       evalError(GT._("The {0} command is not available for the applet.",
           "WRITE image"));
     int quality = Integer.MIN_VALUE;
-    if (type == "SPT")
-      type = (String) viewer.getProperty("string", "stateInfo", null);
-    else if (type == "HIS")
-      type = viewer.getSetHistory(Integer.MAX_VALUE);
-    else if (type == "MO")
-      type = getMoJvxl(Integer.MAX_VALUE);
-    else if (type == "ISO") {
-      if ((type = getIsosurfaceJvxl()) == null)
+    String data = type.intern();
+    if (data == "SPT")
+      data = (String) viewer.getProperty("string", "stateInfo", null);
+    else if (data == "HIS")
+      data = viewer.getSetHistory(Integer.MAX_VALUE);
+    else if (data == "MO")
+      data = getMoJvxl(Integer.MAX_VALUE);
+    else if (data == "ISO") {
+      if ((data = getIsosurfaceJvxl()) == null)
         evalError(GT._("No data available"));
     } else
       quality = 100;
-    viewer.createImage(fileName, type, quality);
+    viewer.createImage(fileName, data, quality);
+    viewer.scriptStatus("type=" + type + "; file=" + fileName);
   }
 
   /* ****************************************************************************
@@ -7584,9 +7645,9 @@ class Eval { //implements Runnable {
       case Token.decimal:
         if (token.intValue < Integer.MAX_VALUE) {
           int iv = token.intValue;
-          sb.append("" + (iv / 1000));
+          sb.append("" + (iv / 1000000));
           sb.append(".");
-          sb.append("" + (iv % 1000));
+          sb.append("" + (iv % 1000000));
         } else {
           sb.append("" + token.value);
         }

@@ -177,7 +177,7 @@ class ModelManager {
     Properties props = getModelSetProperties();
     str = str.concat(listProperties(props));
     for (int i = 0; i < modelCount; ++i) {
-      str = str.concat("\n" + i + ":" + getModelNumber(i) +
+      str = str.concat("\n" + i + ":" + getModelName(-1 -i) +
                  ":" + getModelName(i) +
                  "\nmodelHasVibrationVectors:" +
                  modelHasVibrationVectors(i));
@@ -190,7 +190,7 @@ class ModelManager {
     int modelCount = getModelCount();
     String str = "Symmetry Information:";
     for (int i = 0; i < modelCount; ++i) {
-      str += "\nmodel #" + getModelNumber(i) + "; name=" + getModelName(i) + "\n"
+      str += "\nmodel #" + getModelName(-1 - i) + "; name=" + getModelName(i) + "\n"
           + frame.getSymmetryInfoAsString(i);
     }
     return str;

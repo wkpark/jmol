@@ -160,7 +160,7 @@ class AtomSetCollection extends Parser {
 
       // names and numbers
       atomSetNames[currentAtomSetIndex] = collection.atomSetNames[atomSetNum];
-      atomSetNumbers[currentAtomSetIndex] = ((collectionIndex + 1) * 1000)
+      atomSetNumbers[currentAtomSetIndex] = ((collectionIndex + 1) * 1000000)
           + collection.atomSetNumbers[atomSetNum];
     }
     // Clone bonds

@@ -48,16 +48,18 @@ class RepaintManager {
       currentModelIndex = -1;
     else
       currentModelIndex = modelIndex;
-    viewer.setStringProperty("_modelNumber", (currentModelIndex < 0 ? ""
-        + currentModelIndex : viewer.getModelName(-1 - currentModelIndex)));
-    viewer.setStringProperty("_modelName", (currentModelIndex < 0 ? "" : viewer
-        .getModelName(currentModelIndex)));
     if (currentModelIndex == -1)
       setBackgroundModelIndex(-1);
     viewer.setTainted(true);
     if (frame != null)
       setStatusFrameChanged();
     setFrameRangeVisible();
+    String s =  viewer.getModelNumberDotted(currentModelIndex);
+    if (s == "0")
+      s = viewer.getModelNumberDotted(firstModelIndex) + " - " + viewer.getModelNumberDotted(lastModelIndex);
+    viewer.setStringProperty("_modelNumber", s);
+    viewer.setStringProperty("_modelName", (currentModelIndex < 0 ? "" : viewer
+        .getModelName(currentModelIndex)));
   }
 
   void setStatusFrameChanged() {
@@ -199,7 +201,7 @@ class RepaintManager {
     info.put("animationDirection", new Integer(animationDirection));
     info.put("currentDirection", new Integer(currentDirection));
     info.put("displayModelIndex", new Integer(currentModelIndex));
-    info.put("displayModelNumber", new Integer(currentModelIndex >=0 ? viewer.getModelNumber(currentModelIndex) : 0));
+    info.put("displayModelNumber", new Integer(currentModelIndex >=0 ? viewer.getModelNumberDotted(currentModelIndex) : "0"));
     info.put("displayModelName", (currentModelIndex >=0 ? viewer.getModelName(currentModelIndex) : ""));
     info.put("animationFps", new Integer(animationFps));
     info.put("animationReplayMode", new Integer(animationReplayMode));
@@ -214,19 +216,19 @@ class RepaintManager {
     if (modelCount < 2)
       return "";
     StringBuffer commands = new StringBuffer("# frame state;\n# modelCount "
-        + modelCount + ";\n# first " + viewer.getModelNumber(0) + ";\n# last "
-        + viewer.getModelNumber(modelCount - 1) + ";\n");
+        + modelCount + ";\n# first " + viewer.getModelNumberDotted(0) + ";\n# last "
+        + viewer.getModelNumberDotted(modelCount - 1) + ";\n");
     if (backgroundModelIndex >= 0)
       commands.append("background model " + backgroundModelIndex + ";\n");
-    if (currentModelIndex >= 0) {
-      commands.append("frame RANGE " + viewer.getModelNumber(firstModelIndex)
-          + " " + viewer.getModelNumber(lastModelIndex) + ";\n");
+    if (true || currentModelIndex >= 0) {
+      commands.append("frame RANGE " + viewer.getModelNumberDotted(firstModelIndex)
+          + " " + viewer.getModelNumberDotted(lastModelIndex) + ";\n");
       commands.append("animation DIRECTION "
           + (animationDirection == 1 ? "+1" : "-1") + ";\n");
       commands.append("animation " + (animationOn ? "ON" : "OFF") + ";\n");
       if (animationOn && animationPaused)
         commands.append("animation PAUSE;\n");
-      commands.append("frame " + viewer.getModelNumber(currentModelIndex) + ";\n");
+      commands.append("frame " + viewer.getModelNumberDotted(currentModelIndex) + ";\n");
     } else {
       commands.append("frame ALL;\n");
     }

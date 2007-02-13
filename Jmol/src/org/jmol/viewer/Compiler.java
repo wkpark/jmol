@@ -226,6 +226,8 @@ class Compiler {
           //write script filename
           //write spt filename
           //write jpg filename
+          //write filename
+          
           if (nTokens > 2 && !iHaveQuotedString && lookingAtSpecialString()) {
             String str = script.substring(ichToken, ichToken + cchToken).trim();
             if (str.indexOf(" ") < 0) {
@@ -254,8 +256,8 @@ class Compiler {
           // Float.parseFloat(script.substring(ichToken, ichToken + cchToken));
           Float.valueOf(script.substring(ichToken, ichToken + cchToken))
               .floatValue();
-          int intValue = (value > 0 ? modelValue(script.substring(ichToken,
-              ichToken + cchToken)) : 0);
+          int intValue = (modelValue(script.substring(ichToken,
+              ichToken + cchToken)));
           ltoken
               .addElement(new Token(Token.decimal, intValue, new Float(value)));
           continue;
@@ -376,16 +378,19 @@ class Compiler {
   }
 
   int modelValue(String strDecimal) {
+    //this will overflow, but it doesn't matter -- it's only for file.model
+    //2147483647 is maxvalue, so this allows loading
+    //simultaneously up to 2147 files. Yeah, sure!
     int pt = strDecimal.indexOf(".");
     if (pt < 0)
       return 0;
     int i = 0;
     int j = 0;
-    if (pt > 0)
-      i = Integer.parseInt(strDecimal.substring(0, pt)) * 1000;
+    if (pt > 0 && (i = Integer.parseInt(strDecimal.substring(0, pt))) < 0)
+      i = -i;
     if (pt < strDecimal.length() - 1)
       j = Integer.parseInt(strDecimal.substring(pt + 1));
-    return  i + j;
+    return i * 1000000 + j;
   }
   
   void getData(Vector ltoken, String key) {
@@ -1735,18 +1740,16 @@ class Compiler {
       return invalidModelSpecification();
     switch (theToken.tok) {
     case Token.decimal:
-      return generateResidueSpecCode(new Token(Token.spec_model, theToken.intValue, null));
+      return generateResidueSpecCode(new Token(Token.spec_model,
+          theToken.intValue, null));
     case Token.integer:
-//    case Token.string:  -- what was THIS all about? */modelname ? Never implemented in Eval as far as I can tell. -BH
-//    case Token.identifier:
-      if (viewer.getModelNumber(0) > 1000 && theToken.intValue < 1000)
-        return generateResidueSpecCode(new Token(Token.spec_model, theToken.intValue * 1000, null));        
       break;
     default:
       return invalidModelSpecification();
     }
     //integer implies could be model number
-    return generateResidueSpecCode(new Token(Token.spec_model, new Integer(theToken.intValue)));
+    return generateResidueSpecCode(new Token(Token.spec_model, new Integer(
+        theToken.intValue)));
   }
 
   boolean clauseAtomSpec() {

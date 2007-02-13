@@ -803,11 +803,11 @@ class Draw extends MeshCollection {
       return str.toString();
     }
     int nVertices = 0;
-    int n = viewer.getModelNumber(iModel);
+    String nFrame = viewer.getModelNumberDotted(iModel);
     if (modelCount > 1)
-      str.append("frame " + n + ";");
+      str.append("frame " + nFrame + ";");
     str.append("draw " + mesh.thisID
-        + (mesh.drawType == Mesh.DRAW_MULTIPLE ? "_" + n : ""));
+        + (mesh.drawType == Mesh.DRAW_MULTIPLE ? "_" + iModel : ""));
     switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
     case Mesh.DRAW_NONE:
       return "";

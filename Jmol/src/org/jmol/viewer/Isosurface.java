@@ -4231,7 +4231,7 @@ class Isosurface extends IsosurfaceMeshCollection {
           info += qmOrbitalCount;
           break;
         case 'M':
-          info += viewer.getModelNumber(viewer.getDisplayModelIndex());
+          info += viewer.getModelNumberDotted(viewer.getDisplayModelIndex());
           break;
         case 'E':
           info += mo.get("energy");

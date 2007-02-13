@@ -1683,6 +1683,12 @@ public class Viewer extends JmolViewer {
     return modelManager.getModelNumber(modelIndex);
   }
 
+  String getModelNumberDotted(int modelIndex) {
+    if (modelIndex < 0)
+      return "0";
+    return getModelName(-1 - modelIndex);
+  }
+
   public String getModelName(int modelIndex) {
     return modelManager.getModelName(modelIndex);
   }
@@ -2317,9 +2323,13 @@ public class Viewer extends JmolViewer {
     return (backgroundIndex >= 0 ? -2 - modelIndex : modelIndex);
   }
 
-  private void setBackgroundModel(int modelNumber) {
+  boolean haveFileSet() {
+    return (getModelCount() > 1 && getModelNumber(0) > 1000000);
+  }
+  
+  void setBackgroundModel(int modelNumber) {
     //Eval
-    int modelIndex = getModelNumberIndex(modelNumber, true);
+    int modelIndex = getModelNumberIndex(modelNumber, !haveFileSet());
     setBackgroundModelIndex(modelIndex);
   }
 
@@ -3342,8 +3352,8 @@ public class Viewer extends JmolViewer {
             scriptEcho("script WARNING: cannot set boolean flag to string value");
             return;
           }
-          Logger.warn("viewer.setStringProperty(" + key + "," + value
-              + ") - string variable defined");
+          Logger.warn("viewer.setStringProperty(" + key + ",\"" + value
+              + "\") - string variable defined");
           break;
         }
       }
@@ -3475,11 +3485,6 @@ public class Viewer extends JmolViewer {
       }
       if (key.equalsIgnoreCase("showScript")) {
         setScriptDelay(value);
-        break;
-      }
-      ////11.0///
-      if (key.equalsIgnoreCase("backgroundModel")) {
-        setBackgroundModel(value);
         break;
       }
       if (key.equalsIgnoreCase("specularPower")) {

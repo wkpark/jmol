@@ -576,6 +576,7 @@ public class Token {
     "move",              new Token(move,     varArgCount, "move"),
     "spin",              new Token(spin,     varArgCount, "spin"),
     "frame",             new Token(frame,    varArgCount, "frame"),
+    "frames",            null,
     
     // unimplemented
     

@@ -178,12 +178,12 @@ final class Mmset {
   String getModelNumberDotted(int modelIndex) {
     if (modelCount < 1)
       return "";
-    int filenumber = models[modelIndex].modelNumber / 1000; 
+    int filenumber = models[modelIndex].modelNumber / 1000000; 
     if (filenumber == 0)
       return "" + getModelNumber(modelIndex);
-    int modelnumber = (models[modelIndex].modelNumber % 1000);
+    int modelnumber = (models[modelIndex].modelNumber % 1000000);
     //if only one file, just return the integer file number
-    if (modelnumber == 1 && (modelIndex + 1 == modelCount || models[modelIndex+1].modelNumber / 1000 != filenumber))
+    if (modelnumber == 1 && (modelIndex + 1 == modelCount || models[modelIndex+1].modelNumber / 1000000 != filenumber))
       return filenumber + "";
     return filenumber + "." + modelnumber;    
   }
@@ -199,10 +199,10 @@ final class Mmset {
     int nFile = -1;
     int thisFile = 0;
     int thisModel = 0;
-    int modelFile = modelNumber / 1000;
-    int modelPtr = modelNumber % 1000;
+    int modelFile = modelNumber / 1000000;
+    int modelPtr = modelNumber % 1000000;
     for (int i = 0; i < modelCount; i++) {
-      thisFile = models[i].modelNumber / 1000;
+      thisFile = models[i].modelNumber / 1000000;
       if (thisFile == nFile) {
         thisModel++;
       } else {

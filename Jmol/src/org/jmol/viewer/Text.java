@@ -559,7 +559,7 @@ class Text {
       default:
         s.append("set echo " + vAlignNames[valign] + " " + hAlignNames[align]);
       }
-      s.append(";echo " + StateManager.escape(text) + ";\n");
+      s.append(";echo " + StateManager.escape(textUnformatted) + ";\n");
     }
     //isDefine and target==top: do all
     //isDefine and target!=top: just start

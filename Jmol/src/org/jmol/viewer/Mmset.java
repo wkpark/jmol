@@ -178,14 +178,7 @@ final class Mmset {
   String getModelNumberDotted(int modelIndex) {
     if (modelCount < 1)
       return "";
-    int filenumber = models[modelIndex].modelNumber / 1000000; 
-    if (filenumber == 0)
-      return "" + getModelNumber(modelIndex);
-    int modelnumber = (models[modelIndex].modelNumber % 1000000);
-    //if only one file, just return the integer file number
-    if (modelnumber == 1 && (modelIndex + 1 == modelCount || models[modelIndex+1].modelNumber / 1000000 != filenumber))
-      return filenumber + "";
-    return filenumber + "." + modelnumber;    
+    return models[modelIndex].modelNumberDotted;
   }
   
   int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
@@ -271,11 +264,89 @@ final class Mmset {
     String codes = (String) getModelAuxiliaryInfo(modelIndex, "altLocs");
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
     codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
-    models[modelIndex].modelFileNumber = getModelAuxiliaryInfoInt(modelIndex, "modelFileNumber");
     models[modelIndex].setNInsertions(codes == null ? 0 : codes.length());
     return models[modelIndex].isPDB = isPDB || getModelAuxiliaryInfoBoolean(modelIndex, "isPDB");
   }
+  
+  /**
+   * Model numbers are considerably more complicated in Jmol 11.
+   * 
+   * int modelNumber
+   *  
+   *   The adapter gives us a modelNumber, but that is not necessarily
+   *   what the user accesses. If a single files is loaded this is:
+   *   
+   *   a) single file context:
+   *   
+   *     1) the sequential number of the model in the file , or
+   *     2) if a PDB file and "MODEL" record is present, that model number
+   *     
+   *   b) multifile context:
+   *   
+   *     always 1000000 * (fileIndex + 1) + (modelIndexInFile + 1)
+   *   
+   *   
+   * int fileIndex
+   * 
+   *   The 0-based reference to the file containing this model. Used
+   *   when doing   "select model=3.2" in a multifile context
+   *   
+   * int modelFileNumber
+   * 
+   *   An integer coding both the file and the model:
+   *   
+   *     file * 1000000 + modelInFile (1-based)
+   *     
+   *   Used all over the place. Note that if there is only one file,
+   *   then modelFileNumber < 1000000.
+   * 
+   * String modelNumberDotted
+   *   
+   *   A number the user can use "1.3"
+   *   
+   *   
+   */
+  void finalizeModelNumbers() {
+    String sNum;
+    int modelnumber = 0;
+    int lastfilenumber = -1;
+    for (int i = 0; i < modelCount; ++i) {
+      int filenumber = models[i].modelNumber / 1000000;
+      if (filenumber != lastfilenumber) {
+        modelnumber = 0;
+        lastfilenumber = filenumber;
+      }
+      modelnumber++;
+      if (filenumber == 0) {
+        // only one file -- take the PDB number or sequential number as given by adapter
+        sNum = "" + getModelNumber(i);
+        filenumber = 1;
+      } else {
+        //if only one file, just return the integer file number
+        if (modelnumber == 1
+            && (i + 1 == modelCount || models[i + 1].modelNumber / 1000000 != filenumber))
+          sNum = filenumber + "";
+        else
+          sNum = filenumber + "." + modelnumber;
+      }
+      models[i].modelNumberDotted = sNum;
+      models[i].fileIndex = filenumber - 1;
+      models[i].modelInFileIndex = modelnumber - 1;
+      models[i].modelFileNumber = filenumber * 1000000 + modelnumber;
+    }
+  }
 
+  static int modelFileNumberFromFloat(float fDotM) {
+    //only used in the case of select model = someVariable
+    //2.1 and 2.10 will be ambiguous and reduce to 2.1  
+    
+    int file = (int)(fDotM);
+    int model = (int) ((fDotM - file +0.00001) * 10000);
+    while (model % 10 == 0)
+      model /= 10;
+    return file * 1000000 + model;
+  }
+  
   int getAltLocCountInModel(int modelIndex) {
     return models[modelIndex].nAltLocs;
   }

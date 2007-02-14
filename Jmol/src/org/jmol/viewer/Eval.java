@@ -812,11 +812,12 @@ class Eval { //implements Runnable {
       case Token.show:
         show();
         break;
-      case Token.frame:
-        frame(1, false);
+      case Token.file:
+        file();
         break;
+      case Token.frame:
       case Token.model:
-        frame(1, true);
+        frame(1);
         break;
       case Token.font:
         font();
@@ -1083,6 +1084,11 @@ class Eval { //implements Runnable {
     int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
         .length()
         : lineIndices[pc + 1]);
+    
+    // I can't figure out why this gets messed up with entry from app on syntaxCheck
+    
+    if (ichBegin < 0)
+      ichBegin = 0;
     if (ichEnd > script.length() || ichEnd < ichBegin)
       ichEnd = script.length();
     String s = script.substring(ichBegin, ichEnd);
@@ -1258,7 +1264,7 @@ class Eval { //implements Runnable {
       case Token.carbohydrate:
       case Token.purine:
       case Token.pyrimidine:
-        stack[sp++] = viewer.getAtomBits((String) instruction.value);
+        stack[sp++] = getAtomBits((String) instruction.value);
         break;
       case Token.spec_atom:
         stack[sp++] = viewer
@@ -1273,17 +1279,17 @@ class Eval { //implements Runnable {
         isExpressionBitSet = true;
         break;
       case Token.spec_alternate:
-        stack[sp++] = viewer.getAtomBits("SpecAlternate",
+        stack[sp++] = getAtomBits("SpecAlternate",
             (String) instruction.value);
         break;
       case Token.spec_model:
-        //1002 is equivalent to 1.2 when more than one file is present
+      //1002 is equivalent to 1.2 when more than one file is present
       case Token.spec_model2:
-        int iModel = instruction.intValue; 
+        int iModel = instruction.intValue;
         if (iModel == Integer.MAX_VALUE) {
           iModel = ((Integer) instruction.value).intValue();
           if (!viewer.haveFileSet()) {
-            stack[sp++] = viewer.getAtomBits("SpecModel", iModel);
+            stack[sp++] = getAtomBits("SpecModel", iModel);
             break;
           }
           if (iModel < 1000)
@@ -1291,27 +1297,26 @@ class Eval { //implements Runnable {
           else
             iModel = (iModel / 1000) * 1000000 + iModel % 1000;
         }
-        stack[sp++] = bitSetForModelNumberSet(
-            new int[] { iModel }, 1);
+        stack[sp++] = bitSetForModelNumberSet(new int[] { iModel }, 1);
         break;
       case Token.spec_resid:
-        stack[sp++] = viewer.getAtomBits("SpecResid", instruction.intValue);
+        stack[sp++] = getAtomBits("SpecResid", instruction.intValue);
         break;
       case Token.spec_seqcode:
-        stack[sp++] = viewer.getAtomBits("SpecSeqcode", instruction.intValue);
+        stack[sp++] = getAtomBits("SpecSeqcode", instruction.intValue);
         break;
       case Token.spec_chain:
-        stack[sp++] = viewer.getAtomBits("SpecChain", instruction.intValue);
+        stack[sp++] = getAtomBits("SpecChain", instruction.intValue);
         break;
       case Token.spec_seqcode_range:
         int seqcodeA = instruction.intValue;
         int seqcodeB = ((Integer) instruction.value).intValue();
-        stack[sp++] = viewer.getAtomBits("SpecSeqcodeRange", new int[] {
+        stack[sp++] = getAtomBits("SpecSeqcodeRange", new int[] {
             seqcodeA, seqcodeB });
         break;
       case Token.cell:
         Point3f pt = (Point3f) instruction.value;
-        stack[sp++] = viewer.getAtomBits("Cell", new int[] {
+        stack[sp++] = getAtomBits("Cell", new int[] {
             (int) (pt.x * 1000), (int) (pt.y * 1000), (int) (pt.z * 1000) });
         break;
       case Token.identifier:
@@ -1332,24 +1337,39 @@ class Eval { //implements Runnable {
         Object val = code[++pc].value;
         if (isSyntaxCheck)
           break;
+        int tokOperator = instruction.tok;
+        int tokWhat = instruction.intValue;
+        boolean isModel = (tokWhat == Token.model);
+        boolean isRadius = (tokWhat == Token.radius);
+        int tokValue = code[pc].tok;
         comparisonValue = code[pc].intValue;
-        boolean isIdentifier = (code[pc].tok == Token.identifier);
+        boolean isIdentifier = (tokValue == Token.identifier);
         if (isIdentifier) {
           val = viewer.getParameter((String) val);
           if (val instanceof Integer)
             comparisonValue = ((Integer) val).intValue();
+          else if (val instanceof Float && isModel)
+            comparisonValue = Mmset.modelFileNumberFromFloat(((Float) val).floatValue());
         }
-        if (val instanceof Integer || code[pc].tok == Token.integer)
-          comparisonValue *= ((instruction.intValue & Token.atompropertyfloat) == Token.atompropertyfloat ? 100
+        if (val instanceof Integer || tokValue == Token.integer) {
+          comparisonValue *= ((tokWhat & Token.atompropertyfloat) == Token.atompropertyfloat ? 100
               : 1);
-        else if (val instanceof Float)
-          comparisonValue = (int) (((Float) val).floatValue() * (instruction.intValue == Token.radius ? 250f
-              : 100f));
-        else
+          if (isModel) {
+            if (comparisonValue > 1000 && comparisonValue < 1000000 && viewer.haveFileSet()) {
+              comparisonValue = (comparisonValue / 1000) * 1000000 + comparisonValue % 1000;
+            }
+          }
+        } else if (val instanceof Float) {
+          if (isModel) {
+            tokWhat = -tokWhat;            
+          } else {
+            comparisonValue = (int) (((Float) val).floatValue() * (isRadius ? 250f : 100f));
+          }
+        } else
           invalidArgument();
         if (((String) instruction.value).indexOf("-") >= 0)
           comparisonValue = -comparisonValue;
-        comparatorInstruction(instruction, bs, comparisonValue);
+         comparatorInstruction(tokWhat, tokOperator, comparisonValue, bs);
         break;
       default:
         unrecognizedExpression();
@@ -1399,8 +1419,32 @@ class Eval { //implements Runnable {
       return copyBitSet(bs);
 
     // next we look for names of groups (PDB) or atoms (non-PDB)
-    bs = viewer.getAtomBits("IdentifierOrNull", identifier);
+    bs = getAtomBits("IdentifierOrNull", identifier);
     return (bs == null ? new BitSet() : bs);
+  }
+  
+  BitSet getAtomBits(String setType) {
+    if (isSyntaxCheck)
+      return new BitSet();
+    return viewer.getAtomBits(setType);
+  }
+
+  BitSet getAtomBits(String setType, String specInfo) {
+    if (isSyntaxCheck)
+      return new BitSet();
+    return viewer.getAtomBits(setType, specInfo);
+  }
+
+  BitSet getAtomBits(String setType, int specInfo) {
+    if (isSyntaxCheck)
+      return new BitSet();
+    return viewer.getAtomBits(setType, specInfo);
+  }
+
+  BitSet getAtomBits(String setType, int[] specInfo) {
+    if (isSyntaxCheck)
+      return new BitSet();
+    return viewer.getAtomBits(setType, specInfo);
   }
 
   BitSet lookupValue(String variable, boolean plurals) throws ScriptException {
@@ -1438,13 +1482,11 @@ class Eval { //implements Runnable {
     return lookupValue(variable, true);
   }
 
-  void comparatorInstruction(Token instruction, BitSet bs, int comparisonValue)
-      throws ScriptException {
-    int comparator = instruction.tok;
-    int property = instruction.intValue;
+  void comparatorInstruction(int tokWhat, int tokOperator, int comparisonValue,
+                             BitSet bs) throws ScriptException {
     int propertyValue = Integer.MAX_VALUE;//Float.NaN;
     BitSet propertyBitSet = null;
-    int bitsetComparator = comparator;
+    int bitsetComparator = tokOperator;
     int bitsetBaseValue = comparisonValue;
     int atomCount = viewer.getAtomCount();
     int imax = 0;
@@ -1453,7 +1495,7 @@ class Eval { //implements Runnable {
     for (int i = 0; i < atomCount; ++i) {
       boolean match = false;
       Atom atom = frame.getAtomAt(i);
-      switch (property) {
+      switch (tokWhat) {
       case Token.atomno:
         propertyValue = atom.getAtomNumber();
         break;
@@ -1557,8 +1599,17 @@ class Eval { //implements Runnable {
       case Token._bondedcount:
         propertyValue = atom.getCovalentBondCount();
         break;
+      case Token.file:
+        propertyValue = atom.getModelFileIndex() + 1;
+        break;
       case Token.model:
-        propertyValue = atom.getModelTagNumber();
+        //integer model number -- could be PDB/sequential adapter number
+        //or it could be a sequential model in file number when multiple files
+        propertyValue = atom.getModelNumber() % 1000000;
+        break;
+      case -Token.model:
+        //float is handled differently
+        propertyValue = atom.getModelFileNumber();
         break;
       case Token.atomX:
         propertyValue = (int) (atom.x * 100);
@@ -1570,7 +1621,7 @@ class Eval { //implements Runnable {
         propertyValue = (int) (atom.z * 100);
         break;
       default:
-        unrecognizedAtomProperty(property);
+        unrecognizedAtomProperty(tokWhat);
       }
       // note that a symop property can be both LE and GT !
       if (propertyBitSet != null) {
@@ -1610,9 +1661,9 @@ class Eval { //implements Runnable {
           }
         }
         if (!match || propertyValue == Integer.MAX_VALUE)
-          comparator = Token.none;
+          tokOperator = Token.none;
       }
-      switch (comparator) {
+      switch (tokOperator) {
       case Token.opLT:
         match = propertyValue < comparisonValue;
         break;
@@ -1723,6 +1774,8 @@ class Eval { //implements Runnable {
 
   String parameterAsString(int i) throws ScriptException {
     Token token = getToken(i);
+    if (token == null)
+      endOfStatementUnexpected();
     return (token.tok == Token.integer ? "" + token.intValue : "" + token.value);
   }
 
@@ -4768,7 +4821,7 @@ class Eval { //implements Runnable {
         viewer.setAnimationOn(animate);
       break;
     case Token.frame:
-      frame(2, false);
+      frame(2);
       break;
     case Token.mode:
       animationMode();
@@ -4788,8 +4841,26 @@ class Eval { //implements Runnable {
     }
   }
 
-  void frame(int offset, boolean useModelNumber) throws ScriptException {
-    useModelNumber = true;
+  void file() throws ScriptException {
+    int file = intParameter(1);
+    if (isSyntaxCheck)
+      return;
+    int modelIndex = viewer.getModelNumberIndex(file * 1000000 + 1, false);
+    int modelIndex2 = -1;
+    if (modelIndex >= 0) {
+      modelIndex2 = viewer.getModelNumberIndex((file + 1) * 1000000 + 1, false);
+      if (modelIndex2 < 0)
+        modelIndex2 = viewer.getModelCount();
+      modelIndex2--;
+    }
+    viewer.setAnimationOn(false);
+    viewer.setAnimationDirection(1);
+    viewer.setAnimationRange(modelIndex, modelIndex2);
+    viewer.setCurrentModelIndex(-1);
+  }
+  
+  void frame(int offset) throws ScriptException {
+    boolean useModelNumber = true;
     // for now -- as before -- remove to implement
     // frame/model difference
 
@@ -7775,6 +7846,7 @@ class Eval { //implements Runnable {
 
     ScriptException(String message) {
       this.message = (message == null ? "" : message) + contextTrace();
+      
       if (!isSyntaxCheck)
         Logger.error("eval ERROR: " + toString());
     }

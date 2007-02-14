@@ -361,6 +361,7 @@ class Compiler {
         case Token.restrict:
         case Token.select:
         case Token.display:
+        case Token.hide:
           if (tok != Token.identifier && !tokAttr(tok, Token.expression))
             return invalidExpressionToken(ident);
           break;
@@ -1293,6 +1294,8 @@ class Compiler {
     case Token.leftbrace:
       if (!isBitSetExpression)
         break;
+    case Token.define:
+      break;
     default:
       return numberOrVariableNameExpected();
     }
@@ -1303,7 +1306,10 @@ class Compiler {
       returnToken();
       return clausePrimitive();
     }
-    return addTokenToPostfix(theToken);
+    addTokenToPostfix(theToken);
+    if (theToken.tok == Token.define)
+      addTokenToPostfix(getToken());
+    return true;
   }
 
   boolean clauseCell() {

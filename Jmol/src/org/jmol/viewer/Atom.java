@@ -811,7 +811,7 @@ final public class Atom extends Point3fi implements Tuple {
     }
     if (group.chain.frame.getModelCount() > 1) {
       info.append("/");
-      info.append(getModelTagNumber());
+      info.append(getModelNumberDotted());
     }
     info.append(" #");
     info.append(getAtomNumber());
@@ -960,23 +960,24 @@ final public class Atom extends Point3fi implements Tuple {
     return group.chain.model;
   }
 
+  String getModelNumberDotted() {
+    return group.chain.model.modelNumberDotted;
+  }
+  
   int getModelNumber() {
     return group.chain.model.modelNumber;
   }
   
-  String getModelTag() {
-    return group.chain.model.modelTag;
+  int getModelFileIndex() {
+    return group.chain.model.fileIndex;
   }
-
-  int getModelTagNumber() {
-    if (group.chain.model.isPDB) { 
-      try {
-        return Integer.parseInt(group.chain.model.modelTag);
-      } 
-      catch (Exception e) {
-      }
-    }  
-    return getModelNumber();
+  
+  int getModelInFileIndex() {
+    return group.chain.model.modelInFileIndex;
+  }
+  
+  int getModelFileNumber() {
+    return group.chain.model.modelFileNumber;
   }
   
   byte getProteinStructureType() {
@@ -1163,7 +1164,7 @@ final public class Atom extends Point3fi implements Tuple {
           strT = "" + getPolymerLength();
           break;
         case 'M':
-          strT = "" + getModelTagNumber();
+          strT = getModelNumberDotted();
           break;
         case 'm':
           strT = getGroup1();

@@ -68,8 +68,11 @@ final class Model {
   
   Mmset mmset;
   int modelIndex;   // our 0-based reference
-  int modelNumber;  // possibly PDB MODEL record
+  int modelNumber;  // from adapter -- possibly PDB MODEL record; possibly modelFileNumber
+  int fileIndex;   // 0-based file reference
+  int modelInFileIndex;   // 0-based index of model in its file
   int modelFileNumber;  // file * 1000000 + modelInFile (1-based)
+  String modelNumberDotted = "1.1";
   String modelTag;
   int preSymmetryAtomIndex = -1;
   int preSymmetryAtomCount;

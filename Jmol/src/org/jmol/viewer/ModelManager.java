@@ -984,7 +984,7 @@ String getAtomInfoChime(int i) {
     }
     info.put("bondCount", new Integer(atom.getCovalentBondCount()));
     info.put("radius", new Float((atom.getRasMolRadius() / 120.0)));
-    info.put("model", new Integer(atom.getModelTagNumber()));
+    info.put("model", new Integer(atom.getModelNumberDotted()));
     info.put("visible", new Boolean(getAtomVisibility(i)));
     info.put("clickabilityFlags", new Integer(atom.clickabilityFlags));
     info.put("visibilityFlags", new Integer(atom.shapeVisibilityFlags));

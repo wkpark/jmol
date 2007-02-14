@@ -121,7 +121,7 @@ public class Token {
   final static int color        = command |  6 | colorparam | setparam;
   final static int connect      = command |  7 | embeddedExpression | colorparam;
   final static int data         = command |  8;
-  final static int define       = command |  9 | expressionCommand;
+  final static int define       = command |  9 | expressionCommand | expression;
   final static int dots         = command | 10 | embeddedExpression | bool;
   final static int echo         = command | 11 | setparam | specialstring;
   final static int exit         = command | 12;
@@ -210,12 +210,13 @@ public class Token {
   final static int boundbox      = command | 113 | setparam;
   final static int unitcell      = command | 114 | setparam | expression | predefinedset;
   final static int frank         = command | 115 | setparam;
- // model and molecule are listed with atomproperty because they must be registered as atom property names
-  //final static int model         = command | 116 | atomproperty;
-  //final static int molecule      = command | 117 | unimplemented | atomproperty;
-  final static int navigate      = command | 118 | negnums | embeddedExpression;
-  final static int gotocmd       = command | 119;
-  
+  final static int navigate      = command | 116 | negnums | embeddedExpression;
+  final static int gotocmd       = command | 117;
+  //the following are listed with atomproperty because they must be registered as atom property names
+  //final static int model           = atomproperty | 5 | command;
+  //final static int molecule        = atomproperty | 12 | command | unimplemented;
+  //final static int file            = atomproperty | 26 | command | showparam;
+
   // parameters
   final static int ambient      = setparam |  0;
   // background
@@ -298,8 +299,7 @@ public class Token {
   final static int axisangle    = showparam | 13;
   final static int transform    = showparam | 14;
   final static int orientation  = showparam | 15;
-  final static int file         = showparam | 16;
-  final static int state        = showparam | 17;
+  final static int state        = showparam | 16;
 
   // of the above, only pdbheader, orientation, and file are implemented
   // axisangle is used in the spin command, not the show command
@@ -367,6 +367,9 @@ public class Token {
   final static int atomX       = atompropertyfloat | 23;
   final static int atomY       = atompropertyfloat | 24;
   final static int atomZ       = atompropertyfloat | 25;
+  
+  final static int file            = atomproperty | 26 | command | showparam;
+
 
 
   final static String[] atomPropertyNames = {
@@ -375,7 +378,7 @@ public class Token {
     "occupancy", "polymerLength", "molecule", "cell", "site", 
     "element", "symop", "surfaceDistance", "atomIndex", 
     "formalCharge", "phi", "psi", "partialCharge",
-    "atomX", "atomY", "atomZ"};
+    "atomX", "atomY", "atomZ", "file"};
 
   final static int ATOM_PROPERTY_MASK = 0x1F;  
 
@@ -720,7 +723,7 @@ public class Token {
     "axisangle",    new Token(axisangle,       "axisangle"),
     "transform",    new Token(transform,       "transform"),
     "orientation",  new Token(orientation,     "orientation"),
-    "file",         new Token(file,            "file"),
+    "file",         new Token(file,            1, "file"),
     "state",        new Token(state,           "state"),
     "url",          new Token(url,             "url"),
 

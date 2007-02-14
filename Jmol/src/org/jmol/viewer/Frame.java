@@ -291,6 +291,7 @@ public final class Frame {
           }
         }
       }
+      mmset.finalizeModelNumbers();
 
       // atom is created, but not all methods are safe, because it
       // has no group -- this is only an issue for debugging

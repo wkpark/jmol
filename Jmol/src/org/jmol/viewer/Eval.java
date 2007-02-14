@@ -6056,8 +6056,8 @@ class Eval { //implements Runnable {
     case Token.string:
       fileName = parameterAsString(pt);
       //write filename.xxx  gets separated as filename .spt
-      if (fileName.charAt(0) == '.') {
-        fileName = val + fileName;
+      if (fileName.charAt(0) == '.' && pt == 2) {
+        fileName = parameterAsString(1) + fileName;
         type = "image";
       }
       break;

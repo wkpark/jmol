@@ -35,12 +35,23 @@ final public class JmolConstants {
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
   public final static String version = "11.1.12"; 
+  //11.1.12:
   //app fix for console entry messing up cursor position; 
   //allows for scripting during pause or interrupt of running script using ! as first character of script
   //new: within(x.x,plane,$plane1)
   //fix for "draw off" not recorded in save state
   //fix for within(integer,...) bug using RasMol units
   //fix for _modelnumber showing up as 2001
+  //reconfigures _modelNumber as x.y for single models; x.x - y.y for range 
+  //adds _currentFileNumber
+  //adds _currentModelNumberInFile
+  //disallows user setting of variables with _ as first character
+  //adds @variableName in any command 
+  //adds frame x.x - y.y
+  //adds frame 0.0
+  //adds frame range x.x - y.y
+  
+  
   
   public final static String cvsDate = "$Date$";
   public final static String date = cvsDate.substring(7, 23);

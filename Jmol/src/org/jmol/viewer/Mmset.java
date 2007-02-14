@@ -196,27 +196,18 @@ final class Mmset {
       return -1;
     }
     //new decimal format:   frame 1.2 1.3 1.4
-    int nFile = -1;
-    int thisFile = 0;
-    int thisModel = 0;
-    int modelFile = modelNumber / 1000000;
-    int modelPtr = modelNumber % 1000000;
-    for (int i = 0; i < modelCount; i++) {
-      thisFile = models[i].modelNumber / 1000000;
-      if (thisFile == nFile) {
-        thisModel++;
-      } else {
-        thisModel = 1;
-        nFile = thisFile;
-      }
-      if (modelFile == thisFile && modelPtr == thisModel)
+    for (int i = 0; i < modelCount; i++)
+      if (models[i].modelFileNumber == modelNumber)
         return i;
-    }
     return -1;
   }
 
   int getModelNumber(int modelIndex) {
     return models[modelIndex].modelNumber;
+  }
+
+  int getModelFileNumber(int modelIndex) {
+    return models[modelIndex].modelFileNumber;
   }
 
   Properties getModelProperties(int modelIndex) {
@@ -280,6 +271,8 @@ final class Mmset {
     String codes = (String) getModelAuxiliaryInfo(modelIndex, "altLocs");
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
     codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
+    models[modelIndex].modelFileNumber = getModelAuxiliaryInfoInt(modelIndex, "modelFileNumber");
+ System.out.println("mmset model " + modelIndex + " " + getModelFileNumber(modelIndex));
     models[modelIndex].setNInsertions(codes == null ? 0 : codes.length());
     return models[modelIndex].isPDB = isPDB || getModelAuxiliaryInfoBoolean(modelIndex, "isPDB");
   }

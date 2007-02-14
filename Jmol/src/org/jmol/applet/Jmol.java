@@ -808,11 +808,13 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       showStatusAndConsole(strInfo);
     }
 
-    public void notifyFrameChanged(int frameNo) {
+    public void notifyFrameChanged(int frameNo, int fileNo, int modelNo,
+                                   int firstNo, int lastNo) {
       boolean isAnimationRunning = (frameNo <= -2);
       if (animFrameCallback != null && jsoWindow != null)
         jsoWindow.call(animFrameCallback, new Object[] { htmlName,
-            new Integer(Math.max(frameNo, -2 - frameNo)) });
+            new Integer(Math.max(frameNo, -2 - frameNo)), new Integer(fileNo),
+            new Integer(modelNo), new Integer(firstNo), new Integer(lastNo) });
       if (jmolpopup == null || isAnimationRunning)
         return;
       jmolpopup.updateComputedMenus();

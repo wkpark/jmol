@@ -68,7 +68,8 @@ final class Model {
   
   Mmset mmset;
   int modelIndex;   // our 0-based reference
-  int modelNumber;  // what the user works with
+  int modelNumber;  // possibly PDB MODEL record
+  int modelFileNumber;  // file * 1000000 + modelInFile (1-based)
   String modelTag;
   int preSymmetryAtomIndex = -1;
   int preSymmetryAtomCount;
@@ -83,7 +84,8 @@ final class Model {
   private Polymer[] polymers = new Polymer[8];
 
 
-  Model(Mmset mmset, int modelIndex, int modelNumber, String modelTag) {
+  Model(Mmset mmset, int modelIndex, int modelNumber,
+      String modelTag) {
     this.mmset = mmset;
     this.modelIndex = modelIndex;
     this.modelNumber = modelNumber;

@@ -565,7 +565,7 @@ class StateManager {
       + ";vibrationscale;vibrationperiod;"
       + ";cameradepth;navigationmode;rotationradius;"
       + ";zerobasedxyzrasmol;axesorientationrasmol;"
-      + ";_modelnumber;_modelname;_version;_memory;"
+      + ";_modelnumber;_modelname;_currentmodelnumberinfile;_currentfilenumber;_version;_memory;"
       + "";
 
     void clearVolatileProperties() {

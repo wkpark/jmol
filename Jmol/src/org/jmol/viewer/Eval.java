@@ -4835,9 +4835,11 @@ class Eval { //implements Runnable {
         if (nFrames == 2)
           invalidArgument();
         int iFrame = statement[i].intValue;
-        if (iFrame >= 1000 && iFrame < 1000000)
-          iFrame = (iFrame / 1000) * 1000000 + (iFrame % 1000);
-        if (iFrame > 1000)
+        if (iFrame >= 1000 && iFrame < 1000000 && viewer.haveFileSet())
+          iFrame = (iFrame / 1000) * 1000000 + (iFrame % 1000); //initial way
+        if (!useModelNumber && iFrame == 0)
+          isAll = true; // 0.0 means ALL; 0 means "all in this range
+        if (iFrame > 1000000)
           useModelNumber = false;
         frameList[nFrames++] = iFrame;
         break;

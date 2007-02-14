@@ -205,6 +205,10 @@ class ModelManager {
     return frame.getModelNumber(modelIndex);
   }
 
+  int getModelFileNumber(int modelIndex) {
+    return frame.getModelNumber(modelIndex);
+  }
+
   Properties getModelProperties(int modelIndex) {
     return frame.getModelProperties(modelIndex);
   }

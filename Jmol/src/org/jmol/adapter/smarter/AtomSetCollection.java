@@ -67,6 +67,7 @@ class AtomSetCollection extends Parser {
   int atomSetCount;
   int currentAtomSetIndex = -1;
   int[] atomSetNumbers = new int[16];
+  int[] atomSetModelFileNumbers = new int[16];
   String[] atomSetNames = new String[16];
   int[] atomSetAtomCounts = new int[16];
   Properties[] atomSetProperties = new Properties[16];
@@ -125,7 +126,6 @@ class AtomSetCollection extends Parser {
                                          AtomSetCollection collection) {
     // Initialisations
     int existingAtomsCount = atomCount;
-
     // Clone each AtomSet
     int clonedAtoms = 0;
     for (int atomSetNum = 0; atomSetNum < collection.atomSetCount; atomSetNum++) {
@@ -150,7 +150,11 @@ class AtomSetCollection extends Parser {
 
       // auxiliary info
       atomSetAuxiliaryInfo[currentAtomSetIndex] = collection.atomSetAuxiliaryInfo[atomSetNum];
+      int modelFileNumber = ((Integer)atomSetAuxiliaryInfo[currentAtomSetIndex].get("modelFileNumber")).intValue();
+      modelFileNumber += (collectionIndex + 1) * 1000000;
+      atomSetAuxiliaryInfo[currentAtomSetIndex].put("modelFileNumber", new Integer(modelFileNumber));
 
+      
       //Structures: We must incorporate any global structures (modelIndex == -1) into this model
       //explicitly. Whew! This is because some cif _data structures have multiple PDB models (1skt)
       for (int i = 0; i < collection.structureCount; i++)
@@ -292,6 +296,7 @@ class AtomSetCollection extends Parser {
       atomSetCount = 1;
       currentAtomSetIndex = 0;
       atomSetNumbers[0] = 1;
+      setAtomSetAuxiliaryInfo("modelFileNumber", new Integer(1));
     }
     atom.atomSetIndex = currentAtomSetIndex;
     atom.atomSite = ++atomSetAtomCounts[currentAtomSetIndex];
@@ -658,6 +663,7 @@ class AtomSetCollection extends Parser {
     // seems that it should have been here all along, but apparently
     // noone else needed it
     atomSymbolicMap.clear();
+    setAtomSetAuxiliaryInfo("modelFileNumber", new Integer(currentAtomSetIndex + 1));
   }
 
   /**

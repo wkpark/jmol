@@ -51,15 +51,9 @@ class RepaintManager {
     if (currentModelIndex == -1)
       setBackgroundModelIndex(-1);
     viewer.setTainted(true);
+    setFrameRangeVisible();
     if (frame != null)
       setStatusFrameChanged();
-    setFrameRangeVisible();
-    String s =  viewer.getModelNumberDotted(currentModelIndex);
-    if (s == "0")
-      s = viewer.getModelNumberDotted(firstModelIndex) + " - " + viewer.getModelNumberDotted(lastModelIndex);
-    viewer.setStringProperty("_modelNumber", s);
-    viewer.setStringProperty("_modelName", (currentModelIndex < 0 ? "" : viewer
-        .getModelName(currentModelIndex)));
   }
 
   void setStatusFrameChanged() {

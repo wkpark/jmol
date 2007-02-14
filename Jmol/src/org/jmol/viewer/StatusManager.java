@@ -150,7 +150,7 @@ class StatusManager {
              modelName, clientFile, errorMsg);
   }
 
-  synchronized void setStatusFrameChanged(int frameNo) {
+  synchronized void setStatusFrameChanged(int frameNo, int fileNo, int modelNo, int firstNo, int lastNo) {
     if (viewer.getFrame() == null)
       return;
     boolean isAnimationRunning = (frameNo <= -2);
@@ -160,7 +160,7 @@ class StatusManager {
     setStatusChanged("frameChanged", frameNo, (f >= 0 ? viewer
         .getModelName(f) : ""), false);
     if (jmolStatusListener != null)
-      jmolStatusListener.notifyFrameChanged(frameNo);
+      jmolStatusListener.notifyFrameChanged(frameNo, fileNo, modelNo, firstNo, lastNo);
   }
 
   synchronized void setStatusNewPickingModeMeasurement(int iatom, String strMeasure) {

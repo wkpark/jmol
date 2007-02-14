@@ -1550,7 +1550,7 @@ public class Jmol extends JPanel {
         pcs.firePropertyChange(chemFileProperty, null, clientFile);
     }
 
-    public void notifyFrameChanged(int frameNo) {
+    public void notifyFrameChanged(int frameNo, int fileNo, int modelNo, int firstNo, int lastNo) {
       // Note: twos-complement. To get actual frame number, use 
       // Math.max(frameNo, -2 - frameNo)
       // -1 means all frames are now displayed

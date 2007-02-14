@@ -221,11 +221,10 @@ public class Viewer extends JmolViewer {
       Logger.info(JmolConstants.copyright + "\nJmol Version "
           + getJmolVersion() + "\njava.vendor:" + strJavaVendor
           + "\njava.version:" + strJavaVersion + "\nos.name:" + strOSName
-          + "\nmemory:" + getParameter("_memory")
-          + "\n" + htmlName);
+          + "\nmemory:" + getParameter("_memory") + "\n" + htmlName);
     }
 
-    setIntProperty("_version", getJmolVersionInt());    
+    setIntProperty("_version", getJmolVersionInt());
     if (isApplet)
       fileManager.setAppletContext(documentBase, codeBase,
           appletProxyOrCommandOptions);
@@ -1241,8 +1240,7 @@ public class Viewer extends JmolViewer {
     fileManager.openFiles(modelName, names, loadScript);
     long ms = System.currentTimeMillis() - timeBegin;
     for (int i = 0; i < names.length; i++) {
-      setStatusFileLoaded(1, names[i], "", getModelSetName(),
-          null, null);
+      setStatusFileLoaded(1, names[i], "", getModelSetName(), null, null);
     }
     Logger.info("openFiles(" + names.length + ") " + ms + " ms");
   }
@@ -1258,8 +1256,7 @@ public class Viewer extends JmolViewer {
     fileManager.openStringInline(strModel, params);
     String errorMsg = getOpenFileError();
     if (errorMsg == null)
-      setStatusFileLoaded(1, "string", "", getModelSetName(),
-          null, null);
+      setStatusFileLoaded(1, "string", "", getModelSetName(), null, null);
   }
 
   private void openStringInline(String[] arrayModels, int[] params) {
@@ -1268,8 +1265,7 @@ public class Viewer extends JmolViewer {
     fileManager.openStringInline(arrayModels, params);
     String errorMsg = getOpenFileError();
     if (errorMsg == null)
-      setStatusFileLoaded(1, "string[]", "", getModelSetName(),
-          null, null);
+      setStatusFileLoaded(1, "string[]", "", getModelSetName(), null, null);
   }
 
   public char getInlineChar() {
@@ -1455,7 +1451,8 @@ public class Viewer extends JmolViewer {
       bMax = runtime.maxMemory();
     } catch (Exception e) {
     }
-    Logger.error("ZAP memory inuse, total, free, max: "+(bTotal - bFree) + " " + bTotal+" " + bFree + " " + bMax);
+    Logger.error("ZAP memory inuse, total, free, max: " + (bTotal - bFree)
+        + " " + bTotal + " " + bFree + " " + bMax);
   }
 
   void zap(boolean notify) {
@@ -1681,6 +1678,12 @@ public class Viewer extends JmolViewer {
     if (modelIndex < 0)
       return modelIndex;
     return modelManager.getModelNumber(modelIndex);
+  }
+
+  public int getModelFileNumber(int modelIndex) {
+    if (modelIndex < 0)
+      return 0;
+    return modelManager.getModelFileNumber(modelIndex);
   }
 
   String getModelNumberDotted(int modelIndex) {
@@ -2326,7 +2329,7 @@ public class Viewer extends JmolViewer {
   boolean haveFileSet() {
     return (getModelCount() > 1 && getModelNumber(0) > 1000000);
   }
-  
+
   void setBackgroundModel(int modelNumber) {
     //Eval
     int modelIndex = getModelNumberIndex(modelNumber, !haveFileSet());
@@ -2595,6 +2598,7 @@ public class Viewer extends JmolViewer {
   }
 
   String interruptScript = "";
+
   String getInterruptScript() {
     String s = interruptScript;
     interruptScript = "";
@@ -2602,7 +2606,7 @@ public class Viewer extends JmolViewer {
       System.out.println("interrupt: " + s);
     return s;
   }
-  
+
   public String evalString(String strScript) {
     getInterruptScript();
     boolean isInterrupt = (strScript.length() > 0 && strScript.charAt(0) == '!');
@@ -2695,12 +2699,11 @@ public class Viewer extends JmolViewer {
   public Object evalStringWaitStatus(String returnType, String strScript,
                                      String statusList) {
     scriptManager.waitForQueue();
-    return evalStringWaitStatus(returnType, strScript, statusList, false,
-        false);
+    return evalStringWaitStatus(returnType, strScript, statusList, false, false);
   }
 
   int scriptIndex;
-  
+
   synchronized Object evalStringWaitStatus(String returnType, String strScript,
                                            String statusList,
                                            boolean isScriptFile, boolean isQuiet) {
@@ -3139,7 +3142,29 @@ public class Viewer extends JmolViewer {
 
   void setStatusFrameChanged(int frameNo) {
     transformManager.setVibrationPeriod(Float.NaN);
-    statusManager.setStatusFrameChanged(frameNo);
+    int modelIndex = repaintManager.currentModelIndex;
+    int fileNo = getModelFileNumber(modelIndex);
+    int modelNo = fileNo % 1000000;
+    int firstNo = getModelFileNumber(repaintManager.firstModelIndex);
+    int lastNo = getModelFileNumber(repaintManager.lastModelIndex);
+    String s;
+    if (fileNo == 0) {
+      s = getModelNumberDotted(repaintManager.firstModelIndex) + " - "
+          + getModelNumberDotted(repaintManager.lastModelIndex);
+      if (firstNo/1000000 == lastNo/1000000)
+        fileNo = firstNo;
+    } else {
+      s = getModelNumberDotted(modelIndex);
+    }
+    if (fileNo != 0)
+      fileNo = (fileNo < 1000000 ? 1 : fileNo / 1000000);
+
+    global.setParameterValue("_currentFileNumber", fileNo);
+    global.setParameterValue("_currentModelNumberInFile", modelNo);
+    global.setParameterValue("_modelNumber", s);
+    global.setParameterValue("_modelName", (modelIndex < 0 ? ""
+        : getModelName(modelIndex)));
+    statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo, firstNo, lastNo);
   }
 
   void setStatusFileLoaded(int ptLoad, String fullPathName, String fileName,
@@ -4238,7 +4263,8 @@ public class Viewer extends JmolViewer {
   }
 
   int makeConnections(float minDistance, float maxDistance, short order,
-                      int connectOperation, BitSet bsA, BitSet bsB, BitSet bsBonds) {
+                      int connectOperation, BitSet bsA, BitSet bsB,
+                      BitSet bsBonds) {
     //eval
     clearAllMeasurements(); // necessary for serialization
     return modelManager.makeConnections(minDistance, maxDistance, order,
@@ -4487,15 +4513,13 @@ public class Viewer extends JmolViewer {
       if (i < 0)
         return text;
       String name = text.substring(i0, i);
-      text = text.substring(0, i0 - 2) + 
-        (name.length() == 0 ? ""  : name.charAt(0) == '(' 
-          ? "" + cardinalityOf(getAtomBitSet(name))             
-            :  getParameter(name).toString())
-          + text.substring(i + 1);
+      text = text.substring(0, i0 - 2)
+          + (name.length() == 0 ? "" : name.charAt(0) == '(' ? ""
+              + cardinalityOf(getAtomBitSet(name)) : getParameter(name)
+              .toString()) + text.substring(i + 1);
     }
     return text;
   }
-  
 
   // //////////////////////////////////////////////////////////////
   // Access to atom properties for clients

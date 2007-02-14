@@ -94,12 +94,12 @@ class StatusManager {
     boolean isAdd = (statusList.length() > 0 && statusList.charAt(0) == '+');
     String oldList = this.statusList;
     if (isRemove) {
-      this.statusList = viewer.simpleReplace(oldList, statusList.substring(1,statusList.length()), "");
+      this.statusList = Viewer.simpleReplace(oldList, statusList.substring(1,statusList.length()), "");
       messageQueue = new Hashtable();
       statusPtr = 0;
       return true;
     }
-    statusList = viewer.simpleReplace(statusList, "+", "");
+    statusList = Viewer.simpleReplace(statusList, "+", "");
     if(oldList.equals(statusList) 
         || isAdd && oldList.indexOf(statusList) >= 0)
       return false;

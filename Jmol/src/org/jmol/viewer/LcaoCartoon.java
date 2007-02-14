@@ -203,7 +203,7 @@ class LcaoCartoon extends Isosurface {
     // both "pz" and "-pz" on the same atom
     // but we can have "-sp3a" and "sp3a"
     return (id != null ? id : "lcao_" + (i + 1)
-        + (thisType == null ? "" : viewer.simpleReplace(thisType, "-",
+        + (thisType == null ? "" : Viewer.simpleReplace(thisType, "-",
             (thisType.indexOf("-p") == 0 ? "" : "_"))));
   }
 

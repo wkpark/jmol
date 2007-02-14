@@ -3079,6 +3079,17 @@ public final class Frame {
     tainted.set(atomIndex);
   }
   
+  void setTaintedAtoms(BitSet bs) {
+    if (bs == null) {
+      tainted = null;
+      return;
+    }
+    if (tainted == null)
+      tainted = new BitSet(atomCount);
+    tainted.clear();
+    tainted.or(bs);
+  }
+
   void loadCoordinates(String data) {
     Parser p = new Parser();
     int[] lines = p.markLines(data, ';');
@@ -3460,16 +3471,18 @@ public final class Frame {
       int n = 0;
       for (int i = 0; i < atomCount; i++)
         if (tainted.get(i)) {
-          s.append((i + 1) + " " + atoms[i].getElementSymbol() + " "
+          s.append(atoms[i].getElementSymbol() + " "
+              + Viewer.simpleReplace(atoms[i].getIdentity(), " ", "_") + " "
               + atoms[i].x + " " + atoms[i].y + " " + atoms[i].z + " ;\n");
           ++n;
         }
-      commands.append("DATA \"coord set\"\n" + n + " ;\nJmol Coordinate Data Format 1 -- Jmol " + Viewer.getJmolVersion() + ";\n");
+      commands.append("DATA \"coord set\"\n" + n
+          + " ;\nJmol Coordinate Data Format 1 -- Jmol "
+          + Viewer.getJmolVersion() + ";\n");
       commands.append(s);
       commands.append("end \"coord set\";\n");
     }
 
-    
     // connections
 
     commands.append("\n# connections;\n");

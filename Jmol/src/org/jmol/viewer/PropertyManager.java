@@ -272,8 +272,8 @@ class PropertyManager {
   String fixString(String s) {
     if (s == null || s.indexOf("{\"") == 0) //don't doubly fix JSON strings when retrieving status
       return s;
-    s = viewer.simpleReplace(s,"\"","''");
-    s = viewer.simpleReplace(s,"\n"," | ");
+    s = Viewer.simpleReplace(s,"\"","''");
+    s = Viewer.simpleReplace(s,"\n"," | ");
    return "\"" + s + "\"";  
   }
   

@@ -365,6 +365,11 @@ abstract class AtomSetCollectionReader extends Parser {
     return line;
   }
 
+  void checkLineForScript(String line) {
+    this.line = line;
+    checkLineForScript();
+  }
+  
   void checkLineForScript() {
     if (line.endsWith("#noautobond")) {
       line = line.substring(0, line.lastIndexOf('#')).trim();

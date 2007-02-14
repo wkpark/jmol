@@ -50,7 +50,7 @@ class Resolver {
     if (atomSetCollectionReaderName.indexOf("\n") >= 0)
       return "unrecognized file format for file " + name + "\n"
           + atomSetCollectionReaderName;
-    Logger.debug("The Resolver thinks " + atomSetCollectionReaderName);
+    Logger.info("The Resolver thinks " + atomSetCollectionReaderName);
     String className = "org.jmol.adapter.smarter."
         + atomSetCollectionReaderName + "Reader";
     try {
@@ -379,16 +379,19 @@ class Resolver {
   final static String[] nwchemRecords =
   {" argument  1 = "};
 
+  final static String[] jmolDataRecords =
+  { "Jmol Coordinate Data" };
+
   final static String[][] containsRecords =
   { xmlRecords, gaussianRecords, mopacRecords, qchemRecords, gamessRecords,
     spartanBinaryRecords, spartanRecords, mol2Records, adfRecords, psiRecords,
-    nwchemRecords
+    nwchemRecords, jmolDataRecords
   };
 
   final static String[] containsFormats =
   { "Xml", "Gaussian", "Mopac", "Qchem", "Gamess",
     "SpartanSmol", "Spartan" , "Mol2", "Adf", "Psi",
-    "NWChem"};
+    "NWChem", "JmolData"};
 }
 
 class LimitedLineReader {

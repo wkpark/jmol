@@ -4692,7 +4692,7 @@ public class Viewer extends JmolViewer {
         + modelManager.getModelExtract(bs);
   }
 
-  String simpleReplace(String str, String strFrom, String strTo) {
+  static String simpleReplace(String str, String strFrom, String strTo) {
     if (str == null)
       return str;
     int fromLength = strFrom.length();
@@ -4839,6 +4839,14 @@ public class Viewer extends JmolViewer {
 
   Point3f getDefaultLattice() {
     return global.getDefaultLatticePoint();
+  }
+
+  BitSet getTaintedAtoms() {
+    return modelManager.getTaintedAtoms();
+  }
+  
+  void setTaintedAtoms(BitSet bs) {
+    modelManager.setTaintedAtoms(bs);
   }
 
   public void setAtomCoord(int atomIndex, float x, float y, float z) {

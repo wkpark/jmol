@@ -1500,4 +1500,12 @@ String getAtomInfoChime(int i) {
     unitCell.setOffset(nnn);
     return true;
   }
+  
+  BitSet getTaintedAtoms() {
+    return frame.tainted;
+  }
+  
+  void setTaintedAtoms(BitSet bs) {
+    frame.setTaintedAtoms(bs);
+  }
 }

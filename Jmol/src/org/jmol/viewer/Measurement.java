@@ -184,7 +184,7 @@ class Measurement {
     String label = (strFormat != null ? strFormat : viewer
         .getDefaultMeasurementLabel(countPlusIndices[0]));
     if (label.indexOf("%=") >= 0)
-      label = viewer.simpleReplace(label, "%=", "" + (index + 1));
+      label = Viewer.simpleReplace(label, "%=", "" + (index + 1));
     for (int i = countPlusIndices[0]; --i >= 1;) {
       if (label.indexOf("%") < 0)
         break;

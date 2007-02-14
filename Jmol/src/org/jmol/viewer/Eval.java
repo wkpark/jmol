@@ -3332,7 +3332,7 @@ class Eval { //implements Runnable {
         int[] p;
         if (i < statementLength && getToken(i).tok == Token.spacegroup) {
           ++i;
-          String spacegroup = viewer.simpleReplace(parameterAsString(i++),
+          String spacegroup = Viewer.simpleReplace(parameterAsString(i++),
               "''", "\"");
           loadScript.append(" " + StateManager.escape(spacegroup));
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
@@ -6098,7 +6098,12 @@ class Eval { //implements Runnable {
     int tok = (statementLength == 1 ? Token.clipboard : statement[1].tok);
     int pt = 1;
     String type = "SPT";
+    boolean isCoord = false;
     switch (tok) {
+    case Token.coord:
+      isCoord = true;
+      pt++;
+      break;
     case Token.state:
     case Token.script:
       pt++;
@@ -6183,7 +6188,14 @@ class Eval { //implements Runnable {
     int quality = Integer.MIN_VALUE;
     String data = type.intern();
     if (data == "SPT")
-      data = (String) viewer.getProperty("string", "stateInfo", null);
+      if (isCoord) {
+        BitSet tainted = viewer.getTaintedAtoms();
+        viewer.setAtomCoordRelative(new Point3f(0, 0, 0));
+        data = (String) viewer.getProperty("string", "stateInfo", null);
+        viewer.setTaintedAtoms(tainted);
+      } else {
+        data = (String) viewer.getProperty("string", "stateInfo", null);
+      }
     else if (data == "HIS")
       data = viewer.getSetHistory(Integer.MAX_VALUE);
     else if (data == "MO")
@@ -6320,7 +6332,7 @@ class Eval { //implements Runnable {
         return;
       }
       if (statementLength == 3 && getToken(2).tok == Token.string) {
-        String sg = viewer.simpleReplace(stringParameter(2), "''", "\"");
+        String sg = Viewer.simpleReplace(stringParameter(2), "''", "\"");
         if (!isSyntaxCheck)
           showString(viewer.getSpaceGroupInfoText(sg));
         return;
@@ -6529,14 +6541,14 @@ class Eval { //implements Runnable {
             String data = (String) statement[++i].value;
             if (data.indexOf("|") < 0 && data.indexOf("\n") < 0) {
               // space separates -- so set isOnePerLine
-              data = viewer.simpleReplace(data, " ", "\n");
+              data = Viewer.simpleReplace(data, " ", "\n");
               propertyName = "bufferedReaderOnePerLine";
             }
-            data = viewer.simpleReplace(data, "{", " ");
-            data = viewer.simpleReplace(data, ",", " ");
-            data = viewer.simpleReplace(data, "}", " ");
-            data = viewer.simpleReplace(data, "|", "\n");
-            data = viewer.simpleReplace(data, "\n\n", "\n");
+            data = Viewer.simpleReplace(data, "{", " ");
+            data = Viewer.simpleReplace(data, ",", " ");
+            data = Viewer.simpleReplace(data, "}", " ");
+            data = Viewer.simpleReplace(data, "|", "\n");
+            data = Viewer.simpleReplace(data, "\n\n", "\n");
             if (logMessages)
               Logger.debug("pmesh inline data:\n" + data);
             t = viewer.getBufferedReaderForString(data);

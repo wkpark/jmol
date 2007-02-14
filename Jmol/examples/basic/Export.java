@@ -66,10 +66,6 @@ class MyStatusListener implements JmolStatusListener {
   // JTextField monitor used to broadcast atom tracking out of Jmol
   public JTextField monitor;
 
-  public void setStatusMessage(String statusMessage) {
-    System.out.println(statusMessage);
-  }
-
   /* (non-Javadoc)
    * @see org.jmol.api.JmolStatusListener#notifyFileLoaded(java.lang.String, java.lang.String, java.lang.String, java.lang.Object, java.lang.String)
    */
@@ -77,14 +73,6 @@ class MyStatusListener implements JmolStatusListener {
                                String modelName, Object clientFile,
                                String errorMessage) {
     System.out.println("loaded " + fileName);
-  }
-
-  public void scriptEcho(String strEcho) {
-    System.out.println(strEcho);
-  }
-
-  public void scriptStatus(String strStatus) {
-    System.out.println(strStatus);
   }
 
   /* (non-Javadoc)
@@ -99,17 +87,6 @@ class MyStatusListener implements JmolStatusListener {
    */
   public void handlePopupMenu(int x, int y) {
     System.out.println("");
-  }
-
-  public void notifyMeasurementsChanged() {
-    System.out.println("measurements changed");
-  }
-
-  /* (non-Javadoc)
-   * @see org.jmol.api.JmolStatusListener#notifyFrameChanged(int)
-   */
-  public void notifyFrameChanged(int frameNo) {
-    System.out.println("frame changed");
   }
 
   /* (non-Javadoc)
@@ -204,7 +181,17 @@ class MyStatusListener implements JmolStatusListener {
     //
   }
 
+  /* (non-Javadoc)
+   * @see org.jmol.api.JmolStatusListener#eval(java.lang.String)
+   */
   public String eval(String strEval) {
     return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.jmol.api.JmolStatusListener#notifyFrameChanged(int, int, int, int, int)
+   */
+  public void notifyFrameChanged(int frameNo, int fileNo, int modelNo, int firstNo, int LastNo) {
+    //
   }
 }

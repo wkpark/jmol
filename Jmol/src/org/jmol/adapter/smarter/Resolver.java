@@ -32,7 +32,7 @@ class Resolver {
 
   static String getFileType(BufferedReader br) {
     try {
-      return determineAtomSetCollectionReader(br);
+      return determineAtomSetCollectionReader(br, false);
     } catch (Exception e) {
       return null;
     }
@@ -42,28 +42,29 @@ class Resolver {
     return resolve(name, bufferedReader, null);
   }
 
-  static Object resolve(String name, BufferedReader bufferedReader,
-                        int[] params) throws Exception {
+  static Object resolve(String name, BufferedReader bufferedReader, int[] params)
+      throws Exception {
     AtomSetCollectionReader atomSetCollectionReader;
-    String atomSetCollectionReaderName =
-      determineAtomSetCollectionReader(bufferedReader);
-    if (atomSetCollectionReaderName == null)
-      return "unrecognized file format for file " + name;
+    String atomSetCollectionReaderName = determineAtomSetCollectionReader(
+        bufferedReader, true);
+    if (atomSetCollectionReaderName.indexOf("\n") >= 0)
+      return "unrecognized file format for file " + name + "\n"
+          + atomSetCollectionReaderName;
     Logger.debug("The Resolver thinks " + atomSetCollectionReaderName);
-    String className =
-      "org.jmol.adapter.smarter." + atomSetCollectionReaderName + "Reader";
+    String className = "org.jmol.adapter.smarter."
+        + atomSetCollectionReaderName + "Reader";
     try {
       Class atomSetCollectionReaderClass = Class.forName(className);
-      atomSetCollectionReader =
-        (AtomSetCollectionReader)atomSetCollectionReaderClass.newInstance();
+      atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
+          .newInstance();
     } catch (Exception e) {
       String err = "Could not instantiate:" + className;
       Logger.error(err, e);
       return err;
     }
     atomSetCollectionReader.initialize(params);
-    AtomSetCollection atomSetCollection =
-      atomSetCollectionReader.readAtomSetCollection(bufferedReader);
+    AtomSetCollection atomSetCollection = atomSetCollectionReader
+        .readAtomSetCollection(bufferedReader);
     bufferedReader.close();
     bufferedReader = null;
     return finalize(atomSetCollection, "file " + name);
@@ -88,7 +89,7 @@ class Resolver {
     return atomSetCollection;
   }
 
-  static String determineAtomSetCollectionReader(BufferedReader bufferedReader)
+  static String determineAtomSetCollectionReader(BufferedReader bufferedReader, boolean returnLines)
       throws Exception {
     String[] lines = new String[16];
     LimitedLineReader llr = new LimitedLineReader(bufferedReader, 16384);
@@ -147,7 +148,7 @@ class Resolver {
       }
     }
 
-    return null;
+    return (returnLines ? "\n" + lines[0] + "\n" + lines[1] + "\n" + lines[2] + "\n" : null);
   }
 
   ////////////////////////////////////////////////////////////////

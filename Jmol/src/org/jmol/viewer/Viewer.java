@@ -1294,7 +1294,7 @@ public class Viewer extends JmolViewer {
       strModel = simpleReplace(strModel, "" + newLine, "\n");
     }
     String datasep = (String) global.getParameter("dataseparator");
-    if (datasep != null && (i = strModel.indexOf(datasep)) >= 0) {
+    if (datasep != null && datasep != "" && (i = strModel.indexOf(datasep)) >= 0) {
       int n = 2;
       while ((i = strModel.indexOf(datasep, i + 1)) >= 0)
         n++;
@@ -1486,7 +1486,7 @@ public class Viewer extends JmolViewer {
     modelManager.clear();
     statusManager.clear();
     stateManager.clear(global);
-    setRefreshing(true);
+    //setRefreshing(true);
     refresh(0, "Viewer:clear()");
     System.gc();
   }
@@ -2528,7 +2528,7 @@ public class Viewer extends JmolViewer {
   }
 
   private void render1(Graphics g, Image img, int x, int y) {
-    if (g == null)
+    if (g == null || getTestFlag1())
       return;
     try {
       g.drawImage(img, x, y, null);

@@ -521,6 +521,40 @@ class Eval { //implements Runnable {
 
   int commandHistoryLevelMax = 0;
 
+  void fixVariables() throws ScriptException {
+    Token[] fixed;
+    int i;
+    for (i = 1; i < statementLength; i++)
+      if (statement[i].tok == Token.define) break;
+    if (i == statementLength)
+      return;
+    fixed = new Token[statementLength];
+    fixed[0] = statement[0];
+    int j = 1;
+    for (i = 1; i < statementLength; i++) {
+      if (statement[i].tok == Token.define) {
+        String var = parameterAsString(++i);
+        Object v = viewer.getParameter(var);
+        if (v instanceof Boolean) {
+          fixed[j] = (((Boolean) v).booleanValue() ? Token.tokenOn : Token.tokenOff); 
+        } else if (v instanceof Integer) {
+          fixed[j]= new Token(Token.integer, ((Integer) v).intValue(), v); 
+        } else if (v instanceof Float) {
+          fixed[j]= new Token(Token.decimal, Compiler.modelValue(""+v), v);
+        } else if (v instanceof String) {
+          fixed[j]= new Token(Token.identifier, v);
+        } else {
+          invalidArgument();
+        }
+      } else {
+        fixed[j] = statement[i];
+      }
+      j++;
+    }
+    statement = fixed;
+    statementLength = j;
+  }
+  
   void instructionDispatchLoop(boolean doList) throws ScriptException {
     long timeBegin = 0;
     int ifLevel = 0;
@@ -544,10 +578,11 @@ class Eval { //implements Runnable {
         break;
       Token token = aatoken[pc][0];
       statement = aatoken[pc];
+      statementLength = statement.length;
+      fixVariables();
       if (linenumbers[pc] > lineEnd)
         break;
       thisCommand = getCommand();
-      statementLength = statement.length;
       iToken = 0;
       String script = viewer.getInterruptScript();
       if (script != "")

@@ -377,7 +377,7 @@ class Compiler {
     return true;
   }
 
-  int modelValue(String strDecimal) {
+  static int modelValue(String strDecimal) {
     //this will overflow, but it doesn't matter -- it's only for file.model
     //2147483647 is maxvalue, so this allows loading
     //simultaneously up to 2147 files. Yeah, sure!

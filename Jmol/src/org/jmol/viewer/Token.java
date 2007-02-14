@@ -488,6 +488,7 @@ public class Token {
    
 
   final static Token tokenOn  = new Token(on, 1, "on");
+  final static Token tokenOff = new Token(off, 0, "off");
   final static Token tokenAll = new Token(all, "all");
   final static Token tokenAnd = new Token(opAnd, "and");
   final static Token tokenExpressionBegin =
@@ -787,7 +788,7 @@ public class Token {
     "polymerlength",new Token(polymerLength, "polymerlength"),
     "site",         new Token(site, "site"),
     "symop",        new Token(symop, "symop"),
-    "off",          new Token(off, 0, "off"),
+    "off",          tokenOff,
     "false",        null,
     "on",           tokenOn,
     "true",         null,

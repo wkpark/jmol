@@ -3098,9 +3098,9 @@ public final class Frame {
       for (int i = 1; i <= nData; i++) {
         String[] tokens = p.getTokens(p.parseTrimmed(data.substring(lines[i], lines[i + 1])));
         int atomIndex = p.parseInt(tokens[0]) - 1;
-        float x = p.parseFloat(tokens[2]);
-        float y = p.parseFloat(tokens[3]);
-        float z = p.parseFloat(tokens[4]);
+        float x = p.parseFloat(tokens[3]);
+        float y = p.parseFloat(tokens[4]);
+        float z = p.parseFloat(tokens[5]);
         setAtomCoord(atomIndex, x, y, z);
       }
     } catch (Exception e) {
@@ -3471,7 +3471,7 @@ public final class Frame {
       int n = 0;
       for (int i = 0; i < atomCount; i++)
         if (tainted.get(i)) {
-          s.append(atoms[i].getElementSymbol() + " "
+          s.append((i + 1) + " " + atoms[i].getElementSymbol() + " "
               + Viewer.simpleReplace(atoms[i].getIdentity(), " ", "_") + " "
               + atoms[i].x + " " + atoms[i].y + " " + atoms[i].z + " ;\n");
           ++n;

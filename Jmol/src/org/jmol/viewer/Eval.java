@@ -3825,9 +3825,6 @@ class Eval { //implements Runnable {
       while (pc < linenumbers.length && linenumbers[pc] < lineNumber)
         pc++;
       this.pc = pc;
-      //System.out.println("script pc line lineend pcend" + pc + " " + lineNumber
-      //  + " " + lineEnd + " " + pcEnd);
-
       boolean saveLoadCheck = fileOpenCheck;
       fileOpenCheck = fileOpenCheck && loadCheck;
       instructionDispatchLoop(isCheck);

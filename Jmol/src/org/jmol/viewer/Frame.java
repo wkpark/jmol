@@ -223,7 +223,6 @@ public final class Frame {
                        Hashtable info) {
     //long timeBegin = System.currentTimeMillis();
     modelSetTypeName = name;
-    //System.out.println(modelSetTypeName + " frame initialized "+this);  
     isXYZ = (modelSetTypeName == "xyz");
     isArrayOfFiles = (modelSetTypeName == "array");
     setZeroBased();
@@ -641,7 +640,6 @@ public final class Frame {
               /*
                * save for future option -- turns out the 1jsa bug was in relation to an author using the same group number for two different groups
                * 
-               System.out.println( i + " " + atoms[i].getIdentity() + " " + specialAtomID);
                if ((distinguishingBits & bit) != 0) {
                
                //bh 9/21/2006:
@@ -848,7 +846,6 @@ public final class Frame {
       if (atomNames[i] == null) {
         Atom atom = atoms[i];
         atomNames[i] = atom.getElementSymbol() + atom.getAtomNumber();
-        //System.out.println("atom " + i + " " + atomNames[i]);
       }
   }
 

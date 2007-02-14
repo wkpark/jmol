@@ -272,7 +272,6 @@ final class Mmset {
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
     codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
     models[modelIndex].modelFileNumber = getModelAuxiliaryInfoInt(modelIndex, "modelFileNumber");
- System.out.println("mmset model " + modelIndex + " " + getModelFileNumber(modelIndex));
     models[modelIndex].setNInsertions(codes == null ? 0 : codes.length());
     return models[modelIndex].isPDB = isPDB || getModelAuxiliaryInfoBoolean(modelIndex, "isPDB");
   }

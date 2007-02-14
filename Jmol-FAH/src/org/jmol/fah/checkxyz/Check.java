@@ -25,6 +25,8 @@
 
 package org.jmol.fah.checkxyz;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
@@ -45,7 +47,7 @@ import java.util.Vector;
  * Checking for missing XYZ files for http://www.jmol.org/fah
  *
  */
-public class Check {
+public class Check implements ActionListener {
 
   private boolean forceConfig = false;
   private boolean availableFilesDownloaded = false;
@@ -104,13 +106,30 @@ public class Check {
     configuration.loadConfiguration();
     if (forceConfig || !configuration.isConfigured()) {
       configure();
+    } else {
+      processDirectories();
     }
+  }
+
+  /* (non-Javadoc)
+   * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+   */
+  public void actionPerformed(ActionEvent e) {
+    processDirectories();
+  }
+
+  /**
+   * Process all directories for XYZ files. 
+   */
+  public void processDirectories() {
+    System.err.println("-->processDirectories");
     if (configuration.getDirectories() != null) {
       Iterator iter = configuration.getDirectories().iterator();
       while (iter.hasNext()) {
         processDirectory(iter.next().toString());
       }
     }
+    System.err.println("<--processDirectories");
   }
 
   /**
@@ -128,6 +147,7 @@ public class Check {
     if ((directory == null) || (!directory.isDirectory())) {
       return;
     }
+    System.err.println(" Processing " + directory.getAbsolutePath());
     File[] files = directory.listFiles(fileFilter);
     if (files == null) {
       return;
@@ -150,6 +170,7 @@ public class Check {
     if ((file == null) || (!file.isFile())) {
       return;
     }
+    System.err.println("  Processing " + file.getAbsolutePath());
     BufferedReader reader = null;
     try {
       reader = new BufferedReader(new FileReader(file));
@@ -329,7 +350,7 @@ public class Check {
    * Update configuration. 
    */
   private void configure() {
-    ConfigurationWindow window = new ConfigurationWindow(configuration);
+    ConfigurationWindow window = new ConfigurationWindow(configuration, this);
     window.show();
   }
 
@@ -339,7 +360,7 @@ public class Check {
   public static void main(String[] args) {
     Check check = new Check();
     check.process(args);
-    System.exit(0);
+    System.err.println("End main");
   }
 
 }

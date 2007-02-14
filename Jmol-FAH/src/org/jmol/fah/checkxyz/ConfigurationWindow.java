@@ -25,6 +25,7 @@
 
 package org.jmol.fah.checkxyz;
 
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -39,7 +40,6 @@ import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -59,9 +59,10 @@ import javax.swing.border.TitledBorder;
 /**
  * Configuration Window.
  */
-public class ConfigurationWindow extends JDialog implements ActionListener {
+public class ConfigurationWindow extends JFrame implements ActionListener {
 
   private Configuration configuration = null;
+  private ActionListener actionValidate = null;
 
   private JTextField textUser = null;
   private JTextField textMailServer = null;
@@ -84,10 +85,12 @@ public class ConfigurationWindow extends JDialog implements ActionListener {
    * Constructor.
    * 
    * @param config Configuration.
+   * @param action What to do when OK is pressed.
    */
-  public ConfigurationWindow(Configuration config) {
-    super((JFrame) null, true);
+  public ConfigurationWindow(Configuration config, ActionListener action) {
+    super("Current.xyz files for Jmol");
     configuration = config;
+    actionValidate = action;
     createWindowContent();
   }
 
@@ -97,7 +100,7 @@ public class ConfigurationWindow extends JDialog implements ActionListener {
   private void createWindowContent() {
 
     // Various settings
-    setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+    setDefaultCloseOperation(EXIT_ON_CLOSE);
     setTitle("Current.xyz files for Jmol");
 
     // Layout
@@ -389,12 +392,19 @@ public class ConfigurationWindow extends JDialog implements ActionListener {
       }
       configuration.setDirectories(directories);
       configuration.saveConfiguration();
-      this.hide();
+
+      if (actionValidate != null) {
+        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+        actionValidate.actionPerformed(e);
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+      }
+
+      this.dispose();
 
     } else if (actionCancel.equals(e.getActionCommand())) {
 
       // Cancel
-      this.hide();
+      this.dispose();
 
     } else if (actionAddDirectory.equals(e.getActionCommand())) {
 

@@ -4001,26 +4001,33 @@ class Eval { //implements Runnable {
   }
 
   void invertSelected() throws ScriptException {
-   // invertSelected POINT
-   // invertSelected PLANE
-   // invertSelected HKL
-   String type = parameterAsString(1);
-   Point3f pt = null;
-   Point4f plane = null;
-   
-   if (type.equalsIgnoreCase("point")) {
-     pt = atomCenterOrCoordinateParameter(2);
-   } else if (type.equalsIgnoreCase("plane")) {
-     plane = planeParameter(2);
-   } else if (type.equalsIgnoreCase("hkl")) {
-     plane = hklParameter(2);
-   }
-   checkStatementLength(iToken + 1);
-   if (plane == null && pt == null)   
-     invalidArgument();
-   if (isSyntaxCheck)
-     return;
-   viewer.invertSelected(pt, plane);
+    // invertSelected POINT
+    // invertSelected PLANE
+    // invertSelected HKL
+    Point3f pt = null;
+    Point4f plane = null;
+    if (statementLength == 1) {
+      if (!isSyntaxCheck) {
+        pt = viewer.getRotationCenter();
+        viewer.invertSelected(pt, bsAll());
+      }
+      return;
+    }
+    String type = parameterAsString(1);
+
+    if (type.equalsIgnoreCase("point")) {
+      pt = atomCenterOrCoordinateParameter(2);
+    } else if (type.equalsIgnoreCase("plane")) {
+      plane = planeParameter(2);
+    } else if (type.equalsIgnoreCase("hkl")) {
+      plane = hklParameter(2);
+    }
+    checkStatementLength(iToken + 1);
+    if (plane == null && pt == null)
+      invalidArgument();
+    if (isSyntaxCheck)
+      return;
+    viewer.invertSelected(pt, plane);
   }
   
   void translate() throws ScriptException {

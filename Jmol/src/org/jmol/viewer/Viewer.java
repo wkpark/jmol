@@ -4863,7 +4863,12 @@ public class Viewer extends JmolViewer {
     modelManager.setAtomCoordRelative(offset, selectionManager.bsSelection);
   }
 
-  public void invertSelected(Point3f pt, Point4f plane) {
+  void invertSelected(Point3f pt, BitSet bs) {
+    //Eval
+    modelManager.invertSelected(pt, null, bs);
+  }
+
+  void invertSelected(Point3f pt, Point4f plane) {
     //Eval
     modelManager.invertSelected(pt, plane, selectionManager.bsSelection);
   }

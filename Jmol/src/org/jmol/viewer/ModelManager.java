@@ -743,28 +743,13 @@ String getAtomInfoChime(int i) {
   }
 
   BitSet getAtomsWithin(float distance, Point4f plane) {
-    // "within" means "on the opposite side of the plane or within this distance of the plane"
-    // in this way we can use two operations to exclude any set of atoms
-    
-    BitSet bsResult = new BitSet();
-    for (int i = frame.getAtomCount(); --i >= 0;) {
-      Atom atom = frame.getAtomAt(i);
-      float d = distanceToPlane(plane, atom);
-      if (distance > 0 && d >= -0.1 && d <= distance
-          || distance < 0 && d <=0.1 && d >= distance
-          || distance == 0 && Math.abs(d) < 0.01)
-        bsResult.set(atom.atomIndex);
-    }
-    return bsResult;
-  }
-  
-  static float distanceToPlane(Point4f plane, Point3f pt) {
-    return (plane == null ? Float.NaN 
-        : (plane.x * pt.x + plane.y * pt.y + plane.z * pt.z + plane.w)
-        / (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z
-            * plane.z));
+    return frame.getAtomsWithin(distance, plane);
   }
 
+  void loadCoordinates(String coordinateData) {
+    frame.loadCoordinates(coordinateData);
+  }
+ 
   BitSet getAtomsConnected(float min, float max, int intType, BitSet bs) {
     BitSet bsResult = new BitSet();
     int atomCount = getAtomCount();
@@ -1398,6 +1383,10 @@ String getAtomInfoChime(int i) {
 
   void setAtomCoordRelative(Point3f offset, BitSet bs) {
     frame.setAtomCoordRelative(bs, offset.x, offset.y, offset.z);
+  }
+
+  void invertSelected(Point3f pt, Point4f plane, BitSet bs) {
+    frame.invertSelected(pt, plane, bs);
   }
 
   boolean getPrincipalAxes(int atomIndex, Vector3f z, Vector3f x,

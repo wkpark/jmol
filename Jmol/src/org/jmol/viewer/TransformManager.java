@@ -31,6 +31,7 @@ import javax.vecmath.Matrix4f;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
+import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Logger;
 
 import java.util.Hashtable;
@@ -769,8 +770,8 @@ abstract class TransformManager {
       slabRef = new Point3f(fixedRotationCenter);
       Point3f pt1 = pointOnPlane(slabPlane);
       Point3f pt2 = pointOnPlane(depthPlane);
-      float d1 = distanceToPlane(slabPlane, slabRef);
-      float d2 = distanceToPlane(depthPlane, slabRef);
+      float d1 = Graphics3D.distanceToPlane(slabPlane, slabRef);
+      float d2 = Graphics3D.distanceToPlane(depthPlane, slabRef);
       if (slabPlane != null && depthPlane != null && (d1 <= 0 || d2 >= 0)) {
         pt2.sub(pt1);
         pt2.scale(2);
@@ -800,19 +801,19 @@ abstract class TransformManager {
     //could be easily expanded to any number of planes
     if (Float.isNaN(slabRefDistance)) {
       Point4f plane = (slabPlane == null ? depthPlane : slabPlane);
-      if ((slabRefDistance = distanceToPlane(plane, slabRef)) == 0) {
+      if ((slabRefDistance = Graphics3D.distanceToPlane(plane, slabRef)) == 0) {
         slabRef.x -= 0.12334;
-        if ((slabRefDistance = distanceToPlane(plane, slabRef)) == 0) {
+        if ((slabRefDistance = Graphics3D.distanceToPlane(plane, slabRef)) == 0) {
           slabRef.y -= 0.12334;
         }
-        if ((slabRefDistance = distanceToPlane(plane, slabRef)) == 0) {
+        if ((slabRefDistance = Graphics3D.distanceToPlane(plane, slabRef)) == 0) {
           slabRef.z -= 0.12334;
-          slabRefDistance = distanceToPlane(plane, slabRef);
+          slabRefDistance = Graphics3D.distanceToPlane(plane, slabRef);
         }
-        depthRefDistance = distanceToPlane(depthPlane, slabRef);
+        depthRefDistance = Graphics3D.distanceToPlane(depthPlane, slabRef);
       }      
     }
-    float d = distanceToPlane(isDepth ? depthPlane : slabPlane, pt);
+    float d = Graphics3D.distanceToPlane(isDepth ? depthPlane : slabPlane, pt);
     return (slabRefDistance < 0 && d > 0 || slabRefDistance > 0 && d < 0);
   }
 
@@ -829,12 +830,6 @@ abstract class TransformManager {
     else
       pt.z = 1/plane.z;
     return pt;
-  }
-  static float distanceToPlane(Point4f plane, Point3f pt) {
-    return (plane == null ? Float.NaN 
-        : (plane.x * pt.x + plane.y * pt.y + plane.z * pt.z + plane.w)
-        / (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z
-            * plane.z));
   }
   
   /* ***************************************************************

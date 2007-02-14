@@ -33,6 +33,19 @@ public class Parser {
   
   public int ichNextParse;
 
+  public int[] markLines(String data, char eol) {
+    int nLines = 0;
+    for (int i = data.length(); --i >=0;)
+      if (data.charAt(i) == eol)
+        nLines++;
+    int[] lines = new int[nLines + 1];
+    lines[nLines--] = data.length();
+    for (int i = data.length(); --i >=0;)
+      if (data.charAt(i) == eol)
+        lines[nLines--] = i + 1;
+    return lines;
+  }
+  
   public float parseFloat(String str) {
     return parseFloatChecked(str, 0, str.length());
   }
@@ -262,10 +275,10 @@ public class Parser {
   private String parseTrimmedChecked(String str, int ichStart, int ichMax) {
     int ich = ichStart;
     char ch;
-    while (ich < ichMax && ((ch = str.charAt(ich)) == ' ' || ch == '\t'))
+    while (ich < ichMax && ((ch = str.charAt(ich)) == ' ' || ch == '\t' || ch == '\n'))
       ++ich;
     int ichLast = ichMax - 1;
-    while (ichLast >= ich && ((ch = str.charAt(ichLast)) == ' ' || ch == '\t'))
+    while (ichLast >= ich && ((ch = str.charAt(ichLast)) == ' ' || ch == '\t' || ch == '\n'))
       --ichLast;
     if (ichLast < ich)
       return "";

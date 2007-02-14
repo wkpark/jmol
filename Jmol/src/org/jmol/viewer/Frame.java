@@ -27,6 +27,7 @@ package org.jmol.viewer;
 
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Parser;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.g3d.Graphics3D;
@@ -37,6 +38,7 @@ import org.jmol.symmetry.UnitCell;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Matrix3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.AxisAngle4f;
 import java.util.BitSet;
@@ -89,6 +91,7 @@ public final class Frame {
   byte[] specialAtomIDs;
   String[] group3Lists;
   int[][] group3Counts;
+  BitSet tainted;
 
   BitSet bsHidden = new BitSet();
 
@@ -2001,6 +2004,19 @@ public final class Frame {
     return null;
   }
 
+  BitSet getAtomsWithin(float distance, Point4f plane) {    
+    BitSet bsResult = new BitSet();
+    for (int i = getAtomCount(); --i >= 0;) {
+      Atom atom = getAtomAt(i);
+      float d = Graphics3D.distanceToPlane(plane, atom);
+      if (distance > 0 && d >= -0.1 && d <= distance
+          || distance < 0 && d <=0.1 && d >= distance
+          || distance == 0 && Math.abs(d) < 0.01)
+        bsResult.set(atom.atomIndex);
+    }
+    return bsResult;
+  }
+
   ///// this set of methods is used by Eval
 
   /**
@@ -3057,12 +3073,38 @@ public final class Frame {
     reportFormalCharges = true;
   }
 
+  void taint(int atomIndex) {
+    if (tainted == null)
+      tainted = new BitSet(atomCount);
+    tainted.set(atomIndex);
+  }
+  
+  void loadCoordinates(String data) {
+    Parser p = new Parser();
+    int[] lines = p.markLines(data, ';');
+    try {
+      int nData = p.parseInt(data.substring(0, lines[0] - 1));
+      for (int i = 1; i <= nData; i++) {
+        String[] tokens = p.getTokens(p.parseTrimmed(data.substring(lines[i], lines[i + 1])));
+        int atomIndex = p.parseInt(tokens[0]) - 1;
+        float x = p.parseFloat(tokens[2]);
+        float y = p.parseFloat(tokens[3]);
+        float z = p.parseFloat(tokens[4]);
+        setAtomCoord(atomIndex, x, y, z);
+      }
+    } catch (Exception e) {
+      Logger.error("Frame.loadCoordinate error: " + e);
+    }
+  }
+  
+
   void setAtomCoord(int atomIndex, float x, float y, float z) {
     if (atomIndex < 0 || atomIndex >= atomCount)
       return;
     atoms[atomIndex].x = x;
     atoms[atomIndex].y = y;
     atoms[atomIndex].z = z;
+    taint(atomIndex);
   }
 
   void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
@@ -3071,12 +3113,39 @@ public final class Frame {
     atoms[atomIndex].x += x;
     atoms[atomIndex].y += y;
     atoms[atomIndex].z += z;
+    taint(atomIndex);
   }
 
   void setAtomCoordRelative(BitSet atomSet, float x, float y, float z) {
-    for (int i = 0; i < atomCount; i++)
+    for (int i = atomCount; --i >= 0;)
       if (atomSet.get(i))
         setAtomCoordRelative(i, x, y, z);
+  }
+
+  void invertSelected(Point3f pt, Point4f plane, BitSet bs) {
+    if (pt != null) {
+      for (int i = atomCount; --i >= 0;)
+        if (bs.get(i)) {
+          float x = (pt.x - atoms[i].x) * 2;
+          float y = (pt.y - atoms[i].y) * 2;
+          float z = (pt.z - atoms[i].z) * 2;
+          setAtomCoordRelative(i, x, y, z);
+        }
+      return;
+    }
+    // ax + by + cz + d = 0
+    Vector3f norm = new Vector3f(plane.x, plane.y, plane.z);
+    norm.normalize();
+    float d = (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z
+        * plane.z);
+    for (int i = atomCount; --i >= 0;)
+      if (bs.get(i)) {
+        float twoD = -Graphics3D.distanceToPlane(plane, d, atoms[i]) * 2;
+        float x = norm.x * twoD;
+        float y = norm.y * twoD;
+        float z = norm.z * twoD;
+        setAtomCoordRelative(i, x, y, z);
+      }
   }
 
   String hybridization;
@@ -3372,9 +3441,10 @@ public final class Frame {
   }
 
   String getState() {
-    StringBuffer commands = new StringBuffer("# connections;\n");
+    StringBuffer commands = new StringBuffer();
     String cmd;
     if (reportFormalCharges) {
+      commands.append("\n# charges;\n");
       Hashtable ht = new Hashtable();
       for (int i = 0; i < atomCount; i++)
         StateManager.setStateInfo(ht, i, i, "set formalCharge "
@@ -3382,8 +3452,27 @@ public final class Frame {
       commands.append(StateManager.getCommands(ht));
     }
 
+    // positions
+
+    if (tainted != null) {
+      commands.append("\n# positions;\n");
+      StringBuffer s = new StringBuffer();
+      int n = 0;
+      for (int i = 0; i < atomCount; i++)
+        if (tainted.get(i)) {
+          s.append((i + 1) + " " + atoms[i].getElementSymbol() + " "
+              + atoms[i].x + " " + atoms[i].y + " " + atoms[i].z + " ;\n");
+          ++n;
+        }
+      commands.append("DATA \"coord set\"\n" + n + " ;\nJmol Coordinate Data Format 1 -- Jmol " + Viewer.getJmolVersion() + ";\n");
+      commands.append(s);
+      commands.append("end \"coord set\";\n");
+    }
+
+    
     // connections
 
+    commands.append("\n# connections;\n");
     Vector fs = stateScripts;
     int len = fs.size();
     for (int i = 0; i < len; i++)
@@ -3404,5 +3493,4 @@ public final class Frame {
     commands.append("\n");
     return commands.toString();
   }
-
 }

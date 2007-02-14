@@ -702,6 +702,9 @@ class Eval { //implements Runnable {
       case Token.translate:
         translate();
         break;
+      case Token.invertSelected:
+        invertSelected();
+        break;
       case Token.translateSelected:
         translateSelected();
         break;
@@ -1198,7 +1201,7 @@ class Eval { //implements Runnable {
         if (withinSpec instanceof String) {
           if (withinSpec.equals("plane")) {
             distance = floatParameter(++pc);
-            Point4f thisPlane = planeParameter(++pc, false);
+            Point4f thisPlane = planeParameter(++pc);
             pc = iToken + 1;
             stack[sp++] = viewer.getAtomsWithin(distance, thisPlane);
             break;
@@ -1986,7 +1989,7 @@ class Eval { //implements Runnable {
     return center;
   }
 
-  Point4f planeParameter(int i, boolean allowExpression) throws ScriptException {
+  Point4f planeParameter(int i) throws ScriptException {
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
     if (i < statementLength)
@@ -2004,7 +2007,7 @@ class Eval { //implements Runnable {
           if (points == null || points.length < 3)
             break;
           Vector3f pv = new Vector3f();
-          float w = Graphics3D.getPlaneThroughPoints(points[0], points[1],
+          float w = Graphics3D.getNormalThroughPoints(points[0], points[1],
               points[2], pv, vAB, vAC);
           return new Point4f(pv.x, pv.y, pv.z, w);
         case JmolConstants.SHAPE_ISOSURFACE:
@@ -2053,7 +2056,7 @@ class Eval { //implements Runnable {
         i = iToken;
         Vector3f plane = new Vector3f();
         float w = Graphics3D
-            .getPlaneThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
+            .getNormalThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
         Point4f p = new Point4f(plane.x, plane.y, plane.z, w);
         Logger.debug("points: " + pt1 + pt2 + pt3 + " defined plane: " + p);
         return p;
@@ -2108,7 +2111,7 @@ class Eval { //implements Runnable {
     pt2.add(offset);
     pt3.add(offset);
     Vector3f plane = new Vector3f();
-    float w = Graphics3D.getPlaneThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
+    float w = Graphics3D.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
     Point4f p = new Point4f(plane.x, plane.y, plane.z, w);
     Logger.info("defined plane: " + p);
     return p;
@@ -3191,6 +3194,9 @@ class Eval { //implements Runnable {
         newLine = '\0';
       viewer.loadInline(dataString, newLine);
     }
+    if (dataType.equalsIgnoreCase("coord")) {
+      viewer.loadCoordinates(dataString);
+    }
   }
 
   void define() throws ScriptException {
@@ -3994,6 +4000,29 @@ class Eval { //implements Runnable {
     // viewer.select(bsSubset, false);
   }
 
+  void invertSelected() throws ScriptException {
+   // invertSelected POINT
+   // invertSelected PLANE
+   // invertSelected HKL
+   String type = parameterAsString(1);
+   Point3f pt = null;
+   Point4f plane = null;
+   
+   if (type.equalsIgnoreCase("point")) {
+     pt = atomCenterOrCoordinateParameter(2);
+   } else if (type.equalsIgnoreCase("plane")) {
+     plane = planeParameter(2);
+   } else if (type.equalsIgnoreCase("hkl")) {
+     plane = hklParameter(2);
+   }
+   checkStatementLength(iToken + 1);
+   if (plane == null && pt == null)   
+     invalidArgument();
+   if (isSyntaxCheck)
+     return;
+   viewer.invertSelected(pt, plane);
+  }
+  
   void translate() throws ScriptException {
     float percent = floatParameter(2);
     if (percent > 100 || percent < -100)
@@ -4231,7 +4260,7 @@ class Eval { //implements Runnable {
         case Token.none:
           break;
         default:
-          plane = planeParameter(2, true);
+          plane = planeParameter(2);
         }
         if (!isSyntaxCheck)
           viewer.slabInternal(plane, isDepth);
@@ -7033,7 +7062,7 @@ class Eval { //implements Runnable {
       if (str.equalsIgnoreCase("plane")) {
         // plane {X, Y, Z, W}
         propertyName = "plane";
-        propertyValue = planeParameter(2, true);
+        propertyValue = planeParameter(2);
         break;
       }
       if (str.equalsIgnoreCase("noplane")) {
@@ -7302,7 +7331,7 @@ class Eval { //implements Runnable {
           // plane {X, Y, Z, W}
           planeSeen = true;
           propertyName = "plane";
-          propertyValue = planeParameter(++i, true);
+          propertyValue = planeParameter(++i);
           i = iToken;
           break;
         }

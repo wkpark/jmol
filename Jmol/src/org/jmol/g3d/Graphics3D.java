@@ -29,6 +29,7 @@ import java.awt.FontMetrics;
 import java.util.Hashtable;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
@@ -2079,7 +2080,25 @@ final public class Graphics3D {
    * normals and normal indexes -- normix
    * ***************************************************************/
 
+  public static float distanceToPlane(Point4f plane, Point3f pt) {
+    return (plane == null ? Float.NaN 
+        : (plane.x * pt.x + plane.y * pt.y + plane.z * pt.z + plane.w)
+        / (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z
+            * plane.z));
+  }
 
+  public static float distanceToPlane(Point4f plane, float d, Point3f pt) {
+    return (plane == null ? Float.NaN : (plane.x * pt.x + plane.y
+        * pt.y + plane.z * pt.z + plane.w) / d);
+  }
+
+  public static float distanceToPlane(Vector3f norm, float w, Point3f pt) {
+    return (norm == null ? Float.NaN 
+        : (norm.x * pt.x + norm.y * pt.y + norm.z * pt.z + w)
+        / (float) Math.sqrt(norm.x * norm.x + norm.y * norm.y + norm.z
+            * norm.z));
+  }
+  
   public static void calcNormalizedNormal(Point3f pointA, Point3f pointB,
                                    Point3f pointC, Vector3f vNormNorm, Vector3f vAB, Vector3f vAC) {
     vAB.sub(pointB, pointA);
@@ -2088,7 +2107,7 @@ final public class Graphics3D {
     vNormNorm.normalize();
   }
 
-  public static float getPlaneThroughPoints(Point3f pointA, Point3f pointB,
+  public static float getNormalThroughPoints(Point3f pointA, Point3f pointB,
                                    Point3f pointC, Vector3f vNorm, Vector3f vAB, Vector3f vAC) {
     // for Polyhedra
     calcNormalizedNormal(pointA, pointB, pointC, vNorm, vAB, vAC);

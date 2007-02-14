@@ -212,6 +212,8 @@ public class Token {
   final static int frank         = command | 115 | setparam;
   final static int navigate      = command | 116 | negnums | embeddedExpression;
   final static int gotocmd       = command | 117;
+  final static int invertSelected = command | 118 | negnums | embeddedExpression;
+
   //the following are listed with atomproperty because they must be registered as atom property names
   //final static int model           = atomproperty | 5 | command;
   //final static int molecule        = atomproperty | 12 | command | unimplemented;
@@ -642,6 +644,7 @@ public class Token {
     "configuration",     new Token(configuration,     varArgCount, "configuration"),
     "config",            null,
     "conformation",      null,
+    "invertselected",    new Token(invertSelected,    varArgCount, "invertSelected"),
 
     // setparams
     "axes",         new Token(axes, varArgCount,    "axes"),

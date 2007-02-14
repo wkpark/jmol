@@ -488,14 +488,9 @@ class Polyhedra extends AtomShape {
      * of the fourth
      * 
      */
-    Vector3f plane = new Vector3f();
-    float w = Graphics3D.getPlaneThroughPoints(pt1, pt2, pt3, plane, vAB, vAC);
-    float distanceToPlane = Math.abs(plane.x * ptX.x + plane.y * ptX.y
-        + plane.z * ptX.z + w)
-        / (float) Math.sqrt(plane.x * plane.x + plane.y * plane.y + plane.z
-            * plane.z);
-    boolean isPlanar = (distanceToPlane < minDistanceForPlanarity);
-    return isPlanar;
+    Vector3f norm = new Vector3f();
+    float w = Graphics3D.getNormalThroughPoints(pt1, pt2, pt3, norm, vAB, vAC);
+    return (Graphics3D.distanceToPlane(norm, w, ptX) < minDistanceForPlanarity);
   }
 
   class Polyhedron {

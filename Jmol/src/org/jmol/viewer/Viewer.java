@@ -1322,6 +1322,10 @@ public class Viewer extends JmolViewer {
     openStringInline(arrayModels, A);
   }
 
+  void loadCoordinates(String coordinateData) {
+    modelManager.loadCoordinates(coordinateData);
+  }
+  
   public void openDOM(Object DOMNode) {
     //applet.loadDOMNode
     clear();
@@ -4837,20 +4841,23 @@ public class Viewer extends JmolViewer {
     return global.getDefaultLatticePoint();
   }
 
-  //these functions will throw off the state.
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
-    //not implemented -- no script equivalent
+    //Frame equivalent used in DATA "coord set"
     modelManager.setAtomCoord(atomIndex, x, y, z);
   }
 
   public void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
-    //not implemented
     modelManager.setAtomCoordRelative(atomIndex, x, y, z);
   }
 
-  public void setAtomCoordRelative(Point3f offset) {
+  void setAtomCoordRelative(Point3f offset) {
     //Eval
     modelManager.setAtomCoordRelative(offset, selectionManager.bsSelection);
+  }
+
+  public void invertSelected(Point3f pt, Point4f plane) {
+    //Eval
+    modelManager.invertSelected(pt, plane, selectionManager.bsSelection);
   }
 
   float functionXY(String functionName, int x, int y) {

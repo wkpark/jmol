@@ -34,7 +34,15 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "11.1.12"; 
+  public final static String version = "11.1.13";
+  //11.1.13:
+  
+  // DATA "coord set"
+  // invertSelected POINT ....
+  // invertSelected PLANE ....
+  // invertSelected HKL ......
+  // full state support for "tainting" atom positions using translateSelected or invertSelected
+  
   //11.1.12:
   //app fix for console entry messing up cursor position; 
   //allows for scripting during pause or interrupt of running script using ! as first character of script
@@ -50,6 +58,9 @@ final public class JmolConstants {
   //adds frame x.x - y.y
   //adds frame 0.0
   //adds frame range x.x - y.y
+  //adds file command
+  //adds select file=
+  //tunes select model=
   
   
   

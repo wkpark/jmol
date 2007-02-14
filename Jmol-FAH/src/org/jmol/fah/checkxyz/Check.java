@@ -122,14 +122,12 @@ public class Check implements ActionListener {
    * Process all directories for XYZ files. 
    */
   public void processDirectories() {
-    System.err.println("-->processDirectories");
     if (configuration.getDirectories() != null) {
       Iterator iter = configuration.getDirectories().iterator();
       while (iter.hasNext()) {
         processDirectory(iter.next().toString());
       }
     }
-    System.err.println("<--processDirectories");
   }
 
   /**
@@ -147,7 +145,6 @@ public class Check implements ActionListener {
     if ((directory == null) || (!directory.isDirectory())) {
       return;
     }
-    System.err.println(" Processing " + directory.getAbsolutePath());
     File[] files = directory.listFiles(fileFilter);
     if (files == null) {
       return;
@@ -170,7 +167,6 @@ public class Check implements ActionListener {
     if ((file == null) || (!file.isFile())) {
       return;
     }
-    System.err.println("  Processing " + file.getAbsolutePath());
     BufferedReader reader = null;
     try {
       reader = new BufferedReader(new FileReader(file));
@@ -360,7 +356,6 @@ public class Check implements ActionListener {
   public static void main(String[] args) {
     Check check = new Check();
     check.process(args);
-    System.err.println("End main");
   }
 
 }

@@ -343,7 +343,8 @@ abstract class TransformManager {
       return;
     }
     rotateAxisAngleRadiansFixed(angle);
-    setRotateSelected(false);
+    if (isSelected)
+      setRotateSelected(false);
   }
 
   synchronized void rotateAxisAngleRadiansFixed(float angleRadians) {
@@ -367,7 +368,8 @@ abstract class TransformManager {
 
     if (degrees == 0)
       return;
-
+    if (isSelected)
+      setRotateSelected(true);
     Vector3f axis = new Vector3f(point1);
     axis.sub(point2);
     if (isClockwise)
@@ -381,6 +383,8 @@ abstract class TransformManager {
       return;
     }
     rotateAxisAngleRadiansInternal(angle);
+    if (isSelected)
+      setRotateSelected(false);
   }
 
   synchronized void rotateAxisAngleRadiansInternal(float radians) {
@@ -399,8 +403,9 @@ abstract class TransformManager {
     // NOW apply that rotation  
 
     matrixTemp3.set(axisangleT);
-    matrixRotate.mul(matrixTemp3, matrixRotate);
-    getNewFixedRotationCenter();
+    applyRotation(matrixTemp3);
+    if (!rotateSelected)
+      getNewFixedRotationCenter();
   }
 
   void getNewFixedRotationCenter() {

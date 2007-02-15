@@ -3707,6 +3707,9 @@ class Eval { //implements Runnable {
       points[i] = new Point3f(0, 0, 0);
     for (int i = 1; i < statementLength; ++i) {
       switch (getToken(i).tok) {
+      case Token.spin:
+        isSpin = true;
+        break;
       case Token.hyphen:
         direction = -1;
         break;
@@ -3806,12 +3809,8 @@ class Eval { //implements Runnable {
         degrees = 10;
       if (isSyntaxCheck)
         return;
-      if (isSelected)
-        viewer.setRotateSelected(true);
       viewer.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees, endDegrees,
-          isSpin);
-      if (isSelected)
-        viewer.setRotateSelected(false);
+          isSpin, isSelected);
       return;
     }
     if (nPoints < 2 && !isSyntaxCheck) {
@@ -3834,7 +3833,7 @@ class Eval { //implements Runnable {
     if (isSyntaxCheck)
       return;
     viewer.rotateAboutPointsInternal(points[0], points[1], degrees, endDegrees,
-        isSpin);
+        isSpin, isSelected);
   }
 
   void script() throws ScriptException {

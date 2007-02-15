@@ -4767,18 +4767,18 @@ public class Viewer extends JmolViewer {
    * ********************************************************/
 
   void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,
-                               float degrees, float endDegrees, boolean isSpin) {
+                               float degrees, float endDegrees, boolean isSpin, boolean isSelected) {
     // Eval: rotate FIXED
     transformManager.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees,
-        endDegrees, isSpin);
+        endDegrees, isSpin, isSelected);
   }
 
   void rotateAboutPointsInternal(Point3f point1, Point3f point2,
                                  float nDegrees, float endDegrees,
-                                 boolean isSpin) {
+                                 boolean isSpin, boolean isSelected) {
     // Eval: rotate INTERNAL
     transformManager.rotateAboutPointsInternal(point1, point2, nDegrees,
-        endDegrees, false, isSpin);
+        endDegrees, false, isSpin, isSelected);
   }
 
   private void setPickingSpinRate(int rate) {
@@ -4808,7 +4808,7 @@ public class Viewer extends JmolViewer {
       return;
     }
     transformManager.rotateAboutPointsInternal(pt1, pt2,
-        global.pickingSpinRate, Float.MAX_VALUE, isClockwise, true);
+        global.pickingSpinRate, Float.MAX_VALUE, isClockwise, true, false);
   }
 
   Point3f getDrawObjectCenter(String axisID) {

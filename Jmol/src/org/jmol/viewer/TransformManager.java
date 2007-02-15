@@ -319,9 +319,11 @@ abstract class TransformManager {
    ****************************************************************/
 
   void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,
-                               float degrees, float endDegrees, boolean isSpin) {
+                               float degrees, float endDegrees, boolean isSpin, boolean isSelected) {
 
     //*THE* Viewer FIXED frame rotation/spinning entry point
+    if (isSelected)
+      setRotateSelected(true);
     if (rotCenter != null)
       moveRotationCenter(rotCenter, true);
 
@@ -341,6 +343,7 @@ abstract class TransformManager {
       return;
     }
     rotateAxisAngleRadiansFixed(angle);
+    setRotateSelected(false);
   }
 
   synchronized void rotateAxisAngleRadiansFixed(float angleRadians) {
@@ -356,7 +359,7 @@ abstract class TransformManager {
 
   void rotateAboutPointsInternal(Point3f point1, Point3f point2, float degrees,
                                  float endDegrees, boolean isClockwise,
-                                 boolean isSpin) {
+                                 boolean isSpin, boolean isSelected) {
 
     // *THE* Viewer INTERNAL frame rotation entry point
 
@@ -1826,6 +1829,7 @@ abstract class TransformManager {
         }
       }
       viewer.setBooleanProperty("isSpinning", false);
+      setRotateSelected(false);
     }
   }
 

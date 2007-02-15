@@ -209,6 +209,16 @@ abstract class TransformManager {
   final static int MAXIMUM_ZOOM_PERCENTAGE = 200000;
   final static int MAXIMUM_ZOOM_PERSPECTIVE_DEPTH = 10000;
 
+  private boolean rotateSelected;
+  
+  void setRotateSelected(boolean TF) {
+    rotateSelected = TF;
+  }
+  
+  boolean getRotateSelected() {
+    return rotateSelected;
+  }
+  
   private void setFixedRotationCenter(Point3f center) {
     if (center == null)
       return;
@@ -267,23 +277,30 @@ abstract class TransformManager {
     matrixRotate.rotZ(angleRadians);
   }
 
+  void applyRotation(Matrix3f mNew) {
+    if (rotateSelected)
+      viewer.rotateSelected(mNew, matrixRotate);
+    else
+      matrixRotate.mul(mNew, matrixRotate);
+  }
+  
   synchronized void rotateXRadians(float angleRadians) {
     matrixTemp3.rotX(angleRadians);
-    matrixRotate.mul(matrixTemp3, matrixRotate);
+    applyRotation(matrixTemp3);
   }
 
   synchronized void rotateYRadians(float angleRadians) {
     if (axesOrientationRasmol)
       angleRadians = -angleRadians;
     matrixTemp3.rotY(angleRadians);
-    matrixRotate.mul(matrixTemp3, matrixRotate);
+    applyRotation(matrixTemp3);
   }
 
   synchronized void rotateZRadians(float angleRadians) {
     if (axesOrientationRasmol)
       angleRadians = -angleRadians;
     matrixTemp3.rotZ(angleRadians);
-    matrixRotate.mul(matrixTemp3, matrixRotate);
+    applyRotation(matrixTemp3);
   }
 
   protected void rotateAxisAngle(Vector3f rotAxis, float radians) {
@@ -294,25 +311,7 @@ abstract class TransformManager {
   synchronized void rotateAxisAngle(AxisAngle4f axisAngle) {
     matrixTemp3.setIdentity();
     matrixTemp3.set(axisAngle);
-    matrixRotate.mul(matrixTemp3, matrixRotate);
-  }
-
-  void rotateTo(float x, float y, float z, float degrees) {
-    //unused
-    if (degrees < .01 && degrees > -.01) {
-      matrixRotate.setIdentity();
-    } else {
-      axisangleT.set(x, y, z, degrees * radiansPerDegree);
-      matrixRotate.set(axisangleT);
-    }
-  }
-
-  void rotateTo(AxisAngle4f axisAngle) {
-    //unused
-    if (axisAngle.angle < .01 && axisAngle.angle > -.01)
-      matrixRotate.setIdentity();
-    else
-      matrixRotate.set(axisAngle);
+    applyRotation(matrixTemp3);
   }
 
   /* ***************************************************************

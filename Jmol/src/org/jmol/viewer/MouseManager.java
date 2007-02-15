@@ -331,8 +331,8 @@ abstract class MouseManager implements KeyListener {
         viewer.checkObjectClicked(x, y, modifiers);
       }
       break;
+    case ALT_LEFT:      
     case SHIFT_LEFT:
-    case ALT_LEFT:
     case ALT_SHIFT_LEFT:
       if (!drawMode) {
         viewer.atomPicked(nearestAtomIndex, modifiers);
@@ -391,8 +391,14 @@ abstract class MouseManager implements KeyListener {
     case LEFT:
       viewer.rotateXYBy(deltaX, deltaY);
       break;
-    case SHIFT_LEFT:
     case ALT_LEFT:
+      if (viewer.allowRotateSelected()) {
+        viewer.setRotateSelected(true);
+        viewer.rotateXYBy(deltaX, deltaY);
+        viewer.setRotateSelected(false);
+        break;
+      }
+    case SHIFT_LEFT:
     case ALT_SHIFT_LEFT:
       if (drawMode) {
         viewer.checkObjectDragged(previousDragX, previousDragY, deltaX, deltaY,

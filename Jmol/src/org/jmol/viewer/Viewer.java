@@ -3604,6 +3604,13 @@ public class Viewer extends JmolViewer {
   boolean setBooleanProperty(String key, boolean value, boolean defineNew) {
     boolean notFound = false;
     while (true) {
+      
+      ///11.1.13///
+      if (key.equalsIgnoreCase("allowRotateSelected")) {
+        setAllowRotateSelected(value);
+        break;
+      }
+
       if (key.equalsIgnoreCase("showScript")) {
         setIntProperty("showScript", value ? 1 : 0);
         return true;
@@ -4863,6 +4870,18 @@ public class Viewer extends JmolViewer {
     modelManager.setAtomCoordRelative(offset, selectionManager.bsSelection);
   }
 
+  void setRotateSelected(boolean TF) {
+    transformManager.setRotateSelected(TF);
+  }
+  
+  void setAllowRotateSelected(boolean TF) {
+    global.allowRotateSelected = TF;
+  }
+
+  boolean allowRotateSelected() {
+    return global.allowRotateSelected;
+  }
+
   void invertSelected(Point3f pt, BitSet bs) {
     //Eval
     modelManager.invertSelected(pt, null, bs);
@@ -4871,6 +4890,10 @@ public class Viewer extends JmolViewer {
   void invertSelected(Point3f pt, Point4f plane) {
     //Eval
     modelManager.invertSelected(pt, plane, selectionManager.bsSelection);
+  }
+
+  void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate) {
+    modelManager.rotateSelected(mNew, matrixRotate, selectionManager.bsSelection);
   }
 
   float functionXY(String functionName, int x, int y) {

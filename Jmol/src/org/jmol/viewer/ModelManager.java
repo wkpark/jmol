@@ -37,6 +37,7 @@ import java.util.Hashtable;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
@@ -1387,6 +1388,10 @@ String getAtomInfoChime(int i) {
 
   void invertSelected(Point3f pt, Point4f plane, BitSet bs) {
     frame.invertSelected(pt, plane, bs);
+  }
+  
+  void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate, BitSet bs) {
+    frame.rotateSelected(mNew, matrixRotate, bs);
   }
 
   boolean getPrincipalAxes(int atomIndex, Vector3f z, Vector3f x,

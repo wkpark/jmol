@@ -405,6 +405,7 @@ class StateManager {
 
     boolean allowCameraMoveFlag = true;
     boolean adjustCameraFlag = true;
+    boolean allowRotateSelected = false;
 
     //solvent
 

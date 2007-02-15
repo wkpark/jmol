@@ -3133,6 +3133,32 @@ public final class Frame {
         setAtomCoordRelative(i, x, y, z);
   }
 
+  final Matrix3f matTemp = new Matrix3f();
+  final Matrix3f matInv = new Matrix3f();
+  final Point3f ptTemp = new Point3f();
+  final Point3f ptTemp2 = new Point3f();
+  
+  void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate, BitSet bs) {
+    matInv.set(matrixRotate);
+    matInv.invert();
+    ptTemp.set(0,0,0);
+    matTemp.mul(mNew, matrixRotate);
+    matTemp.mul(matInv,matTemp);
+    int n = 0;
+    for (int i = atomCount; --i >= 0;)
+      if (bs.get(i)) {
+        ptTemp.add(atoms[i]);
+        matTemp.transform(atoms[i]);
+        ptTemp.sub(atoms[i]);
+        taint(i);
+        n++;
+      }
+    ptTemp.scale(1f/n);
+    for (int i = atomCount; --i >= 0;)
+      if (bs.get(i))
+        atoms[i].add(ptTemp);
+  }
+
   void invertSelected(Point3f pt, Point4f plane, BitSet bs) {
     if (pt != null) {
       for (int i = atomCount; --i >= 0;)

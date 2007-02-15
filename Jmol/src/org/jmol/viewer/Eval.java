@@ -688,7 +688,7 @@ class Eval { //implements Runnable {
         reset();
         break;
       case Token.rotate:
-        rotate(false);
+        rotate(false, false);
         break;
       case Token.script:
         script();
@@ -704,6 +704,9 @@ class Eval { //implements Runnable {
         break;
       case Token.invertSelected:
         invertSelected();
+        break;
+      case Token.rotateSelected:
+        rotate(false, true);
         break;
       case Token.translateSelected:
         translateSelected();
@@ -804,7 +807,7 @@ class Eval { //implements Runnable {
         proteinShape(JmolConstants.SHAPE_ROCKETS);
         break;
       case Token.spin:
-        rotate(true);
+        rotate(true, false);
         break;
       case Token.ssbond:
         ssbond();
@@ -3618,7 +3621,7 @@ class Eval { //implements Runnable {
     viewer.setSelectionSet(bsSelected);
   }
 
-  void rotate(boolean isSpin) throws ScriptException {
+  void rotate(boolean isSpin, boolean isSelected) throws ScriptException {
 
     /*
      * The Chime spin method:
@@ -3801,9 +3804,14 @@ class Eval { //implements Runnable {
       // rotate x 10 
       if (degrees == Float.MIN_VALUE)
         degrees = 10;
-      if (!isSyntaxCheck)
-        viewer.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees, endDegrees,
-            isSpin);
+      if (isSyntaxCheck)
+        return;
+      if (isSelected)
+        viewer.setRotateSelected(true);
+      viewer.rotateAxisAngleAtCenter(rotCenter, rotAxis, degrees, endDegrees,
+          isSpin);
+      if (isSelected)
+        viewer.setRotateSelected(false);
       return;
     }
     if (nPoints < 2 && !isSyntaxCheck) {
@@ -3823,9 +3831,10 @@ class Eval { //implements Runnable {
       evalError(GT._("rotation points cannot be identical"));
     if (degrees == Float.MIN_VALUE)
       degrees = 10;
-    if (!isSyntaxCheck)
-      viewer.rotateAboutPointsInternal(points[0], points[1], degrees,
-          endDegrees, isSpin);
+    if (isSyntaxCheck)
+      return;
+    viewer.rotateAboutPointsInternal(points[0], points[1], degrees, endDegrees,
+        isSpin);
   }
 
   void script() throws ScriptException {
@@ -4007,10 +4016,11 @@ class Eval { //implements Runnable {
     Point3f pt = null;
     Point4f plane = null;
     if (statementLength == 1) {
-      if (!isSyntaxCheck) {
-        pt = viewer.getRotationCenter();
-        viewer.invertSelected(pt, bsAll());
-      }
+      if (isSyntaxCheck)
+        return;
+      BitSet bs = viewer.getSelectedAtomsOrBonds();
+      pt = viewer.getAtomSetCenter(bs);
+      viewer.invertSelected(pt, bs);
       return;
     }
     String type = parameterAsString(1);
@@ -4030,6 +4040,13 @@ class Eval { //implements Runnable {
     viewer.invertSelected(pt, plane);
   }
   
+  void translateSelected() throws ScriptException {
+    // translateSelected {x y z}
+    Point3f pt = getCoordinate(1, true);
+    if (!isSyntaxCheck)
+      viewer.setAtomCoordRelative(pt);
+  }
+
   void translate() throws ScriptException {
     float percent = floatParameter(2);
     if (percent > 100 || percent < -100)
@@ -4053,13 +4070,6 @@ class Eval { //implements Runnable {
       }
     }
     axisExpected();
-  }
-
-  void translateSelected() throws ScriptException {
-    // translateSelected {x y z}
-    Point3f pt = getCoordinate(1, true);
-    if (!isSyntaxCheck)
-      viewer.setAtomCoordRelative(pt);
   }
 
   void zap() {

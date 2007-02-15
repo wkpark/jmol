@@ -5352,7 +5352,7 @@ class Eval { //implements Runnable {
       switch (statementLength) {
       case 2:
         setBooleanProperty(key, true);
-        if (!isSyntaxCheck)
+        if (!isSyntaxCheck &&  viewer.getScriptDelay() > 0)
           showString(key + " = " + viewer.getParameterEscaped(key));
         return;
       case 3:
@@ -5570,7 +5570,7 @@ class Eval { //implements Runnable {
       case 3:
         setStringProperty(key, strValue);
       }
-      if (!isSyntaxCheck)
+      if (!isSyntaxCheck &&  viewer.getScriptDelay()>0)
         showString(key + " = " + viewer.getParameterEscaped(key));
     }
   }

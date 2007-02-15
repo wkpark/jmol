@@ -23,7 +23,6 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 
 import org.jmol.api.JmolSelectionListener;
@@ -31,7 +30,6 @@ import org.jmol.i18n.GT;
 
 import java.util.BitSet;
 import java.util.Hashtable;
-import java.util.Vector;
 
 class SelectionManager {
 
@@ -339,32 +337,7 @@ class SelectionManager {
         listeners[i].selectionChanged(bsSelection);
     }
   }
-  
-  BitSet getAtomBitSet(Object atomExpression) {
-    if (atomExpression instanceof BitSet)
-      return (BitSet) atomExpression;
-    selectionModeAtoms = true;
-    Eval e = new Eval(viewer);
-    BitSet bs = new BitSet();
-    try {
-      bs = e.getAtomBitSet(atomExpression.toString());
-    } catch (Exception ex) {
-      Logger.error("SelectionManager.getAtomBitSet " + atomExpression);
-      Logger.error("" + ex);
-      return bs;
-    }
-    return bs;
-  }
-
-  Vector getAtomBitSetVector(Object atomExpression) {
-    Vector V = new Vector();
-    BitSet bs = getAtomBitSet(atomExpression);
-    int atomCount = viewer.getAtomCount();
-    for (int i = 0; i < atomCount; i++)
-      if (bs.get(i)) V.add(new Integer(i));
-    return V;
-  }
-  
+    
   String getState() {
     StringBuffer commands = new StringBuffer("# selection state;\n");
     String cmd = null;

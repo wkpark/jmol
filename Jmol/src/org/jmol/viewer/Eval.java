@@ -8079,4 +8079,28 @@ class Eval { //implements Runnable {
     }
     return "ERROR";
   }
+  
+  static BitSet getAtomBitSet(Viewer viewer, Object atomExpression) {
+    if (atomExpression instanceof BitSet)
+      return (BitSet) atomExpression;
+    Eval e = new Eval(viewer);
+    BitSet bs = new BitSet();
+    try {
+      bs = e.getAtomBitSet(atomExpression.toString());
+    } catch (Exception ex) {
+      Logger.error("getAtomBitSet " + atomExpression + "\n" + ex);
+      return bs;
+    }
+    return bs;
+  }
+
+  static Vector getAtomBitSetVector(Viewer viewer, Object atomExpression) {
+    Vector V = new Vector();
+    BitSet bs = getAtomBitSet(viewer, atomExpression);
+    int atomCount = viewer.getAtomCount();
+    for (int i = 0; i < atomCount; i++)
+      if (bs.get(i)) V.add(new Integer(i));
+    return V;
+  }
+
 }

@@ -1129,7 +1129,14 @@ public class Viewer extends JmolViewer {
   }
 
   BitSet getAtomBitSet(Object atomExpression) {
-    return selectionManager.getAtomBitSet(atomExpression);
+    // typically a string such as "(atomno < 3)"
+    if (atomExpression instanceof BitSet)
+      return (BitSet)atomExpression;
+    return Eval.getAtomBitSet(this, atomExpression);
+  }
+
+  Vector getAtomBitSetVector(Object atomExpression) {
+    return Eval.getAtomBitSetVector(this, atomExpression);
   }
 
   int firstAtomOf(BitSet bs) {
@@ -1138,10 +1145,6 @@ public class Viewer extends JmolViewer {
 
   Point3f getAtomSetCenter(BitSet bs) {
     return modelManager.getAtomSetCenter(bs);
-  }
-
-  Vector getAtomBitSetVector(Object atomExpression) {
-    return selectionManager.getAtomBitSetVector(atomExpression);
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -1933,28 +1936,23 @@ public class Viewer extends JmolViewer {
   }
 
   Vector getAllAtomInfo(Object atomExpression) {
-    BitSet bs = getAtomBitSet(atomExpression);
-    return modelManager.getAllAtomInfo(bs);
+    return modelManager.getAllAtomInfo(getAtomBitSet(atomExpression));
   }
 
   Vector getAllBondInfo(Object atomExpression) {
-    BitSet bs = getAtomBitSet(atomExpression);
-    return modelManager.getAllBondInfo(bs);
+    return modelManager.getAllBondInfo(getAtomBitSet(atomExpression));
   }
 
   Vector getMoleculeInfo(Object atomExpression) {
-    BitSet bs = getAtomBitSet(atomExpression);
-    return modelManager.getMoleculeInfo(bs);
+    return modelManager.getMoleculeInfo(getAtomBitSet(atomExpression));
   }
 
   public Hashtable getAllChainInfo(Object atomExpression) {
-    BitSet bs = getAtomBitSet(atomExpression);
-    return modelManager.getAllChainInfo(bs);
+    return modelManager.getAllChainInfo(getAtomBitSet(atomExpression));
   }
 
   public Hashtable getAllPolymerInfo(Object atomExpression) {
-    BitSet bs = getAtomBitSet(atomExpression);
-    return modelManager.getAllPolymerInfo(bs);
+    return modelManager.getAllPolymerInfo(getAtomBitSet(atomExpression));
   }
 
   String loadScript;
@@ -4695,10 +4693,9 @@ public class Viewer extends JmolViewer {
   }
 
   String getModelExtract(Object atomExpression) {
-    BitSet bs = getAtomBitSet(atomExpression);
     return fileManager.getFullPathName() + "\nJmol version " + getJmolVersion()
         + "\nEXTRACT: " + atomExpression + "\n"
-        + modelManager.getModelExtract(bs);
+        + modelManager.getModelExtract(getAtomBitSet(atomExpression));
   }
 
   static String simpleReplace(String str, String strFrom, String strTo) {

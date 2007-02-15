@@ -209,14 +209,14 @@ abstract class TransformManager {
   final static int MAXIMUM_ZOOM_PERCENTAGE = 200000;
   final static int MAXIMUM_ZOOM_PERSPECTIVE_DEPTH = 10000;
 
-  private boolean rotateSelected;
+  private boolean rotateSelected, rotateMolecule;
   
   void setRotateSelected(boolean TF) {
     rotateSelected = TF;
   }
   
-  boolean getRotateSelected() {
-    return rotateSelected;
+  void setRotateMolecule(boolean TF) {
+    rotateMolecule = TF;
   }
   
   private void setFixedRotationCenter(Point3f center) {
@@ -279,7 +279,7 @@ abstract class TransformManager {
 
   void applyRotation(Matrix3f mNew) {
     if (rotateSelected)
-      viewer.rotateSelected(mNew, matrixRotate);
+      viewer.rotateSelected(mNew, matrixRotate, rotateMolecule);
     else
       matrixRotate.mul(mNew, matrixRotate);
   }

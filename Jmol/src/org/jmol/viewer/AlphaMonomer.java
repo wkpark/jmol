@@ -59,7 +59,8 @@ class AlphaMonomer extends Monomer {
   ProteinStructure getProteinStructure() { return proteinStructure; }
 
   byte getProteinStructureType() {
-    return proteinStructure == null ? 0 : proteinStructure.type;
+    return proteinStructure == null ? JmolConstants.PROTEIN_STRUCTURE_NONE
+        : proteinStructure.type;
   }
 
   boolean isHelix() {

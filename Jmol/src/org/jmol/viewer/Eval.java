@@ -58,6 +58,7 @@ class Eval { //implements Runnable {
 
   Compiler compiler;
   int scriptLevel;
+  int scriptReportingLevel;
   Context[] stack = new Context[scriptLevelMax];
   String filename;
   String script;
@@ -1086,25 +1087,32 @@ class Eval { //implements Runnable {
   }
 
   String getCommand() {
-     int ichBegin = lineIndices[pc];
+    int ichBegin = lineIndices[pc];
     int ichEnd = (pc + 1 == lineIndices.length || lineIndices[pc + 1] == 0 ? script
         .length()
         : lineIndices[pc + 1]);
-    
+
     // I can't figure out why this gets messed up with entry from app on syntaxCheck
-    
+
     if (ichBegin < 0)
       ichBegin = 0;
     if (ichEnd > script.length() || ichEnd < ichBegin)
       ichEnd = script.length();
-    String s = script.substring(ichBegin, ichEnd);
-    int i;
-    if ((i = s.indexOf("\n")) >= 0)
-      s = s.substring(0, i);
-    if ((i = s.indexOf("\r")) >= 0)
-      s = s.substring(0, i);
-    if (!s.endsWith(";"))
-      s += ";";
+    String s = "";
+    try {
+      s = script.substring(ichBegin, ichEnd);
+      int i;
+      if ((i = s.indexOf("\n")) >= 0)
+        s = s.substring(0, i);
+      if ((i = s.indexOf("\r")) >= 0)
+        s = s.substring(0, i);
+      if (!s.endsWith(";"))
+        s += ";";
+    } catch (Exception e) {
+      Logger.error("darn problem in Eval getCommand: ichBegin=" + ichBegin
+          + " ichEnd=" + ichEnd + " len = " + script.length() + " script = "
+          + script + "\n" + e);
+    }
     return s;
   }
 
@@ -1585,13 +1593,9 @@ class Eval { //implements Runnable {
         break;
       case Token._atomID:
         propertyValue = atom.getSpecialAtomID();
-        if (propertyValue < 0)
-          continue;
         break;
       case Token._structure:
-        propertyValue = getProteinStructureType(atom);
-        if (propertyValue == -1)
-          continue;
+        propertyValue = atom.getProteinStructureType();
         break;
       case Token.radius:
         propertyValue = atom.getRasMolRadius();
@@ -1732,9 +1736,6 @@ class Eval { //implements Runnable {
     return null;
   }
 
-  int getProteinStructureType(Atom atom) {
-    return atom.getProteinStructureType();
-  }
 
   /* ****************************************************************************
    * ==============================================================
@@ -1754,10 +1755,11 @@ class Eval { //implements Runnable {
       badArgumentCount();
   }
 
-  void checkLength23() throws ScriptException {
+  int checkLength23() throws ScriptException {
     iToken = statementLength;
     if (statementLength < 2 || statementLength > 3)
       badArgumentCount();
+    return statementLength;
   }
 
   void checkLength2() throws ScriptException {
@@ -3990,12 +3992,12 @@ class Eval { //implements Runnable {
       return;
     }
     if (statementLength == 1) {
-      viewer.select(null, tQuiet);
+      viewer.select(null, tQuiet || scriptLevel > scriptReportingLevel);
       return;
     }
     BitSet bs = expression(1);
     if (!isSyntaxCheck)
-      viewer.select(bs, tQuiet || isExpressionBitSet);
+      viewer.select(bs, tQuiet || isExpressionBitSet || scriptLevel > scriptReportingLevel);
   }
 
   void subset() throws ScriptException {
@@ -5274,47 +5276,21 @@ class Eval { //implements Runnable {
     case Token.radius:
     case Token.solvent:
       key = parameterAsString(1);
-      if (key.charAt(0) =='_') //these cannot be set by user
+      if (key.charAt(0) == '_') //these cannot be set by user
         invalidArgument();
+
+      //these next are not reported
+
       if (key.toLowerCase().indexOf("label") == 0) {
         setLabel(key.substring(5));
         return;
-      }
-      if (key.equalsIgnoreCase("toggleLabel")) { //from PickingManager
-        BitSet bs = expression(2);
-        if (!isSyntaxCheck)
-          viewer.togglePickingLabel(bs);
-        return;
-      }
-      if (key.equalsIgnoreCase("defaults")) {
-        key = parameterAsString(2).toLowerCase();
-        if (!key.equals("jmol") && !key.equals("rasmol"))
-          invalidArgument();
-        setStringProperty("defaults", key);
-        return;
-      }
-
-      if (key.equalsIgnoreCase("defaultColorScheme")) {
+      } else if (key.equalsIgnoreCase("defaultColorScheme")) {
         setDefaultColors();
         return;
-      }
-      if (key.equalsIgnoreCase("measurementNumbers")) {
+      } else if (key.equalsIgnoreCase("measurementNumbers")) {
         setMonitor(2);
         return;
-      }
-      if (key.equalsIgnoreCase("historyLevel")) {
-        int iLevel = intParameter(2);
-        if (!isSyntaxCheck)
-          commandHistoryLevelMax = iLevel;
-        return;
-      }
-      if (key.equalsIgnoreCase("backgroundModel")) {
-        checkLength3();
-        if (!isSyntaxCheck)
-          viewer.setBackgroundModel(statement[2].intValue);
-        return;
-      }
-      if (key.equalsIgnoreCase("defaultLattice")) {
+      } else if (key.equalsIgnoreCase("defaultLattice")) {
         Point3f pt;
         if (getToken(2).tok == Token.integer) {
           int i = intParameter(2);
@@ -5325,256 +5301,433 @@ class Eval { //implements Runnable {
         if (!isSyntaxCheck)
           viewer.setDefaultLattice(pt);
         return;
-      }
-      if (key.equalsIgnoreCase("dipoleScale")) {
-        checkLength3();
-        float scale = floatParameter(2);
-        if (scale < -10 || scale > 10)
-          numberOutOfRange(-10f, 10f);
-        setFloatProperty("dipoleScale", scale);
+      } else if (key.equalsIgnoreCase("toggleLabel")) { //from PickingManager
+        BitSet bs = expression(2);
+        if (!isSyntaxCheck)
+          viewer.togglePickingLabel(bs);
         return;
-      }
-      if (key.equalsIgnoreCase("logLevel")) {
+      } else if (key.equalsIgnoreCase("logLevel")) {
         // set logLevel n
         // we have 5 levels 0 - 4 debug -- error
         // n = 0 -- no messages -- turn all off
         // n = 1 add level 4, error
         // n = 2 add level 3, warn
         // etc.
-
+        checkLength3();
         int ilevel = intParameter(2);
-        if (!isSyntaxCheck) {
-          Viewer.setLogLevel(ilevel);
-          Logger.info("logging level set to " + ilevel);
-        }
+        if (isSyntaxCheck)
+          return;
+        Viewer.setLogLevel(ilevel);
+        Logger.info("logging level set to " + ilevel);
+        return;
+      } else if (key.equalsIgnoreCase("backgroundModel")) {
+        checkLength3();
+        if (!isSyntaxCheck)
+          viewer.setBackgroundModel(statement[2].intValue);
         return;
       }
-      switch (statementLength) {
-      case 2:
-        setBooleanProperty(key, true);
-        if (!isSyntaxCheck &&  viewer.getScriptDelay() > 0)
-          showString(key + " = " + viewer.getParameterEscaped(key));
-        return;
-      case 3:
-        switch (statement[2].tok) {
-        case Token.none:
-          if (!isSyntaxCheck)
-            viewer.unsetProperty(key);
+      if (setParameter(key)) {
+        if (isSyntaxCheck)
           return;
-        case Token.on:
-          setBooleanProperty(key, true);
-          return;
-        case Token.off:
-          setBooleanProperty(key, false);
-        }
-      }
-
-      //initialize
-      int intValue = Integer.MAX_VALUE;
-      float floatValue = Float.NaN;
-      String strValue = null;
-      boolean bValue = false;
-      boolean haveBoolean = false;
-      int opAdd = -2;
-      int opOr = -2;
-      int opMul = -2;
-      boolean isNot = false;
-      int mode = 0;
-      int modePrev = 0;
-      int nOp = 0;
-      for (int i = 2; i < statementLength; i++) {
-
-        //operators
-
-        if (nOp > 1)
-          invalidArgument();
-
-        nOp++;
-
-        switch (getToken(i).tok) {
-        case Token.plus:
-          opAdd = 1;
-          continue;
-        case Token.hyphen:
-          if (opAdd != 0)
-            nOp--;
-          opAdd = (opAdd == -1 ? 1 : -1);
-          continue;
-        case Token.asterisk:
-          opMul = 1;
-          continue;
-        case Token.slash:
-          opMul = -1;
-          continue;
-        case Token.opOr:
-          opOr = 1;
-          continue;
-        case Token.opAnd:
-          opOr = -1;
-          continue;
-        case Token.opNot:
-          isNot = !isNot;
-          nOp--;
-          continue;
-        }
-
-        nOp--;
-
-        //values
-
-        modePrev = mode;
-        int iv = Integer.MAX_VALUE;
-        float fv = Float.NaN;
-        String sv = null;
-        boolean bv = true;
-        switch (getToken(i).tok) {
-        case Token.off:
-          bv = false;
-          break;
-        case Token.on:
-          bv = true;
-          break;
-        case Token.identifier:
-          Object v = viewer.getParameter(parameterAsString(i));
-          if (v instanceof Boolean) {
-            bv = ((Boolean) v).booleanValue();
-          } else if (v instanceof Integer) {
-            iv = ((Integer) v).intValue();
-            mode = Math.max(mode, 1);
-          } else if (v instanceof Float) {
-            fv = ((Float) v).floatValue();
-            mode = Math.max(mode, 2);
-          } else if (v instanceof String) {
-            sv = ((String) v).toLowerCase();
-            mode = 3;
-          } else {
-            invalidArgument();
-          }
-          break;
-        case Token.integer:
-          iv = intParameter(i);
-          mode = Math.max(mode, 1);
-          break;
-        case Token.decimal:
-          fv = floatParameter(i);
-          mode = Math.max(mode, 2);
-          break;
-        case Token.expressionBegin:
-          iv = viewer
-              .cardinalityOf(expression(getToken(i).tok == Token.leftbrace ? i + 1
-                  : i));
-          i = iToken;
-          mode = Math.max(mode, 1);
-          break;
-        default:
-          if (!(statement[i].value instanceof String))
-            invalidArgument();
-          sv = stringParameter(i);
-          mode = 3;
-        }
-
-        //apply NOT
-
-        if (isNot)
-          bv = !bv;
-
-        if (mode == 0 && (opAdd == 1 || opAdd == -1 || opOr == 0)
-            ||(mode < 1 || mode > 2) && (opMul == 1 || opMul == -1)
-            || mode > 0 && (isNot || opOr == 1 || opOr == -1)
-            || mode == 3 && (opAdd == -1 || opAdd == 0)
-            || (mode == 1 || mode == 2) && (opAdd == 0 && opMul == 0))
-          invalidArgument();
-          
-        switch (mode) {
+      } else {
+        switch (parameterExpression(2)) {
         case 0:
-          if (!haveBoolean)
-            bValue = bv;
-          else if (opOr == 1 && bv || opOr == -1 && !bv)
-            bValue = bv;
-          else if (opOr == -1)
-            bValue &= bv;
-          haveBoolean = true;
+          setBooleanProperty(key, bValue);
           break;
         case 1:
-          switch (modePrev) {
-          case 0:
-            intValue = (bValue ? 1 : 0);
-          }
-          if (iv == Integer.MAX_VALUE)
-            iv = (bv ? 1 : 0);
-          if (opAdd == -2 && opMul == -2)
-            opAdd = 1;
-          else if (opAdd == -2)
-            opAdd = 0;
-          else if (opMul == -2)
-            opMul = 1;
-          if (opAdd != 0)
-            intValue += opAdd * iv;
-          else if (opMul == 1)
-            intValue *= iv;
-          else if (opMul == -1)
-            intValue /= iv;
+          setIntProperty(key, intValue);
           break;
         case 2:
-          switch (modePrev) {
-          case 0:
-            intValue = (bValue ? 1 : 0);
-          case 1:
-            floatValue = intValue;
-          }
-          if (Float.isNaN(fv))
-            fv = (iv != Integer.MAX_VALUE ? (float) iv : bv ? 1 : 0);
-          if (opAdd == -2 && opMul == -2)
-            opAdd = 1;
-          else if (opAdd == -2)
-            opAdd = 0;
-          else if (opMul == -2)
-            opMul = 1;
-          if (opAdd != 0)
-            floatValue += opAdd * fv;
-          else if (opMul == 1)
-            floatValue *= fv;
-          else if (opMul == -1)
-            floatValue /= fv;
+          setFloatProperty(key, floatValue);
           break;
         case 3:
-          switch (modePrev) {
-          case 0:
-            strValue = (!haveBoolean ? "" : bValue ? "true" : "false");
-            break;
-          case 1:
-            strValue = "" + intValue;
-            break;
-          case 2:
-            strValue = "" + floatValue;
-          }
-          strValue += (sv != null ? sv : !Float.isNaN(fv) ? "" + fv
-              : iv != Integer.MAX_VALUE ? "" + iv : (bv ? "true" : "false"));
+          setStringProperty(key, strValue);
         }
-        nOp = opOr = opAdd = opMul = 0;
-        isNot = false;
       }
-
-      // all done - save property of designated type
-
-      switch (mode) {
-      case 0:
-        setBooleanProperty(key, bValue);
-        break;
-      case 1:
-        setIntProperty(key, intValue);
-        break;
-      case 2:
-        setFloatProperty(key, floatValue);
-        break;
-      case 3:
-        setStringProperty(key, strValue);
-      }
-      if (!isSyntaxCheck &&  viewer.getScriptDelay()>0)
+      if (!isSyntaxCheck && scriptLevel <= scriptReportingLevel)
         showString(key + " = " + viewer.getParameterEscaped(key));
     }
   }
 
+  boolean setParameter(String key) throws ScriptException {
+    if (key.equalsIgnoreCase("scriptReportingLevel")) { //11.1.13
+      checkLength3();
+      int iLevel = intParameter(2);
+      if (!isSyntaxCheck) {
+        scriptReportingLevel = iLevel;
+        setIntProperty(key, iLevel);
+      }
+    } else if (key.equalsIgnoreCase("defaults")) {
+      checkLength3();
+      String val = parameterAsString(2).toLowerCase();
+      if (!val.equals("jmol") && !val.equals("rasmol"))
+        invalidArgument();
+      setStringProperty("defaults", val);
+    } else if (key.equalsIgnoreCase("historyLevel")) {
+      checkLength3();
+      int iLevel = intParameter(2);
+      if (!isSyntaxCheck) {
+        commandHistoryLevelMax = iLevel;
+        setIntProperty(key, iLevel);
+      }
+    } else if (key.equalsIgnoreCase("dipoleScale")) {
+      checkLength3();
+      float scale = floatParameter(2);
+      if (scale < -10 || scale > 10)
+        numberOutOfRange(-10f, 10f);
+      setFloatProperty("dipoleScale", scale);
+    } else if (statementLength == 2) {
+      if (!isSyntaxCheck)
+        setBooleanProperty(key, true);
+    } else if (statementLength == 3) {
+      int tok = statement[2].tok;
+      if (tok == Token.none) {
+        if (!isSyntaxCheck)
+          viewer.unsetProperty(key);
+      } else if (tok == Token.on || tok == Token.off) {
+        if (!isSyntaxCheck)
+          setBooleanProperty(key, tok == Token.on);
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+    return true;
+  }
+
+  int intValue;
+  float floatValue;
+  String strValue;
+  boolean bValue;
+
+  int parameterExpression(int pt) throws ScriptException {
+    bValue = false;
+    intValue = Integer.MAX_VALUE;
+    floatValue = Float.NaN;
+    strValue = null;
+    boolean haveBoolean = false;
+    int opAdd = -2;
+    int opOr = -2;
+    int opMul = -2;
+    boolean isNot = false;
+    int mode = 0;
+    int modePrev = 0;
+    int nOp = 0;
+    for (int i = pt; i < statementLength; i++) {
+
+      //operators
+
+      if (nOp > 1)
+        invalidArgument();
+
+      nOp++;
+
+      switch (getToken(i).tok) {
+      case Token.plus:
+        opAdd = 1;
+        continue;
+      case Token.hyphen:
+        if (opAdd != 0)
+          nOp--;
+        opAdd = (opAdd == -1 ? 1 : -1);
+        continue;
+      case Token.asterisk:
+        opMul = 1;
+        continue;
+      case Token.slash:
+        opMul = -1;
+        continue;
+      case Token.opOr:
+        opOr = 1;
+        continue;
+      case Token.opAnd:
+        opOr = -1;
+        continue;
+      case Token.opNot:
+        isNot = !isNot;
+        nOp--;
+        continue;
+      }
+
+      nOp--;
+
+      //values
+
+      modePrev = mode;
+      int iv = Integer.MAX_VALUE;
+      float fv = Float.NaN;
+      String sv = null;
+      boolean bv = true;
+      switch (getToken(i).tok) {
+      case Token.off:
+        bv = false;
+        break;
+      case Token.on:
+        bv = true;
+        break;
+      case Token.identifier:
+        Object v = viewer.getParameter(parameterAsString(i));
+        if (v instanceof Boolean) {
+          bv = ((Boolean) v).booleanValue();
+        } else if (v instanceof Integer) {
+          iv = ((Integer) v).intValue();
+          mode = Math.max(mode, 1);
+        } else if (v instanceof Float) {
+          fv = ((Float) v).floatValue();
+          mode = Math.max(mode, 2);
+        } else if (v instanceof String) {
+          sv = ((String) v).toLowerCase();
+          mode = 3;
+        } else {
+          invalidArgument();
+        }
+        break;
+      case Token.integer:
+        iv = intParameter(i);
+        mode = Math.max(mode, 1);
+        break;
+      case Token.decimal:
+        fv = floatParameter(i);
+        mode = Math.max(mode, 2);
+        break;
+      case Token.expressionBegin:
+        BitSet bs = expression(getToken(i).tok == Token.leftbrace ? i + 1 : i);
+        i = iToken;
+        if (i + 1 < statementLength && getToken(i + 1).tok == Token.dot) {
+          i++;
+          int tok = getToken(++i).tok;
+          if (tok == Token.identifier) {
+            String s = parameterAsString(i).toLowerCase();
+            if (s.equals("x"))
+              tok = Token.atomX;
+            else if(s.equals("y"))
+              tok = Token.atomY;
+            else if(s.equals("z"))
+              tok = Token.atomZ;
+            else if(s.equals("bondcount"))
+              tok = Token._bondedcount;
+            else
+              invalidArgument();
+          }
+          Object val = averageValue(bs, tok);
+          if (val == null)
+            invalidArgument();
+          if (val instanceof Integer) {
+            mode = Math.max(mode, 1);
+            iv = ((Integer)val).intValue();
+          } else {
+            mode = Math.max(mode, 2);
+            fv = ((Float)val).floatValue();
+          }
+        } else {
+          iv = viewer.cardinalityOf(bs);
+          mode = Math.max(mode, 1);
+        }
+        break;
+      default:
+        if (!(statement[i].value instanceof String))
+          invalidArgument();
+        sv = stringParameter(i);
+        mode = 3;
+      }
+
+      //apply NOT
+
+      if (isNot)
+        bv = !bv;
+
+      if (mode == 0 && (opAdd == 1 || opAdd == -1 || opOr == 0)
+          || (mode < 1 || mode > 2) && (opMul == 1 || opMul == -1) || mode > 0
+          && (isNot || opOr == 1 || opOr == -1) || mode == 3
+          && (opAdd == -1 || opAdd == 0) || (mode == 1 || mode == 2)
+          && (opAdd == 0 && opMul == 0))
+        invalidArgument();
+
+      switch (mode) {
+      case 0:
+        if (!haveBoolean)
+          bValue = bv;
+        else if (opOr == 1 && bv || opOr == -1 && !bv)
+          bValue = bv;
+        else if (opOr == -1)
+          bValue &= bv;
+        haveBoolean = true;
+        break;
+      case 1:
+        switch (modePrev) {
+        case 0:
+          intValue = (bValue ? 1 : 0);
+        }
+        if (iv == Integer.MAX_VALUE)
+          iv = (bv ? 1 : 0);
+        if (opAdd == -2 && opMul == -2)
+          opAdd = 1;
+        else if (opAdd == -2)
+          opAdd = 0;
+        else if (opMul == -2)
+          opMul = 1;
+        if (opAdd != 0)
+          intValue += opAdd * iv;
+        else if (opMul == 1)
+          intValue *= iv;
+        else if (opMul == -1)
+          intValue /= iv;
+        break;
+      case 2:
+        switch (modePrev) {
+        case 0:
+          intValue = (bValue ? 1 : 0);
+        case 1:
+          floatValue = intValue;
+        }
+        if (Float.isNaN(fv))
+          fv = (iv != Integer.MAX_VALUE ? (float) iv : bv ? 1 : 0);
+        if (opAdd == -2 && opMul == -2)
+          opAdd = 1;
+        else if (opAdd == -2)
+          opAdd = 0;
+        else if (opMul == -2)
+          opMul = 1;
+        if (opAdd != 0)
+          floatValue += opAdd * fv;
+        else if (opMul == 1)
+          floatValue *= fv;
+        else if (opMul == -1)
+          floatValue /= fv;
+        break;
+      case 3:
+        switch (modePrev) {
+        case 0:
+          strValue = (!haveBoolean ? "" : bValue ? "true" : "false");
+          break;
+        case 1:
+          strValue = "" + intValue;
+          break;
+        case 2:
+          strValue = "" + floatValue;
+        }
+        strValue += (sv != null ? sv : !Float.isNaN(fv) ? "" + fv
+            : iv != Integer.MAX_VALUE ? "" + iv : (bv ? "true" : "false"));
+      }
+      nOp = opOr = opAdd = opMul = 0;
+      isNot = false;
+    }
+    return mode;
+  }
+  
+  Object averageValue(BitSet bs, int tok) throws ScriptException {
+    int iv = 0;
+    float fv = 0;
+    int n = 0;
+    boolean isInt = true;
+    int atomCount = viewer.getAtomCount();
+    Frame frame = viewer.getFrame();
+    for (int i = 0; i < atomCount; i++)
+      if (bs.get(i)) {
+        n++;
+        Atom atom = frame.getAtomAt(i);
+        switch (tok) {
+        case Token.atomno:
+          iv += atom.getAtomNumber();
+          continue;
+        case Token.atomIndex:
+          iv += i;
+          continue;
+        case Token.elemno:
+          iv += atom.getElementNumber();
+          continue;
+        case Token.element:
+          iv += atom.getAtomicAndIsotopeNumber();
+          continue;
+        case Token.formalCharge:
+          iv += atom.getFormalCharge();
+          continue;
+        case Token.site:
+          iv += atom.getAtomSite();
+          continue;
+        case Token.symop:
+          // a little weird
+          BitSet bsSym = atom.getAtomSymmetry();
+          int len = bsSym.size();
+          int p = 0;
+          for (int k = 0; k < len; k++)
+            if (bsSym.get(k)) {
+              iv += k + 1;
+              p++;
+            }
+          n += p - 1;
+          continue;
+        case Token.molecule:
+          iv += atom.getMoleculeNumber();
+          continue;
+        case Token.occupancy:
+          iv += atom.getOccupancy();
+          continue;
+        case Token.polymerLength:
+          iv += atom.getPolymerLength();
+          continue;
+        case Token.resno:
+          iv += atom.getResno() + 1;
+          continue;
+        case Token._groupID:
+          iv += atom.getGroupID() + 1;
+          continue;
+        case Token._atomID:
+          iv += atom.getSpecialAtomID();
+          continue;
+        case Token._structure:
+          iv += atom.getProteinStructureType();
+          continue;
+        case Token._bondedcount:
+          iv += atom.getCovalentBondCount();
+          continue;
+        case Token.file:
+          iv += atom.getModelFileIndex() + 1;
+          continue;
+        case Token.model:
+          iv += atom.getModelNumber() % 1000000;
+          continue;
+        case Token.partialCharge:
+          fv += atom.getPartialCharge();
+          break;
+        case Token.temperature: // 0 - 9999
+          fv += atom.getBfactor100() / 100f;
+          break;
+        case Token.surfacedistance:
+          if (frame.getSurfaceDistanceMax() == 0)
+            dots(statementLength, Dots.DOTS_MODE_CALCONLY);
+          fv += atom.getSurfaceDistance100() / 100f;
+          break;
+        case Token.radius:
+          fv += atom.getRadius();
+          break;
+        case Token.psi:
+          fv += atom.getGroupPsi();
+          break;
+        case Token.phi:
+          fv += atom.getGroupPhi();
+          break;
+        case Token.atomX:
+          fv += atom.x;
+          break;
+        case Token.atomY:
+          fv += atom.y;
+          break;
+        case Token.atomZ:
+          fv += atom.z;
+          break;
+        default:
+          unrecognizedAtomProperty(tok);
+        }
+        isInt = false;
+      }
+    if (n == 0)
+      n = 1;
+    return (isInt && (iv / n) * n == iv ? (Object) (new Integer(iv / n))
+        : (Object) (new Float((isInt ? iv * 1f : fv) / n)));
+  }
+  
   void setAxes(int index) throws ScriptException {
     if (statementLength == 1) {
       setShapeSize(JmolConstants.SHAPE_AXES, 1);
@@ -6232,223 +6385,218 @@ class Eval { //implements Runnable {
    */
 
   void show() throws ScriptException {
-    Object value = null;
+    String value = null;
     String str = parameterAsString(1);
+    String msg = null;
+    int len = 2;
     switch (getToken(1).tok) {
     case Token.set:
-      showString(viewer.getAllSettings());
+      checkLength2();
+      if (!isSyntaxCheck)
+        showString(viewer.getAllSettings());
       return;
-    case Token.axes:
-      switch (viewer.getAxesMode()) {
-      case JmolConstants.AXES_MODE_UNITCELL:
-        value = "axesUnitcell";
-        break;
-      case JmolConstants.AXES_MODE_BOUNDBOX:
-        value = "axesWindow";
-        break;
-      default:
-        value = "axesMolecular";
+    case Token.url:
+      // in a new window
+      if ((len = statementLength) == 2) {
+        if (!isSyntaxCheck)
+          viewer.showUrl(viewer.getFullPathName());
+        return;
       }
-      str = "";
-      break;
-    case Token.bondmode:
-      value = "bondMode " + (viewer.getBondSelectionModeOr() ? "OR" : "AND");
-      str = "";
-      break;
+      String fileName = stringParameter(2);
+      if (!isSyntaxCheck)
+        viewer.showUrl(fileName);
+      return;
     case Token.defaultColors:
       str = "defaultColorScheme";
       break;
     case Token.scale3d:
       str = "scaleAngstromsPerInch";
       break;
-    case Token.strands:
-      viewer.loadShape(JmolConstants.SHAPE_STRANDS);
-      value = viewer.getShapeProperty(JmolConstants.SHAPE_STRANDS,
-          "strandCount");
-      str = "set strands";
-      break;
-    case Token.spin:
-      value = viewer.getSpinState();
-      str = "";
-      break;
-    case Token.hbond:
-      value = "set hbondsBackbone " + viewer.getHbondsBackbone()
-          + ";set hbondsSolid " + viewer.getHbondsSolid();
-      str = "";
-      break;
-    case Token.ssbond:
-      value = "set ssbondsBackbone " + viewer.getSsbondsBackbone();
-      str = "";
+    case Token.identifier:
+      if (str.equalsIgnoreCase("historyLevel")) {
+        value = "" + commandHistoryLevelMax;
+      } else if (str.equalsIgnoreCase("defaultLattice")) {
+        value = StateManager.escape(viewer.getDefaultLattice());
+      } else if (str.equalsIgnoreCase("logLevel")) {
+        value = "" + Viewer.getLogLevel();
+      } else if (str.equalsIgnoreCase("fileHeader")) {
+        if (!isSyntaxCheck)
+          msg = viewer.getPDBHeader();
+      }
       break;
     case Token.debugscript:
       value = "" + viewer.getDebugScript();
       break;
+    case Token.axes:
+      switch (viewer.getAxesMode()) {
+      case JmolConstants.AXES_MODE_UNITCELL:
+        msg = "set axesUnitcell";
+        break;
+      case JmolConstants.AXES_MODE_BOUNDBOX:
+        msg = "set axesWindow";
+        break;
+      default:
+        msg = "set axesMolecular";
+      }
+      break;
+    case Token.bondmode:
+      msg = "set bondMode " + (viewer.getBondSelectionModeOr() ? "OR" : "AND");
+      break;
+    case Token.strands:
+      viewer.loadShape(JmolConstants.SHAPE_STRANDS);
+      msg = "set strands "
+          + viewer.getShapeProperty(JmolConstants.SHAPE_STRANDS, "strandCount");
+      break;
+    case Token.hbond:
+      msg = "hbondsBackbone = " + viewer.getHbondsBackbone()
+          + ";hbondsSolid = " + viewer.getHbondsSolid();
+      break;
+    case Token.spin:
+      msg = viewer.getSpinState();
+      break;
+    case Token.ssbond:
+      msg = "ssbondsBackbone = " + viewer.getSsbondsBackbone();
+      break;
     case Token.display://deprecated
     case Token.selectionHalo:
-      value = "set SelectionHalosEnabled " + viewer.getSelectionHaloEnabled();
-      str = "";
+      msg = "selectionHalosEnabled = " + viewer.getSelectionHaloEnabled();
       break;
     case Token.hetero:
-      value = "set defaultSelectHetero " + viewer.getRasmolHeteroSetting();
-      str = "";
+      msg = "defaultSelectHetero = " + viewer.getRasmolHeteroSetting();
       break;
     case Token.hydrogen:
-      value = "set defaultSelectHydrogens " + viewer.getRasmolHydrogenSetting();
-      str = "";
+      msg = "defaultSelectHydrogens = " + viewer.getRasmolHydrogenSetting();
       break;
     case Token.ambient:
     case Token.diffuse:
     case Token.specular:
     case Token.specpower:
     case Token.specexponent:
-      value = viewer.getSpecularState();
-      str = "";
+      msg = viewer.getSpecularState();
       break;
-    case Token.echo:
-    case Token.fontsize:
-    case Token.property: // huh? why?
-    case Token.bonds:
-    case Token.frank:
-    case Token.help:
-    case Token.radius:
-    case Token.solvent:
-      value = "?";
+    case Token.save:
+      if (!isSyntaxCheck)
+        msg = viewer.listSavedStates();
+      break;
+    case Token.unitcell:
+      if (!isSyntaxCheck)
+        msg = viewer.getUnitCellInfoText();
       break;
     case Token.state:
-      checkLength23();
-      if (statementLength == 2) {
+      if ((len = statementLength) == 2) {
         if (!isSyntaxCheck)
-          showString(viewer.getStateInfo());
-        return;
+          msg = viewer.getStateInfo();
+        break;
       }
       String name = parameterAsString(2);
       if (!isSyntaxCheck)
-        showString(viewer.getSavedState(name));
-      return;
-    case Token.save:
-      if (!isSyntaxCheck)
-        showString(viewer.listSavedStates());
-      return;
+        msg = viewer.getSavedState(name);
+      break;
     case Token.data:
-      String type = (statementLength == 3 ? stringParameter(2) : null);
+      String type = ((len = statementLength) == 3 ? stringParameter(2) : null);
       if (!isSyntaxCheck) {
         String[] data = (type == null ? dataLabelString : viewer.getData(type));
-        showString(data == null ? "no data" : "data \"" + data[0] + "\"\n"
+        msg = (data == null ? "no data" : "data \"" + data[0] + "\"\n"
             + data[1]);
       }
-      return;
-    case Token.unitcell:
-      if (!isSyntaxCheck)
-        showString(viewer.getUnitCellInfoText());
-      return;
+      break;
     case Token.spacegroup:
-      if (statementLength == 2) {
+      if ((len = statementLength) == 2) {
         if (!isSyntaxCheck)
-          showString(viewer.getSpaceGroupInfoText(null));
-        return;
+          msg = viewer.getSpaceGroupInfoText(null);
+        break;
       }
-      if (statementLength == 3 && getToken(2).tok == Token.string) {
-        String sg = Viewer.simpleReplace(stringParameter(2), "''", "\"");
-        if (!isSyntaxCheck)
-          showString(viewer.getSpaceGroupInfoText(sg));
-        return;
-      }
-      invalidArgument();
+      String sg = stringParameter(2);
+      if (!isSyntaxCheck)
+        msg = viewer
+            .getSpaceGroupInfoText(Viewer.simpleReplace(sg, "''", "\""));
+      break;
     case Token.dollarsign:
+      len = 3;
       int shapeType = setShapeByNameParameter(2);
-      if (isSyntaxCheck)
-        return;
-      if (shapeType == JmolConstants.SHAPE_ISOSURFACE)
-        showString(getIsosurfaceJvxl());
-      else
-        showString((String) viewer.getShapeProperty(shapeType, "command"));
-      return;
+      if (!isSyntaxCheck) {
+        if (shapeType == JmolConstants.SHAPE_ISOSURFACE)
+          msg = getIsosurfaceJvxl();
+        else
+          msg = (String) viewer.getShapeProperty(shapeType, "command");
+      }
+      break;
     case Token.boundbox:
-      showString("boundbox " + viewer.getBoundBoxCenter() + " "
-          + viewer.getBoundBoxCornerVector());
-      return;
+      if (!isSyntaxCheck)
+        msg = "boundbox " + viewer.getBoundBoxCenter() + " "
+            + viewer.getBoundBoxCornerVector();
+      break;
     case Token.center:
-      Point3f pt = viewer.getRotationCenter();
-      showString("center " + StateManager.escape(pt));
-      return;
+      if (!isSyntaxCheck)
+        msg = "center " + StateManager.escape(viewer.getRotationCenter());
+      break;
     case Token.draw:
       if (!isSyntaxCheck)
-        showString((String) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
-            "command"));
-      return;
+        msg = (String) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
+            "command");
+      break;
     case Token.file:
       // as as string
       if (statementLength == 2) {
         if (!isSyntaxCheck)
-          showString(viewer.getCurrentFileAsString());
-        return;
+          msg = viewer.getCurrentFileAsString();
+        break;
       }
-      if (statementLength == 3 && getToken(2).tok == Token.string) {
-        String fileName = stringParameter(2);
-        if (!isSyntaxCheck)
-          showString(viewer.getFileAsString(fileName));
-        return;
-      }
-      invalidArgument();
+      checkLength3();
+      value = stringParameter(2);
+      if (!isSyntaxCheck)
+        msg = viewer.getFileAsString(value);
+      break;
     case Token.history:
-      int n = (statementLength == 2 ? Integer.MAX_VALUE : intParameter(2));
+      int n = ((len = statementLength) == 2 ? Integer.MAX_VALUE
+          : intParameter(2));
       if (n < 1)
         invalidArgument();
       if (!isSyntaxCheck) {
         viewer.removeCommand();
-        showString(viewer.getSetHistory(n));
+        msg = viewer.getSetHistory(n);
       }
-      return;
+      break;
     case Token.isosurface:
       if (!isSyntaxCheck)
-        showString((String) viewer.getShapeProperty(
-            JmolConstants.SHAPE_ISOSURFACE, "jvxlFileData"));
-      return;
+        msg = (String) viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
+            "jvxlFileData");
+      break;
     case Token.mo:
-      int ptMO = (statementLength > 2 ? intParameter(2) : Integer.MAX_VALUE);
-      if (isSyntaxCheck)
-        return;
-      showString(getMoJvxl(ptMO));
-      return;
+      int ptMO = ((len = statementLength) == 2 ? Integer.MAX_VALUE
+          : intParameter(2));
+      if (!isSyntaxCheck)
+        msg = getMoJvxl(ptMO);
+      break;
     case Token.model:
       if (!isSyntaxCheck)
-        showString(viewer.getModelInfoAsString());
-      return;
+        msg = viewer.getModelInfoAsString();
+      break;
     case Token.monitor:
       if (!isSyntaxCheck)
-        showString(viewer.getMeasurementInfoAsString());
-      return;
+        msg = viewer.getMeasurementInfoAsString();
+      break;
     case Token.orientation:
-      showString(viewer.getOrientationText());
-      return;
+      if (!isSyntaxCheck)
+        msg = viewer.getOrientationText();
+      break;
     case Token.pdbheader:
-      showString(viewer.getPDBHeader());
-      return;
+      if (!isSyntaxCheck)
+        msg = viewer.getPDBHeader();
+      break;
     case Token.symmetry:
-      showString(viewer.getSymmetryInfoAsString());
-      return;
+      if (!isSyntaxCheck)
+        msg = viewer.getSymmetryInfoAsString();
+      break;
     case Token.transform:
-      showString("transform:\n" + viewer.getTransformText());
-      return;
-    case Token.url:
-      // in a new window
-      if (statementLength == 2) {
-        if (!isSyntaxCheck)
-          viewer.showUrl(viewer.getFullPathName());
-        return;
-      }
-      if (statementLength == 3 && statement[2].tok == Token.string) {
-        String fileName = stringParameter(2);
-        if (!isSyntaxCheck)
-          viewer.showUrl(fileName);
-        return;
-      }
-      invalidArgument();
+      if (!isSyntaxCheck)
+        msg = "transform:\n" + viewer.getTransformText();
+      break;
     case Token.zoom:
-      showString("zoom "
+      msg = "zoom "
           + (viewer.getZoomEnabled() ? ("" + viewer.getZoomPercentFloat())
-              : "off"));
-      return;
+              : "off");
+      break;
     // not implemented
     case Token.translation:
     case Token.rotation:
@@ -6462,29 +6610,25 @@ class Eval { //implements Runnable {
       unrecognizedShowParameter("getProperty ATOMINFO (selected)");
     case Token.atom:
       unrecognizedShowParameter("getProperty ATOMINFO (atom expression)");
-    case Token.identifier:
-      if (str.equalsIgnoreCase("historyLevel")) {
-        showString("historyLevel " + commandHistoryLevelMax);
-        return;
-      }
-      if (str.equalsIgnoreCase("defaultLattice")) {
-        showString("defaultLattice "
-            + StateManager.escape(viewer.getDefaultLattice()));
-        return;
-      }
-      if (str.equalsIgnoreCase("logLevel")) {
-        value = "" + Viewer.getLogLevel();
-        break;
-      }
+    case Token.echo:
+    case Token.fontsize:
+    case Token.property: // huh? why?
+    case Token.bonds:
+    case Token.frank:
+    case Token.help:
+    case Token.radius:
+    case Token.solvent:
+      value = "?";
       break;
     }
-    if (statementLength != 2)
-      badArgumentCount();
-    if (value != null) {
-      showString((str.length() > 0 ? "set " + str + " " : "") + value);
+    checkStatementLength(len);
+    if (isSyntaxCheck)
       return;
-    }
-    if (!isSyntaxCheck && str != null)
+    if (msg != null)
+      showString(msg);
+    else if (value != null)
+      showString(str + " = " + value);
+    else if (str != null)
       showString(str + " = " + viewer.getParameterEscaped(str));
   }
 
@@ -7913,4 +8057,26 @@ class Eval { //implements Runnable {
     }
   }
 
+  static Object evaluateExpression(Viewer viewer, String expr) {
+    Eval e = new Eval(viewer);
+    try {
+      if (e.loadScript(null, "x = " + expr)) {
+        e.statement = e.aatoken[0];
+        e.statementLength = e.statement.length;
+        switch (e.parameterExpression(2)) {
+        case 0:
+          return (e.bValue ? Boolean.TRUE: Boolean.FALSE);
+        case 1:
+          return new Integer(e.intValue);
+        case 2:
+          return new Float(e.floatValue);
+        case 3:
+          return e.strValue;
+        }
+      }
+    } catch (Exception ex) {
+      Logger.error("Error evaluating: " + expr + "\n" + ex);
+    }
+    return "ERROR";
+  }
 }

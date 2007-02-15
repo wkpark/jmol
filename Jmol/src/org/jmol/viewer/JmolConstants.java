@@ -35,47 +35,62 @@ final public class JmolConstants {
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
   public final static String version = "11.1.13";
-  //11.1.13:
   
-  // DATA "coord set"
-  // invertSelected POINT ....
-  // invertSelected PLANE ....
-  // invertSelected HKL ......
-  // full state support for "tainting" atom positions using translateSelected or invertSelected
+  /*
+   11.1.13:
+   
+   DATA "coord set"
+   invertSelected POINT ....
+   invertSelected PLANE ....
+   invertSelected HKL ......
+   rotateSelected ....
+   rotateSelected spin ....
+   full state support for "tainting" atom positions using translateSelected or invertSelected
   
-  // write coords xxxx.spt
-  // load xxxx.spt # minimal -- just coord.
-  // script xxxx.spt # this is the full state load
+   set allowRotateSelected # then use ALT-LEFT for rotating just the selected molecule
   
-  // following still experimental -- do experiment, please!
+   this all definitely needs some work and discussion in terms of user interface via mouse
   
-  // rotateSelected ....
-  // rotateSelected spin ....
+
+   write coords xxxx.spt
+   load xxxx.spt # minimal -- just coord.
+   script xxxx.spt # this is the full state load
+
+   x = (some atom expression).atomProperty  -- takes an average if more than one atom
+   for example:
   
-  // set allowRotateSelected # then use ALT-LEFT for rotating just the selected molecule
+   x = (* /1).temperature
+   x = (C5).bondcount
+   
+   note that you can even say:
+   
+   set echo top left
+   echo average position= {%{(selected).x},%{(selected).y},%{(selected).z}}
+   
+   and it will AUTOMATICALLY update with new values as you select different atoms.
+   
   
-  // definitely needs some work in terms of user interface via mouse
+  11.1.12:
   
+  app fix for console entry messing up cursor position; 
+  allows for scripting during pause or interrupt of running script using ! as first character of script
+  new: within(x.x,plane,$plane1)
+  fix for "draw off" not recorded in save state
+  fix for within(integer,...) bug using RasMol units
+  fix for _modelnumber showing up as 2001
+  reconfigures _modelNumber as x.y for single models; x.x - y.y for range 
+  adds _currentFileNumber
+  adds _currentModelNumberInFile
+  disallows user setting of variables with _ as first character
+  adds @variableName in any command 
+  adds frame x.x - y.y
+  adds frame 0.0
+  adds frame range x.x - y.y
+  adds file command
+  adds select file=
+  tunes select model=
   
-  //11.1.12:
-  //app fix for console entry messing up cursor position; 
-  //allows for scripting during pause or interrupt of running script using ! as first character of script
-  //new: within(x.x,plane,$plane1)
-  //fix for "draw off" not recorded in save state
-  //fix for within(integer,...) bug using RasMol units
-  //fix for _modelnumber showing up as 2001
-  //reconfigures _modelNumber as x.y for single models; x.x - y.y for range 
-  //adds _currentFileNumber
-  //adds _currentModelNumberInFile
-  //disallows user setting of variables with _ as first character
-  //adds @variableName in any command 
-  //adds frame x.x - y.y
-  //adds frame 0.0
-  //adds frame range x.x - y.y
-  //adds file command
-  //adds select file=
-  //tunes select model=
-  
+  */
   
   
   public final static String cvsDate = "$Date$";

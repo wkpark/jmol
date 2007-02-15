@@ -393,9 +393,7 @@ abstract class MouseManager implements KeyListener {
       break;
     case ALT_LEFT:
       if (viewer.allowRotateSelected()) {
-        viewer.setRotateSelected(true);
-        viewer.rotateXYBy(deltaX, deltaY);
-        viewer.setRotateSelected(false);
+        viewer.rotateMolecule(deltaX, deltaY);
         break;
       }
     case SHIFT_LEFT:

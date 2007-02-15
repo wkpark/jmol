@@ -505,17 +505,18 @@ public class Viewer extends JmolViewer {
     transformManager.navTranslatePercent(timeSeconds, x, y);
     refresh(1, "navigate");
   }
-
-  boolean pointToCenter = true;
-
-  boolean getPointToCenter() {
-    return pointToCenter;
+  
+  void rotateMolecule(int deltaX, int deltaY) {
+    setRotateSelected(true);
+    setRotateMolecule(true);
+    rotateXYBy(deltaX, deltaY);
+    setRotateMolecule(false);
+    setRotateSelected(false);
   }
 
   void rotateXYBy(int xDelta, int yDelta) {
     //mouseSinglePressDrag
     transformManager.rotateXYBy(xDelta, yDelta);
-    //just an idea. Nah... pointToCenter = global.centerPointer;
     refresh(1, "Viewer:rotateXYBy()");
   }
 
@@ -3605,11 +3606,12 @@ public class Viewer extends JmolViewer {
     boolean notFound = false;
     while (true) {
       
-      ///11.1.13///
       if (key.equalsIgnoreCase("allowRotateSelected")) {
         setAllowRotateSelected(value);
         break;
       }
+
+      ///11.1.13///
 
       if (key.equalsIgnoreCase("showScript")) {
         setIntProperty("showScript", value ? 1 : 0);
@@ -4526,7 +4528,7 @@ public class Viewer extends JmolViewer {
       String name = text.substring(i0, i);
       text = text.substring(0, i0 - 2)
           + (name.length() == 0 ? "" : name.charAt(0) == '(' ? ""
-              + cardinalityOf(getAtomBitSet(name)) : getParameter(name)
+              + Eval.evaluateExpression(this, name) : getParameter(name)
               .toString()) + text.substring(i + 1);
     }
     return text;
@@ -4874,6 +4876,10 @@ public class Viewer extends JmolViewer {
     transformManager.setRotateSelected(TF);
   }
   
+  void setRotateMolecule(boolean TF) {
+    transformManager.setRotateMolecule(TF);
+  }
+  
   void setAllowRotateSelected(boolean TF) {
     global.allowRotateSelected = TF;
   }
@@ -4892,8 +4898,8 @@ public class Viewer extends JmolViewer {
     modelManager.invertSelected(pt, plane, selectionManager.bsSelection);
   }
 
-  void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate) {
-    modelManager.rotateSelected(mNew, matrixRotate, selectionManager.bsSelection);
+  void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate, boolean fullMolecule) {
+    modelManager.rotateSelected(mNew, matrixRotate, selectionManager.bsSelection, fullMolecule);
   }
 
   float functionXY(String functionName, int x, int y) {

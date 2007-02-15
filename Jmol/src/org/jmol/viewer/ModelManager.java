@@ -207,7 +207,7 @@ class ModelManager {
   }
 
   int getModelFileNumber(int modelIndex) {
-    return frame.getModelNumber(modelIndex);
+    return frame.getModelFileNumber(modelIndex);
   }
 
   Properties getModelProperties(int modelIndex) {
@@ -866,8 +866,7 @@ String getAtomInfoChime(int i) {
   }
 
   String getPDBHeader() {
-    return (frame.isPDB ? getFullPDBHeader() : 
-      "!Not a pdb file!\n" + getFileHeader());
+    return (frame.isPDB ? getFullPDBHeader() : getFileHeader());
   }
   
   String getFullPDBHeader() {
@@ -1390,8 +1389,8 @@ String getAtomInfoChime(int i) {
     frame.invertSelected(pt, plane, bs);
   }
   
-  void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate, BitSet bs) {
-    frame.rotateSelected(mNew, matrixRotate, bs);
+  void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate, BitSet bs, boolean fullMolecule) {
+    frame.rotateSelected(mNew, matrixRotate, bs, fullMolecule);
   }
 
   boolean getPrincipalAxes(int atomIndex, Vector3f z, Vector3f x,

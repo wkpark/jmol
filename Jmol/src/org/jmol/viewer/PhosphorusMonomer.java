@@ -73,7 +73,7 @@ class PhosphorusMonomer extends Monomer {
 
 
   byte getProteinStructureType() {
-    return 0;
+    return JmolConstants.PROTEIN_STRUCTURE_NONE;
   }
 
   Atom getAtom(byte specialAtomID) {

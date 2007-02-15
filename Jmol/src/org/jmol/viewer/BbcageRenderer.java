@@ -37,9 +37,6 @@ class BbcageRenderer extends ShapeRenderer {
   }
 
   void render() {
-    
-    if (false && viewer.pointToCenter) //not ready to implement this
-      showCenterPointer();
     Bbcage bbcage = (Bbcage)shape;
     short mad = bbcage.mad;
     if (mad == 0)
@@ -74,12 +71,5 @@ class BbcageRenderer extends ShapeRenderer {
                          screens[Bbcage.edges[i]],
                          screens[Bbcage.edges[i+1]]);
     }
-  }
-  
-  void showCenterPointer() {
-    short colix = viewer.getColixBackgroundContrast();
-    screens[0].set(viewer.getCursorX(), viewer.getCursorY(), 1);
-    viewer.transformPoint(viewer.getRotationCenter(), screens[1]);
-    g3d.drawDottedLine(colix, screens[0], screens[1]);    
-  }
+  }  
 }

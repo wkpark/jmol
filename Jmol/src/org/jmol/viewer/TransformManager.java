@@ -322,8 +322,6 @@ abstract class TransformManager {
                                float degrees, float endDegrees, boolean isSpin, boolean isSelected) {
 
     //*THE* Viewer FIXED frame rotation/spinning entry point
-    if (isSelected)
-      setRotateSelected(true);
     if (rotCenter != null)
       moveRotationCenter(rotCenter, true);
 
@@ -339,9 +337,11 @@ abstract class TransformManager {
     if (isSpin) {
       isSpinInternal = false;
       isSpinFixed = true;
-      setSpinOn(true, endDegrees);
+      setSpinOn(true, endDegrees, isSelected);
       return;
     }
+    if (isSelected)
+      setRotateSelected(true);
     rotateAxisAngleRadiansFixed(angle);
     if (isSelected)
       setRotateSelected(false);
@@ -368,8 +368,6 @@ abstract class TransformManager {
 
     if (degrees == 0)
       return;
-    if (isSelected)
-      setRotateSelected(true);
     Vector3f axis = new Vector3f(point1);
     axis.sub(point2);
     if (isClockwise)
@@ -379,9 +377,11 @@ abstract class TransformManager {
     if (isSpin) {
       isSpinInternal = true;
       isSpinFixed = false;
-      setSpinOn(true, endDegrees);
+      setSpinOn(true, endDegrees, isSelected);
       return;
     }
+    if (isSelected)
+      setRotateSelected(true);
     rotateAxisAngleRadiansInternal(angle);
     if (isSelected)
       setRotateSelected(false);
@@ -1749,14 +1749,14 @@ abstract class TransformManager {
   private SpinThread spinThread;
 
   void setSpinOn(boolean spinOn) {
-    setSpinOn(spinOn, Float.MAX_VALUE);
+    setSpinOn(spinOn, Float.MAX_VALUE, false);
   }
 
-  private void setSpinOn(boolean spinOn, float endDegrees) {
+  private void setSpinOn(boolean spinOn, float endDegrees, boolean isSelected) {
     this.spinOn = spinOn;
     if (spinOn) {
       if (spinThread == null) {
-        spinThread = new SpinThread(endDegrees);
+        spinThread = new SpinThread(endDegrees, isSelected);
         spinThread.start();
       }
     } else {
@@ -1770,9 +1770,11 @@ abstract class TransformManager {
   private class SpinThread extends Thread implements Runnable {
     float endDegrees;
     float nDegrees = 0;
+    boolean isSelected;
 
-    SpinThread(float endDegrees) {
+    SpinThread(float endDegrees, boolean isSelected) {
       this.endDegrees = Math.abs(endDegrees);
+      this.isSelected = isSelected;
     }
 
     public void run() {
@@ -1801,6 +1803,8 @@ abstract class TransformManager {
         if (sleepTime > 0) {
           if (refreshNeeded && spinOn) {
             float angle = 0;
+            if (isSelected)
+              setRotateSelected(true);
             if (isSpinInternal || isSpinFixed) {
               angle = (isSpinInternal ? internalRotationAxis
                   : fixedRotationAxis).angle
@@ -1822,6 +1826,8 @@ abstract class TransformManager {
                 rotateZRadians(spinZ * radiansPerDegree / myFps);
               }
             }
+            if (isSelected)
+              setRotateSelected(false);
             viewer.refresh(1, "TransformationManager:SpinThread:run()");
             if (nDegrees >= endDegrees - 0.00001)
               setSpinOn(false);
@@ -1834,7 +1840,8 @@ abstract class TransformManager {
         }
       }
       viewer.setBooleanProperty("isSpinning", false);
-      setRotateSelected(false);
+      if (isSelected)
+        setRotateSelected(false);
     }
   }
 

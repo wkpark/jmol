@@ -43,6 +43,20 @@ final public class JmolConstants {
   // invertSelected HKL ......
   // full state support for "tainting" atom positions using translateSelected or invertSelected
   
+  // write coords xxxx.spt
+  // load xxxx.spt # minimal -- just coord.
+  // script xxxx.spt # this is the full state load
+  
+  // following still experimental -- do experiment, please!
+  
+  // rotateSelected ....
+  // rotateSelected spin ....
+  
+  // set allowRotateSelected # then use ALT-LEFT for rotating just the selected molecule
+  
+  // definitely needs some work in terms of user interface via mouse
+  
+  
   //11.1.12:
   //app fix for console entry messing up cursor position; 
   //allows for scripting during pause or interrupt of running script using ! as first character of script

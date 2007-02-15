@@ -3138,7 +3138,8 @@ public final class Frame {
   final Point3f ptTemp = new Point3f();
   final Point3f ptTemp2 = new Point3f();
   
-  void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate, BitSet bs) {
+  void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate, BitSet bsInput) {
+    BitSet bs = getMoleculeBitSet(bsInput);
     matInv.set(matrixRotate);
     matInv.invert();
     ptTemp.set(0,0,0);

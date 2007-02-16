@@ -5742,9 +5742,10 @@ class Eval { //implements Runnable {
         isInt = false;
       }
     if (n == 0)
-      n = 1;
-    return (isInt && (iv / n) * n == iv ? (Object) (new Integer(iv / n))
-        : (Object) (new Float((isInt ? iv * 1f : fv) / n)));
+      return new Float(Float.NaN);
+    if (isInt && (iv / n) * n == iv )
+      return new Integer(iv / n);
+    return new Float((isInt ? iv * 1f : fv) / n);
   }
   
   void setAxes(int index) throws ScriptException {
@@ -7964,7 +7965,6 @@ class Eval { //implements Runnable {
     StringBuffer sb = new StringBuffer();
     int tok = statement[0].tok;
     boolean addParens = ((tok & Token.embeddedExpression) != 0);
-    boolean isIfcmd = (tok == Token.ifcmd);
     boolean useBraces = (tok == Token.ifcmd || tok == Token.set);
     for (int i = 0; i < statementLength; ++i) {
       if (iToken == i - 1)

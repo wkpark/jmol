@@ -248,8 +248,7 @@ class Measures extends Shape {
         || count > 2 && atomCountPlusIndices[1] == atomCountPlusIndices[3]
         || count == 4 && atomCountPlusIndices[2] == atomCountPlusIndices[4])
       return;
-    float value;
-    value = frame.getMeasurement(atomCountPlusIndices);
+    float value = frame.getMeasurement(atomCountPlusIndices);
     if (rangeMinMax[0] != Float.MAX_VALUE
         && (value < rangeMinMax[0] || value > rangeMinMax[1]))
       return;

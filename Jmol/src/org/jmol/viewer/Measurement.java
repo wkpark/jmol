@@ -41,6 +41,7 @@ class Measurement {
   float value;
   boolean isVisible = true;
   boolean isHidden = false;
+  boolean isDynamic = false;
   short colix;
   int index;
   
@@ -57,6 +58,11 @@ class Measurement {
     setInfo(frame, atomCountPlusIndices, value, index);
   }   
 
+  void refresh() {
+    value = frame.getMeasurement(countPlusIndices);
+    formatMeasurement();
+  }
+  
   /**
    * Used by MouseManager and Picking Manager to build the script
    * @param countPlusIndexes

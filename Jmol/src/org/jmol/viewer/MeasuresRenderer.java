@@ -49,15 +49,19 @@ class MeasuresRenderer extends ShapeRenderer {
     showMeasurementNumbers = measures.showMeasurementNumbers;
     measures.setVisibilityInfo();
     short colix;
+    boolean dynamicMeasurements = viewer.getDynamicMeasurements();
     for (int i = measures.measurementCount; --i >= 0;) {
-      if (!measures.measurements[i].isVisible)
+      Measurement m = measures.measurements[i];
+      if (dynamicMeasurements || m.isDynamic)
+        m.refresh();
+      if (!m.isVisible)
         continue;
-      colix = measures.measurements[i].colix;
+      colix = m.colix;
       if (colix == 0)
         colix = measures.colix;
       if (colix == 0)
         colix = viewer.getColixBackgroundContrast();
-      renderMeasurement(measures.measurements[i], colix);
+      renderMeasurement(m, colix);
     }
     renderPendingMeasurement(measures.pendingMeasurement);
   }

@@ -3604,6 +3604,13 @@ public class Viewer extends JmolViewer {
     boolean notFound = false;
     while (true) {
       
+      if (key.equalsIgnoreCase("dynamicMeasurements")) {
+        setDynamicMeasurements(value);
+        break;
+      }
+
+      //11.1.14
+      
       if (key.equalsIgnoreCase("allowRotateSelected")) {
         setAllowRotateSelected(value);
         break;
@@ -4518,14 +4525,23 @@ public class Viewer extends JmolViewer {
   String formatText(String text) {
     int i0 = -1;
     int i;
+    String name;
     while ((i = text.indexOf("%{")) >= 0) {
       i0 = i + 2;
       i = text.indexOf("}", i0);
       if (i < 0)
         return text;
-      String name = text.substring(i0, i);
+      name = text.substring(i0, i);
+      if (name.charAt(0) == '{') {
+        while (name.lastIndexOf("{") > name.lastIndexOf("}")) {
+          i = text.indexOf("}", i + 1);
+          if (i < 0)
+            return text;
+          name = text.substring(i0, i);
+        }
+      }
       text = text.substring(0, i0 - 2)
-          + (name.length() == 0 ? "" : name.charAt(0) == '(' ? ""
+          + (name.length() == 0 ? "" : name.charAt(0) == '{' ? ""
               + Eval.evaluateExpression(this, name) : getParameter(name)
               .toString()) + text.substring(i + 1);
     }
@@ -4879,6 +4895,14 @@ public class Viewer extends JmolViewer {
   
   void setAllowRotateSelected(boolean TF) {
     global.allowRotateSelected = TF;
+  }
+
+  void setDynamicMeasurements(boolean TF) {
+    global.dynamicMeasurements = TF;
+  }
+  
+  boolean getDynamicMeasurements() {
+    return global.dynamicMeasurements;
   }
 
   boolean allowRotateSelected() {

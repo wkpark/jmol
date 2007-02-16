@@ -34,9 +34,40 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "11.1.13";
+  public final static String version = "11.1.14";
   
   /*
+   * 
+   11.1.14:
+   
+   BRACES NOT PARENTHESES 
+   
+   BIG change is that now we use {} in SET and %{} for designating atom expressions.
+   This was necessary in order to align SET and %{} with IF, where () are also allowed.
+   
+   set a {oxygen}.temperature
+   message %{{carbon}.x}
+   if {O22}.bondCount > 2;goto ...
+   
+   
+   .DISTANCE ATOM PROPERTY FOR SET, IF, and %{}
+   
+   d = {oxygen and * /1}.distance{oxygen and * /2}
+   set echo top left
+   echo the O-O distance is %{{oxygen and * /1}.distance{oxygen and * /2}}
+   
+   message %{{atomno=3}.distance{atomno=4}}
+   
+   DYNAMIC MEASUREMENTS
+   
+   Now that we can move atoms so easily, we don't want those measurements getting stale.
+   
+   set dynamicMeasurements
+   
+   allows measurements to be recalculated on the fly.
+   
+   
+   
    11.1.13:
    
    DATA "coord set"

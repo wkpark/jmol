@@ -433,6 +433,7 @@ class StateManager {
     boolean frankOn                     = false;
     boolean centerPointer               = true;
     boolean zShade                      = false;
+    boolean dynamicMeasurements         = false;
     
     //atoms and bonds
 

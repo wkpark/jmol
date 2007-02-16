@@ -385,10 +385,10 @@ public class Token {
 
   final static int ATOM_PROPERTY_MASK = 0x1F;  
 
-  final static String getAtomPropertyName(int i) {
-    if (i == Integer.MAX_VALUE)
-      return "?";
-    return atomPropertyNames[i & ATOM_PROPERTY_MASK];
+  final static String getAtomPropertyName(int tok) {
+    if (tok == -1 || tok == Integer.MAX_VALUE || (tok & atomproperty) != atomproperty)
+      return "";
+    return atomPropertyNames[tok & ATOM_PROPERTY_MASK];
   }
 
   final static int opGT         = comparator |  0;

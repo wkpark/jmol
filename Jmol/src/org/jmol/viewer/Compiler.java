@@ -854,8 +854,8 @@ class Compiler {
 
     //compile expressions
 
-    isSetExpression = false;//(tokCommand == Token.set && size > 3 && atokenCommand[2].tok == Token.leftbrace);
-    isNumericExpression = (tokCommand == Token.ifcmd || isSetExpression);
+    isSetExpression =  (tokCommand == Token.set);// && size > 3 && atokenCommand[2].tok == Token.leftbrace);
+    isNumericExpression = (tokCommand == Token.ifcmd);
     boolean checkExpression = (isNumericExpression || tokAttrOr(tokCommand,
         Token.expressionCommand, Token.embeddedExpression));
     if (!isNumericExpression && !tokAttr(tokCommand, Token.coordOrSet)) {
@@ -978,7 +978,7 @@ class Compiler {
     while (expPtr > 0 && expPtr < atokenCommand.length) {
       if (isMultipleOK)
         while (!isNumericExpression && expPtr < atokenCommand.length
-            && atokenCommand[expPtr].tok != Token.leftparen)
+            && atokenCommand[expPtr].tok != (isSetExpression ? Token.leftbrace : Token.leftparen))
           ++expPtr;
       // 0 here means OK; -1 means error;
       // > 0 means pointer to the next expression
@@ -1176,7 +1176,8 @@ class Compiler {
     case Token.substructure:
       return clauseSubstructure();
     case Token.decimal:
-      return addTokenToPostfix(new Token(Token.spec_model2, getToken().intValue, null));
+      return addTokenToPostfix(new Token(Token.spec_model2,
+          getToken().intValue, theValue));
     case Token.hyphen: // selecting a negative residue spec
     case Token.integer:
     case Token.seqcode:
@@ -1194,7 +1195,7 @@ class Compiler {
         if (!tokAttr(tok, Token.predefinedset))
           break;
       } else {
-        return clauseComparator();        
+        return clauseComparator();
       }
     // fall into the code and below and just add the token
     case Token.all:
@@ -1218,7 +1219,23 @@ class Compiler {
         isBitSetExpression = false;
         if (tokPeek() != Token.rightbrace)
           return rightBraceExpected();
-        return (isSetExpression ? addTokenToPostfix(tokenNext()) : clauseComparator());        
+        return clauseComparator();
+        //        return (isSetExpression ? addTokenToPostfix(tokenNext()) : clauseComparator());        
+      } else if (isSetExpression) {
+        // allows for the possibility of {x y z} or {a/b c/d e/f}
+        tokenNext();
+        if (!clauseOr())
+          return false;
+        if (tokPeek() == Token.rightbrace) {
+          tokenNext();
+        } else {
+          if (!clauseOr() || !clauseOr())
+            return false;
+          if (!tokenNext(Token.rightbrace))
+            return rightBraceExpected();
+        }
+        return true;
+
       } else if (!bitset())
         return false;
       return true;
@@ -1269,14 +1286,21 @@ class Compiler {
       // atom property has already been loaded, or this really is unary = 
       if (isBitSetExpression || tokenAtomProperty == null)
         return comparisonOperatorExpected();
-      if (tokenComparator != null)
+      if (tokenComparator != null && tokenComparator.tok != Token.dot)
         returnToken();
       if (!tokAttr(tokenAtomProperty.tok, Token.comparator)) {
         addTokenToPostfix(tokenAtomProperty);
-        addTokenToPostfix(new Token(Token.opEQ, tokenAtomProperty.tok, "=="));
-        return addTokenToPostfix(new Token(Token.integer, 1, new Integer(1)));
+        if (tokenComparator != null && tokenComparator.tok == Token.dot) {
+          addTokenToPostfix(tokenComparator);  //.
+          addTokenToPostfix(tokenNext());  //.
+          tokenComparator = tokenNext();   //atomProperty
+        } else {
+          //addTokenToPostfix(new Token(Token.opEQ, tokenAtomProperty.tok, "=="));
+          return true;//addTokenToPostfix(new Token(Token.integer, 1, new Integer(1)));
+        }
+      } else {
+        tokenComparator = tokenAtomProperty;
       }
-      tokenComparator = tokenAtomProperty;
     } else if (!isBitSetExpression) {
       addTokenToPostfix(tokenAtomProperty);
     }
@@ -1300,7 +1324,7 @@ class Compiler {
       return numberOrVariableNameExpected();
     }
     addTokenToPostfix(new Token(tokenComparator.tok,
-        isBitSetExpression ? tokenAtomProperty.tok : Token.nada,
+        isBitSetExpression ? tokenAtomProperty.tok : -1,
         tokenComparator.value + (isNegative ? " -" : "")));
     if (isToken(Token.leftbrace)) {
       returnToken();
@@ -1537,15 +1561,17 @@ class Compiler {
       specSeen = true;
       tok = tokPeek();
     }
+    boolean wasInteger = false;
     if (tok == Token.asterisk || tok == Token.hyphen || tok == Token.integer
         || tok == Token.seqcode) {
+      wasInteger = (tok == Token.integer);
       if (!clauseResNumSpec())
         return false;
       specSeen = true;
       tok = tokPeek();
     }
     if (tok == Token.colon || tok == Token.asterisk || tok == Token.identifier
-        || tok == Token.integer) {
+        || tok == Token.integer && !wasInteger) {
       if (!clauseChainSpec(tok))
         return false;
       specSeen = true;
@@ -1637,11 +1663,12 @@ class Compiler {
           seqcodeA, new Integer(seqcode)));
     }
     return generateResidueSpecCode(new Token(Token.spec_seqcode, seqcode,
-        "seqcode"));
+        new Integer(seqvalue)));
   }
 
   int seqcode;
-
+  int seqvalue;
+  
   boolean clauseSequenceCode() {
     boolean negative = false;
     int tokPeek = tokPeek();
@@ -1653,8 +1680,8 @@ class Compiler {
     if (tokPeek == Token.seqcode)
       seqcode = tokenNext().intValue;
     else if (tokPeek == Token.integer) {
-      int val = tokenNext().intValue;
-      seqcode = Group.getSeqcode(Math.abs(val), ' ');
+      seqvalue = tokenNext().intValue;
+      seqcode = Group.getSeqcode(Math.abs(seqvalue), ' ');
     } else
       return false;
     if (negative)

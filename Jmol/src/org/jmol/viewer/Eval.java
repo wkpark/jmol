@@ -240,6 +240,7 @@ class Eval { //implements Runnable {
     isSyntaxCheck = true;
     isScriptCheck = false;
     errorMessage = null;
+    this.script = compiler.script;
     pc = 0;
     aatoken = compiler.getAatokenCompiled();
     linenumbers = compiler.getLineNumbers();
@@ -949,8 +950,13 @@ class Eval { //implements Runnable {
         stringValue = parameterAsString(i).toLowerCase();
         break;
       case Token.leftbrace:
-        floatValue = viewer.cardinalityOf(expression(i + 1));
+        val = getExpressionValue(i + 1);
         i = iToken;
+        if (val instanceof Integer) {
+          floatValue = intValue = ((Integer) val).intValue();
+        } else {
+          floatValue = ((Float) val).floatValue();
+        }
         if (logMessages)
           viewer.scriptStatus("expression evaluates to " + floatValue);
         break;
@@ -966,6 +972,12 @@ class Eval { //implements Runnable {
           stringValue = ((String) val).toLowerCase();
         else
           invalidArgument();
+        break;
+      case Token.on:
+        stack[sp++] = true;
+        break;
+      case Token.off:
+        stack[sp++] = false;
         break;
       case Token.opOr:
         bValue = stack[--sp];
@@ -994,8 +1006,13 @@ class Eval { //implements Runnable {
         boolean isNegative = (parameterAsString(i).indexOf("-") >= 0);
         int tok = getToken(++i).tok;
         if (tok == Token.leftbrace) {
-          comparisonValue = viewer.cardinalityOf(expression(i + 1));
+          val = getExpressionValue(i);
           i = iToken;
+          if (val instanceof Integer) {
+            comparisonValue = comparisonInt = ((Integer) val).intValue();
+          } else {
+            comparisonValue = ((Float) val).floatValue();
+          }
         } else {
           boolean isIdentifier = (tok == Token.identifier);
           val = statement[i].value;
@@ -1092,12 +1109,6 @@ class Eval { //implements Runnable {
         .length()
         : lineIndices[pc + 1]);
 
-    // I can't figure out why this gets messed up with entry from app on syntaxCheck
-
-    if (ichBegin < 0)
-      ichBegin = 0;
-    if (ichEnd > script.length() || ichEnd < ichBegin)
-      ichEnd = script.length();
     String s = "";
     try {
       s = script.substring(ichBegin, ichEnd);
@@ -5296,7 +5307,7 @@ class Eval { //implements Runnable {
           int i = intParameter(2);
           pt = new Point3f(i, i, i);
         } else {
-          pt = getCoordinate(2, false);
+          pt = getSetCoordinate(true);
         }
         if (!isSyntaxCheck)
           viewer.setDefaultLattice(pt);
@@ -5491,38 +5502,17 @@ class Eval { //implements Runnable {
         fv = floatParameter(i);
         mode = Math.max(mode, 2);
         break;
+      case Token.leftbrace:
+        //fall through
       case Token.expressionBegin:
-        BitSet bs = expression(getToken(i).tok == Token.leftbrace ? i + 1 : i);
+        Object val = getExpressionValue(i);
         i = iToken;
-        if (i + 1 < statementLength && getToken(i + 1).tok == Token.dot) {
-          i++;
-          int tok = getToken(++i).tok;
-          if (tok == Token.identifier) {
-            String s = parameterAsString(i).toLowerCase();
-            if (s.equals("x"))
-              tok = Token.atomX;
-            else if(s.equals("y"))
-              tok = Token.atomY;
-            else if(s.equals("z"))
-              tok = Token.atomZ;
-            else if(s.equals("bondcount"))
-              tok = Token._bondedcount;
-            else
-              invalidArgument();
-          }
-          Object val = averageValue(bs, tok);
-          if (val == null)
-            invalidArgument();
-          if (val instanceof Integer) {
-            mode = Math.max(mode, 1);
-            iv = ((Integer)val).intValue();
-          } else {
-            mode = Math.max(mode, 2);
-            fv = ((Float)val).floatValue();
-          }
-        } else {
-          iv = viewer.cardinalityOf(bs);
+        if (val instanceof Integer) {
           mode = Math.max(mode, 1);
+          iv = ((Integer) val).intValue();
+        } else {
+          mode = Math.max(mode, 2);
+          fv = ((Float) val).floatValue();
         }
         break;
       default:
@@ -5616,7 +5606,33 @@ class Eval { //implements Runnable {
     return mode;
   }
   
-  Object averageValue(BitSet bs, int tok) throws ScriptException {
+  Object getExpressionValue(int i) throws ScriptException {
+    BitSet bs = expression(getToken(i).tok == Token.leftbrace ? i + 1 : i);
+    Point3f ptRef = null;
+    i = iToken + 1;
+    if (i >= statementLength || statement[i].tok != Token.dot)
+      return new Integer(viewer.cardinalityOf(bs));
+    int tok = getToken(++i).tok;
+    if (tok == Token.identifier) {
+      String s = parameterAsString(i).toLowerCase();
+      if (s.equals("x"))
+        tok = Token.atomX;
+      else if (s.equals("y"))
+        tok = Token.atomY;
+      else if (s.equals("z"))
+        tok = Token.atomZ;
+      else if (s.equals("bondcount"))
+        tok = Token._bondedcount;
+      else
+        invalidArgument();
+    } else if (tok == Token.distance) {
+      BitSet bs2 = expression(getToken(++i).tok == Token.leftbrace ? i + 1 : i);
+      ptRef = viewer.getAtomSetCenter(bs2);
+    }
+    return averageValue(bs, tok, ptRef);
+  }
+  
+  Object averageValue(BitSet bs, int tok, Point3f ptRef) throws ScriptException {
     int iv = 0;
     float fv = 0;
     int n = 0;
@@ -5717,6 +5733,9 @@ class Eval { //implements Runnable {
         case Token.atomZ:
           fv += atom.z;
           break;
+        case Token.distance:
+          fv += atom.distance(ptRef);
+          break;
         default:
           unrecognizedAtomProperty(tok);
         }
@@ -5762,11 +5781,42 @@ class Eval { //implements Runnable {
       }
       return;
     }
-    Point3f pt = getCoordinate(index, true, false, true);
+    Point3f pt = (index == 1 ? getCoordinate(1, true, false, true) : getSetCoordinate(false));
     if (!isSyntaxCheck)
       viewer.setCurrentUnitCellOffset(pt);
   }
 
+  Point3f getSetCoordinate(boolean integerOnly) throws ScriptException {
+    // { x y z } or {a/b c/d e/f} are encoded in SET commands as seqcodes and model numbers
+    // so we decode them here. It's a bit of a pain, but it isn't too bad.
+    float[] coord = new float[3];
+    int n = -1;
+    for (int i = 2; i < statement.length; i++) {
+      switch (getToken(i).tok) {
+      case Token.spec_seqcode:
+        if (++n > 2)
+          invalidArgument();
+        coord[n] = ((Integer) statement[i].value).intValue();
+        break;
+      case Token.spec_model:
+        if (integerOnly)
+          invalidArgument();
+        coord[n] /= ((Integer) statement[i].value).intValue();
+        break;
+      case Token.spec_model2:
+        if (integerOnly)
+          invalidArgument();
+        if (++n > 2)
+          invalidArgument();
+        coord[n] = ((Float) statement[i].value).floatValue();
+        break;
+      }
+    }
+    if (n != 2)
+      invalidArgument();
+    return new Point3f(coord[0], coord[1], coord[2]);
+  }
+  
   void setFrank(int index) throws ScriptException {
     setBooleanProperty("frank", booleanParameter(index));
   }
@@ -7912,7 +7962,10 @@ class Eval { //implements Runnable {
 
   String statementAsString() {
     StringBuffer sb = new StringBuffer();
-    boolean addParens = ((statement[0].tok & Token.embeddedExpression) != 0);
+    int tok = statement[0].tok;
+    boolean addParens = ((tok & Token.embeddedExpression) != 0);
+    boolean isIfcmd = (tok == Token.ifcmd);
+    boolean useBraces = (tok == Token.ifcmd || tok == Token.set);
     for (int i = 0; i < statementLength; ++i) {
       if (iToken == i - 1)
         sb.append(" <<");
@@ -7923,13 +7976,23 @@ class Eval { //implements Runnable {
         sb.append(">> ");
       switch (token.tok) {
       case Token.expressionBegin:
-        if (addParens)
+        if (useBraces)
+          sb.append("{");
+        else if (addParens)
           sb.append("(");
         continue;
       case Token.expressionEnd:
-        if (addParens)
+        if (useBraces)
+          sb.append("}");
+        else if (addParens)
           sb.append(")");
         continue;
+      case Token.on:
+        sb.append("true");
+        continue;
+      case Token.off:
+        sb.append("false");
+        break;
       case Token.integer:
         sb.append(token.intValue);
         continue;
@@ -7946,7 +8009,7 @@ class Eval { //implements Runnable {
         break;
       case Token.spec_model:
         sb.append("/");
-        //fall through
+      //fall through
       case Token.spec_model2:
       case Token.decimal:
         if (token.intValue < Integer.MAX_VALUE) {

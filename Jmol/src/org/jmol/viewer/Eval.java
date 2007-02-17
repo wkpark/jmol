@@ -29,7 +29,6 @@ import org.jmol.smiles.InvalidSmilesException;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Parser;
 
 import java.io.*;
 import java.util.BitSet;
@@ -8006,12 +8005,13 @@ void set() throws ScriptException {
     }
 
     Token getResult() throws ScriptException {
-      while (oPt >= 0)
-        if (!operate(Token.nada))
-          return null;
-      if (xPt != 0)
-        return null;
-      return xStack[0];
+      boolean isOK = true;
+      while (isOK && oPt >= 0)
+        isOK = operate(Token.nada);
+      if (isOK && xPt == 0)
+        return xStack[0];
+      dumpStacks();
+      return null;
     }
 
     boolean addX(Token x) throws ScriptException {
@@ -8088,8 +8088,15 @@ void set() throws ScriptException {
       }
       while (oPt >= 0 && op.tok != Token.leftparen && op.tok != Token.opNot
           && Token.prec(oStack[oPt]) >= Token.prec(op)) {
-        if (!operate(op.tok))
+        if (op.tok == Token.rightparen && oStack[oPt].tok == Token.leftparen) {
+          parenCount--;
+          oPt--;
+          break;
+        } else if (oStack[oPt].tok == Token.leftparen){
           return false;
+        } else if (!operate(op.tok)) {
+          return false;
+        }
       }
 
       switch (op.tok) {
@@ -8111,7 +8118,7 @@ void set() throws ScriptException {
     }
 
     void dumpStacks() {
-      Logger.info("RPN stacks: ");
+      Logger.info("RPN stacks: for " + script);
       for (int i = 0; i <= xPt; i++)
         Logger.info("x[" + i + "]: " + xStack[i]);
       for (int i = 0; i <= oPt; i++)
@@ -8121,13 +8128,7 @@ void set() throws ScriptException {
 
     boolean operate(int thisOp) throws ScriptException {
 
-      if (logMessages)
-        dumpStacks();
-
       Token op = oStack[oPt--];
-      if (op.tok == Token.leftparen)
-        return (parenCount-- > 0 && thisOp == Token.rightparen);
-
       if (xPt < 0)
         stackUnderflow();
       Token x2 = xStack[xPt--];
@@ -8226,11 +8227,11 @@ void set() throws ScriptException {
           return addX(Token.iValue(x1) % n);
         case Token.decimal:
           float f = Token.fValue(x1);
-          //neg could be scientific notation?
+          //neg is scientific notation
           if (n == 0)
             return addX((int) (f + 0.5f * (f < 0 ? -1 : 1)));
-          s = TextFormat.formatDecimal(f, Math.abs(n));
-          return addX(Parser.parseFloat(s));
+          s = TextFormat.formatDecimal(f, n);
+          return addX(s);
         case Token.string:
           s = (String) x1.value;
           if (n == 0)

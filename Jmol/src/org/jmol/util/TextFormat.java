@@ -35,8 +35,29 @@ public class TextFormat {
       "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000" };
 
   public static String formatDecimal(float value, int decimalDigits) {
-    if (decimalDigits < 0)
-      return "" + value;
+    if (decimalDigits < 0) {
+      decimalDigits = -decimalDigits;
+      if (decimalDigits > formattingStrings.length)
+        decimalDigits = formattingStrings.length;
+      if (value == 0)
+        return formattingStrings[decimalDigits] + "E+0";
+      //scientific notation
+      int n = 0;
+      double d;
+      if (Math.abs(value) < 1) {
+        n = 10;
+        d = value * 1e-10;
+      } else {
+        n = -10;
+        d = value * 1e10;
+      }
+      String s = ("" + d).toUpperCase();
+      int i = s.indexOf("E");
+      n = Parser.parseInt(s.substring(i + 1)) + n;
+      return (i < 0 ? "" + value : formatDecimal(Parser.parseFloat(s.substring(
+          0, i)), decimalDigits - 1) + "E" + (n >= 0 ? "+" : "") + n);
+    }
+    
     if (decimalDigits >= formattingStrings.length)
       decimalDigits = formattingStrings.length - 1;
     DecimalFormat formatter = formatters[decimalDigits];
@@ -48,7 +69,7 @@ public class TextFormat {
 
   public static String format(float value, int width, int precision,
                               boolean alignLeft, boolean zeroPad) {
-    return TextFormat.format(TextFormat.formatDecimal(value, precision), width,
+    return format(formatDecimal(value, precision), width,
         0, alignLeft, zeroPad);
   }
 

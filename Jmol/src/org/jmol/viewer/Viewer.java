@@ -4532,7 +4532,7 @@ public class Viewer extends JmolViewer {
       if (i < 0)
         return text;
       name = text.substring(i0, i);
-      if (name.charAt(0) == '{') {
+      if (name.indexOf("{") >= 0) {
         while (name.lastIndexOf("{") > name.lastIndexOf("}")) {
           i = text.indexOf("}", i + 1);
           if (i < 0)
@@ -4541,7 +4541,7 @@ public class Viewer extends JmolViewer {
         }
       }
       text = text.substring(0, i0 - 2)
-          + (name.length() == 0 ? "" : name.charAt(0) == '{' ? ""
+          + (name.length() == 0 ? "" : name.indexOf("{") >= 0 ? ""
               + Eval.evaluateExpression(this, name) : getParameter(name)
               .toString()) + text.substring(i + 1);
     }

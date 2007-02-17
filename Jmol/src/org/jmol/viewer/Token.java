@@ -26,7 +26,11 @@ package org.jmol.viewer;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+
+import javax.vecmath.Point3f;
+
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 
 public class Token {
@@ -91,15 +95,94 @@ public class Token {
   final static int atomproperty      = (1 << 16) | expression;
   final static int atompropertyfloat = atomproperty | 1 << 5;
   // every predefined is also valid in an expression context
-  final static int comparator        = (1 << 17) | expression;
-  final static int predefinedset     = (1 << 18) | expression;
-  final static int colorparam        = (1 << 19);
-  final static int specialstring     = (1 << 20); // echo, label
+  final static int predefinedset     = (1 << 17) | expression;
+  final static int colorparam        = (1 << 18);
+  final static int specialstring     = (1 << 19); // echo, label
   // generally, the minus sign is used to denote atom ranges
   // this property is used for the few commands which allow negative integers
-  final static int negnums           = (1 << 21);
-  final static int objectid          = (1 << 22);
-  final static int unimplemented     = (1 << 23);
+  final static int negnums           = (1 << 20);
+  final static int objectid          = (1 << 21);
+  final static int unimplemented     = (1 << 22);
+  final static int mathop            = (1 << 23) | expression;
+  final static int comparator        = (1 << 24);
+
+  final static int prec(Token op) {
+    return ((op.tok >> 4) & 0xF);  
+  }
+
+  // precedence is set by the << 3 shift
+  
+  final static int leftparen    = 0  | mathop | 1 << 3;
+  final static int rightparen   = 1  | mathop | 1 << 3;
+  
+  final static int opOr         = 0  | mathop | 2 << 3;
+  final static int opXor        = 1  | mathop | 2 << 3;
+  
+  final static int opAnd        = 0  | mathop | 3 << 3;
+  
+  final static int opNot        = 0  | mathop | 4 << 3;
+ 
+  final static int opGT         = 0  | mathop | 5 << 3 | comparator;
+  final static int opGE         = 1  | mathop | 5 << 3 | comparator;
+  final static int opLE         = 2  | mathop | 5 << 3 | comparator;
+  final static int opLT         = 3  | mathop | 5 << 3 | comparator;
+  final static int opEQ         = 4  | mathop | 5 << 3 | comparator;
+  final static int opNE         = 5  | mathop | 5 << 3 | comparator;
+   
+  final static int hyphen       = 0  | mathop | 6 << 3;
+  final static int plus         = 1  | mathop | 6 << 3;
+  
+  final static int slash        = 0  | mathop | 7 << 3;
+  final static int asterisk     = 1  | mathop | 7 << 3;
+  final static int percent      = 2  | mathop | 7 << 3;
+  
+  final static Point3f pt0 = new Point3f();
+
+  static boolean bValue(Token x) {
+    switch (x.tok) {
+    case Token.on:
+      return true;
+    case Token.off:
+      return false;
+    case Token.integer:
+      return x.intValue != 0;
+    case Token.decimal:
+      return ((Float) x.value).floatValue() != 0;
+    case Token.string:
+      String s = (String) x.value;
+      return s.length() > 0 && !s.equals("0")
+      && !s.equals("false") && !s.equals("0.0");
+    case Token.xyz:
+      return ((Point3f) x.value).distance(pt0) > 0.0001f;
+    default:
+      return false;
+    }
+  }
+
+  static float fValue(Token x) {
+    int[] next = new int[1];
+    switch (x.tok) {
+    case Token.on:
+      return 1;
+    case Token.off:
+      return 0;
+    case Token.integer:
+      return x.intValue;
+    case Token.decimal:
+      return ((Float) x.value).floatValue();
+    case Token.xyz:
+      return ((Point3f) x.value).distance(pt0);
+    case Token.string:
+      String s = (String) x.value;
+      if (s.equalsIgnoreCase("true"))
+        return 1;
+      if (s.equalsIgnoreCase("false"))
+        return 0;
+      return Parser.parseFloat(s, next);
+    default:
+      return 0;
+    }
+  }  
   
   final static int coordOrSet = negnums | embeddedExpression; 
 
@@ -202,7 +285,7 @@ public class Token {
   final static int selectionHalo = command | 105 | setparam;
   final static int history       = command | 106 | setparam;
   final static int display       = command | 107 | setparam | expressionCommand;
-  final static int ifcmd         = command | 108 | expressionCommand;
+  final static int ifcmd         = command | 108 |  negnums | embeddedExpression;
   final static int elsecmd       = command | 109;
   final static int endifcmd      = command | 110;
   final static int subset        = command | 111 | expressionCommand | predefinedset;
@@ -261,7 +344,6 @@ public class Token {
   final static int mep          = setparam | 25;
   final static int mlp          = setparam | 26;
   final static int molsurface   = setparam | 27;
-  final static int debugscript  = setparam | 28;
   final static int scale3d      = setparam | 29;
   // jmol extensions
   final static int property     = setparam | 30;
@@ -307,22 +389,17 @@ public class Token {
   // of the above, only pdbheader, orientation, and file are implemented
   // axisangle is used in the spin command, not the show command
   
+//  from 55: 
+//  Global Const opcodes$ = "(+-*/ LNE OA!)
+//  Global Const opprior$ = "12233 555 6789
+//  a and b or c * 3 and b < c 
   // atom expression operators
-  final static int leftparen    = expression |  0;
-  final static int rightparen   = expression |  1;
-  final static int hyphen       = expression |  2;
-  final static int opAnd        = expression |  3;
-  final static int opOr         = expression |  4;
-  final static int opNot        = expression |  5;
   final static int within       = expression |  6;
-  final static int plus         = expression |  7;
   final static int pick         = expression |  8;
-  final static int asterisk     = expression |  9;
   final static int dot          = expression | 11;
   final static int leftsquare   = expression | 12;
   final static int rightsquare  = expression | 13;
   final static int colon        = expression | 14;
-  final static int slash        = expression | 15;
   final static int substructure = expression | 16;
   final static int leftbrace    = expression | 17;
   final static int rightbrace   = expression | 18;
@@ -330,8 +407,7 @@ public class Token {
   final static int connected    = expression | 20;
   final static int altloc       = expression | 21;
   final static int insertion    = expression | 22;
-  final static int opXor        = expression | 23;
-  final static int opToggle     = expression | 24;
+  final static int opToggle     = expression | 23;
 
   
 
@@ -372,6 +448,7 @@ public class Token {
   final static int atomZ       = atompropertyfloat | 25;
   
   final static int file            = atomproperty | 26 | command | showparam;
+  final static int xyz             = atomproperty | 27; // very special!
 
 
 
@@ -381,7 +458,7 @@ public class Token {
     "occupancy", "polymerLength", "molecule", "cell", "site", 
     "element", "symop", "surfaceDistance", "atomIndex", 
     "formalCharge", "phi", "psi", "partialCharge",
-    "atomX", "atomY", "atomZ", "file"};
+    "atomX", "atomY", "atomZ", "file", "xyz"};
 
   final static int ATOM_PROPERTY_MASK = 0x1F;  
 
@@ -390,13 +467,6 @@ public class Token {
       return "";
     return atomPropertyNames[tok & ATOM_PROPERTY_MASK];
   }
-
-  final static int opGT         = comparator |  0;
-  final static int opGE         = comparator |  1;
-  final static int opLE         = comparator |  2;
-  final static int opLT         = comparator |  3;
-  final static int opEQ         = comparator |  4;
-  final static int opNE         = comparator |  5;
 
   // misc
   final static int off          = bool |  0;
@@ -428,7 +498,6 @@ public class Token {
   final static int spec_alternate       = misc | 26;
   final static int spec_model           = misc | 27;
   final static int spec_atom            = misc | 28;
-  final static int percent      = misc | expression | 29;
   final static int dotted       = misc | 30;
   final static int mode         = misc | 31;
   final static int direction    = misc | 32;
@@ -497,6 +566,8 @@ public class Token {
   final static Token tokenOff = new Token(off, 0, "off");
   final static Token tokenAll = new Token(all, "all");
   final static Token tokenAnd = new Token(opAnd, "and");
+  final static Token tokenMinus = new Token(hyphen, "-");
+ 
   final static Token tokenExpressionBegin =
     new Token(expressionBegin, "expressionBegin");
   final static Token tokenExpressionEnd =
@@ -678,7 +749,6 @@ public class Token {
     "mep",          new Token(mep,             "mep"),
     "mlp",          new Token(mlp,             "mlp"),
     "molsurface",   new Token(molsurface,      "molsurface"),
-    "debugscript",  new Token(debugscript,     "debugscript"),
 //    "fps",          new Token(fps,             "fps"),
     "scale3d",      new Token(scale3d,         "scale3d"),
 
@@ -735,7 +805,7 @@ public class Token {
     // atom expressions
     "(",            new Token(leftparen, "("),
     ")",            new Token(rightparen, ")"),
-    "-",            new Token(hyphen, "-"),
+    "-",            tokenMinus,
     "and",          tokenAnd,
     "&",            null,
     "&&",           null,

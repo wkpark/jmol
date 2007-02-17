@@ -160,19 +160,12 @@ abstract class AtomSetCollectionReader {
     return Parser.parseToken(s, iEnd, next);
   }
   
-  String parseTrimmed(String s) {
-    next[0] = 0;
-    return Parser.parseTrimmed(s, next);
+  static String parseTrimmed(String s, int iStart) {
+    return Parser.parseTrimmed(s, iStart);
   }
   
-  String parseTrimmed(String s, int iStart) {
-    next[0] = iStart;
-    return Parser.parseTrimmed(s, next);
-  }
-  
-  String parseTrimmed(String s, int iStart, int iEnd) {
-    next[0] = iStart;
-    return Parser.parseTrimmed(s, iEnd, next);
+  static String parseTrimmed(String s, int iStart, int iEnd) {
+    return Parser.parseTrimmed(s, iStart, iEnd);
   }
   
   

@@ -43,7 +43,6 @@ class SpartanArchive {
   String calculationType = "";
   BufferedReader reader;
   String line;
-  int[] next = new int[1];
   
   String[] getTokens() {
     return Parser.getTokens(line);

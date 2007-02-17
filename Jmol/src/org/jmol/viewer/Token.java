@@ -156,8 +156,25 @@ public class Token {
     }
   }
 
+  static int iValue(Token x) {
+    switch (x.tok) {
+    case Token.on:
+      return 1;
+    case Token.off:
+      return 0;
+    case Token.integer:
+      return x.intValue;
+    case Token.decimal:
+    case Token.string:
+      return (int)fValue(x);
+    case Token.xyz:
+      return (int)((Point3f) x.value).distance(pt0);
+    default:
+      return 0;
+    }
+  }
+
   static float fValue(Token x) {
-    int[] next = new int[1];
     switch (x.tok) {
     case Token.on:
       return 1;
@@ -175,12 +192,29 @@ public class Token {
         return 1;
       if (s.equalsIgnoreCase("false"))
         return 0;
-      return Parser.parseFloat(s, next);
+      return Parser.parseFloat(s);
     default:
       return 0;
     }
   }  
   
+  static String sValue(Token x) {
+    switch (x.tok) {
+    case Token.on:
+      return "true";
+    case Token.off:
+      return "false";
+    case Token.integer:
+      return "" + x.intValue;
+    case Token.xyz:
+      return StateManager.escape((Point3f) x.value);
+    case Token.decimal:
+    case Token.string:
+    default:
+      return "" + x.value;
+    }
+  }
+
   final static int coordOrSet = negnums | embeddedExpression; 
 
   // These are unrelated

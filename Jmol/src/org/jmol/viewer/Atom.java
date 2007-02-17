@@ -28,7 +28,7 @@ package org.jmol.viewer;
 import org.jmol.vecmath.Point3fi;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.bspt.Tuple;
-import org.jmol.util.Parser;
+import org.jmol.util.TextFormat;
 
 import java.util.Hashtable;
 import java.util.BitSet;
@@ -1206,9 +1206,9 @@ final public class Atom extends Point3fi implements Tuple {
           strT = "%" + ch0;
         }
         if (!Float.isNaN(floatT))
-          strLabel += format(floatT, width, precision, alignLeft, zeroPad);
+          strLabel += TextFormat.format(floatT, width, precision, alignLeft, zeroPad);
         else if (strT != null)
-          strLabel += format(strT, width, precision, alignLeft, zeroPad);
+          strLabel += TextFormat.format(strT, width, precision, alignLeft, zeroPad);
       } catch (IndexOutOfBoundsException ioobe) {
         ich = ichPercent;
         break;
@@ -1218,35 +1218,5 @@ final public class Atom extends Point3fi implements Tuple {
     if (strLabel.length() == 0)
       return null;
     return strLabel.intern();
-  }
-
-  String format(float value, int width, int precision,
-                boolean alignLeft, boolean zeroPad) {
-    return format(Parser.formatDecimal(value, precision),
-                  width, 0, alignLeft, zeroPad);
-  }
-
-  static String format(String value, int width, int precision,
-                       boolean alignLeft, boolean zeroPad) {
-    if (value == null)
-      return "";
-    if (precision > value.length())
-      value = value.substring(0, precision);
-    int padLength = width - value.length();
-    if (padLength <= 0)
-      return value;
-    boolean isNeg = (zeroPad && !alignLeft && value.charAt(0) == '-');
-    char padChar = (zeroPad ? '0' : ' ');
-    char padChar0 = (isNeg ? '-' : padChar);
-
-    StringBuffer sb = new StringBuffer();
-    if (alignLeft)
-      sb.append(value);
-    sb.append(padChar0);
-    for (int i = padLength; --i > 0;)
-      sb.append(padChar);
-    if (!alignLeft)
-      sb.append(isNeg ? padChar + value.substring(1) : value);
-    return "" + sb;
   }
 }

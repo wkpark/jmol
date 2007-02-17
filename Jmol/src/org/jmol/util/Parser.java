@@ -25,12 +25,47 @@
 
 package org.jmol.util;
 
-import java.text.DecimalFormat;
-
 public class Parser {
 
-  /// for adapter (and others?) ///
+  /// general static string-parsing class ///
   
+  // next[0] tracks the pointer within the string so these can all be static.
+  // but the methods parseFloat, parseInt, parseToken, parseTrimmed, and getTokens do not require this.
+  
+  
+  public static float parseFloat(String str) {
+    return parseFloat(str, new int[] {0});
+  }
+
+  public static int parseInt(String str) {
+    return parseInt(str, new int[] {0});
+  }
+
+  public static String[] getTokens(String line) {
+    return getTokens(line, 0);
+  }
+
+  public static String parseToken(String str) {
+    return parseToken(str, new int[] {0});
+  }
+
+  public static String parseTrimmed(String str) {
+    return parseTrimmed(str, 0, str.length());
+  }
+  
+  public static String parseTrimmed(String str, int ichStart) {
+    return parseTrimmed(str, ichStart, str.length());
+  }
+  
+  public static String parseTrimmed(String str, int ichStart, int ichMax) {
+    int cch = str.length();
+    if (ichMax < cch)
+      cch = ichMax;
+    if (cch < ichStart)
+      return "";
+    return parseTrimmedChecked(str, ichStart, cch);
+  }
+
   public static int[] markLines(String data, char eol) {
     int nLines = 0;
     for (int i = data.length(); --i >=0;)
@@ -43,7 +78,7 @@ public class Parser {
         lines[nLines--] = i + 1;
     return lines;
   }
-  
+
   public static float parseFloat(String str, int[] next) {
     int cch = str.length();
     if (next[0] >= cch)
@@ -62,6 +97,7 @@ public class Parser {
 
   private final static float[] decimalScale = { 0.1f, 0.01f, 0.001f, 0.0001f, 0.00001f,
       0.000001f, 0.0000001f, 0.00000001f };
+
   private final static float[] tensScale = { 10, 100, 1000, 10000, 100000, 1000000 };
 
   private static float parseFloatChecked(String str, int ichMax, int[] next) {
@@ -158,10 +194,6 @@ public class Parser {
     return value;
   }
 
-  public static String[] getTokens(String line) {
-    return getTokens(line, 0);
-  }
-
   public static String[] getTokens(String line, int ich) {
     if (line == null)
       return null;
@@ -226,24 +258,7 @@ public class Parser {
     return str.substring(ichNonWhite, ich);
   }
 
-  public static String parseTrimmed(String str, int[] next) {
-    int cch = str.length();
-    if (next[0] >= cch)
-      return "";
-    return parseTrimmedChecked(str, cch, next);
-  }
-
-  public static String parseTrimmed(String str, int ichMax, int[] next) {
-    int cch = str.length();
-    if (ichMax > cch)
-      ichMax = cch;
-    if (next[0] >= ichMax)
-      return "";
-    return parseTrimmedChecked(str, ichMax, next);
-  }
-
-  private static String parseTrimmedChecked(String str, int ichMax, int[] next) {
-    int ich = next[0];
+  private static String parseTrimmedChecked(String str, int ich, int ichMax) {
     char ch;
     while (ich < ichMax && ((ch = str.charAt(ich)) == ' ' || ch == '\t' || ch == '\n'))
       ++ich;
@@ -252,8 +267,6 @@ public class Parser {
       --ichLast;
     if (ichLast < ich)
       return "";
-    if (next != null)
-      next[0] = ichLast + 1;
     return str.substring(ich, ichLast + 1);
   }
 
@@ -273,22 +286,5 @@ public class Parser {
     int i = line.indexOf(strQuote);
     int j = line.lastIndexOf(strQuote);
     return (j == i ? "" : line.substring(i + 1, j));
-  }
-  
-  public static DecimalFormat[] formatters = new DecimalFormat[10];
-
-  private static String[] formattingStrings = { "0", "0.0", "0.00", "0.000",
-      "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000" };
-
-  public static String formatDecimal(float value, int decimalDigits) {
-    if (decimalDigits < 0)
-      return "" + value;
-    if (decimalDigits >= formattingStrings.length)
-      decimalDigits = formattingStrings.length - 1;
-    DecimalFormat formatter = formatters[decimalDigits];
-    if (formatter == null)
-      formatter = formatters[decimalDigits] = new DecimalFormat(
-          formattingStrings[decimalDigits]);
-    return formatter.format(value);
   }
 }

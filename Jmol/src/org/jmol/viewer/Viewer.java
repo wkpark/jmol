@@ -3376,8 +3376,7 @@ public class Viewer extends JmolViewer {
         key = key.toLowerCase();
         if (!global.htParameterValues.containsKey(key)) {
           if (global.htPropertyFlags.containsKey(key)) {
-            Logger.error("cannot set boolean flag to string value");
-            scriptEcho("script WARNING: cannot set boolean flag to string value");
+            scriptStatus("ERROR: cannot set boolean flag to string value");
             return;
           }
           Logger.warn("viewer.setStringProperty(" + key + ",\"" + value
@@ -3592,8 +3591,13 @@ public class Viewer extends JmolViewer {
       }
       break;
     }
-    if (defineNew)
+    if (defineNew) {
+      if (global.htPropertyFlags.containsKey(key)) {
+       scriptStatus(GT._("ERROR: Cannot set value of a boolean to another type. use \"{0}\" first.", "SET "+ key + " NONE"));
+        return; // don't allow setting boolean of a numeric
+      }
       global.setParameterValue(key, value);
+    }
   }
 
   public void setBooleanProperty(String key, boolean value) {
@@ -3913,7 +3917,7 @@ public class Viewer extends JmolViewer {
     if (notFound) {
       key = key.toLowerCase();
       if (global.htParameterValues.containsKey(key)) {
-        scriptStatus(GT._("ERROR: Cannot set value of boolean to a boolean. use \"{0}\" first.", "SET "+ key + " NONE"));
+        scriptStatus(GT._("ERROR: Cannot set value of this variable to a boolean. use \"{0}\" first.", "SET "+ key + " NONE"));
         return true; // don't allow setting boolean of a numeric
       }
       if (!value && !global.htPropertyFlags.containsKey(key)) {

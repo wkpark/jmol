@@ -3091,16 +3091,15 @@ public final class Frame {
   }
 
   void loadCoordinates(String data) {
-    int[] next = new int[1];
     int[] lines = Parser.markLines(data, ';');
     try {
-      int nData = Parser.parseInt(data.substring(0, lines[0] - 1), next);
+      int nData = Parser.parseInt(data.substring(0, lines[0] - 1));
       for (int i = 1; i <= nData; i++) {
-        String[] tokens = Parser.getTokens(Parser.parseTrimmed(data.substring(lines[i], lines[i + 1]), next));
-        int atomIndex = Parser.parseInt(tokens[0], next) - 1;
-        float x = Parser.parseFloat(tokens[3], next);
-        float y = Parser.parseFloat(tokens[4], next);
-        float z = Parser.parseFloat(tokens[5], next);
+        String[] tokens = Parser.getTokens(Parser.parseTrimmed(data.substring(lines[i], lines[i + 1])));
+        int atomIndex = Parser.parseInt(tokens[0]) - 1;
+        float x = Parser.parseFloat(tokens[3]);
+        float y = Parser.parseFloat(tokens[4]);
+        float z = Parser.parseFloat(tokens[5]);
         setAtomCoord(atomIndex, x, y, z);
       }
     } catch (Exception e) {

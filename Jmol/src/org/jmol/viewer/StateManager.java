@@ -33,7 +33,7 @@ import java.util.Enumeration;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.CommandHistory;
-import org.jmol.util.Parser;
+import org.jmol.util.TextFormat;
 
 import java.util.Arrays;
 
@@ -647,8 +647,8 @@ class StateManager {
         Runtime runtime = Runtime.getRuntime();
         float bTotal = runtime.totalMemory() / 1000000f;
         float bFree = runtime.freeMemory() / 1000000f;
-        return Parser.formatDecimal(bTotal - bFree, 1) + "/"
-            + Parser.formatDecimal(bTotal, 1);
+        return TextFormat.formatDecimal(bTotal - bFree, 1) + "/"
+            + TextFormat.formatDecimal(bTotal, 1);
       }
       if (htParameterValues.containsKey(name))
         return htParameterValues.get(name);

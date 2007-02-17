@@ -3912,6 +3912,10 @@ public class Viewer extends JmolViewer {
       return !notFound;
     if (notFound) {
       key = key.toLowerCase();
+      if (global.htParameterValues.containsKey(key)) {
+        scriptStatus(GT._("ERROR: Cannot set value of boolean to a boolean. use \"{0}\" first.", "SET "+ key + " NONE"));
+        return true; // don't allow setting boolean of a numeric
+      }
       if (!value && !global.htPropertyFlags.containsKey(key)) {
         Logger.warn("viewer.setBooleanProperty(" + key + "," + value
             + ") - boolean variable defined");

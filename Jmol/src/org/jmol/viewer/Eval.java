@@ -545,10 +545,13 @@ class Eval { //implements Runnable {
           fixed[j] = new Token(Token.integer, ((Integer) v).intValue(), v);
         } else if (v instanceof Float) {
           fixed[j] = new Token(Token.decimal, Compiler.modelValue("" + v), v);
-        } else if (v instanceof String) {
+        } else if (v instanceof String && ((String)v).length() > 0) {
           fixed[j] = new Token(Token.identifier, v);
-        } else {
-          invalidArgument();
+        } else  {
+          Point3f center = viewer.getDrawObjectCenter(var);
+          if (center == null)
+            invalidArgument();
+          fixed[j] = new Token(Token.xyz,center);
         }
       } else {
         fixed[j] = statement[i];

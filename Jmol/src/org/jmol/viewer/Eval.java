@@ -5013,7 +5013,7 @@ class Eval { //implements Runnable {
    * ==============================================================
    */
 
-void set() throws ScriptException {
+  void set() throws ScriptException {
     if (statementLength == 1) {
       showString(viewer.getAllSettings());
       return;
@@ -5198,22 +5198,23 @@ void set() throws ScriptException {
       if (setParameter(key)) {
         if (isSyntaxCheck)
           return;
-      } else {    
-        Object v = parameterExpression((getToken(2).tok == Token.opEQ ? 3 : 2), false);
+      } else {
+        Object v = parameterExpression((getToken(2).tok == Token.opEQ ? 3 : 2),
+            false);
         if (isSyntaxCheck)
           return;
         if (v instanceof Boolean) {
-          setBooleanProperty(key, ((Boolean)v).booleanValue());
+          setBooleanProperty(key, ((Boolean) v).booleanValue());
         } else if (v instanceof Integer) {
-          setIntProperty(key, ((Integer)v).intValue());
+          setIntProperty(key, ((Integer) v).intValue());
         } else if (v instanceof Float) {
-          setFloatProperty(key, ((Float)v).floatValue());
+          setFloatProperty(key, ((Float) v).floatValue());
         } else if (v instanceof String) {
-          setStringProperty(key, (String)v);
+          setStringProperty(key, (String) v);
         } else if (v instanceof Point3f) {
-          drawPoint(key, (Point3f)v, false);
-          showString("draw " + key + " " + StateManager.escape((Point3f)v)
-              + "; draw off");
+          drawPoint(key, (Point3f) v, false);
+          showString("draw " + key + " " + StateManager.escape((Point3f) v)
+              + " off;");
           return;
         }
       }

@@ -926,7 +926,7 @@ class Eval { //implements Runnable {
   }
 
   boolean ifCmd() throws ScriptException {
-    return (parameterExpression(1, true) == 1);
+    return ((Boolean)parameterExpression(1, true)).booleanValue();
   }
 
   int getLinenumber() {
@@ -5011,7 +5011,7 @@ class Eval { //implements Runnable {
    * ==============================================================
    */
 
-  void set() throws ScriptException {
+void set() throws ScriptException {
     if (statementLength == 1) {
       showString(viewer.getAllSettings());
       return;
@@ -5197,24 +5197,20 @@ class Eval { //implements Runnable {
         if (isSyntaxCheck)
           return;
       } else {
-        switch (parameterExpression(2, false)) {
-        case 0:
-          setBooleanProperty(key, bValue);
-          break;
-        case 1:
-          setIntProperty(key, intValue);
-          break;
-        case 2:
-          setFloatProperty(key, floatValue);
-          break;
-        case 3:
-          setStringProperty(key, strValue);
-          break;
-        case 4:
-          if (isSyntaxCheck)
-            return;
-          drawPoint(key, ptValue, false);
-          showString("draw " + key + " " + StateManager.escape(ptValue)
+        Object v = parameterExpression(2, false);
+        if (isSyntaxCheck)
+          return;
+        if (v instanceof Boolean) {
+          setBooleanProperty(key, ((Boolean)v).booleanValue());
+        } else if (v instanceof Integer) {
+          setIntProperty(key, ((Integer)v).intValue());
+        } else if (v instanceof Float) {
+          setFloatProperty(key, ((Float)v).floatValue());
+        } else if (v instanceof String) {
+          setStringProperty(key, (String)v);
+        } else if (v instanceof Point3f) {
+          drawPoint(key, (Point3f)v, false);
+          showString("draw " + key + " " + StateManager.escape((Point3f)v)
               + "; draw off");
           return;
         }
@@ -5271,19 +5267,7 @@ class Eval { //implements Runnable {
     return true;
   }
 
-  int intValue;
-  float floatValue;
-  String strValue;
-  boolean bValue;
-  Point3f ptValue;
-
-  int parameterExpression(int pt, boolean TFonly) throws ScriptException {
-    bValue = false;
-    intValue = Integer.MAX_VALUE;
-    floatValue = Float.NaN;
-    strValue = null;
-    ptValue = null;
-
+  Object parameterExpression(int pt, boolean TFonly) throws ScriptException {
     Object v;
     Rpn rpn = new Rpn(16);
     for (int i = pt; i < statementLength; i++) {
@@ -5332,26 +5316,19 @@ class Eval { //implements Runnable {
     if (result == null)
       endOfStatementUnexpected();
     if (TFonly)
-      return (Token.bValue(result) ? 1 : 0);
+      return new Boolean(Token.bValue(result));
     switch (result.tok) {
     case Token.on:
     case Token.off:
-      bValue = (result == Token.tokenOn);
-      return 0;
+      return new Boolean(result == Token.tokenOn);
     case Token.integer:
-      intValue = result.intValue;
-      return 1;
+      return new Integer(result.intValue);
     case Token.decimal:
-      floatValue = ((Float) result.value).floatValue();
-      return 2;
     case Token.string:
-      strValue = (String) result.value;
-      return 3;      
     case Token.xyz:
-      ptValue = (Point3f) result.value;
-      return 4;
+    default:
+      return result.value;
     }
-    return 0;
   }
 
   void getBitsetItem(int i, BitSet bs) throws ScriptException {
@@ -7967,18 +7944,7 @@ class Eval { //implements Runnable {
       if (e.loadScript(null, "x = " + expr)) {
         e.statement = e.aatoken[0];
         e.statementLength = e.statement.length;
-        switch (e.parameterExpression(2, false)) {
-        case 0:
-          return (e.bValue ? Boolean.TRUE : Boolean.FALSE);
-        case 1:
-          return new Integer(e.intValue);
-        case 2:
-          return new Float(e.floatValue);
-        case 3:
-          return e.strValue;
-        case 4:
-          return StateManager.escape(e.ptValue);
-        }
+        return e.parameterExpression(2, false);
       }
     } catch (Exception ex) {
       Logger.error("Error evaluating: " + expr + "\n" + ex);

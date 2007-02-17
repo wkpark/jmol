@@ -4523,29 +4523,7 @@ public class Viewer extends JmolViewer {
   }
 
   String formatText(String text) {
-    int i0 = -1;
-    int i;
-    String name;
-    while ((i = text.indexOf("%{")) >= 0) {
-      i0 = i + 2;
-      i = text.indexOf("}", i0);
-      if (i < 0)
-        return text;
-      name = text.substring(i0, i);
-      if (name.indexOf("{") >= 0) {
-        while (name.lastIndexOf("{") > name.lastIndexOf("}")) {
-          i = text.indexOf("}", i + 1);
-          if (i < 0)
-            return text;
-          name = text.substring(i0, i);
-        }
-      }
-      text = text.substring(0, i0 - 2)
-          + (name.length() == 0 ? "" : name.indexOf("{") >= 0 ? ""
-              + Eval.evaluateExpression(this, name) : getParameter(name)
-              .toString()) + text.substring(i + 1);
-    }
-    return text;
+    return Text.formatText(this, text);
   }
 
   // //////////////////////////////////////////////////////////////

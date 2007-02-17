@@ -846,6 +846,7 @@ class Compiler {
       for (int i = 0; i < atokenCommand.length; i++)
         Logger.debug(i + ": " + atokenCommand[i]);
     }
+    
 
     //compile color parameters
 
@@ -855,16 +856,15 @@ class Compiler {
     //compile expressions
 
     isSetExpression =  (tokCommand == Token.set || tokCommand == Token.ifcmd);// && size > 3 && atokenCommand[2].tok == Token.leftbrace);
-    isNumericExpression = false;//(tokCommand == Token.ifcmd);
-    boolean checkExpression = (isNumericExpression || tokAttrOr(tokCommand,
+    boolean checkExpression = (tokAttrOr(tokCommand,
         Token.expressionCommand, Token.embeddedExpression));
-    if (!isNumericExpression && !tokAttr(tokCommand, Token.coordOrSet)) {
+    if (!tokAttr(tokCommand, Token.coordOrSet)) {
       // $ or { at beginning disallow expression checking for center command
       int firstTok = (size == 1 ? Token.nada : atokenCommand[1].tok);
       if ((firstTok == Token.leftbrace || firstTok == Token.dollarsign))
         checkExpression = false;
     }
-    isBitSetExpression = !isNumericExpression;
+    isBitSetExpression = true;
     if (checkExpression && !compileExpression())
       return false;
 
@@ -969,7 +969,7 @@ class Compiler {
 
   private boolean compileExpression() {
     int tokCommand = atokenCommand[0].tok;
-    boolean isMultipleOK = (isNumericExpression || tokAttr(tokCommand, Token.embeddedExpression));
+    boolean isMultipleOK = (tokAttr(tokCommand, Token.embeddedExpression));
     int expPtr = 1;
     if (tokCommand == Token.define || tokCommand == Token.set)
       expPtr = 2;
@@ -977,16 +977,17 @@ class Compiler {
       return true;
     while (expPtr > 0 && expPtr < atokenCommand.length) {
       if (isMultipleOK)
-        while (!isNumericExpression && expPtr < atokenCommand.length
-            && atokenCommand[expPtr].tok != (isSetExpression ? Token.leftbrace : Token.leftparen))
+        while (expPtr < atokenCommand.length
+            && atokenCommand[expPtr].tok != (isSetExpression ? Token.leftbrace
+                : Token.leftparen))
           ++expPtr;
       // 0 here means OK; -1 means error;
       // > 0 means pointer to the next expression
       if (expPtr >= atokenCommand.length)
-          break;
+        break;
       if ((expPtr = compileExpression(expPtr)) <= 0)
         break;
-      if (!isNumericExpression && !isMultipleOK)
+      if (!isMultipleOK)
         return endOfExpressionExpected();
     }
     return (expPtr == atokenCommand.length || expPtr == 0);
@@ -1118,7 +1119,6 @@ class Compiler {
     return (atokenInfix[itokenInfix].tok == tok);
   }
 
-  boolean isNumericExpression;
   boolean isBitSetExpression;
   boolean isSetExpression;
   
@@ -1209,19 +1209,7 @@ class Compiler {
         return rightParenthesisExpected();
       return true;
     case Token.leftbrace:
-      if (isNumericExpression) {
-        if (isBitSetExpression)
-          break;
-        addTokenToPostfix(tokenNext());
-        isBitSetExpression = true;
-        if (!clauseOr())
-          return false;
-        isBitSetExpression = false;
-        if (tokPeek() != Token.rightbrace)
-          return rightBraceExpected();
-        return clauseComparator();
-        //        return (isSetExpression ? addTokenToPostfix(tokenNext()) : clauseComparator());        
-      } else if (isSetExpression) {
+      if (isSetExpression) {
         // allows for the possibility of {x y z} or {a/b c/d e/f}
         tokenNext();
         if (!clauseOr())
@@ -1235,7 +1223,6 @@ class Compiler {
             return rightBraceExpected();
         }
         return true;
-
       } else if (!bitset())
         return false;
       return true;

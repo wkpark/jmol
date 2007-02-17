@@ -5163,7 +5163,7 @@ class Eval { //implements Runnable {
           int i = intParameter(2);
           pt = new Point3f(i, i, i);
         } else {
-          pt = getSetCoordinate(2, true, false);
+          pt = getSetCoordinate(2, false, false);
         }
         if (!isSyntaxCheck)
           viewer.setDefaultLattice(pt);

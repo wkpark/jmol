@@ -1944,9 +1944,9 @@ class Compiler {
     return compileError(GT._("unrecognized {0} parameter", kind) + ": " + param);
   }
   
-  private boolean badRGBColor() {
-    return compileError(GT._("bad [R,G,B] color"));
-  }
+//  private boolean badRGBColor() {
+  //  return compileError(GT._("bad [R,G,B] color"));
+  //}
 
   private boolean identifierOrResidueSpecificationExpected() {
     return compileError(GT._("identifier or residue specification expected"));

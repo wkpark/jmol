@@ -107,7 +107,7 @@ public class Token {
   final static int comparator        = (1 << 24);
 
   final static int prec(Token op) {
-    return ((op.tok >> 4) & 0xF);  
+    return ((op.tok >> 3) & 0xF);  
   }
 
   // precedence is set by the << 3 shift

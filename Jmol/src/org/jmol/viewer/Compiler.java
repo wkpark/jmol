@@ -1859,7 +1859,7 @@ class Compiler {
         }
       }
     }
-    return badRGBColor();
+    return true; // don't sweat it. badRGBColor();
   }
   
   /// error handling

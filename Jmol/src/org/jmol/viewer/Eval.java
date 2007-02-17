@@ -23,11 +23,14 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.util.Logger;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
 import org.jmol.smiles.InvalidSmilesException;
 import org.jmol.util.CommandHistory;
+import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
+import org.jmol.util.Parser;
+
 import java.io.*;
 import java.util.BitSet;
 import java.util.Vector;
@@ -5339,23 +5342,28 @@ void set() throws ScriptException {
           && statement[i + 1].tok == Token.expressionBegin)
         i += 2;
     }
-    if (statement[i].tok != Token.identifier)
+    if (i + 2 >= statementLength || statement[i++].tok != Token.leftsquare)
       return;
-    String s = parameterAsString(i);
-    if (s.charAt(0) != '_') {
-      iToken--;
-      return;
+    int i1 = intParameter(i);
+    int i2 = i1;
+    getToken(++i);
+    if (i1 < 0) {
+      i2 = -i1;
+    } else if (theTok == Token.hyphen) {
+      if (getToken(++i).tok == Token.integer)
+        i2 = intParameter(i++);
+      else
+        i2 = Integer.MAX_VALUE;
+    } else if (theTok == Token.integer) {
+      i2 = Math.abs(intParameter(i++));      
     }
-    int pt;
-    try {
-      pt = Integer.parseInt(s.substring(1));
-    } catch (Exception e) {
-      return;
-    }
+    if (getToken(i).tok != Token.rightsquare)
+      invalidArgument();
+      
     int len = bs.size();
     int n = 0;
     for (int j = 0; j < len; j++)
-      if (bs.get(j) && ++n != pt)
+      if (bs.get(j) && (++n < i1 || n > i2))
         bs.clear(j);
   }
 
@@ -8123,15 +8131,14 @@ void set() throws ScriptException {
       if (xPt < 0)
         stackUnderflow();
       Token x2 = xStack[xPt--];
-      checkOK(x2.tok, op.tok, 2);
       if (op.tok == Token.opNot)
         return addX(!Token.bValue(x2));
 
       if (xPt < 0)
         stackUnderflow();
       Token x1 = xStack[xPt--];
-      checkOK(x1.tok, op.tok, 1);
-
+      if (!checkOK(x1.tok, x2.tok, op.tok))
+        return false;
       switch (op.tok) {
       case Token.opAnd:
         return addX(Token.bValue(x1) && Token.bValue(x2));
@@ -8150,10 +8157,10 @@ void set() throws ScriptException {
       case Token.opNE:
         return addX(Token.fValue(x1) != Token.fValue(x2));
       case Token.plus:
-        if (x1.tok == Token.string && x2.tok == Token.string)
-          return addX("" + x1.value + x2.value);
-        if (x1.tok == Token.integer && x2.tok == Token.integer)
-          return addX(x1.intValue + x2.intValue);
+        if (x1.tok == Token.string)
+          return addX("" + x1.value + Token.sValue(x2));
+        if (x1.tok == Token.integer)
+          return addX(x1.intValue + Token.iValue(x2));
         if (x1.tok == Token.xyz) {
           Point3f pt = new Point3f((Point3f) x1.value);
           switch (x2.tok) {
@@ -8167,8 +8174,8 @@ void set() throws ScriptException {
         }
         return addX(Token.fValue(x1) + Token.fValue(x2));
       case Token.hyphen:
-        if (x1.tok == Token.integer && x2.tok == Token.integer)
-          return addX(x1.intValue - x2.intValue);
+        if (x1.tok == Token.integer)
+          return addX(x1.intValue - Token.iValue(x2));
         if (x1.tok == Token.xyz) {
           Point3f pt = new Point3f((Point3f) x1.value);
           switch (x2.tok) {
@@ -8182,8 +8189,8 @@ void set() throws ScriptException {
         }
         return addX(Token.fValue(x1) - Token.fValue(x2));
       case Token.asterisk:
-        if (x1.tok == Token.integer && x2.tok == Token.integer)
-          return addX(x1.intValue * x2.intValue);
+        if (x1.tok == Token.integer)
+          return addX(x1.intValue * Token.iValue(x2));
         if (x1.tok == Token.xyz) {
           Point3f pt = new Point3f((Point3f) x1.value);
           switch (x2.tok) {
@@ -8197,22 +8204,56 @@ void set() throws ScriptException {
         }
         return addX(Token.fValue(x1) * Token.fValue(x2));
       case Token.percent:
-        return addX(x1.intValue % x2.intValue);
+        // more than just modulus
+
+        //  float % n     round to n digits; n = 0 does "nice" rounding
+        //  String % n    trim to width n; left justify
+        //  String % -n   trim to width n; right justify
+        //  Point3f % n   ah... sets to multiple of unit cell!
+        //  Point3f * Point3f  does dot product
+        //  Point3f / Point3f  divides by magnitude
+        //  float * Point3f gets magnitude
+        
+        //checkOK only allows situations where operand x2 is integer
+        String s = null;
+        int n = Token.iValue(x2);
+        switch (x1.tok) {
+        case Token.on:
+        case Token.off:
+        case Token.integer:
+          if (n == 0)
+            return addX((int)0);
+          return addX(Token.iValue(x1) % n);
+        case Token.decimal:
+          float f = Token.fValue(x1);
+          //neg could be scientific notation?
+          if (n == 0)
+            return addX((int) (f + 0.5f * (f < 0 ? -1 : 1)));
+          s = TextFormat.formatDecimal(f, Math.abs(n));
+          return addX(Parser.parseFloat(s));
+        case Token.string:
+          s = (String) x1.value;
+          if (n == 0)
+            return addX(s.trim());
+          else if (n > 0)
+            return addX(TextFormat.format(s, n, 0, true, false));
+          return addX(TextFormat.format(s, -n, 0, false, false));
+        case Token.xyz:
+          Point3f pt = new Point3f((Point3f) x1.value);
+          viewer.toUnitCell(pt, new Point3f(n, n, n));
+          return addX(pt);
+        }
       case Token.slash:
         if (x1.tok == Token.integer && x2.tok == Token.integer
-            && x2.intValue != 0 && (x1.intValue / x2.intValue) * x2.intValue == x1.intValue)
+            && x2.intValue != 0
+            && (x1.intValue / x2.intValue) * x2.intValue == x1.intValue)
           return addX(x1.intValue / x2.intValue);
         if (x1.tok == Token.xyz) {
           Point3f pt = new Point3f((Point3f) x1.value);
-          switch (x2.tok) {
-          case Token.xyz:
-            invalidArgument();
-          default:
-            float f = Token.fValue(x2);
-            if (f == 0)
-              return addX(new Point3f(Float.NaN, Float.NaN, Float.NaN));
-            return addX(new Point3f(pt.x / f, pt.y / f, pt.z / f));
-          }
+          float f = Token.fValue(x2);
+          if (f == 0)
+            return addX(new Point3f(Float.NaN, Float.NaN, Float.NaN));
+          return addX(new Point3f(pt.x / f, pt.y / f, pt.z / f));
         }
         float f1 = Token.fValue(x1);
         float f2 = Token.fValue(x2);
@@ -8224,8 +8265,8 @@ void set() throws ScriptException {
       return true;
     }
 
-    boolean checkOK(int x, int op, int side) throws ScriptException {
-      if (op == Token.percent && x != Token.integer)
+    boolean checkOK(int x1, int x2, int op) throws ScriptException {
+      if (op == Token.percent && x2 != Token.integer)
         invalidArgument();
       return true;
     }

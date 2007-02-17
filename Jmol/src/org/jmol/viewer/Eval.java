@@ -8234,8 +8234,8 @@ class Eval { //implements Runnable {
         return addX(x1.intValue % x2.intValue);
       case Token.slash:
         if (x1.tok == Token.integer && x2.tok == Token.integer
-            && (x1.intValue / x2.intValue) * x2.intValue == x1.intValue)
-          return addX(x1.intValue * x2.intValue);
+            && x2.intValue != 0 && (x1.intValue / x2.intValue) * x2.intValue == x1.intValue)
+          return addX(x1.intValue / x2.intValue);
         if (x1.tok == Token.xyz) {
           Point3f pt = new Point3f((Point3f) x1.value);
           switch (x2.tok) {

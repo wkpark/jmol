@@ -147,11 +147,8 @@ public class Token {
     case Token.integer:
       return x.intValue != 0;
     case Token.decimal:
-      return ((Float) x.value).floatValue() != 0;
     case Token.string:
-      String s = (String) x.value;
-      return s.length() > 0 && !s.equals("0")
-      && !s.equals("false") && !s.equals("0.0");
+      return fValue(x) != 0;
     case Token.xyz:
       return ((Point3f) x.value).distance(pt0) > 0.0001f;
     default:

@@ -8181,7 +8181,7 @@ class Eval { //implements Runnable {
       case Token.opNE:
         return addX(Token.fValue(x1) != Token.fValue(x2));
       case Token.plus:
-        if (x1.tok == Token.string || x2.tok == Token.string)
+        if (x1.tok == Token.string && x2.tok == Token.string)
           return addX("" + x1.value + x2.value);
         if (x1.tok == Token.integer && x2.tok == Token.integer)
           return addX(x1.intValue + x2.intValue);

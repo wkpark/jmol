@@ -122,8 +122,8 @@ class Pmesh extends MeshFileCollection {
       for (int i = 0; i < currentMesh.vertexCount; ++i) {
         String line = br.readLine();
         float x = parseFloat(line);
-        float y = parseFloat(line, ichNextParse);
-        float z = parseFloat(line, ichNextParse);
+        float y = parseFloat();
+        float z = parseFloat();
         currentMesh.vertices[i] = new Point3f(x, y, z);
       }
     }

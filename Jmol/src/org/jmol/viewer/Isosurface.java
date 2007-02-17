@@ -1327,7 +1327,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     if (!isSilent)
       Logger.debug(line);
     atomCount = parseInt(line);
-    String atomLine = line.substring(ichNextParse);
+    String atomLine = line.substring(next[0]);
     negativeAtomCount = (atomCount < 0);
     if (!isSilent)
       Logger.debug("atom Count: " + atomCount);
@@ -1446,7 +1446,7 @@ class Isosurface extends IsosurfaceMeshCollection {
      */
     boolean inside = false;
     int dataCount = 0;
-    ichNextParse = 0;
+    next[0] = 0;
     nThisValue = 0;
     surfaceData = "";
     nPointsX = voxelCounts[0];
@@ -1867,7 +1867,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       int n = parseInt(str);
       while (n != Integer.MIN_VALUE) {
         count += n;
-        n = parseInt(str, ichNextParse);
+        n = parseIntNext(str);
       }
       return count;
     }
@@ -2541,7 +2541,7 @@ class Isosurface extends IsosurfaceMeshCollection {
         } else {
           for (int c = 0; c < nChar; c++)
             dataOut += chLast;
-          i = ichNextParse;
+          i = next[0];
         }
       } else {
         dataOut += ch;

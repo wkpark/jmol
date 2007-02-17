@@ -31,9 +31,7 @@ public class Parser {
 
   /// for adapter (and others?) ///
   
-  public int ichNextParse;
-
-  public int[] markLines(String data, char eol) {
+  public static int[] markLines(String data, char eol) {
     int nLines = 0;
     for (int i = data.length(); --i >=0;)
       if (data.charAt(i) == eol)
@@ -46,34 +44,30 @@ public class Parser {
     return lines;
   }
   
-  public float parseFloat(String str) {
-    return parseFloatChecked(str, 0, str.length());
-  }
-
-  public float parseFloat(String str, int ich) {
+  public static float parseFloat(String str, int[] next) {
     int cch = str.length();
-    if (ich >= cch)
+    if (next[0] >= cch)
       return Float.NaN;
-    return parseFloatChecked(str, ich, cch);
+    return parseFloatChecked(str, cch, next);
   }
 
-  public float parseFloat(String str, int ichStart, int ichMax) {
+  public static float parseFloat(String str, int ichMax, int[] next) {
     int cch = str.length();
     if (ichMax > cch)
       ichMax = cch;
-    if (ichStart >= ichMax)
+    if (next[0] >= ichMax)
       return Float.NaN;
-    return parseFloatChecked(str, ichStart, ichMax);
+    return parseFloatChecked(str, ichMax, next);
   }
 
   private final static float[] decimalScale = { 0.1f, 0.01f, 0.001f, 0.0001f, 0.00001f,
       0.000001f, 0.0000001f, 0.00000001f };
   private final static float[] tensScale = { 10, 100, 1000, 10000, 100000, 1000000 };
 
-  private float parseFloatChecked(String str, int ichStart, int ichMax) {
+  private static float parseFloatChecked(String str, int ichMax, int[] next) {
     boolean digitSeen = false;
     float value = 0;
-    int ich = ichStart;
+    int ich = next[0];
     char ch;
     while (ich < ichMax && ((ch = str.charAt(ich)) == ' ' || ch == '\t'))
       ++ich;
@@ -107,7 +101,8 @@ public class Parser {
       ch = str.charAt(ich);
       if ((ch == '+') && (++ich >= ichMax))
         return Float.NaN;
-      int exponent = parseIntChecked(str, ich, ichMax);
+      next[0] = ich;
+      int exponent = parseIntChecked(str, ichMax, next);
       if (exponent == Integer.MIN_VALUE)
         return Float.NaN;
       if (exponent > 0)
@@ -117,42 +112,31 @@ public class Parser {
         value *= ((-exponent < decimalScale.length) ? decimalScale[-exponent - 1]
             : Math.pow(10, exponent));
     } else {
-      ichNextParse = ich; // the exponent code finds its own ichNextParse
+       next[0] = ich; // the exponent code finds its own ichNextParse
     }
-    //Logger.debug("parseFloat(" + str + "," + ichStart + "," +
-    // ichMax + ") -> " + value);
     return value;
   }
 
-  /**
-   * parses a string for an integer
-   * @param str
-   * @return integer or Integer.MIN_VALUE
-   */
-  public int parseInt(String str) {
-    return parseIntChecked(str, 0, str.length());
-  }
-
-  public int parseInt(String str, int ich) {
+  public static int parseInt(String str, int[] next) {
     int cch = str.length();
-    if (ich >= cch)
+    if (next[0] >= cch)
       return Integer.MIN_VALUE;
-    return parseIntChecked(str, ich, cch);
+    return parseIntChecked(str, cch, next);
   }
 
-  public int parseInt(String str, int ichStart, int ichMax) {
+  public static int parseInt(String str, int ichMax, int[] next) {
     int cch = str.length();
     if (ichMax > cch)
       ichMax = cch;
-    if (ichStart >= ichMax)
+    if (next[0] >= ichMax)
       return Integer.MIN_VALUE;
-    return parseIntChecked(str, ichStart, ichMax);
+    return parseIntChecked(str, ichMax, next);
   }
 
-  private int parseIntChecked(String str, int ichStart, int ichMax) {
+  private static int parseIntChecked(String str, int ichMax, int[] next) {
     boolean digitSeen = false;
     int value = 0;
-    int ich = ichStart;
+    int ich = next[0];
     char ch;
     while (ich < ichMax && ((ch = str.charAt(ich)) == ' ' || ch == '\t'))
       ++ich;
@@ -170,17 +154,15 @@ public class Parser {
       value = Integer.MIN_VALUE;
     else if (negative)
       value = -value;
-    //Logger.debug("parseInt(" + str + "," + ichStart + "," +
-    // ichMax + ") -> " + value);
-    ichNextParse = ich;
+    next[0] = ich;
     return value;
   }
 
-  public String[] getTokens(String line) {
+  public static String[] getTokens(String line) {
     return getTokens(line, 0);
   }
 
-  public String[] getTokens(String line, int ich) {
+  public static String[] getTokens(String line, int ich) {
     if (line == null)
       return null;
     int cchLine = line.length();
@@ -188,18 +170,14 @@ public class Parser {
       return null;
     int tokenCount = countTokens(line, ich);
     String[] tokens = new String[tokenCount];
-    ichNextParse = ich;
+    int[] next = new int[1];
+    next[0] = ich;
     for (int i = 0; i < tokenCount; ++i)
-            tokens[i] = parseTokenChecked(line, ichNextParse, cchLine);
-    /*
-     Logger.debug("-----------\nline:" + line);
-     for (int i = 0; i < tokenCount; ++i) 
-     Logger.debug("token[" + i + "]=" + tokens[i]);
-     */
+      tokens[i] = parseTokenChecked(line, cchLine, next);
     return tokens;
   }
 
-  public int countTokens(String line, int ich) {
+  public static int countTokens(String line, int ich) {
     int tokenCount = 0;
     if (line != null) {
       int ichMax = line.length();
@@ -218,62 +196,54 @@ public class Parser {
     return tokenCount;
   }
 
-  public String parseToken(String str) {
-    return parseTokenChecked(str, 0, str.length());
-  }
-
-  public String parseToken(String str, int ich) {
+  public static String parseToken(String str, int[] next) {
     int cch = str.length();
-    if (ich >= cch)
+    if (next[0] >= cch)
       return null;
-    return parseTokenChecked(str, ich, cch);
+    return parseTokenChecked(str, cch, next);
   }
 
-  public String parseToken(String str, int ichStart, int ichMax) {
+  public static String parseToken(String str, int ichMax, int[] next) {
     int cch = str.length();
     if (ichMax > cch)
       ichMax = cch;
-    if (ichStart >= ichMax)
+    if (next[0] >= ichMax)
       return null;
-    return parseTokenChecked(str, ichStart, ichMax);
+    return parseTokenChecked(str, ichMax, next);
   }
 
-  private String parseTokenChecked(String str, int ichStart, int ichMax) {
-    int ich = ichStart;
+  private static String parseTokenChecked(String str, int ichMax, int[] next) {
+    int ich = next[0];
     char ch;
     while (ich < ichMax && ((ch = str.charAt(ich)) == ' ' || ch == '\t'))
       ++ich;
     int ichNonWhite = ich;
     while (ich < ichMax && ((ch = str.charAt(ich)) != ' ' && ch != '\t'))
       ++ich;
-    ichNextParse = ich;
+    next[0] = ich;
     if (ichNonWhite == ich)
       return null;
     return str.substring(ichNonWhite, ich);
   }
 
-  public String parseTrimmed(String str) {
-    return parseTrimmedChecked(str, 0, str.length());
-  }
-
-  public String parseTrimmed(String str, int ich) {
+  public static String parseTrimmed(String str, int[] next) {
     int cch = str.length();
-    if (ich >= cch)
+    if (next[0] >= cch)
       return "";
-    return parseTrimmedChecked(str, ich, cch);
+    return parseTrimmedChecked(str, cch, next);
   }
 
-  public String parseTrimmed(String str, int ichStart, int ichMax) {
+  public static String parseTrimmed(String str, int ichMax, int[] next) {
     int cch = str.length();
     if (ichMax > cch)
       ichMax = cch;
-    if (ichStart >= ichMax)
+    if (next[0] >= ichMax)
       return "";
-    return parseTrimmedChecked(str, ichStart, ichMax);
+    return parseTrimmedChecked(str, ichMax, next);
   }
 
-  private String parseTrimmedChecked(String str, int ichStart, int ichMax) {
-    int ich = ichStart;
+  private static String parseTrimmedChecked(String str, int ichMax, int[] next) {
+    int ich = next[0];
     char ch;
     while (ich < ichMax && ((ch = str.charAt(ich)) == ' ' || ch == '\t' || ch == '\n'))
       ++ich;
@@ -282,11 +252,12 @@ public class Parser {
       --ichLast;
     if (ichLast < ich)
       return "";
-    ichNextParse = ichLast + 1;
+    if (next != null)
+      next[0] = ichLast + 1;
     return str.substring(ich, ichLast + 1);
   }
 
-  public String concatTokens(String[] tokens, int iFirst, int iEnd) {
+  public static String concatTokens(String[] tokens, int iFirst, int iEnd) {
     String str = "";
     String sep = "";
     for (int i = iFirst; i < iEnd; i++) {
@@ -298,7 +269,7 @@ public class Parser {
     return str;
   }
   
-  public String getString(String line, String strQuote) {
+  public static String getString(String line, String strQuote) {
     int i = line.indexOf(strQuote);
     int j = line.lastIndexOf(strQuote);
     return (j == i ? "" : line.substring(i + 1, j));

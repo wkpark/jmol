@@ -76,7 +76,7 @@ class OdysseyReader extends AtomSetCollectionReader {
     atomCount = 0;
     while (readLine() != null
         && !line.startsWith("ENDCART")) {
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       int elementNumber = parseInt(tokens[0]);      
       String elementSymbol = getElementSymbol(elementNumber);
       float x = parseFloat(tokens[1]);
@@ -111,7 +111,7 @@ class OdysseyReader extends AtomSetCollectionReader {
      1    7    1
      */
     while (readLine() != null && !line.startsWith("ENDHESS")) {
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       if (nAtoms == 0) {
         int sourceIndex = parseInt(tokens[0]) - 1;
         int targetIndex = parseInt(tokens[1]) - 1;

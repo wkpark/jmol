@@ -151,7 +151,7 @@ class ShelxReader extends AtomSetCollectionReader {
 
   void parseLattRecord() throws Exception {
     parseToken(line);
-    int latt = parseInt(line, ichNextParse);
+    int latt = parseInt();
     atomSetCollection.setLatticeParameter(latt);
   }
 
@@ -170,7 +170,7 @@ class ShelxReader extends AtomSetCollectionReader {
      * CELL   7.11174  21.71704  30.95857  90.000  90.000  90.000
      */
 
-    String[] tokens = getTokens(line);
+    String[] tokens = getTokens();
     int ioff = 1;
     if (isCmdf) {
       ioff = 0;
@@ -235,10 +235,10 @@ class ShelxReader extends AtomSetCollectionReader {
     // this line gives an atom, because any line not starting with
     // a SHELX command is an atom
     String atomName = parseToken(line);
-    int scatterFactor = parseInt(line, ichNextParse);
-    float a = parseFloat(line, ichNextParse);
-    float b = parseFloat(line, ichNextParse);
-    float c = parseFloat(line, ichNextParse);
+    int scatterFactor = parseInt();
+    float a = parseFloat();
+    float b = parseFloat();
+    float c = parseFloat();
     // skip the rest
 
     Atom atom = atomSetCollection.addNewAtom();
@@ -276,7 +276,7 @@ class ShelxReader extends AtomSetCollectionReader {
   void processCmdfAtoms() throws Exception {
     while (readLine() != null && line.length() > 10) {
       Atom atom = atomSetCollection.addNewAtom();
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       atom.elementSymbol = getSymbol(tokens[0]);
       setAtomCoord(atom, parseFloat(tokens[2]), parseFloat(tokens[3]),
           parseFloat(tokens[4]));

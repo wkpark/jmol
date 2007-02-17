@@ -88,7 +88,7 @@ class QchemReader extends AtomSetCollectionReader {
     discardLines(2);
     String[] tokens;
     while (readLine() != null && !line.startsWith(" --")) {
-      tokens = getTokens(line);
+      tokens = getTokens();
       if (tokens.length < 5)
         continue;
       String symbol = tokens[1];
@@ -113,12 +113,12 @@ class QchemReader extends AtomSetCollectionReader {
     int modelNumber = 1;
     discardLinesUntilStartsWith(" Frequency:");
     while (line != null && line.startsWith(" Frequency:")) {
-      String[] frequencies = getTokens(line);
+      String[] frequencies = getTokens();
       int nModels = frequencies.length - 1;
       discardLines(4);
       for (int i = 0; i < atomCount; ++i) {
         readLine();
-        String[] tokens = getTokens(line);
+        String[] tokens = getTokens();
         for (int j = 0, offset = 0; j < nModels; j++) {
           float x = parseFloat(tokens[++offset]);
           float y = parseFloat(tokens[++offset]);
@@ -151,6 +151,6 @@ class QchemReader extends AtomSetCollectionReader {
   void readPartialCharges() throws Exception {
     discardLines(3);
     for (int i = 0; i < atomCount && readLine() != null; ++i)
-      atomSetCollection.atoms[i].partialCharge = parseFloat(getTokens(line)[2]);
+      atomSetCollection.atoms[i].partialCharge = parseFloat(getTokens()[2]);
   }
 }

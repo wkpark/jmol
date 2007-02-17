@@ -225,7 +225,7 @@ class GaussianReader extends AtomSetCollectionReader {
    *
    */
   private void setEnergy() {
-    String tokens[] = getTokens(line);
+    String tokens[] = getTokens();
     energyKey = "Energy";
     energyString = tokens[1];
     atomSetCollection.setAtomSetNames("Energy = "+tokens[1], equivalentAtomSets);
@@ -261,12 +261,12 @@ class GaussianReader extends AtomSetCollectionReader {
   private void readAtoms() throws Exception {
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetName(""); // start with an empty name
-    String path = getTokens(line)[0]; // path = type of orientation
+    String path = getTokens()[0]; // path = type of orientation
     discardLines(4);
     String tokens[];
     while (readLine() != null &&
         !line.startsWith(" --")) {
-      tokens = getTokens(line); // get the tokens in the line
+      tokens = getTokens(); // get the tokens in the line
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber =
         (byte)parseInt(tokens[STD_ORIENTATION_ATOMIC_NUMBER_OFFSET]);
@@ -320,7 +320,7 @@ class GaussianReader extends AtomSetCollectionReader {
     String[] tokens;
     while (readLine() != null && line.startsWith(" Atom")) {
       shellCount++;
-      tokens = getTokens(line);
+      tokens = getTokens();
       Hashtable slater = new Hashtable();
       if (!tokens[1].equals(lastAtom))
         atomCount++;
@@ -370,7 +370,7 @@ class GaussianReader extends AtomSetCollectionReader {
     int nThisLine = 0;
     while (readLine() != null
         && line.toUpperCase().indexOf("DENS") < 0) {
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       int ptData = (line.charAt(5) == ' ' ? 2 : 4);
       if (line.indexOf("                    ") == 0) {
         addMOData(nThisLine, data, mos);

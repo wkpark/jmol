@@ -62,7 +62,7 @@ class JmolDataReader extends AtomSetCollectionReader {
     for (int i = 0; i < modelAtomCount; ++i) {
       readLine();
       Atom atom = atomSetCollection.addNewAtom();
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       atom.elementSymbol = tokens[1];
       atom.x = parseFloat(tokens[3]);
       atom.y = parseFloat(tokens[4]);

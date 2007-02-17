@@ -109,9 +109,9 @@ class XyzReader extends AtomSetCollectionReader {
         atom.elementNumber = (short)((isotope << 7) + JmolConstants.elementNumberFromSymbol(str));
         atomSetCollection.setFileTypeName("xyzi");
       }
-      atom.x = parseFloat(line, ichNextParse);
-      atom.y = parseFloat(line, ichNextParse);
-      atom.z = parseFloat(line, ichNextParse);
+      atom.x = parseFloat();
+      atom.y = parseFloat();
+      atom.z = parseFloat();
       if (Float.isNaN(atom.x) || Float.isNaN(atom.y) || Float.isNaN(atom.z)) {
         Logger.warn("line cannot be read for XYZ atom data: " + line);
         atom.x = 0;
@@ -121,7 +121,7 @@ class XyzReader extends AtomSetCollectionReader {
       setAtomCoord(atom);
       for (int j = 0; j < 4; ++j)
         isNaN[j] =
-          Float.isNaN(chargeAndOrVector[j] = parseFloat(line, ichNextParse));
+          Float.isNaN(chargeAndOrVector[j] = parseFloat());
       if (isNaN[0])
         continue;
       if (isNaN[1]) {

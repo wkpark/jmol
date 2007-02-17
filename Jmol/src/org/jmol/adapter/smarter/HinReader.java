@@ -87,8 +87,8 @@ class HinReader extends AtomSetCollectionReader {
 
   String getMolName() {
     parseToken(line);
-    parseToken(line, ichNextParse);
-    return parseToken(line, ichNextParse);
+    parseToken();
+    return parseToken();
   }
 
   void processAtom() throws Exception {
@@ -100,19 +100,19 @@ class HinReader extends AtomSetCollectionReader {
     }
 
     Atom atom = atomSetCollection.addNewAtom();
-    parseToken(line, ichNextParse); // discard
-    atom.elementSymbol = parseToken(line, ichNextParse);
-    parseToken(line, ichNextParse); // discard
-    parseToken(line, ichNextParse); // discard
-    atom.partialCharge = parseFloat(line, ichNextParse);
-    atom.x = parseFloat(line, ichNextParse);
-    atom.y = parseFloat(line, ichNextParse);
-    atom.z = parseFloat(line, ichNextParse);
+    parseToken(); // discard
+    atom.elementSymbol = parseToken();
+    parseToken(); // discard
+    parseToken(); // discard
+    atom.partialCharge = parseFloat();
+    atom.x = parseFloat();
+    atom.y = parseFloat();
+    atom.z = parseFloat();
     
-    int bondCount = parseInt(line, ichNextParse);
+    int bondCount = parseInt();
     for (int i = 0; i < bondCount; ++i) {
-      int otherAtomNumber = parseInt(line, ichNextParse);
-      String bondTypeToken = parseToken(line, ichNextParse);
+      int otherAtomNumber = parseInt();
+      String bondTypeToken = parseToken();
       if (otherAtomNumber > atomIndex)
         continue;
       int bondOrder;

@@ -84,7 +84,7 @@ class FoldingXyzReader extends AtomSetCollectionReader {
         //Logger.debug("Line: " + line);
         Atom atom = atomSetCollection.addNewAtom();
         parseInt(line);
-        atom.atomName = parseToken(line, ichNextParse);
+        atom.atomName = parseToken();
         if (atom.atomName != null) {
           int carCount = 1;
           if (atom.atomName.length() >= 2) {
@@ -100,15 +100,15 @@ class FoldingXyzReader extends AtomSetCollectionReader {
           }
           atom.elementSymbol = atom.atomName.substring(0, carCount);
         }
-        atom.x = parseFloat(line, ichNextParse);
-        atom.y = parseFloat(line, ichNextParse);
-        atom.z = parseFloat(line, ichNextParse);
+        atom.x = parseFloat();
+        atom.y = parseFloat();
+        atom.z = parseFloat();
 
         // Memorise bond informations
         int bondCount = 0;
         bonds[i] = new int[5];
         int bondNum = Integer.MIN_VALUE;
-        while ((bondNum = parseInt(line, ichNextParse)) > 0) {
+        while ((bondNum = parseInt()) > 0) {
           if (bondCount == bonds[i].length) {
           	bonds[i] = ArrayUtil.setLength(bonds[i], bondCount + 1); 
           }

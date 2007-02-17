@@ -189,7 +189,7 @@ OR:
     readLine();
     Hashtable slater = null;
     while (readLine() != null && line.indexOf("TOTAL") < 0) {
-      tokens = getTokens(line);
+      tokens = getTokens();
       switch (tokens.length) {
       case 1:
         atomCount++;
@@ -265,7 +265,7 @@ OR:
     int nThisLine = 0;
     while (readLine() != null
         && line.indexOf("--") < 0 && line.indexOf(".....") < 0) {
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       Logger.debug(tokens.length + " --- " + line);
       if (line.length() == 0) {
         for (int i = 0; i < nThisLine; i++) {
@@ -313,7 +313,7 @@ OR:
     while (line != null && line.indexOf("FREQUENCY:") >= 0) {
       int lineBaseFreqCount = totalFrequencyCount;
       int lineFreqCount = 0;
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       for (int i = 0; i < tokens.length; i++) {
         float frequency = parseFloat(tokens[i]);
         if (tokens[i].equals("I"))
@@ -330,11 +330,11 @@ OR:
       String[] intensities = null;
       readLine();
       if (line.indexOf("MASS") >= 0) {
-        red_masses = getTokens(line);
+        red_masses = getTokens();
         readLine();
       }
       if (line.indexOf("INTENS") >= 0) {
-        intensities = getTokens(line);
+        intensities = getTokens();
       }
       for (int i = 0; i < lineFreqCount; i++) {
         ++totalFrequencyCount;

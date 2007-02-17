@@ -23,6 +23,7 @@
  */
 
 package org.jmol.adapter.smarter;
+import org.jmol.util.Parser;
 
 import java.io.BufferedReader;
 import java.util.Vector;
@@ -42,6 +43,11 @@ class SpartanArchive {
   String calculationType = "";
   BufferedReader reader;
   String line;
+  int[] next = new int[1];
+  
+  String[] getTokens() {
+    return Parser.getTokens(line);
+  }
 
   AtomSetCollection atomSetCollection;
   AtomSetCollectionReader r;
@@ -91,8 +97,8 @@ class SpartanArchive {
     return atomCount;
   }
 
-  String[] getTokens(String info) {
-    return r.getTokens(info);
+  static String[] getTokens(String info) {
+    return Parser.getTokens(info);
   }
 
   int parseInt(String info) {
@@ -122,7 +128,7 @@ class SpartanArchive {
   void readAtoms() throws Exception {
     for (int i = 0; i < atomCount; i++) {
       readLine();
-      String tokens[] = getTokens(line);
+      String tokens[] = getTokens();
       float x = parseFloat(tokens[1]);
       float y = parseFloat(tokens[2]);
       float z = parseFloat(tokens[3]);
@@ -192,7 +198,7 @@ class SpartanArchive {
     int[] typeArray = new int[gaussianCount];
     for (int i = 0; i < shellCount; i++) {
       readLine();
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       Hashtable slater = new Hashtable();
       int iBasis = parseInt(tokens[0]);
       String basisType;
@@ -226,7 +232,7 @@ class SpartanArchive {
     for (int i = 0; i < gaussianCount; i++) {
       float alpha = parseFloat(readLine());
       readLine();
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       int nData = tokens.length;
       float[] data = new float[nData + 1];
       data[0] = alpha;
@@ -301,7 +307,7 @@ class SpartanArchive {
   void readDipole() throws Exception {
     //fall-back if no other dipole record
     readLine();
-    String tokens[] = getTokens(line);
+    String tokens[] = getTokens();
     if (tokens.length != 3)
       return;
     Vector3f dipole = new Vector3f(parseFloat(tokens[0]),
@@ -310,7 +316,7 @@ class SpartanArchive {
   }
 
   void readProperty() throws Exception {
-    String tokens[] = getTokens(line);
+    String tokens[] = getTokens();
     if (tokens.length == 0)
       return;
     //Logger.debug("reading property line:" + line);
@@ -336,7 +342,7 @@ class SpartanArchive {
           value = getQuotedString("\"");
           vector.add(value);
         } else {
-          String tokens2[] = getTokens(line);
+          String tokens2[] = getTokens();
           for (int i = 0; i < tokens2.length; i++) {
             if (isArray) {
               atomInfo.add(new Float(parseFloat(tokens2[i])));
@@ -398,7 +404,7 @@ class SpartanArchive {
     int nValues = 3;
     float[] atomInfo = new float[3];
     while (readLine() != null) {
-      String tokens2[] = getTokens(line);
+      String tokens2[] = getTokens();
       for (int i = 0; i < tokens2.length; i++) {
         float f = parseFloat(tokens2[i]);
         atomInfo[i % nValues] = f;

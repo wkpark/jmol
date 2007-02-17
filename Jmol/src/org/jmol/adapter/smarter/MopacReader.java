@@ -109,8 +109,8 @@ void processAtomicCharges() throws Exception {
       if (atomNumber != expectedAtomNumber)
         throw new Exception("unexpected atom number in atomic charges");
       Atom atom = atomSetCollection.addNewAtom();
-      atom.elementSymbol = parseToken(line, ichNextParse);
-      atom.partialCharge = parseFloat(line, ichNextParse);
+      atom.elementSymbol = parseToken();
+      atom.partialCharge = parseFloat();
     }
     chargesFound = true;
   }
@@ -157,16 +157,16 @@ void processAtomicCharges() throws Exception {
       ++expectedAtomNumber;
       if (atomNumber != expectedAtomNumber)
         throw new Exception("unexpected atom number in coordinates");
-      String elementSymbol = parseToken(line, ichNextParse);
+      String elementSymbol = parseToken();
 
       Atom atom = atomSetCollection.atoms[baseAtomIndex + atomNumber - 1];
       if (atom == null) {
           atom = atomSetCollection.addNewAtom(); // if no charges were found first
       }
       atom.atomSerial = atomNumber;
-      atom.x = parseFloat(line, ichNextParse);
-      atom.y = parseFloat(line, ichNextParse);
-      atom.z = parseFloat(line, ichNextParse);
+      atom.x = parseFloat();
+      atom.y = parseFloat();
+      atom.z = parseFloat();
       int atno = parseInt(elementSymbol); 
       if (atno != Integer.MIN_VALUE)
         elementSymbol = getElementSymbol(atno);
@@ -210,7 +210,7 @@ void processAtomicCharges() throws Exception {
     while (readLine() != null
         && line.indexOf("DESCRIPTION") < 0)
       if (line.indexOf("ROOT") >= 0) {
-        int frequencyCount = getTokens(line).length - 2;
+        int frequencyCount = getTokens().length - 2;
         data = new String[nAtoms * 3 + 1][];
         fillDataBlock(data);
         for (int i = 0; i < frequencyCount; ++i) {

@@ -153,7 +153,7 @@ class NWChemReader extends AtomSetCollectionReader {
     discardLines(2);
     if (readLine() == null)
       return;
-    String tokens[] = getTokens(line);
+    String tokens[] = getTokens();
     atomSetCollection.setAtomSetProperties("Symmetry group name",
         tokens[tokens.length-1], equivalentAtomSets);
   }
@@ -168,7 +168,7 @@ class NWChemReader extends AtomSetCollectionReader {
    * <p>Determine whether it reports the energy, if so set the property and name(s)
    */
   private void readTotal() {
-    String tokens[] = getTokens(line);
+    String tokens[] = getTokens();
     try {
       if (tokens[2].startsWith("energy")) {
         // in an optimization an energy is reported in a follow up step
@@ -187,7 +187,7 @@ class NWChemReader extends AtomSetCollectionReader {
       if (readLine() == null)
         return;
     }
-    String tokens[] = getTokens(line);
+    String tokens[] = getTokens();
     if (!haveEnergy) { // if didn't already have the energies, set them now
       setEnergies("E", tokens[2], equivalentAtomSets);
     } else {
@@ -226,7 +226,7 @@ class NWChemReader extends AtomSetCollectionReader {
         (inInput?SmarterJmolAdapter.PATH_SEPARATOR+"Input":
          SmarterJmolAdapter.PATH_SEPARATOR+"Geometry"));
     while (readLine() != null && line.length() > 0) {
-      tokens = getTokens(line); // get the tokens in the line
+      tokens = getTokens(); // get the tokens in the line
       if (tokens.length < 6) break; // if don't have enough of them: done
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
@@ -276,7 +276,7 @@ class NWChemReader extends AtomSetCollectionReader {
         "Task "+taskNumber+
         SmarterJmolAdapter.PATH_SEPARATOR+"Gradients");
    while (readLine() != null && line.length() > 0) {
-      tokens = getTokens(line); // get the tokens in the line
+      tokens = getTokens(); // get the tokens in the line
       if (tokens.length < 8) break; // make sure I have enough tokens
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[1]);
@@ -397,7 +397,7 @@ class NWChemReader extends AtomSetCollectionReader {
     atomSetCollection.newAtomSet();
     atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY, path);
     while (readLine() != null && line.indexOf("---") < 0) {
-      tokens = getTokens(line);
+      tokens = getTokens();
       Atom atom = atomSetCollection.addNewAtom();
       atom.atomName = fixTag(tokens[0]);
       atom.x = parseFloat(tokens[2]) * AU2ANGSTROM;
@@ -451,7 +451,7 @@ class NWChemReader extends AtomSetCollectionReader {
       for (int i = 0; i < atomCount * 3; ++i) {
         if (readLine() == null)
           return;
-        tokens = getTokens(line);
+        tokens = getTokens();
         for (int j = 0; j < nFreq; ++j) {
           Atom atom = atomSetCollection.atoms[firstModelAtom + j * atomCount
               + i / 3];
@@ -481,7 +481,7 @@ class NWChemReader extends AtomSetCollectionReader {
       for (int i = totalFrequencies, idx = firstFrequencyAtomSetIndex; --i >= 0; idx++) {
         if (readLine() == null)
           return;
-        tokens = getTokens(line);
+        tokens = getTokens();
         String frequencyString = tokens[1] + " cm**-1";
         atomSetCollection.setAtomSetName(frequencyString, idx);
         atomSetCollection.setAtomSetProperty("Frequency", frequencyString, idx);
@@ -510,7 +510,7 @@ class NWChemReader extends AtomSetCollectionReader {
       // assign the partial charge
       if (readLine() == null)
         return;
-      tokens = getTokens(line);
+      tokens = getTokens();
       atomSetCollection.atoms[i].partialCharge = 
         parseInt(tokens[2]) - parseFloat(tokens[3]);
     }

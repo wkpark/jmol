@@ -98,8 +98,8 @@ class Mol2Reader extends AtomSetCollectionReader {
     readLine();
     line += " 0 0 0 0 0 0";
     int atomCount = parseInt(line);
-    int bondCount = parseInt(line, ichNextParse);
-    int resCount = parseInt(line, ichNextParse);
+    int bondCount = parseInt();
+    int resCount = parseInt();
     readLine();//mol_type
     readLine();//charge_type
     boolean iHaveCharges = (line.indexOf("NO_CHARGES") != 0);
@@ -180,9 +180,9 @@ class Mol2Reader extends AtomSetCollectionReader {
   void readCrystalInfo() throws Exception {
     //    4.1230    4.1230    4.1230   90.0000   90.0000   90.0000   221     1
     readLine();
-    ichNextParse = 0;
+    next[0] = 0;
     for (int i = 0; i < 6; i++)
-      setUnitCellItem(i, parseFloat(line, ichNextParse));
-    setSpaceGroupName(line.substring(ichNextParse, line.length()).trim());
+      setUnitCellItem(i, parseFloat());
+    setSpaceGroupName(line.substring(next[0], line.length()).trim());
   }
 }

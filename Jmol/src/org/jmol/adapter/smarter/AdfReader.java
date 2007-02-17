@@ -76,7 +76,7 @@ public class AdfReader extends AtomSetCollectionReader {
           iHaveAtoms = true;
           readCoordinates();
         } else if (line.indexOf("Energy:") >= 0) {
-          String[] tokens = getTokens(line);
+          String[] tokens = getTokens();
           energy = tokens[1];
         } else if (line.indexOf("Vibrations") >= 0) {
           readFrequencies();
@@ -111,7 +111,7 @@ public class AdfReader extends AtomSetCollectionReader {
     atomSetCollection.setAtomSetName("" + energy); // start with an empty name
     discardLinesUntilStartsWith(" -----");
     while (readLine() != null && !line.startsWith(" -----")) {
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       if (tokens.length < 5)
         continue;
       String symbol = tokens[1];
@@ -160,7 +160,7 @@ public class AdfReader extends AtomSetCollectionReader {
       }
       if (line == null || line.indexOf(".") < 0)
         return;
-      frequencies = getTokens(line);
+      frequencies = getTokens();
       readLine(); // -------- -------- --------
       int frequencyCount = frequencies.length;
       int firstModelAtom = atomSetCollection.atomCount;
@@ -174,7 +174,7 @@ public class AdfReader extends AtomSetCollectionReader {
       }
       int atomPt = 0;
       while (readLine() != null && line.indexOf(".") >= 0) {
-        tokens = getTokens(line);
+        tokens = getTokens();
         String symbol = tokens[0].substring(tokens[0].indexOf(".") + 1);
         if (JmolConstants.elementNumberFromSymbol(symbol) < 1)
           continue;

@@ -94,7 +94,7 @@ class WebMOReader extends AtomSetCollectionReader {
   void readHeader() throws Exception {
     while (readLine() != null && line.length() > 0) {
       moData.put("calculationType", "?");
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       tokens[0] = tokens[0].substring(0, 1).toLowerCase()
           + tokens[0].substring(1, tokens[0].length());
       String str = "";
@@ -126,7 +126,7 @@ class WebMOReader extends AtomSetCollectionReader {
     while (line != null && (line.length() == 0 || line.charAt(0) != '[')) {
       if (line.length() != 0) {
         Atom atom = atomSetCollection.addNewAtom();
-        String[] tokens = getTokens(line);
+        String[] tokens = getTokens();
         if (isAtomicNumber) {
           atom.elementSymbol = getElementSymbol(parseInt(tokens[0]));
         } else {
@@ -154,7 +154,7 @@ class WebMOReader extends AtomSetCollectionReader {
         && (line.length() == 0 || line.charAt(0) != '[')) {
       if (line.length() == 0)
         continue;
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       int atomIndex1 = parseInt(tokens[0]);
       int atomIndex2 = parseInt(tokens[1]);
       int order = parseInt(tokens[2]);
@@ -174,7 +174,7 @@ class WebMOReader extends AtomSetCollectionReader {
         && (line.length() == 0 || line.charAt(0) != '[')) {
       if (line.length() == 0)
         continue;
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       info.put(tokens[0].substring(0, 1), tokens);
     }
     moData.put("atomicOrbitalOrder", info);
@@ -205,7 +205,7 @@ class WebMOReader extends AtomSetCollectionReader {
 
     while (readLine() != null
         && (line.length() == 0 || line.charAt(0) != '[')) {
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       if (tokens.length == 0)
         continue;
       if (tokens.length != 1) // VERY unlikely event -- might as well note it, though.
@@ -253,7 +253,7 @@ class WebMOReader extends AtomSetCollectionReader {
     int ndata = 0;
     while (readLine() != null
         && (line.length() == 0 || line.charAt(0) != '[')) {
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       if (tokens.length < 7)
         continue;
       float fdata[] = new float[2];
@@ -295,7 +295,7 @@ class WebMOReader extends AtomSetCollectionReader {
         && (line.length() == 0 || line.charAt(0) != '[')) {
       if (line.length() == 0)
         continue;
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       data.add(tokens[1]);
     }
     float[] coefs = new float[data.size()];

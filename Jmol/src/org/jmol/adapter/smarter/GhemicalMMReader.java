@@ -113,7 +113,7 @@ class GhemicalMMReader extends AtomSetCollectionReader {
       if (atomIndex != i)
         throw new Exception("bad atom index in !Atoms" +
                             "expected: " + i + " saw:" + atomIndex);
-      int elementNumber = parseInt(line, ichNextParse);
+      int elementNumber = parseInt();
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber = (byte)elementNumber;
     }
@@ -124,8 +124,8 @@ class GhemicalMMReader extends AtomSetCollectionReader {
     for (int i = 0; i < bondCount; ++i) {
       readLine();
       int atomIndex1 = parseInt(line);
-      int atomIndex2 = parseInt(line, ichNextParse);
-      String orderCode = parseToken(line, ichNextParse);
+      int atomIndex2 = parseInt();
+      String orderCode = parseToken();
       int order = 0;
       switch(orderCode.charAt(0)) {
       case 'C': // Conjugated (aromatic)
@@ -150,9 +150,9 @@ class GhemicalMMReader extends AtomSetCollectionReader {
         throw new Exception("bad atom index in !Coord" +
                             "expected: " + i + " saw:" + atomIndex);
       Atom atom = atomSetCollection.atoms[i];
-      atom.x = parseFloat(line, ichNextParse) * 10;
-      atom.y = parseFloat(line, ichNextParse) * 10;
-      atom.z = parseFloat(line, ichNextParse) * 10;
+      atom.x = parseFloat() * 10;
+      atom.y = parseFloat() * 10;
+      atom.z = parseFloat() * 10;
     }
   }
 
@@ -164,7 +164,7 @@ class GhemicalMMReader extends AtomSetCollectionReader {
         throw new Exception("bad atom index in !Charges" +
                             "expected: " + i + " saw:" + atomIndex);
       Atom atom = atomSetCollection.atoms[i];
-      atom.partialCharge = parseFloat(line, ichNextParse);
+      atom.partialCharge = parseFloat();
     }
   }
 }

@@ -455,9 +455,9 @@ class PdbReader extends AtomSetCollectionReader {
     if (htElementsInGroup == null)
       htFormul.put(groupName, htElementsInGroup = new Hashtable());
     // now, look for atom names in the formula
-    ichNextParse = 0;
+    next[0] = 0;
     String elementWithCount;
-    while ((elementWithCount = parseToken(formula, ichNextParse)) != null) {
+    while ((elementWithCount = parseTokenNext(formula)) != null) {
       if (elementWithCount.length() < 2)
         continue;
       char chFirst = elementWithCount.charAt(0);

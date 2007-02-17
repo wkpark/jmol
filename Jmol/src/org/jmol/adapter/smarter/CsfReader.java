@@ -83,7 +83,7 @@ class CsfReader extends AtomSetCollectionReader {
                           byte[] fieldMap,
                           int[] fieldTypes,
                           boolean[] propertyReferenced) throws Exception {
-    String tokens[] = getTokens(line);
+    String tokens[] = getTokens();
     String field;
     int fieldCount = -1;
     for (int ipt = tokens.length; --ipt >= 0; ) {
@@ -134,7 +134,7 @@ class CsfReader extends AtomSetCollectionReader {
         break;
       String thisAtomID = null;
       String thisBondID = null;
-      String tokens[] = getTokens(line);
+      String tokens[] = getTokens();
       for (int i = 0; i < fieldCount; ++i) {
         String field = tokens[i];
         switch (fieldTypes[i]) {
@@ -210,7 +210,7 @@ class CsfReader extends AtomSetCollectionReader {
     for (; readLine() != null; ) {
       if (line.startsWith("property_flags:"))
         break;
-      String tokens[] = getTokens(line);
+      String tokens[] = getTokens();
       Atom atom = new Atom();
       for (int i = 0; i < fieldCount; i++) {
         String field = tokens[i];
@@ -275,7 +275,7 @@ class CsfReader extends AtomSetCollectionReader {
       if (line.startsWith("property_flags:"))
         break;
       String thisBondID = null;
-      String tokens[] = getTokens(line);
+      String tokens[] = getTokens();
       for (int i = 0; i < fieldCount; ++i) {
         String field = tokens[i];
         switch (fieldTypes[i]) {
@@ -333,7 +333,7 @@ class CsfReader extends AtomSetCollectionReader {
     for (; readLine() != null;) {
       if (line.startsWith("property_flags:"))
         break;
-      String tokens[] = getTokens(line);
+      String tokens[] = getTokens();
       if (parseInt(tokens[0]) != thisvibID) {
         thisvibID = parseInt(tokens[0]);
         atomSetCollection.cloneFirstAtomSetWithBonds(nBonds);
@@ -356,7 +356,7 @@ class CsfReader extends AtomSetCollectionReader {
     for (; readLine() != null; ) {
       if (line.startsWith("property_flags:"))
         break;
-      String tokens[] = getTokens(line);
+      String tokens[] = getTokens();
       int thisvib = -1;
       for (int i = 0; i < fieldCount; ++i) {
         String field = tokens[i];

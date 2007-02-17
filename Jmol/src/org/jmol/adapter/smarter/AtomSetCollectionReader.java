@@ -73,7 +73,7 @@ import java.io.BufferedReader;
  * 
  */
 
-abstract class AtomSetCollectionReader extends Parser {
+abstract class AtomSetCollectionReader {
   AtomSetCollection atomSetCollection;
   BufferedReader reader;
   String line, prevline;
@@ -92,6 +92,90 @@ abstract class AtomSetCollectionReader extends Parser {
   int[] latticeCells = new int[3];
   int desiredSpaceGroupIndex;
 
+  int[] next = new int[1];
+  
+  // parser functions are static, so they need notstatic counterparts
+   
+  
+  String[] getTokens() {
+    return Parser.getTokens( line);  
+  }
+  
+  String[] getTokens(String s) {
+    return Parser.getTokens(s);  
+  }
+  
+  String[] getTokens(String s, int iStart) {
+    return Parser.getTokens(s, iStart);  
+  }
+  
+  float parseFloat() {
+    return Parser.parseFloat(line, next);
+  }
+
+  float parseFloat(String s) {
+    next[0] = 0;
+    return Parser.parseFloat(s, next);
+  }
+
+  float parseFloat(String s, int iStart, int iEnd) {
+    next[0] = iStart;
+    return Parser.parseFloat(s, iEnd, next);
+  }
+  
+  int parseInt() {
+    return Parser.parseInt(line, next);
+  }
+  
+  int parseInt(String s) {
+    next[0] = 0;
+    return Parser.parseInt(s, next);
+  }
+  
+  int parseInt(String s, int iStart) {
+    next[0] = iStart;
+    return Parser.parseInt(s, next);
+  }
+  
+  int parseInt(String s, int iStart, int iEnd) {
+    next[0] = iStart;
+    return Parser.parseInt(s, iEnd, next);
+  }
+
+  String parseToken() {
+    return Parser.parseToken(line, next);
+  }
+  
+  String parseToken(String s) {
+    next[0] = 0;
+    return Parser.parseToken(s, next);
+  }
+  
+  String parseTokenNext(String s) {
+    return Parser.parseToken(s, next);
+  }
+
+  String parseToken(String s, int iStart, int iEnd) {
+    next[0] = iStart;
+    return Parser.parseToken(s, iEnd, next);
+  }
+  
+  String parseTrimmed(String s) {
+    next[0] = 0;
+    return Parser.parseTrimmed(s, next);
+  }
+  
+  String parseTrimmed(String s, int iStart) {
+    next[0] = iStart;
+    return Parser.parseTrimmed(s, next);
+  }
+  
+  String parseTrimmed(String s, int iStart, int iEnd) {
+    next[0] = iStart;
+    return Parser.parseTrimmed(s, iEnd, next);
+  }
+  
+  
   // load options:
 
   boolean doApplySymmetry;

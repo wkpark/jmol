@@ -77,7 +77,7 @@ class V3000Reader extends AtomSetCollectionReader {
         newAtomSet("");
       } else if (line.startsWith("M  V30 COUNTS")) {
         headerAtomCount = parseInt(line, 13);
-        headerBondCount = parseInt(line, ichNextParse);
+        headerBondCount = parseInt();
       }
     }
     if (line != null && !line.startsWith("$$$$"))
@@ -90,15 +90,15 @@ class V3000Reader extends AtomSetCollectionReader {
       if (line == null || (! line.startsWith("M  V30 ")))
         throw new Exception("unrecognized atom");
       Atom atom = new Atom();
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       atom.atomSerial = parseInt(tokens[2]);
       atom.elementSymbol = tokens[3];
       atom.x = parseFloat(tokens[4]);
       atom.y = parseFloat(tokens[5]);
       atom.z = parseFloat(tokens[6]);
-      parseInt(line, ichNextParse); // discard aamap
+      parseInt(); // discard aamap
       while (true) {
-        String option = parseToken(line, ichNextParse);
+        String option = parseToken();
         if (option == null)
           break;
         if (option.startsWith("CHG="))
@@ -118,9 +118,9 @@ class V3000Reader extends AtomSetCollectionReader {
       if (line == null || (! line.startsWith("M  V30 ")))
         throw new Exception("unrecognized bond");
       /*int bondSerial = */parseInt(line, 7); // currently unused
-      int order = parseInt(line, ichNextParse);
-      int atomSerial1 = parseInt(line, ichNextParse);
-      int atomSerial2 = parseInt(line, ichNextParse);
+      int order = parseInt();
+      int atomSerial1 = parseInt();
+      int atomSerial2 = parseInt();
       atomSetCollection.addNewBondWithMappedSerialNumbers(atomSerial1,
                                                           atomSerial2,
                                                           order);

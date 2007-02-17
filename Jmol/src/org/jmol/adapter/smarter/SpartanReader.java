@@ -107,10 +107,10 @@ class SpartanReader extends AtomSetCollectionReader {
     while (true) {
       discardLinesUntilNonBlank();
       int lineBaseFreqCount = totalFrequencyCount;
-      ichNextParse = 16;
+      next[0] = 16;
       int lineFreqCount;
       for (lineFreqCount = 0; lineFreqCount < 3; ++lineFreqCount) {
-        float frequency = parseFloat(line, ichNextParse);
+        float frequency = parseFloat();
         if (Float.isNaN(frequency))
           break; //////////////// loop exit is here
         ++totalFrequencyCount;

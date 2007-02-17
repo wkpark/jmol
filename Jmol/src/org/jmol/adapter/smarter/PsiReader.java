@@ -131,7 +131,7 @@ class PsiReader extends AtomSetCollectionReader {
     }
     int atomPt = 0;
     while (readLine() != null && line.length() > 0) {
-      String[] tokens = getTokens(line); // get the tokens in the line
+      String[] tokens = getTokens(); // get the tokens in the line
       Atom atom = (isInitial ? atomSetCollection.addNewAtom()
           : atomSetCollection.atoms[atomPt++]);
       atom.elementNumber = (byte) parseInt(tokens[0]);
@@ -188,7 +188,7 @@ class PsiReader extends AtomSetCollectionReader {
     while (readLine() != null && line.startsWith("   -Basis set on")) {
       atomCenter = parseInt(line.substring(31));
       while (readLine() != null && !line.startsWith("       )")) {
-        tokens = getTokens(line);
+        tokens = getTokens();
         int ipt = 1;
         if (line.startsWith("        (")) {
           ipt = 2;
@@ -332,7 +332,7 @@ Orbital energies (a.u.):
     Vector[] data = new Vector[5];
     int nThisLine = 0;
     while (readLine() != null && line.toUpperCase().indexOf("DENS") < 0) {
-      String[] tokens = getTokens(line);
+      String[] tokens = getTokens();
       int ptData = (line.charAt(5) == ' ' ? 2 : 4);
       if (line.indexOf("                    ") == 0) {
         addMOData(nThisLine, data, mos);

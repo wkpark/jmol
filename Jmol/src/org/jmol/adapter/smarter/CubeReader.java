@@ -91,9 +91,9 @@ class CubeReader extends AtomSetCollectionReader {
   void readAtomCountAndOrigin() throws Exception {
     readLine();
     atomCount = parseInt(line);
-    origin[0] = parseFloat(line, ichNextParse);
-    origin[1] = parseFloat(line, ichNextParse);
-    origin[2] = parseFloat(line, ichNextParse);
+    origin[0] = parseFloat();
+    origin[1] = parseFloat();
+    origin[2] = parseFloat();
     if (atomCount < 0) {
       atomCount = -atomCount;
       negativeAtomCount = true;
@@ -111,9 +111,9 @@ class CubeReader extends AtomSetCollectionReader {
     float[] voxelVector = new float[3];
     voxelVectors[voxelVectorIndex] = voxelVector;
     voxelCounts[voxelVectorIndex] = parseInt(line);
-    voxelVector[0] = parseFloat(line, ichNextParse);
-    voxelVector[1] = parseFloat(line, ichNextParse);
-    voxelVector[2] = parseFloat(line, ichNextParse);
+    voxelVector[0] = parseFloat();
+    voxelVector[1] = parseFloat();
+    voxelVector[2] = parseFloat();
   }
 
   void readAtoms() throws Exception {
@@ -121,10 +121,10 @@ class CubeReader extends AtomSetCollectionReader {
       readLine();
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber = (short)parseInt(line); //allowing atomicAndIsotope for JVXL format
-      atom.partialCharge = parseFloat(line, ichNextParse);
-      atom.x = parseFloat(line, ichNextParse) * ANGSTROMS_PER_BOHR;
-      atom.y = parseFloat(line, ichNextParse) * ANGSTROMS_PER_BOHR;
-      atom.z = parseFloat(line, ichNextParse) * ANGSTROMS_PER_BOHR;
+      atom.partialCharge = parseFloat();
+      atom.x = parseFloat() * ANGSTROMS_PER_BOHR;
+      atom.y = parseFloat() * ANGSTROMS_PER_BOHR;
+      atom.z = parseFloat() * ANGSTROMS_PER_BOHR;
     }
   }
 

@@ -34,10 +34,9 @@ import org.jmol.symmetry.SpaceGroup;
 import org.jmol.symmetry.SymmetryOperation;
 import org.jmol.symmetry.UnitCell;
 import org.jmol.util.Logger;
-import org.jmol.util.Parser;
 import org.jmol.util.ArrayUtil;
 
-class AtomSetCollection extends Parser {
+class AtomSetCollection {
   String fileTypeName;
   String collectionName;
   Properties atomSetCollectionProperties = new Properties();

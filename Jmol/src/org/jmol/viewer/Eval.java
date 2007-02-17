@@ -5196,8 +5196,8 @@ void set() throws ScriptException {
       if (setParameter(key)) {
         if (isSyntaxCheck)
           return;
-      } else {
-        Object v = parameterExpression(2, false);
+      } else {    
+        Object v = parameterExpression((getToken(2).tok == Token.opEQ ? 3 : 2), false);
         if (isSyntaxCheck)
           return;
         if (v instanceof Boolean) {

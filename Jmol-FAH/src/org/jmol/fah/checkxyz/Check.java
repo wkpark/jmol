@@ -43,6 +43,8 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 /**
  * Checking for missing XYZ files for http://www.jmol.org/fah
  *
@@ -56,6 +58,8 @@ public class Check implements ActionListener {
   private FileFilter fileFilter = null;
   private File availableProjects = null;
   private Vector existingProjects = new Vector();
+  private boolean showSentProjects = false;
+  private Vector sentProjects = new Vector();
 
   /**
    * Constructor. 
@@ -105,6 +109,7 @@ public class Check implements ActionListener {
   private void process() {
     configuration.loadConfiguration();
     if (forceConfig || !configuration.isConfigured()) {
+      showSentProjects = true;
       configure();
     } else {
       processDirectories();
@@ -127,6 +132,25 @@ public class Check implements ActionListener {
       while (iter.hasNext()) {
         processDirectory(iter.next().toString());
       }
+    }
+    String message = null;
+    if ((sentProjects != null) && (!sentProjects.isEmpty())) {
+      message = "" + sentProjects.size() + " sent (";
+      for (int i = 0; i < sentProjects.size(); i++) {
+        if (i != 0) {
+          message += ", ";
+        }
+        message += sentProjects.get(i).toString();
+      }
+    } else {
+      message = "No new projets found";
+    }
+    if (showSentProjects) {
+      JOptionPane.showMessageDialog(
+          null, message, "Result", JOptionPane.INFORMATION_MESSAGE);
+      System.exit(0);
+    } else {
+      System.out.println(message);
     }
   }
 

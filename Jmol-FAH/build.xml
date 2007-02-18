@@ -32,7 +32,7 @@
 
   <target name="dist" depends="init,jar">
     <mkdir dir="${dist.dir}" />
-  	<zip zipfile="${dist.dir}/JmolFah.zip">
+  	<zip zipfile="${dist.dir}/JmolFah-${JmolFAH.Version}.zip">
   	  <fileset dir="${build.dir}">
   	    <include name="JmolFah.jar" />
   	  </fileset>
@@ -67,6 +67,7 @@
   <target name="init" id="init">
     <tstamp/>
     <delete dir="${build.dir}" />
+    <property file="${src.dir}/org/jmol/fah/Jmol-FAH.properties" prefix="JmolFAH" />
   </target>
 
 </project>

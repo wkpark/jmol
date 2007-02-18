@@ -77,8 +77,11 @@ public class TextFormat {
                               boolean alignLeft, boolean zeroPad) {
     if (value == null)
       return "";
-    if (precision > value.length())
+    if (precision > 0 && precision < value.length())
       value = value.substring(0, precision);
+    else if (precision < 0 && -precision < value.length())
+      value = value.substring(value.length() + precision);
+    
     int padLength = width - value.length();
     if (padLength <= 0)
       return value;

@@ -40,6 +40,14 @@ final public class JmolConstants {
    * 
    11.1.14:
    
+   DYNAMIC MEASUREMENTS
+   
+   Now that we can move atoms so easily, we don't want those measurements getting stale.
+   
+   set dynamicMeasurements
+   
+   allows measurements to be recalculated on the fly.
+   
    BRACES NOT PARENTHESES 
    
    BIG change is that now we use {} in SET and %{} for designating atom expressions.
@@ -58,15 +66,38 @@ final public class JmolConstants {
    
    message %{{atomno=3}.distance{atomno=4}}
    
-   DYNAMIC MEASUREMENTS
+  
+   MATH
    
-   Now that we can move atoms so easily, we don't want those measurements getting stale.
+   -- full standard operator precedence and parentheses
    
-   set dynamicMeasurements
+   degUnsat = ({carbon} * 2 + {nitrogen} + 2 - {hydrogen}) / 2
+
+   -- selected atoms from an atom expression in math
    
-   allows measurements to be recalculated on the fly.
+   x = {atom expression}[3].ident
+   x = {atom expression}[3-].xyz
+   x = {atom expression}[3-5].x
+   x = {atom expression}[-5].temperature
+   
+   -- expanded modulus % operator
+   
+   Usually modulus is reserved for integer math, so we
+   extend that here to add some useful "modulus-like" capability:
    
    
+   -- type conversion
+   
+      We have five different variable types now:
+      
+      boolean 
+      integer
+      decimal
+      string
+      point3f
+      
+      These can be mixed and matched to good effect
+      
    
    11.1.13:
    

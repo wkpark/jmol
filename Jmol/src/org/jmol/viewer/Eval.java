@@ -8238,8 +8238,8 @@ class Eval { //implements Runnable {
           if (n == 0)
             return addX(s.trim());
           else if (n > 0)
-            return addX(TextFormat.format(s, n, 0, true, false));
-          return addX(TextFormat.format(s, -n, 0, false, false));
+            return addX(TextFormat.format(s, n, n, true, false));
+          return addX(TextFormat.format(s, -n, n, false, false));
         case Token.xyz:
           Point3f pt = new Point3f((Point3f) x1.value);
           viewer.toUnitCell(pt, new Point3f(n, n, n));

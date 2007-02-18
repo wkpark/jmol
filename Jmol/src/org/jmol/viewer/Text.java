@@ -378,12 +378,12 @@ class Text {
           name = text.substring(i0, i);
         }
       }
+      if (name.length() == 0)
+        return text;
       Object v = Eval.evaluateExpression(viewer, name);
       if (v instanceof Point3f)
         v = StateManager.escape((Point3f) v);
-      text = text.substring(0, i0 - 2)
-          + (name.length() == 0 ? "" : name.indexOf("{") >= 0 ? v.toString()
-              : viewer.getParameter(name).toString()) + text.substring(i + 1);
+      text = text.substring(0, i0 - 2)+ v.toString() + text.substring(i + 1);
     }
     return text;
   }

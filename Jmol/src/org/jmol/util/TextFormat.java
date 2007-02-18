@@ -35,6 +35,8 @@ public class TextFormat {
       "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000" };
 
   public static String formatDecimal(float value, int decimalDigits) {
+    if (decimalDigits == Integer.MAX_VALUE)
+      return "" + value;
     if (decimalDigits < 0) {
       decimalDigits = -decimalDigits;
       if (decimalDigits > formattingStrings.length)
@@ -77,7 +79,7 @@ public class TextFormat {
                               boolean alignLeft, boolean zeroPad) {
     if (value == null)
       return "";
-    if (precision > 0 && precision < value.length())
+    if (precision != Integer.MAX_VALUE && precision > 0 && precision < value.length())
       value = value.substring(0, precision);
     else if (precision < 0 && -precision < value.length())
       value = value.substring(value.length() + precision);

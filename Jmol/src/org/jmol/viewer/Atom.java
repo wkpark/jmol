@@ -1035,7 +1035,7 @@ final public class Atom extends Point3fi implements Tuple {
           width = (10 * width) + (ch - '0');
           ++ich;
         }
-        int precision = -1;
+        int precision = Integer.MAX_VALUE;
         if (strFormat.charAt(ich) == '.') {
           ++ich;
           if ((ch = strFormat.charAt(ich)) >= '0' && (ch <= '9')) {

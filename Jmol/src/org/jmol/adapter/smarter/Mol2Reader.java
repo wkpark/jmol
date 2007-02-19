@@ -182,6 +182,8 @@ class Mol2Reader extends AtomSetCollectionReader {
     //    4.1230    4.1230    4.1230   90.0000   90.0000   90.0000   221     1
     readLine();
     String[] tokens = getTokens();
+    if (tokens.length < 6)
+      return;
     for (int i = 0; i < 6; i++)
       setUnitCellItem(i, parseFloat(tokens[i]));
     String name = "";

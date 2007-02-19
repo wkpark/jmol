@@ -124,6 +124,7 @@ class SticksRenderer extends ShapeRenderer {
     case 3:
       renderCylinder(0);
       break;
+    case JmolConstants.BOND_ORDER_UNSPECIFIED:
     case JmolConstants.BOND_PARTIAL01:
       bondOrder = 1;
       renderCylinder(1);

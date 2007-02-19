@@ -296,20 +296,36 @@ final public class JmolConstants {
    * Extended Bond Definition Types
    *
    */
+  
+  // Pa Hbnd S St A Cov
+  
+  // 21 1987 6 54 3 210
+  // 21 0
+  
+  // 11 1111 1 11 1 111 = 1FFF
+  
   public final static short BOND_ORDER_ANY      = -2;
   public final static short BOND_ORDER_NULL      = -1;
-  public final static short BOND_ORDER_UNSPECIFIED = 0;
+
+  public final static short BOND_ALL_MASK      = 0x1FFF;
+
+  public final static short BOND_COVALENT_MASK   = 0x07;
   public final static short BOND_COVALENT_SINGLE = 1;
   public final static short BOND_COVALENT_DOUBLE = 2;
   public final static short BOND_COVALENT_TRIPLE = 3;
-  public final static short BOND_COVALENT_MASK   = 3;
-  public final static short BOND_AROMATIC_MASK = (1 << 2);
-  public final static short BOND_AROMATIC      = (1 << 2) | 1;
-  public final static short BOND_STEREO_MASK   = (3 << 3);
-  public final static short BOND_STEREO_NEAR   = (1 << 3) | 1;
-  public final static short BOND_STEREO_FAR    = (2 << 3) | 2;
-  public final static short BOND_SULFUR_MASK   = (1 << 5);
-  public final static short BOND_HBOND_SHIFT = 6;
+  public final static short BOND_COVALENT_QUADRUPLE = 4;
+  public final static short BOND_ORDER_UNSPECIFIED = 7;
+  
+  public final static short BOND_AROMATIC_MASK = (1 << 3);
+  public final static short BOND_AROMATIC      = (1 << 3) | 1;
+  
+  public final static short BOND_STEREO_MASK   = (3 << 4);
+  public final static short BOND_STEREO_NEAR   = (1 << 4) | 1;
+  public final static short BOND_STEREO_FAR    = (2 << 4) | 2;
+  
+  public final static short BOND_SULFUR_MASK   = (1 << 6);
+
+  public final static short BOND_HBOND_SHIFT = 7;
   public final static short BOND_HYDROGEN_MASK = (0x0F << BOND_HBOND_SHIFT);
   public final static short BOND_H_REGULAR     = (1 << BOND_HBOND_SHIFT);
   public final static short BOND_H_PLUS_2      = (2 << BOND_HBOND_SHIFT);
@@ -319,19 +335,18 @@ final public class JmolConstants {
   public final static short BOND_H_MINUS_3     = (6 << BOND_HBOND_SHIFT);
   public final static short BOND_H_MINUS_4     = (7 << BOND_HBOND_SHIFT);
   public final static short BOND_H_NUCLEOTIDE  = (8 << BOND_HBOND_SHIFT);
-  public final static short BOND_PARTIAL01     = (1 << 10) | 1;
-  public final static short BOND_PARTIAL12     = (1 << 11) | 2;
-  public final static short BOND_PARTIAL_MASK  = (3 << 10);
-
-  public final static short BOND_ALL_MASK      = (short)0xFFFF;
-
+  
+  public final static short BOND_PARTIAL_MASK  = (3 << 11);
+  public final static short BOND_PARTIAL01     = (1 << 11) | 1;
+  public final static short BOND_PARTIAL12     = (1 << 12) | 2;
+  
   final static String[] bondOrderNames = {
-    "single", "double", "triple", "aromatic", "hbond", "partial", "partialDouble"
+    "single", "double", "triple", "aromatic", "hbond", "partial", "partialDouble", "unspecified"
   };
 
   final static short[] bondOrderValues = {
     BOND_COVALENT_SINGLE, BOND_COVALENT_DOUBLE, BOND_COVALENT_TRIPLE,
-    BOND_AROMATIC, BOND_H_REGULAR, BOND_PARTIAL01, BOND_PARTIAL12
+    BOND_AROMATIC, BOND_H_REGULAR, BOND_PARTIAL01, BOND_PARTIAL12, BOND_ORDER_UNSPECIFIED
   };
 
   public final static short getBondOrderFromString(String bondOrderString) {

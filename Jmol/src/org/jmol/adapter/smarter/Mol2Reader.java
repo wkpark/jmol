@@ -164,7 +164,7 @@ class Mol2Reader extends AtomSetCollectionReader {
       int atomIndex2 = parseInt(tokens[2]);
       int order = parseInt(tokens[3]);
       if (order == Integer.MIN_VALUE)
-        order = (tokens[3].equals("ar") ? JmolAdapter.ORDER_AROMATIC : 1);
+        order = (tokens[3].equals("ar") ? JmolAdapter.ORDER_AROMATIC : JmolAdapter.ORDER_UNSPECIFIED);
       atomSetCollection
           .addBond(new Bond(nAtoms + atomIndex1 - 1, nAtoms + atomIndex2 - 1, order));
     }

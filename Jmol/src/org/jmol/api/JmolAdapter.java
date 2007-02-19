@@ -29,6 +29,8 @@ import java.util.Properties;
 import java.util.Hashtable;
 import java.util.BitSet;
 
+import org.jmol.viewer.JmolConstants;
+
 /****************************************************************
  * The JmolAdapter interface defines the API used by the JmolViewer to
  * read external files and fetch atom properties necessary for rendering.
@@ -49,16 +51,17 @@ import java.util.BitSet;
  ****************************************************************/
 public abstract class JmolAdapter {
   
-  public final static short ORDER_COVALENT_SINGLE = 1;
-  public final static short ORDER_COVALENT_DOUBLE = 2;
-  public final static short ORDER_COVALENT_TRIPLE = 3;
-  public final static short ORDER_AROMATIC        = (1 << 2);
-  public final static short ORDER_HBOND           = (1 << 6);
-  public final static short ORDER_STEREO_NEAR     = ((1 << 3) | 1);
-  public final static short ORDER_STEREO_FAR      = ((2 << 3) | 2);
-  public final static short ORDER_PARTIAL01       = (1 << 10);
-  public final static short ORDER_PARTIAL12       = (1 << 11);
-
+  public final static short ORDER_COVALENT_SINGLE = JmolConstants.BOND_COVALENT_SINGLE;
+  public final static short ORDER_COVALENT_DOUBLE = JmolConstants.BOND_COVALENT_DOUBLE;
+  public final static short ORDER_COVALENT_TRIPLE = JmolConstants.BOND_COVALENT_TRIPLE;
+  public final static short ORDER_AROMATIC        = JmolConstants.BOND_AROMATIC;
+  public final static short ORDER_HBOND           = JmolConstants.BOND_H_REGULAR;
+  public final static short ORDER_STEREO_NEAR     = JmolConstants.BOND_STEREO_NEAR;
+  public final static short ORDER_STEREO_FAR      = JmolConstants.BOND_STEREO_FAR;
+  public final static short ORDER_PARTIAL01       = JmolConstants.BOND_PARTIAL01;
+  public final static short ORDER_PARTIAL12       = JmolConstants.BOND_PARTIAL12;
+  public final static short ORDER_UNSPECIFIED     = JmolConstants.BOND_ORDER_UNSPECIFIED;
+  
   //////////////////////////////////////////////////////////////////
   // file related
   //////////////////////////////////////////////////////////////////

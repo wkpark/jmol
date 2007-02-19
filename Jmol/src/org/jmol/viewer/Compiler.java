@@ -1488,7 +1488,7 @@ class Compiler {
       }
       intType = JmolConstants.getBondOrderFromString((String)theValue);
       if (intType < JmolConstants.BOND_COVALENT_SINGLE) {
-        intType = JmolConstants.BOND_ORDER_UNSPECIFIED;
+        intType = JmolConstants.BOND_ORDER_ANY;
       } else {
         if (getToken() == null || !isToken(Token.rightparen)
             && !isToken(Token.opOr))

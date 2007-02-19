@@ -344,7 +344,7 @@ class AtomSetCollection {
   void addBond(Bond bond) {
     if (bond.atomIndex1 < 0 ||
         bond.atomIndex2 < 0 ||
-        bond.order <= 0) {
+        bond.order < 0) {
           Logger.debug(">>>>>>BAD BOND:" + bond.atomIndex1 + "-" +
                          bond.atomIndex2 + ":" + bond.order);
       return;

@@ -759,7 +759,7 @@ String getAtomInfoChime(int i) {
     int i;
     for (int ibond = 0; ibond < bondCount; ibond++) {
       Bond bond = frame.bonds[ibond];
-      if (bond.order > 0 && (intType == 0 || bond.order == intType)) {
+      if (intType == JmolConstants.BOND_ORDER_ANY || bond.order == intType) {
         if (bs.get(bond.atom1.atomIndex)) {
           nBonded[i = bond.atom2.atomIndex]++;
           bsResult.set(i);

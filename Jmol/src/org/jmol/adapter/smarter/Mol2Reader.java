@@ -181,10 +181,18 @@ class Mol2Reader extends AtomSetCollectionReader {
   void readCrystalInfo() throws Exception {
     //    4.1230    4.1230    4.1230   90.0000   90.0000   90.0000   221     1
     readLine();
-    next[0] = 0;
+    String[] tokens = getTokens();
     for (int i = 0; i < 6; i++)
-      setUnitCellItem(i, parseFloat());
-    setSpaceGroupName("P1");
+      setUnitCellItem(i, parseFloat(tokens[i]));
+    String name = "";
+    for (int i = 6; i < tokens.length; i++)
+      name += " " + tokens[i];
+    if (name == "")
+      name = " P1";
+    else
+      name += " *";
+    name = name.substring(1);
+    setSpaceGroupName(name);
     for (int i = 0; i < atomCount; ++i)
       setAtomCoord(atomSetCollection.atoms[nAtoms + i]);
   }

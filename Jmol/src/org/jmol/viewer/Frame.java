@@ -370,7 +370,7 @@ public final class Frame {
       doUnitcellStuff();
       // perform bonding if necessary
       boolean doBond = (bondCount == 0 || isMultiFile || isPDB
-          && bondCount < atomCount / 2);
+          && bondCount < atomCount / 2 || someModelsHaveSymmetry && maxSymOp < 2);
       if (viewer.getForceAutoBond() || doBond && viewer.getAutoBond()
           && getModelSetProperty("noautobond") == null) {
         autoBond(null, null, null);
@@ -2969,6 +2969,8 @@ public final class Frame {
       new Point3f(1, 0, 0), new Point3f(1, 0, 1), new Point3f(1, 1, 0),
       new Point3f(1, 1, 1), };
 
+  int maxSymOp;
+  
   class CellInfo {
 
     int modelIndex;
@@ -2995,6 +2997,7 @@ public final class Frame {
         symmetryInfoString += "\nNumber of symmetry operations: ?"
             + "\nSymmetry Operations: unspecified\n";
       } else {
+        maxSymOp = Math.max(maxSymOp, symmetryCount);
         symmetryInfoString += "\nNumber of symmetry operations: "
             + (symmetryCount == 0 ? 1 : symmetryCount)
             + "\nSymmetry Operations:";

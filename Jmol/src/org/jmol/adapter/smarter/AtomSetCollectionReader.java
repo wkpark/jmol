@@ -390,11 +390,11 @@ abstract class AtomSetCollectionReader {
       atomSetCollection.setLatticeCells(latticeCells);
       if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
         SpaceGroup sg = SpaceGroup.createSpaceGroup(desiredSpaceGroupIndex,
-            spaceGroup, notionalUnitCell);
+            (spaceGroup.indexOf("*")>=0 ? "P1" : spaceGroup), notionalUnitCell);
         if (sg != null) {
           if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
             Logger.debug("using generated space group " + sg.dumpInfo());
-          atomSetCollection.setAtomSetSpaceGroupName(sg.getName());
+          atomSetCollection.setAtomSetSpaceGroupName((spaceGroup.indexOf("*")>=0 ? spaceGroup : sg.getName()));
           atomSetCollection.applySymmetry(sg);
         }
       } else {

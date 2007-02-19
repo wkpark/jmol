@@ -5345,10 +5345,9 @@ class Eval { //implements Runnable {
       return new Integer(result.intValue);
     case Token.bitset:
       BitSet bs = (BitSet)result.value;
-      assignBitsetVariable("~" + key, bs);
-      if (result.intValue == Integer.MAX_VALUE)
-        return new Integer(Viewer.cardinalityOf(bs));
-      return new Integer(bs.get(result.intValue) ? 1 : 0);
+      if (key != "")
+        assignBitsetVariable("~" + key, bs);
+      return new Integer(Viewer.cardinalityOf(bs));        
     case Token.decimal:
     case Token.string:
     case Token.xyz:
@@ -7856,9 +7855,12 @@ class Eval { //implements Runnable {
         sb.append("substructure ");
         break;
       case Token.cell:
-        Point3f pt = (Point3f) token.value;
-        sb.append("cell={" + pt.x + " " + pt.y + " " + pt.z + "}");
-        continue;
+        if (token.value instanceof Point3f) {
+          Point3f pt = (Point3f) token.value;
+          sb.append("cell={" + pt.x + " " + pt.y + " " + pt.z + "}");
+          continue;
+        }
+        break;
       case Token.string:
         sb.append("\"" + token.value + "\"");
         continue;
@@ -7931,7 +7933,7 @@ class Eval { //implements Runnable {
       if (e.loadScript(null, "x = " + expr)) {
         e.statement = e.aatoken[0];
         e.statementLength = e.statement.length;
-        return e.parameterExpression(2, false);
+        return e.parameterExpression(2, "");
       }
     } catch (Exception ex) {
       Logger.error("Error evaluating: " + expr + "\n" + ex);

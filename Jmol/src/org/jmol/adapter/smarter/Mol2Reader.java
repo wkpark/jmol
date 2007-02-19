@@ -52,7 +52,8 @@ import org.jmol.api.JmolAdapter;
 class Mol2Reader extends AtomSetCollectionReader {
 
   int nAtoms = 0;
-
+  int atomCount = 0;
+  
   AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("mol2");
@@ -97,7 +98,7 @@ class Mol2Reader extends AtomSetCollectionReader {
     String thisDataSetName = readLineTrimmed();
     readLine();
     line += " 0 0 0 0 0 0";
-    int atomCount = parseInt(line);
+    atomCount = parseInt(line);
     int bondCount = parseInt();
     int resCount = parseInt();
     readLine();//mol_type
@@ -183,6 +184,8 @@ class Mol2Reader extends AtomSetCollectionReader {
     next[0] = 0;
     for (int i = 0; i < 6; i++)
       setUnitCellItem(i, parseFloat());
-    setSpaceGroupName(line.substring(next[0], line.length()).trim());
+    setSpaceGroupName("P1");
+    for (int i = 0; i < atomCount; ++i)
+      setAtomCoord(atomSetCollection.atoms[nAtoms + i]);
   }
 }

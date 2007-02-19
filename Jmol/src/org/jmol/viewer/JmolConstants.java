@@ -63,56 +63,197 @@ final public class JmolConstants {
    
    allows measurements to be recalculated on the fly.
    
-   BRACES NOT PARENTHESES 
    
-   BIG change is that now we use {} in SET and %{} for designating atom expressions.
-   This was necessary in order to align SET and %{} with IF, where () are also allowed.
+   MATH OPERATOR PRECEDENCE AND PARENTHESES
    
-   set a {oxygen}.temperature
-   message %{{carbon}.x}
-   if {O22}.bondCount > 2;goto ...
+   Jmol 11.1.14 supports full standard operator precedence and parentheses
+   in IF, SET, and %{} expressions
+   
+   degUnsat = ({carbon} * 2 + {nitrogen} + 2 - {hydrogen}) / 2
+
+
+   BRACES INDICATE ATOM EXPRESSIONS  
+   
+   Use {} in IF, SET and %{} for designating atom expressions.
+   We are still using () for "embedded expressions" in all other commands.
+
+     nOxygen = {oxygen}
+     xOxygen = {oxygen}.x
+     ptOxygen = {oxygen.xyz}
+     
+     a = {oxygen}.temperature
+     message %{{carbon}.x}
+     if {O22}.bondCount > 2;goto ...
+   
+   but
+   
+     draw line1 (atomno=2) (atomno=3)
    
    
-   .DISTANCE ATOM PROPERTY FOR SET, IF, and %{}
+
+   ATOM EXPRESSION ITEM SELECTOR [n]
+   
+   In SET, IF, and %{ } in MESSAGE and ECHO you can now specify a subset of the 
+   atom expression. 
+   
+   x = {carbon}[3]  # the third carbon atom
+   x = {carbon}[3][5]  # the third through fifth carbon atoms
+   x = {carbon}[3][0]  # the third through last carbon atoms
+   
+   ATOM EXPRESSION AUTOMATIC DEFINE
+   
+   When you set a variable to a value, and that value is a point or atom expression,
+   then Jmol automatically registers the result as follows:
+   
+    points:
+       a "DRAW varName {x y z} off" command is effected
+       
+    atom expressions:
+       a "DEFINE ~varName ...." is effected
+       
+   Thus we have:
+   
+     set x = {oxygen}.xyz
+     set y = {carbon}.xyz
+     draw x on; draw y on
+     draw x off; draw y off
+     draw line1 $x $y
+     
+   and
+   
+     set x = {carbon}[3][5]
+     select ~x
+     color geen
+       
+   POINTS IN IF, SET, and %{}
+   
+   Points in IF, SET, and %{} can be designated using the standard {x y z}
+   notation WITHOUT commas. This is because we have to distinguish between
+   atom expressions {1,2,3} and coordinates {x y z}, and this seems to me the
+   simplest way to do it. (Comma means "or" in atom expressions.) In all other
+   instances, the commas are fine, including "SET UNITCELL" and "SET DEFAULTLATTICE".  
+   
+     x = {1 1 0} + {oxygen}.xyz
+     
+   
+   {  }.distance ATOM PROPERTY FOR SET, IF, and %{}
    
    d = {oxygen and * /1}.distance{oxygen and * /2}
    set echo top left
    echo the O-O distance is %{{oxygen and * /1}.distance{oxygen and * /2}}
    
    message %{{atomno=3}.distance{atomno=4}}
+   message %{{atomno=3}.distance{1/2 1/2 1/2}}
    
-  
-   MATH
+   Note that when more than one atom is involved in a set, 
+   the following are different:
    
-   -- full standard operator precedence and parentheses
+   x1 = {molecule=1}.distance{molecule=2}
+   x2 = {molecule=1}.xyz - {molecule=2}.xyz
    
-   degUnsat = ({carbon} * 2 + {nitrogen} + 2 - {hydrogen}) / 2
+   x1 is a NUMBER that is the "average distance measured 
+      from each molecule 1 atom to the average molecule 2 position"
+   x2 is a point representing the VECTOR from the "average position of molecule 2" 
+      to the "average position of molecule 1"
 
-   -- selected atoms from an atom expression in math
+   x3 = {molecule=1}.xyz.distance{molecule=2}
+   x4 = 0.0 + ({molecule=1}.xyz - {molecule=2}.xyz)   
+   x5 = ({molecule=1}.xyz - {molecule=2}.xyz).distance{0 0 0}
+
+   These are all equivalent -- the distance from the center of molecule 1
+      to the center of molecule 2
+      
+  
+   SELECTED ATOMS FROM ATOM EXPRESSIONS
+   
+   You can selecte atoms from an atom expression using [n]. 
+   "[0]" means "and everything after".
    
    x = {atom expression}[3].ident
    x = {atom expression}[3][0].xyz   # 3 and after (average position)
    x = {atom expression}[3][5].x     # 3-5 (average x)
    
-   -- expanded modulus % operator
+   
+   TYPE CONVERSION
+   
+   We have six different variable types now:
+      
+      boolean    True/False 
+      integer    0, 1, 2, ....
+      decimal    3.5, 3.25E-3
+      string     "test" "3.5"
+      point3f    {2.3 3.4 5.6} {0 1/2 1}
+      bitset     {oxygen}
+      
+   These can be mixed and matched to good effect. Certain relatively
+   intuitive rules apply. Usually the operand on the left sets
+   the overall type, allowing for easy type conversion depending upon 
+   operand order:
+
+      int + float:
+      
+      0 + 3.6 ==> 3    (int on left rounds float on right)
+      3.6 + 0 ==> 3.6  (float on left sets result)
+      
+      int/float + string:
+      
+      0.0 + "3.5" ==> 3.5 (string converted to float)
+      0 + "3.5"   ==> 3 (string converted to float, then int)
+      "3.5" + 0   ==> "3.50" (integer converted to string)
+      "3.5" + 0.0 ==> "3.50.0" (float converted to string)
+      
+      1.0 + {carbon}.xyz     ==> 1 + distance from {0 0 0} to {carbon} center
+      {carbon}.xyz + 1       ==> {carbon} center point offset by {1 1 1}
+
+      x = {carbon}.xyz * {1 0 0} ==> (dot product)
+      
+      Now x is the average x coordinate of carbon
+      
+    Boolean expressions are a bit different in that the operators 
+    AND, OR, XOR, and NOT all require conversion to boolean UNLESS both
+    operands are atom expressions, in which case these operate directly on the
+    atom sets and return a new atom set, just like in SELECT.
+    
+      3 and 0.5  ==> TRUE (both are nonzero)
+      false OR 2.0 ==> true (2.0 is not 0, so it is TRUE)
+      {oxygen} and {molecule=1} ==> all oxygen atoms in the first molecule
+
+     x = ({oxygen} and {molecule=1}).xyz 
+     
+     x is now the center point of all oxygen atoms in the first molecule
+
+    In standard math, boolean TRUE evaluates to 1.0; FALSE evaluates to 0.0
+      
+      true + 2.0 ==> 3.0 ("TRUE" evaluates to 1.0 in math operations)     
+      2 + true ==> 3 ("TRUE" evaluates to 1.0 and is then turned into an integer)     
+      
+      
+   EXPANDED MODULUS % OPERATOR IN IF, SET, AND %{}
    
    Usually modulus is reserved for integer math, so we
    extend that here to add some useful "modulus-like" capability:
    
-   
-   -- type conversion
-   
-      We have five different variable types now:
+     string modulus for trimming and padding
+     
+      "test" %3  ==> left trim:  "tes"
+      "test" %6  ==> right pad:  "test  "
+      "test" %-3 ==> right trim: "est"
+      "test" %-6 ==> left pad:   "  test"   
+     
+     float modulus for rounding and scientific notation
+     
+      3.5456 %3 ==> "3.546"  (STRING!)
+      3545.6 %-3 ==> "3.55E+3" (STRING!)
       
-      boolean 
-      integer
-      decimal
-      string
-      point3f
+      0.0 + 3.5456 %3  ==> 3.546 (float)
+      0.0 + 3545.6 %-3 ==> 3550.0
       
-      These can be mixed and matched to good effect
+     point modulus for getting base unit cell equivalent position
+
+      {3/2 1/2 1/1} % 0 ==> {1/2 1/2 0}
       
-   
+      
+      
    11.1.13:
    
    DATA "coord set"

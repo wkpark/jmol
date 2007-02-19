@@ -96,6 +96,30 @@ class Eval { //implements Runnable {
     clearDefinitionsAndLoadPredefined();
   }
 
+  final static String EXPRESSION_KEY = "e_x_p_r_e_s_s_i_o_n";
+  /**
+   * a general-use method to evaluate a "SET" type expression. 
+   * @param viewer
+   * @param expr
+   * @return an object of one of the following types:
+   *   Boolean, Integer, Float, String, Point3f, BitSet 
+   */
+  
+  public static Object evaluateExpression(Viewer viewer, String expr) {
+    // Text.formatText for MESSAGE and ECHO
+    Eval e = new Eval(viewer);
+    try {
+      if (e.loadScript(null, EXPRESSION_KEY + " = " + expr)) {
+        e.statement = e.aatoken[0];
+        e.statementLength = e.statement.length;
+        return e.parameterExpression(2, "");
+      }
+    } catch (Exception ex) {
+      Logger.error("Error evaluating: " + expr + "\n" + ex);
+    }
+    return "ERROR";
+  }
+
   BitSet getAtomBitSet(String atomExpression) throws ScriptException {
     //SelectionManager 
     BitSet bs = new BitSet();
@@ -7927,20 +7951,6 @@ class Eval { //implements Runnable {
     }
   }
 
-  static Object evaluateExpression(Viewer viewer, String expr) {
-    Eval e = new Eval(viewer);
-    try {
-      if (e.loadScript(null, "x = " + expr)) {
-        e.statement = e.aatoken[0];
-        e.statementLength = e.statement.length;
-        return e.parameterExpression(2, "");
-      }
-    } catch (Exception ex) {
-      Logger.error("Error evaluating: " + expr + "\n" + ex);
-    }
-    return "ERROR";
-  }
-
   static BitSet getAtomBitSet(Viewer viewer, Object atomExpression) {
     if (atomExpression instanceof BitSet)
       return (BitSet) atomExpression;
@@ -7977,7 +7987,6 @@ class Eval { //implements Runnable {
     int maxLevel;
     int parenCount;
     int squareCount;
-    boolean isUnary = true;
     boolean wasX = false;
 
     Rpn(int maxLevel) {
@@ -8081,11 +8090,12 @@ class Eval { //implements Runnable {
         break;
       case Token.rightparen:
       case Token.rightsquare:
-        isUnary = false;
         wasX = true;
         break;
+      case Token.propselector:
+        wasX = (op.intValue != Token.distance);
+        break;
       default:
-        isUnary = true;
         wasX = false;
       }
       if (op.tok == Token.rightparen || op.tok == Token.rightsquare)

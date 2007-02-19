@@ -76,9 +76,8 @@ final public class JmolConstants {
    -- selected atoms from an atom expression in math
    
    x = {atom expression}[3].ident
-   x = {atom expression}[3-].xyz
-   x = {atom expression}[3-5].x
-   x = {atom expression}[-5].temperature
+   x = {atom expression}[3][0].xyz   # 3 and after (average position)
+   x = {atom expression}[3][5].x     # 3-5 (average x)
    
    -- expanded modulus % operator
    

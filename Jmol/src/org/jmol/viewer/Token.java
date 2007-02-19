@@ -26,6 +26,7 @@ package org.jmol.viewer;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 
@@ -114,7 +115,9 @@ public class Token {
   
   final static int leftparen    = 0  | mathop | 1 << 3;
   final static int rightparen   = 1  | mathop | 1 << 3;
-  
+  final static int leftsquare   = 2  | mathop | 1 << 3;
+  final static int rightsquare  = 3  | mathop | 1 << 3;
+
   final static int opOr         = 0  | mathop | 2 << 3;
   final static int opXor        = 1  | mathop | 2 << 3;
   
@@ -136,6 +139,8 @@ public class Token {
   final static int asterisk     = 1  | mathop | 7 << 3;
   final static int percent      = 2  | mathop | 7 << 3;
   
+  final static int propselector = 1  | mathop | 8 << 3;
+
   final static Point3f pt0 = new Point3f();
 
   static boolean bValue(Token x) {
@@ -149,6 +154,8 @@ public class Token {
     case Token.decimal:
     case Token.string:
       return fValue(x) != 0;
+    case Token.bitset:
+      return iValue(x) != 0;
     case Token.xyz:
       return ((Point3f) x.value).distance(pt0) > 0.0001f;
     default:
@@ -167,6 +174,8 @@ public class Token {
     case Token.decimal:
     case Token.string:
       return (int)fValue(x);
+    case Token.bitset:
+      return Viewer.cardinalityOf(bsSelect(x, -1));
     case Token.xyz:
       return (int)((Point3f) x.value).distance(pt0);
     default:
@@ -184,8 +193,6 @@ public class Token {
       return x.intValue;
     case Token.decimal:
       return ((Float) x.value).floatValue();
-    case Token.xyz:
-      return ((Point3f) x.value).distance(pt0);
     case Token.string:
       String s = (String) x.value;
       if (s.equalsIgnoreCase("true"))
@@ -193,6 +200,10 @@ public class Token {
       if (s.equalsIgnoreCase("false"))
         return 0;
       return Parser.parseFloat(s);
+    case Token.bitset:
+      return iValue(x); 
+    case Token.xyz:
+      return ((Point3f) x.value).distance(pt0);
     default:
       return 0;
     }
@@ -208,12 +219,42 @@ public class Token {
       return "" + x.intValue;
     case Token.xyz:
       return StateManager.escape((Point3f) x.value);
+    case Token.bitset:
+      return "" + iValue(x);
     case Token.decimal:
     case Token.string:
     default:
       return "" + x.value;
     }
   }
+
+  static BitSet bsSelect(Token token) {
+    return bsSelect(token, -1);
+  }
+
+  static BitSet bsSelect(Token token, int i2) {
+    if (token.tok != bitset)
+      return null;
+    BitSet bs = (BitSet)token.value;
+    int i1 = token.intValue;
+    if (i1 == Integer.MAX_VALUE) {
+      if (i2 > 0)
+        token.intValue = i2;
+      return bs;
+    }
+    int len = bs.size();
+    int n = 0;
+    if (i2 == 0)
+      i2 = len;
+    else if (i2 < 0)
+      i2 = i1;
+    for (int j = 0; j < len; j++)
+      if (bs.get(j) && (++n < i1 || n > i2))
+        bs.clear(j);
+    token.intValue = Integer.MAX_VALUE;
+    return bs;
+  }
+  
 
   final static int coordOrSet = negnums | embeddedExpression; 
 
@@ -425,20 +466,18 @@ public class Token {
 //  Global Const opprior$ = "12233 555 6789
 //  a and b or c * 3 and b < c 
   // atom expression operators
-  final static int within       = expression |  6;
-  final static int pick         = expression |  8;
-  final static int dot          = expression | 11;
-  final static int leftsquare   = expression | 12;
-  final static int rightsquare  = expression | 13;
-  final static int colon        = expression | 14;
-  final static int substructure = expression | 16;
-  final static int leftbrace    = expression | 17;
-  final static int rightbrace   = expression | 18;
-  final static int dollarsign   = expression | 19 | objectid;
-  final static int connected    = expression | 20;
-  final static int altloc       = expression | 21;
-  final static int insertion    = expression | 22;
-  final static int opToggle     = expression | 23;
+  final static int within       = expression | 1;
+  final static int pick         = expression | 2;
+  final static int dot          = expression | 3;
+  final static int colon        = expression | 4;
+  final static int substructure = expression | 5;
+  final static int leftbrace    = expression | 6;
+  final static int rightbrace   = expression | 7;
+  final static int dollarsign   = expression | 8 | objectid;
+  final static int connected    = expression | 9;
+  final static int altloc       = expression | 10;
+  final static int insertion    = expression | 11;
+  final static int opToggle     = expression | 12;
 
   
 

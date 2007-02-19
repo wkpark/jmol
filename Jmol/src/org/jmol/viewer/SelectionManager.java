@@ -68,7 +68,7 @@ class SelectionManager {
     if (!isQuiet)
       viewer.reportSelection(GT._(
           "{0} atoms hidden",
-          "" + viewer.cardinalityOf(bsHidden)));
+          "" + Viewer.cardinalityOf(bsHidden)));
   }
 
   void display(BitSet bsAll, BitSet bs, boolean isQuiet) {
@@ -82,7 +82,7 @@ class SelectionManager {
     if (!isQuiet)
       viewer.reportSelection(GT._(
           "{0} atoms hidden",
-          "" + viewer.cardinalityOf(bsHidden)));
+          "" + Viewer.cardinalityOf(bsHidden)));
   }
 
   BitSet getHiddenSet() {

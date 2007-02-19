@@ -478,6 +478,7 @@ class Eval { //implements Runnable {
     if (isSyntaxCheck)
       return;
     delay(100);
+    viewer.popHoldRepaint();
     executionPaused = Boolean.TRUE;
   }
 
@@ -928,7 +929,7 @@ class Eval { //implements Runnable {
   }
 
   boolean ifCmd() throws ScriptException {
-    return ((Boolean)parameterExpression(1, true)).booleanValue();
+    return ((Boolean)parameterExpression(1, null)).booleanValue();
   }
 
   int getLinenumber() {
@@ -1262,13 +1263,14 @@ class Eval { //implements Runnable {
     }
   }
 
-  void notSet(BitSet bs) {
+  BitSet notSet(BitSet bs) {
     for (int i = viewer.getAtomCount(); --i >= 0;) {
       if (bs.get(i))
         bs.clear(i);
       else
         bs.set(i);
     }
+    return bs;
   }
 
   BitSet lookupIdentifierValue(String identifier) throws ScriptException {
@@ -3099,8 +3101,7 @@ class Eval { //implements Runnable {
       variables.put("!" + variable.substring(8), code);
       viewer.addStateScript(thisCommand);
     } else {
-      variables.put(variable, bs);
-      setStringProperty("@" + variable, StateManager.escape(bs));
+      assignBitsetVariable(variable, bs);
     }
   }
 
@@ -5200,7 +5201,7 @@ class Eval { //implements Runnable {
           return;
       } else {
         Object v = parameterExpression((getToken(2).tok == Token.opEQ ? 3 : 2),
-            false);
+            key);
         if (isSyntaxCheck)
           return;
         if (v instanceof Boolean) {
@@ -5211,6 +5212,8 @@ class Eval { //implements Runnable {
           setFloatProperty(key, ((Float) v).floatValue());
         } else if (v instanceof String) {
           setStringProperty(key, (String) v);
+        } else if (v instanceof BitSet) {
+          setIntProperty(key, Viewer.cardinalityOf((BitSet) v));
         } else if (v instanceof Point3f) {
           drawPoint(key, (Point3f) v, false);
           showString("draw " + key + " " + StateManager.escape((Point3f) v)
@@ -5270,7 +5273,7 @@ class Eval { //implements Runnable {
     return true;
   }
 
-  Object parameterExpression(int pt, boolean TFonly) throws ScriptException {
+  Object parameterExpression(int pt, String key) throws ScriptException {
     Object v;
     Rpn rpn = new Rpn(16);
     for (int i = pt; i < statementLength; i++) {
@@ -5291,7 +5294,14 @@ class Eval { //implements Runnable {
           v = viewer.getParameter(parameterAsString(i));
         break;
       case Token.expressionBegin:
-        v = getExpressionValue(i);
+        if ((v = expression(statement,
+            getToken(i).tok == Token.leftbrace ? i + 1 : i, true, true)) == null)
+          v = getSetCoordinate(i, false, true);
+        i = iToken;
+        break;
+      case Token.dot:
+        if (!rpn.addOp(getBitsetPropertySelector(i)))
+          invalidArgument();
         i = iToken;
         break;
       default:
@@ -5302,7 +5312,7 @@ class Eval { //implements Runnable {
       }
       if (v != null)
         if (v instanceof Boolean) {
-          rpn.addX(((Boolean) v).booleanValue());
+          rpn.addX(((Boolean) v).booleanValue()? Token.tokenOn: Token.tokenOff);
         } else if (v instanceof Integer) {
           rpn.addX(new Token(Token.integer, ((Integer) v).intValue()));
         } else if (v instanceof Float) {
@@ -5311,14 +5321,21 @@ class Eval { //implements Runnable {
           rpn.addX(new Token(Token.string, v));
         } else if (v instanceof Point3f) {
           rpn.addX(new Token(Token.xyz, v));
+        } else if (v instanceof BitSet) {
+          rpn.addX(new Token(Token.bitset, v));
+        } else if (v instanceof Token) {
+          rpn.addX((Token)v);
         } else {
           invalidArgument();
         }
     }
     Token result = rpn.getResult();
-    if (result == null)
+    if (result == null) {
+      if (!isSyntaxCheck)
+        rpn.dumpStacks();
       endOfStatementUnexpected();
-    if (TFonly)
+    }
+    if (key == null)
       return new Boolean(Token.bValue(result));
     switch (result.tok) {
     case Token.on:
@@ -5326,6 +5343,12 @@ class Eval { //implements Runnable {
       return new Boolean(result == Token.tokenOn);
     case Token.integer:
       return new Integer(result.intValue);
+    case Token.bitset:
+      BitSet bs = (BitSet)result.value;
+      assignBitsetVariable("~" + key, bs);
+      if (result.intValue == Integer.MAX_VALUE)
+        return new Integer(Viewer.cardinalityOf(bs));
+      return new Integer(bs.get(result.intValue) ? 1 : 0);
     case Token.decimal:
     case Token.string:
     case Token.xyz:
@@ -5334,39 +5357,11 @@ class Eval { //implements Runnable {
     }
   }
 
-  void getBitsetItem(int i, BitSet bs) throws ScriptException {
-    if (bs == null || i >= statementLength)
-      return;
-    if (statement[i].tok == Token.expressionEnd) {
-      if (i + 2 < statementLength
-          && statement[i + 1].tok == Token.expressionBegin)
-        i += 2;
-    }
-    if (i + 2 >= statementLength || statement[i++].tok != Token.leftsquare)
-      return;
-    int i1 = intParameter(i);
-    int i2 = i1;
-    getToken(++i);
-    if (i1 < 0) {
-      i2 = -i1;
-    } else if (theTok == Token.hyphen) {
-      if (getToken(++i).tok == Token.integer)
-        i2 = intParameter(i++);
-      else
-        i2 = Integer.MAX_VALUE;
-    } else if (theTok == Token.integer) {
-      i2 = Math.abs(intParameter(i++));      
-    }
-    if (getToken(i).tok != Token.rightsquare)
-      invalidArgument();
-      
-    int len = bs.size();
-    int n = 0;
-    for (int j = 0; j < len; j++)
-      if (bs.get(j) && (++n < i1 || n > i2))
-        bs.clear(j);
+  void assignBitsetVariable(String variable, BitSet bs) {
+    variables.put(variable, bs);
+    setStringProperty("@" + variable, StateManager.escape(bs));
   }
-
+  
   String getBitsetIdent(BitSet bs) {
     if (bs == null)
       return "";
@@ -5383,23 +5378,13 @@ class Eval { //implements Runnable {
     return s.toString();
   }
 
-  Object getExpressionValue(int i) throws ScriptException {
-    Point3f ptRef = null;
-    Point3f pt = null;
-    BitSet bs = expression(statement,
-        getToken(i).tok == Token.leftbrace ? i + 1 : i, true, true);
-    if (bs == null)
-      pt = getSetCoordinate(i, false, true);
-    else
-      getBitsetItem(iToken + 1, bs);
-    i = iToken + 1;
-    if (i >= statementLength || statement[i].tok != Token.dot) {
-      if (pt != null)
-        return pt;
-      return new Integer(viewer.cardinalityOf(bs));
-    }
+  Token getBitsetPropertySelector(int i) throws ScriptException {
     int tok = getToken(++i).tok;
-    if (tok == Token.identifier) {
+    switch (tok) {
+    case Token.distance:
+    case Token.ident:
+      break;
+    case Token.identifier:
       String s = parameterAsString(i).toLowerCase();
       if (s.equals("x"))
         tok = Token.atomX;
@@ -5413,23 +5398,17 @@ class Eval { //implements Runnable {
         tok = Token.xyz;
       else
         invalidArgument();
-    } else if (tok == Token.distance) {
-      BitSet bs2 = expression(statement,
-          getToken(++i).tok == Token.leftbrace ? i + 1 : i, false, true);
-      getBitsetItem(iToken + 1, bs2);
-      ptRef = (bs2 == null ? getSetCoordinate(i, false, true) : viewer
-          .getAtomSetCenter(bs2));
-    } else if (tok == Token.ident) {
-      if (bs == null)
+      break;
+    default:
+      if (!Compiler.tokAttr(tok, Token.atomproperty))
         invalidArgument();
-      return getBitsetIdent(bs);
     }
-    if (pt != null)
-      return new Float(pt.distance(ptRef));
-    return averageValue(bs, tok, ptRef);
+    return new Token(Token.propselector, tok);
   }
 
-  Object averageValue(BitSet bs, int tok, Point3f ptRef) throws ScriptException {
+  Object getBitsetAverage(BitSet bs, int tok, Point3f ptRef) throws ScriptException {
+    if (tok == Token.ident)
+      return getBitsetIdent(bs);
     int iv = 0;
     float fv = 0;
     int n = 0;
@@ -7995,7 +7974,9 @@ class Eval { //implements Runnable {
     int xPt = -1;
     int maxLevel;
     int parenCount;
+    int squareCount;
     boolean isUnary = true;
+    boolean wasX = false;
 
     Rpn(int maxLevel) {
       this.maxLevel = maxLevel;
@@ -8009,19 +7990,21 @@ class Eval { //implements Runnable {
       boolean isOK = true;
       while (isOK && oPt >= 0)
         isOK = operate(Token.nada);
-      if (isOK && xPt == 0)
+      if (isOK && xPt == 0) {
+        if (xStack[0].tok == Token.bitset)
+          Token.bsSelect(xStack[0]);
         return xStack[0];
-      dumpStacks();
+      }
       return null;
     }
 
     boolean addX(Token x) throws ScriptException {
       if (++xPt == maxLevel)
         stackOverflow();
-      if (!isUnary && x.tok == Token.integer && x.intValue < 0) {
+      if (wasX && x.tok == Token.integer && x.intValue < 0) {
         addOp(Token.tokenMinus);
         xStack[xPt] = new Token(Token.integer, -x.intValue);
-      } else if (!isUnary && x.tok == Token.decimal
+      } else if (wasX && x.tok == Token.decimal
           && ((Float) x.value).floatValue() < 0) {
         addOp(Token.tokenMinus);
         xStack[xPt] = new Token(Token.decimal, new Float(-((Float) x.value)
@@ -8029,93 +8012,154 @@ class Eval { //implements Runnable {
       } else {
         xStack[xPt] = x;
       }
-      switch (x.tok) {
-      case Token.integer:
-      case Token.decimal:
-      case Token.on:
-      case Token.off:
-      case Token.string:
+      return wasX = true;
+    }
+
+    boolean addOp(Token op) throws ScriptException {
+      switch (op.tok) {
+      case Token.opNot:
+      case Token.leftparen:
+        if (wasX)
+          return false;
+        break;
+      case Token.rightparen:
+        if (parenCount == 0 || !wasX)
+          return false;
+        if (oPt >= 0 && oStack[oPt].tok == Token.leftparen) {
+          oPt--;
+          return wasX = true;
+        }
+        break;
+      case Token.rightsquare:
+        if (squareCount == 0 || !wasX)
+          return false;
+        if (oPt >= 0 && oStack[oPt].tok == Token.leftsquare) {
+          oPt--;
+          doBitsetSelect();
+          return wasX = true;
+        }
+        break;
+      default:
+        if (!wasX)
+          return false;
+        break;
+      }
+
+      while (oPt >= 0 && op.tok != Token.leftparen
+          && op.tok != Token.leftsquare && op.tok != Token.opNot
+          && Token.prec(oStack[oPt]) >= Token.prec(op)) {
+        if (op.tok == Token.rightparen) {
+          if (parenCount == 0)
+            return false;
+          if (oStack[oPt].tok == Token.leftparen) {
+            parenCount--;
+            oPt--;
+            break;
+          }
+        } else if (op.tok == Token.rightsquare) {
+          if (oStack[oPt].tok == Token.leftsquare) {
+            if (squareCount == 0)
+              return false;
+            squareCount--;
+            oPt--;
+            return doBitsetSelect();
+          }
+        } 
+        if (!operate(op.tok))
+          return false;
+        
+      }
+
+      switch (op.tok) {
+      case Token.leftparen:
+        parenCount++;
+        break;
+      case Token.leftsquare:
+        squareCount++;
+        break;
+      case Token.rightparen:
+      case Token.rightsquare:
         isUnary = false;
+        wasX = true;
         break;
       default:
         isUnary = true;
+        wasX = false;
       }
+      if (op.tok == Token.rightparen || op.tok == Token.rightsquare)
+        return true;
+      if (++oPt == maxLevel)
+        stackOverflow();
+      oStack[oPt] = op;
       return true;
     }
 
-    boolean addX(boolean x) throws ScriptException {
+    private boolean doBitsetSelect() {
+      if (xPt < 1)
+        return false;
+      int i = Token.iValue(xStack[xPt--]);
+      if (i < 0)
+        return false;
+      Token token = xStack[xPt];
+      if (token.tok != Token.bitset)
+        return false;
+      Token.bsSelect(token, i);
+      return true;
+    }
+    
+    private boolean addX(boolean x) throws ScriptException {
       if (++xPt == maxLevel)
         stackOverflow();
       xStack[xPt] = (x ? Token.tokenOn : Token.tokenOff);
       return true;
     }
 
-    boolean addX(int x) throws ScriptException {
+    private boolean addX(int x) throws ScriptException {
       if (++xPt == maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.integer, x, new Integer(x));
       return true;
     }
 
-    boolean addX(float x) throws ScriptException {
+    private boolean addX(float x) throws ScriptException {
       if (++xPt == maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.decimal, new Float(x));
       return true;
     }
 
-    boolean addX(String x) throws ScriptException {
+    private boolean addX(String x) throws ScriptException {
       if (++xPt == maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.string, x);
       return true;
     }
 
-    boolean addX(Point3f x) throws ScriptException {
+    private boolean addX(Point3f x) throws ScriptException {
       if (++xPt == maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.xyz, x);
       return true;
     }
 
-    boolean addOp(Token op) throws ScriptException {
-      if (op.tok == Token.rightparen) {
-        if (oPt >= 0 && oStack[oPt].tok == Token.leftparen) {
-          oPt--;
-          return true;
-        }
-        if (parenCount == 0)
-          return false;
-      }
-      while (oPt >= 0 && op.tok != Token.leftparen && op.tok != Token.opNot
-          && Token.prec(oStack[oPt]) >= Token.prec(op)) {
-        if (op.tok == Token.rightparen && oStack[oPt].tok == Token.leftparen) {
-          parenCount--;
-          oPt--;
-          break;
-        } else if (oStack[oPt].tok == Token.leftparen){
-          return false;
-        } else if (!operate(op.tok)) {
-          return false;
-        }
-      }
-
-      switch (op.tok) {
-      case Token.rightparen:
-        isUnary = false;
-        break;
-      default:
-        isUnary = true;
-      }
-      if (op.tok == Token.rightparen)
-        return true;
-      if (++oPt == maxLevel)
+    /*boolean addX(BitSet x) throws ScriptException {
+      if (++xPt == maxLevel)
         stackOverflow();
-      oStack[oPt] = op;
-      if (op.tok == Token.leftparen)
-        parenCount++;
-
+      xStack[xPt] = new Token(Token.bitset, x);
       return true;
+    }
+    */
+    private boolean addX(Object x) throws ScriptException {
+      wasX = true;
+      if (x instanceof Integer)
+        return addX(((Integer)x).intValue());
+      if (x instanceof Float)
+        return addX(((Float)x).floatValue());
+      if (x instanceof String)
+        return addX((String)x);
+      if (x instanceof Point3f)
+        return addX((Point3f)x);
+      return false;
     }
 
     void dumpStacks() {
@@ -8133,8 +8177,18 @@ class Eval { //implements Runnable {
       if (xPt < 0)
         stackUnderflow();
       Token x2 = xStack[xPt--];
+
+      //unary:
+
       if (op.tok == Token.opNot)
-        return addX(!Token.bValue(x2));
+        return (x2.tok == Token.bitset ? addX(notSet(Token.bsSelect(x2)))
+            : addX(!Token.bValue(x2)));
+      if (op.tok == Token.propselector && op.intValue != Token.distance) {
+        if (x2.tok != Token.bitset)
+          invalidArgument();
+        return addX(getBitsetAverage(Token.bsSelect(x2), op.intValue, null));
+      }
+      //binary:
 
       if (xPt < 0)
         stackUnderflow();
@@ -8142,9 +8196,37 @@ class Eval { //implements Runnable {
       if (!checkOK(x1.tok, x2.tok, op.tok))
         return false;
       switch (op.tok) {
+      case Token.propselector:
+        if (op.intValue == Token.distance) {
+          Point3f pt = (x2.tok == Token.xyz ? (Point3f) x2.value
+              : (Point3f) getBitsetAverage(Token.bsSelect(x2), Token.xyz, null));
+          if (x1.tok == Token.bitset)
+            return addX(getBitsetAverage(Token.bsSelect(x1), op.intValue, pt));
+          else if (x1.tok == Token.xyz)
+            return addX(pt.distance((Point3f) x1.value));
+          return false;
+        }
+        return false;
       case Token.opAnd:
+        if (x1.tok == Token.bitset && x2.tok == Token.bitset) {
+          BitSet bs = Token.bsSelect(x1);
+          bs.and(Token.bsSelect(x2));
+          return addX(bs);
+        }
         return addX(Token.bValue(x1) && Token.bValue(x2));
       case Token.opOr:
+        if (x1.tok == Token.bitset && x2.tok == Token.bitset) {
+          BitSet bs = Token.bsSelect(x1);
+          bs.or(Token.bsSelect(x2));
+          return addX(bs);
+        }
+        return addX(Token.bValue(x1) || Token.bValue(x2));
+      case Token.opXor:
+        if (x1.tok == Token.bitset && x2.tok == Token.bitset) {
+          BitSet bs = Token.bsSelect(x1);
+          bs.xor(Token.bsSelect(x2));
+          return addX(bs);
+        }
         return addX(Token.bValue(x1) || Token.bValue(x2));
       case Token.opLE:
         return addX(Token.fValue(x1) <= Token.fValue(x2));
@@ -8215,7 +8297,7 @@ class Eval { //implements Runnable {
         //  Point3f * Point3f  does dot product
         //  Point3f / Point3f  divides by magnitude
         //  float * Point3f gets magnitude
-        
+
         //checkOK only allows situations where operand x2 is integer
         String s = null;
         int n = Token.iValue(x2);
@@ -8224,7 +8306,7 @@ class Eval { //implements Runnable {
         case Token.off:
         case Token.integer:
           if (n == 0)
-            return addX((int)0);
+            return addX((int) 0);
           return addX(Token.iValue(x1) % n);
         case Token.decimal:
           float f = Token.fValue(x1);
@@ -8268,8 +8350,15 @@ class Eval { //implements Runnable {
     }
 
     boolean checkOK(int x1, int x2, int op) throws ScriptException {
+      
+      if (x2 == 0)
+        return true;
+      
+      // binary check:
+      
       if (op == Token.percent && x2 != Token.integer)
         invalidArgument();
+      
       return true;
     }
 

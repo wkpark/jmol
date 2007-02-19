@@ -232,7 +232,7 @@ class Dipoles extends Shape {
       BitSet atomset = (BitSet) value;
       startCoord = viewer.getAtomSetCenter(atomset);
       tempDipole.set(startCoord, new Point3f(0, 0, 0), dipoleValue);
-      if (viewer.cardinalityOf(atomset) == 1)
+      if (Viewer.cardinalityOf(atomset) == 1)
         atomIndex1 = viewer.firstAtomOf(atomset);
       return;
     }
@@ -251,7 +251,7 @@ class Dipoles extends Shape {
       iHaveTwoEnds = true;
       iHaveTwoAtoms = true;
       BitSet atomset = (BitSet) value;
-      if (atomIndex1 >= 0 && viewer.cardinalityOf(atomset) == 1) {
+      if (atomIndex1 >= 0 && Viewer.cardinalityOf(atomset) == 1) {
         atomIndex2 = viewer.firstAtomOf(atomset);
         tempDipole.set(frame.atoms[atomIndex1], frame.atoms[atomIndex2], 1);
         currentDipole = findDipole(tempDipole.thisID, tempDipole.dipoleInfo);

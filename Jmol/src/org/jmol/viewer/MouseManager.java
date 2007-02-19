@@ -82,7 +82,7 @@ abstract class MouseManager implements KeyListener {
     int i = ke.getKeyCode();
     int m = ke.getModifiers();
     if (viewer.getBooleanProperty("showKeyStrokes", false))
-      viewer.script("set echo bottom left;echo " + (i == 0 ? "" : i + " " + m));
+      viewer.script("!set echo bottom left;!echo " + (i == 0 ? "" : i + " " + m));
     switch (i) {
     case KeyEvent.VK_UP:
     case KeyEvent.VK_DOWN:
@@ -97,7 +97,7 @@ abstract class MouseManager implements KeyListener {
     if (!viewer.getNavigationMode())
       return;
     if (viewer.getBooleanProperty("showKeyStrokes", false))
-      viewer.script("set echo bottom left;echo;");
+      viewer.script("!set echo bottom left;!echo;");
     int i = ke.getKeyCode();
     switch (i) {
     case KeyEvent.VK_UP:
@@ -360,7 +360,7 @@ abstract class MouseManager implements KeyListener {
     case MIDDLE:
     case SHIFT_LEFT:
       if (nearestAtomIndex < 0)
-        viewer.script("reset");
+        viewer.script("!reset");
       break;
     }
   }
@@ -565,7 +565,7 @@ abstract class MouseManager implements KeyListener {
   void toggleMeasurement() {
     if (measurementCount >= 2 && measurementCount <= 4) {
       measurementCountPlusIndices[0] = measurementCount;
-      viewer.script(Measurement.getMeasurementScript(measurementCountPlusIndices));
+      viewer.script("!" + Measurement.getMeasurementScript(measurementCountPlusIndices));
     }
     exitMeasurementMode();
   }

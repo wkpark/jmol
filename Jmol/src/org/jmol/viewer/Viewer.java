@@ -4753,7 +4753,7 @@ public class Viewer extends JmolViewer {
     modelManager.checkObjectDragged(prevX, prevY, deltaX, deltaY, modifiers);
   }
 
-  int cardinalityOf(BitSet bs) {
+  static int cardinalityOf(BitSet bs) {
     int nbitset = 0;
     for (int i = bs.size(); --i >= 0;)
       if (bs.get(i))

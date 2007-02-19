@@ -1667,7 +1667,7 @@ public final class Frame {
       if (mmset != null)
         mmset.calcHydrogenBonds(bsA, bsB);
       bsBonds = bsPseudoHBonds;
-      return viewer.cardinalityOf(bsBonds);
+      return Viewer.cardinalityOf(bsBonds);
     }
     // this method is not enabled and is probably error-prone.
     // it does not take into account anything but distance, 
@@ -1973,7 +1973,7 @@ public final class Frame {
 
   Point3f getAtomSetCenter(BitSet bs) {
     Point3f ptCenter = new Point3f(0, 0, 0);
-    int nPoints = viewer.cardinalityOf(bs);
+    int nPoints = Viewer.cardinalityOf(bs);
     if (nPoints == 0)
       return ptCenter;
     for (int i = atomCount; --i >= 0;) {
@@ -2056,7 +2056,7 @@ public final class Frame {
     BitSet bs = new BitSet(atomCount);
     for (int i = atomCount; --i >= 0;) {
       BitSet bsSym = atoms[i].getAtomSymmetry();
-      if (bsSym != null && viewer.cardinalityOf(bsSym) > 1)
+      if (bsSym != null && Viewer.cardinalityOf(bsSym) > 1)
         bs.set(i);
     }
     return bs;
@@ -2505,7 +2505,7 @@ public final class Frame {
   void setSurfaceAtoms(BitSet bsSurface, BitSet bsEnclosed) {
     bsSurfaceSet = (BitSet) bsEnclosed.clone();
     surfaceDistance100s = null;
-    int n = viewer.cardinalityOf(bsSurface);
+    int n = Viewer.cardinalityOf(bsSurface);
     if (n == 0) {
       surfaceAtoms = null;
       return;

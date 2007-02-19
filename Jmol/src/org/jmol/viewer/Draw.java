@@ -218,7 +218,7 @@ class Draw extends MeshCollection {
     }
 
     if ("atomSet" == propertyName) {
-      if (viewer.cardinalityOf((BitSet) value) == 0)
+      if (Viewer.cardinalityOf((BitSet) value) == 0)
         return;
       ptBitSets[nbitsets++] = (BitSet) value;
       bsAllAtoms.or((BitSet) value);
@@ -379,7 +379,7 @@ class Draw extends MeshCollection {
       BitSet bs = (BitSet) ptBitSets[i].clone();
       if (bsModel != null)
         bs.and(bsModel);
-      if (viewer.cardinalityOf(bs) > 0) {
+      if (Viewer.cardinalityOf(bs) > 0) {
         addPoint(viewer.getAtomSetCenter(bs));
       }
     }

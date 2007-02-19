@@ -40,6 +40,21 @@ final public class JmolConstants {
    * 
    11.1.14:
    
+   "UNSPECIFIED" and "QUADRUPLE" BOND TYPES
+   
+   An additional bond type is now avaiable: "UNSPECIFIED". 
+   This shows up in the MOL2 reader and may be selected for and modified using, for example:
+   
+    select connected(unspecified)
+    color bonds red
+    
+    or
+    
+    select connected(unspecified)
+    connect (selected) single modify
+    
+   In addition, we now can depict quadruple bonds.
+    
    DYNAMIC MEASUREMENTS
    
    Now that we can move atoms so easily, we don't want those measurements getting stale.
@@ -341,11 +356,11 @@ final public class JmolConstants {
   public final static short BOND_PARTIAL12     = (1 << 12) | 2;
   
   final static String[] bondOrderNames = {
-    "single", "double", "triple", "aromatic", "hbond", "partial", "partialDouble", "unspecified"
+    "single", "double", "triple", "quadruple", "aromatic", "hbond", "partial", "partialDouble", "unspecified"
   };
 
   final static short[] bondOrderValues = {
-    BOND_COVALENT_SINGLE, BOND_COVALENT_DOUBLE, BOND_COVALENT_TRIPLE,
+    BOND_COVALENT_SINGLE, BOND_COVALENT_DOUBLE, BOND_COVALENT_TRIPLE, BOND_COVALENT_QUADRUPLE,
     BOND_AROMATIC, BOND_H_REGULAR, BOND_PARTIAL01, BOND_PARTIAL12, BOND_ORDER_UNSPECIFIED
   };
 

@@ -122,6 +122,7 @@ class SticksRenderer extends ShapeRenderer {
     case 1:
     case 2:
     case 3:
+    case 4:
       renderCylinder(0);
       break;
     case JmolConstants.BOND_ORDER_UNSPECIFIED:
@@ -210,6 +211,8 @@ class SticksRenderer extends ShapeRenderer {
     int dxB = dx * dx;
     int dyB = dy * dy;
     int mag2d2 = dxB + dyB;
+    if (bondOrder == 4)
+      mag2d2 *= 4;
     mag2d = (int)(Math.sqrt(mag2d2) + 0.5);
     resetAxisCoordinates(lineBond);
     while (true) {
@@ -248,6 +251,9 @@ class SticksRenderer extends ShapeRenderer {
     } else if (bondOrder == 3) {
       xAxis1 -= dxStep; yAxis1 -= dyStep;
       xAxis2 -= dxStep; yAxis2 -= dyStep;
+    } else if (bondOrder == 4) {
+      xAxis1 -= dxStep * 1.5; yAxis1 -= dyStep * 1.5;
+      xAxis2 -= dxStep * 1.5; yAxis2 -= dyStep * 1.5;
     }
   }
 

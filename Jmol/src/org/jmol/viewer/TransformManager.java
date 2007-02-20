@@ -1571,17 +1571,17 @@ abstract class TransformManager {
       truncate0(sb, vectorT.x);
       truncate0(sb, vectorT.y);
       truncate0(sb, vectorT.z);
-      truncate1(sb, degrees);
+      truncate2(sb, degrees);
       sb.append("}");
     }
     sb.append(" /* zoom, translation */ ");
-    truncate1(sb, zoomPercent);
-    truncate1(sb, getTranslationXPercent());
-    truncate1(sb, getTranslationYPercent());
+    truncate2(sb, zoomPercent);
+    truncate2(sb, getTranslationXPercent());
+    truncate2(sb, getTranslationYPercent());
     sb.append(" ");
     sb.append(" /* center, rotationRadius */ ");
     sb.append(getCenterText());
-    truncate1(sb, modelRadius);
+    sb.append(" " + modelRadius);
     sb.append(getNavigationText());
     return "" + sb + ";";
   }
@@ -1613,15 +1613,15 @@ abstract class TransformManager {
     sb.append(";center " + getCenterText());
     if (rX != 0) {
       sb.append("; rotate x");
-      truncate1(sb, rX);
+      truncate2(sb, rX);
     }
     if (rY != 0) {
       sb.append("; rotate y");
-      truncate1(sb, rY);
+      truncate2(sb, rY);
     }
     if (rZ != 0) {
       sb.append("; rotate z");
-      truncate1(sb, rZ);
+      truncate2(sb, rZ);
     }
     sb.append(";");
     addZoomTranslationNavigationText(sb);
@@ -1631,34 +1631,34 @@ abstract class TransformManager {
   private void addZoomTranslationNavigationText(StringBuffer sb) {
     if (zoomPercent != 100) {
       sb.append(" zoom");
-      truncate1(sb, zoomPercent);
+      truncate2(sb, zoomPercent);
       sb.append(";");
     }
     float tX = getTranslationXPercent();
     if (tX != 0) {
       sb.append(" translate x");
-      truncate1(sb, tX);
+      truncate2(sb, tX);
       sb.append(";");
     }
     float tY = getTranslationYPercent();
     if (tY != 0) {
       sb.append(" translate y");
-      truncate1(sb, tY);
+      truncate2(sb, tY);
       sb.append(";");
     }
     if (modelRadius != rotationRadiusDefault) {
       sb.append("set rotationRadius");
-      truncate1(sb, modelRadius);
+      truncate2(sb, modelRadius);
       sb.append(";");
     }      
     if (isNavigationMode) {
       sb.append("navigate 0 center "
           + StateManager.escape(navigationCenter));
       sb.append(";navigate 0 translate");
-      truncate1(sb, getNavigationOffsetPercent('X'));
-      truncate1(sb, getNavigationOffsetPercent('Y'));
+      truncate2(sb, getNavigationOffsetPercent('X'));
+      truncate2(sb, getNavigationOffsetPercent('Y'));
       sb.append(";navigate 0 depth ");
-      truncate1(sb, getNavigationDepthPercent());
+      truncate2(sb, getNavigationDepthPercent());
       sb.append(";");
     }
   }
@@ -1684,15 +1684,15 @@ abstract class TransformManager {
     sb.append(";center " + getCenterText());
     if (rZ1 != 0) {
       sb.append("; rotate z");
-      truncate1(sb, rZ1);
+      truncate2(sb, rZ1);
     }
     if (rY != 0) {
       sb.append("; rotate y");
-      truncate1(sb, rY);
+      truncate2(sb, rY);
     }
     if (rZ2 != 0) {
       sb.append("; rotate z");
-      truncate1(sb, rZ2);
+      truncate2(sb, rZ2);
     }
     addZoomTranslationNavigationText(sb);
     return sb.toString();
@@ -1703,9 +1703,9 @@ abstract class TransformManager {
     sb.append(Math.round(val));
   }
 
-  static private void truncate1(StringBuffer sb, float val) {
+  static private void truncate2(StringBuffer sb, float val) {
     sb.append(' ');
-    sb.append(Math.round(val * 10) / 10f);
+    sb.append(Math.round(val * 100) / 100f);
   }
 
   /* ***************************************************************

@@ -1444,9 +1444,10 @@ public class Viewer extends JmolViewer {
     modelManager.setEchoStateActive(TF);
   }
 
-  void zap() {
+  void zap(boolean notify) {
     //Eval
     //setAppletContext
+    System.out.println("ZAP " + notify);
     clear();
     modelManager.zap();
     initializeModel();
@@ -1461,10 +1462,6 @@ public class Viewer extends JmolViewer {
     }
     Logger.error("ZAP memory inuse, total, free, max: " + (bTotal - bFree)
         + " " + bTotal + " " + bFree + " " + bMax);
-  }
-
-  void zap(boolean notify) {
-    zap();
     if (notify)
       setStatusFileLoaded(0, null, null, null, null, null);
   }
@@ -2366,6 +2363,8 @@ public class Viewer extends JmolViewer {
       if (inMotion)
         ++motionEventNumber;
       repaintManager.setInMotion(inMotion);
+      if (!inMotion)
+        repaintManager.refresh();
       wasInMotion = inMotion;
     }
   }
@@ -2386,11 +2385,6 @@ public class Viewer extends JmolViewer {
 
   private void setRefreshing(boolean TF) {
     refreshing = TF;
-  }
-
-  public void refresh() {
-    //Draw, pauseScriptExecution
-    repaintManager.refresh();
   }
 
   public void refresh(int isOrientationChange, String strWhy) {
@@ -2531,12 +2525,12 @@ public class Viewer extends JmolViewer {
   }
 
   private void render1(Graphics g, Image img, int x, int y) {
-    if (g == null || getTestFlag1())
-      return;
-    try {
-      g.drawImage(img, x, y, null);
-    } catch (NullPointerException npe) {
-      Logger.error("Sun!! ... fix graphics your bugs!");
+    if (g != null) {
+      try {
+        g.drawImage(img, x, y, null);
+      } catch (NullPointerException npe) {
+        Logger.error("Sun!! ... fix graphics your bugs!");
+      }
     }
     g3d.releaseScreenImage();
   }
@@ -2784,7 +2778,7 @@ public class Viewer extends JmolViewer {
   }
 
   public void pauseScriptExecution() {
-    refresh();
+    refresh(0, "pauseScriptExecution");
     eval.pauseExecution();
   }
 

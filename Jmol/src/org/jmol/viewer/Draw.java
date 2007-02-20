@@ -704,7 +704,7 @@ class Draw extends MeshCollection {
       }
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug(getDrawCommand(mesh));
-    viewer.refresh();
+    viewer.refresh(0, "draw");
   }
   
   boolean findPickedObject(int x, int y, boolean isPicking) {

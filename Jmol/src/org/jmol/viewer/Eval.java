@@ -2344,7 +2344,8 @@ class Eval { //implements Runnable {
       badArgumentCount();
 
     if (!isSyntaxCheck) {
-      refresh();
+      if (floatSecondsTotal > 0)
+        refresh();
       viewer.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans,
           yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
     }
@@ -3485,7 +3486,6 @@ class Eval { //implements Runnable {
 
   void initialize() {
     viewer.initialize();
-    zap();
   }
 
   void restrict() throws ScriptException {

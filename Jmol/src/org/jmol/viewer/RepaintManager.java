@@ -98,8 +98,6 @@ class RepaintManager {
   boolean inMotion = false;
   void setInMotion(boolean inMotion) {
     this.inMotion = inMotion;
-    if (! inMotion)
-      refresh();
   }
 
   int holdRepaint = 0;

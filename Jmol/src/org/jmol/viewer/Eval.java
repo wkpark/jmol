@@ -5311,6 +5311,10 @@ class Eval { //implements Runnable {
       case Token.string:
         rpn.addX(token);
         break;
+      case Token.dollarsign:
+         rpn.addX(new Token(Token.xyz, centerParameter(i)));
+        i = iToken;
+        break;
       case Token.identifier:
         if (isSyntaxCheck)
           v = Boolean.TRUE;

@@ -6137,7 +6137,9 @@ class Eval { //implements Runnable {
     boolean isApplet = viewer.isApplet();
     int tok = (statementLength == 1 ? Token.clipboard : statement[1].tok);
     int pt = 1;
+    int len = 0;
     String type = "SPT";
+    String data = "";
     boolean isCoord = false;
     switch (tok) {
     case Token.coord:
@@ -6162,10 +6164,14 @@ class Eval { //implements Runnable {
       break;
     case Token.identifier:
       type = parameterAsString(1).toLowerCase();
-      if (type.equals("image"))
+      if (type.equals("image")) {
         pt++;
-      else
+      } else if (type.equals("var")) {
+        pt += 2;
+        type = "VAR";
+      } else {
         type = "image";
+      }
       break;
     }
     if (pt == statementLength)
@@ -6203,7 +6209,8 @@ class Eval { //implements Runnable {
       //write filename.xxx  gets separated as filename .spt
       if (fileName.charAt(0) == '.' && pt == 2) {
         fileName = parameterAsString(1) + fileName;
-        type = "image";
+        if (type != "VAR")
+          type = "image";
       }
       break;
     default:
@@ -6216,9 +6223,9 @@ class Eval { //implements Runnable {
         type = "JPG";
     }
     boolean isImage = (";JPEG;JPG64;JPG;PPM;PNG;".indexOf(";" + type + ";") >= 0);
-    if (!isImage && ";SPT;HIS;MO;ISO;".indexOf(";" + type + ";") < 0)
+    if (!isImage && ";SPT;HIS;MO;ISO;VAR;".indexOf(";" + type + ";") < 0)
       evalError(GT._("write what? {0} or {1} \"filename\"", new Object[] {
-          "STATE|HISTORY|IMAGE|ISOSURFACE|MO CLIPBOARD",
+          "STATE|HISTORY|IMAGE|ISOSURFACE|MO CLIPBOARD|VAR x",
           "JPG|JPG64|PNG|PPM|SPT|JVXL" }));
     if (isSyntaxCheck)
       return;
@@ -6226,8 +6233,10 @@ class Eval { //implements Runnable {
       evalError(GT._("The {0} command is not available for the applet.",
           "WRITE image"));
     int quality = Integer.MIN_VALUE;
-    String data = type.intern();
-    if (data == "SPT")
+    data = type.intern();
+    if (data == "VAR") {
+      data = "" + viewer.getParameter(parameterAsString(2));
+    } else if (data == "SPT") {
       if (isCoord) {
         BitSet tainted = viewer.getTaintedAtoms();
         viewer.setAtomCoordRelative(new Point3f(0, 0, 0));
@@ -6236,17 +6245,22 @@ class Eval { //implements Runnable {
       } else {
         data = (String) viewer.getProperty("string", "stateInfo", null);
       }
-    else if (data == "HIS")
+    } else if (data == "HIS") {
       data = viewer.getSetHistory(Integer.MAX_VALUE);
-    else if (data == "MO")
+    } else if (data == "MO") {
       data = getMoJvxl(Integer.MAX_VALUE);
-    else if (data == "ISO") {
+    } else if (data == "ISO") {
       if ((data = getIsosurfaceJvxl()) == null)
         evalError(GT._("No data available"));
-    } else
+    } else {
+      len = -1;
       quality = 100;
+    }
+    if (len == 0)
+      len = data.length();
     viewer.createImage(fileName, data, quality);
-    viewer.scriptStatus("type=" + type + "; file=" + fileName);
+    viewer.scriptStatus("type=" + type + "; file=" + fileName
+        + (len >= 0 ? "; length=" + len : ""));
   }
 
   /* ****************************************************************************

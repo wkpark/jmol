@@ -5394,14 +5394,12 @@ class Eval { //implements Runnable {
       return "";
     StringBuffer s = new StringBuffer();
     int len = bs.size();
-    int n = 0;
     Frame frame = viewer.getFrame();
     for (int j = 0; j < len; j++)
       if (bs.get(j)) {
-        if (n++ > 0)
-          s.append("\n");
         s.append((label == null ? frame.getAtomAt(j).getIdentity() : frame
             .getAtomAt(j).formatLabel(label)));
+        s.append("\n");
       }
     return s.toString();
   }

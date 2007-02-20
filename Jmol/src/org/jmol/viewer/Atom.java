@@ -1055,6 +1055,7 @@ final public class Atom extends Point3fi implements Tuple {
          case 'c': chain
          case 'D': atom inDex (was "X")
          case 'e': element symbol
+         case 'E': insErtion code
          case 'i': atom number
          case 'I': Ionic radius
          case 'L': polymer Length
@@ -1064,8 +1065,10 @@ final public class Atom extends Point3fi implements Tuple {
          case 'N': molecule Number
          case 'o': symmetry operator set
          case 'P': Partial charge
-         case 'q': occupancy
+         case 'q': occupancy 0-100%
+         case 'Q': occupancy 0.00 - 1.00
          case 'r': residue sequence code
+         case 'R': residue number
          case 'S': crystllographic Site
          case 's': strand (chain)
          case 't': temperature factor
@@ -1104,6 +1107,10 @@ final public class Atom extends Point3fi implements Tuple {
           break;
         case 'e':
           strT = getElementSymbol();
+          break;
+        case 'E':
+          ch = getInsertionCode();
+          strT = (ch == '\0' ? "" : "" + ch);
           break;
         case 'x':
           floatT = x;
@@ -1153,9 +1160,13 @@ final public class Atom extends Point3fi implements Tuple {
         case 'q':
           strT = "" + getOccupancy();
           break;
+        case 'Q':
+          floatT = getOccupancy() / 100f;
+          break;
         case 'c': // these two are the same
         case 's':
-          strT = "" + getChainID();
+          ch = getChainID();
+          strT = (ch == '\0' ? "" : "" + ch);
           break;
         case 'S':
           strT = "" + atomSite;
@@ -1171,9 +1182,14 @@ final public class Atom extends Point3fi implements Tuple {
           break;
         case 'n':
           strT = getGroup3();
+          if (strT == null || strT.length() == 0)
+            strT = "UNK";
           break;
         case 'r':
           strT = getSeqcodeString();
+          break;
+        case 'R':
+          strT = "" + getResno();
           break;
         case 'U':
           strT = getIdentity();

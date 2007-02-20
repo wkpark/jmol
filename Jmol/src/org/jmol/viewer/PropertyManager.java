@@ -86,6 +86,7 @@ class PropertyManager {
     "boundBoxInfo"    , "", "",  
     "dataInfo"        , "<data type>", "types",
     "image"           , "", "",
+    "evaluate"        , "<expression>", "",
   };
 
   final static int PROP_APPLET_INFO = 0;
@@ -121,7 +122,8 @@ class PropertyManager {
   final static int PROP_BOUNDBOX_INFO = 25;
   final static int PROP_DATA_INFO = 26;
   final static int PROP_IMAGE = 27;
-  final static int PROP_COUNT = 28;
+  final static int PROP_EVALUATE = 28;
+  final static int PROP_COUNT = 29;
 
   static int getPropertyNumber(String infoType) {
     if (infoType == null)
@@ -242,6 +244,8 @@ class PropertyManager {
       return viewer.getMatrixRotate();
     case PROP_DATA_INFO:
       return viewer.getData(myParam.toString());
+    case PROP_EVALUATE:
+      return Eval.evaluateExpression(viewer, myParam.toString());
     case PROP_IMAGE:
       return viewer.getJpegBase64(100);
     }

@@ -163,7 +163,29 @@ final public class JmolConstants {
    These are all equivalent -- the distance from the center of molecule 1
       to the center of molecule 2
       
-  
+
+   {  }.label "xxxx" ATOM PROPERTY FOR IF, SET, and %{}
+   
+   The .label format provides a convenient means of delivering a wide range of 
+   atom-based data back to the user with whatever formatting is desired. 
+   
+   x2 = {atomno=3).label("atom %a\t" + (atomno=3).xyz)
+   
+   myXYZfile = "" + {silicon} + "\n\n" + {silicon}.label("%a %x %y %z")
+   
+   
+   GETPROPERTY "evaluate"
+   
+   You can now use getProperty to get expression information directly:
+   
+   getproperty "evaluate" "{*}.xyz"
+   
+   or on a web page the following returns a valid XYZ file for molecule 1:
+   
+   var info = jmolGetPropertyAsJavaObject("evaluate", '"" + {molecule=1} + "\n\n" + {molecule=1}.label("%a %x %y %z")')
+   
+   
+
    SELECTED ATOMS FROM ATOM EXPRESSIONS
    
    You can selecte atoms from an atom expression using [n]. 

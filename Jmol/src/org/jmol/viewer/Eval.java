@@ -5389,7 +5389,7 @@ class Eval { //implements Runnable {
     setStringProperty("@" + variable, StateManager.escape(bs));
   }
   
-  String getBitsetIdent(BitSet bs) {
+  String getBitsetIdent(BitSet bs, String label) {
     if (bs == null)
       return "";
     StringBuffer s = new StringBuffer();
@@ -5399,8 +5399,9 @@ class Eval { //implements Runnable {
     for (int j = 0; j < len; j++)
       if (bs.get(j)) {
         if (n++ > 0)
-          s.append(", ");
-        s.append(frame.getAtomAt(j).getIdentity());
+          s.append("\n");
+        s.append((label == null ? frame.getAtomAt(j).getIdentity() : frame
+            .getAtomAt(j).formatLabel(label)));
       }
     return s.toString();
   }
@@ -5410,6 +5411,7 @@ class Eval { //implements Runnable {
     switch (tok) {
     case Token.distance:
     case Token.ident:
+    case Token.label:
       break;
     case Token.identifier:
       String s = parameterAsString(i).toLowerCase();
@@ -5435,7 +5437,7 @@ class Eval { //implements Runnable {
 
   Object getBitsetAverage(BitSet bs, int tok, Point3f ptRef) throws ScriptException {
     if (tok == Token.ident)
-      return getBitsetIdent(bs);
+      return getBitsetIdent(bs, null);
     int iv = 0;
     float fv = 0;
     int n = 0;
@@ -8097,7 +8099,7 @@ class Eval { //implements Runnable {
         wasX = true;
         break;
       case Token.propselector:
-        wasX = (op.intValue != Token.distance);
+        wasX = (op.intValue != Token.distance && op.intValue != Token.label);
         break;
       default:
         wasX = false;
@@ -8199,7 +8201,7 @@ class Eval { //implements Runnable {
       if (op.tok == Token.opNot)
         return (x2.tok == Token.bitset ? addX(notSet(Token.bsSelect(x2)))
             : addX(!Token.bValue(x2)));
-      if (op.tok == Token.propselector && op.intValue != Token.distance) {
+      if (op.tok == Token.propselector && op.intValue != Token.distance && op.intValue != Token.label) {
         if (x2.tok != Token.bitset)
           invalidArgument();
         return addX(getBitsetAverage(Token.bsSelect(x2), op.intValue, null));
@@ -8221,6 +8223,11 @@ class Eval { //implements Runnable {
           else if (x1.tok == Token.xyz)
             return addX(pt.distance((Point3f) x1.value));
           return false;
+        } 
+        if (op.intValue == Token.label) {
+          if (x1.tok != Token.bitset || x2.tok != Token.string)
+            return false;
+            return addX(getBitsetIdent(Token.bsSelect(x1), (String)x2.value));
         }
         return false;
       case Token.opAnd:
@@ -8374,7 +8381,6 @@ class Eval { //implements Runnable {
       
       if (op == Token.percent && x2 != Token.integer)
         invalidArgument();
-      
       return true;
     }
 

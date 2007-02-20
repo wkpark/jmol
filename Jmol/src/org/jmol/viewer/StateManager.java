@@ -835,6 +835,8 @@ class StateManager {
     int pt = -2;
     while ((pt = str.indexOf("\"", pt + 2)) >= 0)
       str = str.substring(0, pt) + '\\' + str.substring(pt);
+    str = Viewer.simpleReplace(str, "\n",""+'\1');
+    str = Viewer.simpleReplace(str, ""+'\1',"\\n");
     return "\"" + str + "\"";
   }
   

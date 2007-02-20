@@ -1447,7 +1447,6 @@ public class Viewer extends JmolViewer {
   void zap(boolean notify) {
     //Eval
     //setAppletContext
-    System.out.println("ZAP " + notify);
     clear();
     modelManager.zap();
     initializeModel();
@@ -2600,7 +2599,7 @@ public class Viewer extends JmolViewer {
     String s = interruptScript;
     interruptScript = "";
     if (s != "")
-      System.out.println("interrupt: " + s);
+      Logger.debug("interrupt: " + s);
     return s;
   }
 
@@ -4695,24 +4694,26 @@ public class Viewer extends JmolViewer {
   }
 
   static String simpleReplace(String str, String strFrom, String strTo) {
-    if (str == null)
+    if (str == null || str.indexOf(strFrom) < 0)
       return str;
     int fromLength = strFrom.length();
     if (fromLength == 0)
       return str;
     boolean isOnce = (strTo.indexOf(strFrom) >= 0);
     int ipt;
-    String stemp = "";
     while (str.indexOf(strFrom) >= 0) {
+      StringBuffer s = new StringBuffer();
       int ipt0 = 0;
       while ((ipt = str.indexOf(strFrom, ipt0)) >= 0) {
-        stemp += str.substring(ipt0, ipt) + strTo;
+        s.append(str.substring(ipt0, ipt) + strTo);
         ipt0 = ipt + fromLength;
       }
-      str = stemp + str.substring(ipt0, str.length());
       if (isOnce)
         break;
+      s.append(str.substring(ipt0));
+      str = s.toString();
     }
+
     return str;
   }
 

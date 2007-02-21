@@ -5484,6 +5484,8 @@ class Eval { //implements Runnable {
         tok = Token.xyz;
       else if (s.equals("lines"))
         tok = Token.list;
+      else if (s.equals("find"))
+        tok = Token.within;
       else
         invalidArgument();
       break;
@@ -8120,7 +8122,7 @@ class Eval { //implements Runnable {
 
     boolean addOp(Token op) throws ScriptException {
 
-      //dumpStacks();
+      dumpStacks();
 
       // Do we have the appropriate context for this operator?
 
@@ -8133,6 +8135,12 @@ class Eval { //implements Runnable {
           addX(op);
         }
         break;
+      case Token.hyphen:
+        if (wasX)
+          break;
+        addX(0);
+        op = new Token(Token.unaryMinus);
+        break;
       case Token.opNot:
       case Token.leftparen:
         isLeftOp = true;
@@ -8144,7 +8152,9 @@ class Eval { //implements Runnable {
 
       //do we need to operate?
 
-      while (oPt >= 0 && (!isLeftOp || op.tok == Token.leftsquare && oStack[oPt].tok == Token.propselector)
+      while (oPt >= 0
+          && (!isLeftOp || op.tok == Token.leftsquare
+              && oStack[oPt].tok == Token.propselector)
           && Token.prec(oStack[oPt]) >= Token.prec(op)) {
 
         // ) and ] must wait until matching ( or [ is found
@@ -8190,7 +8200,7 @@ class Eval { //implements Runnable {
         oPt--;
         return (squareCount-- > 0);
       case Token.propselector:
-        wasX = (op.intValue != Token.distance && op.intValue != Token.label && op.intValue != Token.load);
+        wasX = !isBinaryProperty(op.intValue);
         break;
       default:
         wasX = false;
@@ -8307,6 +8317,11 @@ class Eval { //implements Runnable {
             + Token.prec(oStack[i]));
     }
 
+    boolean isBinaryProperty(int iv) {
+      return  iv== Token.distance || iv == Token.label 
+      || iv == Token.load || iv == Token.within;  
+    }
+    
     boolean operate(int thisOp) throws ScriptException {
 
       Token op = oStack[oPt--];
@@ -8320,12 +8335,11 @@ class Eval { //implements Runnable {
         return (x2.tok == Token.bitset ? addX(notSet(Token.bsSelect(x2)))
             : addX(!Token.bValue(x2)));
       int iv = op.intValue;
-      if (op.tok == Token.propselector && iv!= Token.distance
-          && iv != Token.label && iv != Token.load) {
+      if (op.tok == Token.propselector && !isBinaryProperty(iv)) {
         if (iv == Token.list) {
           if (x2.tok != Token.string)
             invalidArgument();
-          String s = (String)x2.value;
+          String s = (String) x2.value;
           s = Viewer.simpleReplace(s, "\n\r", "\n");
           s = Viewer.simpleReplace(s, "\r", "\n");
           return addX(Text.split(s, '\n'));
@@ -8345,28 +8359,36 @@ class Eval { //implements Runnable {
       if (xPt < 0)
         stackUnderflow();
       Token x1 = xStack[xPt--];
-      if (!checkOK(x1.tok, x2.tok, op.tok))
+      try {
+        if (!checkOK(x1.tok, x2.tok, op.tok))
+            return false;
+      } catch (Exception e) {
         return false;
+      }
       switch (op.tok) {
       case Token.propselector:
-        if (op.intValue == Token.distance) {
+        switch (op.intValue) {
+        case Token.distance:
           Point3f pt = ptValue(x2);
           if (x1.tok == Token.bitset)
             return addX(getBitsetAverage(Token.bsSelect(x1), op.intValue, pt));
           else if (x1.tok == Token.xyz)
             return addX(pt.distance((Point3f) x1.value));
           return false;
-        }
-        if (op.intValue == Token.label) {
+        case Token.label:
           if (x1.tok != Token.bitset || x2.tok != Token.string)
             return false;
           return addX(getBitsetIdent(Token.bsSelect(x1), (String) x2.value));
-        }
-        if (op.intValue == Token.load) {
+        case Token.load:
           if (x1.tok != Token.string || x2.tok != Token.string)
             return false;
-          String s = (isSyntaxCheck ? "" : viewer.getFileAsString((String)x2.value));
+          String s = (isSyntaxCheck ? "" : viewer
+              .getFileAsString((String) x2.value));
           return addX(s);
+        case Token.within:
+          if (x1.tok != Token.string || x2.tok != Token.string)
+            return false;
+          return addX(Token.sValue(x1).indexOf(Token.sValue(x2)) + 1);
         }
         return false;
       case Token.opAnd:
@@ -8426,6 +8448,7 @@ class Eval { //implements Runnable {
           }
         }
         return addX(Token.fValue(x1) + Token.fValue(x2));
+      case Token.unaryMinus:
       case Token.hyphen:
         if (x1.tok == Token.integer)
           return addX(x1.intValue - Token.iValue(x2));

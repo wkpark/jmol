@@ -139,7 +139,8 @@ public class Token {
   final static int asterisk     = 1  | mathop | 7 << 3;
   final static int percent      = 2  | mathop | 7 << 3;
   
-  final static int propselector = 1  | mathop | 8 << 3;
+  final static int unaryMinus   = 0  | mathop | 8 << 3;
+  final static int propselector = 1  | mathop | 9 << 3;
 
   final static Point3f pt0 = new Point3f();
 

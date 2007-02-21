@@ -1051,6 +1051,8 @@ class Eval { //implements Runnable {
       case Token.opAnd:
       case Token.opNot:
       case Token.opToggle:
+      case Token.leftparen:
+      case Token.rightparen:
         rpn.addOp(instruction);
         break;
       case Token.all:

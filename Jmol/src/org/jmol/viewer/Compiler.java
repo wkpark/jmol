@@ -1133,12 +1133,10 @@ class Compiler {
     //for simplicity, giving XOR (toggle) same precedence as OR
     //OrNot: First OR, but if that makes no change, then NOT (special toggle)
     while (tokPeek(Token.opOr) || tokPeek(Token.opXor)
-        || tokPeek(Token.opToggle)) {
-      
-      Token tokenOr = tokenNext();
+        || tokPeek(Token.opToggle)) {      
+      addTokenToPostfix(tokenNext());
       if (!clauseAnd())
         return false;
-      addTokenToPostfix(tokenOr);
     }
     return true;
   }
@@ -1147,10 +1145,9 @@ class Compiler {
     if (!clauseNot())
       return false;
     while (tokPeek(Token.opAnd)) {
-      Token tokenAnd = tokenNext();
+      addTokenToPostfix(tokenNext());
       if (!clauseNot())
         return false;
-      addTokenToPostfix(tokenAnd);
     }
     return true;
   }
@@ -1207,12 +1204,12 @@ class Compiler {
     case Token.none:
       return addTokenToPostfix(tokenNext());
     case Token.leftparen:
-      tokenNext();
+      addTokenToPostfix(tokenNext());
       if (!clauseOr())
         return false;
-      if (!tokenNext(Token.rightparen))
+      if (tokPeek() != Token.rightparen)
         return rightParenthesisExpected();
-      return true;
+      return addTokenToPostfix(tokenNext());
     case Token.leftbrace:
       if (isSetExpression) {
         // allows for the possibility of {x y z} or {a/b c/d e/f}
@@ -1222,7 +1219,7 @@ class Compiler {
         if (tokPeek() != Token.rightbrace) {
           if (!clauseOr() || !clauseOr())
             return false;
-          if (tokPeek()!=Token.rightbrace)
+          if (tokPeek() != Token.rightbrace)
             return rightBraceExpected();
         }
         return true;
@@ -1526,9 +1523,9 @@ class Compiler {
   boolean residueSpecCodeGenerated;
 
   boolean generateResidueSpecCode(Token token) {
-    addTokenToPostfix(token);
     if (residueSpecCodeGenerated)
       addTokenToPostfix(Token.tokenAnd);
+    addTokenToPostfix(token);
     residueSpecCodeGenerated = true;
     return true;
   }

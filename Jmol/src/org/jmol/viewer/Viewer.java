@@ -550,16 +550,14 @@ public class Viewer extends JmolViewer {
     refresh(1, "Viewer:rotateToZ()");
   }
 
-  final static float radiansPerDegree = (float) (2 * Math.PI / 360);
-
   public void rotateToX(int angleDegrees) {
     //deprecated
-    rotateToX(angleDegrees * radiansPerDegree);
+    rotateToX(angleDegrees * Measurement.radiansPerDegree);
   }
 
   public void rotateToY(int angleDegrees) {
     //deprecated
-    rotateToY(angleDegrees * radiansPerDegree);
+    rotateToY(angleDegrees * Measurement.radiansPerDegree);
   }
 
   void translateXYBy(int xDelta, int yDelta) {

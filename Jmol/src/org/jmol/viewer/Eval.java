@@ -2074,24 +2074,32 @@ class Eval { //implements Runnable {
     return copy;
   }
 
+  boolean isColorParam(int i) {
+    return (i < statementLength && (statement[i].tok == Token.colorRGB || statement[i].tok == Token.leftsquare));
+  }
+  
   int getArgbParam(int index) throws ScriptException {
-    if (checkToken(index)) {
-      Token token = getToken(index);
-      if (token.tok == Token.colorRGB)
-        return token.intValue;
-    }
-    colorExpected();
-    //impossible return
-    return 0;
+    return getArgbParam(index, false);
   }
 
-  int getArgbOrNoneParam(int index) throws ScriptException {
+  int getArgbParamLast(int index, boolean allowNone) throws ScriptException {
+    int icolor = getArgbParam(index, allowNone);
+    checkStatementLength(iToken + 1);
+    return icolor;
+  }
+  
+  int getArgbParam(int index, boolean allowNone) throws ScriptException {
     if (checkToken(index)) {
       Token token = getToken(index);
-      if (token.tok == Token.colorRGB)
+      switch (token.tok) {
+      case Token.leftsquare:
+        return getColorTriad(++index);
+      case Token.colorRGB:
         return token.intValue;
-      if (token.tok == Token.none)
-        return 0;
+      case Token.none:
+        if (allowNone)
+          return 0;
+      }
     }
     colorExpected();
     //impossible return
@@ -2102,8 +2110,9 @@ class Eval { //implements Runnable {
     if (checkToken(index)) {
       Token token = getToken(index);
       switch (token.tok) {
+      case Token.leftsquare:
       case Token.colorRGB:
-        return token.intValue;
+        return getArgbParam(index);
       case Token.rasmol:
         return Token.rasmol;
       case Token.none:
@@ -2113,6 +2122,45 @@ class Eval { //implements Runnable {
     }
     evalError(GT._("a color or palette name (Jmol, Rasmol) is required"));
     //unattainable
+    return 0;
+  }
+
+  int getColorTriad(int i) throws ScriptException {
+    int[] colors = new int[3];
+    int n = 0;
+    Token token = getToken(i);
+    switch (token.tok) {
+    case Token.integer:
+      for (; i < statementLength; i++) {
+        token = getToken(i);
+        switch (token.tok) {
+        case Token.opOr:
+          continue;
+        case Token.integer:
+          if (n > 2)
+            badRGBColor();
+          colors[n++] = token.intValue;
+          continue;
+        case Token.rightsquare:
+          if (n == 3)
+            return 0xFF000000 | colors[0] << 16 | colors[1] << 8 | colors[2];
+        default:
+          badRGBColor();
+        }
+      }
+      badRGBColor();
+    case Token.identifier:
+      String hex = parameterAsString(i);
+      if (getToken(++i).tok == Token.rightsquare && hex.length() == 7
+          && hex.charAt(0) == 'x')
+        try {
+          return 0xFF000000 | Integer.parseInt(hex.substring(1), 16);
+        } catch (NumberFormatException e) {
+          badRGBColor();
+        }
+    }
+    badRGBColor();
+    // impossible return
     return 0;
   }
 
@@ -2629,12 +2677,14 @@ class Eval { //implements Runnable {
         stereoMode = JmolConstants.STEREO_NONE;
         state = " off";
         break;
+      case Token.leftsquare:
       case Token.colorRGB:
         if (colorpt > 1)
           badArgumentCount();
         if (!degreesSeen)
           degrees = 3;
         colors[colorpt++] = getArgbParam(i);
+        i = iToken;
         if (colorpt == 1)
           colors[colorpt] = ~colors[0];
         state += " " + StateManager.escapeColor(colors[colorpt - 1]);
@@ -2675,6 +2725,7 @@ class Eval { //implements Runnable {
     } else {
       viewer.setStereoMode(stereoMode, state);
     }
+    checkStatementLength(iToken + 1);
   }
 
   void connect() throws ScriptException {
@@ -2762,8 +2813,10 @@ class Eval { //implements Runnable {
         radius = floatParameter(++i);
         isColorOrRadius = true;
         break;
+      case Token.leftsquare:
       case Token.colorRGB:
         color = getArgbParam(i);
+        i = iToken;
         isColorOrRadius = true;
         break;
       case Token.none:
@@ -2843,13 +2896,13 @@ class Eval { //implements Runnable {
   void background(int i) throws ScriptException {
     int tok = getToken(i).tok;
     int argb;
-    if (tok == Token.colorRGB || tok == Token.none) {
-      argb = getArgbOrNoneParam(i);
+    if (isColorParam(i) || tok == Token.none) {
+      argb = getArgbParamLast(i, true);
       if (!isSyntaxCheck)
         viewer.setBackgroundArgb(argb);
       return;
     }
-    argb = getArgbOrNoneParam(i + 1);
+    argb = getArgbParamLast(i + 1, true);
     int iShape = getShapeType(tok);
     if (!isSyntaxCheck)
       viewer.setShapePropertyArgb(iShape, "bgcolor", argb);
@@ -2876,6 +2929,7 @@ class Eval { //implements Runnable {
       colorNamedObject(2);
       return;
     case Token.colorRGB:
+    case Token.leftsquare:
     case Token.none:
     case Token.spacefill:
     case Token.amino:
@@ -2902,17 +2956,17 @@ class Eval { //implements Runnable {
       colorObject(Token.atom, 1);
       return;
     case Token.rubberband:
-      argb = getArgbParam(2);
+      argb = getArgbParamLast(2, false);
       if (!isSyntaxCheck)
         viewer.setRubberbandArgb(argb);
       return;
     case Token.background:
-      argb = getArgbOrNoneParam(2);
+      argb = getArgbParamLast(2, true);
       if (!isSyntaxCheck)
         viewer.setBackgroundArgb(argb);
       return;
     case Token.selectionHalo:
-      argb = getArgbOrNoneParam(2);
+      argb = getArgbParamLast(2, true);
       if (isSyntaxCheck)
         return;
       viewer.loadShape(JmolConstants.SHAPE_HALOS);
@@ -2922,8 +2976,9 @@ class Eval { //implements Runnable {
     case Token.identifier:
     case Token.hydrogen:
       //color element
-      argb = getArgbOrPaletteParam(2);
       String str = parameterAsString(1);
+      argb = getArgbOrPaletteParam(2);
+      checkStatementLength(iToken + 1);
       for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
         if (str.equalsIgnoreCase(JmolConstants.elementNameFromNumber(i))) {
           if (!isSyntaxCheck)
@@ -3002,8 +3057,9 @@ class Eval { //implements Runnable {
       modifier = "Surface";
     }
     if (index < statementLength) {
-      if ((tok = getToken(index).tok) == Token.colorRGB) {
-        int argb = getArgbParam(index);
+      tok = getToken(index).tok;
+      if (isColorParam(index)) {
+        int argb = getArgbParamLast(index, false);
         colorvalue = (argb == 0 ? null : new Integer(argb));
       } else {
         // "cpk" value would be "spacefill"
@@ -3013,9 +3069,9 @@ class Eval { //implements Runnable {
             || pid == JmolConstants.PALETTE_TYPE
             && shapeType != JmolConstants.SHAPE_HSTICKS)
           invalidArgument();
+        checkStatementLength(index + 1);
         colorvalue = new Byte((byte) pid);
       }
-
       if (isSyntaxCheck)
         return;
 
@@ -5363,6 +5419,7 @@ class Eval { //implements Runnable {
         rpn.dumpStacks();
       endOfStatementUnexpected();
     }
+    
     if (key == null)
       return new Boolean(Token.bValue(result));
     switch (result.tok) {
@@ -5407,6 +5464,7 @@ class Eval { //implements Runnable {
   Token getBitsetPropertySelector(int i) throws ScriptException {
     int tok = getToken(++i).tok;
     switch (tok) {
+    case Token.monitor:
     case Token.distance:
     case Token.ident:
     case Token.label:
@@ -5423,6 +5481,8 @@ class Eval { //implements Runnable {
         tok = Token._bondedcount;
       else if (s.equals("xyz"))
         tok = Token.xyz;
+      else if (s.equals("lines"))
+        tok = Token.list;
       else
         invalidArgument();
       break;
@@ -6734,8 +6794,9 @@ class Eval { //implements Runnable {
           isTranslucent = true;
           i++;
         }
-        if (i < statementLength && statement[i].tok == Token.colorRGB) {
+        if (isColorParam(i)) {
           colorArgb = getArgbParam(i);
+          i = iToken;
           setShapeProperty(JmolConstants.SHAPE_DRAW, "colorRGB", new Integer(
               colorArgb));
           continue;
@@ -6853,7 +6914,9 @@ class Eval { //implements Runnable {
         translucency = "opaque";
         continue;
       case Token.colorRGB:
+      case Token.leftsquare:
         color = getArgbParam(i);
+        i = iToken;
         continue;
       case Token.identifier:
         String str = parameterAsString(i);
@@ -7003,12 +7066,12 @@ class Eval { //implements Runnable {
         i = iToken;
         break;
       case Token.color:
-        if (++i < statementLength && statement[i].tok == Token.colorRGB) {
+        if (isColorParam(++i)) {
           setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "colorRGB",
               new Integer(getArgbParam(i)));
           setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "colorRGB",
-              new Integer(getArgbParam(i + 1 < statementLength
-                  && statement[i + 1].tok == Token.colorRGB ? ++i : i)));
+              new Integer(getArgbParam(isColorParam(i + 1) ? i + 1 : i)));
+          i = iToken;
           continue;
         }
         invalidArgument();
@@ -7687,6 +7750,10 @@ class Eval { //implements Runnable {
     evalError(GT._("valid (atom expression) expected"));
   }
 
+  void badRGBColor() throws ScriptException {
+    evalError(GT._("bad [R,G,B] color"));
+  }
+
   int integerExpected() throws ScriptException {
     evalError(GT._("integer expected"));
     return 0;
@@ -8021,10 +8088,15 @@ class Eval { //implements Runnable {
       while (isOK && oPt >= 0)
         isOK = operate(Token.nada);
       if (isOK && xPt == 0) {
-        if (xStack[0].tok == Token.bitset)
-          Token.bsSelect(xStack[0]);
-        return xStack[0];
+        Token x = xStack[0];
+        if (x.tok == Token.bitset || x.tok == Token.list || x.tok == Token.string)
+          x = xStack[0] = Token.selectItem(x, -1);
+        if (x.tok == Token.list)
+          x = new Token(Token.string, Token.sValue(x));
+        return x;
       }
+      if (xPt >=0 || oPt >= 0)
+        invalidArgument();
       return null;
     }
 
@@ -8047,33 +8119,47 @@ class Eval { //implements Runnable {
 
     boolean addOp(Token op) throws ScriptException {
 
-      // was an operand entered last?
+      dumpStacks();
 
+      // Do we have the appropriate context for this operator?
+
+      boolean isLeftOp = false;
       switch (op.tok) {
+      case Token.leftsquare: // two contexts: [x x].distance or {....}[n]
+        isLeftOp = !wasX;
+        if (isLeftOp) {
+          op = new Token(Token.leftsquare, 0);
+          addX(op);
+        }
+        break;
       case Token.opNot:
       case Token.leftparen:
-        if (wasX)
-          return false;
-        break;
+        isLeftOp = true;
       default:
-        if (!wasX)
+        if (wasX == isLeftOp)
           return false;
         break;
       }
 
       //do we need to operate?
 
-      while (oPt >= 0 && op.tok != Token.leftparen
-          && op.tok != Token.leftsquare && op.tok != Token.opNot
+      while (oPt >= 0 && (!isLeftOp || op.tok == Token.leftsquare && oStack[oPt].tok == Token.propselector)
           && Token.prec(oStack[oPt]) >= Token.prec(op)) {
 
         // ) and ] must wait until matching ( or [ is found
 
-        if (op.tok == Token.rightparen && oStack[oPt].tok == Token.leftparen
-            || op.tok == Token.rightsquare
-            && oStack[oPt].tok == Token.leftsquare) {
-          if (op.tok == Token.rightsquare && !doBitsetSelect())
+        if (op.tok == Token.rightparen && oStack[oPt].tok == Token.leftparen)
+          break;
+
+        if (op.tok == Token.rightsquare && oStack[oPt].tok == Token.leftsquare) {
+          if (oStack[oPt].intValue == 0) {
+            if (xPt >= 0 && xStack[xPt].tok == Token.string) {
+              if (!concatList())
+                return false;
+            }
+          } else if (!doBitsetSelect()) {
             return false;
+          }
           break;
         }
 
@@ -8117,6 +8203,20 @@ class Eval { //implements Runnable {
       return true;
     }
 
+    private boolean concatList() throws ScriptException {
+      int nPoints = 0;
+      int pt = xPt;
+      while (xStack[pt--].tok != Token.leftsquare)
+        nPoints++;
+      String[]list = new String[nPoints];
+      for (int i = 0; i < nPoints; i++)
+        list[i] = Token.sValue(xStack[pt + i + 2]);
+      xPt = pt;
+      addX(list);
+      return true;
+                                
+    }
+    
     private boolean doBitsetSelect() {
       if (xPt < 1)
         return false;
@@ -8124,10 +8224,15 @@ class Eval { //implements Runnable {
       if (i < 0)
         return false;
       Token token = xStack[xPt];
-      if (token.tok != Token.bitset)
+      switch (token.tok) {
+      case Token.bitset:
+      case Token.list:
+      case Token.string:
+        xStack[xPt] = Token.selectItem(token, i);
+        return true;
+      default:
         return false;
-      Token.bsSelect(token, i);
-      return true;
+      }
     }
     
     private boolean addX(boolean x) throws ScriptException {
@@ -8155,6 +8260,13 @@ class Eval { //implements Runnable {
       if (++xPt == maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.string, x);
+      return true;
+    }
+
+    private boolean addX(String[] x) throws ScriptException {
+      if (++xPt == maxLevel)
+        stackOverflow();
+      xStack[xPt] = new Token(Token.list, x);
       return true;
     }
 
@@ -8206,7 +8318,20 @@ class Eval { //implements Runnable {
       if (op.tok == Token.opNot)
         return (x2.tok == Token.bitset ? addX(notSet(Token.bsSelect(x2)))
             : addX(!Token.bValue(x2)));
-      if (op.tok == Token.propselector && op.intValue != Token.distance && op.intValue != Token.label) {
+      int iv = op.intValue;
+      if (op.tok == Token.propselector && iv!= Token.distance
+          && iv != Token.label) {
+        if (iv == Token.list) {
+          if (x2.tok != Token.string)
+            invalidArgument();
+          return addX(Text.split((String)x2.value, '\n'));
+        }
+        if (iv == Token.monitor) {
+          float f = getXMeasure(iv, x2);
+          if (Float.isNaN(f))
+            return false;
+          return addX(f);
+        }
         if (x2.tok != Token.bitset)
           invalidArgument();
         return addX(getBitsetAverage(Token.bsSelect(x2), op.intValue, null));
@@ -8221,18 +8346,17 @@ class Eval { //implements Runnable {
       switch (op.tok) {
       case Token.propselector:
         if (op.intValue == Token.distance) {
-          Point3f pt = (x2.tok == Token.xyz ? (Point3f) x2.value
-              : (Point3f) getBitsetAverage(Token.bsSelect(x2), Token.xyz, null));
+          Point3f pt = ptValue(x2);
           if (x1.tok == Token.bitset)
             return addX(getBitsetAverage(Token.bsSelect(x1), op.intValue, pt));
           else if (x1.tok == Token.xyz)
             return addX(pt.distance((Point3f) x1.value));
           return false;
-        } 
+        }
         if (op.intValue == Token.label) {
           if (x1.tok != Token.bitset || x2.tok != Token.string)
             return false;
-            return addX(getBitsetIdent(Token.bsSelect(x1), (String)x2.value));
+          return addX(getBitsetIdent(Token.bsSelect(x1), (String) x2.value));
         }
         return false;
       case Token.opAnd:
@@ -8269,8 +8393,15 @@ class Eval { //implements Runnable {
       case Token.opNE:
         return addX(Token.fValue(x1) != Token.fValue(x2));
       case Token.plus:
-        if (x1.tok == Token.string)
-          return addX("" + x1.value + Token.sValue(x2));
+        if (x1.tok == Token.list) {
+          if (x2.tok == Token.list || x2.tok == Token.string)
+            return addX(Token.concatList(x1, x2, true, x2.tok == Token.list));
+        }
+        if (x1.tok == Token.string || x1.tok == Token.list) {
+          if (x2.tok == Token.list)
+            return addX(Token.concatList(x1, x2, false, true));
+          return addX(Token.sValue(x1) + Token.sValue(x2));
+        }
         if (x1.tok == Token.integer)
           return addX(x1.intValue + Token.iValue(x2));
         if (x1.tok == Token.xyz) {
@@ -8343,6 +8474,17 @@ class Eval { //implements Runnable {
             return addX((int) (f + 0.5f * (f < 0 ? -1 : 1)));
           s = TextFormat.formatDecimal(f, n);
           return addX(s);
+        case Token.list:
+          String[] list = (String[]) x1.value;
+          for (int i = 0; i < list.length; i++) {
+            if (n == 0)
+              list[i] = list[i].trim();
+            else if (n > 0)
+              list[i] = TextFormat.format(list[i], n, n, true, false);
+            else
+              list[i] = TextFormat.format(s, -n, n, false, false);
+          }
+          return addX(list);
         case Token.string:
           s = (String) x1.value;
           if (n == 0)
@@ -8375,6 +8517,46 @@ class Eval { //implements Runnable {
         return addX(f1 / f2);
       }
       return true;
+    }
+    
+    float getXMeasure(int tok, Token x2) throws ScriptException {
+      Point3f[] pts = new Point3f[4];
+      int nPoints = 1;
+      pts[0] = ptValue(x2);
+      while (xPt >= 0 && (x2 = xStack[xPt]).tok != Token.leftsquare) {
+        if (nPoints == 4)
+          return Float.NaN;
+        pts[nPoints++] = ptValue(x2);
+        xPt--;
+      }
+      if (xPt < 0)
+        return Float.NaN;
+      xPt--;
+      switch (nPoints) {
+      case 1:
+        return Float.NaN;
+      case 2:
+        return pts[0].distance(pts[1]);
+      case 3:
+        return Measurement.computeAngle(pts[0], pts[1], pts[2], true);
+      case 4:
+        return Measurement.computeTorsion(pts[0], pts[1], pts[2], pts[3], true);
+      }
+      return Float.NaN;
+    }
+
+    Point3f ptValue(Token x) throws ScriptException {
+      if (isSyntaxCheck)
+        return new Point3f();
+      switch (x.tok) {
+      case Token.xyz:
+        return (Point3f) x.value;
+      case Token.bitset:
+        return (Point3f) getBitsetAverage(Token.bsSelect(x), Token.xyz, null);
+      default:
+        float f = Token.fValue(x);
+        return new Point3f(f, f, f);
+      }
     }
 
     boolean checkOK(int x1, int x2, int op) throws ScriptException {

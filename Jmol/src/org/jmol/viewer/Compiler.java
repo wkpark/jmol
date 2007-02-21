@@ -185,7 +185,6 @@ class Compiler {
         break;
       }
       if (tokCommand == Token.nada) {
-        bracketsOpen = false;
         isNewSet = false;
       } else {
         if (lookingAtString()) {
@@ -306,7 +305,7 @@ class Compiler {
           }
         } else {
           ident = ident.toLowerCase();
-          token = bracketsOpen ? null : (Token) Token.map.get(ident);
+          token = (Token) Token.map.get(ident);
         }
         if (token == null)
           token = new Token(Token.identifier, ident);
@@ -779,8 +778,6 @@ class Compiler {
     return true;
   }
 
-  boolean bracketsOpen;
-
   boolean lookingAtLookupToken() {
     if (ichToken == cchScript)
       return false;
@@ -800,12 +797,8 @@ class Compiler {
     case '@':
     case '.':
     case '%':
-      break;
     case '[':
-      bracketsOpen = true;
-      break;
     case ']':
-      bracketsOpen = false;
       break;
     case '&':
     case '|':
@@ -1816,10 +1809,7 @@ class Compiler {
     for (int i = 1; i < atokenCommand.length; ++i) {
       theToken = atokenCommand[i];
       //Logger.debug(token + " atokenCommand: " + atokenCommand.length);
-      if (isToken(Token.leftsquare)) {
-        if (!compileRGB(i))
-          return false;
-      } else if (isToken(Token.dollarsign)) {
+      if (isToken(Token.dollarsign)) {
         i++; // skip identifier
       } else if (isToken(Token.identifier)) {
         String id = (String) theToken.value;
@@ -1831,47 +1821,6 @@ class Compiler {
       }
     }
     return true;
-  }
-
-  boolean compileRGB(int i) {
-    Token[] atoken = atokenCommand;
-    if (atoken.length >= i + 7 && atoken[i].tok == Token.leftsquare
-        && atoken[i + 1].tok == Token.integer
-        && atoken[i + 2].tok == Token.opOr
-        && atoken[i + 3].tok == Token.integer
-        && atoken[i + 4].tok == Token.opOr
-        && atoken[i + 5].tok == Token.integer
-        && atoken[i + 6].tok == Token.rightsquare) {
-      int argb = (0xFF000000 | atoken[i + 1].intValue << 16
-          | atoken[i + 3].intValue << 8 | atoken[i + 5].intValue);
-      atoken[i++] = new Token(Token.colorRGB, argb, "[R,G,B]");
-      for (int ipt = i + 6; ipt < atoken.length; ipt++)
-        atoken[i++] = atoken[ipt];
-      Token[] atokenNew = new Token[i];
-      System.arraycopy(atoken, 0, atokenNew, 0, i);
-      atokenCommand = atokenNew;
-      return true;
-    }
-    // chime also accepts [xRRGGBB]
-    if (atoken.length >= i + 3 && atoken[i].tok == Token.leftsquare
-        && atoken[i + 1].tok == Token.identifier
-        && atoken[i + 2].tok == Token.rightsquare) {
-      String hex = (String) atoken[i + 1].value;
-      if (hex.length() == 7 && hex.charAt(0) == 'x') {
-        try {
-          int argb = 0xFF000000 | Integer.parseInt(hex.substring(1), 16);
-          atoken[i++] = new Token(Token.colorRGB, argb, "[xRRGGBB]");
-          for (int ipt = i + 2; ipt < atoken.length; ipt++)
-            atoken[i++] = atoken[ipt];
-          Token[] atokenNew = new Token[i];
-          System.arraycopy(atoken, 0, atokenNew, 0, i);
-          atokenCommand = atokenNew;
-          return true;
-        } catch (NumberFormatException e) {
-        }
-      }
-    }
-    return true; // don't sweat it. badRGBColor();
   }
   
   /// error handling
@@ -1956,10 +1905,6 @@ class Compiler {
     return compileError(GT._("unrecognized {0} parameter", kind) + ": " + param);
   }
   
-//  private boolean badRGBColor() {
-  //  return compileError(GT._("bad [R,G,B] color"));
-  //}
-
   private boolean identifierOrResidueSpecificationExpected() {
     return compileError(GT._("identifier or residue specification expected"));
   }

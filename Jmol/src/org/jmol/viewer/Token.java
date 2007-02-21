@@ -153,6 +153,7 @@ public class Token {
       return x.intValue != 0;
     case Token.decimal:
     case Token.string:
+    case Token.list:
       return fValue(x) != 0;
     case Token.bitset:
       return iValue(x) != 0;
@@ -172,10 +173,11 @@ public class Token {
     case Token.integer:
       return x.intValue;
     case Token.decimal:
+    case Token.list:
     case Token.string:
       return (int)fValue(x);
     case Token.bitset:
-      return Viewer.cardinalityOf(bsSelect(x, -1));
+      return Viewer.cardinalityOf(bsSelect(x));
     case Token.xyz:
       return (int)((Point3f) x.value).distance(pt0);
     default:
@@ -193,15 +195,20 @@ public class Token {
       return x.intValue;
     case Token.decimal:
       return ((Float) x.value).floatValue();
+    case Token.list:
+      int i = x.intValue;
+      String[] list = (String[]) x.value;
+      if (i == Integer.MAX_VALUE)
+        return list.length;
     case Token.string:
-      String s = (String) x.value;
+      String s = sValue(x);
       if (s.equalsIgnoreCase("true"))
         return 1;
-      if (s.equalsIgnoreCase("false"))
+      if (s.equalsIgnoreCase("false") || s.length() == 0)
         return 0;
       return Parser.parseFloat(s);
     case Token.bitset:
-      return iValue(x); 
+      return iValue(x);
     case Token.xyz:
       return ((Point3f) x.value).distance(pt0);
     default:
@@ -210,6 +217,7 @@ public class Token {
   }  
   
   static String sValue(Token x) {
+    int i;
     switch (x.tok) {
     case Token.on:
       return "true";
@@ -221,38 +229,109 @@ public class Token {
       return StateManager.escape((Point3f) x.value);
     case Token.bitset:
       return "" + iValue(x);
-    case Token.decimal:
+    case Token.list:
+      String[] list = (String[]) x.value;
+      i = x.intValue;
+      if (i != Integer.MAX_VALUE)
+        return (i < 0 || i >= list.length ? "" : list[i]);
+      StringBuffer sb = new StringBuffer();
+      for (i = 0; i < list.length; i++)
+        sb.append(list[i] + "\n");
+      return sb.toString();
     case Token.string:
+      String s = (String) x.value;
+      i = x.intValue;
+      if (i == Integer.MAX_VALUE)
+        return s;
+      if (i < 0 || i >= s.length())
+        return "";
+      return "" + s.charAt(i);
+    case Token.decimal:
     default:
       return "" + x.value;
     }
   }
 
-  static BitSet bsSelect(Token token) {
-    return bsSelect(token, -1);
+  static String[] concatList(Token x1, Token x2, boolean x1IsList, boolean x2IsList) {
+    String[] list1 = (x1IsList ? (String[]) x1.value
+        : new String[] { (String) x1.value });
+    String[] list2 = (x2IsList ? (String[]) x2.value
+        : new String[] { (String) x2.value });
+    String[] list = new String[list1.length + list2.length];
+    int pt = 0;
+    for (int i = 0; i < list1.length; i++)
+      list[pt++] = list1[i];
+    for (int i = 0; i < list2.length; i++)
+      list[pt++] = list2[i];
+    return list;
   }
 
-  static BitSet bsSelect(Token token, int i2) {
-    if (token.tok != bitset)
-      return null;
-    BitSet bs = (BitSet)token.value;
+  static BitSet bsSelect(Token token) {
+    selectItem(token, -1);
+    return (BitSet)token.value;
+  }
+
+  static Token selectItem(Token token, int i2) {
+    BitSet bs = null;
+    String[] st = null;
+    String s =null;
+    
     int i1 = token.intValue;
     if (i1 == Integer.MAX_VALUE) {
       if (i2 > 0)
         token.intValue = i2;
-      return bs;
+      return token;
     }
-    int len = bs.size();
+    int len = 0;
     int n = 0;
+    switch (token.tok) {
+    case Token.bitset:
+      bs = (BitSet) token.value;
+      len = bs.size();
+      break;
+    case Token.list:
+      st = (String[]) token.value;
+      len = st.length;
+      break;
+    case Token.string:
+      s = (String) token.value;
+      len = s.length();
+    }
     if (i2 == 0)
       i2 = len;
     else if (i2 < 0)
       i2 = i1;
-    for (int j = 0; j < len; j++)
-      if (bs.get(j) && (++n < i1 || n > i2))
-        bs.clear(j);
+    else if (i2 > len)
+      i2 = len;
+    else if (i2 < i1)
+      i2 = i1;
+
     token.intValue = Integer.MAX_VALUE;
-    return bs;
+
+    switch (token.tok) {
+    case Token.bitset:
+      for (int j = 0; j < len; j++)
+        if (bs.get(j) && (++n < i1 || n > i2))
+          bs.clear(j);
+      return token;
+    case Token.string:
+      if (i1 < 1 || i1 > len)
+        token.value = "";
+      else
+        token.value = s.substring(i1 - 1, i2);
+      return token;
+    case Token.list:
+      if (i1 < 1 || i1 > len || i2 > len)
+        return new Token(Token.string, "");     
+      if (i2 == i1)
+        return new Token(Token.string, st[i1 - 1]);
+      String[]list = new String[i2 - i1 + 1];
+      for (int i = 0; i < list.length; i++)
+        list[i] = st[i + i1 - 1];
+      token.value = list;
+      return token;
+    }
+    return token;
   }
   
 
@@ -653,12 +732,12 @@ public class Token {
   final static Object[] arrayPairs  = {
     // commands
     "backbone",          new Token(backbone,  onDefault1, "backbone"),
-    "background",        new Token(background,   maxArg2, "background"),
+    "background",        new Token(background, varArgCount, "background"),
     "cartoon",           new Token(cartoon,   onDefault1, "cartoon"),
     "cartoons",          null,
     "center",            new Token(center,   varArgCount, "center"),
     "centre",            null,
-    "color",             new Token(color,        maxArg4, "color"),
+    "color",             new Token(color,    varArgCount, "color"),
     "colour",            null,
     "connect",           new Token(connect,  varArgCount, "connect"),
     "data",              new Token(data,         maxArg2, "data"),
@@ -701,7 +780,7 @@ public class Token {
     "cpk",               null,
     "ssbond",            new Token(ssbond,    onDefault1, "ssbond"),
     "ssbonds",           null,
-    "stereo",            new Token(stereo,       maxArg3, "stereo"),
+    "stereo",            new Token(stereo,   varArgCount, "stereo"),
     "strand",            new Token(strands,   onDefault1, "strand"),
     "strands",           null,
     "trace",             new Token(trace,     onDefault1, "trace"),

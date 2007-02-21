@@ -534,7 +534,7 @@ class Text {
             zSlab);
   }
   
-  String[] split(String text, char ch) {
+  static String[] split(String text, char ch) {
     int n = 1;
     int i = text.indexOf(ch);
     String[] lines;

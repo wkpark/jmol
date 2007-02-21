@@ -368,9 +368,9 @@ class AminoPolymer extends AlphaPolymer {
     Point3f carbon2 = trailingResidue.getCarbonylCarbonAtomPoint();
 
     trailingResidue.phi = Measurement.computeTorsion(carbon1, nitrogen2,
-                                            alphacarbon2, carbon2);
+                                            alphacarbon2, carbon2, true);
     leadingResidue.psi = Measurement.computeTorsion(nitrogen1, alphacarbon1,
-                                            carbon1, nitrogen2);
+                                            carbon1, nitrogen2, true);
   }
   
   

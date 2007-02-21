@@ -8112,8 +8112,7 @@ class Eval { //implements Runnable {
       } else if (wasX && x.tok == Token.decimal
           && ((Float) x.value).floatValue() < 0) {
         addOp(Token.tokenMinus);
-        xStack[xPt] = new Token(Token.decimal, new Float(-((Float) x.value)
-            .floatValue()));
+        xStack[xPt] = new Token(Token.decimal, new Float(-Token.fValue(x)));
       } else {
         xStack[xPt] = x;
       }
@@ -8122,7 +8121,7 @@ class Eval { //implements Runnable {
 
     boolean addOp(Token op) throws ScriptException {
 
-      dumpStacks();
+      //dumpStacks();
 
       // Do we have the appropriate context for this operator?
 
@@ -8139,7 +8138,7 @@ class Eval { //implements Runnable {
         if (wasX)
           break;
         addX(0);
-        op = new Token(Token.unaryMinus);
+        op = new Token(Token.unaryMinus, "-");
         break;
       case Token.opNot:
       case Token.leftparen:
@@ -8448,9 +8447,12 @@ class Eval { //implements Runnable {
           }
         }
         return addX(Token.fValue(x1) + Token.fValue(x2));
-      case Token.unaryMinus:
       case Token.hyphen:
         if (x1.tok == Token.integer)
+          return addX(x1.intValue - Token.iValue(x2));
+        //fall through
+      case Token.unaryMinus:
+        if (x1.tok == Token.integer && x2.tok == Token.integer)
           return addX(x1.intValue - Token.iValue(x2));
         if (x1.tok == Token.xyz) {
           Point3f pt = new Point3f((Point3f) x1.value);

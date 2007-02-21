@@ -6238,7 +6238,7 @@ class Eval { //implements Runnable {
       }
       break;
     }
-    if (pt == statementLength)
+    if (pt >= statementLength)
       badArgumentCount();
 
     tok = statement[pt].tok;

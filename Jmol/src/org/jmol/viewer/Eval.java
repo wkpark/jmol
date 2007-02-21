@@ -1026,9 +1026,7 @@ class Eval { //implements Runnable {
       statement = code;
     }
     isExpressionBitSet = false;
-    BitSet bs;
     Rpn rpn = new Rpn(10);
-    int sp = 0;
     int comparisonValue = Integer.MAX_VALUE;
     boolean refreshed = false;
     iToken = 1000;
@@ -1263,7 +1261,7 @@ class Eval { //implements Runnable {
         rpn.dumpStacks();
       endOfStatementUnexpected();
     }
-    bs = (BitSet)result.value;
+    BitSet bs = (BitSet)result.value;
     if (!ignoreSubset && bsSubset != null)
       bs.and(bsSubset);
     if (tempStatement != null) {

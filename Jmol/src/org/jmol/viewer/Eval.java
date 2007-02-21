@@ -7994,7 +7994,8 @@ class Eval { //implements Runnable {
   }
 
   /// Reverse Polish Notation Engine for IF, SET, and %{...} -- Bob Hanson 2/16/2007
-  /// Just a simple RPN processor that can handle boolean, int, float, String, and Point3f
+  /// Just a simple RPN processor that can handle 
+  /// boolean, int, float, String, Point3f, and BitSet
 
   class Rpn {
 
@@ -8045,28 +8046,14 @@ class Eval { //implements Runnable {
     }
 
     boolean addOp(Token op) throws ScriptException {
+
+      // was an operand entered last?
+
       switch (op.tok) {
       case Token.opNot:
       case Token.leftparen:
         if (wasX)
           return false;
-        break;
-      case Token.rightparen:
-        if (parenCount == 0 || !wasX)
-          return false;
-        if (oPt >= 0 && oStack[oPt].tok == Token.leftparen) {
-          oPt--;
-          return wasX = true;
-        }
-        break;
-      case Token.rightsquare:
-        if (squareCount == 0 || !wasX)
-          return false;
-        if (oPt >= 0 && oStack[oPt].tok == Token.leftsquare) {
-          oPt--;
-          doBitsetSelect();
-          return wasX = true;
-        }
         break;
       default:
         if (!wasX)
@@ -8074,30 +8061,31 @@ class Eval { //implements Runnable {
         break;
       }
 
+      //do we need to operate?
+
       while (oPt >= 0 && op.tok != Token.leftparen
           && op.tok != Token.leftsquare && op.tok != Token.opNot
           && Token.prec(oStack[oPt]) >= Token.prec(op)) {
-        if (op.tok == Token.rightparen) {
-          if (parenCount == 0)
+
+        // ) and ] must wait until matching ( or [ is found
+
+        if (op.tok == Token.rightparen && oStack[oPt].tok == Token.leftparen
+            || op.tok == Token.rightsquare
+            && oStack[oPt].tok == Token.leftsquare) {
+          if (op.tok == Token.rightsquare && !doBitsetSelect())
             return false;
-          if (oStack[oPt].tok == Token.leftparen) {
-            parenCount--;
-            oPt--;
-            break;
-          }
-        } else if (op.tok == Token.rightsquare) {
-          if (oStack[oPt].tok == Token.leftsquare) {
-            if (squareCount == 0)
-              return false;
-            squareCount--;
-            oPt--;
-            return doBitsetSelect();
-          }
-        } 
+          break;
+        }
+
+        // if not, it's time to operate
+
         if (!operate(op.tok))
           return false;
-        
+
       }
+
+      // fix up counts and operand flag
+      // right ) and ] are not added to the stack
 
       switch (op.tok) {
       case Token.leftparen:
@@ -8107,17 +8095,22 @@ class Eval { //implements Runnable {
         squareCount++;
         break;
       case Token.rightparen:
+        wasX = true;
+        oPt--;
+        return (parenCount-- > 0);
       case Token.rightsquare:
         wasX = true;
-        break;
+        oPt--;
+        return (squareCount-- > 0);
       case Token.propselector:
         wasX = (op.intValue != Token.distance && op.intValue != Token.label);
         break;
       default:
         wasX = false;
       }
-      if (op.tok == Token.rightparen || op.tok == Token.rightsquare)
-        return true;
+
+      //add the operator if possible
+
       if (++oPt == maxLevel)
         stackOverflow();
       oStack[oPt] = op;

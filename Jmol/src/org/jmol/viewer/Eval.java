@@ -7916,13 +7916,14 @@ class Eval { //implements Runnable {
         sb.append(Group.getSeqcodeString(token.intValue));
         continue;
       case Token.spec_chain:
-        sb.append(':');
+        sb.append("*:");
         sb.append((char) token.intValue);
         continue;
       case Token.spec_alternate:
-        sb.append("%");
-        sb.append("" + token.value);
-        break;
+        sb.append("*%");
+        if (token.value != null)
+          sb.append("" + token.value);
+        continue;
       case Token.spec_model:
         sb.append("*/");
       //fall through

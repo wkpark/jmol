@@ -906,7 +906,20 @@ class Compiler {
    rmh -- Note that these syntax rules have not been recently updated.
    Newer features such as if/else/endif, aa = xxx variation of set aa xxx,
    using file.model instead of * /model, being able to express bitsets within
-   expressions, new CONNECTED syntax, among other things are not represented here. 
+   expressions, new CONNECTED syntax, among other things are not represented here.
+   
+   rmh 2/21/07 -- Up until this time, the compiler output was in Reverse Polish
+   Notation (RPN). I've added an RPN processor to Eval now, so this is no longer
+   necessary. The RPN processor allows processing of math separately from 
+   expressions, but it can (and now does) also process natural-language expressions.
+   
+   The main advantage to this is that the order of tokens out is the same as the 
+   order of all tokens in. This allows for a much more user-friendly syntax for
+   debugging, primarily. In addition, if we wanted, we could now include
+   math in expressions. For example, comparator values would not need to be 
+   constants.  
+   
+   
 
    expression       :: = clauseOr
 
@@ -1003,6 +1016,8 @@ class Compiler {
   int itokenInfix;
 
   boolean addTokenToPostfix(Token token) {
+    if (token == null)
+      return false;
     if (logMessages)
       log("addTokenToPostfix" + token);
     ltokenPostfix.addElement(token);
@@ -1322,7 +1337,7 @@ class Compiler {
     }
     addTokenToPostfix(theToken);
     if (theToken.tok == Token.define)
-      addTokenToPostfix(getToken());
+        addTokenToPostfix(getToken());
     return true;
   }
 

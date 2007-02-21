@@ -120,8 +120,15 @@ public class XmlCmlReader extends XmlReader {
   protected int state = START;
 
   /*
-   * this is a crude implementation of CML. See CifReader for
-   * additional crystallographic capabilities
+   * added 2/2007  Bob Hanson:
+   * 
+   * <crystal id="struct" dictRef="castep:ucell">
+      <cellParameter latticeType="real" parameterType="length"
+        units="castepunits:a">4.592100143433e0 4.592100143433e0 2.957400083542e0</cellParameter>
+      <cellParameter latticeType="real" parameterType="angle"
+        units="castepunits:degree">9.000000000000e1 9.000000000000e1 9.000000000000e1</cellParameter>
+    </crystal>
+
    * 
    */
 
@@ -149,6 +156,7 @@ public class XmlCmlReader extends XmlReader {
   String scalarDictKey;
   String scalarDictValue;
   String scalarTitle;
+  String cellParameterType;
 
   // counter that is incremented each time a molecule element is started and 
   // decremented when finished.  Needed so that only 1 atomSet created for each
@@ -159,7 +167,7 @@ public class XmlCmlReader extends XmlReader {
   public void processStartElement(String uri, String name, String qName,
                                   HashMap atts) {
     //if (!uri.equals(NAMESPACE_URI))
-      //return;
+    //return;
 
     switch (state) {
     case START:
@@ -186,8 +194,7 @@ public class XmlCmlReader extends XmlReader {
           scalarDictKey = scalarDictRef
               .substring(0, (iColon >= 0 ? iColon : 0));
         }
-      }
-      if (name.equals("symmetry")) {
+      } else if (name.equals("symmetry")) {
         state = CRYSTAL_SYMMETRY;
         if (atts.containsKey("spaceGroup")) {
           String spaceGroup = (String) atts.get("spaceGroup");
@@ -196,6 +203,11 @@ public class XmlCmlReader extends XmlReader {
               spaceGroup = spaceGroup.substring(0, i)
                   + spaceGroup.substring((i--) + 1);
           parent.setSpaceGroupName(spaceGroup);
+        }
+      } else if (name.equals("cellParameter")) {
+        if (atts.containsKey("parameterType")) {
+          cellParameterType = (String) atts.get("parameterType");
+          setKeepChars(true);
         }
       }
       break;
@@ -311,12 +323,13 @@ public class XmlCmlReader extends XmlReader {
           atom.atomName = (String) atts.get("label");
         else
           atom.atomName = (String) atts.get("id");
-        if (atts.containsKey("xFract") && parent.iHaveUnitCell) {
+        if (atts.containsKey("xFract")
+            && (parent.iHaveUnitCell || !atts.containsKey("x3"))) {
           coords3D = coordsFractional = true;
           parent.setFractionalCoordinates(true);
-          atom.x = parseFloat((String) atts.get("xFract"));
-          atom.y = parseFloat((String) atts.get("yFract"));
-          atom.z = parseFloat((String) atts.get("zFract"));
+          parent.setAtomCoord(atom, parseFloat((String) atts.get("xFract")),
+              parseFloat((String) atts.get("yFract")), parseFloat((String) atts
+                  .get("zFract")));
         }
         if (atts.containsKey("x3") && !coordsFractional) {
           coords3D = true;
@@ -372,6 +385,25 @@ public class XmlCmlReader extends XmlReader {
         } else {
           state = START;
         }
+      } else if (name.equals("cellParameter") && keepChars) {
+        String[] tokens = getTokens(chars);
+        setKeepChars(false);
+        if (tokens.length != 3 || cellParameterType == null) {
+        } else if (cellParameterType.equals("length")) {
+          parent.needToApplySymmetry = true;
+          for (int i = 0; i < 3; i++) 
+            parent.setUnitCellItem(i, parseFloat(tokens[i]));
+          break;
+        } else if (cellParameterType.equals("angle")) {
+          for (int i = 0; i < 3; i++) 
+            parent.setUnitCellItem(i + 3, parseFloat(tokens[i]));
+          applySymmetry();
+          break;
+        }
+        //if here, then something is wrong
+        Logger.error("bad cellParameter information: parameterType="
+            + cellParameterType + " data=" + chars);
+        parent.setFractionalCoordinates(false);
       }
       break;
     case CRYSTAL_SCALAR:
@@ -411,12 +443,7 @@ public class XmlCmlReader extends XmlReader {
     case MOLECULE:
       if (name.equals("molecule")) {
         if (--moleculeNesting == 0) {
-          try {
-            parent.applySymmetry();
-          } catch (Exception e) {
-            e.printStackTrace();
-            Logger.error("applySymmetry failed: " + e);
-          }
+          applySymmetry();
           state = START;
         } else {
           state = MOLECULE;
@@ -558,6 +585,15 @@ public class XmlCmlReader extends XmlReader {
       collectionName = (String) atts.get("id");
     if (collectionName != null) {
       atomSetCollection.setAtomSetName(collectionName);
+    }
+  }
+  
+  void applySymmetry() {
+    try {
+      parent.applySymmetry();
+    } catch (Exception e) {
+      e.printStackTrace();
+      Logger.error("applySymmetry failed: " + e);
     }
   }
 

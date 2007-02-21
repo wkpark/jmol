@@ -75,7 +75,7 @@ import org.jmol.util.Logger;
  * 
  * Several aspects of CifReader are NOT YET implemented here. 
  * These include loading a specific model when there are several,
- * applying the symmetry, and loading fractional coordinates.
+ * applying the symmetry, and loading fractional coordinates. [DONE for CML reader 2/2007 RMH]
  * 
  * The DOM reader is NOT CHECKED OVER, and I do not think that it supports
  * reading characters between start/end tags:

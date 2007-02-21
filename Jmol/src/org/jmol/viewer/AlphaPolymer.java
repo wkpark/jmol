@@ -119,7 +119,7 @@ class AlphaPolymer extends Polymer {
         Measurement.computeTorsion(monomers[i - 2].getLeadAtomPoint(),
                                    monomers[i - 1].getLeadAtomPoint(),
                                    monomers[i    ].getLeadAtomPoint(),
-                                   monomers[i + 1].getLeadAtomPoint());
+                                   monomers[i + 1].getLeadAtomPoint(), true);
     return angles;
   }
 

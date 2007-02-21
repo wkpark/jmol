@@ -98,14 +98,14 @@ abstract class AtomSetCollectionReader {
    
   
   String[] getTokens() {
-    return Parser.getTokens( line);  
+    return Parser.getTokens(line);  
   }
   
-  String[] getTokens(String s) {
+  static String[] getTokens(String s) {
     return Parser.getTokens(s);  
   }
   
-  String[] getTokens(String s, int iStart) {
+  static String[] getTokens(String s, int iStart) {
     return Parser.getTokens(s, iStart);  
   }
   
@@ -283,7 +283,7 @@ abstract class AtomSetCollectionReader {
       unitcell = null;
     }
     if (!ignoreFileSpaceGroupName)
-      spaceGroup = "unspecified";
+      spaceGroup = "unspecified *";
 
     needToApplySymmetry = false;
   }

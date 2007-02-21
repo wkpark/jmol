@@ -1190,6 +1190,9 @@ class Compiler {
     case Token.percent:
       if (isBitSetExpression && clauseResidueSpec())
         return true;
+    case Token.slash:
+      if (isBitSetExpression && clauseResidueSpec())
+        return true;
     default:
       if (isBitSetExpression) {
         if (tokAttr(tok, Token.atomproperty))

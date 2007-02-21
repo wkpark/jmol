@@ -120,7 +120,8 @@ public class Token {
 
   final static int opOr         = 0  | mathop | 2 << 3;
   final static int opXor        = 1  | mathop | 2 << 3;
-  
+  final static int opToggle     = 2  | mathop | 2 << 3;
+
   final static int opAnd        = 0  | mathop | 3 << 3;
   
   final static int opNot        = 0  | mathop | 4 << 3;
@@ -557,7 +558,6 @@ public class Token {
   final static int connected    = expression | 9;
   final static int altloc       = expression | 10;
   final static int insertion    = expression | 11;
-  final static int opToggle     = expression | 12;
 
   
 

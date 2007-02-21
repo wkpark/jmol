@@ -4982,7 +4982,7 @@ class Eval { //implements Runnable {
   }
 
   BitSet bitSetForModelNumberSet(int[] frameList, int nFrames) {
-    BitSet bs = new BitSet();
+1    BitSet bs = new BitSet();
     if (isSyntaxCheck)
       return bs;
     int modelCount = viewer.getModelCount();
@@ -5002,8 +5002,6 @@ class Eval { //implements Runnable {
         for (int j = model1; j < model2; j++)
           bs.or(viewer.getModelAtomBitSet(j));
       } else {
-        if (!haveFileSet && m > 1000000)
-          m = pt;
         bs.or(viewer.getModelAtomBitSet(viewer.getModelNumberIndex(m, false)));
       }
     }
@@ -7926,7 +7924,7 @@ class Eval { //implements Runnable {
         sb.append("" + token.value);
         break;
       case Token.spec_model:
-        sb.append("/");
+        sb.append("*/");
       //fall through
       case Token.spec_model2:
       case Token.decimal:
@@ -7953,7 +7951,7 @@ class Eval { //implements Runnable {
         sb.append(StateManager.escape((BitSet) token.value));
         continue;
       case Token.spec_atom:
-        sb.append('.');
+        sb.append("*.");
         break;
       case Token.spec_seqcode_range:
         sb.append(Group.getSeqcodeString(token.intValue));

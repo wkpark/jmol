@@ -1157,9 +1157,7 @@ class Compiler {
   boolean clauseNot() {
     if (tokPeek(Token.opNot)) {
       addTokenToPostfix(tokenNext());
-      if (!clauseNot())
-        return false;
-      return true;
+      return clauseNot();
     }
     return clausePrimitive();
   }

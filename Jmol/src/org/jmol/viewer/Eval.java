@@ -8119,7 +8119,7 @@ class Eval { //implements Runnable {
 
     boolean addOp(Token op) throws ScriptException {
 
-      dumpStacks();
+      //dumpStacks();
 
       // Do we have the appropriate context for this operator?
 

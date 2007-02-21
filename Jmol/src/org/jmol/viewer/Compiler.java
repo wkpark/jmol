@@ -61,6 +61,18 @@ class Compiler {
     this.viewer = viewer;
   }
 
+  /**
+   * allows for two kinds of comments. 
+   * 
+   * 1) /** .... ** /  (closing involved two asterisks and slash together, but that can't be shown here.
+   * 2) /* ..... * /  (same deal here).
+   * 
+   * The reason is that /* ... * / will appear as standard in MOVETO command
+   * but we still might want to escape it, so around that you can have /** .... ** /
+   * 
+   * @param script
+   * @return cleaned script
+   */
   static String cleanScriptComments(String script) {
     int pt, pt1;
     while ((pt = script.indexOf("/**")) >= 0) {

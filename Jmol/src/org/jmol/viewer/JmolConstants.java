@@ -145,6 +145,15 @@ final public class JmolConstants {
    message %{{atomno=3}.distance{atomno=4}}
    message %{{atomno=3}.distance{1/2 1/2 1/2}}
    
+   
+   [{....} {....} {...}].measure
+   
+   The [ ].measure syntax accepts from two to four 
+   atom expressions or XYZ coordinates and returns a decimal number for
+   the distance, angle, or dihedral relating these points. 
+   When more than one atom is involved, average positions are used. 
+   
+   
    Note that when more than one atom is involved in a set, 
    the following are different:
    
@@ -156,11 +165,14 @@ final public class JmolConstants {
    x2 is a point representing the VECTOR from the "average position of molecule 2" 
       to the "average position of molecule 1"
 
+   The following are all equivalent:
+   
    x3 = {molecule=1}.xyz.distance{molecule=2}
    x4 = 0.0 + ({molecule=1}.xyz - {molecule=2}.xyz)   
    x5 = ({molecule=1}.xyz - {molecule=2}.xyz).distance{0 0 0}
-
-   These are all equivalent -- the distance from the center of molecule 1
+   x6 = [{molecule=1} {molecule=2}].measure
+   
+   They are all the distance from the center of molecule 1
       to the center of molecule 2
       
 
@@ -173,6 +185,16 @@ final public class JmolConstants {
    
    xyzFile = "" + {selected} + "\n\n" + {selected}.label("%a %x %y %z")
 
+   
+   "....".lines
+   
+   The .lines operator splits a string into an array based on line termination. 
+   
+   "".load("filename")
+   
+   The string data in the file are loaded into the string.
+   If the file does not exist, then the string contains the error message.
+   
    
    WRITE VAR "filename" (application only)
    

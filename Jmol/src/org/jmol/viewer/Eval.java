@@ -5468,6 +5468,7 @@ class Eval { //implements Runnable {
     case Token.distance:
     case Token.ident:
     case Token.label:
+    case Token.load:
       break;
     case Token.identifier:
       String s = parameterAsString(i).toLowerCase();
@@ -8189,7 +8190,7 @@ class Eval { //implements Runnable {
         oPt--;
         return (squareCount-- > 0);
       case Token.propselector:
-        wasX = (op.intValue != Token.distance && op.intValue != Token.label);
+        wasX = (op.intValue != Token.distance && op.intValue != Token.label && op.intValue != Token.load);
         break;
       default:
         wasX = false;
@@ -8320,11 +8321,14 @@ class Eval { //implements Runnable {
             : addX(!Token.bValue(x2)));
       int iv = op.intValue;
       if (op.tok == Token.propselector && iv!= Token.distance
-          && iv != Token.label) {
+          && iv != Token.label && iv != Token.load) {
         if (iv == Token.list) {
           if (x2.tok != Token.string)
             invalidArgument();
-          return addX(Text.split((String)x2.value, '\n'));
+          String s = (String)x2.value;
+          s = Viewer.simpleReplace(s, "\n\r", "\n");
+          s = Viewer.simpleReplace(s, "\r", "\n");
+          return addX(Text.split(s, '\n'));
         }
         if (iv == Token.monitor) {
           float f = getXMeasure(iv, x2);
@@ -8357,6 +8361,12 @@ class Eval { //implements Runnable {
           if (x1.tok != Token.bitset || x2.tok != Token.string)
             return false;
           return addX(getBitsetIdent(Token.bsSelect(x1), (String) x2.value));
+        }
+        if (op.intValue == Token.load) {
+          if (x1.tok != Token.string || x2.tok != Token.string)
+            return false;
+          String s = (isSyntaxCheck ? "" : viewer.getFileAsString((String)x2.value));
+          return addX(s);
         }
         return false;
       case Token.opAnd:

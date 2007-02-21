@@ -1134,6 +1134,7 @@ class Compiler {
     //OrNot: First OR, but if that makes no change, then NOT (special toggle)
     while (tokPeek(Token.opOr) || tokPeek(Token.opXor)
         || tokPeek(Token.opToggle)) {
+      
       Token tokenOr = tokenNext();
       if (!clauseAnd())
         return false;
@@ -1154,6 +1155,7 @@ class Compiler {
     return true;
   }
 
+  // for RPN processor, not reversed
   boolean clauseNot() {
     if (tokPeek(Token.opNot)) {
       addTokenToPostfix(tokenNext());
@@ -1217,12 +1219,10 @@ class Compiler {
         tokenNext();
         if (!clauseOr())
           return false;
-        if (tokPeek() == Token.rightbrace) {
-          tokenNext();
-        } else {
+        if (tokPeek() != Token.rightbrace) {
           if (!clauseOr() || !clauseOr())
             return false;
-          if (!tokenNext(Token.rightbrace))
+          if (tokPeek()!=Token.rightbrace)
             return rightBraceExpected();
         }
         return true;

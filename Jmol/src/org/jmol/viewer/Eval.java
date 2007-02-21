@@ -5382,6 +5382,8 @@ class Eval { //implements Runnable {
           v = getSetCoordinate(i, false, true);
         i = iToken;
         break;
+      case Token.rightbrace:
+        break;
       case Token.dot:
         if (!rpn.addOp(getBitsetPropertySelector(i)))
           invalidArgument();

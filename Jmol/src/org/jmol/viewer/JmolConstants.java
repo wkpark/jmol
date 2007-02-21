@@ -198,8 +198,8 @@ final public class JmolConstants {
    
    WRITE VAR "filename" (application only)
    
-   pdbAtomData = {selected and not hetero}.label("ATOM  %5i %-4a%1A%3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2q%6.2b          %2e%2C")
-   pdbHeteroData =   {selected and hetero}.label("HETATM%5i %-4a%1A%3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2q%6.2b          %2e%2C")
+   pdbAtomData = {selected and not hetero}.label("ATOM  %5i %-4a%1A%3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e%2C")
+   pdbHeteroData =   {selected and hetero}.label("HETATM%5i %-4a%1A%3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e%2C")
    pdbFile = pdbAtomData + pdbHeteroData
    write VAR pdbFile "test.pdb"
    

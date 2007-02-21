@@ -4982,7 +4982,7 @@ class Eval { //implements Runnable {
   }
 
   BitSet bitSetForModelNumberSet(int[] frameList, int nFrames) {
-1    BitSet bs = new BitSet();
+    BitSet bs = new BitSet();
     if (isSyntaxCheck)
       return bs;
     int modelCount = viewer.getModelCount();

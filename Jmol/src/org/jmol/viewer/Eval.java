@@ -1046,18 +1046,18 @@ class Eval { //implements Runnable {
       case Token.expressionEnd:
       case Token.rightbrace:
         break expression_loop;
-      case Token.all:
-        rpn.addX(bsAll());
-        break;
-      case Token.none:
-        rpn.addX( new BitSet());
-        break;
       case Token.opOr:
       case Token.opXor:
       case Token.opAnd:
       case Token.opNot:
       case Token.opToggle:
         rpn.addOp(instruction);
+        break;
+      case Token.all:
+        rpn.addX(bsAll());
+        break;
+      case Token.none:
+        rpn.addX(new BitSet());
         break;
       case Token.within:
         float distance;
@@ -1067,19 +1067,19 @@ class Eval { //implements Runnable {
             distance = floatParameter(++pc);
             Point4f thisPlane = planeParameter(++pc);
             pc = iToken + 1;
-            rpn.addX( viewer.getAtomsWithin(distance, thisPlane));
+            rpn.addX(viewer.getAtomsWithin(distance, thisPlane));
             break;
           } else if (withinSpec.equals("hkl")) {
             distance = floatParameter(++pc);
             Point4f thisPlane = hklParameter(++pc);
             pc = iToken + 1;
-            rpn.addX( viewer.getAtomsWithin(distance, thisPlane));
+            rpn.addX(viewer.getAtomsWithin(distance, thisPlane));
             break;
           } else if (withinSpec.equals("coord")) {
             distance = floatParameter(++pc);
             Point3f thisCoordinate = getCoordinate(++pc, true);
             pc = iToken + 1;
-            rpn.addX( viewer.getAtomsWithin(distance, thisCoordinate));
+            rpn.addX(viewer.getAtomsWithin(distance, thisCoordinate));
             break;
           }
         }
@@ -1093,31 +1093,31 @@ class Eval { //implements Runnable {
         rpn.addX(instruction);
         break;
       case Token.substructure:
-        rpn.addX( getSubstructureSet((String) instruction.value));
+        rpn.addX(getSubstructureSet((String) instruction.value));
         break;
       case Token.selected:
         rpn.addX(copyBitSet(viewer.getSelectionSet()));
         break;
       case Token.subset:
-        rpn.addX( copyBitSet(bsSubset == null ? bsAll() : bsSubset));
+        rpn.addX(copyBitSet(bsSubset == null ? bsAll() : bsSubset));
         break;
       case Token.hidden:
-        rpn.addX( copyBitSet(viewer.getHiddenSet()));
+        rpn.addX(copyBitSet(viewer.getHiddenSet()));
         break;
       case Token.displayed:
-        rpn.addX( invertBitSet(viewer.getHiddenSet()));
+        rpn.addX(invertBitSet(viewer.getHiddenSet()));
         break;
       case Token.visible:
         if (!isSyntaxCheck && !refreshed)
           viewer.setModelVisibility();
         refreshed = true;
-        rpn.addX( viewer.getVisibleSet());
+        rpn.addX(viewer.getVisibleSet());
         break;
       case Token.clickable:
         // a bit different, because it requires knowing what got slabbed
         if (!isSyntaxCheck && allowRefresh)
           refresh();
-        rpn.addX( viewer.getClickableSet());
+        rpn.addX(viewer.getClickableSet());
         break;
       case Token.specialposition:
       case Token.symmetry:
@@ -1131,22 +1131,20 @@ class Eval { //implements Runnable {
       case Token.carbohydrate:
       case Token.purine:
       case Token.pyrimidine:
-        rpn.addX( getAtomBits((String) instruction.value));
+        rpn.addX(getAtomBits((String) instruction.value));
         break;
       case Token.spec_atom:
-        rpn.addX( viewer
-            .getAtomBits("SpecAtom", (String) instruction.value));
+        rpn.addX(viewer.getAtomBits("SpecAtom", (String) instruction.value));
         break;
       case Token.spec_name_pattern:
-        rpn.addX( viewer
-            .getAtomBits("SpecName", (String) instruction.value));
+        rpn.addX(viewer.getAtomBits("SpecName", (String) instruction.value));
         break;
       case Token.bitset:
-        rpn.addX( (BitSet) instruction.value);
+        rpn.addX((BitSet) instruction.value);
         isExpressionBitSet = true;
         break;
       case Token.spec_alternate:
-        rpn.addX( getAtomBits("SpecAlternate", (String) instruction.value));
+        rpn.addX(getAtomBits("SpecAlternate", (String) instruction.value));
         break;
       case Token.spec_model:
       //1002 is equivalent to 1.2 when more than one file is present
@@ -1155,7 +1153,7 @@ class Eval { //implements Runnable {
         if (iModel == Integer.MAX_VALUE) {
           iModel = ((Integer) instruction.value).intValue();
           if (!viewer.haveFileSet()) {
-            rpn.addX( getAtomBits("SpecModel", iModel));
+            rpn.addX(getAtomBits("SpecModel", iModel));
             break;
           }
           if (iModel < 1000)
@@ -1163,26 +1161,26 @@ class Eval { //implements Runnable {
           else
             iModel = (iModel / 1000) * 1000000 + iModel % 1000;
         }
-        rpn.addX( bitSetForModelNumberSet(new int[] { iModel }, 1));
+        rpn.addX(bitSetForModelNumberSet(new int[] { iModel }, 1));
         break;
       case Token.spec_resid:
-        rpn.addX( getAtomBits("SpecResid", instruction.intValue));
+        rpn.addX(getAtomBits("SpecResid", instruction.intValue));
         break;
       case Token.spec_seqcode:
-        rpn.addX( getAtomBits("SpecSeqcode", instruction.intValue));
+        rpn.addX(getAtomBits("SpecSeqcode", instruction.intValue));
         break;
       case Token.spec_chain:
-        rpn.addX( getAtomBits("SpecChain", instruction.intValue));
+        rpn.addX(getAtomBits("SpecChain", instruction.intValue));
         break;
       case Token.spec_seqcode_range:
         int seqcodeA = instruction.intValue;
         int seqcodeB = ((Integer) instruction.value).intValue();
-        rpn.addX( getAtomBits("SpecSeqcodeRange", new int[] { seqcodeA,
-            seqcodeB }));
+        rpn.addX(getAtomBits("SpecSeqcodeRange",
+            new int[] { seqcodeA, seqcodeB }));
         break;
       case Token.cell:
         Point3f pt = (Point3f) instruction.value;
-        rpn.addX( getAtomBits("Cell", new int[] { (int) (pt.x * 1000),
+        rpn.addX(getAtomBits("Cell", new int[] { (int) (pt.x * 1000),
             (int) (pt.y * 1000), (int) (pt.z * 1000) }));
         break;
       case Token.identifier:
@@ -1191,7 +1189,7 @@ class Eval { //implements Runnable {
       case Token.solvent:
       case Token.sidechain:
       case Token.surface:
-        rpn.addX( lookupIdentifierValue((String) instruction.value));
+        rpn.addX(lookupIdentifierValue((String) instruction.value));
         break;
       case Token.opLT:
       case Token.opLE:
@@ -1247,12 +1245,12 @@ class Eval { //implements Runnable {
       }
     }
     /*
-    if (sp != 1) {
-      if (allowUnderflow)
-        return null;
-      mnevalError(GT._("atom expression compiler error - stack over/underflow"));
-    }
-    */
+     if (sp != 1) {
+     if (allowUnderflow)
+     return null;
+     mnevalError(GT._("atom expression compiler error - stack over/underflow"));
+     }
+     */
     Token result = rpn.getResult(allowUnderflow);
     if (result == null) {
       if (allowUnderflow)
@@ -1261,7 +1259,7 @@ class Eval { //implements Runnable {
         rpn.dumpStacks();
       endOfStatementUnexpected();
     }
-    BitSet bs = (BitSet)result.value;
+    BitSet bs = (BitSet) result.value;
     if (!ignoreSubset && bsSubset != null)
       bs.and(bsSubset);
     if (tempStatement != null) {
@@ -8122,7 +8120,7 @@ class Eval { //implements Runnable {
 
     boolean addOp(Token op) throws ScriptException {
 
-      dumpStacks();
+      //dumpStacks();
 
       // Do we have the appropriate context for this operator?
 

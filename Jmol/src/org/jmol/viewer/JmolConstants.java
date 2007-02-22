@@ -64,6 +64,28 @@ final public class JmolConstants {
    allows measurements to be recalculated on the fly.
    
    
+   MEASUREMENT FORMAT STRINGS
+   
+   Measurement format strings can be set using
+   
+   measure "format string..."
+   
+   where the format string may have the following keys:
+   
+    %=      1-based index
+    %VALUE  the value of the measurement
+    %UNITS  the units for the measurement
+    %x1     atom property "x" for atom 1 
+    %x2     atom property "x" for atom 2
+    %x3     atom property "x" for atom 3
+    %x4     atom property "x" for atom 4
+    
+   
+   for example:
+   
+   measure "%a1 -- %VALUE %UNITS --- %a2"
+   
+   
    MATH OPERATOR PRECEDENCE AND PARENTHESES
    
    Jmol 11.1.14 supports full standard operator precedence and parentheses
@@ -218,12 +240,39 @@ final public class JmolConstants {
 
    SELECTED ATOMS FROM ATOM EXPRESSIONS
    
-   You can selecte atoms from an atom expression using [n]. 
+   You can select atoms from an atom expression using [n]. 
    "[0]" means "and everything after".
    
    x = {atom expression}[3].ident
    x = {atom expression}[3][0].xyz   # 3 and after (average position)
    x = {atom expression}[3][5].x     # 3-5 (average x)
+   
+
+   SELECTED BONDS FROM EXPRESSIONS
+   
+   You can select bonds from an atom expression
+   
+   x = {atom expression}.bonds.ident
+   x = {atom expression}.bonds[3].ident
+   
+   BOND INFORMATION
+   
+   You can specify how to label a set of bonds using format strings.
+   Numbers are currently in Angstroms. Keys are 
+   
+    %#      sequential number
+    %=      file 1-based index
+    %ORDER  the bond order
+    %TYPE   the bond type
+    %LENGTH the bond length
+    %x1     atom property "x" for atom 1 
+    %x2     atom property "x" for atom 2
+    
+    The special atom properties %D1 and %D2 give sequential numbers for the
+    atoms FOR THIS SET OF BONDS. This is so that a proper subfile of type MOL
+    could be generated.
+   
+   x = {atom expression}.bonds[3].label("%# %3ORDER %TYPE %a1 %a2 %6.3LENGTH") 
    
    
    TYPE CONVERSION
@@ -235,7 +284,7 @@ final public class JmolConstants {
       decimal    3.5, 3.25E-3
       string     "test" "3.5"
       point3f    {2.3 3.4 5.6} {0 1/2 1}
-      bitset     {oxygen}
+      bitset     {oxygen}   {oxygen}.bonds
       
    These can be mixed and matched to good effect. Certain relatively
    intuitive rules apply. Usually the operand on the left sets
@@ -552,6 +601,10 @@ final public class JmolConstants {
     "single", "double", "triple", "quadruple", "aromatic", "hbond", "partial", "partialDouble", "unspecified"
   };
 
+  final static String[] bondOrderNumbers = {
+    "1", "2", "3", "4", "1.5", "1", "0.5", "1.5", "1"
+  };
+
   final static short[] bondOrderValues = {
     BOND_COVALENT_SINGLE, BOND_COVALENT_DOUBLE, BOND_COVALENT_TRIPLE, BOND_COVALENT_QUADRUPLE,
     BOND_AROMATIC, BOND_H_REGULAR, BOND_PARTIAL01, BOND_PARTIAL12, BOND_ORDER_UNSPECIFIED
@@ -579,6 +632,19 @@ final public class JmolConstants {
     return "?";
   }
 
+  public final static String getBondOrderNumberFromOrder(short order) {
+    if (order == BOND_ORDER_NULL || order == BOND_ORDER_ANY)
+      return "0";
+    if ((order & BOND_HYDROGEN_MASK) != 0)
+      return "1";
+    if ((order & BOND_SULFUR_MASK) != 0)
+      return "1";
+    for (int i = bondOrderValues.length; --i >= 0; ) {
+      if (bondOrderValues[i] == order)
+        return bondOrderNumbers[i];
+    }
+    return "?";
+  }
 
   /* .cube files need this */
   final static float ANGSTROMS_PER_BOHR = 0.5291772f;

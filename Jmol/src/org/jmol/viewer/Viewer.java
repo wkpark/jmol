@@ -1775,6 +1775,11 @@ public class Viewer extends JmolViewer {
     return modelManager.getBondCountInModel(modelIndex);
   }
 
+  BitSet getBondsForSelectedAtoms(BitSet bsAtoms) {
+    //eval
+    return modelManager.getBondsForSelectedAtoms(bsAtoms);
+  }
+
   boolean frankClicked(int x, int y) {
     return modelManager.frankClicked(x, y);
   }

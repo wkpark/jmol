@@ -24,6 +24,7 @@
 package org.jmol.viewer;
 
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -159,7 +160,11 @@ class Measurement {
    this.strFormat = strFormat; 
   }
 
-  void formatMeasurement(String strFormat) {
+  void formatMeasurement(String strFormat, boolean useDefault) {
+    if (strFormat != null && strFormat.length() == 0)
+      strFormat = null;
+    if (!useDefault && strFormat != null && strFormat.indexOf(countPlusIndices[0]+":")!=0)
+      return;
     setFormat(strFormat);
     formatMeasurement();
   }
@@ -238,19 +243,19 @@ class Measurement {
   }
 
   String formatString(float value, String units) {
-    String label = (strFormat != null ? strFormat : viewer
+    String label = (strFormat != null && strFormat.indexOf(countPlusIndices[0]+":")==0? strFormat : viewer
         .getDefaultMeasurementLabel(countPlusIndices[0]));
-    if (label.indexOf("%=") >= 0)
-      label = Viewer.simpleReplace(label, "%=", "" + (index + 1));
-    for (int i = countPlusIndices[0]; --i >= 1;) {
+    label = TextFormat.formatString(label, "#", index + 1);
+    label = TextFormat.formatString(label, "UNITS", units);
+    label = TextFormat.formatString(label, "VALUE", value);
+    for (int i = countPlusIndices[0]; i >= 1;--i) {
       if (label.indexOf("%") < 0)
         break;
-      label = frame.atoms[countPlusIndices[i]].formatLabel(label, (char)('0' + i),
-          value, units);
+      label = frame.atoms[countPlusIndices[i]].formatLabel(label, (char)('0' + i), null);
     }
     if (label == null)
       return "";
-    return label;
+    return label.substring(2);
   }
 
   boolean sameAs(int[] atomCountPlusIndices) {

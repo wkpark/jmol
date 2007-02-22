@@ -584,11 +584,8 @@ final public class Atom extends Point3fi implements Tuple {
    
    int getAtomNumber() {
      int[] atomSerials = group.chain.frame.atomSerials;
-     if (atomSerials != null)
-       return atomSerials[atomIndex];
-     if (group.chain.frame.isZeroBased)
-       return atomIndex;
-     return atomIndex + 1;
+     return (atomSerials != null ? atomSerials[atomIndex]
+        : group.chain.frame.isZeroBased ? atomIndex : atomIndex);
    }
 
    boolean isModelVisible() {
@@ -717,50 +714,6 @@ final public class Atom extends Point3fi implements Tuple {
     return (z - Math.sqrt(dz2) < zCompetitor - Math.sqrt(dz2Competitor));
   }
 
-  /* ***************************************************************
-    * disabled until I (Miguel) figure out how to generate pretty names
-    * without breaking inorganic compounds
-
-   // this requires a 4 letter name, in PDB format
-   // only here for transition purposes
-   static String calcPrettyName(String name) {
-     if (name.length() < 4)
-       return name;
-     char chBranch = name.charAt(3);
-     char chRemote = name.charAt(2);
-     switch (chRemote) {
-     case 'A':
-       chRemote = '\u03B1';
-       break;
-     case 'B':
-       chRemote = '\u03B2';
-       break;
-     case 'C':
-     case 'G':
-       chRemote = '\u03B3';
-       break;
-     case 'D':
-       chRemote = '\u03B4';
-       break;
-     case 'E':
-       chRemote = '\u03B5';
-       break;
-     case 'Z':
-       chRemote = '\u03B6';
-       break;
-     case 'H':
-       chRemote = '\u03B7';
-     }
-     String pretty = name.substring(0, 2).trim();
-     if (chBranch != ' ')
-       pretty += "" + chRemote + chBranch;
-     else
-       pretty += chRemote;
-     return pretty;
-   }
-   
-   */
-   
   /*
    *  DEVELOPER NOTE (BH):
    *  
@@ -1000,11 +953,10 @@ final public class Atom extends Point3fi implements Tuple {
     return group.getInsertionCode();
   }
   String formatLabel(String strFormat) {
-    return formatLabel(strFormat, '\0', 0, "");
+    return formatLabel(strFormat, '\0', null);
   }
 
-  String formatLabel(String strFormat, char chAtom, float thisValue,
-                     String units) {
+  String formatLabel(String strFormat, char chAtom, int[]indices) {
     if (strFormat == null || strFormat.length() == 0)
       return null;
     String strLabel = "";
@@ -1073,9 +1025,8 @@ final public class Atom extends Point3fi implements Tuple {
          case 's': strand (chain)
          case 't': temperature factor
          case 'U': identity
-         case 'u': sUrface distance or provided units
+         case 'u': sUrface distance
          case 'V': van der Waals
-         case 'v': provided value
          case 'x': x coord
          case 'X': fractional X coord
          case 'y': y coord
@@ -1088,11 +1039,12 @@ final public class Atom extends Point3fi implements Tuple {
         char ch0 = ch = strFormat.charAt(ich++);
 
         if (chAtom != '\0' && ich < cch && ch != 'v' && ch != 'u') {
-          if (strFormat.charAt(ich) == chAtom)
-            strFormat = strFormat.substring(0, ich)
-                + strFormat.substring(ich + 1);
-          else
-            ch = '\0'; //skip if not for this atom
+          if (strFormat.charAt(ich) != chAtom) {
+            strLabel = strLabel + "%";
+            ich = ichPercent + 1;
+             continue;
+          }
+          ich++;
         }
         switch (ch) {
         case 'i':
@@ -1127,7 +1079,7 @@ final public class Atom extends Point3fi implements Tuple {
           floatT = getFractionalCoord(ch);
           break;
         case 'D':
-          strT = "" + atomIndex;
+          strT = "" + (indices == null ? atomIndex : indices[atomIndex]);
           break;
         case 'C':
           int formalCharge = getFormalCharge();
@@ -1146,9 +1098,6 @@ final public class Atom extends Point3fi implements Tuple {
           break;
         case 'V':
           floatT = getVanderwaalsRadiusFloat();
-          break;
-        case 'v':
-          floatT = thisValue;
           break;
         case 'I':
           floatT = getBondingRadiusFloat();
@@ -1195,11 +1144,7 @@ final public class Atom extends Point3fi implements Tuple {
           strT = getIdentity();
           break;
         case 'u':
-          if (chAtom == '\0') {
-            floatT = getSurfaceDistance100() / 100f;
-          } else {
-            strT = units;
-          }
+          floatT = getSurfaceDistance100() / 100f;
           break;
         case 'N':
           strT = "" + getMoleculeNumber();

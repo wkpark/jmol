@@ -27,6 +27,7 @@ package org.jmol.viewer;
 
 import org.jmol.g3d.Graphics3D;
 import java.util.Hashtable;
+import org.jmol.util.TextFormat;
 
 class Bond {
 
@@ -55,6 +56,25 @@ class Bond {
     this.colix = colix;
     setMad(mad);
   }
+
+  String getIdentity() {
+    return (index + 1) + " "+ order + " " + atom1.getIdentity() + " -- "
+        + atom2.getIdentity();
+  }
+
+  String formatLabel(String strFormat, int[] indices) {
+    if (strFormat == null || strFormat.length() == 0)
+      return getIdentity();
+    String label = strFormat;
+    label = TextFormat.formatString(label, "=", index + 1);
+    label = TextFormat.formatString(label, "ORDER", getOrderNumber());
+    label = TextFormat.formatString(label, "TYPE", getOrderName());
+    label = TextFormat.formatString(label, "LENGTH", atom1.distance(atom2));
+    label = atom1.formatLabel(label, (char)('0' + 1), indices);
+    label = atom2.formatLabel(label, (char)('0' + 2), indices);
+    return label;
+  }
+
 
   boolean isCovalent() {
     return (order & JmolConstants.BOND_COVALENT_MASK) != 0;
@@ -132,19 +152,11 @@ class Bond {
   }
 
   String getOrderName() {
-    switch (order) {
-    case 1:
-      return "single";
-    case 2:
-      return "double";
-    case 3:
-      return "triple";
-    case 4:
-      return "aromatic";
-    }
-    if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
-      return "hbond";
-    return "unknown";
+    return JmolConstants.getBondOrderNameFromOrder(order);
+  }
+
+  String getOrderNumber() {
+    return JmolConstants.getBondOrderNumberFromOrder(order);
   }
 
   short getColix1() {

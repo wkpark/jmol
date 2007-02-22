@@ -1074,6 +1074,20 @@ public final class Frame {
     return bonds[bondIndex];
   }
 
+  BitSet getBondsForSelectedAtoms(BitSet bsAtoms) {
+    BitSet bs = new BitSet();
+    boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
+    for (int iBond = 0; iBond < bondCount; ++iBond) {
+      Bond bond = bonds[iBond];
+      boolean isSelected1 = bsAtoms.get(bond.atom1.atomIndex);
+      boolean isSelected2 = bsAtoms.get(bond.atom2.atomIndex);
+      if ((!bondSelectionModeOr & isSelected1 & isSelected2)
+          || (bondSelectionModeOr & (isSelected1 | isSelected2)))
+        bs.set(iBond);
+    }
+    return bs;
+  }
+  
   /**
    * When creating a new bond, determine bond diameter from order 
    * @param order
@@ -1330,8 +1344,8 @@ public final class Frame {
         bsFoundRectangle.set(i);
     }
     return bsFoundRectangle;
-  }
-
+  }  
+  
   BondIterator getBondIterator(short bondType, BitSet bsSelected) {
     return new SelectedBondIterator(bondType, bsSelected);
   }
@@ -2964,10 +2978,14 @@ public final class Frame {
     }
 
     void toCartesian(Point3f pt) {
+      if (unitCell == null)
+        return;
       unitCell.toCartesian(pt);
     }
 
     void toFractional(Point3f pt) {
+      if (unitCell == null)
+        return;
       unitCell.toFractional(pt);
     }
 

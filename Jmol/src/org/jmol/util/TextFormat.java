@@ -95,11 +95,101 @@ public class TextFormat {
     if (alignLeft)
       sb.append(value);
     sb.append(padChar0);
-    for (int i = padLength; --i > 0;)
+    for (int i = padLength; --i > 0;) // this is correct, not >= 0
       sb.append(padChar);
     if (!alignLeft)
       sb.append(isNeg ? padChar + value.substring(1) : value);
     return "" + sb;
+  }
+
+  public static String formatString(String strFormat, String key, String strT) {
+    return formatString(strFormat, key, strT, Float.NaN);
+  }
+  
+  public static String formatString(String strFormat, String key, float floatT) {
+    return formatString(strFormat, key, null, floatT);
+  }    
+  public static String formatString(String strFormat, String key, int intT) {
+    return formatString(strFormat, key, "" + intT, Float.NaN);
+  }    
+
+  /**
+   * generic string formatter  based on formatLabel in Atom
+   * 
+   * 
+   * @param strFormat   .... %width.precisionKEY....
+   * @param key      any string to match
+   * @param strT     replacement string or null
+   * @param floatT   replacement float or Float.NaN
+   * @return         formatted string
+   */
+  
+  public static String formatString(String strFormat, String key, String strT,
+                                    float floatT) {
+    if (strFormat == null || strFormat.length() == 0)
+      return null;
+    int len = key.length();
+    if (strFormat.indexOf("%") < 0 || len == 0 || strFormat.indexOf(key) < 0)
+      return strFormat;
+
+    String strLabel = "";
+    int ich, ichPercent, ichKey;
+    for (ich = 0; (ichPercent = strFormat.indexOf('%', ich)) >= 0
+        && (ichKey = strFormat.indexOf(key, ichPercent + 1)) >= 0;) {
+      if (ich != ichPercent)
+        strLabel += strFormat.substring(ich, ichPercent);
+      ich = ichPercent + 1;
+      if (ichKey > ichPercent + 6) {
+        strLabel += '%';
+        continue;//%12.10x
+      }
+      try {
+        boolean alignLeft = false;
+        if (strFormat.charAt(ich) == '-') {
+          alignLeft = true;
+          ++ich;
+        }
+        boolean zeroPad = false;
+        if (strFormat.charAt(ich) == '0') {
+          zeroPad = true;
+          ++ich;
+        }
+        char ch;
+        int width = 0;
+        while ((ch = strFormat.charAt(ich)) >= '0' && (ch <= '9')) {
+          width = (10 * width) + (ch - '0');
+          ++ich;
+        }
+        int precision = Integer.MAX_VALUE;
+        if (strFormat.charAt(ich) == '.') {
+          ++ich;
+          if ((ch = strFormat.charAt(ich)) >= '0' && (ch <= '9')) {
+            precision = ch - '0';
+            ++ich;
+          }
+        }
+        String st = strFormat.substring(ich, ich + len);
+        if (!st.equals(key)) {
+          ich = ichPercent + 1;
+          strLabel += '%';
+          continue;
+        }
+        ich += len;
+        if (!Float.isNaN(floatT))
+          strLabel += TextFormat.format(floatT, width, precision, alignLeft,
+              zeroPad);
+        else if (strT != null)
+          strLabel += TextFormat.format(strT, width, precision, alignLeft,
+              zeroPad);
+      } catch (IndexOutOfBoundsException ioobe) {
+        ich = ichPercent;
+        break;
+      }
+    }
+    strLabel += strFormat.substring(ich);
+    if (strLabel.length() == 0)
+      return null;
+    return strLabel;
   }
 
 }

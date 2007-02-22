@@ -1271,14 +1271,14 @@ class Compiler {
       case Token.colon:
         if (iPrev >= 0) {
           if (getToken() == null || !isToken(Token.integer))
-            return invalidExpressionToken(theToken.toString());
+            return invalidExpressionToken("" + theToken);
           for (int i = theToken.intValue; i >= iPrev; i--)
             bs.set(i);
           break;
         }
       // fall through
       default:
-        return invalidExpressionToken(theToken.toString());
+        return invalidExpressionToken("" + theToken);
       }
     }
     return addTokenToPostfix(new Token(Token.bitset, bs));
@@ -1381,7 +1381,7 @@ class Compiler {
   
    boolean clauseSpecial(int tok) {
     if (itokenInfix != 1)
-      return invalidExpressionToken(tokenNext().toString());
+      return invalidExpressionToken("" + tokenNext());
     tokenNext(); // BONDS
     if (!tokenNext(Token.leftparen)) // (
       return leftParenthesisExpected();

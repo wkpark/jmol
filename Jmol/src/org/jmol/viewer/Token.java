@@ -39,17 +39,19 @@ public class Token {
   int tok;
   Object value;
   int intValue = Integer.MAX_VALUE;
+  int[] intArray;
+
+  Token(int tok, int intValue, Object value, int[] intArray) {
+    this.tok = tok;
+    this.intValue = intValue;
+    this.value = value;
+    this.intArray = intArray;
+  }
 
   Token(int tok, int intValue, Object value) {
     this.tok = tok;
     this.intValue = intValue;
     this.value = value;
-/*
-    if ((intValue & varArgCount) == 0 && (tok & command) != 0) {
-      if ((tok & expressionCommand) != 0)
-        System.out.println("ERROR for " + (tok & 127));
-    }
-*/    
   }
 
   Token(int tok, int intValue) {
@@ -254,6 +256,28 @@ public class Token {
     }
   }
 
+  static int sizeOf(Token x) {
+    switch (x.tok) {
+    case Token.on:
+    case Token.off:
+      return -1;
+    case Token.integer:
+      return -2;
+    case Token.decimal:
+      return -4;
+    case Token.xyz:
+      return -8;
+    case Token.string:
+      return ((String)x.value).length();
+    case Token.list:
+      return ((String[]) x.value).length;
+    case Token.bitset:
+      return Viewer.cardinalityOf(bsSelect(x));
+    default:
+      return 0;
+    }
+  }
+
   static String[] concatList(Token x1, Token x2, boolean x1IsList, boolean x2IsList) {
     String[] list1 = (x1IsList ? (String[]) x1.value
         : new String[] { (String) x1.value });
@@ -279,9 +303,10 @@ public class Token {
     String s =null;
     
     int i1 = token.intValue;
-    if (i1 == Integer.MAX_VALUE) {
+    // maxvalue or positive: atoms; minvalue or negative: bonds
+    if (i1 == Integer.MAX_VALUE || i1 == Integer.MIN_VALUE) {
       if (i2 > 0)
-        token.intValue = i2;
+        token.intValue = (i1 == Integer.MAX_VALUE ? i2 : -i2);
       return token;
     }
     int len = 0;
@@ -299,6 +324,10 @@ public class Token {
       s = (String) token.value;
       len = s.length();
     }
+
+    token.intValue = (i1 >= 0 ? Integer.MAX_VALUE : Integer.MIN_VALUE);
+    i1 = Math.abs(i1);
+      
     if (i2 == 0)
       i2 = len;
     else if (i2 < 0)
@@ -307,8 +336,6 @@ public class Token {
       i2 = len;
     else if (i2 < i1)
       i2 = i1;
-
-    token.intValue = Integer.MAX_VALUE;
 
     switch (token.tok) {
     case Token.bitset:
@@ -602,22 +629,6 @@ public class Token {
 
 
 
-  final static String[] atomPropertyNames = {
-    "atomno", "elemno", "resno", "radius", "temperature", "model",
-    "_bondedCount", "_groupID", "_atomID", "_structure",
-    "occupancy", "polymerLength", "molecule", "cell", "site", 
-    "element", "symop", "surfaceDistance", "atomIndex", 
-    "formalCharge", "phi", "psi", "partialCharge",
-    "atomX", "atomY", "atomZ", "file", "xyz"};
-
-  final static int ATOM_PROPERTY_MASK = 0x1F;  
-
-  final static String getAtomPropertyName(int tok) {
-    if (tok == -1 || tok == Integer.MAX_VALUE || (tok & atomproperty) != atomproperty)
-      return "";
-    return atomPropertyNames[tok & ATOM_PROPERTY_MASK];
-  }
-
   // misc
   final static int off          = bool |  0;
   final static int on           = bool |  1;
@@ -637,6 +648,8 @@ public class Token {
   final static int angle        = misc | 13;
   final static int torsion      = misc | 14;
   final static int coord        = misc | 15;
+  final static int length       = misc | 16;
+  final static int size         = misc | 17;
   final static int shapely      = misc | 18;
 //  final static int restore      = misc | 19; // chime extended
   final static int colorRGB     = misc | 20 | colorparam;
@@ -1037,6 +1050,7 @@ public class Token {
     "quanta",       new Token(quanta, "quanta"),
     "ident",        new Token(ident, "ident"),
     "distance",     new Token(distance, "distance"),
+    "length",       new Token(length, "length"),
     "angle",        new Token(angle, "angle"),
     "torsion",      new Token(torsion, "torsion"),
     "coord",        new Token(coord, "coord"),
@@ -1123,6 +1137,16 @@ public class Token {
     }
   }
 
+  public static String nameOf(int tok) {
+    Enumeration e = map.elements();
+    while (e.hasMoreElements()) {
+      Token token = (Token)e.nextElement();
+      if (token.tok == tok)
+        return "" + token.value;
+    }
+    return "0x"+Integer.toHexString(tok);
+   }
+   
   public String toString() {
     return "Token[" + astrType[tok<=keyword ? tok : keyword] +
       "-" + tok +

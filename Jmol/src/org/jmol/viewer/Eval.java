@@ -1522,7 +1522,7 @@ class Eval { //implements Runnable {
         propertyValue = (int) (atom.z * 100);
         break;
       default:
-        unrecognizedAtomProperty(tokWhat);
+        unrecognizedAtomProperty(Token.nameOf(tokWhat));
       }
       // note that a symop property can be both LE and GT !
       if (propertyBitSet != null) {
@@ -5465,16 +5465,42 @@ class Eval { //implements Runnable {
     setStringProperty("@" + variable, StateManager.escape(bs));
   }
   
-  String getBitsetIdent(BitSet bs, String label) {
+  int[] getAtomIndices(BitSet bs) {
+    int len = bs.size();
+    int n = 0;
+    int atomCount = viewer.getFrame().getAtomCount();
+    int[] indices = new int[atomCount];
+    for (int j = 0; j < len; j++)
+      if (bs.get(j))
+        indices[j] = ++n;
+    return indices;
+  }
+  
+  String getBitsetIdent(BitSet bs, String label, boolean isAtoms, int[] indices) {
     if (bs == null)
       return "";
     StringBuffer s = new StringBuffer();
     int len = bs.size();
     Frame frame = viewer.getFrame();
+    int n = 0;
+    if (indices == null && label.indexOf("%D") > 0)
+      indices = getAtomIndices(bs);
     for (int j = 0; j < len; j++)
       if (bs.get(j)) {
-        s.append((label == null ? frame.getAtomAt(j).getIdentity() : frame
-            .getAtomAt(j).formatLabel(label)));
+        String str = label;
+        if (isAtoms) {
+          if (str == null)
+            str = frame.getAtomAt(j).getIdentity();
+          else
+            str = frame.getAtomAt(j).formatLabel(str, '\0', indices);
+        } else {
+          if (str == null)
+            str = frame.getBondAt(j).getIdentity();
+          else
+            str = frame.getBondAt(j).formatLabel(str, indices);
+        }
+        str = TextFormat.formatString(str, "#", ++n);
+        s.append(str);
         s.append("\n");
       }
     return s.toString();
@@ -5483,11 +5509,14 @@ class Eval { //implements Runnable {
   Token getBitsetPropertySelector(int i) throws ScriptException {
     int tok = getToken(++i).tok;
     switch (tok) {
+    case Token.bonds:
     case Token.monitor:
     case Token.distance:
     case Token.ident:
     case Token.label:
     case Token.load:
+    case Token.length:
+    case Token.list:
       break;
     case Token.identifier:
       String s = parameterAsString(i).toLowerCase();
@@ -5505,6 +5534,8 @@ class Eval { //implements Runnable {
         tok = Token.list;
       else if (s.equals("find"))
         tok = Token.within;
+      else if (s.equals("size"))
+        tok = Token.size;
       else
         invalidArgument();
       break;
@@ -5515,16 +5546,19 @@ class Eval { //implements Runnable {
     return new Token(Token.propselector, tok);
   }
 
-  Object getBitsetAverage(BitSet bs, int tok, Point3f ptRef) throws ScriptException {
+  Object getBitsetAverage(BitSet bs, int tok, Point3f ptRef, boolean isAtoms, int[] indices) throws ScriptException {
+    if (tok == Token.bonds)
+      return (isAtoms ? viewer.getBondsForSelectedAtoms(bs) : bs);
     if (tok == Token.ident)
-      return getBitsetIdent(bs, null);
+      return getBitsetIdent(bs, null, isAtoms, indices);
     int iv = 0;
     float fv = 0;
     int n = 0;
     Point3f pt = new Point3f();
     boolean isInt = true;
-    int atomCount = viewer.getAtomCount();
     Frame frame = viewer.getFrame();
+    if (isAtoms) {
+    int atomCount = viewer.getAtomCount();
     for (int i = 0; i < atomCount; i++)
       if (bs.get(i)) {
         n++;
@@ -5626,10 +5660,31 @@ class Eval { //implements Runnable {
           pt.add(atom);
           break;
         default:
-          unrecognizedAtomProperty(tok);
+          unrecognizedAtomProperty(Token.nameOf(tok));
         }
         isInt = false;
       }
+    }else{
+      int bondCount = viewer.getBondCount();
+      for (int i = 0; i < bondCount; i++)
+        if (bs.get(i)) {
+          n++;
+          Bond bond = frame.getBondAt(i);
+          switch (tok) {
+          case Token.length:
+            fv += bond.atom1.distance(bond.atom2);
+            break;
+          case Token.xyz:
+            pt.add(bond.atom1);
+            pt.add(bond.atom2);
+            n++;
+            break;
+          default:
+            unrecognizedBondProperty(Token.nameOf(tok));
+          }
+          isInt = false;
+        }
+    }
     if (tok == Token.xyz)
       return (n == 0 ? pt : new Point3f(pt.x / n, pt.y / n, pt.z / n));
     if (n == 0)
@@ -6718,6 +6773,10 @@ class Eval { //implements Runnable {
         propertyValue = stringParameter(i);
         propertyName = "title";
         break;
+      case Token.length:
+        propertyValue = new Float(floatParameter(++i));
+        propertyName = "length";
+        break;
       case Token.identifier:
         propertyValue = statement[i].value;
         String str = (String) propertyValue;
@@ -6792,11 +6851,6 @@ class Eval { //implements Runnable {
         if (str.equalsIgnoreCase("DIAMETER")) {
           propertyValue = new Float(floatParameter(++i));
           propertyName = "diameter";
-          break;
-        }
-        if (str.equalsIgnoreCase("LENGTH")) {
-          propertyValue = new Float(floatParameter(++i));
-          propertyName = "length";
           break;
         }
         if (idSeen)
@@ -7736,8 +7790,12 @@ class Eval { //implements Runnable {
     evalError(GT._("unrecognized command") + ": " + statement[0].value);
   }
 
-  void unrecognizedAtomProperty(int propnum) throws ScriptException {
-    evalError(GT._("unrecognized atom property") + ": " + propnum);
+  void unrecognizedAtomProperty(String prop) throws ScriptException {
+    evalError(GT._("unrecognized atom property") + ": " + prop);
+  }
+
+  void unrecognizedBondProperty(String prop) throws ScriptException {
+    evalError(GT._("unrecognized bond property") + ": " + prop);
   }
 
   void filenameExpected() throws ScriptException {
@@ -7916,8 +7974,7 @@ class Eval { //implements Runnable {
           sb.append("(");
         continue;
       case Token.expressionEnd:
-        if (useBraces)
-          sb.append("}");
+        if (useBraces){}
         else if (addParens)
           sb.append(")");
         continue;
@@ -8002,7 +8059,7 @@ class Eval { //implements Runnable {
       case Token.opGT:
       case Token.opLT:
       case Token.opNE:
-        sb.append(Token.getAtomPropertyName(token.intValue));
+        sb.append(Token.nameOf(token.intValue));
         sb.append(" ");
         break;
       case Token.identifier:
@@ -8100,27 +8157,28 @@ class Eval { //implements Runnable {
     }
 
     boolean addX(Token x) throws ScriptException {
-      if (++xPt == maxLevel)
+      if (xPt + 1 == maxLevel)
         stackOverflow();
       if (wasX && x.tok == Token.integer && x.intValue < 0) {
         addOp(Token.tokenMinus);
-        xStack[xPt] = new Token(Token.integer, -x.intValue);
+        xStack[++xPt] = new Token(Token.integer, -x.intValue);
       } else if (wasX && x.tok == Token.decimal
           && ((Float) x.value).floatValue() < 0) {
         addOp(Token.tokenMinus);
-        xStack[xPt] = new Token(Token.decimal, new Float(-Token.fValue(x)));
+        xStack[++xPt] = new Token(Token.decimal, new Float(-Token.fValue(x)));
       } else {
-        xStack[xPt] = x;
+        xStack[++xPt] = x;
       }
       return wasX = true;
     }
 
     boolean addOp(Token op) throws ScriptException {
 
-      //dumpStacks();
-
       // Do we have the appropriate context for this operator?
 
+      //System.out.println ("addOp: "+ op);
+      //dumpStacks();
+      
       boolean isLeftOp = false;
       switch (op.tok) {
       case Token.leftsquare: // two contexts: [x x].distance or {....}[n]
@@ -8152,6 +8210,12 @@ class Eval { //implements Runnable {
               && oStack[oPt].tok == Token.propselector)
           && Token.prec(oStack[oPt]) >= Token.prec(op)) {
 
+        /*dumpStacks();
+        System.out.println("operating, oPt="+oPt+" isLeftOp="+isLeftOp
+            +" oStack[oPt]="+Token.nameOf(oStack[oPt].tok)+"/"+Token.prec(oStack[oPt])
+            +" op="+Token.nameOf(op.tok)+"/" + Token.prec(op));
+        */
+        
         // ) and ] must wait until matching ( or [ is found
 
         if (op.tok == Token.rightparen && oStack[oPt].tok == Token.leftparen)
@@ -8182,9 +8246,11 @@ class Eval { //implements Runnable {
       switch (op.tok) {
       case Token.leftparen:
         parenCount++;
+        wasX = false;
         break;
       case Token.leftsquare:
         squareCount++;
+        wasX = false;
         break;
       case Token.rightparen:
         wasX = true;
@@ -8324,6 +8390,8 @@ class Eval { //implements Runnable {
       if (xPt < 0)
         stackUnderflow();
       Token x2 = xStack[xPt--];
+      if (x2 == null)
+        return false;
 
       //unary:
 
@@ -8332,6 +8400,9 @@ class Eval { //implements Runnable {
             : addX(!Token.bValue(x2)));
       int iv = op.intValue;
       if (op.tok == Token.propselector && !isBinaryProperty(iv)) {
+        if (iv == Token.size) {
+          return addX(Token.sizeOf(x2));
+        }
         if (iv == Token.list) {
           if (x2.tok != Token.string)
             invalidArgument();
@@ -8348,16 +8419,24 @@ class Eval { //implements Runnable {
         }
         if (x2.tok != Token.bitset)
           invalidArgument();
-        return addX(getBitsetAverage(Token.bsSelect(x2), op.intValue, null));
+        Object val = getBitsetAverage(Token.bsSelect(x2), op.intValue, null,
+            x2.intValue >= 0, x2.intArray);
+        if (op.intValue == Token.bonds)
+          return addX(new Token(Token.bitset, Integer.MIN_VALUE, (BitSet) val,
+              x2.intValue >= 0 ? getAtomIndices(Token.bsSelect(x2))
+                  : x2.intArray));
+        return addX(val);
       }
       //binary:
 
       if (xPt < 0)
         stackUnderflow();
       Token x1 = xStack[xPt--];
+      if (x1 == null)
+        return false;
       try {
         if (!checkOK(x1.tok, x2.tok, op.tok))
-            return false;
+          return false;
       } catch (Exception e) {
         return false;
       }
@@ -8367,14 +8446,16 @@ class Eval { //implements Runnable {
         case Token.distance:
           Point3f pt = ptValue(x2);
           if (x1.tok == Token.bitset)
-            return addX(getBitsetAverage(Token.bsSelect(x1), op.intValue, pt));
+            return addX(getBitsetAverage(Token.bsSelect(x1), Token.distance,
+                pt, (x1.intValue >= 0), null));
           else if (x1.tok == Token.xyz)
             return addX(pt.distance((Point3f) x1.value));
           return false;
         case Token.label:
           if (x1.tok != Token.bitset || x2.tok != Token.string)
             return false;
-          return addX(getBitsetIdent(Token.bsSelect(x1), (String) x2.value));
+          return addX(getBitsetIdent(Token.bsSelect(x1), (String) x2.value,
+              (x1.intValue >= 0), x1.intArray));
         case Token.load:
           if (x1.tok != Token.string || x2.tok != Token.string)
             return false;
@@ -8457,7 +8538,7 @@ class Eval { //implements Runnable {
       case Token.hyphen:
         if (x1.tok == Token.integer)
           return addX(x1.intValue - Token.iValue(x2));
-        //fall through
+      //fall through
       case Token.unaryMinus:
         if (x1.tok == Token.integer && x2.tok == Token.integer)
           return addX(x1.intValue - Token.iValue(x2));
@@ -8594,7 +8675,7 @@ class Eval { //implements Runnable {
       case Token.xyz:
         return (Point3f) x.value;
       case Token.bitset:
-        return (Point3f) getBitsetAverage(Token.bsSelect(x), Token.xyz, null);
+          return (Point3f) getBitsetAverage(Token.bsSelect(x), Token.xyz, null, x.intValue >= 0, null);
       default:
         float f = Token.fValue(x);
         return new Point3f(f, f, f);

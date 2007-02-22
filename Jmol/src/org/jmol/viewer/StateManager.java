@@ -416,9 +416,9 @@ class StateManager {
 
     boolean measureAllModels    = false;
     boolean justifyMeasurements = false;
-    String defaultDistanceLabel = "%v %u"; //also %_ and %a1 %a2 %m1 %m2, etc.
-    String defaultAngleLabel    = "%v %u";
-    String defaultTorsionLabel  = "%v %u";
+    String defaultDistanceLabel = "%VALUE %UNITS"; //also %_ and %a1 %a2 %m1 %m2, etc.
+    String defaultAngleLabel    = "%VALUE %UNITS";
+    String defaultTorsionLabel  = "%VALUE %UNITS";
 
     //rendering
 

@@ -310,6 +310,10 @@ class ModelManager {
     return frame.getBondCountInModel(modelIndex);
   }
 
+  BitSet getBondsForSelectedAtoms(BitSet bsAtoms) {
+    return frame.getBondsForSelectedAtoms(bsAtoms);
+  }
+
   int getGroupCount() {
     return frame.getGroupCount();
   }

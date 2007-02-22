@@ -314,7 +314,7 @@ class Measures extends Shape {
             if (isDelete)
               define(atomCountPlusIndices, true);
             else if (strFormat != null)
-              measurements[iThis].formatMeasurement(strFormat);
+              measurements[iThis].formatMeasurement(strFormat, true);
             else
               showHide(atomCountPlusIndices, isHide);
             continue;
@@ -363,7 +363,7 @@ class Measures extends Shape {
       format = null;
     for (int i = measurementCount; --i >= 0;)
       if (bsSelected == null || bsSelected.get(i))
-        measurements[i].formatMeasurement(format);
+        measurements[i].formatMeasurement(format, false);
   }
   
   private Vector getAllInfo() {

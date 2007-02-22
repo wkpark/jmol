@@ -121,6 +121,17 @@ final public class JmolConstants {
    x = {carbon}[3]  # the third carbon atom
    x = {carbon}[3][5]  # the third through fifth carbon atoms
    x = {carbon}[3][0]  # the third through last carbon atoms
+
+   
+   This also works in standard select expressions, but using () instead:
+   
+   select (carbon)[3]  # the third carbon atom
+
+   and anywhere an embedded expression might be found:
+   
+   measure ((_C)[1]) ((_C)[2])
+
+  
    
    ATOM EXPRESSION AUTOMATIC DEFINE
    

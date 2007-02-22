@@ -115,10 +115,11 @@ public class Token {
 
   // precedence is set by the << 3 shift
   
-  final static int leftparen    = 0  | mathop | 1 << 3;
-  final static int rightparen   = 1  | mathop | 1 << 3;
-  final static int leftsquare   = 2  | mathop | 1 << 3;
-  final static int rightsquare  = 3  | mathop | 1 << 3;
+  final static int leftparen    = 0  | mathop | 0 << 3;
+  final static int rightparen   = 1  | mathop | 0 << 3;
+
+  final static int leftsquare   = 0  | mathop | 1 << 3;
+  final static int rightsquare  = 1  | mathop | 1 << 3;
 
   final static int opOr         = 0  | mathop | 2 << 3;
   final static int opXor        = 1  | mathop | 2 << 3;

@@ -1227,7 +1227,18 @@ class Compiler {
         return false;
       if (tokPeek() != Token.rightparen)
         return rightParenthesisExpected();
-      return addTokenToPostfix(tokenNext());
+      addTokenToPostfix(tokenNext());
+      for (int i = 0; i < 2; i++) {
+        if (tokPeek() != Token.leftsquare)
+          break;
+        addTokenToPostfix(tokenNext());
+        if (!clauseOr())
+          return false;
+        if (tokPeek() != Token.rightsquare)
+          return rightBracketExpected();
+        addTokenToPostfix(tokenNext());
+      }
+      return true;
     case Token.leftbrace:
       if (isSetExpression) {
         // allows for the possibility of {x y z} or {a/b c/d e/f}
@@ -1872,6 +1883,10 @@ class Compiler {
 
   private boolean rightBraceExpected() {
     return compileError(GT._("right brace expected"));
+  }
+
+  private boolean rightBracketExpected() {
+    return compileError(GT._("right bracket expected"));
   }
 
   private boolean coordinateExpected() {

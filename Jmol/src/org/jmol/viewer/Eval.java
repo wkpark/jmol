@@ -1049,6 +1049,7 @@ class Eval { //implements Runnable {
     boolean refreshed = false;
     iToken = 1000;
     boolean ignoreSubset = (pcStart < 0);
+    boolean isInMath = false;
     if (ignoreSubset)
       pcStart = -pcStart;
     if (logMessages)
@@ -1073,6 +1074,14 @@ class Eval { //implements Runnable {
       case Token.rightparen:
         rpn.addOp(instruction);
         break;
+      case Token.leftsquare:
+        isInMath = true;
+        rpn.addOp(instruction);
+        break;
+      case Token.rightsquare:
+        isInMath = false;
+        rpn.addOp(instruction);
+        break;        
       case Token.all:
         rpn.addX(bsAll());
         break;
@@ -1187,6 +1196,9 @@ class Eval { //implements Runnable {
         rpn.addX(getAtomBits("SpecResid", instruction.intValue));
         break;
       case Token.spec_seqcode:
+        if (isInMath)
+          rpn.addX(instruction.value);
+        else 
         rpn.addX(getAtomBits("SpecSeqcode", instruction.intValue));
         break;
       case Token.spec_chain:
@@ -7958,6 +7970,8 @@ class Eval { //implements Runnable {
     int tok = statement[0].tok;
     boolean addParens = (Compiler.tokAttr(tok, Token.embeddedExpression));
     boolean useBraces = (tok == Token.ifcmd || tok == Token.set);
+    boolean isInMath = false;
+    
     for (int i = 0; i < statementLength; ++i) {
       if (iToken == i - 1)
         sb.append(" <<");
@@ -7978,6 +7992,12 @@ class Eval { //implements Runnable {
         else if (addParens)
           sb.append(")");
         continue;
+      case Token.leftsquare:
+        isInMath=true;
+        break;
+      case Token.rightsquare:
+        isInMath=false;
+        break;
       case Token.on:
         sb.append("true");
         continue;
@@ -7988,7 +8008,10 @@ class Eval { //implements Runnable {
         sb.append(token.intValue);
         continue;
       case Token.spec_seqcode:
-        sb.append(Group.getSeqcodeString(token.intValue));
+        if (isInMath)
+          sb.append(token.intValue);
+        else
+          sb.append(Group.getSeqcodeString(token.intValue));
         continue;
       case Token.spec_chain:
         sb.append("*:");
@@ -8059,6 +8082,7 @@ class Eval { //implements Runnable {
       case Token.opGT:
       case Token.opLT:
       case Token.opNE:
+        //not quite right -- for "inmath"
         sb.append(Token.nameOf(token.intValue));
         sb.append(" ");
         break;
@@ -8172,12 +8196,26 @@ class Eval { //implements Runnable {
       return wasX = true;
     }
 
+    boolean addX(Object x) throws ScriptException {
+      if (x instanceof Integer)
+        return addX(((Integer)x).intValue());
+      if (x instanceof Float)
+        return addX(((Float)x).floatValue());
+      if (x instanceof String)
+        return addX((String)x);
+      if (x instanceof Point3f)
+        return addX((Point3f)x);
+      if (x instanceof BitSet)
+        return addX((BitSet)x);
+      return false;
+    }
+
     boolean addOp(Token op) throws ScriptException {
 
       // Do we have the appropriate context for this operator?
 
-      //System.out.println ("addOp: "+ op);
-      //dumpStacks();
+      System.out.println ("addOp: "+ op);
+      dumpStacks();
       
       boolean isLeftOp = false;
       switch (op.tok) {
@@ -8210,11 +8248,11 @@ class Eval { //implements Runnable {
               && oStack[oPt].tok == Token.propselector)
           && Token.prec(oStack[oPt]) >= Token.prec(op)) {
 
-        /*dumpStacks();
+        dumpStacks();
         System.out.println("operating, oPt="+oPt+" isLeftOp="+isLeftOp
             +" oStack[oPt]="+Token.nameOf(oStack[oPt].tok)+"/"+Token.prec(oStack[oPt])
             +" op="+Token.nameOf(op.tok)+"/" + Token.prec(op));
-        */
+        
         
         // ) and ] must wait until matching ( or [ is found
 
@@ -8318,35 +8356,35 @@ class Eval { //implements Runnable {
       if (++xPt == maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.integer, x, new Integer(x));
-      return true;
+      return wasX = true;
     }
 
     private boolean addX(float x) throws ScriptException {
       if (++xPt == maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.decimal, new Float(x));
-      return true;
+      return wasX = true;
     }
 
     private boolean addX(String x) throws ScriptException {
       if (++xPt == maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.string, x);
-      return true;
+      return wasX = true;
     }
 
     private boolean addX(String[] x) throws ScriptException {
       if (++xPt == maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.list, x);
-      return true;
+      return wasX = true;
     }
 
     private boolean addX(Point3f x) throws ScriptException {
       if (++xPt == maxLevel)
         stackOverflow();
       xStack[xPt] = new Token(Token.xyz, x);
-      return true;
+      return wasX = true;
     }
 
     boolean addX(BitSet x) throws ScriptException {
@@ -8354,20 +8392,6 @@ class Eval { //implements Runnable {
         stackOverflow();
       xStack[xPt] = new Token(Token.bitset, x);
       return wasX = true;
-    }
-
-    private boolean addX(Object x) throws ScriptException {
-      if (x instanceof Integer)
-        return addX(((Integer)x).intValue());
-      if (x instanceof Float)
-        return addX(((Float)x).floatValue());
-      if (x instanceof String)
-        return addX((String)x);
-      if (x instanceof Point3f)
-        return addX((Point3f)x);
-      if (x instanceof BitSet)
-        return addX((BitSet)x);
-      return false;
     }
 
     void dumpStacks() {

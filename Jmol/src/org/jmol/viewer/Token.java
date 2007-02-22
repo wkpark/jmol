@@ -378,7 +378,7 @@ public class Token {
   // rasmol commands
   final static int backbone     = command |  0 | bool | predefinedset;
   final static int background   = command |  1 | colorparam | setparam;
-  final static int bond         = command |  2 | unimplemented | setparam | bool;
+  final static int bonds        = command |  2 | unimplemented | setparam | expression;
   final static int cartoon      = command |  3 | setparam;
   final static int center       = command |  4 | setparam | expressionCommand;
   final static int clipboard    = command |  5 | unimplemented;
@@ -489,7 +489,6 @@ public class Token {
   // background
   final static int backfade     = setparam |  2;
   final static int bondmode     = setparam |  3;
-  final static int bonds        = setparam |  4 | expression;
   // cartoon
   final static int cisangle     = setparam |  6;
   final static int fontsize     = setparam |  7;
@@ -822,7 +821,6 @@ public class Token {
     
     // unimplemented
     
-    "bond",              new Token(bond, "bond"),
     "clipboard",         new Token(clipboard, "clipboard"),
     "print",             new Token(print, "print"),
     "renumber",          new Token(renumber, "renumber"),
@@ -888,6 +886,7 @@ public class Token {
     "backfade",     new Token(backfade,        "backfade"),
     "bondmode",     new Token(bondmode,        "bondmode"),
     "bonds",        new Token(bonds,           "bonds"),
+    "bond",         null,
     "cisangle",     new Token(cisangle,        "cisangle"),
     "display",      new Token(display, varArgCount,  "display"),
     "fontsize",     new Token(fontsize,        "fontsize"),

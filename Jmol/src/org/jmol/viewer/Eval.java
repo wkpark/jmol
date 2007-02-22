@@ -2980,7 +2980,7 @@ class Eval { //implements Runnable {
     case Token.insertion:
     case Token.translucent:
     case Token.opaque:
-      colorObject(Token.atom, 1);
+      colorObject(viewer.isBondSelection() ? Token.bonds : Token.atom, 1);
       return;
     case Token.jmol:
     case Token.rasmol:
@@ -3052,9 +3052,6 @@ class Eval { //implements Runnable {
         }
       }
       invalidArgument();
-    case Token.bond:
-      tok = Token.bonds; // special hack for bond/bonds confusion
-    // fall through
     default:
       colorObject(tok, 2);
     }
@@ -4568,7 +4565,6 @@ class Eval { //implements Runnable {
         propertyValue = pt;
         iHaveCoord = true;
         break;
-      case Token.bond:
       case Token.bonds:
         propertyName = "bonds";
         break;
@@ -5128,9 +5124,9 @@ class Eval { //implements Runnable {
       showString(viewer.getAllSettings());
       return;
     }
-    int val = 0;
+    int val = Integer.MAX_VALUE;
     int n = 0;
-    String key;
+    String key = null;
     switch (getToken(1).tok) {
     case Token.axes:
       setAxes(2);
@@ -5179,6 +5175,9 @@ class Eval { //implements Runnable {
     case Token.spin:
       setSpin();
       return;
+    case Token.frank:
+      setFrank(2);
+      return;
     case Token.ssbond:
       setSsbond();
       return;
@@ -5198,62 +5197,57 @@ class Eval { //implements Runnable {
       return;
     case Token.specular:
       if (statementLength == 2 || statement[2].tok != Token.integer) {
-        setBooleanProperty("specular", booleanParameter(2));
-        return;
+        key = "specular";
+        break;
       }
     //fall through
-    case Token.ambient:
-    case Token.diffuse:
     case Token.specpercent:
-      checkLength3();
+      key = "specularPercent";
+    case Token.ambient:
+      if (key == null)
+        key = "ambientPercent";
+    case Token.diffuse:
+      if (key == null)
+        key = "diffusePercent";
       val = intParameter(2);
       if (val > 100 || val < 0)
         numberOutOfRange(0, 100);
-      setIntProperty(parameterAsString(1), val);
-      return;
+      break;
     case Token.specpower:
-      checkLength3();
       val = intParameter(2);
       if (val > 100)
         numberOutOfRange(0, 100);
       if (val >= 0) {
-        setIntProperty((String) "specularPower", val);
-        return;
+        key = "specularPower";
+        break;
       }
       if (val < -10 || val > -1)
         numberOutOfRange(-10, -1);
-      setIntProperty("specularExponent", -val);
-      return;
+      val = -val;
+      key = "specularExponent";
+      break;
     case Token.specexponent:
-      checkLength3();
-      if (val == 0)
-        val = intParameter(2);
+      val = intParameter(2);
       if (val > 10 || val < 1)
         numberOutOfRange(1, 10);
-      setIntProperty("specularExponent", val);
-      return;
-    // not implemented
-    case Token.backfade:
-    case Token.cartoon:
-    case Token.hourglass:
-    case Token.kinemage:
-    case Token.menus:
-    case Token.mouse:
-    case Token.shadow:
-    case Token.slabmode:
-    case Token.transparent:
-    case Token.vectps:
-    case Token.write:
-    // fall through to identifier
-
+      key = "specularExponent";
+      break;
     case Token.bonds:
-    case Token.frank:
-    case Token.help:
+      key = "showMultipleBonds";
+      break;
     case Token.hetero:
+      key = "defaultSelectHetero";
+      break;
     case Token.hydrogen:
-    case Token.identifier:
+      key = "defaultSelectHydrogen";
+      break;
     case Token.radius:
+      key = "solventProbeRadius";
+      break;
     case Token.solvent:
+      key = "solventProbe";
+      break;
+    default:
       key = parameterAsString(1);
       if (key.charAt(0) == '_') //these cannot be set by user
         invalidArgument();
@@ -5305,37 +5299,46 @@ class Eval { //implements Runnable {
           viewer.setBackgroundModel(statement[2].intValue);
         return;
       }
-      if (setParameter(key)) {
-        if (isSyntaxCheck)
-          return;
-      } else {
-        Object v = parameterExpression((getToken(2).tok == Token.opEQ ? 3 : 2),
-            key);
-        if (isSyntaxCheck)
-          return;
-        if (v instanceof Boolean) {
-          setBooleanProperty(key, ((Boolean) v).booleanValue());
-        } else if (v instanceof Integer) {
-          setIntProperty(key, ((Integer) v).intValue());
-        } else if (v instanceof Float) {
-          setFloatProperty(key, ((Float) v).floatValue());
-        } else if (v instanceof String) {
-          setStringProperty(key, (String) v);
-        } else if (v instanceof BitSet) {
-          setIntProperty(key, Viewer.cardinalityOf((BitSet) v));
-        } else if (v instanceof Point3f) {
-          drawPoint(key, (Point3f) v, false);
-          showString("draw " + key + " " + StateManager.escape((Point3f) v)
-              + " off;");
-          return;
-        }
+
+      // deprecated:
+      
+      if (key.equalsIgnoreCase("showSelections")) {
+        key = "selectionHalos";
       }
-      if (!isSyntaxCheck && scriptLevel <= scriptReportingLevel)
-        showString(key + " = " + viewer.getParameterEscaped(key));
+
     }
+    
+    
+    if (setParameter(key, val)) {
+      if (isSyntaxCheck)
+        return;
+    } else {
+      Object v = parameterExpression((getToken(2).tok == Token.opEQ ? 3 : 2),
+          key);
+      if (isSyntaxCheck)
+        return;
+      if (v instanceof Boolean) {
+        setBooleanProperty(key, ((Boolean) v).booleanValue());
+      } else if (v instanceof Integer) {
+        setIntProperty(key, ((Integer) v).intValue());
+      } else if (v instanceof Float) {
+        setFloatProperty(key, ((Float) v).floatValue());
+      } else if (v instanceof String) {
+        setStringProperty(key, (String) v);
+      } else if (v instanceof BitSet) {
+        setIntProperty(key, Viewer.cardinalityOf((BitSet) v));
+      } else if (v instanceof Point3f) {
+        drawPoint(key, (Point3f) v, false);
+        showString("draw " + key + " " + StateManager.escape((Point3f) v)
+            + " off;");
+        return;
+      }
+    }
+    if (!isSyntaxCheck && scriptLevel <= scriptReportingLevel)
+      viewer.showParameter(key, true);
   }
 
-  boolean setParameter(String key) throws ScriptException {
+  boolean setParameter(String key, int intVal) throws ScriptException {
     if (key.equalsIgnoreCase("scriptReportingLevel")) { //11.1.13
       checkLength3();
       int iLevel = intParameter(2);
@@ -5366,6 +5369,10 @@ class Eval { //implements Runnable {
       if (!isSyntaxCheck)
         setBooleanProperty(key, true);
     } else if (statementLength == 3) {
+      if (intVal != Integer.MAX_VALUE) {
+        setIntProperty(key, intVal);
+        return true;
+      }
       getToken(2);
       if (theTok == Token.none) {
         if (!isSyntaxCheck)
@@ -6668,8 +6675,7 @@ class Eval { //implements Runnable {
   void showString(String str) {
     if (isSyntaxCheck)
       return;
-    Logger.warn(str);
-    viewer.scriptEcho(str);
+    viewer.showString(str);
   }
 
   String getIsosurfaceJvxl() {

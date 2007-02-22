@@ -3602,6 +3602,11 @@ public class Viewer extends JmolViewer {
     boolean notFound = false;
     while (true) {
       
+      if (key.equalsIgnoreCase("solventProbe")) {
+        setSolventOn(value);
+        break;
+      }
+
       if (key.equalsIgnoreCase("dynamicMeasurements")) {
         setDynamicMeasurements(value);
         break;
@@ -3682,7 +3687,7 @@ public class Viewer extends JmolViewer {
         setZoomEnabled(value);
         break;
       }
-      if (key.equalsIgnoreCase("solvent")) {
+      if (key.equalsIgnoreCase("solventProbe")) {
         setSolventOn(value);
         break;
       }
@@ -3836,18 +3841,17 @@ public class Viewer extends JmolViewer {
       }
       //these next are deprecated because they don't 
       //give much indication what they really do:
-      if (key.equalsIgnoreCase("bonds")) {
+
+      if (key.equalsIgnoreCase("solvent"))
+        return setBooleanProperty("solventProbe", value, true);
+      if (key.equalsIgnoreCase("bonds")) 
         return setBooleanProperty("showMultipleBonds", value, true);
-      }
-      if (key.equalsIgnoreCase("hydrogen")) { //deprecated
+      if (key.equalsIgnoreCase("hydrogen"))  //deprecated
         return setBooleanProperty("defaultSelectHydrogen", value, true);
-      }
-      if (key.equalsIgnoreCase("hetero")) { //deprecated
+      if (key.equalsIgnoreCase("hetero"))  //deprecated
         return setBooleanProperty("defaultSelectHetero", value, true);
-      }
-      if (key.equalsIgnoreCase("showSelections")) { //deprecated -- see "selectionHalos"
+      if (key.equalsIgnoreCase("showSelections"))  //deprecated -- see "selectionHalos"
         return setBooleanProperty("selectionHalos", value, true);
-      }
       // these next return, because there is no need to repaint
       while (true) {
         if (key.equalsIgnoreCase("bondModeOr")) {
@@ -3925,6 +3929,17 @@ public class Viewer extends JmolViewer {
     setTainted(true);
     refresh(0, "viewer.setBooleanProperty");
     return true;
+  }
+
+  void showParameter(String key, boolean ifNotSet) {
+    String sv = "" + getParameterEscaped(key);
+    if (ifNotSet || sv.indexOf("<not set>") < 0)
+    showString(key + " = " + sv); 
+  }
+  
+  void showString(String str) {
+    Logger.warn(str);
+    scriptEcho(str);
   }
 
   String getAllSettings() {

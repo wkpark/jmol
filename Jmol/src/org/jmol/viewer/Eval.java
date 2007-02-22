@@ -120,17 +120,35 @@ class Eval { //implements Runnable {
     return "ERROR";
   }
 
-  BitSet getAtomBitSet(String atomExpression) throws ScriptException {
-    //SelectionManager 
+  static BitSet getAtomBitSet(Eval e, Viewer viewer, Object atomExpression) {
+    if (atomExpression instanceof BitSet)
+      return (BitSet) atomExpression;
+    if (e == null)
+      e = new Eval(viewer);
     BitSet bs = new BitSet();
-    pushContext();
-    if (loadScript(null, "select (" + atomExpression + ")")) {
-      statement = aatoken[0];
-      bs = expression(statement, 1, false, false);
+    try {
+      e.pushContext();
+      if (e.loadScript(null, "select (" + atomExpression + ")")) {
+        e.statement = e.aatoken[0];
+        bs = e.expression(e.statement, 1, false, false);
+      }
+      e.popContext();
+    } catch (Exception ex) {
+      Logger.error("getAtomBitSet " + atomExpression + "\n" + ex);
     }
-    popContext();
     return bs;
   }
+
+  static Vector getAtomBitSetVector(Eval e, Viewer viewer, Object atomExpression) {
+    Vector V = new Vector();
+    BitSet bs = getAtomBitSet(e, viewer, atomExpression);
+    int atomCount = viewer.getAtomCount();
+    for (int i = 0; i < atomCount; i++)
+      if (bs.get(i))
+        V.add(new Integer(i));
+    return V;
+  }
+
 
   void haltExecution() {
     resumePausedExecution();
@@ -8039,30 +8057,6 @@ class Eval { //implements Runnable {
     public String toString() {
       return message;
     }
-  }
-
-  static BitSet getAtomBitSet(Viewer viewer, Object atomExpression) {
-    if (atomExpression instanceof BitSet)
-      return (BitSet) atomExpression;
-    Eval e = new Eval(viewer);
-    BitSet bs = new BitSet();
-    try {
-      bs = e.getAtomBitSet(atomExpression.toString());
-    } catch (Exception ex) {
-      Logger.error("getAtomBitSet " + atomExpression + "\n" + ex);
-      return bs;
-    }
-    return bs;
-  }
-
-  static Vector getAtomBitSetVector(Viewer viewer, Object atomExpression) {
-    Vector V = new Vector();
-    BitSet bs = getAtomBitSet(viewer, atomExpression);
-    int atomCount = viewer.getAtomCount();
-    for (int i = 0; i < atomCount; i++)
-      if (bs.get(i))
-        V.add(new Integer(i));
-    return V;
   }
 
   /// Reverse Polish Notation Engine for IF, SET, and %{...} -- Bob Hanson 2/16/2007

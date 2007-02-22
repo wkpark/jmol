@@ -1128,13 +1128,11 @@ public class Viewer extends JmolViewer {
 
   BitSet getAtomBitSet(Object atomExpression) {
     // typically a string such as "(atomno < 3)"
-    if (atomExpression instanceof BitSet)
-      return (BitSet)atomExpression;
-    return Eval.getAtomBitSet(this, atomExpression);
+    return Eval.getAtomBitSet(eval, this, atomExpression);
   }
 
   Vector getAtomBitSetVector(Object atomExpression) {
-    return Eval.getAtomBitSetVector(this, atomExpression);
+    return Eval.getAtomBitSetVector(eval, this, atomExpression);
   }
 
   int firstAtomOf(BitSet bs) {

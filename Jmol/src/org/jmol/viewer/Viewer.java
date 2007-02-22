@@ -2188,8 +2188,8 @@ public class Viewer extends JmolViewer {
   void toggleMeasurement(int[] atomCountPlusIndices, String strFormat) {
     //Eval
     if (strFormat != null)
-      setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormat", strFormat);
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "toggle",
+      setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormats", strFormat);
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, (strFormat == null ? "toggle" : "toggleOn"),
         atomCountPlusIndices);
   }
 

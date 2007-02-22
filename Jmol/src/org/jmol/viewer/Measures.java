@@ -123,6 +123,8 @@ class Measures extends Shape {
       define((Vector) value, false, true, false);
     } else if ("toggle".equals(propertyName)) {
       toggle((int[]) value);
+    } else if ("toggleOn".equals(propertyName)) {
+      toggleOn((int[]) value);
     } else if ("pending".equals(propertyName)) {
       pending((int[]) value);
     } else if ("font".equals(propertyName)) {
@@ -181,6 +183,14 @@ class Measures extends Shape {
     else // define OR turn on if measureAllModels
       define(atomCountPlusIndices, false, true);
     setIndices();
+  }
+
+  private void toggleOn(int[] atomCountPlusIndices) {
+    rangeMinMax[0] = Float.MAX_VALUE;
+    //toggling one that is hidden should be interpreted as DEFINE
+    define(atomCountPlusIndices, false, true);
+    setIndices();
+    reformatDistances();
   }
 
   private void delete(Object value) {

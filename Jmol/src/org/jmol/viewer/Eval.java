@@ -3437,7 +3437,7 @@ class Eval { //implements Runnable {
         return;
       }
     }
-    countPlusIndexes[0] = 0;
+    int nAtoms = 0;
     int expressionCount = 0;
     int atomIndex = -1;
     int atomNumber = 0;
@@ -3526,12 +3526,16 @@ class Eval { //implements Runnable {
         if (++expressionCount > 4)
           badArgumentCount();
         monitorExpressions.add(bs);
+        nAtoms = expressionCount;
       } else {
-        if (++countPlusIndexes[0] > 4)
+        if (++nAtoms > 4)
           badArgumentCount();
-        countPlusIndexes[countPlusIndexes[0]] = atomIndex;
+        countPlusIndexes[nAtoms] = atomIndex;
       }
     }
+    countPlusIndexes[0] = nAtoms;
+    if (strFormat != null && strFormat.indexOf(nAtoms + ":") != 0)
+      strFormat = nAtoms + ":" + strFormat;
     if (isAll) {
       if (!isExpression)
         expressionExpected();
@@ -8220,8 +8224,8 @@ class Eval { //implements Runnable {
 
       // Do we have the appropriate context for this operator?
 
-      System.out.println ("addOp: "+ op);
-      dumpStacks();
+      //System.out.println ("addOp: "+ op);
+      //dumpStacks();
       
       boolean isLeftOp = false;
       switch (op.tok) {
@@ -8254,11 +8258,11 @@ class Eval { //implements Runnable {
               && oStack[oPt].tok == Token.propselector)
           && Token.prec(oStack[oPt]) >= Token.prec(op)) {
 
-        dumpStacks();
+        /*dumpStacks();
         System.out.println("operating, oPt="+oPt+" isLeftOp="+isLeftOp
             +" oStack[oPt]="+Token.nameOf(oStack[oPt].tok)+"/"+Token.prec(oStack[oPt])
             +" op="+Token.nameOf(op.tok)+"/" + Token.prec(op));
-        
+        */
         
         // ) and ] must wait until matching ( or [ is found
 

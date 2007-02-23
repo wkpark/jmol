@@ -3565,8 +3565,10 @@ class Eval { //implements Runnable {
   void reset() throws ScriptException {
     if (isSyntaxCheck)
       return;
-    if (statementLength == 1)
+    if (statementLength == 1) {
       viewer.reset();
+      return;
+    }
     String var = parameterAsString(1);
     if (var.charAt(0) == '_')
       invalidArgument();

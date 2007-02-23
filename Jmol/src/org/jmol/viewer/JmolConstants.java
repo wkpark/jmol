@@ -40,6 +40,11 @@ final public class JmolConstants {
    * 
    11.1.14:
    
+   RESET varName
+   
+   reset varName  # clears that variable definition
+   
+   
    "UNSPECIFIED" and "QUADRUPLE" BOND TYPES
    
    An additional bond type is now avaiable: "UNSPECIFIED". 

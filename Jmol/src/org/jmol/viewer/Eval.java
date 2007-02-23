@@ -3568,6 +3568,8 @@ class Eval { //implements Runnable {
     if (statementLength == 1)
       viewer.reset();
     String var = parameterAsString(1);
+    if (var.charAt(0) == '_')
+      invalidArgument();
     viewer.unsetProperty(var);
   }
 

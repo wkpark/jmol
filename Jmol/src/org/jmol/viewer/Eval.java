@@ -5412,13 +5412,18 @@ class Eval { //implements Runnable {
           v = viewer.getParameter(parameterAsString(i));
         break;
       case Token.expressionBegin:
+        boolean isBrace = (getToken(i).tok == Token.leftbrace);
         if ((v = expression(statement,
-            getToken(i).tok == Token.leftbrace ? i + 1 : i, true, true)) == null)
+            isBrace ? i + 1 : i, true, true)) == null)
           v = getSetCoordinate(i, false, true);
         i = iToken;
+        if (i + 1 < statementLength && getToken(i + 1).tok == Token.rightbrace)
+          i++;          
+//        if (isBrace && getToken(++i).tok != Token.rightbrace)
+  //        invalidArgument();
         break;
       case Token.rightbrace:
-        break;
+        invalidArgument();
       case Token.dot:
         if (!rpn.addOp(getBitsetPropertySelector(i)))
           invalidArgument();
@@ -8157,6 +8162,7 @@ class Eval { //implements Runnable {
     int maxLevel;
     int parenCount;
     int squareCount;
+    int braceCount;
     boolean wasX = false;
 
     Rpn(int maxLevel) {
@@ -8305,6 +8311,13 @@ class Eval { //implements Runnable {
       case Token.propselector:
         wasX = !isBinaryProperty(op.intValue);
         break;
+      case Token.leftbrace:
+        braceCount++;
+        wasX = false;
+        break;
+      case Token.rightbrace:
+        if (braceCount-- <= 0)
+          return false;
       default:
         wasX = false;
       }
@@ -8604,6 +8617,7 @@ class Eval { //implements Runnable {
         //  String % n    trim to width n; left justify
         //  String % -n   trim to width n; right justify
         //  Point3f % n   ah... sets to multiple of unit cell!
+        //  bitset % n  
         //  Point3f * Point3f  does dot product
         //  Point3f / Point3f  divides by magnitude
         //  float * Point3f gets magnitude
@@ -8625,6 +8639,13 @@ class Eval { //implements Runnable {
             return addX((int) (f + 0.5f * (f < 0 ? -1 : 1)));
           s = TextFormat.formatDecimal(f, n);
           return addX(s);
+        case Token.string:
+          s = (String) x1.value;
+          if (n == 0)
+            return addX(s.trim());
+          else if (n > 0)
+            return addX(TextFormat.format(s, n, n, true, false));
+          return addX(TextFormat.format(s, -n, n, false, false));
         case Token.list:
           String[] list = (String[]) x1.value;
           for (int i = 0; i < list.length; i++) {
@@ -8636,17 +8657,12 @@ class Eval { //implements Runnable {
               list[i] = TextFormat.format(s, -n, n, false, false);
           }
           return addX(list);
-        case Token.string:
-          s = (String) x1.value;
-          if (n == 0)
-            return addX(s.trim());
-          else if (n > 0)
-            return addX(TextFormat.format(s, n, n, true, false));
-          return addX(TextFormat.format(s, -n, n, false, false));
         case Token.xyz:
           Point3f pt = new Point3f((Point3f) x1.value);
           viewer.toUnitCell(pt, new Point3f(n, n, n));
           return addX(pt);
+        case Token.bitset:
+          return addX(Token.bsSelect(x1, n));
         }
       case Token.slash:
         if (x1.tok == Token.integer && x2.tok == Token.integer

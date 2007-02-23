@@ -1264,6 +1264,9 @@ class Compiler {
     while ((tok = tokPeek()) != Token.nada && tok != Token.rightsquare) {
       if (!clauseOr())
         return false;
+      returnToken();
+      if (tokPeek() != Token.asterisk)
+        tokenNext();
       tok = tokPeek();
       //System.out.println ("clausemath" + Integer.toHexString(tok) + " " + Integer.toHexString(Token.mathop));
       if (tok == Token.rightsquare || !tokAttr(tok, Token.mathop))

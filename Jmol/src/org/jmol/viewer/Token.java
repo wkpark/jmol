@@ -298,6 +298,13 @@ public class Token {
     return (BitSet)token.value;
   }
 
+  static BitSet bsSelect(Token token, int n) {
+    selectItem(token, -1);
+    selectItem(token, 1);
+    selectItem(token, n);
+    return (BitSet)token.value;
+  }
+
   static Token selectItem(Token token, int i2) {
     BitSet bs = null;
     String[] st = null;

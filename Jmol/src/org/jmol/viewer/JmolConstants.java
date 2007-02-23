@@ -237,6 +237,7 @@ final public class JmolConstants {
    write VAR pdbFile "test.pdb"
    
    
+   molFileData = "line1\nline2\nline3\n"+(""+{selected})%-3+(""+{selected}.bonds)%-3+"  0  0  0\n"+{selected}.labels("%-10.4x%-10.4y%-10.4z %2e  0  0  0  0  0")+{selected}.bonds.labels("%3D1%3D2%3ORDER  0  0  0")
    GETPROPERTY "evaluate"
    
    You can now use getProperty to get expression information directly:

@@ -183,7 +183,7 @@ class Group {
   ////////////////////////////////////////////////////////////////
 
   final int getResno() {
-    return seqcode >> 8; 
+    return (seqcode == Integer.MIN_VALUE ? 1 : seqcode >> 8); 
   }
 
   final int getSeqcode() {

@@ -1232,7 +1232,7 @@ class Compiler {
         if (tokPeek() != Token.leftsquare)
           break;
         addTokenToPostfix(tokenNext());
-        if (!clauseOr())
+        if (!clauseMath())
           return false;
         if (tokPeek() != Token.rightsquare)
           return rightBracketExpected();
@@ -1259,6 +1259,21 @@ class Compiler {
     return unrecognizedExpressionToken();
   }
 
+  boolean clauseMath() {
+    int tok;
+    while ((tok = tokPeek()) != Token.nada && tok != Token.rightsquare) {
+      if (!clauseOr())
+        return false;
+      tok = tokPeek();
+      System.out.println ("clausemath" + Integer.toHexString(tok) + " " + Integer.toHexString(Token.mathop));
+      if (tok == Token.rightsquare || !tokAttr(tok, Token.mathop))
+        break;
+      if (tok != Token.leftparen)
+        addTokenToPostfix(tokenNext());
+    }
+    return true;
+  }
+  
   boolean bitset() {
     getToken();
     int iPrev = -1;

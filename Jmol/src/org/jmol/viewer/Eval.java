@@ -1065,15 +1065,6 @@ class Eval { //implements Runnable {
       case Token.expressionEnd:
       case Token.rightbrace:
         break expression_loop;
-      case Token.opOr:
-      case Token.opXor:
-      case Token.opAnd:
-      case Token.opNot:
-      case Token.opToggle:
-      case Token.leftparen:
-      case Token.rightparen:
-        rpn.addOp(instruction);
-        break;
       case Token.leftsquare:
         isInMath = true;
         rpn.addOp(instruction);
@@ -1273,7 +1264,10 @@ class Eval { //implements Runnable {
         rpn.addX(comparatorInstruction(tokWhat, tokOperator, comparisonValue));
         break;
       default:
-        unrecognizedExpression();
+        if (Compiler.tokAttr(instruction.tok, Token.mathop))
+          rpn.addOp(instruction);
+        else
+          unrecognizedExpression();
       }
     }
     /*
@@ -5506,7 +5500,7 @@ class Eval { //implements Runnable {
     int len = bs.size();
     Frame frame = viewer.getFrame();
     int n = 0;
-    if (indices == null && label.indexOf("%D") > 0)
+    if (indices == null && label != null && label.indexOf("%D") > 0)
       indices = getAtomIndices(bs);
     for (int j = 0; j < len; j++)
       if (bs.get(j)) {

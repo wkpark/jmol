@@ -179,25 +179,26 @@ class Measures extends Shape {
     //toggling one that is hidden should be interpreted as DEFINE
     int i = defined(atomCountPlusIndices);
     if (i >= 0 && !measurements[i].isHidden) // delete it
-      define(atomCountPlusIndices, true, false);
+      define(atomCountPlusIndices, true, false, false);
     else // define OR turn on if measureAllModels
-      define(atomCountPlusIndices, false, true);
+      define(atomCountPlusIndices, false, true, false);
     setIndices();
   }
 
   private void toggleOn(int[] atomCountPlusIndices) {
     rangeMinMax[0] = Float.MAX_VALUE;
     //toggling one that is hidden should be interpreted as DEFINE
-    define(atomCountPlusIndices, false, true);
+    bsSelected = new BitSet();
+    define(atomCountPlusIndices, false, true, true);
     setIndices();
     reformatDistances();
   }
 
   private void delete(Object value) {
     if (value instanceof int[])
-      define((int[])value, true, false);
+      define((int[])value, true, false, false);
     else if (value instanceof Integer)
-      define(measurements[((Integer)value).intValue()].countPlusIndices, true, false);
+      define(measurements[((Integer)value).intValue()].countPlusIndices, true, false, false);
   }
  
   private void define(Vector monitorExpressions, boolean isDelete, boolean isShow, boolean isHide) {
@@ -229,10 +230,10 @@ class Measures extends Shape {
       measurements[i].setIndex(i);
   }
   
-  private void define(int[] atomCountPlusIndices, boolean isDelete, boolean isShow) {
+  private void define(int[] atomCountPlusIndices, boolean isDelete, boolean isShow, boolean doSelect) {
     if (viewer.getMeasureAllModelsFlag()) {
       if (isShow) { // make sure all like this are deleted, not just hidden
-        define(atomCountPlusIndices, true, false); // self-reference
+        define(atomCountPlusIndices, true, false, false); // self-reference
         if (isDelete)
           return;
       }
@@ -245,10 +246,10 @@ class Measures extends Shape {
       define(measureList, isDelete, false, false);
       return;
     }    
-    define(atomCountPlusIndices, isDelete);
+    define(atomCountPlusIndices, isDelete, doSelect);
   }
 
-  private void define(int[] atomCountPlusIndices, boolean isDelete) {
+  private void define(int[] atomCountPlusIndices, boolean isDelete, boolean doSelect) {
     int i = defined(atomCountPlusIndices);
     //Logger.debug("define " + isDelete + " " + i + " [" + atomCountPlusIndices[0] + " " + atomCountPlusIndices[1] + " " + atomCountPlusIndices[2] + " " + atomCountPlusIndices[3] + " " + atomCountPlusIndices[4] + "]");
     // nothing to delete and no A-A, A-B-A, A-B-C-B
@@ -271,6 +272,8 @@ class Measures extends Shape {
         measurements[measurementCount] = null;
       } else {
         measurements[i].isHidden = false;
+        if (doSelect)
+          bsSelected.set(i);
       }
       return;
     }
@@ -322,7 +325,7 @@ class Measures extends Shape {
             continue;
           if ((iThis = defined(atomCountPlusIndices)) >= 0) {
             if (isDelete)
-              define(atomCountPlusIndices, true);
+              define(atomCountPlusIndices, true, false);
             else if (strFormat != null)
               measurements[iThis].formatMeasurement(strFormat, true);
             else
@@ -330,7 +333,7 @@ class Measures extends Shape {
             continue;
           }
           if (!isDelete && !isHide && !isShow)
-            define(atomCountPlusIndices, false);
+            define(atomCountPlusIndices, false, true);
           continue;
         }
         nextMeasure(thispt + 1, nPoints, monitorExpressions,

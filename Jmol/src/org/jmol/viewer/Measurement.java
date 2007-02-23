@@ -158,6 +158,7 @@ class Measurement {
 
   void setFormat(String strFormat) {
    this.strFormat = strFormat; 
+//   System.out.println("setFOrmat" + strFormat);
   }
 
   void formatMeasurement(String strFormat, boolean useDefault) {
@@ -171,6 +172,7 @@ class Measurement {
 
   void formatMeasurement() {
     strMeasurement = null;
+ //   System.out.println("formatMeaurement" + index + " " + strFormat);
     if (Float.isNaN(value) || count == 0) {
       strMeasurement = null;
       return;

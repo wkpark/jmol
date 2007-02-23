@@ -783,7 +783,7 @@ public class Token {
     "wait",              null,
     "quit",              new Token(quit,               0, "quit"),
     "refresh",           new Token(refresh,            0, "refresh"),
-    "reset",             new Token(reset,              0, "reset"),
+    "reset",             new Token(reset,        maxArg1, "reset"),
     "restore",           new Token(restore,      maxArg3, "restore"),
     "restrict",          new Token(restrict, varArgCount, "restrict"),
     "hide",              new Token(hide,     varArgCount, "hide"),

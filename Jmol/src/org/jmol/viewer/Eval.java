@@ -3562,8 +3562,13 @@ class Eval { //implements Runnable {
     viewer.requestRepaintAndWait();
   }
 
-  void reset() {
-    viewer.reset();
+  void reset() throws ScriptException {
+    if (isSyntaxCheck)
+      return;
+    if (statementLength == 1)
+      viewer.reset();
+    String var = parameterAsString(1);
+    viewer.unsetProperty(var);
   }
 
   void initialize() {

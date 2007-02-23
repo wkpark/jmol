@@ -6347,7 +6347,7 @@ class Eval { //implements Runnable {
 
     tok = statement[pt].tok;
     String val = parameterAsString(pt);
-
+    
     //write [image|history|state] clipboard
 
     if (val.equalsIgnoreCase("clipboard")) {
@@ -6391,10 +6391,10 @@ class Eval { //implements Runnable {
         type = "JPG";
     }
     boolean isImage = (";JPEG;JPG64;JPG;PPM;PNG;".indexOf(";" + type + ";") >= 0);
-    if (!isImage && ";SPT;HIS;MO;ISO;VAR;".indexOf(";" + type + ";") < 0)
+    if (!isImage && ";SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB;".indexOf(";" + type + ";") < 0)
       evalError(GT._("write what? {0} or {1} \"filename\"", new Object[] {
-          "STATE|HISTORY|IMAGE|ISOSURFACE|MO CLIPBOARD|VAR x",
-          "JPG|JPG64|PNG|PPM|SPT|JVXL" }));
+          "STATE|HISTORY|IMAGE|ISOSURFACE|MO CLIPBOARD|VAR x|COORD",
+          "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB" }));
     if (isSyntaxCheck)
       return;
     if (isImage && isApplet)
@@ -6402,7 +6402,16 @@ class Eval { //implements Runnable {
           "WRITE image"));
     int quality = Integer.MIN_VALUE;
     data = type.intern();
-    if (data == "VAR") {
+    if (data == "PDB") {
+      data = (String) evaluateExpression(viewer,"{selected and not hetero}.label(\"ATOM  %5i %-4a%1A%3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %-2e%2C\");"
+          +"{selected and hetero}.label(\"HETATM%5i %-4a%1A%3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %-2e%2C\")");
+    } else if(data == "XYZ") {
+      data = (String) evaluateExpression(viewer,"\"\" + {selected} + \"\n\n\"+{selected}.label(\"%-2e %10.5x %10.5y %10.5z\")");
+    } else if(data == "MOL") {
+      data = (String) evaluateExpression(viewer,"\"line1\nline2\nline3\n\"+(\"\"+{selected})%-3+(\"\"+{selected}.bonds)%-3+\"  0  0  0\n\""
+          +"+{selected}.labels(\"%-10.4x%-10.4y%-10.4z %2e  0  0  0  0  0\")"
+          +"+{selected}.bonds.labels(\"%3D1%3D2%3ORDER  0  0  0\")");
+    } else if (data == "VAR") {
       data = "" + viewer.getParameter(parameterAsString(2));
     } else if (data == "SPT") {
       if (isCoord) {

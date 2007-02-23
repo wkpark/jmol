@@ -40,6 +40,24 @@ final public class JmolConstants {
    * 
    11.1.14:
    
+   WRITE coord XYZ fileName
+   WRITE coord MOL fileName
+   WRITE coord PDB fileName
+   
+   If three-letter extensions are present, this reduces to:
+   
+   WRITE name.xyz
+   WRITE name.mol
+   WRITE name.pdb
+   
+   nicely complementing 
+   
+   load name.xyz
+   load name.mol
+   load name.pdb
+   
+   
+   
    RESET varName
    
    reset varName  # clears that variable definition

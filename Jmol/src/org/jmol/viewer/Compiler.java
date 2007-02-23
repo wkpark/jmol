@@ -1265,7 +1265,7 @@ class Compiler {
       if (!clauseOr())
         return false;
       tok = tokPeek();
-      System.out.println ("clausemath" + Integer.toHexString(tok) + " " + Integer.toHexString(Token.mathop));
+      //System.out.println ("clausemath" + Integer.toHexString(tok) + " " + Integer.toHexString(Token.mathop));
       if (tok == Token.rightsquare || !tokAttr(tok, Token.mathop))
         break;
       if (tok != Token.leftparen)

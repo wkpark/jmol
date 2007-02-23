@@ -8247,8 +8247,8 @@ class Eval { //implements Runnable {
 
       //do we need to operate?
 
-      while (oPt >= 0
-          && (!isLeftOp || op.tok == Token.leftsquare
+      while (oPt >= 0 
+          && (!isLeftOp && op.tok != Token.leftsquare || op.tok == Token.leftsquare
               && oStack[oPt].tok == Token.propselector)
           && Token.prec(oStack[oPt]) >= Token.prec(op)) {
 

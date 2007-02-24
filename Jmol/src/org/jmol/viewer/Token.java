@@ -205,7 +205,7 @@ public class Token {
       String[] list = (String[]) x.value;
       if (i == Integer.MAX_VALUE)
         return list.length;
-    case Token.string:
+    case Token.string: 
       String s = sValue(x);
       if (s.equalsIgnoreCase("true"))
         return 1;
@@ -238,7 +238,7 @@ public class Token {
       String[] list = (String[]) x.value;
       i = x.intValue;
       if (i != Integer.MAX_VALUE)
-        return (i < 0 || i >= list.length ? "" : list[i]);
+        return (i < 1 || i > list.length ? "" : list[i - 1]);
       StringBuffer sb = new StringBuffer();
       for (i = 0; i < list.length; i++)
         sb.append(list[i] + "\n");

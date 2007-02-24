@@ -447,7 +447,7 @@ public class Jmol extends JPanel {
       System.out.println("  jmol.logger.logLevel=[true|false] (false)");
       System.out.println("  jmol.logger.warn=[true|false] (true)");
       System.out.println("  plugin.dir (unset)");
-      System.out.println("  user.language=[DE|EN|ES|FR|NL|PL|TR] (EN)");
+      System.out.println("  user.language=[CA|CS|DE|EN|ES|FR|NL|PT|TR] (EN)");
 
       System.exit(0);
     }

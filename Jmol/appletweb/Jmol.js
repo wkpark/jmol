@@ -31,6 +31,9 @@ try{if(typeof(_jmol)!="undefined")exit()
 
 // place "?NOAPPLET" on your command line to check applet control action with a textarea
 
+// bob hanson -- jmolEvaluate -- evaluates molecular math 8:37 AM 2/23/2007
+// bob hanson -- jmolScriptMessage -- returns all "scriptStatus" messages 8:37 AM 2/23/2007
+// bob hanson -- jmolScriptEcho -- returns all "scriptEcho" messages 8:37 AM 2/23/2007
 // bob hanson -- jmolScriptWait -- 11:31 AM 5/2/2006
 // bob hanson -- remove trailing separatorHTML in radio groups -- 12:18 PM 5/6/2006
 // bob hanson -- adds support for dynamic DOM script nodes 7:04 AM 5/19/2006
@@ -1133,6 +1136,43 @@ function jmolScriptWait(script, targetSuffix) {
 	s+=Ret[i][j]+"\n"
   return s
 }
+
+function jmolEvaluate(molecularMath, targetSuffix) {
+
+  //carries out molecular math on a model
+
+  if(!targetSuffix)targetSuffix="0"
+  var result = "" + jmolGetPropertyAsJavaObject("evaluate", molecularMath, targetSuffix);
+  var s = result.replace(/\-*\d+/,"")
+  if (s == "" && !isNaN(parseInt(result)))return parseInt(result);
+  var s = result.replace(/\-*\d*\.\d*/,"")
+  if (s == "" && !isNaN(parseFloat(result)))return parseFloat(result);
+  return result;
+}
+
+function jmolScriptEcho(script, targetSuffix) {
+  // returns a newline-separated list of all echos from a script
+  if(!targetSuffix)targetSuffix="0"
+  var Ret=jmolScriptWaitAsArray(script, targetSuffix)
+  var s = ""
+  for(i=Ret.length;--i>=0;)
+  for(j=Ret[i].length;--j>=0;)
+        if (Ret[i][j][1] == "scriptEcho")s+=Ret[i][j][3]+"\n"
+  return s.replace(/ \| /g, "\n")
+}
+
+
+function jmolScriptMessage(script, targetSuffix) {
+  // returns a newline-separated list of all messages from a script, ending with "script completed\n"
+  if(!targetSuffix)targetSuffix="0"
+  var Ret=jmolScriptWaitAsArray(script, targetSuffix)
+  var s = ""
+  for(i=Ret.length;--i>=0;)
+  for(j=Ret[i].length;--j>=0;)
+        if (Ret[i][j][1] == "scriptStatus")s+=Ret[i][j][3]+"\n"
+  return s.replace(/ \| /g, "\n")
+}
+
 
 function jmolScriptWaitAsArray(script, targetSuffix) {
  var ret = ""

@@ -6409,7 +6409,7 @@ class Eval { //implements Runnable {
       data = (String) evaluateExpression(viewer,"\"\" + {selected} + \"\n\n\"+{selected}.label(\"%-2e %10.5x %10.5y %10.5z\")");
     } else if(data == "MOL") {
       data = (String) evaluateExpression(viewer,"\"line1\nline2\nline3\n\"+(\"\"+{selected})%-3+(\"\"+{selected}.bonds)%-3+\"  0  0  0\n\""
-          +"+{selected}.labels(\"%-10.4x%-10.4y%-10.4z %2e  0  0  0  0  0\")"
+          +"+{selected}.labels(\"%10.4x%10.4y%10.4z %-2e  0  0  0  0  0\")"
           +"+{selected}.bonds.labels(\"%3D1%3D2%3ORDER  0  0  0\")");
     } else if (data == "VAR") {
       data = "" + viewer.getParameter(parameterAsString(2));

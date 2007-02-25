@@ -74,16 +74,11 @@ public class Token {
   final static int decimal           =  3;
   final static int string            =  4;
   final static int seqcode           =  5;
-  final static int unknown           =  6;
-  final static int keyword           =  7;
-  final static int whitespace        =  8;
-  final static int comment           =  9;
-  final static int endofline         = 10;
-  final static int endofstatement    = 11;
+  final static int keyword           =  6;
 
   final static String[] astrType = {
     "nada", "identifier", "integer", "decimal", "string",
-    "seqcode",  "unknown", "keyword"
+    "seqcode", "keyword"
   };
 
   final static int command           = (1 <<  8);
@@ -108,6 +103,7 @@ public class Token {
   final static int unimplemented     = (1 << 22);
   final static int mathop            = (1 << 23) | expression;
   final static int comparator        = (1 << 24);
+  final static int mathfunc          = (1 << 25) | expression;
 
   final static int prec(Token op) {
     return ((op.tok >> 3) & 0xF);  
@@ -146,6 +142,23 @@ public class Token {
   final static int unaryMinus   = 0  | mathop | 8 << 3;
   final static int propselector = 1  | mathop | 9 << 3;
 
+  // maximum number of parameters is << 3
+  
+  // distance (Point3f)
+  // label (String format)
+  // within (float min|int tokType|String planeType|String sequence, BitSet atomset|Point3f pt, Point4f plane)
+  // connected(float min, float max, String type, BitSet atomset1, BitSet atomset2)
+  // substructure("smiles")
+
+  final static int distance     = 1  | mathfunc | 2 << 3;
+  final static int angle        = 2  | mathfunc | 4 << 3;
+  final static int label        = 3  | mathfunc | 1 << 3 | command | specialstring;
+  final static int find         = 4  | mathfunc | 1 << 3;
+  final static int within       = 5  | mathfunc | 5 << 3;
+  final static int connected    = 6  | mathfunc | 5 << 3;
+  final static int substructure = 7  | mathfunc | 1 << 3;
+
+  
   final static Point3f pt0 = new Point3f();
 
   static boolean bValue(Token x) {
@@ -385,7 +398,6 @@ public class Token {
   // rasmol commands
   final static int backbone     = command |  0 | bool | predefinedset;
   final static int background   = command |  1 | colorparam | setparam;
-  final static int bonds        = command |  2 | unimplemented | setparam | expression;
   final static int cartoon      = command |  3 | setparam;
   final static int center       = command |  4 | setparam | expressionCommand;
   final static int clipboard    = command |  5 | unimplemented;
@@ -398,7 +410,7 @@ public class Token {
   final static int exit         = command | 12;
   final static int hbond        = command | 13 | setparam | bool | expression;
   final static int help         = command | 14 | setparam | specialstring;
-  final static int label        = command | 15 | specialstring;
+  //final static int label        = command | 15 | specialstring; with mathfunc
   final static int load         = command | 16 | negnums;
   final static int monitor      = command | 18 | setparam | bool | embeddedExpression | expression;
   final static int pause        = command | 19 | misc | specialstring;
@@ -441,6 +453,7 @@ public class Token {
   final static int list         = command | 65 | unimplemented;
   final static int display3d    = command | 66 | unimplemented;
   final static int view         = command | 63 | unimplemented;
+  final static int bonds        = command | 64 | unimplemented | expression | setparam;
   final static int animation    = command | 67;
   final static int frame        = command | 68;
   // jmol commands
@@ -581,17 +594,14 @@ public class Token {
 //  Global Const opprior$ = "12233 555 6789
 //  a and b or c * 3 and b < c 
   // atom expression operators
-  final static int within       = expression | 1;
-  final static int pick         = expression | 2;
-  final static int dot          = expression | 3;
-  final static int colon        = expression | 4;
-  final static int substructure = expression | 5;
-  final static int leftbrace    = expression | 6;
-  final static int rightbrace   = expression | 7;
-  final static int dollarsign   = expression | 8 | objectid;
-  final static int connected    = expression | 9;
-  final static int altloc       = expression | 10;
-  final static int insertion    = expression | 11;
+  final static int pick         = expression | 1;
+  final static int dot          = expression | 2;
+  final static int colon        = expression | 3;
+  final static int leftbrace    = expression | 5;
+  final static int rightbrace   = expression | 6;
+  final static int dollarsign   = expression | 7 | objectid;
+  final static int altloc       = expression | 8;
+  final static int insertion    = expression | 9;
 
   
 
@@ -640,24 +650,22 @@ public class Token {
   final static int off          = bool |  0;
   final static int on           = bool |  1;
 
-  final static int dash         = misc |  0; //backbone
   final static int user         = misc |  1; //cpk & star
-//  final static int x            = misc |  2 | expression;
-//  final static int y            = misc | 3 | expression | predefinedset;
-//  final static int z            = misc |  4 | expression;
-  final static int none         = misc |  5 | expression;
-  final static int normal       = misc |  7;
-  final static int rasmol       = misc |  8;
-  final static int insight      = misc |  9;
-  final static int quanta       = misc | 10;
-  final static int ident        = misc | 11;
-  final static int distance     = misc | 12;
-  final static int angle        = misc | 13;
-  final static int torsion      = misc | 14;
-  final static int coord        = misc | 15;
-  final static int length       = misc | 16;
-  final static int size         = misc | 17;
-  final static int shapely      = misc | 18;
+  final static int none         = misc |  2 | expression;
+  final static int lines        = misc |  3;
+  final static int normal       = misc |  4;
+  final static int rasmol       = misc |  5;
+  final static int insight      = misc |  6;
+  final static int quanta       = misc |  7;
+  final static int ident        = misc |  8;
+  final static int torsion      = misc | 10;
+  final static int coord        = misc | 11 | expression;
+  final static int length       = misc | 12;
+  final static int size         = misc | 13;
+  final static int shapely      = misc | 14;
+  final static int comma        = misc | 15 | expression;
+
+
 //  final static int restore      = misc | 19; // chime extended
   final static int colorRGB     = misc | 20 | colorparam;
   final static int spec_resid           = misc | 21;
@@ -710,6 +718,7 @@ public class Token {
   final static int bitset       = misc | 71;
   final static int last         = misc | 72;
   final static int spec_model2  = misc | 73;
+  final static int point4f      = misc | 74;
   
  
   final static int amino       = predefinedset |  0;
@@ -736,12 +745,19 @@ public class Token {
   final static Token tokenOff = new Token(off, 0, "off");
   final static Token tokenAll = new Token(all, "all");
   final static Token tokenAnd = new Token(opAnd, "and");
+  final static Token tokenOr  = new Token(opOr, "or");
+  final static Token tokenComma = new Token(comma, ",");
   final static Token tokenMinus = new Token(hyphen, "-");
  
   final static Token tokenExpressionBegin =
     new Token(expressionBegin, "expressionBegin");
   final static Token tokenExpressionEnd =
     new Token(expressionEnd, "expressionEnd");
+  final static Token tokenCoordinateBegin =
+    new Token(leftbrace, "{");
+  final static Token tokenCoordinateEnd =
+    new Token(rightbrace, "}");
+
   
   /*
     Note that the Jmol scripting language is case-insensitive.
@@ -979,8 +995,8 @@ public class Token {
     "and",          tokenAnd,
     "&",            null,
     "&&",           null,
-    "or",           new Token(opOr, "or"),
-    ",",            null,
+    "or",           tokenOr,
+    ",",            tokenComma,
     "|",            null,
     "||",           null,
     "not",          new Token(opNot, "not"),
@@ -1041,7 +1057,6 @@ public class Token {
     "on",           tokenOn,
     "true",         null,
 
-    "dash",         new Token(dash, "dash"),
     "user",         new Token(user, "user"),
     "atomx",        new Token(atomX, "atomx"),
     "atomy",        new Token(atomY, "atomy"),

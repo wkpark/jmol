@@ -1788,7 +1788,7 @@ public final class Frame {
   int makeConnections(float minDistance, float maxDistance, short order,
                       int connectOperation, BitSet bsA, BitSet bsB,
                       BitSet bsBonds) {
-    if (connectOperation != JmolConstants.ADJUST_ONLY) {
+    if (connectOperation != JmolConstants.CONNECT_IDENTIFY_ONLY) {
       String stateScript = "connect " + minDistance + " " + maxDistance + " "
           + StateManager.escape(bsA) + " " + StateManager.escape(bsB) + " "
           + JmolConstants.getBondOrderNameFromOrder(order) + " "
@@ -1796,9 +1796,9 @@ public final class Frame {
       stateScript += ";";
       stateScripts.add(stateScript);
     }
-    if (connectOperation == JmolConstants.DELETE_BONDS)
+    if (connectOperation == JmolConstants.CONNECT_DELETE_BONDS)
       return deleteConnections(minDistance, maxDistance, order, bsA, bsB);
-    if (connectOperation == JmolConstants.AUTO_BOND)
+    if (connectOperation == JmolConstants.CONNECT_AUTO_BOND)
       return autoBond(order, bsA, bsB, bsBonds);
     if (order == JmolConstants.BOND_ORDER_NULL)
       order = JmolConstants.BOND_COVALENT_SINGLE; // default 
@@ -1808,7 +1808,7 @@ public final class Frame {
     short mad = getDefaultMadFromOrder(order);
     int nNew = 0;
     int nModified = 0;
-    boolean isAdjustOnly = (connectOperation == JmolConstants.ADJUST_ONLY);
+    boolean identifyOnly = (connectOperation == JmolConstants.CONNECT_IDENTIFY_ONLY);
     for (int iA = atomCount; --iA >= 0;) {
       if (!bsA.get(iA))
         continue;
@@ -1827,17 +1827,17 @@ public final class Frame {
           continue;
         Bond bondAB = atomA.getBond(atomB);
         if (bondAB == null
-            && (isAdjustOnly || JmolConstants.MODIFY_ONLY == connectOperation)
-            || bondAB != null && JmolConstants.CREATE_ONLY == connectOperation)
+            && (identifyOnly || JmolConstants.CONNECT_MODIFY_ONLY == connectOperation)
+            || bondAB != null && JmolConstants.CONNECT_CREATE_ONLY == connectOperation)
           continue;
         float distanceSquared = pointA.distanceSquared(atomB);
         if (distanceSquared < minDistanceSquared
             || distanceSquared > maxDistanceSquared)
           continue;
         if (bondAB != null) {
-          if (order >= 0 && !isAdjustOnly)
+          if (order >= 0 && !identifyOnly)
             bondAB.setOrder(order);
-          if (!isAdjustOnly || order == bondAB.order
+          if (!identifyOnly || order == bondAB.order
               || order == JmolConstants.BOND_ORDER_ANY
               || order == JmolConstants.BOND_H_REGULAR && bondAB.isHydrogen()) {
             bsBonds.set(bondAB.index);

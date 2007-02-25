@@ -34,10 +34,60 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "11.1.14";
+  public final static String version = "11.1.15";
   
   /*
    * 
+   * 
+   11.1.15:
+   
+   merges math functions within(), connected(), substructure() into molecular math
+   
+   adds connected() both for finding atoms and for identifying bonds:
+   
+   xAtoms = connected(3, {carbon})
+   xBonds = connected(1.3,2.5,"single", {carbon} {oxygen})
+   
+   adds
+   
+     x.atoms
+     
+   to go along with x.bonds   
+   
+   adds distance({carbon},{oxygen})
+   adds angle({carbon}[4],{oxygen}[3], {nitrogen}[2])
+   
+   angle function accepts from three or four 
+   atom expressions or XYZ coordinates and returns a decimal number for
+   the distance, angle, or dihedral relating these points. 
+   When more than one atom is involved, average positions are used. 
+   
+   
+   Note that when more than one atom is involved in a set, 
+   the following are different:
+   
+   x1 = {molecule=1}.distance{molecule=2}
+   x2 = {molecule=1}.xyz - {molecule=2}.xyz
+   
+   x1 is a NUMBER that is the "average distance measured 
+      from each molecule 1 atom to the average molecule 2 position"
+   x2 is a point representing the VECTOR from the "average position of molecule 2" 
+      to the "average position of molecule 1"
+
+   The following are all equivalent:
+   
+   x3 = {molecule=1}.xyz.distance{molecule=2}
+   x4 = 0.0 + ({molecule=1}.xyz - {molecule=2}.xyz)   
+   x5 = ({molecule=1}.xyz - {molecule=2}.xyz).distance{0 0 0}
+   x6 = distance({molecule=1} {molecule=2})
+   
+   They are all the distance from the center of molecule 1
+      to the center of molecule 2
+   
+   
+   Implements ({i j:k m n}) bitset option across all commands
+   
+   
    11.1.14:
    
    WRITE coord XYZ fileName
@@ -201,36 +251,7 @@ final public class JmolConstants {
    message %{{atomno=3}.distance{atomno=4}}
    message %{{atomno=3}.distance{1/2 1/2 1/2}}
    
-   
-   [{....} {....} {...}].measure
-   
-   The [ ].measure syntax accepts from two to four 
-   atom expressions or XYZ coordinates and returns a decimal number for
-   the distance, angle, or dihedral relating these points. 
-   When more than one atom is involved, average positions are used. 
-   
-   
-   Note that when more than one atom is involved in a set, 
-   the following are different:
-   
-   x1 = {molecule=1}.distance{molecule=2}
-   x2 = {molecule=1}.xyz - {molecule=2}.xyz
-   
-   x1 is a NUMBER that is the "average distance measured 
-      from each molecule 1 atom to the average molecule 2 position"
-   x2 is a point representing the VECTOR from the "average position of molecule 2" 
-      to the "average position of molecule 1"
-
-   The following are all equivalent:
-   
-   x3 = {molecule=1}.xyz.distance{molecule=2}
-   x4 = 0.0 + ({molecule=1}.xyz - {molecule=2}.xyz)   
-   x5 = ({molecule=1}.xyz - {molecule=2}.xyz).distance{0 0 0}
-   x6 = [{molecule=1} {molecule=2}].measure
-   
-   They are all the distance from the center of molecule 1
-      to the center of molecule 2
-      
+        
 
    {  }.label "xxxx" ATOM PROPERTY FOR IF, SET, and %{}
    
@@ -462,13 +483,12 @@ final public class JmolConstants {
   public final static float DEFAULT_MIN_BOND_DISTANCE = 0.4f;
 
 
-  public final static int DELETE_BONDS     = 0;
-  public final static int MODIFY_ONLY      = 1;
-  public final static int CREATE_ONLY      = 2;
-  public final static int MODIFY_OR_CREATE = 3;
-  public final static int AUTO_BOND        = 4;
-  public final static int ADJUST_ONLY      = 5;
-
+  public final static int CONNECT_DELETE_BONDS     = 0;
+  public final static int CONNECT_MODIFY_ONLY      = 1;
+  public final static int CONNECT_CREATE_ONLY      = 2;
+  public final static int CONNECT_MODIFY_OR_CREATE = 3;
+  public final static int CONNECT_AUTO_BOND        = 4;
+  public final static int CONNECT_IDENTIFY_ONLY    = 5;
   public final static float DEFAULT_MAX_CONNECT_DISTANCE = 100000000f;
   public final static float DEFAULT_MIN_CONNECT_DISTANCE = 0.1f;
   

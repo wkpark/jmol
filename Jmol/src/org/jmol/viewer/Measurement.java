@@ -245,8 +245,11 @@ class Measurement {
   }
 
   String formatString(float value, String units) {
-    String label = (strFormat != null && strFormat.indexOf(countPlusIndices[0]+":")==0? strFormat : viewer
+    String s = countPlusIndices[0]+":";
+    String label = (strFormat != null && strFormat.indexOf(s)==0? strFormat : viewer
         .getDefaultMeasurementLabel(countPlusIndices[0]));
+    if (label.indexOf(s)==0)
+      label = label.substring(2);
     label = TextFormat.formatString(label, "#", index + 1);
     label = TextFormat.formatString(label, "UNITS", units);
     label = TextFormat.formatString(label, "VALUE", value);
@@ -257,7 +260,7 @@ class Measurement {
     }
     if (label == null)
       return "";
-    return label.substring(2);
+    return label;
   }
 
   boolean sameAs(int[] atomCountPlusIndices) {

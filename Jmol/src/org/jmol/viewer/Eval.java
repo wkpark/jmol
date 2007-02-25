@@ -8508,18 +8508,18 @@ class Eval { //implements Runnable {
     }
 
     boolean evaluateDistance(Token[] args) throws ScriptException {
-      Token x2 = getX();
+      Token x1 = getX();
       if (args.length != 1)
         return false;
+      Token x2 = args[0];
       Point3f pt = ptValue(x2);
       Point4f plane = planeValue(x2);
-      Token x1 = args[0];
       if (x1.tok == Token.bitset)
         return addX(getBitsetAverage(Token.bsSelect(x1), Token.distance, pt,
             plane, (x1.intValue >= 0), null));
       else if (x1.tok == Token.xyz)
-        return addX(plane == null ? pt.distance((Point3f) x1.value)
-            : Graphics3D.distanceToPlane(plane, (Point3f) x1.value));
+        return addX(plane == null ? pt.distance(ptValue(x1))
+            : Graphics3D.distanceToPlane(plane, ptValue(x1)));
       return false;
     }
     

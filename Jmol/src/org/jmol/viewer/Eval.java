@@ -270,7 +270,7 @@ class Eval { //implements Runnable {
       errorMessage = compiler.getErrorMessage();
       return false;
     }
-    this.script = compiler.script;
+    this.script = compiler.getScript();
     pc = 0;
     aatoken = compiler.getAatokenCompiled();
     linenumbers = compiler.getLineNumbers();
@@ -284,7 +284,7 @@ class Eval { //implements Runnable {
     isSyntaxCheck = true;
     isScriptCheck = false;
     errorMessage = null;
-    this.script = compiler.script;
+    this.script = compiler.getScript();
     pc = 0;
     aatoken = compiler.getAatokenCompiled();
     linenumbers = compiler.getLineNumbers();
@@ -298,7 +298,7 @@ class Eval { //implements Runnable {
     if (errorMessage != null)
       return errorMessage;
     Vector info = new Vector();
-    info.add(compiler.script);
+    info.add(compiler.getScript());
     info.add(compiler.getAatokenCompiled());
     info.add(compiler.getLineNumbers());
     info.add(compiler.getLineIndices());
@@ -1056,7 +1056,7 @@ class Eval { //implements Runnable {
     int pcStop = pcStart + 1;
     if (logMessages)
       viewer.scriptStatus("start to evaluate expression");
-    expression_loop: for (int pc = pcStart;pc < pcStop; ++pc) {
+    expression_loop: for (int pc = pcStart; pc < pcStop; ++pc) {
       iToken = pc;
       Token instruction = code[pc];
       Object value = code[pc].value;
@@ -1068,17 +1068,20 @@ class Eval { //implements Runnable {
         pcStop = code.length;
       case Token.comma:
         break;
+      case Token.expressionEnd:
+        break expression_loop;
       case Token.leftbrace:
         if (isCoordinate3(pc)) {
           Point3f pt = getCoordinate(pc, true);
-          if (pt == null)
-            invalidArgument();
-          pc = iToken + 1;
+          if (pt != null) {
+            rpn.addX(pt);
+            pc = iToken + 1;
+            break;
+          }
         }
-        break;
-      case Token.expressionEnd:
+        invalidArgument();
       case Token.rightbrace:
-        break expression_loop;
+        break;
       case Token.leftsquare:
         isInMath = true;
         rpn.addOp(instruction);
@@ -1281,7 +1284,8 @@ class Eval { //implements Runnable {
         rpn.dumpStacks();
       endOfStatementUnexpected();
     }
-    BitSet bs = (result.value instanceof BitSet ? (BitSet) result.value : new BitSet());
+    BitSet bs = (result.value instanceof BitSet ? (BitSet) result.value
+        : new BitSet());
     if (!ignoreSubset && bsSubset != null)
       bs.and(bsSubset);
     if (tempStatement != null) {
@@ -5252,7 +5256,7 @@ class Eval { //implements Runnable {
           int i = intParameter(2);
           pt = new Point3f(i, i, i);
         } else {
-          pt = getSetCoordinate(2, false, false);
+          pt = (Point3f) getSetCoordinate(2, false, false, 3);
         }
         if (!isSyntaxCheck)
           viewer.setDefaultLattice(pt);
@@ -5396,7 +5400,7 @@ class Eval { //implements Runnable {
           v = viewer.getParameter(parameterAsString(i));
         break;
       case Token.leftbrace:
-        v = getSetCoordinate(i, false, true);
+        v = getSetCoordinate(i, false, true, 4);
         i = iToken;
         break;        
       case Token.bitset:
@@ -5430,6 +5434,8 @@ class Eval { //implements Runnable {
           rpn.addX(new Token(Token.string, v));
         } else if (v instanceof Point3f) {
           rpn.addX(new Token(Token.xyz, v));
+        } else if (v instanceof Point4f) {
+          rpn.addX(new Token(Token.point4f, v));
         } else if (v instanceof BitSet) {
           rpn.addX(new Token(Token.bitset, v));
         } else if (v instanceof Token) {
@@ -5565,7 +5571,7 @@ class Eval { //implements Runnable {
     return new Token(Token.propselector, tok);
   }
 
-  Object getBitsetAverage(BitSet bs, int tok, Point3f ptRef, boolean isAtoms,
+  Object getBitsetAverage(BitSet bs, int tok, Point3f ptRef, Point4f planeRef, boolean isAtoms,
                           int[] indices) throws ScriptException {
     if (tok == Token.atom)
       return (!isAtoms && !isSyntaxCheck ? getAtomBitsetFromBonds(bs) : bs);
@@ -5578,7 +5584,7 @@ class Eval { //implements Runnable {
     float fv = 0;
     int n = 0;
     Point3f pt = new Point3f();
-    if (tok == Token.distance && ptRef == null)
+    if (tok == Token.distance && ptRef == null && planeRef == null)
       return pt;
     boolean isInt = true;
     Frame frame = viewer.getFrame();
@@ -5679,7 +5685,10 @@ class Eval { //implements Runnable {
             fv += atom.z;
             break;
           case Token.distance:
-            fv += atom.distance(ptRef);
+            if (planeRef != null)
+              fv += Graphics3D.distanceToPlane(planeRef, atom);
+            else
+              fv += atom.distance(ptRef);
             break;
           case Token.xyz:
             pt.add(atom);
@@ -5755,16 +5764,16 @@ class Eval { //implements Runnable {
     }
     // .xyz here?
     Point3f pt = (index == 1 ? getCoordinate(1, true, false, true)
-        : getSetCoordinate(2, false, false));
+        : (Point3f) getSetCoordinate(2, false, false, 3));
     if (!isSyntaxCheck)
       viewer.setCurrentUnitCellOffset(pt);
   }
 
-  Point3f getSetCoordinate(int index, boolean integerOnly, boolean doConvert)
-      throws ScriptException {
+   Object getSetCoordinate(int index, boolean integerOnly, boolean doConvert,
+                          int max3or4) throws ScriptException {
     // { x y z } or {a/b c/d e/f} are encoded in SET commands as seqcodes and model numbers
     // so we decode them here. It's a bit of a pain, but it isn't too bad.
-    float[] coord = new float[3];
+    float[] coord = new float[4];
     int n = -1;
     coordinatesAreFractional = false;
     out: for (int i = index; i < statement.length; i++) {
@@ -5772,12 +5781,14 @@ class Eval { //implements Runnable {
       case Token.rightbrace:
         break out;
       case Token.spec_seqcode:
-        if (++n > 2)
+        if (++n == max3or4)
           invalidArgument();
         coord[n] = ((Integer) theToken.value).intValue();
         break;
       case Token.spec_model:
         if (integerOnly)
+          invalidArgument();
+        if (n > 2) // no fractional coordinates for planes
           invalidArgument();
         coord[n] /= ((Integer) theToken.value).intValue();
         coordinatesAreFractional = true;
@@ -5785,19 +5796,24 @@ class Eval { //implements Runnable {
       case Token.spec_model2:
         if (integerOnly)
           invalidArgument();
-        if (++n > 2)
+        if (++n == max3or4)
           invalidArgument();
         coord[n] = ((Float) theToken.value).floatValue();
         break;
       }
     }
-    if (n != 2)
+    if (n < 2) {
       invalidArgument();
-    Point3f pt = new Point3f(coord[0], coord[1], coord[2]);
-    if (coordinatesAreFractional && doConvert && !isSyntaxCheck) {
-      viewer.toCartesian(pt);
+    } else if (n == 2) {
+      Point3f pt = new Point3f(coord[0], coord[1], coord[2]);
+      if (coordinatesAreFractional && doConvert && !isSyntaxCheck)
+        viewer.toCartesian(pt);
+      return pt;
+    } else if (n == 3) {
+      return new Point4f(coord[0], coord[1], coord[2], coord[3]);
     }
-    return pt;
+    // impossible return
+    return "";
   }
 
   void setFrank(int index) throws ScriptException {
@@ -7863,7 +7879,7 @@ class Eval { //implements Runnable {
     return 0;
   }
 
-  float numberExpected() throws ScriptException {
+  private float numberExpected() throws ScriptException {
     evalError(GT._("number expected"));
     return 0;
   }
@@ -7897,7 +7913,7 @@ class Eval { //implements Runnable {
     evalError(GT._("runtime unrecognized expression"));
   }
 
-  private void endOfStatementUnexpected() throws ScriptException {
+  void endOfStatementUnexpected() throws ScriptException {
     evalError(GT._("unexpected end of script command"));
   }
 
@@ -8078,8 +8094,8 @@ class Eval { //implements Runnable {
       case Token.opLT:
       case Token.opNE:
         //not quite right -- for "inmath"
-        sb.append(Token.nameOf(token.intValue));
-        sb.append(" ");
+        if (token.intValue != Integer.MAX_VALUE)
+          sb.append(Token.nameOf(token.intValue) + " ");
         break;
       case Token.identifier:
         break;
@@ -8435,7 +8451,7 @@ class Eval { //implements Runnable {
 
     Token getX() throws ScriptException {
       if (xPt < 0)
-        stackUnderflow();
+        endOfStatementUnexpected();
       return xStack[xPt--];
     }
     
@@ -8451,8 +8467,7 @@ class Eval { //implements Runnable {
         return false;
       Token[] args = new Token[nParam]; 
       for (int i = nParam; --i >= 0; )        
-        if ((args[i] = getX())== null)
-          return false;
+        args[i] = getX();
       xPt--;
       switch (op.tok == Token.propselector ? op.intValue : op.tok) {
       case Token.find:
@@ -8494,24 +8509,22 @@ class Eval { //implements Runnable {
 
     boolean evaluateDistance(Token[] args) throws ScriptException {
       Token x2 = getX();
-      if (x2 == null)
-        return false;
       if (args.length != 1)
         return false;
       Point3f pt = ptValue(x2);
+      Point4f plane = planeValue(x2);
       Token x1 = args[0];
       if (x1.tok == Token.bitset)
-        return addX(getBitsetAverage(Token.bsSelect(x1), Token.distance,
-            pt, (x1.intValue >= 0), null));
+        return addX(getBitsetAverage(Token.bsSelect(x1), Token.distance, pt,
+            plane, (x1.intValue >= 0), null));
       else if (x1.tok == Token.xyz)
-        return addX(pt.distance((Point3f) x1.value));
+        return addX(plane == null ? pt.distance((Point3f) x1.value)
+            : Graphics3D.distanceToPlane(plane, (Point3f) x1.value));
       return false;
     }
     
     boolean evaluateFind(Token[] args) throws ScriptException {
       Token x2 = getX();
-      if (x2 == null)
-        return false;
       if (args.length != 1)
         return false;
       Token x1 = args[0];
@@ -8522,8 +8535,6 @@ class Eval { //implements Runnable {
     
     boolean evaluateLabel(Token[] args) throws ScriptException {
       Token x2 = getX();
-      if (x2 == null)
-        return false;
       if (args.length != 1)
         return false;
       Token x1 = args[0];
@@ -8691,8 +8702,6 @@ class Eval { //implements Runnable {
 
       Token op = oStack[oPt--];
       Token x2 = getX();
-      if (x2 == null)
-        return false;
 
       //unary:
 
@@ -8715,7 +8724,7 @@ class Eval { //implements Runnable {
         }
         if (x2.tok != Token.bitset)
           invalidArgument();
-        Object val = getBitsetAverage(Token.bsSelect(x2), op.intValue, null,
+        Object val = getBitsetAverage(Token.bsSelect(x2), op.intValue, null, null,
             x2.intValue >= 0, x2.intArray);
         if (op.intValue == Token.bonds)
           return addX(new Token(Token.bitset, Integer.MIN_VALUE, (BitSet) val,
@@ -8726,8 +8735,6 @@ class Eval { //implements Runnable {
       
       //binary:
       Token x1 = getX();
-      if (x1 == null)
-        return false;
       try {
         if (!checkOK(x1.tok, x2.tok, op.tok))
           return false;
@@ -8913,10 +8920,23 @@ class Eval { //implements Runnable {
       case Token.xyz:
         return (Point3f) x.value;
       case Token.bitset:
-          return (Point3f) getBitsetAverage(Token.bsSelect(x), Token.xyz, null, x.intValue >= 0, null);
+          return (Point3f) getBitsetAverage(Token.bsSelect(x), Token.xyz, null, null, x.intValue >= 0, null);
       default:
         float f = Token.fValue(x);
         return new Point3f(f, f, f);
+      }
+    }
+    
+    Point4f planeValue(Token x) {
+      if (isSyntaxCheck)
+        return new Point4f();
+      switch (x.tok) {
+      case Token.point4f:
+        return (Point4f)x.value;
+      case Token.bitset:
+          //ooooh, wouldn't THIS be nice!
+      default:
+        return null;
       }
     }
 
@@ -8936,9 +8956,6 @@ class Eval { //implements Runnable {
       evalError(GT._("too many parentheses"));
     }
 
-    void stackUnderflow() throws ScriptException {
-      numberExpected();
-    }
   }
   
   static boolean isOneOf(String key, String semiList) {

@@ -35,33 +35,83 @@ import javax.vecmath.Point3f;
 
 class Compiler {
 
-  Viewer viewer;
-  String filename;
-  String script;
+  private Viewer viewer;
+  private String filename;
+  private String script;
 
-  short[] lineNumbers;
-  int[] lineIndices;
-  Token[][] aatokenCompiled;
+  private short[] lineNumbers;
+  private int[] lineIndices;
+  private Token[][] aatokenCompiled;
 
-  boolean error;
-  String errorMessage;
-  String errorLine;
-  boolean preDefining;
-  boolean isSilent;
-  boolean isShowScriptOutput;
+  private String errorMessage;
+  private String errorLine;
+  private boolean preDefining;
+  private boolean isSilent;
+  private boolean isShowScriptOutput;
 
-  boolean logMessages = false;
-
-  private void log(String message) {
-    if (logMessages)
-      Logger.debug(message);
-  }
+  private boolean logMessages = false;
 
   Compiler(Viewer viewer) {
     this.viewer = viewer;
   }
 
-  /**
+  boolean compile(String filename, String script, boolean isPredefining,
+                  boolean isSilent) {
+    this.filename = filename;
+    this.isSilent = isSilent;
+    this.script = cleanScriptComments(script);
+    logMessages = (!isSilent && !isPredefining && Logger
+        .isActiveLevel(Logger.LEVEL_DEBUG));
+    lineNumbers = null;
+    lineIndices = null;
+    aatokenCompiled = null;
+    errorMessage = errorLine = null;
+    preDefining = (filename == "#predefine");
+    return (compile0() ? true : handleError());
+  }
+
+  String getScript() {
+    return script;
+  }
+  
+  short[] getLineNumbers() {
+    return lineNumbers;
+  }
+
+  int[] getLineIndices() {
+    return lineIndices;
+  }
+
+  Token[][] getAatokenCompiled() {
+    return aatokenCompiled;
+  }
+
+  static boolean tokAttr(int a, int b) {
+    return (a & b) == b;
+  }
+  
+  static int modelValue(String strDecimal) {
+    //this will overflow, but it doesn't matter -- it's only for file.model
+    //2147483647 is maxvalue, so this allows loading
+    //simultaneously up to 2147 files. Yeah, sure!
+    int pt = strDecimal.indexOf(".");
+    if (pt < 0)
+      return 0;
+    int i = 0;
+    int j = 0;
+    if (pt > 0 && (i = Integer.parseInt(strDecimal.substring(0, pt))) < 0)
+      i = -i;
+    if (pt < strDecimal.length() - 1)
+      j = Integer.parseInt(strDecimal.substring(pt + 1));
+    return i * 1000000 + j;
+  }
+  
+  private void log(String message) {
+    if (logMessages)
+      Logger.debug(message);
+  }
+
+ /**
    * allows for two kinds of comments. 
    * 
    * 1) /** .... ** /  (closing involved two asterisks and slash together, but that can't be shown here.
@@ -73,7 +123,7 @@ class Compiler {
    * @param script
    * @return cleaned script
    */
-  static String cleanScriptComments(String script) {
+  private static String cleanScriptComments(String script) {
     int pt, pt1;
     while ((pt = script.indexOf("/**")) >= 0) {
       pt1 = script.indexOf("**/", pt + 3);
@@ -90,54 +140,27 @@ class Compiler {
     return script;
   }
   
-  boolean compile(String filename, String script, boolean isPredefining,
-                  boolean isSilent) {
-    this.filename = filename;
-    this.isSilent = isSilent;
-    this.script = cleanScriptComments(script);
-    logMessages = (!isSilent && !isPredefining && Logger
-        .isActiveLevel(Logger.LEVEL_DEBUG));
-    lineNumbers = null;
-    lineIndices = null;
-    aatokenCompiled = null;
-    errorMessage = errorLine = null;
-    preDefining = (filename == "#predefine");
-    return (compile0() ? true : handleError());
-  }
+  private int cchScript;
+  private short lineCurrent;
 
-  short[] getLineNumbers() {
-    return lineNumbers;
-  }
+  private int ichToken;
+  private int cchToken;
+  private int iCommand;
+  private Token[] atokenCommand;
 
-  int[] getLineIndices() {
-    return lineIndices;
-  }
+  private int ichCurrentCommand;
+  private boolean isNewSet;
 
-  Token[][] getAatokenCompiled() {
-    return aatokenCompiled;
-  }
-
-  int cchScript;
-  short lineCurrent;
-
-  int ichToken;
-  int cchToken;
-  int iCommand;
-  Token[] atokenCommand;
-
-  int ichCurrentCommand;
-  boolean isNewSet;
-
-  boolean iHaveQuotedString = false;
+  private boolean iHaveQuotedString = false;
   
-  Vector ltoken;
-  Token lastPrefixToken;
-  void addTokenToPrefix(Token token) {
+  private Vector ltoken;
+  private Token lastPrefixToken;
+  private void addTokenToPrefix(Token token) {
     ltoken.addElement(token);
     lastPrefixToken = token;
   }
   
-  boolean compile0() {
+  private boolean compile0() {
     cchScript = script.length();
     ichToken = 0;
     lineCurrent = 1;
@@ -145,7 +168,6 @@ class Compiler {
     int lnLength = 8;
     lineNumbers = new short[lnLength];
     lineIndices = new int[lnLength];
-    error = false;
     isNewSet = false;
     isShowScriptOutput = false;
 
@@ -406,23 +428,7 @@ class Compiler {
     return true;
   }
 
-  static int modelValue(String strDecimal) {
-    //this will overflow, but it doesn't matter -- it's only for file.model
-    //2147483647 is maxvalue, so this allows loading
-    //simultaneously up to 2147 files. Yeah, sure!
-    int pt = strDecimal.indexOf(".");
-    if (pt < 0)
-      return 0;
-    int i = 0;
-    int j = 0;
-    if (pt > 0 && (i = Integer.parseInt(strDecimal.substring(0, pt))) < 0)
-      i = -i;
-    if (pt < strDecimal.length() - 1)
-      j = Integer.parseInt(strDecimal.substring(pt + 1));
-    return i * 1000000 + j;
-  }
-  
-  void getData(Vector ltoken, String key) {
+  private void getData(Vector ltoken, String key) {
     ichToken += key.length() + 2;
     if (script.length() > ichToken && script.charAt(ichToken) == '\r')
       ichToken++;
@@ -436,11 +442,15 @@ class Compiler {
     cchToken = i - ichToken + 6 + key.length();
   }
 
-  private final static boolean isSpaceOrTab(char ch) {
+  private static boolean isSpaceOrTab(char ch) {
     return ch == ' ' || ch == '\t';
   }
 
-  boolean lookingAtLeadingWhitespace() {
+  private static boolean eol(char ch) {
+    return (ch == ';' || ch == '\r' || ch == '\n');  
+  }
+  
+  private boolean lookingAtLeadingWhitespace() {
     //log("lookingAtLeadingWhitespace");
     int ichT = ichToken;
     while (ichT < cchScript && isSpaceOrTab(script.charAt(ichT)))
@@ -450,9 +460,9 @@ class Compiler {
     return cchToken > 0;
   }
 
-  boolean isShowCommand;
+  private boolean isShowCommand;
   
-  boolean lookingAtComment() {
+  private boolean lookingAtComment() {
     //log ("lookingAtComment ichToken=" + ichToken + " cchToken=" + cchToken);
     // first, find the end of the statement and scan for # (sharp) signs
     char ch = 'X';
@@ -474,7 +484,6 @@ class Compiler {
         ++ichEnd;
       cchToken = ichEnd - ichToken;
       isShowCommand = true;
-      System.out.println(script.substring(ichToken,ichToken+cchToken)+"<<");
       return true;
     } else if (isShowScriptOutput) {
       if (!isShowCommand)
@@ -529,11 +538,7 @@ class Compiler {
     return true;
   }
 
-  static boolean eol(char ch) {
-    return (ch == ';' || ch == '\r' || ch == '\n');  
-  }
-  
-  boolean lookingAtEndOfLine() {
+  private boolean lookingAtEndOfLine() {
     //log("lookingAtEndOfLine");
     if (ichToken >= cchScript)
       return true;
@@ -552,14 +557,14 @@ class Compiler {
     return true;
   }
 
-  boolean lookingAtEndOfStatement() {
+  private boolean lookingAtEndOfStatement() {
     if (ichToken == cchScript || script.charAt(ichToken) != ';')
       return false;
     cchToken = 1;
     return true;
   }
 
-  boolean lookingAtString() {
+  private boolean lookingAtString() {
     if (ichToken == cchScript)
       return false;
     if (script.charAt(ichToken) != '"')
@@ -651,7 +656,7 @@ class Compiler {
   String[] loadFormats = { "alchemy ", "mol2 ", "mopac ", "nmrpdb ", "charmm ",
       "xyz ", "mdl ", "pdb " };
 
-  boolean lookingAtLoadFormat() {
+  private boolean lookingAtLoadFormat() {
     for (int i = loadFormats.length; --i >= 0;) {
       String strFormat = loadFormats[i];
       int cchFormat = strFormat.length();
@@ -663,7 +668,7 @@ class Compiler {
     return false;
   }
 
-  boolean lookingAtSpecialString() {
+  private boolean lookingAtSpecialString() {
     int ichT = ichToken;
     while (ichT < cchScript && !eol(script.charAt(ichT)))
       ++ichT;
@@ -672,7 +677,7 @@ class Compiler {
     return cchToken > 0;
   }
 
-  float lookingAtExponential() {
+  private float lookingAtExponential() {
     if (ichToken == cchScript)
       return Float.NaN; //end
     int ichT = ichToken;
@@ -722,7 +727,7 @@ class Compiler {
     return (float) value;
   }
 
-  boolean lookingAtDecimal() {
+  private boolean lookingAtDecimal() {
     if (ichToken == cchScript)
       return false;
     int ichT = ichToken;
@@ -756,7 +761,7 @@ class Compiler {
     return digitSeen;
   }
 
-  boolean lookingAtSeqcode() {
+  private boolean lookingAtSeqcode() {
     int ichT = ichToken;
     char ch = ' ';
     if (ichT + 1 < cchScript && script.charAt(ichT) == '*'
@@ -780,7 +785,7 @@ class Compiler {
     return true;
   }
 
-  boolean lookingAtInteger(boolean allowNegative) {
+  private boolean lookingAtInteger(boolean allowNegative) {
     if (ichToken == cchScript)
       return false;
     int ichT = ichToken;
@@ -849,7 +854,7 @@ class Compiler {
     return bs;
   }
   
-  boolean lookingAtLookupToken() {
+  private boolean lookingAtLookupToken() {
     if (ichToken == cchScript)
       return false;
     int ichT = ichToken;
@@ -910,6 +915,8 @@ class Compiler {
     return true;
   }
 
+  boolean isSetOrIf;
+
   private boolean compileCommand(Vector ltoken) {
     Token tokenCommand = (Token) ltoken.firstElement();
     int tokCommand = tokenCommand.tok;
@@ -962,197 +969,92 @@ class Compiler {
     return true;
   }
 
-  /*
-   mth -- I think I am going to be sick
-   the grammer is not context-free
-   what does the string cys120 mean?
-   if you have previously defined a variable, as in
-   define cys120 carbon
-   then when you use cys120 it refers to the previous definition.
-   however, if cys120 was *not* previously defined, then it refers to
-   the residue of type cys at number 120.
-   what a disaster.
-   
-   rmh -- Note that these syntax rules have not been recently updated.
-   Newer features such as if/else/endif, aa = xxx variation of set aa xxx,
-   using file.model instead of * /model, being able to express bitsets within
-   expressions, new CONNECTED syntax, among other things are not represented here.
-   
-   rmh 2/21/07 -- Up until this time, the compiler output was in Reverse Polish
-   Notation (RPN). I've added an RPN processor to Eval now, so this is no longer
-   necessary. The RPN processor allows processing of math separately from 
-   expressions, but it can (and now does) also process natural-language expressions.
-   
-   The main advantage to this is that the order of tokens out is the same as the 
-   order of all tokens in. This allows for a much more user-friendly syntax for
-   debugging, primarily. In addition, if we wanted, we could now include
-   math in expressions. For example, comparator values would not need to be 
-   constants.  
-   
-   
-
-   expression       :: = clauseOr
-
-   clauseOr         ::= clauseAnd {OR|XOR|OrNot clauseAnd}*
-
-   clauseAnd        ::= clauseNot {AND clauseNot}*
-
-   clauseNot        ::= NOT clauseNot | clausePrimitive
-
-   clausePrimitive  ::= clauseComparator |
-   clauseCell |       // RMH 6/06
-   WITHIN clauseFunction |
-   CONNECTED clauseFunction |  // RMH 3/06
-   SUBSTRUCTURE clauseFunction |  // RMH 3/06
-   clauseResidueSpec |
-   none | all |
-   ( clauseOr )
-
-   clauseComparator ::= atomproperty comparatorop integer
-
-   clauseDistance   ::= integer | decimal
-
-   clauseResidueSpec::= { clauseResNameSpec }
-   { clauseResNumSpec }
-   { clauseChainSpec }
-   { clauseAtomSpec }
-   { clauseAlternateSpec }
-   { clauseModelSpec }
-
-   clauseResNameSpec::= * | [ resNamePattern ] | resNamePattern
-
-   // question marks are part of identifiers
-   // they get split up and dealt with as wildcards at runtime
-   // and the integers which are residue number chains get bundled
-   // in with the identifier and also split out at runtime
-   // iff a variable of that name does not exist
-
-   resNamePattern   ::= up to 3 alphanumeric chars with * and ?
-
-   clauseResNumSpec ::= * | clauseSequenceRange
-
-   clauseSequenceRange ::= clauseSequenceCode { - clauseSequenceCode }
-
-   clauseSequenceCode ::= seqcode | {-} integer
-
-   clauseChainSpec  ::= {:} * | identifier | integer
-
-   clauseAtomSpec   ::= . * | . identifier {*}
-   // note that in atom spec context a * is *not* a wildcard
-   // rather, it denotes a 'prime'
-
-   clauseAlternateSpec ::= {%} identifier | integer
-
-   clauseModelSpec  ::= {:|/} * | integer | decimal
-
-   */
-
-  private boolean compileExpression() {
-    int tokCommand = atokenCommand[0].tok;
-    boolean isMultipleOK = (tokAttr(tokCommand, Token.embeddedExpression));
-    int expPtr = 1;
-    if (tokCommand == Token.define || tokCommand == Token.set)
-      expPtr = 2;
-    if (tokCommand == Token.set && expPtr >= atokenCommand.length)
-      return true;
-    while (expPtr > 0 && expPtr < atokenCommand.length) {
-      if (isMultipleOK)
-        while (expPtr < atokenCommand.length
-            && atokenCommand[expPtr].tok != (isSetOrIf ? Token.leftbrace
-                : Token.leftparen))
-          ++expPtr;
-      // 0 here means OK; -1 means error;
-      // > 0 means pointer to the next expression
-      if (expPtr >= atokenCommand.length)
-        break;
-      if ((expPtr = compileExpression(expPtr)) <= 0)
-        break;
-      if (!isMultipleOK)
-        return endOfExpressionExpected();
-    }
-    return (expPtr == atokenCommand.length || expPtr == 0);
-  }
-
   Vector ltokenPostfix = null;
   Token[] atokenInfix;
   int itokenInfix;
-
-  boolean addTokenToPostfix(Token token) {
-    if (token == null)
-      return false;
-    if (logMessages)
-      log("addTokenToPostfix" + token);
-    ltokenPostfix.addElement(token);
-    return true;
-  }
-
-  int compileExpression(int itoken) {
-    int expPtr = 0;
+  boolean isCoordinate;
+  
+  private boolean compileExpression() {
+    int tokCommand = atokenCommand[0].tok;
+    boolean isMultipleOK = (tokAttr(tokCommand, Token.embeddedExpression));
+    itokenInfix = 1;
+    if (tokCommand == Token.define || tokCommand == Token.set)
+      itokenInfix = 2;
+    if (tokCommand == Token.set && itokenInfix >= atokenCommand.length)
+      return true;
     ltokenPostfix = new Vector();
-    for (int i = 0; i < itoken; ++i)
-      addTokenToPostfix(atokenCommand[i]);
     atokenInfix = atokenCommand;
-    itokenInfix = itoken;
-
-    int pt = ltokenPostfix.size();
-    addTokenToPostfix(Token.tokenExpressionBegin);
-    isCoordinate = false;
-    if (!clauseOr(!isSetOrIf))
-      return -1;
-    if (isCoordinate) {
-      ltokenPostfix.set(pt, Token.tokenCoordinateBegin);
-      addTokenToPostfix(Token.tokenCoordinateEnd);
-    } else {
-      addTokenToPostfix(Token.tokenExpressionEnd);
-    }
-    if (itokenInfix != atokenInfix.length) {
-      /*
-       Logger.debug("itokenInfix=" + itokenInfix + " atokenInfix.length="
-       + atokenInfix.length);
-       for (int i = 0; i < atokenInfix.length; ++i) 
-       Logger.debug("" + i + ":" + atokenInfix[i]);
-       */
-      //not a problem! 
-      expPtr = ltokenPostfix.size();
-      for (int i = itokenInfix; i < atokenInfix.length; ++i)
-        addTokenToPostfix(atokenCommand[i]);
+    for (int i = 0; i < itokenInfix; ++i)
+      addTokenToPostfix(atokenCommand[i]);
+    while (itokenInfix > 0 && itokenInfix < atokenCommand.length) {
+      if (isMultipleOK)
+        while (itokenInfix < atokenCommand.length
+            && atokenCommand[itokenInfix].tok != (isSetOrIf ? Token.leftbrace
+                : Token.leftparen))
+          addTokenToPostfix(atokenCommand[itokenInfix++]);
+      if (itokenInfix == atokenCommand.length)
+        break;
+      int pt = ltokenPostfix.size();
+      addTokenToPostfix(Token.tokenExpressionBegin);
+      isCoordinate = false;
+      if (!clauseOr(!isSetOrIf))
+        return false;
+      if (isCoordinate && isSetOrIf) {
+        ltokenPostfix.set(pt, Token.tokenCoordinateBegin);
+        addTokenToPostfix(Token.tokenCoordinateEnd);
+      } else {
+        addTokenToPostfix(Token.tokenExpressionEnd);
+      }
+      if (itokenInfix != atokenInfix.length && !isMultipleOK)
+        return endOfExpressionExpected();
     }
     atokenCommand = new Token[ltokenPostfix.size()];
     ltokenPostfix.copyInto(atokenCommand);
-    return expPtr;
+    return true;
   }
 
+  private static boolean tokAttrOr(int a, int b1, int b2) {
+    return (a & b1) == b1 || (a & b2) == b2;
+  }
+  
+  private static boolean tokenAttr(Token token, int tok) {
+    return token != null && (token.tok & tok) == tok;
+  }
+  
+  private int tokPeek() {
+    if (itokenInfix == atokenInfix.length)
+      return Token.nada;
+    return atokenInfix[itokenInfix].tok;
+  }
+
+  private boolean tokPeek(int tok) {
+    if (itokenInfix == atokenInfix.length)
+      return false;
+    return (atokenInfix[itokenInfix].tok == tok);
+  }
+
+  private int intPeek() {
+    if (itokenInfix == atokenInfix.length)
+      return Integer.MAX_VALUE;
+    return atokenInfix[itokenInfix].intValue;    
+  }
+  
   /**
    * increments the pointer; does NOT set theToken or theValue
    * @return the next token
    */
-  Token tokenNext() {
+  private Token tokenNext() {
     if (itokenInfix == atokenInfix.length)
       return null;
     return atokenInfix[itokenInfix++];
   }
   
-  boolean tokenNext(int tok) {
+  private boolean tokenNext(int tok) {
     Token token = tokenNext();
     return (token != null && token.tok == tok);
   }
 
-  boolean addNextToken() {
-    return addTokenToPostfix(tokenNext());
-  }
-  
-  boolean addNextTokenIf(int tok) {
-    return (tokPeek(tok) && addNextToken());
-  }
-  
-  boolean addNextTokenIf(int tok, Token token) {
-    if (!tokPeek(tok))
-      return false;
-    itokenInfix++;
-    return addTokenToPostfix(token);
-  }
-  
-  void returnToken() {
+  private void returnToken() {
     itokenInfix--;
   }
 
@@ -1163,33 +1065,21 @@ class Compiler {
    * gets the next token and sets global theToken and theValue
    * @return the next token
    */
-  Token getToken() {
+  private Token getToken() {
     theValue = ((theToken = tokenNext()) == null ? null : theToken.value);
     return theToken;
   }
   
-  boolean getNumericalToken() {
+  private boolean isToken(int tok) {
+    return theToken != null && theToken.tok == tok;
+  }
+  
+  private boolean getNumericalToken() {
     return (getToken() != null 
         && (isToken(Token.integer) || isToken(Token.decimal)));
   }
   
- static  boolean tokAttr(int a, int b) {
-    return (a & b) == b;
-  }
-  
-  static boolean tokAttrOr(int a, int b1, int b2) {
-    return (a & b1) == b1 || (a & b2) == b2;
-  }
-  
-  static boolean tokenAttr(Token token, int tok) {
-    return token != null && (token.tok & tok) == tok;
-  }
-  
-  boolean isToken(int tok) {
-    return theToken != null && theToken.tok == tok;
-  }
-  
-  float floatValue() {
+  private float floatValue() {
     switch (theToken.tok) {
     case Token.integer:
       return theToken.intValue;
@@ -1199,34 +1089,31 @@ class Compiler {
     return 0;
   }
 
-  Object valuePeek() {
-    if (itokenInfix == atokenInfix.length)
-      return null;
-    return atokenInfix[itokenInfix].value;
-  }
-
-  int intPeek() {
-    if (itokenInfix == atokenInfix.length)
-      return Integer.MAX_VALUE;
-    return atokenInfix[itokenInfix].intValue;
-  }
-
-  int tokPeek() {
-    if (itokenInfix == atokenInfix.length)
-      return Token.nada;
-    return atokenInfix[itokenInfix].tok;
-  }
-
-  boolean tokPeek(int tok) {
-    if (itokenInfix == atokenInfix.length)
+  private boolean addTokenToPostfix(Token token) {
+    if (token == null)
       return false;
-    return (atokenInfix[itokenInfix].tok == tok);
+    if (logMessages)
+      log("addTokenToPostfix" + token);
+    ltokenPostfix.addElement(token);
+    return true;
   }
 
-  boolean isSetOrIf;
-  boolean isCoordinate;
+  private boolean addNextToken() {
+    return addTokenToPostfix(tokenNext());
+  }
   
-  boolean clauseOr(boolean allowComma) {
+  private boolean addNextTokenIf(int tok) {
+    return (tokPeek(tok) && addNextToken());
+  }
+  
+  private boolean addNextTokenIf(int tok, Token token) {
+    if (!tokPeek(tok))
+      return false;
+    itokenInfix++;
+    return addTokenToPostfix(token);
+  }
+  
+  private boolean clauseOr(boolean allowComma) {
     if (!clauseAnd())
       return false;
     //for simplicity, giving XOR (toggle) same precedence as OR
@@ -1244,7 +1131,7 @@ class Compiler {
     return true;
   }
 
-  boolean clauseAnd() {
+  private boolean clauseAnd() {
     if (!clauseNot())
       return false;
     while (tokPeek(Token.opAnd)) {
@@ -1256,7 +1143,7 @@ class Compiler {
   }
 
   // for RPN processor, not reversed
-  boolean clauseNot() {
+  private boolean clauseNot() {
     if (tokPeek(Token.opNot)) {
       addNextToken();
       return clauseNot();
@@ -1264,7 +1151,7 @@ class Compiler {
     return clausePrimitive();
   }
 
-  boolean clausePrimitive() {
+  private boolean clausePrimitive() {
     int tok = tokPeek();
     switch (tok) {
     default:
@@ -1342,6 +1229,9 @@ class Compiler {
           addNextTokenIf(Token.comma);
           if (!clauseOr(false))
             return false;
+          addNextTokenIf(Token.comma);
+          if (!clauseOr(false))
+            return false;
           if (tokPeek() != Token.rightbrace)
             return rightBraceExpected();
           isCoordinate = true;
@@ -1351,8 +1241,7 @@ class Compiler {
         else
           addNextToken();
         return true;
-    }
-    return unrecognizedExpressionToken();
+    }    return unrecognizedExpressionToken();
   }
 
   // within ( plane, ....)
@@ -1361,7 +1250,7 @@ class Compiler {
   // within ( distance, orClause)
   // within ( group, ....)
 
-  boolean clauseWithin() {
+  private boolean clauseWithin() {
     if (!addNextTokenIf(Token.leftparen))
       return false;
     if (getToken() == null)
@@ -1450,7 +1339,7 @@ class Compiler {
     return true;
   }
 
-  boolean clauseConnected() {
+  private boolean clauseConnected() {
     // connected (1,3, single, .....)
     if (!addNextTokenIf(Token.leftparen)) {
       addTokenToPostfix(new Token(Token.leftparen));
@@ -1486,7 +1375,7 @@ class Compiler {
     return true;
   }
 
-  boolean clauseSubstructure() {
+  private boolean clauseSubstructure() {
     if (!addNextTokenIf(Token.leftparen))
       return false;
     if (!addNextTokenIf(Token.string))
@@ -1496,7 +1385,7 @@ class Compiler {
     return true;
   }
 
-  boolean clauseMath() {
+  private boolean clauseMath() {
     int tok;
     while ((tok = tokPeek()) != Token.nada && tok != Token.rightsquare) {
       if (!clauseOr(false))
@@ -1514,7 +1403,7 @@ class Compiler {
     return true;
   }
   
-  boolean clauseComparator() {
+  private boolean clauseComparator() {
     Token tokenAtomProperty = tokenNext();
     Token tokenComparator = tokenNext();
     if (!tokenAttr(tokenComparator, Token.comparator))
@@ -1547,7 +1436,7 @@ class Compiler {
     return true;
   }
 
-  boolean clauseCell() {
+  private boolean clauseCell() {
     Point3f cell = new Point3f();
     tokenNext(); // CELL
     if (!tokenNext(Token.opEQ)) // =
@@ -1579,9 +1468,9 @@ class Compiler {
     return addTokenToPostfix(new Token(Token.cell, cell));
   }
 
-  boolean residueSpecCodeGenerated;
+  private boolean residueSpecCodeGenerated;
 
-  boolean generateResidueSpecCode(Token token) {
+  private boolean generateResidueSpecCode(Token token) {
     if (residueSpecCodeGenerated)
       addTokenToPostfix(Token.tokenAnd);
     addTokenToPostfix(token);
@@ -1589,7 +1478,7 @@ class Compiler {
     return true;
   }
 
-  boolean clauseResidueSpec() {
+  private boolean clauseResidueSpec() {
     boolean specSeen = false;
     residueSpecCodeGenerated = false;
     int tok = tokPeek();
@@ -1650,7 +1539,7 @@ class Compiler {
     return true;
   }
 
-  boolean clauseResNameSpec() {
+  private boolean clauseResNameSpec() {
     getToken();
     if (isToken(Token.asterisk) || isToken(Token.nada))
       return (!isToken(Token.nada));
@@ -1686,14 +1575,14 @@ class Compiler {
     return generateResidueSpecCode(theToken);
   }
 
-  boolean clauseResNumSpec() {
+  private boolean clauseResNumSpec() {
     log("clauseResNumSpec()");
     if (tokPeek(Token.asterisk))
       return (getToken() != null);
     return clauseSequenceRange();
   }
 
-  boolean clauseSequenceRange() {
+  private boolean clauseSequenceRange() {
     if (!clauseSequenceCode())
       return false;
     int tok = tokPeek();
@@ -1702,6 +1591,8 @@ class Compiler {
       // in a command that allows for negInts. 
       if (tok == Token.hyphen)
         tokenNext();
+      else
+        returnToken();
       int seqcodeA = seqcode;
       if (!clauseSequenceCode())
         seqcode = Integer.MAX_VALUE;
@@ -1715,7 +1606,7 @@ class Compiler {
   int seqcode;
   int seqvalue;
   
-  boolean clauseSequenceCode() {
+  private boolean clauseSequenceCode() {
     boolean negative = false;
     int tokPeek = tokPeek();
     if (tokPeek == Token.hyphen) {
@@ -1735,7 +1626,7 @@ class Compiler {
     return true;
   }
 
-  boolean clauseChainSpec(int tok) {
+  private boolean clauseChainSpec(int tok) {
     if (tok == Token.colon) {
       tokenNext();
       tok = tokPeek();
@@ -1769,7 +1660,7 @@ class Compiler {
         "spec_chain"));
   }
 
-  boolean isSpecTerminator(int tok) {
+  private boolean isSpecTerminator(int tok) {
     switch (tok) {
     case Token.nada:
     case Token.slash:
@@ -1784,7 +1675,7 @@ class Compiler {
     return false;
   }
 
-  boolean clauseAlternateSpec() {
+  private boolean clauseAlternateSpec() {
     tokenNext();
     int tok = tokPeek();
     if (isSpecTerminator(tok))
@@ -1803,7 +1694,7 @@ class Compiler {
     return generateResidueSpecCode(new Token(Token.spec_alternate, alternate));
   }
 
-  boolean clauseModelSpec() {
+  private boolean clauseModelSpec() {
     getToken();
     if (isToken(Token.colon) || isToken(Token.slash))
       getToken();
@@ -1825,7 +1716,7 @@ class Compiler {
         theToken.intValue)));
   }
 
-  boolean clauseAtomSpec() {
+  private boolean clauseAtomSpec() {
     if (!tokenNext(Token.dot))
       return invalidAtomSpecification();
     if (getToken() == null)
@@ -1853,7 +1744,7 @@ class Compiler {
     return generateResidueSpecCode(new Token(Token.spec_atom, atomSpec));
   }
 
-  boolean compileColorParam() {
+  private boolean compileColorParam() {
     for (int i = 1; i < atokenCommand.length; ++i) {
       theToken = atokenCommand[i];
       //Logger.debug(token + " atokenCommand: " + atokenCommand.length);
@@ -1914,7 +1805,9 @@ class Compiler {
   }
 
   private boolean unrecognizedExpressionToken() {
-    return compileError(GT._("unrecognized expression token: {0}", "" + valuePeek()));
+    String value = (itokenInfix == atokenInfix.length ? ""
+        : atokenInfix[itokenInfix].value.toString());
+    return compileError(GT._("unrecognized expression token: {0}", "" + value));
   }
 
   private boolean comparisonOperatorExpected() {
@@ -1958,7 +1851,6 @@ class Compiler {
   }
 
   private boolean compileError(String errorMessage) {
-    error = true;
     this.errorMessage = errorMessage;
     return false;
   }
@@ -1975,7 +1867,7 @@ class Compiler {
     return errorMessage;
   }
   
-  boolean handleError() {
+  private boolean handleError() {
     int icharEnd;
     if ((icharEnd = script.indexOf('\r', ichCurrentCommand)) == -1
         && (icharEnd = script.indexOf('\n', ichCurrentCommand)) == -1)
@@ -1993,4 +1885,91 @@ class Compiler {
     }
     return false;
   }
+  
+  /*
+  mth -- I think I am going to be sick
+  the grammer is not context-free
+  what does the string cys120 mean?
+  if you have previously defined a variable, as in
+  define cys120 carbon
+  then when you use cys120 it refers to the previous definition.
+  however, if cys120 was *not* previously defined, then it refers to
+  the residue of type cys at number 120.
+  what a disaster.
+  
+  rmh -- Note that these syntax rules have not been recently updated.
+  Newer features such as if/else/endif, aa = xxx variation of set aa xxx,
+  using file.model instead of * /model, being able to express bitsets within
+  expressions, new CONNECTED syntax, among other things are not represented here.
+  
+  rmh 2/21/07 -- Up until this time, the compiler output was in Reverse Polish
+  Notation (RPN). I've added an RPN processor to Eval now, so this is no longer
+  necessary. The RPN processor allows processing of math separately from 
+  expressions, but it can (and now does) also process natural-language expressions.
+  
+  The main advantage to this is that the order of tokens out is the same as the 
+  order of all tokens in. This allows for a much more user-friendly syntax for
+  debugging, primarily. In addition, if we wanted, we could now include
+  math in expressions. For example, comparator values would not need to be 
+  constants.  
+  
+  
+
+  expression       :: = clauseOr
+
+  clauseOr         ::= clauseAnd {OR|XOR|OrNot clauseAnd}*
+
+  clauseAnd        ::= clauseNot {AND clauseNot}*
+
+  clauseNot        ::= NOT clauseNot | clausePrimitive
+
+  clausePrimitive  ::= clauseComparator |
+  clauseCell |       // RMH 6/06
+  WITHIN clauseFunction |
+  CONNECTED clauseFunction |  // RMH 3/06
+  SUBSTRUCTURE clauseFunction |  // RMH 3/06
+  clauseResidueSpec |
+  none | all |
+  ( clauseOr )
+
+  clauseComparator ::= atomproperty comparatorop integer
+
+  clauseDistance   ::= integer | decimal
+
+  clauseResidueSpec::= { clauseResNameSpec }
+  { clauseResNumSpec }
+  { clauseChainSpec }
+  { clauseAtomSpec }
+  { clauseAlternateSpec }
+  { clauseModelSpec }
+
+  clauseResNameSpec::= * | [ resNamePattern ] | resNamePattern
+
+  // question marks are part of identifiers
+  // they get split up and dealt with as wildcards at runtime
+  // and the integers which are residue number chains get bundled
+  // in with the identifier and also split out at runtime
+  // iff a variable of that name does not exist
+
+  resNamePattern   ::= up to 3 alphanumeric chars with * and ?
+
+  clauseResNumSpec ::= * | clauseSequenceRange
+
+  clauseSequenceRange ::= clauseSequenceCode { - clauseSequenceCode }
+
+  clauseSequenceCode ::= seqcode | {-} integer
+
+  clauseChainSpec  ::= {:} * | identifier | integer
+
+  clauseAtomSpec   ::= . * | . identifier {*}
+  // note that in atom spec context a * is *not* a wildcard
+  // rather, it denotes a 'prime'
+
+  clauseAlternateSpec ::= {%} identifier | integer
+
+  clauseModelSpec  ::= {:|/} * | integer | decimal
+
+  */
+
+
 }

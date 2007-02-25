@@ -4588,8 +4588,8 @@
     server="171.64.65.56" atoms="77373" preferred="4" deadline="12"
     credit="5" frames="100" code="GS" contact="kasson" contrib="uncle_fungus"/>
   <fah_proj number="2604" name="p2604_Protein in POPC" public="y" file="y"
-    server="171.64.65.56" atoms="77373" preferred="4" deadline="8"
-    credit="1210" frames="100" code="GS" contact="kasson" contrib="uncle_fungus"/>
+    server="171.64.65.56" atoms="77373" preferred="3" deadline="4"
+    credit="1760" frames="2" code="GS" contact="kasson" contrib="uncle_fungus"/>
   <fah_proj number="2605" name="p2605_Protein in POPC" public="y" file="y"
     server="171.64.65.56" atoms="77373" preferred="3" deadline="4"
     credit="1760" frames="100" code="GS" contact="kasson" contrib="uncle_fungus"/>
@@ -4647,6 +4647,42 @@
     server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
     credit="330" frames="100" code="GG" contact="densign"/>
   <fah_proj number="2736" name="p2736_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2737" name="p2737_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2738" name="p2738_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2739" name="p2739_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2740" name="p2740_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2741" name="p2741_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2742" name="p2742_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2743" name="p2743_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2744" name="p2744_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2745" name="p2745_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2746" name="p2746_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2747" name="p2747_GPUlambda" public="y"
+    server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
+    credit="330" frames="100" code="GG" contact="densign"/>
+  <fah_proj number="2748" name="p2748_GPUlambda" public="y"
     server="171.64.65.20" atoms="1258" preferred="3" deadline="6"
     credit="330" frames="100" code="GG" contact="densign"/>
 

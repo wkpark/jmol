@@ -54,6 +54,19 @@ class Context {
   int ifs[];
 }
 
+class BondSet extends BitSet {
+  int[] associatedAtoms;
+
+  BondSet() {
+  }
+
+  BondSet(BitSet bs) {
+    for (int i = bs.size(); --i > 0;)
+      if (bs.get(i))
+        set(i);
+  }
+}
+
 class Eval { //implements Runnable {
   final static int scriptLevelMax = 10;
   final static int MAX_IF_DEPTH = 10; //should be plenty
@@ -593,19 +606,11 @@ class Eval { //implements Runnable {
         } else if (v instanceof Float) {
           fixed[j] = new Token(Token.decimal, Compiler.modelValue("" + v), v);
         } else if (v instanceof String && ((String) v).length() > 0) {
-          String s = (String) v;
-          if (s.charAt(0) == '{')
-            v = StateManager.unescapePoint(s);
-          else if (s.indexOf("({") == 0)
-            v = StateManager.unescapeBitset(s);
-          if (v instanceof Point3f)
-            fixed[j] = new Token(Token.point3f, v);
-          else if (v instanceof Point4f)
-            fixed[j] = new Token(Token.point4f, v);
-          else if (v instanceof BitSet)
-            fixed[j] = new Token(Token.bitset, v);
+          v = getStringObjectAsToken((String) v);
+          if (v instanceof Token)
+            fixed[j] = (Token) v;
           else
-            fixed[j] = new Token(Token.identifier, s);
+            fixed[j] = new Token(Token.identifier, (String) v);
         } else {
           Point3f center = viewer.getDrawObjectCenter(var);
           if (center == null)
@@ -621,6 +626,24 @@ class Eval { //implements Runnable {
     statementLength = j;
   }
 
+  Object getStringObjectAsToken(String s) {
+    Object v = s;
+    if (s.charAt(0) == '{')
+      v = StateManager.unescapePoint(s);
+    else if (s.indexOf("({") == 0)
+      v = StateManager.unescapeBitset(s);
+    else if (s.indexOf("[{") == 0)
+      return new Token(Token.bitset, Integer.MIN_VALUE, new BondSet(
+          StateManager.unescapeBitset(s)));
+    if (v instanceof Point3f)
+      return new Token(Token.point3f, v);
+    else if (v instanceof Point4f)
+      return new Token(Token.point4f, v);
+    else if (v instanceof BitSet)
+      return new Token(Token.bitset, v);
+    return v;
+  }
+  
   void instructionDispatchLoop(boolean doList) throws ScriptException {
     long timeBegin = 0;
     int ifLevel = 0;
@@ -1691,11 +1714,11 @@ class Eval { //implements Runnable {
   }
   
   int floatParameterSet(int i, float[] fparams) throws ScriptException {
-    if (tokPeek(i) == Token.leftbrace)
+    if (tokAt(i) == Token.leftbrace)
       i++;
     for (int j = 0; j < fparams.length; j++)
       fparams[j] = floatParameter(i++);
-    if (tokPeek(i) == Token.rightbrace)
+    if (tokAt(i) == Token.rightbrace)
       i++;
     return i;
   }
@@ -1745,8 +1768,8 @@ class Eval { //implements Runnable {
     boolean isOffset = (theTok == Token.plus);
     if (isOffset)
       index++;
-    boolean isPercent = (tokPeek(index + 1) == Token.percent);
-    switch (tokPeek(index)) {
+    boolean isPercent = (tokAt(index + 1) == Token.percent);
+    switch (tokAt(index)) {
     case Token.integer:
       v = intParameter(index);
     case Token.decimal:
@@ -1814,7 +1837,7 @@ class Eval { //implements Runnable {
   }
 
   boolean isAtomCenterOrCoordinateNext(int i) {
-    int tok = tokPeek(i);
+    int tok = tokAt(i);
     return (tok == Token.leftbrace  || tok == Token.expressionBegin 
         || tok == Token.point3f || tok == Token.bitset);
   }
@@ -1834,7 +1857,7 @@ class Eval { //implements Runnable {
   }
 
   boolean isCenterParameter(int i) {
-    switch (tokPeek(i)) {
+    switch (tokAt(i)) {
     case Token.dollarsign:
     case Token.bitset:
     case Token.expressionBegin:
@@ -2081,7 +2104,7 @@ class Eval { //implements Runnable {
   }
 
   boolean isColorParam(int i) {
-    int tok = tokPeek(i);
+    int tok = tokAt(i);
     return (tok == Token.colorRGB || tok == Token.leftsquare);
   }
   
@@ -2273,7 +2296,7 @@ class Eval { //implements Runnable {
     return theToken;
   }
   
-  int tokPeek(int i) {
+  int tokAt(int i) {
     return (i < statementLength ? statement[i].tok : Token.nada);
   }
 
@@ -2885,7 +2908,7 @@ class Eval { //implements Runnable {
     String retValue = "";
     String property = optParameterAsString(1);
     String param = optParameterAsString(2);
-    int tok = tokPeek(2);
+    int tok = tokAt(2);
     BitSet bs = (tok == Token.expressionBegin || tok == Token.bitset ? expression(2)
         : null);
     int propertyID = PropertyManager.getPropertyNumber(property);
@@ -3282,7 +3305,7 @@ class Eval { //implements Runnable {
         params[0] = intParameter(i++);
         loadScript.append(" " + params[0]);
       }
-      int tok = tokPeek(i);
+      int tok = tokAt(i);
       if (tok == Token.leftbrace || tok == Token.point3f) {
         unitCells = getCoordinate(i, false);
         i = iToken + 1;
@@ -3954,24 +3977,24 @@ class Eval { //implements Runnable {
     if (statementLength == 1) {
       viewer.select(null, tQuiet || scriptLevel > scriptReportingLevel);
       return;
-    } else if (statementLength > 3) {
-      if (getToken(2).tok == Token.bonds) {
-        if (statementLength == 5 && getToken(3).tok == Token.bitset) {
-          if (!isSyntaxCheck)
-            viewer.selectBonds((BitSet) theToken.value);
-          return;
-        }
-        invalidArgument();    
+    }
+    if (tokAt(2) == Token.bitset && getToken(2).value instanceof BondSet
+        || getToken(2).tok == Token.bonds && getToken(3).tok == Token.bitset) {
+      if (statementLength == iToken + 2) {
+        if (!isSyntaxCheck)
+          viewer.selectBonds((BitSet) theToken.value);
+        return;
       }
-      if (getToken(2).tok == Token.monitor) {
-        if (statementLength == 5 && getToken(3).tok == Token.bitset) {
-          if (!isSyntaxCheck)
-            setShapeProperty(JmolConstants.SHAPE_MEASURES, "select",
-                theToken.value);
-          return;
-        }
-        invalidArgument();    
+      invalidArgument();
+    }
+    if (getToken(2).tok == Token.monitor) {
+      if (statementLength == 5 && getToken(3).tok == Token.bitset) {
+        if (!isSyntaxCheck)
+          setShapeProperty(JmolConstants.SHAPE_MEASURES, "select",
+              theToken.value);
+        return;
       }
+      invalidArgument();
     }
     BitSet bs = expression(1);
     if (!isSyntaxCheck)
@@ -5419,14 +5442,18 @@ class Eval { //implements Runnable {
         rpn.addX(theToken);
         break;
       case Token.dollarsign:
-         rpn.addX(new Token(Token.point3f, centerParameter(i)));
+        rpn.addX(new Token(Token.point3f, centerParameter(i)));
         i = iToken;
         break;
       case Token.identifier:
-        if (isSyntaxCheck)
-          v = Boolean.TRUE;
-        else
-          v = viewer.getParameter(parameterAsString(i));
+        String name = parameterAsString(i);
+        if (isSyntaxCheck) {
+          v = name;
+        } else {
+          v = viewer.getParameter(name);
+          if (v instanceof String)
+            v = getStringObjectAsToken((String) v);
+        }
         break;
       case Token.leftbrace:
         v = getSetCoordinate(i, false, true, 4);
@@ -5446,7 +5473,8 @@ class Eval { //implements Runnable {
         i = iToken;
         break;
       default:
-        if (!Compiler.tokAttr(theTok, Token.mathop) && !Compiler.tokAttr(theTok, Token.mathfunc))
+        if (!Compiler.tokAttr(theTok, Token.mathop)
+            && !Compiler.tokAttr(theTok, Token.mathfunc))
           invalidArgument();
         if (!rpn.addOp(theToken)) {
           iToken--;
@@ -5455,7 +5483,8 @@ class Eval { //implements Runnable {
       }
       if (v != null)
         if (v instanceof Boolean) {
-          rpn.addX(((Boolean) v).booleanValue()? Token.tokenOn: Token.tokenOff);
+          rpn.addX(((Boolean) v).booleanValue() ? Token.tokenOn
+              : Token.tokenOff);
         } else if (v instanceof Integer) {
           rpn.addX(new Token(Token.integer, ((Integer) v).intValue()));
         } else if (v instanceof Float) {
@@ -5469,7 +5498,7 @@ class Eval { //implements Runnable {
         } else if (v instanceof BitSet) {
           rpn.addX(new Token(Token.bitset, v));
         } else if (v instanceof Token) {
-          rpn.addX((Token)v);
+          rpn.addX((Token) v);
         } else {
           invalidArgument();
         }
@@ -5480,7 +5509,7 @@ class Eval { //implements Runnable {
         rpn.dumpStacks();
       endOfStatementUnexpected();
     }
-    
+
     if (key == null)
       return new Boolean(Token.bValue(result));
     switch (result.tok) {

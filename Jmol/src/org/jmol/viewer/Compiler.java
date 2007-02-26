@@ -323,8 +323,12 @@ class Compiler {
           // don't want to mess up x.distance({1 2 3})
           // if you want to use a bitset there, you must use 
           // bitsets properly: x.distance( ({1 2 3}) )
+          boolean isBond = (script.charAt(ichToken) == '[');
           BitSet bs = lookingAtBitset();
           if (bs != null) {
+            if (isBond)
+              addTokenToPrefix(new Token(Token.bitset, Integer.MIN_VALUE, new BondSet(bs)));
+            else
             addTokenToPrefix(new Token(Token.bitset, bs));
             continue;
           }
@@ -802,6 +806,7 @@ class Compiler {
 
   BitSet lookingAtBitset() {
     // ({n n:m n}) or ({null})
+    // [{n:m}] is a BOND bitset
     // EXCEPT if the previous token was a function:
     // {carbon}.distance({3 3 3})
     // Yes, I wish I had used {{...}}, but this will work. 
@@ -810,16 +815,17 @@ class Compiler {
       cchToken = 8;
       return new BitSet();
     }
-    if (ichToken + 4 > cchScript || script.charAt(ichToken) != '('
-        || script.charAt(ichToken + 1) != '{')
+    if (ichToken + 4 > cchScript || script.charAt(ichToken + 1) != '{'
+      ||(script.charAt(ichToken) != '(' && script.charAt(ichToken) != '['))
       return null;
     int ichT = ichToken + 2;
+    char chEnd = (script.charAt(ichToken) == '(' ? ')' : ']');
     char ch = ' ';
     while (ichT < cchScript && (ch = script.charAt(ichT)) != '}'
         && (Character.isDigit(ch) || isSpaceOrTab(ch) || ch == ':'))
       ichT++;
     if (ch != '}' || ichT + 1 == cchScript
-        || script.charAt(ichT + 1) != ')')
+        || script.charAt(ichT + 1) != chEnd)
       return null;
     int iprev = -1;
     int ipt = 0;

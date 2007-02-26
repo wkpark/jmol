@@ -727,10 +727,11 @@ public class Token {
   final static int top          = misc | 69;
   final static int bottom       = misc | 70;
   final static int bitset       = misc | 71;
-  final static int last         = misc | 72;
-  final static int spec_model2  = misc | 73;
-  final static int point3f      = misc | 74;
-  final static int point4f      = misc | 75;
+  final static int bondset      = misc | 72;
+  final static int last         = misc | 73;
+  final static int spec_model2  = misc | 74;
+  final static int point3f      = misc | 75;
+  final static int point4f      = misc | 76;
  
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;

@@ -221,6 +221,7 @@ public final class ScriptWindow extends JDialog
     if (state == null)
       return;
     state += CommandHistory.NOHISTORYATALL_FLAG;
+    setError(false);
     viewer.evalStringQuiet(state);
     undoPointer = ptr;
     //for (int i =0; i < MAXUNDO; i++) 
@@ -246,7 +247,6 @@ public final class ScriptWindow extends JDialog
   
   void executeCommand(String strCommand) {
     boolean doWait;
-    setError(false);
     console.appendNewline();
     console.setPrompt();
     if (strCommand.length() == 0) {
@@ -254,9 +254,10 @@ public final class ScriptWindow extends JDialog
       return;
     }
     
-    if (strCommand.charAt(0) != '!') {
+    if (strCommand.charAt(0) != '!' && !isError) {
       undoSave();
     }
+    setError(false);
     undoSaved = false;
 
     String strErrorMessage = null;

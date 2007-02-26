@@ -1544,7 +1544,17 @@ public final class Frame {
     autoBond(null, null, null);
   }
 
-  int autoBond(short order, BitSet bsA, BitSet bsB, BitSet bsBonds) {
+  int autoBond(short order, BitSet bsA, BitSet bsB, BitSet bsBonds, boolean isBonds) {
+    if (isBonds) {
+      BitSet bs = bsA;
+      bsA = new BitSet();
+      bsB = new BitSet();
+      for (int i = bondCount; --i >= 0;) 
+      if (bs.get(i)){
+        bsA.set(bonds[i].atom1.atomIndex);  
+        bsB.set(bonds[i].atom2.atomIndex);  
+      }
+    }
     if (order == JmolConstants.BOND_ORDER_NULL)
       return autoBond(bsA, bsB, bsBonds);
     else if (order == JmolConstants.BOND_H_REGULAR)
@@ -1787,19 +1797,24 @@ public final class Frame {
 
   int makeConnections(float minDistance, float maxDistance, short order,
                       int connectOperation, BitSet bsA, BitSet bsB,
-                      BitSet bsBonds) {
+                      BitSet bsBonds, boolean isBonds) {
     if (connectOperation != JmolConstants.CONNECT_IDENTIFY_ONLY) {
-      String stateScript = "connect " + minDistance + " " + maxDistance + " "
-          + StateManager.escape(bsA) + " " + StateManager.escape(bsB) + " "
-          + JmolConstants.getBondOrderNameFromOrder(order) + " "
+      String stateScript = "connect " + minDistance + " " + maxDistance + " ";
+      if (isBonds)
+        stateScript += StateManager.escape(bsA, false) + " ";
+      else
+        stateScript += StateManager.escape(bsA) + " "
+            + StateManager.escape(bsB) + " ";
+      stateScript += JmolConstants.getBondOrderNameFromOrder(order) + " "
           + JmolConstants.connectOperationName(connectOperation);
       stateScript += ";";
       stateScripts.add(stateScript);
     }
     if (connectOperation == JmolConstants.CONNECT_DELETE_BONDS)
-      return deleteConnections(minDistance, maxDistance, order, bsA, bsB);
+      return deleteConnections(minDistance, maxDistance, order, bsA, bsB,
+          isBonds);
     if (connectOperation == JmolConstants.CONNECT_AUTO_BOND)
-      return autoBond(order, bsA, bsB, bsBonds);
+      return autoBond(order, bsA, bsB, bsBonds, isBonds);
     if (order == JmolConstants.BOND_ORDER_NULL)
       order = JmolConstants.BOND_COVALENT_SINGLE; // default 
     float minDistanceSquared = minDistance * minDistance;
@@ -1809,28 +1824,42 @@ public final class Frame {
     int nNew = 0;
     int nModified = 0;
     boolean identifyOnly = (connectOperation == JmolConstants.CONNECT_IDENTIFY_ONLY);
-    for (int iA = atomCount; --iA >= 0;) {
+    Bond bondAB = null;
+    int n = (isBonds ? bondCount : atomCount);
+    int m = (isBonds ? 1 : atomCount);
+    Atom atomA = null;
+    Atom atomB = null;
+    for (int iA = n; --iA >= 0;) {
       if (!bsA.get(iA))
         continue;
-      Atom atomA = atoms[iA];
-      Point3f pointA = atomA;
-      for (int iB = atomCount; --iB >= 0;) {
-        if (iB == iA)
-          continue;
-        if (!bsB.get(iB))
-          continue;
-        Atom atomB = atoms[iB];
-        if (atomA.modelIndex != atomB.modelIndex)
-          continue;
-        if (atomA.alternateLocationID != atomB.alternateLocationID
-            && atomA.alternateLocationID != 0 && atomB.alternateLocationID != 0)
-          continue;
-        Bond bondAB = atomA.getBond(atomB);
+      if (isBonds) {
+        bondAB = bonds[iA];
+        atomA = bondAB.atom1;
+        atomB = bondAB.atom2;
+      } else {
+        atomA = atoms[iA];
+      }
+      for (int iB = m; --iB >= 0;) {
+        if (!isBonds) {
+          if (iB == iA)
+            continue;
+          if (!bsB.get(iB))
+            continue;
+          atomB = atoms[iB];
+          if (atomA.modelIndex != atomB.modelIndex)
+            continue;
+          if (atomA.alternateLocationID != atomB.alternateLocationID
+              && atomA.alternateLocationID != 0
+              && atomB.alternateLocationID != 0)
+            continue;
+          bondAB = atomA.getBond(atomB);
+        }
         if (bondAB == null
             && (identifyOnly || JmolConstants.CONNECT_MODIFY_ONLY == connectOperation)
-            || bondAB != null && JmolConstants.CONNECT_CREATE_ONLY == connectOperation)
+            || bondAB != null
+            && JmolConstants.CONNECT_CREATE_ONLY == connectOperation)
           continue;
-        float distanceSquared = pointA.distanceSquared(atomB);
+        float distanceSquared = atomA.distanceSquared(atomB);
         if (distanceSquared < minDistanceSquared
             || distanceSquared > maxDistanceSquared)
           continue;
@@ -1854,7 +1883,7 @@ public final class Frame {
   }
 
   int deleteConnections(float minDistance, float maxDistance, short order,
-                        BitSet bsA, BitSet bsB) {
+                        BitSet bsA, BitSet bsB, boolean isBonds) {
     BitSet bsDelete = new BitSet();
     float minDistanceSquared = minDistance * minDistance;
     float maxDistanceSquared = maxDistance * maxDistance;
@@ -1866,8 +1895,10 @@ public final class Frame {
       Bond bond = bonds[i];
       Atom atom1 = bond.atom1;
       Atom atom2 = bond.atom2;
-      if (bsA.get(atom1.atomIndex) && bsB.get(atom2.atomIndex)
-          || bsA.get(atom2.atomIndex) && bsB.get(atom1.atomIndex)) {
+      if (!isBonds
+          && (bsA.get(atom1.atomIndex) && bsB.get(atom2.atomIndex) || bsA
+              .get(atom2.atomIndex)
+              && bsB.get(atom1.atomIndex)) || isBonds && bsA.get(i)) {
         if (bond.atom1.isBonded(bond.atom2)) {
           float distanceSquared = atom1.distanceSquared(atom2);
           if (distanceSquared >= minDistanceSquared

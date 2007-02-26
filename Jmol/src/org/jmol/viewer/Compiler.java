@@ -327,7 +327,7 @@ class Compiler {
           BitSet bs = lookingAtBitset();
           if (bs != null) {
             if (isBond)
-              addTokenToPrefix(new Token(Token.bitset, Integer.MIN_VALUE, new BondSet(bs)));
+              addTokenToPrefix(new Token(Token.bitset, new BondSet(bs)));
             else
             addTokenToPrefix(new Token(Token.bitset, bs));
             continue;

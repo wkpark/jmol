@@ -773,9 +773,15 @@ class StateManager {
   }
   
   static String escape(BitSet bs) {
+    return escape(bs, true);
+  }
+    
+  static String escape(BitSet bs, boolean isAtoms) {
+    char chOpen = (isAtoms ? '(' : '[');   
+    char chClose = (isAtoms ? ')' : ']');   
     if (bs == null)
-      return "({})";
-    StringBuffer s = new StringBuffer("({");
+      return chOpen + "{}" + chClose;
+    StringBuffer s = new StringBuffer(chOpen + "{");
     int imax = bs.size();
     int iLast = -1;
     int iFirst = -2;
@@ -785,10 +791,8 @@ class StateManager {
       if (i == imax || iLast >= 0 && !isSet) {
         if (iLast >= 0 && iFirst != iLast)
           s.append((iFirst == iLast - 1 ? " " : ":") + iLast);
-        if (i == imax) {
-          s.append("})");
-          return s.toString();
-        }
+        if (i == imax)
+          break;
         iLast = -1;
       }
       if (bs.get(i)) {
@@ -799,7 +803,8 @@ class StateManager {
         iLast = i;
       }
     }
-    return "({})"; // impossible return
+    s.append("}" + chClose);
+    return s.toString();
   }
  
   static BitSet unescapeBitset(String strBitset) {

@@ -65,6 +65,11 @@ class BondSet extends BitSet {
       if (bs.get(i))
         set(i);
   }
+
+  BondSet(BitSet bs, int[] atoms) {
+    this(bs);
+    associatedAtoms = atoms;
+  }
 }
 
 class Eval { //implements Runnable {
@@ -628,13 +633,14 @@ class Eval { //implements Runnable {
 
   Object getStringObjectAsToken(String s) {
     Object v = s;
+    if (s == null || s.length() == 0)
+      return s;
     if (s.charAt(0) == '{')
       v = StateManager.unescapePoint(s);
     else if (s.indexOf("({") == 0)
       v = StateManager.unescapeBitset(s);
     else if (s.indexOf("[{") == 0)
-      return new Token(Token.bitset, Integer.MIN_VALUE, new BondSet(
-          StateManager.unescapeBitset(s)));
+      return new Token(Token.bitset, new BondSet(StateManager.unescapeBitset(s)));
     if (v instanceof Point3f)
       return new Token(Token.point3f, v);
     else if (v instanceof Point4f)
@@ -1060,7 +1066,8 @@ class Eval { //implements Runnable {
    */
 
   Token[] tempStatement;
-
+  boolean isBondSet;
+  
   BitSet expression(int index) throws ScriptException {
     if (!checkToken(index))
       badArgumentCount();
@@ -1075,6 +1082,7 @@ class Eval { //implements Runnable {
     //predefined variables, but it is conceivable that one could
     //have a problem. 
 
+    isBondSet = false;
     if (code != statement) {
       tempStatement = statement;
       statement = code;
@@ -1218,13 +1226,18 @@ class Eval { //implements Runnable {
         rpn.addX(getAtomBits("Cell", new int[] { (int) (pt.x * 1000),
             (int) (pt.y * 1000), (int) (pt.z * 1000) }));
         break;
-      case Token.identifier:
       case Token.amino:
       case Token.backbone:
       case Token.solvent:
       case Token.sidechain:
       case Token.surface:
         rpn.addX(lookupIdentifierValue((String) value));
+        break;
+      case Token.identifier:
+        val = getStringObjectAsToken("" + viewer.getParameter((String) value));
+        if (val instanceof String)
+          val = lookupIdentifierValue((String) value);        
+        rpn.addX(val);
         break;
       case Token.within:
       case Token.substructure:
@@ -1321,7 +1334,8 @@ class Eval { //implements Runnable {
     }
     BitSet bs = (result.value instanceof BitSet ? (BitSet) result.value
         : new BitSet());
-    if (!ignoreSubset && bsSubset != null)
+    isBondSet = (result.value instanceof BondSet);
+    if (!ignoreSubset && bsSubset != null && !isBondSet)
       bs.and(bsSubset);
     if (tempStatement != null) {
       statement = tempStatement;
@@ -2780,6 +2794,7 @@ class Eval { //implements Runnable {
     int nAtomSets = 0;
     int nDistances = 0;
     BitSet bsBonds = new BitSet();
+    boolean isBonds = false;
     /*
      * connect [<=2 distance parameters] [<=2 atom sets] 
      *             [<=1 bond type] [<=1 operation]
@@ -2809,11 +2824,12 @@ class Eval { //implements Runnable {
         break;
       case Token.bitset:
       case Token.expressionBegin:
-        if (++nAtomSets > 2)
+        if (++nAtomSets > 2 || isBonds && nAtomSets > 1)
           badArgumentCount();
         if (haveType || isColorOrRadius)
           invalidParameterOrder();
         atomSets[atomSetCount++] = expression(i);
+        isBonds = isBondSet;
         i = iToken; // the for loop will increment i
         break;
       case Token.identifier:
@@ -2881,7 +2897,7 @@ class Eval { //implements Runnable {
         operation = JmolConstants.CONNECT_MODIFY_ONLY;
     }
     int n = viewer.makeConnections(distances[0], distances[1], bondOrder,
-        operation, atomSets[0], atomSets[1], bsBonds);
+        operation, atomSets[0], atomSets[1], bsBonds, isBonds);
     if (isDelete) {
       viewer.scriptStatus(GT._("{0} connections deleted", n));
       return;
@@ -3997,8 +4013,13 @@ class Eval { //implements Runnable {
       invalidArgument();
     }
     BitSet bs = expression(1);
-    if (!isSyntaxCheck)
+    if (isSyntaxCheck)
+      return;
+    if (isBondSet) {
+      viewer.selectBonds(bs);      
+    } else {
       viewer.select(bs, tQuiet || scriptLevel > scriptReportingLevel);
+    }
   }
 
   void subset() throws ScriptException {
@@ -5353,6 +5374,11 @@ class Eval { //implements Runnable {
         setFloatProperty(key, ((Float) v).floatValue());
       } else if (v instanceof String) {
         setStringProperty(key, (String) v);
+      } else if (v instanceof BondSet) {
+        setIntProperty(key, Viewer.cardinalityOf((BitSet) v));
+        setStringProperty(key + "_set", StateManager.escape((BitSet) v, false));
+        if (!isSyntaxCheck && scriptLevel <= scriptReportingLevel)
+          viewer.showParameter(key+"_set", true, 60);
       } else if (v instanceof BitSet) {
         setIntProperty(key, Viewer.cardinalityOf((BitSet) v));
         setStringProperty(key + "_set", StateManager.escape((BitSet) v));
@@ -5556,13 +5582,15 @@ class Eval { //implements Runnable {
     return bsAtoms;
   }
   
-  String getBitsetIdent(BitSet bs, String label, boolean isAtoms, int[] indices) {
+  String getBitsetIdent(BitSet bs, String label, Object tokenValue, boolean useAtomMap) {
     if (bs == null || isSyntaxCheck)
       return "";
     StringBuffer s = new StringBuffer();
     int len = bs.size();
     Frame frame = viewer.getFrame();
     int n = 0;
+    boolean isAtoms = !(tokenValue instanceof BondSet);
+    int[] indices = (isAtoms || !useAtomMap ? null : ((BondSet)tokenValue).associatedAtoms);
     if (indices == null && label != null && label.indexOf("%D") > 0)
       indices = getAtomIndices(bs);
     for (int j = 0; j < len; j++)
@@ -5625,15 +5653,15 @@ class Eval { //implements Runnable {
     return new Token(Token.propselector, tok, s);
   }
 
-  Object getBitsetAverage(BitSet bs, int tok, Point3f ptRef, Point4f planeRef, boolean isAtoms,
-                          int[] indices) throws ScriptException {
+  Object getBitsetAverage(BitSet bs, int tok, Point3f ptRef, Point4f planeRef, Object tokenValue, boolean useAtomMap) throws ScriptException {
+    boolean isAtoms = !(tokenValue instanceof BondSet);
     if (tok == Token.atom)
       return (!isAtoms && !isSyntaxCheck ? getAtomBitsetFromBonds(bs) : bs);
     if (tok == Token.bonds)
       return (isAtoms && !isSyntaxCheck ? viewer.getBondsForSelectedAtoms(bs)
           : bs);
     if (tok == Token.ident)
-      return getBitsetIdent(bs, null, isAtoms, indices);
+      return getBitsetIdent(bs, null, tokenValue, useAtomMap);
     int iv = 0;
     float fv = 0;
     int n = 0;
@@ -8290,6 +8318,8 @@ class Eval { //implements Runnable {
         return addX((Point3f)x);
       if (x instanceof BitSet)
         return addX((BitSet)x);
+      if (x instanceof Token)
+        return addX((Token)x);
       return false;
     }
 
@@ -8599,7 +8629,7 @@ class Eval { //implements Runnable {
       Point4f plane = planeValue(x2);
       if (x1.tok == Token.bitset)
         return addX(getBitsetAverage(Token.bsSelect(x1), Token.distance, pt,
-            plane, (x1.intValue >= 0), null));
+            plane, x1.value, false));
       else if (x1.tok == Token.point3f)
         return addX(plane == null ? pt.distance(ptValue(x1))
             : Graphics3D.distanceToPlane(plane, ptValue(x1)));
@@ -8669,8 +8699,7 @@ class Eval { //implements Runnable {
       Token x2 = args[0];
       if (x1.tok != Token.bitset || x2.tok != Token.string)
         return false;
-      return addX(getBitsetIdent(Token.bsSelect(x1), Token.sValue(x2),
-          (x1.intValue >= 0), x1.intArray));
+      return addX(getBitsetIdent(Token.bsSelect(x1), Token.sValue(x2), x1.value, true));
     }
     
     boolean evaluateWithin(Token[] args) throws ScriptException {
@@ -8742,10 +8771,14 @@ class Eval { //implements Runnable {
       short order = JmolConstants.BOND_ORDER_ANY;
       BitSet atoms1 = null;
       BitSet atoms2 = null;
+      boolean isBonds = false;
       for (int i = 0; i < args.length; i++) {
         Token token = args[i];
         switch (token.tok) {
         case Token.bitset:
+          isBonds = (token.value instanceof BondSet);
+          if (isBonds && atoms1 != null)
+            return false;
           if (atoms1 == null)
             atoms1 = Token.bsSelect(token);
           else if (atoms2 == null)
@@ -8788,11 +8821,11 @@ class Eval { //implements Runnable {
       if (atoms2 != null) {
         BitSet bsBonds = new BitSet();
         if (isSyntaxCheck)
-          return addX(new Token(Token.bitset, Integer.MIN_VALUE, bsBonds));
+          return addX(new Token(Token.bitset, new BondSet(bsBonds)));
         viewer.makeConnections(fmin, fmax, order,
-            JmolConstants.CONNECT_IDENTIFY_ONLY, atoms1, atoms2, bsBonds);
-        return addX(new Token(Token.bitset, Integer.MIN_VALUE, bsBonds,
-            getAtomIndices(bsBonds)));
+            JmolConstants.CONNECT_IDENTIFY_ONLY, atoms1, atoms2, bsBonds, isBonds);
+        return addX(new Token(Token.bitset, new BondSet(bsBonds,
+            getAtomIndices(bsBonds))));
       }
       if (isSyntaxCheck)
         return addX(atoms1);
@@ -8842,15 +8875,16 @@ class Eval { //implements Runnable {
         }
         if (x2.tok != Token.bitset)
           return false;
-        Object val = getBitsetAverage(Token.bsSelect(x2), op.intValue, null, null,
-            x2.intValue >= 0, x2.intArray);
+        if (op.intValue == Token.bonds && x2.value instanceof BondSet)
+          return addX(x2);
+        Object val = getBitsetAverage(Token.bsSelect(x2), op.intValue, null,
+            null, x2.value, false);
         if (op.intValue == Token.bonds)
-          return addX(new Token(Token.bitset, Integer.MIN_VALUE, (BitSet) val,
-              x2.intValue >= 0 ? getAtomIndices(Token.bsSelect(x2))
-                  : x2.intArray));
+          return addX(new Token(Token.bitset, new BondSet((BitSet) val,
+              getAtomIndices(Token.bsSelect(x2)))));
         return addX(val);
       }
-      
+
       //binary:
       Token x1 = getX();
       switch (op.tok) {
@@ -9031,7 +9065,7 @@ class Eval { //implements Runnable {
       case Token.point3f:
         return (Point3f) x.value;
       case Token.bitset:
-          return (Point3f) getBitsetAverage(Token.bsSelect(x), Token.point3f, null, null, x.intValue >= 0, null);
+          return (Point3f) getBitsetAverage(Token.bsSelect(x), Token.point3f, null, null, x.value, false);
       default:
         float f = Token.fValue(x);
         return new Point3f(f, f, f);

@@ -346,9 +346,9 @@ class ModelManager {
   }
 
   int makeConnections(float minDistance, float maxDistance, short order,
-                      int connectOperation, BitSet bsA, BitSet bsB, BitSet bsBonds) {
+                      int connectOperation, BitSet bsA, BitSet bsB, BitSet bsBonds, boolean isBonds) {
     return (frame.makeConnections(minDistance, maxDistance,
-        order, connectOperation, bsA, bsB, bsBonds));
+        order, connectOperation, bsA, bsB, bsBonds, isBonds));
   }
 
   void rebond() {

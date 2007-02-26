@@ -4299,11 +4299,11 @@ public class Viewer extends JmolViewer {
 
   int makeConnections(float minDistance, float maxDistance, short order,
                       int connectOperation, BitSet bsA, BitSet bsB,
-                      BitSet bsBonds) {
+                      BitSet bsBonds, boolean isBonds) {
     //eval
     clearAllMeasurements(); // necessary for serialization
     return modelManager.makeConnections(minDistance, maxDistance, order,
-        connectOperation, bsA, bsB, bsBonds);
+        connectOperation, bsA, bsB, bsBonds, isBonds);
   }
 
   // //////////////////////////////////////////////////////////////

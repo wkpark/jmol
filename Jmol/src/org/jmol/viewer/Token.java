@@ -41,14 +41,6 @@ public class Token {
   int tok;
   Object value;
   int intValue = Integer.MAX_VALUE;
-  int[] intArray;
-
-  Token(int tok, int intValue, Object value, int[] intArray) {
-    this.tok = tok;
-    this.intValue = intValue;
-    this.value = value;
-    this.intArray = intArray;
-  }
 
   Token(int tok, int intValue, Object value) {
     this.tok = tok;
@@ -339,9 +331,9 @@ public class Token {
     
     int i1 = token.intValue;
     // maxvalue or positive: atoms; minvalue or negative: bonds
-    if (i1 == Integer.MAX_VALUE || i1 == Integer.MIN_VALUE) {
+    if (i1 == Integer.MAX_VALUE) {
       if (i2 > 0)
-        token.intValue = (i1 == Integer.MAX_VALUE ? i2 : -i2);
+        token.intValue = i2;
       return token;
     }
     int len = 0;
@@ -360,9 +352,7 @@ public class Token {
       len = s.length();
     }
 
-    token.intValue = (i1 >= 0 ? Integer.MAX_VALUE : Integer.MIN_VALUE);
-    i1 = Math.abs(i1);
-      
+    token.intValue = Integer.MAX_VALUE;
     if (i2 == 0)
       i2 = len;
     else if (i2 < 0)

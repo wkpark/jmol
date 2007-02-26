@@ -1181,7 +1181,7 @@ class Compiler {
       addNextToken();
       if (tokPeek(Token.bitset))
         addNextToken();
-      else if(tokPeek(Token.define)) {
+      else if (tokPeek(Token.define)) {
         addNextToken();
         addNextToken();
       }
@@ -1190,7 +1190,7 @@ class Compiler {
       return clauseCell();
     case Token.within:
       addNextToken();
-      return clauseWithin();      
+      return clauseWithin();
     case Token.connected:
       addNextToken();
       return clauseConnected();
@@ -1219,44 +1219,49 @@ class Compiler {
         return false;
       if (!addNextTokenIf(Token.rightparen))
         return rightParenthesisExpected();
-      for (int i = 0; i < 2; i++) {
-        if (!addNextTokenIf(Token.leftsquare))
-          break;
-        if (!clauseMath())
-          return false;
-        if (!addNextTokenIf(Token.rightsquare))
-          return rightBracketExpected();
-      }
-      return true;
+      return checkForMath();
     case Token.leftbrace:
-        isCoordinate = false;
-        if (isSetOrIf)
-          tokenNext();
-        else
-          addNextToken();
+      isCoordinate = false;
+      if (isSetOrIf)
+        tokenNext();
+      else
+        addNextToken();
+      if (!clauseOr(false))
+        return false;
+      if (tokPeek() != Token.rightbrace) {
+        addNextTokenIf(Token.comma);
         if (!clauseOr(false))
           return false;
-        if (tokPeek() != Token.rightbrace) {
-          addNextTokenIf(Token.comma);
-          if (!clauseOr(false))
-            return false;
-          addNextTokenIf(Token.comma);
-          if (!clauseOr(false))
-            return false;
-          addNextTokenIf(Token.comma);
-          clauseOr(false);
-          if (tokPeek() != Token.rightbrace)
-            return rightBraceExpected();
-          isCoordinate = true;
-        }
-        if (isSetOrIf)
-          tokenNext();
-        else
-          addNextToken();
-        return true;
-    }    return unrecognizedExpressionToken();
+        addNextTokenIf(Token.comma);
+        if (!clauseOr(false))
+          return false;
+        addNextTokenIf(Token.comma);
+        clauseOr(false);
+        if (tokPeek() != Token.rightbrace)
+          return rightBraceExpected();
+        isCoordinate = true;
+      }
+      if (isSetOrIf)
+        tokenNext();
+      else
+        addNextToken();
+      return checkForMath();
+    }
+    return unrecognizedExpressionToken();
   }
 
+  private boolean checkForMath() {
+    for (int i = 0; i < 2; i++) {
+      if (!addNextTokenIf(Token.leftsquare))
+        break;
+      if (!clauseMath())
+        return false;
+      if (!addNextTokenIf(Token.rightsquare))
+        return rightBracketExpected();
+    }
+    return true;
+  }
+  
   // within ( plane, ....)
   // within ( distance, plane, planeExpression)
   // within ( hkl, ....

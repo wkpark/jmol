@@ -8515,6 +8515,8 @@ class Eval { //implements Runnable {
       Token x1 = getX();
       if (args.length != 1)
         return false;
+      if (isSyntaxCheck)
+        return addX(1f);      
       Token x2 = args[0];
       Point3f pt = ptValue(x2);
       Point4f plane = planeValue(x2);
@@ -8531,6 +8533,9 @@ class Eval { //implements Runnable {
       int nPoints = args.length;
       if (nPoints < (isAngle ? 3 : 2) || nPoints > (isAngle ? 4 : 2))
         return false;
+      if (isSyntaxCheck)
+        return addX(1f);
+
       Point3f[] pts = new Point3f[nPoints];
       for (int i = 0; i < nPoints; i++)
         pts[i] = ptValue(args[i]);
@@ -8549,6 +8554,8 @@ class Eval { //implements Runnable {
       Token x1 = getX();
       if (args.length != 1)
         return false;
+      if (isSyntaxCheck)
+        return addX((int)1);
       Token x2 = args[0];
       if (x1.tok == Token.string && x2.tok == Token.string)
         return addX(Token.sValue(x1).indexOf(Token.sValue(x2)) + 1);
@@ -8556,10 +8563,12 @@ class Eval { //implements Runnable {
     }
     
     boolean evaluateLabel(Token[] args) throws ScriptException {
-      System.out.println("eval label");
+      //System.out.println("eval label");
       Token x1 = getX();
       if (args.length != 1)
         return false;
+      if (isSyntaxCheck)
+        return addX("");
       Token x2 = args[0];
       if (x1.tok != Token.bitset || x2.tok != Token.string)
         return false;
@@ -8571,11 +8580,12 @@ class Eval { //implements Runnable {
       // within ( distance, expression)
       // within ( group, etc., expression)
       // within ( plane or hkl or coord  atomcenter atomcenter atomcenter )
-      System.out.println("eval within");
+      //System.out.println("eval within");
       if (args.length < 1)
         return false;
       Object withinSpec = args[0].value;
       String withinStr = "" + withinSpec;
+      BitSet bs = new BitSet();
       float distance = 0;
       boolean isSequence = false;
       if (withinSpec instanceof String)
@@ -8589,7 +8599,8 @@ class Eval { //implements Runnable {
         if (!isOneOf(withinStr,"plane;hkl;coord"))
           return false;
       }
-      BitSet bs = new BitSet();
+      if (isSyntaxCheck)
+        return addX(bs);
       Point3f pt = null;
       Point4f plane = null;
       int i = args.length - 1;
@@ -8679,6 +8690,8 @@ class Eval { //implements Runnable {
         atoms1 = bsAll();
       if (atoms2 != null) {
         BitSet bsBonds = new BitSet();
+        if (isSyntaxCheck)
+          return addX(new Token(Token.bitset, Integer.MIN_VALUE, bsBonds));
         viewer.makeConnections(fmin, fmax, order,
             JmolConstants.CONNECT_IDENTIFY_ONLY, atoms1, atoms2, bsBonds);
         return addX(new Token(Token.bitset, Integer.MIN_VALUE, bsBonds,
@@ -8690,14 +8703,14 @@ class Eval { //implements Runnable {
     }
 
     boolean evaluateSubstructure(Token[] args) throws ScriptException {
-      System.out.println("eval subs");
-      if (isSyntaxCheck)
-        return true;
+      //System.out.println("eval subs");
       if (args.length != 1)
         return false;
+      BitSet bs = new BitSet();
+      if (isSyntaxCheck)
+        return addX(bs);
       String smiles = Token.sValue(args[0]);
       PatternMatcher matcher = new PatternMatcher(viewer);
-      BitSet bs = new BitSet();
       try {
         bs = matcher.getSubstructureSet(smiles);
       } catch (InvalidSmilesException e) {

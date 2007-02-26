@@ -2162,19 +2162,132 @@ final public class Graphics3D {
     }
   }
   
-  public void calcAveragePoint(Point3f pointA, Point3f pointB,
-                                   Point3f pointC) {
-   Vector3f v = new Vector3f(pointB);
-   v.sub(pointA);
-   v.scale(1/2f);
-   pointC.set(pointA);
-   pointC.add(v);
+  public static void projectOntoAxis (Point3f point, Point3f axisA, Vector3f axisUnitVector, Vector3f vectorProjection) {
+    vectorProjection.sub(point, axisA);
+    float projectedLength = vectorProjection.dot(axisUnitVector);
+    point.set(axisUnitVector);
+    point.scaleAdd(projectedLength, axisA);
+    vectorProjection.sub(point, axisA);
   }
   
-  public void calcAveragePointN(Point3f[] points, int nPoints,
+  public static void calcBestAxisThroughPoints(Point3f[] points, Point3f axisA,
+                                               Vector3f axisUnitVector,
+                                               Vector3f vectorProjection,
+                                               int nTriesMax) {
+    // just a crude starting point.
+
+    int nPoints = points.length;
+    axisA.set(points[0]);
+    axisUnitVector.sub(points[nPoints - 1], axisA);
+    axisUnitVector.normalize();
+
+    /*
+     * We now calculate the least-squares 3D axis
+     * through the helix alpha carbons starting with Vo
+     * as a first approximation.
+     * 
+     * This uses the simple 0-centered least squares fit:
+     * 
+     * Y = M cross Xi
+     * 
+     * minimizing R^2 = SUM(|Y - Yi|^2) 
+     * 
+     * where Yi is the vector PERPENDICULAR of the point onto axis Vo
+     * and Xi is the vector PROJECTION of the point onto axis Vo
+     * and M is a vector adjustment 
+     * 
+     * M = SUM_(Xi cross Yi) / sum(|Xi|^2)
+     * 
+     * from which we arrive at:
+     * 
+     * V = Vo + (M cross Vo)
+     * 
+     * Basically, this is just a 3D version of a 
+     * standard 2D least squares fit to a line, where we would say:
+     * 
+     * y = m xi + b
+     * 
+     * D = n (sum xi^2) - (sum xi)^2
+     * 
+     * m = [(n sum xiyi) - (sum xi)(sum yi)] / D
+     * b = [(sum yi) (sum xi^2) - (sum xi)(sum xiyi)] / D
+     * 
+     * but here we demand that the line go through the center, so we
+     * require (sum xi) = (sum yi) = 0, so b = 0 and
+     * 
+     * m = (sum xiyi) / (sum xi^2)
+     * 
+     * In 3D we do the same but 
+     * instead of x we have Vo,
+     * instead of multiplication we use cross products
+     * 
+     * A bit of iteration is necessary.
+     * 
+     * Bob Hanson 11/2006
+     * 
+     */
+
+    calcAveragePointN(points, nPoints, axisA);
+
+    int nTries = 0;
+    while (nTries++ < nTriesMax
+        && findAxis(points, nPoints, axisA, axisUnitVector, vectorProjection) > 0.001) {
+    }
+
+    /*
+     * Iteration here gets the job done.
+     * We now find the projections of the endpoints onto the axis
+     * 
+     */
+
+    Point3f tempA = new Point3f(points[0]);
+    Graphics3D.projectOntoAxis(tempA, axisA, axisUnitVector, vectorProjection);
+    axisA.set(tempA);
+  }
+
+  static float findAxis(Point3f[] points, int nPoints, Point3f axisA,
+                        Vector3f axisUnitVector, Vector3f vectorProjection) {
+    Vector3f sumXiYi = new Vector3f();
+    Vector3f vTemp = new Vector3f();
+    Point3f pt = new Point3f();
+    Point3f ptProj = new Point3f();
+    Vector3f a = new Vector3f(axisUnitVector);
+
+    float sum_Xi2 = 0;
+    float sum_Yi2 = 0;
+    for (int i = nPoints; --i >= 0;) {
+      pt.set(points[i]);
+      ptProj.set(pt);
+      Graphics3D.projectOntoAxis(ptProj, axisA, axisUnitVector,
+          vectorProjection);
+      vTemp.sub(pt, ptProj);
+      sum_Yi2 += vTemp.lengthSquared();
+      vTemp.cross(vectorProjection, vTemp);
+      sumXiYi.add(vTemp);
+      sum_Xi2 += vectorProjection.lengthSquared();
+    }
+    Vector3f m = new Vector3f(sumXiYi);
+    m.scale(1 / sum_Xi2);
+    vTemp.cross(m, axisUnitVector);
+    axisUnitVector.add(vTemp);
+    axisUnitVector.normalize();
+    //check for change in direction by measuring vector difference length
+    vTemp.set(axisUnitVector);
+    vTemp.sub(a);
+    return vTemp.length();
+  }
+  
+  
+  public static void calcAveragePoint(Point3f pointA, Point3f pointB,
+                                      Point3f pointC) {
+    pointC.set((pointA.x + pointB.x) / 2, (pointA.y + pointB.y) / 2,
+        (pointA.z + pointB.z) / 2);
+  }
+  
+  public static void calcAveragePointN(Point3f[] points, int nPoints,
                                 Point3f averagePoint) {
-    averagePoint.set(0, 0, 0);
-    for (int i = 0; i < nPoints; i++)
+    averagePoint.set(points[0]);
+    for (int i = 1; i < nPoints; i++)
       averagePoint.add(points[i]);
     averagePoint.scale(1f / nPoints);
   }

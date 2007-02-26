@@ -25,6 +25,8 @@ package org.jmol.viewer;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.g3d.Graphics3D;
+
 class Sheet extends ProteinStructure {
 
   AminoPolymer aminoPolymer;
@@ -56,14 +58,14 @@ class Sheet extends ProteinStructure {
     if (lowerNeighborIsHelixOrSheet()) {
       //System.out.println("ok"); 
     } else {
-      projectOntoAxis(tempA);
+      Graphics3D.projectOntoAxis(tempA, axisA, axisUnitVector, vectorProjection);
     }
     Point3f tempB = new Point3f();
     aminoPolymer.getLeadMidPoint(monomerIndex + monomerCount, tempB);
     if (upperNeighborIsHelixOrSheet()) {
       //System.out.println("ok");       
     } else {
-      projectOntoAxis(tempB);
+      Graphics3D.projectOntoAxis(tempB, axisA, axisUnitVector, vectorProjection);
     }
     axisA = tempA;
     axisB = tempB;

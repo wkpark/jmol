@@ -424,10 +424,8 @@ class Draw extends MeshCollection {
       } else if (nVertices >= 3 && !isPlane && isPerpendicular) {
         // normal to plane
         Graphics3D.calcNormalizedNormal(ptList[0], ptList[1], ptList[2], normal, vAB, vAC);
-        center = new Point3f(ptList[0]);
-        for (int i = 1; i < nVertices; i++)
-          center.add(ptList[i]);
-        center.scale(1f / nVertices);
+        center = new Point3f();
+        Graphics3D.calcAveragePointN(ptList, nVertices, center);
         dist = (length == Float.MAX_VALUE ? ptList[0].distance(center) : length);
         normal.scale(dist);
         ptList[0].set(center);
@@ -436,7 +434,7 @@ class Draw extends MeshCollection {
         nVertices = 2;
       } else if (nVertices == 2 && isPerpendicular) {
         // perpendicular line to line or plane to line
-        g3d.calcAveragePoint(ptList[0], ptList[1], center);
+        Graphics3D.calcAveragePoint(ptList[0], ptList[1], center);
         dist = (length == Float.MAX_VALUE ? ptList[0].distance(center) : length);
         if (isPlane && length != Float.MAX_VALUE)
           dist /= 2f;
@@ -469,10 +467,10 @@ class Draw extends MeshCollection {
           //        3 2
 
           if (isRotated45) {
-            g3d.calcAveragePoint(ptList[0], ptList[1], ptList[0]);
-            g3d.calcAveragePoint(ptList[1], ptList[2], ptList[1]);
-            g3d.calcAveragePoint(ptList[2], ptList[3], ptList[2]);
-            g3d.calcAveragePoint(ptList[3], pt, ptList[3]);
+            Graphics3D.calcAveragePoint(ptList[0], ptList[1], ptList[0]);
+            Graphics3D.calcAveragePoint(ptList[1], ptList[2], ptList[1]);
+            Graphics3D.calcAveragePoint(ptList[2], ptList[3], ptList[2]);
+            Graphics3D.calcAveragePoint(ptList[3], pt, ptList[3]);
           }
           nVertices = 4;
         } else {
@@ -482,7 +480,7 @@ class Draw extends MeshCollection {
           ptList[1].add(normal);
         }
       } else if (nVertices == 2 && length != Float.MAX_VALUE) {
-        g3d.calcAveragePoint(ptList[0], ptList[1], center);
+        Graphics3D.calcAveragePoint(ptList[0], ptList[1], center);
         normal.set(ptList[1]);
         normal.sub(center);
         normal.scale(0.5f / normal.length() * length);

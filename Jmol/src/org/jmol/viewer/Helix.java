@@ -26,6 +26,8 @@ package org.jmol.viewer;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.g3d.Graphics3D;
+
 class Helix extends ProteinStructure {
 
   Helix(AlphaPolymer apolymer, int monomerIndex, int monomerCount) {
@@ -36,125 +38,16 @@ class Helix extends ProteinStructure {
   void calcAxis() {
     if (axisA != null)
       return;
-
-    // just a crude starting point.
-
-    axisA = new Point3f();
-    axisB = new Point3f();
-    apolymer.getLeadMidPoint(monomerIndex, axisA);
-    apolymer.getLeadMidPoint(monomerIndex + monomerCount, axisB);
-    axisUnitVector = new Vector3f();
-    axisUnitVector.sub(axisB, axisA);
-    axisUnitVector.normalize();
-
-    /*
-     * We now calculate the least-squares 3D axis
-     * through the helix alpha carbons starting with Vo
-     * as a first approximation.
-     * 
-     * This uses the simple 0-centered least squares fit:
-     * 
-     * Y = M cross Xi
-     * 
-     * minimizing R^2 = SUM(|Y - Yi|^2) 
-     * 
-     * where Yi is the vector PERPENDICULAR of the point onto axis Vo
-     * and Xi is the vector PROJECTION of the point onto axis Vo
-     * and M is a vector adjustment 
-     * 
-     * M = SUM_(Xi cross Yi) / sum(|Xi|^2)
-     * 
-     * from which we arrive at:
-     * 
-     * V = Vo + (M cross Vo)
-     * 
-     * Basically, this is just a 3D version of a 
-     * standard 2D least squares fit to a line, where we would say:
-     * 
-     * y = m xi + b
-     * 
-     * D = n (sum xi^2) - (sum xi)^2
-     * 
-     * m = [(n sum xiyi) - (sum xi)(sum yi)] / D
-     * b = [(sum yi) (sum xi^2) - (sum xi)(sum xiyi)] / D
-     * 
-     * but here we demand that the line go through the center, so we
-     * require (sum xi) = (sum yi) = 0, so b = 0 and
-     * 
-     * m = (sum xiyi) / (sum xi^2)
-     * 
-     * In 3D we do the same but 
-     * instead of x we have Vo,
-     * instead of multiplication we use cross products
-     * 
-     * A bit of iteration is necessary.
-     * 
-     * Bob Hanson 11/2006
-     * 
-     */
-
-    calcCenter();
-    axisA.set(center);
-    
-    int nTries = 0;
-    while (nTries++ < 4 && findAxis(nTries) > 0.001) {}
-    /*
-     * Iteration here gets the job done.
-     * We now find the projections of the endpoints onto the axis
-     * 
-     */
-    
-    Point3f tempA = new Point3f();
-    apolymer.getLeadMidPoint(monomerIndex, tempA);
-    projectOntoAxis(tempA);
-    axisA = tempA;
-
-    Point3f tempB = new Point3f();
-    apolymer.getLeadMidPoint(monomerIndex + monomerCount, tempB);
-    projectOntoAxis(tempB);
-    axisB.set(tempB);
-
-  }
-
-  float findAxis(int nTries) {
-    Vector3f sumXiYi = new Vector3f();
-    Vector3f vTemp = new Vector3f();
-    Point3f pt = new Point3f();
-    Point3f ptProj = new Point3f();
-    Vector3f a = new Vector3f(axisUnitVector);
-
-    float sum_Xi2 = 0;
-    float sum_Yi2 = 0;
-    for (int i = monomerIndex + monomerCount; --i >= monomerIndex;) {
-      pt.set(apolymer.getLeadPoint(i));
-      ptProj.set(pt);
-      projectOntoAxis(ptProj);
-      vTemp.sub(pt, ptProj);
-      sum_Yi2 += vTemp.lengthSquared();
-      vTemp.cross(vectorProjection, vTemp);
-      sumXiYi.add(vTemp);
-      sum_Xi2 += vectorProjection.lengthSquared();
+    Point3f[] points = new Point3f[monomerCount + 1];
+    for (int i = 0; i <= monomerCount; i++) {
+      points[i] = new Point3f();
+      apolymer.getLeadMidPoint(monomerIndex + i, points[i]);
     }
-    Vector3f m = new Vector3f(sumXiYi);
-    m.scale(1 / sum_Xi2);
-    vTemp.cross(m, axisUnitVector);
-    axisUnitVector.add(vTemp);
-    axisUnitVector.normalize();
-    //check for change in direction by measuring vector difference length
-    vTemp.set(axisUnitVector);
-    vTemp.sub(a);
-    //System.out.println("alpha axis iteration #"+nTries +  " " + monomerIndex + "-" + monomerCount + " " + axisUnitVector + vTemp.length());
-    return vTemp.length();
-  }
-  
-  
-  void calcCenter() {
-    if (center != null)
-      return;
-    center = new Point3f();
-    for (int i = monomerIndex + monomerCount; --i >= monomerIndex;)
-      center.add(apolymer.getLeadPoint(i));
-    center.scale(1f / monomerCount);
+    axisA = new Point3f();
+    axisUnitVector = new Vector3f();
+    Graphics3D.calcBestAxisThroughPoints(points, axisA, axisUnitVector, vectorProjection, 4);
+    axisB = new Point3f(points[monomerCount]);
+    Graphics3D.projectOntoAxis(axisB, axisA, axisUnitVector, vectorProjection);
   }
 
   /****************************************************************

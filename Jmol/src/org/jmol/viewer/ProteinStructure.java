@@ -35,6 +35,7 @@ abstract class ProteinStructure {
   int monomerCount;
   Point3f axisA, axisB;
   Vector3f axisUnitVector;
+  final Vector3f vectorProjection = new Vector3f();
   Point3f[] segments;
   int index;
   Point3f center;
@@ -90,16 +91,6 @@ abstract class ProteinStructure {
       return false;
     return apolymer.monomers[upperNeighborIndex].isHelix()
         || apolymer.monomers[upperNeighborIndex].isSheet();
-  }
-
-  final Vector3f vectorProjection = new Vector3f();
-  void projectOntoAxis(Point3f point) {
-    // assumes axisA, axisB, and axisUnitVector are set;
-    vectorProjection.sub(point, axisA);
-    float projectedLength = vectorProjection.dot(axisUnitVector);
-    point.set(axisUnitVector);
-    point.scaleAdd(projectedLength, axisA);
-    vectorProjection.sub(point, axisA);
   }
 
   int getMonomerCount() {

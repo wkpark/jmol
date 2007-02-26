@@ -4868,6 +4868,23 @@ public class Viewer extends JmolViewer {
     modelManager.setTaintedAtoms(bs);
   }
 
+  public String getData(String atomExpression, String type) {
+    String exp = "";
+    if (type.equalsIgnoreCase("PDB"))
+      exp = "{selected and not hetero}.label(\"ATOM  %5i %-4a%1A%3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %-2e%2C\")"
+          + "+{selected and hetero}.label(\"HETATM%5i %-4a%1A%3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %-2e%2C\")";
+    else if (type.equalsIgnoreCase("MOL"))
+      exp = "\"line1\nline2\nline3\n\"+(\"\"+{selected}.size)%-3+(\"\"+{selected}.bonds.size)%-3+\"  0  0  0\n\""
+          + "+{selected}.labels(\"%10.4x%10.4y%10.4z %-2e  0  0  0  0  0\")"
+          + "+{selected}.bonds.labels(\"%3D1%3D2%3ORDER  0  0  0\")";
+    else
+      //if(type.equals("XYZ"))
+      exp = "\"\" + {selected}.size + \"\n\n\"+{selected}.label(\"%-2e %10.5x %10.5y %10.5z\")";
+    if (!atomExpression.equals("selected"))
+      exp = simpleReplace(exp, "selected",atomExpression);
+    return (String) Eval.evaluateExpression(this, exp);
+  }
+  
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
     //Frame equivalent used in DATA "coord set"
     modelManager.setAtomCoord(atomIndex, x, y, z);

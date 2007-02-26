@@ -29,9 +29,11 @@ import java.util.Hashtable;
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.g3d.Graphics3D;
 
 
 public class Token {
@@ -156,6 +158,7 @@ public class Token {
   final static int substructure = 3  | mathfunc | 1 << 3;
 
   final static int distance     = 0  | mathfunc | 2 << 3;
+  final static int data         = 1  | mathfunc | 2 << 3 | command;
 
   final static int angle        = 0  | mathfunc | 4 << 3;
   
@@ -179,8 +182,9 @@ public class Token {
       return fValue(x) != 0;
     case Token.bitset:
       return iValue(x) != 0;
-    case Token.xyz:
-      return ((Point3f) x.value).distance(pt0) > 0.0001f;
+    case Token.point3f:
+    case Token.point4f:
+      return Math.abs(fValue(x)) > 0.0001f;
     default:
       return false;
     }
@@ -197,11 +201,11 @@ public class Token {
     case Token.decimal:
     case Token.list:
     case Token.string:
+    case Token.point3f:
+    case Token.point4f:
       return (int)fValue(x);
     case Token.bitset:
       return Viewer.cardinalityOf(bsSelect(x));
-    case Token.xyz:
-      return (int)((Point3f) x.value).distance(pt0);
     default:
       return 0;
     }
@@ -231,8 +235,10 @@ public class Token {
       return Parser.parseFloat(s);
     case Token.bitset:
       return iValue(x);
-    case Token.xyz:
+    case Token.point3f:
       return ((Point3f) x.value).distance(pt0);
+    case Token.point4f:
+      return Graphics3D.distanceToPlane((Point4f) x.value, pt0);
     default:
       return 0;
     }
@@ -247,10 +253,12 @@ public class Token {
       return "false";
     case Token.integer:
       return "" + x.intValue;
-    case Token.xyz:
+    case Token.point3f:
       return StateManager.escape((Point3f) x.value);
+    case Token.point4f:
+      return StateManager.escape((Point4f) x.value);
     case Token.bitset:
-      return "" + iValue(x);
+      return StateManager.escape((BitSet) x.value);
     case Token.list:
       String[] list = (String[]) x.value;
       i = x.intValue;
@@ -283,8 +291,10 @@ public class Token {
       return -2;
     case Token.decimal:
       return -4;
-    case Token.xyz:
+    case Token.point3f:
       return -8;
+    case Token.point4f:
+      return -16;
     case Token.string:
       return ((String)x.value).length();
     case Token.list:
@@ -407,7 +417,7 @@ public class Token {
   final static int clipboard    = command |  5 | unimplemented;
   final static int color        = command |  6 | colorparam | setparam;
   final static int connect      = command |  7 | embeddedExpression | colorparam;
-  final static int data         = command |  8;
+  //final static int data         = command |  8; with mathfunc
   final static int define       = command |  9 | expressionCommand | expression;
   final static int dots         = command | 10 | embeddedExpression | bool;
   final static int echo         = command | 11 | setparam | specialstring;
@@ -646,9 +656,6 @@ public class Token {
   final static int atomZ       = atompropertyfloat | 25;
   
   final static int file            = atomproperty | 26 | command | showparam;
-  final static int xyz             = atomproperty | 27; // very special!
-
-
 
   // misc
   final static int off          = bool |  0;
@@ -711,7 +718,7 @@ public class Token {
   final static int rewind       = misc | 60;
   final static int playrev      = misc | 61;
   final static int range        = misc | 62;
-  final static int point3f      = misc | 63;
+ // final static int point3f      = misc | 63;
   final static int sasurface    = misc | 64;
   final static int left         = misc | 65;
   final static int right        = misc | 66;
@@ -722,8 +729,8 @@ public class Token {
   final static int bitset       = misc | 71;
   final static int last         = misc | 72;
   final static int spec_model2  = misc | 73;
-  final static int point4f      = misc | 74;
-  
+  final static int point3f      = misc | 74;
+  final static int point4f      = misc | 75;
  
   final static int amino       = predefinedset |  0;
   final static int hetero      = predefinedset |  1 | setparam;
@@ -1136,7 +1143,6 @@ public class Token {
     "playrev",      new Token(playrev,         "playrev"),
     "play",         new Token(play,            "play"),
     "range",        new Token(range,           "range"),
-    "point3f",      new Token(point3f,         "point3f"),
     "sasurface",    new Token(sasurface,       "sasurface"),
     "top",          new Token(top,             "top"),    
     "bottom",       new Token(bottom,          "bottom"),    

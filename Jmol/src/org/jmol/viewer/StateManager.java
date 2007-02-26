@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
+import javax.vecmath.Point4f;
 import javax.vecmath.Matrix3f;
 
 import java.util.Hashtable;
@@ -34,6 +35,7 @@ import java.util.Enumeration;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Parser;
 
 import java.util.Arrays;
 
@@ -839,6 +841,26 @@ class StateManager {
     return bs;
   }
   
+  static Object unescapePoint(String strPoint) {
+    if (strPoint == null || strPoint.length() == 0 
+        || strPoint.charAt(0) != '{' || strPoint.charAt(strPoint.length() - 1) != '}')
+      return strPoint;
+    float[] points = new float[5];
+    int nPoints = 0;
+    String str = strPoint.substring(1, strPoint.length() - 1);
+    int[] next = new int[1];
+    for (; nPoints < 5;nPoints++) {
+      points[nPoints] = Parser.parseFloat(str, next);
+      if (Float.isNaN(points[nPoints]))
+        break;
+    }
+    if (nPoints == 3)
+      return new Point3f(points[0], points[1], points[2]);
+    if (nPoints == 4)
+      return new Point4f(points[0], points[1], points[2], points[3]);
+    return strPoint;    
+  }
+  
   static String escape(String str) {
     if (str == null)
       return "\"\"";
@@ -852,6 +874,10 @@ class StateManager {
   
   static String escape(Tuple3f xyz) {
     return "{" + xyz.x + " " + xyz.y + " " + xyz.z +"}";
+  }
+  
+  static String escape(Point4f xyzw) {
+    return "{" + xyzw.x + " " + xyzw.y + " " + xyzw.z + " " + xyzw.w + "}";
   }
   
   static String escapeColor(int argb) {

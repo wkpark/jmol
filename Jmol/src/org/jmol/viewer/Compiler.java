@@ -1166,11 +1166,18 @@ class Compiler {
       return addNextToken();
     case Token.nada:
       return endOfCommandUnexpected();
+    case Token.define:
+      addNextToken();
+      return addNextToken();
     case Token.bonds:
     case Token.monitor:
       addNextToken();
-      if (tokPeek() == Token.bitset)
+      if (tokPeek(Token.bitset))
         addNextToken();
+      else if(tokPeek(Token.define)) {
+        addNextToken();
+        addNextToken();
+      }
       return true;
     case Token.cell:
       return clauseCell();
@@ -1230,8 +1237,7 @@ class Compiler {
           if (!clauseOr(false))
             return false;
           addNextTokenIf(Token.comma);
-          if (!clauseOr(false))
-            return false;
+          clauseOr(false);
           if (tokPeek() != Token.rightbrace)
             return rightBraceExpected();
           isCoordinate = true;

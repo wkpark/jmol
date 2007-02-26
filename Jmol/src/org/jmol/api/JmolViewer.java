@@ -69,6 +69,9 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public void pushHoldRepaint();
   abstract public void popHoldRepaint();
 
+  // for example: getData("selected","XYZ");
+  abstract public String getData(String atomExpression, String type);
+
 
   // change this to width, height
   abstract public void setScreenDimension(Dimension dim);

@@ -592,13 +592,25 @@ class Eval { //implements Runnable {
           fixed[j] = new Token(Token.integer, ((Integer) v).intValue(), v);
         } else if (v instanceof Float) {
           fixed[j] = new Token(Token.decimal, Compiler.modelValue("" + v), v);
-        } else if (v instanceof String && ((String)v).length() > 0) {
-          fixed[j] = new Token(Token.identifier, v);
-        } else  {
+        } else if (v instanceof String && ((String) v).length() > 0) {
+          String s = (String) v;
+          if (s.charAt(0) == '{')
+            v = StateManager.unescapePoint(s);
+          else if (s.indexOf("({") == 0)
+            v = StateManager.unescapeBitset(s);
+          if (v instanceof Point3f)
+            fixed[j] = new Token(Token.point3f, v);
+          else if (v instanceof Point4f)
+            fixed[j] = new Token(Token.point4f, v);
+          else if (v instanceof BitSet)
+            fixed[j] = new Token(Token.bitset, v);
+          else
+            fixed[j] = new Token(Token.identifier, s);
+        } else {
           Point3f center = viewer.getDrawObjectCenter(var);
           if (center == null)
             invalidArgument();
-          fixed[j] = new Token(Token.xyz,center);
+          fixed[j] = new Token(Token.point3f, center);
         }
       } else {
         fixed[j] = statement[i];
@@ -1804,7 +1816,7 @@ class Eval { //implements Runnable {
   boolean isAtomCenterOrCoordinateNext(int i) {
     int tok = tokPeek(i);
     return (tok == Token.leftbrace  || tok == Token.expressionBegin 
-        || tok == Token.xyz || tok == Token.bitset);
+        || tok == Token.point3f || tok == Token.bitset);
   }
 
   Point3f atomCenterOrCoordinateParameter(int i) throws ScriptException {
@@ -1813,7 +1825,7 @@ class Eval { //implements Runnable {
     case Token.expressionBegin:
       return viewer.getAtomSetCenter(expression(i));
     case Token.leftbrace:
-    case Token.xyz:
+    case Token.point3f:
       return getCoordinate(i, true);
     }
     invalidArgument();
@@ -1827,7 +1839,7 @@ class Eval { //implements Runnable {
     case Token.bitset:
     case Token.expressionBegin:
     case Token.leftbrace:
-    case Token.xyz:
+    case Token.point3f:
       return true;
     }
     return false;
@@ -1849,7 +1861,7 @@ class Eval { //implements Runnable {
       case Token.bitset:
       case Token.expressionBegin:
       case Token.leftbrace:
-      case Token.xyz:
+      case Token.point3f:
         center = atomCenterOrCoordinateParameter(i);
         break;
       }
@@ -1864,6 +1876,8 @@ class Eval { //implements Runnable {
     Vector3f vAC = new Vector3f();
     if (i < statementLength)
       switch (getToken(i).tok) {
+      case Token.point4f:
+        return (Point4f)theToken.value;
       case Token.dollarsign:
         String id = objectNameParameter(++i);
         if (isSyntaxCheck)
@@ -2182,7 +2196,7 @@ class Eval { //implements Runnable {
     coordinatesAreFractional = implicitFractional;
     if (!checkToken(i))
       coordinateExpected();
-    if (getToken(i).tok == Token.xyz) {
+    if (getToken(i).tok == Token.point3f) {
       return (Point3f) theToken.value;  
     }
     i++;
@@ -2306,7 +2320,7 @@ class Eval { //implements Runnable {
     float yTrans = 0;
     float degrees = 90;
     switch (getToken(i).tok) {
-    case Token.xyz:
+    case Token.point3f:
     case Token.leftbrace:
       // {X, Y, Z} deg or {x y z deg}
       if (isCoordinate3(i)) {
@@ -2462,7 +2476,7 @@ class Eval { //implements Runnable {
             break;
           }
           invalidArgument(); // for now
-        case Token.xyz:
+        case Token.point3f:
         case Token.leftbrace:
           rotAxis.set(getCoordinate(i, true));
           i = iToken + 1;
@@ -3269,7 +3283,7 @@ class Eval { //implements Runnable {
         loadScript.append(" " + params[0]);
       }
       int tok = tokPeek(i);
-      if (tok == Token.leftbrace || tok == Token.xyz) {
+      if (tok == Token.leftbrace || tok == Token.point3f) {
         unitCells = getCoordinate(i, false);
         i = iToken + 1;
         params[1] = (int) unitCells.x;
@@ -3697,7 +3711,7 @@ class Eval { //implements Runnable {
         }
         invalidArgument();
       case Token.leftbrace:
-      case Token.xyz:
+      case Token.point3f:
         // {X, Y, Z}
         Point3f pt = getCoordinate(i, true);
         i = iToken;
@@ -4547,7 +4561,7 @@ class Eval { //implements Runnable {
         iHaveAtoms = true;
         break;
       case Token.leftbrace:
-      case Token.xyz:
+      case Token.point3f:
         // {X, Y, Z}
         Point3f pt = getCoordinate(i, true);
         i = iToken;
@@ -5291,14 +5305,15 @@ class Eval { //implements Runnable {
       }
 
       // deprecated:
-      
+
       if (key.equalsIgnoreCase("showSelections")) {
         key = "selectionHalos";
       }
 
     }
-    
-    
+
+    String str = "";
+
     if (setParameter(key, val)) {
       if (isSyntaxCheck)
         return;
@@ -5317,11 +5332,19 @@ class Eval { //implements Runnable {
         setStringProperty(key, (String) v);
       } else if (v instanceof BitSet) {
         setIntProperty(key, Viewer.cardinalityOf((BitSet) v));
+        setStringProperty(key + "_set", StateManager.escape((BitSet) v));
+        if (!isSyntaxCheck && scriptLevel <= scriptReportingLevel)
+          viewer.showParameter(key+"_set", true, 60);
       } else if (v instanceof Point3f) {
-        drawPoint(key, (Point3f) v, false);
-        showString("draw " + key + " " + StateManager.escape((Point3f) v)
-            + " off;");
-        return;
+        //drawPoint(key, (Point3f) v, false);
+        str = StateManager.escape((Point3f) v);
+        setStringProperty(key, str);
+        showString("to visualize, use DRAW @" + key);
+      } else if (v instanceof Point4f) {
+        //drawPlane(key, (Point4f) v, false);
+        str = StateManager.escape((Point4f) v);
+        setStringProperty(key, str);
+        showString("to visualize, use ISOSURFACE PLANE @" + key);
       }
     }
     if (!isSyntaxCheck && scriptLevel <= scriptReportingLevel)
@@ -5390,10 +5413,13 @@ class Eval { //implements Runnable {
       case Token.integer:
       case Token.decimal:
       case Token.string:
+      case Token.point3f:
+      case Token.point4f:
+      case Token.bitset:
         rpn.addX(theToken);
         break;
       case Token.dollarsign:
-         rpn.addX(new Token(Token.xyz, centerParameter(i)));
+         rpn.addX(new Token(Token.point3f, centerParameter(i)));
         i = iToken;
         break;
       case Token.identifier:
@@ -5405,8 +5431,7 @@ class Eval { //implements Runnable {
       case Token.leftbrace:
         v = getSetCoordinate(i, false, true, 4);
         i = iToken;
-        break;        
-      case Token.bitset:
+        break;
       case Token.expressionBegin:
         v = expression(statement, i, true, true);
         i = iToken;
@@ -5438,7 +5463,7 @@ class Eval { //implements Runnable {
         } else if (v instanceof String) {
           rpn.addX(new Token(Token.string, v));
         } else if (v instanceof Point3f) {
-          rpn.addX(new Token(Token.xyz, v));
+          rpn.addX(new Token(Token.point3f, v));
         } else if (v instanceof Point4f) {
           rpn.addX(new Token(Token.point4f, v));
         } else if (v instanceof BitSet) {
@@ -5465,13 +5490,9 @@ class Eval { //implements Runnable {
     case Token.integer:
       return new Integer(result.intValue);
     case Token.bitset:
-      BitSet bs = (BitSet)result.value;
-      if (key != "")
-        assignBitsetVariable("~" + key, bs);
-      return new Integer(Viewer.cardinalityOf(bs));        
     case Token.decimal:
     case Token.string:
-    case Token.xyz:
+    case Token.point3f:
     default:
       return result.value;
     }
@@ -5558,7 +5579,7 @@ class Eval { //implements Runnable {
       else if (s.equals("bondcount"))
         tok = Token._bondedcount;
       else if (s.equals("xyz"))
-        tok = Token.xyz;
+        tok = Token.point3f;
       else if (s.equals("lines"))
         tok = Token.list;
       else if (s.equals("find"))
@@ -5694,7 +5715,7 @@ class Eval { //implements Runnable {
             else
               fv += atom.distance(ptRef);
             break;
-          case Token.xyz:
+          case Token.point3f:
             pt.add(atom);
             break;
           default:
@@ -5712,7 +5733,7 @@ class Eval { //implements Runnable {
           case Token.length:
             fv += bond.atom1.distance(bond.atom2);
             break;
-          case Token.xyz:
+          case Token.point3f:
             pt.add(bond.atom1);
             pt.add(bond.atom2);
             n++;
@@ -5723,7 +5744,7 @@ class Eval { //implements Runnable {
           isInt = false;
         }
     }
-    if (tok == Token.xyz)
+    if (tok == Token.point3f)
       return (n == 0 ? pt : new Point3f(pt.x / n, pt.y / n, pt.z / n));
     if (n == 0)
       return new Float(Float.NaN);
@@ -6325,6 +6346,8 @@ class Eval { //implements Runnable {
     boolean isCoord = false;
     switch (tok) {
     case Token.coord:
+    case Token.data:
+      type = "data";
       isCoord = true;
       pt++;
       break;
@@ -6404,10 +6427,16 @@ class Eval { //implements Runnable {
       else
         type = "JPG";
     }
+    if (type.equals("data")) {
+      if (fileName != null && fileName.indexOf(".") >= 0)
+        type = fileName.substring(fileName.lastIndexOf(".") + 1).toUpperCase();
+      else
+        type = "XYZ";
+    }
     boolean isImage = isOneOf(type, "JPEG;JPG64;JPG;PPM;PNG");
     if (!isImage && !isOneOf(type, "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB"))
       evalError(GT._("write what? {0} or {1} \"filename\"", new Object[] {
-          "STATE|HISTORY|IMAGE|ISOSURFACE|MO CLIPBOARD|VAR x|COORD",
+          "STATE|HISTORY|IMAGE|ISOSURFACE|MO CLIPBOARD|VAR x|DATA",
           "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB" }));
     if (isSyntaxCheck)
       return;
@@ -6416,15 +6445,8 @@ class Eval { //implements Runnable {
           "WRITE image"));
     int quality = Integer.MIN_VALUE;
     data = type.intern();
-    if (data == "PDB") {
-      data = (String) evaluateExpression(viewer,"{selected and not hetero}.label(\"ATOM  %5i %-4a%1A%3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %-2e%2C\");"
-          +"{selected and hetero}.label(\"HETATM%5i %-4a%1A%3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %-2e%2C\")");
-    } else if(data == "XYZ") {
-      data = (String) evaluateExpression(viewer,"\"\" + {selected} + \"\n\n\"+{selected}.label(\"%-2e %10.5x %10.5y %10.5z\")");
-    } else if(data == "MOL") {
-      data = (String) evaluateExpression(viewer,"\"line1\nline2\nline3\n\"+(\"\"+{selected})%-3+(\"\"+{selected}.bonds)%-3+\"  0  0  0\n\""
-          +"+{selected}.labels(\"%10.4x%10.4y%10.4z %-2e  0  0  0  0  0\")"
-          +"+{selected}.bonds.labels(\"%3D1%3D2%3ORDER  0  0  0\")");
+    if (data == "PDB" || data == "XYZ" || data == "MOL") {
+      data = viewer.getData("selected", data);
     } else if (data == "VAR") {
       data = "" + viewer.getParameter(parameterAsString(2));
     } else if (data == "SPT") {
@@ -6940,7 +6962,7 @@ class Eval { //implements Runnable {
         intScale = intParameter(i);
         break;
       case Token.leftbrace:
-      case Token.xyz:
+      case Token.point3f:
         // {X, Y, Z}
         Point3f pt = getCoordinate(i, true);
         i = iToken;
@@ -6993,6 +7015,16 @@ class Eval { //implements Runnable {
     setShapeProperty(JmolConstants.SHAPE_DRAW, "set", null);
     if (!isOn)
       setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, Token.off);
+  }
+
+  void drawPlane(String key, Point4f plane, boolean isOn) {
+    viewer.loadShape(JmolConstants.SHAPE_ISOSURFACE);
+    setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "init", null);
+    setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID", key);
+    setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "plane", plane);
+    setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "nomap", new Float(0));
+    if (!isOn)
+      setMeshDisplayProperty(JmolConstants.SHAPE_ISOSURFACE, Token.off);
   }
 
   void polyhedra() throws ScriptException {
@@ -8031,6 +8063,11 @@ class Eval { //implements Runnable {
       case Token.integer:
         sb.append(token.intValue);
         continue;
+      case Token.point3f:
+      case Token.point4f:
+      case Token.bitset:
+        sb.append(Token.sValue(token));
+        continue;
       case Token.spec_seqcode:
         if (isInMath)
           sb.append(token.intValue);
@@ -8069,9 +8106,6 @@ class Eval { //implements Runnable {
         sb.append('[');
         sb.append(token.value);
         sb.append(']');
-        continue;
-      case Token.bitset:
-        sb.append(StateManager.escape((BitSet) token.value));
         continue;
       case Token.spec_atom:
         sb.append("*.");
@@ -8268,7 +8302,7 @@ class Eval { //implements Runnable {
     boolean addX(Point3f x) throws ScriptException {
       if (++xPt == maxLevel)
         stackOverflow();
-      xStack[xPt] = new Token(Token.xyz, x);
+      xStack[xPt] = new Token(Token.point3f, x);
       return wasX = true;
     }
 
@@ -8488,6 +8522,10 @@ class Eval { //implements Runnable {
         if (!evaluateLabel(args))
           return false;
         break;
+      case Token.data:
+        if (!evaluateData(args))
+          return false;
+        break;
       case Token.load:
         if (!evaluateLoad(args))
           return false;
@@ -8533,7 +8571,7 @@ class Eval { //implements Runnable {
       if (x1.tok == Token.bitset)
         return addX(getBitsetAverage(Token.bsSelect(x1), Token.distance, pt,
             plane, (x1.intValue >= 0), null));
-      else if (x1.tok == Token.xyz)
+      else if (x1.tok == Token.point3f)
         return addX(plane == null ? pt.distance(ptValue(x1))
             : Graphics3D.distanceToPlane(plane, ptValue(x1)));
       return false;
@@ -8581,6 +8619,17 @@ class Eval { //implements Runnable {
       return addX(viewer.getFileAsString(Token.sValue(args[0])));
     }
     
+    boolean evaluateData(Token[] args) throws ScriptException {
+      //System.out.println("eval data");
+      if (args.length != 2)
+        return false;
+      if (isSyntaxCheck)
+        return addX("");
+      String selected = Token.sValue(args[0]);
+      String type = Token.sValue(args[1]);
+      return addX(viewer.getData(selected, type));
+    }
+    
     boolean evaluateLabel(Token[] args) throws ScriptException {
       //System.out.println("eval label");
       Token x1 = getX();
@@ -8591,9 +8640,6 @@ class Eval { //implements Runnable {
       Token x2 = args[0];
       if (x1.tok != Token.bitset || x2.tok != Token.string)
         return false;
-      for (int i = 0; i < x1.intArray.length; i++)
-        System.out.println ("labelident: "+ i + " " + x1.intArray[i]);
-      
       return addX(getBitsetIdent(Token.bsSelect(x1), Token.sValue(x2),
           (x1.intValue >= 0), x1.intArray));
     }
@@ -8828,10 +8874,10 @@ class Eval { //implements Runnable {
         }
         if (x1.tok == Token.integer)
           return addX(x1.intValue + Token.iValue(x2));
-        if (x1.tok == Token.xyz) {
+        if (x1.tok == Token.point3f) {
           Point3f pt = new Point3f((Point3f) x1.value);
           switch (x2.tok) {
-          case Token.xyz:
+          case Token.point3f:
             pt.add((Point3f) x2.value);
             return addX(pt);
           default:
@@ -8847,10 +8893,10 @@ class Eval { //implements Runnable {
       case Token.unaryMinus:
         if (x1.tok == Token.integer && x2.tok == Token.integer)
           return addX(x1.intValue - Token.iValue(x2));
-        if (x1.tok == Token.xyz) {
+        if (x1.tok == Token.point3f) {
           Point3f pt = new Point3f((Point3f) x1.value);
           switch (x2.tok) {
-          case Token.xyz:
+          case Token.point3f:
             pt.sub((Point3f) x2.value);
             return addX(pt);
           default:
@@ -8862,10 +8908,10 @@ class Eval { //implements Runnable {
       case Token.asterisk:
         if (x1.tok == Token.integer)
           return addX(x1.intValue * Token.iValue(x2));
-        if (x1.tok == Token.xyz) {
+        if (x1.tok == Token.point3f) {
           Point3f pt = new Point3f((Point3f) x1.value);
           switch (x2.tok) {
-          case Token.xyz:
+          case Token.point3f:
             Point3f pt2 = ((Point3f) x2.value);
             return addX(pt.x * pt2.x + pt.y * pt2.y + pt.z * pt2.z);
           default:
@@ -8920,7 +8966,7 @@ class Eval { //implements Runnable {
               list[i] = TextFormat.format(s, -n, n, false, false);
           }
           return addX(list);
-        case Token.xyz:
+        case Token.point3f:
           Point3f pt = new Point3f((Point3f) x1.value);
           viewer.toUnitCell(pt, new Point3f(n, n, n));
           return addX(pt);
@@ -8932,7 +8978,7 @@ class Eval { //implements Runnable {
             && x2.intValue != 0
             && (x1.intValue / x2.intValue) * x2.intValue == x1.intValue)
           return addX(x1.intValue / x2.intValue);
-        if (x1.tok == Token.xyz) {
+        if (x1.tok == Token.point3f) {
           Point3f pt = new Point3f((Point3f) x1.value);
           float f = Token.fValue(x2);
           if (f == 0)
@@ -8953,10 +8999,10 @@ class Eval { //implements Runnable {
       if (isSyntaxCheck)
         return new Point3f();
       switch (x.tok) {
-      case Token.xyz:
+      case Token.point3f:
         return (Point3f) x.value;
       case Token.bitset:
-          return (Point3f) getBitsetAverage(Token.bsSelect(x), Token.xyz, null, null, x.intValue >= 0, null);
+          return (Point3f) getBitsetAverage(Token.bsSelect(x), Token.point3f, null, null, x.intValue >= 0, null);
       default:
         float f = Token.fValue(x);
         return new Point3f(f, f, f);

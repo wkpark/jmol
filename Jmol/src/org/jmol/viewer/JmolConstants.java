@@ -40,6 +40,121 @@ final public class JmolConstants {
    * 
    * 
    11.1.15:
+
+   TYPE CONVERSION
+   
+   We have seven different variable types now:
+      
+      boolean    True/False 
+      integer    0, 1, 2, ....
+      decimal    3.5, 3.25E-3
+      string     "test" "3.5"
+      point      {2.3 3.4 5.6} {0 1/2 1}
+      plane      {0 1 1 0}
+      bitset     {oxygen}   {oxygen}.bonds
+      
+   These can be mixed and matched to good effect. Certain relatively
+   intuitive rules apply. Usually the operand on the left sets
+   the overall type, allowing for easy type conversion depending upon 
+   operand order:
+
+      int + float:
+      
+      0 + 3.6 ==> 3    (int on left rounds float on right)
+      3.6 + 0 ==> 3.6  (float on left sets result)
+      
+      int/float + string:
+      
+      0.0 + "3.5" ==> 3.5 (string converted to float)
+      0 + "3.5"   ==> 3 (string converted to float, then int)
+      "3.5" + 0   ==> "3.50" (integer converted to string)
+      "3.5" + 0.0 ==> "3.50.0" (float converted to string)
+      
+      1.0 + {carbon}.xyz     ==> 1 + distance from {0 0 0} to {carbon} center
+      {carbon}.xyz + 1       ==> {carbon} center point offset by {1 1 1}
+
+      x = {carbon}.xyz * {1 0 0} ==> (dot product)
+      
+      Now x is the average x coordinate of carbon
+      
+    Boolean expressions are a bit different in that the operators 
+    AND, OR, XOR, and NOT all require conversion to boolean UNLESS both
+    operands are atom expressions, in which case these operate directly on the
+    atom sets and return a new atom set, just like in SELECT.
+    
+      3 and 0.5  ==> TRUE (both are nonzero)
+      false OR 2.0 ==> true (2.0 is not 0, so it is TRUE)
+      {oxygen} and {molecule=1} ==> all oxygen atoms in the first molecule
+
+     x = ({oxygen} and {molecule=1}).xyz 
+     
+     x is now the center point of all oxygen atoms in the first molecule
+
+    In standard math, boolean TRUE evaluates to 1.0; FALSE evaluates to 0.0
+      
+      true + 2.0 ==> 3.0 ("TRUE" evaluates to 1.0 in math operations)     
+      2 + true ==> 3 ("TRUE" evaluates to 1.0 and is then turned into an integer)     
+  
+
+         
+   ATOM EXPRESSION AUTOMATIC DEFINE
+   
+   When you set a variable to a value, and that value is a point, plane, or atom expression,
+   then Jmol automatically registers the result as follows:
+   
+    points:
+       x = "{x y z}"
+       
+    planes:
+       x = "{x y z w}"
+       
+    atom expressions:
+       x = n
+       x_set = "({i j k ...})"
+       
+     set x = {oxygen}.xyz
+     set y = {carbon}.xyz
+     draw @x
+     draw @y
+     draw line1 @x @y
+     
+   and
+   
+     set x = {carbon}[3][5]
+     select @x_set
+     color green
+       
+     set x = {carbon or oxygen}.bonds
+     select BONDS @x_set
+     color bonds green
+       
+       
+
+  DATA() function and variable option for DATA command
+      
+  x = data({atomno < 10},"xyz")
+  x = data({atomno < 10},"mol")
+  x = data({atomno < 10},"pdb")
+
+  data "model @x"
+
+  write data t.xyz
+  write data t.mol
+  write data t.pdb
+
+  
+  Better BITSET implementation 
+
+  CHANGE: default string value for a bitset is now the ({n:m})
+  string format, which can be used in numerous commands.
+
+  To get the count within a string context, just use .size:
+
+  x = "number selected is " + {selected}.size
+
+  or force integer math:
+
+  x = "number selected is " + (0 + {selected})
    
    merges math functions within(), connected(), substructure() into molecular math
    
@@ -96,25 +211,7 @@ final public class JmolConstants {
    
    
    11.1.14:
-   
-   WRITE coord XYZ fileName
-   WRITE coord MOL fileName
-   WRITE coord PDB fileName
-   
-   If three-letter extensions are present, this reduces to:
-   
-   WRITE name.xyz
-   WRITE name.mol
-   WRITE name.pdb
-   
-   nicely complementing 
-   
-   load name.xyz
-   load name.mol
-   load name.pdb
-   
-   
-   
+      
    RESET varName
    
    reset varName  # clears that variable definition
@@ -212,32 +309,6 @@ final public class JmolConstants {
    measure ((_C)[1]) ((_C)[2])
 
   
-   
-   ATOM EXPRESSION AUTOMATIC DEFINE
-   
-   When you set a variable to a value, and that value is a point or atom expression,
-   then Jmol automatically registers the result as follows:
-   
-    points:
-       a "DRAW varName {x y z} off" command is effected
-       
-    atom expressions:
-       a "DEFINE ~varName ...." is effected
-       
-   Thus we have:
-   
-     set x = {oxygen}.xyz
-     set y = {carbon}.xyz
-     draw x on; draw y on
-     draw x off; draw y off
-     draw line1 $x $y
-     
-   and
-   
-     set x = {carbon}[3][5]
-     select ~x
-     color geen
-       
    POINTS IN IF, SET, and %{}
    
    Points in IF, SET, and %{} can be designated using the standard {x y z}
@@ -267,7 +338,7 @@ final public class JmolConstants {
    
    x2 = {atomno=3).label("atom %a\t" + (atomno=3).xyz)
    
-   xyzFile = "" + {selected} + "\n\n" + {selected}.label("%a %x %y %z")
+   xyzFile = "" + {selected}.size + "\n\n" + {selected}.label("%a %x %y %z")
 
    
    "....".lines
@@ -282,7 +353,7 @@ final public class JmolConstants {
    write VAR pdbFile "test.pdb"
    
    
-   molFileData = "line1\nline2\nline3\n"+(""+{selected})%-3+(""+{selected}.bonds)%-3+"  0  0  0\n"+{selected}.labels("%-10.4x%-10.4y%-10.4z %2e  0  0  0  0  0")+{selected}.bonds.labels("%3D1%3D2%3ORDER  0  0  0")
+   molFileData = "line1\nline2\nline3\n"+(""+{selected}.size)%-3+(""+{selected}.bonds.size)%-3+"  0  0  0\n"+{selected}.labels("%-10.4x%-10.4y%-10.4z %2e  0  0  0  0  0")+{selected}.bonds.labels("%3D1%3D2%3ORDER  0  0  0")
    GETPROPERTY "evaluate"
    
    You can now use getProperty to get expression information directly:
@@ -332,60 +403,6 @@ final public class JmolConstants {
    x = {atom expression}.bonds[3].label("%# %3ORDER %TYPE %a1 %a2 %6.3LENGTH") 
    
    
-   TYPE CONVERSION
-   
-   We have six different variable types now:
-      
-      boolean    True/False 
-      integer    0, 1, 2, ....
-      decimal    3.5, 3.25E-3
-      string     "test" "3.5"
-      point3f    {2.3 3.4 5.6} {0 1/2 1}
-      bitset     {oxygen}   {oxygen}.bonds
-      
-   These can be mixed and matched to good effect. Certain relatively
-   intuitive rules apply. Usually the operand on the left sets
-   the overall type, allowing for easy type conversion depending upon 
-   operand order:
-
-      int + float:
-      
-      0 + 3.6 ==> 3    (int on left rounds float on right)
-      3.6 + 0 ==> 3.6  (float on left sets result)
-      
-      int/float + string:
-      
-      0.0 + "3.5" ==> 3.5 (string converted to float)
-      0 + "3.5"   ==> 3 (string converted to float, then int)
-      "3.5" + 0   ==> "3.50" (integer converted to string)
-      "3.5" + 0.0 ==> "3.50.0" (float converted to string)
-      
-      1.0 + {carbon}.xyz     ==> 1 + distance from {0 0 0} to {carbon} center
-      {carbon}.xyz + 1       ==> {carbon} center point offset by {1 1 1}
-
-      x = {carbon}.xyz * {1 0 0} ==> (dot product)
-      
-      Now x is the average x coordinate of carbon
-      
-    Boolean expressions are a bit different in that the operators 
-    AND, OR, XOR, and NOT all require conversion to boolean UNLESS both
-    operands are atom expressions, in which case these operate directly on the
-    atom sets and return a new atom set, just like in SELECT.
-    
-      3 and 0.5  ==> TRUE (both are nonzero)
-      false OR 2.0 ==> true (2.0 is not 0, so it is TRUE)
-      {oxygen} and {molecule=1} ==> all oxygen atoms in the first molecule
-
-     x = ({oxygen} and {molecule=1}).xyz 
-     
-     x is now the center point of all oxygen atoms in the first molecule
-
-    In standard math, boolean TRUE evaluates to 1.0; FALSE evaluates to 0.0
-      
-      true + 2.0 ==> 3.0 ("TRUE" evaluates to 1.0 in math operations)     
-      2 + true ==> 3 ("TRUE" evaluates to 1.0 and is then turned into an integer)     
-      
-      
    EXPANDED MODULUS % OPERATOR IN IF, SET, AND %{}
    
    Usually modulus is reserved for integer math, so we

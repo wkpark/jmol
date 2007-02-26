@@ -60,13 +60,15 @@ public final class ScriptWindow extends JDialog
   private JButton historyButton;
   private JButton stateButton;
   private JButton helpButton;
+  private JButton undoButton;
+  private JButton redoButton;
   JmolViewer viewer;
   
   public ScriptWindow(JmolViewer viewer, JFrame frame) {
     super(frame, GT._("Jmol Script Console"), false);
     this.viewer = viewer;
     layoutWindow(getContentPane());
-    setSize(500, 400);
+    setSize(600, 400);
     setLocationRelativeTo(frame);
   }
 
@@ -110,6 +112,14 @@ public final class ScriptWindow extends JDialog
     closeButton = new JButton(GT._("Close"));
     closeButton.addActionListener(this);
     buttonPanel.add(closeButton);
+
+    undoButton = new JButton(GT._("Undo"));
+    undoButton.addActionListener(this);
+    buttonPanel.add(undoButton);
+
+    redoButton = new JButton(GT._("Redo"));
+    redoButton.addActionListener(this);
+    buttonPanel.add(redoButton);
 
   }
 
@@ -172,12 +182,68 @@ public final class ScriptWindow extends JDialog
   ExecuteCommandThread execThread;
   void executeCommandAsThread(){ 
     String strCommand = console.getCommandString().trim();
+    if (strCommand.equalsIgnoreCase("undo")) {
+      undoRedo(false);
+      console.appendNewline();
+      console.setPrompt();
+      return;
+    } else if (strCommand.equalsIgnoreCase("redo")) {
+      undoRedo(true);
+      console.appendNewline();
+      console.setPrompt();
+      return;
+    } 
+      
     if (strCommand.length() > 0) {
       execThread = new ExecuteCommandThread(strCommand);
       execThread.start();
     }
   }
 
+  static int MAXUNDO = 50;
+  String[] undoStack = new String[MAXUNDO];
+  int undoPointer = 0;
+  boolean undoSaved = false;
+  
+  void undoRedo(boolean isRedo) {
+    // pointer is always left at the undo slot when a command is given
+    // redo at CURRENT pointer position
+    if (!undoSaved) 
+      undoSave();
+    String state = undoStack[undoPointer];
+    int ptr = undoPointer + (isRedo ? 1 : -1);
+    if (ptr == MAXUNDO)
+      ptr--;
+    if (ptr < 0)
+      ptr = 0;
+    //console.outputError("undoredo " + isRedo + " " + ptr);
+    state = undoStack[ptr];
+    if (state == null)
+      return;
+    state += CommandHistory.NOHISTORYATALL_FLAG;
+    viewer.evalStringQuiet(state);
+    undoPointer = ptr;
+    //for (int i =0; i < MAXUNDO; i++) 
+      //console.outputError("stack: " + undoPointer + " / " + i + " " +(undoStack[i] == null ? 0 : undoStack[i].length()));
+  }
+  
+  void undoSave() {
+    //shift stack if full
+    undoPointer++;
+    if (undoPointer == MAXUNDO) {
+      for (int i = 1; i < MAXUNDO; i++)
+        undoStack[i - 1] = undoStack[i];
+      undoPointer--;
+    }
+    //delete redo items, since they will no longer be valid
+    for (int i = undoPointer; i < MAXUNDO; i++)
+      undoStack[i] = null;
+    
+    undoStack[undoPointer] = (String) viewer.getProperty("readable", "stateInfo",
+        null);
+    undoSaved = true;
+  }
+  
   void executeCommand(String strCommand) {
     boolean doWait;
     setError(false);
@@ -187,6 +253,12 @@ public final class ScriptWindow extends JDialog
       console.grabFocus();
       return;
     }
+    
+    if (strCommand.charAt(0) != '!') {
+      undoSave();
+    }
+    undoSaved = false;
+
     String strErrorMessage = null;
     doWait = (strCommand.indexOf("WAIT ") == 0);
     if (doWait) { //for testing, mainly
@@ -246,6 +318,10 @@ public final class ScriptWindow extends JDialog
       console.clearContent(viewer.getStateInfo());
     } else if (source == haltButton) {
       viewer.haltScriptExecution();
+    } else if (source == undoButton) {
+      undoRedo(false);
+    } else if (source == redoButton) {
+      undoRedo(true);
     } else if (source == helpButton) {
         URL url = this.getClass().getClassLoader()
             .getResource("org/openscience/jmol/Data/guide/ch04.html");

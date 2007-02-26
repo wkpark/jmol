@@ -5396,7 +5396,7 @@ class Eval { //implements Runnable {
         showString("to visualize, use ISOSURFACE PLANE @" + key);
       }
     }
-    if (!isSyntaxCheck && scriptLevel <= scriptReportingLevel)
+    if (!isSyntaxCheck && !tQuiet && scriptLevel <= scriptReportingLevel)
       viewer.showParameter(key, true, 60);
   }
 

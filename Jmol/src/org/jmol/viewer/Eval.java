@@ -5423,8 +5423,10 @@ class Eval { //implements Runnable {
       default:
         if (!Compiler.tokAttr(theTok, Token.mathop) && !Compiler.tokAttr(theTok, Token.mathfunc))
           invalidArgument();
-        if (!rpn.addOp(theToken))
+        if (!rpn.addOp(theToken)) {
+          iToken--;
           invalidArgument();
+        }
       }
       if (v != null)
         if (v instanceof Boolean) {
@@ -8189,8 +8191,10 @@ class Eval { //implements Runnable {
           x = new Token(Token.string, Token.sValue(x));
         return x;
       }
-      if (!allowUnderflow && (xPt >=0 || oPt >= 0))
+      if (!allowUnderflow && (xPt >=0 || oPt >= 0)) {
+        iToken--;
         invalidArgument();
+      }
       return null;
     }
 
@@ -8755,14 +8759,14 @@ class Eval { //implements Runnable {
         }
         if (iv == Token.list) {
           if (x2.tok != Token.string)
-            invalidArgument();
+            return false;
           String s = (String) x2.value;
           s = Viewer.simpleReplace(s, "\n\r", "\n");
           s = Viewer.simpleReplace(s, "\r", "\n");
           return addX(Text.split(s, '\n'));
         }
         if (x2.tok != Token.bitset)
-          invalidArgument();
+          return false;
         Object val = getBitsetAverage(Token.bsSelect(x2), op.intValue, null, null,
             x2.intValue >= 0, x2.intArray);
         if (op.intValue == Token.bonds)
@@ -8774,12 +8778,6 @@ class Eval { //implements Runnable {
       
       //binary:
       Token x1 = getX();
-      try {
-        if (!checkOK(x1.tok, x2.tok, op.tok))
-          return false;
-      } catch (Exception e) {
-        return false;
-      }
       switch (op.tok) {
       case Token.opAnd:
         if (x1.tok == Token.bitset && x2.tok == Token.bitset) {
@@ -8888,7 +8886,6 @@ class Eval { //implements Runnable {
         //  Point3f / Point3f  divides by magnitude
         //  float * Point3f gets magnitude
 
-        //checkOK only allows situations where operand x2 is integer
         String s = null;
         int n = Token.iValue(x2);
         switch (x1.tok) {
@@ -8977,18 +8974,6 @@ class Eval { //implements Runnable {
       default:
         return null;
       }
-    }
-
-    boolean checkOK(int x1, int x2, int op) throws ScriptException {
-      
-      if (x2 == 0)
-        return true;
-      
-      // binary check:
-      
-      if (op == Token.percent && x2 != Token.integer)
-        invalidArgument();
-      return true;
     }
 
     void stackOverflow() throws ScriptException {

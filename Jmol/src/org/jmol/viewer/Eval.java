@@ -1122,7 +1122,7 @@ class Eval { //implements Runnable {
             break;
           }
         }
-        invalidArgument();
+        break; //ignore otherwise
       case Token.rightbrace:
         break;
       case Token.leftsquare:

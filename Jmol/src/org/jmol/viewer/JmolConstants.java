@@ -41,9 +41,12 @@ final public class JmolConstants {
    * 
    11.1.15:
 
+   APPLICATION: adds undo/redo to a fixed depth of 50 commands
+   
+   
    TYPE CONVERSION
    
-   We have seven different variable types now:
+   We have eight different variable types now:
       
       boolean    True/False 
       integer    0, 1, 2, ....
@@ -51,7 +54,10 @@ final public class JmolConstants {
       string     "test" "3.5"
       point      {2.3 3.4 5.6} {0 1/2 1}
       plane      {0 1 1 0}
-      bitset     {oxygen}   {oxygen}.bonds
+      atomset    {oxygen}
+      bondset    {oxygen}.bonds
+      
+   plane and bondset are new; arithmetic operations are not fully developed.
       
    These can be mixed and matched to good effect. Certain relatively
    intuitive rules apply. Usually the operand on the left sets

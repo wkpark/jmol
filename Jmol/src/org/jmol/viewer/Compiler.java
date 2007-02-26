@@ -1166,6 +1166,7 @@ class Compiler {
       if (!tokAttr(tok, Token.predefinedset))
         break;
     // fall into the code and below and just add the token
+    case Token.string:
     case Token.all:
     case Token.none:
     case Token.bitset:

@@ -1172,7 +1172,7 @@ public class Token {
   public String toString() {
     return "Token[" + astrType[tok<=keyword ? tok : keyword] +
       "-" + tok +
-      ((intValue == Integer.MAX_VALUE) ? "" : ":" + intValue) +
+      ((intValue == Integer.MAX_VALUE) ? "" : ":" + intValue + " = " + Integer.toHexString(intValue)) +
       ((value == null) ? "" : ":" + value) + "]";
   }
   

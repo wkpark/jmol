@@ -5533,6 +5533,7 @@ class Eval { //implements Runnable {
 
   Token getBitsetPropertySelector(int i) throws ScriptException {
     int tok = getToken(++i).tok;
+    String s = parameterAsString(i).toLowerCase();
     switch (tok) {
     case Token.bonds:
     case Token.atom:
@@ -5544,7 +5545,6 @@ class Eval { //implements Runnable {
     case Token.list:
       break;
     case Token.identifier:
-      String s = parameterAsString(i).toLowerCase();
       if (s.equals("x"))
         tok = Token.atomX;
       else if (s.equals("y"))
@@ -5568,7 +5568,7 @@ class Eval { //implements Runnable {
       if (!Compiler.tokAttr(tok, Token.atomproperty))
         invalidArgument();
     }
-    return new Token(Token.propselector, tok);
+    return new Token(Token.propselector, tok, s);
   }
 
   Object getBitsetAverage(BitSet bs, int tok, Point3f ptRef, Point4f planeRef, boolean isAtoms,
@@ -8281,7 +8281,7 @@ class Eval { //implements Runnable {
         Logger.info("\naddOp: " + op);
         dumpStacks();
       }
-
+      Token newOp = null;
       boolean isLeftOp = false;
       boolean isDotSelector = (op.tok == Token.propselector);
       boolean isMathFunc = (Compiler.tokAttr(op.tok, Token.mathfunc) || isDotSelector
@@ -8292,10 +8292,8 @@ class Eval { //implements Runnable {
       switch (op.tok) {
       case Token.leftsquare: // two contexts: [x x].distance or {....}[n]
         isLeftOp = !wasX;
-        if (isLeftOp) {
-          op = new Token(Token.leftsquare, 0);
-          addX(op);
-        }
+        if (isLeftOp)
+          op = newOp = new Token(Token.leftsquare, 0);
         break;
       case Token.hyphen:
         if (wasX)
@@ -8310,7 +8308,7 @@ class Eval { //implements Runnable {
         if (isMathFunc) {
           if (!isDotSelector && wasX)
             return false;
-          addX(op);
+          newOp = op;
           isLeftOp = true;
           wasX = false;
         }
@@ -8324,13 +8322,14 @@ class Eval { //implements Runnable {
       //do we need to operate?
 
       while (oPt >= 0
-          && (!isLeftOp && op.tok != Token.leftsquare || op.tok == Token.leftsquare
+          && (!(isLeftOp || op.tok == Token.leftsquare) ||
+              (op.tok == Token.propselector || op.tok == Token.leftsquare)
               && oStack[oPt].tok == Token.propselector)
           && Token.prec(oStack[oPt]) >= Token.prec(op)) {
 
         if (logMessages) {
           dumpStacks();
-          Logger.info("operating, oPt=" + oPt + " isLeftOp=" + isLeftOp
+          Logger.info("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
               + " oStack[oPt]=" + Token.nameOf(oStack[oPt].tok) + "/"
               + Token.prec(oStack[oPt]) + " op=" + Token.nameOf(op.tok) + "/"
               + Token.prec(op));
@@ -8358,6 +8357,11 @@ class Eval { //implements Runnable {
 
       }
 
+      // now add a marker on the xStack if necessary
+      
+      if (newOp != null)
+        addX(newOp);
+     
       // fix up counts and operand flag
       // right ) and ] are not added to the stack
 
@@ -8523,21 +8527,40 @@ class Eval { //implements Runnable {
       return false;
     }
     
+    boolean evaluateMeasure(Token[] args, boolean isAngle) throws ScriptException {
+      int nPoints = args.length;
+      if (nPoints < (isAngle ? 3 : 2) || nPoints > (isAngle ? 4 : 2))
+        return false;
+      Point3f[] pts = new Point3f[nPoints];
+      for (int i = 0; i < nPoints; i++)
+        pts[i] = ptValue(args[i]);
+      switch (nPoints) {
+      case 2:
+        return addX(pts[0].distance(pts[1]));
+      case 3:
+        return addX(Measurement.computeAngle(pts[0], pts[1], pts[2], true));
+      case 4:
+        return addX(Measurement.computeTorsion(pts[0], pts[1], pts[2], pts[3], true));
+      }
+      return false;
+    }
+
     boolean evaluateFind(Token[] args) throws ScriptException {
-      Token x2 = getX();
+      Token x1 = getX();
       if (args.length != 1)
         return false;
-      Token x1 = args[0];
+      Token x2 = args[0];
       if (x1.tok == Token.string && x2.tok == Token.string)
         return addX(Token.sValue(x1).indexOf(Token.sValue(x2)) + 1);
       return false;
     }
     
     boolean evaluateLabel(Token[] args) throws ScriptException {
-      Token x2 = getX();
+      System.out.println("eval label");
+      Token x1 = getX();
       if (args.length != 1)
         return false;
-      Token x1 = args[0];
+      Token x2 = args[0];
       if (x1.tok != Token.bitset || x2.tok != Token.string)
         return false;
       return addX(getBitsetIdent(Token.bsSelect(x1), Token.sValue(x2),
@@ -8548,6 +8571,7 @@ class Eval { //implements Runnable {
       // within ( distance, expression)
       // within ( group, etc., expression)
       // within ( plane or hkl or coord  atomcenter atomcenter atomcenter )
+      System.out.println("eval within");
       if (args.length < 1)
         return false;
       Object withinSpec = args[0].value;
@@ -8666,38 +8690,22 @@ class Eval { //implements Runnable {
     }
 
     boolean evaluateSubstructure(Token[] args) throws ScriptException {
+      System.out.println("eval subs");
       if (isSyntaxCheck)
         return true;
       if (args.length != 1)
         return false;
       String smiles = Token.sValue(args[0]);
       PatternMatcher matcher = new PatternMatcher(viewer);
+      BitSet bs = new BitSet();
       try {
-        return addX(matcher.getSubstructureSet(smiles));
+        bs = matcher.getSubstructureSet(smiles);
       } catch (InvalidSmilesException e) {
         evalError(e.getMessage());
       }
-      return false;
+      return addX(bs);
     }
     
-    boolean evaluateMeasure(Token[] args, boolean isAngle) throws ScriptException {
-      int nPoints = args.length;
-      if (nPoints < (isAngle ? 3 : 2) || nPoints > (isAngle ? 4 : 2))
-        return false;
-      Point3f[] pts = new Point3f[nPoints];
-      for (int i = 0; i < nPoints; i++)
-        pts[i] = ptValue(args[i]);
-      switch (nPoints) {
-      case 2:
-        return addX(pts[0].distance(pts[1]));
-      case 3:
-        return addX(Measurement.computeAngle(pts[0], pts[1], pts[2], true));
-      case 4:
-        return addX(Measurement.computeTorsion(pts[0], pts[1], pts[2], pts[3], true));
-      }
-      return false;
-    }
-
     boolean operate(int thisOp) throws ScriptException {
 
       Token op = oStack[oPt--];

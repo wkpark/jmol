@@ -631,11 +631,21 @@ class StateManager {
     boolean doRegister(String name) {
       return (unnecessaryProperties.indexOf(";" + name + ";") < 0);
     }
-    
+
     String getParameterEscaped(String name) {
+      return getParameterEscaped(name, 0);
+    }
+
+    String getParameterEscaped(String name, int nMax) {
       name = name.toLowerCase();
-      if (htParameterValues.containsKey(name))
-        return StateManager.escape(htParameterValues.get(name));
+      if (htParameterValues.containsKey(name)) {
+        String sv = StateManager.escape(htParameterValues.get(name));
+        if (nMax > 0 && sv.length() > nMax)
+          sv = sv.substring(0, nMax) + "\n#...(" + sv.length()
+              + " bytes -- use SHOW " + name + " or MESSAGE %{" + name
+              + "} to view)";
+        return sv;
+      }
       if (htPropertyFlags.containsKey(name))
         return htPropertyFlags.get(name).toString();
       return "<not set>";
@@ -657,7 +667,7 @@ class StateManager {
       return "";
     }
     
-    String getAllSettings() {
+    String getAllSettings(int nMax) {
       StringBuffer commands = new StringBuffer("");
       Enumeration e;
       String key;

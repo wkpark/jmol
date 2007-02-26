@@ -85,6 +85,13 @@ final public class JmolConstants {
       to the center of molecule 2
    
    
+   x = load("filename")
+   
+   The string data in the file are loaded into the string.
+   If the file does not exist, then the string contains the error message.
+   
+   
+   
    Implements ({i j:k m n}) bitset option across all commands
    
    
@@ -266,12 +273,6 @@ final public class JmolConstants {
    "....".lines
    
    The .lines operator splits a string into an array based on line termination. 
-   
-   "".load("filename")
-   
-   The string data in the file are loaded into the string.
-   If the file does not exist, then the string contains the error message.
-   
    
    WRITE VAR "filename" (application only)
    

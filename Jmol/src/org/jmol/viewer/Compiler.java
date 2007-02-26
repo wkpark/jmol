@@ -186,7 +186,7 @@ class Compiler {
       boolean endOfLine = lookingAtEndOfLine();
       if (endOfLine || lookingAtEndOfStatement()) {
         if (tokCommand != Token.nada) {
-          if (!compileCommand(ltoken))
+          if (!compileCommand())
             return false;
           iCommand = lltoken.size();
           if (iCommand == lnLength) {
@@ -224,8 +224,8 @@ class Compiler {
               + cchToken - 1) : getUnescapedStringLiteral());
           addTokenToPrefix(new Token(Token.string, str));
           iHaveQuotedString = true;
-          if (tokCommand == Token.data)
-            getData(ltoken, str);
+          if (tokCommand == Token.data && str.indexOf("@") < 0)
+            getData(str);
           continue;
         }
         if (tokCommand == Token.load) {
@@ -428,7 +428,7 @@ class Compiler {
     return true;
   }
 
-  private void getData(Vector ltoken, String key) {
+  private void getData(String key) {
     ichToken += key.length() + 2;
     if (script.length() > ichToken && script.charAt(ichToken) == '\r')
       ichToken++;
@@ -917,7 +917,7 @@ class Compiler {
 
   boolean isSetOrIf;
 
-  private boolean compileCommand(Vector ltoken) {
+  private boolean compileCommand() {
     Token tokenCommand = (Token) ltoken.firstElement();
     int tokCommand = tokenCommand.tok;
     int size = ltoken.size();

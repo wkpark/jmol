@@ -3119,8 +3119,11 @@ class Eval { //implements Runnable {
           Viewer.setData(null, null);
         return;
       }
-      if (statementLength > 2)
+      if (dataLabel.indexOf("@") >= 0) {
+        dataString = "" + viewer.getParameter(dataLabel
+                .substring(dataLabel.indexOf("@") + 1));
         break;
+      }
     default:
       badArgumentCount();
     }
@@ -5108,7 +5111,7 @@ class Eval { //implements Runnable {
 
   void set() throws ScriptException {
     if (statementLength == 1) {
-      showString(viewer.getAllSettings());
+      showString(viewer.getAllSettings(60));
       return;
     }
     int val = Integer.MAX_VALUE;
@@ -5322,7 +5325,7 @@ class Eval { //implements Runnable {
       }
     }
     if (!isSyntaxCheck && scriptLevel <= scriptReportingLevel)
-      viewer.showParameter(key, true);
+      viewer.showParameter(key, true, 60);
   }
 
   boolean setParameter(String key, int intVal) throws ScriptException {
@@ -5540,7 +5543,6 @@ class Eval { //implements Runnable {
     case Token.distance:
     case Token.ident:
     case Token.label:
-    case Token.load:
     case Token.length:
     case Token.list:
       break;
@@ -6465,7 +6467,7 @@ class Eval { //implements Runnable {
     case Token.set:
       checkLength2();
       if (!isSyntaxCheck)
-        showString(viewer.getAllSettings());
+        showString(viewer.getAllSettings(60));
       return;
     case Token.url:
       // in a new window
@@ -8310,7 +8312,7 @@ class Eval { //implements Runnable {
             return false;
           newOp = op;
           isLeftOp = true;
-          wasX = false;
+          break;
         }
         if (wasX == isLeftOp
             && (oPt < 1 || !Compiler.tokAttr(oStack[oPt - 1].tok,
@@ -8482,6 +8484,10 @@ class Eval { //implements Runnable {
         if (!evaluateLabel(args))
           return false;
         break;
+      case Token.load:
+        if (!evaluateLoad(args))
+          return false;
+        break;
       case Token.within:
         if (!evaluateWithin(args))
           return false;
@@ -8562,6 +8568,15 @@ class Eval { //implements Runnable {
       return false;
     }
     
+    boolean evaluateLoad(Token[] args) throws ScriptException {
+      //System.out.println("eval load");
+      if (args.length != 1)
+        return false;
+      if (isSyntaxCheck)
+        return addX("");
+      return addX(viewer.getFileAsString(Token.sValue(args[0])));
+    }
+    
     boolean evaluateLabel(Token[] args) throws ScriptException {
       //System.out.println("eval label");
       Token x1 = getX();
@@ -8572,6 +8587,9 @@ class Eval { //implements Runnable {
       Token x2 = args[0];
       if (x1.tok != Token.bitset || x2.tok != Token.string)
         return false;
+      for (int i = 0; i < x1.intArray.length; i++)
+        System.out.println ("labelident: "+ i + " " + x1.intArray[i]);
+      
       return addX(getBitsetIdent(Token.bsSelect(x1), Token.sValue(x2),
           (x1.intValue >= 0), x1.intArray));
     }

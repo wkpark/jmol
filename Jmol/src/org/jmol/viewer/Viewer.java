@@ -3931,8 +3931,8 @@ public class Viewer extends JmolViewer {
     return true;
   }
 
-  void showParameter(String key, boolean ifNotSet) {
-    String sv = "" + getParameterEscaped(key);
+  void showParameter(String key, boolean ifNotSet, int nMax) {
+    String sv = "" + global.getParameterEscaped(key, nMax);
     if (ifNotSet || sv.indexOf("<not set>") < 0)
     showString(key + " = " + sv); 
   }
@@ -3942,8 +3942,8 @@ public class Viewer extends JmolViewer {
     scriptEcho(str);
   }
 
-  String getAllSettings() {
-    return global.getAllSettings();
+  String getAllSettings(int nMax) {
+    return global.getAllSettings(nMax);
   }
 
   ////////  flags and settings ////////

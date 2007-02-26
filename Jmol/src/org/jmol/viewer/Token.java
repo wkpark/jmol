@@ -150,14 +150,18 @@ public class Token {
   // connected(float min, float max, String type, BitSet atomset1, BitSet atomset2)
   // substructure("smiles")
 
-  final static int distance     = 1  | mathfunc | 2 << 3;
-  final static int angle        = 2  | mathfunc | 4 << 3;
-  final static int label        = 3  | mathfunc | 1 << 3 | command | specialstring;
-  final static int find         = 4  | mathfunc | 1 << 3;
-  final static int within       = 5  | mathfunc | 5 << 3;
-  final static int connected    = 6  | mathfunc | 5 << 3;
-  final static int substructure = 7  | mathfunc | 1 << 3;
+  final static int label        = 0  | mathfunc | 1 << 3 | command | specialstring;
+  final static int find         = 1  | mathfunc | 1 << 3;
+  final static int load         = 2  | mathfunc | 1 << 3 | command | negnums;
+  final static int substructure = 3  | mathfunc | 1 << 3;
 
+  final static int distance     = 0  | mathfunc | 2 << 3;
+
+  final static int angle        = 0  | mathfunc | 4 << 3;
+  
+  final static int within       = 0  | mathfunc | 5 << 3;
+  final static int connected    = 1  | mathfunc | 5 << 3;
+  
   
   final static Point3f pt0 = new Point3f();
 
@@ -411,7 +415,7 @@ public class Token {
   final static int hbond        = command | 13 | setparam | bool | expression;
   final static int help         = command | 14 | setparam | specialstring;
   //final static int label        = command | 15 | specialstring; with mathfunc
-  final static int load         = command | 16 | negnums;
+  //final static int load         = command | 16 | negnums; with mathfunc
   final static int monitor      = command | 18 | setparam | bool | embeddedExpression | expression;
   final static int pause        = command | 19 | misc | specialstring;
   final static int print        = command | 20 | unimplemented;
@@ -1172,7 +1176,7 @@ public class Token {
   public String toString() {
     return "Token[" + astrType[tok<=keyword ? tok : keyword] +
       "-" + tok +
-      ((intValue == Integer.MAX_VALUE) ? "" : ":" + intValue + " = " + Integer.toHexString(intValue)) +
+      ((intValue == Integer.MAX_VALUE) ? "" : ":" + intValue + " = 0x" + Integer.toHexString(intValue)) +
       ((value == null) ? "" : ":" + value) + "]";
   }
   

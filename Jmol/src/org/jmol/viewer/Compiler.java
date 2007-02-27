@@ -1376,6 +1376,12 @@ class Compiler {
       if (addNextTokenIf(Token.integer))
         if (!addNextTokenIf(Token.comma))
           break;
+      if (addNextTokenIf(Token.decimal))
+        if (!addNextTokenIf(Token.comma))
+          break;
+      if (addNextTokenIf(Token.decimal))
+        if (!addNextTokenIf(Token.comma))
+          break;
       if (tokPeek() == Token.identifier) {
         String strOrder = (String) getToken().value;
         int intType = JmolConstants.getBondOrderFromString(strOrder);
@@ -1389,8 +1395,15 @@ class Compiler {
       }
       if (addNextTokenIf(Token.rightparen))
         return true;
-      if (!clauseOr(true)) // *expression*
+      if (!clauseOr(tokPeek(Token.leftparen))) // *expression*
         return false;
+      if (addNextTokenIf(Token.rightparen))
+        return true;
+      if (!addNextTokenIf(Token.comma))
+        return false;
+      if (!clauseOr(tokPeek(Token.leftparen))) // *expression*
+        return false;
+
       break;
     }
     if (!addNextTokenIf(Token.rightparen))

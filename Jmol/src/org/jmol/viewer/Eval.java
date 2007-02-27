@@ -8886,7 +8886,7 @@ class Eval { //implements Runnable {
             return addX(Token.concatList(x1, x2, false, true));
           return addX(Token.sValue(x1) + Token.sValue(x2));
         }
-        if (x1.tok == Token.integer)
+        if (x1.tok == Token.integer && x2.tok != Token.decimal)
           return addX(x1.intValue + Token.iValue(x2));
         if (x1.tok == Token.point3f) {
           Point3f pt = new Point3f((Point3f) x1.value);

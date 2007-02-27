@@ -161,7 +161,7 @@ class LcaoCartoon extends Isosurface {
   }
 
   void createLcaoCartoon(int iAtom) {
-    String id = getID(null, iAtom);
+    String id = getID(lcaoID, iAtom);
     for (int i = meshCount; --i >= 0;)
       if (meshes[i].thisID.indexOf(id) == 0)
         deleteMesh(i);
@@ -202,9 +202,9 @@ class LcaoCartoon extends Isosurface {
     // remove "-" from "-px" "-py" "-pz" because we never want to have
     // both "pz" and "-pz" on the same atom
     // but we can have "-sp3a" and "sp3a"
-    return (id != null ? id : "lcao_" + (i + 1)
+    return (id != null ? id : "lcao_" + (i + 1))
         + (thisType == null ? "" : Viewer.simpleReplace(thisType, "-",
-            (thisType.indexOf("-p") == 0 ? "" : "_"))));
+            (thisType.indexOf("-p") == 0 ? "" : "_")));
   }
 
 }

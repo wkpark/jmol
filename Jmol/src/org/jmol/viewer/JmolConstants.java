@@ -215,9 +215,6 @@ final public class JmolConstants {
    
    Implements ({i j:k m n}) bitset option across all commands
    
-   
-   11.1.14:
-      
    RESET varName
    
    reset varName  # clears that variable definition
@@ -237,6 +234,10 @@ final public class JmolConstants {
     connect (selected) single modify
     
    In addition, we now can depict quadruple bonds.
+
+   
+   11.1.14:
+      
     
    DYNAMIC MEASUREMENTS
    

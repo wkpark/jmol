@@ -2916,6 +2916,14 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     return (4 << shapeID);
   }
 
+  static int CARTOON_VISIBILITY_FLAG = getShapeVisibilityFlag(SHAPE_CARTOON);
+  static int ALPHA_CARBON_VISIBILITY_FLAG = CARTOON_VISIBILITY_FLAG 
+      | getShapeVisibilityFlag(SHAPE_TRACE)
+      | getShapeVisibilityFlag(SHAPE_STRANDS)
+      | getShapeVisibilityFlag(SHAPE_MESHRIBBON)
+      | getShapeVisibilityFlag(SHAPE_RIBBONS);
+
+  
   //see Jmol 10.2 for programming information --- pruned from 11.0
   //Bob Hanson 7/17/06
   //public final static int SHAPE_PRUEBA     = 28;

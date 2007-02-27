@@ -25,7 +25,6 @@ package org.jmol.viewer;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
-import org.jmol.smiles.InvalidSmilesException;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;

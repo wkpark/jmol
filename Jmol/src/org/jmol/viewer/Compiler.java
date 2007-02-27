@@ -921,10 +921,23 @@ class Compiler {
   }
 
   boolean isSetOrIf;
+  boolean isSetOrDefine;
+  Token tokenCommand;
+  int tokCommand;
 
+  Vector ltokenPostfix = null;
+  Token[] atokenInfix;
+  int itokenInfix;
+  boolean isCoordinate;
+  boolean isEmbeddedExpression;
+  
+  
   private boolean compileCommand() {
-    Token tokenCommand = (Token) ltoken.firstElement();
-    int tokCommand = tokenCommand.tok;
+    tokenCommand = (Token) ltoken.firstElement();
+    tokCommand = tokenCommand.tok;
+    isSetOrIf =  (tokCommand == Token.set || tokCommand == Token.ifcmd);
+    isSetOrDefine = (tokCommand == Token.set || tokCommand == Token.define);
+    
     int size = ltoken.size();
     if (size == 1 && tokenCommand.intValue != Integer.MAX_VALUE && tokAttr(tokenCommand.intValue, Token.onDefault1))
       addTokenToPrefix(Token.tokenOn);
@@ -943,9 +956,10 @@ class Compiler {
 
     //compile expressions
 
-    isSetOrIf =  (tokCommand == Token.set || tokCommand == Token.ifcmd);
+    isEmbeddedExpression = (tokAttr(tokCommand, Token.embeddedExpression));
     boolean checkExpression = (tokAttrOr(tokCommand,
         Token.expressionCommand, Token.embeddedExpression));
+
     if (!tokAttr(tokCommand, Token.coordOrSet)) {
       // $ or { at beginning disallow expression checking for center command
       int firstTok = (size == 1 ? Token.nada : atokenInfix[1].tok);
@@ -974,24 +988,14 @@ class Compiler {
     return true;
   }
 
-  Vector ltokenPostfix = null;
-  Token[] atokenInfix;
-  int itokenInfix;
-  boolean isCoordinate;
-  
   private boolean compileExpression() {
-    int tokCommand = atokenInfix[0].tok;
-    boolean isMultipleOK = (tokAttr(tokCommand, Token.embeddedExpression));
-    int firstToken = (tokCommand == Token.define || tokCommand == Token.set ? 2
-        : 1);
-    if (tokCommand == Token.set && firstToken >= atokenInfix.length)
-      return true;
+    int firstToken = (isSetOrDefine ? 2 : 1);
     ltokenPostfix = new Vector();
     itokenInfix = 0;
     for (int i = 0; i < firstToken && addNextToken(); i++) {
     }
     while (moreTokens()) {
-      if (isMultipleOK) {
+      if (isEmbeddedExpression) {
         while (!isExpressionNext() && addNextToken()) {
         }
         if (!moreTokens())
@@ -1008,7 +1012,7 @@ class Compiler {
       } else {
         addTokenToPostfix(Token.tokenExpressionEnd);
       }
-      if (itokenInfix != atokenInfix.length && !isMultipleOK)
+      if (moreTokens() && !isEmbeddedExpression)
         return endOfExpressionExpected();
     }
     atokenInfix = new Token[ltokenPostfix.size()];

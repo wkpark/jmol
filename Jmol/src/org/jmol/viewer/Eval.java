@@ -8920,7 +8920,7 @@ class Eval { //implements Runnable {
         }
         return addX(Token.fValue(x1) - Token.fValue(x2));
       case Token.asterisk:
-        if (x1.tok == Token.integer)
+        if (x1.tok == Token.integer && x2.tok != Token.decimal)
           return addX(x1.intValue * Token.iValue(x2));
         if (x1.tok == Token.point3f) {
           Point3f pt = new Point3f((Point3f) x1.value);

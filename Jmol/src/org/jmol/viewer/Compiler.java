@@ -1119,7 +1119,10 @@ class Compiler {
     return addTokenToPostfix(token);
   }
   
+  boolean haveString;
+  
   private boolean clauseOr(boolean allowComma) {
+    haveString = false;
     if (!clauseAnd())
       return false;
     //for simplicity, giving XOR (toggle) same precedence as OR
@@ -1127,7 +1130,7 @@ class Compiler {
     int tok;
     while ((tok = tokPeek())== Token.opOr || tok == Token.opXor
         || tok==Token.opToggle|| allowComma && tok == Token.comma) {
-      if (tok == Token.comma)
+      if (tok == Token.comma && !haveString)
         addNextTokenIf(Token.comma, Token.tokenOr);
       else
         addNextToken();
@@ -1166,10 +1169,12 @@ class Compiler {
       if (!tokAttr(tok, Token.predefinedset))
         break;
     // fall into the code and below and just add the token
-    case Token.string:
     case Token.all:
     case Token.none:
     case Token.bitset:
+      return addNextToken();
+    case Token.string:
+      haveString = true;
       return addNextToken();
     case Token.nada:
       return endOfCommandUnexpected();

@@ -459,22 +459,17 @@ abstract class Mps extends Shape {
       if (!isActive || wingVectors == null)
         return;
       boolean isNucleicPolymer = polymer instanceof NucleicPolymer;
-      //boolean isProtein = polymer instanceof AlphaPolymer;
-      int cartoonflag = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_CARTOON);
-      //if (!isNucleicPolymer)
-        //return;
       for (int i = monomerCount; --i >= 0;) {
         if (mads[i] <= 0)
           continue;
         int iAtom = leadAtomIndices[i];
         if (frame.bsHidden.get(iAtom))
           continue;
-        frame.atoms[iAtom].clickabilityFlags |= cartoonflag;
-
-        if (isNucleicPolymer) {
-          ((NucleicMonomer) monomers[i]).setModelClickability(cartoonflag);
-        }
+        frame.atoms[iAtom].clickabilityFlags |= JmolConstants.ALPHA_CARBON_VISIBILITY_FLAG;
+        if (isNucleicPolymer)
+          ((NucleicMonomer) monomers[i]).setModelClickability();
       }
     }
+    
   }  
 }

@@ -239,21 +239,19 @@ class NucleicMonomer extends PhosphorusMonomer {
       closest.atom = lead;
   }
   
-  void setModelClickability(int cartoonflag) {
+  void setModelClickability() {
     Atom atom;
     atom = getLeadAtom();
     if (chain.frame.bsHidden.get(atom.atomIndex))
       return;
-//    int cartoonflag = JmolConstants.getShapeVisibilityFlag(JmolConstants.SHAPE_CARTOON);
-    
     for (int i = 6; --i >= 0; ) {
       atom = getAtomFromOffsetIndex(i + 3);
-      atom.clickabilityFlags |= cartoonflag;
+      atom.clickabilityFlags |= JmolConstants.CARTOON_VISIBILITY_FLAG;
     }
     if (isPurine)
       for (int i = 5; --i >= 0; ) {
         atom = getAtomFromOffsetIndex(ring5OffsetIndexes[i]);
-        atom.clickabilityFlags |= cartoonflag;
+        atom.clickabilityFlags |= JmolConstants.CARTOON_VISIBILITY_FLAG;
     }
   }
 }

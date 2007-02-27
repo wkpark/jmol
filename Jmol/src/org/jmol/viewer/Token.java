@@ -405,7 +405,7 @@ public class Token {
   final static int cartoon      = command |  3 | setparam;
   final static int center       = command |  4 | setparam | expressionCommand;
   final static int clipboard    = command |  5 | unimplemented;
-  final static int color        = command |  6 | colorparam | setparam;
+  final static int color        = command |  6 | colorparam | setparam | embeddedExpression;
   final static int connect      = command |  7 | embeddedExpression | colorparam;
   //final static int data         = command |  8; with mathfunc
   final static int define       = command |  9 | expressionCommand | expression;

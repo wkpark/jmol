@@ -2250,7 +2250,7 @@ class Eval { //implements Runnable {
       switch (getToken(i).tok) {
       case Token.leftbrace:
       case Token.comma:
-      case Token.opOr:
+     // case Token.opOr:
       case Token.opAnd:
         break;
       case Token.rightbrace:
@@ -2293,7 +2293,6 @@ class Eval { //implements Runnable {
       Point3f pt = new Point3f(coord[0], coord[1], coord[2]);
       if (coordinatesAreFractional && doConvert && !isSyntaxCheck)
         viewer.toCartesian(pt);
-      System.out.println(pt);
       return pt;
     }
     if (n == 4) {
@@ -3005,6 +3004,10 @@ class Eval { //implements Runnable {
     case Token.opaque:
       colorObject(Token.atom, 1);
       return;
+    case Token.bitset:
+    case Token.expressionBegin:
+      colorObject(Token.atom, -1);
+      return;
     case Token.jmol:
     case Token.rasmol:
       colorObject(Token.atom, 1);
@@ -3094,6 +3097,19 @@ class Eval { //implements Runnable {
     String translucentOrOpaque = null;
     Object colorvalue = null;
     String colorOrBgcolor = "color";
+    BitSet bs = null;
+    if (index < 0) {
+      bs = expression(-index);
+      index = iToken + 1;
+      if (!isSyntaxCheck) {
+        if (isBondSet) {
+          viewer.selectBonds(bs);
+          shapeType = JmolConstants.SHAPE_STICKS;
+        } else {
+          viewer.select(bs, true);
+        }
+      }
+    }
     if (getToken(index).tok == Token.background) {
       colorOrBgcolor = "bgcolor";
       getToken(++index);

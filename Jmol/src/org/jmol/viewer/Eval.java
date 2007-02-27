@@ -8791,10 +8791,12 @@ class Eval { //implements Runnable {
       if (isSyntaxCheck)
         return addX(bs);
       String smiles = Token.sValue(args[0]);
+      if (smiles.length() == 0)
+        return false; 
       PatternMatcher matcher = new PatternMatcher(viewer);
       try {
         bs = matcher.getSubstructureSet(smiles);
-      } catch (InvalidSmilesException e) {
+      } catch (Exception e) {
         evalError(e.getMessage());
       }
       return addX(bs);

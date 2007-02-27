@@ -75,11 +75,12 @@
 				</ul>
 			</p>
 		</section>
-		<section title="Jmol version 11 in beta-test">
+		<section title="Jmol version 11">
 			<p>
-	Jmol v10.2 is the latest official, stable version. 
+	Jmol v11.0 is the latest official, stable version. 
 	<br/>
-	The new Jmol v11 is in beta-testing phase. You can get a prerelease version from the download page.
+	You can also get prerelease versions that are being developed 
+	for enhanced functionality from the download page.
       </p>
 		</section>
 		<section title="What the critics are saying">
@@ -99,7 +100,7 @@
 	December 2004.
       </blockquote>
 		</section>
-		<section title="Jmol v11 features">
+		<section title="Jmol features">
 			<ul>
 				<li>
 	  Free, open-source software licensed under the 
@@ -148,7 +149,7 @@
 	  High-performance 3D rendering with no hardware requirements
 	</li>
 				<li>
-	  File formats (updated to Jmol v11)
+	  File formats
 	  <ul>
 						<li>
 							<a href="http://journals.iucr.org/c/services/cifguide.html">

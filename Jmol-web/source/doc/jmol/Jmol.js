@@ -1,4 +1,7 @@
-/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 11:06 AM 10/13/2006
+
+/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 12:54 AM 1/9/2007
+
+ first pass at checkbox heirarchy -- see http://www.stolaf.edu/academics/jmol/docs/examples-11/check.htm
 
     based on:
  *
@@ -48,7 +51,8 @@ try{if(typeof(_jmol)!="undefined")exit()
 // bob hanson -- jmolScriptWait always returns a string -- 11:23 AM 9/16/2006
 // bh         -- jmolCommandInput()
 // bh         -- jmolSetTranslation(TF) -- forces translation even if there might be message callback issues
-	
+// bh         -- minor fixes suggested by Angel
+	  	
 var defaultdir = "."
 var defaultjar = "JmolApplet.jar"
 
@@ -157,14 +161,19 @@ function jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
   }
   var indexChecked = _jmolAddScript(scriptWhenChecked);
   var indexUnchecked = _jmolAddScript(scriptWhenUnchecked);
+  var eospan = "</span>"
   var t = "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><input type='checkbox' name='" + id + "' id='" + id +
           "' onClick='_jmolCbClick(this," +
           indexChecked + "," + indexUnchecked + _jmol.targetText +
           ")' onMouseover='_jmolCbOver(this," + indexChecked + "," +
           indexUnchecked +
           ");return true' onMouseout='_jmolMouseOut()' " +
-	  (isChecked ? "checked " : "") + _jmol.checkboxCssText + "/>" +
-          labelHtml +"</span>";
+	  (isChecked ? "checked " : "") + _jmol.checkboxCssText + "/>" 
+  if (labelHtml.toLowerCase().indexOf("<td>")>=0) {
+	t += eospan
+	eospan = "";
+  }
+  t += labelHtml +eospan;
   if (_jmol.debugAlert)
     alert(t);
   return _jmolDocumentWrite(t);
@@ -201,7 +210,7 @@ function jmolRadioGroup(arrayOfRadioButtons, separatorHtml, groupName, id, title
     var radio = arrayOfRadioButtons[i];
     type = typeof radio;
     if (type == "object") {
-      t += _jmolRadio(radio[0], radio[1], radio[2], separatorHtml, groupName, (radio.length > 3 ? radio[3]: (id ? id : groupName)+"_"+i), (radio.length > 4 ? radio[4] : 0));
+      t += _jmolRadio(radio[0], radio[1], radio[2], separatorHtml, groupName, (radio.length > 3 ? radio[3]: (id ? id : groupName)+"_"+i), (radio.length > 4 ? radio[4] : 0), title);
     } else {
       t += _jmolRadio(radio, null, null, separatorHtml, groupName, (id ? id : groupName)+"_"+i, title);
     }
@@ -232,9 +241,7 @@ function jmolLink(script, label, id, title) {
   ++_jmol.linkCount;
   var scriptIndex = _jmolAddScript(script);
   var t = "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><a name='" + id + "' id='" + id + 
-          "' href='javascript:_jmolClick(" + scriptIndex +
-          _jmol.targetText +
-          ");' onMouseover='_jmolMouseOver(" + scriptIndex +
+          "' href='javascript:_jmolClick(" + scriptIndex + _jmol.targetText + ");' onMouseover='_jmolMouseOver(" + scriptIndex +
           ");return true;' onMouseout='_jmolMouseOut()' " +
           _jmol.linkCssText + ">" + label + "</a></span>";
   if (_jmol.debugAlert)
@@ -245,14 +252,14 @@ function jmolLink(script, label, id, title) {
 function jmolCommandInput(label, size, id, title) {
   _jmolInitCheck();
   if (id == undefined || id == null)
-    id = "jmolCmd" + _jmol.linkCount;
+    id = "jmolCmd" + _jmol.cmdCount;
   if (label == undefined || label == null)
     label = "Execute";
   if (size == undefined || isNaN(size))
     size = 60;
-  ++_jmol.linkCount;
+  ++_jmol.cmdCount;
   var t = "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><input name='" + id + "' id='" + id + 
-          "' size='"+size+"'><input type=button value = '"+label+"' onClick=\"javascript:jmolScript(document.getElementById('"+id+"').value)\"/></span>";
+          "' size='"+size+"'><input type=button value = '"+label+"' onClick='jmolScript(document.getElementById(\""+id+"\").value" + _jmol.targetText + ")'/></span>";
   if (_jmol.debugAlert)
     alert(t);
   return _jmolDocumentWrite(t);
@@ -272,8 +279,7 @@ function jmolMenu(arrayOfMenuItems, size, id, title) {
       size = len;
     var sizeText = size ? " size='" + size + "' " : "";
     var t = "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><select name='" + id + "' id='" + id +
-            "' onChange='_jmolMenuSelected(this" +
-            _jmol.targetText + ")'" +
+            "' onChange='_jmolMenuSelected(this" + _jmol.targetText + ")'" +
             sizeText + _jmol.menuCssText + ">";
     for (var i = 0; i < len; ++i) {
       var menuItem = arrayOfMenuItems[i];
@@ -435,7 +441,6 @@ function jmolSetMenuCssClass(menuCssClass) {
 // functions for INTERNAL USE ONLY which are subject to change
 // use at your own risk ... you have been WARNED!
 ////////////////////////////////////////////////////////////////
-
 var _jmol = {
   currentDocument: document,
 
@@ -450,6 +455,7 @@ var _jmol = {
   buttonCount: 0,
   checkboxCount: 0,
   linkCount: 0,
+  cmdCount: 0,
   menuCount: 0,
   radioCount: 0,
   radioGroupCount: 0,
@@ -788,14 +794,18 @@ function _jmolRadio(script, labelHtml, isChecked, separatorHtml, groupName, id, 
   if (! separatorHtml)
     separatorHtml = "";
   var scriptIndex = _jmolAddScript(script);
-  return "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><input name='" 
+  var eospan = "</span>"
+  var t = "<span id=\"span_"+id+"\""+(title ? " title =\"" + title + "\"":"")+"><input name='" 
 	+ groupName + "' id='"+id+"' type='radio' onClick='_jmolClick(" +
-         scriptIndex + _jmol.targetText +
-         ");return true;' onMouseover='_jmolMouseOver(" +
-         scriptIndex +
-         ");return true;' onMouseout='_jmolMouseOut()' " +
-	 (isChecked ? "checked " : "") + _jmol.radioCssText + "/>" +
-         labelHtml + "</span>" + separatorHtml;
+         scriptIndex + _jmol.targetText + ");return true;' onMouseover='_jmolMouseOver(" +
+         scriptIndex + ");return true;' onMouseout='_jmolMouseOut()' " +
+	 (isChecked ? "checked " : "") + _jmol.radioCssText + "/>"
+  if (labelHtml.toLowerCase().indexOf("<td>")>=0) {
+	t += eospan
+	eospan = "";
+  }
+  t += labelHtml +eospan + separatorHtml;
+  return t;
 }
 
 function _jmolFindApplet(target) {
@@ -875,8 +885,60 @@ function _jmolMenuSelected(menuObject, targetSuffix) {
   alert("?Que? menu selected bug #8734");
 }
 
+
+_jmol.checkboxMasters = new Array();
+_jmol.checkboxItems = new Array();
+
+function jmolSetCheckboxGroup(chkMaster,chkBox) {
+	var id = chkMaster;
+	if(typeof(id)=="number")id = "jmolCheckbox" + id;
+	chkMaster = document.getElementById(id);
+	if (!chkMaster)alert("jmolSetCheckboxGroup: master checkbox not found: " + id);
+	var m = _jmol.checkboxMasters[id] = new Array();
+	m.chkMaster = chkMaster;
+	m.chkGroup = new Array();
+	for (var i = 1; i < arguments.length; i++){
+		var id = arguments[i];
+		if(typeof(id)=="number")id = "jmolCheckbox" + id;
+		checkboxItem = document.getElementById(id);
+		if (!checkboxItem)alert("jmolSetCheckboxGroup: group checkbox not found: " + id);
+		m.chkGroup[id] = checkboxItem;
+		_jmol.checkboxItems[id] = m;
+	}
+}
+
+function _jmolNotifyMaster(m){
+	//called when a group item is checked
+	var allOn = true;
+	var allOff = true;
+	for (var chkBox in m.chkGroup){
+		if(m.chkGroup[chkBox].checked)
+			allOff = false;
+		else
+			allOn = false;
+	}
+	if (allOn)m.chkMaster.checked = true;	
+	if (allOff)m.chkMaster.checked = false;
+	if ((allOn || allOff) && _jmol.checkboxItems[m.chkMaster.id])
+		_jmolNotifyMaster(_jmol.checkboxItems[m.chkMaster.id])
+}
+
+function _jmolNotifyGroup(m, isOn){
+	//called when a master item is checked
+	for (var chkBox in m.chkGroup){
+		var item = m.chkGroup[chkBox]
+		item.checked = isOn;
+		if (_jmol.checkboxMasters[item.id])
+			_jmolNotifyGroup(_jmol.checkboxMasters[item.id], isOn)
+	}
+}
+
 function _jmolCbClick(ckbox, whenChecked, whenUnchecked, targetSuffix) {
   _jmolClick(ckbox.checked ? whenChecked : whenUnchecked, targetSuffix);
+  if(_jmol.checkboxMasters[ckbox.id])
+	_jmolNotifyGroup(_jmol.checkboxMasters[ckbox.id], ckbox.checked)
+  if(_jmol.checkboxItems[ckbox.id])
+	_jmolNotifyMaster(_jmol.checkboxItems[ckbox.id])
 }
 
 function _jmolCbOver(ckbox, whenChecked, whenUnchecked) {

@@ -80,12 +80,12 @@
 				</ul>
 			</p>
 		</section>
-		<section title="La versión 11 de Jmol en pruebas beta">
+		<section title="La versión 11 de Jmol">
 			<p>
-	Jmol v10.2 es la última versión oficial y estable.
+	Jmol v11.0 es la última versión oficial y estable.
 	<br/>
-	La nueva versión 11 de Jmol está en fase de pruebas (beta). 
-	Puedes conseguir una versión preliminar en la página de descargas.
+	Puedes conseguir también versiones preliminares, que están en desarrollo
+	para ampliar la funcionalidad, en la página de descargas.
       </p>
 		</section>
 		<section title="¿Qué dice la crítica?">
@@ -104,7 +104,7 @@
 	Diciembre de 2004.
       </blockquote>
 		</section>
-		<section title="Prestaciones de Jmol v11">
+		<section title="Prestaciones de Jmol">
 			<ul>
 				<li>
 	  Software gratuito y de código abierto autorizado bajo la 
@@ -153,7 +153,7 @@
 	  Representación gráfica tridimensional de alto rendimiento sin requisitos de hardware
 	</li>
 				<li>
-	  Formatos de archivo (actualizados a Jmol v11):
+	  Formatos de archivo:
 	  <ul>
 						<li>
 							<a href="http://journals.iucr.org/c/services/cifguide.html">

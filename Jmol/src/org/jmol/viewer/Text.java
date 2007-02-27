@@ -543,7 +543,7 @@ class Text {
       lines[0] = text;
       return lines;
     }
-    int len = text.length();
+    int len = text.length() - 1;
     for (; i < len; i++)
       if (text.charAt(i) == ch)
         n++;
@@ -551,11 +551,14 @@ class Text {
     i = 0;
     len = 0;
     int pt = 0;
-    for (; (len = text.indexOf(ch, i)) >= 0;) {
+    for (; (len = text.indexOf(ch, i)) >= 0 && pt + 1 < n;) {
       lines[pt++] = text.substring(i, len);
       i = len + 1;
     }
-    lines[pt] = text.substring(i, text.length());
+    len = text.length();
+    if (text.charAt(len - 1) == ch)
+      len--;
+    lines[pt] = text.substring(i, len);
     return lines;
   }
   

@@ -1274,7 +1274,7 @@ class Compiler {
     for (int i = 0; i < 2; i++) {
       if (!addNextTokenIf(Token.leftsquare))
         break;
-      if (!clauseMath())
+      if (!clauseItemSelector())
         return false;
       if (!addNextTokenIf(Token.rightsquare))
         return rightBracketExpected();
@@ -1436,7 +1436,7 @@ class Compiler {
     return true;
   }
 
-  private boolean clauseMath() {
+  private boolean clauseItemSelector() {
     int tok;
     while ((tok = tokPeek()) != Token.nada && tok != Token.rightsquare) {
       if (!clauseOr(false))
@@ -1445,7 +1445,7 @@ class Compiler {
       if (tokPeek() != Token.asterisk)
         tokenNext();
       tok = tokPeek();
-      //System.out.println ("clausemath" + Integer.toHexString(tok) + " " + Integer.toHexString(Token.mathop));
+      //System.out.println ("clauseItemSelector" + Integer.toHexString(tok) + " " + Integer.toHexString(Token.mathop));
       if (tok == Token.rightsquare || !tokAttr(tok, Token.mathop))
         break;
       if (tok != Token.leftparen)

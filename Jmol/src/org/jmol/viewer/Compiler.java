@@ -328,7 +328,7 @@ class Compiler {
             if (isBond)
               addTokenToPrefix(new Token(Token.bitset, new BondSet(bs)));
             else
-            addTokenToPrefix(new Token(Token.bitset, bs));
+              addTokenToPrefix(new Token(Token.bitset, bs));
             continue;
           }
         }
@@ -934,14 +934,14 @@ class Compiler {
   int itokenInfix;
   boolean isCoordinate;
   boolean isEmbeddedExpression;
-  
+  boolean isCommaAsOrAllowed;
   
   private boolean compileCommand() {
     tokenCommand = (Token) ltoken.firstElement();
     tokCommand = tokenCommand.tok;
     isSetOrIf =  (tokCommand == Token.set || tokCommand == Token.ifcmd);
     isSetOrDefine = (tokCommand == Token.set || tokCommand == Token.define);
-    
+    isCommaAsOrAllowed = tokAttr(tokCommand, Token.expressionCommand);
     int size = ltoken.size();
     if (size == 1 && tokenCommand.intValue != Integer.MAX_VALUE && tokAttr(tokenCommand.intValue, Token.onDefault1))
       addTokenToPrefix(Token.tokenOn);
@@ -965,9 +965,8 @@ class Compiler {
         Token.expressionCommand, Token.embeddedExpression));
 
     if (!tokAttr(tokCommand, Token.coordOrSet)) {
-      // $ or { at beginning disallow expression checking for center command
-      int firstTok = (size == 1 ? Token.nada : atokenInfix[1].tok);
-      if (tokCommand == Token.center && (firstTok == Token.leftbrace || firstTok == Token.dollarsign))
+      // $ at beginning disallow expression checking for center command
+      if (tokCommand == Token.center && tokAt(1) == Token.dollarsign)
         checkExpression = false;
     }
     if (checkExpression && !compileExpression())
@@ -1008,9 +1007,10 @@ class Compiler {
       int pt = ltokenPostfix.size();
       addTokenToPostfix(Token.tokenExpressionBegin);
       isCoordinate = false;
-      if (!clauseOr(!isSetOrIf))
+      if (!clauseOr(isCommaAsOrAllowed || !isSetOrIf
+          && tokPeek(Token.leftparen)))
         return false;
-      if (isCoordinate && isSetOrIf) {
+      if (isCoordinate && (isSetOrIf || isEmbeddedExpression)) {
         ltokenPostfix.set(pt, Token.tokenCoordinateBegin);
         addTokenToPostfix(Token.tokenCoordinateEnd);
       } else {
@@ -1025,7 +1025,7 @@ class Compiler {
   }
 
   private boolean isExpressionNext() {
-    return tokPeek(isSetOrIf ? Token.leftbrace : Token.leftparen);
+    return tokPeek(Token.leftbrace) || !isSetOrIf && tokPeek(Token.leftparen);
   }
 
   private static boolean tokAttrOr(int a, int b1, int b2) {
@@ -1038,6 +1038,10 @@ class Compiler {
   
   private boolean moreTokens() {
     return (itokenInfix < atokenInfix.length);
+  }
+  
+  private int tokAt(int i) {
+    return (itokenInfix < atokenInfix.length ? atokenInfix[i].tok : Token.nada);
   }
   
   private int tokPeek() {
@@ -1182,6 +1186,16 @@ class Compiler {
   private boolean clausePrimitive() {
     int tok = tokPeek();
     switch (tok) {
+    case Token.hyphen: // selecting a negative residue spec
+    case Token.seqcode:
+    case Token.asterisk:
+    case Token.leftsquare:
+    case Token.identifier:
+    case Token.colon:
+    case Token.percent:
+      if (clauseResidueSpec())
+        return true;
+      //fall through for identifier specifically
     default:
       if (tokAttr(tok, Token.atomproperty))
         return clauseComparator();
@@ -1192,6 +1206,12 @@ class Compiler {
     case Token.none:
     case Token.bitset:
       return addNextToken();
+    case Token.integer:
+      if (clauseResidueSpec())
+        return true;
+    case Token.slash:
+      addNextToken();
+      return true;
     case Token.string:
       haveString = true;
       return addNextToken();
@@ -1224,19 +1244,6 @@ class Compiler {
     case Token.decimal:
       return addTokenToPostfix(new Token(Token.spec_model2,
           getToken().intValue, theValue));
-    case Token.hyphen: // selecting a negative residue spec
-    case Token.integer:
-    case Token.seqcode:
-    case Token.asterisk:
-    case Token.leftsquare:
-    case Token.identifier:
-    case Token.colon:
-    case Token.percent:
-      if (clauseResidueSpec())
-        return true;
-    case Token.slash:
-      if (clauseResidueSpec())
-        return true;
     case Token.leftparen:
       addNextToken();
       if (!clauseOr(true))
@@ -1246,26 +1253,21 @@ class Compiler {
       return checkForMath();
     case Token.leftbrace:
       isCoordinate = false;
-      if (isSetOrIf)
+      if (isSetOrIf || isEmbeddedExpression)
         tokenNext();
       else
         addNextToken();
       if (!clauseOr(false))
         return false;
-      if (tokPeek() != Token.rightbrace) {
-        addNextTokenIf(Token.comma);
-        if (!clauseOr(false))
-          return false;
-        addNextTokenIf(Token.comma);
-        if (!clauseOr(false))
-          return false;
-        addNextTokenIf(Token.comma);
-        clauseOr(false);
-        if (tokPeek() != Token.rightbrace)
-          return rightBraceExpected();
-        isCoordinate = true;
+      int n = 1;
+      while (!tokPeek(Token.rightbrace)) {
+          boolean haveComma = addNextTokenIf(Token.comma);
+          if (!clauseOr(false))
+            return (haveComma || n < 3? false : rightBraceExpected());
+          n++;
       }
-      if (isSetOrIf)
+      isCoordinate = (n > 2);
+      if (isSetOrIf || isEmbeddedExpression)
         tokenNext();
       else
         addNextToken();
@@ -1751,24 +1753,23 @@ class Compiler {
 
   private boolean clauseModelSpec() {
     getToken();
-    if (isToken(Token.colon) || isToken(Token.slash))
+    if (tokPeek(Token.asterisk)) {
       getToken();
-    if (isToken(Token.asterisk))
       return true;
-    if (isToken(Token.nada) || theToken == null)
-      return invalidModelSpecification();
-    switch (theToken.tok) {
-    case Token.decimal:
-      return generateResidueSpecCode(new Token(Token.spec_model,
-          theToken.intValue, null));
-    case Token.integer:
-      break;
-    default:
-      return invalidModelSpecification();
     }
-    //integer implies could be model number
-    return generateResidueSpecCode(new Token(Token.spec_model, new Integer(
-        theToken.intValue)));
+    switch (tokPeek()) {
+    case Token.integer:
+      return generateResidueSpecCode(new Token(Token.spec_model, new Integer(
+          getToken().intValue)));
+    case Token.decimal:
+            return generateResidueSpecCode(new Token(Token.spec_model,
+          getToken().intValue, theValue));
+    case Token.comma:
+    case Token.rightbrace:
+    case Token.nada:
+      return generateResidueSpecCode(new Token(Token.spec_model, new Integer(1)));
+    }
+    return invalidModelSpecification();
   }
 
   private boolean clauseAtomSpec() {

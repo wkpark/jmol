@@ -1114,11 +1114,11 @@ class Eval { //implements Runnable {
       case Token.expressionEnd:
         break expression_loop;
       case Token.leftbrace:
-        if (isCoordinate3(pc)) {
-          Point3f pt = getCoordinate(pc, true);
+        if (isPoint3f(pc)) {
+          Point3f pt = getPoint3f(pc, true);
           if (pt != null) {
             rpn.addX(pt);
-            pc = iToken + 1;
+            pc = iToken;
             break;
           }
         }
@@ -1256,7 +1256,7 @@ class Eval { //implements Runnable {
           pc = iToken;
           break;
         } else if (val.equals("coord")) {
-          rpn.addX(getCoordinate(pc + 2, true));
+          rpn.addX(getPoint3f(pc + 2, true));
           pc = iToken;
           break;
         }
@@ -1860,10 +1860,17 @@ class Eval { //implements Runnable {
     switch (getToken(i).tok) {
     case Token.bitset:
     case Token.expressionBegin:
+      if (tokAt(i + 1) == Token.leftbrace) {
+        Point3f pt = getPoint3f(i + 1, true);
+        iToken++;
+        if (tokAt(iToken)!= Token.expressionEnd)
+          invalidArgument();
+        return pt;
+      }
       return viewer.getAtomSetCenter(expression(i));
     case Token.leftbrace:
     case Token.point3f:
-      return getCoordinate(i, true);
+      return getPoint3f(i, true);
     }
     invalidArgument();
     //impossible return
@@ -1967,7 +1974,7 @@ class Eval { //implements Runnable {
         }
         break;
       case Token.leftbrace:
-        if (!isCoordinate3(i))
+        if (!isPoint3f(i))
           return getPoint4f(i);
       //fall through
       case Token.bitset:
@@ -2005,7 +2012,7 @@ class Eval { //implements Runnable {
         evalError(GT._("No unit cell"));
     Vector3f vAB = new Vector3f();
     Vector3f vAC = new Vector3f();
-    Point3f pt = getCoordinate(i, true, false, true);
+    Point3f pt = (Point3f) getPointOrPlane(i, false, true, false, true, 3, 3);
     Point3f pt1 = new Point3f(pt.x == 0 ? 1 : 1 / pt.x, 0, 0);
     Point3f pt2 = new Point3f(0, pt.y == 0 ? 1 : 1 / pt.y, 0);
     Point3f pt3 = new Point3f(0, 0, pt.z == 0 ? 1 : 1 / pt.z);
@@ -2208,11 +2215,11 @@ class Eval { //implements Runnable {
 
   boolean coordinatesAreFractional;
 
-  boolean isCoordinate3(int i) {
+  boolean isPoint3f(int i) {
     ignoreError = true;
     boolean isOK = true;
     try {
-      getCoordinate(i, true, true, false);
+      getPoint3f(i, true);
     } catch (Exception e) {
       isOK = false;
     }
@@ -2220,83 +2227,78 @@ class Eval { //implements Runnable {
     return isOK;
   }
 
-  Point3f getCoordinate(int i, boolean allowFractional) throws ScriptException {
-    return getCoordinate(i, allowFractional, true, false);
-  }
-
-  Point3f getCoordinate(int i, boolean allowFractional, boolean doConvert,
-                        boolean implicitFractional) throws ScriptException {
-    // syntax:  {1/2, 1/2, 1/3} or {0.5/, 0.5, 0.5}
-    // ONE fractional sign anywhere is enough to make ALL fractional;
-    // denominator of 1 can be implied;
-    // commas not necessary if denominator is present or not a fraction
-    coordinatesAreFractional = implicitFractional;
-    if (!checkToken(i))
-      coordinateExpected();
-    if (getToken(i).tok == Token.point3f) {
-      return (Point3f) theToken.value;  
-    }
-    i++;
-    if (theTok != Token.leftbrace)
-      coordinateExpected();
-    Point3f pt = new Point3f();
-    out: for (int j = i; j + 1 < statementLength; j++) {
-      switch (statement[j].tok) {
-      case Token.slash:
-        coordinatesAreFractional = true;
-      case Token.rightbrace:
-        break out;
-      }
-    }
-    if (coordinatesAreFractional && !allowFractional)
-      evalError(GT._("fractional coordinates are not allowed in this context"));
-    pt.x = coordinateValue(i);
-    pt.y = coordinateValue(++iToken);
-    pt.z = coordinateValue(++iToken);
-    if (getToken(++iToken).tok != Token.rightbrace)
-      coordinateExpected();
-    if (coordinatesAreFractional && doConvert)
-      viewer.toCartesian(pt);
-    return pt;
+  Point3f getPoint3f(int i, boolean allowFractional) throws ScriptException {
+    return (Point3f) getPointOrPlane(i, false, allowFractional, true, false, 3, 3);
   }
 
   Point4f getPoint4f(int i) throws ScriptException {
-    coordinatesAreFractional = false;
-    if (!checkToken(i) || getToken(i++).tok != Token.leftbrace)
-      coordinateExpected();
-    Point4f pt = new Point4f();
-    out: for (int j = i; j + 1 < statementLength; j++) {
-      switch (statement[j].tok) {
-      case Token.slash:
-        coordinatesAreFractional = true;
-      case Token.rightbrace:
-        break out;
-      }
-    }
-    if (coordinatesAreFractional)
-      evalError(GT._("fractional coordinates are not allowed in this context"));
-    pt.x = coordinateValue(i);
-    pt.y = coordinateValue(++iToken);
-    pt.z = coordinateValue(++iToken);
-    pt.w = coordinateValue(++iToken);
-    if (getToken(++iToken).tok != Token.rightbrace)
-      coordinateExpected();
-    return pt;
+    return (Point4f) getPointOrPlane(i, false, false, false, false, 4, 4);
   }
 
-  float coordinateValue(int i) throws ScriptException {
-    // includes support for fractional coordinates
-    float val = floatParameter(i++);
-    getToken(i);
-    if (theTok == Token.slash) {
-      getToken(++i);
-      if (theTok == Token.integer || theTok == Token.decimal) {
-        val /= floatParameter(i++);
-        getToken(i);
+  Object getPointOrPlane(int index, boolean integerOnly, boolean allowFractional, boolean doConvert,
+                          boolean implicitFractional,
+                          int minDim, int maxDim) throws ScriptException {
+    // { x y z } or {a/b c/d e/f} are encoded now as seqcodes and model numbers
+    // so we decode them here. It's a bit of a pain, but it isn't too bad.
+    float[] coord = new float[6];
+    int n = 0;
+    coordinatesAreFractional = implicitFractional;
+    out: for (int i = index; i < statement.length; i++) {
+      switch (getToken(i).tok) {
+      case Token.leftbrace:
+      case Token.comma:
+      case Token.opOr:
+      case Token.opAnd:
+        break;
+      case Token.rightbrace:
+        break out;
+      case Token.integer:
+        if (n == 6)
+          invalidArgument();
+        coord[n++] = theToken.intValue;
+        break;
+      case Token.spec_seqcode:
+        if (n == 6)
+          invalidArgument();
+        coord[n++] = ((Integer) theToken.value).intValue() * (theToken.intValue > 0 ? 1 : -1);
+        break;
+      case Token.spec_model: // after a slash
+        n--;
+        if (n < 0 || integerOnly)
+          invalidArgument();
+        if (theToken.value instanceof Integer)
+           coord[n++] /= ((Integer) theToken.value).intValue();
+        else 
+          coord[n++] /= ((Float) theToken.value).floatValue();          
+        coordinatesAreFractional = true;
+        break;
+      case Token.decimal:
+      case Token.spec_model2:
+        if (integerOnly)
+          invalidArgument();
+        if (n == 6)
+          invalidArgument();
+        coord[n++] = ((Float) theToken.value).floatValue();
+        break;
+      default:
+        invalidArgument();
       }
     }
-    iToken = (theTok == Token.comma ? i : i - 1);
-    return val;
+    if (n < minDim || n > maxDim)
+      invalidArgument();
+    if (n == 3) {
+      Point3f pt = new Point3f(coord[0], coord[1], coord[2]);
+      if (coordinatesAreFractional && doConvert && !isSyntaxCheck)
+        viewer.toCartesian(pt);
+      System.out.println(pt);
+      return pt;
+    }
+    if (n == 4) {
+      if (coordinatesAreFractional) // no fractional coordinates for planes (how to convert?)
+        invalidArgument();
+      return new Point4f(coord[0], coord[1], coord[2], coord[3]);
+    }
+    return coord;
   }
 
   int theTok;
@@ -2360,8 +2362,8 @@ class Eval { //implements Runnable {
     case Token.point3f:
     case Token.leftbrace:
       // {X, Y, Z} deg or {x y z deg}
-      if (isCoordinate3(i)) {
-        pt = getCoordinate(i, true);
+      if (isPoint3f(i)) {
+        pt = getPoint3f(i, true);
         i = iToken + 1;
         degrees = floatParameter(i++);
       } else {
@@ -2515,7 +2517,7 @@ class Eval { //implements Runnable {
           invalidArgument(); // for now
         case Token.point3f:
         case Token.leftbrace:
-          rotAxis.set(getCoordinate(i, true));
+          rotAxis.set(getPoint3f(i, true));
           i = iToken + 1;
           break;
         }
@@ -3323,7 +3325,7 @@ class Eval { //implements Runnable {
       }
       int tok = tokAt(i);
       if (tok == Token.leftbrace || tok == Token.point3f) {
-        unitCells = getCoordinate(i, false);
+        unitCells = getPoint3f(i, false);
         i = iToken + 1;
         params[1] = (int) unitCells.x;
         params[2] = (int) unitCells.y;
@@ -3752,7 +3754,7 @@ class Eval { //implements Runnable {
       case Token.leftbrace:
       case Token.point3f:
         // {X, Y, Z}
-        Point3f pt = getCoordinate(i, true);
+        Point3f pt = getPoint3f(i, true);
         i = iToken;
         if (isAxisAngle) {
           if (axesOrientationRasmol)
@@ -4065,7 +4067,7 @@ class Eval { //implements Runnable {
 
   void translateSelected() throws ScriptException {
     // translateSelected {x y z}
-    Point3f pt = getCoordinate(1, true);
+    Point3f pt = getPoint3f(1, true);
     if (!isSyntaxCheck)
       viewer.setAtomCoordRelative(pt);
   }
@@ -4607,7 +4609,7 @@ class Eval { //implements Runnable {
       case Token.leftbrace:
       case Token.point3f:
         // {X, Y, Z}
-        Point3f pt = getCoordinate(i, true);
+        Point3f pt = getPoint3f(i, true);
         i = iToken;
         propertyName = (iHaveAtoms || iHaveCoord ? "endCoord" : "startCoord");
         propertyValue = pt;
@@ -5317,7 +5319,7 @@ class Eval { //implements Runnable {
           int i = intParameter(2);
           pt = new Point3f(i, i, i);
         } else {
-          pt = (Point3f) getSetCoordinate(2, false, false, 3);
+          pt = (Point3f) getPointOrPlane(2, false, false, false, false, 3, 3);
         }
         if (!isSyntaxCheck)
           viewer.setDefaultLattice(pt);
@@ -5482,7 +5484,7 @@ class Eval { //implements Runnable {
         }
         break;
       case Token.leftbrace:
-        v = getSetCoordinate(i, false, true, 4);
+        v = getPointOrPlane(i, false, true, true, false, 4, 4);
         i = iToken;
         break;
       case Token.expressionBegin:
@@ -5845,57 +5847,9 @@ class Eval { //implements Runnable {
       return;
     }
     // .xyz here?
-    Point3f pt = (index == 1 ? getCoordinate(1, true, false, true)
-        : (Point3f) getSetCoordinate(2, false, false, 3));
+    Point3f pt = (Point3f) getPointOrPlane(2, false, true, false, true, 3, 3);
     if (!isSyntaxCheck)
       viewer.setCurrentUnitCellOffset(pt);
-  }
-
-   Object getSetCoordinate(int index, boolean integerOnly, boolean doConvert,
-                          int max3or4) throws ScriptException {
-    // { x y z } or {a/b c/d e/f} are encoded in SET commands as seqcodes and model numbers
-    // so we decode them here. It's a bit of a pain, but it isn't too bad.
-    float[] coord = new float[4];
-    int n = -1;
-    coordinatesAreFractional = false;
-    out: for (int i = index; i < statement.length; i++) {
-      switch (getToken(i).tok) {
-      case Token.rightbrace:
-        break out;
-      case Token.spec_seqcode:
-        if (++n == max3or4)
-          invalidArgument();
-        coord[n] = ((Integer) theToken.value).intValue();
-        break;
-      case Token.spec_model:
-        if (integerOnly)
-          invalidArgument();
-        if (n > 2) // no fractional coordinates for planes
-          invalidArgument();
-        coord[n] /= ((Integer) theToken.value).intValue();
-        coordinatesAreFractional = true;
-        break;
-      case Token.spec_model2:
-        if (integerOnly)
-          invalidArgument();
-        if (++n == max3or4)
-          invalidArgument();
-        coord[n] = ((Float) theToken.value).floatValue();
-        break;
-      }
-    }
-    if (n < 2) {
-      invalidArgument();
-    } else if (n == 2) {
-      Point3f pt = new Point3f(coord[0], coord[1], coord[2]);
-      if (coordinatesAreFractional && doConvert && !isSyntaxCheck)
-        viewer.toCartesian(pt);
-      return pt;
-    } else if (n == 3) {
-      return new Point4f(coord[0], coord[1], coord[2], coord[3]);
-    }
-    // impossible return
-    return "";
   }
 
   void setFrank(int index) throws ScriptException {
@@ -6958,7 +6912,7 @@ class Eval { //implements Runnable {
           break;
         }
         if (str.equalsIgnoreCase("OFFSET")) {
-          Point3f pt = getCoordinate(++i, true);
+          Point3f pt = getPoint3f(++i, true);
           i = iToken;
           propertyName = "offset";
           propertyValue = pt;
@@ -7021,7 +6975,7 @@ class Eval { //implements Runnable {
       case Token.leftbrace:
       case Token.point3f:
         // {X, Y, Z}
-        Point3f pt = getCoordinate(i, true);
+        Point3f pt = getPoint3f(i, true);
         i = iToken;
         propertyName = "coord";
         propertyValue = pt;
@@ -7594,7 +7548,7 @@ class Eval { //implements Runnable {
         }
         if (str.equalsIgnoreCase("ANISOTROPY")) {
           propertyName = "anisotropy";
-          propertyValue = getCoordinate(++i, false);
+          propertyValue = getPoint3f(++i, false);
           i = iToken;
           break;
         }
@@ -7730,7 +7684,7 @@ class Eval { //implements Runnable {
           if (getToken(++i).tok != Token.string)
             invalidArgument();
           v.add(statement[i++].value);
-          v.add(getCoordinate(i, false));
+          v.add(getPoint3f(i, false));
           v.add(getPoint4f(++iToken));
           v.add(getPoint4f(++iToken));
           v.add(getPoint4f(++iToken));
@@ -8052,10 +8006,6 @@ class Eval { //implements Runnable {
   String objectNameExpected() throws ScriptException {
     evalError(GT._("object name expected after '$'"));
     return "";
-  }
-
-  private void coordinateExpected() throws ScriptException {
-    evalError(GT._("{ number number number } expected"));
   }
 
   private void coordinateOrNameOrExpressionRequired() throws ScriptException {

@@ -1134,6 +1134,36 @@ class Eval { //implements Runnable {
         isInMath = false;
         rpn.addOp(instruction);
         break;
+      case Token.identifier:
+        val = viewer.getParameter((String) value);
+        if (val instanceof String)
+          val = getStringObjectAsToken("" + val);
+        if (val instanceof String)        
+          val = lookupIdentifierValue((String) value);        
+        rpn.addX(val);
+        break;
+      case Token.string:
+        val = (String) value;
+        rpn.addX(instruction);
+        if (val.equals("plane")) {
+          rpn.addX(new Token(Token.point4f, planeParameter(pc + 2)));
+          pc = iToken;
+          break;
+        } else if (val.equals("hkl")) {
+          rpn.addX(new Token(Token.point4f, hklParameter(pc + 2)));
+          pc = iToken;
+          break;
+        } else if (val.equals("coord")) {
+          rpn.addX(getPoint3f(pc + 2, true));
+          pc = iToken;
+          break;
+        }
+        break;
+      case Token.within:
+      case Token.substructure:
+      case Token.connected:
+        rpn.addOp(instruction);
+        break;
       case Token.all:
         rpn.addX(bsAll());
         break;
@@ -1233,34 +1263,6 @@ class Eval { //implements Runnable {
       case Token.sidechain:
       case Token.surface:
         rpn.addX(lookupIdentifierValue((String) value));
-        break;
-      case Token.identifier:
-        val = getStringObjectAsToken("" + viewer.getParameter((String) value));
-        if (val instanceof String)
-          val = lookupIdentifierValue((String) value);        
-        rpn.addX(val);
-        break;
-      case Token.within:
-      case Token.substructure:
-      case Token.connected:
-        rpn.addOp(instruction);
-        break;
-      case Token.string:
-        val = (String) value;
-        rpn.addX(instruction);
-        if (val.equals("plane")) {
-          rpn.addX(new Token(Token.point4f, planeParameter(pc + 2)));
-          pc = iToken;
-          break;
-        } else if (val.equals("hkl")) {
-          rpn.addX(new Token(Token.point4f, hklParameter(pc + 2)));
-          pc = iToken;
-          break;
-        } else if (val.equals("coord")) {
-          rpn.addX(getPoint3f(pc + 2, true));
-          pc = iToken;
-          break;
-        }
         break;
       case Token.opLT:
       case Token.opLE:

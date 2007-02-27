@@ -453,6 +453,10 @@ class Compiler {
     return (ch == ';' || ch == '\r' || ch == '\n');  
   }
   
+  static boolean isOneOf(String key, String semiList) {
+    return (';' + semiList + ';').indexOf(';' + key + ';') >= 0;
+  }
+
   private boolean lookingAtLeadingWhitespace() {
     //log("lookingAtLeadingWhitespace");
     int ichT = ichToken;
@@ -1337,7 +1341,7 @@ class Compiler {
         //distance was specified, but to what?
         getToken();
         key = ((String) theValue).toLowerCase();
-        if (";plane;hkl;coord;".indexOf(";" + key + ";") >= 0) {
+        if (isOneOf(key, "plane;hkl;coord")) {
           addTokenToPostfix(new Token(Token.string, key));
         } else {
           returnToken();
@@ -1347,7 +1351,7 @@ class Compiler {
           }
         }
       }
-      if (";plane;hkl;coord;".indexOf(";" + key + ";") >= 0)
+      if (isOneOf(key, "plane;hkl;coord"))
         isCoordOrPlane = true;
       addNextTokenIf(Token.comma);
       if (isCoordOrPlane) {

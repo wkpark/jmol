@@ -6490,8 +6490,8 @@ class Eval { //implements Runnable {
       else
         type = "XYZ";
     }
-    boolean isImage = isOneOf(type, "JPEG;JPG64;JPG;PPM;PNG");
-    if (!isImage && !isOneOf(type, "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB"))
+    boolean isImage = Compiler.isOneOf(type, "JPEG;JPG64;JPG;PPM;PNG");
+    if (!isImage && !Compiler.isOneOf(type, "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB"))
       evalError(GT._("write what? {0} or {1} \"filename\"", new Object[] {
           "STATE|HISTORY|IMAGE|ISOSURFACE|MO CLIPBOARD|VAR x|DATA",
           "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB" }));
@@ -8715,14 +8715,14 @@ class Eval { //implements Runnable {
       float distance = 0;
       boolean isSequence = false;
       if (withinSpec instanceof String)
-        isSequence = !isOneOf(withinStr, "element;site;group;chain;molecule;model");
+        isSequence = !Compiler.isOneOf(withinStr, "element;site;group;chain;molecule;model");
       else if (withinSpec instanceof Float)
         distance = Token.fValue(args[0]);
       else
         return false;
       if (args.length == 3) {
         withinStr = Token.sValue(args[1]);
-        if (!isOneOf(withinStr,"plane;hkl;coord"))
+        if (!Compiler.isOneOf(withinStr,"plane;hkl;coord"))
           return false;
       }
       if (isSyntaxCheck)
@@ -9090,9 +9090,4 @@ class Eval { //implements Runnable {
     }
 
   }
-  
-  static boolean isOneOf(String key, String semiList) {
-    return (";" + semiList + ";").indexOf(";" + key + ";") >= 0;
-  }
-
 }

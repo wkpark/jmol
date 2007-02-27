@@ -679,6 +679,8 @@ class Compiler {
     int ichT = ichToken;
     while (ichT < cchScript && !eol(script.charAt(ichT)))
       ++ichT;
+    if (ichT > ichToken && script.charAt(ichToken) == '@')
+      return false;
     cchToken = ichT - ichToken;
     log("lookingAtSpecialString cchToken=" + cchToken);
     return cchToken > 0;

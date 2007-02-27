@@ -146,7 +146,6 @@ class Compiler {
   private int ichToken;
   private int cchToken;
   private int iCommand;
-  private Token[] atokenCommand;
 
   private int ichCurrentCommand;
   private boolean isNewSet;
@@ -200,7 +199,7 @@ class Compiler {
           }
           lineNumbers[iCommand] = lineCurrent;
           lineIndices[iCommand] = ichCurrentCommand;
-          lltoken.addElement(atokenCommand);
+          lltoken.addElement(atokenInfix);
           ltoken.setSize(0);
           tokCommand = Token.nada;
           iHaveQuotedString = false;
@@ -929,11 +928,11 @@ class Compiler {
     int size = ltoken.size();
     if (size == 1 && tokenCommand.intValue != Integer.MAX_VALUE && tokAttr(tokenCommand.intValue, Token.onDefault1))
       addTokenToPrefix(Token.tokenOn);
-    atokenCommand = new Token[ltoken.size()];
-    ltoken.copyInto(atokenCommand);
+    atokenInfix = new Token[ltoken.size()];
+    ltoken.copyInto(atokenInfix);
     if (logMessages) {
-      for (int i = 0; i < atokenCommand.length; i++)
-        Logger.debug(i + ": " + atokenCommand[i]);
+      for (int i = 0; i < atokenInfix.length; i++)
+        Logger.debug(i + ": " + atokenInfix[i]);
     }
     
 
@@ -949,7 +948,7 @@ class Compiler {
         Token.expressionCommand, Token.embeddedExpression));
     if (!tokAttr(tokCommand, Token.coordOrSet)) {
       // $ or { at beginning disallow expression checking for center command
-      int firstTok = (size == 1 ? Token.nada : atokenCommand[1].tok);
+      int firstTok = (size == 1 ? Token.nada : atokenInfix[1].tok);
       if (tokCommand == Token.center && (firstTok == Token.leftbrace || firstTok == Token.dollarsign))
         checkExpression = false;
     }
@@ -958,7 +957,7 @@ class Compiler {
 
     //check statement length
 
-    size = atokenCommand.length;
+    size = atokenInfix.length;
 
     int allowedLen = (tokenCommand.intValue & 0x0F) + 1;
     if (!tokAttr(tokenCommand.intValue, Token.varArgCount)) {
@@ -981,25 +980,23 @@ class Compiler {
   boolean isCoordinate;
   
   private boolean compileExpression() {
-    int tokCommand = atokenCommand[0].tok;
+    int tokCommand = atokenInfix[0].tok;
     boolean isMultipleOK = (tokAttr(tokCommand, Token.embeddedExpression));
-    itokenInfix = 1;
-    if (tokCommand == Token.define || tokCommand == Token.set)
-      itokenInfix = 2;
-    if (tokCommand == Token.set && itokenInfix >= atokenCommand.length)
+    int firstToken = (tokCommand == Token.define || tokCommand == Token.set ? 2
+        : 1);
+    if (tokCommand == Token.set && firstToken >= atokenInfix.length)
       return true;
     ltokenPostfix = new Vector();
-    atokenInfix = atokenCommand;
-    for (int i = 0; i < itokenInfix; ++i)
-      addTokenToPostfix(atokenCommand[i]);
-    while (itokenInfix > 0 && itokenInfix < atokenCommand.length) {
-      if (isMultipleOK)
-        while (itokenInfix < atokenCommand.length
-            && atokenCommand[itokenInfix].tok != (isSetOrIf ? Token.leftbrace
-                : Token.leftparen))
-          addTokenToPostfix(atokenCommand[itokenInfix++]);
-      if (itokenInfix == atokenCommand.length)
-        break;
+    itokenInfix = 0;
+    for (int i = 0; i < firstToken && addNextToken(); i++) {
+    }
+    while (moreTokens()) {
+      if (isMultipleOK) {
+        while (!isExpressionNext() && addNextToken()) {
+        }
+        if (!moreTokens())
+          break;
+      }
       int pt = ltokenPostfix.size();
       addTokenToPostfix(Token.tokenExpressionBegin);
       isCoordinate = false;
@@ -1014,9 +1011,13 @@ class Compiler {
       if (itokenInfix != atokenInfix.length && !isMultipleOK)
         return endOfExpressionExpected();
     }
-    atokenCommand = new Token[ltokenPostfix.size()];
-    ltokenPostfix.copyInto(atokenCommand);
+    atokenInfix = new Token[ltokenPostfix.size()];
+    ltokenPostfix.copyInto(atokenInfix);
     return true;
+  }
+
+  private boolean isExpressionNext() {
+    return tokPeek(isSetOrIf ? Token.leftbrace : Token.leftparen);
   }
 
   private static boolean tokAttrOr(int a, int b1, int b2) {
@@ -1027,20 +1028,24 @@ class Compiler {
     return token != null && (token.tok & tok) == tok;
   }
   
+  private boolean moreTokens() {
+    return (itokenInfix < atokenInfix.length);
+  }
+  
   private int tokPeek() {
-    if (itokenInfix == atokenInfix.length)
+    if (itokenInfix >= atokenInfix.length)
       return Token.nada;
     return atokenInfix[itokenInfix].tok;
   }
 
   private boolean tokPeek(int tok) {
-    if (itokenInfix == atokenInfix.length)
+    if (itokenInfix >= atokenInfix.length)
       return false;
     return (atokenInfix[itokenInfix].tok == tok);
   }
 
   private int intPeek() {
-    if (itokenInfix == atokenInfix.length)
+    if (itokenInfix >= atokenInfix.length)
       return Integer.MAX_VALUE;
     return atokenInfix[itokenInfix].intValue;    
   }
@@ -1050,7 +1055,7 @@ class Compiler {
    * @return the next token
    */
   private Token tokenNext() {
-    if (itokenInfix == atokenInfix.length)
+    if (itokenInfix >= atokenInfix.length)
       return null;
     return atokenInfix[itokenInfix++];
   }
@@ -1781,9 +1786,9 @@ class Compiler {
   }
 
   private boolean compileColorParam() {
-    for (int i = 1; i < atokenCommand.length; ++i) {
-      theToken = atokenCommand[i];
-      //Logger.debug(token + " atokenCommand: " + atokenCommand.length);
+    for (int i = 1; i < atokenInfix.length; ++i) {
+      theToken = atokenInfix[i];
+      //Logger.debug(token + " atokenInfix: " + atokenInfix.length);
       if (isToken(Token.dollarsign)) {
         i++; // skip identifier
       } else if (isToken(Token.identifier)) {

@@ -1054,6 +1054,12 @@ class Compiler {
     return atokenInfix[itokenInfix].intValue;    
   }
   
+  private Object valuePeek() {
+    if (moreTokens())
+      return atokenInfix[itokenInfix].value;
+    return "";
+  }
+ 
   /**
    * increments the pointer; does NOT set theToken or theValue
    * @return the next token
@@ -1121,7 +1127,7 @@ class Compiler {
     return (tokPeek(tok) && addNextToken());
   }
   
-  private boolean addNextTokenIf(int tok, Token token) {
+  private boolean addSubstituteTokenIf(int tok, Token token) {
     if (!tokPeek(tok))
       return false;
     itokenInfix++;
@@ -1140,7 +1146,7 @@ class Compiler {
     while ((tok = tokPeek())== Token.opOr || tok == Token.opXor
         || tok==Token.opToggle|| allowComma && tok == Token.comma) {
       if (tok == Token.comma && !haveString)
-        addNextTokenIf(Token.comma, Token.tokenOr);
+        addSubstituteTokenIf(Token.comma, Token.tokenOr);
       else
         addNextToken();
       if (!clauseAnd())
@@ -1850,9 +1856,7 @@ class Compiler {
   }
 
   private boolean unrecognizedExpressionToken() {
-    String value = (itokenInfix == atokenInfix.length ? ""
-        : atokenInfix[itokenInfix].value.toString());
-    return compileError(GT._("unrecognized expression token: {0}", "" + value));
+    return compileError(GT._("unrecognized expression token: {0}", "" + valuePeek()));
   }
 
   private boolean comparisonOperatorExpected() {

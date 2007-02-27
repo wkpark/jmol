@@ -148,7 +148,7 @@ class Eval { //implements Runnable {
       e.pushContext();
       if (e.loadScript(null, "select (" + atomExpression + ")")) {
         e.statement = e.aatoken[0];
-        bs = e.expression(e.statement, 1, false, false);
+        bs = e.expression(e.statement, 1, false, false, true);
       }
       e.popContext();
     } catch (Exception ex) {
@@ -1067,15 +1067,16 @@ class Eval { //implements Runnable {
 
   Token[] tempStatement;
   boolean isBondSet;
-  
+  Token expressionResult;
+    
   BitSet expression(int index) throws ScriptException {
     if (!checkToken(index))
       badArgumentCount();
-    return expression(statement, index, true, false);
+    return expression(statement, index, true, false, true);
   }
 
   BitSet expression(Token[] code, int pcStart, boolean allowRefresh,
-                    boolean allowUnderflow) throws ScriptException {
+                    boolean allowUnderflow, boolean bsRequired) throws ScriptException {
     //note that this is general -- NOT just statement[]
     //errors reported would improperly access statement/line context
     //there should be no errors anyway, because this is for 
@@ -1324,17 +1325,19 @@ class Eval { //implements Runnable {
           unrecognizedExpression();
       }
     }
-    Token result = rpn.getResult(allowUnderflow);
-    if (result == null) {
+    expressionResult = rpn.getResult(allowUnderflow);
+    if (expressionResult == null) {
       if (allowUnderflow)
         return null;
       if (!isSyntaxCheck)
         rpn.dumpStacks();
       endOfStatementUnexpected();
     }
-    BitSet bs = (result.value instanceof BitSet ? (BitSet) result.value
+    if (!bsRequired && ! (expressionResult.value instanceof BitSet))
+      return null;
+    BitSet bs = (expressionResult.value instanceof BitSet ? (BitSet) expressionResult.value
         : new BitSet());
-    isBondSet = (result.value instanceof BondSet);
+    isBondSet = (expressionResult.value instanceof BondSet);
     if (!ignoreSubset && bsSubset != null && !isBondSet)
       bs.and(bsSubset);
     if (tempStatement != null) {
@@ -1421,7 +1424,7 @@ class Eval { //implements Runnable {
     if (value != null) {
       if (value instanceof Token[]) {
         pushContext();
-        value = expression((Token[]) value, -2, true, false);
+        value = expression((Token[]) value, -2, true, false, true);
         popContext();
         if (!isDynamic)
           variables.put(variable, value);
@@ -1860,14 +1863,12 @@ class Eval { //implements Runnable {
     switch (getToken(i).tok) {
     case Token.bitset:
     case Token.expressionBegin:
-      if (tokAt(i + 1) == Token.leftbrace) {
-        Point3f pt = getPoint3f(i + 1, true);
-        iToken++;
-        if (tokAt(iToken)!= Token.expressionEnd)
-          invalidArgument();
-        return pt;
-      }
-      return viewer.getAtomSetCenter(expression(i));
+      BitSet bs = expression(statement, i, true, false, false);
+      if (bs != null)
+        return viewer.getAtomSetCenter(bs);
+      if (expressionResult.value instanceof Point3f)
+        return (Point3f) expressionResult.value;
+      invalidArgument();
     case Token.leftbrace:
     case Token.point3f:
       return getPoint3f(i, true);
@@ -5488,7 +5489,7 @@ class Eval { //implements Runnable {
         i = iToken;
         break;
       case Token.expressionBegin:
-        v = expression(statement, i, true, true);
+        v = expression(statement, i, true, true, false);
         i = iToken;
         break;
       case Token.rightbrace:

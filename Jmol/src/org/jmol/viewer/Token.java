@@ -250,7 +250,7 @@ public class Token {
     case Token.point4f:
       return StateManager.escape((Point4f) x.value);
     case Token.bitset:
-      return StateManager.escape((BitSet) x.value);
+      return StateManager.escape((BitSet) x.value, !(x.value instanceof BondSet));
     case Token.list:
       String[] list = (String[]) x.value;
       i = x.intValue;

@@ -976,6 +976,14 @@ class Compiler {
 
     size = atokenInfix.length;
 
+    int nDefined = 0;
+    for (int i = 1; i < size; i++) {
+      if (tokAt(i) == Token.define)
+        nDefined++;
+    }
+    
+    size -= nDefined;
+    
     int allowedLen = (tokenCommand.intValue & 0x0F) + 1;
     if (!tokAttr(tokenCommand.intValue, Token.varArgCount)) {
       if (size > allowedLen)
@@ -1041,7 +1049,7 @@ class Compiler {
   }
   
   private int tokAt(int i) {
-    return (itokenInfix < atokenInfix.length ? atokenInfix[i].tok : Token.nada);
+    return (i < atokenInfix.length ? atokenInfix[i].tok : Token.nada);
   }
   
   private int tokPeek() {

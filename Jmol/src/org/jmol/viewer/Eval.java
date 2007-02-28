@@ -8918,6 +8918,8 @@ class Eval { //implements Runnable {
           return addX(Token.sValue(x1).equalsIgnoreCase(Token.sValue(x2)));
         return addX(Token.fValue(x1) == Token.fValue(x2));
       case Token.opNE:
+        if (x1.tok == Token.string && x2.tok == Token.string)
+          return addX(!(Token.sValue(x1).equalsIgnoreCase(Token.sValue(x2))));
         return addX(Token.fValue(x1) != Token.fValue(x2));
       case Token.plus:
         if (x1.tok == Token.list) {

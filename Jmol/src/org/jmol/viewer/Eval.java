@@ -2245,6 +2245,16 @@ class Eval { //implements Runnable {
     float[] coord = new float[6];
     int n = 0;
     coordinatesAreFractional = implicitFractional;
+    if (tokAt(index) == Token.point3f) {
+      if (minDim<=3 && maxDim>=3)
+        return (Point3f) getToken(index).value;
+      invalidArgument();
+    }
+    if (tokAt(index) == Token.point4f) {
+      if (minDim<=4 && maxDim>=4)
+        return (Point4f) getToken(index).value;
+      invalidArgument();
+    }
     out: for (int i = index; i < statement.length; i++) {
       switch (getToken(i).tok) {
       case Token.leftbrace:
@@ -5377,6 +5387,8 @@ class Eval { //implements Runnable {
     }
 
     String str = "";
+    boolean showing = (!isSyntaxCheck && scriptLevel <= scriptReportingLevel);
+
 
     if (setParameter(key, val)) {
       if (isSyntaxCheck)
@@ -5397,26 +5409,28 @@ class Eval { //implements Runnable {
       } else if (v instanceof BondSet) {
         setIntProperty(key, Viewer.cardinalityOf((BitSet) v));
         setStringProperty(key + "_set", StateManager.escape((BitSet) v, false));
-        if (!isSyntaxCheck && scriptLevel <= scriptReportingLevel)
+        if (showing)
           viewer.showParameter(key+"_set", true, 60);
       } else if (v instanceof BitSet) {
         setIntProperty(key, Viewer.cardinalityOf((BitSet) v));
         setStringProperty(key + "_set", StateManager.escape((BitSet) v));
-        if (!isSyntaxCheck && scriptLevel <= scriptReportingLevel)
+        if (showing)
           viewer.showParameter(key+"_set", true, 60);
       } else if (v instanceof Point3f) {
         //drawPoint(key, (Point3f) v, false);
         str = StateManager.escape((Point3f) v);
         setStringProperty(key, str);
-        showString("to visualize, use DRAW @" + key);
+        if (showing)
+          showString("to visualize, use DRAW @" + key);
       } else if (v instanceof Point4f) {
         //drawPlane(key, (Point4f) v, false);
         str = StateManager.escape((Point4f) v);
         setStringProperty(key, str);
-        showString("to visualize, use ISOSURFACE PLANE @" + key);
+        if (showing)
+          showString("to visualize, use ISOSURFACE PLANE @" + key);
       }
     }
-    if (!isSyntaxCheck && !tQuiet && scriptLevel <= scriptReportingLevel)
+    if (showing)
       viewer.showParameter(key, true, 60);
   }
 
@@ -5502,7 +5516,7 @@ class Eval { //implements Runnable {
         }
         break;
       case Token.leftbrace:
-        v = getPointOrPlane(i, false, true, true, false, 4, 4);
+        v = getPointOrPlane(i, false, true, true, false, 3, 4);
         i = iToken;
         break;
       case Token.expressionBegin:

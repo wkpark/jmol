@@ -3085,6 +3085,7 @@ public final class Frame {
   }
 
   void loadCoordinates(String data) {
+    bspf = null;
     int[] lines = Parser.markLines(data, ';');
     try {
       int nData = Parser.parseInt(data.substring(0, lines[0] - 1));
@@ -3105,6 +3106,7 @@ public final class Frame {
   void setAtomCoord(int atomIndex, float x, float y, float z) {
     if (atomIndex < 0 || atomIndex >= atomCount)
       return;
+    bspf = null;
     atoms[atomIndex].x = x;
     atoms[atomIndex].y = y;
     atoms[atomIndex].z = z;
@@ -3114,6 +3116,7 @@ public final class Frame {
   void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
     if (atomIndex < 0 || atomIndex >= atomCount)
       return;
+    bspf = null;
     atoms[atomIndex].x += x;
     atoms[atomIndex].y += y;
     atoms[atomIndex].z += z;
@@ -3121,6 +3124,7 @@ public final class Frame {
   }
 
   void setAtomCoordRelative(BitSet atomSet, float x, float y, float z) {
+    bspf = null;
     for (int i = atomCount; --i >= 0;)
       if (atomSet.get(i))
         setAtomCoordRelative(i, x, y, z);
@@ -3132,6 +3136,7 @@ public final class Frame {
   final Point3f ptTemp2 = new Point3f();
   
   void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate, BitSet bsInput, boolean fullMolecule) {
+    bspf = null;
     BitSet bs = (fullMolecule ? getMoleculeBitSet(bsInput) : bsInput);
     matInv.set(matrixRotate);
     matInv.invert();
@@ -3154,6 +3159,7 @@ public final class Frame {
   }
 
   void invertSelected(Point3f pt, Point4f plane, BitSet bs) {
+    bspf = null;
     if (pt != null) {
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i)) {

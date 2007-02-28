@@ -2920,7 +2920,8 @@ class Eval { //implements Runnable {
     int n = viewer.makeConnections(distances[0], distances[1], bondOrder,
         operation, atomSets[0], atomSets[1], bsBonds, isBonds);
     if (isDelete) {
-      viewer.scriptStatus(GT._("{0} connections deleted", n));
+      if (!(tQuiet || scriptLevel > scriptReportingLevel))
+        viewer.scriptStatus(GT._("{0} connections deleted", n));
       return;
     }
     if (isColorOrRadius) {
@@ -2936,8 +2937,8 @@ class Eval { //implements Runnable {
             translucency, bsBonds);
       viewer.selectBonds(null);
     }
-    if (!tQuiet || scriptLevel > scriptReportingLevel)
-    viewer.scriptStatus(GT._("{0} connections modified or created", n));
+    if (!(tQuiet || scriptLevel > scriptReportingLevel))
+      viewer.scriptStatus(GT._("{0} connections modified or created", n));
   }
 
   void getProperty() throws ScriptException {

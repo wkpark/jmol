@@ -291,7 +291,7 @@ public final class ScriptWindow extends JDialog
       boolean isScriptExecuting = viewer.isScriptExecuting();
       strErrorMessage = "";
       if (viewer.checkHalt(strCommand))
-        strErrorMessage = (isScriptExecuting ? "string execution halted with "
+        strErrorMessage = (isScriptExecuting ? "script execution halted with "
             + strCommand : "no script was executing");
       //the problem is that scriptCheck is synchronized, so these might get backed up. 
       if (strErrorMessage.length() > 0) {

@@ -408,7 +408,7 @@ public class Token {
   final static int color        = command |  6 | colorparam | setparam | embeddedExpression;
   final static int connect      = command |  7 | embeddedExpression | colorparam;
   //final static int data         = command |  8; with mathfunc
-  final static int define       = command |  9 | expressionCommand | expression;
+  final static int define       = command |  9 | expressionCommand | expression | setparam;
   final static int dots         = command | 10 | embeddedExpression | bool;
   final static int echo         = command | 11 | setparam | specialstring;
   final static int exit         = command | 12;

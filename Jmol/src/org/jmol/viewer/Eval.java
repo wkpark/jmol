@@ -1097,14 +1097,14 @@ class Eval { //implements Runnable {
     if (ignoreSubset)
       pcStart = -pcStart;
     int pcStop = pcStart + 1;
-    if (logMessages)
-      viewer.scriptStatus("start to evaluate expression");
+//    if (logMessages)
+  //    viewer.scriptStatus("start to evaluate expression");
     expression_loop: for (int pc = pcStart; pc < pcStop; ++pc) {
       iToken = pc;
       Token instruction = code[pc];
       Object value = code[pc].value;
-      if (logMessages)
-        viewer.scriptStatus("instruction=" + instruction);
+      //if (logMessages)
+        //viewer.scriptStatus("instruction=" + instruction);
       switch (instruction.tok) {
       case Token.expressionBegin:
         pcStart = pc;
@@ -1414,8 +1414,8 @@ class Eval { //implements Runnable {
   BitSet lookupValue(String variable, boolean plurals) throws ScriptException {
     if (isSyntaxCheck)
       return new BitSet();
-    if (logMessages)
-      viewer.scriptStatus("lookupValue(" + variable + ")");
+    //if (logMessages)
+      //viewer.scriptStatus("lookupValue(" + variable + ")");
     Object value = variables.get(variable);
     boolean isDynamic = false;
     if (value == null) {
@@ -2269,6 +2269,11 @@ class Eval { //implements Runnable {
           invalidArgument();
         coord[n++] = theToken.intValue;
         break;
+      case Token.spec_seqcode_range:
+        if (n == 6)
+          invalidArgument();
+        coord[n++] = -(theToken.intValue>>8);
+        break;        
       case Token.spec_seqcode:
         if (n == 6)
           invalidArgument();
@@ -2302,12 +2307,15 @@ class Eval { //implements Runnable {
       Point3f pt = new Point3f(coord[0], coord[1], coord[2]);
       if (coordinatesAreFractional && doConvert && !isSyntaxCheck)
         viewer.toCartesian(pt);
+      //System.out.println("getPointOrPlane:" + pt);
       return pt;
     }
     if (n == 4) {
       if (coordinatesAreFractional) // no fractional coordinates for planes (how to convert?)
         invalidArgument();
-      return new Point4f(coord[0], coord[1], coord[2], coord[3]);
+      Point4f plane = new Point4f(coord[0], coord[1], coord[2], coord[3]);
+      //System.out.println("getPointOrPlane:" + plane);
+      return plane;
     }
     return coord;
   }
@@ -8906,6 +8914,8 @@ class Eval { //implements Runnable {
       case Token.opLT:
         return addX(Token.fValue(x1) < Token.fValue(x2));
       case Token.opEQ:
+        if (x1.tok == Token.string && x2.tok == Token.string)
+          return addX(Token.sValue(x1).equalsIgnoreCase(Token.sValue(x2)));
         return addX(Token.fValue(x1) == Token.fValue(x2));
       case Token.opNE:
         return addX(Token.fValue(x1) != Token.fValue(x2));

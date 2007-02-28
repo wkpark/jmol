@@ -1165,8 +1165,13 @@ class Compiler {
         || tok==Token.opToggle|| allowComma && tok == Token.comma) {
       if (tok == Token.comma && !haveString)
         addSubstituteTokenIf(Token.comma, Token.tokenOr);
-      else
+      else {
+        if (isSetOrIf)
+          addTokenToPostfix(Token.tokenExpressionEnd);
         addNextToken();
+        if (isSetOrIf)
+          addTokenToPostfix(Token.tokenExpressionBegin);
+      }
       if (!clauseAnd())
         return false;
     }
@@ -1177,7 +1182,11 @@ class Compiler {
     if (!clauseNot())
       return false;
     while (tokPeek(Token.opAnd)) {
+      if (isSetOrIf)
+        addTokenToPostfix(Token.tokenExpressionEnd);
       addNextToken();
+      if (isSetOrIf)
+        addTokenToPostfix(Token.tokenExpressionBegin);
       if (!clauseNot())
         return false;
     }

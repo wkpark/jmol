@@ -2936,6 +2936,7 @@ class Eval { //implements Runnable {
             translucency, bsBonds);
       viewer.selectBonds(null);
     }
+    if (!tQuiet || scriptLevel > scriptReportingLevel)
     viewer.scriptStatus(GT._("{0} connections modified or created", n));
   }
 

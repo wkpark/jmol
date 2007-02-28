@@ -2348,7 +2348,7 @@ class Eval { //implements Runnable {
   void help() throws ScriptException {
     if (!viewer.isApplet())
       return;
-    String what = (statementLength == 1 ? "" : stringParameter(1));
+    String what = (statementLength == 1 ? "" : parameterAsString(1));
     if (!isSyntaxCheck)
       viewer.getHelp(what);
   }
@@ -3371,7 +3371,7 @@ class Eval { //implements Runnable {
         loadScript.append(" " + StateManager.escape(unitCells));
         int iGroup = -1;
         int[] p;
-        if (i < statementLength && getToken(i).tok == Token.spacegroup) {
+        if (tokAt(i)== Token.spacegroup) {
           ++i;
           String spacegroup = Viewer.simpleReplace(parameterAsString(i++),
               "''", "\"");
@@ -3392,7 +3392,7 @@ class Eval { //implements Runnable {
           p[4] = iGroup;
           params = p;
         }
-        if (i < statementLength && getToken(i).tok == Token.unitcell) {
+        if (tokAt(i) == Token.unitcell) {
           ++i;
           p = new int[11];
           for (int j = 0; j < params.length; j++)
@@ -3898,6 +3898,9 @@ class Eval { //implements Runnable {
     int lineEnd = 0;
     int pcEnd = 0;
     int i = 2;
+    String filename = parameterAsString(1);
+    String theScript = (filename.equalsIgnoreCase("inline") ? parameterAsString(i++)
+        : null);
     boolean loadCheck = true;
     boolean isCheck = false;
     String option = optParameterAsString(i);
@@ -3938,8 +3941,12 @@ class Eval { //implements Runnable {
     if (isCheck)
       isSyntaxCheck = isScriptCheck = true;
     pushContext();
-    String filename = stringParameter(1);
-    if (loadScriptFileInternal(filename)) {
+    boolean isOK;
+    if (theScript != null)
+      isOK = loadScript(null, theScript);
+    else
+      isOK = loadScriptFileInternal(filename);
+    if (isOK) {
       this.pcEnd = pcEnd;
       this.lineEnd = lineEnd;
       while (pc < linenumbers.length && linenumbers[pc] < lineNumber)
@@ -6009,7 +6016,7 @@ class Eval { //implements Runnable {
     int pos = intParameter(i++);
     String type;
     propertyValue = new Integer(pos);
-    if (i < statementLength && statement[i].tok == Token.percent) {
+    if (tokAt(i) == Token.percent) {
       type = "%xpos";
       i++;
     } else {
@@ -6018,7 +6025,7 @@ class Eval { //implements Runnable {
     setShapeProperty(JmolConstants.SHAPE_ECHO, type, propertyValue);
     pos = intParameter(i++);
     propertyValue = new Integer(pos);
-    if (i < statementLength && statement[i].tok == Token.percent) {
+    if (tokAt(i) == Token.percent) {
       type = "%ypos";
       i++;
     } else {
@@ -6553,7 +6560,7 @@ class Eval { //implements Runnable {
           viewer.showUrl(viewer.getFullPathName());
         return;
       }
-      String fileName = stringParameter(2);
+      String fileName = parameterAsString(2);
       if (!isSyntaxCheck)
         viewer.showUrl(fileName);
       return;
@@ -6643,7 +6650,7 @@ class Eval { //implements Runnable {
         msg = viewer.getSavedState(name);
       break;
     case Token.data:
-      String type = ((len = statementLength) == 3 ? stringParameter(2) : null);
+      String type = ((len = statementLength) == 3 ? parameterAsString(2) : null);
       if (!isSyntaxCheck) {
         String[] data = (type == null ? dataLabelString : viewer.getData(type));
         msg = (data == null ? "no data" : "data \"" + data[0] + "\"\n"
@@ -6656,7 +6663,7 @@ class Eval { //implements Runnable {
           msg = viewer.getSpaceGroupInfoText(null);
         break;
       }
-      String sg = stringParameter(2);
+      String sg = parameterAsString(2);
       if (!isSyntaxCheck)
         msg = viewer
             .getSpaceGroupInfoText(Viewer.simpleReplace(sg, "''", "\""));
@@ -6693,7 +6700,7 @@ class Eval { //implements Runnable {
         break;
       }
       checkLength3();
-      value = stringParameter(2);
+      value = parameterAsString(2);
       if (!isSyntaxCheck)
         msg = viewer.getFileAsString(value);
       break;
@@ -6992,7 +6999,7 @@ class Eval { //implements Runnable {
         break;
       case Token.color:
         isTranslucent = false;
-        if (++i < statementLength && statement[i].tok == Token.translucent) {
+        if (tokAt(++i) == Token.translucent) {
           isTranslucent = true;
           i++;
         }
@@ -7301,7 +7308,7 @@ class Eval { //implements Runnable {
         break;
       case Token.select:
         propertyName = "selectType";
-        propertyValue = stringParameter(++i);
+        propertyValue = parameterAsString(++i);
         break;
       case Token.identifier:
         String str = parameterAsString(i);
@@ -7312,7 +7319,7 @@ class Eval { //implements Runnable {
         }
         if (str.equalsIgnoreCase("CREATE")) {
           propertyName = "create";
-          propertyValue = stringParameter(++i);
+          propertyValue = parameterAsString(++i);
           break;
         }
         propertyValue = str;
@@ -7395,7 +7402,7 @@ class Eval { //implements Runnable {
       if (str.equalsIgnoreCase("TITLEFORMAT")) {
         if (2 < statementLength && statement[2].tok == Token.string) {
           propertyName = "titleFormat";
-          propertyValue = stringParameter(2);
+          propertyValue = parameterAsString(2);
         }
         break;
       }
@@ -7424,7 +7431,7 @@ class Eval { //implements Runnable {
       setShapeProperty(JmolConstants.SHAPE_MO, propertyName, propertyValue);
     if (moNumber != Integer.MAX_VALUE) {
       if (2 < statementLength && statement[2].tok == Token.string)
-        title = stringParameter(2);
+        title = parameterAsString(2);
       setMoData(JmolConstants.SHAPE_MO, moNumber, title);
     }
   }
@@ -7653,14 +7660,12 @@ class Eval { //implements Runnable {
         }
         if (str.equalsIgnoreCase("CONTOUR")) {
           propertyName = "contour";
-          propertyValue = new Integer(i + 1 < statementLength
-              && statement[i + 1].tok == Token.integer ? intParameter(++i) : 0);
+          propertyValue = new Integer(tokAt(i + 1) == Token.integer ? intParameter(++i) : 0);
           break;
         }
         if (str.equalsIgnoreCase("PHASE")) {
           propertyName = "phase";
-          propertyValue = (i + 1 < statementLength
-              && statement[i + 1].tok == Token.string ? stringParameter(++i)
+          propertyValue = (tokAt(i + 1) == Token.string ? stringParameter(++i)
               : "_orb");
           break;
         }
@@ -7840,7 +7845,7 @@ class Eval { //implements Runnable {
           filename = viewer.getFullPathName();
         }
         surfaceObjectSeen = true;
-        if (i + 1 < statementLength && statement[i + 1].tok == Token.integer)
+        if (tokAt(i + 1) == Token.integer)
           setShapeProperty(iShape, "fileIndex", new Integer(intParameter(++i)));
         Object t = (isSyntaxCheck ? null : viewer
             .getUnzippedBufferedReaderOrErrorMessageFromName(filename));

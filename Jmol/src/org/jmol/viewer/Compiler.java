@@ -100,7 +100,7 @@ class Compiler {
     //2147483647 is maxvalue, so this allows loading
     //simultaneously up to 2147 files. Yeah, sure!
     int pt = strDecimal.indexOf(".");
-    if (pt < 0)
+    if (pt < 1 || strDecimal.charAt(0) == '-')
       return 0;
     int i = 0;
     int j = 0;
@@ -446,6 +446,8 @@ class Compiler {
       i = script.length();
     String str = script.substring(ichToken, i);
     addTokenToPrefix(new Token(Token.data, str));
+    addTokenToPrefix(new Token(Token.identifier, "end"));
+    addTokenToPrefix(new Token(Token.string, key));
     cchToken = i - ichToken + 6 + key.length();
   }
 
@@ -1258,6 +1260,29 @@ class Compiler {
         return rightParenthesisExpected();
       return checkForMath();
     case Token.leftbrace:
+      /*
+       * A bit tricky here: we have three contexts for braces -- 
+       * 
+       * 1) expressionCommands SELECT, RESTRICT, DEFINE, 
+       *    DISPLAY, HIDE, CENTER, and SUBSET
+       * 
+       * 2) embeddedExpression commands such as DRAW and ISOSURFACE
+       * 
+       * 3) IF and SET
+       * 
+       * Then, within these, we have the possibility that we are 
+       * looking at a coordinate {0 0 0} (with or without commas, and
+       * possibly fractional, {1/2 1/2 1}, and possibly a plane Point4f
+       * definition, {a b c d}) or an expression. 
+       * 
+       * We assume an expression initially and then adjust accordingly
+       * if it turns out this is a coordinate. 
+       * 
+       * Note that due to tha nuances of how expressions such as (1-4) are
+       * reported as special codes, Eval must still intepret these
+       * carefully. This could be corrected for here, I think.
+       * 
+       */
       boolean isCoordinate = false;
       int pt = ltokenPostfix.size();
       if (isSetOrIf) {
@@ -1667,8 +1692,6 @@ class Compiler {
       // in a command that allows for negInts. 
       if (tok == Token.hyphen)
         tokenNext();
-      else
-        returnToken();
       int seqcodeA = seqcode;
       if (!clauseSequenceCode())
         seqcode = Integer.MAX_VALUE;

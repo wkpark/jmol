@@ -1101,7 +1101,6 @@ class Eval { //implements Runnable {
       case Token.expressionBegin:
         pcStart = pc;
         pcStop = code.length;
-      case Token.comma:
         break;
       case Token.expressionEnd:
         break expression_loop;
@@ -1153,6 +1152,7 @@ class Eval { //implements Runnable {
       case Token.within:
       case Token.substructure:
       case Token.connected:
+      case Token.comma:
         rpn.addOp(instruction);
         break;
       case Token.all:
@@ -2262,9 +2262,10 @@ class Eval { //implements Runnable {
         coord[n++] = theToken.intValue;
         break;
       case Token.spec_seqcode_range:
-        if (n == 6)
+        if (n == 5)
           invalidArgument();
-        coord[n++] = -(theToken.intValue>>8);
+        coord[n++] = (theToken.intValue>>8);
+        coord[n++] = -(((Integer) theToken.value).intValue() >> 8);
         break;        
       case Token.spec_seqcode:
         if (n == 6)
@@ -3192,21 +3193,21 @@ class Eval { //implements Runnable {
     String dataString = null;
     String dataLabel = null;
     switch (iToken = statementLength) {
-    case 3:
+    case 5:
+      //parameters 3 and 4 are just for the ride: [end] and ["key"]
       dataString = parameterAsString(2);
     //fall through
-    case 2:
+    case 4:
       dataLabel = parameterAsString(1);
       if (dataLabel.equalsIgnoreCase("clear")) {
         if (!isSyntaxCheck)
           Viewer.setData(null, null);
         return;
       }
-      if (dataLabel.indexOf("@") >= 0) {
+      if (dataLabel.indexOf("@") >= 0)
         dataString = "" + viewer.getParameter(dataLabel
                 .substring(dataLabel.indexOf("@") + 1));
-        break;
-      }
+      break;
     default:
       badArgumentCount();
     }
@@ -8461,6 +8462,11 @@ class Eval { //implements Runnable {
         return false;
 
       switch (op.tok) {
+      case Token.comma:
+        if (!wasX)
+          return false;
+        wasX = false;
+        return true;
       case Token.min:
       case Token.max:
         tok = oPt < 0 ? Token.nada : oStack[oPt].tok;

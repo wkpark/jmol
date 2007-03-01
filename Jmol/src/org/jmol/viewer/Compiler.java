@@ -1022,7 +1022,8 @@ class Compiler {
       if (!clauseOr(isCommaAsOrAllowed || !isSetOrIf
           && tokPeek(Token.leftparen)))
         return false;
-      if (!isSetOrIf)
+      if (!isSetOrIf
+          && !(isEmbeddedExpression && lastToken == Token.tokenCoordinateEnd))
         addTokenToPostfix(Token.tokenExpressionEnd);
       if (moreTokens() && !isEmbeddedExpression)
         return endOfExpressionExpected();

@@ -1049,7 +1049,7 @@ public class Token {
     "ionic",        new Token(ionic),
     "resume",       new Token(resume),
     "next",         new Token(next),
-    "previou",      new Token(prev),
+    "previous",      new Token(prev),
     "prev",         null,
     "rewind",       new Token(rewind),
     "last",         new Token(last),

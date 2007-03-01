@@ -42,6 +42,9 @@ final public class JmolConstants {
    * 
    11.1.16:
    
+   First incompatibility found:
+   
+   set echo myecho (atomno=3) or (atomno=5)
    1) adds two new modifiers:
    
    .min

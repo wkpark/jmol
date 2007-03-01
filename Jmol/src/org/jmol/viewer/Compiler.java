@@ -1684,7 +1684,7 @@ class Compiler {
   }
 
   private boolean clauseSequenceRange() {
-    Token seqToken = getSequenceCode();
+    Token seqToken = getSequenceCode(false);
     if (seqToken == null)
       return false;
     int tok = tokPeek();
@@ -1693,15 +1693,13 @@ class Compiler {
         tokenNext();
       seqToken.tok = Token.spec_seqcode_range;
       generateResidueSpecCode(seqToken);
-      seqToken = getSequenceCode();
-      if (seqToken == null)
-        return false;
+      seqToken = getSequenceCode(true);
       return addTokenToPostfix(seqToken);
     }
     return generateResidueSpecCode(seqToken);
   }
 
-  private Token getSequenceCode() {
+  private Token getSequenceCode(boolean allowNull) {
     boolean negative = false;
     int seqcode = Integer.MAX_VALUE;
     int seqvalue = Integer.MAX_VALUE;
@@ -1715,7 +1713,7 @@ class Compiler {
       seqcode = tokenNext().intValue * (negative ? -1 : 1);
     else if (tokPeek == Token.integer)
       seqvalue = tokenNext().intValue * (negative ? -1 : 1);
-    else {
+    else if (!allowNull){
       if (negative)
         returnToken();
       return null;

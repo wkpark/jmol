@@ -2241,21 +2241,22 @@ class Eval { //implements Runnable {
     return (Point4f) getPointOrPlane(i, false, false, false, false, 4, 4);
   }
 
-  Object getPointOrPlane(int index, boolean integerOnly, boolean allowFractional, boolean doConvert,
-                          boolean implicitFractional,
-                          int minDim, int maxDim) throws ScriptException {
+  Object getPointOrPlane(int index, boolean integerOnly,
+                         boolean allowFractional, boolean doConvert,
+                         boolean implicitFractional, int minDim, int maxDim)
+      throws ScriptException {
     // { x y z } or {a/b c/d e/f} are encoded now as seqcodes and model numbers
     // so we decode them here. It's a bit of a pain, but it isn't too bad.
     float[] coord = new float[6];
     int n = 0;
     coordinatesAreFractional = implicitFractional;
     if (tokAt(index) == Token.point3f) {
-      if (minDim<=3 && maxDim>=3)
+      if (minDim <= 3 && maxDim >= 3)
         return (Point3f) getToken(index).value;
       invalidArgument();
     }
     if (tokAt(index) == Token.point4f) {
-      if (minDim<=4 && maxDim>=4)
+      if (minDim <= 4 && maxDim >= 4)
         return (Point4f) getToken(index).value;
       invalidArgument();
     }
@@ -2263,7 +2264,7 @@ class Eval { //implements Runnable {
       switch (getToken(i).tok) {
       case Token.leftbrace:
       case Token.comma:
-     // case Token.opOr:
+      // case Token.opOr:
       case Token.opAnd:
         break;
       case Token.rightbrace:
@@ -2275,14 +2276,17 @@ class Eval { //implements Runnable {
           invalidArgument();
         coord[n++] = theToken.intValue;
         break;
+      case Token.slash:
+        getToken(++i);
       case Token.spec_model: // after a slash
         n--;
         if (n < 0 || integerOnly)
           invalidArgument();
-        if (theToken.value instanceof Integer)
-           coord[n++] /= ((Integer) theToken.value).intValue();
-        else 
-          coord[n++] /= ((Float) theToken.value).floatValue();          
+        if (theToken.value instanceof Integer || theTok == Token.integer)
+          coord[n++] /= (theToken.intValue == Integer.MAX_VALUE ? 
+              ((Integer) theToken.value).intValue() : theToken.intValue);
+        else
+          coord[n++] /= ((Float) theToken.value).floatValue();
         coordinatesAreFractional = true;
         break;
       case Token.decimal:
@@ -3138,8 +3142,14 @@ class Eval { //implements Runnable {
     if (index < statementLength) {
       int tok = getToken(index).tok;
       if (isColorParam(index)) {
-        int argb = getArgbParamLast(index, false);
+        int argb = getArgbParam(index, false);
         colorvalue = (argb == 0 ? null : new Integer(argb));
+        if (tokAt(index = iToken + 1) != Token.nada) {
+          getToken(index);
+          if (translucentOrOpaque == null && (theTok == Token.translucent || theTok == Token.opaque))
+            translucentOrOpaque = parameterAsString(index);
+          checkStatementLength(index + 1);
+        }
       } else {
         // "cpk" value would be "spacefill"
         byte pid = (tok == Token.spacefill ? JmolConstants.PALETTE_CPK
@@ -7442,19 +7452,19 @@ class Eval { //implements Runnable {
       break;
     case Token.color:
       //mo color color1 color2
-      if (2 < statementLength && statement[2].tok == Token.colorRGB) {
+      if (tokAt(2) == Token.colorRGB || tokAt(2) == Token.leftsquare) {
         setShapeProperty(JmolConstants.SHAPE_MO, "colorRGB", new Integer(
             getArgbParam(2)));
-        if (3 < statementLength && statement[3].tok == Token.colorRGB)
+        if (tokAt(++iToken) == Token.colorRGB || tokAt(iToken) == Token.leftsquare)
           setShapeProperty(JmolConstants.SHAPE_MO, "colorRGB", new Integer(
-              getArgbParam(3)));
+              getArgbParam(iToken)));
         break;
       }
       invalidArgument();
     case Token.identifier:
       str = parameterAsString(1);
       if (str.equalsIgnoreCase("CUTOFF")) {
-        if (2 < statementLength && statement[2].tok == Token.plus) {
+        if (tokAt(2) == Token.plus) {
           propertyName = "cutoffPositive";
           propertyValue = new Float(floatParameter(3));
         } else {
@@ -7504,7 +7514,7 @@ class Eval { //implements Runnable {
     if (propertyName != null)
       setShapeProperty(JmolConstants.SHAPE_MO, propertyName, propertyValue);
     if (moNumber != Integer.MAX_VALUE) {
-      if (2 < statementLength && statement[2].tok == Token.string)
+      if (tokAt(2) == Token.string)
         title = parameterAsString(2);
       setMoData(JmolConstants.SHAPE_MO, moNumber, title);
     }
@@ -7569,7 +7579,6 @@ class Eval { //implements Runnable {
       switch (getToken(i).tok) {
       case Token.select:
         propertyName = "select";
-        ++i;
         propertyValue = expression(++i);
         i = iToken;
         break;
@@ -7594,6 +7603,7 @@ class Eval { //implements Runnable {
           colorRangeStage = 1;
           continue;
         case Token.colorRGB:
+        case Token.leftsquare:
           signPt = i + 1;
           continue;
         default:
@@ -7617,11 +7627,14 @@ class Eval { //implements Runnable {
         if (colorRangeStage > 0)
           ++colorRangeStage;
         break;
+      case Token.leftsquare:
       case Token.colorRGB:
-        if (i != signPt && i != signPt + 1)
+        if (i != signPt)
           invalidParameterOrder();
         propertyName = "colorRGB";
         propertyValue = new Integer(getArgbParam(i));
+        i = iToken;
+        signPt = i + 1;
         break;
       case Token.ionic:
         propertyName = "ionicRadius";

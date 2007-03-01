@@ -8920,6 +8920,7 @@ class Eval { //implements Runnable {
       short order = JmolConstants.BOND_ORDER_ANY;
       BitSet atoms1 = null;
       BitSet atoms2 = null;
+      boolean haveDecimal = false;
       boolean isBonds = false;
       for (int i = 0; i < args.length; i++) {
         Token token = args[i];
@@ -8940,6 +8941,9 @@ class Eval { //implements Runnable {
           if (order == JmolConstants.BOND_ORDER_NULL)
             return false;
           break;
+        case Token.decimal:
+          haveDecimal = true;
+          // fall through
         default:
           int n = Token.iValue(token);
           float f = Token.fValue(token);
@@ -8967,6 +8971,8 @@ class Eval { //implements Runnable {
       }
       if (atoms1 == null)
         atoms1 = bsAll();
+      if (haveDecimal && atoms2 == null)
+        atoms2 = atoms1;
       if (atoms2 != null) {
         BitSet bsBonds = new BitSet();
         if (isSyntaxCheck)

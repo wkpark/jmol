@@ -999,6 +999,7 @@ public class Token {
     "lines",        new Token(lines),
     "angle",        new Token(angle),
     "find",         new Token(find),
+    "size",         new Token(size),
     "torsion",      new Token(torsion),
     "coord",        new Token(coord),
     "shapely",      new Token(shapely),

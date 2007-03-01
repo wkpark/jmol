@@ -28,6 +28,7 @@ import javax.vecmath.Point3f;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.TextFormat;
 
 class Text {
 
@@ -533,35 +534,11 @@ class Text {
     g3d.drawString(strLabel, font, colix, x + 4, y + 4 + ascent, z - 1,
             zSlab);
   }
-  
+
   static String[] split(String text, char ch) {
-    int n = 1;
-    int i = text.indexOf(ch);
-    String[] lines;
-    if (i < 0) {
-      lines = new String[1];
-      lines[0] = text;
-      return lines;
-    }
-    int len = text.length() - 1;
-    for (; i < len; i++)
-      if (text.charAt(i) == ch)
-        n++;
-    lines = new String[n];
-    i = 0;
-    len = 0;
-    int pt = 0;
-    for (; (len = text.indexOf(ch, i)) >= 0 && pt + 1 < n;) {
-      lines[pt++] = text.substring(i, len);
-      i = len + 1;
-    }
-    len = text.length();
-    if (text.charAt(len - 1) == ch)
-      len--;
-    lines[pt] = text.substring(i, len);
-    return lines;
+    return TextFormat.split(text, "" + ch);
   }
-  
+
   String getState(boolean isDefine) {
     StringBuffer s = new StringBuffer();
     if (text == null || atomBased || target.equals("error"))

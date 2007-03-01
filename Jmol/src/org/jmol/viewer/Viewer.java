@@ -32,6 +32,7 @@ import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
 import org.jmol.util.Base64;
 import org.jmol.util.JpegEncoder;
+import org.jmol.util.TextFormat;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -1175,7 +1176,7 @@ public class Viewer extends JmolViewer {
 
   private void setDefaultDirectory(String dir) {
     global.defaultDirectory = (dir == null || dir.length() == 0 ? null
-        : simpleReplace(dir, "\\", "/"));
+        : TextFormat.simpleReplace(dir, "\\", "/"));
   }
 
   String getDefaultDirectory() {
@@ -1200,7 +1201,7 @@ public class Viewer extends JmolViewer {
     checkHalt("exit");
     // assumes a Jmol script file if no other file type
     script((type == null ? "script " : "load ")
-        + StateManager.escape(simpleReplace(name, "\\", "/")));
+        + StateManager.escape(TextFormat.simpleReplace(name, "\\", "/")));
   }
 
   void openFile(String name, int[] params, String loadScript) {
@@ -1291,7 +1292,7 @@ public class Viewer extends JmolViewer {
       }
       if (i < len && strModel.charAt(i) == newLine)
         strModel = strModel.substring(i + 1);
-      strModel = simpleReplace(strModel, "" + newLine, "\n");
+      strModel = TextFormat.simpleReplace(strModel, "" + newLine, "\n");
     }
     String datasep = (String) global.getParameter("dataseparator");
     if (datasep != null && datasep != "" && (i = strModel.indexOf(datasep)) >= 0) {
@@ -4709,30 +4710,6 @@ public class Viewer extends JmolViewer {
         + modelManager.getModelExtract(getAtomBitSet(atomExpression));
   }
 
-  static String simpleReplace(String str, String strFrom, String strTo) {
-    if (str == null || str.indexOf(strFrom) < 0)
-      return str;
-    int fromLength = strFrom.length();
-    if (fromLength == 0)
-      return str;
-    boolean isOnce = (strTo.indexOf(strFrom) >= 0);
-    int ipt;
-    while (str.indexOf(strFrom) >= 0) {
-      StringBuffer s = new StringBuffer();
-      int ipt0 = 0;
-      while ((ipt = str.indexOf(strFrom, ipt0)) >= 0) {
-        s.append(str.substring(ipt0, ipt) + strTo);
-        ipt0 = ipt + fromLength;
-      }
-      if (isOnce)
-        break;
-      s.append(str.substring(ipt0));
-      str = s.toString();
-    }
-
-    return str;
-  }
-
   String getHexColorFromIndex(short colix) {
     return g3d.getHexColorFromIndex(colix);
   }
@@ -4881,7 +4858,7 @@ public class Viewer extends JmolViewer {
       //if(type.equals("XYZ"))
       exp = "\"\" + {selected}.size + \"\n\n\"+{selected}.label(\"%-2e %10.5x %10.5y %10.5z\")";
     if (!atomExpression.equals("selected"))
-      exp = simpleReplace(exp, "selected",atomExpression);
+      exp = TextFormat.simpleReplace(exp, "selected",atomExpression);
     return (String) Eval.evaluateExpression(this, exp);
   }
   

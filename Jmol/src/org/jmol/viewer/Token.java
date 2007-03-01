@@ -33,6 +33,7 @@ import javax.vecmath.Point4f;
 
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
+import org.jmol.util.TextFormat;
 import org.jmol.g3d.Graphics3D;
 
 
@@ -311,18 +312,23 @@ public class Token {
   // connected(float min, float max, String type, BitSet atomset1, BitSet atomset2)
   // substructure("smiles")
 
-  final static int label        = 0  | mathfunc | 1 << 3 | command | specialstring;
-  final static int find         = 1  | mathfunc | 1 << 3;
-  final static int load         = 2  | mathfunc | 1 << 3 | command | negnums;
-  final static int substructure = 3  | mathfunc | 1 << 3;
+  final static int split        = 1  | mathfunc | 0 << 3;
+  final static int join         = 2  | mathfunc | 0 << 3;
+  final static int trim         = 3  | mathfunc | 0 << 3;
 
-  final static int distance     = 0  | mathfunc | 2 << 3;
-  final static int data         = 1  | mathfunc | 2 << 3 | command;
+  final static int label        = 1  | mathfunc | 1 << 3 | command | specialstring;
+  final static int find         = 2  | mathfunc | 1 << 3;
+  final static int load         = 3  | mathfunc | 1 << 3 | command | negnums;
+  final static int substructure = 4  | mathfunc | 1 << 3;
 
-  final static int angle        = 0  | mathfunc | 4 << 3;
+  final static int distance     = 1  | mathfunc | 2 << 3;
+  final static int data         = 2  | mathfunc | 2 << 3 | command;
+  final static int replace      = 3  | mathfunc | 2 << 3;
+
+  final static int angle        = 1  | mathfunc | 4 << 3;
   
-  final static int within       = 0  | mathfunc | 5 << 3;
-  final static int connected    = 1  | mathfunc | 5 << 3;
+  final static int within       = 1  | mathfunc | 5 << 3;
+  final static int connected    = 2  | mathfunc | 5 << 3;
 
 
   final static int minmaxmask = 3 << 6;
@@ -508,11 +514,12 @@ public class Token {
     }
   }
 
-  static String[] concatList(Token x1, Token x2, boolean x1IsList, boolean x2IsList) {
-    String[] list1 = (x1IsList ? (String[]) x1.value
-        : new String[] { (String) x1.value });
-    String[] list2 = (x2IsList ? (String[]) x2.value
-        : new String[] { (String) x2.value });
+  static String[] concatList(Token x1, Token x2, boolean x1IsList,
+                             boolean x2IsList) {
+    String[] list1 = (x1IsList ? (String[]) x1.value : TextFormat.split(
+        (String) x1.value, "\n"));
+    String[] list2 = (x2IsList ? (String[]) x2.value : TextFormat.split(
+        (String) x2.value, "\n"));
     String[] list = new String[list1.length + list2.length];
     int pt = 0;
     for (int i = 0; i < list1.length; i++)
@@ -990,16 +997,6 @@ public class Token {
     "inherit",      null,
     "normal",       new Token(normal),
     "rasmol",       new Token(rasmol),
-    "ident",        new Token(ident),
-    "xyz",          new Token(xyz),
-    "min",          new Token(min),
-    "max",          new Token(max),
-    "distance",     new Token(distance),
-    "length",       new Token(length),
-    "lines",        new Token(lines),
-    "angle",        new Token(angle),
-    "find",         new Token(find),
-    "size",         new Token(size),
     "torsion",      new Token(torsion),
     "coord",        new Token(coord),
     "shapely",      new Token(shapely),
@@ -1064,6 +1061,21 @@ public class Token {
     "right",        new Token(right),    
     "front",        new Token(front),    
     "back",         new Token(back),    
+    
+    "ident",        new Token(ident),
+    "xyz",          new Token(xyz),
+    "min",          new Token(min),
+    "max",          new Token(max),
+    "distance",     new Token(distance),
+    "length",       new Token(length),
+    "lines",        new Token(lines),
+    "angle",        new Token(angle),
+    "find",         new Token(find),
+    "size",         new Token(size),
+    "split",        new Token(split),
+    "join",         new Token(join),
+    "trim",         new Token(trim),
+    "replace",      new Token(replace),
   };
 
   static Hashtable map = new Hashtable();

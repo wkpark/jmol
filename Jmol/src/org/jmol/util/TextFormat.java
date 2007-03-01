@@ -192,4 +192,86 @@ public class TextFormat {
     return strLabel;
   }
 
+  /**
+   * 
+   *  proper splitting, even for Java 1.3 -- if the text ends in the run,
+   *  no new line is appended.
+   * 
+   * @param text
+   * @param run
+   * @return  String array
+   */
+  public static String[] split(String text, String run) {
+    int n = 1;
+    int i = text.indexOf(run);
+    String[] lines;
+    int runLen = run.length();
+    if (i < 0 || runLen == 0) {
+      lines = new String[1];
+      lines[0] = text;
+      return lines;
+    }
+    int len = text.length() - runLen;
+    for (; i >= 0 && i < len; n++)
+      i = text.indexOf(run, i + runLen);
+    lines = new String[n];
+    i = 0;
+    int ipt = 0;
+    int pt = 0;
+    for (; (ipt = text.indexOf(run, i)) >= 0 && pt + 1 < n;) {
+      lines[pt++] = text.substring(i, ipt);
+      i = ipt + runLen;
+    }
+    if (text.indexOf(run, len) != len)
+      len += runLen;
+    lines[pt] = text.substring(i, len);
+    return lines;
+  }
+
+  /**
+   * Does a clean replace of strFrom in str with strTo
+   * If strTo contains strFrom, then only a single pass is done.
+   * Otherwise, multiple passes are made until no more replacements can be made.
+   * 
+   * @param str
+   * @param strFrom
+   * @param strTo
+   * @return  replaced string
+   */
+  public static String simpleReplace(String str, String strFrom, String strTo) {
+    if (str == null || str.indexOf(strFrom) < 0 || strFrom.equals(strTo))
+      return str;
+    int fromLength = strFrom.length();
+    if (fromLength == 0)
+      return str;
+    boolean isOnce = (strTo.indexOf(strFrom) >= 0);
+    int ipt;
+    while (str.indexOf(strFrom) >= 0) {
+      StringBuffer s = new StringBuffer();
+      int ipt0 = 0;
+      while ((ipt = str.indexOf(strFrom, ipt0)) >= 0) {
+        s.append(str.substring(ipt0, ipt) + strTo);
+        ipt0 = ipt + fromLength;
+      }
+      s.append(str.substring(ipt0));
+      str = s.toString();
+      if (isOnce)
+        break;
+    }
+
+    return str;
+  }
+
+  public static String trim(String str, String chars) {
+    int len = chars.length();
+    if (len == 0)
+      return str.trim();
+    int k = 0;
+    while(str.indexOf(chars, k) == k)
+      k += len;
+    int m = str.length() - len;
+    while(str.indexOf(chars, m) == m)
+      m -= len;
+    return str.substring(k, m + len);
+  }
 }

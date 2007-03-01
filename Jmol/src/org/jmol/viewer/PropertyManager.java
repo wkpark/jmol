@@ -23,9 +23,6 @@
  */
 package org.jmol.viewer;
 
-//import org.jmol.util.Logger;
-
-
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -34,6 +31,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 
 /**
  * 
@@ -276,8 +274,8 @@ class PropertyManager {
   String fixString(String s) {
     if (s == null || s.indexOf("{\"") == 0) //don't doubly fix JSON strings when retrieving status
       return s;
-    s = Viewer.simpleReplace(s,"\"","''");
-    s = Viewer.simpleReplace(s,"\n"," | ");
+    s = TextFormat.simpleReplace(s,"\"","''");
+    s = TextFormat.simpleReplace(s,"\n"," | ");
    return "\"" + s + "\"";  
   }
   

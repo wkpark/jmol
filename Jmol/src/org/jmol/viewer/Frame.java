@@ -28,6 +28,7 @@ package org.jmol.viewer;
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Parser;
+import org.jmol.util.TextFormat;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.g3d.Graphics3D;
@@ -3498,7 +3499,7 @@ public final class Frame {
       for (int i = 0; i < atomCount; i++)
         if (tainted.get(i)) {
           s.append((i + 1) + " " + atoms[i].getElementSymbol() + " "
-              + Viewer.simpleReplace(atoms[i].getIdentity(), " ", "_") + " "
+              + TextFormat.simpleReplace(atoms[i].getIdentity(), " ", "_") + " "
               + atoms[i].x + " " + atoms[i].y + " " + atoms[i].z + " ;\n");
           ++n;
         }

@@ -332,6 +332,8 @@ class Compiler {
           if (bs != null) {
             if (isBond)
               addTokenToPrefix(new Token(Token.bitset, new BondSet(bs)));
+            // occasionally BondSet appears unknown in Eclipse even though it is defined
+            // in Eval.java -- doesn't seem to matter.
             else
               addTokenToPrefix(new Token(Token.bitset, bs));
             continue;

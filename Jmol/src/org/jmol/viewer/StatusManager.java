@@ -24,6 +24,7 @@
 package org.jmol.viewer;
 
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -94,12 +95,12 @@ class StatusManager {
     boolean isAdd = (statusList.length() > 0 && statusList.charAt(0) == '+');
     String oldList = this.statusList;
     if (isRemove) {
-      this.statusList = Viewer.simpleReplace(oldList, statusList.substring(1,statusList.length()), "");
+      this.statusList = TextFormat.simpleReplace(oldList, statusList.substring(1,statusList.length()), "");
       messageQueue = new Hashtable();
       statusPtr = 0;
       return true;
     }
-    statusList = Viewer.simpleReplace(statusList, "+", "");
+    statusList = TextFormat.simpleReplace(statusList, "+", "");
     if(oldList.equals(statusList) 
         || isAdd && oldList.indexOf(statusList) >= 0)
       return false;

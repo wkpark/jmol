@@ -3363,7 +3363,7 @@ class Eval { //implements Runnable {
         int[] p;
         if (tokAt(i)== Token.spacegroup) {
           ++i;
-          String spacegroup = Viewer.simpleReplace(parameterAsString(i++),
+          String spacegroup = TextFormat.simpleReplace(parameterAsString(i++),
               "''", "\"");
           loadScript.append(" " + StateManager.escape(spacegroup));
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
@@ -5670,6 +5670,10 @@ class Eval { //implements Runnable {
     case Token.distance:
     case Token.label:
     case Token.find:
+    case Token.split:
+    case Token.join:
+    case Token.trim:
+    case Token.replace:
       break;
       
     case Token.identifier:
@@ -6732,7 +6736,7 @@ class Eval { //implements Runnable {
       String sg = parameterAsString(2);
       if (!isSyntaxCheck)
         msg = viewer
-            .getSpaceGroupInfoText(Viewer.simpleReplace(sg, "''", "\""));
+            .getSpaceGroupInfoText(TextFormat.simpleReplace(sg, "''", "\""));
       break;
     case Token.dollarsign:
       len = 3;
@@ -6922,14 +6926,14 @@ class Eval { //implements Runnable {
             String data = (String) statement[++i].value;
             if (data.indexOf("|") < 0 && data.indexOf("\n") < 0) {
               // space separates -- so set isOnePerLine
-              data = Viewer.simpleReplace(data, " ", "\n");
+              data = TextFormat.simpleReplace(data, " ", "\n");
               propertyName = "bufferedReaderOnePerLine";
             }
-            data = Viewer.simpleReplace(data, "{", " ");
-            data = Viewer.simpleReplace(data, ",", " ");
-            data = Viewer.simpleReplace(data, "}", " ");
-            data = Viewer.simpleReplace(data, "|", "\n");
-            data = Viewer.simpleReplace(data, "\n\n", "\n");
+            data = TextFormat.simpleReplace(data, "{", " ");
+            data = TextFormat.simpleReplace(data, ",", " ");
+            data = TextFormat.simpleReplace(data, "}", " ");
+            data = TextFormat.simpleReplace(data, "|", "\n");
+            data = TextFormat.simpleReplace(data, "\n\n", "\n");
             if (logMessages)
               Logger.debug("pmesh inline data:\n" + data);
             t = viewer.getBufferedReaderForString(data);
@@ -8435,6 +8439,11 @@ class Eval { //implements Runnable {
       return wasX = true;
     }
 
+    boolean isOpFunc(Token op) {
+      return (Compiler.tokAttr(op.tok, Token.mathfunc) || op.tok == Token.propselector
+          && Compiler.tokAttr(op.intValue, Token.mathfunc));
+    }
+    
     boolean addOp(Token op) throws ScriptException {
 
       // Do we have the appropriate context for this operator?
@@ -8444,17 +8453,17 @@ class Eval { //implements Runnable {
         dumpStacks();
       }
       Token newOp = null;
+      int tok;
       boolean isLeftOp = false;
       boolean isDotSelector = (op.tok == Token.propselector);
-      boolean isMathFunc = (Compiler.tokAttr(op.tok, Token.mathfunc) || isDotSelector
-          && Compiler.tokAttr(op.intValue, Token.mathfunc));
+      boolean isMathFunc = isOpFunc(op);
       if (isDotSelector && !wasX)
         return false;
 
       switch (op.tok) {
       case Token.min:
       case Token.max:
-        int tok = oPt < 0 ? Token.nada : oStack[oPt].tok;
+        tok = oPt < 0 ? Token.nada : oStack[oPt].tok;
         if (!wasX
             || !(tok == Token.propselector || tok == Token.bonds || tok == Token.atom))
           return false;
@@ -8471,6 +8480,11 @@ class Eval { //implements Runnable {
         addX(0);
         op = new Token(Token.unaryMinus, "-");
         break;
+      case Token.rightparen: //  () without argument allowed only for math funcs
+        if (!wasX && oPt >= 1 && oStack[oPt].tok == Token.leftparen
+            && !isOpFunc(oStack[oPt - 1]))
+          return false;
+        break;
       case Token.opNot:
       case Token.leftparen:
         isLeftOp = true;
@@ -8482,9 +8496,7 @@ class Eval { //implements Runnable {
           isLeftOp = true;
           break;
         }
-        if (wasX == isLeftOp
-            && (oPt < 1 || !Compiler.tokAttr(oStack[oPt - 1].tok,
-                Token.mathfunc)))
+        if (wasX == isLeftOp)
           return false;
         break;
       }
@@ -8550,11 +8562,7 @@ class Eval { //implements Runnable {
           return false;
         if (oPt < 0)
           return true;
-        Token token = oStack[oPt];
-        return (Compiler.tokAttr(token.tok, Token.mathfunc)
-            || token.tok == Token.propselector
-            && Compiler.tokAttr(token.intValue, Token.mathfunc) ? evaluateFunction()
-            : true);
+        return (isOpFunc(oStack[oPt]) ? evaluateFunction() : true);
       case Token.rightsquare:
         wasX = true;
         oPt--;
@@ -8644,48 +8652,33 @@ class Eval { //implements Runnable {
       xPt--;
       switch (op.tok == Token.propselector ? op.intValue : op.tok) {
       case Token.find:
-        if (!evaluateFind(args))
-          return false;
-        break;
+        return evaluateFind(args);
+      case Token.replace:
+        return evaluateReplace(args);
+      case Token.split:
+      case Token.join:
+      case Token.trim:
+        return evaluateString(op.intValue, args);
       case Token.label:
-        if (!evaluateLabel(args))
-          return false;
-        break;
+        return evaluateLabel(args);
       case Token.data:
-        if (!evaluateData(args))
-          return false;
-        break;
+        return evaluateData(args);
       case Token.load:
-        if (!evaluateLoad(args))
-          return false;
-        break;
+        return evaluateLoad(args);
       case Token.within:
-        if (!evaluateWithin(args))
-          return false;
-        break;
+        return evaluateWithin(args);
       case Token.distance:
-        if (op.tok == Token.propselector) {
-          if (!evaluateDistance(args))
-          return false;
-        break;
-        }
+        if (op.tok == Token.propselector)
+          return evaluateDistance(args);
         //fall through
       case Token.angle:
-        if (!evaluateMeasure(args, op.tok == Token.angle))
-          return false;
-        break;
+        return evaluateMeasure(args, op.tok == Token.angle);
       case Token.connected:
-        if (!evaluateConnected(args))
-          return false;
-        break;
+        return evaluateConnected(args);
       case Token.substructure:
-        if (!evaluateSubstructure(args))
-          return false;
-        break;
-      default:
-        return false;
+        return evaluateSubstructure(args);
       }
-      return true;
+      return false;
     }
 
     boolean evaluateDistance(Token[] args) throws ScriptException {
@@ -8728,11 +8721,11 @@ class Eval { //implements Runnable {
     }
 
     boolean evaluateFind(Token[] args) throws ScriptException {
-      Token x1 = getX();
       if (args.length != 1)
         return false;
       if (isSyntaxCheck)
         return addX((int)1);
+      Token x1 = getX();
       String sFind = Token.sValue(args[0]);
       if (x1.tok == Token.string)
         return addX(Token.sValue(x1).indexOf(sFind) + 1);
@@ -8755,6 +8748,51 @@ class Eval { //implements Runnable {
         return addX(listNew);
       }
       return false;
+    }
+    
+    boolean evaluateReplace(Token[] args) throws ScriptException {
+      if (args.length != 2)
+        return false;
+      Token x = getX();
+      if (isSyntaxCheck)
+        return addX("");
+      String sFind = Token.sValue(args[0]);
+      String sReplace = Token.sValue(args[1]);
+      String s = (x.tok == Token.list ? null : Token.sValue(x));
+      if (s != null)
+        return addX(TextFormat.simpleReplace(s, sFind, sReplace));
+      String[] list = (String[]) x.value;
+      for (int i = list.length; --i >= 0;)
+        list[i] = TextFormat.simpleReplace(list[i], sFind, sReplace);
+      return addX(list);
+    }
+    
+    boolean evaluateString(int tok, Token[] args) throws ScriptException {
+      if (args.length > 1)
+        return false;
+      Token x = getX();
+      String s = (tok == Token.trim && x.tok == Token.list ? null : Token
+          .sValue(x));
+      if (isSyntaxCheck)
+        return addX(s);
+      String sArg = (args.length == 1 ? Token.sValue(args[0])
+          : tok == Token.trim ? "" : "\n");
+      switch (tok) {
+      case Token.split:
+        return addX(TextFormat.split(s, sArg));
+      case Token.join:
+        if (s.length() > 0 && s.charAt(s.length() - 1) == '\n')
+          s = s.substring(0, s.length() - 1);
+        return addX(TextFormat.simpleReplace(s, "\n", sArg));
+      case Token.trim:
+        if (s != null)
+          return addX(TextFormat.trim(s, sArg));
+        String[] list = (String[]) x.value;
+        for (int i = list.length; --i >= 0;)
+          list[i] = TextFormat.trim(list[i], sArg);
+        return addX(list);
+      }
+      return addX("");
     }
     
     boolean evaluateLoad(Token[] args) throws ScriptException {
@@ -8959,9 +8997,9 @@ class Eval { //implements Runnable {
           if (x2.tok != Token.string)
             return false;
           String s = (String) x2.value;
-          s = Viewer.simpleReplace(s, "\n\r", "\n");
-          s = Viewer.simpleReplace(s, "\r", "\n");
-          return addX(Text.split(s, '\n'));
+          s = TextFormat.simpleReplace(s, "\n\r", "\n");
+          s = TextFormat.simpleReplace(s, "\r", "\n");
+          return addX(Text.split(s,'\n'));
         }
         if (x2.tok != Token.bitset)
           return false;

@@ -5818,7 +5818,7 @@ class Eval { //implements Runnable {
               isInt = false;
               break;
             }
-            if (iv != Integer.MAX_VALUE) {
+            if (isInt) {
               if (isMin)
                 ivMin = Math.min(ivMin, iv);
               else if (isMax)
@@ -9157,7 +9157,7 @@ class Eval { //implements Runnable {
       case Token.point3f:
         return (Point3f) x.value;
       case Token.bitset:
-          return (Point3f) getBitsetProperty(Token.bsSelect(x), Token.point3f, null, null, x.value, false);
+          return (Point3f) getBitsetProperty(Token.bsSelect(x), Token.xyz, null, null, x.value, false);
       default:
         float f = Token.fValue(x);
         return new Point3f(f, f, f);

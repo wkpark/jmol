@@ -1303,7 +1303,7 @@ class Compiler {
             return (haveComma || n < 3? false : rightBraceExpected());
           n++;
       }
-      isCoordinate = (n > 2);
+      isCoordinate = (n >= 2); // could be {1 -2 3}
       if (isCoordinate && (isSetOrIf || isEmbeddedExpression)) {
         ltokenPostfix.set(pt, Token.tokenCoordinateBegin);
         addTokenToPostfix(Token.tokenCoordinateEnd);
@@ -1684,29 +1684,27 @@ class Compiler {
   }
 
   private boolean clauseSequenceRange() {
-    if (!clauseSequenceCode())
+    Token seqToken = getSequenceCode();
+    if (seqToken == null)
       return false;
     int tok = tokPeek();
     if (tok == Token.hyphen || tok == Token.integer && intPeek() < 0) {
-      // must allow for a negative number here when this is an embedded expression
-      // in a command that allows for negInts. 
       if (tok == Token.hyphen)
         tokenNext();
-      int seqcodeA = seqcode;
-      if (!clauseSequenceCode())
-        seqcode = Integer.MAX_VALUE;
-      return generateResidueSpecCode(new Token(Token.spec_seqcode_range,
-          seqcodeA, new Integer(seqcode)));
+      seqToken.tok = Token.spec_seqcode_range;
+      generateResidueSpecCode(seqToken);
+      seqToken = getSequenceCode();
+      if (seqToken == null)
+        return false;
+      return addTokenToPostfix(seqToken);
     }
-    return generateResidueSpecCode(new Token(Token.spec_seqcode, seqcode,
-        new Integer(seqvalue)));
+    return generateResidueSpecCode(seqToken);
   }
 
-  int seqcode;
-  int seqvalue;
-  
-  private boolean clauseSequenceCode() {
+  private Token getSequenceCode() {
     boolean negative = false;
+    int seqcode = Integer.MAX_VALUE;
+    int seqvalue = Integer.MAX_VALUE;
     int tokPeek = tokPeek();
     if (tokPeek == Token.hyphen) {
       tokenNext();
@@ -1714,15 +1712,15 @@ class Compiler {
       tokPeek = tokPeek();
     }
     if (tokPeek == Token.seqcode)
-      seqcode = tokenNext().intValue;
-    else if (tokPeek == Token.integer) {
-      seqvalue = tokenNext().intValue;
-      seqcode = Group.getSeqcode(Math.abs(seqvalue), ' ');
-    } else
-      return false;
-    if (negative)
-      seqcode = -seqcode;
-    return true;
+      seqcode = tokenNext().intValue * (negative ? -1 : 1);
+    else if (tokPeek == Token.integer)
+      seqvalue = tokenNext().intValue * (negative ? -1 : 1);
+    else {
+      if (negative)
+        returnToken();
+      return null;
+    }
+    return new Token(Token.spec_seqcode, seqvalue, new Integer(seqcode));
   }
 
   private boolean clauseChainSpec(int tok) {

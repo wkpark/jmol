@@ -1067,7 +1067,8 @@ class Eval { //implements Runnable {
   }
 
   BitSet expression(Token[] code, int pcStart, boolean allowRefresh,
-                    boolean allowUnderflow, boolean bsRequired) throws ScriptException {
+                    boolean allowUnderflow, boolean bsRequired)
+      throws ScriptException {
     //note that this is general -- NOT just statement[]
     //errors reported would improperly access statement/line context
     //there should be no errors anyway, because this is for 
@@ -1089,14 +1090,14 @@ class Eval { //implements Runnable {
     if (ignoreSubset)
       pcStart = -pcStart;
     int pcStop = pcStart + 1;
-//    if (logMessages)
-  //    viewer.scriptStatus("start to evaluate expression");
+    //    if (logMessages)
+    //    viewer.scriptStatus("start to evaluate expression");
     expression_loop: for (int pc = pcStart; pc < pcStop; ++pc) {
       iToken = pc;
       Token instruction = code[pc];
       Object value = code[pc].value;
       //if (logMessages)
-        //viewer.scriptStatus("instruction=" + instruction);
+      //viewer.scriptStatus("instruction=" + instruction);
       switch (instruction.tok) {
       case Token.expressionBegin:
         pcStart = pc;
@@ -1128,8 +1129,8 @@ class Eval { //implements Runnable {
         val = viewer.getParameter((String) value);
         if (val instanceof String)
           val = getStringObjectAsToken("" + val);
-        if (val instanceof String)        
-          val = lookupIdentifierValue((String) value);        
+        if (val instanceof String)
+          val = lookupIdentifierValue((String) value);
         rpn.addX(val);
         break;
       case Token.string:
@@ -1228,20 +1229,25 @@ class Eval { //implements Runnable {
       case Token.spec_resid:
         rpn.addX(getAtomBits("SpecResid", instruction.intValue));
         break;
-      case Token.spec_seqcode:
-        if (isInMath)
-          rpn.addX(value);
-        else
-          rpn.addX(getAtomBits("SpecSeqcode", instruction.intValue));
-        break;
       case Token.spec_chain:
         rpn.addX(getAtomBits("SpecChain", instruction.intValue));
         break;
+      case Token.spec_seqcode:
+        if (isInMath) {
+          rpn.addX(instruction.intValue);
+          break;
+        }
+        rpn.addX(getAtomBits("SpecSeqcode", getSeqCode(instruction)));
+        break;
       case Token.spec_seqcode_range:
-        int seqcodeA = instruction.intValue;
-        int seqcodeB = ((Integer) value).intValue();
-        rpn.addX(getAtomBits("SpecSeqcodeRange",
-            new int[] { seqcodeA, seqcodeB }));
+        if (isInMath) {
+          rpn.addX(instruction.intValue);
+          rpn.addX(Token.tokenMinus);
+          rpn.addX(code[++pc].intValue);
+          break;
+        }
+        rpn.addX(getAtomBits("SpecSeqcodeRange", new int[] {
+            getSeqCode(instruction), getSeqCode(code[++pc]) }));
         break;
       case Token.cell:
         Point3f pt = (Point3f) value;
@@ -1326,7 +1332,7 @@ class Eval { //implements Runnable {
         rpn.dumpStacks();
       endOfStatementUnexpected();
     }
-    if (!bsRequired && ! (expressionResult.value instanceof BitSet))
+    if (!bsRequired && !(expressionResult.value instanceof BitSet))
       return null;
     BitSet bs = (expressionResult.value instanceof BitSet ? (BitSet) expressionResult.value
         : new BitSet());
@@ -1340,6 +1346,12 @@ class Eval { //implements Runnable {
     return bs;
   }
 
+  static int getSeqCode(Token instruction) {
+    return (instruction.intValue != Integer.MAX_VALUE ?
+      Group.getSeqcode(Math.abs(instruction.intValue),
+          ' ') : ((Integer) instruction.value).intValue());
+  }
+  
   BitSet toggle(BitSet A, BitSet B) {
     for (int i = viewer.getAtomCount(); --i >= 0;) {
       if (!B.get(i))
@@ -2257,20 +2269,11 @@ class Eval { //implements Runnable {
       case Token.rightbrace:
         break out;
       case Token.integer:
-        if (n == 6)
-          invalidArgument();
-        coord[n++] = theToken.intValue;
-        break;
       case Token.spec_seqcode_range:
-        if (n == 5)
-          invalidArgument();
-        coord[n++] = (theToken.intValue>>8);
-        coord[n++] = -(((Integer) theToken.value).intValue() >> 8);
-        break;        
       case Token.spec_seqcode:
         if (n == 6)
           invalidArgument();
-        coord[n++] = ((Integer) theToken.value).intValue() * (theToken.intValue > 0 ? 1 : -1);
+        coord[n++] = theToken.intValue;
         break;
       case Token.spec_model: // after a slash
         n--;
@@ -8151,7 +8154,6 @@ class Eval { //implements Runnable {
     int tok = statement[0].tok;
     boolean addParens = (Compiler.tokAttr(tok, Token.embeddedExpression));
     boolean useBraces = (tok == Token.ifcmd || tok == Token.set);
-    boolean isInMath = false;    
     for (int i = 0; i < statementLength; ++i) {
       if (iToken == i - 1)
         sb.append(" <<");
@@ -8174,10 +8176,7 @@ class Eval { //implements Runnable {
           sb.append(")");
         continue;
       case Token.leftsquare:
-        isInMath=true;
-        break;
       case Token.rightsquare:
-        isInMath=false;
         break;
       case Token.on:
         sb.append("true");
@@ -8193,11 +8192,21 @@ class Eval { //implements Runnable {
       case Token.bitset:
         sb.append(Token.sValue(token));
         continue;
-      case Token.spec_seqcode:
-        if (isInMath)
-          sb.append(token.intValue);
+      case Token.spec_seqcode_range:
+        if (token.intValue != Integer.MAX_VALUE)
+          sb.append("" + token.intValue);
         else
-          sb.append(Group.getSeqcodeString(token.intValue));
+          sb.append(Group.getSeqcodeString(getSeqCode(token)));
+        token = statement[++i];
+        sb.append(' ');
+        if (token.intValue == Integer.MAX_VALUE)
+          sb.append("- ");
+        //fall through
+      case Token.spec_seqcode:
+        if (token.intValue != Integer.MAX_VALUE)
+          sb.append("" + token.intValue);
+        else
+        sb.append(Group.getSeqcodeString(getSeqCode(token)));
         continue;
       case Token.spec_chain:
         sb.append("*:");
@@ -8234,11 +8243,6 @@ class Eval { //implements Runnable {
         continue;
       case Token.spec_atom:
         sb.append("*.");
-        break;
-      case Token.spec_seqcode_range:
-        sb.append(Group.getSeqcodeString(token.intValue));
-        sb.append('-');
-        sb.append(Group.getSeqcodeString(((Integer) token.value).intValue()));
         break;
       case Token.cell:
         if (token.value instanceof Point3f) {

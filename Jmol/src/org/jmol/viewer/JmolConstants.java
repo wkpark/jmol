@@ -34,11 +34,32 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "11.1.15";
+  public final static String version = "11.1.16";
   
   /*
    * 
+   *
    * 
+   11.1.16:
+   
+   1) adds two new modifiers:
+   
+   .min
+   .max
+   
+   as in:
+     
+    x = {*}.bonds.length.max  #the longest bond length
+    x = {*}.atoms.max         #the last atom
+   
+   2) extends find() to sets of lines. For example:
+   
+    longLine={*}.bonds.label("%=, %LENGTH").lines.find({*}.bonds.length.max)
+    message @longLine
+    longest = longLine%(longLine.find(",")-1)
+    b = {*}.bonds[longest]
+    select b_set;color bonds yellow
+
    11.1.15:
 
    APPLICATION: adds undo/redo to a fixed depth of 50 commands
@@ -2827,11 +2848,11 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "@sidechain (protein,nucleic) & !backbone",
     "@base nucleic & !backbone",
 
-    "@turn _structure=1",
-    "@sheet _structure=2",
-    "@helix _structure=3",
+    "@turn structure=1",
+    "@sheet structure=2",
+    "@helix structure=3",
 
-    "@bonded _bondedcount>0",
+    "@bonded bondcount>0",
     //    "@hetero", handled specially
 
   };

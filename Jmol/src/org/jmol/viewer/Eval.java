@@ -60,7 +60,7 @@ class BondSet extends BitSet {
   }
 
   BondSet(BitSet bs) {
-    for (int i = bs.size(); --i > 0;)
+    for (int i = bs.size(); --i >= 0;)
       if (bs.get(i))
         set(i);
   }
@@ -693,8 +693,8 @@ class Eval { //implements Runnable {
       if (isSyntaxCheck) {
         if (isScriptCheck)
           Logger.info(thisCommand);
-        if (statementLength == 1
-            && !Compiler.tokAttr(token.tok, Token.unimplemented))
+        if (statementLength == 1)
+//            && !Compiler.tokAttr(token.tok, Token.unimplemented))
           continue;
       } else {
         if (debugScript)
@@ -999,14 +999,6 @@ class Eval { //implements Runnable {
         pause();
         break;
       default:
-        if (Compiler.tokAttr(token.tok, Token.unimplemented)) {
-          String s = GT._("command ignored (not implemented): {0}", token.value
-              .toString());
-          if (isSyntaxCheck)
-            evalError(s);
-          evalWarning(s);
-          break;
-        }
         unrecognizedCommand();
       }
     }
@@ -1536,15 +1528,15 @@ class Eval { //implements Runnable {
         if (propertyValue == -1)
           continue;
         break;
-      case Token._groupID:
+      case Token.groupID:
         propertyValue = atom.getGroupID();
         if (propertyValue < 0)
           continue;
         break;
-      case Token._atomID:
+      case Token.atomID:
         propertyValue = atom.getSpecialAtomID();
         break;
-      case Token._structure:
+      case Token.structure:
         propertyValue = atom.getProteinStructureType();
         break;
       case Token.radius:
@@ -1556,7 +1548,7 @@ class Eval { //implements Runnable {
       case Token.phi:
         propertyValue = (int) (atom.getGroupPhi() * 100f);
         break;
-      case Token._bondedcount:
+      case Token.bondcount:
         propertyValue = atom.getCovalentBondCount();
         break;
       case Token.file:
@@ -3014,22 +3006,20 @@ class Eval { //implements Runnable {
     case Token.formalCharge:
     case Token.partialCharge:
     case Token.surfacedistance:
-    case Token.user:
     case Token.monomer:
     case Token.molecule:
     case Token.altloc:
     case Token.insertion:
     case Token.translucent:
     case Token.opaque:
+    case Token.jmol:
+    case Token.rasmol:
+    case Token.user:
       colorObject(Token.atom, 1);
       return;
     case Token.bitset:
     case Token.expressionBegin:
       colorObject(Token.atom, -1);
-      return;
-    case Token.jmol:
-    case Token.rasmol:
-      colorObject(Token.atom, 1);
       return;
     case Token.rubberband:
       argb = getArgbParamLast(2, false);
@@ -5545,7 +5535,13 @@ class Eval { //implements Runnable {
       case Token.comma: //ignore commas
         break;
       case Token.dot:
-        if (!rpn.addOp(getBitsetPropertySelector(i)))
+        Token token = getBitsetPropertySelector(i);
+        //check for added min/max modifier
+        if (tokAt(iToken + 1) == Token.dot
+            && Compiler.tokAttrOr(tokAt(iToken + 2), Token.min, Token.max)) {
+          token.intValue |= getToken(iToken + 2).tok;
+        }
+        if (!rpn.addOp(token))
           invalidArgument();
         i = iToken;
         break;
@@ -5672,11 +5668,10 @@ class Eval { //implements Runnable {
     case Token.bonds:
     case Token.atom:
     case Token.distance:
-    case Token.ident:
     case Token.label:
-    case Token.length:
-    case Token.list:
+    case Token.find:
       break;
+      
     case Token.identifier:
       if (s.equals("x"))
         tok = Token.atomX;
@@ -5684,16 +5679,6 @@ class Eval { //implements Runnable {
         tok = Token.atomY;
       else if (s.equals("z"))
         tok = Token.atomZ;
-      else if (s.equals("bondcount"))
-        tok = Token._bondedcount;
-      else if (s.equals("xyz"))
-        tok = Token.point3f;
-      else if (s.equals("lines"))
-        tok = Token.list;
-      else if (s.equals("find"))
-        tok = Token.find;
-      else if (s.equals("size"))
-        tok = Token.size;
       else
         invalidArgument();
       break;
@@ -5704,22 +5689,53 @@ class Eval { //implements Runnable {
     return new Token(Token.propselector, tok, s);
   }
 
-  Object getBitsetAverage(BitSet bs, int tok, Point3f ptRef, Point4f planeRef, Object tokenValue, boolean useAtomMap) throws ScriptException {
+  Object getBitsetProperty(BitSet bs, int tok, Point3f ptRef, Point4f planeRef,
+                           Object tokenValue, boolean useAtomMap)
+      throws ScriptException {
     boolean isAtoms = !(tokenValue instanceof BondSet);
+    boolean isMin = Compiler.tokAttr(tok, Token.min);
+    boolean isMax = Compiler.tokAttr(tok, Token.max);
+    tok &= ~Token.minmaxmask;
+    BitSet bsNew = null;
     if (tok == Token.atom)
-      return (!isAtoms && !isSyntaxCheck ? getAtomBitsetFromBonds(bs) : bs);
+      bsNew = (!isAtoms && !isSyntaxCheck ? getAtomBitsetFromBonds(bs) : bs);
     if (tok == Token.bonds)
-      return (isAtoms && !isSyntaxCheck ? viewer.getBondsForSelectedAtoms(bs)
+      bsNew = (isAtoms && !isSyntaxCheck ? viewer.getBondsForSelectedAtoms(bs)
           : bs);
+    if (bsNew != null) {
+      if (!isMax && !isMin || isSyntaxCheck)
+        return bsNew;
+      int n = bsNew.size();
+      int i = 0;
+      if (isMin) {
+        for (i = -1; ++i < n;)
+          if (bsNew.get(i))
+            break;
+      } else if (isMax) {
+        for (i = n; --i >= 0;)
+          if (bsNew.get(i))
+            break;
+      }
+      bsNew.clear();
+      if (i >= 0 && i < n)
+        bsNew.set(i);
+      return bsNew;
+    }
+
     if (tok == Token.ident)
-      return getBitsetIdent(bs, null, tokenValue, useAtomMap);
-    int iv = 0;
-    float fv = 0;
+      return (isMin || isMax ? "" : getBitsetIdent(bs, null, tokenValue,
+          useAtomMap));
+
     int n = 0;
+    int ivAvg = 0, ivMax = Integer.MIN_VALUE, ivMin = Integer.MAX_VALUE;
+    float fvAvg = 0, fvMax = -Float.MAX_VALUE, fvMin = Float.MAX_VALUE;
     Point3f pt = new Point3f();
+
     if (tok == Token.distance && ptRef == null && planeRef == null)
       return pt;
+
     boolean isInt = true;
+
     Frame frame = viewer.getFrame();
     if (isAtoms) {
       int atomCount = (isSyntaxCheck ? 0 : viewer.getAtomCount());
@@ -5727,109 +5743,147 @@ class Eval { //implements Runnable {
         if (bs.get(i)) {
           n++;
           Atom atom = frame.getAtomAt(i);
+          if (isInt) {
+            int iv = 0;
+            switch (tok) {
+            case Token.atomno:
+              iv += atom.getAtomNumber();
+              break;
+            case Token.atomIndex:
+              iv = i;
+              break;
+            case Token.elemno:
+              iv = atom.getElementNumber();
+              break;
+            case Token.element:
+              iv = atom.getAtomicAndIsotopeNumber();
+              break;
+            case Token.formalCharge:
+              iv = atom.getFormalCharge();
+              break;
+            case Token.site:
+              iv = atom.getAtomSite();
+              break;
+            case Token.symop:
+              // a little weird
+              BitSet bsSym = atom.getAtomSymmetry();
+              int len = bsSym.size();
+              int p = 0;
+              int ivvMin = Integer.MAX_VALUE;
+              int ivvMax = Integer.MIN_VALUE;
+              for (int k = 0; k < len; k++)
+                if (bsSym.get(k)) {
+                  iv += k + 1;
+                  ivvMin = Math.min(ivvMin, k + 1);
+                  ivvMax = Math.max(ivvMax, k + 1);
+                  p++;
+                }
+              if (isMin)
+                iv = ivvMin;
+              else if (isMax)
+                iv = ivvMax;
+              n += p - 1;
+              break;
+            case Token.molecule:
+              iv = atom.getMoleculeNumber();
+              break;
+            case Token.occupancy:
+              iv = atom.getOccupancy();
+              break;
+            case Token.polymerLength:
+              iv = atom.getPolymerLength();
+              break;
+            case Token.resno:
+              iv = atom.getResno() + 1;
+              break;
+            case Token.groupID:
+              iv = atom.getGroupID() + 1;
+              break;
+            case Token.atomID:
+              iv = atom.getSpecialAtomID();
+              break;
+            case Token.structure:
+              iv = atom.getProteinStructureType();
+              break;
+            case Token.bondcount:
+              iv = atom.getCovalentBondCount();
+              break;
+            case Token.file:
+              iv = atom.getModelFileIndex() + 1;
+              break;
+            case Token.model:
+              iv = atom.getModelNumber() % 1000000;
+              break;
+            default:
+              isInt = false;
+              break;
+            }
+            if (iv != Integer.MAX_VALUE) {
+              if (isMin)
+                ivMin = Math.min(ivMin, iv);
+              else if (isMax)
+                ivMax = Math.max(ivMax, iv);
+              else
+                ivAvg += iv;
+              continue;
+            }
+          }
+
+          //floats 
+
+          float fv = Float.MAX_VALUE;
+
           switch (tok) {
-          case Token.atomno:
-            iv += atom.getAtomNumber();
-            continue;
-          case Token.atomIndex:
-            iv += i;
-            continue;
-          case Token.elemno:
-            iv += atom.getElementNumber();
-            continue;
-          case Token.element:
-            iv += atom.getAtomicAndIsotopeNumber();
-            continue;
-          case Token.formalCharge:
-            iv += atom.getFormalCharge();
-            continue;
-          case Token.site:
-            iv += atom.getAtomSite();
-            continue;
-          case Token.symop:
-            // a little weird
-            BitSet bsSym = atom.getAtomSymmetry();
-            int len = bsSym.size();
-            int p = 0;
-            for (int k = 0; k < len; k++)
-              if (bsSym.get(k)) {
-                iv += k + 1;
-                p++;
-              }
-            n += p - 1;
-            continue;
-          case Token.molecule:
-            iv += atom.getMoleculeNumber();
-            continue;
-          case Token.occupancy:
-            iv += atom.getOccupancy();
-            continue;
-          case Token.polymerLength:
-            iv += atom.getPolymerLength();
-            continue;
-          case Token.resno:
-            iv += atom.getResno() + 1;
-            continue;
-          case Token._groupID:
-            iv += atom.getGroupID() + 1;
-            continue;
-          case Token._atomID:
-            iv += atom.getSpecialAtomID();
-            continue;
-          case Token._structure:
-            iv += atom.getProteinStructureType();
-            continue;
-          case Token._bondedcount:
-            iv += atom.getCovalentBondCount();
-            continue;
-          case Token.file:
-            iv += atom.getModelFileIndex() + 1;
-            continue;
-          case Token.model:
-            iv += atom.getModelNumber() % 1000000;
-            continue;
-          case Token.partialCharge:
-            fv += atom.getPartialCharge();
+          case Token.atomX:
+            fv = atom.x;
             break;
-          case Token.temperature: // 0 - 9999
-            fv += atom.getBfactor100() / 100f;
+          case Token.atomY:
+            fv = atom.y;
+            break;
+          case Token.atomZ:
+            fv = atom.z;
+            break;
+          case Token.distance:
+            if (planeRef != null)
+              fv = Graphics3D.distanceToPlane(planeRef, atom);
+            else
+              fv = atom.distance(ptRef);
+            break;
+          case Token.radius:
+            fv = atom.getRadius();
+            break;
+          case Token.partialCharge:
+            fv = atom.getPartialCharge();
+            break;
+          case Token.phi:
+            fv = atom.getGroupPhi();
+            break;
+          case Token.psi:
+            fv = atom.getGroupPsi();
             break;
           case Token.surfacedistance:
             if (frame.getSurfaceDistanceMax() == 0)
               dots(statementLength, Dots.DOTS_MODE_CALCONLY);
-            fv += atom.getSurfaceDistance100() / 100f;
+            fv = atom.getSurfaceDistance100() / 100f;
             break;
-          case Token.radius:
-            fv += atom.getRadius();
+          case Token.temperature: // 0 - 9999
+            fv = atom.getBfactor100() / 100f;
             break;
-          case Token.psi:
-            fv += atom.getGroupPsi();
-            break;
-          case Token.phi:
-            fv += atom.getGroupPhi();
-            break;
-          case Token.atomX:
-            fv += atom.x;
-            break;
-          case Token.atomY:
-            fv += atom.y;
-            break;
-          case Token.atomZ:
-            fv += atom.z;
-            break;
-          case Token.distance:
-            if (planeRef != null)
-              fv += Graphics3D.distanceToPlane(planeRef, atom);
-            else
-              fv += atom.distance(ptRef);
-            break;
-          case Token.point3f:
+          case Token.xyz:
             pt.add(atom);
             break;
           default:
             unrecognizedAtomProperty(Token.nameOf(tok));
           }
-          isInt = false;
+          
+          if (fv != Float.MAX_VALUE) {
+            if (isMin)
+              fvMin = Math.min(fvMin, fv);
+            else if (isMax)
+              fvMax = Math.max(fvMax, fv);
+            else
+              fvAvg += fv;
+          }
         }
     } else {
       int bondCount = viewer.getBondCount();
@@ -5839,9 +5893,11 @@ class Eval { //implements Runnable {
           Bond bond = frame.getBondAt(i);
           switch (tok) {
           case Token.length:
-            fv += bond.atom1.distance(bond.atom2);
-            break;
-          case Token.point3f:
+            float fv = bond.atom1.distance(bond.atom2);
+            fvMin = Math.min(fvMin, fv);
+            fvMax = Math.max(fvMax, fv);
+            fvAvg += fv;
+          case Token.xyz:
             pt.add(bond.atom1);
             pt.add(bond.atom2);
             n++;
@@ -5852,13 +5908,23 @@ class Eval { //implements Runnable {
           isInt = false;
         }
     }
-    if (tok == Token.point3f)
+    if (tok == Token.xyz)
       return (n == 0 ? pt : new Point3f(pt.x / n, pt.y / n, pt.z / n));
     if (n == 0)
       return new Float(Float.NaN);
-    if (isInt && (iv / n) * n == iv)
-      return new Integer(iv / n);
-    return new Float((isInt ? iv * 1f : fv) / n);
+    
+    if (isMin) {
+      n = 1;
+      ivAvg = ivMin;
+      fvAvg = fvMin;
+    } else if (isMax) {
+      n = 1;
+      ivAvg = ivMax;
+      fvAvg = fvMax;
+    }
+    if (isInt && (ivAvg / n) * n == ivAvg)
+      return new Integer(ivAvg / n);
+    return new Float((isInt ? ivAvg * 1f : fvAvg) / n);
   }
 
   void setAxes(int index) throws ScriptException {
@@ -7924,9 +7990,9 @@ class Eval { //implements Runnable {
     throw new ScriptException(message);
   }
 
-  private void evalWarning(String message) {
-    new ScriptException(message);
-  }
+//  private void evalWarning(String message) {
+//    new ScriptException(message);
+//  }
 
   private void unrecognizedCommand() throws ScriptException {
     evalError(GT._("unrecognized command") + ": " + statement[0].value);
@@ -8386,6 +8452,14 @@ class Eval { //implements Runnable {
         return false;
 
       switch (op.tok) {
+      case Token.min:
+      case Token.max:
+        int tok = oPt < 0 ? Token.nada : oStack[oPt].tok;
+        if (!wasX
+            || !(tok == Token.propselector || tok == Token.bonds || tok == Token.atom))
+          return false;
+        oStack[oPt].intValue |= op.tok;
+        return true;
       case Token.leftsquare: // two contexts: [x x].distance or {....}[n]
         isLeftOp = !wasX;
         if (isLeftOp)
@@ -8418,8 +8492,7 @@ class Eval { //implements Runnable {
       //do we need to operate?
 
       while (oPt >= 0
-          && (!(isLeftOp || op.tok == Token.leftsquare) ||
-              (op.tok == Token.propselector || op.tok == Token.leftsquare)
+          && (!(isLeftOp || op.tok == Token.leftsquare) || (op.tok == Token.propselector || op.tok == Token.leftsquare)
               && oStack[oPt].tok == Token.propselector)
           && Token.prec(oStack[oPt]) >= Token.prec(op)) {
 
@@ -8454,10 +8527,10 @@ class Eval { //implements Runnable {
       }
 
       // now add a marker on the xStack if necessary
-      
+
       if (newOp != null)
         addX(newOp);
-     
+
       // fix up counts and operand flag
       // right ) and ] are not added to the stack
 
@@ -8625,7 +8698,7 @@ class Eval { //implements Runnable {
       Point3f pt = ptValue(x2);
       Point4f plane = planeValue(x2);
       if (x1.tok == Token.bitset)
-        return addX(getBitsetAverage(Token.bsSelect(x1), Token.distance, pt,
+        return addX(getBitsetProperty(Token.bsSelect(x1), Token.distance, pt,
             plane, x1.value, false));
       else if (x1.tok == Token.point3f)
         return addX(plane == null ? pt.distance(ptValue(x1))
@@ -8660,9 +8733,27 @@ class Eval { //implements Runnable {
         return false;
       if (isSyntaxCheck)
         return addX((int)1);
-      Token x2 = args[0];
-      if (x1.tok == Token.string && x2.tok == Token.string)
-        return addX(Token.sValue(x1).indexOf(Token.sValue(x2)) + 1);
+      String sFind = Token.sValue(args[0]);
+      if (x1.tok == Token.string)
+        return addX(Token.sValue(x1).indexOf(sFind) + 1);
+      if (x1.tok == Token.list) {
+        int n = 0;
+        String[]list = (String[])x1.value;
+        int ipt = -1;
+        for (int i =0; i < list.length;i++)
+          if (list[i].indexOf(sFind) >= 0) {
+            n++;
+            ipt = i;
+          }
+        if (n == 1)
+          return addX(list[ipt]);
+        String[]listNew = new String[n];
+        if (n > 0)
+        for (int i =list.length; --i >=0; )
+          if (list[i].indexOf(sFind) >= 0)
+            listNew[--n] = list[i];
+        return addX(listNew);
+      }
       return false;
     }
     
@@ -8859,12 +8950,12 @@ class Eval { //implements Runnable {
         return (x2.tok == Token.bitset ? addX(notSet(Token.bsSelect(x2)))
             : addX(!Token.bValue(x2)));
 
-      int iv = op.intValue;
+      int iv = op.intValue & ~Token.minmaxmask;
       if (op.tok == Token.propselector) {
         if (iv == Token.size) {
           return addX(Token.sizeOf(x2));
         }
-        if (iv == Token.list) {
+        if (iv == Token.lines) {
           if (x2.tok != Token.string)
             return false;
           String s = (String) x2.value;
@@ -8876,7 +8967,7 @@ class Eval { //implements Runnable {
           return false;
         if (op.intValue == Token.bonds && x2.value instanceof BondSet)
           return addX(x2);
-        Object val = getBitsetAverage(Token.bsSelect(x2), op.intValue, null,
+        Object val = getBitsetProperty(Token.bsSelect(x2), op.intValue, null,
             null, x2.value, false);
         if (op.intValue == Token.bonds)
           return addX(new Token(Token.bitset, new BondSet((BitSet) val,
@@ -9066,7 +9157,7 @@ class Eval { //implements Runnable {
       case Token.point3f:
         return (Point3f) x.value;
       case Token.bitset:
-          return (Point3f) getBitsetAverage(Token.bsSelect(x), Token.point3f, null, null, x.value, false);
+          return (Point3f) getBitsetProperty(Token.bsSelect(x), Token.point3f, null, null, x.value, false);
       default:
         float f = Token.fValue(x);
         return new Point3f(f, f, f);

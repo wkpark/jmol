@@ -644,8 +644,8 @@ class StateManager {
         String sv = StateManager.escape(htParameterValues.get(name));
         if (nMax > 0 && sv.length() > nMax)
           sv = sv.substring(0, nMax) + "\n#...(" + sv.length()
-              + " bytes -- use SHOW " + name + " or MESSAGE %{" + name
-              + "} to view)";
+              + " bytes -- use SHOW " + name + " or MESSAGE @" + name
+              + " to view)";
         return sv;
       }
       if (htPropertyFlags.containsKey(name))

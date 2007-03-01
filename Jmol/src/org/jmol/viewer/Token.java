@@ -68,36 +68,203 @@ public class Token {
   final static int decimal           =  3;
   final static int string            =  4;
   final static int seqcode           =  5;
-  final static int keyword           =  6;
+  final static int list              =  6;
+  final static int point3f           =  7;
+  final static int point4f           =  8; 
+  final static int keyword           =  9;
 
   final static String[] astrType = {
     "nada", "identifier", "integer", "decimal", "string",
-    "seqcode", "keyword"
+    "seqcode", "list", "point", "plane", "keyword"
   };
 
+  // command types
+  
   final static int command           = (1 <<  8);
   final static int expressionCommand = (1 <<  9); // expression command
   final static int embeddedExpression= (1 << 10); // embedded expression
-  final static int setparam          = (1 << 11); // parameter to set command
-  final static int showparam         = (1 << 12); // no longer necessary in general
-  final static int bool              = (1 << 13);
-  final static int misc              = (1 << 14); // misc parameter
-  final static int expression        = (1 << 15); /// expression term
-  // every property is also valid in an expression context
-  final static int atomproperty      = (1 << 16) | expression;
-  final static int atompropertyfloat = atomproperty | 1 << 5;
-  // every predefined is also valid in an expression context
+  final static int specialstring     = (1 << 11); // echo, label
+//generally, the minus sign is used to denote atom ranges
+  // this property is used for the commands which allow negative integers
+  final static int negnums           = (1 << 12);
+  
+  // parameter types
+  
+  final static int setparam          = (1 << 13); // parameter to set command
+  final static int colorparam        = (1 << 14);
+  final static int misc              = (1 << 15); // misc parameter
+  
+  // expression terms
+  
+  final static int expression        = (1 << 16);
   final static int predefinedset     = (1 << 17) | expression;
-  final static int colorparam        = (1 << 18);
-  final static int specialstring     = (1 << 19); // echo, label
-  // generally, the minus sign is used to denote atom ranges
-  // this property is used for the few commands which allow negative integers
-  final static int negnums           = (1 << 20);
-  final static int objectid          = (1 << 21);
-  final static int unimplemented     = (1 << 22);
-  final static int mathop            = (1 << 23) | expression;
-  final static int comparator        = (1 << 24);
-  final static int mathfunc          = (1 << 25) | expression;
+  final static int atomproperty      = (1 << 18) | expression;
+  final static int mathproperty      = (1 << 19) | atomproperty;
+  final static int mathop            = (1 << 20) | expression;
+  final static int mathfunc          = (1 << 21) | expression;  
+  final static int comparator        = (1 << 22) | expression;
+
+  final static int coordOrSet = negnums | embeddedExpression; 
+
+  // These are unrelated
+  final static int varArgCount       = (1 << 4);
+  final static int maxArg1           = (1 << 4) | 1;
+  final static int maxArg2           = (1 << 4) | 2;
+  final static int maxArg3           = (1 << 4) | 3;
+  final static int maxArg4           = (1 << 4) | 4;
+  final static int onDefault1        = (1 << 5) | 1;
+  
+  // rasmol commands
+  final static int backbone     = command |  0 | predefinedset;
+  final static int background   = command |  1 | colorparam | setparam;
+  final static int cartoon      = command |  3 | setparam;
+  final static int center       = command |  4 | setparam | expressionCommand;
+  final static int color        = command |  6 | colorparam | setparam | embeddedExpression;
+  final static int connect      = command |  7 | embeddedExpression | colorparam;
+  //final static int data         = command |  8; with mathfunc
+  final static int define       = command |  9 | expressionCommand | expression | setparam;
+  final static int dots         = command | 10 | embeddedExpression;
+  final static int echo         = command | 11 | setparam | specialstring;
+  final static int exit         = command | 12;
+  final static int hbond        = command | 13 | setparam | expression;
+  final static int help         = command | 14 | setparam | specialstring;
+  //final static int label        = command | 15 | specialstring; with mathfunc
+  //final static int load         = command | 16 | negnums; with mathfunc
+  final static int monitor      = command | 18 | setparam | embeddedExpression | expression;
+  final static int pause        = command | 19 | misc | specialstring;
+  final static int quit         = command | 21;
+  final static int refresh      = command | 22;
+  final static int reset        = command | 24;
+  final static int restrict     = command | 25 | expressionCommand;
+  final static int ribbon       = command | 26;
+  final static int rotate       = command | 27 | coordOrSet;
+  final static int save         = command | 28;
+  final static int script       = command | 29;
+  final static int select       = command | 30 | expressionCommand;
+  final static int set          = command | 31 | negnums | embeddedExpression | colorparam;
+  final static int show         = command | 32;
+  final static int slab         = command | 33 | negnums | embeddedExpression;
+  final static int spacefill    = command | 35 | setparam | negnums;
+  final static int ssbond       = command | 36 | setparam;
+  final static int stereo       = command | 38 | colorparam | negnums;
+  final static int strands      = command | 39 | setparam;
+  final static int trace        = command | 41;
+  final static int translate    = command | 42 | negnums;
+  final static int wireframe    = command | 44;
+  final static int write        = command | 45 | setparam;
+  final static int zap          = command | 46;
+  final static int zoom         = command | 47 | negnums | embeddedExpression;
+  final static int zoomTo       = command | 48 | negnums | embeddedExpression;
+  final static int initialize   = command | 49;
+  // openrasmol commands
+  final static int depth        = command | 50 | negnums | embeddedExpression;
+  final static int star         = command | 51;
+  // chime commands
+  final static int delay        = command | 60;
+  final static int loop         = command | 61;
+  final static int move         = command | 62 | negnums;
+  final static int spin         = command | 64 | setparam | coordOrSet;
+  final static int animation    = command | 67;
+  final static int frame        = command | 68;
+  // jmol commands
+  final static int hide         = command | 79 | expressionCommand;
+  final static int font         = command | 80;
+  final static int hover        = command | 81 | specialstring;
+  final static int vibration    = command | 82 | negnums;
+  final static int vector       = command | 83 | negnums;
+  final static int meshRibbon   = command | 84;
+  final static int halo         = command | 85;
+  final static int rocket       = command | 86;
+  final static int geosurface   = command | 87 | embeddedExpression;
+  final static int moveto       = command | 88 | negnums | embeddedExpression;
+  final static int bondorder    = command | 89;
+  final static int console      = command | 90;
+  final static int pmesh        = command | 91;
+  final static int polyhedra    = command | 92 | embeddedExpression | colorparam;
+  final static int centerAt     = command | 93;
+  final static int isosurface   = command | 94 | colorparam | coordOrSet;
+  final static int draw         = command | 95 | coordOrSet | colorparam;
+  final static int getproperty  = command | 96 | embeddedExpression;
+  final static int dipole       = command | 97 | coordOrSet;
+  final static int configuration = command | 98;
+  final static int mo           = command | 99 | colorparam | negnums;
+  final static int lcaocartoon  = command | 100| colorparam | embeddedExpression;
+  final static int message      = command | 101 | specialstring;
+  final static int translateSelected = command | 102 | negnums;
+  final static int calculate    = command | 103;
+  final static int restore      = command | 104;
+  final static int selectionHalo = command | 105 | setparam;
+  final static int history       = command | 106 | setparam;
+  final static int display       = command | 107 | setparam | expressionCommand;
+  final static int ifcmd         = command | 108 |  negnums | embeddedExpression;
+  final static int elsecmd       = command | 109;
+  final static int endifcmd      = command | 110;
+  final static int subset        = command | 111 | expressionCommand | predefinedset;
+  final static int axes          = command | 112 | setparam;
+  final static int boundbox      = command | 113 | setparam;
+  final static int unitcell      = command | 114 | setparam | expression | predefinedset;
+  final static int frank         = command | 115 | setparam;
+  final static int navigate      = command | 116 | negnums | embeddedExpression;
+  final static int gotocmd       = command | 117;
+  final static int invertSelected = command | 118 | negnums | embeddedExpression;
+  final static int rotateSelected = command | 119 | negnums | embeddedExpression;
+
+  //the following are listed with atomproperty because they must be registered as atom property names
+  //final static int model           = atomproperty | 5 | command;
+  //final static int file            = atomproperty | 26 | command;
+
+  final static int expressionBegin = expression | 100;
+  final static int expressionEnd   = expression | 101;
+
+  // atom expression operators
+  final static int dot          = expression | 1;
+  final static int colon        = expression | 2;
+  final static int leftbrace    = expression | 3;
+  final static int rightbrace   = expression | 4;
+  final static int dollarsign   = expression | 5;
+  final static int altloc       = expression | 6;
+  final static int insertion    = expression | 7;
+  final static int group        = expression | 8;
+  final static int chain        = expression | 9;
+  final static int sequence     = expression | 10;
+  final static int comma        = expression | 11;
+  final static int coord        = expression | 12;
+  final static int none         = expression | 13;
+  final static int bonds        = expression | 14;
+  final static int all          = expression | 15;
+  final static int visible       = expression | 17;
+  final static int clickable     = expression | 18;
+  final static int carbohydrate  = expression | 19;
+  final static int hidden        = expression | 20;
+  final static int displayed     = expression | 21;
+  final static int symmetry      = expression | 22;
+  final static int specialposition = expression | 23;
+
+  // generated by compiler:
+  
+  final static int spec_resid           = expression | 24;
+  final static int spec_name_pattern    = expression | 25;
+  final static int spec_seqcode         = expression | 26;
+  final static int spec_seqcode_range   = expression | 27;
+  final static int spec_chain           = expression | 28;
+  final static int spec_alternate       = expression | 29;
+  final static int spec_model           = expression | 30;  // /3, /4
+  final static int spec_model2          = expression | 31;  // 1.2, 1.3
+  final static int spec_atom            = expression | 32;
+
+  final static int amino         = predefinedset |  0;
+  final static int hetero        = predefinedset |  1 | setparam;
+  final static int hydrogen      = predefinedset |  2 | setparam;
+  final static int selected      = predefinedset |  3;
+  final static int solvent       = predefinedset |  4 | setparam;
+  final static int sidechain     = predefinedset |  5;
+  final static int protein       = predefinedset |  6;
+  final static int nucleic       = predefinedset |  7;
+  final static int dna           = predefinedset |  8;
+  final static int rna           = predefinedset |  9;
+  final static int purine        = predefinedset | 10;
+  final static int pyrimidine    = predefinedset | 11;
+  final static int surface       = predefinedset | 12;
 
   final static int prec(Token op) {
     return ((op.tok >> 3) & 0xF);  
@@ -156,7 +323,50 @@ public class Token {
   
   final static int within       = 0  | mathfunc | 5 << 3;
   final static int connected    = 1  | mathfunc | 5 << 3;
+
+
+  final static int minmaxmask = 3 << 6;
+  final static int min        = 1 << 6;
+  final static int max        = 2 << 6;
   
+  final static int xyz       = 1 | mathproperty;
+  final static int ident     = 2 | mathproperty;
+  final static int length    = 3 | mathproperty;
+  final static int size      = 4 | mathproperty;
+  final static int lines     = 5 | mathproperty;
+
+  final static int atompropertyfloat = atomproperty | 1 << 5;
+  
+  final static int atomno        = atomproperty | 1;
+  final static int atomID        = atomproperty | 2;
+  final static int bondcount     = atomproperty | 3;
+  final static int atomIndex     = atomproperty | 4;
+  final static int cell          = atomproperty | 5;
+  final static int element       = atomproperty | 6;
+  final static int elemno        = atomproperty | 7;
+  final static int file          = atomproperty | 8 | command;
+  final static int formalCharge  = atomproperty | 9 | setparam;
+  final static int groupID       = atomproperty | 10;
+  final static int model         = atomproperty | 13 | command;
+  final static int molecule      = atomproperty | 14;
+  final static int occupancy     = atomproperty | 15;
+  final static int polymerLength = atomproperty | 16;
+  final static int radius        = atomproperty | 17 | setparam;
+  final static int resno         = atomproperty | 18;
+  final static int site          = atomproperty | 19;
+  final static int structure     = atomproperty | 20;
+  final static int symop         = atomproperty | 21;
+
+  final static int atomX           = atompropertyfloat | 0;
+  final static int atomY           = atompropertyfloat | 1;
+  final static int atomZ           = atompropertyfloat | 2;
+  final static int partialCharge   = atompropertyfloat | 3;
+  final static int phi             = atompropertyfloat | 4;
+  final static int psi             = atompropertyfloat | 5;
+  final static int surfacedistance = atompropertyfloat | 6;
+  final static int temperature     = atompropertyfloat | 7;
+  
+ // math-related Token static methods
   
   final static Point3f pt0 = new Point3f();
 
@@ -388,166 +598,26 @@ public class Token {
     return token;
   }
   
-
-  final static int coordOrSet = negnums | embeddedExpression; 
-
-  // These are unrelated
-  final static int varArgCount       = (1 << 4);
-  final static int maxArg1           = (1 << 4) | 1;
-  final static int maxArg2           = (1 << 4) | 2;
-  final static int maxArg3           = (1 << 4) | 3;
-  final static int maxArg4           = (1 << 4) | 4;
-  final static int onDefault1        = (1 << 5) | 1;
-  
-  // rasmol commands
-  final static int backbone     = command |  0 | bool | predefinedset;
-  final static int background   = command |  1 | colorparam | setparam;
-  final static int cartoon      = command |  3 | setparam;
-  final static int center       = command |  4 | setparam | expressionCommand;
-  final static int clipboard    = command |  5 | unimplemented;
-  final static int color        = command |  6 | colorparam | setparam | embeddedExpression;
-  final static int connect      = command |  7 | embeddedExpression | colorparam;
-  //final static int data         = command |  8; with mathfunc
-  final static int define       = command |  9 | expressionCommand | expression | setparam;
-  final static int dots         = command | 10 | embeddedExpression | bool;
-  final static int echo         = command | 11 | setparam | specialstring;
-  final static int exit         = command | 12;
-  final static int hbond        = command | 13 | setparam | bool | expression;
-  final static int help         = command | 14 | setparam | specialstring;
-  //final static int label        = command | 15 | specialstring; with mathfunc
-  //final static int load         = command | 16 | negnums; with mathfunc
-  final static int monitor      = command | 18 | setparam | bool | embeddedExpression | expression;
-  final static int pause        = command | 19 | misc | specialstring;
-  final static int print        = command | 20 | unimplemented;
-  final static int quit         = command | 21;
-  final static int refresh      = command | 22;
-  final static int renumber     = command | 23 | unimplemented;
-  final static int reset        = command | 24;
-  final static int restrict     = command | 25 | expressionCommand;
-  final static int ribbon       = command | 26 | bool;
-  final static int rotate       = command | 27 | bool | coordOrSet;
-  final static int save         = command | 28;
-  final static int script       = command | 29;
-  final static int select       = command | 30 | expressionCommand;
-  final static int set          = command | 31 | bool | negnums | embeddedExpression | colorparam;
-  final static int show         = command | 32;
-  final static int slab         = command | 33 | bool | negnums | embeddedExpression;
-  final static int spacefill    = command | 35 | setparam | bool | negnums;
-  final static int ssbond       = command | 36 | setparam | bool;
-  final static int stereo       = command | 38 | colorparam | negnums;
-  final static int strands      = command | 39 | setparam | bool;
-  final static int structure    = command | 40 | unimplemented;
-  final static int trace        = command | 41 | bool;
-  final static int translate    = command | 42 | negnums;
-  final static int unbond       = command | 43 | unimplemented;
-  final static int wireframe    = command | 44 | bool;
-  final static int write        = command | 45 | setparam;
-  final static int zap          = command | 46;
-  final static int zoom         = command | 47 | negnums | embeddedExpression;
-  final static int zoomTo       = command | 48 | negnums | embeddedExpression;
-  final static int initialize   = command | 49;
-  // openrasmol commands
-  final static int depth        = command | 50| bool | negnums | embeddedExpression;
-  final static int star         = command | 51;
-  // chime commands
-  final static int delay        = command | 60;
-  final static int loop         = command | 61;
-  final static int move         = command | 62 | negnums;
-  final static int spin         = command | 64 | setparam | bool | coordOrSet;
-  final static int list         = command | 65 | unimplemented;
-  final static int display3d    = command | 66 | unimplemented;
-  final static int view         = command | 63 | unimplemented;
-  final static int bonds        = command | 64 | unimplemented | expression | setparam;
-  final static int animation    = command | 67;
-  final static int frame        = command | 68;
-  // jmol commands
-  final static int hide         = command | 79 | expressionCommand;
-  final static int font         = command | 80;
-  final static int hover        = command | 81 | specialstring;
-  final static int vibration    = command | 82 | negnums;
-  final static int vector       = command | 83 | negnums;
-  final static int meshRibbon   = command | 84;
-  final static int halo         = command | 85;
-  final static int rocket       = command | 86;
-  final static int geosurface   = command | 87 | embeddedExpression;
-  final static int moveto       = command | 88 | negnums | embeddedExpression;
-  final static int bondorder    = command | 89;
-  final static int console      = command | 90;
-  final static int pmesh        = command | 91;
-  final static int polyhedra    = command | 92 | embeddedExpression | colorparam;
-  final static int centerAt     = command | 93;
-  final static int isosurface   = command | 94 | colorparam | coordOrSet;
-  final static int draw         = command | 95 | coordOrSet | colorparam;
-  final static int getproperty  = command | 96 | embeddedExpression;
-  final static int dipole       = command | 97 | coordOrSet;
-  final static int configuration = command | 98;
-  final static int mo           = command | 99 | colorparam | negnums;
-  final static int lcaocartoon  = command | 100| colorparam | embeddedExpression;
-  final static int message      = command | 101 | specialstring;
-  final static int translateSelected = command | 102 | negnums;
-  final static int calculate    = command | 103;
-  final static int restore      = command | 104;
-  final static int selectionHalo = command | 105 | setparam;
-  final static int history       = command | 106 | setparam;
-  final static int display       = command | 107 | setparam | expressionCommand;
-  final static int ifcmd         = command | 108 |  negnums | embeddedExpression;
-  final static int elsecmd       = command | 109;
-  final static int endifcmd      = command | 110;
-  final static int subset        = command | 111 | expressionCommand | predefinedset;
-  final static int axes          = command | 112 | setparam;
-  final static int boundbox      = command | 113 | setparam;
-  final static int unitcell      = command | 114 | setparam | expression | predefinedset;
-  final static int frank         = command | 115 | setparam;
-  final static int navigate      = command | 116 | negnums | embeddedExpression;
-  final static int gotocmd       = command | 117;
-  final static int invertSelected = command | 118 | negnums | embeddedExpression;
-  final static int rotateSelected = command | 119 | negnums | embeddedExpression;
-
-  //the following are listed with atomproperty because they must be registered as atom property names
-  //final static int model           = atomproperty | 5 | command;
-  //final static int molecule        = atomproperty | 12 | command | unimplemented;
-  //final static int file            = atomproperty | 26 | command | showparam;
-
   // parameters
-  final static int ambient      = setparam |  0;
-  // background
-  final static int backfade     = setparam |  2;
-  final static int bondmode     = setparam |  3;
-  // cartoon
-  final static int cisangle     = setparam |  6;
-  final static int fontsize     = setparam |  7;
-  final static int fontstroke   = setparam |  8;
-  // hbonds
-  // hetero
-  final static int hourglass    = setparam |  9;
-  // hydrogen
-  final static int kinemage     = setparam | 10;
-  final static int menus        = setparam | 11;
-  // monitor
-  final static int mouse        = setparam | 12;
-  final static int picking      = setparam | 13;
-  final static int shadow       = setparam | 14;
-  final static int slabmode     = setparam | 15;
-  // solvent
-  final static int specular     = setparam | 16;
-  final static int specpercent  = setparam | 17;  
-  final static int specpower    = setparam | 18;
-  final static int specexponent = setparam | 19;
-  // ssbonds
-  // stereo
-  // strands
-  final static int transparent  = setparam | 20;
-  final static int vectps       = setparam | 22;
-  
-  // write
+  final static int ambient       = setparam |  0;
+  final static int bondmode      = setparam |  1;
+  final static int fontsize      = setparam |  2;
+  final static int mouse         = setparam |  3;
+  final static int picking       = setparam |  4;
+  final static int shadow        = setparam |  5;
+  final static int slabmode      = setparam |  6;
+  final static int specular      = setparam |  7;
+  final static int specpercent   = setparam |  8;  
+  final static int specpower     = setparam |  9;
+  final static int specexponent  = setparam | 10;
+  final static int transparent   = setparam | 11;
+  final static int defaultColors = setparam | 12;
 
   // chime set parameters
   final static int clear        = setparam | 23;
-  final static int gaussian     = setparam | 24;
   // load
   final static int mep          = setparam | 25;
   final static int mlp          = setparam | 26;
-  final static int molsurface   = setparam | 27;
   final static int scale3d      = setparam | 29;
   // jmol extensions
   final static int property     = setparam | 30;
@@ -555,138 +625,28 @@ public class Token {
   final static int pickingStyle = setparam | 33;
   final static int spacegroup   = setparam | 34;
 
-
-  final static int information  = showparam |  0;
-  final static int phipsi       = showparam |  1;
-  final static int ramprint     = showparam |  2;
-  final static int rotation     = showparam |  3;
-  final static int group        = showparam |  4 | expression;
-  final static int chain        = showparam |  5 | expression;
-  final static int atom         = showparam |  6;
-  final static int sequence     = showparam |  7 | expression;
-  final static int symmetry     = showparam |  8 | expression | predefinedset;
-  final static int translation  = showparam |  9;
-  // chime show parameters
-  final static int residue      = showparam | 10;
-  final static int url          = showparam | 11;
-  //special positions not yet implemented as show specialpositions
-  final static int specialposition = showparam |  12 | expression | predefinedset;
-  // mlp
-  // list
-  // spin
-  //except for "symmetry", above are not implemented
-  // additional show parameters:
-  // selected
-  // center 
-  // boundbox
-  // monitor
-  // model
-  // zoom
-  
-  final static int all          = showparam | 11 | expression;
-  final static int pdbheader    = showparam | 12 | expression;
-  final static int axisangle    = showparam | 13;
-  final static int transform    = showparam | 14;
-  final static int orientation  = showparam | 15;
-  final static int state        = showparam | 16;
-
-  // of the above, only pdbheader, orientation, and file are implemented
-  // axisangle is used in the spin command, not the show command
-  
-//  from 55: 
-//  Global Const opcodes$ = "(+-*/ LNE OA!)
-//  Global Const opprior$ = "12233 555 6789
-//  a and b or c * 3 and b < c 
-  // atom expression operators
-  final static int pick         = expression | 1;
-  final static int dot          = expression | 2;
-  final static int colon        = expression | 3;
-  final static int leftbrace    = expression | 5;
-  final static int rightbrace   = expression | 6;
-  final static int dollarsign   = expression | 7 | objectid;
-  final static int altloc       = expression | 8;
-  final static int insertion    = expression | 9;
-
-  
-
-  // miguel 2005 01 01
-  // these are used to demark the beginning and end of expressions
-  // they do not exist in the source code, but are emitted by the
-  // expression compiler
-  final static int expressionBegin = expression | 100;
-  final static int expressionEnd   = expression | 101;
-
-  final static int atomno       = atomproperty | 0;
-  final static int elemno       = atomproperty | 1;
-  final static int resno        = atomproperty | 2;
-  final static int radius       = atomproperty | 3 | setparam;
-  final static int temperature  = atompropertyfloat | 4;
-  final static int model        = atomproperty | 5 | command;
-  final static int _bondedcount = atomproperty | 6;
-  final static int _groupID     = atomproperty | 7;
-  final static int _atomID      = atomproperty | 8;
-  final static int _structure   = atomproperty | 9;
-  final static int occupancy    = atomproperty | 10;
-
-  final static int polymerLength   = atomproperty | 11;
-  final static int molecule        = atomproperty | 12 | command | unimplemented;
-  final static int cell            = atomproperty | 13;
-  final static int site            = atomproperty | 14;
-  final static int element         = atomproperty | 15;
-  final static int symop           = atomproperty | 16;
-  final static int surfacedistance = atompropertyfloat | 17;
-  final static int atomIndex       = atomproperty | 18;
-  final static int formalCharge    = atomproperty | 19 | setparam;
-  final static int phi             = atompropertyfloat | 20;
-  final static int psi             = atompropertyfloat | 21;
-  final static int partialCharge   = atompropertyfloat | 22;
-
-  final static int atomX       = atompropertyfloat | 23;
-  final static int atomY       = atompropertyfloat | 24;
-  final static int atomZ       = atompropertyfloat | 25;
-  
-  final static int file            = atomproperty | 26 | command | showparam;
-
   // misc
-  final static int off          = bool |  0;
-  final static int on           = bool |  1;
-
-  final static int user         = misc |  1; //cpk & star
-  final static int none         = misc |  2 | expression;
-  final static int lines        = misc |  3;
+  final static int off          = misc |  0;
+  final static int on           = misc |  1;
+  final static int clipboard    = misc |  2;
   final static int normal       = misc |  4;
   final static int rasmol       = misc |  5;
-  final static int insight      = misc |  6;
-  final static int quanta       = misc |  7;
-  final static int ident        = misc |  8;
+  final static int axisangle    = misc |  6;
+  final static int atom         = misc |  7;
   final static int torsion      = misc | 10;
-  final static int coord        = misc | 11 | expression;
-  final static int length       = misc | 12;
-  final static int size         = misc | 13;
   final static int shapely      = misc | 14;
-  final static int comma        = misc | 15 | expression;
-
-
-//  final static int restore      = misc | 19; // chime extended
   final static int colorRGB     = misc | 20 | colorparam;
-  final static int spec_resid           = misc | 21;
-  final static int spec_name_pattern    = misc | 22;
-  final static int spec_seqcode         = misc | 23;
-  final static int spec_seqcode_range   = misc | 24;
-  final static int spec_chain           = misc | 25;
-  final static int spec_alternate       = misc | 26;
-  final static int spec_model           = misc | 27;
-  final static int spec_atom            = misc | 28;
+  final static int user         = misc | 21; //color option
+  final static int fixedtemp    = misc | 22; // color option
+
   final static int dotted       = misc | 30;
   final static int mode         = misc | 31;
   final static int direction    = misc | 32;
-//  final static int fps          = misc | 33;
   final static int displacement = misc | 34;
   final static int type         = misc | 35;
-  final static int fixedtemp    = misc | 36;
+    
   final static int rubberband   = misc | 37;
   final static int monomer      = misc | 38;
-  final static int defaultColors= misc | 39 | setparam;
   final static int opaque       = misc | 40;
   final static int translucent  = misc | 41;
   final static int delete       = misc | 42;
@@ -708,7 +668,6 @@ public class Token {
   final static int rewind       = misc | 60;
   final static int playrev      = misc | 61;
   final static int range        = misc | 62;
- // final static int point3f      = misc | 63;
   final static int sasurface    = misc | 64;
   final static int left         = misc | 65;
   final static int right        = misc | 66;
@@ -719,30 +678,17 @@ public class Token {
   final static int bitset       = misc | 71;
   final static int bondset      = misc | 72;
   final static int last         = misc | 73;
-  final static int spec_model2  = misc | 74;
-  final static int point3f      = misc | 75;
-  final static int point4f      = misc | 76;
- 
-  final static int amino       = predefinedset |  0;
-  final static int hetero      = predefinedset |  1 | setparam;
-  final static int hydrogen    = predefinedset |  2 | setparam;
-  final static int selected    = predefinedset |  3;
-  final static int solvent     = predefinedset |  4 | setparam;
-  final static int sidechain   = predefinedset |  5;
-  final static int protein     = predefinedset |  6;
-  final static int nucleic     = predefinedset |  7;
-  final static int dna         = predefinedset |  8;
-  final static int rna         = predefinedset |  9;
-  final static int purine      = predefinedset | 10;
-  final static int pyrimidine  = predefinedset | 11;
-  final static int surface     = predefinedset | 12;
-  final static int visible     = predefinedset | 13;
-  final static int clickable   = predefinedset | 14;
-  final static int carbohydrate = predefinedset | 15;
-  final static int hidden      = predefinedset | 16;
-  final static int displayed   = predefinedset | 17;
-   
+  final static int rotation     = misc | 74;
+  final static int translation  = misc | 75;
+  final static int residue      = misc | 76;
+  final static int url          = misc | 77;  
+  final static int transform    = misc | 78;
+  final static int orientation  = misc | 79;
+  final static int state        = misc | 80;
+  final static int pdbheader    = misc | 81;
 
+  // predefined Tokens: 
+  
   final static Token tokenOn  = new Token(on, 1, "on");
   final static Token tokenOff = new Token(off, 0, "off");
   final static Token tokenAll = new Token(all, "all");
@@ -759,240 +705,210 @@ public class Token {
     new Token(leftbrace, "{");
   final static Token tokenCoordinateEnd =
     new Token(rightbrace, "}");
-
   
-  /*
-    Note that the Jmol scripting language is case-insensitive.
-    So, the compiler turns all identifiers to lower-case before
-    looking up in the hash table. 
-    Therefore, the left column of this array *must* be lower-case
-  */
-
+  // user names
+  
   final static Object[] arrayPairs  = {
     // commands
-    "backbone",          new Token(backbone,  onDefault1, "backbone"),
-    "background",        new Token(background, varArgCount, "background"),
-    "cartoon",           new Token(cartoon,   onDefault1, "cartoon"),
+    "backbone",          new Token(backbone,  onDefault1),
+    "background",        new Token(background, varArgCount),
+    "cartoon",           new Token(cartoon,   onDefault1),
     "cartoons",          null,
-    "center",            new Token(center,   varArgCount, "center"),
+    "center",            new Token(center,   varArgCount),
     "centre",            null,
-    "color",             new Token(color,    varArgCount, "color"),
+    "color",             new Token(color,    varArgCount),
     "colour",            null,
-    "connect",           new Token(connect,  varArgCount, "connect"),
-    "data",              new Token(data,         maxArg2, "data"),
-    "define",            new Token(define,   varArgCount, "define"),
+    "connect",           new Token(connect,  varArgCount),
+    "data",              new Token(data,         maxArg2),
+    "define",            new Token(define,   varArgCount),
     "@",                 null,
-    "dots",              new Token(dots,     varArgCount, "dots"),
-    "echo",              new Token(echo,         maxArg1, "echo"),
-    "exit",              new Token(exit,               0, "exit"),
-    "hbond",             new Token(hbond,     onDefault1, "hbond"),
+    "dots",              new Token(dots,     varArgCount),
+    "echo",              new Token(echo,         maxArg1),
+    "exit",              new Token(exit,               0),
+    "hbond",             new Token(hbond,     onDefault1),
     "hbonds",            null,
-    "help",              new Token(help,         maxArg1, "help"),
-    "label",             new Token(label,     onDefault1, "label"),
+    "help",              new Token(help,         maxArg1),
+    "label",             new Token(label,     onDefault1),
     "labels",            null,
-    "load",              new Token(load,     varArgCount, "load"),
-    "measure",           new Token(monitor,  varArgCount, "measure"),
+    "load",              new Token(load,     varArgCount),
+    "measure",           new Token(monitor,  varArgCount),
     "measures",          null,
     "measurement",       null,
     "measurements",      null,
     "monitor",           null,
     "monitors",          null,
-    "pause",             new Token(pause,        maxArg1, "pause"),
-    "wait",              null,
-    "quit",              new Token(quit,               0, "quit"),
-    "refresh",           new Token(refresh,            0, "refresh"),
-    "reset",             new Token(reset,        maxArg1, "reset"),
-    "restore",           new Token(restore,      maxArg3, "restore"),
-    "restrict",          new Token(restrict, varArgCount, "restrict"),
-    "hide",              new Token(hide,     varArgCount, "hide"),
-    "ribbon",            new Token(ribbon,    onDefault1, "ribbon"),
-    "ribbons",           null,
-    "rotate",            new Token(rotate,   varArgCount, "rotate"),
-    "save",              new Token(save,         maxArg3, "save"),
-    "script",            new Token(script,   varArgCount, "script"),
-    "source",            null,
-    "select",            new Token(select,   varArgCount, "select"),
-    "set",               new Token(set,      varArgCount, "set"),
-    "show",              new Token(show,         maxArg2, "show"),
-    "slab",              new Token(slab,     varArgCount, "slab"),
-    "spacefill",         new Token(spacefill,    maxArg2, "spacefill"),
-    "cpk",               null,
-    "ssbond",            new Token(ssbond,    onDefault1, "ssbond"),
-    "ssbonds",           null,
-    "stereo",            new Token(stereo,   varArgCount, "stereo"),
-    "strand",            new Token(strands,   onDefault1, "strand"),
-    "strands",           null,
-    "trace",             new Token(trace,     onDefault1, "trace"),
-    "translate",         new Token(translate,          2, "translate"),
-    "wireframe",         new Token(wireframe, onDefault1, "wireframe"),
-    "write",             new Token(write,        maxArg3, "write"),
-    "zap",               new Token(zap,                0, "zap"),
-    "zoom",              new Token(zoom,     varArgCount, "zoom"),
-    "zoomto",            new Token(zoomTo,   varArgCount, "zoomTo"),
-    "initialize",        new Token(initialize,         0, "initialize"),
-    // openrasmol commands
-    "depth",             new Token(depth,    varArgCount, "depth"),
-    "star",              new Token(star,         maxArg2, "star"),
-    "stars",             null,
     
-    // chime commands (except GOTO)
-
-    "delay",             new Token(delay,     onDefault1, "delay"),
-    "loop",              new Token(loop,      onDefault1, "loop"),
-    "move",              new Token(move,     varArgCount, "move"),
-    "spin",              new Token(spin,     varArgCount, "spin"),
-    "frame",             new Token(frame,    varArgCount, "frame"),
-    "frames",            null,
-    
-    // unimplemented
-    
-    "clipboard",         new Token(clipboard, "clipboard"),
-    "print",             new Token(print, "print"),
-    "renumber",          new Token(renumber, "renumber"),
-    "structure",         new Token(structure, "structure"),
-    "unbond",            new Token(unbond, "unbond"),
-    "view",              new Token(view, "view"),
-    "list",              new Token(list, "list"),
-    "display3d",         new Token(display3d,  "display3d"),
-    "animation",         new Token(animation,  "animation"),
-    "anim",              null,
-
-    // jmol commands
-    "centerat",          new Token(centerAt, varArgCount, "centerat"),
-    "font",              new Token(font,     varArgCount, "font"),
-    "hover",             new Token(hover,     onDefault1, "hover"),
-    "vibration",         new Token(vibration,    maxArg2, "vibration"),
-    "vector",            new Token(vector,       maxArg2, "vector"),
-    "vectors",           null,
-    "meshribbon",        new Token(meshRibbon,onDefault1, "meshribbon"),
-    "meshribbons",       null,
-    "halo",              new Token(halo,         maxArg2, "halo"),
-    "halos",             null,
-    "rocket",            new Token(rocket,    onDefault1, "rocket"),
-    "rockets",           null,
-    "moveto",            new Token(moveto,   varArgCount, "moveto"),
-    "navigate",          new Token(navigate, varArgCount, "navigate"),
-    "navigation",        null,
-    "bondorder",         new Token(bondorder,          1, "bondorder"),
-    "console",           new Token(console,   onDefault1, "console"),
-    "pmesh",             new Token(pmesh,    varArgCount, "pmesh"),
-    "draw",              new Token(draw,     varArgCount, "draw"),
-    "dipole",            new Token(dipole,   varArgCount, "dipole"),
-    "dipoles",           null,
-    "polyhedra",         new Token(polyhedra,    varArgCount, "polyhedra"),
-    "mo",                new Token(mo,           varArgCount, "mo"),
-    "isosurface",        new Token(isosurface,   varArgCount,"isosurface"),
-    "geosurface",        new Token(geosurface,   varArgCount, "geosurface"),
-    "getproperty",       new Token(getproperty,  varArgCount, "getproperty"),
-    "lcaocartoon",       new Token(lcaocartoon,  varArgCount, "lcaocartoon"),
-    "lcaocartoons",      null,
-    "message",           new Token(message,                 1, "message"),
-    "if",                new Token(ifcmd,         varArgCount, "if"),
-    "else",              new Token(elsecmd,                 0, "else"),
-    "endif",             new Token(endifcmd,                0, "endif"),
-    "goto",              new Token(gotocmd,                 1, "goto"),
-    "calculate",         new Token(calculate,     varArgCount, "calculate"),
-    "history",           new Token(history,           maxArg2, "history"),
-    "subset",            new Token(subset,        varArgCount, "subset"),
-    "boundbox",          new Token(boundbox,       onDefault1, "boundbox"),
-    "frank",             new Token(frank,          onDefault1, "frank"),
-    "unitcell",          new Token(unitcell,      varArgCount, "unitcell"),
-    "selectionhalo",     new Token(selectionHalo,  onDefault1, "selectionHalos"),
-    "selectionhalos",    null,
-    "translateselected", new Token(translateSelected, varArgCount, "translateSelected"),
-    "configuration",     new Token(configuration,     varArgCount, "configuration"),
-    "config",            null,
-    "conformation",      null,
-    "invertselected",    new Token(invertSelected,    varArgCount, "invertSelected"),
-    "rotateselected",    new Token(rotateSelected,    varArgCount, "rotateSelected"),
-
-    // setparams
-    "axes",         new Token(axes, varArgCount,    "axes"),
-    "backfade",     new Token(backfade,        "backfade"),
-    "bondmode",     new Token(bondmode,        "bondmode"),
-    "bonds",        new Token(bonds,           "bonds"),
-    "bond",         null,
-    "cisangle",     new Token(cisangle,        "cisangle"),
-    "display",      new Token(display, varArgCount,  "display"),
-    "fontsize",     new Token(fontsize,        "fontsize"),
-    "fontstroke",   new Token(fontstroke,      "fontstroke"),
-    // hetero
-    "hourglass",    new Token(hourglass,       "hourglass"),
-    // hydrogen
-    "kinemage",     new Token(kinemage,        "kinemage"),
-    "menus",        new Token(menus,           "menus"),
-    "mouse",        new Token(mouse,           "mouse"),
-    "picking",      new Token(picking,         "picking"),
-    "pickingstyle", new Token(pickingStyle,    "pickingStyle"),
-    "radius",       new Token(radius,          "radius"),
-    "shadow",       new Token(shadow,          "shadow"),
-    "slabmode",     new Token(slabmode,        "slabmode"),
-    // solvent
-    "transparent",  new Token(transparent,     "transparent"),
-    "cell",         new Token(cell,            "cell"),
-    "vectps",       new Token(vectps,          "vectps"),
-    // chime setparams
-    "clear",        new Token(clear,           "clear"),
-    "gaussian",     new Token(gaussian,        "gaussian"),
-    "mep",          new Token(mep,             "mep"),
-    "mlp",          new Token(mlp,             "mlp"),
-    "molsurface",   new Token(molsurface,      "molsurface"),
-//    "fps",          new Token(fps,             "fps"),
-    "scale3d",      new Token(scale3d,         "scale3d"),
-
-    // jmol extensions
-    "property",     new Token(property,        "property"),
-    // must be lower case - see comment above
-    "formalcharge", new Token(formalCharge,    "formalcharge"),
-    "charge",       null,
-    "partialcharge",new Token(partialCharge,   "partialcharge"),
-    "phi",          new Token(phi,             "phi"),
-    "psi",          new Token(psi,             "psi"),
-  
-    // lighting
-    
-    "ambient",          new Token(ambient,      "ambientPercent"),
-    "ambientpercent",   null,
-    "diffuse",          new Token(diffuse,      "diffusePercent"),
-    "diffusepercent",   null,
-    "specular",         new Token(specular,     "specular"),
-    "specularpercent",  new Token(specpercent,  "specularPercent"),
-    "specularpower",    new Token(specpower,    "specularPower"),
-    "specpower",        null,
-    "specularExponent", new Token(specexponent, "specularExponent"),
-
-
-    // show parameters
-    "information",  new Token(information,     "information"),
-    "info",         null,
-    "phipsi",       new Token(phipsi,          "phipsi"),
-    "ramprint",     new Token(ramprint,        "ramprint"),
-    "rotation",     new Token(rotation,        "rotation"),
-    "group",        new Token(group,           "group"),
-    "chain",        new Token(chain,           "chain"),
-    "atom",         new Token(atom,            "atom"),
-    "atoms",        null,
-    "sequence",     new Token(sequence,        "sequence"),
-    "specialposition", new Token(specialposition, "specialPosition"),
-    "symmetry",     new Token(symmetry,        "symmetry"),
-    "spacegroup",   new Token(spacegroup,      "spacegroup"),
-    "translation",  new Token(translation,     "translation"),
+    "pause",             new Token(pause,               maxArg1),
+    "wait",              null, 
+    "quit",              new Token(quit,                      0),
+    "refresh",           new Token(refresh,                   0),
+    "reset",             new Token(reset,               maxArg1),
+    "restore",           new Token(restore,             maxArg3),
+    "restrict",          new Token(restrict,        varArgCount),
+    "hide",              new Token(hide,            varArgCount),
+    "ribbon",            new Token(ribbon,           onDefault1),
+    "ribbons",           null, 
+    "rotate",            new Token(rotate,          varArgCount),
+    "save",              new Token(save,                maxArg3),
+    "script",            new Token(script,          varArgCount),
+    "source",            null, 
+    "select",            new Token(select,          varArgCount),
+    "set",               new Token(set,             varArgCount),
+    "show",              new Token(show,                maxArg2),
+    "slab",              new Token(slab,            varArgCount),
+    "spacefill",         new Token(spacefill,           maxArg2),
+    "cpk",               null, 
+    "ssbond",            new Token(ssbond,           onDefault1),
+    "ssbonds",           null, 
+    "stereo",            new Token(stereo,          varArgCount),
+    "strand",            new Token(strands,          onDefault1),
+    "strands",           null, 
+    "trace",             new Token(trace,            onDefault1),
+    "translate",         new Token(translate,                 2),
+    "wireframe",         new Token(wireframe,        onDefault1),
+    "write",             new Token(write,               maxArg3),
+    "zap",               new Token(zap,                       0),
+    "zoom",              new Token(zoom,            varArgCount),
+    "zoomTo",            new Token(zoomTo,          varArgCount),
+    "initialize",        new Token(initialize,                0),
+    //                   openrasmol commands
+    "depth",             new Token(depth,           varArgCount),
+    "star",              new Token(star,                maxArg2),
+    "stars",             null, 
+                          
+    //                   chime commands
+                          
+    "delay",             new Token(delay,            onDefault1),
+    "loop",              new Token(loop,             onDefault1),
+    "move",              new Token(move,            varArgCount),
+    "spin",              new Token(spin,            varArgCount),
+    "frame",             new Token(frame,           varArgCount),
+    "frames",            null, 
+                          
+    "structure",         new Token(structure),
+    "animation",         new Token(animation),
+    "anim",              null, 
+                          
+    //                   Jmol commands
+    "centerat",          new Token(centerAt,        varArgCount),
+    "font",              new Token(font,            varArgCount),
+    "hover",             new Token(hover,            onDefault1),
+    "vibration",         new Token(vibration,           maxArg2),
+    "vector",            new Token(vector,              maxArg2),
+    "vectors",           null, 
+    "meshribbon",        new Token(meshRibbon, onDefault1),
+    "meshribbons",       null, 
+    "halo",              new Token(halo,                maxArg2),
+    "halos",             null, 
+    "rocket",            new Token(rocket,           onDefault1),
+    "rockets",           null, 
+    "moveto",            new Token(moveto,          varArgCount),
+    "navigate",          new Token(navigate,        varArgCount),
+    "navigation",        null, 
+    "bondorder",         new Token(bondorder,                 1),
+    "console",           new Token(console,          onDefault1),
+    "pmesh",             new Token(pmesh,           varArgCount),
+    "draw",              new Token(draw,            varArgCount),
+    "dipole",            new Token(dipole,          varArgCount),
+    "dipoles",           null, 
+    "polyhedra",         new Token(polyhedra,       varArgCount),
+    "mo",                new Token(mo,              varArgCount),
+    "isosurface",        new Token(isosurface,      varArgCount),
+    "geosurface",        new Token(geosurface,      varArgCount),
+    "getproperty",       new Token(getproperty,     varArgCount),
+    "lcaocartoon",       new Token(lcaocartoon,     varArgCount),
+    "lcaocartoons",      null, 
+    "message",           new Token(message,                   1),
+    "if",                new Token(ifcmd,           varArgCount),
+    "else",              new Token(elsecmd,                   0),
+    "endif",             new Token(endifcmd,                  0),
+    "goto",              new Token(gotocmd,                   1),
+    "calculate",         new Token(calculate,       varArgCount),
+    "history",           new Token(history,             maxArg2),
+    "subset",            new Token(subset,          varArgCount),
+    "boundbox",          new Token(boundbox,         onDefault1),
+    "frank",             new Token(frank,            onDefault1),
+    "unitcell",          new Token(unitcell,        varArgCount),
+    "selectionHalos",    new Token(selectionHalo,    onDefault1),
+    "selectionhalo",     null, 
+    "translateSelected", new Token(translateSelected, varArgCount),
+    "configuration",     new Token(configuration,   varArgCount),
+    "config",            null, 
+    "conformation",      null, 
+    "invertSelected",    new Token(invertSelected,  varArgCount),
+    "rotateSelected",    new Token(rotateSelected,  varArgCount),
+    "model",             new Token(model,           varArgCount),
+    "models",            null, 
+    "file",              new Token(file,                      1),
+                          
+    //                   setparams 
+    "axes",              new Token(axes,            varArgCount),
+    "bondmode",          new Token(bondmode),
+    "bonds",             new Token(bonds),
+    "bond",              null, 
+    "display",           new Token(display,         varArgCount),
+    "fontsize",          new Token(fontsize),
+    "mouse",             new Token(mouse),
+    "picking",           new Token(picking),
+    "pickingStyle",      new Token(pickingStyle),
+    "radius",            new Token(radius),
+    "shadow",            new Token(shadow),
+    "slabmode",          new Token(slabmode),
+    //                   solvent 
+    "transparent",       new Token(transparent),
+    "cell",              new Token(cell),
+    //                   chime setparams
+    "clear",             new Token(clear),
+    "mep",               new Token(mep),
+    "mlp",               new Token(mlp),
+    "scale3D",           new Token(scale3d),
+                          
+    //                   jmol extensions
+    "property",          new Token(property),
+                          
+    "formalCharge",      new Token(formalCharge),
+    "charge",            null, 
+    "partialCharge",     new Token(partialCharge),
+    "phi",               new Token(phi),
+    "psi",               new Token(psi),
+                          
+    //                   lighting 
+                          
+    "ambientPercent",    new Token(ambient),
+    "ambient",           null, 
+    "diffusePercent",    new Token(diffuse),
+    "diffuse",           null, 
+    "specular",          new Token(specular),
+    "specularPercent",   new Token(specpercent),
+    "specularPower",     new Token(specpower),
+    "specpower",         null, 
+    "specularExponent",  new Token(specexponent),
+                          
+                          
+    //                   show parameters
+    "rotation",          new Token(rotation),
+    "group",             new Token(group),
+    "chain",             new Token(chain),
+    "atom",              new Token(atom),
+    "atoms",             null, 
+    "sequence",          new Token(sequence),
+    "specialPosition",   new Token(specialposition),
+    "symmetry",          new Token(symmetry),
+    "spaceGroup",        new Token(spacegroup),
+    "translation",       new Token(translation),
     // chime show parameters
-    "residue",      new Token(residue,         "residue"),
-    "model",        new Token(model,           varArgCount, "model"),
-    "models",       null,
-    "pdbheader",    new Token(pdbheader,       "pdbheader"),
-
-    "axisangle",    new Token(axisangle,       "axisangle"),
-    "transform",    new Token(transform,       "transform"),
-    "orientation",  new Token(orientation,     "orientation"),
-    "file",         new Token(file,            1, "file"),
-    "state",        new Token(state,           "state"),
-    "url",          new Token(url,             "url"),
+    "residue",           new Token(residue),
+    "pdbheader",         new Token(pdbheader),
+                          
+    "axisangle",         new Token(axisangle),
+    "transform",         new Token(transform),
+    "orientation",       new Token(orientation),
+    "state",             new Token(state),
+    "url",               new Token(url),
 
     // atom expressions
-    "(",            new Token(leftparen, "("),
-    ")",            new Token(rightparen, ")"),
+    "(",            new Token(leftparen),
+    ")",            new Token(rightparen),
     "-",            tokenMinus,
     "and",          tokenAnd,
     "&",            null,
@@ -1001,146 +917,152 @@ public class Token {
     ",",            tokenComma,
     "|",            null,
     "||",           null,
-    "not",          new Token(opNot, "not"),
+    "not",          new Token(opNot),
     "!",            null,
-    "xor",          new Token(opXor, "xor"),
+    "xor",          new Token(opXor),
 //no-- don't do this; it interferes with define
 //  "~",            null,
-    "tog",          new Token(opToggle, "tog"),
+    "tog",          new Token(opToggle),
     ",|",           null,
-    "<",            new Token(opLT, "<"),
-    "<=",           new Token(opLE, "<="),
-    ">=",           new Token(opGE, ">="),
-    ">",            new Token(opGT, ">"),
-    "=",            new Token(opEQ, "="),
+    "<",            new Token(opLT),
+    "<=",           new Token(opLE),
+    ">=",           new Token(opGE),
+    ">",            new Token(opGT),
+    "=",            new Token(opEQ),
     "==",           null,
-    "!=",           new Token(opNE, "!="),
+    "!=",           new Token(opNE),
     "<>",           null,
     "/=",           null,
-    "within",       new Token(within, "within"),
-    "+",            new Token(plus, "+"),
-    "pick",         new Token(pick, "pick"),
-    ".",            new Token(dot, "."),
-    "[",            new Token(leftsquare,  "["),
-    "]",            new Token(rightsquare, "]"),
-    "{",            new Token(leftbrace,  "{"),
-    "}",            new Token(rightbrace, "}"),
-    "$",            new Token(dollarsign, "$"),
-    ":",            new Token(colon, ":"),
-    "/",            new Token(slash, "/"),
-    "molecule",          new Token(molecule, "molecule"),
-    "molecules",         null,
-    "altloc",            new Token(altloc, "altloc"),
+    "within",       new Token(within),
+    "+",            new Token(plus),
+    ".",            new Token(dot),
+    "[",            new Token(leftsquare),
+    "]",            new Token(rightsquare),
+    "{",            new Token(leftbrace),
+    "}",            new Token(rightbrace),
+    "$",            new Token(dollarsign),
+    "%",            new Token(percent),
+    "*",            new Token(asterisk),
+    ":",            new Token(colon),
+    "/",            new Token(slash),
+    
+    "molecule",          new Token(molecule),
+    "molecules",         null, 
+    "altloc",            new Token(altloc),
     "altlocs",           null,
-    "insertion",         new Token(insertion, "insertion"),
-    "insertions",        null,
-    "substructure", new Token(substructure, "substructure"),
-    "connected",    new Token(connected, "connected"),
-    "atomindex",    new Token(atomIndex, "atomIndex"),
-    "atomno",       new Token(atomno, "atomno"),
-    "elemno",       new Token(elemno, "elemno"),
-    "_e",           null,
-    "element",      new Token(element, "element"),
-    "resno",        new Token(resno, "resno"),
-    "temperature",  new Token(temperature, "temperature"),
-    "relativetemperature",  null,
-    "_bondedcount", new Token(_bondedcount, "_bondedcount"),
-    "_groupid",     new Token(_groupID, "_groupID"),
-    "_g",           null,
-    "_atomid",      new Token(_atomID, "_atomID"),
-    "_a",           null,
-    "_structure",   new Token(_structure, "_structure"),
-    "occupancy",    new Token(occupancy, "occupancy"),
-    "polymerlength",new Token(polymerLength, "polymerlength"),
-    "site",         new Token(site, "site"),
-    "symop",        new Token(symop, "symop"),
-    "off",          tokenOff,
-    "false",        null,
-    "on",           tokenOn,
-    "true",         null,
-
-    "user",         new Token(user, "user"),
-    "atomx",        new Token(atomX, "atomx"),
-    "atomy",        new Token(atomY, "atomy"),
-    "atomz",        new Token(atomZ, "atomz"),
-    "*",            new Token(asterisk, "*"),
+    "insertion",         new Token(insertion),
+    "insertions",        null, 
+    "substructure",      new Token(substructure),
+    "connected",         new Token(connected),
+    "atomIndex",         new Token(atomIndex),
+    "atomno",            new Token(atomno),
+    "elemno",            new Token(elemno),
+    "_e",                null,
+    "element",           new Token(element),
+    "resno",             new Token(resno),
+    "temperature",       new Token(temperature),
+    "relativetemperature", null,
+    "bondCount",         new Token(bondcount),
+    "groupID",           new Token(groupID),
+    "_groupID",          null, 
+    "_g",                null, 
+    "atomID",            new Token(atomID),
+    "_atomID",           null,
+    "_a",                null, 
+    "structure",         new Token(structure),
+    "_structure",        null,
+    "occupancy",         new Token(occupancy),
+    "polymerLength",     new Token(polymerLength),
+    "site",              new Token(site),
+    "symop",             new Token(symop),
+    "off",               tokenOff, 
+    "false",             null, 
+    "on",                tokenOn, 
+    "true",              null,                           
+    "user",              new Token(user),
+    "clipboard",         new Token(clipboard),
+    "atomx",             new Token(atomX),
+    "atomy",             new Token(atomY),
+    "atomz",             new Token(atomZ),
     "all",          tokenAll,
-    "none",         new Token(none, "none"),
+    "none",         new Token(none),
     "null",         null,
     "inherit",      null,
-    "normal",       new Token(normal, "normal"),
-    "rasmol",       new Token(rasmol, "rasmol"),
-    "insight",      new Token(insight, "insight"),
-    "quanta",       new Token(quanta, "quanta"),
-    "ident",        new Token(ident, "ident"),
-    "distance",     new Token(distance, "distance"),
-    "length",       new Token(length, "length"),
-    "angle",        new Token(angle, "angle"),
-    "torsion",      new Token(torsion, "torsion"),
-    "coord",        new Token(coord, "coord"),
-    "shapely",      new Token(shapely,         "shapely"),
+    "normal",       new Token(normal),
+    "rasmol",       new Token(rasmol),
+    "ident",        new Token(ident),
+    "xyz",          new Token(xyz),
+    "min",          new Token(min),
+    "max",          new Token(max),
+    "distance",     new Token(distance),
+    "length",       new Token(length),
+    "lines",        new Token(lines),
+    "angle",        new Token(angle),
+    "find",         new Token(find),
+    "torsion",      new Token(torsion),
+    "coord",        new Token(coord),
+    "shapely",      new Token(shapely),
 
-    "amino",        new Token(amino,           "amino"),
-    "hetero",       new Token(hetero,          "hetero"),
-    "hydrogen",     new Token(hydrogen,        "hydrogen"),
+    "amino",        new Token(amino),
+    "hetero",       new Token(hetero),
+    "hydrogen",     new Token(hydrogen),
     "hydrogens",    null,
-    "selected",     new Token(selected,        "selected"),
-    "hidden",       new Token(hidden,          "hidden"),
-    "displayed",    new Token(displayed,       "displayed"),
-    "solvent",      new Token(solvent,         "solvent"),
-    "%",            new Token(percent,         "%"),
-    "dotted",       new Token(dotted,          "dotted"),
-    "sidechain",    new Token(sidechain,       "sidechain"),
-    "protein",      new Token(protein,         "protein"),
-    "carbohydrate", new Token(carbohydrate,    "carbohydrate"),
-    "nucleic",      new Token(nucleic,         "nucleic"),
-    "dna",          new Token(dna,             "dna"),
-    "rna",          new Token(rna,             "rna"),
-    "purine",       new Token(purine,          "purine"),
-    "pyrimidine",   new Token(pyrimidine,      "pyrimidine"),
-    "surface",      new Token(surface,         "surface"),
-    "surfacedistance", new Token(surfacedistance, "surfacedistance"),
-    "visible",      new Token(visible,         "visible"),
-    "clickable",    new Token(clickable,       "clickable"),
-    "mode",         new Token(mode,            "mode"),
-    "direction",    new Token(direction,       "direction"),
-    "jmol",         new Token(jmol,            "jmol"),
-    "displacement", new Token(displacement,    "displacement"),
-    "type",         new Token(type,            "type"),
-    "fixedtemperature", new Token(fixedtemp,   "fixedtemperature"),
-    "rubberband",   new Token(rubberband,      "rubberband"),
-    "monomer",      new Token(monomer,         "monomer"),
-    "defaultcolors",new Token(defaultColors,   "defaultColors"),
-    "opaque",       new Token(opaque,          "opaque"),
-    "translucent",  new Token(translucent,     "translucent"),
-    "delete",       new Token(delete,          "delete"),
-    "solid",        new Token(solid,           "solid"),
-    "absolute",     new Token(absolute,        "absolute"),
-    "average",      new Token(average,         "average"),
-    "nodots",       new Token(nodots,          "nodots"),
-    "mesh",         new Token(mesh,            "mesh"),
-    "nomesh",       new Token(nomesh,          "nomesh"),
-    "fill",         new Token(fill,            "fill"),
-    "nofill",       new Token(nofill,          "nofill"),
-    "vanderwaals",  new Token(vanderwaals,     "vanderwaals"),
+    "selected",     new Token(selected),
+    "hidden",       new Token(hidden),
+    "displayed",    new Token(displayed),
+    "solvent",      new Token(solvent),
+    "dotted",       new Token(dotted),
+    "sidechain",    new Token(sidechain),
+    "protein",      new Token(protein),
+    "carbohydrate", new Token(carbohydrate),
+    "nucleic",      new Token(nucleic),
+    "DNA",          new Token(dna),
+    "RNA",          new Token(rna),
+    "purine",       new Token(purine),
+    "pyrimidine",   new Token(pyrimidine),
+    "surface",      new Token(surface),
+    "surfaceDistance", new Token(surfacedistance),
+    "visible",      new Token(visible),
+    "clickable",    new Token(clickable),
+    "mode",         new Token(mode),
+    "direction",    new Token(direction),
+    "Jmol",         new Token(jmol),
+    "displacement", new Token(displacement),
+    "type",         new Token(type),
+    "fixedTemperature", new Token(fixedtemp),
+    "rubberband",   new Token(rubberband),
+    "monomer",      new Token(monomer),
+    "defaultColors",new Token(defaultColors),
+    "opaque",       new Token(opaque),
+    "translucent",  new Token(translucent),
+    "delete",       new Token(delete),
+    "solid",        new Token(solid),
+    "absolute",     new Token(absolute),
+    "average",      new Token(average),
+    "nodots",       new Token(nodots),
+    "mesh",         new Token(mesh),
+    "nomesh",       new Token(nomesh),
+    "fill",         new Token(fill),
+    "nofill",       new Token(nofill),
+    "vanderWaals",  new Token(vanderwaals),
     "vdw",          null,
-    "ionic",        new Token(ionic,           "ionic"),
-    "resume",       new Token(resume,          "resume"),
-    "next",         new Token(next,            "next"),
-    "prev",         new Token(prev,            "previous"),
-    "previous",     null,
-    "rewind",       new Token(rewind,          "rewind"),
-    "last",         new Token(last,            "last"),
-    "playrev",      new Token(playrev,         "playrev"),
-    "play",         new Token(play,            "play"),
-    "range",        new Token(range,           "range"),
-    "sasurface",    new Token(sasurface,       "sasurface"),
-    "top",          new Token(top,             "top"),    
-    "bottom",       new Token(bottom,          "bottom"),    
-    "left",         new Token(left,            "left"),    
-    "right",        new Token(right,           "right"),    
-    "front",        new Token(front,           "front"),    
-    "back",         new Token(back,            "back"),    
+    "ionic",        new Token(ionic),
+    "resume",       new Token(resume),
+    "next",         new Token(next),
+    "previou",      new Token(prev),
+    "prev",         null,
+    "rewind",       new Token(rewind),
+    "last",         new Token(last),
+    "playRev",      new Token(playrev),
+    "play",         new Token(play),
+    "range",        new Token(range),
+    "saSurface",    new Token(sasurface),
+    "top",          new Token(top),    
+    "bottom",       new Token(bottom),    
+    "left",         new Token(left),    
+    "right",        new Token(right),    
+    "front",        new Token(front),    
+    "back",         new Token(back),    
   };
 
   static Hashtable map = new Hashtable();
@@ -1148,14 +1070,18 @@ public class Token {
     Token tokenLast = null;
     String stringThis;
     Token tokenThis;
+    String lcase;
     for (int i = 0; i + 1 < arrayPairs.length; i += 2) {
       stringThis = (String) arrayPairs[i];
+      lcase = stringThis.toLowerCase();
       tokenThis = (Token) arrayPairs[i + 1];
       if (tokenThis == null)
         tokenThis = tokenLast;
-      if (map.get(stringThis) != null)
-        Logger.error("duplicate token definition:" + stringThis);
-      map.put(stringThis, tokenThis);
+      if (tokenThis.value == null)
+        tokenThis.value = stringThis;
+      if (map.get(lcase) != null)
+        Logger.error("duplicate token definition:" + lcase);
+      map.put(lcase, tokenThis);
       tokenLast = tokenThis;
     }
   }
@@ -1202,7 +1128,7 @@ public class Token {
       String name = (String) e.nextElement();
       Token token = (Token) map.get(name);
       if ((token.tok & Token.command) != 0
-          && (token.tok & Token.unimplemented) == 0
+//          && (token.tok & Token.unimplemented) == 0
           && (s == null || name.indexOf(s) == 0)
           && (isMultiCharacter || ((String) token.value).equals(name)))
         htSet.put(name, Boolean.TRUE);

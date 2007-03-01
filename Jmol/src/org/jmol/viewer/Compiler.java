@@ -90,6 +90,11 @@ class Compiler {
     return (a & b) == b;
   }
   
+  static boolean tokAttrOr(int a, int b1, int b2) {
+    return (a & b1) == b1 || (a & b2) == b2;
+  }
+  
+ 
   static int modelValue(String strDecimal) {
     //this will overflow, but it doesn't matter -- it's only for file.model
     //2147483647 is maxvalue, so this allows loading
@@ -153,10 +158,10 @@ class Compiler {
   private boolean iHaveQuotedString = false;
   
   private Vector ltoken;
-  private Token lastPrefixToken;
+  private Token lastToken;
   private void addTokenToPrefix(Token token) {
     ltoken.addElement(token);
-    lastPrefixToken = token;
+    lastToken = token;
   }
   
   private boolean compile0() {
@@ -318,7 +323,7 @@ class Compiler {
           addTokenToPrefix(new Token(Token.integer, val, intString));
           continue;
         }
-        if (!tokenAttr(lastPrefixToken, Token.mathfunc)) {
+        if (!tokenAttr(lastToken, Token.mathfunc)) {
           // don't want to mess up x.distance({1 2 3})
           // if you want to use a bitset there, you must use 
           // bitsets properly: x.distance( ({1 2 3}) )
@@ -381,28 +386,25 @@ class Compiler {
         case Token.define:
           if (ltoken.size() == 1) {
             // we are looking at the variable name
-
-            if (!preDefining && tok != Token.identifier) {
-              if (!tokAttr(tok, Token.predefinedset)) {
-                Logger.warn("WARNING: redefining " + ident + "; was " + token);
-                tok = token.tok = Token.identifier;
-                Token.map.put(ident, token);
-                Logger
-                    .warn("WARNING: not all commands may continue to be functional for the life of the applet!");
-              } else {
-                Logger
-                    .warn("WARNING: predefined term '"
+            if (tok != Token.identifier) {
+              if (preDefining) {
+                if (!tokAttr(tok, Token.predefinedset))
+                  return compileError("ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: "
+                      + ident);
+              } else if (tokAttr(tok, Token.predefinedset)) {
+                Logger.warn("WARNING: predefined term '"
                         + ident
                         + "' has been redefined by the user until the next file load.");
+              } else {
+                Logger.warn("WARNING: redefining " + ident + "; was " + token + "not all commands may continue to be functional for the life of the applet!");
+                tok = token.tok = Token.identifier;
+                Token.map.put(ident, token);
               }
             }
-
-            if (tok != Token.identifier && !tokAttr(tok, Token.predefinedset))
-              return invalidExpressionToken(ident);
           } else {
             // we are looking at the expression
             if (tok != Token.identifier && tok != Token.set
-                && !(tokAttrOr(tok, Token.expression, Token.predefinedset)))
+                && !(tokAttr(tok, Token.expression)))
               return invalidExpressionToken(ident);
           }
           break;
@@ -934,7 +936,6 @@ class Compiler {
   Vector ltokenPostfix = null;
   Token[] atokenInfix;
   int itokenInfix;
-  boolean isCoordinate;
   boolean isEmbeddedExpression;
   boolean isCommaAsOrAllowed;
   
@@ -1014,18 +1015,13 @@ class Compiler {
         if (!moreTokens())
           break;
       }
-      int pt = ltokenPostfix.size();
-      addTokenToPostfix(Token.tokenExpressionBegin);
-      isCoordinate = false;
+      if (!isSetOrIf)
+        addTokenToPostfix(Token.tokenExpressionBegin);
       if (!clauseOr(isCommaAsOrAllowed || !isSetOrIf
           && tokPeek(Token.leftparen)))
         return false;
-      if (isCoordinate && (isSetOrIf || isEmbeddedExpression)) {
-        ltokenPostfix.set(pt, Token.tokenCoordinateBegin);
-        addTokenToPostfix(Token.tokenCoordinateEnd);
-      } else {
+      if (!isSetOrIf)
         addTokenToPostfix(Token.tokenExpressionEnd);
-      }
       if (moreTokens() && !isEmbeddedExpression)
         return endOfExpressionExpected();
     }
@@ -1038,10 +1034,6 @@ class Compiler {
     return tokPeek(Token.leftbrace) || !isSetOrIf && tokPeek(Token.leftparen);
   }
 
-  private static boolean tokAttrOr(int a, int b1, int b2) {
-    return (a & b1) == b1 || (a & b2) == b2;
-  }
-  
   private static boolean tokenAttr(Token token, int tok) {
     return token != null && (token.tok & tok) == tok;
   }
@@ -1134,6 +1126,7 @@ class Compiler {
     if (logMessages)
       log("addTokenToPostfix" + token);
     ltokenPostfix.addElement(token);
+    lastToken = token;
     return true;
   }
 
@@ -1165,13 +1158,8 @@ class Compiler {
         || tok==Token.opToggle|| allowComma && tok == Token.comma) {
       if (tok == Token.comma && !haveString)
         addSubstituteTokenIf(Token.comma, Token.tokenOr);
-      else {
-        if (isSetOrIf)
-          addTokenToPostfix(Token.tokenExpressionEnd);
+      else
         addNextToken();
-        if (isSetOrIf)
-          addTokenToPostfix(Token.tokenExpressionBegin);
-      }
       if (!clauseAnd())
         return false;
     }
@@ -1182,11 +1170,7 @@ class Compiler {
     if (!clauseNot())
       return false;
     while (tokPeek(Token.opAnd)) {
-      if (isSetOrIf)
-        addTokenToPostfix(Token.tokenExpressionEnd);
       addNextToken();
-      if (isSetOrIf)
-        addTokenToPostfix(Token.tokenExpressionBegin);
       if (!clauseNot())
         return false;
     }
@@ -1271,11 +1255,17 @@ class Compiler {
         return rightParenthesisExpected();
       return checkForMath();
     case Token.leftbrace:
-      isCoordinate = false;
-      if (isSetOrIf || isEmbeddedExpression)
+      boolean isCoordinate = false;
+      int pt = ltokenPostfix.size();
+      if (isSetOrIf) {
+        addTokenToPostfix(Token.tokenExpressionBegin);
         tokenNext();
-      else
+      }else if (isEmbeddedExpression) {
+        tokenNext();
+        pt--;
+      } else {
         addNextToken();
+      }
       if (!clauseOr(false))
         return false;
       int n = 1;
@@ -1286,7 +1276,14 @@ class Compiler {
           n++;
       }
       isCoordinate = (n > 2);
-      if (isSetOrIf || isEmbeddedExpression)
+      if (isCoordinate && (isSetOrIf || isEmbeddedExpression)) {
+        ltokenPostfix.set(pt, Token.tokenCoordinateBegin);
+        addTokenToPostfix(Token.tokenCoordinateEnd);
+        tokenNext();
+      } else if (isSetOrIf) {
+        addTokenToPostfix(Token.tokenExpressionEnd);
+        tokenNext();
+      } else if (isEmbeddedExpression)
         tokenNext();
       else
         addNextToken();

@@ -8974,7 +8974,7 @@ class Eval { //implements Runnable {
         viewer.makeConnections(fmin, fmax, order,
             JmolConstants.CONNECT_IDENTIFY_ONLY, atoms1, atoms2, bsBonds, isBonds);
         return addX(new Token(Token.bitset, new BondSet(bsBonds,
-            getAtomIndices(bsBonds))));
+            getAtomIndices(getAtomBitsetFromBonds(bsBonds)))));
       }
       if (isSyntaxCheck)
         return addX(atoms1);

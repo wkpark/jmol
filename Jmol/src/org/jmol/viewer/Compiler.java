@@ -403,6 +403,11 @@ class Compiler {
                 Token.map.put(ident, token);
               }
             }
+          } else if (ltoken.size() == 2 && tok == Token.opEQ) {
+            // we are looking at @x =.... just insert a SET command
+            // and ignore the =. It's the same as set @x ... 
+              ltoken.add(0, new Token(Token.set, Token.varArgCount, "set"));
+              continue;
           } else {
             // we are looking at the expression
             if (tok != Token.identifier && tok != Token.set

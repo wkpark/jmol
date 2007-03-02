@@ -5529,7 +5529,7 @@ class Eval { //implements Runnable {
         break;
       case Token.spec_seqcode:
       case Token.integer:
-        rpn.addX(theToken.intValue);
+        rpn.addX(new Token(Token.integer, theToken.intValue));
         break;
       case Token.dollarsign:
         rpn.addX(new Token(Token.point3f, centerParameter(i)));
@@ -8643,14 +8643,15 @@ class Eval { //implements Runnable {
         return false;
       Token token = xStack[xPt];
       switch (token.tok) {
+      default:
+        token = new Token(Token.string,Token.sValue(token));
+       //fall through
       case Token.bitset:
       case Token.list:
       case Token.string:
         xStack[xPt] = Token.selectItem(token, i);
-        return true;
-      default:
-        return false;
       }
+      return true;
     }
     
     void dumpStacks() {
@@ -8759,9 +8760,10 @@ class Eval { //implements Runnable {
         return addX((int)1);
       Token x1 = getX();
       String sFind = Token.sValue(args[0]);
-      if (x1.tok == Token.string)
+      switch(x1.tok) {
+      default:
         return addX(Token.sValue(x1).indexOf(sFind) + 1);
-      if (x1.tok == Token.list) {
+      case Token.list:
         int n = 0;
         String[]list = (String[])x1.value;
         int ipt = -1;
@@ -8779,7 +8781,6 @@ class Eval { //implements Runnable {
             listNew[--n] = list[i];
         return addX(listNew);
       }
-      return false;
     }
     
     boolean evaluateReplace(Token[] args) throws ScriptException {

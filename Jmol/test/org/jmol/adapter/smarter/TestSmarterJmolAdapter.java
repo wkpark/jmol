@@ -8,7 +8,9 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.zip.GZIPInputStream;
@@ -16,420 +18,195 @@ import java.util.zip.GZIPInputStream;
 import org.jmol.util.JUnitLogger;
 import org.jmol.util.Logger;
 
+import junit.framework.Test;
 import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
-public class TestSmarterJmolAdapter extends TestCase {
+public class TestSmarterJmolAdapter extends TestSuite {
 
-  public TestSmarterJmolAdapter(String arg0) {
-    super(arg0);
-  }
-
-  /**
-   * Test for reading files in abint 
-   */
-  public void testAbint() {
-    //checkDirectory("abint", "out", "");
-  }
-  /**
-   * Test for reading files in aces2/
-   */
-  public void testAces2() {
-    //checkDirectory("aces2", "dat,out", "");
-  }
-  
-  /**
-   * Test for reading files in aminoacids/
-   */
-  public void testAdf() {
-    checkDirectory("adf", "adf", "", "Adf");
-  }
-  
-  /**
-   * Test for reading files in aminoacids/
-   */
-  public void testAminoAcids() {
-    checkDirectory("aminoacids", "mol,pdb", "");
-  }
-  
-  /**
-   * Test for reading files in animations/ 
-   */
-  public void testAnimations() {
-    checkDirectory("animations", "cml,pdb,xyz", "pdb.gz", "Xml");
-  }
-  
-  /**
-   * Test for reading files in cif/
-   */
-  public void testCif() {
-    checkDirectory("cif", "cif", "");
-  }
+  private String datafileDirectory = "../Jmol-datafiles";
 
   /**
-   * Test for reading files in c3xml/ 
+   * @return Test suite containing tests for all files
    */
-  public void testC3xml() {
-    checkDirectory("c3xml", "c3xml", "","Xml");
-  }
-
-  /**
-   * Test for reading files in cml/ 
-   */
-  public void testCml() {
-    checkDirectory("cml", "cml", "","Xml");
-  }
-
-  /**
-   * Test for reading files in crystals/
-   */
-  public void testCrystals() {
-    checkDirectory("crystals", "pdb,mol", "");
+  public static Test suite() {
+    TestSmarterJmolAdapter result = new TestSmarterJmolAdapter();
+    result.datafileDirectory = System.getProperty("test.datafile.directory", result.datafileDirectory);
+    //result.addDirectory(false, "abint", "out");
+    //result.addDirectory(false, "aces2", "dat");
+    //result.addDirectory(false, "aces2", "out");
+    result.addDirectory(false, "adf", "adf", "Adf");
+    result.addDirectory(false, "aminoacids", "mol");
+    result.addDirectory(false, "aminoacids", "pdb");
+    result.addDirectory(false, "animations", "cml", "Xml");
+    result.addDirectory(false, "animations", "pdb");
+    result.addDirectory(true,  "animations", "pdb.gz");
+    result.addDirectory(false, "animations", "xyz");
+    result.addDirectory(false, "cif", "cif");
+    result.addDirectory(false, "c3xml", "c3xml", "Xml");
+    result.addDirectory(false, "cml", "cml", "Xml");
+    result.addDirectory(false, "crystals", "mol");
+    result.addDirectory(false, "crystals", "pdb");
+    result.addDirectory(true,  "cube", "cub.gz");
+    result.addDirectory(true,  "cube", "cube.gz");
+    result.addDirectory(false, "folding", "xyz");
+    result.addDirectory(true,  "folding", "xyz.gz");
+    result.addDirectory(false, "../Jmol-FAH/projects", "xyz");
+    result.addDirectory(true,  "../Jmol-FAH/projects", "xyz.gz");
+    result.addDirectory(false, "gamess", "log");
+    result.addDirectory(false, "gamess", "out");
+    result.addDirectory(false, "gaussian", "log");
+    result.addDirectory(false, "gaussian", "out");
+    result.addDirectory(false, "ghemical", "gpr", "GhemicalMM");
+    result.addDirectory(false, "hin", "hin");
+    result.addDirectory(false, "jaguar", "out");
+    result.addDirectory(false, "modifiedGroups", "cif");
+    result.addDirectory(false, "modifiedGroups", "pdb");
+    result.addDirectory(false, "mol", "mol");
+    result.addDirectory(false, "mol", "sdf");
+    result.addDirectory(false, "mol2", "mol2");
+    result.addDirectory(false, "molpro", "xml");
+    result.addDirectory(false, "mopac", "out");
+    result.addDirectory(false, "nwchem", "nwo");
+    result.addDirectory(false, "pdb", "pdb");
+    result.addDirectory(true,  "pdb", "pdb.gz");
+    // result.pmesh files are not molecular data files
+    result.addDirectory(false, "psi3", "out");
+    result.addDirectory(false, "qchem", "out");
+    result.addDirectory(false, "shelx", "res");
+    result.addDirectory(false, "spartan", "smol", "SpartanSmol");
+    result.addDirectory(false, "spartan", "txt", "Spartan");
+    result.addDirectory(false, "sparchive", "sparchive", "Spartan");
+    result.addDirectory(false, "v3000", "sdf");
+    result.addDirectory(false, "xyz", "xyz");
+    return result;
   }
 
   /**
-   * Test for reading files in cube/
-   */
-  public void testCube() {
-    checkDirectory("cube", "", "cub.gz,cube.gz");
-  }
-
-  /**
-   * Test for reading files in folding/
-   */
-  public void testFolding() {
-    checkDirectory("folding", "xyz", "xyz.gz");
-  }
-
-  /**
-   * Test for reading files in folding/
-   */
-  public void testFoldingAtHome() {
-//    checkDirectory("../Jmol-FAH/projects", "xyz", "xyz.gz");
-  }
-
-  /**
-   * Test for reading files in gamess/
-   */
-  public void testGamess() {
-    checkDirectory("gamess", "log,out", "");
-  }
-
-  /**
-   * Test for reading files in gaussian/
-   */
-  public void testGaussian() {
-    checkDirectory("gaussian", "log,out", "");
-  }
-
-  /**
-   * Test for reading files in ghemical/
-   */
-  public void testGhemical() {
-    checkDirectory("ghemical", "gpr", "", "ghemicalMM");
-  }
-
-  /**
-   * Test for reading files in hin/
-   */
-  public void testHin() {
-    checkDirectory("hin", "hin", "");
-  }
-
-  /**
-   * Test for reading files in jaguar/
-   */
-  public void testJaguar() {
-    checkDirectory("jaguar", "out", "");
-  }
-
-  /**
-   * Test for reading files in modifiedGroups/ 
-   */
-  public void testModifiedGroups() {
-    checkDirectory("modifiedGroups", "cif,pdb", "");
-  }
-
-  /**
-   * Test for reading files in mol/ 
-   */
-  public void testMol() {
-    checkDirectory("mol", "mol,sdf", "");
-  }
-
-  /**
-   * Test for reading files in mol2/ 
-   */
-  public void testMol2() {
-    checkDirectory("mol2", "mol2", "");
-  }
-
-  /**
-   * Test for reading files in molpro/
-   */
-  public void testMolpro() {
-    checkDirectory("molpro", "xml", "");
-  }
-
-  /**
-   * Test for reading files in mopac/ 
-   */
-  public void testMopac() {
-    checkDirectory("mopac", "out", "");
-  }
-
-  /**
-   * Test for reading files in nwchem/
-   */
-  public void testNwchem() {
-    checkDirectory("nwchem", "nwo", "");
-  }
-
-  /**
-   * Test for reading files in pdb/
-   */
-  public void testPdb() {
-    checkDirectory("pdb", "pdb", "pdb.gz");
-  }
-
-  /**
-   * Test for reading files in pmesh/ 
-   */
-  public void testPmesh() {
-    // pmesh files are not molecular data files
-  }
-
-  /**
-   * Test for reading files in psi3/
-   */
-  public void testPsi3() {
-    checkDirectory("psi3", "out", "");
-  }
-
-  /**
-   * Test for reading files in qchem/
-   */
-  public void testQchem() {
-    checkDirectory("qchem", "out", "");
-  }
-
-  /**
-   * Test for reading files in shelx/
-   */
-  public void testShelx() {
-    checkDirectory("shelx", "res", "");
-  }
-
-  /**
-   * Test for reading files in spartan/
-   */
-  public void testSpartan() {
-    checkDirectory("spartan", "smol,txt", "", "spartanSmol");
-  }
-
-  /**
-   * Test for reading files in sparchive/
-   */
-  public void testSparchive() {
-    checkDirectory("sparchive", "sparchive", "", "spartan");
-  }
-
-  /**
-   * Test for reading files in v3000/ 
-   */
-  public void testV3000() {
-    checkDirectory("v3000", "sdf", "");
-  }
-
-  /**
-   * Test for reading files in xyz/
-   */
-  public void testXyz() {
-    checkDirectory("xyz", "xyz", "");
-  }
-
-  /**
-   * Check that files in a directory can be read.
+   * Add tests for each file in a directory.
    * 
+   * @param gzipped Compressed file ?
    * @param directory Directory where the files are (relative to Jmol-datafiles)
-   * @param exts Comma separated list of extensions
-   * @param extsZ Comma separated list of extensions (compressed files)
+   * @param ext Extension
    */
-  private void checkDirectory(String directory, String exts, String extsZ) {
-    checkDirectory(directory, exts, extsZ, "");
+  private void addDirectory(boolean gzipped, String directory, String ext) {
+    addDirectory(gzipped, directory, ext, null);
   }
 
   /**
-   * Check that files in a directory can be read.
+   * Add tests for each file in a directory.
    * 
+   * @param gzipped Compressed file ?
    * @param directory Directory where the files are (relative to Jmol-datafiles)
-   * @param exts Comma separated list of extensions
-   * @param extsZ Comma separated list of extensions (compressed files)
-   * @param fileType additional options for file type
+   * @param ext Extension
+   * @param typeAllowed Allowed file type
    */
-  private void checkDirectory(String directory, String exts, String extsZ,
-                              String fileType) {
-    File dir = new File("../Jmol-datafiles", directory);
+  private void addDirectory(boolean gzipped,
+                            String directory,
+                            final String ext,
+                            String typeAllowed) {
 
-    String message = "";
-
-    String typesAllowed = (directory + exts + fileType).toLowerCase();
-
-    // Checking uncompressed files
-    final String[] ext = exts.split("[,]");
+    // Checking files
+    File dir = new File(datafileDirectory, directory);
     String[] files = dir.list(new FilenameFilter() {
 
       public boolean accept(File dir, String name) {
-        for (int i = 0; i < ext.length; i++) {
-          if (name.endsWith("." + ext[i])) {
-            return true;
-          }
+        if (name.endsWith("." + ext)) {
+          return true;
         }
         return false;
       }
 
     });
     if (files == null) {
-      Logger.warn("No files in directory [" + directory + "] for extensions ["
-          + exts + "]");
+      Logger.warn("No files in directory [" + directory + "] for extension [" + ext + "]");
     } else {
       for (int i = 0; i < files.length; i++) {
-        try {
-          String error = checkOpenFile(directory, files[i], typesAllowed);
-          if (error != null) {
-            message += error + "\n";
-          }
-        } catch (Exception e) {
-          message += files[i] + " ";
-          message += "Exception " + e.getClass().getName() + ": "
-              + e.getMessage();
-        }
+        addFile(gzipped, directory, files[i], typeAllowed);
       }
-    }
-
-    // Checking compressed files
-    final String[] extZ = extsZ.split("[,]");
-    String[] filesZ = dir.list(new FilenameFilter() {
-
-      public boolean accept(File dir, String name) {
-        for (int i = 0; i < extZ.length; i++) {
-          if (name.endsWith("." + extZ[i])) {
-            return true;
-          }
-        }
-        return false;
-      }
-
-    });
-    if (files == null) {
-      Logger.warn("No files in directory [" + directory + "] for extensions ["
-          + exts + "]");
-    } else {
-      for (int i = 0; i < filesZ.length; i++) {
-        try {
-          String error = checkOpenFileGzip(directory, filesZ[i], typesAllowed);
-          if (error != null) {
-            message += error + "\n";
-          }
-        } catch (Exception e) {
-          message += files[i] + " ";
-          message += "Exception " + e.getClass().getName() + ": "
-              + e.getMessage();
-        }
-      }
-    }
-
-    // Checking error messages
-    if (message.length() > 0) {
-      System.out.flush();
-      System.err.println(message);
-      System.err.flush();
-      fail(message);
     }
   }
 
   /**
-   * Check that the file can be read
+   * Add test for a file.
    * 
-   * @param directory Directory where the file is (relative to Jmol-datafiles)
+   * @param gzipped Compressed file ?
+   * @param directory Directory where the files are (relative to Jmol-datafiles)
    * @param filename File name
-   * @param typesAllowed string that must contain the determined file type
-   * @return Error message or null if OK
+   * @param typeAllowed string that must contain the determined file type
    */
-  private String checkOpenFile(String directory, String filename, String typesAllowed) {
+  private void addFile(boolean gzipped,
+                       String directory,
+                       String filename,
+                       String typeAllowed) {
 
-    // Open file
-    JUnitLogger.setInformation(null);
-    Object result = null;
-    try {
-      JUnitLogger.activateLogger();
-      SmarterJmolAdapter adapter = new SmarterJmolAdapter();
-      File file = new File(new File("../Jmol-datafiles", directory), filename);
-      JUnitLogger.setInformation(file.getPath());
-      InputStream iStream = new FileInputStream(file);
-      BufferedInputStream biStream = new BufferedInputStream(iStream);
-      BufferedReader bReader = new BufferedReader(new InputStreamReader(
-          biStream));
-      String fileType = (adapter.getFileTypeName(bReader)+"").toLowerCase();
-      Logger.debug(fileType + ":" + file.getPath());
-      if (typesAllowed.indexOf(fileType) < 0)
-        return "checkFile (" + directory + "/" + filename + "): type error -- " + fileType;
-      result = adapter.openBufferedReader(filename, bReader);
-    } catch (Exception e) {
-      return "checkFile (" + directory + "/" + filename + "): "
-          + e.getMessage();
-    }
+    File file = new File(new File(datafileDirectory, directory), filename);
+    Test test = new TestSmarterJmolAdapterImpl(file, gzipped, typeAllowed);
+    addTest(test);
+  }
+}
 
-    // Check result
-    if (result == null) {
-      return "checkFile (" + directory + "/" + filename + "): returns null";
-    }
-    if (result instanceof String) {
-      return "checkFile (" + directory + "/" + filename + ") :" + result;
-    }
+/**
+ * Implementation of a test reading only one file. 
+ */
+class TestSmarterJmolAdapterImpl extends TestCase {
 
-    return null;
+  private File file;
+  private boolean gzipped;
+  private String typeAllowed;
+
+  public TestSmarterJmolAdapterImpl(File file, boolean gzipped, String typeAllowed) {
+    super("testFile");
+    this.file = file;
+    this.gzipped = gzipped;
+    this.typeAllowed = typeAllowed;
+  }
+
+  /* (non-Javadoc)
+   * @see junit.framework.TestCase#runTest()
+   */
+  public void runTest() throws Throwable {
+    testFile();
   }
 
   /**
-   * Check that the file can be read
+   * Tests reading of one file.
    * 
-   * @param directory Directory where the file is (relative to Jmol-datafiles)
-   * @param filename File name
-   * @param typesAllowed string that must contain the determined file type
-   * @return Error message or null if OK
+   *  @throws FileNotFoundException
+   *  @throws IOException
    */
-  private String checkOpenFileGzip(String directory, String filename, String typesAllowed) {
-    
-    // Open file
-    JUnitLogger.setInformation(null);
-    Object result = null;
-    try {
-      SmarterJmolAdapter adapter = new SmarterJmolAdapter();
-      File file = new File(new File("../Jmol-datafiles", directory), filename);
-      JUnitLogger.setInformation(file.getPath());
-      InputStream iStream = new FileInputStream(file);
-      BufferedInputStream biStream = new BufferedInputStream(iStream);
-      BufferedReader bReader = new BufferedReader(new InputStreamReader(new GZIPInputStream(biStream)));
-      String fileType = (adapter.getFileTypeName(bReader) + "").toLowerCase();
-      Logger.debug(fileType + ":" + file.getPath());
-      if (typesAllowed.indexOf(fileType) < 0)
-        return "checkFile (" + directory + "/" + filename + "): type error -- " + fileType;
-      result = adapter.openBufferedReader(filename, bReader);
-    } catch (Exception e) {
-      return "checkFile (" + directory + "/" + filename + "): " + e.getMessage();
+  public void testFile() throws FileNotFoundException, IOException {
+    JUnitLogger.setInformation(file.getPath());
+    InputStream iStream = new FileInputStream(file);
+    iStream = new BufferedInputStream(iStream);
+    if (gzipped) {
+      iStream = new GZIPInputStream(iStream);
     }
-    
-    // Check result
-    if (result == null) {
-      return "checkFile (" + directory + "/" + filename + "): returns null";
+    BufferedReader bReader = new BufferedReader(new InputStreamReader(iStream));
+    SmarterJmolAdapter adapter = new SmarterJmolAdapter();
+    if (typeAllowed != null) {
+      String fileType = adapter.getFileTypeName(bReader);
+      if (!typeAllowed.equals(fileType)) {
+        fail("Wrong type for " + file.getPath() + ": " + fileType + " instead of " + typeAllowed);
+      }
     }
-    if (result instanceof String) {
-      return "checkFile (" + directory + "/" + filename + ") :" + result;
+    Object result = adapter.openBufferedReader(file.getName(), bReader);
+    assertNotNull("Nothing read for " + file.getPath(), result);
+    assertFalse("Error returned for " + file.getPath() + ": " + result, result instanceof String);
+    assertTrue("Not an AtomSetCollection for " + file.getPath(), result instanceof AtomSetCollection);
+    AtomSetCollection collection = (AtomSetCollection) result;
+    assertTrue("No atoms loaded for " + file.getPath(), collection.atomCount > 0);
+    bReader.close();
+  }
+
+  /* (non-Javadoc)
+   * @see junit.framework.TestCase#getName()
+   */
+  public String getName() {
+    if (file != null) {
+      return super.getName() + " [" + file.getPath() + "]";
     }
-    result = null;
-    System.gc();
-    
-    return null;
+    return super.getName();
   }
 
   /* (non-Javadoc)
@@ -441,4 +218,13 @@ public class TestSmarterJmolAdapter extends TestCase {
     JUnitLogger.setInformation(null);
   }
 
+  /* (non-Javadoc)
+   * @see junit.framework.TestCase#tearDown()
+   */
+  protected void tearDown() throws Exception {
+    super.tearDown();
+    JUnitLogger.setInformation(null);
+    file = null;
+    typeAllowed = null;
+  }
 }

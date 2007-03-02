@@ -114,10 +114,6 @@ class ModelManager {
     return frame;
   }
 
-  JmolAdapter getExportJmolAdapter() {
-    return frame.getExportJmolAdapter();
-  }
-
   String getModelSetName() {
     return modelSetName;
   }
@@ -231,28 +227,6 @@ class ModelManager {
     return frame.getModelNumberIndex(modelNumber, useModelNumber);
   }
 
-  Point3f getSpinCenter(String axisID, int modelIndex) {
-    Draw draw = (Draw) frame.shapes[JmolConstants.SHAPE_DRAW];
-    if (draw == null) 
-      return null;
-    int meshIndex = draw.getIndexFromName(axisID);
-    if (meshIndex < 0) {
-      return null;
-    }
-    return draw.getSpinCenter(meshIndex, modelIndex);
-   }
-   
-  Vector3f getSpinAxis(String axisID, int modelIndex) {
-    Draw draw = (Draw) frame.shapes[JmolConstants.SHAPE_DRAW];
-    if (draw == null) 
-      return null;
-    int meshIndex = draw.getIndexFromName(axisID);
-    if (meshIndex < 0) {
-      return null;
-    }
-    return draw.getSpinAxis(meshIndex, modelIndex);
-   }
-   
   float calcRotationRadius(Point3f center) {
     return frame.calcRotationRadius(center);
   }
@@ -1247,7 +1221,7 @@ String getAtomInfoChime(int i) {
     for (int i = JmolConstants.SHAPE_MIN_NAMED_OBJECT; i < JmolConstants.SHAPE_MAX; i++) 
     if (frame.shapes[i] != null)
       frame.shapes[i].setVisibilityFlags(bs);
-    Polyhedra p = (Polyhedra) frame.shapes[JmolConstants.SHAPE_POLYHEDRA];
+    Shape p = frame.shapes[JmolConstants.SHAPE_POLYHEDRA];
     if (p != null)
       p.setVisibilityFlags(bs);
     if (frame.shapes[JmolConstants.SHAPE_HALOS] != null)

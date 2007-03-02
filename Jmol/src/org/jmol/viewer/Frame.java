@@ -748,13 +748,6 @@ public final class Frame {
   }
 
   ////////////////////////////////////////////////////////////////
-  FrameExportJmolAdapter exportJmolAdapter;
-
-  JmolAdapter getExportJmolAdapter() {
-    if (exportJmolAdapter == null)
-      exportJmolAdapter = new FrameExportJmolAdapter(viewer, this);
-    return exportJmolAdapter;
-  }
 
   void freeze() {
 

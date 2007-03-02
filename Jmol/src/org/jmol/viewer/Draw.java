@@ -257,9 +257,23 @@ class Draw extends MeshCollection {
       return getDrawCommand(currentMesh);
     if (property == "vertices")
       return getPath(currentMesh);
+    if (property.indexOf("getSpinCenter:") == 0)
+      return getSpinCenter(property.substring(14), index);
+    if (property.indexOf("getSpinAxis:") == 0)
+      return getSpinAxis(property.substring(12), index);
     return super.getProperty(property, index);
   }
 
+  Point3f getSpinCenter(String axisID, int modelIndex) {
+    int meshIndex = getIndexFromName(axisID);
+    return (meshIndex < 0 ? null : getSpinCenter(meshIndex, modelIndex));
+   }
+   
+  Vector3f getSpinAxis(String axisID, int modelIndex) {
+    int meshIndex = getIndexFromName(axisID);
+    return (meshIndex < 0 ? null : getSpinAxis(meshIndex, modelIndex));
+   }
+  
   Object getPath(Mesh mesh) {
     if (mesh == null)
       return null;

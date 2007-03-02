@@ -1619,9 +1619,14 @@ public class Viewer extends JmolViewer {
    ****************************************************************************/
 
   JmolAdapter getExportJmolAdapter() {
-    return modelManager.getExportJmolAdapter();
-  }
+  /*  
+   * 
+    return new FrameExportJmolAdapter(this, getFrame());
 
+    */
+    return null;
+  }
+  
   public Frame getFrame() {
     return modelManager.getFrame();
   }
@@ -4216,8 +4221,8 @@ public class Viewer extends JmolViewer {
     global.navigationMode = TF;
     if (TF && !transformManager.canNavigate()) {
       setVibrationPeriod(0);
-      transformManager = new TransformManager11(this, dimScreen.width,
-          dimScreen.height);
+      transformManager = transformManager.getNavigationManager(this,
+          dimScreen.width, dimScreen.height);
       reset();
     }
     transformManager.setNavigationMode(TF);
@@ -4240,8 +4245,7 @@ public class Viewer extends JmolViewer {
           dimScreen.height);
       break;
     default:
-      transformManager = new TransformManager11(this, dimScreen.width,
-          dimScreen.height);
+      transformManager = transformManager.getNavigationManager(this, dimScreen.width, dimScreen.height);
     }
     reset();
   }
@@ -4798,14 +4802,6 @@ public class Viewer extends JmolViewer {
     }
     transformManager.rotateAboutPointsInternal(pt1, pt2,
         global.pickingSpinRate, Float.MAX_VALUE, isClockwise, true, false);
-  }
-
-  Point3f getDrawObjectCenter(String axisID) {
-    return modelManager.getSpinCenter(axisID, repaintManager.currentModelIndex);
-  }
-
-  Vector3f getDrawObjectAxis(String axisID) {
-    return modelManager.getSpinAxis(axisID, repaintManager.currentModelIndex);
   }
 
   Vector3f getModelDipole() {

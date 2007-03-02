@@ -40,6 +40,20 @@ final public class JmolConstants {
    * 
    *
    * 
+   * 
+   11.1.17
+   
+   This build allows for the applet to be "bare-bones" -- only the
+   essential classes included in the Jar file; others never included
+   or possibly in accompanying jar files, such as, perhaps, JmolPopupMenu.jar,
+   JmolNavigation.jar, JmolBio.jar, JmolSurface.jar, JmolXtal.jar, etc. 
+   
+   Then a developer can slim down the download. The minimum is 697K, 
+   about 58% of the full package. All that gets you is atoms, bonds, 
+   and measures. 
+   
+   
+   
    11.1.16:
    
    First incompatibility found:

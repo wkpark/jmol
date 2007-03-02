@@ -37,6 +37,10 @@ class TransformManager11 extends TransformManager {
   private float navigationSlabOffset;
   private float zoomFactor = Float.MAX_VALUE;
 
+  TransformManager11() {
+    super();
+  }
+  
   TransformManager11(Viewer viewer) {
     super(viewer);
   }

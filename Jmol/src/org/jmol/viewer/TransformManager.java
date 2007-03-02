@@ -77,16 +77,39 @@ abstract class TransformManager {
    */
   abstract void adjustTemporaryScreenPoint();
 
+  TransformManager() {
+  }
+
   TransformManager(Viewer viewer) {
     this.viewer = viewer;
   }
 
   TransformManager(Viewer viewer, int width, int height) {
+    setViewer(viewer, width, height);
+  }
+
+  private void setViewer(Viewer viewer, int width, int height) {
     this.viewer = viewer;
     setScreenDimension(width, height);
     scaleFitToScreen();
   }
 
+  boolean checkedForNavigation = false;
+  TransformManager getNavigationManager(Viewer viewer, int width, int height) {
+    String className = "org.jmol.viewer.TransformManager11";
+    try {
+      Class tClass = Class.forName(className);
+      TransformManager t = (TransformManager) tClass.newInstance();
+      t.setViewer(viewer, width, height);
+      return t;
+    } catch (Exception e) {
+      if(!checkedForNavigation)
+        Logger.error("Could not instantiate TransformationManager11 navigation manager. Class file is missing " + e.toString());
+      checkedForNavigation = true;
+    }
+    return this;
+  }
+  
   /* ***************************************************************
    * GENERAL METHODS
    ***************************************************************/

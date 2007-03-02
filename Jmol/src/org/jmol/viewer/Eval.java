@@ -616,7 +616,7 @@ class Eval { //implements Runnable {
           else
             fixed[j] = new Token(Token.identifier, (String) v);
         } else {
-          Point3f center = viewer.getDrawObjectCenter(var);
+          Point3f center = getDrawObjectCenter(var);
           if (center == null)
             invalidArgument();
           fixed[j] = new Token(Token.point3f, center);
@@ -1901,12 +1901,10 @@ class Eval { //implements Runnable {
       switch (getToken(i).tok) {
       case Token.dollarsign:
         String id = objectNameParameter(++i);
-        center = viewer.getDrawObjectCenter(id);
-        if (center == null)
-          if (isSyntaxCheck)
-            center = new Point3f();
-          else
-            drawObjectNotDefined(id);
+        if (isSyntaxCheck)
+          return new Point3f();
+        if ((center = getDrawObjectCenter(id)) == null)
+          drawObjectNotDefined(id);
         break;
       case Token.bitset:
       case Token.expressionBegin:
@@ -3816,13 +3814,15 @@ class Eval { //implements Runnable {
         // $drawObject
         isInternal = true;
         axisID = objectNameParameter(++i);
-        rotCenter = viewer.getDrawObjectCenter(axisID);
-        rotAxis = viewer.getDrawObjectAxis(axisID);
-        if (rotCenter == null)
-          if (isSyntaxCheck)
-            rotCenter = new Point3f();
-          else
+        if (isSyntaxCheck) {
+          rotCenter = new Point3f();
+          rotAxis = new Vector3f();
+        } else {
+          rotCenter = getDrawObjectCenter(axisID);
+          rotAxis = getDrawObjectAxis(axisID);
+          if (rotCenter == null)
             drawObjectNotDefined(axisID);
+        }
         points[nPoints++].set(rotCenter);
         break;
       case Token.comma:
@@ -3896,6 +3896,15 @@ class Eval { //implements Runnable {
       return;
     viewer.rotateAboutPointsInternal(points[0], points[1], degrees, endDegrees,
         isSpin, isSelected);
+  }
+
+
+  Point3f getDrawObjectCenter(String axisID) {
+    return (Point3f)viewer.getShapeProperty(JmolConstants.SHAPE_DRAW, "getSpinCenter:" + axisID);
+  }
+  
+  Vector3f getDrawObjectAxis(String axisID) {
+    return (Vector3f)viewer.getShapeProperty(JmolConstants.SHAPE_DRAW, "getSpinAxis:" + axisID);
   }
 
   void script() throws ScriptException {
@@ -6889,6 +6898,8 @@ class Eval { //implements Runnable {
   }
 
   String getIsosurfaceJvxl() {
+    if (isSyntaxCheck)
+      return "";
     return (String) viewer.getShapeProperty(JmolConstants.SHAPE_ISOSURFACE,
         "jvxlFileData");
   }

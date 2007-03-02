@@ -483,9 +483,9 @@ public class Token {
       i = x.intValue;
       if (i == Integer.MAX_VALUE)
         return s;
-      if (i < 0 || i >= s.length())
+      if (i < 1 || i > s.length())
         return "";
-      return "" + s.charAt(i);
+      return "" + s.charAt(i-1);
     case Token.decimal:
     default:
       return "" + x.value;

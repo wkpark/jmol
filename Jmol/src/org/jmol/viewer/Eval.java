@@ -621,6 +621,8 @@ class Eval { //implements Runnable {
             invalidArgument();
           fixed[j] = new Token(Token.point3f, center);
         }
+        if (j == 1 && statement[0].tok == Token.set && fixed[j].tok != Token.identifier)
+          invalidArgument();
       } else {
         fixed[j] = statement[i];
       }
@@ -8212,6 +8214,11 @@ class Eval { //implements Runnable {
       case Token.leftsquare:
       case Token.rightsquare:
         break;
+      case Token.define:
+        if (i > 0) {
+          sb.append("@");
+          continue;
+        }
       case Token.on:
         sb.append("true");
         continue;

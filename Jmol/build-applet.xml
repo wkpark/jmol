@@ -535,9 +535,9 @@ support for assertions (which were introduced in 1.4).
 
   </target>
 
-	  <target name="applet-light" id="applet-light"
+	  <target name="applet-lite" id="applet-lite"
 	          depends="applet-classes,appletjars">
-    <jar destfile="${jmol.applet.build.dir}/JmolAppletLight.jar"
+    <jar destfile="${jmol.applet.build.dir}/JmolAppletLite.jar"
          manifest="manifest/applet0.txt"
          index="true" >
       <fileset dir="${appletjars.dir}" includes="**/*"/>
@@ -630,11 +630,11 @@ support for assertions (which were introduced in 1.4).
         <include name="org/jmol/i18n/GT.class" />
 
 
-
+<!--
 
         <include name="org/jmol/symmetry/SymmetryOperation.class" />
 
-
+-->
 
         <include name="org/jmol/util/ArrayUtil.class" />
 

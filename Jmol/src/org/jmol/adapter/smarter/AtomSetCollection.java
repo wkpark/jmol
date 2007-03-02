@@ -427,8 +427,12 @@ class AtomSetCollection {
    boolean isLatticeRange = false;
    
    void applySymmetry(int maxX, int maxY, int maxZ) throws Exception {
-    if (!coordinatesAreFractional || spaceGroup == null)
-      return;
+    if (coordinatesAreFractional && spaceGroup != null)
+      applyAllSymmetry(maxX, maxY, maxZ);
+   }
+
+   private void applyAllSymmetry(int maxX, int maxY, int maxZ) throws Exception {
+     
     int count = getLastAtomSetAtomCount();
     int atomIndex = getLastAtomSetAtomIndex();
     SymmetryOperation[] finalOperations = spaceGroup.getFinalOperations(atoms,
@@ -481,10 +485,13 @@ class AtomSetCollection {
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false; //turn off global fractional conversion -- this wil be model by model
     setGlobalBoolean(GLOBAL_SYMMETRY);
+    
+    
   }
   
   Point3f[] cartesians;
-  int symmetryAddAtoms(SymmetryOperation[] finalOperations, int atomIndex,
+  
+  private int symmetryAddAtoms(SymmetryOperation[] finalOperations, int atomIndex,
                         int count, int transX, int transY, int transZ, int pt) throws Exception {
     boolean isBaseCell = (transX == 0 && transY == 0 && transZ == 0);
     int nOperations = finalOperations.length;
@@ -509,11 +516,11 @@ class AtomSetCollection {
           Point3f cartesian = new Point3f(atom);
           unitCell.toCartesian(cartesian);
 
-          /*
-          System.out.println((Point3f) atoms[i] + " " + (Point3f) atom + " "
-              + transX + " " + transY + " " + transZ + " " + cartesian
-              + finalOperations[iSym].getXyz());
-          */
+          
+          //System.out.println((Point3f) atoms[i] + " " + (Point3f) atom + " "
+          //    + transX + " " + transY + " " + transZ + " " + cartesian
+          //    + finalOperations[iSym].getXyz());
+          
   
           Atom special = null;
           for (int j = pt0; --j >= 0;) {
@@ -536,10 +543,10 @@ class AtomSetCollection {
             cartesians[pt++] = cartesian;
           } else {
             special.bsSymmetry.set(iSym);
-            /*
-             System.out.println(iSym + " " + finalOperations[iSym].getXyz()
-             + " special set: " + i + " " + " " + special.bsSymmetry);
-             */
+            
+            // System.out.println(iSym + " " + finalOperations[iSym].getXyz()
+            // + " special set: " + i + " " + " " + special.bsSymmetry);
+            
     //        System.out.println(cartesian+"Y" + "X" + finalOperations[iSym].getXyz() + " " + transX+" "+transY+" "+transZ);
           }
         }
@@ -547,6 +554,8 @@ class AtomSetCollection {
     }
     return pt;
   }
+  
+  
   
   void setCollectionName(String collectionName) {
     if (collectionName != null) {

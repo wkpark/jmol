@@ -2196,6 +2196,11 @@ class Eval { //implements Runnable {
             badRGBColor();
           colors[n++] = theToken.intValue;
           continue;
+        case Token.spec_seqcode:
+          if (n > 2)
+            badRGBColor();
+          colors[n++] = ((Integer)theToken.value).intValue();
+          continue;
         case Token.rightsquare:
           if (n == 3)
             return 0xFF000000 | colors[0] << 16 | colors[1] << 8 | colors[2];
@@ -5504,6 +5509,7 @@ class Eval { //implements Runnable {
       return false;
     }
     return true;
+
   }
 
   Object parameterExpression(int pt, String key) throws ScriptException {
@@ -5514,13 +5520,16 @@ class Eval { //implements Runnable {
       switch (getToken(i).tok) {
       case Token.on:
       case Token.off:
-      case Token.integer:
       case Token.decimal:
       case Token.string:
       case Token.point3f:
       case Token.point4f:
       case Token.bitset:
         rpn.addX(theToken);
+        break;
+      case Token.spec_seqcode:
+      case Token.integer:
+        rpn.addX(theToken.intValue);
         break;
       case Token.dollarsign:
         rpn.addX(new Token(Token.point3f, centerParameter(i)));

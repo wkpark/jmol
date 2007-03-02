@@ -5687,8 +5687,9 @@ class Eval { //implements Runnable {
             str = frame.getBondAt(j).formatLabel(str, indices);
         }
         str = TextFormat.formatString(str, "#", ++n);
+        if (n > 1)
+          s.append("\n");
         s.append(str);
-        s.append("\n");
       }
     return s.toString();
   }

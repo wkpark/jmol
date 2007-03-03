@@ -559,12 +559,12 @@ class Text {
       case XYZ:
         if (strOff == null)
           strOff = StateManager.escape(xyz);
-        s.append("set echo " + target + " " + strOff);
+        s.append("echo = " + target + " " + strOff);
         if (align != LEFT)
-          s.append("set echo " + target + " " + hAlignNames[align]);
+          s.append("echo = " + target + " " + hAlignNames[align]);
         break;
       default:
-        s.append("set echo " + vAlignNames[valign] + " " + hAlignNames[align]);
+        s.append("echo = " + vAlignNames[valign] + " " + hAlignNames[align]);
       }
       s.append(";echo " + StateManager.escape(textUnformatted) + ";\n");
     }

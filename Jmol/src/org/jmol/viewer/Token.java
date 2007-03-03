@@ -152,7 +152,7 @@ public class Token {
   final static int trace        = command | 41;
   final static int translate    = command | 42 | negnums;
   final static int wireframe    = command | 44;
-  final static int write        = command | 45 | setparam;
+  final static int write        = command | 45;
   final static int zap          = command | 46;
   final static int zoom         = command | 47 | negnums | embeddedExpression;
   final static int zoomTo       = command | 48 | negnums | embeddedExpression;
@@ -318,7 +318,7 @@ public class Token {
   final static int join         = 2  | mathfunc | 0 << 3;
   final static int trim         = 3  | mathfunc | 0 << 3;
 
-  final static int label        = 1  | mathfunc | 1 << 3 | command | specialstring;
+  final static int label        = 1  | mathfunc | 1 << 3 | command | specialstring | setparam;
   final static int find         = 2  | mathfunc | 1 << 3;
   final static int load         = 3  | mathfunc | 1 << 3 | command | negnums;
   final static int substructure = 4  | mathfunc | 1 << 3;
@@ -1101,6 +1101,10 @@ public class Token {
     }
   }
 
+  public static Token getTokenFromName(String name) {
+    return (Token) map.get(name);  
+  }
+  
   public static String nameOf(int tok) {
     Enumeration e = map.elements();
     while (e.hasMoreElements()) {

@@ -163,7 +163,7 @@ class Compiler {
     ltoken.addElement(token);
     lastToken = token;
   }
-  
+
   private boolean compile0() {
     cchScript = script.length();
     ichToken = 0;
@@ -179,17 +179,17 @@ class Compiler {
     ltoken = new Vector();
     int tokCommand = Token.nada;
     isNewSet = false;
-    for (int nTokens = 0; true; ichToken += cchToken) {
+    for (; true; ichToken += cchToken) {
+      int nTokens = ltoken.size();
       if (lookingAtLeadingWhitespace())
         continue;
-      nTokens++;
-      if (tokCommand == Token.nada)
+      if (nTokens == 0)
         ichCurrentCommand = ichToken;
       if (lookingAtComment())
         continue;
       boolean endOfLine = lookingAtEndOfLine();
       if (endOfLine || lookingAtEndOfStatement()) {
-        if (tokCommand != Token.nada) {
+        if (nTokens > 0) {
           if (!compileCommand())
             return false;
           iCommand = lltoken.size();
@@ -206,9 +206,9 @@ class Compiler {
           lineIndices[iCommand] = ichCurrentCommand;
           lltoken.addElement(atokenInfix);
           ltoken.setSize(0);
+          nTokens = 0;
           tokCommand = Token.nada;
           iHaveQuotedString = false;
-          nTokens = 0;
         }
         if (ichToken < cchScript) {
           if (endOfLine)
@@ -217,9 +217,16 @@ class Compiler {
         }
         break;
       }
-      if (tokCommand == Token.nada) {
+      if (nTokens == 0) {
         isNewSet = false;
       } else {
+        if (nTokens == 1 && script.charAt(ichToken) == '=' && tokAttr(tokCommand, Token.setparam)) {
+          tokenCommand = Token.getTokenFromName("set");
+          tokCommand = Token.set;
+          ltoken.add(0, tokenCommand);
+          cchToken = 1;
+          continue;
+        }
         if (lookingAtString()) {
           if (cchToken < 0)
             return endOfCommandUnexpected();
@@ -366,27 +373,28 @@ class Compiler {
           tokCommand = tok;
           if (tokAttr(tokCommand, Token.command))
             break;
-          if (!tokAttr(tok, Token.identifier))
+          if (!tokAttr(tok, Token.identifier) && !tokAttr(tok, Token.setparam))
             return commandExpected();
           tokCommand = Token.set;
           isNewSet = true;
           break;
         case Token.set:
-          if (ltoken.size() == 1) {
+          if (nTokens == 1) {
+            // set x   or   x = 
             if (tok == Token.opEQ) {
               token = (Token) ltoken.get(0);
               ltoken.remove(0);
-              ltoken.add(new Token(Token.set, Token.varArgCount, "set"));
+              ltoken.add(Token.getTokenFromName("set"));
               tok = token.tok;
               tokCommand = Token.set;
             }
-            if (tok != Token.identifier && !tokAttr(tok, Token.setparam))
+            if (tok != Token.identifier && (!tokAttr(tok, Token.setparam)))
               return isNewSet ? commandExpected() : unrecognizedParameter(
                   "SET", ident);
           }
           break;
         case Token.define:
-          if (ltoken.size() == 1) {
+          if (nTokens == 1) {
             // we are looking at the variable name
             if (tok != Token.identifier) {
               if (preDefining) {
@@ -403,10 +411,10 @@ class Compiler {
                 Token.map.put(ident, token);
               }
             }
-          } else if (ltoken.size() == 2 && tok == Token.opEQ) {
+          } else if (nTokens == 2 && tok == Token.opEQ) {
             // we are looking at @x =.... just insert a SET command
             // and ignore the =. It's the same as set @x ... 
-              ltoken.add(0, new Token(Token.set, Token.varArgCount, "set"));
+              ltoken.add(0, Token.getTokenFromName("set"));
               continue;
           } else {
             // we are looking at the expression
@@ -431,7 +439,7 @@ class Compiler {
         addTokenToPrefix(token);
         continue;
       }
-      if (ltoken.size() == 0 || isNewSet && ltoken.size() == 1)
+      if (nTokens == 0 || isNewSet && nTokens == 1)
         return commandExpected();
       return unrecognizedToken(script);
     }

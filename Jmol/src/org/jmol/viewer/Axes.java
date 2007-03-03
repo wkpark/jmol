@@ -85,6 +85,7 @@ class Axes extends FontLineShape {
       Point3f axisPoint = axisPoints[i];
       axisPoint.set(unitAxisPoints[i]);
       // we have just set the axisPoint to be a unit on a single axis
+   
       // therefore only one of these values (x, y, or z) will be nonzero
       // it will have value 1 or -1
       if (corner.x < MIN_AXIS_LEN)
@@ -107,7 +108,7 @@ class Axes extends FontLineShape {
   }
   
   String getShapeState() {
-    return super.getShapeState() + "set axes scale " + scale + ";\n";
+    return super.getShapeState() + "axisScale = " + scale + ";\n";
   }
 
 }

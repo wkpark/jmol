@@ -449,8 +449,8 @@ class Measures extends Shape {
     for (int i = 0; i < measurementCount; i++)
       commands.append(getState(i));
     if (!showMeasurementNumbers)
-      commands.append("set measures off; # numbers off\n");
-    appendCmd(commands, "set measures " + viewer.getMeasureDistanceUnits());
+      commands.append("measures off; # numbers off\n");
+    appendCmd(commands, "measures = " + viewer.getMeasureDistanceUnits());
     appendCmd(commands, getFontCommand("measures", font3d));
     int n = 0;
     Hashtable temp = new Hashtable();

@@ -111,7 +111,7 @@ class Hover extends TextShape {
     if (atomFormats != null)
       for (int i = atomCount; --i >= 0;)
         if (atomFormats[i] != null)
-          setStateInfo(temp, i, "set hover "
+          setStateInfo(temp, i, "hover = "
               + StateManager.escape(atomFormats[i]));
     return getShapeCommands(temp, null, atomCount);
   }  

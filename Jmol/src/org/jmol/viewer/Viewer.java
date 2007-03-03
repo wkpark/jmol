@@ -1983,7 +1983,7 @@ public class Viewer extends JmolViewer {
     s.append(transformManager.getState());
     //  display and selections
     s.append(selectionManager.getState());
-    s.append("set refreshing true;\n");
+    s.append("refreshing = true;\n");
     return s.toString();
   }
 
@@ -2064,14 +2064,14 @@ public class Viewer extends JmolViewer {
     int modelIndex = getCurrentModelIndex();
     if (modelManager.setUnitCellOffset(modelIndex, offset))
       global.setParameterValue("_frame " + getModelNumber(modelIndex)
-          + "; set unitcell", offset);
+          + "; unitcell = ", offset);
   }
 
   void setCurrentUnitCellOffset(Point3f pt) {
     int modelIndex = getCurrentModelIndex();
     if (modelManager.setUnitCellOffset(modelIndex, pt))
       global.setParameterValue("_frame " + getModelNumber(modelIndex)
-          + "; set unitcell", StateManager.escape(pt));
+          + "; unitcell = ", StateManager.escape(pt));
   }
 
   /* ****************************************************************************
@@ -3595,7 +3595,7 @@ public class Viewer extends JmolViewer {
     }
     if (defineNew) {
       if (global.htPropertyFlags.containsKey(key)) {
-       scriptStatus(GT._("ERROR: Cannot set value of a boolean to another type. use \"{0}\" first.", "SET "+ key + " NONE"));
+       scriptStatus(GT._("ERROR: Cannot set value of a boolean to another type. use \"{0}\" first.", key + " = NONE"));
         return; // don't allow setting boolean of a numeric
       }
       global.setParameterValue(key, value);
@@ -3803,18 +3803,6 @@ public class Viewer extends JmolViewer {
         setAdjustCamera(value);
         break;
       }
-      if (key.equalsIgnoreCase("axesWindow")) {
-        setAxesModeMolecular(!value);
-        break;
-      }
-      if (key.equalsIgnoreCase("axesMolecular")) {
-        setAxesModeMolecular(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("axesUnitCell")) {
-        setAxesModeUnitCell(value);
-        break;
-      }
       if (key.equalsIgnoreCase("displayCellParameters")) {
         setDisplayCellParameters(value);
         break;
@@ -3847,6 +3835,9 @@ public class Viewer extends JmolViewer {
         setGreyscaleRendering(value);
         break;
       }
+      if (setAxesMode(key, value))
+          break;
+   
       //these next are deprecated because they don't 
       //give much indication what they really do:
 
@@ -3923,7 +3914,7 @@ public class Viewer extends JmolViewer {
     if (notFound) {
       key = key.toLowerCase();
       if (global.htParameterValues.containsKey(key)) {
-        scriptStatus(GT._("ERROR: Cannot set value of this variable to a boolean. use \"{0}\" first.", "SET "+ key + " NONE"));
+        scriptStatus(GT._("ERROR: Cannot set value of this variable to a boolean. use \"{0}\" first.", key + " = NONE"));
         return true; // don't allow setting boolean of a numeric
       }
       if (!value && !global.htPropertyFlags.containsKey(key)) {
@@ -4122,8 +4113,24 @@ public class Viewer extends JmolViewer {
     return transformManager.axesOrientationRasmol;
   }
 
+  boolean setAxesMode(String key, boolean value) {
+    if (key.equalsIgnoreCase("axesWindow")) {
+      setAxesModeMolecular(!value);
+      return true;
+    } 
+    if (key.equalsIgnoreCase("axesMolecular")) {
+      setAxesModeMolecular(value);
+      return true;
+    }
+    if (key.equalsIgnoreCase("axesUnitCell")) {
+      setAxesModeUnitCell(value);
+      return true;
+    }
+    return false;
+  }
+  
   private void setAxesModeMolecular(boolean TF) {
-    global.axesMode = (TF ? JmolConstants.AXES_MODE_MOLECULAR
+     global.axesMode = (TF ? JmolConstants.AXES_MODE_MOLECULAR
         : JmolConstants.AXES_MODE_BOUNDBOX);
     axesAreTainted = true;
     global.removeParameter("axesunitcell");

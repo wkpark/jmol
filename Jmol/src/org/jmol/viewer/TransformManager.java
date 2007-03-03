@@ -142,10 +142,10 @@ abstract class TransformManager {
     StringBuffer commands = new StringBuffer(
         "# orientation/center/spin state;\nset refreshing false;\n");
     if (!isWindowCentered())
-      commands.append("set windowCentered false;\n");
-    commands.append("set cameraDepth " + cameraDepth + ";\n");
+      commands.append("windowCentered = false;\n");
+    commands.append("cameraDepth = " + cameraDepth + ";\n");
     if (isNavigationMode)
-      commands.append("set navigationMode;\n");
+      commands.append("navigationMode = true;\n");
     commands.append("center " + StateManager.escape(fixedRotationCenter)
         + ";\n");
     commands.append(getMoveToText(0) + ";\n");
@@ -175,11 +175,11 @@ abstract class TransformManager {
   }
 
   String getSpinState(boolean isAll) {
-    String s = "set spin X " + (int) spinX + ";set spin Y " + (int) spinY
-        + ";set spin Z " + (int) spinZ + ";set spin fps " + (int) spinFps + ";";
+    String s = "spinX = " + (int) spinX + ";spinY = " + (int) spinY
+        + ";spinZ = " + (int) spinZ + ";spinFps = " + (int) spinFps + ";";
     if (spinOn) {
       if (isAll)
-        s += "set refreshing true;refresh;";
+        s += "refreshing = true;refresh;";
       if (isSpinInternal) {
         Point3f pt = new Point3f(internalRotationCenter);
         pt.add(rotationAxis);
@@ -1670,7 +1670,7 @@ abstract class TransformManager {
       sb.append(";");
     }
     if (modelRadius != rotationRadiusDefault) {
-      sb.append("set rotationRadius");
+      sb.append(" rotationRadius =");
       truncate2(sb, modelRadius);
       sb.append(";");
     }      

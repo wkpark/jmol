@@ -747,7 +747,7 @@ class Eval { //implements Runnable {
         define();
         break;
       case Token.echo:
-        echo();
+        echo(1);
         break;
       case Token.message:
         message();
@@ -764,7 +764,7 @@ class Eval { //implements Runnable {
               : Boolean.FALSE);
         break;
       case Token.label:
-        label();
+        label(1);
         break;
       case Token.hover:
         hover();
@@ -1713,9 +1713,7 @@ class Eval { //implements Runnable {
   }
 
   boolean isFloatParameter(int index) {
-    if (index >= statementLength)
-      return false;
-    switch (statement[index].tok) {
+    switch (tokAt(index)) {
     case Token.integer:
     case Token.decimal:
       return true;
@@ -3283,10 +3281,10 @@ class Eval { //implements Runnable {
     }
   }
 
-  void echo() throws ScriptException {
+  void echo(int index) throws ScriptException {
     if (isSyntaxCheck)
       return;
-    String text = optParameterAsString(1);
+    String text = optParameterAsString(index);
     if (viewer.getEchoStateActive())
       setShapeProperty(JmolConstants.SHAPE_ECHO, "text", text);
     showString(viewer.formatText(text));
@@ -3312,10 +3310,10 @@ class Eval { //implements Runnable {
     viewer.scriptStatus("script execution paused" + msg);
   }
 
-  void label() throws ScriptException {
+  void label(int index) throws ScriptException {
     if (isSyntaxCheck)
       return;
-    String strLabel = parameterAsString(1);
+    String strLabel = parameterAsString(index);
     if (strLabel.equalsIgnoreCase("on")) {
       strLabel = viewer.getStandardLabelFormat();
     } else if (strLabel.equalsIgnoreCase("off"))
@@ -5252,6 +5250,9 @@ class Eval { //implements Runnable {
     case Token.bondmode:
       setBondmode();
       return;
+    case Token.label:
+      label(2);
+      return;
     case Token.boundbox:
       setBoundbox(2);
       return;
@@ -5288,7 +5289,8 @@ class Eval { //implements Runnable {
       setStrands();
       return;
     case Token.spin:
-      setSpin();
+      checkLength4();
+      setSpin(parameterAsString(2), (int)floatParameter(3));
       return;
     case Token.frank:
       setFrank(2);
@@ -5372,13 +5374,20 @@ class Eval { //implements Runnable {
       if (key.toLowerCase().indexOf("label") == 0) {
         setLabel(key.substring(5));
         return;
-      } else if (key.equalsIgnoreCase("defaultColorScheme")) {
+      } 
+      if (key.equalsIgnoreCase("defaultColorScheme")) {
         setDefaultColors();
         return;
-      } else if (key.equalsIgnoreCase("measurementNumbers")) {
+      }
+      if (key.equalsIgnoreCase("measurementNumbers") || key.equalsIgnoreCase("measurementLabels")) {
         setMonitor(2);
         return;
-      } else if (key.equalsIgnoreCase("defaultLattice")) {
+      }
+      if (key.equalsIgnoreCase("axisScale")) {
+        setAxisScale(2);
+        return;
+      }
+      if (key.equalsIgnoreCase("defaultLattice")) {
         Point3f pt;
         if (getToken(2).tok == Token.integer) {
           int i = intParameter(2);
@@ -5389,12 +5398,14 @@ class Eval { //implements Runnable {
         if (!isSyntaxCheck)
           viewer.setDefaultLattice(pt);
         return;
-      } else if (key.equalsIgnoreCase("toggleLabel")) { //from PickingManager
+      }
+      if (key.equalsIgnoreCase("toggleLabel")) { //from PickingManager
         BitSet bs = expression(2);
         if (!isSyntaxCheck)
           viewer.togglePickingLabel(bs);
         return;
-      } else if (key.equalsIgnoreCase("logLevel")) {
+      }
+      if (key.equalsIgnoreCase("logLevel")) {
         // set logLevel n
         // we have 5 levels 0 - 4 debug -- error
         // n = 0 -- no messages -- turn all off
@@ -5408,10 +5419,16 @@ class Eval { //implements Runnable {
         Viewer.setLogLevel(ilevel);
         Logger.info("logging level set to " + ilevel);
         return;
-      } else if (key.equalsIgnoreCase("backgroundModel")) {
+      }
+      if (key.equalsIgnoreCase("backgroundModel")) {
         checkLength3();
         if (!isSyntaxCheck)
           viewer.setBackgroundModel(statement[2].intValue);
+        return;
+      }
+      if (Compiler.isOneOf(key.toLowerCase(), "spinx;spiny;spinz;spinfps")) {
+        checkLength3();
+        setSpin(key.substring(4), (int) floatParameter(2));
         return;
       }
 
@@ -5971,17 +5988,26 @@ class Eval { //implements Runnable {
       setShapeSize(JmolConstants.SHAPE_AXES, 1);
       return;
     }
-    // set axes scale x.xxx
-    if (statementLength == index + 2
-        && statement[index].tok == Token.identifier
-        && ((String) statement[index].value).equalsIgnoreCase("scale")) {
-      setShapeProperty(JmolConstants.SHAPE_AXES, "scale", new Float(
-          floatParameter(index + 1)));
+    String type = optParameterAsString(index).toLowerCase();
+    if (statementLength == index + 1
+        && Compiler.isOneOf(type, "window;unitcell;molecular")) {
+      viewer.setAxesMode("axes" + type, true);
+      return;
+    }
+    // axes = scale x.xxx
+    if (statementLength == index + 2 && type.equals("scale")) {
+      setAxisScale(++index);
       return;
     }
     setShapeSize(JmolConstants.SHAPE_AXES, getSetAxesTypeMad(index));
   }
 
+  void setAxisScale(int index) throws ScriptException {
+    setShapeProperty(JmolConstants.SHAPE_AXES, "scale", new Float(
+        floatParameter(index)));
+ 
+  }
+  
   void setBoundbox(int index) throws ScriptException {
     setShapeSize(JmolConstants.SHAPE_BBCAGE, getSetAxesTypeMad(index));
   }
@@ -6079,6 +6105,9 @@ class Eval { //implements Runnable {
     case Token.identifier:
       propertyValue = statement[2].value;
       break;
+    case Token.string:
+      echo(2);
+      return;
     default:
       invalidArgument();
     }
@@ -6223,7 +6252,7 @@ class Eval { //implements Runnable {
     //index will be 2 here.
     boolean showMeasurementNumbers = false;
     checkLength3();
-    switch (statement[index].tok) {
+    switch (tokAt(index)) {
     case Token.on:
       showMeasurementNumbers = true;
     case Token.off:
@@ -6231,9 +6260,9 @@ class Eval { //implements Runnable {
           showMeasurementNumbers ? Boolean.TRUE : Boolean.FALSE);
       return;
     case Token.identifier:
-      String units = (String) statement[index].value;
+      String units = parameterAsString(index);
       if (!StateManager.isMeasurementUnit(units))
-        unrecognizedParameter("SET MEASUREMENTS", units);
+        unrecognizedParameter("MEASURE ", units);
       if (!isSyntaxCheck)
         viewer.setMeasureDistanceUnits(units);
       return;
@@ -6280,30 +6309,26 @@ class Eval { //implements Runnable {
         strandCount));
   }
 
-  void setSpin() throws ScriptException {
-    checkLength4();
-    int value = (int) floatParameter(3);
-    if (getToken(2).tok == Token.identifier) {
-      String str = parameterAsString(2).toLowerCase();
-      int pt = "x y z f fp fps".indexOf(str);
-      //        0 2 4      11
-      if (pt >= 0)
-        switch (pt) {
-        case 0:
-          viewer.setSpinX(value);
-          return;
-        case 2:
-          viewer.setSpinY(value);
-          return;
-        case 4:
-          viewer.setSpinZ(value);
-          return;
-        case 11:
-          viewer.setSpinFps(value);
-          return;
-        }
+  void setSpin(String key, int value) throws ScriptException {
+    if (Compiler.isOneOf(key, "x;y;z;fps")) {
+      if (isSyntaxCheck)
+        return;
+      switch ("x;y;z".indexOf(key)) {
+      case 0:
+        viewer.setSpinX(value);
+        return;
+      case 2:
+        viewer.setSpinY(value);
+        return;
+      case 4:
+        viewer.setSpinZ(value);
+        return;
+      default:
+        viewer.setSpinFps(value);
+        return;
+      }
     }
-    unrecognizedParameter("SET SPIN", parameterAsString(2));
+    unrecognizedParameter("SPIN =", parameterAsString(2));
   }
 
   void setSsbond() throws ScriptException {

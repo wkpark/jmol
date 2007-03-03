@@ -126,8 +126,10 @@ public class TextFormat {
   
   public static String formatString(String strFormat, String key, String strT,
                                     float floatT) {
-    if (strFormat == null || strFormat.length() == 0)
+    if (strFormat == null)
       return null;
+    if (strFormat == "")
+      return "";
     int len = key.length();
     if (strFormat.indexOf("%") < 0 || len == 0 || strFormat.indexOf(key) < 0)
       return strFormat;

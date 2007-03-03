@@ -347,32 +347,31 @@ class StateManager {
      * @return script command
      */
     String getLoadState() {
-      StringBuffer str = new StringBuffer();
-      if (defaultDirectory != null)
-        appendCmd(str, "set defaultDirectory " + escape(defaultDirectory));
-      appendCmd(str, "set autoBond " + autoBond);
-      appendCmd(str, "set forceAutoBond " + forceAutoBond);
-      appendCmd(str, "set percentVdwAtom " + percentVdwAtom);
-      appendCmd(str, "set bondRadiusMilliAngstroms " + marBond);
-      appendCmd(str, "set minBondDistance " + minBondDistance);
-      appendCmd(str, "set bondTolerance " + bondTolerance);
-      appendCmd(str, "set defaultLattice " + escape(ptDefaultLattice));
-      appendCmd(str, "set allowEmbeddedScripts false");
-      appendCmd(str, "set defaultLoadScript \"\"");
-      if (viewer.getAxesOrientationRasmol())
-        appendCmd(str, "set axesOrientationRasmol");
-      if (zeroBasedXyzRasmol)
-        appendCmd(str, "set zeroBasedXyzRasmol");
-
-      // this next commands register flags so that they will be 
+      // some commands register flags so that they will be 
       // restored in a saved state definition, but will not execute
       // now so that there is no chance any embedded scripts or
       // default load scripts will run and slow things down.
+      StringBuffer str = new StringBuffer();
+      appendCmd(str, "allowEmbeddedScripts = false");
       if (allowEmbeddedScripts)
         setParameterValue("allowEmbeddedScripts", true);
+      appendCmd(str, "autoBond = " + autoBond);
+      if (viewer.getAxesOrientationRasmol())
+        appendCmd(str, "axesOrientationRasmol = true");
+      appendCmd(str, "bondRadiusMilliAngstroms = " + marBond);
+      appendCmd(str, "bondTolerance = " + bondTolerance);
+      if (defaultDirectory != null)
+        appendCmd(str, "defaultDirectory = " + escape(defaultDirectory));
+      appendCmd(str, "defaultLattice = " + escape(ptDefaultLattice));
+      appendCmd(str, "defaultLoadScript = \"\"");
       if (defaultLoadScript.length() > 0)
         setParameterValue("defaultLoadScript", defaultLoadScript);
-      
+
+      appendCmd(str, "forceAutoBond = " + forceAutoBond);
+      appendCmd(str, "minBondDistance = " + minBondDistance);
+      appendCmd(str, "percentVdwAtom = " + percentVdwAtom);
+      if (zeroBasedXyzRasmol)
+        appendCmd(str, "zeroBasedXyzRasmol = true");      
       return str + "\n";
     }
 
@@ -489,8 +488,8 @@ class StateManager {
       StringBuffer str = new StringBuffer("# window state;\n# height " + viewer.getScreenHeight()
           + ";\n# width " + viewer.getScreenWidth() + ";\n");
       appendCmd(str, "initialize");
-      appendCmd(str, "set refreshing false");
-      appendCmd(str, "background " + escapeColor(argbBackground));
+      appendCmd(str, "refreshing = false");
+      appendCmd(str, "background = " + escapeColor(argbBackground));
       str.append(getSpecularState());
       if (stereoState != null)
         appendCmd(str, "stereo" + stereoState);
@@ -499,12 +498,12 @@ class StateManager {
 
     String getSpecularState() {
       StringBuffer str = new StringBuffer("");
-      appendCmd(str, "set ambientPercent " + ambientPercent);
-      appendCmd(str, "set diffusePercent " + diffusePercent);
-      appendCmd(str, "set specular " + specular);
-      appendCmd(str, "set specularPercent " + specularPercent);
-      appendCmd(str, "set specularPower " + specularPower);
-      appendCmd(str, "set specularExponent " + specularExponent);
+      appendCmd(str, "ambientPercent = " + ambientPercent);
+      appendCmd(str, "diffusePercent = " + diffusePercent);
+      appendCmd(str, "specular = " + specular);
+      appendCmd(str, "specularPercent = " + specularPercent);
+      appendCmd(str, "specularPower = " + specularPower);
+      appendCmd(str, "specularExponent = " + specularExponent);
       return str.toString();
     }
     
@@ -701,7 +700,7 @@ class StateManager {
     
     String getState() {
       StringBuffer commands = new StringBuffer("# settings;\n");
-      appendCmd(commands, "set refreshing false");
+      appendCmd(commands, "refreshing = false");
       Enumeration e;
       //two rounds here because default settings 
       //must be declared first
@@ -715,7 +714,7 @@ class StateManager {
           Object value = htParameterValues.get(key);
           if (value instanceof String)
             value = escape((String) value);
-          appendCmd(commands, "set " + key + " " + value);
+          appendCmd(commands, key + " = " + value);
         }
       }
       //booleans
@@ -723,7 +722,7 @@ class StateManager {
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
         if (doRegister(key))
-          appendCmd(commands, "set " + key + " " + htPropertyFlags.get(key));
+          appendCmd(commands, key + " = " + htPropertyFlags.get(key));
       }
       //nondefault, nonvariables
       //save as _xxxx if you don't want "set" to be there first
@@ -736,7 +735,7 @@ class StateManager {
           if (key.charAt(0) == '_') {
             key = key.substring(1);
           } else {
-            key = "set " + key;
+            key += " = ";
             if (value instanceof String)
               value = escape((String) value);
           }
@@ -745,13 +744,13 @@ class StateManager {
       }
       switch (axesMode) {
       case JmolConstants.AXES_MODE_UNITCELL:
-        appendCmd(commands, "set axesUnitcell");
+        appendCmd(commands, "axes = unitcell");
         break;
       case JmolConstants.AXES_MODE_BOUNDBOX:
-        appendCmd(commands, "set axesWindow");
+        appendCmd(commands, "axes = window");
         break;
       default:
-        appendCmd(commands, "set axesMolecular");
+        appendCmd(commands, "axes = molecular");
       }
       //variables only:
       e = htParameterValues.keys();

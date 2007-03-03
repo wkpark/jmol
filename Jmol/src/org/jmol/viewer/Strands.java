@@ -62,7 +62,7 @@ class Strands extends Mps {
   }
   
   String getShapeState() {
-    return "set strandCount " + strandCount + ";\n"
+    return "strandCount = " + strandCount + ";\n"
       + super.getShapeState();
   }
 }

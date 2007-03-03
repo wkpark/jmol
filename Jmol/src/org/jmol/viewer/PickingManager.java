@@ -121,7 +121,7 @@ class PickingManager {
         toggleMeasurement(4);
       break;
     case JmolConstants.PICKING_LABEL:
-      viewer.script("set toggleLabel (atomindex="+atomIndex+")");
+      viewer.script("toggleLabel = (atomindex="+atomIndex+")");
       break;
     case JmolConstants.PICKING_CENTER:
       viewer.script("zoomTo (atomindex=" + atomIndex+")");

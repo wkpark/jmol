@@ -3478,7 +3478,7 @@ public final class Frame {
       commands.append("\n# charges;\n");
       Hashtable ht = new Hashtable();
       for (int i = 0; i < atomCount; i++)
-        StateManager.setStateInfo(ht, i, i, "set formalCharge "
+        StateManager.setStateInfo(ht, i, i, "formalCharge = "
             + atoms[i].getFormalCharge());
       commands.append(StateManager.getCommands(ht));
     }
@@ -3512,7 +3512,7 @@ public final class Frame {
       commands.append(fs.get(i) + "\n");
 
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
-    ((Labels) shapes[JmolConstants.SHAPE_LABELS]).getShapeState(commands);
+    ((Labels) shapes[JmolConstants.SHAPE_LABELS]).getDefaultState(commands);
 
     commands.append("\n# model state;\n");
     // shape construction

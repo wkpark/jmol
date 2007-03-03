@@ -180,7 +180,7 @@ class FileManager {
   }
 
   void openStringInline(String[] arrayModels, int[] params) {
-    loadScript = "set dataSeparator \"~~~next file~~~\";\ndata \"model inline\"";
+    loadScript = "dataSeparator = \"~~~next file~~~\";\ndata \"model inline\"";
     for (int i = 0; i < arrayModels.length; i++) {
       if (i > 0)
         loadScript += "~~~next file~~~";

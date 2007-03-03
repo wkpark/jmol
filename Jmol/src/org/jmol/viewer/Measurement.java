@@ -245,7 +245,7 @@ class Measurement {
   }
 
   String formatString(float value, String units) {
-    String s = countPlusIndices[0]+":";
+    String s = countPlusIndices[0]+":" + "";
     String label = (strFormat != null && strFormat.indexOf(s)==0? strFormat : viewer
         .getDefaultMeasurementLabel(countPlusIndices[0]));
     if (label.indexOf(s)==0)

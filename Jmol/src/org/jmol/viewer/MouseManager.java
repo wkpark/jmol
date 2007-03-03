@@ -56,17 +56,33 @@ abstract class MouseManager implements KeyListener {
 
   MouseManager(Viewer viewer) {
     this.viewer = viewer;
-    hoverWatcherThread = new Thread(new HoverWatcher());
-    hoverWatcherThread.start();
     viewer.getAwtComponent().addKeyListener(this);
   }
-
+  
+  void clear() {
+    stopHoverWatcher();  
+  }
+  
+  void startHoverWatcher() {
+    if (hoverWatcherThread != null)
+      return;
+    hoverWatcherThread = new Thread(new HoverWatcher());
+    hoverWatcherThread.start();
+  }
+  
+  void stopHoverWatcher() {
+    if (hoverWatcherThread == null)
+      return;
+    hoverWatcherThread.interrupt();
+    hoverWatcherThread = null;
+  }
+  
   void removeMouseListeners11() {}
   void removeMouseListeners14() {}
 
   void setModeMouse(int modeMouse) {
     if (modeMouse == JmolConstants.MOUSE_NONE) {
-      hoverWatcherThread.interrupt();
+      stopHoverWatcher();
       removeMouseListeners11();
       removeMouseListeners14();
       viewer.getAwtComponent().removeKeyListener(this);
@@ -581,9 +597,9 @@ abstract class MouseManager implements KeyListener {
   class HoverWatcher implements Runnable {
     public void run() {
       Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-      while (true) {
+      int hoverDelay;
+      while (hoverWatcherThread != null && (hoverDelay = viewer.getHoverDelay()) > 0) {
         try {
-          int hoverDelay = viewer.getHoverDelay();
           Thread.sleep(hoverDelay);
           if (xCurrent == mouseMovedX && yCurrent == mouseMovedY
               && timeCurrent == mouseMovedTime) { // the last event was mouse move
@@ -600,11 +616,13 @@ abstract class MouseManager implements KeyListener {
           }
         } catch (InterruptedException ie) {
           Logger.debug("Hover InterruptedException!");
-          return;
+          break;
         } catch (Exception ie) {
-          Logger.error("Hover Exception!" + ie);
+          Logger.debug("Hover Exception: " + ie);
+          break;
         }
       }
+      hoverWatcherThread = null;
     }
   }
 }

@@ -1485,6 +1485,7 @@ public class Viewer extends JmolViewer {
     selectionManager.clear();
     clearAllMeasurements();
     modelManager.clear();
+    mouseManager.clear();
     statusManager.clear();
     stateManager.clear(global);
     //setRefreshing(true);
@@ -1505,6 +1506,7 @@ public class Viewer extends JmolViewer {
     setCurrentModelIndex(0);
     setBackgroundModelIndex(-1);
     setFrankOn(global.frankOn);
+    mouseManager.startHoverWatcher();
     setTainted(true);
   }
 

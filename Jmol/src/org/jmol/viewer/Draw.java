@@ -657,8 +657,8 @@ class Draw extends MeshCollection {
   }
 
   boolean checkObjectHovered(int x, int y) {
-    if (viewer.getPickingMode() == JmolConstants.PICKING_DRAW)
-      return false;
+    //if (viewer.getPickingMode() == JmolConstants.PICKING_DRAW)
+      //return false;
     if (!findPickedObject(x, y, false))
       return false;
     viewer.hoverOn(x, y, (pickedMesh.title == null ? pickedMesh.thisID

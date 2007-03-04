@@ -99,8 +99,7 @@ class Balls extends AtomShape {
       atom.shapeVisibilityFlags &= (
           ~JmolConstants.ATOM_IN_MODEL
           & ~myVisibilityFlag);
-      if (atom.madAtom == JmolConstants.MAR_DELETED
-          || ! showHydrogens && atom.getElementNumber() == 1)
+      if (! showHydrogens && atom.getElementNumber() == 1)
         continue;
       if (! isOneFrame && bs.get(atom.modelIndex) 
           || atom.modelIndex == displayModelIndex) { 

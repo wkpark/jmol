@@ -2146,6 +2146,8 @@ class Eval { //implements Runnable {
   int getArgbParam(int index, boolean allowNone) throws ScriptException {
     if (checkToken(index)) {
       switch (getToken(index).tok) {
+      case Token.string:
+        return Graphics3D.getArgbFromString(parameterAsString(index));
       case Token.leftsquare:
         return getColorTriad(++index);
       case Token.colorRGB:
@@ -2740,10 +2742,12 @@ class Eval { //implements Runnable {
       switch (getToken(i).tok) {
       case Token.on:
         checkLength2();
+        iToken = 1;
         state = " on";
         break;
       case Token.off:
         checkLength2();
+        iToken = 1;
         stereoMode = JmolConstants.STEREO_NONE;
         state = " off";
         break;
@@ -2788,6 +2792,7 @@ class Eval { //implements Runnable {
       }
     }
     setFloatProperty("stereoDegrees", degrees);
+    checkStatementLength(iToken + 1);
     if (isSyntaxCheck)
       return;
     if (colorpt > 0) {
@@ -2795,7 +2800,6 @@ class Eval { //implements Runnable {
     } else {
       viewer.setStereoMode(stereoMode, state);
     }
-    checkStatementLength(iToken + 1);
   }
 
   void connect() throws ScriptException {
@@ -4614,12 +4618,11 @@ class Eval { //implements Runnable {
       }
       break;
     case 3:
-      if (getToken(1).tok == Token.identifier
-          && parameterAsString(1).equalsIgnoreCase("scale")) {
+      if (parameterAsString(1).equalsIgnoreCase("scale")) {
         float scale = floatParameter(2);
         if (scale < -10 || scale > 10)
           numberOutOfRange(-10f, 10f);
-        viewer.setVectorScale(scale);
+        setFloatProperty("vectorScale", scale);
         return;
       }
       invalidArgument();
@@ -4773,16 +4776,13 @@ class Eval { //implements Runnable {
     switch (getToken(1).tok) {
     case Token.on:
       checkLength2();
-      period = viewer.getDefaultVibrationPeriod();
+      period = viewer.getVibrationPeriod();
       break;
     case Token.off:
       checkLength2();
       period = 0;
       break;
     case Token.integer:
-      checkLength2();
-      period = intParameter(1);
-      break;
     case Token.decimal:
       checkLength2();
       period = floatParameter(1);
@@ -4797,7 +4797,7 @@ class Eval { //implements Runnable {
         return;
       } else if (cmd.equalsIgnoreCase("period")) {
         period = floatParameter(2);
-        setFloatProperty("vibrationPeriod", -period);
+        setFloatProperty("vibrationPeriod", period);
         return;
       } else {
         invalidArgument();
@@ -4807,7 +4807,13 @@ class Eval { //implements Runnable {
     }
     if (period < 0)
       invalidArgument();
-    setFloatProperty("vibrationPeriod", period);
+    if (isSyntaxCheck)
+      return;
+    if (period == 0) {
+      viewer.setVibrationOff();
+      return;
+    }
+    viewer.setVibrationPeriod(-period);
   }
 
   void animationDirection() throws ScriptException {
@@ -5285,9 +5291,6 @@ class Eval { //implements Runnable {
     case Token.scale3d:
       setScale3d();
       return;
-    case Token.strands:
-      setStrands();
-      return;
     case Token.spin:
       checkLength4();
       setSpin(parameterAsString(2), (int)floatParameter(3));
@@ -5352,11 +5355,18 @@ class Eval { //implements Runnable {
     case Token.bonds:
       key = "showMultipleBonds";
       break;
+    case Token.strands:
+      checkLength3();
+      int strandCount = intParameter(2);
+        if (strandCount < 0 || strandCount > 20)
+          numberOutOfRange(0, 20);
+      key = "strandCount";
+      break;
     case Token.hetero:
-      key = "defaultSelectHetero";
+      key = "selectHetero";
       break;
     case Token.hydrogen:
-      key = "defaultSelectHydrogen";
+      key = "selectHydrogen";
       break;
     case Token.radius:
       key = "solventProbeRadius";
@@ -5381,10 +5391,6 @@ class Eval { //implements Runnable {
       }
       if (key.equalsIgnoreCase("measurementNumbers") || key.equalsIgnoreCase("measurementLabels")) {
         setMonitor(2);
-        return;
-      }
-      if (key.equalsIgnoreCase("axisScale")) {
-        setAxisScale(2);
         return;
       }
       if (key.equalsIgnoreCase("defaultLattice")) {
@@ -5996,24 +6002,23 @@ class Eval { //implements Runnable {
     }
     // axes = scale x.xxx
     if (statementLength == index + 2 && type.equals("scale")) {
-      setAxisScale(++index);
+      setFloatProperty("axesScale", floatParameter(++index));
       return;
     }
-    setShapeSize(JmolConstants.SHAPE_AXES, getSetAxesTypeMad(index));
+    short mad = getSetAxesTypeMad(index);
+    setBooleanProperty("showAxes", mad != 0);
+    setShapeSize(JmolConstants.SHAPE_AXES, mad);
   }
 
-  void setAxisScale(int index) throws ScriptException {
-    setShapeProperty(JmolConstants.SHAPE_AXES, "scale", new Float(
-        floatParameter(index)));
- 
-  }
-  
   void setBoundbox(int index) throws ScriptException {
-    setShapeSize(JmolConstants.SHAPE_BBCAGE, getSetAxesTypeMad(index));
+    short mad = getSetAxesTypeMad(index);
+    setBooleanProperty("showBoundBox", mad != 0);
+    setShapeSize(JmolConstants.SHAPE_BBCAGE, mad);
   }
 
   void setUnitcell(int index) throws ScriptException {
     if (statementLength == 1) {
+      setBooleanProperty("showUnitcell", true);
       setShapeSize(JmolConstants.SHAPE_UCCAGE, 1);
       return;
     }
@@ -6022,7 +6027,9 @@ class Eval { //implements Runnable {
         if (!isSyntaxCheck)
           viewer.setCurrentUnitCellOffset(intParameter(index));
       } else {
-        setShapeSize(JmolConstants.SHAPE_UCCAGE, getSetAxesTypeMad(index));
+        short mad = getSetAxesTypeMad(index);
+        setBooleanProperty("showUnitcell", mad != 0);
+        setShapeSize(JmolConstants.SHAPE_UCCAGE, mad);
       }
       return;
     }
@@ -6038,7 +6045,7 @@ class Eval { //implements Runnable {
 
   void setDefaultColors() throws ScriptException {
     checkLength3();
-    String type = "" + statement[2].value;
+    String type = parameterAsString(2);
     if (!type.equalsIgnoreCase("rasmol") && !type.equalsIgnoreCase("jmol"))
       invalidArgument();
     setStringProperty("defaultColorScheme", type);
@@ -6298,15 +6305,6 @@ class Eval { //implements Runnable {
       unrecognizedParameter("SET " + propertyName.toUpperCase(),
           parameterAsString(3));
     }
-  }
-
-  void setStrands() throws ScriptException {
-    int strandCount = 5;
-    if (statementLength == 3)
-      if ((strandCount = intParameter(2)) < 0 || strandCount > 20)
-        numberOutOfRange(0, 20);
-    setShapeProperty(JmolConstants.SHAPE_STRANDS, "strandCount", new Integer(
-        strandCount));
   }
 
   void setSpin(String key, int value) throws ScriptException {
@@ -6746,7 +6744,7 @@ class Eval { //implements Runnable {
       break;
     case Token.display://deprecated
     case Token.selectionHalo:
-      msg = "selectionHalosEnabled = " + viewer.getSelectionHaloEnabled();
+      msg = "selectionHalos = " + viewer.getSelectionHaloEnabled();
       break;
     case Token.hetero:
       msg = "defaultSelectHetero = " + viewer.getRasmolHeteroSetting();

@@ -48,10 +48,7 @@ class VectorsRenderer extends ShapeRenderer {
       Vector3f vibrationVector = atom.getVibrationVector();
       if (vibrationVector == null)
         continue;
-      vectorScale = vectors.scale;
-      if (Float.isNaN(vectorScale)) {
-        vectorScale = vectors.scale = viewer.getDefaultVectorScale();
-      }
+      vectorScale = viewer.getVectorScale();
       if (transform(mads[i], atom, vibrationVector))
         renderVector((colixes == null ? Graphics3D.INHERIT : colixes[i]), atom);
     }
@@ -72,9 +69,6 @@ class VectorsRenderer extends ShapeRenderer {
 
 
   boolean transform(short mad, Atom atom, Vector3f vibrationVector) {
-    if (atom.madAtom == JmolConstants.MAR_DELETED)
-      return false;
-
     float len = vibrationVector.length();
     // to have the vectors move when vibration is turned on
     if (Math.abs(len * vectorScale) < 0.01)
@@ -90,7 +84,7 @@ class VectorsRenderer extends ShapeRenderer {
     pointArrowHead.add(headOffsetVector);
     screenArrowHead.set(viewer.transformPoint(pointArrowHead, vibrationVector));
     screenVectorEnd.set(viewer.transformPoint(pointVectorEnd, vibrationVector));
-    diameter = (mad < 5 ? 5 : mad <= 20 ? mad : viewer.scaleToScreen(screenVectorEnd.z, mad));
+    diameter = (mad < 1 ? 1 : mad <= 20 ? mad : viewer.scaleToScreen(screenVectorEnd.z, mad));
     headWidthPixels = (int)(diameter * 1.5f);
     if (headWidthPixels < diameter + 2)
       headWidthPixels = diameter + 2;

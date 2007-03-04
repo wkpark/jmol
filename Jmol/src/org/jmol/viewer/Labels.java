@@ -248,6 +248,8 @@ class Labels extends AtomShape {
       for (int atomIndex = atomCount; --atomIndex >= 0;)
         if (bsSelected.get(atomIndex)) {
           Atom atom = atoms[atomIndex];
+          if (formats == null || atomIndex >= formats.length)
+            formats = ArrayUtil.ensureLength(formats, atomIndex + 1);
           if (strings != null && strings.length > atomIndex
               && strings[atomIndex] != null) {
             strings[atomIndex] = null;

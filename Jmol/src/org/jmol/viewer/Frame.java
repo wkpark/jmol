@@ -1419,15 +1419,13 @@ public final class Frame {
             if (k >= atomCount)
               continue;
             Atom atom = atoms[k];
-            if (!atom.isDeleted())
-              bspf.addTuple(atom.modelIndex, atom);
+            bspf.addTuple(atom.modelIndex, atom);
           }
       } else {
         Logger.debug("sequential bspt order");
         for (int i = atomCount; --i >= 0;) {
           Atom atom = atoms[i];
-          if (!atom.isDeleted())
-            bspf.addTuple(atom.modelIndex, atom);
+          bspf.addTuple(atom.modelIndex, atom);
         }
       }
       if (showRebondTimes) {

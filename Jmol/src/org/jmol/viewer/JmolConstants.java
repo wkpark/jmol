@@ -34,7 +34,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "11.1.16";
+  public final static String version = "11.1.17";
   
   /*
    * 
@@ -42,6 +42,26 @@ final public class JmolConstants {
    * 
    * 
    11.1.17
+   
+   deprecation of SET
+   ------------------
+   
+   The "SET" command is no longer necessary. Anything that could have
+   been set using "SET x .... " can now be set using
+   
+    x = ....
+    
+   This allows for a much cleaner interface because we simply make 
+   settings in a normal sort of way:
+   
+   axes on
+   axes = molecular
+
+   measures = angstroms
+ 
+   It will take a bit more to make it all consistent, but the idea
+   is that there are then some special reserved variables that 
+   mean something special when set, like "bondmode"
    
    This build allows for the applet to be "bare-bones" -- only the
    essential classes included in the Jar file; others never included
@@ -570,8 +590,6 @@ final public class JmolConstants {
     return connectOperationStrings[i];
   }
   
-  public final static short MAR_DELETED = Short.MIN_VALUE;
-
   public static final int MOUSE_NONE = -1;
   public static final int MOUSE_ROTATE = 0;
   public static final int MOUSE_ZOOM = 1;

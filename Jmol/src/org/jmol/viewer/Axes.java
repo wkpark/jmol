@@ -103,7 +103,6 @@ class Axes extends FontLineShape {
   }
   
   void setScale(float angstroms) {
-    scale = angstroms;
     initShape();
   }
   

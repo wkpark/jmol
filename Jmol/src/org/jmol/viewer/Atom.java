@@ -296,7 +296,6 @@ final public class Atom extends Point3fi implements Tuple {
    */
 
   void setMadAtom(short madAtom) {
-    if (this.madAtom == JmolConstants.MAR_DELETED) return;
     this.madAtom = convertEncodedMad(madAtom);
   }
 
@@ -328,8 +327,6 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   int getRasMolRadius() {
-    if (madAtom == JmolConstants.MAR_DELETED)
-      return 0;
     return madAtom / (4 * 2);
   }
 
@@ -483,8 +480,6 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   float getRadius() {
-    if (madAtom == JmolConstants.MAR_DELETED)
-      return 0;
     return madAtom / (1000f * 2);
   }
 
@@ -658,10 +653,6 @@ final public class Atom extends Point3fi implements Tuple {
         : (group.chain.frame.viewer.
            getClientAtomStringProperty(clientAtomReferences[atomIndex],
                                        propertyName)));
-   }
-
-   boolean isDeleted() {
-     return madAtom == JmolConstants.MAR_DELETED;
    }
 
    byte getSpecialAtomID() {

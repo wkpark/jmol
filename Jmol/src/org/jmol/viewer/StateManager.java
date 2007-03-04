@@ -52,7 +52,9 @@ class StateManager {
   }
 
   GlobalSettings getGlobalSettings() {
-    return new GlobalSettings();  
+    GlobalSettings g = new GlobalSettings();
+    g.registerAllValues();
+    return g;  
   }
   
   void clear(GlobalSettings global) {
@@ -62,8 +64,10 @@ class StateManager {
 
   void setCrystallographicDefaults() {
     //axes on and mode unitCell; unitCell on; perspective depth off;
+    viewer.setShowAxes(true);
     viewer.setShapeSize(JmolConstants.SHAPE_AXES, 200);
     viewer.setShapeSize(JmolConstants.SHAPE_UCCAGE, -1);
+    viewer.setShowUnitCell(true);
     viewer.setAxesModeUnitCell(true);
     viewer.setBooleanProperty("perspectiveDepth", false);
   }
@@ -333,7 +337,7 @@ class StateManager {
     boolean autoBond           = true;
     boolean allowEmbeddedScripts = true;
     int percentVdwAtom    = JmolConstants.DEFAULT_PERCENT_VDW_ATOM;
-    short marBond         = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
+    short bondRadiusMilliAngstroms         = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
     float bondTolerance   = JmolConstants.DEFAULT_BOND_TOLERANCE;
     float minBondDistance = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
     String defaultLoadScript   = "";
@@ -358,7 +362,7 @@ class StateManager {
       appendCmd(str, "autoBond = " + autoBond);
       if (viewer.getAxesOrientationRasmol())
         appendCmd(str, "axesOrientationRasmol = true");
-      appendCmd(str, "bondRadiusMilliAngstroms = " + marBond);
+      appendCmd(str, "bondRadiusMilliAngstroms = " + bondRadiusMilliAngstroms);
       appendCmd(str, "bondTolerance = " + bondTolerance);
       if (defaultDirectory != null)
         appendCmd(str, "defaultDirectory = " + escape(defaultDirectory));
@@ -404,14 +408,11 @@ class StateManager {
 
     //centering and perspective
 
-    boolean allowCameraMoveFlag = true;
-    boolean adjustCameraFlag = true;
     boolean allowRotateSelected = false;
 
     //solvent
 
     boolean solventOn = false;
-    float solventProbeRadius = 1.2f;
 
     //measurements
 
@@ -426,19 +427,18 @@ class StateManager {
     boolean enableFullSceneAntialiasing = false;
     boolean greyscaleRendering          = false;
     boolean zoomLarge                   = true; //false would be like Chime
-    boolean dotsSelectedOnlyFlag        = false;
-    boolean dotSurfaceFlag              = true;
+    boolean dotsSelectedOnly            = false;
+    boolean dotSurface              = true;
     boolean displayCellParameters       = true;
     boolean showHiddenSelectionHalos    = false;
     boolean showMeasurements            = true;
     boolean frankOn                     = false;
-    boolean centerPointer               = true;
     boolean zShade                      = false;
     boolean dynamicMeasurements         = false;
     
     //atoms and bonds
 
-    boolean bondSelectionModeOr = false;
+    boolean bondModeOr = false;
     boolean showMultipleBonds   = true;
     boolean showHydrogens       = true;
     boolean ssbondsBackbone     = false;
@@ -446,13 +446,12 @@ class StateManager {
     boolean hbondsSolid         = false;
 
     byte modeMultipleBond = JmolConstants.MULTIBOND_NOTSMALL;
-    int defaultVectorMad  = 0;
 
     //secondary structure + Rasmol
 
     boolean rasmolHydrogenSetting = true;
     boolean rasmolHeteroSetting   = true;
-    boolean cartoonRocketFlag     = false;
+    boolean cartoonRockets        = false;
     boolean ribbonBorder          = false;
     boolean chainCaseSensitive    = false;
     boolean rangeSelected         = false;
@@ -460,6 +459,7 @@ class StateManager {
     boolean traceAlpha            = true;
     boolean highResolutionFlag    = false;
     int ribbonAspectRatio         = 16;
+    int strandCount               = 5;
     int hermiteLevel              = 0;
     float sheetSmoothing          = 1; // 0: traceAlpha on alphas for helix, 1 on midpoints
 
@@ -467,9 +467,11 @@ class StateManager {
 
     boolean hideNameInPopup      = false;
     boolean disablePopupMenu     = false;
-    float defaultVibrationScale  = 1f;
-    float defaultVibrationPeriod = 1f;
-    float defaultVectorScale     = 1f;
+    float vibrationScale         = 1f;
+    float vibrationPeriod        = 1f;
+    float vectorScale            = 1f;
+    float cameraDepth            = 3.0f;
+    float solventProbeRadius     = 1.2f;
     int scriptDelay              = 0;
     int hoverDelayMs             = 500;
     boolean hideNavigationPoint  = false;
@@ -488,8 +490,9 @@ class StateManager {
       StringBuffer str = new StringBuffer("# window state;\n# height " + viewer.getScreenHeight()
           + ";\n# width " + viewer.getScreenWidth() + ";\n");
       appendCmd(str, "initialize");
+      appendCmd(str, "_version = " + getParameter("_version"));
       appendCmd(str, "refreshing = false");
-      appendCmd(str, "background = " + escapeColor(argbBackground));
+      appendCmd(str, "backgroundColor = " + escapeColor(argbBackground));
       str.append(getSpecularState());
       if (stereoState != null)
         appendCmd(str, "stereo" + stereoState);
@@ -508,6 +511,7 @@ class StateManager {
     }
     
     int axesMode               = JmolConstants.AXES_MODE_BOUNDBOX;
+    float axesScale            = 1;        
     int pickingSpinRate        = 10;
     
     String helpPath            = null;
@@ -516,7 +520,6 @@ class StateManager {
 
     //testing
 
-    boolean debugCommand = false;
     boolean debugScript = false;
     boolean testFlag1 = false;
     boolean testFlag2 = false;
@@ -546,8 +549,8 @@ class StateManager {
       return measureDistanceUnits;
     }
     
-    Hashtable htParameterValues = new Hashtable();
-    Hashtable htPropertyFlags = new Hashtable();
+    Hashtable htParameterValues;
+    Hashtable htPropertyFlags;
     
     final static String volatileProperties = 
       //indicate all properties here in lower case
@@ -565,7 +568,6 @@ class StateManager {
       + ";ambientpercent;diffusepercent;specular;specularexponent;specularpower;specularpercent;"
       + ";debugscript;frank;showaxes;showunitcell;showboundbox;"
       + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;"
-      + ";vibrationscale;vibrationperiod;"
       + ";cameradepth;navigationmode;rotationradius;"
       + ";zerobasedxyzrasmol;axesorientationrasmol;"
       + ";_modelnumber;_modelname;_currentmodelnumberinfile;_currentfilenumber;_version;_memory;"
@@ -623,10 +625,10 @@ class StateManager {
     }
     
     void setParameterValue(String name, String value) {
-      if (htPropertyFlags.containsKey(name))
+      if (value == null || htPropertyFlags.containsKey(name))
         return; // don't allow setting string of a boolean
       name = name.toLowerCase();
-        htParameterValues.put(name, value);
+      htParameterValues.put(name, value);
     }
     
     boolean doRegister(String name) {
@@ -699,38 +701,24 @@ class StateManager {
     }
     
     String getState() {
+      int n = 0;
+      String[] list = new String[htPropertyFlags.size() + htParameterValues.size()];
       StringBuffer commands = new StringBuffer("# settings;\n");
       appendCmd(commands, "refreshing = false");
       Enumeration e;
-      //two rounds here because default settings 
-      //must be declared first
       String key;
-      //defaults
-      e = htParameterValues.keys();
-      while (e.hasMoreElements()) {
-        key = (String) e.nextElement();
-        if (key.indexOf("default") >= 0 && key.charAt(0) != '@'
-            && doRegister(key)) {
-          Object value = htParameterValues.get(key);
-          if (value instanceof String)
-            value = escape((String) value);
-          appendCmd(commands, key + " = " + value);
-        }
-      }
       //booleans
       e = htPropertyFlags.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
         if (doRegister(key))
-          appendCmd(commands, key + " = " + htPropertyFlags.get(key));
+          list[n++] = key + " = " + htPropertyFlags.get(key);
       }
-      //nondefault, nonvariables
       //save as _xxxx if you don't want "set" to be there first
       e = htParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
-        if (key.indexOf("default") < 0 && key.charAt(0) != '@'
-            && doRegister(key)) {
+        if (key.charAt(0) != '@' && doRegister(key)) {
           Object value = htParameterValues.get(key);
           if (key.charAt(0) == '_') {
             key = key.substring(1);
@@ -739,27 +727,116 @@ class StateManager {
             if (value instanceof String)
               value = escape((String) value);
           }
-          appendCmd(commands, key + " " + value);
+          list[n++] = key +  value;
         }
       }
       switch (axesMode) {
       case JmolConstants.AXES_MODE_UNITCELL:
-        appendCmd(commands, "axes = unitcell");
+        list[n++] = "axes = unitcell";
         break;
       case JmolConstants.AXES_MODE_BOUNDBOX:
-        appendCmd(commands, "axes = window");
+        list[n++] = "axes = window";
         break;
       default:
-        appendCmd(commands, "axes = molecular");
+        list[n++] =  "axes = molecular";
       }
       //variables only:
       e = htParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
         if (key.charAt(0) == '@')
-          appendCmd(commands, key + " " + htParameterValues.get(key));
+          list[n++] = key + " " + htParameterValues.get(key);
       }
+      Arrays.sort(list, 0, n);
+      for (int i = 0; i < n; i++)
+        if (list[i] != null)
+          appendCmd(commands, list[i]);
       return commands + "\n";
+    }
+    
+    void registerAllValues() {
+      htParameterValues = new Hashtable();
+      htPropertyFlags = new Hashtable();
+      setParameterValue("allowEmbeddedScripts",allowEmbeddedScripts);
+      setParameterValue("allowRotateSelected",allowRotateSelected);
+      setParameterValue("ambientPercent",ambientPercent);
+//      setParameterValue("argbBackground",argbBackground);
+      setParameterValue("autoBond",autoBond);
+      setParameterValue("axesMode",axesMode);
+      setParameterValue("axesScale",axesScale);
+      setParameterValue("bondRadiusMilliAngstroms",bondRadiusMilliAngstroms);
+      setParameterValue("bondModeOr",bondModeOr);
+      setParameterValue("bondTolerance",bondTolerance);
+      setParameterValue("cameraDepth",cameraDepth);
+      setParameterValue("cartoonRockets",cartoonRockets);
+      setParameterValue("chainCaseSensitive",chainCaseSensitive);
+      setParameterValue("debugScript",debugScript);
+      setParameterValue("defaultAngleLabel",defaultAngleLabel);
+      setParameterValue("defaultDirectory",defaultDirectory);
+      setParameterValue("defaultDistanceLabel",defaultDistanceLabel);
+      setParameterValue("helpPath",defaultHelpPath);
+      setParameterValue("defaultLoadScript",defaultLoadScript);
+      setParameterValue("defaultTorsionLabel",defaultTorsionLabel);
+      setParameterValue("vectorScale",vectorScale);
+      setParameterValue("vibrationPeriod",vibrationPeriod);
+      setParameterValue("vibrationScale",vibrationScale);
+      setParameterValue("diffusePercent",diffusePercent);
+      setParameterValue("disablePopupMenu",disablePopupMenu);
+      setParameterValue("displayCellParameters",displayCellParameters);
+      setParameterValue("dotsSelectedOnly",dotsSelectedOnly);
+      setParameterValue("dotSurface",dotSurface);
+      setParameterValue("dynamicMeasurements",dynamicMeasurements);
+//nah      setParameterValue("enableFullSceneAntialiasing",enableFullSceneAntialiasing);
+      setParameterValue("forceAutoBond",forceAutoBond);
+      setParameterValue("frank",frankOn);
+      setParameterValue("greyscaleRendering",greyscaleRendering);
+      setParameterValue("hbondsBackbone",hbondsBackbone);
+      setParameterValue("hbondsSolid",hbondsSolid);
+      setParameterValue("helpPath",helpPath);
+      setParameterValue("hermiteLevel",hermiteLevel);
+      setParameterValue("hideNameInPopup",hideNameInPopup);
+      setParameterValue("hideNavigationPoint",hideNavigationPoint);
+      setParameterValue("highResolutionFlag",highResolutionFlag);
+      setParameterValue("hoverDelay",hoverDelayMs/1000f);
+      setParameterValue("justifyMeasurements",justifyMeasurements);
+      setParameterValue("measureAllModels",measureAllModels);
+      setParameterValue("minBondDistance",minBondDistance);
+      setParameterValue("navigationCentered",navigationCentered);
+      setParameterValue("navigationMode",navigationMode);
+      setParameterValue("navigationPeriodic",navigationPeriodic);
+      setParameterValue("navigationSpeed",navigationSpeed);
+      setParameterValue("percentVdwAtom",percentVdwAtom);
+      setParameterValue("pickingSpinRate",pickingSpinRate);
+      setParameterValue("propertyStyleString",propertyStyleString);
+      setParameterValue("rangeSelected",rangeSelected);
+      setParameterValue("selectHetero",rasmolHeteroSetting);
+      setParameterValue("selectHydrogen",rasmolHydrogenSetting);
+      setParameterValue("ribbonAspectRatio",ribbonAspectRatio);
+      setParameterValue("ribbonBorder",ribbonBorder);
+      setParameterValue("scriptDelay",scriptDelay);
+      setParameterValue("sheetSmoothing",sheetSmoothing);
+      setParameterValue("showHiddenSelectionHalos",showHiddenSelectionHalos);
+      setParameterValue("showHydrogens",showHydrogens);
+      setParameterValue("showMeasurements",showMeasurements);
+      setParameterValue("showMultipleBonds",showMultipleBonds);
+      setParameterValue("showNavigationPointAlways",showNavigationPointAlways);
+      setParameterValue("solvent",solventOn);
+      setParameterValue("solventProbeRadius",solventProbeRadius);
+      setParameterValue("specular",specular);
+      setParameterValue("specularExponent",specularExponent);
+      setParameterValue("specularPercent",specularPercent);
+      setParameterValue("specularPower",specularPower);
+      setParameterValue("ssbondsBackbone",ssbondsBackbone);
+      setParameterValue("stereoState",stereoState);
+      setParameterValue("strandCount",strandCount);
+      setParameterValue("testFlag1",testFlag1);
+      setParameterValue("testFlag2",testFlag2);
+      setParameterValue("testFlag3",testFlag3);
+      setParameterValue("testFlag4",testFlag4);
+      setParameterValue("traceAlpha",traceAlpha);
+//nah    setParameterValue("zeroBasedXyzRasmol",zeroBasedXyzRasmol);
+      setParameterValue("zoomLarge",zoomLarge);
+      setParameterValue("zShade",zShade);
     }
   }
 

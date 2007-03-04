@@ -161,7 +161,7 @@ abstract class TransformManager {
       commands.append("slab reference "+StateManager.escape(slabRef)+ (slabEnabled || isNavigationMode? ";slab on" : "")+";\n");
     commands.append(getSpinState(true) + "\n");
     if (viewer.modelSetHasVibrationVectors()) {
-      commands.append("vibration scale " + vibrationScale + ";\n");
+      commands.append("vibration scale " + viewer.getVibrationScale() + ";\n");
       if (vibrationOn)
         commands.append("vibration " + vibrationPeriod + ";\n");
       else
@@ -1899,11 +1899,12 @@ abstract class TransformManager {
     } else if (period == 0) {
       vibrationPeriod = 0;
       vibrationPeriodMs = 0;
-    } else if (period != 0) {
+    } else {
       vibrationPeriod = Math.abs(period);
       vibrationPeriodMs = (int) (vibrationPeriod * 1000);
-      if (period < 0)
+      if (period > 0)
         return;
+      period = -period;
     }
     setVibrationOn(period > 0
         && viewer.modelHasVibrationVectors(viewer.getCurrentModelIndex()));
@@ -1912,7 +1913,7 @@ abstract class TransformManager {
   protected void setVibrationT(float t) {
     vibrationRadians = t * twoPI;
     if (vibrationScale == 0)
-      vibrationScale = viewer.getDefaultVibrationScale();
+      vibrationScale = viewer.getVibrationScale();
     vibrationAmplitude = (float) Math.cos(vibrationRadians) * vibrationScale;
   }
 

@@ -879,51 +879,51 @@ public class Viewer extends JmolViewer {
     colorManager.setElementArgb(elementNumber, argb);
   }
 
-  float getDefaultVectorScale() {
-    return global.defaultVectorScale;
+  float getVectorScale() {
+    return global.vectorScale;
   }
 
-  private void setDefaultVectorScale(float scale) {
-    global.defaultVectorScale = scale;
+  public void setVectorScale(float scale) {
+    global.setParameterValue("vectorScale", scale);
+    global.vectorScale = scale;
+    refresh(0, "set vectorScale");
   }
 
-  float getDefaultVibrationScale() {
-    return global.defaultVibrationScale;
+  float getVibrationScale() {
+    return global.vibrationScale;
   }
 
-  private void setDefaultVibrationScale(float scale) {
-    global.defaultVibrationScale = scale;
-  }
-
-  float getDefaultVibrationPeriod() {
-    return global.defaultVibrationPeriod;
-  }
-
-  private void setDefaultVibrationPeriod(float period) {
-    global.defaultVibrationPeriod = period;
+  float getVibrationPeriod() {
+    return global.vibrationPeriod;
   }
 
   public void setVibrationScale(float scale) {
     //Eval
-    global.setParameterValue("vibrationScale", scale);
+    
     transformManager.setVibrationScale(scale);
+    global.vibrationScale = scale;
+    //because this is public:
+    global.setParameterValue("vibrationScale", scale);
   }
 
+  void setVibrationOff() {
+    transformManager.setVibrationPeriod(0);    
+  }
+  
   public void setVibrationPeriod(float period) {
     //Eval
-    global.setParameterValue("vibrationPeriod", period);
     transformManager.setVibrationPeriod(period);
-  }
-
-  public void setVectorScale(float scale) {
-    loadShape(JmolConstants.SHAPE_VECTORS);
-    setShapeProperty(JmolConstants.SHAPE_VECTORS, "scale", new Float(scale));
+    period = Math.abs(period);
+    global.vibrationPeriod = period;
+    //because this is public:
+    global.setParameterValue("vibrationPeriod", period);
   }
 
   void setBackgroundArgb(int argb) {
     // Eval
     global.argbBackground = argb;
     g3d.setBackgroundArgb(argb);
+    global.setParameterValue("backgroundColor", StateManager.escapeColor(argb));
     colorManager.setColixBackgroundContrast(argb);
   }
 
@@ -1460,6 +1460,7 @@ public class Viewer extends JmolViewer {
         + " " + bTotal + " " + bFree + " " + bMax);
     if (notify)
       setStatusFileLoaded(0, null, null, null, null, null);
+     // System.out.println(Token.getSetParameters());
   }
 
   private void zap(String msg) {
@@ -1500,8 +1501,7 @@ public class Viewer extends JmolViewer {
     if (eval != null)
       eval.clearDefinitionsAndLoadPredefined();
     // there probably needs to be a better startup mechanism for shapes
-    if (modelSetHasVibrationVectors())
-      setShapeSize(JmolConstants.SHAPE_VECTORS, global.defaultVectorMad);
+
     repaintManager.initializePointers(1);
     setCurrentModelIndex(0);
     setBackgroundModelIndex(-1);
@@ -2844,7 +2844,7 @@ public class Viewer extends JmolViewer {
   }
 
   public void setMarBond(short marBond) {
-    global.marBond = marBond;
+    global.bondRadiusMilliAngstroms = marBond;
     global.setParameterValue("bondRadiusMilliAngstroms", marBond);
     setShapeSize(JmolConstants.SHAPE_STICKS, marBond * 2);
   }
@@ -3032,14 +3032,6 @@ public class Viewer extends JmolViewer {
     global.debugScript = debugScript;
     global.setParameterValue("debugScript", debugScript);
     //Logger.setActiveLevel(Logger.LEVEL_DEBUG, debugScript);
-  }
-
-  boolean getDebugCommand() {
-    return global.debugCommand;
-  }
-
-  void setDebugCommand(boolean TF) {
-    global.debugScript = TF;
   }
 
   void atomPicked(int atomIndex, int modifiers) {
@@ -3341,7 +3333,7 @@ public class Viewer extends JmolViewer {
         setDefaultDirectory(value);
         break;
       }
-      if (key.equalsIgnoreCase("help")) {
+      if (key.equalsIgnoreCase("helpPath")) {
         setHelpPath(value);
         break;
       }
@@ -3398,7 +3390,12 @@ public class Viewer extends JmolViewer {
   private boolean setFloatProperty(String key, float value, boolean isInt) {
     //Eval
     while (true) {
+      
       ///11.1///
+      if (key.equalsIgnoreCase("axesScale")) {
+        setAxesScale(value);
+        break;
+      }
       if (key.equalsIgnoreCase("visualRange")) {
         setVisualRange(value);
         break;
@@ -3440,25 +3437,20 @@ public class Viewer extends JmolViewer {
         setStereoDegrees(value);
         break;
       }
-      if (key.equalsIgnoreCase("defaultVectorScale")) {
-        setDefaultVectorScale(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("defaultVibrationPeriod")) {
-        setDefaultVibrationPeriod(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("defaultVibrationScale")) {
-        setDefaultVibrationScale(value);
-        break;
+      if (key.equalsIgnoreCase("vectorScale")) {
+        //public -- no need to set
+        setVectorScale(value);
+        return true;
       }
       if (key.equalsIgnoreCase("vibrationPeriod")) {
+        //public -- no need to set
         setVibrationPeriod(value);
-        break;
+        return true;
       }
       if (key.equalsIgnoreCase("vibrationScale")) {
+        //public -- no need to set
         setVibrationScale(value);
-        break;
+        return true;
       }
       if (key.equalsIgnoreCase("bondTolerance")) {
         setBondTolerance(value);
@@ -3508,6 +3500,12 @@ public class Viewer extends JmolViewer {
   private void setIntProperty(String key, int value, boolean defineNew) {
     while (true) {
       ///11.1///
+
+      if (key.equalsIgnoreCase("strandCount")) {
+        setShapeProperty(JmolConstants.SHAPE_STRANDS, "strandCount",
+            new Integer(value >= 0 && value <= 20 ? value : 5));
+        break;
+      }
       if (key.equalsIgnoreCase("perspectiveModel")) {
         setPerspectiveModel(value);
         break;
@@ -3567,7 +3565,8 @@ public class Viewer extends JmolViewer {
       }
       if (key.equalsIgnoreCase("bondRadiusMilliAngstroms")) {
         setMarBond((short) value);
-        break;
+        //public method -- no need to set
+        return;
       }
       if (key.equalsIgnoreCase("hermiteLevel")) {
         setHermiteLevel(value);
@@ -3595,7 +3594,10 @@ public class Viewer extends JmolViewer {
     }
     if (defineNew) {
       if (global.htPropertyFlags.containsKey(key)) {
-       scriptStatus(GT._("ERROR: Cannot set value of a boolean to another type. use \"{0}\" first.", key + " = NONE"));
+        scriptStatus(GT
+            ._(
+                "ERROR: Cannot set value of a boolean to another type. use \"{0}\" first.",
+                key + " = NONE"));
         return; // don't allow setting boolean of a numeric
       }
       global.setParameterValue(key, value);
@@ -3736,20 +3738,20 @@ public class Viewer extends JmolViewer {
         break;
       }
       if (key.equalsIgnoreCase("dotsSelectedOnly")) {
-        setDotsSelectedOnlyFlag(value);
+        setDotsSelectedOnly(value);
         break;
       }
-      if (key.equalsIgnoreCase("showAxes")) { //deprecated --  see "axes" command
+      if (key.equalsIgnoreCase("showAxes")) {
         setShowAxes(value);
-        break;
+        return true;
       }
-      if (key.equalsIgnoreCase("showBoundBox")) { //deprecated -- see "boundBox"
+      if (key.equalsIgnoreCase("showBoundBox")) {
         setShowBbcage(value);
-        break;
+        return true;
       }
-      if (key.equalsIgnoreCase("showUnitcell")) { //deprecated -- see "unitcell"
-        setShapeShow(JmolConstants.SHAPE_UCCAGE, value);
-        break;
+      if (key.equalsIgnoreCase("showUnitcell")) {
+        setShowUnitCell(value);
+        return true;
       }
       if (key.equalsIgnoreCase("selectionHalos")) {
         setSelectionHalos(value); //volatile
@@ -3757,10 +3759,6 @@ public class Viewer extends JmolViewer {
       }
       if (key.equalsIgnoreCase("debugScript")) {
         setDebugScript(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("debugCommand")) {
-        setDebugCommand(value);
         break;
       }
       if (key.equalsIgnoreCase("frank")) {
@@ -3771,11 +3769,11 @@ public class Viewer extends JmolViewer {
         setShowHydrogens(value);
         break;
       }
-      if (key.equalsIgnoreCase("defaultSelectHydrogen")) {
+      if (key.equalsIgnoreCase("selectHydrogen")) {
         setRasmolHydrogenSetting(value);
         break;
       }
-      if (key.equalsIgnoreCase("defaultSelectHetero")) {
+      if (key.equalsIgnoreCase("selectHetero")) {
         setRasmolHeteroSetting(value);
         break;
       }
@@ -3797,10 +3795,6 @@ public class Viewer extends JmolViewer {
       }
       if (key.equalsIgnoreCase("windowCentered")) {
         setWindowCentered(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("adjustCamera")) {
-        setAdjustCamera(value);
         break;
       }
       if (key.equalsIgnoreCase("displayCellParameters")) {
@@ -3846,9 +3840,9 @@ public class Viewer extends JmolViewer {
       if (key.equalsIgnoreCase("bonds")) 
         return setBooleanProperty("showMultipleBonds", value, true);
       if (key.equalsIgnoreCase("hydrogen"))  //deprecated
-        return setBooleanProperty("defaultSelectHydrogen", value, true);
+        return setBooleanProperty("selectHydrogen", value, true);
       if (key.equalsIgnoreCase("hetero"))  //deprecated
-        return setBooleanProperty("defaultSelectHetero", value, true);
+        return setBooleanProperty("selectHetero", value, true);
       if (key.equalsIgnoreCase("showSelections"))  //deprecated -- see "selectionHalos"
         return setBooleanProperty("selectionHalos", value, true);
       // these next return, because there is no need to repaint
@@ -3863,10 +3857,6 @@ public class Viewer extends JmolViewer {
         }
         if (key.equalsIgnoreCase("rangeSelected")) {
           setRangeSelected(value);
-          break;
-        }
-        if (key.equalsIgnoreCase("cameraMove")) {
-          setAllowCameraMove(value);
           break;
         }
         if (key.equalsIgnoreCase("measureAllModels")) {
@@ -3948,19 +3938,19 @@ public class Viewer extends JmolViewer {
   ////////  flags and settings ////////
 
   boolean getDotSurfaceFlag() {
-    return global.dotSurfaceFlag;
+    return global.dotSurface;
   }
 
   private void setDotSurfaceFlag(boolean TF) {
-    global.dotSurfaceFlag = TF;
+    global.dotSurface = TF;
   }
 
   boolean getDotsSelectedOnlyFlag() {
-    return global.dotsSelectedOnlyFlag;
+    return global.dotsSelectedOnly;
   }
 
-  private void setDotsSelectedOnlyFlag(boolean TF) {
-    global.dotsSelectedOnlyFlag = TF;
+  private void setDotsSelectedOnly(boolean TF) {
+    global.dotsSelectedOnly = TF;
   }
 
   boolean isRangeSelected() {
@@ -4016,22 +4006,6 @@ public class Viewer extends JmolViewer {
   public void setVisualRange(float angstroms) {
     transformManager.setVisualRange(angstroms);
     refresh(1, "set visualRange");
-  }
-
-  boolean isCameraAdjustable() {
-    return global.adjustCameraFlag;
-  }
-
-  private void setAdjustCamera(boolean TF) {
-    global.adjustCameraFlag = TF;
-  }
-
-  boolean allowCameraMove() {
-    return global.allowCameraMoveFlag;
-  }
-
-  private void setAllowCameraMove(boolean TF) {
-    global.allowCameraMoveFlag = TF;
   }
 
   private void setSolventProbeRadius(float radius) {
@@ -4112,6 +4086,15 @@ public class Viewer extends JmolViewer {
   public boolean getAxesOrientationRasmol() {
     return transformManager.axesOrientationRasmol;
   }
+  
+  void setAxesScale(float scale) {
+    global.axesScale = scale;
+    refresh(0, "set axesScale");
+  }
+  
+  float getAxesScale() {
+    return global.axesScale;
+  }
 
   boolean setAxesMode(String key, boolean value) {
     if (key.equalsIgnoreCase("axesWindow")) {
@@ -4178,12 +4161,12 @@ public class Viewer extends JmolViewer {
 
   private void setBondSelectionModeOr(boolean bondSelectionModeOr) {
     //Eval
-    global.bondSelectionModeOr = bondSelectionModeOr;
+    global.bondModeOr = bondSelectionModeOr;
     refresh(0, "Viewer:setBondSelectionModeOr()");
   }
 
   boolean getBondSelectionModeOr() {
-    return global.bondSelectionModeOr;
+    return global.bondModeOr;
   }
 
   boolean getChainCaseSensitive() {
@@ -4203,11 +4186,11 @@ public class Viewer extends JmolViewer {
   }
 
   boolean getCartoonRocketFlag() {
-    return global.cartoonRocketFlag;
+    return global.cartoonRockets;
   }
 
   private void setCartoonRocketFlag(boolean TF) {
-    global.cartoonRocketFlag = TF;
+    global.cartoonRockets = TF;
   }
 
   boolean getHideNameInPopup() {
@@ -4229,7 +4212,7 @@ public class Viewer extends JmolViewer {
   private void setNavigationMode(boolean TF) {
     global.navigationMode = TF;
     if (TF && !transformManager.canNavigate()) {
-      setVibrationPeriod(0);
+      setVibrationOff();
       transformManager = transformManager.getNavigationManager(this,
           dimScreen.width, dimScreen.height);
       reset();
@@ -4247,7 +4230,7 @@ public class Viewer extends JmolViewer {
   }
 
   private void setPerspectiveModel(int mode) {
-    setVibrationPeriod(0);
+    setVibrationOff();
     switch (mode) {
     case 10:
       transformManager = new TransformManager10(this, dimScreen.width,
@@ -4379,11 +4362,11 @@ public class Viewer extends JmolViewer {
   }
 
   public short getMadBond() {
-    return (short) (global.marBond * 2);
+    return (short) (global.bondRadiusMilliAngstroms * 2);
   }
 
   public short getMarBond() {
-    return global.marBond;
+    return global.bondRadiusMilliAngstroms;
   }
 
   /*
@@ -4437,7 +4420,13 @@ public class Viewer extends JmolViewer {
   }
 
   public void setShowBbcage(boolean value) {
+    global.setParameterValue("showBoundBox",value);
     setShapeShow(JmolConstants.SHAPE_BBCAGE, value);
+  }
+
+  public void setShowUnitCell(boolean value) {
+    global.setParameterValue("showUnitCell",value);
+    setShapeShow(JmolConstants.SHAPE_UCCAGE, value);
   }
 
   public boolean getShowAxes() {
@@ -4445,6 +4434,7 @@ public class Viewer extends JmolViewer {
   }
 
   public void setShowAxes(boolean value) {
+    global.setParameterValue("showAxes",value);
     setShapeShow(JmolConstants.SHAPE_AXES, value);
   }
 
@@ -4937,8 +4927,6 @@ public class Viewer extends JmolViewer {
   }
 
   void getHelp(String what) {
-    if (global.helpPath == null)
-      global.helpPath = global.defaultHelpPath;
     showUrl(global.helpPath + what);
   }
 

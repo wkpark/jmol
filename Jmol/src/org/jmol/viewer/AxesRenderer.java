@@ -62,7 +62,6 @@ class AxesRenderer extends ShapeRenderer {
     viewer.transformPoint(axes.originPoint, originScreen);
     for (int i = nPoints; --i >= 0;)
       viewer.transformPoint(axes.axisPoints[i], axisScreens[i]);
-
     int widthPixels = mad;
     if (mad >= 20)
       widthPixels = viewer.scaleToScreen(originScreen.z, mad);

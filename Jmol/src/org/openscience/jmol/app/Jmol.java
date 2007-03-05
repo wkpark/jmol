@@ -149,6 +149,11 @@ public class Jmol extends JPanel {
     this.startupHeight = startupHeight;
     numWindows++;
 
+    try {
+      say("history file is " + historyFile.file.getAbsolutePath());
+    } catch (Exception e) {
+    }
+
     frame.setTitle("Jmol");
     frame.setBackground(Color.lightGray);
     frame.getContentPane().setLayout(new BorderLayout());

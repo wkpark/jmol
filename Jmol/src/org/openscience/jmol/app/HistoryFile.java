@@ -64,7 +64,6 @@ class HistoryFile {
   HistoryFile(File file, String header) {
     this.file = file;
     this.header = header;
-    System.out.println("history file is "+file.getAbsolutePath());
     load();
   }
 

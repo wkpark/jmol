@@ -32,6 +32,7 @@ public class AllTests {
     TestSuite suite = new TestSuite("Test for org.jmol");
     //$JUnit-BEGIN$
     suite.addTest(org.jmol.adapter.smarter.TestSmarterJmolAdapter.suite());
+    suite.addTest(org.jmol.api.TestScripts.suite());
     suite.addTestSuite(org.jmol.smiles.TestSmilesParser.class);
     suite.addTest(org.jmol.util.AllTests.suite());
     //$JUnit-END$

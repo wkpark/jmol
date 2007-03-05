@@ -490,7 +490,7 @@ class StateManager {
       StringBuffer str = new StringBuffer("# window state;\n# height " + viewer.getScreenHeight()
           + ";\n# width " + viewer.getScreenWidth() + ";\n");
       appendCmd(str, "initialize");
-      appendCmd(str, "_version = " + getParameter("_version"));
+      appendCmd(str, "stateVersion = " + getParameter("_version"));
       appendCmd(str, "refreshing = false");
       appendCmd(str, "backgroundColor = " + escapeColor(argbBackground));
       str.append(getSpecularState());

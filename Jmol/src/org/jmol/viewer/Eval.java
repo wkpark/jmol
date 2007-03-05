@@ -5569,16 +5569,6 @@ class Eval { //implements Runnable {
         rpn.addX(new Token(Token.point3f, centerParameter(i)));
         i = iToken;
         break;
-      case Token.identifier:
-        String name = parameterAsString(i);
-        if (isSyntaxCheck) {
-          v = name;
-        } else {
-          v = viewer.getParameter(name);
-          if (v instanceof String)
-            v = getStringObjectAsToken((String) v);
-        }
-        break;
       case Token.leftbrace:
         v = getPointOrPlane(i, false, true, true, false, 3, 4);
         i = iToken;
@@ -5603,12 +5593,23 @@ class Eval { //implements Runnable {
         i = iToken;
         break;
       default:
-        if (!Compiler.tokAttr(theTok, Token.mathop)
-            && !Compiler.tokAttr(theTok, Token.mathfunc))
-          invalidArgument();
-        if (!rpn.addOp(theToken)) {
-          iToken--;
-          invalidArgument();
+        if (Compiler.tokAttr(theTok, Token.mathop)
+            || Compiler.tokAttr(theTok, Token.mathfunc)) {
+          if (!rpn.addOp(theToken)) {
+            iToken--;
+            invalidArgument();
+          }
+        } else {
+          String name = parameterAsString(i);
+          if (isSyntaxCheck) {
+            v = name;
+          } else {
+            v = viewer.getParameter(name);
+            if (v instanceof String)
+              v = getStringObjectAsToken((String) v);
+          }
+          break;
+
         }
       }
       if (v != null)

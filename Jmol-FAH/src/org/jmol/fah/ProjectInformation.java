@@ -1708,6 +1708,10 @@ public class ProjectInformation {
         outputInfoS(info._staticContact, separator);
         separator = true;
       }
+      if (info._fciContact != null) {
+        outputInfoFCI(info._fciContact, separator);
+        separator = true;
+      }
       if (info._psContact != null) {
         outputInfoPS(info._psContact, separator);
         separator = true;

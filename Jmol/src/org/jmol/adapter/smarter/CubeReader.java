@@ -48,12 +48,15 @@ import java.io.BufferedReader;
  * these orbitals are interspersed -- all orbital values are
  * given together for each coordinate point.
  * 
+ * also used for JVXL file format
+ * 
  */
 
 class CubeReader extends AtomSetCollectionReader {
     
   boolean negativeAtomCount;
   int atomCount;
+  boolean isAngstroms = false;
   
   final int[] voxelCounts = new int[3];
   final float[] origin = new float[3];
@@ -92,6 +95,7 @@ class CubeReader extends AtomSetCollectionReader {
     readLine();
     while (line != null && line.indexOf("#") == 0)
       readLine();
+    isAngstroms = (line.indexOf("ANGSTROMS") >= 0); //JVXL flag for Angstroms
     atomCount = parseInt(line);
     origin[0] = parseFloat();
     origin[1] = parseFloat();
@@ -119,14 +123,15 @@ class CubeReader extends AtomSetCollectionReader {
   }
 
   void readAtoms() throws Exception {
+    float f = (isAngstroms ? 1 : ANGSTROMS_PER_BOHR);
     for (int i = 0; i < atomCount; ++i) {
       readLine();
       Atom atom = atomSetCollection.addNewAtom();
       atom.elementNumber = (short)parseInt(line); //allowing atomicAndIsotope for JVXL format
       atom.partialCharge = parseFloat();
-      atom.x = parseFloat() * ANGSTROMS_PER_BOHR;
-      atom.y = parseFloat() * ANGSTROMS_PER_BOHR;
-      atom.z = parseFloat() * ANGSTROMS_PER_BOHR;
+      atom.x = parseFloat() * f;
+      atom.y = parseFloat() * f;
+      atom.z = parseFloat() * f;
     }
   }
 

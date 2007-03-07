@@ -891,8 +891,8 @@ class Isosurface extends IsosurfaceMeshCollection {
         }
       }
       thisMesh.nBytes = nBytes;
-      if (logMessages && !isSilent)
-        Logger.debug("\n" + jvxlGetFile(thisMesh, jvxlFileMessage, true, 1));
+      //if (logMessages && !isSilent)
+      //  Logger.debug("\n" + jvxlGetFile(thisMesh, jvxlFileMessage, true, 1));
       setModelIndex();
       discardTempData(true);
       dataType = SURFACE_NONE;
@@ -2103,9 +2103,7 @@ class Isosurface extends IsosurfaceMeshCollection {
         value = valueMappedToRed;
       if (value >= valueMappedToBlue)
         value = valueMappedToBlue;
-      mesh.vertexColixes[vertexIndex] = viewer.getColixFromPalette(
-          isColorReversed ? valueMappedToBlue + valueMappedToRed - value
-              : value, valueMappedToRed, valueMappedToBlue, colorScheme);
+      mesh.vertexColixes[vertexIndex] = getColixFromPalette(value);
     }
     return datum;
   }
@@ -2328,9 +2326,7 @@ class Isosurface extends IsosurfaceMeshCollection {
         colixes[i] = Graphics3D.getColix((isColorReversed ? value > 0
             : value <= 0) ? colorNeg : colorPos);
       } else {
-        colixes[i] = viewer.getColixFromPalette(
-            isColorReversed ? valueMappedToRed + valueMappedToBlue - value
-                : value, valueMappedToRed, valueMappedToBlue, colorScheme);
+        colixes[i] = getColixFromPalette(value);
         if (logMessages)
           Logger.info("readColor " + i + ": " + fraction + " " + value + " "
               + valueMappedToRed + " " + valueMappedToBlue + " " + colixes[i]);
@@ -2347,6 +2343,14 @@ class Isosurface extends IsosurfaceMeshCollection {
     mesh.jvxlColorData = data + "\n";
   }
 
+  short getColixFromPalette(float value) {
+    if (isColorReversed)
+      return viewer.getColixFromPalette(-value, -valueMappedToBlue,
+          -valueMappedToRed, colorScheme);
+    return viewer.getColixFromPalette(value, valueMappedToRed,
+        valueMappedToBlue, colorScheme);
+  }
+  
   ////////////////////////////////////////////////////////////////
   ////////// JVXL FILE READING/WRITING ////////////
   ////////////////////////////////////////////////////////////////

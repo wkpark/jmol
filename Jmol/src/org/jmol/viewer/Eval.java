@@ -4749,13 +4749,13 @@ class Eval { //implements Runnable {
         }
         if (idSeen)
           invalidArgument();
-        idSeen = true;
         propertyName = "thisID"; // might be "molecular"
         propertyValue = cmd.toLowerCase();
         break;
       default:
         invalidArgument();
       }
+      idSeen = (theTok != Token.delete);
       if (propertyName != null)
         setShapeProperty(JmolConstants.SHAPE_DIPOLES, propertyName,
             propertyValue);
@@ -7037,7 +7037,6 @@ class Eval { //implements Runnable {
         }
         if (idSeen)
           invalidArgument();
-        idSeen = true;
         propertyName = "thisID";
         break;
       case Token.string:
@@ -7075,9 +7074,10 @@ class Eval { //implements Runnable {
       default:
         if (!setMeshDisplayProperty(JmolConstants.SHAPE_PMESH, theTok))
           invalidArgument();
-        continue;
       }
-      setShapeProperty(JmolConstants.SHAPE_PMESH, propertyName, propertyValue);
+      idSeen = (theTok != Token.delete);
+      if (propertyName != null)
+        setShapeProperty(JmolConstants.SHAPE_PMESH, propertyName, propertyValue);
     }
   }
 
@@ -7180,7 +7180,6 @@ class Eval { //implements Runnable {
         }
         if (idSeen)
           invalidArgument();
-        idSeen = true;
         propertyName = "thisID";
         break;
       case Token.dollarsign:
@@ -7236,6 +7235,7 @@ class Eval { //implements Runnable {
         if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, theTok))
           invalidArgument();
       }
+      idSeen = (theTok != Token.delete);
       if (havePoints && !isInitialized) {
         setShapeProperty(JmolConstants.SHAPE_DRAW, "points", new Integer(
             intScale));
@@ -7982,7 +7982,6 @@ class Eval { //implements Runnable {
         if (idSeen)
           invalidArgument();
         propertyName = "thisID";
-        idSeen = true;
         break;
       case Token.lcaocartoon:
         surfaceObjectSeen = true;
@@ -8089,6 +8088,7 @@ class Eval { //implements Runnable {
         if (!setMeshDisplayProperty(iShape, theTok))
           invalidArgument();
       }
+      idSeen = (theTok != Token.delete);
       if (propertyName == "property" && !surfaceObjectSeen) {
         surfaceObjectSeen = true;
         setShapeProperty(iShape, "bsSolvent", lookupIdentifierValue("solvent"));

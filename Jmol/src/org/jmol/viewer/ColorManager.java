@@ -310,6 +310,10 @@ class ColorManager {
       int index = quantize(val, lo, hi, JmolConstants.argbsRwbScale.length);
       return Graphics3D.getColix(JmolConstants.argbsRwbScale[index]);
     }
+    if (palette.equals("bwr")) {
+      int index = quantize(-val, -hi, -lo, JmolConstants.argbsRwbScale.length);
+      return Graphics3D.getColix(JmolConstants.argbsRwbScale[index]);
+    }
     if (palette.equals("roygb")) {
       int index = quantize(val, lo, hi, JmolConstants.argbsRoygbScale.length);
       return Graphics3D.getColix(JmolConstants.argbsRoygbScale[index]);

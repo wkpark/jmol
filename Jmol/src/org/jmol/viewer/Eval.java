@@ -8818,7 +8818,8 @@ class Eval { //implements Runnable {
     boolean evaluateFunction() throws ScriptException {
 
       Token op = oStack[oPt--];
-      int nParamMax = Token.prec(op);
+      int tok = (op.tok == Token.propselector ? op.intValue : op.tok);
+      int nParamMax = Token.prec(op); // note - this is NINE for dot-operators
       int nParam = 0;
       int pt = xPt;
       while (xStack[pt--] != op)
@@ -8829,7 +8830,7 @@ class Eval { //implements Runnable {
       for (int i = nParam; --i >= 0;)
         args[i] = getX();
       xPt--;
-      switch (op.tok == Token.propselector ? op.intValue : op.tok) {
+      switch (tok) {
       case Token.find:
         return evaluateFind(args);
       case Token.replace:
@@ -8838,6 +8839,11 @@ class Eval { //implements Runnable {
       case Token.join:
       case Token.trim:
         return evaluateString(op.intValue, args);
+      case Token.add:
+      case Token.sub:
+      case Token.mul:
+      case Token.div:
+        return evaluateList(op.intValue, args);
       case Token.label:
         return evaluateLabel(args);
       case Token.data:
@@ -8974,6 +8980,62 @@ class Eval { //implements Runnable {
         return addX(list);
       }
       return addX("");
+    }
+
+    boolean evaluateList(int tok, Token[] args) throws ScriptException {
+      if (args.length != 1)
+        return false;
+      Token x1 = getX();
+      Token x2 = args[0];
+      if (x1.tok != Token.list && x1.tok != Token.string)
+        return false;
+      if (isSyntaxCheck)
+        return addX("");
+
+      boolean isScalar = (x2.tok != Token.list && Token.sValue(x2)
+          .indexOf("\n") < 0);
+
+      float factor = (isScalar ? Token.fValue(x2) : 0);
+
+      String[] sList1 = (x1.value instanceof String ? TextFormat.split(
+          (String) x1.value, "\n") : (String[]) x1.value);
+      float[] list1 = new float[sList1.length];
+      Parser.parseFloatArray(sList1, list1);
+
+      String[] sList2 = (isScalar ? null
+          : x2.value instanceof String ? TextFormat.split((String) x2.value,
+              "\n") : (String[]) x2.value);
+      float[] list2 = new float[(isScalar ? sList1.length : sList2.length)];
+      int len = Math.min(list1.length, list2.length);
+      if (isScalar)
+        for (int i = len; --i >= 0;)
+          list2[i] = factor;
+      else
+        Parser.parseFloatArray(sList2, list2);
+      switch (tok) {
+      case Token.add:
+        for (int i = len; --i >= 0;)
+          list1[i] += list2[i];
+        break;
+      case Token.sub:
+        for (int i = len; --i >= 0;)
+          list1[i] -= list2[i];
+        break;
+      case Token.mul:
+        for (int i = len; --i >= 0;)
+          list1[i] *= list2[i];
+        break;
+      case Token.div:
+        for (int i = len; --i >= 0;)
+          if (list2[i] == 0)
+            list1[i] = Float.NaN;
+          else
+            list1[i] /= list2[i];
+        break;
+      }
+      for (int i = len; --i >= 0;)
+        sList1[i] = "" + list1[i];
+      return addX(sList1);
     }
 
     boolean evaluateLoad(Token[] args) throws ScriptException {

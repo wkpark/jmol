@@ -3431,8 +3431,7 @@ public class Viewer extends JmolViewer {
             scriptStatus("ERROR: cannot set boolean flag to string value");
             return;
           }
-          Logger.warn("viewer.setStringProperty(" + key + ",\"" + value
-              + "\") - string variable defined");
+          Logger.warn(key +" -- string variable defined (" + value.length() + " bytes)");
           break;
         }
       }

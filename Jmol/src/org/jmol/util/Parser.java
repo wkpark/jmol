@@ -59,6 +59,17 @@ public class Parser {
     }
   }
   
+  /**
+   * parses a string array for floats. Returns NaN for nonfloats.
+   * 
+   *  @param tokens  the strings to parse
+   *  @param data    the array to fill
+   */
+  public static void parseFloatArray(String[] tokens, float[] data) {
+    for (int i = Math.min(data.length, tokens.length); --i>=0;)
+      data[i] = Parser.parseFloat(tokens[i]);
+  }
+  
   public static float parseFloat(String str) {
     return parseFloat(str, new int[] {0});
   }

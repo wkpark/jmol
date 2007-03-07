@@ -305,7 +305,9 @@ public class Token {
   final static int unaryMinus   = 0  | mathop | 8 << 3;
   final static int propselector = 1  | mathop | 9 << 3;
 
-  // maximum number of parameters is << 3
+  // for non-.-operators only, the maximum number of parameters is << 3
+  // for .-operators, the maximum is 9, set byt propselector, above
+  // no more than 7 per group due to << 3.
   
   // .distance (Point3f)
   // .label (String format)
@@ -316,6 +318,13 @@ public class Token {
   final static int split        = 1  | mathfunc | mathproperty | 0 << 3;
   final static int join         = 2  | mathfunc | mathproperty | 0 << 3;
   final static int trim         = 3  | mathfunc | mathproperty | 0 << 3;
+  
+  // for lists: 
+  
+  final static int add          = 4  | mathfunc | mathproperty | 0 << 3;
+  final static int sub          = 5  | mathfunc | mathproperty | 0 << 3;
+  final static int mul          = 6  | mathfunc | mathproperty | 0 << 3;
+  final static int div          = 7  | mathfunc | mathproperty | 0 << 3;
 
   final static int label        = 1  | mathfunc | mathproperty | 1 << 3 | command | specialstring | setparam;
   final static int find         = 2  | mathfunc | mathproperty | 1 << 3;
@@ -1068,6 +1077,10 @@ public class Token {
     "join",         new Token(join),
     "trim",         new Token(trim),
     "replace",      new Token(replace),
+    "add",          new Token(add),
+    "sub",          new Token(sub),
+    "mul",          new Token(mul),
+    "div",          new Token(div),
   };
 
   static Hashtable map = new Hashtable();

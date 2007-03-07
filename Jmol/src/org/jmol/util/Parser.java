@@ -30,19 +30,33 @@ import java.util.BitSet;
 public class Parser {
 
   /// general static string-parsing class ///
-  
+
   // next[0] tracks the pointer within the string so these can all be static.
   // but the methods parseFloat, parseInt, parseToken, parseTrimmed, and getTokens do not require this.
-  
-  
+
+  /**
+   * parses a "dirty" string for floats. If there are non-float tokens, 
+   * they are ignored. A bitset is used to assign values only to specific 
+   * atoms in the set, not changing the values of the data array for other atoms.
+   * thus, a data set can be incrementally added to in this way.
+   * 
+   *  @param str     the string to parse
+   *  @param bs      the atom positions to assign
+   *  @param data    the (sparce) array to fill
+   */
   public static void parseFloatArray(String str, BitSet bs, float[] data) {
     String[] tokens = getTokens(str);
     int len = data.length;
     int nTokens = tokens.length;
     int n = 0;
-    for (int i = 0; i < len && n < nTokens; i++)
-      if (bs == null || bs.get(i))
-        data[i] = Parser.parseFloat(tokens[n++]);
+    for (int i = 0; i < len && n < nTokens; i++) {
+      if (bs != null && !bs.get(i))
+        continue;
+      float f;
+      while (Float.isNaN(f = Parser.parseFloat(tokens[n++])) && n < nTokens) {
+      }
+      data[i] = f;
+    }
   }
   
   public static float parseFloat(String str) {

@@ -226,7 +226,6 @@ public class Viewer extends JmolViewer {
           + "\nmemory:" + getParameter("_memory") + "\n" + htmlName);
     }
 
-    setIntProperty("_version", getJmolVersionInt());
     if (isApplet)
       fileManager.setAppletContext(documentBase, codeBase,
           appletProxyOrCommandOptions);
@@ -322,6 +321,7 @@ public class Viewer extends JmolViewer {
 
   void resetAllParameters() {
     global = stateManager.getGlobalSettings();
+    setIntProperty("_version", getJmolVersionInt());
     colorManager.resetElementColors();
     setStringProperty("backgroundColor", "black");
     setAmbientPercent(global.ambientPercent);

@@ -241,7 +241,7 @@ class PropertyManager {
     case PROP_TRANSFORM_INFO:
       return viewer.getMatrixRotate();
     case PROP_DATA_INFO:
-      return viewer.getData(myParam.toString());
+      return Viewer.getData(myParam.toString());
     case PROP_EVALUATE:
       return Eval.evaluateExpression(viewer, myParam.toString());
     case PROP_IMAGE:

@@ -3641,7 +3641,7 @@ public class Viewer extends JmolViewer {
             scriptEcho("script WARNING: cannot set boolean flag to numeric value");
             return;
           }
-          Logger.warn("viewer.setIntProperty(" + key + "," + value
+          Logger.info("viewer.setIntProperty(" + key + "," + value
               + ") - integer variable defined");
           break;
         }

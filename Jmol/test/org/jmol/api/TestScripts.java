@@ -7,12 +7,9 @@ package org.jmol.api;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import javax.swing.JPanel;
-
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.JUnitLogger;
-import org.jmol.util.Logger;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -31,7 +28,8 @@ public class TestScripts extends TestSuite {
     String datafileDirectory = System.getProperty(
         "test.datafile.script.directory",
         "../Jmol-datafiles/tests/scripts");
-    result.addDirectory(datafileDirectory);
+    result.addDirectory(datafileDirectory + "/check", true);
+    result.addDirectory(datafileDirectory + "/run", false);
     return result;
   }
 
@@ -39,8 +37,9 @@ public class TestScripts extends TestSuite {
    * Add tests for each script in a directory.
    * 
    * @param directory Directory where the files are
+   * @param checkOnly Flag for checking syntax only
    */
-  private void addDirectory(String directory) {
+  private void addDirectory(String directory, boolean checkOnly) {
 
     // Checking files
     File dir = new File(directory);
@@ -56,7 +55,7 @@ public class TestScripts extends TestSuite {
     });
     if (files != null) {
       for (int i = 0; i < files.length; i++) {
-        addFile(directory, files[i]);
+        addFile(directory, files[i], checkOnly);
       }
     }
 
@@ -71,7 +70,9 @@ public class TestScripts extends TestSuite {
     });
     if (dirs != null) {
       for (int i = 0; i < dirs.length; i++) {
-        addDirectory(new File(directory, files[i]).getAbsolutePath());
+        addDirectory(
+            new File(directory, files[i]).getAbsolutePath(),
+            checkOnly);
       }
     }
   }
@@ -81,12 +82,14 @@ public class TestScripts extends TestSuite {
    * 
    * @param directory Directory where the files are
    * @param filename File name
+   * @param checkOnly Flag for checking syntax only
    */
   private void addFile(String directory,
-                       String filename) {
+                       String filename,
+                       boolean checkOnly) {
 
     File file = new File(directory, filename);
-    Test test = new TestScriptsImpl(file);
+    Test test = new TestScriptsImpl(file, checkOnly);
     addTest(test);
   }
 }
@@ -97,10 +100,12 @@ public class TestScripts extends TestSuite {
 class TestScriptsImpl extends TestCase {
 
   private File file;
+  private boolean checkOnly;
 
-  public TestScriptsImpl(File file) {
+  public TestScriptsImpl(File file, boolean checkOnly) {
     super("testFile");
     this.file = file;
+    this.checkOnly = checkOnly;
   }
 
   /* (non-Javadoc)
@@ -116,12 +121,15 @@ class TestScriptsImpl extends TestCase {
   public void testScript() {
     JUnitLogger.setInformation(file.getPath());
 
-    // TODO
     SmarterJmolAdapter adapter = new SmarterJmolAdapter();
     JmolViewer viewer = JmolViewer.allocateViewer(null, adapter);
-    viewer.setAppletContext("", null, null, "-n -c "); // set no display; checkOnly
+    if (checkOnly) {
+      viewer.setAppletContext("", null, null, "-n -c "); // set no display; checkOnly
+    } else {
+      viewer.setAppletContext("", null, null, "-n "); // set no display
+    }
     String s = viewer.evalFile(file.getPath() + " -nowait");
-    System.out.println(s);
+    assertNull("Error in script [" + file.getPath() + ":\n" + s, s);
   }
 
   /* (non-Javadoc)
@@ -141,7 +149,6 @@ class TestScriptsImpl extends TestCase {
     super.setUp();
     JUnitLogger.activateLogger();
     JUnitLogger.setInformation(null);
-    Logger.setActiveLevel(Logger.LEVEL_DEBUG, true);
   }
 
   /* (non-Javadoc)
@@ -150,7 +157,6 @@ class TestScriptsImpl extends TestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
     JUnitLogger.setInformation(null);
-    Logger.setActiveLevel(Logger.LEVEL_DEBUG, false);
     file = null;
   }
 }

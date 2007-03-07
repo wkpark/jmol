@@ -115,12 +115,13 @@ class TestScriptsImpl extends TestCase {
    */
   public void testScript() {
     JUnitLogger.setInformation(file.getPath());
-    
+
     // TODO
-    JPanel panel = new JPanel();
     SmarterJmolAdapter adapter = new SmarterJmolAdapter();
-    JmolViewer viewer = JmolViewer.allocateViewer(panel, adapter);
-    viewer.evalFile(file.getPath());
+    JmolViewer viewer = JmolViewer.allocateViewer(null, adapter);
+    viewer.setAppletContext("", null, null, "-n -c "); // set no display; checkOnly
+    String s = viewer.evalFile(file.getPath() + " -nowait");
+    System.out.println(s);
   }
 
   /* (non-Javadoc)

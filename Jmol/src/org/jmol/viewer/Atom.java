@@ -649,8 +649,7 @@ final public class Atom extends Point3fi implements Tuple {
      Object[] clientAtomReferences = group.chain.frame.clientAtomReferences;
      return
        ((clientAtomReferences==null || clientAtomReferences.length<=atomIndex)
-        ? group.chain.frame.viewer.getParameter(propertyName).toString()
-        : (group.chain.frame.viewer.
+        ? null : (group.chain.frame.viewer.
            getClientAtomStringProperty(clientAtomReferences[atomIndex],
                                        propertyName)));
    }
@@ -1147,11 +1146,13 @@ final public class Atom extends Point3fi implements Tuple {
           int ichCloseBracket = strFormat.indexOf('}', ich);
           if (ichCloseBracket > ich) { // also picks up -1 when no '}' is found
             String propertyName = strFormat.substring(ich, ichCloseBracket);
-            String value = getClientAtomStringProperty(propertyName);
-            if (value != null)
-              strT = value;
-            ich = ichCloseBracket + 1;
-            break;
+            floatT = Viewer.getDataFloat(propertyName, atomIndex);
+            if (Float.isNaN(floatT))
+              strT = getClientAtomStringProperty(propertyName);
+            if (strT != null || !Float.isNaN(floatT)) {
+              ich = ichCloseBracket + 1;
+              break;
+            }
           }
         // malformed will fall into
         default:

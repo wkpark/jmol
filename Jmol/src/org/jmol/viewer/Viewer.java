@@ -33,6 +33,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Base64;
 import org.jmol.util.JpegEncoder;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Parser;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -201,7 +202,7 @@ public class Viewer extends JmolViewer {
       if (str.indexOf("-x") >= 0) {
         autoExit = true;
       }
-      if (str.indexOf("-n") >= 0) {
+      if (display == null || str.indexOf("-n") >= 0) {
         haveDisplay = false;
       }
       writeInfo = null;
@@ -1975,6 +1976,7 @@ public class Viewer extends JmolViewer {
     s.append(fileManager.getState());
     //  numerical values
     s.append(global.getState());
+    getDataState(s);
     //  definitions, connections, atoms, bonds, labels, echos, shapes
     s.append(modelManager.getState());
     //  frame information
@@ -1984,37 +1986,86 @@ public class Viewer extends JmolViewer {
     //  display and selections
     s.append(selectionManager.getState());
     s.append("refreshing = true;\n");
+    
     return s.toString();
   }
 
   static Hashtable dataValues = new Hashtable();
 
-  static void setData(String type, String[] data) {
+  static void setData(String type, Object[] data, BitSet bsSelected, int atomCount) {
     //Eval
     if (type == null) {
       dataValues.clear();
       return;
     }
+    if (type.toLowerCase().indexOf("property_") == 0 && bsSelected != null) {
+      float[] f = new float[atomCount];
+      Parser.parseFloatArray((String) data[1], bsSelected, f);
+      data[1] = f;
+    }
     dataValues.put(type, data);
   }
 
-  public String[] getData(String type) {
+  static public Object[] getData(String type) {
     if (dataValues == null)
       return null;
     if (type.equalsIgnoreCase("types")) {
       String[] info = new String[2];
       info[0] = "types";
       info[1] = "";
+      int n = 0;
       Enumeration e = (dataValues.keys());
       while (e.hasMoreElements())
-        info[1] += "," + e.nextElement();
-      if (info[1].length() > 0)
-        info[1] = info[1].substring(1);
+        info[1] += (n++ == 0 ? ",": "") + e.nextElement();
       return info;
     }
-    return (String[]) dataValues.get(type);
+    return (Object[]) dataValues.get(type);
   }
 
+  static public float[] getDataFloat(String label) {
+    if (dataValues == null)
+      return null;
+    Object[] data = getData(label);
+    if (data == null || !(data[1] instanceof float[]))
+      return null;
+    return (float[]) data[1];
+  }
+
+  static public float getDataFloat(String label, int atomIndex) {
+    if (dataValues != null) {
+      Object[] data = getData(label);
+      if (data != null && data[1] instanceof float[]) {
+        float[] f = (float[]) data[1];
+        if (atomIndex < f.length)
+          return f[atomIndex];
+      }
+    }
+    return Float.NaN;
+  }
+
+  static private void getDataState(StringBuffer s) {
+    if (dataValues == null)
+      return;
+    Enumeration e = (dataValues.keys());
+    while (e.hasMoreElements()) {
+      String name = (String) e.nextElement();
+      if (name.indexOf("property_") == 0) {
+        Object data = ((Object[]) dataValues.get(name))[1];
+        s.append("DATA \"" + name + "\"");
+        if (data instanceof float[]) {
+          s.append("\n");
+          float[] f = (float[]) data;
+          for (int i = 0; i < f.length; i++)
+            s.append(" " + f[i]);
+          s.append("\n");
+        } else {
+          s.append("" + data);
+        }
+        s.append("end \"" + name + "\";\n");
+      }
+    }
+  }
+  
   public String getAltLocListInModel(int modelIndex) {
     return modelManager.getAltLocListInModel(modelIndex);
   }
@@ -2207,6 +2258,8 @@ public class Viewer extends JmolViewer {
 
   void repaint() {
     //from RepaintManager
+    if (display==null)
+      return;
     display.repaint();
   }
 
@@ -2595,6 +2648,11 @@ public class Viewer extends JmolViewer {
 
   public String evalFile(String strFilename) {
     //app -s flag
+    int ptWait = strFilename.indexOf(" -nowait");
+    if (ptWait >= 0) {
+      return (String) evalStringWaitStatus("String", strFilename.substring(0, ptWait), "",
+          true, false);
+    }
     return scriptManager.addScript(strFilename, true, false);
   }
 
@@ -4842,9 +4900,11 @@ public class Viewer extends JmolViewer {
 
   public String getData(String atomExpression, String type) {
     String exp = "";
-    if (type.equalsIgnoreCase("PDB"))
+    if (type.toLowerCase().indexOf("property_") == 0)
+      exp = "{selected}.label(\"%{" + type + "}\")";
+    else if (type.equalsIgnoreCase("PDB"))
       exp = "{selected and not hetero}.label(\"ATOM  %5i  %-3a%1A%3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \").lines"
-          +    "+{selected and hetero}.label(\"HETATM%5i %-4a%1A%3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \").lines";
+          + "+{selected and hetero}.label(\"HETATM%5i %-4a%1A%3n %1c%4R%1E   %8.3x%8.3y%8.3z%6.2Q%6.2b          %2e  \").lines";
     else if (type.equalsIgnoreCase("MOL"))
       exp = "\"line1\nline2\nline3\n\"+(\"\"+{selected}.size)%-3+(\"\"+{selected}.bonds.size)%-3+\"  0  0  0\n\""
           + "+{selected}.labels(\"%10.4x%10.4y%10.4z %-2e  0  0  0  0  0\").lines"
@@ -4853,7 +4913,7 @@ public class Viewer extends JmolViewer {
       //if(type.equals("XYZ"))
       exp = "\"\" + {selected}.size + \"\n\n\"+{selected}.label(\"%-2e %10.5x %10.5y %10.5z\").lines";
     if (!atomExpression.equals("selected"))
-      exp = TextFormat.simpleReplace(exp, "selected",atomExpression);
+      exp = TextFormat.simpleReplace(exp, "selected", atomExpression);
     return (String) Eval.evaluateExpression(this, exp);
   }
   

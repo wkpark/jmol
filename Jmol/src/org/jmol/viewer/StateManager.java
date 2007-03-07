@@ -953,6 +953,16 @@ class StateManager {
     return "\"" + str + "\"";
   }
   
+  static String escape(float[] f) {
+   StringBuffer sb = new StringBuffer();
+   for (int i = 0; i < f.length; i++) {
+     if (i > 0)
+       sb.append('\n');
+     sb.append(""+f[i]);
+   }
+   return sb.toString();
+  }
+  
   static String escape(Tuple3f xyz) {
     return "{" + xyz.x + " " + xyz.y + " " + xyz.z +"}";
   }

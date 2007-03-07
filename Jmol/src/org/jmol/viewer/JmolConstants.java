@@ -34,13 +34,24 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "11.1.17";
+  public final static String version = "11.1.18";
   
   /*
    * 
    *
    * 
    * 
+   * 
+   * 
+   11.1.18
+   
+   isosurface -- now supports APBS (http://apbs.sourceforge.net)
+                 molecular electrostatic potential output files
+ 
+   write -- modified to allow unquoted filename in    write isosurface file.name
+   
+   jvxl 1.0 -- adds ANGSTROMS flag on line with # of atoms (line 3)
+   
    11.1.17
    
    deprecation of SET

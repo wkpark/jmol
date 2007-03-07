@@ -184,10 +184,13 @@ public class Jmol extends JPanel {
       modelAdapter = new SmarterJmolAdapter();
     }
 
+    
+    
     viewer = JmolViewer.allocateViewer(display, modelAdapter);
     viewer.setAppletContext("", null, null, commandOptions);
 
-    display.setViewer(viewer);
+    if (display != null)
+      display.setViewer(viewer);
 
     say(GT._("Initializing Preferences..."));
     preferencesDialog = new PreferencesDialog(frame, guimap, viewer);
@@ -224,36 +227,39 @@ public class Jmol extends JPanel {
     //     pluginManager.loadPlugins(System.getProperty("plugin.dir"));
     // }
 
-    // install the command table
-    say(GT._("Building Command Hooks..."));
-    commands = new Hashtable();
-    Action[] actions = getActions();
-    for (int i = 0; i < actions.length; i++) {
-      Action a = actions[i];
-      commands.put(a.getValue(Action.NAME), a);
-    }
-
-    menuItems = new Hashtable();
-    say(GT._("Building Menubar..."));
-    executeScriptAction = new ExecuteScriptAction();
-    menubar = createMenubar();
-    add("North", menubar);
-
-    JPanel panel = new JPanel();
-    panel.setLayout(new BorderLayout());
-    panel.add("North", createToolbar());
-
-    JPanel ip = new JPanel();
-    ip.setLayout(new BorderLayout());
-    ip.add("Center", display);
-    panel.add("Center", ip);
-    add("Center", panel);
-    add("South", status);
-
-    say(GT._("Starting display..."));
-    display.start();
 
     if (haveDisplay.booleanValue()) {
+
+      // install the command table
+      say(GT._("Building Command Hooks..."));
+      commands = new Hashtable();
+      if (display != null) {
+        Action[] actions = getActions();
+        for (int i = 0; i < actions.length; i++) {
+          Action a = actions[i];
+          commands.put(a.getValue(Action.NAME), a);
+        }
+      }
+
+      menuItems = new Hashtable();
+      say(GT._("Building Menubar..."));
+      executeScriptAction = new ExecuteScriptAction();
+      menubar = createMenubar();
+      add("North", menubar);
+
+      JPanel panel = new JPanel();
+      panel.setLayout(new BorderLayout());
+      panel.add("North", createToolbar());
+
+      JPanel ip = new JPanel();
+      ip.setLayout(new BorderLayout());
+      ip.add("Center", display);
+      panel.add("Center", ip);
+      add("Center", panel);
+      add("South", status);
+
+      say(GT._("Starting display..."));
+      display.start();
 
       say(GT._("Setting up File Choosers..."));
       openChooser = new FileChooser();

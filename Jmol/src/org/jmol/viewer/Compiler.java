@@ -1236,11 +1236,13 @@ class Compiler {
     case Token.string:
       haveString = true;
       return addNextToken();
-    case Token.nada:
-      return endOfCommandUnexpected();
     case Token.define:
       addNextToken();
-      return addNextToken();
+      if (!tokPeek(Token.nada))
+        return addTokenToPostfix(new Token(Token.identifier, tokenNext().value));
+      //fall through
+      case Token.nada:
+        return endOfCommandUnexpected();
     case Token.bonds:
     case Token.monitor:
       addNextToken();

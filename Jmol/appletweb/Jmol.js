@@ -1,5 +1,5 @@
 
-/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 12:54 AM 1/9/2007
+/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 9:53 AM 3/6/2007
 
  first pass at checkbox heirarchy -- see http://www.stolaf.edu/academics/jmol/docs/examples-11/check.htm
 
@@ -31,6 +31,7 @@ try{if(typeof(_jmol)!="undefined")exit()
 
 // place "?NOAPPLET" on your command line to check applet control action with a textarea
 
+// bob hanson -- jmolResize(w,h) -- resizes absolutely or by percent (w or h 0.5 means 50%)
 // bob hanson -- jmolEvaluate -- evaluates molecular math 8:37 AM 2/23/2007
 // bob hanson -- jmolScriptMessage -- returns all "scriptStatus" messages 8:37 AM 2/23/2007
 // bob hanson -- jmolScriptEcho -- returns all "scriptEcho" messages 8:37 AM 2/23/2007
@@ -617,8 +618,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     if (! script)
       script = "select *";
     var sz = _jmolGetAppletSize(size);
-    var widthAndHeight = " width='" + sz[0] + "px' height='" + sz[1] + "px' ";
-
+    var widthAndHeight = " width='" + sz[0] + "' height='" + sz[1] + "' ";
     var tHeader, tFooter;
 
     if (useIEObject || useHtml4Object) {
@@ -774,15 +774,21 @@ function _jmolSterilizeInline(model) {
 function _jmolGetAppletSize(size) {
   var width, height;
   var type = typeof size;
-  if (type == "number")
-    width = height = size;
-  else if (type == "object" && size != null) {
+  if (type == "object" && size != null) {
     width = size[0]; height = size[1];
+  } else {
+    width = height = size;
   }
-  if (! (width >= 25 && width <= 2000))
-    width = 300;
-  if (! (height >= 25 && height <= 2000))
-    height = 300;
+  if (typeof width == "number") {
+	if(! (width >= 25 && width <= 2000))
+	    width = (width < 1 && width > 0 ? (width * 100)+"%":300)
+	width += "px"
+  }
+  if (typeof height == "number") {
+	if(! (height >= 25 && height <= 2000))
+	    height = (height < 1 && height > 0? (height * 100)+"%":300);
+	height += "px"
+  }
   return [width, height];
 }
 
@@ -1364,4 +1370,28 @@ if(document.location.search.indexOf("NOAPPLET")>=0){
 
 
 ///////////////////////////////////////////
+
+//new 9:49 AM 3/6/2007:
+
+//both w and h are optional. 
+//if either is between 0 and 1, then it is taken as percent/100.
+//if either is greater than 1, then it is taken as a size. 
+function jmolResize(w,h) {
+ _jmol.alerted = true;
+ var percentW = (!w ? 100 : w <= 1  && w > 0 ? w * 100 : 0)
+ var percentH = (!h ? percentW : h <= 1 && h > 0 ? h * 100 : 0)
+ if (_jmol.browser=="msie") {
+   var width=document.body.clientWidth;
+   var height=document.body.clientHeight;
+ } else {
+   var netscapeScrollWidth=15;
+   var width=window.innerWidth - netscapeScrollWidth;
+   var height=window.innerHeight-netscapeScrollWidth;
+ }
+ var applet = _jmolGetApplet(0);
+ if(!applet)return;
+ applet.style.width = (percentW ? width * percentW/100 : w)+"px"
+ applet.style.height = (percentH ? height * percentH/100 : h)+"px"
+ title=width +  " " + height + " " + (new Date())
+}
 

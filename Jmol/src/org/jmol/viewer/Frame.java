@@ -3524,4 +3524,15 @@ public final class Frame {
     commands.append("\n");
     return commands.toString();
   }
+  
+  Hashtable userProperties;
+  
+  void putUserProperty(String name, Object property) {
+    if (userProperties == null)
+      userProperties = new Hashtable();
+    if (property == null)
+      userProperties.remove(name);
+    else
+      userProperties.put(name, property);
+  }
 }

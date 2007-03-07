@@ -48,6 +48,8 @@ public class JmolPopupSwing extends JmolPopup {
   }
 
   void showPopupMenu(int x, int y) {
+    if (jmolComponent == null)
+      return;
     swingPopup.show(jmolComponent, x, y);
   }
 
@@ -85,6 +87,8 @@ public class JmolPopupSwing extends JmolPopup {
   }
   
   void showFrankMenu(int x, int y) {
+    if (jmolComponent == null)
+      return;
     ((JPopupMenu)frankPopup).show(jmolComponent, x, y);
   }
 

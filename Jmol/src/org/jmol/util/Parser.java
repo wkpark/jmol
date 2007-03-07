@@ -25,6 +25,8 @@
 
 package org.jmol.util;
 
+import java.util.BitSet;
+
 public class Parser {
 
   /// general static string-parsing class ///
@@ -32,6 +34,16 @@ public class Parser {
   // next[0] tracks the pointer within the string so these can all be static.
   // but the methods parseFloat, parseInt, parseToken, parseTrimmed, and getTokens do not require this.
   
+  
+  public static void parseFloatArray(String str, BitSet bs, float[] data) {
+    String[] tokens = getTokens(str);
+    int len = data.length;
+    int nTokens = tokens.length;
+    int n = 0;
+    for (int i = 0; i < len && n < nTokens; i++)
+      if (bs == null || bs.get(i))
+        data[i] = Parser.parseFloat(tokens[n++]);
+  }
   
   public static float parseFloat(String str) {
     return parseFloat(str, new int[] {0});
@@ -104,15 +116,14 @@ public class Parser {
     boolean digitSeen = false;
     float value = 0;
     int ich = next[0];
-    char ch;
-    while (ich < ichMax && ((ch = str.charAt(ich)) == ' ' || ch == '\t'))
+    while (ich < ichMax && isWhiteSpace(str, ich))
       ++ich;
     boolean negative = false;
     if (ich < ichMax && str.charAt(ich) == '-') {
       ++ich;
       negative = true;
     }
-    ch = 0;
+    char ch = 0;
     while (ich < ichMax && (ch = str.charAt(ich)) >= '0' && ch <= '9') {
       value = value * 10 + (ch - '0');
       ++ich;
@@ -174,7 +185,7 @@ public class Parser {
     int value = 0;
     int ich = next[0];
     char ch;
-    while (ich < ichMax && ((ch = str.charAt(ich)) == ' ' || ch == '\t'))
+    while (ich < ichMax && isWhiteSpace(str, ich))
       ++ich;
     boolean negative = false;
     if (ich < ichMax && str.charAt(ich) == '-') {
@@ -213,16 +224,15 @@ public class Parser {
     int tokenCount = 0;
     if (line != null) {
       int ichMax = line.length();
-      char ch;
       while (true) {
-        while (ich < ichMax && ((ch = line.charAt(ich)) == ' ' || ch == '\t'))
+        while (ich < ichMax && isWhiteSpace(line, ich))
           ++ich;
         if (ich == ichMax)
           break;
         ++tokenCount;
         do {
           ++ich;
-        } while (ich < ichMax && ((ch = line.charAt(ich)) != ' ' && ch != '\t'));
+        } while (ich < ichMax && !isWhiteSpace(line, ich));
       }
     }
     return tokenCount;
@@ -246,11 +256,10 @@ public class Parser {
 
   private static String parseTokenChecked(String str, int ichMax, int[] next) {
     int ich = next[0];
-    char ch;
-    while (ich < ichMax && ((ch = str.charAt(ich)) == ' ' || ch == '\t'))
+    while (ich < ichMax && isWhiteSpace(str, ich))
       ++ich;
     int ichNonWhite = ich;
-    while (ich < ichMax && ((ch = str.charAt(ich)) != ' ' && ch != '\t'))
+    while (ich < ichMax && !isWhiteSpace(str, ich))
       ++ich;
     next[0] = ich;
     if (ichNonWhite == ich)
@@ -259,11 +268,10 @@ public class Parser {
   }
 
   private static String parseTrimmedChecked(String str, int ich, int ichMax) {
-    char ch;
-    while (ich < ichMax && ((ch = str.charAt(ich)) == ' ' || ch == '\t' || ch == '\n'))
+    while (ich < ichMax && isWhiteSpace(str, ich))
       ++ich;
     int ichLast = ichMax - 1;
-    while (ichLast >= ich && ((ch = str.charAt(ichLast)) == ' ' || ch == '\t' || ch == '\n'))
+    while (ichLast >= ich && isWhiteSpace(str, ichLast))
       --ichLast;
     if (ichLast < ich)
       return "";
@@ -287,4 +295,10 @@ public class Parser {
     int j = line.lastIndexOf(strQuote);
     return (j == i ? "" : line.substring(i + 1, j));
   }
+  
+  private static boolean isWhiteSpace(String str, int ich) {
+    char ch;
+    return ((ch = str.charAt(ich)) == ' ' || ch == '\t' || ch == '\n');
+  }
+  
 }

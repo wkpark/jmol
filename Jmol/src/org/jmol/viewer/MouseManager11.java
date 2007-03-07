@@ -35,6 +35,8 @@ class MouseManager11 extends MouseManager
 
   MouseManager11(Component display, Viewer viewer) {
     super(viewer);
+    if (display == null)
+      return;
     //Logger.debug("MouseManager11 implemented");
     display.addMouseListener(this);
     display.addMouseMotionListener(this);

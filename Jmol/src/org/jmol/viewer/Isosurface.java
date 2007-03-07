@@ -93,6 +93,7 @@
 package org.jmol.viewer;
 
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 import org.jmol.util.ArrayUtil;
 
 import java.io.BufferedReader;
@@ -154,7 +155,8 @@ class Isosurface extends IsosurfaceMeshCollection {
   boolean blockCubeData;
   int nSurfaces;
 
-  String[] title = null;
+  String[] title;
+  float[] theProperty;
   String colorScheme;
   short defaultColix;
   boolean colorBySign;
@@ -167,8 +169,6 @@ class Isosurface extends IsosurfaceMeshCollection {
   int colorPhase;
   float resolution;
   boolean insideOut; //no longer does anything now that we are forcing 2-sided triangles
-
-  float[] mepCharges;
 
   int qmOrbitalType;
   int qmOrbitalCount;
@@ -188,6 +188,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   float eccentricityRatio;
 
   boolean isAngstroms;
+  int tokProperty;
   float scale;
   Matrix3f eccentricityMatrix;
   Matrix3f eccentricityMatrixInverse;
@@ -226,6 +227,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   // mapColor only:
 
   final static int SURFACE_NOMAP = 20 | IS_SOLVENTTYPE | NO_ANISOTROPY;
+  final static int SURFACE_PROPERTY = 21 | IS_SOLVENTTYPE | NO_ANISOTROPY;
 
   float solventRadius;
   float solventExtendedAtomRadius;
@@ -545,6 +547,12 @@ class Isosurface extends IsosurfaceMeshCollection {
 
     /// final actions ///
 
+    if ("property" == propertyName) {
+      dataType = SURFACE_PROPERTY;
+      theProperty = (float[]) value;
+      propertyName = "mapColor";
+    }
+
     if ("plane" == propertyName) {
       thePlane = (Point4f) value;
       isContoured = true;
@@ -726,7 +734,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
 
     if ("mep" == propertyName) {
-      mepCharges = (float[]) value;
+      theProperty = (float[]) value;  //mep charges
       isEccentric = isAnisotropic = false;
       dataType = SURFACE_MEP;
       if (state == STATE_DATA_READ) {
@@ -948,6 +956,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     blockCubeData = false; // Gaussian standard, but we allow for multiple surfaces one per data block
     isSilent = false;
     title = null;
+    theProperty = null;
     fileIndex = 1;
     insideOut = false;
     isFixed = false;
@@ -969,6 +978,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     isEccentric = isAnisotropic = false;
     scale = Float.NaN;
     isAngstroms = false;
+    tokProperty = 0;
     resolution = Float.MAX_VALUE;
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     //anisotropy[0] = anisotropy[1] = anisotropy[2] = 1f;
@@ -1168,11 +1178,12 @@ class Isosurface extends IsosurfaceMeshCollection {
         }
   }
 
-  boolean isJvxl;
+  boolean isJvxl, isApbsDx;
   boolean endOfData;
 
   void readData(boolean isMapData) {
     isJvxl = false;
+    isApbsDx = false;
     endOfData = false;
     mappedDataMin = Float.MAX_VALUE;
     nSurfaces = readVolumetricHeader();
@@ -1249,6 +1260,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       case SURFACE_SOLVENT:
       case SURFACE_MOLECULAR:
       case SURFACE_SASURFACE:
+      case SURFACE_PROPERTY:
         setupSolvent();
         break;
       case SURFACE_ATOMICORBITAL:
@@ -1313,7 +1325,13 @@ class Isosurface extends IsosurfaceMeshCollection {
     jvxlFileHeader = new StringBuffer();
     jvxlFileHeader.append(br.readLine());
     jvxlFileHeader.append('\n');
-    jvxlFileHeader.append(br.readLine());
+    line = br.readLine();
+    isApbsDx = (line.indexOf("object 1 class gridpositions counts") == 0);
+    if (isApbsDx) {
+      line = "APBS OpenDx DATA: " + line + " see http://apbs.sourceforge.net";
+      isAngstroms = true;
+    }
+    jvxlFileHeader.append(line);
     jvxlFileHeader.append('\n');
     if (!isSilent)
       Logger.info("" + jvxlFileHeader);
@@ -1323,11 +1341,21 @@ class Isosurface extends IsosurfaceMeshCollection {
   boolean negativeAtomCount;
 
   void readAtomCountAndOrigin() throws Exception {
+    String atomLine;
     line = br.readLine();
     if (!isSilent)
       Logger.debug(line);
     atomCount = parseInt(line);
-    String atomLine = line.substring(next[0]);
+    if (atomCount == Integer.MIN_VALUE) { //unreadable
+      next[0] = line.indexOf(" ");
+      atomCount = 0;
+    }
+    atomLine = line.substring(next[0]);
+    if (isAngstroms)
+      atomLine += " ANGSTROMS";
+    else if (atomLine.indexOf("ANGSTROMS") >= 0)
+      isAngstroms = true;
+
     negativeAtomCount = (atomCount < 0);
     if (!isSilent)
       Logger.debug("atom Count: " + atomCount);
@@ -1335,7 +1363,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     if (negativeAtomCount)
       atomCount = -atomCount;
 
-    int jvxlAtoms = (atomCount == 0 ? -2 : -atomCount);
+    int jvxlAtoms = (atomCount == 0? -2 : -atomCount);
     volumetricOrigin.set(parseFloat(), parseFloat(), parseFloat());
     if (!isAngstroms)
       volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
@@ -1343,21 +1371,48 @@ class Isosurface extends IsosurfaceMeshCollection {
   }
 
   void readVoxelVector(int voxelVectorIndex) throws Exception {
+    
     line = br.readLine();
+    if (isApbsDx) {
+      line = "%dx" + voxelVectorIndex + line;      
+      /* see http://apbs.sourceforge.net/doc/user-guide/index.html#opendx-format
+       * 
+          delta hx 0.0 0.0
+          delta 0.0 hy 0.0 
+          delta 0.0 0.0 hz
+       */
+    }
     jvxlFileHeader.append(line);
     jvxlFileHeader.append('\n');
     Vector3f voxelVector = volumetricVectors[voxelVectorIndex];
-    voxelCounts[voxelVectorIndex] = parseInt(line);
+    if ((voxelCounts[voxelVectorIndex] = parseInt(line)) == Integer.MIN_VALUE) //unreadable
+      next[0] = line.indexOf(" ");
     voxelVector.set(parseFloat(), parseFloat(), parseFloat());
     if (!isAngstroms)
       voxelVector.scale(ANGSTROMS_PER_BOHR);
     volumetricVectorLengths[voxelVectorIndex] = voxelVector.length();
+
     unitVolumetricVectors[voxelVectorIndex].normalize(voxelVector);
     for (int i = 0; i < voxelVectorIndex; i++) {
       float orthoTest = Math.abs(unitVolumetricVectors[i]
           .dot(unitVolumetricVectors[voxelVectorIndex]));
       if (orthoTest > 1.001 || orthoTest < 0.999 && orthoTest > 0.001)
         Logger.warn("Warning: voxel coordinate vectors are not orthogonal.");
+    }
+    if (voxelVectorIndex == 2 && isApbsDx) {
+      line = br.readLine();
+      String[] tokens = getTokens();
+      /* see http://apbs.sourceforge.net/doc/user-guide/index.html#opendx-format
+       object 2 class gridconnections counts nx ny nz
+       object 3 class array type double rank 0 times n data follows
+       * 
+       */
+      String s = jvxlFileHeader.toString();
+      s = TextFormat.formatString(s, "dx0delta", voxelCounts[0] = parseInt(tokens[5]));
+      s = TextFormat.formatString(s, "dx1delta", voxelCounts[1] = parseInt(tokens[6]));
+      s = TextFormat.formatString(s, "dx2delta", voxelCounts[2] = parseInt(tokens[7]));
+      jvxlFileHeader = new StringBuffer(s);
+      br.readLine();
     }
   }
 
@@ -2376,7 +2431,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   String jvxlExtraLine(int n) {
     return (-n) + " " + edgeFractionBase + " " + edgeFractionRange + " "
         + colorFractionBase + " " + colorFractionRange
-        + " Jmol voxel format version 0.9f\n";
+        + " Jmol voxel format version 1.0\n";
     //0.9e adds color contours for planes and min/max range, contour settings
   }
 
@@ -4467,7 +4522,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   void generateMepCube() {
     float[] origin = { volumetricOrigin.x, volumetricOrigin.y,
         volumetricOrigin.z };
-    MepCalculation m = new MepCalculation(mep_atoms, mepCharges);
+    MepCalculation m = new MepCalculation(mep_atoms, theProperty);
     m.createMepCube(voxelData, voxelCounts, origin, volumetricVectorLengths);
   }
 
@@ -4478,6 +4533,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   int solvent_modelIndex;
   float[] solvent_atomRadius;
   Point3f[] solvent_ptAtom;
+  int[] solvent_atomNo = null;
   int solvent_nAtoms;
   int solvent_firstNearbyAtom;
   boolean solvent_quickPlane;
@@ -4550,7 +4606,7 @@ class Isosurface extends IsosurfaceMeshCollection {
         lastSet = i;
       }
     int nH = 0;
-    int[] atomNo = null;
+    solvent_atomNo = null;
     if (iAtom > 0) {
       Point3f[] hAtoms = null;
       if (addHydrogens) {
@@ -4559,11 +4615,11 @@ class Isosurface extends IsosurfaceMeshCollection {
       }
       solvent_atomRadius = new float[iAtom + nH];
       solvent_ptAtom = new Point3f[iAtom + nH];
-      atomNo = new int[iAtom + nH];
+      solvent_atomNo = new int[iAtom + nH];
 
       float r = solventWorkingRadius(null);
       for (int i = 0; i < nH; i++) {
-        atomNo[i] = 1;
+        solvent_atomNo[i] = -1;
         solvent_atomRadius[i] = r;
         solvent_ptAtom[i] = hAtoms[i];
         if (logMessages)
@@ -4574,7 +4630,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       for (int i = firstSet; i <= lastSet; i++) {
         if (!atomSet.get(i))
           continue;
-        atomNo[iAtom] = atoms[i].getElementNumber();
+        solvent_atomNo[iAtom] = i;
         solvent_ptAtom[iAtom] = atoms[i];
         solvent_atomRadius[iAtom++] = solventWorkingRadius(atoms[i]);
       }
@@ -4661,7 +4717,8 @@ class Isosurface extends IsosurfaceMeshCollection {
     for (int i = 0; i < nAtomsWritten; i++) {
       pt.set(solvent_ptAtom[i]);
       pt.scale(1 / ANGSTROMS_PER_BOHR);
-      jvxlFileHeader.append(atomNo[i] + " " + atomNo[i] + ".0 " + pt.x + " "
+      int nZ = (solvent_atomNo[i] < 0 ? 1 : atoms[solvent_atomNo[i]].getElementNumber());
+      jvxlFileHeader.append(nZ+ " " + nZ + ".0 " + pt.x + " "
           + pt.y + " " + pt.z + "\n");
     }
     atomCount = -Integer.MAX_VALUE;
@@ -4686,14 +4743,25 @@ class Isosurface extends IsosurfaceMeshCollection {
     Point3f ptA;
     Point3f ptY0 = new Point3f(), ptZ0 = new Point3f();
     Point3i pt0 = new Point3i(), pt1 = new Point3i();
-    float maxValue = (dataType == SURFACE_NOMAP ? Float.MAX_VALUE
-        : Float.MAX_VALUE);
+    float maxValue = Float.MAX_VALUE;
+    int propMax = 0;
     for (int x = 0; x < nPointsX; ++x)
       for (int y = 0; y < nPointsY; ++y)
         for (int z = 0; z < nPointsZ; ++z)
           voxelData[x][y][z] = maxValue;
     if (dataType == SURFACE_NOMAP)
       return;
+    float property[][][] = null;
+    boolean isProperty = false;
+    if (dataType == SURFACE_PROPERTY) {
+      property = new float[nPointsX][nPointsY][nPointsZ];
+      for (int x = 0; x < nPointsX; ++x)
+        for (int y = 0; y < nPointsY; ++y)
+          for (int z = 0; z < nPointsZ; ++z)
+            property[x][y][z] = maxValue;
+      isProperty = true;
+      propMax = theProperty.length;
+    }
     float maxRadius = 0;
     for (int iAtom = 0; iAtom < solvent_nAtoms; iAtom++) {
       ptA = solvent_ptAtom[iAtom];
@@ -4709,8 +4777,11 @@ class Isosurface extends IsosurfaceMeshCollection {
           ptZ0.set(ptXyzTemp);
           for (int k = pt0.z; k < pt1.z; k++) {
             float v = ptXyzTemp.distance(ptA) - rA;
-            if (v < voxelData[i][j][k])
+            if (v < voxelData[i][j][k]) {
               voxelData[i][j][k] = (isNearby ? Float.NaN : v);
+              if (isProperty && iAtom < propMax && solvent_atomNo[iAtom] >= 0)
+                property[i][j][k] = theProperty[solvent_atomNo[iAtom]];
+            }
             ptXyzTemp.add(volumetricVectors[2]);
           }
           ptXyzTemp.set(ptZ0);
@@ -4720,6 +4791,8 @@ class Isosurface extends IsosurfaceMeshCollection {
         ptXyzTemp.add(volumetricVectors[0]);
       }
     }
+    if (dataType == SURFACE_PROPERTY)
+      voxelData = property;
     if ((dataType == SURFACE_SOLVENT || dataType == SURFACE_MOLECULAR)
         && solventRadius > 0) {
       Point3i ptA0 = new Point3i();

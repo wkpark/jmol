@@ -28,6 +28,7 @@ import org.jmol.g3d.Font3D;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Parser;
 
 import java.io.*;
 import java.util.BitSet;
@@ -114,6 +115,7 @@ class Eval { //implements Runnable {
   }
 
   final static String EXPRESSION_KEY = "e_x_p_r_e_s_s_i_o_n";
+
   /**
    * a general-use method to evaluate a "SET" type expression. 
    * @param viewer
@@ -121,7 +123,7 @@ class Eval { //implements Runnable {
    * @return an object of one of the following types:
    *   Boolean, Integer, Float, String, Point3f, BitSet 
    */
-  
+
   public static Object evaluateExpression(Viewer viewer, String expr) {
     // Text.formatText for MESSAGE and ECHO
     Eval e = new Eval(viewer);
@@ -165,7 +167,6 @@ class Eval { //implements Runnable {
         V.add(new Integer(i));
     return V;
   }
-
 
   void haltExecution() {
     resumePausedExecution();
@@ -621,7 +622,8 @@ class Eval { //implements Runnable {
             invalidArgument();
           fixed[j] = new Token(Token.point3f, center);
         }
-        if (j == 1 && statement[0].tok == Token.set && fixed[j].tok != Token.identifier)
+        if (j == 1 && statement[0].tok == Token.set
+            && fixed[j].tok != Token.identifier)
           invalidArgument();
       } else {
         fixed[j] = statement[i];
@@ -641,7 +643,8 @@ class Eval { //implements Runnable {
     else if (s.indexOf("({") == 0)
       v = StateManager.unescapeBitset(s);
     else if (s.indexOf("[{") == 0)
-      return new Token(Token.bitset, new BondSet(StateManager.unescapeBitset(s)));
+      return new Token(Token.bitset,
+          new BondSet(StateManager.unescapeBitset(s)));
     if (v instanceof Point3f)
       return new Token(Token.point3f, v);
     else if (v instanceof Point4f)
@@ -650,7 +653,7 @@ class Eval { //implements Runnable {
       return new Token(Token.bitset, v);
     return v;
   }
-  
+
   void instructionDispatchLoop(boolean doList) throws ScriptException {
     long timeBegin = 0;
     int ifLevel = 0;
@@ -696,7 +699,7 @@ class Eval { //implements Runnable {
         if (isScriptCheck)
           Logger.info(thisCommand);
         if (statementLength == 1)
-//            && !Compiler.tokAttr(token.tok, Token.unimplemented))
+          //            && !Compiler.tokAttr(token.tok, Token.unimplemented))
           continue;
       } else {
         if (debugScript)
@@ -1007,7 +1010,7 @@ class Eval { //implements Runnable {
   }
 
   boolean ifCmd() throws ScriptException {
-    return ((Boolean)parameterExpression(1, null)).booleanValue();
+    return ((Boolean) parameterExpression(1, null)).booleanValue();
   }
 
   int getLinenumber() {
@@ -1061,7 +1064,7 @@ class Eval { //implements Runnable {
   Token[] tempStatement;
   boolean isBondSet;
   Token expressionResult;
-    
+
   BitSet expression(int index) throws ScriptException {
     if (!checkToken(index))
       badArgumentCount();
@@ -1310,7 +1313,8 @@ class Eval { //implements Runnable {
           invalidArgument();
         if (((String) value).indexOf("-") >= 0)
           comparisonValue = -comparisonValue;
-        rpn.addX(comparatorInstruction(tokWhat, tokOperator, comparisonValue));
+        rpn.addX(comparatorInstruction(instruction, tokWhat, tokOperator,
+            comparisonValue));
         break;
       case Token.bitset:
       case Token.decimal:
@@ -1349,11 +1353,11 @@ class Eval { //implements Runnable {
   }
 
   static int getSeqCode(Token instruction) {
-    return (instruction.intValue != Integer.MAX_VALUE ?
-      Group.getSeqcode(Math.abs(instruction.intValue),
-          ' ') : ((Integer) instruction.value).intValue());
+    return (instruction.intValue != Integer.MAX_VALUE ? Group.getSeqcode(Math
+        .abs(instruction.intValue), ' ') : ((Integer) instruction.value)
+        .intValue());
   }
-  
+
   BitSet toggle(BitSet A, BitSet B) {
     for (int i = viewer.getAtomCount(); --i >= 0;) {
       if (!B.get(i))
@@ -1421,7 +1425,7 @@ class Eval { //implements Runnable {
     if (isSyntaxCheck)
       return new BitSet();
     //if (logMessages)
-      //viewer.scriptStatus("lookupValue(" + variable + ")");
+    //viewer.scriptStatus("lookupValue(" + variable + ")");
     Object value = variables.get(variable);
     boolean isDynamic = false;
     if (value == null) {
@@ -1452,9 +1456,10 @@ class Eval { //implements Runnable {
     return lookupValue(variable, true);
   }
 
-  BitSet comparatorInstruction(int tokWhat, int tokOperator, int comparisonValue) throws ScriptException {
+  BitSet comparatorInstruction(Token token, int tokWhat, int tokOperator,
+                               int comparisonValue) throws ScriptException {
     BitSet bs = new BitSet();
-    int propertyValue = Integer.MAX_VALUE;//Float.NaN;
+    int propertyValue = Integer.MAX_VALUE;
     BitSet propertyBitSet = null;
     int bitsetComparator = tokOperator;
     int bitsetBaseValue = comparisonValue;
@@ -1462,30 +1467,21 @@ class Eval { //implements Runnable {
     int imax = 0;
     int imin = 0;
     Frame frame = viewer.getFrame();
+    float[] data = (tokWhat == Token.identifier ? Viewer.getDataFloat(""
+        + token.value) : null);
     for (int i = 0; i < atomCount; ++i) {
       boolean match = false;
       Atom atom = frame.getAtomAt(i);
       switch (tokWhat) {
-      case Token.atomno:
-        propertyValue = atom.getAtomNumber();
+      default:
+        propertyValue = (int) atomProperty(frame, atom, tokWhat, true);
+        if (propertyValue == Integer.MAX_VALUE)
+          continue;
         break;
-      case Token.atomIndex:
-        propertyValue = i;
-        break;
-      case Token.elemno:
-        propertyValue = atom.getElementNumber();
-        break;
-      case Token.element:
-        propertyValue = atom.getAtomicAndIsotopeNumber();
-        break;
-      case Token.formalCharge:
-        propertyValue = atom.getFormalCharge();
-        break;
-      case Token.partialCharge:
-        propertyValue = (int) (atom.getPartialCharge() * 100);
-        break;
-      case Token.site:
-        propertyValue = atom.getAtomSite();
+      case Token.identifier:
+        if (data == null || data.length <= i)
+          continue;
+        propertyValue = (int) (data[i] * 100);
         break;
       case Token.symop:
         propertyBitSet = atom.getAtomSymmetry();
@@ -1516,78 +1512,6 @@ class Eval { //implements Runnable {
           propertyValue = atom.getSymmetryTranslation(symop);
         }
         break;
-      case Token.molecule:
-        propertyValue = atom.getMoleculeNumber();
-        break;
-      case Token.temperature: // 0 - 9999
-        propertyValue = atom.getBfactor100();
-        if (propertyValue < 0)
-          continue;
-        break;
-      case Token.surfacedistance:
-        if (frame.getSurfaceDistanceMax() == 0)
-          dots(statementLength, Dots.DOTS_MODE_CALCONLY);
-        propertyValue = atom.getSurfaceDistance100();
-        if (propertyValue < 0)
-          continue;
-        break;
-      case Token.occupancy:
-        propertyValue = atom.getOccupancy();
-        break;
-      case Token.polymerLength:
-        propertyValue = atom.getPolymerLength();
-        break;
-      case Token.resno:
-        propertyValue = atom.getResno();
-        if (propertyValue == -1)
-          continue;
-        break;
-      case Token.groupID:
-        propertyValue = atom.getGroupID();
-        if (propertyValue < 0)
-          continue;
-        break;
-      case Token.atomID:
-        propertyValue = atom.getSpecialAtomID();
-        break;
-      case Token.structure:
-        propertyValue = atom.getProteinStructureType();
-        break;
-      case Token.radius:
-        propertyValue = atom.getRasMolRadius();
-        break;
-      case Token.psi:
-        propertyValue = (int) (atom.getGroupPsi() * 100f);
-        break;
-      case Token.phi:
-        propertyValue = (int) (atom.getGroupPhi() * 100f);
-        break;
-      case Token.bondcount:
-        propertyValue = atom.getCovalentBondCount();
-        break;
-      case Token.file:
-        propertyValue = atom.getModelFileIndex() + 1;
-        break;
-      case Token.model:
-        //integer model number -- could be PDB/sequential adapter number
-        //or it could be a sequential model in file number when multiple files
-        propertyValue = atom.getModelNumber() % 1000000;
-        break;
-      case -Token.model:
-        //float is handled differently
-        propertyValue = atom.getModelFileNumber();
-        break;
-      case Token.atomX:
-        propertyValue = (int) (atom.x * 100);
-        break;
-      case Token.atomY:
-        propertyValue = (int) (atom.y * 100);
-        break;
-      case Token.atomZ:
-        propertyValue = (int) (atom.z * 100);
-        break;
-      default:
-        unrecognizedAtomProperty(Token.nameOf(tokWhat));
       }
       // note that a symop property can be both LE and GT !
       if (propertyBitSet != null) {
@@ -1628,6 +1552,7 @@ class Eval { //implements Runnable {
         }
         if (!match || propertyValue == Integer.MAX_VALUE)
           tokOperator = Token.none;
+
       }
       switch (tokOperator) {
       case Token.opLT:
@@ -1653,6 +1578,83 @@ class Eval { //implements Runnable {
         bs.set(i);
     }
     return bs;
+  }
+
+  float atomProperty(Frame frame, Atom atom, int tokWhat, boolean asInt)
+      throws ScriptException {
+    float propertyValue = 0;
+    switch (tokWhat) {
+    case Token.atomno:
+      return atom.getAtomNumber();
+    case Token.atomIndex:
+      return atom.atomIndex;
+    case Token.elemno:
+      return atom.getElementNumber();
+    case Token.element:
+      return atom.getAtomicAndIsotopeNumber();
+    case Token.formalCharge:
+      return atom.getFormalCharge();
+    case Token.partialCharge:
+      propertyValue = atom.getPartialCharge();
+      return asInt ? propertyValue * 100 : propertyValue;
+    case Token.site:
+      return atom.getAtomSite();
+    case Token.molecule:
+      return atom.getMoleculeNumber();
+    case Token.temperature: // 0 - 9999
+      propertyValue = atom.getBfactor100();
+      return (propertyValue < 0 ? Integer.MAX_VALUE : propertyValue);
+    case Token.surfacedistance:
+      if (frame.getSurfaceDistanceMax() == 0)
+        dots(statementLength, Dots.DOTS_MODE_CALCONLY);
+      propertyValue = atom.getSurfaceDistance100();
+      return (propertyValue < 0 ? Integer.MAX_VALUE : propertyValue);
+    case Token.occupancy:
+      return atom.getOccupancy();
+    case Token.polymerLength:
+      return atom.getPolymerLength();
+    case Token.resno:
+      propertyValue = atom.getResno();
+      return (propertyValue == -1 ? Integer.MAX_VALUE : propertyValue);
+    case Token.groupID:
+      propertyValue = atom.getGroupID();
+      return (propertyValue < 0 ? Integer.MAX_VALUE : propertyValue);
+    case Token.atomID:
+      return atom.getSpecialAtomID();
+    case Token.structure:
+      return atom.getProteinStructureType();
+    case Token.radius:
+      return atom.getRasMolRadius();
+    case Token.psi:
+      propertyValue = atom.getGroupPsi();
+      return asInt ? propertyValue * 100 : propertyValue;
+    case Token.phi:
+      propertyValue = atom.getGroupPhi();
+      return asInt ? propertyValue * 100 : propertyValue;
+    case Token.bondcount:
+      return atom.getCovalentBondCount();
+    case Token.file:
+      return atom.getModelFileIndex() + 1;
+    case Token.model:
+      //integer model number -- could be PDB/sequential adapter number
+      //or it could be a sequential model in file number when multiple files
+      return atom.getModelNumber() % 1000000;
+    case -Token.model:
+      //float is handled differently
+      return atom.getModelFileNumber();
+    case Token.atomX:
+      propertyValue = atom.x;
+      return asInt ? propertyValue * 100 : propertyValue;
+    case Token.atomY:
+      propertyValue = atom.y;
+      return asInt ? propertyValue * 100 : propertyValue;
+    case Token.atomZ:
+      propertyValue = atom.z;
+      return asInt ? propertyValue * 100 : propertyValue;
+    default:
+      unrecognizedAtomProperty(Token.nameOf(tokWhat));
+    }
+    return 0;
   }
 
   /* ****************************************************************************
@@ -1702,7 +1704,8 @@ class Eval { //implements Runnable {
     getToken(i);
     if (theToken == null)
       endOfStatementUnexpected();
-    return (theTok == Token.integer ? "" + theToken.intValue : "" + theToken.value);
+    return (theTok == Token.integer ? "" + theToken.intValue : ""
+        + theToken.value);
   }
 
   int intParameter(int index) throws ScriptException {
@@ -1734,7 +1737,7 @@ class Eval { //implements Runnable {
     }
     return numberExpected();
   }
-  
+
   int floatParameterSet(int i, float[] fparams) throws ScriptException {
     if (tokAt(i) == Token.leftbrace)
       i++;
@@ -1860,7 +1863,7 @@ class Eval { //implements Runnable {
 
   boolean isAtomCenterOrCoordinateNext(int i) {
     int tok = tokAt(i);
-    return (tok == Token.leftbrace  || tok == Token.expressionBegin 
+    return (tok == Token.leftbrace || tok == Token.expressionBegin
         || tok == Token.point3f || tok == Token.bitset);
   }
 
@@ -1925,7 +1928,7 @@ class Eval { //implements Runnable {
     if (i < statementLength)
       switch (getToken(i).tok) {
       case Token.point4f:
-        return (Point4f)theToken.value;
+        return (Point4f) theToken.value;
       case Token.dollarsign:
         String id = objectNameParameter(++i);
         if (isSyntaxCheck)
@@ -2132,7 +2135,7 @@ class Eval { //implements Runnable {
     int tok = tokAt(i);
     return (tok == Token.colorRGB || tok == Token.leftsquare);
   }
-  
+
   int getArgbParam(int index) throws ScriptException {
     return getArgbParam(index, false);
   }
@@ -2142,7 +2145,7 @@ class Eval { //implements Runnable {
     checkStatementLength(iToken + 1);
     return icolor;
   }
-  
+
   int getArgbParam(int index, boolean allowNone) throws ScriptException {
     if (checkToken(index)) {
       switch (getToken(index).tok) {
@@ -2199,7 +2202,7 @@ class Eval { //implements Runnable {
         case Token.spec_seqcode:
           if (n > 2)
             badRGBColor();
-          colors[n++] = ((Integer)theToken.value).intValue();
+          colors[n++] = ((Integer) theToken.value).intValue();
           continue;
         case Token.rightsquare:
           if (n == 3)
@@ -2209,6 +2212,12 @@ class Eval { //implements Runnable {
         }
       }
       badRGBColor();
+    case Token.point3f:
+      Point3f pt = (Point3f) theToken.value;
+      if (getToken(++i).tok != Token.rightsquare)
+        badRGBColor();
+      return 0xFF000000 | (((int) pt.x) << 16) | (((int) pt.y) << 8)
+          | ((int) pt.z);
     case Token.identifier:
       String hex = parameterAsString(i);
       if (getToken(++i).tok == Token.rightsquare && hex.length() == 7
@@ -2239,7 +2248,8 @@ class Eval { //implements Runnable {
   }
 
   Point3f getPoint3f(int i, boolean allowFractional) throws ScriptException {
-    return (Point3f) getPointOrPlane(i, false, allowFractional, true, false, 3, 3);
+    return (Point3f) getPointOrPlane(i, false, allowFractional, true, false, 3,
+        3);
   }
 
   Point4f getPoint4f(int i) throws ScriptException {
@@ -2288,8 +2298,9 @@ class Eval { //implements Runnable {
         if (n < 0 || integerOnly)
           invalidArgument();
         if (theToken.value instanceof Integer || theTok == Token.integer)
-          coord[n++] /= (theToken.intValue == Integer.MAX_VALUE ? 
-              ((Integer) theToken.value).intValue() : theToken.intValue);
+          coord[n++] /= (theToken.intValue == Integer.MAX_VALUE ? ((Integer) theToken.value)
+              .intValue()
+              : theToken.intValue);
         else
           coord[n++] /= ((Float) theToken.value).floatValue();
         coordinatesAreFractional = true;
@@ -2327,7 +2338,7 @@ class Eval { //implements Runnable {
 
   int theTok;
   Token theToken;
-  
+
   Token getToken(int i) throws ScriptException {
     if (!checkToken(i))
       endOfStatementUnexpected();
@@ -2335,7 +2346,7 @@ class Eval { //implements Runnable {
     theTok = theToken.tok;
     return theToken;
   }
-  
+
   int tokAt(int i) {
     return (i < statementLength ? statement[i].tok : Token.nada);
   }
@@ -2978,6 +2989,7 @@ class Eval { //implements Runnable {
     int argb;
     if (isColorParam(i) || theTok == Token.none) {
       argb = getArgbParamLast(i, true);
+      System.out.println(Integer.toHexString(argb));
       if (!isSyntaxCheck)
         viewer.setBackgroundArgb(argb);
       return;
@@ -3153,7 +3165,8 @@ class Eval { //implements Runnable {
         colorvalue = (argb == 0 ? null : new Integer(argb));
         if (tokAt(index = iToken + 1) != Token.nada) {
           getToken(index);
-          if (translucentOrOpaque == null && (theTok == Token.translucent || theTok == Token.opaque))
+          if (translucentOrOpaque == null
+              && (theTok == Token.translucent || theTok == Token.opaque))
             translucentOrOpaque = parameterAsString(index);
           checkStatementLength(index + 1);
         }
@@ -3207,38 +3220,47 @@ class Eval { //implements Runnable {
   }
 
   Hashtable variables = new Hashtable();
-  String[] dataLabelString;
+  Object[] dataLabelString;
 
   void data() throws ScriptException {
     String dataString = null;
     String dataLabel = null;
+    int i;
     switch (iToken = statementLength) {
     case 5:
       //parameters 3 and 4 are just for the ride: [end] and ["key"]
       dataString = parameterAsString(2);
     //fall through
     case 4:
+    case 2:
       dataLabel = parameterAsString(1);
       if (dataLabel.equalsIgnoreCase("clear")) {
         if (!isSyntaxCheck)
-          Viewer.setData(null, null);
+          Viewer.setData(null, null, null, 0);
         return;
       }
-      if (dataLabel.indexOf("@") >= 0)
-        dataString = "" + viewer.getParameter(dataLabel
-                .substring(dataLabel.indexOf("@") + 1));
+      if ((i = dataLabel.indexOf("@")) >= 0) {
+        dataString = "" + viewer.getParameter(dataLabel.substring(i + 1));
+        dataLabel = dataLabel.substring(0, i).trim();
+      }
       break;
     default:
       badArgumentCount();
     }
     String dataType = dataLabel + " ";
     dataType = dataType.substring(0, dataType.indexOf(" "));
-    dataLabelString = new String[2];
+    dataLabelString = new Object[2];
     dataLabelString[0] = dataLabel;
     dataLabelString[1] = dataString;
     boolean isModel = dataType.equalsIgnoreCase("model");
-    if (!isSyntaxCheck || isScriptCheck && isModel && fileOpenCheck)
-      Viewer.setData(dataType, dataLabelString);
+    if (!isSyntaxCheck || isScriptCheck && isModel && fileOpenCheck) {
+      if (dataType.toLowerCase().indexOf("property_") == 0) {
+        Viewer.setData(dataType, dataLabelString, viewer
+            .getSelectedAtomsOrBonds(), viewer.getAtomCount());
+      } else {
+        Viewer.setData(dataType, dataLabelString, null, 0);
+      }
+    }
     if (isModel && (!isSyntaxCheck || isScriptCheck && fileOpenCheck)) {
       // only if first character is "|" do we consider "|" to be new line
       char newLine = viewer.getInlineChar();
@@ -3382,7 +3404,7 @@ class Eval { //implements Runnable {
         loadScript.append(" " + StateManager.escape(unitCells));
         int iGroup = -1;
         int[] p;
-        if (tokAt(i)== Token.spacegroup) {
+        if (tokAt(i) == Token.spacegroup) {
           ++i;
           String spacegroup = TextFormat.simpleReplace(parameterAsString(i++),
               "''", "\"");
@@ -3902,13 +3924,14 @@ class Eval { //implements Runnable {
         isSpin, isSelected);
   }
 
-
   Point3f getDrawObjectCenter(String axisID) {
-    return (Point3f)viewer.getShapeProperty(JmolConstants.SHAPE_DRAW, "getSpinCenter:" + axisID);
+    return (Point3f) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
+        "getSpinCenter:" + axisID);
   }
-  
+
   Vector3f getDrawObjectAxis(String axisID) {
-    return (Vector3f)viewer.getShapeProperty(JmolConstants.SHAPE_DRAW, "getSpinAxis:" + axisID);
+    return (Vector3f) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
+        "getSpinAxis:" + axisID);
   }
 
   void script() throws ScriptException {
@@ -4085,7 +4108,7 @@ class Eval { //implements Runnable {
     if (isSyntaxCheck)
       return;
     if (isBondSet) {
-      viewer.selectBonds(bs);      
+      viewer.selectBonds(bs);
     } else {
       viewer.select(bs, tQuiet || scriptLevel > scriptReportingLevel);
     }
@@ -4664,7 +4687,7 @@ class Eval { //implements Runnable {
         break;
       case Token.bitset:
         propertyName = "atomBitset";
-        // fall through
+      // fall through
       case Token.expressionBegin:
         if (propertyName == null)
           propertyName = (iHaveAtoms || iHaveCoord ? "endSet" : "startSet");
@@ -5293,7 +5316,7 @@ class Eval { //implements Runnable {
       return;
     case Token.spin:
       checkLength4();
-      setSpin(parameterAsString(2), (int)floatParameter(3));
+      setSpin(parameterAsString(2), (int) floatParameter(3));
       return;
     case Token.frank:
       setFrank(2);
@@ -5358,8 +5381,8 @@ class Eval { //implements Runnable {
     case Token.strands:
       checkLength3();
       int strandCount = intParameter(2);
-        if (strandCount < 0 || strandCount > 20)
-          numberOutOfRange(0, 20);
+      if (strandCount < 0 || strandCount > 20)
+        numberOutOfRange(0, 20);
       key = "strandCount";
       break;
     case Token.hetero:
@@ -5384,12 +5407,13 @@ class Eval { //implements Runnable {
       if (key.toLowerCase().indexOf("label") == 0) {
         setLabel(key.substring(5));
         return;
-      } 
+      }
       if (key.equalsIgnoreCase("defaultColorScheme")) {
         setDefaultColors();
         return;
       }
-      if (key.equalsIgnoreCase("measurementNumbers") || key.equalsIgnoreCase("measurementLabels")) {
+      if (key.equalsIgnoreCase("measurementNumbers")
+          || key.equalsIgnoreCase("measurementLabels")) {
         setMonitor(2);
         return;
       }
@@ -5449,7 +5473,6 @@ class Eval { //implements Runnable {
     String str = "";
     boolean showing = (!isSyntaxCheck && scriptLevel <= scriptReportingLevel);
 
-
     if (setParameter(key, val)) {
       if (isSyntaxCheck)
         return;
@@ -5470,24 +5493,24 @@ class Eval { //implements Runnable {
         setIntProperty(key, Viewer.cardinalityOf((BitSet) v));
         setStringProperty(key + "_set", StateManager.escape((BitSet) v, false));
         if (showing)
-          viewer.showParameter(key+"_set", true, 60);
+          viewer.showParameter(key + "_set", true, 60);
       } else if (v instanceof BitSet) {
         setIntProperty(key, Viewer.cardinalityOf((BitSet) v));
         setStringProperty(key + "_set", StateManager.escape((BitSet) v));
         if (showing)
-          viewer.showParameter(key+"_set", true, 60);
+          viewer.showParameter(key + "_set", true, 60);
       } else if (v instanceof Point3f) {
         //drawPoint(key, (Point3f) v, false);
         str = StateManager.escape((Point3f) v);
         setStringProperty(key, str);
-        if (showing)
-          showString("to visualize, use DRAW @" + key);
+        //if (showing)
+        //showString("to visualize, use DRAW @" + key);
       } else if (v instanceof Point4f) {
         //drawPlane(key, (Point4f) v, false);
         str = StateManager.escape((Point4f) v);
         setStringProperty(key, str);
-        if (showing)
-          showString("to visualize, use ISOSURFACE PLANE @" + key);
+        //if (showing)
+        //showString("to visualize, use ISOSURFACE PLANE @" + key);
       }
     }
     if (showing)
@@ -5662,7 +5685,7 @@ class Eval { //implements Runnable {
     variables.put(variable, bs);
     setStringProperty("@" + variable, StateManager.escape(bs));
   }
-  
+
   int[] getAtomIndices(BitSet bs) {
     int len = bs.size();
     int n = 0;
@@ -5673,7 +5696,7 @@ class Eval { //implements Runnable {
         indices[j] = ++n;
     return indices;
   }
-  
+
   BitSet getAtomBitsetFromBonds(BitSet bsBonds) {
     BitSet bsAtoms = new BitSet();
     int bondCount = viewer.getBondCount();
@@ -5686,26 +5709,57 @@ class Eval { //implements Runnable {
     }
     return bsAtoms;
   }
-  
-  String getBitsetIdent(BitSet bs, String label, Object tokenValue, boolean useAtomMap) {
-    if (bs == null || isSyntaxCheck)
-      return "";
+
+  String getBitsetIdent(BitSet bs, String label, Object tokenValue,
+                        boolean useAtomMap) {
+    int pt = (label == null ? -1 : label.indexOf("%"));
+    if (bs == null || isSyntaxCheck || pt < 0)
+      return (label == null ? "" : label);
     StringBuffer s = new StringBuffer();
     int len = bs.size();
     Frame frame = viewer.getFrame();
     int n = 0;
     boolean isAtoms = !(tokenValue instanceof BondSet);
-    int[] indices = (isAtoms || !useAtomMap ? null : ((BondSet)tokenValue).associatedAtoms);
+    int[] indices = (isAtoms || !useAtomMap ? null
+        : ((BondSet) tokenValue).associatedAtoms);
     if (indices == null && label != null && label.indexOf("%D") > 0)
       indices = getAtomIndices(bs);
+    int nProp = 0;
+    String[] props = null;
+    float[][] propArray = null;
+    while (pt >= 0 && (pt = label.indexOf("{", pt + 1)) > 0) {
+      int pt2 = label.indexOf("}", pt);
+      if (pt2 > 0) {
+        if (nProp == 0) {
+          for (int j = pt; j < label.length(); j++)
+            if (label.charAt(j) == '{')
+              nProp++;
+          props = new String[nProp];
+          propArray = new float[nProp][];
+          nProp = 0;
+        }
+        String name = label.substring(pt + 1, pt2);
+        float[] f = Viewer.getDataFloat(name);
+        if (f != null) {
+          propArray[nProp] = f;
+          props[nProp++] = '{' + name + '}';
+        }
+      }
+      pt = pt2;
+
+    }
     for (int j = 0; j < len; j++)
       if (bs.get(j)) {
         String str = label;
         if (isAtoms) {
-          if (str == null)
+          if (str == null) {
             str = frame.getAtomAt(j).getIdentity();
-          else
+          } else {
             str = frame.getAtomAt(j).formatLabel(str, '\0', indices);
+            for (int k = 0; k < nProp; k++)
+              if (j < propArray[k].length)
+                str = TextFormat.formatString(str, props[k], propArray[k][j]);
+          }
         } else {
           if (str == null)
             str = frame.getBondAt(j).getIdentity();
@@ -5724,17 +5778,10 @@ class Eval { //implements Runnable {
     int tok = getToken(++i).tok;
     String s = parameterAsString(i).toLowerCase();
     switch (tok) {
-    case Token.bonds:
-    case Token.atom:
-    case Token.distance:
-    case Token.label:
-    case Token.find:
-    case Token.split:
-    case Token.join:
-    case Token.trim:
-    case Token.replace:
-      break;
-      
+    default:
+      if (Compiler.tokAttrOr(tok, Token.atomproperty, Token.mathproperty))
+        break;
+      invalidArgument();
     case Token.identifier:
       if (s.equals("x"))
         tok = Token.atomX;
@@ -5745,9 +5792,6 @@ class Eval { //implements Runnable {
       else
         invalidArgument();
       break;
-    default:
-      if (!Compiler.tokAttr(tok, Token.atomproperty))
-        invalidArgument();
     }
     return new Token(Token.propselector, tok, s);
   }
@@ -5798,7 +5842,7 @@ class Eval { //implements Runnable {
       return pt;
 
     boolean isInt = true;
-
+    Point3f ptT = (tok == Token.color ? new Point3f() : null);
     Frame frame = viewer.getFrame();
     if (isAtoms) {
       int atomCount = (isSyntaxCheck ? 0 : viewer.getAtomCount());
@@ -5935,10 +5979,14 @@ class Eval { //implements Runnable {
           case Token.xyz:
             pt.add(atom);
             break;
+          case Token.color:
+            pt.add(Graphics3D.colorPointFromInt(viewer
+                .getColixArgb(atom.colixAtom), ptT));
+            break;
           default:
             unrecognizedAtomProperty(Token.nameOf(tok));
           }
-          
+
           if (fv != Float.MAX_VALUE) {
             if (isMin)
               fvMin = Math.min(fvMin, fv);
@@ -5965,17 +6013,21 @@ class Eval { //implements Runnable {
             pt.add(bond.atom2);
             n++;
             break;
+          case Token.color:
+            pt.add(Graphics3D.colorPointFromInt(
+                viewer.getColixArgb(bond.colix), ptT));
+            break;
           default:
             unrecognizedBondProperty(Token.nameOf(tok));
           }
           isInt = false;
         }
     }
-    if (tok == Token.xyz)
+    if (tok == Token.xyz || tok == Token.color)
       return (n == 0 ? pt : new Point3f(pt.x / n, pt.y / n, pt.z / n));
     if (n == 0)
       return new Float(Float.NaN);
-    
+
     if (isMin) {
       n = 1;
       ivAvg = ivMin;
@@ -6573,7 +6625,7 @@ class Eval { //implements Runnable {
 
     tok = statement[pt].tok;
     String val = parameterAsString(pt);
-    
+
     //write [image|history|state] clipboard
 
     if (val.equalsIgnoreCase("clipboard")) {
@@ -6582,16 +6634,16 @@ class Eval { //implements Runnable {
       if (isApplet)
         evalError(GT._("The {0} command is not available for the applet.",
             "WRITE CLIPBOARD"));
-      viewer.createImage(null, type, 100);
-      return;
     }
 
     //write [optional image|history|state] [JPG|JPG64|PNG|PPM|SPT] "filename"
     //write script "filename"
+    //write isosurface t.jvxl 
 
     if (pt + 2 == statementLength) {
-      type = val.toUpperCase();
-      pt++;
+      data = parameterAsString(++pt);
+      if (data.charAt(0) != '.')
+        type = val.toUpperCase();
     }
     if (pt + 1 != statementLength)
       badArgumentCount();
@@ -6601,11 +6653,16 @@ class Eval { //implements Runnable {
     case Token.string:
       fileName = parameterAsString(pt);
       //write filename.xxx  gets separated as filename .spt
-      if (fileName.charAt(0) == '.' && pt == 2) {
-        fileName = parameterAsString(1) + fileName;
-        if (type != "VAR")
+      //write isosurface filename.xxx also 
+      if (fileName.charAt(0) == '.' && (pt == 2 || pt == 3)) {
+        fileName = parameterAsString(pt - 1) + fileName;
+        if (type != "VAR" && pt == 2)
           type = "image";
       }
+      if (fileName.equalsIgnoreCase("clipboard"))
+        fileName = null;
+      break;
+    case Token.clipboard:
       break;
     default:
       invalidArgument();
@@ -6661,7 +6718,8 @@ class Eval { //implements Runnable {
     if (len == 0)
       len = data.length();
     viewer.createImage(fileName, data, quality);
-    viewer.scriptStatus("type=" + type + "; file=" + fileName
+    viewer.scriptStatus("type=" + type + "; file="
+        + (fileName == null ? "CLIPBOARD" : fileName)
         + (len >= 0 ? "; length=" + len : ""));
   }
 
@@ -6781,9 +6839,12 @@ class Eval { //implements Runnable {
     case Token.data:
       String type = ((len = statementLength) == 3 ? parameterAsString(2) : null);
       if (!isSyntaxCheck) {
-        String[] data = (type == null ? dataLabelString : viewer.getData(type));
-        msg = (data == null ? "no data" : "data \"" + data[0] + "\"\n"
-            + data[1]);
+        Object[] data = (type == null ? dataLabelString : Viewer.getData(type));
+        msg = (data == null ? "no data" : "data \""
+            + data[0]
+            + "\"\n"
+            + (data[1] instanceof float[] ? StateManager
+                .escape((float[]) data[1]) : "" + data[1]));
       }
       break;
     case Token.spacegroup:
@@ -6794,8 +6855,8 @@ class Eval { //implements Runnable {
       }
       String sg = parameterAsString(2);
       if (!isSyntaxCheck)
-        msg = viewer
-            .getSpaceGroupInfoText(TextFormat.simpleReplace(sg, "''", "\""));
+        msg = viewer.getSpaceGroupInfoText(TextFormat.simpleReplace(sg, "''",
+            "\""));
       break;
     case Token.dollarsign:
       len = 3;
@@ -7502,7 +7563,8 @@ class Eval { //implements Runnable {
       if (tokAt(2) == Token.colorRGB || tokAt(2) == Token.leftsquare) {
         setShapeProperty(JmolConstants.SHAPE_MO, "colorRGB", new Integer(
             getArgbParam(2)));
-        if (tokAt(++iToken) == Token.colorRGB || tokAt(iToken) == Token.leftsquare)
+        if (tokAt(++iToken) == Token.colorRGB
+            || tokAt(iToken) == Token.leftsquare)
           setShapeProperty(JmolConstants.SHAPE_MO, "colorRGB", new Integer(
               getArgbParam(iToken)));
         break;
@@ -7614,6 +7676,7 @@ class Eval { //implements Runnable {
     boolean planeSeen = false;
     boolean idSeen = false;
     float[] nlmZ = new float[5];
+    float[] data = null;
     String str;
     int modelIndex = (isSyntaxCheck ? 0 : viewer.getDisplayModelIndex());
     if (modelIndex < 0)
@@ -7624,6 +7687,19 @@ class Eval { //implements Runnable {
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
+      case Token.property:
+        propertyName = "property";
+        int atomCount = viewer.getAtomCount();
+        int tokProperty = getToken(++i).tok;
+        data = new float[atomCount];
+        if (!isSyntaxCheck) {
+          Frame frame = viewer.getFrame();
+          Atom[] atoms = frame.atoms;
+          for (int iAtom = 0; iAtom < atomCount; iAtom++)
+            data[iAtom] = atomProperty(frame, atoms[iAtom], tokProperty, false);
+        }
+        propertyValue = data;
+        break;
       case Token.select:
         propertyName = "select";
         propertyValue = expression(++i);
@@ -7794,7 +7870,8 @@ class Eval { //implements Runnable {
         }
         if (str.equalsIgnoreCase("CONTOUR")) {
           propertyName = "contour";
-          propertyValue = new Integer(tokAt(i + 1) == Token.integer ? intParameter(++i) : 0);
+          propertyValue = new Integer(
+              tokAt(i + 1) == Token.integer ? intParameter(++i) : 0);
           break;
         }
         if (str.equalsIgnoreCase("PHASE")) {
@@ -7878,6 +7955,25 @@ class Eval { //implements Runnable {
           surfaceObjectSeen = true;
           propertyName = "molecular";
           propertyValue = new Float(1.4);
+          break;
+        }
+        if (str.toLowerCase().indexOf("property_") == 0) {
+          propertyName = "property";
+          data = new float[viewer.getAtomCount()];
+          if (!isSyntaxCheck) {
+            data = Viewer.getDataFloat(str);
+          }
+          propertyValue = data;
+          break;
+        }
+        if (str.equalsIgnoreCase("VARIABLE")) {
+          propertyName = "property";
+          data = new float[viewer.getAtomCount()];
+          if (!isSyntaxCheck) {
+            Parser.parseFloatArray(""
+                + viewer.getParameter(parameterAsString(++i)), null, data);
+          }
+          propertyValue = data;
           break;
         }
         propertyValue = theToken.value;
@@ -7993,6 +8089,12 @@ class Eval { //implements Runnable {
         if (!setMeshDisplayProperty(iShape, theTok))
           invalidArgument();
       }
+      if (propertyName == "property" && !surfaceObjectSeen) {
+        surfaceObjectSeen = true;
+        setShapeProperty(iShape, "bsSolvent", lookupIdentifierValue("solvent"));
+        setShapeProperty(iShape, "sasurface", new Float(0));
+      }
+
       if (propertyName != null)
         setShapeProperty(iShape, propertyName, propertyValue);
     }
@@ -8058,9 +8160,9 @@ class Eval { //implements Runnable {
     throw new ScriptException(message);
   }
 
-//  private void evalWarning(String message) {
-//    new ScriptException(message);
-//  }
+  //  private void evalWarning(String message) {
+  //    new ScriptException(message);
+  //  }
 
   private void unrecognizedCommand() throws ScriptException {
     evalError(GT._("unrecognized command") + ": " + statement[0].value);
@@ -8266,12 +8368,12 @@ class Eval { //implements Runnable {
         sb.append(' ');
         if (token.intValue == Integer.MAX_VALUE)
           sb.append("- ");
-        //fall through
+      //fall through
       case Token.spec_seqcode:
         if (token.intValue != Integer.MAX_VALUE)
           sb.append("" + token.intValue);
         else
-        sb.append(Group.getSeqcodeString(getSeqCode(token)));
+          sb.append(Group.getSeqcodeString(getSeqCode(token)));
         continue;
       case Token.spec_chain:
         sb.append("*:");
@@ -8413,13 +8515,14 @@ class Eval { //implements Runnable {
         isOK = operate(Token.nada);
       if (isOK && xPt == 0) {
         Token x = xStack[0];
-        if (x.tok == Token.bitset || x.tok == Token.list || x.tok == Token.string)
+        if (x.tok == Token.bitset || x.tok == Token.list
+            || x.tok == Token.string)
           x = xStack[0] = Token.selectItem(x, -1);
         if (x.tok == Token.list)
           x = new Token(Token.string, Token.sValue(x));
         return x;
       }
-      if (!allowUnderflow && (xPt >=0 || oPt >= 0)) {
+      if (!allowUnderflow && (xPt >= 0 || oPt >= 0)) {
         iToken--;
         invalidArgument();
       }
@@ -8446,17 +8549,17 @@ class Eval { //implements Runnable {
 
     boolean addX(Object x) throws ScriptException {
       if (x instanceof Integer)
-        return addX(((Integer)x).intValue());
+        return addX(((Integer) x).intValue());
       if (x instanceof Float)
-        return addX(((Float)x).floatValue());
+        return addX(((Float) x).floatValue());
       if (x instanceof String)
-        return addX((String)x);
+        return addX((String) x);
       if (x instanceof Point3f)
-        return addX((Point3f)x);
+        return addX((Point3f) x);
       if (x instanceof BitSet)
-        return addX((BitSet)x);
+        return addX((BitSet) x);
       if (x instanceof Token)
-        return addX((Token)x);
+        return addX((Token) x);
       return false;
     }
 
@@ -8513,7 +8616,7 @@ class Eval { //implements Runnable {
       return (Compiler.tokAttr(op.tok, Token.mathfunc) || op.tok == Token.propselector
           && Compiler.tokAttr(op.intValue, Token.mathfunc));
     }
-    
+
     boolean addOp(Token op) throws ScriptException {
 
       // Do we have the appropriate context for this operator?
@@ -8669,15 +8772,15 @@ class Eval { //implements Runnable {
       int pt = xPt;
       while (xStack[pt--].tok != Token.leftsquare)
         nPoints++;
-      String[]list = new String[nPoints];
+      String[] list = new String[nPoints];
       for (int i = 0; i < nPoints; i++)
         list[i] = Token.sValue(xStack[pt + i + 2]);
       xPt = pt;
       addX(list);
       return true;
-                                
+
     }
-    
+
     private boolean doBitsetSelect() {
       if (xPt < 1)
         return false;
@@ -8687,8 +8790,8 @@ class Eval { //implements Runnable {
       Token token = xStack[xPt];
       switch (token.tok) {
       default:
-        token = new Token(Token.string,Token.sValue(token));
-       //fall through
+        token = new Token(Token.string, Token.sValue(token));
+      //fall through
       case Token.bitset:
       case Token.list:
       case Token.string:
@@ -8696,7 +8799,7 @@ class Eval { //implements Runnable {
       }
       return true;
     }
-    
+
     void dumpStacks() {
       Logger.info("RPN stacks: for " + script);
       for (int i = 0; i <= xPt; i++)
@@ -8711,19 +8814,19 @@ class Eval { //implements Runnable {
         endOfStatementUnexpected();
       return xStack[xPt--];
     }
-    
+
     boolean evaluateFunction() throws ScriptException {
-      
+
       Token op = oStack[oPt--];
       int nParamMax = Token.prec(op);
       int nParam = 0;
       int pt = xPt;
       while (xStack[pt--] != op)
         nParam++;
-      if (nParam > nParamMax) 
+      if (nParam > nParamMax)
         return false;
-      Token[] args = new Token[nParam]; 
-      for (int i = nParam; --i >= 0; )        
+      Token[] args = new Token[nParam];
+      for (int i = nParam; --i >= 0;)
         args[i] = getX();
       xPt--;
       switch (op.tok == Token.propselector ? op.intValue : op.tok) {
@@ -8746,7 +8849,7 @@ class Eval { //implements Runnable {
       case Token.distance:
         if (op.tok == Token.propselector)
           return evaluateDistance(args);
-        //fall through
+      //fall through
       case Token.angle:
         return evaluateMeasure(args, op.tok == Token.angle);
       case Token.connected:
@@ -8762,7 +8865,7 @@ class Eval { //implements Runnable {
       if (args.length != 1)
         return false;
       if (isSyntaxCheck)
-        return addX(1f);      
+        return addX(1f);
       Token x2 = args[0];
       Point3f pt = ptValue(x2);
       Point4f plane = planeValue(x2);
@@ -8770,12 +8873,13 @@ class Eval { //implements Runnable {
         return addX(getBitsetProperty(Token.bsSelect(x1), Token.distance, pt,
             plane, x1.value, false));
       else if (x1.tok == Token.point3f)
-        return addX(plane == null ? pt.distance(ptValue(x1))
-            : Graphics3D.distanceToPlane(plane, ptValue(x1)));
+        return addX(plane == null ? pt.distance(ptValue(x1)) : Graphics3D
+            .distanceToPlane(plane, ptValue(x1)));
       return false;
     }
-    
-    boolean evaluateMeasure(Token[] args, boolean isAngle) throws ScriptException {
+
+    boolean evaluateMeasure(Token[] args, boolean isAngle)
+        throws ScriptException {
       int nPoints = args.length;
       if (nPoints < (isAngle ? 3 : 2) || nPoints > (isAngle ? 4 : 2))
         return false;
@@ -8791,7 +8895,8 @@ class Eval { //implements Runnable {
       case 3:
         return addX(Measurement.computeAngle(pts[0], pts[1], pts[2], true));
       case 4:
-        return addX(Measurement.computeTorsion(pts[0], pts[1], pts[2], pts[3], true));
+        return addX(Measurement.computeTorsion(pts[0], pts[1], pts[2], pts[3],
+            true));
       }
       return false;
     }
@@ -8800,32 +8905,32 @@ class Eval { //implements Runnable {
       if (args.length != 1)
         return false;
       if (isSyntaxCheck)
-        return addX((int)1);
+        return addX((int) 1);
       Token x1 = getX();
       String sFind = Token.sValue(args[0]);
-      switch(x1.tok) {
+      switch (x1.tok) {
       default:
         return addX(Token.sValue(x1).indexOf(sFind) + 1);
       case Token.list:
         int n = 0;
-        String[]list = (String[])x1.value;
+        String[] list = (String[]) x1.value;
         int ipt = -1;
-        for (int i =0; i < list.length;i++)
+        for (int i = 0; i < list.length; i++)
           if (list[i].indexOf(sFind) >= 0) {
             n++;
             ipt = i;
           }
         if (n == 1)
           return addX(list[ipt]);
-        String[]listNew = new String[n];
+        String[] listNew = new String[n];
         if (n > 0)
-        for (int i =list.length; --i >=0; )
-          if (list[i].indexOf(sFind) >= 0)
-            listNew[--n] = list[i];
+          for (int i = list.length; --i >= 0;)
+            if (list[i].indexOf(sFind) >= 0)
+              listNew[--n] = list[i];
         return addX(listNew);
       }
     }
-    
+
     boolean evaluateReplace(Token[] args) throws ScriptException {
       if (args.length != 2)
         return false;
@@ -8842,7 +8947,7 @@ class Eval { //implements Runnable {
         list[i] = TextFormat.simpleReplace(list[i], sFind, sReplace);
       return addX(list);
     }
-    
+
     boolean evaluateString(int tok, Token[] args) throws ScriptException {
       if (args.length > 1)
         return false;
@@ -8870,7 +8975,7 @@ class Eval { //implements Runnable {
       }
       return addX("");
     }
-    
+
     boolean evaluateLoad(Token[] args) throws ScriptException {
       //System.out.println("eval load");
       if (args.length != 1)
@@ -8879,18 +8984,25 @@ class Eval { //implements Runnable {
         return addX("");
       return addX(viewer.getFileAsString(Token.sValue(args[0])));
     }
-    
+
     boolean evaluateData(Token[] args) throws ScriptException {
       //System.out.println("eval data");
-      if (args.length != 2)
+      if (args.length == 0 || args.length > 2)
         return false;
+      String selected = Token.sValue(args[0]);
+      if (args.length == 1) {
+        Object[] data = Viewer.getData(selected);
+        String s = (data == null ? ""
+            : data[1] instanceof float[] ? StateManager
+                .escape((float[]) data[1]) : "" + data[1]);
+        return addX(s);
+      }
       if (isSyntaxCheck)
         return addX("");
-      String selected = Token.sValue(args[0]);
       String type = Token.sValue(args[1]);
       return addX(viewer.getData(selected, type));
     }
-    
+
     boolean evaluateLabel(Token[] args) throws ScriptException {
       //System.out.println("eval label");
       Token x1 = getX();
@@ -8901,9 +9013,10 @@ class Eval { //implements Runnable {
       Token x2 = args[0];
       if (x1.tok != Token.bitset || x2.tok != Token.string)
         return false;
-      return addX(getBitsetIdent(Token.bsSelect(x1), Token.sValue(x2), x1.value, true));
+      return addX(getBitsetIdent(Token.bsSelect(x1), Token.sValue(x2),
+          x1.value, true));
     }
-    
+
     boolean evaluateWithin(Token[] args) throws ScriptException {
       // within ( distance, expression)
       // within ( group, etc., expression)
@@ -8917,14 +9030,15 @@ class Eval { //implements Runnable {
       float distance = 0;
       boolean isSequence = false;
       if (withinSpec instanceof String)
-        isSequence = !Compiler.isOneOf(withinStr, "element;site;group;chain;molecule;model");
+        isSequence = !Compiler.isOneOf(withinStr,
+            "element;site;group;chain;molecule;model");
       else if (withinSpec instanceof Float)
         distance = Token.fValue(args[0]);
       else
         return false;
       if (args.length == 3) {
         withinStr = Token.sValue(args[1]);
-        if (!Compiler.isOneOf(withinStr,"plane;hkl;coord"))
+        if (!Compiler.isOneOf(withinStr, "plane;hkl;coord"))
           return false;
       }
       if (isSyntaxCheck)
@@ -8933,9 +9047,9 @@ class Eval { //implements Runnable {
       Point4f plane = null;
       int i = args.length - 1;
       if (args[i].value instanceof Point4f)
-        plane = (Point4f)args[i].value;
+        plane = (Point4f) args[i].value;
       if (args[i].value instanceof Point3f)
-        pt = (Point3f)args[i].value;
+        pt = (Point3f) args[i].value;
       if (plane == null && pt == null && !(args[i].value instanceof BitSet))
         return false;
       if (isSyntaxCheck)
@@ -8943,15 +9057,15 @@ class Eval { //implements Runnable {
       if (plane != null)
         return addX(viewer.getAtomsWithin(distance, plane));
       if (pt != null)
-        return addX(viewer.getAtomsWithin(distance, pt)); 
-      bs = Token.bsSelect(args[i]);  
+        return addX(viewer.getAtomsWithin(distance, pt));
+      bs = Token.bsSelect(args[i]);
       if (withinSpec instanceof Float)
         return addX(viewer.getAtomsWithin(distance, bs));
       if (isSequence)
         return addX(viewer.getAtomsWithin("sequence", withinStr, bs));
       return addX(viewer.getAtomsWithin(withinStr, bs));
     }
-    
+
     boolean evaluateConnected(Token[] args) throws ScriptException {
       /*
        * Two options here:
@@ -8996,7 +9110,7 @@ class Eval { //implements Runnable {
           break;
         case Token.decimal:
           haveDecimal = true;
-          // fall through
+        // fall through
         default:
           int n = Token.iValue(token);
           float f = Token.fValue(token);
@@ -9031,7 +9145,8 @@ class Eval { //implements Runnable {
         if (isSyntaxCheck)
           return addX(new Token(Token.bitset, new BondSet(bsBonds)));
         viewer.makeConnections(fmin, fmax, order,
-            JmolConstants.CONNECT_IDENTIFY_ONLY, atoms1, atoms2, bsBonds, isBonds);
+            JmolConstants.CONNECT_IDENTIFY_ONLY, atoms1, atoms2, bsBonds,
+            isBonds);
         return addX(new Token(Token.bitset, new BondSet(bsBonds,
             getAtomIndices(getAtomBitsetFromBonds(bsBonds)))));
       }
@@ -9049,7 +9164,7 @@ class Eval { //implements Runnable {
         return addX(bs);
       String smiles = Token.sValue(args[0]);
       if (smiles.length() == 0)
-        return false; 
+        return false;
       PatternMatcher matcher = new PatternMatcher(viewer);
       try {
         bs = matcher.getSubstructureSet(smiles);
@@ -9058,7 +9173,7 @@ class Eval { //implements Runnable {
       }
       return addX(bs);
     }
-    
+
     boolean operate(int thisOp) throws ScriptException {
 
       Token op = oStack[oPt--];
@@ -9081,7 +9196,11 @@ class Eval { //implements Runnable {
           String s = (String) x2.value;
           s = TextFormat.simpleReplace(s, "\n\r", "\n");
           s = TextFormat.simpleReplace(s, "\r", "\n");
-          return addX(Text.split(s,'\n'));
+          return addX(Text.split(s, '\n'));
+        }
+        if (iv == Token.color && x2.tok == Token.string) {
+          Point3f pt = new Point3f();
+          return addX(Graphics3D.colorPointFromString(Token.sValue(x2), pt));
         }
         if (x2.tok != Token.bitset)
           return false;
@@ -9228,7 +9347,7 @@ class Eval { //implements Runnable {
         case Token.string:
           s = (String) x1.value;
           if (n == 0)
-            return addX(s.trim());
+            return addX(TextFormat.trim(s,"\n\t "));
           else if (n > 0)
             return addX(TextFormat.format(s, n, n, true, false));
           return addX(TextFormat.format(s, -n, n, false, false));
@@ -9251,7 +9370,8 @@ class Eval { //implements Runnable {
           return addX(Token.bsSelect(x1, n));
         }
       case Token.slash:
-        if (x1.tok == Token.integer && x2.tok == Token.integer && x2.intValue != 0)
+        if (x1.tok == Token.integer && x2.tok == Token.integer
+            && x2.intValue != 0)
           return addX(x1.intValue / x2.intValue);
         if (x1.tok == Token.point3f) {
           Point3f pt = new Point3f((Point3f) x1.value);
@@ -9269,7 +9389,7 @@ class Eval { //implements Runnable {
       }
       return true;
     }
-    
+
     Point3f ptValue(Token x) throws ScriptException {
       if (isSyntaxCheck)
         return new Point3f();
@@ -9277,21 +9397,22 @@ class Eval { //implements Runnable {
       case Token.point3f:
         return (Point3f) x.value;
       case Token.bitset:
-          return (Point3f) getBitsetProperty(Token.bsSelect(x), Token.xyz, null, null, x.value, false);
+        return (Point3f) getBitsetProperty(Token.bsSelect(x), Token.xyz, null,
+            null, x.value, false);
       default:
         float f = Token.fValue(x);
         return new Point3f(f, f, f);
       }
     }
-    
+
     Point4f planeValue(Token x) {
       if (isSyntaxCheck)
         return new Point4f();
       switch (x.tok) {
       case Token.point4f:
-        return (Point4f)x.value;
+        return (Point4f) x.value;
       case Token.bitset:
-          //ooooh, wouldn't THIS be nice!
+      //ooooh, wouldn't THIS be nice!
       default:
         return null;
       }

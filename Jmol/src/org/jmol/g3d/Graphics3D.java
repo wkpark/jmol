@@ -1440,6 +1440,17 @@ final public class Graphics3D {
     return Colix.getColix(argb);
   }
 
+  public final static Point3f colorPointFromInt(int color, Point3f pt) {
+    pt.z = color & 0xFF;
+    pt.y = (color >> 8) & 0xFF;
+    pt.x = (color >> 16) & 0xFF;
+    return pt;
+  }
+
+  public final static Point3f colorPointFromString(String colorName, Point3f pt) {
+    return colorPointFromInt(getArgbFromString(colorName), pt);
+  }
+
   public final static short getColix(String colorName) {
     int argb = getArgbFromString(colorName);
     if (argb != 0)
@@ -2054,7 +2065,7 @@ final public class Graphics3D {
   }
 
   public static int getArgbFromString(String strColor) {
-    if (strColor != null) {
+    if (strColor != null && strColor.length() > 0) {
       if (strColor.length() == 9 && strColor.indexOf("[x") == 0
           && strColor.indexOf("]") == 8)
         strColor = "#" + strColor.substring(2, 8);

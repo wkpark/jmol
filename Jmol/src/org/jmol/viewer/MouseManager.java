@@ -29,6 +29,7 @@ import java.awt.Rectangle;
 import java.awt.Event;
 import org.jmol.util.Logger;
 import java.awt.event.*;
+import java.awt.Component;
 
 abstract class MouseManager implements KeyListener {
 
@@ -56,7 +57,9 @@ abstract class MouseManager implements KeyListener {
 
   MouseManager(Viewer viewer) {
     this.viewer = viewer;
-    viewer.getAwtComponent().addKeyListener(this);
+    Component display = viewer.getAwtComponent();
+    if (display != null)
+      display.addKeyListener(this);
   }
   
   void clear() {
@@ -83,9 +86,12 @@ abstract class MouseManager implements KeyListener {
   void setModeMouse(int modeMouse) {
     if (modeMouse == JmolConstants.MOUSE_NONE) {
       stopHoverWatcher();
+      Component display = viewer.getAwtComponent();
+      if (display == null)
+        return;
       removeMouseListeners11();
       removeMouseListeners14();
-      viewer.getAwtComponent().removeKeyListener(this);
+      display.removeKeyListener(this);
     }
   }
 

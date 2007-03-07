@@ -31,6 +31,10 @@ abstract class MeshFileCollection extends MeshCollection {
   String line;
   int[] next = new int[1];
   
+  String[] getTokens() {
+    return Parser.getTokens(line);
+  }
+
   float parseFloat() {
     return Parser.parseFloat(line, next);
   }

@@ -8989,17 +8989,33 @@ class Eval { //implements Runnable {
       //System.out.println("eval data");
       if (args.length == 0 || args.length > 2)
         return false;
-      String selected = Token.sValue(args[0]);
-      if (args.length == 1) {
-        Object[] data = Viewer.getData(selected);
-        String s = (data == null ? ""
-            : data[1] instanceof float[] ? StateManager
-                .escape((float[]) data[1]) : "" + data[1]);
-        return addX(s);
-      }
       if (isSyntaxCheck)
         return addX("");
-      String type = Token.sValue(args[1]);
+      String selected = Token.sValue(args[0]);
+      String type = (args.length == 2 ? Token.sValue(args[1]).toLowerCase()
+          : "");
+
+      // parallel addition of float property data sets
+
+      if (selected.toLowerCase().indexOf("property_") == 0) {
+        float[] f1 = Viewer.getDataFloat(selected);
+        if (f1 == null)
+          return addX("");
+        float[] f2 = (type.indexOf("property_") == 0 ? Viewer
+            .getDataFloat(type) : null);
+        if (f2 != null)
+          for (int i = Math.min(f1.length, f2.length); --i >= 0;)
+            f1[i] += f2[i];
+        return addX(StateManager.escape(f1));
+      }
+
+      // some other data type -- just return it
+
+      if (args.length == 1) {
+        Object[] data = Viewer.getData(selected);
+        return addX(data == null ? "" : "" + data[1]);
+      }
+      // {selected atoms} XYZ, MOL, PDB file format 
       return addX(viewer.getData(selected, type));
     }
 

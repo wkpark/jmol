@@ -1325,7 +1325,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     jvxlFileHeader = new StringBuffer();
     jvxlFileHeader.append(br.readLine());
     jvxlFileHeader.append('\n');
-    line = br.readLine();
+    skipComments(true);
     isApbsDx = (line.indexOf("object 1 class gridpositions counts") == 0);
     if (isApbsDx) {
       line = "APBS OpenDx DATA: " + line + " see http://apbs.sourceforge.net";
@@ -1342,7 +1342,7 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   void readAtomCountAndOrigin() throws Exception {
     String atomLine;
-    line = br.readLine();
+    skipComments(true);
     if (!isSilent)
       Logger.debug(line);
     atomCount = parseInt(line);
@@ -1701,10 +1701,17 @@ class Isosurface extends IsosurfaceMeshCollection {
     jvxlWritePrecisionColor = false;
   }
 
-  void jvxlReadDefinitionLine(boolean showMsg) throws Exception {
-    while ((line = br.readLine()) != null && line.length() == 0
-        || line.charAt(0) == '#') {
+  void skipComments(boolean addToHeader) throws Exception {
+    while ((line = br.readLine()) != null && (line.length() == 0
+        || line.charAt(0) == '#')) {
+      if (addToHeader) {
+        jvxlFileHeader.append(line);
+        jvxlFileHeader.append('\n');
+      }
     }
+  }
+  void jvxlReadDefinitionLine(boolean showMsg) throws Exception {
+    skipComments(false);
     if (showMsg)
       Logger.info("reading jvxl data set: " + line);
 
@@ -2267,6 +2274,10 @@ class Isosurface extends IsosurfaceMeshCollection {
     short[] colixes = mesh.vertexColixes;
     fractionData = new StringBuffer();
     strFractionTemp = (isJvxl ? jvxlColorDataRead : "");
+    if (isJvxl && strFractionTemp.length() == 0) {
+      Logger.error("You cannot use JVXL data to map onto OTHER data, because it only containts the data for one surface. Use ISOSURFACE \"file.jvxl\" not ISOSURFACE .... MAP \"file.jvxl\".");
+      return;
+    }
     fractionPtr = 0;
     Logger.info("JVXL reading color data base/range: " + mappedDataMin + "/"
         + mappedDataMax + " for " + vertexCount + " vertices."

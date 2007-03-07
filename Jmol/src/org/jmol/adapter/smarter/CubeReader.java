@@ -90,6 +90,8 @@ class CubeReader extends AtomSetCollectionReader {
 
   void readAtomCountAndOrigin() throws Exception {
     readLine();
+    while (line != null && line.indexOf("#") == 0)
+      readLine();
     atomCount = parseInt(line);
     origin[0] = parseFloat();
     origin[1] = parseFloat();

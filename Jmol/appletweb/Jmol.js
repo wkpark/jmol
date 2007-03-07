@@ -780,14 +780,12 @@ function _jmolGetAppletSize(size) {
     width = height = size;
   }
   if (typeof width == "number") {
-	if(! (width >= 25 && width <= 2000))
-	    width = (width < 1 && width > 0 ? (width * 100)+"%":300)
-	width += "px"
+        width = (width >= 25 && width <= 2000 ? width + "px"
+	 : width < 1 && width > 0 ? (width * 100)+"%":"300px")
   }
   if (typeof height == "number") {
-	if(! (height >= 25 && height <= 2000))
-	    height = (height < 1 && height > 0? (height * 100)+"%":300);
-	height += "px"
+        height = (height >= 25 && height <= 2000 ? height + "px"
+	 : height < 1 && height > 0 ? (height * 100)+"%":"300px")
   }
   return [width, height];
 }

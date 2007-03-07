@@ -34,21 +34,47 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "11.1.18";
+  public final static String version = "11.1.19";
   
   /*
    * 
-   *
-   * 
-   * 
-   * 
-   * 
+  
+   11.1.19  
+  
+   allows comparison of user-defined atom properties in SELECT:
+   
+   select property_myprop < 1e-5; 
+   
+   
    11.1.18
+
+   introduces user-definable atom properties that can be used
+   to color isosurfaces:
+   
+   x = load("file.dat");
+   isosurface variable x   # simple 100% vdw radius mapping
+   
+   select 1.3
+   data "property_myprop @x"
+   isosurface property_myprop
+   
+   
+   
+   allows isosurface mapping of general atom properties:
+   
+   isosurface sasurface colorscheme bwr map property temperature
+   
+   
+   
+   adds "bwr" colorscheme as opposed to "rwb", which I think is backward.
+   
    
    isosurface -- now supports APBS (http://apbs.sourceforge.net)
                  molecular electrostatic potential output files
  
-   write -- modified to allow unquoted filename in    write isosurface file.name
+   write -- modified to allow unquoted filename in 
+   
+     write isosurface file.name
    
    jvxl 1.0 -- adds ANGSTROMS flag on line with # of atoms (line 3)
    

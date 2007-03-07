@@ -1528,7 +1528,8 @@ class Compiler {
     Token tokenComparator = tokenNext();
     if (!tokenAttr(tokenComparator, Token.comparator)) {
       if (isIdentifier) {
-        returnToken();returnToken();
+        returnToken();
+        returnToken();
       }
       return comparisonOperatorExpected();
     }

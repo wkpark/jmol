@@ -6008,6 +6008,7 @@ class Eval { //implements Runnable {
             fvMin = Math.min(fvMin, fv);
             fvMax = Math.max(fvMax, fv);
             fvAvg += fv;
+            break;
           case Token.xyz:
             pt.add(bond.atom1);
             pt.add(bond.atom2);

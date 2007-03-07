@@ -1273,21 +1273,25 @@ class Eval { //implements Runnable {
       case Token.opEQ:
       case Token.opNE:
         val = code[++pc].value;
+        int tokOperator = instruction.tok;
+        int tokWhat = instruction.intValue;
+        String property = (tokWhat == Token.identifier ? (String)val : null);
+        if (property != null)
+          val = code[++pc].value;
         if (isSyntaxCheck) {
           rpn.addX(new BitSet());
           break;
         }
-        int tokOperator = instruction.tok;
-        int tokWhat = instruction.intValue;
         boolean isModel = (tokWhat == Token.model);
         boolean isRadius = (tokWhat == Token.radius);
         int tokValue = code[pc].tok;
         comparisonValue = code[pc].intValue;
         boolean isIdentifier = (tokValue == Token.identifier);
+        float comparisonFloat = Float.NaN;
         if (isIdentifier) {
           val = viewer.getParameter((String) val);
           if (val instanceof Integer)
-            comparisonValue = ((Integer) val).intValue();
+            comparisonFloat = comparisonValue = ((Integer) val).intValue();
           else if (val instanceof Float && isModel)
             comparisonValue = Mmset.modelFileNumberFromFloat(((Float) val)
                 .floatValue());
@@ -1295,6 +1299,7 @@ class Eval { //implements Runnable {
         if (val instanceof Integer || tokValue == Token.integer) {
           comparisonValue *= (Compiler
               .tokAttr(tokWhat, Token.atompropertyfloat) ? 100 : 1);
+          comparisonFloat = comparisonValue;
           if (isModel) {
             if (comparisonValue > 1000 && comparisonValue < 1000000
                 && viewer.haveFileSet()) {
@@ -1306,15 +1311,17 @@ class Eval { //implements Runnable {
           if (isModel) {
             tokWhat = -tokWhat;
           } else {
-            comparisonValue = (int) (((Float) val).floatValue() * (isRadius ? 250f
+            comparisonFloat =((Float) val).floatValue() ;
+            comparisonValue = (int) (comparisonFloat * (isRadius ? 250f
                 : 100f));
           }
         } else
           invalidArgument();
         if (((String) value).indexOf("-") >= 0)
           comparisonValue = -comparisonValue;
-        rpn.addX(comparatorInstruction(instruction, tokWhat, tokOperator,
-            comparisonValue));
+        float[] data = (tokWhat == Token.identifier ? Viewer.getDataFloat(property) : null);
+        rpn.addX(comparatorInstruction(instruction, tokWhat, data, tokOperator,
+            comparisonValue, comparisonFloat));
         break;
       case Token.bitset:
       case Token.decimal:
@@ -1456,8 +1463,8 @@ class Eval { //implements Runnable {
     return lookupValue(variable, true);
   }
 
-  BitSet comparatorInstruction(Token token, int tokWhat, int tokOperator,
-                               int comparisonValue) throws ScriptException {
+  BitSet comparatorInstruction(Token token, int tokWhat, float[] data, int tokOperator,
+                               int comparisonValue, float comparisonFloat) throws ScriptException {
     BitSet bs = new BitSet();
     int propertyValue = Integer.MAX_VALUE;
     BitSet propertyBitSet = null;
@@ -1466,9 +1473,8 @@ class Eval { //implements Runnable {
     int atomCount = viewer.getAtomCount();
     int imax = 0;
     int imin = 0;
+    float propertyFloat = 0;
     Frame frame = viewer.getFrame();
-    float[] data = (tokWhat == Token.identifier ? Viewer.getDataFloat(""
-        + token.value) : null);
     for (int i = 0; i < atomCount; ++i) {
       boolean match = false;
       Atom atom = frame.getAtomAt(i);
@@ -1481,8 +1487,30 @@ class Eval { //implements Runnable {
       case Token.identifier:
         if (data == null || data.length <= i)
           continue;
-        propertyValue = (int) (data[i] * 100);
-        break;
+        propertyFloat = data[i];
+        switch (tokOperator) {
+        case Token.opLT:
+          match = propertyFloat < comparisonFloat;
+          break;
+        case Token.opLE:
+          match = propertyFloat <= comparisonFloat;
+          break;
+        case Token.opGE:
+          match = propertyFloat >= comparisonFloat;
+          break;
+        case Token.opGT:
+          match = propertyFloat > comparisonFloat;
+          break;
+        case Token.opEQ:
+          match = propertyFloat == comparisonFloat;
+          break;
+        case Token.opNE:
+          match = propertyFloat != comparisonFloat;
+          break;
+        }
+        if (match)
+          bs.set(i);
+        continue;
       case Token.symop:
         propertyBitSet = atom.getAtomSymmetry();
         if (bitsetBaseValue >= 1000) {
@@ -8429,7 +8457,9 @@ class Eval { //implements Runnable {
       case Token.opLT:
       case Token.opNE:
         //not quite right -- for "inmath"
-        if (token.intValue != Integer.MAX_VALUE)
+        if (token.intValue == Token.identifier) {
+          sb.append((String)statement[++i].value + " ");
+        } else if (token.intValue != Integer.MAX_VALUE)
           sb.append(Token.nameOf(token.intValue) + " ");
         break;
       case Token.identifier:

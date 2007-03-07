@@ -1103,8 +1103,9 @@ class Compiler {
     return (token != null && token.tok == tok);
   }
 
-  private void returnToken() {
+  private boolean returnToken() {
     itokenInfix--;
+    return false;
   }
 
   Token theToken;
@@ -1219,7 +1220,10 @@ class Compiler {
       //fall through for identifier specifically
     default:
       if (tokAttr(tok, Token.atomproperty))
-        return clauseComparator();
+        return clauseComparator(false);
+    if (tokAttr(tok, Token.identifier) && clauseComparator(true))
+      return true;
+  
       if (!tokAttr(tok, Token.predefinedset))
         break;
     // fall into the code and below and just add the token
@@ -1519,11 +1523,15 @@ class Compiler {
     return true;
   }
   
-  private boolean clauseComparator() {
+  private boolean clauseComparator(boolean isIdentifier) {
     Token tokenAtomProperty = tokenNext();
     Token tokenComparator = tokenNext();
-    if (!tokenAttr(tokenComparator, Token.comparator))
+    if (!tokenAttr(tokenComparator, Token.comparator)) {
+      if (isIdentifier) {
+        returnToken();returnToken();
+      }
       return comparisonOperatorExpected();
+    }
     if (getToken() == null)
       return unrecognizedExpressionToken();
     boolean isNegative = (isToken(Token.hyphen));
@@ -1542,6 +1550,8 @@ class Compiler {
     }
     addTokenToPostfix(new Token(tokenComparator.tok, tokenAtomProperty.tok,
         tokenComparator.value + (isNegative ? " -" : "")));
+    if (tokenAtomProperty.tok == Token.identifier)
+      addTokenToPostfix(tokenAtomProperty);
     if (isToken(Token.leftbrace)) {
       returnToken();
       return clausePrimitive();
@@ -1680,6 +1690,8 @@ class Compiler {
     if (!isToken(Token.identifier))
       return identifierOrResidueSpecificationExpected();
 
+    if (((String)theValue).toLowerCase().indexOf("property_") == 0)
+      return returnToken();
     //check for a * in the next token, which
     //would indicate this must be a name with wildcard
 

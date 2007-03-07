@@ -5817,6 +5817,8 @@ class Eval { //implements Runnable {
         tok = Token.atomY;
       else if (s.equals("z"))
         tok = Token.atomZ;
+      else if (s.indexOf("property_") == 0)
+        tok = Token.property;
       else
         invalidArgument();
       break;
@@ -5825,7 +5827,7 @@ class Eval { //implements Runnable {
   }
 
   Object getBitsetProperty(BitSet bs, int tok, Point3f ptRef, Point4f planeRef,
-                           Object tokenValue, boolean useAtomMap)
+                           Object tokenValue, Object opValue, boolean useAtomMap)
       throws ScriptException {
     boolean isAtoms = !(tokenValue instanceof BondSet);
     boolean isMin = Compiler.tokAttr(tok, Token.min);
@@ -5872,6 +5874,8 @@ class Eval { //implements Runnable {
     boolean isInt = true;
     Point3f ptT = (tok == Token.color ? new Point3f() : null);
     Frame frame = viewer.getFrame();
+    float[]data = (tok == Token.property ? Viewer.getDataFloat((String)opValue) : null); 
+    
     if (isAtoms) {
       int atomCount = (isSyntaxCheck ? 0 : viewer.getAtomCount());
       for (int i = 0; i < atomCount; i++)
@@ -5969,6 +5973,9 @@ class Eval { //implements Runnable {
           float fv = Float.MAX_VALUE;
 
           switch (tok) {
+          case Token.property:
+            fv = (data == null ? 0 : data[i]);
+            break;
           case Token.atomX:
             fv = atom.x;
             break;
@@ -8908,7 +8915,7 @@ class Eval { //implements Runnable {
       Point4f plane = planeValue(x2);
       if (x1.tok == Token.bitset)
         return addX(getBitsetProperty(Token.bsSelect(x1), Token.distance, pt,
-            plane, x1.value, false));
+            plane, x1.value, null, false));
       else if (x1.tok == Token.point3f)
         return addX(plane == null ? pt.distance(ptValue(x1)) : Graphics3D
             .distanceToPlane(plane, ptValue(x1)));
@@ -9316,7 +9323,7 @@ class Eval { //implements Runnable {
         if (op.intValue == Token.bonds && x2.value instanceof BondSet)
           return addX(x2);
         Object val = getBitsetProperty(Token.bsSelect(x2), op.intValue, null,
-            null, x2.value, false);
+            null, x2.value, op.value, false);
         if (op.intValue == Token.bonds)
           return addX(new Token(Token.bitset, new BondSet((BitSet) val,
               getAtomIndices(Token.bsSelect(x2)))));
@@ -9507,7 +9514,7 @@ class Eval { //implements Runnable {
         return (Point3f) x.value;
       case Token.bitset:
         return (Point3f) getBitsetProperty(Token.bsSelect(x), Token.xyz, null,
-            null, x.value, false);
+            null, x.value, null, false);
       default:
         float f = Token.fValue(x);
         return new Point3f(f, f, f);

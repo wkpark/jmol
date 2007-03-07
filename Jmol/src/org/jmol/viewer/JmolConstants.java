@@ -45,6 +45,15 @@ final public class JmolConstants {
    
    select property_myprop < 1e-5; 
    
+   and 
+   
+   x = {carbon}[5].property_test
+   x = {carbon}.property_test.min
+   x = {carbon}.property_test.max
+   
+   etc.
+   
+   This is it! :)
    
    11.1.18
 

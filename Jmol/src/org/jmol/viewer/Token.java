@@ -352,6 +352,7 @@ public class Token {
   final static int lines     = 6 | mathproperty;
   final static int size      = 7 | mathproperty;
   final static int xyz       = 8 | mathproperty;
+  final static int property  = 9 | mathproperty | setparam;
 
   final static int atompropertyfloat = atomproperty | 1 << 5;
   
@@ -631,7 +632,6 @@ public class Token {
   // load
   final static int scale3d      = setparam | 29;
   // jmol extensions
-  final static int property     = setparam | 30;
   final static int diffuse      = setparam | 31;
   final static int pickingStyle = setparam | 33;
 

@@ -356,14 +356,14 @@ class ColorManager {
       int index = quantize(-val, -hi, -lo, JmolConstants.argbsRoygbScale.length);
       return Graphics3D.getColix(JmolConstants.argbsRoygbScale[index]);
     }
-    int ihalf = JmolConstants.argbsRoygbScale.length/2;
+    int ihalf = JmolConstants.argbsRoygbScale.length/3;
     if (palette.equals("low")) {
       int index = quantize(val, lo, hi, ihalf);
       return Graphics3D.getColix(JmolConstants.argbsRoygbScale[index]);
     }
 
     if (palette.equals("high")) {
-      int index = quantize(val, lo, hi, ihalf);
+      int index = quantize(val, lo, hi, ihalf * 2);
       return Graphics3D.getColix(JmolConstants.argbsRoygbScale[ihalf+index]);
     }
     return Graphics3D.GRAY;

@@ -796,8 +796,7 @@ public class Token {
     "spin",              new Token(spin,            varArgCount),
     "frame",             new Token(frame,           varArgCount),
     "frames",            null, 
-                          
-    "structure",         new Token(structure),
+                
     "animation",         new Token(animation),
     "anim",              null, 
                           

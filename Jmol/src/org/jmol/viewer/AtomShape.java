@@ -70,9 +70,9 @@ class AtomShape extends Shape {
     if ("color" == propertyName) {
       isActive = true;
       short colix = Graphics3D.getColix(value);
+      byte pid = JmolConstants.pidOf(value);
       if (bsColixSet == null)
         bsColixSet = new BitSet();
-      byte pid = JmolConstants.pidOf(value);
       for (int i = atomCount; --i >= 0; )
         if (bs.get(i))
           setColixAndPalette(colix, pid, i);

@@ -476,6 +476,7 @@ class StateManager {
     int hoverDelayMs             = 500;
     boolean hideNavigationPoint  = false;
     boolean showNavigationPointAlways = false;
+    String propertyColorScheme   = "roygb";
     
     // window
     
@@ -516,7 +517,6 @@ class StateManager {
     
     String helpPath            = null;
     String defaultHelpPath     = JmolConstants.DEFAULT_HELP_PATH;
-    String propertyStyleString = "";
 
     //testing
 
@@ -807,7 +807,7 @@ class StateManager {
       setParameterValue("navigationSpeed",navigationSpeed);
       setParameterValue("percentVdwAtom",percentVdwAtom);
       setParameterValue("pickingSpinRate",pickingSpinRate);
-      setParameterValue("propertyStyleString",propertyStyleString);
+      setParameterValue("propertyColorScheme",propertyColorScheme);
       setParameterValue("rangeSelected",rangeSelected);
       setParameterValue("selectHetero",rasmolHeteroSetting);
       setParameterValue("selectHydrogen",rasmolHydrogenSetting);

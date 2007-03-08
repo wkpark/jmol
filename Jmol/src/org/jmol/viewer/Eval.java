@@ -1275,7 +1275,7 @@ class Eval { //implements Runnable {
         val = code[++pc].value;
         int tokOperator = instruction.tok;
         int tokWhat = instruction.intValue;
-        String property = (tokWhat == Token.identifier ? (String)val : null);
+        String property = (tokWhat == Token.property ? (String)val : null);
         if (property != null)
           val = code[++pc].value;
         if (isSyntaxCheck) {
@@ -1319,7 +1319,7 @@ class Eval { //implements Runnable {
           invalidArgument();
         if (((String) value).indexOf("-") >= 0)
           comparisonValue = -comparisonValue;
-        float[] data = (tokWhat == Token.identifier ? Viewer.getDataFloat(property) : null);
+        float[] data = (tokWhat == Token.property ? Viewer.getDataFloat(property) : null);
         rpn.addX(comparatorInstruction(instruction, tokWhat, data, tokOperator,
             comparisonValue, comparisonFloat));
         break;
@@ -1484,7 +1484,7 @@ class Eval { //implements Runnable {
         if (propertyValue == Integer.MAX_VALUE)
           continue;
         break;
-      case Token.identifier:
+      case Token.property:
         if (data == null || data.length <= i)
           continue;
         propertyFloat = data[i];
@@ -3070,6 +3070,7 @@ class Eval { //implements Runnable {
     case Token.jmol:
     case Token.rasmol:
     case Token.user:
+    case Token.property:
       colorObject(Token.atom, 1);
       return;
     case Token.bitset:
@@ -3199,15 +3200,44 @@ class Eval { //implements Runnable {
           checkStatementLength(index + 1);
         }
       } else {
+        // must not be a color, but rather a color SCHEME
+        // this could be a problem for properties, which can't be
+        // checked later -- they must be turned into a color NOW.
+
         // "cpk" value would be "spacefill"
+
+        String name = parameterAsString(index).toLowerCase();
         byte pid = (tok == Token.spacefill ? JmolConstants.PALETTE_CPK
-            : JmolConstants.getPaletteID(parameterAsString(index)));
+            : JmolConstants.getPaletteID(name));
         if (pid == JmolConstants.PALETTE_UNKNOWN
             || pid == JmolConstants.PALETTE_TYPE
             && shapeType != JmolConstants.SHAPE_HSTICKS)
           invalidArgument();
-        checkStatementLength(index + 1);
+        if (pid == JmolConstants.PALETTE_PROPERTY) {
+          if (name.equals("property")
+              && Compiler.tokAttr(getToken(++index).tok, Token.atomproperty)) {
+            if (!isSyntaxCheck) {
+              Object data = getBitsetProperty(null,
+                  getToken(index).tok | Token.minmaxmask, null, null, null,
+                  null, false);
+              if (data instanceof float[])
+                viewer.setCurrentColorRange((float[])data, null);
+              else
+                invalidArgument();
+            }
+          } else if (!isSyntaxCheck) {
+            viewer.setCurrentColorRange(name);
+          }
+        }
+        if (pid == JmolConstants.PALETTE_VARIABLE) {
+          name = parameterAsString(++index);
+          float[] data = new float[viewer.getAtomCount()];
+          Parser.parseFloatArray("" + viewer.getParameter(name), null, data);
+          viewer.setCurrentColorRange(data, null);
+          pid = JmolConstants.PALETTE_PROPERTY;
+        }
         colorvalue = new Byte((byte) pid);
+        checkStatementLength(index + 1);
       }
       if (isSyntaxCheck)
         return;
@@ -3248,7 +3278,7 @@ class Eval { //implements Runnable {
   }
 
   Hashtable variables = new Hashtable();
-  Object[] dataLabelString;
+  Object[] data;
 
   void data() throws ScriptException {
     String dataString = null;
@@ -3264,7 +3294,7 @@ class Eval { //implements Runnable {
       dataLabel = parameterAsString(1);
       if (dataLabel.equalsIgnoreCase("clear")) {
         if (!isSyntaxCheck)
-          Viewer.setData(null, null, null, 0);
+          Viewer.setData(null, null, 0);
         return;
       }
       if ((i = dataLabel.indexOf("@")) >= 0) {
@@ -3277,16 +3307,16 @@ class Eval { //implements Runnable {
     }
     String dataType = dataLabel + " ";
     dataType = dataType.substring(0, dataType.indexOf(" "));
-    dataLabelString = new Object[2];
-    dataLabelString[0] = dataLabel;
-    dataLabelString[1] = dataString;
+    data = new Object[3];
+    data[0] = dataLabel;
+    data[1] = dataString;
     boolean isModel = dataType.equalsIgnoreCase("model");
     if (!isSyntaxCheck || isScriptCheck && isModel && fileOpenCheck) {
       if (dataType.toLowerCase().indexOf("property_") == 0) {
-        Viewer.setData(dataType, dataLabelString, viewer
-            .getSelectedAtomsOrBonds(), viewer.getAtomCount());
+        data[2] = viewer.getSelectedAtomsOrBonds();
+        Viewer.setData(dataType, data, viewer.getAtomCount());
       } else {
-        Viewer.setData(dataType, dataLabelString, null, 0);
+        Viewer.setData(dataType, data, 0);
       }
     }
     if (isModel && (!isSyntaxCheck || isScriptCheck && fileOpenCheck)) {
@@ -5635,9 +5665,13 @@ class Eval { //implements Runnable {
       case Token.dot:
         Token token = getBitsetPropertySelector(i);
         //check for added min/max modifier
-        if (tokAt(iToken + 1) == Token.dot
-            && Compiler.tokAttrOr(tokAt(iToken + 2), Token.min, Token.max)) {
-          token.intValue |= getToken(iToken + 2).tok;
+        if (tokAt(iToken + 1) == Token.dot) {
+          if (tokAt(iToken + 2) == Token.all) {
+            token.intValue |= Token.minmaxmask;
+            getToken(iToken + 2);
+          }
+          if (Compiler.tokAttrOr(tokAt(iToken + 2), Token.min, Token.max))
+            token.intValue |= getToken(iToken + 2).tok;
         }
         if (!rpn.addOp(token))
           invalidArgument();
@@ -5789,10 +5823,20 @@ class Eval { //implements Runnable {
                 str = TextFormat.formatString(str, props[k], propArray[k][j]);
           }
         } else {
+          Bond bond = frame.getBondAt(j); 
           if (str == null)
-            str = frame.getBondAt(j).getIdentity();
-          else
-            str = frame.getBondAt(j).formatLabel(str, indices);
+            str = bond.getIdentity();
+          else {
+            str = bond.formatLabel(str, indices);
+            int ia1 = bond.atom1.atomIndex;
+            int ia2 = bond.atom2.atomIndex;
+            for (int k = 0; k < nProp; k++)
+              if (ia1 < propArray[k].length)
+                str = TextFormat.formatString(str, props[k]+"1", propArray[k][ia1]);
+            for (int k = 0; k < nProp; k++)
+              if (ia2 < propArray[k].length)
+                str = TextFormat.formatString(str, props[k]+"2", propArray[k][ia2]);
+          }
         }
         str = TextFormat.formatString(str, "#", ++n);
         if (n > 1)
@@ -5817,8 +5861,6 @@ class Eval { //implements Runnable {
         tok = Token.atomY;
       else if (s.equals("z"))
         tok = Token.atomZ;
-      else if (s.indexOf("property_") == 0)
-        tok = Token.property;
       else
         invalidArgument();
       break;
@@ -5832,8 +5874,11 @@ class Eval { //implements Runnable {
     boolean isAtoms = !(tokenValue instanceof BondSet);
     boolean isMin = Compiler.tokAttr(tok, Token.min);
     boolean isMax = Compiler.tokAttr(tok, Token.max);
+    boolean isAll = Compiler.tokAttr(tok, Token.minmaxmask);
     tok &= ~Token.minmaxmask;
+    float[] list = null;
     BitSet bsNew = null;
+    
     if (tok == Token.atom)
       bsNew = (!isAtoms && !isSyntaxCheck ? getAtomBitsetFromBonds(bs) : bs);
     if (tok == Token.bonds)
@@ -5878,15 +5923,17 @@ class Eval { //implements Runnable {
     
     if (isAtoms) {
       int atomCount = (isSyntaxCheck ? 0 : viewer.getAtomCount());
+      if (isAll)
+        list = new float[atomCount];
       for (int i = 0; i < atomCount; i++)
-        if (bs.get(i)) {
+        if (bs == null || bs.get(i)) {
           n++;
           Atom atom = frame.getAtomAt(i);
           if (isInt) {
             int iv = 0;
             switch (tok) {
             case Token.atomno:
-              iv += atom.getAtomNumber();
+              iv = atom.getAtomNumber();
               break;
             case Token.atomIndex:
               iv = i;
@@ -5958,7 +6005,9 @@ class Eval { //implements Runnable {
               break;
             }
             if (isInt) {
-              if (isMin)
+              if (isAll)
+                list[i] = iv;
+              else if (isMin)
                 ivMin = Math.min(ivMin, iv);
               else if (isMax)
                 ivMax = Math.max(ivMax, iv);
@@ -6023,7 +6072,9 @@ class Eval { //implements Runnable {
           }
 
           if (fv != Float.MAX_VALUE) {
-            if (isMin)
+            if (isAll)
+              list[i] = fv;
+            else if (isMin)
               fvMin = Math.min(fvMin, fv);
             else if (isMax)
               fvMax = Math.max(fvMax, fv);
@@ -6033,8 +6084,10 @@ class Eval { //implements Runnable {
         }
     } else {
       int bondCount = viewer.getBondCount();
+      if (isAll)
+        list = new float[bondCount];
       for (int i = 0; i < bondCount; i++)
-        if (bs.get(i)) {
+        if (bs == null || bs.get(i)) {
           n++;
           Bond bond = frame.getBondAt(i);
           switch (tok) {
@@ -6043,6 +6096,8 @@ class Eval { //implements Runnable {
             fvMin = Math.min(fvMin, fv);
             fvMax = Math.max(fvMax, fv);
             fvAvg += fv;
+            if (isAll)
+              list[i] = fv;
             break;
           case Token.xyz:
             pt.add(bond.atom1);
@@ -6073,6 +6128,10 @@ class Eval { //implements Runnable {
       ivAvg = ivMax;
       fvAvg = fvMax;
     }
+    if (isAll && opValue == null) //not operating
+      return list;
+    if (isAll)
+      return StateManager.escape(list);
     if (isInt && (ivAvg / n) * n == ivAvg)
       return new Integer(ivAvg / n);
     return new Float((isInt ? ivAvg * 1f : fvAvg) / n);
@@ -6875,7 +6934,7 @@ class Eval { //implements Runnable {
     case Token.data:
       String type = ((len = statementLength) == 3 ? parameterAsString(2) : null);
       if (!isSyntaxCheck) {
-        Object[] data = (type == null ? dataLabelString : Viewer.getData(type));
+        Object[] data = (type == null ? this.data : Viewer.getData(type));
         msg = (data == null ? "no data" : "data \""
             + data[0]
             + "\"\n"
@@ -7725,6 +7784,17 @@ class Eval { //implements Runnable {
       switch (getToken(i).tok) {
       case Token.property:
         propertyName = "property";
+        str = parameterAsString(i);
+        if (str.toLowerCase().indexOf("property_") == 0) {
+          data = new float[viewer.getAtomCount()];
+          if (isSyntaxCheck)
+            continue;
+          data = Viewer.getDataFloat(str);
+          if (data == null)
+            invalidArgument();
+          propertyValue = data;
+          break;
+        }
         int atomCount = viewer.getAtomCount();
         int tokProperty = getToken(++i).tok;
         data = new float[atomCount];
@@ -7991,15 +8061,6 @@ class Eval { //implements Runnable {
           surfaceObjectSeen = true;
           propertyName = "molecular";
           propertyValue = new Float(1.4);
-          break;
-        }
-        if (str.toLowerCase().indexOf("property_") == 0) {
-          propertyName = "property";
-          data = new float[viewer.getAtomCount()];
-          if (!isSyntaxCheck) {
-            data = Viewer.getDataFloat(str);
-          }
-          propertyValue = data;
           break;
         }
         if (str.equalsIgnoreCase("VARIABLE")) {
@@ -8464,7 +8525,7 @@ class Eval { //implements Runnable {
       case Token.opLT:
       case Token.opNE:
         //not quite right -- for "inmath"
-        if (token.intValue == Token.identifier) {
+        if (token.intValue == Token.property) {
           sb.append((String)statement[++i].value + " ");
         } else if (token.intValue != Integer.MAX_VALUE)
           sb.append(Token.nameOf(token.intValue) + " ");
@@ -8679,6 +8740,7 @@ class Eval { //implements Runnable {
         return true;
       case Token.min:
       case Token.max:
+      case Token.minmaxmask:
         tok = oPt < 0 ? Token.nada : oStack[oPt].tok;
         if (!wasX
             || !(tok == Token.propselector || tok == Token.bonds || tok == Token.atom))
@@ -9092,12 +9154,11 @@ class Eval { //implements Runnable {
       if (isSyntaxCheck)
         return addX("");
       String selected = Token.sValue(args[0]);
-      String type = (args.length == 2 ? Token.sValue(args[1]).toLowerCase()
-          : "");
+      String type = (args.length == 2 ? Token.sValue(args[1]) : "");
 
       // parallel addition of float property data sets
 
-      if (selected.toLowerCase().indexOf("property_") == 0) {
+      if (selected.indexOf("property_") == 0) {
         float[] f1 = Viewer.getDataFloat(selected);
         if (f1 == null)
           return addX("");

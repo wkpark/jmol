@@ -70,8 +70,8 @@ class Bond {
     label = TextFormat.formatString(label, "ORDER", getOrderNumber());
     label = TextFormat.formatString(label, "TYPE", getOrderName());
     label = TextFormat.formatString(label, "LENGTH", atom1.distance(atom2));
-    label = atom1.formatLabel(label, (char)('0' + 1), indices);
-    label = atom2.formatLabel(label, (char)('0' + 2), indices);
+    label = atom1.formatLabel(label, '1', indices);
+    label = atom2.formatLabel(label, '2', indices);
     return label;
   }
 

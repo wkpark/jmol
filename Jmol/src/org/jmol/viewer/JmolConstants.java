@@ -1778,7 +1778,7 @@ final public class JmolConstants {
         : PALETTE_UNKNOWN);
   }
 
-  public final static byte PALETTE_VARIABLE = 0x40; 
+  public final static byte PALETTE_VOLATILE = 0x40; 
   public final static byte PALETTE_STATIC = 0x3F;
   public final static byte PALETTE_UNKNOWN = (byte) 0xFF; 
   
@@ -1786,31 +1786,34 @@ final public class JmolConstants {
   public final static byte PALETTE_CPK = 1;
   public final static byte PALETTE_PARTIAL_CHARGE = 2;
   public final static byte PALETTE_FORMAL_CHARGE = 3;
-  public final static byte PALETTE_TEMP = 4 | PALETTE_VARIABLE;
+  public final static byte PALETTE_TEMP = 4 | PALETTE_VOLATILE;
   
   public final static byte PALETTE_FIXEDTEMP = 5;
-  public final static byte PALETTE_SURFACE = 6 | PALETTE_VARIABLE;
+  public final static byte PALETTE_SURFACE = 6 | PALETTE_VOLATILE;
   public final static byte PALETTE_STRUCTURE = 7;
   public final static byte PALETTE_AMINO = 8;
   
   public final static byte PALETTE_SHAPELY = 9;
   public final static byte PALETTE_CHAIN = 10;
-  public final static byte PALETTE_GROUP = 11 | PALETTE_VARIABLE;
-  public final static byte PALETTE_MONOMER = 12 | PALETTE_VARIABLE;
-  public final static byte PALETTE_MOLECULE = 13 | PALETTE_VARIABLE;
+  public final static byte PALETTE_GROUP = 11 | PALETTE_VOLATILE;
+  public final static byte PALETTE_MONOMER = 12 | PALETTE_VOLATILE;
+  public final static byte PALETTE_MOLECULE = 13 | PALETTE_VOLATILE;
   public final static byte PALETTE_ALTLOC = 14;
   
   public final static byte PALETTE_INSERTION = 15;
   public final static byte PALETTE_JMOL = 16;
   public final static byte PALETTE_RASMOL = 17;
   public final static byte PALETTE_TYPE = 18;  //b0001 0010
+  public final static byte PALETTE_PROPERTY = 19 | PALETTE_VOLATILE;  //b0001 0011
+  public final static byte PALETTE_VARIABLE = 20 | PALETTE_VOLATILE;  //b0001 0011
   
   private final static String[] paletteNames = {
-    /* 0 */ "none", "cpk", "partialCharge", "formalCharge", "temperature",  
-    /* 5 */ "fixedTemperature", "surfaceDistance", "structure", "amino", 
+    /* 0 */ "none", "cpk", "partialcharge", "formalcharge", "temperature",  
+    /* 5 */ "fixedtemperature", "surfacedistance", "structure", "amino", 
     /* 9 */ "shapely", "chain", "group", "monomer", "molecule", "altloc", 
     /*15 */ "insertion", "jmol", "rasmol", 
-    /*18 */ "type" // hbonds only
+    /*18 */ "type" /* hbonds only */, 
+    /*19 */ "property", "variable", 
    };
    
   private final static byte[] paletteIDs = {
@@ -1835,19 +1838,25 @@ final public class JmolConstants {
     PALETTE_INSERTION,
     PALETTE_JMOL,
     PALETTE_RASMOL,
-    PALETTE_TYPE };
+    PALETTE_TYPE,
+    
+    PALETTE_PROPERTY,
+    PALETTE_VARIABLE,
+    };
    
+  
   private final static int paletteCount = paletteNames.length;
   
   public static boolean isPaletteVariable(byte pid) {
-    return ((pid & PALETTE_VARIABLE) != 0);  
+    return ((pid & PALETTE_VOLATILE) != 0);  
   }
   
   public final static byte getPaletteID(String paletteName) {
     for (int i = 0; i < paletteCount; i++)
-      if (paletteNames[i].equalsIgnoreCase(paletteName))
+      if (paletteNames[i].equals(paletteName))
         return paletteIDs[i];
-    return PALETTE_UNKNOWN;
+    return (paletteName.indexOf("property_") == 0 ? PALETTE_PROPERTY
+        : PALETTE_UNKNOWN);
   }
   
   public final static String getPaletteName(byte pid) {

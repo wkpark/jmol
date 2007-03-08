@@ -938,6 +938,14 @@ public class Viewer extends JmolViewer {
     setBackgroundArgb(Graphics3D.getArgbFromString(colorName));
   }
 
+  void setPropertyColorScheme(String scheme) {
+    global.propertyColorScheme = scheme;  
+  }
+  
+  String getPropertyColorScheme() {
+    return global.propertyColorScheme;  
+  }
+  
   short getColixBackgroundContrast() {
     return colorManager.colixBackgroundContrast;
   }
@@ -1992,15 +2000,21 @@ public class Viewer extends JmolViewer {
 
   static Hashtable dataValues = new Hashtable();
 
-  static void setData(String type, Object[] data, BitSet bsSelected, int atomCount) {
+  static void setData(String type, Object[] data, int atomCount) {
     //Eval
+    /*
+     * data[0] -- label
+     * data[1] -- string or float[]
+     * data[2] -- selection bitset
+     * 
+     */
     if (type == null) {
       dataValues.clear();
       return;
     }
-    if (type.toLowerCase().indexOf("property_") == 0 && bsSelected != null) {
+    if (data[2] != null) {
       float[] f = new float[atomCount];
-      Parser.parseFloatArray((String) data[1], bsSelected, f);
+      Parser.parseFloatArray((String) data[1], (BitSet)data[2], f);
       data[1] = f;
     }
     dataValues.put(type, data);
@@ -2020,6 +2034,16 @@ public class Viewer extends JmolViewer {
       return info;
     }
     return (Object[]) dataValues.get(type);
+  }
+
+  void setCurrentColorRange(String label) {
+    float[] data = getDataFloat(label);
+    BitSet bs = (data == null ? null : (BitSet) ((Object[]) getData(label))[2]);
+    setCurrentColorRange(data, bs);
+  }
+  
+  void setCurrentColorRange(float[] data, BitSet bs) {
+    colorManager.setCurrentColorRange(data, bs, global.propertyColorScheme);
   }
 
   static public float[] getDataFloat(String label) {
@@ -3362,6 +3386,12 @@ public class Viewer extends JmolViewer {
     //Eval
     while (true) {
       ///11.1///
+      
+      if (key.equalsIgnoreCase("propertyColorScheme")) {
+        setPropertyColorScheme(value);
+        break;
+      }
+
       if (key.equalsIgnoreCase("hoverLabel")) {
         setAtomHoverLabel(value);
         break;
@@ -4204,7 +4234,8 @@ public class Viewer extends JmolViewer {
   }
 
   public void setSelectionHalos(boolean TF) {
-    if (TF == getSelectionHaloEnabled())
+    // display panel can hit this without a frame, apparently
+    if (TF == getSelectionHaloEnabled() || getFrame() == null)
       return;
     global.setParameterValue("selectionHalos", TF);
     loadShape(JmolConstants.SHAPE_HALOS);

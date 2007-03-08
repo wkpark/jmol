@@ -24,7 +24,7 @@
 package org.jmol.viewer;
 
 import org.jmol.util.Logger;
-
+import java.util.BitSet;
 import org.jmol.g3d.*;
 
 class ColorManager {
@@ -125,6 +125,8 @@ class ColorManager {
     Frame frame;
     float lo, hi;
     switch (pid) {
+    case JmolConstants.PALETTE_PROPERTY:
+      return getPropertyColix(atom.atomIndex);
     case JmolConstants.PALETTE_JMOL:
       id = atom.getAtomicAndIsotopeNumber();
       argb = getJmolOrRasmolArgb(id, Token.jmol);
@@ -305,6 +307,35 @@ class ColorManager {
     return q;
   }
 
+  private float colorHi, colorLo;
+  private String colorPalette;
+  private float[] colorData;
+  void setCurrentColorRange(float[] data, BitSet bs, String palette) {
+    colorData = data;
+    colorPalette = palette;
+    colorHi = Float.MIN_VALUE;
+    colorLo = Float.MAX_VALUE;
+    if (data == null)
+      return;
+    for (int i = data.length; --i >= 0;)
+      if (bs == null || bs.get(i)) {
+        float d = data[i];
+        if (Float.isNaN(d))
+          continue;
+        colorHi = Math.max(colorHi, d);
+        colorLo = Math.min(colorLo, d);
+      }
+    System.out.println ("colormanager--setcurrentcolorrange "+colorHi+" " + colorLo);
+  }  
+
+  short getPropertyColix(int iAtom) {
+    if (colorData == null || iAtom >= colorData.length)
+      return Graphics3D.GRAY;
+    System.out.println ("\ngetPropertyColix-- "+iAtom+" "+colorData[iAtom]);
+    
+    return getColixFromPalette(colorData[iAtom], colorLo, colorHi, colorPalette);
+  }
+  
   short getColixFromPalette(float val, float lo, float hi, String palette) {
     if (palette.equals("rwb")) {
       int index = quantize(val, lo, hi, JmolConstants.argbsRwbScale.length);
@@ -316,6 +347,13 @@ class ColorManager {
     }
     if (palette.equals("roygb")) {
       int index = quantize(val, lo, hi, JmolConstants.argbsRoygbScale.length);
+      int c = JmolConstants.argbsRoygbScale[index];
+      System.out.println ("roygb val="+val + " lo=" + lo +  " hi=" + hi + " index = " + index + " / " + JmolConstants.argbsRoygbScale.length + " " + Integer.toHexString(c));
+      
+      return Graphics3D.getColix(c);
+    }
+    if (palette.equals("bgyor")) {
+      int index = quantize(-val, -hi, -lo, JmolConstants.argbsRoygbScale.length);
       return Graphics3D.getColix(JmolConstants.argbsRoygbScale[index]);
     }
     int ihalf = JmolConstants.argbsRoygbScale.length/2;

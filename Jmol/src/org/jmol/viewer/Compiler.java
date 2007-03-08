@@ -220,7 +220,8 @@ class Compiler {
       if (nTokens == 0) {
         isNewSet = false;
       } else {
-        if (nTokens == 1 && script.charAt(ichToken) == '=' && tokAttr(tokCommand, Token.setparam)) {
+        if (nTokens == 1 && script.charAt(ichToken) == '='
+            && tokAttr(tokCommand, Token.setparam)) {
           tokenCommand = Token.getTokenFromName("set");
           tokCommand = Token.set;
           ltoken.add(0, tokenCommand);
@@ -363,8 +364,12 @@ class Compiler {
           ident = ident.toLowerCase();
           token = (Token) Token.map.get(ident);
         }
-        if (token == null)
-          token = new Token(Token.identifier, ident);
+        if (token == null) {
+          if (ident.indexOf("property_") == 0)
+            token = new Token(Token.property, ident.toLowerCase());
+          else
+            token = new Token(Token.identifier, ident);
+        }
         int tok = token.tok;
         switch (tokCommand) {
         // special cases
@@ -402,11 +407,17 @@ class Compiler {
                   return compileError("ERROR IN Token.java or JmolConstants.java -- the following term was used in JmolConstants.java but not listed as predefinedset in Token.java: "
                       + ident);
               } else if (tokAttr(tok, Token.predefinedset)) {
-                Logger.warn("WARNING: predefined term '"
+                Logger
+                    .warn("WARNING: predefined term '"
                         + ident
                         + "' has been redefined by the user until the next file load.");
               } else {
-                Logger.warn("WARNING: redefining " + ident + "; was " + token + "not all commands may continue to be functional for the life of the applet!");
+                Logger
+                    .warn("WARNING: redefining "
+                        + ident
+                        + "; was "
+                        + token
+                        + "not all commands may continue to be functional for the life of the applet!");
                 tok = token.tok = Token.identifier;
                 Token.map.put(ident, token);
               }
@@ -414,8 +425,8 @@ class Compiler {
           } else if (nTokens == 2 && tok == Token.opEQ) {
             // we are looking at @x =.... just insert a SET command
             // and ignore the =. It's the same as set @x ... 
-              ltoken.add(0, Token.getTokenFromName("set"));
-              continue;
+            ltoken.add(0, Token.getTokenFromName("set"));
+            continue;
           } else {
             // we are looking at the expression
             if (tok != Token.identifier && tok != Token.set
@@ -1219,11 +1230,8 @@ class Compiler {
         return true;
       //fall through for identifier specifically
     default:
-      if (tokAttr(tok, Token.atomproperty))
-        return clauseComparator(false);
-    if (tokAttr(tok, Token.identifier) && clauseComparator(true))
-      return true;
-  
+      if (tokAttrOr(tok, Token.property,  Token.atomproperty))
+        return clauseComparator();
       if (!tokAttr(tok, Token.predefinedset))
         break;
     // fall into the code and below and just add the token
@@ -1523,16 +1531,11 @@ class Compiler {
     return true;
   }
   
-  private boolean clauseComparator(boolean isIdentifier) {
+  private boolean clauseComparator() {
     Token tokenAtomProperty = tokenNext();
     Token tokenComparator = tokenNext();
-    if (!tokenAttr(tokenComparator, Token.comparator)) {
-      if (isIdentifier) {
-        returnToken();
-        returnToken();
-      }
+    if (!tokenAttr(tokenComparator, Token.comparator))
       return comparisonOperatorExpected();
-    }
     if (getToken() == null)
       return unrecognizedExpressionToken();
     boolean isNegative = (isToken(Token.hyphen));
@@ -1551,7 +1554,7 @@ class Compiler {
     }
     addTokenToPostfix(new Token(tokenComparator.tok, tokenAtomProperty.tok,
         tokenComparator.value + (isNegative ? " -" : "")));
-    if (tokenAtomProperty.tok == Token.identifier)
+    if (tokenAtomProperty.tok == Token.property)
       addTokenToPostfix(tokenAtomProperty);
     if (isToken(Token.leftbrace)) {
       returnToken();
@@ -1690,9 +1693,6 @@ class Compiler {
 
     if (!isToken(Token.identifier))
       return identifierOrResidueSpecificationExpected();
-
-    if (((String)theValue).toLowerCase().indexOf("property_") == 0)
-      return returnToken();
     //check for a * in the next token, which
     //would indicate this must be a name with wildcard
 

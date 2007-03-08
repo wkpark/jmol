@@ -4759,7 +4759,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     Point3f ptY0 = new Point3f(), ptZ0 = new Point3f();
     Point3i pt0 = new Point3i(), pt1 = new Point3i();
     float maxValue = Float.MAX_VALUE;
-    int propMax = 0;
+    int propMax = 0, solvMax = 0, iPt;
     for (int x = 0; x < nPointsX; ++x)
       for (int y = 0; y < nPointsY; ++y)
         for (int z = 0; z < nPointsZ; ++z)
@@ -4776,6 +4776,7 @@ class Isosurface extends IsosurfaceMeshCollection {
             property[x][y][z] = maxValue;
       isProperty = true;
       propMax = theProperty.length;
+      solvMax = solvent_atomNo.length;
     }
     float maxRadius = 0;
     for (int iAtom = 0; iAtom < solvent_nAtoms; iAtom++) {
@@ -4794,8 +4795,9 @@ class Isosurface extends IsosurfaceMeshCollection {
             float v = ptXyzTemp.distance(ptA) - rA;
             if (v < voxelData[i][j][k]) {
               voxelData[i][j][k] = (isNearby ? Float.NaN : v);
-              if (isProperty && iAtom < propMax && solvent_atomNo[iAtom] >= 0)
-                property[i][j][k] = theProperty[solvent_atomNo[iAtom]];
+              if (isProperty && iAtom < solvMax
+                  && (iPt = solvent_atomNo[iAtom]) >= 0 && iPt < propMax)
+                property[i][j][k] = theProperty[iPt];
             }
             ptXyzTemp.add(volumetricVectors[2]);
           }

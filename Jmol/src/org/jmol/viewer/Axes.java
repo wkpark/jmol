@@ -23,23 +23,12 @@
  */
 package org.jmol.viewer;
 
-
-import java.util.BitSet;
-
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.symmetry.UnitCell;
 
 class Axes extends FontLineShape {
-
-  void setProperty(String propertyName, Object value, BitSet bs) {
-    if ("scale" == propertyName) {
-      setScale(((Float)value).floatValue());
-      return;
-    }
-    super.setProperty(propertyName, value, bs);
-  }
 
   final static Point3f[] unitAxisPoints = {
     new Point3f( 1, 0, 0),
@@ -49,8 +38,6 @@ class Axes extends FontLineShape {
     new Point3f( 0,-1, 0),
     new Point3f( 0, 0,-1)
   };
-
-  float scale = 1f;
 
   final Point3f originPoint = new Point3f();
   final Point3f[] axisPoints = new Point3f[6];
@@ -80,6 +67,10 @@ class Axes extends FontLineShape {
     } else {
       originPoint.set(viewer.getBoundBoxCenter());
     }
+    setScale(viewer.getAxesScale());
+  }
+  
+  void setScale(float scale) {
     Vector3f corner = viewer.getBoundBoxCornerVector();
     for (int i = 6; --i >= 0;) {
       Point3f axisPoint = axisPoints[i];
@@ -102,12 +93,8 @@ class Axes extends FontLineShape {
     }
   }
   
-  void setScale(float angstroms) {
-    initShape();
-  }
-  
   String getShapeState() {
-    return super.getShapeState() + "axisScale = " + scale + ";\n";
+    return super.getShapeState() + "axisScale = " + viewer.getAxesScale() + ";\n";
   }
 
 }

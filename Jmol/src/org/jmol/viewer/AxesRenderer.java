@@ -41,10 +41,11 @@ class AxesRenderer extends ShapeRenderer {
       axisScreens[i] = new Point3i();
   }
   final Point3i originScreen = new Point3i();
+  short[] colixes = new short[3];
 
   void render() {
     Axes axes = (Axes) shape;
-    short mad = axes.mad;
+    short mad = viewer.getObjectMad(StateManager.OBJ_AXIS1);
     if (mad == 0)
       return;
     if (viewer.areAxesTainted())
@@ -65,10 +66,12 @@ class AxesRenderer extends ShapeRenderer {
     int widthPixels = mad;
     if (mad >= 20)
       widthPixels = viewer.scaleToScreen(originScreen.z, mad);
-    short colix = axes.colix;
-    if (colix == 0)
-      colix = Graphics3D.OLIVE;
+    colixes[0] = viewer.getObjectColix(StateManager.OBJ_AXIS1);
+    colixes[1] = viewer.getObjectColix(StateManager.OBJ_AXIS2);
+    colixes[2] = viewer.getObjectColix(StateManager.OBJ_AXIS3);
+
     for (int i = nPoints; --i >= 0;) {
+      short colix = colixes[i % 3];                          
       if (mad < 0)
         g3d.drawDottedLine(colix, originScreen, axisScreens[i]);
       else
@@ -80,7 +83,7 @@ class AxesRenderer extends ShapeRenderer {
             axisScreens[i].y, axisScreens[i].z, g3d);
     }
     if (nPoints == 3) //a b c
-      renderLabel("0", colix, axes.font3d, originScreen.x, originScreen.y, originScreen.z, g3d);
+      renderLabel("0", viewer.getColixBackgroundContrast(), axes.font3d, originScreen.x, originScreen.y, originScreen.z, g3d);
   }
   
   void renderLabel(String str, short colix, Font3D font3d, int x,

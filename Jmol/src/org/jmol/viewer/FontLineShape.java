@@ -25,7 +25,6 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.Font3D;
-import org.jmol.g3d.Graphics3D;
 
 import java.util.BitSet;
 
@@ -33,43 +32,18 @@ abstract class FontLineShape extends Shape {
   
   // Axes, Bbcage, Frank, Uccage
 
-  short mad;
-  short colix;
-  short bgcolix;
   Font3D font3d;
   String myType;
 
-  void initShape() {
-  }
-  
-  void setSize(int size, BitSet bsSelected) {
-    this.mad = (short)size;
-  }
-  
   void setProperty(String propertyName, Object value, BitSet bs) {
-    if ("color" == propertyName) {
-      colix = Graphics3D.getColix(value);
-      return;
-    }
-
     if ("font" == propertyName) {
       font3d = (Font3D)value;
-      return;
-    }
-
-    if ("bgcolor" == propertyName) {
-      bgcolix = Graphics3D.getColix(value);
       return;
     }
   }
   
   String getShapeState() {
-    StringBuffer s = new StringBuffer();
-    appendCmd(s, myType
-        + (mad == 0 ? " off" : mad == 1 ? " on" : mad == -1 ? " dotted" 
-            : mad < 20 ? " " + mad : " " + (mad / 2000f)));
-    appendCmd(s, getColorCommand(myType, colix));
-    appendCmd(s, getFontCommand(myType, font3d));
-    return s.toString();
+    return viewer.getObjectState(myType) + Shape.getFontCommand(myType, font3d)
+        + ";\n";
   }
 }

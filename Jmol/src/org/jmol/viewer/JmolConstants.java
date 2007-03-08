@@ -34,11 +34,34 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "11.1.19";
+  public final static String version = "11.1.20";
   
   /*
    * 
-  
+   * 
+   11.1.20
+   
+   cleans up axes/boundbox/unitcell business
+   
+   allows for individually colored axes:
+   
+   color axis1 ... 
+   color axis2 ... 
+   color axis3 ... 
+   color axes ... (of course)
+   
+   
+   and these objects are considered more like background -- 
+     colors and sizes persist past file load
+     
+   to turn on and off without messing with size, just use
+   
+   showAxes = true
+   showBoundBox = true
+   
+   etc. 
+   
+     
    11.1.19  
   
    allows comparison of user-defined atom properties in SELECT:

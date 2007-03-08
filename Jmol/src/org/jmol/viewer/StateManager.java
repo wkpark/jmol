@@ -40,6 +40,29 @@ import org.jmol.util.Parser;
 import java.util.Arrays;
 
 class StateManager {
+
+  final static int OBJ_BACKGROUND = 0;
+  final static int OBJ_AXIS1 = 1;
+  final static int OBJ_AXIS2 = 2;
+  final static int OBJ_AXIS3 = 3;
+  final static int OBJ_BOUNDBOX = 4;
+  final static int OBJ_UNITCELL = 5;
+  final static String objectNameList =
+      "background axis1      axis2      axis3      boundbox   unitcell   ";
+  
+  static int getObjectIdFromName(String name) {
+    if (name == null)
+      return -1;
+    int objID = objectNameList.indexOf(name.toLowerCase());
+    return (objID < 0 ? objID : objID / 11);
+  }
+  
+  static String getObjectNameFromId(int objId) {
+    if (objId < 0 || objId > 5)
+      return null;
+   return objectNameList.substring(objId * 11,objId*11 + 11).trim();
+  }
+  
   Viewer viewer;
   Hashtable saved = new Hashtable();
   String lastOrientation = "";
@@ -64,11 +87,9 @@ class StateManager {
 
   void setCrystallographicDefaults() {
     //axes on and mode unitCell; unitCell on; perspective depth off;
-    viewer.setShowAxes(true);
-    viewer.setShapeSize(JmolConstants.SHAPE_AXES, 200);
-    viewer.setShapeSize(JmolConstants.SHAPE_UCCAGE, -1);
-    viewer.setShowUnitCell(true);
     viewer.setAxesModeUnitCell(true);
+    viewer.setShowAxes(true);
+    viewer.setShowUnitCell(true);
     viewer.setBooleanProperty("perspectiveDepth", false);
   }
 
@@ -403,6 +424,8 @@ class StateManager {
       // "global" settings that
       // need to be reset whenever a file is loaded
 
+      viewer.setShowAxes(false);
+      viewer.setShowBbcage(false);
       clearVolatileProperties();
     }
 
@@ -480,7 +503,9 @@ class StateManager {
     
     // window
     
-    int argbBackground         = 0xFF000000;
+    int[] objColors            = new int[6];
+    boolean[] objStateOn       = new boolean[6];
+    short[] objMad             = new short[6];
     String stereoState         = null;
     boolean navigationMode     = false;
     boolean navigationPeriodic = false;
@@ -488,12 +513,16 @@ class StateManager {
     float navigationSpeed      = 5;
 
     String getWindowState() {
-      StringBuffer str = new StringBuffer("# window state;\n# height " + viewer.getScreenHeight()
-          + ";\n# width " + viewer.getScreenWidth() + ";\n");
+      StringBuffer str = new StringBuffer("# window state;\n# height "
+          + viewer.getScreenHeight() + ";\n# width " + viewer.getScreenWidth()
+          + ";\n");
       appendCmd(str, "initialize");
       appendCmd(str, "stateVersion = " + getParameter("_version"));
       appendCmd(str, "refreshing = false");
-      appendCmd(str, "backgroundColor = " + escapeColor(argbBackground));
+      for (int i = 0; i < 6; i++)
+        if (objColors[i] != 0)
+          appendCmd(str, getObjectNameFromId(i) + "Color = "
+              + escapeColor(objColors[i]));
       str.append(getSpecularState());
       if (stereoState != null)
         appendCmd(str, "stereo" + stereoState);
@@ -564,7 +593,8 @@ class StateManager {
       //handle these specially for the CURRENT FILE, their current
       //settings won't be reflected in the load state, which is determined
       //earlier, when the file loads. 
-        ";refreshing;defaults;backgroundmodel;backgroundcolor;stereo;"
+        ";refreshing;defaults;backgroundmodel;stereo;"
+      + ";backgroundcolor;axescolor;axis1color;axis2color;axis3color;boundboxcolor;unitcellcolor;"
       + ";ambientpercent;diffusepercent;specular;specularexponent;specularpower;specularpercent;"
       + ";debugscript;frank;showaxes;showunitcell;showboundbox;"
       + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;"

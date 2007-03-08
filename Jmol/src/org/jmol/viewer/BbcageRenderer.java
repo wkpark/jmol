@@ -37,13 +37,10 @@ class BbcageRenderer extends ShapeRenderer {
   }
 
   void render() {
-    Bbcage bbcage = (Bbcage)shape;
-    short mad = bbcage.mad;
+    short mad = viewer.getObjectMad(StateManager.OBJ_BOUNDBOX);
     if (mad == 0)
       return;
-    short colix = bbcage.colix;
-    if (colix == 0)
-      colix = Graphics3D.OLIVE;
+    short colix = viewer.getObjectColix(StateManager.OBJ_BOUNDBOX);
     render(viewer, g3d, mad, colix, frame.bboxVertices, screens);
   }
 

@@ -323,7 +323,10 @@ public class Viewer extends JmolViewer {
     global = stateManager.getGlobalSettings();
     setIntProperty("_version", getJmolVersionInt());
     colorManager.resetElementColors();
-    setStringProperty("backgroundColor", "black");
+    setObjectColor("background", "black");
+    setObjectColor("axis1", "red");
+    setObjectColor("axis2", "green");
+    setObjectColor("axis3", "blue");
     setAmbientPercent(global.ambientPercent);
     setDiffusePercent(global.diffusePercent);
     setSpecular(global.specular);
@@ -920,24 +923,80 @@ public class Viewer extends JmolViewer {
     global.setParameterValue("vibrationPeriod", period);
   }
 
-  void setBackgroundArgb(int argb) {
-    // Eval
-    global.argbBackground = argb;
-    g3d.setBackgroundArgb(argb);
-    global.setParameterValue("backgroundColor", StateManager.escapeColor(argb));
-    colorManager.setColixBackgroundContrast(argb);
+  void setObjectColor(String name, String colorName) {
+    if (colorName == null || colorName.length() == 0)
+      return;
+    setObjectArgb(name, Graphics3D.getArgbFromString(colorName));
+  }
+
+  void setObjectArgb(String name, int argb) {
+    int objId = StateManager.getObjectIdFromName(name);
+    if (objId < 0)
+      return;
+    global.objColors[objId] = argb;
+    switch(objId) {
+    case StateManager.OBJ_BACKGROUND:
+      g3d.setBackgroundArgb(argb);
+      colorManager.setColixBackgroundContrast(argb);
+      break;
+    }
+    global.setParameterValue(name + "Color", StateManager.escapeColor(argb));
+  }
+  
+  int getObjectArgb(int objId) {
+    return global.objColors[objId];
+  }
+
+  short getObjectColix(int objId) {
+    int argb = getObjectArgb(objId);
+    if (argb == 0)
+      return getColixBackgroundContrast();
+    return Graphics3D.getColix(argb);
+  }
+  
+ String getObjectState(String name) {
+   int objId = StateManager.getObjectIdFromName(name.equalsIgnoreCase("axes") ? "axis" : name);
+   if (objId < 0)
+     return "";
+   short mad = getObjectMad(objId);
+   StringBuffer s = new StringBuffer();
+   Shape.appendCmd(s, name
+      + (mad == 0 ? " off" : mad == 1 ? " on" : mad == -1 ? " dotted" 
+          : mad < 20 ? " " + mad : " " + (mad / 2000f)));
+  return s.toString();
+}
+  //for historical reasons, leave these two:
+  
+  public void setColorBackground(String colorName) {
+    setObjectColor("background", colorName);
   }
 
   public int getBackgroundArgb() {
-    return global.argbBackground;
+    return getObjectArgb(StateManager.OBJ_BACKGROUND);
   }
 
-  public void setColorBackground(String colorName) {
-    if (colorName == null || colorName.length() <= 0)
+  void setObjectMad(int iShape, String name, short mad) {
+    int objId = StateManager.getObjectIdFromName(name.equalsIgnoreCase("axes") ? "axis" : name);
+    if (objId < 0)
       return;
-    setBackgroundArgb(Graphics3D.getArgbFromString(colorName));
+    if (mad == -2 || mad == -4) { //turn on if not set "showAxes = true"
+      short m = (short)(mad + 3);
+      mad = getObjectMad(objId);
+      if (mad == 0)
+        mad = m;
+    }
+    global.setParameterValue("show" + name, mad != 0);
+    global.objStateOn[objId] = (mad !=0);
+    if (mad ==0)
+      return;
+      global.objMad[objId] = mad;
+    setShapeSize(iShape, mad); //just loads it
   }
 
+  short getObjectMad(int objId) {
+    return (global.objStateOn[objId] ? global.objMad[objId] : 0);
+  }
+  
   void setPropertyColorScheme(String scheme) {
     global.propertyColorScheme = scheme;  
   }
@@ -948,10 +1007,6 @@ public class Viewer extends JmolViewer {
   
   short getColixBackgroundContrast() {
     return colorManager.colixBackgroundContrast;
-  }
-
-  int getArgbFromString(String colorName) {
-    return Graphics3D.getArgbFromString(colorName);
   }
 
   private void setSpecular(boolean specular) {
@@ -2999,14 +3054,6 @@ public class Viewer extends JmolViewer {
     return selectionManager.bsSelection;
   }
 
-  private void setShapeShow(int shapeID, boolean show) {
-    setShapeSize(shapeID, show ? -1 : 0);
-  }
-
-  boolean getShapeShow(int shapeID) {
-    return getShapeSize(shapeID) != 0;
-  }
-
   void loadShape(int shapeID) {
     modelManager.loadShape(shapeID);
   }
@@ -3333,11 +3380,11 @@ public class Viewer extends JmolViewer {
     if (key.equalsIgnoreCase("perspectiveDepth"))
       return getPerspectiveDepth();
     if (key.equalsIgnoreCase("showAxes"))
-      return getShapeShow(JmolConstants.SHAPE_AXES);
+      return getShowAxes();
     if (key.equalsIgnoreCase("showBoundBox"))
-      return getShapeShow(JmolConstants.SHAPE_BBCAGE);
+      return getShowBbcage();
     if (key.equalsIgnoreCase("showUnitcell"))
-      return getShapeShow(JmolConstants.SHAPE_UCCAGE);
+      return getShowUnitCell();
     if (key.equalsIgnoreCase("debugScript"))
       return getDebugScript();
     if (key.equalsIgnoreCase("showHydrogens"))
@@ -3387,6 +3434,43 @@ public class Viewer extends JmolViewer {
     while (true) {
       ///11.1///
       
+      if (key.equalsIgnoreCase("backgroundColor")) {
+        setObjectColor("background", value);
+        return;
+      }
+      
+      if (key.equalsIgnoreCase("axesColor")) {
+        setObjectColor("axis1", value);
+        setObjectColor("axis2", value);
+        setObjectColor("axis3", value);
+        return;
+      }
+
+      if (key.equalsIgnoreCase("axis1Color")) {
+        setObjectColor("axis1", value);
+        return;
+      }
+
+      if (key.equalsIgnoreCase("axis2Color")) {
+        setObjectColor("axis2", value);
+        return;
+      }
+
+      if (key.equalsIgnoreCase("axis3Color")) {
+        setObjectColor("axis3", value);
+        return;
+      }
+
+      if (key.equalsIgnoreCase("boundBoxColor")) {
+        setObjectColor("boundbox", value);
+        return;
+      }
+
+      if (key.equalsIgnoreCase("unitCellColor")) {
+        setObjectColor("unitcell", value);
+        return;
+      }
+
       if (key.equalsIgnoreCase("propertyColorScheme")) {
         setPropertyColorScheme(value);
         break;
@@ -3423,10 +3507,6 @@ public class Viewer extends JmolViewer {
       }
       if (key.equalsIgnoreCase("helpPath")) {
         setHelpPath(value);
-        break;
-      }
-      if (key.equalsIgnoreCase("backgroundColor")) {
-        setColorBackground(value);
         break;
       }
       if (key.equalsIgnoreCase("defaults")) {
@@ -4176,6 +4256,7 @@ public class Viewer extends JmolViewer {
   
   void setAxesScale(float scale) {
     global.axesScale = scale;
+    axesAreTainted = true;
     refresh(0, "set axesScale");
   }
   
@@ -4503,27 +4584,28 @@ public class Viewer extends JmolViewer {
     return global.showHiddenSelectionHalos;
   }
 
-  public boolean getShowBbcage() {
-    return getShapeShow(JmolConstants.SHAPE_BBCAGE);
+  public void setShowBbcage(boolean value) {
+    setObjectMad(JmolConstants.SHAPE_BBCAGE, "boundbox", (short)(value ? -4 : 0));
   }
 
-  public void setShowBbcage(boolean value) {
-    global.setParameterValue("showBoundBox",value);
-    setShapeShow(JmolConstants.SHAPE_BBCAGE, value);
+  public boolean getShowBbcage() {
+    return getObjectMad(StateManager.OBJ_BOUNDBOX) !=  0;
   }
 
   public void setShowUnitCell(boolean value) {
-    global.setParameterValue("showUnitCell",value);
-    setShapeShow(JmolConstants.SHAPE_UCCAGE, value);
+    setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitcell", (short)(value ? -4 : 0));
   }
 
-  public boolean getShowAxes() {
-    return getShapeShow(JmolConstants.SHAPE_AXES);
+  public boolean getShowUnitCell() {
+    return getObjectMad(StateManager.OBJ_UNITCELL) !=  0;
   }
 
   public void setShowAxes(boolean value) {
-    global.setParameterValue("showAxes",value);
-    setShapeShow(JmolConstants.SHAPE_AXES, value);
+    setObjectMad(JmolConstants.SHAPE_AXES, "axes", (short)(value ? -2 : 0));
+  }
+
+  public boolean getShowAxes() {
+    return getObjectMad(StateManager.OBJ_AXIS1) !=  0;
   }
 
   public void setShowMeasurements(boolean TF) {

@@ -210,9 +210,8 @@ abstract class Shape {
   }
 
   String encodeColor(short colix) {
-    String color = g3d.getHexColorFromIndex(colix);
     return (Graphics3D.isColixTranslucent(colix) ? "translucent" : "")
-        + (color == null ? " none" : " [x" + color + "]");
+        + (colix == 0 ? " none" : StateManager.escapeColor(g3d.getColixArgb(colix)));
   }
 
 }

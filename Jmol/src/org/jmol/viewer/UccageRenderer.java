@@ -27,7 +27,6 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import java.text.NumberFormat;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.symmetry.UnitCell;
 
 class UccageRenderer extends ShapeRenderer {
@@ -46,17 +45,14 @@ class UccageRenderer extends ShapeRenderer {
     }
   }
 
-  Uccage uccage;
-
   void render() {
-    uccage = (Uccage) shape;
-    short colix = uccage.colix;
-    short mad = uccage.mad;
+    short colix = viewer.getObjectColix(StateManager.OBJ_UNITCELL);
+    short mad = viewer.getObjectMad(StateManager.OBJ_UNITCELL);
     if (mad == 0)
       return;
     render1(mad, colix);
   }
-  
+
   void render1(short mad, short colix) {
     if (frame.cellInfos == null)
       return;
@@ -66,8 +62,6 @@ class UccageRenderer extends ShapeRenderer {
     Frame.CellInfo cellInfo = frame.cellInfos[viewer.getDisplayModelIndex()];
     Point3f[] vertices = unitCell.getVertices();
     Point3f offset = unitCell.getCartesianOffset(); 
-    if (colix == 0)
-      colix = Graphics3D.OLIVE;
     for (int i = 8; --i >= 0;)
       verticesT[i].add(vertices[i], offset);
     BbcageRenderer.render(viewer, g3d, mad, colix, verticesT, screens);

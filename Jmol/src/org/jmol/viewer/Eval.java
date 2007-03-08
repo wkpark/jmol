@@ -3017,9 +3017,8 @@ class Eval { //implements Runnable {
     int argb;
     if (isColorParam(i) || theTok == Token.none) {
       argb = getArgbParamLast(i, true);
-      System.out.println(Integer.toHexString(argb));
       if (!isSyntaxCheck)
-        viewer.setBackgroundArgb(argb);
+        viewer.setObjectArgb("background", argb);
       return;
     }
     int iShape = getShapeType(theTok);
@@ -3073,6 +3072,11 @@ class Eval { //implements Runnable {
     case Token.property:
       colorObject(Token.atom, 1);
       return;
+    case Token.background:
+      argb = getArgbParamLast(2, true);
+      if (!isSyntaxCheck)
+        viewer.setObjectArgb("background", argb);
+      return;
     case Token.bitset:
     case Token.expressionBegin:
       colorObject(Token.atom, -1);
@@ -3082,11 +3086,6 @@ class Eval { //implements Runnable {
       if (!isSyntaxCheck)
         viewer.setRubberbandArgb(argb);
       return;
-    case Token.background:
-      argb = getArgbParamLast(2, true);
-      if (!isSyntaxCheck)
-        viewer.setBackgroundArgb(argb);
-      return;
     case Token.selectionHalo:
       argb = getArgbParamLast(2, true);
       if (isSyntaxCheck)
@@ -3095,12 +3094,23 @@ class Eval { //implements Runnable {
       setShapeProperty(JmolConstants.SHAPE_HALOS, "argbSelection", new Integer(
           argb));
       return;
+    case Token.axes:
+    case Token.boundbox:
+    case Token.unitcell:
     case Token.identifier:
     case Token.hydrogen:
       //color element
       String str = parameterAsString(1);
       argb = getArgbOrPaletteParam(2);
       checkStatementLength(iToken + 1);
+     if (str.equalsIgnoreCase("axes")) {
+       setStringProperty("axesColor", StateManager.escapeColor(argb));
+       return;
+     }else if (StateManager.getObjectIdFromName(str) >= 0) {
+        if (!isSyntaxCheck)
+          viewer.setObjectArgb(str, argb);
+        return;
+      }
       for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
         if (str.equalsIgnoreCase(JmolConstants.elementNameFromNumber(i))) {
           if (!isSyntaxCheck)
@@ -6154,20 +6164,20 @@ class Eval { //implements Runnable {
       return;
     }
     short mad = getSetAxesTypeMad(index);
-    setBooleanProperty("showAxes", mad != 0);
-    setShapeSize(JmolConstants.SHAPE_AXES, mad);
+    if (!isSyntaxCheck)
+      viewer.setObjectMad(JmolConstants.SHAPE_AXES, "axes", mad);
   }
 
   void setBoundbox(int index) throws ScriptException {
     short mad = getSetAxesTypeMad(index);
-    setBooleanProperty("showBoundBox", mad != 0);
-    setShapeSize(JmolConstants.SHAPE_BBCAGE, mad);
+    if (!isSyntaxCheck)
+      viewer.setObjectMad(JmolConstants.SHAPE_BBCAGE, "boundbox", mad);
   }
 
   void setUnitcell(int index) throws ScriptException {
     if (statementLength == 1) {
-      setBooleanProperty("showUnitcell", true);
-      setShapeSize(JmolConstants.SHAPE_UCCAGE, 1);
+      if (!isSyntaxCheck)
+        viewer.setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitcell", (short)1);
       return;
     }
     if (statementLength == index + 1) {
@@ -6176,8 +6186,8 @@ class Eval { //implements Runnable {
           viewer.setCurrentUnitCellOffset(intParameter(index));
       } else {
         short mad = getSetAxesTypeMad(index);
-        setBooleanProperty("showUnitcell", mad != 0);
-        setShapeSize(JmolConstants.SHAPE_UCCAGE, mad);
+        if (!isSyntaxCheck)
+          viewer.setObjectMad(JmolConstants.SHAPE_UCCAGE, "unitCell", mad);
       }
       return;
     }

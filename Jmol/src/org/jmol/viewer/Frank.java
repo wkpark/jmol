@@ -45,9 +45,7 @@ class Frank extends FontLineShape {
 
 
   void initShape() {
-    mad = 1;
     myType = "frank";
-    colix = defaultFontColix;
     font3d = g3d.getFont3D(defaultFontName, defaultFontStyle, defaultFontSize);
   }
 

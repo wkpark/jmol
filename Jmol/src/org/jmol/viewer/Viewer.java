@@ -1569,7 +1569,7 @@ public class Viewer extends JmolViewer {
     repaintManager.initializePointers(1);
     setCurrentModelIndex(0);
     setBackgroundModelIndex(-1);
-    setFrankOn(global.frankOn);
+    setFrankOn(getShowFrank());
     mouseManager.startHoverWatcher();
     setTainted(true);
   }
@@ -3390,7 +3390,7 @@ public class Viewer extends JmolViewer {
     if (key.equalsIgnoreCase("showHydrogens"))
       return getShowHydrogens();
     if (key.equalsIgnoreCase("frank"))
-      return getFrankOn();
+      return getShowFrank();
     if (key.equalsIgnoreCase("showMultipleBonds"))
       return getShowMultipleBonds();
     if (key.equalsIgnoreCase("showMeasurements"))
@@ -3779,6 +3779,11 @@ public class Viewer extends JmolViewer {
     boolean notFound = false;
     while (true) {
       
+      if (key.equalsIgnoreCase("showFrank")) {
+        setFrankOn(value);
+        break;
+      }
+
       if (key.equalsIgnoreCase("solventProbe")) {
         setSolventOn(value);
         break;
@@ -3928,10 +3933,6 @@ public class Viewer extends JmolViewer {
         setDebugScript(value);
         break;
       }
-      if (key.equalsIgnoreCase("frank")) {
-        setFrankOn(value);
-        break;
-      }
       if (key.equalsIgnoreCase("showHydrogens")) {
         setShowHydrogens(value);
         break;
@@ -4001,7 +4002,8 @@ public class Viewer extends JmolViewer {
    
       //these next are deprecated because they don't 
       //give much indication what they really do:
-
+      if (key.equalsIgnoreCase("frank"))
+        return setBooleanProperty("showFrank", value, true);
       if (key.equalsIgnoreCase("solvent"))
         return setBooleanProperty("solventProbe", value, true);
       if (key.equalsIgnoreCase("bonds")) 
@@ -4512,16 +4514,6 @@ public class Viewer extends JmolViewer {
     setShapeSize(JmolConstants.SHAPE_BALLS, -percentVdwAtom);
   }
 
-  public void setFrankOn(boolean TF) {
-    //initializeModel
-    global.frankOn = TF;
-    setShapeSize(JmolConstants.SHAPE_FRANK, TF ? 1 : 0);
-  }
-
-  boolean getFrankOn() {
-    return global.frankOn;
-  }
-
   public int getPercentVdwAtom() {
     return global.percentVdwAtom;
   }
@@ -4606,6 +4598,14 @@ public class Viewer extends JmolViewer {
 
   public boolean getShowAxes() {
     return getObjectMad(StateManager.OBJ_AXIS1) !=  0;
+  }
+
+  public void setFrankOn(boolean TF) {
+    setObjectMad(JmolConstants.SHAPE_FRANK, "frank", (short)(TF ? 1 : 0));
+  }
+
+  boolean getShowFrank() {
+    return getObjectMad(StateManager.OBJ_FRANK) !=  0;
   }
 
   public void setShowMeasurements(boolean TF) {

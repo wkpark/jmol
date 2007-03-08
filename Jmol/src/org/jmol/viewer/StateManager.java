@@ -47,8 +47,10 @@ class StateManager {
   final static int OBJ_AXIS3 = 3;
   final static int OBJ_BOUNDBOX = 4;
   final static int OBJ_UNITCELL = 5;
+  final static int OBJ_FRANK = 6;
+  final static int OBJ_MAX = 7;
   final static String objectNameList =
-      "background axis1      axis2      axis3      boundbox   unitcell   ";
+      "background axis1      axis2      axis3      boundbox   unitcell   frank      ";
   
   static int getObjectIdFromName(String name) {
     if (name == null)
@@ -455,7 +457,6 @@ class StateManager {
     boolean displayCellParameters       = true;
     boolean showHiddenSelectionHalos    = false;
     boolean showMeasurements            = true;
-    boolean frankOn                     = false;
     boolean zShade                      = false;
     boolean dynamicMeasurements         = false;
     
@@ -503,9 +504,9 @@ class StateManager {
     
     // window
     
-    int[] objColors            = new int[6];
-    boolean[] objStateOn       = new boolean[6];
-    short[] objMad             = new short[6];
+    int[] objColors            = new int[OBJ_MAX];
+    boolean[] objStateOn       = new boolean[OBJ_MAX];
+    short[] objMad             = new short[OBJ_MAX];
     String stereoState         = null;
     boolean navigationMode     = false;
     boolean navigationPeriodic = false;
@@ -519,7 +520,7 @@ class StateManager {
       appendCmd(str, "initialize");
       appendCmd(str, "stateVersion = " + getParameter("_version"));
       appendCmd(str, "refreshing = false");
-      for (int i = 0; i < 6; i++)
+      for (int i = 0; i < OBJ_MAX; i++)
         if (objColors[i] != 0)
           appendCmd(str, getObjectNameFromId(i) + "Color = "
               + escapeColor(objColors[i]));
@@ -596,7 +597,7 @@ class StateManager {
         ";refreshing;defaults;backgroundmodel;stereo;"
       + ";backgroundcolor;axescolor;axis1color;axis2color;axis3color;boundboxcolor;unitcellcolor;"
       + ";ambientpercent;diffusepercent;specular;specularexponent;specularpower;specularpercent;"
-      + ";debugscript;frank;showaxes;showunitcell;showboundbox;"
+      + ";debugscript;showfrank;showaxes;showunitcell;showboundbox;"
       + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;"
       + ";cameradepth;navigationmode;rotationradius;"
       + ";zerobasedxyzrasmol;axesorientationrasmol;"
@@ -818,7 +819,6 @@ class StateManager {
       setParameterValue("dynamicMeasurements",dynamicMeasurements);
 //nah      setParameterValue("enableFullSceneAntialiasing",enableFullSceneAntialiasing);
       setParameterValue("forceAutoBond",forceAutoBond);
-      setParameterValue("frank",frankOn);
       setParameterValue("greyscaleRendering",greyscaleRendering);
       setParameterValue("hbondsBackbone",hbondsBackbone);
       setParameterValue("hbondsSolid",hbondsSolid);

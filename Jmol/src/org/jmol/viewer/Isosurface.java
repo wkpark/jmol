@@ -2257,6 +2257,8 @@ class Isosurface extends IsosurfaceMeshCollection {
                              float x21, float x22) {
     float v1 = x11 + fx * (x12 - x11);
     float v2 = x21 + fx * (x22 - x21);
+//    if (v1 + fy*(v2-v1) > 100)
+//    System.out.println ("getfrac " + x11 + " " + x12 + " " + x21 + " " + x22 + " " + v1 + " " + v2);
     return v1 + fy * (v2 - v1);
   }
 
@@ -4773,7 +4775,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       for (int x = 0; x < nPointsX; ++x)
         for (int y = 0; y < nPointsY; ++y)
           for (int z = 0; z < nPointsZ; ++z)
-            property[x][y][z] = maxValue;
+            property[x][y][z] = Float.NaN;
       isProperty = true;
       propMax = theProperty.length;
       solvMax = solvent_atomNo.length;
@@ -4795,9 +4797,11 @@ class Isosurface extends IsosurfaceMeshCollection {
             float v = ptXyzTemp.distance(ptA) - rA;
             if (v < voxelData[i][j][k]) {
               voxelData[i][j][k] = (isNearby ? Float.NaN : v);
-              if (isProperty && iAtom < solvMax
-                  && (iPt = solvent_atomNo[iAtom]) >= 0 && iPt < propMax)
+                if (isProperty && iAtom < solvMax         
+                  && (iPt = solvent_atomNo[iAtom]) >= 0 && iPt < propMax) {
                 property[i][j][k] = theProperty[iPt];
+                //System.out.println("theprop "+ iPt + " ijk " + i + " " + j + " " + k + " = " + theProperty[iPt]);
+              }
             }
             ptXyzTemp.add(volumetricVectors[2]);
           }
@@ -4808,8 +4812,6 @@ class Isosurface extends IsosurfaceMeshCollection {
         ptXyzTemp.add(volumetricVectors[0]);
       }
     }
-    if (dataType == SURFACE_PROPERTY)
-      voxelData = property;
     if ((dataType == SURFACE_SOLVENT || dataType == SURFACE_MOLECULAR)
         && solventRadius > 0) {
       Point3i ptA0 = new Point3i();
@@ -4857,8 +4859,14 @@ class Isosurface extends IsosurfaceMeshCollection {
                       ptXyzTemp);
                   if (!Float.isNaN(dVS)) {
                     float v = solventRadius - dVS;
-                    if (v < voxelData[i][j][k])
+                    if (v < voxelData[i][j][k]) {
                       voxelData[i][j][k] = v;
+                      if (isProperty && iAtom < solvMax         
+                          && (iPt = solvent_atomNo[iAtom]) >= 0 && iPt < propMax) {
+                        property[i][j][k] = theProperty[iPt];
+                        //System.out.println("theprop "+ iPt + " ijk " + i + " " + j + " " + k + " = " + theProperty[iPt]);
+                        }
+                    }
                   }
                   ptXyzTemp.add(volumetricVectors[2]);
                 }
@@ -4871,7 +4879,16 @@ class Isosurface extends IsosurfaceMeshCollection {
           }
         }
     }
-    if (thePlane != null) {
+    if (dataType == SURFACE_PROPERTY)
+      voxelData = property;
+    if (thePlane == null) {
+      for (int i = pt0.x; i < pt1.x; i++)
+        for (int j = pt0.y; j < pt1.y; j++)
+          for (int k = pt0.z; k < pt1.z; k++)
+            if (voxelData[i][j][k] == Float.MAX_VALUE)
+              voxelData[i][j][k] = Float.NaN;
+              
+    } else {
       maxValue = 0.001f;
       for (int x = 0; x < nPointsX; ++x)
         for (int y = 0; y < nPointsY; ++y)

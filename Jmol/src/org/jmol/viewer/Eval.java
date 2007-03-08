@@ -1631,12 +1631,12 @@ class Eval { //implements Runnable {
       return atom.getMoleculeNumber();
     case Token.temperature: // 0 - 9999
       propertyValue = atom.getBfactor100();
-      return (propertyValue < 0 ? Integer.MAX_VALUE : propertyValue);
+      return (propertyValue < 0 ? Integer.MAX_VALUE : asInt ? propertyValue : propertyValue / 100f);
     case Token.surfacedistance:
       if (frame.getSurfaceDistanceMax() == 0)
         dots(statementLength, Dots.DOTS_MODE_CALCONLY);
       propertyValue = atom.getSurfaceDistance100();
-      return (propertyValue < 0 ? Integer.MAX_VALUE : propertyValue);
+      return (propertyValue < 0 ? Integer.MAX_VALUE : asInt ? propertyValue : propertyValue / 100f);
     case Token.occupancy:
       return atom.getOccupancy();
     case Token.polymerLength:

@@ -325,14 +325,11 @@ class ColorManager {
         colorHi = Math.max(colorHi, d);
         colorLo = Math.min(colorLo, d);
       }
-    System.out.println ("colormanager--setcurrentcolorrange "+colorHi+" " + colorLo);
   }  
 
   short getPropertyColix(int iAtom) {
     if (colorData == null || iAtom >= colorData.length)
       return Graphics3D.GRAY;
-    System.out.println ("\ngetPropertyColix-- "+iAtom+" "+colorData[iAtom]);
-    
     return getColixFromPalette(colorData[iAtom], colorLo, colorHi, colorPalette);
   }
   
@@ -347,10 +344,7 @@ class ColorManager {
     }
     if (palette.equals("roygb")) {
       int index = quantize(val, lo, hi, JmolConstants.argbsRoygbScale.length);
-      int c = JmolConstants.argbsRoygbScale[index];
-      System.out.println ("roygb val="+val + " lo=" + lo +  " hi=" + hi + " index = " + index + " / " + JmolConstants.argbsRoygbScale.length + " " + Integer.toHexString(c));
-      
-      return Graphics3D.getColix(c);
+      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[index]);
     }
     if (palette.equals("bgyor")) {
       int index = quantize(-val, -hi, -lo, JmolConstants.argbsRoygbScale.length);

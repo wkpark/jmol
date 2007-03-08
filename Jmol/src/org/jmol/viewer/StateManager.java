@@ -60,7 +60,7 @@ class StateManager {
   }
   
   static String getObjectNameFromId(int objId) {
-    if (objId < 0 || objId > 5)
+    if (objId < 0 || objId >= OBJ_MAX)
       return null;
    return objectNameList.substring(objId * 11,objId*11 + 11).trim();
   }
@@ -597,7 +597,7 @@ class StateManager {
         ";refreshing;defaults;backgroundmodel;stereo;"
       + ";backgroundcolor;axescolor;axis1color;axis2color;axis3color;boundboxcolor;unitcellcolor;"
       + ";ambientpercent;diffusepercent;specular;specularexponent;specularpower;specularpercent;"
-      + ";debugscript;showfrank;showaxes;showunitcell;showboundbox;"
+      + ";debugscript;showfrank;showaxes;showaxis1;showaxis2;showaxis3;showunitcell;showboundbox;"
       + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;"
       + ";cameradepth;navigationmode;rotationradius;"
       + ";zerobasedxyzrasmol;axesorientationrasmol;"
@@ -788,6 +788,11 @@ class StateManager {
     void registerAllValues() {
       htParameterValues = new Hashtable();
       htPropertyFlags = new Hashtable();
+      setParameterValue("showaxes",false);
+      setParameterValue("showunitcell",false);
+      setParameterValue("showboundbox",false);
+      setParameterValue("showfrank",false);
+
       setParameterValue("allowEmbeddedScripts",allowEmbeddedScripts);
       setParameterValue("allowRotateSelected",allowRotateSelected);
       setParameterValue("ambientPercent",ambientPercent);

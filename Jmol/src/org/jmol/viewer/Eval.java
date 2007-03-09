@@ -5514,7 +5514,7 @@ class Eval { //implements Runnable {
         int ilevel = intParameter(2);
         if (isSyntaxCheck)
           return;
-        Viewer.setLogLevel(ilevel);
+        Logger.setLogLevel(ilevel);
         Logger.info("logging level set to " + ilevel);
         return;
       }

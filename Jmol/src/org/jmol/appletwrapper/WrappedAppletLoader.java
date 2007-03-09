@@ -71,10 +71,16 @@ class WrappedAppletLoader extends Thread {
         }
       }
     }
+    try {
     tickerThread.keepRunning = false;
     tickerThread.interrupt();
     appletWrapper.wrappedApplet = wrappedApplet;
     appletWrapper.repaint();
+    } catch (Exception e) {
+      Logger.debug("applet wrapper MSIE bug: " + e);
+      return;
+    }
+    Logger.debug("applet wrapper init OK");
   }
 }
 

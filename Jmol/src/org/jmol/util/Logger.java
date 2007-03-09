@@ -100,6 +100,16 @@ public final class Logger {
   }
 
   /**
+   * Activates all logging levels up through a given level.
+   * 
+   * @param level
+   */
+  public static void setLogLevel(int level) {
+    for (int i = NB_LEVELS; --i >= 0;)
+      setActiveLevel(i, (NB_LEVELS - i) <= level);
+  }
+
+  /**
    * Returns the text corresponding to a level.
    * 
    * @param level Level.

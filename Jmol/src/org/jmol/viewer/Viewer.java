@@ -193,7 +193,7 @@ public class Viewer extends JmolViewer {
     if (!isApplet) {
       // not an applet -- used to pass along command line options
       if (str.indexOf("-i") >= 0) {
-        setLogLevel(3); //no info, but warnings and errors
+        Logger.setLogLevel(3); //no info, but warnings and errors
         isSilent = true;
       }
       if (str.indexOf("-c") >= 0) {
@@ -223,7 +223,7 @@ public class Viewer extends JmolViewer {
       Logger.info(JmolConstants.copyright + "\nJmol Version "
           + getJmolVersion() + "\njava.vendor:" + strJavaVendor
           + "\njava.version:" + strJavaVersion + "\nos.name:" + strOSName
-          + "\nmemory:" + getParameter("_memory") + "\n" + htmlName);
+          + "\nmemory:" + getParameter("_memory") + "\nappletId:" + htmlName);
     }
 
     if (isApplet)
@@ -258,11 +258,6 @@ public class Viewer extends JmolViewer {
 
   boolean mustRenderFlag() {
     return mustRender && refreshing;
-  }
-
-  static void setLogLevel(int ilevel) {
-    for (int i = Logger.NB_LEVELS; --i >= 0;)
-      Logger.setActiveLevel(i, (Logger.NB_LEVELS - i) <= ilevel);
   }
 
   static int getLogLevel() {

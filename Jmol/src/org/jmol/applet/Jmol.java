@@ -151,6 +151,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     return appletWrapper.getParameter(paramName);
   }
 
+  boolean haveNotifiedError = false;
+  
   public void initWindows() {
 
     // to enable CDK
@@ -165,40 +167,31 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     jvm12orGreater = viewer.isJvm12orGreater();
     if (jvm12orGreater)
       jvm12 = new Jvm12(appletWrapper, viewer);
+    Logger.debug("checking for jsoWindow mayScript="+mayScript);
     if (mayScript) {
       try {
         jsoWindow = JSObject.getWindow(appletWrapper);
+        Logger.debug("jsoWindow="+jsoWindow);
         if (jsoWindow == null)
           Logger.error("jsoWindow returned null ... no JavaScript callbacks :-(");
         jsoDocument = (JSObject) jsoWindow.getMember("document");
         if (jsoDocument == null)
           Logger.error("jsoDocument returned null ... no DOM manipulations :-(");
       } catch (Exception e) {
-        Logger.error("" + e);
+        jsoWindow = null;
+        jsoDocument = null;
+        Logger.error("Microsoft MSIE bug -- http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5012558 " + e);
       }
+      Logger.debug("jsoWindow:" + jsoWindow+ " jsoDocument:" + jsoDocument);
     }
   }
 
+  
   void setLogging(){
-    String logLevel = getValue("logLevel", "") + "4";
-    for (int i = 0; i < Logger.NB_LEVELS; i++)
-      Logger.setActiveLevel(i, false);
-    if (logLevel.charAt(0) > '5')
-      logLevel = "5";
-    if (logLevel.charAt(0)!='4')
-      System.out.println("setting logLevel="+logLevel.charAt(0)+" -- To change, use script \"set logLevel [0-5]\"");
-    switch (logLevel.charAt(0)) {
-    case '5':
-      Logger.setActiveLevel(Logger.LEVEL_DEBUG, true);
-    case '4':
-      Logger.setActiveLevel(Logger.LEVEL_INFO, true);
-    case '3':
-      Logger.setActiveLevel(Logger.LEVEL_WARN, true);
-    case '2':
-      Logger.setActiveLevel(Logger.LEVEL_ERROR, true);
-    case '1':
-      Logger.setActiveLevel(Logger.LEVEL_FATAL, true);
-    }
+    int iLevel = (getValue("logLevel", "") + "4").charAt(0) - '0';
+    if (iLevel != 4)
+      System.out.println("setting logLevel="+iLevel+" -- To change, use script \"set logLevel [0-5]\"");
+    Logger.setLogLevel(iLevel);
   }
   /*
    * PropertyResourceBundle appletProperties = null;
@@ -350,11 +343,18 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   void sendMessageCallback(String strMsg) {
-    if (messageCallback != null && jsoWindow != null)
-      if (messageCallback.equals("alert"))
-        jsoWindow.call(messageCallback, new Object[] { strMsg });
-      else
-        jsoWindow.call(messageCallback, new Object[] { htmlName, strMsg });
+    try {
+      if (messageCallback != null && jsoWindow != null)
+        if (messageCallback.equals("alert"))
+          jsoWindow.call(messageCallback, new Object[] { strMsg });
+        else
+          jsoWindow.call(messageCallback, new Object[] { htmlName, strMsg });
+    } catch (Exception e) {
+      if (!haveNotifiedError)
+      Logger.debug("messageCallback call error to " + messageCallback + ": "
+          + e);
+      haveNotifiedError = true;
+    }
   }
   
   void sendJsTextStatus(String message) {
@@ -773,30 +773,51 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         showStatusAndConsole(GT._("File Error:") + errorMsg);
         return;
       }
-      if (fullPathName != null)
-        if (loadStructCallback != null && jsoWindow != null)
-          if (loadStructCallback.equals("alert"))
-            jsoWindow.call(loadStructCallback, new Object[] { fullPathName });
-          else
-            jsoWindow.call(loadStructCallback, new Object[] { htmlName,
-                fullPathName });
-//      if (jmolpopup != null)
-  //      jmolpopup.updateComputedMenus();
+      try {
+        if (fullPathName != null)
+          if (loadStructCallback != null && jsoWindow != null)
+            if (loadStructCallback.equals("alert"))
+              jsoWindow.call(loadStructCallback, new Object[] { fullPathName });
+            else
+              jsoWindow.call(loadStructCallback, new Object[] { htmlName,
+                  fullPathName });
+      } catch (Exception e) {
+        if (!haveNotifiedError)
+          Logger.debug("loadStructCallback call error to " + loadStructCallback + ": "
+              + e);
+          haveNotifiedError = true;
+      }
+
+      //      if (jmolpopup != null)
+      //      jmolpopup.updateComputedMenus();
     }
 
     public void notifyScriptStart(String statusMessage, String additionalInfo) {
-      if (messageCallback != null && jsoWindow != null)
-        if (messageCallback.equals("alert"))
-          jsoWindow.call(messageCallback, new Object[] { statusMessage + " ; "
-              + additionalInfo });
-        else
-          jsoWindow.call(messageCallback, new Object[] { htmlName,
-              statusMessage, additionalInfo });
+      try {
+        if (messageCallback != null && jsoWindow != null)
+          if (messageCallback.equals("alert"))
+            jsoWindow.call(messageCallback, new Object[] { statusMessage
+                + " ; " + additionalInfo });
+          else
+            jsoWindow.call(messageCallback, new Object[] { htmlName,
+                statusMessage, additionalInfo });
+      } catch (Exception e) {
+        if (!haveNotifiedError)
+          Logger.debug("messageCallback call error to " + messageCallback + ": "
+              + e);
+          haveNotifiedError = true;
+      }
+
       showStatusAndConsole(statusMessage);
     }
 
     public float functionXY(String functionName, int x, int y) {
-      return ((Double) jsoWindow.call(functionName, new Object[] { htmlName, new Integer(x), new Integer(y)})).floatValue();
+      try {
+        return ((Double) jsoWindow.call(functionName, new Object[] { htmlName,
+            new Integer(x), new Integer(y) })).floatValue();
+      } catch (Exception e) {
+        return 0;
+      }
     }
     
     public void notifyNewPickingModeMeasurement(int iatom, String strMeasure) {
@@ -811,10 +832,18 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     public void notifyFrameChanged(int frameNo, int fileNo, int modelNo,
                                    int firstNo, int lastNo) {
       boolean isAnimationRunning = (frameNo <= -2);
-      if (animFrameCallback != null && jsoWindow != null)
-        jsoWindow.call(animFrameCallback, new Object[] { htmlName,
-            new Integer(Math.max(frameNo, -2 - frameNo)), new Integer(fileNo),
-            new Integer(modelNo), new Integer(firstNo), new Integer(lastNo) });
+      try {
+        if (animFrameCallback != null && jsoWindow != null)
+          jsoWindow.call(animFrameCallback, new Object[] { htmlName,
+              new Integer(Math.max(frameNo, -2 - frameNo)),
+              new Integer(fileNo), new Integer(modelNo), new Integer(firstNo),
+              new Integer(lastNo) });
+      } catch (Exception e) {
+        if (!haveNotifiedError)
+          Logger.debug("animFrameCallback call error to " + animFrameCallback + ": "
+              + e);
+          haveNotifiedError = true;
+      }
       if (jmolpopup == null || isAnimationRunning)
         return;
       jmolpopup.updateComputedMenus();
@@ -822,21 +851,35 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
     public void notifyAtomPicked(int atomIndex, String strInfo) {
       showStatusAndConsole(strInfo);
-      if (pickCallback != null && jsoWindow != null)
-        if (pickCallback.equals("alert"))
-          jsoWindow.call(pickCallback, new Object[] { strInfo });
-        else
-          jsoWindow.call(pickCallback, new Object[] { htmlName, strInfo,
-              new Integer(atomIndex) });
+      try {
+        if (pickCallback != null && jsoWindow != null)
+          if (pickCallback.equals("alert"))
+            jsoWindow.call(pickCallback, new Object[] { strInfo });
+          else
+            jsoWindow.call(pickCallback, new Object[] { htmlName, strInfo,
+                new Integer(atomIndex) });
+      } catch (Exception e) {
+        if (!haveNotifiedError)
+          Logger.debug("pickCallback call error to " + pickCallback + ": "
+              + e);
+          haveNotifiedError = true;
+      }
     }
 
     public void notifyAtomHovered(int atomIndex, String strInfo) {
-      if (hoverCallback != null && jsoWindow != null)
-        if (hoverCallback.equals("alert"))
-          jsoWindow.call(hoverCallback, new Object[] { strInfo });
-        else
-          jsoWindow.call(hoverCallback, new Object[] { htmlName, strInfo,
-              new Integer(atomIndex) });
+      try {
+        if (hoverCallback != null && jsoWindow != null)
+          if (hoverCallback.equals("alert"))
+            jsoWindow.call(hoverCallback, new Object[] { strInfo });
+          else
+            jsoWindow.call(hoverCallback, new Object[] { htmlName, strInfo,
+                new Integer(atomIndex) });
+      } catch (Exception e) {
+        if (!haveNotifiedError)
+          Logger.debug("hoverCallback call error to " + hoverCallback + ": "
+              + e);
+          haveNotifiedError = true;
+      }
     }
     
     public void notifyScriptTermination(String errorMessage, int msWalltime) {

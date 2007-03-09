@@ -5561,12 +5561,12 @@ class Eval { //implements Runnable {
         setIntProperty(key, Viewer.cardinalityOf((BitSet) v));
         setStringProperty(key + "_set", StateManager.escape((BitSet) v, false));
         if (showing)
-          viewer.showParameter(key + "_set", true, 60);
+          viewer.showParameter(key + "_set", true, 80);
       } else if (v instanceof BitSet) {
         setIntProperty(key, Viewer.cardinalityOf((BitSet) v));
         setStringProperty(key + "_set", StateManager.escape((BitSet) v));
         if (showing)
-          viewer.showParameter(key + "_set", true, 60);
+          viewer.showParameter(key + "_set", true, 80);
       } else if (v instanceof Point3f) {
         //drawPoint(key, (Point3f) v, false);
         str = StateManager.escape((Point3f) v);
@@ -5582,7 +5582,7 @@ class Eval { //implements Runnable {
       }
     }
     if (showing)
-      viewer.showParameter(key, true, 60);
+      viewer.showParameter(key, true, 80);
   }
 
   boolean setParameter(String key, int intVal) throws ScriptException {
@@ -8626,7 +8626,7 @@ class Eval { //implements Runnable {
         Token x = xStack[0];
         if (x.tok == Token.bitset || x.tok == Token.list
             || x.tok == Token.string)
-          x = xStack[0] = Token.selectItem(x, -1);
+          x = xStack[0] = Token.selectItem(x, Integer.MIN_VALUE);
         if (x.tok == Token.list)
           x = new Token(Token.string, Token.sValue(x));
         return x;
@@ -8895,8 +8895,6 @@ class Eval { //implements Runnable {
       if (xPt < 1)
         return false;
       int i = Token.iValue(xStack[xPt--]);
-      if (i < 0)
-        return false;
       Token token = xStack[xPt];
       switch (token.tok) {
       default:

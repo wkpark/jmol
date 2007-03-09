@@ -543,27 +543,29 @@ public class Token {
   }
 
   static BitSet bsSelect(Token token) {
-    selectItem(token, -1);
+    selectItem(token, Integer.MIN_VALUE);
     return (BitSet)token.value;
   }
 
   static BitSet bsSelect(Token token, int n) {
-    selectItem(token, -1);
+    selectItem(token, Integer.MIN_VALUE);
     selectItem(token, 1);
     selectItem(token, n);
     return (BitSet)token.value;
   }
 
   static Token selectItem(Token token, int i2) {
+    
+    // negative number is a count from the end
+    
     BitSet bs = null;
     String[] st = null;
     String s =null;
     
     int i1 = token.intValue;
-    // maxvalue or positive: atoms; minvalue or negative: bonds
     if (i1 == Integer.MAX_VALUE) {
-      if (i2 > 0)
-        token.intValue = i2;
+      if (i2 != Integer.MIN_VALUE)
+      token.intValue = i2;
       return token;
     }
     int len = 0;
@@ -583,11 +585,16 @@ public class Token {
     }
 
     token.intValue = Integer.MAX_VALUE;
+    if (i1 < 0)
+      i1 = len + i1 + 1;
+    if (i1 < 1)
+      i1 = 1;
     if (i2 == 0)
       i2 = len;
     else if (i2 < 0)
-      i2 = i1;
-    else if (i2 > len)
+      i2 = len + i2;
+    
+    if (i2 > len)
       i2 = len;
     else if (i2 < i1)
       i2 = i1;

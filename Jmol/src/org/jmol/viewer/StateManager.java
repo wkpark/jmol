@@ -522,8 +522,8 @@ class StateManager {
       appendCmd(str, "refreshing = false");
       for (int i = 0; i < OBJ_MAX; i++)
         if (objColors[i] != 0)
-          appendCmd(str, getObjectNameFromId(i) + "Color = "
-              + escapeColor(objColors[i]));
+          appendCmd(str, getObjectNameFromId(i) + "Color = \""
+              + escapeColor(objColors[i]) + '"');
       str.append(getSpecularState());
       if (stereoState != null)
         appendCmd(str, "stereo" + stereoState);

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-02-27 22:46+0100\n"
-"PO-Revision-Date: 2006-12-12 01:07+0100\n"
+"PO-Revision-Date: 2007-03-10 14:10+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -812,12 +812,8 @@ msgid "Filename Stem"
 msgstr "Raíz del nombre de archivo"
 
 #: org/openscience/jmol/app/PovrayDialog.java:163
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
-msgstr ""
-"Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p."
-"ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgstr "Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p.ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:173
 msgid "Working Directory"
@@ -861,9 +857,7 @@ msgstr "Activar el suavizado de bordes en POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:235
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr ""
-"Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor "
-"calidad"
+msgstr "Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor calidad"
 
 #: org/openscience/jmol/app/PovrayDialog.java:244
 msgid "Display While Rendering"
@@ -871,8 +865,7 @@ msgstr "Mostrar mientras se está representando"
 
 #: org/openscience/jmol/app/PovrayDialog.java:246
 msgid "Should povray attempt to display while rendering?"
-msgstr ""
-"¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
+msgstr "¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:255
 #: org/openscience/jmol/app/PovrayDialog.java:257
@@ -1115,11 +1108,11 @@ msgstr "Ayuda"
 
 #: org/openscience/jmol/app/ScriptWindow.java:116
 msgid "Undo"
-msgstr ""
+msgstr "Deshacer"
 
 #: org/openscience/jmol/app/ScriptWindow.java:120
 msgid "Redo"
-msgstr ""
+msgstr "Rehacer"
 
 #: org/openscience/jmol/app/Splash.java:45
 msgid "Loading..."
@@ -1135,84 +1128,58 @@ msgstr "Novedades en Jmol"
 #, fuzzy
 #~ msgid "CLIP or JPG|PNG|PPM:filename"
 #~ msgstr " nombre de archivo JPG|PNG|PPM"
-
 #~ msgid "no display"
 #~ msgstr "sin mostrar"
-
 #~ msgid "run script and exit"
 #~ msgstr "ejecutar guión y salir"
-
 #~ msgid "pick one more atom in order to spin the model around an axis"
 #~ msgstr "elige uno o varios átomos para que el modelo gire en torno a un eje"
-
 #~ msgid "pick two atoms in order to spin the model around an axis"
 #~ msgstr "elige dos átomos para que el modelo gire en torno a un eje"
-
 #~ msgid "atoms selected"
 #~ msgstr "átomos seleccionados"
-
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Jmol ejecutando guión..."
-
 #~ msgid "pick "
 #~ msgstr "elige"
-
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "&Rotar en modelo de alambres"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotar en modelo de alambres"
-
 #~ msgid "Colors"
 #~ msgstr "Colores"
-
 #~ msgid "Background"
 #~ msgstr "Fondo"
-
 #~ msgid "Set the Background Color"
 #~ msgstr "Elegir el color de fondo"
-
 #~ msgid "Background Color"
 #~ msgstr "Color de fondo"
-
 #~ msgid "Picked Atoms"
 #~ msgstr "Atomos seleccionados"
-
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Elegir color para átomos seleccionados"
-
 #~ msgid "Picked Atom Color"
 #~ msgstr "Color del átomo elegido"
-
 #~ msgid "Text"
 #~ msgstr "Texto"
-
 #~ msgid "Set the Color for Text"
 #~ msgstr "Elegir color del texto"
-
 #~ msgid "Text Color"
 #~ msgstr "Color de texto"
-
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Elegir color para enlaces"
-
 #~ msgid "Bond Color"
 #~ msgstr "Color de enlaces"
-
 #~ msgid "Vectors"
 #~ msgstr "Vectores"
-
 #~ msgid "Set the Vector Color"
 #~ msgstr "Elegir color para vectores"
-
 #~ msgid "Vector Color"
 #~ msgstr "Color de vectores"
-
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Color para mediciones de distancia, ángulo y torsión"
-
 #~ msgid "Measurements Color"
 #~ msgstr "Color de mediciones"
-
 #~ msgid "Loading plugins..."
 #~ msgstr "Cargando conectores..."
+

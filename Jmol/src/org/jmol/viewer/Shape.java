@@ -210,8 +210,8 @@ abstract class Shape {
   }
 
   String encodeColor(short colix) {
-    return (Graphics3D.isColixTranslucent(colix) ? "translucent" : "")
-        + (colix == 0 ? " none" : StateManager.escapeColor(g3d.getColixArgb(colix)));
+    return (Graphics3D.isColixTranslucent(colix) ? "translucent " : "")
+        + (colix == 0 ? "none" : StateManager.escapeColor(g3d.getColixArgb(colix)));
   }
 
   static short getColix(short[] colixes, int i, Atom atom) {

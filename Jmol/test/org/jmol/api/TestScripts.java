@@ -20,16 +20,40 @@ import junit.framework.TestSuite;
  */
 public class TestScripts extends TestSuite {
 
+  public TestScripts() {
+    super();
+  }
+
+  public TestScripts(Class theClass, String name) {
+    super(theClass, name);
+  }
+
+  public TestScripts(Class theClass) {
+    super(theClass);
+  }
+
+  public TestScripts(String name) {
+    super(name);
+  }
+
   /**
    * @return Test suite containing tests for all scripts.
    */
   public static Test suite() {
-    TestScripts result = new TestScripts();
+    TestScripts result = new TestScripts("Test for scripts");
     String datafileDirectory = System.getProperty(
         "test.datafile.script.directory",
         "../Jmol-datafiles/tests/scripts");
-    result.addDirectory(datafileDirectory + "/check", true);
-    result.addDirectory(datafileDirectory + "/run", false);
+    TestScripts resultCheck = new TestScripts("Test for checking scripts");
+    resultCheck.addDirectory(datafileDirectory + "/check", true);
+    if (resultCheck.countTestCases() > 0) {
+      result.addTest(resultCheck);
+    }
+    TestScripts resultRun = new TestScripts("Test for running scripts");
+    resultRun.addDirectory(datafileDirectory + "/run", false);
+    if (resultRun.countTestCases() > 0) {
+      result.addTest(resultRun);
+    }
     return result;
   }
 

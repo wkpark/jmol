@@ -26,11 +26,27 @@ public class TestSmarterJmolAdapter extends TestSuite {
 
   private String datafileDirectory = "../Jmol-datafiles";
 
+  public TestSmarterJmolAdapter() {
+    super();
+  }
+
+  public TestSmarterJmolAdapter(Class theClass, String name) {
+    super(theClass, name);
+  }
+
+  public TestSmarterJmolAdapter(Class theClass) {
+    super(theClass);
+  }
+
+  public TestSmarterJmolAdapter(String name) {
+    super(name);
+  }
+
   /**
    * @return Test suite containing tests for all files
    */
   public static Test suite() {
-    TestSmarterJmolAdapter result = new TestSmarterJmolAdapter();
+    TestSmarterJmolAdapter result = new TestSmarterJmolAdapter("Test for org.jmol.adapter.smarter.SmarterJmolAdapter");
     result.datafileDirectory = System.getProperty("test.datafile.directory", result.datafileDirectory);
     //result.addDirectory(false, "abint", "out");
     //result.addDirectory(false, "aces2", "dat");

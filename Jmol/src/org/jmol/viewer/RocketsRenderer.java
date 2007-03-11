@@ -116,7 +116,6 @@ class RocketsRenderer extends MpsRenderer {
   int endIndexPending;
   short madPending;
   short colixPending;
-  int[] shadesPending;
 
   void renderPending() {
     if (!tPending)
@@ -137,19 +136,22 @@ class RocketsRenderer extends MpsRenderer {
   Point3f screenB = new Point3f();
   Point3f screenC = new Point3f();
 
-  void renderPendingRocketSegment(int i, Point3f pointStart, Point3f pointBeforeEnd,
-                                  Point3f pointEnd, boolean tEnd) {
+  void renderPendingRocketSegment(int i, Point3f pointStart,
+                                  Point3f pointBeforeEnd, Point3f pointEnd,
+                                  boolean tEnd) {
     viewer.transformPoint(pointStart, screenA);
     viewer.transformPoint(pointEnd, screenB);
     int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);
     int diameter = viewer.scaleToScreen(zMid, madPending);
     if (tEnd) {
       viewer.transformPoint(pointBeforeEnd, screenC);
-      if (pointBeforeEnd.distance(pointEnd) > MIN_CONE_HEIGHT) {
-        renderCone(i, pointBeforeEnd, pointEnd, screenC, screenB, colixPending, madPending);
-      } else {
-        g3d.fillCylinderBits(colixPending, Graphics3D.ENDCAPS_FLAT, diameter,
-            screenB, screenC);
+      if (g3d.setColix(colixPending)) {
+        if (pointBeforeEnd.distance(pointEnd) > MIN_CONE_HEIGHT)
+          renderCone(i, pointBeforeEnd, pointEnd, screenC, screenB, madPending,
+              colixPending);
+        else
+          g3d.fillCylinderBits(Graphics3D.ENDCAPS_FLAT, diameter, screenB,
+              screenC);
       }
       if (startIndexPending == endIndexPending)
         return;
@@ -157,13 +159,14 @@ class RocketsRenderer extends MpsRenderer {
       screenB = screenC;
       screenC = t;
     }
-    g3d.fillCylinderBits(colixPending, Graphics3D.ENDCAPS_FLAT, diameter,
-        screenA, screenB);
+    if (g3d.setColix(colixPending))
+      g3d.fillCylinderBits(Graphics3D.ENDCAPS_FLAT, diameter, screenA, screenB);
   }
 
   void renderPendingSheet(Point3f pointStart, Point3f pointBeforeEnd,
                           Point3f pointEnd, boolean tEnd) {
-    shadesPending = g3d.getShades(colixPending);
+    if (!g3d.setColix(colixPending))
+      return;
     if (tEnd) {
       drawArrowHeadBox(pointBeforeEnd, pointEnd);
       drawBox(pointStart, pointBeforeEnd);
@@ -254,15 +257,17 @@ class RocketsRenderer extends MpsRenderer {
       int i1 = boxFaces[i * 4 + 1];
       int i2 = boxFaces[i * 4 + 2];
       int i3 = boxFaces[i * 4 + 3];
-      g3d.fillQuadrilateral(colixPending,
-                            screenCorners[i0],
-                            screenCorners[i1],
-                            screenCorners[i2],
-                            screenCorners[i3]);
+      if (g3d.setColix(colixPending))
+        g3d.fillQuadrilateral(screenCorners[i0],
+                              screenCorners[i1],
+                              screenCorners[i2],
+                              screenCorners[i3]);
     }
   }
 
   void drawArrowHeadBox(Point3f base, Point3f tip) {
+    if (!g3d.setColix(colixPending))
+      return;
     Sheet sheet = (Sheet)proteinstructurePending;
     float scale = madPending / 1000f;
     scaledWidthVector.set(sheet.getWidthUnitVector());
@@ -275,12 +280,10 @@ class RocketsRenderer extends MpsRenderer {
     pointTipOffset.scaleAdd(-0.5f, tip);
     buildArrowHeadBox(pointCorner, scaledWidthVector,
                       scaledHeightVector, pointTipOffset);
-    g3d.fillTriangle(colixPending,
-                     screenCorners[0],
+    g3d.fillTriangle(screenCorners[0],
                      screenCorners[1],
                      screenCorners[4]);
-    g3d.fillTriangle(colixPending,
-                     screenCorners[2],
+    g3d.fillTriangle(screenCorners[2],
                      screenCorners[3],
                      screenCorners[5]);
     for (int i = 0; i < 12; i += 4) {
@@ -288,11 +291,10 @@ class RocketsRenderer extends MpsRenderer {
       int i1 = arrowHeadFaces[i + 1];
       int i2 = arrowHeadFaces[i + 2];
       int i3 = arrowHeadFaces[i + 3];
-      g3d.fillQuadrilateral(colixPending,
-                            screenCorners[i0],
-                            screenCorners[i1],
-                            screenCorners[i2],
-                            screenCorners[i3]);
+      g3d.fillQuadrilateral(screenCorners[i0],
+                              screenCorners[i1],
+                              screenCorners[i2],
+                              screenCorners[i3]);
     }
   }
 }

@@ -103,20 +103,22 @@ class DotsRenderer extends ShapeRenderer {
   int[] mapAtoms = null; 
   void renderConvex(Dots dots, Atom atom, short colix, int[] visibilityMap,
                     boolean iShowSolid, boolean isInMotion) {
-    colix = Graphics3D.getColixInherited(colix, atom.colixAtom);
     if (mapAtoms == null)
       mapAtoms = new int[geodesic.vertices.length];
     boolean isSolid = (iShowSolid && !isInMotion);
     geodesic.calcScreenPoints(visibilityMap, dots.getAppropriateRadius(atom),
-        atom.screenX, atom.screenY, atom.screenZ, mapAtoms,
-        isSolid);
+        atom.screenX, atom.screenY, atom.screenZ, mapAtoms, isSolid);
     if (geodesic.screenCoordinateCount == 0)
       return;
+    colix = (isSolid ? dots.surfaceColix : Graphics3D.getColixInherited(colix,
+        atom.colixAtom));
+    if (!g3d.setColix(colix))
+      return;
     if (isSolid)
-      renderGeodesicFragment(dots.surfaceColix, geodesic, visibilityMap,
-          mapAtoms, geodesic.screenDotCount);
+      renderGeodesicFragment(geodesic, visibilityMap, mapAtoms,
+          geodesic.screenDotCount);
     else
-      g3d.drawPoints(colix, geodesic.screenCoordinateCount,
+      g3d.drawPoints(geodesic.screenCoordinateCount,
           geodesic.screenCoordinates);
   }
 
@@ -124,7 +126,7 @@ class DotsRenderer extends ShapeRenderer {
   Point3i facePt2 = new Point3i();
   Point3i facePt3 = new Point3i();
   
-  void renderGeodesicFragment(short colix, Geodesic g, int[] points, int[] map,
+  void renderGeodesicFragment(Geodesic g, int[] points, int[] map,
                               int dotCount) {
     short[] faces = (g.screenLevel == 1 ? g1.faceIndices
         : g.screenLevel == 2 ? g2.faceIndices : g.faceIndices);
@@ -147,7 +149,8 @@ class DotsRenderer extends ShapeRenderer {
       facePt1.set(coords[map[p1]], coords[map[p1] + 1], coords[map[p1] + 2]);
       facePt2.set(coords[map[p2]], coords[map[p2] + 1], coords[map[p2] + 2]);
       facePt3.set(coords[map[p3]], coords[map[p3] + 1], coords[map[p3] + 2]);
-      g3d.fillTriangle(colix, facePt1, facePt2, facePt3);
+      g3d.calcSurfaceShade(facePt1, facePt2, facePt3);
+      g3d.fillTriangle(facePt1, facePt2, facePt3);
     }
   }
   final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));

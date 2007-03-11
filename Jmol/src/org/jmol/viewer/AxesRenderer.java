@@ -46,7 +46,7 @@ class AxesRenderer extends ShapeRenderer {
   void render() {
     Axes axes = (Axes) shape;
     short mad = viewer.getObjectMad(StateManager.OBJ_AXIS1);
-    if (mad == 0)
+    if (mad == 0 || !g3d.checkTranslucent(false));
       return;
     if (viewer.areAxesTainted())
       axes.initShape();
@@ -71,22 +71,24 @@ class AxesRenderer extends ShapeRenderer {
     colixes[2] = viewer.getObjectColix(StateManager.OBJ_AXIS3);
 
     for (int i = nPoints; --i >= 0;) {
-      short colix = colixes[i % 3];                          
+      g3d.setColix(colixes[i % 3]);                          
       if (mad < 0)
-        g3d.drawDottedLine(colix, originScreen, axisScreens[i]);
+        g3d.drawDottedLine(originScreen, axisScreens[i]);
       else
-        g3d.fillCylinder(colix, Graphics3D.ENDCAPS_FLAT, widthPixels,
+        g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, widthPixels,
             originScreen, axisScreens[i]);
       String label = axisLabels[i + labelPtr];
       if (label != null)
-        renderLabel(label, colix, axes.font3d, axisScreens[i].x,
+        renderLabel(label, axes.font3d, axisScreens[i].x,
             axisScreens[i].y, axisScreens[i].z, g3d);
     }
-    if (nPoints == 3) //a b c
-      renderLabel("0", viewer.getColixBackgroundContrast(), axes.font3d, originScreen.x, originScreen.y, originScreen.z, g3d);
+    if (nPoints == 3) { //a b c
+      g3d.setColix(viewer.getColixBackgroundContrast());
+      renderLabel("0", axes.font3d, originScreen.x, originScreen.y, originScreen.z, g3d);
+    }
   }
   
-  void renderLabel(String str, short colix, Font3D font3d, int x,
+  void renderLabel(String str, Font3D font3d, int x,
                            int y, int z, Graphics3D g3d) {
     FontMetrics fontMetrics = font3d.fontMetrics;
     int strAscent = fontMetrics.getAscent();
@@ -102,6 +104,6 @@ class AxesRenderer extends ShapeRenderer {
     }
     int xStrBaseline = x - strWidth / 2;
     int yStrBaseline = y + strAscent / 2;
-    g3d.drawString(str, font3d, colix, xStrBaseline, yStrBaseline, z, z);
+    g3d.drawString(str, font3d, xStrBaseline, yStrBaseline, z, z);
   }
 }

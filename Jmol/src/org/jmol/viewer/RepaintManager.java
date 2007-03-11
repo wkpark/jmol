@@ -152,9 +152,8 @@ class RepaintManager {
                      Frame frame, int displayModelID) {
     frameRenderer.render(g3d, rectClip, frame, displayModelID);
     Rectangle band = viewer.getRubberBandSelection();
-    if (band != null)
-      g3d.drawRect(viewer.getColixRubberband(),
-                   band.x, band.y, 0, 0, band.width, band.height);
+    if (band != null && g3d.setColix(viewer.getColixRubberband()))
+      g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);
   }
 
   /****************************************************************

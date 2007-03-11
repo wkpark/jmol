@@ -41,16 +41,15 @@ class VectorsRenderer extends ShapeRenderer {
     short[] colixes = vectors.colixes;
     for (int i = frame.atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) == 0
-          || (atom.shapeVisibilityFlags & vectors.myVisibilityFlag) == 0
-          || frame.bsHidden.get(i))
+      if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i))
         continue;
       Vector3f vibrationVector = atom.getVibrationVector();
       if (vibrationVector == null)
         continue;
       vectorScale = viewer.getVectorScale();
-      if (transform(mads[i], atom, vibrationVector))
-        renderVector((colixes == null ? Graphics3D.INHERIT : colixes[i]), atom);
+      if (transform(mads[i], atom, vibrationVector)
+          && g3d.setColix(Shape.getColix(colixes, i, atom)))
+        renderVector(atom);
     }
   }
 
@@ -91,13 +90,12 @@ class VectorsRenderer extends ShapeRenderer {
     return true;
   }
   
-  void renderVector(short colix, Atom atom) {
-    colix = Graphics3D.getColixInherited(colix, atom.colixAtom);
+  void renderVector(Atom atom) {
     if (doShaft)
-    g3d.fillCylinder(colix, Graphics3D.ENDCAPS_OPEN, diameter,
-                 atom.screenX, atom.screenY, atom.screenZ,
-                 screenArrowHead.x, screenArrowHead.y, screenArrowHead.z);
-    g3d.fillCone(colix, Graphics3D.ENDCAPS_FLAT, headWidthPixels,
-                 screenArrowHead, screenVectorEnd);
+      g3d.fillCylinder(Graphics3D.ENDCAPS_OPEN, diameter, atom.screenX,
+          atom.screenY, atom.screenZ, screenArrowHead.x, screenArrowHead.y,
+          screenArrowHead.z);
+    g3d.fillCone(Graphics3D.ENDCAPS_FLAT, headWidthPixels, screenArrowHead,
+        screenVectorEnd);
   }
 }

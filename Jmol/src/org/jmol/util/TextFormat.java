@@ -34,6 +34,15 @@ public class TextFormat {
   private static String[] formattingStrings = { "0", "0.0", "0.00", "0.000",
       "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000" };
 
+  private static Boolean[] useNumberLocalization = new Boolean[1];
+  {
+    useNumberLocalization[0] = Boolean.TRUE;
+  }
+  
+  public static void setUseNumberLocalization(boolean TF) {
+    useNumberLocalization[0] = (TF ? Boolean.TRUE : Boolean.FALSE);
+  }
+
   public static String formatDecimal(float value, int decimalDigits) {
     if (decimalDigits == Integer.MAX_VALUE)
       return "" + value;
@@ -57,33 +66,36 @@ public class TextFormat {
       int i = s.indexOf("E");
       n = Parser.parseInt(s.substring(i + 1)) + n;
       return (i < 0 ? "" + value : formatDecimal(Parser.parseFloat(s.substring(
-          0, i)), decimalDigits - 1) + "E" + (n >= 0 ? "+" : "") + n);
+          0, i)), decimalDigits - 1)
+          + "E" + (n >= 0 ? "+" : "") + n);
     }
-    
+
     if (decimalDigits >= formattingStrings.length)
       decimalDigits = formattingStrings.length - 1;
     DecimalFormat formatter = formatters[decimalDigits];
     if (formatter == null)
       formatter = formatters[decimalDigits] = new DecimalFormat(
           formattingStrings[decimalDigits]);
-    return formatter.format(value);
+    String s = formatter.format(value);
+    return (useNumberLocalization[0] == Boolean.TRUE ? s : simpleReplace(s,
+        ",", "."));
   }
 
   public static String format(float value, int width, int precision,
                               boolean alignLeft, boolean zeroPad) {
-    return format(formatDecimal(value, precision), width,
-        0, alignLeft, zeroPad);
+    return format(formatDecimal(value, precision), width, 0, alignLeft, zeroPad);
   }
 
   public static String format(String value, int width, int precision,
                               boolean alignLeft, boolean zeroPad) {
     if (value == null)
       return "";
-    if (precision != Integer.MAX_VALUE && precision > 0 && precision < value.length())
+    if (precision != Integer.MAX_VALUE && precision > 0
+        && precision < value.length())
       value = value.substring(0, precision);
     else if (precision < 0 && -precision < value.length())
       value = value.substring(value.length() + precision);
-    
+
     int padLength = width - value.length();
     if (padLength <= 0)
       return value;
@@ -95,7 +107,8 @@ public class TextFormat {
     if (alignLeft)
       sb.append(value);
     sb.append(padChar0);
-    for (int i = padLength; --i > 0;) // this is correct, not >= 0
+    for (int i = padLength; --i > 0;)
+      // this is correct, not >= 0
       sb.append(padChar);
     if (!alignLeft)
       sb.append(isNeg ? padChar + value.substring(1) : value);
@@ -105,13 +118,14 @@ public class TextFormat {
   public static String formatString(String strFormat, String key, String strT) {
     return formatString(strFormat, key, strT, Float.NaN);
   }
-  
+
   public static String formatString(String strFormat, String key, float floatT) {
     return formatString(strFormat, key, null, floatT);
-  }    
+  }
+
   public static String formatString(String strFormat, String key, int intT) {
     return formatString(strFormat, key, "" + intT, Float.NaN);
-  }    
+  }
 
   /**
    * generic string formatter  based on formatLabel in Atom
@@ -123,7 +137,7 @@ public class TextFormat {
    * @param floatT   replacement float or Float.NaN
    * @return         formatted string
    */
-  
+
   public static String formatString(String strFormat, String key, String strT,
                                     float floatT) {
     if (strFormat == null)
@@ -269,10 +283,10 @@ public class TextFormat {
     if (len == 0)
       return str.trim();
     int k = 0;
-    while(str.indexOf(chars, k) == k)
+    while (str.indexOf(chars, k) == k)
       k += len;
     int m = str.length() - len;
-    while(str.indexOf(chars, m) == m)
+    while (str.indexOf(chars, m) == m)
       m -= len;
     return str.substring(k, m + len);
   }

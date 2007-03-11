@@ -70,7 +70,7 @@ abstract class Shape {
   Graphics3D g3d;
   int shapeID;
   int myVisibilityFlag;
-
+  
   final void setViewerG3dFrame(Viewer viewer, Graphics3D g3d, Frame frame,
                                int shapeID) {
     this.viewer = viewer;
@@ -213,5 +213,11 @@ abstract class Shape {
     return (Graphics3D.isColixTranslucent(colix) ? "translucent" : "")
         + (colix == 0 ? " none" : StateManager.escapeColor(g3d.getColixArgb(colix)));
   }
+
+  static short getColix(short[] colixes, int i, Atom atom) {
+    return Graphics3D.getColixInherited(
+        (colixes == null || i >= colixes.length ? Graphics3D.INHERIT
+            : colixes[i]), atom.colixAtom);
+  }  
 
 }

@@ -34,7 +34,7 @@ class PolyhedraRenderer extends ShapeRenderer {
     Polyhedra.Polyhedron[] polyhedrons = polyhedra.polyhedrons;
     drawEdges = polyhedra.drawEdges;
     for (int i = polyhedra.polyhedronCount; --i >= 0;) {
-      short colix = polyhedra.colixes == null ? 0
+      short colix = polyhedra.colixes == null ? Graphics3D.INHERIT
           : polyhedra.colixes[polyhedrons[i].centralAtom.atomIndex];
       render1(polyhedrons[i], colix);
     }
@@ -56,36 +56,29 @@ class PolyhedraRenderer extends ShapeRenderer {
     boolean isAll = (drawEdges == Polyhedra.EDGES_ALL);
     boolean isFrontOnly = (drawEdges == Polyhedra.EDGES_FRONT);
 
-    // no edges to new points when not collapsed 
+    // no edges to new points when not collapsed
+    if (g3d.setColix(colix))
+      for (int i = 0, j = 0; j < planes.length;)
+        fillFace(p.normixes[i++], vertices[planes[j++]], vertices[planes[j++]],
+            vertices[planes[j++]]);
+    if (!g3d.setColix(Graphics3D.getColixTranslucent(colix, false)))
+      return;
     for (int i = 0, j = 0; j < planes.length;)
-      if (true || p.collapsed || planes[j] < p.ptCenter
-          && planes[j + 1] < p.ptCenter && planes[j + 2] < p.ptCenter) {
-        drawFace(colix, p.normixes[i++], vertices[planes[j++]],
-            vertices[planes[j++]], vertices[planes[j++]], isAll, isFrontOnly);
-      } else {
-        i++;
-        j += 3;
-      }
-
-    for (int i = 0, j = 0; j < planes.length;)
-      fillFace(colix, p.normixes[i++], vertices[planes[j++]],
-          vertices[planes[j++]], vertices[planes[j++]]);
+      drawFace(p.normixes[i++], vertices[planes[j++]],
+          vertices[planes[j++]], vertices[planes[j++]], isAll, isFrontOnly);
   }
 
-  void drawFace(short colix, short normix,
-                Atom atomA, Atom atomB, Atom atomC, boolean isAll, boolean isFrontOnly) {
-    if (isAll || isFrontOnly && g3d.isDirectedTowardsCamera(normix)) {
-      g3d.drawCylinderTriangle(Graphics3D.getColixTranslucent(colix, false),
-                               atomA.screenX, atomA.screenY, atomA.screenZ,
-                               atomB.screenX, atomB.screenY, atomB.screenZ,
-                               atomC.screenX, atomC.screenY, atomC.screenZ,
-                               3);
-    }
+  void drawFace(short normix, Atom atomA, Atom atomB, Atom atomC,
+                boolean isAll, boolean isFrontOnly) {
+    if (isAll || isFrontOnly && g3d.isDirectedTowardsCamera(normix))
+      g3d.drawCylinderTriangle(atomA.screenX, atomA.screenY, atomA.screenZ,
+          atomB.screenX, atomB.screenY, atomB.screenZ, atomC.screenX,
+          atomC.screenY, atomC.screenZ, 3);
   }
 
-  void fillFace(short colix, short normix,
+  void fillFace(short normix,
                   Atom atomA, Atom atomB, Atom atomC) {
-    g3d.fillTriangle(colix, normix,
+    g3d.fillTriangle(normix,
                      atomA.screenX, atomA.screenY, atomA.screenZ,
                      atomB.screenX, atomB.screenY, atomB.screenZ,
                      atomC.screenX, atomC.screenY, atomC.screenZ);

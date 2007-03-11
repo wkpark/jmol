@@ -38,11 +38,11 @@ import java.awt.Image;
 abstract class Platform3D {
 
   int windowWidth, windowHeight, windowSize;
-  int bufferWidth, bufferHeight, bufferSize;
+  int bufferWidth, bufferHeight, bufferSize, bufferSizeT;
 
   Image imagePixelBuffer;
-  int[] pBuffer;
-  int[] zBuffer;
+  int[] pBuffer, pBufferT;
+  int[] zBuffer, zBufferT;
   int argbBackground;
 
   int widthOffscreen, heightOffscreen;
@@ -85,6 +85,11 @@ abstract class Platform3D {
 
   abstract Image allocateImage();
 
+  void allocateTBuffers() {
+    zBufferT = new int[bufferSizeT];
+    pBufferT = new int[bufferSizeT];    
+  }
+  
   void allocateBuffers(int width, int height, boolean tFsaa4) {
     windowWidth = width;
     windowHeight = height;
@@ -99,6 +104,8 @@ abstract class Platform3D {
     bufferSize = bufferWidth * bufferHeight;
     zBuffer = new int[bufferSize];
     pBuffer = new int[bufferSize];
+    //no need for any antialiazing on a translucent buffer
+    bufferSizeT = windowWidth * windowHeight;
     imagePixelBuffer = allocateImage();
     /*
     Logger.debug("  width:" + width + " bufferWidth=" + bufferWidth +
@@ -114,6 +121,8 @@ abstract class Platform3D {
     }
     pBuffer = null;
     zBuffer = null;
+    pBufferT = null;
+    zBufferT = null;
   }
 
   void setBackground(int argbBackground) {
@@ -135,6 +144,13 @@ abstract class Platform3D {
     for (int i = bufferSize; --i >= 0; ) {
       zBuffer[i] = ZBUFFER_BACKGROUND;
       pBuffer[i] = argbBackground;
+    }
+  }
+  
+  void clearTBuffer() {
+    for (int i = bufferSizeT; --i >= 0; ) {
+      zBufferT[i] = ZBUFFER_BACKGROUND;
+      pBufferT[i] = 0;
     }
   }
   

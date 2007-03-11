@@ -71,8 +71,9 @@ class CartoonRenderer extends RocketsRenderer {
             ptConnect.set(controlPointScreens[i + 1]);
           }
           renderHermiteConic(i, false);
-          renderNucleicBaseStep((NucleicMonomer) monomers[i], getLeadColix(i), mads[i],
-              ptConnect);
+          if (g3d.setColix(getLeadColix(i)))
+            renderNucleicBaseStep((NucleicMonomer) monomers[i], mads[i],
+                ptConnect);
         }
   }
 
@@ -131,7 +132,7 @@ class CartoonRenderer extends RocketsRenderer {
     tPending = false;
     for (int i = 0; i < monomerCount; ++i)
       if (bsVisible.get(i) && isHelix(i))
-        renderSpecialSegment(monomers[i], getLeadColix(i), mads[i]);
+        renderSpecialSegment(monomers[i],getLeadColix(i), mads[i]);
     renderPending();
   }
   
@@ -151,10 +152,10 @@ class CartoonRenderer extends RocketsRenderer {
   }
 
   void renderNucleicBaseStep(NucleicMonomer nucleotide,
-                             short colix, short mad, Point3i backboneScreen) {
+                             short mad, Point3i backboneScreen) {
     nucleotide.getBaseRing6Points(ring6Points);
     viewer.transformPoints(ring6Points, ring6Screens);
-    renderRing6(colix);
+    renderRing6();
     boolean hasRing5 = nucleotide.maybeGetBaseRing5Points(ring5Points);
     Point3i stepScreen;
     if (hasRing5) {
@@ -164,7 +165,7 @@ class CartoonRenderer extends RocketsRenderer {
     } else {
       stepScreen = ring6Screens[2];//was 1
     }
-    g3d.fillCylinder(colix, Graphics3D.ENDCAPS_SPHERICAL,
+    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL,
                      viewer.scaleToScreen(backboneScreen.z,
                                           mad > 1 ? mad / 2 : mad),
                      backboneScreen, stepScreen);
@@ -175,21 +176,20 @@ class CartoonRenderer extends RocketsRenderer {
         --ring5Screens[i].z;
     }
     for (int i = 6; --i > 0; )
-      g3d.fillCylinder(colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
+      g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
                        ring6Screens[i], ring6Screens[i - 1]);
     if (hasRing5) {
       for (int i = 5; --i > 0; )
-        g3d.fillCylinder(colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
+        g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
                          ring5Screens[i], ring5Screens[i - 1]);
     } else {
-      g3d.fillCylinder(colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
+      g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
                        ring6Screens[5], ring6Screens[0]);
     }
   }
 
-  void renderRing6(short colix) {
-    g3d.calcSurfaceShade(colix,
-                         ring6Screens[0], ring6Screens[2], ring6Screens[4]);
+  void renderRing6() {
+    g3d.calcSurfaceShade(ring6Screens[0], ring6Screens[2], ring6Screens[4]);
     g3d.fillTriangle(ring6Screens[0], ring6Screens[2], ring6Screens[4]);
     g3d.fillTriangle(ring6Screens[0], ring6Screens[1], ring6Screens[2]);
     g3d.fillTriangle(ring6Screens[0], ring6Screens[4], ring6Screens[5]);

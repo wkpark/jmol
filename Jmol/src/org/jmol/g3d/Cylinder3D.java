@@ -71,10 +71,14 @@ class Cylinder3D {
 
   private int zShift;
 
-  void render(short colixA, short colixB, byte endcaps, int diameter, int xA,
-              int yA, int zA, int xB, int yB, int zB) {
+  void render(short colixA, short colixB, boolean isScreenedA,
+              boolean isScreenedB, byte endcaps, int diameter, int xA, int yA,
+              int zA, int xB, int yB, int zB) {
+    //0 for colixA or colixB means ignore for this pass
     if (diameter > g3d.height * 3)
       return;
+    this.isScreenedA = isScreenedA;
+    this.isScreenedB = isScreenedB;
     int r = diameter / 2 + 1;
     int codeMinA = line3d.clipCode(xA - r, yA - r, zA - r);
     int codeMaxA = line3d.clipCode(xA + r, yA + r, zA + r);
@@ -88,12 +92,12 @@ class Cylinder3D {
     dxB = xB - xA;
     dyB = yB - yA;
     dzB = zB - zA;
-    zShift = g3d.getZShift((zA + zB) >> 1); 
+    zShift = g3d.getZShift((zA + zB) >> 1);
 
     if (diameter <= 1) {
-      line3d.plotLineDelta(g3d.getColixArgb(colixA), Graphics3D
-          .isColixTranslucent(colixA), g3d.getColixArgb(colixB), Graphics3D
-          .isColixTranslucent(colixB), xA, yA, zA, dxB, dyB, dzB, notClipped);
+      line3d.plotLineDelta(g3d.getColixArgb(colixA), isScreenedA, g3d
+          .getColixArgb(colixB), isScreenedB, xA, yA, zA, dxB, dyB, dzB,
+          notClipped);
       return;
     }
     drawBackside = (!notClipped || endcaps == Graphics3D.ENDCAPS_FLAT);
@@ -104,9 +108,6 @@ class Cylinder3D {
     this.endcaps = endcaps;
     shadesA = g3d.getShades(this.colixA = colixA);
     shadesB = g3d.getShades(this.colixB = colixB);
-    isScreenedA = (colixA & Graphics3D.TRANSLUCENT_MASK) != 0;
-    isScreenedB = (colixB & Graphics3D.TRANSLUCENT_MASK) != 0;
-
     calcArgbEndcap(true);
 
     generateBaseEllipse();
@@ -119,11 +120,14 @@ class Cylinder3D {
       renderSphericalEndcaps();
   }
 
-  void renderBits(short colixA, short colixB, byte endcaps, int diameter,
-                  float xA, float yA, float zA, float xB, float yB, float zB) {
+  void renderBits(short colixA, short colixB, boolean isScreenedA,
+                  boolean isScreenedB, byte endcaps, int diameter, float xA,
+                  float yA, float zA, float xB, float yB, float zB) {
     if (diameter > g3d.height * 3)
       return;
-
+    this.isScreenedA = isScreenedA;
+    this.isScreenedB = isScreenedB;
+    
     // oops -- problem here if diameter < 0 is that we may have already clipped it!
     int r = diameter / 2 + 1;
     int codeMinA = line3d.clipCode((int) xA - r, (int) yA - r, (int) zA - r);
@@ -139,10 +143,9 @@ class Cylinder3D {
     dyBf = yB - yA;
     dzBf = zB - zA;
     if (diameter == 0 || diameter == 1) {
-      line3d.plotLineDelta(g3d.getColixArgb(colixA), Graphics3D
-          .isColixTranslucent(colixA), g3d.getColixArgb(colixB), Graphics3D
-          .isColixTranslucent(colixB), (int) xA, (int) yA, (int) zA, (int) dxB,
-          (int) dyB, (int) dzB, notClipped);
+      line3d.plotLineDelta(g3d.getColixArgb(colixA), isScreenedA, g3d
+          .getColixArgb(colixB), isScreenedB, (int) xA, (int) yA, (int) zA,
+          (int) dxB, (int) dyB, (int) dzB, notClipped);
       return;
     }
     if (diameter > 0) {
@@ -151,7 +154,7 @@ class Cylinder3D {
       this.yAf = yA;
       this.zAf = zA;
     }
-    drawBackside = (!notClipped || endcaps == Graphics3D.ENDCAPS_FLAT);
+    drawBackside = (!isScreenedA && !isScreenedB && (!notClipped || endcaps == Graphics3D.ENDCAPS_FLAT));
     this.xA = (int) xAf;
     this.yA = (int) yAf;
     this.zA = (int) zAf;
@@ -161,8 +164,6 @@ class Cylinder3D {
 
     this.shadesA = g3d.getShades(this.colixA = colixA);
     this.shadesB = g3d.getShades(this.colixB = colixB);
-    this.isScreenedA = (colixA & Graphics3D.TRANSLUCENT_MASK) != 0;
-    this.isScreenedB = (colixB & Graphics3D.TRANSLUCENT_MASK) != 0;
     this.endcaps = endcaps;
     calcArgbEndcap(true);
 
@@ -209,7 +210,7 @@ class Cylinder3D {
 
   float xTip, yTip, zTip;
 
-  void renderCone(short colix, byte endcap, int diameter, float xA, float yA,
+  void renderCone(short colix, boolean isScreened, byte endcap, int diameter, float xA, float yA,
                   float zA, float xTip, float yTip, float zTip) {
     if (diameter > g3d.height * 3)
       return;
@@ -227,8 +228,8 @@ class Cylinder3D {
     this.zTip = zTip;
 
     colixA = colix;
+    this.isScreenedA = isScreened;
     shadesA = g3d.getShades(colix);
-    isScreenedA = (colixA & Graphics3D.TRANSLUCENT_MASK) != 0;
     int intensityTip = Shade3D.calcIntensity(dxB, dyB, -dzB);
     g3d.plotPixelClipped(shadesA[intensityTip], isScreenedA, (int) xTip,
         (int) yTip, (int) zTip);
@@ -531,7 +532,7 @@ class Cylinder3D {
   }
 
   private void renderFlatEndcap(boolean tCylinder) {
-    if (dzB == 0)
+    if (dzB == 0 || !g3d.setColix(colixEndcap))
       return;
     int xT = xA, yT = yA, zT = zA;
     if (tCylinder && dzB < 0) {
@@ -543,15 +544,17 @@ class Cylinder3D {
     for (int y = yMin; y <= yMax; ++y) {
       findMinMaxX(y);
       int count = xMax - xMin + 1;
-      g3d.setColorNoisy(colixEndcap, intensityEndcap);
+      g3d.setColorNoisy(intensityEndcap);
       g3d.plotPixelsClipped(count, xT + xMin, yT + y, zT - zXMin - 1, zT
           - zXMax - 1, null, null);
     }
   }
 
   private void renderSphericalEndcaps() {
-    g3d.fillSphereCentered(colixA, diameter, xA, yA, zA + 1);
-    g3d.fillSphereCentered(colixB, diameter, xA + dxB, yA + dyB, zA + dzB + 1);
+    if (g3d.setColix(colixA))
+      g3d.fillSphereCentered(diameter, xA, yA, zA + 1);
+    if (g3d.setColix(colixB))
+      g3d.fillSphereCentered(diameter, xA + dxB, yA + dyB, zA + dzB + 1);
   }
 
   private void plotRasterCone(int i) {

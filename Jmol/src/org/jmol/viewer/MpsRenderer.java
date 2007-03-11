@@ -252,8 +252,10 @@ abstract class MpsRenderer extends MeshRenderer {
   }
 
   final void renderHermiteCylinder(Point3i[] screens, int i) {
+    if (!g3d.setColix(getLeadColix(i)))
+      return;
     setNeighbors(i);
-    g3d.drawHermite(getLeadColix(i), isNucleic ? 4 : 7, screens[iPrev],
+    g3d.drawHermite(isNucleic ? 4 : 7, screens[iPrev],
         screens[i], screens[iNext], screens[iNext2]);
   }
 
@@ -293,6 +295,8 @@ abstract class MpsRenderer extends MeshRenderer {
   final void renderHermiteConic(int i, boolean thisTypeOnly) {
     setNeighbors(i);
     short colix = getLeadColix(i);
+    if (!g3d.setColix(colix))
+      return;
     if (setMads(i, thisTypeOnly)) {
       try {
         if (meshes[i] == null || !meshReady[i])
@@ -307,7 +311,7 @@ abstract class MpsRenderer extends MeshRenderer {
         //e.printStackTrace();
       }
     }
-    g3d.fillHermite(colix, isNucleic ? 4 : 7, diameterBeg, diameterMid,
+    g3d.fillHermite(isNucleic ? 4 : 7, diameterBeg, diameterMid,
         diameterEnd, controlPointScreens[iPrev], controlPointScreens[i],
         controlPointScreens[iNext], controlPointScreens[iNext2]);
   }
@@ -317,6 +321,8 @@ abstract class MpsRenderer extends MeshRenderer {
   final void renderHermiteRibbon(boolean doFill, int i, boolean thisTypeOnly) {
     setNeighbors(i);
     short colix = getLeadColix(i);
+    if (!g3d.setColix(colix))
+      return;    
     if (doFill && aspectRatio != 0) {
       if (setMads(i, thisTypeOnly)) {
         try {
@@ -331,7 +337,7 @@ abstract class MpsRenderer extends MeshRenderer {
         }
       }
     }
-    g3d.drawHermite(doFill, ribbonBorder, colix, isNucleic ? 4 : 7,
+    g3d.drawHermite(doFill, ribbonBorder, isNucleic ? 4 : 7,
         ribbonTopScreens[iPrev], ribbonTopScreens[i], ribbonTopScreens[iNext],
         ribbonTopScreens[iNext2], ribbonBottomScreens[iPrev],
         ribbonBottomScreens[i], ribbonBottomScreens[iNext],
@@ -347,6 +353,8 @@ abstract class MpsRenderer extends MeshRenderer {
 
   final void renderHermiteArrowHead(int i) {
     short colix = getLeadColix(i);
+    if (!g3d.setColix(colix))
+      return;
     setNeighbors(i);
     if (setMads(i, false)) {
       try {
@@ -376,7 +384,7 @@ abstract class MpsRenderer extends MeshRenderer {
       g3d.fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
           screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
           screenArrowBot.x, screenArrowBot.y, screenArrowBot.z);
-    g3d.drawHermite(true, ribbonBorder, colix, isNucleic ? 4 : 7,
+    g3d.drawHermite(true, ribbonBorder, isNucleic ? 4 : 7,
         screenArrowTopPrev, screenArrowTop, controlPointScreens[iNext],
         controlPointScreens[iNext2], screenArrowBotPrev, screenArrowBot,
         controlPointScreens[iNext], controlPointScreens[iNext2], aspectRatio);
@@ -384,8 +392,10 @@ abstract class MpsRenderer extends MeshRenderer {
 
   //  rockets --not satisfactory yet 
   void renderCone(int i, Point3f pointBegin, Point3f pointEnd,
-                  Point3f screenPtBegin, Point3f screenPtEnd, short colix,
-                  int mad) {
+                  Point3f screenPtBegin, Point3f screenPtEnd,
+                  int mad, short colix) {
+    if (!g3d.setColix(colix))
+      return;
     int coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
         mad + (mad >> 2));
     if (false && aspectRatio > 0 && checkDiameter(coneDiameter)) {
@@ -400,7 +410,7 @@ abstract class MpsRenderer extends MeshRenderer {
         //e.printStackTrace();
       }
     }
-    g3d.fillCone(colix, Graphics3D.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
+    g3d.fillCone(Graphics3D.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
         screenPtEnd);
   }
 

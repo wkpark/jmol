@@ -28,11 +28,13 @@ import javax.vecmath.Point3f;
 import java.text.NumberFormat;
 
 import org.jmol.symmetry.UnitCell;
+import org.jmol.util.TextFormat;
 
 class UccageRenderer extends ShapeRenderer {
 
   NumberFormat nf;
   byte fid;
+  boolean doLocalize;
   void initRenderer() {
   }
 
@@ -46,14 +48,14 @@ class UccageRenderer extends ShapeRenderer {
   }
 
   void render() {
-    short colix = viewer.getObjectColix(StateManager.OBJ_UNITCELL);
     short mad = viewer.getObjectMad(StateManager.OBJ_UNITCELL);
-    if (mad == 0)
-      return;
-    render1(mad, colix);
+    if (mad == 0 || !g3d.setColix(viewer.getObjectColix(StateManager.OBJ_UNITCELL)))
+        return;
+    doLocalize = viewer.getUseNumberLocalization();
+    render1(mad);
   }
 
-  void render1(short mad, short colix) {
+  void render1(short mad) {
     if (frame.cellInfos == null)
       return;
     UnitCell unitCell = viewer.getCurrentUnitCell();
@@ -61,10 +63,10 @@ class UccageRenderer extends ShapeRenderer {
       return;
     Frame.CellInfo cellInfo = frame.cellInfos[viewer.getDisplayModelIndex()];
     Point3f[] vertices = unitCell.getVertices();
-    Point3f offset = unitCell.getCartesianOffset(); 
+    Point3f offset = unitCell.getCartesianOffset();
     for (int i = 8; --i >= 0;)
       verticesT[i].add(vertices[i], offset);
-    BbcageRenderer.render(viewer, g3d, mad, colix, verticesT, screens);
+    BbcageRenderer.render(viewer, g3d, mad, verticesT, screens);
     if (!viewer.getDisplayCellParameters())
       return;
     if (nf == null) {
@@ -80,35 +82,36 @@ class UccageRenderer extends ShapeRenderer {
     int lineheight = 15;
     if (cellInfo.spaceGroup != null) {
       line += lineheight;
-      g3d.drawStringNoSlab(cellInfo.spaceGroup, null, colix, (short) 0, 5,
-          line, 0);
+      g3d.drawStringNoSlab(cellInfo.spaceGroup, null, (short) 0, 5, line, 0);
     }
     line += lineheight;
-    g3d.drawStringNoSlab("a=" + nfformat(unitCell.getInfo(UnitCell.INFO_A)) + "\u00C5", null, colix,
-        (short) 0, 5, line, 0);
+    g3d.drawStringNoSlab("a=" + nfformat(unitCell.getInfo(UnitCell.INFO_A))
+        + "\u00C5", null, (short) 0, 5, line, 0);
     line += lineheight;
-    g3d.drawStringNoSlab("b=" + nfformat(unitCell.getInfo(UnitCell.INFO_B)) + "\u00C5", null, colix,
-        (short) 0, 5, line, 0);
+    g3d.drawStringNoSlab("b=" + nfformat(unitCell.getInfo(UnitCell.INFO_B))
+        + "\u00C5", null, (short) 0, 5, line, 0);
     line += lineheight;
-    g3d.drawStringNoSlab("c=" + nfformat(unitCell.getInfo(UnitCell.INFO_C)) + "\u00C5", null, colix,
-        (short) 0, 5, line, 0);
+    g3d.drawStringNoSlab("c=" + nfformat(unitCell.getInfo(UnitCell.INFO_C))
+        + "\u00C5", null, (short) 0, 5, line, 0);
     if (nf != null)
       nf.setMaximumFractionDigits(1);
     line += lineheight;
-    g3d.drawStringNoSlab("\u03B1=" + nfformat(unitCell.getInfo(UnitCell.INFO_ALPHA)) + "\u00B0", null,
-        colix, (short) 0, 5, line, 0);
+    g3d.drawStringNoSlab("\u03B1="
+        + nfformat(unitCell.getInfo(UnitCell.INFO_ALPHA)) + "\u00B0", null,
+        (short) 0, 5, line, 0);
     line += lineheight;
-    g3d.drawStringNoSlab("\u03B2=" + nfformat(unitCell.getInfo(UnitCell.INFO_BETA)) + "\u00B0", null,
-        colix, (short) 0, 5, line, 0);
+    g3d.drawStringNoSlab("\u03B2="
+        + nfformat(unitCell.getInfo(UnitCell.INFO_BETA)) + "\u00B0", null,
+        (short) 0, 5, line, 0);
     line += lineheight;
-    g3d.drawStringNoSlab("\u03B3=" + nfformat(unitCell.getInfo(UnitCell.INFO_GAMMA)) + "\u00B0", null,
-        colix, (short) 0, 5, line, 0);
+    g3d.drawStringNoSlab("\u03B3="
+        + nfformat(unitCell.getInfo(UnitCell.INFO_GAMMA)) + "\u00B0", null,
+        (short) 0, 5, line, 0);
   }
   
   String nfformat(float x) {
-    if (nf == null)
-      return "" + x;
-    return nf.format(x);
+    return (doLocalize && nf != null ? nf.format(x) : TextFormat.formatDecimal(x, 3));
   }
+
 }
 

@@ -2999,6 +2999,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_HSTICKS    = 2;
   public final static int SHAPE_SSSTICKS   = 3;
   public final static int SHAPE_LABELS     = 4;
+  
   public final static int SHAPE_VECTORS    = 5;
   public final static int SHAPE_MEASURES   = 6;
   public final static int SHAPE_DOTS       = 7;

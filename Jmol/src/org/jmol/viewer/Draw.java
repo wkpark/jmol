@@ -619,7 +619,7 @@ class Draw extends MeshCollection {
     for (int i = 0; i < meshCount; i++) {
       Mesh m = meshes[i];
       m.visibilityFlags = (m.isValid && m.visible ? myVisibilityFlag : 0);
-      if (m.modelIndex >=0 && !bs.get(m.modelIndex)) {
+      if (m.modelIndex >= 0 && !bs.get(m.modelIndex)) {
         m.visibilityFlags = 0;
         continue;
       }
@@ -629,7 +629,7 @@ class Draw extends MeshCollection {
         m.modelFlags[iModel] = (bs.get(iModel) ? 1 : 0);
     }
   }
-
+  
   final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 10 * 10;
 
   Mesh pickedMesh = null;

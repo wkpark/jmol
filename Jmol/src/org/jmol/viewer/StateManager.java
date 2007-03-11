@@ -41,6 +41,22 @@ import java.util.Arrays;
 
 class StateManager {
 
+  
+
+  /* steps in adding a global variable:
+ 
+  In Viewer:
+  
+  1. add a check in setIntProperty or setBooleanProperty or setFloat.. or setString...
+  2. create new set/get methods
+  
+  In StateManager
+  
+  3. create the global.xxx varaible
+  4. in registerParameter() register it so that it shows up as having a value in math
+  
+  */
+
   final static int OBJ_BACKGROUND = 0;
   final static int OBJ_AXIS1 = 1;
   final static int OBJ_AXIS2 = 2;
@@ -501,6 +517,8 @@ class StateManager {
     boolean hideNavigationPoint  = false;
     boolean showNavigationPointAlways = false;
     String propertyColorScheme   = "roygb";
+    boolean useNumberLocalization = true;
+    
     
     // window
     
@@ -869,6 +887,7 @@ class StateManager {
       setParameterValue("testFlag3",testFlag3);
       setParameterValue("testFlag4",testFlag4);
       setParameterValue("traceAlpha",traceAlpha);
+      setParameterValue("useNumberLocalization",useNumberLocalization);
 //nah    setParameterValue("zeroBasedXyzRasmol",zeroBasedXyzRasmol);
       setParameterValue("zoomLarge",zoomLarge);
       setParameterValue("zShade",zShade);

@@ -433,5 +433,6 @@ class Labels extends AtomShape {
             .getFont3D(fids[i])));
     }
     return getShapeCommands(temp, temp2, atomCount);
-  }  
+  }
+  
 }

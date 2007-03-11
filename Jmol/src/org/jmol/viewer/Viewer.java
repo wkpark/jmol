@@ -2620,10 +2620,16 @@ public class Viewer extends JmolViewer {
 
   private Image getImage(boolean isDouble, boolean antialias) {
     Matrix3f matrixRotate = transformManager.getStereoRotationMatrix(isDouble);
+    boolean twoPass = getTestFlag1();
     g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
-        matrixRotate, antialias);
+        matrixRotate, antialias, twoPass);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
         repaintManager.currentModelIndex);
+    if (twoPass) {
+      g3d.setPass2();
+      repaintManager.render(g3d, rectClip, modelManager.getFrame(),
+          repaintManager.currentModelIndex);
+    }
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized.
@@ -2632,14 +2638,20 @@ public class Viewer extends JmolViewer {
   }
 
   private Image getStereoImage(int stereoMode, boolean antialias) {
+    boolean twoPass = false; //required for new translucency
     g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
-        transformManager.getStereoRotationMatrix(true), antialias);
+        transformManager.getStereoRotationMatrix(true), antialias, twoPass);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
         repaintManager.currentModelIndex);
+    if (twoPass && g3d.haveTranslucentObjects()) {
+      g3d.setPass2();
+      repaintManager.render(g3d, rectClip, modelManager.getFrame(),
+          repaintManager.currentModelIndex);      
+    }
     g3d.endRendering();
     g3d.snapshotAnaglyphChannelBytes();
     g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
-        transformManager.getStereoRotationMatrix(false), antialias);
+        transformManager.getStereoRotationMatrix(false), antialias, twoPass);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),
         repaintManager.currentModelIndex);
     g3d.endRendering();
@@ -3774,11 +3786,23 @@ public class Viewer extends JmolViewer {
     boolean notFound = false;
     while (true) {
       
+      //11.1.21
+      
+      if (key.equalsIgnoreCase("useNumberLocalization")) {
+        setUseNumberLocalization(value);
+        break;
+      }
+
+      
+      //11.1.20
+      
       if (key.equalsIgnoreCase("showFrank")) {
         setFrankOn(value);
         break;
       }
 
+      /////
+      
       if (key.equalsIgnoreCase("solventProbe")) {
         setSolventOn(value);
         break;
@@ -4632,7 +4656,16 @@ public class Viewer extends JmolViewer {
   String getMeasureDistanceUnits() {
     return global.getMeasureDistanceUnits();
   }
-
+  
+  private void setUseNumberLocalization(boolean TF) {
+    global.useNumberLocalization = TF;
+    TextFormat.setUseNumberLocalization(TF);
+  }
+  
+  boolean getUseNumberLocalization()  {
+    return global.useNumberLocalization;
+  }
+  
   public void setRasmolDefaults() {
     setDefaults("RasMol");
   }

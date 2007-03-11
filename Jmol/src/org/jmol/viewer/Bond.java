@@ -129,6 +129,7 @@ class Bond {
   
   boolean isTranslucent() {
     return Graphics3D.isColixTranslucent(colix);
+    //but may show up translucent anyway!
   }
 
   void setOrder(short order) {

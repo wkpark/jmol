@@ -169,6 +169,10 @@ public class XmlCmlReader extends XmlReader {
     //if (!uri.equals(NAMESPACE_URI))
     //return;
 
+    try{System.out.println(name + "::"+atts.get("name"));}catch(Exception e){
+      System.out.println(name);
+    }
+    
     switch (state) {
     case START:
       if (name.equals("molecule")) {

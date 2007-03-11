@@ -65,7 +65,11 @@ final public class Graphics3D {
 
   boolean inGreyscaleMode;
   byte[] anaglyphChannelBytes;
-
+  
+  boolean twoPass = false;
+  boolean isPass2;
+  boolean haveTranslucent;
+  
   boolean tPaintingInProgress;
 
   int windowWidth, windowHeight;
@@ -74,8 +78,8 @@ final public class Graphics3D {
   int slab, depth;
   boolean zShade;
   int xLast, yLast;
-  int[] pbuf;
-  int[] zbuf;
+  int[] pbuf, pbufT;
+  int[] zbuf, zbufT;
 
   int clipX;
   int clipY;
@@ -135,9 +139,21 @@ final public class Graphics3D {
     width = -1; height = -1;
     pbuf = null;
     zbuf = null;
+    pbufT = null;
+    zbufT = null;
     platform.releaseBuffers();
   }
 
+  public boolean checkTranslucent(boolean isScreened) {
+    if (isScreened)
+      haveTranslucent = true;
+    return (!twoPass || twoPass && (isPass2 == isScreened));
+  }
+  
+  public boolean haveTranslucentObjects() {
+    return haveTranslucent;
+  }
+  
   /**
    * is full scene / oversampling antialiasing in effect
    *
@@ -266,6 +282,32 @@ final public class Graphics3D {
     }
   }
 
+  void mergeOpaqueAndTranslucentBuffers() {
+    int offset = 0;
+    for (int i = windowHeight; --i >= 0; )
+      for (int j = windowWidth; --j >= 0; )
+        mergeBufferPixel(pbuf, pbufT, offset++);
+  }
+  
+  static void mergeBufferPixel(int[] pbuf, int[] pbufT, int pt) {
+    //simple 50:50 for now.
+    int argbA = pbuf[pt];
+    int argbB = pbufT[pt];
+    if (argbB == 0 || argbA == argbB)
+      return;
+    int rb = (((argbA & 0x00FF00FF)+(argbB & 0x00FF00FF)) >> 1) & 0x00FF00FF;
+    int g = (((argbA & 0x0000FF00)+(argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
+    pbuf[pt] = 0xFF000000 | rb | g;
+  }
+  
+  static void mergeBufferPixel(int[] pbuf, int argbB, int pt) {
+    //simple 50:50 for now.
+    int argbA = pbuf[pt];
+    int rb = (((argbA & 0x00FF00FF)+(argbB & 0x00FF00FF)) >> 1) & 0x00FF00FF;
+    int g = (((argbA & 0x0000FF00)+(argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
+    pbuf[pt] = 0xFF000000 | rb | g;
+  }
+  
   public boolean hasContent() {
     return platform.hasContent();
   }
@@ -273,33 +315,25 @@ final public class Graphics3D {
   /**
    * sets current color from colix color index
    * @param colix the color index
+   * @return true or false if this is the right pass
    */
-  public void setColix(short colix) {
+  public boolean setColix(short colix) {
+    isTranslucent = (colix & TRANSLUCENT_MASK) != 0;
+    if (!checkTranslucent(isTranslucent))
+      return false;
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
     argbCurrent = argbNoisyUp = argbNoisyDn = getColixArgb(colix);
-    isTranslucent = (colix & TRANSLUCENT_MASK) != 0;
+    //System.out.println("setColix" + colix + " argb="+Integer.toHexString(argbCurrent)+ " " +isTranslucent);
+    return true;
   }
 
-  public void setColixIntensity(short colix, int intensity) {
-    colixCurrent = colix;
-    shadesCurrent = getShades(colix);
-    argbCurrent = argbNoisyUp = argbNoisyDn = shadesCurrent[intensity];
-    isTranslucent = (colix & TRANSLUCENT_MASK) != 0;
-  }
-
-  public void setIntensity(int intensity) {
-    // only adjusting intensity, but colix & isTranslucent stay the same
-    argbCurrent = argbNoisyUp = argbNoisyDn = shadesCurrent[intensity];
-  }
-
-  void setColorNoisy(short colix, int intensity) {
-    colixCurrent = colix;
-    int[] shades = getShades(colix);
-    argbCurrent = shades[intensity];
-    argbNoisyUp = shades[intensity < shadeLast ? intensity + 1 : shadeLast];
-    argbNoisyDn = shades[intensity > 0 ? intensity - 1 : 0];
-    isTranslucent = (colix & TRANSLUCENT_MASK) != 0;
+  void setColorNoisy(int intensity) {
+    //if (isPass2)
+      //return;
+    argbCurrent = shadesCurrent[intensity];
+    argbNoisyUp = shadesCurrent[intensity < shadeLast ? intensity + 1 : shadeLast];
+    argbNoisyDn = shadesCurrent[intensity > 0 ? intensity - 1 : 0];
   }
 
   int[] imageBuf = new int[0];
@@ -336,50 +370,43 @@ final public class Graphics3D {
   /**
    * fills a solid sphere
    *
-   * @param colix the color index
    * @param diameter pixel count
    * @param x center x
    * @param y center y
    * @param z center z
    */
-  public void fillSphereCentered(short colix, int diameter,
-                                 int x, int y, int z) {
+  public void fillSphereCentered(int diameter, int x, int y, int z) {
     if (diameter <= 1) {
-      plotPixelClipped(getColixArgb(colix), x, y, z);
+      plotPixelClipped(argbCurrent, x, y, z);
     } else {
-      sphere3d.render(getShades(colix), ((colix & TRANSLUCENT_MASK) != 0),
-                      diameter, x, y, z);
+      sphere3d.render(shadesCurrent, isTranslucent, diameter, x, y, z);
     }
   }
 
-
   /**
    * fills a solid sphere
    *
-   * @param colix the color index
    * @param diameter pixel count
    * @param center javax.vecmath.Point3i defining the center
    */
-  public void fillSphereCentered(short colix, int diameter, Point3i center) {
-    fillSphereCentered(colix, diameter, center.x, center.y, center.z);
+
+  public void fillSphereCentered(int diameter, Point3i center) {
+    fillSphereCentered(diameter, center.x, center.y, center.z);
   }
 
   /**
    * fills a solid sphere
    *
-   * @param colix the color index
    * @param diameter pixel count
    * @param center a javax.vecmath.Point3f ... floats are casted to ints
    */
-  public void fillSphereCentered(short colix, int diameter, Point3f center) {
-    fillSphereCentered(colix, diameter,
-                       (int)center.x, (int)center.y, (int)center.z);
+  void fillSphereCentered(int diameter, Point3f center) {
+    fillSphereCentered(diameter, (int)center.x, (int)center.y, (int)center.z);
   }
 
   /**
    * draws a rectangle
    *
-   * @param colix the color index
    * @param x upper left x
    * @param y upper left y
    * @param z upper left z
@@ -387,7 +414,7 @@ final public class Graphics3D {
    * @param rWidth pixel count
    * @param rHeight pixel count
    */
-  public void drawRect(short colix, int x, int y, int z, int zSlab, int rWidth, int rHeight) {
+  public void drawRect(int x, int y, int z, int zSlab, int rWidth, int rHeight) {
     // labels (and rubberband, not implemented) and navigation cursor
     if (zSlab != 0 && isClippedZ(zSlab))
       return;
@@ -395,7 +422,6 @@ final public class Graphics3D {
     int h = rHeight - 1;
     int xRight = x + w;
     int yBottom = y + h;
-    setColix(colix);
     if (y >= 0 && y < height)
       line3d.drawHLine(argbCurrent, isTranslucent, x, y, z, w);
     if (yBottom >= 0 && yBottom < height)
@@ -410,7 +436,6 @@ final public class Graphics3D {
    * fills background rectangle for label
    *<p>
    *
-   * @param colix the color index
    * @param x upper left x
    * @param y upper left y
    * @param z upper left z
@@ -418,8 +443,7 @@ final public class Graphics3D {
    * @param widthFill pixel count
    * @param heightFill pixel count
    */
-  public void fillRect(short colix,
-                       int x, int y, int z, int zSlab, int widthFill, int heightFill) {
+  public void fillRect(int x, int y, int z, int zSlab, int widthFill, int heightFill) {
     // hover and labels only -- slab at atom or front -- simple Z/window clip
     if (isClippedZ(zSlab))
       return;
@@ -440,7 +464,6 @@ final public class Graphics3D {
         return;
       y = 0;
     }
-    setColix(colix);
     if (y + heightFill > height)
       heightFill = height - y;
     while (--heightFill >= 0)
@@ -453,21 +476,20 @@ final public class Graphics3D {
    *
    * @param str the String
    * @param font3d the Font3D
-   * @param colix the color index
    * @param xBaseline baseline x
    * @param yBaseline baseline y
    * @param z baseline z
    * @param zSlab z for slab calculation
    */
   
-  public void drawString(String str, Font3D font3d, short colix,
+  public void drawString(String str, Font3D font3d,
                          int xBaseline, int yBaseline, int z, int zSlab) {
     //axis, labels, measures    
     if (str == null)
       return;
     if (isClippedZ(zSlab))
       return;
-    drawStringNoSlab(str, font3d, colix, (short) 0, xBaseline, yBaseline, z); 
+    drawStringNoSlab(str, font3d, (short) 0, xBaseline, yBaseline, z); 
   }
 
   /**
@@ -476,14 +498,13 @@ final public class Graphics3D {
    *
    * @param str the String
    * @param font3d the Font3D
-   * @param colix the color index
    * @param bgcolix the background color index
    * @param xBaseline baseline x
    * @param yBaseline baseline y
    * @param z baseline z
    */
   
-  public void drawStringNoSlab(String str, Font3D font3d, short colix,
+  public void drawStringNoSlab(String str, Font3D font3d, 
                                short bgcolix, int xBaseline, int yBaseline,
                                int z) {
     // echo, frank, hover, molecularOrbital, uccage
@@ -491,7 +512,6 @@ final public class Graphics3D {
       return;
     if(font3d != null)
       font3dCurrent = font3d;
-    setColix(colix);
     Text3D.plot(xBaseline, yBaseline - font3dCurrent.fontMetrics.getAscent(),
                 z, argbCurrent, getColixArgb(bgcolix), str, font3dCurrent, this);
   }
@@ -548,13 +568,17 @@ final public class Graphics3D {
   public void beginRendering(int clipX, int clipY,
                              int clipWidth, int clipHeight,
                              Matrix3f rotationMatrix,
-                             boolean antialiasThisFrame) {
+                             boolean antialiasThisFrame, 
+                             boolean twoPass) {
     if (currentlyRendering)
       endRendering();
     normix3d.setRotationMatrix(rotationMatrix);
     antialiasThisFrame &= isFullSceneAntialiasingEnabled;
     this.antialiasThisFrame = antialiasThisFrame;
     currentlyRendering = true;
+    this.twoPass = twoPass;
+    isPass2 = false;
+    haveTranslucent = false;
     if (pbuf == null) {
       platform.allocateBuffers(windowWidth, windowHeight,
                                isFullSceneAntialiasingEnabled);
@@ -577,10 +601,24 @@ final public class Graphics3D {
     platform.obtainScreenBuffer();
   }
 
+  public void setPass2() {
+    if (!haveTranslucent || !currentlyRendering)
+      return;
+    isPass2 = true;
+    if (pbufT == null) {
+      platform.allocateTBuffers();
+      pbufT = platform.pBufferT;
+      zbufT = platform.zBufferT;
+    }    
+    platform.clearTBuffer();
+  }
+  
   public void endRendering() {
     if (currentlyRendering) {
       if (antialiasThisFrame)
         downSampleFullSceneAntialiasing();
+      if (isPass2)
+        mergeOpaqueAndTranslucentBuffers();
       platform.notifyEndOfRendering();
       currentlyRendering = false;
     }
@@ -649,9 +687,8 @@ final public class Graphics3D {
     plotPixelClipped(x, y, z);
   }
 
-  public void drawPoints(short colix, int count, int[] coordinates) {
+  public void drawPoints(int count, int[] coordinates) {
     // for dots only
-    setColix(colix);
     plotPoints(count, coordinates);
   }
 
@@ -659,36 +696,39 @@ final public class Graphics3D {
    * lines and cylinders
    * ***************************************************************/
 
-  public void drawDashedLine(short colix, int run, int rise,
+  public void drawDashedLine(int run, int rise,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
     // measures only
-    int argb = getColixArgb(colix);
-    line3d.plotDashedLine(argb, isTranslucent, argb, isTranslucent,
+    line3d.plotDashedLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
                           run, rise, x1, y1, z1, x2, y2, z2, false);
   }
 
-  public void drawDottedLine(short colix, Point3i pointA, Point3i pointB) {
+  public void drawDottedLine(Point3i pointA, Point3i pointB) {
      //axes, bbcage only
-    setColix(colix);
     line3d.plotDashedLine(argbCurrent, isTranslucent,
                           argbCurrent, isTranslucent, 2, 1,
                           pointA.x, pointA.y, pointA.z,
                           pointB.x, pointB.y, pointB.z, false);
   }
 
-  public void drawLine(short colix,
-                       int x1, int y1, int z1, int x2, int y2, int z2) {
+  public void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
     // stars
-    setColix(colix);
     line3d.plotLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
                     x1, y1, z1, x2, y2, z2, false);
   }
 
-  public void drawLine(short colix1, short colix2,
+  public void drawLine(short colixA, short colixB,
                        int x1, int y1, int z1, int x2, int y2, int z2) {
     // backbone and sticks
-    line3d.plotLine(getColixArgb(colix1), isColixTranslucent(colix1),
-                    getColixArgb(colix2), isColixTranslucent(colix2),
+    if (!setColix(colixA))
+      colixA = 0;
+    boolean isScreenedA = isTranslucent;
+    int argbA = argbCurrent;
+    if (!setColix(colixB))
+      colixB = 0;
+    if (colixA == 0 && colixB == 0)
+      return;
+    line3d.plotLine(argbA, isScreenedA, argbCurrent, isTranslucent,
                     x1, y1, z1, x2, y2, z2, false);
   }
   
@@ -707,88 +747,86 @@ final public class Graphics3D {
   public void fillCylinder(short colixA, short colixB, byte endcaps,
                            int diameter,
                            int xA, int yA, int zA, int xB, int yB, int zB) {
-    cylinder3d.render(colixA, colixB, endcaps, diameter,
+    if (!setColix(colixA))
+      colixA = 0;
+    boolean isScreenedA = isTranslucent;
+    if (!setColix(colixB))
+      colixB = 0;
+    if (colixA == 0 && colixB == 0)
+      return;
+    cylinder3d.render(colixA, colixB, isScreenedA, isTranslucent, endcaps, diameter,
                       xA, yA, zA, xB, yB, zB);
   }
 
-  public void fillCylinder(short colix, byte endcaps,
+  public void fillCylinder(byte endcaps,
                            int diameter,
                            int xA, int yA, int zA, int xB, int yB, int zB) {
-    cylinder3d.render(colix, colix, endcaps, diameter,
+    cylinder3d.render(colixCurrent, colixCurrent, isTranslucent, isTranslucent, endcaps, diameter,
                       xA, yA, zA, xB, yB, zB);
   }
 
-  public void fillCylinder(short colix, byte endcaps, int diameter,
+  public void fillCylinder(byte endcaps, int diameter,
                            Point3i screenA, Point3i screenB) {
-    cylinder3d.render(colix, colix, endcaps, diameter,
+    cylinder3d.render(colixCurrent, colixCurrent, isTranslucent, isTranslucent, endcaps, diameter,
                       screenA.x, screenA.y, screenA.z,
                       screenB.x, screenB.y, screenB.z);
   }
 
   public void fillCylinderBits(short colixA, short colixB, byte endcaps,
-                               int diameter,
-                               int xA, int yA, int zA, int xB, int yB, int zB) {
-        cylinder3d.renderBits(colixA, colixB, endcaps, diameter,
-                          xA, yA, zA, xB, yB, zB);
-      }
-
-  public void fillCylinderBits(short colix, byte endcaps, int diameter,
-                                Point3i screenA, Point3i screenB) {
-    // dipole cross, cartoonRockets
-    cylinder3d.renderBits(colix, colix, endcaps, diameter,
-        (float)screenA.x, (float)screenA.y, (float)screenA.z,
-        (float)screenB.x, (float)screenB.y, (float)screenB.z);
+                               int diameter, int xA, int yA, int zA, int xB,
+                               int yB, int zB) {
+    if (!setColix(colixA))
+      colixA = 0;
+    boolean isScreenedA = isTranslucent;
+    if (!setColix(colixB))
+      colixB = 0;
+    if (colixA == 0 && colixB == 0)
+      return;
+    cylinder3d.renderBits(colixA, colixB, isScreenedA, isTranslucent, endcaps,
+        diameter, xA, yA, zA, xB, yB, zB);
   }
 
-  public void fillCylinderBits(short colix, byte endcaps, int diameter,
+  public void fillCylinderBits(byte endcaps, int diameter,
                                Point3f screenA, Point3f screenB) {
    // dipole cross, cartoonRockets
-   cylinder3d.renderBits(colix, colix, endcaps, diameter,
+   cylinder3d.renderBits(colixCurrent, colixCurrent, isTranslucent, isTranslucent, endcaps, diameter,
        screenA.x, screenA.y, screenA.z,
        screenB.x, screenB.y, screenB.z);
  }
 
-  public void fillCone(short colix, byte endcap, int diameter,
+  public void fillCone(byte endcap, int diameter,
                        Point3i screenBase, Point3i screenTip) {
     // dipoles, mesh, vectors
-    cylinder3d.renderCone(colix, endcap, diameter,
+    cylinder3d.renderCone(colixCurrent, isTranslucent, endcap, diameter,
                           screenBase.x, screenBase.y, screenBase.z,
                           screenTip.x, screenTip.y, screenTip.z);
   }
 
-  public void fillCone(short colix, byte endcap, int diameter,
+  public void fillCone(byte endcap, int diameter,
                        Point3f screenBase, Point3f screenTip) {
     // cartoons, rockets
-    cylinder3d.renderCone(colix, endcap, diameter,
+    cylinder3d.renderCone(colixCurrent, isTranslucent, endcap, diameter,
                           screenBase.x, screenBase.y, screenBase.z,
                           screenTip.x, screenTip.y, screenTip.z);
   }
 
-  public void drawHermite(short colix, int tension,
+  public void drawHermite(int tension,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
-    hermite3d.render(false, colix, tension, 0, 0, 0, s0, s1, s2, s3);
+    hermite3d.render(false, tension, 0, 0, 0, s0, s1, s2, s3);
   }
 
   public void drawHermite(boolean fill, boolean border,
-                          short colix, int tension,
-                          Point3i s0, Point3i s1, Point3i s2, Point3i s3,
-                          Point3i s4, Point3i s5, Point3i s6, Point3i s7) {
-    hermite3d.render2(fill, border, colix, tension,
-                      s0, s1, s2, s3, s4, s5, s6, s7, 0);
-  }
-
-  public void drawHermite(boolean fill, boolean border, short colix,
                           int tension, Point3i s0, Point3i s1, Point3i s2,
                           Point3i s3, Point3i s4, Point3i s5, Point3i s6,
                           Point3i s7, int aspectRatio) {
-    hermite3d.render2(fill, border, colix, tension, s0, s1, s2, s3, s4, s5, s6,
+    hermite3d.render2(fill, border, tension, s0, s1, s2, s3, s4, s5, s6,
         s7, aspectRatio);
   }
 
-  public void fillHermite(short colix, int tension, int diameterBeg,
+  public void fillHermite(int tension, int diameterBeg,
                           int diameterMid, int diameterEnd,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
-    hermite3d.render(true, colix, tension,
+    hermite3d.render(true, tension,
                      diameterBeg, diameterMid, diameterEnd,
                      s0, s1, s2, s3);
   }
@@ -801,16 +839,15 @@ final public class Graphics3D {
    * triangles
    * ***************************************************************/
 
-  public void drawTriangle(short colix, Point3i screenA, Point3i screenB,
+  public void drawTriangle(Point3i screenA, Point3i screenB,
                            Point3i screenC) {
     // primary method for Mesh
-    drawTriangle(colix, screenA.x, screenA.y, screenA.z, screenB.x, screenB.y,
+    drawTriangle(screenA.x, screenA.y, screenA.z, screenB.x, screenB.y,
         screenB.z, screenC.x, screenC.y, screenC.z, false);
   }
 
-  void drawTriangle(short colix, int xA, int yA, int zA, int xB, int yB,
+  void drawTriangle(int xA, int yA, int zA, int xB, int yB,
                     int zB, int xC, int yC, int zC, boolean notClipped) {
-    setColix(colix);
     line3d.plotLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent, xA,
         yA, zA, xB, yB, zB, notClipped);
     line3d.plotLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent, xA,
@@ -819,22 +856,21 @@ final public class Graphics3D {
         yB, zB, xC, yC, zC, notClipped);
   }
 
-  public void drawCylinderTriangle(short colix, int xA, int yA, int zA, int xB,
+  public void drawCylinderTriangle(int xA, int yA, int zA, int xB,
                                    int yB, int zB, int xC, int yC, int zC,
                                    int diameter) {
     // polyhedra
-    fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, diameter, xA, yA,
+    fillCylinder(ENDCAPS_SPHERICAL, diameter, xA, yA,
         zA, xB, yB, zB);
-    fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, diameter, xA, yA,
+    fillCylinder(ENDCAPS_SPHERICAL, diameter, xA, yA,
         zA, xC, yC, zC);
-    fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, diameter, xB, yB,
+    fillCylinder(ENDCAPS_SPHERICAL, diameter, xB, yB,
         zB, xC, yC, zC);
   }
 
-  public void drawfillTriangle(short colix, int xA, int yA, int zA, int xB,
+  public void drawfillTriangle(int xA, int yA, int zA, int xB,
                                int yB, int zB, int xC, int yC, int zC) {
     // sticks -- sterochemical wedge notation -- not implemented?
-    setColix(colix);
     line3d.plotLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent, xA,
         yA, zA, xB, yB, zB, false);
     line3d.plotLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent, xA,
@@ -847,11 +883,12 @@ final public class Graphics3D {
   public void fillTriangle(Point3i screenA, short colixA, short normixA,
                            Point3i screenB, short colixB, short normixB,
                            Point3i screenC, short colixC, short normixC) {
-    // mesh
+    // mesh, isosurface
     boolean useGouraud;
     if (normixA == normixB && normixA == normixC &&
         colixA == colixB && colixA == colixC) {
-      setColorNoisy(colixA, normix3d.getIntensity(normixA));
+      setColix(colixA);
+      setColorNoisy(normix3d.getIntensity(normixA));
       useGouraud = false;
     } else {
       triangle3d.setGouraud(getShades(colixA)[normix3d.getIntensity(normixA)],
@@ -870,28 +907,20 @@ final public class Graphics3D {
     triangle3d.fillTriangle(screenA, screenB, screenC, useGouraud);
   }
 
-  public void fillTriangle(short colix,
-                           Point3i screenA, Point3i screenB, Point3i screenC) {
-    // geodesic (Dots.java)
-    calcSurfaceShade(colix, screenA, screenB, screenC);
-    triangle3d.fillTriangle(screenA, screenB, screenC, false);
-  }
-
-  public void fillTriangle(short colix, short normix,
+  public void fillTriangle(short normix,
                            int xScreenA, int yScreenA, int zScreenA,
                            int xScreenB, int yScreenB, int zScreenB,
                            int xScreenC, int yScreenC, int zScreenC) {
     // polyhedra
-    setColorNoisy(colix, normix3d.getIntensity(normix));
+    setColorNoisy(normix3d.getIntensity(normix));
     triangle3d.fillTriangle( xScreenA, yScreenA, zScreenA,
         xScreenB, yScreenB, zScreenB,
         xScreenC, yScreenC, zScreenC, false);
   }
 
-  public void fillTriangle(short colix, Point3f screenA,
-                           Point3f screenB, Point3f screenC) {
+  public void fillTriangle(Point3f screenA, Point3f screenB, Point3f screenC) {
     // rockets
-    setColorNoisy(colix, calcIntensityScreen(screenA, screenB, screenC));
+    setColorNoisy(calcIntensityScreen(screenA, screenB, screenC));
     triangle3d.fillTriangle(screenA, screenB, screenC, false);
   }
 
@@ -905,11 +934,12 @@ final public class Graphics3D {
                                    short colixB, short normixB,
                                    Point3i screenC, short colixC,
                                    short normixC, float factor) {
-    // isosurface
+    // isosurface test showing triangles
     boolean useGouraud;
     if (normixA == normixB && normixA == normixC && colixA == colixB
         && colixA == colixC) {
-      setColorNoisy(colixA, normix3d.getIntensity(normixA));
+      setColix(colixA);
+      setColorNoisy(normix3d.getIntensity(normixA));
       useGouraud = false;
     } else {
       triangle3d.setGouraud(getShades(colixA)[normix3d.getIntensity(normixA)],
@@ -935,6 +965,7 @@ final public class Graphics3D {
   
   public void drawQuadrilateral(short colix, Point3i screenA, Point3i screenB,
                                 Point3i screenC, Point3i screenD) {
+    //mesh only -- translucency has been checked
     setColix(colix);
     drawLine(screenA, screenB);
     drawLine(screenB, screenC);
@@ -942,11 +973,10 @@ final public class Graphics3D {
     drawLine(screenD, screenA);
   }
 
-  public void fillQuadrilateral(short colix,
-                                Point3f screenA, Point3f screenB,
+  public void fillQuadrilateral(Point3f screenA, Point3f screenB,
                                 Point3f screenC, Point3f screenD) {
-    // hermite, rockets
-    setColorNoisy(colix, calcIntensityScreen(screenA, screenB, screenC));
+    // hermite, rockets, cartoons
+    setColorNoisy(calcIntensityScreen(screenA, screenB, screenC));
     triangle3d.fillTriangle(screenA, screenB, screenC, false);
     triangle3d.fillTriangle(screenA, screenC, screenD, false);
   }
@@ -1164,9 +1194,8 @@ final public class Graphics3D {
   static int totalGouraud;
   static int shortCircuitGouraud;
 
-  void plotPixelsUnclipped(int count, int x, int y,
-                           int zAtLeft, int zPastRight,
-                           Rgb16 rgb16Left, Rgb16 rgb16Right) {
+  void xxxplotPixelsUnclipped(int count, int x, int y, int zAtLeft,
+                           int zPastRight, Rgb16 rgb16Left, Rgb16 rgb16Right) {
     // for Triangle3D.fillRaster
     if (count <= 0)
       return;
@@ -1175,20 +1204,19 @@ final public class Graphics3D {
     int zScaled = (zAtLeft << 10) + (1 << 9);
     int dz = zPastRight - zAtLeft;
     int roundFactor = count / 2;
-    int zIncrementScaled =
-      ((dz << 10) + (dz >= 0 ? roundFactor : -roundFactor))/count;
+    int zIncrementScaled = ((dz << 10) + (dz >= 0 ? roundFactor : -roundFactor))
+        / count;
     int offsetPbuf = y * width + x;
     if (rgb16Left == null) {
-      if (! isTranslucent) {
+      if (!isTranslucent) {
         while (--count >= 0) {
           int z = zScaled >> 10;
           if (z < zbuf[offsetPbuf]) {
             zbuf[offsetPbuf] = z;
             seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
             int bits = (seed >> 16) & 0x07;
-            pbuf[offsetPbuf] = (bits == 0
-                                ? argbNoisyDn
-                                : (bits == 1 ? argbNoisyUp : argbCurrent));
+            pbuf[offsetPbuf] = (bits == 0 ? argbNoisyDn
+                : (bits == 1 ? argbNoisyUp : argbCurrent));
           }
           ++offsetPbuf;
           zScaled += zIncrementScaled;
@@ -1203,9 +1231,8 @@ final public class Graphics3D {
               zbuf[offsetPbuf] = z;
               seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
               int bits = (seed >> 16) & 0x07;
-              pbuf[offsetPbuf] = (bits == 0
-                                  ? argbNoisyDn
-                                  : (bits == 1 ? argbNoisyUp : argbCurrent));
+              pbuf[offsetPbuf] = (bits == 0 ? argbNoisyDn
+                  : (bits == 1 ? argbNoisyUp : argbCurrent));
             }
           }
           ++offsetPbuf;
@@ -1219,17 +1246,14 @@ final public class Graphics3D {
         int i = count;
         int j = offsetPbuf;
         int zMin = zAtLeft < zPastRight ? zAtLeft : zPastRight;
-        
-        if (! isTranslucent) {
-          for ( ; zbuf[j] < zMin; ++j)
+
+        if (!isTranslucent) {
+          for (; zbuf[j] < zMin; ++j)
             if (--i == 0) {
               if ((++shortCircuitGouraud % 100000) == 0)
-                Logger.debug("totalGouraud=" + totalGouraud +
-                                   " shortCircuitGouraud=" +
-                                   shortCircuitGouraud
-                                   + " %=" +
-                                   (100.0 * shortCircuitGouraud /
-                                    totalGouraud));
+                Logger.debug("totalGouraud=" + totalGouraud
+                    + " shortCircuitGouraud=" + shortCircuitGouraud + " %="
+                    + (100.0 * shortCircuitGouraud / totalGouraud));
               return;
             }
         } else {
@@ -1238,16 +1262,13 @@ final public class Graphics3D {
             if (--i == 0)
               return;
           }
-          for ( ; zbuf[j] < zMin; j += 2) {
+          for (; zbuf[j] < zMin; j += 2) {
             i -= 2;
             if (i <= 0) {
               if ((++shortCircuitGouraud % 100000) == 0)
-                Logger.debug("totalGouraud=" + totalGouraud +
-                                   " shortCircuitGouraud=" +
-                                   shortCircuitGouraud
-                                   + " %=" +
-                                   (100.0 * shortCircuitGouraud /
-                                    totalGouraud));
+                Logger.debug("totalGouraud=" + totalGouraud
+                    + " shortCircuitGouraud=" + shortCircuitGouraud + " %="
+                    + (100.0 * shortCircuitGouraud / totalGouraud));
               return;
             }
           }
@@ -1261,14 +1282,12 @@ final public class Graphics3D {
       int bScaled = rgb16Left.bScaled;
       int bIncrement = (rgb16Right.bScaled - bScaled) / count;
       while (--count >= 0) {
-        if (! isTranslucent || (flipflop = !flipflop)) {
+        if (!isTranslucent || (flipflop = !flipflop)) {
           int z = zScaled >> 10;
           if (z < zbuf[offsetPbuf]) {
             zbuf[offsetPbuf] = z;
-            pbuf[offsetPbuf] = (0xFF000000 |
-                                (rScaled & 0xFF0000) |
-                                (gScaled & 0xFF00) |
-                                ((bScaled >> 8) & 0xFF));
+            pbuf[offsetPbuf] = (0xFF000000 | (rScaled & 0xFF0000)
+                | (gScaled & 0xFF00) | ((bScaled >> 8) & 0xFF));
           }
         }
         ++offsetPbuf;
@@ -1280,7 +1299,121 @@ final public class Graphics3D {
     }
   }
 
+  ///////////////////////////////////
+
+  void plotPixelsUnclipped(int count, int x, int y, int zAtLeft,
+                              int zPastRight, Rgb16 rgb16Left, Rgb16 rgb16Right) {
+    // for isosurface Triangle3D.fillRaster
+    if (count <= 0)
+      return;
+    int seed = (x << 16) + (y << 1) ^ 0x33333333;
+    // scale the z coordinates;
+    int zScaled = (zAtLeft << 10) + (1 << 9);
+    int dz = zPastRight - zAtLeft;
+    int roundFactor = count / 2;
+    int zIncrementScaled = ((dz << 10) + (dz >= 0 ? roundFactor : -roundFactor))
+        / count;
+    int offsetPbuf = y * width + x;
+    if (rgb16Left == null) {
+      if (isPass2) {
+        while (--count >= 0) {
+          int z = zScaled >> 10;
+          if (z < zbuf[offsetPbuf]) {
+            seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
+            int bits = (seed >> 16) & 0x07;
+            int p = (bits == 0 ? argbNoisyDn : (bits == 1 ? argbNoisyUp
+                : argbCurrent));
+            int zT = zbufT[offsetPbuf]; 
+            if (z < zT) {
+              //new in front -- merge old translucent with opaque
+              mergeBufferPixel(pbuf, pbufT, offsetPbuf);
+              zbufT[offsetPbuf] = z;
+              pbufT[offsetPbuf] = p;
+            } else {
+              //oops-out of order
+              mergeBufferPixel(pbuf, p, offsetPbuf);
+            }
+          }
+          ++offsetPbuf;
+          zScaled += zIncrementScaled;
+        }
+      } else if (!isTranslucent) {
+        while (--count >= 0) {
+          int z = zScaled >> 10;
+          if (z < zbuf[offsetPbuf]) {
+            zbuf[offsetPbuf] = z;
+            seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
+            int bits = (seed >> 16) & 0x07;
+            pbuf[offsetPbuf] = (bits == 0 ? argbNoisyDn
+                : (bits == 1 ? argbNoisyUp : argbCurrent));
+          }
+          ++offsetPbuf;
+          zScaled += zIncrementScaled;
+        }
+      } else {
+        boolean flipflop = ((x ^ y) & 1) != 0;
+        while (--count >= 0) {
+          flipflop = !flipflop;
+          if (flipflop) {
+            int z = zScaled >> 10;
+            if (z < zbuf[offsetPbuf]) {
+              zbuf[offsetPbuf] = z;
+              seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
+              int bits = (seed >> 16) & 0x07;
+              pbuf[offsetPbuf] = (bits == 0 ? argbNoisyDn
+                  : (bits == 1 ? argbNoisyUp : argbCurrent));
+            }
+          }
+          ++offsetPbuf;
+          zScaled += zIncrementScaled;
+        }
+      }
+    } else {
+      boolean flipflop = ((x ^ y) & 1) != 0;
+      int rScaled = rgb16Left.rScaled << 8;
+      int rIncrement = ((rgb16Right.rScaled - rgb16Left.rScaled) << 8) / count;
+      int gScaled = rgb16Left.gScaled;
+      int gIncrement = (rgb16Right.gScaled - gScaled) / count;
+      int bScaled = rgb16Left.bScaled;
+      int bIncrement = (rgb16Right.bScaled - bScaled) / count;
+      while (--count >= 0) {
+        int z = zScaled >> 10;
+        if (isPass2) {
+          if (z < zbuf[offsetPbuf]) {
+            int p = (0xFF000000 | (rScaled & 0xFF0000) | (gScaled & 0xFF00) | ((bScaled >> 8) & 0xFF));
+            int zT = zbufT[offsetPbuf]; 
+            if (z < zT) {
+              //new in front -- merge old translucent with opaque
+              mergeBufferPixel(pbuf, pbufT, offsetPbuf);
+              zbufT[offsetPbuf] = z;
+              pbufT[offsetPbuf] = p;
+            } else {
+              //oops-out of order
+              mergeBufferPixel(pbuf, p, offsetPbuf);
+            }
+          }
+        } else if (!isTranslucent || (flipflop = !flipflop)) {
+          if (z < zbuf[offsetPbuf]) {
+            int p = (0xFF000000 | (rScaled & 0xFF0000) | (gScaled & 0xFF00) | ((bScaled >> 8) & 0xFF));
+            zbuf[offsetPbuf] = z;
+            pbuf[offsetPbuf] = p;
+          }
+        }
+        ++offsetPbuf;
+        zScaled += zIncrementScaled;
+        rScaled += rIncrement;
+        gScaled += gIncrement;
+        bScaled += bIncrement;
+      }
+    }
+  }
+  
+
+  ///////////////////////////////
   void plotPixelsUnclipped(int count, int x, int y, int z) {
+    
+    // for Cirle3D.plot8Filled and fillRect
+    
     int offsetPbuf = y * width + x;
     if (! isTranslucent) {
       while (--count >= 0) {
@@ -1535,6 +1668,8 @@ final public class Graphics3D {
     return getColixInherited(myColix, parentColix);
   }
 
+  //no references
+  /*
   public final short getColixMix(short colixA, short colixB) {
     return Colix.getColixMix(colixA >= 0 ? colixA :
                              changableColixMap[colixA &
@@ -1543,7 +1678,8 @@ final public class Graphics3D {
                              changableColixMap[colixB &
                                                UNMASK_CHANGABLE_TRANSLUCENT]);
   }
-
+ */
+  
   public String getHexColorFromIndex(short colix) {
     int argb = getColixArgb(colix);
     return getHexColorFromRGB(argb);
@@ -1646,7 +1782,7 @@ final public class Graphics3D {
   private final Vector3f vectorNormal = new Vector3f();
   // these points are in screen coordinates even though 3f
 
-  public void calcSurfaceShade(short colix, Point3i screenA,
+  public void calcSurfaceShade(Point3i screenA,
                                Point3i screenB, Point3i screenC) {
     vectorAB.x = screenB.x - screenA.x;
     vectorAB.y = screenB.y - screenA.y;
@@ -1663,7 +1799,7 @@ final public class Graphics3D {
       : calcIntensity(vectorNormal.x, vectorNormal.y, -vectorNormal.z);
     if (intensity > intensitySpecularSurfaceLimit)
       intensity = intensitySpecularSurfaceLimit;
-    setColorNoisy(colix, intensity);
+    setColorNoisy(intensity);
   }
 
   public int calcIntensityScreen(Point3f screenA,

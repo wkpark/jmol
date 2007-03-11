@@ -209,7 +209,7 @@ class Dots extends AtomShape {
       return;
     }
     if ("translucencySurface" == propertyName) {
-      boolean isTranslucent = ("translucent" == value);
+      boolean isTranslucent = (value.equals("translucent"));
       surfaceColix = Graphics3D.getColixTranslucent(surfaceColix, isTranslucent);
       return;
     }    
@@ -660,4 +660,5 @@ class Dots extends AtomShape {
       s.append(getShapeCommands(temp, null, atomCount));
     return s.toString();
   }
+  
 }

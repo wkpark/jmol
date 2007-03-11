@@ -428,10 +428,10 @@ final class Line3D {
     boolean flipflop = (((x ^ y) & 1) != 0);
     boolean tScreened = tScreened1;
     int argb = argb1;
-    if ((!tScreened || (flipflop = !flipflop)) && notClipped && offset >= 0
+    if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && notClipped && offset >= 0
         && offset < offsetMax && z < zbuf[offset]) {
       zbuf[offset] = z;
-      pbuf[offset] = argb1;
+      pbuf[offset] = argb;
     }
     if (dx == 0 && dy == 0)
       return;
@@ -466,6 +466,8 @@ final class Line3D {
         if (n == nMid) {
           tScreened = tScreened2;
           argb = argb2;
+          if (argb == 0)
+            return;
         }
         offset += xIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -475,7 +477,7 @@ final class Line3D {
           twoDxAccumulatedYError -= twoDx;
           flipflop = !flipflop;
         }
-        if ((!tScreened || (flipflop = !flipflop)) && n < n2 && offset >= 0
+        if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && n < n2 && offset >= 0
             && offset < offsetMax && runIndex < rise) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
@@ -497,6 +499,8 @@ final class Line3D {
         if (n == nMid) {
           tScreened = tScreened2;
           argb = argb2;
+          if (argb == 0)
+            return;
         }
         offset += yOffsetIncrement;
         zCurrentScaled += zIncrementScaled;
@@ -506,7 +510,7 @@ final class Line3D {
           twoDyAccumulatedXError -= twoDy;
           flipflop = !flipflop;
         }
-        if ((!tScreened || (flipflop = !flipflop)) && n < n2 && offset >= 0
+        if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && n < n2 && offset >= 0
             && offset < offsetMax && runIndex < rise) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
@@ -519,6 +523,7 @@ final class Line3D {
     }
   }
 
+  
   private void plotLineClipped(int[] shades1, boolean tScreened1,
                                int[] shades2, boolean tScreened2,
                                int intensity, int x, int y, int z, int dx,
@@ -544,12 +549,13 @@ final class Line3D {
     int argb2 = shades2[intensity];
     int argb2Up = shades2[intensityUp];
     int argb2Dn = shades2[intensityDn];
+    int argb = argb1;
     boolean tScreened = tScreened1;
     boolean flipflop = (((x ^ y) & 1) != 0);
-    if ((!tScreened || (flipflop = !flipflop)) && notClipped && offset >= 0
+    if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && notClipped && offset >= 0
         && offset < offsetMax && z < zbuf[offset]) {
       zbuf[offset] = z;
-      pbuf[offset] = argb1;
+      pbuf[offset] = argb;
     }
     if (dx == 0 && dy == 0) {
       return;
@@ -572,7 +578,6 @@ final class Line3D {
     // the z dimension and the z increment are stored with a fractional
     // component in the bottom 10 bits.
     int zCurrentScaled = z << 10;
-    int argb = argb1;
     int argbUp = argb1Up;
     int argbDn = argb1Dn;
     if (dy <= dx) {
@@ -589,6 +594,8 @@ final class Line3D {
       for (int n = dx - 1, nMid = n / 2; --n >= n1;) {
         if (n == nMid) {
           argb = argb2;
+          if (argb == 0)
+            return;
           argbUp = argb2Up;
           argbDn = argb2Dn;
           tScreened = tScreened2;
@@ -608,7 +615,7 @@ final class Line3D {
           flipflop = !flipflop;
         }
         //System.out.println("shade n offset" + n + " " + offset);
-        if ((!tScreened || (flipflop = !flipflop)) && n < n2 && offset >= 0
+        if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && n < n2 && offset >= 0
             && offset < offsetMax && runIndex < rise) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
@@ -633,6 +640,8 @@ final class Line3D {
       for (int n = dy - 1, nMid = n / 2; --n >= n1;) {
         if (n == nMid) {
           argb = argb2;
+          if (argb == 0)
+            return;
           argbUp = argb2Up;
           argbDn = argb2Dn;
           tScreened = tScreened2;
@@ -650,7 +659,7 @@ final class Line3D {
           twoDyAccumulatedXError -= twoDy;
           flipflop = !flipflop;
         }
-        if ((!tScreened || (flipflop = !flipflop)) && n < n2 && offset >= 0
+        if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && n < n2 && offset >= 0
             && offset < offsetMax && runIndex < rise) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
@@ -737,6 +746,8 @@ final class Line3D {
         isInWindow = true;
       if (i == iMid) {
         argb = argb2;
+        if (argb == 0)
+          return;
         argbUp = argb2Up;
         argbDn = argb2Dn;
         tScreened = tScreened2;
@@ -747,7 +758,7 @@ final class Line3D {
         }
       }
       //if(test > 0)System.out.println(isInWindow + " i1="+ i1 + " i0=" + i0 + " i=" + i + " offset="+offset );
-      if (isInWindow && (!tScreened || (flipflop = !flipflop)) && offset >= 0
+      if (argb != 0 && isInWindow && (!tScreened || (flipflop = !flipflop)) && offset >= 0
           && offset < offsetMax && runIndex < rise) {
         if (zFloat < zbuf[offset]) {
           //if (test > 0)System.out.println("ok");

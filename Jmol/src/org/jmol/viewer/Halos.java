@@ -43,7 +43,7 @@ class Halos extends AtomShape {
     super.setProperty(propertyName, value, bs);
   }
 
-  void setVisibilityFlags() {
+  void setVisibilityFlags(BitSet bs) {
     BitSet bsSelected = (viewer.getSelectionHaloEnabled() ? viewer
         .getSelectionSet() : null);
     for (int i = atomCount; --i >= 0;) {

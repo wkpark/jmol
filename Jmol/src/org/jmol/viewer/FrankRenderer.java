@@ -27,10 +27,10 @@ class FrankRenderer extends ShapeRenderer {
 
   void render() {
     Frank frank = (Frank) shape;
-    if (!viewer.getShowFrank())
+    if (!viewer.getShowFrank() || !g3d.setColix(Frank.defaultFontColix))
       return;
     frank.calcMetrics();
-    g3d.drawStringNoSlab(Frank.frankString, frank.font3d, Frank.defaultFontColix,
+    g3d.drawStringNoSlab(Frank.frankString, frank.font3d,
         (short)0, g3d.getRenderWidth() - frank.frankWidth
             - Frank.frankMargin, g3d.getRenderHeight() - frank.frankDescent
             - Frank.frankMargin, 0);

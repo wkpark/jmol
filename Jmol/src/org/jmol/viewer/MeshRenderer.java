@@ -48,9 +48,7 @@ abstract class MeshRenderer extends ShapeRenderer {
   }
   
   boolean renderMesh(Mesh mesh, boolean isPlane, boolean isContoured) {
-    if (mesh == null)
-      return false;
-    if (mesh.visibilityFlags == 0)
+    if (mesh == null || mesh.visibilityFlags == 0 || !g3d.setColix(mesh.colix))
       return false;
     this.isContoured = isContoured;
     int vertexCount = mesh.vertexCount;
@@ -75,13 +73,13 @@ abstract class MeshRenderer extends ShapeRenderer {
     boolean isDrawPickMode = (mesh.meshType == "draw" && viewer
         .getPickingMode() == JmolConstants.PICKING_DRAW);
     int drawType = mesh.drawType;
-    short colix = mesh.colix;
     if ((drawType == Mesh.DRAW_CURVE || drawType == Mesh.DRAW_ARROW)
         && mesh.vertexCount >= 2) {
       int diameter = (mesh.diameter > 0 ? mesh.diameter : 3);
       for (int i = 0, i0 = 0; i < mesh.vertexCount - 1; i++) {
-        g3d.fillHermite(colix, 5, diameter, diameter, diameter, screens[i0], screens[i],
-            screens[i + 1], screens[i + (i + 2 == mesh.vertexCount ? 1 : 2)]);
+        g3d.fillHermite(5, diameter, diameter, diameter, screens[i0],
+            screens[i], screens[i + 1], screens[i
+                + (i + 2 == mesh.vertexCount ? 1 : 2)]);
         i0 = i;
       }
     }
@@ -90,7 +88,7 @@ abstract class MeshRenderer extends ShapeRenderer {
       Point3i pt1 = screens[mesh.vertexCount - 2];
       Point3i pt2 = screens[mesh.vertexCount - 1];
       Vector3f tip = new Vector3f(pt2.x - pt1.x, pt2.y - pt1.y, pt2.z - pt1.z);
-      int diameter = (mesh.diameter > 0 ? mesh.diameter : 3);        
+      int diameter = (mesh.diameter > 0 ? mesh.diameter : 3);
       float d = tip.length();
       if (d > 0) {
         tip.scale(5 / d);
@@ -100,7 +98,7 @@ abstract class MeshRenderer extends ShapeRenderer {
         pt3.x = pt2.x + (int) Math.floor(tip.x);
         pt3.y = pt2.y + (int) Math.floor(tip.y);
         pt3.z = pt2.z + (int) Math.floor(tip.z);
-        g3d.fillCone(colix, Graphics3D.ENDCAPS_FLAT, diameter * 5, pt0, pt3);
+        g3d.fillCone(Graphics3D.ENDCAPS_FLAT, diameter * 5, pt0, pt3);
       }
       break;
     case Mesh.DRAW_CIRCLE:
@@ -110,14 +108,14 @@ abstract class MeshRenderer extends ShapeRenderer {
       //unnecessary
       break;
     default:
-      if (mesh.showPoints)
-        renderPoints(mesh, screens, vertexCount);
-      if (iShowNormals)
-        renderNormals(mesh, screens, vertexCount);
       if (mesh.drawTriangles)
         renderTriangles(mesh, screens, false);
       if (mesh.fillTriangles)
         renderTriangles(mesh, screens, true);
+      if (iShowNormals)
+        renderNormals(mesh, screens, vertexCount);
+      if (mesh.showPoints)
+        renderPoints(mesh, screens, vertexCount);
     }
     if (isDrawPickMode) {
       renderHandles(mesh, screens, vertexCount);
@@ -152,22 +150,24 @@ abstract class MeshRenderer extends ShapeRenderer {
   }
 
   void renderPoints(Mesh mesh, Point3i[] screens, int vertexCount) {
-    short colix = mesh.colix;
     short[] vertexColixes = mesh.vertexColixes;
     int iCount = (mesh.lastViewableVertex > 0 ? mesh.lastViewableVertex + 1
         : vertexCount);
     int iFirst = mesh.firstViewableVertex;
     for (int i = iCount; --i >= iFirst;)
-      if (vertexValues != null && !Float.isNaN(vertexValues[i]))
-        g3d.fillSphereCentered(
-            vertexColixes != null ? vertexColixes[i] : colix, 4, screens[i]);
-    if (mesh.hasGridPoints)
+      if (vertexValues != null && !Float.isNaN(vertexValues[i])) {
+        if (vertexColixes != null)
+          g3d.setColix(vertexColixes[i]);
+        g3d.fillSphereCentered(4, screens[i]);
+      }
+    if (mesh.hasGridPoints && g3d.setColix(Graphics3D.GRAY)) {
       for (int i = 0; i < iFirst; i++)
-        g3d.fillSphereCentered(Graphics3D.GRAY, 2, screens[i]);
-    if (mesh.hasGridPoints && !isContoured) {
+        g3d.fillSphereCentered(2, screens[i]);
+    }
+    if (mesh.hasGridPoints && !isContoured && g3d.setColix(Graphics3D.GRAY)) {
       for (int i = 1; i < vertexCount; i += 3) {
-        g3d.fillCylinder(Graphics3D.GRAY, Graphics3D.ENDCAPS_SPHERICAL, 1,
-            screens[i], screens[i + 1]);
+        g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 1, screens[i],
+            screens[i + 1]);
       }
     }
   }
@@ -177,6 +177,8 @@ abstract class MeshRenderer extends ShapeRenderer {
 
   void renderNormals(Mesh mesh, Point3i[] screens, int vertexCount) {
     //Logger.debug("mesh renderPoints: " + vertexCount);
+    if (!g3d.setColix(Graphics3D.WHITE))
+      return;
     for (int i = vertexCount; --i >= 0;)
       if (true || vertexValues != null && !Float.isNaN(vertexValues[i]))
         if ((i % 3) == 0) { //investigate vertex normixes
@@ -186,7 +188,7 @@ abstract class MeshRenderer extends ShapeRenderer {
           if (n > 0) {
             ptTemp.add(g3d.getNormixVector(n));
             viewer.transformPoint(ptTemp, ptTempi);
-            g3d.fillCylinder(Graphics3D.WHITE, Graphics3D.ENDCAPS_SPHERICAL, 1,
+            g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 1,
                 screens[i], ptTempi);
           }
         }
@@ -196,7 +198,6 @@ abstract class MeshRenderer extends ShapeRenderer {
     int[][] polygonIndexes = mesh.polygonIndexes;
     short[] normixes = mesh.normixes;
     short colix = mesh.colix;
-    
     short[] vertexColixes = mesh.vertexColixes;
     short hideColix = 0;
     try {
@@ -233,7 +234,8 @@ abstract class MeshRenderer extends ShapeRenderer {
       if (iB == iC) {
         int diameter = (mesh.diameter> 0 ? mesh.diameter : iA == iB ? 6
             : 3);
-        g3d.fillCylinder(colixA, Graphics3D.ENDCAPS_SPHERICAL, diameter, screens[iA], screens[iB]);
+        g3d.setColix(colixA);
+        g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, diameter, screens[iA], screens[iB]);
       } else if (vertexIndexes.length == 3) {
         if (fill)
           if (iShowTriangles)
@@ -255,7 +257,7 @@ abstract class MeshRenderer extends ShapeRenderer {
           }
         else
           // FIX ME ... need a drawTriangle routine with multiple colors
-          g3d.drawTriangle(colixA, screens[iA], screens[iB], screens[iC]);
+          g3d.drawTriangle(screens[iA], screens[iB], screens[iC]);
 
       } else if (vertexIndexes.length == 4) {
         int iD = vertexIndexes[3];

@@ -1210,25 +1210,26 @@ String getAtomInfoChime(int i) {
   }
   
   void setModelVisibility() {
-    
+
     if (frame == null) //necessary for file chooser
       return;
-      
+
     //named objects must be set individually
     //in the future, we might include here a BITSET of models rather than just a modelIndex
+
+    // all these isTranslucent = f() || isTranslucent are that way because
+    // in general f() does MORE than just check translucency. 
+    // so isTranslucent = isTranslucent || f() would NOT work.
     
     BitSet bs = viewer.getVisibleFramesBitSet();
-    for (int i = JmolConstants.SHAPE_MIN_NAMED_OBJECT; i < JmolConstants.SHAPE_MAX; i++) 
-    if (frame.shapes[i] != null)
-      frame.shapes[i].setVisibilityFlags(bs);
-    Shape p = frame.shapes[JmolConstants.SHAPE_POLYHEDRA];
-    if (p != null)
-      p.setVisibilityFlags(bs);
-    if (frame.shapes[JmolConstants.SHAPE_HALOS] != null)
-      frame.shapes[JmolConstants.SHAPE_HALOS].setVisibilityFlags(bs);
+    //NOT balls (yet)
+    for (int i = 1; i < JmolConstants.SHAPE_MAX; i++)
+      if (frame.shapes[i] != null)
+        frame.shapes[i].setVisibilityFlags(bs);
     // BALLS sets the JmolConstants.ATOM_IN_MODEL flag.
-    frame.shapes[JmolConstants.SHAPE_BALLS].setVisibilityFlags(bs);
-    
+    frame.shapes[JmolConstants.SHAPE_BALLS]
+        .setVisibilityFlags(bs);
+
     //set clickability -- this enables measures and such
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = frame.shapes[i];

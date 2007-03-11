@@ -82,7 +82,7 @@ class Hermite3D {
     }
   }
 
-  void render(boolean tFill, short colix, int tension,
+  void render(boolean tFill, int tension,
                      int diameterBeg, int diameterMid, int diameterEnd,
                      Point3i p0, Point3i p1, Point3i p2, Point3i p3) {
     if (p0.z == 1 ||p1.z == 1 ||p2.z == 1 ||p3.z == 1)
@@ -108,8 +108,6 @@ class Hermite3D {
     if (tFill) {
       dDiameterFirstHalf = 2 * (diameterMid - diameterBeg);
       dDiameterSecondHalf = 2 * (diameterEnd - diameterMid);
-    } else {
-      g3d.setColix(colix);
     }
     do {
       Point3i a = pLeft[sp];
@@ -127,7 +125,7 @@ class Hermite3D {
             int d =(s < 0.5f
                     ? diameterBeg + (int)(dDiameterFirstHalf * s)
                     : diameterMid + (int)(dDiameterSecondHalf * (s - 0.5f)));
-            g3d.fillSphereCentered(colix, d, a);
+            g3d.fillSphereCentered(d, a);
           } else {
             g3d.plotPixelClipped(a);
           }
@@ -158,7 +156,7 @@ class Hermite3D {
     } while (sp >= 0);
   }
 
-  void render2x(boolean fill, short colix, int tension,
+  private void render2x(boolean fill, int tension,
                 //top strand segment
                 Point3i p0, Point3i p1, Point3i p2, Point3i p3,
                 //bottom strand segment
@@ -193,7 +191,6 @@ class Hermite3D {
     sRight[0] = 1;
     pRight[0].set(p2);
     sp = 0;
-    g3d.setColix(colix);
 
     for (int strands = 2; strands > 0; strands--) {
        if (strands == 1) {
@@ -226,7 +223,7 @@ class Hermite3D {
            // but drawing spheres was faster
            float s = sLeft[sp];
 
-           g3d.fillSphereCentered(colix, 3, a);
+           g3d.fillSphereCentered(3, a);
            //draw outside edges of mesh
 
            if (s < 1.0f - currentInt) { //if first point over the interval
@@ -314,7 +311,7 @@ class Hermite3D {
   Point3f d2 = new Point3f();
   Vector3f depth1 = new Vector3f();
   
-  public void render2(boolean fill, boolean border, short colix, int tension,
+  public void render2(boolean fill, boolean border, int tension,
                       //top strand segment
                       Point3i p0, Point3i p1, Point3i p2, Point3i p3,
                       //bottom strand segment
@@ -323,7 +320,7 @@ class Hermite3D {
     if (p0.z == 1 ||p1.z == 1 ||p2.z == 1 ||p3.z == 1 ||p4.z == 1 ||p5.z == 1 ||p6.z == 1 ||p7.z == 1)
       return;
     if (!fill) {
-      render2x(fill, colix, tension, p0, p1, p2, p3, p4, p5, p6, p7);
+      render2x(fill, tension, p0, p1, p2, p3, p4, p5, p6, p7);
       return;
     }
     float ratio = 1f / aspectRatio;
@@ -372,8 +369,8 @@ class Hermite3D {
             double dyBot2 = dyBot * dyBot;
             if (dyBot2 < 8) {
               if (border) {
-                g3d.fillSphereCentered(colix, 3, a);
-                g3d.fillSphereCentered(colix, 3, c);
+                g3d.fillSphereCentered(3, a);
+                g3d.fillSphereCentered(3, c);
               }
 
               if (needToFill[sp]) {
@@ -387,13 +384,13 @@ class Hermite3D {
                   setPoint(c2, c, depth1, -1);
                   setPoint(d1, d, depth1, 1);
                   setPoint(d2, d, depth1, -1);
-                  g3d.fillQuadrilateral(colix, a1, b1, d1, c1);
-                  g3d.fillQuadrilateral(colix, a2, b2, d2, c2);
-                  g3d.fillQuadrilateral(colix, a1, b1, b2, a2);
-                  g3d.fillQuadrilateral(colix, c1, d1, d2, c2);
+                  g3d.fillQuadrilateral(a1, b1, d1, c1);
+                  g3d.fillQuadrilateral(a2, b2, d2, c2);
+                  g3d.fillQuadrilateral(a1, b1, b2, a2);
+                  g3d.fillQuadrilateral(c1, d1, d2, c2);
                   closeEnd = true;
                 } else {
-                  g3d.fillQuadrilateral(colix, a, b, d, c);
+                  g3d.fillQuadrilateral(a, b, d, c);
                 }
                 needToFill[sp] = false;
               }
@@ -443,7 +440,7 @@ class Hermite3D {
       c1.z += 1;
       c2.z += 1;
       a2.z += 1;
-      g3d.fillQuadrilateral(colix, a1, c1, c2, a2);
+      g3d.fillQuadrilateral(a1, c1, c2, a2);
     }
   }
  

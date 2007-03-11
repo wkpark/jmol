@@ -156,6 +156,7 @@ final class Colix {
       ashades[i] = null;
   }
 
+  /*
   final static Int2IntHash hashMix2 = new Int2IntHash(32);
 
   final static short getColixMix(short colixA, short colixB) {
@@ -184,4 +185,5 @@ final class Colix {
     }
     return (short)(mixed | translucentMask);
   }
+  */
 }

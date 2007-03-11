@@ -38,14 +38,14 @@ class BbcageRenderer extends ShapeRenderer {
 
   void render() {
     short mad = viewer.getObjectMad(StateManager.OBJ_BOUNDBOX);
-    if (mad == 0)
+    if (mad == 0 || !g3d.checkTranslucent(false))
       return;
-    short colix = viewer.getObjectColix(StateManager.OBJ_BOUNDBOX);
-    render(viewer, g3d, mad, colix, frame.bboxVertices, screens);
+    g3d.setColix(viewer.getObjectColix(StateManager.OBJ_BOUNDBOX));
+    render(viewer, g3d, mad, frame.bboxVertices, screens);
   }
 
   static void render(Viewer viewer, Graphics3D g3d,
-                     short mad, short colix,
+                     short mad,
                      Point3f[] vertices, Point3i[] screens) {
     int zSum = 0;
     for (int i = 8; --i >= 0; ) {
@@ -60,11 +60,10 @@ class BbcageRenderer extends ShapeRenderer {
     }
     for (int i = 0; i < 24; i += 2) {
       if (mad < 0)
-        g3d.drawDottedLine(colix,
-                           screens[Bbcage.edges[i]],
+        g3d.drawDottedLine(screens[Bbcage.edges[i]],
                            screens[Bbcage.edges[i+1]]);
       else
-        g3d.fillCylinder(colix, Graphics3D.ENDCAPS_SPHERICAL, widthPixels,
+        g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, widthPixels,
                          screens[Bbcage.edges[i]],
                          screens[Bbcage.edges[i+1]]);
     }

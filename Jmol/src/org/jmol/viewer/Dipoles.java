@@ -218,7 +218,7 @@ class Dipoles extends Shape {
     }
 
     if ("translucency" == propertyName) {
-      boolean isTranslucent = ("translucent" == value);
+      boolean isTranslucent = (value.equals("translucent"));
       if (currentDipole != null)
         currentDipole.setTranslucent(isTranslucent);
       else

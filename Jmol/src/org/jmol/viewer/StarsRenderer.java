@@ -25,8 +25,6 @@
 
 package org.jmol.viewer;
 
-import org.jmol.g3d.*;
-
 class StarsRenderer extends ShapeRenderer {
 
   void render() {
@@ -36,23 +34,22 @@ class StarsRenderer extends ShapeRenderer {
     Atom[] atoms = frame.atoms;
     for (int i = frame.atomCount; --i >= 0;) {
       Atom atom = atoms[i];
-      if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i))
+      if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i)
+          || !g3d.setColix(Shape.getColix(stars.colixes, i, atom)))
         continue;
-      short colix = stars.colixes == null ? 0 : stars.colixes[i];
-      render1(atom, stars.mads[i], colix);
+      render1(atom, stars.mads[i]);
     }
   }
 
-  void render1(Atom atom, short mad, short colix) {
+  void render1(Atom atom, short mad) {
     int x = atom.screenX;
     int y = atom.screenY;
     int z = atom.screenZ;
     int d = viewer.scaleToScreen(z, mad);
     d -= (d & 1) ^ 1; // round down to odd value
-    colix = Graphics3D.getColixInherited(colix, atom.colixAtom);
     int r = d / 2;
-    g3d.drawLine(colix, x - r, y, z, x - r + d, y, z);
-    g3d.drawLine(colix, x, y - r, z, x, y - r + d, z);
+    g3d.drawLine(x - r, y, z, x - r + d, y, z);
+    g3d.drawLine(x, y - r, z, x, y - r + d, z);
   }
 
 }

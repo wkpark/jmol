@@ -311,7 +311,9 @@ class SticksRenderer extends ShapeRenderer {
   private static int wideWidthMilliAngstroms = 400;
 
   private void renderTriangle(Bond bond) {
-    // for now, always solid
+    // for now, always solid, always opaque
+    if (!g3d.checkTranslucent(false))
+      return;
     int mag2d = (int)Math.sqrt(dx*dx + dy*dy);
     int wideWidthPixels = viewer.scaleToScreen(zB, wideWidthMilliAngstroms);
     int dxWide, dyWide;
@@ -326,8 +328,9 @@ class SticksRenderer extends ShapeRenderer {
     int xWideDn = xWideUp - dxWide;
     int yWideUp = yB + dyWide/2;
     int yWideDn = yWideUp - dyWide;
+    g3d.setColix(colixA);
     if (colixA == colixB) {
-      g3d.drawfillTriangle(colixA, xA, yA, zA,
+      g3d.drawfillTriangle(xA, yA, zA,
                            xWideUp, yWideUp, zB, xWideDn, yWideDn, zB);
     } else {
       int xMidUp = (xA + xWideUp) / 2;
@@ -335,11 +338,12 @@ class SticksRenderer extends ShapeRenderer {
       int zMid = (zA + zB) / 2;
       int xMidDn = (xA + xWideDn) / 2;
       int yMidDn = (yA + yWideDn) / 2;
-      g3d.drawfillTriangle(colixA, xA, yA, zA,
+      g3d.drawfillTriangle(xA, yA, zA,
                            xMidUp, yMidUp, zMid, xMidDn, yMidDn, zMid);
-      g3d.drawfillTriangle(colixB, xMidUp, yMidUp, zMid,
+      g3d.setColix(colixB);
+      g3d.drawfillTriangle(xMidUp, yMidUp, zMid,
                            xMidDn, yMidDn, zMid, xWideDn, yWideDn, zB);
-      g3d.drawfillTriangle(colixB, xMidUp, yMidUp, zMid,
+      g3d.drawfillTriangle(xMidUp, yMidUp, zMid,
                            xWideUp, yWideUp, zB, xWideDn, yWideDn, zB);
     }
   }
@@ -349,11 +353,15 @@ class SticksRenderer extends ShapeRenderer {
     int dx = x2 - x1;
     int dy = y2 - y1;
     int dz = z2 - z1;
+    boolean ok = g3d.setColix(colixB);
     for (int i = 8; --i >= 0; ) {
       int x = x1 + (dx * i) / 7;
       int y = y1 + (dy * i) / 7;
       int z = z1 + (dz * i) / 7;
-      g3d.fillSphereCentered(i > 3 ? colixB : colixA, width, x, y, z);
+      if (i == 3 && !(ok = g3d.setColix(colixA)))
+        return;
+      if (ok)
+        g3d.fillSphereCentered(width, x, y, z);
     }
   }
 

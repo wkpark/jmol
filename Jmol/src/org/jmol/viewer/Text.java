@@ -389,7 +389,7 @@ class Text {
     return text;
   }
   void render() {
-    if (text == null)
+    if (text == null || !g3d.setColix(colix))
       return;
 
     if (doFormatText)
@@ -424,27 +424,29 @@ class Text {
       case RIGHT:
         x = x0 - widths[i];
       }
-      g3d.drawString(lines[i], font, colix, x, y, z, zSlab);
+      g3d.drawString(lines[i], font, x, y, z, zSlab);
       y += lineHeight;
     }
 
     // now daw the pointer, if requested
 
     if ((pointer & POINTER_ON) != 0) {
-      short pointerColix = ((pointer & POINTER_BACKGROUND) != 0 && bgcolix != 0 ? bgcolix
+      g3d.setColix((pointer & POINTER_BACKGROUND) != 0 && bgcolix != 0 ? bgcolix
           : colix);
       if (boxX > movableX)
-        g3d.drawLine(pointerColix, movableX, movableY, zSlab, boxX, boxY
+        g3d.drawLine(movableX, movableY, zSlab, boxX, boxY
             + boxHeight / 2, zSlab);
       else if (boxX + boxWidth < movableX)
-        g3d.drawLine(pointerColix, movableX, movableY, zSlab, boxX + boxWidth,
+        g3d.drawLine(movableX, movableY, zSlab, boxX + boxWidth,
             boxY + boxHeight / 2, zSlab);
     }
   }
 
   private void drawBox() {
-    g3d.fillRect(bgcolix, boxX, boxY, z + 2, zSlab, boxWidth, boxHeight);
-    g3d.drawRect(colix, boxX + 1, boxY + 1, z + 1, zSlab, boxWidth - 2,
+    g3d.setColix(bgcolix);
+    g3d.fillRect(boxX, boxY, z + 2, zSlab, boxWidth, boxHeight);
+    g3d.setColix(colix);
+    g3d.drawRect(boxX + 1, boxY + 1, z + 1, zSlab, boxWidth - 2,
         boxHeight - 2);
   }
 
@@ -487,7 +489,7 @@ class Text {
                                  boolean doPointer, short pointerColix) {
 
     // old static style -- quick, simple, no line breaks, odd alignment?
-    if (strLabel == null || strLabel.length() == 0)
+    if (strLabel == null || strLabel.length() == 0 || !g3d.setColix(colix))
       return;
     int x0 = x;
     int y0 = y;
@@ -519,20 +521,24 @@ class Text {
     y += yBoxOffset;
 
     if (bgcolix != 0) {
-      g3d.fillRect(bgcolix, x, y, z, zSlab, boxWidth, boxHeight);
-      g3d.drawRect(colix, x + 1, y + 1, z - 1, zSlab, boxWidth - 2,
+      g3d.setColix(bgcolix);
+      g3d.fillRect(x, y, z, zSlab, boxWidth, boxHeight);
+      g3d.setColix(colix);
+      g3d.drawRect(x + 1, y + 1, z - 1, zSlab, boxWidth - 2,
           boxHeight - 2);
     }
     
+    g3d.drawString(strLabel, font, x + 4, y + 4 + ascent, z - 1,
+        zSlab);
+
     if (doPointer) {
+      g3d.setColix(pointerColix);
       if (xOffset > 0)
-        g3d.drawLine(pointerColix, x0, y0, zSlab, x, y + boxHeight / 2, zSlab);
+        g3d.drawLine(x0, y0, zSlab, x, y + boxHeight / 2, zSlab);
       else if (xOffset < 0)
-        g3d.drawLine(pointerColix, x0, y0, zSlab, x + boxWidth, y + boxHeight
+        g3d.drawLine(x0, y0, zSlab, x + boxWidth, y + boxHeight
             / 2, zSlab);
     }
-    g3d.drawString(strLabel, font, colix, x + 4, y + 4 + ascent, z - 1,
-            zSlab);
   }
 
   static String[] split(String text, char ch) {

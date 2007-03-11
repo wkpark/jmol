@@ -80,7 +80,7 @@ class AtomShape extends Shape {
     }
     if ("translucency" == propertyName) {
       isActive = true;
-      boolean isTranslucent = ("translucent" == value);
+      boolean isTranslucent = (value.equals("translucent"));
       if (bsColixSet == null)
         bsColixSet = new BitSet();
       for (int i = atomCount; --i >= 0; )
@@ -137,4 +137,5 @@ class AtomShape extends Shape {
     }
     return getShapeCommands(temp, temp2, atomCount);
   }
+  
 }

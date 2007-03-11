@@ -65,7 +65,7 @@ abstract class Mps extends Shape {
       return;
     }
     if ("translucency" == propertyName) {
-      boolean isTranslucent = ("translucent" == value);
+      boolean isTranslucent = ("translucent".equals(value));
       for (int m = mpsmodels.length; --m >= 0; )
         mpsmodels[m].setTranslucent(isTranslucent, bs);
     }
@@ -104,6 +104,13 @@ abstract class Mps extends Shape {
   void findNearestAtomIndex(int xMouse, int yMouse, Closest closest) {
     for (int i = mpsmodels.length; --i >= 0; )
       mpsmodels[i].findNearestAtomIndex(xMouse, yMouse, closest);
+  }
+
+  void setVisibilityFlags(BitSet bs) {
+    if (mpsmodels == null)
+      return;
+    for (int i = mpsmodels.length; --i >= 0; )
+      mpsmodels[i].setVisibilityFlags(bs);
   }
 
   void setModelClickability() {
@@ -172,11 +179,13 @@ abstract class Mps extends Shape {
         mpspolymers[i].findNearestAtomIndex(xMouse, yMouse, closest);
     }
 
-    void setModelClickability() {
+    void setVisibilityFlags(BitSet bs) {
       int displayModelIndex = viewer.getCurrentModelIndex();
-      modelVisibilityFlags = 
-        (displayModelIndex >= 0 && displayModelIndex != modelIndex
-            ? 0 : myVisibilityFlag);
+      modelVisibilityFlags = (displayModelIndex >= 0
+          && displayModelIndex != modelIndex ? 0 : myVisibilityFlag);
+    }
+
+    void setModelClickability() {
       for (int i = mpspolymers.length; --i >= 0; )
         mpspolymers[i].setModelClickability();
     }

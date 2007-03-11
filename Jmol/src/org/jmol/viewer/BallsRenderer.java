@@ -81,16 +81,18 @@ class BallsRenderer extends ShapeRenderer {
       int x = Math.max(Math.min(viewer.getScreenWidth(),(int) T.x),0);
       int y = Math.max(Math.min(viewer.getScreenHeight(),(int) T.y),0);
       int z = (int) T.z + 1;
-      short colix = (viewer.getNavigationCentered() ? Graphics3D.GOLD : Graphics3D.RED);
-      g3d.drawRect(colix, x - 10, y, z, 0, 20, 1);
-      g3d.drawRect(colix, x, y - 10, z, 0, 1, 20);
-      g3d.drawRect(colix, x - 4, y -4, z, 0, 10, 10);
+      if (!g3d.setColix(viewer.getNavigationCentered() ? Graphics3D.GOLD : Graphics3D.RED))
+        return;
+      g3d.drawRect(x - 10, y, z, 0, 20, 1);
+      g3d.drawRect(x, y - 10, z, 0, 1, 20);
+      g3d.drawRect(x - 4, y -4, z, 0, 10, 10);
     }
   }
 
   void renderBall(Atom atom) {
-    short colix = atom.colixAtom;
-    g3d.fillSphereCentered(colix, atom.screenDiameter,
+    if (!g3d.setColix(atom.colixAtom))
+        return;    
+    g3d.fillSphereCentered(atom.screenDiameter,
                            atom.screenX, atom.screenY, atom.screenZ);
   }
 }

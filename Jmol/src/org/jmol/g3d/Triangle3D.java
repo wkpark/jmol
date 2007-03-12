@@ -252,7 +252,7 @@ class Triangle3D {
         generateRaster(nLines, iMinY, iMaxY, axE, azE, 0, gouraudE);
       }
     }
-    fillRaster(yMin, nLines, useGouraud, isClipped);
+    fillRaster(yMin, nLines, useGouraud, isClipped, g3d.haveAlphaTranslucent ? 1 : 0);
   }
 
   private final static int DEFAULT = 64;
@@ -289,6 +289,7 @@ class Triangle3D {
     int xN = ax[iN], zN = az[iN];
     int xS = ax[iS], zS = az[iS];
     int dx = xS - xN, dz = zS - zN;
+    //System.out.println("fillt dx dy dz "+ dx + " " + dy + " " + dz);
     int xCurrent = xN;
     int xIncrement, width, errorTerm;
     if (dx >= 0) {
@@ -356,7 +357,7 @@ class Triangle3D {
   private static int bar;
 
   private void fillRaster(int y, int numLines, boolean useGouraud,
-                          boolean isClipped) {
+                          boolean isClipped, int correction) {
     //Logger.debug("fillRaster("+y+","+numLines+","+paintFirstLine);
     int i = 0;
     ++bar;
@@ -367,10 +368,11 @@ class Triangle3D {
     }
     if (y + numLines > g3d.height)
       numLines = g3d.height - y;
+    //numLines = numLines - correction;
     if (isClipped) {
       for (; --numLines >= 0; ++y, ++i) {
         int xW = axW[i];
-        int pixelCount = axE[i] - xW + 1;
+        int pixelCount = axE[i] - xW + 1;// - correction;
         if (pixelCount > 0) {
           g3d.plotPixelsClipped(pixelCount, xW, y, azW[i], azE[i],
               useGouraud ? rgb16sW[i] : null, useGouraud ? rgb16sE[i] : null);
@@ -379,7 +381,7 @@ class Triangle3D {
     } else {
       for (; --numLines >= 0; ++y, ++i) {
         int xW = axW[i];
-        int pixelCount = axE[i] - xW + 1;
+        int pixelCount = axE[i] - xW + 1;// - correction;
         // miguel 2005 01 13
         // not sure exactly why we are getting pixel counts of 0 here
         // it means that the east/west lines are crossing by 1

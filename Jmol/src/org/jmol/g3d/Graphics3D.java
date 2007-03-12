@@ -69,7 +69,7 @@ final public class Graphics3D {
   boolean twoPass = false;
   boolean isPass2;
   boolean addAllPixels;
-  boolean haveTranslucent;
+  boolean haveAlphaTranslucent;
   
   boolean tPaintingInProgress;
 
@@ -94,6 +94,7 @@ final public class Graphics3D {
   int[] shadesCurrent;
   int argbCurrent;
   boolean isTranslucent;
+  boolean isScreened;
   int translucencyMask;
   int argbNoisyUp, argbNoisyDn;
 
@@ -149,14 +150,14 @@ final public class Graphics3D {
     platform.releaseBuffers();
   }
 
-  public boolean checkTranslucent(boolean isTranslucent) {
-    if (isTranslucent)
-      haveTranslucent = true;
-    return (!twoPass || twoPass && (isPass2 == isTranslucent));
+  public boolean checkTranslucent(boolean isAlphaTranslucent) {
+    if (isAlphaTranslucent)
+      haveAlphaTranslucent = true;
+    return (!twoPass || twoPass && (isPass2 == isAlphaTranslucent));
   }
   
   public boolean haveTranslucentObjects() {
-    return haveTranslucent;
+    return haveAlphaTranslucent;
   }
   
   /**
@@ -335,7 +336,8 @@ final public class Graphics3D {
    */
   public boolean setColix(short colix) {
     isTranslucent = (colix & TRANSLUCENT_FLAG) != 0;
-    if (!checkTranslucent(isTranslucent && (colix & TRANSLUCENT_LEVEL_MASK) != 0))
+    isScreened = isTranslucent && (colix & TRANSLUCENT_LEVEL_MASK) == 0;
+    if (!checkTranslucent(isTranslucent && !isScreened))
       return false;
     addAllPixels = isPass2 || !isTranslucent;
     if (isPass2)
@@ -686,7 +688,7 @@ final public class Graphics3D {
     currentlyRendering = true;
     this.twoPass = twoPass;
     isPass2 = false;
-    haveTranslucent = false;
+    haveAlphaTranslucent = false;
     addAllPixels = true;
     if (pbuf == null) {
       platform.allocateBuffers(windowWidth, windowHeight,
@@ -712,7 +714,7 @@ final public class Graphics3D {
   }
 
   public void setPass2() {
-    if (!haveTranslucent || !currentlyRendering)
+    if (!haveAlphaTranslucent || !currentlyRendering)
       return;
     isPass2 = true;
     addAllPixels = true;

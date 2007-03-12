@@ -90,6 +90,7 @@ final public class Graphics3D {
   int[] shadesCurrent;
   int argbCurrent;
   boolean isTranslucent;
+  int translucencyMask;
   int argbNoisyUp, argbNoisyDn;
 
   Font3D font3dCurrent;
@@ -286,43 +287,36 @@ final public class Graphics3D {
     int offset = 0;
     for (int i = windowHeight; --i >= 0; )
       for (int j = windowWidth; --j >= 0; )
-        mergeBufferPixel(pbuf, pbufT, offset++);
-  }
-  
-  static void mergeBufferPixel(int[] pbuf, int[] pbufT, int pt) {
-    //simple 50:50 for now.
-    int argbA = pbuf[pt];
-    int argbB = pbufT[pt];
-    if (argbB == 0 || argbA == argbB)
-      return;
-    int rb = (((argbA & 0x00FF00FF)+(argbB & 0x00FF00FF)) >> 1) & 0x00FF00FF;
-    int g = (((argbA & 0x0000FF00)+(argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
-    pbuf[pt] = 0xFF000000 | rb | g;
+        mergeBufferPixel(pbuf, pbufT[offset], offset++);
   }
   
   static void mergeBufferPixel(int[] pbuf, int argbB, int pt) {
-    int logAlpha = 2;//4;
-    //1=50%, 2 = 25%, 3 = 12.5%, 4 = 6.25% opacity.
+    if (argbB == 0)
+      return;
     int argbA = pbuf[pt];
-    int rb = 0,g = 0;
+    if (argbA == argbB)
+      return;
+    int rb = (argbA & 0x00FF00FF);
+    int g = (argbA & 0x0000FF00);
+    int logAlpha = (argbB >> 24) & 3;//4;
+    //0 or 1=50%, 2 = 25%, 3 = 12.5% opacity.
+//      System.out.print(Integer.toHexString(argbB));
     switch (logAlpha) {
-    case 4:
-      rb = (( ((argbA & 0x00FF00FF)<< 3) + ((argbA & 0x00FF00FF)<< 2) + ((argbA & 0x00FF00FF)<< 1) +(argbA & 0x00FF00FF)+ (argbB & 0x00FF00FF)) >> 4) & 0x00FF00FF;
-      g = (( ((argbA & 0x0000FF00)<< 3) + ((argbA & 0x0000FF00)<< 2) + ((argbA & 0x0000FF00)<<1) + (argbA & 0x0000FF00)+(argbB & 0x0000FF00)) >> 4) & 0x0000FF00;
-      break;
     case 3:
-      rb = (( ((argbA & 0x00FF00FF)<< 2) + ((argbA & 0x00FF00FF)<< 1) +(argbA & 0x00FF00FF)+ (argbB & 0x00FF00FF)) >> 3) & 0x00FF00FF;
-      g = (( ((argbA & 0x0000FF00)<< 2) + ((argbA & 0x0000FF00)<<1) + (argbA & 0x0000FF00)+(argbB & 0x0000FF00)) >> 3) & 0x0000FF00;
+      rb = (((rb << 2) + (rb << 1) + rb + (argbB & 0x00FF00FF)) >> 3) & 0x00FF00FF;
+      g = (((g << 2) + (g << 1) + g + (argbB & 0x0000FF00)) >> 3) & 0x0000FF00;
       break;
     case 2:
-      rb = (( ((argbA & 0x00FF00FF)<< 1)  +(argbA & 0x00FF00FF)+ (argbB & 0x00FF00FF)) >> 2) & 0x00FF00FF;
-      g = (( ((argbA & 0x0000FF00)<< 1) + (argbA & 0x0000FF00)+(argbB & 0x0000FF00)) >> 2) & 0x0000FF00;
+      rb = (((rb << 1) + rb + (argbB & 0x00FF00FF)) >> 2) & 0x00FF00FF;
+      g = (((g << 1) + g + (argbB & 0x0000FF00)) >> 2) & 0x0000FF00;
       break;
     case 1:
-      rb = (((argbA & 0x00FF00FF)+(argbB & 0x00FF00FF)) >> 1) & 0x00FF00FF;
-      g = (((argbA & 0x0000FF00)+(argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
+    case 0:
+      rb = ((rb + (argbB & 0x00FF00FF)) >> 1) & 0x00FF00FF;
+      g = ((g + (argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
       break;
     }
+//    System.out.println(Integer.toHexString(pbuf[pt]));
     pbuf[pt] = 0xFF000000 | rb | g;
   }
   
@@ -336,13 +330,15 @@ final public class Graphics3D {
    * @return true or false if this is the right pass
    */
   public boolean setColix(short colix) {
-    isTranslucent = (colix & TRANSLUCENT_MASK) != 0;
+    isTranslucent = (colix & TRANSLUCENT_FLAG) != 0;
     if (!checkTranslucent(isTranslucent))
       return false;
+    if (isPass2)
+      translucencyMask = ((colix & TRANSLUCENT_LEVEL_MASK) << ALPHA_SHIFT) | 0xFFFFFF;
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
     argbCurrent = argbNoisyUp = argbNoisyDn = getColixArgb(colix);
-    //System.out.println("setColix" + colix + " argb="+Integer.toHexString(argbCurrent)+ " " +isTranslucent);
+    //System.out.println("setColix" + Integer.toHexString(colix) + " argb="+Integer.toHexString(argbCurrent)+ " " +isTranslucent + " tMask " + Integer.toHexString(translucencyMask));
     return true;
   }
 
@@ -1347,9 +1343,9 @@ final public class Graphics3D {
               //if (zT != Integer.MAX_VALUE)
               //System.out.println("plcA: z "+z + " zT " + zT + " " + offsetPbuf + " " + Integer.toHexString(p));
               //if (p != pbufT[offsetPbuf])
-                mergeBufferPixel(pbuf, pbufT, offsetPbuf);
+                mergeBufferPixel(pbuf, pbufT[offsetPbuf], offsetPbuf);
               zbufT[offsetPbuf] = z;
-              pbufT[offsetPbuf] = p;
+              pbufT[offsetPbuf] = p & translucencyMask;
             } else if (z == zT) {
             } else {
               //oops-out of order
@@ -1410,9 +1406,9 @@ final public class Graphics3D {
             if (z < zT) {
               //new in front -- merge old translucent with opaque
               //if (p != pbufT[offsetPbuf])
-              mergeBufferPixel(pbuf, pbufT, offsetPbuf);
+              mergeBufferPixel(pbuf, pbufT[offsetPbuf], offsetPbuf);
               zbufT[offsetPbuf] = z;
-              pbufT[offsetPbuf] = p;
+              pbufT[offsetPbuf] = p & translucencyMask;
             } else {
               //oops-out of order
               //if (p != pbufT[offsetPbuf])
@@ -1486,7 +1482,7 @@ final public class Graphics3D {
    * color indexes -- colix
    * ***************************************************************/
 
-  /* entries 0 through 3 are reserved and are special
+  /* entries 0 and 1 are reserved and are special inheritance
      INHERIT_TRANSLUCENT and INHERIT_OPAQUE are used to inherit
      the underlying color, but change the translucency
 
@@ -1494,29 +1490,60 @@ final public class Graphics3D {
      they are 'screened' where every-other pixel is turned
      on. 
      
-     0x8000 changable flag
+     0x8000 changable flag (elements and isotopes, about 200; negative)
      0x4000 translucent flag
+     0x3000 translucent level
+     
+     NEW:
+     0x5000 translucent level 1
+     0x6000 translucent level 2
+     0x7000 translucent level 3
+
      0x0000 inherit color and translucency
      0x0001 inherit color; make opaque
      0x4001 inherit color; make translucent
-     0x0002 special palette ("group", "structure", etc.); opaque 
-     0x4002 special palette ("group", "structure", etc.); translucent 
-     0x0004 black...
-       ....
-     0x0017  ...gold
-     0x00?? [elements]
-  */
-  final static short TRANSLUCENT_MASK = 0x4000;
-  final static short OPAQUE_MASK  = ~TRANSLUCENT_MASK;
-  final static short CHANGABLE_MASK = (short)0x8000; // negative
-  final static short UNMASK_CHANGABLE_TRANSLUCENT = 0x3FFF;
+       ...
+     0x7001 inherit color; make translucent level 3
+     
+     0x0002 special palette ("group", "structure", etc.)
 
-  public final static short INHERIT              = 0;
-  public final static short INHERIT_OPAQUE       = 1;
-  public final static short INHERIT_TRANSLUCENT  = 1 | TRANSLUCENT_MASK;
-  public final static short USE_PALETTE          = 2;
-  public final static short UNUSED_OPTION        = 3;
-  public final static short SPECIAL_COLIX_MAX    = 4;
+     Note that inherited colors and special palettes are not handled here. 
+     They could be anything, including totally variable quantities such as 
+     distance to an object. So there are two stages of argb color determination
+     from a colix. The special palette flag is only used transiently - just to
+     indicate that the color selected isn't a known color. The actual palette-based
+     colix is saved here, and and the atom or shape's byte paletteID is set as well.
+     
+     Shapes/ColorManager: responsible for assigning argb colors based on 
+     color palettes. These argb colors are then used directly.
+     
+     Graphics3D: responsible for "system" colors and caching of user-defined rgbs.
+     
+     
+     
+     0x0002 black...
+       ....
+     0x0015  ...gold
+     0x00?? additional colors used from JavaScript list or specified by user
+
+     Bob Hanson 3/2007
+     
+  */
+  private final static short CHANGEABLE_MASK = (short)0x8000; // negative
+  private final static int TRANSLUCENT_SHIFT        = 12;
+  private final static int ALPHA_SHIFT              = 24 - TRANSLUCENT_SHIFT;
+  private final static int  TRANSLUCENT_LEVEL_MASK  = 0x3000;
+  final static short TRANSLUCENT_FLAG               = 0x4000;
+  private final static short TRANSLUCENT_MASK       = TRANSLUCENT_FLAG | TRANSLUCENT_LEVEL_MASK;
+  final static short OPAQUE_MASK  = ~TRANSLUCENT_MASK;
+  private final static short UNMASK_CHANGEABLE_TRANSLUCENT =0x0FFF;
+
+  public final static short INHERIT_ALL          = 0;
+  private final static short INHERIT_OPAQUE      = 1;
+  private final static short INHERIT_TRANSLUCENT = 1 | TRANSLUCENT_FLAG;
+  public final static short USE_PALETTE        = 2;
+  final static short UNUSED_OPTION3              = 3;
+  final static short SPECIAL_COLIX_MAX           = 4;
 
   public final static short BLACK       = 4;
   public final static short ORANGE      = 5;
@@ -1616,7 +1643,7 @@ final public class Graphics3D {
     if (argb != 0)
       return Colix.getColix(argb);
     if ("none".equalsIgnoreCase(colorName))
-      return INHERIT;
+      return INHERIT_ALL;
     if ("translucent".equalsIgnoreCase(colorName))
       return INHERIT_TRANSLUCENT;
     if ("opaque".equalsIgnoreCase(colorName))
@@ -1624,12 +1651,18 @@ final public class Graphics3D {
     return USE_PALETTE;
   }
 
+  
+  public final static short applyColorTranslucencyLevel(short colix, int iLevel) {
+    return (short) (colix & ~TRANSLUCENT_MASK 
+        | TRANSLUCENT_FLAG | ((iLevel % 4) << TRANSLUCENT_SHIFT));
+  }
+
   public final static short getColix(Object obj) {
     if (obj == null)
-      return INHERIT;
+      return INHERIT_ALL;
     if (obj instanceof Byte)
-      return (((Byte) obj).byteValue() == 0 ? INHERIT
-          : Graphics3D.USE_PALETTE);
+      return (((Byte) obj).byteValue() == 0 ? INHERIT_ALL
+          : USE_PALETTE);
     if (obj instanceof Integer)
       return Colix.getColix(((Integer) obj).intValue());
     if (obj instanceof String)
@@ -1638,16 +1671,18 @@ final public class Graphics3D {
     return HOTPINK;
   }
 
-  public final static short getColixTranslucent(short colix, boolean isTranslucent) {
-    if (colix == INHERIT)
+  public final static short getColixTranslucent(short colix, boolean isTranslucent, int iLevel) {
+    if (colix == INHERIT_ALL)
       colix = INHERIT_OPAQUE;
-    return (short) (isTranslucent ? colix | TRANSLUCENT_MASK : colix
-        & OPAQUE_MASK);
+    colix &= ~TRANSLUCENT_MASK;
+    if (!isTranslucent)
+      return colix;
+    return applyColorTranslucencyLevel(colix, iLevel);
   }
 
   public int getColixArgb(short colix) {
     if (colix < 0)
-      colix = changableColixMap[colix & UNMASK_CHANGABLE_TRANSLUCENT];
+      colix = changableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
     if (! inGreyscaleMode)
       return Colix.getArgb(colix);
     return Colix.getArgbGreyscale(colix);
@@ -1655,7 +1690,7 @@ final public class Graphics3D {
 
   public int[] getShades(short colix) {
     if (colix < 0)
-      colix = changableColixMap[colix & UNMASK_CHANGABLE_TRANSLUCENT];
+      colix = changableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
     if (! inGreyscaleMode)
       return Colix.getShades(colix);
     return Colix.getShadesGreyscale(colix);
@@ -1664,46 +1699,49 @@ final public class Graphics3D {
   public final static short getChangableColixIndex(short colix) {
     if (colix >= 0)
       return -1;
-    return (short)(colix & UNMASK_CHANGABLE_TRANSLUCENT);
+    return (short)(colix & UNMASK_CHANGEABLE_TRANSLUCENT);
   }
 
   public final static boolean isColixTranslucent(short colix) {
-    return ((colix & TRANSLUCENT_MASK) != 0);
+    return ((colix & TRANSLUCENT_FLAG) != 0);
   }
 
   public final static short getColixInherited(short myColix, short parentColix) {
     switch (myColix) {
-    case INHERIT:
+    case INHERIT_ALL:
       return parentColix;
-    case INHERIT_TRANSLUCENT:
-      return (short)(parentColix | TRANSLUCENT_MASK);
     case INHERIT_OPAQUE:
-      return (short)(parentColix & OPAQUE_MASK);
+      return (short) (parentColix & OPAQUE_MASK);
+    case INHERIT_TRANSLUCENT:
+      //strip off any parent translucent level and add 0-level (old-style)
+      return (short) (parentColix & OPAQUE_MASK | TRANSLUCENT_FLAG);
     default:
-      return myColix;
+      //check this colix irrespective of translucency, and if inherit, then
+      //it must be inherit color but not translucent level; 
+      return ((myColix & OPAQUE_MASK) == INHERIT_OPAQUE ? (short) (parentColix
+          & OPAQUE_MASK | myColix & TRANSLUCENT_MASK) : myColix);
     }
   }
 
-  public final static short getColixInherited(short myColix,
-                                         short parentColix,
-                                         short grandParentColix) {
+  //no references:
+
+  /*
+  
+  public final static short getColixInherited(short myColix, short parentColix,
+                                              short grandParentColix) {
     if ((myColix & OPAQUE_MASK) >= SPECIAL_COLIX_MAX)
       return myColix;
-    parentColix = getColixInherited(parentColix, grandParentColix);
-    if (myColix == 0)
-      return parentColix;
-    return getColixInherited(myColix, parentColix);
+    return getColixInherited(myColix, getColixInherited(parentColix,
+        grandParentColix));
   }
 
-  //no references
-  /*
   public final short getColixMix(short colixA, short colixB) {
     return Colix.getColixMix(colixA >= 0 ? colixA :
                              changableColixMap[colixA &
-                                               UNMASK_CHANGABLE_TRANSLUCENT],
+                                               UNMASK_CHANGEABLE_TRANSLUCENT],
                              colixB >= 0 ? colixB :
                              changableColixMap[colixB &
-                                               UNMASK_CHANGABLE_TRANSLUCENT]);
+                                               UNMASK_CHANGEABLE_TRANSLUCENT]);
   }
  */
   
@@ -1741,7 +1779,8 @@ final public class Graphics3D {
     }
     if (changableColixMap[id] == 0)
       changableColixMap[id] = Colix.getColix(argb);
-    return (short)(id | CHANGABLE_MASK);
+    //System.out.println("changeable colix "+Integer.toHexString(id | CHANGEABLE_MASK) + " = "+Integer.toHexString(argb));
+    return (short)(id | CHANGEABLE_MASK);
   }
 
   public void changeColixArgb(short id, int argb) {

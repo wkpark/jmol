@@ -220,11 +220,11 @@ class Dipoles extends Shape {
     if ("translucency" == propertyName) {
       boolean isTranslucent = (value.equals("translucent"));
       if (currentDipole != null)
-        currentDipole.setTranslucent(isTranslucent);
+        currentDipole.setTranslucent(isTranslucent, translucentLevel);
       else
         for (int i = dipoleCount; --i >= 0;)
           if (!isBond || isBondDipole(i))
-            dipoles[i].setTranslucent(isTranslucent);
+            dipoles[i].setTranslucent(isTranslucent, translucentLevel);
       return;
     }
 

@@ -164,12 +164,12 @@ class Mesh {
     }
   }
 
-  void setTranslucent(boolean isTranslucent) {
-    colix = Graphics3D.getColixTranslucent(colix, isTranslucent);
+  void setTranslucent(boolean isTranslucent, int iLevel) {
+    colix = Graphics3D.getColixTranslucent(colix, isTranslucent, iLevel);
     if (vertexColixes != null)
       for (int i = vertexCount; --i >= 0; )
         vertexColixes[i] =
-          Graphics3D.getColixTranslucent(vertexColixes[i], isTranslucent);
+          Graphics3D.getColixTranslucent(vertexColixes[i], isTranslucent, iLevel);
   }
 
   final Vector3f vAB = new Vector3f();

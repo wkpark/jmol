@@ -40,12 +40,20 @@ import org.jmol.util.Logger;
  * generally means that the value is inherited from some other object.
  *</p>
  *<p>
- * The value 1 is used to indicate TRANSLUCENT, but with the color
- * coming from the parent. The value 2 indicates INHERIT_OPAQUE, but with the
- * color coming from the parent.
+ * The value 1 is used to indicate that color only is to be inherited. 
+ * 
+ * 0x0001 INHERIT_OPAQUE -- opaque, but with the color coming from the parent.
+ * 0x4001 INHERIT_TRANSLUCENT -- translucent but with the color coming from the parent.
+ * 
+ * The value 2 is used to indicate that one of the palettes is to be used. 
+ * 
+ * 0x0002 PALETTE, opaque
+ * 0x4002 PALETTE, translucent
+ * 
+ * Palettes themselves are coded separately in a Palette ID that is tracked with
  *</p>
  *
- * @author Miguel, miguel@jmol.org
+ * @author Miguel, miguel@jmol.org 
  */
 final class Colix {
 
@@ -60,20 +68,18 @@ final class Colix {
   final static short getColix(int argb) {
     if (argb == 0)
       return 0;
-    int translucentMask = 0;
+    int translucentFlag = 0;
     if ((argb & 0xFF000000) != 0xFF000000) {
       if ((argb & 0xFF000000) == 0) {
         Logger.error("zero alpha channel + non-zero rgb not supported");
         throw new IndexOutOfBoundsException();
       }
       argb |= 0xFF000000;
-      translucentMask = Graphics3D.TRANSLUCENT_MASK;
+      translucentFlag = Graphics3D.TRANSLUCENT_FLAG;
     }
     int c = colixHash.get(argb);
-    if (c > 0) {
-	return (short)(c | translucentMask);
-    }
-    return (short)(allocateColix(argb) | translucentMask);
+    return (c > 0 ? (short) (c | translucentFlag)
+        : (short) (allocateColix(argb) | translucentFlag));
   }
 
   private synchronized static int allocateColix(int argb) {
@@ -108,6 +114,7 @@ final class Colix {
       }
     }
     argbs[colixMax] = argb;
+    //System.out.println("Colix "+colixMax + " = "+Integer.toHexString(argb));
     if (argbsGreyscale != null)
       argbsGreyscale[colixMax] = Graphics3D.calcGreyscaleRgbFromRgb(argb);
     colixHash.put(argb, colixMax);

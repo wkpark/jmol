@@ -67,7 +67,7 @@ abstract class Mps extends Shape {
     if ("translucency" == propertyName) {
       boolean isTranslucent = ("translucent".equals(value));
       for (int m = mpsmodels.length; --m >= 0; )
-        mpsmodels[m].setTranslucent(isTranslucent, bs);
+        mpsmodels[m].setTranslucent(isTranslucent, bs, translucentLevel);
     }
   }
 
@@ -150,11 +150,11 @@ abstract class Mps extends Shape {
       }
     }
     
-    void setTranslucent(boolean isTranslucent, BitSet bsSelected) {
+    void setTranslucent(boolean isTranslucent, BitSet bsSelected, int iLevel) {
       for (int i = mpspolymers.length; --i >= 0; ) {
         MpsShape polymer = mpspolymers[i];
         if (polymer.monomerCount > 0)
-          polymer.setTranslucent(isTranslucent, bsSelected);
+          polymer.setTranslucent(isTranslucent, bsSelected, iLevel);
       }
     }
 
@@ -432,19 +432,19 @@ abstract class Mps extends Shape {
         if (bsSelected.get(atomIndex)) {
           colixes[i] = shape.setColix(colix, pid, atomIndex);
           paletteIDs[i] = pid;
-          bsColixSet.set(i, colixes[i] != Graphics3D.INHERIT);
+          bsColixSet.set(i, colixes[i] != Graphics3D.INHERIT_ALL);
         }
       }
     }
     
-    void setTranslucent(boolean isTranslucent, BitSet bsSelected) {
+    void setTranslucent(boolean isTranslucent, BitSet bsSelected, int iLevel) {
       isActive = true;
       if (bsColixSet == null)
         bsColixSet = new BitSet();
       for (int i = monomerCount; --i >= 0; )
         if (bsSelected.get(leadAtomIndices[i])) {
-          colixes[i] = Graphics3D.getColixTranslucent(colixes[i], isTranslucent);
-          bsColixSet.set(i, colixes[i] != Graphics3D.INHERIT);
+          colixes[i] = Graphics3D.getColixTranslucent(colixes[i], isTranslucent, iLevel);
+          bsColixSet.set(i, colixes[i] != Graphics3D.INHERIT_ALL);
       }
     }
 

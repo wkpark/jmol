@@ -113,7 +113,7 @@ class Sticks extends Shape {
         int iBond = iter.nextIndex();
         Bond bond = iter.next();
         bond.setColix(colix);
-        bsColixSet.set(iBond, colix != Graphics3D.INHERIT);
+        bsColixSet.set(iBond, colix != Graphics3D.INHERIT_ALL);
       }
       return;
     }
@@ -125,7 +125,7 @@ class Sticks extends Shape {
           .getBondIterator(myMask, bsSelected));
       while (iter.hasNext()) {
         bsColixSet.set(iter.nextIndex());
-        iter.next().setTranslucent(isTranslucent);
+        iter.next().setTranslucent(isTranslucent, translucentLevel);
       }
       return;
     }

@@ -537,7 +537,7 @@ abstract public class JmolPopup {
         colorCode += item;
         if (colorSet.length() > 0)
           colorSet += " -";
-        if (item.equals("INHERIT")) {
+        if (item.equals("INHERIT_ALL")) {
           colorSet += " " + PopupResourceBundle.INHERIT;
         } else if (item.equals("COLOR")) {
           colorSet += " " + PopupResourceBundle.COLOR;

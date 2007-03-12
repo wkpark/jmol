@@ -76,13 +76,13 @@ class Measures extends Shape {
     } else if ("color".equals(propertyName)) {
       if (bsColixSet == null)
         bsColixSet = new BitSet();
-        short colix = (value == null ? Graphics3D.INHERIT : Graphics3D.getColix(value));
+        short colix = (value == null ? Graphics3D.INHERIT_ALL : Graphics3D.getColix(value));
         if (bsSelected == null)
           this.colix = colix;
       for (int i = 0; i < measurements.length; i++)
         if (measurements[i] != null
             && (bsSelected != null && bsSelected.get(i) || bsSelected == null
-                && (colix == Graphics3D.INHERIT || measurements[i].colix == Graphics3D.INHERIT))) {
+                && (colix == Graphics3D.INHERIT_ALL || measurements[i].colix == Graphics3D.INHERIT_ALL))) {
           measurements[i].colix = colix;
           bsColixSet.set(i);
         }

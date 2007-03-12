@@ -70,6 +70,7 @@ abstract class Shape {
   Graphics3D g3d;
   int shapeID;
   int myVisibilityFlag;
+  int translucentLevel;
   
   final void setViewerG3dFrame(Viewer viewer, Graphics3D g3d, Frame frame,
                                int shapeID) {
@@ -88,6 +89,11 @@ abstract class Shape {
   }
 
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
+    if (propertyName == "translucentLevel") {
+      translucentLevel = ((Integer)value).intValue();
+      return;
+    }
+    
     Logger.warn("unassigned shape setProperty:" + propertyName + ":" + value);
   }
 
@@ -177,7 +183,7 @@ abstract class Shape {
   }
 
   String getColorCommand(String type, byte pid, short colix) {
-    if (pid == JmolConstants.PALETTE_UNKNOWN && colix == Graphics3D.INHERIT)
+    if (pid == JmolConstants.PALETTE_UNKNOWN && colix == Graphics3D.INHERIT_ALL)
       return "";
     return "color " + type + " " + encodeTransColor(pid, colix);
   }
@@ -187,7 +193,7 @@ abstract class Shape {
   }
 
   String encodeTransColor(byte pid, short colix) {
-    if (pid == JmolConstants.PALETTE_UNKNOWN && colix == Graphics3D.INHERIT)
+    if (pid == JmolConstants.PALETTE_UNKNOWN && colix == Graphics3D.INHERIT_ALL)
       return "";
     String s = "";
     /* nuance here is that some palettes depend upon a
@@ -216,7 +222,7 @@ abstract class Shape {
 
   static short getColix(short[] colixes, int i, Atom atom) {
     return Graphics3D.getColixInherited(
-        (colixes == null || i >= colixes.length ? Graphics3D.INHERIT
+        (colixes == null || i >= colixes.length ? Graphics3D.INHERIT_ALL
             : colixes[i]), atom.colixAtom);
   }  
 

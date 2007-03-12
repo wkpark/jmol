@@ -50,7 +50,7 @@ class Balls extends AtomShape {
   void setProperty(String propertyName, Object value, BitSet bs) {
     if ("color" == propertyName) {
       short colix = Graphics3D.getColix(value);
-      if (colix == Graphics3D.INHERIT)
+      if (colix == Graphics3D.INHERIT_ALL)
         colix = Graphics3D.USE_PALETTE;
       if (bsColixSet == null)
         bsColixSet = new BitSet();
@@ -71,12 +71,13 @@ class Balls extends AtomShape {
         bsColixSet = new BitSet();
       for (int i = atomCount; --i >= 0;)
         if (bs.get(i)) {
-          atoms[i].setTranslucent(isTranslucent);
+          atoms[i].setTranslucent(isTranslucent, translucentLevel);
           if (isTranslucent)
             bsColixSet.set(i);
         }
       return;
     }
+    super.setProperty(propertyName, value, bs);
   }
 
   void setModelClickability() {

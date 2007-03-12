@@ -89,7 +89,7 @@ class AtomShape extends Shape {
             colixes = new short[atomCount];
             paletteIDs = new byte[atomCount];
           }
-          colixes[i] = Graphics3D.getColixTranslucent(colixes[i], isTranslucent);
+          colixes[i] = Graphics3D.getColixTranslucent(colixes[i], isTranslucent, translucentLevel);
           if (isTranslucent)
             bsColixSet.set(i);
         }
@@ -99,7 +99,7 @@ class AtomShape extends Shape {
 
   void setColixAndPalette(short colix, byte paletteID, int atomIndex) {
     if (colixes == null || atomIndex >= colixes.length) {
-      if (colix == Graphics3D.INHERIT)
+      if (colix == Graphics3D.INHERIT_ALL)
         return;
       colixes = ArrayUtil.ensureLength(colixes, atomIndex + 1);
       paletteIDs = ArrayUtil.ensureLength(paletteIDs, atomIndex + 1);
@@ -107,7 +107,7 @@ class AtomShape extends Shape {
     if (bsColixSet == null)
       bsColixSet = new BitSet();
     colixes[atomIndex] = colix = setColix(colix, paletteID, atomIndex);
-    bsColixSet.set(atomIndex, colix != Graphics3D.INHERIT);    
+    bsColixSet.set(atomIndex, colix != Graphics3D.INHERIT_ALL);    
     paletteIDs[atomIndex] = paletteID;
   }
   

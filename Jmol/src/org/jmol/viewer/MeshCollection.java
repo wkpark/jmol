@@ -161,10 +161,10 @@ abstract class MeshCollection extends Shape {
     if ("translucency" == propertyName) {
       boolean isTranslucent = (((String)value).equals("translucent"));
       if (currentMesh != null)
-        currentMesh.setTranslucent(isTranslucent);
+        currentMesh.setTranslucent(isTranslucent, translucentLevel);
       else {
         for (int i = meshCount; --i >= 0; )
-          meshes[i].setTranslucent(isTranslucent);
+          meshes[i].setTranslucent(isTranslucent, translucentLevel);
       }
       return;
     }
@@ -203,6 +203,7 @@ abstract class MeshCollection extends Shape {
       return;
     }
     
+    super.setProperty(propertyName, value, bs);
   }
 
   private void deleteMesh() {

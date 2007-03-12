@@ -34,7 +34,7 @@ class PolyhedraRenderer extends ShapeRenderer {
     Polyhedra.Polyhedron[] polyhedrons = polyhedra.polyhedrons;
     drawEdges = polyhedra.drawEdges;
     for (int i = polyhedra.polyhedronCount; --i >= 0;) {
-      short colix = polyhedra.colixes == null ? Graphics3D.INHERIT
+      short colix = polyhedra.colixes == null ? Graphics3D.INHERIT_ALL
           : polyhedra.colixes[polyhedrons[i].centralAtom.atomIndex];
       render1(polyhedrons[i], colix);
     }
@@ -61,7 +61,7 @@ class PolyhedraRenderer extends ShapeRenderer {
       for (int i = 0, j = 0; j < planes.length;)
         fillFace(p.normixes[i++], vertices[planes[j++]], vertices[planes[j++]],
             vertices[planes[j++]]);
-    if (!g3d.setColix(Graphics3D.getColixTranslucent(colix, false)))
+    if (!g3d.setColix(Graphics3D.getColixTranslucent(colix, false, 0)))
       return;
     for (int i = 0, j = 0; j < planes.length;)
       drawFace(p.normixes[i++], vertices[planes[j++]],

@@ -2857,6 +2857,7 @@ class Eval { //implements Runnable {
     boolean haveOperation = false;
     boolean isTranslucentOrOpaque = false;
     String translucency = null;
+    int translucentLevel = 0;
     boolean isColorOrRadius = false;
     int nAtomSets = 0;
     int nDistances = 0;
@@ -2924,6 +2925,8 @@ class Eval { //implements Runnable {
           invalidArgument();
         isColorOrRadius = isTranslucentOrOpaque = true;
         translucency = parameterAsString(i);
+        if (tokAt(i+1) == Token.integer)
+          translucentLevel = intParameter(++i);
         break;
       case Token.radius:
         radius = floatParameter(++i);
@@ -2978,9 +2981,12 @@ class Eval { //implements Runnable {
       if (color != Integer.MIN_VALUE)
         viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "color",
             new Integer(color), bsBonds);
-      if (isTranslucentOrOpaque)
+      if (isTranslucentOrOpaque) {
+        viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "translucentLevel",
+            new Integer(translucentLevel));
         viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "translucency",
             translucency, bsBonds);
+      }
       viewer.selectBonds(null);
     }
     if (!(tQuiet || scriptLevel > scriptReportingLevel))
@@ -3173,6 +3179,7 @@ class Eval { //implements Runnable {
     Object colorvalue = null;
     String colorOrBgcolor = "color";
     BitSet bs = null;
+    int translucentLevel = 0;
     if (index < 0) {
       bs = expression(-index);
       index = iToken + 1;
@@ -3191,6 +3198,8 @@ class Eval { //implements Runnable {
     }
     if (theTok == Token.translucent || theTok == Token.opaque)
       translucentOrOpaque = parameterAsString(index++);
+    if (theTok == Token.translucent && tokAt(index) == Token.integer)
+      translucentLevel = intParameter(index++);
     String modifier = "";
     if (shapeType < 0) {
       //geosurface
@@ -3205,8 +3214,11 @@ class Eval { //implements Runnable {
         if (tokAt(index = iToken + 1) != Token.nada) {
           getToken(index);
           if (translucentOrOpaque == null
-              && (theTok == Token.translucent || theTok == Token.opaque))
+              && (theTok == Token.translucent || theTok == Token.opaque)) {
             translucentOrOpaque = parameterAsString(index);
+            if (theTok == Token.translucent && tokAt(index + 1) == Token.integer)
+              translucentLevel = intParameter(++index);
+          }
           checkStatementLength(index + 1);
         }
       } else {
@@ -3282,11 +3294,18 @@ class Eval { //implements Runnable {
       else
         setShapeProperty(shapeType, colorOrBgcolor + modifier, colorvalue);
     }
-    if (translucentOrOpaque != null)
+    if (translucentOrOpaque != null) {
+      setShapeProperty(shapeType, "translucentLevel", new Integer(translucentLevel));
       setShapeProperty(shapeType, "translucency" + modifier,
           translucentOrOpaque);
+    }
   }
 
+  void setShapeTranslucency (int shapeType, String translucentOrOpaque, int translucentLevel) {
+    setShapeProperty(shapeType, "translucentLevel", new Integer(translucentLevel));
+    setShapeProperty(shapeType, "translucency", translucentOrOpaque);  
+  }
+  
   Hashtable variables = new Hashtable();
   Object[] data;
 
@@ -7179,6 +7198,7 @@ class Eval { //implements Runnable {
       default:
         if (!setMeshDisplayProperty(JmolConstants.SHAPE_PMESH, theTok))
           invalidArgument();
+        i = iToken;
       }
       idSeen = (theTok != Token.delete);
       if (propertyName != null)
@@ -7193,6 +7213,7 @@ class Eval { //implements Runnable {
     boolean idSeen = false;
     boolean isInitialized = false;
     boolean isTranslucent = false;
+    int translucentLevel = 0;
     int colorArgb = Integer.MIN_VALUE;
     int intScale = 0;
     for (int i = 1; i < statementLength; ++i) {
@@ -7297,7 +7318,8 @@ class Eval { //implements Runnable {
         isTranslucent = false;
         if (tokAt(++i) == Token.translucent) {
           isTranslucent = true;
-          i++;
+          if (tokAt(++i) == Token.integer)
+            translucentLevel = intParameter(i++);
         }
         if (isColorParam(i)) {
           colorArgb = getArgbParam(i);
@@ -7335,10 +7357,13 @@ class Eval { //implements Runnable {
         break;
       case Token.translucent:
         isTranslucent = true;
+        if (tokAt(i + 1) == Token.integer)
+          translucentLevel = intParameter(++i);
         break;
       default:
         if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, theTok))
           invalidArgument();
+        i = iToken;
       }
       idSeen = (theTok != Token.delete);
       if (havePoints && !isInitialized) {
@@ -7357,13 +7382,13 @@ class Eval { //implements Runnable {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "colorRGB", new Integer(
           colorArgb));
     if (isTranslucent)
-      setShapeProperty(JmolConstants.SHAPE_DRAW, "translucency", "translucent");
+      setShapeTranslucency(JmolConstants.SHAPE_DRAW, "translucent", translucentLevel);
     if (intScale != 0) {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "scale", new Integer(intScale));
     }
   }
 
-  void drawPoint(String key, Point3f pt, boolean isOn) {
+  void drawPoint(String key, Point3f pt, boolean isOn) throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_DRAW);
     setShapeProperty(JmolConstants.SHAPE_DRAW, "init", null);
     setShapeProperty(JmolConstants.SHAPE_DRAW, "thisID", key);
@@ -7374,7 +7399,7 @@ class Eval { //implements Runnable {
       setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, Token.off);
   }
 
-  void drawPlane(String key, Point4f plane, boolean isOn) {
+  void drawPlane(String key, Point4f plane, boolean isOn) throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_ISOSURFACE);
     setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "init", null);
     setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "thisID", key);
@@ -7407,6 +7432,7 @@ class Eval { //implements Runnable {
     String setPropertyName = "centers";
     String decimalPropertyName = "radius_";
     String translucency = "";
+    int translucentLevel = 0;
     int color = Integer.MIN_VALUE;
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
@@ -7544,8 +7570,7 @@ class Eval { //implements Runnable {
       setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "colorThis", new Integer(
           color));
     if (translucency.length() > 0)
-      setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "translucencyThis",
-          translucency);
+    setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, translucency, translucentLevel);
   }
 
   void lcaoCartoon() throws ScriptException {
@@ -8194,6 +8219,7 @@ class Eval { //implements Runnable {
       default:
         if (!setMeshDisplayProperty(iShape, theTok))
           invalidArgument();
+        i = iToken;
       }
       idSeen = (theTok != Token.delete);
       if (propertyName == "property" && !surfaceObjectSeen) {
@@ -8217,7 +8243,7 @@ class Eval { //implements Runnable {
     }
   }
 
-  boolean setMeshDisplayProperty(int shape, int tok) {
+  boolean setMeshDisplayProperty(int shape, int tok) throws ScriptException {
     String propertyName = null;
     Object propertyValue = null;
     switch (tok) {
@@ -8246,9 +8272,9 @@ class Eval { //implements Runnable {
       propertyName = "fill";
       break;
     case Token.translucent:
-      propertyName = "translucency";
-      propertyValue = "translucent";
-      break;
+      int iLevel = (tokAt(iToken + 1) == Token.integer ? intParameter(++iToken) : 0);
+      setShapeTranslucency(shape, "translucent", iLevel);
+      return true;
     case Token.opaque:
       propertyName = "translucency";
       propertyValue = "opaque";

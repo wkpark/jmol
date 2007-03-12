@@ -44,14 +44,14 @@ class HalosRenderer extends ShapeRenderer {
       if ((atom.shapeVisibilityFlags & JmolConstants.ATOM_IN_MODEL) == 0)
         continue;
       short mad = (halos.mads == null ? 0 : halos.mads[i]);
-      short colix = (halos.colixes == null || i >= halos.colixes.length ? Graphics3D.INHERIT : halos.colixes[i]);
+      short colix = (halos.colixes == null || i >= halos.colixes.length ? Graphics3D.INHERIT_ALL : halos.colixes[i]);
       boolean isHidden = frame.bsHidden.get(i);
       if (selectDisplayTrue && bsSelected.get(i)) {
         if (isHidden && !showHiddenSelections)
           continue;
         if (mad == 0)
           mad = -1; // unsized
-        if (colix == Graphics3D.INHERIT)
+        if (colix == Graphics3D.INHERIT_ALL)
           colix = halos.colixSelection;
         if (colix == Graphics3D.USE_PALETTE)
           colix = Graphics3D.GOLD;

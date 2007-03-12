@@ -301,10 +301,28 @@ final public class Graphics3D {
   }
   
   static void mergeBufferPixel(int[] pbuf, int argbB, int pt) {
-    //simple 50:50 for now.
+    int logAlpha = 2;//4;
+    //1=50%, 2 = 25%, 3 = 12.5%, 4 = 6.25% opacity.
     int argbA = pbuf[pt];
-    int rb = (((argbA & 0x00FF00FF)+(argbB & 0x00FF00FF)) >> 1) & 0x00FF00FF;
-    int g = (((argbA & 0x0000FF00)+(argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
+    int rb = 0,g = 0;
+    switch (logAlpha) {
+    case 4:
+      rb = (( ((argbA & 0x00FF00FF)<< 3) + ((argbA & 0x00FF00FF)<< 2) + ((argbA & 0x00FF00FF)<< 1) +(argbA & 0x00FF00FF)+ (argbB & 0x00FF00FF)) >> 4) & 0x00FF00FF;
+      g = (( ((argbA & 0x0000FF00)<< 3) + ((argbA & 0x0000FF00)<< 2) + ((argbA & 0x0000FF00)<<1) + (argbA & 0x0000FF00)+(argbB & 0x0000FF00)) >> 4) & 0x0000FF00;
+      break;
+    case 3:
+      rb = (( ((argbA & 0x00FF00FF)<< 2) + ((argbA & 0x00FF00FF)<< 1) +(argbA & 0x00FF00FF)+ (argbB & 0x00FF00FF)) >> 3) & 0x00FF00FF;
+      g = (( ((argbA & 0x0000FF00)<< 2) + ((argbA & 0x0000FF00)<<1) + (argbA & 0x0000FF00)+(argbB & 0x0000FF00)) >> 3) & 0x0000FF00;
+      break;
+    case 2:
+      rb = (( ((argbA & 0x00FF00FF)<< 1)  +(argbA & 0x00FF00FF)+ (argbB & 0x00FF00FF)) >> 2) & 0x00FF00FF;
+      g = (( ((argbA & 0x0000FF00)<< 1) + (argbA & 0x0000FF00)+(argbB & 0x0000FF00)) >> 2) & 0x0000FF00;
+      break;
+    case 1:
+      rb = (((argbA & 0x00FF00FF)+(argbB & 0x00FF00FF)) >> 1) & 0x00FF00FF;
+      g = (((argbA & 0x0000FF00)+(argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
+      break;
+    }
     pbuf[pt] = 0xFF000000 | rb | g;
   }
   
@@ -1326,12 +1344,17 @@ final public class Graphics3D {
             int zT = zbufT[offsetPbuf]; 
             if (z < zT) {
               //new in front -- merge old translucent with opaque
-              mergeBufferPixel(pbuf, pbufT, offsetPbuf);
+              //if (zT != Integer.MAX_VALUE)
+              //System.out.println("plcA: z "+z + " zT " + zT + " " + offsetPbuf + " " + Integer.toHexString(p));
+              //if (p != pbufT[offsetPbuf])
+                mergeBufferPixel(pbuf, pbufT, offsetPbuf);
               zbufT[offsetPbuf] = z;
               pbufT[offsetPbuf] = p;
+            } else if (z == zT) {
             } else {
               //oops-out of order
-              mergeBufferPixel(pbuf, p, offsetPbuf);
+              //if (p != pbufT[offsetPbuf])
+                mergeBufferPixel(pbuf, p, offsetPbuf);
             }
           }
           ++offsetPbuf;
@@ -1382,13 +1405,17 @@ final public class Graphics3D {
           if (z < zbuf[offsetPbuf]) {
             int p = (0xFF000000 | (rScaled & 0xFF0000) | (gScaled & 0xFF00) | ((bScaled >> 8) & 0xFF));
             int zT = zbufT[offsetPbuf]; 
+            //if (zT != Integer.MAX_VALUE)
+              //System.out.println("plcB: z "+z + " zT " + zT + " " + offsetPbuf + " " + Integer.toHexString(p));
             if (z < zT) {
               //new in front -- merge old translucent with opaque
+              //if (p != pbufT[offsetPbuf])
               mergeBufferPixel(pbuf, pbufT, offsetPbuf);
               zbufT[offsetPbuf] = z;
               pbufT[offsetPbuf] = p;
             } else {
               //oops-out of order
+              //if (p != pbufT[offsetPbuf])
               mergeBufferPixel(pbuf, p, offsetPbuf);
             }
           }

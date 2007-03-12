@@ -3138,15 +3138,6 @@ public class Viewer extends JmolViewer {
         : ((Integer) value).intValue();
   }
 
-  int getShapeID(String shapeName) {
-    for (int i = JmolConstants.SHAPE_MAX; --i >= 0;)
-      if (JmolConstants.shapeClassBases[i].equals(shapeName))
-        return i;
-    String msg = "Unrecognized shape name:" + shapeName;
-    Logger.error(msg);
-    throw new NullPointerException(msg);
-  }
-
   short getColix(Object object) {
     return Graphics3D.getColix(object);
   }

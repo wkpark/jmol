@@ -26,11 +26,14 @@ import org.jmol.g3d.Graphics3D;
 
 class FrankRenderer extends ShapeRenderer {
 
+  //we render Frank last just for the touch that if there are translucent
+  //objects, then it becomes translucent. Just for fun.
+  
   void render() {
     Frank frank = (Frank) shape;
     if (!viewer.getShowFrank()
         || !g3d.setColix(Graphics3D.getColixTranslucent(Frank.defaultFontColix,
-            true, 1)))
+            g3d.haveTranslucentObjects(), 1)))
       return;
     frank.calcMetrics();
     g3d.drawStringNoSlab(Frank.frankString, frank.font3d, (short) 0, g3d

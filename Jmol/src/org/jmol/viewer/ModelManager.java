@@ -380,7 +380,7 @@ class ModelManager {
   int getShapeIdFromObjectName(String objectName) {
     int i;
     for (i = JmolConstants.SHAPE_MIN_MESH_COLLECTION; 
-        i < JmolConstants.SHAPE_MAX; ++i) {
+        i < JmolConstants.SHAPE_FRANK; ++i) {
       MeshCollection shape = (MeshCollection) frame.shapes[i];
       if (shape != null && shape.getIndexFromName(objectName) >= 0)
         return i;

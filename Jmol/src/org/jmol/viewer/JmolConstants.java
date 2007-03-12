@@ -2990,7 +2990,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // do not rearrange/modify these shapes without
   // updating the String[] shapeBaseClasses below &&
   // also creating a token for this shape in Token.java &&
-  // also updating Eval.java shapeToks to confirm consistent
+  // also updating shapeToks to confirm consistent
   // conversion from tokens to shapes
   ////////////////////////////////////////////////////////////////
 
@@ -3021,20 +3021,21 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_AXES       = 17;
   public final static int SHAPE_BBCAGE     = 18;
   public final static int SHAPE_UCCAGE     = 19;
-  public final static int SHAPE_FRANK      = 20;
-  public final static int SHAPE_ECHO       = 21;
-  public final static int SHAPE_HOVER      = 22;
-  public final static int SHAPE_POLYHEDRA  = 23;
-  public final static int SHAPE_MIN_NAMED_OBJECT = 24;
-  public final static int SHAPE_DIPOLES    = 24;
-  public final static int SHAPE_MIN_MESH_COLLECTION = 25;
-  public final static int SHAPE_PMESH      = 25;
-  public final static int SHAPE_MO         = 26;
-  public final static int SHAPE_ISOSURFACE = 27;
-  public final static int SHAPE_LCAOCARTOON = 28;
-  public final static int SHAPE_DRAW       = 29;
-  public final static int SHAPE_MAX        = SHAPE_DRAW + 1;
-  //handled in Balls.java: (It's ok that this is SHAPE_MAX)
+  public final static int SHAPE_ECHO       = 20;
+  public final static int SHAPE_HOVER      = 21;
+  public final static int SHAPE_POLYHEDRA  = 22;
+  public final static int SHAPE_MIN_NAMED_OBJECT = 23;
+  public final static int SHAPE_DIPOLES    = 23;
+  public final static int SHAPE_MIN_MESH_COLLECTION = 24;
+  public final static int SHAPE_PMESH      = 24;
+  public final static int SHAPE_MO         = 25;
+  public final static int SHAPE_ISOSURFACE = 26;
+  public final static int SHAPE_LCAOCARTOON = 27;
+  public final static int SHAPE_DRAW       = 28;
+  
+  // last should be frank:
+  public final static int SHAPE_FRANK      = 29;
+  public final static int SHAPE_MAX        = SHAPE_FRANK + 1;
   
   // this atom flag simply associates an atom with the current model
   // but doesn't necessarily mean it is visible
@@ -3066,17 +3067,16 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   //public final static int SHAPE_SASURFACE  = 29;
   
   // note that these next two arrays *MUST* be in the same sequence 
-  // given in SHAPE_*  
+  // given in SHAPE_* and they must be capitalized exactly as in their class name 
 
   public final static String[] shapeClassBases = {
     "Balls", "Sticks", "Hsticks", "Sssticks",
     "Labels", "Vectors", "Measures", "Dots",
     "Backbone", "Trace", "Cartoon", "Strands", 
     "MeshRibbon", "Ribbons", "Rockets", "Stars", "Halos",
-    "Axes", "Bbcage", "Uccage", 
-    "Frank", "Echo", "Hover", 
+    "Axes", "Bbcage", "Uccage", "Echo", "Hover", 
     "Polyhedra", "Dipoles", 
-    "Pmesh", "MolecularOrbital", "Isosurface", "LcaoCartoon", "Draw"
+    "Pmesh", "MolecularOrbital", "Isosurface", "LcaoCartoon", "Draw", "Frank"
     //,"Prueba","Sasurface"
      };
 
@@ -3092,11 +3092,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     Token.label, Token.vector, Token.monitor, Token.dots, 
     Token.backbone, Token.trace, Token.cartoon, Token.strands,
     Token.meshRibbon, Token.ribbon, Token.rocket, Token.star, Token.halo, 
-    Token.axes, Token.boundbox, Token.unitcell, 
-    Token.frank, Token.echo, Token.hover,
+    Token.axes, Token.boundbox, Token.unitcell, Token.echo, Token.hover,
     Token.polyhedra, Token.dipole,
-    Token.pmesh, Token.mo, Token.isosurface, Token.lcaocartoon, Token.draw
-      //, Token.prueba, Token.sasurface 
+    Token.pmesh, Token.mo, Token.isosurface, Token.lcaocartoon, Token.draw, Token.frank
       };
 
   static {

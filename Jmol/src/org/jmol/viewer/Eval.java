@@ -3198,7 +3198,7 @@ class Eval { //implements Runnable {
       getToken(++index);
     }
     if (theTok == Token.translucent || theTok == Token.opaque) {
-      translucency = parameterAsString(++index);
+      translucency = parameterAsString(index++);
     if (theTok == Token.translucent && tokAt(index) == Token.integer)
       translucentLevel = intParameter(index++);
     }

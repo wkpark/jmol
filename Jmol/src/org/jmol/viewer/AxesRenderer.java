@@ -46,7 +46,7 @@ class AxesRenderer extends ShapeRenderer {
   void render() {
     Axes axes = (Axes) shape;
     short mad = viewer.getObjectMad(StateManager.OBJ_AXIS1);
-    if (mad == 0 || !g3d.checkTranslucent(false));
+    if (mad == 0 || !g3d.checkTranslucent(false))
       return;
     if (viewer.areAxesTainted())
       axes.initShape();

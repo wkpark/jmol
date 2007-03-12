@@ -2855,9 +2855,8 @@ class Eval { //implements Runnable {
     boolean isDelete = false;
     boolean haveType = false;
     boolean haveOperation = false;
-    boolean isTranslucentOrOpaque = false;
     String translucency = null;
-    int translucentLevel = 0;
+    int translucentLevel = -1;
     boolean isColorOrRadius = false;
     int nAtomSets = 0;
     int nDistances = 0;
@@ -2921,11 +2920,11 @@ class Eval { //implements Runnable {
         break;
       case Token.translucent:
       case Token.opaque:
-        if (isTranslucentOrOpaque)
+        if (translucency != null)
           invalidArgument();
-        isColorOrRadius = isTranslucentOrOpaque = true;
+        isColorOrRadius = true;
         translucency = parameterAsString(i);
-        if (tokAt(i+1) == Token.integer)
+        if (theTok == Token.translucent && tokAt(i + 1) == Token.integer)
           translucentLevel = intParameter(++i);
         break;
       case Token.radius:
@@ -2959,7 +2958,7 @@ class Eval { //implements Runnable {
       distances[1] = distances[0];
       distances[0] = JmolConstants.DEFAULT_MIN_CONNECT_DISTANCE;
     }
-    if (isTranslucentOrOpaque || !Float.isNaN(radius)
+    if (translucency != null || !Float.isNaN(radius)
         || color != Integer.MIN_VALUE) {
       if (!haveType)
         bondOrder = JmolConstants.BOND_ORDER_ANY;
@@ -2981,7 +2980,9 @@ class Eval { //implements Runnable {
       if (color != Integer.MIN_VALUE)
         viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "color",
             new Integer(color), bsBonds);
-      if (isTranslucentOrOpaque) {
+      if (translucency != null) {
+        if (translucentLevel < 0)
+          translucentLevel = viewer.getDefaultTranslucent();
         viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "translucentLevel",
             new Integer(translucentLevel));
         viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "translucency",
@@ -3175,11 +3176,11 @@ class Eval { //implements Runnable {
   }
 
   void colorShape(int shapeType, int index) throws ScriptException {
-    String translucentOrOpaque = null;
+    String translucency = null;
     Object colorvalue = null;
     String colorOrBgcolor = "color";
     BitSet bs = null;
-    int translucentLevel = 0;
+    int translucentLevel = -1;
     if (index < 0) {
       bs = expression(-index);
       index = iToken + 1;
@@ -3196,10 +3197,11 @@ class Eval { //implements Runnable {
       colorOrBgcolor = "bgcolor";
       getToken(++index);
     }
-    if (theTok == Token.translucent || theTok == Token.opaque)
-      translucentOrOpaque = parameterAsString(index++);
+    if (theTok == Token.translucent || theTok == Token.opaque) {
+      translucency = parameterAsString(++index);
     if (theTok == Token.translucent && tokAt(index) == Token.integer)
       translucentLevel = intParameter(index++);
+    }
     String modifier = "";
     if (shapeType < 0) {
       //geosurface
@@ -3213,9 +3215,8 @@ class Eval { //implements Runnable {
         colorvalue = (argb == 0 ? null : new Integer(argb));
         if (tokAt(index = iToken + 1) != Token.nada) {
           getToken(index);
-          if (translucentOrOpaque == null
-              && (theTok == Token.translucent || theTok == Token.opaque)) {
-            translucentOrOpaque = parameterAsString(index);
+          if (translucency == null && (theTok == Token.translucent || theTok == Token.opaque)) {
+            translucency = parameterAsString(index);
             if (theTok == Token.translucent && tokAt(index + 1) == Token.integer)
               translucentLevel = intParameter(++index);
           }
@@ -3294,16 +3295,15 @@ class Eval { //implements Runnable {
       else
         setShapeProperty(shapeType, colorOrBgcolor + modifier, colorvalue);
     }
-    if (translucentOrOpaque != null) {
-      setShapeProperty(shapeType, "translucentLevel", new Integer(translucentLevel));
-      setShapeProperty(shapeType, "translucency" + modifier,
-          translucentOrOpaque);
-    }
+    if (translucency != null)
+      setShapeTranslucency(shapeType, modifier, translucency, translucentLevel);
   }
 
-  void setShapeTranslucency (int shapeType, String translucentOrOpaque, int translucentLevel) {
+  void setShapeTranslucency (int shapeType, String modifier, String translucency, int translucentLevel) {
+    if (translucentLevel < 0)
+      translucentLevel = viewer.getDefaultTranslucent();
     setShapeProperty(shapeType, "translucentLevel", new Integer(translucentLevel));
-    setShapeProperty(shapeType, "translucency", translucentOrOpaque);  
+    setShapeProperty(shapeType, "translucency" + modifier, translucency);  
   }
   
   Hashtable variables = new Hashtable();
@@ -7213,7 +7213,7 @@ class Eval { //implements Runnable {
     boolean idSeen = false;
     boolean isInitialized = false;
     boolean isTranslucent = false;
-    int translucentLevel = 0;
+    int translucentLevel = -1;
     int colorArgb = Integer.MIN_VALUE;
     int intScale = 0;
     for (int i = 1; i < statementLength; ++i) {
@@ -7355,11 +7355,6 @@ class Eval { //implements Runnable {
         i = iToken;
         havePoints = true;
         break;
-      case Token.translucent:
-        isTranslucent = true;
-        if (tokAt(i + 1) == Token.integer)
-          translucentLevel = intParameter(++i);
-        break;
       default:
         if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, theTok))
           invalidArgument();
@@ -7382,7 +7377,7 @@ class Eval { //implements Runnable {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "colorRGB", new Integer(
           colorArgb));
     if (isTranslucent)
-      setShapeTranslucency(JmolConstants.SHAPE_DRAW, "translucent", translucentLevel);
+      setShapeTranslucency(JmolConstants.SHAPE_DRAW, "", "translucent", translucentLevel);
     if (intScale != 0) {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "scale", new Integer(intScale));
     }
@@ -7431,8 +7426,8 @@ class Eval { //implements Runnable {
     setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "init", null);
     String setPropertyName = "centers";
     String decimalPropertyName = "radius_";
-    String translucency = "";
-    int translucentLevel = 0;
+    String translucency = null;
+    int translucentLevel = -1;
     int color = Integer.MIN_VALUE;
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
@@ -7451,10 +7446,8 @@ class Eval { //implements Runnable {
         decimalPropertyName = "radius";
         continue;
       case Token.translucent:
-        translucency = "translucent";
-        continue;
       case Token.opaque:
-        translucency = "opaque";
+        translucency = parameterAsString(i);
         continue;
       case Token.colorRGB:
       case Token.leftsquare:
@@ -7569,8 +7562,8 @@ class Eval { //implements Runnable {
     if (color != Integer.MIN_VALUE)
       setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "colorThis", new Integer(
           color));
-    if (translucency.length() > 0)
-    setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, translucency, translucentLevel);
+    if (translucency != null)
+    setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, "", translucency, translucentLevel);
   }
 
   void lcaoCartoon() throws ScriptException {
@@ -8272,8 +8265,8 @@ class Eval { //implements Runnable {
       propertyName = "fill";
       break;
     case Token.translucent:
-      int iLevel = (tokAt(iToken + 1) == Token.integer ? intParameter(++iToken) : 0);
-      setShapeTranslucency(shape, "translucent", iLevel);
+      setShapeTranslucency(shape, "", "translucent",
+          tokAt(iToken + 1) == Token.integer ? intParameter(++iToken) : -1);
       return true;
     case Token.opaque:
       propertyName = "translucency";

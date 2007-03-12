@@ -858,6 +858,14 @@ public class Viewer extends JmolViewer {
     colorManager.setDefaultColors(colorScheme);
   }
 
+  private void setDefaultTranslucent(int value) {
+    global.defaultTranslucent = value;  
+  }
+  
+  int getDefaultTranslucent() {
+    return global.defaultTranslucent;
+  }
+  
   int getColixArgb(short colix) {
     return g3d.getColixArgb(colix);
   }
@@ -3675,6 +3683,12 @@ public class Viewer extends JmolViewer {
   private void setIntProperty(String key, int value, boolean defineNew) {
     while (true) {
       ///11.1///
+
+
+      if (key.equalsIgnoreCase("defaultTranslucent")) {
+        setDefaultTranslucent(value);
+        break;
+      }
 
       if (key.equalsIgnoreCase("strandCount")) {
         setShapeProperty(JmolConstants.SHAPE_STRANDS, "strandCount",

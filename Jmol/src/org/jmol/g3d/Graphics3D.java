@@ -149,10 +149,10 @@ final public class Graphics3D {
     platform.releaseBuffers();
   }
 
-  public boolean checkTranslucent(boolean isScreened) {
-    if (isScreened)
+  public boolean checkTranslucent(boolean isTranslucent) {
+    if (isTranslucent)
       haveTranslucent = true;
-    return (!twoPass || twoPass && (isPass2 == isScreened));
+    return (!twoPass || twoPass && (isPass2 == isTranslucent));
   }
   
   public boolean haveTranslucentObjects() {
@@ -335,7 +335,7 @@ final public class Graphics3D {
    */
   public boolean setColix(short colix) {
     isTranslucent = (colix & TRANSLUCENT_FLAG) != 0;
-    if (!checkTranslucent(isTranslucent))
+    if (!checkTranslucent(isTranslucent && (colix & TRANSLUCENT_LEVEL_MASK) != 0))
       return false;
     addAllPixels = isPass2 || !isTranslucent;
     if (isPass2)

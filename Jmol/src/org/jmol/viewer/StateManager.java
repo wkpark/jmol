@@ -518,6 +518,7 @@ class StateManager {
     boolean showNavigationPointAlways = false;
     String propertyColorScheme   = "roygb";
     boolean useNumberLocalization = true;
+    int defaultTranslucent        = 1;
     
     
     // window
@@ -828,6 +829,7 @@ class StateManager {
       setParameterValue("defaultAngleLabel",defaultAngleLabel);
       setParameterValue("defaultDirectory",defaultDirectory);
       setParameterValue("defaultDistanceLabel",defaultDistanceLabel);
+      setParameterValue("defaultTranslucent",defaultTranslucent);
       setParameterValue("helpPath",defaultHelpPath);
       setParameterValue("defaultLoadScript",defaultLoadScript);
       setParameterValue("defaultTorsionLabel",defaultTorsionLabel);

@@ -68,6 +68,7 @@ final public class Graphics3D {
   
   boolean twoPass = false;
   boolean isPass2;
+  boolean addAllPixels;
   boolean haveTranslucent;
   
   boolean tPaintingInProgress;
@@ -78,8 +79,11 @@ final public class Graphics3D {
   int slab, depth;
   boolean zShade;
   int xLast, yLast;
-  int[] pbuf, pbufT;
-  int[] zbuf, zbufT;
+  private int[] pbuf;
+  int[] pbufT;
+  int[] zbuf;
+  private int[] zbufT;
+  int bufferSize;
 
   int clipX;
   int clipY;
@@ -333,12 +337,13 @@ final public class Graphics3D {
     isTranslucent = (colix & TRANSLUCENT_FLAG) != 0;
     if (!checkTranslucent(isTranslucent))
       return false;
+    addAllPixels = isPass2 || !isTranslucent;
     if (isPass2)
       translucencyMask = ((colix & TRANSLUCENT_LEVEL_MASK) << ALPHA_SHIFT) | 0xFFFFFF;
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
     argbCurrent = argbNoisyUp = argbNoisyDn = getColixArgb(colix);
-    //System.out.println("setColix" + Integer.toHexString(colix) + " argb="+Integer.toHexString(argbCurrent)+ " " +isTranslucent + " tMask " + Integer.toHexString(translucencyMask));
+    //System.out.println("setColix:" + Integer.toHexString(colix) + " argb="+Integer.toHexString(argbCurrent)+ " " +isTranslucent + " tMask " + Integer.toHexString(translucencyMask));
     return true;
   }
 
@@ -349,6 +354,33 @@ final public class Graphics3D {
     argbNoisyUp = shadesCurrent[intensity < shadeLast ? intensity + 1 : shadeLast];
     argbNoisyDn = shadesCurrent[intensity > 0 ? intensity - 1 : 0];
   }
+  void addPixel(int offset, int z, int p) {
+    addPixelT(offset, z, p, zbuf, pbuf, zbufT, pbufT, translucencyMask, isPass2);
+  }
+  
+  final static void addPixelT(int offset, int z, int p, int[] zbuf, int[] pbuf, int[] zbufT, int[] pbufT, int translucencyMask, boolean isPass2) {
+    if (!isPass2) {
+      zbuf[offset] = z;
+      pbuf[offset] = p;
+      return;
+    }
+    int zT = zbufT[offset]; 
+    if (z < zT) {
+      //new in front -- merge old translucent with opaque
+      //if (zT != Integer.MAX_VALUE)
+      //System.out.println("plcA: z "+z + " zT " + zT + " " + offsetPbuf + " " + Integer.toHexString(p));
+      //if (p != pbufT[offsetPbuf])
+        mergeBufferPixel(pbuf, pbufT[offset], offset);
+      zbufT[offset] = z;
+      pbufT[offset] = p & translucencyMask;
+    } else if (z == zT) {
+    } else {
+      //oops-out of order
+      //if (p != pbufT[offsetPbuf])
+        mergeBufferPixel(pbuf, p, offset);
+    }
+  }
+
 
   int[] imageBuf = new int[0];
 
@@ -362,23 +394,25 @@ final public class Graphics3D {
    * @param y center y
    * @param z center z
    */
-  public void fillScreenedCircleCentered(short colixFill, int diameter, 
-                                         int x, int y, int z) {
+  public void fillScreenedCircleCentered(short colixFill, int diameter, int x,
+                                         int y, int z) {
     // halo only -- simple Z/window clip
     if (isClippedZ(z))
       return;
     int r = (diameter + 1) / 2;
-    setColix(colixFill);
-    isTranslucent = true;
-    if (x >= r && x + r < width && y >= r && y + r < height) {
-      circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
-      isTranslucent = false;
-      circle3d.plotCircleCenteredUnclipped(x, y, z, diameter);
-    } else if (!isClippedXY(diameter, x, y)) {
-      circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);
-      isTranslucent = false;
-      circle3d.plotCircleCenteredClipped(x, y, z, diameter);
+    boolean isClipped = x < r || x + r >= width || y < r || y + r >= height;
+    if (setColix(getColixTranslucent(colixFill, false, 0))) {
+      if (!isClipped)
+        circle3d.plotCircleCenteredUnclipped(x, y, z, diameter);
+      else if (!isClippedXY(diameter, x, y))
+        circle3d.plotCircleCenteredClipped(x, y, z, diameter);
     }
+    if (!setColix(getColixTranslucent(colixFill, true, 1)))
+      return;
+    if (!isClipped)
+      circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
+    else if (!isClippedXY(diameter, x, y))
+      circle3d.plotFilledCircleCenteredClipped(x, y, z, diameter);
   }
 
   /**
@@ -393,7 +427,7 @@ final public class Graphics3D {
     if (diameter <= 1) {
       plotPixelClipped(argbCurrent, x, y, z);
     } else {
-      sphere3d.render(shadesCurrent, isTranslucent, diameter, x, y, z);
+      sphere3d.render(shadesCurrent, !addAllPixels, diameter, x, y, z);
     }
   }
 
@@ -437,14 +471,74 @@ final public class Graphics3D {
     int xRight = x + w;
     int yBottom = y + h;
     if (y >= 0 && y < height)
-      line3d.drawHLine(argbCurrent, isTranslucent, x, y, z, w);
+      drawHLine(x, y, z, w);
     if (yBottom >= 0 && yBottom < height)
-      line3d.drawHLine(argbCurrent, isTranslucent, x, yBottom, z, w);
+      drawHLine(x, yBottom, z, w);
     if (x >= 0 && x < width)
-      line3d.drawVLine(argbCurrent, isTranslucent, x, y, z, h);
+      drawVLine(x, y, z, h);
     if (xRight >= 0 && xRight < width)
-      line3d.drawVLine(argbCurrent, isTranslucent, xRight, y, z, h);
+      drawVLine(xRight, y, z, h);
   }
+
+  private void drawHLine(int x, int y, int z, int w) {
+    // hover, labels only
+    if (w < 0) {
+      x += w;
+      w = -w;
+    }
+    if (x < 0) {
+      w += x;
+      x = 0;
+    }
+    if (x + w >= width)
+      w = width - 1 - x;
+    int offset = x + width * y;
+    if (addAllPixels) {
+      for (int i = 0; i <= w; i++) {
+        if (z < zbuf[offset])
+          addPixel(offset, z, argbCurrent);
+        offset++;
+      }
+      return;
+    }
+    boolean flipflop = ((x ^ y) & 1) != 0;
+    for (int i = 0; i <= w; i++) {
+      if ((flipflop = !flipflop) && z < zbuf[offset])
+        addPixel(offset, z, argbCurrent);
+      offset++;
+    }
+  }
+
+  private void drawVLine(int x, int y, int z, int h) {
+    // hover, labels only
+    if (h < 0) {
+      y += h;
+      h = -h;
+    }
+    if (y < 0) {
+      h += y;
+      y = 0;
+    }
+    if (y + h >= height) {
+      h = height - 1 - y;
+    }
+    int offset = x + width * y;
+    if (addAllPixels) {
+      for (int i = 0; i <= h; i++) {
+        if (z < zbuf[offset])
+          addPixel(offset, z, argbCurrent);
+        offset += width;
+      }
+      return;
+    }
+    boolean flipflop = ((x ^ y) & 1) != 0;
+    for (int i = 0; i <= h; i++) {
+      if ((flipflop = !flipflop) && z < zbuf[offset])
+        addPixel(offset, z, argbCurrent);
+      offset += width;
+    }
+  }
+
 
   /**
    * fills background rectangle for label
@@ -593,6 +687,7 @@ final public class Graphics3D {
     this.twoPass = twoPass;
     isPass2 = false;
     haveTranslucent = false;
+    addAllPixels = true;
     if (pbuf == null) {
       platform.allocateBuffers(windowWidth, windowHeight,
                                isFullSceneAntialiasingEnabled);
@@ -602,6 +697,7 @@ final public class Graphics3D {
       xLast = width - 1;
       height = windowHeight;
       yLast = height - 1;
+      bufferSize = pbuf.length;
     }
     width = windowWidth;
     height = windowHeight;
@@ -619,6 +715,7 @@ final public class Graphics3D {
     if (!haveTranslucent || !currentlyRendering)
       return;
     isPass2 = true;
+    addAllPixels = true;
     if (pbufT == null) {
       platform.allocateTBuffers();
       pbufT = platform.pBufferT;
@@ -713,21 +810,20 @@ final public class Graphics3D {
   public void drawDashedLine(int run, int rise,
                              int x1, int y1, int z1, int x2, int y2, int z2) {
     // measures only
-    line3d.plotDashedLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
+    line3d.plotDashedLine(argbCurrent, !addAllPixels,
                           run, rise, x1, y1, z1, x2, y2, z2, false);
   }
 
   public void drawDottedLine(Point3i pointA, Point3i pointB) {
      //axes, bbcage only
-    line3d.plotDashedLine(argbCurrent, isTranslucent,
-                          argbCurrent, isTranslucent, 2, 1,
+    line3d.plotDashedLine(argbCurrent, !addAllPixels, 2, 1,
                           pointA.x, pointA.y, pointA.z,
                           pointB.x, pointB.y, pointB.z, false);
   }
 
   public void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
     // stars
-    line3d.plotLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
+    line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
                     x1, y1, z1, x2, y2, z2, false);
   }
 
@@ -736,19 +832,19 @@ final public class Graphics3D {
     // backbone and sticks
     if (!setColix(colixA))
       colixA = 0;
-    boolean isScreenedA = isTranslucent;
+    boolean isScreenedA = !addAllPixels;
     int argbA = argbCurrent;
     if (!setColix(colixB))
       colixB = 0;
     if (colixA == 0 && colixB == 0)
       return;
-    line3d.plotLine(argbA, isScreenedA, argbCurrent, isTranslucent,
+    line3d.plotLine(argbA, isScreenedA, argbCurrent, !addAllPixels,
                     x1, y1, z1, x2, y2, z2, false);
   }
   
   void drawLine(Point3i pointA, Point3i pointB) {
     // draw quadrilateral and hermite
-    line3d.plotLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent,
+    line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
                     pointA.x, pointA.y, pointA.z,
                     pointB.x, pointB.y, pointB.z, false);
   }
@@ -763,25 +859,25 @@ final public class Graphics3D {
                            int xA, int yA, int zA, int xB, int yB, int zB) {
     if (!setColix(colixA))
       colixA = 0;
-    boolean isScreenedA = isTranslucent;
+    boolean isScreenedA = !addAllPixels;
     if (!setColix(colixB))
       colixB = 0;
     if (colixA == 0 && colixB == 0)
       return;
-    cylinder3d.render(colixA, colixB, isScreenedA, isTranslucent, endcaps, diameter,
+    cylinder3d.render(colixA, colixB, isScreenedA, !addAllPixels, endcaps, diameter,
                       xA, yA, zA, xB, yB, zB);
   }
 
   public void fillCylinder(byte endcaps,
                            int diameter,
                            int xA, int yA, int zA, int xB, int yB, int zB) {
-    cylinder3d.render(colixCurrent, colixCurrent, isTranslucent, isTranslucent, endcaps, diameter,
+    cylinder3d.render(colixCurrent, colixCurrent, !addAllPixels, !addAllPixels, endcaps, diameter,
                       xA, yA, zA, xB, yB, zB);
   }
 
   public void fillCylinder(byte endcaps, int diameter,
                            Point3i screenA, Point3i screenB) {
-    cylinder3d.render(colixCurrent, colixCurrent, isTranslucent, isTranslucent, endcaps, diameter,
+    cylinder3d.render(colixCurrent, colixCurrent, !addAllPixels, !addAllPixels, endcaps, diameter,
                       screenA.x, screenA.y, screenA.z,
                       screenB.x, screenB.y, screenB.z);
   }
@@ -791,19 +887,19 @@ final public class Graphics3D {
                                int yB, int zB) {
     if (!setColix(colixA))
       colixA = 0;
-    boolean isScreenedA = isTranslucent;
+    boolean isScreenedA = !addAllPixels;
     if (!setColix(colixB))
       colixB = 0;
     if (colixA == 0 && colixB == 0)
       return;
-    cylinder3d.renderBits(colixA, colixB, isScreenedA, isTranslucent, endcaps,
+    cylinder3d.renderBits(colixA, colixB, isScreenedA, !addAllPixels, endcaps,
         diameter, xA, yA, zA, xB, yB, zB);
   }
 
   public void fillCylinderBits(byte endcaps, int diameter,
                                Point3f screenA, Point3f screenB) {
    // dipole cross, cartoonRockets
-   cylinder3d.renderBits(colixCurrent, colixCurrent, isTranslucent, isTranslucent, endcaps, diameter,
+   cylinder3d.renderBits(colixCurrent, colixCurrent, !addAllPixels, !addAllPixels, endcaps, diameter,
        screenA.x, screenA.y, screenA.z,
        screenB.x, screenB.y, screenB.z);
  }
@@ -811,7 +907,7 @@ final public class Graphics3D {
   public void fillCone(byte endcap, int diameter,
                        Point3i screenBase, Point3i screenTip) {
     // dipoles, mesh, vectors
-    cylinder3d.renderCone(colixCurrent, isTranslucent, endcap, diameter,
+    cylinder3d.renderCone(colixCurrent, !addAllPixels, endcap, diameter,
                           screenBase.x, screenBase.y, screenBase.z,
                           screenTip.x, screenTip.y, screenTip.z);
   }
@@ -819,7 +915,7 @@ final public class Graphics3D {
   public void fillCone(byte endcap, int diameter,
                        Point3f screenBase, Point3f screenTip) {
     // cartoons, rockets
-    cylinder3d.renderCone(colixCurrent, isTranslucent, endcap, diameter,
+    cylinder3d.renderCone(colixCurrent, !addAllPixels, endcap, diameter,
                           screenBase.x, screenBase.y, screenBase.z,
                           screenTip.x, screenTip.y, screenTip.z);
   }
@@ -862,11 +958,11 @@ final public class Graphics3D {
 
   void drawTriangle(int xA, int yA, int zA, int xB, int yB,
                     int zB, int xC, int yC, int zC, boolean notClipped) {
-    line3d.plotLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent, xA,
+    line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xA,
         yA, zA, xB, yB, zB, notClipped);
-    line3d.plotLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent, xA,
+    line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xA,
         yA, zA, xC, yC, zC, notClipped);
-    line3d.plotLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent, xB,
+    line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xB,
         yB, zB, xC, yC, zC, notClipped);
   }
 
@@ -885,11 +981,11 @@ final public class Graphics3D {
   public void drawfillTriangle(int xA, int yA, int zA, int xB,
                                int yB, int zB, int xC, int yC, int zC) {
     // sticks -- sterochemical wedge notation -- not implemented?
-    line3d.plotLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent, xA,
+    line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xA,
         yA, zA, xB, yB, zB, false);
-    line3d.plotLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent, xA,
+    line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xA,
         yA, zA, xC, yC, zC, false);
-    line3d.plotLine(argbCurrent, isTranslucent, argbCurrent, isTranslucent, xB,
+    line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xB,
         yB, zB, xC, yC, zC, false);
     triangle3d.fillTriangle(xA, yA, zA, xB, yB, zB, xC, yC, zC, false);
   }
@@ -1035,13 +1131,12 @@ final public class Graphics3D {
   }
   
   void plotPixelClipped(int x, int y, int z) {
+    //circle3D, drawPixel, plotPixelClipped(point3)
     if (isClipped(x, y, z))
       return;
     int offset = y * width + x;
-    if (z < zbuf[offset]) {
-      zbuf[offset] = z;
-      pbuf[offset] = argbCurrent;
-    }
+    if (z < zbuf[offset])
+      addPixel(offset, z, argbCurrent);
   }
 
   void plotPixelClipped(Point3i screen) {
@@ -1054,10 +1149,8 @@ final public class Graphics3D {
     if (isClipped(x, y, z))
       return;
     int offset = y * width + x;
-    if (z < zbuf[offset]) {
-      zbuf[offset] = z;
-      pbuf[offset] = argb;
-    }
+    if (z < zbuf[offset])
+      addPixel(offset, z, argb);
   }
 
   void plotPixelClippedNoSlab(int argb, int x, int y, int z) {
@@ -1065,40 +1158,32 @@ final public class Graphics3D {
     if (isClipped(x, y))
       return;
     int offset = y * width + x;
-    if (z < zbuf[offset]) {
-      zbuf[offset] = z;
-      pbuf[offset] = argb;
-    }
+    if (z < zbuf[offset])
+      addPixel(offset, z, argb);
   }
 
-  void plotPixelClipped(int argb, boolean isTranslucent, int x, int y, int z) {
+  void plotPixelClipped(int argb, boolean isScreened, int x, int y, int z) {
     if (isClipped(x, y, z))
       return;
-    if (isTranslucent && ((x ^ y) & 1) != 0)
+    if (isScreened && ((x ^ y) & 1) != 0)
       return;
     int offset = y * width + x;
-    if (z < zbuf[offset]) {
-      zbuf[offset] = z;
-      pbuf[offset] = argb;
-    }
+    if (z < zbuf[offset])
+      addPixel(offset, z, argb);
   }
 
   void plotPixelUnclipped(int x, int y, int z) {
     // circle (halo)
     int offset = y * width + x;
-    if (z < zbuf[offset]) {
-      zbuf[offset] = z;
-      pbuf[offset] = argbCurrent;
-    }
+    if (z < zbuf[offset])
+      addPixel(offset, z, argbCurrent);
   }
   
   void plotPixelUnclipped(int argb, int x, int y, int z) {
     // cylinder plotRaster
     int offset = y * width + x;
-    if (z < zbuf[offset]) {
-      zbuf[offset] = z;
-      pbuf[offset] = argb;
-    }
+    if (z < zbuf[offset])
+      addPixel(offset, z, argb);
   }
   
   void plotPixelsClipped(int count, int x, int y, int z) {
@@ -1117,36 +1202,32 @@ final public class Graphics3D {
     int offsetPbuf = y * width + x;
     int offsetMax = offsetPbuf + count;
     int step = 1;
-    if (isTranslucent) {
+    if (!addAllPixels) {
       step = 2;
       if (((x ^ y) & 1) != 0)
         ++offsetPbuf;
     }
     while (offsetPbuf < offsetMax) {
-      if (z < zbuf[offsetPbuf]) {
-        zbuf[offsetPbuf] = z;
-        pbuf[offsetPbuf] = argbCurrent;
-      }
+      if (z < zbuf[offsetPbuf])
+        addPixel(offsetPbuf, z, argbCurrent);
       offsetPbuf += step;
     }
   }
 
-  void plotPixelsClipped(int count, int x, int y,
-                         int zAtLeft, int zPastRight,
+  void plotPixelsClipped(int count, int x, int y, int zAtLeft, int zPastRight,
                          Rgb16 rgb16Left, Rgb16 rgb16Right) {
     // cylinder3d.renderFlatEndcap, triangle3d.fillRaster
-    if (count <= 0 || y < 0 || y >= height || x >= width ||
-        (zAtLeft < slab && zPastRight < slab) ||
-        (zAtLeft > depth && zPastRight > depth)
-        )
+    if (count <= 0 || y < 0 || y >= height || x >= width
+        || (zAtLeft < slab && zPastRight < slab)
+        || (zAtLeft > depth && zPastRight > depth))
       return;
     int seed = (x << 16) + (y << 1) ^ 0x33333333;
     // scale the z coordinates;
     int zScaled = (zAtLeft << 10) + (1 << 9);
     int dz = zPastRight - zAtLeft;
     int roundFactor = count / 2;
-    int zIncrementScaled =
-      ((dz << 10) + (dz >= 0 ? roundFactor : -roundFactor))/count;
+    int zIncrementScaled = ((dz << 10) + (dz >= 0 ? roundFactor : -roundFactor))
+        / count;
     if (x < 0) {
       x = -x;
       zScaled += zIncrementScaled * x;
@@ -1163,132 +1244,19 @@ final public class Graphics3D {
     int offsetPbuf = y * width + x;
     if (rgb16Left == null) {
       while (--count >= 0) {
-        if (! isTranslucent || (flipflop = !flipflop)) {
+        if (addAllPixels || (flipflop = !flipflop) == true) {
           int z = zScaled >> 10;
           if (z >= slab && z <= depth && z < zbuf[offsetPbuf]) {
-            zbuf[offsetPbuf] = z;
             seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
             int bits = (seed >> 16) & 0x07;
-            pbuf[offsetPbuf] = (bits == 0
-                                ? argbNoisyDn
-                                : (bits == 1 ? argbNoisyUp : argbCurrent));
-          }
-        }
-        ++offsetPbuf;
-        zScaled += zIncrementScaled;
-      }
-    } else {
-      int rScaled = rgb16Left.rScaled << 8;
-      int rIncrement = ((rgb16Right.rScaled - rgb16Left.rScaled) << 8) / count;
-      int gScaled = rgb16Left.gScaled;
-      int gIncrement = (rgb16Right.gScaled - gScaled) / count;
-      int bScaled = rgb16Left.bScaled;
-      int bIncrement = (rgb16Right.bScaled - bScaled) / count;
-      while (--count >= 0) {
-        if (! isTranslucent || (flipflop = !flipflop)) {
-          int z = zScaled >> 10;
-          if (z >= slab && z <= depth && z < zbuf[offsetPbuf]) {
-            zbuf[offsetPbuf] = z;
-            pbuf[offsetPbuf] = (0xFF000000 |
-                                (rScaled & 0xFF0000) |
-                                (gScaled & 0xFF00) |
-                                ((bScaled >> 8) & 0xFF));
-          }
-        }
-        ++offsetPbuf;
-        zScaled += zIncrementScaled;
-        rScaled += rIncrement;
-        gScaled += gIncrement;
-        bScaled += bIncrement;
-      }
-    }
-  }
-
-  final static boolean ENABLE_GOURAUD_STATS = false;
-  static int totalGouraud;
-  static int shortCircuitGouraud;
-
-  void xxxplotPixelsUnclipped(int count, int x, int y, int zAtLeft,
-                           int zPastRight, Rgb16 rgb16Left, Rgb16 rgb16Right) {
-    // for Triangle3D.fillRaster
-    if (count <= 0)
-      return;
-    int seed = (x << 16) + (y << 1) ^ 0x33333333;
-    // scale the z coordinates;
-    int zScaled = (zAtLeft << 10) + (1 << 9);
-    int dz = zPastRight - zAtLeft;
-    int roundFactor = count / 2;
-    int zIncrementScaled = ((dz << 10) + (dz >= 0 ? roundFactor : -roundFactor))
-        / count;
-    int offsetPbuf = y * width + x;
-    if (rgb16Left == null) {
-      if (!isTranslucent) {
-        while (--count >= 0) {
-          int z = zScaled >> 10;
-          if (z < zbuf[offsetPbuf]) {
-            zbuf[offsetPbuf] = z;
-            seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
-            int bits = (seed >> 16) & 0x07;
-            pbuf[offsetPbuf] = (bits == 0 ? argbNoisyDn
+            addPixel(offsetPbuf, z, bits == 0 ? argbNoisyDn
                 : (bits == 1 ? argbNoisyUp : argbCurrent));
           }
-          ++offsetPbuf;
-          zScaled += zIncrementScaled;
         }
-      } else {
-        boolean flipflop = ((x ^ y) & 1) != 0;
-        while (--count >= 0) {
-          flipflop = !flipflop;
-          if (flipflop) {
-            int z = zScaled >> 10;
-            if (z < zbuf[offsetPbuf]) {
-              zbuf[offsetPbuf] = z;
-              seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
-              int bits = (seed >> 16) & 0x07;
-              pbuf[offsetPbuf] = (bits == 0 ? argbNoisyDn
-                  : (bits == 1 ? argbNoisyUp : argbCurrent));
-            }
-          }
-          ++offsetPbuf;
-          zScaled += zIncrementScaled;
-        }
+        ++offsetPbuf;
+        zScaled += zIncrementScaled;
       }
     } else {
-      boolean flipflop = ((x ^ y) & 1) != 0;
-      if (ENABLE_GOURAUD_STATS) {
-        ++totalGouraud;
-        int i = count;
-        int j = offsetPbuf;
-        int zMin = zAtLeft < zPastRight ? zAtLeft : zPastRight;
-
-        if (!isTranslucent) {
-          for (; zbuf[j] < zMin; ++j)
-            if (--i == 0) {
-              if ((++shortCircuitGouraud % 100000) == 0)
-                Logger.debug("totalGouraud=" + totalGouraud
-                    + " shortCircuitGouraud=" + shortCircuitGouraud + " %="
-                    + (100.0 * shortCircuitGouraud / totalGouraud));
-              return;
-            }
-        } else {
-          if (flipflop) {
-            ++j;
-            if (--i == 0)
-              return;
-          }
-          for (; zbuf[j] < zMin; j += 2) {
-            i -= 2;
-            if (i <= 0) {
-              if ((++shortCircuitGouraud % 100000) == 0)
-                Logger.debug("totalGouraud=" + totalGouraud
-                    + " shortCircuitGouraud=" + shortCircuitGouraud + " %="
-                    + (100.0 * shortCircuitGouraud / totalGouraud));
-              return;
-            }
-          }
-        }
-      }
-
       int rScaled = rgb16Left.rScaled << 8;
       int rIncrement = ((rgb16Right.rScaled - rgb16Left.rScaled) << 8) / count;
       int gScaled = rgb16Left.gScaled;
@@ -1296,13 +1264,11 @@ final public class Graphics3D {
       int bScaled = rgb16Left.bScaled;
       int bIncrement = (rgb16Right.bScaled - bScaled) / count;
       while (--count >= 0) {
-        if (!isTranslucent || (flipflop = !flipflop)) {
+        if (addAllPixels || (flipflop = !flipflop)) {
           int z = zScaled >> 10;
-          if (z < zbuf[offsetPbuf]) {
-            zbuf[offsetPbuf] = z;
-            pbuf[offsetPbuf] = (0xFF000000 | (rScaled & 0xFF0000)
+          if (z >= slab && z <= depth && z < zbuf[offsetPbuf])
+            addPixel(offsetPbuf, z, 0xFF000000 | (rScaled & 0xFF0000)
                 | (gScaled & 0xFF00) | ((bScaled >> 8) & 0xFF));
-          }
         }
         ++offsetPbuf;
         zScaled += zIncrementScaled;
@@ -1313,14 +1279,124 @@ final public class Graphics3D {
     }
   }
 
-  ///////////////////////////////////
+  /*
+   final static boolean ENABLE_GOURAUD_STATS = false;
+   static int totalGouraud;
+   static int shortCircuitGouraud;
 
+   void plotPixelsUnclipped(int count, int x, int y, int zAtLeft,
+   int zPastRight, Rgb16 rgb16Left, Rgb16 rgb16Right) {
+   // for Triangle3D.fillRaster
+   if (count <= 0)
+   return;
+   int seed = (x << 16) + (y << 1) ^ 0x33333333;
+   // scale the z coordinates;
+   int zScaled = (zAtLeft << 10) + (1 << 9);
+   int dz = zPastRight - zAtLeft;
+   int roundFactor = count / 2;
+   int zIncrementScaled = ((dz << 10) + (dz >= 0 ? roundFactor : -roundFactor))
+   / count;
+   int offsetPbuf = y * width + x;
+   if (rgb16Left == null) {
+   if (!isTranslucent) {
+   while (--count >= 0) {
+   int z = zScaled >> 10;
+   if (z < zbuf[offsetPbuf]) {
+   zbuf[offsetPbuf] = z;
+   seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
+   int bits = (seed >> 16) & 0x07;
+   pbuf[offsetPbuf] = (bits == 0 ? argbNoisyDn
+   : (bits == 1 ? argbNoisyUp : argbCurrent));
+   }
+   ++offsetPbuf;
+   zScaled += zIncrementScaled;
+   }
+   } else {
+   boolean flipflop = ((x ^ y) & 1) != 0;
+   while (--count >= 0) {
+   flipflop = !flipflop;
+   if (flipflop) {
+   int z = zScaled >> 10;
+   if (z < zbuf[offsetPbuf]) {
+   zbuf[offsetPbuf] = z;
+   seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
+   int bits = (seed >> 16) & 0x07;
+   pbuf[offsetPbuf] = (bits == 0 ? argbNoisyDn
+   : (bits == 1 ? argbNoisyUp : argbCurrent));
+   }
+   }
+   ++offsetPbuf;
+   zScaled += zIncrementScaled;
+   }
+   }
+   } else {
+   boolean flipflop = ((x ^ y) & 1) != 0;
+   if (ENABLE_GOURAUD_STATS) {
+   ++totalGouraud;
+   int i = count;
+   int j = offsetPbuf;
+   int zMin = zAtLeft < zPastRight ? zAtLeft : zPastRight;
+
+   if (!isTranslucent) {
+   for (; zbuf[j] < zMin; ++j)
+   if (--i == 0) {
+   if ((++shortCircuitGouraud % 100000) == 0)
+   Logger.debug("totalGouraud=" + totalGouraud
+   + " shortCircuitGouraud=" + shortCircuitGouraud + " %="
+   + (100.0 * shortCircuitGouraud / totalGouraud));
+   return;
+   }
+   } else {
+   if (flipflop) {
+   ++j;
+   if (--i == 0)
+   return;
+   }
+   for (; zbuf[j] < zMin; j += 2) {
+   i -= 2;
+   if (i <= 0) {
+   if ((++shortCircuitGouraud % 100000) == 0)
+   Logger.debug("totalGouraud=" + totalGouraud
+   + " shortCircuitGouraud=" + shortCircuitGouraud + " %="
+   + (100.0 * shortCircuitGouraud / totalGouraud));
+   return;
+   }
+   }
+   }
+   }
+
+   int rScaled = rgb16Left.rScaled << 8;
+   int rIncrement = ((rgb16Right.rScaled - rgb16Left.rScaled) << 8) / count;
+   int gScaled = rgb16Left.gScaled;
+   int gIncrement = (rgb16Right.gScaled - gScaled) / count;
+   int bScaled = rgb16Left.bScaled;
+   int bIncrement = (rgb16Right.bScaled - bScaled) / count;
+   while (--count >= 0) {
+   if (!isTranslucent || (flipflop = !flipflop)) {
+   int z = zScaled >> 10;
+   if (z < zbuf[offsetPbuf]) {
+   zbuf[offsetPbuf] = z;
+   pbuf[offsetPbuf] = (0xFF000000 | (rScaled & 0xFF0000)
+   | (gScaled & 0xFF00) | ((bScaled >> 8) & 0xFF));
+   }
+   }
+   ++offsetPbuf;
+   zScaled += zIncrementScaled;
+   rScaled += rIncrement;
+   gScaled += gIncrement;
+   bScaled += bIncrement;
+   }
+   }
+   }
+   */
+  ///////////////////////////////////
   void plotPixelsUnclipped(int count, int x, int y, int zAtLeft,
-                              int zPastRight, Rgb16 rgb16Left, Rgb16 rgb16Right) {
+                           int zPastRight, Rgb16 rgb16Left, Rgb16 rgb16Right) {
     // for isosurface Triangle3D.fillRaster
     if (count <= 0)
       return;
     int seed = (x << 16) + (y << 1) ^ 0x33333333;
+    boolean flipflop = ((x ^ y) & 1) != 0;
     // scale the z coordinates;
     int zScaled = (zAtLeft << 10) + (1 << 9);
     int dz = zPastRight - zAtLeft;
@@ -1329,66 +1405,20 @@ final public class Graphics3D {
         / count;
     int offsetPbuf = y * width + x;
     if (rgb16Left == null) {
-      if (isPass2) {
-        while (--count >= 0) {
+      while (--count >= 0) {
+        if (addAllPixels || (flipflop = !flipflop)) {
           int z = zScaled >> 10;
           if (z < zbuf[offsetPbuf]) {
             seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
             int bits = (seed >> 16) & 0x07;
-            int p = (bits == 0 ? argbNoisyDn : (bits == 1 ? argbNoisyUp
-                : argbCurrent));
-            int zT = zbufT[offsetPbuf]; 
-            if (z < zT) {
-              //new in front -- merge old translucent with opaque
-              //if (zT != Integer.MAX_VALUE)
-              //System.out.println("plcA: z "+z + " zT " + zT + " " + offsetPbuf + " " + Integer.toHexString(p));
-              //if (p != pbufT[offsetPbuf])
-                mergeBufferPixel(pbuf, pbufT[offsetPbuf], offsetPbuf);
-              zbufT[offsetPbuf] = z;
-              pbufT[offsetPbuf] = p & translucencyMask;
-            } else if (z == zT) {
-            } else {
-              //oops-out of order
-              //if (p != pbufT[offsetPbuf])
-                mergeBufferPixel(pbuf, p, offsetPbuf);
-            }
-          }
-          ++offsetPbuf;
-          zScaled += zIncrementScaled;
-        }
-      } else if (!isTranslucent) {
-        while (--count >= 0) {
-          int z = zScaled >> 10;
-          if (z < zbuf[offsetPbuf]) {
-            zbuf[offsetPbuf] = z;
-            seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
-            int bits = (seed >> 16) & 0x07;
-            pbuf[offsetPbuf] = (bits == 0 ? argbNoisyDn
+            addPixel(offsetPbuf, z, bits == 0 ? argbNoisyDn
                 : (bits == 1 ? argbNoisyUp : argbCurrent));
           }
-          ++offsetPbuf;
-          zScaled += zIncrementScaled;
         }
-      } else {
-        boolean flipflop = ((x ^ y) & 1) != 0;
-        while (--count >= 0) {
-          flipflop = !flipflop;
-          if (flipflop) {
-            int z = zScaled >> 10;
-            if (z < zbuf[offsetPbuf]) {
-              zbuf[offsetPbuf] = z;
-              seed = ((seed << 16) + (seed << 1) + seed) & 0x7FFFFFFF;
-              int bits = (seed >> 16) & 0x07;
-              pbuf[offsetPbuf] = (bits == 0 ? argbNoisyDn
-                  : (bits == 1 ? argbNoisyUp : argbCurrent));
-            }
-          }
-          ++offsetPbuf;
-          zScaled += zIncrementScaled;
-        }
+        ++offsetPbuf;
+        zScaled += zIncrementScaled;
       }
     } else {
-      boolean flipflop = ((x ^ y) & 1) != 0;
       int rScaled = rgb16Left.rScaled << 8;
       int rIncrement = ((rgb16Right.rScaled - rgb16Left.rScaled) << 8) / count;
       int gScaled = rgb16Left.gScaled;
@@ -1396,31 +1426,11 @@ final public class Graphics3D {
       int bScaled = rgb16Left.bScaled;
       int bIncrement = (rgb16Right.bScaled - bScaled) / count;
       while (--count >= 0) {
-        int z = zScaled >> 10;
-        if (isPass2) {
-          if (z < zbuf[offsetPbuf]) {
-            int p = (0xFF000000 | (rScaled & 0xFF0000) | (gScaled & 0xFF00) | ((bScaled >> 8) & 0xFF));
-            int zT = zbufT[offsetPbuf]; 
-            //if (zT != Integer.MAX_VALUE)
-              //System.out.println("plcB: z "+z + " zT " + zT + " " + offsetPbuf + " " + Integer.toHexString(p));
-            if (z < zT) {
-              //new in front -- merge old translucent with opaque
-              //if (p != pbufT[offsetPbuf])
-              mergeBufferPixel(pbuf, pbufT[offsetPbuf], offsetPbuf);
-              zbufT[offsetPbuf] = z;
-              pbufT[offsetPbuf] = p & translucencyMask;
-            } else {
-              //oops-out of order
-              //if (p != pbufT[offsetPbuf])
-              mergeBufferPixel(pbuf, p, offsetPbuf);
-            }
-          }
-        } else if (!isTranslucent || (flipflop = !flipflop)) {
-          if (z < zbuf[offsetPbuf]) {
-            int p = (0xFF000000 | (rScaled & 0xFF0000) | (gScaled & 0xFF00) | ((bScaled >> 8) & 0xFF));
-            zbuf[offsetPbuf] = z;
-            pbuf[offsetPbuf] = p;
-          }
+        if (addAllPixels || (flipflop = !flipflop)) {
+          int z = zScaled >> 10;
+          if (z < zbuf[offsetPbuf])
+            addPixel(offsetPbuf, z, 0xFF000000 | (rScaled & 0xFF0000)
+                | (gScaled & 0xFF00) | ((bScaled >> 8) & 0xFF));
         }
         ++offsetPbuf;
         zScaled += zIncrementScaled;
@@ -1430,7 +1440,6 @@ final public class Graphics3D {
       }
     }
   }
-  
 
   ///////////////////////////////
   void plotPixelsUnclipped(int count, int x, int y, int z) {
@@ -1438,12 +1447,10 @@ final public class Graphics3D {
     // for Cirle3D.plot8Filled and fillRect
     
     int offsetPbuf = y * width + x;
-    if (! isTranslucent) {
+    if (addAllPixels) {
       while (--count >= 0) {
-        if (z < zbuf[offsetPbuf]) {
-          zbuf[offsetPbuf] = z;
-          pbuf[offsetPbuf] = argbCurrent;
-        }
+        if (z < zbuf[offsetPbuf])
+          addPixel(offsetPbuf, z, argbCurrent);
         ++offsetPbuf;
       }
     } else {
@@ -1452,10 +1459,8 @@ final public class Graphics3D {
         if (++offsetPbuf == offsetMax)
           return;
       do {
-        if (z < zbuf[offsetPbuf]) {
-          zbuf[offsetPbuf] = z;
-          pbuf[offsetPbuf] = argbCurrent;
-        }
+        if (z < zbuf[offsetPbuf])
+          addPixel(offsetPbuf, z, argbCurrent);
         offsetPbuf += 2;
       } while (offsetPbuf < offsetMax);
     }
@@ -1470,10 +1475,8 @@ final public class Graphics3D {
       if (isClipped(x, y, z))
         continue;
       int offset = y * width + x;
-      if (z < zbuf[offset]) {
-        zbuf[offset] = z;
-        pbuf[offset] = argb;
-      }
+      if (z < zbuf[offset])
+        addPixel(offset, z, argb);
     }
   }
 

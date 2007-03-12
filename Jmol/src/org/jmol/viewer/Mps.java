@@ -69,6 +69,7 @@ abstract class Mps extends Shape {
       for (int m = mpsmodels.length; --m >= 0; )
         mpsmodels[m].setTranslucent(isTranslucent, bs, translucentLevel);
     }
+    super.setProperty(propertyName, value, bs);
   }
 
   String getShapeState() {

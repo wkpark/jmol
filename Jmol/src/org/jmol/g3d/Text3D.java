@@ -199,6 +199,8 @@ class Text3D {
                    String text, Font3D font3d, Graphics3D g3d) {
     if (text.length() == 0)
       return;
+    //setColix has presumably been carried out for argb, and the two 
+    //are assumed to be both the same -- translucent or not. 
     Text3D text3d = getText3D(text, font3d, g3d.platform);
     int[] bitmap = text3d.bitmap;
     int textWidth = text3d.width;
@@ -222,7 +224,6 @@ class Text3D {
     int shiftregister = 0;
     int i = 0, j = 0;
     int[] zbuf = g3d.zbuf;
-    int[] pbuf = g3d.pbuf;
     int screenWidth = g3d.width;
     int pbufOffset = y * screenWidth + x;
     boolean addBackground = (argbBackground != 0);
@@ -237,13 +238,10 @@ class Text3D {
           pbufOffset += skip;
         } else {
           if (z < zbuf[pbufOffset]) {
-            if (shiftregister < 0) {
-              zbuf[pbufOffset] = z;
-              pbuf[pbufOffset] = argb;
-            } else if (addBackground) {
-              zbuf[pbufOffset] = z;
-              pbuf[pbufOffset] = argbBackground;
-            }
+            if (shiftregister < 0) 
+              g3d.addPixel(pbufOffset, z, argb);
+            else if (addBackground)
+              g3d.addPixel(pbufOffset, z, argbBackground);
           }
           shiftregister <<= 1;
           ++offset;

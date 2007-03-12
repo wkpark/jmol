@@ -95,6 +95,7 @@ class AtomShape extends Shape {
         }
       return;
     }
+    super.setProperty(propertyName, value, bs);
   }
 
   void setColixAndPalette(short colix, byte paletteID, int atomIndex) {

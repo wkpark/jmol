@@ -57,6 +57,8 @@ class HalosRenderer extends ShapeRenderer {
           colix = Graphics3D.GOLD;
       } else if (isHidden) {
         continue;
+      } else {
+        colix = Graphics3D.getColixInherited(colix, atom.colixAtom);
       }
       if (mad == 0)
         continue;
@@ -82,7 +84,6 @@ class HalosRenderer extends ShapeRenderer {
     int haloDiameter = diameter + 2 * halowidth;
     if (haloDiameter <= 0)
       return;
-    colix = Graphics3D.getColixInherited(colix, atom.colixAtom);
     g3d.fillScreenedCircleCentered(colix, haloDiameter, atom.screenX,
         atom.screenY, atom.screenZ);
   }

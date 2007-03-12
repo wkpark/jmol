@@ -95,18 +95,18 @@ class Sphere3D {
       renderShapeUnclipped(shades, tScreened, ss, diameter, x, y, z);
   }
   
-  private void renderShapeUnclipped(int[] shades, boolean tScreened, int[] sphereShape,
-                            int diameter, int x, int y, int z) {
-    int[] pbuf = g3d.pbuf;
+  private void renderShapeUnclipped(int[] shades, boolean tScreened,
+                                    int[] sphereShape, int diameter, int x,
+                                    int y, int z) {
     int[] zbuf = g3d.zbuf;
     int offsetSphere = 0;
-    
+
     int width = g3d.width;
     int evenSizeCorrection = 1 - (diameter & 1);
     int offsetSouthCenter = width * y + x;
     int offsetNorthCenter = offsetSouthCenter - evenSizeCorrection * width;
     int nLines = (diameter + 1) / 2;
-    if (! tScreened) {
+    if (!tScreened) {
       do {
         int offsetSE = offsetSouthCenter;
         int offsetSW = offsetSouthCenter - evenSizeCorrection;
@@ -116,22 +116,18 @@ class Sphere3D {
         do {
           packed = sphereShape[offsetSphere++];
           int zPixel = z - (packed & 0x7F);
-          if (zPixel < zbuf[offsetSE]) {
-            zbuf[offsetSE] = zPixel;
-            pbuf[offsetSE] = shades[((packed >> 7) & 0x3F) >> zShift];
-          }
-          if (zPixel < zbuf[offsetSW]) {
-            zbuf[offsetSW] = zPixel;
-            pbuf[offsetSW] = shades[((packed >> 13) & 0x3F) >> zShift];
-          }
-          if (zPixel < zbuf[offsetNE]) {
-            zbuf[offsetNE] = zPixel;
-            pbuf[offsetNE] = shades[((packed >> 19) & 0x3F) >> zShift];
-          }
-          if (zPixel < zbuf[offsetNW]) {
-            zbuf[offsetNW] = zPixel;
-            pbuf[offsetNW] = shades[((packed >> 25) & 0x3F) >> zShift];
-          }
+          if (zPixel < zbuf[offsetSE])
+            g3d.addPixel(offsetSE, zPixel,
+                shades[((packed >> 7) & 0x3F) >> zShift]);
+          if (zPixel < zbuf[offsetSW])
+            g3d.addPixel(offsetSW, zPixel,
+                shades[((packed >> 13) & 0x3F) >> zShift]);
+          if (zPixel < zbuf[offsetNE])
+            g3d.addPixel(offsetNE, zPixel,
+                shades[((packed >> 19) & 0x3F) >> zShift]);
+          if (zPixel < zbuf[offsetNW])
+            g3d.addPixel(offsetNW, zPixel,
+                shades[((packed >> 25) & 0x3F) >> zShift]);
           ++offsetSE;
           --offsetSW;
           ++offsetNE;
@@ -148,8 +144,8 @@ class Sphere3D {
     int flipflopSW = flipflopSouthCenter ^ evenSizeCorrection;
     int flipflopNE = flipflopNorthCenter;
     int flipflopNW = flipflopNorthCenter ^ evenSizeCorrection;
-    int flipflopsCenter =
-      flipflopSE | (flipflopSW << 1) | (flipflopNE << 2) | (flipflopNW << 3);
+    int flipflopsCenter = flipflopSE | (flipflopSW << 1) | (flipflopNE << 2)
+        | (flipflopNW << 3);
     do {
       int offsetSE = offsetSouthCenter;
       int offsetSW = offsetSouthCenter - evenSizeCorrection;
@@ -160,22 +156,18 @@ class Sphere3D {
       do {
         packed = sphereShape[offsetSphere++];
         int zPixel = z - (packed & 0x7F);
-        if ((flipflops & 1) != 0 && zPixel < zbuf[offsetSE]) {
-          zbuf[offsetSE] = zPixel;
-          pbuf[offsetSE] = shades[((packed >> 7) & 0x3F)>>zShift];
-        }
-        if ((flipflops & 2) != 0 && zPixel < zbuf[offsetSW]) {
-          zbuf[offsetSW] = zPixel;
-          pbuf[offsetSW] = shades[((packed >> 13) & 0x3F)>>zShift];
-        }
-        if ((flipflops & 4) != 0 && zPixel < zbuf[offsetNE]) {
-          zbuf[offsetNE] = zPixel;
-          pbuf[offsetNE] = shades[((packed >> 19) & 0x3F)>>zShift];
-        }
-        if ((flipflops & 8) != 0 && zPixel < zbuf[offsetNW]) {
-          zbuf[offsetNW] = zPixel;
-          pbuf[offsetNW] = shades[((packed >> 25) & 0x3F)>>zShift];
-        }
+        if ((flipflops & 1) != 0 && zPixel < zbuf[offsetSE])
+            g3d.addPixel(offsetSE, zPixel,
+                shades[((packed >> 7) & 0x3F) >> zShift]);
+        if ((flipflops & 2) != 0 && zPixel < zbuf[offsetSW])        
+          g3d.addPixel(offsetSW, zPixel,
+              shades[((packed >> 13) & 0x3F) >> zShift]);
+        if ((flipflops & 4) != 0 && zPixel < zbuf[offsetNE])        
+          g3d.addPixel(offsetNE, zPixel,
+              shades[((packed >> 19) & 0x3F) >> zShift]);
+        if ((flipflops & 8) != 0 && zPixel < zbuf[offsetNW])
+          g3d.addPixel(offsetNW, zPixel,
+              shades[((packed >> 25) & 0x3F) >> zShift]);
         ++offsetSE;
         --offsetSW;
         ++offsetNE;
@@ -189,10 +181,11 @@ class Sphere3D {
 
   private final static int SHADE_SLAB_CLIPPED = Shade3D.shadeNormal - 5;
 
-  private void renderShapeClipped(int[] shades, boolean tScreened, int[] sphereShape,
-                          int diameter, int x, int y, int z) {
-    int[] pbuf = g3d.pbuf;
+  private void renderShapeClipped(int[] shades, boolean tScreened,
+                                  int[] sphereShape, int diameter, int x,
+                                  int y, int z) {
     int[] zbuf = g3d.zbuf;
+    boolean addAllPixels = g3d.addAllPixels;
     int offsetSphere = 0;
     int width = g3d.width, height = g3d.height;
     int slab = g3d.slab, depth = g3d.depth;
@@ -209,8 +202,8 @@ class Sphere3D {
     int flipflopSW = flipflopSouthCenter ^ evenSizeCorrection;
     int flipflopNE = flipflopNorthCenter;
     int flipflopNW = flipflopNorthCenter ^ evenSizeCorrection;
-    int flipflopsCenter =
-      flipflopSE | (flipflopSW << 1) | (flipflopNE << 2) | (flipflopNW << 3);
+    int flipflopsCenter = flipflopSE | (flipflopSW << 1) | (flipflopNE << 2)
+        | (flipflopNW << 3);
     do {
       boolean tSouthVisible = ySouth >= 0 && ySouth < height;
       boolean tNorthVisible = yNorth >= 0 && yNorth < height;
@@ -242,39 +235,31 @@ class Sphere3D {
           zPixel = slab;
         if (zPixel >= slab && zPixel <= depth) {
           if (tSouthVisible) {
-            if (tEastVisible && (!tScreened || (flipflops & 1) != 0) &&
-                zPixel < zbuf[offsetSE]) {
-              zbuf[offsetSE] = zPixel;
-              int i = (packed >> 7) & 0x3F;
-              if (isCore)
-                i = SHADE_SLAB_CLIPPED - 3 + ((randu >> 7) & 0x07);
-              pbuf[offsetSE] = shades[i >> zShift];
+            if (tEastVisible && (addAllPixels || (flipflops & 1) != 0)
+                && zPixel < zbuf[offsetSE]) {
+              int i = (isCore ? SHADE_SLAB_CLIPPED - 3 + ((randu >> 7) & 0x07)
+                  : (packed >> 7) & 0x3F);
+              g3d.addPixel(offsetSE, zPixel, shades[i >> zShift]);
             }
-            if (tWestVisible && (!tScreened || (flipflops & 2) != 0) &&
-                zPixel < zbuf[offsetSW]) {
-              zbuf[offsetSW] = zPixel;
-              int i = (packed >> 13) & 0x3F;
-              if (isCore)
-                i = SHADE_SLAB_CLIPPED - 3 + ((randu >> 13) & 0x07);
-              pbuf[offsetSW] = shades[i >> zShift];
+            if (tWestVisible && (addAllPixels || (flipflops & 2) != 0)
+                && zPixel < zbuf[offsetSW]) {
+              int i = (isCore ? SHADE_SLAB_CLIPPED - 3 + ((randu >> 13) & 0x07)
+                  : (packed >> 13) & 0x3F);
+              g3d.addPixel(offsetSW, zPixel, shades[i >> zShift]);
             }
           }
           if (tNorthVisible) {
-            if (tEastVisible && (!tScreened || (flipflops & 4) != 0) &&
-                zPixel < zbuf[offsetNE]) {
-              zbuf[offsetNE] = zPixel;
-              int i = (packed >> 19) & 0x3F;
-              if (isCore)
-                i = SHADE_SLAB_CLIPPED - 3 + ((randu >> 19) & 0x07);
-              pbuf[offsetNE] = shades[i >> zShift];
+            if (tEastVisible && (!tScreened || (flipflops & 4) != 0)
+                && zPixel < zbuf[offsetNE]) {
+              int i = (isCore ? SHADE_SLAB_CLIPPED - 3 + ((randu >> 19) & 0x07)
+                  : (packed >> 19) & 0x3F);
+              g3d.addPixel(offsetNE, zPixel, shades[i >> zShift]);
             }
-            if (tWestVisible && (!tScreened || (flipflops & 8) != 0) &&
-                zPixel < zbuf[offsetNW]) {
-              zbuf[offsetNW] = zPixel;
-              int i = (packed >> 25) & 0x3F;
-              if (isCore)
-                i = SHADE_SLAB_CLIPPED - 3 + ((randu >> 25) & 0x07);
-              pbuf[offsetNW] = shades[i >> zShift];
+            if (tWestVisible && (!tScreened || (flipflops & 8) != 0)
+                && zPixel < zbuf[offsetNW]) {
+              int i = (isCore ? SHADE_SLAB_CLIPPED - 3 + ((randu >> 25) & 0x07)
+                  : (packed >> 25) & 0x3F);
+              g3d.addPixel(offsetNW, zPixel, shades[i >> zShift]);
             }
           }
         }
@@ -439,8 +424,8 @@ class Sphere3D {
     int r2 = radius * radius;
     int dDivisor = radius * 2 + 1;
 
-    int[] pbuf = g3d.pbuf;
     int[] zbuf = g3d.zbuf;
+    boolean addAllPixels = g3d.addAllPixels;
     int width = g3d.width;
     // it will get flipped twice before use
     // so initialize it to true if it is at an even coordinate
@@ -458,7 +443,7 @@ class Sphere3D {
       for (int j = 0, j2 = 0; j2 <= s2;
            j2 += j + j + 1, ++j) {
         offsetPbuf += xSign;
-        if (!tScreened || (flipflop = !flipflop)) {
+        if (addAllPixels || (flipflop = !flipflop)) {
           if (zbuf[offsetPbuf] <= z0)
             continue;
           int k = (int)Math.sqrt(s2 - j2);
@@ -466,8 +451,7 @@ class Sphere3D {
           if (zbuf[offsetPbuf] <= z0)
             continue;
           int x8 = ((j * xSign + radius) << 8) / dDivisor;
-          pbuf[offsetPbuf] = shades[sphereIntensities[((y8 << 8) + x8) >> zShift]];
-          zbuf[offsetPbuf] = z0;
+          g3d.addPixel(offsetPbuf,z0, shades[sphereIntensities[((y8 << 8) + x8) >> zShift]]);
         }
       }
     }
@@ -478,7 +462,6 @@ class Sphere3D {
                              int xSign, int ySign) {
     int r2 = radius * radius;
     int dDivisor = radius * 2 + 1;
-    int[] pbuf = g3d.pbuf;
     int[] zbuf = g3d.zbuf;
     int slab = g3d.slab;
     int depth = g3d.depth;
@@ -548,8 +531,7 @@ class Sphere3D {
           int x8 = ((j * xSign + radius) << 8) / dDivisor;
           s = sphereIntensities[(y8 << 8) + x8];
         }
-        pbuf[offsetPbuf] = shades[s >> zShift];
-        zbuf[offsetPbuf] =  zPixel;
+        g3d.addPixel(offsetPbuf, zPixel, shades[s >> zShift]);
       }
       // randu is failing me and generating moire patterns :-(
       // so throw in a little more salt

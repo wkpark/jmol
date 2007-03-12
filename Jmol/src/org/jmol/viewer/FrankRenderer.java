@@ -22,17 +22,20 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.jmol.viewer;
+import org.jmol.g3d.Graphics3D;
 
 class FrankRenderer extends ShapeRenderer {
 
   void render() {
     Frank frank = (Frank) shape;
-    if (!viewer.getShowFrank() || !g3d.setColix(Frank.defaultFontColix))
+    if (!viewer.getShowFrank()
+        || !g3d.setColix(Graphics3D.getColixTranslucent(Frank.defaultFontColix,
+            true, 1)))
       return;
     frank.calcMetrics();
-    g3d.drawStringNoSlab(Frank.frankString, frank.font3d,
-        (short)0, g3d.getRenderWidth() - frank.frankWidth
-            - Frank.frankMargin, g3d.getRenderHeight() - frank.frankDescent
-            - Frank.frankMargin, 0);
+    g3d.drawStringNoSlab(Frank.frankString, frank.font3d, (short) 0, g3d
+        .getRenderWidth()
+        - frank.frankWidth - Frank.frankMargin, g3d.getRenderHeight()
+        - frank.frankDescent, 0);
   }
 }

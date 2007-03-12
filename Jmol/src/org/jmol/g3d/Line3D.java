@@ -106,84 +106,9 @@ final class Line3D {
     return true;
   }
   
-  void drawHLine(int argb, boolean tScreened, int x, int y, int z, int w) {
-    // hover, labels only
-    int width = g3d.width;
-    if (w < 0) {
-      x += w;
-      w = -w;
-    }
-    int[] pbuf = g3d.pbuf;
-    int[] zbuf = g3d.zbuf;
-    if (x < 0) {
-      w += x;
-      x = 0;
-    }
-    if (x + w >= width) {
-      w = width - 1 - x;
-    }
-    int offset = x + width * y;
-    if (!tScreened) {
-      for (int i = 0; i <= w; i++) {
-        if (z < zbuf[offset]) {
-          zbuf[offset] = z;
-          pbuf[offset] = argb;
-        }
-        offset++;
-      }
-      return;
-    }
-    boolean flipflop = ((x ^ y) & 1) != 0;
-    for (int i = 0; i <= w; i++) {
-      if ((flipflop = !flipflop) && z < zbuf[offset]) {
-        zbuf[offset] = z;
-        pbuf[offset] = argb;
-      }
-      offset++;
-    }
-  }
-
   final static int VISIBILITY_UNCLIPPED = 0;
   final static int VISIBILITY_CLIPPED = 1;
   final static int VISIBILITY_OFFSCREEN = 2;
-
-  void drawVLine(int argb, boolean tScreened, int x, int y, int z, int h) {
-    // hover, labels only
-    int width = g3d.width;
-    int height = g3d.height;
-    if (h < 0) {
-      y += h;
-      h = -h;
-    }
-    int[] pbuf = g3d.pbuf;
-    int[] zbuf = g3d.zbuf;
-    if (y < 0) {
-      h += y;
-      y = 0;
-    }
-    if (y + h >= height) {
-      h = height - 1 - y;
-    }
-    int offset = x + width * y;
-    if (!tScreened) {
-      for (int i = 0; i <= h; i++) {
-        if (z < zbuf[offset]) {
-          zbuf[offset] = z;
-          pbuf[offset] = argb;
-        }
-        offset += width;
-      }
-      return;
-    }
-    boolean flipflop = ((x ^ y) & 1) != 0;
-    for (int i = 0; i <= h; i++) {
-      if ((flipflop = !flipflop) && z < zbuf[offset]) {
-        zbuf[offset] = z;
-        pbuf[offset] = argb;
-      }
-      offset += width;
-    }
-  }
 
   int x1t, y1t, z1t, x2t, y2t, z2t, cc1, cc2; // trimmed
 
@@ -392,8 +317,7 @@ final class Line3D {
     }
   }
 
-  void plotDashedLine(int argbA, boolean tScreenedA, int argbB,
-                      boolean tScreenedB, int run, int rise, int xA, int yA,
+  void plotDashedLine(int argb, boolean tScreened, int run, int rise, int xA, int yA,
                       int zA, int xB, int yB, int zB, boolean notClipped) {
     // measures, axes, bbcage only    
     x1t = xA;
@@ -405,7 +329,7 @@ final class Line3D {
     switch (notClipped ? VISIBILITY_UNCLIPPED : getTrimmedLine()) {
     case VISIBILITY_UNCLIPPED:
     case VISIBILITY_CLIPPED:
-      plotLineClipped(argbA, tScreenedA, argbB, tScreenedB, xA, yA, zA,
+      plotLineClipped(argb, tScreened, argb, tScreened, xA, yA, zA,
           xB - xA, yB - yA, zB - zA, notClipped, run, rise);
     }
   }
@@ -415,7 +339,6 @@ final class Line3D {
                                int dy, int dz, boolean notClipped, int run,
                                int rise) {
     // standard, dashed or not dashed
-    int[] pbuf = g3d.pbuf;
     int[] zbuf = g3d.zbuf;
     int width = g3d.width;
     int runIndex = 0;
@@ -424,15 +347,13 @@ final class Line3D {
       run = 1;
     }
     int offset = y * width + x;
-    int offsetMax = pbuf.length;
+    int offsetMax = g3d.bufferSize;
     boolean flipflop = (((x ^ y) & 1) != 0);
     boolean tScreened = tScreened1;
     int argb = argb1;
-    if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && notClipped && offset >= 0
-        && offset < offsetMax && z < zbuf[offset]) {
-      zbuf[offset] = z;
-      pbuf[offset] = argb;
-    }
+    if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && notClipped
+        && offset >= 0 && offset < offsetMax && z < zbuf[offset])
+      g3d.addPixel(offset, z, argb);
     if (dx == 0 && dy == 0)
       return;
     int xIncrement = 1;
@@ -477,13 +398,11 @@ final class Line3D {
           twoDxAccumulatedYError -= twoDx;
           flipflop = !flipflop;
         }
-        if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && n < n2 && offset >= 0
-            && offset < offsetMax && runIndex < rise) {
+        if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && n < n2
+            && offset >= 0 && offset < offsetMax && runIndex < rise) {
           int zCurrent = zCurrentScaled >> 10;
-          if (zCurrent < zbuf[offset]) {
-            zbuf[offset] = zCurrent;
-            pbuf[offset] = argb;
-          }
+          if (zCurrent < zbuf[offset])
+            g3d.addPixel(offset, zCurrent, argb);
         }
         runIndex = (runIndex + 1) % run;
       }
@@ -510,27 +429,23 @@ final class Line3D {
           twoDyAccumulatedXError -= twoDy;
           flipflop = !flipflop;
         }
-        if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && n < n2 && offset >= 0
-            && offset < offsetMax && runIndex < rise) {
+        if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && n < n2
+            && offset >= 0 && offset < offsetMax && runIndex < rise) {
           int zCurrent = zCurrentScaled >> 10;
-          if (zCurrent < zbuf[offset]) {
-            zbuf[offset] = zCurrent;
-            pbuf[offset] = argb;
-          }
+          if (zCurrent < zbuf[offset])
+            g3d.addPixel(offset, zCurrent, argb);
         }
         runIndex = (runIndex + 1) % run;
       }
     }
   }
 
-  
   private void plotLineClipped(int[] shades1, boolean tScreened1,
                                int[] shades2, boolean tScreened2,
                                int intensity, int x, int y, int z, int dx,
                                int dy, int dz, boolean notClipped, int run,
                                int rise) {
     // special shading for bonds
-    int[] pbuf = g3d.pbuf;
     int[] zbuf = g3d.zbuf;
     int width = g3d.width;
     int runIndex = 0;
@@ -539,7 +454,7 @@ final class Line3D {
       run = 1;
     }
     int offset = y * width + x;
-    int offsetMax = pbuf.length;
+    int offsetMax = g3d.bufferSize;
     int intensityUp = (intensity < Shade3D.shadeLast ? intensity + 1
         : intensity);
     int intensityDn = (intensity > 0 ? intensity - 1 : intensity);
@@ -553,10 +468,8 @@ final class Line3D {
     boolean tScreened = tScreened1;
     boolean flipflop = (((x ^ y) & 1) != 0);
     if (argb != 0 && (!tScreened || (flipflop = !flipflop)) && notClipped && offset >= 0
-        && offset < offsetMax && z < zbuf[offset]) {
-      zbuf[offset] = z;
-      pbuf[offset] = argb;
-    }
+        && offset < offsetMax && z < zbuf[offset])
+      g3d.addPixel(offset, z, argb);
     if (dx == 0 && dy == 0) {
       return;
     }
@@ -619,9 +532,8 @@ final class Line3D {
             && offset < offsetMax && runIndex < rise) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
-            zbuf[offset] = zCurrent;
             int rand8 = Shade3D.nextRandom8Bit();
-            pbuf[offset] = rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb);
+            g3d.addPixel(offset, zCurrent, rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb));
           }
         }
         runIndex = (runIndex + 1) % run;
@@ -663,9 +575,8 @@ final class Line3D {
             && offset < offsetMax && runIndex < rise) {
           int zCurrent = zCurrentScaled >> 10;
           if (zCurrent < zbuf[offset]) {
-            zbuf[offset] = zCurrent;
             int rand8 = Shade3D.nextRandom8Bit();
-            pbuf[offset] = rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb);
+            g3d.addPixel(offset, zCurrent, rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb));
           }
         }
         runIndex = (runIndex + 1) % run;
@@ -680,7 +591,6 @@ final class Line3D {
                                    int rise) {
     // special shading for rockets; somewhat slower than above;
     // System.out.println("line3d plotLineClippedBits "+x+" "+y+" "+z+" "+dx+" "+dy+" "+dz+" "+shades1);
-    int[] pbuf = g3d.pbuf;
     int[] zbuf = g3d.zbuf;
     int width = g3d.width;
     int runIndex = 0;
@@ -700,7 +610,7 @@ final class Line3D {
     boolean tScreened = tScreened1;
     boolean flipflop = (((x ^ y) & 1) != 0);
     int offset = y * width + x;
-    int offsetMax = pbuf.length;
+    int offsetMax = g3d.bufferSize;
     int i0, iMid, i1, i2, iIncrement, xIncrement, yIncrement;
     float zIncrement;
     if (lineTypeX) {
@@ -761,10 +671,8 @@ final class Line3D {
       if (argb != 0 && isInWindow && (!tScreened || (flipflop = !flipflop)) && offset >= 0
           && offset < offsetMax && runIndex < rise) {
         if (zFloat < zbuf[offset]) {
-          //if (test > 0)System.out.println("ok");
-          zbuf[offset] = (int) zFloat;
           int rand8 = Shade3D.nextRandom8Bit();
-          pbuf[offset] = rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb);
+          g3d.addPixel(offset, (int) zFloat, rand8 < 85 ? argbDn : (rand8 > 170 ? argbUp : argb));
         }
       }
       if (i == i2)

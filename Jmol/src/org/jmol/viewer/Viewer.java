@@ -2629,7 +2629,7 @@ public class Viewer extends JmolViewer {
 
   private Image getImage(boolean isDouble, boolean antialias) {
     Matrix3f matrixRotate = transformManager.getStereoRotationMatrix(isDouble);
-    boolean twoPass = getTestFlag1();
+    boolean twoPass = !getTestFlag1();
     g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         matrixRotate, antialias, twoPass);
     repaintManager.render(g3d, rectClip, modelManager.getFrame(),

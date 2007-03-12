@@ -26,8 +26,6 @@ package org.jmol.viewer;
 
 import java.util.BitSet;
 
-import org.jmol.g3d.Graphics3D;
-
 class Vectors extends AtomShape {
 
   float scale = Float.NaN;

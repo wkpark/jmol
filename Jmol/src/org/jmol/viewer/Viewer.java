@@ -204,6 +204,7 @@ public class Viewer extends JmolViewer {
       }
       if (display == null || str.indexOf("-n") >= 0) {
         haveDisplay = false;
+        display = null;
       }
       writeInfo = null;
       if (str.indexOf("-w") >= 0) {

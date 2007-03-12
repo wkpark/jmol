@@ -8207,6 +8207,13 @@ class Eval { //implements Runnable {
     }
     if (planeSeen && !surfaceObjectSeen) {
       setShapeProperty(iShape, "nomap", new Float(0));
+      surfaceObjectSeen = true;
+    }
+    if (surfaceObjectSeen && iShape == JmolConstants.SHAPE_ISOSURFACE && !isSyntaxCheck) {
+      String id = (String) viewer.getShapeProperty(iShape, "ID");
+      Integer n = (Integer) viewer.getShapeProperty(iShape, "count");
+      if (id != null)
+        showString(id + " created; number of isosurfaces = " + n);
     }
   }
 

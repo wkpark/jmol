@@ -901,8 +901,10 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
 
     if ("delete" == propertyName) {
-      if (thisMesh == null)
+      if (thisMesh == null) {
         nLCAO = 0;
+        nUnnamed = 0;
+      }
       // fall through to meshCollection
     }
 
@@ -911,6 +913,10 @@ class Isosurface extends IsosurfaceMeshCollection {
   }
 
   Object getProperty(String property, int index) {
+    if (property == "count")
+      return new Integer(meshCount);
+    if (property == "ID")
+      return (currentMesh == null ? (String) null : currentMesh.thisID);
     if (property == "moNumber")
       return new Integer(qm_moNumber);
     if (thisMesh == null)
@@ -1107,8 +1113,8 @@ class Isosurface extends IsosurfaceMeshCollection {
   }
 
   void checkFlags() {
-    if (viewer.getTestFlag1()) // turn off new solvent method
-      newSolventMethod = false;
+    //if (viewer.getTestFlag1()) // turn off new solvent method
+      //newSolventMethod = false;
     if (viewer.getTestFlag2())
       associateNormals = false;
     if (viewer.getTestFlag4()) // turn off 2-sided if showing normals

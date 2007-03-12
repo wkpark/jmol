@@ -80,7 +80,7 @@ final public class Graphics3D {
   boolean zShade;
   int xLast, yLast;
   private int[] pbuf;
-  int[] pbufT;
+  private int[] pbufT;
   int[] zbuf;
   private int[] zbufT;
   int bufferSize;

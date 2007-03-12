@@ -658,6 +658,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       case SURFACE_NOMAP:
         solventExtendedAtomRadius = solventRadius;
         solventRadius = 0f;
+        isContoured = false;
         break;
       case SURFACE_MOLECULAR:
         solventExtendedAtomRadius = 0f;
@@ -4760,7 +4761,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     Point3f ptA;
     Point3f ptY0 = new Point3f(), ptZ0 = new Point3f();
     Point3i pt0 = new Point3i(), pt1 = new Point3i();
-    float maxValue = Float.MAX_VALUE;
+    float maxValue = (dataType == SURFACE_NOMAP ? Float.MAX_VALUE : Float.MAX_VALUE);
     int propMax = 0, solvMax = 0, iPt;
     for (int x = 0; x < nPointsX; ++x)
       for (int y = 0; y < nPointsY; ++y)

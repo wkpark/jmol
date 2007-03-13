@@ -290,7 +290,7 @@ final public class Graphics3D {
 
   void mergeOpaqueAndTranslucentBuffers() {
     for (int offset = 0; offset < bufferSize; offset++)
-      mergeBufferPixel(pbuf, pbufT[offset], offset++);
+      mergeBufferPixel(pbuf, pbufT[offset], offset);
 
   }
   

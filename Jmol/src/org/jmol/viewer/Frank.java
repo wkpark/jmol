@@ -47,6 +47,7 @@ class Frank extends FontLineShape {
   void initShape() {
     myType = "frank";
     font3d = g3d.getFont3D(defaultFontName, defaultFontStyle, defaultFontSize);
+    super.initShape();
   }
 
   boolean wasClicked(int x, int y) {

@@ -33,5 +33,6 @@ class Uccage extends FontLineShape {
   
   void initShape() {
     myType = "unitcell";
+    super.initShape();
   }
 }

@@ -1510,7 +1510,7 @@ final public class Graphics3D {
      they are 'screened' where every-other pixel is turned
      on. 
      
-     0x8000 changable flag (elements and isotopes, about 200; negative)
+     0x8000 changeable flag (elements and isotopes, about 200; negative)
      0x4000 translucent flag
      0x3000 translucent level
      
@@ -1561,7 +1561,7 @@ final public class Graphics3D {
   public final static short INHERIT_ALL          = 0;
   private final static short INHERIT_OPAQUE      = 1;
   private final static short INHERIT_TRANSLUCENT = 1 | TRANSLUCENT_FLAG;
-  public final static short USE_PALETTE        = 2;
+  public final static short USE_PALETTE          = 2;
   final static short UNUSED_OPTION3              = 3;
   final static short SPECIAL_COLIX_MAX           = 4;
 
@@ -1674,9 +1674,18 @@ final public class Graphics3D {
   
   private final static short applyColorTranslucencyLevel(short colix,
                                                          float translucentLevel) {
-    // 0.01 to 1.0 ==> MORE translucent   
-    //  0  1/2, 3/4, 7/8, 1
-    //  128  192  224
+    // 0.0 to 1.0 ==> MORE translucent   
+    //                 1/2, 3/4, 7/8,  1
+    //     t           128  192  224  256
+    //     256-t       128   64   32   0
+    //     log(256-t)   7    6    5   -inf
+    // x = 8-log(256-t) 1    2    3    inf
+    
+    // t = (2 << 8) - (2 << (8 - x))
+    // 256 and 0 have no representations because "translucent 256" is hidden and "translucent 0" is opaque.
+    // we are not going to fuss over 255/256 business! The point here is to use 256 so that we
+    // have an easily dividable range starting with 0.
+    
     if (translucentLevel < 0) //old Jmol 10.0
       return (short) (colix & ~TRANSLUCENT_MASK | TRANSLUCENT_FLAG);
     if (translucentLevel == 0) //opaque
@@ -1686,6 +1695,17 @@ final public class Graphics3D {
     return (short) (colix & ~TRANSLUCENT_MASK | TRANSLUCENT_FLAG | (iLevel << TRANSLUCENT_SHIFT));
   }
 
+  public final static int getColixTranslucencyLevel(short colix) {
+    int logAlpha = (colix >> TRANSLUCENT_SHIFT) & 3;
+    switch (logAlpha) {
+    case 1:
+    case 2:
+    case 3:
+      return (1 << 8) - (1 << ((1 << 3) - logAlpha));
+    }
+    return -1;
+  }
+  
   public final static short getColix(Object obj) {
     if (obj == null)
       return INHERIT_ALL;
@@ -1711,7 +1731,7 @@ final public class Graphics3D {
 
   public int getColixArgb(short colix) {
     if (colix < 0)
-      colix = changableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
+      colix = changeableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
     if (! inGreyscaleMode)
       return Colix.getArgb(colix);
     return Colix.getArgbGreyscale(colix);
@@ -1719,13 +1739,13 @@ final public class Graphics3D {
 
   public int[] getShades(short colix) {
     if (colix < 0)
-      colix = changableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
+      colix = changeableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
     if (! inGreyscaleMode)
       return Colix.getShades(colix);
     return Colix.getShadesGreyscale(colix);
   }
 
-  public final static short getChangableColixIndex(short colix) {
+  public final static short getChangeableColixIndex(short colix) {
     if (colix >= 0)
       return -1;
     return (short)(colix & UNMASK_CHANGEABLE_TRANSLUCENT);
@@ -1752,6 +1772,16 @@ final public class Graphics3D {
     }
   }
 
+  public final static boolean isColixColorInherited(short colix) {
+    switch (colix) {
+    case INHERIT_ALL:
+    case INHERIT_OPAQUE:
+      return true;
+    default: //could be translucent of some sort
+      return (colix & OPAQUE_MASK) == INHERIT_OPAQUE; 
+    }
+  }
+  
   //no references:
 
   /*
@@ -1766,10 +1796,10 @@ final public class Graphics3D {
 
   public final short getColixMix(short colixA, short colixB) {
     return Colix.getColixMix(colixA >= 0 ? colixA :
-                             changableColixMap[colixA &
+                             changeableColixMap[colixA &
                                                UNMASK_CHANGEABLE_TRANSLUCENT],
                              colixB >= 0 ? colixB :
-                             changableColixMap[colixB &
+                             changeableColixMap[colixB &
                                                UNMASK_CHANGEABLE_TRANSLUCENT]);
   }
  */
@@ -1792,29 +1822,29 @@ final public class Graphics3D {
   }
 
   /****************************************************************
-   * changable colixes
+   * changeable colixes
    * give me a short ID and a color, and I will give you a colix
    * later, you can reassign the color if you want
    * Used only for colorManager coloring of elements
    ****************************************************************/
 
-  short[] changableColixMap = new short[16];
+  private short[] changeableColixMap = new short[16];
 
-  public short getChangableColix(short id, int argb) {
-    if (id >= changableColixMap.length) {
+  public short getChangeableColix(short id, int argb) {
+    if (id >= changeableColixMap.length) {
       short[] t = new short[id + 16];
-      System.arraycopy(changableColixMap, 0, t, 0, changableColixMap.length);
-      changableColixMap = t;
+      System.arraycopy(changeableColixMap, 0, t, 0, changeableColixMap.length);
+      changeableColixMap = t;
     }
-    if (changableColixMap[id] == 0)
-      changableColixMap[id] = Colix.getColix(argb);
+    if (changeableColixMap[id] == 0)
+      changeableColixMap[id] = Colix.getColix(argb);
     //System.out.println("changeable colix "+Integer.toHexString(id | CHANGEABLE_MASK) + " = "+Integer.toHexString(argb));
     return (short)(id | CHANGEABLE_MASK);
   }
 
   public void changeColixArgb(short id, int argb) {
-    if (id < changableColixMap.length && changableColixMap[id] != 0)
-      changableColixMap[id] = Colix.getColix(argb);
+    if (id < changeableColixMap.length && changeableColixMap[id] != 0)
+      changeableColixMap[id] = Colix.getColix(argb);
   }
 
   /* ***************************************************************

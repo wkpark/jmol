@@ -31,5 +31,6 @@ class Bbcage extends FontLineShape {
 
   void initShape() {
     myType = "boundBox";
+    super.initShape();
   }
 }

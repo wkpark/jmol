@@ -141,20 +141,20 @@ class ColorManager {
       // therefore, a changable colix is allocated in this case
       id = atom.getAtomicAndIsotopeNumber();
       if (id < 256)
-        return g3d.getChangableColix(id, argbsCpk[id]);
+        return g3d.getChangeableColix(id, argbsCpk[id]);
       id = (short) JmolConstants.altElementIndexFromNumber(id);
-      return g3d.getChangableColix((short) (JmolConstants.elementNumberMax + id),
+      return g3d.getChangeableColix((short) (JmolConstants.elementNumberMax + id),
           altArgbsCpk[id]);
     case JmolConstants.PALETTE_PARTIAL_CHARGE:
       // This code assumes that the range of partial charges is [-1, 1].
       index = quantize(atom.getPartialCharge(), -1, 1,
           JmolConstants.PARTIAL_CHARGE_RANGE_SIZE);
-      return g3d.getChangableColix(
+      return g3d.getChangeableColix(
           (short) (JmolConstants.PARTIAL_CHARGE_COLIX_RED + index),
           JmolConstants.argbsRwbScale[index]);
     case JmolConstants.PALETTE_FORMAL_CHARGE:
       index = atom.getFormalCharge() - JmolConstants.FORMAL_CHARGE_MIN;
-      return g3d.getChangableColix(
+      return g3d.getChangeableColix(
           (short) (JmolConstants.FORMAL_CHARGE_COLIX_RED + index),
           JmolConstants.argbsFormalCharge[index]);
     case JmolConstants.PALETTE_TEMP:

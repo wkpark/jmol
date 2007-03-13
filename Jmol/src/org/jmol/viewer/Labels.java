@@ -72,6 +72,7 @@ class Labels extends AtomShape {
     defaultBgcolix = 0; //"none" -- off
     defaultOffset = zeroOffset = (JmolConstants.LABEL_DEFAULT_X_OFFSET << 8)
          | JmolConstants.LABEL_DEFAULT_Y_OFFSET;
+    translucentAllowed = false;
     super.initShape();
   }
 

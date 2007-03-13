@@ -3110,61 +3110,66 @@ class Eval { //implements Runnable {
       String str = parameterAsString(1);
       argb = getArgbOrPaletteParam(2);
       checkStatementLength(iToken + 1);
-     if (str.equalsIgnoreCase("axes")) {
-       setStringProperty("axesColor", StateManager.escapeColor(argb));
-       return;
-     }else if (StateManager.getObjectIdFromName(str) >= 0) {
+      if (str.equalsIgnoreCase("axes")) {
+        setStringProperty("axesColor", StateManager.escapeColor(argb));
+        return;
+      } else if (StateManager.getObjectIdFromName(str) >= 0) {
         if (!isSyntaxCheck)
           viewer.setObjectArgb(str, argb);
         return;
       }
-      for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
-        if (str.equalsIgnoreCase(JmolConstants.elementNameFromNumber(i))) {
-          if (!isSyntaxCheck)
-            viewer.setElementArgb(i, argb);
-          return;
-        }
-      }
-      for (int i = JmolConstants.altElementMax; --i >= 0;) {
-        if (str.equalsIgnoreCase(JmolConstants.altElementNameFromIndex(i))) {
-          if (!isSyntaxCheck)
-            viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
-                argb);
-          return;
-        }
-      }
-      if (str.charAt(0) == '_') {
-        for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
-          if (str.equalsIgnoreCase("_"
-              + JmolConstants.elementSymbolFromNumber(i))) {
-            if (!isSyntaxCheck)
-              viewer.setElementArgb(i, argb);
-            return;
-          }
-        }
-        for (int i = JmolConstants.altElementMax; --i >= JmolConstants.firstIsotope;) {
-          if (str.equalsIgnoreCase("_"
-              + JmolConstants.altElementSymbolFromIndex(i))) {
-            if (!isSyntaxCheck)
-              viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
-                  argb);
-            return;
-          }
-          if (str.equalsIgnoreCase("_"
-              + JmolConstants.altIsotopeSymbolFromIndex(i))) {
-            if (!isSyntaxCheck)
-              viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
-                  argb);
-            return;
-          }
-        }
-      }
+      if (changeElementColor(str, argb))
+        return;
       invalidArgument();
     default:
       colorObject(theTok, 2);
     }
   }
 
+  private boolean changeElementColor(String str, int argb) {
+    for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
+      if (str.equalsIgnoreCase(JmolConstants.elementNameFromNumber(i))) {
+        if (!isSyntaxCheck)
+          viewer.setElementArgb(i, argb);
+        return true;
+      }
+    }
+    for (int i = JmolConstants.altElementMax; --i >= 0;) {
+      if (str.equalsIgnoreCase(JmolConstants.altElementNameFromIndex(i))) {
+        if (!isSyntaxCheck)
+          viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
+              argb);
+        return true;
+      }
+    }
+    if (str.charAt(0) != '_')
+      return false;
+    for (int i = JmolConstants.elementNumberMax; --i >= 0;) {
+      if (str.equalsIgnoreCase("_" + JmolConstants.elementSymbolFromNumber(i))) {
+        if (!isSyntaxCheck)
+          viewer.setElementArgb(i, argb);
+        return true;
+      }
+    }
+    for (int i = JmolConstants.altElementMax; --i >= JmolConstants.firstIsotope;) {
+      if (str
+          .equalsIgnoreCase("_" + JmolConstants.altElementSymbolFromIndex(i))) {
+        if (!isSyntaxCheck)
+          viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
+              argb);
+        return true;
+      }
+      if (str
+          .equalsIgnoreCase("_" + JmolConstants.altIsotopeSymbolFromIndex(i))) {
+        if (!isSyntaxCheck)
+          viewer.setElementArgb(JmolConstants.altElementNumberFromIndex(i),
+              argb);
+        return true;
+      }
+    }
+    return false;
+  }
+  
   void colorNamedObject(int index) throws ScriptException {
     // color $ whatever green
     int shapeType = setShapeByNameParameter(index);

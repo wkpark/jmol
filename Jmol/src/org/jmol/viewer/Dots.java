@@ -168,7 +168,6 @@ class Dots extends AtomShape {
   }
 
   void initShape() {
-    Logger.debug("init dots");
     dotsRenderer = (DotsRenderer)frame.getRenderer(JmolConstants.SHAPE_DOTS);
     geodesicVertices = dotsRenderer.geodesic.vertices;
     geodesicCount = geodesicVertices.length;
@@ -177,6 +176,7 @@ class Dots extends AtomShape {
     geodesicSolventCount = geodesicSolventVertices.length;
     geodesicSolventMap = allocateBitmap(geodesicSolventCount);
     mapT = allocateBitmap(geodesicSolventCount);
+    translucentAllowed = false; //except for geosurface
     super.initShape();
   }
 

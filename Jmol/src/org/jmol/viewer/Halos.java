@@ -28,11 +28,17 @@ package org.jmol.viewer;
 import java.util.BitSet;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.Logger;
 
 class Halos extends AtomShape {
 
   short colixSelection = Graphics3D.USE_PALETTE;
 
+  void initState() {
+    Logger.debug("init halos");
+    translucentAllowed = false;
+  }
+  
   void setProperty(String propertyName, Object value, BitSet bs) {
     if ("translucency" == propertyName)
       return;

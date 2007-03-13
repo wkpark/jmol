@@ -50,6 +50,7 @@ class Axes extends FontLineShape {
   void initShape() {
     myType = "axes";
     font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
+    super.initShape();
     int axesMode = viewer.getAxesMode();
     if (axesMode == JmolConstants.AXES_MODE_UNITCELL && frame.cellInfos != null) {
       UnitCell unitcell = viewer.getCurrentUnitCell();

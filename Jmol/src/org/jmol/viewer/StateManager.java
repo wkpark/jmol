@@ -771,8 +771,10 @@ class StateManager {
         if (key.charAt(0) != '@' && doRegister(key)) {
           Object value = htParameterValues.get(key);
           if (key.charAt(0) == '_') {
-            key = key.substring(1);
+            key = key.substring(1) + " ";
           } else {
+            if (key.indexOf("default") == 0)
+              key = " " + key;
             key += " = ";
             if (value instanceof String)
               value = escape((String) value);

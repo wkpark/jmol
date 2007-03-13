@@ -71,7 +71,8 @@ abstract class Shape {
   int shapeID;
   int myVisibilityFlag;
   float translucentLevel;
-  
+  boolean translucentAllowed = true;
+
   final void setViewerG3dFrame(Viewer viewer, Graphics3D g3d, Frame frame,
                                int shapeID) {
     this.viewer = viewer;
@@ -90,10 +91,10 @@ abstract class Shape {
 
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
     if (propertyName == "translucentLevel") {
-      translucentLevel = ((Float)value).floatValue();
+      translucentLevel = ((Float) value).floatValue();
       return;
     }
-    
+
     Logger.warn("unassigned shape setProperty:" + propertyName + ":" + value);
   }
 
@@ -123,7 +124,7 @@ abstract class Shape {
   }
 
   boolean checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
-                          int modifiers) {
+                             int modifiers) {
     return false;
   }
 
@@ -185,17 +186,13 @@ abstract class Shape {
   String getColorCommand(String type, byte pid, short colix) {
     if (pid == JmolConstants.PALETTE_UNKNOWN && colix == Graphics3D.INHERIT_ALL)
       return "";
-    return "color " + type + " " + encodeTransColor(pid, colix);
+    return "color " + type + " " + encodeTransColor(pid, colix, translucentAllowed);
   }
 
-  String encodeTransColor(short colix) {
-    return encodeTransColor(JmolConstants.PALETTE_UNKNOWN, colix);
-  }
-
-  String encodeTransColor(byte pid, short colix) {
+  private String encodeTransColor(byte pid, short colix,
+                                  boolean translucentAllowed) {
     if (pid == JmolConstants.PALETTE_UNKNOWN && colix == Graphics3D.INHERIT_ALL)
       return "";
-    String s = "";
     /* nuance here is that some palettes depend upon a
      * point-in-time calculation that takes into account
      * some aspect of the current state, such as what groups
@@ -204,26 +201,27 @@ abstract class Shape {
      * Serialization of the palette name is just a convenience
      * anyway. 
      */
-    if (pid != JmolConstants.PALETTE_UNKNOWN
-        && !JmolConstants.isPaletteVariable(pid)) {
-      if (Graphics3D.isColixTranslucent(colix))
-        s += "translucent ";
-      s += JmolConstants.getPaletteName(pid);
-    } else {
-      s += encodeColor(colix);
-    }
-    return s;
+    return (translucentAllowed ? getTranslucentLabel(colix) + " " : "")
+        + (pid != JmolConstants.PALETTE_UNKNOWN 
+        && !JmolConstants.isPaletteVariable(pid) 
+        ? JmolConstants.getPaletteName(pid) : encodeColor(colix));
   }
 
   String encodeColor(short colix) {
-    return (Graphics3D.isColixTranslucent(colix) ? "translucent " : "")
-        + (colix == 0 ? "none" : StateManager.escapeColor(g3d.getColixArgb(colix)));
+    // used also by labels for background state (no translucent issues there?)
+    return (Graphics3D.isColixColorInherited(colix) ? "none" : StateManager
+        .escapeColor(g3d.getColixArgb(colix)));
+  }
+
+  private static String getTranslucentLabel(short colix) {
+    return (Graphics3D.isColixTranslucent(colix) ? "translucent "
+        + Graphics3D.getColixTranslucencyLevel(colix): "opaque");
   }
 
   static short getColix(short[] colixes, int i, Atom atom) {
     return Graphics3D.getColixInherited(
         (colixes == null || i >= colixes.length ? Graphics3D.INHERIT_ALL
             : colixes[i]), atom.colixAtom);
-  }  
+  }
 
 }

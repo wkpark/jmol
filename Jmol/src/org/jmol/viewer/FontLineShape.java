@@ -35,6 +35,10 @@ abstract class FontLineShape extends Shape {
   Font3D font3d;
   String myType;
 
+  void initShape() {
+    translucentAllowed = false;
+  }
+  
   void setProperty(String propertyName, Object value, BitSet bs) {
     if ("font" == propertyName) {
       font3d = (Font3D)value;

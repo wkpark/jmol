@@ -418,7 +418,7 @@ class Triangle3D {
       numLines = g3d.height - y;
     //numLines = numLines - correction;
     if (isClipped) {
-      for (; --numLines > 0; ++y, ++i) {
+      for (; --numLines >= correction; ++y, ++i) {
         int xW = axW[i];
         int pixelCount = axE[i] - xW + 1 - correction;
         if (pixelCount > 0) {
@@ -427,7 +427,7 @@ class Triangle3D {
         }
       }
     } else {
-      for (; --numLines > 0; ++y, ++i) {
+      for (; --numLines >= correction; ++y, ++i) {
         int xW = axW[i];
         int pixelCount = axE[i] - xW + 1 - correction;
         // miguel 2005 01 13

@@ -8210,6 +8210,10 @@ class Eval { //implements Runnable {
         propertyValue = t;
         break;
       default:
+        if (planeSeen && !surfaceObjectSeen) {
+          setShapeProperty(iShape, "nomap", new Float(0));
+          surfaceObjectSeen = true;
+        }
         if (!setMeshDisplayProperty(iShape, theTok))
           invalidArgument();
         i = iToken;
@@ -8228,6 +8232,8 @@ class Eval { //implements Runnable {
       setShapeProperty(iShape, "nomap", new Float(0));
       surfaceObjectSeen = true;
     }
+    
+    
     if (surfaceObjectSeen && iShape == JmolConstants.SHAPE_ISOSURFACE && !isSyntaxCheck) {
       String id = (String) viewer.getShapeProperty(iShape, "ID");
       Integer n = (Integer) viewer.getShapeProperty(iShape, "count");
@@ -8264,14 +8270,10 @@ class Eval { //implements Runnable {
     case Token.nofill:
       propertyName = "fill";
       break;
-    case Token.translucent:
-      setShapeTranslucency(shape, "", "translucent",
-          tokAt(iToken + 1) == Token.integer ? intParameter(++iToken) : -1);
-      return true;
     case Token.opaque:
-      propertyName = "translucency";
-      propertyValue = "opaque";
-      break;
+    case Token.translucent:
+      colorShape(shape, iToken);
+      return true;
     }
     if (propertyName == null)
       return false;

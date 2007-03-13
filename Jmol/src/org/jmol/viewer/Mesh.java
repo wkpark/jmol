@@ -164,7 +164,7 @@ class Mesh {
     }
   }
 
-  void setTranslucent(boolean isTranslucent, int iLevel) {
+  void setTranslucent(boolean isTranslucent, float iLevel) {
     colix = Graphics3D.getColixTranslucent(colix, isTranslucent, iLevel);
     if (vertexColixes != null)
       for (int i = vertexCount; --i >= 0; )

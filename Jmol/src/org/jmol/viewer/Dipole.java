@@ -90,7 +90,7 @@ class Dipole {
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
   }
 
-  void setTranslucent(boolean isTranslucent, int iLevel) {
+  void setTranslucent(boolean isTranslucent, float iLevel) {
     colix = Graphics3D.getColixTranslucent(colix, isTranslucent, iLevel);
   }
 

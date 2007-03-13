@@ -123,8 +123,8 @@ class Bond {
     this.colix = colix;
   }
 
-  void setTranslucent(boolean isTranslucent, int iLevel) {
-    colix = Graphics3D.getColixTranslucent(colix, isTranslucent, iLevel);
+  void setTranslucent(boolean isTranslucent, float translucentLevel) {
+    colix = Graphics3D.getColixTranslucent(colix, isTranslucent, translucentLevel);
   }
   
   boolean isTranslucent() {

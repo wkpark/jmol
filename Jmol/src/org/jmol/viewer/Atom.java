@@ -363,8 +363,8 @@ final public class Atom extends Point3fi implements Tuple {
     this.paletteID = paletteID;
   }
 
-  void setTranslucent(boolean isTranslucent, int iLevel) {
-    colixAtom = Graphics3D.getColixTranslucent(colixAtom, isTranslucent, iLevel);    
+  void setTranslucent(boolean isTranslucent, float translucentLevel) {
+    colixAtom = Graphics3D.getColixTranslucent(colixAtom, isTranslucent, translucentLevel);    
   }
 
   boolean isTranslucent() {

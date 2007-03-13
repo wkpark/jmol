@@ -70,7 +70,7 @@ abstract class Shape {
   Graphics3D g3d;
   int shapeID;
   int myVisibilityFlag;
-  int translucentLevel;
+  float translucentLevel;
   
   final void setViewerG3dFrame(Viewer viewer, Graphics3D g3d, Frame frame,
                                int shapeID) {
@@ -90,7 +90,7 @@ abstract class Shape {
 
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
     if (propertyName == "translucentLevel") {
-      translucentLevel = ((Integer)value).intValue();
+      translucentLevel = ((Float)value).floatValue();
       return;
     }
     

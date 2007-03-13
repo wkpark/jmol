@@ -2856,7 +2856,7 @@ class Eval { //implements Runnable {
     boolean haveType = false;
     boolean haveOperation = false;
     String translucency = null;
-    int translucentLevel = -1;
+    float translucentLevel = -1;
     boolean isColorOrRadius = false;
     int nAtomSets = 0;
     int nDistances = 0;
@@ -2924,8 +2924,8 @@ class Eval { //implements Runnable {
           invalidArgument();
         isColorOrRadius = true;
         translucency = parameterAsString(i);
-        if (theTok == Token.translucent && tokAt(i + 1) == Token.integer)
-          translucentLevel = intParameter(++i);
+        if (theTok == Token.translucent && isFloatParameter(i + 1))
+          translucentLevel = floatParameter(++i);
         break;
       case Token.radius:
         radius = floatParameter(++i);
@@ -2984,7 +2984,7 @@ class Eval { //implements Runnable {
         if (translucentLevel < 0)
           translucentLevel = viewer.getDefaultTranslucent();
         viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "translucentLevel",
-            new Integer(translucentLevel));
+            new Float(translucentLevel));
         viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "translucency",
             translucency, bsBonds);
       }
@@ -3180,7 +3180,7 @@ class Eval { //implements Runnable {
     Object colorvalue = null;
     String colorOrBgcolor = "color";
     BitSet bs = null;
-    int translucentLevel = -1;
+    float translucentLevel = -1;
     if (index < 0) {
       bs = expression(-index);
       index = iToken + 1;
@@ -3199,8 +3199,8 @@ class Eval { //implements Runnable {
     }
     if (theTok == Token.translucent || theTok == Token.opaque) {
       translucency = parameterAsString(index++);
-    if (theTok == Token.translucent && tokAt(index) == Token.integer)
-      translucentLevel = intParameter(index++);
+    if (theTok == Token.translucent && isFloatParameter(index))
+      translucentLevel = floatParameter(index++);
     }
     String modifier = "";
     if (shapeType < 0) {
@@ -3217,8 +3217,8 @@ class Eval { //implements Runnable {
           getToken(index);
           if (translucency == null && (theTok == Token.translucent || theTok == Token.opaque)) {
             translucency = parameterAsString(index);
-            if (theTok == Token.translucent && tokAt(index + 1) == Token.integer)
-              translucentLevel = intParameter(++index);
+            if (theTok == Token.translucent && isFloatParameter(index + 1))
+              translucentLevel = floatParameter(++index);
           }
           checkStatementLength(index + 1);
         }
@@ -3299,10 +3299,10 @@ class Eval { //implements Runnable {
       setShapeTranslucency(shapeType, modifier, translucency, translucentLevel);
   }
 
-  void setShapeTranslucency (int shapeType, String modifier, String translucency, int translucentLevel) {
+  void setShapeTranslucency (int shapeType, String modifier, String translucency, float translucentLevel) {
     if (translucentLevel < 0)
       translucentLevel = viewer.getDefaultTranslucent();
-    setShapeProperty(shapeType, "translucentLevel", new Integer(translucentLevel));
+    setShapeProperty(shapeType, "translucentLevel", new Float(translucentLevel));
     setShapeProperty(shapeType, "translucency" + modifier, translucency);  
   }
   
@@ -7213,7 +7213,7 @@ class Eval { //implements Runnable {
     boolean idSeen = false;
     boolean isInitialized = false;
     boolean isTranslucent = false;
-    int translucentLevel = -1;
+    float translucentLevel = -1;
     int colorArgb = Integer.MIN_VALUE;
     int intScale = 0;
     for (int i = 1; i < statementLength; ++i) {
@@ -7318,8 +7318,8 @@ class Eval { //implements Runnable {
         isTranslucent = false;
         if (tokAt(++i) == Token.translucent) {
           isTranslucent = true;
-          if (tokAt(++i) == Token.integer)
-            translucentLevel = intParameter(i++);
+          if (isFloatParameter(++i))
+            translucentLevel = floatParameter(i++);
         }
         if (isColorParam(i)) {
           colorArgb = getArgbParam(i);
@@ -7427,7 +7427,7 @@ class Eval { //implements Runnable {
     String setPropertyName = "centers";
     String decimalPropertyName = "radius_";
     String translucency = null;
-    int translucentLevel = -1;
+    float translucentLevel = -1;
     int color = Integer.MIN_VALUE;
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;

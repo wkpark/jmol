@@ -1672,7 +1672,12 @@ final public class Graphics3D {
   }
 
   
-  public final static short applyColorTranslucencyLevel(short colix, int iLevel) {
+  private final static short applyColorTranslucencyLevel(short colix, float translucentLevel) {
+    // 0.0 to 1.0 ==> 0 to 
+    // 0, 1/2, 3/4, 7/8
+    // 0  128  192  224
+    int iLevel = (int) (translucentLevel <= 1.0 ? translucentLevel * 256 : translucentLevel);
+    iLevel = (iLevel == 0? 0 : iLevel <=  128 ? 1 : iLevel <= 192 ? 2 : 3);
     return (short) (colix & ~TRANSLUCENT_MASK 
         | TRANSLUCENT_FLAG | ((iLevel % 4) << TRANSLUCENT_SHIFT));
   }
@@ -1691,13 +1696,13 @@ final public class Graphics3D {
     return HOTPINK;
   }
 
-  public final static short getColixTranslucent(short colix, boolean isTranslucent, int iLevel) {
+  public final static short getColixTranslucent(short colix, boolean isTranslucent, float translucentLevel) {
     if (colix == INHERIT_ALL)
       colix = INHERIT_OPAQUE;
     colix &= ~TRANSLUCENT_MASK;
     if (!isTranslucent)
       return colix;
-    return applyColorTranslucencyLevel(colix, iLevel);
+    return applyColorTranslucencyLevel(colix, translucentLevel);
   }
 
   public int getColixArgb(short colix) {

@@ -898,6 +898,7 @@ final public class Graphics3D {
   public void fillCylinder(short colixA, short colixB, byte endcaps,
                            int diameter,
                            int xA, int yA, int zA, int xB, int yB, int zB) {
+    //Backbone, Mps, Sticks
     if (!setColix(colixA))
       colixA = 0;
     boolean isScreenedA = !addAllPixels;
@@ -912,29 +913,17 @@ final public class Graphics3D {
   public void fillCylinder(byte endcaps,
                            int diameter,
                            int xA, int yA, int zA, int xB, int yB, int zB) {
+    //measures, vectors
     cylinder3d.render(colixCurrent, colixCurrent, !addAllPixels, !addAllPixels, endcaps, diameter,
                       xA, yA, zA, xB, yB, zB);
   }
 
   public void fillCylinder(byte endcaps, int diameter,
                            Point3i screenA, Point3i screenB) {
+    //axes, bbcage, cartoon, dipoles, mesh
     cylinder3d.render(colixCurrent, colixCurrent, !addAllPixels, !addAllPixels, endcaps, diameter,
                       screenA.x, screenA.y, screenA.z,
                       screenB.x, screenB.y, screenB.z);
-  }
-
-  public void fillCylinderBits(short colixA, short colixB, byte endcaps,
-                               int diameter, int xA, int yA, int zA, int xB,
-                               int yB, int zB) {
-    if (!setColix(colixA))
-      colixA = 0;
-    boolean isScreenedA = !addAllPixels;
-    if (!setColix(colixB))
-      colixB = 0;
-    if (colixA == 0 && colixB == 0)
-      return;
-    cylinder3d.renderBits(colixA, colixB, isScreenedA, !addAllPixels, endcaps,
-        diameter, xA, yA, zA, xB, yB, zB);
   }
 
   public void fillCylinderBits(byte endcaps, int diameter,

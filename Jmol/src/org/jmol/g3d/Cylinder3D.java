@@ -123,6 +123,7 @@ class Cylinder3D {
   void renderBits(short colixA, short colixB, boolean isScreenedA,
                   boolean isScreenedB, byte endcaps, int diameter, float xA,
                   float yA, float zA, float xB, float yB, float zB) {
+    // dipole cross, cartoonRockets
     if (diameter > g3d.height * 3)
       return;
     this.isScreenedA = isScreenedA;

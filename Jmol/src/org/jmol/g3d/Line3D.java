@@ -288,8 +288,8 @@ final class Line3D {
     switch (notClipped ? VISIBILITY_UNCLIPPED : getTrimmedLine()) {
     case VISIBILITY_UNCLIPPED:
     case VISIBILITY_CLIPPED:
-      //      System.out.println("plotlinedelta " + notClipped + " " + xA + " " + yA
-      //        + " " + zA + " " + dxBA + " " + dyBA + " " + dzBA);
+        //    System.out.println("plotlinedelta " + notClipped + " { " + xA + " " + yA
+          //    + " " + zA + " } dx " + dxBA + " dy " + dyBA + " dz " + dzBA);
 
       plotLineClipped(shades1, tScreened1, shades2, tScreened2, intensity, xA,
           yA, zA, dxBA, dyBA, dzBA, notClipped, 0, 0);

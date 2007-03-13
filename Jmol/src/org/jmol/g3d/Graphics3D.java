@@ -393,11 +393,18 @@ final public class Graphics3D {
     argbNoisyUp = shadesCurrent[intensity < shadeLast ? intensity + 1 : shadeLast];
     argbNoisyDn = shadesCurrent[intensity > 0 ? intensity - 1 : 0];
   }
-  void addPixel(int offset, int z, int p) {
-    addPixelT(offset, z, p, zbuf, pbuf, zbufT, pbufT, translucencyMask, isPass2);
+  
+  int zMargin;
+  
+  void setZMargin(int dz) {
+    zMargin = dz;
   }
   
-  final static void addPixelT(int offset, int z, int p, int[] zbuf, int[] pbuf, int[] zbufT, int[] pbufT, int translucencyMask, boolean isPass2) {
+  void addPixel(int offset, int z, int p) {
+    addPixelT(offset, z, p, zbuf, pbuf, zbufT, pbufT, translucencyMask, isPass2, zMargin);
+  }
+  
+  final static void addPixelT(int offset, int z, int p, int[] zbuf, int[] pbuf, int[] zbufT, int[] pbufT, int translucencyMask, boolean isPass2, int zMargin) {
     if (!isPass2) {
       //System.out.println("pass1A " + offset + " " + Integer.toHexString(z)+ " " + Integer.toHexString(p));
       zbuf[offset] = z;
@@ -410,14 +417,14 @@ final public class Graphics3D {
       //new in front -- merge old translucent with opaque
       //if (zT != Integer.MAX_VALUE)
       //System.out.println("plcA: z "+z + " zT " + zT + " " + offsetPbuf + " " + Integer.toHexString(p));
-      //if (p != pbufT[offsetPbuf])
+      if (zT - z > zMargin)
         mergeBufferPixel(pbuf, pbufT[offset], offset);
       zbufT[offset] = z;
       pbufT[offset] = p & translucencyMask;
     } else if (z == zT) {
     } else {
       //oops-out of order
-      //if (p != pbufT[offsetPbuf])
+      if (z - zT > zMargin)
         mergeBufferPixel(pbuf, p & translucencyMask, offset);
     }
   }

@@ -114,8 +114,10 @@ class Cylinder3D {
 
     if (endcaps == Graphics3D.ENDCAPS_FLAT)
       renderFlatEndcap(true);
+    g3d.setZMargin(5);
     for (int i = rasterCount; --i >= 0;)
       plotRaster(i);
+    g3d.setZMargin(0);
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL)
       renderSphericalEndcaps();
   }
@@ -173,8 +175,10 @@ class Cylinder3D {
     if (endcaps == Graphics3D.ENDCAPS_FLAT)
       renderFlatEndcap(true);
     line3d.setLineBits(this.dxBf, this.dyBf);
+    g3d.setZMargin(5);
     for (int i = rasterCount; --i >= 0;)
       plotRasterBits(i);
+    g3d.setZMargin(0);
     if (endcaps == Graphics3D.ENDCAPS_SPHERICAL)
       renderSphericalEndcaps();
     this.xAf += dxBf;
@@ -249,8 +253,10 @@ class Cylinder3D {
     generateBaseEllipsePrecisely();
     if (endcaps == Graphics3D.ENDCAPS_FLAT)
       renderFlatEndcap(false);
+    g3d.setZMargin(5);
     for (int i = rasterCount; --i >= 0;)
       plotRasterCone(i);
+    g3d.setZMargin(0);
   }
 
   private void generateBaseEllipse() {

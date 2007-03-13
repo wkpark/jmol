@@ -179,7 +179,9 @@ abstract class TransformManager {
         + ";spinZ = " + (int) spinZ + ";spinFps = " + (int) spinFps + ";";
     if (spinOn) {
       if (isAll)
-        s += "refreshing = true;refresh;";
+        s += "\nrefreshing = true;refresh;";
+      if ((isSpinInternal || isSpinFixed) && rotateSelected)
+          s +="\nselect " + StateManager.escape(viewer.getSelectionSet()) + "\nrotateSelected ";
       if (isSpinInternal) {
         Point3f pt = new Point3f(internalRotationCenter);
         pt.add(rotationAxis);

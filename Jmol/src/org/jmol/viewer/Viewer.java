@@ -1861,7 +1861,9 @@ public class Viewer extends JmolViewer {
   }
 
   int findNearestAtomIndex(int x, int y) {
-    return modelManager.findNearestAtomIndex(x, y);
+    //System.out.println("hover x y o :" + x + " " + y 
+      //  + "  " + (x + y * getScreenWidth()));
+   return modelManager.findNearestAtomIndex(x, y);
   }
 
   BitSet findAtomsInRectangle(Rectangle rectRubberBand) {

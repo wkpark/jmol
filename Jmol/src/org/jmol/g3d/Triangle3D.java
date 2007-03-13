@@ -213,9 +213,9 @@ class Triangle3D {
     Rgb16[] gouraudW = useGouraud ? rgb16sW : null;
     Rgb16[] gouraudE = useGouraud ? rgb16sE : null;
 
-    /*
-     * System.out.println("triangle: nlines = " + nLines +" " + ax[0]+ " " + ax[1]+ " " + ax[2]+ " y: " + ay[0]+ " " + ay[1]+ " " + ay[2]);
-    */
+    
+     //System.out.println("triangle: nlines = " + nLines +" " + ax[0]+ " " + ax[1]+ " " + ax[2]+ " y: " + ay[0]+ " " + ay[1]+ " " + ay[2] + " " + Integer.toHexString(g3d.argbCurrent));
+    
     int dyMidMin = yMid - yMin;
     if (dyMidMin == 0) {
       // flat top

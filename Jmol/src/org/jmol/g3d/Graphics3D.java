@@ -310,13 +310,14 @@ final public class Graphics3D {
     int argbA = pbuf[pt];
     if (argbA == argbB)
       return;
+
     //System.out.println("merge " + pt + " " + Integer.toHexString(argbB)+ " " + Integer.toHexString(pbuf[pt]));
 
     int rb = (argbA & 0x00FF00FF);
     int g = (argbA & 0x0000FF00);
     int logAlpha = (argbB >> 24) & 3;//4;
     //0 or 1=50%, 2 = 25%, 3 = 12.5% opacity.
-//      System.out.print(Integer.toHexString(argbB));
+    //System.out.print(Integer.toHexString(argbB));
     switch (logAlpha) {
     case 3:
       rb = (((rb << 2) + (rb << 1) + rb + (argbB & 0x00FF00FF)) >> 3) & 0x00FF00FF;
@@ -334,6 +335,7 @@ final public class Graphics3D {
     }
     pbuf[pt] = 0xFF000000 | rb | g;
     
+      //System.out.println("mergefinal " + pt + " " + Integer.toHexString(pbuf[pt]) + " " + Integer.toHexString(rb) + " " + Integer.toHexString(g));
   }
   
   public boolean hasContent() {
@@ -378,7 +380,8 @@ final public class Graphics3D {
       pbuf[offset] = p;
       return;
     }
-    //System.out.println("addPixelT " + offset + " " + Integer.toHexString(p)+ " " + Integer.toHexString(pbuf[offset])+ " " + Integer.toHexString(pbufT[offset])+ " zT " + zbufT[offset]+ " z " + z);
+    if (offset == 72274 || offset == 77623)
+      System.out.println("addPixelT " + offset + " " + Integer.toHexString(p)+ " " + Integer.toHexString(pbuf[offset])+ " " + Integer.toHexString(pbufT[offset])+ " zT " + zbufT[offset]+ " z " + z + " tmask=" + Integer.toHexString(translucencyMask));
     int zT = zbufT[offset]; 
     if (z < zT) {
       //new in front -- merge old translucent with opaque
@@ -392,7 +395,7 @@ final public class Graphics3D {
     } else {
       //oops-out of order
       //if (p != pbufT[offsetPbuf])
-        mergeBufferPixel(pbuf, p, offset);
+        mergeBufferPixel(pbuf, p & translucencyMask, offset);
     }
   }
 

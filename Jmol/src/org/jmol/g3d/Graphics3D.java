@@ -1708,14 +1708,14 @@ final public class Graphics3D {
     //                 1/8  1/4 3/8 1/2 5/8 3/4
     //     t            32  64  96  128 160 192
     //     t >> 5        1   2   3   4   5   6
-    // 7 is reserved for screened 
+    // 7 is reserved for screened, so 7 and 8 just map to 6
 
     if (translucentLevel == 0) //opaque
       return (short) (colix & ~TRANSLUCENT_MASK);
     int iLevel = (int) (translucentLevel < 0 ? 7 << 5
         : translucentLevel < 1 ? translucentLevel * 256
             : translucentLevel < 7 ? ((int) translucentLevel) << 5
-                : translucentLevel);
+               : translucentLevel < 9 ? 6 << 5 : translucentLevel);
     iLevel = (iLevel >> 5) % 8;
     return (short) (colix & ~TRANSLUCENT_MASK | (iLevel << TRANSLUCENT_SHIFT));
   }

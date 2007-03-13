@@ -195,11 +195,6 @@ class Dots extends AtomShape {
       return;
     }
     
-    if ("color" == propertyName) {
-      super.setProperty(propertyName, value, bs);
-      return;
-    }
-    
     if ("translucency" == propertyName) {
       return;  // no translucent dots
     }
@@ -255,7 +250,8 @@ class Dots extends AtomShape {
       colixes[indexI] = Graphics3D.getColix(argb);
       //all done!
       return;
-    }
+    }    
+    super.setProperty(propertyName, value, bs);
   }
 
   void setSize(int size, BitSet bsSelected) {

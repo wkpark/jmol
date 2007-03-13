@@ -38,7 +38,21 @@ final public class JmolConstants {
   
   /*
    * 
-   * 
+   *
+   11.1.21
+   
+   Introduces "real" color translucency 
+   
+   color xxxx translucent N   
+   
+   where N is 0 to 3.
+   
+   translucent 0   same as Jmol 10.2
+   translucent 1   1/2 translucency (default)
+   translucent 2   3/4 translucency
+   translucent 3   7/8 translucency (very sheer)
+   
+   
    11.1.20
    
    cleans up axes/boundbox/unitcell business

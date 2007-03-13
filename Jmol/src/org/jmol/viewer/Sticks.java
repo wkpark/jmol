@@ -129,7 +129,6 @@ class Sticks extends Shape {
       }
       return;
     }
-    //better not be here
     super.setProperty(propertyName, value, bsSelected);
   }
 

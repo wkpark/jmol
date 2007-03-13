@@ -165,8 +165,7 @@ class Polyhedra extends AtomShape {
       // but from Color we need to identify the centers.
       if ("colorThis" == propertyName && iHaveCenterBitSet)
         bs = centers;
-      super.setProperty("color", value, bs);
-      return;
+      //allow super
     }
 
     if (propertyName.indexOf("translucency") == 0) {
@@ -174,14 +173,15 @@ class Polyhedra extends AtomShape {
       // but from Color we need to identify the centers.
       if ("translucencyThis" == propertyName && iHaveCenterBitSet)
         bs = centers;
-      super.setProperty("translucency", value, bs);
-      return;
+      //allow super
     }
     
     if ("radius" == propertyName) {
       radius = ((Float) value).floatValue();
       return;
     }
+
+    super.setProperty(propertyName, value, bs);
   }
 
   void deletePolyhedra() {
@@ -225,7 +225,8 @@ class Polyhedra extends AtomShape {
         if (haveBitSetVertices)
           return;
       }
-  }
+
+}
 
   Polyhedron constructBondsPolyhedron(int atomIndex) {
     Atom atom = atoms[atomIndex];

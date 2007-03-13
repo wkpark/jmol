@@ -180,8 +180,8 @@ abstract class TransformManager {
     if (spinOn) {
       if (isAll)
         s += "\nrefreshing = true;refresh;";
-      if ((isSpinInternal || isSpinFixed) && rotateSelected)
-          s +="\nselect " + StateManager.escape(viewer.getSelectionSet()) + "\nrotateSelected ";
+      if (isSpinSelected)
+          s +="\nselect " + StateManager.escape(viewer.getSelectionSet()) + ";\nrotateSelected ";
       if (isSpinInternal) {
         Point3f pt = new Point3f(internalRotationCenter);
         pt.add(rotationAxis);
@@ -204,6 +204,7 @@ abstract class TransformManager {
   float spinX, spinY = 30f, spinZ, spinFps = 30f;
   boolean isSpinInternal = false;
   boolean isSpinFixed = false;
+  boolean isSpinSelected = false;
 
   protected final Point3f fixedRotationOffset = new Point3f();
   protected final Point3f fixedRotationCenter = new Point3f(0, 0, 0);
@@ -362,6 +363,7 @@ abstract class TransformManager {
     if (isSpin) {
       isSpinInternal = false;
       isSpinFixed = true;
+      isSpinSelected = isSelected;
       setSpinOn(true, endDegrees, isSelected);
       return;
     }
@@ -402,6 +404,7 @@ abstract class TransformManager {
     if (isSpin) {
       isSpinInternal = true;
       isSpinFixed = false;
+      isSpinSelected = isSelected;
       setSpinOn(true, endDegrees, isSelected);
       return;
     }

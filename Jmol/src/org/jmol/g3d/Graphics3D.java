@@ -289,10 +289,19 @@ final public class Graphics3D {
   }
 
   void mergeOpaqueAndTranslucentBuffers() {
-    int offset = 0;
-    for (int i = windowHeight; --i >= 0; )
-      for (int j = windowWidth; --j >= 0; )
-        mergeBufferPixel(pbuf, pbufT[offset], offset++);
+    for (int offset = 0; offset < bufferSize; offset++)
+      mergeBufferPixel(pbuf, pbufT[offset], offset++);
+
+  }
+  
+  static void averageBufferPixel(int[] pIn, int[] pOut, int pt, int dp) {
+    int argbA = pIn[pt - dp];
+    int argbB = pIn[pt + dp];
+    if (argbA == 0 || argbB == 0)
+      return;
+    pOut[pt] = ((((argbA & 0xFF000000)>>1) + ((argbB & 0xFF000000)>>1))<< 1)
+        | (((argbA & 0x00FF00FF) + (argbB & 0x00FF00FF)) >> 1) & 0x00FF00FF
+        | (((argbA & 0x0000FF00) + (argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
   }
   
   static void mergeBufferPixel(int[] pbuf, int argbB, int pt) {
@@ -301,6 +310,8 @@ final public class Graphics3D {
     int argbA = pbuf[pt];
     if (argbA == argbB)
       return;
+    //System.out.println("merge " + pt + " " + Integer.toHexString(argbB)+ " " + Integer.toHexString(pbuf[pt]));
+
     int rb = (argbA & 0x00FF00FF);
     int g = (argbA & 0x0000FF00);
     int logAlpha = (argbB >> 24) & 3;//4;
@@ -321,8 +332,8 @@ final public class Graphics3D {
       g = ((g + (argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
       break;
     }
-//    System.out.println(Integer.toHexString(pbuf[pt]));
     pbuf[pt] = 0xFF000000 | rb | g;
+    
   }
   
   public boolean hasContent() {
@@ -362,10 +373,12 @@ final public class Graphics3D {
   
   final static void addPixelT(int offset, int z, int p, int[] zbuf, int[] pbuf, int[] zbufT, int[] pbufT, int translucencyMask, boolean isPass2) {
     if (!isPass2) {
+      //System.out.println("pass1A " + offset + " " + Integer.toHexString(z)+ " " + Integer.toHexString(p));
       zbuf[offset] = z;
       pbuf[offset] = p;
       return;
     }
+    //System.out.println("addPixelT " + offset + " " + Integer.toHexString(p)+ " " + Integer.toHexString(pbuf[offset])+ " " + Integer.toHexString(pbufT[offset])+ " zT " + zbufT[offset]+ " z " + z);
     int zT = zbufT[offset]; 
     if (z < zT) {
       //new in front -- merge old translucent with opaque

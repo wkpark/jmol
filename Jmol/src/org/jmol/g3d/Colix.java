@@ -75,7 +75,7 @@ final class Colix {
         throw new IndexOutOfBoundsException();
       }
       argb |= 0xFF000000;
-      translucentFlag = Graphics3D.TRANSLUCENT_FLAG;
+      translucentFlag = Graphics3D.TRANSLUCENT_50;
     }
     int c = colixHash.get(argb);
     return (c > 0 ? (short) (c | translucentFlag)

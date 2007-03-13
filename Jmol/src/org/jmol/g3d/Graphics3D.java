@@ -313,27 +313,51 @@ final public class Graphics3D {
 
     //System.out.println("merge " + pt + " " + Integer.toHexString(argbB)+ " " + Integer.toHexString(pbuf[pt]));
 
-    int rb = (argbA & 0x00FF00FF);
-    int g = (argbA & 0x0000FF00);
-    int logAlpha = (argbB >> 24) & 3;//4;
-    //0 or 1=50%, 2 = 25%, 3 = 12.5% opacity.
+    int rbA = (argbA & 0x00FF00FF);
+    int gA = (argbA & 0x0000FF00);
+    int rbB = (argbB & 0x00FF00FF);
+    int gB = (argbB & 0x0000FF00);
+    int logAlpha = (argbB >> 24) & 7;
+    //just for now:
+    //0 or 1=100% opacity, 2=87.5%, 3=75%, 4=50%, 5=50%, 6 = 25%, 7 = 12.5% opacity.
+    //4 is reserved because it is the default-Jmol 10.2
     //System.out.print(Integer.toHexString(argbB));
     switch (logAlpha) {
-    case 3:
-      rb = (((rb << 2) + (rb << 1) + rb + (argbB & 0x00FF00FF)) >> 3) & 0x00FF00FF;
-      g = (((g << 2) + (g << 1) + g + (argbB & 0x0000FF00)) >> 3) & 0x0000FF00;
+    // 0.0 to 1.0 ==> MORE translucent   
+    //                1/8  1/4 3/8 1/2 5/8 3/4 7/8
+    //     t           32  64  96  128 160 192 224
+    //     t >> 5       1  10  11  100 101 110 111
+
+    case 1: // 7:1
+      rbA = (((rbB << 2) + (rbB << 1) + rbB  + rbA) >> 3) & 0x00FF00FF;
+      gA = (((gB << 2) + + (gB << 1) + gB + gA) >> 3) & 0x0000FF00;
       break;
-    case 2:
-      rb = (((rb << 1) + rb + (argbB & 0x00FF00FF)) >> 2) & 0x00FF00FF;
-      g = (((g << 1) + g + (argbB & 0x0000FF00)) >> 2) & 0x0000FF00;
+    case 2: // 3:1
+      rbA = (((rbB << 1) + rbB + rbA) >> 2) & 0x00FF00FF;
+      gA = (((gB << 1) + gB + gA) >> 2) & 0x0000FF00;
       break;
-    case 1:
-    case 0:
-      rb = ((rb + (argbB & 0x00FF00FF)) >> 1) & 0x00FF00FF;
-      g = ((g + (argbB & 0x0000FF00)) >> 1) & 0x0000FF00;
+    case 3: // 5:3
+      rbA = (((rbB << 2) + rbB + (rbA << 1) + rbA) >> 3) & 0x00FF00FF;
+      gA = (((gB << 2) + gB  + (gA << 1) + gA) >> 3) & 0x0000FF00;
+      break;
+    case 4: // 1:1
+      rbA = ((rbA + rbB) >> 1) & 0x00FF00FF;
+      gA = ((gA + gB) >> 1) & 0x0000FF00;
+      break;
+    case 5: // 3:5
+      rbA = (((rbB << 1) + rbB + (rbA << 2) + rbA) >> 3) & 0x00FF00FF;
+      gA = (((gB << 1) + gB  + (gA << 2) + gA) >> 3) & 0x0000FF00;
+      break;
+    case 6: // 1:3
+      rbA = (((rbA << 1) + rbA + rbB) >> 2) & 0x00FF00FF;
+      gA = (((gA << 1) + gA + gB) >> 2) & 0x0000FF00;
+      break;
+    case 7: // 1:7   (not implemented)
+      rbA = (((rbA << 2) + (rbA << 1) + rbA + rbB) >> 3) & 0x00FF00FF;
+      gA = (((gA << 2) + (gA << 1) + gA + gB) >> 3) & 0x0000FF00;
       break;
     }
-    pbuf[pt] = 0xFF000000 | rb | g;
+    pbuf[pt] = 0xFF000000 | rbA | gA;
     
       //System.out.println("mergefinal " + pt + " " + Integer.toHexString(pbuf[pt]) + " " + Integer.toHexString(rb) + " " + Integer.toHexString(g));
   }
@@ -348,13 +372,13 @@ final public class Graphics3D {
    * @return true or false if this is the right pass
    */
   public boolean setColix(short colix) {
-    isTranslucent = (colix & TRANSLUCENT_FLAG) != 0;
-    isScreened = isTranslucent && (colix & TRANSLUCENT_LEVEL_MASK) == 0;
+    isTranslucent = (colix & TRANSLUCENT_MASK) != 0;
+    isScreened = isTranslucent && (colix & TRANSLUCENT_MASK) == TRANSLUCENT_SCREENED;
     if (!checkTranslucent(isTranslucent && !isScreened))
       return false;
     addAllPixels = isPass2 || !isTranslucent;
     if (isPass2)
-      translucencyMask = ((colix & TRANSLUCENT_LEVEL_MASK) << ALPHA_SHIFT) | 0xFFFFFF;
+      translucencyMask = ((colix & TRANSLUCENT_MASK) << ALPHA_SHIFT) | 0xFFFFFF;
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
     argbCurrent = argbNoisyUp = argbNoisyDn = getColixArgb(colix);
@@ -1511,10 +1535,15 @@ final public class Graphics3D {
      on. 
      
      0x8000 changeable flag (elements and isotopes, about 200; negative)
-     0x4000 translucent flag
-     0x3000 translucent level
-     
+     0x7000 translucent flag set
+
      NEW:
+     0x1000 translucent level 1
+     0x2000 translucent level 2
+     0x3000 translucent level 3
+     0x4000 translucent level 1
+     0x6000 translucent level 2
+     0x7000 translucent level 3
      0x5000 translucent level 1
      0x6000 translucent level 2
      0x7000 translucent level 3
@@ -1550,12 +1579,13 @@ final public class Graphics3D {
      
   */
   private final static short CHANGEABLE_MASK = (short)0x8000; // negative
-  private final static int TRANSLUCENT_SHIFT        = 12;
-  private final static int ALPHA_SHIFT              = 24 - TRANSLUCENT_SHIFT;
-  private final static int  TRANSLUCENT_LEVEL_MASK  = 0x3000;
-  final static short TRANSLUCENT_FLAG               = 0x4000;
-  private final static short TRANSLUCENT_MASK       = TRANSLUCENT_FLAG | TRANSLUCENT_LEVEL_MASK;
-  final static short OPAQUE_MASK  = ~TRANSLUCENT_MASK;
+  private final static int   TRANSLUCENT_SHIFT        = 12;
+  private final static int   ALPHA_SHIFT              = 24 - TRANSLUCENT_SHIFT;
+  private final static int   TRANSLUCENT_MASK         = 0x7000;
+  final static int           TRANSLUCENT_FLAG         = 0x4000;
+  final static int           TRANSLUCENT_50           = 0x5000;
+  final static int           TRANSLUCENT_SCREENED     = TRANSLUCENT_MASK;
+  final static short         OPAQUE_MASK  = ~TRANSLUCENT_MASK;
   private final static short UNMASK_CHANGEABLE_TRANSLUCENT =0x0FFF;
 
   public final static short INHERIT_ALL          = 0;
@@ -1675,33 +1705,31 @@ final public class Graphics3D {
   private final static short applyColorTranslucencyLevel(short colix,
                                                          float translucentLevel) {
     // 0.0 to 1.0 ==> MORE translucent   
-    //                 1/2, 3/4, 7/8,  1
-    //     t           128  192  224  256
-    //     256-t       128   64   32   0
-    //     log(256-t)   7    6    5   -inf
-    // x = 8-log(256-t) 1    2    3    inf
-    
-    // t = (2 << 8) - (2 << (8 - x))
-    // 256 and 0 have no representations because "translucent 256" is hidden and "translucent 0" is opaque.
-    // we are not going to fuss over 255/256 business! The point here is to use 256 so that we
-    // have an easily dividable range starting with 0.
-    
-    if (translucentLevel < 0) //old Jmol 10.0
-      return (short) (colix & ~TRANSLUCENT_MASK | TRANSLUCENT_FLAG);
+    //                 1/8  1/4 3/8 1/2 5/8 3/4
+    //     t            32  64  96  128 160 192
+    //     t >> 5        1   2   3   4   5   6
+    // 7 is reserved for screened 
+
     if (translucentLevel == 0) //opaque
       return (short) (colix & ~TRANSLUCENT_MASK);
-    int iLevel = (int) (translucentLevel <= 1.0 ? translucentLevel * 256 : translucentLevel);
-    iLevel = (iLevel <= 128 ? 1 : iLevel <= 192 ? 2 : 3);
-    return (short) (colix & ~TRANSLUCENT_MASK | TRANSLUCENT_FLAG | (iLevel << TRANSLUCENT_SHIFT));
+    int iLevel = (int) (translucentLevel < 0 ? 7 << 5
+        : translucentLevel < 1 ? translucentLevel * 256
+            : translucentLevel < 7 ? ((int) translucentLevel) << 5
+                : translucentLevel);
+    iLevel = (iLevel >> 5) % 8;
+    return (short) (colix & ~TRANSLUCENT_MASK | (iLevel << TRANSLUCENT_SHIFT));
   }
 
   public final static int getColixTranslucencyLevel(short colix) {
-    int logAlpha = (colix >> TRANSLUCENT_SHIFT) & 3;
+    int logAlpha = (colix >> TRANSLUCENT_SHIFT) & 7;
     switch (logAlpha) {
     case 1:
     case 2:
     case 3:
-      return (1 << 8) - (1 << ((1 << 3) - logAlpha));
+    case 4:
+    case 5:
+    case 6:
+      return logAlpha << 5;
     }
     return -1;
   }
@@ -1752,7 +1780,7 @@ final public class Graphics3D {
   }
 
   public final static boolean isColixTranslucent(short colix) {
-    return ((colix & TRANSLUCENT_FLAG) != 0);
+    return ((colix & TRANSLUCENT_MASK) != 0);
   }
 
   public final static short getColixInherited(short myColix, short parentColix) {

@@ -346,7 +346,7 @@ public class Token {
   
   final static int atom      = 1 | mathproperty;
   final static int bonds     = 2 | mathproperty | setparam;
-  final static int color     = 3 | mathproperty | command | colorparam | setparam | embeddedExpression;
+  final static int color     = 3 | mathproperty | command | colorparam | setparam | embeddedExpression | negnums;
   final static int ident     = 4 | mathproperty;
   final static int length    = 5 | mathproperty;
   final static int lines     = 6 | mathproperty;

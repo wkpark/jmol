@@ -424,7 +424,7 @@ final public class Graphics3D {
       else if (!isClippedXY(diameter, x, y))
         circle3d.plotCircleCenteredClipped(x, y, z, diameter);
     }
-    if (!setColix(getColixTranslucent(colixFill, true, 1)))
+    if (!setColix(getColixTranslucent(colixFill, true, 0.5f)))
       return;
     if (!isClipped)
       circle3d.plotFilledCircleCenteredUnclipped(x, y, z, diameter);
@@ -1672,14 +1672,18 @@ final public class Graphics3D {
   }
 
   
-  private final static short applyColorTranslucencyLevel(short colix, float translucentLevel) {
-    // 0.0 to 1.0 ==> 0 to 
-    // 0, 1/2, 3/4, 7/8
-    // 0  128  192  224
+  private final static short applyColorTranslucencyLevel(short colix,
+                                                         float translucentLevel) {
+    // 0.01 to 1.0 ==> MORE translucent   
+    //  0  1/2, 3/4, 7/8, 1
+    //  128  192  224
+    if (translucentLevel < 0) //old Jmol 10.0
+      return (short) (colix & ~TRANSLUCENT_MASK | TRANSLUCENT_FLAG);
+    if (translucentLevel == 0) //opaque
+      return (short) (colix & ~TRANSLUCENT_MASK);
     int iLevel = (int) (translucentLevel <= 1.0 ? translucentLevel * 256 : translucentLevel);
-    iLevel = (iLevel == 0? 0 : iLevel <=  128 ? 1 : iLevel <= 192 ? 2 : 3);
-    return (short) (colix & ~TRANSLUCENT_MASK 
-        | TRANSLUCENT_FLAG | ((iLevel % 4) << TRANSLUCENT_SHIFT));
+    iLevel = (iLevel <= 128 ? 1 : iLevel <= 192 ? 2 : 3);
+    return (short) (colix & ~TRANSLUCENT_MASK | TRANSLUCENT_FLAG | (iLevel << TRANSLUCENT_SHIFT));
   }
 
   public final static short getColix(Object obj) {

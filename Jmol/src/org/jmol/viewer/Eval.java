@@ -2856,7 +2856,7 @@ class Eval { //implements Runnable {
     boolean haveType = false;
     boolean haveOperation = false;
     String translucency = null;
-    float translucentLevel = -1;
+    float translucentLevel = Float.MAX_VALUE;
     boolean isColorOrRadius = false;
     int nAtomSets = 0;
     int nDistances = 0;
@@ -2981,7 +2981,7 @@ class Eval { //implements Runnable {
         viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "color",
             new Integer(color), bsBonds);
       if (translucency != null) {
-        if (translucentLevel < 0)
+        if (translucentLevel == Float.MAX_VALUE)
           translucentLevel = viewer.getDefaultTranslucent();
         viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "translucentLevel",
             new Float(translucentLevel));
@@ -3180,7 +3180,7 @@ class Eval { //implements Runnable {
     Object colorvalue = null;
     String colorOrBgcolor = "color";
     BitSet bs = null;
-    float translucentLevel = -1;
+    float translucentLevel = Float.MAX_VALUE;
     if (index < 0) {
       bs = expression(-index);
       index = iToken + 1;
@@ -3300,7 +3300,7 @@ class Eval { //implements Runnable {
   }
 
   void setShapeTranslucency (int shapeType, String modifier, String translucency, float translucentLevel) {
-    if (translucentLevel < 0)
+    if (translucentLevel ==  Float.MAX_VALUE)
       translucentLevel = viewer.getDefaultTranslucent();
     setShapeProperty(shapeType, "translucentLevel", new Float(translucentLevel));
     setShapeProperty(shapeType, "translucency" + modifier, translucency);  
@@ -7213,7 +7213,7 @@ class Eval { //implements Runnable {
     boolean idSeen = false;
     boolean isInitialized = false;
     boolean isTranslucent = false;
-    float translucentLevel = -1;
+    float translucentLevel = Float.MAX_VALUE;
     int colorArgb = Integer.MIN_VALUE;
     int intScale = 0;
     for (int i = 1; i < statementLength; ++i) {
@@ -7427,7 +7427,7 @@ class Eval { //implements Runnable {
     String setPropertyName = "centers";
     String decimalPropertyName = "radius_";
     String translucency = null;
-    float translucentLevel = -1;
+    float translucentLevel = Float.MAX_VALUE;
     int color = Integer.MIN_VALUE;
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;

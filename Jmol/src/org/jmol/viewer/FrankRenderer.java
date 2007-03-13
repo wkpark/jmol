@@ -33,7 +33,7 @@ class FrankRenderer extends ShapeRenderer {
     Frank frank = (Frank) shape;
     if (!viewer.getShowFrank()
         || !g3d.setColix(Graphics3D.getColixTranslucent(Frank.defaultFontColix,
-            g3d.haveTranslucentObjects(), 1)))
+            g3d.haveTranslucentObjects(), 0.5f)))
       return;
     frank.calcMetrics();
     g3d.drawStringNoSlab(Frank.frankString, frank.font3d, (short) 0, g3d

@@ -380,8 +380,7 @@ final public class Graphics3D {
       pbuf[offset] = p;
       return;
     }
-    if (offset == 72274 || offset == 77623)
-      System.out.println("addPixelT " + offset + " " + Integer.toHexString(p)+ " " + Integer.toHexString(pbuf[offset])+ " " + Integer.toHexString(pbufT[offset])+ " zT " + zbufT[offset]+ " z " + z + " tmask=" + Integer.toHexString(translucencyMask));
+      //System.out.println("addPixelT " + offset + " " + Integer.toHexString(p)+ " " + Integer.toHexString(pbuf[offset])+ " " + Integer.toHexString(pbufT[offset])+ " zT " + zbufT[offset]+ " z " + z + " tmask=" + Integer.toHexString(translucencyMask));
     int zT = zbufT[offset]; 
     if (z < zT) {
       //new in front -- merge old translucent with opaque

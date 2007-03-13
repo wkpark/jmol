@@ -662,12 +662,9 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
         "width:" + sz[0] + "px;height:" + sz[1] + "px;" + 
         // why doesn't this vertical-align work?
 	"text-align:center;vertical-align:middle;'>\n" +
-        "You do not have Java applets<br />\n" +
-        "enabled in your web browser.<br />\n" +
-        "Install the Java Runtime Environment<br />\n" +
-        "from <a href='http://www.java.com'>www.java.com</a><br />" +
-        "and/or enable Java applets in<br />\n" +
-        "your web browser preferences." +
+        "You do not have Java applets enabled in your web browser, or your browser is blocking this applet.<br />\n" +
+        "Check the warning message from your browser and/or enable Java applets in<br />\n" +
+        "your web browser preferences, or install the Java Runtime Environment from <a href='http://www.java.com'>www.java.com</a><br />" +
         "</p>";
     } else {
       visitJava =

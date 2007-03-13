@@ -518,7 +518,7 @@ class StateManager {
     boolean showNavigationPointAlways = false;
     String propertyColorScheme   = "roygb";
     boolean useNumberLocalization = true;
-    int defaultTranslucent        = 1;
+    float defaultTranslucent      = 0.5f;
     
     
     // window

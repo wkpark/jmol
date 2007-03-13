@@ -858,11 +858,11 @@ public class Viewer extends JmolViewer {
     colorManager.setDefaultColors(colorScheme);
   }
 
-  private void setDefaultTranslucent(int value) {
+  private void setDefaultTranslucent(float value) {
     global.defaultTranslucent = value;  
   }
   
-  int getDefaultTranslucent() {
+  float getDefaultTranslucent() {
     return global.defaultTranslucent;
   }
   
@@ -3568,6 +3568,12 @@ public class Viewer extends JmolViewer {
     while (true) {
       
       ///11.1///
+      if (key.equalsIgnoreCase("defaultTranslucent")) {
+        setDefaultTranslucent(value);
+        break;
+      }
+
+
       if (key.equalsIgnoreCase("axesScale")) {
         setAxesScale(value);
         break;
@@ -3677,11 +3683,6 @@ public class Viewer extends JmolViewer {
     while (true) {
       ///11.1///
 
-
-      if (key.equalsIgnoreCase("defaultTranslucent")) {
-        setDefaultTranslucent(value);
-        break;
-      }
 
       if (key.equalsIgnoreCase("strandCount")) {
         setShapeProperty(JmolConstants.SHAPE_STRANDS, "strandCount",

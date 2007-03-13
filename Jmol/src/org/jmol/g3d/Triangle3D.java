@@ -214,7 +214,10 @@ class Triangle3D {
     Rgb16[] gouraudE = useGouraud ? rgb16sE : null;
 
     
+   // if (yMid != yMin || yMax != yMin)
+     // return;
      //System.out.println("triangle: nlines = " + nLines +" " + ax[0]+ " " + ax[1]+ " " + ax[2]+ " y: " + ay[0]+ " " + ay[1]+ " " + ay[2] + " " + Integer.toHexString(g3d.argbCurrent));
+
     
     int dyMidMin = yMid - yMin;
     if (dyMidMin == 0) {
@@ -417,6 +420,9 @@ class Triangle3D {
     if (y + numLines > g3d.height)
       numLines = g3d.height - y;
     //numLines = numLines - correction;
+    //System.out.println("fill: " + numLines + " " + (axE[0] - axW[0]));
+    if (numLines == 1 &&  (axE[0] - axW[0]) == 0)
+      correction = 0;
     if (isClipped) {
       for (; --numLines >= correction; ++y, ++i) {
         int xW = axW[i];
@@ -430,6 +436,7 @@ class Triangle3D {
       for (; --numLines >= correction; ++y, ++i) {
         int xW = axW[i];
         int pixelCount = axE[i] - xW + 1 - correction;
+        //System.out.println("pixelcount = " +pixelCount);
         // miguel 2005 01 13
         // not sure exactly why we are getting pixel counts of 0 here
         // it means that the east/west lines are crossing by 1

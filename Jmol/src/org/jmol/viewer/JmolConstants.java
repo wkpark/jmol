@@ -34,7 +34,7 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "11.1.20";
+  public final static String version = "11.1.22";
   
   /*
    *
@@ -50,13 +50,17 @@ final public class JmolConstants {
    
    color xxxx translucent N   
    
-   where N is 0 to 3.
+   where N is -1 to 6.
    
-   translucent 0   same as Jmol 10.2
-   translucent 1   1/2 translucency (default)
-   translucent 2   3/4 translucency
-   translucent 3   7/8 translucency (very sheer)
-   
+                   OR     OR   
+   translucent -1               same as Jmol 10.2
+   translucent 0                opaque
+   translucent 1   0.125  32    1/8 translucency (slightly translucent)
+   translucent 2   0.25   64    2/8 translucency
+   translucent 3   0.375  96    3/8 translucency 
+   translucent 4   0.5   128    4/8 translucency (default)
+   translucent 5   0.625 160    5/8 translucency 
+   translucent 6   0.75  192    6/8 translucency (very sheer)
    
    11.1.20
    

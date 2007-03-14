@@ -168,13 +168,13 @@ public class XmlCmlReader extends XmlReader {
                                   HashMap atts) {
     //if (!uri.equals(NAMESPACE_URI))
     //return;
-
+/*
     try {
-      Logger.debug(name + "::"+atts.get("name"));
+      System.out.println(name + "::"+atts.get("name"));
     } catch (Exception e) {
-      Logger.warn(name);
+      System.out.println(name);
     }
-    
+  */  
     switch (state) {
     case START:
       if (name.equals("molecule")) {

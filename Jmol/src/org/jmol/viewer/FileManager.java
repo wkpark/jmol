@@ -88,7 +88,7 @@ class FileManager {
   }
 
   String getState() {
-    StringBuffer commands = new StringBuffer("# file state;\n");
+    StringBuffer commands = new StringBuffer("# file state;\n\n");
     commands.append(loadScript);
     commands.append("\n\n");
     return commands.toString();
@@ -108,7 +108,7 @@ class FileManager {
   void setLoadScript(String script, boolean isMerge) {
     if (loadScript == null || !isMerge)
       loadScript = "";
-    loadScript += viewer.getLoadState() + script + "\n";
+    loadScript += "\n"+viewer.getLoadState() + script + "\n";
   }
 
   void openFile(String name, int[] params, String loadScript, boolean isMerge) {
@@ -156,8 +156,9 @@ class FileManager {
   }
 
   void openStringInline(String strModel, int[] params, boolean isMerge) {
-    loadScript = "data \"model inline\"" + strModel + "end \"model inline\";";
-    setLoadScript(loadScript, isMerge);
+    String tag = (isMerge ? "append" : "model");
+    String script = "data \""+tag+" inline\"" + strModel + "end \""+tag+" inline\";";
+    setLoadScript(script, isMerge);
     String sp = "";
     if (params != null)
       for (int i = 0; i < params.length; i++)

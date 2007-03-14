@@ -2049,12 +2049,6 @@ public class Viewer extends JmolViewer {
     return modelManager.getAllPolymerInfo(getAtomBitSet(atomExpression));
   }
 
-  String loadScript;
-
-  void setLoadScript(String script) {
-    loadScript = script;
-  }
-
   public String getStateInfo() {
     StringBuffer s = new StringBuffer("# Jmol state version "
         + getJmolVersion() + ";\n\n");

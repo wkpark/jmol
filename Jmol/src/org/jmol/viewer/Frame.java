@@ -2729,6 +2729,8 @@ public final class Frame {
   private void getMolecules() {
     if (moleculeCount > 0)
       return;
+    if (molecules == null)
+      molecules = new Molecule[4];
     moleculeCount = 0;
     int atomCount = getAtomCount();
     BitSet atomlist = new BitSet(atomCount);

@@ -244,8 +244,8 @@ abstract class MeshCollection extends Shape {
     if (currentMesh == null)
       return;
     currentMesh.visible = true; 
-    if (modelCount < 2)
-      isFixed = true;
+    //if (modelCount < 2)
+      //isFixed = true;
     if ((currentMesh.atomIndex = atomIndex) >= 0)
       currentMesh.modelIndex = viewer.getAtomModelIndex(atomIndex);
     else if (isFixed)

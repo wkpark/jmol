@@ -242,9 +242,10 @@ class Compiler {
         }
         if (tokCommand == Token.load) {
           if (lookingAtLoadFormat()) {
-            //String strFormat = script.substring(ichToken, ichToken + cchToken);
-            //strFormat = strFormat.toLowerCase();
-            //addTokenToPrefix(new Token(Token.identifier, strFormat));
+            String strFormat = script.substring(ichToken, ichToken + cchToken);
+            strFormat = strFormat.toLowerCase();
+            if (strFormat.equals("append") || strFormat.equals("files"))
+              addTokenToPrefix(new Token(Token.identifier, strFormat));
             continue;
           }
           if (!iHaveQuotedString && lookingAtSpecialString()) {
@@ -689,16 +690,18 @@ class Compiler {
       return -1;
   }
 
-  // note that these formats include a space character
-  String[] loadFormats = { "alchemy ", "mol2 ", "mopac ", "nmrpdb ", "charmm ",
-      "xyz ", "mdl ", "pdb " };
+  static String[] loadFormats = { "append", "files", /*ancient:*/ "alchemy", "mol2", "mopac", "nmrpdb", "charmm",
+      "xyz", "mdl", "pdb" };
 
   private boolean lookingAtLoadFormat() {
+    int ichT;
+    String match = script
+        .substring(ichToken, Math.min(cchScript, ichToken + 7)).toLowerCase();
     for (int i = loadFormats.length; --i >= 0;) {
       String strFormat = loadFormats[i];
       int cchFormat = strFormat.length();
-      if (script.regionMatches(true, ichToken, strFormat, 0, cchFormat)) {
-        cchToken = cchFormat - 1; // subtract off the space character
+      if (match.indexOf(strFormat) == 0 && (ichT = ichToken + cchFormat) < cchScript && isSpaceOrTab(script.charAt(ichT))) {
+        cchToken = cchFormat;
         return true;
       }
     }

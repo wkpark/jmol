@@ -51,6 +51,14 @@ final class Mmset {
     this.frame = frame;
   }
 
+  void merge(Mmset mmset) {
+    for (int i = 0; i < mmset.modelCount; i++) {
+      models[i] = mmset.getModel(i);
+      modelProperties[i] = mmset.getModelProperties(i);
+      modelAuxiliaryInfo[i] = mmset.getModelAuxiliaryInfo(i);
+    }    
+  }
+  
   void defineStructure(int modelIndex, String structureType, char startChainID,
                        int startSequenceNumber, char startInsertionCode,
                        char endChainID, int endSequenceNumber,
@@ -304,13 +312,31 @@ final class Mmset {
    *   
    *   A number the user can use "1.3"
    *   
-   *   
+   * @param baseModelIndex
+   *    
    */
-  void finalizeModelNumbers() {
+  void finalizeModelNumbers(int baseModelIndex) {
     String sNum;
     int modelnumber = 0;
+
     int lastfilenumber = -1;
-    for (int i = 0; i < modelCount; ++i) {
+    if (baseModelIndex > 0) {
+      if (models[0].modelNumber < 1000000) {
+        for (int i = 0; i < baseModelIndex; i++) {
+          models[i].modelNumber = 1000000 + i + 1;
+          models[i].modelTag = "" + models[i].modelNumber;
+        }
+      }
+      modelnumber = models[baseModelIndex - 1].modelNumber;
+      modelnumber -= modelnumber % 1000000;
+      if (models[baseModelIndex].modelNumber < 1000000)
+        modelnumber += 1000000;
+      for (int i = baseModelIndex; i < modelCount; i++) {
+        models[i].modelNumber += modelnumber;
+        models[i].modelTag = "" + models[i].modelNumber;
+      }
+    }
+    for (int i = baseModelIndex; i < modelCount; ++i) {
       int filenumber = models[i].modelNumber / 1000000;
       if (filenumber != lastfilenumber) {
         modelnumber = 0;

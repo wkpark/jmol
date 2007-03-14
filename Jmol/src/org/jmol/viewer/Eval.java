@@ -3361,7 +3361,8 @@ class Eval { //implements Runnable {
     data[0] = dataLabel;
     data[1] = dataString;
     boolean isModel = dataType.equalsIgnoreCase("model");
-    if (!isSyntaxCheck || isScriptCheck && isModel && fileOpenCheck) {
+    boolean isAppend = dataType.equalsIgnoreCase("append");
+    if (!isSyntaxCheck || isScriptCheck && (isModel|| isAppend) && fileOpenCheck) {
       if (dataType.toLowerCase().indexOf("property_") == 0) {
         data[2] = viewer.getSelectedAtomsOrBonds();
         Viewer.setData(dataType, data, viewer.getAtomCount());
@@ -3369,12 +3370,13 @@ class Eval { //implements Runnable {
         Viewer.setData(dataType, data, 0);
       }
     }
-    if (isModel && (!isSyntaxCheck || isScriptCheck && fileOpenCheck)) {
+    if ((isModel || isAppend)
+        && (!isSyntaxCheck || isScriptCheck && fileOpenCheck)) {
       // only if first character is "|" do we consider "|" to be new line
       char newLine = viewer.getInlineChar();
       if (dataString.length() > 0 && dataString.charAt(0) != newLine)
         newLine = '\0';
-      viewer.loadInline(dataString, newLine);
+      viewer.loadInline(dataString, newLine, isAppend);
     }
     if (dataType.equalsIgnoreCase("coord")) {
       viewer.loadCoordinates(dataString);
@@ -3469,6 +3471,7 @@ class Eval { //implements Runnable {
   }
 
   void load() throws ScriptException {
+    boolean isMerge = false;
     StringBuffer loadScript = new StringBuffer("load");
     int[] params = new int[4];
     Point3f unitCells = viewer.getDefaultLattice();
@@ -3481,8 +3484,12 @@ class Eval { //implements Runnable {
     if (statementLength == 1) {
       i = 0;
     } else {
-      if (getToken(1).tok == Token.identifier)
+      if (getToken(1).tok == Token.identifier) {
+        filename = parameterAsString(1);
+        loadScript.append(" "+ filename);
+        isMerge = (filename.equalsIgnoreCase("append"));
         i = 2;
+      }
       if (getToken(i).tok != Token.string)
         filenameExpected();
     }
@@ -3492,7 +3499,7 @@ class Eval { //implements Runnable {
         filename = viewer.getFullPathName();
       loadScript.append(" " + StateManager.escape(filename) + ";");
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
-        viewer.openFile(filename, params, loadScript.toString());
+        viewer.openFile(filename, params, loadScript.toString(), isMerge);
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.integer) {
       if ((filename = parameterAsString(i++)).length() == 0)
@@ -3552,11 +3559,15 @@ class Eval { //implements Runnable {
       }
       loadScript.append(";");
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
-        viewer.openFile(filename, params, loadScript.toString());
+        viewer.openFile(filename, params, loadScript.toString(), isMerge);
     } else {
-      String modelName = parameterAsString(i);
-      i++;
-      loadScript.append(" " + StateManager.escape(modelName));
+      String modelName;
+      if (i == 2) {
+        modelName = filename;
+      } else {
+        modelName = parameterAsString(i++);
+        loadScript.append(" " + StateManager.escape(modelName));
+      }
       String[] filenames = new String[statementLength - i];
       while (i < statementLength) {
         modelName = parameterAsString(i);
@@ -3566,11 +3577,11 @@ class Eval { //implements Runnable {
       }
       loadScript.append(";");
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
-        viewer.openFiles(modelName, filenames, loadScript.toString());
+        viewer.openFiles(modelName, filenames, loadScript.toString(), isMerge);
     }
     if (isSyntaxCheck && !(isScriptCheck && fileOpenCheck))
       return;
-    String errMsg = viewer.getOpenFileError();
+    String errMsg = viewer.getOpenFileError(isMerge);
     // int millis = (int)(System.currentTimeMillis() - timeBegin);
     // Logger.debug("!!!!!!!!! took " + millis + " ms");
     if (errMsg != null && !isScriptCheck)

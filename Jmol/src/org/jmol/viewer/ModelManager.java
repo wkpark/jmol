@@ -76,6 +76,13 @@ class ModelManager {
     frame = new Frame(viewer, "empty");
   }
   
+  void merge(JmolAdapter adapter, Object clientFile ) {
+    frame = new Frame(viewer, adapter, clientFile, frame);
+    haveFile = true;
+    if (frame.atomCount == 0)
+      zap();
+  }
+  
   void setClientFile(String fullPathName, String fileName, JmolAdapter adapter, Object clientFile) {
     if (clientFile == null) {
       clear();
@@ -92,7 +99,7 @@ class ModelManager {
     if (modelSetName == null)
       modelSetName = reduceFilename(fileName);
     clearFrame();
-    frame = new Frame(viewer, adapter, clientFile);
+    frame = new Frame(viewer, adapter, clientFile, null);
     haveFile = true;
     if (frame.atomCount == 0)
       zap();

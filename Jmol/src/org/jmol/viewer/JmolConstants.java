@@ -40,6 +40,13 @@ final public class JmolConstants {
    *
    * 
    11.1.22
+  
+   adds 
+   
+   load files .....  # just a cleaner version of loading multiple files.
+   load append ..... # APPENDS the file(s) or model(s) as new frames onto the current set.
+   data append ..... # same thing, but inline
+   
    
    isosurface MODEL n
    pmesh MODEL n

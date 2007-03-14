@@ -1272,21 +1272,22 @@ public class Viewer extends JmolViewer {
         + StateManager.escape(TextFormat.simpleReplace(name, "\\", "/")));
   }
 
-  void openFile(String name, int[] params, String loadScript) {
+  void openFile(String name, int[] params, String loadScript, boolean isMerge) {
     //Eval
     if (name == null)
       return;
     if (name.equalsIgnoreCase("string")) {
-      openStringInline(fileManager.inlineData, params);
+      openStringInline(fileManager.inlineData, params, isMerge);
       return;
     }
     if (name.equalsIgnoreCase("string[]")) {
-      openStringInline(fileManager.inlineDataArray, params);
+      openStringInline(fileManager.inlineDataArray, params, isMerge);
       return;
     }
-    zap(false);
+    if (!isMerge)
+      zap(false);
     long timeBegin = System.currentTimeMillis();
-    fileManager.openFile(name, params, loadScript);
+    fileManager.openFile(name, params, loadScript, isMerge);
     long ms = System.currentTimeMillis() - timeBegin;
     setStatusFileLoaded(1, name, "", getModelSetName(), null, null);
     String sp = "";
@@ -1297,16 +1298,17 @@ public class Viewer extends JmolViewer {
   }
 
   public void openFiles(String modelName, String[] names) {
-    openFiles(modelName, names, null);
+    openFiles(modelName, names, null, false);
   }
 
-  void openFiles(String modelName, String[] names, String loadScript) {
+  void openFiles(String modelName, String[] names, String loadScript, boolean isMerge) {
     //Eval
-    zap(false);
+    if (!isMerge)
+      zap(false);
     // keep old screen image while new file is being loaded
     // forceRefresh();
     long timeBegin = System.currentTimeMillis();
-    fileManager.openFiles(modelName, names, loadScript);
+    fileManager.openFiles(modelName, names, loadScript, isMerge);
     long ms = System.currentTimeMillis() - timeBegin;
     for (int i = 0; i < names.length; i++) {
       setStatusFileLoaded(1, names[i], "", getModelSetName(), null, null);
@@ -1316,23 +1318,25 @@ public class Viewer extends JmolViewer {
 
   public void openStringInline(String strModel) {
     //Jmol app file dropper
-    openStringInline(strModel, null);
+    openStringInline(strModel, null, false);
   }
 
-  private void openStringInline(String strModel, int[] params) {
+  private void openStringInline(String strModel, int[] params, boolean isMerge) {
     //loadInline, openFile, openStringInline
-    clear();
-    fileManager.openStringInline(strModel, params);
-    String errorMsg = getOpenFileError();
+    if (!isMerge)
+      clear();
+    fileManager.openStringInline(strModel, params, isMerge);
+    String errorMsg = getOpenFileError(isMerge);
     if (errorMsg == null)
       setStatusFileLoaded(1, "string", "", getModelSetName(), null, null);
   }
 
-  private void openStringInline(String[] arrayModels, int[] params) {
+  private void openStringInline(String[] arrayModels, int[] params, boolean isMerge) {
     //loadInline, openFile, openStringInline
-    clear();
-    fileManager.openStringInline(arrayModels, params);
-    String errorMsg = getOpenFileError();
+    if (!isMerge)
+      clear();
+    fileManager.openStringInline(arrayModels, params, isMerge);
+    String errorMsg = getOpenFileError(isMerge);
     if (errorMsg == null)
       setStatusFileLoaded(1, "string[]", "", getModelSetName(), null, null);
   }
@@ -1347,8 +1351,10 @@ public class Viewer extends JmolViewer {
   }
 
   public void loadInline(String strModel, char newLine) {
-    //Eval data
-    //loadInline
+    loadInline(strModel, newLine, false);
+  }
+
+  void loadInline(String strModel, char newLine, boolean isMerge) {
     if (strModel == null)
       return;
     int i;
@@ -1376,19 +1382,23 @@ public class Viewer extends JmolViewer {
         strModels[i] = strModel.substring(pt0, pt);
         pt0 = pt + datasep.length();
       }
-      openStringInline(strModels, A);
+      openStringInline(strModels, A, isMerge);
       return;
     }
-    openStringInline(strModel, A);
+    openStringInline(strModel, A, isMerge);
   }
 
   public void loadInline(String[] arrayModels) {
+    loadInline(arrayModels, false);  
+  }
+  
+  void loadInline(String[] arrayModels, boolean isMerge) {
     //Eval data
     //loadInline
     if (arrayModels == null || arrayModels.length == 0)
       return;
     int[] A = global.getDefaultLatticeArray();
-    openStringInline(arrayModels, A);
+    openStringInline(arrayModels, A, isMerge);
   }
 
   void loadCoordinates(String coordinateData) {
@@ -1432,6 +1442,10 @@ public class Viewer extends JmolViewer {
    * @return errorMsg
    */
   public String getOpenFileError() {
+    return getOpenFileError(false);  
+  }
+  
+  String getOpenFileError(boolean isMerge) {
     String fullPathName = getFullPathName();
     String fileName = getFileName();
     Object clientFile = fileManager.waitForClientFileOrErrorMessage();
@@ -1442,7 +1456,11 @@ public class Viewer extends JmolViewer {
         zap(errorMsg);
       return errorMsg;
     }
-    openClientFile(fullPathName, fileName, clientFile);
+    if (isMerge) {
+      modelManager.merge(modelAdapter, clientFile);
+    } else {
+      openClientFile(fullPathName, fileName, clientFile);
+    } 
     return null;
   }
 
@@ -3302,13 +3320,13 @@ public class Viewer extends JmolViewer {
     statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo, firstNo, lastNo);
   }
 
-  void setStatusFileLoaded(int ptLoad, String fullPathName, String fileName,
+  private void setStatusFileLoaded(int ptLoad, String fullPathName, String fileName,
                            String modelName, Object clientFile, String strError) {
     statusManager.setStatusFileLoaded(fullPathName, fileName, modelName,
         clientFile, strError, ptLoad);
   }
 
-  void setStatusFileNotLoaded(String fullPathName, String errorMsg) {
+  private void setStatusFileNotLoaded(String fullPathName, String errorMsg) {
     setStatusFileLoaded(-1, fullPathName, null, null, null, errorMsg);
   }
 

@@ -101,20 +101,18 @@ class FileManager {
     return modelAdapter.getFileTypeName((BufferedReader) br);
   }
   
-  void openFile(String name) {
-    openFile(name, null, null);
-  }
-
   void clear() {
-    setLoadScript("");
+    setLoadScript("", false);
   }
   
-  void setLoadScript(String script) {
-    loadScript = viewer.getLoadState() + script + "\n";
+  void setLoadScript(String script, boolean isMerge) {
+    if (loadScript == null || !isMerge)
+      loadScript = "";
+    loadScript += viewer.getLoadState() + script + "\n";
   }
 
-  void openFile(String name, int[] params, String loadScript) {
-    setLoadScript(loadScript);
+  void openFile(String name, int[] params, String loadScript, boolean isMerge) {
+    setLoadScript(loadScript, isMerge);
     String sp = "";
     if (params != null)
       for (int i = 0; i < params.length; i++)
@@ -131,8 +129,8 @@ class FileManager {
     fileOpenThread.run();
   }
 
-  void openFiles(String modelName, String[] names, String loadScript) {
-    setLoadScript(loadScript);
+  void openFiles(String modelName, String[] names, String loadScript, boolean isMerge) {
+    setLoadScript(loadScript, isMerge);
     String[] fullPathNames = new String[names.length];
     for (int i = 0; i < names.length; i++) {
       nameAsGiven = names[i];
@@ -153,13 +151,13 @@ class FileManager {
     filesOpenThread.run();
   }
 
-  void openStringInline(String strModel) {
-    openStringInline(strModel, null);
+  void openStringInline(String strModel, boolean isMerge) {
+    openStringInline(strModel, null, isMerge);
   }
 
-  void openStringInline(String strModel, int[] params) {
+  void openStringInline(String strModel, int[] params, boolean isMerge) {
     loadScript = "data \"model inline\"" + strModel + "end \"model inline\";";
-    setLoadScript(loadScript);
+    setLoadScript(loadScript, isMerge);
     String sp = "";
     if (params != null)
       for (int i = 0; i < params.length; i++)
@@ -179,7 +177,7 @@ class FileManager {
     fileOpenThread.run();
   }
 
-  void openStringInline(String[] arrayModels, int[] params) {
+  void openStringInline(String[] arrayModels, int[] params, boolean isMerge) {
     loadScript = "dataSeparator = \"~~~next file~~~\";\ndata \"model inline\"";
     for (int i = 0; i < arrayModels.length; i++) {
       if (i > 0)
@@ -187,7 +185,7 @@ class FileManager {
       loadScript += arrayModels[i];
     }
     loadScript += "end \"model inline\";";
-    setLoadScript(loadScript);
+    setLoadScript(loadScript, isMerge);
 
     String sp = "";
     if (params != null)

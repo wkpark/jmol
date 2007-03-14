@@ -51,8 +51,12 @@ class Measures extends Shape {
   Font3D font3d;
   float[] rangeMinMax = {Float.MAX_VALUE, Float.MAX_VALUE};
   
-  void initShape() {
+
+  void initFrame() {
     pendingMeasurement = new PendingMeasurement(frame);
+  }
+  
+  void initShape() {
     font3d = g3d.getFont3D(JmolConstants.MEASURE_DEFAULT_FONTSIZE);
   }
 

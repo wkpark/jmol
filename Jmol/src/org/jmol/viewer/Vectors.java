@@ -30,10 +30,10 @@ class Vectors extends AtomShape {
 
   float scale = Float.NaN;
   
-  void initShape() {
-    super.initShape();
+  void initFrame() {
     if (!(isActive = frame.hasVibrationVectors))
       return;
+    super.initFrame();
   }
 
   void setProperty(String propertyName, Object value, BitSet bsSelected) {

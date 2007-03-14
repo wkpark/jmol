@@ -44,7 +44,7 @@ class AtomShape extends Shape {
   Atom[] atoms;
   boolean isActive;
   
-  void initShape() {
+  void initFrame() {
     atomCount = frame.atomCount;
     atoms = frame.atoms;  
   }

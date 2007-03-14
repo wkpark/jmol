@@ -43,7 +43,7 @@ abstract class Mps extends Shape {
   
   Mpsmodel[] mpsmodels;
 
-  final void initShape() {
+  final void initFrame() {
     mmset = frame.mmset;
     atoms = frame.atoms;
   }
@@ -107,9 +107,12 @@ abstract class Mps extends Shape {
       mpsmodels[i].findNearestAtomIndex(xMouse, yMouse, closest);
   }
 
+  int displayModelIndex;
+  
   void setVisibilityFlags(BitSet bs) {
     if (mpsmodels == null)
       return;
+    displayModelIndex = viewer.getCurrentModelIndex();
     for (int i = mpsmodels.length; --i >= 0; )
       mpsmodels[i].setVisibilityFlags(bs);
   }
@@ -181,7 +184,6 @@ abstract class Mps extends Shape {
     }
 
     void setVisibilityFlags(BitSet bs) {
-      int displayModelIndex = viewer.getCurrentModelIndex();
       modelVisibilityFlags = (displayModelIndex >= 0
           && displayModelIndex != modelIndex ? 0 : myVisibilityFlag);
     }

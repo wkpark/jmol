@@ -168,7 +168,7 @@ class Dots extends AtomShape {
   }
 
   void initShape() {
-    dotsRenderer = (DotsRenderer)frame.getRenderer(JmolConstants.SHAPE_DOTS);
+    dotsRenderer = (DotsRenderer)viewer.getFrameRenderer().getRenderer(JmolConstants.SHAPE_DOTS, g3d);
     geodesicVertices = dotsRenderer.geodesic.vertices;
     geodesicCount = geodesicVertices.length;
     geodesicMap = allocateBitmap(geodesicCount);

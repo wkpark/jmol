@@ -1722,6 +1722,22 @@ class Eval { //implements Runnable {
     checkStatementLength(4);
   }
 
+  int modelNumberParameter(int i) {
+    int iFrame = 0;
+    boolean useModelNumber = false;
+    switch (tokAt(i)) {
+    case Token.integer:
+      useModelNumber = true;
+      //fall through
+    case Token.decimal:
+      iFrame = statement[i].intValue; //decimal Token intValue is model/frame number encoded
+      break;
+    default:
+      return -1;    
+    }
+    return viewer.getModelNumberIndex(iFrame, useModelNumber);
+  }
+  
   String optParameterAsString(int i) throws ScriptException {
     if (i >= statementLength)
       return "";
@@ -7126,7 +7142,7 @@ class Eval { //implements Runnable {
     viewer.loadShape(JmolConstants.SHAPE_MO);
     int modelIndex = viewer.getDisplayModelIndex();
     if (modelIndex < 0)
-      evalError(GT._("MO isosurfaces require that only one model be displayed"));
+      multipleModelsNotOK();
     Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
         "moData");
     if (moData == null)
@@ -7168,6 +7184,15 @@ class Eval { //implements Runnable {
           invalidArgument();
         propertyName = "thisID";
         break;
+      case Token.model:
+        int modelIndex = modelNumberParameter(++i);
+        if (modelIndex < 0) {
+          propertyName = "fixed";
+          propertyValue = Boolean.TRUE;
+          break;
+        }
+        propertyName = "modelIndex";
+        propertyValue = new Integer(modelIndex);
       case Token.string:
         String filename = stringParameter(i);
         propertyName = "bufferedReader";
@@ -7659,7 +7684,7 @@ class Eval { //implements Runnable {
   void mo() throws ScriptException {
     int modelIndex = viewer.getDisplayModelIndex();
     if (!isSyntaxCheck && modelIndex < 0)
-      evalError(GT._("MO isosurfaces require that only one model be displayed"));
+      multipleModelsNotOK();
     viewer.loadShape(JmolConstants.SHAPE_MO);
     setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(modelIndex));
     Integer index = null;
@@ -7762,7 +7787,7 @@ class Eval { //implements Runnable {
       return;
     int modelIndex = viewer.getDisplayModelIndex();
     if (modelIndex < 0)
-      evalError(GT._("MO isosurfaces require that only one model be displayed"));
+      multipleModelsNotOK();
     Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
         "moData");
     Hashtable surfaceInfo = (Hashtable) viewer.getModelAuxiliaryInfo(
@@ -7807,10 +7832,6 @@ class Eval { //implements Runnable {
     float[] data = null;
     String str;
     int modelIndex = (isSyntaxCheck ? 0 : viewer.getDisplayModelIndex());
-    if (modelIndex < 0)
-      evalError(GT._(
-          "the {0} command requires that only one model be displayed",
-          "ISOSURFACE"));
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -7838,6 +7859,18 @@ class Eval { //implements Runnable {
             data[iAtom] = atomProperty(frame, atoms[iAtom], tokProperty, false);
         }
         propertyValue = data;
+        break;
+      case Token.model:
+        if (surfaceObjectSeen)
+          invalidArgument();
+        modelIndex = modelNumberParameter(++i);
+        if (modelIndex < 0) {
+          propertyName = "fixed";
+          propertyValue = Boolean.TRUE;
+          break;
+        }
+        propertyName = "modelIndex";
+        propertyValue = new Integer(modelIndex);
         break;
       case Token.select:
         propertyName = "select";
@@ -8304,6 +8337,10 @@ class Eval { //implements Runnable {
   //    new ScriptException(message);
   //  }
 
+  private void multipleModelsNotOK() throws ScriptException {
+    evalError(GT._("MO isosurfaces require that only one model be displayed"));
+  }
+  
   private void unrecognizedCommand() throws ScriptException {
     evalError(GT._("unrecognized command") + ": " + statement[0].value);
   }

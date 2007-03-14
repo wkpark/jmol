@@ -240,17 +240,18 @@ abstract class MeshCollection extends Shape {
     mesh.thisID = id;
   }
   
-  void setModelIndex(int atomIndex) {
+  void setModelIndex(int atomIndex, int modelIndex) {
     if (currentMesh == null)
       return;
     currentMesh.visible = true; 
     if (modelCount < 2)
       isFixed = true;
     if ((currentMesh.atomIndex = atomIndex) >= 0)
-      currentMesh.modelIndex = (atomIndex < 0 ? -1 : viewer
-          .getAtomModelIndex(atomIndex));
+      currentMesh.modelIndex = viewer.getAtomModelIndex(atomIndex);
     else if (isFixed)
       currentMesh.modelIndex = -1;
+    else if (modelIndex >= 0)
+      currentMesh.modelIndex = modelIndex;
     else
       currentMesh.modelIndex = viewer.getCurrentModelIndex();
     if (currentMesh.thisID == null)

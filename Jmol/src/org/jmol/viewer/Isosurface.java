@@ -154,7 +154,7 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   boolean blockCubeData;
   int nSurfaces;
-
+  int modelIndex;
   String[] title;
   float[] theProperty;
   String colorScheme;
@@ -346,6 +346,11 @@ class Isosurface extends IsosurfaceMeshCollection {
       boolean TF = ((Boolean) value).booleanValue();
       //Logger.setActiveLevel(Logger.LEVEL_DEBUG, TF);
       blockCubeData = TF;
+      return;
+    }
+
+    if ("modelIndex" == propertyName) {
+      modelIndex = ((Integer)value).intValue();
       return;
     }
 
@@ -962,11 +967,14 @@ class Isosurface extends IsosurfaceMeshCollection {
     logCube = logCompression = false;
     blockCubeData = false; // Gaussian standard, but we allow for multiple surfaces one per data block
     isSilent = false;
+    modelIndex = viewer.getCurrentModelIndex();
+    isFixed = (modelIndex < 0);
+    if (modelIndex < 0)
+      modelIndex = 0;
     title = null;
     theProperty = null;
     fileIndex = 1;
     insideOut = false;
-    isFixed = false;
     atomIndex = -1;
     precalculateVoxelData = false;
     isColorReversed = false;
@@ -4310,7 +4318,7 @@ class Isosurface extends IsosurfaceMeshCollection {
           info += qmOrbitalCount;
           break;
         case 'M':
-          info += viewer.getModelNumberDotted(viewer.getDisplayModelIndex());
+          info += viewer.getModelNumberDotted(modelIndex);
           break;
         case 'E':
           info += mo.get("energy");
@@ -4344,7 +4352,6 @@ class Isosurface extends IsosurfaceMeshCollection {
         Float.MAX_VALUE);
     Point3f xyzMax = new Point3f(-Float.MAX_VALUE, -Float.MAX_VALUE,
         -Float.MAX_VALUE);
-    int modelIndex = viewer.getDisplayModelIndex();
     int iAtom = 0;
     int nSelected = 0;
     int nAtoms = viewer.getAtomCount();
@@ -4464,7 +4471,6 @@ class Isosurface extends IsosurfaceMeshCollection {
         Float.MAX_VALUE);
     Point3f xyzMax = new Point3f(-Float.MAX_VALUE, -Float.MAX_VALUE,
         -Float.MAX_VALUE);
-    int modelIndex = viewer.getDisplayModelIndex();
     int iAtom = 0;
     int nSelected = 0;
     iUseBitSets = true;
@@ -5212,7 +5218,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   }
 
   void setModelIndex() {
-    setModelIndex(atomIndex);
+    setModelIndex(atomIndex, modelIndex);
     thisMesh.ptCenter.set(center);
     thisMesh.title = title;
     thisMesh.jvxlDefinitionLine = jvxlGetDefinitionLine(thisMesh, false);

@@ -37,8 +37,13 @@ final public class JmolConstants {
   public final static String version = "11.1.20";
   
   /*
-   * 
    *
+   * 
+   11.1.22
+   
+   isosurface MODEL n
+   pmesh MODEL n
+   
    11.1.21
    
    Introduces "real" color translucency 

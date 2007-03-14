@@ -31,27 +31,34 @@ import javax.vecmath.Point3f;
 class Pmesh extends MeshFileCollection {
 
   boolean isOnePerLine;
+  int modelIndex;
 
   void initShape() {
     super.initShape();
     myType = "pmesh";
   }
-  
+    
   void setProperty(String propertyName, Object value, BitSet bs) {
     //Logger.debug(propertyName + " "+ value);
     
     if ("init" == propertyName) {
       isFixed = false;
+      modelIndex = -1;
       isOnePerLine = false;
       script = (String)value;
       
       super.setProperty("thisID", null, null);
       return;
     }
+    
+    if ("modelIndex" == propertyName) {
+      modelIndex = ((Integer)value).intValue();
+      return;
+    }
 
     if ("fixed" == propertyName) {
       isFixed = ((Boolean) value).booleanValue();
-      setModelIndex(-1);
+      setModelIndex(-1, modelIndex = -1);
       return;
     }
 
@@ -70,7 +77,7 @@ class Pmesh extends MeshFileCollection {
         currentMesh.initialize();
         currentMesh.visible = true;
       }
-      setModelIndex(-1);
+      setModelIndex(-1, modelIndex);
     }
     
     super.setProperty(propertyName, value, bs);

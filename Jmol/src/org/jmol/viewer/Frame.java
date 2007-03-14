@@ -180,6 +180,7 @@ public final class Frame {
   Group nullGroup;
 
   int baseModelIndex = 0;
+  int baseModelCount = 0;
   int baseAtomIndex = 0;
   int baseBondIndex = 0;
   int baseGroupIndex = 0;
@@ -192,12 +193,21 @@ public final class Frame {
     modelCount = adapterModelCount = (adapter == null ? 1 : adapter
         .getAtomSetCount(clientFile));
     if (merging) {
-      baseModelIndex = mergeFrame.modelCount;
-      currentModelIndex = baseModelIndex - 1;
+      baseModelCount = mergeFrame.modelCount;
+      if (viewer.getAppendNew()) {
+        baseModelIndex = baseModelCount;
+        currentModelIndex = baseModelIndex - 1;
+        modelCount += baseModelCount;
+      } else {
+        baseModelIndex = viewer.getCurrentModelIndex();
+        if (baseModelIndex < 0)
+          baseModelIndex = baseModelCount - 1;
+        currentModelIndex = baseModelIndex;        
+        modelCount += baseModelCount - 1;
+      }
       atomCount = baseAtomIndex = mergeFrame.atomCount;
       bondCount = baseBondIndex = mergeFrame.bondCount;
       baseGroupIndex = mergeFrame.groupCount;
-      modelCount += baseModelIndex;
     }
     mmset.setModelCount(modelCount);
 
@@ -221,12 +231,12 @@ public final class Frame {
       if (merging) {
         mmset.merge(mergeFrame.mmset);
         if (mergeFrame.group3Lists != null) {
-          for (int i = 0; i < baseModelIndex; i++) {
+          for (int i = 0; i < baseModelCount; i++) {
             group3Lists[i] = mergeFrame.group3Lists[i];
             group3Counts[i] = mergeFrame.group3Counts[i];
           }
-          group3Lists[modelCount] = mergeFrame.group3Lists[baseModelIndex];
-          group3Counts[modelCount] = mergeFrame.group3Counts[baseModelIndex];
+          group3Lists[modelCount] = mergeFrame.group3Lists[baseModelCount];
+          group3Counts[modelCount] = mergeFrame.group3Counts[baseModelCount];
         }
 
         clientAtomReferences = mergeFrame.clientAtomReferences;
@@ -242,7 +252,7 @@ public final class Frame {
       }
 
       int ipt = 0;
-      for (int i = baseModelIndex; i < modelCount; ++i, ++ipt) {
+      for (int i = baseModelCount; i < modelCount; ++i, ++ipt) {
         int modelNumber = adapter.getAtomSetNumber(clientFile, ipt);
         String modelName = adapter.getAtomSetName(clientFile, ipt);
         if (modelName == null)
@@ -262,7 +272,7 @@ public final class Frame {
           }
         }
       }
-      mmset.finalizeModelNumbers(baseModelIndex);
+      mmset.finalizeModelNumbers(baseModelCount);
 
       // atom is created, but not all methods are safe, because it
       // has no group -- this is only an issue for debugging
@@ -358,6 +368,7 @@ public final class Frame {
         if ((shapes[i] = mergeFrame.shapes[i]) != null)
           shapes[i].setFrame(this);
       viewer.getFrameRenderer().clear();
+      merging = false;
     } else {
       loadShape(JmolConstants.SHAPE_BALLS);
       loadShape(JmolConstants.SHAPE_STICKS);
@@ -366,7 +377,6 @@ public final class Frame {
       loadShape(JmolConstants.SHAPE_BBCAGE);
       loadShape(JmolConstants.SHAPE_UCCAGE);
     }
-
   }
 
   void dumpAtomSetNameDiagnostics(JmolAdapter adapter, Object clientFile) {
@@ -452,7 +462,7 @@ public final class Frame {
                      String group3, int groupSequenceNumber,
                      char groupInsertionCode) {
     String group3i = (group3 == null ? null : group3.intern());
-    if (modelIndex != currentModelIndex) {
+    if (modelIndex != currentModelIndex || currentModel == null) {
       currentModel = mmset.getModel(modelIndex);
       currentModelIndex = modelIndex;
       currentChainID = '\uFFFF';
@@ -715,6 +725,8 @@ public final class Frame {
   void buildPolymers() {
     for (int i = 0; i < groupCount; ++i) {
       Group group = groups[i];
+      if (merging)
+        group.chain.frame = this;
       if (group instanceof Monomer) {
         Monomer monomer = (Monomer) group;
         if (monomer.polymer == null)
@@ -759,7 +771,6 @@ public final class Frame {
     
     molecules = null;
     moleculeCount = 0;
-    
   }
 
   /**
@@ -1927,20 +1938,21 @@ public final class Frame {
     if (someModelsHaveUnitcells) {
       boolean doPdbScale = (adapterModelCount == 1);
       cellInfos = new CellInfo[modelCount];
-      for (int i = 0; i < baseModelIndex; i++)
-        cellInfos[i] = mergeFrame.cellInfos[i];
-      for (int i = baseModelIndex; i < modelCount; i++)
+      for (int i = 0; i < baseModelCount; i++)
+        cellInfos[i] = (mergeFrame.cellInfos != null ? mergeFrame.cellInfos[i]
+            : new CellInfo(i, false));
+      for (int i = baseModelCount; i < modelCount; i++)
         cellInfos[i] = new CellInfo(i, doPdbScale);
     }
     if (someModelsHaveSymmetry) {
-      for (int i = baseModelIndex; i < modelCount; i++) {
+      for (int i = baseModelCount; i < modelCount; i++) {
         mmset.setSymmetryAtomInfo(i, mmset.getModelAuxiliaryInfoInt(i,
             "presymmetryAtomIndex"), mmset.getModelAuxiliaryInfoInt(i,
             "presymmetryAtomCount"));
       }
     } else {
       int ipt = 0;
-      for (int i = baseModelIndex; i < modelCount; i++) {
+      for (int i = baseModelCount; i < modelCount; i++) {
         ipt = mmset.setSymmetryAtomInfo(i, ipt, getAtomCountInModel(i));
       }
     }

@@ -199,6 +199,8 @@ final class Model {
   }
 
   void addPolymer(Polymer polymer) {
+    if (polymers.length == 0)
+      polymers = new Polymer[8];
     if (polymerCount == polymers.length)
       polymers = (Polymer[])ArrayUtil.doubleLength(polymers);
     polymers[polymerCount++] = polymer;

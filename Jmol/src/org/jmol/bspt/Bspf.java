@@ -61,7 +61,8 @@ public final class Bspf {
 
   public void stats() {
     for (int i = 0; i < bspts.length; ++i)
-      bspts[i].stats();
+      if (bspts[i] != null)
+        bspts[i].stats();
   }
 
   /*

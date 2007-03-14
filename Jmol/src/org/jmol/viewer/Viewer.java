@@ -1458,6 +1458,7 @@ public class Viewer extends JmolViewer {
     }
     if (isMerge) {
       modelManager.merge(modelAdapter, clientFile);
+      setTainted(true);
     } else {
       openClientFile(fullPathName, fileName, clientFile);
     } 
@@ -3812,6 +3813,13 @@ public class Viewer extends JmolViewer {
   boolean setBooleanProperty(String key, boolean value, boolean defineNew) {
     boolean notFound = false;
     while (true) {
+   
+      //11.1.22
+      
+      if (key.equalsIgnoreCase("appendNew")) {
+        setAppendNew(value);
+        break;
+      }
       
       //11.1.21
       
@@ -4691,6 +4699,14 @@ public class Viewer extends JmolViewer {
   
   boolean getUseNumberLocalization()  {
     return global.useNumberLocalization;
+  }
+  
+  private void setAppendNew(boolean TF) {
+    global.appendNew = TF;
+  }
+  
+  boolean getAppendNew()  {
+    return global.appendNew;
   }
   
   public void setRasmolDefaults() {

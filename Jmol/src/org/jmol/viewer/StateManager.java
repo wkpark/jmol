@@ -370,7 +370,7 @@ class StateManager {
     //file loading
 
     char inlineNewlineChar     = '|';    //pseudo static
-
+    boolean appendNew          = true;
     boolean zeroBasedXyzRasmol = false;
     boolean forceAutoBond      = false;
     boolean autoBond           = true;
@@ -399,6 +399,7 @@ class StateManager {
       if (allowEmbeddedScripts)
         setParameterValue("allowEmbeddedScripts", true);
       appendCmd(str, "autoBond = " + autoBond);
+      appendCmd(str, "appendNew = " + appendNew);
       if (viewer.getAxesOrientationRasmol())
         appendCmd(str, "axesOrientationRasmol = true");
       appendCmd(str, "bondRadiusMilliAngstroms = " + bondRadiusMilliAngstroms);
@@ -521,6 +522,7 @@ class StateManager {
     float defaultTranslucent      = 0.5f;
     
     
+    
     // window
     
     int[] objColors            = new int[OBJ_MAX];
@@ -614,7 +616,7 @@ class StateManager {
       //settings won't be reflected in the load state, which is determined
       //earlier, when the file loads. 
         ";refreshing;defaults;backgroundmodel;stereo;"
-      + ";backgroundcolor;axescolor;axis1color;axis2color;axis3color;boundboxcolor;unitcellcolor;"
+      + ";appendnew;backgroundcolor;axescolor;axis1color;axis2color;axis3color;boundboxcolor;unitcellcolor;"
       + ";ambientpercent;diffusepercent;specular;specularexponent;specularpower;specularpercent;"
       + ";debugscript;showfrank;showaxes;showaxis1;showaxis2;showaxis3;showunitcell;showboundbox;"
       + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;"
@@ -818,6 +820,7 @@ class StateManager {
       setParameterValue("allowRotateSelected",allowRotateSelected);
       setParameterValue("ambientPercent",ambientPercent);
 //      setParameterValue("argbBackground",argbBackground);
+      setParameterValue("appendNew",appendNew);
       setParameterValue("autoBond",autoBond);
       setParameterValue("axesMode",axesMode);
       setParameterValue("axesScale",axesScale);

@@ -312,31 +312,33 @@ final class Mmset {
    *   
    *   A number the user can use "1.3"
    *   
-   * @param baseModelIndex
+   * @param baseModelCount
    *    
    */
-  void finalizeModelNumbers(int baseModelIndex) {
+  void finalizeModelNumbers(int baseModelCount) {
+    if (modelCount == baseModelCount)
+      return;
     String sNum;
     int modelnumber = 0;
-
+    
     int lastfilenumber = -1;
-    if (baseModelIndex > 0) {
+    if (baseModelCount > 0) {
       if (models[0].modelNumber < 1000000) {
-        for (int i = 0; i < baseModelIndex; i++) {
+        for (int i = 0; i < baseModelCount; i++) {
           models[i].modelNumber = 1000000 + i + 1;
           models[i].modelTag = "" + models[i].modelNumber;
         }
       }
-      modelnumber = models[baseModelIndex - 1].modelNumber;
+      modelnumber = models[baseModelCount - 1].modelNumber;
       modelnumber -= modelnumber % 1000000;
-      if (models[baseModelIndex].modelNumber < 1000000)
+      if (models[baseModelCount].modelNumber < 1000000)
         modelnumber += 1000000;
-      for (int i = baseModelIndex; i < modelCount; i++) {
+      for (int i = baseModelCount; i < modelCount; i++) {
         models[i].modelNumber += modelnumber;
         models[i].modelTag = "" + models[i].modelNumber;
       }
     }
-    for (int i = baseModelIndex; i < modelCount; ++i) {
+    for (int i = baseModelCount; i < modelCount; ++i) {
       int filenumber = models[i].modelNumber / 1000000;
       if (filenumber != lastfilenumber) {
         modelnumber = 0;

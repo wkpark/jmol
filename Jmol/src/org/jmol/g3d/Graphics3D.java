@@ -326,7 +326,7 @@ final public class Graphics3D {
     // 0.0 to 1.0 ==> MORE translucent   
     //                1/8  1/4 3/8 1/2 5/8 3/4 7/8
     //     t           32  64  96  128 160 192 224
-    //     t >> 5       1  10  11  100 101 110 111
+    //     t >> 5       1   2   3   4   5   6   7
 
     case 1: // 7:1
       rbA = (((rbB << 2) + (rbB << 1) + rbB  + rbA) >> 3) & 0x00FF00FF;
@@ -1526,12 +1526,9 @@ final public class Graphics3D {
    * ***************************************************************/
 
   /* entries 0 and 1 are reserved and are special inheritance
-     INHERIT_TRANSLUCENT and INHERIT_COLOR are used to inherit
-     the underlying color, but change the translucency
-
-     Note that colors are not actually translucent. Rather,
-     they are 'screened' where every-other pixel is turned
-     on. 
+     0 INHERIT_ALL inherits both color and translucency
+     1 INHERIT_COLOR is used to inherit just the color
+     
      
      0x8000 changeable flag (elements and isotopes, about 200; negative)
      0x7800 translucent flag set
@@ -1573,17 +1570,16 @@ final public class Graphics3D {
      Bob Hanson 3/2007
      
   */
-  private final static short CHANGEABLE_MASK = (short)0x8000; // negative
+  private final static short CHANGEABLE_MASK       = (short)0x8000; // negative
+  private final static short UNMASK_CHANGEABLE_TRANSLUCENT =0x07FF;
   private final static int   TRANSLUCENT_SHIFT        = 11;
   private final static int   ALPHA_SHIFT              = 24 - TRANSLUCENT_SHIFT;
-  private final static int   TRANSLUCENT_MASK         = 0x7800;
-  private final static int   TRANSLUCENT_FLAG         = 0x4000;
+  private final static int   TRANSLUCENT_MASK         = 0xF << TRANSLUCENT_SHIFT; //0x7800
   private final static int   TRANSLUCENT_SCREENED     = TRANSLUCENT_MASK;
-  private final static int   TRANSPARENT              = TRANSLUCENT_FLAG;
-  private final static short UNMASK_CHANGEABLE_TRANSLUCENT =0x07FF;
-
+  private final static int   TRANSPARENT              =  8 << TRANSLUCENT_SHIFT;  //0x4800
+  final static int           TRANSLUCENT_50           =  4 << TRANSLUCENT_SHIFT;
   final static short         OPAQUE_MASK              = ~TRANSLUCENT_MASK;
-  final static int           TRANSLUCENT_50           = 0x2800;
+
 
   public final static short  INHERIT_ALL         = 0;
   private final static short INHERIT_COLOR       = 1;
@@ -1699,24 +1695,27 @@ final public class Graphics3D {
   private final static short applyColorTranslucencyLevel(short colix,
                                                          float translucentLevel) {
     // 0.0 to 1.0 ==> MORE translucent   
-    //                 1/8  1/4 3/8 1/2 5/8 3/4 7/8
-    //     t            32  64  96  128 160 192 224
-    //     t >> 5        1   2   3   4   5   6   7
-    // 15 is reserved for screened, so 8-14 just map to 8, "invisible"
+    //                 1/8  1/4 3/8 1/2 5/8 3/4 7/8 8/8
+    //     t            32  64  96  128 160 192 224 255 or 256
+    //     t >> 5        1   2   3   4   5   6   7   8
+    //     (t >> 5) + 1  2   3   4   5   6   7   8   9 
+    // 15 is reserved for screened, so 9-14 just map to 9, "invisible"
 
     if (translucentLevel == 0) //opaque
       return (short) (colix & ~TRANSLUCENT_MASK);
     if (translucentLevel < 0) //screened
       return (short) (colix | TRANSLUCENT_MASK);
+    if (translucentLevel > 255 || translucentLevel == 1.0)
+      return (short) (colix | TRANSPARENT);
     int iLevel = (int) (translucentLevel < 1 ? translucentLevel * 256
-            : translucentLevel < 8 ? ((int) translucentLevel) << 5
+            : translucentLevel <= 9 ? ((int) (translucentLevel-1)) << 5
                : translucentLevel < 15 ? 8 << 5 : translucentLevel);
     iLevel = (iLevel >> 5) % 16;
     return (short) (colix & ~TRANSLUCENT_MASK | (iLevel << TRANSLUCENT_SHIFT));
   }
 
   public final static int getColixTranslucencyLevel(short colix) {
-    int logAlpha = (colix >> TRANSLUCENT_SHIFT) & 7;
+    int logAlpha = (colix >> TRANSLUCENT_SHIFT) & 15;
     switch (logAlpha) {
     case 1:
     case 2:
@@ -1724,9 +1723,13 @@ final public class Graphics3D {
     case 4:
     case 5:
     case 6:
+    case 7:
       return logAlpha << 5;
+    case 15:
+      return -1;
+    default:
+      return 255;
     }
-    return -1;
   }
   
   public final static short getColix(Object obj) {

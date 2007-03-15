@@ -837,6 +837,10 @@ public final class Frame {
         lastModelIndex = atom.modelIndex;
         modelAtomIndex = (isZeroBased ? 0 : 1);
       }
+      // 1) do not change numbers assigned by adapter
+      // 2) do not change the number already assigned when merging
+      // 3) restart numbering with new atoms, not a continuation of old
+      
       if (atomSerials[i] == 0)
         atomSerials[i] = (i < baseAtomIndex ? mergeFrame.atomSerials[i]
             : modelAtomIndex++);

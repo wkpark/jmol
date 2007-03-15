@@ -170,7 +170,6 @@ class TestScriptsImpl extends TestCase {
 
     SmarterJmolAdapter adapter = new SmarterJmolAdapter();
     JmolViewer viewer = JmolViewer.allocateViewer(null, adapter);
-    checkOnly = true;
     if (checkOnly) {
       viewer.setAppletContext("", null, null, "-n -C "); // set no display; checkOnly; no file opening
     } else {

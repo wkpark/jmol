@@ -120,8 +120,6 @@ class Isosurface extends IsosurfaceMeshCollection {
     myType = "isosurface";
   }
 
-  boolean solventTest = true;
-  
   boolean logMessages = false;
   boolean logCompression = false;
   boolean logCube = false;
@@ -300,7 +298,6 @@ class Isosurface extends IsosurfaceMeshCollection {
         + " = " + value);
 
     if ("init" == propertyName) {
-      solventTest = true;
       script = (String) value;
       initializeIsosurface();
       if (!(iHaveBitSets = getScriptBitSets()))
@@ -4700,17 +4697,6 @@ class Isosurface extends IsosurfaceMeshCollection {
       if (pt.z + rA > xyzMax.z)
         xyzMax.z = pt.z + rA;
     }
-    if (!Float.isNaN(scale)) {
-      Vector3f v = new Vector3f(xyzMax);
-      v.sub(xyzMin);
-      v.scale(0.5f);
-      xyzMin.add(v);
-      v.scale(scale);
-      xyzMax.set(xyzMin);
-      xyzMax.add(v);
-      xyzMin.sub(v);
-    }
-
     Logger.info("surface range " + xyzMin + " to " + xyzMax);
     jvxlFileHeader = new StringBuffer();
     jvxlFileHeader.append("solvent-"
@@ -4838,9 +4824,8 @@ class Isosurface extends IsosurfaceMeshCollection {
           for (int k = pt0.z; k < pt1.z; k++) {
             float v = ptXyzTemp.distance(ptA) - rA;
             if (v < voxelData[i][j][k]) {
-              voxelData[i][j][k] = (isNearby || isWithin
-                  && ptXyzTemp.distance(point) > distance ? Float.NaN : v);
-              if (isProperty && iAtom < solvMax
+              voxelData[i][j][k] = (isNearby || isWithin && ptXyzTemp.distance(point) > distance ? Float.NaN : v);
+                if (isProperty && iAtom < solvMax         
                   && (iPt = solvent_atomNo[iAtom]) >= 0 && iPt < propMax) {
                 property[i][j][k] = theProperty[iPt];
                 //System.out.println("theprop "+ iPt + " ijk " + i + " " + j + " " + k + " = " + theProperty[iPt]);
@@ -4856,7 +4841,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       }
     }
     if ((dataType == SURFACE_SOLVENT || dataType == SURFACE_MOLECULAR)
-        && solventRadius > 0 && !solventTest) {
+        && solventRadius > 0) {
       Point3i ptA0 = new Point3i();
       Point3i ptB0 = new Point3i();
       Point3i ptA1 = new Point3i();
@@ -4904,12 +4889,11 @@ class Isosurface extends IsosurfaceMeshCollection {
                     float v = solventRadius - dVS;
                     if (v < voxelData[i][j][k]) {
                       voxelData[i][j][k] = v;
-                      if (isProperty && iAtom < solvMax
-                          && (iPt = solvent_atomNo[iAtom]) >= 0
-                          && iPt < propMax) {
+                      if (isProperty && iAtom < solvMax         
+                          && (iPt = solvent_atomNo[iAtom]) >= 0 && iPt < propMax) {
                         property[i][j][k] = theProperty[iPt];
                         //System.out.println("theprop "+ iPt + " ijk " + i + " " + j + " " + k + " = " + theProperty[iPt]);
-                      }
+                        }
                     }
                   }
                   ptXyzTemp.add(volumetricVectors[2]);
@@ -4923,39 +4907,6 @@ class Isosurface extends IsosurfaceMeshCollection {
           }
         }
     }
-
-    for (int iAtom = 0; iAtom < solvent_nAtoms; iAtom++) {
-      ptA = solvent_ptAtom[iAtom];
-      rA = solvent_atomRadius[iAtom];
-      if (rA > maxRadius)
-        maxRadius = rA;
-      if (isWithin && ptA.distance(point) > distance + rA + 0.5)
-        continue;
-      setGridLimitsForAtom(ptA, rA, pt0, pt1);
-      voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
-      if (solventTest)
-        for (int i = pt0.x; i < pt1.x; i++) {
-          ptY0.set(ptXyzTemp);
-          for (int j = pt0.y; j < pt1.y; j++) {
-            ptZ0.set(ptXyzTemp);
-            for (int k = pt0.z; k < pt1.z; k++) {
-              if (voxelData[i][j][k] > 0) {
-                //System.out.println("set echo myech"+i+""+j+""+k+" " + StateManager.escape(ptXyzTemp)+";echo " + TextFormat.formatDecimal(voxelData[i][j][k],1));
-                System.out.println("draw " + StateManager.escape(ptXyzTemp));
-                //float v = -(ptXyzTemp.distance(ptA) - rA - 0.4f);
-              //if (v < voxelData[i][j][k])
-                //voxelData[i][j][k] = v;
-            }
-            ptXyzTemp.add(volumetricVectors[2]);
-          }
-          ptXyzTemp.set(ptZ0);
-          ptXyzTemp.add(volumetricVectors[1]);
-        }
-        ptXyzTemp.set(ptY0);
-        ptXyzTemp.add(volumetricVectors[0]);
-      }
-    }
-    
     if (dataType == SURFACE_PROPERTY)
       voxelData = property;
     if (thePlane == null) {
@@ -4973,15 +4924,13 @@ class Isosurface extends IsosurfaceMeshCollection {
             if (voxelData[x][y][z] < maxValue) {
               // Float.NaN will also match ">=" this way  
             } else {
-              voxelData[x][y][z] = (solventTest ? -maxValue : maxValue);
+              voxelData[x][y][z] = maxValue;
             }
     }
     Logger.debug("solvent surface time:" + (System.currentTimeMillis() - time));
   }
 
   void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0, Point3i pt1) {
-    if (solventTest)
-      rA = rA + 1.4f;
     xyzToVoxelPt(ptA.x - rA, ptA.y - rA, ptA.z - rA, pt0);
     pt0.x -= 1;
     pt0.y -= 1;

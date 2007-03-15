@@ -23,6 +23,9 @@
  */
 package org.jmol.viewer;
 
+
+import javax.vecmath.Point3i;
+
 class DrawRenderer extends MeshRenderer {
 
   void render() {
@@ -33,7 +36,24 @@ class DrawRenderer extends MeshRenderer {
      * 
      */
     Draw draw = (Draw) shape;
-    for (int i = draw.meshCount; --i >= 0;)
+    for (int i = draw.meshCount; --i >= 0;) {
       render1(draw.meshes[i]);
+      renderInfo(draw.meshes[i]);
+    }
+  }
+  
+  Point3i xyz = new Point3i();
+  void renderInfo(Mesh mesh) {
+    if (mesh == null || mesh.title == null
+        || !g3d.setColix(viewer.getColixBackgroundContrast()))
+      return;
+    byte fid = g3d.getFontFid("SansSerif", 14);
+    g3d.setFont(fid);
+    for (int i = 0; i < mesh.title.length; i++)
+      if (mesh.title[i].length() > 0) {
+        viewer.transformPoint(vertices[i], xyz);
+        g3d.drawString(mesh.title[i], null, xyz.x + 5, xyz.y - 5, xyz.z, xyz.z);
+      }
+
   }
 }

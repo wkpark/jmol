@@ -183,9 +183,11 @@ class Eval { //implements Runnable {
 
   Thread currentThread = null;
 
-  public void runEval(boolean checkScriptOnly) {
+  public void runEval(boolean checkScriptOnly, boolean openFiles) {
     // only one reference now -- in Viewer
     //refresh();
+    boolean tempOpen = fileOpenCheck;
+    fileOpenCheck = openFiles;
     viewer.pushHoldRepaint();
     interruptExecution = Boolean.FALSE;
     executionPaused = Boolean.FALSE;
@@ -201,7 +203,7 @@ class Eval { //implements Runnable {
       viewer.scriptStatus(errorMessage);
     }
     timeEndExecution = System.currentTimeMillis();
-
+    fileOpenCheck = tempOpen;
     if (errorMessage == null && interruptExecution.booleanValue())
       errorMessage = "execution interrupted";
     else if (!tQuiet && !isSyntaxCheck)

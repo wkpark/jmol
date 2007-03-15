@@ -3234,14 +3234,15 @@ class Eval { //implements Runnable {
       if (isColorParam(index)) {
         int argb = getArgbParam(index, false);
         colorvalue = (argb == 0 ? null : new Integer(argb));
-        if (tokAt(index = iToken + 1) != Token.nada) {
+        if (translucency == null && tokAt(index = iToken + 1) != Token.nada) {
           getToken(index);
           if (translucency == null && (theTok == Token.translucent || theTok == Token.opaque)) {
             translucency = parameterAsString(index);
             if (theTok == Token.translucent && isFloatParameter(index + 1))
               translucentLevel = floatParameter(++index);
           }
-          checkStatementLength(index + 1);
+          //checkStatementLength(index + 1);
+          //iToken = index;
         }
       } else {
         // must not be a color, but rather a color SCHEME

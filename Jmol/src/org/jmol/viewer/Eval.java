@@ -1325,6 +1325,8 @@ class Eval { //implements Runnable {
         break;
       case Token.bitset:
       case Token.decimal:
+      case Token.point3f:
+      case Token.point4f:
         rpn.addX(value);
         break;
       case Token.integer:

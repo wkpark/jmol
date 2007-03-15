@@ -1253,7 +1253,7 @@ class Compiler {
       return addNextToken();
     case Token.define:
       addNextToken();
-      if (!tokPeek(Token.nada))
+      if (tokPeek()!=Token.nada)
         return addTokenToPostfix(new Token(Token.identifier, tokenNext().value));
       //fall through
       case Token.nada:

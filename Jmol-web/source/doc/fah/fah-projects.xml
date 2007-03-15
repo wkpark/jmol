@@ -3596,33 +3596,33 @@
   <fah_proj number="1581" name="p1581_A21nat_d26_GO" public="y" file="y"
     server="171.65.103.155" atoms="4018" preferred="29" deadline="43"
     credit="149" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1582" name="p1582_A7ext_298K_03" public="n"
+  <fah_proj number="1582" name="p1582_A7ext_298K_03" public="y" file="y"
     server="171.65.103.149" atoms="4167" preferred="18" deadline="24"
-    credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1583" name="p1583_A7hel_298K_03" public="n"
+    credit="76" frames="100" code="G" contact="esorin" contrib="daveb"/>
+  <fah_proj number="1583" name="p1583_A7hel_298K_03" public="y"
     server="171.65.103.149" atoms="4206" preferred="18" deadline="24"
     credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1584" name="p1584_A7pp2_298K_03" public="n"
+  <fah_proj number="1584" name="p1584_A7pp2_298K_03" public="y" file="y"
     server="171.65.103.149" atoms="4206" preferred="18" deadline="24"
-    credit="76" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1585" name="p1585_nat_305_03" public="n"
+    credit="76" frames="100" code="G" contact="esorin" contrib="Andy Richardson"/>
+  <fah_proj number="1585" name="p1585_nat_305_03" public="y" file="y"
     server="171.65.103.149" atoms="6414" preferred="18" deadline="36"
-    credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1586" name="p1586_unf_305_03" public="n"
+    credit="57" frames="100" code="G" contact="esorin" contrib="daveb"/>
+  <fah_proj number="1586" name="p1586_unf_305_03" public="y" file="y"
     server="171.65.103.149" atoms="6384" preferred="18" deadline="36"
-    credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1587" name="p1587_A21nat_305_03" public="n"
+    credit="57" frames="100" code="G" contact="esorin" contrib="John Deas"/>
+  <fah_proj number="1587" name="p1587_A21nat_305_03" public="y" file="y"
     server="171.65.103.149" atoms="6426" preferred="18" deadline="36"
-    credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1588" name="p1588_A21unf_305_03" public="n"
+    credit="57" frames="100" code="G" contact="esorin" contrib="efishy"/>
+  <fah_proj number="1588" name="p1588_A21unf_305_03" public="y"
     server="171.65.103.149" atoms="6399" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1589" name="p1589_TZ2nat_305_03" public="n"
+  <fah_proj number="1589" name="p1589_TZ2nat_305_03" public="y" file="y"
     server="171.65.103.149" atoms="9129" preferred="12" deadline="17"
-    credit="56" frames="100" code="G" contact="esorin"/>
-  <fah_proj number="1590" name="p1590_TZ2unf_305_03" public="n"
+    credit="56" frames="100" code="G" contact="esorin" contrib="daveb"/>
+  <fah_proj number="1590" name="p1590_TZ2unf_305_03" public="y" file="y"
     server="171.65.103.149" atoms="9141" preferred="12" deadline="17"
-    credit="56" frames="100" code="G" contact="esorin"/>
+    credit="56" frames="100" code="G" contact="esorin" contrib="daveb"/>
   <fah_proj number="1591" name="p1591_LZIP-1598-0-12_pfold" public="y" file="y"
     server="171.64.122.129" atoms="34341" preferred="12" deadline="18"
     credit="57" frames="100" code="G" contact="esorin"/>
@@ -4329,6 +4329,12 @@
   <fah_proj number="2306" name="p2306_BBA5_pfold in water" public="y" file="y"
     server="171.64.122.139" atoms="374" preferred="36" deadline="53"
     credit="188" frames="100" code="GB" contact="alexrson" contrib="uncle_fungus"/>
+  <fah_proj number="2307" name="p2307_BBA5" public="n"
+    server="171.64.122.139" atoms="12200" preferred="19" deadline="28"
+    credit="95" frames="100" code="DG" contact="alexrson"/>
+  <fah_proj number="2308" name="p2308_BBA5" public="n"
+    server="171.64.122.139" atoms="12200" preferred="17" deadline="24"
+    credit="80" frames="100" code="DG" contact="alexrson"/>
   <fah_proj number="2321" name="p2321_IM7" public="y" file="y"
     server="171.65.103.150" atoms="29073" preferred="35" deadline="51"
     credit="181" frames="100" code="G" contact="alexrson" contrib="glennk721"/>
@@ -4597,15 +4603,24 @@
   <fah_proj number="2511" name="p2511_BBA5_pfold" public="y"
     server="171.64.122.139" atoms="1285" preferred="27" deadline="39"
     credit="136" frames="100" code="GB" contact="luttmann"/>
+  <fah_proj number="2512" name="p2512_Protein" public="n"
+    server="171.64.122.139" atoms="29970" preferred="27" deadline="39"
+    credit="136" frames="100" code="G" contact="luttmann"/>
   <fah_proj number="2526" name="p2526_Am22-43" public="y" file="y"
     server="171.64.122.136" atoms="8062" preferred="36" deadline="53"
     credit="186" frames="100" code="G" contact="luttmann" contrib="sYnAnjin,uncle_fungus"/>
   <fah_proj number="2527" name="p2527_Am22-43" public="y" file="y"
     server="171.64.122.136" atoms="8062" preferred="36" deadline="53"
     credit="186" frames="100" code="G" contact="luttmann" contrib="sYnAnjin,Flathead74"/>
-  <fah_proj number="2534" name="p2534_A21_agbnp_amber99" public="n" file="y"
+  <fah_proj number="2534" name="p2534_A21_agbnp_amber99" public="y" file="y"
     server="171.64.122.70" atoms="222" preferred="42" deadline="62"
     credit="221" frames="100" code="GB" contact="luttmann" contrib="uncle_fungus"/>
+  <fah_proj number="2542" name="p2542_dpdp-ii" public="y" file="y"
+    server="171.64.122.136" atoms="14312" preferred="39" deadline="58"
+    credit="206" frames="100" code="G" contact="luttmann" contrib="Erich Ritz"/>
+  <fah_proj number="2543" name="p2543_BBA5_ext" public="n" file="y"
+    server="171.64.122.139" atoms="12200" preferred="43" deadline="63"
+    credit="223" frames="100" code="DG" contact="luttmann" contrib="uncle_fungus"/>
 
   <!-- Projects 2600 to 2699 -->
   <fah_proj number="2602" name="p2602_Protein in POPC" public="n" file="y"
@@ -4626,12 +4641,21 @@
   <fah_proj number="2607" name="p2607_31337 31337 TM_apposed" public="n" file="y"
     server="171.65.103.68" atoms="31337" preferred="20" deadline="60"
     credit="338" frames="100" code="A0" contact="kasson" contrib="smartcat99s"/>
-  <fah_proj number="2650" public="n"
-    deadline="3"
-    credit="1148"/>
+  <fah_proj number="2608" name="p2608_Protein" public="n" file="y"
+    server="171.64.65.56" atoms="126010" preferred="4" deadline="4"
+    credit="1385" frames="100" code="GS" contact="kasson" contrib="P5-133XL"/>
+  <fah_proj number="2609" name="p2609_Protein" public="n" file="y"
+    server="171.64.65.56" atoms="126010" preferred="4" deadline="4"
+    credit="1523" frames="100" code="GS" contact="kasson" contrib="P5-133XL"/>
+  <fah_proj number="2650" name="p2650_Protein" public="n" file="y"
+    preferred="3" deadline="3"
+    credit="1148" code="GS" contrib="7up1n3"/>
   <fah_proj number="2651" name="p2651_Protein in POPC" public="n" file="y"
     deadline="4"
-    credit="1760" contrib="P5_133XL"/>
+    credit="1760" code="GS" contrib="P5_133XL"/>
+  <fah_proj number="2652" name="p2652_Protein" public="n" file="y"
+    preferred="3" deadline="3"
+    credit="1148" code="GS" contrib="P5-133XL"/>
 
   <!-- Projects 2700 to 2799 -->
   <fah_proj number="2711" name="p2711_GPUlambda" public="y"
@@ -4845,10 +4869,10 @@
     server="171.64.65.63" atoms="9684" preferred="2" deadline="3"
     credit="1440" frames="100" code="GS" contact="densign"/>
   <fah_proj number="3036" name="p3036_p3028_SMP-ensv-03" public="y" file="y"
-    server="171.64.65.63" atoms="9684" preferred="2" deadline="3"
+    server="171.64.65.63" atoms="9684" preferred="1.5" deadline="3"
     credit="1440" frames="100" code="GS" contact="densign" contrib="dreederocuk"/>
   <fah_proj number="3037" name="p3037_p3029_SMP-emsv-03" public="y" file="y"
-    server="171.64.65.63" atoms="9684" preferred="2" deadline="3"
+    server="171.64.65.63" atoms="9684" preferred="1.5" deadline="3"
     credit="1440" frames="100" code="GS" contact="densign" contrib="radekboktor"/>
   <fah_proj number="3038" name="p3038_p3030_supervillin-03" public="y" file="y"
     server="171.65.103.160" atoms="9684" preferred="36" deadline="53"

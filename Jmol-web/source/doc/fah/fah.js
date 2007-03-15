@@ -42,6 +42,7 @@ function getParameter(paramName, defaultVal) {
 
 function createFahPage(select,
                        project, name, credit, atoms, preferred, deadline, frames, code,
+                       contrib,
                        projectDescription, hideSolvent, availableFiles,
                        findMissing, missingProjects, supportJmol) {
   document.writeln("<table border='0' cellpadding='0' cellspacing='0' width='100%'>");
@@ -61,7 +62,7 @@ function createFahPage(select,
   }
   if (paramDetailLocation == "top") {
     document.writeln("<tr><td valign='top'>");
-    createDetails(project, name, credit, atoms, preferred, deadline, frames, code, supportJmol);
+    createDetails(project, name, credit, atoms, preferred, deadline, frames, code, contrib, supportJmol);
     document.writeln("</td></tr>");
   }
   document.writeln(" <tr>");
@@ -70,7 +71,7 @@ function createFahPage(select,
   document.writeln("    <tr>");
   if (paramDetailLocation == "left") {
     document.writeln("<td valign='top'>");
-    createDetails(project, name, credit, atoms, preferred, deadline, frames, code, supportJmol);
+    createDetails(project, name, credit, atoms, preferred, deadline, frames, code, contrib, supportJmol);
     document.writeln("</td>");
   }
   document.writeln("     <td>");
@@ -93,7 +94,7 @@ function createFahPage(select,
   document.writeln("     </td>");
   if (paramDetailLocation == "right") {
     document.writeln("<td valign='top'>");
-    createDetails(project, name, credit, atoms, preferred, deadline, frames, code, supportJmol);
+    createDetails(project, name, credit, atoms, preferred, deadline, frames, code, contrib, supportJmol);
     document.writeln("</td>");
   }
   document.writeln("    </tr>");
@@ -115,7 +116,7 @@ function createFahPage(select,
   document.writeln(" </tr>");
   if (paramDetailLocation == "bottom") {
     document.writeln("<tr><td valign='top'>");
-    createDetails(project, name, credit, atoms, preferred, deadline, frames, code, supportJmol);
+    createDetails(project, name, credit, atoms, preferred, deadline, frames, code, contrib, supportJmol);
     document.writeln("</td></tr>");
   }
   document.writeln(" <tr>");
@@ -145,7 +146,7 @@ function createFahPage(select,
   document.writeln("</table>");
 }
 
-function createDetails(project, name, credit, atoms, preferred, deadline, frames, code, supportJmol) {
+function createDetails(project, name, credit, atoms, preferred, deadline, frames, code, contrib, supportJmol) {
   document.writeln("<table border='0' cellpadding='0' cellspacing='0' width='100%'>");
   document.writeln(" <tr>");
   document.writeln("  <td align='center' colspan='2'>");
@@ -195,13 +196,18 @@ function createDetails(project, name, credit, atoms, preferred, deadline, frames
   document.writeln("             size='45' readonly='readonly'/></td>");
   document.writeln(" </tr>");
   document.writeln(" <tr>");
+  document.writeln("  <td><label>" + contrib + " :</label></td>");
+  document.writeln("  <td><input type='text' name='infoContrib' id='infoContrib'");
+  document.writeln("             size='45' readonly='readonly'/></td>");
+  document.writeln(" </tr>");
+  document.writeln(" <tr>");
   document.writeln("  <td align='center' colspan='2'><br/><small><i>" + supportJmol + "</i></small></td>");
   document.writeln(" </tr>");
   document.writeln("</table>");
 }
 
 function addProject(project, filename, projectname,
-                    credit, atoms, preferred, deadline, frames, code, p,
+                    credit, atoms, preferred, deadline, frames, code, p, contrib,
                     showList) {
   if ((projectname != undefined) &&
       (projectname !== null) &&
@@ -231,6 +237,10 @@ function addProject(project, filename, projectname,
     varValue = varValue + ";";
     if (code != undefined && code != null) {
       varValue = varValue + code;
+    }
+    varValue = varValue + ";";
+    if (contrib != undefined && contrib != null) {
+      varValue = varValue + contrib;
     }
     if (showList == "button") {
       varButton =
@@ -287,4 +297,5 @@ function showProjectInfo(value) {
   } else {
     document.fahForm.infoCode.value = code;
   }
+  document.fahForm.infoContrib.value = varArray[9];
 }

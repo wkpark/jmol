@@ -184,6 +184,7 @@ public final class Frame {
   int baseAtomIndex = 0;
   int baseBondIndex = 0;
   int baseGroupIndex = 0;
+  boolean appendNew = true;
 
   void initializeModel(JmolAdapter adapter, Object clientFile) {
     currentModel = null;
@@ -194,16 +195,15 @@ public final class Frame {
         .getAtomSetCount(clientFile));
     if (merging) {
       baseModelCount = mergeFrame.modelCount;
-      if (viewer.getAppendNew()) {
+      appendNew = (modelCount == 1 && viewer.getAppendNew());
+      if (appendNew) {
         baseModelIndex = baseModelCount;
-        currentModelIndex = baseModelIndex - 1;
         modelCount += baseModelCount;
       } else {
         baseModelIndex = viewer.getCurrentModelIndex();
         if (baseModelIndex < 0)
           baseModelIndex = baseModelCount - 1;
-        currentModelIndex = baseModelIndex;        
-        modelCount += baseModelCount - 1;
+        modelCount = baseModelCount;
       }
       atomCount = baseAtomIndex = mergeFrame.atomCount;
       bondCount = baseBondIndex = mergeFrame.bondCount;
@@ -251,21 +251,21 @@ public final class Frame {
         specialAtomIDs = mergeFrame.specialAtomIDs;
       }
 
-      int ipt = 0;
-      for (int i = baseModelCount; i < modelCount; ++i, ++ipt) {
-        int modelNumber = adapter.getAtomSetNumber(clientFile, ipt);
-        String modelName = adapter.getAtomSetName(clientFile, ipt);
+      int ipt = baseModelIndex;
+      for (int i = 0; i < adapterModelCount; ++i, ipt++) {
+        int modelNumber = (appendNew ? adapter.getAtomSetNumber(clientFile, i) : Integer.MAX_VALUE);
+        String modelName = adapter.getAtomSetName(clientFile, i);
         if (modelName == null)
           modelName = "" + modelNumber;
-        Properties modelProperties = adapter.getAtomSetProperties(clientFile,
-            ipt);
+        Properties modelProperties = adapter
+            .getAtomSetProperties(clientFile, i);
         Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
-            clientFile, ipt);
-        boolean isPDBModel = mmset.setModelNameNumberProperties(i, modelName,
+            clientFile, i);
+        boolean isPDBModel = mmset.setModelNameNumberProperties(ipt, modelName,
             modelNumber, modelProperties, modelAuxiliaryInfo, isPDB);
         if (isPDBModel) {
-          group3Lists[i] = JmolConstants.group3List;
-          group3Counts[i] = new int[JmolConstants.group3Count + 10];
+          group3Lists[ipt] = JmolConstants.group3List;
+          group3Counts[ipt] = new int[JmolConstants.group3Count + 10];
           if (group3Lists[modelCount] == null) {
             group3Lists[modelCount] = JmolConstants.group3List;
             group3Counts[modelCount] = new int[JmolConstants.group3Count + 10];
@@ -285,10 +285,9 @@ public final class Frame {
           elementNumber = JmolConstants.elementNumberFromSymbol(iterAtom
               .getElementSymbol());
         char alternateLocation = iterAtom.getAlternateLocationID();
-        addAtom(iterAtom.getAtomSetIndex() + baseModelIndex, iterAtom
-            .getAtomSymmetry(), iterAtom.getAtomSite(), iterAtom.getUniqueID(),
-            elementNumber, iterAtom.getAtomName(), mad, iterAtom
-                .getFormalCharge(), iterAtom.getPartialCharge(), iterAtom
+        addAtom(iterAtom.getAtomSetIndex() + baseModelIndex, iterAtom.getAtomSymmetry(), iterAtom.getAtomSite(),
+            iterAtom.getUniqueID(), elementNumber, iterAtom.getAtomName(), mad,
+            iterAtom.getFormalCharge(), iterAtom.getPartialCharge(), iterAtom
                 .getOccupancy(), iterAtom.getBfactor(), iterAtom.getX(),
             iterAtom.getY(), iterAtom.getZ(), iterAtom.getIsHetero(), iterAtom
                 .getAtomSerial(), iterAtom.getChainID(), iterAtom.getGroup3(),
@@ -462,7 +461,7 @@ public final class Frame {
                      String group3, int groupSequenceNumber,
                      char groupInsertionCode) {
     String group3i = (group3 == null ? null : group3.intern());
-    if (modelIndex != currentModelIndex || currentModel == null) {
+    if (modelIndex != currentModelIndex) {
       currentModel = mmset.getModel(modelIndex);
       currentModelIndex = modelIndex;
       currentChainID = '\uFFFF';

@@ -268,7 +268,8 @@ final class Mmset {
     
     this.modelProperties[modelIndex] = modelProperties;
     this.modelAuxiliaryInfo[modelIndex] = modelAuxiliaryInfo;
-    models[modelIndex] = new Model(this, modelIndex, modelNumber, modelName);
+    if (modelNumber != Integer.MAX_VALUE)
+      models[modelIndex] = new Model(this, modelIndex, modelNumber, modelName);
     String codes = (String) getModelAuxiliaryInfo(modelIndex, "altLocs");
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
     codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");

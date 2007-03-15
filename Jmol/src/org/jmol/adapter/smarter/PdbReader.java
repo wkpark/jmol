@@ -130,7 +130,7 @@ class PdbReader extends AtomSetCollectionReader {
           continue;
         }
         if (line.startsWith("REMARK")) {
-          Logger.debug(line);
+          //Logger.debug(line);
           checkLineForScript();
           continue;
         }
@@ -478,7 +478,7 @@ class PdbReader extends AtomSetCollectionReader {
     if (htName != null)
       return;
     htHetero.put(groupName, hetName);
-    Logger.debug("het: "+groupName);
+    //Logger.debug("het: "+groupName);
   }
   
   void hetnam() {
@@ -490,7 +490,7 @@ class PdbReader extends AtomSetCollectionReader {
     if (htName != null)
       hetName = htName + hetName;
     htHetero.put(groupName, hetName);
-    Logger.debug("hetero: "+groupName+" "+hetName);
+    //Logger.debug("hetero: "+groupName+" "+hetName);
   }
   
   void applySymmetry() throws Exception {

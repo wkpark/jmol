@@ -180,6 +180,7 @@ public class Viewer extends JmolViewer {
   boolean haveDisplay = true;
   boolean mustRender = true;
   boolean checkScriptOnly = false;
+  boolean fileOpenCheck = true;
 
   public boolean isApplet() {
     return (htmlName.length() > 0);
@@ -198,6 +199,11 @@ public class Viewer extends JmolViewer {
       }
       if (str.indexOf("-c") >= 0) {
         checkScriptOnly = true;
+        fileOpenCheck = true;
+      }
+      if (str.indexOf("-C") >= 0) {
+        checkScriptOnly = true;
+        fileOpenCheck = false;
       }
       if (str.indexOf("-x") >= 0) {
         autoExit = true;
@@ -2901,7 +2907,7 @@ public class Viewer extends JmolViewer {
     String strErrorMessage = eval.getErrorMessage();
     if (isOK) {
       statusManager.setStatusScriptStarted(++scriptIndex, strScript);
-      eval.runEval(checkScriptOnly);
+      eval.runEval(checkScriptOnly, !checkScriptOnly || fileOpenCheck);
       int msWalltime = eval.getExecutionWalltime();
       strErrorMessage = eval.getErrorMessage();
       statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);

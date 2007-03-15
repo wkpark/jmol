@@ -80,7 +80,9 @@ final class Shade3D {
 
   static int[] getShades(int rgb, boolean greyScale) {
     int[] shades = new int[shadeMax];
-
+    if (rgb == 0)
+      return shades;
+    
     int red = (rgb >> 16) & 0xFF;
     int grn = (rgb >>  8) & 0xFF;
     int blu = rgb         & 0xFF;

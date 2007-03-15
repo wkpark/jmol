@@ -516,7 +516,7 @@ abstract public class JmolPopup {
                             PopupResourceBundle popupResourceBundle) {
     String id = parentId + "." + key;
     String value = popupResourceBundle.getStructure(key);
-    Logger.debug(id + " --- " + value);
+    //Logger.debug(id + " --- " + value);
     if (value == null) {
       addMenuItem(menu, "#" + key, "", "");
       return;

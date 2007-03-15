@@ -352,7 +352,7 @@ final public class Graphics3D {
       rbA = (((rbA << 1) + rbA + rbB) >> 2) & 0x00FF00FF;
       gA = (((gA << 1) + gA + gB) >> 2) & 0x0000FF00;
       break;
-    case 7: // 1:7   (not implemented)
+    case 7: // 1:7
       rbA = (((rbA << 2) + (rbA << 1) + rbA + rbB) >> 3) & 0x00FF00FF;
       gA = (((gA << 2) + (gA << 1) + gA + gB) >> 3) & 0x0000FF00;
       break;
@@ -372,13 +372,16 @@ final public class Graphics3D {
    * @return true or false if this is the right pass
    */
   public boolean setColix(short colix) {
-    isTranslucent = (colix & TRANSLUCENT_MASK) != 0;
-    isScreened = isTranslucent && (colix & TRANSLUCENT_MASK) == TRANSLUCENT_SCREENED;
+    int mask = colix & TRANSLUCENT_MASK;
+    if (mask == TRANSPARENT)
+      return false;
+    isTranslucent = mask != 0;
+    isScreened = isTranslucent && mask == TRANSLUCENT_SCREENED;
     if (!checkTranslucent(isTranslucent && !isScreened))
       return false;
     addAllPixels = isPass2 || !isTranslucent;
     if (isPass2)
-      translucencyMask = ((colix & TRANSLUCENT_MASK) << ALPHA_SHIFT) | 0xFFFFFF;
+      translucencyMask = (mask << ALPHA_SHIFT) | 0xFFFFFF;
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
     argbCurrent = argbNoisyUp = argbNoisyDn = getColixArgb(colix);
@@ -1523,7 +1526,7 @@ final public class Graphics3D {
    * ***************************************************************/
 
   /* entries 0 and 1 are reserved and are special inheritance
-     INHERIT_TRANSLUCENT and INHERIT_OPAQUE are used to inherit
+     INHERIT_TRANSLUCENT and INHERIT_COLOR are used to inherit
      the underlying color, but change the translucency
 
      Note that colors are not actually translucent. Rather,
@@ -1531,26 +1534,22 @@ final public class Graphics3D {
      on. 
      
      0x8000 changeable flag (elements and isotopes, about 200; negative)
-     0x7000 translucent flag set
+     0x7800 translucent flag set
 
      NEW:
-     0x1000 translucent level 1
-     0x2000 translucent level 2
-     0x3000 translucent level 3
-     0x4000 translucent level 1
-     0x6000 translucent level 2
-     0x7000 translucent level 3
-     0x5000 translucent level 1
-     0x6000 translucent level 2
-     0x7000 translucent level 3
+     0x0000 translucent level 0  (opaque)
+     0x0800 translucent level 1
+     0x1000 translucent level 2
+     0x1800 translucent level 3
+     0x2000 translucent level 4
+     0x2800 translucent level 5
+     0x3000 translucent level 6
+     0x3800 translucent level 7
+     0x4000 translucent level 8 (invisible)
 
      0x0000 inherit color and translucency
-     0x0001 inherit color; make opaque
-     0x4001 inherit color; make translucent
-       ...
-     0x7001 inherit color; make translucent level 3
-     
-     0x0002 special palette ("group", "structure", etc.)
+     0x0001 inherit color; translucency determined by mask     
+     0x0002 special palette ("group", "structure", etc.); translucency by mask
 
      Note that inherited colors and special palettes are not handled here. 
      They could be anything, including totally variable quantities such as 
@@ -1566,30 +1565,31 @@ final public class Graphics3D {
      
      
      
-     0x0002 black...
+     0x0004 black...
        ....
-     0x0015  ...gold
+     0x0017  ...gold
      0x00?? additional colors used from JavaScript list or specified by user
 
      Bob Hanson 3/2007
      
   */
   private final static short CHANGEABLE_MASK = (short)0x8000; // negative
-  private final static int   TRANSLUCENT_SHIFT        = 12;
+  private final static int   TRANSLUCENT_SHIFT        = 11;
   private final static int   ALPHA_SHIFT              = 24 - TRANSLUCENT_SHIFT;
-  private final static int   TRANSLUCENT_MASK         = 0x7000;
-  final static int           TRANSLUCENT_FLAG         = 0x4000;
-  final static int           TRANSLUCENT_50           = 0x5000;
-  final static int           TRANSLUCENT_SCREENED     = TRANSLUCENT_MASK;
-  final static short         OPAQUE_MASK  = ~TRANSLUCENT_MASK;
-  private final static short UNMASK_CHANGEABLE_TRANSLUCENT =0x0FFF;
+  private final static int   TRANSLUCENT_MASK         = 0x7800;
+  private final static int   TRANSLUCENT_FLAG         = 0x4000;
+  private final static int   TRANSLUCENT_SCREENED     = TRANSLUCENT_MASK;
+  private final static int   TRANSPARENT              = TRANSLUCENT_FLAG;
+  private final static short UNMASK_CHANGEABLE_TRANSLUCENT =0x07FF;
 
-  public final static short INHERIT_ALL          = 0;
-  private final static short INHERIT_OPAQUE      = 1;
-  private final static short INHERIT_TRANSLUCENT = 1 | TRANSLUCENT_FLAG;
-  public final static short USE_PALETTE          = 2;
-  final static short UNUSED_OPTION3              = 3;
-  final static short SPECIAL_COLIX_MAX           = 4;
+  final static short         OPAQUE_MASK              = ~TRANSLUCENT_MASK;
+  final static int           TRANSLUCENT_50           = 0x2800;
+
+  public final static short  INHERIT_ALL         = 0;
+  private final static short INHERIT_COLOR       = 1;
+  public final static short  USE_PALETTE         = 2;
+  final static short         UNUSED_OPTION3      = 3;
+  final static short         SPECIAL_COLIX_MAX   = 4;
 
   public final static short BLACK       = 4;
   public final static short ORANGE      = 5;
@@ -1690,10 +1690,8 @@ final public class Graphics3D {
       return Colix.getColix(argb);
     if ("none".equalsIgnoreCase(colorName))
       return INHERIT_ALL;
-    if ("translucent".equalsIgnoreCase(colorName))
-      return INHERIT_TRANSLUCENT;
     if ("opaque".equalsIgnoreCase(colorName))
-      return INHERIT_OPAQUE;
+      return INHERIT_COLOR;
     return USE_PALETTE;
   }
 
@@ -1701,18 +1699,19 @@ final public class Graphics3D {
   private final static short applyColorTranslucencyLevel(short colix,
                                                          float translucentLevel) {
     // 0.0 to 1.0 ==> MORE translucent   
-    //                 1/8  1/4 3/8 1/2 5/8 3/4
-    //     t            32  64  96  128 160 192
-    //     t >> 5        1   2   3   4   5   6
-    // 7 is reserved for screened, so 7 and 8 just map to 6
+    //                 1/8  1/4 3/8 1/2 5/8 3/4 7/8
+    //     t            32  64  96  128 160 192 224
+    //     t >> 5        1   2   3   4   5   6   7
+    // 15 is reserved for screened, so 8-14 just map to 8, "invisible"
 
     if (translucentLevel == 0) //opaque
       return (short) (colix & ~TRANSLUCENT_MASK);
-    int iLevel = (int) (translucentLevel < 0 ? 7 << 5
-        : translucentLevel < 1 ? translucentLevel * 256
-            : translucentLevel < 7 ? ((int) translucentLevel) << 5
-               : translucentLevel < 9 ? 6 << 5 : translucentLevel);
-    iLevel = (iLevel >> 5) % 8;
+    if (translucentLevel < 0) //screened
+      return (short) (colix | TRANSLUCENT_MASK);
+    int iLevel = (int) (translucentLevel < 1 ? translucentLevel * 256
+            : translucentLevel < 8 ? ((int) translucentLevel) << 5
+               : translucentLevel < 15 ? 8 << 5 : translucentLevel);
+    iLevel = (iLevel >> 5) % 16;
     return (short) (colix & ~TRANSLUCENT_MASK | (iLevel << TRANSLUCENT_SHIFT));
   }
 
@@ -1746,7 +1745,7 @@ final public class Graphics3D {
 
   public final static short getColixTranslucent(short colix, boolean isTranslucent, float translucentLevel) {
     if (colix == INHERIT_ALL)
-      colix = INHERIT_OPAQUE;
+      colix = INHERIT_COLOR;
     colix &= ~TRANSLUCENT_MASK;
     if (!isTranslucent)
       return colix;
@@ -1783,15 +1782,12 @@ final public class Graphics3D {
     switch (myColix) {
     case INHERIT_ALL:
       return parentColix;
-    case INHERIT_OPAQUE:
+    case INHERIT_COLOR:
       return (short) (parentColix & OPAQUE_MASK);
-    case INHERIT_TRANSLUCENT:
-      //strip off any parent translucent level and add 0-level (old-style)
-      return (short) (parentColix & OPAQUE_MASK | TRANSLUCENT_FLAG);
     default:
       //check this colix irrespective of translucency, and if inherit, then
       //it must be inherit color but not translucent level; 
-      return ((myColix & OPAQUE_MASK) == INHERIT_OPAQUE ? (short) (parentColix
+      return ((myColix & OPAQUE_MASK) == INHERIT_COLOR ? (short) (parentColix
           & OPAQUE_MASK | myColix & TRANSLUCENT_MASK) : myColix);
     }
   }
@@ -1799,10 +1795,10 @@ final public class Graphics3D {
   public final static boolean isColixColorInherited(short colix) {
     switch (colix) {
     case INHERIT_ALL:
-    case INHERIT_OPAQUE:
+    case INHERIT_COLOR:
       return true;
     default: //could be translucent of some sort
-      return (colix & OPAQUE_MASK) == INHERIT_OPAQUE; 
+      return (colix & OPAQUE_MASK) == INHERIT_COLOR; 
     }
   }
   

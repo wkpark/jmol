@@ -394,42 +394,58 @@ class RepaintManager {
       long timeBegin = System.currentTimeMillis();
       int targetTime = 0;
       int sleepTime;
-      Logger.debug("animation thread " + intThread + " running");            
+      int holdTime = 0;
+      Logger.debug("animation thread " + intThread + " running");
       requestRepaintAndWait();
       try {
-        sleepTime = targetTime - (int)(System.currentTimeMillis() - timeBegin);
+        sleepTime = targetTime - (int) (System.currentTimeMillis() - timeBegin);
         if (sleepTime > 0)
           Thread.sleep(sleepTime);
-        while (! isInterrupted() && animationOn) {
+        while (!isInterrupted() && animationOn) {
           if (currentModelIndex == framePointer) {
             targetTime += firstFrameDelayMs;
-            sleepTime =
-              targetTime - (int)(System.currentTimeMillis() - timeBegin);
+            sleepTime = targetTime
+                - (int) (System.currentTimeMillis() - timeBegin);
             if (sleepTime > 0)
               Thread.sleep(sleepTime);
           }
           if (currentModelIndex == framePointer2) {
             targetTime += lastFrameDelayMs;
-            sleepTime =
-              targetTime - (int)(System.currentTimeMillis() - timeBegin);
+            sleepTime = targetTime
+                - (int) (System.currentTimeMillis() - timeBegin);
             if (sleepTime > 0)
               Thread.sleep(sleepTime);
           }
-          if (! setAnimationNext()) {
-            Logger.debug("animation thread " + intThread + " exiting");            
+          if (!setAnimationNext()) {
+            Logger.debug("animation thread " + intThread + " exiting");
             setAnimationOff(false);
             return;
           }
           targetTime += (1000 / animationFps);
-          sleepTime =
-            targetTime - (int)(System.currentTimeMillis() - timeBegin);
+          sleepTime = targetTime
+              - (int) (System.currentTimeMillis() - timeBegin);
           if (sleepTime < 0)
             continue;
           refresh();
-          sleepTime =
-            targetTime - (int)(System.currentTimeMillis() - timeBegin);
+          sleepTime = targetTime
+              - (int) (System.currentTimeMillis() - timeBegin);
           if (sleepTime > 0)
             Thread.sleep(sleepTime);
+          boolean autoFps = viewer.getAutoFps();
+          if (autoFps) {
+            if (holdTime == 0)
+              holdTime = 10;
+            int nHold = 0;
+            //optimally we want 2 hold cycles
+            while (repaintPending) {
+              Thread.sleep(holdTime);
+              nHold++;
+            }
+            holdTime *=(nHold - 1);
+            if (nHold == 1)
+              holdTime = holdTime / 2;
+            Logger.info("repaint man autoFPS hold time " + holdTime + " ms; cylces "+nHold);
+          }
         }
       } catch (InterruptedException ie) {
         Logger.debug("animation thread interrupted!");

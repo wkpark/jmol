@@ -381,6 +381,7 @@ class StateManager {
     float minBondDistance = JmolConstants.DEFAULT_MIN_BOND_DISTANCE;
     String defaultLoadScript   = "";
     String defaultDirectory    = null;
+    String loadFormat          = "http://www.rcsb.org/pdb/files/%FILE.pdb";
 
     /**
      *  these settings are determined when the file is loaded and are
@@ -410,6 +411,7 @@ class StateManager {
       appendCmd(str, "defaultLoadScript = \"\"");
       if (defaultLoadScript.length() > 0)
         setParameterValue("defaultLoadScript", defaultLoadScript);
+      appendCmd(str, "loadFormat = " + escape(loadFormat));
 
       appendCmd(str, "forceAutoBond = " + forceAutoBond);
       appendCmd(str, "minBondDistance = " + minBondDistance);
@@ -520,6 +522,7 @@ class StateManager {
     String propertyColorScheme   = "roygb";
     boolean useNumberLocalization = true;
     float defaultTranslucent      = 0.5f;
+    boolean autoFps               = false;
     
     
     
@@ -822,6 +825,7 @@ class StateManager {
 //      setParameterValue("argbBackground",argbBackground);
       setParameterValue("appendNew",appendNew);
       setParameterValue("autoBond",autoBond);
+      setParameterValue("autoFps",autoFps);
       setParameterValue("axesMode",axesMode);
       setParameterValue("axesScale",axesScale);
       setParameterValue("bondRadiusMilliAngstroms",bondRadiusMilliAngstroms);
@@ -859,6 +863,7 @@ class StateManager {
       setParameterValue("highResolutionFlag",highResolutionFlag);
       setParameterValue("hoverDelay",hoverDelayMs/1000f);
       setParameterValue("justifyMeasurements",justifyMeasurements);
+      setParameterValue("loadFormat",loadFormat);
       setParameterValue("measureAllModels",measureAllModels);
       setParameterValue("minBondDistance",minBondDistance);
       setParameterValue("navigationCentered",navigationCentered);

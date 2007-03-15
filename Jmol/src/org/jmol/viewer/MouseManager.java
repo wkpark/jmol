@@ -63,29 +63,29 @@ abstract class MouseManager implements KeyListener {
   }
   
   void clear() {
-    stopHoverWatcher();  
+    startHoverWatcher(false);  
   }
   
-  void startHoverWatcher() {
-    if (hoverWatcherThread != null)
-      return;
-    hoverWatcherThread = new Thread(new HoverWatcher());
-    hoverWatcherThread.start();
+  synchronized void startHoverWatcher(boolean isStart) {
+    if (isStart) {
+      if (hoverWatcherThread != null)
+        return;
+      hoverWatcherThread = new Thread(new HoverWatcher());
+      hoverWatcherThread.start();
+    } else {
+      if (hoverWatcherThread == null)
+        return;
+      hoverWatcherThread.interrupt();
+      hoverWatcherThread = null;
+    }
   }
-  
-  void stopHoverWatcher() {
-    if (hoverWatcherThread == null)
-      return;
-    hoverWatcherThread.interrupt();
-    hoverWatcherThread = null;
-  }
-  
+
   void removeMouseListeners11() {}
   void removeMouseListeners14() {}
 
   void setModeMouse(int modeMouse) {
     if (modeMouse == JmolConstants.MOUSE_NONE) {
-      stopHoverWatcher();
+      startHoverWatcher(false);
       Component display = viewer.getAwtComponent();
       if (display == null)
         return;

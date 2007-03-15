@@ -1593,7 +1593,7 @@ public class Viewer extends JmolViewer {
     setCurrentModelIndex(0);
     setBackgroundModelIndex(-1);
     setFrankOn(getShowFrank());
-    mouseManager.startHoverWatcher();
+    mouseManager.startHoverWatcher(true);
     setTainted(true);
   }
 
@@ -2967,6 +2967,15 @@ public class Viewer extends JmolViewer {
     return global.defaultLoadScript;
   }
 
+  private void setLoadFormat(String format) {
+    //Eval
+    global.loadFormat = format;
+  }
+
+  String getLoadFormat() {
+    return global.loadFormat;
+  }
+
   String getStandardLabelFormat() {
     return stateManager.getStandardLabelFormat();
   }
@@ -3454,6 +3463,13 @@ public class Viewer extends JmolViewer {
   public void setStringProperty(String key, String value) {
     //Eval
     while (true) {
+      ///11.1.22//
+      
+      if (key.equalsIgnoreCase("loadFormat")) {
+        setLoadFormat(value);
+        return;
+      }
+            
       ///11.1///
       
       if (key.equalsIgnoreCase("backgroundColor")) {
@@ -3812,6 +3828,12 @@ public class Viewer extends JmolViewer {
       
       if (key.equalsIgnoreCase("appendNew")) {
         setAppendNew(value);
+        break;
+      }
+      
+            
+      if (key.equalsIgnoreCase("autoFPS")) {
+        setAutoFps(value);
         break;
       }
       
@@ -4701,6 +4723,14 @@ public class Viewer extends JmolViewer {
   
   boolean getAppendNew()  {
     return global.appendNew;
+  }
+  
+  private void setAutoFps(boolean TF) {
+    global.autoFps = TF;
+  }
+  
+  boolean getAutoFps()  {
+    return global.autoFps;
   }
   
   public void setRasmolDefaults() {

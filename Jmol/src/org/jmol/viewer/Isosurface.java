@@ -276,7 +276,8 @@ class Isosurface extends IsosurfaceMeshCollection {
   boolean force2SidedTriangles;
   boolean isColorReversed;
 
-  Point3f center;
+  Point3f center, point;
+  float distance;
   Point4f thePlane;
   boolean isContoured;
   boolean isBicolorMap;
@@ -368,6 +369,16 @@ class Isosurface extends IsosurfaceMeshCollection {
 
     if ("bsSolvent" == propertyName) {
         bsSolvent = (BitSet) value;
+      return;
+    }
+
+    if ("withinDistance" == propertyName) {
+      distance = ((Float)value).floatValue();
+      return;
+    }
+
+    if ("withinPoint" == propertyName) {
+      point = (Point3f) value;
       return;
     }
 
@@ -996,6 +1007,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     tokProperty = 0;
     resolution = Float.MAX_VALUE;
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+    distance = Float.MAX_VALUE;
     //anisotropy[0] = anisotropy[1] = anisotropy[2] = 1f;
     cutoff = Float.MAX_VALUE;
     thePlane = null;
@@ -4794,11 +4806,14 @@ class Isosurface extends IsosurfaceMeshCollection {
       solvMax = solvent_atomNo.length;
     }
     float maxRadius = 0;
+    boolean isWithin = (distance != Float.MAX_VALUE);
     for (int iAtom = 0; iAtom < solvent_nAtoms; iAtom++) {
       ptA = solvent_ptAtom[iAtom];
       rA = solvent_atomRadius[iAtom];
       if (rA > maxRadius)
         maxRadius = rA;
+      if (isWithin && ptA.distance(point) > distance + rA + 0.5)
+        continue;
       boolean isNearby = (iAtom >= solvent_firstNearbyAtom);
       setGridLimitsForAtom(ptA, rA, pt0, pt1);
       voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
@@ -4809,7 +4824,7 @@ class Isosurface extends IsosurfaceMeshCollection {
           for (int k = pt0.z; k < pt1.z; k++) {
             float v = ptXyzTemp.distance(ptA) - rA;
             if (v < voxelData[i][j][k]) {
-              voxelData[i][j][k] = (isNearby ? Float.NaN : v);
+              voxelData[i][j][k] = (isNearby || isWithin && ptXyzTemp.distance(point) > distance ? Float.NaN : v);
                 if (isProperty && iAtom < solvMax         
                   && (iPt = solvent_atomNo[iAtom]) >= 0 && iPt < propMax) {
                 property[i][j][k] = theProperty[iPt];

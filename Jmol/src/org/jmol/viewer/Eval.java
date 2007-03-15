@@ -1205,7 +1205,7 @@ class Eval { //implements Runnable {
       case Token.carbohydrate:
       case Token.purine:
       case Token.pyrimidine:
-        rpn.addX(getAtomBits((String) value));
+        rpn.addX(getAtomBits(((String) value).toLowerCase()));
         break;
       case Token.spec_atom:
         rpn.addX(viewer.getAtomBits("SpecAtom", (String) value));

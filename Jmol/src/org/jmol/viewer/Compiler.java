@@ -246,6 +246,9 @@ class Compiler {
             strFormat = strFormat.toLowerCase();
             if (strFormat.equals("append") || strFormat.equals("files"))
               addTokenToPrefix(new Token(Token.identifier, strFormat));
+            else if (strFormat.indexOf("=") == 0) {
+              addTokenToPrefix(new Token(Token.string, strFormat));
+            }
             continue;
           }
           if (!iHaveQuotedString && lookingAtSpecialString()) {

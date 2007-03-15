@@ -3500,6 +3500,8 @@ class Eval { //implements Runnable {
     if (statementLength == i + 1) {
       if (i == 0 || (filename = parameterAsString(i)).length() == 0)
         filename = viewer.getFullPathName();
+      if (filename.charAt(0) == '=')
+        filename = fixFileName(filename);
       loadScript.append(" " + StateManager.escape(filename) + ";");
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
         viewer.openFile(filename, params, loadScript.toString(), isMerge);
@@ -3507,6 +3509,8 @@ class Eval { //implements Runnable {
         || theTok == Token.integer) {
       if ((filename = parameterAsString(i++)).length() == 0)
         filename = viewer.getFullPathName();
+      if (filename.charAt(0) == '=')
+        filename = fixFileName(filename);
       loadScript.append(" " + StateManager.escape(filename));
       if (getToken(i).tok == Token.integer) {
         params[0] = intParameter(i++);
@@ -3574,6 +3578,8 @@ class Eval { //implements Runnable {
       String[] filenames = new String[statementLength - i];
       while (i < statementLength) {
         modelName = parameterAsString(i);
+        if (modelName.charAt(0) == '=')
+          modelName = fixFileName(modelName);
         filenames[filenames.length - statementLength + i] = modelName;
         loadScript.append(" " + StateManager.escape(modelName));
         i++;
@@ -3608,6 +3614,11 @@ class Eval { //implements Runnable {
       runScript(defaultScript);
   }
 
+  String fixFileName(String filename) {
+    String s = TextFormat.formatString(viewer.getLoadFormat(), "FILE", filename.substring(1));
+    showString("Loading " + s);
+    return s;
+  }
   //measure() see monitor()
 
   void monitor() throws ScriptException {
@@ -7850,6 +7861,13 @@ class Eval { //implements Runnable {
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
+      case Token.within:
+        float distance = floatParameter(++i);
+        propertyValue = atomCenterOrCoordinateParameter(++i);
+        i = iToken;
+        propertyName = "withinPoint";
+        setShapeProperty(iShape, "withinDistance", new Float(distance));
+        break;
       case Token.property:
         propertyName = "property";
         str = parameterAsString(i);

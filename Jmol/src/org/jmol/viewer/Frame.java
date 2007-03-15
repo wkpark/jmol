@@ -247,7 +247,6 @@ public final class Frame {
         surfaceDistance100s = mergeFrame.surfaceDistance100s;
         surfaceAtoms = mergeFrame.surfaceAtoms;
         atomNames = mergeFrame.atomNames;
-        atomSerials = mergeFrame.atomSerials;
         specialAtomIDs = mergeFrame.specialAtomIDs;
       }
 
@@ -827,19 +826,20 @@ public final class Frame {
 
   private void setAtomNamesAndNumbers() {
     // first, validate that all atomSerials are NaN
-    if (atomSerials == null) {
-      // now, we'll assign 1-based atom numbers within each model
-      int lastModelIndex = Integer.MAX_VALUE;
-      int modelAtomIndex = 0;
+    if (atomSerials == null)
       atomSerials = new int[atomCount];
-      for (int i = 0; i < atomCount; ++i) {
-        Atom atom = atoms[i];
-        if (atom.modelIndex != lastModelIndex) {
-          lastModelIndex = atom.modelIndex;
-          modelAtomIndex = (isZeroBased ? 0 : 1);
-        }
-        atomSerials[i] = modelAtomIndex++;
+    // now, we'll assign 1-based atom numbers within each model
+    int lastModelIndex = Integer.MAX_VALUE;
+    int modelAtomIndex = 0;
+    for (int i = 0; i < atomCount; ++i) {
+      Atom atom = atoms[i];
+      if (atom.modelIndex != lastModelIndex) {
+        lastModelIndex = atom.modelIndex;
+        modelAtomIndex = (isZeroBased ? 0 : 1);
       }
+      if (atomSerials[i] == 0)
+        atomSerials[i] = (i < baseAtomIndex ? mergeFrame.atomSerials[i]
+            : modelAtomIndex++);
     }
     if (atomNames == null)
       atomNames = new String[atomCount];

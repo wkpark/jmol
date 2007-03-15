@@ -26,7 +26,7 @@ package org.jmol.adapter.smarter;
 
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.util.Logger;
+//import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 
 import java.io.BufferedReader;

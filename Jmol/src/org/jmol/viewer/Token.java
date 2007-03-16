@@ -785,7 +785,7 @@ public class Token {
     "trace",             new Token(trace,            onDefault1),
     "translate",         new Token(translate,                 2),
     "wireframe",         new Token(wireframe,        onDefault1),
-    "write",             new Token(write,               maxArg3),
+    "write",             new Token(write,           varArgCount),
     "zap",               new Token(zap,                       0),
     "zoom",              new Token(zoom,            varArgCount),
     "zoomTo",            new Token(zoomTo,          varArgCount),

@@ -2590,13 +2590,17 @@ public class Viewer extends JmolViewer {
       width = (width + 1) / 2;
     if (dimScreen.width == width && dimScreen.height == height)
       return;
+    resizeImage(width, height);
+  }
+
+  private void resizeImage(int width, int height) {
     dimScreen.width = width;
     dimScreen.height = height;
     transformManager.setScreenDimension(width, height);
     transformManager.scaleFitToScreen();
     g3d.setWindowSize(width, height, global.enableFullSceneAntialiasing);
   }
-
+  
   public int getScreenWidth() {
     return dimScreen.width;
   }
@@ -5276,8 +5280,22 @@ public class Viewer extends JmolViewer {
    * @param quality up to 100 for JPG quality; Integer.MAX_VALUE for text
    */
   public void createImage(String file, String type_text, int quality) {
+    createImage(file, type_text, quality, -1 , -1);
+  }
+
+  void createImage(String file, String type_text, int quality, int width, int height) {
+    int saveWidth = dimScreen.width;
+    int saveHeight = dimScreen.height;
+    if (width > 0 && height > 0)
+      resizeImage(width, height);
     setModelVisibility();
+    try {
     statusManager.createImage(file, type_text, quality);
+    } catch (Exception e) {
+      Logger.error("Error creating image: " + e.getMessage());
+    }
+    if (width > 0 && height > 0)
+      resizeImage(saveWidth, saveHeight);
   }
 
   //////////unimplemented

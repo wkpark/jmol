@@ -6754,6 +6754,8 @@ class Eval { //implements Runnable {
     int tok = (statementLength == 1 ? Token.clipboard : statement[1].tok);
     int pt = 1;
     int len = 0;
+    int width = -1;
+    int height = -1;
     String type = "SPT";
     String data = "";
     boolean isCoord = false;
@@ -6784,10 +6786,14 @@ class Eval { //implements Runnable {
       type = parameterAsString(1).toLowerCase();
       if (type.equals("image")) {
         pt++;
+        if (tokAt(pt) == Token.integer) {
+          width = intParameter(pt++);
+          height = intParameter(pt++);
+        }
       } else if (type.equals("var")) {
         pt += 2;
         type = "VAR";
-      } else {
+      } else { 
         type = "image";
       }
       break;
@@ -6889,7 +6895,7 @@ class Eval { //implements Runnable {
     }
     if (len == 0)
       len = data.length();
-    viewer.createImage(fileName, data, quality);
+    viewer.createImage(fileName, data, quality, width, height);
     viewer.scriptStatus("type=" + type + "; file="
         + (fileName == null ? "CLIPBOARD" : fileName)
         + (len >= 0 ? "; length=" + len : ""));

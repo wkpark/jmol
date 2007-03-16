@@ -319,17 +319,20 @@ abstract class AtomSetCollectionReader {
     iHaveSymmetryOperators = true;
   }
 
+  int nMatrixElements = 0;
   void setUnitCellItem(int i, float x) {
     if (ignoreFileUnitCell)
       return;
-    if (i >= 6 && Float.isNaN(notionalUnitCell[6]))
+    if (i >= 6 && Float.isNaN(notionalUnitCell[6])) {
       initializeCartesianToFractional();
+      nMatrixElements = 0;
+    }
     notionalUnitCell[i] = x;
     Logger.debug("setunitcellitem " + i + " " + x);
     if (i < 6)
       iHaveUnitCell = checkUnitCell(6);
     else
-      iHaveCartesianToFractionalMatrix = checkUnitCell(22);
+      iHaveCartesianToFractionalMatrix = (++nMatrixElements == 12 && checkUnitCell(22));
   }
 
   void setUnitCell(float a, float b, float c, float alpha, float beta,

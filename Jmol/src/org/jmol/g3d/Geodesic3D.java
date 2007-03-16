@@ -205,7 +205,7 @@ class Geodesic3D {
     for (int i = 0; i < maxLevel - 1; ++i)
       quadruple(i);
     
-    if (DUMP) {
+    if (DUMP && Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       for (int i = 0; i < maxLevel; ++i) {
         Logger.debug("geodesic level " + i +
                            " vertexCount= " + getVertexCount(i) +
@@ -245,7 +245,7 @@ class Geodesic3D {
   private final static boolean VALIDATE = true;
 
   private static void quadruple(int level) {
-    if (DUMP)
+    if (DUMP && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug("quadruple(" + level + ")");
     htVertex = new Hashtable();
     int oldVertexCount = vertexVectors.length;

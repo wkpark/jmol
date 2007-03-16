@@ -121,7 +121,9 @@ public class Viewer extends JmolViewer {
   private boolean jvm14orGreater = false;
 
   Viewer(Component display, JmolAdapter modelAdapter) {
-    Logger.debug("Viewer constructor " + this);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("Viewer constructor " + this);
+    }
     this.display = display;
     this.modelAdapter = modelAdapter;
     strJavaVendor = System.getProperty("java.vendor");
@@ -2785,7 +2787,7 @@ public class Viewer extends JmolViewer {
   String getInterruptScript() {
     String s = interruptScript;
     interruptScript = "";
-    if (s != "")
+    if ((s != "") && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug("interrupt: " + s);
     return s;
   }
@@ -5302,7 +5304,9 @@ public class Viewer extends JmolViewer {
 
   public void setSyncDriver(int syncMode) {
     //it was an idea...
-    Logger.debug(htmlName + " viewer setting sync driver " + syncMode);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(htmlName + " viewer setting sync driver " + syncMode);
+    }
     statusManager.setSyncDriver(syncMode);
   }
 

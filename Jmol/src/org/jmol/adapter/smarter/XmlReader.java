@@ -169,7 +169,9 @@ class XmlReader extends AtomSetCollectionReader {
   void processXml(XMLReader xmlReader) throws Exception {
     String xmlType = getXmlType(reader);
     atomSetCollection = new AtomSetCollection(xmlType);
-    Logger.debug("XmlReader thinks " + xmlType);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("XmlReader thinks " + xmlType);
+    }
     if (xmlType.indexOf("cml(xml)") >= 0) {
       subReader = new XmlCmlReader(this, atomSetCollection, reader, xmlReader);
       return;
@@ -248,7 +250,9 @@ class XmlReader extends AtomSetCollectionReader {
     if (DOMNode == null)
       throw new RuntimeException("Not a node");
     String xmlType = getXmlType(DOMNode);
-    Logger.debug("XmlReader thinks " + xmlType);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("XmlReader thinks " + xmlType);
+    }
     atomSetCollection = new AtomSetCollection(xmlType);
     if (xmlType.indexOf("cml(DOM)") >= 0) {
       subReader = new XmlCmlReader(this, atomSetCollection, DOMNode);
@@ -355,7 +359,9 @@ class XmlReader extends AtomSetCollectionReader {
     public void startElement(String namespaceURI, String localName,
                              String qName, Attributes attributes) {
       getAttributes(attributes);
-      Logger.debug("start " + localName);
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug("start " + localName);
+      }
       startElement(namespaceURI, localName, qName);
     }
 
@@ -364,7 +370,9 @@ class XmlReader extends AtomSetCollectionReader {
     }
 
     public void endElement(String uri, String localName, String qName) {
-      Logger.debug("end " + localName);
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug("end " + localName);
+      }
       processEndElement(uri, localName, qName);
     }
 
@@ -384,20 +392,26 @@ class XmlReader extends AtomSetCollectionReader {
 
     public InputSource resolveEntity(String name, String publicId,
                                      String baseURI, String systemId) {
-      Logger.debug("Not resolving this:"
-          + "\n      name: " + name
-          + "\n  systemID: " + systemId
-          + "\n  publicID: " + publicId
-          + "\n   baseURI: " + baseURI
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug(
+            "Not resolving this:" +
+            "\n      name: " + name +
+            "\n  systemID: " + systemId +
+            "\n  publicID: " + publicId +
+            "\n   baseURI: " + baseURI
           );
+      }
       return null;
     }
 
     public InputSource resolveEntity(String publicId, String systemId) {
-      Logger.debug("Not resolving this:"
-          + "\n  publicID: " + publicId
-          + "\n  systemID: " + systemId
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug(
+            "Not resolving this:" +
+            "\n  publicID: " + publicId +
+            "\n  systemID: " + systemId
           );
+      }
       return null;
     }
 

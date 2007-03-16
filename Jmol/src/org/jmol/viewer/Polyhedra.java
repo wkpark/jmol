@@ -66,7 +66,9 @@ class Polyhedra extends AtomShape {
 
   void setProperty(String propertyName, Object value, BitSet bs) {
 
-    Logger.debug("polyhedra: " + propertyName + " " + value);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("polyhedra: " + propertyName + " " + value);
+    }
 
     if ("init" == propertyName) {
       faceCenterOffset = DEFAULT_FACECENTEROFFSET;
@@ -332,9 +334,12 @@ class Polyhedra extends AtomShape {
         if (bs.get(i)) {
           isOK = false;
           factor *= 1.05f;
-          Logger.debug("Polyhedra distanceFactor for " + ptCenter
-              + " atoms increased to " + factor + " in order to include "
-              + otherAtoms[i].getIdentity());
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug(
+                "Polyhedra distanceFactor for " + ptCenter +
+                " atoms increased to " + factor + " in order to include " +
+                otherAtoms[i].getIdentity());
+          }
           break;
         }
     }

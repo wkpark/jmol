@@ -113,7 +113,9 @@ class SpartanArchive {
     //    0   1  2   3    4   5   6   7  8        9
 
     String[] tokens = getTokens(info);
-    Logger.debug("reading Spartan archive info :" + info);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("reading Spartan archive info :" + info);
+    }
     atomCount = parseInt(tokens[0]);
     moCount = parseInt(tokens[1]);
     shellCount = parseInt(tokens[2]);
@@ -138,7 +140,9 @@ class SpartanArchive {
       atom.y = y * AtomSetCollectionReader.ANGSTROMS_PER_BOHR;
       atom.z = z * AtomSetCollectionReader.ANGSTROMS_PER_BOHR;
     }
-    Logger.debug(atomCount + " atoms read");
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(atomCount + " atoms read");
+    }
   }
 
   void addBonds(String data) {
@@ -170,7 +174,9 @@ class SpartanArchive {
         bondCount++;
       }
     }
-    Logger.debug(bondCount + " bonds read");
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(bondCount + " bonds read");
+    }
   }
 
   void readBasis() throws Exception {
@@ -254,8 +260,10 @@ class SpartanArchive {
     }
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
-    Logger.debug(sdata.size() + " slater shells read");
-    Logger.debug(garray.length + " gaussian primitives read");
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(sdata.size() + " slater shells read");
+      Logger.debug(garray.length + " gaussian primitives read");
+    }
   }
 
   void readMolecularOrbital() throws Exception {
@@ -286,7 +294,9 @@ class SpartanArchive {
       mo.put("coefficients", coefficients[i]);
       orbitals.add(mo);
     }
-    Logger.debug(orbitals.size() + " molecular orbitals read");
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(orbitals.size() + " molecular orbitals read");
+    }
     moData.put("mos", orbitals);
   }
 
@@ -358,7 +368,9 @@ class SpartanArchive {
       }
       value = null;
     } else {
-      Logger.debug(" Skipping property line " + line);
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug(" Skipping property line " + line);
+      }
     }
     //Logger.debug(keyName + " = " + value + " ; " + vector);
     if (value != null)
@@ -375,8 +387,10 @@ class SpartanArchive {
     int frequencyCount = parseInt(line);
     Vector vibrations = new Vector();
     Vector freqs = new Vector();
-    Logger.debug("reading VIBFREQ vibration records: frequencyCount = "
-        + frequencyCount);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(
+          "reading VIBFREQ vibration records: frequencyCount = " + frequencyCount);
+    }
     for (int i = 0; i < frequencyCount; ++i) {
       int atomCount0 = atomSetCollection.atomCount;
       atomSetCollection.cloneLastAtomSet();

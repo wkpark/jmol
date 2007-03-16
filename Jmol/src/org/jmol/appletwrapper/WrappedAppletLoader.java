@@ -41,8 +41,9 @@ class WrappedAppletLoader extends Thread {
     
   public void run() {
     long startTime = System.currentTimeMillis();
-    Logger.debug("WrappedAppletLoader.run(" +
-                       wrappedAppletClassName + ")");
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("WrappedAppletLoader.run(" + wrappedAppletClassName + ")");
+    }
     TickerThread tickerThread = new TickerThread(appletWrapper);
     tickerThread.start();
     WrappedApplet wrappedApplet = null;
@@ -58,8 +59,10 @@ class WrappedAppletLoader extends Thread {
     }
     long loadTimeSeconds =
       (System.currentTimeMillis() - startTime + 500) / 1000;
-    Logger.debug(wrappedAppletClassName + " load time = " +
-                       loadTimeSeconds + " seconds");
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(
+          wrappedAppletClassName + " load time = " + loadTimeSeconds + " seconds");
+    }
     if (minimumLoadSeconds != 0) { // optimizer should eliminate all this code
       long minimumEndTime = startTime + 1000 * minimumLoadSeconds;
       int sleepTime = (int)(minimumEndTime - System.currentTimeMillis());

@@ -49,7 +49,9 @@ class TextShape extends Shape {
   
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
 
-    Logger.debug("TextShape.setProperty(" + propertyName + "," + value + ")");
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("TextShape.setProperty(" + propertyName + "," + value + ")");
+    }
 
     if ("allOff" == propertyName) {
       currentText = null;

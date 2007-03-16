@@ -395,7 +395,9 @@ class RepaintManager {
       int targetTime = 0;
       int sleepTime;
       int holdTime = 0;
-      Logger.debug("animation thread " + intThread + " running");
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug("animation thread " + intThread + " running");
+      }
       requestRepaintAndWait();
       try {
         sleepTime = targetTime - (int) (System.currentTimeMillis() - timeBegin);
@@ -417,7 +419,9 @@ class RepaintManager {
               Thread.sleep(sleepTime);
           }
           if (!setAnimationNext()) {
-            Logger.debug("animation thread " + intThread + " exiting");
+            if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+              Logger.debug("animation thread " + intThread + " exiting");
+            }
             setAnimationOff(false);
             return;
           }

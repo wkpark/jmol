@@ -57,7 +57,9 @@ class Jvm12 {
       return;
     }
     if (console == null) {
-      Logger.debug("Jvm12.showConsole(" + showConsole + ")");
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug("Jvm12.showConsole(" + showConsole + ")");
+      }
       try {
         console = new Console(awtComponent, viewer, this);
       } catch (Exception e) {

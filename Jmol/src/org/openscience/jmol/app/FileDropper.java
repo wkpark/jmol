@@ -124,9 +124,11 @@ public class FileDropper implements DropTargetListener {
       if ((df != null) && (df.length > 0)) {
         for (int i = 0; i < df.length; ++ i) {
           DataFlavor flavor = df[i];
-          Logger.debug("df " + i + " flavor " + flavor);
-          Logger.debug("  class: " + flavor.getRepresentationClass().getName());
-          Logger.debug("  mime : " + flavor.getMimeType());
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug("df " + i + " flavor " + flavor);
+            Logger.debug("  class: " + flavor.getRepresentationClass().getName());
+            Logger.debug("  mime : " + flavor.getMimeType());
+          }
 
           if (flavor.getMimeType().startsWith("text/uri-list") &&
               flavor.getRepresentationClass().getName().equals("java.lang.String")) {
@@ -155,7 +157,9 @@ public class FileDropper implements DropTargetListener {
             }
 
             if ((o != null) && (o instanceof String)) {
-              Logger.debug("  String: " + o.toString());
+              if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+                Logger.debug("  String: " + o.toString());
+              }
 
               PropertyChangeEvent pce = new PropertyChangeEvent(
                   this, FD_PROPERTY_FILENAME, fd_oldFileName, o.toString());
@@ -193,7 +197,9 @@ public class FileDropper implements DropTargetListener {
 
             if ((o != null) && (o instanceof String)) {
               String content = (String)o;
-              Logger.debug("  String: " + content);
+              if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+                Logger.debug("  String: " + content);
+              }
               if (content.startsWith("file:/")) {
                 PropertyChangeEvent pce = new PropertyChangeEvent(
                     this, FD_PROPERTY_FILENAME, fd_oldFileName, content);

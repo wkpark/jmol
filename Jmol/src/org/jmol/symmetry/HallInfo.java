@@ -328,8 +328,12 @@ public class HallInfo {
         m2.m23 = -vector12ths.z;
         seitzMatrix12ths.mul(m1, seitzMatrix12ths);
         seitzMatrix12ths.mul(m2);
-      }     
-      Logger.debug("code = "+code + "; primitive code ="+primitiveCode+"\n Seitz Matrix(12ths):"+seitzMatrix12ths);
+      }
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug(
+            "code = "+code + "; primitive code ="+primitiveCode+
+            "\n Seitz Matrix(12ths):"+seitzMatrix12ths);
+      }
     }
   }  
 }

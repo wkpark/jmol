@@ -70,7 +70,9 @@ abstract class MeshCollection extends Shape {
   
   void setProperty(String propertyName, Object value, BitSet bs) {
 
-    Logger.debug("MeshCollection.setProperty(" + propertyName + "," + value + ")");
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("MeshCollection.setProperty(" + propertyName + "," + value + ")");
+    }
     /*
     Logger.debug("meshCount=" + meshCount +
                        " currentMesh=" + currentMesh);

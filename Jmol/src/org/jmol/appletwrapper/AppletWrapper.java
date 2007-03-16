@@ -171,15 +171,19 @@ public class AppletWrapper extends Applet {
     needToCompleteInitialization = false;
     if (preloadImageName != null) {
       try {
-        Logger.debug("loadImage:" + preloadImageName);
+        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          Logger.debug("loadImage:" + preloadImageName);
+        }
         URL urlImage =
           getClass().getClassLoader().getResource(preloadImageName);
         Logger.info("urlImage=" + urlImage);
         if (urlImage != null) {
           preloadImage =
             Toolkit.getDefaultToolkit().getImage(urlImage);
-          Logger.debug("successfully loaded " + preloadImageName);
-          Logger.debug("preloadImage=" + preloadImage);
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug("successfully loaded " + preloadImageName);
+            Logger.debug("preloadImage=" + preloadImage);
+          }
           mediaTracker = new MediaTracker(this);
           mediaTracker.addImage(preloadImage, 0);
           mediaTracker.checkID(0, true);

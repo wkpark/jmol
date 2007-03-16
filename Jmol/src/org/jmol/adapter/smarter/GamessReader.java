@@ -240,8 +240,10 @@ OR:
     }
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
-    Logger.debug(shellCount + " slater shells read");
-    Logger.debug(gaussianCount + " gaussian primitives read");
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(shellCount + " slater shells read");
+      Logger.debug(gaussianCount + " gaussian primitives read");
+    }
   }
 
   /*
@@ -266,7 +268,9 @@ OR:
     while (readLine() != null
         && line.indexOf("--") < 0 && line.indexOf(".....") < 0) {
       String[] tokens = getTokens();
-      Logger.debug(tokens.length + " --- " + line);
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug(tokens.length + " --- " + line);
+      }
       if (line.length() == 0) {
         for (int i = 0; i < nThisLine; i++) {
           float[] coefs = new float[data[i].size()];
@@ -322,7 +326,9 @@ OR:
           continue; // may be "I" for imaginary
         frequencies[lineFreqCount] = frequency;
         lineFreqCount++;
-        Logger.debug(totalFrequencyCount + " frequency=" + frequency);
+        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          Logger.debug(totalFrequencyCount + " frequency=" + frequency);
+        }
         if (lineFreqCount == 5)
           break;
       }

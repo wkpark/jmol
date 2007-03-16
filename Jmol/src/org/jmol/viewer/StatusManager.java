@@ -110,7 +110,9 @@ class StatusManager {
       this.statusList = "";
     }
     this.statusList += statusList;
-    Logger.debug(oldList + "\nmessageQueue = " + this.statusList);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(oldList + "\nmessageQueue = " + this.statusList);
+    }
     return true;
   }
 
@@ -229,7 +231,9 @@ class StatusManager {
       setStatusChanged("newOrientation", 0, strWhy, true);
       if(isSynced && drivingSync) {
         int time = (int) System.currentTimeMillis();
-        Logger.debug(" syncing" + time + " " + lastSyncTimeMs + " " + minSyncRepeatMs );
+        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          Logger.debug(" syncing" + time + " " + lastSyncTimeMs + " " + minSyncRepeatMs );
+        }
         if (lastSyncTimeMs == 0 || time - lastSyncTimeMs >= minSyncRepeatMs) {
           lastSyncTimeMs = time;
           Logger.debug("sending sync");
@@ -259,7 +263,11 @@ class StatusManager {
     drivingSync = (syncMode == 1 ? true : false);
     isSynced = (syncMode > 0 || 
         isSynced && syncMode < 0? true : false);
-    Logger.debug(viewer.getHtmlName() + " " + syncMode + " synced? " + isSynced + " driving?" + drivingSync);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(
+          viewer.getHtmlName() + " " + syncMode +
+          " synced? " + isSynced + " driving?" + drivingSync);
+    }
   }
 
   public void syncSend(String script, String appletName) {

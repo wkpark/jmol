@@ -83,7 +83,9 @@ class PsiReader extends AtomSetCollectionReader {
         } else if (false && iHaveAtoms
             && line.indexOf("Molecular Orbital Coefficients") >= 0) {
           readMolecularOrbitals();
-          Logger.debug(orbitals.size() + " molecular orbitals read");
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug(orbitals.size() + " molecular orbitals read");
+          }
           moData.put("mos", orbitals);
           atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
         } else if (iHaveAtoms && line.indexOf("SCF total energy   =") >= 0) {
@@ -223,8 +225,10 @@ class PsiReader extends AtomSetCollectionReader {
     }
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
-    Logger.debug(shellCount + " slater shells read");
-    Logger.debug(gaussianCount + " gaussian primitives read");
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(shellCount + " slater shells read");
+      Logger.debug(gaussianCount + " gaussian primitives read");
+    }
   }
 
   /*

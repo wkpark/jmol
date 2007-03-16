@@ -59,7 +59,9 @@ class Dipoles extends Shape {
   
   void setProperty(String propertyName, Object value, BitSet bs) {
 
-    Logger.debug("dipoles setProperty " + propertyName + " " + value);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("dipoles setProperty " + propertyName + " " + value);
+    }
 
     if ("init" == propertyName) {
       tempDipole = new Dipole();

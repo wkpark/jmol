@@ -167,11 +167,15 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     jvm12orGreater = viewer.isJvm12orGreater();
     if (jvm12orGreater)
       jvm12 = new Jvm12(appletWrapper, viewer);
-    Logger.debug("checking for jsoWindow mayScript="+mayScript);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("checking for jsoWindow mayScript="+mayScript);
+    }
     if (mayScript) {
       try {
         jsoWindow = JSObject.getWindow(appletWrapper);
-        Logger.debug("jsoWindow="+jsoWindow);
+        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          Logger.debug("jsoWindow="+jsoWindow);
+        }
         if (jsoWindow == null)
           Logger.error("jsoWindow returned null ... no JavaScript callbacks :-(");
         jsoDocument = (JSObject) jsoWindow.getMember("document");
@@ -182,7 +186,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         jsoDocument = null;
         Logger.error("Microsoft MSIE bug -- http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5012558 " + e);
       }
-      Logger.debug("jsoWindow:" + jsoWindow+ " jsoDocument:" + jsoDocument);
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug("jsoWindow:" + jsoWindow+ " jsoDocument:" + jsoDocument);
+      }
     }
   }
 
@@ -351,8 +357,10 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
           jsoWindow.call(messageCallback, new Object[] { htmlName, strMsg });
     } catch (Exception e) {
       if (!haveNotifiedError)
-      Logger.debug("messageCallback call error to " + messageCallback + ": "
-          + e);
+        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          Logger.debug(
+              "messageCallback call error to " + messageCallback + ": " + e);
+        }
       haveNotifiedError = true;
     }
   }
@@ -517,7 +525,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     Logger.info(htmlName + " JmolApplet.scriptButton(" + buttonWindow
         + "," + buttonName + "," + script + "," + buttonCallback);
     if (buttonWindow != null && buttonCallback != null) {
-      Logger.debug("!!!! calling back " + buttonCallback);
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug("!!!! calling back " + buttonCallback);
+      }
       buttonCallbackBefore[0] = buttonName;
       Logger.debug("trying...");
       buttonWindow.call(buttonCallback, buttonCallbackBefore);
@@ -612,7 +622,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     }
     if (viewer.getSyncMode() != 0)
       return;
-    Logger.debug(htmlName + " syncing with script: " + script);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(htmlName + " syncing with script: " + script);
+    }
     script(script);
   }
   
@@ -783,8 +795,10 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
                   fullPathName });
       } catch (Exception e) {
         if (!haveNotifiedError)
-          Logger.debug("loadStructCallback call error to " + loadStructCallback + ": "
-              + e);
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug(
+                "loadStructCallback call error to " + loadStructCallback + ": " + e);
+          }
           haveNotifiedError = true;
       }
 
@@ -803,8 +817,10 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
                 statusMessage, additionalInfo });
       } catch (Exception e) {
         if (!haveNotifiedError)
-          Logger.debug("messageCallback call error to " + messageCallback + ": "
-              + e);
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug(
+                "messageCallback call error to " + messageCallback + ": " + e);
+          }
           haveNotifiedError = true;
       }
 
@@ -840,8 +856,10 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
               new Integer(lastNo) });
       } catch (Exception e) {
         if (!haveNotifiedError)
-          Logger.debug("animFrameCallback call error to " + animFrameCallback + ": "
-              + e);
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug(
+                "animFrameCallback call error to " + animFrameCallback + ": " + e);
+          }
           haveNotifiedError = true;
       }
       if (jmolpopup == null || isAnimationRunning)
@@ -860,8 +878,10 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
                 new Integer(atomIndex) });
       } catch (Exception e) {
         if (!haveNotifiedError)
-          Logger.debug("pickCallback call error to " + pickCallback + ": "
-              + e);
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug(
+                "pickCallback call error to " + pickCallback + ": " + e);
+          }
           haveNotifiedError = true;
       }
     }
@@ -876,8 +896,10 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
                 new Integer(atomIndex) });
       } catch (Exception e) {
         if (!haveNotifiedError)
-          Logger.debug("hoverCallback call error to " + hoverCallback + ": "
-              + e);
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug(
+                "hoverCallback call error to " + hoverCallback + ": " + e);
+          }
           haveNotifiedError = true;
       }
     }
@@ -885,7 +907,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     public void notifyScriptTermination(String errorMessage, int msWalltime) {
       showStatusAndConsole(GT._(errorMessage));
       if (buttonCallbackNotificationPending) {
-        Logger.debug("!!!! calling back " + buttonCallback);
+        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          Logger.debug("!!!! calling back " + buttonCallback);
+        }
         buttonCallbackAfter[0] = buttonName;
         buttonWindow.call(buttonCallback, buttonCallbackAfter);
       }
@@ -921,7 +945,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     }
 
     public void showUrl(String urlString) {
-      Logger.debug("showUrl(" + urlString + ")");
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug("showUrl(" + urlString + ")");
+      }
       if (urlString != null && urlString.length() > 0) {
         try {
           URL url = new URL(urlString);
@@ -946,10 +972,14 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         String theApplet = (String)keys.nextElement();
         if (! theApplet.equals(htmlName) &&
             (appletName == null || appletName == theApplet)) {
-          Logger.debug("sendSyncScript class "+h.get(theApplet).getClass().getName());
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug("sendSyncScript class "+h.get(theApplet).getClass().getName());
+          }
           JmolAppletInterface app = (JmolAppletInterface)(h.get(theApplet));
           try {
-            Logger.debug(htmlName + " sending " + script + " to " + theApplet);
+            if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+              Logger.debug(htmlName + " sending " + script + " to " + theApplet);
+            }
             app.syncScript(script);
           } catch (Exception e) {
             Logger.debug(htmlName + " couldn't send " + script + " to " + theApplet + ": " + e);

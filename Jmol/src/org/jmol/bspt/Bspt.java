@@ -114,8 +114,11 @@ public final class Bspt {
    * prints some simple stats to stdout
    */
   public void stats() {
-    Logger.debug("bspt treeDepth=" + treeDepth +
-                       " count=" + eleRoot.count);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(
+          "bspt treeDepth=" + treeDepth +
+          " count=" + eleRoot.count);
+    }
   }
 
   /*

@@ -185,7 +185,9 @@ class Dots extends AtomShape {
   
   void setProperty(String propertyName, Object value, BitSet bs) {
 
-    Logger.debug("Dots.setProperty: " + propertyName + " " + value);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("Dots.setProperty: " + propertyName + " " + value);
+    }
 
     if ("init" == propertyName) {
       int mode = ((Integer) value).intValue();
@@ -261,7 +263,9 @@ class Dots extends AtomShape {
     // 2 - 1001       (mad-1)/100 * van der Waals
     // 1002 - 11002    (mad - 1002)/1000 set radius 0.0 to 10.0 angstroms
 
-    Logger.debug("Dots.setSize " + size);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("Dots.setSize " + size);
+    }
 
     bsSurface = new BitSet();
     boolean isVisible = true;
@@ -378,7 +382,9 @@ class Dots extends AtomShape {
       dotsConvexMaps = null;
     }
     timeEndExecution = System.currentTimeMillis();
-    Logger.debug("dots generation time = " + getExecutionWalltime());
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("dots generation time = " + getExecutionWalltime());
+    }
   }
 
   float getAppropriateRadius(Atom atom) {

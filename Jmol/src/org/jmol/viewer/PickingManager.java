@@ -216,7 +216,11 @@ class PickingManager {
   }
 
   void setPickingStyle(int pickingStyle) {
-    Logger.debug(" setPickingStyle " + pickingStyle+": " + JmolConstants.getPickingStyleName(pickingStyle));
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(
+          " setPickingStyle " + pickingStyle+": " +
+          JmolConstants.getPickingStyleName(pickingStyle));
+    }
     if (pickingStyle >= JmolConstants.PICKINGSTYLE_MEASURE_ON) {
       pickingStyleMeasure = pickingStyle;
       queuedAtomCount = 0;

@@ -112,7 +112,7 @@ class Compiler {
   }
   
   private void log(String message) {
-    if (logMessages)
+    if (logMessages && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug(message);
   }
 
@@ -984,7 +984,7 @@ class Compiler {
       addTokenToPrefix(Token.tokenOn);
     atokenInfix = new Token[ltoken.size()];
     ltoken.copyInto(atokenInfix);
-    if (logMessages) {
+    if (logMessages && Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       for (int i = 0; i < atokenInfix.length; i++)
         Logger.debug(i + ": " + atokenInfix[i]);
     }

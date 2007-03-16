@@ -60,7 +60,9 @@ class Sticks extends Shape {
   }
   
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
-    Logger.debug(propertyName + " " + value + " " + bsSelected);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(propertyName + " " + value + " " + bsSelected);
+    }
     boolean isBonds = viewer.isBondSelection();
 
     if ("reportAll" == propertyName) {

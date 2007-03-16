@@ -57,7 +57,9 @@ class Hover extends TextShape {
 
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
 
-    Logger.debug("Hover.setProperty(" + propertyName + "," + value + ")");
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("Hover.setProperty(" + propertyName + "," + value + ")");
+    }
 
     if ("target" == propertyName) {
       if (value == null)

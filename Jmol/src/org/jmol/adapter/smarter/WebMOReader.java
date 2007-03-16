@@ -85,7 +85,9 @@ class WebMOReader extends AtomSetCollectionReader {
     } catch (Exception e) {
       return setError(e);
     }
-    Logger.debug(orbitals.size() + " molecular orbitals read");
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(orbitals.size() + " molecular orbitals read");
+    }
     moData.put("mos", orbitals);
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
     return atomSetCollection;
@@ -235,8 +237,10 @@ class WebMOReader extends AtomSetCollectionReader {
       garray[i]=(float[])gdata.get(i);
     moData.put("shells", sdata);
     moData.put("gaussians", garray);
-    Logger.debug(sdata.size() + " slater shells read");
-    Logger.debug(garray.length + " gaussian primitives read");
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(sdata.size() + " slater shells read");
+      Logger.debug(garray.length + " gaussian primitives read");
+    }
   }
 
   void readSlaterBasis() throws Exception {

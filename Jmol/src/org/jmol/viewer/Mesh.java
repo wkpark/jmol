@@ -267,7 +267,7 @@ class Mesh {
     for (int i = vertexCount; --i >= 0; )
       for (int j = i; --j >= 0; ) {
         float dist2 = vertices[i].distanceSquared(vertices[j]);
-        if (dist2 < cutoff2) {
+        if ((dist2 < cutoff2) && Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
           Logger.debug("Mesh.checkForDuplicates " +
                              vertices[i] + "<->" + vertices[j] +
                              " : " + Math.sqrt(dist2));

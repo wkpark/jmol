@@ -294,8 +294,11 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   void setProperty(String propertyName, Object value, BitSet bs) {
 
-    Logger.debug("Isosurface state=" + state + " setProperty: " + propertyName
-        + " = " + value);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(
+          "Isosurface state=" + state +
+          " setProperty: " + propertyName + " = " + value);
+    }
 
     if ("init" == propertyName) {
       script = (String) value;
@@ -867,7 +870,7 @@ class Isosurface extends IsosurfaceMeshCollection {
         super.setProperty("color", "sets", null);
       }
       setModelIndex();
-      if (logMessages && thePlane == null && !isSilent)
+      if (logMessages && thePlane == null && !isSilent && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
         Logger.debug("\n" + jvxlGetFile(thisMesh, jvxlFileMessage, true, 1));
       discardTempData(jvxlDataIs2dContour);
       dataType = SURFACE_NONE;
@@ -1109,7 +1112,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       mappedDataMin = getMinMappedValue();
       mappedDataMax = getMaxMappedValue();
     }
-    if (logMessages)
+    if (logMessages && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug("setMapRanges: all mapped data " + mappedDataMin + " to "
           + mappedDataMax + ", red-blue selected " + valueMappedToRed + " to "
           + valueMappedToBlue);
@@ -1123,7 +1126,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       valueMappedToRed = mappedDataMin;
       valueMappedToBlue = mappedDataMax;
     }
-    if (logMessages)
+    if (logMessages && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug("setMapRanges: " + mappedDataMin + " " + mappedDataMax + " "
           + valueMappedToRed + " " + valueMappedToBlue);
     thisMesh.valueMappedToRed = valueMappedToRed;
@@ -1139,7 +1142,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       associateNormals = false;
     if (viewer.getTestFlag4()) // turn off 2-sided if showing normals
       force2SidedTriangles = false;
-    if (logMessages) {
+    if (logMessages && Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug("Isosurface using testflag4: no 2-sided triangles = "
           + !force2SidedTriangles);
       Logger.debug("Isosurface using testflag2: no associative grouping = "
@@ -1309,11 +1312,11 @@ class Isosurface extends IsosurfaceMeshCollection {
       default:
         readTitleLines();
         readAtomCountAndOrigin();
-        if (!isSilent)
+        if (!isSilent && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
           Logger.debug("voxel grid origin:" + volumetricOrigin);
         for (int i = 0; i < 3; ++i) {
           readVoxelVector(i);
-          if (!isSilent)
+          if (!isSilent && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
             Logger.debug("voxel grid vector:" + volumetricVectors[i]);
         }
       }
@@ -1384,7 +1387,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       isAngstroms = true;
 
     negativeAtomCount = (atomCount < 0);
-    if (!isSilent)
+    if (!isSilent && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug("atom Count: " + atomCount);
 
     if (negativeAtomCount)
@@ -1537,7 +1540,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     int nPoints = nPointsX * nPointsY * nPointsZ;
     if (nPointsX <= 0 || nPointsY <= 0 || nPointsZ <= 0)
       return;
-    if (!isSilent)
+    if (!isSilent && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug("entering readVoxelData for fileIndex = " + fileIndex + "; "
           + nPoints + " data points mapping=" + isMapData);
 
@@ -1681,7 +1684,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       thisMesh.jvxlSurfaceData = (thePlane == null ? surfaceData : "");
       thisMesh.jvxlPlane = thePlane;
     }
-    if (!isSilent)
+    if (!isSilent && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug("Successfully read " + nPointsX + " x " + nPointsY + " x "
           + nPointsZ + " data points; " + edgeCount + " edges");
   }
@@ -1996,7 +1999,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     int vertexCount = thisMesh.vertexCount;
     Vector3f[] vectorSums = new Vector3f[vertexCount];
 
-    if (!isSilent)
+    if (!isSilent && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug(" initializeMesh " + vertexCount);
     /* 
      * OK, so if there is an associated grid point (because the 
@@ -2074,7 +2077,7 @@ class Isosurface extends IsosurfaceMeshCollection {
           ch = jvxlValueAsCharacter2(value, min, max, colorFractionBase,
               colorFractionRange);
           list1 += remainder;
-          if (logCompression)
+          if (logCompression && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
             Logger.debug("setcolor precision "
                 + value
                 + " as '"
@@ -2174,7 +2177,9 @@ class Isosurface extends IsosurfaceMeshCollection {
       if (challenger < min)
         min = challenger;
     }
-    Logger.debug("minimum mapped value: " + min);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("minimum mapped value: " + min);
+    }
     return min;
   }
 
@@ -2193,7 +2198,9 @@ class Isosurface extends IsosurfaceMeshCollection {
         if (challenger < min)
           min = challenger;
       }
-    Logger.debug("minimum mapped value: " + min);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("minimum mapped value: " + min);
+    }
     return min;
   }
 
@@ -2226,7 +2233,9 @@ class Isosurface extends IsosurfaceMeshCollection {
         if (challenger > max && challenger != Float.MAX_VALUE)
           max = challenger;
       }
-    Logger.debug("maximum mapped value: " + max);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("maximum mapped value: " + max);
+    }
     return max;
   }
 
@@ -4664,7 +4673,7 @@ class Isosurface extends IsosurfaceMeshCollection {
         solvent_atomNo[i] = -1;
         solvent_atomRadius[i] = r;
         solvent_ptAtom[i] = hAtoms[i];
-        if (logMessages)
+        if (logMessages && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
           Logger.debug("draw {" + hAtoms[i].x + " " + hAtoms[i].y + " "
               + hAtoms[i].z + "};");
       }
@@ -4931,7 +4940,9 @@ class Isosurface extends IsosurfaceMeshCollection {
               voxelData[x][y][z] = maxValue;
             }
     }
-    Logger.debug("solvent surface time:" + (System.currentTimeMillis() - time));
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("solvent surface time:" + (System.currentTimeMillis() - time));
+    }
   }
 
   void setGridLimitsForAtom(Point3f ptA, float rA, Point3i pt0, Point3i pt1) {
@@ -5224,7 +5235,9 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   void createLcaoLobe(Vector3f lobeAxis, float factor) {
     initState();
-    Logger.debug("creating isosurface " + thisMesh.thisID);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("creating isosurface " + thisMesh.thisID);
+    }
     if (lobeAxis == null) {
       setProperty("sphere", new Float(factor / 2f), null);
       return;

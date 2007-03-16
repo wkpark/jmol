@@ -75,7 +75,9 @@ class Normix3D {
       for (int i = 0; i < normixCount; ++i) {
         short normix = getNormix(Geodesic3D.vertexVectors[i]);
         if (normix != i)
-          Logger.debug("" + i + " -> " + normix);
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug("" + i + " -> " + normix);
+          }
       }
       short[] neighborVertexes =
         Geodesic3D.neighborVertexesArrays[NORMIX_GEODESIC_LEVEL];
@@ -105,8 +107,10 @@ class Normix3D {
         vSum.normalize();
       }
       runTime = System.currentTimeMillis() - timeBegin;
-      Logger.debug("base runtime for " + runCount + " -> " +
-                         runTime + " ms");
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug(
+            "base runtime for " + runCount + " -> " + runTime + " ms");
+      }
 
       timeBegin = System.currentTimeMillis();
       for (int i = 0; i < runCount; ++i) {
@@ -124,19 +128,19 @@ class Normix3D {
         vSum.add(vFoo, vBar);
         short sum = getNormix(vSum);
         if (sum != foo && sum != bar) {
-          Logger.debug("foo:" + foo + " -> " +
-                             Geodesic3D.vertexVectors[foo] + "\n" +
-                             "bar:" + bar + " -> " +
-                             Geodesic3D.vertexVectors[bar] + "\n" +
-                             "sum:" + sum + " -> " +
-                             Geodesic3D.vertexVectors[sum] + "\n" +
-                             "foo.dist="+dist2(vSum,
-                                                  Geodesic3D.vertexVectors[foo])+"\n"+
-                             "bar.dist="+dist2(vSum,
-                                                  Geodesic3D.vertexVectors[bar])+"\n"+
-                             "sum.dist="+dist2(vSum,
-                                                  Geodesic3D.vertexVectors[sum])+"\n"+
-                             "\nvSum:" + vSum + "\n");
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug(
+                "foo:" + foo + " -> " +
+                Geodesic3D.vertexVectors[foo] + "\n" +
+                "bar:" + bar + " -> " +
+                Geodesic3D.vertexVectors[bar] + "\n" +
+                "sum:" + sum + " -> " +
+                Geodesic3D.vertexVectors[sum] + "\n" +
+                "foo.dist="+dist2(vSum, Geodesic3D.vertexVectors[foo])+"\n"+
+                "bar.dist="+dist2(vSum, Geodesic3D.vertexVectors[bar])+"\n"+
+                "sum.dist="+dist2(vSum, Geodesic3D.vertexVectors[sum])+"\n"+
+                "\nvSum:" + vSum + "\n");
+          }
           throw new NullPointerException();
         }
         short sum2 = getNormix(vSum);
@@ -221,13 +225,12 @@ class Normix3D {
         if (champSeqD2 + .01 < championDist2) {
           Logger.debug("?que? getNormix is messed up?");
           boolean considered = bsConsidered.get(champSeq);
-          Logger.debug("Was the sequential winner considered? " +
-                             considered);
-          Logger.debug("champion " + champion + " @ " +
-                             championDist2 +
-                             " sequential champ " + champSeq + " @ " +
-                             champSeqD2 +
-                             "\n");
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug("Was the sequential winner considered? " + considered);
+            Logger.debug(
+                "champion " + champion + " @ " + championDist2 +
+                " sequential champ " + champSeq + " @ " + champSeqD2 + "\n");
+          }
           return (short)champSeq;
         }
       }
@@ -341,10 +344,13 @@ class Normix3D {
         if (d2At < d2Nt ||
             d2Bt < d2Nt ||
             d2Ct < d2Nt) {
-          Logger.debug(" d2At =" + d2At +
-                             " d2Bt =" + d2Bt +
-                             " d2Ct =" + d2Ct +
-                             " d2Nt =" + d2Nt);
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug(
+                " d2At =" + d2At +
+                " d2Bt =" + d2Bt +
+                " d2Ct =" + d2Ct +
+                " d2Nt =" + d2Nt);
+          }
         }
       }
  

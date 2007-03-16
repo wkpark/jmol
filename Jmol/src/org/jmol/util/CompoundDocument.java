@@ -270,10 +270,12 @@ public class CompoundDocument extends BinaryDocument {
     nShortSectorsPerStandardSector = sectorSize / shortSectorSize; // e.g. 512 / 64 = 8
     nIntPerSector = sectorSize / 4; // e.g. 512 / 4 = 128
     nDirEntriesperSector = sectorSize / 128; // e.g. 512 / 128 = 4
-    Logger.debug("compound document: revNum=" + header.revNumber
-        + " verNum=" + header.verNumber + " isBigEndian=" + isBigEndian
-        + " bytes per standard/short sector=" + sectorSize + "/"
-        + shortSectorSize);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(
+          "compound document: revNum=" + header.revNumber +
+          " verNum=" + header.verNumber + " isBigEndian=" + isBigEndian +
+          " bytes per standard/short sector=" + sectorSize + "/" + shortSectorSize);
+    }
     return true;
   }
 

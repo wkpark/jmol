@@ -124,7 +124,9 @@ class Console implements ActionListener, WindowListener {
   }
 
   void setVisible(boolean visible) {
-    Logger.debug("Console.setVisible(" + visible + ")");
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("Console.setVisible(" + visible + ")");
+    }
     jf.setVisible(visible);
     input.requestFocus();
   }

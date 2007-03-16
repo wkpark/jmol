@@ -102,7 +102,9 @@ final class Line3D {
     lineBits = (BitSet) lineCache.get(slopeKey);
     nFound++;
     if (nFound == 1000000)
-      Logger.debug("nCached/nFound lines: " + nCached + " " + nFound);
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug("nCached/nFound lines: " + nCached + " " + nFound);
+      }
     return true;
   }
   

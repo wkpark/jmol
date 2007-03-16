@@ -400,8 +400,11 @@ class DotsRenderer extends ShapeRenderer {
         throw new NullPointerException();
       }
       if (iVertexNew != nVerticesNew) {
-        Logger.debug("huh? " + " iVertexNew=" + iVertexNew +
-                           "nVerticesNew=" + nVerticesNew);
+        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          Logger.debug(
+              "huh? " + " iVertexNew=" + iVertexNew +
+              "nVerticesNew=" + nVerticesNew);
+        }
         throw new NullPointerException();
       }
       htVertex = null;

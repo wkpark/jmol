@@ -186,7 +186,9 @@ public class GT {
       }
     }
     if (translationResourcesCount > 0) {
-      Logger.debug("No trans, using default: " + string);
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug("No trans, using default: " + string);
+      }
     }
     return string;
   }
@@ -206,7 +208,9 @@ public class GT {
     }
     trans = MessageFormat.format(string, objects);
     if (translationResourcesCount > 0) {
-      Logger.debug("No trans, using default: " + trans);
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug("No trans, using default: " + trans);
+      }
     }
     return trans;
   }

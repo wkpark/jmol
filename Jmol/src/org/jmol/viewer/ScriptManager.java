@@ -67,7 +67,9 @@ class ScriptManager {
       viewer.haltScriptExecution();
     }
     scriptQueue.add(scriptItem);
-    Logger.debug(scriptQueue.size() + " scripts; added: " + strScript);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(scriptQueue.size() + " scripts; added: " + strScript);
+    }
     startScriptQueue();
     return "pending";
   }
@@ -86,8 +88,10 @@ class ScriptManager {
       try {
         Thread.sleep(100);
         if (((n++) % 10) == 0)
-          Logger.debug("...scriptManager waiting for queue: "
-              + scriptQueue.size());
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug(
+                "...scriptManager waiting for queue: " + scriptQueue.size());
+          }
       } catch (InterruptedException e) {
       }
     }
@@ -102,7 +106,9 @@ class ScriptManager {
     String returnType = (String) scriptItem.get(2);
     boolean isScriptFile = ((Boolean) scriptItem.get(3)).booleanValue();
     boolean isQuiet = ((Boolean) scriptItem.get(4)).booleanValue();
-    Logger.debug(scriptQueue.size() + " scripts; running: " + script);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(scriptQueue.size() + " scripts; running: " + script);
+    }
     scriptQueue.remove(0);
     Object returnInfo = runScript(returnType, script, statusList, isScriptFile,
         isQuiet);

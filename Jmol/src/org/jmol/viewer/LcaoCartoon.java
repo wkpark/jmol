@@ -51,7 +51,9 @@ class LcaoCartoon extends Isosurface {
 
   void setProperty(String propertyName, Object value, BitSet bs) {
 
-    Logger.debug("\nLcaoCartoon.setProperty " + propertyName + " " + value);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("\nLcaoCartoon.setProperty " + propertyName + " " + value);
+    }
 
     // in the case of molecular orbitals, we just cache the information and
     // then send it all at once. 

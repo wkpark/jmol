@@ -380,13 +380,16 @@ public final class Frame {
   void dumpAtomSetNameDiagnostics(JmolAdapter adapter, Object clientFile) {
     int frameModelCount = getModelCount();
     int adapterAtomSetCount = adapter.getAtomSetCount(clientFile);
-    Logger.debug("----------------\n" + "debugging of AtomSetName stuff\n"
-        + "\nframeModelCount=" + frameModelCount + "\nadapterAtomSetCount="
-        + adapterAtomSetCount + "\n -- \n");
-    for (int i = 0; i < adapterAtomSetCount; ++i) {
-      Logger.debug("atomSetName[" + i + "]="
-          + adapter.getAtomSetName(clientFile, i) + " atomSetNumber[" + i
-          + "]=" + adapter.getAtomSetNumber(clientFile, i));
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(
+          "----------------\n" + "debugging of AtomSetName stuff\n" +
+          "\nframeModelCount=" + frameModelCount +
+          "\nadapterAtomSetCount=" + adapterAtomSetCount + "\n -- \n");
+      for (int i = 0; i < adapterAtomSetCount; ++i) {
+        Logger.debug(
+            "atomSetName[" + i + "]=" + adapter.getAtomSetName(clientFile, i) +
+            " atomSetNumber[" + i + "]=" + adapter.getAtomSetNumber(clientFile, i));
+      }
     }
   }
 
@@ -1629,7 +1632,7 @@ public final class Frame {
       }
       iter.release();
     }
-    if (showRebondTimes) {
+    if (showRebondTimes && Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       long timeEnd = System.currentTimeMillis();
       Logger.debug("Time to autoBond=" + (timeEnd - timeBegin));
     }
@@ -1727,7 +1730,7 @@ public final class Frame {
       }
       iter.release();
     }
-    if (showRebondTimes) {
+    if (showRebondTimes && Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       long timeEnd = System.currentTimeMillis();
       Logger.debug("Time to hbond=" + (timeEnd - timeBegin));
     }
@@ -3372,8 +3375,9 @@ public final class Frame {
     x.normalize();
     z.normalize();
 
-    Logger
-        .debug(atom.getIdentity() + " nBonds=" + nBonds + " " + hybridization);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(atom.getIdentity() + " nBonds=" + nBonds + " " + hybridization);
+    }
     if (hybridizationCompatible) {
       if (hybridization == "")
         return false;

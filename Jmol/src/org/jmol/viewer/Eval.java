@@ -558,7 +558,9 @@ class Eval { //implements Runnable {
     if (!interruptExecution.booleanValue()) {
       if (!executionPaused.booleanValue())
         return true;
-      Logger.debug("script execution paused at this command: " + thisCommand);
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug("script execution paused at this command: " + thisCommand);
+      }
       try {
         while (executionPaused.booleanValue()) {
           Thread.sleep(100);
@@ -706,7 +708,7 @@ class Eval { //implements Runnable {
       } else {
         if (debugScript)
           logDebugScript();
-        if (logMessages)
+        if (logMessages && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
           Logger.debug(token.toString());
         if (ifLevel > 0 && ifs[ifLevel] < 0 && token.tok != Token.endifcmd
             && token.tok != Token.ifcmd && token.tok != Token.elsecmd)
@@ -1047,7 +1049,7 @@ class Eval { //implements Runnable {
 
   void logDebugScript() {
     strbufLog.setLength(0);
-    if (logMessages) {
+    if (logMessages && Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug(statement[0].toString());
       for (int i = 1; i < statementLength; ++i)
         Logger.debug(statement[i].toString());
@@ -2046,7 +2048,9 @@ class Eval { //implements Runnable {
         float w = Graphics3D.getNormalThroughPoints(pt1, pt2, pt3, plane, vAB,
             vAC);
         Point4f p = new Point4f(plane.x, plane.y, plane.z, w);
-        Logger.debug("points: " + pt1 + pt2 + pt3 + " defined plane: " + p);
+        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+          Logger.debug("points: " + pt1 + pt2 + pt3 + " defined plane: " + p);
+        }
         return p;
       }
     evalError(GT
@@ -7242,7 +7246,7 @@ class Eval { //implements Runnable {
             data = TextFormat.simpleReplace(data, "}", " ");
             data = TextFormat.simpleReplace(data, "|", "\n");
             data = TextFormat.simpleReplace(data, "\n\n", "\n");
-            if (logMessages)
+            if (logMessages && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
               Logger.debug("pmesh inline data:\n" + data);
             t = viewer.getBufferedReaderForString(data);
           } else {

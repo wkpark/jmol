@@ -1744,7 +1744,9 @@ final public class Graphics3D {
       return Colix.getColix(((Integer) obj).intValue());
     if (obj instanceof String)
       return getColix((String) obj);
-    Logger.debug("?? getColix(" + obj + ")");
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("?? getColix(" + obj + ")");
+    }
     return HOTPINK;
   }
 

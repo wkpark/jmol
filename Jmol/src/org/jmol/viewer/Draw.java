@@ -76,7 +76,9 @@ class Draw extends MeshCollection {
   String title;
 
   void setProperty(String propertyName, Object value, BitSet bs) {
-    Logger.debug("draw " + propertyName + " " + value);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("draw " + propertyName + " " + value);
+    }
 
     if ("init" == propertyName) {
       colix = Graphics3D.ORANGE;

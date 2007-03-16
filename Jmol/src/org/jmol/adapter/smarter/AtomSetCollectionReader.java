@@ -330,7 +330,9 @@ abstract class AtomSetCollectionReader {
     if (i >= 6 && Float.isNaN(notionalUnitCell[6]))
       initializeCartesianToFractional();
     notionalUnitCell[i] = x;
-    Logger.debug("setunitcellitem " + i + " " + x);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("setunitcellitem " + i + " " + x);
+    }
     if (i < 6)
       iHaveUnitCell = checkUnitCell(6);
     else

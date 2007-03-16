@@ -4850,6 +4850,8 @@ class Isosurface extends IsosurfaceMeshCollection {
         if (solvent_ptAtom[iAtom] instanceof Atom) {
           ptA = solvent_ptAtom[iAtom];
           rA = solvent_atomRadius[iAtom] + solventRadius;
+          if (isWithin && ptA.distance(point) > distance + rA + 0.5)
+            continue;
           setGridLimitsForAtom(ptA, rA - solventRadius, ptA0, ptA1);
           AtomIterator iter = frame.getWithinModelIterator((Atom) ptA, rA
               + solventRadius + maxRadius);
@@ -4862,6 +4864,8 @@ class Isosurface extends IsosurfaceMeshCollection {
             if (!bsSolventSelected.get(ptB.atomIndex))
               continue;
             rB = solventWorkingRadius(ptB) + solventRadius;
+            if (isWithin && ptB.distance(point) > distance + rB + 0.5)
+              continue;
             if (solvent_quickPlane && thePlane != null
                 && Math.abs(distancePointToPlane(ptB, thePlane)) > 2 * rB)
               continue;
@@ -4888,7 +4892,7 @@ class Isosurface extends IsosurfaceMeshCollection {
                   if (!Float.isNaN(dVS)) {
                     float v = solventRadius - dVS;
                     if (v < voxelData[i][j][k]) {
-                      voxelData[i][j][k] = v;
+                      voxelData[i][j][k] = (isWithin && ptXyzTemp.distance(point) > distance ? Float.NaN : v);
                       if (isProperty && iAtom < solvMax         
                           && (iPt = solvent_atomNo[iAtom]) >= 0 && iPt < propMax) {
                         property[i][j][k] = theProperty[iPt];

@@ -299,7 +299,9 @@ class Triangle3D {
         generateRaster(nLines, iMinY, iMaxY, axE, azE, 0, gouraudE);
       }
     }
-    fillRaster(yMin, nLines, useGouraud, isClipped, g3d.haveAlphaTranslucent ? 1 : 0);
+    g3d.setZMargin(5);
+    fillRaster(yMin, nLines, useGouraud, isClipped);
+    g3d.setZMargin(0);
   }
 
   private final static int DEFAULT = 64;
@@ -408,7 +410,7 @@ class Triangle3D {
   private static int bar;
 
   private void fillRaster(int y, int numLines, boolean useGouraud,
-                          boolean isClipped, int correction) {
+                          boolean isClipped) {
     //Logger.debug("fillRaster("+y+","+numLines+","+paintFirstLine);
     int i = 0;
     ++bar;
@@ -419,32 +421,27 @@ class Triangle3D {
     }
     if (y + numLines > g3d.height)
       numLines = g3d.height - y;
-    //numLines = numLines - correction;
     //System.out.println("fill: " + numLines + " " + (axE[0] - axW[0]));
-    if (numLines == 1 &&  (axE[0] - axW[0]) == 0)
-      correction = 0;
     if (isClipped) {
-      for (; --numLines >= correction; ++y, ++i) {
+      for (; --numLines >= 1; ++y, ++i) {
         int xW = axW[i];
-        int pixelCount = axE[i] - xW + 1 - correction;
+        int pixelCount = axE[i] - xW + 1;
         if (pixelCount > 0) {
+          //System.out.println("-plotrow y:" + y + " dx:" + pixelCount + " x:" + xW);
           g3d.plotPixelsClipped(pixelCount, xW, y, azW[i], azE[i],
               useGouraud ? rgb16sW[i] : null, useGouraud ? rgb16sE[i] : null);
         }
       }
     } else {
-      for (; --numLines >= correction; ++y, ++i) {
+      for (; --numLines>= 0; ++y, ++i) {
         int xW = axW[i];
-        int pixelCount = axE[i] - xW + 1 - correction;
+        int pixelCount = axE[i] - xW + 1;
         //System.out.println("pixelcount = " +pixelCount);
-        // miguel 2005 01 13
-        // not sure exactly why we are getting pixel counts of 0 here
-        // it means that the east/west lines are crossing by 1
-        // something must be going wrong with the scaled addition
         if (pixelCount > 0) {
-          /*
-           * System.out.println("plotrow y:" + y + " dx:" + pixelCount + " x:" + xW);
-           */g3d.plotPixelsUnclipped(pixelCount, xW, y, azW[i], azE[i],
+          
+           //if(y==4)System.out.println("plotrow y:" + y + " dx:" + pixelCount + " x:" + xW);
+           
+          g3d.plotPixelsUnclipped(pixelCount, xW, y, azW[i], azE[i],
               useGouraud ? rgb16sW[i] : null, useGouraud ? rgb16sE[i] : null);
         }
       }

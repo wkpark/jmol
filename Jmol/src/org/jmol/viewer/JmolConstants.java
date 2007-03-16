@@ -2849,10 +2849,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     StringBuffer s = new StringBuffer();
     //for menu presentation order
     for (int i = 1; i < GROUPID_PURINE_MIN; i++)
-      s.append(",[" + (predefinedGroup3Names[i]+"   ").substring(0,3)+"]");
+      s.append(",[").append((predefinedGroup3Names[i]+"   ").substring(0,3)+"]");
     s.append(",[G  ],[C  ],[A  ],[T  ],[I  ],[U  ],[+G ],[+C ],[+A ],[+T ],[+I ],[+U ]");
     s.append(allCarbohydrates);
-    return "" + s;
+    return s.toString();
   }
   
   public final static boolean isHetero(String group3) {

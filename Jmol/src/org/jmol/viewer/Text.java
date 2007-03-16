@@ -565,14 +565,14 @@ class Text {
       case XYZ:
         if (strOff == null)
           strOff = StateManager.escape(xyz);
-        s.append("echo = " + target + " " + strOff);
+        s.append("echo = ").append(target).append(" ").append(strOff);
         if (align != LEFT)
-          s.append("echo = " + target + " " + hAlignNames[align]);
+          s.append("echo = ").append(target).append(" ").append(hAlignNames[align]);
         break;
       default:
-        s.append("echo = " + vAlignNames[valign] + " " + hAlignNames[align]);
+        s.append("echo = ").append(vAlignNames[valign]).append(" ").append(hAlignNames[align]);
       }
-      s.append(";echo " + StateManager.escape(textUnformatted) + ";\n");
+      s.append(";echo ").append(StateManager.escape(textUnformatted)).append(";\n");
     }
     //isDefine and target==top: do all
     //isDefine and target!=top: just start
@@ -583,10 +583,10 @@ class Text {
     if (isDefine != target.equals("top"))
       return s.toString();
     // these may not change much:
-    s.append(Shape.getFontCommand("echo", font) + ";\n");
-    s.append("color echo [x" + g3d.getHexColorFromIndex(colix) + "]");
+    s.append(Shape.getFontCommand("echo", font)).append(";\n");
+    s.append("color echo [x").append(g3d.getHexColorFromIndex(colix)).append("]");
     if (bgcolix != 0)
-      s.append(";background echo [x" + g3d.getHexColorFromIndex(bgcolix) + "]");
+      s.append(";background echo [x").append(g3d.getHexColorFromIndex(bgcolix)).append("]");
     s.append(";\n");
     return s.toString();
   }

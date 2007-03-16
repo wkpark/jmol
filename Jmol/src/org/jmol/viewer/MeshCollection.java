@@ -270,7 +270,7 @@ abstract class MeshCollection extends Shape {
       Mesh mesh = meshes[i];
       if (mesh.modelIndex > 0 && modelCount > 1)
         appendCmd(s, "frame " + viewer.getModelNumber(mesh.modelIndex));
-      s.append(cmd + "\n");
+      s.append(cmd).append("\n");
       if (cmd.charAt(0) != '#') {
         s.append(getMeshState(mesh, myType));
         if (mesh.vertexColixes == null)

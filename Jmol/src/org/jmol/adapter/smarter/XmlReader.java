@@ -203,7 +203,7 @@ class XmlReader extends AtomSetCollectionReader {
     int cchBuf = reader.read(buf);
     reader.reset();
     StringBuffer str = new StringBuffer();
-    return "" + str.append(buf, 0, cchBuf);
+    return str.append(buf, 0, cchBuf).toString();
   }
 
   String getXmlType(BufferedReader reader) throws Exception  {

@@ -417,8 +417,9 @@ class StateManager {
       appendCmd(str, "minBondDistance = " + minBondDistance);
       appendCmd(str, "percentVdwAtom = " + percentVdwAtom);
       if (zeroBasedXyzRasmol)
-        appendCmd(str, "zeroBasedXyzRasmol = true");      
-      return str + "\n";
+        appendCmd(str, "zeroBasedXyzRasmol = true");
+      str.append("\n");
+      return str.toString();
     }
 
     private final Point3f ptDefaultLattice = new Point3f();
@@ -551,7 +552,8 @@ class StateManager {
       str.append(getSpecularState());
       if (stereoState != null)
         appendCmd(str, "stereo" + stereoState);
-      return str + "\n";
+      str.append("\n");
+      return str.toString();
     }
 
     String getSpecularState() {
@@ -752,7 +754,8 @@ class StateManager {
       for (int i = 0; i < n; i++)
         if (list[i] != null)
           appendCmd(commands, list[i]);
-      return commands + "\n";
+      commands.append("\n");
+      return commands.toString();
     }
     
     String getState() {
@@ -808,7 +811,8 @@ class StateManager {
       for (int i = 0; i < n; i++)
         if (list[i] != null)
           appendCmd(commands, list[i]);
-      return commands + "\n";
+      commands.append("\n");
+      return commands.toString();
     }
     
     void registerAllValues() {
@@ -945,7 +949,7 @@ class StateManager {
         iLast = i;
       }
     }
-    s.append("}" + chClose);
+    s.append("}").append(chClose);
     return s.toString();
   }
  
@@ -1092,6 +1096,6 @@ class StateManager {
   static void appendCmd(StringBuffer s, String cmd) {
     if (cmd.length() == 0)
       return;
-    s.append(cmd + ";\n");
+    s.append(cmd).append(";\n");
   }
 }

@@ -206,20 +206,25 @@ class RepaintManager {
   String getState() {
     if (modelCount < 2)
       return "";
-    StringBuffer commands = new StringBuffer("# frame state;\n# modelCount "
-        + modelCount + ";\n# first " + viewer.getModelNumberDotted(0) + ";\n# last "
-        + viewer.getModelNumberDotted(modelCount - 1) + ";\n");
+    StringBuffer commands = new StringBuffer("# frame state;\n# modelCount ").
+      append(modelCount).append(";\n# first ").
+      append(viewer.getModelNumberDotted(0)).append(";\n# last ").
+      append(viewer.getModelNumberDotted(modelCount - 1)).append(";\n");
     if (backgroundModelIndex >= 0)
-      commands.append("background model " + backgroundModelIndex + ";\n");
+      commands.append("background model ").append(backgroundModelIndex).append(";\n");
     if (true || currentModelIndex >= 0) {
-      commands.append("frame RANGE " + viewer.getModelNumberDotted(firstModelIndex)
-          + " " + viewer.getModelNumberDotted(lastModelIndex) + ";\n");
-      commands.append("animation DIRECTION "
-          + (animationDirection == 1 ? "+1" : "-1") + ";\n");
-      commands.append("animation " + (animationOn ? "ON" : "OFF") + ";\n");
+      commands.append("frame RANGE ").
+               append(viewer.getModelNumberDotted(firstModelIndex)).append(" ").
+               append(viewer.getModelNumberDotted(lastModelIndex)).append(";\n");
+      commands.append("animation DIRECTION ").
+               append(animationDirection == 1 ? "+1" : "-1").append(";\n");
+      commands.append("animation ").
+               append(animationOn ? "ON" : "OFF").append(";\n");
       if (animationOn && animationPaused)
         commands.append("animation PAUSE;\n");
-      commands.append("frame " + viewer.getModelNumberDotted(currentModelIndex) + ";\n");
+      commands.append("frame ").
+               append(viewer.getModelNumberDotted(currentModelIndex)).
+               append(";\n");
     } else {
       commands.append("frame ALL;\n");
     }

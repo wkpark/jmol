@@ -3502,16 +3502,18 @@ public final class Frame {
       int n = 0;
       for (int i = 0; i < atomCount; i++)
         if (tainted.get(i)) {
-          s
-              .append((i + 1) + " " + atoms[i].getElementSymbol() + " "
-                  + TextFormat.simpleReplace(atoms[i].getIdentity(), " ", "_")
-                  + " " + atoms[i].x + " " + atoms[i].y + " " + atoms[i].z
-                  + " ;\n");
+          s.append(i + 1).
+            append(" ").append(atoms[i].getElementSymbol()).
+            append(" ").append(TextFormat.simpleReplace(atoms[i].getIdentity(), " ", "_")).
+            append(" ").append(atoms[i].x).
+            append(" ").append(atoms[i].y).
+            append(" ").append(atoms[i].z).append(" ;\n");
           ++n;
         }
-      commands.append("DATA \"coord set\"\n" + n
-          + " ;\nJmol Coordinate Data Format 1 -- Jmol "
-          + Viewer.getJmolVersion() + ";\n");
+      commands.append("DATA \"coord set\"\n").append(n).
+               append(" ;\nJmol Coordinate Data Format 1 -- Jmol ").
+               append(Viewer.getJmolVersion()).
+               append(";\n");
       commands.append(s);
       commands.append("end \"coord set\";\n");
     }
@@ -3522,7 +3524,7 @@ public final class Frame {
     Vector fs = stateScripts;
     int len = fs.size();
     for (int i = 0; i < len; i++)
-      commands.append(fs.get(i) + "\n");
+      commands.append(fs.get(i)).append("\n");
 
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
     ((Labels) shapes[JmolConstants.SHAPE_LABELS]).getDefaultState(commands);

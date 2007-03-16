@@ -434,7 +434,7 @@ class LimitedLineReader {
         continue;
       StringBuffer sb = new StringBuffer(cchLine);
       sb.append(buf, ichBeginningOfLine, cchLine);
-      return "" + sb;
+      return sb.toString();
     }
     //Logger.debug("org.jmol.adapter.smarter.Resolver short input buffer");
     // miguel 2005 01 26

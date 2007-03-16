@@ -266,7 +266,7 @@ public class TextFormat {
       StringBuffer s = new StringBuffer();
       int ipt0 = 0;
       while ((ipt = str.indexOf(strFrom, ipt0)) >= 0) {
-        s.append(str.substring(ipt0, ipt) + strTo);
+        s.append(str.substring(ipt0, ipt)).append(strTo);
         ipt0 = ipt + fromLength;
       }
       s.append(str.substring(ipt0));

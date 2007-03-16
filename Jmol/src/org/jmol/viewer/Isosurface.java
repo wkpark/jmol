@@ -1364,7 +1364,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     jvxlFileHeader.append(line);
     jvxlFileHeader.append('\n');
     if (!isSilent)
-      Logger.info("" + jvxlFileHeader);
+      Logger.info(jvxlFileHeader.toString());
   }
 
   int atomCount;
@@ -4114,12 +4114,12 @@ class Isosurface extends IsosurfaceMeshCollection {
     for (int i = 0; i < 3; i++)
       setVoxelRange(i, -radius, radius, sphere_ptsPerAngstrom, sphere_gridMax);
     jvxlFileHeader = new StringBuffer();
-    jvxlFileHeader.append("SPHERE \nres="
-        + sphere_ptsPerAngstrom
-        + " rad="
-        + sphere_radiusAngstroms
-        + (isAnisotropic ? " anisotropy=(" + anisotropy[0] + ","
-            + anisotropy[1] + "," + anisotropy[2] + ")" : "") + "\n");
+    jvxlFileHeader.append("SPHERE \nres=").
+                   append(sphere_ptsPerAngstrom).
+                   append(" rad=").
+                   append(sphere_radiusAngstroms).
+                   append(isAnisotropic ? " anisotropy=(" + anisotropy[0] + "," + anisotropy[1] + "," + anisotropy[2] + ")" : "").
+                   append("\n");
     jvxlFileHeader.append(jvxlGetVolumeHeader(2));
     atomCount = 0;
     negativeAtomCount = false;
@@ -4159,20 +4159,14 @@ class Isosurface extends IsosurfaceMeshCollection {
       setVoxelRange(i, -psi_radiusAngstroms, psi_radiusAngstroms,
           psi_ptsPerAngstrom, psi_gridMax);
     jvxlFileHeader = new StringBuffer();
-    jvxlFileHeader.append("hydrogen-like orbital \nn="
-        + psi_n
-        + ", l="
-        + psi_l
-        + ", m="
-        + psi_m
-        + " Znuc="
-        + psi_Znuc
-        + " res="
-        + psi_ptsPerAngstrom
-        + " rad="
-        + psi_radiusAngstroms
-        + (isAnisotropic ? " anisotropy=(" + anisotropy[0] + ","
-            + anisotropy[1] + "," + anisotropy[2] + ")" : "") + "\n");
+    jvxlFileHeader.append("hydrogen-like orbital \nn=").append(psi_n).
+                   append(", l=").append(psi_l).
+                   append(", m=").append(psi_m).
+                   append(" Znuc=").append(psi_Znuc).
+                   append(" res=").append(psi_ptsPerAngstrom).
+                   append(" rad=").append(psi_radiusAngstroms).
+                   append(isAnisotropic ? " anisotropy=(" + anisotropy[0] + "," + anisotropy[1] + "," + anisotropy[2] + ")" : "").
+                   append("\n");
     jvxlFileHeader.append(jvxlGetVolumeHeader(2));
     atomCount = 0;
     negativeAtomCount = false;
@@ -4280,20 +4274,14 @@ class Isosurface extends IsosurfaceMeshCollection {
     setVoxelRange(2, 0, radius / eccentricityRatio, lobe_ptsPerAngstrom,
         lobe_gridMax);
     jvxlFileHeader = new StringBuffer();
-    jvxlFileHeader.append("lobe \nn="
-        + psi_n
-        + ", l="
-        + psi_l
-        + ", m="
-        + psi_m
-        + " Znuc="
-        + psi_Znuc
-        + " res="
-        + lobe_ptsPerAngstrom
-        + " rad="
-        + radius
-        + (isAnisotropic ? " anisotropy=(" + anisotropy[0] + ","
-            + anisotropy[1] + "," + anisotropy[2] + ")" : "") + "\n");
+    jvxlFileHeader.append("lobe \nn=").append(psi_n).
+                   append(", l=").append(psi_l).
+                   append(", m=").append(psi_m).
+                   append(" Znuc=").append(psi_Znuc).
+                   append(" res=").append(lobe_ptsPerAngstrom).
+                   append(" rad=").append(radius).
+                   append(isAnisotropic ? " anisotropy=(" + anisotropy[0] + "," + anisotropy[1] + "," + anisotropy[2] + ")" : "").
+                   append("\n");
     jvxlFileHeader.append(jvxlGetVolumeHeader(2));
     atomCount = 0;
     negativeAtomCount = false;
@@ -4427,8 +4415,8 @@ class Isosurface extends IsosurfaceMeshCollection {
 
     Logger.info("MO range bohr " + xyzMin + " to " + xyzMax);
     jvxlFileHeader = new StringBuffer();
-    jvxlFileHeader.append("MO range bohr " + xyzMin + " to " + xyzMax
-        + "\ncalculation type: " + moData.get("calculationType") + "\n");
+    jvxlFileHeader.append("MO range bohr ").append(xyzMin).append(" to ").append(xyzMax).
+                   append("\ncalculation type: ").append(moData.get("calculationType")).append("\n");
 
     int maxGrid = qm_gridMax;
 
@@ -4546,7 +4534,7 @@ class Isosurface extends IsosurfaceMeshCollection {
 
     Logger.info("MEP range bohr " + xyzMin + " to " + xyzMax);
     jvxlFileHeader = new StringBuffer();
-    jvxlFileHeader.append("MEP range bohr " + xyzMin + " to " + xyzMax + "\n");
+    jvxlFileHeader.append("MEP range bohr ").append(xyzMin).append(" to ").append(xyzMax).append("\n");
 
     int maxGrid = mep_gridMax;
 
@@ -4708,9 +4696,8 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
     Logger.info("surface range " + xyzMin + " to " + xyzMax);
     jvxlFileHeader = new StringBuffer();
-    jvxlFileHeader.append("solvent-"
-        + (dataType == SURFACE_SASURFACE ? "accesible" : "excluded")
-        + " surface\nrange " + xyzMin + " to " + xyzMax + "\n");
+    jvxlFileHeader.append("solvent-").append(dataType == SURFACE_SASURFACE ? "accesible" : "excluded").
+                   append(" surface\nrange ").append(xyzMin).append(" to ").append(xyzMax).append("\n");
 
     // fragment idea
 
@@ -5131,7 +5118,7 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   void setupFunctionXY() {
     jvxlFileHeader = new StringBuffer();
-    jvxlFileHeader.append("functionXY\n" + functionXYinfo + "\n");
+    jvxlFileHeader.append("functionXY\n").append(functionXYinfo).append("\n");
     functionName = (String) functionXYinfo.get(0);
     volumetricOrigin.set((Point3f) functionXYinfo.get(1));
     if (!isAngstroms)

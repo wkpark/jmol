@@ -183,7 +183,7 @@ class MolecularOrbital extends Isosurface {
           if (nTotal == 1)
             break;
         }
-      return "" + str;
+      return str.toString();
     }
     return null;
   }

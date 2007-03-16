@@ -271,7 +271,7 @@ class FileManager {
         sb.append(line);
         sb.append('\n');
       }
-      return "" + sb;
+      return sb.toString();
     } catch (Exception ioe) {
       return ioe.getMessage();
     }

@@ -487,7 +487,7 @@ public class Token {
         return (i < 1 || i > list.length ? "" : list[i - 1]);
       StringBuffer sb = new StringBuffer();
       for (i = 0; i < list.length; i++)
-        sb.append(list[i] + "\n");
+        sb.append(list[i]).append("\n");
       return sb.toString();
     case Token.string:
       String s = (String) x.value;

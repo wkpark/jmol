@@ -518,7 +518,7 @@ ActionListener, ChangeListener, Runnable {
         PrintWriter f = new PrintWriter(new FileOutputStream(fname));
         for (int idx = 0; idx < nidx; idx++ ) {
           int modelIndex = indexes[idx];
-          StringBuffer str = new StringBuffer(viewer.getModelName(modelIndex)+"\n");
+          StringBuffer str = new StringBuffer(viewer.getModelName(modelIndex)).append("\n");
           int natoms=0;
           int atomCount = viewer.getAtomCount();
           for (int i = 0; i < atomCount;  i++) {
@@ -526,8 +526,8 @@ ActionListener, ChangeListener, Runnable {
               natoms++;
               Point3f p = viewer.getAtomPoint3f(i);
               // should really be getElementSymbol(i) in stead
-              str.append(viewer.getAtomName(i)+"\t");
-              str.append(p.x+"\t"+p.y+"\t"+p.z+"\n");
+              str.append(viewer.getAtomName(i)).append("\t");
+              str.append(p.x).append("\t").append(p.y).append("\t").append(p.z).append("\n");
               // not sure how to get the vibration vector and charge here...
             }
           }

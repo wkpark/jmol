@@ -196,24 +196,25 @@ class Dipole {
     if (!isValid)
       return "";
     StringBuffer s = new StringBuffer();
-    s.append("dipole " + thisID);
+    s.append("dipole ").append(thisID);
     if (isUserValue)
-      s.append(" value " + dipoleValue);
+      s.append(" value ").append(dipoleValue);
     if (haveAtoms)
-      s.append(" ({" + atoms[0].atomIndex + " " + atoms[1].atomIndex + "})");
+      s.append(" ({").append(atoms[0].atomIndex).append(" ").
+                      append(atoms[1].atomIndex).append("})");
     else if (coords[0] == null)
       return "";
     else
-      s.append(" " + StateManager.escape(coords[0]) + " "
-          + StateManager.escape(coords[1]));
+      s.append(" ").append(StateManager.escape(coords[0])).
+        append(" ").append(StateManager.escape(coords[1]));
     if (mad != Dipoles.DEFAULT_MAD)
-      s.append(" width " + (mad / 1000f));
+      s.append(" width ").append(mad / 1000f);
     if (offsetAngstroms != 0)
-      s.append(" offset " + offsetAngstroms);
+      s.append(" offset ").append(offsetAngstroms);
     else if (offsetPercent != 0)
-      s.append(" offset " + offsetPercent);
+      s.append(" offset ").append(offsetPercent);
     if (offsetSide != Dipoles.DEFAULT_OFFSETSIDE)
-      s.append(" offsetSide " + offsetSide);
+      s.append(" offsetSide ").append(offsetSide);
     if (noCross)
       s.append(" nocross");
     if (!visible)

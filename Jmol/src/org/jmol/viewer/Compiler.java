@@ -679,7 +679,7 @@ class Compiler {
       }
       sb.append(ch);
     }
-    return "" + sb;
+    return sb.toString();
   }
 
   static int getHexitValue(char ch) {

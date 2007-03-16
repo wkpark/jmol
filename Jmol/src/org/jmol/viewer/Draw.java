@@ -792,7 +792,7 @@ class Draw extends MeshCollection {
         continue;
       str.append(getVertexList(mesh, iModel, nVertices));
     }
-    str.append(";\n" + getColorCommand("draw", mesh.colix)+";");
+    str.append(";\n").append(getColorCommand("draw", mesh.colix)).append(";");
     
     return str.toString();
   }
@@ -819,9 +819,9 @@ class Draw extends MeshCollection {
     int nVertices = 0;
     String nFrame = viewer.getModelNumberDotted(iModel);
     if (modelCount > 1)
-      str.append("frame " + nFrame + ";");
-    str.append("draw " + mesh.thisID
-        + (mesh.drawType == Mesh.DRAW_MULTIPLE ? "_" + iModel : ""));
+      str.append("frame ").append(nFrame).append(";");
+    str.append("draw ").append(mesh.thisID).
+        append(mesh.drawType == Mesh.DRAW_MULTIPLE ? "_" + iModel : "");
     switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
     case Mesh.DRAW_NONE:
       return "";

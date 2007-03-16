@@ -143,29 +143,36 @@ abstract class TransformManager {
         "# orientation/center/spin state;\nset refreshing false;\n");
     if (!isWindowCentered())
       commands.append("windowCentered = false;\n");
-    commands.append("cameraDepth = " + cameraDepth + ";\n");
+    commands.append("cameraDepth = ").append(cameraDepth).append(";\n");
     if (isNavigationMode)
       commands.append("navigationMode = true;\n");
-    commands.append("center " + StateManager.escape(fixedRotationCenter)
-        + ";\n");
-    commands.append(getMoveToText(0) + ";\n");
+    commands.append("center ").append(StateManager.escape(fixedRotationCenter)).append(";\n");
+    commands.append(getMoveToText(0)).append(";\n");
     if (!isNavigationMode && !zoomEnabled)
       commands.append("zoom off;\n");
-    commands.append("slab " + slabPercentSetting + ";depth "
-        + depthPercentSetting + (slabEnabled && !isNavigationMode ? ";slab on" : "") + ";\n");
+    commands.append("slab ").append(slabPercentSetting).
+             append(";depth ").append(depthPercentSetting).
+             append(slabEnabled && !isNavigationMode ? ";slab on" : "").append(";\n");
     if (slabPlane != null)
-      commands.append("slab plane {"+slabPlane.x+" "+slabPlane.y+" "+slabPlane.z+" "+slabPlane.w+" };\n");
+      commands.append("slab plane {").append(slabPlane.x).
+               append(" ").append(slabPlane.y).
+               append(" ").append(slabPlane.z).
+               append(" ").append(slabPlane.w).append(" };\n");
     if (depthPlane != null)
-      commands.append("depth plane {"+depthPlane.x+" "+depthPlane.y+" "+depthPlane.z+" "+depthPlane.w+" };\n");
+      commands.append("depth plane {").append(depthPlane.x).
+               append(" ").append(depthPlane.y).
+               append(" ").append(depthPlane.z).
+               append(" ").append(depthPlane.w).append(" };\n");
     if (depthPlane != null || slabPlane != null)
-      commands.append("slab reference "+StateManager.escape(slabRef)+ (slabEnabled || isNavigationMode? ";slab on" : "")+";\n");
-    commands.append(getSpinState(true) + "\n");
+      commands.append("slab reference ").append(StateManager.escape(slabRef)).
+               append(slabEnabled || isNavigationMode? ";slab on" : "").append(";\n");
+    commands.append(getSpinState(true)).append("\n");
     if (viewer.modelSetHasVibrationVectors()) {
-      commands.append("vibration scale " + viewer.getVibrationScale() + ";\n");
+      commands.append("vibration scale ").append(viewer.getVibrationScale()).append(";\n");
       if (vibrationOn)
-        commands.append("vibration " + vibrationPeriod + ";\n");
+        commands.append("vibration ").append(vibrationPeriod).append(";\n");
       else
-        commands.append("vibration period " + vibrationPeriod + ";\n");
+        commands.append("vibration period ").append(vibrationPeriod).append(";\n");
     }
 
     commands.append("\n");
@@ -1588,7 +1595,7 @@ abstract class TransformManager {
     axisangleT.set(matrixRotate);
     float degrees = axisangleT.angle * degreesPerRadian;
     StringBuffer sb = new StringBuffer();
-    sb.append("moveto /* time, axisAngle */ " + timespan);
+    sb.append("moveto /* time, axisAngle */ ").append(timespan);
     if (degrees < 0.01f) {
       sb.append(" {0 0 1 0}");
     } else {
@@ -1609,9 +1616,10 @@ abstract class TransformManager {
     sb.append(" ");
     sb.append(" /* center, rotationRadius */ ");
     sb.append(getCenterText());
-    sb.append(" " + modelRadius);
+    sb.append(" ").append(modelRadius);
     sb.append(getNavigationText());
-    return "" + sb + ";";
+    sb.append(";");
+    return sb.toString();
   }
 
   private String getCenterText() {
@@ -1638,7 +1646,7 @@ abstract class TransformManager {
           * degreesPerRadian;
     }
     sb.append("reset");
-    sb.append(";center " + getCenterText());
+    sb.append(";center ").append(getCenterText());
     if (rX != 0) {
       sb.append("; rotate x");
       truncate2(sb, rX);
@@ -1680,8 +1688,7 @@ abstract class TransformManager {
       sb.append(";");
     }      
     if (isNavigationMode) {
-      sb.append("navigate 0 center "
-          + StateManager.escape(navigationCenter));
+      sb.append("navigate 0 center ").append(StateManager.escape(navigationCenter));
       sb.append(";navigate 0 translate");
       truncate2(sb, getNavigationOffsetPercent('X'));
       truncate2(sb, getNavigationOffsetPercent('Y'));
@@ -1709,7 +1716,7 @@ abstract class TransformManager {
     if (rZ1 != 0 && rY != 0 && rZ2 != 0 && iAddComment)
       sb.append("#Follows Z-Y-Z convention for Euler angles\n");
     sb.append("reset");
-    sb.append(";center " + getCenterText());
+    sb.append(";center ").append(getCenterText());
     if (rZ1 != 0) {
       sb.append("; rotate z");
       truncate2(sb, rZ1);

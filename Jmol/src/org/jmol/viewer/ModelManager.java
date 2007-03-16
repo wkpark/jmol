@@ -810,7 +810,7 @@ String getAtomInfoChime(int i) {
     rFill(s, "          " ,safeTruncate(getAtomX(i),9));
     rFill(s, "          " ,safeTruncate(getAtomY(i),9));
     rFill(s, "          " ,safeTruncate(getAtomZ(i),9));
-    s.append(" " + (getElementSymbol(i) + "  ").substring(0,2) + "\n");
+    s.append(" ").append((getElementSymbol(i) + "  ").substring(0,2)).append("\n");
   }
 
   void getBondRecordMOL(StringBuffer s, int i,int[] atomMap){
@@ -818,7 +818,7 @@ String getAtomInfoChime(int i) {
     Bond b = frame.getBondAt(i);
     rFill(s, "   ","" + atomMap[b.getAtom1().atomIndex]);
     rFill(s, "   ","" + atomMap[b.getAtom2().atomIndex]);
-    s.append("  " + getBondOrder(i) + "\n"); 
+    s.append("  ").append(getBondOrder(i)).append("\n"); 
   }
   
   private void rFill(StringBuffer s, String s1, String s2) {

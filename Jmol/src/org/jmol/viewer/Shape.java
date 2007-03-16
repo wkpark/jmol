@@ -177,7 +177,7 @@ abstract class Shape {
   static void appendCmd(StringBuffer s, String cmd) {
     if (cmd.length() == 0)
       return;
-    s.append(cmd + ";\n");
+    s.append(cmd).append(";\n");
   }
 
   static String getFontCommand(String type, Font3D font) {

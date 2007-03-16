@@ -2157,17 +2157,17 @@ public class Viewer extends JmolViewer {
       String name = (String) e.nextElement();
       if (name.indexOf("property_") == 0) {
         Object data = ((Object[]) dataValues.get(name))[1];
-        s.append("DATA \"" + name + "\"");
+        s.append("DATA \"").append(name).append("\"");
         if (data instanceof float[]) {
           s.append("\n");
           float[] f = (float[]) data;
           for (int i = 0; i < f.length; i++)
-            s.append(" " + f[i]);
+            s.append(" ").append(f[i]);
           s.append("\n");
         } else {
-          s.append("" + data);
+          s.append("").append(data);
         }
-        s.append("end \"" + name + "\";\n");
+        s.append("end \"").append(name).append("\";\n");
       }
     }
   }

@@ -758,7 +758,7 @@ final public class Atom extends Point3fi implements Tuple {
     }
     info.append(" #");
     info.append(getAtomNumber());
-    return "" + info;
+    return info.toString();
   }
 
   String getGroup3() {

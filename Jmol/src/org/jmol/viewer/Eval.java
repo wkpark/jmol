@@ -3495,7 +3495,7 @@ class Eval { //implements Runnable {
     } else {
       if (getToken(1).tok == Token.identifier) {
         filename = parameterAsString(1);
-        loadScript.append(" "+ filename);
+        loadScript.append(" ").append(filename);
         isMerge = (filename.equalsIgnoreCase("append"));
         i = 2;
       }
@@ -3508,7 +3508,7 @@ class Eval { //implements Runnable {
         filename = viewer.getFullPathName();
       if (filename.charAt(0) == '=')
         filename = fixFileName(filename);
-      loadScript.append(" " + StateManager.escape(filename) + ";");
+      loadScript.append(" ").append(StateManager.escape(filename)).append(";");
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
         viewer.openFile(filename, params, loadScript.toString(), isMerge);
     } else if (getToken(i + 1).tok == Token.leftbrace
@@ -3517,10 +3517,10 @@ class Eval { //implements Runnable {
         filename = viewer.getFullPathName();
       if (filename.charAt(0) == '=')
         filename = fixFileName(filename);
-      loadScript.append(" " + StateManager.escape(filename));
+      loadScript.append(" ").append(StateManager.escape(filename));
       if (getToken(i).tok == Token.integer) {
         params[0] = intParameter(i++);
-        loadScript.append(" " + params[0]);
+        loadScript.append(" ").append(params[0]);
       }
       int tok = tokAt(i);
       if (tok == Token.leftbrace || tok == Token.point3f) {
@@ -3529,14 +3529,14 @@ class Eval { //implements Runnable {
         params[1] = (int) unitCells.x;
         params[2] = (int) unitCells.y;
         params[3] = (int) unitCells.z;
-        loadScript.append(" " + StateManager.escape(unitCells));
+        loadScript.append(" ").append(StateManager.escape(unitCells));
         int iGroup = -1;
         int[] p;
         if (tokAt(i) == Token.spacegroup) {
           ++i;
           String spacegroup = TextFormat.simpleReplace(parameterAsString(i++),
               "''", "\"");
-          loadScript.append(" " + StateManager.escape(spacegroup));
+          loadScript.append(" ").append(StateManager.escape(spacegroup));
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
             iGroup = -999;
           } else {
@@ -3564,7 +3564,7 @@ class Eval { //implements Runnable {
           loadScript.append(" {");
           for (int j = 0; j < 6; j++) {
             p[5 + j] = (int) (fparams[j] * 10000f);
-            loadScript.append((j == 0 ? "" : " ") + p[5 + j]);
+            loadScript.append((j == 0 ? "" : " ")).append(p[5 + j]);
           }
           loadScript.append("}");
           params = p;
@@ -3579,7 +3579,7 @@ class Eval { //implements Runnable {
         modelName = filename;
       } else {
         modelName = parameterAsString(i++);
-        loadScript.append(" " + StateManager.escape(modelName));
+        loadScript.append(" ").append(StateManager.escape(modelName));
       }
       String[] filenames = new String[statementLength - i];
       while (i < statementLength) {
@@ -3587,7 +3587,7 @@ class Eval { //implements Runnable {
         if (modelName.charAt(0) == '=')
           modelName = fixFileName(modelName);
         filenames[filenames.length - statementLength + i] = modelName;
-        loadScript.append(" " + StateManager.escape(modelName));
+        loadScript.append(" ").append(StateManager.escape(modelName));
         i++;
       }
       loadScript.append(";");
@@ -8582,7 +8582,7 @@ class Eval { //implements Runnable {
         continue;
       case Token.spec_seqcode_range:
         if (token.intValue != Integer.MAX_VALUE)
-          sb.append("" + token.intValue);
+          sb.append(token.intValue);
         else
           sb.append(Group.getSeqcodeString(getSeqCode(token)));
         token = statement[++i];
@@ -8592,7 +8592,7 @@ class Eval { //implements Runnable {
       //fall through
       case Token.spec_seqcode:
         if (token.intValue != Integer.MAX_VALUE)
-          sb.append("" + token.intValue);
+          sb.append(token.intValue);
         else
           sb.append(Group.getSeqcodeString(getSeqCode(token)));
         continue;
@@ -8603,7 +8603,7 @@ class Eval { //implements Runnable {
       case Token.spec_alternate:
         sb.append("*%");
         if (token.value != null)
-          sb.append("" + token.value);
+          sb.append(token.value.toString());
         continue;
       case Token.spec_model:
         sb.append("*/");
@@ -8635,12 +8635,14 @@ class Eval { //implements Runnable {
       case Token.cell:
         if (token.value instanceof Point3f) {
           Point3f pt = (Point3f) token.value;
-          sb.append("cell={" + pt.x + " " + pt.y + " " + pt.z + "}");
+          sb.append("cell={").append(pt.x).append(" ").
+                              append(pt.y).append(" ").
+                              append(pt.z).append("}");
           continue;
         }
         break;
       case Token.string:
-        sb.append("\"" + token.value + "\"");
+        sb.append("\"").append(token.value).append("\"");
         continue;
       case Token.opEQ:
       case Token.opLE:
@@ -8650,9 +8652,9 @@ class Eval { //implements Runnable {
       case Token.opNE:
         //not quite right -- for "inmath"
         if (token.intValue == Token.property) {
-          sb.append((String)statement[++i].value + " ");
+          sb.append((String)statement[++i].value).append(" ");
         } else if (token.intValue != Integer.MAX_VALUE)
-          sb.append(Token.nameOf(token.intValue) + " ");
+          sb.append(Token.nameOf(token.intValue)).append(" ");
         break;
       case Token.identifier:
         break;
@@ -8662,7 +8664,7 @@ class Eval { //implements Runnable {
         sb.append(token.toString());
         continue;
       }
-      sb.append("" + token.value);
+      sb.append(token.value.toString());
     }
     if (iToken >= statementLength - 1)
       sb.append(" <<");

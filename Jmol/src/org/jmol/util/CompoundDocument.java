@@ -107,10 +107,10 @@ public class CompoundDocument extends BinaryDocument {
     for (int i = 0; i < directory.size(); i++) {
       CmpDocDirectoryEntry thisEntry = (CmpDocDirectoryEntry) directory.get(i);
       if (!thisEntry.isEmpty && thisEntry.entryType != 5) {
-        data.append("BEGIN Compound Document Entry: "+thisEntry.entryName+"\n");            
+        data.append("BEGIN Compound Document Entry: ").append(thisEntry.entryName).append("\n");            
         data.append(getFileAsString(thisEntry));
         data.append("\n");
-        data.append("END Compound Document Entry: "+thisEntry.entryName+"\n");            
+        data.append("END Compound Document Entry: ").append(thisEntry.entryName).append("\n");            
       }
     }
     return data;

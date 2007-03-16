@@ -288,11 +288,6 @@ abstract class AtomSetCollectionReader {
     needToApplySymmetry = false;
   }
 
-  void initializeCartesianToFractional() {
-    for (int i = 0; i < 16; i++)
-      notionalUnitCell[6 + i] = ((i % 5 == 0 ? 1 : 0));
-  }
-
   void newAtomSet(String name) {
     if (atomSetCollection.currentAtomSetIndex >= 0) {
       atomSetCollection.newAtomSet();
@@ -320,13 +315,20 @@ abstract class AtomSetCollectionReader {
   }
 
   int nMatrixElements = 0;
+  void initializeCartesianToFractional() {
+    for (int i = 0; i < 16; i++)
+      if (!Float.isNaN(notionalUnitCell[6 + i]))
+        return; //just do this once
+    for (int i = 0; i < 16; i++)
+      notionalUnitCell[6 + i] = ((i % 5 == 0 ? 1 : 0));
+    nMatrixElements = 0;
+  }
+
   void setUnitCellItem(int i, float x) {
     if (ignoreFileUnitCell)
       return;
-    if (i >= 6 && Float.isNaN(notionalUnitCell[6])) {
+    if (i >= 6 && Float.isNaN(notionalUnitCell[6]))
       initializeCartesianToFractional();
-      nMatrixElements = 0;
-    }
     notionalUnitCell[i] = x;
     Logger.debug("setunitcellitem " + i + " " + x);
     if (i < 6)

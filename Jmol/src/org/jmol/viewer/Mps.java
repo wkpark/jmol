@@ -68,6 +68,7 @@ abstract class Mps extends Shape {
       boolean isTranslucent = ("translucent".equals(value));
       for (int m = mpsmodels.length; --m >= 0; )
         mpsmodels[m].setTranslucent(isTranslucent, bs, translucentLevel);
+      return;
     }
     super.setProperty(propertyName, value, bs);
   }

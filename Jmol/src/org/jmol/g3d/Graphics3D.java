@@ -1034,6 +1034,8 @@ final public class Graphics3D {
                            Point3i screenB, short colixB, short normixB,
                            Point3i screenC, short colixC, short normixC) {
     // mesh, isosurface
+    //if ( screenA.x < 0 || screenA.y < 0 || screenA.x > 10 || screenA.y > 10)return;
+    //System.out.println("fillTriangle: "+screenA + screenB + screenC);
     boolean useGouraud;
     if (normixA == normixB && normixA == normixC &&
         colixA == colixB && colixA == colixC) {

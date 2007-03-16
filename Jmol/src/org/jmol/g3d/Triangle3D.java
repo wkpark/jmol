@@ -300,7 +300,7 @@ class Triangle3D {
       }
     }
     g3d.setZMargin(5);
-    fillRaster(yMin, nLines, useGouraud, isClipped);
+    fillRaster(yMin, nLines, useGouraud, isClipped, g3d.haveAlphaTranslucent ? 1 : 0);
     g3d.setZMargin(0);
   }
 
@@ -410,7 +410,7 @@ class Triangle3D {
   private static int bar;
 
   private void fillRaster(int y, int numLines, boolean useGouraud,
-                          boolean isClipped) {
+                          boolean isClipped, int correction) {
     //Logger.debug("fillRaster("+y+","+numLines+","+paintFirstLine);
     int i = 0;
     ++bar;
@@ -421,11 +421,11 @@ class Triangle3D {
     }
     if (y + numLines > g3d.height)
       numLines = g3d.height - y;
-    //System.out.println("fill: " + numLines + " " + (axE[0] - axW[0]));
+    //int ytest=8;
     if (isClipped) {
-      for (; --numLines >= 1; ++y, ++i) {
+      for (; --numLines >= correction; ++y, ++i) {
         int xW = axW[i];
-        int pixelCount = axE[i] - xW + 1;
+        int pixelCount = axE[i] - xW + 1 - correction;
         if (pixelCount > 0) {
           //System.out.println("-plotrow y:" + y + " dx:" + pixelCount + " x:" + xW);
           g3d.plotPixelsClipped(pixelCount, xW, y, azW[i], azE[i],
@@ -433,15 +433,27 @@ class Triangle3D {
         }
       }
     } else {
-      for (; --numLines>= 0; ++y, ++i) {
-        int xW = axW[i];
-        int pixelCount = axE[i] - xW + 1;
+      //System.out.println("fill: " + numLines + " " + y + " " + (axE[0] - axW[0]));
+      int xW;
+      for (;--numLines >= correction; ++y, ++i) {
+        int pixelCount = axE[i] - (xW = axW[i]) + 1 - correction;
         //System.out.println("pixelcount = " +pixelCount);
+        if (correction == 1 && pixelCount < 0) {
+          /*
+           * The issue here is that some very long, narrow triangles can be skipped
+           * altogether because axE < axW.
+           * 
+           */
+
+          pixelCount = 1;
+          xW--;
+        }
         if (pixelCount > 0) {
           
-           //if(y==4)System.out.println("plotrow y:" + y + " dx:" + pixelCount + " x:" + xW);
+        //   if(ytest == 0 || y==ytest)System.out.println("plotrow y:" + y + " dx:" + pixelCount + " x:" + xW + "-" + (xW + pixelCount - 1));
            
-          g3d.plotPixelsUnclipped(pixelCount, xW, y, azW[i], azE[i],
+          //if(ytest == 0 || y==ytest)
+            g3d.plotPixelsUnclipped(pixelCount, xW, y, azW[i], azE[i],
               useGouraud ? rgb16sW[i] : null, useGouraud ? rgb16sE[i] : null);
         }
       }

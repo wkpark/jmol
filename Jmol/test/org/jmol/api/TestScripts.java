@@ -188,7 +188,7 @@ class TestScriptsImpl extends TestCase {
           long end = System.currentTimeMillis();
           if ((info != null) && (info.size() > 0)) {
             String error = info.get(0).toString();
-            /*if (info.get(0) instanceof Vector) {
+            if (info.get(0) instanceof Vector) {
               Vector vector = (Vector) info.get(0);
               if (vector.size() > 0) {
                 if (vector.get(0) instanceof Vector) {
@@ -196,11 +196,13 @@ class TestScriptsImpl extends TestCase {
                   error = vector.get(vector.size() - 1).toString();
                 }
               }
-            }*/
-            fail(
-                "Error in script [" + file.getPath() + "] " +
-                "at line " + lineNum + " (" + line + "):\n" +
-                error);
+            }
+            if (!error.equalsIgnoreCase("Jmol script terminated successfully")) {
+              fail(
+                  "Error in script [" + file.getPath() + "] " +
+                  "at line " + lineNum + " (" + line + "):\n" +
+                  error);
+            }
           }
           if ((end - begin) > 0) {
             System.err.println("Time to execute [" + line + "]: " + (end - begin) + " milliseconds");

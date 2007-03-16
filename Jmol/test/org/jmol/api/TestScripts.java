@@ -112,9 +112,9 @@ public class TestScripts extends TestSuite {
 
     });
     if (dirs != null) {
-      for (int i = 0; i < files.length; i++) {
+      for (int i = 0; i < dirs.length; i++) {
         addDirectory(
-            new File(directory, files[i]).getAbsolutePath(),
+            new File(directory, dirs[i]).getAbsolutePath(),
             checkOnly, performance);
       }
     }

@@ -414,6 +414,12 @@ class Eval { //implements Runnable {
     return str.toString();
   }
 
+  void clearPredefined() {
+    int cPredef = JmolConstants.predefinedSets.length;
+    for (int iPredef = 0; iPredef < cPredef; iPredef++)
+      predefine(JmolConstants.predefinedSets[iPredef]);
+  }
+  
   void clearDefinitionsAndLoadPredefined() {
     //executed each time a file is loaded; like clear() for the managers
     variables.clear();
@@ -421,10 +427,7 @@ class Eval { //implements Runnable {
     viewer.setSelectionSubset(null);
     if (viewer.getFrame() == null || viewer.getAtomCount() == 0)
       return;
-
-    int cPredef = JmolConstants.predefinedSets.length;
-    for (int iPredef = 0; iPredef < cPredef; iPredef++)
-      predefine(JmolConstants.predefinedSets[iPredef]);
+    clearPredefined();
     // Now, define all the elements as predefined sets
     // hydrogen is handled specially, so don't define it
 
@@ -708,7 +711,7 @@ class Eval { //implements Runnable {
       } else {
         if (debugScript)
           logDebugScript();
-        if (logMessages && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+        if (logMessages)
           Logger.debug(token.toString());
         if (ifLevel > 0 && ifs[ifLevel] < 0 && token.tok != Token.endifcmd
             && token.tok != Token.ifcmd && token.tok != Token.elsecmd)
@@ -1049,7 +1052,7 @@ class Eval { //implements Runnable {
 
   void logDebugScript() {
     strbufLog.setLength(0);
-    if (logMessages && Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+    if (logMessages) {
       Logger.debug(statement[0].toString());
       for (int i = 1; i < statementLength; ++i)
         Logger.debug(statement[i].toString());
@@ -3495,9 +3498,11 @@ class Eval { //implements Runnable {
     } else {
       if (getToken(1).tok == Token.identifier) {
         filename = parameterAsString(1);
-        loadScript.append(" ").append(filename);
+        loadScript.append(" "+ filename);
         isMerge = (filename.equalsIgnoreCase("append"));
         i = 2;
+        if (isMerge)
+          clearPredefined();
       }
       if (getToken(i).tok != Token.string)
         filenameExpected();

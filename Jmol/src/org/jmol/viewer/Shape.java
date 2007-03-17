@@ -103,7 +103,7 @@ abstract class Shape {
       return;
     }
 
-    Logger.warn("unassigned shape setProperty:" + propertyName + ":" + value);
+    Logger.warn("unassigned " + JmolConstants.shapeClassBases[shapeID] + " + shape setProperty:" + propertyName + ":" + value);
   }
 
   Object getProperty(String property, int index) {

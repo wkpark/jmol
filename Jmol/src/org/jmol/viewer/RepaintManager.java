@@ -213,18 +213,14 @@ class RepaintManager {
     if (backgroundModelIndex >= 0)
       commands.append("background model ").append(backgroundModelIndex).append(";\n");
     if (true || currentModelIndex >= 0) {
-      commands.append("frame RANGE ").
-               append(viewer.getModelNumberDotted(firstModelIndex)).append(" ").
-               append(viewer.getModelNumberDotted(lastModelIndex)).append(";\n");
-      commands.append("animation DIRECTION ").
-               append(animationDirection == 1 ? "+1" : "-1").append(";\n");
-      commands.append("animation ").
-               append(animationOn ? "ON" : "OFF").append(";\n");
+      commands.append("frame RANGE " + viewer.getModelNumberDotted(firstModelIndex)
+          + " " + viewer.getModelNumberDotted(lastModelIndex) + ";\n");
+      commands.append("animation DIRECTION "
+          + (animationDirection == 1 ? "+1" : "-1") + ";\n");
+      commands.append("animation " + (animationOn ? "ON" : "OFF") + ";\n");
       if (animationOn && animationPaused)
         commands.append("animation PAUSE;\n");
-      commands.append("frame ").
-               append(viewer.getModelNumberDotted(currentModelIndex)).
-               append(";\n");
+      commands.append("frame " + viewer.getModelNumberDotted(currentModelIndex) + ";\n");
     } else {
       commands.append("frame ALL;\n");
     }
@@ -400,10 +396,13 @@ class RepaintManager {
       int targetTime = 0;
       int sleepTime;
       int holdTime = 0;
+      Logger.debug("animation thread " + intThread + " running");
+      
       if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
         Logger.debug("animation thread " + intThread + " running");
       }
       requestRepaintAndWait();
+      
       try {
         sleepTime = targetTime - (int) (System.currentTimeMillis() - timeBegin);
         if (sleepTime > 0)
@@ -424,9 +423,7 @@ class RepaintManager {
               Thread.sleep(sleepTime);
           }
           if (!setAnimationNext()) {
-            if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-              Logger.debug("animation thread " + intThread + " exiting");
-            }
+            Logger.debug("animation thread " + intThread + " exiting");
             setAnimationOff(false);
             return;
           }
@@ -435,14 +432,18 @@ class RepaintManager {
               - (int) (System.currentTimeMillis() - timeBegin);
           if (sleepTime < 0)
             continue;
-          refresh();
+          boolean autoFps = viewer.getAutoFps();
+          System.out.println("requesting repaint for " + currentModelIndex);
+          if (autoFps)
+            requestRepaintAndWait();
+          else
+            refresh();
           sleepTime = targetTime
               - (int) (System.currentTimeMillis() - timeBegin);
           if (sleepTime > 0)
             Thread.sleep(sleepTime);
-          boolean autoFps = viewer.getAutoFps();
-          if (autoFps) {
-            if (holdTime == 0)
+          if (false && autoFps) {
+            if (holdTime <= 0)
               holdTime = 10;
             int nHold = 0;
             //optimally we want 2 hold cycles
@@ -453,7 +454,7 @@ class RepaintManager {
             holdTime *=(nHold - 1);
             if (nHold == 1)
               holdTime = holdTime / 2;
-            Logger.info("repaint man autoFPS hold time " + holdTime + " ms; cylces "+nHold);
+            Logger.info("repaint man autoFPS hold time " + holdTime + " ms; cycles "+nHold + " frame " + currentModelIndex);
           }
         }
       } catch (InterruptedException ie) {

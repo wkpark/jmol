@@ -39,7 +39,7 @@ final public class JmolConstants {
   /*
    *
    * 
-   11.1.22
+   11.1.21/22
   
    adds 
    
@@ -50,8 +50,7 @@ final public class JmolConstants {
    
    isosurface MODEL n
    pmesh MODEL n
-   
-   11.1.21
+   isosurface within x.x (what)
    
    Introduces "real" color translucency 
    
@@ -61,13 +60,19 @@ final public class JmolConstants {
    
                    OR     OR   
    translucent -1               same as Jmol 10.2
-   translucent 0                opaque
-   translucent 1   0.125  32    1/8 translucency (slightly translucent)
-   translucent 2   0.25   64    2/8 translucency
-   translucent 3   0.375  96    3/8 translucency 
-   translucent 4   0.5   128    4/8 translucency (default)
-   translucent 5   0.625 160    5/8 translucency 
-   translucent 6   0.75  192    6/8 translucency (very sheer)
+   translucent 0.0                opaque
+     through
+   translucent 1.0                transparent (invisible)
+   
+   translucent 2   0.125  32    1/8 translucency (slightly translucent)
+   translucent 3   0.25   64    2/8 translucency
+   translucent 4   0.375  96    3/8 translucency 
+   translucent 5   0.5   128    4/8 translucency (default)
+   translucent 6   0.625 160    5/8 translucency 
+   translucent 7   0.75  192    6/8 translucency 
+   translucent 8   0.825 224    7/8 translucency (very sheer)
+   translucent 9   1.00  255    8/8 transparent (invisible)
+   
    
    11.1.20
    

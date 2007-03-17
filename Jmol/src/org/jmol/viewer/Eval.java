@@ -7240,7 +7240,7 @@ class Eval { //implements Runnable {
             data = TextFormat.simpleReplace(data, "}", " ");
             data = TextFormat.simpleReplace(data, "|", "\n");
             data = TextFormat.simpleReplace(data, "\n\n", "\n");
-            if (logMessages && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+            if (logMessages)
               Logger.debug("pmesh inline data:\n" + data);
             t = viewer.getBufferedReaderForString(data);
           } else {

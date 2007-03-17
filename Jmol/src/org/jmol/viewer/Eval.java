@@ -1914,12 +1914,6 @@ class Eval { //implements Runnable {
     return false;
   }
 
-  boolean isAtomCenterOrCoordinateNext(int i) {
-    int tok = tokAt(i);
-    return (tok == Token.leftbrace || tok == Token.expressionBegin
-        || tok == Token.point3f || tok == Token.bitset);
-  }
-
   Point3f atomCenterOrCoordinateParameter(int i) throws ScriptException {
     switch (getToken(i).tok) {
     case Token.bitset:
@@ -1940,15 +1934,10 @@ class Eval { //implements Runnable {
   }
 
   boolean isCenterParameter(int i) {
-    switch (tokAt(i)) {
-    case Token.dollarsign:
-    case Token.bitset:
-    case Token.expressionBegin:
-    case Token.leftbrace:
-    case Token.point3f:
-      return true;
-    }
-    return false;
+    int tok = tokAt(i);
+    return (tok == Token.dollarsign || 
+        tok == Token.leftbrace || tok == Token.expressionBegin
+        || tok == Token.point3f || tok == Token.bitset);
   }
 
   Point3f centerParameter(int i) throws ScriptException {
@@ -2496,17 +2485,17 @@ class Eval { //implements Runnable {
       degrees = floatParameter(i++);
     }
     //zoom xTrans yTrans (center) rotationRadius 
-    if (i != statementLength && !isAtomCenterOrCoordinateNext(i))
+    if (i != statementLength && !isCenterParameter(i))
       zoom = floatParameter(i++);
-    if (i != statementLength && !isAtomCenterOrCoordinateNext(i)) {
+    if (i != statementLength && !isCenterParameter(i)) {
       xTrans = floatParameter(i++);
       yTrans = floatParameter(i++);
     }
     float rotationRadius = 0;
     if (i != statementLength) {
-      center = atomCenterOrCoordinateParameter(i);
+      center = centerParameter(i);
       i = iToken + 1;
-      if (i != statementLength && !isAtomCenterOrCoordinateNext(i))
+      if (i != statementLength && !isCenterParameter(i))
         rotationRadius = floatParameter(i++);
     }
     // (navCenter) xNav yNav navDepth 
@@ -2517,7 +2506,7 @@ class Eval { //implements Runnable {
     float navDepth = Float.NaN;
 
     if (i != statementLength) {
-      navCenter = atomCenterOrCoordinateParameter(i);
+      navCenter = centerParameter(i);
       i = iToken + 1;
       if (i != statementLength) {
         xNav = floatParameter(i++);
@@ -3240,7 +3229,7 @@ class Eval { //implements Runnable {
       shapeType = -shapeType;
       modifier = "Surface";
     }
-    if (index < statementLength) {
+    if (index < statementLength && tokAt(index) != Token.on && tokAt(index)!=Token.off) {
       int tok = getToken(index).tok;
       if (isColorParam(index)) {
         int argb = getArgbParam(index, false);
@@ -4285,7 +4274,7 @@ class Eval { //implements Runnable {
     String type = parameterAsString(1);
 
     if (type.equalsIgnoreCase("point")) {
-      pt = atomCenterOrCoordinateParameter(2);
+      pt = centerParameter(2);
     } else if (type.equalsIgnoreCase("plane")) {
       plane = planeParameter(2);
     } else if (type.equalsIgnoreCase("hkl")) {
@@ -4363,9 +4352,9 @@ class Eval { //implements Runnable {
       invalidArgument();
     //zoom {x y z} or (atomno=3)
     int ptCenter = 0;
-    if (isAtomCenterOrCoordinateNext(i)) {
+    if (isCenterParameter(i)) {
       ptCenter = i;
-      center = atomCenterOrCoordinateParameter(i);
+      center = centerParameter(i);
       i = iToken + 1;
     }
 
@@ -6383,9 +6372,9 @@ class Eval { //implements Runnable {
     getToken(4);
     int i = 3;
     //set echo name {x y z}
-    if (isAtomCenterOrCoordinateNext(i)) {
+    if (isCenterParameter(i)) {
       setShapeProperty(JmolConstants.SHAPE_ECHO, "xyz",
-          atomCenterOrCoordinateParameter(i));
+          centerParameter(i));
       return;
     }
     int pos = intParameter(i++);
@@ -7880,7 +7869,7 @@ class Eval { //implements Runnable {
       switch (getToken(i).tok) {
       case Token.within:
         float distance = floatParameter(++i);
-        propertyValue = atomCenterOrCoordinateParameter(++i);
+        propertyValue = centerParameter(++i);
         i = iToken;
         propertyName = "withinPoint";
         setShapeProperty(iShape, "withinDistance", new Float(distance));

@@ -128,31 +128,41 @@ public class CoreType {
     return this._name;
   }
 
+  /**
+   * @return Flag indicating if the core is producing a current.xyz file
+   */
+  public boolean hasFile() {
+    return this._hasFile;
+  }
+
   // Cores
-  static public final CoreType UNKNOWN     = new CoreType(null, null);
-  static public final CoreType A0GROMACS   = new CoreType("Gromacs33", "A0"); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType AMBER       = new CoreType("Amber", "A"); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType DGROMACS    = new CoreType("DGromacs", "DG"); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType GBGROMACS   = new CoreType("GBGromacs", "GB"); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType GROGPU      = new CoreType("GroGPU", "GG");  //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType GROMACS     = new CoreType("Gromacs", "G");  //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType GROMACS_SMP = new CoreType("Gro-SMP", "GS");  //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType GROMACS_ST  = new CoreType("GroST", "GT");  //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType QMD         = new CoreType("QMD", "Q"); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType TINKER      = new CoreType("Tinker", "T");   //$NON-NLS-1$//$NON-NLS-2$
+  static public final CoreType UNKNOWN     = new CoreType(null, null, true);
+  static public final CoreType A0GROMACS   = new CoreType("Gromacs33", "A0", true); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType AMBER       = new CoreType("Amber", "A", true); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType DGROMACS    = new CoreType("DGromacs", "DG", true); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GBGROMACS   = new CoreType("GBGromacs", "GB", true); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GROGPU      = new CoreType("GroGPU", "GG", false);  //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GROMACS     = new CoreType("Gromacs", "G", true);  //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GROMACS_SMP = new CoreType("Gro-SMP", "GS", true);  //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GROMACS_ST  = new CoreType("GroST", "GT", true);  //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType QMD         = new CoreType("QMD", "Q", true); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType TINKER      = new CoreType("Tinker", "T", true);   //$NON-NLS-1$//$NON-NLS-2$
 
   // Attributes
   private final String _name;
   private final String _code;
+  private final boolean _hasFile;
 
   /**
    * Constructor for CoreType
    * 
    * @param name Name of core
    * @param code Letter code of core
+   * @param hasFile Flad indicating the present of a current.xyz file
    */
-  private CoreType(String name, String code) {
+  private CoreType(String name, String code, boolean hasFile) {
     this._name = name;
     this._code = code;
+    this._hasFile = hasFile;
   }
 }

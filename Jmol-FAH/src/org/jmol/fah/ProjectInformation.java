@@ -1138,12 +1138,15 @@ public class ProjectInformation {
     for (int ii = 0; ii < _projectInfo.size(); ii++) {
       Information info = getInfo(ii);
       if (info != null) {
-        if ((info._psName != null) && (!Boolean.TRUE.equals(info._staticFile))) {
-          if (!separator) {
-            outputText("Active missing beta projects: ");
+        if ((info._psName != null) &&
+            (!Boolean.TRUE.equals(info._staticFile))) {
+          if ((info._staticCore == null) || (info._staticCore.hasFile())) {
+            if (!separator) {
+              outputText("Active missing beta projects: ");
+            }
+            outputInfo("", "p" + ii, separator);
+            separator = true;
           }
-          outputInfo("", "p" + ii, separator);
-          separator = true;
         }
       }
     }
@@ -1159,11 +1162,13 @@ public class ProjectInformation {
         if ((info._psName != null) &&
             (!Boolean.TRUE.equals(info._staticFile)) &&
             (Boolean.TRUE.equals(info._staticPublic))) {
-          if (!separator) {
-            outputText("Active missing public projects: ");
+          if ((info._staticCore == null) || (info._staticCore.hasFile())) {
+            if (!separator) {
+              outputText("Active missing public projects: ");
+            }
+            outputInfo("", "p" + ii, separator);
+            separator = true;
           }
-          outputInfo("", "p" + ii, separator);
-          separator = true;
         }
       }
     }

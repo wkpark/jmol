@@ -3614,7 +3614,7 @@
   <fah_proj number="1587" name="p1587_A21nat_305_03" public="y" file="y"
     server="171.65.103.149" atoms="6426" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin" contrib="efishy"/>
-  <fah_proj number="1588" name="p1588_A21unf_305_03" public="y"
+  <fah_proj number="1588" name="p1588_A21unf_305_03" public="y" file="y"
     server="171.65.103.149" atoms="6399" preferred="18" deadline="36"
     credit="57" frames="100" code="G" contact="esorin"/>
   <fah_proj number="1589" name="p1589_TZ2nat_305_03" public="y" file="y"
@@ -4647,15 +4647,18 @@
   <fah_proj number="2609" name="p2609_Protein" public="n" file="y"
     server="171.64.65.56" atoms="126010" preferred="4" deadline="4"
     credit="1523" frames="100" code="GS" contact="kasson" contrib="P5-133XL"/>
+  <fah_proj number="2610" name="p2610_Protein" public="n" file="y"
+    preferred="4" deadline="4"
+    credit="1523" frames="100" code="GS" contact="kasson" contrib="P5-133XL"/>
   <fah_proj number="2650" name="p2650_Protein" public="n" file="y"
     preferred="3" deadline="3"
     credit="1148" code="GS" contrib="7up1n3"/>
   <fah_proj number="2651" name="p2651_Protein in POPC" public="n" file="y"
-    deadline="4"
-    credit="1760" code="GS" contrib="P5_133XL"/>
+    preferred="4" deadline="4"
+    credit="1760" frames="100" code="GS" contact="kasson" contrib="P5_133XL"/>
   <fah_proj number="2652" name="p2652_Protein" public="n" file="y"
     preferred="3" deadline="3"
-    credit="1148" code="GS" contrib="P5-133XL"/>
+    credit="1148" frames="100" code="GS" contact="kasson" contrib="P5-133XL"/>
 
   <!-- Projects 2700 to 2799 -->
   <fah_proj number="2711" name="p2711_GPUlambda" public="y"

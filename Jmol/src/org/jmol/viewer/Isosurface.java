@@ -661,6 +661,11 @@ class Isosurface extends IsosurfaceMeshCollection {
       return;
     }
 
+    if ("cavity" == propertyName) {
+      solvent_dots = (Point3f[])value;
+      return;
+    }
+    
     if ("molecular" == propertyName || "solvent" == propertyName
         || "sasurface" == propertyName || "nomap" == propertyName) {
       // plain plane
@@ -1025,6 +1030,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     precalculateVoxelData = false;
     bsIgnore = null;
     bsSolvent = null;
+    solvent_dots = null;
     iUseBitSets = false;
     solventExtendedAtomRadius = 0;
     solventAtomRadiusFactor = 1;
@@ -4572,6 +4578,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   int solvent_modelIndex;
   float[] solvent_atomRadius;
   Point3f[] solvent_ptAtom;
+  Point3f[] solvent_dots;
   int[] solvent_atomNo = null;
   int solvent_nAtoms;
   int solvent_firstNearbyAtom;
@@ -4776,6 +4783,48 @@ class Isosurface extends IsosurfaceMeshCollection {
   }
 
   void generateSolventCube() {
+    generateSolventCube(true);
+    if (solvent_dots == null || dataType == SURFACE_NOMAP || dataType == SURFACE_PROPERTY)
+      return;
+    //we have a ring of dots around the model.
+    //1) identify which voxelData points are > 0 and within this volume
+    //2) turn these voxel points into solvent_atoms with given radii
+    //3) rerun the calculation to mark a solvent around these!
+    BitSet bs = new BitSet(nPointsX * nPointsY * nPointsZ);
+    int i = 0;
+    int n = 0;
+    for (int x = 0; x < nPointsX; ++x)
+      for (int y = 0; y < nPointsY; ++y) {
+        out: for (int z = 0; z < nPointsZ; ++z, ++i) 
+          if (voxelData[x][y][z] < Float.MAX_VALUE && voxelData[x][y][z] > 0.2) {
+            voxelPtToXYZ(x, y, z, ptXyzTemp);
+            for (int j = solvent_dots.length; --j >= 0;)
+              if (solvent_dots[j].distance(ptXyzTemp) < 10f)
+                continue out;
+            //System.out.println("xyz" + x + "  "+ y + " " + z + " " + voxelData[x][y][z]);
+            bs.set(i);
+            n++;
+          }
+      }
+    System.out.println("cavities include " + n + " voxel points");
+    if (n == 0)
+      return;
+    solvent_atomRadius = new float[n];
+    solvent_ptAtom = new Point3f[n];
+    i = 0;
+    int apt = 0;
+    for (int x = 0; x < nPointsX; ++x)
+      for (int y = 0; y < nPointsY; ++y)
+        for (int z = 0; z < nPointsZ; ++z, ++i)
+          if (bs.get(i)) {
+            voxelPtToXYZ(x, y, z, (solvent_ptAtom[apt] = new Point3f()));
+            solvent_atomRadius[apt++] = voxelData[x][y][z];
+          }
+    solvent_nAtoms = solvent_firstNearbyAtom = n; 
+    generateSolventCube(false);
+  }
+
+  void generateSolventCube(boolean isFirstPass) {
     long time = System.currentTimeMillis();
     float rA, rB;
     Point3f ptA;
@@ -4802,7 +4851,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       solvMax = solvent_atomNo.length;
     }
     float maxRadius = 0;
-    boolean isWithin = (distance != Float.MAX_VALUE);
+    boolean isWithin = (isFirstPass && distance != Float.MAX_VALUE);
     for (int iAtom = 0; iAtom < solvent_nAtoms; iAtom++) {
       ptA = solvent_ptAtom[iAtom];
       rA = solvent_atomRadius[iAtom];
@@ -4836,8 +4885,10 @@ class Isosurface extends IsosurfaceMeshCollection {
         ptXyzTemp.add(volumetricVectors[0]);
       }
     }
-    if ((dataType == SURFACE_SOLVENT || dataType == SURFACE_MOLECULAR)
-        && solventRadius > 0) {
+    if (isFirstPass && solvent_dots != null)
+      return;
+    if (solvent_dots == null && solventRadius > 0
+        && (dataType == SURFACE_SOLVENT || dataType == SURFACE_MOLECULAR)) {
       Point3i ptA0 = new Point3i();
       Point3i ptB0 = new Point3i();
       Point3i ptA1 = new Point3i();
@@ -4907,6 +4958,7 @@ class Isosurface extends IsosurfaceMeshCollection {
           }
         }
     }
+    
     if (dataType == SURFACE_PROPERTY)
       voxelData = property;
     if (thePlane == null) {
@@ -4914,8 +4966,7 @@ class Isosurface extends IsosurfaceMeshCollection {
         for (int j = pt0.y; j < pt1.y; j++)
           for (int k = pt0.z; k < pt1.z; k++)
             if (voxelData[i][j][k] == Float.MAX_VALUE)
-              voxelData[i][j][k] = Float.NaN;
-              
+              voxelData[i][j][k] = Float.NaN;              
     } else {
       maxValue = 0.001f;
       for (int x = 0; x < nPointsX; ++x)

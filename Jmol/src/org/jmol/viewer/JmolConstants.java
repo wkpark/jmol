@@ -33,7 +33,7 @@ final public class JmolConstants {
 
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
-  public final static String copyright = "(C) 2006 Jmol Development";
+  public final static String copyright = "(C) 2007 Jmol Development";
   public final static String version = "11.1.24";
   
   /*
@@ -43,8 +43,9 @@ final public class JmolConstants {
    11.1.24
    
    refactored Geodesic3D, Dots, DotsRenderer
-   set now for proper rendering of cavities
-   still working...
+   
+   isosurface CAVITY 
+
    
    11.1.23
    

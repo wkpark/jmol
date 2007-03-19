@@ -7856,6 +7856,7 @@ class Eval { //implements Runnable {
     boolean surfaceObjectSeen = false;
     boolean planeSeen = false;
     boolean idSeen = false;
+    boolean isCavity = false;
     float[] nlmZ = new float[5];
     float[] data = null;
     BitSet bsSelected = null, bsIgnore = null;
@@ -8004,20 +8005,23 @@ class Eval { //implements Runnable {
           break;
         }
         if (str.equalsIgnoreCase("CAVITY")) {
-          float range = floatParameter(++i);
+          isCavity = true;
+          if (isSyntaxCheck)
+            continue;
+          float range = (isFloatParameter(i + 1) ? floatParameter(++i) : 10f);
           if (range > 10f)
             numberOutOfRange(0, 10);
-          if (!isSyntaxCheck) {
-            Dots dotCalculation = viewer.getFrame().getDotCalculation();
-            dotCalculation.setProperty("init", new Integer(
-                Dots.DOTS_MODE_CALCONLY), null);
-            dotCalculation.setProperty("ignore", bsIgnore, null);
-            dotCalculation.setSize((int) (range * 1000 + 1002),
-                bsSelected == null ? viewer.getSelectionSet() : bsSelected);
-            viewer.getFrame().calcSurfaceDistances(dotCalculation);
-            dotCalculation = null;
-          }
-          continue;
+          Dots dotCalculation = viewer.getFrame().getDotCalculation();
+          dotCalculation.setProperty("init", new Integer(
+              Dots.DOTS_MODE_CALCONLY), null);
+          dotCalculation.setProperty("ignore", bsIgnore, null);
+          dotCalculation.setSize((int) (range * 1000 + 1002),
+              bsSelected == null ? viewer.getSelectionSet() : bsSelected);
+          viewer.getFrame().calcSurfaceDistances(dotCalculation);
+          propertyName = "cavity";
+          propertyValue = dotCalculation.getPoints(); 
+          dotCalculation = null;
+          break;
         }
         if (str.equalsIgnoreCase("SCALE")) {
           propertyName = "scale";
@@ -8322,10 +8326,17 @@ class Eval { //implements Runnable {
       if (propertyName != null)
         setShapeProperty(iShape, propertyName, propertyValue);
     }
+    if (isCavity && !surfaceObjectSeen) {
+      surfaceObjectSeen = true;
+      setShapeProperty(iShape, "bsSolvent", lookupIdentifierValue("solvent"));
+      setShapeProperty(iShape, "sasurface", new Float(0));
+    }
+
     if (planeSeen && !surfaceObjectSeen) {
       setShapeProperty(iShape, "nomap", new Float(0));
       surfaceObjectSeen = true;
-    }
+    } 
+
 
     if (surfaceObjectSeen && iShape == JmolConstants.SHAPE_ISOSURFACE
         && !isSyntaxCheck) {

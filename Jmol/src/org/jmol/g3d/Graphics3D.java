@@ -55,11 +55,7 @@ final public class Graphics3D {
   Triangle3D triangle3d;
   Cylinder3D cylinder3d;
   Hermite3D hermite3d;
-  Geodesic3D geodesic3d;
   Normix3D normix3d;
-
-  public final static int HIGHEST_GEODESIC_LEVEL = 3;
-
   boolean isFullSceneAntialiasingEnabled;
   boolean antialiasThisFrame;
 
@@ -116,7 +112,6 @@ final public class Graphics3D {
     this.triangle3d = new Triangle3D(this);
     this.cylinder3d = new Cylinder3D(this);
     this.hermite3d = new Hermite3D(this);
-    this.geodesic3d = new Geodesic3D(this);
     this.normix3d = new Normix3D(this);
     //    setFontOfSize(13);
   }
@@ -2621,18 +2616,6 @@ final public class Graphics3D {
     return normix3d.isDirectedTowardsCamera(normix);
   }
 
-  public boolean isNeighborVertex(short vertex1, short vertex2, int level) {
-    return Geodesic3D.isNeighborVertex(vertex1, vertex2, level);
-  }
-
-  public Vector3f[] getGeodesicVertexVectors() {
-    return Geodesic3D.getVertexVectors();
-  }
-
-  public int getGeodesicVertexCount(int level) {
-    return Geodesic3D.getVertexCount(level);
-  }
-
   public Vector3f[] getTransformedVertexVectors() {
     return normix3d.getTransformedVectors();
   }
@@ -2641,22 +2624,7 @@ final public class Graphics3D {
     return normix3d.getVector(normix);
   }
 
-  public int getGeodesicFaceCount(int level) {
-    return Geodesic3D.getFaceCount(level);
-  }
-
-  public short[] getGeodesicFaceVertexes(int level) {
-    return Geodesic3D.getFaceVertexes(level);
-  }
-
   public short[] getGeodesicFaceNormixes(int level) {
     return normix3d.getFaceNormixes(level);
-  }
-
-  public final static int GEODESIC_START_VERTEX_COUNT = 12;
-  public final static int GEODESIC_START_NEIGHBOR_COUNT = 5;
-
-  public short[] getGeodesicNeighborVertexes(int level) {
-    return Geodesic3D.getNeighborVertexes(level);
   }
 }

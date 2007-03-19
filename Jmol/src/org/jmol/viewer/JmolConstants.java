@@ -34,12 +34,18 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "11.1.23";
+  public final static String version = "11.1.24";
   
   /*
    *
    * 
    * 
+   11.1.24
+   
+   refactored Geodesic3D, Dots, DotsRenderer
+   set now for proper rendering of cavities
+   still working...
+   
    11.1.23
    
    fixes a number of bugs, some critical

@@ -1644,7 +1644,7 @@ class Eval { //implements Runnable {
     case Token.surfacedistance:
       frame.getSurfaceDistanceMax();
       propertyValue = atom.getSurfaceDistance100();
-      return (propertyValue == -1 ? Integer.MAX_VALUE : asInt ? propertyValue : propertyValue / 100f);
+      return (asInt ? propertyValue : propertyValue / 100f);
     case Token.occupancy:
       return atom.getOccupancy();
     case Token.polymerLength:
@@ -3292,8 +3292,7 @@ class Eval { //implements Runnable {
 
       switch (tok) {
       case Token.surfacedistance:
-        if (viewer.getFrame().getSurfaceDistanceMax() == 0)
-          dots(statementLength, Dots.DOTS_MODE_CALCONLY);
+        viewer.getFrame().getSurfaceDistanceMax();
         break;
       case Token.temperature:
         if (viewer.isRangeSelected())
@@ -7894,9 +7893,10 @@ class Eval { //implements Runnable {
           Atom[] atoms = frame.atoms;
           if (tokProperty == Token.surfacedistance)
             viewer.getFrame().getSurfaceDistanceMax();
-          for (int iAtom = atomCount; --iAtom >= 0;) 
+          for (int iAtom = atomCount; --iAtom >= 0;) {
             data[iAtom] = atomProperty(frame, atoms[iAtom], tokProperty, false);
-          
+          }
+
         }
         propertyValue = data;
         break;
@@ -8006,11 +8006,17 @@ class Eval { //implements Runnable {
         if (str.equalsIgnoreCase("CAVITY")) {
           float range = floatParameter(++i);
           if (range > 10f)
-            numberOutOfRange(0,10);
-          setShapeProperty(JmolConstants.SHAPE_DOTS, "init", new Integer(Dots.DOTS_MODE_CALCONLY));
-          setShapeProperty(JmolConstants.SHAPE_DOTS, "select", bsSelected);
-          setShapeProperty(JmolConstants.SHAPE_DOTS, "ignore", bsIgnore);
-          setShapeSize(JmolConstants.SHAPE_DOTS, (int)(range * 1000 + 1002));
+            numberOutOfRange(0, 10);
+          if (!isSyntaxCheck) {
+            Dots dotCalculation = viewer.getFrame().getDotCalculation();
+            dotCalculation.setProperty("init", new Integer(
+                Dots.DOTS_MODE_CALCONLY), null);
+            dotCalculation.setProperty("ignore", bsIgnore, null);
+            dotCalculation.setSize((int) (range * 1000 + 1002),
+                bsSelected == null ? viewer.getSelectionSet() : bsSelected);
+            viewer.getFrame().calcSurfaceDistances(dotCalculation);
+            dotCalculation = null;
+          }
           continue;
         }
         if (str.equalsIgnoreCase("SCALE")) {
@@ -8320,9 +8326,9 @@ class Eval { //implements Runnable {
       setShapeProperty(iShape, "nomap", new Float(0));
       surfaceObjectSeen = true;
     }
-    
-    
-    if (surfaceObjectSeen && iShape == JmolConstants.SHAPE_ISOSURFACE && !isSyntaxCheck) {
+
+    if (surfaceObjectSeen && iShape == JmolConstants.SHAPE_ISOSURFACE
+        && !isSyntaxCheck) {
       String id = (String) viewer.getShapeProperty(iShape, "ID");
       Integer n = (Integer) viewer.getShapeProperty(iShape, "count");
       if (id != null)

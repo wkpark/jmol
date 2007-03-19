@@ -28,9 +28,9 @@ import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.g3d.Geodesic3D;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -63,6 +63,9 @@ import java.util.Hashtable;
  * 
  * A discussion of molecular/solvent-accessible surfaces can be found at
  * http://www.netsci.org/Science/Compchem/feature14e.html
+ * 
+ * In March 2007, Bob refactored all Geodesic business 
+ * into the static class g3d.Geodesic3D. 
  * 
  */
 
@@ -118,10 +121,11 @@ import java.util.Hashtable;
 class Dots extends AtomShape {
 
   final static float SURFACE_DISTANCE_FOR_CALCULATION = 10f;
-  DotsRenderer dotsRenderer;
 
   BitSet bsOn = new BitSet();
   BitSet bsIgnore, bsSelected;
+  
+  int level = 3;
   
   short mad = 0;
   short lastMad = 0;
@@ -135,12 +139,8 @@ class Dots extends AtomShape {
   int[][] dotsConvexMaps;
   final int nArcPoints = 9;  
   
-  Vector3f[] geodesicVertices;
   int geodesicCount;
   int[] geodesicMap;
-  Vector3f[] geodesicSolventVertices;
-  int geodesicSolventCount;
-  int[] geodesicSolventMap;
   int[] mapT;
   final static int[] mapNull = new int[0];
   final static int DOTS_MODE_DOTS = 0;
@@ -171,14 +171,12 @@ class Dots extends AtomShape {
   }
 
   void initShape() {
-    dotsRenderer = (DotsRenderer)viewer.getFrameRenderer().getRenderer(JmolConstants.SHAPE_DOTS, g3d);
-    geodesicVertices = dotsRenderer.geodesic.vertices;
-    geodesicCount = geodesicVertices.length;
+
+    //these next two are for the geodesic fragment at a distance
+
+    geodesicCount = Geodesic3D.vertexVectors.length;
     geodesicMap = allocateBitmap(geodesicCount);
-    geodesicSolventVertices = dotsRenderer.geodesicSolvent.vertices;
-    geodesicSolventCount = geodesicSolventVertices.length;
-    geodesicSolventMap = allocateBitmap(geodesicSolventCount);
-    mapT = allocateBitmap(geodesicSolventCount);
+    mapT = allocateBitmap(geodesicCount);
     translucentAllowed = false; //except for geosurface
     super.initShape();
   }
@@ -266,21 +264,10 @@ class Dots extends AtomShape {
     super.setProperty(propertyName, value, bs);
   }
 
-  Object getProperty(String property, int index) {
-    if (property == "points") {
-      if (dotsConvexMaps == null) {
-        initialize(DOTS_MODE_CALCONLY);
-        setSize(1, bsSelected == null ? viewer.getSelectionSet() : bsSelected);
-      }
-      return getPoints();
-    }
-    if (property == "distance") {
-      return new Float(Float.isNaN(setRadius)? 0 : setRadius);
-    }
-   
-    return super.getProperty(property, index);
+  float getRadius() {
+    return Float.isNaN(setRadius)? 0 : setRadius;
   }
-
+  
   void initialize(int mode) {
     isSurface = (mode == DOTS_MODE_SURFACE);
     isCalcOnly = (mode == DOTS_MODE_CALCONLY);
@@ -345,7 +332,7 @@ class Dots extends AtomShape {
       setRadius = Float.MAX_VALUE;
       scale = 1;
     }
-    maxRadius = frame.getMaxVanderwaalsRadius();
+    maxRadius = isCalcOnly ? setRadius : frame.getMaxVanderwaalsRadius();
     float solventRadius = viewer.getCurrentSolventProbeRadius();
     if (addRadius == Float.MAX_VALUE)
       addRadius = (solventRadius != 0 ? solventRadius : 0);
@@ -398,8 +385,8 @@ class Dots extends AtomShape {
         colixes = new short[atomCount];
         paletteIDs = new byte[atomCount];
       }
-      disregardNeighbors = (viewer.getDotSurfaceFlag() == false);
-      onlySelectedDots = (viewer.getDotsSelectedOnlyFlag() == true);
+      disregardNeighbors = (!isCalcOnly && viewer.getDotSurfaceFlag() == false);
+      onlySelectedDots = (!isCalcOnly && viewer.getDotsSelectedOnlyFlag() == true);
       for (int i = atomCount; --i >= 0;)
         if (bsOn.get(i) && (bsIgnore == null || !bsIgnore.get(i))) {
           setAtomI(i);
@@ -417,7 +404,6 @@ class Dots extends AtomShape {
       dotsConvexMax = i + 1;
     }
     currentPoints = null;
-    frame.setSurfaceAtoms(bsSurface, bsOn);
     timeEndExecution = System.currentTimeMillis();
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug("dots generation time = " + getExecutionWalltime());
@@ -449,9 +435,9 @@ class Dots extends AtomShape {
     if (count > 0) {
       bsSurface.set(indexI);
       if (isSurface) {
-        addIncompleteFaces(geodesicMap, dotsRenderer.geodesic);
+        addIncompleteFaces(geodesicMap);
         //add a second row as well.
-        addIncompleteFaces(geodesicMap, dotsRenderer.geodesic);
+        addIncompleteFaces(geodesicMap);
       }
       count = getMapStorageCount(geodesicMap);
       map = new int[count];
@@ -468,9 +454,9 @@ class Dots extends AtomShape {
     return indexLast + 1;
   }
 
-  void addIncompleteFaces(int[] points, DotsRenderer.Geodesic g) {
+  void addIncompleteFaces(int[] points) {
     clearBitmap(mapT);
-    short[] faces = g.faceIndices;
+    short[] faces = Geodesic3D.faceVertexesArrays[level];
     int len = faces.length;
     int maxPt = -1;
     for (int f = 0; f < len;) {
@@ -506,6 +492,16 @@ class Dots extends AtomShape {
   }
 
   Point3f centerT;
+  
+  //level = 3 for both
+  final Point3f[] vertexTest = new Point3f[12];
+  {
+    for(int i = 0; i < 12; i++)
+      vertexTest[i] = new Point3f();
+  }
+
+  static int[] power4 = {1, 4, 16, 64, 256};
+  
   void calcConvexBits() {
     setAllBits(geodesicMap, geodesicCount);
     float combinedRadii = radiusI + radiusP;
@@ -513,13 +509,13 @@ class Dots extends AtomShape {
       return;
     int faceTest;
     int p1, p2, p3;
-    short[] faces = dotsRenderer.geodesic.faceIndices;
-    int p4 = DotsRenderer.power4[dotsRenderer.geodesic.level - 1];
+    short[] faces = Geodesic3D.faceVertexesArrays[level];
+    
+    int p4 = power4[level - 1];
     boolean ok1, ok2, ok3;
     clearBitmap(mapT);
-    Point3f[] vertexTest = dotsRenderer.vertexTest;
     for (int i = 0; i < 12; i++) {
-      vertexTest[i].set(geodesicVertices[i]);
+      vertexTest[i].set(Geodesic3D.vertexVectors[i]);
       vertexTest[i].scaleAdd(combinedRadii, centerI);      
     }    
     for (int f = 0; f < 20; f++) {
@@ -560,10 +556,15 @@ class Dots extends AtomShape {
           for (int j = 0; j < neighborCount; j++) {
             float maxDist = neighborPlusProbeRadii2[j];
             centerT = neighborCenters[j];
-            pointT.set(geodesicVertices[vect]);
+            //if (((Atom)centerI).atomIndex == 536)
+             // System.out.println(j + " " + ((Atom)centerT).getIdentity() + " "+(pointT.distanceSquared(centerT)) + "/" + maxDist + " " + ((Atom)centerI).getIdentity() );
+            pointT.set(Geodesic3D.vertexVectors[vect]);
             pointT.scaleAdd(combinedRadii, centerI);
             if (pointT.distanceSquared(centerT) < maxDist) {
               clearBit(geodesicMap, vect);
+            } else {
+              //if (((Atom)centerI).atomIndex == 536 && ((Atom)centerT).atomIndex == 643)
+              //System.out.println(((Atom)centerT).getIdentity() + " "+(pointT.distanceSquared(centerT)) + "/" + maxDist + " " + ((Atom)centerI).getIdentity() );
             }
           }
           break;
@@ -593,6 +594,8 @@ class Dots extends AtomShape {
       if (neighbor == atomI || bsIgnore != null && bsIgnore.get(neighbor.atomIndex))
         continue;
       // only consider selected neighbors
+      //if (((Atom)centerI).atomIndex == 536)
+      //System.out.println(neighbor.getIdentity() + " " + centerI.distance(neighbor));
       if (onlySelectedDots && !bsOn.get(neighbor.atomIndex))
         continue;
       float neighborRadius = getAppropriateRadius(neighbor);
@@ -715,6 +718,10 @@ class Dots extends AtomShape {
   
   Point3f[] currentPoints;
   Point3f[] getPoints() {
+    if (dotsConvexMaps == null) {
+      initialize(DOTS_MODE_CALCONLY);
+      setSize(1, bsSelected == null ? viewer.getSelectionSet() : bsSelected);
+    }
     if (currentPoints != null)
       return currentPoints;
     int nPoints = 0;
@@ -735,8 +742,7 @@ class Dots extends AtomShape {
         while (--iDot >= 0)
           if (getBit(dotsConvexMaps[i], iDot)) {
             Point3f pt = new Point3f();
-            pt.scaleAdd(SURFACE_DISTANCE_FOR_CALCULATION,
-                dotsRenderer.geodesic.vertices[iDot], atom);
+            pt.scaleAdd(setRadius, Geodesic3D.vertexVectors[iDot], atom);
             points[nPoints++] = pt;
           }
       }

@@ -26,9 +26,11 @@ package org.jmol.g3d;
 
 import javax.vecmath.Vector3f;
 import java.util.Hashtable;
-import org.jmol.util.Logger;
 
   /**
+   * 
+   * Consolidated Geodesic from dotsRenderer 3/19/07 Bob Hanson
+   * 
    * Constructs a canonical geodesic sphere of unit radius.
    *<p>
    * The Normix3D code quantizes arbitrary vectors to the vectors
@@ -105,12 +107,8 @@ import org.jmol.util.Logger;
    * converting from normal to normix.
    */
 
-class Geodesic3D {
+public class Geodesic3D {
   
-  Graphics3D g3d;
-
-  private final static boolean DUMP = false;
-
   final static float halfRoot5 = (float)(0.5 * Math.sqrt(5));
   final static float oneFifth = 2 * (float)Math.PI / 5;
   final static float oneTenth = oneFifth / 2;
@@ -166,56 +164,48 @@ class Geodesic3D {
   /**
    * 5 levels, 0 through 4
    */
+  
+  public static Vector3f[] vertexVectors;
+  public static short[][] faceVertexesArrays;
+  
   final static int maxLevel = 4;
-  static short[] vertexCounts;
   static short[][] neighborVertexesArrays;
-  static short[][] faceVertexesArrays;
-  static Vector3f[] vertexVectors;
-  
-    Geodesic3D(Graphics3D g3d) {
-      this.g3d = g3d;
-      initialize();
-    }
+  private static short[] vertexCounts;
 
-  private static synchronized void initialize() {
-    if(vertexCounts != null)
-      return;
-    vertexCounts = new short[maxLevel];
-    neighborVertexesArrays = new short[maxLevel][];
-    faceVertexesArrays = new short[maxLevel][];
-    vertexVectors = new Vector3f[12];
-    vertexVectors[0] = new Vector3f(0, 0, halfRoot5);
-    for (int i = 0; i < 5; ++i) {
-      vertexVectors[i+1] =
-        new Vector3f((float)Math.cos(i * oneFifth),
-                     (float)Math.sin(i * oneFifth),
-                     0.5f);
-      vertexVectors[i+6] =
-        new Vector3f((float)Math.cos(i * oneFifth + oneTenth),
-                     (float)Math.sin(i * oneFifth + oneTenth),
-                     -0.5f);
-    }
-    vertexVectors[11] = new Vector3f(0, 0, -halfRoot5);
-    for (int i = 12; --i >= 0; )
-      vertexVectors[i].normalize();
-    faceVertexesArrays[0] = faceVertexesIcosahedron;
-    neighborVertexesArrays[0] = neighborVertexesIcosahedron;
-    vertexCounts[0] = 12;
-    
-    for (int i = 0; i < maxLevel - 1; ++i)
-      quadruple(i);
-    
-    if (DUMP && Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-      for (int i = 0; i < maxLevel; ++i) {
-        Logger.debug("geodesic level " + i +
-                           " vertexCount= " + getVertexCount(i) +
-                           " faceCount=" + getFaceCount(i) +
-                           " edgeCount=" + getEdgeCount(i));
-      }
-    }
-  }
   
-  static int getVertexCount(int level) {
+  public Geodesic3D() {
+  }
+
+  public static int getVertexCount(int level) {
+    if (vertexCounts == null) {
+      vertexCounts = new short[maxLevel];
+      neighborVertexesArrays = new short[maxLevel][];
+      faceVertexesArrays = new short[maxLevel][];
+      vertexVectors = new Vector3f[12];
+      vertexVectors[0] = new Vector3f(0, 0, halfRoot5);
+      for (int i = 0; i < 5; ++i) {
+        vertexVectors[i + 1] = new Vector3f((float) Math.cos(i * oneFifth),
+            (float) Math.sin(i * oneFifth), 0.5f);
+        vertexVectors[i + 6] = new Vector3f((float) Math.cos(i * oneFifth
+            + oneTenth), (float) Math.sin(i * oneFifth + oneTenth), -0.5f);
+      }
+      vertexVectors[11] = new Vector3f(0, 0, -halfRoot5);
+      for (int i = 12; --i >= 0;)
+        vertexVectors[i].normalize();
+      faceVertexesArrays[0] = faceVertexesIcosahedron;
+      neighborVertexesArrays[0] = neighborVertexesIcosahedron;
+      vertexCounts[0] = 12;
+
+      for (int i = 0; i < maxLevel - 1; ++i)
+        quadruple(i);
+
+/*      for (int i = 0; i < maxLevel; ++i) {
+        System.out.println("geodesic level " + i + " vertexCount= "
+            + getVertexCount(i) + " faceCount=" + getFaceCount(i)
+            + " edgeCount=" + getEdgeCount(i));
+        }
+*/
+    }
     return vertexCounts[level];
   }
 
@@ -245,8 +235,6 @@ class Geodesic3D {
   private final static boolean VALIDATE = true;
 
   private static void quadruple(int level) {
-    if (DUMP && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
-      Logger.debug("quadruple(" + level + ")");
     htVertex = new Hashtable();
     int oldVertexCount = vertexVectors.length;
     short[] oldFaceVertexes = faceVertexesArrays[level];
@@ -268,12 +256,6 @@ class Geodesic3D {
 
     vertexCounts[level + 1] = (short)newVertexCount;
 
-    if (DUMP)
-      Logger.debug("oldVertexCount=" + oldVertexCount +
-                         " newVertexCount=" + newVertexCount +
-                         " oldFaceCount=" + oldFaceCount +
-                         " newFaceCount=" + newFaceCount);
-    
     vertexNext = (short)oldVertexCount;
 
     int iFaceNew = 0;
@@ -402,15 +384,5 @@ class Geodesic3D {
     newVertexVector.normalize();
     htVertex.put(hashKey, new Short(vertexNext));
     return vertexNext++;
-  }
-
-  static boolean isNeighborVertex(short vertex1, short vertex2, int level) {
-    short[] neighborVertexes = neighborVertexesArrays[level];
-    int offset1 = vertex1 * 6;
-    for (int i = offset1 + (vertex1 < 12 ? 5 : 6); --i >= offset1; ) {
-      if (neighborVertexes[i] == vertex2)
-        return true;
-    }
-    return false;
   }
 }

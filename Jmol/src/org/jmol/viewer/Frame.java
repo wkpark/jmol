@@ -2558,7 +2558,7 @@ public final class Frame {
     if (nSurfaceAtoms == 0)
       return -1;
     if (surfaceDistance100s == null)
-      calcSurfaceDistances();
+      calcSurfaceDistances(null);
     return surfaceDistance100s[atomIndex];
   }
 
@@ -2566,22 +2566,30 @@ public final class Frame {
 
   int getSurfaceDistanceMax() {
     if (surfaceDistance100s == null)
-      calcSurfaceDistances();
+      calcSurfaceDistances(null);
     return surfaceDistanceMax;
   }
 
-  private void calcSurfaceDistances() {
+  Dots getDotCalculation() {
+      Dots dotCalculation = new Dots();
+      dotCalculation.setViewerG3dFrame(viewer, g3d, this, JmolConstants.SHAPE_DOTS);
+      return dotCalculation;
+  }
+  
+  void calcSurfaceDistances(Dots dotCalculation) {
     surfaceDistanceMax = 0;
-    loadShape(JmolConstants.SHAPE_DOTS);
-    Point3f[] points = (Point3f[]) getShapeProperty(JmolConstants.SHAPE_DOTS, "points", 0);
+    if (dotCalculation == null)
+      dotCalculation = getDotCalculation();
+    Point3f[] points = dotCalculation.getPoints();
+    setSurfaceAtoms(dotCalculation.bsSurface, dotCalculation.bsOn);
     if (bsSurfaceSet == null || nSurfaceAtoms == 0)
       return;
     surfaceDistance100s = new int[atomCount];
     if (points.length == 0)
       return;
-    float dist = ((Float)getShapeProperty(JmolConstants.SHAPE_DOTS, "distance", 0)).floatValue();
+    float dist = dotCalculation.getRadius();
     for (int i = 0; i < atomCount; i++) {
-      surfaceDistance100s[i] = -1;
+      //surfaceDistance100s[i] = Integer.MIN_VALUE;
       if (bsSurface.get(i)) {
         surfaceDistance100s[i] = 0;
       }else{
@@ -2589,8 +2597,9 @@ public final class Frame {
         Atom atom = atoms[i];
         for (int j = points.length; --j >= 0;) {
           float d = points[j].distance(atom) - dist;
+          if (d < 0)
+            System.out.println("draw d"+j+" "+StateManager.escape(points[j]) +" \""+d + " ? " + atom.getIdentity()+"\"");
           dMin = Math.min(d, dMin);
-          //System.out.println("draw d"+j+" "+StateManager.escape(points[j]));
         }
         //System.out.println("frame calcsurf " + i + " " + dMin);
         int d = surfaceDistance100s[i] = (int) (dMin * 100);

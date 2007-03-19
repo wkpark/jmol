@@ -12,9 +12,12 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Vector;
 
+import javax.swing.JFrame;
+
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.JUnitLogger;
+import org.openscience.jmol.app.Jmol;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -148,11 +151,20 @@ class TestScriptsImpl extends TestCase {
   private boolean checkOnly;
   private boolean performance;
 
+  private final int nbExecutions;
+
   public TestScriptsImpl(File file, boolean checkOnly, boolean performance) {
     super("testFile");
     this.file = file;
     this.checkOnly = checkOnly;
     this.performance = performance;
+    int nbExec = 1;
+    try {
+      nbExec = Integer.parseInt(System.getProperty("test.nbExecutions", "1"));
+    } catch (NumberFormatException e) {
+      //
+    }
+    this.nbExecutions = nbExec;
   }
 
   /* (non-Javadoc)
@@ -163,24 +175,32 @@ class TestScriptsImpl extends TestCase {
   }
 
   /**
-   * Tests reading of one file.
+   * Execute test for a script.
    */
   public void testScript() {
     JUnitLogger.setInformation(file.getPath());
-
-    SmarterJmolAdapter adapter = new SmarterJmolAdapter();
-    JmolViewer viewer = JmolViewer.allocateViewer(null, adapter);
-    if (checkOnly) {
-      viewer.setAppletContext("", null, null, "-n -C "); // set no display; checkOnly; no file opening
-    } else {
-      viewer.setAppletContext("", null, null, "-n "); // set no display
-    }
     if (performance) {
+      runPerformanceTest();
+      return;
+    }
+    runSimpleTest();
+  }
+
+  /**
+   * Executes a performance test.
+   */
+  public void runPerformanceTest() {
+    JFrame frame = new JFrame();
+    Jmol jmol = Jmol.getJmol(frame, 500, 500, checkOnly ? "-C " : "");
+    JmolViewer viewer = jmol.viewer;
+    long beginFull = System.currentTimeMillis();
+    for (int i = 0; i < nbExecutions; i++) {
+      viewer.scriptWaitStatus("set defaultDirectory \"" + file.getParent().replace('\\', '/') + "\"", "");
       int lineNum = 0;
       try {
         BufferedReader reader = new BufferedReader(new FileReader(file));
         String line = null;
-        long beginFull = System.currentTimeMillis();
+        long beginScript = System.currentTimeMillis();
         while ((line = reader.readLine()) != null) {
           lineNum++;
           long begin = System.currentTimeMillis();
@@ -202,23 +222,53 @@ class TestScriptsImpl extends TestCase {
                   "Error in script [" + file.getPath() + "] " +
                   "at line " + lineNum + " (" + line + "):\n" +
                   error);
+              }
             }
-          }
           if ((end - begin) > 0) {
-            System.err.println("Time to execute [" + line + "]: " + (end - begin) + " milliseconds");
+            outputPerformanceMessage(end - begin, "execute [" + line + "]");
           }
         }
-        long endFull = System.currentTimeMillis();
-        System.err.println("Time to execute script [" + file.getPath() + "]: " + (endFull - beginFull) + " milliseconds");
+        long endScript = System.currentTimeMillis();
+        outputPerformanceMessage(endScript - beginScript, "execute script [" + file.getPath() + "]");
       } catch (FileNotFoundException e) {
         fail("File " + file.getPath() + " not found");
       } catch (IOException e) {
         fail("Error reading line " + lineNum + " of " + file.getPath());
       }
-    } else {
-      String s = viewer.evalFile(file.getPath() + " -nowait");
-      assertNull("Error in script [" + file.getPath() + ":\n" + s, s);
     }
+    long endFull = System.currentTimeMillis();
+    if (nbExecutions > 1) {
+      outputPerformanceMessage(endFull - beginFull, nbExecutions + " of script");
+    }
+  }
+
+  /**
+   * Executes a test.
+   */
+  public void runSimpleTest() {
+    JUnitLogger.setInformation(file.getPath());
+
+    SmarterJmolAdapter adapter = new SmarterJmolAdapter();
+    JmolViewer viewer = JmolViewer.allocateViewer(null, adapter);
+    if (checkOnly) {
+      viewer.setAppletContext("", null, null, "-n -C "); // set no display; checkOnly; no file opening
+    } else {
+      viewer.setAppletContext("", null, null, "-n "); // set no display
+    }
+    String s = viewer.evalFile(file.getPath() + " -nowait");
+    assertNull("Error in script [" + file.getPath() + ":\n" + s, s);
+  }
+
+  /**
+   * Output a performance message.
+   * 
+   * @param duration Duration in milliseconds.
+   * @param message Message.
+   */
+  private void outputPerformanceMessage(long duration, String message) {
+    String time = "      " + duration;
+    time = time.substring(Math.min(6, time.length() - 6));
+    System.err.println(time + " ms: " + message);
   }
 
   /* (non-Javadoc)

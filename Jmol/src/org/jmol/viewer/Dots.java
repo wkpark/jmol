@@ -700,6 +700,8 @@ class Dots extends AtomShape {
   }
 
   int getPointCount(int[] visibilityMap, int dotCount) {
+    if (visibilityMap == null)
+      return 0;
     int iDot = visibilityMap.length << 5;
     if (iDot > dotCount)
       iDot = dotCount;
@@ -724,18 +726,20 @@ class Dots extends AtomShape {
     if (nPoints == 0)
       return points;
     nPoints = 0;
-    for (int i = dotsConvexMax; --i >= 0;) {
-      Atom atom = atoms[i];
-      int iDot = dotsConvexMaps[i].length << 5;
-      if (iDot > dotCount)
-        iDot = dotCount;
-      while (--iDot >= 0)
-        if (getBit(dotsConvexMaps[i], iDot)) {
-          Point3f pt = new Point3f();
-          pt.scaleAdd(SURFACE_DISTANCE_FOR_CALCULATION, dotsRenderer.geodesic.vertices[iDot], atom);
-          points[nPoints++] = pt;
-        }
-    }
+    for (int i = dotsConvexMax; --i >= 0;)
+      if (dotsConvexMaps[i] != null) {
+        Atom atom = atoms[i];
+        int iDot = dotsConvexMaps[i].length << 5;
+        if (iDot > dotCount)
+          iDot = dotCount;
+        while (--iDot >= 0)
+          if (getBit(dotsConvexMaps[i], iDot)) {
+            Point3f pt = new Point3f();
+            pt.scaleAdd(SURFACE_DISTANCE_FOR_CALCULATION,
+                dotsRenderer.geodesic.vertices[iDot], atom);
+            points[nPoints++] = pt;
+          }
+      }
     currentPoints = points;
     return points;
   }

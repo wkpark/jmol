@@ -34,11 +34,20 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2006 Jmol Development";
-  public final static String version = "11.1.22";
+  public final static String version = "11.1.23";
   
   /*
    *
    * 
+   * 
+   11.1.23
+   
+   fixes a number of bugs, some critical
+   
+   adds isosurface CAVITY x.xx -- a new way to depict the cavities of 
+   a molecule in terms of color. 
+   
+   
    11.1.21/22
   
    adds 

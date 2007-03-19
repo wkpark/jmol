@@ -1,7 +1,7 @@
 
-/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 9:53 AM 3/6/2007
+/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 1:34 AM 3/19/2007
 
- first pass at checkbox heirarchy -- see http://www.stolaf.edu/academics/jmol/docs/examples-11/check.htm
+ checkbox heirarchy -- see http://www.stolaf.edu/academics/jmol/docs/examples-11/check.htm
 
     based on:
  *
@@ -659,7 +659,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     if (isIEWin || useHtml4Object) {
       visitJava =
         "<p style='background-color:yellow;" +
-        "width:" + sz[0] + "px;height:" + sz[1] + "px;" + 
+        "width:" + sz[0] + ";height:" + sz[1] + ";" + 
         // why doesn't this vertical-align work?
 	"text-align:center;vertical-align:middle;'>\n" +
         "You do not have Java applets enabled in your web browser, or your browser is blocking this applet.<br />\n" +

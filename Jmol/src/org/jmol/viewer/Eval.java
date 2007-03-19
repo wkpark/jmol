@@ -7853,6 +7853,7 @@ class Eval { //implements Runnable {
     setShapeProperty(iShape, "title", new String[] { thisCommand });
     int colorRangeStage = 0;
     int signPt = 0;
+    boolean isIsosurface = (iShape == JmolConstants.SHAPE_ISOSURFACE);
     boolean surfaceObjectSeen = false;
     boolean planeSeen = false;
     boolean idSeen = false;
@@ -7876,7 +7877,7 @@ class Eval { //implements Runnable {
       case Token.property:
         propertyName = "property";
         str = parameterAsString(i);
-        if (str.toLowerCase().indexOf("property_") == 0) {
+        if (!isCavity && str.toLowerCase().indexOf("property_") == 0) {
           data = new float[viewer.getAtomCount()];
           if (isSyntaxCheck)
             continue;
@@ -7888,8 +7889,10 @@ class Eval { //implements Runnable {
         }
         int atomCount = viewer.getAtomCount();
         int tokProperty = getToken(++i).tok;
-        data = new float[atomCount];
-        if (!isSyntaxCheck) {
+        data = (isCavity ? new float[0] : new float[atomCount]);
+        if (isCavity)//not implemented: && tokProperty != Token.surfacedistance)
+          invalidArgument();
+        if (!isSyntaxCheck && !isCavity) {
           Frame frame = viewer.getFrame();
           Atom[] atoms = frame.atoms;
           if (tokProperty == Token.surfacedistance)
@@ -7897,7 +7900,6 @@ class Eval { //implements Runnable {
           for (int iAtom = atomCount; --iAtom >= 0;) {
             data[iAtom] = atomProperty(frame, atoms[iAtom], tokProperty, false);
           }
-
         }
         propertyValue = data;
         break;
@@ -8005,6 +8007,8 @@ class Eval { //implements Runnable {
           break;
         }
         if (str.equalsIgnoreCase("CAVITY")) {
+          if (!isIsosurface)
+            invalidArgument();
           isCavity = true;
           if (isSyntaxCheck)
             continue;
@@ -8018,6 +8022,7 @@ class Eval { //implements Runnable {
           dotCalculation.setSize((int) (range * 1000 + 1002),
               bsSelected == null ? viewer.getSelectionSet() : bsSelected);
           viewer.getFrame().calcSurfaceDistances(dotCalculation);
+          
           propertyName = "cavity";
           propertyValue = dotCalculation.getPoints(); 
           dotCalculation = null;
@@ -8114,7 +8119,7 @@ class Eval { //implements Runnable {
         }
         // surface objects
         if (str.equalsIgnoreCase("MAP")) { // "use current"
-          surfaceObjectSeen = true;
+          surfaceObjectSeen = !isCavity;
           propertyName = "map";
           break;
         }
@@ -8338,8 +8343,7 @@ class Eval { //implements Runnable {
     } 
 
 
-    if (surfaceObjectSeen && iShape == JmolConstants.SHAPE_ISOSURFACE
-        && !isSyntaxCheck) {
+    if (surfaceObjectSeen && isIsosurface && !isSyntaxCheck) {
       String id = (String) viewer.getShapeProperty(iShape, "ID");
       Integer n = (Integer) viewer.getShapeProperty(iShape, "count");
       if (id != null)

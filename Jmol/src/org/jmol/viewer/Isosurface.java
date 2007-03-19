@@ -278,6 +278,7 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   Point3f center, point;
   float distance;
+  float cavityRange;
   Point4f thePlane;
   boolean isContoured;
   boolean isBicolorMap;
@@ -661,6 +662,11 @@ class Isosurface extends IsosurfaceMeshCollection {
       return;
     }
 
+    if ("cavityRange" == propertyName) {
+      cavityRange = ((Float)value).floatValue();
+      return;
+    }
+    
     if ("cavity" == propertyName) {
       solvent_dots = (Point3f[])value;
       return;
@@ -1019,7 +1025,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     //anisotropy[0] = anisotropy[1] = anisotropy[2] = 1f;
     cutoff = Float.MAX_VALUE;
     thePlane = null;
-    surface_data = null;
+    //surface_data = null;
     nBytes = 0;
     nContours = 0;
     colorPtr = 0;
@@ -4783,11 +4789,32 @@ class Isosurface extends IsosurfaceMeshCollection {
     return r;
   }
 
-  float[] surface_data;
+  //float[] surface_data;
   BitSet solvent_bs;
   
   void generateSolventCube() {
+    /*
+     * 
+     * Jmol cavity rendering. Tim Driscoll suggested "filling a 
+     * protein with foam. Here you go....
+     * 
+     * 1) Use a dot-surface extended x.xx Angstroms to define the 
+     *    outer envelope of the protein.
+     * 2) Identify all voxel points outside the protein surface (v > 0) 
+     *    but inside the envelope (nearest distance to a dot > x.xx).
+     * 3) First pass -- create the protein surface.
+     * 4) Replace solvent atom set with "foam" ball of the right radius
+     *    at the voxel vertex points.
+     * 5) Run through a second time using these "atoms" to generate 
+     *    the surface around the foam spheres. 
+     *    
+     *    Bob Hanson 3/19/07
+     * 
+     */
+    
     if (solvent_dots != null && theProperty != null) {
+/*
+ * couldn't get this to work -- we only have half of the points
       for (int x = 0, i = 0, ipt = 0; x < nPointsX; ++x)
         for (int y = 0; y < nPointsY; ++y)
           for (int z = 0; z < nPointsZ; ++z)
@@ -4800,6 +4827,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       for (int i = 0; i < solvent_nAtoms; i++)
         if (surface_data[i] > mappedDataMax)
           mappedDataMax = surface_data[i];      
+*/
       return;
     }
     generateSolventCube(true);
@@ -4813,24 +4841,26 @@ class Isosurface extends IsosurfaceMeshCollection {
     solvent_bs = new BitSet(nPointsX * nPointsY * nPointsZ);
     int i = 0;
     int n = 0;
-    surface_data = new float[1000];
+    //surface_data = new float[1000];
     for (int x = 0; x < nPointsX; ++x)
       for (int y = 0; y < nPointsY; ++y) {
         out: for (int z = 0; z < nPointsZ; ++z, ++i)
           if (voxelData[x][y][z] < Float.MAX_VALUE && voxelData[x][y][z] > 0.2) {
             voxelPtToXYZ(x, y, z, ptXyzTemp);
-            float dMin = Float.MAX_VALUE;
-            float d;
+            //float dMin = Float.MAX_VALUE;
+            //float d;
             for (int j = solvent_dots.length; --j >= 0;) {
-              if ((d = solvent_dots[j].distance(ptXyzTemp)) < 10f)
+              if (solvent_dots[j].distance(ptXyzTemp) < cavityRange)
                 continue out;
-              dMin = Math.min(d, dMin);
+              //dMin = Math.min(d - cavityRange, dMin);
             }
             //System.out.println("xyz" + x + "  "+ y + " " + z + " " + voxelData[x][y][z]);
             solvent_bs.set(i);
+/*
             if (n == surface_data.length)
               surface_data = (float[]) ArrayUtil.doubleLength(surface_data);
-            surface_data[n] = dMin - 10f;
+            surface_data[n] = dMin;            
+*/
             n++;
           }
       }

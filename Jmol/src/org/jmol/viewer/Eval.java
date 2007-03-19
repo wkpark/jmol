@@ -8012,17 +8012,19 @@ class Eval { //implements Runnable {
           isCavity = true;
           if (isSyntaxCheck)
             continue;
-          float range = (isFloatParameter(i + 1) ? floatParameter(++i) : 10f);
-          if (range > 10f)
+          float envelopeRadius = (isFloatParameter(i + 1) ? floatParameter(++i) : 10f);
+          if (envelopeRadius > 10f)
             numberOutOfRange(0, 10);
+          float cavityRadius = (isFloatParameter(i + 1) ? floatParameter(++i) : 1.2f);
           Dots dotCalculation = viewer.getFrame().getDotCalculation();
           dotCalculation.setProperty("init", new Integer(
               Dots.DOTS_MODE_CALCONLY), null);
           dotCalculation.setProperty("ignore", bsIgnore, null);
-          dotCalculation.setSize((int) (range * 1000 + 1002),
+          dotCalculation.setSize((int) (envelopeRadius * 1000 + 1002),
               bsSelected == null ? viewer.getSelectionSet() : bsSelected);
           viewer.getFrame().calcSurfaceDistances(dotCalculation);
-          
+          setShapeProperty(iShape, "envelopeRadius", new Float(envelopeRadius));
+          setShapeProperty(iShape, "cavityRadius", new Float(cavityRadius));
           propertyName = "cavity";
           propertyValue = dotCalculation.getPoints(); 
           dotCalculation = null;

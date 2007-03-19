@@ -278,7 +278,8 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   Point3f center, point;
   float distance;
-  float cavityRange;
+  float envelopeRadius;
+  float cavityRadius;
   Point4f thePlane;
   boolean isContoured;
   boolean isBicolorMap;
@@ -662,8 +663,13 @@ class Isosurface extends IsosurfaceMeshCollection {
       return;
     }
 
-    if ("cavityRange" == propertyName) {
-      cavityRange = ((Float)value).floatValue();
+    if ("envelopeRadius" == propertyName) {
+      envelopeRadius = ((Float)value).floatValue();
+      return;
+    }
+    
+    if ("cavityRadius" == propertyName) {
+      cavityRadius = ((Float)value).floatValue();
       return;
     }
     
@@ -4845,14 +4851,14 @@ class Isosurface extends IsosurfaceMeshCollection {
     for (int x = 0; x < nPointsX; ++x)
       for (int y = 0; y < nPointsY; ++y) {
         out: for (int z = 0; z < nPointsZ; ++z, ++i)
-          if (voxelData[x][y][z] < Float.MAX_VALUE && voxelData[x][y][z] > 0.2) {
+          if (voxelData[x][y][z] < Float.MAX_VALUE && voxelData[x][y][z] >= cavityRadius) {
             voxelPtToXYZ(x, y, z, ptXyzTemp);
             //float dMin = Float.MAX_VALUE;
             //float d;
             for (int j = solvent_dots.length; --j >= 0;) {
-              if (solvent_dots[j].distance(ptXyzTemp) < cavityRange)
+              if (solvent_dots[j].distance(ptXyzTemp) < envelopeRadius)
                 continue out;
-              //dMin = Math.min(d - cavityRange, dMin);
+              //dMin = Math.min(d - envelopeRadius, dMin);
             }
             //System.out.println("xyz" + x + "  "+ y + " " + z + " " + voxelData[x][y][z]);
             solvent_bs.set(i);

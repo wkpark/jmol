@@ -574,7 +574,9 @@ class Draw extends MeshCollection {
     Mesh m = meshes[meshIndex];
     if (m.vertices == null)
       return null;
-    return (m.ptCenters == null || modelIndex < 0 ? m.ptCenter : m.ptCenters[modelIndex]);
+    Point3f pt = (m.ptCenters == null || modelIndex < 0 ? m.ptCenter : m.ptCenters[modelIndex]);
+    pt.add(offset);
+    return pt;
   }
   
   final Vector3f getSpinAxis(int meshIndex, int modelIndex) {

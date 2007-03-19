@@ -34,7 +34,10 @@ class DotsRenderer extends ShapeRenderer {
   boolean perspectiveDepth;
   int scalePixelsPerAngstrom;
   boolean bondSelectionModeOr;
-
+  boolean isInMotion;
+  boolean iShowSolid;
+  int nPoints;
+  
   Geodesic geodesic, geodesicSolvent, g1, g2;
 
   final static int[] mapNull = Dots.mapNull;
@@ -74,52 +77,55 @@ class DotsRenderer extends ShapeRenderer {
     perspectiveDepth = viewer.getPerspectiveDepth();
     scalePixelsPerAngstrom = (int) viewer.getScalePixelsPerAngstrom();
     bondSelectionModeOr = viewer.getBondSelectionModeOr();
-
+    nPoints = 0;
     geodesic.transform();
     Dots dots = (Dots) shape;
-    if (dots == null)
+    if (dots == null || dots.isCalcOnly)
       return;
-
+    isInMotion = (viewer.getInMotion() && dots.dotsConvexMax > 100);
+    iShowSolid = dots.isSurface && !isInMotion;
+    if (iShowSolid && !g3d.setColix(dots.surfaceColix) ||
+        !iShowSolid && !g3d.setColix(Graphics3D.BLACK))
+      return;
     dots.timeBeginExecution = System.currentTimeMillis();
 
     Atom[] atoms = frame.atoms;
     int[][] dotsConvexMaps = dots.dotsConvexMaps;
     short[] colixes = dots.colixes;
-    boolean isInMotion = (viewer.getInMotion() && dots.dotsConvexMax > 100);
-    boolean iShowSolid = dots.isSurface;
-    //boolean iShowSolid = (viewer.getTestFlag3()||dots.showSurface) && dots.useBobsAlgorithm;
     for (int i = dots.dotsConvexMax; --i >= 0;) {
       Atom atom = atoms[i];
       if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i)
           ||!g3d.isInDisplayRange(atom.screenX, atom.screenY))
         continue;
-      renderConvex(dots, atom, colixes[i], dotsConvexMaps[i], iShowSolid,
-          isInMotion);
+      renderConvex(dots, atom, colixes[i], dotsConvexMaps[i]);
     }
+    //System.out.println("dotsrenderer n=" + nPoints);
     dots.timeEndExecution = System.currentTimeMillis();
     //Logger.debug("dots rendering time = "+ dots.getExecutionWalltime());
   }
 
   int[] mapAtoms = null; 
-  void renderConvex(Dots dots, Atom atom, short colix, int[] visibilityMap,
-                    boolean iShowSolid, boolean isInMotion) {
+  void renderConvex(Dots dots, Atom atom, short colix, int[] visibilityMap) {
     if (mapAtoms == null)
       mapAtoms = new int[geodesic.vertices.length];
-    boolean isSolid = (iShowSolid && !isInMotion);
+    //System.out.println("dotsrend atom " + atom.atomIndex + " " + geodesic.screenDotCount);
     geodesic.calcScreenPoints(visibilityMap, dots.getAppropriateRadius(atom),
-        atom.screenX, atom.screenY, atom.screenZ, mapAtoms, isSolid);
+        atom.screenX, atom.screenY, atom.screenZ, mapAtoms, iShowSolid);
     if (geodesic.screenCoordinateCount == 0)
       return;
-    colix = (isSolid ? dots.surfaceColix : Graphics3D.getColixInherited(colix,
-        atom.colixAtom));
-    if (!g3d.setColix(colix))
-      return;
-    if (isSolid)
+    // dots are never translucent; geoSurface may be translucent
+    if (!iShowSolid)
+      g3d.setColix(Graphics3D.getColixTranslucent(Graphics3D.getColixInherited(colix,
+        atom.colixAtom), false, 0));
+    if (iShowSolid)
       renderGeodesicFragment(geodesic, visibilityMap, mapAtoms,
           geodesic.screenDotCount);
-    else
+    else {
       g3d.drawPoints(geodesic.screenCoordinateCount,
           geodesic.screenCoordinates);
+      nPoints+=geodesic.screenCoordinateCount;
+    }
+    
   }
 
   Point3i facePt1 = new Point3i();
@@ -321,6 +327,7 @@ class DotsRenderer extends ShapeRenderer {
       while (--iDot >= 0) {
         if (!Dots.getBit(visibilityMap, iDot))
           continue;
+        //System.out.println("dotsrend: iDot " + iDot +  " " + (iDot >> 5));
         //        intensities[iintensities++] = intensitiesTransformed[iDot];
         Vector3f vertex = verticesTransformed[iDot];
         if (coordMap != null)
@@ -344,7 +351,7 @@ class DotsRenderer extends ShapeRenderer {
       pt.z = screenCenterZ
           + (int) ((scaledRadius * vertex.z) + (vertex.z < 0 ? -0.5 : 0.5));
     }
-    
+
     short iVertexNew;
     Hashtable htVertex;
     

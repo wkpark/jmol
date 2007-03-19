@@ -1642,10 +1642,9 @@ class Eval { //implements Runnable {
       propertyValue = atom.getBfactor100();
       return (propertyValue < 0 ? Integer.MAX_VALUE : asInt ? propertyValue : propertyValue / 100f);
     case Token.surfacedistance:
-      if (frame.getSurfaceDistanceMax() == 0)
-        dots(statementLength, Dots.DOTS_MODE_CALCONLY);
+      frame.getSurfaceDistanceMax();
       propertyValue = atom.getSurfaceDistance100();
-      return (propertyValue < 0 ? Integer.MAX_VALUE : asInt ? propertyValue : propertyValue / 100f);
+      return (propertyValue == -1 ? Integer.MAX_VALUE : asInt ? propertyValue : propertyValue / 100f);
     case Token.occupancy:
       return atom.getOccupancy();
     case Token.polymerLength:
@@ -6128,8 +6127,7 @@ class Eval { //implements Runnable {
             fv = atom.getGroupPsi();
             break;
           case Token.surfacedistance:
-            if (frame.getSurfaceDistanceMax() == 0)
-              dots(statementLength, Dots.DOTS_MODE_CALCONLY);
+            frame.getSurfaceDistanceMax();
             fv = atom.getSurfaceDistance100() / 100f;
             break;
           case Token.temperature: // 0 - 9999
@@ -7861,6 +7859,7 @@ class Eval { //implements Runnable {
     boolean idSeen = false;
     float[] nlmZ = new float[5];
     float[] data = null;
+    BitSet bsSelected = null, bsIgnore = null;
     String str;
     int modelIndex = (isSyntaxCheck ? 0 : viewer.getDisplayModelIndex());
     for (int i = 1; i < statementLength; ++i) {
@@ -7893,8 +7892,11 @@ class Eval { //implements Runnable {
         if (!isSyntaxCheck) {
           Frame frame = viewer.getFrame();
           Atom[] atoms = frame.atoms;
-          for (int iAtom = 0; iAtom < atomCount; iAtom++)
+          if (tokProperty == Token.surfacedistance)
+            viewer.getFrame().getSurfaceDistanceMax();
+          for (int iAtom = atomCount; --iAtom >= 0;) 
             data[iAtom] = atomProperty(frame, atoms[iAtom], tokProperty, false);
+          
         }
         propertyValue = data;
         break;
@@ -7912,7 +7914,7 @@ class Eval { //implements Runnable {
         break;
       case Token.select:
         propertyName = "select";
-        propertyValue = expression(++i);
+        propertyValue = bsSelected = expression(++i);
         i = iToken;
         break;
       case Token.center:
@@ -7987,7 +7989,7 @@ class Eval { //implements Runnable {
         }
         if (str.equalsIgnoreCase("IGNORE")) {
           propertyName = "ignore";
-          propertyValue = expression(++i);
+          propertyValue = bsIgnore = expression(++i);
           i = iToken;
           break;
         }
@@ -8000,6 +8002,16 @@ class Eval { //implements Runnable {
             propertyValue = new Float(floatParameter(i));
           }
           break;
+        }
+        if (str.equalsIgnoreCase("CAVITY")) {
+          float range = floatParameter(++i);
+          if (range > 10f)
+            numberOutOfRange(0,10);
+          setShapeProperty(JmolConstants.SHAPE_DOTS, "init", new Integer(Dots.DOTS_MODE_CALCONLY));
+          setShapeProperty(JmolConstants.SHAPE_DOTS, "select", bsSelected);
+          setShapeProperty(JmolConstants.SHAPE_DOTS, "ignore", bsIgnore);
+          setShapeSize(JmolConstants.SHAPE_DOTS, (int)(range * 1000 + 1002));
+          continue;
         }
         if (str.equalsIgnoreCase("SCALE")) {
           propertyName = "scale";

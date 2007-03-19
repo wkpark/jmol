@@ -117,9 +117,12 @@ import java.util.Hashtable;
 
 class Dots extends AtomShape {
 
+  final static float SURFACE_DISTANCE_FOR_CALCULATION = 10f;
   DotsRenderer dotsRenderer;
 
   BitSet bsOn = new BitSet();
+  BitSet bsIgnore, bsSelected;
+  
   short mad = 0;
   short lastMad = 0;
   float lastSolventRadius = 0;
@@ -190,10 +193,7 @@ class Dots extends AtomShape {
     }
 
     if ("init" == propertyName) {
-      int mode = ((Integer) value).intValue();
-      isSurface = (mode == DOTS_MODE_SURFACE);
-      isCalcOnly = (mode == DOTS_MODE_CALCONLY);
-      argb = 0;
+      initialize(((Integer) value).intValue());
       return;
     }
     
@@ -210,6 +210,16 @@ class Dots extends AtomShape {
       surfaceColix = Graphics3D.getColixTranslucent(surfaceColix, isTranslucent, translucentLevel);
       return;
     }    
+
+    if ("ignore" == propertyName) {
+      bsIgnore = (BitSet)value;
+      return;
+    }
+
+    if ("select" == propertyName) {
+      bsSelected = (BitSet)value;
+      return;
+    }
 
     // next four are for serialization
     if ("radius" == propertyName) {
@@ -256,7 +266,36 @@ class Dots extends AtomShape {
     super.setProperty(propertyName, value, bs);
   }
 
+  Object getProperty(String property, int index) {
+    if (property == "points") {
+      if (dotsConvexMaps == null) {
+        initialize(DOTS_MODE_CALCONLY);
+        setSize(1, bsSelected == null ? viewer.getSelectionSet() : bsSelected);
+      }
+      return getPoints();
+    }
+    if (property == "distance") {
+      return new Float(Float.isNaN(setRadius)? 0 : setRadius);
+    }
+   
+    return super.getProperty(property, index);
+  }
+
+  void initialize(int mode) {
+    isSurface = (mode == DOTS_MODE_SURFACE);
+    isCalcOnly = (mode == DOTS_MODE_CALCONLY);
+    if (isCalcOnly)
+      bsOn.clear();
+    bsIgnore = null;
+    bsSelected = null;
+    argb = 0;
+    isActive = false;
+  }
+  
   void setSize(int size, BitSet bsSelected) {
+    if (this.bsSelected != null)
+      bsSelected = this.bsSelected;
+    
     // if mad == 0 then turn it off
     //    1           van der Waals (dots) or +1.2, calconly)
     //   -1           ionic/covalent
@@ -272,9 +311,11 @@ class Dots extends AtomShape {
 
     isActive = true;
     short mad = (short) size;
-    if (mad == 1 && isCalcOnly)
-      mad = 1200 + 11002;
-    if (mad < 0) { // ionic
+    if (mad == 1 && isCalcOnly) {
+      addRadius = Float.MAX_VALUE;
+      setRadius = SURFACE_DISTANCE_FOR_CALCULATION;
+      scale = 1;
+    } else if (mad < 0) { // ionic
       useVanderwaalsRadius = false;
       addRadius = Float.MAX_VALUE;
       setRadius = Float.MAX_VALUE;
@@ -313,7 +354,7 @@ class Dots extends AtomShape {
 
     // combine current and selected set
     boolean newSet = (lastSolventRadius != addRadius || mad != 0
-        && mad != lastMad || dotsConvexMax == 0);
+        && mad != lastMad || dotsConvexMax == 0 || isCalcOnly);
 
     // for an solvent-accessible surface there is no torus/cavity issue. 
     // we just increment the atom radius and set the probe radius = 0;
@@ -360,7 +401,7 @@ class Dots extends AtomShape {
       disregardNeighbors = (viewer.getDotSurfaceFlag() == false);
       onlySelectedDots = (viewer.getDotsSelectedOnlyFlag() == true);
       for (int i = atomCount; --i >= 0;)
-        if (bsOn.get(i)) {
+        if (bsOn.get(i) && (bsIgnore == null || !bsIgnore.get(i))) {
           setAtomI(i);
           getNeighbors();
           calcConvexMap();
@@ -375,12 +416,8 @@ class Dots extends AtomShape {
       }
       dotsConvexMax = i + 1;
     }
-    
+    currentPoints = null;
     frame.setSurfaceAtoms(bsSurface, bsOn);
-    if (isCalcOnly) {
-      dotsConvexMax = 0;
-      dotsConvexMaps = null;
-    }
     timeEndExecution = System.currentTimeMillis();
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug("dots generation time = " + getExecutionWalltime());
@@ -549,35 +586,34 @@ class Dots extends AtomShape {
     neighborCount = 0;
     if (disregardNeighbors)
       return;
-    AtomIterator iter =
-      frame.getWithinModelIterator(atomI, radiusI + diameterP +
-                                   maxRadius);    
+    AtomIterator iter = frame.getWithinModelIterator(atomI, radiusI + diameterP
+        + maxRadius);
     while (iter.hasNext()) {
       Atom neighbor = iter.next();
-      if (neighbor == atomI)
+      if (neighbor == atomI || bsIgnore != null && bsIgnore.get(neighbor.atomIndex))
         continue;
       // only consider selected neighbors
       if (onlySelectedDots && !bsOn.get(neighbor.atomIndex))
         continue;
       float neighborRadius = getAppropriateRadius(neighbor);
-      if (centerI.distance(neighbor) >
-          radiusI + radiusP + radiusP + neighborRadius)
+      if (centerI.distance(neighbor) > radiusI + radiusP + radiusP
+          + neighborRadius)
         continue;
       if (neighborCount == neighbors.length) {
-        neighbors = (Atom[])ArrayUtil.doubleLength(neighbors);
+        neighbors = (Atom[]) ArrayUtil.doubleLength(neighbors);
         neighborIndices = ArrayUtil.doubleLength(neighborIndices);
-        neighborCenters = (Point3f[])ArrayUtil.doubleLength(neighborCenters);
-        neighborPlusProbeRadii2 = ArrayUtil.doubleLength(neighborPlusProbeRadii2);
+        neighborCenters = (Point3f[]) ArrayUtil.doubleLength(neighborCenters);
+        neighborPlusProbeRadii2 = ArrayUtil
+            .doubleLength(neighborPlusProbeRadii2);
         neighborRadii2 = ArrayUtil.doubleLength(neighborRadii2);
       }
       neighbors[neighborCount] = neighbor;
       neighborCenters[neighborCount] = neighbor;
       neighborIndices[neighborCount] = neighbor.atomIndex;
       float neighborPlusProbeRadii = neighborRadius + radiusP;
-      neighborPlusProbeRadii2[neighborCount] =
-        neighborPlusProbeRadii * neighborPlusProbeRadii;
-      neighborRadii2[neighborCount] =
-        neighborRadius * neighborRadius;
+      neighborPlusProbeRadii2[neighborCount] = neighborPlusProbeRadii
+          * neighborPlusProbeRadii;
+      neighborRadii2[neighborCount] = neighborRadius * neighborRadius;
       ++neighborCount;
     }
   }
@@ -635,7 +671,7 @@ class Dots extends AtomShape {
   }
 
   String getShapeState() {
-    if (dotsConvexMaps == null)
+    if (dotsConvexMaps == null || isCalcOnly)
       return "";
     StringBuffer s = new StringBuffer();
     Hashtable temp = new Hashtable();
@@ -662,5 +698,45 @@ class Dots extends AtomShape {
       s.append(getShapeCommands(temp, null, atomCount));
     return s.toString();
   }
+
+  int getPointCount(int[] visibilityMap, int dotCount) {
+    int iDot = visibilityMap.length << 5;
+    if (iDot > dotCount)
+      iDot = dotCount;
+    int n = 0;
+    n = 0;
+    while (--iDot >= 0)
+      if (Dots.getBit(visibilityMap, iDot))
+        n++;
+    return n;
+  }
   
+  Point3f[] currentPoints;
+  Point3f[] getPoints() {
+    if (currentPoints != null)
+      return currentPoints;
+    int nPoints = 0;
+    int dotCount = 42;
+    for (int i = dotsConvexMax; --i >= 0;)
+      nPoints += getPointCount(dotsConvexMaps[i], dotCount);
+    System.out.println("dots getPoints " + nPoints);
+    Point3f[] points = new Point3f[nPoints];
+    if (nPoints == 0)
+      return points;
+    nPoints = 0;
+    for (int i = dotsConvexMax; --i >= 0;) {
+      Atom atom = atoms[i];
+      int iDot = dotsConvexMaps[i].length << 5;
+      if (iDot > dotCount)
+        iDot = dotCount;
+      while (--iDot >= 0)
+        if (getBit(dotsConvexMaps[i], iDot)) {
+          Point3f pt = new Point3f();
+          pt.scaleAdd(SURFACE_DISTANCE_FOR_CALCULATION, dotsRenderer.geodesic.vertices[iDot], atom);
+          points[nPoints++] = pt;
+        }
+    }
+    currentPoints = points;
+    return points;
+  }
 }

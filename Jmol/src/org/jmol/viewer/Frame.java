@@ -88,7 +88,6 @@ public final class Frame {
   short[] bfactor100s;
   float[] partialCharges;
   int[] surfaceDistance100s;
-  int[] surfaceAtoms;
   String[] atomNames;
   int[] atomSerials;
   byte[] specialAtomIDs;
@@ -244,8 +243,7 @@ public final class Frame {
         occupancies = mergeFrame.occupancies;
         bfactor100s = mergeFrame.bfactor100s;
         partialCharges = mergeFrame.partialCharges;
-        surfaceDistance100s = mergeFrame.surfaceDistance100s;
-        surfaceAtoms = mergeFrame.surfaceAtoms;
+        surfaceDistance100s = null;
         atomNames = mergeFrame.atomNames;
         specialAtomIDs = mergeFrame.specialAtomIDs;
       }
@@ -2546,24 +2544,18 @@ public final class Frame {
     }
   }
 
-  BitSet bsSurfaceSet;
+  private BitSet bsSurfaceSet, bsSurface;
+  private int nSurfaceAtoms;
 
   void setSurfaceAtoms(BitSet bsSurface, BitSet bsEnclosed) {
     bsSurfaceSet = (BitSet) bsEnclosed.clone();
+    this.bsSurface = (BitSet) bsSurface.clone();
     surfaceDistance100s = null;
-    int n = Viewer.cardinalityOf(bsSurface);
-    if (n == 0) {
-      surfaceAtoms = null;
-      return;
-    }
-    surfaceAtoms = new int[n];
-    for (int i = atomCount, pt = 0; --i >= 0;)
-      if (bsSurface.get(i))
-        surfaceAtoms[pt++] = i;
+    nSurfaceAtoms = Viewer.cardinalityOf(bsSurface);
   }
 
   int getSurfaceDistance100(int atomIndex) {
-    if (surfaceAtoms == null)
+    if (nSurfaceAtoms == 0)
       return -1;
     if (surfaceDistance100s == null)
       calcSurfaceDistances();
@@ -2580,18 +2572,27 @@ public final class Frame {
 
   private void calcSurfaceDistances() {
     surfaceDistanceMax = 0;
-    if (bsSurfaceSet == null)
+    loadShape(JmolConstants.SHAPE_DOTS);
+    Point3f[] points = (Point3f[]) getShapeProperty(JmolConstants.SHAPE_DOTS, "points", 0);
+    if (bsSurfaceSet == null || nSurfaceAtoms == 0)
       return;
     surfaceDistance100s = new int[atomCount];
+    if (points.length == 0)
+      return;
+    float dist = ((Float)getShapeProperty(JmolConstants.SHAPE_DOTS, "distance", 0)).floatValue();
     for (int i = 0; i < atomCount; i++) {
       surfaceDistance100s[i] = -1;
-      if (bsSurfaceSet.get(i)) {
+      if (bsSurface.get(i)) {
+        surfaceDistance100s[i] = 0;
+      }else{
         float dMin = Float.MAX_VALUE;
         Atom atom = atoms[i];
-        for (int j = surfaceAtoms.length; --j >= 0;) {
-          float d = atoms[surfaceAtoms[j]].distance(atom);
+        for (int j = points.length; --j >= 0;) {
+          float d = points[j].distance(atom) - dist;
           dMin = Math.min(d, dMin);
+          //System.out.println("draw d"+j+" "+StateManager.escape(points[j]));
         }
+        //System.out.println("frame calcsurf " + i + " " + dMin);
         int d = surfaceDistance100s[i] = (int) (dMin * 100);
         surfaceDistanceMax = Math.max(surfaceDistanceMax, d);
       }

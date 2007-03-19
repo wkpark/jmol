@@ -44,7 +44,7 @@ class DrawRenderer extends MeshRenderer {
   
   Point3i xyz = new Point3i();
   void renderInfo(Mesh mesh) {
-    if (mesh == null || mesh.title == null
+    if (mesh == null || mesh.title == null || mesh.visibilityFlags == 0 
         || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
     byte fid = g3d.getFontFid("SansSerif", 14);

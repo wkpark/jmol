@@ -4871,8 +4871,8 @@ class Isosurface extends IsosurfaceMeshCollection {
           }
       }
     Logger.info("cavities include " + n + " voxel points");
-    if (n == 0)
-      return;
+    //if (n == 0)
+      //  return;
     solvent_atomRadius = new float[n];
     solvent_ptAtom = new Point3f[n];
     for (int x = 0, ipt = 0, apt = 0; x < nPointsX; ++x)

@@ -3611,7 +3611,9 @@ class Eval { //implements Runnable {
   }
 
   String getFullPathName() throws ScriptException {
-    String filename = viewer.getFullPathName();
+    String filename = (!isSyntaxCheck || isScriptCheck && fileOpenCheck ? viewer
+        .getFullPathName()
+        : "test.xyz");
     if (filename == null)
       invalidArgument();
     return filename;

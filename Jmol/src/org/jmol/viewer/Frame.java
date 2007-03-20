@@ -2544,21 +2544,14 @@ public final class Frame {
     }
   }
 
-  private BitSet bsSurfaceSet, bsSurface;
+  private BitSet bsSurface;
   private int nSurfaceAtoms;
-
-  void setSurfaceAtoms(BitSet bsSurface, BitSet bsEnclosed) {
-    bsSurfaceSet = (BitSet) bsEnclosed.clone();
-    this.bsSurface = (BitSet) bsSurface.clone();
-    surfaceDistance100s = null;
-    nSurfaceAtoms = Viewer.cardinalityOf(bsSurface);
-  }
 
   int getSurfaceDistance100(int atomIndex) {
     if (nSurfaceAtoms == 0)
       return -1;
     if (surfaceDistance100s == null)
-      calcSurfaceDistances(null);
+      calcSurfaceDistances();
     return surfaceDistance100s[atomIndex];
   }
 
@@ -2566,39 +2559,43 @@ public final class Frame {
 
   int getSurfaceDistanceMax() {
     if (surfaceDistance100s == null)
-      calcSurfaceDistances(null);
+      calcSurfaceDistances();
     return surfaceDistanceMax;
   }
 
-  Dots getDotCalculation() {
-      Dots dotCalculation = new Dots();
-      dotCalculation.setViewerG3dFrame(viewer, g3d, this, JmolConstants.SHAPE_DOTS);
-      return dotCalculation;
+  private void calcSurfaceDistances() {
+    calculateSurface(null, null, -1);
   }
   
-  void calcSurfaceDistances(Dots dotCalculation) {
+  Point3f[] calculateSurface(BitSet bsSelected, BitSet bsIgnore,
+                             float envelopeRadius) {
+    if (envelopeRadius < 0)
+      envelopeRadius = EnvelopeCalculation.SURFACE_DISTANCE_FOR_CALCULATION;
+    EnvelopeCalculation ec = new EnvelopeCalculation(viewer, atoms, null);
+    ec.initialize();
+    ec.setIgnore(bsIgnore);
+    ec.setSelected(bsSelected);
+    ec.calculate(Float.MAX_VALUE, envelopeRadius, 1, Float.MAX_VALUE, false,
+        false, false, false);
+    Point3f[] points = ec.getPoints();
     surfaceDistanceMax = 0;
-    if (dotCalculation == null)
-      dotCalculation = getDotCalculation();
-    Point3f[] points = dotCalculation.getPoints();
-    setSurfaceAtoms(dotCalculation.bsSurface, dotCalculation.bsOn);
-    if (bsSurfaceSet == null || nSurfaceAtoms == 0)
-      return;
+    bsSurface = (ec.bsSurface == null ? null : (BitSet) ec.bsSurface.clone());
     surfaceDistance100s = new int[atomCount];
-    if (points.length == 0)
-      return;
-    float dist = dotCalculation.getRadius();
+    nSurfaceAtoms = Viewer.cardinalityOf(bsSurface);
+    if (nSurfaceAtoms == 0 || points == null || points.length == 0)
+      return points;
     for (int i = 0; i < atomCount; i++) {
       //surfaceDistance100s[i] = Integer.MIN_VALUE;
       if (bsSurface.get(i)) {
         surfaceDistance100s[i] = 0;
-      }else{
+      } else {
         float dMin = Float.MAX_VALUE;
         Atom atom = atoms[i];
         for (int j = points.length; --j >= 0;) {
-          float d = points[j].distance(atom) - dist;
-          if (d < 0)
-            System.out.println("draw d"+j+" "+StateManager.escape(points[j]) +" \""+d + " ? " + atom.getIdentity()+"\"");
+          float d = points[j].distance(atom) - envelopeRadius;
+          if (d < 0 && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+            Logger.debug("draw d" + j + " " + StateManager.escape(points[j])
+                + " \"" + d + " ? " + atom.getIdentity() + "\"");
           dMin = Math.min(d, dMin);
         }
         //System.out.println("frame calcsurf " + i + " " + dMin);
@@ -2606,6 +2603,7 @@ public final class Frame {
         surfaceDistanceMax = Math.max(surfaceDistanceMax, d);
       }
     }
+    return points;
   }
 
   void calcBfactorRange() {

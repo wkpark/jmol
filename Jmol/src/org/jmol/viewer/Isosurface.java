@@ -674,7 +674,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
     
     if ("cavity" == propertyName) {
-      solvent_dots = (Point3f[])value;
+      solvent_dots = viewer.calculateSurface(bsSelected, bsIgnore, envelopeRadius);
       return;
     }
     

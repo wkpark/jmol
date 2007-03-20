@@ -893,7 +893,7 @@ class Eval { //implements Runnable {
         calculate();
         break;
       case Token.dots:
-        dots(1, JmolConstants.SHAPE_DOTS, Dots.DOTS_MODE_DOTS);
+        dots(1, JmolConstants.SHAPE_DOTS);
         break;
       case Token.strands:
         proteinShape(JmolConstants.SHAPE_STRANDS);
@@ -957,7 +957,7 @@ class Eval { //implements Runnable {
         polyhedra();
         break;
       case Token.geosurface:
-        dots(1, JmolConstants.SHAPE_GEOSURFACE, Dots.DOTS_MODE_SURFACE);
+        dots(1, JmolConstants.SHAPE_GEOSURFACE);
         break;
       case Token.centerAt:
         centerAt();
@@ -3491,7 +3491,11 @@ class Eval { //implements Runnable {
     // long timeBegin = System.currentTimeMillis();
     if (statementLength == i + 1) {
       if (i == 0 || (filename = parameterAsString(i)).length() == 0)
-        filename = getFullPathName();
+        filename = viewer.getFullPathName();
+      if (filename == null) {
+        zap();
+        return;
+      }
       if (filename.length() > 0 && filename.charAt(0) == '=')
         filename = fixFileName(filename);
       loadScript.append(" ").append(StateManager.escape(filename)).append(";");
@@ -4992,7 +4996,7 @@ class Eval { //implements Runnable {
     if ((iToken = statementLength) >= 2) {
       switch (getToken(1).tok) {
       case Token.surface:
-        dots(2, JmolConstants.SHAPE_DOTS, Dots.DOTS_MODE_CALCONLY);
+        viewer.calculateSurface(null, null, -1);
         if (!isSyntaxCheck)
           viewer.addStateScript(thisCommand);
         return;
@@ -5012,9 +5016,9 @@ class Eval { //implements Runnable {
     evalError(GT._("Calculate what?") + "hbonds?  surface? structure?");
   }
 
-  void dots(int ipt, int iShape, int dotsMode) throws ScriptException {
+  void dots(int ipt, int iShape) throws ScriptException {
     viewer.loadShape(iShape);
-    setShapeProperty(iShape, "init", new Integer(dotsMode));
+    setShapeProperty(iShape, "init", null);
     if (statementLength == ipt) {
       setShapeSize(iShape, 1);
       return;
@@ -7859,7 +7863,6 @@ class Eval { //implements Runnable {
     boolean isCavity = false;
     float[] nlmZ = new float[5];
     float[] data = null;
-    BitSet bsSelected = null, bsIgnore = null;
     String str;
     int modelIndex = (isSyntaxCheck ? 0 : viewer.getDisplayModelIndex());
     for (int i = 1; i < statementLength; ++i) {
@@ -7916,7 +7919,7 @@ class Eval { //implements Runnable {
         break;
       case Token.select:
         propertyName = "select";
-        propertyValue = bsSelected = expression(++i);
+        propertyValue = expression(++i);
         i = iToken;
         break;
       case Token.center:
@@ -7991,7 +7994,7 @@ class Eval { //implements Runnable {
         }
         if (str.equalsIgnoreCase("IGNORE")) {
           propertyName = "ignore";
-          propertyValue = bsIgnore = expression(++i);
+          propertyValue = expression(++i);
           i = iToken;
           break;
         }
@@ -8015,18 +8018,9 @@ class Eval { //implements Runnable {
           if (envelopeRadius > 10f)
             numberOutOfRange(0, 10);
           float cavityRadius = (isFloatParameter(i + 1) ? floatParameter(++i) : 1.2f);
-          Dots dotCalculation = viewer.getFrame().getDotCalculation();
-          dotCalculation.setProperty("init", new Integer(
-              Dots.DOTS_MODE_CALCONLY), null);
-          dotCalculation.setProperty("ignore", bsIgnore, null);
-          dotCalculation.setSize((int) (envelopeRadius * 1000 + 1002),
-              bsSelected == null ? viewer.getSelectionSet() : bsSelected);
-          viewer.getFrame().calcSurfaceDistances(dotCalculation);
           setShapeProperty(iShape, "envelopeRadius", new Float(envelopeRadius));
           setShapeProperty(iShape, "cavityRadius", new Float(cavityRadius));
           propertyName = "cavity";
-          propertyValue = dotCalculation.getPoints(); 
-          dotCalculation = null;
           break;
         }
         if (str.equalsIgnoreCase("SCALE")) {

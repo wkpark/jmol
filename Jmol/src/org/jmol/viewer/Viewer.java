@@ -1524,6 +1524,13 @@ public class Viewer extends JmolViewer {
   // delegated to ModelManager
   // ///////////////////////////////////////////////////////////////
 
+  Point3f[] calculateSurface(BitSet bsSelected, BitSet bsIgnore,
+                             float envelopeRadius) {
+    if (bsSelected == null)
+      bsSelected = getSelectionSet();
+    return modelManager.calculateSurface(bsSelected, bsIgnore, envelopeRadius);
+  }
+  
   void addStateScript(String script) {
     modelManager.addStateScript(script);
   }
@@ -5025,9 +5032,10 @@ public class Viewer extends JmolViewer {
 
   static int cardinalityOf(BitSet bs) {
     int nbitset = 0;
-    for (int i = bs.size(); --i >= 0;)
-      if (bs.get(i))
-        nbitset++;
+    if (bs != null)
+      for (int i = bs.size(); --i >= 0;)
+        if (bs.get(i))
+          nbitset++;
     return nbitset;
   }
 

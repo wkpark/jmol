@@ -1498,4 +1498,10 @@ String getAtomInfoChime(int i) {
   void setTaintedAtoms(BitSet bs) {
     frame.setTaintedAtoms(bs);
   }
+  
+  Point3f[] calculateSurface(BitSet bsSelected, BitSet bsIgnore,
+                             float envelopeRadius) {
+    return frame.calculateSurface(bsSelected, bsIgnore, envelopeRadius);
+  }
+  
 }

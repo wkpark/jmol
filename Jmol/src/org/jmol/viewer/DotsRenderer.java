@@ -50,8 +50,6 @@ class DotsRenderer extends ShapeRenderer {
 
   void render() {
     Dots dots = (Dots) shape;
-    if (dots.isCalcOnly) //because we were using that shape as a calculator as well.
-      return;
     render1(dots);
   }
 
@@ -66,16 +64,17 @@ class DotsRenderer extends ShapeRenderer {
     for (int i = screenDotCount; --i >= 0;)
       viewer.transformVector(Geodesic3D.vertexVectors[i],
           verticesTransformed[i]);
-    for (int i = dots.dotsConvexMax; --i >= 0;) {
+    for (int i = dots.ec.dotsConvexMax; --i >= 0;) {
       Atom atom = frame.atoms[i];
+      int[] map = dots.ec.dotsConvexMaps[i];
       if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i)
           || !g3d.isInDisplayRange(atom.screenX, atom.screenY))
         continue;
-      int nPoints = calcScreenPoints(dots.dotsConvexMaps[i], dots
-          .getAppropriateRadius(atom), atom.screenX, atom.screenY, atom.screenZ);
+      int nPoints = calcScreenPoints(map, dots.ec.getAppropriateRadius(atom),
+          atom.screenX, atom.screenY, atom.screenZ);
       if (nPoints != 0)
         renderConvex(Graphics3D.getColixInherited(dots.colixes[i],
-            atom.colixAtom), dots.dotsConvexMaps[i], nPoints);
+            atom.colixAtom), map, nPoints);
     }
     //dots.timeEndExecution = System.currentTimeMillis();
     //Logger.debug("dots rendering time = "+ gs.getExecutionWalltime());
@@ -97,7 +96,7 @@ class DotsRenderer extends ShapeRenderer {
     float scaledRadius = viewer.scaleToPerspective(z, radius);
     int iDot = Math.min(visibilityMap.length << 5, screenDotCount);
     while (--iDot >= 0) {
-      if (!Dots.getBit(visibilityMap, iDot))
+      if (!EnvelopeCalculation.getBit(visibilityMap, iDot))
         continue;
       Vector3f vertex = verticesTransformed[iDot];
       if (faceMap != null)

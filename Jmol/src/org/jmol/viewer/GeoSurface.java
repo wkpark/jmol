@@ -26,7 +26,6 @@ package org.jmol.viewer;
 
 import java.util.BitSet;
 
-import org.jmol.g3d.Geodesic3D;
 import org.jmol.util.Logger;
 
 class GeoSurface extends Dots {
@@ -36,13 +35,6 @@ class GeoSurface extends Dots {
     super.initShape();
   }
 
-  void initialize(int mode) {
-    bsIgnore = null;
-    bsSelected = null;
-    argb = 0;
-    isActive = false;
-  }
-  
   void setProperty(String propertyName, Object value, BitSet bs) {
 
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
@@ -57,56 +49,4 @@ class GeoSurface extends Dots {
     super.setProperty(propertyName, value, bs);
   }
 
-
-  void calcConvexMap() {
-    calcConvexBits();
-    int[] map = mapNull;
-    int count = getMapStorageCount(geodesicMap);
-    if (count > 0) {
-      bsSurface.set(indexI);
-      addIncompleteFaces(geodesicMap);
-      addIncompleteFaces(geodesicMap);
-      count = getMapStorageCount(geodesicMap);
-      map = new int[count];
-      System.arraycopy(geodesicMap, 0, map, 0, count);
-    }
-    dotsConvexMaps[indexI] = map;
-  }
-  
-  void addIncompleteFaces(int[] points) {
-    clearBitmap(mapT);
-    short[] faces = Geodesic3D.faceVertexesArrays[MAX_LEVEL];
-    int len = faces.length;
-    int maxPt = -1;
-    for (int f = 0; f < len;) {
-      short p1 = faces[f++];
-      short p2 = faces[f++];
-      short p3 = faces[f++];
-      boolean ok1 = getBit(points, p1); 
-      boolean ok2 = getBit(points, p2); 
-      boolean ok3 = getBit(points, p3);
-      if (! (ok1 || ok2 || ok3) || ok1 && ok2 && ok3)
-        continue;
-      // trick: DO show faces if ANY ONE vertex is missing
-      if (!ok1) {
-        setBit(mapT, p1);
-        if (maxPt < p1)
-          maxPt = p1;
-      }
-      if (!ok2) {
-        setBit(mapT, p2);
-        if (maxPt < p2)
-          maxPt = p2;
-      }
-      if (!ok3) {
-        setBit(mapT, p3);
-        if (maxPt < p3)
-          maxPt = p3;
-      }
-    }
-    for (int i=0; i <= maxPt; i++) {
-      if (getBit(mapT, i))
-        setBit(points, i);
-    }
-  }
 }

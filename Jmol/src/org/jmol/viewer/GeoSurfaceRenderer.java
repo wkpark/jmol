@@ -41,7 +41,7 @@ class GeoSurfaceRenderer extends DotsRenderer {
   
   void render() {
     GeoSurface gs = (GeoSurface) shape;
-    iShowSolid = !(viewer.getInMotion() && gs.dotsConvexMax > 100);
+    iShowSolid = !(viewer.getInMotion() && gs.ec.dotsConvexMax > 100);
     if (!iShowSolid && !g3d.setColix(Graphics3D.BLACK))
       return;
     if (iShowSolid && faceMap == null)
@@ -79,8 +79,8 @@ class GeoSurfaceRenderer extends DotsRenderer {
       if (p1 >= mapMax || p2 >= mapMax || p3 >= mapMax)
         continue;
       //Logger.debug("geod frag "+p1+" "+p2+" "+p3+" "+dotCount);
-      if (!Dots.getBit(points, p1) || !Dots.getBit(points, p2)
-          || !Dots.getBit(points, p3))
+      if (!EnvelopeCalculation.getBit(points, p1) || !EnvelopeCalculation.getBit(points, p2)
+          || !EnvelopeCalculation.getBit(points, p3))
         continue;
       facePt1.set(coords[faceMap[p1]], coords[faceMap[p1] + 1], coords[faceMap[p1] + 2]);
       facePt2.set(coords[faceMap[p2]], coords[faceMap[p2] + 1], coords[faceMap[p2] + 2]);

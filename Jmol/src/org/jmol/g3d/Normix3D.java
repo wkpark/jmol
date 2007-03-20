@@ -49,7 +49,6 @@ class Normix3D {
   final byte[] intensities;
   final byte[] intensities2Sided;
   final int normixCount;
-  final static int[] vertexCounts = {12, 42, 162, 642, 2562};
 
   static short[][] faceNormixesArrays;
     // not "final" = new short[NORMIX_GEODESIC_LEVEL + 1][];
@@ -61,7 +60,7 @@ class Normix3D {
   private final Matrix3f rotationMatrix = new Matrix3f();
 
   Normix3D(Graphics3D g3d) {
-    // 12, 42, 162, 642, 2562
+    // 12, 42, 162, 642
     this.g3d = g3d;
     normixCount = Geodesic3D.getVertexCount(NORMIX_GEODESIC_LEVEL);
     intensities = new byte[normixCount];
@@ -214,7 +213,7 @@ class Normix3D {
     if (DEBUG_WITH_SEQUENTIAL_SEARCH) {
       int champSeq = 0;
       double champSeqD2 = dist2(Geodesic3D.vertexVectors[champSeq], x, y, z);
-      for (int k = vertexCounts[geodesicLevel]; --k > 0; ) {
+      for (int k = Geodesic3D.getVertexCount(geodesicLevel); --k > 0; ) {
         double challengerD2 = dist2(Geodesic3D.vertexVectors[k], x, y, z);
         if (challengerD2 < champSeqD2) {
           champSeq = k;

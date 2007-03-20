@@ -3222,12 +3222,6 @@ class Eval { //implements Runnable {
     if (theTok == Token.translucent && isFloatParameter(index))
       translucentLevel = floatParameter(index++);
     }
-    String modifier = "";
-    if (shapeType < 0) {
-      //geosurface
-      shapeType = -shapeType;
-      modifier = "Surface";
-    }
     if (index < statementLength && tokAt(index) != Token.on && tokAt(index)!=Token.off) {
       int tok = getToken(index).tok;
       if (isColorParam(index)) {
@@ -3310,20 +3304,20 @@ class Eval { //implements Runnable {
       }
       viewer.loadShape(shapeType);
       if (shapeType == JmolConstants.SHAPE_STICKS)
-        viewer.setShapeProperty(shapeType, colorOrBgcolor + modifier,
+        viewer.setShapeProperty(shapeType, colorOrBgcolor,
             colorvalue, viewer.getSelectedAtomsOrBonds());
       else
-        setShapeProperty(shapeType, colorOrBgcolor + modifier, colorvalue);
+        setShapeProperty(shapeType, colorOrBgcolor, colorvalue);
     }
     if (translucency != null)
-      setShapeTranslucency(shapeType, modifier, translucency, translucentLevel);
+      setShapeTranslucency(shapeType, translucency, translucentLevel);
   }
 
-  void setShapeTranslucency (int shapeType, String modifier, String translucency, float translucentLevel) {
+  void setShapeTranslucency (int shapeType, String translucency, float translucentLevel) {
     if (translucentLevel ==  Float.MAX_VALUE)
       translucentLevel = viewer.getDefaultTranslucent();
     setShapeProperty(shapeType, "translucentLevel", new Float(translucentLevel));
-    setShapeProperty(shapeType, "translucency" + modifier, translucency);  
+    setShapeProperty(shapeType, "translucency", translucency);  
   }
   
   Hashtable variables = new Hashtable();
@@ -5350,8 +5344,6 @@ class Eval { //implements Runnable {
   }
 
   int getShapeType(int tok) throws ScriptException {
-    if (tok == Token.geosurface)
-      return -JmolConstants.shapeTokenIndex(Token.dots);
     int iShape = JmolConstants.shapeTokenIndex(tok);
     if (iShape < 0)
       unrecognizedObject();
@@ -7435,7 +7427,7 @@ class Eval { //implements Runnable {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "colorRGB", new Integer(
           colorArgb));
     if (isTranslucent)
-      setShapeTranslucency(JmolConstants.SHAPE_DRAW, "", "translucent", translucentLevel);
+      setShapeTranslucency(JmolConstants.SHAPE_DRAW, "translucent", translucentLevel);
     if (intScale != 0) {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "scale", new Integer(intScale));
     }
@@ -7621,7 +7613,7 @@ class Eval { //implements Runnable {
       setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "colorThis", new Integer(
           color));
     if (translucency != null)
-    setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, "", translucency, translucentLevel);
+    setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, translucency, translucentLevel);
   }
 
   void lcaoCartoon() throws ScriptException {

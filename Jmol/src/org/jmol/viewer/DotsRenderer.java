@@ -31,126 +31,108 @@ import javax.vecmath.Vector3f;
 
 class DotsRenderer extends ShapeRenderer {
 
-  boolean perspectiveDepth;
-  int scalePixelsPerAngstrom;
-  boolean bondSelectionModeOr;
-  int level = 3;
   boolean iShowSolid;
   
   Vector3f[] verticesTransformed;
-  int screenCoordinateCount;
+  int screenLevel;
+  int screenDotCount;
   int[] screenCoordinates;
+  int[] faceMap = null; // used only by GeoSurface, but set here
   
   void initRenderer() {
-    int nVertices = Geodesic3D.getVertexCount(level);
-    verticesTransformed = new Vector3f[nVertices];
-    for (int i = nVertices; --i >= 0; )
+    screenLevel = Dots.MAX_LEVEL;
+    screenDotCount = Geodesic3D.getVertexCount(Dots.MAX_LEVEL);
+    verticesTransformed = new Vector3f[screenDotCount];
+    for (int i = screenDotCount; --i >= 0; )
       verticesTransformed[i] = new Vector3f();
-    screenCoordinates = new int[3 * nVertices];
+    screenCoordinates = new int[3 * screenDotCount];
   }
 
   void render() {
     Dots dots = (Dots) shape;
-    if (dots == null || dots.isCalcOnly)
-      return;
-    if (!g3d.setColix(Graphics3D.BLACK))
+    if (dots.isCalcOnly) //because we were using that shape as a calculator as well.
       return;
     render1(dots);
   }
 
-  void render1(Dots dots) {
+  protected void render1(Dots dots) {
     //dots.timeBeginExecution = System.currentTimeMillis();
-
-    perspectiveDepth = viewer.getPerspectiveDepth();
-    scalePixelsPerAngstrom = (int) viewer.getScalePixelsPerAngstrom();
-    bondSelectionModeOr = viewer.getBondSelectionModeOr();
-
-    transform();
-
-    Atom[] atoms = frame.atoms;
-    int[][] dotsConvexMaps = dots.dotsConvexMaps;
-    short[] colixes = dots.colixes;
+    if (!iShowSolid && !g3d.setColix(Graphics3D.BLACK)) // no translucent for dots
+      return;
+    int sppa = (int) viewer.getScalePixelsPerAngstrom();
+    screenLevel = (iShowSolid || sppa > 20 ? 3 : sppa > 10 ? 2 : sppa > 5 ? 1
+        : 0);
+    screenDotCount = Geodesic3D.getVertexCount(screenLevel);
+    for (int i = screenDotCount; --i >= 0;)
+      viewer.transformVector(Geodesic3D.vertexVectors[i],
+          verticesTransformed[i]);
     for (int i = dots.dotsConvexMax; --i >= 0;) {
-      Atom atom = atoms[i];
+      Atom atom = frame.atoms[i];
       if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i)
-          ||!g3d.isInDisplayRange(atom.screenX, atom.screenY))
+          || !g3d.isInDisplayRange(atom.screenX, atom.screenY))
         continue;
-      if (mapAtoms == null)
-        mapAtoms = new int[Geodesic3D.vertexVectors.length];
-      calcScreenPoints(dotsConvexMaps[i], dots.getAppropriateRadius(atom),
-          atom.screenX, atom.screenY, atom.screenZ);
-      if (screenCoordinateCount == 0)
-        continue;
-      renderConvex(atom, colixes[i], dotsConvexMaps[i]);
+      int nPoints = calcScreenPoints(dots.dotsConvexMaps[i], dots
+          .getAppropriateRadius(atom), atom.screenX, atom.screenY, atom.screenZ);
+      if (nPoints != 0)
+        renderConvex(Graphics3D.getColixInherited(dots.colixes[i],
+            atom.colixAtom), dots.dotsConvexMaps[i], nPoints);
     }
     //dots.timeEndExecution = System.currentTimeMillis();
     //Logger.debug("dots rendering time = "+ gs.getExecutionWalltime());
-
   }
   
-  void transform() {
-    for (int i = Geodesic3D.getVertexCount(level); --i >= 0;)
-      viewer.transformVector(Geodesic3D.vertexVectors[i], verticesTransformed[i]);
-  }
-
-  int[] mapAtoms = null; 
-  
-  void renderConvex(Atom atom, short colix, int[] map) {
-      g3d.setColix(Graphics3D.getColixTranslucent(Graphics3D.getColixInherited(colix,
-        atom.colixAtom), false, 0));
-      g3d.drawPoints(screenCoordinateCount, screenCoordinates);
-  }
-
-  int screenLevel;
-  int screenDotCount;
-
-  void calcScreenPoints(int[] visibilityMap, float radius, int x, int y, int z) {
-    float scaledRadius;
-    
-    int dotCount;
-    if (iShowSolid) {
-      dotCount = 642;
-      screenLevel = 3;
-    } else if (scalePixelsPerAngstrom > 5) {
-      dotCount = 42;
-      screenLevel = 1;
-      if (scalePixelsPerAngstrom > 10) {
-        dotCount = 162;
-        screenLevel = 2;
-        if (scalePixelsPerAngstrom > 20) {
-          dotCount = 642;
-          screenLevel = 3;
-          //      if (scalePixelsPerAngstrom > 32) {
-          //          screenLevel = 4; //untested
-          //          dotCount = 2562;
-          //      }
-        }
-      }
-    } else {
-      dotCount = 12;
-      screenLevel = 0;
-    }
-    screenDotCount = dotCount;
-    scaledRadius = viewer.scaleToPerspective(z, radius);
-    int icoordinates = 0;
-    int iDot = visibilityMap.length << 5;
-    screenCoordinateCount = 0;
-    if (iDot > dotCount)
-      iDot = dotCount;
+  /**
+   * calculates the screen xy coordinates for the dots or faces
+   * 
+   * @param visibilityMap
+   * @param radius
+   * @param x
+   * @param y
+   * @param z
+   * @return number of points
+   */
+  private int calcScreenPoints(int[] visibilityMap, float radius, int x, int y, int z) {
+    int nPoints = 0;
+    int i = 0;
+    float scaledRadius = viewer.scaleToPerspective(z, radius);
+    int iDot = Math.min(visibilityMap.length << 5, screenDotCount);
     while (--iDot >= 0) {
       if (!Dots.getBit(visibilityMap, iDot))
         continue;
       Vector3f vertex = verticesTransformed[iDot];
-      if (mapAtoms != null)
-        mapAtoms[iDot] = icoordinates;
-      screenCoordinates[icoordinates++] = x
+      if (faceMap != null)
+        faceMap[iDot] = i;
+      screenCoordinates[i++] = x
           + (int) ((scaledRadius * vertex.x) + (vertex.x < 0 ? -0.5 : 0.5));
-      screenCoordinates[icoordinates++] = y
+      screenCoordinates[i++] = y
           + (int) ((scaledRadius * vertex.y) + (vertex.y < 0 ? -0.5 : 0.5));
-      screenCoordinates[icoordinates++] = z
+      screenCoordinates[i++] = z
           + (int) ((scaledRadius * vertex.z) + (vertex.z < 0 ? -0.5 : 0.5));
-      ++screenCoordinateCount;
+      ++nPoints;
     }
+    return nPoints;
+  }
+
+  /**
+   * generic renderer -- dots and geosurface
+   * 
+   * @param colix
+   * @param map
+   * @param nPoints
+   */
+  protected void renderConvex(short colix, int[] map, int nPoints) {
+    renderDots(colix, nPoints);
+  }
+
+  /**
+   * also called by GeoSurface when in motion
+   * 
+   * @param colix
+   * @param nPoints
+   */
+  protected void renderDots(short colix, int nPoints) {
+    g3d.setColix(Graphics3D.getColixTranslucent(colix, false, 0));
+    g3d.drawPoints(nPoints, screenCoordinates);
   }
 }
 

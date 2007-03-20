@@ -53,19 +53,20 @@ import java.util.Hashtable;
  * 
  * What remains is the van der Waals surface, which can be extended using
  * 
- * geosurface +1.2
+ * dots/geosurface +1.2
  * 
  * to provide the solvent-accessible surface.
  * 
  * A better rendering of the solvent accessible surface is given using
  * 
- * isosurface sasurface  
+ * isosurface sasurface 1.2  
  * 
  * A discussion of molecular/solvent-accessible surfaces can be found at
  * http://www.netsci.org/Science/Compchem/feature14e.html
  * 
- * In March 2007, Bob refactored all Geodesic business 
- * into the static class g3d.Geodesic3D. 
+ * In March 2007, Bob refactored all Geodesic business that was here 
+ * into the static class g3d.Geodesic3D, made GeoSurface an extension of Dots,
+ * and generally similified the code. 
  * 
  */
 
@@ -78,7 +79,7 @@ import java.util.Hashtable;
  * atom. The surface of the atom is 'peppered' with dots. Each dot is
  * tested to see if it falls within the vanderWaals radius of any of
  * its neighbors. If so, then the dot is not displayed. <p>
- * See DotsRenderer.Geodesic for more discussion of the implementation. <p>
+ * See g3d.Geodesic3D for more discussion of the implementation. <p>
  * The Connolly surface is defined by rolling a probe sphere over the
  * surface of the molecule. In this way, a smooth surface is generated ...
  * one that does not have crevices between atoms. Three types of shapes
@@ -91,7 +92,7 @@ import java.util.Hashtable;
  * The saddles are generated between pairs of atoms. Imagine an O2
  * molecule. The probe sphere is rolled around the two oxygen spheres so
  * that it stays in contact with both spheres. The probe carves out a
- * torus (donut). The portion of the torus between the two points of
+ * torus (doughnut). The portion of the torus between the two points of
  * contact with the oxygen spheres is a saddle. <p>
  * The concave shapes are defined by triples of atoms. Imagine three
  * atom spheres in a close triangle. The probe sphere will sit (nicely)
@@ -125,7 +126,7 @@ class Dots extends AtomShape {
   BitSet bsOn = new BitSet();
   BitSet bsIgnore, bsSelected;
   
-  int level = 3;
+  static int MAX_LEVEL = 3;
   
   short mad = 0;
   short lastMad = 0;
@@ -134,7 +135,6 @@ class Dots extends AtomShape {
   float scale = 1f;
   float setRadius = Float.MAX_VALUE;
   float addRadius = Float.MAX_VALUE;
-  short surfaceColix = Graphics3D.GRAY;
   int dotsConvexMax; // the Max == the highest atomIndex with dots + 1
   int[][] dotsConvexMaps;
   final int nArcPoints = 9;  
@@ -199,16 +199,6 @@ class Dots extends AtomShape {
       return;  // no translucent dots
     }
 
-    if ("colorSurface" == propertyName) {
-      surfaceColix = Graphics3D.getColix(value);
-      return;
-    }
-    if ("translucencySurface" == propertyName) {
-      boolean isTranslucent = (value.equals("translucent"));
-      surfaceColix = Graphics3D.getColixTranslucent(surfaceColix, isTranslucent, translucentLevel);
-      return;
-    }    
-
     if ("ignore" == propertyName) {
       bsIgnore = (BitSet)value;
       return;
@@ -264,6 +254,10 @@ class Dots extends AtomShape {
     super.setProperty(propertyName, value, bs);
   }
 
+  void setSuperProperty(String propertyName, Object value, BitSet bs) {
+    super.setProperty(propertyName, value, bs);
+  }
+  
   float getRadius() {
     return Float.isNaN(setRadius)? 0 : setRadius;
   }
@@ -466,9 +460,9 @@ class Dots extends AtomShape {
       return;
     int faceTest;
     int p1, p2, p3;
-    short[] faces = Geodesic3D.faceVertexesArrays[level];
+    short[] faces = Geodesic3D.faceVertexesArrays[MAX_LEVEL];
     
-    int p4 = power4[level - 1];
+    int p4 = power4[MAX_LEVEL - 1];
     boolean ok1, ok2, ok3;
     clearBitmap(mapT);
     for (int i = 0; i < 12; i++) {
@@ -644,10 +638,7 @@ class Dots extends AtomShape {
           + getAppropriateRadius(atoms[i]) + " "
           + StateManager.escape(bs));
     }
-    if (isSurface)
-      appendCmd(s, getColorCommand("geoSurface", surfaceColix));
-    else
-      s.append(getShapeCommands(temp, null, atomCount));
+    s.append(getShapeCommands(temp, null, atomCount));
     return s.toString();
   }
 

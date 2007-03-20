@@ -36,7 +36,8 @@ import javax.vecmath.Point3f;
 
 class TextShape extends Shape {
 
-
+  // echo, hover
+  
   final static int ECHO = 1;
   final static int HOVER = 2;
   int myType;

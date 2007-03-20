@@ -24,11 +24,13 @@
 
 package org.jmol.viewer;
 
+import java.util.BitSet;
+
 import org.jmol.g3d.Geodesic3D;
+import org.jmol.util.Logger;
 
 class GeoSurface extends Dots {
-
-
+  
   void initShape() {
     isSurface = true;
     super.initShape();
@@ -41,6 +43,21 @@ class GeoSurface extends Dots {
     isActive = false;
   }
   
+  void setProperty(String propertyName, Object value, BitSet bs) {
+
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("GeoSurface.setProperty: " + propertyName + " " + value);
+    }
+
+    if ("translucency" == propertyName) {
+      //skip dots and go straight to AtomShape
+      super.setSuperProperty(propertyName, value, bs);
+      return;
+    }    
+    super.setProperty(propertyName, value, bs);
+  }
+
+
   void calcConvexMap() {
     calcConvexBits();
     int[] map = mapNull;
@@ -58,7 +75,7 @@ class GeoSurface extends Dots {
   
   void addIncompleteFaces(int[] points) {
     clearBitmap(mapT);
-    short[] faces = Geodesic3D.faceVertexesArrays[level];
+    short[] faces = Geodesic3D.faceVertexesArrays[MAX_LEVEL];
     int len = faces.length;
     int maxPt = -1;
     for (int f = 0; f < len;) {

@@ -37,11 +37,15 @@ import java.util.Hashtable;
  * After code reorganization of 11/2006 (BH) Shape now encompasses:
  * 
  * AtomShape
+ *     |
  *   Balls, Dots, Halos, Labels, Polyhedra, Stars, Vectors
+ *           |
+ *         GeoSurface  
  * 
  * Dipoles, Measures
  * 
  * FontLineShape
+ *     |
  *   Axes, Bbcage, Frank, Uccage
  * 
  * MeshCollection
@@ -54,12 +58,15 @@ import java.util.Hashtable;
  *                      |________ LcaoCartoon, MolecularOrbital
  * 
  * Mps
+ *   |
  *   Backbone, Cartoon, MeshRibbon, Ribbons, Rockets, Strands, Trace
  * 
  * Sticks
+ *     |
  *    Hsticks, Sssticks
  * 
  * TextShape
+ *     |
  *    Echo, Hover
  *    
  */

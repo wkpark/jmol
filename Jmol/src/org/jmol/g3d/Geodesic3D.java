@@ -78,6 +78,12 @@ import java.util.Hashtable;
    *     when you subdivide, each edge contributes one vertex
    *     12 + 30 = 42 vertices at the next level
    *     80 faces + 42 vertices - 2 = 120 edges at the next level
+
+   * geodesic level 0 vertexCount= 12 faceCount=20 edgeCount=30
+   * geodesic level 1 vertexCount= 42 faceCount=80 edgeCount=120
+   * geodesic level 2 vertexCount= 162 faceCount=320 edgeCount=480
+   * geodesic level 3 vertexCount= 642 faceCount=1280 edgeCount=1920
+   *
    *</code>
    *<p>
    * The vertices of the 'one true canonical sphere' are rotated to the

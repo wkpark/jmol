@@ -34,15 +34,23 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2007 Jmol Development";
-  public final static String version = "11.1.24";
+  public final static String version = "11.1.25";
   
   /*
    *
    * 
    * 
+   * 
+   11.1.25
+   
+   --fully dissociates geosurface from dots; 
+   --allows coloring and transparency of geosurface
+       similarly to the way stars are colored
+       
    11.1.24
    
    refactored Geodesic3D, Dots, DotsRenderer
+   independent dots/geosurface
    
    isosurface CAVITY 
 

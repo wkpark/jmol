@@ -3366,6 +3366,8 @@ public class Viewer extends JmolViewer {
     //applet.Jmol
     //app Jmol
     //StatusManager
+    if (urlString == null)
+      return;
     if (urlString.indexOf(":") < 0) {
       String base = fileManager.getAppletDocumentBase();
       if (base == "")

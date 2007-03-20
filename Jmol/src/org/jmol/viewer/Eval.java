@@ -3479,7 +3479,7 @@ class Eval { //implements Runnable {
     } else {
       if (getToken(1).tok == Token.identifier) {
         filename = parameterAsString(1);
-        loadScript.append(" "+ filename);
+        loadScript.append(" " + filename);
         isMerge = (filename.equalsIgnoreCase("append"));
         i = 2;
         if (isMerge)
@@ -3491,7 +3491,7 @@ class Eval { //implements Runnable {
     // long timeBegin = System.currentTimeMillis();
     if (statementLength == i + 1) {
       if (i == 0 || (filename = parameterAsString(i)).length() == 0)
-        filename = viewer.getFullPathName();
+        filename = getFullPathName();
       if (filename.length() > 0 && filename.charAt(0) == '=')
         filename = fixFileName(filename);
       loadScript.append(" ").append(StateManager.escape(filename)).append(";");
@@ -3606,6 +3606,13 @@ class Eval { //implements Runnable {
       runScript(defaultScript);
   }
 
+  String getFullPathName() throws ScriptException {
+    String filename = viewer.getFullPathName();
+    if (filename == null)
+      invalidArgument();
+    return filename;
+  }
+  
   String fixFileName(String filename) {
     String s = TextFormat.formatString(viewer.getLoadFormat(), "FILE", filename.substring(1));
     showString("Loading " + s);
@@ -6909,7 +6916,7 @@ class Eval { //implements Runnable {
       // in a new window
       if ((len = statementLength) == 2) {
         if (!isSyntaxCheck)
-          viewer.showUrl(viewer.getFullPathName());
+          viewer.showUrl(getFullPathName());
         return;
       }
       String fileName = parameterAsString(2);
@@ -8293,7 +8300,7 @@ class Eval { //implements Runnable {
           surfaceObjectSeen = true;
           if (propertyValue != null)
             break;
-          filename = viewer.getFullPathName();
+          filename = getFullPathName();
         }
         surfaceObjectSeen = true;
         if (tokAt(i + 1) == Token.integer)

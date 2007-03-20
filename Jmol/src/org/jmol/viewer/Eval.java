@@ -8016,10 +8016,10 @@ class Eval { //implements Runnable {
           isCavity = true;
           if (isSyntaxCheck)
             continue;
+          float cavityRadius = (isFloatParameter(i + 1) ? floatParameter(++i) : 1.2f);
           float envelopeRadius = (isFloatParameter(i + 1) ? floatParameter(++i) : 10f);
           if (envelopeRadius > 10f)
             numberOutOfRange(0, 10);
-          float cavityRadius = (isFloatParameter(i + 1) ? floatParameter(++i) : 1.2f);
           setShapeProperty(iShape, "envelopeRadius", new Float(envelopeRadius));
           setShapeProperty(iShape, "cavityRadius", new Float(cavityRadius));
           propertyName = "cavity";

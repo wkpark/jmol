@@ -893,7 +893,7 @@ class Eval { //implements Runnable {
         calculate();
         break;
       case Token.dots:
-        dots(1, Dots.DOTS_MODE_DOTS);
+        dots(1, JmolConstants.SHAPE_DOTS, Dots.DOTS_MODE_DOTS);
         break;
       case Token.strands:
         proteinShape(JmolConstants.SHAPE_STRANDS);
@@ -957,7 +957,7 @@ class Eval { //implements Runnable {
         polyhedra();
         break;
       case Token.geosurface:
-        dots(1, Dots.DOTS_MODE_SURFACE);
+        dots(1, JmolConstants.SHAPE_GEOSURFACE, Dots.DOTS_MODE_SURFACE);
         break;
       case Token.centerAt:
         centerAt();
@@ -4991,7 +4991,7 @@ class Eval { //implements Runnable {
     if ((iToken = statementLength) >= 2) {
       switch (getToken(1).tok) {
       case Token.surface:
-        dots(2, Dots.DOTS_MODE_CALCONLY);
+        dots(2, JmolConstants.SHAPE_DOTS, Dots.DOTS_MODE_CALCONLY);
         if (!isSyntaxCheck)
           viewer.addStateScript(thisCommand);
         return;
@@ -5011,11 +5011,11 @@ class Eval { //implements Runnable {
     evalError(GT._("Calculate what?") + "hbonds?  surface? structure?");
   }
 
-  void dots(int ipt, int dotsMode) throws ScriptException {
-    viewer.loadShape(JmolConstants.SHAPE_DOTS);
-    setShapeProperty(JmolConstants.SHAPE_DOTS, "init", new Integer(dotsMode));
+  void dots(int ipt, int iShape, int dotsMode) throws ScriptException {
+    viewer.loadShape(iShape);
+    setShapeProperty(iShape, "init", new Integer(dotsMode));
     if (statementLength == ipt) {
-      setShapeSize(JmolConstants.SHAPE_DOTS, 1);
+      setShapeSize(iShape, 1);
       return;
     }
     short mad = 0;
@@ -5045,17 +5045,17 @@ class Eval { //implements Runnable {
     case Token.integer:
       int dotsParam = intParameter(ipt);
       if (statementLength > ipt + 1 && statement[ipt + 1].tok == Token.radius) {
-        setShapeProperty(JmolConstants.SHAPE_DOTS, "atom", new Integer(
+        setShapeProperty(iShape, "atom", new Integer(
             dotsParam));
         ipt++;
-        setShapeProperty(JmolConstants.SHAPE_DOTS, "radius", new Float(
+        setShapeProperty(iShape, "radius", new Float(
             floatParameter(++ipt)));
         if (statementLength > ipt + 1 && statement[++ipt].tok == Token.color)
-          setShapeProperty(JmolConstants.SHAPE_DOTS, "colorRGB", new Integer(
+          setShapeProperty(iShape, "colorRGB", new Integer(
               getArgbParam(++ipt)));
         if (getToken(ipt).tok != Token.bitset)
           invalidArgument();
-        setShapeProperty(JmolConstants.SHAPE_DOTS, "dots", statement[ipt].value);
+        setShapeProperty(iShape, "dots", statement[ipt].value);
         return;
       }
 
@@ -5066,7 +5066,7 @@ class Eval { //implements Runnable {
     default:
       booleanOrNumberExpected();
     }
-    setShapeSize(JmolConstants.SHAPE_DOTS, mad);
+    setShapeSize(iShape, mad);
   }
 
   void proteinShape(int shapeType) throws ScriptException {

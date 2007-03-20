@@ -181,7 +181,7 @@ class Dots extends AtomShape {
     super.initShape();
   }
 
-  boolean isSurface;
+  boolean isSurface = false;
   boolean isCalcOnly;
   
   void setProperty(String propertyName, Object value, BitSet bs) {
@@ -269,7 +269,6 @@ class Dots extends AtomShape {
   }
   
   void initialize(int mode) {
-    isSurface = (mode == DOTS_MODE_SURFACE);
     isCalcOnly = (mode == DOTS_MODE_CALCONLY);
     if (isCalcOnly)
       bsOn.clear();
@@ -292,7 +291,6 @@ class Dots extends AtomShape {
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug("Dots.setSize " + size);
     }
-
     bsSurface = new BitSet();
     boolean isVisible = true;
 
@@ -308,7 +306,6 @@ class Dots extends AtomShape {
       setRadius = Float.MAX_VALUE;
       scale = 1;
     } else if (mad == 0) {
-      isSurface = false;
       isCalcOnly = false;
       isVisible = false;
     } else if (mad == 1) {
@@ -332,7 +329,7 @@ class Dots extends AtomShape {
       setRadius = Float.MAX_VALUE;
       scale = 1;
     }
-    maxRadius = isCalcOnly ? setRadius : frame.getMaxVanderwaalsRadius();
+    maxRadius = !useVanderwaalsRadius ?  setRadius : frame.getMaxVanderwaalsRadius();
     float solventRadius = viewer.getCurrentSolventProbeRadius();
     if (addRadius == Float.MAX_VALUE)
       addRadius = (solventRadius != 0 ? solventRadius : 0);
@@ -359,8 +356,9 @@ class Dots extends AtomShape {
     }
     
     if (!isCalcOnly)
-      for (int i = atomCount; --i >= 0;)
-        atoms[i].setShapeVisibility(myVisibilityFlag, bsOn.get(i));
+      for (int i = atomCount; --i >= 0;) {
+          atoms[i].setShapeVisibility(myVisibilityFlag, bsOn.get(i));
+      }
     if (newSet) {
       dotsConvexMax = 0;
       dotsConvexMaps = null;
@@ -431,14 +429,10 @@ class Dots extends AtomShape {
   void calcConvexMap() {
     calcConvexBits();
     int[] map = mapNull;
+    
     int count = getMapStorageCount(geodesicMap);
     if (count > 0) {
       bsSurface.set(indexI);
-      if (isSurface) {
-        addIncompleteFaces(geodesicMap);
-        //add a second row as well.
-        addIncompleteFaces(geodesicMap);
-      }
       count = getMapStorageCount(geodesicMap);
       map = new int[count];
       System.arraycopy(geodesicMap, 0, map, 0, count);
@@ -452,43 +446,6 @@ class Dots extends AtomShape {
         && map[indexLast] == 0;) {
     }
     return indexLast + 1;
-  }
-
-  void addIncompleteFaces(int[] points) {
-    clearBitmap(mapT);
-    short[] faces = Geodesic3D.faceVertexesArrays[level];
-    int len = faces.length;
-    int maxPt = -1;
-    for (int f = 0; f < len;) {
-      short p1 = faces[f++];
-      short p2 = faces[f++];
-      short p3 = faces[f++];
-      boolean ok1 = getBit(points, p1); 
-      boolean ok2 = getBit(points, p2); 
-      boolean ok3 = getBit(points, p3);
-      if (! (ok1 || ok2 || ok3) || ok1 && ok2 && ok3)
-        continue;
-      // trick: DO show faces if ANY ONE vertex is missing
-      if (!ok1) {
-        setBit(mapT, p1);
-        if (maxPt < p1)
-          maxPt = p1;
-      }
-      if (!ok2) {
-        setBit(mapT, p2);
-        if (maxPt < p2)
-          maxPt = p2;
-      }
-      if (!ok3) {
-        setBit(mapT, p3);
-        if (maxPt < p3)
-          maxPt = p3;
-      }
-    }
-    for (int i=0; i <= maxPt; i++) {
-      if (getBit(mapT, i))
-        setBit(points, i);
-    }
   }
 
   Point3f centerT;
@@ -556,16 +513,10 @@ class Dots extends AtomShape {
           for (int j = 0; j < neighborCount; j++) {
             float maxDist = neighborPlusProbeRadii2[j];
             centerT = neighborCenters[j];
-            //if (((Atom)centerI).atomIndex == 536)
-             // System.out.println(j + " " + ((Atom)centerT).getIdentity() + " "+(pointT.distanceSquared(centerT)) + "/" + maxDist + " " + ((Atom)centerI).getIdentity() );
             pointT.set(Geodesic3D.vertexVectors[vect]);
             pointT.scaleAdd(combinedRadii, centerI);
-            if (pointT.distanceSquared(centerT) < maxDist) {
+            if (pointT.distanceSquared(centerT) < maxDist)
               clearBit(geodesicMap, vect);
-            } else {
-              //if (((Atom)centerI).atomIndex == 536 && ((Atom)centerT).atomIndex == 643)
-              //System.out.println(((Atom)centerT).getIdentity() + " "+(pointT.distanceSquared(centerT)) + "/" + maxDist + " " + ((Atom)centerI).getIdentity() );
-            }
           }
           break;
         case 1:
@@ -594,8 +545,6 @@ class Dots extends AtomShape {
       if (neighbor == atomI || bsIgnore != null && bsIgnore.get(neighbor.atomIndex))
         continue;
       // only consider selected neighbors
-      //if (((Atom)centerI).atomIndex == 536)
-      //System.out.println(neighbor.getIdentity() + " " + centerI.distance(neighbor));
       if (onlySelectedDots && !bsOn.get(neighbor.atomIndex))
         continue;
       float neighborRadius = getAppropriateRadius(neighbor);
@@ -649,7 +598,7 @@ class Dots extends AtomShape {
     for (int i = bitmap.length; --i >= 0; )
       bitmap[i] = 0;
   }
- /* 
+ 
   String showMap(int[] map) {
     String s = "showMap";
     int n = 0;
@@ -662,7 +611,7 @@ class Dots extends AtomShape {
     s = n + " points:" + s;
     return s;
   }
-*/
+
   void setModelClickability() {
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
@@ -728,7 +677,6 @@ class Dots extends AtomShape {
     int dotCount = 42;
     for (int i = dotsConvexMax; --i >= 0;)
       nPoints += getPointCount(dotsConvexMaps[i], dotCount);
-    System.out.println("dots getPoints " + nPoints);
     Point3f[] points = new Point3f[nPoints];
     if (nPoints == 0)
       return points;

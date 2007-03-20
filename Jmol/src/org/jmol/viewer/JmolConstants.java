@@ -3054,38 +3054,39 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_VECTORS    = 5;
   public final static int SHAPE_MEASURES   = 6;
   public final static int SHAPE_DOTS       = 7;
+  public final static int SHAPE_GEOSURFACE = 8;
   
-  public final static int SHAPE_MIN_SECONDARY  = 8;
-  public final static int SHAPE_BACKBONE   = 8;
-  public final static int SHAPE_TRACE      = 9;
-  public final static int SHAPE_CARTOON    = 10;
-  public final static int SHAPE_STRANDS    = 11;
-  public final static int SHAPE_MESHRIBBON = 12;
-  public final static int SHAPE_RIBBONS    = 13;
-  public final static int SHAPE_ROCKETS    = 14;
-  public final static int SHAPE_MAX_SECONDARY  = 15;
+  public final static int SHAPE_MIN_SECONDARY  = 9;
+  public final static int SHAPE_BACKBONE   = 9;
+  public final static int SHAPE_TRACE      = 10;
+  public final static int SHAPE_CARTOON    = 11;
+  public final static int SHAPE_STRANDS    = 12;
+  public final static int SHAPE_MESHRIBBON = 13;
+  public final static int SHAPE_RIBBONS    = 14;
+  public final static int SHAPE_ROCKETS    = 15;
+  public final static int SHAPE_MAX_SECONDARY  = 16;
   
-  public final static int SHAPE_STARS      = 15;
-  public final static int SHAPE_HALOS      = 16;
+  public final static int SHAPE_STARS      = 16;
+  public final static int SHAPE_HALOS      = 17;
 
-  public final static int SHAPE_MIN_SELECTION_INDEPENDENT = 17;
-  public final static int SHAPE_AXES       = 17;
-  public final static int SHAPE_BBCAGE     = 18;
-  public final static int SHAPE_UCCAGE     = 19;
-  public final static int SHAPE_ECHO       = 20;
-  public final static int SHAPE_HOVER      = 21;
-  public final static int SHAPE_POLYHEDRA  = 22;
-  public final static int SHAPE_MIN_NAMED_OBJECT = 23;
-  public final static int SHAPE_DIPOLES    = 23;
-  public final static int SHAPE_MIN_MESH_COLLECTION = 24;
-  public final static int SHAPE_PMESH      = 24;
-  public final static int SHAPE_MO         = 25;
-  public final static int SHAPE_ISOSURFACE = 26;
-  public final static int SHAPE_LCAOCARTOON = 27;
-  public final static int SHAPE_DRAW       = 28;
+  public final static int SHAPE_MIN_SELECTION_INDEPENDENT = 18;
+  public final static int SHAPE_AXES       = 18;
+  public final static int SHAPE_BBCAGE     = 19;
+  public final static int SHAPE_UCCAGE     = 20;
+  public final static int SHAPE_ECHO       = 21;
+  public final static int SHAPE_HOVER      = 22;
+  public final static int SHAPE_POLYHEDRA  = 23;
+  public final static int SHAPE_MIN_NAMED_OBJECT = 24;
+  public final static int SHAPE_DIPOLES    = 24;
+  public final static int SHAPE_MIN_MESH_COLLECTION = 25;
+  public final static int SHAPE_PMESH      = 25;
+  public final static int SHAPE_MO         = 26;
+  public final static int SHAPE_ISOSURFACE = 27;
+  public final static int SHAPE_LCAOCARTOON = 28;
+  public final static int SHAPE_DRAW       = 29;
   
   // last should be frank:
-  public final static int SHAPE_FRANK      = 29;
+  public final static int SHAPE_FRANK      = 30;
   public final static int SHAPE_MAX        = SHAPE_FRANK + 1;
   
   // this atom flag simply associates an atom with the current model
@@ -3122,7 +3123,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   public final static String[] shapeClassBases = {
     "Balls", "Sticks", "Hsticks", "Sssticks",
-    "Labels", "Vectors", "Measures", "Dots",
+    "Labels", "Vectors", "Measures", "Dots", "GeoSurface",
     "Backbone", "Trace", "Cartoon", "Strands", 
     "MeshRibbon", "Ribbons", "Rockets", "Stars", "Halos",
     "Axes", "Bbcage", "Uccage", "Echo", "Hover", 
@@ -3140,7 +3141,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   public final static int[] shapeToks = { 
     Token.atom, Token.bonds, Token.hbond, Token.ssbond, 
-    Token.label, Token.vector, Token.monitor, Token.dots, 
+    Token.label, Token.vector, Token.monitor, Token.dots, Token.geosurface, 
     Token.backbone, Token.trace, Token.cartoon, Token.strands,
     Token.meshRibbon, Token.ribbon, Token.rocket, Token.star, Token.halo, 
     Token.axes, Token.boundbox, Token.unitcell, Token.echo, Token.hover,

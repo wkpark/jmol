@@ -26,7 +26,6 @@ package org.jmol.viewer;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Geodesic3D;
-import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 
@@ -35,11 +34,8 @@ class DotsRenderer extends ShapeRenderer {
   boolean perspectiveDepth;
   int scalePixelsPerAngstrom;
   boolean bondSelectionModeOr;
-  boolean isInMotion;
-  boolean iShowSolid;
-  int nPoints;
-
   int level = 3;
+  boolean iShowSolid;
   
   Vector3f[] verticesTransformed;
   int screenCoordinateCount;
@@ -54,20 +50,22 @@ class DotsRenderer extends ShapeRenderer {
   }
 
   void render() {
-    perspectiveDepth = viewer.getPerspectiveDepth();
-    scalePixelsPerAngstrom = (int) viewer.getScalePixelsPerAngstrom();
-    bondSelectionModeOr = viewer.getBondSelectionModeOr();
-    nPoints = 0;
     Dots dots = (Dots) shape;
     if (dots == null || dots.isCalcOnly)
       return;
-    transform();
-    isInMotion = (viewer.getInMotion() && dots.dotsConvexMax > 100);
-    iShowSolid = dots.isSurface && !isInMotion;
-    if (iShowSolid && !g3d.setColix(dots.surfaceColix) ||
-        !iShowSolid && !g3d.setColix(Graphics3D.BLACK))
+    if (!g3d.setColix(Graphics3D.BLACK))
       return;
-    dots.timeBeginExecution = System.currentTimeMillis();
+    render1(dots);
+  }
+
+  void render1(Dots dots) {
+    //dots.timeBeginExecution = System.currentTimeMillis();
+
+    perspectiveDepth = viewer.getPerspectiveDepth();
+    scalePixelsPerAngstrom = (int) viewer.getScalePixelsPerAngstrom();
+    bondSelectionModeOr = viewer.getBondSelectionModeOr();
+
+    transform();
 
     Atom[] atoms = frame.atoms;
     int[][] dotsConvexMaps = dots.dotsConvexMaps;
@@ -77,13 +75,19 @@ class DotsRenderer extends ShapeRenderer {
       if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i)
           ||!g3d.isInDisplayRange(atom.screenX, atom.screenY))
         continue;
-      renderConvex(dots, atom, colixes[i], dotsConvexMaps[i]);
+      if (mapAtoms == null)
+        mapAtoms = new int[Geodesic3D.vertexVectors.length];
+      calcScreenPoints(dotsConvexMaps[i], dots.getAppropriateRadius(atom),
+          atom.screenX, atom.screenY, atom.screenZ);
+      if (screenCoordinateCount == 0)
+        continue;
+      renderConvex(atom, colixes[i], dotsConvexMaps[i]);
     }
-    //System.out.println("dotsrenderer n=" + nPoints);
-    dots.timeEndExecution = System.currentTimeMillis();
-    //Logger.debug("dots rendering time = "+ dots.getExecutionWalltime());
-  }
+    //dots.timeEndExecution = System.currentTimeMillis();
+    //Logger.debug("dots rendering time = "+ gs.getExecutionWalltime());
 
+  }
+  
   void transform() {
     for (int i = Geodesic3D.getVertexCount(level); --i >= 0;)
       viewer.transformVector(Geodesic3D.vertexVectors[i], verticesTransformed[i]);
@@ -91,29 +95,14 @@ class DotsRenderer extends ShapeRenderer {
 
   int[] mapAtoms = null; 
   
-  void renderConvex(Dots dots, Atom atom, short colix, int[] visibilityMap) {
-    if (mapAtoms == null)
-      mapAtoms = new int[Geodesic3D.vertexVectors.length];
-    //System.out.println("dotsrend atom " + atom.atomIndex + " " + geodesic.screenDotCount);
-    calcScreenPoints(visibilityMap, dots.getAppropriateRadius(atom),
-        atom.screenX, atom.screenY, atom.screenZ);
-    if (screenCoordinateCount == 0)
-      return;
-    // dots are never translucent; geoSurface may be translucent
-    if (!iShowSolid)
+  void renderConvex(Atom atom, short colix, int[] map) {
       g3d.setColix(Graphics3D.getColixTranslucent(Graphics3D.getColixInherited(colix,
         atom.colixAtom), false, 0));
-    if (iShowSolid)
-      renderGeodesicFragment(visibilityMap, mapAtoms, screenDotCount);
-    else {
       g3d.drawPoints(screenCoordinateCount, screenCoordinates);
-      nPoints += screenCoordinateCount;
-    }
-    
   }
 
-  private int screenLevel;
-  private int screenDotCount;
+  int screenLevel;
+  int screenDotCount;
 
   void calcScreenPoints(int[] visibilityMap, float radius, int x, int y, int z) {
     float scaledRadius;
@@ -163,35 +152,5 @@ class DotsRenderer extends ShapeRenderer {
       ++screenCoordinateCount;
     }
   }
-
-  Point3i facePt1 = new Point3i();
-  Point3i facePt2 = new Point3i();
-  Point3i facePt3 = new Point3i();
-  
-  void renderGeodesicFragment(int[] points, int[] map, int dotCount) {
-    short[] faces = Geodesic3D.faceVertexesArrays[screenLevel];
-    int[] coords = screenCoordinates;
-    short p1, p2, p3;
-    int mapMax = (points.length << 5);
-    //Logger.debug("geod frag "+mapMax+" "+dotCount);
-    if (dotCount < mapMax)
-      mapMax = dotCount;
-    for (int f = 0; f < faces.length;) {
-      p1 = faces[f++];
-      p2 = faces[f++];
-      p3 = faces[f++];
-      if (p1 >= mapMax || p2 >= mapMax || p3 >= mapMax)
-        continue;
-      //Logger.debug("geod frag "+p1+" "+p2+" "+p3+" "+dotCount);
-      if (!Dots.getBit(points, p1) || !Dots.getBit(points, p2)
-          || !Dots.getBit(points, p3))
-        continue;
-      facePt1.set(coords[map[p1]], coords[map[p1] + 1], coords[map[p1] + 2]);
-      facePt2.set(coords[map[p2]], coords[map[p2] + 1], coords[map[p2] + 2]);
-      facePt3.set(coords[map[p3]], coords[map[p3] + 1], coords[map[p3] + 2]);
-      g3d.calcSurfaceShade(facePt1, facePt2, facePt3);
-      g3d.fillTriangle(facePt1, facePt2, facePt3);
-    }
-  }  
 }
 

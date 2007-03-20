@@ -3492,7 +3492,7 @@ class Eval { //implements Runnable {
     if (statementLength == i + 1) {
       if (i == 0 || (filename = parameterAsString(i)).length() == 0)
         filename = viewer.getFullPathName();
-      if (filename.charAt(0) == '=')
+      if (filename.length() > 0 && filename.charAt(0) == '=')
         filename = fixFileName(filename);
       loadScript.append(" ").append(StateManager.escape(filename)).append(";");
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
@@ -3501,7 +3501,7 @@ class Eval { //implements Runnable {
         || theTok == Token.integer) {
       if ((filename = parameterAsString(i++)).length() == 0)
         filename = viewer.getFullPathName();
-      if (filename.charAt(0) == '=')
+      if (filename.length() > 0 && filename.charAt(0) == '=')
         filename = fixFileName(filename);
       loadScript.append(" ").append(StateManager.escape(filename));
       if (getToken(i).tok == Token.integer) {
@@ -3570,7 +3570,7 @@ class Eval { //implements Runnable {
       String[] filenames = new String[statementLength - i];
       while (i < statementLength) {
         modelName = parameterAsString(i);
-        if (modelName.charAt(0) == '=')
+        if (modelName.length() > 0 && modelName.charAt(0) == '=')
           modelName = fixFileName(modelName);
         filenames[filenames.length - statementLength + i] = modelName;
         loadScript.append(" ").append(StateManager.escape(modelName));

@@ -395,7 +395,7 @@ class RepaintManager {
       long timeBegin = System.currentTimeMillis();
       int targetTime = 0;
       int sleepTime;
-      int holdTime = 0;
+      //int holdTime = 0;
       Logger.debug("animation thread " + intThread + " running");
       
       if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
@@ -430,19 +430,17 @@ class RepaintManager {
           targetTime += (1000 / animationFps);
           sleepTime = targetTime
               - (int) (System.currentTimeMillis() - timeBegin);
-          if (sleepTime < 0)
-            continue;
-          boolean autoFps = viewer.getAutoFps();
-          System.out.println("requesting repaint for " + currentModelIndex);
-          if (autoFps)
-            requestRepaintAndWait();
-          else
+          //boolean autoFps = viewer.getAutoFps();
+          //if (autoFps) {
+            //System.out.println("requesting repaint for " + currentModelIndex);
+            //requestRepaintAndWait();
+          //} else
             refresh();
           sleepTime = targetTime
               - (int) (System.currentTimeMillis() - timeBegin);
           if (sleepTime > 0)
             Thread.sleep(sleepTime);
-          if (false && autoFps) {
+          /*if (false && autoFps) {
             if (holdTime <= 0)
               holdTime = 10;
             int nHold = 0;
@@ -455,7 +453,7 @@ class RepaintManager {
             if (nHold == 1)
               holdTime = holdTime / 2;
             Logger.info("repaint man autoFPS hold time " + holdTime + " ms; cycles "+nHold + " frame " + currentModelIndex);
-          }
+         } */
         }
       } catch (InterruptedException ie) {
         Logger.debug("animation thread interrupted!");

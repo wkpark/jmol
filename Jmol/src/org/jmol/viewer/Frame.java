@@ -194,7 +194,7 @@ public final class Frame {
         .getAtomSetCount(clientFile));
     if (merging) {
       baseModelCount = mergeFrame.modelCount;
-      appendNew = (modelCount == 1 && viewer.getAppendNew());
+      appendNew = (modelCount > 1 || viewer.getAppendNew());
       if (appendNew) {
         baseModelIndex = baseModelCount;
         modelCount += baseModelCount;
@@ -253,7 +253,7 @@ public final class Frame {
         int modelNumber = (appendNew ? adapter.getAtomSetNumber(clientFile, i) : Integer.MAX_VALUE);
         String modelName = adapter.getAtomSetName(clientFile, i);
         if (modelName == null)
-          modelName = "" + modelNumber;
+          modelName = (modelNumber == Integer.MAX_VALUE ? "" : "" + modelNumber);
         Properties modelProperties = adapter
             .getAtomSetProperties(clientFile, i);
         Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(

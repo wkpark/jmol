@@ -1830,8 +1830,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       jvxlEdgeDataCount = 0; //plane
     else
       jvxlEdgeDataCount = (param2 < -1 ? -param2 : param2 > 0 ? param2 : 0);
-    jvxlColorDataCount = (param3 < -1 ? -param3 : param3 > 0 ? param3 : 0);
-
+    jvxlColorDataCount = (isBicolorMap ? -param2 : param3 < -1 ? -param3 : param3 > 0 ? param3 : 0);
     if (jvxlDataIsColorMapped) {
       float dataMin = parseFloat();
       float dataMax = parseFloat();
@@ -2430,25 +2429,27 @@ class Isosurface extends IsosurfaceMeshCollection {
     return jvxlFractionFromCharacter(strFractionTemp.charAt(fractionPtr++),
         base, range, fracOffset);
   }
-
+  
+  /* unused here
   float jvxlValueFromCharacter(int ich, float min, float max, int base,
                                int range, float fracOffset) {
     float fraction = jvxlFractionFromCharacter(ich, base, range, fracOffset);
     return (max == min ? fraction : min + fraction * (max - min));
   }
-
+ */
+  
   float jvxlFractionFromCharacter(int ich, int base, int range, float fracOffset) {
+    if (ich == base + range)
+      return Float.NaN;
     if (ich < base)
       ich = 92; // ! --> \
     float fraction = (ich - base + fracOffset) / range;
     if (fraction < 0f)
-      fraction = 0f;
+      return 0f;
     if (fraction > 1f)
-      fraction = 0.999999f;
-    if (ich == base + range)
-      fraction = Float.NaN;
-    if (logCompression)
-      Logger.info("ffc: " + fraction + " <-- " + ich + " " + (char) ich);
+      return 0.999999f;
+    //if (logCompression)
+      //Logger.info("ffc: " + fraction + " <-- " + ich + " " + (char) ich);
     return fraction;
   }
 
@@ -2461,15 +2462,15 @@ class Isosurface extends IsosurfaceMeshCollection {
   char jvxlFractionAsCharacter(float fraction, int base, int range) {
     if (fraction > 0.9999f)
       fraction = 0.9999f;
-    if (Float.isNaN(fraction))
+    else if (Float.isNaN(fraction))
       fraction = 1.0001f;
     int ich = (int) (fraction * range + base);
     if (ich < base)
-      ich = base;
+      return (char) base;
     if (ich == 92)
-      ich = 33; // \ --> !
-    if (logCompression)
-      Logger.info("fac: " + fraction + " --> " + ich + " " + (char) ich);
+      return 33; // \ --> !
+    //if (logCompression)
+      //Logger.info("fac: " + fraction + " --> " + ich + " " + (char) ich);
     return (char) ich;
   }
 
@@ -2572,15 +2573,13 @@ class Isosurface extends IsosurfaceMeshCollection {
         definitionLine += (nSurfaceData) + " " + (-nEdgeData);
         info += "; bicolor map";
       } else {
-        definitionLine += nSurfaceData
-            + " "
-            + nEdgeData
-            + " "
-            + (mesh.isJvxlPrecisionColor && nColorData != -1 ? -nColorData
-                : nColorData);
+        definitionLine += nSurfaceData + " " + nEdgeData;
         info += (mesh.isJvxlPrecisionColor && nColorData != -1 ? "; precision colored"
             : nColorData > 0 ? "; colormapped" : "");
       }
+      definitionLine += " "
+          + (mesh.isJvxlPrecisionColor && nColorData != -1 ? -nColorData
+              : nColorData);
     } else {
       String s = " " + mesh.jvxlPlane.x + " " + mesh.jvxlPlane.y + " "
           + mesh.jvxlPlane.z + " " + mesh.jvxlPlane.w;
@@ -2595,8 +2594,10 @@ class Isosurface extends IsosurfaceMeshCollection {
     // ...  mappedDataMin  mappedDataMax  valueMappedToRed  valueMappedToBlue ... 
     definitionLine += " " + mesh.mappedDataMin + " " + mesh.mappedDataMax + " "
         + mesh.valueMappedToRed + " " + mesh.valueMappedToBlue;
-    info += "\n# data mimimum = " + mesh.mappedDataMin + "; data maximum = " + mesh.mappedDataMax + " "
-    + "\n# value mapped to red = " + mesh.valueMappedToRed + "; value mapped to blue = " + mesh.valueMappedToBlue;
+    info += "\n# data mimimum = " + mesh.mappedDataMin + "; data maximum = "
+        + mesh.mappedDataMax + " " + "\n# value mapped to red = "
+        + mesh.valueMappedToRed + "; value mapped to blue = "
+        + mesh.valueMappedToBlue;
     if (mesh.jvxlCompressionRatio > 0)
       info += "; approximate compressionRatio=" + mesh.jvxlCompressionRatio
           + ":1";

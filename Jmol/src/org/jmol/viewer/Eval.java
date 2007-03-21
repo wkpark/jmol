@@ -6352,6 +6352,11 @@ class Eval { //implements Runnable {
     propertyName = "align";
     // set echo name xxx
     if (statementLength == 4) {
+      if (isCenterParameter(3)) {
+        setShapeProperty(JmolConstants.SHAPE_ECHO, "xyz",
+            centerParameter(3));
+        return;
+      }
       switch (getToken(3).tok) {
       case Token.off:
         propertyName = "off";

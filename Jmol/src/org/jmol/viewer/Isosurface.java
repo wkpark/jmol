@@ -1671,6 +1671,8 @@ class Isosurface extends IsosurfaceMeshCollection {
             case SURFACE_FILE:
             default:
               voxelValue = getNextVoxelValue();
+              if (voxelValue < 0)
+                System.out.println("vv " +voxelValue);
             }
           }
           strip[z] = voxelValue;
@@ -2594,6 +2596,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     // ...  mappedDataMin  mappedDataMax  valueMappedToRed  valueMappedToBlue ... 
     definitionLine += " " + mesh.mappedDataMin + " " + mesh.mappedDataMax + " "
         + mesh.valueMappedToRed + " " + mesh.valueMappedToBlue;
+    
     info += "\n# data mimimum = " + mesh.mappedDataMin + "; data maximum = "
         + mesh.mappedDataMax + " " + "\n# value mapped to red = "
         + mesh.valueMappedToRed + "; value mapped to blue = "
@@ -2601,6 +2604,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     if (mesh.jvxlCompressionRatio > 0)
       info += "; approximate compressionRatio=" + mesh.jvxlCompressionRatio
           + ":1";
+    info += "\n# created using Jmol Version " + Viewer.getJmolVersion();
     return (isInfo ? info : definitionLine);
   }
 
@@ -2797,11 +2801,15 @@ class Isosurface extends IsosurfaceMeshCollection {
   boolean checkCutoff(int v1, int v2, int v3) {
     // never cross a +/- junction with a triangle in the case of orbitals, 
     // where we are using |psi| instead of psi for the surface generation.
+    // note that for bicolor maps, where the values are all positive, we 
+    // check this later in the meshRenderer
     if (v1 < 0 || v2 < 0 || v3 < 0)
       return false;
+    
     float val1 = thisMesh.vertexValues[v1];
     float val2 = thisMesh.vertexValues[v2];
     float val3 = thisMesh.vertexValues[v3];
+
     return (val1 * val2 >= 0 && val2 * val3 >= 0);
   }
 

@@ -28,10 +28,10 @@ class IsosurfaceRenderer extends MeshRenderer {
   void render() {
     Isosurface isosurface = (Isosurface)shape;
     for (int i = isosurface.meshCount; --i >= 0; )
-      render1(isosurface.meshes[i]);
+      render1((IsosurfaceMesh)isosurface.meshes[i]);
   }
   
   boolean render1(IsosurfaceMesh mesh) {
-    return super.renderMesh(mesh, mesh.jvxlPlane != null, mesh.isContoured);
+    return super.renderMesh(mesh, mesh.jvxlPlane != null, mesh.isContoured, mesh.isBicolorMap);
   }  
 }

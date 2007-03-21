@@ -34,6 +34,7 @@ abstract class MeshRenderer extends ShapeRenderer {
   boolean iShowNormals;
   boolean iHideBackground;
   boolean isContoured;
+  boolean isBicolorMap;
   short backgroundColix;
   Point3f[] vertices;
   Point3i[] screens;
@@ -44,13 +45,14 @@ abstract class MeshRenderer extends ShapeRenderer {
   Vector3f[] transformedVectors;
 
   boolean render1(Mesh mesh) {
-    return renderMesh(mesh, false, false);
+    return renderMesh(mesh, false, false, false);
   }
   
-  boolean renderMesh(Mesh mesh, boolean isPlane, boolean isContoured) {
+  boolean renderMesh(Mesh mesh, boolean isPlane, boolean isContoured, boolean isBicolorMap) {
     if (mesh == null || mesh.visibilityFlags == 0 || !g3d.setColix(mesh.colix))
       return false;
     this.isContoured = isContoured;
+    this.isBicolorMap = isBicolorMap;
     int vertexCount = mesh.vertexCount;
     if (vertexCount == 0)
       return false;
@@ -218,6 +220,9 @@ abstract class MeshRenderer extends ShapeRenderer {
         colixA = vertexColixes[iA];
         colixB = vertexColixes[iB];
         colixC = vertexColixes[iC];
+        if (isBicolorMap && (colixA != colixB || colixB != colixC))
+          continue;
+        //System.out.println("meshrender " + colixA + " " + colixB + " " + colixC);
       } else {
         colixA = colixB = colixC = colix;
       }

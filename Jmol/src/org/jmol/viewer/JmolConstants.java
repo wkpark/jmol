@@ -34,13 +34,20 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2007 Jmol Development";
-  public final static String version = "11.1.25";
+  public final static String version = "11.1.26";
   
   /*
    *
    * 
    * 
-   * 
+   *
+   11.1.26
+      fixes two nasty bugs relating to isosurfaces and JVXL files. 
+      -- JVXL files created from molecular orbitals will show up with no color
+         in 11.1.0 - 11.1.25 because of a missing number in the definition line :(
+      -- JVXL files created from molecular orbitals will show unwanted cross-over
+         surfaces from + to -. 
+         
    11.1.25
    
    --fully dissociates geosurface from dots; 
@@ -80,7 +87,7 @@ final public class JmolConstants {
    
    color xxxx translucent N   
    
-   where N is -1 to 6.
+   where N is -1 to 9.
    
                    OR     OR   
    translucent -1               same as Jmol 10.2
@@ -160,7 +167,7 @@ final public class JmolConstants {
    adds "bwr" colorscheme as opposed to "rwb", which I think is backward.
    
    
-   isosurface -- now supports APBS (http://apbs.sourceforge.net)
+   isosurface -- now supports APBS (  )
                  molecular electrostatic potential output files
  
    write -- modified to allow unquoted filename in 
@@ -194,7 +201,7 @@ final public class JmolConstants {
    This build allows for the applet to be "bare-bones" -- only the
    essential classes included in the Jar file; others never included
    or possibly in accompanying jar files, such as, perhaps, JmolPopupMenu.jar,
-   JmolNavigation.jar, JmolBio.jar, JmolSurface.jar, JmolXtal.jar, etc. 
+   JmolNavigation.jar, JmolBio.jar, Jm  olSurface.jar, JmolXtal.jar, etc. 
    
    Then a developer can slim down the download. The minimum is 697K, 
    about 58% of the full package. All that gets you is atoms, bonds, 

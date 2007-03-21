@@ -78,6 +78,8 @@ class Mesh {
   final static int DRAW_PLANE = 5;
   final static int DRAW_POINT = 6;
   final static int DRAW_TRIANGLE = 7;
+  final static int ISOSURFACE_BICOLOR = 8;
+  
   int drawType = DRAW_TRIANGLE;
   int[] drawTypes;
   

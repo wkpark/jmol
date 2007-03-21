@@ -1702,7 +1702,7 @@ final public class Graphics3D {
       return (short) (colix & ~TRANSLUCENT_MASK);
     if (translucentLevel < 0) //screened
       return (short) (colix | TRANSLUCENT_MASK);
-    if (translucentLevel > 255 || translucentLevel == 1.0)
+    if (translucentLevel >= 255 || translucentLevel == 1.0)
       return (short) (colix | TRANSPARENT);
     int iLevel = (int) (translucentLevel < 1 ? translucentLevel * 256
             : translucentLevel <= 9 ? ((int) (translucentLevel-1)) << 5

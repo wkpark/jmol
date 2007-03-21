@@ -448,6 +448,7 @@ class StateManager {
 
       viewer.setShowAxes(false);
       viewer.setShowBbcage(false);
+      viewer.setShowUnitCell(false);
       clearVolatileProperties();
     }
 

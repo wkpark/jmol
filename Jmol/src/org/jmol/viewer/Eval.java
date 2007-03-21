@@ -5243,7 +5243,7 @@ class Eval { //implements Runnable {
       isHyphen = true;
     if (haveFileSet)
       useModelNumber = false;
-    else
+    else if (useModelNumber)
       for (int i = 0; i < nFrames; i++)
         if (frameList[i] >= 0)
           frameList[i] %= 1000000;

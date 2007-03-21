@@ -407,7 +407,7 @@ class Labels extends AtomShape {
     for (int i = atomCount; --i >= 0;) {
       if (bsSizeSet == null || !bsSizeSet.get(i))
         continue;
-      setStateInfo(temp, i, "label " + formats[i]);
+      setStateInfo(temp, i, "label " + StateManager.escape(formats[i]));
       if (bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp2, i, getColorCommand("label", paletteIDs[i],
             colixes[i]));

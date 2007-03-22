@@ -261,7 +261,7 @@ public final class ScriptWindow extends JDialog
     undoSaved = false;
 
     String strErrorMessage = null;
-    doWait = (strCommand.indexOf("WAIT ") == 0);
+    doWait = (strCommand.indexOf("WAITTEST ") == 0);
     if (doWait) { //for testing, mainly
       // demonstrates using the statusManager system.
       runButton.setEnabled(false);

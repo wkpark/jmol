@@ -263,7 +263,7 @@ public final class ScriptWindow extends JDialog
     String strErrorMessage = null;
     doWait = (strCommand.indexOf("WAITTEST ") == 0);
     if (doWait) { //for testing, mainly
-      // demonstrates using the statusManager system.
+      // demonstrates using the statusManager system; probably hangs application.
       runButton.setEnabled(false);
       haltButton.setEnabled(true);
 

@@ -697,6 +697,7 @@ final public class Graphics3D {
   boolean currentlyRendering;
 
   private void setRectClip(int x, int y, int width, int height) {
+    // not implemented
     if (x < 0)
       x = 0;
     if (y < 0)

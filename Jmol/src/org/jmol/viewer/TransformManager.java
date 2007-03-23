@@ -90,8 +90,7 @@ abstract class TransformManager {
 
   private void setViewer(Viewer viewer, int width, int height) {
     this.viewer = viewer;
-    setScreenDimension(width, height);
-    scaleFitToScreen();
+    setScreenDimension(width, height, true);
   }
 
   boolean checkedForNavigation = false;
@@ -123,7 +122,7 @@ abstract class TransformManager {
     zoomToPercent(100);
     zoomPercent = zoomPercentSetting;
     slabReset();
-    scaleFitToScreen();
+    scaleFitToScreen(true);
     if (isNavigationMode)
       setNavigationMode(true);
   }
@@ -260,7 +259,7 @@ abstract class TransformManager {
 
   void setRotationPointXY(Point3f center) {
     Point3i newCenterScreen = transformPoint(center);
-    translateCenterTo(newCenterScreen.x, newCenterScreen.y);
+    fixedTranslation.set(newCenterScreen.x, newCenterScreen.y, 0);
   }
 
   Vector3f rotationAxis = new Vector3f();
@@ -484,18 +483,30 @@ abstract class TransformManager {
    ****************************************************************/
   protected final Point3f fixedTranslation = new Point3f();
 
+  float xTranslationFraction = 0.5f; 
+  float yTranslationFraction = 0.5f; 
+    
+  void setTranslationFractions() {
+    xTranslationFraction = fixedTranslation.x / width;    
+    yTranslationFraction = fixedTranslation.y / height;    
+  }
+
   void translateXYBy(int xDelta, int yDelta) {
     // mouse action only
     fixedTranslation.x += xDelta;
     fixedTranslation.y += yDelta;
+    setTranslationFractions();
   }
 
+
   void translateToXPercent(float percent) {
-    fixedTranslation.x = (width / 2) + width * percent / 100;
+    xTranslationFraction = 0.5f + percent / 100;
+    fixedTranslation.x = width * xTranslationFraction;
   }
 
   void translateToYPercent(float percent) {
-    fixedTranslation.y = (height / 2) + height * percent / 100;
+    yTranslationFraction = 0.5f + percent / 100;
+    fixedTranslation.y = height * yTranslationFraction;
   }
 
   void translateToZPercent(float percent) {
@@ -525,10 +536,6 @@ abstract class TransformManager {
     if (f != 0.0)
       info += "translate y " + f + ";";
     return info;
-  }
-
-  void translateCenterTo(int x, int y) {
-    fixedTranslation.set(x, y, 0);
   }
 
   String getOrientationText() {
@@ -1039,7 +1046,7 @@ abstract class TransformManager {
     if (this.perspectiveDepth == perspectiveDepth)
       return;
     this.perspectiveDepth = perspectiveDepth;
-    scaleFitToScreen();
+    scaleFitToScreen(false);
   }
 
   boolean getPerspectiveDepth() {
@@ -1088,11 +1095,12 @@ abstract class TransformManager {
   float scalePixelsPerAngstrom;
   float scaleDefaultPixelsPerAngstrom;
 
-  void setScreenDimension(int width, int height) {
+  void setScreenDimension(int width, int height, boolean useZoomLarge) {
     this.width1 = this.width = width;
    // this.width4 = width + width;
     this.height1 = this.height = height;
   //  this.height4 = height + height;
+    scaleFitToScreen(false, useZoomLarge);
   }
 
 
@@ -1114,24 +1122,6 @@ abstract class TransformManager {
   }
   */
   
-  private void setTranslationCenterToScreen() {
-    // translate to the middle of the screen
-    translateCenterTo(width / 2, height / 2);
-    resetNavigationPoint();
-    // 2005 02 22
-    // switch to finding larger screen dimension
-    // find smaller screen dimension
-    screenPixelCount = (viewer.getZoomLarge() == (height > width) ? height
-        : width);
-    // ensure that rotations don't leave some atoms off the screen
-    // note that this radius is to the furthest outside edge of an atom
-    // given the current VDW radius setting. it is currently *not*
-    // recalculated when the vdw radius settings are changed
-    // leave a very small margin - only 1 on top and 1 on bottom
-    if (screenPixelCount > 2)
-      screenPixelCount -= 2;
-  }
-
   private float defaultScaleToScreen(float radius) {
     /* 
      * 
@@ -1148,10 +1138,28 @@ abstract class TransformManager {
     return screenPixelCount / 2f / radius;
   }
 
-  void scaleFitToScreen() {
+  void scaleFitToScreen(boolean andCenter) {
+    scaleFitToScreen(andCenter, viewer.getZoomLarge());
+  }
+  
+  void scaleFitToScreen(boolean andCenter, boolean zoomLarge) {
     if (width == 0 || height == 0)
       return;
-    setTranslationCenterToScreen();
+    // translate to the middle of the screen
+    fixedTranslation.set(width * (andCenter ? 0.5f : xTranslationFraction), height
+        * (andCenter ? 0.5f : yTranslationFraction), 0);
+    resetNavigationPoint();
+    // 2005 02 22
+    // switch to finding larger screen dimension
+    // find smaller screen dimension
+    screenPixelCount = (zoomLarge == (height > width) ? height : width);
+    // ensure that rotations don't leave some atoms off the screen
+    // note that this radius is to the furthest outside edge of an atom
+    // given the current VDW radius setting. it is currently *not*
+    // recalculated when the vdw radius settings are changed
+    // leave a very small margin - only 1 on top and 1 on bottom
+    if (screenPixelCount > 2)
+      screenPixelCount -= 2;
     scaleDefaultPixelsPerAngstrom = defaultScaleToScreen(modelRadius);
   }
 
@@ -2091,7 +2099,7 @@ abstract class TransformManager {
       translateToYPercent(0);///CenterTo(0, 0);
       setRotationCenterAndRadiusXYZ(center, true);
       if (doScale)
-        scaleFitToScreen();
+        scaleFitToScreen(true);
     } else {
       moveRotationCenter(center, true);
     }
@@ -2111,7 +2119,7 @@ abstract class TransformManager {
 
   void setCenterAt(String relativeTo, Point3f pt) {
     setRotationCenterAndRadiusXYZ(relativeTo, pt);
-    scaleFitToScreen();
+    scaleFitToScreen(true);
   }
 
   /* ***************************************************************

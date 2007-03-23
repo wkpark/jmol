@@ -774,11 +774,6 @@ public class Viewer extends JmolViewer {
     return transformManager.scaleToPerspective(z, sizeAngstroms);
   }
 
-  void scaleFitToScreen() {
-    //setCenter
-    transformManager.scaleFitToScreen();
-  }
-
   private void setScaleAngstromsPerInch(float angstromsPerInch) {
     //Eval.setScale3d
     transformManager.setScaleAngstromsPerInch(angstromsPerInch);
@@ -2599,14 +2594,14 @@ public class Viewer extends JmolViewer {
       width = (width + 1) / 2;
     if (dimScreen.width == width && dimScreen.height == height)
       return;
-    resizeImage(width, height);
+    resizeImage(width, height, false);
   }
 
-  private void resizeImage(int width, int height) {
+  private void resizeImage(int width, int height, boolean useZoomLarge) {
     dimScreen.width = width;
     dimScreen.height = height;
-    transformManager.setScreenDimension(width, height);
-    transformManager.scaleFitToScreen();
+    transformManager.setScreenDimension(width, height,
+        useZoomLarge ? global.zoomLarge : false);
     g3d.setWindowSize(width, height, global.enableFullSceneAntialiasing);
   }
   
@@ -4506,7 +4501,7 @@ public class Viewer extends JmolViewer {
 
   private void setZoomLarge(boolean TF) {
     global.zoomLarge = TF;
-    scaleFitToScreen();
+    transformManager.scaleFitToScreen(false, global.zoomLarge);
   }
 
   boolean getZoomLarge() {
@@ -5299,7 +5294,7 @@ public class Viewer extends JmolViewer {
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
     if (width > 0 && height > 0)
-      resizeImage(width, height);
+      resizeImage(width, height, true);
     setModelVisibility();
     try {
     statusManager.createImage(file, type_text, quality);
@@ -5307,7 +5302,7 @@ public class Viewer extends JmolViewer {
       Logger.error("Error creating image: " + e.getMessage());
     }
     if (width > 0 && height > 0)
-      resizeImage(saveWidth, saveHeight);
+      resizeImage(saveWidth, saveHeight, true);
   }
 
   //////////unimplemented

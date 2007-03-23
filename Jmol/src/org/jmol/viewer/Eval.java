@@ -4906,10 +4906,10 @@ class Eval { //implements Runnable {
     float startDelay = 1, endDelay = 1;
     if (statementLength > 5)
       badArgumentCount();
-    int animationMode = 0;
+    int animationMode = RepaintManager.ANIMATION_ONCE;
     switch (getToken(2).tok) {
     case Token.loop:
-      ++animationMode;
+      animationMode = RepaintManager.ANIMATION_LOOP;
       break;
     case Token.identifier:
       String cmd = parameterAsString(2);
@@ -4918,7 +4918,7 @@ class Eval { //implements Runnable {
         break;
       }
       if (cmd.equalsIgnoreCase("palindrome")) {
-        animationMode = 2;
+        animationMode = RepaintManager.ANIMATION_PALINDROME;
         break;
       }
       invalidArgument();

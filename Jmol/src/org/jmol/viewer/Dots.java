@@ -78,41 +78,47 @@ class Dots extends AtomShape {
       initialize();
       return;
     }
-    
+
     if ("translucency" == propertyName) {
-      return;  // no translucent dots
+      return; // no translucent dots
     }
 
     if ("ignore" == propertyName) {
-      ec.setIgnore((BitSet)value);
+      ec.setIgnore((BitSet) value);
       return;
     }
 
     if ("select" == propertyName) {
-      bsSelected = (BitSet)value;
+      bsSelected = (BitSet) value;
       return;
     }
 
     // next four are for serialization
     if ("radius" == propertyName) {
-      thisRadius = ((Float)value).floatValue();
+      thisRadius = ((Float) value).floatValue();
       return;
     }
     if ("colorRGB" == propertyName) {
-      thisArgb = ((Integer)value).intValue();
+      thisArgb = ((Integer) value).intValue();
       return;
     }
     if ("atom" == propertyName) {
-      thisAtom = ((Integer)value).intValue();
+      thisAtom = ((Integer) value).intValue();
       atoms[thisAtom].setShapeVisibility(myVisibilityFlag, true);
       ec.dotsConvexMax = Math.max(thisAtom + 1, ec.dotsConvexMax);
-      return;  
+      return;
     }
     if ("dots" == propertyName) {
       isActive = true;
-      ec.setFromBits(thisAtom, (BitSet)value);      
-      if (mads == null)
+      ec.setFromBits(thisAtom, (BitSet) value);
+      atoms[thisAtom].setShapeVisibility(myVisibilityFlag, true);
+      if (mads == null) {
         mads = new short[atomCount];
+        for (int i = 0; i < atomCount; i++)
+          if (atoms[i].isShapeVisible(myVisibilityFlag))
+            mads[i] = (short) (ec.getAppropriateRadius(atoms[i]) * 1000);
+        ec.setMads(mads);
+      }
       mads[thisAtom] = (short) (thisRadius * 1000f);
       if (colixes == null) {
         colixes = new short[atomCount];
@@ -121,7 +127,7 @@ class Dots extends AtomShape {
       colixes[thisAtom] = Graphics3D.getColix(thisArgb);
       //all done!
       return;
-    }    
+    }
     super.setProperty(propertyName, value, bs);
   }
 
@@ -204,8 +210,8 @@ class Dots extends AtomShape {
       atoms[i].setShapeVisibility(myVisibilityFlag, bsOn.get(i));
     }
     if (newSet) {
-      ec.newSet();
       mads = null;
+      ec.newSet();
       lastSolventRadius = addRadius;
     }
     // always delete old surfaces for selected atoms
@@ -255,19 +261,24 @@ class Dots extends AtomShape {
     int atomCount = viewer.getAtomCount();
     String type = (isSurface ? "geoSurface " : "dots ");
     for (int i = 0; i < atomCount; i++) {
-      if (ec.dotsConvexMaps[i] == null)
+      if (ec.dotsConvexMaps[i] == null
+          || !atoms[i].isShapeVisible(myVisibilityFlag))
         continue;
       if (!isSurface && bsColixSet != null && bsColixSet.get(i))
-          setStateInfo(temp, i, getColorCommand(type, paletteIDs[i], colixes[i]));
+        setStateInfo(temp, i, getColorCommand(type, paletteIDs[i], colixes[i]));
       BitSet bs = new BitSet();
       int[] map = ec.dotsConvexMaps[i];
       int iDot = map.length << 5;
+      int n = 0;
       while (--iDot >= 0)
-        if (EnvelopeCalculation.getBit(map, iDot))
+        if (EnvelopeCalculation.getBit(map, iDot)) {
+          n++;
           bs.set(iDot);
-      appendCmd(s, type + i + " radius "
-          + ec.getAppropriateRadius(atoms[i]) + " "
-          + StateManager.escape(bs));
+        }
+      if (n > 0) {
+        appendCmd(s, type + i + " radius " + ec.getAppropriateRadius(atoms[i])
+            + " " + StateManager.escape(bs));
+      }
     }
     s.append(getShapeCommands(temp, null, atomCount));
     return s.toString();

@@ -163,12 +163,11 @@ class RepaintManager {
   int firstModelIndex;
   int lastModelIndex;
   int frameStep;
-  int modelCount;
+
   void initializePointers(int frameStep) {
     firstModelIndex = 0;
-    modelCount = (frameStep == 0 ? 0 : viewer.getModelCount());
-    lastModelIndex = modelCount - 1;
-    this.frameStep = frameStep;      
+    lastModelIndex = (frameStep == 0 ? 0 : viewer.getModelCount()) - 1;
+    this.frameStep = frameStep;
   }
 
   void clear() {
@@ -195,7 +194,7 @@ class RepaintManager {
     info.put("displayModelNumber", new Integer(currentModelIndex >=0 ? viewer.getModelNumberDotted(currentModelIndex) : "0"));
     info.put("displayModelName", (currentModelIndex >=0 ? viewer.getModelName(currentModelIndex) : ""));
     info.put("animationFps", new Integer(animationFps));
-    info.put("animationReplayMode", new Integer(animationReplayMode));
+    info.put("animationReplayMode", getAnimationModeName());
     info.put("firstFrameDelay", new Float(firstFrameDelay));
     info.put("lastFrameDelay", new Float(lastFrameDelay));
     info.put("animationOn", new Boolean(animationOn));
@@ -204,26 +203,32 @@ class RepaintManager {
   }
  
   String getState() {
+    int modelCount = viewer.getModelCount();
     if (modelCount < 2)
       return "";
-    StringBuffer commands = new StringBuffer("# frame state;\n# modelCount ").
-      append(modelCount).append(";\n# first ").
-      append(viewer.getModelNumberDotted(0)).append(";\n# last ").
-      append(viewer.getModelNumberDotted(modelCount - 1)).append(";\n");
+    StringBuffer commands = new StringBuffer("# frame state;\n# modelCount ")
+        .append(modelCount).append(";\n# first ").append(
+            viewer.getModelNumberDotted(0)).append(";\n# last ").append(
+            viewer.getModelNumberDotted(modelCount - 1)).append(";\n");
     if (backgroundModelIndex >= 0)
-      commands.append("background model ").append(backgroundModelIndex).append(";\n");
-    if (true || currentModelIndex >= 0) {
-      commands.append("frame RANGE " + viewer.getModelNumberDotted(firstModelIndex)
-          + " " + viewer.getModelNumberDotted(lastModelIndex) + ";\n");
-      commands.append("animation DIRECTION "
-          + (animationDirection == 1 ? "+1" : "-1") + ";\n");
-      commands.append("animation " + (animationOn ? "ON" : "OFF") + ";\n");
-      if (animationOn && animationPaused)
-        commands.append("animation PAUSE;\n");
-      commands.append("frame " + viewer.getModelNumberDotted(currentModelIndex) + ";\n");
-    } else {
-      commands.append("frame ALL;\n");
-    }
+      commands.append("background model ").append(backgroundModelIndex).append(
+          ";\n");
+    commands.append(
+        "frame RANGE " + viewer.getModelNumberDotted(firstModelIndex) + " "
+            + viewer.getModelNumberDotted(lastModelIndex)).append(";\n");
+    commands.append(
+        "animation DIRECTION " + (animationDirection == 1 ? "+1" : "-1"))
+        .append(";\n");
+    commands.append("animation MODE " + getAnimationModeName()).append(" ")
+        .append(firstFrameDelay).append(" ").append(lastFrameDelay).append(
+            ";\n");
+    commands.append("frame " + viewer.getModelNumberDotted(currentModelIndex)
+        + ";\n");
+    commands.append(
+        "animation " + (!animationOn ? "OFF" : currentDirection == 1 ? "PLAY"
+                : "PLAYREV")).append(";\n");
+    if (animationOn && animationPaused)
+      commands.append("animation PAUSE;\n");
     commands.append("\n");
     return commands.toString();
   }
@@ -246,6 +251,11 @@ class RepaintManager {
   // 0 = once
   // 1 = loop
   // 2 = palindrome
+  
+  final static int ANIMATION_ONCE = 0;
+  final static int ANIMATION_LOOP = 1;
+  final static int ANIMATION_PALINDROME = 2;
+  
   int animationReplayMode = 0;
   float firstFrameDelay, lastFrameDelay;
   int firstFrameDelayMs, lastFrameDelayMs;
@@ -256,14 +266,14 @@ class RepaintManager {
     firstFrameDelayMs = (int)(this.firstFrameDelay * 1000);
     this.lastFrameDelay = lastFrameDelay > 0 ? lastFrameDelay : 0;
     lastFrameDelayMs = (int)(this.lastFrameDelay * 1000);
-    if (animationReplayMode >= 0 && animationReplayMode <= 2)
+    if (animationReplayMode >= ANIMATION_ONCE && animationReplayMode <= ANIMATION_PALINDROME)
       this.animationReplayMode = animationReplayMode;
     else
       Logger.error("invalid animationReplayMode:" + animationReplayMode);
   }
 
   void setAnimationRange(int framePointer, int framePointer2) {
-    modelCount = viewer.getModelCount();
+    int modelCount = viewer.getModelCount();
     if (framePointer < 0) framePointer = 0;
     if (framePointer2 < 0) framePointer2 = modelCount;
     if (framePointer >= modelCount) framePointer = modelCount - 1;
@@ -311,7 +321,7 @@ class RepaintManager {
   void resumeAnimation() {
     if(currentModelIndex < 0)
       setAnimationRange(firstModelIndex, lastModelIndex);
-    if (modelCount <= 1) {
+    if (viewer.getModelCount() <= 1) {
       animationOn = false;
       return;
     }
@@ -346,38 +356,48 @@ class RepaintManager {
     int modelIndexNext = currentModelIndex + frameStep;
     boolean isDone = (modelIndexNext > firstModelIndex && modelIndexNext > lastModelIndex 
                       || modelIndexNext < firstModelIndex && modelIndexNext < lastModelIndex);
-
-    
     /*
      Logger.debug("setAnimationRelative: " +
                        " firstModelIndex=" + firstModelIndex +
                        " displayModelIndex=" + displayModelIndex +
                        " lastModelIndex=" + lastModelIndex +
                        " currentDirection=" + currentDirection +
+                       " animationDirection=" + animationDirection +
                        " direction=" + direction +
                        " isDone="+isDone +
                        " modelIndexNext=" + modelIndexNext +
-                       " modelCount=" + modelCount +
+                       " modelCount=" + viewer.getModelCount() +
                        " animationReplayMode=" + animationReplayMode +
                        " animationDirection=" + animationDirection);
    */
     if (isDone) {
       switch (animationReplayMode) {
-      case 0:  //once through
+      case ANIMATION_ONCE:
         return false;
-      case 1:  //repeat
+      case ANIMATION_LOOP:
         modelIndexNext = (animationDirection > 0 ? firstModelIndex : lastModelIndex);
         break;
-      case 2:  //palindrome
+      case ANIMATION_PALINDROME:
         currentDirection = -currentDirection;
         modelIndexNext -= 2 * frameStep;
       }
     }
     //Logger.debug("next="+modelIndexNext+" dir="+currentDirection+" isDone="+isDone);
-    if (modelIndexNext < 0 || modelIndexNext >= modelCount)
+    if (modelIndexNext < 0 || modelIndexNext >= viewer.getModelCount())
       return false;
     setCurrentModelIndex(modelIndexNext);
     return true;
+  }
+  
+  String getAnimationModeName() {
+    switch (animationReplayMode) {
+    case ANIMATION_LOOP:
+      return "LOOP";
+    case ANIMATION_PALINDROME:
+      return "PALINDROME";
+    default:
+      return "ONCE";
+    }
   }
 
   class AnimationThread extends Thread implements Runnable {

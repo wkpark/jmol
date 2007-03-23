@@ -185,6 +185,10 @@ class EnvelopeCalculation {
   boolean isCalcOnly;
   
 
+  void setMads(short[] mads) {
+    this.mads = mads;
+  }
+  
   void setFromBits(int index, BitSet bs) {
     setAllBits(geodesicMap, geodesicCount);
     for (int iDot = geodesicCount; --iDot >= 0;)
@@ -199,7 +203,7 @@ class EnvelopeCalculation {
       System.arraycopy(geodesicMap, 0, map, 0, count);
     }
     dotsConvexMaps[index] = map;
-  
+    dotsConvexMax = Math.max(dotsConvexMax, index);
   }
   
   void setIgnore(BitSet value) {
@@ -223,6 +227,7 @@ class EnvelopeCalculation {
     dotsConvexMax = 0;
     dotsConvexMaps = null;
     radiusP = diameterP = 0;
+    mads = null;
   }
   
   void calculate(float addRadius, float setRadius, float scale,

@@ -327,6 +327,7 @@ final class Mmset {
       if (models[0].modelNumber < 1000000) {
         for (int i = 0; i < baseModelCount; i++) {
           models[i].modelNumber = 1000000 + i + 1;
+          models[i].modelNumberDotted = "1." + (i + 1);
           models[i].modelTag = "" + models[i].modelNumber;
         }
       }
@@ -336,6 +337,7 @@ final class Mmset {
         modelnumber += 1000000;
       for (int i = baseModelCount; i < modelCount; i++) {
         models[i].modelNumber += modelnumber;
+        models[i].modelNumberDotted = (modelnumber / 1000000) + "." + (modelnumber % 1000000);
         models[i].modelTag = "" + models[i].modelNumber;
       }
     }

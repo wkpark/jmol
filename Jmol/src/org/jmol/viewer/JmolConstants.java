@@ -34,13 +34,19 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2007 Jmol Development";
-  public final static String version = "11.1.26";
+  public final static String version = "11.1.27";
   
   /*
    *
    * 
    * 
    *
+   11.1.27
+     fixes two state bugs: 
+     1) dots/geosurface not being saved properly in state
+     2) animation parameters not being saved properly in state
+     
+   
    11.1.26
       fixes two nasty bugs relating to isosurfaces and JVXL files. 
       -- JVXL files created from molecular orbitals will show up with no color

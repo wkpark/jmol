@@ -57,13 +57,9 @@ class HinReader extends AtomSetCollectionReader {
   
   int atomIndex;
   int baseAtomIndex;
-  String[] tokens;
-
-  final static int MAX_TOKENS = 40; // should be plenty
 
   void readAtoms() throws Exception {
 
-    tokens = new String[MAX_TOKENS];
     while (readLine() != null ) {
       if (line.length() == 0 || line.charAt(0) == ';') // comment
         continue;
@@ -74,7 +70,6 @@ class HinReader extends AtomSetCollectionReader {
       else if (line.startsWith("endmol "))
         processEndmol();
     }
-    tokens = null;
   }
 
   void processMol() throws Exception {

@@ -78,7 +78,7 @@ public class JmolTable {
               Logger.error(strError);
             }
 
-            data[i][1] = new String(args[i]);
+            data[i][1] = args[i];
         }
         String[] colNames = { "Structure", "Filename" };
         

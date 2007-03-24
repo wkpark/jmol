@@ -83,8 +83,9 @@ import java.io.Reader;
 
 public class Viewer extends JmolViewer {
 
-  public void finalize() {
+  protected void finalize() throws Throwable {
     Logger.debug("viewer finalize " + this);
+    super.finalize();
   }
 
   // these are all private now so we are certain they are not 

@@ -119,10 +119,6 @@ public final class Frame {
   int bfactor100Lo;
   int bfactor100Hi;
 
-  public void finalize() {
-    //System.out.println(modelSetTypeName+" frame finalized "+this);  
-  }
-
   //////// initialization and model loading ///////
 
   Frame(Viewer viewer, String name) {

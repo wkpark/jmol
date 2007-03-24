@@ -3577,7 +3577,7 @@ public final class Frame {
     Hashtable getInfo() {
       Hashtable info = new Hashtable();
       info.put("number", new Integer(moleculeIndex + 1)); //for now
-      info.put("modelNumber", new String(getModelName(-1 - modelIndex)));
+      info.put("modelNumber", getModelName(-1 - modelIndex));
       info.put("numberInModel", new Integer(indexInModel + 1));
       info.put("nAtoms", new Integer(nAtoms));
       info.put("nElements", new Integer(nElements));

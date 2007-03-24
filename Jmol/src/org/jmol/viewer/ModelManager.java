@@ -985,7 +985,7 @@ String getAtomInfoChime(int i) {
       info.put("atomID", new Integer(atom.getSpecialAtomID()));
       info.put("groupID", new Integer(atom.getGroupID()));
       if (atom.alternateLocationID != '\0')
-        info.put("altLocation", new String("" + atom.alternateLocationID));
+        info.put("altLocation", "" + atom.alternateLocationID);
       info.put("structure", new Integer(atom.getProteinStructureType()));
       info.put("polymerLength", new Integer(atom.getPolymerLength()));
       info.put("occupancy", new Integer(atom.getOccupancy()));

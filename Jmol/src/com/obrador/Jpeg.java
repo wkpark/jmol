@@ -49,7 +49,7 @@ public class Jpeg
                 FileOutputStream dataOut = null;
                 File file, outFile;
                 JpegEncoder jpg;
-                String string = new String();
+                String string = "";
                 int i, Quality = 80;
 // Check to see if the input file name has one of the extensions:
 //     .tif, .gif, .jpg

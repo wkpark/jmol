@@ -212,7 +212,7 @@ public class JpegEncoder extends Frame
     WriteArray(JFIF, out);
     
     // Comment Header
-    String comment = new String();
+    String comment = "";
     comment = JpegObj.getComment();
     length = comment.length();
     byte COM[] = new byte[length + 4];

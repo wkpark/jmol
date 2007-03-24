@@ -627,7 +627,7 @@ public class PovrayDialog extends JDialog {
       if (newFile.isDirectory()) {
         savePath = newFile.toString();
       } else {
-        savePath = newFile.getParent().toString();
+        savePath = newFile.getParent();
       }
       savePathLabel.setText(savePath);
       updateCommandLine();

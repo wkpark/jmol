@@ -25,6 +25,7 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.*;
+
 import java.awt.FontMetrics;
 
 class LabelsRenderer extends ShapeRenderer {
@@ -50,6 +51,8 @@ class LabelsRenderer extends ShapeRenderer {
     if (labelStrings == null)
       return;
     Atom[] atoms = frame.atoms;
+    short backgroundColixContrast = viewer.getColixBackgroundContrast();
+    int backgroundColor = viewer.getBackgroundArgb();
     for (int i = labelStrings.length; --i >= 0;) {
       Atom atom = atoms[i];
       if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i))
@@ -61,6 +64,8 @@ class LabelsRenderer extends ShapeRenderer {
       colix = Graphics3D.getColixInherited(colix, atom.colixAtom);
       short bgcolix = (bgcolixes == null || i >= bgcolixes.length) ? 0
           : bgcolixes[i];
+      if (bgcolix == 0 && g3d.getColixArgb(colix) == backgroundColor)
+        colix = backgroundColixContrast;
       byte fid = ((fids == null || i >= fids.length || fids[i] == 0) ? labels.zeroFontId
           : fids[i]);
       int offsetFull = (offsets == null || i >= offsets.length ? 0 : offsets[i]);

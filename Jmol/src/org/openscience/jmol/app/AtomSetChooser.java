@@ -700,7 +700,7 @@ ActionListener, ChangeListener, Runnable {
   /**
    * Objects in the AtomSetChooser tree
    */
-  private class AtomSet extends DefaultMutableTreeNode {
+  private static class AtomSet extends DefaultMutableTreeNode {
     /**
      * The index of that AtomSet
      */

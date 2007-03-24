@@ -1029,7 +1029,7 @@ public class Jmol extends JPanel {
     return menu;
   }
 
-  private class ActionChangedListener implements PropertyChangeListener {
+  private static class ActionChangedListener implements PropertyChangeListener {
 
     AbstractButton button;
 
@@ -1122,7 +1122,7 @@ public class Jmol extends JPanel {
       }
   }
   
-  class ConsoleAction extends AbstractAction {
+  static class ConsoleAction extends AbstractAction {
 
     public ConsoleAction() {
       super("console");

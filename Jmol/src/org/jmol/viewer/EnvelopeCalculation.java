@@ -235,7 +235,7 @@ class EnvelopeCalculation {
                  boolean disregardNeighbors, boolean onlySelectedDots,
                  boolean isSurface) {
     this.addRadius = (addRadius == Float.MAX_VALUE ? 0 : addRadius);
-    this.setRadius = (setRadius == Float.MAX_VALUE ? SURFACE_DISTANCE_FOR_CALCULATION
+    this.setRadius = (setRadius == Float.MAX_VALUE && !useVanderwaalsRadius ? SURFACE_DISTANCE_FOR_CALCULATION
         : setRadius);
     this.scale = scale;
     this.useVanderwaalsRadius = useVanderwaalsRadius;

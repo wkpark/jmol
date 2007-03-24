@@ -197,8 +197,8 @@ class RepaintManager {
     info.put("animationReplayMode", getAnimationModeName());
     info.put("firstFrameDelay", new Float(firstFrameDelay));
     info.put("lastFrameDelay", new Float(lastFrameDelay));
-    info.put("animationOn", new Boolean(animationOn));
-    info.put("animationPaused", new Boolean(animationPaused));
+    info.put("animationOn", Boolean.valueOf(animationOn));
+    info.put("animationPaused", Boolean.valueOf(animationPaused));
     return info;
   }
  

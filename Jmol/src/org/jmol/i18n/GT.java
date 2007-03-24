@@ -33,7 +33,7 @@ public class GT {
   private static GT getTextWrapper;
   private ResourceBundle[] translationResources = null;
   private int translationResourcesCount = 0;
-  private static Boolean doTranslate = new Boolean(true);
+  private static Boolean doTranslate = Boolean.TRUE;
 
   private GT() {
     Locale locale = Locale.getDefault();

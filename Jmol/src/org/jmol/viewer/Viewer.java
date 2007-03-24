@@ -2317,7 +2317,7 @@ public class Viewer extends JmolViewer {
                          boolean isDelete, boolean isAllConnected,
                          boolean isShowHide, boolean isHidden, String strFormat) {
     //Eval.monitor()
-    setShapeProperty(JmolConstants.SHAPE_MEASURES, "setConnected", new Boolean(
+    setShapeProperty(JmolConstants.SHAPE_MEASURES, "setConnected", Boolean.valueOf(
         isAllConnected));
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "setRange", rangeMinMax);
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "setFormat", strFormat);
@@ -2348,7 +2348,7 @@ public class Viewer extends JmolViewer {
   void hideMeasurements(boolean isOFF) {
     //Eval
     setShapeProperty(JmolConstants.SHAPE_MEASURES, "hideAll",
-        new Boolean(isOFF));
+        Boolean.valueOf(isOFF));
     refresh(0, "hideMeasurements()");
   }
 

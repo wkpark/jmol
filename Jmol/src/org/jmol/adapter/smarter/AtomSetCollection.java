@@ -371,8 +371,9 @@ class AtomSetCollection {
     
   void setCoordinatesAreFractional(boolean coordinatesAreFractional) {
     this.coordinatesAreFractional = coordinatesAreFractional;
-    setAtomSetAuxiliaryInfo("coordinatesAreFractional", 
-        new Boolean(coordinatesAreFractional));
+    setAtomSetAuxiliaryInfo(
+        "coordinatesAreFractional",
+        Boolean.valueOf(coordinatesAreFractional));
     if (coordinatesAreFractional)
       setGlobalBoolean(GLOBAL_FRACTCOORD);    
   }

@@ -5805,11 +5805,11 @@ class Eval { //implements Runnable {
     }
 
     if (key == null)
-      return new Boolean(Token.bValue(result));
+      return Boolean.valueOf(Token.bValue(result));
     switch (result.tok) {
     case Token.on:
     case Token.off:
-      return new Boolean(result == Token.tokenOn);
+      return Boolean.valueOf(result == Token.tokenOn);
     case Token.integer:
       return new Integer(result.intValue);
     case Token.bitset:

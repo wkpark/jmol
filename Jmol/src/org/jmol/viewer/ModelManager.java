@@ -880,7 +880,7 @@ String getAtomInfoChime(int i) {
     info.put("modelSetName",getModelSetName());
     info.put("modelCount",new Integer(modelCount));
     info.put("modelSetHasVibrationVectors", 
-        new Boolean(modelSetHasVibrationVectors()));
+        Boolean.valueOf(modelSetHasVibrationVectors()));
     Properties props = viewer.getModelSetProperties();
     if(props != null)
       info.put("modelSetProperties",props);
@@ -890,7 +890,7 @@ String getAtomInfoChime(int i) {
       model.put("_ipt",new Integer(i));
       model.put("num",new Integer(viewer.getModelNumber(i)));
       model.put("name",viewer.getModelName(i));
-      model.put("vibrationVectors", new Boolean(modelHasVibrationVectors(i)));
+      model.put("vibrationVectors", Boolean.valueOf(modelHasVibrationVectors(i)));
       model.put("atomCount",new Integer(getAtomCountInModel(i)));
       model.put("bondCount",new Integer(getBondCountInModel(i)));
       model.put("groupCount",new Integer(getGroupCountInModel(i)));
@@ -955,7 +955,7 @@ String getAtomInfoChime(int i) {
     info.put("bondCount", new Integer(atom.getCovalentBondCount()));
     info.put("radius", new Float((atom.getRasMolRadius() / 120.0)));
     info.put("model", new Integer(atom.getModelNumberDotted()));
-    info.put("visible", new Boolean(getAtomVisibility(i)));
+    info.put("visible", Boolean.valueOf(getAtomVisibility(i)));
     info.put("clickabilityFlags", new Integer(atom.clickabilityFlags));
     info.put("visibilityFlags", new Integer(atom.shapeVisibilityFlags));
     info.put("spacefill", new Integer(atom.madAtom >> 3));
@@ -965,7 +965,7 @@ String getAtomInfoChime(int i) {
     info.put("colix", new Integer(atom.colixAtom));
     boolean isTranslucent = atom.isTranslucent();
     if (isTranslucent)
-      info.put("translucent", new Boolean(isTranslucent));
+      info.put("translucent", Boolean.valueOf(isTranslucent));
     info.put("formalCharge", new Integer(atom.getFormalCharge()));
     info.put("partialCharge", new Float(atom.getPartialCharge()));
     float d = atom.getSurfaceDistance100() / 100f;
@@ -1020,14 +1020,14 @@ String getAtomInfoChime(int i) {
     info.put("order", new Integer(getBondOrder(i)));
     info.put("radius", new Float(bond.mad/2000.));
     info.put("length_Ang",new Float(getBondLength(i)));
-    info.put("visible", new Boolean(bond.shapeVisibilityFlags != 0));
+    info.put("visible", Boolean.valueOf(bond.shapeVisibilityFlags != 0));
     String strColor = viewer.getHexColorFromIndex(bond.colix);
     if (strColor != null) 
       info.put("color", strColor);
     info.put("colix", new Integer(bond.colix));
     boolean isTranslucent = bond.isTranslucent();
     if (isTranslucent)
-      info.put("translucent", new Boolean(isTranslucent));
+      info.put("translucent", Boolean.valueOf(isTranslucent));
    return info;
   }  
   

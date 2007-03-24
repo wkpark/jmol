@@ -37,7 +37,6 @@ import org.jmol.util.Logger;
 
 class SpartanSmolReader extends AtomSetCollectionReader {
 
-  final boolean debugReader = false;
   boolean isCompoundDocument;
 
   String modelName = "Spartan file";

@@ -159,7 +159,7 @@ class EnvelopeCalculation {
   float addRadius = Float.MAX_VALUE;
   int dotsConvexMax; // the Max == the highest atomIndex with dots + 1
   int[][] dotsConvexMaps;
-  final int nArcPoints = 9;  
+  //private final static int nArcPoints = 9;  
   
   int geodesicCount;
   int[] geodesicMap;

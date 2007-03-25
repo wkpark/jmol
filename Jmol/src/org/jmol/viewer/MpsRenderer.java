@@ -93,7 +93,7 @@ abstract class MpsRenderer extends MeshRenderer {
 
   abstract void renderMpspolymer(Mps.MpsShape mpspolymer);
 
-  Point3f[] tempPoints;
+  //Point3f[] tempPoints;
 
   private boolean initializePolymer(Mps.MpsShape schain) {
 

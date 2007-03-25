@@ -67,8 +67,6 @@ final public class Graphics3D {
   boolean addAllPixels;
   boolean haveAlphaTranslucent;
   
-  boolean tPaintingInProgress;
-
   int windowWidth, windowHeight;
   int width, height;
   int displayMinX, displayMaxX, displayMinY, displayMaxY;

@@ -65,7 +65,6 @@ class Cylinder3D {
 
   private float radius, radius2, cosTheta, cosPhi, sinPhi;
 
-  int sampleCount;
   boolean notClipped;
   private boolean drawBackside;
 

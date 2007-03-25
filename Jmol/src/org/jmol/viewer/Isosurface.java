@@ -2061,7 +2061,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   // color mapping methods
   ////////////////////////////////////////////////////////////////
 
-  String remainderString;
+  //String remainderString;
 
   void applyColorScale(IsosurfaceMesh mesh) {
     // ONLY the current mesh now. Previous was just too weird.
@@ -2889,8 +2889,8 @@ class Isosurface extends IsosurfaceMeshCollection {
     return voxelPointIndexes;
   }
 
-  int firstCriticalVertex;
-  int lastCriticalVertex;
+  //int firstCriticalVertex;
+  //int lastCriticalVertex;
   int edgeCount;
   final static float assocCutoff = 0.3f;
 

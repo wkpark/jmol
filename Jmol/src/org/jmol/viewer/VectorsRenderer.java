@@ -59,7 +59,7 @@ class VectorsRenderer extends ShapeRenderer {
   final Point3i screenArrowHead = new Point3i();
   final Vector3f headOffsetVector = new Vector3f();
   int diameter;
-  float headWidthAngstroms;
+  //float headWidthAngstroms;
   int headWidthPixels;
   float vectorScale;
   float headScale;

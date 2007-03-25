@@ -74,7 +74,6 @@ abstract public class JmolPopup {
   boolean isApplet;
   boolean isZapped;
   boolean haveCharges;
-  boolean haveAltLocs;
   String altlocs;
   
   int modelIndex, modelCount, atomCount;

@@ -36,7 +36,7 @@ class LabelsRenderer extends ShapeRenderer {
   FontMetrics fontMetrics;
   int ascent;
   int descent;
-  int msgWidth;
+  //int msgWidth;
 
   void render() {
     fidPrevious = 0;

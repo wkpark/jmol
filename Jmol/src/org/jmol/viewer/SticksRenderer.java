@@ -33,7 +33,7 @@ class SticksRenderer extends ShapeRenderer {
 
   boolean showMultipleBonds;
   byte modeMultipleBond;
-  boolean showHydrogens;
+  //boolean showHydrogens;
   byte endcaps;
 
   boolean ssbondsBackbone;
@@ -46,7 +46,7 @@ class SticksRenderer extends ShapeRenderer {
   int xA, yA, zA;
   int xB, yB, zB;
   int dx, dy;
-  int mag2d, mag2d2;
+  int mag2d;
   short colixA, colixB;
   int width;
   int bondOrder;

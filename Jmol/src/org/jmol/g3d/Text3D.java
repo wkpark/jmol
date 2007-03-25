@@ -24,7 +24,6 @@
 
 package org.jmol.g3d;
 
-import java.awt.Component;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -60,7 +59,6 @@ class Text3D {
       array of bits - uncompressed - i like this
       some type of run-length, using bytes
   */
-  Component component;
   int height; // this height is just ascent + descent ... no reason for leading
   int ascent;
   int width;

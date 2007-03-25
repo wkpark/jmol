@@ -61,7 +61,6 @@ class CubeReader extends AtomSetCollectionReader {
   final int[] voxelCounts = new int[3];
   final float[] origin = new float[3];
   final float[][] voxelVectors = new float[3][];
-  float[][][] voxelData;
   
   AtomSetCollection readAtomSetCollection(BufferedReader br) {
     reader = br;

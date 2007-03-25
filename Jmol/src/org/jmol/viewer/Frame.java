@@ -1678,7 +1678,7 @@ public final class Frame {
   float hbondMin = 2.5f;
   float hbondMin2 = hbondMin * hbondMin;
 
-  boolean hbondsCalculated;
+  //boolean hbondsCalculated;
 
   boolean useRasMolHbondsCalculation = true;
 

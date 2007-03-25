@@ -1088,7 +1088,7 @@ abstract class TransformManager {
   /* ***************************************************************
    * SCREEN SCALING
    ****************************************************************/
-  boolean tOversample;
+  //boolean tOversample;
   int width, height;
   int width1, height1;//, width4, height4;
   int screenPixelCount;

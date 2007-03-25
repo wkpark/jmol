@@ -165,7 +165,6 @@ public class HallInfo {
     String inputCode;
     String primitiveCode;
     String lookupCode;
-    String rotationCode;
     String translationString;
     Rotation rotation;
     Translation translation;
@@ -481,7 +480,6 @@ class Translation {
 class Rotation {
   String rotCode;
   int order;
-  Point3i axis;
   Matrix4f seitzMatrix = new Matrix4f();
   Matrix4f seitzMatrixInv = new Matrix4f();
   

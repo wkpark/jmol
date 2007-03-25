@@ -132,10 +132,10 @@ public class CompoundDocument extends BinaryDocument {
     byte[] magicNumbers = new byte[8]; // D0CF11E0A1B11AE1
     byte[] uniqueID = new byte[16];
     byte revNumber; // 3E = 62
-    byte unusedb1;
+    //byte unusedb1;
     byte verNumber; // 3
-    byte unusedb2;
-    short byteOrder; // -2 littleEndian
+    //byte unusedb2;
+    //short byteOrder; // -2 littleEndian
     short sectorPower; // 2^sectorPower = sector size; 512 = 2^9
     short shortSectorPower; // 2^shortSectorPower = short sector size; 64 = 2^6
     byte[] unused = new byte[10];

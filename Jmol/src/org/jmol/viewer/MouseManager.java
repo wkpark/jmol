@@ -187,7 +187,7 @@ abstract class MouseManager implements KeyListener {
     CTRL | ALT | SHIFT | LEFT | MIDDLE | RIGHT;
 
   int previousPressedX, previousPressedY;
-  int previousPressedModifiers, previousPressedCount;
+  int previousPressedModifiers;
   long previousPressedTime;
   int pressedCount;
 

@@ -134,7 +134,7 @@ class ScriptManager {
   }
   
   boolean scriptQueueRunning;
-  int level;
+  //int level;
   class ScriptQueueRunnable implements Runnable {
     public void run() {
       while (scriptQueue.size() != 0) {

@@ -33,7 +33,7 @@ import java.util.Hashtable;
 
 class Measures extends Shape {
 
-  BitSet bsSizeSet;
+  //BitSet bsSizeSet;
   BitSet bsColixSet;
   BitSet bsSelected;
 

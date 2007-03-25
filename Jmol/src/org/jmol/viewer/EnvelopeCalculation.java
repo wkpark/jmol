@@ -167,22 +167,22 @@ class EnvelopeCalculation {
   final static int[] mapNull = new int[0];
   
   BitSet bsSurface; 
-  boolean calcDistanceOnly;
+  //boolean calcDistanceOnly;
   boolean useVanderwaalsRadius;
   boolean disregardNeighbors = false;
   boolean onlySelectedDots = false;
-  int indexI, indexJ, indexK;
-  Atom atomI, atomJ, atomK;
-  Point3f centerI, centerJ, centerK;
-  float radiusI, radiusJ, radiusK;
+  int indexI;
+  Atom atomI;
+  Point3f centerI;
+  float radiusI;
   float radiusP, diameterP;
-  float radiiIP2, radiiJP2, radiiKP2;
-  float distanceIJ2;
+  float radiiIP2;
+  //float distanceIJ2;
   final Point3f pointT = new Point3f();
 
 
   boolean isSurface = false;
-  boolean isCalcOnly;
+  //boolean isCalcOnly;
   
 
   void setMads(short[] mads) {

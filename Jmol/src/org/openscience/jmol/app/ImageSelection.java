@@ -47,7 +47,7 @@ public class ImageSelection implements Transferable {
    */
   private Image image;
   private String text;
-  boolean isText;
+  //boolean isText;
   
   /**
    * Transfers <code>image</code> into the clipboard.

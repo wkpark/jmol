@@ -45,7 +45,7 @@ class AminoPolymer extends AlphaPolymer {
 
   boolean hasWingPoints() { return true; }
 
-  boolean hbondsAlreadyCalculated;
+  //boolean hbondsAlreadyCalculated;
 
   boolean debugHbonds;
 

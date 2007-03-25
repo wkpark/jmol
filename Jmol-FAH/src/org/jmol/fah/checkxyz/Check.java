@@ -295,17 +295,26 @@ public class Check implements ActionListener {
     if ((!availableProjects.exists()) || (!existingProjects.isEmpty())) {
       return;
     }
+    BufferedReader reader = null;
     try {
-      BufferedReader reader = new BufferedReader(new FileReader(availableProjects));
+      reader = new BufferedReader(new FileReader(availableProjects));
       String line;
       while ((line = reader.readLine()) != null) {
-        line.trim();
+        line = line.trim();
         existingProjects.add(line);
       }
     } catch (FileNotFoundException e) {
       outputError("Reading local available projects", e);
     } catch (IOException e) {
       outputError("Reading local available projects", e);
+    } finally {
+      if (reader != null) {
+        try {
+          reader.close();
+        } catch (IOException e) {
+          // Nothing
+        }
+      }
     }
   }
 

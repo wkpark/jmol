@@ -28,6 +28,8 @@ package org.jmol.fah.checkxyz;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
@@ -35,7 +37,7 @@ import java.util.Vector;
 /**
  * Hold configuration.
  */
-public class Configuration {
+public class Configuration implements Serializable {
 
   private String userName;
   private String mailServer;
@@ -89,7 +91,7 @@ public class Configuration {
         sent.add(props.getProperty("sent_" + num));
         num++;
       }
-    } catch (Exception e) {
+    } catch (IOException e) {
       //
     }
   }
@@ -121,7 +123,7 @@ public class Configuration {
       FileOutputStream fos = new FileOutputStream(configFile);
       props.store(fos, "Jmol FAH");
       fos.close();
-    } catch (Exception e) {
+    } catch (IOException e) {
       //
     }
   }

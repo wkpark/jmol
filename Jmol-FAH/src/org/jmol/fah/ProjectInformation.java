@@ -201,7 +201,7 @@ public class ProjectInformation {
       if ((info._psName != null) &&
           ((_info._psDate > date) || (name == null))) {
         name = info._psName;
-        date = _info._psDate;
+        //date = _info._psDate;
       }
     }
 
@@ -281,7 +281,7 @@ public class ProjectInformation {
           String line1 = null;
           int count = 0;
           while ((line1 = file.readLine()) != null) {
-            String line2 = (line1 != null) ? file.readLine() : null;
+            String line2 = file.readLine();
             String line3 = (line2 != null) ? file.readLine() : null;
             String line4 = (line3 != null) ? file.readLine() : null;
             count++;
@@ -660,9 +660,9 @@ public class ProjectInformation {
           Node child = node.getFirstChild();
           while (child != null) {
             //Get Date
-            if (child.getNodeName().equalsIgnoreCase("date")) { //$NON-NLS-1$
+            /*if (child.getNodeName().equalsIgnoreCase("date")) { //$NON-NLS-1$
               //TODO
-            }
+            }*/
 
             //Get project information
             if (child.getNodeName().equalsIgnoreCase("fah_proj")) { //$NON-NLS-1$
@@ -721,7 +721,7 @@ public class ProjectInformation {
   /**
    * Information for a project
    */
-  private class Information {
+  private static class Information {
     /**
      * Constructor for Information
      */

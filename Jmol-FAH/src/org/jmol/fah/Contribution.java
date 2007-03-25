@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Vector;
@@ -43,7 +44,7 @@ import javax.swing.text.html.parser.ParserDelegator;
 /**
  * Manage contributions informations
  */
-public class Contribution {
+public class Contribution implements Serializable {
 
   // Contributions
   private Vector _infos = null;
@@ -178,7 +179,7 @@ public class Contribution {
   /**
    * HTML Document for Contribution page
    */
-  private class HTMLDocumentContribution extends HTMLDocument {
+  private static class HTMLDocumentContribution extends HTMLDocument {
 
     private Contribution _contrib1 = null;
 

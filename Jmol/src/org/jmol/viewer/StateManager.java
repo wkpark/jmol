@@ -297,25 +297,6 @@ class StateManager {
       }
     }
 
-    class Connection {
-      int atomIndex1;
-      int atomIndex2;
-      short mad;
-      short colix;
-      short order;
-      int shapeVisibilityFlags;
-
-      Connection(int atom1, int atom2, short mad, short colix, short order,
-          int shapeVisibilityFlags) {
-        atomIndex1 = atom1;
-        atomIndex2 = atom2;
-        this.mad = mad;
-        this.colix = colix;
-        this.order = order;
-        this.shapeVisibilityFlags = shapeVisibilityFlags;
-      }
-    }
-
     void restore() {
       Frame frame = viewer.getFrame();
       if (frame == null)
@@ -333,6 +314,25 @@ class StateManager {
       for (int i = bondCount; --i >= 0;)
         frame.bonds[i].index = i;
       viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "reportAll", null);
+    }
+  }
+
+  static class Connection {
+    int atomIndex1;
+    int atomIndex2;
+    short mad;
+    short colix;
+    short order;
+    int shapeVisibilityFlags;
+
+    Connection(int atom1, int atom2, short mad, short colix, short order,
+        int shapeVisibilityFlags) {
+      atomIndex1 = atom1;
+      atomIndex2 = atom2;
+      this.mad = mad;
+      this.colix = colix;
+      this.order = order;
+      this.shapeVisibilityFlags = shapeVisibilityFlags;
     }
   }
 

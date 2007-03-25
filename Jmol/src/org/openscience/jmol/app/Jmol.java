@@ -930,42 +930,51 @@ public class Jmol extends JPanel {
   }
 
   protected void addMacrosMenuBar(JMenuBar menuBar) {
-      // ok, here needs to be added the funny stuff
-      JMenu macroMenu = new JMenu(GT._("Macros"));
-      File macroDir = new File(
-          System.getProperty("user.home") + System.getProperty("file.separator")
-          + ".jmol" + System.getProperty("file.separator") + "macros"
-      );
-      report("User macros dir: " + macroDir);
-      report("       exists: " + macroDir.exists());
-      report("  isDirectory: " + macroDir.isDirectory());
-      if (macroDir.exists() && macroDir.isDirectory()) {
-          File[] macros = macroDir.listFiles();
-          for (int i=0; i<macros.length; i++) {
-              // loop over these files and load them
-              String macroName = macros[i].getName();
-              if (macroName.endsWith(".macro")) {
-                if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-                  Logger.debug("Possible macro found: " + macroName);
-                }
-                  try {
-                      FileInputStream macro = new FileInputStream(macros[i]);
-                      Properties macroProps = new Properties();
-                      macroProps.load(macro);
-                      String macroTitle = macroProps.getProperty("Title");
-                      String macroScript = macroProps.getProperty("Script");
-                      JMenuItem mi = new JMenuItem(macroTitle);
-                      mi.setActionCommand(macroScript);
-                      mi.addActionListener(executeScriptAction);
-                      macroMenu.add(mi);
-                  } catch (IOException exception) {
-                      System.err.println("Could not load macro file: ");
-                      System.err.println(exception);
-                  }
-              }
+    // ok, here needs to be added the funny stuff
+    JMenu macroMenu = new JMenu(GT._("Macros"));
+    File macroDir = new File(
+        System.getProperty("user.home") + System.getProperty("file.separator") +
+        ".jmol" + System.getProperty("file.separator") + "macros");
+    report("User macros dir: " + macroDir);
+    report("       exists: " + macroDir.exists());
+    report("  isDirectory: " + macroDir.isDirectory());
+    if (macroDir.exists() && macroDir.isDirectory()) {
+      File[] macros = macroDir.listFiles();
+      for (int i=0; i<macros.length; i++) {
+        // loop over these files and load them
+        String macroName = macros[i].getName();
+        if (macroName.endsWith(".macro")) {
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug("Possible macro found: " + macroName);
           }
+          FileInputStream macro = null;
+          try {
+            macro = new FileInputStream(macros[i]);
+            Properties macroProps = new Properties();
+            macroProps.load(macro);
+            String macroTitle = macroProps.getProperty("Title");
+            String macroScript = macroProps.getProperty("Script");
+            JMenuItem mi = new JMenuItem(macroTitle);
+            mi.setActionCommand(macroScript);
+            mi.addActionListener(executeScriptAction);
+            macroMenu.add(mi);
+          } catch (IOException exception) {
+            System.err.println("Could not load macro file: ");
+            System.err.println(exception);
+          } finally {
+            if (macro != null) {
+              try {
+                macro.close();
+              } catch (IOException e) {
+                // Nothing
+              }
+              macro = null;
+            }
+          }
+        }
       }
-      menuBar.add(macroMenu);
+    }
+    menuBar.add(macroMenu);
   }
   
   protected void addNormalMenuBar(JMenuBar menuBar) {

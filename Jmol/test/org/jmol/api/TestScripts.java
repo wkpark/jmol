@@ -197,8 +197,9 @@ class TestScriptsImpl extends TestCase {
     for (int i = 0; i < nbExecutions; i++) {
       viewer.scriptWaitStatus("set defaultDirectory \"" + file.getParent().replace('\\', '/') + "\"", "");
       int lineNum = 0;
+      BufferedReader reader = null;
       try {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+        reader = new BufferedReader(new FileReader(file));
         String line = null;
         long beginScript = System.currentTimeMillis();
         while ((line = reader.readLine()) != null) {
@@ -234,6 +235,14 @@ class TestScriptsImpl extends TestCase {
         fail("File " + file.getPath() + " not found");
       } catch (IOException e) {
         fail("Error reading line " + lineNum + " of " + file.getPath());
+      } finally {
+        if (reader != null) {
+          try {
+            reader.close();
+          } catch (IOException e) {
+            // Nothing
+          }
+        }
       }
     }
     long endFull = System.currentTimeMillis();

@@ -7231,6 +7231,7 @@ class Eval { //implements Runnable {
         }
         propertyName = "modelIndex";
         propertyValue = new Integer(modelIndex);
+        break;
       case Token.string:
         String filename = stringParameter(i);
         propertyName = "bufferedReader";

@@ -228,7 +228,7 @@ class PdbReader extends AtomSetCollectionReader {
      ****************************************************************/
     int occupancy = 100;
     float floatOccupancy = parseFloat(line, 54, 60);
-    if (floatOccupancy != Float.NaN)
+    if (!Float.isNaN(floatOccupancy))
       occupancy = (int) (floatOccupancy * 100);
 
     /****************************************************************/

@@ -104,8 +104,6 @@ public class XmlCmlReader extends XmlReader {
   int tokenCount;
   String[] tokens = new String[16];
 
-  String desctitle = null;
-
   /**
    * state constants
    */
@@ -585,8 +583,6 @@ public class XmlCmlReader extends XmlReader {
     String collectionName = null;
     if (atts.containsKey("title"))
       collectionName = (String) atts.get("title");
-    else if (desctitle != null)
-      collectionName = desctitle;
     else if (atts.containsKey("id"))
       collectionName = (String) atts.get("id");
     if (collectionName != null) {

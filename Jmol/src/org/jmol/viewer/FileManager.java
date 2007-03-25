@@ -559,7 +559,7 @@ class FileManager {
           Object t = getInputStreamOrErrorMessageFromName(nameAsGivenInThread[i]);
           if (! (t instanceof InputStream)) {
             errorMessage = (t == null
-                            ? "error opening:" + nameAsGivenInThread
+                            ? "error opening:" + nameAsGivenInThread[i]
                             : (String)t);
             terminated = true;
             return;
@@ -569,7 +569,7 @@ class FileManager {
         openInputStream(istream);
       }
       if (errorMessage != null)
-        Logger.error("file ERROR: " + fullPathNameInThread + "\n" + errorMessage);
+        Logger.error("file ERROR: " + errorMessage);
       terminated = true;
     }
 

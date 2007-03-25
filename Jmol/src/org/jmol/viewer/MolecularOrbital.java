@@ -268,7 +268,7 @@ class MolecularOrbital extends Isosurface {
       appendCmd(s, "mo titleFormat " + StateManager.escape(moTitleFormat));
     if (moColorNeg != null)
       appendCmd(s, "mo color " + StateManager.escapeColor(moColorNeg.intValue())
-          + (moColorNeg == moColorPos ? "" : " " + StateManager.escapeColor(moColorPos.intValue())));
+          + (moColorNeg.equals(moColorPos) ? "" : " " + StateManager.escapeColor(moColorPos.intValue())));
     appendCmd(s, "mo " + moNumber);
     appendCmd(s, getMeshState(currentMesh, "mo"));
     return s.toString();

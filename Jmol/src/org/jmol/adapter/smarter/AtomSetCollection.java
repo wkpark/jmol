@@ -174,8 +174,8 @@ class AtomSetCollection {
     }
     // Set globals
     for (int i = globalBooleans.length; --i >= 0;)
-      if ((Boolean) collection
-          .getAtomSetCollectionAuxiliaryInfo(globalBooleans[i]) == Boolean.TRUE)
+      if (Boolean.TRUE.equals(
+          collection.getAtomSetCollectionAuxiliaryInfo(globalBooleans[i])))
         setGlobalBoolean(i);
   }
 

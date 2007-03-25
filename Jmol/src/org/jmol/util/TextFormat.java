@@ -77,7 +77,7 @@ public class TextFormat {
       formatter = formatters[decimalDigits] = new DecimalFormat(
           formattingStrings[decimalDigits]);
     String s = formatter.format(value);
-    return (useNumberLocalization[0] == Boolean.TRUE ? s : simpleReplace(s,
+    return (Boolean.TRUE.equals(useNumberLocalization[0]) ? s : simpleReplace(s,
         ",", "."));
   }
 

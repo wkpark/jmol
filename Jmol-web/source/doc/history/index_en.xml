@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE history [
-<!ENTITY contributors SYSTEM "../changes/contributors.xml">
-<!ENTITY changes      SYSTEM "../changes/changes.xml">
+<!ENTITY contributors SYSTEM "contributors.xml">
+<!ENTITY changes      SYSTEM "changes.xml">
 ]>
 <document>
 	<body>

@@ -212,7 +212,7 @@
 	(window, frame or <code>DIV</code>); 
 	depending on which is the surrounding layer and its properties,
 	this allows to have an applet that is dynamically resized when the browser 
-	window is resized.
+	window is resized;
 				</li>
 					<li>a number between zero and 1; this will be multiplied 
 	by 100 and interpreted as percent.
@@ -258,7 +258,7 @@
 				</p>
 				<p>
 					<i>
-	    Advanced: If your application requires a rectangular JmolApplet,
+	    Advanced: If your layout requires a rectangular JmolApplet,
 	    then the <code>size</code> parameter may be specified
 	    as an array containing two elements, width and height,
 	    specified in pixel counts, percents or fractional numbers. This is usually 

@@ -205,10 +205,46 @@
 				</p>
 				<p>
 	Define e inserta en la página una miniaplicación JmolApplet. 
-	<code>tamaño</code> debe ser un 
-	número entero de píxeles (entre 25 y 2000).
-	<code>guión</code> es un guión, o conjunto de instrucciones, que se deberá
+				</p>
+				<p>
+					<code>tamaño</code> puede ser:
+				</p>
+				<ul>
+					<li>un número entero de píxeles (entre 25 y 2000);
+				</li>
+					<li>un valor de porcentaje, acabado en % y rodeado por comillas 
+	(pero lea las notas a continuación);
+	este valor será interpretado por el navegador como un porcentaje de las
+	dimensiones de la capa que engloba la miniaplicación (ventana, marco o capa <code>DIV</code>);
+	dependiendo de cuál sea esa capa y de sus propiedades, 
+	esto permite tener una miniaplicación que se redimensiona dinámicamente 
+	cuando cambie el tamaño de la ventana del navegador;
+				</li>
+					<li>un número entre cero y 1 que, multiplicado por 100, 
+	se interpretará como porcentaje.
+				</li>
+				</ul>
+				<p>
+					<code>guión</code> es un guión, o conjunto de instrucciones, que se deberá
 	ejecutar. Normalmente, se usa para cargar un modelo molecular y aplicarle algún estilo.
+	</p>
+				<p>
+					<i>Nota 1:</i> los tamaños en porcentaje, y los números menores de 1, sólo están 
+	disponibles en Jmol.js que acompaña a la versión 11.1.28 o posterior de Jmol.
+	<br/>
+					<i>Nota 2:</i> sé cauto al usar tamaños en porcentaje, pues pueden rendir
+	resultados no deseados en navegadores antiguos.
+	<br/>
+					<i>Nota 3:</i> los tamaños en porcentaje por lo general generarán una miniaplicación
+	 JmolApplet no cuadrada (lee a continuación más detalles acerca de las miniaplicaciones rectangulares).
+	<br/>
+					<i>Nota 4:</i> para conseguir una compatibilidad con diversos navegadores
+	al especificar una altura en porcentaje, es preciso que la
+	capa que envuelve la miniaplicación tenga una altura explícita
+	(de no ser así, algunos navegadores generarán una miniaplicación de altura cero).
+	Ésta puede ser un número de píxeles o, si se desea que la altura sea relativa a 
+	la altura de la ventana, debe especificarse un valor CSS de altura de 100% 
+	tanto para <code>html</code> como para <code>body</code>.
 	</p>
 				<p>
 					<i>
@@ -228,15 +264,13 @@
 				</p>
 				<p>
 					<i>
-	    Avanzado: las miniaplicaciones JmolApplet deben normalmente 
-	    tener forma cuadrada. Si necesitas usar una rectangular, puedes
-	    indicar el parámetro <code>tamaño</code> en forma de matriz de 
-	    dos elementos: ancho y alto, en píxeles.
+	    Avanzado: si el diseño requiere una miniaplicación JmolApplet rectangular,
+	    puedes indicar el parámetro <code>tamaño</code> en forma de matriz de 
+	    dos elementos: ancho y alto, en píxeles, en porcentajes o como valores fraccionarios.
 	    Normalmente esto es más fácil de hacer usando la notación de 
-	    corchetes de javascript para matrices de constantes:
-	    <code>[400, 200]</code>.
-	    El tamaño debe ser fijo; no se permiten porcentajes, pues con ellos
-	    muchos navegadores se bloquean o se cierran al redimensionar la ventana del navegador. 
+	    corchetes de javascript para matrices de constantes, por ej.:
+	    <code>[400, 200]</code>,
+	    <code>["50%", "100%"]</code> o <code>[0.5, 1.0]</code>.
 	  </i>
 				</p>
 				<p>

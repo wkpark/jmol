@@ -609,7 +609,24 @@ function jmolSetLogLevel(n) {
   _jmol.params.logLevel = ''+n;
 }
 
+	/*  AngelH, mar2007:
+		By (re)setting these variables in the webpage before calling jmolApplet(), 
+		a custom message can be provided (e.g. localized for user's language) when no Java is installed.
+	*/
+var noJavaMsg = 
+        "You do not have Java applets enabled in your web browser, or your browser is blocking this applet.<br />\n" +
+        "Check the warning message from your browser and/or enable Java applets in<br />\n" +
+        "your web browser preferences, or install the Java Runtime Environment from <a href='http://www.java.com'>www.java.com</a><br />";
+var noJavaMsg2 = 
+        "You do not have the<br />\n" +
+        "Java Runtime Environment<br />\n" +
+        "installed for applet support.<br />\n" +
+        "Visit <a href='http://www.java.com'>www.java.com</a>";
 function _jmolApplet(size, inlineModel, script, nameSuffix) {
+	/*  AngelH, mar2007
+		Fixed percent / pixel business, to avoid browser errors:
+		put "px" where needed, avoid where not.		
+	*/
   with (_jmol) {
     if (! nameSuffix)
       nameSuffix = appletCount;
@@ -650,30 +667,28 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
         "' " + appletCssText +
         " code='JmolApplet'" +
         " archive='" + archivePath + "' codebase='" + codebase + "'\n" +
-        " width='" + sz[0] + "' height='" + sz[1] +
-        "' mayscript='true'>\n";
+		widthAndHeight +
+        " mayscript='true'>\n";
       tFooter = "</applet>";
     }
-        
     var visitJava;
     if (isIEWin || useHtml4Object) {
+		var szX = "width:" + sz[0]
+		if ( szX.indexOf("%")==-1 ) szX+="px" 
+		var szY = "height:" + sz[1]
+		if ( szY.indexOf("%")==-1 ) szY+="px" 
       visitJava =
         "<p style='background-color:yellow;" +
-        "width:" + sz[0] + ";height:" + sz[1] + ";" + 
+		szX + ";" + szY + ";" +
         // why doesn't this vertical-align work?
 	"text-align:center;vertical-align:middle;'>\n" +
-        "You do not have Java applets enabled in your web browser, or your browser is blocking this applet.<br />\n" +
-        "Check the warning message from your browser and/or enable Java applets in<br />\n" +
-        "your web browser preferences, or install the Java Runtime Environment from <a href='http://www.java.com'>www.java.com</a><br />" +
+		noJavaMsg +
         "</p>";
     } else {
       visitJava =
-        "<table bgcolor='yellow' width='" + sz[0] + "'><tr>" +
-        "<td align='center' valign='middle' height='" + sz[1] + "'>\n" +
-        "You do not have the<br />\n" +
-        "Java Runtime Environment<br />\n" +
-        "installed for applet support.<br />\n" +
-        "Visit <a href='http://www.java.com'>www.java.com</a>" +
+        "<table bgcolor='yellow'><tr>" +
+        "<td align='center' valign='middle' " + widthAndHeight + ">\n" +
+		noJavaMsg2 +
         "</td></tr></table>";
     }
     params.loadInline = (inlineModel ? inlineModel : "");
@@ -768,21 +783,34 @@ function _jmolSterilizeInline(model) {
   return inlineModel;
 }
 
+	/*  AngelH, mar2007:
+		By (re)setting this variable in the webpage before calling jmolApplet(), limits for applet size can be overriden.
+	*/
+var allowedJmolSize = [25, 2000, 300]   // min, max, default (pixels)
 function _jmolGetAppletSize(size) {
+	/*  AngelH, mar2007
+		Accepts single number or 2-value array, each one can be either:
+	   percent (text string ending %), decimal 0 to 1 (percent/100), number, or text string (interpreted as nr.)
+	   Size is now returned as string or number, no "px".
+	*/
   var width, height;
-  var type = typeof size;
-  if (type == "object" && size != null) {
+  if ( (typeof size) == "object" && size != null ) {
     width = size[0]; height = size[1];
   } else {
     width = height = size;
   }
-  if (typeof width == "number") {
-        width = (width >= 25 && width <= 2000 ? width + "px"
-	 : width < 1 && width > 0 ? (width * 100)+"%":"300px")
+  // if percent, leave it as it is:
+  if ( width.toString().charAt(width.toString().length-1) != "%" ) {
+    width = parseFloat(width);	// convert to nr., or strip text, or make zero
+	if ( width <= 1 && width > 0 ) { width = (width*100)+"%" }	// decimal: convert to percent and quit
+	else if ( width >= allowedJmolSize[0] && width <= allowedJmolSize[1] ) { width = parseInt(width) }	// accept only that range (pixels)
+	else { width = allowedJmolSize[2] }	// default size 300 pixels
   }
-  if (typeof height == "number") {
-        height = (height >= 25 && height <= 2000 ? height + "px"
-	 : height < 1 && height > 0 ? (height * 100)+"%":"300px")
+  if ( height.toString().charAt(height.toString().length-1) != "%" ) {
+    height = parseFloat(height);
+	if ( height <= 1 && height > 0 ) { height = (height*100)+"%" }
+	else if ( height >= allowedJmolSize[0] && height <= allowedJmolSize[1] ) { height = parseInt(height) }
+	else { height = allowedJmolSize[2] }
   }
   return [width, height];
 }

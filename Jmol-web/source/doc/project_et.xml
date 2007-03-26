@@ -17,33 +17,18 @@
 				</td>
 				<td align="right" valign="middle">
 					<font size="2">
-						<a href="[root]/">Koduleht</a> |
-            <a href="[root]/websites/">Veebilehed</a> |
-            <a href="[root]/history/">Ajalugu</a> |
-            <a href="[root]/changes/">Muudatused</a> |
-            <a href="[root]/technotes/">Tehnilised märkused</a> |
-            <a href="[root]/faqs/">KKKd</a>
+						<a href="[root]/">Koduleht</a> 
+	    | <a href="[root]/demo/">Näidislehed</a>
+	    | <a href="[root]/websites/">Veebilehed</a>
 						<br/>
-						<a href="http://wiki.jmol.org">Wiki</a> |
-            <a href="[root]/docs/">Dokumentatsioon</a> |
-            <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs" target="_blank">
-              Interaktiivne skriptimise dok
-            </a> |
-            <a href="[root]/browsercheck/">Brauseri kontroll</a>
+						<a href="[root]/docs/">Dokumentatsioon</a>
+	    | <a href="http://wiki.jmol.org">Wiki</a>
+	    | <a href="[root]/history/">Ajalugu</a> 
+	    | <a href="[root]/faqs/">KKKd</a>
 						<br/>
-						<a href="[root]/screenshots/">Screenshots</a>
-	    | <a href="[root]/demo/">Näidislehed</a> |
-            <a href="[root]/jslibrary/">JavaScript teek</a> |
-            <a href="[root]/jscolors/">Värvid</a>
-						<br/>
-						<a href="[root]/download/">Lae alla</a> |
-            <a href="[root]/lists/">Postilistid</a> |
-            <a href="http://sourceforge.net/projects/jmol">
-              Sourceforge Projekti leht
-            </a> |
-            <a href="http://sourceforge.net/tracker/?group_id=23629&amp;amp;atid=379133">
-              Vigade andmebaas
-            </a>
+						<a href="[root]/browsercheck/">Brauseri kontroll</a>
+	    | <a href="[root]/download/">Lae alla</a> 
+	    | <a href="[root]/project/">Projekti leht</a>
 					</font>
 				</td>
 			</tr>

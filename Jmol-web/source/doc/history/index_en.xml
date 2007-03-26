@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE history [
+<!ENTITY contributors SYSTEM "../changes/contributors.xml">
+<!ENTITY changes      SYSTEM "../changes/changes.xml">
+]>
 <document>
 	<body>
-		<title>History</title>
+		<title>History of Jmol Development</title>
+		<section title="News">
+			<p>Announcements about Jmol development are posted on the project's 
+		<a href="http://sourceforge.net/news/?group_id=23629">News Page</a>
+	at SourceForge.
+			</p>
+		</section>
 		<section title="The origins of Jmol">
 			<p>
         Jmol was originally intended to be a fully functional replacement for
@@ -84,15 +94,26 @@
 			<p>
 	Jmol version 10.0, an open source replacement for the Chime plugin,
 	was released in December 2004. It was followed by an improved 
-	version 10.2 on April 2006. Version 11, with a remarkable set 
+	version 10.2 on April 2006. 
+      </p>
+			<p>
+	Version 11.0, with a remarkable set 
 	of new capabilities, was released in February 2007.
       </p>
 		</section>
-		<section title="Jmol Literature">
-			<p>
-        An up to date list of literature describing Jmol can be found at
-        <a href="http://wiki.jmol.org/index.php/Literature">Jmol's Wiki</a>.
-      </p>
+		<section title="History of Changes">
+			<p>Changes in forthcoming Jmol 11.2: <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/examples-11/new.htm">list and demo</a></p>
+			<p>Changes in Jmol 11.0:</p>
+			<ul>
+				<li><a href="http://sourceforge.net/forum/forum.php?forum_id=678304">Summary</a></li>
+				<li><a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/examples-11/new0.htm">More detailed list and demo</a></li>
+			</ul>
+			<p>Changes in Jmol 10.2: <a href="http://www.stolaf.edu/people/hansonr/jmol/test/10.2/new.htm">list and demo</a>
+			</p>
+			&changes;
+		</section>
+		<section title="Contributors">
+			&contributors;
 		</section>
 	</body>
 </document>

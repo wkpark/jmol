@@ -1,5 +1,7 @@
 DirectoryIndex index index.en.html index.html
 RedirectPermanent /files http://sourceforge.net/project/showfiles.php?group_id=23629
+RedirectPermanent /changes /history
+RedirectPermanent /lists /project
 Options MultiViews FollowSymLinks
 AddLanguage de .de
 AddLanguage en .en

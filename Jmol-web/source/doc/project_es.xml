@@ -18,34 +18,17 @@
 				<td align="right" valign="middle">
 					<font size="2">
 						<a href="[root]/">Inicio</a> 
+	    | <a href="[root]/demo/">Páginas de demostración</a>
 	    | <a href="[root]/websites/">Sitios web</a>
+						<br/>
+						<a href="[root]/docs/">Documentación</a>
+	    | <a href="http://wiki.jmol.org">Wiki</a>
 	    | <a href="[root]/history/">Historia</a> 
-            | <a href="[root]/changes/">Cambios</a>
-	    | <a href="[root]/technotes/">Notas técnicas</a>
 	    | <a href="[root]/faqs/">Preguntas frecuentes</a>
 						<br/>
-						<a href="http://wiki.jmol.org">Wiki</a>
-	    | <a href="[root]/docs/">Documentación</a>
-	    |
-	    <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs" target="_blank">
-	      Documentación de guiones interactivos
-	    </a>
-	    | <a href="[root]/browsercheck/">Verificación del navegador</a>
-						<br/>
-						<!-- 	    <a href="[root]/v9/">Version 9</a> -->
-						<a href="[root]/screenshots/">Pantallas</a>
-	    | <a href="[root]/demo/">Páginas de demostración</a>
-	    | <a href="[root]/jslibrary/">Biblioteca JavaScript</a>
-            | <a href="[root]/jscolors/">Colores</a>
-						<br/>
-						<a href="[root]/download/">Descarga</a> 
-	    | <a href="[root]/lists/">Listas de correo</a>
-	    | <a href="http://sourceforge.net/projects/jmol">
-	      Página del proyecto en Sourceforge
-	    </a>
-	    |
-	    <a href="http://sourceforge.net/tracker/?group_id=23629&amp;amp;atid=379133">Base de datos de anomalías
-	    </a>
+						<a href="[root]/browsercheck/">Verificación del navegador</a>
+	    | <a href="[root]/download/">Descarga</a> 
+	    | <a href="[root]/project/">Páginas del proyecto</a>
 					</font>
 				</td>
 			</tr>

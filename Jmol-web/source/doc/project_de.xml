@@ -17,33 +17,18 @@
 				</td>
 				<td align="right" valign="middle">
 					<font size="2">
-						<a href="[root]/">Startseite</a> |
-            <a href="[root]/websites/">Links</a> |
-            <a href="[root]/history/">Historie</a> |
-            <a href="[root]/changes/">Veränderungen</a> |
-            <a href="[root]/technotes/">Technische Dokumente</a> |
-            <a href="[root]/faqs/">Häufig gestellte Fragen</a>
+						<a href="[root]/">Startseite</a> 
+	    | <a href="[root]/demo/">Beispiele</a>
+	    | <a href="[root]/websites/">Links</a>
 						<br/>
-						<a href="http://wiki.jmol.org">Wiki</a> |
-            <a href="[root]/docs/">Dokumentation</a> |
-            <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs" target="_blank">
-              Doku zum interaktiven Scripting
-            </a> |
-            <a href="[root]/browsercheck/">Browser-Test</a>
+						<a href="[root]/docs/">Dokumentation</a>
+	    | <a href="http://wiki.jmol.org">Wiki</a>
+	    | <a href="[root]/history/">Historie</a> 
+	    | <a href="[root]/faqs/">Häufig gestellte Fragen</a>
 						<br/>
-						<a href="[root]/screenshots/">Screenshots</a>
-	    | <a href="[root]/demo/">Beispiele</a> |
-            <a href="[root]/jslibrary/">JavaScript-Bibliothek</a> |
-            <a href="[root]/jscolors/">Farben</a>
-						<br/>
-						<a href="[root]/download/">Download</a> |
-            <a href="[root]/lists/">Mailinglisten</a> |
-            <a href="http://sourceforge.net/projects/jmol">
-              SourceForge-Projekt
-            </a> |
-            <a href="http://sourceforge.net/tracker/?group_id=23629&amp;amp;atid=379133">
-              Bug-Datenbank
-            </a>
+						<a href="[root]/browsercheck/">Browser-Test</a>
+	    | <a href="[root]/download/">Download</a> 
+	    | <a href="[root]/project/">Projekt</a>
 					</font>
 				</td>
 			</tr>

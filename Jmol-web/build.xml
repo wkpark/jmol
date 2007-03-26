@@ -25,7 +25,7 @@
 		<mkdir dir="${doc.dir}/images"/>
 		<mkdir dir="${build.html}"/>
 		<!-- Copy files from Jmol history -->
-		<copy todir="${doc.dir}/changes" overwrite="yes">
+		<copy todir="${doc.dir}/history" overwrite="yes">
 			<fileset dir="${jmol-doc-dir}/doc/source/history" includes="**/*"/>
 		</copy>
 		<!-- Generate index html files for each language -->

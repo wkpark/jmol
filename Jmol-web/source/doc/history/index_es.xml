@@ -3,9 +3,19 @@
   Spanish translation 
   Translated from default version : index_en.xml 
 -->
+<!DOCTYPE history [
+<!ENTITY contributors SYSTEM "contributors.xml">
+<!ENTITY changes      SYSTEM "changes.xml">
+]>
 <document>
 	<body>
-		<title>Historia</title>
+		<title>Historia del desarrollo de Jmol</title>
+		<section title="Noticias">
+			<p>Los anuncios relativos al desarrollo de Jmol se publican en la 
+		<a href="http://sourceforge.net/news/?group_id=23629">página de noticias</a>
+	del proyecto en SourceForge.
+			</p>
+		</section>
 		<section title="Orígenes de Jmol">
 			<p>
         Jmol se concibió originalmente como un sustituto plenamente funcional de
@@ -88,15 +98,27 @@
 			<p>
 	La versión 10.0 de Jmol, un sustituto de código abierto para el conector Chime,
 	estuvo disponible en diciembre de 2004. Tras ella llegó, en abril de 2006, 
-	una versión mejorada, la 10.2. La versión 11, con un notable conjunto de 
+	una versión mejorada, la 10.2.
+      </p>
+			<p>
+	La versión 11, con un notable conjunto de 
 	nuevas prestaciones, está disponible desde febrero de 2007.
       </p>
 		</section>
-		<section title="Bibliografía de Jmol">
-			<p>
-        Se puede encontrar una lista actualizada de publicaciones que describen Jmol en
-        <a href="http://wiki.jmol.org/index.php/Literature">http://wiki.jmol.org/index.php/Literature</a>
+		<section title="Historial de cambios">
+			<p>Cambios en el futuro Jmol 11.2: <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/examples-11/new.htm">lista y demostración</a></p>
+			<p>Cambios en Jmol 11.0:</p>
+			<ul>
+				<li><a href="http://sourceforge.net/forum/forum.php?forum_id=678304">Resumen</a></li>
+				<li><a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/examples-11/new0.htm">Listado 
+				más detallado  y demostración</a></li>
+			</ul>
+			<p>Cambios en Jmol 10.2: <a href="http://www.stolaf.edu/people/hansonr/jmol/test/10.2/new.htm">lista y demostración</a>
 			</p>
+			&changes;
+		</section>
+		<section title="Colaboradores">
+			&contributors;
 		</section>
 	</body>
 </document>

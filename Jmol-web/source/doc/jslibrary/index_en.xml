@@ -197,10 +197,47 @@
 					<code>jmolApplet(size, {script}, {nameSuffix})</code>
 				</p>
 				<p>
-	Allocates a JmolApplet. <code>size</code> should be an
-	integer pixel count (between 25 and 2000).
-	<code>script</code> is a script that will be run;
+	Allocates a JmolApplet. 
+				</p>
+				<p>
+					<code>size</code> can be:
+				</p>
+				<ul>
+					<li>an integer pixel count (between 25 and 2000);
+				</li>
+					<li>a percent value, ending in % and surrounded by quotes
+	(but see notes below); 
+	this will be interpreted by the browser as percentage of the dimensions of
+	the surrounding layer 
+	(window, frame or <code>DIV</code>); 
+	depending on which is the surrounding layer and its properties,
+	this allows to have an applet that is dynamically resized when the browser 
+	window is resized.
+				</li>
+					<li>a number between zero and 1; this will be multiplied 
+	by 100 and interpreted as percent.
+				</li>
+				</ul>
+				<p>
+					<code>script</code> is a script that will be run;
 	this usually loads a model and then modifies its rendering.
+	</p>
+				<p>
+					<i>Note 1:</i> Percent values for size, and numbers below 1, are only available in Jmol.js 
+	accompanying Jmol version 11.1.28 or later.
+	<br/>
+					<i>Note 2:</i> Be cautious using percent values for size, as it may give undesired
+	results in old browsers.
+	<br/>
+					<i>Note 3:</i> Using percent values for size will usually generate a non-square 
+	 JmolApplet (read below about rectangular applets).
+	<br/>
+					<i>Note 4:</i> For cross-browser compatibility, percent height requires that the 
+	layer surrounding the applet has an explicit height value
+	(otherwise, the applet will have zero height in some browsers).
+	This can be a pixel count or, if you want height to be relative to 
+	window height, you must specify a CSS height attribute of 100% for both 
+	<code>html</code> and <code>body</code>.
 	</p>
 				<p>
 					<i>
@@ -221,16 +258,13 @@
 				</p>
 				<p>
 					<i>
-	    Advanced: JmolApplet instances should generally be square.
-	    If your application requires a rectangular JmolApplet,
+	    Advanced: If your application requires a rectangular JmolApplet,
 	    then the <code>size</code> parameter may be specified
 	    as an array containing two elements, width and height,
-	    specified in pixel counts. This is usually easiest to
-	    do using JavaScript square bracket notation for
-	    array constants, as in <code>[400, 200]</code>.
-	    The size must be fixed; percentages are not allowed.
-	    Otherwise, many browsers lock or quit when the browser window
-	    is resized. 
+	    specified in pixel counts, percents or fractional numbers. This is usually 
+	    easiest to do using JavaScript square bracket notation for
+	    array constants, as in <code>[400, 200]</code>,
+	    <code>["50%", "100%"]</code> or <code>[0.5, 1.0]</code>.
 	  </i>
 				</p>
 				<p>

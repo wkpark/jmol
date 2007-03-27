@@ -24,7 +24,7 @@
 				<p>
         Pour un historique des messages qui ont été
         postés vous pouvez parcourir les
-        <a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-users">archives 
+        <a href="http://sourceforge.net/mailarchive/forum.php?forum_name=jmol-users">archives 
 	de la liste de diffusion <code>jmol-users</code></a>.
 			</p>
 			</section>
@@ -47,7 +47,7 @@
 				<p>
         Pour un historique des messages qui ont été
         postés vous pouvez parcourir les
-        <a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-developers">archives 
+        <a href="http://sourceforge.net/mailarchive/forum.php?forum_name=jmol-developers">archives 
 	de la liste de diffusion <code>jmol-developers</code></a>.
 			</p>
 			</section>

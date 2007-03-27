@@ -11,13 +11,13 @@
 		<section title="Guía de Jmol">
 			<p>
         Describe la aplicación -o programa autónomo- Jmol; 
-        <a href="JmolUserGuide/">Jmol Guide</a>
+        <a href="JmolUserGuide/">Jmol Guide</a>.
 			</p>
 		</section>
 		<section title="Guía de la miniaplicación Jmol">
 			<p>
         Describe la miniaplicación Jmol; 
-        <a href="JmolAppletGuide.html">Jmol Applet Guide</a>
+        <a href="JmolAppletGuide.html">Jmol Applet Guide</a>.
 			</p>
 		</section>
 		<section title="Guiones para Jmol">
@@ -34,7 +34,7 @@
 	Esta <a href="http://www.stolaf.edu/academics/chemapps/jmol/docs">documentación interactiva en línea</a>
 	(en inglés)
 	es la guía de referencia para todas las instrucciones que forman el lenguaje de guiones para Jmol. 
-	Además de una descrpción exhaustiva de todas las instrucciones y sus opciones, proporciona excelentes
+	Además de una descripción exhaustiva de todas las instrucciones y sus opciones, proporciona excelentes
 	demostraciones y ejemplos.
       </p>
 			</section>
@@ -49,7 +49,7 @@
 			</section>
 			<section title="Documentación de la biblioteca javascript">
 				<p>
-	Jmol.js (incluida en la distribucón estándar de Jmol) es una biblioteca javascript que 
+	Jmol.js (incluida en la distribución estándar de Jmol) es una biblioteca javascript que 
 	puede usarse para simplificar el desarrollo de páginas web que incluyan la miniaplicación JmolApplet. 
 	Aquí está su <a href="../jslibrary/">descripción y documentación</a>.
 				</p>
@@ -58,9 +58,9 @@
 		<section title="Colores usados por Jmol">
 			<p>
 			Este <a href="../jscolors/">documento</a> especifica
-	qué colore usa Jmol para los elementos, estructura secundaria, residuos,
+	qué colores usa Jmol para los elementos, estructura secundaria, residuos,
 	cadenas, carga, enlaces de hidrógeno, orientación en la cadena e isosuperficies.
-	También indica los nombres de colores en javascript y la paleta de colores 
+	También indica los nombres de colores reconocidos por javascript y la paleta de colores 
 	de 8 bits de Netscape.
 			</p>
 		</section>
@@ -74,20 +74,20 @@
 		<section title="Guía para desarrolladores de Jmol">
 			<p>
         Describe los procedimientos de desarrollo de Jmol; 
-        <a href="JmolDevelopersGuide.html">Jmol Developers Guide</a>
+        <a href="JmolDevelopersGuide.html">Jmol Developers Guide</a>.
 			</p>
 		</section>
 		<section title="Notas técnicas de Jmol">
 			<p>
 			Este <a href="../technotes/">documento</a> proporciona información
-	técnica sobre cómo se ha construido Jmol, en particular en lo relativo
+	técnica sobre cómo está construido Jmol, en particular en lo relativo
 	al trazado de gráficos.
 			</p>
 		</section>
 		<section title="Bibliografía de Jmol">
 			<p>
 	 Se puede encontrar una lista actualizada de publicaciones que describen Jmol en
-			<a href="http://wiki.jmol.org/index.php/Literature/">la Wiki de Jmol</a>
+			<a href="http://wiki.jmol.org/index.php/Literature/">la Wiki de Jmol</a>.
 			</p>
 		</section>
 	</body>

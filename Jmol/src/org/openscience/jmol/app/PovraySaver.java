@@ -524,7 +524,6 @@ public class PovraySaver {
 
   Point3f point1 = new Point3f();
   Point3f point2 = new Point3f();
-  Point3f pointC = new Point3f();
 
   void writeAtom(int modelIndex, int i) throws IOException {
   	int model = viewer.getAtomModelIndex(i);

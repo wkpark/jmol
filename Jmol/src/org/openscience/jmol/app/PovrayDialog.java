@@ -66,7 +66,7 @@ import java.util.Vector;
  */
 public class PovrayDialog extends JDialog {
 
-  private JmolViewer viewer;
+  private transient JmolViewer viewer;
   
   protected JButton    povrayPathButton;
   protected JTextField commandLineField;
@@ -102,11 +102,6 @@ public class PovrayDialog extends JDialog {
   private JLabel    mosaicPreviewEnd;
   private JComboBox mosaicPreviewComboEnd;
   
-  // Event management
-  private ActionListener updateActionListener = null;
-  private InputVerifier  updateInputVerifier  = null;
-  private ItemListener   updateItemListener   = null;
-  
 
   /**
    * Creates a dialog for getting info related to output frames in
@@ -128,18 +123,18 @@ public class PovrayDialog extends JDialog {
     setImageDimensions(screenWidth, screenHeight);
 
     // Event management
-    updateActionListener = new ActionListener() {
+    ActionListener updateActionListener = new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         updateScreen();
       }
     };
-    updateInputVerifier = new InputVerifier() {
+    InputVerifier updateInputVerifier = new InputVerifier() {
       public boolean verify(JComponent component) {
         updateScreen();
         return true;
       }
     };
-    updateItemListener = new ItemListener() {
+    ItemListener updateItemListener = new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         updateScreen();
       }

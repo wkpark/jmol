@@ -33,7 +33,7 @@ public class GT {
   private static GT getTextWrapper;
   private ResourceBundle[] translationResources = null;
   private int translationResourcesCount = 0;
-  private static Boolean doTranslate = Boolean.TRUE;
+  private static boolean doTranslate = true;
 
   private GT() {
     Locale locale = Locale.getDefault();
@@ -125,12 +125,12 @@ public class GT {
   }
 
   public static void setDoTranslate(boolean TF) {
-    doTranslate = (TF ? Boolean.TRUE : Boolean.FALSE);
+    doTranslate = TF;
 //    System.out.println("setDoTranslate " + doTranslate.booleanValue());
   }
 
   public static boolean getDoTranslate() {
-    return doTranslate.booleanValue();
+    return doTranslate;
   }
 
   public static String _(String string) {
@@ -166,7 +166,7 @@ public class GT {
 
   public static synchronized String _(String string, Object[] objects, boolean t) {
     boolean wasTranslating;
-    if (!(wasTranslating = doTranslate.booleanValue()))
+    if (!(wasTranslating = doTranslate))
       setDoTranslate(true);
     String str = (objects == null ? _(string) : _(string, objects));
     if (!wasTranslating)
@@ -175,7 +175,7 @@ public class GT {
   }
 
   private String getString(String string) {
-    if (!doTranslate.booleanValue())
+    if (!doTranslate)
       return string;
     for (int bundle = 0; bundle < translationResourcesCount; bundle++) {
       try {
@@ -195,7 +195,7 @@ public class GT {
 
   private String getString(String string, Object[] objects) {
     String trans = null;
-    if (!doTranslate.booleanValue())
+    if (!doTranslate)
       return MessageFormat.format(string, objects);
     for (int bundle = 0; bundle < translationResourcesCount; bundle++) {
       try {

@@ -380,7 +380,7 @@ public class Check implements ActionListener {
    */
   private void configure() {
     ConfigurationWindow window = new ConfigurationWindow(configuration, this);
-    window.show();
+    window.setVisible(true);
   }
 
   /**

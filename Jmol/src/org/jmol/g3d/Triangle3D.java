@@ -392,9 +392,9 @@ class Triangle3D {
       rgb16Increment.diffDiv(rgb16sGouraud[iS], rgb16Base, dy);
       for (int i = iRaster, iMax = iRaster + dy; i < iMax; ++i)
         gouraud[i].setAndIncrement(rgb16Base, rgb16Increment);
-      Rgb16 north = rgb16sGouraud[iN];
-      Rgb16 generated = gouraud[iRaster];
       if (VERIFY) {
+        Rgb16 north = rgb16sGouraud[iN];
+        Rgb16 generated = gouraud[iRaster];
         if (north.getArgb() != generated.getArgb()) {
           if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
             Logger.debug("north=" + north + "\ngenerated=" + generated);

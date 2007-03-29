@@ -92,7 +92,7 @@ class PopupResourceBundle {
       { "proteinSideChains", "protein and not backbone" },
       { "polar", "protein and polar" },
       { "nonpolar", "protein and not polar" },
-      { "positive ", "protein and basic" },
+      { "positiveCharge", "protein and basic" },
       { "negativeCharge", "protein and acidic" },
       { "noCharge", "protein and not (acidic,basic)" },
       { "allCarbo", "carbohydrate" },

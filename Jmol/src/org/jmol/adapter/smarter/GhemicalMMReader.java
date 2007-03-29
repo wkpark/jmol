@@ -26,6 +26,8 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 
+import org.jmol.api.JmolAdapter;
+
 /**
  * Reads Ghemical (<a href="http://www.uku.fi/~thassine/ghemical/">
  * http://www.uku.fi/~thassine/ghemical</a>)
@@ -127,16 +129,20 @@ class GhemicalMMReader extends AtomSetCollectionReader {
       int atomIndex2 = parseInt();
       String orderCode = parseToken();
       int order = 0;
+      //bug found using FindBugs -- was not considering changes in bond order numbers
       switch(orderCode.charAt(0)) {
       case 'C': // Conjugated (aromatic)
-        ++order; // our code for aromatic is 4;
+        order = JmolAdapter.ORDER_AROMATIC;
+        break;
       case 'T':
-        ++order;
+        order = JmolAdapter.ORDER_COVALENT_TRIPLE;
+        break;
       case 'D':
-        ++order;
+        order = JmolAdapter.ORDER_COVALENT_DOUBLE;
+        break;
       case 'S':
       default:
-        ++order;
+        order = JmolAdapter.ORDER_COVALENT_SINGLE;
       }
       atomSetCollection.addNewBond(atomIndex1, atomIndex2, order);
     }

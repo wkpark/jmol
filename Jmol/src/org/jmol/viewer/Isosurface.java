@@ -1667,7 +1667,7 @@ class Isosurface extends IsosurfaceMeshCollection {
             default:
               voxelValue = getNextVoxelValue();
               if (voxelValue < 0)
-                System.out.println("vv " +voxelValue);
+                Logger.debug("vv " +voxelValue);
             }
           }
           strip[z] = voxelValue;

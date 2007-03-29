@@ -146,6 +146,11 @@ class MolecularOrbital extends Isosurface {
     }
 
     if ("translucency" == propertyName) {
+      if (thisModel == null) {
+        if (currentMesh == null)
+          return;      
+        thisModel = (Hashtable) htModels.get(currentMesh.thisID);        
+      }
       thisModel.put("moTranslucency", value);
       //pass through
     }
@@ -279,6 +284,8 @@ class MolecularOrbital extends Isosurface {
     if (moColorNeg != null)
       appendCmd(s, "mo color " + StateManager.escapeColor(moColorNeg.intValue())
           + (moColorNeg.equals(moColorPos) ? "" : " " + StateManager.escapeColor(moColorPos.intValue())));
+    if (moTranslucency != null)
+      appendCmd(s, "mo translucent");
     appendCmd(s, "mo " + moNumber);
     appendCmd(s, getMeshState(currentMesh, "mo"));
     return s.toString();

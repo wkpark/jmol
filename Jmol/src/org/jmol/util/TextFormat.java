@@ -29,12 +29,12 @@ import java.text.DecimalFormat;
 
 public class TextFormat {
 
-  public static DecimalFormat[] formatters = new DecimalFormat[10];
+  private final static DecimalFormat[] formatters = new DecimalFormat[10];
 
-  private static String[] formattingStrings = { "0", "0.0", "0.00", "0.000",
+  private final static String[] formattingStrings = { "0", "0.0", "0.00", "0.000",
       "0.0000", "0.00000", "0.000000", "0.0000000", "0.00000000", "0.000000000" };
 
-  private static Boolean[] useNumberLocalization = new Boolean[1];
+  private final static Boolean[] useNumberLocalization = new Boolean[1];
   {
     useNumberLocalization[0] = Boolean.TRUE;
   }
@@ -112,7 +112,7 @@ public class TextFormat {
       sb.append(padChar);
     if (!alignLeft)
       sb.append(isNeg ? padChar + value.substring(1) : value);
-    return "" + sb;
+    return sb.toString();
   }
 
   public static String formatString(String strFormat, String key, String strT) {
@@ -142,7 +142,7 @@ public class TextFormat {
                                     float floatT) {
     if (strFormat == null)
       return null;
-    if (strFormat == "")
+    if ("".equals(strFormat))
       return "";
     int len = key.length();
     if (strFormat.indexOf("%") < 0 || len == 0 || strFormat.indexOf(key) < 0)

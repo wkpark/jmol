@@ -25,23 +25,19 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.Graphics3D;
-import java.awt.Rectangle;
+//import java.awt.Rectangle;
 
 abstract class ShapeRenderer {
 
   Viewer viewer;
-  FrameRenderer frameRenderer;
   int myVisibilityFlag;
   int shapeID;
 
-  final void setViewerFrameRenderer(Viewer viewer,
-                                    FrameRenderer frameRenderer,
-                                    Graphics3D g3d, int refShape) {
+  final void setViewerG3dShapeID(Viewer viewer, Graphics3D g3d, int shapeID) {
     this.viewer = viewer;
-    this.frameRenderer = frameRenderer;
     this.g3d = g3d;
-    myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(refShape);
-    shapeID = refShape;
+    this.shapeID = shapeID;
+    myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(shapeID);
     initRenderer();
   }
 
@@ -49,17 +45,14 @@ abstract class ShapeRenderer {
   }
 
   Graphics3D g3d;
-  Rectangle rectClip;
+  //Rectangle rectClip; //not implemented
   Frame frame;
-  int displayModelIndex;
   Shape shape;
 
-  void render(Graphics3D g3d, Rectangle rectClip,
-              Frame frame, int displayModelIndex, Shape shape) {
+  void render(Graphics3D g3d, Frame frame, Shape shape) { //, Rectangle rectClip
     this.g3d = g3d;
-    this.rectClip = rectClip;
+    //this.rectClip = rectClip; //not implemented -- could be a place for optimization
     this.frame = frame;
-    this.displayModelIndex = displayModelIndex;
     this.shape = shape;
     render();
   }

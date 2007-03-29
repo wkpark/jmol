@@ -40,7 +40,6 @@ class TextShape extends Shape {
   
   final static int ECHO = 1;
   final static int HOVER = 2;
-  int myType;
   Hashtable texts = new Hashtable();
   Text currentText;
   Font3D currentFont;

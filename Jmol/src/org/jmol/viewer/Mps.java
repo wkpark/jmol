@@ -28,7 +28,6 @@ package org.jmol.viewer;
 import java.util.BitSet;
 import java.util.Hashtable;
 
-import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
@@ -222,8 +221,8 @@ abstract class Mps extends Shape {
     int monomerCount;
     Monomer[] monomers;
 
-    Point3f[] leadMidpoints;
-    Point3f[] leadPoints;
+    //Point3f[] leadMidpoints;
+    //Point3f[] leadPoints;
     Vector3f[] wingVectors;
     int[] leadAtomIndices;
 
@@ -242,8 +241,8 @@ abstract class Mps extends Shape {
         monomers = polymer.monomers;
         meshReady = new boolean[monomerCount];
         meshes = new Mesh[monomerCount];
-        leadPoints = polymer.getLeadPoints();
-        leadMidpoints = polymer.getLeadMidpoints();
+        //leadPoints = polymer.getLeadPoints();
+        //leadMidpoints = polymer.getLeadMidpoints();
         wingVectors = polymer.getWingVectors();
         leadAtomIndices = polymer.getLeadAtomIndices();
         //Logger.debug("mps assigning wingVectors and leadMidpoints");

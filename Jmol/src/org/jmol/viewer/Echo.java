@@ -50,7 +50,6 @@ class Echo extends TextShape {
   private final static short COLOR = Graphics3D.RED;
   
   void initShape() {
-    myType = ECHO;
     setProperty("target", "top", null);
   }
 

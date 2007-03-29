@@ -579,8 +579,8 @@ final public class Atom extends Point3fi implements Tuple {
    
    int getAtomNumber() {
      int[] atomSerials = group.chain.frame.atomSerials;
-     return (atomSerials != null ? atomSerials[atomIndex]
-        : group.chain.frame.isZeroBased ? atomIndex : atomIndex);
+     return (atomSerials != null ? atomSerials[atomIndex] : atomIndex);
+//        : group.chain.frame.isZeroBased ? atomIndex : atomIndex);
    }
 
    boolean isModelVisible() {

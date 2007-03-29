@@ -25,7 +25,7 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.*;
-import java.awt.Rectangle;
+//import java.awt.Rectangle;
 import org.jmol.util.Logger;
 
 class FrameRenderer {
@@ -41,8 +41,7 @@ class FrameRenderer {
     this.viewer = viewer;
   }
 
-  void render(Graphics3D g3d, Rectangle rectClip, Frame frame,
-              int displayModelIndex) {
+  void render(Graphics3D g3d, Frame frame) {  //, Rectangle rectClip
 
     if (frame == null || !viewer.mustRenderFlag())
       return;
@@ -59,18 +58,17 @@ class FrameRenderer {
 
       if (shape == null)
         continue;
-      getRenderer(i, g3d)
-          .render(g3d, rectClip, frame, displayModelIndex, shape);
+      getRenderer(i, g3d).render(g3d, frame, shape); //, rectClip
     }
     if (logTime)
       Logger.info("render time: " + (System.currentTimeMillis() - timeBegin)
           + " ms");
   }
 
-  ShapeRenderer getRenderer(int refShape, Graphics3D g3d) {
-    if (renderers[refShape] == null)
-      renderers[refShape] = allocateRenderer(refShape, g3d);
-    return renderers[refShape];
+  ShapeRenderer getRenderer(int shapeID, Graphics3D g3d) {
+    if (renderers[shapeID] == null)
+      renderers[shapeID] = allocateRenderer(shapeID, g3d);
+    return renderers[shapeID];
   }
   
   void clear() {
@@ -78,14 +76,14 @@ class FrameRenderer {
       renderers[i] = null;
   }
 
-  ShapeRenderer allocateRenderer(int refShape, Graphics3D g3d) {
+  ShapeRenderer allocateRenderer(int shapeID, Graphics3D g3d) {
     String classBase =
-      JmolConstants.shapeClassBases[refShape] + "Renderer";
+      JmolConstants.shapeClassBases[shapeID] + "Renderer";
     String className = "org.jmol.viewer." + classBase;
     try {
       Class shapeClass = Class.forName(className);
       ShapeRenderer renderer = (ShapeRenderer)shapeClass.newInstance();
-      renderer.setViewerFrameRenderer(viewer, this, g3d, refShape);
+      renderer.setViewerG3dShapeID(viewer, g3d, shapeID);
       return renderer;
     } catch (Exception e) {
       Logger.error("Could not instantiate renderer:" + classBase, e);

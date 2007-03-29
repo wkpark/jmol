@@ -27,10 +27,7 @@ import javax.vecmath.*;
 
 class TempManager {
 
-  Viewer viewer;
-
-  TempManager(Viewer viewer) {
-    this.viewer = viewer;
+  TempManager() {
   }
 
   static int findBestFit(int size, short[] lengths) {

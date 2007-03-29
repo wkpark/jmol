@@ -41,9 +41,6 @@ abstract class MouseManager implements KeyListener {
   int xCurrent, yCurrent;
   long timeCurrent;
   
-  int modifiersWhenPressed;
-  boolean wasDragged;
-
   boolean measurementMode = false;
   boolean drawMode = false;
   boolean measuresEnabled = true;
@@ -211,9 +208,6 @@ abstract class MouseManager implements KeyListener {
     if (logMouseEvents && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug("mousePressed("+x+","+y+","+modifiers+
                          " isPopupTrigger=" + isPopupTrigger+")");
-
-    modifiersWhenPressed = modifiers;
-    wasDragged = false;
 
     //viewer.setStatusUserAction("mousePressed: " + modifiers);
     
@@ -396,7 +390,6 @@ abstract class MouseManager implements KeyListener {
     hoverOff();
     timeCurrent = time;
     xCurrent = previousDragX = x; yCurrent = previousDragY = y;
-    wasDragged = true;
     if (!viewer.getInMotion())
       viewer.getAwtComponent().setCursor(
           Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));

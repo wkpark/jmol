@@ -153,7 +153,7 @@ public class Viewer extends JmolViewer {
       mouseManager = new MouseManager10(display, this);
     modelManager = new ModelManager(this);
     propertyManager = new PropertyManager(this);
-    tempManager = new TempManager(this);
+    tempManager = new TempManager();
     pickingManager = new PickingManager(this);
     fileManager = new FileManager(this, modelAdapter);
     repaintManager = new RepaintManager(this);
@@ -289,8 +289,8 @@ public class Viewer extends JmolViewer {
     //Eval.reset()
     //initializeModel
     transformManager.homePosition();
-    if (modelManager.modelsHaveSymmetry())
-      stateManager.setCrystallographicDefaults();
+    if (modelManager.useXtalDefaults())
+      stateManager.setCrystallographicDefaults();//frame.someModelsHavePeriodicOrigin);
     refresh(1, "Viewer:homePosition()");
   }
 
@@ -458,7 +458,7 @@ public class Viewer extends JmolViewer {
     return transformManager.getNavigating();
   }
 
-  void move(Vector3f dRot, int dZoom, Vector3f dTrans, int dSlab,
+  void move(Vector3f dRot, float dZoom, Vector3f dTrans, float dSlab,
             float floatSecondsTotal, int fps) {
     //from Eval
     transformManager.move(dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
@@ -2584,7 +2584,7 @@ public class Viewer extends JmolViewer {
 
   final Dimension dimScreen = new Dimension();
 
-  final Rectangle rectClip = new Rectangle();
+  //final Rectangle rectClip = new Rectangle();
 
   public void setScreenDimension(Dimension dim) {
     // There is a bug in Netscape 4.7*+MacOS 9 when comparing dimension objects
@@ -2614,7 +2614,8 @@ public class Viewer extends JmolViewer {
     return dimScreen.height;
   }
 
-  void setRectClip(Rectangle clip) {
+  /* not implemented
+  private void setRectClip(Rectangle clip) {
     if (clip == null) {
       rectClip.x = rectClip.y = 0;
       rectClip.setSize(dimScreen);
@@ -2632,6 +2633,7 @@ public class Viewer extends JmolViewer {
         rectClip.height = dimScreen.height - rectClip.y;
     }
   }
+  */
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
     if (isTainted || getSlabEnabled())
@@ -2639,7 +2641,7 @@ public class Viewer extends JmolViewer {
     isTainted = false;
     if (size != null)
       setScreenDimension(size);
-    setRectClip(null);
+    //setRectClip(null);
     int stereoMode = getStereoMode();
     switch (stereoMode) {
     case JmolConstants.STEREO_DOUBLE:
@@ -2660,14 +2662,12 @@ public class Viewer extends JmolViewer {
   private Image getImage(boolean isDouble, boolean antialias) {
     Matrix3f matrixRotate = transformManager.getStereoRotationMatrix(isDouble);
     boolean twoPass = !getTestFlag1();
-    g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
+    g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         matrixRotate, antialias, twoPass);
-    repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-        repaintManager.currentModelIndex);
+    repaintManager.render(g3d, modelManager.getFrame()); //, rectClip
     if (twoPass) {
       g3d.setPass2();
-      repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-          repaintManager.currentModelIndex);
+      repaintManager.render(g3d, modelManager.getFrame()); //, rectClip
     }
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
@@ -2678,21 +2678,19 @@ public class Viewer extends JmolViewer {
 
   private Image getStereoImage(int stereoMode, boolean antialias) {
     boolean twoPass = false; //required for new translucency
-    g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
+    g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         transformManager.getStereoRotationMatrix(true), antialias, twoPass);
-    repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-        repaintManager.currentModelIndex);
+    Frame frame = modelManager.getFrame();
+    repaintManager.render(g3d, frame);//, rectClip
     if (twoPass && g3d.haveTranslucentObjects()) {
       g3d.setPass2();
-      repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-          repaintManager.currentModelIndex);      
+      repaintManager.render(g3d, frame);//, rectClip      
     }
     g3d.endRendering();
     g3d.snapshotAnaglyphChannelBytes();
-    g3d.beginRendering(rectClip.x, rectClip.y, rectClip.width, rectClip.height,
+    g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         transformManager.getStereoRotationMatrix(false), antialias, twoPass);
-    repaintManager.render(g3d, rectClip, modelManager.getFrame(),
-        repaintManager.currentModelIndex);
+    repaintManager.render(g3d, frame);//, rectClip
     g3d.endRendering();
     switch (stereoMode) {
     case JmolConstants.STEREO_REDCYAN:
@@ -2724,7 +2722,7 @@ public class Viewer extends JmolViewer {
   public Image getScreenImage() {
     boolean antialias = true;
     boolean isStereo = false;
-    setRectClip(null);
+    //setRectClip(null);
     int stereoMode = getStereoMode();
     switch (stereoMode) {
     case JmolConstants.STEREO_DOUBLE:

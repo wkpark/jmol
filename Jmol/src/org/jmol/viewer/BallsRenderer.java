@@ -29,15 +29,16 @@ import org.jmol.g3d.*;
 import javax.vecmath.*;
 class BallsRenderer extends ShapeRenderer {
 
-  int minX, maxX, minY, maxY, minZ, maxZ;
-  boolean isNav;
+  //int minX, minY, maxX, maxY; 
+  int minZ, maxZ;
+  //boolean isNav;
   void render() {
-    minX = rectClip.x;
-    maxX = minX + rectClip.width;
-    minY = rectClip.y;
-    maxY = minY + rectClip.height;
+    //minX = rectClip.x;
+    //maxX = minX + rectClip.width;
+    //minY = rectClip.y;
+    //maxY = minY + rectClip.height;
     boolean slabbing = viewer.getSlabEnabled();
-    isNav = viewer.getNavigationMode();
+    //isNav = viewer.getNavigationMode();
     if (slabbing) {
       minZ = g3d.getSlab();
       maxZ = g3d.getDepth();

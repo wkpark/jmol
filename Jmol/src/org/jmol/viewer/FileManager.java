@@ -60,7 +60,7 @@ class FileManager {
 
   // for applet proxy
   URL appletDocumentBase = null;
-  URL appletCodeBase = null;
+  URL appletCodeBase = null; //unused currently
   String appletProxy;
 
   // for expanding names into full path names
@@ -70,8 +70,8 @@ class FileManager {
   String fileName;
   String inlineData;
   String[] inlineDataArray;
-  boolean isInline;
-  boolean isDOM;
+  //boolean isInline;
+  //boolean isDOM;
   
   private String loadScript;  
   private File file;
@@ -145,8 +145,8 @@ class FileManager {
     
     fullPathName = fileName = nameAsGiven = modelName;
     inlineData = "";
-    isInline = false;
-    isDOM = false;
+    //isInline = false;
+    //isDOM = false;
     filesOpenThread = new FilesOpenThread(fullPathNames, names);
     filesOpenThread.run();
   }
@@ -167,8 +167,8 @@ class FileManager {
     openErrorMessage = null;
     fullPathName = fileName = "string";
     inlineData = strModel;
-    isInline = true;
-    isDOM = false;
+    //isInline = true;
+    //isDOM = false;
     if (params == null)
       fileOpenThread = new FileOpenThread(fullPathName, new BufferedReader(new StringReader(
           strModel)));
@@ -196,8 +196,8 @@ class FileManager {
     openErrorMessage = null;
     fullPathName = fileName = "string[]";
     inlineDataArray = arrayModels;
-    isInline = true;
-    isDOM = false;
+    //isInline = true;
+    //isDOM = false;
     String[] fullPathNames = new String[arrayModels.length];
     StringReader[] readers = new StringReader[arrayModels.length];
     for (int i = 0; i < arrayModels.length; i++) {
@@ -212,8 +212,8 @@ class FileManager {
     openErrorMessage = null;
     fullPathName = fileName = "JSNode";
     inlineData = "";
-    isInline = false;
-    isDOM = true;
+    //isInline = false;
+    //isDOM = true;
     aDOMOpenThread = new DOMOpenThread(DOMNode);
     aDOMOpenThread.run();
   }
@@ -457,7 +457,7 @@ class FileManager {
   }
 
   class DOMOpenThread implements Runnable {
-    boolean terminated;
+    //boolean terminated;
     String errorMessage;
     Object aDOMNode;
     Object clientFile;
@@ -469,12 +469,12 @@ class FileManager {
     public void run() {
       clientFile = modelAdapter.openDOMReader(aDOMNode);
       errorMessage = null;
-      terminated = true;
+      //terminated = true;
     }
   }
 
   class FileOpenThread implements Runnable {
-    boolean terminated;
+    //boolean terminated;
     String errorMessage;
     String fullPathNameInThread;
     String nameAsGivenInThread;
@@ -519,7 +519,7 @@ class FileManager {
       }
       if (errorMessage != null)
         Logger.error("file ERROR: " + fullPathNameInThread + "\n" + errorMessage);
-      terminated = true;
+      //terminated = true;
     }
 
     private void openBufferedReader(BufferedReader reader) {
@@ -533,7 +533,7 @@ class FileManager {
   }
   
   class FilesOpenThread implements Runnable {
-    boolean terminated;
+    //boolean terminated;
     String errorMessage;
     String[] fullPathNameInThread;
     String[] nameAsGivenInThread;
@@ -561,7 +561,7 @@ class FileManager {
             errorMessage = (t == null
                             ? "error opening:" + nameAsGivenInThread[i]
                             : (String)t);
-            terminated = true;
+            //terminated = true;
             return;
           }
           istream[i] = (InputStream) t;
@@ -570,7 +570,7 @@ class FileManager {
       }
       if (errorMessage != null)
         Logger.error("file ERROR: " + errorMessage);
-      terminated = true;
+      //terminated = true;
     }
 
     private void openInputStream(InputStream[] istream) {

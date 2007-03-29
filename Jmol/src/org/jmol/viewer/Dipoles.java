@@ -51,8 +51,6 @@ class Dipoles extends Shape {
   boolean isUserValue;
   boolean isBond;
   boolean iHaveTwoEnds;
-  boolean iHaveTwoAtoms;
-  boolean isValid;
   int atomIndex1;
   int atomIndex2;
   short colix;
@@ -70,7 +68,7 @@ class Dipoles extends Shape {
       atomIndex1 = -1;
       tempDipole.modelIndex = -1;
       dipoleValue = 0;
-      isValid = isUserValue = isBond = iHaveTwoEnds = iHaveTwoAtoms = false;
+      isUserValue = isBond = iHaveTwoEnds = false;
       if (currentDipole != null)
         Logger.debug("current dipole: " + currentDipole.thisID);
       return;
@@ -251,7 +249,6 @@ class Dipoles extends Shape {
     
     if ("endSet" == propertyName) {
       iHaveTwoEnds = true;
-      iHaveTwoAtoms = true;
       BitSet atomset = (BitSet) value;
       if (atomIndex1 >= 0 && Viewer.cardinalityOf(atomset) == 1) {
         atomIndex2 = viewer.firstAtomOf(atomset);
@@ -298,7 +295,6 @@ class Dipoles extends Shape {
     if ("set" == propertyName) {
       if (isBond || !iHaveTwoEnds)
         return;
-      isValid = true;
       setDipole();
       setModelIndex();
       return;
@@ -412,8 +408,8 @@ class Dipoles extends Shape {
     dipoles = (Dipole[]) ArrayUtil.ensureLength(dipoles, dipoleCount + 1);
     if (thisID == null || thisID.length() == 0)
       thisID = "dipole" + (dipoleCount + 1);
-    Dipole d = dipoles[dipoleCount++] = new Dipole(viewer, thisID, dipoleInfo,
-        g3d, colix, DEFAULT_MAD, true);
+    Dipole d = dipoles[dipoleCount++] = new Dipole(viewer.getCurrentModelIndex(), 
+        thisID, dipoleInfo, colix, DEFAULT_MAD, true);
     return d;
   }
 

@@ -735,7 +735,7 @@ abstract class TransformManager {
   Point4f slabPlane = null;
   Point4f depthPlane = null;
   Point3f slabRef = new Point3f(0, 0, 0);
-  float slabRefDistance, depthRefDistance;
+  float slabRefDistance;//, depthRefDistance;
   
   void depthToPercent(int percentDepth) {
     depthPercentSetting = percentDepth;
@@ -859,7 +859,7 @@ abstract class TransformManager {
           slabRef.z -= 0.12334;
           slabRefDistance = Graphics3D.distanceToPlane(plane, slabRef);
         }
-        depthRefDistance = Graphics3D.distanceToPlane(depthPlane, slabRef);
+        //depthRefDistance = Graphics3D.distanceToPlane(depthPlane, slabRef);
       }      
     }
     float d = Graphics3D.distanceToPlane(isDepth ? depthPlane : slabPlane, pt);
@@ -1090,15 +1090,15 @@ abstract class TransformManager {
    ****************************************************************/
   //boolean tOversample;
   int width, height;
-  int width1, height1;//, width4, height4;
+  //int width1, height1;//, width4, height4;
   int screenPixelCount;
   float scalePixelsPerAngstrom;
   float scaleDefaultPixelsPerAngstrom;
 
   void setScreenDimension(int width, int height, boolean useZoomLarge) {
-    this.width1 = this.width = width;
+    this.width = width; //this.width1 = 
    // this.width4 = width + width;
-    this.height1 = this.height = height;
+    this.height = height; //this.height1 = 
   //  this.height4 = height + height;
     scaleFitToScreen(false, useZoomLarge);
   }
@@ -1382,7 +1382,7 @@ abstract class TransformManager {
    * move/moveTo support
    ****************************************************************/
 
-  void move(Vector3f dRot, int dZoom, Vector3f dTrans, int dSlab,
+  void move(Vector3f dRot, float dZoom, Vector3f dTrans, float dSlab,
             float floatSecondsTotal, int fps) {
     int slab = getSlabPercentSetting();
     float transX = getTranslationXPercent();
@@ -1416,7 +1416,7 @@ abstract class TransformManager {
       if (dTrans.z != 0)
         translateToZPercent(transZ + dTrans.z * i / totalSteps);
       if (dSlab != 0)
-        slabToPercent(slab + dSlab * i / totalSteps);
+        slabToPercent((int)(slab + dSlab * i / totalSteps));
       int timeSpent = (int) (System.currentTimeMillis() - timeBegin);
       int timeAllowed = i * timePerStep;
       if (timeSpent < timeAllowed) {

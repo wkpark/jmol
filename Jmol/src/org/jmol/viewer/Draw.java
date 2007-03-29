@@ -52,8 +52,6 @@ class Draw extends MeshCollection {
   BitSet[] ptBitSets = new BitSet[MAX_POINTS];
   BitSet bsAllAtoms = new BitSet();
   Vector3f offset = new Vector3f();
-  Point3f xyz = new Point3f();
-  //int ipt;
   int nPoints;
   int nbitsets;
   int ncoord;
@@ -680,6 +678,7 @@ class Draw extends MeshCollection {
     switch (modifiers & MouseManager.BUTTON_MODIFIER_MASK) {
     case MouseManager.SHIFT_LEFT:
       moveAll = true;
+      //fall through
     case MouseManager.ALT_LEFT:
       move2D(pickedMesh, pickedMesh.polygonIndexes[pickedModel], pickedVertex,
           prevX + deltaX, prevY + deltaY, moveAll);
@@ -778,7 +777,8 @@ class Draw extends MeshCollection {
       str.append(" CURVE");
       break;
     case Mesh.DRAW_LINE:
-      nVertices++;
+      nVertices += 2;
+      break;
     case Mesh.DRAW_POINT:
       nVertices++;
       break;
@@ -795,7 +795,7 @@ class Draw extends MeshCollection {
       str.append(getVertexList(mesh, iModel, nVertices));
     }
     str.append(";\n").append(getColorCommand("draw", mesh.colix)).append(";");
-    
+
     return str.toString();
   }
 
@@ -837,7 +837,8 @@ class Draw extends MeshCollection {
       str.append(" CURVE");
       break;
     case Mesh.DRAW_LINE:
-      nVertices++;
+      nVertices += 2;
+      break;
     case Mesh.DRAW_POINT:
       nVertices++;
       break;

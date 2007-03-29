@@ -188,7 +188,6 @@ class Isosurface extends IsosurfaceMeshCollection {
   float eccentricityRatio;
 
   boolean isAngstroms;
-  int tokProperty;
   float scale;
   Matrix3f eccentricityMatrix;
   Matrix3f eccentricityMatrixInverse;
@@ -202,7 +201,6 @@ class Isosurface extends IsosurfaceMeshCollection {
   final static int CAN_CONTOUR = 1 << 9;
   int dataType;
   int surfaceType;
-  int mappingType;
 
   final static int SURFACE_NONE = 0;
 
@@ -879,7 +877,6 @@ class Isosurface extends IsosurfaceMeshCollection {
       thisMesh.nBytes = nBytes;
       if (colorByPhase || colorBySign) {
         state = STATE_DATA_COLORED;
-        mappingType = dataType;
         applyColorScale(thisMesh);
       }
       if (colorScheme.equals("sets")) {
@@ -912,7 +909,6 @@ class Isosurface extends IsosurfaceMeshCollection {
           return;
         }
       }
-      mappingType = dataType;
       checkFlags();
       if (thePlane != null) {
         createIsosurface(); //for the plane
@@ -1024,7 +1020,6 @@ class Isosurface extends IsosurfaceMeshCollection {
     isEccentric = isAnisotropic = false;
     scale = Float.NaN;
     isAngstroms = false;
-    tokProperty = 0;
     resolution = Float.MAX_VALUE;
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     distance = Float.MAX_VALUE;
@@ -1058,7 +1053,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     state = STATE_INITIALIZED;
     assocGridPointMap = new Hashtable();
     assocGridPointNormals = new Hashtable();
-    dataType = surfaceType = mappingType = SURFACE_NONE;
+    dataType = surfaceType = SURFACE_NONE;
   }
 
   void setEccentricity(Point4f info) {
@@ -1736,7 +1731,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   int jvxlEdgeDataCount;
   int jvxlColorDataCount;
   boolean jvxlDataIsColorMapped;
-  boolean jvxlDataisBicolorMap;
+  //boolean jvxlDataisBicolorMap;
   boolean jvxlDataIsPrecisionColor;
   boolean jvxlWritePrecisionColor;
   boolean jvxlDataIs2dContour;
@@ -1748,7 +1743,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     jvxlDataIs2dContour = false;
     jvxlDataIsColorMapped = false;
     jvxlDataIsPrecisionColor = false;
-    jvxlDataisBicolorMap = false;
+    //jvxlDataisBicolorMap = false;
     jvxlWritePrecisionColor = false;
   }
 
@@ -1821,7 +1816,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
 
     jvxlDataIsPrecisionColor = (param1 == -1 && param2 == -2 || param3 < 0);
-    isBicolorMap = jvxlDataisBicolorMap = (param1 > 0 && param2 < 0);
+    isBicolorMap = (param1 > 0 && param2 < 0);
     jvxlDataIsColorMapped = (param3 != 0);
     jvxlDataIs2dContour = (jvxlDataIsColorMapped && isContoured);
 
@@ -3478,20 +3473,20 @@ class Isosurface extends IsosurfaceMeshCollection {
     int nOutside;
     int nThrough;
     int contourBits;
-    int x, y;
-    Point3f origin;
+    //int x, y;
+    //Point3f origin;
     int[] vertexes;
     int[][] intersectionPoints;
 
-    PlanarSquare(Point3f origin, int x, int y) {
+    PlanarSquare() {
       edgeMask12 = new int[nContours];
       intersectionPoints = new int[nContours][4];
       vertexes = new int[4];
       edgeMask12All = 0;
       contourBits = 0;
-      this.origin = origin;
-      this.x = x;
-      this.y = y;
+      //this.origin = origin;
+      //this.x = x;
+      //this.y = y;
     }
 
     void setIntersectionPoints(int contourIndex, int[] pts) {
@@ -3552,7 +3547,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     nSquares = 0;
     for (int x = 0; x < squareCountX; x++)
       for (int y = 0; y < squareCountY; y++)
-        planarSquares[nSquares++] = new PlanarSquare(null, x, y);
+        planarSquares[nSquares++] = new PlanarSquare();
     Logger.info("nSquares = " + nSquares);
   }
 
@@ -3915,20 +3910,6 @@ class Isosurface extends IsosurfaceMeshCollection {
   // Bits 2 and 3 are set, so edges 2 and 3 intersect the contour.
 
   ////////// debug utility methods /////////
-
-  String binaryString(int value) {
-    String str = "0b";
-    if (value == 0)
-      return "0";
-    int i = 0;
-    while (value != 0) {
-      str += (value % 2 == 1 ? "1" : "0");
-      value = value >> 1;
-      if (i++ != 0 && i % 4 == 0)
-        str += " ";
-    }
-    return str;
-  }
 
   String dumpArray(String msg, float[][] A, int x1, int x2, int y1, int y2) {
     String s = "dumpArray: " + msg + "\n";

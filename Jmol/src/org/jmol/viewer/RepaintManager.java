@@ -148,9 +148,8 @@ class RepaintManager {
   }
   */
 
-  void render(Graphics3D g3d, Rectangle rectClip,
-                     Frame frame, int displayModelID) {
-    frameRenderer.render(g3d, rectClip, frame, displayModelID);
+  void render(Graphics3D g3d, Frame frame) {//, Rectangle rectClip
+    frameRenderer.render(g3d, frame); //, rectClip
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null && g3d.setColix(viewer.getColixRubberband()))
       g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);

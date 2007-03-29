@@ -49,8 +49,8 @@ class IsosurfaceMesh extends Mesh {
   int nBytes;
   int nContours;  
   
-  IsosurfaceMesh(Viewer viewer, String thisID, Graphics3D g3d, short colix) {
-    super(viewer, thisID, g3d, colix);
+  IsosurfaceMesh(String thisID, Graphics3D g3d, short colix) {
+    super(thisID, g3d, colix);
   }
 
 }

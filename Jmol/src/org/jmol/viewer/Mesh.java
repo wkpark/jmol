@@ -36,7 +36,6 @@ import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
 class Mesh {
-  Viewer viewer;
   String[] title = null;
   String thisID;
   boolean isValid = true;
@@ -119,8 +118,7 @@ class Mesh {
   
   Mesh() {}
   
-  Mesh(Viewer viewer, String thisID, Graphics3D g3d, short colix) {
-    this.viewer = viewer;
+  Mesh(String thisID, Graphics3D g3d, short colix) {
     this.thisID = thisID;
     this.g3d = g3d;
     this.colix = colix;

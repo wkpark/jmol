@@ -127,17 +127,16 @@ import java.util.BitSet;
 
 class EnvelopeCalculation {
 
-  Viewer viewer;
+  //Viewer viewer;
   Frame frame;
   Atom[] atoms;
   short[] mads;
   int atomCount;
   
-  EnvelopeCalculation(Viewer viewer, Atom[] atoms, short[] mads) {
-    this.viewer = viewer;
+  EnvelopeCalculation(Frame frame, Atom[] atoms, short[] mads) {
     this.atoms = atoms;
     this.mads = mads;
-    frame = viewer.getFrame();
+    this.frame = frame;
     atomCount = atoms.length;
     geodesicCount = Geodesic3D.vertexVectors.length;
     geodesicMap = allocateBitmap(geodesicCount);
@@ -150,16 +149,12 @@ class EnvelopeCalculation {
   
   static int MAX_LEVEL = 3;
   
-  short mad = 0;
-  short lastMad = 0;
-  float lastSolventRadius = 0;
   float maxRadius = 0;
   float scale = 1f;
   float setRadius = Float.MAX_VALUE;
   float addRadius = Float.MAX_VALUE;
   int dotsConvexMax; // the Max == the highest atomIndex with dots + 1
   int[][] dotsConvexMaps;
-  //private final static int nArcPoints = 9;  
   
   int geodesicCount;
   int[] geodesicMap;
@@ -167,7 +162,6 @@ class EnvelopeCalculation {
   final static int[] mapNull = new int[0];
   
   BitSet bsSurface; 
-  //boolean calcDistanceOnly;
   boolean useVanderwaalsRadius;
   boolean disregardNeighbors = false;
   boolean onlySelectedDots = false;
@@ -177,14 +171,8 @@ class EnvelopeCalculation {
   float radiusI;
   float radiusP, diameterP;
   float radiiIP2;
-  //float distanceIJ2;
   final Point3f pointT = new Point3f();
-
-
-  boolean isSurface = false;
-  //boolean isCalcOnly;
   
-
   void setMads(short[] mads) {
     this.mads = mads;
   }

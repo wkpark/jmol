@@ -51,7 +51,7 @@ class ModelManager {
   String fullPathName;
   String fileName;
   String modelSetName;
-  boolean haveFile;
+  //boolean haveFile;
 
 
   ModelManager(Viewer viewer) {
@@ -60,7 +60,7 @@ class ModelManager {
 
   void clear() {
     fullPathName = fileName = modelSetName = null;
-    haveFile = false;
+    //haveFile = false;
     clearFrame();
   }
 
@@ -78,7 +78,7 @@ class ModelManager {
   
   void merge(JmolAdapter adapter, Object clientFile ) {
     frame = new Frame(viewer, adapter, clientFile, frame);
-    haveFile = true;
+    //haveFile = true;
     if (frame.atomCount == 0)
       zap();
   }
@@ -100,7 +100,7 @@ class ModelManager {
       modelSetName = reduceFilename(fileName);
     clearFrame();
     frame = new Frame(viewer, adapter, clientFile, null);
-    haveFile = true;
+    //haveFile = true;
     if (frame.atomCount == 0)
       zap();
   }
@@ -1308,7 +1308,7 @@ String getAtomInfoChime(int i) {
     frame.getBondDipoles();
   }
 
-  boolean modelsHaveSymmetry() {
+  boolean useXtalDefaults() {
     return (frame.someModelsHaveSymmetry);
   }
 

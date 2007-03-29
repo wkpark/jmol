@@ -31,8 +31,6 @@ import org.jmol.g3d.Graphics3D;
 
 class Dipole {
   
-  Viewer viewer;
-  Graphics3D g3d;
   String thisID = "";
   short mad;
   short colix = 0;
@@ -71,13 +69,11 @@ class Dipole {
   Dipole() {
   }
 
-  Dipole(Viewer viewer, String thisID, String dipoleInfo, Graphics3D g3d,
+  Dipole(int modelIndex, String thisID, String dipoleInfo,
       short colix, short mad, boolean visible) {
-    this.viewer = viewer;
-    this.modelIndex = viewer.getCurrentModelIndex();
+    this.modelIndex = modelIndex;
     this.thisID = thisID;
     this.dipoleInfo = dipoleInfo;
-    this.g3d = g3d;
     this.colix = colix;
     this.mad = mad;
     this.visible = visible;

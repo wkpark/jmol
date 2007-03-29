@@ -844,9 +844,9 @@ final public class JmolConstants {
   public final static short BOND_ALL_MASK      = 0x1FFF;
 
   public final static short BOND_COVALENT_MASK   = 0x07;
-  public final static short BOND_COVALENT_SINGLE = 1;
-  public final static short BOND_COVALENT_DOUBLE = 2;
-  public final static short BOND_COVALENT_TRIPLE = 3;
+  public final static short BOND_COVALENT_SINGLE = 1;   //actually, this MUST be 1
+  public final static short BOND_COVALENT_DOUBLE = 2;   //actually, this MUST be 2
+  public final static short BOND_COVALENT_TRIPLE = 3;   //actually, this MUST be 3
   public final static short BOND_COVALENT_QUADRUPLE = 4;
   public final static short BOND_ORDER_UNSPECIFIED = 7;
   

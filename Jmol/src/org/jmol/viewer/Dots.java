@@ -44,11 +44,9 @@ class Dots extends AtomShape {
   float thisRadius;
   int thisArgb;
 
-  short mad = 0;
+  //short mad = 0;
   short lastMad = 0;
   float lastSolventRadius = 0;
-  
-  boolean TIMINGS = true;
   
   long timeBeginExecution;
   long timeEndExecution;
@@ -62,7 +60,7 @@ class Dots extends AtomShape {
 
     translucentAllowed = false; //except for geosurface
     super.initShape();
-    ec = new EnvelopeCalculation(viewer, atoms, mads);
+    ec = new EnvelopeCalculation(frame, atoms, mads);
     
   }
 
@@ -139,7 +137,7 @@ class Dots extends AtomShape {
     bsSelected = null;
     isActive = false;
     if (ec == null)
-      ec = new EnvelopeCalculation(viewer, atoms, mads);
+      ec = new EnvelopeCalculation(frame, atoms, mads);
     ec.initialize();
   }
   

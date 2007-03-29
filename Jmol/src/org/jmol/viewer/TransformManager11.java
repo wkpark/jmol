@@ -198,7 +198,7 @@ class TransformManager11 extends TransformManager {
     switch (navMode) {
     case NAV_MODE_RESET:
       //simply place the navigation center front and center and recalculate modelCenterOffset
-      navigationOffset.set(width / 2, height / 2, referencePlaneOffset);
+      navigationOffset.set(width / 2f, height / 2f, referencePlaneOffset);
       zoomFactor = Float.MAX_VALUE;
       calcCameraFactors();
       calcTransformMatrix();
@@ -466,11 +466,11 @@ class TransformManager11 extends TransformManager {
     transformPoint(navigationCenter, navigationOffset);
     if (seconds >= 0) {
       if (!Float.isNaN(x))
-        x = width * x / 100
-            + (Float.isNaN(y) ? navigationOffset.x : (width / 2));
+        x = width * x / 100f
+            + (Float.isNaN(y) ? navigationOffset.x : (width / 2f));
       if (!Float.isNaN(y))
-        y = height * y / 100
-            + (Float.isNaN(x) ? navigationOffset.y : (height / 2));
+        y = height * y / 100f
+            + (Float.isNaN(x) ? navigationOffset.y : (height / 2f));
     }
     if (seconds > 0) {
       navigateTo(seconds, null, Float.NaN, null, Float.NaN, x, y);
@@ -720,8 +720,8 @@ class TransformManager11 extends TransformManager {
 
   float getNavigationOffsetPercent(char XorY) {
     transformPoint(navigationCenter, navigationOffset);
-    return (XorY == 'X' ? (navigationOffset.x - width / 2) * 100 / width
-        : (navigationOffset.y - height / 2) * 100 / height);
+    return (XorY == 'X' ? (navigationOffset.x - width / 2f) * 100f / width
+        : (navigationOffset.y - height / 2f) * 100f / height);
   }
 
   protected String getNavigationText() {

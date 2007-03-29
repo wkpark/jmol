@@ -56,7 +56,6 @@ class Polyhedra extends AtomShape {
 
   boolean isCollapsed;
   boolean iHaveCenterBitSet;
-  boolean iHaveVertexBitSet;
   boolean bondedOnly;
   boolean haveBitSetVertices;
   
@@ -78,7 +77,7 @@ class Polyhedra extends AtomShape {
       bsVertices = null;
       centers = null;
       bsVertexCount = new BitSet();
-      bondedOnly = isCollapsed = iHaveCenterBitSet = iHaveVertexBitSet = false;
+      bondedOnly = isCollapsed = iHaveCenterBitSet = false;
       drawEdges = EDGES_NONE;
       haveBitSetVertices = false;
     }
@@ -504,11 +503,10 @@ class Polyhedra extends AtomShape {
     final Atom centralAtom;
     final Atom[] vertices;
     int ptCenter;
-    int nPoints;
     boolean visible;
     final short[] normixes;
     byte[] planes;
-    int planeCount;
+    //int planeCount;
     int visibilityFlags = 0;
     boolean collapsed = false;
     float myFaceCenterOffset, myDistanceFactor;
@@ -518,11 +516,10 @@ class Polyhedra extends AtomShape {
       this.collapsed = isCollapsed;
       this.centralAtom = centralAtom;
       this.ptCenter = ptCenter;
-      this.nPoints = nPoints;
       this.vertices = new Atom[nPoints];
       this.visible = true;
       this.normixes = new short[planeCount];
-      this.planeCount = planeCount;
+      //this.planeCount = planeCount;
       this.planes = new byte[planeCount * 3];
       myFaceCenterOffset = faceCenterOffset;
       myDistanceFactor = distanceFactor;

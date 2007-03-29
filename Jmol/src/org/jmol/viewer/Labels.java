@@ -50,7 +50,6 @@ class Labels extends AtomShape {
   byte defaultPaletteID;
   int defaultAlignment;
   int defaultPointer;
-  int defaultZpos;
   byte zeroFontId;
   int zeroOffset;
 
@@ -58,12 +57,7 @@ class Labels extends AtomShape {
   
 
   //labels
-  
-  int labelOffsetX        = JmolConstants.LABEL_DEFAULT_X_OFFSET;
-  int labelOffsetY        = JmolConstants.LABEL_DEFAULT_Y_OFFSET;
-  int pointsLabelFontSize = JmolConstants.LABEL_DEFAULT_FONTSIZE;
-
-  
+    
   void initShape() {
     defaultFontId = zeroFontId = g3d.getFont3D(JmolConstants.DEFAULT_FONTFACE,
                                   JmolConstants.DEFAULT_FONTSTYLE,
@@ -191,7 +185,7 @@ class Labels extends AtomShape {
         if (bsSelected.get(i))
           setOffsets(i, offset, n++);
       if (n == 0 || !defaultsOnlyForNone)
-        defaultOffset = offset;
+        defaultOffset = offset | (defaultOffset & ZPOS_FLAGS);
       return;
     }
 
@@ -229,7 +223,10 @@ class Labels extends AtomShape {
         if (bsSelected.get(i))
           setFront(i, TF, n++);
       if (n == 0 || !defaultsOnlyForNone)
-        defaultZpos = TF ? FRONT_FLAG : 0;
+        defaultOffset = defaultOffset & ~ZPOS_FLAGS | (TF ? FRONT_FLAG : 0);
+      //FindBugs mission accomplished!
+      //if (n == 0 || !defaultsOnlyForNone)
+        //defaultZpos = TF ? GROUP_FLAG : 0;
       return;
     }
 
@@ -240,7 +237,10 @@ class Labels extends AtomShape {
         if (bsSelected.get(i))
           setGroup(i, TF, n++);
       if (n == 0 || !defaultsOnlyForNone)
-        defaultZpos = TF ? GROUP_FLAG : 0;
+        defaultOffset = defaultOffset & ~ZPOS_FLAGS | (TF ? GROUP_FLAG : 0);
+      //FindBugs mission accomplished!
+      //if (n == 0 || !defaultsOnlyForNone)
+        //defaultZpos = TF ? GROUP_FLAG : 0;
       return;
     }
 

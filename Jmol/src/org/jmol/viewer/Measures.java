@@ -33,7 +33,6 @@ import java.util.Hashtable;
 
 class Measures extends Shape {
 
-  //BitSet bsSizeSet;
   BitSet bsColixSet;
   BitSet bsSelected;
 
@@ -41,7 +40,6 @@ class Measures extends Shape {
   int measurementCount = 0;
   Measurement[] measurements = new Measurement[measurementGrowthIncrement];
   PendingMeasurement pendingMeasurement;
-  String[] formats = new String[5];
   short mad = (short)-1;
   short colix; // default to none in order to contrast with background
   String strFormat;

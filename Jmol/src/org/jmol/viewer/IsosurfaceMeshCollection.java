@@ -37,7 +37,7 @@ abstract class IsosurfaceMeshCollection extends MeshFileCollection {
   
   void allocMesh(String thisID) {
     meshes = isomeshes = (IsosurfaceMesh[])ArrayUtil.ensureLength(isomeshes, meshCount + 1);
-    currentMesh = thisMesh = isomeshes[meshCount++] = new IsosurfaceMesh(viewer, thisID, g3d, colix);
+    currentMesh = thisMesh = isomeshes[meshCount++] = new IsosurfaceMesh(thisID, g3d, colix);
   }
 
   void setProperty(String propertyName, Object value, BitSet bs) {

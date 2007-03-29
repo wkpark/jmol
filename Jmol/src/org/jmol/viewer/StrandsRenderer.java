@@ -42,7 +42,7 @@ class StrandsRenderer extends MpsRenderer {
   void setStrandCount(int strandCount) {
     this.strandCount = strandCount;
     strandSeparation = (strandCount <= 1) ? 0 : 1f / (strandCount - 1);
-    baseOffset = (strandCount % 2 == 0 ? strandSeparation / 2
+    baseOffset = ((strandCount & 1) == 0 ? strandSeparation / 2
         : strandSeparation);
   }
 

@@ -36,7 +36,7 @@ import java.util.BitSet;
 
 abstract class MpsRenderer extends MeshRenderer {
 
-  Mps.MpsShape thisChain;
+  //Mps.MpsShape thisChain;
 
   int aspectRatio;
   int hermiteLevel;
@@ -150,7 +150,7 @@ abstract class MpsRenderer extends MeshRenderer {
     if (!haveVisible)
       return false;
     ribbonBorder = viewer.getRibbonBorder();
-    thisChain = schain;
+    //thisChain = schain;
 
     // note that we are not treating a PhosphorusPolymer
     // as nucleic because we are not calculating the wing
@@ -467,8 +467,7 @@ abstract class MpsRenderer extends MeshRenderer {
     boolean isEccentric = (aspectRatio != 1 && wingVectors != null);
     int nHermites = (hermiteLevel + 1) * 2 + 1; // 4 for hermiteLevel = 1
     int nPer = (nHermites - 1) * 2 - 2; // 6 for hermiteLevel 1
-    Mesh mesh = meshes[i] = new Mesh(viewer, "mesh_" + shapeID + "_" + i, g3d,
-        (short) 0);
+    Mesh mesh = meshes[i] = new Mesh("mesh_" + shapeID + "_" + i, g3d, (short) 0);
     boolean variableRadius = (madBeg != madMid || madMid != madEnd);
     if (controlHermites == null || controlHermites.length < nHermites + 1) {
       controlHermites = new Point3f[nHermites + 1];
@@ -574,7 +573,7 @@ abstract class MpsRenderer extends MeshRenderer {
     wing.cross(Z, norm);
     wing.normalize();
     wing.scale(mad * 1.2f / 2000f);
-    Mesh mesh = meshes[i] = new Mesh(viewer, "mesh_" + shapeID + "_" + i, g3d,
+    Mesh mesh = meshes[i] = new Mesh("mesh_" + shapeID + "_" + i, g3d,
         (short) 0);
     aa.set(norm, (float) (2 * Math.PI / nPer));
     mat.set(aa);

@@ -60,7 +60,7 @@ abstract class MeshCollection extends Shape {
 
   void allocMesh(String thisID) {
     meshes = (Mesh[])ArrayUtil.ensureLength(meshes, meshCount + 1);
-    currentMesh = meshes[meshCount++] = new Mesh(viewer, thisID, g3d, colix);
+    currentMesh = meshes[meshCount++] = new Mesh(thisID, g3d, colix);
   }
 
   void initShape() {

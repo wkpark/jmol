@@ -27,8 +27,6 @@ package org.jmol.viewer;
 
 import org.jmol.g3d.*;
 
-import java.awt.Rectangle;
-
 class SticksRenderer extends ShapeRenderer {
 
   boolean showMultipleBonds;
@@ -40,9 +38,9 @@ class SticksRenderer extends ShapeRenderer {
   boolean hbondsBackbone;
   boolean bondsBackbone;
   boolean hbondsSolid;
-  boolean asBits;
   
   Atom atomA, atomB;
+  Bond bond;
   int xA, yA, zA;
   int xB, yB, zB;
   int dx, dy;
@@ -53,8 +51,6 @@ class SticksRenderer extends ShapeRenderer {
   short madBond;
 
   void render() {
-    asBits = false;//viewer.getTestFlag2();
-    
     endcaps = Graphics3D.ENDCAPS_SPHERICAL;
     showMultipleBonds = viewer.getShowMultipleBonds();
     modeMultipleBond = viewer.getModeMultipleBond();
@@ -65,17 +61,17 @@ class SticksRenderer extends ShapeRenderer {
     hbondsSolid = viewer.getHbondsSolid();
     Bond[] bonds = frame.bonds;
     for (int i = frame.bondCount; --i >= 0; ) {
-      Bond bond = bonds[i];
+      bond = bonds[i];
       if ((bond.shapeVisibilityFlags & myVisibilityFlag) != 0) 
-        render(bond);
+        renderBond();
     }
   }
 
-  void render(Bond bond) {
+  void renderBond() {
     madBond = bond.mad;
     int order = bond.order;
-    Atom atomA = bond.atom1;
-    Atom atomB = bond.atom2;
+    atomA = bond.atom1;
+    atomB = bond.atom2;
     if (!bond.atom1.isModelVisible()
         || !bond.atom2.isModelVisible()
         || !g3d.isInDisplayRange(atomA.screenX, atomA.screenY)
@@ -104,13 +100,7 @@ class SticksRenderer extends ShapeRenderer {
         atomB = getBackboneAtom(atomB);
       }
     }
-    render(bond, atomA, atomB);
-  }
-
-  void render(Bond bond, Atom atomA, Atom atomB) {
-    this.atomA = atomA;
     xA = atomA.screenX; yA = atomA.screenY; zA = atomA.screenZ;
-    this.atomB = atomB;
     xB = atomB.screenX; yB = atomB.screenY; zB = atomB.screenZ;
     if (zA ==1 || zB == 1)
       return;
@@ -233,17 +223,15 @@ class SticksRenderer extends ShapeRenderer {
     }
   }
 
-  int cylinderNumber;
-  int xAxis1, yAxis1, zAxis1, xAxis2, yAxis2, zAxis2, dxStep, dyStep;
+  int xAxis1, yAxis1, xAxis2, yAxis2, dxStep, dyStep;
 
   void resetAxisCoordinates(boolean lineBond) {
-    cylinderNumber = 0;
     int space = mag2d >> 3;
     int step = width + space;
     dxStep = step * dy / mag2d; dyStep = step * -dx / mag2d;
 
-    xAxis1 = xA; yAxis1 = yA; zAxis1 = zA;
-    xAxis2 = xB; yAxis2 = yB; zAxis2 = zB;
+    xAxis1 = xA; yAxis1 = yA; 
+    xAxis2 = xB; yAxis2 = yB; 
 
     if (bondOrder == 2) {
       xAxis1 -= dxStep / 2; yAxis1 -= dyStep / 2;
@@ -263,8 +251,6 @@ class SticksRenderer extends ShapeRenderer {
     xAxis2 += dxStep; yAxis2 += dyStep;
   }
 
-  Rectangle rectTemp = new Rectangle();
-  
   /*private boolean isClipVisible(int xA, int yA, int xB, int yB) {
     // this is not actually correct, but quick & dirty
     int xMin, width, yMin, height;
@@ -366,7 +352,7 @@ class SticksRenderer extends ShapeRenderer {
   }
 
   private int getAromaticDottedBondMask(Bond bond) {
-    Atom atomC = findAromaticNeighbor(bond);
+    Atom atomC = findAromaticNeighbor();
     if (atomC == null)
       return 1;
     int dxAC = atomC.screenX - xA;
@@ -374,7 +360,7 @@ class SticksRenderer extends ShapeRenderer {
     return (dx * dyAC - dy * dxAC) >= 0 ? 2 : 1;
   }
 
-  private Atom findAromaticNeighbor(Bond bond) {
+  private Atom findAromaticNeighbor() {
     Bond[] bonds = atomB.bonds;
     for (int i = bonds.length; --i >= 0; ) {
       Bond bondT = bonds[i];

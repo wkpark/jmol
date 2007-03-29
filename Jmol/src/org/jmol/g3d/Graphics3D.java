@@ -986,17 +986,17 @@ final public class Graphics3D {
                            Point3i screenC) {
     // primary method for Mesh
     drawTriangle(screenA.x, screenA.y, screenA.z, screenB.x, screenB.y,
-        screenB.z, screenC.x, screenC.y, screenC.z, false);
+        screenB.z, screenC.x, screenC.y, screenC.z);
   }
 
-  void drawTriangle(int xA, int yA, int zA, int xB, int yB,
-                    int zB, int xC, int yC, int zC, boolean notClipped) {
+  private void drawTriangle(int xA, int yA, int zA, int xB, int yB, int zB,
+                            int xC, int yC, int zC) {
     line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xA,
-        yA, zA, xB, yB, zB, notClipped);
-    line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xA,
-        yA, zA, xC, yC, zC, notClipped);
+        yA, zA, xB, yB, zB, false);
     line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xB,
-        yB, zB, xC, yC, zC, notClipped);
+        yB, zB, xC, yC, zC, false);
+    line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xA,
+        yA, zA, xC, yC, zC, false);
   }
 
   public void drawCylinderTriangle(int xA, int yA, int zA, int xB,

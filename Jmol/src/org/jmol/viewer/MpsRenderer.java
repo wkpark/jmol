@@ -69,7 +69,7 @@ abstract class MpsRenderer extends MeshRenderer {
   void render() {
     if (shape == null)
       return;
-    frontOnly = viewer.getTestFlag2();
+    //frontOnly = viewer.getTestFlag2();
     Mps mcps = (Mps) shape;
     for (int m = mcps.getMpsmodelCount(); --m >= 0;) {
       Mps.Mpsmodel mcpsmodel = mcps.getMpsmodel(m);

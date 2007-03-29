@@ -1190,8 +1190,8 @@ class Isosurface extends IsosurfaceMeshCollection {
       jvxlReadColorData(thisMesh);
     thisMesh.colix = getDefaultColix();
     thisMesh.jvxlExtraLine = jvxlExtraLine(1);
-    if (thePlane != null && iAddGridPoints)
-      addGridPointCube();
+    //if (thePlane != null && iAddGridPoints)
+      //addGridPointCube();
     return true;
   }
 
@@ -1214,6 +1214,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   }
 
   void addGridPointCube() {
+    thisMesh.firstViewableVertex = thisMesh.vertexCount;
     for (int x = 0; x < voxelCounts[0]; x += 5)
       for (int y = 0; y < voxelCounts[1]; y += 5)
         for (int z = 0; z < voxelCounts[2]; z += 5) {
@@ -1221,7 +1222,7 @@ class Isosurface extends IsosurfaceMeshCollection {
           addVertexCopy(pt, 0, false, "");
         }
   }
-
+  
   boolean isJvxl, isApbsDx;
   boolean endOfData;
 
@@ -1666,8 +1667,6 @@ class Isosurface extends IsosurfaceMeshCollection {
             case SURFACE_FILE:
             default:
               voxelValue = getNextVoxelValue();
-              if (voxelValue < 0)
-                Logger.debug("vv " +voxelValue);
             }
           }
           strip[z] = voxelValue;
@@ -1680,8 +1679,8 @@ class Isosurface extends IsosurfaceMeshCollection {
           if (logCube)
             if (x < 5 && y < 5 && z < 5) {
               voxelPtToXYZ(x, y, z, ptXyzTemp);
-              Logger.info("voxelData[" + x + "][" + y + "][" + z
-                  + "] xyz(Angstroms)=" + ptXyzTemp + " value=" + voxelValue);
+              Logger.info("draw voxelData_" + x + "_" + y + "_" + z
+                  + " " + StateManager.escape(ptXyzTemp) + " \"" + voxelValue+"\";");
             }
           if (inside == isInside(voxelValue, cutoff)) {
             dataCount++;
@@ -1907,8 +1906,10 @@ class Isosurface extends IsosurfaceMeshCollection {
   float nextVoxel() throws Exception {
     float voxelValue = parseFloat();
     if (Float.isNaN(voxelValue)) {
-      line = br.readLine();
-      if (line == null || Float.isNaN(voxelValue = parseFloat(line))) {
+      while ((line = br.readLine()) != null
+          && Float.isNaN(voxelValue = parseFloat(line))) {
+      }
+      if (line == null) {
         if (!endOfData)
           Logger.warn("end of file reading cube voxel data? nBytes=" + nBytes
               + " nDataPoints=" + nDataPoints + " (line):" + line);
@@ -2693,7 +2694,6 @@ class Isosurface extends IsosurfaceMeshCollection {
     for (int i = 8; --i >= 0;)
       vertexPoints[i] = new Point3i();
   }
-  final int[] surfacePointIndexes = new int[12];
   int cubeCountX, cubeCountY, cubeCountZ;
   int contourType; // 0, 1, or 2
 
@@ -2736,23 +2736,24 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
 
     int[][] isoPointIndexes = new int[cubeCountY * cubeCountZ][12];
-    for (int i = cubeCountY * cubeCountZ; --i >= 0;)
-      isoPointIndexes[i] = new int[12];
+    //for (int i = cubeCountY * cubeCountZ; --i >= 0;)
+      //isoPointIndexes[i] = new int[12];
     int insideCount = 0, outsideCount = 0, surfaceCount = 0;
     for (int x = cubeCountX; --x >= 0;) {
       for (int y = cubeCountY; --y >= 0;) {
         for (int z = cubeCountZ; --z >= 0;) {
           int[] voxelPointIndexes = propagateNeighborPointIndexes(x, y, z,
               isoPointIndexes);
+          System.out.println("generateSurfaceData " 
+              + " xyz " + x + " " + y + " " + z);
           int insideMask = 0;
           for (int i = 8; --i >= 0;) {
             Point3i offset = cubeVertexOffsets[i];
-            float voxelValue = voxelData[x + offset.x][y + offset.y][z
-                + offset.z];
-            vertexValues[i] = voxelValue;
             if (logCube)
               vertexPoints[i].set(x + offset.x, y + offset.y, z + offset.z);
-            if (isInside(voxelValue, cutoff))
+            if (isInside(
+                (vertexValues[i] = voxelData[x + offset.x][y + offset.y][z
+                    + offset.z]), cutoff))
               insideMask |= 1 << i;
           }
 
@@ -2814,8 +2815,7 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   final int[] nullNeighbor = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 
-  int[] propagateNeighborPointIndexes(int x, int y, int z,
-                                      int[][] isoPointIndexes) {
+  int[] propagateNeighborPointIndexes(int x, int y, int z, int[][] isoPointIndexes) {
     /*                     Y 
      *                      4 --------4--------- 5  
      *                     /|                   /|
@@ -2835,13 +2835,24 @@ class Isosurface extends IsosurfaceMeshCollection {
      *               3 ---------2-------- 2
      *              Z 
      * 
+     * We are running through the grid points in yz planes from high x --> low x
+     * and within those planes along strips from high y to low y
+     * and within those strips, from high z to low z. 
+     * 
+     * For each such cube, edges are traversed from high to low (11-->0)
+     * 
+     * Each edge has the potential to be "critical" and cross the surface.
+     * Setting -1 in voxelPointIndexes indicates that this edge needs checking.
+     * Otherwise, the crossing point for this edge is taken from the value
+     * already determined, because it has already been determined to be critical. 
+     * 
      */
     int cellIndex = y * cubeCountZ + z;
     int[] voxelPointIndexes = isoPointIndexes[cellIndex];
 
     boolean noXNeighbor = (x == cubeCountX - 1);
-    // the x neighbor is myself from my last pass through here
     if (noXNeighbor) {
+      // the x neighbor is myself from my last pass through here
       voxelPointIndexes[1] = -1;
       voxelPointIndexes[9] = -1;
       voxelPointIndexes[5] = -1;
@@ -2891,6 +2902,8 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   boolean processOneCubical(int insideMask, float cutoff,
                             int[] voxelPointIndexes, int x, int y, int z) {
+    
+    
     int edgeMask = insideMaskTable[insideMask];
     boolean isNaN = false;
     for (int iEdge = 12; --iEdge >= 0;) {
@@ -2906,6 +2919,11 @@ class Isosurface extends IsosurfaceMeshCollection {
       if (Float.isNaN(valueA) || Float.isNaN(valueB))
         isNaN = true;
       calcVertexPoints(x, y, z, vertexA, vertexB);
+      System.out.println("critical edge " + edgeCount + " index " + iEdge 
+          + " xyz " + x + " " + y + " " + z 
+          + " vertexA/B "+vertexA + " " + vertexB 
+          + " pointA/B "+ pointA + " " + pointB 
+          + " valueA/B " + valueA + " " + valueB);
       float fraction = calcSurfacePoint(cutoff, valueA, valueB,
           surfacePoints[iEdge]);
       if (isContoured) {
@@ -3033,12 +3051,13 @@ class Isosurface extends IsosurfaceMeshCollection {
    * 
    * 
    * type 0: x-edges: 0 2 4 6
-   * typw 1: y-edges: 8 9 10 11
+   * type 1: y-edges: 8 9 10 11
    * type 2: z-edges: 1 3 5 7
    * 
    * 
    * 
    */
+  
   final static int edgeTypeTable[] = { 0, 2, 0, 2, 0, 2, 0, 2, 1, 1, 1, 1 };
 
   final static byte edgeVertexes[] = { 0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6,
@@ -3238,6 +3257,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       { 2, 3, 8, 2, 8, 10, 0, 1, 8, 1, 10, 8 }, { 1, 10, 2 },
       { 1, 3, 8, 9, 1, 8 }, { 0, 9, 1 }, { 0, 3, 8 }, null };
 
+  
   ////////////////////////////////////////////////////////////////
   // contour plane implementation 
   ////////////////////////////////////////////////////////////////

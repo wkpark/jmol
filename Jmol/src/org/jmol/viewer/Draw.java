@@ -851,8 +851,9 @@ class Draw extends MeshCollection {
     if (mesh.drawTriangles)
       s += " mesh";
     if (!mesh.fillTriangles)
-      s += " nofill";
-    
+      s += " nofill";    
+    if (mesh.title != null)
+      s += " " + StateManager.escape(mesh.title[0]);
     appendCmd(str, s);
     appendCmd(str, getColorCommand("draw", mesh.colix));
     return str.toString();

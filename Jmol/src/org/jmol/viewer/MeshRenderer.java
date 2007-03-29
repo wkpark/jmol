@@ -30,30 +30,26 @@ import org.jmol.g3d.Graphics3D;
 
 abstract class MeshRenderer extends ShapeRenderer {
 
-  boolean iShowTriangles;
-  boolean iShowNormals;
-  boolean iHideBackground;
-  boolean isContoured;
-  boolean isBicolorMap;
-  short backgroundColix;
   Point3f[] vertices;
   Point3i[] screens;
   float[] vertexValues;
   Point3i pt0 = new Point3i();
   Point3i pt3 = new Point3i();
-  boolean frontOnly;
+  //boolean frontOnly;
   Vector3f[] transformedVectors;
-
+  boolean doMesh;
+  boolean isTranslucent;
+  int vertexCount;
+  
   boolean render1(Mesh mesh) {
-    return renderMesh(mesh, false, false, false);
+    return renderMesh(mesh);
   }
   
-  boolean renderMesh(Mesh mesh, boolean isPlane, boolean isContoured, boolean isBicolorMap) {
+  boolean renderMesh(Mesh mesh) {
     if (mesh == null || mesh.visibilityFlags == 0 || !g3d.setColix(mesh.colix))
       return false;
-    this.isContoured = isContoured;
-    this.isBicolorMap = isBicolorMap;
-    int vertexCount = mesh.vertexCount;
+    isTranslucent = Graphics3D.isColixTranslucent(mesh.colix);
+    vertexCount = mesh.vertexCount;
     if (vertexCount == 0)
       return false;
     vertices = mesh.vertices;
@@ -66,29 +62,23 @@ abstract class MeshRenderer extends ShapeRenderer {
         viewer.transformPoint(vertices[i], screens[i]);
         //System.out.println(i + " meshRender " + vertices[i] + screens[i]);
       }
-    iShowTriangles = viewer.getTestFlag3();
-    iShowNormals = viewer.getTestFlag4();
-    iHideBackground = (isPlane && mesh.hideBackground);
-    if (iHideBackground) {
-      backgroundColix = Graphics3D.getColix(viewer.getBackgroundArgb());
-    }
     boolean isDrawPickMode = (mesh.meshType == "draw" && viewer
         .getPickingMode() == JmolConstants.PICKING_DRAW);
     int drawType = mesh.drawType;
     if ((drawType == Mesh.DRAW_CURVE || drawType == Mesh.DRAW_ARROW)
-        && mesh.vertexCount >= 2) {
+        && vertexCount >= 2) {
       int diameter = (mesh.diameter > 0 ? mesh.diameter : 3);
-      for (int i = 0, i0 = 0; i < mesh.vertexCount - 1; i++) {
+      for (int i = 0, i0 = 0; i < vertexCount - 1; i++) {
         g3d.fillHermite(5, diameter, diameter, diameter, screens[i0],
             screens[i], screens[i + 1], screens[i
-                + (i + 2 == mesh.vertexCount ? 1 : 2)]);
+                + (i + 2 == vertexCount ? 1 : 2)]);
         i0 = i;
       }
     }
     switch (drawType) {
     case Mesh.DRAW_ARROW:
-      Point3i pt1 = screens[mesh.vertexCount - 2];
-      Point3i pt2 = screens[mesh.vertexCount - 1];
+      Point3i pt1 = screens[vertexCount - 2];
+      Point3i pt2 = screens[vertexCount - 1];
       Vector3f tip = new Vector3f(pt2.x - pt1.x, pt2.y - pt1.y, pt2.z - pt1.z);
       int diameter = (mesh.diameter > 0 ? mesh.diameter : 3);
       float d = tip.length();
@@ -111,22 +101,20 @@ abstract class MeshRenderer extends ShapeRenderer {
       break;
     default:
       if (mesh.drawTriangles)
-        renderTriangles(mesh, screens, false);
+        renderTriangles(mesh, false);
       if (mesh.fillTriangles)
-        renderTriangles(mesh, screens, true);
-      if (iShowNormals)
-        renderNormals(mesh, screens, vertexCount);
+        renderTriangles(mesh, true);
       if (mesh.showPoints)
-        renderPoints(mesh, screens, vertexCount);
+        renderPoints(mesh);
     }
     if (isDrawPickMode) {
-      renderHandles(mesh, screens, vertexCount);
+      renderHandles(mesh);
     }
     viewer.freeTempScreens(screens);
     return true;
   }
 
-  void renderHandles(Mesh mesh, Point3i[] screens, int vertexCount) {
+  void renderHandles(Mesh mesh) {
     switch (mesh.drawType) {
     case Mesh.DRAW_POINT:
     case Mesh.DRAW_ARROW:
@@ -151,7 +139,7 @@ abstract class MeshRenderer extends ShapeRenderer {
     }
   }
 
-  void renderPoints(Mesh mesh, Point3i[] screens, int vertexCount) {
+  void renderPoints(Mesh mesh) {
     short[] vertexColixes = mesh.vertexColixes;
     int iCount = (mesh.lastViewableVertex > 0 ? mesh.lastViewableVertex + 1
         : vertexCount);
@@ -162,50 +150,14 @@ abstract class MeshRenderer extends ShapeRenderer {
           g3d.setColix(vertexColixes[i]);
         g3d.fillSphereCentered(4, screens[i]);
       }
-    if (mesh.hasGridPoints && g3d.setColix(Graphics3D.GRAY)) {
-      for (int i = 0; i < iFirst; i++)
-        g3d.fillSphereCentered(2, screens[i]);
-    }
-    if (mesh.hasGridPoints && !isContoured && g3d.setColix(Graphics3D.GRAY)) {
-      for (int i = 1; i < vertexCount; i += 3) {
-        g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 1, screens[i],
-            screens[i + 1]);
-      }
-    }
   }
 
-  final Point3f ptTemp = new Point3f();
-  final Point3i ptTempi = new Point3i();
-
-  void renderNormals(Mesh mesh, Point3i[] screens, int vertexCount) {
-    //Logger.debug("mesh renderPoints: " + vertexCount);
-    if (!g3d.setColix(Graphics3D.WHITE))
-      return;
-    for (int i = vertexCount; --i >= 0;)
-      if (true || vertexValues != null && !Float.isNaN(vertexValues[i]))
-        if ((i % 3) == 0) { //investigate vertex normixes
-          ptTemp.set(mesh.vertices[i]);
-          short n = mesh.normixes[i];
-          // -n is an intensity2sided and does not correspond to a true normal index
-          if (n > 0) {
-            ptTemp.add(g3d.getNormixVector(n));
-            viewer.transformPoint(ptTemp, ptTempi);
-            g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 1,
-                screens[i], ptTempi);
-          }
-        }
-  }
-
-  void renderTriangles(Mesh mesh, Point3i[] screens, boolean fill) {
+  void renderTriangles(Mesh mesh, boolean fill) {
     int[][] polygonIndexes = mesh.polygonIndexes;
     short[] normixes = mesh.normixes;
     short colix = mesh.colix;
     short[] vertexColixes = mesh.vertexColixes;
-    short hideColix = 0;
-    try {
-      hideColix = vertexColixes[mesh.polygonIndexes[0][0]];
-    } catch (Exception e) {
-    }
+    g3d.setColix(mesh.colix);
     for (int i = mesh.polygonCount; --i >= 0;) {
       if (!mesh.isPolygonDisplayable(i))
         continue;
@@ -220,47 +172,28 @@ abstract class MeshRenderer extends ShapeRenderer {
         colixA = vertexColixes[iA];
         colixB = vertexColixes[iB];
         colixC = vertexColixes[iC];
-        if (isBicolorMap && (colixA != colixB || colixB != colixC))
-          continue;
-        //System.out.println("meshrender " + colixA + " " + colixB + " " + colixC);
       } else {
         colixA = colixB = colixC = colix;
       }
-      if (iHideBackground) {
-        if (colixA == hideColix && colixB == hideColix && colixC == hideColix)
-          continue;
-        if (colixA == hideColix)
-          colixA = backgroundColix;
-        if (colixB == hideColix)
-          colixB = backgroundColix;
-        if (colixC == hideColix)
-          colixC = backgroundColix;
-      }
       if (iB == iC) {
-        int diameter = (mesh.diameter> 0 ? mesh.diameter : iA == iB ? 6
-            : 3);
+        int diameter = (mesh.diameter > 0 ? mesh.diameter : iA == iB ? 6 : 3);
         g3d.setColix(colixA);
-        g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, diameter, screens[iA], screens[iB]);
+        g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, diameter, screens[iA],
+            screens[iB]);
       } else if (vertexIndexes.length == 3) {
-        if (fill)
-          if (iShowTriangles)
-            g3d.fillTriangle(screens[iA], colixA, normixes[iA],
-                screens[iB], colixB, normixes[iB], screens[iC], colixC,
-                normixes[iC], 0.1f);
-          else {
-            if (frontOnly && transformedVectors[normixes[iA]].z < 0 &&
-                transformedVectors[normixes[iB]].z < 0 &&
-                transformedVectors[normixes[iC]].z < 0)
-              continue;
-            try{
+        if (fill) {
+          //if (frontOnly && transformedVectors[normixes[iA]].z < 0
+            //  && transformedVectors[normixes[iB]].z < 0
+              //&& transformedVectors[normixes[iC]].z < 0)
+            //continue;
+          try {
             g3d.fillTriangle(screens[iA], colixA, normixes[iA], screens[iB],
                 colixB, normixes[iB], screens[iC], colixC, normixes[iC]);
-            }catch(Exception e) {
-              //TODO  I can't track this one down -- happened once, not second time, with script running to create isosurface plane for slabbing
-              System.out.println("MeshRenderer bug?"+ e);
-            }
+          } catch (Exception e) {
+            //TODO  I can't track this one down -- happened once, not second time, with script running to create isosurface plane for slabbing
+            System.out.println("MeshRenderer bug?" + e);
           }
-        else
+        } else
           // FIX ME ... need a drawTriangle routine with multiple colors
           g3d.drawTriangle(screens[iA], screens[iB], screens[iC]);
 
@@ -268,11 +201,11 @@ abstract class MeshRenderer extends ShapeRenderer {
         int iD = vertexIndexes[3];
         short colixD = vertexColixes != null ? vertexColixes[iD] : colix;
         if (fill) {
-          if (frontOnly && transformedVectors[normixes[iA]].z < 0 &&
-              transformedVectors[normixes[iB]].z < 0 &&
-              transformedVectors[normixes[iC]].z < 0 &&
-              transformedVectors[normixes[iD]].z < 0)
-            continue;
+          //if (frontOnly && transformedVectors[normixes[iA]].z < 0
+            //  && transformedVectors[normixes[iB]].z < 0
+              //&& transformedVectors[normixes[iC]].z < 0
+              //&& transformedVectors[normixes[iD]].z < 0)
+            //continue;
           g3d.fillQuadrilateral(screens[iA], colixA, normixes[iA], screens[iB],
               colixB, normixes[iB], screens[iC], colixC, normixes[iC],
               screens[iD], colixD, normixes[iD]);
@@ -280,9 +213,10 @@ abstract class MeshRenderer extends ShapeRenderer {
           g3d.drawQuadrilateral(colixA, screens[iA], screens[iB], screens[iC],
               screens[iD]);
 
-//      } else {
-  //      Logger.debug("MeshRenderer: polygon with > 4 sides");
+        //      } else {
+        //      Logger.debug("MeshRenderer: polygon with > 4 sides");
       }
     }
   }
+
 }

@@ -2067,6 +2067,8 @@ public class Viewer extends JmolViewer {
     s.append(global.getWindowState());
     //  file state
     s.append(fileManager.getState());
+    if (modelManager.fileName.equals("zapped"))
+      s.append("zap;\n\n");
     //  numerical values
     s.append(global.getState());
     getDataState(s);

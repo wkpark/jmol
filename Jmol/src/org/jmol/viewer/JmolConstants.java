@@ -34,13 +34,23 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2007 Jmol Development";
-  public final static String version = "11.1.27";
+  public final static String version = "11.1.28";
   
   /*
    *
    * 
    * 
    *
+   11.1.28 fixes bugs found by FindBugs:
+   
+   labels:  default z setting for labels (set labelFront, set labelGroup, set labelAtom) 
+            was not being recorded properly
+   move:    with slab or zoom was doing integer math
+   GhemicalMMReader -- was incorrectly assigning aromatic to bond type 4 via fall-through of switch
+   
+   adds xodydata reading of "boundary" as unitcell
+   enhances default axis rendering for axes unitcell
+   
    11.1.27
      fixes two state bugs: 
      1) dots/geosurface not being saved properly in state

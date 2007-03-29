@@ -6912,10 +6912,17 @@ class Eval { //implements Runnable {
     }
     if (len == 0)
       len = data.length();
+    if (isImage) {
+      if (width < 0)
+        width = viewer.getScreenWidth();
+      if (height < 0)
+        height = viewer.getScreenHeight();
+    }
     viewer.createImage(fileName, data, quality, width, height);
     viewer.scriptStatus("type=" + type + "; file="
         + (fileName == null ? "CLIPBOARD" : fileName)
-        + (len >= 0 ? "; length=" + len : ""));
+        + (len >= 0 ? "; length=" + len : "")
+        + (isImage ? "; width=" + width + "; height=" + height : ""));
   }
 
   /* ****************************************************************************

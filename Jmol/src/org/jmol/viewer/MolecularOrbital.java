@@ -44,6 +44,7 @@ class MolecularOrbital extends Isosurface {
   // these are globals, stored here and only passed on when the they are needed. 
 
   String moTranslucency = null;
+  Float moTranslucentLevel = null;
   Point4f moPlane = null;
   Float moCutoff = new Float(Isosurface.defaultQMOrbitalCutoff);
   Float moResolution = null;
@@ -112,13 +113,11 @@ class MolecularOrbital extends Isosurface {
     }
 
     if ("color" == propertyName) {
-      if (currentMesh == null)
-        return;      
-      thisModel = (Hashtable) htModels.get(currentMesh.thisID);
+      thisModel.remove("moTranslucency");
       super.setProperty("color", value, bs);
-      //fall through
       propertyName = "colorRGB";
       myColorPt = 0;
+      //fall through
     }
     
     if ("colorRGB" == propertyName) {
@@ -145,6 +144,16 @@ class MolecularOrbital extends Isosurface {
       return;
     }
 
+    if ("translucentLevel" == propertyName) {
+      if (thisModel == null) {
+        if (currentMesh == null)
+          return;      
+        thisModel = (Hashtable) htModels.get(currentMesh.thisID);        
+      }
+      thisModel.put("moTranslucentLevel", value);
+      //pass through
+    }
+
     if ("translucency" == propertyName) {
       if (thisModel == null) {
         if (currentMesh == null)
@@ -168,9 +177,8 @@ class MolecularOrbital extends Isosurface {
   }
   
   Object getProperty(String propertyName, int param) {
-    if (propertyName == "moNumber") {
-      return (moNumber == 0 ? null : new Integer(moNumber));
-    }
+    if (propertyName == "moNumber")
+      return new Integer(moNumber);
     if (propertyName == "showMO") {
       StringBuffer str = new StringBuffer();
       String infoType = "jvxlFileData";
@@ -208,6 +216,7 @@ class MolecularOrbital extends Isosurface {
     if (thisModel == null)
       return false;
     moTranslucency = (String)thisModel.get("moTranslucency");
+    moTranslucentLevel = (Float)thisModel.get("moTranslucentLevel");
     moPlane = (Point4f)thisModel.get("moPlane");
     moCutoff = (Float )thisModel.get("moCutoff");
     if (moCutoff == null)
@@ -248,6 +257,8 @@ class MolecularOrbital extends Isosurface {
     }
     super.setProperty("title", moTitleFormat, null);
     super.setProperty("molecularOrbital", new Integer(moNumber), null);
+    if (moTranslucentLevel != null)
+      super.setProperty("translucenctLevel", moTranslucentLevel, null);
     if (moTranslucency != null)
       super.setProperty("translucency", moTranslucency, null);
     thisModel.put("mesh", currentMesh);
@@ -284,9 +295,9 @@ class MolecularOrbital extends Isosurface {
     if (moColorNeg != null)
       appendCmd(s, "mo color " + StateManager.escapeColor(moColorNeg.intValue())
           + (moColorNeg.equals(moColorPos) ? "" : " " + StateManager.escapeColor(moColorPos.intValue())));
-    if (moTranslucency != null)
-      appendCmd(s, "mo translucent");
     appendCmd(s, "mo " + moNumber);
+    if (moTranslucency != null)
+      appendCmd(s, "mo translucent " + moTranslucentLevel);
     appendCmd(s, getMeshState(currentMesh, "mo"));
     return s.toString();
   }

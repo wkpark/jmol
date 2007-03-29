@@ -974,7 +974,7 @@ class Eval { //implements Runnable {
         lcaoCartoon();
         break;
       case Token.mo:
-        mo();
+        mo(false);
         break;
       case Token.stereo:
         stereo();
@@ -3222,6 +3222,8 @@ class Eval { //implements Runnable {
       colorOrBgcolor = "bgcolor";
       getToken(++index);
     }
+    if (shapeType == JmolConstants.SHAPE_MO && !mo(true))
+      invalidArgument();
     if (theTok == Token.translucent || theTok == Token.opaque) {
       translucency = parameterAsString(index++);
     if (theTok == Token.translucent && isFloatParameter(index))
@@ -3288,7 +3290,6 @@ class Eval { //implements Runnable {
       //ok, the following five options require precalculation.
       //the state must not save them as paletteIDs, only as pure
       //color values. 
-
       switch (tok) {
       case Token.surfacedistance:
         viewer.getFrame().getSurfaceDistanceMax();
@@ -7739,23 +7740,21 @@ class Eval { //implements Runnable {
 
   int lastMoNumber = 0;
 
-  void mo() throws ScriptException {
+  boolean mo(boolean isInitOnly) throws ScriptException {
     int modelIndex = viewer.getDisplayModelIndex();
     if (!isSyntaxCheck && modelIndex < 0)
       multipleModelsNotOK();
     viewer.loadShape(JmolConstants.SHAPE_MO);
     setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(modelIndex));
-    Integer index = null;
     String title = null;
-    try {
-      index = (Integer) viewer.getShapeProperty(JmolConstants.SHAPE_MO,
-          "moNumber");
-    } catch (Exception e) {
-      // could just be the string "no current mesh"
-    }
-    int moNumber = (index == null ? Integer.MAX_VALUE : index.intValue());
-    if (moNumber == Integer.MAX_VALUE)
+    int moNumber = ((Integer) viewer.getShapeProperty(JmolConstants.SHAPE_MO,
+          "moNumber")).intValue();
+    if (isInitOnly)
+      return (moNumber != 0);
+    if (moNumber == 0 && !isSyntaxCheck) {
       lastMoNumber = 0;
+      moNumber = Integer.MAX_VALUE;
+    }
     String str;
     String propertyName = null;
     Object propertyValue = null;
@@ -7829,7 +7828,7 @@ class Eval { //implements Runnable {
     default:
       if (!setMeshDisplayProperty(JmolConstants.SHAPE_MO, theTok))
         invalidArgument();
-      return;
+      return true;
     }
     if (propertyName != null)
       setShapeProperty(JmolConstants.SHAPE_MO, propertyName, propertyValue);
@@ -7838,6 +7837,7 @@ class Eval { //implements Runnable {
         title = parameterAsString(2);
       setMoData(JmolConstants.SHAPE_MO, moNumber, title);
     }
+    return true;
   }
 
   void setMoData(int shape, int moNumber, String title) throws ScriptException {

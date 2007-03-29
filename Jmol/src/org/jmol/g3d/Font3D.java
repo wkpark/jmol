@@ -132,7 +132,7 @@ final public class Font3D {
   public final static int FONT_FACE_SERIF = 1;
   public final static int FONT_FACE_MONO  = 2;
   
-  public final static String[] fontFaces =
+  private final static String[] fontFaces =
   {"SansSerif", "Serif", "Monospaced", ""};
 
   public final static int FONT_STYLE_PLAIN      = 0;
@@ -140,7 +140,7 @@ final public class Font3D {
   public final static int FONT_STYLE_ITALIC     = 2;
   public final static int FONT_STYLE_BOLDITALIC = 3;
   
-  public final static String[] fontStyles =
+  private final static String[] fontStyles =
   {"Plain", "Bold", "Italic", "BoldItalic"};
   
   public static int getFontFaceID(String fontface) {

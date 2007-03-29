@@ -177,8 +177,13 @@ class Eval { //implements Runnable {
     return isExecuting && !interruptExecution.booleanValue();
   }
 
-  static Boolean interruptExecution = Boolean.FALSE;
-  static Boolean executionPaused = Boolean.FALSE;
+  //FindBugs suggest these should not be static -- sounds right to me;
+  // otherwise "halt" would halt script execution on ALL open applets -- not
+  // the desired idea here, I think. In addition, I think it would then 
+  // operate from any instance of eval. 
+  
+  private Boolean interruptExecution = Boolean.FALSE;
+  private Boolean executionPaused = Boolean.FALSE;
   boolean isExecuting = false;
 
   Thread currentThread = null;
@@ -3652,9 +3657,8 @@ class Eval { //implements Runnable {
         if (!isSyntaxCheck)
           viewer.setMeasurementFormats(stringParameter(1));
         return;
-      default:
-        keywordExpected("ON, OFF, DELETE");
       }
+      keywordExpected("ON, OFF, DELETE");
     case 3: //measure delete N
       if (getToken(1).tok == Token.delete) {
         if (getToken(2).tok == Token.all) {
@@ -4477,10 +4481,10 @@ class Eval { //implements Runnable {
     //rotx roty rotz zoom transx transy transz slab seconds fps
     Vector3f dRot = new Vector3f(floatParameter(1), floatParameter(2),
         floatParameter(3));
-    int dZoom = intParameter(4);
+    float dZoom = floatParameter(4);
     Vector3f dTrans = new Vector3f(intParameter(5), intParameter(6),
         intParameter(7));
-    int dSlab = intParameter(8);
+    float dSlab = floatParameter(8);
     float floatSecondsTotal = floatParameter(9);
     int fps = (statementLength == 11 ? intParameter(10) : 30);
     if (isSyntaxCheck)
@@ -5120,6 +5124,7 @@ class Eval { //implements Runnable {
     switch (getToken(1).tok) {
     case Token.on:
       animate = true;
+      //fall through
     case Token.off:
       if (!isSyntaxCheck)
         viewer.setAnimationOn(animate);
@@ -5333,6 +5338,7 @@ class Eval { //implements Runnable {
       switch (tok) {
       case Token.playrev:
         viewer.reverseAnimation();
+        //fall through
       case Token.play:
       case Token.resume:
         viewer.resumeAnimation();
@@ -5373,10 +5379,12 @@ class Eval { //implements Runnable {
       if (getToken(4).tok != Token.identifier)
         invalidArgument();
       fontstyle = parameterAsString(4);
+      //fall through
     case 4:
       if (getToken(3).tok != Token.identifier)
         invalidArgument();
       fontface = parameterAsString(3);
+      //fall through
     case 3:
       if (getToken(2).tok != Token.integer)
         integerExpected();

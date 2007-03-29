@@ -111,6 +111,16 @@ class MolecularOrbital extends Isosurface {
       return;
     }
 
+    if ("color" == propertyName) {
+      if (currentMesh == null)
+        return;      
+      thisModel = (Hashtable) htModels.get(currentMesh.thisID);
+      super.setProperty("color", value, bs);
+      //fall through
+      propertyName = "colorRGB";
+      myColorPt = 0;
+    }
+    
     if ("colorRGB" == propertyName) {
       moColorPos = (Integer) value;
       if (myColorPt++ == 0)
@@ -255,7 +265,6 @@ class MolecularOrbital extends Isosurface {
     StringBuffer s = new StringBuffer();
     if (modelCount > 1)
       appendCmd(s, "frame " + viewer.getModelNumber(modelIndex));
-    getSettings(strID);
     if (moCutoff != null)
       appendCmd(s, "mo cutoff " + (isPositiveOnly ? "+" : "") + moCutoff);
     if (moScale != null)
@@ -269,7 +278,7 @@ class MolecularOrbital extends Isosurface {
     //the following is a correct object==object test
     if (moColorNeg != null)
       appendCmd(s, "mo color " + StateManager.escapeColor(moColorNeg.intValue())
-          + (moColorNeg == moColorPos ? "" : " " + StateManager.escapeColor(moColorPos.intValue())));
+          + (moColorNeg.equals(moColorPos) ? "" : " " + StateManager.escapeColor(moColorPos.intValue())));
     appendCmd(s, "mo " + moNumber);
     appendCmd(s, getMeshState(currentMesh, "mo"));
     return s.toString();

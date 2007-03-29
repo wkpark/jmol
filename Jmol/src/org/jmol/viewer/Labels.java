@@ -393,9 +393,9 @@ class Labels extends AtomShape {
     appendCmd(s, "labelPointer = "
         + (pointer.length() == 0 ? "off" : pointer));
     if ((defaultOffset & FRONT_FLAG) != 0)
-      appendCmd(s, "labelFront = true");
+      appendCmd(s, "set labelFront");
     if ((defaultOffset & GROUP_FLAG) != 0)
-      appendCmd(s, "labelGroup = ");
+      appendCmd(s, "set labelGroup");
     appendCmd(s, getFontCommand("label", Font3D.getFont3D(defaultFontId)));
   }  
 
@@ -425,9 +425,9 @@ class Labels extends AtomShape {
         if (pointer.length() > 0)
           setStateInfo(temp2, i, "labelPointer = " + pointer);
         if ((offset & FRONT_FLAG) != 0)
-          setStateInfo(temp2, i, "labelFront = ");
+          setStateInfo(temp2, i, "set labelFront");
         if ((offset & GROUP_FLAG) != 0)
-          setStateInfo(temp2, i, "labelGroup = ");
+          setStateInfo(temp2, i, "set labelGroup");
       }
       if (bsFontSet != null && bsFontSet.get(i))
         setStateInfo(temp2, i, getFontCommand("label", Font3D

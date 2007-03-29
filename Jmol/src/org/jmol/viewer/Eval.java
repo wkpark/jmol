@@ -5549,8 +5549,8 @@ class Eval { //implements Runnable {
       //these next are not reported
 
       if (key.toLowerCase().indexOf("label") == 0) {
-        setLabel(key.substring(5));
-        return;
+        if (setLabel(key.substring(5)))
+          return;
       }
       if (key.equalsIgnoreCase("defaultColorScheme")) {
         setDefaultColors();
@@ -6430,7 +6430,7 @@ class Eval { //implements Runnable {
         rasmolSize));
   }
 
-  void setLabel(String str) throws ScriptException {
+  boolean setLabel(String str) throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_LABELS);
     if (str.equals("offset")) {
       checkLength4();
@@ -6441,7 +6441,7 @@ class Eval { //implements Runnable {
       int offset = ((xOffset & 0xFF) << 8) | (yOffset & 0xFF);
       setShapeProperty(JmolConstants.SHAPE_LABELS, "offset",
           new Integer(offset));
-      return;
+      return true;
     }
     if (str.equals("alignment")) {
       checkLength3();
@@ -6451,7 +6451,7 @@ class Eval { //implements Runnable {
       case Token.center:
         setShapeProperty(JmolConstants.SHAPE_LABELS, "align",
             statement[2].value);
-        return;
+        return true;
       }
       invalidArgument();
     }
@@ -6472,24 +6472,28 @@ class Eval { //implements Runnable {
       }
       setShapeProperty(JmolConstants.SHAPE_LABELS, "pointer",
           new Integer(flags));
-      return;
+      return true;
     }
-    checkLength2();
+    checkLength23();
+    boolean TF = (statementLength == 2 || tokAt(2) == Token.on);
+    if (str.equals("front") || str.equals("group")) {
+      if (!TF && tokAt(2) != Token.off)
+        invalidArgument();
+      if (!TF) {
+        str = "atom";
+        TF = true;
+      } else {
+        setShapeProperty(JmolConstants.SHAPE_LABELS, str, Boolean.TRUE);
+        return true;
+      }
+    }
     if (str.equals("atom")) {
-      setShapeProperty(JmolConstants.SHAPE_LABELS, "front", Boolean.FALSE);
-      return;
+      if (!TF && tokAt(2) != Token.off)
+        invalidArgument();
+      setShapeProperty(JmolConstants.SHAPE_LABELS, "front", (TF ? Boolean.FALSE : Boolean.TRUE));
+      return true;
     }
-    if (str.equals("front")) {
-      viewer
-          .setShapeProperty(JmolConstants.SHAPE_LABELS, "front", Boolean.TRUE);
-      return;
-    }
-    if (str.equals("group")) {
-      viewer
-          .setShapeProperty(JmolConstants.SHAPE_LABELS, "group", Boolean.TRUE);
-      return;
-    }
-    invalidArgument();
+    return false;
   }
 
   void setMonitor(int index) throws ScriptException {

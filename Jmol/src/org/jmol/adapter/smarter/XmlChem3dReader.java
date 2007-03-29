@@ -57,9 +57,9 @@ class XmlChem3dReader extends XmlReader {
       "calcPartialCharges", "calcAtoms" // electronicStructureCalculation 
   };
 
-  String modelName = null;
-  String formula = null;
-  String phase = null;
+  //String modelName = null;
+  //String formula = null;
+  //String phase = null;
 
   XmlChem3dReader(XmlReader parent, AtomSetCollection atomSetCollection, BufferedReader reader, XMLReader xmlReader) {
     this.parent = parent;

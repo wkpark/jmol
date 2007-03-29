@@ -37,7 +37,7 @@ import java.util.Hashtable;
  */
 class MopacReader extends AtomSetCollectionReader {
     
-  String frameInfo;
+  //String frameInfo;
   int baseAtomIndex;
   
   private boolean chargesFound = false;
@@ -46,7 +46,7 @@ class MopacReader extends AtomSetCollectionReader {
 
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("mopac");
-    frameInfo = null;
+    //frameInfo = null;
     try {
       while (readLine() != null && !line.startsWith(" ---")) {
         if (line.indexOf("MOLECULAR POINT GROUP") >= 0) {
@@ -77,7 +77,7 @@ class MopacReader extends AtomSetCollectionReader {
   }
     
   void processTotalEnergy() {
-    frameInfo = line.trim();
+    //frameInfo = line.trim();
   }
 
   /**

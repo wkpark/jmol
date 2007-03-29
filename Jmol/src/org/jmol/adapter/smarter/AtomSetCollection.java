@@ -66,7 +66,6 @@ class AtomSetCollection {
   int atomSetCount;
   int currentAtomSetIndex = -1;
   int[] atomSetNumbers = new int[16];
-  int[] atomSetModelFileNumbers = new int[16];
   String[] atomSetNames = new String[16];
   int[] atomSetAtomCounts = new int[16];
   Properties[] atomSetProperties = new Properties[16];
@@ -75,7 +74,7 @@ class AtomSetCollection {
 
   String errorMessage;
 
-  float wavelength = Float.NaN;
+  //float wavelength = Float.NaN;
   boolean coordinatesAreFractional;
   float[] notionalUnitCell = new float[6]; 
   // expands to 22 for cartesianToFractional matrix as array (PDB)

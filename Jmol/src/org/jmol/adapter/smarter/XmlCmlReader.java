@@ -151,7 +151,7 @@ public class XmlCmlReader extends XmlReader {
   }
 
   String scalarDictRef;
-  String scalarDictKey;
+  //String scalarDictKey;
   String scalarDictValue;
   String scalarTitle;
   String cellParameterType;
@@ -195,8 +195,8 @@ public class XmlCmlReader extends XmlReader {
         if (scalarDictRef != null) {
           int iColon = scalarDictRef.indexOf(":");
           scalarDictValue = scalarDictRef.substring(iColon + 1);
-          scalarDictKey = scalarDictRef
-              .substring(0, (iColon >= 0 ? iColon : 0));
+          //scalarDictKey = scalarDictRef
+            //  .substring(0, (iColon >= 0 ? iColon : 0));
         }
       } else if (name.equals("symmetry")) {
         state = CRYSTAL_SYMMETRY;
@@ -365,8 +365,8 @@ public class XmlCmlReader extends XmlReader {
         if (scalarDictRef != null) {
           int iColon = scalarDictRef.indexOf(":");
           scalarDictValue = scalarDictRef.substring(iColon + 1);
-          scalarDictKey = scalarDictRef
-              .substring(0, (iColon >= 0 ? iColon : 0));
+          //scalarDictKey = scalarDictRef
+            //  .substring(0, (iColon >= 0 ? iColon : 0));
         }
       }
       break;
@@ -509,11 +509,11 @@ public class XmlCmlReader extends XmlReader {
       str = str.toUpperCase();
       switch (str.charAt(0)) {
       case 'S':
-        return 1;
+        return JmolAdapter.ORDER_COVALENT_SINGLE;
       case 'D':
-        return 2;
+        return JmolAdapter.ORDER_COVALENT_DOUBLE;
       case 'T':
-        return 3;
+        return JmolAdapter.ORDER_COVALENT_TRIPLE;
       case 'A':
         return JmolAdapter.ORDER_AROMATIC;
       }
@@ -522,10 +522,10 @@ public class XmlCmlReader extends XmlReader {
     if (floatOrder == 1.5)
       return JmolAdapter.ORDER_AROMATIC;
     if (floatOrder == 2)
-      return 2;
+      return JmolAdapter.ORDER_COVALENT_DOUBLE;
     if (floatOrder == 3)
-      return 3;
-    return 1;
+      return JmolAdapter.ORDER_COVALENT_TRIPLE;
+    return JmolAdapter.ORDER_COVALENT_SINGLE;
   }
 
   //this routine breaks out all the tokens in a string

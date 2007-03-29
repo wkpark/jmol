@@ -39,7 +39,7 @@ class OdysseyReader extends AtomSetCollectionReader {
 
   String modelName = "Odyssey file";
   int atomCount, bondCount;
-  Hashtable moData = new Hashtable();
+  //Hashtable moData = new Hashtable();
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;

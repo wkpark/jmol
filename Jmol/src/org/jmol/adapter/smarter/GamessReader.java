@@ -35,7 +35,7 @@ class GamessReader extends AtomSetCollectionReader {
   final static float angstromsPerBohr = 0.529177f;
 
   int atomCount = 0;
-  int moCount = 0;
+  //int moCount = 0;
   int shellCount = 0;
   int gaussianCount = 0;
   String calculationType = "?";
@@ -193,6 +193,7 @@ OR:
       switch (tokens.length) {
       case 1:
         atomCount++;
+        break;
       case 0:
         break;
       default:

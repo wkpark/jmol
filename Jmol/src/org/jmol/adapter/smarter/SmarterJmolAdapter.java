@@ -279,14 +279,14 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   class BondIterator extends JmolAdapter.BondIterator {
     AtomSetCollection atomSetCollection;
-    Atom[] atoms;
+    //Atom[] atoms;
     Bond[] bonds;
     int ibond;
     Bond bond;
 
     BondIterator(AtomSetCollection atomSetCollection) {
       this.atomSetCollection = atomSetCollection;
-      atoms = atomSetCollection.atoms;
+      //atoms = atomSetCollection.atoms;
       bonds = atomSetCollection.bonds;
       ibond = 0;
     }

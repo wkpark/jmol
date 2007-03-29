@@ -175,7 +175,7 @@ class ShelxReader extends AtomSetCollectionReader {
     if (isCmdf) {
       ioff = 0;
     } else {
-      float wavelength = atomSetCollection.wavelength = parseFloat(tokens[0]);
+      float wavelength = parseFloat(tokens[0]);
       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("wavelength",
           new Float(wavelength));
     }

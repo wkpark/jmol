@@ -247,6 +247,7 @@ class SpartanArchive {
       switch(iBasis) {
       case 1: //SP
         data[2] = parseFloat(tokens[1]);
+        //fall through
       case 0: //S
         data[1] = parseFloat(tokens[0]);
         break;

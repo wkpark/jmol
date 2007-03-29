@@ -39,7 +39,7 @@ class OdysseyXMLReader extends AtomSetCollectionReader {
 
   String modelName = "Odyssey XML file";
   int atomCount, bondCount;
-  Hashtable moData = new Hashtable();
+  //Hashtable moData = new Hashtable();
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
@@ -142,9 +142,9 @@ class OdysseyXMLReader extends AtomSetCollectionReader {
         bondOrder = 2;
       else if (order == "triple")
         bondOrder = 3;
-      else if (order == "delocalized")
-        bondOrder = 1;
-      else
+      else// if (order == "delocalized")
+      //  bondOrder = 1;
+      //else
         bondOrder = 1;
       atomSetCollection.addBond(new Bond(sourceIndex, targetIndex,
           bondOrder < 4 ? bondOrder : 1)); //aromatic would be 5

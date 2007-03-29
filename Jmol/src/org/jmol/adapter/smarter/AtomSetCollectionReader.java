@@ -180,7 +180,7 @@ abstract class AtomSetCollectionReader {
 
   // state variables
   boolean iHaveUnitCell;
-  boolean iHaveCartesianToFractionalMatrix;
+  //boolean iHaveCartesianToFractionalMatrix;
   boolean iHaveFractionalCoordinates;
   boolean iHaveSymmetryOperators;
   boolean needToApplySymmetry;
@@ -221,7 +221,7 @@ abstract class AtomSetCollectionReader {
     fileCoordinatesAreFractional = false;
 
     iHaveUnitCell = false;
-    iHaveCartesianToFractionalMatrix = false;
+    //iHaveCartesianToFractionalMatrix = false;
     iHaveFractionalCoordinates = false;
     iHaveSymmetryOperators = false;
 
@@ -335,8 +335,8 @@ abstract class AtomSetCollectionReader {
     }
     if (i < 6)
       iHaveUnitCell = checkUnitCell(6);
-    else
-      iHaveCartesianToFractionalMatrix = (++nMatrixElements == 12 && checkUnitCell(22));
+    else if(++nMatrixElements == 12)
+      checkUnitCell(22);
   }
 
   void setUnitCell(float a, float b, float c, float alpha, float beta,

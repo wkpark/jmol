@@ -43,12 +43,12 @@ import org.jmol.util.Logger;
  **/
 class PsiReader extends AtomSetCollectionReader {
 
-  String modelName = "";
-  int atomCount = 0;
-  int moCount = 0;
+  //String modelName = "";
+  //int atomCount = 0;
+  //int moCount = 0;
   int shellCount = 0;
   int gaussianCount = 0;
-  String calculationType = "";
+  //String calculationType = "";
   Hashtable moData = new Hashtable();
   Vector orbitals = new Vector();
 
@@ -180,7 +180,7 @@ class PsiReader extends AtomSetCollectionReader {
   void readBasis() throws Exception {
     Vector sdata = new Vector();
     Vector gdata = new Vector();
-    atomCount = -1;
+    //atomCount = -1;
     gaussianCount = 0;
     shellCount = 0;
     String[] tokens;

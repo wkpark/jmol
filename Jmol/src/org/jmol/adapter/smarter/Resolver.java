@@ -403,6 +403,7 @@ class LimitedLineReader {
   LimitedLineReader(BufferedReader bufferedReader, int readLimit)
     throws Exception {
     this.readLimit = readLimit;
+    //TODO Nico: BindBugs reports this.readLimit is never used
     bufferedReader.mark(readLimit);
     buf = new char[readLimit];
     cchBuf = bufferedReader.read(buf);

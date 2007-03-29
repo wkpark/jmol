@@ -98,7 +98,7 @@ import org.jmol.util.Logger;
 
 class XmlReader extends AtomSetCollectionReader {
 
-  XmlReader subReader; // the actual reader; to be determined
+  //XmlReader subReader; // the actual reader; to be determined
   XmlReader parent;    // XmlReader itself; to be assigned by the subReader
 
   Atom atom;
@@ -173,23 +173,23 @@ class XmlReader extends AtomSetCollectionReader {
       Logger.debug("XmlReader thinks " + xmlType);
     }
     if (xmlType.indexOf("cml(xml)") >= 0) {
-      subReader = new XmlCmlReader(this, atomSetCollection, reader, xmlReader);
+      new XmlCmlReader(this, atomSetCollection, reader, xmlReader);
       return;
     }
     if (xmlType == "molpro(xml)") {
-      subReader = new XmlMolproReader(this, atomSetCollection, reader, xmlReader);
+      new XmlMolproReader(this, atomSetCollection, reader, xmlReader);
       return;
     }
     if (xmlType == "chem3d(xml)") {
-      subReader = new XmlChem3dReader(this, atomSetCollection, reader, xmlReader);
+      new XmlChem3dReader(this, atomSetCollection, reader, xmlReader);
       return;
     }
     if (xmlType == "odyssey(xml)") {
-      subReader = new XmlOdysseyReader(this, atomSetCollection, reader, xmlReader);
+      new XmlOdysseyReader(this, atomSetCollection, reader, xmlReader);
       return;
     }
     if (xmlType == "arguslab(xml)") {
-      subReader = new XmlArgusReader(this, atomSetCollection, reader, xmlReader);
+      new XmlArgusReader(this, atomSetCollection, reader, xmlReader);
       return;
     }
     new JmolXmlHandler(xmlReader);
@@ -255,23 +255,23 @@ class XmlReader extends AtomSetCollectionReader {
     }
     atomSetCollection = new AtomSetCollection(xmlType);
     if (xmlType.indexOf("cml(DOM)") >= 0) {
-      subReader = new XmlCmlReader(this, atomSetCollection, DOMNode);
+      new XmlCmlReader(this, atomSetCollection, DOMNode);
       return;
     }
     if (xmlType == "molpro(DOM)") {
-      subReader = new XmlMolproReader(this, atomSetCollection, DOMNode);
+      new XmlMolproReader(this, atomSetCollection, DOMNode);
       return;
     }
     if (xmlType == "chem3d(DOM)") {
-      subReader = new XmlChem3dReader(this, atomSetCollection, DOMNode);
+      new XmlChem3dReader(this, atomSetCollection, DOMNode);
       return;
     }
     if (xmlType == "odyssey(DOM)") {
-      subReader = new XmlOdysseyReader(this, atomSetCollection, DOMNode);
+      new XmlOdysseyReader(this, atomSetCollection, DOMNode);
       return;
     }
     if (xmlType == "arguslab(DOM)") {
-      subReader = new XmlArgusReader(this, atomSetCollection, DOMNode);
+      new XmlArgusReader(this, atomSetCollection, DOMNode);
       return;
     }
     //arguslab and odyssey don't have namespaces

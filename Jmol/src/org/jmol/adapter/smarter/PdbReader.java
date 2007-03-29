@@ -177,7 +177,7 @@ class PdbReader extends AtomSetCollectionReader {
     char insertionCode = line.charAt(26);
     String group3 = parseToken(line, 17, 20);
     if (group3 == null) {
-      currentGroup3 = group3;
+      currentGroup3 = null;
       htElementsInCurrentGroup = null;
     } else if (!group3.equals(currentGroup3)) {
       currentGroup3 = group3;

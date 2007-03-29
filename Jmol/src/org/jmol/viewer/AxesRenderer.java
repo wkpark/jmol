@@ -69,18 +69,17 @@ class AxesRenderer extends ShapeRenderer {
     colixes[0] = viewer.getObjectColix(StateManager.OBJ_AXIS1);
     colixes[1] = viewer.getObjectColix(StateManager.OBJ_AXIS2);
     colixes[2] = viewer.getObjectColix(StateManager.OBJ_AXIS3);
-
     for (int i = nPoints; --i >= 0;) {
       g3d.setColix(colixes[i % 3]);                          
+      String label = axisLabels[i + labelPtr];
+      if (label != null)
+        renderLabel(label, axes.font3d, axisScreens[i].x,
+            axisScreens[i].y, axisScreens[i].z, g3d);
       if (mad < 0)
         g3d.drawDottedLine(originScreen, axisScreens[i]);
       else
         g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, widthPixels,
             originScreen, axisScreens[i]);
-      String label = axisLabels[i + labelPtr];
-      if (label != null)
-        renderLabel(label, axes.font3d, axisScreens[i].x,
-            axisScreens[i].y, axisScreens[i].z, g3d);
     }
     if (nPoints == 3) { //a b c
       g3d.setColix(viewer.getColixBackgroundContrast());

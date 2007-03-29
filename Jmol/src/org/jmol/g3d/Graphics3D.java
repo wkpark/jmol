@@ -79,10 +79,10 @@ final public class Graphics3D {
   private int[] zbufT;
   int bufferSize;
 
-  int clipX;
-  int clipY;
-  int clipWidth;
-  int clipHeight;
+  //int clipX;
+  //int clipY;
+  //int clipWidth;
+  //int clipHeight;
 
   short colixCurrent;
   int[] shadesCurrent;
@@ -93,8 +93,6 @@ final public class Graphics3D {
   int argbNoisyUp, argbNoisyDn;
 
   Font3D font3dCurrent;
-
-  final static int ZBUFFER_BACKGROUND = Platform3D.ZBUFFER_BACKGROUND;
 
   /**
    * Allocates a g3d object
@@ -243,10 +241,8 @@ final public class Graphics3D {
    */
   public void setSlabAndDepthValues(int slabValue, int depthValue,
                                     boolean zShade) {
-    slab = slabValue < 0 ? 0
-        : slabValue > ZBUFFER_BACKGROUND ? ZBUFFER_BACKGROUND : slabValue;
-    depth = depthValue < 0 ? 0
-        : depthValue > ZBUFFER_BACKGROUND ? ZBUFFER_BACKGROUND : depthValue;
+    slab = slabValue < 0 ? 0 : slabValue;
+    depth = depthValue < 0 ? 0 : depthValue;
     this.zShade = zShade;
   }
 
@@ -377,8 +373,9 @@ final public class Graphics3D {
       translucencyMask = (mask << ALPHA_SHIFT) | 0xFFFFFF;
     colixCurrent = colix;
     shadesCurrent = getShades(colix);
+    
     argbCurrent = argbNoisyUp = argbNoisyDn = getColixArgb(colix);
-    //System.out.println("setColix:" + Integer.toHexString(colix) + " argb="+Integer.toHexString(argbCurrent)+ " " +isTranslucent + " tMask " + Integer.toHexString(translucencyMask));
+    //System.out.println("setColix:" + Integer.toHexString(colix) + " argb="+Integer.toHexString(argbCurrent)+ " " +isTranslucent + " tMask " + Integer.toHexString(translucencyMask) + " pass2:"+isPass2);
     return true;
   }
 
@@ -386,6 +383,7 @@ final public class Graphics3D {
     //if (isPass2)
       //return;
     argbCurrent = shadesCurrent[intensity];
+    //System.out.println("setColixNoisy:" + " argb="+Integer.toHexString(argbCurrent));    
     argbNoisyUp = shadesCurrent[intensity < shadeLast ? intensity + 1 : shadeLast];
     argbNoisyDn = shadesCurrent[intensity > 0 ? intensity - 1 : 0];
   }
@@ -426,7 +424,7 @@ final public class Graphics3D {
   }
 
 
-  int[] imageBuf = new int[0];
+  //int[] imageBuf = new int[0];
 
 
   /**
@@ -694,6 +692,7 @@ final public class Graphics3D {
 
   boolean currentlyRendering;
 
+  /*
   private void setRectClip(int x, int y, int width, int height) {
     // not implemented
     if (x < 0)
@@ -715,11 +714,11 @@ final public class Graphics3D {
       clipHeight *= 2;
     }
   }
-
+  */
 
   // 3D specific routines
-  public void beginRendering(int clipX, int clipY,
-                             int clipWidth, int clipHeight,
+  public void beginRendering(//int clipX, int clipY,
+                             //int clipWidth, int clipHeight,
                              Matrix3f rotationMatrix,
                              boolean antialiasThisFrame, 
                              boolean twoPass) {
@@ -752,7 +751,7 @@ final public class Graphics3D {
     }
     xLast = width - 1;
     yLast = height - 1;
-    setRectClip(clipX, clipY, clipWidth, clipHeight);
+    //setRectClip(clipX, clipY, clipWidth, clipHeight);
     platform.obtainScreenBuffer();
   }
 
@@ -924,7 +923,7 @@ final public class Graphics3D {
 
   public void fillCylinder(byte endcaps, int diameter,
                            Point3i screenA, Point3i screenB) {
-    //axes, bbcage, cartoon, dipoles, mesh
+    //axes, bbcage, uccage, cartoon, dipoles, mesh
     cylinder3d.render(colixCurrent, colixCurrent, !addAllPixels, !addAllPixels, endcaps, diameter,
                       screenA.x, screenA.y, screenA.z,
                       screenB.x, screenB.y, screenB.z);
@@ -1503,7 +1502,6 @@ final public class Graphics3D {
   }
 
   void plotPoints(int count, int[] coordinates) {
-    int argb = argbCurrent;
     for (int i = count * 3; i > 0; ) {
       int z = coordinates[--i];
       int y = coordinates[--i];
@@ -1512,7 +1510,7 @@ final public class Graphics3D {
         continue;
       int offset = y * width + x;
       if (z < zbuf[offset])
-        addPixel(offset, z, argb);
+        addPixel(offset, z, argbCurrent);
     }
   }
 

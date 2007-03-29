@@ -41,7 +41,7 @@ public class SphereIterator {
   int leafIndex;
   Leaf leaf;
 
-  Tuple center;
+  //Tuple center;
   float radius;
 
   float[] centerValues;
@@ -66,7 +66,7 @@ public class SphereIterator {
    * @param radius
    */
   public void initialize(Tuple center, float radius) {
-    this.center = center;
+    //this.center = center;
     this.radius = radius;
     this.radius2 = radius*radius;
     this.tHemisphere = false;

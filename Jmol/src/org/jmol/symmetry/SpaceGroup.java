@@ -48,10 +48,10 @@ import org.jmol.util.Logger;
 public class SpaceGroup {
 
   String hallSymbol;
-  String schoenfliesSymbol;
+  String schoenfliesSymbol; //parsed but not read
   String hmSymbol; 
   String hmSymbolFull; 
-  String hmSymbolCompressed; 
+  //String hmSymbolCompressed; 
   String hmSymbolExt;
   String hmSymbolAbbr;
   String hmSymbolAlternative;
@@ -59,8 +59,8 @@ public class SpaceGroup {
   char ambiguityType;
   char uniqueAxis; 
   char axisChoice;
-  int cellChoice; 
-  int originChoice;
+  //int cellChoice; 
+  //int originChoice;
   String intlTableNumber;
   String intlTableNumberFull;
   String intlTableNumberExt;
@@ -104,7 +104,7 @@ public class SpaceGroup {
     for (int i = 0; i < hmSymbol.length(); i++)
       if ((c = hmSymbol.charAt(i)) != ' ')
         term += c;
-    hmSymbolCompressed = term;
+    //hmSymbolCompressed = term;
     term = hmSymbol + " ";
     hmSymbolAbbr = "";
     hmSymbolAbbrShort = "";
@@ -132,12 +132,12 @@ public class SpaceGroup {
     } else if (intlTableNumberExt.startsWith("1")
         || intlTableNumberExt.startsWith("2")) {
       ambiguityType = 'o';
-      originChoice = intlTableNumberExt.charAt(0);
+     // originChoice = intlTableNumberExt.charAt(0);
     } else if (intlTableNumberExt.length() <= 2) { // :a  or :b3
       ambiguityType = 'a';
       uniqueAxis = intlTableNumberExt.charAt(0);
-      if (intlTableNumberExt.length() == 2)
-        cellChoice = intlTableNumberExt.charAt(1);
+     // if (intlTableNumberExt.length() == 2)
+       // cellChoice = intlTableNumberExt.charAt(1);
     }
   }
 

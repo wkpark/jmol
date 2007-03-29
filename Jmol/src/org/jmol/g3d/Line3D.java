@@ -58,7 +58,7 @@ final class Line3D {
   BitSet lineBits;
   float slope;
   boolean lineTypeX;
-  int lineDirection;
+  //int lineDirection;
   int nBits;
   int nCached = 0;
   int nFound = 0;
@@ -67,7 +67,7 @@ final class Line3D {
   void setLineBits(float dx, float dy) {    
     slope = (dx != 0 ?  dy / dx : dy >= 0 ? Float.MAX_VALUE  : -Float.MAX_VALUE);
     lineTypeX = (slope <=1 && slope >= -1);
-    lineDirection = (slope < 0 ? -1 : 1);
+    //lineDirection = (slope < 0 ? -1 : 1);
     if (getCachedLine())
       return;
     nBits = (lineTypeX ? g3d.width : g3d.height);

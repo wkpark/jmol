@@ -37,7 +37,7 @@ public class JmolAppletRegistry {
   boolean mayScript;
   Applet applet;
   AppletContext appletContext;
-  String strJavaVendor, strJavaVersion, strOSName;
+  //String strJavaVendor, strJavaVersion, strOSName;
 
   public JmolAppletRegistry(String name, boolean mayScript, Applet applet) {
     if (name == null || name.length() == 0)
@@ -46,9 +46,9 @@ public class JmolAppletRegistry {
     this.mayScript = mayScript;
     this.applet = applet;
     this.appletContext = applet.getAppletContext();
-    strJavaVendor = System.getProperty("java.vendor");
-    strJavaVersion = System.getProperty("java.version");
-    strOSName = System.getProperty("os.name");
+    //strJavaVendor = System.getProperty("java.vendor");
+    //strJavaVersion = System.getProperty("java.version");
+    //strOSName = System.getProperty("os.name");
     /*
     if (mayScript) {
       try {

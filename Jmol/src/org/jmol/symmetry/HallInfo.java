@@ -79,8 +79,8 @@ public class HallInfo {
       while (str.length() > 0 && nRotations < 16) {
         str = extractRotationInfo(str, prevOrder, prevAxisType);
         RotationTerm r = rotationTerms[nRotations - 1];
-        prevOrder = r.order;
-        prevAxisType = r.axisType;
+        //prevOrder = r.order;
+        //prevAxisType = r.axisType;
         primitiveHallSymbol += " " + r.primitiveCode;
       }
       primitiveHallSymbol += vectorCode;
@@ -173,8 +173,8 @@ public class HallInfo {
     int order;
     char axisType;
     char diagonalReferenceAxis;
-    int prevOrder;
-    char prevAxisType;
+    //int prevOrder;
+    //char prevAxisType;
 
     
     RotationTerm(String code, int prevOrder, char prevAxisType) {
@@ -208,8 +208,8 @@ public class HallInfo {
    
     private void getRotationInfo(String code, int prevOrder, char prevAxisType) {
       this.inputCode = code;
-      this.prevOrder = prevOrder;
-      this.prevAxisType = prevAxisType;
+      //this.prevOrder = prevOrder;
+      //this.prevAxisType = prevAxisType;
       code += "   ";
       if (code.charAt(0) == '-') {
         isImproper = true;
@@ -231,7 +231,8 @@ public class HallInfo {
           diagonalReferenceAxis = c;
           c = code.charAt(2);
           ptr++;
-        }        
+        }     
+        //fall through
       case '*':
         axisType = c;
         break;
@@ -479,7 +480,7 @@ class Translation {
 
 class Rotation {
   String rotCode;
-  int order;
+  //int order;
   Matrix4f seitzMatrix = new Matrix4f();
   Matrix4f seitzMatrixInv = new Matrix4f();
   
@@ -488,7 +489,7 @@ class Rotation {
   
   private Rotation (String code, String matrixData) {
     rotCode = code;
-    order = code.charAt(0) - '0';
+    //order = code.charAt(0) - '0';
     float[] data = new float[16];
     float[] dataInv = new float[16];
     data[15] = dataInv[15] = 1f;

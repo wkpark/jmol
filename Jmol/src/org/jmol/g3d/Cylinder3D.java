@@ -370,11 +370,11 @@ class Cylinder3D {
       calcRotatedPoint(tMid, iMid, false);
       if ((xRaster[iMid] == xRaster[iLower])
           && (yRaster[iMid] == yRaster[iLower])) {
-        fp8IntensityUp[iLower] = (fp8IntensityUp[iLower] + fp8IntensityUp[iMid]) / 2;
+        fp8IntensityUp[iLower] = (fp8IntensityUp[iLower] + fp8IntensityUp[iMid]) >>> 1;
         tLower = tMid;
       } else if ((xRaster[iMid] == xRaster[iUpper])
           && (yRaster[iMid] == yRaster[iUpper])) {
-        fp8IntensityUp[iUpper] = (fp8IntensityUp[iUpper] + fp8IntensityUp[iMid]) / 2;
+        fp8IntensityUp[iUpper] = (fp8IntensityUp[iUpper] + fp8IntensityUp[iMid]) >>> 1;
         tUpper = tMid;
       } else {
         interpolate(iLower, iMid);
@@ -407,13 +407,13 @@ class Cylinder3D {
           .floor(txRaster[iLower]))
           && ((int) Math.floor(tyRaster[iMid]) == (int) Math
               .floor(tyRaster[iLower]))) {
-        fp8IntensityUp[iLower] = (fp8IntensityUp[iLower] + fp8IntensityUp[iMid]) / 2;
+        fp8IntensityUp[iLower] = (fp8IntensityUp[iLower] + fp8IntensityUp[iMid]) >>> 1;
         tLower = tMid;
       } else if (((int) Math.floor(txRaster[iMid]) == (int) Math
           .floor(txRaster[iUpper]))
           && ((int) Math.floor(tyRaster[iMid]) == (int) Math
               .floor(tyRaster[iUpper]))) {
-        fp8IntensityUp[iUpper] = (fp8IntensityUp[iUpper] + fp8IntensityUp[iMid]) / 2;
+        fp8IntensityUp[iUpper] = (fp8IntensityUp[iUpper] + fp8IntensityUp[iMid]) >>> 1;
         tUpper = tMid;
       } else {
         interpolatePrecisely(iLower, iMid);

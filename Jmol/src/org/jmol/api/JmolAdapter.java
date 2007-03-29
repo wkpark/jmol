@@ -73,6 +73,9 @@ public abstract class JmolAdapter {
     this.adapterName = adapterName;
   }
 
+  public String getAdapterName() {
+    return adapterName;
+  }
   
   /**
    * Associate a clientFile object with a bufferedReader.

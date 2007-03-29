@@ -81,8 +81,6 @@ abstract class Platform3D {
     }
   }
 
-  final static int ZBUFFER_BACKGROUND = Integer.MAX_VALUE;
-
   abstract Image allocateImage();
 
   void allocateTBuffers() {
@@ -135,21 +133,21 @@ abstract class Platform3D {
 
   boolean hasContent() {
     for (int i = bufferSize; --i >= 0; )
-      if (zBuffer[i] != ZBUFFER_BACKGROUND)
+      if (zBuffer[i] != Integer.MAX_VALUE)
         return true;
     return false;
   }
 
   void clearScreenBuffer(int argbBackground) {
     for (int i = bufferSize; --i >= 0; ) {
-      zBuffer[i] = ZBUFFER_BACKGROUND;
+      zBuffer[i] = Integer.MAX_VALUE;
       pBuffer[i] = argbBackground;
     }
   }
   
   void clearTBuffer() {
     for (int i = bufferSizeT; --i >= 0; ) {
-      zBufferT[i] = ZBUFFER_BACKGROUND;
+      zBufferT[i] = Integer.MAX_VALUE;
       pBufferT[i] = 0;
     }
   }

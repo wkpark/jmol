@@ -57,7 +57,7 @@ public final class Frame {
   boolean isXYZ;
   boolean isPDB;
   boolean isMultiFile;
-  boolean isArrayOfFiles;
+  //boolean isArrayOfFiles;
   boolean isZeroBased;
   Mmset mmset;
   Graphics3D g3d;
@@ -111,7 +111,7 @@ public final class Frame {
   boolean someModelsHaveFractionalCoordinates;
 
   boolean hasVibrationVectors;
-  boolean fileHasHbonds;
+  //boolean fileHasHbonds;
 
   boolean structuresDefined;
 
@@ -145,7 +145,7 @@ public final class Frame {
     //long timeBegin = System.currentTimeMillis();
     modelSetTypeName = name;
     isXYZ = (modelSetTypeName == "xyz");
-    isArrayOfFiles = (modelSetTypeName == "array");
+    //isArrayOfFiles = (modelSetTypeName == "array");
     setZeroBased();
     mmset = new Mmset(this);
     mmset.setModelSetProperties(properties);
@@ -154,7 +154,7 @@ public final class Frame {
     isMultiFile = mmset.getModelSetAuxiliaryInfoBoolean("isMultiFile");
     isPDB = mmset.getModelSetAuxiliaryInfoBoolean("isPDB");
     someModelsHaveSymmetry = mmset
-        .getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
+    .getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
     someModelsHaveUnitcells = mmset
         .getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
     someModelsHaveFractionalCoordinates = mmset
@@ -167,7 +167,7 @@ public final class Frame {
       someModelsHaveFractionalCoordinates |= mergeFrame.mmset
           .getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
     }
-    fileHasHbonds = false;
+    //fileHasHbonds = false;
     initializeBuild(nAtoms);
   }
 
@@ -178,7 +178,7 @@ public final class Frame {
   int baseModelCount = 0;
   int baseAtomIndex = 0;
   int baseBondIndex = 0;
-  int baseGroupIndex = 0;
+  //int baseGroupIndex = 0;
   boolean appendNew = true;
 
   void initializeModel(JmolAdapter adapter, Object clientFile) {
@@ -202,7 +202,7 @@ public final class Frame {
       }
       atomCount = baseAtomIndex = mergeFrame.atomCount;
       bondCount = baseBondIndex = mergeFrame.bondCount;
-      baseGroupIndex = mergeFrame.groupCount;
+      //baseGroupIndex = mergeFrame.groupCount;
     }
     mmset.setModelCount(modelCount);
 
@@ -504,8 +504,8 @@ public final class Frame {
       bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount + 2
           * ATOM_GROWTH_INCREMENT);
     setBond(bondCount++, bond);
-    if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
-      fileHasHbonds = true;
+    //if ((order & JmolConstants.BOND_HYDROGEN_MASK) != 0)
+      //fileHasHbonds = true;
   }
 
   void growAtomArrays(int byHowMuch) {
@@ -1254,10 +1254,6 @@ public final class Frame {
     return (maxRadius == 0 ? 10 : maxRadius);
   }
 
-  final static int measurementGrowthIncrement = 16;
-  int measurementCount = 0;
-  Measurement[] measurements = null;
-
   /*==============================================================*
    * selection handling
    *==============================================================*/
@@ -1456,17 +1452,11 @@ public final class Frame {
 
   class WithinModelIterator implements AtomIterator {
 
-    int bsptIndex;
-    Tuple center;
-    float radius;
     SphereIterator bsptIter;
 
     void initialize(int bsptIndex, Tuple center, float radius) {
       initializeBspf();
-      this.bsptIndex = bsptIndex;
       bsptIter = bspf.getSphereIterator(bsptIndex);
-      this.center = center;
-      this.radius = radius;
       bsptIter.initialize(center, radius);
     }
 
@@ -2567,7 +2557,7 @@ public final class Frame {
                              float envelopeRadius) {
     if (envelopeRadius < 0)
       envelopeRadius = EnvelopeCalculation.SURFACE_DISTANCE_FOR_CALCULATION;
-    EnvelopeCalculation ec = new EnvelopeCalculation(viewer, atoms, null);
+    EnvelopeCalculation ec = new EnvelopeCalculation(this, atoms, null);
     ec.initialize();
     ec.setIgnore(bsIgnore);
     ec.setSelected(bsSelected);
@@ -2974,12 +2964,15 @@ public final class Frame {
     String[] symmetryOperations;
     String symmetryInfoString;
     UnitCell unitCell;
-
+    Point3f periodicOriginXyz;
+    
     CellInfo(int modelIndex, boolean doPdbScale) {
       notionalUnitcell = (float[]) mmset.getModelAuxiliaryInfo(modelIndex,
           "notionalUnitcell");
       this.modelIndex = modelIndex;
-      spaceGroup = (String) getModelAuxiliaryInfo(modelIndex, "spaceGroup");
+     if(( periodicOriginXyz = (Point3f) getModelAuxiliaryInfo(modelIndex, "periodicOriginXyz"))!= null)
+         someModelsHaveSymmetry = true;
+     spaceGroup = (String) getModelAuxiliaryInfo(modelIndex, "spaceGroup");
       if (spaceGroup == null || spaceGroup == "")
         spaceGroup = "spacegroup unspecified";
       symmetryCount = mmset.getModelAuxiliaryInfoInt(modelIndex,

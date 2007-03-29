@@ -24,12 +24,15 @@
 package org.jmol.adapter.smarter;
 
 
+
 import java.io.BufferedReader;
 import java.util.HashMap;
+import javax.vecmath.Point3f;
 
 import netscape.javascript.JSObject;
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.util.Logger;
 import org.xml.sax.*;
 
 /**
@@ -48,6 +51,7 @@ class XmlOdysseyReader extends XmlReader {
   String[] odysseyImplementedAttributes = { "id", "label", //general 
       "xyz", "element", "hybrid", //atoms
       "a", "b", "order", //bond
+      "boundary"
   };
 
   String modelName = null;
@@ -86,14 +90,13 @@ class XmlOdysseyReader extends XmlReader {
       if (atts.containsKey("xyz")) {
         String xyz = (String) atts.get("xyz");
         String[] tokens = getTokens(xyz);
-        atom.x = parseFloat(tokens[0]);
-        atom.y = parseFloat(tokens[1]);
-        atom.z = parseFloat(tokens[2]);
-      } 
+        parent.setAtomCoord(atom, parseFloat(tokens[0]), parseFloat(tokens[1]),
+            parseFloat(tokens[2]));
+      }
       if (atts.containsKey("element")) {
         atom.elementSymbol = (String) atts.get("element");
       }
-      
+
       return;
     }
     if ("bond".equals(localName)) {
@@ -103,6 +106,31 @@ class XmlOdysseyReader extends XmlReader {
       if (atts.containsKey("order"))
         order = parseBondToken((String) atts.get("order"));
       atomSetCollection.addNewBond(atom1, atom2, order);
+      return;
+    }
+
+    if ("boundary".equals(localName)) {
+      String[] boxDim = getTokens((String) atts.get("box"));
+      float x = parseFloat(boxDim[0]);
+      float y = parseFloat(boxDim[1]);
+      float z = parseFloat(boxDim[2]);
+      parent.setUnitCellItem(0, x);
+      parent.setUnitCellItem(1, y);
+      parent.setUnitCellItem(2, z);
+      parent.setUnitCellItem(3, 90);
+      parent.setUnitCellItem(4, 90);
+      parent.setUnitCellItem(5, 90);
+      Point3f pt = new Point3f(-x / 2, -y / 2, -z / 2);
+      atomSetCollection.setAtomSetAuxiliaryInfo("periodicOriginXyz", pt);
+      for (int i = atomSetCollection.atomCount; --i >= 0;) {
+        atomSetCollection.atoms[i].sub(pt);
+        parent.setAtomCoord(atomSetCollection.atoms[i]);
+      }
+      if (parent.latticeCells[0] == 0)
+        parent.latticeCells[0] = parent.latticeCells[1] = parent.latticeCells[2] = 1;
+      parent.setSymmetryOperator("x,y,z");
+      parent.setSpaceGroupName("P1");
+      applySymmetry();
       return;
     }
 
@@ -117,6 +145,15 @@ class XmlOdysseyReader extends XmlReader {
     if ("title".equals(localName) || "formula".equals(localName)
         || "phase".equals(localName))
       keepChars = true;
+  }
+
+  void applySymmetry() {
+    try {
+      parent.applySymmetry();
+    } catch (Exception e) {
+      e.printStackTrace();
+      Logger.error("applySymmetry failed: " + e);
+    }
   }
 
   int parseBondToken(String str) {

@@ -50,7 +50,6 @@ public class MeasurementTable extends JDialog {
   JmolViewer viewer;
   private JTable measurementTable;
   private MeasurementTableModel measurementTableModel;
-  private ListSelectionModel measurementSelection;
   int selectedMeasurementRow = -1;
   JButton deleteButton;
   private JButton deleteAllButton;
@@ -99,7 +98,7 @@ public class MeasurementTable extends JDialog {
     measurementTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     measurementTable.setRowSelectionAllowed(true);
     measurementTable.setColumnSelectionAllowed(false);
-    measurementSelection = measurementTable.getSelectionModel();
+    ListSelectionModel measurementSelection = measurementTable.getSelectionModel();
     measurementSelection.addListSelectionListener(new ListSelectionListener() {
         public void valueChanged(ListSelectionEvent e) {
           if (e.getValueIsAdjusting()) return;

@@ -66,8 +66,9 @@ class UccageRenderer extends ShapeRenderer {
     Point3f offset = unitCell.getCartesianOffset();
     for (int i = 8; --i >= 0;)
       verticesT[i].add(vertices[i], offset);
-    BbcageRenderer.render(viewer, g3d, mad, verticesT, screens);
-    if (!viewer.getDisplayCellParameters())
+    int firstLine = (viewer.getObjectMad(StateManager.OBJ_AXIS1) == 0  || viewer.getAxesMode() != JmolConstants.AXES_MODE_UNITCELL ? 0 : 3);
+    BbcageRenderer.render(viewer, g3d, mad, verticesT, screens, firstLine);
+    if (!viewer.getDisplayCellParameters() || cellInfo.periodicOriginXyz != null)
       return;
     if (nf == null) {
       nf = NumberFormat.getInstance();

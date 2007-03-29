@@ -569,7 +569,7 @@ class StateManager {
     }
     
     int axesMode               = JmolConstants.AXES_MODE_BOUNDBOX;
-    float axesScale            = 1;        
+    float axesScale            = 2;        
     int pickingSpinRate        = 10;
     
     String helpPath            = null;

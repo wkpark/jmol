@@ -2744,8 +2744,6 @@ class Isosurface extends IsosurfaceMeshCollection {
         for (int z = cubeCountZ; --z >= 0;) {
           int[] voxelPointIndexes = propagateNeighborPointIndexes(x, y, z,
               isoPointIndexes);
-          System.out.println("generateSurfaceData " 
-              + " xyz " + x + " " + y + " " + z);
           int insideMask = 0;
           for (int i = 8; --i >= 0;) {
             Point3i offset = cubeVertexOffsets[i];
@@ -2919,11 +2917,11 @@ class Isosurface extends IsosurfaceMeshCollection {
       if (Float.isNaN(valueA) || Float.isNaN(valueB))
         isNaN = true;
       calcVertexPoints(x, y, z, vertexA, vertexB);
-      System.out.println("critical edge " + edgeCount + " index " + iEdge 
-          + " xyz " + x + " " + y + " " + z 
-          + " vertexA/B "+vertexA + " " + vertexB 
-          + " pointA/B "+ pointA + " " + pointB 
-          + " valueA/B " + valueA + " " + valueB);
+      //System.out.println("critical edge " + edgeCount + " index " + iEdge 
+        //  + " xyz " + x + " " + y + " " + z 
+          //+ " vertexA/B "+vertexA + " " + vertexB 
+         // + " pointA/B "+ pointA + " " + pointB 
+          //+ " valueA/B " + valueA + " " + valueB);
       float fraction = calcSurfacePoint(cutoff, valueA, valueB,
           surfacePoints[iEdge]);
       if (isContoured) {

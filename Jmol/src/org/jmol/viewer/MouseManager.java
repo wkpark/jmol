@@ -271,13 +271,14 @@ abstract class MouseManager implements KeyListener {
     switch (viewer.getPickingMode()) {
     case JmolConstants.PICKING_DRAW:
       drawMode = true;
-      // fall through...
+      measuresEnabled = false;
+      break;
     //other cases here?
     case JmolConstants.PICKING_LABEL:
     case JmolConstants.PICKING_MEASURE_DISTANCE:
     case JmolConstants.PICKING_MEASURE_ANGLE:
     case JmolConstants.PICKING_MEASURE_TORSION:
-      measuresEnabled=false;
+      measuresEnabled = false;
       break;
     default:
       return;

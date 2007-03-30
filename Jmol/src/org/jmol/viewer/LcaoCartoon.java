@@ -157,7 +157,7 @@ class LcaoCartoon extends Isosurface {
     
   void createLcaoCartoon() {
     int atomCount = viewer.getAtomCount();
-    for (int i = atomCount; --i >= 0;)
+    for (int i = 0; i < atomCount; i++)
       if (thisSet.get(i))
         createLcaoCartoon(i);
   }

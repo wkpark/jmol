@@ -35,7 +35,6 @@ abstract class MeshRenderer extends ShapeRenderer {
   float[] vertexValues;
   Point3i pt0 = new Point3i();
   Point3i pt3 = new Point3i();
-  //boolean frontOnly;
   Vector3f[] transformedVectors;
   boolean doMesh;
   boolean isTranslucent;
@@ -101,9 +100,9 @@ abstract class MeshRenderer extends ShapeRenderer {
       break;
     default:
       if (mesh.drawTriangles)
-        renderTriangles(mesh, false);
+        renderTriangles(mesh, false, false, mesh.frontOnly && !mesh.isTwoSided);
       if (mesh.fillTriangles)
-        renderTriangles(mesh, true);
+        renderTriangles(mesh, true, mesh.showTriangles, mesh.frontOnly && !mesh.isTwoSided);
       if (mesh.showPoints)
         renderPoints(mesh);
     }
@@ -152,7 +151,16 @@ abstract class MeshRenderer extends ShapeRenderer {
       }
   }
 
-  void renderTriangles(Mesh mesh, boolean fill) {
+  /**
+   * NOTE-- IF YOU CHANGE THIS SET OF PARAMETERS, 
+   * YOU MUST CHANGE THEM IN IsosurfaceRenderer.java
+   * 
+   * @param mesh
+   * @param fill
+   * @param iShowTriangles
+   * @param frontOnly
+   */
+  void renderTriangles(Mesh mesh, boolean fill, boolean iShowTriangles, boolean frontOnly) {
     int[][] polygonIndexes = mesh.polygonIndexes;
     short[] normixes = mesh.normixes;
     short colix = mesh.colix;
@@ -181,11 +189,16 @@ abstract class MeshRenderer extends ShapeRenderer {
         g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, diameter, screens[iA],
             screens[iB]);
       } else if (vertexIndexes.length == 3) {
+        if (frontOnly && transformedVectors[normixes[iA]].z < 0
+            && transformedVectors[normixes[iB]].z < 0
+            && transformedVectors[normixes[iC]].z < 0)
+          continue;
         if (fill) {
-          //if (frontOnly && transformedVectors[normixes[iA]].z < 0
-            //  && transformedVectors[normixes[iB]].z < 0
-              //&& transformedVectors[normixes[iC]].z < 0)
-            //continue;
+          if (iShowTriangles) {
+            g3d.fillTriangle(screens[iA], colixA, normixes[iA], screens[iB],
+                colixB, normixes[iB], screens[iC], colixC, normixes[iC], 0.1f);
+          } else {
+
           try {
             g3d.fillTriangle(screens[iA], colixA, normixes[iA], screens[iB],
                 colixB, normixes[iB], screens[iC], colixC, normixes[iC]);
@@ -193,19 +206,21 @@ abstract class MeshRenderer extends ShapeRenderer {
             //TODO  I can't track this one down -- happened once, not second time, with script running to create isosurface plane for slabbing
             System.out.println("MeshRenderer bug?" + e);
           }
-        } else
-          // FIX ME ... need a drawTriangle routine with multiple colors
+          }
+        } else if (vertexColixes == null) {
           g3d.drawTriangle(screens[iA], screens[iB], screens[iC], 7);
-
+        } else {
+          g3d.drawTriangle(screens[iA], colixA, screens[iB], colixB, screens[iC], colixC, 7);
+        }
       } else if (vertexIndexes.length == 4) {
         int iD = vertexIndexes[3];
         short colixD = vertexColixes != null ? vertexColixes[iD] : colix;
+        if (frontOnly && transformedVectors[normixes[iA]].z < 0
+          && transformedVectors[normixes[iB]].z < 0
+          && transformedVectors[normixes[iC]].z < 0
+          && transformedVectors[normixes[iD]].z < 0)
+        continue;
         if (fill) {
-          //if (frontOnly && transformedVectors[normixes[iA]].z < 0
-            //  && transformedVectors[normixes[iB]].z < 0
-              //&& transformedVectors[normixes[iC]].z < 0
-              //&& transformedVectors[normixes[iD]].z < 0)
-            //continue;
           g3d.fillQuadrilateral(screens[iA], colixA, normixes[iA], screens[iB],
               colixB, normixes[iB], screens[iC], colixC, normixes[iC],
               screens[iD], colixD, normixes[iD]);

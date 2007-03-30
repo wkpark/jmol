@@ -30,7 +30,7 @@ class MolecularOrbitalRenderer extends IsosurfaceRenderer {
   NumberFormat nf;
   byte fid;
 
-  void render() {
+  void renderSurface() {
     MolecularOrbital mo = (MolecularOrbital) shape;
     for (int i = mo.meshCount; --i >= 0;)
       if (render1(mo.meshes[i]))

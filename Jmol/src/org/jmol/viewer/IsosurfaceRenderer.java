@@ -30,18 +30,21 @@ import org.jmol.g3d.Graphics3D;
 
 class IsosurfaceRenderer extends MeshRenderer {
 
-  boolean iShowTriangles;
   boolean iShowNormals;
   boolean iHideBackground;
   boolean isContoured;
   boolean isPlane;
   boolean isBicolorMap;
   short backgroundColix;
-  
+  int renderCount;
   
   void render() {
-    iShowTriangles = viewer.getTestFlag3();
     iShowNormals = viewer.getTestFlag4();
+    renderCount++;
+    renderSurface();
+  }
+
+  void renderSurface() {
     Isosurface isosurface = (Isosurface) shape;
     for (int i = isosurface.meshCount; --i >= 0;)
       render1((IsosurfaceMesh) isosurface.meshes[i]);
@@ -57,7 +60,16 @@ class IsosurfaceRenderer extends MeshRenderer {
     return renderMesh(mesh);
   }  
   
-  void renderTriangles(Mesh mesh, boolean fill) {
+  /**
+   * NOTE-- IF YOU CHANGE THIS SET OF PARAMETERS, 
+   * YOU MUST CHANGE THEM IN MeshRenderer.java
+   * 
+   * @param mesh
+   * @param fill
+   * @param iShowTriangles
+   * @param frontOnly
+   */
+  void renderTriangles(Mesh mesh, boolean fill, boolean iShowTriangles, boolean frontOnly) {
     int[][] polygonIndexes = mesh.polygonIndexes;
     short[] normixes = mesh.normixes;
     short colix = mesh.colix;
@@ -77,7 +89,17 @@ class IsosurfaceRenderer extends MeshRenderer {
       int iA = vertexIndexes[0];
       int iB = vertexIndexes[1];
       int iC = vertexIndexes[2];
-      short colixA, colixB, colixC;
+      //if (iA != 6 && iB !=6 && iC!=6 &&iA != 1 && iB !=1 && iC!=1 &&iA != 120 && iB !=120 && iC!=120)
+        //continue;
+      if (frontOnly && (normixes[iA] < 0 || normixes[iB] < 0 || normixes[iC] < 0))
+        frontOnly = false;
+      //if (frontOnly)
+        //System.out.println(renderCount+": "+iA + " " + transformedVectors[normixes[iA]] + ", "+iB + " " + transformedVectors[normixes[iB]] + ", "+iC + " " + transformedVectors[normixes[iC]]);
+      if (frontOnly && transformedVectors[normixes[iA]].z < 0
+          && transformedVectors[normixes[iB]].z < 0
+          && transformedVectors[normixes[iC]].z < 0)
+        continue;
+     short colixA, colixB, colixC;
       if (vertexColixes != null) {
         colixA = vertexColixes[iA];
         colixB = vertexColixes[iB];
@@ -116,8 +138,13 @@ class IsosurfaceRenderer extends MeshRenderer {
       } else {
         int check = vertexIndexes[3];
         // FIX ME ... need a drawTriangle routine with multiple colors
-        if (check != 0)
+        if (check == 0)
+          continue;
+        if (vertexColixes == null)
           g3d.drawTriangle(screens[iA], screens[iB], screens[iC], check);
+        else
+          g3d.drawTriangle(screens[iA], colixA, screens[iB], colixB,
+              screens[iC], colixC, check);
       }
     }
   }
@@ -156,7 +183,7 @@ class IsosurfaceRenderer extends MeshRenderer {
     //Logger.debug("mesh renderPoints: " + vertexCount);
     if (!g3d.setColix(Graphics3D.WHITE))
       return;
-    for (int i = vertexCount; --i >= 0;)
+    for (int i = vertexCount; --i >= 0;) {
       if (true || vertexValues != null && !Float.isNaN(vertexValues[i]))
         if ((i % 3) == 0) { //investigate vertex normixes
           ptTemp.set(mesh.vertices[i]);
@@ -169,6 +196,7 @@ class IsosurfaceRenderer extends MeshRenderer {
                 screens[i], ptTempi);
           }
         }
+    }
   }
 
 }

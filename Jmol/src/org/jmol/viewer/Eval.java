@@ -4805,6 +4805,8 @@ class Eval { //implements Runnable {
     boolean idSeen = false;
 
     viewer.loadShape(JmolConstants.SHAPE_DIPOLES);
+    if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_DIPOLES))
+      return;
     setShapeProperty(JmolConstants.SHAPE_DIPOLES, "init", null);
     if (statementLength == 1) {
       setShapeProperty(JmolConstants.SHAPE_DIPOLES, "thisID", null);
@@ -7218,7 +7220,9 @@ class Eval { //implements Runnable {
 
   void pmesh() throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_PMESH);
-    setShapeProperty(JmolConstants.SHAPE_PMESH, "init", thisCommand);
+    if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_PMESH))
+      return;
+    initIsosurface(JmolConstants.SHAPE_PMESH);
     Object t;
     boolean idSeen = false;
     for (int i = 1; i < statementLength; ++i) {
@@ -7285,7 +7289,7 @@ class Eval { //implements Runnable {
         propertyValue = t;
         break;
       default:
-        if (!setMeshDisplayProperty(JmolConstants.SHAPE_PMESH, theTok))
+        if (!setMeshDisplayProperty(JmolConstants.SHAPE_PMESH, i, theTok))
           invalidArgument();
         i = iToken;
       }
@@ -7297,6 +7301,8 @@ class Eval { //implements Runnable {
 
   void draw() throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_DRAW);
+    if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_DRAW))
+      return;
     setShapeProperty(JmolConstants.SHAPE_DRAW, "init", null);
     boolean havePoints = false;
     boolean idSeen = false;
@@ -7445,7 +7451,7 @@ class Eval { //implements Runnable {
         havePoints = true;
         break;
       default:
-        if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, theTok))
+        if (!setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, i, theTok))
           invalidArgument();
         i = iToken;
       }
@@ -7480,7 +7486,7 @@ class Eval { //implements Runnable {
     setShapeProperty(JmolConstants.SHAPE_DRAW, "coord", pt);
     setShapeProperty(JmolConstants.SHAPE_DRAW, "set", null);
     if (!isOn)
-      setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, Token.off);
+      setMeshDisplayProperty(JmolConstants.SHAPE_DRAW, -1, Token.off);
   }
 
   void drawPlane(String key, Point4f plane, boolean isOn) throws ScriptException {
@@ -7490,7 +7496,7 @@ class Eval { //implements Runnable {
     setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "plane", plane);
     setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "nomap", new Float(0));
     if (!isOn)
-      setMeshDisplayProperty(JmolConstants.SHAPE_ISOSURFACE, Token.off);
+      setMeshDisplayProperty(JmolConstants.SHAPE_ISOSURFACE, -1, Token.off);
   }
 
   void polyhedra() throws ScriptException {
@@ -7657,6 +7663,8 @@ class Eval { //implements Runnable {
 
   void lcaoCartoon() throws ScriptException {
     viewer.loadShape(JmolConstants.SHAPE_LCAOCARTOON);
+    if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_LCAOCARTOON))
+      return;
     setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "init", null);
     if (statementLength == 1) {
       setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "lcaoID", null);
@@ -7745,6 +7753,8 @@ class Eval { //implements Runnable {
     if (!isSyntaxCheck && modelIndex < 0)
       multipleModelsNotOK();
     viewer.loadShape(JmolConstants.SHAPE_MO);
+    if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_MO))
+      return true;
     setShapeProperty(JmolConstants.SHAPE_MO, "init", new Integer(modelIndex));
     String title = null;
     int moNumber = ((Integer) viewer.getShapeProperty(JmolConstants.SHAPE_MO,
@@ -7826,7 +7836,7 @@ class Eval { //implements Runnable {
       }
       invalidArgument();
     default:
-      if (!setMeshDisplayProperty(JmolConstants.SHAPE_MO, theTok))
+      if (!setMeshDisplayProperty(JmolConstants.SHAPE_MO, 1, theTok))
         invalidArgument();
       return true;
     }
@@ -7877,10 +7887,25 @@ class Eval { //implements Runnable {
     setShapeProperty(shape, "molecularOrbital", new Integer(moNumber));
   }
 
+  void initIsosurface(int iShape) throws ScriptException {
+    setShapeProperty(iShape, "init", thisCommand);
+    if (!setMeshDisplayProperty(iShape, 0, tokAt(1)))
+      setShapeProperty(iShape, "thisID", Mesh.PREVIOUS_MESH_ID);
+    setShapeProperty(iShape, "title", new String[] { thisCommand });
+  }
+  
+  boolean listIsosurface(int iShape) throws ScriptException {
+    checkLength2();
+    if (!isSyntaxCheck)
+      showString((String) viewer.getShapeProperty(iShape, "list"));
+    return true;
+  }
+  
   void isosurface(int iShape) throws ScriptException {
     viewer.loadShape(iShape);
-    setShapeProperty(iShape, "init", isScriptCheck ? "" : thisCommand);
-    setShapeProperty(iShape, "title", new String[] { thisCommand });
+    if (tokAt(1) == Token.list && listIsosurface(iShape))
+      return;
+    initIsosurface(iShape);
     int colorRangeStage = 0;
     int signPt = 0;
     boolean isIsosurface = (iShape == JmolConstants.SHAPE_ISOSURFACE);
@@ -8041,8 +8066,10 @@ class Eval { //implements Runnable {
           isCavity = true;
           if (isSyntaxCheck)
             continue;
-          float cavityRadius = (isFloatParameter(i + 1) ? floatParameter(++i) : 1.2f);
-          float envelopeRadius = (isFloatParameter(i + 1) ? floatParameter(++i) : 10f);
+          float cavityRadius = (isFloatParameter(i + 1) ? floatParameter(++i)
+              : 1.2f);
+          float envelopeRadius = (isFloatParameter(i + 1) ? floatParameter(++i)
+              : 10f);
           if (envelopeRadius > 10f)
             numberOutOfRange(0, 10);
           setShapeProperty(iShape, "envelopeRadius", new Float(envelopeRadius));
@@ -8339,7 +8366,7 @@ class Eval { //implements Runnable {
           setShapeProperty(iShape, "nomap", new Float(0));
           surfaceObjectSeen = true;
         }
-        if (!setMeshDisplayProperty(iShape, theTok))
+        if (!setMeshDisplayProperty(iShape, i, theTok))
           invalidArgument();
         i = iToken;
       }
@@ -8362,8 +8389,7 @@ class Eval { //implements Runnable {
     if (planeSeen && !surfaceObjectSeen) {
       setShapeProperty(iShape, "nomap", new Float(0));
       surfaceObjectSeen = true;
-    } 
-
+    }
 
     if (surfaceObjectSeen && isIsosurface && !isSyntaxCheck) {
       String id = (String) viewer.getShapeProperty(iShape, "ID");
@@ -8373,9 +8399,12 @@ class Eval { //implements Runnable {
     }
   }
 
-  boolean setMeshDisplayProperty(int shape, int tok) throws ScriptException {
+  boolean setMeshDisplayProperty(int shape, int i, int tok) throws ScriptException {
     String propertyName = null;
     Object propertyValue = null;
+    boolean checkOnly = (i == 0);
+    //these properties are all processed in MeshCollection.java
+    
     switch (tok) {
     case Token.on:
       propertyName = "on";
@@ -8388,27 +8417,48 @@ class Eval { //implements Runnable {
       break;
     case Token.dots:
       propertyValue = Boolean.TRUE;
+      //fall through
     case Token.nodots:
       propertyName = "dots";
       break;
     case Token.mesh:
       propertyValue = Boolean.TRUE;
+      //fall through
     case Token.nomesh:
       propertyName = "mesh";
       break;
     case Token.fill:
       propertyValue = Boolean.TRUE;
+      //fall through
     case Token.nofill:
       propertyName = "fill";
       break;
+    case Token.triangles:
+      propertyValue = Boolean.TRUE;
+      //fall through
+    case Token.notriangles:
+      propertyName = "triangles";
+      break;
+    case Token.frontonly:
+      propertyValue = Boolean.TRUE;
+      //fall through
+    case Token.notfrontonly:
+      propertyName = "frontOnly";
+      break;
     case Token.opaque:
     case Token.translucent:
+      if (checkOnly)
+        return true;
       colorShape(shape, iToken);
       return true;
     }
     if (propertyName == null)
       return false;
+    if (checkOnly)
+      return true;
     setShapeProperty(shape, propertyName, propertyValue);
+    if ((tok = tokAt(iToken + 1)) != Token.nada)
+      setMeshDisplayProperty(shape, ++iToken, tok);
     return true;
   }
 

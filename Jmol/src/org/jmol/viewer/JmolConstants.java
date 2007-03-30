@@ -51,6 +51,31 @@ final public class JmolConstants {
    adds xodydata reading of "boundary" as unitcell
    enhances default axis rendering for axes unitcell
    
+   adds expanded isosurface-related commands:
+
+  draw list
+  isosurface list
+  lcaocartoon list
+  mo list
+  pmesh list
+ 
+   Listing gives id, number of vertices, number of polygons, visibility,
+   and title (usually the command that was given that created this isosurface)
+   
+   CHANGED BEHAVIOR FOR ISOSURFACE COMMAND WITHOUT ID INDICATED:
+   
+   Now if no ID is indicated, the previous ID is used for all commands 
+   EXCEPT "isosurface delete", which deletes all isosurfaces. 
+   
+   This was a needed change to prevent unwanted multiple isosurfaces.
+   
+   CHANGED BEHAVIOR FOR ISOSURFACE DEFAULT COLOR
+   
+   The default isosurface color no longer changes shade among 5 possible shades.
+   That was necessary only because it was easy to mistakenly make multiple
+   isosurfaces that otherwise would look the same. 
+   
+   
    11.1.27
      fixes two state bugs: 
      1) dots/geosurface not being saved properly in state
@@ -2536,19 +2561,20 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   // positive and negative default colors used for
   // isosurface rendering of .cube files
-
+  // multiple colors removed -- RMH 3/2008 11.1.28
+  
   public final static int[] argbsIsosurfacePositive = {
     0xFF5020A0,
-    0xFF7040C0,
+  /*  0xFF7040C0,
     0xFF9060E0,
-    0xFFB080FF,
+    0xFFB080FF,*/
   };
   
   public final static int[] argbsIsosurfaceNegative = {
     0xFFA02050,
-    0xFFC04070,
+  /*  0xFFC04070,
     0xFFE06090,
-    0xFFFF80B0,
+    0xFFFF80B0,*/
   };
 
     public final static String[] specialAtomNames = {

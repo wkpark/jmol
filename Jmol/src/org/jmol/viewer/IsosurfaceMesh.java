@@ -48,7 +48,7 @@ class IsosurfaceMesh extends Mesh {
   float cutoff;
   int nBytes;
   int nContours;  
-  
+
   IsosurfaceMesh(String thisID, Graphics3D g3d, short colix) {
     super(thisID, g3d, colix);
   }

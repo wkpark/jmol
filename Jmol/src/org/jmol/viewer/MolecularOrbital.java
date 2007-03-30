@@ -177,6 +177,8 @@ class MolecularOrbital extends Isosurface {
   }
   
   Object getProperty(String propertyName, int param) {
+    if (propertyName == "list")
+      return super.getProperty(propertyName, param);
     if (propertyName == "moNumber")
       return new Integer(moNumber);
     if (propertyName == "showMO") {
@@ -213,7 +215,7 @@ class MolecularOrbital extends Isosurface {
   
   boolean getSettings(String strID) {
     thisModel = (Hashtable)htModels.get(strID);
-    if (thisModel == null)
+    if (thisModel == null || thisModel.get("moNumber") == null)
       return false;
     moTranslucency = (String)thisModel.get("moTranslucency");
     moTranslucentLevel = (Float)thisModel.get("moTranslucentLevel");
@@ -298,7 +300,7 @@ class MolecularOrbital extends Isosurface {
     appendCmd(s, "mo " + moNumber);
     if (moTranslucency != null)
       appendCmd(s, "mo translucent " + moTranslucentLevel);
-    appendCmd(s, getMeshState(currentMesh, "mo"));
+    appendCmd(s, getMeshState((Mesh)thisModel.get("mesh"), "mo"));
     return s.toString();
   }
 }

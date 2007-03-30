@@ -186,6 +186,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   boolean isEccentric;
   float eccentricityScale;
   float eccentricityRatio;
+  boolean showTriangles;
 
   boolean isAngstroms;
   float scale;
@@ -912,7 +913,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       checkFlags();
       if (thePlane != null) {
         createIsosurface(); //for the plane
-        initializeMesh(true);
+        initializeMesh(force2SidedTriangles);
         readVolumetricData(true); //for the data
         colorIsosurface();
       } else {
@@ -945,10 +946,8 @@ class Isosurface extends IsosurfaceMeshCollection {
   }
 
   Object getProperty(String property, int index) {
-    if (property == "count")
-      return new Integer(meshCount);
-    if (property == "ID")
-      return (currentMesh == null ? (String) null : currentMesh.thisID);
+    if (property == "list")
+      return super.getProperty(property, index);
     if (property == "moNumber")
       return new Integer(qm_moNumber);
     if (thisMesh == null)
@@ -1008,7 +1007,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     iAddGridPoints = false;
     newSolventMethod = true;
     associateNormals = true;
-    force2SidedTriangles = true;
+    force2SidedTriangles = false;//true;
     colorBySign = colorByPhase = false;
     defaultColix = 0;
     colorNeg = defaultColorNegative;
@@ -1017,7 +1016,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     colorPosLCAO = defaultColorPositiveLCAO;
     colorScheme = "roygb";
     addHydrogens = false;
-    isEccentric = isAnisotropic = false;
+    isEccentric = isAnisotropic = showTriangles = false;
     scale = Float.NaN;
     isAngstroms = false;
     resolution = Float.MAX_VALUE;
@@ -1103,7 +1102,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     setMapRanges();
     if (isContoured) { //did NOT work here.
       generateContourData(jvxlDataIs2dContour);
-      initializeMesh(true);
+      initializeMesh(force2SidedTriangles);
       if (!colorByContourOnly)
         applyColorScale(thisMesh);
     } else {
@@ -1126,7 +1125,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       mappedDataMin = getMinMappedValue();
       mappedDataMax = getMaxMappedValue();
     }
-    if (logMessages && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (logMessages)
       Logger.debug("setMapRanges: all mapped data " + mappedDataMin + " to "
           + mappedDataMax + ", red-blue selected " + valueMappedToRed + " to "
           + valueMappedToBlue);
@@ -1140,7 +1139,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       valueMappedToRed = mappedDataMin;
       valueMappedToBlue = mappedDataMax;
     }
-    if (logMessages && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (logMessages)
       Logger.debug("setMapRanges: " + mappedDataMin + " " + mappedDataMax + " "
           + valueMappedToRed + " " + valueMappedToBlue);
     thisMesh.valueMappedToRed = valueMappedToRed;
@@ -1156,9 +1155,9 @@ class Isosurface extends IsosurfaceMeshCollection {
       associateNormals = false;
     if (viewer.getTestFlag4()) // turn off 2-sided if showing normals
       force2SidedTriangles = false;
-    if (logMessages && Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-      Logger.debug("Isosurface using testflag4: no 2-sided triangles = "
-          + !force2SidedTriangles);
+    if (logMessages) {
+      Logger.debug("Isosurface using testflag4: 2-sided triangles = "
+          + force2SidedTriangles);
       Logger.debug("Isosurface using testflag2: no associative grouping = "
           + !associateNormals);
       Logger.debug("IsosurfaceRenderer using testflag3: separated triangles = "
@@ -1204,6 +1203,9 @@ class Isosurface extends IsosurfaceMeshCollection {
     if (iAddGridPoints) {
       thisMesh.showPoints = true;
       thisMesh.hasGridPoints = true;
+    }
+    if (showTriangles) {
+      thisMesh.showTriangles = true;
     }
     if (cutoff == Float.MAX_VALUE)
       cutoff = defaultCutoff;
@@ -2013,6 +2015,8 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   void initializeMesh(boolean use2Sided) {
     int vertexCount = thisMesh.vertexCount;
+    thisMesh.isTwoSided = use2Sided;
+    //System.out.println("initializeMesh"+use2Sided);
     Vector3f[] vectorSums = new Vector3f[vertexCount];
 
     if (!isSilent && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
@@ -2031,7 +2035,7 @@ class Isosurface extends IsosurfaceMeshCollection {
 
     for (int i = vertexCount; --i >= 0;)
       vectorSums[i] = new Vector3f();
-    thisMesh.sumVertexNormals(vectorSums);
+    thisMesh.sumVertexNormals(vectorSums, true);
     Enumeration e = ((Hashtable) assocGridPointMap).keys();
     while (e.hasMoreElements()) {
       Integer I = (Integer) e.nextElement();

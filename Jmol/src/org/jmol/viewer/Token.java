@@ -705,6 +705,10 @@ public class Token {
   final static int orientation  = misc | 79;
   final static int state        = misc | 80;
   final static int pdbheader    = misc | 81;
+  final static int triangles    = misc | 82;
+  final static int notriangles  = misc | 83;
+  final static int frontonly    = misc | 84;
+  final static int notfrontonly = misc | 85;
 
   // predefined Tokens: 
   
@@ -1044,11 +1048,15 @@ public class Token {
     "solid",        new Token(solid),
     "absolute",     new Token(absolute),
     "average",      new Token(average),
-    "nodots",       new Token(nodots),
+    "noDots",       new Token(nodots),
     "mesh",         new Token(mesh),
-    "nomesh",       new Token(nomesh),
+    "noMesh",       new Token(nomesh),
     "fill",         new Token(fill),
-    "nofill",       new Token(nofill),
+    "noFill",       new Token(nofill),
+    "triangles",    new Token(triangles),
+    "noTriangles",  new Token(notriangles),
+    "frontOnly",    new Token(frontonly),
+    "notFrontOnly", new Token(notfrontonly),
     "vanderWaals",  new Token(vanderwaals),
     "vdw",          null,
     "ionic",        new Token(ionic),
@@ -1069,6 +1077,8 @@ public class Token {
     "front",        new Token(front),    
     "back",         new Token(back),    
     
+    "list",         new Token(list),
+
     "ident",        new Token(ident),
     "xyz",          new Token(xyz),
     "min",          new Token(min),

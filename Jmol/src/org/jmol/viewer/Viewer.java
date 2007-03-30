@@ -2638,6 +2638,7 @@ public class Viewer extends JmolViewer {
   */
 
   public void renderScreenImage(Graphics g, Dimension size, Rectangle clip) {
+    //System.out.println("renderScreen");
     if (isTainted || getSlabEnabled())
       setModelVisibility();
     isTainted = false;
@@ -2667,10 +2668,8 @@ public class Viewer extends JmolViewer {
     g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         matrixRotate, antialias, twoPass);
     repaintManager.render(g3d, modelManager.getFrame()); //, rectClip
-    if (twoPass) {
-      g3d.setPass2();
+    if (twoPass && g3d.setPass2())
       repaintManager.render(g3d, modelManager.getFrame()); //, rectClip
-    }
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized.
@@ -2679,15 +2678,13 @@ public class Viewer extends JmolViewer {
   }
 
   private Image getStereoImage(int stereoMode, boolean antialias) {
-    boolean twoPass = false; //required for new translucency
+    boolean twoPass = !getTestFlag1();
     g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         transformManager.getStereoRotationMatrix(true), antialias, twoPass);
     Frame frame = modelManager.getFrame();
     repaintManager.render(g3d, frame);//, rectClip
-    if (twoPass && g3d.haveTranslucentObjects()) {
-      g3d.setPass2();
+    if (twoPass && g3d.setPass2())
       repaintManager.render(g3d, frame);//, rectClip      
-    }
     g3d.endRendering();
     g3d.snapshotAnaglyphChannelBytes();
     g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,

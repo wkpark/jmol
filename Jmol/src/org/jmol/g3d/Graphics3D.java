@@ -755,9 +755,11 @@ final public class Graphics3D {
     platform.obtainScreenBuffer();
   }
 
-  public void setPass2() {
+  public boolean setPass2() {
+    //System.out.println("g3d setPass2: haveAlphaTranslucent,currentlyRendering: " + haveAlphaTranslucent + " " + currentlyRendering);
     if (!haveAlphaTranslucent || !currentlyRendering)
-      return;
+      return false;
+    //System.out.println("isPass2");
     isPass2 = true;
     addAllPixels = true;
     if (pbufT == null) {
@@ -766,6 +768,7 @@ final public class Graphics3D {
       zbufT = platform.zBufferT;
     }    
     platform.clearTBuffer();
+    return true;
   }
   
   public void endRendering() {
@@ -982,15 +985,38 @@ final public class Graphics3D {
    * triangles
    * ***************************************************************/
 
-  public void drawTriangle(Point3i screenA, Point3i screenB,
-                           Point3i screenC, int check) {
-    // primary method for Mesh
-    drawTriangle(screenA.x, screenA.y, screenA.z, screenB.x, screenB.y,
-        screenB.z, screenC.x, screenC.y, screenC.z, check);
+  public void drawTriangle(Point3i screenA, short colixA, Point3i screenB,
+                           short colixB, Point3i screenC, short colixC, int check) {
+    // primary method for mapped Mesh
+    int xA = screenA.x;
+    int yA = screenA.y;
+    int zA = screenA.z;
+    int xB = screenB.x;
+    int yB = screenB.y;
+    int zB = screenB.z;
+    int xC = screenC.x;
+    int yC = screenC.y;
+    int zC = screenC.z;
+    if ((check & 1) == 1)
+      drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
+    if ((check & 2) == 2)
+      drawLine(colixB, colixC, xB, yB, zB, xC, yC, zC);
+    if ((check & 4) == 4)
+      drawLine(colixA, colixC, xA, yA, zA, xC, yC, zC);
   }
 
-  private void drawTriangle(int xA, int yA, int zA, int xB, int yB, int zB,
-                            int xC, int yC, int zC, int check) {
+  public void drawTriangle(Point3i screenA, Point3i screenB,
+                           Point3i screenC, int check) {
+    // primary method for unmapped monochromatic Mesh
+    int xA = screenA.x;
+    int yA = screenA.y;
+    int zA = screenA.z;
+    int xB = screenB.x;
+    int yB = screenB.y;
+    int zB = screenB.z;
+    int xC = screenC.x;
+    int yC = screenC.y;
+    int zC = screenC.z;
     if ((check & 1) == 1)
       line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
           xA, yA, zA, xB, yB, zB, false);

@@ -36,6 +36,9 @@ import javax.vecmath.Vector3f;
 import java.util.BitSet;
 
 class Mesh {
+  
+  final static String PREVIOUS_MESH_ID = "+PREVIOUS_MESH+";
+
   String[] title = null;
   String thisID;
   boolean isValid = true;
@@ -45,7 +48,7 @@ class Mesh {
   BitSet[] surfaceSet;
   int firstViewableVertex;
   int lastViewableVertex;
-
+  
   boolean visible = true;
   short colix;
   short[] vertexColixes;
@@ -113,12 +116,17 @@ class Mesh {
   boolean showPoints = false;
   boolean drawTriangles = false;
   boolean fillTriangles = true;
-
+  boolean showTriangles = false; //as distinct entitities
+  boolean frontOnly = false;
+  boolean isTwoSided = true;
+  
   static int SEED_COUNT = 25; //optimized for cartoon mesh hermites
   
   Mesh() {}
   
   Mesh(String thisID, Graphics3D g3d, short colix) {
+    if (thisID.equals(PREVIOUS_MESH_ID))
+      thisID = null;
     this.thisID = thisID;
     this.g3d = g3d;
     this.colix = colix;
@@ -138,10 +146,11 @@ class Mesh {
   }
   
   void initialize(boolean use2Sided) {
+    isTwoSided = use2Sided;
     Vector3f[] vectorSums = new Vector3f[vertexCount];
     for (int i = vertexCount; --i >= 0;)
       vectorSums[i] = new Vector3f();
-    sumVertexNormals(vectorSums);
+    sumVertexNormals(vectorSums, false);
     normixes = new short[vertexCount];
     if (use2Sided)
       for (int i = vertexCount; --i >= 0;)
@@ -175,8 +184,9 @@ class Mesh {
   final Vector3f vAB = new Vector3f();
   final Vector3f vAC = new Vector3f();
 
-  void sumVertexNormals(Vector3f[] vectorSums) {
+  void sumVertexNormals(Vector3f[] vectorSums, boolean haveCheckByte) {
     final Vector3f vNormalizedNormal = new Vector3f();
+    int adjustment = (haveCheckByte ? 1 : 0);
 
     for (int i = polygonCount; --i >= 0;) {
       int[] pi = polygonIndexes[i];
@@ -189,7 +199,7 @@ class Mesh {
           // two points of triangle being identical
           float l = vNormalizedNormal.length();
           if( l > 0.9 && l < 1.1) //test for not infinity or -infinity or isNaN
-          for (int j = pi.length; --j >= 0;) {
+          for (int j = pi.length - adjustment; --j >= 0;) {
             int k = pi[j];
             vectorSums[k].add(vNormalizedNormal);
           }

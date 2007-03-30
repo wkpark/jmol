@@ -33,7 +33,7 @@ import org.jmol.util.ArrayUtil;
 abstract class MeshCollection extends Shape {
 
   // Draw, Isosurface(LcaoCartoon MolecularOrbital), Pmesh
-  
+    
   int meshCount;
   Mesh[] meshes = new Mesh[4];
   Mesh currentMesh;
@@ -171,7 +171,7 @@ abstract class MeshCollection extends Shape {
       return;
     }
     if ("dots" == propertyName) {
-      boolean showDots = value == Boolean.TRUE;
+      boolean showDots = (value == Boolean.TRUE);
       if (currentMesh != null)
         currentMesh.showPoints = showDots;
       else {
@@ -181,7 +181,7 @@ abstract class MeshCollection extends Shape {
       return;
     }
     if ("mesh" == propertyName) {
-      boolean showMesh = value == Boolean.TRUE;
+      boolean showMesh = (value == Boolean.TRUE);
       if (currentMesh != null)
         currentMesh.drawTriangles = showMesh;
       else {
@@ -190,8 +190,30 @@ abstract class MeshCollection extends Shape {
       }
       return;
     }
+    if ("triangles" == propertyName) {
+      boolean showTriangles = (value == Boolean.TRUE);
+      if (currentMesh != null)
+        currentMesh.showTriangles = showTriangles;
+      else {
+        for (int i = meshCount; --i >= 0; )
+          meshes[i].showTriangles = showTriangles;
+      }
+      return;
+    }
+
+    if ("frontOnly" == propertyName) {
+      boolean frontOnly = (value == Boolean.TRUE);
+      if (currentMesh != null)
+        currentMesh.frontOnly = frontOnly;
+      else {
+        for (int i = meshCount; --i >= 0; )
+          meshes[i].frontOnly = frontOnly;
+      }
+      return;
+    }
+
     if ("fill" == propertyName) {
-      boolean showFill = value == Boolean.TRUE;
+      boolean showFill = (value == Boolean.TRUE);
       if (currentMesh != null)
         currentMesh.fillTriangles = showFill;
       else {
@@ -206,6 +228,31 @@ abstract class MeshCollection extends Shape {
     }
     
     super.setProperty(propertyName, value, bs);
+  }
+
+  Object getProperty(String property, int index) {
+    if (property == "count")
+      return new Integer(meshCount);
+    if (property == "ID")
+      return (currentMesh == null ? (String) null : currentMesh.thisID);
+    if (property == "list") {
+      String s = "";
+      int k = 0;
+      for (int i = 0; i < meshCount; i++) {
+        if (meshes[i] == null || meshes[i].vertexCount == 0)
+          continue;
+        Mesh m = meshes[i];
+        s += (++k) + " id:" + m.thisID + "; vertices:" + m.vertexCount
+            + "; polygons: " + m.polygonCount
+            + "; visible:" + m.visible; 
+        if (m.title != null)
+          for (int j = 0; j < m.title.length; j++)
+            s += (j == 0 ? "; title: " : " | ") + m.title[j];
+        s += "\n";
+      }
+      return s;
+    }
+    return null;
   }
 
   private void deleteMesh() {
@@ -229,6 +276,8 @@ abstract class MeshCollection extends Shape {
   }
   
   int getIndexFromName(String thisID) {
+    if (thisID.equals(Mesh.PREVIOUS_MESH_ID))
+      return meshCount - 1;
     for (int i = meshCount; --i >= 0; ) {
       if (meshes[i] != null && thisID.equals(meshes[i].thisID))
         return i;
@@ -256,8 +305,9 @@ abstract class MeshCollection extends Shape {
       currentMesh.modelIndex = modelIndex;
     else
       currentMesh.modelIndex = viewer.getCurrentModelIndex();
-    if (currentMesh.thisID == null)
+    if (currentMesh.thisID == null) {
       currentMesh.thisID = myType + (++nUnnamed);
+    }
     currentMesh.scriptCommand = script;
   }
 
@@ -289,7 +339,11 @@ abstract class MeshCollection extends Shape {
     if (mesh.drawTriangles)
       appendCmd(s, type + " mesh");
     if (!mesh.fillTriangles)
-      appendCmd(s, type + " nofill");
+      appendCmd(s, type + " noFill");
+    if (mesh.showTriangles)
+      appendCmd(s, type + " triangles");
+    if (mesh.frontOnly)
+      appendCmd(s, type + " frontOnly");
     if (!mesh.visible)
       appendCmd(s, type + " off");
     return s.toString();

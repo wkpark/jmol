@@ -145,7 +145,7 @@ public class CompoundDocument extends BinaryDocument {
     //offset 56:
     int minBytesStandardStream; // less than this (and not DIR) will be "short"
     int SID_SSAT_start; // start of short sector allocation table (SSAT)
-    int nSSATsectors; // number of sectors allocated to SSAT
+    //int nSSATsectors; // number of sectors allocated to SSAT
     int SID_MSAT_next; // pointer to next master sector allocation table sector
     int nAdditionalMATsectors; // number of sectors allocated to more MSAT sectors
     //offset 76; 436 bytes:      
@@ -186,7 +186,7 @@ public class CompoundDocument extends BinaryDocument {
         readByteArray(unused2);
         minBytesStandardStream = readInt();
         SID_SSAT_start = readInt();
-        nSSATsectors = readInt();
+        /*nSSATsectors = */readInt();
         SID_MSAT_next = readInt();
         nAdditionalMATsectors = readInt();
         for (int i = 0; i < 109; i++)
@@ -205,14 +205,14 @@ public class CompoundDocument extends BinaryDocument {
     byte[] unicodeName = new byte[64];
     short nBytesUnicodeName; // twice the ascii length, including terminating 0
     byte entryType; // 0 empty; 1 storage; 2 stream; 5 root storage
-    byte entryColor; // 0 red or 1 black
-    int DIDchildLeft;
-    int DIDchildRight;
-    int DIDstorageRoot;
+    //byte entryColor; // 0 red or 1 black
+    //int DIDchildLeft;
+    //int DIDchildRight;
+    //int DIDstorageRoot;
     byte[] uniqueID = new byte[16];
     byte[] userflags = new byte[4];
-    long timeStamp1;
-    long timeStamp2;
+    //long timeStamp1;
+    //long timeStamp2;
     //offset 116:
     int SIDfirstSector; // either SAT or SSAT
     int lenStream;
@@ -229,14 +229,14 @@ public class CompoundDocument extends BinaryDocument {
         readByteArray(unicodeName);
         nBytesUnicodeName = readShort();
         entryType = readByte();
-        entryColor = readByte();
-        DIDchildLeft = readInt();
-        DIDchildRight = readInt();
-        DIDstorageRoot = readInt();
+        /*entryColor = */readByte();
+        /*DIDchildLeft = */readInt();
+        /*DIDchildRight = */readInt();
+        /*DIDstorageRoot = */readInt();
         readByteArray(uniqueID);
         readByteArray(userflags);
-        timeStamp1 = readLong();
-        timeStamp2 = readLong();
+        /*timeStamp1 = */readLong();
+        /*timeStamp2 = */readLong();
         //offset 116:
         SIDfirstSector = readInt();
         lenStream = readInt();

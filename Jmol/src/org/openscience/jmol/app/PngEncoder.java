@@ -158,7 +158,7 @@ public class PngEncoder extends Object {
    * @param encodeAlpha boolean false=no alpha, true=encode alpha
    * @return an array of bytes, or null if there was a problem
    */
-  public byte[] pngEncode(boolean encodeAlpha) {
+  byte[] pngEncode(boolean encodeAlpha) {
 
     byte[] pngIdBytes = {
       -119, 80, 78, 71, 13, 10, 26, 10

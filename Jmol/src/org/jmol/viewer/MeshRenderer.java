@@ -36,7 +36,6 @@ abstract class MeshRenderer extends ShapeRenderer {
   Point3i pt0 = new Point3i();
   Point3i pt3 = new Point3i();
   Vector3f[] transformedVectors;
-  boolean doMesh;
   boolean isTranslucent;
   int vertexCount;
   

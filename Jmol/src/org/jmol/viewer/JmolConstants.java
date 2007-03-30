@@ -67,6 +67,9 @@ final public class JmolConstants {
    Now if no ID is indicated, the previous ID is used for all commands 
    EXCEPT "isosurface delete", which deletes all isosurfaces. 
    
+   This is a change from Jmol 10.2 and 11.0, where if you leave
+   off the ID, a new isosurface is created.
+   
    This was a needed change to prevent unwanted multiple isosurfaces.
    
    CHANGED BEHAVIOR FOR ISOSURFACE DEFAULT COLOR

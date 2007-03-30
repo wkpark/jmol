@@ -443,7 +443,7 @@ class ColorManager {
       }
       return argb;
     }
-    return argb |= 0xFF000000;
+    return argb | 0xFF000000;
   }
 
   void setElementArgb(int id, int argb) {

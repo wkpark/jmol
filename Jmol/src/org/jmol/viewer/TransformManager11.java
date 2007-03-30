@@ -208,7 +208,8 @@ class TransformManager11 extends TransformManager {
     case NAV_MODE_ZOOMED:
       //update fixed rotation offset and find the new 3D navigation center
       fixedRotationOffset.set(fixedTranslation);
-    //fall through
+      newNavigationCenter();
+      break;
     case NAV_MODE_NEWXY:
       // redefine the navigation center based on its old screen position
       newNavigationCenter();

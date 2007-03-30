@@ -249,6 +249,18 @@ class Mesh {
     polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC};
   }
 
+  void addTriangleCheck(int vertexA, int vertexB, int vertexC, int check) {
+    if (vertexValues != null && (Float.isNaN(vertexValues[vertexA])||Float.isNaN(vertexValues[vertexB])||Float.isNaN(vertexValues[vertexC])))
+      return;
+    if (Float.isNaN(vertices[vertexA].x)||Float.isNaN(vertices[vertexB].x)||Float.isNaN(vertices[vertexC].x))
+      return;
+    if (polygonCount == 0)
+      polygonIndexes = new int[SEED_COUNT][];
+    else if (polygonCount == polygonIndexes.length)
+      polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
+    polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC, check};
+  }
+
   void addQuad(int vertexA, int vertexB, int vertexC, int vertexD) {
     if (polygonCount == 0)
       polygonIndexes = new int[SEED_COUNT][];

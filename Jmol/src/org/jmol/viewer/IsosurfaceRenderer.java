@@ -114,8 +114,10 @@ class IsosurfaceRenderer extends MeshRenderer {
         if (iShowNormals)
           renderNormals(mesh);
       } else {
+        int check = vertexIndexes[3];
         // FIX ME ... need a drawTriangle routine with multiple colors
-        g3d.drawTriangle(screens[iA], screens[iB], screens[iC]);
+        if (check != 0)
+          g3d.drawTriangle(screens[iA], screens[iB], screens[iC], check);
       }
     }
   }

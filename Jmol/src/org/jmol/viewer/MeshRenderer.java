@@ -195,7 +195,7 @@ abstract class MeshRenderer extends ShapeRenderer {
           }
         } else
           // FIX ME ... need a drawTriangle routine with multiple colors
-          g3d.drawTriangle(screens[iA], screens[iB], screens[iC]);
+          g3d.drawTriangle(screens[iA], screens[iB], screens[iC], 7);
 
       } else if (vertexIndexes.length == 4) {
         int iD = vertexIndexes[3];

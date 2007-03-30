@@ -983,20 +983,23 @@ final public class Graphics3D {
    * ***************************************************************/
 
   public void drawTriangle(Point3i screenA, Point3i screenB,
-                           Point3i screenC) {
+                           Point3i screenC, int check) {
     // primary method for Mesh
     drawTriangle(screenA.x, screenA.y, screenA.z, screenB.x, screenB.y,
-        screenB.z, screenC.x, screenC.y, screenC.z);
+        screenB.z, screenC.x, screenC.y, screenC.z, check);
   }
 
   private void drawTriangle(int xA, int yA, int zA, int xB, int yB, int zB,
-                            int xC, int yC, int zC) {
-    line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xA,
-        yA, zA, xB, yB, zB, false);
-    line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xB,
-        yB, zB, xC, yC, zC, false);
-    line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels, xA,
-        yA, zA, xC, yC, zC, false);
+                            int xC, int yC, int zC, int check) {
+    if ((check & 1) == 1)
+      line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
+          xA, yA, zA, xB, yB, zB, false);
+    if ((check & 2) == 2)
+      line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
+          xB, yB, zB, xC, yC, zC, false);
+    if ((check & 4) == 4)
+      line3d.plotLine(argbCurrent, !addAllPixels, argbCurrent, !addAllPixels,
+          xA, yA, zA, xC, yC, zC, false);
   }
 
   public void drawCylinderTriangle(int xA, int yA, int zA, int xB,

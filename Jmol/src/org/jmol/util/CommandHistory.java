@@ -190,7 +190,8 @@ final public class CommandHistory {
     switch (n) {
     case 0:
       isOn = false;
-      //fall through
+      clear();
+      return "";
     case Integer.MIN_VALUE:
     case -2:
       clear();

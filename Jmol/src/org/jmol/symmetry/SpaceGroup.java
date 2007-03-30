@@ -48,7 +48,7 @@ import org.jmol.util.Logger;
 public class SpaceGroup {
 
   String hallSymbol;
-  String schoenfliesSymbol; //parsed but not read
+  //String schoenfliesSymbol; //parsed but not read
   String hmSymbol; 
   String hmSymbolFull; 
   //String hmSymbolCompressed; 
@@ -89,7 +89,7 @@ public class SpaceGroup {
     intlTableNumberFull = term = extractLine(); //International Table Number : options
     intlTableNumber = extractTerm(':');
     intlTableNumberExt = term;
-    schoenfliesSymbol = extractLine();
+    /*schoenfliesSymbol = */extractLine();
     term = extractLine() + "  "; //Hermann-Mauguin
     hmSymbolFull = term = (term.substring(0, 2).toUpperCase() 
         + term.substring(2)).trim();

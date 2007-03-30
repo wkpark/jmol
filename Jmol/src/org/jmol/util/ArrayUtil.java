@@ -92,6 +92,9 @@ final public class ArrayUtil {
   }
 
   public static Object setLength(Object array, int newLength) {
+    if (array == null) {
+      return null; // We can't allocate since we don't know the type of array
+    }
     Object t = Array
         .newInstance(array.getClass().getComponentType(), newLength);
     int oldLength = Array.getLength(array);

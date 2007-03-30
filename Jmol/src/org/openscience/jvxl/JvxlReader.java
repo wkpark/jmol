@@ -35,7 +35,7 @@
  * 
  * see http://www.stolaf.edu/academics/chemapps/jmol/docs/misc/JVXL-format.pdf
  *
- * The JVXL (Jmol VoXeL format) is a file format specifically designed
+ * The JVXL (Jmol VoXeL) format is a file format specifically designed
  * to encode an isosurface or planar slice through a set of 3D scalar values
  * in lieu of a that set. A JVXL file can contain coordinates, and in fact
  * it must contain at least one coordinate, but additional coordinates are
@@ -686,10 +686,10 @@ class JvxlReader {
      * might be a plane, then (isMapData = true) to color them based 
      * on a second data set.
      * 
-     * Planes are only compatible with data sets that return actual 
-     * numbers at all grid points -- cube files, orbitals, functionXY -- 
-     * not solvent, spheres, elipsoids, or lobes.
-     * 
+     * Planes are compatible with data sets that return actual 
+     * numbers at all grid points -- cube files, orbitals, functionXY,
+     * and solvent/molecular surface calculations.
+     *  
      * It is possible to map a QM orbital onto a plane. In the first pass we defined
      * the plane; in the second pass we just calculate the new voxel values and return.
      * 
@@ -1071,15 +1071,6 @@ class JvxlReader {
         ++ich;
     }
     return count;
-  }
-
-  ////////////////////////////////////////////////////////////////
-  // associated vertex normalization
-  ////////////////////////////////////////////////////////////////
-
-  int addVertexCopy(Point3f vertex, float value) {
-    int vPt = meshData.addVertexCopy(vertex, value);
-    return vPt;
   }
 
   ////////////////////////////////////////////////////////////////
@@ -1890,7 +1881,7 @@ class JvxlReader {
         voxelPointIndexes[iEdge] = vPt;
         continue;
       }
-      voxelPointIndexes[iEdge] = addVertexCopy(surfacePoints[iEdge], thisValue);
+      voxelPointIndexes[iEdge] = meshData.addVertexCopy(surfacePoints[iEdge], thisValue);
     }
     return !isNaN;
   }
@@ -2486,7 +2477,7 @@ class JvxlReader {
     x += offsets.x;
     y += offsets.y;
     z += offsets.z;
-    int vPt = addVertexCopy(vertexXYZ, value);
+    int vPt = meshData.addVertexCopy(vertexXYZ, value);
     contourVertexes[contourVertexCount++] = new ContourVertex(x, y, z,
         vertexXYZ, vPt);
     return vPt;
@@ -2766,7 +2757,7 @@ class JvxlReader {
       else
         calcVertexPoints2d(x, y, vertexA, vertexB);
       calcContourPoint(cutoff, valueA, valueB, contourPoints[iEdge]);
-      pixelPointIndexes[iEdge] = addVertexCopy(contourPoints[iEdge], cutoff);
+      pixelPointIndexes[iEdge] = meshData.addVertexCopy(contourPoints[iEdge], cutoff);
     }
     //this must be a square that is involved in this particular contour
     planarSquares[x * squareCountY + y].setIntersectionPoints(contourIndex,

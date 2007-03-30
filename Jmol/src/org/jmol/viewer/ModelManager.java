@@ -68,7 +68,7 @@ class ModelManager {
     //just a bit cleaner -- never two frames in memory,
     //even if one would always be "empty"
     frame = null;
-    System.gc();
+    //System.gc();
   }
   void zap() {
     clear();
@@ -906,8 +906,7 @@ String getAtomInfoChime(int i) {
   }
 
   Hashtable getAuxiliaryInfo() {
-    Hashtable info = new Hashtable();
-    info = getModelSetAuxiliaryInfo();
+    Hashtable info = getModelSetAuxiliaryInfo();
     if (info == null)
       return info;
     Vector models = new Vector();

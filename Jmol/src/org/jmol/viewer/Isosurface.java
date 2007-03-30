@@ -51,7 +51,7 @@
  *  
  * inventing "Jmol Voxel File" format, *.jvxl
  * 
- * see http://www.stolaf.edu/people/hansonr/jmol/docs/JVXL-format.pdf
+ * see http://www.stolaf.edu/academics/chemapps/jmol/docs/misc/JVXL-format.pdf
  * 
  * lines through coordinates are identical to CUBE files
  * after that, we have a line that starts with a negative number to indicate this
@@ -168,7 +168,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   boolean colorByPhase;
   int colorPhase;
   float resolution;
-  boolean insideOut; //no longer does anything now that we are forcing 2-sided triangles
+  boolean insideOut;
 
   int qmOrbitalType;
   int qmOrbitalCount;
@@ -913,7 +913,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       checkFlags();
       if (thePlane != null) {
         createIsosurface(); //for the plane
-        initializeMesh(force2SidedTriangles);
+        initializeMesh(true);
         readVolumetricData(true); //for the data
         colorIsosurface();
       } else {
@@ -1034,7 +1034,6 @@ class Isosurface extends IsosurfaceMeshCollection {
     rangeDefined = false;
     mappedDataMin = Float.MAX_VALUE;
     isBicolorMap = isCutoffAbsolute = isPositiveOnly = false;
-    precalculateVoxelData = false;
     bsIgnore = null;
     bsSolvent = null;
     solvent_dots = null;
@@ -1102,7 +1101,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     setMapRanges();
     if (isContoured) { //did NOT work here.
       generateContourData(jvxlDataIs2dContour);
-      initializeMesh(force2SidedTriangles);
+      initializeMesh(thePlane != null);
       if (!colorByContourOnly)
         applyColorScale(thisMesh);
     } else {

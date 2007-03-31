@@ -7850,7 +7850,8 @@ class Eval { //implements Runnable {
     return true;
   }
 
-  void setMoData(int shape, int moNumber, int modelIndex, String title) throws ScriptException {
+  void setMoData(int shape, int moNumber, int modelIndex, String title)
+      throws ScriptException {
     if (isSyntaxCheck)
       return;
     if (modelIndex == 0)
@@ -7858,29 +7859,23 @@ class Eval { //implements Runnable {
     if (modelIndex < 0)
       multipleModelsNotOK();
     Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
-        "moData");
-    Hashtable surfaceInfo = (Hashtable) viewer.getModelAuxiliaryInfo(
-        modelIndex, "jmolSurfaceInfo");
-    if (surfaceInfo != null
-        && ((String) surfaceInfo.get("surfaceDataType")).equals("mo")) {
-      viewer.loadShape(shape);
-      setShapeProperty(shape, "init", new Integer(modelIndex));
-      setShapeProperty(shape, "sign", Boolean.TRUE);
-      setShapeProperty(shape, "getSurface",
-          surfaceInfo);
-
-      return;
+        "jmolSurfaceInfo");
+    if (moData != null && ((String) moData.get("surfaceDataType")).equals("mo")) {
+      //viewer.loadShape(shape);
+      //setShapeProperty(shape, "init", new Integer(modelIndex));
+    } else {
+      moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex, "moData");
+      if (moData == null)
+        evalError(GT._("no MO basis/coefficient data available for this frame"));
+      Vector mos = (Vector) (moData.get("mos"));
+      int nOrb = (mos == null ? 0 : mos.size());
+      if (nOrb == 0)
+        evalError(GT._("no MO coefficient data available"));
+      if (nOrb == 1 && moNumber > 1)
+        evalError(GT._("Only one molecular orbital is available in this file"));
+      if (moNumber < 1 || moNumber > nOrb)
+        evalError(GT._("An MO index from 1 to {0} is required", nOrb));
     }
-    if (moData == null)
-      evalError(GT._("no MO basis/coefficient data available for this frame"));
-    Vector mos = (Vector) (moData.get("mos"));
-    int nOrb = (mos == null ? 0 : mos.size());
-    if (nOrb == 0)
-      evalError(GT._("no MO coefficient data available"));
-    if (nOrb == 1 && moNumber > 1)
-      evalError(GT._("Only one molecular orbital is available in this file"));
-    if (moNumber < 1 || moNumber > nOrb)
-      evalError(GT._("An MO index from 1 to {0} is required", nOrb));
     lastMoNumber = moNumber;
     setShapeProperty(shape, "moData", moData);
     if (title != null)

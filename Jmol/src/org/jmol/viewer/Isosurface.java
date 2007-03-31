@@ -296,9 +296,8 @@ class Isosurface extends IsosurfaceMeshCollection {
   void setProperty(String propertyName, Object value, BitSet bs) {
 
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-      Logger.debug(
-          "Isosurface state=" + state +
-          " setProperty: " + propertyName + " = " + value);
+      Logger.debug("Isosurface state=" + state + " setProperty: "
+          + propertyName + " = " + value);
     }
 
     if ("init" == propertyName) {
@@ -355,7 +354,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
 
     if ("modelIndex" == propertyName) {
-      modelIndex = ((Integer)value).intValue();
+      modelIndex = ((Integer) value).intValue();
       return;
     }
 
@@ -372,12 +371,12 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
 
     if ("bsSolvent" == propertyName) {
-        bsSolvent = (BitSet) value;
+      bsSolvent = (BitSet) value;
       return;
     }
 
     if ("withinDistance" == propertyName) {
-      distance = ((Float)value).floatValue();
+      distance = ((Float) value).floatValue();
       return;
     }
 
@@ -664,20 +663,21 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
 
     if ("envelopeRadius" == propertyName) {
-      envelopeRadius = ((Float)value).floatValue();
+      envelopeRadius = ((Float) value).floatValue();
       return;
     }
-    
+
     if ("cavityRadius" == propertyName) {
-      cavityRadius = ((Float)value).floatValue();
+      cavityRadius = ((Float) value).floatValue();
       return;
     }
-    
+
     if ("cavity" == propertyName) {
-      solvent_dots = viewer.calculateSurface(bsSelected, bsIgnore, envelopeRadius);
+      solvent_dots = viewer.calculateSurface(bsSelected, bsIgnore,
+          envelopeRadius);
       return;
     }
-    
+
     if ("molecular" == propertyName || "solvent" == propertyName
         || "sasurface" == propertyName || "nomap" == propertyName) {
       // plain plane
@@ -726,7 +726,6 @@ class Isosurface extends IsosurfaceMeshCollection {
 
     if ("moData" == propertyName) {
       moData = (Hashtable) value;
-      propertyName = "mapColor";
       return;
     }
 
@@ -735,33 +734,33 @@ class Isosurface extends IsosurfaceMeshCollection {
       qmOrbitalType = (moData.containsKey("gaussians") ? QM_TYPE_GAUSSIAN
           : moData.containsKey("slaterInfo") ? QM_TYPE_SLATER : QM_TYPE_UNKNOWN);
       if (qmOrbitalType == QM_TYPE_UNKNOWN) {
-        Logger.error("moData does not contain data of a known type");
-        return;
-      }
-      Vector mos = (Vector) (moData.get("mos"));
-      qmOrbitalCount = mos.size();
-      Logger.info("Molecular orbital #" + qm_moNumber + "/" + qmOrbitalCount
-          + " " + moData.get("calculationType"));
-      Hashtable mo = (Hashtable) mos.get(qm_moNumber - 1);
-      if (title == null) {
-        title = new String[5];
-        title[0] = "%F";
-        title[1] = "Model %M  MO %I/%N";
-        title[2] = "Energy = %E %U";
-        title[3] = "?Symmetry = %S";
-        title[4] = "?Occupancy = %O";
-      }
+        value = moData;  // must be generic surface info
+      } else {
+        Vector mos = (Vector) (moData.get("mos"));
+        qmOrbitalCount = mos.size();
+        Logger.info("Molecular orbital #" + qm_moNumber + "/" + qmOrbitalCount
+            + " " + moData.get("calculationType"));
+        Hashtable mo = (Hashtable) mos.get(qm_moNumber - 1);
 
-      for (int i = title.length; --i >= 0;)
-        addMOTitleInfo(i, mo);
-      moCoefficients = (float[]) mo.get("coefficients");
-      dataType = SURFACE_MOLECULARORBITAL;
+        if (title == null) {
+          title = new String[5];
+          title[0] = "%F";
+          title[1] = "Model %M  MO %I/%N";
+          title[2] = "Energy = %E %U";
+          title[3] = "?Symmetry = %S";
+          title[4] = "?Occupancy = %O";
+        }
+        for (int i = title.length; --i >= 0;)
+          addMOTitleInfo(i, mo);
+        moCoefficients = (float[]) mo.get("coefficients");
+        dataType = SURFACE_MOLECULARORBITAL;
+      }
       if (state == STATE_DATA_READ) {
         propertyName = "mapColor";
       } else {
         colorBySign = true;
-        colorByPhase = true;
-        colorPhase = 0;
+        //colorByPhase = true;
+        //colorPhase = 0;
         if (cutoff == Float.MAX_VALUE)
           cutoff = defaultQMOrbitalCutoff;
         isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
@@ -771,7 +770,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
 
     if ("mep" == propertyName) {
-      theProperty = (float[]) value;  //mep charges
+      theProperty = (float[]) value; //mep charges
       isEccentric = isAnisotropic = false;
       dataType = SURFACE_MEP;
       if (state == STATE_DATA_READ) {
@@ -783,8 +782,8 @@ class Isosurface extends IsosurfaceMeshCollection {
         propertyName = "mapColor";
       } else {
         colorBySign = true;
-        colorByPhase = true;
-        colorPhase = 0;
+        //colorByPhase = true;
+        //colorPhase = 0;
         if (cutoff == Float.MAX_VALUE)
           cutoff = defaultMepCutoff;
         isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
@@ -886,7 +885,8 @@ class Isosurface extends IsosurfaceMeshCollection {
         super.setProperty("color", "sets", null);
       }
       setModelIndex();
-      if (logMessages && thePlane == null && !isSilent && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+      if (logMessages && thePlane == null && !isSilent
+          && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
         Logger.debug("\n" + jvxlGetFile(thisMesh, jvxlFileMessage, true, 1));
       discardTempData(jvxlDataIs2dContour);
       dataType = SURFACE_NONE;
@@ -2824,10 +2824,13 @@ class Isosurface extends IsosurfaceMeshCollection {
       fractionData.append(jvxlEdgeDataRead);
     }
     fractionData.append('\n'); //from generateSurfaceData
-    if (!isSilent || logMessages)
+    if (!isSilent || logMessages) {
       Logger.info("insideCount=" + insideCount + " outsideCount="
           + outsideCount + " surfaceCount=" + surfaceCount + " total="
           + (insideCount + outsideCount + surfaceCount));
+      if (insideCount == 0)
+        Logger.info("no output -- cutoff is probably too high: " + cutoff);
+    }
   }
 
   boolean checkCutoff(int v1, int v2, int v3) {

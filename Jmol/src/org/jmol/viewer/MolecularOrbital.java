@@ -46,7 +46,7 @@ class MolecularOrbital extends Isosurface {
   String moTranslucency = null;
   Float moTranslucentLevel = null;
   Point4f moPlane = null;
-  Float moCutoff = new Float(Isosurface.defaultQMOrbitalCutoff);
+  Float moCutoff = null;
   Float moResolution = null;
   Float moScale = null;
   Integer moColorPos = null;
@@ -222,7 +222,10 @@ class MolecularOrbital extends Isosurface {
     moPlane = (Point4f)thisModel.get("moPlane");
     moCutoff = (Float )thisModel.get("moCutoff");
     if (moCutoff == null)
+      moCutoff = (Float)moData.get("defaultCutoff");
+    if (moCutoff == null) {
       moCutoff = new Float(Isosurface.defaultQMOrbitalCutoff);
+    }
     moResolution = (Float)thisModel.get("moResolution");
     moScale = (Float)thisModel.get("moScale");
     moColorPos = (Integer)thisModel.get("moColorPos");

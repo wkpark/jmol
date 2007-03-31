@@ -170,6 +170,7 @@ In Chem3D, all grid data in following format:
       volumetricVectors[2] = new Vector3f(0, 0, zStep);
       Hashtable surfaceInfo = new Hashtable();
       surfaceInfo.put("surfaceDataType", "mo");
+      surfaceInfo.put("defaultCutoff", new Float(0.01));
       surfaceInfo.put("volumetricOrigin", volumetricOrigin);
       surfaceInfo.put("voxelCounts", voxelCounts);
       surfaceInfo.put("volumetricVectors", volumetricVectors);

@@ -114,6 +114,7 @@
 package org.openscience.jvxl;
 
 import java.io.BufferedReader;
+import java.util.BitSet;
 
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
@@ -121,15 +122,22 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.util.Logger;
+
 class JvxlReader {
 
-  JvxlReader() {
+  ColorEncoder colorEncoder;
+  
+  JvxlReader(ColorEncoder colorEncoder) {
     initializeIsosurface();
+    colorPos = colorEncoder.getColorPositive();
+    colorNeg = colorEncoder.getColorNegative();
+    this.colorEncoder = colorEncoder;
   }
   
   int state;
-  MeshData meshData;
-  JvxlData jvxlData;
+  MeshData meshData = new MeshData();
+  JvxlData jvxlData = new JvxlData();
   VolumeData volumeData;
   
   int fileIndex; //one-based
@@ -183,6 +191,7 @@ class JvxlReader {
   
   boolean colorBySign;
   boolean colorByPhase;
+  boolean colorBySets;
   int colorNeg;
   int colorPos;
   int colorPtr;
@@ -216,6 +225,12 @@ class JvxlReader {
       fileIndex = ((Integer) value).intValue();
       if (fileIndex < 1)
         fileIndex = 1;
+      return;
+    }
+
+    if ("blockData" == propertyName) {
+      boolean TF = ((Boolean) value).booleanValue();
+      blockCubeData = TF;
       return;
     }
 
@@ -271,6 +286,12 @@ class JvxlReader {
       return;
     }
 
+    if ("setColorScheme" == propertyName) {
+      String colorScheme = (String) value;
+      colorEncoder.setColorScheme(colorScheme);
+      return;
+    }
+
     if ("plane" == propertyName) {
       thePlane = (Point4f) value;
       isContoured = true;
@@ -281,12 +302,12 @@ class JvxlReader {
     if ("readData" == propertyName) {
       if (++state != STATE_DATA_READ)
         return;
-      meshData = new MeshData();
-      jvxlData = new JvxlData();
       if (!setData(value)) {
         Logger.error("Could not set the data");
         return;
       }
+      if (colorBySign)
+        isBicolorMap = true;
       if (!createIsosurface()) {
         Logger.error("Could not create isosurface");
         return;
@@ -299,16 +320,41 @@ class JvxlReader {
         pixelCounts[1] = voxelCounts[1];
       }
       jvxlData.nBytes = nBytes;
+      if (colorBySign) {
+        state = STATE_DATA_COLORED;
+        applyColorScale();
+      }
       jvxlUpdateInfo();
       discardTempData(false);
       mappedDataMin = Float.MAX_VALUE;
       return;
     }
 
+    if ("phase" == propertyName) {
+      String color = (String) value;
+      isCutoffAbsolute = true;
+      colorBySign = true;
+      colorByPhase = true;
+      colorPhase = -1;
+      for (int i = colorPhases.length; --i >= 0;)
+        if (color.equalsIgnoreCase(colorPhases[i])) {
+          colorPhase = i;
+          break;
+        }
+      if (colorPhase <= 0) {
+        Logger.warn(" invalid color phase: " + color);
+        colorPhase = 1;
+      }
+      return;
+    }
+
     if ("mapColor" == propertyName) {
       if (++state != STATE_DATA_COLORED)
         return;
-      if (!setData(value)) {
+      if (value instanceof String && ((String)value).equalsIgnoreCase("sets")) {
+        meshData.getSurfaceSet(0);
+        colorBySets = true;
+      } else if (!setData(value)) {
         Logger.error("Could not set the mapping data");
         return;
       }
@@ -317,7 +363,8 @@ class JvxlReader {
         readVolumetricData(true); //for the data
         colorIsosurface();
       } else {
-        readData(true);
+        if (!colorBySets)
+          readData(true);
         if (jvxlDataIsColorMapped) {
           jvxlReadColorData();
         } else {
@@ -380,7 +427,7 @@ class JvxlReader {
     blockCubeData = false; // Gaussian standard, but we allow for multiple surfaces one per data block
     isColorReversed = false;
     haveVoxelData = false;
-    colorBySign = colorByPhase = false;
+    colorBySign = colorByPhase = colorBySets = false;
     resolution = Float.MAX_VALUE;
     //anisotropy[0] = anisotropy[1] = anisotropy[2] = 1f;
     cutoff = Float.MAX_VALUE;
@@ -414,10 +461,11 @@ class JvxlReader {
     jvxlData.jvxlFileHeader = "" + jvxlFileHeader;
     jvxlData.cutoff = (isJvxl ? jvxlCutoff : cutoff);
     jvxlData.jvxlColorData = "";
-    jvxlData.jvxlEdgeData = "" + fractionData;
+    jvxlData.jvxlEdgeData = fractionData.toString();
     jvxlData.isBicolorMap = isBicolorMap;
     jvxlData.isContoured = isContoured;
     jvxlData.nContours = nContours;
+    jvxlData.nEdges = edgeCount;
     if (jvxlDataIsColorMapped)
       jvxlReadColorData();
     jvxlData.jvxlExtraLine = jvxlExtraLine(1);
@@ -437,8 +485,60 @@ class JvxlReader {
     edgeCount = 0;
   }
 
+  void discardTempData(boolean discardAll) {
+    voxelData = null;
+    try {
+      br.close();
+    } catch (Exception e) {
+    }
+    if (!discardAll)
+      return;
+    pixelData = null;
+    planarSquares = null;
+    contourVertexes = null;
+    contourVertexCount = 0;
+  }
+  
+  ////////////////////////////////////////////////////////////////
+  // CUBE/APSB/JVXL file reading stuff
+  ////////////////////////////////////////////////////////////////
+
+  StringBuffer jvxlFileHeader = new StringBuffer();
+  String  jvxlFileMessage;
+  String  jvxlEdgeDataRead;
+  String  jvxlColorDataRead;
+  int     jvxlSurfaceDataCount;
+  int     jvxlEdgeDataCount;
+  int     jvxlColorDataCount;
+  boolean jvxlDataIsColorMapped;
+  boolean jvxlDataIsPrecisionColor;
+  boolean jvxlWritePrecisionColor;
+  boolean jvxlDataIs2dContour;
+  float   jvxlCutoff;
+  int     edgeCount;
+
+
+  int atomCount;
+  boolean negativeAtomCount;
+  int nBytes;
+  int nDataPoints;
+  String surfaceData;
+  int nPointsX, nPointsY, nPointsZ;
+  final Vector3f thePlaneNormal = new Vector3f();
+  float thePlaneNormalMag;
+
   boolean isJvxl, isApbsDx;
   boolean endOfData;
+
+  void jvxlInitFlags() {
+    jvxlEdgeDataRead = "";
+    jvxlColorDataRead = "";
+    jvxlDataIs2dContour = false;
+    jvxlDataIsColorMapped = false;
+    jvxlDataIsPrecisionColor = false;
+    //jvxlDataisBicolorMap = false;
+    jvxlWritePrecisionColor = false;
+  }
 
   void readData(boolean isMapData) {
     isJvxl = false;
@@ -462,38 +562,18 @@ class JvxlReader {
       }
     else
       readVolumetricData(isMapData);
+    Logger.info("Read " + nPointsX + " x " + nPointsY + " x " + nPointsZ
+        + " data points");
   }
-
-  void discardTempData(boolean discardAll) {
-    voxelData = null;
-    try {
-      br.close();
-    } catch (Exception e) {
-    }
-    if (!discardAll)
-      return;
-    pixelData = null;
-    planarSquares = null;
-    contourVertexes = null;
-    contourVertexCount = 0;
-  } ////////////////////////////////////////////////////////////////
-
-  // default color stuff
-  ////////////////////////////////////////////////////////////////
-
-  int indexColorPositive;
-  int indexColorNegative;
-
-  ////////////////////////////////////////////////////////////////
-  // CUBE/JVXL file reading stuff
-  ////////////////////////////////////////////////////////////////
 
   int readVolumetricHeader() {
     try {
         readTitleLines();
         readAtomCountAndOrigin();
+        Logger.info("voxel grid origin:" + volumetricOrigin);
         for (int i = 0; i < 3; ++i) {
           readVoxelVector(i);
+          Logger.info("voxel grid vector:" + volumetricVectors[i]);
         }
       setupMatrix(volumetricMatrix, volumetricVectors);
       readAtoms();
@@ -503,7 +583,45 @@ class JvxlReader {
       throw new NullPointerException();
     }
   }
+  
+  static void setupMatrix(Matrix3f mat, Vector3f[] cols) {
+    for (int i = 0; i < 3; i++)
+      mat.setColumn(i, cols[i]);
+  }
 
+  void readTitleLines() throws Exception {
+    jvxlFileHeader = new StringBuffer();
+    int nLines = skipComments(true);
+    isApbsDx = (line.indexOf("object 1 class gridpositions counts") == 0);
+    if (isApbsDx) {
+      jvxlFileHeader.append("APBS OpenDx DATA ").append(line).append("\n");
+      jvxlFileHeader.append("see http://apbs.sourceforge.net\n");
+      isAngstroms = true;
+    } else {
+      nLines = 1;
+      while (nLines <= 2) {
+        if (line == null || line.length() == 0)
+          line = "Line " + nLines;
+        jvxlFileHeader.append(line).append('\n');
+        if (nLines++ == 1)
+          line = br.readLine();
+      }
+    }
+  }
+
+  int skipComments(boolean addToHeader) throws Exception {
+    int n = 1;
+    while ((line = br.readLine()) != null && 
+        (!addToHeader && line.length() == 0 || line.indexOf("#") == 0)) {
+      if (addToHeader) {
+        jvxlFileHeader.append(line);
+        jvxlFileHeader.append('\n');
+      }
+      n++;
+    }
+    return n;
+  }
+  
   void readVolumetricData(boolean isMapData) {
     try {
       readVoxelData(isMapData);
@@ -517,28 +635,6 @@ class JvxlReader {
       throw new NullPointerException();
     }
   }
-
-  StringBuffer jvxlFileHeader = new StringBuffer();
-  String jvxlFileMessage;
-  String jvxlEdgeDataRead;
-  String jvxlColorDataRead;
-
-  void readTitleLines() throws Exception {
-    jvxlFileHeader = new StringBuffer();
-    jvxlFileHeader.append(br.readLine());
-    jvxlFileHeader.append('\n');
-    skipComments(true);
-    isApbsDx = (line.indexOf("object 1 class gridpositions counts") == 0);
-    if (isApbsDx) {
-      line = "APBS OpenDx DATA: " + line + " see http://apbs.sourceforge.net";
-      isAngstroms = true;
-    }
-    jvxlFileHeader.append(line);
-    jvxlFileHeader.append('\n');
-  }
-
-  int atomCount;
-  boolean negativeAtomCount;
 
   void readAtomCountAndOrigin() throws Exception {
     String atomLine;
@@ -611,11 +707,6 @@ class JvxlReader {
     }
   }
 
-  void setupMatrix(Matrix3f mat, Vector3f[] cols) {
-    for (int i = 0; i < 3; i++)
-      mat.setColumn(i, cols[i]);
-  }
-
   void readAtoms() throws Exception {
     for (int i = 0; i < atomCount; ++i)
       jvxlFileHeader.append(br.readLine() + "\n");
@@ -659,11 +750,6 @@ class JvxlReader {
     }
     return nSurfaces;
   }
-
-  int nBytes;
-  int nDataPoints;
-  String surfaceData;
-  int nPointsX, nPointsY, nPointsZ;
 
   void readVoxelData(boolean isMapData) throws Exception {
     /*
@@ -784,9 +870,6 @@ class JvxlReader {
     volumeData.setVoxelData(voxelData);
   }
 
-  final Vector3f thePlaneNormal = new Vector3f();
-  float thePlaneNormalMag;
-
   void setPlaneParameters(Point4f plane) {
     if (plane.x == 0 && plane.y == 0 && plane.z == 0)
       plane.z = 1; //{0 0 0 w} becomes {0 0 1 w}
@@ -806,35 +889,6 @@ class JvxlReader {
         / thePlaneNormalMag;
   }
 
-  int jvxlSurfaceDataCount;
-  int jvxlEdgeDataCount;
-  int jvxlColorDataCount;
-  boolean jvxlDataIsColorMapped;
-  //boolean jvxlDataisBicolorMap;
-  boolean jvxlDataIsPrecisionColor;
-  boolean jvxlWritePrecisionColor;
-  boolean jvxlDataIs2dContour;
-  float jvxlCutoff;
-
-  void jvxlInitFlags() {
-    jvxlEdgeDataRead = "";
-    jvxlColorDataRead = "";
-    jvxlDataIs2dContour = false;
-    jvxlDataIsColorMapped = false;
-    jvxlDataIsPrecisionColor = false;
-    //jvxlDataisBicolorMap = false;
-    jvxlWritePrecisionColor = false;
-  }
-
-  void skipComments(boolean addToHeader) throws Exception {
-    while ((line = br.readLine()) != null && (line.length() == 0
-        || line.charAt(0) == '#')) {
-      if (addToHeader) {
-        jvxlFileHeader.append(line);
-        jvxlFileHeader.append('\n');
-      }
-    }
-  }
   void jvxlReadDefinitionLine(boolean showMsg) throws Exception {
     skipComments(false);
     if (showMsg)
@@ -907,6 +961,8 @@ class JvxlReader {
     else
       jvxlEdgeDataCount = (param2 < -1 ? -param2 : param2 > 0 ? param2 : 0);
     jvxlColorDataCount = (isBicolorMap ? -param2 : param3 < -1 ? -param3 : param3 > 0 ? param3 : 0);
+    if (colorBySign)
+      isBicolorMap = true;
     if (jvxlDataIsColorMapped) {
       float dataMin = parseFloat();
       float dataMax = parseFloat();
@@ -1077,7 +1133,6 @@ class JvxlReader {
   // color mapping methods
   ////////////////////////////////////////////////////////////////
 
-  //String remainderString;
 
   void colorIsosurface() {
     if (isContoured &&
@@ -1091,6 +1146,7 @@ class JvxlReader {
       generateContourData(jvxlDataIs2dContour);
     }
     applyColorScale();
+    jvxlData.nContours = nContours;
     jvxlData.jvxlExtraLine = jvxlExtraLine(1);
     jvxlFileMessage = "mapped: min = " + valueMappedToRed + "; max = "
         + valueMappedToBlue;
@@ -1169,7 +1225,11 @@ class JvxlReader {
      * the key to making the JVXL contours work.
      *  
      */
-    if (isBicolorMap && !isContoured) // will be current mesh only
+    if (colorBySets)
+      datum = value = meshData.vertexSets[vertexIndex];
+    else if (colorByPhase)
+      datum = value = getPhase(meshData.vertices[vertexIndex]);
+    else if (isBicolorMap && !isContoured) // will be current mesh only
       datum = value = meshData.vertexValues[vertexIndex];
     else if (jvxlDataIs2dContour)
       datum = value = getInterpolatedPixelValue(meshData.vertices[vertexIndex]);
@@ -1192,7 +1252,36 @@ class JvxlReader {
     return datum;
   }
 
+  final static String[] colorPhases = { "_orb", "x", "y", "z", "xy", "yz",
+    "xz", "x2-y2", "z2" };
+
+  float getPhase(Point3f pt) {
+    switch (colorPhase) {
+    case 0:
+    case -1:
+    case 1:
+      return (pt.x > 0 ? 1 : -1);
+    case 2:
+      return (pt.y > 0 ? 1 : -1);
+    case 3:
+      return (pt.z > 0 ? 1 : -1);
+    case 4:
+      return (pt.x * pt.y > 0 ? 1 : -1);
+    case 5:
+      return (pt.y * pt.z > 0 ? 1 : -1);
+    case 6:
+      return (pt.x * pt.z > 0 ? 1 : -1);
+    case 7:
+      return (pt.x * pt.x - pt.y * pt.y > 0 ? 1 : -1);
+    case 8:
+      return (pt.z * pt.z * 2f - pt.x * pt.x - pt.y * pt.y > 0 ? 1 : -1);
+    }
+    return 1;
+  }
+
   float getMinMappedValue() {
+    if (colorBySets)
+      return 0;
     int vertexCount = meshData.vertexCount;
     Point3f[] vertexes = meshData.vertices;
     float min = Float.MAX_VALUE;
@@ -1210,6 +1299,8 @@ class JvxlReader {
   }
 
   float getMaxMappedValue() {
+    if (colorBySets)
+      return Math.max(meshData.nSets - 1, 0);
     int vertexCount = meshData.vertexCount;
     Point3f[] vertexes = meshData.vertices;
     float max = -Float.MAX_VALUE;
@@ -1361,17 +1452,12 @@ class JvxlReader {
     jvxlData.jvxlColorData = data + "\n";
   }
 
-  int colorScheme;
   int getColorFromPalette(float value) {
     if (isColorReversed)
-      return getColorFromPalette(-value, -valueMappedToBlue,
-          -valueMappedToRed, colorScheme);
-    return getColorFromPalette(value, valueMappedToRed,
-        valueMappedToBlue, colorScheme);
-  }
-  
-  int getColorFromPalette(float value, float min, float max, int colorScheme) {
-    return 0;  // user-supplied
+      return colorEncoder.getColorFromPalette(-value, -valueMappedToBlue,
+          -valueMappedToRed);
+    return colorEncoder.getColorFromPalette(value, valueMappedToRed,
+        valueMappedToBlue);
   }
   
   ////////////////////////////////////////////////////////////////
@@ -1483,7 +1569,7 @@ class JvxlReader {
       data = jvxlData.jvxlFileHeader
           + (nSurfaces > 0 ? (-nSurfaces) + jvxlData.jvxlExtraLine.substring(2)
               : jvxlData.jvxlExtraLine);
-      if (data.indexOf("JVXL") != 0)
+      if (data.indexOf("JVXL") != 0 && data.indexOf("#") != 0)
         data = "JVXL " + data;
     }
     data += "# " + msg + "\n";
@@ -1566,7 +1652,7 @@ class JvxlReader {
     if (jvxlData.jvxlCompressionRatio > 0)
       info += "; approximate compressionRatio=" + jvxlData.jvxlCompressionRatio
           + ":1";
-    info += "\n# created using Jvxl";
+    info += "\n# created using Jvxl.java";
     return (isInfo ? info : definitionLine);
   }
 
@@ -1832,11 +1918,6 @@ class JvxlReader {
 
     return voxelPointIndexes;
   }
-
-  //int firstCriticalVertex;
-  //int lastCriticalVertex;
-  int edgeCount;
-  final static float assocCutoff = 0.3f;
 
   boolean processOneCubical(int insideMask, float cutoff,
                             int[] voxelPointIndexes, int x, int y, int z) {
@@ -3101,7 +3182,8 @@ class JvxlData {
   float valueMappedToBlue;
   float cutoff;
   int nBytes;
-  int nContours;  
+  int nContours;
+  int nEdges;
 
   String[] title;
   
@@ -3157,5 +3239,99 @@ class MeshData {
     polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
   polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC, check};
  }
+  
+  BitSet[] surfaceSet;
+  int[] vertexSets;
+  int nSets = 0;
+  boolean setsSuccessful;
+
+  BitSet[] getSurfaceSet(int level) {
+    if (level == 0) {
+      surfaceSet = new BitSet[100];
+      nSets = 0;
+    }
+    setsSuccessful = true;
+    for (int i = 0; i < polygonCount; i++) {
+      int[] p = polygonIndexes[i];
+      int pt0 = findSet(p[0]);
+      int pt1 = findSet(p[1]);
+      int pt2 = findSet(p[2]);
+      if (pt0 < 0 && pt1 < 0 && pt2 < 0) {
+        createSet(p[0], p[1], p[2]);
+        continue;
+      }
+      if (pt0 == pt1 && pt1 == pt2)
+        continue;
+      if (pt0 >= 0) {
+        surfaceSet[pt0].set(p[1]);
+        surfaceSet[pt0].set(p[2]);
+        if (pt1 >= 0 && pt1 != pt0)
+          mergeSets(pt0, pt1);
+        if (pt2 >= 0 && pt2 != pt0 && pt2 != pt1)
+          mergeSets(pt0, pt2);
+        continue;
+      }
+      if (pt1 >= 0) {
+        surfaceSet[pt1].set(p[0]);
+        surfaceSet[pt1].set(p[2]);
+        if (pt2 >= 0 && pt2 != pt1)
+          mergeSets(pt1, pt2);
+        continue;
+      }
+      surfaceSet[pt2].set(p[0]);
+      surfaceSet[pt2].set(p[1]);
+    }
+    int n = 0;
+    for (int i = 0; i < nSets; i++)
+      if (surfaceSet[i] != null)
+        n++;
+    BitSet[] temp = new BitSet[n];
+    n = 0;
+    for (int i = 0; i < nSets; i++)
+      if (surfaceSet[i] != null)
+        temp[n++] = surfaceSet[i];
+    nSets = n;
+    surfaceSet = temp;
+    if (!setsSuccessful && level < 2)
+      getSurfaceSet(++level);
+    if (level == 0) {
+      vertexSets = new int[vertexCount];
+      for (int i = 0; i < nSets; i++)
+        for (int j = 0; j < vertexCount; j++)
+          if (surfaceSet[i].get(j))
+            vertexSets[j] = i;
+    }
+    return surfaceSet;
+  }
+
+  int findSet(int vertex) {
+    for (int i = 0; i < nSets; i++)
+      if (surfaceSet[i] != null && surfaceSet[i].get(vertex))
+        return i;
+    return -1;
+  }
+
+  void createSet(int v1, int v2, int v3) {
+    int i;
+    for (i = 0; i < nSets; i++)
+      if (surfaceSet[i] == null)
+        break;
+    if (i >= 100) {
+      setsSuccessful = false;
+      return;
+    }
+    if (i == nSets)
+      nSets = i + 1;
+    surfaceSet[i] = new BitSet();
+    surfaceSet[i].set(v1);
+    surfaceSet[i].set(v2);
+    surfaceSet[i].set(v3);
+  }
+
+  void mergeSets(int a, int b) {
+    surfaceSet[a].or(surfaceSet[b]);
+    surfaceSet[b] = null;
+  }
+  
 }
 

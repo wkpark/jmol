@@ -142,7 +142,7 @@ abstract class MeshCollection extends Shape {
         for (int i = 0; i < currentMesh.surfaceSet.length; i++)
           for (int j = 0; j < currentMesh.vertexCount; j++)
           if (currentMesh.surfaceSet[i].get(j))
-            currentMesh.vertexColixes[j] = Graphics3D.getColix(Graphics3D.colorNames[i]);
+            currentMesh.vertexColixes[j] = Graphics3D.getColix(Graphics3D.getColorName(i));
         return;
       }
       if (value != null) {  

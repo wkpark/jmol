@@ -78,9 +78,9 @@ import org.jmol.viewer.Atom;
 
 public class QuantumCalculation {
 
-  public static int MAX_GRID = 80;
+  public final static int MAX_GRID = 80;
 
-  final static float bohr_per_angstrom = 1 / 0.52918f;
+  private final static float bohr_per_angstrom = 1 / 0.52918f;
 
   // absolute grid coordinates in Bohr 
   float[][] xyzBohr = new float[MAX_GRID][3];
@@ -115,7 +115,7 @@ public class QuantumCalculation {
   Atom[] atoms;
   Vector shells;
   float[][] gaussians;
-  Hashtable aoOrdersDF;
+  //Hashtable aoOrdersDF;
   int[][] slaterInfo;
   float[][] slaterData;
   float[] moCoefficients;
@@ -138,7 +138,7 @@ public class QuantumCalculation {
     this.atoms = atoms;
     this.shells = shells;
     this.gaussians = gaussians;
-    this.aoOrdersDF = aoOrdersDF;
+    //this.aoOrdersDF = aoOrdersDF;
     this.slaterInfo = slaterInfo;
     this.slaterData = slaterData;
     this.moCoefficients = moCoefficients;

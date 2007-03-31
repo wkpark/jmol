@@ -38,9 +38,9 @@ import org.jmol.viewer.Atom;
  */
 public class MepCalculation {
 
-  final static float bohr_per_angstrom = 1 / 0.52918f;
+  private final static float bohr_per_angstrom = 1 / 0.52918f;
 
-  public static int MAX_GRID = 40;
+  public final static int MAX_GRID = 40;
 
   // grid coordinates relative t  o charge center in Bohr 
   float[] X = new float[MAX_GRID];

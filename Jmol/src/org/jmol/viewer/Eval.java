@@ -7845,15 +7845,16 @@ class Eval { //implements Runnable {
     if (moNumber != Integer.MAX_VALUE) {
       if (tokAt(2) == Token.string)
         title = parameterAsString(2);
-      setMoData(JmolConstants.SHAPE_MO, moNumber, title);
+      setMoData(JmolConstants.SHAPE_MO, moNumber, modelIndex, title);
     }
     return true;
   }
 
-  void setMoData(int shape, int moNumber, String title) throws ScriptException {
+  void setMoData(int shape, int moNumber, int modelIndex, String title) throws ScriptException {
     if (isSyntaxCheck)
       return;
-    int modelIndex = viewer.getDisplayModelIndex();
+    if (modelIndex == 0)
+      modelIndex = viewer.getDisplayModelIndex();
     if (modelIndex < 0)
       multipleModelsNotOK();
     Hashtable moData = (Hashtable) viewer.getModelAuxiliaryInfo(modelIndex,
@@ -7862,10 +7863,10 @@ class Eval { //implements Runnable {
         modelIndex, "jmolSurfaceInfo");
     if (surfaceInfo != null
         && ((String) surfaceInfo.get("surfaceDataType")).equals("mo")) {
-      viewer.loadShape(JmolConstants.SHAPE_ISOSURFACE);
-      setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "init", null);
-      setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "sign", Boolean.TRUE);
-      setShapeProperty(JmolConstants.SHAPE_ISOSURFACE, "getSurface",
+      viewer.loadShape(shape);
+      setShapeProperty(shape, "init", new Integer(modelIndex));
+      setShapeProperty(shape, "sign", Boolean.TRUE);
+      setShapeProperty(shape, "getSurface",
           surfaceInfo);
 
       return;
@@ -8297,7 +8298,7 @@ class Eval { //implements Runnable {
         if (++i == statementLength)
           badArgumentCount();
         int moNumber = intParameter(i);
-        setMoData(iShape, moNumber, null);
+        setMoData(iShape, moNumber, modelIndex, null);
         surfaceObjectSeen = true;
         continue;
       case Token.mep:

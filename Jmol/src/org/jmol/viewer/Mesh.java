@@ -125,7 +125,7 @@ class Mesh {
   Mesh() {}
   
   Mesh(String thisID, Graphics3D g3d, short colix) {
-    if (thisID.equals(PREVIOUS_MESH_ID))
+    if (PREVIOUS_MESH_ID.equals(thisID))
       thisID = null;
     this.thisID = thisID;
     this.g3d = g3d;

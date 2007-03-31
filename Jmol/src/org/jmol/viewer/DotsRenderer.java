@@ -62,7 +62,7 @@ class DotsRenderer extends ShapeRenderer {
         : 0);
     screenDotCount = Geodesic3D.getVertexCount(screenLevel);
     for (int i = screenDotCount; --i >= 0;)
-      viewer.transformVector(Geodesic3D.vertexVectors[i],
+      viewer.transformVector(Geodesic3D.getVertexVector(i),
           verticesTransformed[i]);
     for (int i = dots.ec.dotsConvexMax; --i >= 0;) {
       Atom atom = frame.atoms[i];

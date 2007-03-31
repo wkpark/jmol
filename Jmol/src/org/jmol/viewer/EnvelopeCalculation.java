@@ -138,7 +138,7 @@ class EnvelopeCalculation {
     this.mads = mads;
     this.frame = frame;
     atomCount = atoms.length;
-    geodesicCount = Geodesic3D.vertexVectors.length;
+    geodesicCount = Geodesic3D.getVertexVectorsCount();
     geodesicMap = allocateBitmap(geodesicCount);
     mapT = allocateBitmap(geodesicCount);
   }
@@ -305,7 +305,7 @@ class EnvelopeCalculation {
 
   void addIncompleteFaces(int[] points) {
     clearBitmap(mapT);
-    short[] faces = Geodesic3D.faceVertexesArrays[MAX_LEVEL];
+    short[] faces = Geodesic3D.getFaceVertexes(MAX_LEVEL);
     int len = faces.length;
     int maxPt = -1;
     for (int f = 0; f < len;) {
@@ -358,13 +358,13 @@ class EnvelopeCalculation {
       return;
     int faceTest;
     int p1, p2, p3;
-    short[] faces = Geodesic3D.faceVertexesArrays[MAX_LEVEL];
+    short[] faces = Geodesic3D.getFaceVertexes(MAX_LEVEL);
     
     int p4 = power4[MAX_LEVEL - 1];
     boolean ok1, ok2, ok3;
     clearBitmap(mapT);
     for (int i = 0; i < 12; i++) {
-      vertexTest[i].set(Geodesic3D.vertexVectors[i]);
+      vertexTest[i].set(Geodesic3D.getVertexVector(i));
       vertexTest[i].scaleAdd(combinedRadii, centerI);      
     }    
     for (int f = 0; f < 20; f++) {
@@ -405,7 +405,7 @@ class EnvelopeCalculation {
           for (int j = 0; j < neighborCount; j++) {
             float maxDist = neighborPlusProbeRadii2[j];
             centerT = neighborCenters[j];
-            pointT.set(Geodesic3D.vertexVectors[vect]);
+            pointT.set(Geodesic3D.getVertexVector(vect));
             pointT.scaleAdd(combinedRadii, centerI);
             if (pointT.distanceSquared(centerT) < maxDist)
               clearBit(geodesicMap, vect);
@@ -544,7 +544,7 @@ class EnvelopeCalculation {
         while (--iDot >= 0)
           if (getBit(dotsConvexMaps[i], iDot)) {
             Point3f pt = new Point3f();
-            pt.scaleAdd(setRadius, Geodesic3D.vertexVectors[iDot], atom);
+            pt.scaleAdd(setRadius, Geodesic3D.getVertexVector(iDot), atom);
             points[nPoints++] = pt;
           }
       }

@@ -65,7 +65,7 @@ class GeoSurfaceRenderer extends DotsRenderer {
   private void renderSurface(int[] points) {
     if (faceMap == null)
       return;
-    short[] faces = Geodesic3D.faceVertexesArrays[screenLevel];
+    short[] faces = Geodesic3D.getFaceVertexes(screenLevel);
     int[] coords = screenCoordinates;
     short p1, p2, p3;
     int mapMax = (points.length << 5);

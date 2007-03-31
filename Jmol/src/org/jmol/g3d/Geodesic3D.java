@@ -171,8 +171,8 @@ public class Geodesic3D {
    * 5 levels, 0 through 4
    */
   
-  public static Vector3f[] vertexVectors;
-  public static short[][] faceVertexesArrays;
+  static Vector3f[] vertexVectors;
+  static short[][] faceVertexesArrays;
   
   final static int maxLevel = 4;
   static short[][] neighborVertexesArrays;
@@ -219,6 +219,14 @@ public class Geodesic3D {
     return vertexVectors;
   }
 
+  static public int getVertexVectorsCount() {
+    return (vertexVectors == null ? 0 : vertexVectors.length);
+  }
+
+  static public Vector3f getVertexVector(int i) {
+    return vertexVectors[i];
+  }
+
   static int getFaceCount(int level) {
     return faceVertexesArrays[level].length / 3;
   }
@@ -231,7 +239,7 @@ public class Geodesic3D {
     return neighborVertexesArrays[level];
   }
 
-  static short[] getFaceVertexes(int level) {
+  static public short[] getFaceVertexes(int level) {
     return faceVertexesArrays[level];
   }
 

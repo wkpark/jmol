@@ -514,6 +514,7 @@ class Isosurface extends IsosurfaceMeshCollection {
 
     if ("setColorScheme" == propertyName) {
       colorScheme = ((String) value);
+      viewer.setColorScheme(colorScheme);
       if (thisMesh != null && colorScheme.equals("sets")) {
         thisMesh.surfaceSet = getSurfaceSet(0);
         super.setProperty("color", "sets", null);
@@ -876,7 +877,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       if (jvxlDataIs2dContour)
         colorIsosurface();
       thisMesh.nBytes = nBytes;
-      if (colorByPhase || colorBySign) {
+      if (colorBySign) {
         state = STATE_DATA_COLORED;
         applyColorScale(thisMesh);
       }
@@ -1366,10 +1367,13 @@ class Isosurface extends IsosurfaceMeshCollection {
   String jvxlFileMessage;
   String jvxlEdgeDataRead;
   String jvxlColorDataRead;
-
+/*
   void readTitleLines() throws Exception {
     jvxlFileHeader = new StringBuffer();
-    jvxlFileHeader.append(br.readLine());
+    line = br.readLine();
+    if (line == null || line.length() == 0)
+      line = "Line 1 -- intentionally blank.";
+    jvxlFileHeader.append(line);
     jvxlFileHeader.append('\n');
     skipComments(true);
     isApbsDx = (line.indexOf("object 1 class gridpositions counts") == 0);
@@ -1377,11 +1381,49 @@ class Isosurface extends IsosurfaceMeshCollection {
       line = "APBS OpenDx DATA: " + line + " see http://apbs.sourceforge.net";
       isAngstroms = true;
     }
+    if (line == null || line.length() == 0)
+      line = "Line 2 -- intentionally blank.";
     jvxlFileHeader.append(line);
     jvxlFileHeader.append('\n');
     if (!isSilent)
       Logger.info(jvxlFileHeader.toString());
   }
+
+*/
+
+  void readTitleLines() throws Exception {
+    jvxlFileHeader = new StringBuffer();
+    int nLines = skipComments(true);
+    isApbsDx = (line.indexOf("object 1 class gridpositions counts") == 0);
+    if (isApbsDx) {
+      jvxlFileHeader.append("APBS OpenDx DATA ").append(line).append("\n");
+      jvxlFileHeader.append("see http://apbs.sourceforge.net\n");
+      isAngstroms = true;
+    } else {
+      nLines = 1;
+      while (nLines <= 2) {
+        if (line == null || line.length() == 0)
+          line = "Line " + nLines;
+        jvxlFileHeader.append(line).append('\n');
+        if (nLines++ == 1)
+          line = br.readLine();
+      }
+    }
+  }
+
+  int skipComments(boolean addToHeader) throws Exception {
+    int n = 1;
+    while ((line = br.readLine()) != null && 
+        (!addToHeader && line.length() == 0 || line.indexOf("#") == 0)) {
+      if (addToHeader) {
+        jvxlFileHeader.append(line);
+        jvxlFileHeader.append('\n');
+      }
+      n++;
+    }
+    return n;
+  }
+  
 
   int atomCount;
   boolean negativeAtomCount;
@@ -1462,7 +1504,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
   }
 
-  void setupMatrix(Matrix3f mat, Vector3f[] cols) {
+  static void setupMatrix(Matrix3f mat, Vector3f[] cols) {
     for (int i = 0; i < 3; i++)
       mat.setColumn(i, cols[i]);
   }
@@ -1747,15 +1789,6 @@ class Isosurface extends IsosurfaceMeshCollection {
     jvxlWritePrecisionColor = false;
   }
 
-  void skipComments(boolean addToHeader) throws Exception {
-    while ((line = br.readLine()) != null && (line.length() == 0
-        || line.charAt(0) == '#')) {
-      if (addToHeader) {
-        jvxlFileHeader.append(line);
-        jvxlFileHeader.append('\n');
-      }
-    }
-  }
   void jvxlReadDefinitionLine(boolean showMsg) throws Exception {
     skipComments(false);
     if (showMsg)
@@ -1828,6 +1861,8 @@ class Isosurface extends IsosurfaceMeshCollection {
     else
       jvxlEdgeDataCount = (param2 < -1 ? -param2 : param2 > 0 ? param2 : 0);
     jvxlColorDataCount = (isBicolorMap ? -param2 : param3 < -1 ? -param3 : param3 > 0 ? param3 : 0);
+    if (colorBySign)
+      isBicolorMap = true;
     if (jvxlDataIsColorMapped) {
       float dataMin = parseFloat();
       float dataMax = parseFloat();
@@ -2130,10 +2165,10 @@ class Isosurface extends IsosurfaceMeshCollection {
      * the key to making the JVXL contours work.
      *  
      */
-    if (isBicolorMap && !isContoured) // will be current mesh only
-      datum = value = mesh.vertexValues[vertexIndex];
-    else if (colorByPhase)
+    if (colorByPhase)
       datum = value = getPhase(mesh.vertices[vertexIndex]);
+    else if (isBicolorMap && !isContoured) // will be current mesh only
+      datum = value = mesh.vertexValues[vertexIndex];
     else if (jvxlDataIs2dContour)
       datum = value = getInterpolatedPixelValue(mesh.vertices[vertexIndex]);
     else
@@ -2386,8 +2421,8 @@ class Isosurface extends IsosurfaceMeshCollection {
           Logger.info("readColor " + i + ": " + fraction + " " + value + " "
               + valueMappedToRed + " " + valueMappedToBlue + " " + colixes[i]);
         if (mesh.hasGridPoints) {
-          colixes[++i] = viewer.getColixFromPalette(0.2f, 0f, 1f, colorScheme);
-          colixes[++i] = viewer.getColixFromPalette(0.8f, 0f, 1f, colorScheme);
+          colixes[++i] = viewer.getColixFromPalette(0.2f, 0f, 1f);
+          colixes[++i] = viewer.getColixFromPalette(0.8f, 0f, 1f);
         }
       }
     }
@@ -2401,9 +2436,9 @@ class Isosurface extends IsosurfaceMeshCollection {
   short getColixFromPalette(float value) {
     if (isColorReversed)
       return viewer.getColixFromPalette(-value, -valueMappedToBlue,
-          -valueMappedToRed, colorScheme);
+          -valueMappedToRed);
     return viewer.getColixFromPalette(value, valueMappedToRed,
-        valueMappedToBlue, colorScheme);
+        valueMappedToBlue);
   }
   
   ////////////////////////////////////////////////////////////////
@@ -2513,7 +2548,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       data = mesh.jvxlFileHeader
           + (nSurfaces > 0 ? (-nSurfaces) + mesh.jvxlExtraLine.substring(2)
               : mesh.jvxlExtraLine);
-      if (data.indexOf("JVXL") != 0)
+      if (data.indexOf("JVXL") != 0 && data.indexOf("#") != 0)
         data = "JVXL " + data;
     }
     data += "# " + msg + "\n";

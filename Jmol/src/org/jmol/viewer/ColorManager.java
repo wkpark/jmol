@@ -253,7 +253,7 @@ class ColorManager {
     return (argb == 0 ? Graphics3D.HOTPINK : Graphics3D.getColix(argb));
   }
 
-  int quantize(float val, float lo, float hi, int segmentCount) {
+  static int quantize(float val, float lo, float hi, int segmentCount) {
     /* oy! Say you have an array with 10 values, so segmentCount=10
      * then we expect 0,1,2,...,9  EVENLY
      * If f = fractional distance from lo to hi, say 0.0 to 10.0 again,
@@ -308,11 +308,10 @@ class ColorManager {
   }
 
   private float colorHi, colorLo;
-  private String colorPalette;
   private float[] colorData;
-  void setCurrentColorRange(float[] data, BitSet bs, String palette) {
+  void setCurrentColorRange(float[] data, BitSet bs, String colorScheme) {
     colorData = data;
-    colorPalette = palette;
+    setColorScheme(colorScheme);
     colorHi = Float.MIN_VALUE;
     colorLo = Float.MAX_VALUE;
     if (data == null)
@@ -330,35 +329,48 @@ class ColorManager {
   short getPropertyColix(int iAtom) {
     if (colorData == null || iAtom >= colorData.length)
       return Graphics3D.GRAY;
-    return getColixFromPalette(colorData[iAtom], colorLo, colorHi, colorPalette);
+    return getColixFromPalette(colorData[iAtom], colorLo, colorHi);
+  }
+
+  private final static String[] colorSchemes = {"roygb", "bgyor", "rwb", "bwr", "low", "high"}; 
+  private final static int ROYGB = 0;
+  private final static int BGYOR = 1;
+  private final static int RWB   = 2;
+  private final static int BWR   = 3;
+  private final static int LOW   = 4;
+  private final static int HIGH  = 5;
+  private final static int ihalf = JmolConstants.argbsRoygbScale.length/3;
+  
+  int palette = 0;
+  
+  int setColorScheme(String colorScheme) {
+    palette = 0;
+    for (int i = 0; i < colorSchemes.length; i++)
+      if (colorSchemes[i].equalsIgnoreCase(colorScheme))
+        return (palette = i);
+    return palette;
   }
   
-  short getColixFromPalette(float val, float lo, float hi, String palette) {
-    if (palette.equals("rwb")) {
-      int index = quantize(val, lo, hi, JmolConstants.argbsRwbScale.length);
-      return Graphics3D.getColix(JmolConstants.argbsRwbScale[index]);
-    }
-    if (palette.equals("bwr")) {
-      int index = quantize(-val, -hi, -lo, JmolConstants.argbsRwbScale.length);
-      return Graphics3D.getColix(JmolConstants.argbsRwbScale[index]);
-    }
-    if (palette.equals("roygb")) {
-      int index = quantize(val, lo, hi, JmolConstants.argbsRoygbScale.length);
-      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[index]);
-    }
-    if (palette.equals("bgyor")) {
-      int index = quantize(-val, -hi, -lo, JmolConstants.argbsRoygbScale.length);
-      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[index]);
-    }
-    int ihalf = JmolConstants.argbsRoygbScale.length/3;
-    if (palette.equals("low")) {
-      int index = quantize(val, lo, hi, ihalf);
-      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[index]);
-    }
-
-    if (palette.equals("high")) {
-      int index = quantize(val, lo, hi, ihalf * 2);
-      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[ihalf+index]);
+  short getColixFromPalette(float val, float lo, float hi) {
+    switch (palette) {
+    case RWB:
+      return Graphics3D.getColix(JmolConstants.argbsRwbScale[quantize(val, lo,
+          hi, JmolConstants.argbsRwbScale.length)]);
+    case BWR:
+      return Graphics3D.getColix(JmolConstants.argbsRwbScale[quantize(-val,
+          -hi, -lo, JmolConstants.argbsRwbScale.length)]);
+    case ROYGB:
+      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[quantize(val,
+          lo, hi, JmolConstants.argbsRoygbScale.length)]);
+    case BGYOR:
+      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[quantize(-val,
+          -hi, -lo, JmolConstants.argbsRoygbScale.length)]);
+    case LOW:
+      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[quantize(val,
+          lo, hi, ihalf)]);
+    case HIGH:
+      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[ihalf
+          + quantize(val, lo, hi, ihalf * 2)]);
     }
     return Graphics3D.GRAY;
   }

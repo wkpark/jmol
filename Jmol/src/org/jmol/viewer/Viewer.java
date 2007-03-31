@@ -1089,9 +1089,14 @@ public class Viewer extends JmolViewer {
     return colorManager.getColixHbondType(order);
   }
 
-  short getColixFromPalette(float val, float rangeMin, float rangeMax,
-                            String palette) {
-    return colorManager.getColixFromPalette(val, rangeMin, rangeMax, palette);
+  int setColorScheme(String colorScheme) {
+    //isosurface
+    return colorManager.setColorScheme(colorScheme); 
+  }
+
+  short getColixFromPalette(float val, float rangeMin, float rangeMax) {
+    //isosurface
+    return colorManager.getColixFromPalette(val, rangeMin, rangeMax);
   }
 
   // ///////////////////////////////////////////////////////////////

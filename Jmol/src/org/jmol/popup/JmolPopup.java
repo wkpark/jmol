@@ -482,7 +482,7 @@ abstract public class JmolPopup {
     addMenuSeparator(menu);
     addMenuItem(menu, GT._("Java memory usage", true));
     Runtime runtime = Runtime.getRuntime();
-    runtime.gc();
+    //runtime.gc();
     long mbTotal = convertToMegabytes(runtime.totalMemory());
     long mbFree = convertToMegabytes(runtime.freeMemory());
     long mbMax = convertToMegabytes(maxMemoryForNewerJvm());
@@ -509,8 +509,6 @@ abstract public class JmolPopup {
     return num / (1024*1024);
   }
 
-  Hashtable colorMenus = new Hashtable();
-  
   private void addMenuItems(String parentId, String key, Object menu,
                             PopupResourceBundle popupResourceBundle) {
     String id = parentId + "." + key;

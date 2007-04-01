@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-02-27 22:46+0100\n"
+"POT-Creation-Date: 2007-04-01 15:02+0200\n"
 "PO-Revision-Date: 2006-03-17 20:19+0100\n"
 "Last-Translator: Ivo Sarak <ivo@ra.vendomar.ee>\n"
 "Language-Team: Estonian <Jmol-developers@lists.sf.net>\n"
@@ -62,10 +62,10 @@ msgstr "Info"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:237
 #: org/openscience/jmol/app/GuiMap.java:69
-#: org/openscience/jmol/app/PovrayDialog.java:181
-#: org/openscience/jmol/app/PovrayDialog.java:454
-#: org/openscience/jmol/app/PovrayDialog.java:623
-#: org/openscience/jmol/app/PovrayDialog.java:644
+#: org/openscience/jmol/app/PovrayDialog.java:176
+#: org/openscience/jmol/app/PovrayDialog.java:449
+#: org/openscience/jmol/app/PovrayDialog.java:618
+#: org/openscience/jmol/app/PovrayDialog.java:639
 msgid "Select"
 msgstr "Vali"
 
@@ -144,13 +144,13 @@ msgstr "Mine kollektsiooni viimasele {0}"
 msgid "Error reading from BufferedReader: {0}"
 msgstr "Viga lugemisel BufferedReader'ist: {0}"
 
-#: org/openscience/jmol/app/DisplayPanel.java:238
-msgid "Select Atoms"
-msgstr "Vali aatomid"
-
-#: org/openscience/jmol/app/DisplayPanel.java:252
+#: org/openscience/jmol/app/DisplayPanel.java:153
 msgid "Delete Atoms"
 msgstr "Kustuta aatomid"
+
+#: org/openscience/jmol/app/DisplayPanel.java:154
+msgid "Select Atoms"
+msgstr "Vali aatomid"
 
 #: org/openscience/jmol/app/FilePreview.java:66
 msgid "Preview"
@@ -456,7 +456,7 @@ msgid "&Tools"
 msgstr "&Tööriistad"
 
 #: org/openscience/jmol/app/GuiMap.java:134
-#: org/openscience/jmol/app/MeasurementTable.java:66
+#: org/openscience/jmol/app/MeasurementTable.java:65
 msgid "Measurements..."
 msgstr "Mõõted..."
 
@@ -639,375 +639,375 @@ msgstr "JPEG kvaliteet"
 msgid "Error starting Jmol: the property 'user.home' is not defined."
 msgstr "Jmol käivitamise viga: 'user.home' omadus kirjeldamata."
 
-#: org/openscience/jmol/app/Jmol.java:162
+#: org/openscience/jmol/app/Jmol.java:167
 msgid "Initializing 3D display..."
 msgstr "Algväärtustan 3D ekraani..."
 
-#: org/openscience/jmol/app/Jmol.java:187
+#: org/openscience/jmol/app/Jmol.java:195
 msgid "Initializing Preferences..."
 msgstr "Algväärtustan eelistusi..."
 
-#: org/openscience/jmol/app/Jmol.java:189
+#: org/openscience/jmol/app/Jmol.java:197
 msgid "Initializing Recent Files..."
 msgstr "Algväärtustan hiljutisi faile..."
 
-#: org/openscience/jmol/app/Jmol.java:192
+#: org/openscience/jmol/app/Jmol.java:200
 msgid "Initializing Script Window..."
 msgstr "Algväärtustan skripti akent..."
 
-#: org/openscience/jmol/app/Jmol.java:194
+#: org/openscience/jmol/app/Jmol.java:202
 msgid "Initializing AtomSetChooser Window..."
 msgstr "Algväärtustan AtomSetChooser akent..."
 
-#: org/openscience/jmol/app/Jmol.java:202
+#: org/openscience/jmol/app/Jmol.java:210
 msgid "Initializing Measurements..."
 msgstr "Algväärtustan mõõted..."
 
-#: org/openscience/jmol/app/Jmol.java:223
+#: org/openscience/jmol/app/Jmol.java:234
 msgid "Building Command Hooks..."
 msgstr "Koostan Command Hooks..."
 
-#: org/openscience/jmol/app/Jmol.java:232
+#: org/openscience/jmol/app/Jmol.java:245
 msgid "Building Menubar..."
 msgstr "Koostan menüüriba..."
 
-#: org/openscience/jmol/app/Jmol.java:248
+#: org/openscience/jmol/app/Jmol.java:261
 msgid "Starting display..."
 msgstr "Käivitan ekraani..."
 
-#: org/openscience/jmol/app/Jmol.java:253
+#: org/openscience/jmol/app/Jmol.java:264
 msgid "Setting up File Choosers..."
 msgstr "Seadistan failivalijat..."
 
-#: org/openscience/jmol/app/Jmol.java:306
+#: org/openscience/jmol/app/Jmol.java:317
 msgid "Setting up Drag-and-Drop..."
 msgstr "Seadistan Drag-ja-Drop'i..."
 
-#: org/openscience/jmol/app/Jmol.java:327
+#: org/openscience/jmol/app/Jmol.java:338
 msgid "Launching main frame..."
 msgstr "Käivitan peafreimi..."
 
-#: org/openscience/jmol/app/Jmol.java:345
+#: org/openscience/jmol/app/Jmol.java:356
 msgid "Creating main window..."
 msgstr "Loon peaakna..."
 
-#: org/openscience/jmol/app/Jmol.java:346
+#: org/openscience/jmol/app/Jmol.java:357
 msgid "Initializing Swing..."
 msgstr "Algväärtustan Swing'i..."
 
-#: org/openscience/jmol/app/Jmol.java:358
+#: org/openscience/jmol/app/Jmol.java:369
 msgid "Initializing Jmol..."
 msgstr "Algväärtustan Jmol'i..."
 
-#: org/openscience/jmol/app/Jmol.java:378
+#: org/openscience/jmol/app/Jmol.java:389
 msgid "give this help page"
 msgstr "anna see abileht"
 
-#: org/openscience/jmol/app/Jmol.java:380
+#: org/openscience/jmol/app/Jmol.java:391
 msgid "no display (and also exit when done)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:381
+#: org/openscience/jmol/app/Jmol.java:392
 msgid "check script syntax only"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:382
+#: org/openscience/jmol/app/Jmol.java:393
 msgid "silent startup operation"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:384
+#: org/openscience/jmol/app/Jmol.java:395
 msgid "no console -- all output to sysout"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:386
+#: org/openscience/jmol/app/Jmol.java:397
 msgid "exit after script (implicit with -n)"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:394
+#: org/openscience/jmol/app/Jmol.java:405
 msgid "property=value"
 msgstr "omadus=väärtus"
 
-#: org/openscience/jmol/app/Jmol.java:397
+#: org/openscience/jmol/app/Jmol.java:408
 msgid "supported options are given below"
 msgstr "lubatud valikud on eespool"
 
-#: org/openscience/jmol/app/Jmol.java:402
+#: org/openscience/jmol/app/Jmol.java:413
 #, fuzzy, java-format
 msgid "window width x height, e.g. {0}"
 msgstr "akna suurus 500x500"
 
-#: org/openscience/jmol/app/Jmol.java:409
+#: org/openscience/jmol/app/Jmol.java:420
 #, java-format
 msgid "{0} or {1}:filename"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:431
+#: org/openscience/jmol/app/Jmol.java:442
 msgid "For example:"
 msgstr ""
 
-#: org/openscience/jmol/app/Jmol.java:437
+#: org/openscience/jmol/app/Jmol.java:448
 msgid "The -D options are as follows (defaults in parathesis):"
 msgstr "-D valikud on järgnevad (vaikeväärtus on sulgudes):"
 
-#: org/openscience/jmol/app/Jmol.java:575
+#: org/openscience/jmol/app/Jmol.java:586
 msgid "Executing script..."
 msgstr "Käivitan skripti..."
 
-#: org/openscience/jmol/app/Jmol.java:587
+#: org/openscience/jmol/app/Jmol.java:598
 #, fuzzy
 msgid "Jmol Java Console"
 msgstr "Jmol konsool"
 
-#: org/openscience/jmol/app/Jmol.java:595
+#: org/openscience/jmol/app/Jmol.java:606
 #: org/openscience/jmol/app/ScriptWindow.java:96
 msgid "Clear"
 msgstr "Puhasta"
 
-#: org/openscience/jmol/app/Jmol.java:609
+#: org/openscience/jmol/app/Jmol.java:620
 msgid "Could not create ConsoleTextArea: "
 msgstr "Ei saa luua ConsoleTextArea: "
 
-#: org/openscience/jmol/app/Jmol.java:687
+#: org/openscience/jmol/app/Jmol.java:698
 msgid "Closing Jmol..."
 msgstr "Jmol sulgemine..."
 
-#: org/openscience/jmol/app/Jmol.java:923
+#: org/openscience/jmol/app/Jmol.java:934
 msgid "Macros"
 msgstr "Makrod"
 
-#: org/openscience/jmol/app/Jmol.java:1275
+#: org/openscience/jmol/app/Jmol.java:1297
 msgid "Open URL"
 msgstr "Ava URL"
 
-#: org/openscience/jmol/app/Jmol.java:1276
+#: org/openscience/jmol/app/Jmol.java:1298
 msgid "Enter URL of molecular model"
 msgstr "Sisesta molekulaarmudeli URL"
 
-#: org/openscience/jmol/app/Jmol.java:1705
+#: org/openscience/jmol/app/Jmol.java:1727
 msgid "IO Exception:"
 msgstr "IO eriolukord:"
 
-#: org/openscience/jmol/app/MeasurementTable.java:124
+#: org/openscience/jmol/app/MeasurementTable.java:123
 msgid "Delete"
 msgstr "Kustuta"
 
-#: org/openscience/jmol/app/MeasurementTable.java:133
+#: org/openscience/jmol/app/MeasurementTable.java:132
 msgid "DeleteAll"
 msgstr "KustutaKõik"
 
-#: org/openscience/jmol/app/MeasurementTable.java:151
+#: org/openscience/jmol/app/MeasurementTable.java:150
 msgid "Dismiss"
 msgstr "Tühista"
 
-#: org/openscience/jmol/app/MeasurementTable.java:201
+#: org/openscience/jmol/app/MeasurementTable.java:200
 msgid "Value"
 msgstr "Väärtus"
 
-#: org/openscience/jmol/app/PovrayDialog.java:119
+#: org/openscience/jmol/app/PovrayDialog.java:114
 msgid "Render in POV-Ray"
 msgstr "Renderda POV-Ray's"
 
-#: org/openscience/jmol/app/PovrayDialog.java:157
+#: org/openscience/jmol/app/PovrayDialog.java:152
 msgid "Jmol-to-POV-Ray Conversion"
 msgstr "Jmol'ist POV-Ray muundamine"
 
-#: org/openscience/jmol/app/PovrayDialog.java:161
+#: org/openscience/jmol/app/PovrayDialog.java:156
 msgid "Filename Stem"
 msgstr "Failinime tüvi"
 
-#: org/openscience/jmol/app/PovrayDialog.java:163
+#: org/openscience/jmol/app/PovrayDialog.java:158
 msgid ""
 "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
 "'caffine_1.pov', 'caffine_2.pov'"
 msgstr ""
 
-#: org/openscience/jmol/app/PovrayDialog.java:173
+#: org/openscience/jmol/app/PovrayDialog.java:168
 msgid "Working Directory"
 msgstr "Jooksev kataloog"
 
-#: org/openscience/jmol/app/PovrayDialog.java:175
+#: org/openscience/jmol/app/PovrayDialog.java:170
 msgid "Where the .pov files will be saved"
 msgstr "Kuhu .pov failid salvestakse"
 
-#: org/openscience/jmol/app/PovrayDialog.java:195
+#: org/openscience/jmol/app/PovrayDialog.java:190
 msgid "POV-Ray Runtime Options"
 msgstr "POV-Ray Runtime valikud"
 
-#: org/openscience/jmol/app/PovrayDialog.java:200
+#: org/openscience/jmol/app/PovrayDialog.java:195
 msgid "Run POV-Ray directly"
 msgstr "Käivita POV-Ray otse"
 
-#: org/openscience/jmol/app/PovrayDialog.java:202
+#: org/openscience/jmol/app/PovrayDialog.java:197
 msgid "Launch povray from within Jmol"
 msgstr "Käivita povray otse Jmol'ist"
 
-#: org/openscience/jmol/app/PovrayDialog.java:211
+#: org/openscience/jmol/app/PovrayDialog.java:206
 msgid "Use .ini file"
 msgstr "Kasuta .ini faili"
 
-#: org/openscience/jmol/app/PovrayDialog.java:213
+#: org/openscience/jmol/app/PovrayDialog.java:208
 msgid "Save options in a .ini file"
 msgstr "Salvesta valikud .ini faili"
 
-#: org/openscience/jmol/app/PovrayDialog.java:222
+#: org/openscience/jmol/app/PovrayDialog.java:217
 msgid "Render all frames"
 msgstr "Renderda kõik kaadrid"
 
-#: org/openscience/jmol/app/PovrayDialog.java:224
+#: org/openscience/jmol/app/PovrayDialog.java:219
 msgid "Render each model (not only the currently displayed one)"
 msgstr "Renderda kõik mudelid (lisaks kuvatule)"
 
-#: org/openscience/jmol/app/PovrayDialog.java:233
+#: org/openscience/jmol/app/PovrayDialog.java:228
 msgid "Turn on POV-Ray anti-aliasing"
 msgstr "Rakenda POV-Ray anti-aliasing'ut"
 
-#: org/openscience/jmol/app/PovrayDialog.java:235
+#: org/openscience/jmol/app/PovrayDialog.java:230
 msgid "Use povray's slower but higher quality anti-aliasing mode"
 msgstr ""
 "Kasuta povray aeglasemat, aga parema kvaliteediga anti-aliasing reziimis"
 
-#: org/openscience/jmol/app/PovrayDialog.java:244
+#: org/openscience/jmol/app/PovrayDialog.java:239
 msgid "Display While Rendering"
 msgstr "Kuva renderdamise ajal"
 
-#: org/openscience/jmol/app/PovrayDialog.java:246
+#: org/openscience/jmol/app/PovrayDialog.java:241
 msgid "Should povray attempt to display while rendering?"
 msgstr "Kas renderdamise ajal peaks povray kuvama?"
 
-#: org/openscience/jmol/app/PovrayDialog.java:255
-#: org/openscience/jmol/app/PovrayDialog.java:257
+#: org/openscience/jmol/app/PovrayDialog.java:250
+#: org/openscience/jmol/app/PovrayDialog.java:252
 msgid "Image size"
 msgstr "Pildi suurus"
 
-#: org/openscience/jmol/app/PovrayDialog.java:269
+#: org/openscience/jmol/app/PovrayDialog.java:264
 msgid "Width : "
 msgstr "Laius : "
 
-#: org/openscience/jmol/app/PovrayDialog.java:271
+#: org/openscience/jmol/app/PovrayDialog.java:266
 msgid "Image width"
 msgstr "Pildi laius"
 
-#: org/openscience/jmol/app/PovrayDialog.java:286
+#: org/openscience/jmol/app/PovrayDialog.java:281
 msgid "Height : "
 msgstr "Kõrgus : "
 
-#: org/openscience/jmol/app/PovrayDialog.java:288
+#: org/openscience/jmol/app/PovrayDialog.java:283
 msgid "Image height"
 msgstr "Pildi kõrgus"
 
-#: org/openscience/jmol/app/PovrayDialog.java:305
+#: org/openscience/jmol/app/PovrayDialog.java:300
 msgid "Fixed ratio : "
 msgstr "Kinnistatud skaala : "
 
-#: org/openscience/jmol/app/PovrayDialog.java:307
+#: org/openscience/jmol/app/PovrayDialog.java:302
 msgid "Use a fixed ratio for width:height"
 msgstr "Kasuta kinnistatus laius:kõrgus skaalat"
 
-#: org/openscience/jmol/app/PovrayDialog.java:318
+#: org/openscience/jmol/app/PovrayDialog.java:313
 msgid "User defined"
 msgstr "Kasutaja määratav"
 
-#: org/openscience/jmol/app/PovrayDialog.java:320
+#: org/openscience/jmol/app/PovrayDialog.java:315
 msgid "Keep ratio of Jmol window"
 msgstr "Hoia Jmol akna skaalat"
 
-#: org/openscience/jmol/app/PovrayDialog.java:344
+#: org/openscience/jmol/app/PovrayDialog.java:339
 msgid "Output format : "
 msgstr "Väljundformaat : "
 
-#: org/openscience/jmol/app/PovrayDialog.java:346
+#: org/openscience/jmol/app/PovrayDialog.java:341
 msgid "Select the file format of the output file"
 msgstr "Vali väljundfaili formaat"
 
-#: org/openscience/jmol/app/PovrayDialog.java:356
+#: org/openscience/jmol/app/PovrayDialog.java:351
 msgid "C - Compressed Targa-24"
 msgstr "C - Pakitud Targa-24"
 
-#: org/openscience/jmol/app/PovrayDialog.java:358
+#: org/openscience/jmol/app/PovrayDialog.java:353
 msgid "N - PNG"
 msgstr "N - PNG"
 
-#: org/openscience/jmol/app/PovrayDialog.java:360
+#: org/openscience/jmol/app/PovrayDialog.java:355
 msgid "P - PPM"
 msgstr "P - PPM"
 
-#: org/openscience/jmol/app/PovrayDialog.java:362
+#: org/openscience/jmol/app/PovrayDialog.java:357
 msgid "T - Uncompressed Targa-24"
 msgstr "T - Pakkimata Targa-24"
 
-#: org/openscience/jmol/app/PovrayDialog.java:378
+#: org/openscience/jmol/app/PovrayDialog.java:373
 msgid "Alpha transparency"
 msgstr "Alfa transparentsus"
 
-#: org/openscience/jmol/app/PovrayDialog.java:380
+#: org/openscience/jmol/app/PovrayDialog.java:375
 msgid "Output Alpha transparency data"
 msgstr "Väljasta Alfa transparentsuse andmed"
 
-#: org/openscience/jmol/app/PovrayDialog.java:393
+#: org/openscience/jmol/app/PovrayDialog.java:388
 msgid "Mosaic preview"
 msgstr "Mosaiik eelvaade"
 
-#: org/openscience/jmol/app/PovrayDialog.java:395
+#: org/openscience/jmol/app/PovrayDialog.java:390
 msgid "Render the image in several passes"
 msgstr "Pildi renderdamine mitmes järgus"
 
-#: org/openscience/jmol/app/PovrayDialog.java:405
+#: org/openscience/jmol/app/PovrayDialog.java:400
 msgid "Start size : "
 msgstr "Alguse suurus : "
 
-#: org/openscience/jmol/app/PovrayDialog.java:407
+#: org/openscience/jmol/app/PovrayDialog.java:402
 msgid "Inital size of the tiles"
 msgstr "Tükkide algsuurus"
 
-#: org/openscience/jmol/app/PovrayDialog.java:423
+#: org/openscience/jmol/app/PovrayDialog.java:418
 msgid "End size : "
 msgstr "Lõppsuurus : "
 
-#: org/openscience/jmol/app/PovrayDialog.java:425
+#: org/openscience/jmol/app/PovrayDialog.java:420
 msgid "Final size of the tiles"
 msgstr "Tükkide lõplik suurus"
 
-#: org/openscience/jmol/app/PovrayDialog.java:446
+#: org/openscience/jmol/app/PovrayDialog.java:441
 msgid "POV-Ray Executable Location"
 msgstr "POV-Ray programmi asukoht"
 
-#: org/openscience/jmol/app/PovrayDialog.java:448
+#: org/openscience/jmol/app/PovrayDialog.java:443
 msgid "Location of the povray Executable"
 msgstr "povray programmi asukoht"
 
-#: org/openscience/jmol/app/PovrayDialog.java:467
+#: org/openscience/jmol/app/PovrayDialog.java:462
 msgid "Command Line to Execute"
 msgstr "Käivitatav käsurida"
 
-#: org/openscience/jmol/app/PovrayDialog.java:469
-#: org/openscience/jmol/app/PovrayDialog.java:472
+#: org/openscience/jmol/app/PovrayDialog.java:464
+#: org/openscience/jmol/app/PovrayDialog.java:467
 msgid "The actual command which will be executed"
 msgstr "Tegelik käsk, mis käivitatakse"
 
-#: org/openscience/jmol/app/PovrayDialog.java:482
-#: org/openscience/jmol/app/PovrayDialog.java:754
+#: org/openscience/jmol/app/PovrayDialog.java:477
+#: org/openscience/jmol/app/PovrayDialog.java:749
 msgid "Go!"
 msgstr "Mine!"
 
-#: org/openscience/jmol/app/PovrayDialog.java:484
+#: org/openscience/jmol/app/PovrayDialog.java:479
 msgid "Save file and possibly launch povray"
 msgstr "Salvesta see fail ning võimalusel käivita povray"
 
-#: org/openscience/jmol/app/PovrayDialog.java:493
+#: org/openscience/jmol/app/PovrayDialog.java:488
 #: org/openscience/jmol/app/PreferencesDialog.java:165
 #: org/openscience/jmol/app/RecentFilesDialog.java:69
 msgid "Cancel"
 msgstr "Katkesta"
 
-#: org/openscience/jmol/app/PovrayDialog.java:495
+#: org/openscience/jmol/app/PovrayDialog.java:490
 msgid "Cancel this dialog without saving"
 msgstr "Katkesta see dialoog ilma salvestamata"
 
-#: org/openscience/jmol/app/PovrayDialog.java:756
+#: org/openscience/jmol/app/PovrayDialog.java:751
 msgid "Save"
 msgstr "Salvesta"
 
-#: org/openscience/jmol/app/PovrayDialog.java:817
+#: org/openscience/jmol/app/PovrayDialog.java:812
 msgid "null component string"
 msgstr "tühi komponent string"
 

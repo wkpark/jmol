@@ -25,16 +25,15 @@ package org.openscience.jvxl.readers;
 
 class VolumeDataReader extends VoxelReader {
 
-  VolumeDataReader(SurfaceReader.Parameters params, VolumeData volumeData,
-      MeshData meshData, JvxlData jvxlData) {
-    this.params = params;
-    setVolumeData(volumeData);
-    this.meshData = meshData;
-    this.jvxlData = jvxlData;
+  VolumeDataReader(SurfaceGenerator sg) {
+    super(sg);
+    setJvxlInfo();
+  }
+
+  void setJvxlInfo() {
     jvxlFileHeaderBuffer = new StringBuffer();
     jvxlFileHeaderBuffer.append("JVXL Volume Data\n================\n");
     jvxlFileHeaderBuffer.append("-2 ").append('\n');
-
   }
   
   // reads a pre-calculated volume data set

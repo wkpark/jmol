@@ -29,8 +29,8 @@ import org.openscience.jvxl.util.TextFormat;
 
 class ApbsReader extends VolumeFileReader {
 
-  ApbsReader(BufferedReader br, SurfaceReader.Parameters params, VolumeData volumeData, MeshData meshData, JvxlData jvxlData) {
-    super(br, params, volumeData, meshData, jvxlData);
+  ApbsReader(SurfaceGenerator sg, BufferedReader br) {
+    super(sg, br);
     isApbsDx = true;
   }
   

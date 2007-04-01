@@ -114,20 +114,20 @@
 package org.openscience.jvxl.readers;
 
 import java.io.BufferedReader;
-import java.util.BitSet;
-
-import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
-import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
 import org.openscience.jvxl.util.*;
 
-public class SurfaceReader { 
+public class SurfaceGenerator { 
 
   ColorEncoder colorEncoder;
   Parameters params;
-  public SurfaceReader(ColorEncoder colorEncoder) {
+  MeshData meshData = new MeshData();
+  JvxlData jvxlData = new JvxlData();
+  VolumeData volumeData;
+
+  public SurfaceGenerator(ColorEncoder colorEncoder) {
     params = new Parameters();
     initializeIsosurface();
     params.colorPos = colorEncoder.getColorPositive();
@@ -136,11 +136,7 @@ public class SurfaceReader {
   }
   
   private int state;
-  private MeshData meshData = new MeshData();
-  private JvxlData jvxlData = new JvxlData();
-  private VolumeData volumeData;
   
-
   private final static int STATE_INITIALIZED = 1;
   private final static int STATE_DATA_READ = 2;
   private final static int STATE_DATA_COLORED = 3;
@@ -394,7 +390,7 @@ public class SurfaceReader {
   VoxelReader setData(Object value) {
     if (value instanceof VolumeData) {
       volumeData = (VolumeData) value;
-      return new VolumeDataReader(params, volumeData, meshData, jvxlData);
+      return new VolumeDataReader(this);
     }
     volumeData = new VolumeData();
     BufferedReader br = null; 
@@ -413,10 +409,10 @@ public class SurfaceReader {
     String fileType = VolumeFileReader.determineFileType(br);
     Logger.info("data file type was determined to be " + fileType);
     if (fileType.equals("Jvxl"))
-      return new JvxlReader(br, params, volumeData, meshData, jvxlData);
+      return new JvxlReader(this, br);
     if (fileType.equals("Apbs"))
-      return new ApbsReader(br, params, volumeData, meshData, jvxlData);
-    return new CubeReader(br, params, volumeData, meshData, jvxlData);
+      return new ApbsReader(this, br);
+    return new CubeReader(this, br);
   }
   
   void initializeIsosurface() {
@@ -429,206 +425,5 @@ public class SurfaceReader {
     state = STATE_INITIALIZED;
   }
 
-}
-
-class VolumeData {
- 
-  final Point3f volumetricOrigin = new Point3f();
-  final Vector3f[] volumetricVectors = new Vector3f[3];
-  final int[] voxelCounts = new int[3];
-  float[][][] voxelData;
-
-  VolumeData() {   
-    volumetricVectors[0] = new Vector3f();
-    volumetricVectors[1] = new Vector3f();
-    volumetricVectors[2] = new Vector3f();
-  }
-  
-  void setVoxelData(float[][][] voxelData) {
-    this.voxelData = voxelData;
-  }
-  
-}
-
-class JvxlData {
-  String jvxlFileMessage;
-  String jvxlFileHeader;
-  String jvxlExtraLine;
-  String jvxlDefinitionLine;
-  String jvxlSurfaceData;
-  String jvxlEdgeData;
-  String jvxlColorData;
-  String jvxlInfoLine;
-  
-  int edgeFractionBase;
-  int edgeFractionRange;
-  int colorFractionBase;
-  int colorFractionRange;
-
-  Point4f jvxlPlane;
-
-  int jvxlCompressionRatio;
-  boolean isJvxlPrecisionColor;
-  boolean jvxlDataIsColorMapped;
-
-  boolean isContoured;
-  boolean isBicolorMap;
-  float mappedDataMin;
-  float mappedDataMax;
-  float valueMappedToRed;
-  float valueMappedToBlue;
-  float cutoff;
-  int nBytes;
-  int nContours;
-  int nEdges;
-
-  String[] title;
-  
-  JvxlData() {
-    
-  }
-  
-}
-
-class MeshData {
-  static int SEED_COUNT = 25;
-  
-  int polygonCount;
-  Point3f[] vertices;
-  int[] vertexColors;
-  int vertexCount;
-  float[] vertexValues;
-  int[][] polygonIndexes;
-  
-  void clear(String meshType) {
-    vertexCount = polygonCount = 0;
-    vertices = null;
-    polygonIndexes = null;
-  }
-  
-  int addVertexCopy(Point3f vertex, float value) {
-    if (vertexCount == 0)
-      vertexValues = new float[SEED_COUNT];
-    else if (vertexCount >= vertexValues.length)
-      vertexValues = (float[]) ArrayUtil.doubleLength(vertexValues);
-    vertexValues[vertexCount] = value;
-    return addVertexCopy(vertex);
-  }
-
-  int addVertexCopy(Point3f vertex) {
-    if (vertexCount == 0)
-      vertices = new Point3f[SEED_COUNT];
-    else if (vertexCount == vertices.length)
-      vertices = (Point3f[]) ArrayUtil.doubleLength(vertices);
-    vertices[vertexCount] = new Point3f(vertex);
-    //Logger.debug("mesh.addVertexCopy " + vertexCount + vertex +vertices[vertexCount]);
-    return vertexCount++;
-  }
-
-  void addTriangleCheck(int vertexA, int vertexB, int vertexC, int check) {
-  if (vertexValues != null && (Float.isNaN(vertexValues[vertexA])||Float.isNaN(vertexValues[vertexB])||Float.isNaN(vertexValues[vertexC])))
-    return;
-  if (Float.isNaN(vertices[vertexA].x)||Float.isNaN(vertices[vertexB].x)||Float.isNaN(vertices[vertexC].x))
-    return;
-  if (polygonCount == 0)
-    polygonIndexes = new int[SEED_COUNT][];
-  else if (polygonCount == polygonIndexes.length)
-    polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
-  polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC, check};
- }
-  
-  BitSet[] surfaceSet;
-  int[] vertexSets;
-  int nSets = 0;
-  boolean setsSuccessful;
-
-  BitSet[] getSurfaceSet(int level) {
-    if (level == 0) {
-      surfaceSet = new BitSet[100];
-      nSets = 0;
-    }
-    setsSuccessful = true;
-    for (int i = 0; i < polygonCount; i++) {
-      int[] p = polygonIndexes[i];
-      int pt0 = findSet(p[0]);
-      int pt1 = findSet(p[1]);
-      int pt2 = findSet(p[2]);
-      if (pt0 < 0 && pt1 < 0 && pt2 < 0) {
-        createSet(p[0], p[1], p[2]);
-        continue;
-      }
-      if (pt0 == pt1 && pt1 == pt2)
-        continue;
-      if (pt0 >= 0) {
-        surfaceSet[pt0].set(p[1]);
-        surfaceSet[pt0].set(p[2]);
-        if (pt1 >= 0 && pt1 != pt0)
-          mergeSets(pt0, pt1);
-        if (pt2 >= 0 && pt2 != pt0 && pt2 != pt1)
-          mergeSets(pt0, pt2);
-        continue;
-      }
-      if (pt1 >= 0) {
-        surfaceSet[pt1].set(p[0]);
-        surfaceSet[pt1].set(p[2]);
-        if (pt2 >= 0 && pt2 != pt1)
-          mergeSets(pt1, pt2);
-        continue;
-      }
-      surfaceSet[pt2].set(p[0]);
-      surfaceSet[pt2].set(p[1]);
-    }
-    int n = 0;
-    for (int i = 0; i < nSets; i++)
-      if (surfaceSet[i] != null)
-        n++;
-    BitSet[] temp = new BitSet[n];
-    n = 0;
-    for (int i = 0; i < nSets; i++)
-      if (surfaceSet[i] != null)
-        temp[n++] = surfaceSet[i];
-    nSets = n;
-    surfaceSet = temp;
-    if (!setsSuccessful && level < 2)
-      getSurfaceSet(++level);
-    if (level == 0) {
-      vertexSets = new int[vertexCount];
-      for (int i = 0; i < nSets; i++)
-        for (int j = 0; j < vertexCount; j++)
-          if (surfaceSet[i].get(j))
-            vertexSets[j] = i;
-    }
-    return surfaceSet;
-  }
-
-  int findSet(int vertex) {
-    for (int i = 0; i < nSets; i++)
-      if (surfaceSet[i] != null && surfaceSet[i].get(vertex))
-        return i;
-    return -1;
-  }
-
-  void createSet(int v1, int v2, int v3) {
-    int i;
-    for (i = 0; i < nSets; i++)
-      if (surfaceSet[i] == null)
-        break;
-    if (i >= 100) {
-      setsSuccessful = false;
-      return;
-    }
-    if (i == nSets)
-      nSets = i + 1;
-    surfaceSet[i] = new BitSet();
-    surfaceSet[i].set(v1);
-    surfaceSet[i].set(v2);
-    surfaceSet[i].set(v3);
-  }
-
-  void mergeSets(int a, int b) {
-    surfaceSet[a].or(surfaceSet[b]);
-    surfaceSet[b] = null;
-  }
-  
 }
 

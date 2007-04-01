@@ -27,8 +27,8 @@ import java.io.BufferedReader;
 
 class CubeReader extends VolumeFileReader {
 
-  CubeReader(BufferedReader br, SurfaceReader.Parameters params, VolumeData volumeData, MeshData meshData, JvxlData jvxlData) {
-    super(br, params, volumeData, meshData, jvxlData);
+  CubeReader(SurfaceGenerator sg, BufferedReader br) {
+    super(sg, br);
   }
 
   void readTitleLines() throws Exception {

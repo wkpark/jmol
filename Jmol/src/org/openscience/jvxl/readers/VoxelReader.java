@@ -53,11 +53,20 @@ class VoxelReader {
    * 
    */
 
-  VolumeData volumeData; 
+  ColorEncoder colorEncoder;
+  SurfaceGenerator.Parameters params;
   MeshData meshData;
   JvxlData jvxlData;
-  SurfaceReader.Parameters params;
+  VolumeData volumeData; 
   
+  VoxelReader(SurfaceGenerator sg) {
+    this.colorEncoder = sg.colorEncoder;
+    this.params = sg.params;
+    this.meshData = sg.meshData;
+    this.jvxlData = sg.jvxlData;
+    setVolumeData(sg.volumeData);
+  }
+    
   final static float ANGSTROMS_PER_BOHR = 0.5291772f;
   final static int defaultEdgeFractionBase = 35; //#$%.......
   final static int defaultEdgeFractionRange = 90;
@@ -99,8 +108,6 @@ class VoxelReader {
     volumeData = v;
   }
   
-  ColorEncoder colorEncoder;
-
   Point3f volumetricOrigin;
   Vector3f[] volumetricVectors;
   int[] voxelCounts;

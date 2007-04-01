@@ -31,9 +31,8 @@ import org.openscience.jvxl.util.*;
 
 class JvxlReader extends VolumeFileReader {
 
-  JvxlReader(BufferedReader br, SurfaceReader.Parameters params,
-      VolumeData volumeData, MeshData meshData, JvxlData jvxlData) {
-    super(br, params, volumeData, meshData, jvxlData);
+  JvxlReader(SurfaceGenerator sg, BufferedReader br) {
+    super(sg, br);
     isJvxl = true;
   }
 
@@ -91,7 +90,7 @@ class JvxlReader extends VolumeFileReader {
   // #comments (optional)
   // info line1
   // info line2
-  // -na originx originy originz   [ANGSTROMS] optional
+  // -na originx originy originz   [ANGSTROMS/BOHR] optional
   // n1 x y z
   // n2 x y z
   // n3 x y z
@@ -121,6 +120,28 @@ class JvxlReader extends VolumeFileReader {
     }
   }
 
+  static boolean jvxlCheckAtomLine(boolean isAngstroms, String atomLine,
+                                   StringBuffer bs) {
+    int atomCount = Parser.parseInt(atomLine);
+    if (atomCount == Integer.MIN_VALUE) {
+      atomCount = 0;
+      atomLine = " " + atomLine;
+    } else {
+      atomLine = atomLine.substring(("" + atomCount).length());
+    }
+    String jvxlAtoms = "" + (atomCount == 0 ? -2 : -Math.abs(atomCount));
+    int i = atomLine.indexOf("ANGSTROM");
+    if (isAngstroms && i < 0)
+      atomLine += " ANGSTROMS";
+    else if (atomLine.indexOf("ANGSTROMS") >= 0)
+      isAngstroms = true;
+    i = atomLine.indexOf("BOHR");
+    if (!isAngstroms && i < 0)
+      atomLine += " BOHR";
+    bs.append(jvxlAtoms).append(atomLine).append('\n');
+    return isAngstroms;
+  }
+  
   void readAtomCountAndOrigin() throws Exception {
     super.readAtomCountAndOrigin(); // same as for cube file
   }

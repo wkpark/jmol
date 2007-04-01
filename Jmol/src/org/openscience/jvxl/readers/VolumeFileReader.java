@@ -39,13 +39,9 @@ class VolumeFileReader extends VoxelReader {
   private int nSurfaces;
   
   
-  VolumeFileReader(BufferedReader br, SurfaceReader.Parameters params,
-      VolumeData volumeData, MeshData meshData, JvxlData jvxlData) {
+  VolumeFileReader(SurfaceGenerator sg, BufferedReader br) {
+    super(sg);
     this.br = br;
-    this.params = params;
-    setVolumeData(volumeData);
-    this.meshData = meshData;
-    this.jvxlData = jvxlData;
   }
 
   static String determineFileType(BufferedReader bufferedReader) {
@@ -137,28 +133,18 @@ class VolumeFileReader extends VoxelReader {
   }
   
   void readAtomCountAndOrigin() throws Exception {
-    String atomLine;
     skipComments(true);
+    String atomLine = line;
     atomCount = parseInt(line);
-    if (atomCount == Integer.MIN_VALUE) { //unreadable
-      next[0] = line.indexOf(" ");
+    if (atomCount == Integer.MIN_VALUE) //unreadable
       atomCount = 0;
-    }
-    atomLine = line.substring(next[0]);
-    if (isAngstroms)
-      atomLine += " ANGSTROMS";
-    else if (atomLine.indexOf("ANGSTROMS") >= 0)
-      isAngstroms = true;
-
     negativeAtomCount = (atomCount < 0);
     if (negativeAtomCount)
       atomCount = -atomCount;
-
-    int jvxlAtoms = (atomCount == 0? -2 : -atomCount);
     volumetricOrigin.set(parseFloat(), parseFloat(), parseFloat());
+    isAngstroms = JvxlReader.jvxlCheckAtomLine(isAngstroms, atomLine, jvxlFileHeaderBuffer);
     if (!isAngstroms)
       volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
-    jvxlFileHeaderBuffer.append(jvxlAtoms + atomLine + '\n');
   }
 
   void adjustVoxelVectorLine(int voxelVectorIndex) {

@@ -47,7 +47,7 @@ public class Jvxl {
 
     boolean blockData = false;
     int fileIndex = Integer.MAX_VALUE;
-    String inputFile = "t.dx";
+    String inputFile = "example.dx";
     String mapFile = null;
     String outputFile = null;
 
@@ -244,12 +244,12 @@ public class Jvxl {
     }
 
     if (line.hasOption("P")) {
-      phase = line.getOptionValue("p");
+      phase = line.getOptionValue("P");
     }
 
     // compose the surface
 
-    SurfaceReader surfaceReader = new SurfaceReader(new ColorEncoder());
+    SurfaceGenerator surfaceReader = new SurfaceGenerator(new ColorEncoder());
 
     // input file
 

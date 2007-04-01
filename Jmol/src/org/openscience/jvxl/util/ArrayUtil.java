@@ -22,44 +22,33 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.openscience.jvxl;
+package org.openscience.jvxl.util;
 
-class Logger {
+import java.lang.reflect.Array;
 
-  /**
-   * Writes a log at DEBUG level.
-   * 
-   * @param txt String to write.
-   */
-  public static void debug(String txt) {
-    System.out.println(txt);
+public class ArrayUtil {
+
+  public static Object ensureLength(Object array, int minimumLength) {
+    if (array != null && Array.getLength(array) >= minimumLength)
+      return array;
+    return setLength(array, minimumLength);
   }
 
-  /**
-   * Writes a log at INFO level.
-   * 
-   * @param txt String to write.
-   */
-  public static void info(String txt) {
-    System.out.println(txt);
+  public static Object doubleLength(Object array) {
+    return setLength(array, (array == null ? 16 : 2 * Array.getLength(array)));
   }
 
-  /**
-   * Writes a log at WARN level.
-   * 
-   * @param txt String to write.
-   */
-  public static void warn(String txt) {
-    System.out.println(txt);
+  public static Object setLength(Object array, int newLength) {
+    if (array == null) {
+      return null; // We can't allocate since we don't know the type of array
+    }
+    Object t = Array
+        .newInstance(array.getClass().getComponentType(), newLength);
+    int oldLength = Array.getLength(array);
+    System.arraycopy(array, 0, t, 0, oldLength < newLength ? oldLength
+        : newLength);
+    return t;
   }
 
-  /**
-   * Writes a log at ERROR level.
-   * 
-   * @param txt String to write.
-   */
-  public static void error(String txt) {
-    System.out.println(txt);
-  }
 }
 

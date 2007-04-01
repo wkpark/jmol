@@ -22,9 +22,9 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.openscience.jvxl;
+package org.openscience.jvxl.util;
 
-class Parser {
+public class Parser {
 
   /// general static string-parsing class ///
 
@@ -33,6 +33,13 @@ class Parser {
 
   public static int parseInt(String str) {
     return parseInt(str, new int[] {0});
+  }
+
+  public static int parseInt(String str, int[] next) {
+    int cch = str.length();
+    if (next[0] >= cch)
+      return Integer.MIN_VALUE;
+    return parseIntChecked(str, cch, next);
   }
 
   public static float parseFloat(String str) {
@@ -44,6 +51,39 @@ class Parser {
     if (next[0] >= cch)
       return Float.NaN;
     return parseFloatChecked(str, cch, next);
+  }
+
+  public static String[] getTokens(String line, int ich) {
+    if (line == null)
+      return null;
+    int cchLine = line.length();
+    if (ich > cchLine)
+      return null;
+    int tokenCount = countTokens(line, ich);
+    String[] tokens = new String[tokenCount];
+    int[] next = new int[1];
+    next[0] = ich;
+    for (int i = 0; i < tokenCount; ++i)
+      tokens[i] = parseTokenChecked(line, cchLine, next);
+    return tokens;
+  }
+
+  public static int countTokens(String line, int ich) {
+    int tokenCount = 0;
+    if (line != null) {
+      int ichMax = line.length();
+      while (true) {
+        while (ich < ichMax && isWhiteSpace(line, ich))
+          ++ich;
+        if (ich == ichMax)
+          break;
+        ++tokenCount;
+        do {
+          ++ich;
+        } while (ich < ichMax && !isWhiteSpace(line, ich));
+      }
+    }
+    return tokenCount;
   }
 
   private final static float[] decimalScale = { 0.1f, 0.01f, 0.001f, 0.0001f, 0.00001f,
@@ -103,13 +143,6 @@ class Parser {
     return value;
   }
 
-  public static int parseInt(String str, int[] next) {
-    int cch = str.length();
-    if (next[0] >= cch)
-      return Integer.MIN_VALUE;
-    return parseIntChecked(str, cch, next);
-  }
-
   private static int parseIntChecked(String str, int ichMax, int[] next) {
     boolean digitSeen = false;
     int value = 0;
@@ -133,39 +166,6 @@ class Parser {
       value = -value;
     next[0] = ich;
     return value;
-  }
-
-  public static String[] getTokens(String line, int ich) {
-    if (line == null)
-      return null;
-    int cchLine = line.length();
-    if (ich > cchLine)
-      return null;
-    int tokenCount = countTokens(line, ich);
-    String[] tokens = new String[tokenCount];
-    int[] next = new int[1];
-    next[0] = ich;
-    for (int i = 0; i < tokenCount; ++i)
-      tokens[i] = parseTokenChecked(line, cchLine, next);
-    return tokens;
-  }
-
-  public static int countTokens(String line, int ich) {
-    int tokenCount = 0;
-    if (line != null) {
-      int ichMax = line.length();
-      while (true) {
-        while (ich < ichMax && isWhiteSpace(line, ich))
-          ++ich;
-        if (ich == ichMax)
-          break;
-        ++tokenCount;
-        do {
-          ++ich;
-        } while (ich < ichMax && !isWhiteSpace(line, ich));
-      }
-    }
-    return tokenCount;
   }
 
   private static String parseTokenChecked(String str, int ichMax, int[] next) {

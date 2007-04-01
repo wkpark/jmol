@@ -15,40 +15,28 @@
  *  This library is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  Lesser General Public License for more details.
+ *  Lesser General License for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+package org.openscience.jvxl.readers;
 
-package org.openscience.jvxl;
+import java.io.BufferedReader;
 
-import java.lang.reflect.Array;
+class CubeReader extends VolumeFileReader {
 
-class ArrayUtil {
-
-  public static Object ensureLength(Object array, int minimumLength) {
-    if (array != null && Array.getLength(array) >= minimumLength)
-      return array;
-    return setLength(array, minimumLength);
+  CubeReader(BufferedReader br, SurfaceReader.Parameters params, VolumeData volumeData, MeshData meshData, JvxlData jvxlData) {
+    super(br, params, volumeData, meshData, jvxlData);
   }
 
-  public static Object doubleLength(Object array) {
-    return setLength(array, (array == null ? 16 : 2 * Array.getLength(array)));
-  }
-
-  public static Object setLength(Object array, int newLength) {
-    if (array == null) {
-      return null; // We can't allocate since we don't know the type of array
-    }
-    Object t = Array
-        .newInstance(array.getClass().getComponentType(), newLength);
-    int oldLength = Array.getLength(array);
-    System.arraycopy(array, 0, t, 0, oldLength < newLength ? oldLength
-        : newLength);
-    return t;
+  void readTitleLines() throws Exception {
+    jvxlFileHeaderBuffer = new StringBuffer();
+    jvxlFileHeaderBuffer.append(br.readLine()).append('\n');
+    jvxlFileHeaderBuffer.append(br.readLine()).append('\n');
   }
 
 }
+
 

@@ -22,9 +22,9 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.openscience.jvxl;
+package org.openscience.jvxl.util;
 
-class TextFormat {
+public class TextFormat {
   
   /**
    * Does a clean replace of strFrom in str with strTo

@@ -28,7 +28,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-//import javax.swing.*;
 import javax.vecmath.Point4f;
 
 import org.apache.commons.cli.OptionBuilder;
@@ -38,6 +37,9 @@ import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.HelpFormatter;
+
+import org.openscience.jvxl.readers.*;
+import org.openscience.jvxl.util.*;
 
 public class Jvxl {
 
@@ -247,44 +249,43 @@ public class Jvxl {
 
     // compose the surface
 
-    ColorEncoder colorEncoder = new ColorEncoder();
-    JvxlReader jvxlReader = new JvxlReader(colorEncoder);
+    SurfaceReader surfaceReader = new SurfaceReader(new ColorEncoder());
 
     // input file
 
     if (blockData)
-      jvxlReader.setProperty("blockData", Boolean.TRUE);
+      surfaceReader.setProperty("blockData", Boolean.TRUE);
     if (!Float.isNaN(cutoff))
-      jvxlReader.setProperty("cutoff" + (isPositiveOnly ? "Positive" : ""),
+      surfaceReader.setProperty("cutoff" + (isPositiveOnly ? "Positive" : ""),
           new Float(cutoff));
     if (bicolor)
-      jvxlReader.setProperty("sign", null);
+      surfaceReader.setProperty("sign", null);
     if (reverseColor)
-      jvxlReader.setProperty("reverseColor", null);
+      surfaceReader.setProperty("reverseColor", null);
     if (phase != null)
-      jvxlReader.setProperty("phase", phase);
+      surfaceReader.setProperty("phase", phase);
 
     if (plane != null)
-      jvxlReader.setProperty("plane", plane);
+      surfaceReader.setProperty("plane", plane);
     else {
       if (fileIndex != Integer.MAX_VALUE)
-        jvxlReader.setProperty("fileIndex", new Integer(fileIndex));
-      jvxlReader.setProperty("readData", inputFile);
+        surfaceReader.setProperty("fileIndex", new Integer(fileIndex));
+      surfaceReader.setProperty("readData", inputFile);
     }
 
     //color scheme is only for VMRL
 
     if (colorScheme != null)
-      jvxlReader.setProperty("colorScheme", colorScheme);
+      surfaceReader.setProperty("colorScheme", colorScheme);
     if (!Float.isNaN(min))
-      jvxlReader.setProperty("red", new Float(min));
+      surfaceReader.setProperty("red", new Float(min));
     if (!Float.isNaN(max))
-      jvxlReader.setProperty("blue", new Float(max));
+      surfaceReader.setProperty("blue", new Float(max));
     if (mapFile != null)
-      jvxlReader.setProperty("mapColor", mapFile);
+      surfaceReader.setProperty("mapColor", mapFile);
 
-    writeFile(outputFile, (String) jvxlReader.getProperty("jvxlFileData", 0));
-    Logger.info((String) jvxlReader.getProperty("jvxlFileInfo", 0));
+    writeFile(outputFile, (String) surfaceReader.getProperty("jvxlFileData", 0));
+    Logger.info((String) surfaceReader.getProperty("jvxlFileInfo", 0));
 
     Logger.info("\ncreated " + outputFile);
   }

@@ -101,7 +101,7 @@
  * 
  */
 
-package org.openscience.jvxl;
+package org.openscience.jvxl.readers;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -112,13 +112,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.openscience.jvxl.util.*;
+
 class FileReader {
   
   FileReader() {
     
   }
   
-  Object getBufferedReaderOrErrorMessageFromName(String name) {
+  static Object getBufferedReaderOrErrorMessageFromName(String name) {
     Object t = getInputStreamOrErrorMessageFromName(name);
     if (t instanceof String)
       return t;
@@ -131,7 +133,7 @@ class FileReader {
     }
   }
 
-  private Object getInputStreamOrErrorMessageFromName(String name) {
+  private static Object getInputStreamOrErrorMessageFromName(String name) {
     String errorMessage = null;
     try {
         Logger.info("opening " + name);

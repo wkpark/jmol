@@ -21,27 +21,13 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.openscience.jvxl;
+package org.openscience.jvxl.util;
 
-class ColorEncoder {
-  private final static int RED  = 0xFFFF0000;
-  private final static int BLUE = 0xFF0000FF;
-  private final static int GRAY = 0xFF808080;
-  
-  private int palette = 0;
-  
-  private final static String[] colorSchemes = {"roygb", "bgyor", "rwb", "bwr", "low", "high"}; 
-  private final static int ROYGB = 0;
-  private final static int BGYOR = 1;
-  private final static int RWB   = 2;
-  private final static int BWR   = 3;
-  private final static int LOW   = 4;
-  private final static int HIGH  = 5;
-  
-  ColorEncoder() {
+public class ColorEncoder {
+  public ColorEncoder() {
   }
   
-  int setColorScheme(String colorScheme) {
+  public int setColorScheme(String colorScheme) {
     palette = 0;
     for (int i = 0; i < colorSchemes.length; i++)
       if (colorSchemes[i].equalsIgnoreCase(colorScheme))
@@ -49,15 +35,15 @@ class ColorEncoder {
     return palette;
   }
   
-  int getColorNegative() {
+  public int getColorNegative() {
     return RED;
   }
 
-  int getColorPositive() {
+  public int getColorPositive() {
     return BLUE;
   }
   
-  int getColorFromPalette(float val, float lo, float hi) {
+  public int getColorFromPalette(float val, float lo, float hi) {
     switch (palette) {
     case ROYGB:
       return argbsRoygbScale[quantize(val, lo, hi, argbsRoygbScale.length)];
@@ -75,7 +61,7 @@ class ColorEncoder {
     return GRAY;
   }
 
-  static int quantize(float val, float lo, float hi, int segmentCount) {
+  private static int quantize(float val, float lo, float hi, int segmentCount) {
     float range = hi - lo;
     if (range <= 0 || Float.isNaN(val))
       return segmentCount / 2;
@@ -89,10 +75,21 @@ class ColorEncoder {
     return q;
   }
 
-
-  int ihalf = argbsRoygbScale.length/3;
-
-  public final static int[] argbsRwbScale = {
+  private final static int RED  = 0xFFFF0000;
+  private final static int BLUE = 0xFF0000FF;
+  private final static int GRAY = 0xFF808080;
+  
+  private int palette = 0;
+  
+  private final static String[] colorSchemes = {"roygb", "bgyor", "rwb", "bwr", "low", "high"}; 
+  private final static int ROYGB = 0;
+  private final static int BGYOR = 1;
+  private final static int RWB   = 2;
+  private final static int BWR   = 3;
+  private final static int LOW   = 4;
+  private final static int HIGH  = 5;
+  
+  private final static int[] argbsRwbScale = {
     0xFFFF0000, // red
     0xFFFF1010, //
     0xFFFF2020, //
@@ -126,7 +123,7 @@ class ColorEncoder {
     0xFF0000FF, // blue
   };
 
-  public final static int[] argbsRoygbScale = {
+  private final static int[] argbsRoygbScale = {
     0xFFFF0000,
     0xFFFF2000,
     0xFFFF4000,
@@ -168,6 +165,8 @@ class ColorEncoder {
 
     0xFF0000FF,
   };
+
+  private final static int ihalf = argbsRoygbScale.length/3;
 
 
 }

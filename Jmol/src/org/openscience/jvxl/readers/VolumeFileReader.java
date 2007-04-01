@@ -32,6 +32,12 @@ import org.openscience.jvxl.util.*;
 class VolumeFileReader extends VoxelReader {
 
   BufferedReader br;
+  boolean endOfData;
+
+  private int atomCount;
+  private boolean negativeAtomCount;
+  private int nSurfaces;
+  
   
   VolumeFileReader(BufferedReader br, SurfaceReader.Parameters params,
       VolumeData volumeData, MeshData meshData, JvxlData jvxlData) {
@@ -49,12 +55,12 @@ class VolumeFileReader extends VoxelReader {
     String line = br.readNonCommentLine();
     if (line.indexOf("object 1 class gridpositions counts") == 0)
       return "Apbs";
-    //if (br.info().indexOf("JVXL") >= 0)
-      //return "Jvxl";
+    if (br.info().indexOf("JVXL") >= 0)
+      return "Jvxl";
     line = br.readNonCommentLine(); // second line
     line = br.readNonCommentLine(); // third line
-    //if (br.iLine() > 3)
-      //return "Jvxl"; //Can't be a cube file
+    if (br.iLine() > 3)
+      return "Jvxl"; //Can't be a cube file
     int nAtoms = Parser.parseInt(line);
     if (nAtoms >= 0)
       return "Cube"; //Can't be a Jvxl file
@@ -73,11 +79,7 @@ class VolumeFileReader extends VoxelReader {
     }
     super.discardTempData(discardAll);
   }
-  
-  boolean endOfData;
-  int nSurfaces;
-  
-    
+      
   void readData(boolean isMapData) {
     super.readData(isMapData);
     endOfData = false;

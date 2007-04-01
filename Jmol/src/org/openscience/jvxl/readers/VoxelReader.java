@@ -32,6 +32,21 @@ import javax.vecmath.Vector3f;
 import org.openscience.jvxl.util.*;
 
 class VoxelReader {
+  
+  //main class for reading any of the file formats
+  
+  /*
+   *     VoxelReader
+   *          |
+   *          |_______VolumeDataReader  (still needs work)
+   *          |
+   *          |_______VolumeFileReader
+   *                      |
+   *                      |______ApbsReader
+   *                      |______CubeReader
+   *                      |______JvxlReader
+   * 
+   */
 
   VolumeData volumeData; 
   MeshData meshData;
@@ -55,6 +70,7 @@ class VoxelReader {
   int colorFractionBase;
   int colorFractionRange;
 
+  StringBuffer jvxlFileHeaderBuffer;
   StringBuffer fractionData;
   String  jvxlEdgeDataRead = "";
   String  jvxlColorDataRead = "";
@@ -78,11 +94,6 @@ class VoxelReader {
     volumeData = v;
   }
   
-  VoxelReader() {
-    //unused constructor  
-   }
-   
-   
   ColorEncoder colorEncoder;
 
   Point3f volumetricOrigin;
@@ -105,21 +116,18 @@ class VoxelReader {
   }
   
   ////////////////////////////////////////////////////////////////
-  // CUBE/APSB/JVXL file reading stuff
+  // CUBE/APBS/JVXL file reading stuff
   ////////////////////////////////////////////////////////////////
 
-  int     edgeCount;
-
-
-  int atomCount;
-  boolean negativeAtomCount;
   int nBytes;
   int nDataPoints;
   String surfaceData;
   int nPointsX, nPointsY, nPointsZ;
-  final Vector3f thePlaneNormal = new Vector3f();
-  float thePlaneNormalMag;
 
+  private int edgeCount;
+  private float thePlaneNormalMag;
+  private final Vector3f thePlaneNormal = new Vector3f();
+  
   boolean isJvxl;
   boolean isApbsDx;
 
@@ -136,6 +144,7 @@ class VoxelReader {
     } catch (Exception e) {
       return false;
     }
+
     jvxlData.jvxlFileHeader = "" + jvxlFileHeaderBuffer;
     jvxlData.cutoff = (isJvxl ? jvxlCutoff : params.cutoff);
     jvxlData.jvxlColorData = "";
@@ -183,7 +192,8 @@ class VoxelReader {
       mat.setColumn(i, cols[i]);
   }
 
-  StringBuffer jvxlFileHeaderBuffer;
+  int nThisValue;
+  boolean thisInside;
 
   void initializeVolumetricData() {
     nThisValue = 0;
@@ -266,9 +276,6 @@ class VoxelReader {
     return (plane.x * ptXyzTemp.x + plane.y * ptXyzTemp.y + plane.z
         * ptXyzTemp.z + plane.w) / thePlaneNormalMag;
   }
-
-  int nThisValue;
-  boolean thisInside;
 
   ////////////////////////////////////////////////////////////////
   // marching cube stuff

@@ -48,6 +48,46 @@ class JvxlReader extends VolumeFileReader {
 
   /////////////reading the format///////////
 
+  void readData(boolean isMapData) {
+    super.readData(isMapData);
+    if (isMapData)
+      try {
+        int nPoints = nPointsX * nPointsY * nPointsZ;
+        gotoData(params.fileIndex - 1, nPoints);
+        jvxlSkipData(nPoints, false);
+      } catch (Exception e) {
+        Logger.error(e.toString());
+        throw new NullPointerException();
+      }
+    else
+      readVolumetricData(isMapData);
+    Logger.info("Read " + nPointsX + " x " + nPointsY + " x " + nPointsZ
+        + " data points");
+    strFractionTemp = jvxlEdgeDataRead;
+    fractionPtr = 0;
+  }
+
+  void readVolumetricData(boolean isMapData) {
+    initializeVolumetricData();
+    try {
+      readVoxelData(isMapData);
+      if (jvxlEdgeDataCount > 0)
+        jvxlEdgeDataRead = jvxlReadData("edge", jvxlEdgeDataCount);
+      if (jvxlColorDataCount > 0)
+        jvxlColorDataRead = jvxlReadData("color", jvxlColorDataCount);
+    } catch (Exception e) {
+      Logger.error(e.toString());
+      throw new NullPointerException();
+    }
+  }
+
+  void readVoxelData(boolean isMapData) throws Exception {
+
+    //calls VolumeFileReader.readVoxelData
+
+    super.readVoxelData(isMapData);
+  }
+
   // #comments (optional)
   // info line1
   // info line2
@@ -234,46 +274,6 @@ class JvxlReader extends VolumeFileReader {
       Logger.info("JVXL read: color red/blue: " + params.valueMappedToRed + " "
           + params.valueMappedToBlue);
     }
-  }
-
-  void readData(boolean isMapData) {
-    super.readData(isMapData);
-    if (isMapData)
-      try {
-        int nPoints = nPointsX * nPointsY * nPointsZ;
-        gotoData(params.fileIndex - 1, nPoints);
-        jvxlSkipData(nPoints, false);
-      } catch (Exception e) {
-        Logger.error(e.toString());
-        throw new NullPointerException();
-      }
-    else
-      readVolumetricData(isMapData);
-    Logger.info("Read " + nPointsX + " x " + nPointsY + " x " + nPointsZ
-        + " data points");
-    strFractionTemp = jvxlEdgeDataRead;
-    fractionPtr = 0;
-  }
-
-  void readVolumetricData(boolean isMapData) {
-    initializeVolumetricData();
-    try {
-      readVoxelData(isMapData);
-      if (jvxlEdgeDataCount > 0)
-        jvxlEdgeDataRead = jvxlReadData("edge", jvxlEdgeDataCount);
-      if (jvxlColorDataCount > 0)
-        jvxlColorDataRead = jvxlReadData("color", jvxlColorDataCount);
-    } catch (Exception e) {
-      Logger.error(e.toString());
-      throw new NullPointerException();
-    }
-  }
-
-  void readVoxelData(boolean isMapData) throws Exception {
-
-    //calls VolumeFileReader.readVoxelData
-
-    super.readVoxelData(isMapData);
   }
 
   private String jvxlReadData(String type, int nPoints) {

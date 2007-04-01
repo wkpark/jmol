@@ -249,44 +249,43 @@ public class Jvxl {
 
     // compose the surface
 
-    SurfaceGenerator surfaceReader = new SurfaceGenerator(new ColorEncoder());
+    SurfaceGenerator sg = new SurfaceGenerator(new ColorEncoder());
 
     // input file
 
     if (blockData)
-      surfaceReader.setProperty("blockData", Boolean.TRUE);
+      sg.setProperty("blockData", Boolean.TRUE);
     if (!Float.isNaN(cutoff))
-      surfaceReader.setProperty("cutoff" + (isPositiveOnly ? "Positive" : ""),
+      sg.setProperty("cutoff" + (isPositiveOnly ? "Positive" : ""),
           new Float(cutoff));
     if (bicolor)
-      surfaceReader.setProperty("sign", null);
+      sg.setProperty("sign", null);
     if (reverseColor)
-      surfaceReader.setProperty("reverseColor", null);
+      sg.setProperty("reverseColor", null);
     if (phase != null)
-      surfaceReader.setProperty("phase", phase);
+      sg.setProperty("phase", phase);
 
     if (plane != null)
-      surfaceReader.setProperty("plane", plane);
+      sg.setProperty("plane", plane);
     else {
       if (fileIndex != Integer.MAX_VALUE)
-        surfaceReader.setProperty("fileIndex", new Integer(fileIndex));
-      surfaceReader.setProperty("readData", inputFile);
+        sg.setProperty("fileIndex", new Integer(fileIndex));
+      sg.setProperty("readData", inputFile);
     }
 
     //color scheme is only for VMRL
 
     if (colorScheme != null)
-      surfaceReader.setProperty("colorScheme", colorScheme);
+      sg.setProperty("colorScheme", colorScheme);
     if (!Float.isNaN(min))
-      surfaceReader.setProperty("red", new Float(min));
+      sg.setProperty("red", new Float(min));
     if (!Float.isNaN(max))
-      surfaceReader.setProperty("blue", new Float(max));
+      sg.setProperty("blue", new Float(max));
     if (mapFile != null)
-      surfaceReader.setProperty("mapColor", mapFile);
+      sg.setProperty("mapColor", mapFile);
 
-    writeFile(outputFile, (String) surfaceReader.getProperty("jvxlFileData", 0));
-    Logger.info((String) surfaceReader.getProperty("jvxlFileInfo", 0));
-
+    writeFile(outputFile, (String) sg.getProperty("jvxlFileData", 0));
+    Logger.info((String) sg.getProperty("jvxlFileInfo", 0));
     Logger.info("\ncreated " + outputFile);
   }
 

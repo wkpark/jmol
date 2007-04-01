@@ -148,207 +148,83 @@ public class DisplayPanel extends JPanel
 
   // The actions:
 
-  private DeleteAction deleteAction = new DeleteAction();
-  private PickAction pickAction = new PickAction();
-  private RotateAction rotateAction = new RotateAction();
-  private ZoomAction zoomAction = new ZoomAction();
-  private XlateAction xlateAction = new XlateAction();
   private HomeAction homeAction = new HomeAction();
-  private FrontAction frontAction = new FrontAction();
-  private TopAction topAction = new TopAction();
-  private BottomAction bottomAction = new BottomAction();
-  private RightAction rightAction = new RightAction();
-  private LeftAction leftAction = new LeftAction();
   private DefineCenterAction defineCenterAction = new DefineCenterAction();
-  private HydrogensAction hydrogensAction = new HydrogensAction();
-  private MeasurementsAction measurementsAction =
-    new MeasurementsAction();
-  private SelectallAction selectallAction = new SelectallAction();
-  private DeselectallAction deselectallAction = new DeselectallAction();
-  private PerspectiveAction perspectiveAction = new PerspectiveAction();
-  private AxesAction axesAction = new AxesAction();
-  private BoundboxAction boundboxAction = new BoundboxAction();
+  private Action deleteAction       = new SetStatusAction("delete", GT._("Delete Atoms"));
+  private Action pickAction         = new SetStatusAction("pick",   GT._("Select Atoms"));
+  private Action rotateAction       = new SetStatusAction("rotate", null);
+  private Action zoomAction         = new SetStatusAction("zoom",   null);
+  private Action xlateAction        = new SetStatusAction("xlate",  null);
+  private Action frontAction        = new MoveToAction("front",  "moveto 2.0 front");
+  private Action topAction          = new MoveToAction("top",    "moveto 1.0 front;moveto 2.0 top");
+  private Action bottomAction       = new MoveToAction("bottom", "moveto 1.0 front;moveto 2.0 bottom");
+  private Action rightAction        = new MoveToAction("right",  "moveto 1.0 front;moveto 2.0 right");
+  private Action leftAction         = new MoveToAction("left",   "moveto 1.0 front;moveto 2.0 left");
+  private Action selectallAction    = new EvalStringQuietAction("selectall",   "select all");
+  private Action deselectallAction  = new EvalStringQuietAction("deselectall", "select none");
+  private Action hydrogensAction    = new CheckBoxMenuItemAction("hydrogensCheck",    "set showHydrogens");
+  private Action measurementsAction = new CheckBoxMenuItemAction("measurementsCheck", "set showMeasurements");
+  private Action perspectiveAction  = new CheckBoxMenuItemAction("perspectiveCheck",  "set PerspectiveDepth");
+  private Action axesAction         = new CheckBoxMenuItemAction("axesCheck",         "set showAxes");
+  private Action boundboxAction     = new CheckBoxMenuItemAction("boundboxCheck",     "set showBoundBox");
 
-  void moveTo(String move) {
-  if (viewer.getShowBbcage() || viewer.getBooleanProperty("showUnitCell"))
-    viewer.evalStringQuiet(move);
-  else
-    viewer.evalStringQuiet("boundbox on;" + move +";delay 1;boundbox off");
-  }
+  /**
+   * Action calling evalStringQuiet() 
+   */
+  private class EvalStringQuietAction extends AbstractAction {
+    private final String action;
 
-  class HydrogensAction extends AbstractAction {
-
-    public HydrogensAction() {
-      super("hydrogensCheck");
+    public EvalStringQuietAction(String name, String action) {
+      super(name);
+      this.action = action;
       this.setEnabled(true);
     }
 
     public void actionPerformed(ActionEvent e) {
-      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.evalStringQuiet("set showHydrogens " + cbmi.isSelected());
+      viewer.evalStringQuiet(action);
     }
   }
 
-  class MeasurementsAction extends AbstractAction {
+  /**
+   * Action calling setStatus() 
+   */
+  private class SetStatusAction extends AbstractAction {
+    private final String statusText;
 
-    public MeasurementsAction() {
-      super("measurementsCheck");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.evalStringQuiet ("set showMeasurements " +cbmi.isSelected());
-    }
-  }
-
-  class SelectallAction extends AbstractAction {
-
-    public SelectallAction() {
-      super("selectall");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.evalStringQuiet("select all");
-    }
-  }
-
-  class DeselectallAction extends AbstractAction {
-
-    public DeselectallAction() {
-      super("deselectall");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.evalStringQuiet("select none");
-    }
-  }
-
-  class PickAction extends AbstractAction {
-
-    public PickAction() {
-      super("pick");
+    public SetStatusAction(String name, String status) {
+      super(name);
+      this.statusText = status;
       this.setEnabled(true);
     }
 
     public void actionPerformed(ActionEvent e) {
       viewer.setSelectionHalos(false);
-      status.setStatus(1, GT._("Select Atoms"));
+      if (statusText != null) {
+        status.setStatus(1, statusText);
+      } else {
+        status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
+      }
     }
   }
 
-  class DeleteAction extends AbstractAction {
+  /**
+   * Action calling moveTo() 
+   */
+  private class MoveToAction extends AbstractAction {
+    private final String action;
 
-    public DeleteAction() {
-      super("delete");
+    public MoveToAction(String name, String action) {
+      super(name);
+      this.action = action;
       this.setEnabled(true);
     }
 
     public void actionPerformed(ActionEvent e) {
-      //not implemented (I hope)
-      viewer.setSelectionHalos(false);
-      status.setStatus(1, GT._("Delete Atoms"));
-    }
-  }
-
-  class RotateAction extends AbstractAction {
-
-    public RotateAction() {
-      super("rotate");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.setSelectionHalos(false);
-      status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
-    }
-  }
-
-  class ZoomAction extends AbstractAction {
-
-    public ZoomAction() {
-      super("zoom");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.setSelectionHalos(false);
-      status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
-    }
-  }
-
-  class XlateAction extends AbstractAction {
-
-    public XlateAction() {
-      super("xlate");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      viewer.setSelectionHalos(false);
-      status.setStatus(1, ((JComponent) e.getSource()).getToolTipText());
-    }
-  }
-
-  class FrontAction extends AbstractAction {
-
-    public FrontAction() {
-      super("front");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      moveTo("moveto 2.0 front");
-    }
-  }
-
-  class TopAction extends AbstractAction {
-
-    public TopAction() {
-      super("top");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      moveTo("moveto 1.0 front;moveto 2.0 top");
-    }
-  }
-
-  class BottomAction extends AbstractAction {
-
-    public BottomAction() {
-      super("bottom");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      moveTo("moveto 1.0 front;moveto 2.0 bottom");
-    }
-  }
-
-  class RightAction extends AbstractAction {
-
-    public RightAction() {
-      super("right");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      moveTo("moveto 1.0 front;moveto 2.0 right");
-    }
-  }
-
-  class LeftAction extends AbstractAction {
-
-    public LeftAction() {
-      super("left");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      moveTo("moveto 1.0 front;moveto 2.0 left");
+      if (viewer.getShowBbcage() || viewer.getBooleanProperty("showUnitCell")) {
+        viewer.evalStringQuiet(action);
+      } else {
+        viewer.evalStringQuiet("boundbox on;" + action + ";delay 1;boundbox off");
+      }
     }
   }
 
@@ -378,46 +254,25 @@ public class DisplayPanel extends JPanel
     }
   }
 
-  class PerspectiveAction extends AbstractAction {
+  /**
+   * Action calling evalStringQuiet(&lt;action&gt; + CheckBoxState) 
+   */
+  private class CheckBoxMenuItemAction extends AbstractAction {
+    private final String action;
 
-    public PerspectiveAction() {
-      super("perspectiveCheck");
+    public CheckBoxMenuItemAction(String name, String action) {
+      super(name);
+      this.action = action;
       this.setEnabled(true);
     }
 
     public void actionPerformed(ActionEvent e) {
       JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.evalStringQuiet("set PerspectiveDepth " +cbmi.isSelected());
+      viewer.evalStringQuiet(action + " " + cbmi.isSelected());
     }
   }
 
-  class AxesAction extends AbstractAction {
-
-    public AxesAction() {
-      super("axesCheck");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.evalStringQuiet("set showAxes " + cbmi.isSelected());
-    }
-  }
-
-  class BoundboxAction extends AbstractAction {
-
-    public BoundboxAction() {
-      super("boundboxCheck");
-      this.setEnabled(true);
-    }
-
-    public void actionPerformed(ActionEvent e) {
-      JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem) e.getSource();
-      viewer.evalStringQuiet("set showBoundBox " + cbmi.isSelected());
-    }
-  }
-
-  MenuListener menuListener = new MenuListener() {
+  private MenuListener menuListener = new MenuListener() {
       public void menuSelected(MenuEvent e) {
         String menuKey = guimap.getKey(e.getSource());
         if (menuKey.equals("display")) {

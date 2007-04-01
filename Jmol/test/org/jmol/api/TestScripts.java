@@ -17,6 +17,7 @@ import javax.swing.JFrame;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.JUnitLogger;
+import org.jmol.util.Profiling;
 import org.openscience.jmol.app.Jmol;
 
 import junit.framework.Test;
@@ -193,7 +194,7 @@ class TestScriptsImpl extends TestCase {
     JFrame frame = new JFrame();
     Jmol jmol = Jmol.getJmol(frame, 500, 500, checkOnly ? "-C " : "");
     JmolViewer viewer = jmol.viewer;
-    long beginFull = System.currentTimeMillis();
+    long beginFull = Profiling.getTime();
     for (int i = 0; i < nbExecutions; i++) {
       viewer.scriptWaitStatus("set defaultDirectory \"" + file.getParent().replace('\\', '/') + "\"", "");
       int lineNum = 0;
@@ -201,12 +202,12 @@ class TestScriptsImpl extends TestCase {
       try {
         reader = new BufferedReader(new FileReader(file));
         String line = null;
-        long beginScript = System.currentTimeMillis();
+        long beginScript = Profiling.getTime();
         while ((line = reader.readLine()) != null) {
           lineNum++;
-          long begin = System.currentTimeMillis();
+          long begin = Profiling.getTime();
           Vector info = (Vector) viewer.scriptWaitStatus(line, "scriptTerminated");
-          long end = System.currentTimeMillis();
+          long end = Profiling.getTime();
           if ((info != null) && (info.size() > 0)) {
             String error = info.get(0).toString();
             if (info.get(0) instanceof Vector) {
@@ -229,7 +230,7 @@ class TestScriptsImpl extends TestCase {
             outputPerformanceMessage(end - begin, "execute [" + line + "]");
           }
         }
-        long endScript = System.currentTimeMillis();
+        long endScript = Profiling.getTime();
         outputPerformanceMessage(endScript - beginScript, "execute script [" + file.getPath() + "]");
       } catch (FileNotFoundException e) {
         fail("File " + file.getPath() + " not found");
@@ -245,7 +246,7 @@ class TestScriptsImpl extends TestCase {
         }
       }
     }
-    long endFull = System.currentTimeMillis();
+    long endFull = Profiling.getTime();
     if (nbExecutions > 1) {
       outputPerformanceMessage(endFull - beginFull, nbExecutions + " of script");
     }
@@ -275,9 +276,9 @@ class TestScriptsImpl extends TestCase {
    * @param message Message.
    */
   private void outputPerformanceMessage(long duration, String message) {
-    String time = "      " + duration;
-    time = time.substring(Math.min(6, time.length() - 6));
-    System.err.println(time + " ms: " + message);
+    String time = "            " + duration;
+    time = time.substring(Math.min(12, time.length() - 12));
+    System.err.println(time + Profiling.getUnit() + ": " + message);
   }
 
   /* (non-Javadoc)

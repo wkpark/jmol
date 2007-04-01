@@ -123,10 +123,8 @@ class VolumeFileReader extends VoxelReader {
     int n = 1;
     while ((line = br.readLine()) != null && 
         (!addToHeader && line.length() == 0 || line.indexOf("#") == 0)) {
-      if (addToHeader) {
-        jvxlFileHeaderBuffer.append(line);
-        jvxlFileHeaderBuffer.append('\n');
-      }
+      if (addToHeader)
+        jvxlFileHeaderBuffer.append(line).append('\n');
       n++;
     }
     return n;
@@ -154,8 +152,7 @@ class VolumeFileReader extends VoxelReader {
   void readVoxelVector(int voxelVectorIndex) throws Exception {    
     line = br.readLine();
     adjustVoxelVectorLine(voxelVectorIndex);
-    jvxlFileHeaderBuffer.append(line);
-    jvxlFileHeaderBuffer.append('\n');
+    jvxlFileHeaderBuffer.append(line).append('\n');
     Vector3f voxelVector = volumetricVectors[voxelVectorIndex];
     if ((voxelCounts[voxelVectorIndex] = parseInt(line)) == Integer.MIN_VALUE) //unreadable
       next[0] = line.indexOf(" ");

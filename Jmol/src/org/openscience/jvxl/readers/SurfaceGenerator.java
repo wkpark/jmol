@@ -372,6 +372,10 @@ public class SurfaceGenerator {
   }
 
   public Object getProperty(String property, int index) {
+    //StringBuffer bs = new StringBuffer();
+    //JvxlReader.jvxlCreateHeader("line1", "line2", volumeData, bs);
+    //System.out.println(bs);
+
     if (property == "plane")
       return (jvxlData.jvxlPlane);
     if (property == "jvxlFileData")

@@ -27,16 +27,11 @@ class VolumeDataReader extends VoxelReader {
 
   VolumeDataReader(SurfaceGenerator sg) {
     super(sg);
-    setJvxlInfo();
+    jvxlFileHeaderBuffer = new StringBuffer();
+    JvxlReader.jvxlCreateHeader("JVXL Volume Data","================", volumeData, jvxlFileHeaderBuffer);
   }
 
-  void setJvxlInfo() {
-    jvxlFileHeaderBuffer = new StringBuffer();
-    jvxlFileHeaderBuffer.append("JVXL Volume Data\n================\n");
-    jvxlFileHeaderBuffer.append("-2 ").append('\n');
-  }
-  
-  // reads a pre-calculated volume data set
+  // UNTESTED -- reads a pre-calculated volume data set -- UNTESTED
   
   void readVoxelData(boolean isMapData) throws Exception {
     /* 

@@ -151,15 +151,7 @@ class JvxlReader extends VolumeFileReader {
     //mostly ignored
     for (int i = 0; i < atomCount; ++i)
       bs.append(br.readLine() + "\n");
-    if (atomCount == 0) {
-      Point3f pt = new Point3f(v.volumetricOrigin);
-      bs.append("1 1.0 " + pt.x + " " + pt.y + " " + pt.z
-          + " //BOGUS H ATOM ADDED FOR JVXL FORMAT\n");
-      for (int i = 0; i < 3; i++)
-        pt.scaleAdd(v.voxelCounts[i] - 1, v.volumetricVectors[i], pt);
-      bs.append("2 2.0 " + pt.x + " " + pt.y + " " + pt.z
-          + " //BOGUS He ATOM ADDED FOR JVXL FORMAT\n");
-    }
+    jvxlAddDummyAtomList(v, bs);
   }
 
   int readExtraLine() throws Exception {
@@ -521,6 +513,35 @@ class JvxlReader extends VolumeFileReader {
 
   //// methods for creating the JVXL code  
 
+  static void jvxlCreateHeader(String line1, String line2, VolumeData v,
+                               StringBuffer bs) {
+    //unchecked
+    line1 = jvxlMarkHeaderJVXL(line1);
+    bs.append(line1).append('\n');
+    bs.append(line2).append('\n');
+    bs.append("-2 " + v.volumetricOrigin.x + " " + v.volumetricOrigin.y + " "
+        + v.volumetricOrigin.z + " ANGSTROMS\n");
+    for (int i = 0; i < 3; i++)
+      bs.append(v.voxelCounts[i] + " " + v.volumetricVectors[i].x + " "
+          + v.volumetricVectors[i].y + " " + v.volumetricVectors[i].z + '\n');
+    jvxlAddDummyAtomList(v, bs);
+  }
+  
+  static String jvxlMarkHeaderJVXL(String data) {
+    return (data.indexOf("JVXL") == 0 || data.indexOf("#JVXL") == 0 ? data
+        : (data.indexOf("#") == 0 ? "#" : "") + "JVXL " + data);
+  }
+  
+  static void jvxlAddDummyAtomList(VolumeData v, StringBuffer bs) {
+    Point3f pt = new Point3f(v.volumetricOrigin);
+    bs.append("1 1.0 " + pt.x + " " + pt.y + " " + pt.z
+        + " //BOGUS H ATOM ADDED FOR JVXL FORMAT\n");
+    for (int i = 0; i < 3; i++)
+      pt.scaleAdd(v.voxelCounts[i] - 1, v.volumetricVectors[i], pt);
+    bs.append("2 2.0 " + pt.x + " " + pt.y + " " + pt.z
+        + " //BOGUS He ATOM ADDED FOR JVXL FORMAT\n");
+  }
+
   static String jvxlGetDefinitionLine(JvxlData jvxlData, boolean isInfo) {
     String definitionLine = jvxlData.cutoff + " ";
 
@@ -597,8 +618,7 @@ class JvxlReader extends VolumeFileReader {
       data = jvxlData.jvxlFileHeader
           + (nSurfaces > 0 ? (-nSurfaces) + jvxlData.jvxlExtraLine.substring(2)
               : jvxlData.jvxlExtraLine);
-      if (data.indexOf("JVXL") != 0)
-        data = (data.indexOf("#") == 0 ? "#" : "") + "JVXL " + data;
+      data = jvxlMarkHeaderJVXL(data);
     }
     data += "# " + msg + "\n";
     if (title != null)

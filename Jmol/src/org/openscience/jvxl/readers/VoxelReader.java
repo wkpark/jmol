@@ -36,6 +36,11 @@ class VoxelReader {
   //main class for reading any of the file formats
   
   /*
+   * Jvxl.java
+   *           creates a surfaceReader, which handles all user interface
+   *           and then instantiates a voxel reader 
+   * 
+   * 
    *     VoxelReader
    *          |
    *          |_______VolumeDataReader  (still needs work)

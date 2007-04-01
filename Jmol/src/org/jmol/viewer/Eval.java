@@ -8453,8 +8453,10 @@ class Eval { //implements Runnable {
     if (checkOnly)
       return true;
     setShapeProperty(shape, propertyName, propertyValue);
-    if ((tok = tokAt(iToken + 1)) != Token.nada)
-      setMeshDisplayProperty(shape, ++iToken, tok);
+    if ((tok = tokAt(iToken + 1)) != Token.nada) {
+      if (!setMeshDisplayProperty(shape, ++iToken, tok))
+          --iToken;
+    }
     return true;
   }
 

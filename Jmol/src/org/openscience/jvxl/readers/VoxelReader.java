@@ -150,7 +150,7 @@ class VoxelReader {
       return false;
     }
 
-    jvxlData.jvxlFileHeader = "" + jvxlFileHeaderBuffer;
+    jvxlData.jvxlFileHeader = jvxlFileHeaderBuffer.toString();
     jvxlData.cutoff = (isJvxl ? jvxlCutoff : params.cutoff);
     jvxlData.jvxlColorData = "";
     jvxlData.jvxlEdgeData = fractionData.toString();

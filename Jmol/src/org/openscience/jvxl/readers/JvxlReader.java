@@ -69,9 +69,9 @@ class JvxlReader extends VolumeFileReader {
   // # optional comments
 
   void readTitleLines() throws Exception {
+    jvxlFileHeaderBuffer = new StringBuffer();
     skipComments(true);
     int nLines = 1;
-    jvxlFileHeaderBuffer = new StringBuffer();
     while (nLines <= 2) {
       if (line == null || line.length() == 0)
         line = "Line " + nLines;

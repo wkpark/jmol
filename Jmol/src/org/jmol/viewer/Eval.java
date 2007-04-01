@@ -3222,7 +3222,7 @@ class Eval { //implements Runnable {
       colorOrBgcolor = "bgcolor";
       getToken(++index);
     }
-    if (shapeType == JmolConstants.SHAPE_MO && !mo(true))
+    if (!isSyntaxCheck && shapeType == JmolConstants.SHAPE_MO && !mo(true))
       invalidArgument();
     if (theTok == Token.translucent || theTok == Token.opaque) {
       translucency = parameterAsString(index++);

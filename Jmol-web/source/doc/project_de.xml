@@ -18,8 +18,8 @@
 				<td align="right" valign="middle">
 					<font size="2">
 						<a href="[root]/">Startseite</a> 
-	    | <a href="[root]/demo/">Beispiele</a>
-	    | <a href="[root]/websites/">Links</a>
+	    | <a href="[root]/demo/">Demoseiten</a>
+	    | <a href="[root]/websites/">Websites</a>
 						<br/>
 						<a href="[root]/docs/">Dokumentation</a>
 	    | <a href="http://wiki.jmol.org">Wiki</a>
@@ -28,7 +28,7 @@
 						<br/>
 						<a href="[root]/browsercheck/">Browser-Test</a>
 	    | <a href="[root]/download/">Download</a> 
-	    | <a href="[root]/project/">Projekt</a>
+	    | <a href="[root]/project/">Projektseitent</a>
 					</font>
 				</td>
 			</tr>

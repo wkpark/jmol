@@ -133,7 +133,6 @@ class VoxelReader {
 
   int nBytes;
   int nDataPoints;
-  String surfaceData;
   int nPointsX, nPointsY, nPointsZ;
 
   private int edgeCount;
@@ -209,7 +208,6 @@ class VoxelReader {
 
   void initializeVolumetricData() {
     nThisValue = 0;
-    surfaceData = "";
     nPointsX = voxelCounts[0];
     nPointsY = voxelCounts[1];
     nPointsZ = voxelCounts[2];
@@ -257,8 +255,8 @@ class VoxelReader {
           if (inside == isInside(voxelValue, cutoff, isCutoffAbsolute)) {
             dataCount++;
           } else {
-            if (dataCount != 0)
-              surfaceData += " " + dataCount;
+            //if (dataCount != 0)
+              //surfaceData += " " + dataCount;
             dataCount = 1;
             inside = !inside;
           }

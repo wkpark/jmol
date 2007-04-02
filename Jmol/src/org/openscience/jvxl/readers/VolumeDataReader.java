@@ -54,48 +54,32 @@ class VolumeDataReader extends VoxelReader {
       readPlaneData();
       return;
     }
+    voxelData = volumeData.voxelData;
+    if (isMapData)
+      return;
 
+    StringBuffer sb = new StringBuffer();
     boolean inside = false;
     int dataCount = 0;    
-
-    voxelData = volumeData.voxelData;
-    if (isMapData || params.thePlane != null)
-      return;
     nDataPoints = 0;
     float cutoff = params.cutoff;
     boolean isCutoffAbsolute = params.isCutoffAbsolute;
-    for (int x = 0; x < nPointsX; ++x) {
-      float[][] plane;
-      plane = voxelData[x];
-      for (int y = 0; y < nPointsY; ++y) {
-        float[] strip;
-        strip = plane[y];
+    for (int x = 0; x < nPointsX; ++x)
+      for (int y = 0; y < nPointsY; ++y)
         for (int z = 0; z < nPointsZ; ++z) {
-          float voxelValue;
-          voxelValue = strip[z]; //precalculated
           ++nDataPoints;
-          if (inside == isInside(voxelValue, cutoff, isCutoffAbsolute)) {
+          if (inside == isInside(voxelData[x][y][z], cutoff, isCutoffAbsolute)) {
             dataCount++;
           } else {
             if (dataCount != 0)
-              surfaceData += " " + dataCount;
+              sb.append(' ').append(dataCount);
             dataCount = 1;
             inside = !inside;
           }
         }
-      }
-    }
-    surfaceData += " " + dataCount + "\n";
-    jvxlData.jvxlSurfaceData = surfaceData;
+    sb.append(' ').append(dataCount).append('\n');
+    jvxlData.jvxlSurfaceData = sb.toString();
     jvxlData.jvxlPlane = params.thePlane;
     volumeData.setVoxelData(voxelData);
-  }
-  
-  float getVoxelValue(int x, int y, int z) {
-    return volumeData.voxelData[x][y][z];
-  }
-
-  
+  }  
 }
-
-

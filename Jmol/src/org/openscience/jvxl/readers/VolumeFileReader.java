@@ -232,47 +232,59 @@ class VolumeFileReader extends VoxelReader {
     voxelData = new float[nPointsX][][];
     nDataPoints = 0;
     line = "";
-    float cutoff = params.cutoff;
-    boolean isCutoffAbsolute = params.isCutoffAbsolute; 
-    for (int x = 0; x < nPointsX; ++x) {
-      float[][] plane;
-      plane = new float[nPointsY][];
-      voxelData[x] = plane;
-      for (int y = 0; y < nPointsY; ++y) {
-        float[] strip;
-        strip = new float[nPointsZ];
-        plane[y] = strip;
-        for (int z = 0; z < nPointsZ; ++z) {
-          float voxelValue = getNextVoxelValue();
-          strip[z] = voxelValue;
-          ++nDataPoints;
-          if (isMapData || isJvxl && params.thePlane == null)
-            continue;
-
-          // update surfaceData
-
-          if (inside == isInside(voxelValue, cutoff, isCutoffAbsolute)) {
-            dataCount++;
-          } else {
-            if (dataCount != 0)
-              surfaceData += " " + dataCount;
-            dataCount = 1;
-            inside = !inside;
+    StringBuffer sb = new StringBuffer();
+    boolean collectData = (!isJvxl && params.thePlane == null);
+    if (isMapData || isJvxl && params.thePlane == null) {
+      for (int x = 0; x < nPointsX; ++x) {
+        float[][] plane = new float[nPointsY][];
+        voxelData[x] = plane;
+        for (int y = 0; y < nPointsY; ++y) {
+          float[] strip = new float[nPointsZ];
+          plane[y] = strip;
+          for (int z = 0; z < nPointsZ; ++z) {
+            strip[z] = getNextVoxelValue(sb);
+            ++nDataPoints;
+          }
+        }
+      }
+    } else {
+      float cutoff = params.cutoff;
+      boolean isCutoffAbsolute = params.isCutoffAbsolute;
+      for (int x = 0; x < nPointsX; ++x) {
+        float[][] plane;
+        plane = new float[nPointsY][];
+        voxelData[x] = plane;
+        for (int y = 0; y < nPointsY; ++y) {
+          float[] strip = new float[nPointsZ];
+          plane[y] = strip;
+          for (int z = 0; z < nPointsZ; ++z) {
+            float voxelValue = getNextVoxelValue(sb);
+            strip[z] = voxelValue;
+            ++nDataPoints;
+            if (inside == isInside(voxelValue, cutoff, isCutoffAbsolute)) {
+              dataCount++;
+            } else {
+              if (collectData && dataCount != 0)
+                sb.append(' ').append(dataCount);
+              dataCount = 1;
+              inside = !inside;
+            }
           }
         }
       }
     }
-    if (!isJvxl)
-      surfaceData += " " + dataCount + "\n";
+    //Jvxl getNextVoxelValue records the data read on its own.
+    if (collectData)
+      sb.append(' ').append(dataCount).append('\n');
     if (!isMapData) {
-      jvxlData.jvxlSurfaceData = (params.thePlane == null ? surfaceData : "");
+      jvxlData.jvxlSurfaceData = sb.toString();
       jvxlData.jvxlPlane = params.thePlane;
     }
     volumeData.setVoxelData(voxelData);
   }
 
-  float getNextVoxelValue() throws Exception {
-    //overloaded in JvxlReader
+  float getNextVoxelValue(StringBuffer sb) throws Exception {
+    //overloaded in JvxlReader, where sb is appended to
     float voxelValue = 0;
     if (nSurfaces > 1 && !params.blockCubeData) {
       for (int i = 1; i < params.fileIndex; i++)

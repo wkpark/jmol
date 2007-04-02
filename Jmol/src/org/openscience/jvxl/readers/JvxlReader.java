@@ -336,7 +336,7 @@ class JvxlReader extends VolumeFileReader {
     return dataOut;
   }
 
-  float getNextVoxelValue() throws Exception {
+  float getNextVoxelValue(StringBuffer sb) throws Exception {
 
     //called by VolumeFileReader.readVoxelData
 
@@ -352,8 +352,8 @@ class JvxlReader extends VolumeFileReader {
           endOfData = true;
           nThisValue = 10000;
           //throw new NullPointerException();
-        } else {
-          surfaceData += line + "\n";
+        } else if (sb != null){
+          sb.append(line).append('\n');
         }
       }
       thisInside = !thisInside;

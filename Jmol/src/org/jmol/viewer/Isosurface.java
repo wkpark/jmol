@@ -272,7 +272,6 @@ class Isosurface extends IsosurfaceMeshCollection {
   boolean iAddGridPoints;
   boolean associateNormals;
   boolean newSolventMethod;
-  boolean force2SidedTriangles;
   boolean isColorReversed;
 
   Point3f center, point;
@@ -865,7 +864,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       if (!isSilent)
         Logger.info("surface calculation time: "
             + (System.currentTimeMillis() - timeBegin) + " ms");
-      initializeMesh(force2SidedTriangles);
+      initializeMesh(thePlane != null);
       jvxlFileMessage = (jvxlDataIsColorMapped ? "mapped" : "");
       if (isContoured && thePlane == null) {
         planarVectors[0].set(volumetricVectors[0]);
@@ -916,15 +915,14 @@ class Isosurface extends IsosurfaceMeshCollection {
         createIsosurface(); //for the plane
         initializeMesh(true);
         readVolumetricData(true); //for the data
-        colorIsosurface();
       } else {
         readData(true);
-        if (jvxlDataIsColorMapped) {
-          jvxlReadColorData(thisMesh);
-        } else {
-          colorIsosurface();
+        if (isJvxl) {
+          Logger.error("Cannot MAP jvxl data");
+          return;          
         }
       }
+      colorIsosurface();
       thisMesh.nBytes = nBytes;
       //if (logMessages && !isSilent)
       //  Logger.debug("\n" + jvxlGetFile(thisMesh, jvxlFileMessage, true, 1));
@@ -1008,7 +1006,6 @@ class Isosurface extends IsosurfaceMeshCollection {
     iAddGridPoints = false;
     newSolventMethod = true;
     associateNormals = true;
-    force2SidedTriangles = false;//true;
     colorBySign = colorByPhase = false;
     defaultColix = 0;
     colorNeg = defaultColorNegative;
@@ -1153,11 +1150,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       //newSolventMethod = false;
     if (viewer.getTestFlag2())
       associateNormals = false;
-    if (viewer.getTestFlag4()) // turn off 2-sided if showing normals
-      force2SidedTriangles = false;
     if (logMessages) {
-      Logger.debug("Isosurface using testflag4: 2-sided triangles = "
-          + force2SidedTriangles);
       Logger.debug("Isosurface using testflag2: no associative grouping = "
           + !associateNormals);
       Logger.debug("IsosurfaceRenderer using testflag3: separated triangles = "
@@ -1673,6 +1666,8 @@ class Isosurface extends IsosurfaceMeshCollection {
           float voxelValue;
           if (justDefiningPlane) {
             voxelValue = calcVoxelPlaneDistance(x, y, z);
+            //if (nDataPoints < 100)
+              //System.out.println("planedata "+nDataPoints + " " + thePlane+" "+voxelValue);
           } else {
             switch (dataType) {
             case SURFACE_SPHERE:
@@ -2517,7 +2512,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   float jvxlFractionFromCharacter2(int ich1, int ich2, int base, int range) {
     float fraction = jvxlFractionFromCharacter(ich1, base, range, 0);
     float remains = jvxlFractionFromCharacter(ich2, base, range, 0.5f);
-    if (logMessages)
+    if (false && logMessages)
       Logger.info("fraction:" + fraction + " + " + (remains / range) + " r="
           + range + " " + (char) ich1 + (char) ich2 + " = "
           + (fraction + remains / range));
@@ -2608,9 +2603,11 @@ class Isosurface extends IsosurfaceMeshCollection {
         info += "; bicolor map";
       } else {
         definitionLine += nSurfaceData + " " + nEdgeData;
-        info += (mesh.isJvxlPrecisionColor && nColorData != -1 ? "; precision colored"
-            : nColorData > 0 ? "; colormapped" : "");
+        if (nColorData > 0)
+          info += "; colormapped";
       }
+      if (mesh.isJvxlPrecisionColor && nColorData != -1)
+        info +=  "; precision colored";
       definitionLine += " "
           + (mesh.isJvxlPrecisionColor && nColorData != -1 ? -nColorData
               : nColorData);
@@ -3854,8 +3851,8 @@ class Isosurface extends IsosurfaceMeshCollection {
     if (Math.abs(value) < 0.0000001)
       thisMesh.invalidateVertex(vPt);
     thisMesh.firstViewableVertex = thisMesh.vertexCount;
-    if (logMessages)
-      Logger.info("addCountourdata " + x + " " + y + " " + z + offsets
+    if (logMessages && false)
+      Logger.info("addContourdata " + x + " " + y + " " + z + offsets
           + vertexXYZ + value);
     return vPt;
   } // (3) generate the contours using marching squares
@@ -3983,8 +3980,8 @@ class Isosurface extends IsosurfaceMeshCollection {
         contourPlaneMinimumValue = value;
       if (value > contourPlaneMaximumValue)
         contourPlaneMaximumValue = value;
-      if (logMessages)
-        Logger.info("loadPixelData " + c.vertexXYZ + value + pt);
+      //if (i < 10)
+        //Logger.info("loadPixelData " + c.vertexXYZ + value + pt);
       if ((x = pt.x) >= 0 && x < pixelCounts[0] && (y = pt.y) >= 0
           && y < pixelCounts[1]) {
         pixelData[x][y] = value;

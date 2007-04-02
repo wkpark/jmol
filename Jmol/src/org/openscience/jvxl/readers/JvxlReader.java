@@ -127,7 +127,8 @@ class JvxlReader extends VolumeFileReader {
       atomCount = 0;
       atomLine = " " + atomLine;
     } else {
-      atomLine = atomLine.substring(("" + atomCount).length());
+      String s = "" + atomCount;
+      atomLine = atomLine.substring(atomLine.indexOf(s) + s.length());
     }
     String jvxlAtoms = "" + (atomCount == 0 ? -2 : -Math.abs(atomCount));
     int i = atomLine.indexOf("ANGSTROM");

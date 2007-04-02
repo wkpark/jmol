@@ -149,7 +149,7 @@ class VolumeFileReader extends VoxelReader {
     String atomLine = line;
     String[] tokens = Parser.getTokens(atomLine, 0);
     atomCount = parseInt(tokens[0]);
-    if (atomCount == Integer.MIN_VALUE) //unreadable
+    if (atomCount == Integer.MIN_VALUE)//unreadable
       atomCount = 0;
     negativeAtomCount = (atomCount < 0);
     if (negativeAtomCount)
@@ -228,17 +228,15 @@ class VolumeFileReader extends VoxelReader {
     if (nPointsX <= 0 || nPointsY <= 0 || nPointsZ <= 0)
       return;
 
-    if (!isMapData && params.thePlane != null) {
-      readPlaneData();
-      return;
-    }
-
     boolean inside = false;
     int dataCount = 0;
     next[0] = 0;
     int nPoints = nPointsX * nPointsY * nPointsZ;
     gotoData(params.fileIndex - 1, nPoints);
-
+    if (!isMapData && params.thePlane != null) {
+      readPlaneData();
+      return;
+    }
     if (params.thePlane != null) {
       setPlaneParameters(params.thePlane);
       params.cutoff = 0f;

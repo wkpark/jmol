@@ -29,6 +29,7 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.util.Logger;
 import org.openscience.jvxl.util.*;
 
 class VoxelReader {
@@ -90,7 +91,6 @@ class VoxelReader {
   String  jvxlColorDataRead = "";
   boolean jvxlDataIsColorMapped;
   boolean jvxlDataIsPrecisionColor;
-  boolean jvxlWritePrecisionColor;
   boolean jvxlDataIs2dContour;
   float   jvxlCutoff;
   int     jvxlNSurfaceInts;
@@ -166,10 +166,13 @@ class VoxelReader {
     jvxlData.edgeFractionRange = edgeFractionRange;
     jvxlData.colorFractionBase = colorFractionBase;
     jvxlData.colorFractionRange = colorFractionRange;
+    jvxlData.jvxlDataIs2dContour = jvxlDataIs2dContour;
+    jvxlData.jvxlDataIsColorMapped = jvxlDataIsColorMapped;
     
-    if (jvxlData.jvxlDataIsColorMapped)
-      readColorData();
+    if (jvxlDataIsColorMapped)
+      jvxlData.jvxlColorData = readColorData();
     jvxlData.jvxlExtraLine = JvxlReader.jvxlExtraLine(jvxlData, 1);
+
     //if (thePlane != null && iAddGridPoints)
       //addGridPointCube();
     return true;
@@ -241,6 +244,8 @@ class VoxelReader {
         for (int z = 0; z < nPointsZ; ++z) {
           float voxelValue;
           voxelValue = calcVoxelPlaneDistance(x, y, z, params.thePlane);
+          //if (nDataPoints < 100)
+            //System.out.println("planedata "+nDataPoints + " " + params.thePlane+" "+voxelValue);
           strip[z] = voxelValue;
           ++nDataPoints;
           if (inside == isInside(voxelValue, cutoff, isCutoffAbsolute)) {
@@ -259,8 +264,9 @@ class VoxelReader {
     volumeData.setVoxelData(voxelData);  
   }
   
-  void readColorData() {
+  String readColorData() {
     //jvxl only -- overloaded
+    return "";
   }
   
   void setPlaneParameters(Point4f plane) {
@@ -1328,6 +1334,8 @@ class VoxelReader {
         contourPlaneMinimumValue = value;
       if (value > contourPlaneMaximumValue)
         contourPlaneMaximumValue = value;
+      //if (i < 10)
+        //Logger.info("loadPixelDatv " + c.vertexXYZ + value + pt);
       if ((x = pt.x) >= 0 && x < pixelCounts[0] && (y = pt.y) >= 0
           && y < pixelCounts[1]) {
         pixelData[x][y] = value;
@@ -1756,6 +1764,7 @@ class VoxelReader {
     applyColorScale();
     jvxlData.nContours = nContours;
     jvxlData.jvxlExtraLine = JvxlReader.jvxlExtraLine(jvxlData,1);
+    
     jvxlData.jvxlFileMessage = "mapped: min = " + params.valueMappedToRed + "; max = "
         + params.valueMappedToBlue;
   }
@@ -1776,12 +1785,13 @@ class VoxelReader {
     String list1 = "";
     int incr = 1;
     char[] remainder = new char[1];
-    if (jvxlDataIsPrecisionColor || params.isContoured)
-      jvxlWritePrecisionColor = true;
+    boolean writePrecisionColor = (jvxlDataIsPrecisionColor || params.isContoured);
+    int lastVertex = (contourVertexCount > 0 ? contourVertexCount : vertexCount);
     for (int i = 0; i < vertexCount; i += incr) {
       float value = getVertexColorValue(i);
+      if (i < lastVertex) {
         char ch; 
-        if (jvxlWritePrecisionColor) {
+        if (writePrecisionColor) {
           ch = JvxlReader.jvxlValueAsCharacter2(value, min, max, colorFractionBase,
               colorFractionRange, remainder);
           list1 += remainder[0];
@@ -1791,8 +1801,9 @@ class VoxelReader {
               colorFractionBase, colorFractionRange);
         }
         list += ch;
+      }
     }
-    jvxlData.isJvxlPrecisionColor = jvxlWritePrecisionColor;
+    jvxlData.isJvxlPrecisionColor = writePrecisionColor;
     jvxlData.jvxlColorData = (params.colorByPhase && !params.isBicolorMap && !params.colorBySign ? ""
         : list + list1 + "\n");
   }
@@ -1802,10 +1813,7 @@ class VoxelReader {
     // ["phase" | colorIsoSurface] --> applyColorScale
     // colorIsosurface --> generateContourData --> createContours
     params.setMapRanges();
-    jvxlData.valueMappedToRed = params.valueMappedToRed;
-    jvxlData.valueMappedToBlue = params.valueMappedToBlue;
-    jvxlData.mappedDataMin = params.mappedDataMin;
-    jvxlData.mappedDataMax = params.mappedDataMax;
+    JvxlReader.jvxlSetMapRanges(jvxlData, params.valueMappedToRed, params.valueMappedToBlue,params.mappedDataMin,params.mappedDataMax);
   }
 
   private float getVertexColorValue(int vertexIndex) {
@@ -1884,7 +1892,7 @@ class VoxelReader {
   float getMinMappedValue() {
     if (params.colorBySets)
       return 0;
-    int vertexCount = meshData.vertexCount;
+    int vertexCount = (contourVertexCount > 0 ? contourVertexCount : meshData.vertexCount);
     Point3f[] vertexes = meshData.vertices;
     float min = Float.MAX_VALUE;
     int incr = 1;
@@ -1903,7 +1911,7 @@ class VoxelReader {
   float getMaxMappedValue() {
     if (params.colorBySets)
       return Math.max(meshData.nSets - 1, 0);
-    int vertexCount = meshData.vertexCount;
+    int vertexCount = (contourVertexCount > 0 ? contourVertexCount : meshData.vertexCount);
     Point3f[] vertexes = meshData.vertices;
     float max = -Float.MAX_VALUE;
     int incr = 1;

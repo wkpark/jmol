@@ -302,6 +302,19 @@ public class SurfaceGenerator {
       return;
     }
 
+    if ("phase" == propertyName) {
+      String color = (String) value;
+      params.isCutoffAbsolute = true;
+      params.colorBySign = true;
+      params.colorByPhase = true;
+      params.colorPhase = VoxelReader.getColorPhaseIndex(color);
+      if (params.colorPhase <= 0) {
+        Logger.warn(" invalid color phase: " + color);
+        params.colorPhase = 1;
+      }
+      return;
+    }
+
     if ("readData" == propertyName) {
       if (++state != STATE_DATA_READ)
         return;
@@ -315,10 +328,10 @@ public class SurfaceGenerator {
         Logger.error("Could not create isosurface");
         return;
       }
-      jvxlData.jvxlFileMessage = (jvxlData.jvxlDataIsColorMapped ? "mapped" : "");
       if (params.isContoured && params.thePlane == null)
         voxelReader.setPlanarVectors();
-
+      if (jvxlData.jvxlDataIs2dContour)
+       voxelReader.colorIsosurface();
       if (params.colorBySign) {
         state = STATE_DATA_COLORED;
         voxelReader.applyColorScale();
@@ -326,19 +339,6 @@ public class SurfaceGenerator {
       voxelReader.jvxlUpdateInfo();
       voxelReader.discardTempData(false);
       params.mappedDataMin = Float.MAX_VALUE;
-      return;
-    }
-
-    if ("phase" == propertyName) {
-      String color = (String) value;
-      params.isCutoffAbsolute = true;
-      params.colorBySign = true;
-      params.colorByPhase = true;
-      params.colorPhase = VoxelReader.getColorPhaseIndex(color);
-      if (params.colorPhase <= 0) {
-        Logger.warn(" invalid color phase: " + color);
-        params.colorPhase = 1;
-      }
       return;
     }
 
@@ -355,16 +355,10 @@ public class SurfaceGenerator {
       if (params.thePlane != null) {
         voxelReader.createIsosurface(); //for the plane
         voxelReader.readVolumetricData(true); //for the data
-        voxelReader.colorIsosurface();
-      } else {
-        if (!params.colorBySets)
-          voxelReader.readData(true);
-        if (jvxlData.jvxlDataIsColorMapped) {
-          voxelReader.readColorData();
-        } else {
-          voxelReader.colorIsosurface();
-        }
+      } else if (!params.colorBySets) {
+        voxelReader.readData(true);
       }
+      voxelReader.colorIsosurface();
       voxelReader.jvxlUpdateInfo();
       voxelReader.discardTempData(true);
       return;

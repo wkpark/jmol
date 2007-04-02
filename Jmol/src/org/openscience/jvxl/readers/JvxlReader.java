@@ -149,7 +149,7 @@ class JvxlReader extends VolumeFileReader {
     int atomCount = Parser.parseInt(atomLine);
     if (atomCount == Integer.MIN_VALUE) {
       atomCount = 0;
-      atomLine = " " + atomLine;
+      atomLine = " " + atomLine.substring(atomLine.indexOf(" ") + 1);
     } else {
       String s = "" + atomCount;
       atomLine = atomLine.substring(atomLine.indexOf(s) + s.length());
@@ -180,8 +180,6 @@ class JvxlReader extends VolumeFileReader {
       jvxlAddDummyAtomList(v, bs);
   }
 
-  not reading contourf file
-  
   int readExtraLine() throws Exception {
     line = br.readLine();
     Logger.info("Reading extra JVXL information line: " + line);
@@ -318,11 +316,20 @@ class JvxlReader extends VolumeFileReader {
           params.valueMappedToBlue = 1f;
           params.rangeDefined = true;
         }
-      Logger.info("JVXL read: color red/blue: " + params.valueMappedToRed + " "
+      Logger.info("JVXL read: color red/blue: " + params.valueMappedToRed + "/"
           + params.valueMappedToBlue);
     }
+    jvxlSetMapRanges(jvxlData, params.valueMappedToRed, params.valueMappedToBlue,params.mappedDataMin,params.mappedDataMax);
   }
 
+  static void jvxlSetMapRanges(JvxlData jvxlData, float red, float blue,
+                               float min, float max) {
+    jvxlData.valueMappedToRed = red;
+    jvxlData.valueMappedToBlue = blue;
+    jvxlData.mappedDataMin = min;
+    jvxlData.mappedDataMax = max;
+  }
+  
   private String jvxlReadData(String type, int nPoints) {
     String str = "";
     try {
@@ -433,7 +440,7 @@ class JvxlReader extends VolumeFileReader {
         base, range, fracOffset);
   }
 
-  void readColorData() {
+  String readColorData() {
     // overloads VoxelReader
     // standard jvxl file read for color 
 
@@ -445,7 +452,7 @@ class JvxlReader extends VolumeFileReader {
     if (isJvxl && strFractionTemp.length() == 0) {
       Logger
           .error("You cannot use JVXL data to map onto OTHER data, because it only containts the data for one surface. Use ISOSURFACE \"file.jvxl\" not ISOSURFACE .... MAP \"file.jvxl\".");
-      return;
+      return "";
     }
     fractionPtr = 0;
     Logger.info("JVXL reading color data base/range: " + params.mappedDataMin
@@ -507,7 +514,7 @@ class JvxlReader extends VolumeFileReader {
       params.mappedDataMin = contourPlaneMinimumValue;
       params.mappedDataMax = contourPlaneMaximumValue;
     }
-    jvxlData.jvxlColorData = data + "\n";
+    return data + "\n";
   }
 
   void gotoData(int n, int nPoints) throws Exception {
@@ -596,13 +603,15 @@ class JvxlReader extends VolumeFileReader {
     //   when        > 0       &&    <  0 ==> jvxlDataisBicolorMap
 
     // * nInts saved as -1 - nInts
-    
+
     if (jvxlData.jvxlSurfaceData == null)
       return "";
     int nSurfaceInts = jvxlData.nSurfaceInts;//jvxlData.jvxlSurfaceData.length();
     int bytesUncompressedEdgeData = (jvxlData.jvxlEdgeData.length() - 1);
     int nColorData = (jvxlData.jvxlColorData.length() - 1);
-    String info = "# nSurfaceInts = " + nSurfaceInts + "; nBytesData = "
+    String info = "# nSurfaceInts = "
+        + nSurfaceInts
+        + "; nBytesData = "
         + (jvxlData.jvxlSurfaceData.length() + bytesUncompressedEdgeData + (jvxlData.jvxlColorData
             .length()));
     if (jvxlData.jvxlPlane == null) {
@@ -614,13 +623,16 @@ class JvxlReader extends VolumeFileReader {
         info += "; bicolor map";
       } else {
         definitionLine += nSurfaceInts + " " + bytesUncompressedEdgeData;
-        info += (jvxlData.isJvxlPrecisionColor && nColorData != -1 ? "; precision colored"
-            : nColorData > 0 ? "; colormapped" : "");
+        if (nColorData > 0)
+          info += "; colormapped";
       }
       definitionLine += " "
           + (jvxlData.isJvxlPrecisionColor && nColorData != -1 ? -nColorData
               : nColorData);
+      if (jvxlData.isJvxlPrecisionColor && nColorData != -1)
+        info += "; precision colored";
     } else {
+
       String s = " " + jvxlData.jvxlPlane.x + " " + jvxlData.jvxlPlane.y + " "
           + jvxlData.jvxlPlane.z + " " + jvxlData.jvxlPlane.w;
       definitionLine += "-1 -2 " + (-nColorData) + s;
@@ -636,7 +648,7 @@ class JvxlReader extends VolumeFileReader {
         + jvxlData.mappedDataMax + " " + jvxlData.valueMappedToRed + " "
         + jvxlData.valueMappedToBlue;
 
-    info += "\n# data mimimum = " + jvxlData.mappedDataMin
+    info += "\n# data minimum = " + jvxlData.mappedDataMin
         + "; data maximum = " + jvxlData.mappedDataMax + " "
         + "\n# value mapped to red = " + jvxlData.valueMappedToRed
         + "; value mapped to blue = " + jvxlData.valueMappedToBlue;

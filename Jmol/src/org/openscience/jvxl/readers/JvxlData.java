@@ -138,7 +138,8 @@ class JvxlData {
   int jvxlCompressionRatio;
   boolean isJvxlPrecisionColor;
   boolean jvxlDataIsColorMapped;
-
+  boolean jvxlDataIs2dContour;
+  
   boolean isXLowToHigh;
   boolean isContoured;
   boolean isBicolorMap;

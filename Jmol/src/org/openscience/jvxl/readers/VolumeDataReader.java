@@ -32,7 +32,7 @@ class VolumeDataReader extends VoxelReader {
   }
 
   // UNTESTED -- reads a pre-calculated volume data set -- UNTESTED
-  
+
   void readVoxelData(boolean isMapData) throws Exception {
     /* 
      * This routine is used twice in the case of color mapping. 
@@ -60,8 +60,9 @@ class VolumeDataReader extends VoxelReader {
 
     StringBuffer sb = new StringBuffer();
     boolean inside = false;
-    int dataCount = 0;    
+    int dataCount = 0;
     nDataPoints = 0;
+    int nSurfaceInts = 0;
     float cutoff = params.cutoff;
     boolean isCutoffAbsolute = params.isCutoffAbsolute;
     for (int x = 0; x < nPointsX; ++x)
@@ -71,15 +72,17 @@ class VolumeDataReader extends VoxelReader {
           if (inside == isInside(voxelData[x][y][z], cutoff, isCutoffAbsolute)) {
             dataCount++;
           } else {
-            if (dataCount != 0)
+            if (dataCount != 0) {
               sb.append(' ').append(dataCount);
+              ++nSurfaceInts;
+            }
             dataCount = 1;
             inside = !inside;
           }
         }
     sb.append(' ').append(dataCount).append('\n');
-    jvxlData.jvxlSurfaceData = sb.toString();
-    jvxlData.jvxlPlane = params.thePlane;
+    ++nSurfaceInts;
+    JvxlReader.setSurfaceInfo(jvxlData, params.thePlane, nSurfaceInts, sb);
     volumeData.setVoxelData(voxelData);
   }  
 }

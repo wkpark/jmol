@@ -412,11 +412,15 @@ public class SurfaceGenerator {
       return null;
     String fileType = VolumeFileReader.determineFileType(br);
     Logger.info("data file type was determined to be " + fileType);
+    if (fileType.equals("Jvxl+"))
+      return new JvxlReader(this, br);
     if (fileType.equals("Jvxl"))
       return new JvxlReader(this, br);
     if (fileType.equals("Apbs"))
       return new ApbsReader(this, br);
-    return new CubeReader(this, br);
+    if (fileType.equals("Cube"))
+      return new CubeReader(this, br);
+    return null;
   }
   
   void initializeIsosurface() {

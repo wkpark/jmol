@@ -139,6 +139,7 @@ class JvxlData {
   boolean isJvxlPrecisionColor;
   boolean jvxlDataIsColorMapped;
 
+  boolean isXLowToHigh;
   boolean isContoured;
   boolean isBicolorMap;
   float mappedDataMin;
@@ -149,6 +150,7 @@ class JvxlData {
   int nBytes;
   int nContours;
   int nEdges;
+  int nSurfaceInts;
 
   String[] title;
   

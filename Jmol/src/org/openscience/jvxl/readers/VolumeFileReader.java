@@ -47,24 +47,37 @@ class VolumeFileReader extends VoxelReader {
   static String determineFileType(BufferedReader bufferedReader) {
     // JVXL should be on the FIRST line of the file, but it may be 
     // after comments or missing. 
-    LimitedLineReader br = new LimitedLineReader(bufferedReader, 16000);
-    String line = br.readNonCommentLine();
+    LimitedLineReader br = new LimitedLineReader(bufferedReader, 10);
+    String line;
+    if ((line = br.info()).indexOf("#JVXL+") == 0)
+      return "Jvxl+";
+    if (line.indexOf("#JVXL") == 0)
+      return "Jvxl";
+    //must investigate further
+    br = new LimitedLineReader(bufferedReader, 16000);
+    line = br.readNonCommentLine();
     if (line.indexOf("object 1 class gridpositions counts") == 0)
       return "Apbs";
-    if (br.info().indexOf("JVXL") >= 0)
+    if (br.info().indexOf("Jmol voxel format") >= 0) // early files (pre 4/2007) only had this)
       return "Jvxl";
     line = br.readNonCommentLine(); // second line
     line = br.readNonCommentLine(); // third line
     if (br.iLine() > 3)
-      return "Jvxl"; //Can't be a cube file
+      return "Jvxl"; //Can't be a cube file -- has more than two lines of comments
+    //next line should be the atom line
     int nAtoms = Parser.parseInt(line);
+    if (nAtoms == Integer.MIN_VALUE)
+      return "UNKNOWN";
     if (nAtoms >= 0)
       return "Cube"; //Can't be a Jvxl file
     nAtoms = -nAtoms;
     for (int i = 4 + nAtoms; --i >=0;)
-      line = br.readNonCommentLine();
+      if ((line = br.readNonCommentLine()) == null)
+        return "UNKNOWN";
     int nSurfaces = Parser.parseInt(line);
-    return (nSurfaces < 0 ?  "Jvxl" : "Cube"); //Final test
+    if (nSurfaces == Integer.MIN_VALUE)
+      return "UNKNOWN";
+    return (nSurfaces < 0 ?  "Jvxl" : "Cube"); //Final test looks at surface definition line
   }
   
   void discardTempData(boolean discardAll) {
@@ -77,6 +90,7 @@ class VolumeFileReader extends VoxelReader {
   }
       
   void readData(boolean isMapData) {
+    //augmented in JvxlReader
     super.readData(isMapData);
     endOfData = false;
     nSurfaces = readVolumetricHeader();
@@ -133,13 +147,15 @@ class VolumeFileReader extends VoxelReader {
   void readAtomCountAndOrigin() throws Exception {
     skipComments(true);
     String atomLine = line;
-    atomCount = parseInt(line);
+    String[] tokens = Parser.getTokens(atomLine, 0);
+    atomCount = parseInt(tokens[0]);
     if (atomCount == Integer.MIN_VALUE) //unreadable
       atomCount = 0;
     negativeAtomCount = (atomCount < 0);
     if (negativeAtomCount)
       atomCount = -atomCount;
-    volumetricOrigin.set(parseFloat(), parseFloat(), parseFloat());
+    if (tokens.length >= 4)
+      volumetricOrigin.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
     isAngstroms = JvxlReader.jvxlCheckAtomLine(isAngstroms, atomLine, jvxlFileHeaderBuffer);
     if (!isAngstroms)
       volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
@@ -233,6 +249,7 @@ class VolumeFileReader extends VoxelReader {
     nDataPoints = 0;
     line = "";
     StringBuffer sb = new StringBuffer();
+    jvxlNSurfaceInts = 0;
     boolean collectData = (!isJvxl && params.thePlane == null);
     if (isMapData || isJvxl && params.thePlane == null) {
       for (int x = 0; x < nPointsX; ++x) {
@@ -264,8 +281,10 @@ class VolumeFileReader extends VoxelReader {
             if (inside == isInside(voxelValue, cutoff, isCutoffAbsolute)) {
               dataCount++;
             } else {
-              if (collectData && dataCount != 0)
+              if (collectData && dataCount != 0) {
                 sb.append(' ').append(dataCount);
+                ++jvxlNSurfaceInts;
+              }
               dataCount = 1;
               inside = !inside;
             }
@@ -274,12 +293,12 @@ class VolumeFileReader extends VoxelReader {
       }
     }
     //Jvxl getNextVoxelValue records the data read on its own.
-    if (collectData)
+    if (collectData) {
       sb.append(' ').append(dataCount).append('\n');
-    if (!isMapData) {
-      jvxlData.jvxlSurfaceData = sb.toString();
-      jvxlData.jvxlPlane = params.thePlane;
+      ++jvxlNSurfaceInts;
     }
+    if (!isMapData)
+      JvxlReader.setSurfaceInfo(jvxlData, params.thePlane, jvxlNSurfaceInts, sb);
     volumeData.setVoxelData(voxelData);
   }
 

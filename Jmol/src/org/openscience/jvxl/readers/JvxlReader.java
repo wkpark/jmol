@@ -31,6 +31,8 @@ import org.openscience.jvxl.util.*;
 
 class JvxlReader extends VolumeFileReader {
 
+  boolean isProgressive;
+  
   JvxlReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     isJvxl = true;
@@ -46,6 +48,10 @@ class JvxlReader extends VolumeFileReader {
   //// methods used for reading any file format, but creating a JVXL file
 
   /////////////reading the format///////////
+
+  private int surfaceDataCount;
+  private int edgeDataCount;
+  private int colorDataCount;
 
   void readData(boolean isMapData) {
     super.readData(isMapData);
@@ -70,27 +76,36 @@ class JvxlReader extends VolumeFileReader {
     initializeVolumetricData();
     try {
       readVoxelData(isMapData);
-      if (jvxlEdgeDataCount > 0)
-        jvxlEdgeDataRead = jvxlReadData("edge", jvxlEdgeDataCount);
-      if (jvxlColorDataCount > 0)
-        jvxlColorDataRead = jvxlReadData("color", jvxlColorDataCount);
+      if (edgeDataCount > 0)
+        jvxlEdgeDataRead = jvxlReadData("edge", edgeDataCount);
+      if (colorDataCount > 0)
+        jvxlColorDataRead = jvxlReadData("color", colorDataCount);
     } catch (Exception e) {
       Logger.error(e.toString());
       throw new NullPointerException();
     }
   }
-
-  void readVoxelData(boolean isMapData) throws Exception {
-
-    //calls VolumeFileReader.readVoxelData
-
-    super.readVoxelData(isMapData);
+  
+  int nThisValue;
+  boolean thisInside;
+  
+  void initializeVoxelData() {
+    thisInside = !params.isContoured;
+    if (params.insideOut)
+      thisInside = !thisInside;
+    nThisValue = 0;
+  }
+  
+  void readVoxelData(boolean isMapDataIgnored) throws Exception {
+    initializeVoxelData();
+    //calls VolumeFileReader.readVoxelData; no mapping allowed
+    super.readVoxelData(false);
   }
 
   // #comments (optional)
   // info line1
   // info line2
-  // -na originx originy originz   [ANGSTROMS/BOHR] optional
+  // -na originx originy originz   [ANGSTROMS/BOHR] optional; BOHR assumed
   // n1 x y z
   // n2 x y z
   // n3 x y z
@@ -116,10 +131,19 @@ class JvxlReader extends VolumeFileReader {
         line = "Line " + nLines;
       jvxlFileHeaderBuffer.append(line).append('\n');
       if (nLines++ == 1)
-        br.readLine();
+        line = br.readLine();
     }
   }
 
+  /**
+   * checks an atom line for "ANGSTROMS", possibly overriding the data's 
+   * natural units, BOHR (similar to Gaussian CUBE files).
+   * 
+   * @param isAngstroms
+   * @param atomLine
+   * @param bs
+   * @return  isAngstroms
+   */
   static boolean jvxlCheckAtomLine(boolean isAngstroms, String atomLine,
                                    StringBuffer bs) {
     int atomCount = Parser.parseInt(atomLine);
@@ -152,9 +176,12 @@ class JvxlReader extends VolumeFileReader {
     //mostly ignored
     for (int i = 0; i < atomCount; ++i)
       bs.append(br.readLine() + "\n");
-    jvxlAddDummyAtomList(v, bs);
+    if (atomCount == 0)
+      jvxlAddDummyAtomList(v, bs);
   }
 
+  not reading contourf file
+  
   int readExtraLine() throws Exception {
     line = br.readLine();
     Logger.info("Reading extra JVXL information line: " + line);
@@ -187,16 +214,19 @@ class JvxlReader extends VolumeFileReader {
     jvxlCutoff = parseFloat(line);
     Logger.info("JVXL read: cutoff " + jvxlCutoff);
 
-    // cutoff        param1              param2         param3
+    //  cutoff       nInts     (+/-)bytesEdgeData (+/-)bytesColorData
+    //               param1              param2         param3    
     //                 |                   |              |
-    //   when          |                   |        >  0 ==> 1-byte jvxlDataIsColorMapped
+    //   when          |                   |        >  0 ==> jvxlDataIsColorMapped
     //   when          |                   |       == -1 ==> not color mapped
-    //   when          |                   |        < -1 ==> 2-byte jvxlDataIsPrecisionColor    
+    //   when          |                   |        < -1 ==> jvxlDataIsPrecisionColor    
     //   when        == -1     &&   == -1 ==> noncontoured plane
     //   when        == -1     &&   == -2 ==> contourable plane
-    //   when        < -1      &&    >  0 ==> contourable functionXY
+    //   when        < -1*     &&    >  0 ==> contourable functionXY
     //   when        > 0       &&    <  0 ==> jvxlDataisBicolorMap
 
+    // * nInts saved as -1 - nInts
+    
     // early on I wasn't contouring planes, so it's possible that a plane would
     // not be contoured (-1 -1), but that is NOT a possibility anymore with Jmol.
     // instead, we just set "contour 1" to indicate just one contour to demo that.
@@ -225,9 +255,9 @@ class JvxlReader extends VolumeFileReader {
       params.thePlane = null;
     }
     if (param1 < 0 && param2 != -1) {
-      params.isContoured = (param3 != 0);
       // contours are defined (possibly overridden -- this is just a display option
       // could be plane or functionXY
+      params.isContoured = (param3 != 0);
       int nContoursRead = parseInt();
       if (nContours == 0 && nContoursRead != Integer.MIN_VALUE
           && nContoursRead != 0 && nContoursRead <= nContourMax) {
@@ -245,12 +275,15 @@ class JvxlReader extends VolumeFileReader {
 
     if (params.isBicolorMap || params.colorBySign)
       jvxlCutoff = 0;
-    jvxlSurfaceDataCount = (param1 < -1 ? -param1 : param1 > 0 ? param1 : 0);
+    surfaceDataCount = (param1 < -1 ? -1 - param1 : param1 > 0 ? param1 : 0);
+    //prior to JVXL 1.1 (4/2007), this number counts the bytes of integer data.
+    //after that, the number of integers, for the progressive reader
+    
     if (param1 == -1)
-      jvxlEdgeDataCount = 0; //plane
+      edgeDataCount = 0; //plane
     else
-      jvxlEdgeDataCount = (param2 < -1 ? -param2 : param2 > 0 ? param2 : 0);
-    jvxlColorDataCount = (params.isBicolorMap ? -param2 : param3 < -1 ? -param3
+      edgeDataCount = (param2 < -1 ? -param2 : param2 > 0 ? param2 : 0);
+    colorDataCount = (params.isBicolorMap ? -param2 : param3 < -1 ? -param3
         : param3 > 0 ? param3 : 0);
     if (params.colorBySign)
       params.isBicolorMap = true;
@@ -341,7 +374,7 @@ class JvxlReader extends VolumeFileReader {
 
     //called by VolumeFileReader.readVoxelData
 
-    if (jvxlSurfaceDataCount <= 0)
+    if (surfaceDataCount <= 0)
       return 0f; //unnecessary -- probably a plane
     if (nThisValue == 0) {
       nThisValue = parseInt();
@@ -358,15 +391,22 @@ class JvxlReader extends VolumeFileReader {
         }
       }
       thisInside = !thisInside;
+      ++jvxlNSurfaceInts;
     }
     --nThisValue;
     return (thisInside ? 1f : 0f);
   }
 
+  static void setSurfaceInfo(JvxlData jvxlData, Point4f thePlane, int nSurfaceInts, StringBuffer surfaceData) {
+    jvxlData.jvxlSurfaceData = surfaceData.toString();
+    jvxlData.jvxlPlane = thePlane;
+    jvxlData.nSurfaceInts = nSurfaceInts;
+  }
+  
   float readSurfacePoint(float cutoff, boolean isCutoffAbsolute, float valueA,
                          float valueB, Point3f surfacePoint) {
     float fraction;
-    if (jvxlEdgeDataCount <= 0)
+    if (edgeDataCount <= 0)
       return super.readSurfacePoint(cutoff, isCutoffAbsolute, valueA, valueB,
           surfacePoint);
     fraction = jvxlGetNextFraction(edgeFractionBase, edgeFractionRange, 0.5f);
@@ -436,6 +476,8 @@ class JvxlReader extends VolumeFileReader {
         // necessary for planes.
         // precision is used for FULL-data range encoding, allowing full
         // treatment of JVXL files as though they were CUBE files.
+        // the two parts of the "double-character-precision" value
+        // are in separate lines, separated by n characters.
         fraction = jvxlFractionFromCharacter2(data.charAt(cpt), data.charAt(cpt
             + n), colorFractionBase, colorFractionRange);
         value = min + fraction * range;
@@ -476,8 +518,8 @@ class JvxlReader extends VolumeFileReader {
       Logger.info("skipping " + n + " data sets, " + nPoints + " points each");
     for (int i = 0; i < n; i++) {
       jvxlReadDefinitionLine(true);
-      Logger.info("JVXL skipping: jvxlSurfaceDataCount=" + jvxlSurfaceDataCount
-          + " jvxlEdgeDataCount=" + jvxlEdgeDataCount
+      Logger.info("JVXL skipping: jvxlSurfaceDataCount=" + surfaceDataCount
+          + " jvxlEdgeDataCount=" + edgeDataCount
           + " jvxlDataIsColorMapped=" + jvxlDataIsColorMapped);
       jvxlSkipData(nPoints, true);
     }
@@ -486,12 +528,14 @@ class JvxlReader extends VolumeFileReader {
 
   private void jvxlSkipData(int nPoints, boolean doSkipColorData)
       throws Exception {
-    if (jvxlSurfaceDataCount > 0)
+    // surfaceDataCount is quantitatively unreliable in pre-4/2007 versions (Jvxl 1.0)
+    // so we just add them all up -- they must sum to nX * nY * nZ points 
+    if (surfaceDataCount > 0) // unreliable in pre-4/2007 versions (Jvxl 1.0)
       jvxlSkipDataBlock(nPoints, true);
-    if (jvxlEdgeDataCount > 0)
-      jvxlSkipDataBlock(jvxlEdgeDataCount, false);
+    if (edgeDataCount > 0)
+      jvxlSkipDataBlock(edgeDataCount, false);
     if (jvxlDataIsColorMapped && doSkipColorData)
-      jvxlSkipDataBlock(jvxlColorDataCount, false);
+      jvxlSkipDataBlock(colorDataCount, false);
   }
 
   private void jvxlSkipDataBlock(int nPoints, boolean isInt) throws Exception {
@@ -517,7 +561,6 @@ class JvxlReader extends VolumeFileReader {
   static void jvxlCreateHeader(String line1, String line2, VolumeData v,
                                StringBuffer bs) {
     //unchecked
-    line1 = jvxlMarkHeaderJVXL(line1);
     bs.append(line1).append('\n');
     bs.append(line2).append('\n');
     bs.append("-2 " + v.volumetricOrigin.x + " " + v.volumetricOrigin.y + " "
@@ -526,11 +569,6 @@ class JvxlReader extends VolumeFileReader {
       bs.append(v.voxelCounts[i] + " " + v.volumetricVectors[i].x + " "
           + v.volumetricVectors[i].y + " " + v.volumetricVectors[i].z + '\n');
     jvxlAddDummyAtomList(v, bs);
-  }
-  
-  static String jvxlMarkHeaderJVXL(String data) {
-    return (data.indexOf("JVXL") == 0 || data.indexOf("#JVXL") == 0 ? data
-        : (data.indexOf("#") == 0 ? "#" : "") + "JVXL " + data);
   }
   
   static void jvxlAddDummyAtomList(VolumeData v, StringBuffer bs) {
@@ -546,32 +584,36 @@ class JvxlReader extends VolumeFileReader {
   static String jvxlGetDefinitionLine(JvxlData jvxlData, boolean isInfo) {
     String definitionLine = jvxlData.cutoff + " ";
 
-    // cutoff        param1              param2         param3
+    //  cutoff       nInts     (+/-)bytesEdgeData (+/-)bytesColorData
+    //               param1              param2         param3    
     //                 |                   |              |
     //   when          |                   |        >  0 ==> jvxlDataIsColorMapped
     //   when          |                   |       == -1 ==> not color mapped
     //   when          |                   |        < -1 ==> jvxlDataIsPrecisionColor    
     //   when        == -1     &&   == -1 ==> noncontoured plane
     //   when        == -1     &&   == -2 ==> contourable plane
-    //   when        < -1      &&    >  0 ==> contourable functionXY
+    //   when        < -1*     &&    >  0 ==> contourable functionXY
     //   when        > 0       &&    <  0 ==> jvxlDataisBicolorMap
 
+    // * nInts saved as -1 - nInts
+    
     if (jvxlData.jvxlSurfaceData == null)
       return "";
-    int nSurfaceData = jvxlData.jvxlSurfaceData.length();
-    int nEdgeData = (jvxlData.jvxlEdgeData.length() - 1);
+    int nSurfaceInts = jvxlData.nSurfaceInts;//jvxlData.jvxlSurfaceData.length();
+    int bytesUncompressedEdgeData = (jvxlData.jvxlEdgeData.length() - 1);
     int nColorData = (jvxlData.jvxlColorData.length() - 1);
-    String info = "# nSurfaceData = " + nSurfaceData + "; nEdgeData = "
-        + nEdgeData;
+    String info = "# nSurfaceInts = " + nSurfaceInts + "; nBytesData = "
+        + (jvxlData.jvxlSurfaceData.length() + bytesUncompressedEdgeData + (jvxlData.jvxlColorData
+            .length()));
     if (jvxlData.jvxlPlane == null) {
       if (jvxlData.isContoured) {
-        definitionLine += (-nSurfaceData) + " " + nEdgeData;
+        definitionLine += (-1 - nSurfaceInts) + " " + bytesUncompressedEdgeData;
         info += "; contoured";
       } else if (jvxlData.isBicolorMap) {
-        definitionLine += (nSurfaceData) + " " + (-nEdgeData);
+        definitionLine += (nSurfaceInts) + " " + (-bytesUncompressedEdgeData);
         info += "; bicolor map";
       } else {
-        definitionLine += nSurfaceData + " " + nEdgeData;
+        definitionLine += nSurfaceInts + " " + bytesUncompressedEdgeData;
         info += (jvxlData.isJvxlPrecisionColor && nColorData != -1 ? "; precision colored"
             : nColorData > 0 ? "; colormapped" : "");
       }
@@ -608,7 +650,7 @@ class JvxlReader extends VolumeFileReader {
   static String jvxlExtraLine(JvxlData jvxlData, int n) {
     return (-n) + " " + jvxlData.edgeFractionBase + " "
         + jvxlData.edgeFractionRange + " " + jvxlData.colorFractionBase + " "
-        + jvxlData.colorFractionRange + " JVXL Jmol voxel format version 1.0\n";
+        + jvxlData.colorFractionRange + " Jmol voxel format version 1.1\n";
     //0.9e adds color contours for planes and min/max range, contour settings
   }
 
@@ -619,7 +661,8 @@ class JvxlReader extends VolumeFileReader {
       data = jvxlData.jvxlFileHeader
           + (nSurfaces > 0 ? (-nSurfaces) + jvxlData.jvxlExtraLine.substring(2)
               : jvxlData.jvxlExtraLine);
-      data = jvxlMarkHeaderJVXL(data);
+      if (data.indexOf("#JVXL") != 0)
+        data = "#JVXL" + (jvxlData.isXLowToHigh ? "+\n" : "\n") + data;
     }
     data += "# " + msg + "\n";
     if (title != null)

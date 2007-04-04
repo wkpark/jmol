@@ -4501,7 +4501,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     return n * factorial(n - 1);
   }
 
-  float[] fact = new float[20];
+  static float[] fact = new float[20];
 
   float getDefaultResolution() {
     return Float.MAX_VALUE;

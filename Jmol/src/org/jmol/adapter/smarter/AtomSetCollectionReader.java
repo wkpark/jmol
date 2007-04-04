@@ -31,6 +31,9 @@ import org.jmol.util.Parser;
 import org.jmol.viewer.JmolConstants;
 
 import java.io.BufferedReader;
+import java.util.Vector;
+import java.util.Hashtable;
+
 
 /*
  * Notes 9/2006 Bob Hanson
@@ -99,6 +102,12 @@ abstract class AtomSetCollectionReader {
   
   String[] getTokens() {
     return Parser.getTokens(line);  
+  }
+  
+  static float[] getTokensFloat(String s, int n) {
+    float[] f = new float[n];
+    Parser.parseFloatArray(getTokens(s), f);
+    return f;   
   }
   
   static String[] getTokens(String s) {
@@ -414,6 +423,28 @@ abstract class AtomSetCollectionReader {
   static String getElementSymbol(int elementNumber) {
     return JmolConstants.elementSymbolFromNumber(elementNumber);
   }
+  
+  static void addSlaterInfoData(Vector intinfo, Vector floatinfo,
+                            int ndata, Hashtable moData) {
+    int[][] iarray = new int[ndata][];
+    for (int i = 0; i < ndata; i++)
+      iarray[i] = (int[]) intinfo.get(i);
+    float[][] farray = new float[ndata][];
+    for (int i = 0; i < ndata; i++)
+      farray[i] = (float[]) floatinfo.get(i);
+    moData.put("slaterInfo", iarray);
+    moData.put("slaterData", farray);
+/*
+    System.out.println("\n#: ATOM a b c d \tzeta    \tcoef");
+    for (int i = 0; i < ndata; i++) {
+      System.out.print(i + ":   ");
+      for (int j = 0; j < 5; j++)
+        System.out.print(" " + iarray[i][j]);
+      System.out.println("  \t" + farray[i][0] + "  \t" + farray[i][1]);
+    }
+*/      
+  }
+
 
   void fillDataBlock(String[][] data) throws Exception {
     int nLines = data.length;

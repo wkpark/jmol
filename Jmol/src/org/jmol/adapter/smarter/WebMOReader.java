@@ -265,20 +265,13 @@ class WebMOReader extends AtomSetCollectionReader {
       idata[0] = parseInt(tokens[0]) - 1;
       for (int i = 1; i < 5; i++)
         idata[i] = parseInt(tokens[i]);
-      fdata[0] = parseFloat(tokens[5]);
-      fdata[1] = parseFloat(tokens[6]);
+      fdata[0] = parseFloat(tokens[5]); //zeta
+      fdata[1] = parseFloat(tokens[6]); //coef
       intinfo.add(idata);
       floatinfo.add(fdata);
       ndata++;
     }
-    int[][] iarray = new int[ndata][];
-    for (int i = 0; i < ndata; i++)
-      iarray[i]=(int[])intinfo.get(i);
-    moData.put("slaterInfo", iarray);
-    float[][] farray = new float[ndata][];
-    for (int i = 0; i < ndata; i++)
-      farray[i]=(float[])floatinfo.get(i);
-    moData.put("slaterData", farray);
+    addSlaterInfoData(intinfo, floatinfo, ndata, moData);
   }
 
   void readMolecularOrbital() throws Exception {

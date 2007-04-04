@@ -151,6 +151,7 @@ public class QuantumCalculation {
     setupCoordinates(originXYZ, stepsXYZ);
     atomIndex = -1;
     moCoeff = 0;
+    doDebug = (Logger.isActiveLevel(Logger.LEVEL_DEBUG));
     // each STO shell is the combination of one or more gaussians
     int nSlaters = slaterInfo.length;
     for (int i = 0; i < nSlaters; i++) {
@@ -172,7 +173,7 @@ public class QuantumCalculation {
     moCoeff = 0;
     for (int i = 0; i < nShells; i++) {
       processShell(i);
-      if (doDebug && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+      if (doDebug)
         Logger.debug("createGaussianCube shell=" + i + " moCoeff=" + moCoeff
             + "/" + moCoefficients.length);
     }
@@ -232,7 +233,7 @@ public class QuantumCalculation {
       this.atomCoordBohr[i].scale(bohr_per_angstrom);
     }
 
-    if (doDebug && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (doDebug)
       Logger.debug("QuantumCalculation:\n origin(Bohr)= " + originBohr[0] + " "
           + originBohr[1] + " " + originBohr[2] + "\n steps(Bohr)= "
           + stepBohr[0] + " " + stepBohr[1] + " " + stepBohr[2] + "\n counts= "
@@ -246,7 +247,7 @@ public class QuantumCalculation {
     int nGaussians = ((Integer) shell.get("nGaussians")).intValue();
     atomIndex = ((Integer) shell.get("atomIndex")).intValue();
     String basisType = (String) shell.get("basisType");
-    if (doDebug && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+    if (doDebug)
       Logger.debug("processShell: " + iShell + " " + basisType + " nGaussians="
           + nGaussians + " atom=" + atomIndex);
     if (atomIndex != lastAtom && atomCoordBohr[atomIndex] != null) {
@@ -498,17 +499,6 @@ public class QuantumCalculation {
     int d = slaterInfo[slaterIndex][4];
     float minuszeta = -slaterData[slaterIndex][0];
     float coef = slaterData[slaterIndex][1] * moCoefficients[moCoeff++];
-    if (doDebug) {
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-        for (int i = moCoeff; i < moCoeff + 1; i++)
-          Logger.debug(
-              "Slater " + slaterIndex + " " + a + " " + b + " " + c + " " + d +
-              " zeta=" + (-minuszeta) +
-              " c=" + slaterData[slaterIndex][1] +
-              " MO coeff " + i + " " + moCoefficients[i]);
-      }
-      return;
-    }
     setMinMax(a, b, c, d, minuszeta, coef);
     for (int i = xMax; --i >= xMin;)
       X[i] = xyzBohr[i][0] - atomCoordBohr[atomIndex].x;
@@ -575,3 +565,4 @@ public class QuantumCalculation {
     return;
   }
 }
+

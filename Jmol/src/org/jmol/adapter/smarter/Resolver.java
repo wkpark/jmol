@@ -108,8 +108,8 @@ class Resolver {
       return "V3000";
     if (checkMol(lines))
       return "Mol";
-    if (checkXyz(lines))
-      return "Xyz";
+    if (checkMopacGraphf(lines))
+      return "MopacGraphf";
     if (checkFoldingXyz(lines))
       return "FoldingXyz";
     if (checkCube(lines))
@@ -229,7 +229,7 @@ class Resolver {
     return true;
   }
 
-
+ /**
   static boolean checkFoldingXyzxx(String[] lines) {
     try {
       StringTokenizer tokens = new StringTokenizer(lines[0].trim(), " \t");
@@ -246,6 +246,15 @@ class Resolver {
     } catch (NumberFormatException nfe) {
     }
     return false;
+  }
+ */
+  
+  /**
+   * @param lines First lines of the files.
+   * @return Indicates if the file is a Mopac GRAPHF output file.
+   */
+  static boolean checkMopacGraphf(String[] lines) {
+    return (lines[0].indexOf("MOPAC-Graphical data") == 6);
   }
 
   static boolean checkCube(String[] lines) {

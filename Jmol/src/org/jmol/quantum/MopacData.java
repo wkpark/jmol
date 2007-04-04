@@ -105,7 +105,6 @@ public class MopacData {
 
   public final static float getMopacConstS(int atomicNumber, float zeta) {
     int n = getNPQs(atomicNumber);
-    float[] f = fact;
     return (float) (Math.pow(2 * zeta, n + 0.5) 
         * Math.sqrt(1 / fourPi / fact[2 * n]));
   }

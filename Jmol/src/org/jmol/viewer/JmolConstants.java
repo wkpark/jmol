@@ -41,7 +41,13 @@ final public class JmolConstants {
    * 
    * 
    *
-   11.1.28 fixes bugs found by FindBugs:
+   11.1.28 
+   
+   adds MOPAC 2007 graphf output reader (MOPAC molecular orbitals)
+   based on the VERY latest version (not released yet), which includes
+   "MOPAC-Graphical data" on the first line, character index 6.
+   
+   fixes bugs found by FindBugs:
    
    labels:  default z setting for labels (set labelFront, set labelGroup, set labelAtom) 
             was not being recorded properly

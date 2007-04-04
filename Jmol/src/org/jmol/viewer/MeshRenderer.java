@@ -203,7 +203,7 @@ abstract class MeshRenderer extends ShapeRenderer {
                 colixB, normixes[iB], screens[iC], colixC, normixes[iC]);
           } catch (Exception e) {
             //TODO  I can't track this one down -- happened once, not second time, with script running to create isosurface plane for slabbing
-            System.out.println("MeshRenderer bug?" + e);
+            System.out.println("MeshRenderer bug?" + e.getMessage() + "\n"+e.getStackTrace());
           }
           }
         } else if (vertexColixes == null) {

@@ -1144,7 +1144,7 @@ public final class Frame {
     boolean atom1InSetB = bsB == null || bsB.get(atom1.atomIndex);
     boolean atom2InSetA = bsA == null || bsA.get(atom2.atomIndex);
     boolean atom2InSetB = bsB == null || bsB.get(atom2.atomIndex);
-    if (atom1InSetA & atom2InSetB || atom1InSetB & atom2InSetA)
+    if (atom1InSetA && atom2InSetB || atom1InSetB && atom2InSetA)
       getOrAddBond(atom1, atom2, order, (short) 1, bsPseudoHBonds);
   }
 
@@ -1383,8 +1383,8 @@ public final class Frame {
         }
         boolean isSelected1 = bsSelected.get(bond.atom1.atomIndex);
         boolean isSelected2 = bsSelected.get(bond.atom2.atomIndex);
-        if ((!bondSelectionModeOr & isSelected1 & isSelected2)
-            || (bondSelectionModeOr & (isSelected1 | isSelected2)))
+        if ((!bondSelectionModeOr && isSelected1 && isSelected2)
+            || (bondSelectionModeOr && (isSelected1 || isSelected2)))
           return true;
       }
       return false;
@@ -1585,7 +1585,7 @@ public final class Frame {
     for (int i = atomCount; --i >= 0;) {
       boolean isAtomInSetA = (bsA == null || bsA.get(i));
       boolean isAtomInSetB = (bsB == null || bsB.get(i));
-      if (!isAtomInSetA & !isAtomInSetB)
+      if (!isAtomInSetA && !isAtomInSetB)
         continue;
       Atom atom = atoms[i];
       // Covalent bonds
@@ -1602,9 +1602,9 @@ public final class Frame {
         int atomIndexNear = atomNear.atomIndex;
         boolean isNearInSetA = (bsA == null || bsA.get(atomIndexNear));
         boolean isNearInSetB = (bsB == null || bsB.get(atomIndexNear));
-        if (!isNearInSetA & !isNearInSetB)
+        if (!isNearInSetA && !isNearInSetB)
           continue;
-        if (!(isAtomInSetA & isNearInSetB || isAtomInSetB & isNearInSetA))
+        if (!(isAtomInSetA && isNearInSetB || isAtomInSetB && isNearInSetA))
           continue;
         short order = getBondOrder(atom, myBondingRadius, atomNear, atomNear
             .getBondingRadiusFloat(), iter.foundDistance2(), minBondDistance2,

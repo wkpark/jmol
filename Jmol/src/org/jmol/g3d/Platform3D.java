@@ -61,7 +61,7 @@ abstract class Platform3D {
     boolean useSwing = jvm12orGreater && !forcePlatformAWT;
     Platform3D platform =(useSwing
                           ? allocateSwing3D() : new Awt3D(awtComponent));
-    platform.initialize(desireClearingThread & useSwing);
+    platform.initialize(desireClearingThread && useSwing);
     return platform;
   }
 

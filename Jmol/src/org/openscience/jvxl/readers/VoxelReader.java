@@ -1794,23 +1794,24 @@ class VoxelReader {
     for (int i = 0; i < vertexCount; i += incr) {
       float value = getVertexColorValue(i);
       if (i < lastVertex) {
-        char ch; 
+        char ch;
         if (writePrecisionColor) {
-          ch = JvxlReader.jvxlValueAsCharacter2(value, min, max, colorFractionBase,
-              colorFractionRange, remainder);
+          ch = JvxlReader.jvxlValueAsCharacter2(value, min, max,
+              colorFractionBase, colorFractionRange, remainder);
           if (saveColorData)
             list1.append(remainder[0]);
         } else {
           //isColorReversed
-          ch = JvxlReader.jvxlValueAsCharacter(value, params.valueMappedToRed, params.valueMappedToBlue,
-              colorFractionBase, colorFractionRange);
+          ch = JvxlReader.jvxlValueAsCharacter(value, params.valueMappedToRed,
+              params.valueMappedToBlue, colorFractionBase, colorFractionRange);
         }
         if (saveColorData)
           list.append(ch);
       }
     }
     jvxlData.isJvxlPrecisionColor = writePrecisionColor;
-    jvxlData.jvxlColorData = (saveColorData ? list.append(list1).append('\n').toString() : "");
+    jvxlData.jvxlColorData = (saveColorData ? list.append(list1).append('\n')
+        .toString() : "");
   }
 
   private void setMapRanges() {

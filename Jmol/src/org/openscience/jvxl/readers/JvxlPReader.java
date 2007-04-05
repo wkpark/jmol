@@ -29,7 +29,7 @@ class JvxlPReader extends JvxlReader {
 
   //progressive reader
 
-  private int[] voxelDataStream;
+  //private int[] voxelDataStream;
   
   JvxlPReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);

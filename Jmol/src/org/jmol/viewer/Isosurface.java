@@ -537,6 +537,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       isCutoffAbsolute = true;
       colorBySign = true;
       colorByPhase = true;
+      isBicolorMap = true;
       colorPhase = -1;
       for (int i = colorPhases.length; --i >= 0;)
         if (color.equalsIgnoreCase(colorPhases[i])) {
@@ -552,8 +553,10 @@ class Isosurface extends IsosurfaceMeshCollection {
       if (state == STATE_DATA_READ) {
         dataType = surfaceType;
         state = STATE_DATA_COLORED;
-        if (thisMesh != null)
+        if (thisMesh != null) {
+          thisMesh.isBicolorMap = true;
           applyColorScale(thisMesh);
+        }
       }
       return;
     }
@@ -582,6 +585,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     if ("sphere" == propertyName) {
       sphere_radiusAngstroms = ((Float) value).floatValue();
       dataType = SURFACE_SPHERE;
+      isCutoffAbsolute = false;
       isSilent = !logMessages;
       setEccentricity(new Point4f(0, 0, 1, 1));
       cutoff = Float.MIN_VALUE;
@@ -596,6 +600,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       dataType = SURFACE_ELLIPSOID;
       sphere_radiusAngstroms = 1.0f;
       cutoff = Float.MIN_VALUE;
+      isCutoffAbsolute = false;
       propertyName = "getSurface";
       script = " center " + StateManager.escape(center)
           + (Float.isNaN(scale) ? "" : " scale " + scale) + " ELLIPSOID {"
@@ -2104,10 +2109,10 @@ class Isosurface extends IsosurfaceMeshCollection {
     float min = mappedDataMin;
     float max = mappedDataMax;
     Logger.info("full mapped data range: " + min + " to " + max);
-    if (isBicolorMap && thePlane == null || colorBySign)
-      Logger.info("coloring by sign");
-    else if (colorByPhase)
+    if (colorByPhase)
       Logger.info("coloring by phase: " + colorPhases[colorPhase]);
+    else if (isBicolorMap && thePlane == null || colorBySign)
+      Logger.info("coloring by sign");
     else
       Logger.info("coloring red to blue over range: " + valueMappedToRed
           + " to " + valueMappedToBlue);
@@ -2991,7 +2996,7 @@ class Isosurface extends IsosurfaceMeshCollection {
           assocVertex < 0 ? vertexA : vertexB));
       voxelPointIndexes[iEdge] = addVertexCopy(surfacePoints[iEdge], thisValue,
           (assocVertex != 0), sKey);
-      if (logCube)
+      if (logCube && x < 5 && y < 5 && z < 5)
         Logger.info("edge " + vertexPoints[vertexA] + " "
             + vertexPoints[vertexB] + " surface " + surfacePoints[iEdge] + " "
             + thisValue);

@@ -1810,8 +1810,7 @@ class VoxelReader {
       }
     }
     jvxlData.isJvxlPrecisionColor = writePrecisionColor;
-    jvxlData.jvxlColorData = (saveColorData ? ""
-        : list.append(list1).append('\n').toString());
+    jvxlData.jvxlColorData = (saveColorData ? list.append(list1).append('\n').toString() : "");
   }
 
   private void setMapRanges() {

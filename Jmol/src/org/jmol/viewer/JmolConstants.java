@@ -43,6 +43,8 @@ final public class JmolConstants {
    *
    11.1.28 
    
+   reinstates tempManager properly.
+   
    adds MOPAC 2007 graphf output reader (MOPAC molecular orbitals)
    based on the VERY latest version (not released yet), which includes
    "MOPAC-Graphical data" on the first line, character index 6.

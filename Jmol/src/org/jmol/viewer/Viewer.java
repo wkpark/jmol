@@ -1592,6 +1592,7 @@ public class Viewer extends JmolViewer {
     mouseManager.clear();
     statusManager.clear();
     stateManager.clear(global);
+    tempManager.clear();
     //setRefreshing(true);
     refresh(0, "Viewer:clear()");
     System.gc();
@@ -4784,6 +4785,7 @@ public class Viewer extends JmolViewer {
   // //////////////////////////////////////////////////////////////
 
   Point3f[] allocTempPoints(int size) {
+    //rockets renderer
     return tempManager.allocTempPoints(size);
   }
 
@@ -4792,6 +4794,7 @@ public class Viewer extends JmolViewer {
   }
 
   Point3i[] allocTempScreens(int size) {
+    //mesh and mps
     return tempManager.allocTempScreens(size);
   }
 
@@ -4799,6 +4802,7 @@ public class Viewer extends JmolViewer {
     tempManager.freeTempScreens(tempScreens);
   }
 
+ /*
   boolean[] allocTempBooleans(int size) {
     return tempManager.allocTempBooleans(size);
   }
@@ -4806,8 +4810,10 @@ public class Viewer extends JmolViewer {
   void freeTempBooleans(boolean[] tempBooleans) {
     tempManager.freeTempBooleans(tempBooleans);
   }
-
+  */
+  
   byte[] allocTempBytes(int size) {
+    //mps renderer
     return tempManager.allocTempBytes(size);
   }
 

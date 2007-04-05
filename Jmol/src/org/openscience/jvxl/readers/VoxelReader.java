@@ -1782,7 +1782,9 @@ class VoxelReader {
     if (colors == null)
       meshData.vertexColors = colors = new int[vertexCount];
     StringBuffer list = null, list1 = null;
-    boolean saveColorData = !(params.colorByPhase && !params.isBicolorMap && !params.colorBySign); //sorry!
+    //colorBySign is true when colorByPhase is true, but not vice-versa
+    //old: boolean saveColorData = !(params.colorByPhase && !params.isBicolorMap && !params.colorBySign); //sorry!
+    boolean saveColorData = params.isBicolorMap || params.colorBySign || !params.colorByPhase;
     if (saveColorData) {
       list = new StringBuffer();
       list1 = new StringBuffer();

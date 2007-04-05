@@ -2113,8 +2113,12 @@ class Isosurface extends IsosurfaceMeshCollection {
           + " to " + valueMappedToBlue);
     if (colixes == null)
       mesh.vertexColixes = colixes = new short[vertexCount];
-    String list = "";
-    String list1 = "";
+    StringBuffer list = null, list1 = null;
+    boolean saveColorData = !(colorByPhase && !isBicolorMap && !colorBySign); //sorry!
+    if (saveColorData) {
+      list = new StringBuffer();
+      list1 = new StringBuffer();
+    }
     int incr = (mesh.hasGridPoints && mesh.jvxlPlane == null ? 3 : 1);
     if (jvxlDataIsPrecisionColor || isContoured)
       jvxlWritePrecisionColor = true;
@@ -2125,7 +2129,8 @@ class Isosurface extends IsosurfaceMeshCollection {
         if (jvxlWritePrecisionColor) {
           ch = jvxlValueAsCharacter2(value, min, max, colorFractionBase,
               colorFractionRange);
-          list1 += remainder;
+          if (saveColorData)
+            list1.append(remainder);
           if (logCompression && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
             Logger.debug("setcolor precision "
                 + value
@@ -2141,12 +2146,13 @@ class Isosurface extends IsosurfaceMeshCollection {
           if (logCompression)
             Logger.info("setcolor noprecision " + value + " as " + ch);
         }
-        list += ch;
+        if (saveColorData)
+          list.append(ch);
       }
     }
     mesh.isJvxlPrecisionColor = jvxlWritePrecisionColor;
-    mesh.jvxlColorData = (colorByPhase && !isBicolorMap && !colorBySign ? ""
-        : list + list1 + "\n");
+    mesh.jvxlColorData = (saveColorData ? ""
+        : list.append(list1).append('\n').toString());
     if (logMessages)
       Logger.info("color data: " + mesh.jvxlColorData);
   }

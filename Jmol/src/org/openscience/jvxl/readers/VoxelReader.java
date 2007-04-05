@@ -1781,8 +1781,12 @@ class VoxelReader {
     float max = params.mappedDataMax;
     if (colors == null)
       meshData.vertexColors = colors = new int[vertexCount];
-    String list = "";
-    String list1 = "";
+    StringBuffer list = null, list1 = null;
+    boolean saveColorData = !(params.colorByPhase && !params.isBicolorMap && !params.colorBySign); //sorry!
+    if (saveColorData) {
+      list = new StringBuffer();
+      list1 = new StringBuffer();
+    }
     int incr = 1;
     char[] remainder = new char[1];
     boolean writePrecisionColor = (jvxlDataIsPrecisionColor || params.isContoured);
@@ -1794,18 +1798,20 @@ class VoxelReader {
         if (writePrecisionColor) {
           ch = JvxlReader.jvxlValueAsCharacter2(value, min, max, colorFractionBase,
               colorFractionRange, remainder);
-          list1 += remainder[0];
+          if (saveColorData)
+            list1.append(remainder[0]);
         } else {
           //isColorReversed
           ch = JvxlReader.jvxlValueAsCharacter(value, params.valueMappedToRed, params.valueMappedToBlue,
               colorFractionBase, colorFractionRange);
         }
-        list += ch;
+        if (saveColorData)
+          list.append(ch);
       }
     }
     jvxlData.isJvxlPrecisionColor = writePrecisionColor;
-    jvxlData.jvxlColorData = (params.colorByPhase && !params.isBicolorMap && !params.colorBySign ? ""
-        : list + list1 + "\n");
+    jvxlData.jvxlColorData = (saveColorData ? ""
+        : list.append(list1).append('\n').toString());
   }
 
   private void setMapRanges() {

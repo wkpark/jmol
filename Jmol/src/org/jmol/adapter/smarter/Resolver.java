@@ -108,8 +108,10 @@ class Resolver {
       return "V3000";
     if (checkMol(lines))
       return "Mol";
+    if (checkXyz(lines))
+      return "Xyz";
     if (checkMopacGraphf(lines))
-      return "MopacGraphf";
+      return "MopacGraphf"; //must be prior to checkFoldingXyz
     if (checkFoldingXyz(lines))
       return "FoldingXyz";
     if (checkCube(lines))
@@ -155,7 +157,7 @@ class Resolver {
   // file types that need special treatment
   ////////////////////////////////////////////////////////////////
 
-  static boolean checkOdyssey(String[] lines) {
+  private static boolean checkOdyssey(String[] lines) {
     int i;
     for (i = 0; i < lines.length; i++)
       if (!lines[i].startsWith("C "))
@@ -165,7 +167,7 @@ class Resolver {
         && lines[i + 2].equals("0 1\n"));
   }
   
-  static boolean checkV3000(String[] lines) {
+  private static boolean checkV3000(String[] lines) {
     if (lines[3].length() >= 6) {
       String line4trimmed = lines[3].trim();
       if (line4trimmed.endsWith("V3000"))
@@ -174,7 +176,7 @@ class Resolver {
     return false;
   }
 
-  static boolean checkMol(String[] lines) {
+  private static boolean checkMol(String[] lines) {
     if (lines[3].length() >= 6) {
       String line4trimmed = lines[3].trim();
       if (line4trimmed.endsWith("V2000") ||
@@ -190,7 +192,7 @@ class Resolver {
     return false;
   }
 
-  static boolean checkXyz(String[] lines) {
+  private static boolean checkXyz(String[] lines) {
     try {
       Integer.parseInt(lines[0].trim());
       return true;
@@ -203,7 +205,7 @@ class Resolver {
    * @param lines First lines of the files.
    * @return Indicates if the file may be a Folding@Home file.
    */
-  static boolean checkFoldingXyz(String[] lines) {
+  private static boolean checkFoldingXyz(String[] lines) {
     // Checking first line: <number of atoms> <protein name>
     StringTokenizer tokens = new StringTokenizer(lines[0].trim(), " \t");
     if (tokens.countTokens() < 2)
@@ -253,11 +255,12 @@ class Resolver {
    * @param lines First lines of the files.
    * @return Indicates if the file is a Mopac GRAPHF output file.
    */
-  static boolean checkMopacGraphf(String[] lines) {
+  
+  private static boolean checkMopacGraphf(String[] lines) {
     return (lines[0].indexOf("MOPAC-Graphical data") == 6);
   }
 
-  static boolean checkCube(String[] lines) {
+  private static boolean checkCube(String[] lines) {
     try {
       StringTokenizer tokens2 = new StringTokenizer(lines[2]);
       if (tokens2 == null || tokens2.countTokens() != 4)
@@ -277,8 +280,8 @@ class Resolver {
     }
     return false;
   }
-
-  void dumpLines(String[] lines) {
+/*
+  private void dumpLines(String[] lines) {
       for (int i = 0; i < lines.length; i++) {
         Logger.info("\nLine "+i + " len " + lines[i].length());
         for (int j = 0; j < lines[i].length(); j++)
@@ -287,6 +290,7 @@ class Resolver {
       Logger.info("");
   }
 
+*/
   ////////////////////////////////////////////////////////////////
   // these test files that startWith one of these strings
   ////////////////////////////////////////////////////////////////

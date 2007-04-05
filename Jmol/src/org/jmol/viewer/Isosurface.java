@@ -2131,7 +2131,7 @@ class Isosurface extends IsosurfaceMeshCollection {
               colorFractionRange);
           if (saveColorData)
             list1.append(remainder);
-          if (logCompression && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+          if (logCompression)
             Logger.debug("setcolor precision "
                 + value
                 + " as '"
@@ -2151,8 +2151,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       }
     }
     mesh.isJvxlPrecisionColor = jvxlWritePrecisionColor;
-    mesh.jvxlColorData = (saveColorData ? ""
-        : list.append(list1).append('\n').toString());
+    mesh.jvxlColorData = (saveColorData ? list.append(list1).append('\n').toString() : "");
     if (logMessages)
       Logger.info("color data: " + mesh.jvxlColorData);
   }

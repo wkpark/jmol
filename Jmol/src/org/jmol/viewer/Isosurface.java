@@ -1553,7 +1553,7 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   int nBytes;
   int nDataPoints;
-  String surfaceData;
+  StringBuffer surfaceData;
   int nPointsX, nPointsY, nPointsZ;
 
   void readVoxelData(boolean isMapData) throws Exception {
@@ -1589,7 +1589,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     int dataCount = 0;
     next[0] = 0;
     nThisValue = 0;
-    surfaceData = "";
+    surfaceData = new StringBuffer();
     nPointsX = voxelCounts[0];
     nPointsY = voxelCounts[1];
     nPointsZ = voxelCounts[2];
@@ -1729,7 +1729,7 @@ class Isosurface extends IsosurfaceMeshCollection {
             dataCount++;
           } else {
             if (dataCount != 0)
-              surfaceData += " " + dataCount;
+              surfaceData.append(' ').append(dataCount);
             dataCount = 1;
             inside = !inside;
           }
@@ -1737,9 +1737,9 @@ class Isosurface extends IsosurfaceMeshCollection {
       }
     }
     if (!isJvxl)
-      surfaceData += " " + dataCount + "\n";
+      surfaceData.append(' ').append(dataCount).append('\n');
     if (!isMapData) {
-      thisMesh.jvxlSurfaceData = (thePlane == null ? surfaceData : "");
+      thisMesh.jvxlSurfaceData = (thePlane == null ? surfaceData.toString() : "");
       thisMesh.jvxlPlane = thePlane;
     }
     if (!isSilent && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
@@ -1918,7 +1918,7 @@ class Isosurface extends IsosurfaceMeshCollection {
             nThisValue = 10000;
             //throw new NullPointerException();
           } else {
-            surfaceData += line + "\n";
+            surfaceData.append(line).append('\n');
           }
         }
         thisInside = !thisInside;

@@ -57,11 +57,11 @@ class Sphere3D {
   private final static int maxSphereCache = 128;
   private final static int maxOddSizeSphere = 49;
   private final static int maxSphereDiameter = 1000;
-  private static int[][] sphereShapeCache = new int[maxSphereCache][];
+  private int[][] sphereShapeCache = new int[maxSphereCache][];
 
   private int zShift;
   
-  static void flushImageCache() {
+  void flushImageCache() {
     sphereShapeCache = new int[maxSphereCache][];
   }
 

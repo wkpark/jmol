@@ -183,38 +183,45 @@ public class Geodesic3D {
   }
 
   public static int getVertexCount(int level) {
-    if (vertexCounts == null) {
-      vertexCounts = new short[maxLevel];
-      neighborVertexesArrays = new short[maxLevel][];
-      faceVertexesArrays = new short[maxLevel][];
-      vertexVectors = new Vector3f[12];
-      vertexVectors[0] = new Vector3f(0, 0, halfRoot5);
-      for (int i = 0; i < 5; ++i) {
-        vertexVectors[i + 1] = new Vector3f((float) Math.cos(i * oneFifth),
-            (float) Math.sin(i * oneFifth), 0.5f);
-        vertexVectors[i + 6] = new Vector3f((float) Math.cos(i * oneFifth
-            + oneTenth), (float) Math.sin(i * oneFifth + oneTenth), -0.5f);
-      }
-      vertexVectors[11] = new Vector3f(0, 0, -halfRoot5);
-      for (int i = 12; --i >= 0;)
-        vertexVectors[i].normalize();
-      faceVertexesArrays[0] = faceVertexesIcosahedron;
-      neighborVertexesArrays[0] = neighborVertexesIcosahedron;
-      vertexCounts[0] = 12;
-
-      for (int i = 0; i < maxLevel - 1; ++i)
-        quadruple(i);
-
-/*      for (int i = 0; i < maxLevel; ++i) {
-        System.out.println("geodesic level " + i + " vertexCount= "
-            + getVertexCount(i) + " faceCount=" + getFaceCount(i)
-            + " edgeCount=" + getEdgeCount(i));
-        }
-*/
-    }
+    if (vertexCounts == null)
+      createGeodesic();
     return vertexCounts[level];
   }
 
+  synchronized private static void createGeodesic() {
+    //only one per applet set
+    if (vertexCounts != null)
+      return;
+    short[] v = new short[maxLevel];
+    neighborVertexesArrays = new short[maxLevel][];
+    faceVertexesArrays = new short[maxLevel][];
+    vertexVectors = new Vector3f[12];
+    vertexVectors[0] = new Vector3f(0, 0, halfRoot5);
+    for (int i = 0; i < 5; ++i) {
+      vertexVectors[i + 1] = new Vector3f((float) Math.cos(i * oneFifth),
+          (float) Math.sin(i * oneFifth), 0.5f);
+      vertexVectors[i + 6] = new Vector3f((float) Math.cos(i * oneFifth
+          + oneTenth), (float) Math.sin(i * oneFifth + oneTenth), -0.5f);
+    }
+    vertexVectors[11] = new Vector3f(0, 0, -halfRoot5);
+    for (int i = 12; --i >= 0;)
+      vertexVectors[i].normalize();
+    faceVertexesArrays[0] = faceVertexesIcosahedron;
+    neighborVertexesArrays[0] = neighborVertexesIcosahedron;
+    v[0] = 12;
+
+    for (int i = 0; i < maxLevel - 1; ++i)
+      quadruple(i, v);
+
+    /*      for (int i = 0; i < maxLevel; ++i) {
+     System.out.println("geodesic level " + i + " vertexCount= "
+     + v[i] + " faceCount=" + getFaceCount(i)
+     + " edgeCount=" + getEdgeCount(i));
+     }
+     */
+    vertexCounts = v;
+  }
+  
   static Vector3f[] getVertexVectors() {
     return vertexVectors;
   }
@@ -248,7 +255,7 @@ public class Geodesic3D {
     
   private final static boolean VALIDATE = true;
 
-  private static void quadruple(int level) {
+  private static void quadruple(int level, short[] counts) {
     htVertex = new Hashtable();
     int oldVertexCount = vertexVectors.length;
     short[] oldFaceVertexes = faceVertexesArrays[level];
@@ -268,7 +275,7 @@ public class Geodesic3D {
     for (int i = neighborVertexes.length; --i >= 0; )
       neighborVertexes[i] = -1;
 
-    vertexCounts[level + 1] = (short)newVertexCount;
+    counts[level + 1] = (short)newVertexCount;
 
     vertexNext = (short)oldVertexCount;
 

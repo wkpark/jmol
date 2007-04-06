@@ -52,6 +52,10 @@ class MolecularOrbital extends Isosurface {
   Integer moColorPos = null;
   Integer moColorNeg = null;
   boolean moIsPositiveOnly = false;
+  boolean moFill = true;
+  boolean moMesh = false;
+  boolean moDots = false;
+  boolean moFrontOnly = true;  
   String moTitleFormat = null;
   boolean moDebug;
   int myColorPt;
@@ -163,6 +167,26 @@ class MolecularOrbital extends Isosurface {
       thisModel.put("moTranslucency", value);
       //pass through
     }
+    
+    if ("dots" == propertyName) {
+      moDots = (value == Boolean.TRUE);
+      //pass through
+    }
+    if ("mesh" == propertyName) {
+      moMesh = (value == Boolean.TRUE);
+      //pass through
+    }
+
+    if ("frontOnly" == propertyName) {
+      moFrontOnly = (value == Boolean.TRUE);
+      //pass through
+    }
+
+    if ("fill" == propertyName) {
+      moFill = (value == Boolean.TRUE);
+      //pass through
+    }
+
     if ("delete" == propertyName) {
       htModels.remove(strID);
       //pass through
@@ -266,6 +290,11 @@ class MolecularOrbital extends Isosurface {
       super.setProperty("translucenctLevel", moTranslucentLevel, null);
     if (moTranslucency != null)
       super.setProperty("translucency", moTranslucency, null);
+    super.setProperty("fill", moFill ? Boolean.TRUE: Boolean.FALSE, null);
+    super.setProperty("mesh", moMesh ? Boolean.TRUE: Boolean.FALSE, null);
+    super.setProperty("dots", moDots ? Boolean.TRUE: Boolean.FALSE, null);
+    super.setProperty("frontOnly", moFrontOnly ? Boolean.TRUE: Boolean.FALSE, null);
+    
     thisModel.put("mesh", currentMesh);
     return;
   }

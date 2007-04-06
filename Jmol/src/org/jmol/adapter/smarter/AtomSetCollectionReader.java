@@ -104,10 +104,8 @@ abstract class AtomSetCollectionReader {
     return Parser.getTokens(line);  
   }
   
-  static float[] getTokensFloat(String s, int n) {
-    float[] f = new float[n];
-    Parser.parseFloatArray(getTokens(s), f);
-    return f;   
+  static void getTokensFloat(String s, float[] f, int n) {
+    Parser.parseFloatArray(getTokens(s), f, n);
   }
   
   static String[] getTokens(String s) {
@@ -176,7 +174,6 @@ abstract class AtomSetCollectionReader {
   static String parseTrimmed(String s, int iStart, int iEnd) {
     return Parser.parseTrimmed(s, iStart, iEnd);
   }
-  
   
   // load options:
 

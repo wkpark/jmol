@@ -118,8 +118,9 @@ class MopacGraphfReader extends AtomSetCollectionReader {
     nOrbitals = 0;
     Vector intinfo = new Vector();
     Vector floatinfo = new Vector();
+    float[] values = new float[3];
     for (int iAtom = 0; iAtom < atomCount; iAtom++) {
-      float[] values = getTokensFloat(readLine(), 3);
+      getTokensFloat(readLine(), values, 3);
       int[] idata;
       int atomicNumber = atomicNumbers[iAtom];
       float fdata[];
@@ -221,7 +222,10 @@ class MopacGraphfReader extends AtomSetCollectionReader {
   }
   
   void readMOs() throws Exception {
-    //(5 data per line, 15 characters per datum, FORTRAN format: 5d15.8)
+
+    // read mo coefficients
+
+    //  (5 data per line, 15 characters per datum, FORTRAN format: 5d15.8)
 
     float[][] list = new float[nOrbitals][nOrbitals];
     for (int iMo = 0; iMo < nOrbitals; iMo++) {
@@ -232,35 +236,17 @@ class MopacGraphfReader extends AtomSetCollectionReader {
         list[iMo][i] = parseFloat(line.substring(n * 15, (n + 1) * 15));
       }
     }
-/*    
-    System.out.println("MO file coordinates: ");
-    for (int i = 0; i < nOrbitals; i++) {
-      System.out.print((i + 1) + ": ");
-      for (int j = 0; j < nOrbitals; j++)
-        System.out.print(" " + list[i][j]);
-      System.out.println();
-    }
-*/
+    // read lower triangle of symmetric inverse sqrt matrix and multiply
     float[][] invMatrix = new float[nOrbitals][nOrbitals];
     for (int iMo = 0; iMo < nOrbitals; iMo++) {
       int n = -1;
       for (int i = 0; i < iMo + 1; i++) {
         if ((n = (n + 1) % 5) == 0)
           readLine();
-        String s = line.substring(n * 15, (n + 1) * 15);
-        float value = parseFloat(s);
-        invMatrix[iMo][i] = invMatrix[i][iMo] = value;
+        invMatrix[iMo][i] = invMatrix[i][iMo] = parseFloat(line.substring(
+            n * 15, (n + 1) * 15));
       }
     }
-/*
-    System.out.println("inversionMatrix: ");
-    for (int i = 0; i < nOrbitals; i++) {
-      System.out.print((i + 1) + ": ");
-      for (int j = 0; j < nOrbitals; j++)
-        System.out.print(" " + invMatrix[i][j]);
-      System.out.println();
-    }
-*/
     float[][] list2 = new float[nOrbitals][nOrbitals];
     for (int i = 0; i < nOrbitals; i++)
       for (int j = 0; j < nOrbitals; j++) {
@@ -269,22 +255,27 @@ class MopacGraphfReader extends AtomSetCollectionReader {
         if (Math.abs(list2[i][j]) < 1e-10)
           list2[i][j] = 0;
       }
+    /*
+    System.out.println("MO coefficients: ");
+    for (int i = 0; i < nOrbitals; i++) {
+    System.out.print((i + 1) + ": ");
+    for (int j = 0; j < nOrbitals; j++)
+    System.out.print(" " + list2[i][j]);
+    System.out.println();
+    }
+    */
 
+    // read MO energies and occupancies, and fill "coefficients" element
+    float[] values = new float[2];
     for (int iMo = 0; iMo < nOrbitals; iMo++) {
       Hashtable mo = new Hashtable();
+      getTokensFloat(readLine(), values, 2);
+      mo.put("energy", new Float(values[0]));
+      mo.put("occupancy", new Integer((int) values[1]));
       mo.put("coefficients", list2[iMo]);
       orbitals.add(mo);
     }
     moData.put("mos", orbitals);
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
-/*
-    System.out.println("MO coefficients: ");
-    for (int i = 0; i < nOrbitals; i++) {
-      System.out.print((i + 1) + ": ");
-      for (int j = 0; j < nOrbitals; j++)
-        System.out.print(" " + list2[i][j]);
-      System.out.println();
-    }
-*/    
   }
 }

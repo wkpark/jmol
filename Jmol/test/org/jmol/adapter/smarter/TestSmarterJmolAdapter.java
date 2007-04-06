@@ -42,6 +42,8 @@ public class TestSmarterJmolAdapter extends TestSuite {
     super(name);
   }
 
+  String testOne;
+  
   /**
    * @return Test suite containing tests for all files
    */
@@ -51,6 +53,9 @@ public class TestSmarterJmolAdapter extends TestSuite {
     //result.addDirectory(false, "abint", "out");
     //result.addDirectory(false, "aces2", "dat");
     //result.addDirectory(false, "aces2", "out");
+    
+    //testOne = "csf";
+    
     result.addDirectory(false, "adf", "adf", "Adf");
     result.addDirectory(false, "aminoacids", "mol");
     result.addDirectory(false, "aminoacids", "pdb");
@@ -63,6 +68,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "cml", "cml", "Xml");
     result.addDirectory(false, "crystals", "mol");
     result.addDirectory(false, "crystals", "pdb");
+    result.addDirectory(false, "csf", "csf", "Csf");
     result.addDirectory(true,  "cube", "cub.gz");
     result.addDirectory(true,  "cube", "cube.gz");
     result.addDirectory(false, "folding", "xyz");
@@ -74,6 +80,7 @@ public class TestSmarterJmolAdapter extends TestSuite {
     result.addDirectory(false, "gaussian", "log");
     result.addDirectory(false, "gaussian", "out");
     result.addDirectory(false, "ghemical", "gpr", "GhemicalMM");
+    result.addDirectory(false, "gpt2", "gpt2","MopacGraphf");
     result.addDirectory(false, "hin", "hin");
     result.addDirectory(false, "jaguar", "out");
     result.addDirectory(false, "modifiedGroups", "cif");
@@ -106,6 +113,8 @@ public class TestSmarterJmolAdapter extends TestSuite {
    * @param ext Extension
    */
   private void addDirectory(boolean gzipped, String directory, String ext) {
+    if (testOne != null && !directory.equals(testOne))
+      return;
     addDirectory(gzipped, directory, ext, null);
   }
 
@@ -123,6 +132,8 @@ public class TestSmarterJmolAdapter extends TestSuite {
                             String typeAllowed) {
 
     // Checking files
+    if (testOne != null && !directory.equals(testOne))
+      return;
     File dir = new File(datafileDirectory, directory);
     String[] files = dir.list(new FilenameFilter() {
 

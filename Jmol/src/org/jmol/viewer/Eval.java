@@ -7750,6 +7750,7 @@ class Eval { //implements Runnable {
 
   boolean mo(boolean isInitOnly) throws ScriptException {
     int modelIndex = viewer.getDisplayModelIndex();
+    int offset = Integer.MAX_VALUE;
     if (!isSyntaxCheck && modelIndex < 0)
       multipleModelsNotOK();
     viewer.loadShape(JmolConstants.SHAPE_MO);
@@ -7792,6 +7793,16 @@ class Eval { //implements Runnable {
       invalidArgument();
     case Token.identifier:
       str = parameterAsString(1);
+      boolean isHomo = false;
+      if ((isHomo = str.equalsIgnoreCase("HOMO"))|| str.equalsIgnoreCase("LUMO")) {
+        moNumber = 0;
+        offset = (isHomo ? 0 : 1);
+        if (tokAt(2) == Token.integer && intParameter(2) < 0)
+          offset += intParameter(2);
+        else if (tokAt(2) == Token.plus)
+          offset += intParameter(3);
+        break;
+      }
       if (str.equalsIgnoreCase("CUTOFF")) {
         if (tokAt(2) == Token.plus) {
           propertyName = "cutoffPositive";
@@ -7845,12 +7856,12 @@ class Eval { //implements Runnable {
     if (moNumber != Integer.MAX_VALUE) {
       if (tokAt(2) == Token.string)
         title = parameterAsString(2);
-      setMoData(JmolConstants.SHAPE_MO, moNumber, modelIndex, title);
+      setMoData(JmolConstants.SHAPE_MO, moNumber, offset, modelIndex, title);
     }
     return true;
   }
 
-  void setMoData(int shape, int moNumber, int modelIndex, String title)
+  void setMoData(int shape, int moNumber, int offset, int modelIndex, String title)
       throws ScriptException {
     if (isSyntaxCheck)
       return;
@@ -7873,6 +7884,18 @@ class Eval { //implements Runnable {
         evalError(GT._("no MO coefficient data available"));
       if (nOrb == 1 && moNumber > 1)
         evalError(GT._("Only one molecular orbital is available in this file"));
+      if (offset != Integer.MAX_VALUE) {
+        // 0: HOMO;
+        for (int i = 0; i < nOrb; i++) {
+          Hashtable mo = (Hashtable)mos.get(i);
+          if (!mo.containsKey("occupancy"))
+            evalError(GT._("no MO occupancy data available"));
+          if (((Integer)mo.get("occupancy")).intValue() == 0) {
+            lastMoNumber = moNumber = (i + 1) + offset - 1;
+            break;
+          }
+        }
+      }
       if (moNumber < 1 || moNumber > nOrb)
         evalError(GT._("An MO index from 1 to {0} is required", nOrb));
     }
@@ -8293,7 +8316,7 @@ class Eval { //implements Runnable {
         if (++i == statementLength)
           badArgumentCount();
         int moNumber = intParameter(i);
-        setMoData(iShape, moNumber, modelIndex, null);
+        setMoData(iShape, moNumber, Integer.MAX_VALUE, modelIndex, null);
         surfaceObjectSeen = true;
         continue;
       case Token.mep:

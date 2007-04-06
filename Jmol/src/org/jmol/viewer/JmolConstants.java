@@ -38,17 +38,20 @@ final public class JmolConstants {
   
   /*
    *
-   * 
-   * 
    *
    11.1.28 
    
    reinstates tempManager properly.
    
-   adds MOPAC 2007 graphf output reader (MOPAC molecular orbitals)
+   adds MOPAC 2007 graphf output reader (gpt2 files, MOPAC molecular orbitals)
    based on the VERY latest version (not released yet), which includes
    "MOPAC-Graphical data" on the first line, character index 6.
    
+   adds 
+   
+    mo HOMO [+/- n]
+    mo LUMO [+/- n]
+    
    fixes bugs found by FindBugs:
    
    labels:  default z setting for labels (set labelFront, set labelGroup, set labelAtom) 

@@ -34,6 +34,20 @@ public class MopacData {
   ///////////// MOPAC CALCULATION SLATER CONSTANTS //////////////
 
 
+  private final static boolean isNoble(int atomicNumber) {
+    switch (atomicNumber) {
+    case 2:
+    case 10:
+    case 18:
+    case 36:
+    case 54:
+    case 86:
+      return true;
+    default:
+      return false;
+    }
+  }
+
   //H                                                             He
   //Li Be                                          B  C  N  O  F  Ne
   //Na Mg                                          Al Si P  S  Cl Ar
@@ -52,34 +66,18 @@ public class MopacData {
                       6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, // 86
   };
 
-  private final static int[] pnqD = new int[] { 0,
-    0,                                                             3, //  2
-    0, 0,                                           0, 0, 0, 0, 0, 3, // 10
+  private final static int getNPQ(int atomicNumber) {
+    return (atomicNumber < principalQuantumNumber.length ? principalQuantumNumber[atomicNumber]
+        : 0);
+  }
+
+  private final static int[] pnqD = new int[] { 0, //1-10
     3, 3,                                           3, 3, 3, 3, 3, 4, // 18
     3, 3,             3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, // 36
     4, 4,             4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, // 54
     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,   
                       5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, // 86
   };
-
-  private final static int getNPQ(int atomicNumber) {
-    return (atomicNumber < principalQuantumNumber.length ? principalQuantumNumber[atomicNumber]
-        : 0);
-  }
-
-  private final static boolean isNoble(int atomicNumber) {
-    switch (atomicNumber) {
-    case 2:
-    case 10:
-    case 18:
-    case 36:
-    case 54:
-    case 86:
-      return true;
-    default:
-      return false;
-    }
-  }
 
   public final static int getNPQs(int atomicNumber) {
     return getNPQ(atomicNumber)
@@ -91,7 +89,8 @@ public class MopacData {
   }
 
   public final static int getNPQd(int atomicNumber) {
-    return (atomicNumber < pnqD.length ? pnqD[atomicNumber] : 0);
+    int n = atomicNumber - 10;
+    return (n > 0 && n < pnqD.length ? pnqD[n] : 0);
   }
 
   private final static float[] fact = new float[20];

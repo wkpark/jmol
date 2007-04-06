@@ -4749,7 +4749,7 @@ class Isosurface extends IsosurfaceMeshCollection {
           info += mo.get("energy");
           break;
         case 'U':
-          if (mo.containsKey("energyUnits"))
+          if (moData.containsKey("energyUnits"))
             info += moData.get("energyUnits");
           break;
         case 'S':

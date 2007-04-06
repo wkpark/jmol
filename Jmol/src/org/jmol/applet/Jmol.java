@@ -454,12 +454,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   // code to record last and average times
   // last and average of all the previous times are shown in the status window
 
-  static int timeLast = 0;
-
-  static int timeCount;
-
-  static int timeTotal;
-
+  int timeLast, timeCount, timeTotal;
   void resetTimes() {
     timeCount = timeTotal = 0;
     timeLast = -1;

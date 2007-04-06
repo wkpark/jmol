@@ -488,7 +488,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     if ("colorRGB" == propertyName) {
       int rgb = ((Integer) value).intValue();
       colorPos = colorPosLCAO = rgb;
-      defaultColix = Graphics3D.getColix(rgb);
+      defaultColix = g3d.getColix(rgb);
       if (colorPtr++ == 0)
         colorNeg = colorNegLCAO = rgb;
       return;
@@ -1283,7 +1283,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       indexColorNegative = (indexColorNegative % JmolConstants.argbsIsosurfaceNegative.length);
       argb = JmolConstants.argbsIsosurfaceNegative[indexColorNegative++];
     }
-    return Graphics3D.getColix(argb);
+    return g3d.getColix(argb);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -2180,11 +2180,9 @@ class Isosurface extends IsosurfaceMeshCollection {
       datum = value = lookupInterpolatedVoxelValue(mesh.vertices[vertexIndex]);
     if (isBicolorMap && !isContoured || colorBySign) {
       if (value <= 0)
-        mesh.vertexColixes[vertexIndex] = Graphics3D
-            .getColix(isColorReversed ? colorPos : colorNeg);
+        mesh.vertexColixes[vertexIndex] = g3d.getColix(isColorReversed ? colorPos : colorNeg);
       if (value > 0)
-        mesh.vertexColixes[vertexIndex] = Graphics3D
-            .getColix(isColorReversed ? colorNeg : colorPos);
+        mesh.vertexColixes[vertexIndex] = g3d.getColix(isColorReversed ? colorNeg : colorPos);
       if (!isContoured)
         datum = (value > 0 ? 0.999f : -0.999f);
     } else {
@@ -2418,7 +2416,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       if (isContoured) {
         contourVertexes[i].setValue(value);
       } else if (colorBySign) {
-        colixes[i] = Graphics3D.getColix((isColorReversed ? value > 0
+        colixes[i] = g3d.getColix((isColorReversed ? value > 0
             : value <= 0) ? colorNeg : colorPos);
       } else {
         colixes[i] = getColixFromPalette(value);
@@ -4504,14 +4502,12 @@ class Isosurface extends IsosurfaceMeshCollection {
     return str;
   }
 
-  //just for small factorials
-  static float factorial(int n) {
-    if (n == 0)
-      return 1;
-    return n * factorial(n - 1);
-  }
-
   static float[] fact = new float[20];
+  static {
+    fact[0] = 1;
+    for (int i = 1; i < 20; i++)
+      fact[i] = fact[i - 1] * i;
+  }
 
   float getDefaultResolution() {
     return Float.MAX_VALUE;
@@ -4567,7 +4563,6 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   double[] rfactor = new double[10];
   double[] pfactor = new double[10];
-  int lastFactorial = -1;
 
   final static double A0 = 0.52918f; //x10^-10 meters
 
@@ -4616,11 +4611,6 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   void calcFactors(int n, int el, int m) {
     int abm = Math.abs(m);
-    if (lastFactorial < n + el) {
-      for (int i = lastFactorial + 1; i <= n + el; i++)
-        fact[i] = factorial(i);
-      lastFactorial = n + el;
-    }
     double Nnl = Math.pow(2 * psi_Znuc / n / A0, 1.5)
         * Math.sqrt(fact[n - el - 1] / 2 / n / Math.pow(fact[n + el], 3));
     double Lnl = fact[n + el] * fact[n + el];
@@ -5676,14 +5666,14 @@ class Isosurface extends IsosurfaceMeshCollection {
         : thisMesh.thisID);
     if (thisMesh == null)
       allocMesh(id);
-    defaultColix = Graphics3D.getColix(colorPos);
+    defaultColix = g3d.getColix(colorPos);
 
     if (lcaoCartoon.equals("px")) {
       thisMesh.thisID += "a";
       createLcaoLobe(x, sense);
       setProperty("thisID", id + "b", null);
       createLcaoLobe(x, -sense);
-      thisMesh.colix = Graphics3D.getColix(colorNeg);
+      thisMesh.colix = g3d.getColix(colorNeg);
       return;
     }
     if (lcaoCartoon.equals("py")) {
@@ -5691,7 +5681,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       createLcaoLobe(y, sense);
       setProperty("thisID", id + "b", null);
       createLcaoLobe(y, -sense);
-      thisMesh.colix = Graphics3D.getColix(colorNeg);
+      thisMesh.colix = g3d.getColix(colorNeg);
       return;
     }
     if (lcaoCartoon.equals("pz")) {
@@ -5699,7 +5689,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       createLcaoLobe(z, sense);
       setProperty("thisID", id + "b", null);
       createLcaoLobe(z, -sense);
-      thisMesh.colix = Graphics3D.getColix(colorNeg);
+      thisMesh.colix = g3d.getColix(colorNeg);
       return;
     }
     if (lcaoCartoon.equals("pxa")) {

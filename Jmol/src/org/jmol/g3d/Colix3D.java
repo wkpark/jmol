@@ -55,17 +55,22 @@ import org.jmol.util.Logger;
  *
  * @author Miguel, miguel@jmol.org 
  */
-final class Colix {
 
+class Colix3D {
 
-  private static int colixMax = Graphics3D.SPECIAL_COLIX_MAX;
-  private static int[] argbs = new int[128];
-  private static int[] argbsGreyscale;
-  private static int[][] ashades = new int[128][];
-  private static int[][] ashadesGreyscale;
-  private static final Int2IntHash colixHash = new Int2IntHash();
+  private int colixMax = Graphics3D.SPECIAL_COLIX_MAX;
+  private int[] argbs = new int[128];
+  private int[] argbsGreyscale;
+  private int[][] ashades = new int[128][];
+  private int[][] ashadesGreyscale;
+  private Int2IntHash colixHash = new Int2IntHash();
 
-  final static short getColix(int argb) {
+  Colix3D() {
+    for (int i = 0; i < predefinedArgbs.length; ++i)
+      getColix(predefinedArgbs[i]);
+  }
+  
+  short getColix(int argb) {
     if (argb == 0)
       return 0;
     int translucentFlag = 0;
@@ -82,7 +87,7 @@ final class Colix {
         : (short) (allocateColix(argb) | translucentFlag));
   }
 
-  private synchronized static int allocateColix(int argb) {
+  private int allocateColix(int argb) {
     // double-check to make sure that someone else did not allocate
     // something of the same color while we were waiting for the lock
     if ((argb & 0xFF000000) != 0xFF000000)
@@ -91,7 +96,7 @@ final class Colix {
       if (argb == argbs[i])
         return (short)i;
     if (colixMax == argbs.length) {
-      int oldSize = argbs.length;
+      int oldSize = colixMax;
       int newSize = oldSize * 2;
       int[] t0 = new int[newSize];
       System.arraycopy(argbs, 0, t0, 0, oldSize);
@@ -121,25 +126,26 @@ final class Colix {
     return colixMax++;
   }
 
-  private synchronized static void calcArgbsGreyscale() {
-    if (argbsGreyscale == null) {
-      argbsGreyscale = new int[argbs.length];
-      for (int i = argbsGreyscale.length; --i >= Graphics3D.SPECIAL_COLIX_MAX; )
-        argbsGreyscale[i] = Graphics3D.calcGreyscaleRgbFromRgb(argbs[i]);
-    }
+  private void calcArgbsGreyscale() {
+    if (argbsGreyscale != null)
+      return;
+    int[] a = new int[argbs.length];
+    for (int i = argbsGreyscale.length; --i >= Graphics3D.SPECIAL_COLIX_MAX;)
+      a[i] = Graphics3D.calcGreyscaleRgbFromRgb(argbs[i]);
+    argbsGreyscale = a;
   }
 
-  final static int getArgb(short colix) {
+  int getArgb(short colix) {
     return argbs[colix & Graphics3D.OPAQUE_MASK];
   }
 
-  final static int getArgbGreyscale(short colix) {
+  int getArgbGreyscale(short colix) {
     if (argbsGreyscale == null)
       calcArgbsGreyscale();
     return argbsGreyscale[colix & Graphics3D.OPAQUE_MASK];
   }
 
-  final static int[] getShades(short colix, float[] lighting) {
+  int[] getShades(short colix, float[] lighting) {
     colix &= Graphics3D.OPAQUE_MASK;
     int[] shades = ashades[colix];
     if (shades == null)
@@ -147,7 +153,7 @@ final class Colix {
     return shades;
   }
 
-  final static int[] getShadesGreyscale(short colix, float[] lighting) {
+  int[] getShadesGreyscale(short colix, float[] lighting) {
     colix &= Graphics3D.OPAQUE_MASK;
     if (ashadesGreyscale == null)
       ashadesGreyscale = new int[ashades.length][];
@@ -158,15 +164,15 @@ final class Colix {
     return shadesGreyscale;
   }
 
-  final static void flushShades() {
+  void flushShades() {
     for (int i = colixMax; --i >= 0; )
       ashades[i] = null;
   }
 
   /*
-  final static Int2IntHash hashMix2 = new Int2IntHash(32);
+  Int2IntHash hashMix2 = new Int2IntHash(32);
 
-  final static short getColixMix(short colixA, short colixB) {
+  short getColixMix(short colixA, short colixB) {
     if (colixA == colixB)
       return colixA;
     if (colixA <= 0)
@@ -193,4 +199,29 @@ final class Colix {
     return (short)(mixed | translucentMask);
   }
   */
+  
+  static int[] predefinedArgbs = {
+    0xFF000000, // black
+    0xFFFFA500, // orange
+    0xFFFFC0CB, // pink
+    0xFF0000FF, // blue
+    0xFFFFFFFF, // white
+    0xFF00FFFF, // cyan
+    0xFFFF0000, // red
+    0xFF008000, // green -- really!
+    0xFF808080, // gray
+    0xFFC0C0C0, // silver
+    0xFF00FF00, // lime  -- no kidding!
+    0xFF800000, // maroon
+    0xFF000080, // navy
+    0xFF808000, // olive
+    0xFF800080, // purple
+    0xFF008080, // teal
+    0xFFFF00FF, // magenta
+    0xFFFFFF00, // yellow
+    0xFFFF69B4, // hotpink
+    0xFFFFD700, // gold
+  };
+
+
 }

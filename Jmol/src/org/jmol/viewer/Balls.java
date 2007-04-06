@@ -49,7 +49,7 @@ class Balls extends AtomShape {
 
   void setProperty(String propertyName, Object value, BitSet bs) {
     if ("color" == propertyName) {
-      short colix = Graphics3D.getColix(value);
+      short colix = g3d.getColix(value);
       if (colix == Graphics3D.INHERIT_ALL)
         colix = Graphics3D.USE_PALETTE;
       if (bsColixSet == null)

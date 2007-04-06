@@ -69,7 +69,7 @@ class AtomShape extends Shape {
   void setProperty(String propertyName, Object value, BitSet bs) {
     if ("color" == propertyName) {
       isActive = true;
-      short colix = Graphics3D.getColix(value);
+      short colix = g3d.getColix(value);
       byte pid = JmolConstants.pidOf(value);
       if (bsColixSet == null)
         bsColixSet = new BitSet();

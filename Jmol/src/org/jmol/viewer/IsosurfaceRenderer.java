@@ -37,6 +37,7 @@ class IsosurfaceRenderer extends MeshRenderer {
   boolean isBicolorMap;
   short backgroundColix;
   int renderCount;
+  int nError = 0;
   
   void render() {
     iShowNormals = viewer.getTestFlag4();
@@ -53,7 +54,7 @@ class IsosurfaceRenderer extends MeshRenderer {
   boolean render1(IsosurfaceMesh mesh) {
     iHideBackground = (isPlane && mesh.hideBackground);
     if (iHideBackground)
-      backgroundColix = Graphics3D.getColix(viewer.getBackgroundArgb());
+      backgroundColix = g3d.getColix(viewer.getBackgroundArgb());
    isPlane = (mesh.jvxlPlane != null);
    isContoured = mesh.isContoured;
    isBicolorMap = mesh.isBicolorMap;    
@@ -69,7 +70,8 @@ class IsosurfaceRenderer extends MeshRenderer {
    * @param iShowTriangles
    * @param frontOnly
    */
-  void renderTriangles(Mesh mesh, boolean fill, boolean iShowTriangles, boolean frontOnly) {
+  void renderTriangles(Mesh mesh, boolean fill, boolean iShowTriangles,
+                       boolean frontOnly) {
     int[][] polygonIndexes = mesh.polygonIndexes;
     short[] normixes = mesh.normixes;
     short colix = mesh.colix;
@@ -80,6 +82,9 @@ class IsosurfaceRenderer extends MeshRenderer {
     } catch (Exception e) {
     }
     g3d.setColix(mesh.colix);
+    //System.out.println("Isosurface renderTriangle polygoncount = "
+      //  + mesh.polygonCount + " screens: " + screens.length + " normixes: "
+        //+ normixes.length);
     for (int i = mesh.polygonCount; --i >= 0;) {
       //if (!mesh.isPolygonDisplayable(i))
       // continue;
@@ -90,16 +95,17 @@ class IsosurfaceRenderer extends MeshRenderer {
       int iB = vertexIndexes[1];
       int iC = vertexIndexes[2];
       //if (iA != 6 && iB !=6 && iC!=6 &&iA != 1 && iB !=1 && iC!=1 &&iA != 120 && iB !=120 && iC!=120)
-        //continue;
-      if (frontOnly && (normixes[iA] < 0 || normixes[iB] < 0 || normixes[iC] < 0))
+      //continue;
+      if (frontOnly
+          && (normixes[iA] < 0 || normixes[iB] < 0 || normixes[iC] < 0))
         frontOnly = false;
       //if (frontOnly)
-        //System.out.println(renderCount+": "+iA + " " + transformedVectors[normixes[iA]] + ", "+iB + " " + transformedVectors[normixes[iB]] + ", "+iC + " " + transformedVectors[normixes[iC]]);
+      //System.out.println(renderCount+": "+iA + " " + transformedVectors[normixes[iA]] + ", "+iB + " " + transformedVectors[normixes[iB]] + ", "+iC + " " + transformedVectors[normixes[iC]]);
       if (frontOnly && transformedVectors[normixes[iA]].z < 0
           && transformedVectors[normixes[iB]].z < 0
           && transformedVectors[normixes[iC]].z < 0)
         continue;
-     short colixA, colixB, colixC;
+      short colixA, colixB, colixC;
       if (vertexColixes != null) {
         colixA = vertexColixes[iA];
         colixB = vertexColixes[iB];
@@ -130,14 +136,21 @@ class IsosurfaceRenderer extends MeshRenderer {
                 colixB, normixes[iB], screens[iC], colixC, normixes[iC]);
           } catch (Exception e) {
             //TODO  I can't track this one down -- happened once, not second time, with script running to create isosurface plane for slabbing
-            System.out.println("MeshRenderer bug?" + e);
+            if (++nError < 5) {
+              haveNotified = true;
+              System.out.println("IsosurfaceRenderer bug? s=" + screens
+                  + (screens == null ? "" : " " + screens[iA]+ " " + screens[iB]+ " " + screens[iC]) + " n="
+                  + normixes + (normixes == null ? "" : " " + normixes.length)
+                  + " abc" + iA + " " + iB + " " + iC + " " + e.toString()
+                  + "\n");
+              e.printStackTrace();
+            }
           }
         }
         if (iShowNormals)
           renderNormals(mesh);
       } else {
         int check = vertexIndexes[3];
-        // FIX ME ... need a drawTriangle routine with multiple colors
         if (check == 0)
           continue;
         if (vertexColixes == null)

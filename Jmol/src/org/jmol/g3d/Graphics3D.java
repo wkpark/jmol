@@ -52,6 +52,7 @@ final public class Graphics3D {
   Line3D line3d;
   Circle3D circle3d;
   Sphere3D sphere3d;
+  Colix3D colix3d;
   Triangle3D triangle3d;
   Cylinder3D cylinder3d;
   Hermite3D hermite3d;
@@ -105,6 +106,7 @@ final public class Graphics3D {
     this.line3d = new Line3D(this);
     this.circle3d = new Circle3D(this);
     this.sphere3d = new Sphere3D(this);
+    this.colix3d = new Colix3D();
     this.triangle3d = new Triangle3D(this);
     this.cylinder3d = new Cylinder3D(this);
     this.hermite3d = new Hermite3D(this);
@@ -1631,35 +1633,6 @@ final public class Graphics3D {
   public final static short HOTPINK     = 22;
   public final static short GOLD        = 23;
 
-  static int[] predefinedArgbs = {
-    0xFF000000, // black
-    0xFFFFA500, // orange
-    0xFFFFC0CB, // pink
-    0xFF0000FF, // blue
-    0xFFFFFFFF, // white
-    0xFF00FFFF, // cyan
-    0xFFFF0000, // red
-    0xFF008000, // green -- really!
-    0xFF808080, // gray
-    0xFFC0C0C0, // silver
-    0xFF00FF00, // lime  -- no kidding!
-    0xFF800000, // maroon
-    0xFF000080, // navy
-    0xFF808000, // olive
-    0xFF800080, // purple
-    0xFF008080, // teal
-    0xFFFF00FF, // magenta
-    0xFFFFFF00, // yellow
-    0xFFFF69B4, // hotpink
-    0xFFFFD700, // gold
-  };
-
-  static {
-    for (int i = 0; i < predefinedArgbs.length; ++i)
-      if (Colix.getColix(predefinedArgbs[i]) != i + SPECIAL_COLIX_MAX)
-        throw new NullPointerException();
-  }
-
 
   /* no refs
    * 
@@ -1688,8 +1661,8 @@ final public class Graphics3D {
     return greyRgb;
   }
 
-  public final static short getColix(int argb) {
-    return Colix.getColix(argb);
+  public short getColix(int argb) {
+    return colix3d.getColix(argb);
   }
 
   public final static Point3f colorPointFromInt(int color, Point3f pt) {
@@ -1703,10 +1676,10 @@ final public class Graphics3D {
     return colorPointFromInt(getArgbFromString(colorName), pt);
   }
 
-  public final static short getColix(String colorName) {
+  public short getColix(String colorName) {
     int argb = getArgbFromString(colorName);
     if (argb != 0)
-      return Colix.getColix(argb);
+      return getColix(argb);
     if ("none".equalsIgnoreCase(colorName))
       return INHERIT_ALL;
     if ("opaque".equalsIgnoreCase(colorName))
@@ -1755,14 +1728,14 @@ final public class Graphics3D {
     }
   }
   
-  public final static short getColix(Object obj) {
+  public short getColix(Object obj) {
     if (obj == null)
       return INHERIT_ALL;
     if (obj instanceof Byte)
       return (((Byte) obj).byteValue() == 0 ? INHERIT_ALL
           : USE_PALETTE);
     if (obj instanceof Integer)
-      return Colix.getColix(((Integer) obj).intValue());
+      return getColix(((Integer) obj).intValue());
     if (obj instanceof String)
       return getColix((String) obj);
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
@@ -1784,16 +1757,16 @@ final public class Graphics3D {
     if (colix < 0)
       colix = changeableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
     if (! inGreyscaleMode)
-      return Colix.getArgb(colix);
-    return Colix.getArgbGreyscale(colix);
+      return colix3d.getArgb(colix);
+    return colix3d.getArgbGreyscale(colix);
   }
 
   public int[] getShades(short colix) {
     if (colix < 0)
       colix = changeableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
     if (! inGreyscaleMode)
-      return Colix.getShades(colix, lighting);
-    return Colix.getShadesGreyscale(colix, lighting);
+      return colix3d.getShades(colix, lighting);
+    return colix3d.getShadesGreyscale(colix, lighting);
   }
 
   public final static short getChangeableColixIndex(short colix) {
@@ -1885,14 +1858,14 @@ final public class Graphics3D {
       changeableColixMap = t;
     }
     if (changeableColixMap[id] == 0)
-      changeableColixMap[id] = Colix.getColix(argb);
+      changeableColixMap[id] = colix3d.getColix(argb);
     //System.out.println("changeable colix "+Integer.toHexString(id | CHANGEABLE_MASK) + " = "+Integer.toHexString(argb));
     return (short)(id | CHANGEABLE_MASK);
   }
 
   public void changeColixArgb(short id, int argb) {
     if (id < changeableColixMap.length && changeableColixMap[id] != 0)
-      changeableColixMap[id] = Colix.getColix(argb);
+      changeableColixMap[id] = colix3d.getColix(argb);
   }
 
   /* ***************************************************************
@@ -1900,7 +1873,7 @@ final public class Graphics3D {
    * ***************************************************************/
 
   public void flushShadesAndImageCaches() {
-    Colix.flushShades();
+    colix3d.flushShades();
     sphere3d.flushImageCache();
   }
 

@@ -153,7 +153,7 @@ class Text {
   }
 
   void setColix(Object value) {
-    colix = Graphics3D.getColix(value);
+    colix = g3d.getColix(value);
   }
 
   void setBgColix(short colix) {
@@ -161,7 +161,7 @@ class Text {
   }
 
   void setBgColix(Object value) {
-    bgcolix = (value == null ? (short) 0 : Graphics3D.getColix(value));
+    bgcolix = (value == null ? (short) 0 : g3d.getColix(value));
   }
 
   void setMovableX(int x) {

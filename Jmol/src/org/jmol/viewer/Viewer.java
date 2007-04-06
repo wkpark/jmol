@@ -959,7 +959,7 @@ public class Viewer extends JmolViewer {
     int argb = getObjectArgb(objId);
     if (argb == 0)
       return getColixBackgroundContrast();
-    return Graphics3D.getColix(argb);
+    return g3d.getColix(argb);
   }
   
  String getObjectState(String name) {
@@ -3181,7 +3181,7 @@ public class Viewer extends JmolViewer {
   }
 
   short getColix(Object object) {
-    return Graphics3D.getColix(object);
+    return g3d.getColix(object);
   }
 
   private void setRasmolHydrogenSetting(boolean b) {

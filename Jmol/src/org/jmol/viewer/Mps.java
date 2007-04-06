@@ -58,7 +58,7 @@ abstract class Mps extends Shape {
     initialize();
     if ("color" == propertyName) {
       byte pid = JmolConstants.pidOf(value);
-      short colix = Graphics3D.getColix(value);
+      short colix = g3d.getColix(value);
       for (int m = mpsmodels.length; --m >= 0; )
         mpsmodels[m].setColix(colix, pid, bs);
       return;

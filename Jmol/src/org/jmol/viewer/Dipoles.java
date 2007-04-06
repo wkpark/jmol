@@ -204,7 +204,7 @@ class Dipoles extends Shape {
     }
 
     if ("color" == propertyName) {
-      colix = Graphics3D.getColix(value);
+      colix = g3d.getColix(value);
       if (isBond) {
         setColixDipole(colix, JmolConstants.BOND_COVALENT_MASK, bs);
       } else if (value != null) {

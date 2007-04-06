@@ -199,16 +199,8 @@ abstract class MeshRenderer extends ShapeRenderer {
             g3d.fillTriangle(screens[iA], colixA, normixes[iA], screens[iB],
                 colixB, normixes[iB], screens[iC], colixC, normixes[iC], 0.1f);
           } else {
-
-          try {
             g3d.fillTriangle(screens[iA], colixA, normixes[iA], screens[iB],
                 colixB, normixes[iB], screens[iC], colixC, normixes[iC]);
-          } catch (Exception e) {
-            //TODO  I can't track this one down -- happened once, not second time, with script running to create isosurface plane for slabbing
-            if (!haveNotified)
-              System.out.println("MeshRenderer bug?" + e.getMessage() + "\n"+e.getStackTrace());
-            haveNotified = true;
-          }
           }
         } else if (vertexColixes == null) {
           g3d.drawTriangle(screens[iA], screens[iB], screens[iC], 7);

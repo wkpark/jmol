@@ -97,7 +97,7 @@ class ColorManager {
   
   short colixRubberband = Graphics3D.HOTPINK;
   void setRubberbandArgb(int argb) {
-    colixRubberband = (argb == 0 ? 0 : Graphics3D.getColix(argb));
+    colixRubberband = (argb == 0 ? 0 : g3d.getColix(argb));
   }
 
   short colixBackgroundContrast;
@@ -250,7 +250,7 @@ class ColorManager {
       argb = JmolConstants.argbsRoygbScale[index];
       break;
     }
-    return (argb == 0 ? Graphics3D.HOTPINK : Graphics3D.getColix(argb));
+    return (argb == 0 ? Graphics3D.HOTPINK : g3d.getColix(argb));
   }
 
   static int quantize(float val, float lo, float hi, int segmentCount) {
@@ -354,22 +354,22 @@ class ColorManager {
   short getColixFromPalette(float val, float lo, float hi) {
     switch (palette) {
     case RWB:
-      return Graphics3D.getColix(JmolConstants.argbsRwbScale[quantize(val, lo,
+      return g3d.getColix(JmolConstants.argbsRwbScale[quantize(val, lo,
           hi, JmolConstants.argbsRwbScale.length)]);
     case BWR:
-      return Graphics3D.getColix(JmolConstants.argbsRwbScale[quantize(-val,
+      return g3d.getColix(JmolConstants.argbsRwbScale[quantize(-val,
           -hi, -lo, JmolConstants.argbsRwbScale.length)]);
     case ROYGB:
-      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[quantize(val,
+      return g3d.getColix(JmolConstants.argbsRoygbScale[quantize(val,
           lo, hi, JmolConstants.argbsRoygbScale.length)]);
     case BGYOR:
-      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[quantize(-val,
+      return g3d.getColix(JmolConstants.argbsRoygbScale[quantize(-val,
           -hi, -lo, JmolConstants.argbsRoygbScale.length)]);
     case LOW:
-      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[quantize(val,
+      return g3d.getColix(JmolConstants.argbsRoygbScale[quantize(val,
           lo, hi, ihalf)]);
     case HIGH:
-      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[ihalf
+      return g3d.getColix(JmolConstants.argbsRoygbScale[ihalf
           + quantize(val, lo, hi, ihalf * 2)]);
     }
     return Graphics3D.GRAY;
@@ -378,7 +378,7 @@ class ColorManager {
   short getColixHbondType(short order) {
     int argbIndex = ((order & JmolConstants.BOND_HYDROGEN_MASK)
                      >> JmolConstants.BOND_HBOND_SHIFT);
-    return Graphics3D.getColix(JmolConstants.argbsHbondType[argbIndex]);
+    return g3d.getColix(JmolConstants.argbsHbondType[argbIndex]);
   }
 
   void flushCachedColors() {

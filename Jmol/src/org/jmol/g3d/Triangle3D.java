@@ -190,7 +190,7 @@ class Triangle3D {
       }
     }
     int iMinY = 0;
-    if (ay[1] < ay[0])
+    if (ay[1] < ay[iMinY])
       iMinY = 1;
     if (ay[2] < ay[iMinY])
       iMinY = 2;
@@ -212,13 +212,7 @@ class Triangle3D {
 
     Rgb16[] gouraudW = useGouraud ? rgb16sW : null;
     Rgb16[] gouraudE = useGouraud ? rgb16sE : null;
-
-    
-   // if (yMid != yMin || yMax != yMin)
-     // return;
-     //System.out.println("triangle: nlines = " + nLines +" " + ax[0]+ " " + ax[1]+ " " + ax[2]+ " y: " + ay[0]+ " " + ay[1]+ " " + ay[2] + " " + Integer.toHexString(g3d.argbCurrent));
-
-    
+   
     int dyMidMin = yMid - yMin;
     if (dyMidMin == 0) {
       // flat top
@@ -330,6 +324,8 @@ class Triangle3D {
 
   private void generateRaster(int dy, int iN, int iS, int[] axRaster,
                               int[] azRaster, int iRaster, Rgb16[] gouraud) {
+    if (dy == 0)
+      return;
     /*
     System.out.println("generateRaster\n" +
      "N="+ax[iN]+","+ay[iN]+","+az[iN]+"\n" +

@@ -71,14 +71,6 @@ public class MopacData {
         : 0);
   }
 
-  private final static int[] pnqD = new int[] { 0, //1-10
-    3, 3,                                           3, 3, 3, 3, 3, 4, // 18
-    3, 3,             3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, // 36
-    4, 4,             4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, // 54
-    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,   
-                      5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, // 86
-  };
-
   public final static int getNPQs(int atomicNumber) {
     return getNPQ(atomicNumber)
         + (atomicNumber > 2 && isNoble(atomicNumber) ? 1 : 0);
@@ -88,9 +80,18 @@ public class MopacData {
     return getNPQ(atomicNumber) + (atomicNumber == 2 ? 1 : 0);
   }
 
+  private final static int[] pnqD = new int[] { 0, //1-10
+    0,                                                             0, //  2
+    0, 0,                                           0, 0, 0, 0, 0, 0, // 10
+    3, 3,                                           3, 3, 3, 3, 3, 4, // 18
+    3, 3,             3, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, // 36
+    4, 4,             4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6, // 54
+    5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,   
+                      5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, // 86
+  };
+
   public final static int getNPQd(int atomicNumber) {
-    int n = atomicNumber - 10;
-    return (n > 0 && n < pnqD.length ? pnqD[n] : 0);
+    return (atomicNumber < pnqD.length ? pnqD[atomicNumber] : 0);
   }
 
   private final static float[] fact = new float[20];

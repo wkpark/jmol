@@ -139,22 +139,22 @@ final class Colix {
     return argbsGreyscale[colix & Graphics3D.OPAQUE_MASK];
   }
 
-  final static int[] getShades(short colix) {
+  final static int[] getShades(short colix, float[] lighting) {
     colix &= Graphics3D.OPAQUE_MASK;
     int[] shades = ashades[colix];
     if (shades == null)
-      shades = ashades[colix] = Shade3D.getShades(argbs[colix], false);
+      shades = ashades[colix] = Shade3D.getShades(argbs[colix], false, lighting);
     return shades;
   }
 
-  final static int[] getShadesGreyscale(short colix) {
+  final static int[] getShadesGreyscale(short colix, float[] lighting) {
     colix &= Graphics3D.OPAQUE_MASK;
     if (ashadesGreyscale == null)
       ashadesGreyscale = new int[ashades.length][];
     int[] shadesGreyscale = ashadesGreyscale[colix];
     if (shadesGreyscale == null)
       shadesGreyscale = ashadesGreyscale[colix] =
-        Shade3D.getShades(argbs[colix], true);
+        Shade3D.getShades(argbs[colix], true, lighting);
     return shadesGreyscale;
   }
 

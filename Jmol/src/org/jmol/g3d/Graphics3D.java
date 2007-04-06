@@ -724,7 +724,7 @@ final public class Graphics3D {
                              boolean twoPass) {
     if (currentlyRendering)
       endRendering();
-    normix3d.setRotationMatrix(rotationMatrix);
+    normix3d.setRotationMatrix(rotationMatrix, lighting);
     antialiasThisFrame &= isFullSceneAntialiasingEnabled;
     this.antialiasThisFrame = antialiasThisFrame;
     currentlyRendering = true;
@@ -1792,8 +1792,8 @@ final public class Graphics3D {
     if (colix < 0)
       colix = changeableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
     if (! inGreyscaleMode)
-      return Colix.getShades(colix);
-    return Colix.getShadesGreyscale(colix);
+      return Colix.getShades(colix, lighting);
+    return Colix.getShadesGreyscale(colix, lighting);
   }
 
   public final static short getChangeableColixIndex(short colix) {
@@ -1910,66 +1910,102 @@ final public class Graphics3D {
   public final static byte intensitySpecularSurfaceLimit =
     Shade3D.intensitySpecularSurfaceLimit;
 
+  /*  
+  static boolean specularOn = true;
+  // set specular 0-100
+  static float intensitySpecular = 0.22f;
+  // set specpower -6
+  static int specularExponent = 6;
+  // set specpower 0-100
+  static float intenseFraction = 0.4f;
+  // set diffuse 0-100
+  static float intensityDiffuse = 0.84f;
+  // set ambient 0-100
+  static float ambientFraction = 0.45f;
+  
+*/
+  
+
+  final float[] lighting = new float[] {1f, 0.22f, 6f, 0.4f, 0.84f, 0.45f}; 
+  
   public void setSpecular(boolean specular) {
-    Shade3D.setSpecular(specular);
+    lighting[Shade3D.SPECULAR_ON] = (specular ? 1f : 0f);
   }
 
   public boolean getSpecular() {
-    return Shade3D.getSpecular();
+    return (lighting[Shade3D.SPECULAR_ON] != 0);
   }
 
   public void setSpecularPower(int specularPower) {
-    Shade3D.setSpecularPower(specularPower);
+    if (specularPower >= 0)
+      lighting[Shade3D.INTENSE_FRACTION] = specularPower / 100f;
+    else
+      lighting[Shade3D.SPECULAR_EXPONENT] = -specularPower;
   }
   
   public void setAmbientPercent(int ambientPercent) {
-    Shade3D.setAmbientPercent(ambientPercent);
+    lighting[Shade3D.AMBIENT_FRACTION] = ambientPercent / 100f;
   }
 
   public int getAmbientPercent() {
-    return Shade3D.getAmbientPercent();
+    return (int) (lighting[Shade3D.AMBIENT_FRACTION] * 100);
   }
-
+  
   public void setDiffusePercent(int diffusePercent) {
-    Shade3D.setDiffusePercent(diffusePercent);
+    lighting[Shade3D.INTENSITY_DIFFUSE]= diffusePercent / 100f;
   }
 
   public int getDiffusePercent() {
-    return Shade3D.getDiffusePercent();
+    return (int) (lighting[Shade3D.INTENSITY_DIFFUSE] * 100);
   }
+  
 
   public void setSpecularPercent(int specularPercent) {
-    Shade3D.setSpecularPercent(specularPercent);
+    lighting[Shade3D.INTENSITY_SPECULAR] = specularPercent / 100f;
   }
 
   public int getSpecularPercent() {
-    return Shade3D.getSpecularPercent();
+    return (int) (lighting[Shade3D.INTENSITY_SPECULAR] * 100);
   }
 
+/*  
+  static void dump() {
+    Logger.debug("\n ambientPercent=" + ambientFraction +
+                       "\n diffusePercent=" + intensityDiffuse +
+                       "\n specularOn=" + specularOn +
+                       "\n specularPercent=" + intensitySpecular +
+                       "\n specularPower=" + intenseFraction +
+                       "\n lighting[Shade3D.SPECULAR_EXPONENT]=" + lighting[Shade3D.SPECULAR_EXPONENT] +
+                       "\n zLightsource=" + zLightsource +
+                       "\n shadeNormal=" + shadeNormal);
+  }
+*/
+
+  /*
   public void setLightsourceZ(float dist) {
     Shade3D.setLightsourceZ(dist);
   }
-
+  */
+  
   private final Vector3f vectorAB = new Vector3f();
   private final Vector3f vectorAC = new Vector3f();
   private final Vector3f vectorNormal = new Vector3f();
   // these points are in screen coordinates even though 3f
 
-  public void calcSurfaceShade(Point3i screenA,
-                               Point3i screenB, Point3i screenC) {
+  public void calcSurfaceShade(Point3i screenA, Point3i screenB, Point3i screenC) {
     vectorAB.x = screenB.x - screenA.x;
     vectorAB.y = screenB.y - screenA.y;
     vectorAB.z = screenB.z - screenA.z;
-    
+
     vectorAC.x = screenC.x - screenA.x;
     vectorAC.y = screenC.y - screenA.y;
     vectorAC.z = screenC.z - screenA.z;
 
     vectorNormal.cross(vectorAB, vectorAC);
-    int intensity =
-      vectorNormal.z >= 0
-      ? calcIntensity(-vectorNormal.x, -vectorNormal.y, vectorNormal.z)
-      : calcIntensity(vectorNormal.x, vectorNormal.y, -vectorNormal.z);
+    int intensity = vectorNormal.z >= 0 ? Shade3D.calcIntensity(
+        -vectorNormal.x, -vectorNormal.y, vectorNormal.z, lighting) : Shade3D
+        .calcIntensity(vectorNormal.x, vectorNormal.y, -vectorNormal.z,
+            lighting);
     if (intensity > intensitySpecularSurfaceLimit)
       intensity = intensitySpecularSurfaceLimit;
     setColorNoisy(intensity);
@@ -1984,14 +2020,9 @@ final public class Graphics3D {
     return
       (vectorNormal.z >= 0
             ? Shade3D.calcIntensity(-vectorNormal.x, -vectorNormal.y,
-                                    vectorNormal.z)
+                                    vectorNormal.z, lighting)
             : Shade3D.calcIntensity(vectorNormal.x, vectorNormal.y,
-                                    -vectorNormal.z));
-  }
-
-  static public int calcIntensity(float x, float y, float z) {
-    // from calcSurfaceShade
-    return Shade3D.calcIntensity(x, y, z);
+                                    -vectorNormal.z, lighting));
   }
 
   /* ***************************************************************

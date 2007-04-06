@@ -257,7 +257,7 @@ class Normix3D {
     return intensities[normix];
   }
 
-  void setRotationMatrix(Matrix3f rotationMatrix) {
+  void setRotationMatrix(Matrix3f rotationMatrix, float[] lighting) {
     this.rotationMatrix.set(rotationMatrix);
     for (int i = normixCount; --i >= 0; ) {
       Vector3f tv = transformedVectors[i];
@@ -277,12 +277,12 @@ class Normix3D {
         z = -z;
       }
       */
-      byte intensity = Shade3D.calcIntensityNormalized(x, y, z);
+      byte intensity = Shade3D.calcIntensityNormalized(x, y, z, lighting);
       intensities[i] = intensity;
       if (z >= 0)
         intensities2Sided[i] = intensity;
       else
-        intensities2Sided[i] = Shade3D.calcIntensityNormalized(-x, -y, -z);
+        intensities2Sided[i] = Shade3D.calcIntensityNormalized(-x, -y, -z, lighting);
     }
   }
 

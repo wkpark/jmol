@@ -47,9 +47,11 @@ package org.jmol.g3d;
 class Sphere3D {
 
   Graphics3D g3d;
-
+  float[] lighting;
+  
   Sphere3D(Graphics3D g3d) {
     this.g3d = g3d;
+    lighting = g3d.lighting;
   }
 
   private final static int maxSphereCache = 128;
@@ -323,10 +325,10 @@ class Sphere3D {
         if (z2 >= 0) {
           float z = (float)Math.sqrt(z2);
           int height = (int)z;
-          int intensitySE = Shade3D.calcDitheredNoisyIntensity( x,  y, z, radiusF);
-          int intensitySW = Shade3D.calcDitheredNoisyIntensity(-x,  y, z, radiusF);
-          int intensityNE = Shade3D.calcDitheredNoisyIntensity( x, -y, z, radiusF);
-          int intensityNW = Shade3D.calcDitheredNoisyIntensity(-x, -y, z, radiusF);
+          int intensitySE = Shade3D.calcDitheredNoisyIntensity( x,  y, z, radiusF, lighting);
+          int intensitySW = Shade3D.calcDitheredNoisyIntensity(-x,  y, z, radiusF, lighting);
+          int intensityNE = Shade3D.calcDitheredNoisyIntensity( x, -y, z, radiusF, lighting);
+          int intensityNW = Shade3D.calcDitheredNoisyIntensity(-x, -y, z, radiusF, lighting);
           int packed = (height |
                         (intensitySE << 7) |
                         (intensitySW << 13) |
@@ -357,7 +359,7 @@ class Sphere3D {
           float z2 = 130*130 - xF*xF - yF*yF;
           if (z2 > 0) {
             float z = (float)Math.sqrt(z2);
-            intensity = Shade3D.calcDitheredNoisyIntensity(xF, yF, z, 130);
+            intensity = Shade3D.calcDitheredNoisyIntensity(xF, yF, z, 130, lighting);
           }
           sphereIntensities[(j << 8) + i] = intensity;
         }

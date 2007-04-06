@@ -38,10 +38,12 @@ class Cylinder3D {
 
   final Graphics3D g3d;
   final Line3D line3d;
+  final float[] lighting;
 
   Cylinder3D(Graphics3D g3d) {
     this.g3d = g3d;
-    this.line3d = g3d.line3d;
+    line3d = g3d.line3d;
+    lighting = g3d.lighting;
   }
 
   private short colixA, colixB;
@@ -234,7 +236,7 @@ class Cylinder3D {
     colixA = colix;
     this.isScreenedA = isScreened;
     shadesA = g3d.getShades(colix);
-    int intensityTip = Shade3D.calcIntensity(dxB, dyB, -dzB);
+    int intensityTip = Shade3D.calcIntensity(dxB, dyB, -dzB, lighting);
     g3d.plotPixelClipped(shadesA[intensityTip], isScreenedA, (int) xTip,
         (int) yTip, (int) zTip);
 
@@ -350,7 +352,7 @@ class Cylinder3D {
       zRaster[i] = (int) (zR + 0.5);
     }
     fp8IntensityUp[i] = Shade3D.calcFp8Intensity((float) xR, (float) yR,
-        (float) zR);
+        (float) zR, lighting);
   }
 
   private void interpolate(int iLower, int iUpper) {
@@ -605,12 +607,12 @@ class Cylinder3D {
     zEndcap = zA;
     int[] shadesEndcap;
     if (dzB >= 0 || !tCylinder) {
-      intensityEndcap = Shade3D.calcIntensity(-dxB, -dyB, dzB);
+      intensityEndcap = Shade3D.calcIntensity(-dxB, -dyB, dzB, lighting);
       colixEndcap = colixA;
       shadesEndcap = shadesA;
       //Logger.debug("endcap is A");
     } else {
-      intensityEndcap = Shade3D.calcIntensity(dxB, dyB, -dzB);
+      intensityEndcap = Shade3D.calcIntensity(dxB, dyB, -dzB, lighting);
       colixEndcap = colixB;
       shadesEndcap = shadesB;
       xEndcap += dxB;

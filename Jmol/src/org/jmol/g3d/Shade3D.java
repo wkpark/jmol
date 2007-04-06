@@ -51,34 +51,29 @@ final class Shade3D {
   // the light source vector
   static final float xLightsource = -1;
   static final float yLightsource = -1;
-  static float zLightsource = 2.5f;
-  static float magnitudeLight =
+  static final float zLightsource = 2.5f;
+  static final float magnitudeLight =
     (float)Math.sqrt(xLightsource * xLightsource +
                      yLightsource * yLightsource +
                      zLightsource * zLightsource);
   // the light source vector normalized
-  static float xLight = xLightsource / magnitudeLight;
-  static float yLight = yLightsource / magnitudeLight;
-  static float zLight = zLightsource / magnitudeLight;
+  static final float xLight = xLightsource / magnitudeLight;
+  static final float yLight = yLightsource / magnitudeLight;
+  static final float zLight = zLightsource / magnitudeLight;
 
   // the viewer vector is always 0,0,1
 
-  // the following six settings are actually set in StateManager
+  // the following six settings are set in StateManager
+  // and saved in g3d.lighting
   
-  // set specular on|off
-  static boolean specularOn = true;
-  // set specular 0-100
-  static float intensitySpecular = 0.22f;
-  // set specpower -6
-  static int specularExponent = 6;
-  // set specpower 0-100
-  static float intenseFraction = 0.4f;
-  // set diffuse 0-100
-  static float intensityDiffuse = 0.84f;
-  // set ambient 0-100
-  static float ambientFraction = 0.45f;
+  static int SPECULAR_ON = 0; // set specular on|off
+  static int INTENSITY_SPECULAR = 1;
+  static int SPECULAR_EXPONENT = 2;
+  static int INTENSE_FRACTION = 3;
+  static int INTENSITY_DIFFUSE = 4;
+  static int AMBIENT_FRACTION = 5;
 
-  static int[] getShades(int rgb, boolean greyScale) {
+  static int[] getShades(int rgb, boolean greyScale, float[] lighting) {
     int[] shades = new int[shadeMax];
     if (rgb == 0)
       return shades;
@@ -86,9 +81,10 @@ final class Shade3D {
     int red = (rgb >> 16) & 0xFF;
     int grn = (rgb >>  8) & 0xFF;
     int blu = rgb         & 0xFF;
-
+    float ambientFraction = lighting[AMBIENT_FRACTION];
     float ambientRange = 1 - ambientFraction;
-
+    float intenseFraction = lighting[INTENSE_FRACTION];
+    
     shades[shadeNormal] = rgb(red, grn, blu);
     for (int i = 0; i < shadeNormal; ++i) {
       float fraction = ambientFraction + ambientRange*i/shadeNormal;
@@ -127,55 +123,56 @@ final class Shade3D {
 
   final static byte intensitySpecularSurfaceLimit = (byte)(shadeNormal + 4);
 
-  static byte calcIntensity(float x, float y, float z) {
+  static byte calcIntensity(float x, float y, float z, float[] lighting) {
     // from Cylinder3D.calcArgbEndcap and renderCone
     // from Graphics3D.calcIntensity and calcIntensityScreen
     double magnitude = Math.sqrt(x*x + y*y + z*z);
     return (byte)(calcFloatIntensityNormalized((float)(x/magnitude),
                                                (float)(y/magnitude),
-                                               (float)(z/magnitude))
+                                               (float)(z/magnitude), lighting)
                   * shadeLast + 0.5f);
   }
 
-  static byte calcIntensityNormalized(float x, float y, float z) {
+  static byte calcIntensityNormalized(float x, float y, float z, float[] lighting) {
     //from Normix3D.setRotationMatrix
-    return (byte)(calcFloatIntensityNormalized(x, y, z)
+    return (byte)(calcFloatIntensityNormalized(x, y, z, lighting)
                   * shadeLast + 0.5f);
   }
 
-  static int calcFp8Intensity(float x, float y, float z) {
+  static int calcFp8Intensity(float x, float y, float z, float[] lighting) {
     //from calcDitheredNoisyIntensity (not utilized)
     //and Cylinder.calcRotatedPoint
     double magnitude = Math.sqrt(x*x + y*y + z*z);
     return (int)(calcFloatIntensityNormalized((float)(x/magnitude),
                                               (float)(y/magnitude),
-                                              (float)(z/magnitude))
+                                              (float)(z/magnitude), lighting)
                  * shadeLast * (1 << 8));
   }
-
-  static float calcFloatIntensity(float x, float y, float z) {
+/*
+  static float calcFloatIntensity(float x, float y, float z, float[] lighting) {
     //not utilized
     double magnitude = Math.sqrt(x*x + y*y + z*z);
     return calcFloatIntensityNormalized((float)(x/magnitude),
                                         (float)(y/magnitude),
-                                        (float)(z/magnitude));
+                                        (float)(z/magnitude), lighting);
   }
-
-  static float calcFloatIntensityNormalized(float x, float y, float z) {
+*/
+  
+  private static float calcFloatIntensityNormalized(float x, float y, float z, float[] lighting) {
     float cosTheta = x*xLight + y*yLight + z*zLight;
     float intensity = 0; // ambient component
     if (cosTheta > 0) {
-      intensity += cosTheta * intensityDiffuse; // diffuse component
+      intensity += cosTheta * lighting[INTENSITY_DIFFUSE]; // diffuse component
       
-      if (specularOn) {
+      if (lighting[SPECULAR_ON] != 0) {
         // this is the dot product of the reflection and the viewer
         // but the viewer only has a z component
         float dotProduct = z * 2 * cosTheta - zLight;
         if (dotProduct > 0) {
-          for (int n = specularExponent; --n >= 0 && dotProduct > .0001f; )
+          for (int n = (int)lighting[SPECULAR_EXPONENT]; --n >= 0 && dotProduct > .0001f; )
             dotProduct *= dotProduct;
           // specular component
-          intensity += dotProduct * intensitySpecular;
+          intensity += dotProduct * lighting[INTENSITY_SPECULAR];
         }
       }
     }
@@ -184,29 +181,33 @@ final class Shade3D {
     return intensity;
   }
 
-  static byte calcDitheredNoisyIntensity(float x, float y, float z) {
-    //not utilized
-    // add some randomness to prevent banding
-    int fp8Intensity = calcFp8Intensity(x, y, z);
-    int intensity = fp8Intensity >> 8;
-    // this cannot overflow because the if the float intensity is 1.0
-    // then intensity will be == shadeLast
-    // but there will be no fractional component, so the next test will fail
-    if ((fp8Intensity & 0xFF) > nextRandom8Bit())
-      ++intensity;
-    int random16bit = seed & 0xFFFF;
-    if (random16bit < 65536 / 3 && intensity > 0)
-      --intensity;
-    else if (random16bit > 65536 * 2 / 3 && intensity < shadeLast)
-      ++intensity;
-    return (byte)intensity;
-  }
+  /*
+   static byte calcDitheredNoisyIntensity(float x, float y, float z, float[] lighting) {
+   //not utilized
+   // add some randomness to prevent banding
+   int fp8Intensity = calcFp8Intensity(x, y, z, lighting);
+   int intensity = fp8Intensity >> 8;
+   // this cannot overflow because the if the float intensity is 1.0
+   // then intensity will be == shadeLast
+   // but there will be no fractional component, so the next test will fail
+   if ((fp8Intensity & 0xFF) > nextRandom8Bit())
+   ++intensity;
+   int random16bit = seed & 0xFFFF;
+   if (random16bit < 65536 / 3 && intensity > 0)
+   --intensity;
+   else if (random16bit > 65536 * 2 / 3 && intensity < shadeLast)
+   ++intensity;
+   return (byte)intensity;
+   }
+   */
 
-  static byte calcDitheredNoisyIntensity(float x, float y, float z, float r) {
+  static byte calcDitheredNoisyIntensity(float x, float y, float z, float r,
+                                         float[] lighting) {
     // from Sphere3D only
     // add some randomness to prevent banding
-    int fp8Intensity = (int)(calcFloatIntensityNormalized(x/r, y/r, z/r)
-			* shadeLast * (1 << 8));
+    int fp8Intensity = (int) (calcFloatIntensityNormalized(x / r, y / r, z / r,
+        lighting)
+        * shadeLast * (1 << 8));
     int intensity = fp8Intensity >> 8;
     // this cannot overflow because the if the float intensity is 1.0
     // then intensity will be == shadeLast
@@ -218,7 +219,7 @@ final class Shade3D {
       --intensity;
     else if (random16bit > 65536 * 2 / 3 && intensity < shadeLast)
       ++intensity;
-    return (byte)intensity;
+    return (byte) intensity;
   }
 
   /*
@@ -255,15 +256,7 @@ final class Shade3D {
     return t >> 23;
   }
 
-  static void setSpecular(boolean specular) {
-    specularOn = specular;
-    //dump();
-  }
-
-  static boolean getSpecular() {
-    return specularOn;
-  }
-
+  /*
   static void setLightsourceZ(float z) {
     zLightsource = z;
     magnitudeLight =
@@ -272,52 +265,6 @@ final class Shade3D {
                        zLightsource * zLightsource);
     //dump();
   }
-
-  static void setSpecularPower(int specularPower) {
-    if (specularPower >= 0)
-      intenseFraction = specularPower / 100f;
-    else
-      specularExponent = -specularPower;
-    //dump();
-  }
-
-  static void setAmbientPercent(int ambientPercent) {
-    ambientFraction = ambientPercent / 100f;
-    //dump();
-  }
-
-  static int getAmbientPercent() {
-    return (int) (ambientFraction * 100);
-  }
-  
-
-  static void setDiffusePercent(int diffusePercent) {
-    intensityDiffuse = diffusePercent / 100f;
-    //dump();
-  }
-
-  static int getDiffusePercent() {
-    return (int) (intensityDiffuse * 100);
-  }
-  
-  static void setSpecularPercent(int specularPercent) {
-    intensitySpecular = specularPercent / 100f;
-    //dump();
-  }
-
-  static int getSpecularPercent() {
-    return (int) (intensitySpecular * 100);
-  }
-/*  
-  static void dump() {
-    Logger.debug("\n ambientPercent=" + ambientFraction +
-                       "\n diffusePercent=" + intensityDiffuse +
-                       "\n specularOn=" + specularOn +
-                       "\n specularPercent=" + intensitySpecular +
-                       "\n specularPower=" + intenseFraction +
-                       "\n specularExponent=" + specularExponent +
-                       "\n zLightsource=" + zLightsource +
-                       "\n shadeNormal=" + shadeNormal);
-  }
 */
+  
 }

@@ -746,11 +746,15 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         Logger.error("JmolPopup not loaded");
         return;
       }
-      if (viewer.haveFrame())
-        popup.updateComputedMenus();
       jmolpopup = popup;
       // long runTime = System.currentTimeMillis() - beginTime;
       // Logger.debug("LoadPopupThread finished " + runTime + " ms");
+      try {
+        popup.updateComputedMenus();
+      } catch (NullPointerException e) {
+        // ignore -- the frame just wasn't ready yet;
+        // updateComputedMenus() will be called again when the frame is ready; 
+      }
     }
   }
 

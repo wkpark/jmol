@@ -429,11 +429,13 @@ class ColorManager {
     return g3d.getDiffusePercent();
   }
 
+  /*
   void setLightsourceZ(float dist) {
     g3d.setLightsourceZ(dist);
     flushCaches();
   }
-
+  */
+  
   int getJmolOrRasmolArgb(int id, int argb) {
     if (argb == Token.jmol) {
       return (id < 256 ? JmolConstants.argbsCpk[id]

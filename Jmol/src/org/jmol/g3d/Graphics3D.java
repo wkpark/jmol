@@ -1901,7 +1901,7 @@ final public class Graphics3D {
 
   public void flushShadesAndImageCaches() {
     Colix.flushShades();
-    Sphere3D.flushImageCache();
+    sphere3d.flushImageCache();
   }
 
   public final static byte shadeMax = Shade3D.shadeMax;

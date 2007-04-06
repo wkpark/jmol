@@ -409,13 +409,10 @@ class Triangle3D {
     }
   }
 
-  private static int bar;
-
   private void fillRaster(int y, int numLines, boolean useGouraud,
                           boolean isClipped, int correction) {
     //Logger.debug("fillRaster("+y+","+numLines+","+paintFirstLine);
     int i = 0;
-    ++bar;
     if (y < 0) {
       numLines += y;
       i -= y;

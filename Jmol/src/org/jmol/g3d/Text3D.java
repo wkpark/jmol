@@ -72,36 +72,6 @@ class Text3D {
     rasterize(platform);
   }
 
-  /*
-  static int widthBuffer;
-  static int heightBuffer;
-  static Image img;
-  static Graphics g;
-
-  void checkImageBufferSize(Component component, int width, int height) {
-    boolean realloc = false;
-    int widthT = widthBuffer;
-    int heightT = heightBuffer;
-    if (width > widthT) {
-      widthT = (width + 63) & ~63;
-      realloc = true;
-    }
-    if (height > heightT) {
-      heightT = (height + 7) & ~7;
-      realloc = true;
-    }
-    if (realloc) {
-      if (g != null)
-        g.dispose();
-      img = component.createImage(widthT, heightT);
-      widthBuffer = widthT;
-      heightBuffer = heightT;
-      g = img.getGraphics();
-    }
-  }
-
-  */
-
   void calcMetrics(String text, Font3D font3d) {
     FontMetrics fontMetrics = font3d.fontMetrics;
     ascent = fontMetrics.getAscent();

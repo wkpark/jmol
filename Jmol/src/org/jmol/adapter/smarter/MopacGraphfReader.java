@@ -276,6 +276,7 @@ class MopacGraphfReader extends AtomSetCollectionReader {
       orbitals.add(mo);
     }
     moData.put("mos", orbitals);
+    moData.put("energyUnits", "eV");
     atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
   }
 }

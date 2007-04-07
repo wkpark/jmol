@@ -52,7 +52,7 @@ public class JmolApplet
     "org.jmol.g3d.Graphics3D",
     "org.jmol.adapter.smarter.SmarterJmolAdapter",
     "org.jmol.g3d.Sphere3D",
-    ".Line3D", ".Cylinder3D", ".Colix", ".Shade3D",
+    ".Line3D", ".Cylinder3D", ".Colix3D", ".Shade3D",
 
     "org.jmol.adapter.smarter.Atom",
     ".Bond", ".AtomSetCollection", ".AtomSetCollectionReader",

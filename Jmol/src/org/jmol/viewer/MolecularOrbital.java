@@ -52,8 +52,8 @@ class MolecularOrbital extends Isosurface {
   Integer moColorPos = null;
   Integer moColorNeg = null;
   boolean moIsPositiveOnly = false;
-  boolean moFill = true;
-  boolean moMesh = false;
+  boolean moFill = false;
+  boolean moMesh = true;
   boolean moDots = false;
   boolean moFrontOnly = true;  
   String moTitleFormat = null;

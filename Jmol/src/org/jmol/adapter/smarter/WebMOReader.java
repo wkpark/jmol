@@ -41,10 +41,7 @@ import org.jmol.util.Logger;
  * right now WebMO files don't allow for multiple MOS, but we will assume here that that may change.
  *<p>
  */
-class WebMOReader extends AtomSetCollectionReader {
-
-  Hashtable moData = new Hashtable();
-  Vector orbitals = new Vector();
+class WebMOReader extends MopacDataReader {
 
   AtomSetCollection readAtomSetCollection(BufferedReader reader)  {
     this.reader = reader;
@@ -88,8 +85,6 @@ class WebMOReader extends AtomSetCollectionReader {
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug(orbitals.size() + " molecular orbitals read");
     }
-    moData.put("mos", orbitals);
-    atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
     return atomSetCollection;
   }
 
@@ -241,6 +236,7 @@ class WebMOReader extends AtomSetCollectionReader {
       Logger.debug(sdata.size() + " slater shells read");
       Logger.debug(garray.length + " gaussian primitives read");
     }
+    atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
   }
 
   void readSlaterBasis() throws Exception {
@@ -252,26 +248,14 @@ class WebMOReader extends AtomSetCollectionReader {
      1 0 1 0 0 1.842345 2.59926303779824
      1 0 0 1 0 1.842345 2.59926303779824
      */
-    Vector intinfo = new Vector();
-    Vector floatinfo = new Vector();
-    int ndata = 0;
-    while (readLine() != null
-        && (line.length() == 0 || line.charAt(0) != '[')) {
+    while (readLine() != null && (line.length() == 0 || line.charAt(0) != '[')) {
       String[] tokens = getTokens();
-      if (tokens.length < 7)
-        continue;
-      float fdata[] = new float[2];
-      int idata[] = new int[5];
-      idata[0] = parseInt(tokens[0]) - 1;
-      for (int i = 1; i < 5; i++)
-        idata[i] = parseInt(tokens[i]);
-      fdata[0] = parseFloat(tokens[5]); //zeta
-      fdata[1] = parseFloat(tokens[6]); //coef
-      intinfo.add(idata);
-      floatinfo.add(fdata);
-      ndata++;
+      if (tokens.length >= 7)
+        addSlater(parseInt(tokens[0]) - 1, parseInt(tokens[1]),
+            parseInt(tokens[2]), parseInt(tokens[3]), parseInt(tokens[4]),
+            parseFloat(tokens[5]), parseFloat(tokens[6]));
     }
-    addSlaterInfoData(intinfo, floatinfo, ndata, moData);
+    setSlaters();
   }
 
   void readMolecularOrbital() throws Exception {
@@ -302,5 +286,6 @@ class WebMOReader extends AtomSetCollectionReader {
     mo.put("occupancy", new Integer(occupancy));
     mo.put("coefficients", coefs);
     orbitals.add(mo);
+    setMOs("eV");
   }
 }

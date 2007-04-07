@@ -7801,6 +7801,8 @@ class Eval { //implements Runnable {
           offset += intParameter(2);
         else if (tokAt(2) == Token.plus)
           offset += intParameter(3);
+        else if (tokAt(2) == Token.hyphen)
+          offset -= intParameter(3);
         break;
       }
       if (str.equalsIgnoreCase("CUTOFF")) {
@@ -7895,6 +7897,7 @@ class Eval { //implements Runnable {
             break;
           }
         }
+        Logger.info("MO " + moNumber);
       }
       if (moNumber < 1 || moNumber > nOrb)
         evalError(GT._("An MO index from 1 to {0} is required", nOrb));

@@ -27,6 +27,7 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 import java.util.Hashtable;
 
+import org.jmol.quantum.MopacData;
 import org.jmol.util.Logger;
 
 /**
@@ -39,20 +40,23 @@ import org.jmol.util.Logger;
  * 
  * @author hansonr <hansonr@stolaf.edu>
  */
-class CsfReader extends AtomSetCollectionReader {
+class CsfReader extends MopacDataReader {
 
   int nAtoms = 0;
+  String atomicNumbers = "";
   
   AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("csf");
     try {
-      while (readLine() != null) {
+      readLine();
+      while (line != null) {
         if (line.startsWith("object_class")) {
           processObjectClass();
           // there is already an unprocessed line in the firing chamber
-          continue;
+          continue; 
         }
+        readLine();
       }
     } catch (Exception e) {
       return setError(e);
@@ -76,10 +80,19 @@ class CsfReader extends AtomSetCollectionReader {
       processVibrationObject();
       return;
     }
+    if (line.equals("object_class mol_orbital")) {
+      processMolecularOrbitalObject();
+      return;
+    }
+    if (line.equals("object_class sto_basis_fxn")) {
+      processSlaterBasisObject();
+      return;
+    }
+    
     readLine();
   }
   
-  int parseLineParameters(String[] fields,
+  private int parseLineParameters(String[] fields,
                           byte[] fieldMap,
                           int[] fieldTypes,
                           boolean[] propertyReferenced) throws Exception {
@@ -146,6 +159,10 @@ class CsfReader extends AtomSetCollectionReader {
             continue out;
           break;
         case objCls2:
+          if (field.equals("sto_basis_fxn")) {
+            nOrbitals++;
+            continue out;
+          }
           if (!field.equals("bond")) 
             continue out;
           break;
@@ -195,11 +212,6 @@ class CsfReader extends AtomSetCollectionReader {
     atomID, sym, anum, chrg, xyz_coordinates
   };
 
-  static {
-    if (atomFieldMap.length != atomFields.length)
-      atomFields[100] = "explode";
-  }
-
   void processAtomObject() throws Exception {
     nAtoms = 0;
     int[] fieldTypes = new int[100]; // should be enough
@@ -226,6 +238,7 @@ class CsfReader extends AtomSetCollectionReader {
           atom.elementSymbol = field;
           break;
         case anum:
+          atomicNumbers += field + " "; // for MO slater basis calc
           break;
         case xyz_coordinates:
           atom.x = parseFloat(field);
@@ -306,6 +319,8 @@ class CsfReader extends AtomSetCollectionReader {
       }
     }
   }
+
+  
   final static byte vibID            = 1;
   final static byte normalMode       = 2;
   final static byte vibEnergy        = 3;
@@ -374,6 +389,238 @@ class CsfReader extends AtomSetCollectionReader {
       }
     }
   }
-  
-}
 
+  ////////////////////////////////////////////////////////////////
+  // Molecular Orbitals
+  ////////////////////////////////////////////////////////////////
+
+  final static byte moID   = 1;
+  final static byte eig_val = 2;
+  final static byte mo_occ  = 3;
+  final static byte eig_vec = 4;
+  final static byte eig_vec_compressed = 5;
+  final static byte coef_indices  = 6;
+  final static byte bfxn_ang  = 7;
+  final static byte sto_exp  = 8;
+  final static byte MO_PROPERTY_MAX    = 9;
+
+  final static String[] moFields = {
+    "ID", "eig_val", "mo_occ", "eig_vec", "eig_vec_compressed", "coef_indices", "bfxn_ang", "sto_exp"
+  };
+
+  final static byte[] moFieldMap = {
+    moID, eig_val, mo_occ, eig_vec, eig_vec_compressed, coef_indices, bfxn_ang, sto_exp
+  };
+   
+  void processMolecularOrbitalObject() throws Exception {
+    if (nOrbitals == 0)
+      return; // no slaters;
+    Logger.info("Reading data for " + nOrbitals + " molecular orbitals");
+    /* we read the following blocks in ANY order:
+ 
+    ID dflag eig_val    mo_occ
+     1   0x0 -36.825790 2.00000000
+     2   0x0 -17.580715 2.00000000
+     3   0x0 -14.523387 2.00000000
+     4   0x0 -12.316568 2.00000000
+     5   0x0   4.060438 0.00000000
+     6   0x0   5.331586 0.00000000
+
+    ID eig_vec_compressed                                          nom_coef 
+     1 -0.845963 -0.179125 -0.179118 -0.067970  0.049666  0.000000        5
+     2 -0.517325 -0.474120  0.474119 -0.377978  0.000000  0.000000        4
+     3 -0.638505  0.466520  0.400882 -0.255125 -0.255118  0.000000        5
+     4 -0.999990  0.000000  0.000000  0.000000  0.000000  0.000000        1
+     5  0.582228  0.582125 -0.529468 -0.521559  0.386787 -0.004860        6
+     6 -0.906355  0.906280 -0.753041 -0.550159  0.000000  0.000000        4
+    
+    ID coef_indices
+     1  2 1 6 4 3 0
+     2  3 6 1 4 0 0
+     3  4 3 2 6 1 0
+     4  5 0 0 0 0 0
+     5  6 1 4 2 3 5
+     6  1 6 3 4 0 0
+    
+    ID eig_vec
+     1 -0.245163 -0.011925  0.000554  0.000542 -0.236038 -0.002974  0.006251
+     1 -0.000460 -0.231155  0.003499  0.009902  0.000555 -0.236059  0.006221
+     1  0.002910  0.001090 -0.245083  0.008801 -0.006892  0.004063 -0.264182
+     1 -0.001313 -0.005736 -0.004526 -0.166087 -0.008065 -0.001462 -0.002563
+     1 -0.166219  0.005699 -0.006460 -0.000149 -0.021764 -0.016402 -0.019220
+     1 -0.014385 -0.022278 -0.016332 -0.019246 -0.021743 -0.023016 -0.018217
+     1 -0.013078 -0.016269 -0.012006 -0.016322 -0.013100 -0.011989
+     2  0.289501 -0.029400  0.007611 -0.002158  0.222093 -0.028271 -0.003105
+     2 -0.004796 -0.000433 -0.025248  0.009182 -0.004274 -0.222016 -0.019921
+     2  0.020485 -0.003535 -0.289379 -0.026658  0.012619 -0.007483  0.000107
+     2 -0.046398  0.016755 -0.008013  0.351901  0.007737  0.007248 -0.001799
+     2 -0.351606  0.000505 -0.010223  0.003301  0.024485  0.031084  0.019300
+     2  0.000034 -0.000129 -0.031187 -0.019043 -0.024563  0.000012 -0.000014
+     2  0.028784  0.031377  0.035556 -0.031461 -0.028669 -0.035517
+
+     */
+
+    int[] fieldTypes = new int[100];
+    boolean[] propertyReferenced = null;
+    float[] energy = new float[nOrbitals];
+    int[] occupancy = new int[nOrbitals];
+    float[][] list = new float[nOrbitals][nOrbitals];
+    String[][] compressedCoefficients = null;
+    String[][] coefIndices = null;
+    int ipt = 0;
+    int coefPt = 0;
+    int indexPt = -1;
+    readLine();
+    while (line != null) {
+      if (line.startsWith("property_flags:"))
+        readLine();
+      if (line.startsWith("object_class"))
+        break;
+      if (line.indexOf("ID") != 0)
+        discardLinesUntilStartsWith("ID");
+      propertyReferenced = new boolean[MO_PROPERTY_MAX];
+      int fieldCount = parseLineParameters(moFields, moFieldMap, fieldTypes,
+          propertyReferenced);
+      int cPt = 0;
+      while (readLine() != null) {
+        if (line.startsWith("property_flags:"))
+          break;
+        String tokens[] = getTokens();
+        for (int i = 0; i < fieldCount; ++i) {
+          switch (fieldTypes[i]) {
+          case moID:
+            int id = parseInt(tokens[i]);
+            if (id != ipt + 1) {
+              cPt = 0;
+              ipt = id - 1;
+            }
+            break;
+          case eig_val:
+            energy[ipt] = parseFloat(tokens[i]);
+            break;
+          case mo_occ:
+            occupancy[ipt] = parseInt(tokens[i]);
+            break;
+          case eig_vec:
+            for (int j = 1; j < tokens.length; j++, cPt++)
+              list[ipt][cPt] = parseFloat(tokens[j]);
+            break;
+          case eig_vec_compressed:
+            coefPt = i;
+            //presuming here only one line per MO
+            if (compressedCoefficients == null)
+              compressedCoefficients = new String[nOrbitals][];
+            compressedCoefficients[ipt] = tokens;
+            break;
+          case coef_indices:
+            indexPt = i;
+            if (coefIndices == null)
+              coefIndices = new String[nOrbitals][];
+            coefIndices[ipt++] = tokens;
+            break;
+          }
+        }
+      }
+    }
+    //put it all together
+    for (int iMo = 0; iMo < nOrbitals; iMo++) {
+      if (indexPt >= 0) { // must uncompress
+        String[] sIndices = coefIndices[iMo];
+        String[] sCoef = compressedCoefficients[iMo];
+        ipt = coefPt;
+        for (int i = indexPt; i < sIndices.length; i++) {
+          int pt = parseInt(sIndices[i]) - 1;
+          if (pt < 0)
+            break;
+          float coef = parseFloat(sCoef[ipt++]);
+          list[iMo][pt] = coef;
+        }
+      }
+      Hashtable mo = new Hashtable();
+      mo.put("energy", new Float(energy[iMo]));
+      mo.put("occupancy", new Integer(occupancy[iMo]));
+      mo.put("coefficients", list[iMo]);
+/*      
+      System.out.print("MO " + iMo + " : ");
+      for (int i = 0; i < nOrbitals; i++)
+        System.out.print(" " + list[iMo][i]);
+      System.out.println();
+*/      
+      orbitals.add(mo);
+    }
+    setMOs("eV");
+  }
+  
+  void processSlaterBasisObject() throws Exception {
+    int[] fieldTypes = new int[100];
+    String[] atomNos = getTokens(atomicNumbers);
+
+    /*
+     ID dflag bfxn_ang contr_len Nquant sto_exp  shell
+     1   0x0        S         6      1 0.967807     1
+     2   0x0        S         6      2 3.796544     2
+     3   0x0       Px         6      2 2.389402     3
+     4   0x0       Py         6      2 2.389402     3
+     5   0x0       Pz         6      2 2.389402     3
+     6   0x0        S         6      1 0.967807     4
+     */
+
+    boolean[] propertyReferenced = new boolean[MO_PROPERTY_MAX];
+    discardLinesUntilStartsWith("ID");
+    int fieldCount = parseLineParameters(moFields, moFieldMap, fieldTypes,
+        propertyReferenced);
+    int iAtom = -1;
+    String type = "";
+    float zeta = Float.NaN;
+    int atomicNumber = 0;
+    while (readLine() != null) {
+      if (line.startsWith("property_flags:"))
+        break;
+      String tokens[] = getTokens();
+      for (int i = 0; i < fieldCount; ++i) {
+        String field = tokens[i];
+        switch (fieldTypes[i]) {
+        case bfxn_ang:
+          type = field;
+          if (type.equals("S")) {
+            iAtom++;
+            atomicNumber = parseInt(atomNos[iAtom]);
+          }
+          break;
+        case sto_exp:
+          zeta = parseFloat(field);
+          break;
+        }
+      }
+      int pt = "S Px Py Pz Dx2-y2 Dxz Dz2 Dyz Dxy".indexOf(type);
+      //        0 2  5  8  11     18  22  26  30
+      switch (pt) {
+      case 0: //s
+        addSlater(iAtom, 0, 0, 0, MopacData.getNPQs(atomicNumber) - 1, zeta,
+            MopacData.getMopacConstS(atomicNumber, zeta));
+        break;
+      case 2: //Px
+      case 5: //Py
+      case 8: //Pz
+        addSlater(iAtom, pt == 2 ? 1 : 0, pt == 5 ? 1 : 0, pt == 8 ? 1 : 0,
+            MopacData.getNPQp(atomicNumber) - 2, zeta, MopacData
+                .getMopacConstP(atomicNumber, zeta));
+        break;
+      case 11: //Dx2-y2
+      case 18: //Dxz
+      case 22: //Dz2
+      case 26: //Dyz
+      case 30: //Dxy
+        int dPt = (pt == 11 ? 0 : pt == 18 ? 1 : pt == 22 ? 2 : pt == 26 ? 3
+            : 4);
+        int dPt3 = dPt * 3;
+        addSlater(iAtom, dValues[dPt3++], dValues[dPt3++],
+            dValues[dPt3++], MopacData.getNPQd(atomicNumber) - 3, zeta,
+            MopacData.getMopacConstD(atomicNumber, zeta)
+                * MopacData.getFactorD(dPt));
+        break;
+      }
+    }
+    setSlaters();
+  }  
+}

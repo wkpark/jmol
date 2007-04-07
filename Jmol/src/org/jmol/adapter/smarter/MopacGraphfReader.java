@@ -25,7 +25,6 @@ package org.jmol.adapter.smarter;
 
 
 import java.io.BufferedReader;
-import java.util.Vector;
 import java.util.Hashtable;
 
 import org.jmol.quantum.MopacData;
@@ -36,13 +35,10 @@ import org.jmol.quantum.MopacData;
  * @author Bob Hanson <hansonr@stolaf.edu>
  * 
  */
-class MopacGraphfReader extends AtomSetCollectionReader {
+class MopacGraphfReader extends MopacDataReader {
     
   int[] atomicNumbers;
   int atomCount;
-  Hashtable moData = new Hashtable();
-  Vector orbitals = new Vector();
-  int nOrbitals;
   
   AtomSetCollection readAtomSetCollection(BufferedReader reader) {
 
@@ -116,109 +112,34 @@ class MopacGraphfReader extends AtomSetCollectionReader {
      *    and: b == -2 ==> (coef)(x^2-y^2)(r^d)exp(-zeta*r)
      */
     nOrbitals = 0;
-    Vector intinfo = new Vector();
-    Vector floatinfo = new Vector();
     float[] values = new float[3];
     for (int iAtom = 0; iAtom < atomCount; iAtom++) {
       getTokensFloat(readLine(), values, 3);
-      int[] idata;
       int atomicNumber = atomicNumbers[iAtom];
-      float fdata[];
       float zeta;
       if ((zeta = values[0]) != 0) {
         //s
-        fdata = new float[] { zeta, MopacData.getMopacConstS(atomicNumber, zeta) };
-        idata = new int[5];
-        idata[0] = iAtom;
-        idata[4] = MopacData.getNPQs(atomicNumber) - 1;
-        intinfo.add(idata);
-        floatinfo.add(fdata);
+        addSlater(iAtom, 0, 0, 0, MopacData.getNPQs(atomicNumber) - 1, zeta,
+            MopacData.getMopacConstS(atomicNumber, zeta));
       }
       if ((zeta = values[1]) != 0) {
         int d = MopacData.getNPQp(atomicNumber) - 2;
         float coef = MopacData.getMopacConstP(atomicNumber, zeta);
-        //px
-        fdata = new float[] { zeta, coef };
-        idata = new int[5];
-        idata[0] = iAtom;
-        idata[1] = 1;
-        idata[4] = d;
-        intinfo.add(idata);
-        floatinfo.add(fdata);
-
-        //py
-        fdata = new float[] { zeta, coef };
-        idata = new int[5];
-        idata[0] = iAtom;
-        idata[2] = 1;
-        idata[4] = d;
-        intinfo.add(idata);
-        floatinfo.add(fdata);
-
-        //pz
-        fdata = new float[] { zeta, coef };
-        idata = new int[5];
-        idata[0] = iAtom;
-        idata[3] = 1;
-        idata[4] = d;
-        intinfo.add(idata);
-        floatinfo.add(fdata);
+        addSlater(iAtom, 1, 0, 0, d, zeta, coef);
+        addSlater(iAtom, 0, 1, 0, d, zeta, coef);
+        addSlater(iAtom, 0, 0, 1, d, zeta, coef);
       }
       if ((zeta = values[2]) != 0) {
         int d = MopacData.getNPQd(atomicNumber) - 3;
         float coef = MopacData.getMopacConstD(atomicNumber, zeta);
-
-        //d x2-y2
-        fdata = new float[] { zeta, coef * MopacData.getFactorD(0) };
-        idata = new int[5];
-        idata[0] = iAtom;
-        idata[2] = -2;
-        idata[4] = d;
-        intinfo.add(idata);
-        floatinfo.add(fdata);
-
-        //dxz
-        fdata = new float[] { zeta, coef * MopacData.getFactorD(1) };
-        idata = new int[5];
-        idata[0] = iAtom;
-        idata[1] = 1;
-        idata[3] = 1;
-        idata[4] = d;
-        intinfo.add(idata);
-        floatinfo.add(fdata);
-
-        //dz2
-        fdata = new float[] { zeta, coef * MopacData.getFactorD(2) };
-        idata = new int[5];
-        idata[0] = iAtom;
-        idata[1] = -2;
-        idata[4] = d;
-        intinfo.add(idata);
-        floatinfo.add(fdata);
-
-        //dyz
-        fdata = new float[] { zeta, coef * MopacData.getFactorD(3) };
-        idata = new int[5];
-        idata[0] = iAtom;
-        idata[2] = 1;
-        idata[3] = 1;
-        idata[4] = d;
-        intinfo.add(idata);
-        floatinfo.add(fdata);
-
-        //dxy
-        fdata = new float[] { zeta, coef * MopacData.getFactorD(4) };
-        idata = new int[5];
-        idata[0] = iAtom;
-        idata[1] = 1;
-        idata[2] = 1;
-        idata[4] = d;
-        intinfo.add(idata);
-        floatinfo.add(fdata);
+        int dpt = 0;
+        for (int i = 0; i < 5; i++)
+          addSlater(iAtom, dValues[dpt++], dValues[dpt++], dValues[dpt++], d,
+              zeta, coef * MopacData.getFactorD(i));
       }
     }
     nOrbitals = intinfo.size();
-    addSlaterInfoData(intinfo, floatinfo, nOrbitals, moData);
+    setSlaters();
   }
   
   void readMOs() throws Exception {
@@ -275,8 +196,6 @@ class MopacGraphfReader extends AtomSetCollectionReader {
       mo.put("coefficients", list2[iMo]);
       orbitals.add(mo);
     }
-    moData.put("mos", orbitals);
-    moData.put("energyUnits", "eV");
-    atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
+    setMOs("eV");
   }
 }

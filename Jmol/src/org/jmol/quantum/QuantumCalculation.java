@@ -486,18 +486,25 @@ public class QuantumCalculation {
      * 
      * except: a == -2 ==> z^2 ==> (coef)(2z^2-x^2-y^2)(r^d)exp(-zeta*r)
      *    and: b == -2 ==> (coef)(x^2-y^2)(r^d)exp(-zeta*r)
+     *    
+     *    NOTE: A negative zeta means this is contracted!
      */
 
     atomIndex = slaterInfo[slaterIndex][0];
+    float minuszeta = -slaterData[slaterIndex][0];
     if (atomCoordBohr[atomIndex] == null) {
-      moCoeff++;
+      if (minuszeta <= 0)
+        moCoeff++;
       return;
     }
     int a = slaterInfo[slaterIndex][1];
     int b = slaterInfo[slaterIndex][2];
     int c = slaterInfo[slaterIndex][3];
     int d = slaterInfo[slaterIndex][4];
-    float minuszeta = -slaterData[slaterIndex][0];
+    if (minuszeta > 0) { //this is contracted; use previous moCoeff
+      minuszeta = -minuszeta;
+      moCoeff--;
+    }
     float coef = slaterData[slaterIndex][1] * moCoefficients[moCoeff++];
     setMinMax(a, b, c, d, minuszeta, coef);
     for (int i = xMax; --i >= xMin;)

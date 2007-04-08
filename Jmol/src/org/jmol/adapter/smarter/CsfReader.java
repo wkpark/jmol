@@ -402,14 +402,17 @@ class CsfReader extends MopacDataReader {
   final static byte coef_indices  = 6;
   final static byte bfxn_ang  = 7;
   final static byte sto_exp  = 8;
-  final static byte MO_PROPERTY_MAX    = 9;
+  final static byte contractions  = 9;
+  final static byte MO_PROPERTY_MAX    = 10;
 
   final static String[] moFields = {
-    "ID", "eig_val", "mo_occ", "eig_vec", "eig_vec_compressed", "coef_indices", "bfxn_ang", "sto_exp"
+    "ID", "eig_val", "mo_occ", "eig_vec",
+      "eig_vec_compressed", "coef_indices", "bfxn_ang", "sto_exp",
+      "contractions"
   };
 
   final static byte[] moFieldMap = {
-    moID, eig_val, mo_occ, eig_vec, eig_vec_compressed, coef_indices, bfxn_ang, sto_exp
+    moID, eig_val, mo_occ, eig_vec, eig_vec_compressed, coef_indices, bfxn_ang, sto_exp, contractions
   };
    
   void processMolecularOrbitalObject() throws Exception {
@@ -460,16 +463,16 @@ class CsfReader extends MopacDataReader {
 
      */
 
-    int[] fieldTypes = new int[100];
+    int[] fieldTypes;
     boolean[] propertyReferenced = null;
     float[] energy = new float[nOrbitals];
     int[] occupancy = new int[nOrbitals];
     float[][] list = new float[nOrbitals][nOrbitals];
-    String[][] compressedCoefficients = null;
-    String[][] coefIndices = null;
+    float[][] listCompressed = null;
+    int[][] coefIndices = null;
     int ipt = 0;
     int coefPt = 0;
-    int indexPt = -1;
+    int indexPt = 0;
     readLine();
     while (line != null) {
       if (line.startsWith("property_flags:"))
@@ -479,6 +482,7 @@ class CsfReader extends MopacDataReader {
       if (line.indexOf("ID") != 0)
         discardLinesUntilStartsWith("ID");
       propertyReferenced = new boolean[MO_PROPERTY_MAX];
+      fieldTypes = new int[100];
       int fieldCount = parseLineParameters(moFields, moFieldMap, fieldTypes,
           propertyReferenced);
       int cPt = 0;
@@ -491,7 +495,7 @@ class CsfReader extends MopacDataReader {
           case moID:
             int id = parseInt(tokens[i]);
             if (id != ipt + 1) {
-              cPt = 0;
+              cPt = indexPt = coefPt = 0;
               ipt = id - 1;
             }
             break;
@@ -502,21 +506,20 @@ class CsfReader extends MopacDataReader {
             occupancy[ipt] = parseInt(tokens[i]);
             break;
           case eig_vec:
-            for (int j = 1; j < tokens.length; j++, cPt++)
+            for (int j = i; j < tokens.length; j++, cPt++)
               list[ipt][cPt] = parseFloat(tokens[j]);
             break;
           case eig_vec_compressed:
-            coefPt = i;
-            //presuming here only one line per MO
-            if (compressedCoefficients == null)
-              compressedCoefficients = new String[nOrbitals][];
-            compressedCoefficients[ipt] = tokens;
+            if (listCompressed == null)
+              listCompressed = new float[nOrbitals][nOrbitals];
+            for (int j = i; j < tokens.length; j++, coefPt++)
+              listCompressed[ipt][coefPt] = parseFloat(tokens[j]);
             break;
           case coef_indices:
-            indexPt = i;
             if (coefIndices == null)
-              coefIndices = new String[nOrbitals][];
-            coefIndices[ipt++] = tokens;
+              coefIndices = new int[nOrbitals][nOrbitals];
+            for (int j = i; j < tokens.length; j++, indexPt++)
+              coefIndices[ipt][indexPt] = parseInt(tokens[j]);
             break;
           }
         }
@@ -524,16 +527,12 @@ class CsfReader extends MopacDataReader {
     }
     //put it all together
     for (int iMo = 0; iMo < nOrbitals; iMo++) {
-      if (indexPt >= 0) { // must uncompress
-        String[] sIndices = coefIndices[iMo];
-        String[] sCoef = compressedCoefficients[iMo];
-        ipt = coefPt;
-        for (int i = indexPt; i < sIndices.length; i++) {
-          int pt = parseInt(sIndices[i]) - 1;
+      if (indexPt > 0) { // must uncompress
+        for (int i = 0; i < coefIndices[iMo].length; i++) {
+          int pt = coefIndices[iMo][i] - 1;
           if (pt < 0)
             break;
-          float coef = parseFloat(sCoef[ipt++]);
-          list[iMo][pt] = coef;
+          list[iMo][pt] = listCompressed[iMo][i];
         }
       }
       Hashtable mo = new Hashtable();
@@ -573,10 +572,13 @@ class CsfReader extends MopacDataReader {
     String type = "";
     float zeta = Float.NaN;
     int atomicNumber = 0;
+    float exp2 = 0;
+    float coef2 = 0;
     while (readLine() != null) {
       if (line.startsWith("property_flags:"))
         break;
       String tokens[] = getTokens();
+      float contractionCoef = 1;
       for (int i = 0; i < fieldCount; ++i) {
         String field = tokens[i];
         switch (fieldTypes[i]) {
@@ -590,37 +592,49 @@ class CsfReader extends MopacDataReader {
         case sto_exp:
           zeta = parseFloat(field);
           break;
+        case contractions:
+          exp2 = parseFloat(field);
+          contractionCoef = parseFloat(tokens[i + 1]);
+          coef2 = parseFloat(tokens[i + 2]);
         }
       }
-      int pt = "S Px Py Pz Dx2-y2 Dxz Dz2 Dyz Dxy".indexOf(type);
-      //        0 2  5  8  11     18  22  26  30
-      switch (pt) {
-      case 0: //s
-        addSlater(iAtom, 0, 0, 0, MopacData.getNPQs(atomicNumber) - 1, zeta,
-            MopacData.getMopacConstS(atomicNumber, zeta));
-        break;
-      case 2: //Px
-      case 5: //Py
-      case 8: //Pz
-        addSlater(iAtom, pt == 2 ? 1 : 0, pt == 5 ? 1 : 0, pt == 8 ? 1 : 0,
-            MopacData.getNPQp(atomicNumber) - 2, zeta, MopacData
-                .getMopacConstP(atomicNumber, zeta));
-        break;
-      case 11: //Dx2-y2
-      case 18: //Dxz
-      case 22: //Dz2
-      case 26: //Dyz
-      case 30: //Dxy
-        int dPt = (pt == 11 ? 0 : pt == 18 ? 1 : pt == 22 ? 2 : pt == 26 ? 3
-            : 4);
-        int dPt3 = dPt * 3;
-        addSlater(iAtom, dValues[dPt3++], dValues[dPt3++],
-            dValues[dPt3++], MopacData.getNPQd(atomicNumber) - 3, zeta,
-            MopacData.getMopacConstD(atomicNumber, zeta)
-                * MopacData.getFactorD(dPt));
-        break;
-      }
+      //System.out.println("orbitals for atom " + iAtom + " at.no. " + atomicNumber);
+      createSlaterByType(iAtom, atomicNumber, type, zeta, contractionCoef);
+      if (exp2 != 0)
+        createSlaterByType(iAtom, atomicNumber, type, -exp2, coef2);
     }
     setSlaters();
   }  
+  void createSlaterByType(int iAtom, int atomicNumber, String type, float zeta,
+                          float coef) {
+    int pt = "S Px Py Pz Dx2-y2 Dxz Dz2 Dyz Dxy".indexOf(type);
+    //        0 2  5  8  11     18  22  26  30
+    float absZeta = Math.abs(zeta);
+    switch (pt) {
+    case 0: //s
+      addSlater(iAtom, 0, 0, 0, MopacData.getNPQs(atomicNumber) - 1, zeta,
+          MopacData.getMopacConstS(atomicNumber, absZeta) * coef);
+      return;
+    case 2: //Px
+    case 5: //Py
+    case 8: //Pz
+      addSlater(iAtom, pt == 2 ? 1 : 0, pt == 5 ? 1 : 0, pt == 8 ? 1 : 0,
+          MopacData.getNPQp(atomicNumber) - 2, zeta, MopacData.getMopacConstP(
+              atomicNumber, absZeta)
+              * coef);
+      return;
+    case 11: //Dx2-y2
+    case 18: //Dxz
+    case 22: //Dz2
+    case 26: //Dyz
+    case 30: //Dxy
+      int dPt = (pt == 11 ? 0 : pt == 18 ? 1 : pt == 22 ? 2 : pt == 26 ? 3 : 4);
+      int dPt3 = dPt * 3;
+      addSlater(iAtom, dValues[dPt3++], dValues[dPt3++], dValues[dPt3++],
+          MopacData.getNPQd(atomicNumber) - 3, zeta, MopacData.getMopacConstD(
+              atomicNumber, absZeta)
+              * MopacData.getFactorD(dPt) * coef);
+      return;
+    }
+  }
 }

@@ -298,13 +298,16 @@ public class Viewer extends JmolViewer {
     script("reset");
   }
 
+ 
+  /*
   final Hashtable imageCache = new Hashtable();
 
   void flushCachedImages() {
     imageCache.clear();
     colorManager.flushCachedColors();
   }
-
+ */
+ 
   Hashtable getAppletInfo() {
     Hashtable info = new Hashtable();
     info.put("htmlName", htmlName);
@@ -959,7 +962,7 @@ public class Viewer extends JmolViewer {
     int argb = getObjectArgb(objId);
     if (argb == 0)
       return getColixBackgroundContrast();
-    return g3d.getColix(argb);
+    return g3d.getColix(argb); 
   }
   
  String getObjectState(String name) {

@@ -1897,9 +1897,21 @@ final public class Graphics3D {
   static float ambientFraction = 0.45f;
   
 */
-  
 
-  final float[] lighting = new float[] {1f, 0.22f, 6f, 0.4f, 0.84f, 0.45f}; 
+  final float[] lighting = new float[] {
+      //user set:
+      1f,       // specularON
+      22f,      // specularPercent
+      6f,       // specularExponent
+      40f,      // specularPower
+      84f,      // diffusePercent
+      45f,      // ambientPercent
+      //derived:
+      0.22f,    // intensitySpecular
+      0.4f,     // intense fraction
+      0.84f,    // intensity diffuse
+      0.45f,    // ambient fraction  
+      }; 
   
   public void setSpecular(boolean specular) {
     lighting[Shade3D.SPECULAR_ON] = (specular ? 1f : 0f);
@@ -1909,38 +1921,51 @@ final public class Graphics3D {
     return (lighting[Shade3D.SPECULAR_ON] != 0);
   }
 
+  
   public void setSpecularPower(int specularPower) {
-    if (specularPower >= 0)
-      lighting[Shade3D.INTENSE_FRACTION] = specularPower / 100f;
-    else
-      lighting[Shade3D.SPECULAR_EXPONENT] = -specularPower;
+    lighting[Shade3D.SPECULAR_POWER] = specularPower;
+    lighting[Shade3D.INTENSE_FRACTION] = specularPower / 100f;
   }
   
-  public void setAmbientPercent(int ambientPercent) {
-    lighting[Shade3D.AMBIENT_FRACTION] = ambientPercent / 100f;
-  }
-
-  public int getAmbientPercent() {
-    return (int) (lighting[Shade3D.AMBIENT_FRACTION] * 100);
+  public float getSpecularPower() {
+    return lighting[Shade3D.SPECULAR_POWER];
   }
   
-  public void setDiffusePercent(int diffusePercent) {
-    lighting[Shade3D.INTENSITY_DIFFUSE]= diffusePercent / 100f;
-  }
-
-  public int getDiffusePercent() {
-    return (int) (lighting[Shade3D.INTENSITY_DIFFUSE] * 100);
-  }
-  
-
   public void setSpecularPercent(int specularPercent) {
+    lighting[Shade3D.SPECULAR_PERCENT]= specularPercent;
     lighting[Shade3D.INTENSITY_SPECULAR] = specularPercent / 100f;
   }
 
   public int getSpecularPercent() {
-    return (int) (lighting[Shade3D.INTENSITY_SPECULAR] * 100);
+    return (int) lighting[Shade3D.SPECULAR_PERCENT];
   }
 
+  public float getSpecularExponent() {
+    return lighting[Shade3D.SPECULAR_EXPONENT];
+  }
+  
+  public void setSpecularExponent(int specularExponent) {
+    lighting[Shade3D.SPECULAR_EXPONENT] = specularExponent;
+  }
+  
+  public void setDiffusePercent(int diffusePercent) {
+    lighting[Shade3D.DIFFUSE_PERCENT]= diffusePercent;
+    lighting[Shade3D.INTENSITY_DIFFUSE]= diffusePercent / 100f;
+  }
+
+  public int getDiffusePercent() {
+    return (int) lighting[Shade3D.DIFFUSE_PERCENT];
+  }
+  
+  public void setAmbientPercent(int ambientPercent) {
+    lighting[Shade3D.AMBIENT_PERCENT] = ambientPercent;
+    lighting[Shade3D.AMBIENT_FRACTION] = ambientPercent / 100f;
+  }
+
+  public int getAmbientPercent() {
+    return (int) (lighting[Shade3D.AMBIENT_PERCENT]);
+  }
+  
 /*  
   static void dump() {
     Logger.debug("\n ambientPercent=" + ambientFraction +

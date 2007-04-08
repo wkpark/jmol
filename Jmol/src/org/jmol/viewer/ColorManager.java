@@ -381,14 +381,18 @@ class ColorManager {
     return g3d.getColix(JmolConstants.argbsHbondType[argbIndex]);
   }
 
+  /*
   void flushCachedColors() {
   }
-
+  */
+  
   private void flushCaches() {
     g3d.flushShadesAndImageCaches();
   }
 
   void setSpecular(boolean specular) {
+    if (g3d.getSpecular() == specular)
+      return;
     g3d.setSpecular(specular);
     flushCaches();
   }
@@ -397,36 +401,50 @@ class ColorManager {
     return g3d.getSpecular();
   }
 
-  void setSpecularPower(int specularPower) {
-    g3d.setSpecularPower(specularPower);
+  void setSpecularPercent(int specularPercent) {
+    if (g3d.getSpecularPercent() == specularPercent)
+      return;
+    g3d.setSpecularPercent(specularPercent);
     flushCaches();
   }
   
-  void setAmbientPercent(int ambientPercent) {
-    g3d.setAmbientPercent(ambientPercent);
-    flushCaches();
+  int getSpecularPercent() {
+    return g3d.getSpecularPercent();
   }
 
+  void setSpecularPower(int specularPower) {
+    if (specularPower < 0) {
+      if (g3d.getSpecularExponent() == -specularPower)
+        return;
+      g3d.setSpecularExponent(-specularPower);
+    } else {
+      if (g3d.getSpecularPower() == specularPower)
+        return;
+      g3d.setSpecularPower(specularPower);
+    }
+    flushCaches();
+  }
+  
   void setDiffusePercent(int diffusePercent) {
+    if (g3d.getDiffusePercent() == diffusePercent)
+      return;
     g3d.setDiffusePercent(diffusePercent);
     flushCaches();
   }
 
-  void setSpecularPercent(int specularPercent) {
-    g3d.setSpecularPercent(specularPercent);
+  int getDiffusePercent() {
+    return g3d.getDiffusePercent();
+  }
+
+  void setAmbientPercent(int ambientPercent) {
+    if (g3d.getAmbientPercent() == ambientPercent)
+      return;
+    g3d.setAmbientPercent(ambientPercent);
     flushCaches();
   }
 
   int getAmbientPercent() {
     return g3d.getAmbientPercent();
-  }
-
-  int getSpecularPercent() {
-    return g3d.getSpecularPercent();
-  }
-
-  int getDiffusePercent() {
-    return g3d.getDiffusePercent();
   }
 
   /*

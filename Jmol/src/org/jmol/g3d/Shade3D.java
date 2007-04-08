@@ -67,11 +67,15 @@ final class Shade3D {
   // and saved in g3d.lighting
   
   static int SPECULAR_ON = 0; // set specular on|off
-  static int INTENSITY_SPECULAR = 1;
+  static int SPECULAR_PERCENT = 1;
   static int SPECULAR_EXPONENT = 2;
-  static int INTENSE_FRACTION = 3;
-  static int INTENSITY_DIFFUSE = 4;
-  static int AMBIENT_FRACTION = 5;
+  static int SPECULAR_POWER = 3;
+  static int DIFFUSE_PERCENT = 4;
+  static int AMBIENT_PERCENT = 5;
+  static int INTENSITY_SPECULAR = 6;
+  static int INTENSE_FRACTION = 7;
+  static int INTENSITY_DIFFUSE = 8;
+  static int AMBIENT_FRACTION = 9;
 
   static int[] getShades(int rgb, boolean greyScale, float[] lighting) {
     int[] shades = new int[shadeMax];

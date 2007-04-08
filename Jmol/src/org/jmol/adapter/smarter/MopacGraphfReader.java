@@ -173,7 +173,7 @@ class MopacGraphfReader extends MopacDataReader {
       for (int j = 0; j < nOrbitals; j++) {
         for (int k = 0; k < nOrbitals; k++)
           list2[i][j] += (list[i][k] * invMatrix[k][j]);
-        if (Math.abs(list2[i][j]) < 1e-10)
+        if (Math.abs(list2[i][j]) < MIN_COEF)
           list2[i][j] = 0;
       }
     /*

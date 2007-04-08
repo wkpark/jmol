@@ -515,7 +515,8 @@ class CsfReader extends MopacDataReader {
           case eig_vec_compressed:
             if (listCompressed == null)
               listCompressed = new float[nOrbitals][nOrbitals];
-            for (int j = i; j < tokens.length; j++, coefPt++)
+            int n = i + getPropertyCount("eig_vec_compressed");
+            for (int j = i; j < n; j++, coefPt++)
               listCompressed[ipt][coefPt] = parseFloat(tokens[j]);
             break;
           case coef_indices:
@@ -538,6 +539,9 @@ class CsfReader extends MopacDataReader {
           list[iMo][pt] = listCompressed[iMo][i];
         }
       }
+      for (int i = 0; i < nOrbitals; i++)
+        if (Math.abs(list[iMo][i]) < MIN_COEF)
+          list[iMo][i] = 0;
       Hashtable mo = new Hashtable();
       mo.put("energy", new Float(energy[iMo]));
       mo.put("occupancy", new Integer(occupancy[iMo]));

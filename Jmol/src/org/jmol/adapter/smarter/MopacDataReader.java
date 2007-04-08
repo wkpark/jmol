@@ -40,6 +40,8 @@ import java.util.Vector;
  * @author hansonr <hansonr@stolaf.edu>
  */
 abstract class MopacDataReader extends AtomSetCollectionReader {
+
+  final static float MIN_COEF = 0.0001f;  // sufficient?
   
   Hashtable moData = new Hashtable();
   int nOrbitals = 0;

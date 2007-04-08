@@ -506,6 +506,8 @@ public class QuantumCalculation {
       moCoeff--;
     }
     float coef = slaterData[slaterIndex][1] * moCoefficients[moCoeff++];
+    if (coef == 0)
+      return;
     setMinMax(a, b, c, d, minuszeta, coef);
     for (int i = xMax; --i >= xMin;)
       X[i] = xyzBohr[i][0] - atomCoordBohr[atomIndex].x;

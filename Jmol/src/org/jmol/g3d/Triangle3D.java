@@ -43,9 +43,9 @@ class Triangle3D {
   final Graphics3D g3d;
   final Line3D line3d;
 
-  final int[] ax = new int[3];
-  final int[] ay = new int[3];
-  final int[] az = new int[3];
+  int[] ax = new int[3];
+  int[] ay = new int[3];
+  int[] az = new int[3];
 
   Rgb16[] rgb16sGouraud;
   

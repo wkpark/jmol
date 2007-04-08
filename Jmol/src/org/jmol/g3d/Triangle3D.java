@@ -48,7 +48,9 @@ class Triangle3D {
   final int[] az = new int[3];
 
   Rgb16[] rgb16sGouraud;
-
+  
+  private String testString = null;
+  
   private final static boolean VERIFY = false;
 
   Triangle3D(Graphics3D g3d) {
@@ -205,15 +207,18 @@ class Triangle3D {
     int yMid = ay[iMidY];
     int yMax = ay[iMaxY];
     int nLines = yMax - yMin + 1;
-    if (nLines > g3d.height*3)
+    if (nLines > g3d.height * 3)
       return;
     if (nLines > axW.length)
       reallocRasterArrays(nLines);
 
     Rgb16[] gouraudW = useGouraud ? rgb16sW : null;
     Rgb16[] gouraudE = useGouraud ? rgb16sE : null;
-   
+
     int dyMidMin = yMid - yMin;
+    if (yMid < yMin || yMax < yMin || yMax < yMid)
+      System.out.println("HUH? dyMidMin < 0!! "
+          + yMin + " " + yMid + " " + yMax + " ay012:" + ay[0] + " " + ay[1] + " " + ay[2]);
     if (dyMidMin == 0) {
       // flat top
       if (ax[iMidY] < ax[iMinY]) {
@@ -222,14 +227,15 @@ class Triangle3D {
         iMinY = t;
       }
       /*  min --------  mid //
-             \         /
-            A \       / B
-             \ \     / /
-                \   /
-                 max
-      */
-      
+       \         /
+       A \       / B
+       \ \     / /
+       \   /
+       max
+       */
+      testString = "flat top1";
       generateRaster(nLines, iMinY, iMaxY, axW, azW, 0, gouraudW);
+      testString = "flat top2";
       generateRaster(nLines, iMidY, iMaxY, axE, azE, 0, gouraudE);
     } else if (yMid == yMax) {
       // flat bottom
@@ -246,8 +252,9 @@ class Triangle3D {
        *   /         \
        *  mid -------- max
        */
-
+      testString = "flat bottom1";
       generateRaster(nLines, iMinY, iMidY, axW, azW, 0, gouraudW);
+      testString = "flat bottom2";
       generateRaster(nLines, iMinY, iMaxY, axE, azE, 0, gouraudE);
     } else {
       int dxMaxMin = ax[iMaxY] - ax[iMinY];
@@ -269,14 +276,16 @@ class Triangle3D {
 
         // Trick is that we need to overlap so as to generate the IDENTICAL
         // raster on each segment, but then we always throw out the FIRST raster
+        testString = "rightmid1";
         generateRaster(nLines, iMinY, iMaxY, axW, azW, 0, gouraudW);
+        testString = "rightmid2";
         generateRaster(dyMidMin + 1, iMinY, iMidY, axE, azE, 0, gouraudE);
+        testString = "rightmid3";
         generateRaster(nLines - dyMidMin, iMidY, iMaxY, axE, azE, dyMidMin,
             gouraudE);
 
-      
       } else {
-        
+
         /*
          *       min
          *      /   \ C
@@ -287,14 +296,18 @@ class Triangle3D {
          *       B->    max
          */
 
+        testString = "leftmid1";
         generateRaster(dyMidMin + 1, iMinY, iMidY, axW, azW, 0, gouraudW);
+        testString = "leftmid2";
         generateRaster(nLines - dyMidMin, iMidY, iMaxY, axW, azW, dyMidMin,
             gouraudW);
+        testString = "leftmid3";
         generateRaster(nLines, iMinY, iMaxY, axE, azE, 0, gouraudE);
       }
     }
     g3d.setZMargin(5);
-    fillRaster(yMin, nLines, useGouraud, isClipped, g3d.haveAlphaTranslucent ? 1 : 0);
+    fillRaster(yMin, nLines, useGouraud, isClipped,
+        g3d.haveAlphaTranslucent ? 1 : 0);
     g3d.setZMargin(0);
   }
 
@@ -324,13 +337,12 @@ class Triangle3D {
 
   private void generateRaster(int dy, int iN, int iS, int[] axRaster,
                               int[] azRaster, int iRaster, Rgb16[] gouraud) {
-    if (dy == 0)
-      return;
-    /*
-    System.out.println("generateRaster\n" +
+    if (dy == 0 || iRaster < 0) {
+    System.out.println(testString + " generateRaster nlines iRaster " + dy + " " + iRaster + " iN, iS:" +iN + " " + iS + "\n" +
      "N="+ax[iN]+","+ay[iN]+","+az[iN]+"\n" +
      "S="+ax[iS]+","+ay[iS]+","+az[iS]+"\n");
-     */
+    return;
+    }
     int xN = ax[iN], zN = az[iN];
     int xS = ax[iS], zS = az[iS];
     int dx = xS - xN, dz = zS - zN;

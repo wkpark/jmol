@@ -43,7 +43,7 @@ class Triangle3D {
   final Graphics3D g3d;
   final Line3D line3d;
 
-  Thread t;
+  //Thread t;
   
   int[] ax = new int[3];
   int[] ay = new int[3];
@@ -131,7 +131,7 @@ class Triangle3D {
 
   void fillTriangle(Point3i screenA, Point3i screenB, Point3i screenC,
                     boolean useGouraud) {
-    t = Thread.currentThread();
+    //t = Thread.currentThread();
     ax[0] = screenA.x;
     ax[1] = screenB.x;
     ax[2] = screenC.x;
@@ -219,11 +219,11 @@ class Triangle3D {
     Rgb16[] gouraudE = useGouraud ? rgb16sE : null;
 
     int dyMidMin = yMid - yMin;
-    if (Thread.currentThread() != t)
-      System.out.println("!!!!two renderers are working!");
-    if (yMid < yMin || yMax < yMin || yMax < yMid)
-      System.out.println("HUH? dyMidMin < 0!! "
-          + yMin + " " + yMid + " " + yMax + " ay012:" + ay[0] + " " + ay[1] + " " + ay[2]);
+    //if (Thread.currentThread() != t)
+      //System.out.println("!!!!two renderers are working!");
+    //if (yMid < yMin || yMax < yMin || yMax < yMid)
+      //System.out.println("HUH? dyMidMin < 0!! "
+       //   + yMin + " " + yMid + " " + yMax + " ay012:" + ay[0] + " " + ay[1] + " " + ay[2]);
     if (dyMidMin == 0) {
       // flat top
       if (ax[iMidY] < ax[iMinY]) {
@@ -342,12 +342,12 @@ class Triangle3D {
 
   private void generateRaster(int dy, int iN, int iS, int[] axRaster,
                               int[] azRaster, int iRaster, Rgb16[] gouraud) {
-    if (dy == 0 || iRaster < 0) {
-    System.out.println(" generateRaster nlines iRaster " + dy + " " + iRaster + " iN, iS:" +iN + " " + iS + "\n" +
-     "N="+ax[iN]+","+ay[iN]+","+az[iN]+"\n" +
-     "S="+ax[iS]+","+ay[iS]+","+az[iS]+"\n");
-    return;
-    }
+    //if (dy == 0 || iRaster < 0) {
+    //System.out.println(" generateRaster nlines iRaster " + dy + " " + iRaster + " iN, iS:" +iN + " " + iS + "\n" +
+    // "N="+ax[iN]+","+ay[iN]+","+az[iN]+"\n" +
+    // "S="+ax[iS]+","+ay[iS]+","+az[iS]+"\n");
+    //return;
+    //}
     int xN = ax[iN], zN = az[iN];
     int xS = ax[iS], zS = az[iS];
     int dx = xS - xN, dz = zS - zN;

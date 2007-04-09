@@ -774,14 +774,14 @@ final public class Graphics3D {
   }
   
   public void endRendering() {
-    if (currentlyRendering) {
-      if (antialiasThisFrame)
-        downSampleFullSceneAntialiasing();
-      if (isPass2)
-        mergeOpaqueAndTranslucentBuffers();
-      platform.notifyEndOfRendering();
-      currentlyRendering = false;
-    }
+    if (!currentlyRendering)
+      return;
+    if (antialiasThisFrame)
+      downSampleFullSceneAntialiasing();
+    if (isPass2)
+      mergeOpaqueAndTranslucentBuffers();
+    platform.notifyEndOfRendering();
+    currentlyRendering = false;
   }
 
   public void snapshotAnaglyphChannelBytes() {

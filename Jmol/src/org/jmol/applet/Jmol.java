@@ -406,8 +406,14 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
   public void paint(Graphics g) {
     //paint is invoked for system-based updates (obscuring, for example)
+    //Opera has a bug in relation to displaying the Java Console. 
+      
+    if (isUpdating)
+      return;
     update(g, "paint ");
   }
+
+  private boolean isUpdating;
 
   public void update(Graphics g) {
     //update is called in response to repaintManager's repaint() request. 
@@ -418,6 +424,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   private void update(Graphics g, String source) {
     if (viewer == null) // it seems that this can happen at startup sometimes
       return;
+    
+    isUpdating = true;
     if (showPaintTime)
       startPaintClock();
     Dimension size = jvm12orGreater ? jvm12.getSize() : appletWrapper.size();
@@ -430,15 +438,17 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       printProgressbarMessage(g);
       viewer.repaintView();
     } else {
-      System.out.println("UPDATE1: " + source + " " + Thread.currentThread());
+      //System.out.println("UPDATE1: " + source + " " + Thread.currentThread());
       viewer.renderScreenImage(g, size, rectClip);
-      System.out.println("UPDATE2: " + source + " " + Thread.currentThread());
+      //System.out.println("UPDATE2: " + source + " " + Thread.currentThread());
     }
 
     if (showPaintTime) {
       stopPaintClock();
       showTimes(10, 10, g);
     }
+    
+    isUpdating = false;
   }
 
   final static String[] progressbarMsgs = { "Jmol developer alert!", "",

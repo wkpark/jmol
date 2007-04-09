@@ -43,6 +43,8 @@ class Triangle3D {
   final Graphics3D g3d;
   final Line3D line3d;
 
+  Thread t;
+  
   int[] ax = new int[3];
   int[] ay = new int[3];
   int[] az = new int[3];
@@ -129,6 +131,7 @@ class Triangle3D {
 
   void fillTriangle(Point3i screenA, Point3i screenB, Point3i screenC,
                     boolean useGouraud) {
+    t = Thread.currentThread();
     ax[0] = screenA.x;
     ax[1] = screenB.x;
     ax[2] = screenC.x;
@@ -216,6 +219,8 @@ class Triangle3D {
     Rgb16[] gouraudE = useGouraud ? rgb16sE : null;
 
     int dyMidMin = yMid - yMin;
+    if (Thread.currentThread() != t)
+      System.out.println("!!!!two renderers are working!");
     if (yMid < yMin || yMax < yMin || yMax < yMid)
       System.out.println("HUH? dyMidMin < 0!! "
           + yMin + " " + yMid + " " + yMax + " ay012:" + ay[0] + " " + ay[1] + " " + ay[2]);

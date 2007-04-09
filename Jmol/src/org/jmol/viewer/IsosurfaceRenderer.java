@@ -27,6 +27,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.Logger;
 
 class IsosurfaceRenderer extends MeshRenderer {
 
@@ -135,15 +136,8 @@ class IsosurfaceRenderer extends MeshRenderer {
             g3d.fillTriangle(screens[iA], colixA, normixes[iA], screens[iB],
                 colixB, normixes[iB], screens[iC], colixC, normixes[iC]);
           } catch (Exception e) {
-            //TODO  I can't track this one down -- happened once, not second time, with script running to create isosurface plane for slabbing
-            if (++nError < 5) {
-              haveNotified = true;
-              System.out.println("IsosurfaceRenderer bug? s=" + screens
-                  + (screens == null ? "" : " " + screens[iA]+ " " + screens[iB]+ " " + screens[iC]) + " n="
-                  + normixes + (normixes == null ? "" : " " + normixes.length)
-                  + " abc" + iA + " " + iB + " " + iC + " " + e.toString()
-                  + "\n");
-              e.printStackTrace();
+            if (nError++ < 1) {
+              Logger.warn("IsosurfaceRenderer -- competing thread bug?\n", e);
             }
           }
         }

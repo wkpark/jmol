@@ -150,8 +150,6 @@ abstract class MeshRenderer extends ShapeRenderer {
       }
   }
 
-  boolean haveNotified;
-  
   /**
    * NOTE-- IF YOU CHANGE THIS SET OF PARAMETERS, 
    * YOU MUST CHANGE THEM IN IsosurfaceRenderer.java

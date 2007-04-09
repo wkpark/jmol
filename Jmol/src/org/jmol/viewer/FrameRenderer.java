@@ -45,7 +45,7 @@ class FrameRenderer {
 
     if (frame == null || !viewer.mustRenderFlag())
       return;
-    
+    //System.out.println("Frame: rendering viewer "+ viewer + " thread " + Thread.currentThread());    
     logTime = viewer.getTestFlag1();
 
     viewer.finalizeTransformParameters();

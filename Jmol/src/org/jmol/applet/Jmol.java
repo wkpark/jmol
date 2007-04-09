@@ -417,7 +417,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       printProgressbarMessage(g);
       viewer.repaintView();
     } else {
+      System.out.println("UPDATE1: " + Thread.currentThread());
       viewer.renderScreenImage(g, size, rectClip);
+      System.out.println("UPDATE2: " + Thread.currentThread());
     }
 
     if (showPaintTime) {

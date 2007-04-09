@@ -51,7 +51,7 @@ class Triangle3D {
 
   Rgb16[] rgb16sGouraud;
   
-  private String testString = null;
+  //private String testString = null;
   
   private final static boolean VERIFY = false;
 
@@ -238,9 +238,9 @@ class Triangle3D {
        \   /
        max
        */
-      testString = "flat top1";
+      //testString = "flat top1";
       generateRaster(nLines, iMinY, iMaxY, axW, azW, 0, gouraudW);
-      testString = "flat top2";
+      //testString = "flat top2";
       generateRaster(nLines, iMidY, iMaxY, axE, azE, 0, gouraudE);
     } else if (yMid == yMax) {
       // flat bottom
@@ -257,9 +257,9 @@ class Triangle3D {
        *   /         \
        *  mid -------- max
        */
-      testString = "flat bottom1";
+      //testString = "flat bottom1";
       generateRaster(nLines, iMinY, iMidY, axW, azW, 0, gouraudW);
-      testString = "flat bottom2";
+      //testString = "flat bottom2";
       generateRaster(nLines, iMinY, iMaxY, axE, azE, 0, gouraudE);
     } else {
       int dxMaxMin = ax[iMaxY] - ax[iMinY];
@@ -281,11 +281,11 @@ class Triangle3D {
 
         // Trick is that we need to overlap so as to generate the IDENTICAL
         // raster on each segment, but then we always throw out the FIRST raster
-        testString = "rightmid1";
+        //testString = "rightmid1";
         generateRaster(nLines, iMinY, iMaxY, axW, azW, 0, gouraudW);
-        testString = "rightmid2";
+        //testString = "rightmid2";
         generateRaster(dyMidMin + 1, iMinY, iMidY, axE, azE, 0, gouraudE);
-        testString = "rightmid3";
+        //testString = "rightmid3";
         generateRaster(nLines - dyMidMin, iMidY, iMaxY, axE, azE, dyMidMin,
             gouraudE);
 
@@ -301,12 +301,12 @@ class Triangle3D {
          *       B->    max
          */
 
-        testString = "leftmid1";
+        //testString = "leftmid1";
         generateRaster(dyMidMin + 1, iMinY, iMidY, axW, azW, 0, gouraudW);
-        testString = "leftmid2";
+        //testString = "leftmid2";
         generateRaster(nLines - dyMidMin, iMidY, iMaxY, axW, azW, dyMidMin,
             gouraudW);
-        testString = "leftmid3";
+        //testString = "leftmid3";
         generateRaster(nLines, iMinY, iMaxY, axE, azE, 0, gouraudE);
       }
     }
@@ -343,7 +343,7 @@ class Triangle3D {
   private void generateRaster(int dy, int iN, int iS, int[] axRaster,
                               int[] azRaster, int iRaster, Rgb16[] gouraud) {
     if (dy == 0 || iRaster < 0) {
-    System.out.println(testString + " generateRaster nlines iRaster " + dy + " " + iRaster + " iN, iS:" +iN + " " + iS + "\n" +
+    System.out.println(" generateRaster nlines iRaster " + dy + " " + iRaster + " iN, iS:" +iN + " " + iS + "\n" +
      "N="+ax[iN]+","+ay[iN]+","+az[iN]+"\n" +
      "S="+ax[iS]+","+ay[iS]+","+az[iS]+"\n");
     return;

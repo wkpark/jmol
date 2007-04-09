@@ -43,6 +43,11 @@ final public class JmolConstants {
    
    reinstates tempManager properly.
    
+   adds support for CAChe CSF files with MOPAC (AM1, PM3, etc.),
+   Density Functional, and Extended Huckel Gaussian/Slater-based molecular orbitals.
+   
+   CHANGES DEFAULT RENDERING FOR MOLECULAR ORBITALS TO: MESH NOFILL FRONTONLY
+   
    adds MOPAC 2007 graphf output reader (gpt2 files, MOPAC molecular orbitals)
    based on the VERY latest version (not released yet), which includes
    "MOPAC-Graphical data" on the first line, character index 6.
@@ -67,7 +72,7 @@ final public class JmolConstants {
   draw list
   isosurface list
   lcaocartoon list
-  mo list
+  (mo list) -- not particularly useful
   pmesh list
  
    Listing gives id, number of vertices, number of polygons, visibility,

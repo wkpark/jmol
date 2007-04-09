@@ -26,6 +26,7 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import org.jmol.quantum.MopacData;
 import org.jmol.util.Logger;
@@ -37,6 +38,9 @@ import org.jmol.util.Logger;
  * in addition, ID numbers are not sequential, requiring atomNames
  * 
  * first crack at this 2006/04/13
+ * added DGAUSS, MOPAC, EHT orbital/basis reading 2007/04/09
+ * streamlined CSF dataset reading capabilities 2007/04/09
+ * 
  * 
  * @author hansonr <hansonr@stolaf.edu>
  */
@@ -44,6 +48,10 @@ class CsfReader extends MopacDataReader {
 
   int nAtoms = 0;
   String atomicNumbers = "";
+  int fieldCount;
+  int nVibrations = 0;
+  int nGaussians = 0;
+  int nSlaters = 0;
   
   AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
@@ -86,7 +94,11 @@ class CsfReader extends MopacDataReader {
       return;
     }
     if (line.equals("object_class sto_basis_fxn")) {
-      processSlaterBasisObject();
+      processBasisObject("sto");
+      return;
+    }
+    if (line.equals("object_class gto_basis_fxn")) {
+      processBasisObject("gto");
       return;
     }
     
@@ -105,6 +117,13 @@ class CsfReader extends MopacDataReader {
   private int parseLineParameters(String[] fields,
                           byte[] fieldMap) throws Exception {
     
+    fieldCount = -1;
+    //System.out.println(line);
+    if (line == null || line.startsWith("property_flags:"))
+      readLine();
+    if (line == null || line.startsWith("object_class"))
+      return fieldCount;
+
     String[] tokens = new String[0];
     //property xyz_coordinates Linus angstrom 6 3 FLOAT
 
@@ -117,12 +136,10 @@ class CsfReader extends MopacDataReader {
       readLine();
     }
     // ID line:
-    String field;
-    int fieldCount = -1;
     for (int i = 0; i < nFields; i++)
       fieldTypes[i] = 0;
     for (int ipt = 0, fpt = 0; ipt < tokens.length; ipt++ ) {
-      field = tokens[ipt];
+      String field = tokens[ipt];
       for (int i = fields.length; --i >= 0; )
         if (field.equals(fields[i])) {
           fieldTypes[fpt] = fieldMap[i];
@@ -136,30 +153,50 @@ class CsfReader extends MopacDataReader {
     return fieldCount;
   }
 
+  private void fillCsfArray(String property, String[] tokens, int i0, Object f)
+      throws Exception {
+    // handles the continuation. i0 should be 1 for actual continuation, I think.
+    int n = getPropertyCount(property);
+    int ioffset = i0;
+    //System.out.println(property);
+    boolean isInteger = (f instanceof int[]);
+    for (int i = 0; i < n; i++) {
+      int ipt = ioffset + i;
+      if (ipt == tokens.length) {
+        tokens = getTokens(readLine());
+        //System.out.println(line);
+        ioffset -= ipt - i0;
+        ipt = i0;
+      }
+      if (isInteger)
+        ((int[]) f)[i] = parseInt(tokens[ipt]);
+      else
+        ((float[]) f)[i] = parseFloat(tokens[ipt]);
+    }
+  }
+
   ////////////////////////////////////////////////////////////////
   // connector data
   ////////////////////////////////////////////////////////////////
 
-  final static byte conID   = 1;
-  final static byte objCls1 = 2;
-  final static byte objID1  = 3;
-  final static byte objCls2 = 4;
-  final static byte objID2  = 5;
+  final static byte objCls1 = 1;
+  final static byte objID1  = 2;
+  final static byte objCls2 = 3;
+  final static byte objID2  = 4;
   
-  final static byte CONNECTOR_PROPERTY_MAX      = 6;
-
   final static String[] connectorFields = {
-    "ID", "objCls1", "objID1", "objCls2", "objID2"
+    "objCls1", "objID1", "objCls2", "objID2"
   };
 
   final static byte[] connectorFieldMap = {
-    conID, objCls1, objID1, objCls2, objID2
+    objCls1, objID1, objCls2, objID2
   };
   
   Hashtable connectors = new Hashtable();
   
   void processConnectorObject() throws Exception {
-    int fieldCount = parseLineParameters(connectorFields, connectorFieldMap);
+    readLine();
+    parseLineParameters(connectorFields, connectorFieldMap);
     out: for (; readLine() != null;) {
       if (line.startsWith("property_flags:"))
         break;
@@ -170,9 +207,6 @@ class CsfReader extends MopacDataReader {
       for (int i = 0; i < fieldCount; ++i) {
         String field = tokens[i];
         switch (fieldTypes[i]) {
-        case NONE:
-        case conID:
-          break;
         case objCls1:
           if (!field.equals("atom"))
             continue out;
@@ -180,8 +214,12 @@ class CsfReader extends MopacDataReader {
         case objCls2:
           field2 = field;
           if (field.equals("sto_basis_fxn"))
-            nOrbitals++;
-          else if (!field.equals("bond") && !field.equals("gto_basis_fxn")) 
+            nSlaters++;
+          else if (field.equals("gto_basis_fxn"))
+            nGaussians++;
+          else if (field.equals("vibrational_level"))
+            nVibrations++;
+          else if (!field.equals("bond")) 
             continue out;
           break;
         case objID1:
@@ -211,29 +249,27 @@ class CsfReader extends MopacDataReader {
   // atom data
   ////////////////////////////////////////////////////////////////
 
-  final static byte NONE           = 0;
-  final static byte atomID         = 1;
-  final static byte sym            = 2;
-  final static byte anum           = 3;
-  final static byte chrg           = 4;
-  final static byte xyz_coordinates = 5;
-  final static byte pchrg           = 6;
-  final static byte ATOM_PROPERTY_MAX = 7;
+  final static byte ID             = -1;
+
+  final static byte sym            = 1;
+  final static byte anum           = 2;
+  final static byte chrg           = 3;
+  final static byte xyz_coordinates = 4;
+  final static byte pchrg           = 5;
   
 
   final static String[] atomFields = {
-    "ID",
-    "sym", "anum",
-    "chrg", "xyz_coordinates", "pchrg"
+    "ID", "sym", "anum", "chrg", "xyz_coordinates", "pchrg"
   };
 
   final static byte[] atomFieldMap = {
-    atomID, sym, anum, chrg, xyz_coordinates, pchrg
+    ID, sym, anum, chrg, xyz_coordinates, pchrg
   };
 
   void processAtomObject() throws Exception {
+    readLine();
+    parseLineParameters(atomFields, atomFieldMap);
     nAtoms = 0;
-    int fieldCount = parseLineParameters(atomFields, atomFieldMap);
     for (; readLine() != null; ) {
       if (line.startsWith("property_flags:"))
         break;
@@ -244,9 +280,7 @@ class CsfReader extends MopacDataReader {
         if (field == null)
           Logger.warn("field == null in " + line);
         switch (fieldTypes[i]) {
-        case NONE:
-          break;
-        case atomID:
+        case ID:
           atom.atomName = "atom"+field;
           break;
         case sym:
@@ -281,24 +315,22 @@ class CsfReader extends MopacDataReader {
   // bond order data
   ////////////////////////////////////////////////////////////////
 
-  final static byte bondID = 1;
-  final static byte bondType = 2;
-  final static byte BOND_PROPERTY_MAX      = 3;
+  final static byte bondType = 1;
 
   final static String[] bondFields  = {
     "ID", "type"
   };
 
   final static byte[] bondFieldMap = {
-    bondID, bondType
+    ID, bondType
   };
 
   int nBonds = 0;
   
   void processBondObject() throws Exception {
-    int fieldCount = parseLineParameters(bondFields,
-                                         bondFieldMap);
-    for (; readLine() != null; ) {
+    readLine();
+    parseLineParameters(bondFields, bondFieldMap);
+    for (; readLine() != null;) {
       if (line.startsWith("property_flags:"))
         break;
       String thisBondID = null;
@@ -306,10 +338,8 @@ class CsfReader extends MopacDataReader {
       for (int i = 0; i < fieldCount; ++i) {
         String field = tokens[i];
         switch (fieldTypes[i]) {
-        case NONE:
-          break;
-        case bondID:
-          thisBondID = "bond"+field;
+        case ID:
+          thisBondID = "bond" + field;
           break;
         case bondType:
           int order = 1;
@@ -325,7 +355,7 @@ class CsfReader extends MopacDataReader {
           Bond bond = new Bond();
           bond.atomIndex1 = atomSetCollection.getAtomNameIndex(connect[0]);
           bond.atomIndex2 = atomSetCollection.getAtomNameIndex(connect[1]);
-          bond.order=order;
+          bond.order = order;
           atomSetCollection.addBond(bond);
           nBonds++;
           break;
@@ -335,66 +365,55 @@ class CsfReader extends MopacDataReader {
   }
 
   
-  final static byte vibID            = 1;
-  final static byte normalMode       = 2;
-  final static byte vibEnergy        = 3;
-  final static byte transitionDipole = 4;
-  final static byte lineWidth        = 5;
-  final static byte VIB_PROPERTY_MAX = 6;
+  final static byte normalMode       = 1;
+  final static byte vibEnergy        = 2;
+  final static byte transitionDipole = 3;
 
   final static String[] vibFields  = {
     "ID", "normalMode", "Energy", "transitionDipole"
   };
 
   final static byte[] vibFieldMap = {
-    vibID, normalMode, vibEnergy, transitionDipole
+    ID, normalMode, vibEnergy, transitionDipole
   };
 
   void processVibrationObject() throws Exception {
-    discardLinesUntilStartsWith("ID normalMode"); //a bit risky -- could miss it
-    int thisvibID = -1;
-    float[] vibXYZ = new float[3];
-    int iatom = atomSetCollection.getFirstAtomSetAtomCount();
-    int xyzpt = 0;
+    //int iatom = atomSetCollection.getFirstAtomSetAtomCount();
     Atom[] atoms = atomSetCollection.atoms;
-    for (; readLine() != null;) {
-      if (line.startsWith("property_flags:"))
-        break;
-      String tokens[] = getTokens();
-      if (parseInt(tokens[0]) != thisvibID) {
-        thisvibID = parseInt(tokens[0]);
-        atomSetCollection.cloneFirstAtomSetWithBonds(nBonds);
-      }
-      for (int i = 1; i < tokens.length; ++i) {
-        vibXYZ[xyzpt++] = parseFloat(tokens[i]);
-        if (xyzpt == 3) {
-          atoms[iatom].addVibrationVector(vibXYZ[0], vibXYZ[1], vibXYZ[2]);
-          iatom++;
-          xyzpt = 0;
+    nVibrations /= nAtoms;
+    float[][] vibData = new float[nVibrations][nAtoms * 3];
+    float[] energies = new float[nVibrations];
+    readLine();
+    while (line != null && parseLineParameters(vibFields, vibFieldMap) > 0) {
+      while (readLine() != null && !line.startsWith("property_flags:")) {
+        String tokens[] = getTokens();
+        int thisvib = -1;
+        for (int i = 0; i < fieldCount; ++i) {
+          String field = tokens[i];
+          switch (fieldTypes[i]) {
+          case ID:
+            thisvib = parseInt(field) - 1;
+            break;
+          case normalMode:
+            fillCsfArray("normalMode", tokens, i, vibData[thisvib]);
+            break;
+          case vibEnergy:
+            energies[thisvib] = parseFloat(field);
+            break;
+          }
         }
       }
     }
-    int fieldCount = parseLineParameters(vibFields, vibFieldMap);
-    for (; readLine() != null;) {
-      if (line.startsWith("property_flags:"))
-        break;
-      String tokens[] = getTokens();
-      int thisvib = -1;
-      for (int i = 0; i < fieldCount; ++i) {
-        String field = tokens[i];
-        switch (fieldTypes[i]) {
-        case NONE:
-          break;
-        case vibID:
-          thisvib = parseInt(field);
-          break;
-        case vibEnergy:
-          atomSetCollection.setAtomSetName(field + " cm^-1", thisvib);
-          atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
-              "Frequencies");
-          break;
-        }
-      }
+    for (int i = 0; i < nVibrations; i++) {
+      atomSetCollection.cloneFirstAtomSetWithBonds(nBonds);
+      atomSetCollection.setAtomSetName(energies[i] + " cm^-1", i + 1);
+      atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
+          "Frequencies");
+      int ipt = 0;
+      int baseAtom = nAtoms * (i + 1);
+      for (int iAtom = 0; iAtom < nAtoms; iAtom++)
+        atoms[baseAtom + iAtom].addVibrationVector(vibData[i][ipt++],
+            vibData[i][ipt++], vibData[i][ipt++]);
     }
   }
 
@@ -402,36 +421,37 @@ class CsfReader extends MopacDataReader {
   // Molecular Orbitals
   ////////////////////////////////////////////////////////////////
 
-  final static byte moID   = 1;
-  final static byte eig_val = 2;
-  final static byte mo_occ  = 3;
-  final static byte eig_vec = 4;
-  final static byte eig_vec_compressed = 5;
-  final static byte coef_indices  = 6;
-  final static byte bfxn_ang  = 7;
-  final static byte sto_exp  = 8;
-  final static byte contractions  = 9;
-  final static byte MO_PROPERTY_MAX    = 10;
+  final static byte eig_val = 1;
+  final static byte mo_occ  = 2;
+  final static byte eig_vec = 3;
+  final static byte eig_vec_compressed = 4;
+  final static byte coef_indices  = 5;
+  final static byte bfxn_ang  = 6;
+  final static byte sto_exp  = 7;
+  final static byte contractions  = 8;
+  final static byte gto_exp = 9;
+  final static byte shell = 10;
 
   final static String[] moFields = {
     "ID", "eig_val", "mo_occ", "eig_vec",
       "eig_vec_compressed", "coef_indices", "bfxn_ang", "sto_exp",
-      "contractions"
+      "contractions", "gto_exp", "shell"
   };
 
   final static byte[] moFieldMap = {
-    moID, eig_val, mo_occ, eig_vec, eig_vec_compressed, coef_indices, bfxn_ang, sto_exp, contractions
+    ID, eig_val, mo_occ, eig_vec, eig_vec_compressed, 
+    coef_indices, bfxn_ang, sto_exp, contractions, gto_exp, shell
   };
    
   void processMolecularOrbitalObject() throws Exception {
-    if (nOrbitals == 0) {
+    if (nSlaters == 0 && nGaussians == 0) {
       readLine();
-      return; // no slaters;
+      return; // no slaters or gaussians?;
     }
     Logger.info("Reading data for " + nOrbitals + " molecular orbitals");
     /* we read the following blocks in ANY order:
- 
-    ID dflag eig_val    mo_occ
+     
+     ID dflag eig_val    mo_occ
      1   0x0 -36.825790 2.00000000
      2   0x0 -17.580715 2.00000000
      3   0x0 -14.523387 2.00000000
@@ -439,23 +459,23 @@ class CsfReader extends MopacDataReader {
      5   0x0   4.060438 0.00000000
      6   0x0   5.331586 0.00000000
 
-    ID eig_vec_compressed                                          nom_coef 
+     ID eig_vec_compressed                                          nom_coef 
      1 -0.845963 -0.179125 -0.179118 -0.067970  0.049666  0.000000        5
      2 -0.517325 -0.474120  0.474119 -0.377978  0.000000  0.000000        4
      3 -0.638505  0.466520  0.400882 -0.255125 -0.255118  0.000000        5
      4 -0.999990  0.000000  0.000000  0.000000  0.000000  0.000000        1
      5  0.582228  0.582125 -0.529468 -0.521559  0.386787 -0.004860        6
      6 -0.906355  0.906280 -0.753041 -0.550159  0.000000  0.000000        4
-    
-    ID coef_indices
+     
+     ID coef_indices
      1  2 1 6 4 3 0
      2  3 6 1 4 0 0
      3  4 3 2 6 1 0
      4  5 0 0 0 0 0
      5  6 1 4 2 3 5
      6  1 6 3 4 0 0
-    
-    ID eig_vec
+     
+     ID eig_vec
      1 -0.245163 -0.011925  0.000554  0.000542 -0.236038 -0.002974  0.006251
      1 -0.000460 -0.231155  0.003499  0.009902  0.000555 -0.236059  0.006221
      1  0.002910  0.001090 -0.245083  0.008801 -0.006892  0.004063 -0.264182
@@ -473,34 +493,22 @@ class CsfReader extends MopacDataReader {
 
      */
 
+    nOrbitals = (nSlaters + nGaussians);
     float[] energy = new float[nOrbitals];
     int[] occupancy = new int[nOrbitals];
     float[][] list = new float[nOrbitals][nOrbitals];
     float[][] listCompressed = null;
     int[][] coefIndices = null;
     int ipt = 0;
-    int coefPt = 0;
-    int indexPt = 0;
+    boolean isCompressed = false;
     readLine();
-    while (line != null) {
-      if (line.startsWith("property_flags:"))
-        readLine();
-      if (line.startsWith("object_class"))
-        break;
-      int fieldCount = parseLineParameters(moFields, moFieldMap);
-      int cPt = 0;
-      while (readLine() != null) {
-        if (line.startsWith("property_flags:"))
-          break;
+    while (line != null && parseLineParameters(moFields, moFieldMap) > 0)
+      while (readLine() != null && !line.startsWith("property_flags:")) {
         String tokens[] = getTokens();
         for (int i = 0; i < fieldCount; ++i) {
           switch (fieldTypes[i]) {
-          case moID:
-            int id = parseInt(tokens[i]);
-            if (id != ipt + 1) {
-              cPt = indexPt = coefPt = 0;
-              ipt = id - 1;
-            }
+          case ID:
+            ipt = parseInt(tokens[i]) - 1;
             break;
           case eig_val:
             energy[ipt] = parseFloat(tokens[i]);
@@ -509,29 +517,25 @@ class CsfReader extends MopacDataReader {
             occupancy[ipt] = parseInt(tokens[i]);
             break;
           case eig_vec:
-            for (int j = i; j < tokens.length; j++, cPt++)
-              list[ipt][cPt] = parseFloat(tokens[j]);
+            fillCsfArray("eig_vec", tokens, i, list[ipt]);
             break;
           case eig_vec_compressed:
+            isCompressed = true;
             if (listCompressed == null)
               listCompressed = new float[nOrbitals][nOrbitals];
-            int n = i + getPropertyCount("eig_vec_compressed");
-            for (int j = i; j < n; j++, coefPt++)
-              listCompressed[ipt][coefPt] = parseFloat(tokens[j]);
+            fillCsfArray("eig_vec_compressed", tokens, i, listCompressed[ipt]);
             break;
           case coef_indices:
             if (coefIndices == null)
               coefIndices = new int[nOrbitals][nOrbitals];
-            for (int j = i; j < tokens.length; j++, indexPt++)
-              coefIndices[ipt][indexPt] = parseInt(tokens[j]);
+            fillCsfArray("coef_indices", tokens, i, coefIndices[ipt]);
             break;
           }
         }
       }
-    }
     //put it all together
     for (int iMo = 0; iMo < nOrbitals; iMo++) {
-      if (indexPt > 0) { // must uncompress
+      if (isCompressed) { // must uncompress
         for (int i = 0; i < coefIndices[iMo].length; i++) {
           int pt = coefIndices[iMo][i] - 1;
           if (pt < 0)
@@ -546,18 +550,18 @@ class CsfReader extends MopacDataReader {
       mo.put("energy", new Float(energy[iMo]));
       mo.put("occupancy", new Integer(occupancy[iMo]));
       mo.put("coefficients", list[iMo]);
-/*      
-      System.out.print("MO " + iMo + " : ");
-      for (int i = 0; i < nOrbitals; i++)
-        System.out.print(" " + list[iMo][i]);
-      System.out.println();
-*/      
+      /*      
+       System.out.print("MO " + iMo + " : ");
+       for (int i = 0; i < nOrbitals; i++)
+       System.out.print(" " + list[iMo][i]);
+       System.out.println();
+       */
       orbitals.add(mo);
     }
     setMOs("eV");
   }
-  
-  void processSlaterBasisObject() throws Exception {
+
+  void processBasisObject(String sto_gto) throws Exception {
     String[] atomNos = getTokens(atomicNumbers);
 
     /*
@@ -570,58 +574,93 @@ class CsfReader extends MopacDataReader {
      6   0x0        S         6      1 0.967807     4
      */
 
-    readLine();
-    while (line != null) {
-      if (line.startsWith("property_flags:"))
-        readLine();
-      if (line.startsWith("object_class"))
-        break;
-      int fieldCount = parseLineParameters(moFields, moFieldMap);
-      int iAtom = -1;
-      String type = "";
-      int nZetas = getPropertyCount("sto_exp");
-      float[] zetas = new float[nZetas];
-      float[] contractionCoefs = null;
-      int atomicNumber = 0;
+    nOrbitals = (nSlaters + nGaussians);
+    boolean isGaussian = (sto_gto.equals("gto"));
+    float[][] zetas = new float[nOrbitals][];
+    float[][] contractionCoefs = null;
+    String[] types = new String[nOrbitals];
+    int[] shells = new int[nOrbitals];
+    int nZetas = 0;
 
-      while (readLine() != null) {
-        if (line.startsWith("property_flags:"))
-          break;
+    readLine();
+    while (line != null && parseLineParameters(moFields, moFieldMap) > 0) {
+      if (nZetas == 0)
+        nZetas = getPropertyCount(sto_gto + "_exp");
+      int ipt = 0;
+      while (readLine() != null && !line.startsWith("property_flags:")) {
         String tokens[] = getTokens();
         for (int i = 0; i < fieldCount; ++i) {
           String field = tokens[i];
           switch (fieldTypes[i]) {
-          case moID:
-            iAtom = atomSetCollection.getAtomNameIndex(((String[]) (connectors
-                .get("sto_basis_fxn" + field)))[0]);
-            atomicNumber = parseInt(atomNos[iAtom]);
+          case ID:
+            ipt = parseInt(field) - 1;
             break;
           case bfxn_ang:
-            type = field;
+            types[ipt] = field;
             break;
           case sto_exp:
-            for (int j = 0; j < nZetas; j++)
-              zetas[j] = parseFloat(tokens[i + j]);
+          case gto_exp:
+            zetas[ipt] = new float[nZetas];
+            fillCsfArray(sto_gto + "_exp", tokens, i, zetas[ipt]);
+            break;
+          case shell:
+            shells[ipt] = parseInt(field);
             break;
           case contractions:
             if (contractionCoefs == null)
-              contractionCoefs = new float[nZetas];
-            for (int j = 0; j < nZetas; j++)
-              contractionCoefs[j] = parseFloat(tokens[i + j]);
+              contractionCoefs = new float[nOrbitals][nZetas];
+            fillCsfArray("contractions", tokens, i, contractionCoefs[ipt]);
           }
-        }
-        //System.out.println("orbitals for atom " + iAtom + " at.no. " + atomicNumber);
-        for (int i = 0; i < nZetas; i++) {
-          if (zetas[i] == 0)
-            break;
-          createSlaterByType(iAtom, atomicNumber, type, zetas[i]
-              * (i == 0 ? 1 : -1), contractionCoefs == null ? 1
-              : contractionCoefs[i]);
         }
       }
     }
-    setSlaters();
-  }  
+    if (isGaussian) {
+      Vector sdata = new Vector();
+      Vector gdata = new Vector();
+      int iShell = 0;
+      int gaussianCount = 0;
+      for (int ipt = 0; ipt < nGaussians; ipt++) {
+        if(shells[ipt] != iShell) {
+          iShell = shells[ipt];
+          Hashtable slater = new Hashtable();
+          int iAtom = atomSetCollection.getAtomNameIndex(((String[]) (connectors
+              .get(sto_gto + "_basis_fxn" + (ipt + 1))))[0]);
+          slater.put("atomIndex", new Integer(iAtom));
+          slater.put("basisType", types[ipt].substring(0,1));
+          int nZ = 0;
+          while (++nZ < nZetas && zetas[ipt][nZ] != 0) {
+          }
+          slater.put("gaussianPtr", new Integer(gaussianCount));
+          slater.put("nGaussians", new Integer(nZ));
+          sdata.add(slater);
+          gaussianCount += nZ;
+          for (int i = 0; i < nZ; i++)
+            gdata.add(new float[] {zetas[ipt][i], contractionCoefs[ipt][i]});
+        }
+      }
+      float[][] garray = new float[gaussianCount][];
+      for (int i = 0; i < gaussianCount; i++)
+        garray[i] = (float[]) gdata.get(i); 
+      moData.put("shells", sdata);
+      moData.put("gaussians", garray);
+    } else {
+      for (int ipt = 0; ipt < nSlaters; ipt++) {
+        //System.out.println("orbitals for atom " + iAtom + " at.no. " + atomicNumber);
+        int iAtom = atomSetCollection.getAtomNameIndex(((String[]) (connectors
+            .get(sto_gto + "_basis_fxn" + (ipt + 1))))[0]);
+        int atomicNumber = parseInt(atomNos[iAtom]);
+        for (int i = 0; i < nZetas; i++) {
+          if (zetas[ipt][i] == 0)
+            break;
+          createSlaterByType(iAtom, atomicNumber, types[ipt], zetas[ipt][i]
+              * (i == 0 ? 1 : -1), contractionCoefs == null ? 1
+              : contractionCoefs[ipt][i]);
+        }
+      }
+      setSlaters();
+    }
+  }
+  
   void createSlaterByType(int iAtom, int atomicNumber, String type, float zeta,
                           float coef) {
     int pt = "S Px Py Pz Dx2-y2 Dxz Dz2 Dyz Dxy".indexOf(type);
@@ -653,5 +692,5 @@ class CsfReader extends MopacDataReader {
               * MopacData.getFactorD(dPt) * coef);
       return;
     }
-  }
+  }  
 }

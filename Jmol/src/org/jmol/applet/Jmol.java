@@ -402,7 +402,20 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     sendJsTextareaStatus(message);
   }
 
+  public boolean showPaintTime = false;
+
+  public void paint(Graphics g) {
+    //paint is invoked for system-based updates (obscuring, for example)
+    update(g, "paint ");
+  }
+
   public void update(Graphics g) {
+    //update is called in response to repaintManager's repaint() request. 
+    //we don't make a distinction here, but we could.
+    update(g, "update");
+  }
+
+  private void update(Graphics g, String source) {
     if (viewer == null) // it seems that this can happen at startup sometimes
       return;
     if (showPaintTime)
@@ -417,9 +430,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       printProgressbarMessage(g);
       viewer.repaintView();
     } else {
-      System.out.println("UPDATE1: " + Thread.currentThread());
+      System.out.println("UPDATE1: " + source + " " + Thread.currentThread());
       viewer.renderScreenImage(g, size, rectClip);
-      System.out.println("UPDATE2: " + Thread.currentThread());
+      System.out.println("UPDATE2: " + source + " " + Thread.currentThread());
     }
 
     if (showPaintTime) {
@@ -439,12 +452,6 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     for (int i = 0, y = 13; i < progressbarMsgs.length; ++i, y += 13) {
       g.drawString(progressbarMsgs[i], 10, y);
     }
-  }
-
-  public boolean showPaintTime = false;
-
-  public void paint(Graphics g) {
-    update(g);
   }
 
   public boolean handleEvent(Event e) {

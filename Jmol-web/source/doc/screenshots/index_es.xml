@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   Spanish translation 
-  Translated from default version (...)_en.xml (v 1.1)
+  Translated from default version index_en.xml
 -->
 <document>
 	<body>
@@ -74,6 +74,10 @@
 						<font color="purple">tRNA del sito P</font>
 						<font color="cyan">tRNA del sitio E</font></b>
 					<i>(enviada por Wayne Decatur)</i>
+				</screenshot>
+				<screenshot image="screenshot_newtranslucency.jpg">
+          Ilustra la transparencia variable, en preparación para Jmol 11.2.
+          <i>(preparada por Bob Hanson)</i>
 				</screenshot>
 			</screenshots>
 		</section>

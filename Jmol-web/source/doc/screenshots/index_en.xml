@@ -71,6 +71,10 @@
 						<font color="cyan">E-site tRNA</font></b>
 					<i>(submitted by Wayne Decatur)</i>
 				</screenshot>
+				<screenshot image="screenshot_newtranslucency.jpg">
+          Illustrates the variable translucency, in preparation for Jmol 11.2.
+          <i>(prepared by Bob Hanson)</i>
+				</screenshot>
 			</screenshots>
 		</section>
 		<section title="Crystallography">

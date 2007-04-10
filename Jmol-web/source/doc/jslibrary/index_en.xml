@@ -147,7 +147,7 @@
     (Parameters between braces <code>{}</code> are optional)
       <section title="jmolInitialize">
 				<p>
-					<code>jmolInitialize(JmolFolder, useSignedApplet)</code>
+					<code>jmolInitialize(JmolFolder)</code>
 				</p>
 				<p>
 	Initializes the Jmol.js JavaScript library. The call to
@@ -155,15 +155,30 @@
 	<code>&lt;body&gt;</code> of the HTML page. 
 	The first parameter, <code>JmolFolder</code>, is compulsory and specifies
 	(between quotes)
-	the relative path of the directory (folder) containing the Jmol applet
-	files.
+	the relative path of the directory (folder) containing the Jmol applet files, 
+	<code>JmolApplet0.jar</code> through <code>JmolApplet6.jar</code>.
 	</p>
-				<p>
-					<i>
-	    Advanced: the second parameter, <code>useSignedApplet</code>, must 
-	    be specified as "true" if you want to use the signed
-	    applet (which has less Java security restrictions than the 
-		unsigned applet). If this parameter is omitted, it 
+				<p><i>Advanced: 
+	  <code>jmolInitialize()</code> may be omitted if you want to use 
+	  <code>JmolApplet.jar</code> and that file is in the same directory as the HTML page. 
+				</i></p>
+				<section title="Using signed applet or custom applets">
+					<p><i>Advanced:</i>
+					</p>
+					<p>
+						<code>jmolInitialize(JmolFolder, useCustomApplet)</code><br/>
+						<code>jmolInitialize(JmolFolder, useSignedApplet)</code>
+					</p>
+					<p>
+		If the second parameter is a string (e.g. "myJarFile.jar"), 
+		it will be interpreted as the filename 
+		of your own, custom, <code>jar</code> file to be used.
+		(And if it's "JmolApplet0.jar", then all six jar files will be used.)
+		<br/>
+		If it's not a filename, it will be interpreted as a logical (true/false) value for 
+		using or not the signed applet
+	        (which has less Java security restrictions than the 
+		unsigned applet). If this parameter is omitted (as in the very first syntax given above), it 
 		defaults to "false", i.e. use the unsigned applet.
 		<br/>
 		With the signed applet, you can put applet files, model 
@@ -174,23 +189,8 @@
 		applet (please, beware that this may deter novice users from 
 		entering the pages, unless you first give them precise advice 
 		that this will show up and is not harmful). 
-	  </i>
 				</p>
-				<p>
-					<i>Advanced: 
-	  <code>jmolInitialize()</code> may be omitted if you want to use 
-	  JmolApplet.jar and that file is in the same directory as the HTML page. 
-	  </i>
-				</p>
-				<p>
-					<i>Advanced: 
-	  You can also specify the use of your own, custom, <code>jar</code> file by using:
-	  	<code>jmolInitialize(JmolFolder, "myJarFile.jar")</code>
-		If the second parameter is a string, if will be interpreted in this way;
-		if not, it will be interpreted as a logical (true/false) value for 
-		<code>useSignedApplet</code>.
-	  </i>
-				</p>
+				</section>
 			</section>
 			<section title="jmolApplet">
 				<p>

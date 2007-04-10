@@ -155,24 +155,41 @@
     (Los parámetros entre llaves <code>{}</code> son  opcionales)
       <section title="jmolInitialize">
 				<p>
-					<code>jmolInitialize(CarpetaJmol, usarSignedApplet)</code>
+					<code>jmolInitialize(CarpetaJmol)</code>
 				</p>
 				<p>
-	Initializa la biblioteca JavaScript Jmol.js. La llamada a
+	Inicializa la biblioteca JavaScript Jmol.js. La llamada a
 	<code>jmolInitialize()</code> debe estar dentro del cuerpo  
 	(<code>&lt;body&gt;</code>) de la página web. 
 	El primer parámetro, <code>CarpetaJmol</code>, es indispensable e indica 
 	(entre comillas) la 
-	ruta relativa a la carpeta que contiene los archivos de la miniaplicación Jmol.
+	ruta relativa a la carpeta que contiene los archivos de la miniaplicación Jmol,
+	<code>JmolApplet0.jar</code> hasta <code>JmolApplet6.jar</code>.
 	</p>
-				<p>
-					<i>
-	    Avanzado: el segundo parámtero, <code>usarSignedApplet</code>,
-	    debe especificarse como "true" (verdadero) si quieres que se
-	    utilice la miniaplicación firmada (o confiable), que 
+				<p><i>Avanzado: 
+	  <code>jmolInitialize()</code> puede omitirse si quieres usar
+	  <code>JmolApplet.jar</code> y ese archivo está en la misma 
+	carpeta o directorio que la página HTML. 
+			  </i></p>
+				<section title="Uso de la miniaplicación firmada o una miniaplicación específica">
+					<p><i>Avanzado:</i>
+					</p>
+					<p>
+						<code>jmolInitialize(CarpetaJmol, usarEspecífica)</code><br/>
+						<code>jmolInitialize(CarpetaJmol, usarSignedApplet)</code>
+					</p>
+					<p>
+		Si el segundo parámetro es un texto (por ej., "miArchivoJar.jar"), 
+		se interpretará como el nombre de archivo <code>jar</code> 
+		de una miniaplicación personalizada, que debe usarse.
+		(Y si es "JmolApplet0.jar", se usarán los seis archivos jar.)
+		<br/>
+		Si no es un nombre de archivo, se interpretará como un valor lógico (verdadero/falso) para 
+		usar o no la miniaplicación firmada o confiable (<i>SignedApplet</i>), que 
 	    aplica menos restricciones de seguridad en Java que la 
-	    miniaplicación no firmada. Si se omite este parámetro,
-	se asumirá "false" y se usará la miniaplicación no firmada.
+	    miniaplicación no firmada. Si se omite este parámetro
+		(como en el primer ejemplo de sintaxis de arriba),
+		se asumirá "false" y se usará la miniaplicación no firmada.
 		<br/>
 		Con la miniaplicación firmada, puedes poner los archivos de la miniaplicación, 
 		los de los modelos y los de las páginas donde quieras y ejecutarlos desde un 
@@ -181,23 +198,8 @@
 		la miniaplicación firmada (considera que esto puede hacer que los usuarios 
 		noveles renuncien a entrar en tus páginas, a no ser que previamente les adviertas 
 		con detalle de que ese aviso aparecerá y que no es peligroso). 
-	  </i>
 				</p>
-				<p>
-					<i>Avanzado: 
-	  <code>jmolInitialize()</code> puede omitirse si quieres usar
-	  JmolApplet.jar y ese archivo está en la misma carpeta o directorio que la página HTML. 
-	  </i>
-				</p>
-				<p>
-					<i>Avanzado: 
-	  También puedes indicar que se use tu propio archivo <code>jar</code> personalizado usando:
-	  	<code>jmolInitialize(CarpetaJmol, "miArchivoJar.jar")</code>
-		Si el segundo parámetro es un texto, se interpretará de este modo;
-		si no, se interpretará como un valor lógico (verdadero/falso) para 
-		<code>usarSignedApplet</code>.
-	  </i>
-				</p>
+				</section>
 			</section>
 			<section title="jmolApplet">
 				<p>

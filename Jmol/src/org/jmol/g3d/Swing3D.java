@@ -31,7 +31,6 @@ import java.awt.Image;
 import java.awt.image.DirectColorModel;
 import java.awt.image.Raster;
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
 import java.awt.image.SinglePixelPackedSampleModel;
@@ -62,16 +61,18 @@ final class Swing3D extends Platform3D {
   { 0x00FF0000, 0x0000FF00, 0x000000FF };
   
   Image allocateImage() {
-    SinglePixelPackedSampleModel sppsm =
-      new SinglePixelPackedSampleModel(DataBuffer.TYPE_INT,
-                                       windowWidth,
-                                       windowHeight,
-                                       sampleModelBitMasks);
-    DataBufferInt dbi = new DataBufferInt(pBuffer, windowSize);
-    WritableRaster wr =
-      Raster.createWritableRaster(sppsm, dbi, null);
-    BufferedImage bi = new BufferedImage(rgbColorModel, wr, false, null);
-    return bi;
+    return new BufferedImage(
+        rgbColorModel,
+        Raster.createWritableRaster(
+            new SinglePixelPackedSampleModel(
+                DataBuffer.TYPE_INT,
+                windowWidth,
+                windowHeight,
+                sampleModelBitMasks), 
+            new DataBufferInt(pBuffer, windowSize),
+            null),
+        false, 
+        null);
   }
 
   Image allocateOffscreenImage(int width, int height) {
@@ -79,8 +80,11 @@ final class Swing3D extends Platform3D {
   }
 
   Graphics getGraphics(Image image) {
-    BufferedImage bi = (BufferedImage) image;
-    Graphics2D g2d = bi.createGraphics();
+    return getStaticGraphics(image);
+  }
+  
+  static Graphics getStaticGraphics(Image image) {
+    Graphics2D g2d = ((BufferedImage) image).createGraphics();
     // miguel 20041122
     // we need to turn off text antialiasing on OSX when
     // running in a web browser

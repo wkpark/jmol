@@ -64,105 +64,7 @@ class Text3D {
   int width;
   int size;
   int[] bitmap;
-
-  Text3D(String text, Font3D font3d, Platform3D platform) {
-    calcMetrics(text, font3d);
-    platform.checkOffscreenSize(width, height);
-    renderOffscreen(text, font3d, platform);
-    rasterize(platform);
-  }
-
-  void calcMetrics(String text, Font3D font3d) {
-    FontMetrics fontMetrics = font3d.fontMetrics;
-    ascent = fontMetrics.getAscent();
-    height = ascent + fontMetrics.getDescent();
-    width = fontMetrics.stringWidth(text);
-    size = width*height;
-  }
-
-  void renderOffscreen(String text, Font3D font3d, Platform3D platform) {
-    Graphics g = platform.gOffscreen;
-    g.setColor(Color.black);
-    g.fillRect(0, 0, width, height);
-    g.setColor(Color.white);
-    g.setFont(font3d.font);
-    g.drawString(text, 0, ascent);
-  }
-
-  void rasterize(Platform3D platform) {
-    PixelGrabber pixelGrabber = new PixelGrabber(platform.imageOffscreen,
-                                                 0, 0, width, height, true);
-    try {
-      pixelGrabber.grabPixels();
-    } catch (InterruptedException e) {
-      Logger.debug("Que? 7748");
-    }
-    int pixels[] = (int[])pixelGrabber.getPixels();
-
-    int bitmapSize = (size + 31) >> 5;
-    bitmap = new int[bitmapSize];
-
-    int offset, shifter;
-    for (offset = shifter = 0; offset < size; ++offset, shifter <<= 1) {
-      if ((pixels[offset] & 0x00FFFFFF) != 0)
-        shifter |= 1;
-      if ((offset & 31) == 31)
-        bitmap[offset >> 5] = shifter;
-    }
-    if ((offset & 31) != 0) {
-      shifter <<= 31 - (offset & 31);
-      bitmap[offset >> 5] = shifter;
-    }
-
-    if (false) {
-      // error checking
-      // shifter error checking
-      boolean[] bits = new boolean[size];
-      for (int i = 0; i < size; ++i)
-        bits[i] = (pixels[i] & 0x00FFFFFF) != 0;
-      //
-      for (offset = 0; offset < size; ++offset, shifter <<= 1) {
-        if ((offset & 31) == 0)
-          shifter = bitmap[offset >> 5];
-        if (shifter < 0) {
-          if (!bits[offset]) {
-            Logger.debug("false positive @" + offset);
-            Logger.debug("size = " + size);
-          }
-        } else {
-          if (bits[offset]) {
-            Logger.debug("false negative @" + offset);
-            Logger.debug("size = " + size);
-          }
-        }
-      }
-      // error checking
-    }
-  }
-
-  static Hashtable htFont3d = new Hashtable();
   
-  // FIXME mth
-  // we have a synchronization issue/race condition  here with multiple
-  // so only one Text3D can be generated at a time
-
-  synchronized static Text3D getText3D(String text, Font3D font3d,
-                                         Platform3D platform) {
-
-    Hashtable htForThisFont = (Hashtable)htFont3d.get(font3d);
-    if (htForThisFont != null) {
-      Text3D text3d = (Text3D)htForThisFont.get(text);
-      if (text3d != null)
-        return text3d;
-    } else {
-      htForThisFont = new Hashtable();
-      htFont3d.put(font3d, htForThisFont);
-    }
-    Text3D text3d = new Text3D(text, font3d, platform);
-    htForThisFont.put(text, text3d);
-    return text3d;
-  }
-
   static void plot(int x, int y, int z, int argb, int argbBackground,
                    String text, Font3D font3d, Graphics3D g3d) {
     if (text.length() == 0)
@@ -254,5 +156,103 @@ class Text3D {
         j -= textWidth;
       }
     }
+  }
+
+  private Text3D(String text, Font3D font3d, Platform3D platform) {
+    calcMetrics(text, font3d);
+    platform.checkOffscreenSize(width, height);
+    renderOffscreen(text, font3d, platform);
+    rasterize(platform);
+  }
+
+  private void calcMetrics(String text, Font3D font3d) {
+    FontMetrics fontMetrics = font3d.fontMetrics;
+    ascent = fontMetrics.getAscent();
+    height = ascent + fontMetrics.getDescent();
+    width = fontMetrics.stringWidth(text);
+    size = width*height;
+  }
+
+  private void renderOffscreen(String text, Font3D font3d, Platform3D platform) {
+    Graphics g = platform.gOffscreen;
+    g.setColor(Color.black);
+    g.fillRect(0, 0, width, height);
+    g.setColor(Color.white);
+    g.setFont(font3d.font);
+    g.drawString(text, 0, ascent);
+  }
+
+  private void rasterize(Platform3D platform) {
+    PixelGrabber pixelGrabber = new PixelGrabber(platform.imageOffscreen,
+                                                 0, 0, width, height, true);
+    try {
+      pixelGrabber.grabPixels();
+    } catch (InterruptedException e) {
+      Logger.debug("Que? 7748");
+    }
+    int pixels[] = (int[])pixelGrabber.getPixels();
+
+    int bitmapSize = (size + 31) >> 5;
+    bitmap = new int[bitmapSize];
+
+    int offset, shifter;
+    for (offset = shifter = 0; offset < size; ++offset, shifter <<= 1) {
+      if ((pixels[offset] & 0x00FFFFFF) != 0)
+        shifter |= 1;
+      if ((offset & 31) == 31)
+        bitmap[offset >> 5] = shifter;
+    }
+    if ((offset & 31) != 0) {
+      shifter <<= 31 - (offset & 31);
+      bitmap[offset >> 5] = shifter;
+    }
+
+    if (false) {
+      // error checking
+      // shifter error checking
+      boolean[] bits = new boolean[size];
+      for (int i = 0; i < size; ++i)
+        bits[i] = (pixels[i] & 0x00FFFFFF) != 0;
+      //
+      for (offset = 0; offset < size; ++offset, shifter <<= 1) {
+        if ((offset & 31) == 0)
+          shifter = bitmap[offset >> 5];
+        if (shifter < 0) {
+          if (!bits[offset]) {
+            Logger.debug("false positive @" + offset);
+            Logger.debug("size = " + size);
+          }
+        } else {
+          if (bits[offset]) {
+            Logger.debug("false negative @" + offset);
+            Logger.debug("size = " + size);
+          }
+        }
+      }
+      // error checking
+    }
+  }
+
+  private final static Hashtable htFont3d = new Hashtable();
+  
+  // FIXME mth
+  // we have a synchronization issue/race condition  here with multiple
+  // so only one Text3D can be generated at a time
+
+  private synchronized static Text3D getText3D(String text, Font3D font3d,
+                                         Platform3D platform) {
+
+    Hashtable htForThisFont = (Hashtable)htFont3d.get(font3d);
+    if (htForThisFont != null) {
+      Text3D text3d = (Text3D)htForThisFont.get(text);
+      if (text3d != null)
+        return text3d;
+    } else {
+      htForThisFont = new Hashtable();
+      htFont3d.put(font3d, htForThisFont);
+    }
+    Text3D text3d = new Text3D(text, font3d, platform);
+    htForThisFont.put(text, text3d);
+    return text3d;
   }
 }

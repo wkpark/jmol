@@ -181,7 +181,7 @@ class Triangle3D {
       t[i] += factor * (av - t[i]);
   }
 
-  void fillTriangle(boolean useGouraud) {
+  private void fillTriangle(boolean useGouraud) {
     if (az[0] <= 1 || az[1] <= 1 || az[2] <= 1)
       return;
     int cc0 = line3d.clipCode(ax[0], ay[0], az[0]);
@@ -471,5 +471,4 @@ class Triangle3D {
       }
     }
   }
-
 }

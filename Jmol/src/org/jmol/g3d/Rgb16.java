@@ -54,18 +54,22 @@ final class Rgb16 {
     bScaled = (rgb16A.bScaled - rgb16B.bScaled) / divisor;
   }
 
+  /*
   void add(Rgb16 other) {
     rScaled += other.rScaled;
     gScaled += other.gScaled;
     bScaled += other.bScaled;
   }
-
+  */
+  
+  /*
   void add(Rgb16 base, Rgb16 other) {
     rScaled = base.rScaled + other.rScaled;
     gScaled = base.gScaled + other.gScaled;
     bScaled = base.bScaled + other.bScaled;
   }
-
+  */
+  
   void setAndIncrement(Rgb16 base, Rgb16 other) {
     rScaled = base.rScaled;
     base.rScaled += other.rScaled;
@@ -76,20 +80,19 @@ final class Rgb16 {
   }
 
   int getArgb() {
-    return ((0xFF << 24) |
-            ((rScaled << 8) & 0xFF0000) |
-            (gScaled & 0xFF00) |
-            (bScaled >> 8));
+    return (                 0xFF000000 |
+           ((rScaled << 8) & 0x00FF0000)|
+           (gScaled        & 0x0000FF00)|
+           (bScaled >> 8));
   }
 
   public String toString() {
-    return"Rgb16(" +
-      rScaled + "," +
-      gScaled + "," +
-      bScaled + " -> " +
-      ((rScaled >> 8) & 0xFF) + "," +
-      ((gScaled >> 8) & 0xFF) + "," +
-      ((bScaled >> 8) & 0xFF) + ")";
+    return (new StringBuffer("Rgb16(")).append(rScaled).append(',')
+    .append(gScaled).append(',')
+    .append(bScaled).append(" -> ")
+    .append((rScaled >> 8) & 0xFF).append(',')
+    .append((gScaled >> 8) & 0xFF).append(',')
+    .append((bScaled >> 8) & 0xFF).append(')').toString();
   }
 }
 

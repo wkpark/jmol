@@ -94,7 +94,7 @@ class Sticks extends Shape {
     if ("color" == propertyName) {
       if (bsColixSet == null)
         bsColixSet = new BitSet();
-      short colix = g3d.getColix(value);
+      short colix = Graphics3D.getColix(value);
       byte pid = JmolConstants.pidOf(value);
       if (pid == JmolConstants.PALETTE_TYPE) {
         //only for hydrogen bonds

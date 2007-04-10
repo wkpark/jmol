@@ -404,53 +404,56 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
   public boolean showPaintTime = false;
 
-  public void paint(Graphics g) {
-    //paint is invoked for system-based updates (obscuring, for example)
-    //Opera has a bug in relation to displaying the Java Console. 
+    public void paint(Graphics g) {
+      //paint is invoked for system-based updates (obscurring, for example)
+      //Opera has a bug in relation to displaying the Java Console. 
+
+      update(g, "paint ");
+    }
+  
+    private boolean isUpdating;
+  
+    public void update(Graphics g) {
+      //update is called in response to repaintManager's repaint() request. 
+      update(g, "update");
+    }
       
-    if (isUpdating)
-      return;
-    update(g, "paint ");
-  }
-
-  private boolean isUpdating;
-
-  public void update(Graphics g) {
-    //update is called in response to repaintManager's repaint() request. 
-    //we don't make a distinction here, but we could.
-    update(g, "update");
-  }
-
-  private void update(Graphics g, String source) {
-    if (viewer == null) // it seems that this can happen at startup sometimes
-      return;
-    
-    isUpdating = true;
-    if (showPaintTime)
-      startPaintClock();
-    Dimension size = jvm12orGreater ? jvm12.getSize() : appletWrapper.size();
-    viewer.setScreenDimension(size);
-    Rectangle rectClip = jvm12orGreater ? jvm12.getClipBounds(g) : g
-        .getClipRect();
-    ++paintCounter;
-    if (REQUIRE_PROGRESSBAR && !hasProgressBar && paintCounter < 30
-        && (paintCounter & 1) == 0) {
-      printProgressbarMessage(g);
-      viewer.repaintView();
-    } else {
-      //System.out.println("UPDATE1: " + source + " " + Thread.currentThread());
-      viewer.renderScreenImage(g, size, rectClip);
-      //System.out.println("UPDATE2: " + source + " " + Thread.currentThread());
+    private void update(Graphics g, String source) {
+      if (viewer == null) // it seems that this can happen at startup sometimes
+        return;
+      if (isUpdating)
+        return;
+      
+      //Opera has been known to allow entry to update() by one thread
+      //while another thread is doing a paint() or update(). 
+      
+      //for now, leaving out the "needRendering" idea
+      
+      isUpdating = true;
+      if (showPaintTime)
+        startPaintClock();
+      Dimension size = jvm12orGreater ? jvm12.getSize() : appletWrapper.size();
+      viewer.setScreenDimension(size);
+      Rectangle rectClip = jvm12orGreater ? jvm12.getClipBounds(g) : g
+          .getClipRect();
+      ++paintCounter;
+      if (REQUIRE_PROGRESSBAR && !hasProgressBar && paintCounter < 30
+          && (paintCounter & 1) == 0) {
+        printProgressbarMessage(g);
+        viewer.repaintView();
+      } else {
+        //System.out.println("UPDATE1: " + source + " " + Thread.currentThread());
+        viewer.renderScreenImage(g, size, rectClip);
+        //System.out.println("UPDATE2: " + source + " " + Thread.currentThread());
+      }
+  
+      if (showPaintTime) {
+        stopPaintClock();
+        showTimes(10, 10, g);
+      }
+      isUpdating = false;
     }
-
-    if (showPaintTime) {
-      stopPaintClock();
-      showTimes(10, 10, g);
-    }
-    
-    isUpdating = false;
-  }
-
+  
   final static String[] progressbarMsgs = { "Jmol developer alert!", "",
       "Please use jmol.js. You are missing the require 'progressbar' parameter.",
       "  <param name='progressbar' value='true' />",};

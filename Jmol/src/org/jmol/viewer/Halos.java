@@ -43,7 +43,7 @@ class Halos extends AtomShape {
     if ("translucency" == propertyName)
       return;
     if ("argbSelection" == propertyName) {
-      colixSelection = g3d.getColix(((Integer)value).intValue());
+      colixSelection = Graphics3D.getColix(((Integer)value).intValue());
       return;
     }
     super.setProperty(propertyName, value, bs);

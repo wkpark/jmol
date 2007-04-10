@@ -76,7 +76,7 @@ class Labels extends AtomShape {
       isActive = true;
       int n = 0;
       byte pid = JmolConstants.pidOf(value);
-      short colix = g3d.getColix(value);
+      short colix = Graphics3D.getColix(value);
       for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
           setColix(i, colix, pid, n++);
@@ -128,7 +128,7 @@ class Labels extends AtomShape {
       isActive = true;
       if (bsBgColixSet == null)
         bsBgColixSet = new BitSet();
-      short bgcolix = g3d.getColix(value);
+      short bgcolix = Graphics3D.getColix(value);
       int n = 0;
       for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))

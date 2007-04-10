@@ -122,7 +122,7 @@ class Dots extends AtomShape {
         colixes = new short[atomCount];
         paletteIDs = new byte[atomCount];
       }
-      colixes[thisAtom] = g3d.getColix(thisArgb);
+      colixes[thisAtom] = Graphics3D.getColix(thisArgb);
       //all done!
       return;
     }

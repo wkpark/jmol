@@ -78,7 +78,7 @@ class Measures extends Shape {
     } else if ("color".equals(propertyName)) {
       if (bsColixSet == null)
         bsColixSet = new BitSet();
-        short colix = (value == null ? Graphics3D.INHERIT_ALL : g3d.getColix(value));
+        short colix = (value == null ? Graphics3D.INHERIT_ALL : Graphics3D.getColix(value));
         if (bsSelected == null)
           this.colix = colix;
       for (int i = 0; i < measurements.length; i++)

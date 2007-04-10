@@ -962,7 +962,7 @@ public class Viewer extends JmolViewer {
     int argb = getObjectArgb(objId);
     if (argb == 0)
       return getColixBackgroundContrast();
-    return g3d.getColix(argb); 
+    return Graphics3D.getColix(argb); 
   }
   
  String getObjectState(String name) {
@@ -1020,10 +1020,14 @@ public class Viewer extends JmolViewer {
     return colorManager.colixBackgroundContrast;
   }
 
+  String getSpecularState() {
+    return global.getSpecularState();
+  }
+
   private void setSpecular(boolean specular) {
     //Eval
     colorManager.setSpecular(specular);
-    global.specular = specular;
+    //global.specular = specular;
   }
 
   boolean getSpecular() {
@@ -1033,31 +1037,19 @@ public class Viewer extends JmolViewer {
   private void setSpecularPower(int specularPower) {
     //Eval
     colorManager.setSpecularPower(Math.abs(specularPower));
-    global.specularPower = specularPower;
+    //global.specularPower = specularPower;
   }
 
   private void setSpecularExponent(int specularExponent) {
     //Eval
     colorManager.setSpecularPower(-Math.abs(specularExponent));
-    global.specularExponent = specularExponent;
-  }
-
-  String getSpecularState() {
-    return global.getSpecularState();
-  }
-
-  private void setZShade(boolean TF) {
-    global.zShade = TF;
-  }
-
-  boolean getZShade() {
-    return global.zShade;
+    //global.specularExponent = specularExponent;
   }
 
   private void setAmbientPercent(int ambientPercent) {
     //Eval
     colorManager.setAmbientPercent(ambientPercent);
-    global.ambientPercent = ambientPercent;
+    //global.ambientPercent = ambientPercent;
   }
 
   int getAmbientPercent() {
@@ -1067,7 +1059,7 @@ public class Viewer extends JmolViewer {
   private void setDiffusePercent(int diffusePercent) {
     //Eval
     colorManager.setDiffusePercent(diffusePercent);
-    global.diffusePercent = diffusePercent;
+    //global.diffusePercent = diffusePercent;
   }
 
   int getDiffusePercent() {
@@ -1077,13 +1069,21 @@ public class Viewer extends JmolViewer {
   private void setSpecularPercent(int specularPercent) {
     //Eval
     colorManager.setSpecularPercent(specularPercent);
-    global.specularPercent = specularPercent;
+    //global.specularPercent = specularPercent;
   }
 
   int getSpecularPercent() {
     return colorManager.getSpecularPercent();
   }
 
+  private void setZShade(boolean TF) {
+    global.zShade = TF;
+  }
+
+  boolean getZShade() {
+    return global.zShade;
+  }
+  
   short getColixAtomPalette(Atom atom, byte pid) {
     return colorManager.getColixAtomPalette(atom, pid);
   }
@@ -3210,7 +3210,7 @@ public class Viewer extends JmolViewer {
   }
 
   short getColix(Object object) {
-    return g3d.getColix(object);
+    return Graphics3D.getColix(object);
   }
 
   private void setRasmolHydrogenSetting(boolean b) {

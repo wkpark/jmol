@@ -55,7 +55,7 @@ class IsosurfaceRenderer extends MeshRenderer {
   boolean render1(IsosurfaceMesh mesh) {
     iHideBackground = (isPlane && mesh.hideBackground);
     if (iHideBackground)
-      backgroundColix = g3d.getColix(viewer.getBackgroundArgb());
+      backgroundColix = Graphics3D.getColix(viewer.getBackgroundArgb());
    isPlane = (mesh.jvxlPlane != null);
    isContoured = mesh.isContoured;
    isBicolorMap = mesh.isBicolorMap;    

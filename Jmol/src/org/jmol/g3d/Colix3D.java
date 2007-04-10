@@ -58,19 +58,17 @@ import org.jmol.util.Logger;
 
 class Colix3D {
 
-  private int colixMax = Graphics3D.SPECIAL_COLIX_MAX;
-  private int[] argbs = new int[128];
-  private int[] argbsGreyscale;
-  private int[][] ashades = new int[128][];
-  private int[][] ashadesGreyscale;
-  private Int2IntHash colixHash = new Int2IntHash();
+  private static int colixMax = Graphics3D.SPECIAL_COLIX_MAX;
+  private static int[] argbs = new int[128];
+  private static int[] argbsGreyscale;
+  private static int[][] ashades = new int[128][];
+  private static int[][] ashadesGreyscale;
+  private static final Int2IntHash colixHash = new Int2IntHash();
 
   Colix3D() {
-    for (int i = 0; i < predefinedArgbs.length; ++i)
-      getColix(predefinedArgbs[i]);
   }
   
-  short getColix(int argb) {
+  static short getColix(int argb) {
     if (argb == 0)
       return 0;
     int translucentFlag = 0;
@@ -87,7 +85,7 @@ class Colix3D {
         : (short) (allocateColix(argb) | translucentFlag));
   }
 
-  private int allocateColix(int argb) {
+  private synchronized static int allocateColix(int argb) {
     // double-check to make sure that someone else did not allocate
     // something of the same color while we were waiting for the lock
     if ((argb & 0xFF000000) != 0xFF000000)
@@ -126,7 +124,7 @@ class Colix3D {
     return colixMax++;
   }
 
-  private void calcArgbsGreyscale() {
+  private synchronized static void calcArgbsGreyscale() {
     if (argbsGreyscale != null)
       return;
     int[] a = new int[argbs.length];
@@ -135,17 +133,17 @@ class Colix3D {
     argbsGreyscale = a;
   }
 
-  int getArgb(short colix) {
+  final static int getArgb(short colix) {
     return argbs[colix & Graphics3D.OPAQUE_MASK];
   }
 
-  int getArgbGreyscale(short colix) {
+  final static int getArgbGreyscale(short colix) {
     if (argbsGreyscale == null)
       calcArgbsGreyscale();
     return argbsGreyscale[colix & Graphics3D.OPAQUE_MASK];
   }
 
-  int[] getShades(short colix, float[] lighting) {
+  final static int[] getShades(short colix, float[] lighting) {
     colix &= Graphics3D.OPAQUE_MASK;
     int[] shades = ashades[colix];
     if (shades == null)
@@ -153,7 +151,7 @@ class Colix3D {
     return shades;
   }
 
-  int[] getShadesGreyscale(short colix, float[] lighting) {
+  final static int[] getShadesGreyscale(short colix, float[] lighting) {
     colix &= Graphics3D.OPAQUE_MASK;
     if (ashadesGreyscale == null)
       ashadesGreyscale = new int[ashades.length][];
@@ -164,7 +162,7 @@ class Colix3D {
     return shadesGreyscale;
   }
 
-  void flushShades() {
+  final static void flushShades() {
     for (int i = colixMax; --i >= 0; )
       ashades[i] = null;
   }
@@ -200,7 +198,7 @@ class Colix3D {
   }
   */
   
-  static int[] predefinedArgbs = {
+  final static int[] predefinedArgbs = {
     0xFF000000, // black
     0xFFFFA500, // orange
     0xFFFFC0CB, // pink
@@ -223,5 +221,8 @@ class Colix3D {
     0xFFFFD700, // gold
   };
 
-
+  static {
+    for (int i = 0; i < predefinedArgbs.length; ++i)
+      getColix(predefinedArgbs[i]);
+  }
 }

@@ -1661,8 +1661,8 @@ final public class Graphics3D {
     return greyRgb;
   }
 
-  public short getColix(int argb) {
-    return colix3d.getColix(argb);
+  public static short getColix(int argb) {
+    return Colix3D.getColix(argb); 
   }
 
   public final static Point3f colorPointFromInt(int color, Point3f pt) {
@@ -1676,7 +1676,7 @@ final public class Graphics3D {
     return colorPointFromInt(getArgbFromString(colorName), pt);
   }
 
-  public short getColix(String colorName) {
+  public static short getColix(String colorName) {
     int argb = getArgbFromString(colorName);
     if (argb != 0)
       return getColix(argb);
@@ -1728,7 +1728,7 @@ final public class Graphics3D {
     }
   }
   
-  public short getColix(Object obj) {
+  public static short getColix(Object obj) {
     if (obj == null)
       return INHERIT_ALL;
     if (obj instanceof Byte)
@@ -1757,16 +1757,16 @@ final public class Graphics3D {
     if (colix < 0)
       colix = changeableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
     if (! inGreyscaleMode)
-      return colix3d.getArgb(colix);
-    return colix3d.getArgbGreyscale(colix);
+      return Colix3D.getArgb(colix);
+    return Colix3D.getArgbGreyscale(colix);
   }
 
   public int[] getShades(short colix) {
     if (colix < 0)
       colix = changeableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
     if (! inGreyscaleMode)
-      return colix3d.getShades(colix, lighting);
-    return colix3d.getShadesGreyscale(colix, lighting);
+      return Colix3D.getShades(colix, lighting);
+    return Colix3D.getShadesGreyscale(colix, lighting);
   }
 
   public final static short getChangeableColixIndex(short colix) {
@@ -1858,23 +1858,23 @@ final public class Graphics3D {
       changeableColixMap = t;
     }
     if (changeableColixMap[id] == 0)
-      changeableColixMap[id] = colix3d.getColix(argb);
+      changeableColixMap[id] = Colix3D.getColix(argb);
     //System.out.println("changeable colix "+Integer.toHexString(id | CHANGEABLE_MASK) + " = "+Integer.toHexString(argb));
     return (short)(id | CHANGEABLE_MASK);
   }
 
   public void changeColixArgb(short id, int argb) {
     if (id < changeableColixMap.length && changeableColixMap[id] != 0)
-      changeableColixMap[id] = colix3d.getColix(argb);
+      changeableColixMap[id] = Colix3D.getColix(argb);
   }
 
   /* ***************************************************************
    * shading and lighting
    * ***************************************************************/
 
-  public void flushShadesAndImageCaches() {
-    colix3d.flushShades();
-    sphere3d.flushImageCache();
+  public static void flushShadesAndImageCaches() {
+    Colix3D.flushShades();
+    Sphere3D.flushImageCache();
   }
 
   public final static byte shadeMax = Shade3D.shadeMax;
@@ -1898,7 +1898,7 @@ final public class Graphics3D {
   
 */
 
-  final float[] lighting = new float[] {
+  final static float[] lighting = new float[] {
       //user set:
       1f,       // specularON
       22f,      // specularPercent
@@ -1913,56 +1913,56 @@ final public class Graphics3D {
       0.45f,    // ambient fraction  
       }; 
   
-  public void setSpecular(boolean specular) {
+  public static void setSpecular(boolean specular) {
     lighting[Shade3D.SPECULAR_ON] = (specular ? 1f : 0f);
   }
 
-  public boolean getSpecular() {
+  public static boolean getSpecular() {
     return (lighting[Shade3D.SPECULAR_ON] != 0);
   }
 
   
-  public void setSpecularPower(int specularPower) {
+  public static void setSpecularPower(int specularPower) {
     lighting[Shade3D.SPECULAR_POWER] = specularPower;
     lighting[Shade3D.INTENSE_FRACTION] = specularPower / 100f;
   }
   
-  public float getSpecularPower() {
-    return lighting[Shade3D.SPECULAR_POWER];
+  public static int getSpecularPower() {
+    return (int) lighting[Shade3D.SPECULAR_POWER];
   }
   
-  public void setSpecularPercent(int specularPercent) {
+  public static void setSpecularPercent(int specularPercent) {
     lighting[Shade3D.SPECULAR_PERCENT]= specularPercent;
     lighting[Shade3D.INTENSITY_SPECULAR] = specularPercent / 100f;
   }
 
-  public int getSpecularPercent() {
+  public static int getSpecularPercent() {
     return (int) lighting[Shade3D.SPECULAR_PERCENT];
   }
 
-  public float getSpecularExponent() {
-    return lighting[Shade3D.SPECULAR_EXPONENT];
+  public static int getSpecularExponent() {
+    return (int) lighting[Shade3D.SPECULAR_EXPONENT];
   }
   
-  public void setSpecularExponent(int specularExponent) {
+  public static void setSpecularExponent(int specularExponent) {
     lighting[Shade3D.SPECULAR_EXPONENT] = specularExponent;
   }
   
-  public void setDiffusePercent(int diffusePercent) {
+  public static void setDiffusePercent(int diffusePercent) {
     lighting[Shade3D.DIFFUSE_PERCENT]= diffusePercent;
     lighting[Shade3D.INTENSITY_DIFFUSE]= diffusePercent / 100f;
   }
 
-  public int getDiffusePercent() {
+  public static int getDiffusePercent() {
     return (int) lighting[Shade3D.DIFFUSE_PERCENT];
   }
   
-  public void setAmbientPercent(int ambientPercent) {
+  public static void setAmbientPercent(int ambientPercent) {
     lighting[Shade3D.AMBIENT_PERCENT] = ambientPercent;
     lighting[Shade3D.AMBIENT_FRACTION] = ambientPercent / 100f;
   }
 
-  public int getAmbientPercent() {
+  public static int getAmbientPercent() {
     return (int) (lighting[Shade3D.AMBIENT_PERCENT]);
   }
   

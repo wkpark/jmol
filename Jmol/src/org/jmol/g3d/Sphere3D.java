@@ -47,21 +47,21 @@ package org.jmol.g3d;
 class Sphere3D {
 
   Graphics3D g3d;
-  float[] lighting;
+  static float[] lighting = Graphics3D.lighting;
   
   Sphere3D(Graphics3D g3d) {
     this.g3d = g3d;
-    lighting = g3d.lighting;
+    //lighting = g3d.lighting;
   }
 
   private final static int maxSphereCache = 128;
   private final static int maxOddSizeSphere = 49;
   private final static int maxSphereDiameter = 1000;
-  private int[][] sphereShapeCache = new int[maxSphereCache][];
+  private static int[][] sphereShapeCache = new int[maxSphereCache][];
 
   private int zShift;
   
-  void flushImageCache() {
+  static void flushImageCache() {
     sphereShapeCache = new int[maxSphereCache][];
   }
 

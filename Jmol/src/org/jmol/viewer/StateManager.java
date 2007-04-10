@@ -559,12 +559,12 @@ class StateManager {
 
     String getSpecularState() {
       StringBuffer str = new StringBuffer("");
-      appendCmd(str, "ambientPercent = " + ambientPercent);
-      appendCmd(str, "diffusePercent = " + diffusePercent);
-      appendCmd(str, "specular = " + specular);
-      appendCmd(str, "specularPercent = " + specularPercent);
-      appendCmd(str, "specularPower = " + specularPower);
-      appendCmd(str, "specularExponent = " + specularExponent);
+      appendCmd(str, "ambientPercent = " + Graphics3D.getAmbientPercent());
+      appendCmd(str, "diffusePercent = " + Graphics3D.getDiffusePercent());
+      appendCmd(str, "specular = " + Graphics3D.getSpecular());
+      appendCmd(str, "specularPercent = " + Graphics3D.getSpecularPercent());
+      appendCmd(str, "specularPower = " + Graphics3D.getSpecularPower());
+      appendCmd(str, "specularExponent = " + Graphics3D.getSpecularExponent());
       return str.toString();
     }
     

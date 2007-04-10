@@ -162,7 +162,7 @@ class Colix3D {
     return shadesGreyscale;
   }
 
-  final static void flushShades() {
+  final synchronized static void flushShades() {
     for (int i = colixMax; --i >= 0; )
       ashades[i] = null;
   }

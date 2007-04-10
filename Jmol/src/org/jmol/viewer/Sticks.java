@@ -103,7 +103,7 @@ class Sticks extends Shape {
         while (iter.hasNext()) {
           bsColixSet.set(iter.nextIndex());
           Bond bond = iter.next();
-          bond.setColix(viewer.getColixHbondType(bond.order));
+          bond.setColix(Viewer.getColixHbondType(bond.order));
         }
         return;
       }

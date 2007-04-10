@@ -1872,9 +1872,9 @@ final public class Graphics3D {
    * shading and lighting
    * ***************************************************************/
 
-  public static void flushShadesAndImageCaches() {
+  public static void flushShadesAndSphereCaches() { 
     Colix3D.flushShades();
-    Sphere3D.flushImageCache();
+    Sphere3D.flushSphereCache();
   }
 
   public final static byte shadeMax = Shade3D.shadeMax;
@@ -1883,37 +1883,9 @@ final public class Graphics3D {
   public final static byte intensitySpecularSurfaceLimit =
     Shade3D.intensitySpecularSurfaceLimit;
 
-  /*  
-  static boolean specularOn = true;
-  // set specular 0-100
-  static float intensitySpecular = 0.22f;
-  // set specpower -6
-  static int specularExponent = 6;
-  // set specpower 0-100
-  static float intenseFraction = 0.4f;
-  // set diffuse 0-100
-  static float intensityDiffuse = 0.84f;
-  // set ambient 0-100
-  static float ambientFraction = 0.45f;
+  final static float[] lighting = Shade3D.lighting;
   
-*/
-
-  final static float[] lighting = new float[] {
-      //user set:
-      1f,       // specularON
-      22f,      // specularPercent
-      6f,       // specularExponent
-      40f,      // specularPower
-      84f,      // diffusePercent
-      45f,      // ambientPercent
-      //derived:
-      0.22f,    // intensitySpecular
-      0.4f,     // intense fraction
-      0.84f,    // intensity diffuse
-      0.45f,    // ambient fraction  
-      }; 
-  
-  public static void setSpecular(boolean specular) {
+  public synchronized static void setSpecular(boolean specular) {
     lighting[Shade3D.SPECULAR_ON] = (specular ? 1f : 0f);
   }
 
@@ -1921,8 +1893,7 @@ final public class Graphics3D {
     return (lighting[Shade3D.SPECULAR_ON] != 0);
   }
 
-  
-  public static void setSpecularPower(int specularPower) {
+  public synchronized static void setSpecularPower(int specularPower) {
     lighting[Shade3D.SPECULAR_POWER] = specularPower;
     lighting[Shade3D.INTENSE_FRACTION] = specularPower / 100f;
   }
@@ -1931,7 +1902,7 @@ final public class Graphics3D {
     return (int) lighting[Shade3D.SPECULAR_POWER];
   }
   
-  public static void setSpecularPercent(int specularPercent) {
+  public synchronized static void setSpecularPercent(int specularPercent) {
     lighting[Shade3D.SPECULAR_PERCENT]= specularPercent;
     lighting[Shade3D.INTENSITY_SPECULAR] = specularPercent / 100f;
   }
@@ -1940,15 +1911,15 @@ final public class Graphics3D {
     return (int) lighting[Shade3D.SPECULAR_PERCENT];
   }
 
+  public synchronized static void setSpecularExponent(int specularExponent) {
+    lighting[Shade3D.SPECULAR_EXPONENT] = specularExponent;
+  }
+  
   public static int getSpecularExponent() {
     return (int) lighting[Shade3D.SPECULAR_EXPONENT];
   }
   
-  public static void setSpecularExponent(int specularExponent) {
-    lighting[Shade3D.SPECULAR_EXPONENT] = specularExponent;
-  }
-  
-  public static void setDiffusePercent(int diffusePercent) {
+  public synchronized static void setDiffusePercent(int diffusePercent) {
     lighting[Shade3D.DIFFUSE_PERCENT]= diffusePercent;
     lighting[Shade3D.INTENSITY_DIFFUSE]= diffusePercent / 100f;
   }
@@ -1957,7 +1928,7 @@ final public class Graphics3D {
     return (int) lighting[Shade3D.DIFFUSE_PERCENT];
   }
   
-  public static void setAmbientPercent(int ambientPercent) {
+  public synchronized static void setAmbientPercent(int ambientPercent) {
     lighting[Shade3D.AMBIENT_PERCENT] = ambientPercent;
     lighting[Shade3D.AMBIENT_FRACTION] = ambientPercent / 100f;
   }
@@ -1966,19 +1937,6 @@ final public class Graphics3D {
     return (int) (lighting[Shade3D.AMBIENT_PERCENT]);
   }
   
-/*  
-  static void dump() {
-    Logger.debug("\n ambientPercent=" + ambientFraction +
-                       "\n diffusePercent=" + intensityDiffuse +
-                       "\n specularOn=" + specularOn +
-                       "\n specularPercent=" + intensitySpecular +
-                       "\n specularPower=" + intenseFraction +
-                       "\n lighting[Shade3D.SPECULAR_EXPONENT]=" + lighting[Shade3D.SPECULAR_EXPONENT] +
-                       "\n zLightsource=" + zLightsource +
-                       "\n shadeNormal=" + shadeNormal);
-  }
-*/
-
   /*
   public void setLightsourceZ(float dist) {
     Shade3D.setLightsourceZ(dist);

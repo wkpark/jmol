@@ -165,6 +165,7 @@ class Colix3D {
   final synchronized static void flushShades() {
     for (int i = colixMax; --i >= 0; )
       ashades[i] = null;
+    Shade3D.sphereShadingCalculated = false;
   }
 
   /*

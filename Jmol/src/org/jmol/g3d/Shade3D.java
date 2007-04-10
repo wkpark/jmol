@@ -63,9 +63,21 @@ final class Shade3D {
 
   // the viewer vector is always 0,0,1
 
-  // the following six settings are set in StateManager
-  // and saved in g3d.lighting
+  /*  
+  static boolean specularOn = true;
+  // set specular 0-100
+  static float intensitySpecular = 0.22f;
+  // set specpower -6
+  static int specularExponent = 6;
+  // set specpower 0-100
+  static float intenseFraction = 0.4f;
+  // set diffuse 0-100
+  static float intensityDiffuse = 0.84f;
+  // set ambient 0-100
+  static float ambientFraction = 0.45f;
   
+  */
+
   static int SPECULAR_ON = 0; // set specular on|off
   static int SPECULAR_PERCENT = 1;
   static int SPECULAR_EXPONENT = 2;
@@ -77,6 +89,21 @@ final class Shade3D {
   static int INTENSITY_DIFFUSE = 8;
   static int AMBIENT_FRACTION = 9;
 
+  final static float[] lighting = new float[] {
+      //user set:
+      1f,       // specularON
+      22f,      // specularPercent
+      6f,       // specularExponent
+      40f,      // specularPower
+      84f,      // diffusePercent
+      45f,      // ambientPercent
+      //derived:
+      0.22f,    // intensitySpecular
+      0.4f,     // intense fraction
+      0.84f,    // intensity diffuse
+      0.45f,    // ambient fraction  
+      }; 
+  
   static int[] getShades(int rgb, boolean greyScale, float[] lighting) {
     int[] shades = new int[shadeMax];
     if (rgb == 0)
@@ -124,6 +151,7 @@ final class Shade3D {
 
     return "[" + red + "," + grn + "," + blu + "]";
   }
+
 
   final static byte intensitySpecularSurfaceLimit = (byte)(shadeNormal + 4);
 
@@ -240,6 +268,54 @@ final class Shade3D {
   }
   */
 
+  
+  ////////////////////////////////////////////////////////////////
+  // Sphere shading cache for Large spheres
+  ////////////////////////////////////////////////////////////////
+
+  static boolean sphereShadingCalculated = false;
+  final static byte[] sphereIntensities = new byte[256 * 256];
+
+  synchronized static void calcSphereShading() {
+    //if (!sphereShadingCalculated) { //unnecessary -- but be careful!
+    float xF = -127.5f;
+    for (int i = 0; i < 256; ++xF, ++i) {
+      float yF = -127.5f;
+      for (int j = 0; j < 256; ++yF, ++j) {
+        byte intensity = 0;
+        float z2 = 130 * 130 - xF * xF - yF * yF;
+        if (z2 > 0) {
+          float z = (float) Math.sqrt(z2);
+          intensity = Shade3D.calcDitheredNoisyIntensity(xF, yF, z, 130,
+              lighting);
+        }
+        sphereIntensities[(j << 8) + i] = intensity;
+      }
+    }
+    sphereShadingCalculated = true;
+  }
+  
+  /*
+  static byte calcSphereIntensity(int x, int y, int r) {
+    int d = 2*r + 1;
+    x += r;
+    if (x < 0)
+      x = 0;
+    int x8 = (x << 8) / d;
+    if (x8 > 0xFF)
+      x8 = 0xFF;
+    y += r;
+    if (y < 0)
+      y = 0;
+    int y8 = (y << 8) / d;
+    if (y8 > 0xFF)
+      y8 = 0xFF;
+    return sphereIntensities[(y8 << 8) + x8];
+  }
+  */
+  
+ 
+  
   // this doesn't really need to be synchronized
   // no serious harm done if two threads write seed at the same time
   private static int seed = 0x12345679; // turn lo bit on

@@ -309,6 +309,7 @@ class ColorManager {
 
   private float colorHi, colorLo;
   private float[] colorData;
+  
   void setCurrentColorRange(float[] data, BitSet bs, String colorScheme) {
     colorData = data;
     setColorScheme(colorScheme);
@@ -375,7 +376,7 @@ class ColorManager {
     return Graphics3D.GRAY;
   }
 
-  short getColixHbondType(short order) {
+  static short getColixHbondType(short order) {
     int argbIndex = ((order & JmolConstants.BOND_HYDROGEN_MASK)
                      >> JmolConstants.BOND_HBOND_SHIFT);
     return Graphics3D.getColix(JmolConstants.argbsHbondType[argbIndex]);
@@ -386,33 +387,33 @@ class ColorManager {
   }
   */
   
-  private void flushCaches() {
-    Graphics3D.flushShadesAndImageCaches();
+  private static void flushCaches() {
+    Graphics3D.flushShadesAndSphereCaches();
   }
 
-  void setSpecular(boolean specular) {
+  static void setSpecular(boolean specular) {
     if (Graphics3D.getSpecular() == specular)
       return;
     Graphics3D.setSpecular(specular);
     flushCaches();
   }
 
-  boolean getSpecular() {
+  static boolean getSpecular() {
     return Graphics3D.getSpecular();
   }
 
-  void setSpecularPercent(int specularPercent) {
+  static void setSpecularPercent(int specularPercent) {
     if (Graphics3D.getSpecularPercent() == specularPercent)
       return;
     Graphics3D.setSpecularPercent(specularPercent);
     flushCaches();
   }
   
-  int getSpecularPercent() {
+  static int getSpecularPercent() {
     return Graphics3D.getSpecularPercent();
   }
 
-  void setSpecularPower(int specularPower) {
+  static void setSpecularPower(int specularPower) {
     if (specularPower < 0) {
       if (Graphics3D.getSpecularExponent() == -specularPower)
         return;
@@ -425,25 +426,25 @@ class ColorManager {
     flushCaches();
   }
   
-  void setDiffusePercent(int diffusePercent) {
+  static void setDiffusePercent(int diffusePercent) {
     if (Graphics3D.getDiffusePercent() == diffusePercent)
       return;
     Graphics3D.setDiffusePercent(diffusePercent);
     flushCaches();
   }
 
-  int getDiffusePercent() {
+  static int getDiffusePercent() {
     return Graphics3D.getDiffusePercent();
   }
 
-  void setAmbientPercent(int ambientPercent) {
+  static void setAmbientPercent(int ambientPercent) {
     if (Graphics3D.getAmbientPercent() == ambientPercent)
       return;
     Graphics3D.setAmbientPercent(ambientPercent);
     flushCaches();
   }
 
-  int getAmbientPercent() {
+  static int getAmbientPercent() {
     return Graphics3D.getAmbientPercent();
   }
 
@@ -454,7 +455,7 @@ class ColorManager {
   }
   */
   
-  int getJmolOrRasmolArgb(int id, int argb) {
+  static int getJmolOrRasmolArgb(int id, int argb) {
     if (argb == Token.jmol) {
       return (id < 256 ? JmolConstants.argbsCpk[id]
           : JmolConstants.altArgbsCpk[JmolConstants

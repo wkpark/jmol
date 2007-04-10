@@ -726,7 +726,7 @@ final public class Graphics3D {
                              boolean twoPass) {
     if (currentlyRendering)
       endRendering();
-    normix3d.setRotationMatrix(rotationMatrix, lighting);
+    normix3d.setRotationMatrix(rotationMatrix);
     antialiasThisFrame &= isFullSceneAntialiasingEnabled;
     this.antialiasThisFrame = antialiasThisFrame;
     currentlyRendering = true;
@@ -1765,8 +1765,8 @@ final public class Graphics3D {
     if (colix < 0)
       colix = changeableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
     if (! inGreyscaleMode)
-      return Colix3D.getShades(colix, lighting);
-    return Colix3D.getShadesGreyscale(colix, lighting);
+      return Colix3D.getShades(colix);
+    return Colix3D.getShadesGreyscale(colix);
   }
 
   public final static short getChangeableColixIndex(short colix) {
@@ -1959,9 +1959,8 @@ final public class Graphics3D {
 
     vectorNormal.cross(vectorAB, vectorAC);
     int intensity = vectorNormal.z >= 0 ? Shade3D.calcIntensity(
-        -vectorNormal.x, -vectorNormal.y, vectorNormal.z, lighting) : Shade3D
-        .calcIntensity(vectorNormal.x, vectorNormal.y, -vectorNormal.z,
-            lighting);
+        -vectorNormal.x, -vectorNormal.y, vectorNormal.z) : Shade3D
+        .calcIntensity(vectorNormal.x, vectorNormal.y, -vectorNormal.z);
     if (intensity > intensitySpecularSurfaceLimit)
       intensity = intensitySpecularSurfaceLimit;
     setColorNoisy(intensity);
@@ -1976,9 +1975,9 @@ final public class Graphics3D {
     return
       (vectorNormal.z >= 0
             ? Shade3D.calcIntensity(-vectorNormal.x, -vectorNormal.y,
-                                    vectorNormal.z, lighting)
+                                    vectorNormal.z)
             : Shade3D.calcIntensity(vectorNormal.x, vectorNormal.y,
-                                    -vectorNormal.z, lighting));
+                                    -vectorNormal.z));
   }
 
   /* ***************************************************************

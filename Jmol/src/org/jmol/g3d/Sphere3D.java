@@ -47,11 +47,9 @@ package org.jmol.g3d;
 class Sphere3D {
 
   Graphics3D g3d;
-  static float[] lighting = Graphics3D.lighting;
   
   Sphere3D(Graphics3D g3d) {
     this.g3d = g3d;
-    //lighting = g3d.lighting;
   }
 
   private int zShift;
@@ -103,10 +101,10 @@ class Sphere3D {
         if (z2 >= 0) {
           float z = (float)Math.sqrt(z2);
           int height = (int)z;
-          int intensitySE = Shade3D.calcDitheredNoisyIntensity( x,  y, z, radiusF, lighting);
-          int intensitySW = Shade3D.calcDitheredNoisyIntensity(-x,  y, z, radiusF, lighting);
-          int intensityNE = Shade3D.calcDitheredNoisyIntensity( x, -y, z, radiusF, lighting);
-          int intensityNW = Shade3D.calcDitheredNoisyIntensity(-x, -y, z, radiusF, lighting);
+          int intensitySE = Shade3D.calcDitheredNoisyIntensity( x,  y, z, radiusF);
+          int intensitySW = Shade3D.calcDitheredNoisyIntensity(-x,  y, z, radiusF);
+          int intensityNE = Shade3D.calcDitheredNoisyIntensity( x, -y, z, radiusF);
+          int intensityNW = Shade3D.calcDitheredNoisyIntensity(-x, -y, z, radiusF);
           int packed = (height |
                         (intensitySE << 7) |
                         (intensitySW << 13) |

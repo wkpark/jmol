@@ -49,6 +49,7 @@ class MopacGraphfReader extends MopacDataReader {
       readAtoms();
       readSlaterBasis();
       readMOs();
+      readKeywords();
     } catch (Exception e) {
       return setError(e);
     }
@@ -66,6 +67,8 @@ class MopacGraphfReader extends MopacDataReader {
       atom.x = parseFloat(line.substring(4, 17));
       atom.y = parseFloat(line.substring(17, 29));
       atom.z = parseFloat(line.substring(29, 41));
+      if (line.length() > 41)
+        atom.partialCharge = parseFloat(line.substring(41));
       atom.elementSymbol = AtomSetCollectionReader.getElementSymbol(atomicNumbers[i]);
       //System.out.println(atom.elementSymbol + " " + atom.x + " " + atom.y + " " + atom.z);
     }
@@ -197,5 +200,11 @@ class MopacGraphfReader extends MopacDataReader {
       orbitals.add(mo); 
     }
     setMOs("eV");
+  }
+  
+  private void readKeywords() throws Exception {
+    if (readLine() == null || line.indexOf(" Keywords:") < 0)
+      return;
+    moData.put("calculationType", line.substring(11).trim());
   }
 }

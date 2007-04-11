@@ -1327,12 +1327,13 @@ class Eval { //implements Runnable {
           comparisonValue *= (Compiler
               .tokAttr(tokWhat, Token.atompropertyfloat) ? 100 : 1);
           comparisonFloat = comparisonValue;
-          if (isModel) {
-            if (comparisonValue > 1000 && comparisonValue < 1000000
-                && viewer.haveFileSet()) {
+          if (isModel && viewer.haveFileSet()) {
+            if (comparisonValue >= 1000 && comparisonValue < 1000000) {
               comparisonValue = (comparisonValue / 1000) * 1000000
                   + comparisonValue % 1000;
+              tokWhat = -tokWhat;
             }
+              
           }
         } else if (val instanceof Float) {
           if (isModel) {

@@ -6365,17 +6365,18 @@ class Eval { //implements Runnable {
       propertyName = "allOff";
       break;
     case Token.none:
-      checkLength3();
       echoShapeActive = false;
+      //fall through
     case Token.all:
       checkLength3();
+      //fall through
     case Token.left:
     case Token.right:
     case Token.top:
     case Token.bottom:
     case Token.center:
     case Token.identifier:
-      propertyValue = statement[2].value;
+      propertyValue = parameterAsString(2);
       break;
     case Token.string:
       echo(2);
@@ -6407,11 +6408,18 @@ class Eval { //implements Runnable {
       case Token.bottom:
       case Token.center:
       case Token.identifier: //middle
-        propertyValue = statement[3].value;
+        propertyValue = parameterAsString(3);
         break;
       default:
         invalidArgument();
-      }
+       }
+      setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
+      return;
+    }
+    //set echo name script "some script"
+    if (statementLength == 5 && getToken(3).tok == Token.script) {
+      propertyName = "script";
+      propertyValue = parameterAsString(4);
       setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
       return;
     }

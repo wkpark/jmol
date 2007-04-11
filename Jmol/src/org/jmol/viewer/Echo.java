@@ -59,6 +59,11 @@ class Echo extends TextShape {
       Logger.debug("Echo.setProperty(" + propertyName + "," + value + ")");
     }
 
+    if ("script" == propertyName) {
+      if (currentText != null)
+        currentText.setScript((String)value);
+      return;
+    }
     if ("target" == propertyName) {
       String target = ((String) value).intern().toLowerCase();
       if (target != "none" && target != "all") {
@@ -108,5 +113,20 @@ class Echo extends TextShape {
     }
     return s.toString();
   }
+  
+  boolean checkObjectClicked(int x, int y, int modifiers) {
+    Enumeration e = texts.elements();
+    while (e.hasMoreElements()) {
+      Text t = (Text) e.nextElement();
+      if (t.checkObjectClicked(x, y)) {
+        String s = t.getScript();
+        if (s != null)
+          viewer.evalStringQuiet(s);
+        return true;
+      }
+    }
+    return false;
+  }
+
 }
 

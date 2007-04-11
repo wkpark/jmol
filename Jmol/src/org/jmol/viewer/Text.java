@@ -56,6 +56,8 @@ class Text {
   Point3f xyz;
   String target;
   String text, textUnformatted;
+  String script;
+  
   boolean doFormatText;
   
   String[] lines;
@@ -204,6 +206,14 @@ class Text {
     setZs(z, zSlab);
   }
 
+  void setScript(String script) {
+    this.script = (script == null || script.length() == 0 ? null : script);
+  }
+  
+  String getScript() {
+    return script;
+  }
+  
   void setPositions() {
     int xLeft, xCenter, xRight;
     if (valign == XY || valign == XYZ) {
@@ -589,5 +599,10 @@ class Text {
       s.append(";background echo [x").append(g3d.getHexColorFromIndex(bgcolix)).append("]");
     s.append(";\n");
     return s.toString();
+  }
+  
+  boolean checkObjectClicked(int x, int y) {
+    return (script != null && 
+        x >= boxX && x <= boxX + boxWidth && y >= boxY && y <= boxY + boxHeight);
   }
 }

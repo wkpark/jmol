@@ -41,6 +41,13 @@ final public class JmolConstants {
    *
    11.1.28 
    
+   adds
+   
+   a = script("some script command")
+   a = javascript("some javascript")
+   
+   putting output into a from commands such as "show" or "getProperty", for instance.
+   
    reinstates tempManager properly.
    
    adds support for CAChe CSF files with MOPAC (AM1, PM3, etc.),

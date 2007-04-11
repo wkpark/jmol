@@ -84,7 +84,7 @@ public class Token {
   final static int command           = (1 <<  8);
   final static int expressionCommand = (1 <<  9); // expression command
   final static int embeddedExpression= (1 << 10); // embedded expression
-  final static int specialstring     = (1 << 11); // echo, label
+  final static int specialstring     = (1 << 11); // echo, label, javascript
 //generally, the minus sign is used to denote atom ranges
   // this property is used for the commands which allow negative integers
   final static int negnums           = (1 << 12);
@@ -140,7 +140,7 @@ public class Token {
   final static int ribbon       = command | 26;
   final static int rotate       = command | 27 | coordOrSet;
   final static int save         = command | 28;
-  final static int script       = command | 29;
+//  final static int script       = command | 29; with mathfunc
   final static int select       = command | 30 | expressionCommand;
   final static int set          = command | 31 | negnums | embeddedExpression | colorparam;
   final static int show         = command | 32;
@@ -330,6 +330,8 @@ public class Token {
   final static int find         = 2  | mathfunc | mathproperty | 1 << 3;
   final static int load         = 3  | mathfunc | 1 << 3 | command | negnums;
   final static int substructure = 4  | mathfunc | 1 << 3;
+  final static int script       = 5  | mathfunc | 1 << 3 | command;
+  final static int javascript   = 6  | mathfunc | 1 << 3 | command | specialstring;
 
   final static int distance     = 1  | mathfunc | mathproperty | 2 << 3;
   final static int data         = 2  | mathfunc | 2 << 3 | command;
@@ -775,6 +777,7 @@ public class Token {
     "save",              new Token(save,                maxArg3),
     "script",            new Token(script,          varArgCount),
     "source",            null, 
+    "javascript",        new Token(javascript,                1),
     "select",            new Token(select,          varArgCount),
     "set",               new Token(set,             varArgCount),
     "show",              new Token(show,                maxArg2),

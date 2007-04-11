@@ -1562,7 +1562,7 @@ public class Viewer extends JmolViewer {
       bMax = runtime.maxMemory();
     } catch (Exception e) {
     }
-    Logger.error("ZAP memory inuse, total, free, max: " + (bTotal - bFree)
+    Logger.debug("ZAP memory inuse, total, free, max: " + (bTotal - bFree)
         + " " + bTotal + " " + bFree + " " + bMax);
     if (notify)
       setStatusFileLoaded(0, null, null, null, null, null);

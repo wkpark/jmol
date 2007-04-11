@@ -52,6 +52,7 @@ class Context {
   int lineEnd = Integer.MAX_VALUE;
   int iToken;
   int ifs[];
+  StringBuffer outputBuffer;
 }
 
 class BondSet extends BitSet {
@@ -107,6 +108,8 @@ class Eval { //implements Runnable {
   boolean logMessages = false;
   boolean debugScript = false;
   boolean fileOpenCheck = true;
+  
+  StringBuffer outputBuffer;
 
   Eval(Viewer viewer) {
     compiler = new Compiler(viewer);
@@ -205,7 +208,7 @@ class Eval { //implements Runnable {
     } catch (ScriptException e) {
       error = true;
       setErrorMessage(e.toString());
-      viewer.scriptStatus(errorMessage);
+      scriptStatus(errorMessage);
     }
     timeEndExecution = System.currentTimeMillis();
     fileOpenCheck = tempOpen;
@@ -245,6 +248,15 @@ class Eval { //implements Runnable {
     popContext();
   }
 
+  void runScript(String script, StringBuffer outputBuffer) throws ScriptException {
+    //a = script("xxxx")
+    pushContext();
+    this.outputBuffer = outputBuffer;
+    if (loadScript(null, script))
+      instructionDispatchLoop(false);
+    popContext();
+  }
+
   void pushContext() throws ScriptException {
     if (scriptLevel == scriptLevelMax)
       evalError(GT._("too many script levels"));
@@ -261,6 +273,7 @@ class Eval { //implements Runnable {
     context.pcEnd = pcEnd;
     context.iToken = iToken;
     context.ifs = ifs;
+    context.outputBuffer = outputBuffer;
     stack[scriptLevel++] = context;
     if (isScriptCheck)
       Logger.info("-->>-------------".substring(0, scriptLevel + 5) + filename);
@@ -285,6 +298,7 @@ class Eval { //implements Runnable {
     pcEnd = context.pcEnd;
     iToken = context.iToken;
     ifs = context.ifs;
+    outputBuffer = context.outputBuffer;
   }
 
   boolean loadScript(String filename, String script) {
@@ -585,7 +599,7 @@ class Eval { //implements Runnable {
             }
             pc++;
             if (error)
-              viewer.scriptStatus(errorMessage);
+              scriptStatus(errorMessage);
             pauseExecution();
           }
         }
@@ -803,7 +817,8 @@ class Eval { //implements Runnable {
         rotate(false, false);
         break;
       case Token.script:
-        script();
+      case Token.javascript:
+        script(token.tok == Token.javascript);
         break;
       case Token.history:
         history(1);
@@ -2989,7 +3004,7 @@ class Eval { //implements Runnable {
         operation, atomSets[0], atomSets[1], bsBonds, isBonds);
     if (isDelete) {
       if (!(tQuiet || scriptLevel > scriptReportingLevel))
-        viewer.scriptStatus(GT._("{0} connections deleted", n));
+        scriptStatus(GT._("{0} connections deleted", n));
       return;
     }
     if (isColorOrRadius) {
@@ -3011,7 +3026,7 @@ class Eval { //implements Runnable {
       viewer.selectBonds(null);
     }
     if (!(tQuiet || scriptLevel > scriptReportingLevel))
-      viewer.scriptStatus(GT._("{0} connections modified or created", n));
+      scriptStatus(GT._("{0} connections modified or created", n));
   }
 
   void getProperty() throws ScriptException {
@@ -3430,11 +3445,20 @@ class Eval { //implements Runnable {
     if (isSyntaxCheck)
       return;
     String s = viewer.formatText(text);
-    Logger.warn(s);
+    if (outputBuffer == null)
+      Logger.warn(s);
     if (!s.startsWith("_"))
-      viewer.scriptStatus(s);
+      scriptStatus(s);
   }
 
+  void scriptStatus(String s) {
+    if (outputBuffer != null) {
+      outputBuffer.append(s);
+      return;
+    }
+    viewer.scriptStatus(s);    
+  }
+  
   void pause() throws ScriptException {
     pauseExecution();
     String msg = optParameterAsString(1);
@@ -3598,7 +3622,7 @@ class Eval { //implements Runnable {
     if (errMsg != null && !isScriptCheck)
       evalError(errMsg);
     if (logMessages)
-      viewer.scriptStatus("Successfully loaded:" + filename);
+      scriptStatus("Successfully loaded:" + filename);
     String defaultScript = viewer.getDefaultLoadScript();
     String msg = "";
     if (defaultScript.length() > 0)
@@ -4077,8 +4101,13 @@ class Eval { //implements Runnable {
         "getSpinAxis:" + axisID);
   }
 
-  void script() throws ScriptException {
+  void script(boolean isJavaScript) throws ScriptException {
     // token allows for only 1 or 2 parameters
+    if (isJavaScript) {
+      if (!isSyntaxCheck)
+        viewer.eval(parameterAsString(1));
+      return;
+    }
     if (getToken(1).tok != Token.string)
       filenameExpected();
     int lineNumber = 0;
@@ -4724,7 +4753,7 @@ class Eval { //implements Runnable {
       if (isSyntaxCheck)
         return;
       int n = viewer.autoHbond(null);
-      viewer.scriptStatus(GT._("{0} hydrogen bonds", n));
+      scriptStatus(GT._("{0} hydrogen bonds", n));
       return;
     }
     setShapeSize(JmolConstants.SHAPE_HSTICKS, getMadParameter());
@@ -6922,7 +6951,7 @@ class Eval { //implements Runnable {
         height = viewer.getScreenHeight();
     }
     viewer.createImage(fileName, data, quality, width, height);
-    viewer.scriptStatus("type=" + type + "; file="
+    scriptStatus("type=" + type + "; file="
         + (fileName == null ? "CLIPBOARD" : fileName)
         + (len >= 0 ? "; length=" + len : "")
         + (isImage ? "; width=" + width + "; height=" + height : ""));
@@ -7187,7 +7216,10 @@ class Eval { //implements Runnable {
   void showString(String str) {
     if (isSyntaxCheck)
       return;
-    viewer.showString(str);
+    if (outputBuffer != null)
+      outputBuffer.append(str);
+    else
+      viewer.showString(str);
   }
 
   String getIsosurfaceJvxl() {
@@ -9197,6 +9229,9 @@ class Eval { //implements Runnable {
         return evaluateData(args);
       case Token.load:
         return evaluateLoad(args);
+      case Token.script:
+      case Token.javascript:
+        return evaluateScript(args, tok == Token.javascript);
       case Token.within:
         return evaluateWithin(args);
       case Token.distance:
@@ -9392,6 +9427,21 @@ class Eval { //implements Runnable {
       if (isSyntaxCheck)
         return addX("");
       return addX(viewer.getFileAsString(Token.sValue(args[0])));
+    }
+
+    boolean evaluateScript(Token[] args, boolean isJavaScript)
+        throws ScriptException {
+      //System.out.println("eval load");
+      if (args.length != 1)
+        return false;
+      if (isSyntaxCheck)
+        return addX("");
+      String s = Token.sValue(args[0]);
+      if (isJavaScript)
+        return addX(viewer.eval(s));
+      StringBuffer sb = new StringBuffer();
+      runScript(s, sb);
+      return addX(sb.toString());
     }
 
     boolean evaluateData(Token[] args) throws ScriptException {

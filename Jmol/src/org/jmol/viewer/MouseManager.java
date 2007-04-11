@@ -24,7 +24,6 @@
 package org.jmol.viewer;
 
 
-import java.awt.Cursor;
 import java.awt.Rectangle;
 import java.awt.Event;
 import org.jmol.util.Logger;
@@ -254,7 +253,7 @@ abstract class MouseManager implements KeyListener {
     if (logMouseEvents && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug("mouseReleased("+x+","+y+","+modifiers+")");
     viewer.setInMotion(false);
-    viewer.getAwtComponent().setCursor(Cursor.getDefaultCursor());
+    viewer.setCursor(Viewer.CURSOR_DEFAULT);
   }
 
   int previousClickX, previousClickY;
@@ -392,8 +391,7 @@ abstract class MouseManager implements KeyListener {
     timeCurrent = time;
     xCurrent = previousDragX = x; yCurrent = previousDragY = y;
     if (!viewer.getInMotion())
-      viewer.getAwtComponent().setCursor(
-          Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+      viewer.setCursor(Viewer.CURSOR_MOVE);
     viewer.setInMotion(true);
     if (pressedCount == 1)
       mouseSinglePressDrag(deltaX, deltaY, modifiers);
@@ -568,12 +566,11 @@ abstract class MouseManager implements KeyListener {
     viewer.setPendingMeasurement(null);
     measurementMode = false;
     measurementCount = 0;
-    viewer.getAwtComponent().setCursor(Cursor.getDefaultCursor());
+    viewer.setCursor(Viewer.CURSOR_DEFAULT);
   }
 
   void enterMeasurementMode() {
-    viewer.getAwtComponent()
-      .setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+    viewer.setCursor(Viewer.CURSOR_CROSSHAIR);
     measurementCount = 0;
     measurementMode = true;
   }
@@ -609,7 +606,7 @@ abstract class MouseManager implements KeyListener {
               int atomIndex = viewer.findNearestAtomIndex(xCurrent, yCurrent);
               if (atomIndex >= 0) {
                 hoverOn(atomIndex);
-              } else if (viewer.getDrawHover()) {
+              } else {
                 viewer.checkObjectHovered(xCurrent, yCurrent);
               }
             }

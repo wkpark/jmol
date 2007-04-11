@@ -1255,11 +1255,13 @@ String getAtomInfoChime(int i) {
   void checkObjectHovered(int x, int y) {
     if (frame == null)
       return;
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = frame.shapes[i];
-      if (shape != null && shape.checkObjectHovered(x, y))
-        break;
-    }
+    Shape shape = frame.shapes[JmolConstants.SHAPE_ECHO];
+    if (shape != null && shape.checkObjectHovered(x, y))
+      return;
+    shape = frame.shapes[JmolConstants.SHAPE_DRAW];
+    if (shape == null || !viewer.getDrawHover())
+      return;
+    shape.checkObjectHovered(x, y);
   }
  
   void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,

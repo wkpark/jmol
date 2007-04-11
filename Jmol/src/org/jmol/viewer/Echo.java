@@ -128,5 +128,25 @@ class Echo extends TextShape {
     return false;
   }
 
+  boolean checkObjectHovered(int x, int y) {
+    Enumeration e = texts.elements();
+    boolean haveScripts = false;
+    while (e.hasMoreElements()) {
+      Text t = (Text) e.nextElement();
+      String s = t.getScript();
+      if (s != null) {
+        haveScripts = true;
+        if (t.checkObjectClicked(x, y)) {
+          viewer.setCursor(Viewer.CURSOR_HAND);
+          return true;
+        }
+      }
+    }
+    if (haveScripts)
+      viewer.setCursor(Viewer.CURSOR_DEFAULT);
+    return false;
+  }
+
+
 }
 

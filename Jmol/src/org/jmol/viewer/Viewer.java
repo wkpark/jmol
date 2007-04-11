@@ -35,6 +35,7 @@ import org.jmol.util.JpegEncoder;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Parser;
 
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Dimension;
@@ -3253,6 +3254,34 @@ public class Viewer extends JmolViewer {
     setTainted(true);
   }
 
+  final static int CURSOR_DEFAULT = 0;
+  final static int CURSOR_HAND = 1;
+  final static int CURSOR_CROSSHAIR = 2;
+  final static int CURSOR_MOVE = 3;
+  
+  int currentCursor = CURSOR_DEFAULT;
+  
+  void setCursor(int cursor) {
+    if(currentCursor == cursor || display == null)
+      return;
+    int c;
+    switch(currentCursor = cursor) {
+    case CURSOR_HAND:
+      c = Cursor.HAND_CURSOR;
+      break;
+    case CURSOR_MOVE:
+      c = Cursor.MOVE_CURSOR;
+      break;
+    case CURSOR_CROSSHAIR:
+      c = Cursor.CROSSHAIR_CURSOR;
+      break;
+    default:
+       display.setCursor(Cursor.getDefaultCursor());
+      return;
+    }
+    display.setCursor(Cursor.getPredefinedCursor(c));
+ }
+  
   private void setPickingMode(String mode) {
     int pickingMode = JmolConstants.GetPickingMode(mode);
     if (pickingMode < 0)

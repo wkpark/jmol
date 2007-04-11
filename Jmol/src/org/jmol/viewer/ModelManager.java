@@ -1249,7 +1249,7 @@ String getAtomInfoChime(int i) {
     if (shape != null && shape.checkObjectClicked(x, y, modifiers))
       return true;
     return ((shape = frame.shapes[JmolConstants.SHAPE_DRAW]) != null
-        && viewer.getDrawHover() && shape.checkObjectClicked(x, y, modifiers));
+        && shape.checkObjectClicked(x, y, modifiers));
   }
  
   boolean checkObjectHovered(int x, int y) {

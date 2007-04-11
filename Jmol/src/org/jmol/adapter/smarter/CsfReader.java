@@ -204,6 +204,7 @@ class CsfReader extends MopacDataReader {
       String thisBondID = null;
       String tokens[] = getTokens();
       String field2 = "";
+      boolean isVibration = false;
       for (int i = 0; i < fieldCount; ++i) {
         String field = tokens[i];
         switch (fieldTypes[i]) {
@@ -218,7 +219,7 @@ class CsfReader extends MopacDataReader {
           else if (field.equals("gto_basis_fxn"))
             nGaussians++;
           else if (field.equals("vibrational_level"))
-            nVibrations++;
+            isVibration = true;
           else if (!field.equals("bond")) 
             continue out;
           break;
@@ -227,6 +228,8 @@ class CsfReader extends MopacDataReader {
           break;
         case objID2:
           thisBondID = field2+field;
+          if (isVibration)
+            nVibrations = Math.max(nVibrations, parseInt(field));
           break;
         default:
         }
@@ -380,7 +383,6 @@ class CsfReader extends MopacDataReader {
   void processVibrationObject() throws Exception {
     //int iatom = atomSetCollection.getFirstAtomSetAtomCount();
     Atom[] atoms = atomSetCollection.atoms;
-    nVibrations /= nAtoms;
     float[][] vibData = new float[nVibrations][nAtoms * 3];
     float[] energies = new float[nVibrations];
     readLine();
@@ -448,7 +450,6 @@ class CsfReader extends MopacDataReader {
       readLine();
       return; // no slaters or gaussians?;
     }
-    Logger.info("Reading data for " + nOrbitals + " molecular orbitals");
     /* we read the following blocks in ANY order:
      
      ID dflag eig_val    mo_occ
@@ -494,6 +495,7 @@ class CsfReader extends MopacDataReader {
      */
 
     nOrbitals = (nSlaters + nGaussians);
+    Logger.info("Reading CSF data for " + nOrbitals + " molecular orbitals");
     float[] energy = new float[nOrbitals];
     int[] occupancy = new int[nOrbitals];
     float[][] list = new float[nOrbitals][nOrbitals];

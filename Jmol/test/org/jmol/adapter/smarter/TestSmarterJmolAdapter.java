@@ -209,6 +209,7 @@ class TestSmarterJmolAdapterImpl extends TestCase {
     if (gzipped) {
       iStream = new GZIPInputStream(iStream);
     }
+    Logger.info(file.getPath());
     BufferedReader bReader = new BufferedReader(new InputStreamReader(iStream));
     SmarterJmolAdapter adapter = new SmarterJmolAdapter();
     if (typeAllowed != null) {

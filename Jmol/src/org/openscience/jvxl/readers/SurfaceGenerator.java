@@ -160,6 +160,7 @@ public class SurfaceGenerator {
     boolean isBicolorMap;
     boolean isCutoffAbsolute;
     boolean isPositiveOnly;
+    boolean isProgressive;
 
     boolean colorBySign;
     boolean colorByPhase;
@@ -302,6 +303,11 @@ public class SurfaceGenerator {
       return;
     }
 
+    if ("progressive" == propertyName) { 
+      params.isProgressive = true;
+      return;
+    }
+    
     if ("phase" == propertyName) {
       String color = (String) value;
       params.isCutoffAbsolute = true;

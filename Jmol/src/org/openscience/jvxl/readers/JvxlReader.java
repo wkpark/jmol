@@ -31,11 +31,10 @@ import org.openscience.jvxl.util.*;
 
 class JvxlReader extends VolumeFileReader {
 
-  boolean isProgressive;
-  
   JvxlReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     isJvxl = true;
+    isXLowToHigh = false;
   }
 
   static void jvxlUpdateInfo(JvxlData jvxlData, String[] title, int nBytes) {
@@ -135,26 +134,32 @@ class JvxlReader extends VolumeFileReader {
     }
   }
 
+  
   /**
    * checks an atom line for "ANGSTROMS", possibly overriding the data's 
    * natural units, BOHR (similar to Gaussian CUBE files).
    * 
+   * @param isXLowToHigh
    * @param isAngstroms
+   * @param strAtomCount
    * @param atomLine
    * @param bs
    * @return  isAngstroms
    */
-  static boolean jvxlCheckAtomLine(boolean isAngstroms, String atomLine,
+  static boolean jvxlCheckAtomLine(boolean isXLowToHigh, boolean isAngstroms,
+                                   String strAtomCount, String atomLine,
                                    StringBuffer bs) {
-    int atomCount = Parser.parseInt(atomLine);
-    if (atomCount == Integer.MIN_VALUE) {
-      atomCount = 0;
-      atomLine = " " + atomLine.substring(atomLine.indexOf(" ") + 1);
-    } else {
-      String s = "" + atomCount;
-      atomLine = atomLine.substring(atomLine.indexOf(s) + s.length());
+    if (strAtomCount != null) {
+      int atomCount = Parser.parseInt(strAtomCount);
+      if (atomCount == Integer.MIN_VALUE) {
+        atomCount = 0;
+        atomLine = " " + atomLine.substring(atomLine.indexOf(" ") + 1);
+      } else {
+        String s = "" + atomCount;
+        atomLine = atomLine.substring(atomLine.indexOf(s) + s.length());
+      }
+      bs.append((isXLowToHigh ? "+" : "-") + Math.abs(atomCount));
     }
-    String jvxlAtoms = "" + (atomCount == 0 ? -2 : -Math.abs(atomCount));
     int i = atomLine.indexOf("ANGSTROM");
     if (isAngstroms && i < 0)
       atomLine += " ANGSTROMS";
@@ -163,12 +168,28 @@ class JvxlReader extends VolumeFileReader {
     i = atomLine.indexOf("BOHR");
     if (!isAngstroms && i < 0)
       atomLine += " BOHR";
-    bs.append(jvxlAtoms).append(atomLine).append('\n');
+    bs.append(atomLine).append('\n');
     return isAngstroms;
   }
   
   void readAtomCountAndOrigin() throws Exception {
-    super.readAtomCountAndOrigin(); // same as for cube file
+      skipComments(true);
+      String atomLine = line;
+      String[] tokens = Parser.getTokens(atomLine, 0);
+      isXLowToHigh = false;
+      negativeAtomCount = true;
+      atomCount = 0;
+      if (tokens[0] == "-0") {
+      } else if (tokens[0].charAt(0) == '+'){
+        isXLowToHigh = true;
+        atomCount = parseInt(tokens[0].substring(1));
+      } else {
+        atomCount = -parseInt(tokens[0]);
+      }
+      volumetricOrigin.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
+      isAngstroms = jvxlCheckAtomLine(isXLowToHigh, isAngstroms, null, atomLine, jvxlFileHeaderBuffer);
+      if (!isAngstroms)
+        volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
   }
 
   static void jvxlReadAtoms(BufferedReader br, StringBuffer bs, int atomCount,
@@ -176,8 +197,8 @@ class JvxlReader extends VolumeFileReader {
     //mostly ignored
     for (int i = 0; i < atomCount; ++i)
       bs.append(br.readLine() + "\n");
-    if (atomCount == 0)
-      jvxlAddDummyAtomList(v, bs);
+    //if (atomCount == 0)
+      //jvxlAddDummyAtomList(v, bs);
   }
 
   int readExtraLine() throws Exception {
@@ -648,13 +669,16 @@ class JvxlReader extends VolumeFileReader {
         + jvxlData.mappedDataMax + " " + jvxlData.valueMappedToRed + " "
         + jvxlData.valueMappedToBlue;
 
-    info += "\n# data minimum = " + jvxlData.mappedDataMin
+    if (jvxlData.jvxlColorData.length() > 0 && !jvxlData.isBicolorMap)
+      info += "\n# data minimum = " + jvxlData.mappedDataMin
         + "; data maximum = " + jvxlData.mappedDataMax + " "
         + "\n# value mapped to red = " + jvxlData.valueMappedToRed
         + "; value mapped to blue = " + jvxlData.valueMappedToBlue;
     if (jvxlData.jvxlCompressionRatio > 0)
       info += "; approximate compressionRatio=" + jvxlData.jvxlCompressionRatio
           + ":1";
+    if (jvxlData.isXLowToHigh)
+      info += "\n# progressive JVXL+ -- X values read from low(0) to high(" + (jvxlData.nPointsX - 1) + ")";
     info += "\n# created using Jvxl.java";
     return (isInfo ? info : definitionLine);
   }

@@ -79,6 +79,9 @@ public class Jvxl {
     options.addOption("B", "blockdata", false,
         "multiple cube data are in blocks, not interspersed");
 
+    options.addOption("P", "progressive", false,
+    "create JVXL+ progressive X low-to-high format");
+
     OptionBuilder.withLongOpt("file");
     OptionBuilder.withDescription("file containing surface data");
     OptionBuilder.withValueSeparator('=');
@@ -131,12 +134,13 @@ public class Jvxl {
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("s"));
 
-    OptionBuilder.withLongOpt("phase");
+/*    OptionBuilder.withLongOpt("phase");
     OptionBuilder
         .withDescription("color by phase: x, y, z, xy, xz, yz, z2, x2-y2");
     OptionBuilder.withValueSeparator('=');
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("P"));
+*/
 
     OptionBuilder.withLongOpt("min");
     OptionBuilder.withDescription("color absolute minimum value");
@@ -243,10 +247,12 @@ public class Jvxl {
         max = Parser.parseFloat(line.getOptionValue("x"));
     }
 
-    if (line.hasOption("P")) {
-      phase = line.getOptionValue("P");
-    }
+//    if (line.hasOption("P")) {
+//      phase = line.getOptionValue("P");
+//    }
 
+    boolean progressive = line.hasOption("P");
+    
     // compose the surface
 
     SurfaceGenerator sg = new SurfaceGenerator(new ColorEncoder());
@@ -264,6 +270,9 @@ public class Jvxl {
       sg.setProperty("reverseColor", null);
     if (phase != null)
       sg.setProperty("phase", phase);
+
+    if (progressive)
+      sg.setProperty("progressive", null);
 
     if (plane != null)
       sg.setProperty("plane", plane);

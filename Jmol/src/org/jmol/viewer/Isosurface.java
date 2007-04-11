@@ -284,7 +284,8 @@ class Isosurface extends IsosurfaceMeshCollection {
   boolean isCutoffAbsolute;
   boolean isPositiveOnly;
   boolean isSilent;
-
+  boolean isProgressive;
+  
   BufferedReader br;
   Hashtable surfaceInfo;
   BitSet bsSelected;
@@ -1361,6 +1362,8 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
   }
 
+  boolean isXLowToHigh = false;
+
   StringBuffer jvxlFileHeader = new StringBuffer();
   String jvxlFileMessage;
   String jvxlEdgeDataRead;
@@ -1431,29 +1434,28 @@ class Isosurface extends IsosurfaceMeshCollection {
     skipComments(true);
     if (!isSilent)
       Logger.debug(line);
+    isXLowToHigh = (line.indexOf("+") == 0);
+    negativeAtomCount = (isXLowToHigh || line.indexOf("-") == 0);
     atomCount = parseInt(line);
     if (atomCount == Integer.MIN_VALUE) { //unreadable
+      atomCount = (isXLowToHigh ? -parseInt(line.substring(1)) : 0);
       next[0] = line.indexOf(" ");
-      atomCount = 0;
     }
     atomLine = line.substring(next[0]);
-    if (isAngstroms)
+    if (isAngstroms && atomLine.indexOf("ANGSTROMS") < 0)
       atomLine += " ANGSTROMS";
     else if (atomLine.indexOf("ANGSTROMS") >= 0)
       isAngstroms = true;
-
-    negativeAtomCount = (atomCount < 0);
+    if (atomCount < 0) {
+      atomCount = -atomCount;
+      negativeAtomCount = true;
+    }
     if (!isSilent && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug("atom Count: " + atomCount);
-
-    if (negativeAtomCount)
-      atomCount = -atomCount;
-
-    int jvxlAtoms = (atomCount == 0? -2 : -atomCount);
     volumetricOrigin.set(parseFloat(), parseFloat(), parseFloat());
     if (!isAngstroms)
       volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
-    jvxlFileHeader.append(jvxlAtoms + atomLine + '\n');
+    jvxlFileHeader.append((isXLowToHigh ? "+" : "-") + atomCount + atomLine + '\n');
   }
 
   void readVoxelVector(int voxelVectorIndex) throws Exception {
@@ -1510,6 +1512,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   void readAtoms() throws Exception {
     for (int i = 0; i < atomCount; ++i)
       jvxlFileHeader.append(br.readLine() + "\n");
+    /*
     if (atomCount == 0) {
       Point3f pt = new Point3f(volumetricOrigin);
       jvxlFileHeader.append("1 1.0 " + pt.x + " " + pt.y + " " + pt.z
@@ -1519,6 +1522,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       jvxlFileHeader.append("2 2.0 " + pt.x + " " + pt.y + " " + pt.z
           + " //BOGUS He ATOM ADDED FOR JVXL FORMAT\n");
     }
+    */
   }
 
   int readExtraLine() throws Exception {
@@ -2551,8 +2555,10 @@ class Isosurface extends IsosurfaceMeshCollection {
       data = mesh.jvxlFileHeader
           + (nSurfaces > 0 ? (-nSurfaces) + mesh.jvxlExtraLine.substring(2)
               : mesh.jvxlExtraLine);
-      if (data.indexOf("JVXL") != 0 && data.indexOf("#") != 0)
+      if (!isXLowToHigh && data.indexOf("JVXL") != 0 && data.indexOf("#") != 0)
         data = "JVXL " + data;
+      else if (isXLowToHigh && data.indexOf("#JVXL+") != 0)
+        data = "#JVXL+\n" + data;
     }
     data += "# " + msg + "\n";
     if (title != null)
@@ -2615,7 +2621,7 @@ class Isosurface extends IsosurfaceMeshCollection {
           info += "; colormapped";
       }
       if (mesh.isJvxlPrecisionColor && nColorData != -1)
-        info +=  "; precision colored";
+        info += "; precision colored";
       definitionLine += " "
           + (mesh.isJvxlPrecisionColor && nColorData != -1 ? -nColorData
               : nColorData);
@@ -2633,11 +2639,11 @@ class Isosurface extends IsosurfaceMeshCollection {
     // ...  mappedDataMin  mappedDataMax  valueMappedToRed  valueMappedToBlue ... 
     definitionLine += " " + mesh.mappedDataMin + " " + mesh.mappedDataMax + " "
         + mesh.valueMappedToRed + " " + mesh.valueMappedToBlue;
-    
-    info += "\n# data mimimum = " + mesh.mappedDataMin + "; data maximum = "
-        + mesh.mappedDataMax + " " + "\n# value mapped to red = "
-        + mesh.valueMappedToRed + "; value mapped to blue = "
-        + mesh.valueMappedToBlue;
+    if (mesh.jvxlColorData.length() > 0 && !mesh.isBicolorMap)
+      info += "\n# data minimum = " + mesh.mappedDataMin + "; data maximum = "
+          + mesh.mappedDataMax + " " + "\n# value mapped to red = "
+          + mesh.valueMappedToRed + "; value mapped to blue = "
+          + mesh.valueMappedToBlue;
     if (mesh.jvxlCompressionRatio > 0)
       info += "; approximate compressionRatio=" + mesh.jvxlCompressionRatio
           + ":1";
@@ -2780,7 +2786,17 @@ class Isosurface extends IsosurfaceMeshCollection {
     //for (int i = cubeCountY * cubeCountZ; --i >= 0;)
       //isoPointIndexes[i] = new int[12];
     int insideCount = 0, outsideCount = 0, surfaceCount = 0;
-    for (int x = cubeCountX; --x >= 0;) {
+    int x0, x1, xStep;
+    if (isXLowToHigh) {
+      x0 = 0;
+      x1 = cubeCountX;
+      xStep = 1;
+    } else {
+      x0 = cubeCountX - 1;
+      x1 = -1;
+      xStep = -1;
+    }
+    for (int x = x0; x != x1; x += xStep) {
       for (int y = cubeCountY; --y >= 0;) {
         for (int z = cubeCountZ; --z >= 0;) {
           int[] voxelPointIndexes = propagateNeighborPointIndexes(x, y, z,
@@ -2859,8 +2875,146 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   final int[] nullNeighbor = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 
-  int[] propagateNeighborPointIndexes(int x, int y, int z, int[][] isoPointIndexes) {
+  private int[] propagateNeighborPointIndexes(int x, int y, int z,
+                                              int[][] isoPointIndexes) {
     /*                     Y 
+     *                      4 --------4--------- 5  
+     *                     /|                   /|
+     *                    / |                  / |
+     *                   /  |                 /  |
+     *                  7   8                5   |
+     *                 /    |               /    9
+     *                /     |              /     |
+     *               7 --------6--------- 6      |
+     *               |      |             |      |
+     *               |      0 ---------0--|----- 1    X
+     *               |     /              |     /
+     *              11    /               10   /
+     *               |   3                |   1
+     *               |  /                 |  /
+     *               | /                  | /
+     *               3 ---------2-------- 2
+     *              Z 
+     * 
+     * 
+     * We are running through the grid points in yz planes from high x --> low x
+     * and within those planes along strips from high y to low y
+     * and within those strips, from high z to low z. The "leading vertex" is 0, 
+     * and the "leading edges" are {0,3,8}. 
+     * 
+     * For each such cube, edges are traversed from high to low (11-->0)
+     * 
+     * Each edge has the potential to be "critical" and cross the surface.
+     * Setting -1 in voxelPointIndexes indicates that this edge needs checking.
+     * Otherwise, the crossing point for this edge is taken from the value
+     * already determined, because it has already been determined to be critical. 
+     *
+     * The above model, because it starts at HIGH x, requires that all x,y,z points 
+     * be in memory from the beginning. We could have instead used a progressive 
+     * streaming model, where we only pull in the slice of data that we need. In 
+     * that case, each edge corresponds to a specific pair of indices in our slice.
+     * 
+     * Say we have a 51 x 11 x 21 block of data. This represents a 50 x 10 x 20 set
+     * of cubes. If, instead of reading all the data, we pull in just the first two
+     * "slices" x=0(10x20), x=1(10x20), that is just 400 points. Once a slice of
+     * data is used, we can flush it -- it is never used again. 
+     * 
+     * When color mapping, we can do the same thing; we just have to put the verticies
+     * into bins based on which pair of slices will be relevant, and then make sure we
+     * process the verticies based on these bins. 
+     * 
+     * The JVXL format depends on a specific order of reading of the edge data. The
+     * progressive model completely messes this up. The vertices will be read in the 
+     * same order around the cube, but the "leading edges" will be {0,1,9}, not {0,3,8}. 
+     * We do know which edge is which, so we could construct a progressive model from
+     * a nonprogressive one, if necessary. 
+     * 
+     * All we are really talking about is the JVXL reader, because we can certainly
+     * switch to progressive mode in all the other readers.  
+     *  
+     *  
+     */
+    int cellIndex = y * cubeCountZ + z;
+    int[] voxelPointIndexes = isoPointIndexes[cellIndex];
+
+    boolean noXNeighbor = (x == cubeCountX - 1);
+    if (isXLowToHigh) {
+      // reading x from low to high
+      if (noXNeighbor) {
+        voxelPointIndexes[3] = -1;
+        voxelPointIndexes[8] = -1;
+        voxelPointIndexes[7] = -1;
+        voxelPointIndexes[11] = -1;
+      } else {
+        voxelPointIndexes[3] = voxelPointIndexes[1];
+        voxelPointIndexes[7] = voxelPointIndexes[5];
+        voxelPointIndexes[8] = voxelPointIndexes[9];
+        voxelPointIndexes[11] = voxelPointIndexes[10];
+      }
+    } else {
+      // reading x from high to low
+      if (noXNeighbor) {
+        // the x neighbor is myself from my last pass through here
+        voxelPointIndexes[1] = -1;
+        voxelPointIndexes[9] = -1;
+        voxelPointIndexes[5] = -1;
+        voxelPointIndexes[10] = -1;
+      } else {
+        voxelPointIndexes[1] = voxelPointIndexes[3];
+        voxelPointIndexes[5] = voxelPointIndexes[7];
+        voxelPointIndexes[9] = voxelPointIndexes[8];
+        voxelPointIndexes[10] = voxelPointIndexes[11];
+      }
+    }
+    //from the y neighbor pick up the top
+    boolean noYNeighbor = (y == cubeCountY - 1);
+    int[] yNeighbor = noYNeighbor ? nullNeighbor : isoPointIndexes[cellIndex
+        + cubeCountZ];
+
+    voxelPointIndexes[4] = yNeighbor[0];
+    voxelPointIndexes[6] = yNeighbor[2];
+
+    if (isXLowToHigh) {
+      voxelPointIndexes[5] = yNeighbor[1];
+      if (noXNeighbor)
+        voxelPointIndexes[7] = yNeighbor[3];
+    } else {
+      voxelPointIndexes[7] = yNeighbor[3];
+      if (noXNeighbor)
+        voxelPointIndexes[5] = yNeighbor[1];
+    }
+    // from my z neighbor
+    boolean noZNeighbor = (z == cubeCountZ - 1);
+    int[] zNeighbor = noZNeighbor ? nullNeighbor
+        : isoPointIndexes[cellIndex + 1];
+
+    voxelPointIndexes[2] = zNeighbor[0];
+    if (noYNeighbor)
+      voxelPointIndexes[6] = zNeighbor[4];
+    if (isXLowToHigh) {
+      if (noXNeighbor)
+        voxelPointIndexes[11] = zNeighbor[8];
+      voxelPointIndexes[10] = zNeighbor[9];
+    } else {
+      if (noXNeighbor)
+        voxelPointIndexes[10] = zNeighbor[9];
+      voxelPointIndexes[11] = zNeighbor[8];
+    }
+    // these must always be calculated
+    voxelPointIndexes[0] = -1;
+    if (isXLowToHigh) {
+      voxelPointIndexes[1] = -1;
+      voxelPointIndexes[9] = -1;
+    } else {
+      voxelPointIndexes[3] = -1;
+      voxelPointIndexes[8] = -1;
+    }
+    return voxelPointIndexes;
+  }
+
+  /*
+  int[] propagateNeighborPointIndexes(int x, int y, int z, int[][] isoPointIndexes) {
+                         Y 
      *                      4 --------4--------- 5  
      *                     /|                   /|
      *                    / |                  / |
@@ -2890,7 +3044,7 @@ class Isosurface extends IsosurfaceMeshCollection {
      * Otherwise, the crossing point for this edge is taken from the value
      * already determined, because it has already been determined to be critical. 
      * 
-     */
+     
     int cellIndex = y * cubeCountZ + z;
     int[] voxelPointIndexes = isoPointIndexes[cellIndex];
 
@@ -2938,7 +3092,7 @@ class Isosurface extends IsosurfaceMeshCollection {
 
     return voxelPointIndexes;
   }
-
+*/
   //int firstCriticalVertex;
   //int lastCriticalVertex;
   int edgeCount;

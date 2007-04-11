@@ -59,10 +59,13 @@ class VoxelReader {
   MeshData meshData;
   JvxlData jvxlData;
   VolumeData volumeData; 
-  
+  boolean isProgressive = false;
+  boolean isXLowToHigh = false; //can be overridden in some readers by --progressive
+
   VoxelReader(SurfaceGenerator sg) {
     this.colorEncoder = sg.colorEncoder;
     this.params = sg.params;
+    isXLowToHigh = params.isProgressive;
     this.meshData = sg.meshData;
     this.jvxlData = sg.jvxlData;
     setVolumeData(sg.volumeData);
@@ -168,6 +171,10 @@ class VoxelReader {
     jvxlData.colorFractionRange = colorFractionRange;
     jvxlData.jvxlDataIs2dContour = jvxlDataIs2dContour;
     jvxlData.jvxlDataIsColorMapped = jvxlDataIsColorMapped;
+    jvxlData.isXLowToHigh = isXLowToHigh;
+    jvxlData.nPointsX = nPointsX;
+    jvxlData.nPointsY = nPointsY;
+    jvxlData.nPointsZ = nPointsZ;
     
     if (jvxlDataIsColorMapped)
       jvxlData.jvxlColorData = readColorData();
@@ -407,8 +414,6 @@ class VoxelReader {
 
   private final int[] nullNeighbor = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 
-  boolean isXLowToHigh; //experimental -- low X to high X
-  
   private int[] propagateNeighborPointIndexes(int x, int y, int z,
                                               int[][] isoPointIndexes) {
     /*                     Y 

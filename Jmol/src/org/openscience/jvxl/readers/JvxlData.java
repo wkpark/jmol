@@ -148,6 +148,8 @@ class JvxlData {
   float valueMappedToRed;
   float valueMappedToBlue;
   float cutoff;
+  
+  int nPointsX, nPointsY, nPointsZ;
   int nBytes;
   int nContours;
   int nEdges;

@@ -26,16 +26,16 @@ package org.openscience.jvxl.readers;
 import java.io.BufferedReader;
 
 import javax.vecmath.Vector3f;
-
-import org.openscience.jvxl.util.*;
+import org.openscience.jvxl.util.Parser;
+import org.openscience.jvxl.util.Logger;
 
 class VolumeFileReader extends VoxelReader {
 
   BufferedReader br;
   boolean endOfData;
 
-  private int atomCount;
-  private boolean negativeAtomCount;
+  int atomCount;
+  boolean negativeAtomCount;
   private int nSurfaces;
   
   
@@ -46,28 +46,30 @@ class VolumeFileReader extends VoxelReader {
 
   static String determineFileType(BufferedReader bufferedReader) {
     // JVXL should be on the FIRST line of the file, but it may be 
-    // after comments or missing. 
+    // after comments or missing.
+    
+    // Apbs, Jvxl, or Cube
+    
     LimitedLineReader br = new LimitedLineReader(bufferedReader, 10);
     String line;
+    br = new LimitedLineReader(bufferedReader, 16000);
+    //sure bets, but not REQUIRED:
     if ((line = br.info()).indexOf("#JVXL+") == 0)
       return "Jvxl+";
     if (line.indexOf("#JVXL") == 0)
       return "Jvxl";
-    //must investigate further
-    br = new LimitedLineReader(bufferedReader, 16000);
     line = br.readNonCommentLine();
     if (line.indexOf("object 1 class gridpositions counts") == 0)
       return "Apbs";
-    if (br.info().indexOf("Jmol voxel format") >= 0) // early files (pre 4/2007) only had this)
-      return "Jvxl";
+
+    // Jvxl, or Cube
+    
     line = br.readNonCommentLine(); // second line
     line = br.readNonCommentLine(); // third line
-    if (br.iLine() > 3)
-      return "Jvxl"; //Can't be a cube file -- has more than two lines of comments
     //next line should be the atom line
     int nAtoms = Parser.parseInt(line);
     if (nAtoms == Integer.MIN_VALUE)
-      return "UNKNOWN";
+      return (line.indexOf("+") == 0 ? "Jvxl+" : "UNKNOWN");
     if (nAtoms >= 0)
       return "Cube"; //Can't be a Jvxl file
     nAtoms = -nAtoms;
@@ -145,20 +147,7 @@ class VolumeFileReader extends VoxelReader {
   }
   
   void readAtomCountAndOrigin() throws Exception {
-    skipComments(true);
-    String atomLine = line;
-    String[] tokens = Parser.getTokens(atomLine, 0);
-    atomCount = parseInt(tokens[0]);
-    if (atomCount == Integer.MIN_VALUE)//unreadable
-      atomCount = 0;
-    negativeAtomCount = (atomCount < 0);
-    if (negativeAtomCount)
-      atomCount = -atomCount;
-    if (tokens.length >= 4)
-      volumetricOrigin.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
-    isAngstroms = JvxlReader.jvxlCheckAtomLine(isAngstroms, atomLine, jvxlFileHeaderBuffer);
-    if (!isAngstroms)
-      volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
+    //reader-specific
   }
 
   void adjustVoxelVectorLine(int voxelVectorIndex) {
@@ -192,7 +181,6 @@ class VolumeFileReader extends VoxelReader {
     line = br.readLine();
     Logger.info("Reading extra CUBE information line: " + line);
     return parseInt(line);
-    //trouble is, now we have to switch readers!
   }
 
   void readVoxelData(boolean isMapData) throws Exception {

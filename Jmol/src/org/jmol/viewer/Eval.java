@@ -1302,7 +1302,7 @@ class Eval { //implements Runnable {
         val = code[++pc].value;
         int tokOperator = instruction.tok;
         int tokWhat = instruction.intValue;
-        String property = (tokWhat == Token.property ? (String)val : null);
+        String property = (tokWhat == Token.property ? (String) val : null);
         if (property != null)
           val = code[++pc].value;
         if (isSyntaxCheck) {
@@ -1331,26 +1331,27 @@ class Eval { //implements Runnable {
             if (comparisonValue >= 1000 && comparisonValue < 1000000) {
               comparisonValue = (comparisonValue / 1000) * 1000000
                   + comparisonValue % 1000;
-              tokWhat = -tokWhat;
+              tokWhat = -Token.model;
             }
-            if (comparisonValue >= 1000000 && comparisonValue % 1000000 == 0)
-              tokWhat--;
           }
         } else if (val instanceof Float) {
           if (isModel) {
-            tokWhat = -tokWhat;
-            if (comparisonValue % 1000000 == 0)
-              tokWhat--;
+            tokWhat = -Token.model;
           } else {
-            comparisonFloat =((Float) val).floatValue() ;
-            comparisonValue = (int) (comparisonFloat * (isRadius ? 250f
-                : 100f));
+            comparisonFloat = ((Float) val).floatValue();
+            comparisonValue = (int) (comparisonFloat * (isRadius ? 250f : 100f));
           }
         } else
           invalidArgument();
+        if (isModel && comparisonValue >= 1000000
+            && comparisonValue % 1000000 == 0) {
+          comparisonValue /= 1000000;
+          tokWhat = Token.file;
+        }
         if (((String) value).indexOf("-") >= 0)
           comparisonValue = -comparisonValue;
-        float[] data = (tokWhat == Token.property ? Viewer.getDataFloat(property) : null);
+        float[] data = (tokWhat == Token.property ? Viewer
+            .getDataFloat(property) : null);
         rpn.addX(comparatorInstruction(instruction, tokWhat, data, tokOperator,
             comparisonValue, comparisonFloat));
         break;
@@ -1702,9 +1703,6 @@ class Eval { //implements Runnable {
     case -Token.model:
       //float is handled differently
       return atom.getModelFileNumber();
-    case -Token.model - 1:
-      //float is handled differently
-      return (atom.getModelFileNumber() / 1000000) * 1000000;
     case Token.atomX:
       propertyValue = atom.x;
       return asInt ? propertyValue * 100 : propertyValue;

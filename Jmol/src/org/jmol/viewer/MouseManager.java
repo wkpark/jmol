@@ -339,22 +339,17 @@ abstract class MouseManager implements KeyListener {
               - 50f, y * 100f / viewer.getScreenHeight() - 50f);
         return;
       }
-      if (!drawMode)
+      if (!viewer.checkObjectClicked(x, y, modifiers, drawMode)) {
         viewer.atomPicked(nearestAtomIndex, modifiers);
-      if (measurementMode) {
-        addToMeasurement(nearestAtomIndex, false);
-      } else if (drawMode || nearestAtomIndex == -1) {
-        viewer.checkObjectClicked(x, y, modifiers);
+        if (measurementMode)
+          addToMeasurement(nearestAtomIndex, false);
       }
       break;
-    case ALT_LEFT:      
+    case ALT_LEFT:
     case SHIFT_LEFT:
     case ALT_SHIFT_LEFT:
-      if (!drawMode) {
+      if (!drawMode && !viewer.checkObjectClicked(x, y, modifiers, false))
         viewer.atomPicked(nearestAtomIndex, modifiers);
-        if (nearestAtomIndex == -1)
-          viewer.checkObjectClicked(x, y, modifiers);
-      }
       break;
     }
   }
@@ -595,7 +590,8 @@ abstract class MouseManager implements KeyListener {
     public void run() {
       Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
       int hoverDelay;
-      while (hoverWatcherThread != null && (hoverDelay = viewer.getHoverDelay()) > 0) {
+      while (hoverWatcherThread != null
+          && (hoverDelay = viewer.getHoverDelay()) > 0) {
         try {
           Thread.sleep(hoverDelay);
           if (xCurrent == mouseMovedX && yCurrent == mouseMovedY
@@ -603,11 +599,10 @@ abstract class MouseManager implements KeyListener {
             long currentTime = System.currentTimeMillis();
             int howLong = (int) (currentTime - mouseMovedTime);
             if (howLong > hoverDelay) {
-              int atomIndex = viewer.findNearestAtomIndex(xCurrent, yCurrent);
-              if (atomIndex >= 0) {
-                hoverOn(atomIndex);
-              } else {
-                viewer.checkObjectHovered(xCurrent, yCurrent);
+              if (!viewer.checkObjectHovered(xCurrent, yCurrent)) {
+                int atomIndex = viewer.findNearestAtomIndex(xCurrent, yCurrent);
+                if (atomIndex >= 0)
+                  hoverOn(atomIndex);
               }
             }
           }

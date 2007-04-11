@@ -5079,12 +5079,12 @@ public class Viewer extends JmolViewer {
     axesAreTainted = TF && refreshing;
   }
 
-  void checkObjectClicked(int x, int y, int modifiers) {
-    modelManager.checkObjectClicked(x, y, modifiers);
+  boolean checkObjectClicked(int x, int y, int modifiers, boolean allowDraw) {
+    return modelManager.checkObjectClicked(x, y, modifiers, allowDraw);
   }
 
-  void checkObjectHovered(int x, int y) {
-    modelManager.checkObjectHovered(x, y);
+  boolean checkObjectHovered(int x, int y) {
+    return modelManager.checkObjectHovered(x, y);
   }
 
   void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,

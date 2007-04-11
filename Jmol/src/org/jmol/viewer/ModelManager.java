@@ -1244,24 +1244,25 @@ String getAtomInfoChime(int i) {
     }
   }
  
-  void checkObjectClicked(int x, int y, int modifiers) {
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = frame.shapes[i];
-      if (shape != null && shape.checkObjectClicked(x, y, modifiers))
-        break;
-    }
+  boolean checkObjectClicked(int x, int y, int modifiers, boolean allowDraw) {
+    Shape shape = frame.shapes[JmolConstants.SHAPE_ECHO];
+    if (shape != null && shape.checkObjectClicked(x, y, modifiers))
+      return true;
+    return (allowDraw
+        && (shape = frame.shapes[JmolConstants.SHAPE_DRAW]) != null
+        && viewer.getDrawHover() && shape.checkObjectClicked(x, y, modifiers));
   }
  
-  void checkObjectHovered(int x, int y) {
+  boolean checkObjectHovered(int x, int y) {
     if (frame == null)
-      return;
+      return false;
     Shape shape = frame.shapes[JmolConstants.SHAPE_ECHO];
     if (shape != null && shape.checkObjectHovered(x, y))
-      return;
+      return true;
     shape = frame.shapes[JmolConstants.SHAPE_DRAW];
     if (shape == null || !viewer.getDrawHover())
-      return;
-    shape.checkObjectHovered(x, y);
+      return false;
+    return shape.checkObjectHovered(x, y);
   }
  
   void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,

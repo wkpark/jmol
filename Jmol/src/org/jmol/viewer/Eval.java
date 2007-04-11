@@ -1333,11 +1333,14 @@ class Eval { //implements Runnable {
                   + comparisonValue % 1000;
               tokWhat = -tokWhat;
             }
-              
+            if (comparisonValue >= 1000000 && comparisonValue % 1000000 == 0)
+              tokWhat--;
           }
         } else if (val instanceof Float) {
           if (isModel) {
             tokWhat = -tokWhat;
+            if (comparisonValue % 1000000 == 0)
+              tokWhat--;
           } else {
             comparisonFloat =((Float) val).floatValue() ;
             comparisonValue = (int) (comparisonFloat * (isRadius ? 250f
@@ -1699,6 +1702,9 @@ class Eval { //implements Runnable {
     case -Token.model:
       //float is handled differently
       return atom.getModelFileNumber();
+    case -Token.model - 1:
+      //float is handled differently
+      return (atom.getModelFileNumber() / 1000000) * 1000000;
     case Token.atomX:
       propertyValue = atom.x;
       return asInt ? propertyValue * 100 : propertyValue;

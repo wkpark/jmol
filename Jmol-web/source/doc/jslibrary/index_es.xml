@@ -62,7 +62,7 @@
 	</a> (al parecer, las versiones más recientes de estos navegadores 
 	ya incluyen este conector, por lo que funcionarán sin
 	necesidad de esa instalación extra)
-      </p>
+Cada páginaCada página      </p>
 			<p>
 	Hay unas pocas situaciones en las que podrías optar por
 	no utilizar la biblioteca Jmol.js. Entre ellas, puedes querer
@@ -478,6 +478,36 @@
 	  en forma de texto flotante o <i>tooltip</i>
 	  al detener el puntero del ratón sobre el menú. 
 	  </i>
+				</p>
+				<p>
+					<i>
+	  Avanzado: 
+	  Se pueden definir grupos de opciones (en html, <code>optgroup</code>) de este modo:
+	<br/>
+	Añade el elemento optgroup como uno más en el <code>grupoElementosMenú</code>.
+	Para él, el primer elemento de la matriz secundaria debe ser "#optgroup" (en lugar de un guión);
+	el segundo elemento, el texto mostrado para el grupo ("label" en sintaxis html); 
+	el tercer elemento no se usará.
+	Luego añade un elemento más para señalar el fin del grupo, cuyo
+	primer elemento debe ser "#optgroupEnd" (los elementos segundo y tercero se ignoran).
+	Ejemplo:
+	  </i>
+					<pre><![CDATA[
+ jmolMenu([
+ [null, ".... selecciona ....", "selected"],
+ ["color cpk", "patrón CPK"],
+ ["#optgroup", "... Colorear por: ...."],
+ ["color structure", "estructura"],
+ ["color chain", "cadena"],
+ ["color group", "grupo"],
+ ["#optgroupEnd"],
+ ["#optgroup", ".... Otros colores: ...."],
+ ["color formalcharge", "carga eléctrica"],
+ ["color amino", "aminoácidos"],
+ ["color shapely", "nucleótidos"],
+ ["#optgroupEnd"]
+ ]);
+]]></pre>
 				</p>
 			</section>
 		</section>

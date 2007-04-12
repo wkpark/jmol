@@ -461,6 +461,37 @@
 	  stays over the menu. 
 	  </i>
 				</p>
+				<p>
+					<i>
+	  Advanced: 
+	  Option groups can be set (in html, <code>optgroup</code>) in this way:
+	<br/>
+	Add the optgroup entry as one more element in the <code>arrayOfMenuItems</code>.
+	For that entry, the first element in the sub-array must be "#optgroup" (instead of a script);
+	the second element, the caption wanted for the group ("label" in html syntax); 
+	the third element will not be used. 
+	Then add an extra entry to mark the end of the group, whose 
+	first element must be "#optgroupEnd" (second and third elements are ignored).
+	<br/>
+	Example:
+	</i>
+					<pre><![CDATA[
+ jmolMenu([
+ [null, ".... select ....", "selected"],
+ ["color cpk", "CPK pattern"],
+ ["#optgroup", "... Color by: ...."],
+ ["color structure", "structure"],
+ ["color chain", "chain"],
+ ["color group", "group"],
+ ["#optgroupEnd"],
+ ["#optgroup", ".... Other colors: ...."],
+ ["color formalcharge", "electric charge"],
+ ["color amino", "amino acids"],
+ ["color shapely", "nucleotides"],
+ ["#optgroupEnd"]
+ ]);
+]]></pre>
+				</p>
 			</section>
 		</section>
 		<section title="Intermediate Scripting Commands">

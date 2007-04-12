@@ -169,7 +169,7 @@
 		(lenguage químico de marcado)</li>
 						<li>
 	      CSF
-        - estructura química de Fujitsu CAChe</li>
+        - estructura química de Fujitsu CAChe, ahora Fujitsu Sygress </li>
 						<li>
 	      CTFile
         - Tabla química de <em>Elsevier MDL</em>
@@ -210,8 +210,11 @@
 	      MOLPRO
         - formato de salida de Molpro </li>
 						<li>
-		MOPOUT
+							<a href="http://openmopac.net/">MOPAC</a>
 	      - formato de salida de MOPAC 93/97/2002 (dominio público)
+		<br/>
+	      - MOPAC 2007 (v.7.101) formato de salida graphf (archivos .mgf) (public domain) 
+	[a partir de 11.1.28; lee coordenadas, cargas y orbitales moleculares]
 	    </li>
 						<li>
 							<a href="http://www.emsl.pnl.gov/docs/nwchem/nwchem.html">NWCHEM</a>

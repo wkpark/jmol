@@ -165,7 +165,7 @@
 	    </li>
 						<li>
 	      CSF
-	      - Fujitsu CAChe chemical structure
+	      - Fujitsu CAChe chemical structure, now Fujitsu Sygress 
 	    </li>
 						<li>
 	      CTFile
@@ -209,8 +209,11 @@
 	      - Molpro output
 	    </li>
 						<li>
-		MOPOUT
+							<a href="http://openmopac.net/">MOPAC</a>
 	      - MOPAC 93/97/2002 output (public domain)
+		<br/>
+	      - MOPAC 2007 (v.7.101) graphf output (.mgf files) (public domain) 
+	[starting Jmol 11.1.28; reads coordinates, charges, and molecular orbitals]
 	    </li>
 						<li>
 							<a href="http://www.emsl.pnl.gov/docs/nwchem/nwchem.html">NWCHEM</a>

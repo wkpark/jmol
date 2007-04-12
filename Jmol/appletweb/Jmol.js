@@ -298,10 +298,16 @@ function jmolMenu(arrayOfMenuItems, size, id, title) {
         script = text = menuItem;
       }
       if (text == undefined || text == null)
-        text = script;
-      var scriptIndex = _jmolAddScript(script);
-      var selectedText = isSelected ? "' selected>" : "'>";
-      t += "<option value='" + scriptIndex + selectedText + text + "</option>";
+        text = script;		
+	  if (script=="#optgroup") {
+        t += "<optgroup label='" + text + "'>";	  
+	  } else if (script=="#optgroupEnd") {
+        t += "</optgroup>";	  
+	  } else {		
+        var scriptIndex = _jmolAddScript(script);
+        var selectedText = isSelected ? "' selected>" : "'>";
+        t += "<option value='" + scriptIndex + selectedText + text + "</option>";
+	  }
     }
     t += "</select></span>";
     if (_jmol.debugAlert)

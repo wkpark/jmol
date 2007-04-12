@@ -339,11 +339,11 @@ abstract class MouseManager implements KeyListener {
               - 50f, y * 100f / viewer.getScreenHeight() - 50f);
         return;
       }
-      if (!viewer.checkObjectClicked(x, y, modifiers)) {
-        viewer.atomPicked(nearestAtomIndex, modifiers);
-        if (measurementMode)
-          addToMeasurement(nearestAtomIndex, false);
-      }
+      if (!measurementMode)
+        viewer.checkObjectClicked(x, y, modifiers);
+      viewer.atomPicked(nearestAtomIndex, modifiers);
+      if (measurementMode)
+        addToMeasurement(nearestAtomIndex, false);
       break;
     case ALT_LEFT:
     case SHIFT_LEFT:

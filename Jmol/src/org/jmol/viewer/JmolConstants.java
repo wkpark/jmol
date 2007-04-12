@@ -34,11 +34,21 @@ final public class JmolConstants {
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2007 Jmol Development";
-  public final static String version = "11.1.28";
+  public final static String version = "11.1.29";
   
   /*
    *
    *
+   11.1.29
+   
+   adds translucency for echo and hover, both text and backgrounds
+   
+   adds echo script to defined state
+   
+   adds hourglass cursor during MO/Isosurface operations
+   
+   fixes inoperative set pickingstyle measures on
+   
    11.1.28 
    
    adds

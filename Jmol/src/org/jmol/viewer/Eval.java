@@ -1033,6 +1033,8 @@ class Eval { //implements Runnable {
       default:
         unrecognizedCommand();
       }
+      if (!isSyntaxCheck)
+        viewer.setCursor(Viewer.CURSOR_DEFAULT);
     }
   }
 
@@ -3069,9 +3071,7 @@ class Eval { //implements Runnable {
       return;
     }
     int iShape = getShapeType(theTok);
-    argb = getArgbParamLast(i + 1, true);
-    if (!isSyntaxCheck)
-      viewer.setShapePropertyArgb(iShape, "bgcolor", argb);
+    colorShape(iShape, i + 1, true);
   }
 
   void center(int i) throws ScriptException {
@@ -3213,18 +3213,19 @@ class Eval { //implements Runnable {
   void colorNamedObject(int index) throws ScriptException {
     // color $ whatever green
     int shapeType = setShapeByNameParameter(index);
-    colorShape(shapeType, index + 1);
+    colorShape(shapeType, index + 1, false);
   }
 
   void colorObject(int tokObject, int index) throws ScriptException {
-    colorShape(getShapeType(tokObject), index);
+    colorShape(getShapeType(tokObject), index, false);
   }
 
-  void colorShape(int shapeType, int index) throws ScriptException {
+  void colorShape(int shapeType, int index, boolean isBackground)
+      throws ScriptException {
     String translucency = null;
     Object colorvalue = null;
-    String colorOrBgcolor = "color";
     BitSet bs = null;
+    String prefix = "";
     float translucentLevel = Float.MAX_VALUE;
     if (index < 0) {
       bs = expression(-index);
@@ -3238,25 +3239,29 @@ class Eval { //implements Runnable {
         }
       }
     }
-    if (getToken(index).tok == Token.background) {
-      colorOrBgcolor = "bgcolor";
+    if (isBackground)
+      getToken(index);
+    else if ((isBackground = (getToken(index).tok == Token.background)) == true)
       getToken(++index);
-    }
+    if (isBackground)
+      prefix = "bg";
     if (!isSyntaxCheck && shapeType == JmolConstants.SHAPE_MO && !mo(true))
       invalidArgument();
     if (theTok == Token.translucent || theTok == Token.opaque) {
       translucency = parameterAsString(index++);
-    if (theTok == Token.translucent && isFloatParameter(index))
-      translucentLevel = floatParameter(index++);
+      if (theTok == Token.translucent && isFloatParameter(index))
+        translucentLevel = floatParameter(index++);
     }
-    if (index < statementLength && tokAt(index) != Token.on && tokAt(index)!=Token.off) {
+    if (index < statementLength && tokAt(index) != Token.on
+        && tokAt(index) != Token.off) {
       int tok = getToken(index).tok;
       if (isColorParam(index)) {
         int argb = getArgbParam(index, false);
         colorvalue = (argb == 0 ? null : new Integer(argb));
         if (translucency == null && tokAt(index = iToken + 1) != Token.nada) {
           getToken(index);
-          if (translucency == null && (theTok == Token.translucent || theTok == Token.opaque)) {
+          if (translucency == null
+              && (theTok == Token.translucent || theTok == Token.opaque)) {
             translucency = parameterAsString(index);
             if (theTok == Token.translucent && isFloatParameter(index + 1))
               translucentLevel = floatParameter(++index);
@@ -3282,11 +3287,10 @@ class Eval { //implements Runnable {
           if (name.equals("property")
               && Compiler.tokAttr(getToken(++index).tok, Token.atomproperty)) {
             if (!isSyntaxCheck) {
-              Object data = getBitsetProperty(null,
-                  getToken(index).tok | Token.minmaxmask, null, null, null,
-                  null, false);
+              Object data = getBitsetProperty(null, getToken(index).tok
+                  | Token.minmaxmask, null, null, null, null, false);
               if (data instanceof float[])
-                viewer.setCurrentColorRange((float[])data, null);
+                viewer.setCurrentColorRange((float[]) data, null);
               else
                 invalidArgument();
             }
@@ -3330,20 +3334,20 @@ class Eval { //implements Runnable {
       }
       viewer.loadShape(shapeType);
       if (shapeType == JmolConstants.SHAPE_STICKS)
-        viewer.setShapeProperty(shapeType, colorOrBgcolor,
-            colorvalue, viewer.getSelectedAtomsOrBonds());
+        viewer.setShapeProperty(shapeType, prefix + "color", colorvalue, viewer
+            .getSelectedAtomsOrBonds());
       else
-        setShapeProperty(shapeType, colorOrBgcolor, colorvalue);
+        setShapeProperty(shapeType, prefix + "color", colorvalue);
     }
     if (translucency != null)
-      setShapeTranslucency(shapeType, translucency, translucentLevel);
+      setShapeTranslucency(shapeType, prefix, translucency, translucentLevel);
   }
 
-  void setShapeTranslucency (int shapeType, String translucency, float translucentLevel) {
+  void setShapeTranslucency (int shapeType, String prefix, String translucency, float translucentLevel) {
     if (translucentLevel ==  Float.MAX_VALUE)
       translucentLevel = viewer.getDefaultTranslucent();
     setShapeProperty(shapeType, "translucentLevel", new Float(translucentLevel));
-    setShapeProperty(shapeType, "translucency", translucency);  
+    setShapeProperty(shapeType, prefix + "translucency", translucency);  
   }
   
   Hashtable variables = new Hashtable();
@@ -7517,7 +7521,7 @@ class Eval { //implements Runnable {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "colorRGB", new Integer(
           colorArgb));
     if (isTranslucent)
-      setShapeTranslucency(JmolConstants.SHAPE_DRAW, "translucent", translucentLevel);
+      setShapeTranslucency(JmolConstants.SHAPE_DRAW, "", "translucent", translucentLevel);
     if (intScale != 0) {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "scale", new Integer(intScale));
     }
@@ -7703,7 +7707,7 @@ class Eval { //implements Runnable {
       setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "colorThis", new Integer(
           color));
     if (translucency != null)
-    setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, translucency, translucentLevel);
+    setShapeTranslucency(JmolConstants.SHAPE_POLYHEDRA, "", translucency, translucentLevel);
   }
 
   void lcaoCartoon() throws ScriptException {
@@ -7903,6 +7907,8 @@ class Eval { //implements Runnable {
     if (moNumber != Integer.MAX_VALUE) {
       if (tokAt(2) == Token.string)
         title = parameterAsString(2);
+      if (!isSyntaxCheck)
+        viewer.setCursor(Viewer.CURSOR_WAIT);
       setMoData(JmolConstants.SHAPE_MO, moNumber, offset, modelIndex, title);
     }
     return true;
@@ -7984,6 +7990,8 @@ class Eval { //implements Runnable {
     float[] data = null;
     String str;
     int modelIndex = (isSyntaxCheck ? 0 : viewer.getDisplayModelIndex());
+    if (!isSyntaxCheck)
+      viewer.setCursor(Viewer.CURSOR_WAIT);
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
@@ -8516,7 +8524,7 @@ class Eval { //implements Runnable {
     case Token.translucent:
       if (checkOnly)
         return true;
-      colorShape(shape, iToken);
+      colorShape(shape, iToken, false);
       return true;
     }
     if (propertyName == null)
@@ -8541,6 +8549,7 @@ class Eval { //implements Runnable {
     if (!isSyntaxCheck) {
       String s = viewer.removeCommand();
       viewer.addCommand(s + CommandHistory.ERROR_FLAG);
+      viewer.setCursor(Viewer.CURSOR_DEFAULT);
     }
     throw new ScriptException(message);
   }

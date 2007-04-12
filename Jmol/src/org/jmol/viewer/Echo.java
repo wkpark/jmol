@@ -90,6 +90,10 @@ class Echo extends TextShape {
             text.setColix(currentColor);
           if (currentBgColor != null)
             text.setBgColix(currentBgColor);
+          if (currentTranslucentLevel != 0)
+            text.setTranslucent(currentTranslucentLevel, false);
+          if (currentBgTranslucentLevel != 0)
+            text.setTranslucent(currentBgTranslucentLevel, true);
         }
         currentText = text;
         //process super

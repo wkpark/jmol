@@ -45,6 +45,8 @@ class TextShape extends Shape {
   Font3D currentFont;
   Object currentColor;
   Object currentBgColor;
+  float currentTranslucentLevel;
+  float currentBgTranslucentLevel;
   boolean isAll;
   
   void setProperty(String propertyName, Object value, BitSet bsSelected) {
@@ -154,11 +156,6 @@ class TextShape extends Shape {
       return;
     }
 
-    if ("translucency" == propertyName) {
-      Logger.warn("translucent TextShape not implemented");
-      return;
-    }
-
     if ("xpos" == propertyName) {
       if (currentText != null)
         currentText.setMovableX(((Integer) value).intValue());
@@ -188,6 +185,29 @@ class TextShape extends Shape {
         currentText.setXYZ((Point3f) value);
       return;
     }
+
+    boolean isBackground;
+    if ((isBackground = ("bgtranslucency" == propertyName))
+        || "translucency" == propertyName) {
+      boolean isTranslucent = ("translucent" == value);
+      if (isBackground)
+        currentBgTranslucentLevel = (isTranslucent ? translucentLevel : 0);
+      else
+        currentTranslucentLevel = (isTranslucent ? translucentLevel : 0);
+      if (currentText == null) {
+        if (isAll) {
+          Enumeration e = texts.elements();
+          while (e.hasMoreElements())
+            ((Text) e.nextElement()).setTranslucent(translucentLevel,
+                isBackground);
+        }
+        return;
+      }
+      currentText.setTranslucent(translucentLevel, isBackground);
+      return;
+    }
+    
+    super.setProperty(propertyName, value, null);
   }
 }
 

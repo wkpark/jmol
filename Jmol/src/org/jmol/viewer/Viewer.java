@@ -3258,6 +3258,7 @@ public class Viewer extends JmolViewer {
   final static int CURSOR_HAND = 1;
   final static int CURSOR_CROSSHAIR = 2;
   final static int CURSOR_MOVE = 3;
+  final static int CURSOR_WAIT = 4;
   
   int currentCursor = CURSOR_DEFAULT;
   
@@ -3274,6 +3275,9 @@ public class Viewer extends JmolViewer {
       break;
     case CURSOR_CROSSHAIR:
       c = Cursor.CROSSHAIR_CURSOR;
+      break;
+    case CURSOR_WAIT:
+      c = Cursor.WAIT_CURSOR;
       break;
     default:
        display.setCursor(Cursor.getDefaultCursor());
@@ -3294,7 +3298,7 @@ public class Viewer extends JmolViewer {
   }
 
   private void setPickingStyle(String style) {
-    int pickingStyle = JmolConstants.GetPickingMode(style);
+    int pickingStyle = JmolConstants.GetPickingStyle(style);
     if (pickingStyle < 0)
       pickingStyle = JmolConstants.PICKINGSTYLE_SELECT_JMOL;
     pickingManager.setPickingStyle(pickingStyle);

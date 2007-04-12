@@ -158,6 +158,16 @@ class Text {
     colix = Graphics3D.getColix(value);
   }
 
+  void setTranslucent(float level, boolean isBackground) {
+    if (isBackground) {
+      if (bgcolix != 0)
+        bgcolix = Graphics3D.getColixTranslucent(bgcolix, !Float.isNaN(level), level);
+    } else {
+      colix = Graphics3D.getColixTranslucent(colix, !Float.isNaN(level), level);
+    }
+  }
+  
+  
   void setBgColix(short colix) {
     this.bgcolix = colix;
   }
@@ -336,7 +346,7 @@ class Text {
   }
   
   String fixText(String text) {
-    if (text == null)
+    if (text == null || text.length() == 0)
       return null;
     int pt;
     while ((pt = text.indexOf("\n")) >= 0)
@@ -399,7 +409,7 @@ class Text {
     return text;
   }
   void render() {
-    if (text == null || !g3d.setColix(colix))
+    if (text == null)
       return;
 
     if (doFormatText)
@@ -408,56 +418,55 @@ class Text {
 
     // draw the box if necessary
 
-    if (bgcolix != 0)
-      drawBox();
+    if (bgcolix != 0 && g3d.setColix(bgcolix))
+      g3d.fillRect(boxX, boxY, z + 2, zSlab, boxWidth, boxHeight);
 
-    // now set x and y positions for text from (new?) box position
 
-    int x0 = boxX + 4;
-    switch (align) {
-    case CENTER:
-      x0 = boxX + boxWidth / 2;
-      break;
-    case RIGHT:
-      x0 = boxX + boxWidth - 4;
-    }
+    if (g3d.setColix(colix)) {
 
-    // now write properly aligned text
+      if (bgcolix != 0 && !Graphics3D.isColixTranslucent(bgcolix))
+        g3d.drawRect(boxX + 1, boxY + 1, z + 1, zSlab, boxWidth - 2, boxHeight - 2);
 
-    int x = x0;
-    int y = boxY + ascent + 4;
-    for (int i = 0; i < lines.length; i++) {
+      // now set x and y positions for text from (new?) box position
+
+      int x0 = boxX + 4;
       switch (align) {
       case CENTER:
-        x = x0 - widths[i] / 2;
+        x0 = boxX + boxWidth / 2;
         break;
       case RIGHT:
-        x = x0 - widths[i];
+        x0 = boxX + boxWidth - 4;
       }
-      g3d.drawString(lines[i], font, x, y, z, zSlab);
-      y += lineHeight;
-    }
 
+      // now write properly aligned text
+
+      int x = x0;
+      int y = boxY + ascent + 4;
+      for (int i = 0; i < lines.length; i++) {
+        switch (align) {
+        case CENTER:
+          x = x0 - widths[i] / 2;
+          break;
+        case RIGHT:
+          x = x0 - widths[i];
+        }
+        g3d.drawString(lines[i], font, x, y, z, zSlab);
+        y += lineHeight;
+      }
+    }
     // now daw the pointer, if requested
 
     if ((pointer & POINTER_ON) != 0) {
-      g3d.setColix((pointer & POINTER_BACKGROUND) != 0 && bgcolix != 0 ? bgcolix
-          : colix);
+      g3d
+          .setColix((pointer & POINTER_BACKGROUND) != 0 && bgcolix != 0 ? bgcolix
+              : colix);
       if (boxX > movableX)
-        g3d.drawLine(movableX, movableY, zSlab, boxX, boxY
-            + boxHeight / 2, zSlab);
+        g3d.drawLine(movableX, movableY, zSlab, boxX, boxY + boxHeight / 2,
+            zSlab);
       else if (boxX + boxWidth < movableX)
-        g3d.drawLine(movableX, movableY, zSlab, boxX + boxWidth,
-            boxY + boxHeight / 2, zSlab);
+        g3d.drawLine(movableX, movableY, zSlab, boxX + boxWidth, boxY
+            + boxHeight / 2, zSlab);
     }
-  }
-
-  private void drawBox() {
-    g3d.setColix(bgcolix);
-    g3d.fillRect(boxX, boxY, z + 2, zSlab, boxWidth, boxHeight);
-    g3d.setColix(colix);
-    g3d.drawRect(boxX + 1, boxY + 1, z + 1, zSlab, boxWidth - 2,
-        boxHeight - 2);
   }
 
   void setBoxOffsetsInWindow() {
@@ -575,14 +584,16 @@ class Text {
       case XYZ:
         if (strOff == null)
           strOff = StateManager.escape(xyz);
-        s.append("echo = ").append(target).append(" ").append(strOff);
+        s.append("set echo ").append(target).append(" ").append(strOff);
         if (align != LEFT)
-          s.append("echo = ").append(target).append(" ").append(hAlignNames[align]);
+          s.append("set echo ").append(target).append(" ").append(hAlignNames[align]);
         break;
       default:
-        s.append("echo = ").append(vAlignNames[valign]).append(" ").append(hAlignNames[align]);
+        s.append("set echo ").append(vAlignNames[valign]).append(" ").append(hAlignNames[align]);
       }
-      s.append(";echo ").append(StateManager.escape(textUnformatted)).append(";\n");
+      s.append("; echo ").append(StateManager.escape(textUnformatted)).append(";\n");
+      if (script != null)
+        s.append("set echo ").append(target).append(" script ").append(StateManager.escape(script)).append(";\n");
     }
     //isDefine and target==top: do all
     //isDefine and target!=top: just start
@@ -594,9 +605,16 @@ class Text {
       return s.toString();
     // these may not change much:
     s.append(Shape.getFontCommand("echo", font)).append(";\n");
-    s.append("color echo [x").append(g3d.getHexColorFromIndex(colix)).append("]");
-    if (bgcolix != 0)
-      s.append(";background echo [x").append(g3d.getHexColorFromIndex(bgcolix)).append("]");
+    s.append("color echo");
+    if (Graphics3D.isColixTranslucent(colix))
+      s.append(" translucent " + Graphics3D.getColixTranslucencyLevel(colix));
+    s.append(" [x").append(g3d.getHexColorFromIndex(colix)).append("]");
+    if (bgcolix != 0) {
+      s.append("; color echo background");
+      if (Graphics3D.isColixTranslucent(bgcolix))
+        s.append(" translucent " + Graphics3D.getColixTranslucencyLevel(bgcolix));
+      s.append(" [x").append(g3d.getHexColorFromIndex(bgcolix)).append("]");
+    }
     s.append(";\n");
     return s.toString();
   }

@@ -309,7 +309,9 @@ final public class Atom extends Point3fi implements Tuple {
       size = diameter;
     } else if (size == -1001) // ionic
       size = (getBondingMar() * 2);
-    else if (size < 0) {
+    else if (size == -100) { // simple van der waals
+      size = (int)(getVanderwaalsMar() * -2);
+    } else if (size < 0) {
       size = -size;
       if (size > 200)
         size = 200;
@@ -327,7 +329,7 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   int getRasMolRadius() {
-    return madAtom / (4 * 2);
+    return Math.abs(madAtom / (4 * 2));
   }
 
   int getCovalentBondCount() {
@@ -480,7 +482,7 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   float getRadius() {
-    return madAtom / (1000f * 2);
+    return Math.abs(madAtom / (1000f * 2));
   }
 
   int getAtomIndex() {
@@ -538,7 +540,7 @@ final public class Atom extends Point3fi implements Tuple {
      screenX = screen.x;
      screenY = screen.y;
      screenZ = screen.z;
-     screenDiameter = viewer.scaleToScreen(screenZ, madAtom);
+     screenDiameter = viewer.scaleToScreen(screenZ, Math.abs(madAtom));
    }
 
    String getAtomNameOrNull() {

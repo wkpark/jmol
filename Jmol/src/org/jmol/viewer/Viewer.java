@@ -158,7 +158,7 @@ public class Viewer extends JmolViewer {
     pickingManager = new PickingManager(this);
     fileManager = new FileManager(this, modelAdapter);
     repaintManager = new RepaintManager(this);
-    eval = new Eval(this);
+    eval = new Eval(this);    
   }
 
   /**
@@ -2785,7 +2785,7 @@ public class Viewer extends JmolViewer {
     jc.Compress();
     byte[] jpeg = os.toByteArray();
     releaseScreenImage();
-    return "" + Base64.getBase64(jpeg);
+    return Base64.getBase64(jpeg).toString();
   }
 
   public void releaseScreenImage() {

@@ -113,9 +113,14 @@ class Balls extends AtomShape {
 
   String getShapeState() {
     Hashtable temp = new Hashtable();
+    float r = 0;
     for (int i = 0; i < atomCount; i++) {
-      if (bsSizeSet != null && bsSizeSet.get(i))
-        setStateInfo(temp, i, "Spacefill " + (atoms[i].madAtom / 2000f));
+      if (bsSizeSet != null && bsSizeSet.get(i)) {
+        if ((r = atoms[i].madAtom) < 0)
+          setStateInfo(temp, i, "Spacefill on");
+        else
+          setStateInfo(temp, i, "Spacefill " + (r / 2000f));
+      }
       if (bsColixSet != null && bsColixSet.get(i)) {
         byte pid = atoms[i].getPaletteID();
         if (pid != JmolConstants.PALETTE_CPK || atoms[i].isTranslucent())

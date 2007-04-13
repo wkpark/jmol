@@ -640,8 +640,9 @@ class Eval { //implements Runnable {
           v = getStringObjectAsToken((String) v);
           if (v instanceof Token)
             fixed[j] = (Token) v;
-          else
-            fixed[j] = new Token(Token.identifier, (String) v);
+          else  // identifiers cannot have periods; file names can, though
+            fixed[j] = new Token((((String) v).indexOf(".") >= 0 ? Token.string
+                : Token.identifier), (String) v);
         } else {
           Point3f center = getDrawObjectCenter(var);
           if (center == null)
@@ -7992,6 +7993,7 @@ class Eval { //implements Runnable {
     int modelIndex = (isSyntaxCheck ? 0 : viewer.getDisplayModelIndex());
     if (!isSyntaxCheck)
       viewer.setCursor(Viewer.CURSOR_WAIT);
+    
     for (int i = 1; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;

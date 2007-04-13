@@ -957,7 +957,7 @@ String getAtomInfoChime(int i) {
     info.put("visible", Boolean.valueOf(getAtomVisibility(i)));
     info.put("clickabilityFlags", new Integer(atom.clickabilityFlags));
     info.put("visibilityFlags", new Integer(atom.shapeVisibilityFlags));
-    info.put("spacefill", new Integer(atom.madAtom >> 3));
+    info.put("spacefill", new Float(atom.getRadius()));
     String strColor = viewer.getHexColorFromIndex(atom.colixAtom);
     if (strColor != null)
       info.put("color", strColor);

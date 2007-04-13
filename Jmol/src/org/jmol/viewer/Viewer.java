@@ -2639,6 +2639,9 @@ public class Viewer extends JmolViewer {
   private void resizeImage(int width, int height, boolean useZoomLarge) {
     dimScreen.width = width;
     dimScreen.height = height;
+    global.setParameterValue("_width", width);
+    global.setParameterValue("_height", height);
+
     transformManager.setScreenDimension(width, height,
         useZoomLarge ? global.zoomLarge : false);
     g3d.setWindowSize(width, height, global.enableFullSceneAntialiasing);

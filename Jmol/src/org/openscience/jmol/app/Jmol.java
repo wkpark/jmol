@@ -1528,6 +1528,7 @@ public class Jmol extends JPanel {
   class MyStatusListener implements JmolStatusListener {
     
     public String eval(String strEval) {
+      sendConsoleMessage("javascript: " + strEval);
       return "# 'eval' is implemented only for the applet.";
     }
     

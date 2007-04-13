@@ -26,16 +26,55 @@ package org.jmol.viewer;
 
 import org.jmol.util.Logger;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.BitSet;
+import java.util.Properties;
 
 final public class JmolConstants {
 
   // for now, just update this by hand
   // perhaps use ant filter later ... but mth doesn't like it :-(
   public final static String copyright = "(C) 2007 Jmol Development";
-  public final static String version = "11.1.29";
-  
+  public final static String version;
+
+  static {
+    String tmpVersion = null;
+    Properties props = new Properties();
+
+    // Reading version from resource inside jar
+    if (tmpVersion == null) {
+      BufferedInputStream bis = null;
+      InputStream is = null;
+      try {
+        is = JmolConstants.class.getClassLoader().getResourceAsStream("org/jmol/Jmol.properties");
+        bis = new BufferedInputStream(is);
+        props.load(bis);
+        tmpVersion = props.getProperty("version", tmpVersion);
+      } catch (IOException e) {
+        // Nothing to do
+      } finally {
+        if (bis != null) {
+          try {
+            bis.close();
+          } catch (IOException e) {
+            // Nothing to do
+          }
+        }
+        if (is != null) {
+          try {
+            is.close();
+          } catch (IOException e) {
+            // Nothing to do
+          }
+        }
+      }
+    }
+    version = (tmpVersion != null ? tmpVersion : "(Unknown version)");
+  }
+
   /*
    *
    *

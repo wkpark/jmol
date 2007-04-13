@@ -14,7 +14,8 @@
   <property name="deprecation" value="off" />
   <property name="optimization" value="off" />
 
-  <property name="version" value="11.1.28" />
+  <property file="src/org/jmol/Jmol.properties" prefix="Jmol.properties" />
+  <property name="version" value="${Jmol.properties.version}" />
   <property name="jvxl_version" value="0.1" />
 
   <property name="tests.source.dir" value="source-tests" />
@@ -242,6 +243,16 @@ support for assertions (which were introduced in 1.4).
       <fileset dir="src">
         <include name="jmol75x29x8.gif" />
       </fileset>
+    </copy>
+    <copy todir="${applet.classes.dir}" >
+      <fileset dir="src">
+        <include name="org/jmol/Jmol.properties" />
+      </fileset>
+      <filterchain>
+        <striplinecomments>
+          <comment value="#" />
+        </striplinecomments>
+      </filterchain>
     </copy>
     <copy todir="${applet.classes.dir}" >
       <fileset dir="${classes.dir}">
@@ -516,6 +527,7 @@ support for assertions (which were introduced in 1.4).
     <jar destfile="${jmol.applet.build.dir}/JmolApplet6.jar" manifest="manifest/applet6.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/viewer/**" />
+        <include name="org/jmol/Jmol.properties" />
       </fileset>
     </jar>
 

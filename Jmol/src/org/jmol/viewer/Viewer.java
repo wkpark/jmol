@@ -248,19 +248,36 @@ public class Viewer extends JmolViewer {
   }
 
   static int getJmolVersionInt() {
-    String s = JmolConstants.version;
     //11.9.999 --> 1109999
-    int i = s.indexOf(".");
-    int v = Integer.parseInt(s.substring(0, i));
-    s = s.substring(i + 1);
-    i = s.indexOf(".");
-    int subv = Integer.parseInt(s.substring(0, i));
-    s = s.substring(i + 1);
-    i = 0;
-    while (i < s.length() && Character.isDigit(s.charAt(i)))
-      i++;
-    int subsubv = (i == 0 ? 0 : Integer.parseInt(s.substring(0, i)));
-    return v * 100000 + subv * 1000 + subsubv;
+    String s = JmolConstants.version;
+    int version = -1;
+
+    try {
+      // Major number
+      int i = s.indexOf(".");
+      if (i < 0) {
+        version = 100000 * Integer.parseInt(s);
+        return version;
+      }
+      version = 100000 * Integer.parseInt(s.substring(0, i));
+  
+      // Minor number
+      s = s.substring(i + 1);
+      i = s.indexOf(".");
+      if (i < 0) {
+        version += 1000 * Integer.parseInt(s);
+        return version;
+      }
+      version += 1000 * Integer.parseInt(s.substring(0, i));
+  
+      // Revision number
+      s = s.substring(i + 1);
+      version += Integer.parseInt(s);
+    } catch (NumberFormatException e) {
+      // We simply keep the version currently found
+    }
+
+    return version;
   }
 
   String getHtmlName() {

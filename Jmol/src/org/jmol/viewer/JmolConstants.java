@@ -41,6 +41,10 @@ final public class JmolConstants {
    *
    11.1.29
    
+   adds script: option for callbacks set from within Jmol.
+   
+   adds resizeCallback
+   
    adds translucency for echo and hover, both text and backgrounds
    
    adds echo script to defined state

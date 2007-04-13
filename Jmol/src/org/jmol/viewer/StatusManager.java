@@ -124,10 +124,19 @@ class StatusManager {
     return resetMessageQueue(statusList);
   }
 
+  Hashtable htCallbacks = new Hashtable();
   synchronized void setCallbackFunction(String callbackType,
                                         String callbackFunction) {
+    if (callbackFunction == null)
+      htCallbacks.remove(callbackType.toLowerCase());
+    else if (callbackFunction.toLowerCase().indexOf("script:") == 0)
+      htCallbacks.put(callbackType.toLowerCase(), callbackFunction.substring(7));
     if (jmolStatusListener != null)
       jmolStatusListener.setCallbackFunction(callbackType, callbackFunction);
+  }
+  
+  String getCallbackScript(String callbackType) {
+    return (String) htCallbacks.get(callbackType);
   }
   
   synchronized void setStatusAtomPicked(int atomIndex, String strInfo){
@@ -136,6 +145,11 @@ class StatusManager {
     setStatusChanged("atomPicked", atomIndex, strInfo, false);
     if (jmolStatusListener != null)
       jmolStatusListener.notifyAtomPicked(atomIndex, strInfo);
+  }
+
+  synchronized void setStatusResized(int width, int height){
+    if (jmolStatusListener != null)
+      jmolStatusListener.notifyResized(width, height);
   }
 
   synchronized void setStatusAtomHovered(int iatom, String strInfo) {

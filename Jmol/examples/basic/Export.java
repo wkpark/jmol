@@ -132,6 +132,14 @@ class MyStatusListener implements JmolStatusListener {
     //
   }
 
+
+  /* (non-Javadoc)
+   * @see org.jmol.api.JmolStatusListener
+   */
+  public void notifyResized(int newWidth, int newHeight) {
+    //
+  }
+
   /* (non-Javadoc)
    * @see org.jmol.api.JmolStatusListener#notifyNewDefaultModeMeasurement(int, java.lang.String)
    */

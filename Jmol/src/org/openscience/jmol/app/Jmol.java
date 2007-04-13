@@ -1540,6 +1540,10 @@ public class Jmol extends JPanel {
       // applet only?
     }
 
+    public void notifyResized(int width, int height){
+      // applet only?
+    }
+
     public void notifyFileLoaded(String fullPathName, String fileName,
                                  String modelName, Object clientFile,
                                  String errorMsg) {

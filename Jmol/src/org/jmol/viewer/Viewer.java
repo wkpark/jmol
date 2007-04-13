@@ -2636,14 +2636,17 @@ public class Viewer extends JmolViewer {
     resizeImage(width, height, false);
   }
 
-  private void resizeImage(int width, int height, boolean useZoomLarge) {
+  private void resizeImage(int width, int height, boolean isImageWrite) {
     dimScreen.width = width;
     dimScreen.height = height;
-    global.setParameterValue("_width", width);
-    global.setParameterValue("_height", height);
-
+    if (!isImageWrite) {
+      global.setParameterValue("_width", width);
+      global.setParameterValue("_height", height);
+      setStatusResized(width, height);
+    }
+    
     transformManager.setScreenDimension(width, height,
-        useZoomLarge ? global.zoomLarge : false);
+        isImageWrite ? global.zoomLarge : false);
     g3d.setWindowSize(width, height, global.enableFullSceneAntialiasing);
   }
   
@@ -3340,21 +3343,45 @@ public class Viewer extends JmolViewer {
     statusManager.setCallbackFunction(callbackType, callbackFunction);
   }
 
+  /*
+    no local version of MessageCallback
+   */
+
   void setStatusAtomPicked(int atomIndex, String info) {
-    statusManager.setStatusAtomPicked(atomIndex, info);
+    String s = statusManager.getCallbackScript("pickcallback");
+    global.setParameterValue("_atompicked", atomIndex);
+    if (s != null)
+      evalStringQuiet(s);
+    else
+      statusManager.setStatusAtomPicked(atomIndex, info);
   }
 
   void setStatusAtomHovered(int atomIndex, String info) {
-    statusManager.setStatusAtomHovered(atomIndex, info);
+    String s = statusManager.getCallbackScript("hovercallback");
+    global.setParameterValue("_atomhovered", atomIndex);
+    if (s != null)
+      evalStringQuiet(s);
+    else
+      statusManager.setStatusAtomHovered(atomIndex, info);
   }
 
   void setStatusNewPickingModeMeasurement(int iatom, String strMeasure) {
+    //for pending measurements
     statusManager.setStatusNewPickingModeMeasurement(iatom, strMeasure);
   }
 
   void setStatusNewDefaultModeMeasurement(String status, int count,
                                           String strMeasure) {
+    //measurement completed
     statusManager.setStatusNewDefaultModeMeasurement(status, count, strMeasure);
+  }
+
+  void setStatusResized(int width, int height) {
+    String s = statusManager.getCallbackScript("resizecallback");
+    if (s != null)
+      evalStringQuiet(s);
+    else
+      statusManager.setStatusResized(width, height);
   }
 
   void setStatusScriptStarted(int iscript, String script) {
@@ -3404,13 +3431,23 @@ public class Viewer extends JmolViewer {
     global.setParameterValue("_modelNumber", s);
     global.setParameterValue("_modelName", (modelIndex < 0 ? ""
         : getModelName(modelIndex)));
-    statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo, firstNo, lastNo);
+    
+    s = statusManager.getCallbackScript("animframecallback");
+    if (s != null)
+      evalStringQuiet(s);
+    else
+      statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo, firstNo, lastNo);
   }
 
-  private void setStatusFileLoaded(int ptLoad, String fullPathName, String fileName,
-                           String modelName, Object clientFile, String strError) {
-    statusManager.setStatusFileLoaded(fullPathName, fileName, modelName,
-        clientFile, strError, ptLoad);
+  private void setStatusFileLoaded(int ptLoad, String fullPathName,
+                                   String fileName, String modelName,
+                                   Object clientFile, String strError) {
+    String s = statusManager.getCallbackScript("loadstructcallback");
+    if (s != null)
+      evalStringQuiet(s);
+    else
+      statusManager.setStatusFileLoaded(fullPathName, fileName, modelName,
+          clientFile, strError, ptLoad);
   }
 
   private void setStatusFileNotLoaded(String fullPathName, String errorMsg) {

@@ -65,6 +65,7 @@ import org.jmol.util.Logger;
  * name="LoadStructCallback" value="yourJavaScriptMethodName" /] [param
  * name="MessageCallback" value="yourJavaScriptMethodName" /] [param
  * name="HoverCallback" value="yourJavaScriptMethodName" /] [param
+ * name="ResizeCallback" value="yourJavaScriptMethodName" /] [param
  * name="PickCallback" value="yourJavaScriptMethodName" /]
  * 
  */
@@ -107,12 +108,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   boolean mayScript;
 
   String animFrameCallback;
-
+  String resizeCallback;
   String loadStructCallback;
-
   String messageCallback;
-
-  // ??? String pauseCallback;
   String pickCallback;
   String hoverCallback;
 
@@ -279,6 +277,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       messageCallback = getValue("MessageCallback", null);
       // pauseCallback = getValue("PauseCallback", null);
       pickCallback = getValue("PickCallback", null);
+      resizeCallback = getValue("ResizeCallback", null);
       hoverCallback = getValue("HoverCallback", null);
 
       statusForm = getValue("StatusForm", null);
@@ -290,14 +289,16 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
       if (animFrameCallback != null)
         Logger.info("animFrameCallback=" + animFrameCallback);
+      if (hoverCallback != null)
+        Logger.info("hoverCallback=" + hoverCallback);
       if (loadStructCallback != null)
         Logger.info("loadStructCallback=" + loadStructCallback);
       if (messageCallback != null)
         Logger.info("messageCallback=" + messageCallback);
       if (pickCallback != null)
         Logger.info("pickCallback=" + pickCallback);
-      if (hoverCallback != null)
-        Logger.info("hoverCallback=" + hoverCallback);
+      if (resizeCallback != null)
+        Logger.info("resizeCallback=" + resizeCallback);
       if (statusForm != null && statusText != null) {
         Logger.info("applet text status will be reported to document."
             + statusForm + "." + statusText);
@@ -866,6 +867,21 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       showStatusAndConsole(strInfo);
     }
 
+    public void notifyResized(int newWidth, int newHeight) {
+      try {
+        if (resizeCallback != null && jsoWindow != null)
+          jsoWindow.call(resizeCallback, new Object[] { htmlName,
+              new Integer(newWidth), new Integer(newHeight)});
+      } catch (Exception e) {
+        if (!haveNotifiedError)
+          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+            Logger.debug(
+                "resizeCallback call error to " + resizeCallback + ": " + e);
+          }
+          haveNotifiedError = true;
+      }
+    }
+
     public void notifyFrameChanged(int frameNo, int fileNo, int modelNo,
                                    int firstNo, int lastNo) {
       boolean isAnimationRunning = (frameNo <= -2);
@@ -956,8 +972,10 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         messageCallback = callbackFunction;
       else if (callbackType.equalsIgnoreCase("PickCallback"))
         pickCallback = callbackFunction;
+      else if (callbackType.equalsIgnoreCase("ResizeCallback"))
+        resizeCallback = callbackFunction;
       else
-        sendConsoleMessage("Available callbacks include: AnimFrameCallback, HoverCallback, LoadStructCallback, MessageCallback, and PickCallback");
+        sendConsoleMessage("Available callbacks include: AnimFrameCallback, HoverCallback, LoadStructCallback, MessageCallback, PickCallback, and ResizeCallback");
     }
     
     public void handlePopupMenu(int x, int y) {

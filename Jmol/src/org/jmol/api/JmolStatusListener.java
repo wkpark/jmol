@@ -44,6 +44,8 @@ public interface JmolStatusListener {
       String modelName, Object clientFile,
       String errorMessage);
 
+  public void notifyResized(int newWidth, int newHeight);
+
   public void notifyFrameChanged(int frameNo, int fileNo, int modelNo, int firstNo, int LastNo);
 
   public void notifyNewDefaultModeMeasurement(int count, String strInfo);

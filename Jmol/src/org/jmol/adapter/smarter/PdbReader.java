@@ -158,7 +158,7 @@ class PdbReader extends AtomSetCollectionReader {
         }
       }
       serialMap = null;
-      if (!isNMRdata)
+      //if (!isNMRdata)
         applySymmetry();
     } catch (Exception e) {
       return setError(e);
@@ -494,7 +494,7 @@ class PdbReader extends AtomSetCollectionReader {
   }
   
   void applySymmetry() throws Exception {
-    if (needToApplySymmetry) {
+    if (needToApplySymmetry && !isNMRdata) {
       // problem with PDB is that they don't give origins, 
       // so we must force the issue
       if(spaceGroup.indexOf(":") < 0)

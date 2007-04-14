@@ -2472,8 +2472,17 @@ public class Viewer extends JmolViewer {
     refresh(0, "Viewer:pauseAnimation()");
   }
 
-  void setAnimationRange(int modelIndex1, int modelIndex2) {
-    repaintManager.setAnimationRange(modelIndex1, modelIndex2);
+  void setTrajectory(int iTraj) {
+    modelManager.setTrajectory(iTraj);
+    repaintManager.setTrajectory(iTraj);
+  }
+  
+  int getTrajectoryCount() {
+    return modelManager.getTrajectoryCount();
+  }
+
+  void setAnimationRange(int modelIndex1, int modelIndex2, boolean isTrajectory) {
+    repaintManager.setAnimationRange(modelIndex1, modelIndex2, isTrajectory);
   }
 
   BitSet getVisibleFramesBitSet() {
@@ -3426,6 +3435,9 @@ public class Viewer extends JmolViewer {
 
   void setStatusFrameChanged(int frameNo) {
     transformManager.setVibrationPeriod(Float.NaN);
+    boolean isTrajectory = (getTrajectoryCount() > 1);
+    if (isTrajectory)
+      return; //for now
     int modelIndex = repaintManager.currentModelIndex;
     int fileNo = getModelFileNumber(modelIndex);
     int modelNo = fileNo % 1000000;

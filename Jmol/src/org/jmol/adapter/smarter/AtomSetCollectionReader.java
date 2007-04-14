@@ -181,6 +181,8 @@ abstract class AtomSetCollectionReader {
   boolean ignoreFileUnitCell;
   boolean ignoreFileSymmetryOperators;
   boolean ignoreFileSpaceGroupName;
+  boolean isTrajectory;
+  
 
   // state variables
   boolean iHaveUnitCell;
@@ -216,6 +218,8 @@ abstract class AtomSetCollectionReader {
 
     desiredSpaceGroupIndex = -1;
 
+    isTrajectory = false;
+
     ignoreFileUnitCell = false;
     ignoreFileSpaceGroupName = false;
     ignoreFileSymmetryOperators = false;
@@ -242,7 +246,9 @@ abstract class AtomSetCollectionReader {
     //  desiredSpaceGroupIndex,
     //  a*10000, b*10000, c*10000, alpha*10000, beta*10000, gamma*10000]
 
-    desiredModelNumber = params[0];
+    isTrajectory = params[0] == -1;
+    if (!isTrajectory)
+      desiredModelNumber = params[0];
     latticeCells[0] = params[1];
     latticeCells[1] = params[2];
     latticeCells[2] = params[3];
@@ -390,6 +396,8 @@ abstract class AtomSetCollectionReader {
   }
 
   void applySymmetry() throws Exception {
+    if (isTrajectory)
+      atomSetCollection.setTrajectory();
     if (!needToApplySymmetry || !iHaveUnitCell) {
       initializeSymmetry();
       return;

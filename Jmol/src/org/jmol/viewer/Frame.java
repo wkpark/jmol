@@ -153,6 +153,8 @@ public final class Frame {
     g3d = viewer.getGraphics3D();
     isMultiFile = mmset.getModelSetAuxiliaryInfoBoolean("isMultiFile");
     isPDB = mmset.getModelSetAuxiliaryInfoBoolean("isPDB");
+    trajectories = (Vector) mmset.getModelSetAuxiliaryInfo("trajectories");
+    isTrajectory = (trajectories != null);
     someModelsHaveSymmetry = mmset
     .getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
     someModelsHaveUnitcells = mmset
@@ -180,6 +182,8 @@ public final class Frame {
   int baseBondIndex = 0;
   //int baseGroupIndex = 0;
   boolean appendNew = true;
+  boolean isTrajectory = false;
+  Vector trajectories;
 
   void initializeModel(JmolAdapter adapter, Object clientFile) {
     currentModel = null;
@@ -213,7 +217,8 @@ public final class Frame {
         Logger.info("frame: haveSymmetry:" + someModelsHaveSymmetry
             + " haveUnitcells:" + someModelsHaveUnitcells
             + " haveFractionalCoord:" + someModelsHaveFractionalCoordinates);
-        Logger.info(modelCount + " model" + (modelCount == 1 ? "" : "s")
+        Logger.info(modelCount + " model" + (modelCount == 1 ? "" : "s") 
+            + (isTrajectory ? ", " + trajectories.size() + " trajectories" : "")
             + " in this collection. Use getProperty \"modelInfo\" or"
             + " getProperty \"auxiliaryInfo\" to inspect them.");
 
@@ -3103,6 +3108,19 @@ public final class Frame {
     }
   }
 
+  void setTrajectory(int iTraj) {
+    if (trajectories == null || iTraj < 0 || iTraj >= trajectories.size())
+      return;
+    //System.out.println("setting trajectory " + iTraj);
+    Point3f[] trajectory = (Point3f[]) trajectories.get(iTraj);
+      for (int i = atomCount; --i >= 0;)
+        atoms[i].set(trajectory[i]);
+  }
+
+  int getTrajectoryCount() {
+    return (trajectories == null ? 1 : trajectories.size());
+  }
+  
   void setAtomCoord(int atomIndex, float x, float y, float z) {
     if (atomIndex < 0 || atomIndex >= atomCount)
       return;

@@ -246,6 +246,8 @@ class Compiler {
             strFormat = strFormat.toLowerCase();
             if (strFormat.equals("append") || strFormat.equals("files"))
               addTokenToPrefix(new Token(Token.identifier, strFormat));
+            else if (strFormat.equals("trajectory"))
+              addTokenToPrefix(new Token(Token.trajectory));
             else if (strFormat.indexOf("=") == 0) {
               addTokenToPrefix(new Token(Token.string, strFormat));
             }
@@ -693,13 +695,13 @@ class Compiler {
       return -1;
   }
 
-  static String[] loadFormats = { "append", "files", /*ancient:*/ "alchemy", "mol2", "mopac", "nmrpdb", "charmm",
-      "xyz", "mdl", "pdb" };
+  static String[] loadFormats = { "append", "files", "trajectory", 
+    /*ancient:*/ "alchemy", "mol2", "mopac", "nmrpdb", "charmm", "xyz", "mdl", "pdb" };
 
   private boolean lookingAtLoadFormat() {
     int ichT;
     String match = script
-        .substring(ichToken, Math.min(cchScript, ichToken + 7)).toLowerCase();
+        .substring(ichToken, Math.min(cchScript, ichToken + 10)).toLowerCase();
     for (int i = loadFormats.length; --i >= 0;) {
       String strFormat = loadFormats[i];
       int cchFormat = strFormat.length();

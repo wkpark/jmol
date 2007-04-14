@@ -951,7 +951,10 @@ class Eval { //implements Runnable {
         break;
       case Token.frame:
       case Token.model:
-        frame(1);
+        frame(1, false);
+        break;
+      case Token.trajectory:
+        frame(1, true);
         break;
       case Token.font:
         font();
@@ -3508,6 +3511,7 @@ class Eval { //implements Runnable {
     StringBuffer loadScript = new StringBuffer("load");
     int[] params = new int[4];
     Point3f unitCells = viewer.getDefaultLattice();
+    //params[0] will be a designated model number or -1 for a trajectory
     params[1] = (int) unitCells.x;
     params[2] = (int) unitCells.y;
     params[3] = (int) unitCells.z;
@@ -3517,7 +3521,10 @@ class Eval { //implements Runnable {
     if (statementLength == 1) {
       i = 0;
     } else {
-      if (getToken(1).tok == Token.identifier) {
+      if (getToken(1).tok == Token.trajectory) {
+        params[0] = -1;  // 
+        i = 2;
+      } else if (theTok == Token.identifier) {
         filename = parameterAsString(1);
         loadScript.append(" " + filename);
         isMerge = (filename.equalsIgnoreCase("append"));
@@ -5171,8 +5178,11 @@ class Eval { //implements Runnable {
       if (!isSyntaxCheck)
         viewer.setAnimationOn(animate);
       break;
+    case Token.trajectory:
+      frame(2, true);
+      break;
     case Token.frame:
-      frame(2);
+      frame(2, false);
       break;
     case Token.mode:
       animationMode();
@@ -5206,11 +5216,11 @@ class Eval { //implements Runnable {
     }
     viewer.setAnimationOn(false);
     viewer.setAnimationDirection(1);
-    viewer.setAnimationRange(modelIndex, modelIndex2);
+    viewer.setAnimationRange(modelIndex, modelIndex2, false);
     viewer.setCurrentModelIndex(-1);
   }
 
-  void frame(int offset) throws ScriptException {
+  void frame(int offset, boolean isTrajectory) throws ScriptException {
     boolean useModelNumber = true;
     // for now -- as before -- remove to implement
     // frame/model difference
@@ -5275,13 +5285,15 @@ class Eval { //implements Runnable {
       }
     }
     boolean haveFileSet = viewer.haveFileSet();
-    if (isSyntaxCheck)
-      return;
     if (isRange && nFrames == 0)
       isAll = true;
+    if ((haveFileSet || !useModelNumber || isAll) && isTrajectory)
+      evalError(GT._("trajectory not applicable in this context"));
+    if (isSyntaxCheck)
+      return;
     if (isAll) {
       viewer.setAnimationOn(false);
-      viewer.setAnimationRange(-1, -1);
+      viewer.setAnimationRange(-1, -1, false);
       if (!isRange)
         viewer.setCurrentModelIndex(-1);
       return;
@@ -5294,7 +5306,8 @@ class Eval { //implements Runnable {
       for (int i = 0; i < nFrames; i++)
         if (frameList[i] >= 0)
           frameList[i] %= 1000000;
-    int modelIndex = viewer.getModelNumberIndex(frameList[0], useModelNumber);
+    int modelIndex = (isTrajectory ? frameList[0] - 1 : viewer.getModelNumberIndex(
+        frameList[0], useModelNumber));
     int modelIndex2 = -1;
     if (haveFileSet && nFrames == 1 && modelIndex < 0 && frameList[0] != 0) {
       // may have frame 2.0 or frame 2 meaning the range of models in file 2
@@ -5319,16 +5332,23 @@ class Eval { //implements Runnable {
     }
 
     if (!isPlay && !isRange || modelIndex >= 0) {
-      viewer.setCurrentModelIndex(modelIndex);
+      if (isTrajectory)
+        viewer.setTrajectory(modelIndex);
+      else
+        viewer.setCurrentModelIndex(modelIndex);
     }
     if (isPlay && nFrames == 2 || isRange || isHyphen) {
       if (modelIndex2 < 0)
-        modelIndex2 = viewer.getModelNumberIndex(frameList[1], useModelNumber);
+        modelIndex2 = (isTrajectory ? frameList[1] - 1 :
+          viewer.getModelNumberIndex(frameList[1], useModelNumber));
       viewer.setAnimationOn(false);
       viewer.setAnimationDirection(1);
-      viewer.setAnimationRange(modelIndex, modelIndex2);
-      viewer.setCurrentModelIndex(isHyphen && !isRange ? -1
-          : modelIndex >= 0 ? modelIndex : 0);
+      viewer.setAnimationRange(modelIndex, modelIndex2, isTrajectory);
+      if (isTrajectory)
+        viewer.setTrajectory(modelIndex);
+      else
+        viewer.setCurrentModelIndex(isHyphen && !isRange ? -1
+            : modelIndex >= 0 ? modelIndex : 0);
     }
     if (isPlay)
       viewer.resumeAnimation();

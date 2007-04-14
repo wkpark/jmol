@@ -76,6 +76,8 @@ class AtomSetCollection {
 
   //float wavelength = Float.NaN;
   boolean coordinatesAreFractional;
+  boolean isTrajectory;
+  
   float[] notionalUnitCell = new float[6]; 
   // expands to 22 for cartesianToFractional matrix as array (PDB)
   
@@ -112,6 +114,13 @@ class AtomSetCollection {
    */
   void setFileTypeName(String type) {
     fileTypeName = type;
+  }
+  
+  Vector trajectories;
+  boolean setTrajectory() {
+    if (!isTrajectory)
+      trajectories = new Vector();
+    return (isTrajectory = true);
   }
   
   /**
@@ -201,6 +210,8 @@ class AtomSetCollection {
 
   void freeze() {
     //Logger.debug("AtomSetCollection.freeze; atomCount = " + atomCount);
+    if (isTrajectory)
+      finalizeTrajectories();
     getAltLocLists();
     getInsertionLists();
   }
@@ -290,12 +301,16 @@ class AtomSetCollection {
       atoms = (Atom[])ArrayUtil.doubleLength(atoms);
     atom.atomIndex = atomCount;
     atoms[atomCount++] = atom;
-    if (atomSetCount == 0) {
+    if (atomSetCount == 0)
+      newAtomSet();
+    /*
+     * WAS: {
       atomSetCount = 1;
       currentAtomSetIndex = 0;
       atomSetNumbers[0] = 1;
       setAtomSetAuxiliaryInfo("modelFileNumber", new Integer(1));
     }
+     */
     atom.atomSetIndex = currentAtomSetIndex;
     atom.atomSite = ++atomSetAtomCounts[currentAtomSetIndex];
   }
@@ -655,18 +670,50 @@ class AtomSetCollection {
   ////////////////////////////////////////////////////////////////
   // atomSet stuff
   ////////////////////////////////////////////////////////////////
+  
+  int nTrajectories = 0;
+  Point3f[] trajectory;
 
+  void addTrajectory() {
+    if (trajectory.length == 0) //done with FIRST atom set
+      trajectory = new Point3f[atomCount];
+    for (int i = 0; i < atomCount; i++)
+      trajectory[i] = new Point3f(atoms[i]);
+    trajectories.add(trajectory);
+    nTrajectories++;
+    //System.out.println(" nTrajectories:" + nTrajectories + " coord 4: " + trajectory[4]);
+  }
+  
+  void finalizeTrajectories() {
+    if (trajectory == null || trajectory.length == 0 || nTrajectories == 0)
+      return;
+    addTrajectory();
+    //reset atom positions to original trajectory
+    Point3f[] trajectory = (Point3f[])trajectories.get(0);
+    for (int i = 0; i < atomCount; i++)
+      atoms[i].set(trajectory[i]);
+    setAtomSetCollectionAuxiliaryInfo("trajectories", trajectories);
+  }
+  
   void newAtomSet() {
+    if (isTrajectory) {
+      if (trajectory == null && atomCount > 0)
+        trajectory = new Point3f[0];
+      if (trajectory != null) { // not BEFORE first atom set
+        addTrajectory();
+      }
+      trajectory = new Point3f[atomCount];
+      discardPreviousAtoms();
+    }
     currentAtomSetIndex = atomSetCount++;
     if (atomSetCount > atomSetNumbers.length) {
       atomSetNumbers = ArrayUtil.doubleLength(atomSetNumbers);
       atomSetNames = ArrayUtil.doubleLength(atomSetNames);
-      atomSetAtomCounts =
-        ArrayUtil.doubleLength(atomSetAtomCounts);
-      atomSetProperties = 
-        (Properties[]) ArrayUtil.doubleLength(atomSetProperties);
-      atomSetAuxiliaryInfo =
-        (Hashtable[]) ArrayUtil.doubleLength(atomSetAuxiliaryInfo);
+      atomSetAtomCounts = ArrayUtil.doubleLength(atomSetAtomCounts);
+      atomSetProperties = (Properties[]) ArrayUtil
+          .doubleLength(atomSetProperties);
+      atomSetAuxiliaryInfo = (Hashtable[]) ArrayUtil
+          .doubleLength(atomSetAuxiliaryInfo);
     }
     atomSetNumbers[currentAtomSetIndex] = atomSetCount;
     // miguel 2006 03 22
@@ -674,7 +721,8 @@ class AtomSetCollection {
     // seems that it should have been here all along, but apparently
     // noone else needed it
     atomSymbolicMap.clear();
-    setAtomSetAuxiliaryInfo("modelFileNumber", new Integer(currentAtomSetIndex + 1));
+    setAtomSetAuxiliaryInfo("modelFileNumber", new Integer(
+        currentAtomSetIndex + 1));
   }
 
   /**

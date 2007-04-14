@@ -1360,7 +1360,15 @@ String getAtomInfoChime(int i) {
     frame.setZeroBased();
   }
 
-  public void setAtomCoord(int atomIndex, float x, float y, float z) {
+  void setTrajectory(int iTraj) {
+    frame.setTrajectory(iTraj);
+  }
+
+  int getTrajectoryCount() {
+    return frame.getTrajectoryCount();
+  }
+  
+  void setAtomCoord(int atomIndex, float x, float y, float z) {
     frame.setAtomCoord(atomIndex,x,y,z);
   }
 

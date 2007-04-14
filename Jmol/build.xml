@@ -252,6 +252,9 @@ support for assertions (which were introduced in 1.4).
         <striplinecomments>
           <comment value="#" />
         </striplinecomments>
+        <linecontains>
+          <contains value="=" />
+        </linecontains>
       </filterchain>
     </copy>
     <copy todir="${applet.classes.dir}" >

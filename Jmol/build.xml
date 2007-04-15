@@ -289,7 +289,7 @@ support for assertions (which were introduced in 1.4).
       </and>
     </condition>
   </target>
-  
+
   <target name="check.pluginjars" id="check.pluginjars">
     <condition property="pluginjars.uptodate">
       <and>
@@ -302,7 +302,7 @@ support for assertions (which were introduced in 1.4).
       </and>
     </condition>
   </target>
-  
+
   <target name="check.libjars" id="check.libjars">
     <condition property="libjars.uptodate">
       <and>
@@ -391,7 +391,7 @@ support for assertions (which were introduced in 1.4).
     <delete file="${jmol.build.dir}/JmolUnsigned.jar"/>
 
     <!-- Jvxl jar -->
-  	<jar destfile="${jmol.build.dir}/JvxlUnsigned.jar"
+    <jar destfile="${jmol.build.dir}/JvxlUnsigned.jar"
          manifest="manifest/jvxl.txt">
       <fileset dir="${classes.dir}" >
         <exclude name="**/.*" />
@@ -414,7 +414,7 @@ support for assertions (which were introduced in 1.4).
       </fileset>
       <fileset dir="." >
         <include name="LICENSE.txt"/>
-      </fileset>	
+      </fileset>
     </jar>
   </target>
 
@@ -523,7 +523,7 @@ support for assertions (which were introduced in 1.4).
         <include name="org/jmol/bspt/**" />
         <include name="org/jmol/util/**" />
         <include name="org/jmol/smiles/**" />
-    	<include name="org/jmol/vecmath/**" />
+        <include name="org/jmol/vecmath/**" />
       </fileset>
     </jar>
 
@@ -674,10 +674,10 @@ support for assertions (which were introduced in 1.4).
     <tar tarfile="build/dist/jmol-${version}-binary.tar.gz"
          compression="gzip" >
       <tarfileset dir="build/dist"
-		  excludes="*/jmol,*/jmol.sh"
-		  includes="jmol-${version}/**" />
+                  excludes="*/jmol,*/jmol.sh"
+                  includes="jmol-${version}/**" />
       <tarfileset dir="build/dist"
-		  mode="755"
+                  mode="755"
                   includes="*/jmol,*/jmol.sh" />
     </tar>
 
@@ -851,7 +851,6 @@ support for assertions (which were introduced in 1.4).
       </fileset>
     </signjar>
   </target>
-  
 
   <target name="clean" id="clean">
     <delete dir="${classes.dir}"/>
@@ -889,9 +888,9 @@ support for assertions (which were introduced in 1.4).
        ******************************** -->
   <target name="doc" id="doc"
           depends="jmolGuide,jmolDevelopersGuide,jmolAppletGuide,jmolHistory,javadoc"/>
-  
+
   <target name="initdoc" depends="init,check.docbook-xml,check.docbook-xsl,check.xsl" />
-  
+
   <target name="check.docbook-xsl" depends="setup" unless="docbook-xsl.uptodate" >
     <delete file="build/${docbook-xsl}.timestamp" />
     <delete dir="build/${docbook-xsl}" />
@@ -1061,8 +1060,8 @@ support for assertions (which were introduced in 1.4).
   <target name="compile-tests" id="compile-tests" depends="main">
     <mkdir dir="${test-classes.dir}"/>
     <javac srcdir="test" destdir="${test-classes.dir}"
-	   debug="on" deprecation="on"
-	   optimize="off" source="1.4">
+           debug="on" deprecation="on"
+           optimize="off" source="1.4">
       <classpath>
         <pathelement location="${jmol.build.dir}/Jmol.jar" />
         <pathelement location="./jars/junit.jar" />

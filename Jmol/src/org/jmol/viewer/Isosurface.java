@@ -152,6 +152,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       .getArgbFromString("orange");
   final static float defaultSolventRadius = 1.2f;
 
+  boolean explicitID;
   boolean blockCubeData;
   int nSurfaces;
   int modelIndex;
@@ -169,7 +170,8 @@ class Isosurface extends IsosurfaceMeshCollection {
   int colorPhase;
   float resolution;
   boolean insideOut;
-
+  Boolean pocket; //three states: TRUE, FALSE, and NULL
+  int minSet;
   int qmOrbitalType;
   int qmOrbitalCount;
   final static int QM_TYPE_UNKNOWN = 0;
@@ -279,6 +281,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   float envelopeRadius;
   float cavityRadius;
   Point4f thePlane;
+  boolean isCavity;
   boolean isContoured;
   boolean isBicolorMap;
   boolean isCutoffAbsolute;
@@ -305,10 +308,16 @@ class Isosurface extends IsosurfaceMeshCollection {
       initializeIsosurface();
       if (!(iHaveBitSets = getScriptBitSets()))
         bsSelected = bs; //THIS MAY BE NULL
-      super.setProperty("thisID", null, null);
+      super.setProperty("thisID", Mesh.PREVIOUS_MESH_ID, null);
       return;
     }
 
+    if ("thisID" == propertyName) {
+      explicitID = true;
+      super.setProperty("thisID", value, null);
+      return;
+    }
+    
     if ("title" == propertyName) {
       if (value == null) {
         title = null;
@@ -358,6 +367,11 @@ class Isosurface extends IsosurfaceMeshCollection {
       return;
     }
 
+    if ("clear" == propertyName) {
+      discardTempData(true);      
+      return;
+    }
+    
     if ("select" == propertyName) {
       if (!iHaveBitSets)
         bsSelected = (BitSet) value;
@@ -468,7 +482,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
 
     if ("insideOut" == propertyName) {
-      insideOut = true;
+      insideOut = !insideOut;
       return;
     }
 
@@ -515,7 +529,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       colorScheme = ((String) value);
       viewer.setColorScheme(colorScheme);
       if (thisMesh != null && colorScheme.equals("sets")) {
-        thisMesh.surfaceSet = getSurfaceSet(0);
+        thisMesh.surfaceSet = getSurfaceSet();
         super.setProperty("color", "sets", null);
       }
       return;
@@ -678,8 +692,19 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
 
     if ("cavity" == propertyName) {
-      solvent_dots = viewer.calculateSurface(bsSelected, bsIgnore,
-          envelopeRadius);
+      isCavity = true;
+      return;
+    }
+
+    if ("pocket" == propertyName) {
+      pocket = (Boolean) value;
+      if (pocket.booleanValue())
+        insideOut = !insideOut;
+      return;
+    }
+
+    if ("minset" == propertyName) {
+      minSet = ((Integer) value).intValue();
       return;
     }
 
@@ -739,7 +764,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       qmOrbitalType = (moData.containsKey("gaussians") ? QM_TYPE_GAUSSIAN
           : moData.containsKey("slaterInfo") ? QM_TYPE_SLATER : QM_TYPE_UNKNOWN);
       if (qmOrbitalType == QM_TYPE_UNKNOWN) {
-        value = moData;  // must be generic surface info
+        value = moData; // must be generic surface info
       } else {
         Vector mos = (Vector) (moData.get("mos"));
         qmOrbitalCount = mos.size();
@@ -867,6 +892,18 @@ class Isosurface extends IsosurfaceMeshCollection {
         Logger.error("Could not create isosurface");
         return;
       }
+      if (pocket != null)
+        selectPocket();
+      if (minSet > 0) {
+        getSurfaceSet();
+        for (int i = 0; i < nSets; i++) {
+          //System.out.println(" set " + i + " " + Viewer.cardinalityOf(surfaceSet[i]));
+          if (surfaceSet[i] != null
+              && Viewer.cardinalityOf(surfaceSet[i]) < minSet)
+            invalidateSurfaceSet(i);
+        }
+        thisMesh.invalidateTriangles();
+      }
       if (!isSilent)
         Logger.info("surface calculation time: "
             + (System.currentTimeMillis() - timeBegin) + " ms");
@@ -886,7 +923,7 @@ class Isosurface extends IsosurfaceMeshCollection {
         applyColorScale(thisMesh);
       }
       if (colorScheme.equals("sets")) {
-        thisMesh.surfaceSet = getSurfaceSet(0);
+        thisMesh.surfaceSet = getSurfaceSet();
         super.setProperty("color", "sets", null);
       }
       setModelIndex();
@@ -925,7 +962,8 @@ class Isosurface extends IsosurfaceMeshCollection {
         readData(true);
         if (isJvxl) {
           Logger.error("Cannot MAP jvxl data");
-          return;          
+          discardTempData(true);
+          return;
         }
       }
       colorIsosurface();
@@ -933,12 +971,16 @@ class Isosurface extends IsosurfaceMeshCollection {
       //if (logMessages && !isSilent)
       //  Logger.debug("\n" + jvxlGetFile(thisMesh, jvxlFileMessage, true, 1));
       setModelIndex();
-      discardTempData(true);
       dataType = SURFACE_NONE;
+      discardTempData(true);
       return;
     }
 
     if ("delete" == propertyName) {
+      if (!explicitID) {
+        thisMesh = null;
+        currentMesh = null;
+      }
       if (thisMesh == null) {
         nLCAO = 0;
         nUnnamed = 0;
@@ -958,7 +1000,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     if (thisMesh == null)
       return "no current isosurface";
     if (property == "plane")
-      return ((IsosurfaceMesh)currentMesh).jvxlPlane;
+      return (thisMesh).jvxlPlane;
     if (property == "jvxlFileData")
       return jvxlGetFile(thisMesh, "", true, index);
     if (property == "jvxlSurfaceData")
@@ -996,6 +1038,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   void initializeIsosurface() {
     logMessages = Logger.isActiveLevel(Logger.LEVEL_DEBUG);
     logCube = logCompression = false;
+    explicitID = false;
     blockCubeData = false; // Gaussian standard, but we allow for multiple surfaces one per data block
     isSilent = false;
     modelIndex = viewer.getCurrentModelIndex();
@@ -1029,6 +1072,8 @@ class Isosurface extends IsosurfaceMeshCollection {
     //anisotropy[0] = anisotropy[1] = anisotropy[2] = 1f;
     cutoff = Float.MAX_VALUE;
     thePlane = null;
+    pocket = null;
+    minSet = 0;
     //surface_data = null;
     nBytes = 0;
     nContours = 0;
@@ -1040,7 +1085,11 @@ class Isosurface extends IsosurfaceMeshCollection {
     isBicolorMap = isCutoffAbsolute = isPositiveOnly = false;
     bsIgnore = null;
     bsSolvent = null;
+    isCavity = false;
+    envelopeRadius = 10f;
     solvent_dots = null;
+    surfaceSet = null;
+    nSets = 0;
     iUseBitSets = false;
     solventExtendedAtomRadius = 0;
     solventAtomRadiusFactor = 1;
@@ -1179,6 +1228,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
     thisMesh.jvxlFileHeader = "" + jvxlFileHeader;
     thisMesh.cutoff = (isJvxl ? jvxlCutoff : cutoff);
+    thisMesh.insideOut = insideOut;
     thisMesh.jvxlColorData = "";
     thisMesh.jvxlEdgeData = "" + fractionData;
     thisMesh.isBicolorMap = isBicolorMap;
@@ -1252,9 +1302,10 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   void discardTempData(boolean discardAll) {
     voxelData = null;
-    if (dataType == SURFACE_FILE)
+    if (dataType == SURFACE_FILE && br != null)
       try {
         br.close();
+        br = null;
       } catch (Exception e) {
       }
     if (!discardAll)
@@ -1265,6 +1316,16 @@ class Isosurface extends IsosurfaceMeshCollection {
     planarSquares = null;
     contourVertexes = null;
     contourVertexCount = 0;
+    surfaceSet = null;
+    atomSet = null;
+    jvxlFileHeader = null;
+    solvent_atomNo = null;
+    solvent_atomRadius = null;
+    solvent_bs = null;
+    solvent_dots = null;
+    solvent_ptAtom = null;
+    surfaceData = null;
+    title = null;
   } ////////////////////////////////////////////////////////////////
 
   // default color stuff
@@ -1609,8 +1670,8 @@ class Isosurface extends IsosurfaceMeshCollection {
     gotoData(fileIndex - 1, nPoints);
 
     thisInside = (!isJvxl || !isContoured);
-    if (insideOut)
-      thisInside = !thisInside;
+    //if (insideOut)
+      //thisInside = !thisInside;
 
     if (thePlane != null) {
       setPlaneParameters(thePlane);
@@ -2054,7 +2115,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   void initializeMesh(boolean use2Sided) {
     int vertexCount = thisMesh.vertexCount;
     thisMesh.isTwoSided = use2Sided;
-    //System.out.println("initializeMesh"+use2Sided);
+    //System0intln("initializeMesh"+use2Sided);
     Vector3f[] vectorSums = new Vector3f[vertexCount];
 
     if (!isSilent && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
@@ -2801,7 +2862,7 @@ class Isosurface extends IsosurfaceMeshCollection {
         for (int z = cubeCountZ; --z >= 0;) {
           int[] voxelPointIndexes = propagateNeighborPointIndexes(x, y, z,
               isoPointIndexes);
-          //System.out.println("generateSurfaceData " 
+          //System println("generateSurfaceData " 
             //  + " xyz " + x + " " + y + " " + z);
           int insideMask = 0;
           for (int i = 8; --i >= 0;) {
@@ -3215,7 +3276,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       new Vector3f(0, 1, 0), new Vector3f(1, 1, 0), new Vector3f(1, 1, 1),
       new Vector3f(0, 1, 1) };
 
-  Vector3f[] voxelVertexVectors = new Vector3f[8];
+  final Vector3f[] voxelVertexVectors = new Vector3f[8];
 
   void calcVoxelVertexVectors() {
     for (int i = 8; --i >= 0;) {
@@ -3986,9 +4047,6 @@ class Isosurface extends IsosurfaceMeshCollection {
     void setValue(float value) {
       this.value = value;
       voxelData[voxelLocation.x][voxelLocation.y][voxelLocation.z] = value;
-      if (Math.abs(value) < 0.0000001)
-        thisMesh.invalidateVertex(vertexIndex);
-
     }
 
     void setPixelLocation(Point3i pt) {
@@ -4010,8 +4068,6 @@ class Isosurface extends IsosurfaceMeshCollection {
     int vPt = addVertexCopy(vertexXYZ, value, false, "");
     contourVertexes[contourVertexCount++] = new ContourVertex(x, y, z,
         vertexXYZ, vPt);
-    if (Math.abs(value) < 0.0000001)
-      thisMesh.invalidateVertex(vPt);
     thisMesh.firstViewableVertex = thisMesh.vertexCount;
     if (logMessages && false)
       Logger.info("addContourdata " + x + " " + y + " " + z + offsets
@@ -4409,7 +4465,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       fillSquare(square, contourIndex, edgeMask, true);
   }
 
-  int[] triangleVertexList = new int[20];
+  final int[] triangleVertexList = new int[20];
 
   void fillSquare(PlanarSquare square, int contourIndex, int edgeMask,
                   boolean reverseWinding) {
@@ -5369,7 +5425,7 @@ class Isosurface extends IsosurfaceMeshCollection {
      * 
      */
     
-    if (solvent_dots != null && theProperty != null) {
+    if (isCavity && theProperty != null) {
 /*
  * couldn't get this to work -- we only have half of the points
       for (int x = 0, i = 0, ipt = 0; x < nPointsX; ++x)
@@ -5387,8 +5443,11 @@ class Isosurface extends IsosurfaceMeshCollection {
 */
       return;
     }
+    if (isCavity)
+      solvent_dots = viewer.calculateSurface(bsSelected, bsIgnore,
+        envelopeRadius);
     generateSolventCube(true);
-    if (solvent_dots == null || dataType == SURFACE_NOMAP
+    if (!isCavity || dataType == SURFACE_NOMAP
         || dataType == SURFACE_PROPERTY)
       return;
     //we have a ring of dots around the model.
@@ -5397,6 +5456,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     //3) rerun the calculation to mark a solvent around these!
     solvent_bs = new BitSet(nPointsX * nPointsY * nPointsZ);
     int i = 0;
+    int nDots = solvent_dots.length;
     int n = 0;
     //surface_data = new float[1000];
     for (int x = 0; x < nPointsX; ++x)
@@ -5406,7 +5466,7 @@ class Isosurface extends IsosurfaceMeshCollection {
             voxelPtToXYZ(x, y, z, ptXyzTemp);
             //float dMin = Float.MAX_VALUE;
             //float d;
-            for (int j = solvent_dots.length; --j >= 0;) {
+            for (int j = 0; j < nDots; j++) {
               if (solvent_dots[j].distance(ptXyzTemp) < envelopeRadius)
                 continue out;
             }
@@ -5431,7 +5491,56 @@ class Isosurface extends IsosurfaceMeshCollection {
     generateSolventCube(false);
   }
 
-  void generateSolventCube(boolean isFirstPass) {
+  void selectPocket() {
+    if (solvent_dots == null)
+      solvent_dots = viewer.calculateSurface(bsSelected, bsIgnore,
+          envelopeRadius);
+    //mark VERTICES for proximity to surface
+    Point3f[] v = thisMesh.vertices;
+    int nVertices = thisMesh.vertexCount;
+    int nDots = solvent_dots.length;
+    for (int i = 0; i < nVertices; i++) {
+      for (int j = 0; j < nDots; j++) {
+        if (solvent_dots[j].distance(v[i]) < envelopeRadius) {
+          thisMesh.vertexValues[i] = Float.NaN;
+          continue;
+        }
+      }
+    }
+    getSurfaceSet();
+    BitSet pocketSet = new BitSet(nSets);
+    for (int i = 0; i < nSets; i++)
+      if (surfaceSet[i] != null)
+        for (int j = surfaceSet[i].length(); --j >= 0;)
+          if (surfaceSet[i].get(j) && Float.isNaN(thisMesh.vertexValues[j])) {
+            pocketSet.set(i);
+            //System.out.println("pocket " + i + " " + j + " " + surfaceSet[i]);
+            break;
+          }
+
+    //now clear all vertices that match the pocket toggle
+    //"POCKET"   --> pocket TRUE means "show just the pockets"
+    //"INTERIOR" --> pocket FALSE means "show everything that is not a pocket"
+    boolean doExclude = !pocket.booleanValue();
+    for (int i = 0; i < nSets; i++)
+      if (surfaceSet[i] != null) {
+        if (pocketSet.get(i) == doExclude)
+          invalidateSurfaceSet(i);
+      }
+
+    thisMesh.invalidateTriangles();
+    if (!doExclude)
+      surfaceSet = null;
+  }
+
+  void invalidateSurfaceSet(int i) {
+    for (int j = surfaceSet[i].length(); --j >= 0;)
+      if (surfaceSet[i].get(j))
+        thisMesh.vertexValues[j] = Float.NaN;
+    surfaceSet[i] = null;
+  }
+
+    void generateSolventCube(boolean isFirstPass) {
     long time = System.currentTimeMillis();
     float rA, rB;
     Point3f ptA;
@@ -5493,9 +5602,9 @@ class Isosurface extends IsosurfaceMeshCollection {
         ptXyzTemp.add(volumetricVectors[0]);
       }
     }
-    if (isFirstPass && solvent_dots != null)
+    if (isCavity && isFirstPass)
       return;
-    if (solvent_dots == null && solventRadius > 0
+    if (!isCavity && solventRadius > 0
         && (dataType == SURFACE_SOLVENT || dataType == SURFACE_MOLECULAR)) {
       Point3i ptA0 = new Point3i();
       Point3i ptB0 = new Point3i();
@@ -5933,6 +6042,10 @@ class Isosurface extends IsosurfaceMeshCollection {
   int nSets = 0;
   boolean setsSuccessful;
 
+  BitSet[] getSurfaceSet() {
+    return (surfaceSet == null ? getSurfaceSet(0) : surfaceSet);
+  }
+  
   BitSet[] getSurfaceSet(int level) {
     if (thisMesh == null)
       return null;
@@ -5943,9 +6056,14 @@ class Isosurface extends IsosurfaceMeshCollection {
     setsSuccessful = true;
     for (int i = 0; i < thisMesh.polygonCount; i++) {
       int[] p = thisMesh.polygonIndexes[i];
-      int pt0 = findSet(p[0]);
-      int pt1 = findSet(p[1]);
-      int pt2 = findSet(p[2]);
+      if (p == null)
+        continue;
+      int pt0 = p[0];
+      int pt1 = p[1];
+      int pt2 = p[2];
+      pt0 = findSet(pt0);
+      pt1 = findSet(pt1);
+      pt2 = findSet(pt2);
       if (pt0 < 0 && pt1 < 0 && pt2 < 0) {
         createSet(p[0], p[1], p[2]);
         continue;

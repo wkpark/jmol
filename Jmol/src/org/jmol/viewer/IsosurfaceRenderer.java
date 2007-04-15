@@ -84,8 +84,8 @@ class IsosurfaceRenderer extends MeshRenderer {
     }
     g3d.setColix(mesh.colix);
     //System.out.println("Isosurface renderTriangle polygoncount = "
-      //  + mesh.polygonCount + " screens: " + screens.length + " normixes: "
-        //+ normixes.length);
+    //  + mesh.polygonCount + " screens: " + screens.length + " normixes: "
+    //+ normixes.length);
     for (int i = mesh.polygonCount; --i >= 0;) {
       //if (!mesh.isPolygonDisplayable(i))
       // continue;
@@ -95,17 +95,21 @@ class IsosurfaceRenderer extends MeshRenderer {
       int iA = vertexIndexes[0];
       int iB = vertexIndexes[1];
       int iC = vertexIndexes[2];
-      //if (iA != 6 && iB !=6 && iC!=6 &&iA != 1 && iB !=1 && iC!=1 &&iA != 120 && iB !=120 && iC!=120)
-      //continue;
-      if (frontOnly
-          && (normixes[iA] < 0 || normixes[iB] < 0 || normixes[iC] < 0))
+      short nA = normixes[iA];
+      short nB = normixes[iB];
+      short nC = normixes[iC];
+      if (frontOnly && (nA < 0 || nB < 0 || nC < 0))
         frontOnly = false;
       //if (frontOnly)
       //System.out.println(renderCount+": "+iA + " " + transformedVectors[normixes[iA]] + ", "+iB + " " + transformedVectors[normixes[iB]] + ", "+iC + " " + transformedVectors[normixes[iC]]);
-      if (frontOnly && transformedVectors[normixes[iA]].z < 0
-          && transformedVectors[normixes[iB]].z < 0
-          && transformedVectors[normixes[iC]].z < 0)
+      if (frontOnly && transformedVectors[nA].z < 0
+          && transformedVectors[nB].z < 0 && transformedVectors[nC].z < 0)
         continue;
+      if (mesh.insideOut) {
+        nA = g3d.getInverseNormix(nA);
+        nB = g3d.getInverseNormix(nB);
+        nC = g3d.getInverseNormix(nC);
+      }
       short colixA, colixB, colixC;
       if (vertexColixes != null) {
         colixA = vertexColixes[iA];
@@ -129,12 +133,12 @@ class IsosurfaceRenderer extends MeshRenderer {
       }
       if (fill) {
         if (iShowTriangles) {
-          g3d.fillTriangle(screens[iA], colixA, normixes[iA], screens[iB],
-              colixB, normixes[iB], screens[iC], colixC, normixes[iC], 0.1f);
+          g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
+              screens[iC], colixC, nC, 0.1f);
         } else {
           try {
-            g3d.fillTriangle(screens[iA], colixA, normixes[iA], screens[iB],
-                colixB, normixes[iB], screens[iC], colixC, normixes[iC]);
+            g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
+                screens[iC], colixC, nC);
           } catch (Exception e) {
             if (nError++ < 1) {
               Logger.warn("IsosurfaceRenderer -- competing thread bug?\n", e);

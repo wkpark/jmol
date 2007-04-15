@@ -53,4 +53,19 @@ class IsosurfaceMesh extends Mesh {
     super(thisID, g3d, colix);
   }
 
+  void invalidateTriangles() {
+    for (int i = polygonCount; --i >= 0;) {
+      int[] vertexIndexes = polygonIndexes[i];
+      if (vertexIndexes == null)
+        continue;
+      int iA = vertexIndexes[0];
+      int iB = vertexIndexes[1];
+      int iC = vertexIndexes[2];
+      if (Float.isNaN(vertexValues[iA]) || Float.isNaN(vertexValues[iB])
+          || Float.isNaN(vertexValues[iC]))
+        polygonIndexes[i] = null;
+    }
+  }
+  
+
 }

@@ -7814,7 +7814,8 @@ class Eval { //implements Runnable {
       setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, propertyName,
           propertyValue);
     }
-  }
+    setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "clear", null);
+ }
 
   int lastMoNumber = 0;
 
@@ -7979,6 +7980,7 @@ class Eval { //implements Runnable {
     if (title != null)
       setShapeProperty(shape, "title", title);
     setShapeProperty(shape, "molecularOrbital", new Integer(moNumber));
+    setShapeProperty(shape, "clear", null);
   }
 
   void initIsosurface(int iShape) throws ScriptException {
@@ -8174,9 +8176,24 @@ class Eval { //implements Runnable {
           propertyName = "cavity";
           break;
         }
+        if (str.equalsIgnoreCase("POCKET")) {
+          propertyName = "pocket";
+          propertyValue = Boolean.TRUE;
+          break;
+        }
+        if (str.equalsIgnoreCase("INTERIOR")) {
+          propertyName = "pocket";
+          propertyValue = Boolean.FALSE;
+          break;
+        }
         if (str.equalsIgnoreCase("SCALE")) {
           propertyName = "scale";
           propertyValue = new Float(floatParameter(++i));
+          break;
+        }
+        if (str.equalsIgnoreCase("MINSET")) {
+          propertyName = "minset";
+          propertyValue = new Integer(intParameter(++i));
           break;
         }
         if (str.equalsIgnoreCase("ANGSTROMS")) {
@@ -8494,6 +8511,7 @@ class Eval { //implements Runnable {
       if (id != null)
         showString(id + " created; number of isosurfaces = " + n);
     }
+    setShapeProperty(iShape, "clear", null);
   }
 
   boolean setMeshDisplayProperty(int shape, int i, int tok) throws ScriptException {

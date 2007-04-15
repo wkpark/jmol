@@ -45,6 +45,7 @@ class Mesh {
   String scriptCommand;
   boolean hasGridPoints;
   boolean hideBackground;
+  boolean insideOut;
   BitSet[] surfaceSet;
   int firstViewableVertex;
   int lastViewableVertex;
@@ -243,10 +244,6 @@ class Mesh {
     return vertexCount++;
   }
 
-  void invalidateVertex(int vertex) {
-    //vertexValues[vertex] = Float.NaN;  
-  }
-  
   void addTriangle(int vertexA, int vertexB, int vertexC) {
     if (vertexValues != null && (Float.isNaN(vertexValues[vertexA])||Float.isNaN(vertexValues[vertexB])||Float.isNaN(vertexValues[vertexC])))
       return;

@@ -42,7 +42,7 @@ abstract class IsosurfaceMeshCollection extends MeshFileCollection {
 
   void setProperty(String propertyName, Object value, BitSet bs) {
     currentMesh = thisMesh;
-    super.setProperty(propertyName, value,bs);
+    super.setProperty(propertyName, value, bs);
     thisMesh = (IsosurfaceMesh)currentMesh;
   }
 

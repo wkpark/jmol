@@ -2021,7 +2021,8 @@ final public class Graphics3D {
   // includes 16 official HTML 4.0 color names & values
   // plus a few extra rasmol names
 
-  final static String[] colorNames = {
+  private final static String[] colorNames = {
+    "black",                // 000000
     "aliceblue",            // F0F8FF
     "antiquewhite",         // FAEBD7
     "aqua",                 // 00FFFF
@@ -2029,7 +2030,6 @@ final public class Graphics3D {
     "azure",                // F0FFFF
     "beige",                // F5F5DC
     "bisque",               // FFE4C4
-    "black",                // 000000
     "blanchedalmond",       // FFEBCD
     "blue",                 // 0000FF
     "blueviolet",           // 8A2BE2
@@ -2186,11 +2186,12 @@ final public class Graphics3D {
     "pewhite",              // ffffff
   };
 
-  public static String getColorName(int i) {
-    return colorNames[i];
+  public static int getColorArgb(int i) {
+    return colorArgbs[i % colorArgbs.length];
   }
 
-  final static int[] colorArgbs = {
+  private final static int[] colorArgbs = {
+    0xFF000000, // black
     0xFFF0F8FF, // aliceblue
     0xFFFAEBD7, // antiquewhite
     0xFF00FFFF, // aqua
@@ -2198,7 +2199,6 @@ final public class Graphics3D {
     0xFFF0FFFF, // azure
     0xFFF5F5DC, // beige
     0xFFFFE4C4, // bisque
-    0xFF000000, // black
     0xFFFFEBCD, // blanchedalmond
     0xFF0000FF, // blue
     0xFF8A2BE2, // blueviolet

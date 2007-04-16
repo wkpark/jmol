@@ -2617,9 +2617,8 @@ final public class Graphics3D {
   }
 
   public short getInverseNormix(short normix) {
-    if (normix3d.inverseNormixes != null)
-      return normix3d.inverseNormixes[normix];
-    normix3d.calculateInverseNormixes();
+    if (normix3d.inverseNormixes == null)
+      normix3d.calculateInverseNormixes();
     return normix3d.inverseNormixes[normix];
   }
 

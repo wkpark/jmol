@@ -332,7 +332,7 @@ class MolecularOrbital extends Isosurface {
     appendCmd(s, "mo " + moNumber);
     if (moTranslucency != null)
       appendCmd(s, "mo translucent " + moTranslucentLevel);
-    appendCmd(s, getMeshState((Mesh)thisModel.get("mesh"), "mo"));
+    appendCmd(s, ((IsosurfaceMesh)thisModel.get("mesh")).getState("mo"));
     return s.toString();
   }
 }

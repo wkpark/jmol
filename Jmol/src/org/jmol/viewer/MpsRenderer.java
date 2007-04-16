@@ -37,6 +37,8 @@ import java.util.BitSet;
 abstract class MpsRenderer extends MeshRenderer {
 
   //Mps.MpsShape thisChain;
+  
+  //ultimately this renderer calls MeshRenderer.render1(mesh)
 
   int aspectRatio;
   int hermiteLevel;
@@ -398,6 +400,7 @@ abstract class MpsRenderer extends MeshRenderer {
       return;
     int coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
         mad + (mad >> 2));
+/*    
     if (false && aspectRatio > 0 && checkDiameter(coneDiameter)) {
       try {
         if (meshes[i] == null || !meshReady[i])
@@ -410,6 +413,7 @@ abstract class MpsRenderer extends MeshRenderer {
         //e.printStackTrace();
       }
     }
+*/    
     g3d.fillCone(Graphics3D.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
         screenPtEnd);
   }
@@ -557,7 +561,7 @@ abstract class MpsRenderer extends MeshRenderer {
       for (int k = hermiteLevel * 2; --k >= 0;)
         mesh.addQuad(nPoints - k - 1, nPoints - nPer + (nPer - k) % nPer,
             nPoints - nPer + k + 1, nPoints - nPer + k + 2);
-    mesh.initialize(false);
+    mesh.initialize(Mesh.FRONTLIT);
     //System.out.sprintln("mesh "+ mesh.thisID + " " + mesh.vertexCount+" "+mesh.vertices.length + " " + mesh.polygonCount + " " + mesh.polygonIndexes.length);
     meshReady[i] = true;
     mesh.visibilityFlags = 1;
@@ -589,7 +593,7 @@ abstract class MpsRenderer extends MeshRenderer {
       mesh.addTriangle((k + 1) % nPer, nPer, k);
     for (int k = level * 2; --k >= 0;)
       mesh.addQuad(k + 2, k + 1, (nPer - k) % nPer, nPer - k - 1);
-    mesh.initialize(false);
+    mesh.initialize(Mesh.FRONTLIT);
     meshReady[i] = true;
     mesh.visibilityFlags = 1;
   }

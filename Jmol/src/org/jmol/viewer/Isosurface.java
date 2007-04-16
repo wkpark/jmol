@@ -113,7 +113,15 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.quantum.QuantumCalculation;
 import org.jmol.quantum.MepCalculation;
 
-class Isosurface extends IsosurfaceMeshCollection {
+class Isosurface extends MeshFileCollection {
+
+  IsosurfaceMesh[] isomeshes = new IsosurfaceMesh[4];
+  IsosurfaceMesh thisMesh;
+  
+  void allocMesh(String thisID) {
+    meshes = isomeshes = (IsosurfaceMesh[])ArrayUtil.ensureLength(isomeshes, meshCount + 1);
+    currentMesh = thisMesh = isomeshes[meshCount++] = new IsosurfaceMesh(thisID, g3d, colix);
+  }
 
   void initShape() {
     super.initShape();
@@ -152,11 +160,9 @@ class Isosurface extends IsosurfaceMeshCollection {
       .getArgbFromString("orange");
   final static float defaultSolventRadius = 1.2f;
 
-  boolean explicitID;
   boolean blockCubeData;
   int nSurfaces;
   int modelIndex;
-  String[] title;
   float[] theProperty;
   String colorScheme;
   short defaultColix;
@@ -169,7 +175,6 @@ class Isosurface extends IsosurfaceMeshCollection {
   boolean colorByPhase;
   int colorPhase;
   float resolution;
-  boolean insideOut;
   Boolean pocket; //three states: TRUE, FALSE, and NULL
   int minSet;
   int qmOrbitalType;
@@ -179,6 +184,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   final static int QM_TYPE_SLATER = 2;
   Hashtable moData;
   float[] moCoefficients;
+  int lighting = Mesh.FRONTLIT;
 
   boolean precalculateVoxelData;
   Vector functionXYinfo;
@@ -240,6 +246,7 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   int edgeFractionBase;
   int edgeFractionRange;
+  char cJvxlEdgeNaN;
   int colorFractionBase;
   int colorFractionRange;
   float mappedDataMin;
@@ -308,38 +315,32 @@ class Isosurface extends IsosurfaceMeshCollection {
       initializeIsosurface();
       if (!(iHaveBitSets = getScriptBitSets()))
         bsSelected = bs; //THIS MAY BE NULL
-      super.setProperty("thisID", Mesh.PREVIOUS_MESH_ID, null);
+      setPropertySuper("thisID", Mesh.PREVIOUS_MESH_ID, null);
       return;
     }
 
     if ("thisID" == propertyName) {
-      explicitID = true;
-      super.setProperty("thisID", value, null);
+      setPropertySuper("thisID", value, null);
       return;
     }
-    
+
+    /*
+     if ("background" == propertyName) {
+     boolean doHide = !((Boolean) value).booleanValue();
+     if (thisMesh != null)
+     thisMesh.hideBackground = doHide;
+     else {
+     for (int i = meshCount; --i >= 0;)
+     meshes[i].hideBackground = doHide;
+     }
+     return;
+     }
+
+     */
     if ("title" == propertyName) {
-      if (value == null) {
-        title = null;
+      setPropertySuper(propertyName, value, bs);
+      if (title == null)
         return;
-      } else if (value instanceof String[]) {
-        title = (String[]) value;
-      } else {
-        int nLine = 1;
-        String lines = (String) value;
-        for (int i = lines.length(); --i >= 0;)
-          if (lines.charAt(i) == '|')
-            nLine++;
-        title = new String[nLine];
-        nLine = 0;
-        int i0 = -1;
-        for (int i = 0; i < lines.length(); i++)
-          if (lines.charAt(i) == '|') {
-            title[nLine++] = lines.substring(i0 + 1, i);
-            i0 = i;
-          }
-        title[nLine] = lines.substring(i0 + 1);
-      }
       for (int i = 0; i < title.length; i++)
         if (title[i].length() > 0)
           Logger.info("TITLE " + title[i]);
@@ -368,10 +369,10 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
 
     if ("clear" == propertyName) {
-      discardTempData(true);      
+      discardTempData(true);
       return;
     }
-    
+
     if ("select" == propertyName) {
       if (!iHaveBitSets)
         bsSelected = (BitSet) value;
@@ -481,11 +482,6 @@ class Isosurface extends IsosurfaceMeshCollection {
       return;
     }
 
-    if ("insideOut" == propertyName) {
-      insideOut = !insideOut;
-      return;
-    }
-
     if ("remappable" == propertyName) {
       jvxlWritePrecisionColor = true;
       return;
@@ -530,9 +526,10 @@ class Isosurface extends IsosurfaceMeshCollection {
       viewer.setColorScheme(colorScheme);
       if (thisMesh != null && colorScheme.equals("sets")) {
         thisMesh.surfaceSet = getSurfaceSet();
-        super.setProperty("color", "sets", null);
+        setColorSchemeSets();
+      } else {
+        return;
       }
-      return;
     }
 
     if ("contour" == propertyName) {
@@ -698,8 +695,7 @@ class Isosurface extends IsosurfaceMeshCollection {
 
     if ("pocket" == propertyName) {
       pocket = (Boolean) value;
-      if (pocket.booleanValue())
-        insideOut = !insideOut;
+      lighting = (pocket.booleanValue() ? Mesh.FULLYLIT : Mesh.FRONTLIT);
       return;
     }
 
@@ -902,12 +898,12 @@ class Isosurface extends IsosurfaceMeshCollection {
               && Viewer.cardinalityOf(surfaceSet[i]) < minSet)
             invalidateSurfaceSet(i);
         }
-        thisMesh.invalidateTriangles();
+        thisMesh.updateSurfaceData(cJvxlEdgeNaN);
       }
       if (!isSilent)
         Logger.info("surface calculation time: "
             + (System.currentTimeMillis() - timeBegin) + " ms");
-      initializeMesh(thePlane != null);
+      initializeMesh(thePlane != null ? Mesh.FULLYLIT : lighting);
       jvxlFileMessage = (jvxlDataIsColorMapped ? "mapped" : "");
       if (isContoured && thePlane == null) {
         planarVectors[0].set(volumetricVectors[0]);
@@ -915,6 +911,7 @@ class Isosurface extends IsosurfaceMeshCollection {
         pixelCounts[0] = voxelCounts[0];
         pixelCounts[1] = voxelCounts[1];
       }
+
       if (jvxlDataIs2dContour)
         colorIsosurface();
       thisMesh.nBytes = nBytes;
@@ -924,7 +921,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       }
       if (colorScheme.equals("sets")) {
         thisMesh.surfaceSet = getSurfaceSet();
-        super.setProperty("color", "sets", null);
+        setColorSchemeSets();
       }
       setModelIndex();
       if (logMessages && thePlane == null && !isSilent
@@ -934,6 +931,19 @@ class Isosurface extends IsosurfaceMeshCollection {
       dataType = SURFACE_NONE;
       mappedDataMin = Float.MAX_VALUE;
       return;
+    }
+
+    if ("color" == propertyName) {
+      if (thisMesh != null) {
+        thisMesh.vertexColixes = null;
+        thisMesh.isColorSolid = true;
+      } else {
+        for (int i = meshCount; --i >= 0;) {
+          isomeshes[i].vertexColixes = null;
+          isomeshes[i].isColorSolid = true;
+        }
+      }
+      // continue on to super
     }
 
     if ("mapColor" == propertyName) {
@@ -956,7 +966,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       checkFlags();
       if (thePlane != null) {
         createIsosurface(); //for the plane
-        initializeMesh(true);
+        initializeMesh(Mesh.FULLYLIT);
         readVolumetricData(true); //for the data
       } else {
         readData(true);
@@ -977,21 +987,21 @@ class Isosurface extends IsosurfaceMeshCollection {
     }
 
     if ("delete" == propertyName) {
-      if (!explicitID) {
-        thisMesh = null;
-        currentMesh = null;
-      }
-      if (thisMesh == null) {
-        nLCAO = 0;
-        nUnnamed = 0;
-      }
+      if (!explicitID)
+        nLCAO = nUnnamed = 0;
       // fall through to meshCollection
     }
 
     // processed by meshCollection
-    super.setProperty(propertyName, value, bs);
+    setPropertySuper(propertyName, value, bs);
   }
 
+  void setPropertySuper(String propertyName, Object value, BitSet bs) {
+    currentMesh = thisMesh;
+    super.setProperty(propertyName, value, bs);
+    thisMesh = (IsosurfaceMesh)currentMesh;  
+  }
+  
   Object getProperty(String property, int index) {
     if (property == "list")
       return super.getProperty(property, index);
@@ -1024,6 +1034,8 @@ class Isosurface extends IsosurfaceMeshCollection {
   }
 
   String fixScript() {
+    if (script == null)
+      return null;
     if (script.indexOf("# ({") >= 0)
       return script;
     if (script.charAt(0) == ' ')
@@ -1038,7 +1050,6 @@ class Isosurface extends IsosurfaceMeshCollection {
   void initializeIsosurface() {
     logMessages = Logger.isActiveLevel(Logger.LEVEL_DEBUG);
     logCube = logCompression = false;
-    explicitID = false;
     blockCubeData = false; // Gaussian standard, but we allow for multiple surfaces one per data block
     isSilent = false;
     modelIndex = viewer.getCurrentModelIndex();
@@ -1048,7 +1059,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     title = null;
     theProperty = null;
     fileIndex = 1;
-    insideOut = false;
+    lighting = Mesh.FRONTLIT;
     atomIndex = -1;
     precalculateVoxelData = false;
     isColorReversed = false;
@@ -1154,7 +1165,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     setMapRanges();
     if (isContoured) { //did NOT work here.
       generateContourData(jvxlDataIs2dContour);
-      initializeMesh(thePlane != null);
+      initializeMesh(thePlane != null ? Mesh.FULLYLIT : lighting);
       if (!colorByContourOnly)
         applyColorScale(thisMesh);
     } else {
@@ -1226,9 +1237,11 @@ class Isosurface extends IsosurfaceMeshCollection {
     } catch (Exception e) {
       return false;
     }
+    thisMesh.realVertexCount = (thisMesh.firstViewableVertex > 0 ? thisMesh.firstViewableVertex
+        : thisMesh.vertexCount);
+    thisMesh.vertexIncrement =   (thisMesh.hasGridPoints && thisMesh.jvxlPlane == null ? 3 : 1);
     thisMesh.jvxlFileHeader = "" + jvxlFileHeader;
     thisMesh.cutoff = (isJvxl ? jvxlCutoff : cutoff);
-    thisMesh.insideOut = insideOut;
     thisMesh.jvxlColorData = "";
     thisMesh.jvxlEdgeData = "" + fractionData;
     thisMesh.isBicolorMap = isBicolorMap;
@@ -1238,24 +1251,39 @@ class Isosurface extends IsosurfaceMeshCollection {
       jvxlReadColorData(thisMesh);
     thisMesh.colix = getDefaultColix();
     thisMesh.jvxlExtraLine = jvxlExtraLine(1);
+    if (isJvxl && jvxlRenderingData != null)
+      setRendering(jvxlRenderingData);
     //if (thePlane != null && iAddGridPoints)
       //addGridPointCube();
     return true;
   }
 
+  /**
+   * simple processing of mesh rendering information:
+   * type fill|nofill|mesh|nomesh|dots|nodots|backlit|frontlit|fullylit
+   * @param data
+   */
+  void setRendering(String data) {
+    line = data.toLowerCase();
+    String[] tokens = getTokens();
+    for (int i = 1; i < tokens.length; i++) { //skip first
+      super.setProperty(tokens[i].intern(),Boolean.TRUE, null);
+    }
+  }
+  
   void resetIsosurface() {
     if (thisMesh == null)
       allocMesh(null);
     thisMesh.clear("isosurface");
+    thisMesh.vertexColixes = null;
+    thisMesh.vertexValues = null;
+    thisMesh.isColorSolid = true;
+    thisMesh.realVertexCount = 0;
     contourVertexCount = 0;
     thisMesh.firstViewableVertex = 0;
-    if (iAddGridPoints) {
-      thisMesh.showPoints = true;
-      thisMesh.hasGridPoints = true;
-    }
-    if (showTriangles) {
-      thisMesh.showTriangles = true;
-    }
+    thisMesh.hasGridPoints = iAddGridPoints;
+    thisMesh.showPoints = iAddGridPoints;
+    thisMesh.showTriangles = showTriangles;
     if (cutoff == Float.MAX_VALUE)
       cutoff = defaultCutoff;
     thisMesh.jvxlSurfaceData = "";
@@ -1263,7 +1291,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     thisMesh.jvxlColorData = "";
     edgeCount = 0;
   }
-
+/*
   void addGridPointCube() {
     thisMesh.firstViewableVertex = thisMesh.vertexCount;
     for (int x = 0; x < voxelCounts[0]; x += 5)
@@ -1273,7 +1301,7 @@ class Isosurface extends IsosurfaceMeshCollection {
           addVertexCopy(pt, 0, false, "");
         }
   }
-  
+*/  
   boolean isJvxl, isApbsDx;
   boolean endOfData;
 
@@ -1613,6 +1641,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       colorFractionBase = ich;
       colorFractionRange = parseInt();
     }
+    cJvxlEdgeNaN = (char)(edgeFractionBase + edgeFractionRange);
     return nSurfaces;
   }
 
@@ -1838,6 +1867,7 @@ class Isosurface extends IsosurfaceMeshCollection {
   int jvxlEdgeDataCount;
   int jvxlColorDataCount;
   boolean jvxlDataIsColorMapped;
+  String jvxlRenderingData;
   //boolean jvxlDataisBicolorMap;
   boolean jvxlDataIsPrecisionColor;
   boolean jvxlWritePrecisionColor;
@@ -1852,6 +1882,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     jvxlDataIsPrecisionColor = false;
     //jvxlDataisBicolorMap = false;
     jvxlWritePrecisionColor = false;
+    cJvxlEdgeNaN = (char) (defaultEdgeFractionBase + defaultEdgeFractionRange);
   }
 
   void jvxlReadDefinitionLine(boolean showMsg) throws Exception {
@@ -1962,8 +1993,11 @@ class Isosurface extends IsosurfaceMeshCollection {
       Logger.info("JVXL read: color red/blue: " + valueMappedToRed + " "
           + valueMappedToBlue);
     }
+    
+    jvxlRenderingData = (line.indexOf("rendering:") >= 0 ? line.substring(line.indexOf("rendering:")+10) : null);      
   }
 
+  
   int nThisValue;
   boolean thisInside;
 
@@ -2112,14 +2146,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     return vPt;
   }
 
-  void initializeMesh(boolean use2Sided) {
-    int vertexCount = thisMesh.vertexCount;
-    thisMesh.isTwoSided = use2Sided;
-    //System0intln("initializeMesh"+use2Sided);
-    Vector3f[] vectorSums = new Vector3f[vertexCount];
-
-    if (!isSilent && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
-      Logger.debug(" initializeMesh " + vertexCount);
+  void initializeMesh(int lighting) {
     /* 
      * OK, so if there is an associated grid point (because the 
      * point is so close to one), we now declare that associated
@@ -2132,6 +2159,10 @@ class Isosurface extends IsosurfaceMeshCollection {
      *  
      */
 
+    int vertexCount = thisMesh.vertexCount;
+    Vector3f[] vectorSums = new Vector3f[vertexCount];
+    if (!isSilent && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+      Logger.debug(" initializeMesh " + vertexCount);
     for (int i = vertexCount; --i >= 0;)
       vectorSums[i] = new Vector3f();
     thisMesh.sumVertexNormals(vectorSums, true);
@@ -2147,13 +2178,7 @@ class Isosurface extends IsosurfaceMeshCollection {
       vectorSums[I.intValue()] = ((Vector3f) assocGridPointNormals
           .get(assocGridPointMap.get(I)));
     }
-    short[] norm = thisMesh.normixes = new short[vertexCount];
-    if (use2Sided)
-      for (int i = vertexCount; --i >= 0;)
-        norm[i] = g3d.get2SidedNormix(vectorSums[i]);
-    else
-      for (int i = vertexCount; --i >= 0;)
-        norm[i] = g3d.getNormix(vectorSums[i]);
+    thisMesh.initializeNormixes(lighting, vectorSums);
   }
 
   ////////////////////////////////////////////////////////////////
@@ -2161,6 +2186,19 @@ class Isosurface extends IsosurfaceMeshCollection {
   ////////////////////////////////////////////////////////////////
 
   //String remainderString;
+  void setColorSchemeSets() {
+    thisMesh.allocVertexColixes();
+    int n = 0;
+    for (int i = 0; i < thisMesh.surfaceSet.length; i++)
+      if (thisMesh.surfaceSet[i] != null) {
+        int c = Graphics3D.getColorArgb(++n);
+        //System.out.println(n + " " + Integer.toHexString(c));
+        short colix = Graphics3D.getColix(c);
+        for (int j = 0; j < thisMesh.vertexCount; j++)
+          if (thisMesh.surfaceSet[i].get(j))
+            thisMesh.vertexColixes[j] = colix; //not black
+      }
+  }
 
   void applyColorScale(IsosurfaceMesh mesh) {
     // ONLY the current mesh now. Previous was just too weird.
@@ -2189,44 +2227,44 @@ class Isosurface extends IsosurfaceMeshCollection {
       list = new StringBuffer();
       list1 = new StringBuffer();
     }
-    int incr = (mesh.hasGridPoints && mesh.jvxlPlane == null ? 3 : 1);
     if (jvxlDataIsPrecisionColor || isContoured)
       jvxlWritePrecisionColor = true;
-    for (int i = 0; i < vertexCount; i += incr) {
+    int iLast = mesh.realVertexCount;
+    int incr = mesh.vertexIncrement; 
+    for (int i = 0; i < iLast; i += incr) {
       float value = getVertexColorValue(mesh, i);
-      if (mesh.firstViewableVertex == 0 || i < mesh.firstViewableVertex) {
-        char ch;
-        if (jvxlWritePrecisionColor) {
-          ch = jvxlValueAsCharacter2(value, min, max, colorFractionBase,
-              colorFractionRange);
-          if (saveColorData)
-            list1.append(remainder);
-          if (logCompression)
-            Logger.debug("setcolor precision "
-                + value
-                + " as '"
-                + ch
-                + jvxlValueFromCharacter2(ch, remainder, min, max,
-                    colorFractionBase, colorFractionRange) + "'/remainder="
-                + remainder + " ");
-        } else {
-          //isColorReversed
-          ch = jvxlValueAsCharacter(value, valueMappedToRed, valueMappedToBlue,
-              colorFractionBase, colorFractionRange);
-          if (logCompression)
-            Logger.info("setcolor noprecision " + value + " as " + ch);
-        }
+      char ch;
+      if (jvxlWritePrecisionColor) {
+        ch = jvxlValueAsCharacter2(value, min, max, colorFractionBase,
+            colorFractionRange);
         if (saveColorData)
-          list.append(ch);
+          list1.append(remainder);
+        if (logCompression)
+          Logger.debug("setcolor precision "
+              + value
+              + " as '"
+              + ch
+              + jvxlValueFromCharacter2(ch, remainder, min, max,
+                  colorFractionBase, colorFractionRange) + "'/remainder="
+              + remainder + " ");
+      } else {
+        //isColorReversed
+        ch = jvxlValueAsCharacter(value, valueMappedToRed, valueMappedToBlue,
+            colorFractionBase, colorFractionRange);
+        if (logCompression)
+          Logger.info("setcolor noprecision " + value + " as " + ch);
       }
+      if (saveColorData)
+        list.append(ch);
     }
     mesh.isJvxlPrecisionColor = jvxlWritePrecisionColor;
-    mesh.jvxlColorData = (saveColorData ? list.append(list1).append('\n').toString() : "");
+    mesh.jvxlColorData = (saveColorData ? list.append(list1).append('\n')
+        .toString() : "");
     if (logMessages)
       Logger.info("color data: " + mesh.jvxlColorData);
   }
 
-  float getVertexColorValue(Mesh mesh, int vertexIndex) {
+  float getVertexColorValue(IsosurfaceMesh mesh, int vertexIndex) {
     float value, datum;
     /* but RETURNS the actual value, not the truncated one
      * right, so what we are doing here is setting a range within the 
@@ -2305,7 +2343,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     return min;
   }
 
-  float getMinMappedValue(Mesh mesh) {
+  float getMinMappedValue(IsosurfaceMesh mesh) {
     int vertexCount = mesh.vertexCount;
     Point3f[] vertexes = mesh.vertices;
     float min = Float.MAX_VALUE;
@@ -2338,7 +2376,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     return max;
   }
 
-  float getMaxMappedValue(Mesh mesh) {
+  float getMaxMappedValue(IsosurfaceMesh mesh) {
     int vertexCount = mesh.vertexCount;
     Point3f[] vertexes = mesh.vertices;
     float max = -Float.MAX_VALUE;
@@ -2415,6 +2453,7 @@ class Isosurface extends IsosurfaceMeshCollection {
                              float x21, float x22) {
     float v1 = x11 + fx * (x12 - x11);
     float v2 = x21 + fx * (x22 - x21);
+    //System.out.println("v1 v2="+v1 + " " + v2 + " fx fy=" + fx + " " + fy + " v=" + (v1 + fy * (v2 - v1)));
     return v1 + fy * (v2 - v1);
   }
 
@@ -2611,21 +2650,21 @@ class Isosurface extends IsosurfaceMeshCollection {
   }
 
   String jvxlGetFile(IsosurfaceMesh mesh, String msg, boolean includeHeader, int nSurfaces) {
-    String data = "";
+    StringBuffer data = new StringBuffer();
     if (includeHeader) {
-      data = mesh.jvxlFileHeader
+      String s = mesh.jvxlFileHeader
           + (nSurfaces > 0 ? (-nSurfaces) + mesh.jvxlExtraLine.substring(2)
               : mesh.jvxlExtraLine);
-      if (!isXLowToHigh && data.indexOf("JVXL") != 0 && data.indexOf("#") != 0)
-        data = "JVXL " + data;
-      else if (isXLowToHigh && data.indexOf("#JVXL+") != 0)
-        data = "#JVXL+\n" + data;
+      data.append(!isXLowToHigh && data.indexOf("JVXL") != 0 && data.indexOf("#") != 0 ?
+        "JVXL ": isXLowToHigh && data.indexOf("#JVXL+") != 0 ? "#JVXL+\n": "");
+      data.append(s);
     }
-    data += "# " + msg + "\n";
+    data.append("# ").append(msg).append('\n');
     if (title != null)
       for (int i = 0; i < title.length; i++)
-        data += "# " + title[i] + "\n";
-    data += mesh.jvxlDefinitionLine + "\n";
+        data.append("# ").append(title[i]).append('\n');
+    String state = mesh.getState(myType);
+    data.append(mesh.jvxlDefinitionLine + " rendering:" + state).append('\n');
     String compressedData = (mesh.jvxlPlane == null ? mesh.jvxlSurfaceData : "");
     if (logMessages)
       Logger.info(" jvxlGetFile: " + mesh.jvxlSurfaceData + "\n"
@@ -2642,11 +2681,14 @@ class Isosurface extends IsosurfaceMeshCollection {
     if (!isJvxl && mesh.nBytes > 0)
       mesh.jvxlCompressionRatio = (int) (((float) mesh.nBytes + mesh.jvxlFileHeader
           .length()) / (data.length() + compressedData.length()));
-    data += compressedData;
+    data.append(compressedData);
     if (msg != null)
-      data += "#-------end of jvxl file data-------\n";
-    data += mesh.jvxlInfoLine + "\n";
-    return data;
+      data.append("#-------end of jvxl file data-------\n");
+    data.append(mesh.jvxlInfoLine).append('\n');
+    int n = (mesh.scriptCommand+";").indexOf(";");
+    data.append("# ").append(mesh.scriptCommand.substring(0, n)).append('\n');
+    data.append("# ").append(state).append('\n');
+    return data.toString();
   }
 
   String jvxlGetDefinitionLine(IsosurfaceMesh mesh, boolean isInfo) {
@@ -3872,6 +3914,23 @@ class Isosurface extends IsosurfaceMeshCollection {
   // contour plane implementation 
   ////////////////////////////////////////////////////////////////
 
+  final static Point3i[] squareVertexOffsets = { new Point3i(0, 0, 0),
+    new Point3i(1, 0, 0), new Point3i(1, 1, 0), new Point3i(0, 1, 0) };
+
+  final static Vector3f[] squareVertexVectors = { new Vector3f(0, 0, 0),
+    new Vector3f(1, 0, 0), new Vector3f(1, 1, 0), new Vector3f(0, 1, 0) };
+
+  final static byte edgeVertexes2d[] = { 0, 1, 1, 2, 2, 3, 3, 0 };
+
+  final static byte insideMaskTable2d[] = { 0, 9, 3, 10, 6, 15, 5, 12, 12, 5,
+    15, 6, 10, 3, 9, 0 };
+
+  // position in the table corresponds to the binary equivalent of which corners are inside
+  // for example, 0th is completely outside; 15th is completely inside;
+  // the 4th entry (0b0100; 2**3), corresponding to only the third corner inside, is 6 (0b1100). 
+  // Bits 2 and 3 are set, so edges 2 and 3 intersect the contour.
+
+
   void generateContourData(boolean iHaveContourVertexesAlready) {
 
     /*
@@ -4100,13 +4159,14 @@ class Isosurface extends IsosurfaceMeshCollection {
     int contourBits;
     //int x, y;
     //Point3f origin;
-    int[] vertexes;
+    final int[] vertexes = new int[4];
+    float[][] fractions;
     int[][] intersectionPoints;
 
     PlanarSquare() {
       edgeMask12 = new int[nContours];
       intersectionPoints = new int[nContours][4];
-      vertexes = new int[4];
+      fractions = new float[nContours][4];
       edgeMask12All = 0;
       contourBits = 0;
       //this.origin = origin;
@@ -4114,9 +4174,11 @@ class Isosurface extends IsosurfaceMeshCollection {
       //this.y = y;
     }
 
-    void setIntersectionPoints(int contourIndex, int[] pts) {
-      for (int i = 0; i < 4; i++)
+    void setIntersectionPoints(int contourIndex, int[] pts, float[] f) {
+      for (int i = 0; i < 4; i++) {
         intersectionPoints[contourIndex][i] = pts[i];
+        fractions[contourIndex][i] = f[i];
+      }
     }
 
     void setVertex(int iV, int pt) {
@@ -4130,7 +4192,8 @@ class Isosurface extends IsosurfaceMeshCollection {
       /*
        * binary abcd abcd vvvv  where abcd is edge intersection mask and
        * vvvv is the inside/outside mask (0-15)
-       * the duplication is so that this can be used efficiently either as  
+       * the duplication is so that this can be used efficiently
+       * in triangulateContourSquare().  
        */
       if (insideMask != 0)
         contourBits |= (1 << contourIndex);
@@ -4238,6 +4301,7 @@ class Isosurface extends IsosurfaceMeshCollection {
        */
       generateContourData(cutoff);
     }
+    thisMesh.realVertexCount = thisMesh.vertexCount;
   }
 
   void generateContourData(float contourCutoff) {
@@ -4253,8 +4317,10 @@ class Isosurface extends IsosurfaceMeshCollection {
      */
 
     int[][] isoPointIndexes2d = new int[squareCountY][4];
+    float[][] squareFractions2d = new float[squareCountY][4];
+    
     for (int i = squareCountY; --i >= 0;)
-      isoPointIndexes2d[i][0] = isoPointIndexes2d[i][1] = isoPointIndexes2d[i][2] = isoPointIndexes2d[i][3] = -1; //new int[4];
+      isoPointIndexes2d[i][0] = isoPointIndexes2d[i][1] = isoPointIndexes2d[i][2] = isoPointIndexes2d[i][3] = -1;
 
     if (Math.abs(contourCutoff) < 0.0001)
       contourCutoff = (contourCutoff <= 0 ? -0.0001f : 0.0001f);
@@ -4262,7 +4328,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     for (int x = squareCountX; --x >= 0;) {
       for (int y = squareCountY; --y >= 0;) {
         int[] pixelPointIndexes = propagateNeighborPointIndexes2d(x, y,
-            isoPointIndexes2d);
+            isoPointIndexes2d, squareFractions2d);
         int insideMask = 0;
         for (int i = 4; --i >= 0;) {
           Point3i offset = squareVertexOffsets[i];
@@ -4284,6 +4350,12 @@ class Isosurface extends IsosurfaceMeshCollection {
         ++contourCount;
         processOneQuadrilateral(insideMask, contourCutoff, pixelPointIndexes,
             x, y);
+
+        //System.out.println(contourIndex + "/" + (x * squareCountY + y) + " " + x + " " + y 
+          //  + " " + (pixelPointIndexes[0]  >= 0 ? squareFractions[0] : -1)
+           // + " " + (pixelPointIndexes[1]  >= 0 ? squareFractions[1] : -1)
+           // + " " + (pixelPointIndexes[2]  >= 0 ? squareFractions[2] : -1)
+           // + " " + (pixelPointIndexes[3]  >= 0 ? squareFractions[3] : -1));
       }
     }
 
@@ -4302,11 +4374,14 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   final int[] nullNeighbor2d = { -1, -1, -1, -1 };
 
-  int[] propagateNeighborPointIndexes2d(int x, int y, int[][] isoPointIndexes2d) {
+  float[] squareFractions;
+  
+  int[] propagateNeighborPointIndexes2d(int x, int y, int[][] isoPointIndexes2d, float[][]squareFractions2d) {
 
     // propagates only the intersection point -- one in the case of a square
 
     int[] pixelPointIndexes = isoPointIndexes2d[y];
+    squareFractions = squareFractions2d[y];
 
     boolean noXNeighbor = (x == squareCountX - 1);
     // the x neighbor is myself from my last pass through here
@@ -4317,11 +4392,17 @@ class Isosurface extends IsosurfaceMeshCollection {
       pixelPointIndexes[3] = -1;
     } else {
       pixelPointIndexes[1] = pixelPointIndexes[3];
+      squareFractions[1] = 1f - squareFractions[3];
     }
 
     // from my y neighbor
     boolean noYNeighbor = (y == squareCountY - 1);
-    pixelPointIndexes[2] = (noYNeighbor ? -1 : isoPointIndexes2d[y + 1][0]);
+    if (noYNeighbor) {
+      pixelPointIndexes[2] = -1;    
+    } else {
+      pixelPointIndexes[2] = isoPointIndexes2d[y + 1][0];
+      squareFractions[2] = 1f - squareFractions2d[y + 1][0];
+    }
 
     // these must always be calculated
     pixelPointIndexes[0] = -1;
@@ -4348,13 +4429,14 @@ class Isosurface extends IsosurfaceMeshCollection {
         calcVertexPoints3d(x, y, vertexA, vertexB);
       else
         calcVertexPoints2d(x, y, vertexA, vertexB);
-      calcContourPoint(cutoff, valueA, valueB, contourPoints[iEdge]);
+      squareFractions[iEdge] = calcContourPoint(cutoff, valueA, valueB, contourPoints[iEdge]);
+      //System.out.println("x y iEdge cutoff A B f " + x + " " + y + " " + iEdge + " :: " + cutoff + " " + valueA + " " + valueB + " " + squareFractions[iEdge]);
       pixelPointIndexes[iEdge] = addVertexCopy(contourPoints[iEdge], cutoff,
           false, "");
     }
     //this must be a square that is involved in this particular contour
     planarSquares[x * squareCountY + y].setIntersectionPoints(contourIndex,
-        pixelPointIndexes);
+        pixelPointIndexes, squareFractions);
   }
 
   final Point3f pixelOrigin = new Point3f();
@@ -4418,51 +4500,155 @@ class Isosurface extends IsosurfaceMeshCollection {
 
   void triangulateContours() {
     thisMesh.vertexColixes = new short[thisMesh.vertexCount];
+    thisMesh.isColorSolid = false;
 
-    for (int i = 0; i < nContours; i++) {
-      if (thisContour <= 0 || thisContour == i + 1)
-        createContourTriangles(i);
-    }
-  }
+    /*
+     * Y
+     *  3 ---c---- 2
+     *  |          |           binar edgeMask is dcba 3210
+     *  |          |           dcba: 1 is intersection
+     *  d          b           3210: 1 is Inside
+     *  |          |                 
+     *  0 ----a--- 1  X
+     *  
+     *  for example:
+     *  
+     *         \
+     *  3 ------c- 2
+     *  |        \ |           edgeMask is 0110 0100
+     *  |         \|           0110: intesection on b and c
+     *  d          b           0100: only vertex 2 is inside
+     *  |          |\_contour
+     *  0 ----a--- 1  
+     *  
+     *  
+     *  we need to go around the loop: 0 a 1 b 2 c 3 d 0
+     *  to construct the polyhedron that will then be 
+     *  turned into a set of triangles.
+     *  
+     *   But what if the square crosses TWO contours?
+     *  
+     *  for example:
+     *  
+     *         \
+     *  3 ------c- 2
+     *  |        \ |           mask(n)   is 1001 1001 1110
+     * \|         \|           mask(n-1) is 0110 0110 0100
+     *  d          b           
+     *  |\         |\_contour n-1
+     *  0 a------- 1  
+     *     \_contour n
+     *  
+     *  In that case, what we do is load bits 8-11 with
+     *  information about the other contour and XOR the two masks:
+     *  
+     *  mask(n)   & 0FF 0000 1001 1110
+     *  mask(n-1) & F0F 0110 0000 0100
+     *                  --------------
+     *  XOR :           0110 1001 1010
+     *  
+     *  This says (1010) that vertices 0 and 2 are outside our contour
+     *  and (1001) that our contour line intersects at a and d
+     *  and (0110) that our inner contour line intersects at b and c
+     *  
+     * The problem is, we don't know the order of the two contours
+     * if they both intersect the same edge.
+     * 
+     *         contour n-1
+     *        \ \
+     *  3 -----c-c 2
+     *  |       \ \|               mask(n)   is 0110 0110 0100
+     *  |        \ b(n-1)          mask(n-1) is 0110 0110 0100
+     *  |         \|\          
+     *  |          b(n)
+     *  0 -------- 1\  
+     *               contour n 
+     *  
+     * Half the time the algorithm will mess up if it has no
+     * additional information, because it will flip the order 
+     * of the edges on BOTH sides of the quadrilateral and so
+     * not properly generate the listing of triangles. 
+     * 
+     * So, how to distinguish the above from the following?
+     * 
+     *         contour n
+     *        \ \
+     *  3 -----c-c 2
+     *  |       \ \|               mask(n)   is 0110 0110 0100
+     *  |        \ b(n)            mask(n-1) is 0110 0110 0100
+     *  |         \|\          
+     *  |          b(n-1)
+     *  0 -------- 1\  
+     *               contour n-1 
+     *  
+     *  The simple solution is "Don't!" Just draw the contour part
+     *  twice, once each way. This is a reasonable alternative. 
+     *  
+     *  Or, we could check the fractional distance for b(n) and
+     *  b(n-1). If f(n) < f(n-1), then we should start with n.
+     *  
+     */
 
-  void createContourTriangles(int contourIndex) {
-    for (int i = 0; i < nSquares; i++) {
-      triangulateContourSquare(i, contourIndex);
-    }
-  }
+    for (int contourIndex = 0; contourIndex < nContours; contourIndex++) {
+      if (thisContour <= 0 || thisContour == contourIndex + 1)
+        for (int squareIndex = 0; squareIndex < nSquares; squareIndex++) {
 
-  void triangulateContourSquare(int squareIndex, int contourIndex) {
-    PlanarSquare square = planarSquares[squareIndex];
-    int edgeMask0 = square.edgeMask12[contourIndex] & 0x00FF;
-    if (edgeMask0 == 0) // all outside
-      return;
+          /*
+           * binary dcba dcba 3210 where dcba is edge intersection mask and
+           * 3210 is the inside/outside mask for the vertices (0-15)
+           */
 
-    // unnecessary inside square?
-    // full square and next contour is also a full square there
-    if (edgeMask0 == 15 && contourIndex + 1 < nContours
-        && square.edgeMask12[contourIndex + 1] == 15)
-      return;
+          PlanarSquare square = planarSquares[squareIndex];
+          int edgeMask0 = square.edgeMask12[contourIndex] & 0xFF;
+          if (edgeMask0 == 0) // all outside
+            continue;
+          // unnecessary inside square drawn by different contour?
+          // full square and also inside next inner contour
+          if (edgeMask0 == 0xF && contourIndex > 0
+              && square.edgeMask12[contourIndex - 1] == 0xF)
+            continue;
 
-    //still working here.... not efficient; stubbornly trying to avoid just
-    // writing the damn triangle table.
-    boolean isOK = true;
-    int edgeMask = edgeMask0;
-    if (contourIndex < nContours - 1) {
-      edgeMask0 = square.edgeMask12[contourIndex + 1];
-      if (edgeMask0 != 0x0F) {
-        isOK = false;
-        if (((edgeMask ^ edgeMask0) & 0xF0) == 0) {
-          isOK = false;
+          //still working here.... not efficient; stubbornly trying to avoid just
+          // writing the damn triangle table.
+
+      //    if (squareIndex != 281 && squareIndex != 303)
+        //    continue;
+          boolean isOK = true;
+          int edgeMask = edgeMask0;
+          if (contourIndex > 0) {
+            edgeMask0 = square.edgeMask12[contourIndex - 1];
+            if (edgeMask0 != 0) {
+              int andMask = (edgeMask & edgeMask0 & 0xF0) >> 4;
+              int orMask = ((edgeMask | edgeMask0) & 0xF0) >> 4;
+//              System.out.println(squareIndex + " " + Integer.toBinaryString(edgeMask) + " " + Integer.toBinaryString(edgeMask0));
+              if (andMask != 0) {
+                //isOK = false;
+                //at least one edge is common
+                for (int i = 0; i < 4; i++)
+                  if ((andMask & (1 << i)) != 0) {
+                    //isOK = false;
+  //                  System.out.println (square.fractions[contourIndex][i] +" " + square.fractions[contourIndex - 1][i]);
+                    if (square.fractions[contourIndex][i] > square.fractions[contourIndex - 1][i]) {
+                      isOK = false;
+                    }
+                    break;
+                  } else if ((orMask & (1 << i)) != 0) {
+                    break;
+                  }
+              }
+              edgeMask ^= edgeMask0 & 0x0F0F;
+            }
+          }
+          if (contourIndex > 0 && edgeMask == 0)
+            continue;
+
+    //      System.out.println("trianglate " + squareIndex + " " + Integer.toBinaryString(edgeMask0) + " " + Integer.toBinaryString(edgeMask));
+
+          fillSquare(square, contourIndex, edgeMask, !isOK);
+ //         if (!isOK) // a lazy hack instead of really figuring out the order
+   //         fillSquare(square, contourIndex, edgeMask, true);
         }
-        edgeMask &= 0x0FF;
-        edgeMask ^= edgeMask0 & 0x0F0F;
-      }
     }
-    if (contourIndex > 0 && edgeMask == 0)
-      return;
-    fillSquare(square, contourIndex, edgeMask, false);
-    if (!isOK) // a lazy hack instead of really figuring out the order
-      fillSquare(square, contourIndex, edgeMask, true);
   }
 
   final int[] triangleVertexList = new int[20];
@@ -4470,34 +4656,51 @@ class Isosurface extends IsosurfaceMeshCollection {
   void fillSquare(PlanarSquare square, int contourIndex, int edgeMask,
                   boolean reverseWinding) {
     int vPt = 0;
-    boolean flip = reverseWinding;
-    int nIntersect = 0;
-    boolean newIntersect;
+    boolean lowerFirst = reverseWinding;
+    int mesh1 = -1, mesh2 = -1;
     for (int i = 0; i < 4; i++) {
-      newIntersect = false;
-      if ((edgeMask & (1 << i)) != 0) {
+      boolean newVertex = ((edgeMask & (1 << i)) != 0);
+      boolean thisIntersect = ((edgeMask & (1 << (4 + i))) != 0);
+      boolean lowerIntersect = ((edgeMask & (1 << (8 + i))) != 0);
+      boolean lowerLast = false;
+      
+      //this vertex inside?
+      
+      if (newVertex) {
         triangleVertexList[vPt++] = square.vertexes[i];
       }
-      //order here needs to be considered for when Edges(A)==Edges(B)
-      //for proper winding -- isn't up to snuff
 
-      if (flip && (edgeMask & (1 << (8 + i))) != 0) {
-        nIntersect++;
-        newIntersect = true;
-        triangleVertexList[vPt++] = square.intersectionPoints[contourIndex + 1][i];
+      //intersection of next lower contour on this edge?
+      if (lowerFirst && lowerIntersect) {
+        lowerLast = true;
+        triangleVertexList[vPt++] = square.intersectionPoints[contourIndex - 1][i];
       }
-      if ((edgeMask & (1 << (4 + i))) != 0) {
-        nIntersect++;
-        newIntersect = true;
-        triangleVertexList[vPt++] = square.intersectionPoints[contourIndex][i];
+      
+      //intersection point of this contour on this edge?
+      
+      if (thisIntersect) {
+        lowerLast = false;
+        int pt = triangleVertexList[vPt++] = square.intersectionPoints[contourIndex][i];
+        if (mesh1 < 0)
+          mesh1 = pt;
+        else
+          mesh2 = pt;
       }
-      if (!flip && (edgeMask & (1 << (8 + i))) != 0) {
-        nIntersect++;
-        newIntersect = true;
-        triangleVertexList[vPt++] = square.intersectionPoints[contourIndex + 1][i];
+      
+      //intersection of next lower contour on this edge?
+
+      if (!lowerFirst && lowerIntersect) {
+        lowerLast = true;
+        triangleVertexList[vPt++] = square.intersectionPoints[contourIndex - 1][i];
       }
-      if (nIntersect == 2 && newIntersect)
-        flip = !flip;
+      if (lowerLast && newVertex)
+        lowerFirst = true;
+      if (thisIntersect && newVertex)
+        lowerFirst = false;
+      if (thisIntersect && !lowerLast)
+        lowerFirst = false;
+      if (thisIntersect && lowerLast)
+        lowerFirst = true;
     }
     /*
      Logger.debug("\nfillSquare (" + square.x + " " + square.y + ") "
@@ -4507,54 +4710,26 @@ class Isosurface extends IsosurfaceMeshCollection {
      + dumpIntArray(square.intersectionPoints[contourIndex], 4));
      Logger.debug(dumpIntArray(triangleVertexList, vPt));
      */
-    createTriangleSet(vPt);
+    createTriangleSet(vPt, mesh1, mesh2);
   }
 
-  void createTriangleSet(int nVertex) {
+  void createTriangleSet(int nVertex, int mesh1, int mesh2) {
     int k = triangleVertexList[1];
     for (int i = 2; i < nVertex; i++) {
-      thisMesh.addTriangleCheck(triangleVertexList[0], k, triangleVertexList[i], 7);
+      int iA = triangleVertexList[0];
+      int iB = k;
+      int iC = triangleVertexList[i];
+      int check = (iA == mesh1 && iB == mesh2 || iB == mesh1 && iA == mesh2 ? 1
+          : iB == mesh1 && iC == mesh2 || iC == mesh1 && iB == mesh2 ? 2
+              : iA == mesh1 && iC == mesh2 || iC == mesh1 && iA == mesh2 ? 4
+                  : 0);
+      thisMesh.addTriangleCheck(iA, iB, iC, check);
       k = triangleVertexList[i];
     }
   }
 
-  final static Point3i[] squareVertexOffsets = { new Point3i(0, 0, 0),
-      new Point3i(1, 0, 0), new Point3i(1, 1, 0), new Point3i(0, 1, 0) };
-
-  final static Vector3f[] squareVertexVectors = { new Vector3f(0, 0, 0),
-      new Vector3f(1, 0, 0), new Vector3f(1, 1, 0), new Vector3f(0, 1, 0) };
-
-  final static byte edgeVertexes2d[] = { 0, 1, 1, 2, 2, 3, 3, 0 };
-
-  final static byte insideMaskTable2d[] = { 0, 9, 3, 10, 6, 15, 5, 12, 12, 5,
-      15, 6, 10, 3, 9, 0 };
-
-  // position in the table corresponds to the binary equivalent of which corners are inside
-  // for example, 0th is completely outside; 15th is completely inside;
-  // the 4th entry (0b0100; 2**3), corresponding to only the third corner inside, is 6 (0b1100). 
-  // Bits 2 and 3 are set, so edges 2 and 3 intersect the contour.
-
-  ////////// debug utility methods /////////
-
-  String dumpArray(String msg, float[][] A, int x1, int x2, int y1, int y2) {
-    String s = "dumpArray: " + msg + "\n";
-    for (int x = x1; x <= x2; x++)
-      s += "\t*" + x + "*";
-    for (int y = y2; y >= y1; y--) {
-      s += "\n*" + y + "*";
-      for (int x = x1; x <= x2; x++)
-        s += "\t" + (x < A.length && y < A[x].length ? A[x][y] : Float.NaN);
-    }
-    return s;
-  }
-
-  String dumpIntArray(int[] A, int n) {
-    String str = "";
-    for (int i = 0; i < n; i++)
-      str += " " + A[i];
-    return str;
-  }
-
+ /////////////////////////
+  
   void voxelPtToXYZ(int x, int y, int z, Point3f pt) {
     pt.scaleAdd(x, volumetricVectors[0], volumetricOrigin);
     pt.scaleAdd(y, volumetricVectors[1], pt);
@@ -5528,7 +5703,7 @@ class Isosurface extends IsosurfaceMeshCollection {
           invalidateSurfaceSet(i);
       }
 
-    thisMesh.invalidateTriangles();
+    thisMesh.updateSurfaceData(cJvxlEdgeNaN);
     if (!doExclude)
       surfaceSet = null;
   }
@@ -5686,7 +5861,7 @@ class Isosurface extends IsosurfaceMeshCollection {
           for (int z = 0; z < nPointsZ; ++z)
             if (voxelData[x][y][z] == Float.MAX_VALUE)
               voxelData[x][y][z] = Float.NaN;
-    } else {
+    } else {  //solvent planes just focus on negative values
       maxValue = 0.001f;
       for (int x = 0; x < nPointsX; ++x)
         for (int y = 0; y < nPointsY; ++y)
@@ -6013,8 +6188,7 @@ class Isosurface extends IsosurfaceMeshCollection {
     thisMesh.title = title;
     thisMesh.jvxlDefinitionLine = jvxlGetDefinitionLine(thisMesh, false);
     thisMesh.jvxlInfoLine = jvxlGetDefinitionLine(thisMesh, true);
-    if (script != null)
-      thisMesh.scriptCommand = fixScript();
+    thisMesh.scriptCommand = fixScript();
   }
 
   Vector getShapeDetail() {
@@ -6133,4 +6307,26 @@ class Isosurface extends IsosurfaceMeshCollection {
     surfaceSet[a].or(surfaceSet[b]);
     surfaceSet[b] = null;
   }
+  
+  ////////// debug utility methods /////////
+
+  String dumpArray(String msg, float[][] A, int x1, int x2, int y1, int y2) {
+    String s = "dumpArray: " + msg + "\n";
+    for (int x = x1; x <= x2; x++)
+      s += "\t*" + x + "*";
+    for (int y = y2; y >= y1; y--) {
+      s += "\n*" + y + "*";
+      for (int x = x1; x <= x2; x++)
+        s += "\t" + (x < A.length && y < A[x].length ? A[x][y] : Float.NaN);
+    }
+    return s;
+  }
+
+  String dumpIntArray(int[] A, int n) {
+    String str = "";
+    for (int i = 0; i < n; i++)
+      str += " " + A[i];
+    return str;
+  }
+
 }

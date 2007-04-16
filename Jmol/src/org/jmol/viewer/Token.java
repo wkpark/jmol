@@ -712,6 +712,9 @@ public class Token {
   final static int notriangles  = misc | 83;
   final static int frontonly    = misc | 84;
   final static int notfrontonly = misc | 85;
+  final static int frontlit     = misc | 86;
+  final static int backlit      = misc | 87;
+  final static int fullylit     = misc | 88;
 
   // predefined Tokens: 
   
@@ -1063,6 +1066,9 @@ public class Token {
     "noTriangles",  new Token(notriangles),
     "frontOnly",    new Token(frontonly),
     "notFrontOnly", new Token(notfrontonly),
+    "frontlit",     new Token(frontlit),
+    "backlit",      new Token(backlit),
+    "fullylit",     new Token(fullylit),
     "vanderWaals",  new Token(vanderwaals),
     "vdw",          null,
     "ionic",        new Token(ionic),

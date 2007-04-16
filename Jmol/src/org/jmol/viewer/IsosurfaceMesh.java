@@ -24,9 +24,13 @@
 
 package org.jmol.viewer;
 
+import java.util.BitSet;
+
+import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.ArrayUtil;
 
 class IsosurfaceMesh extends Mesh {
   String jvxlFileHeader;
@@ -48,11 +52,55 @@ class IsosurfaceMesh extends Mesh {
   float cutoff;
   int nBytes;
   int nContours;  
+  boolean hideBackground;
+  int realVertexCount;
+  int vertexIncrement = 1;
+  int firstViewableVertex;
+  boolean hasGridPoints;
 
+  BitSet[] surfaceSet;
+  float[] vertexValues;  
+  short[] vertexColixes;
+  
   IsosurfaceMesh(String thisID, Graphics3D g3d, short colix) {
     super(thisID, g3d, colix);
   }
 
+  void allocVertexColixes() {
+    if (vertexColixes == null) {
+      vertexColixes = new short[vertexCount];
+      for (int i = vertexCount; --i >= 0; )
+        vertexColixes[i] = colix;
+    }
+    isColorSolid = false;
+  }
+
+  int addVertexCopy(Point3f vertex, float value) {
+    if (vertexCount == 0)
+      vertexValues = new float[SEED_COUNT];
+    else if (vertexCount >= vertexValues.length)
+      vertexValues = (float[]) ArrayUtil.doubleLength(vertexValues);
+    vertexValues[vertexCount] = value;
+    return addVertexCopy(vertex);
+  }
+
+  void setTranslucent(boolean isTranslucent, float iLevel) {
+    super.setTranslucent(isTranslucent, iLevel);
+    if (vertexColixes != null)
+      for (int i = vertexCount; --i >= 0; )
+        vertexColixes[i] =
+          Graphics3D.getColixTranslucent(vertexColixes[i], isTranslucent, iLevel);
+  }
+
+  void updateSurfaceData(char isNaN) {
+    invalidateTriangles();
+    char[] chars = jvxlEdgeData.toCharArray();
+    for (int i = 0; i < realVertexCount; i+= vertexIncrement)
+      if (Float.isNaN(vertexValues[i]))
+          chars[i] = isNaN;
+    jvxlEdgeData = String.copyValueOf(chars);
+  }
+  
   void invalidateTriangles() {
     for (int i = polygonCount; --i >= 0;) {
       int[] vertexIndexes = polygonIndexes[i];
@@ -67,5 +115,15 @@ class IsosurfaceMesh extends Mesh {
     }
   }
   
-
+  void addTriangleCheck(int vertexA, int vertexB, int vertexC, int check) {
+    if (vertexValues != null && (Float.isNaN(vertexValues[vertexA])||Float.isNaN(vertexValues[vertexB])||Float.isNaN(vertexValues[vertexC])))
+      return;
+    if (Float.isNaN(vertices[vertexA].x)||Float.isNaN(vertices[vertexB].x)||Float.isNaN(vertices[vertexC].x))
+      return;
+    if (polygonCount == 0)
+      polygonIndexes = new int[SEED_COUNT][];
+    else if (polygonCount == polygonIndexes.length)
+      polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
+    polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC, check};
+  }
 }

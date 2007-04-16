@@ -31,64 +31,103 @@ import org.jmol.util.Logger;
 
 class IsosurfaceRenderer extends MeshRenderer {
 
-  boolean iShowNormals;
-  boolean iHideBackground;
-  boolean isContoured;
-  boolean isPlane;
-  boolean isBicolorMap;
-  short backgroundColix;
-  int renderCount;
-  int nError = 0;
-  
+  private boolean iShowNormals;
+  private boolean iHideBackground;
+  private boolean isContoured;
+  private boolean isPlane;
+  private boolean isBicolorMap;
+  private short backgroundColix;
+  private boolean isTranslucent;
+  private int nError = 0;
+  private float[] vertexValues;
+
+  IsosurfaceMesh imesh;
+
   void render() {
     iShowNormals = viewer.getTestFlag4();
-    renderCount++;
-    renderSurface();
-  }
-
-  void renderSurface() {
     Isosurface isosurface = (Isosurface) shape;
     for (int i = isosurface.meshCount; --i >= 0;)
-      render1((IsosurfaceMesh) isosurface.meshes[i]);
+      render1(imesh = (IsosurfaceMesh) isosurface.meshes[i]);
+  }
+
+  void transform() {
+    vertexValues = imesh.vertexValues;
+    for (int i = vertexCount; --i >= 0;) {
+      if (vertexValues == null || !Float.isNaN(vertexValues[i])
+          || imesh.hasGridPoints) {
+        viewer.transformPoint(vertices[i], screens[i]);
+        //System.out.println(i + " meshRender " + vertices[i] + screens[i]);
+      }
+    }
   }
   
-  boolean render1(IsosurfaceMesh mesh) {
-    iHideBackground = (isPlane && mesh.hideBackground);
+  void render2() {
+    isTranslucent = Graphics3D.isColixTranslucent(imesh.colix);
+    iHideBackground = (isPlane && imesh.hideBackground);
     if (iHideBackground)
       backgroundColix = Graphics3D.getColix(viewer.getBackgroundArgb());
-   isPlane = (mesh.jvxlPlane != null);
-   isContoured = mesh.isContoured;
-   isBicolorMap = mesh.isBicolorMap;    
-    return renderMesh(mesh);
-  }  
+    isPlane = (imesh.jvxlPlane != null);
+    isContoured = imesh.isContoured;
+    isBicolorMap = imesh.isBicolorMap;
+    super.render2();
+  }
   
-  /**
-   * NOTE-- IF YOU CHANGE THIS SET OF PARAMETERS, 
-   * YOU MUST CHANGE THEM IN MeshRenderer.java
-   * 
-   * @param mesh
-   * @param fill
-   * @param iShowTriangles
-   * @param frontOnly
-   */
-  void renderTriangles(Mesh mesh, boolean fill, boolean iShowTriangles,
-                       boolean frontOnly) {
-    int[][] polygonIndexes = mesh.polygonIndexes;
-    short[] normixes = mesh.normixes;
-    short colix = mesh.colix;
-    short[] vertexColixes = mesh.vertexColixes;
+  private final Point3f ptTemp = new Point3f();
+  private final Point3i ptTempi = new Point3i();
+
+  void renderPoints() {
+    for (int i = imesh.realVertexCount; --i >= 0;) {
+      if (vertexValues != null && Float.isNaN(vertexValues[i])
+          || frontOnly && transformedVectors[normixes[i]].z < 0)
+        continue;
+      if (imesh.vertexColixes != null)
+        g3d.setColix(imesh.vertexColixes[i]);
+      g3d.fillSphereCentered(4, screens[i]);
+    }
+    if (!imesh.hasGridPoints)
+      return;
+    int iFirst = imesh.firstViewableVertex;
+    if (iFirst > 0 || !isContoured) {
+      g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
+          Graphics3D.GRAY, true, 0.5f) : Graphics3D.GRAY);
+      if (iFirst > 0)
+        for (int i = 0; i < iFirst; i++)
+          g3d.fillSphereCentered(2, screens[i]);
+      if (!isContoured)
+        for (int i = 1; i < vertexCount; i += 3)
+          g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 1, screens[i],
+              screens[i + 1]);
+    }
+    g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
+        Graphics3D.YELLOW, true, 0.5f) : Graphics3D.YELLOW);
+    for (int i = 1; i < vertexCount; i += 3)
+      g3d.fillSphereCentered(4, screens[i]);
+
+    g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
+        Graphics3D.BLUE, true, 0.5f) : Graphics3D.BLUE);
+    for (int i = 2; i < vertexCount; i += 3)
+      g3d.fillSphereCentered(4, screens[i]);
+  }
+
+  void renderTriangles(boolean fill, boolean iShowTriangles) {
+    int[][] polygonIndexes = imesh.polygonIndexes;
+    short colix = imesh.colix;
+    short[] vertexColixes = imesh.vertexColixes;
     short hideColix = 0;
     try {
-      hideColix = vertexColixes[mesh.polygonIndexes[0][0]];
+      hideColix = vertexColixes[imesh.polygonIndexes[0][0]];
     } catch (Exception e) {
     }
-    g3d.setColix(mesh.colix);
+    g3d.setColix(imesh.colix);
     //System.out.println("Isosurface renderTriangle polygoncount = "
     //  + mesh.polygonCount + " screens: " + screens.length + " normixes: "
     //+ normixes.length);
-    for (int i = mesh.polygonCount; --i >= 0;) {
+    // two-sided means like a plane, with no front/back distinction
+    for (int i = imesh.polygonCount; --i >= 0;) {
       //if (!mesh.isPolygonDisplayable(i))
       // continue;
+      //if (i !=20)
+        //continue;
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes == null)
         continue;
@@ -98,18 +137,13 @@ class IsosurfaceRenderer extends MeshRenderer {
       short nA = normixes[iA];
       short nB = normixes[iB];
       short nC = normixes[iC];
-      if (frontOnly && (nA < 0 || nB < 0 || nC < 0))
-        frontOnly = false;
+      //if (frontOnly && (nA < 0 || nB < 0 || nC < 0))
+        //frontOnly = false;
       //if (frontOnly)
       //System.out.println(renderCount+": "+iA + " " + transformedVectors[normixes[iA]] + ", "+iB + " " + transformedVectors[normixes[iB]] + ", "+iC + " " + transformedVectors[normixes[iC]]);
       if (frontOnly && transformedVectors[nA].z < 0
           && transformedVectors[nB].z < 0 && transformedVectors[nC].z < 0)
         continue;
-      if (mesh.insideOut) {
-        nA = g3d.getInverseNormix(nA);
-        nB = g3d.getInverseNormix(nB);
-        nC = g3d.getInverseNormix(nC);
-      }
       short colixA, colixB, colixC;
       if (vertexColixes != null) {
         colixA = vertexColixes[iA];
@@ -117,7 +151,7 @@ class IsosurfaceRenderer extends MeshRenderer {
         colixC = vertexColixes[iC];
         if (isBicolorMap && (colixA != colixB || colixB != colixC))
           continue;
-        //System.out.println("meshrender " + colixA + " " + colixB + " " + colixC);
+        //System.out.println("meshrender " + iA + " " + iB + " " + iC + " " + colixA + " " + colixB + " " + colixC);
       } else {
         colixA = colixB = colixC = colix;
       }
@@ -146,7 +180,7 @@ class IsosurfaceRenderer extends MeshRenderer {
           }
         }
         if (iShowNormals)
-          renderNormals(mesh);
+          renderNormals();
       } else {
         int check = vertexIndexes[3];
         if (check == 0)
@@ -160,37 +194,7 @@ class IsosurfaceRenderer extends MeshRenderer {
     }
   }
 
-  final Point3f ptTemp = new Point3f();
-  final Point3i ptTempi = new Point3i();
-
-  void renderPoints(Mesh mesh) {
-    super.renderPoints(mesh);
-    int iFirst = mesh.firstViewableVertex;
-    if (!mesh.hasGridPoints)
-      return;
-    if (iFirst > 0 || !isContoured) {
-      g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
-          Graphics3D.GRAY, true, 0.5f) : Graphics3D.GRAY);
-      if (iFirst > 0)
-        for (int i = 0; i < iFirst; i++)
-          g3d.fillSphereCentered(2, screens[i]);
-      if (!isContoured)
-        for (int i = 1; i < vertexCount; i += 3)
-          g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 1, screens[i],
-              screens[i + 1]);
-    }
-    g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
-        Graphics3D.YELLOW, true, 0.5f) : Graphics3D.YELLOW);
-    for (int i = 1; i < vertexCount; i += 3)
-      g3d.fillSphereCentered(4, screens[i]);
-
-    g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
-        Graphics3D.BLUE, true, 0.5f) : Graphics3D.BLUE);
-    for (int i = 2; i < vertexCount; i += 3)
-      g3d.fillSphereCentered(4, screens[i]);
-  }
-
-  void renderNormals(Mesh mesh) {
+  private void renderNormals() {
     //Logger.debug("mesh renderPoints: " + vertexCount);
     if (!g3d.setColix(Graphics3D.WHITE))
       return;

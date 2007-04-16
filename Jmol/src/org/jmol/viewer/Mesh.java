@@ -24,91 +24,39 @@
 
 package org.jmol.viewer;
 
-import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
-
-import java.util.Hashtable;
-
 import org.jmol.g3d.*;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
-import java.util.BitSet;
 
 class Mesh {
   
   final static String PREVIOUS_MESH_ID = "+PREVIOUS_MESH+";
+  final static int FRONTLIT = 0;
+  final static int BACKLIT = 1;
+  final static int FULLYLIT = 2;
 
+  Graphics3D g3d;
+  
   String[] title = null;
   String thisID;
   boolean isValid = true;
   String scriptCommand;
-  boolean hasGridPoints;
-  boolean hideBackground;
-  boolean insideOut;
-  BitSet[] surfaceSet;
-  int firstViewableVertex;
-  int lastViewableVertex;
-  
+ 
   boolean visible = true;
   short colix;
-  short[] vertexColixes;
-  Graphics3D g3d;
-    
   int vertexCount;
   Point3f[] vertices;
-  float[] vertexValues;
   short[] normixes;
   int polygonCount;  // negative number indicates hermite curve
   int[][] polygonIndexes = null;
   
-  int drawVertexCount;
-  int[] drawVertexCounts;
   float scale = 1;
   int diameter;
   Point3f ptCenter = new Point3f(0,0,0);
-  Point3f ptCenters[];
-  Vector3f axis = new Vector3f(1,0,0);
-  Vector3f axes[];
   String meshType = null;
   
-  final static int DRAW_MULTIPLE = -1;
-  final static int DRAW_NONE = 0;
-  final static int DRAW_ARROW = 1;
-  final static int DRAW_CIRCLE = 2;
-  final static int DRAW_CURVE = 3;
-  final static int DRAW_LINE = 4;
-  final static int DRAW_PLANE = 5;
-  final static int DRAW_POINT = 6;
-  final static int DRAW_TRIANGLE = 7;
-  final static int ISOSURFACE_BICOLOR = 8;
-  
-  int drawType = DRAW_TRIANGLE;
-  int[] drawTypes;
-  
-
-  String getDrawType() {
-    switch (drawType) {
-    case Mesh.DRAW_MULTIPLE:
-      return "multiple";
-    case Mesh.DRAW_ARROW:
-      return "arrow";
-    case Mesh.DRAW_CIRCLE:
-      return "circle";
-    case Mesh.DRAW_CURVE:
-      return "curve";
-    case Mesh.DRAW_POINT:
-      return "point";
-    case Mesh.DRAW_LINE:
-      return "line";
-    case Mesh.DRAW_TRIANGLE:
-      return "triangle";
-    case Mesh.DRAW_PLANE:
-      return "plane";
-    }
-    return "type is not identified in mesh.getDrawType()";
-  }
-
   int atomIndex = -1;
   int modelIndex = -1;  // for Isosurface and Draw
   int visibilityFlags;
@@ -120,6 +68,7 @@ class Mesh {
   boolean showTriangles = false; //as distinct entitities
   boolean frontOnly = false;
   boolean isTwoSided = true;
+  boolean isColorSolid = true;
   
   static int SEED_COUNT = 25; //optimized for cartoon mesh hermites
   
@@ -137,49 +86,55 @@ class Mesh {
     vertexCount = polygonCount = 0;
     scale = 1;
     vertices = null;
-    vertexColixes = null;
     polygonIndexes = null;
     this.meshType = meshType;
   }
 
-  void initialize() {
-    initialize(true);
-  }
+  int lighting = Mesh.FRONTLIT;
   
-  void initialize(boolean use2Sided) {
-    isTwoSided = use2Sided;
+  void initialize(int lighting) {
     Vector3f[] vectorSums = new Vector3f[vertexCount];
     for (int i = vertexCount; --i >= 0;)
       vectorSums[i] = new Vector3f();
     sumVertexNormals(vectorSums, false);
     normixes = new short[vertexCount];
-    if (use2Sided)
-      for (int i = vertexCount; --i >= 0;)
-        normixes[i] = g3d.get2SidedNormix(vectorSums[i]);
-    else
-      for (int i = vertexCount; --i >= 0;)
-        normixes[i] = g3d.getNormix(vectorSums[i]);
+    initializeNormixes(lighting, vectorSums);
   }
 
-  void offset(Vector3f offset) {
+  void initializeNormixes(int lighting, Vector3f[] vectorSums) {
+    isTwoSided = (lighting == Mesh.FULLYLIT);
+    normixes = new short[vertexCount];
     for (int i = vertexCount; --i >= 0;)
-      vertices[i].add(offset);
+      normixes[i] = g3d.getNormix(vectorSums[i]);
+    this.lighting = Mesh.FRONTLIT;
+    setLighting(lighting);  
   }
-
-  void allocVertexColixes() {
-    if (vertexColixes == null) {
-      vertexColixes = new short[vertexCount];
-      for (int i = vertexCount; --i >= 0; )
-        vertexColixes[i] = colix;
+  
+  void setLighting(int lighting) {
+     if (lighting == this.lighting)
+      return;
+    switch (lighting < 0 ? this.lighting : lighting) {
+    case BACKLIT:
+      if (this.lighting == FULLYLIT)
+        setLighting(-1);
+      for (int i = vertexCount; --i >= 0;)
+        normixes[i] = g3d.getInverseNormix(normixes[i]);
+      break;
+    case FULLYLIT:
+      if (lighting == BACKLIT)
+        setLighting(-1); //reverses previous
+      for (int i = vertexCount; --i >= 0;)
+        normixes[i] = (short)~normixes[i];
+      break;
+    case FRONTLIT:
+      setLighting(-1); //reverses previous
+      break;
     }
+    this.lighting = lighting;
   }
-
+  
   void setTranslucent(boolean isTranslucent, float iLevel) {
     colix = Graphics3D.getColixTranslucent(colix, isTranslucent, iLevel);
-    if (vertexColixes != null)
-      for (int i = vertexCount; --i >= 0; )
-        vertexColixes[i] =
-          Graphics3D.getColixTranslucent(vertexColixes[i], isTranslucent, iLevel);
   }
 
   final Vector3f vAB = new Vector3f();
@@ -210,12 +165,6 @@ class Mesh {
     }
   }
 
-  void setVertexCount(int vertexCount) {
-    this.vertexCount = vertexCount;
-    vertices = new Point3f[vertexCount];
-    vertexValues = new float[vertexCount];
-  }
-
   void setPolygonCount(int polygonCount) {
     //Logger.debug("Mesh setPolygonCount" + polygonCount);
     this.polygonCount = polygonCount;
@@ -223,15 +172,6 @@ class Mesh {
       return;
     if (polygonIndexes == null || polygonCount > polygonIndexes.length)
       polygonIndexes = new int[polygonCount][];
-  }
-
-  int addVertexCopy(Point3f vertex, float value) {
-    if (vertexCount == 0)
-      vertexValues = new float[SEED_COUNT];
-    else if (vertexCount >= vertexValues.length)
-      vertexValues = (float[]) ArrayUtil.doubleLength(vertexValues);
-    vertexValues[vertexCount] = value;
-    return addVertexCopy(vertex);
   }
 
   int addVertexCopy(Point3f vertex) {
@@ -245,27 +185,11 @@ class Mesh {
   }
 
   void addTriangle(int vertexA, int vertexB, int vertexC) {
-    if (vertexValues != null && (Float.isNaN(vertexValues[vertexA])||Float.isNaN(vertexValues[vertexB])||Float.isNaN(vertexValues[vertexC])))
-      return;
-    if (Float.isNaN(vertices[vertexA].x)||Float.isNaN(vertices[vertexB].x)||Float.isNaN(vertices[vertexC].x))
-      return;
     if (polygonCount == 0)
       polygonIndexes = new int[SEED_COUNT][];
     else if (polygonCount == polygonIndexes.length)
       polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
     polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC};
-  }
-
-  void addTriangleCheck(int vertexA, int vertexB, int vertexC, int check) {
-    if (vertexValues != null && (Float.isNaN(vertexValues[vertexA])||Float.isNaN(vertexValues[vertexB])||Float.isNaN(vertexValues[vertexC])))
-      return;
-    if (Float.isNaN(vertices[vertexA].x)||Float.isNaN(vertices[vertexB].x)||Float.isNaN(vertices[vertexC].x))
-      return;
-    if (polygonCount == 0)
-      polygonIndexes = new int[SEED_COUNT][];
-    else if (polygonCount == polygonIndexes.length)
-      polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
-    polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC, check};
   }
 
   void addQuad(int vertexA, int vertexB, int vertexC, int vertexD) {
@@ -280,56 +204,37 @@ class Mesh {
     this.colix = colix;
   }
 
-  void checkForDuplicatePoints(float cutoff) {
-    //not implemented
-    float cutoff2 = cutoff * cutoff;
-    for (int i = vertexCount; --i >= 0; )
-      for (int j = i; --j >= 0; ) {
-        float dist2 = vertices[i].distanceSquared(vertices[j]);
-        if ((dist2 < cutoff2) && Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-          Logger.debug("Mesh.checkForDuplicates " +
-                             vertices[i] + "<->" + vertices[j] +
-                             " : " + Math.sqrt(dist2));
-        }
-      }
-  }
-  
-  Hashtable getShapeDetail() {
-    return null;
-  }
-  
- final  boolean isPolygonDisplayable(int index) {
-    return (polygonIndexes[index].length > 0 
-        && (modelIndex == index || modelFlags == null 
-            || modelFlags[index] != 0)); 
-  }
-  
-  final void setCenter(int iModel) {
-    Point3f center = new Point3f(0, 0, 0);
-    int iptlast = -1;
-    int ipt = 0;
-    int n = 0;
-    for (int i = polygonCount; --i >= 0;) {
-      if (iModel >=0 && i != iModel)
-        continue;
-      iptlast = -1;
-      for (int iV = polygonIndexes[i].length; --iV >= 0;) {
-        ipt = polygonIndexes[i][iV];
-        if (ipt == iptlast)
-          continue;
-        iptlast = ipt;
-        center.add(vertices[ipt]);
-        n++;
-      }
-      if (n > 0 && (i == iModel || i == 0)) {
-        center.scale(1.0f / n);
-        break;
-      }
-    }
-    if (iModel < 0){
-      ptCenter = center;
-    } else {
-      ptCenters[iModel] = center;
-    }
+  /*
+   void checkForDuplicatePoints(float cutoff) {
+   //not implemented
+   float cutoff2 = cutoff * cutoff;
+   for (int i = vertexCount; --i >= 0; )
+   for (int j = i; --j >= 0; ) {
+   float dist2 = vertices[i].distanceSquared(vertices[j]);
+   if ((dist2 < cutoff2) && Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+   Logger.debug("Mesh.checkForDuplicates " +
+   vertices[i] + "<->" + vertices[j] +
+   " : " + Math.sqrt(dist2));
+   }
+   }
+   }
+   Hashtable getShapeDetail() {
+   return null;
+   }
+   */
+
+  String getState(String type) {
+    StringBuffer s = new StringBuffer(type);
+    s.append(fillTriangles ? " fill" : " noFill");
+    s.append(drawTriangles ? " mesh" : " noMesh");
+    s.append(showPoints ? " dots" : " noDots");
+    s.append(frontOnly ? " frontOnly" : " notFrontOnly");
+    if (showTriangles)
+      s.append(" triangles");
+    s.append(lighting == BACKLIT ? " backlit"
+        : lighting == FULLYLIT ? " fullylit" : " frontlit");
+    if (!visible)
+      s.append(" off");
+    return s.toString();
   }
 }

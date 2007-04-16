@@ -32,6 +32,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.g3d.Graphics3D;
 
@@ -39,6 +40,20 @@ class Draw extends MeshCollection {
 
   // bob hanson hansonr@stolaf.edu 3/2006
 
+  DrawMesh[] dmeshes = new DrawMesh[4];
+  DrawMesh thisMesh;
+  
+  void allocMesh(String thisID) {
+    meshes = dmeshes = (DrawMesh[])ArrayUtil.ensureLength(dmeshes, meshCount + 1);
+    currentMesh = thisMesh = dmeshes[meshCount++] = new DrawMesh(thisID, g3d, colix);
+  }
+
+  void setPropertySuper(String propertyName, Object value, BitSet bs) {
+    currentMesh = thisMesh;
+    super.setProperty(propertyName, value, bs);
+    thisMesh = (DrawMesh)currentMesh;  
+  }
+  
   void initShape() {
     super.initShape();
     myType = "draw";
@@ -71,7 +86,6 @@ class Draw extends MeshCollection {
   boolean isRotated45;
   boolean isCrossed;
   boolean isValid;
-  String title;
 
   void setProperty(String propertyName, Object value, BitSet bs) {
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
@@ -90,12 +104,11 @@ class Draw extends MeshCollection {
       diameter = 0;
       bsAllAtoms.clear();
       rgb = null;
-      title = null;
       offset = new Vector3f();
       if (colix == 0)
         colix = Graphics3D.GOLD;
-      super.setProperty("thisID", null, null);
-      return;
+      setPropertySuper("thisID", Mesh.PREVIOUS_MESH_ID, null);
+      //fall through to MeshCollection "init"
     }
 
     if ("colorRGB" == propertyName) {
@@ -120,13 +133,6 @@ class Draw extends MeshCollection {
 
     if ("plane" == propertyName) {
       isPlane = true;
-      return;
-    }
-
-    if ("title" == propertyName) {
-      title = (String) value;
-      if (title.length() == 0)
-        title = null;
       return;
     }
 
@@ -172,10 +178,10 @@ class Draw extends MeshCollection {
       newScale = ((Integer) value).floatValue() / 100;
       if (newScale == 0)
         newScale = 0.01f; // very tiny but still sizable;
-      if (currentMesh != null) {
+      if (thisMesh != null) {
         // no points in this script statement
-        scaleDrawing(currentMesh, newScale);
-        currentMesh.initialize();
+        scaleDrawing(thisMesh, newScale);
+        thisMesh.initialize(Mesh.FULLYLIT);
       }
       return;
     }
@@ -212,8 +218,8 @@ class Draw extends MeshCollection {
 
     if ("offset" == propertyName) {
       offset = new Vector3f((Point3f) value);
-      if (currentMesh != null)
-        currentMesh.offset(offset);
+      if (thisMesh != null)
+        thisMesh.offset(offset);
       return;
     }
 
@@ -226,20 +232,20 @@ class Draw extends MeshCollection {
       return;
     }
     if ("set" == propertyName) {
-      if (currentMesh == null) {
+      if (thisMesh == null) {
         allocMesh(null);
-        currentMesh.colix = colix;
+        thisMesh.colix = colix;
       }
-      currentMesh.isValid = (isValid ? setDrawing() : false);
-      if (currentMesh.isValid) {
-        if (currentMesh.vertexCount > 2 && length != Float.MAX_VALUE
+      thisMesh.isValid = (isValid ? setDrawing() : false);
+      if (thisMesh.isValid) {
+        if (thisMesh.vertexCount > 2 && length != Float.MAX_VALUE
             && newScale == 1)
           newScale = length;
-        scaleDrawing(currentMesh, newScale);
-        currentMesh.initialize();
-        setAxes(currentMesh);
-        currentMesh.title = (title == null ? null : new String[] {title});
-        currentMesh.visible = isVisible; 
+        scaleDrawing(thisMesh, newScale);
+        thisMesh.initialize(Mesh.FULLYLIT);
+        setAxes(thisMesh);
+        thisMesh.title = title;
+        thisMesh.visible = isVisible; 
       }
       nPoints = -1; // for later scaling
       return;
@@ -249,14 +255,14 @@ class Draw extends MeshCollection {
       //let pass through
     }
 
-    super.setProperty(propertyName, value, bs);
+    setPropertySuper(propertyName, value, bs);
   }
 
   Object getProperty(String property, int index) {
     if (property == "command")
-      return getDrawCommand(currentMesh);
+      return getDrawCommand(thisMesh);
     if (property == "vertices")
-      return getPath(currentMesh);
+      return getPath(thisMesh);
     if (property.indexOf("getSpinCenter:") == 0)
       return getSpinCenter(property.substring(14), index);
     if (property.indexOf("getSpinAxis:") == 0)
@@ -281,9 +287,9 @@ class Draw extends MeshCollection {
   }
   
   boolean setDrawing() {
-    if (currentMesh == null)
+    if (thisMesh == null)
       allocMesh(null);
-    currentMesh.clear("draw");
+    thisMesh.clear("draw");
     if (nPoints == 0)
       return false;
     int nPoly = 0;
@@ -291,17 +297,17 @@ class Draw extends MeshCollection {
       // make just ONE copy 
       // arrows and curves simply can't be handled as
       // multiple frames yet
-      currentMesh.modelIndex = viewer.getDisplayModelIndex();
-      if (currentMesh.modelIndex < 0)
-        currentMesh.modelIndex = 0;
+      thisMesh.modelIndex = viewer.getDisplayModelIndex();
+      if (thisMesh.modelIndex < 0)
+        thisMesh.modelIndex = 0;
       if (isFixed && !isArrow && !isCurve && modelCount > 1)
-        currentMesh.modelIndex = -1;
-      currentMesh.setPolygonCount(1);
-      currentMesh.ptCenters = null;
-      currentMesh.modelFlags = null;
-      currentMesh.drawTypes = null;
-      currentMesh.drawVertexCounts = null;
-      currentMesh.diameter = diameter;
+        thisMesh.modelIndex = -1;
+      thisMesh.setPolygonCount(1);
+      thisMesh.ptCenters = null;
+      thisMesh.modelFlags = null;
+      thisMesh.drawTypes = null;
+      thisMesh.drawVertexCounts = null;
+      thisMesh.diameter = diameter;
       if (rgb != null)
         super.setProperty("color", rgb, null);
       addModelPoints(-1);
@@ -313,35 +319,35 @@ class Draw extends MeshCollection {
         bsAllModels = viewer.getModelBitSet(bsAllAtoms);
       else if (nidentifiers > 0)
         for (int i = 0; i < nidentifiers; i++)
-          for (int j = meshes[ptIdentifiers[i]].polygonCount; --j >= 0;)
+          for (int j = dmeshes[ptIdentifiers[i]].polygonCount; --j >= 0;)
             bsAllModels.set(j);
       else
         bsAllModels = viewer.getVisibleFramesBitSet();
-      currentMesh.setPolygonCount(modelCount);
-      currentMesh.ptCenters = new Point3f[modelCount];
-      currentMesh.modelFlags = new int[modelCount];
-      currentMesh.drawTypes = new int[modelCount];
-      currentMesh.drawVertexCounts = new int[modelCount];
+      thisMesh.setPolygonCount(modelCount);
+      thisMesh.ptCenters = new Point3f[modelCount];
+      thisMesh.modelFlags = new int[modelCount];
+      thisMesh.drawTypes = new int[modelCount];
+      thisMesh.drawVertexCounts = new int[modelCount];
 
       for (int iModel = 0; iModel < modelCount; iModel++) {
         if (bsAllModels.get(iModel)) {
           addModelPoints(iModel);
           setPolygons(nPoly);
-          currentMesh.setCenter(iModel);
-          currentMesh.drawTypes[iModel] = currentMesh.drawType;
-          currentMesh.drawVertexCounts[iModel] = currentMesh.drawVertexCount;
-          currentMesh.drawType = Mesh.DRAW_MULTIPLE;
-          currentMesh.drawVertexCount = -1;
+          thisMesh.setCenter(iModel);
+          thisMesh.drawTypes[iModel] = thisMesh.drawType;
+          thisMesh.drawVertexCounts[iModel] = thisMesh.drawVertexCount;
+          thisMesh.drawType = DrawMesh.DRAW_MULTIPLE;
+          thisMesh.drawVertexCount = -1;
         } else {
-          currentMesh.drawTypes[iModel] = Mesh.DRAW_NONE;
-          currentMesh.polygonIndexes[iModel] = new int[0];
+          thisMesh.drawTypes[iModel] = DrawMesh.DRAW_NONE;
+          thisMesh.polygonIndexes[iModel] = new int[0];
         }
         nPoly++;
       }
     }
-    currentMesh.setCenter(-1);
-    if (currentMesh.thisID == null) {
-      currentMesh.thisID = currentMesh.getDrawType() + (++nUnnamed);
+    thisMesh.setCenter(-1);
+    if (thisMesh.thisID == null) {
+      thisMesh.thisID = thisMesh.getDrawType() + (++nUnnamed);
     }
     return true;
   }
@@ -359,7 +365,7 @@ class Draw extends MeshCollection {
     // {x,y,z} points are already defined in ptList
     // $drawID references may be fixed or not
     for (int i = 0; i < nidentifiers; i++) {
-      Mesh m = meshes[ptIdentifiers[i]];
+      DrawMesh m = dmeshes[ptIdentifiers[i]];
       if (isPlane || isPerpendicular || useVertices[i]) {
         if (reversePoints[i]) {
           if (iModel < 0 || iModel >= m.polygonCount)
@@ -405,23 +411,23 @@ class Draw extends MeshCollection {
       ptList[1].set(ptList[2]);
       ptList[2].set(pt);
     }
-    return setPolygon(currentMesh, nPoints, nPoly);
+    return setPolygon(thisMesh, nPoints, nPoly);
   }
 
   final Vector3f vAB = new Vector3f();
   final Vector3f vAC = new Vector3f();
 
-  private int setPolygon(Mesh mesh, int nVertices, int nPoly) {
+  private int setPolygon(DrawMesh mesh, int nVertices, int nPoly) {
     /*
      * for now, just add all new vertices. It's simpler this way
      * though a bit redundant. We could reuse the fixed ones -- no matter
      */
 
-    int drawType = Mesh.DRAW_POINT;
+    int drawType = DrawMesh.DRAW_POINT;
     if ((isCurve || isArrow || isCircle) && nVertices >= 2)
-      drawType = (isCurve ? Mesh.DRAW_CURVE : isArrow ? Mesh.DRAW_ARROW
-          : Mesh.DRAW_CIRCLE);
-    if (drawType == Mesh.DRAW_POINT) {
+      drawType = (isCurve ? DrawMesh.DRAW_CURVE : isArrow ? DrawMesh.DRAW_ARROW
+          : DrawMesh.DRAW_CIRCLE);
+    if (drawType == DrawMesh.DRAW_POINT) {
       Point3f pt;
       Point3f center = new Point3f();
       Vector3f normal = new Vector3f();
@@ -510,10 +516,10 @@ class Draw extends MeshCollection {
       case 1:
         break;
       case 2:
-        drawType = Mesh.DRAW_LINE;
+        drawType = DrawMesh.DRAW_LINE;
         break;
       default:
-        drawType = Mesh.DRAW_PLANE;
+        drawType = DrawMesh.DRAW_PLANE;
       }
     }
     mesh.drawType = drawType;
@@ -536,7 +542,7 @@ class Draw extends MeshCollection {
     return nPoly + 1;
   }
 
-  private void scaleDrawing(Mesh mesh, float newScale) {
+  private void scaleDrawing(DrawMesh mesh, float newScale) {
     /*
      * allows for Draw to scale object
      * have to watch out for double-listed vertices
@@ -569,7 +575,7 @@ class Draw extends MeshCollection {
   }
 
   final Point3f getSpinCenter(int meshIndex, int modelIndex) {
-    Mesh m = meshes[meshIndex];
+    DrawMesh m = dmeshes[meshIndex];
     if (m.vertices == null)
       return null;
     Point3f pt = (m.ptCenters == null || modelIndex < 0 ? m.ptCenter : m.ptCenters[modelIndex]);
@@ -578,13 +584,13 @@ class Draw extends MeshCollection {
   }
   
   final Vector3f getSpinAxis(int meshIndex, int modelIndex) {
-    Mesh m = meshes[meshIndex];
+    DrawMesh m = dmeshes[meshIndex];
     if (m.vertices == null)
       return null;
     return (m.ptCenters == null || modelIndex < 0 ? m.axis : m.axes[modelIndex]);
   }
   
-  final void setAxes(Mesh m) {
+  final void setAxes(DrawMesh m) {
     m.axis = new Vector3f(0, 0, 0);
     m.axes = new Vector3f[m.polygonCount > 0 ? m.polygonCount : 1];
     if (m.vertices == null)
@@ -619,7 +625,7 @@ class Draw extends MeshCollection {
      * you say "frame 0" it is just turning on all the mads.
      */
     for (int i = 0; i < meshCount; i++) {
-      Mesh m = meshes[i];
+      DrawMesh m = dmeshes[i];
       m.visibilityFlags = (m.isValid && m.visible ? myVisibilityFlag : 0);
       if (m.modelIndex >= 0 && !bs.get(m.modelIndex)) {
         m.visibilityFlags = 0;
@@ -634,7 +640,7 @@ class Draw extends MeshCollection {
   
   final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 10 * 10;
 
-  Mesh pickedMesh = null;
+  DrawMesh pickedMesh = null;
   int pickedModel;
   int pickedVertex;
   final Point3i ptXY = new Point3i();
@@ -682,7 +688,7 @@ class Draw extends MeshCollection {
     case MouseManager.ALT_LEFT:
       move2D(pickedMesh, pickedMesh.polygonIndexes[pickedModel], pickedVertex,
           prevX + deltaX, prevY + deltaY, moveAll);
-      currentMesh = pickedMesh;
+      thisMesh = pickedMesh;
       break;
     case MouseManager.ALT_SHIFT_LEFT:
       // reserved -- constrained move?
@@ -691,7 +697,7 @@ class Draw extends MeshCollection {
     return true;
   }
   
-  void move2D(Mesh mesh, int[] vertexes, int iVertex, int x, int y,
+  void move2D(DrawMesh mesh, int[] vertexes, int iVertex, int x, int y,
               boolean moveAll) {
     if (vertexes == null || vertexes.length == 0)
       return;
@@ -728,8 +734,8 @@ class Draw extends MeshCollection {
     pickedVertex = 0;
     pickedMesh = null;
     for (int i = 0; i < meshCount; i++) {
-      Mesh m = meshes[i];
-      if ((isPicking || m.drawType == Mesh.DRAW_LINE || m.drawType == Mesh.DRAW_MULTIPLE)
+      DrawMesh m = dmeshes[i];
+      if ((isPicking || m.drawType == DrawMesh.DRAW_LINE || m.drawType == DrawMesh.DRAW_MULTIPLE)
           && m.visibilityFlags != 0) {
         int mCount = (m.modelFlags == null ? 1 : modelCount);
         for (int iModel = mCount; --iModel >= 0;) {
@@ -759,31 +765,31 @@ class Draw extends MeshCollection {
     return (d2 < dmin2 ? d2 : -1);
   }
   
-  private String getDrawCommand(Mesh mesh) {
+  private String getDrawCommand(DrawMesh mesh) {
     int nVertices = 0;
     if (mesh == null)
       return "no current draw object";
     StringBuffer str = new StringBuffer("draw " + mesh.thisID);
     switch (mesh.drawType) {
-    case Mesh.DRAW_MULTIPLE:
+    case DrawMesh.DRAW_MULTIPLE:
       return getDrawCommand(mesh, -1);
-    case Mesh.DRAW_ARROW:
+    case DrawMesh.DRAW_ARROW:
       str.append(" ARROW");
       break;
-    case Mesh.DRAW_CIRCLE:
+    case DrawMesh.DRAW_CIRCLE:
       str.append(" CIRCLE"); //not yet implemented
       break;
-    case Mesh.DRAW_CURVE:
+    case DrawMesh.DRAW_CURVE:
       str.append(" CURVE");
       break;
-    case Mesh.DRAW_LINE:
+    case DrawMesh.DRAW_LINE:
       nVertices += 2;
       break;
-    case Mesh.DRAW_POINT:
+    case DrawMesh.DRAW_POINT:
       nVertices++;
       break;
-    case Mesh.DRAW_TRIANGLE:
-    case Mesh.DRAW_PLANE:
+    case DrawMesh.DRAW_TRIANGLE:
+    case DrawMesh.DRAW_PLANE:
     }
     int modelIndex = viewer.getDisplayModelIndex();
     if (modelIndex < 0)
@@ -811,7 +817,7 @@ class Draw extends MeshCollection {
     return str;
   }
   
-  String getDrawCommand(Mesh mesh, int iModel) {
+  String getDrawCommand(DrawMesh mesh, int iModel) {
     StringBuffer str = new StringBuffer();
     if (iModel < 0) {
       for (int i = 0; i < modelCount; i++)
@@ -823,27 +829,27 @@ class Draw extends MeshCollection {
     if (modelCount > 1)
       str.append("frame ").append(nFrame).append(";");
     str.append("draw ").append(mesh.thisID).
-        append(mesh.drawType == Mesh.DRAW_MULTIPLE ? "_" + iModel : "");
+        append(mesh.drawType == DrawMesh.DRAW_MULTIPLE ? "_" + iModel : "");
     switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
-    case Mesh.DRAW_NONE:
+    case DrawMesh.DRAW_NONE:
       return "";
-    case Mesh.DRAW_ARROW:
+    case DrawMesh.DRAW_ARROW:
       str.append(" ARROW");
       break;
-    case Mesh.DRAW_CIRCLE:
+    case DrawMesh.DRAW_CIRCLE:
       str.append(" CIRCLE"); //not yet implemented
       break;
-    case Mesh.DRAW_CURVE:
+    case DrawMesh.DRAW_CURVE:
       str.append(" CURVE");
       break;
-    case Mesh.DRAW_LINE:
+    case DrawMesh.DRAW_LINE:
       nVertices += 2;
       break;
-    case Mesh.DRAW_POINT:
+    case DrawMesh.DRAW_POINT:
       nVertices++;
       break;
-    case Mesh.DRAW_TRIANGLE:
-    case Mesh.DRAW_PLANE:
+    case DrawMesh.DRAW_TRIANGLE:
+    case DrawMesh.DRAW_PLANE:
     }
     String s = getVertexList(mesh, iModel, nVertices);
     if (mesh.diameter > 0)
@@ -864,7 +870,7 @@ class Draw extends MeshCollection {
     if (nPoints == 0)
       return V;
     for (int i = 0; i < meshCount; i++) {
-      Mesh mesh = meshes[i];
+      DrawMesh mesh = dmeshes[i];
       if (mesh.vertexCount == 0)
         continue;
       Hashtable info = new Hashtable();
@@ -874,7 +880,7 @@ class Draw extends MeshCollection {
       if (mesh.diameter > 0)
         info.put("diameter", new Integer(mesh.diameter));
       info.put("scale", new Float(mesh.scale));
-      if (mesh.drawType == Mesh.DRAW_MULTIPLE) {
+      if (mesh.drawType == DrawMesh.DRAW_MULTIPLE) {
         Vector m = new Vector();
         for (int k = 0; k < modelCount; k++) {
           if (mesh.ptCenters[k] == null)
@@ -891,7 +897,7 @@ class Draw extends MeshCollection {
           for (int ipt = 0; ipt < nPoints; ipt++)
             v.add(mesh.vertices[mesh.polygonIndexes[k][ipt]]);
           mInfo.put("vertices", v);
-          if (mesh.drawTypes[k] == Mesh.DRAW_LINE) {
+          if (mesh.drawTypes[k] == DrawMesh.DRAW_LINE) {
             float d = mesh.vertices[mesh.polygonIndexes[k][0]]
                 .distance(mesh.vertices[mesh.polygonIndexes[k][1]]);
             mInfo.put("length_Ang", new Float(d));
@@ -908,7 +914,7 @@ class Draw extends MeshCollection {
         for (int j = 0; j < mesh.vertexCount; j++)
           v.add(mesh.vertices[j]);
         info.put("vertices", v);
-        if (mesh.drawType == Mesh.DRAW_LINE)
+        if (mesh.drawType == DrawMesh.DRAW_LINE)
           info.put("length_Ang", new Float(mesh.vertices[0]
               .distance(mesh.vertices[1])));
       }
@@ -922,7 +928,7 @@ class Draw extends MeshCollection {
     if (nPoints == 0)
       return "";
     for (int i = 0; i < meshCount; i++) {
-      Mesh mesh = meshes[i];
+      DrawMesh mesh = dmeshes[i];
       if (mesh.vertexCount == 0)
         continue;
       s.append(getDrawCommand(mesh, mesh.modelIndex));

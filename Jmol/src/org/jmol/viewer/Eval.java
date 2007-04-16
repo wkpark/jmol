@@ -7936,8 +7936,8 @@ class Eval { //implements Runnable {
     return true;
   }
 
-  void setMoData(int shape, int moNumber, int offset, int modelIndex, String title)
-      throws ScriptException {
+  void setMoData(int shape, int moNumber, int offset, int modelIndex,
+                 String title) throws ScriptException {
     if (isSyntaxCheck)
       return;
     if (modelIndex == 0)
@@ -7961,13 +7961,17 @@ class Eval { //implements Runnable {
         evalError(GT._("Only one molecular orbital is available in this file"));
       if (offset != Integer.MAX_VALUE) {
         // 0: HOMO;
-        for (int i = 0; i < nOrb; i++) {
-          Hashtable mo = (Hashtable)mos.get(i);
-          if (!mo.containsKey("occupancy"))
-            evalError(GT._("no MO occupancy data available"));
-          if (((Integer)mo.get("occupancy")).intValue() == 0) {
-            lastMoNumber = moNumber = (i + 1) + offset - 1;
-            break;
+        if (moData.containsKey("HOMO")) {
+          lastMoNumber = moNumber = ((Integer)moData.get("HOMO")).intValue() + offset;
+        } else {
+          for (int i = 0; i < nOrb; i++) {
+            Hashtable mo = (Hashtable) mos.get(i);
+            if (!mo.containsKey("occupancy"))
+              evalError(GT._("no MO occupancy data available"));
+            if (((Integer) mo.get("occupancy")).intValue() == 0) {
+              lastMoNumber = moNumber = i + offset;
+              break;
+            }
           }
         }
         Logger.info("MO " + moNumber);
@@ -8237,10 +8241,6 @@ class Eval { //implements Runnable {
           propertyName = "sign";
           propertyValue = Boolean.TRUE;
           colorRangeStage = 1;
-          break;
-        }
-        if (str.equalsIgnoreCase("INSIDEOUT")) { // no longer of use?
-          propertyName = "insideOut";
           break;
         }
         if (str.equalsIgnoreCase("REVERSECOLOR")) {
@@ -8559,6 +8559,18 @@ class Eval { //implements Runnable {
       //fall through
     case Token.notfrontonly:
       propertyName = "frontOnly";
+      break;
+    case Token.frontlit:
+      propertyName = "lighting";
+      propertyValue = new Integer(Mesh.FRONTLIT);
+      break;
+    case Token.backlit:
+      propertyName = "lighting";
+      propertyValue = new Integer(Mesh.BACKLIT);
+      break;
+    case Token.fullylit:
+      propertyName = "lighting";
+      propertyValue = new Integer(Mesh.FULLYLIT);
       break;
     case Token.opaque:
     case Token.translucent:

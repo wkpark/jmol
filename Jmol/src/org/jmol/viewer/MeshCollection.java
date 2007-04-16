@@ -43,6 +43,8 @@ abstract class MeshCollection extends Shape {
   int nUnnamed;
   short colix;
   String myType;
+  boolean explicitID;
+  String[] title;
 
   private Mesh setMesh(String thisID) {
     if (thisID == null) {
@@ -89,8 +91,44 @@ abstract class MeshCollection extends Shape {
      }
      */
 
+    if ("init" == propertyName) {
+      title = null;
+      return;
+    }
+
     if ("thisID" == propertyName) {
-      setMesh((String) value);
+      String id = (String) value;
+      setMesh(id);
+      explicitID = !id.equals(Mesh.PREVIOUS_MESH_ID);
+      return;
+    }
+
+    if ("title" == propertyName) {
+      if (value == null) {
+        title = null;
+      } else if (value instanceof String[]) {
+        title = (String[]) value;
+      } else {
+        int nLine = 1;
+        String lines = (String) value;
+        for (int i = lines.length(); --i >= 0;)
+          if (lines.charAt(i) == '|')
+            nLine++;
+        title = new String[nLine];
+        nLine = 0;
+        int i0 = -1;
+        for (int i = 0; i < lines.length(); i++)
+          if (lines.charAt(i) == '|') {
+            title[nLine++] = lines.substring(i0 + 1, i);
+            i0 = i;
+          }
+        title[nLine] = lines.substring(i0 + 1);
+      }
+      return;
+    }
+
+    if ("delete" == propertyName) {
+      deleteMesh();
       return;
     }
 
@@ -122,53 +160,19 @@ abstract class MeshCollection extends Shape {
       return;
     }
 
-    if ("background" == propertyName) {
-      boolean doHide = !((Boolean) value).booleanValue();
-      if (currentMesh != null)
-        currentMesh.hideBackground = doHide;
-      else {
-        for (int i = meshCount; --i >= 0;)
-          meshes[i].hideBackground = doHide;
-      }
-      return;
-    }
-    if ("title" == propertyName) {
-      if (currentMesh != null) {
-        currentMesh.title = (String[]) value;
-      }
-      return;
-    }
-
     if ("color" == propertyName) {
-      if (value instanceof String && ((String) value).equals("sets")) {
-        currentMesh.allocVertexColixes();
-        int n = 0;
-        for (int i = 0; i < currentMesh.surfaceSet.length; i++)
-          if (currentMesh.surfaceSet[i] != null) {
-            int c = Graphics3D.getColorArgb(++n);
-            //System.out.println(n + " " + Integer.toHexString(c));
-            short colix = Graphics3D.getColix(c);
-            for (int j = 0; j < currentMesh.vertexCount; j++)
-              if (currentMesh.surfaceSet[i].get(j))
-                currentMesh.vertexColixes[j] = colix; //not black
-          }
+      if (value == null)
         return;
-      }
-      if (value != null) {
-        colix = Graphics3D.getColix(value);
-        if (currentMesh != null) {
-          currentMesh.colix = colix;
-          currentMesh.vertexColixes = null;
-        } else {
-          for (int i = meshCount; --i >= 0;) {
-            Mesh mesh = meshes[i];
-            mesh.colix = colix;
-            mesh.vertexColixes = null;
-          }
-        }
+      colix = Graphics3D.getColix(value);
+      if (currentMesh != null) {
+        currentMesh.colix = colix;
+      } else {
+        for (int i = meshCount; --i >= 0;)
+          meshes[i].colix = colix;
       }
       return;
-    }
+    }   
+
     if ("translucency" == propertyName) {
       boolean isTranslucent = (((String) value).equals("translucent"));
       if (currentMesh != null)
@@ -179,8 +183,9 @@ abstract class MeshCollection extends Shape {
       }
       return;
     }
-    if ("dots" == propertyName) {
-      boolean showDots = (value == Boolean.TRUE);
+    boolean test;
+    if ((test = ("nodots" == propertyName)) || "dots" == propertyName) {
+      boolean showDots = (!test && value == Boolean.TRUE);
       if (currentMesh != null)
         currentMesh.showPoints = showDots;
       else {
@@ -189,8 +194,9 @@ abstract class MeshCollection extends Shape {
       }
       return;
     }
-    if ("mesh" == propertyName) {
-      boolean showMesh = (value == Boolean.TRUE);
+
+    if ((test = ("nomesh" == propertyName)) || "mesh" == propertyName) {
+      boolean showMesh = (!test && value == Boolean.TRUE);
       if (currentMesh != null)
         currentMesh.drawTriangles = showMesh;
       else {
@@ -199,6 +205,18 @@ abstract class MeshCollection extends Shape {
       }
       return;
     }
+
+    if ((test = ("nofill" == propertyName)) || "fill" == propertyName) {
+      boolean showFill = (!test && value == Boolean.TRUE);
+      if (currentMesh != null)
+        currentMesh.fillTriangles = showFill;
+      else {
+        for (int i = meshCount; --i >= 0;)
+          meshes[i].fillTriangles = showFill;
+      }
+      return;
+    }
+
     if ("triangles" == propertyName) {
       boolean showTriangles = (value == Boolean.TRUE);
       if (currentMesh != null)
@@ -221,21 +239,20 @@ abstract class MeshCollection extends Shape {
       return;
     }
 
-    if ("fill" == propertyName) {
-      boolean showFill = (value == Boolean.TRUE);
+    if ((test = ("lighting" == propertyName))
+        || Compiler.isOneOf(propertyName, "backlit;frontlit;fulllit")) {
+      int lighting = (test ? ((Integer) value).intValue()
+          : "frontlit" == propertyName ? Mesh.FRONTLIT
+              : "backlit" == propertyName ? Mesh.BACKLIT : Mesh.FULLYLIT);
       if (currentMesh != null)
-        currentMesh.fillTriangles = showFill;
+        currentMesh.setLighting(lighting);
       else {
         for (int i = meshCount; --i >= 0;)
-          meshes[i].fillTriangles = showFill;
+          meshes[i].setLighting(lighting);
       }
       return;
     }
-    if ("delete" == propertyName) {
-      deleteMesh();
-      return;
-    }
-
+    
     super.setProperty(propertyName, value, bs);
   }
 
@@ -245,37 +262,41 @@ abstract class MeshCollection extends Shape {
     if (property == "ID")
       return (currentMesh == null ? (String) null : currentMesh.thisID);
     if (property == "list") {
-      String s = "";
+      StringBuffer sb = new StringBuffer();
       int k = 0;
       for (int i = 0; i < meshCount; i++) {
         if (meshes[i] == null || meshes[i].vertexCount == 0)
           continue;
         Mesh m = meshes[i];
-        s += (++k) + " id:" + m.thisID + "; vertices:" + m.vertexCount
-            + "; polygons: " + m.polygonCount
-            + "; visible:" + m.visible; 
-        if (m.title != null)
+        sb.append((++k)).append(" id:"+m.thisID).append("; vertices:" + m.vertexCount).append("; polygons:" + m.polygonCount).append("; visible:" + m.visible); 
+        if (m.title != null) {
+          String s = "";
           for (int j = 0; j < m.title.length; j++)
-            s += (j == 0 ? "; title: " : " | ") + m.title[j];
-        s += "\n";
+            s += (j == 0 ? "; title:" : " | ") + m.title[j];
+          if (s.length() > 100)
+            s = s.substring(0, 100) + "...";
+          sb.append(s);
+        }
+        sb.append('\n');
       }
-      return s;
+      return sb.toString();
     }
     return null;
   }
 
   private void deleteMesh() {
-    if (currentMesh != null) {
+    if (explicitID && currentMesh != null) {
       int iCurrent;
       for (iCurrent = meshCount; meshes[--iCurrent] != currentMesh; )
         {}
       deleteMesh(iCurrent);
-      currentMesh = null; 
     } else {
       for (int i = meshCount; --i >= 0; )
         meshes[i] = null;
       meshCount = 0;
+      nUnnamed = 0;
     }
+    currentMesh = null; 
   }
 
   void deleteMesh(int i) {
@@ -292,12 +313,6 @@ abstract class MeshCollection extends Shape {
         return i;
     }
     return -1; 
-  }
-  
-  void setID(Mesh mesh, String id) {
-    if (mesh == null)
-      return;
-    mesh.thisID = id;
   }
   
   void setModelIndex(int atomIndex, int modelIndex) {
@@ -328,30 +343,11 @@ abstract class MeshCollection extends Shape {
         appendCmd(s, "frame " + viewer.getModelNumber(mesh.modelIndex));
       s.append(cmd).append("\n");
       if (cmd.charAt(0) != '#') {
-        s.append(getMeshState(mesh, myType));
-        if (mesh.vertexColixes == null)
+        appendCmd(s, mesh.getState(myType));
+        if (mesh.isColorSolid)
           appendCmd(s, getColorCommand("$" + mesh.thisID, mesh.colix));
       }
     }
-    return s.toString();
-  }
-
-  String getMeshState(Mesh mesh, String type) {
-    StringBuffer s = new StringBuffer();
-    if (mesh == null)
-      return "";
-    if (mesh.showPoints)
-      appendCmd(s, type + " dots");
-    if (mesh.drawTriangles)
-      appendCmd(s, type + " mesh");
-    if (!mesh.fillTriangles)
-      appendCmd(s, type + " noFill");
-    if (mesh.showTriangles)
-      appendCmd(s, type + " triangles");
-    if (mesh.frontOnly)
-      appendCmd(s, type + " frontOnly");
-    if (!mesh.visible)
-      appendCmd(s, type + " off");
     return s.toString();
   }
   

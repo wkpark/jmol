@@ -27,17 +27,17 @@ import java.text.NumberFormat;
 
 class MolecularOrbitalRenderer extends IsosurfaceRenderer {
 
-  NumberFormat nf;
-  byte fid;
+  private NumberFormat nf;
+  private byte fid;
 
-  void renderSurface() {
+  void render() {
     MolecularOrbital mo = (MolecularOrbital) shape;
     for (int i = mo.meshCount; --i >= 0;)
-      if (render1(mo.meshes[i]))
-        renderInfo(mo.meshes[i]);
+      if (render1(imesh = (IsosurfaceMesh) mo.meshes[i]))
+        renderInfo();
   }
 
-  void renderInfo(Mesh mesh) {
+  private void renderInfo() {
     if (mesh == null || !g3d.setColix(viewer.getColixBackgroundContrast()))
         return;
     if (nf == null) {
@@ -59,10 +59,11 @@ class MolecularOrbitalRenderer extends IsosurfaceRenderer {
         }
   }
 
-  String nfformat(float x) {
+  /*
+  private String nfformat(float x) {
     if (nf == null)
       return "" + x;
     return nf.format(x);
   }
-
+*/
 }

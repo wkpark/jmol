@@ -24,10 +24,4 @@
 package org.jmol.viewer;
 
 class LcaoCartoonRenderer extends IsosurfaceRenderer {
-
-  void render() {
-    LcaoCartoon ao = (LcaoCartoon) shape;
-    for (int i = ao.meshCount; --i >= 0;)
-      render1(ao.meshes[i]);
-  }
 }

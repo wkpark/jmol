@@ -24,10 +24,4 @@
 package org.jmol.viewer;
 
 class PmeshRenderer extends MeshRenderer {
-
-  void render() {
-    Pmesh pmesh = (Pmesh) shape;
-    for (int i = pmesh.meshCount; --i >= 0;)
-      render1(pmesh.meshes[i]);
-  }
 }

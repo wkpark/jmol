@@ -40,13 +40,13 @@ class LcaoCartoon extends Isosurface {
     myType = "lcaoCartoon";
   }
   
-  Integer lcaoColorPos = null;
-  Integer lcaoColorNeg = null;
+  Integer lcaoColorPos;
+  Integer lcaoColorNeg;
   String thisType;
-  Float lcaoScale = null; //actually, we need to reset this one.
+  Float lcaoScale;
   int myColorPt;
   String lcaoID;
-  BitSet thisSet = null;
+  BitSet thisSet;
   boolean isMolecular;
 
   void setProperty(String propertyName, Object value, BitSet bs) {

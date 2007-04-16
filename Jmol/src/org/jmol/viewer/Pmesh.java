@@ -45,10 +45,9 @@ class Pmesh extends MeshFileCollection {
       isFixed = false;
       modelIndex = -1;
       isOnePerLine = false;
-      script = (String)value;
-      
-      super.setProperty("thisID", null, null);
-      return;
+      script = (String)value;    
+      super.setProperty("thisID", Mesh.PREVIOUS_MESH_ID, null);
+      //fall through to MeshCollection "init"
     }
     
     if ("modelIndex" == propertyName) {
@@ -63,8 +62,8 @@ class Pmesh extends MeshFileCollection {
     }
 
     if ("bufferedReaderOnePerLine" == propertyName) {
-      propertyName = "bufferedReader";
       isOnePerLine = true;
+      propertyName = "bufferedReader";
     }  
   
     if ("bufferedReader" == propertyName) {
@@ -74,10 +73,12 @@ class Pmesh extends MeshFileCollection {
       currentMesh.clear("pmesh");
       currentMesh.isValid = readPmesh(br);
       if(currentMesh.isValid) {
-        currentMesh.initialize();
+        currentMesh.initialize(Mesh.FULLYLIT);
         currentMesh.visible = true;
+        currentMesh.title = title;
       }
       setModelIndex(-1, modelIndex);
+      return;
     }
     
     super.setProperty(propertyName, value, bs);
@@ -110,9 +111,10 @@ class Pmesh extends MeshFileCollection {
   }
 
   void readVertexCount(BufferedReader br) throws Exception {
-    currentMesh.setVertexCount(0);
-    int n = parseInt(br.readLine());
-    currentMesh.setVertexCount(n);
+    currentMesh.vertexCount = 0;
+    currentMesh.vertices = new Point3f[0];
+    currentMesh.vertexCount = (currentMesh.vertices = 
+      new Point3f[parseInt(br.readLine())]).length;
   }
 
   void readVertices(BufferedReader br) throws Exception {
@@ -169,5 +171,6 @@ class Pmesh extends MeshFileCollection {
       throw new NullPointerException();
     }
     return vertices;
-  }  
+  }
+  
 }

@@ -79,6 +79,9 @@ class SpartanSmolReader extends AtomSetCollectionReader {
           if (!atomSetCollection
               .setAtomSetCollectionPartialCharges("MULCHARGES"))
             atomSetCollection.setAtomSetCollectionPartialCharges("Q1_CHARGES");
+          Float n = (Float) atomSetCollection.getAtomSetCollectionAuxiliaryInfo("HOMO_N");
+          if (moData != null && n != null)
+            moData.put("HOMO", new Integer(n.intValue()));
         }
         readLine();
       }

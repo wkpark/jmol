@@ -292,7 +292,7 @@ public class VoxelReader {
     int contourType = -1;
     MarchingSquares marchingSquares = null;
     if (params.thePlane != null || params.isContoured) {
-      marchingSquares = new MarchingSquares(volumeData, params.thePlane,
+      marchingSquares = new MarchingSquares(this, volumeData, params.thePlane,
           params.nContours, params.thisContour);
       contourType = marchingSquares.getContourType();
     }
@@ -347,7 +347,7 @@ public class VoxelReader {
      * we take every point.
      * 
      */
-    return (marchingSquares == null ? meshData.addVertexCopy(surfacePoint,
+    return (marchingSquares == null ? addContourVertex(surfacePoint,
         thisValue) : isContourType ? marchingSquares.addContourData(x, y, z,
         offset, surfacePoint, cutoff) : Integer.MAX_VALUE);
   }
@@ -411,7 +411,8 @@ public class VoxelReader {
       return;
     }
     if (params.isContoured)
-      marchingSquares.generateContourData(jvxlDataIs2dContour, meshData);
+      contourVertexCount = marchingSquares.generateContourData(jvxlDataIs2dContour);
+      
     applyColorScale();
     jvxlData.nContours = params.nContours;
     jvxlData.jvxlExtraLine = JvxlReader.jvxlExtraLine(jvxlData,1);
@@ -420,6 +421,10 @@ public class VoxelReader {
         + params.valueMappedToBlue;
   }
 
+  public int addContourVertex(Point3f vertexXYZ, float value) {
+    return meshData.addVertexCopy(vertexXYZ, value);
+  }
+  
   void applyColorScale() {
     if (params.colorPhase == 0)
       params.colorPhase = 1;
@@ -511,7 +516,7 @@ public class VoxelReader {
     return datum;
   }
 
-  final static String[] colorPhases = { "_orb", "x", "y", "z", "xy", "yz",
+  private final static String[] colorPhases = { "_orb", "x", "y", "z", "xy", "yz",
     "xz", "x2-y2", "z2" };
 
   static int getColorPhaseIndex(String color) {
@@ -524,7 +529,7 @@ public class VoxelReader {
     return colorPhase;
   }
   
-  float getPhase(Point3f pt) {
+  private float getPhase(Point3f pt) {
     switch (params.colorPhase) {
     case 0:
     case -1:

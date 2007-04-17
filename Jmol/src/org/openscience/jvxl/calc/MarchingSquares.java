@@ -32,7 +32,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.util.Logger;
 import org.openscience.jvxl.util.*;
 import org.openscience.jvxl.data.VolumeData;
-import org.openscience.jvxl.data.MeshData;
+import org.openscience.jvxl.readers.VoxelReader;
 
 
 public class MarchingSquares {
@@ -43,7 +43,8 @@ public class MarchingSquares {
    * Author: Bob Hanson, hansonr@stolaf.edu
    *  
    */
-  
+
+  private VoxelReader voxelReader;
   private VolumeData volumeData;
 
   private final static int nContourMax = 100;
@@ -74,8 +75,9 @@ public class MarchingSquares {
     unitPlanarVectors[2] = new Vector3f();
   }
 
-  public MarchingSquares(VolumeData volumeData, Point4f thePlane, 
+  public MarchingSquares(VoxelReader voxelReader, VolumeData volumeData, Point4f thePlane, 
       int nContours, int thisContour) {
+    this.voxelReader = voxelReader;
     this.volumeData = volumeData;
     this.thePlane = thePlane;
     this.nContours = (nContours == 0 ? defaultContourCount
@@ -139,11 +141,7 @@ public class MarchingSquares {
   // the 4th entry (0b0100; 2**3), corresponding to only the third corner inside, is 6 (0b1100). 
   // Bits 2 and 3 are set, so edges 2 and 3 intersect the contour.
 
-  private MeshData meshData;
-
-  public void generateContourData(boolean haveData, MeshData meshData) {
-
-    this.meshData = meshData;
+  public int generateContourData(boolean haveData) {
 
     /*
      * (1) define the plane
@@ -169,6 +167,8 @@ public class MarchingSquares {
     loadPixelData(haveData);
     createContours(valueMin, valueMax);
     triangulateContours();
+    
+    return contourVertexCount;
   }
 
   // (1) define the plane
@@ -309,12 +309,16 @@ public class MarchingSquares {
     x += offsets.x;
     y += offsets.y;
     z += offsets.z;
-    int vPt = meshData.addVertexCopy(vertexXYZ, value);
+    int vPt = voxelReader.addContourVertex(vertexXYZ, value);
     contourVertexes[contourVertexCount++] = new ContourVertex(x, y, z,
         vertexXYZ, vPt);
     return vPt;
   }
 
+  public int getContourVertexCount() {
+    return contourVertexCount;
+  }
+  
   public void setContourData(int i, float value) {
     contourVertexes[i].setValue(value, volumeData);  
   }
@@ -622,7 +626,7 @@ public class MarchingSquares {
         calcVertexPoints2d(x, y, vertexA, vertexB);
       squareFractions[iEdge] = calcContourPoint(cutoff, valueA, valueB, contourPoints[iEdge]);
       //System.out.println("x y iEdge cutoff A B f " + x + " " + y + " " + iEdge + " :: " + cutoff + " " + valueA + " " + valueB + " " + squareFractions[iEdge]);
-      pixelPointIndexes[iEdge] = meshData.addVertexCopy(contourPoints[iEdge], cutoff);
+      pixelPointIndexes[iEdge] = voxelReader.addContourVertex(contourPoints[iEdge], cutoff);
     }
     //this must be a square that is involved in this particular contour
     planarSquares[x * squareCountY + y].setIntersectionPoints(contourIndex,
@@ -910,7 +914,7 @@ public class MarchingSquares {
           : iB == mesh1 && iC == mesh2 || iC == mesh1 && iB == mesh2 ? 2
               : iA == mesh1 && iC == mesh2 || iC == mesh1 && iA == mesh2 ? 4
                   : 0);
-      meshData.addTriangleCheck(iA, iB, iC, check);
+      voxelReader.addTriangleCheck(iA, iB, iC, check, false);
       k = triangleVertexList[i];
     }
   }

@@ -28,6 +28,7 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Point4f;
 import java.io.BufferedReader;
 
+import org.jmol.util.Logger;
 import org.openscience.jvxl.util.*;
 import org.openscience.jvxl.data.JvxlData;
 import org.openscience.jvxl.data.VolumeData;
@@ -74,9 +75,13 @@ class JvxlReader extends VolumeFileReader {
     fractionPtr = 0;
   }
 
+
   void readVolumetricData(boolean isMapData) {
     initializeVolumetricData();
+    if (nPointsX <= 0 || nPointsY <= 0 || nPointsZ <= 0)
+      return;
     try {
+      gotoData(params.fileIndex - 1, nPointsX * nPointsY * nPointsZ);
       readVoxelData(isMapData);
       if (edgeDataCount > 0)
         jvxlEdgeDataRead = jvxlReadData("edge", edgeDataCount);

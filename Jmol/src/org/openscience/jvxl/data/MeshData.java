@@ -111,30 +111,37 @@
  * 
  */
 
-package org.openscience.jvxl.readers;
+package org.openscience.jvxl.data;
 
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 import org.openscience.jvxl.util.*;
 
-class MeshData {
+public class MeshData {
   static int SEED_COUNT = 25;
   
-  int polygonCount;
-  Point3f[] vertices;
-  int[] vertexColors;
-  int vertexCount;
-  float[] vertexValues;
-  int[][] polygonIndexes;
+  public int polygonCount;
+  public Point3f[] vertices;
+  public int[] vertexColors;
+  public int vertexCount;
+  public float[] vertexValues;
+  public int[][] polygonIndexes;
+
+  public BitSet[] surfaceSet;
+  public int[] vertexSets;
+  public int nSets = 0;
   
-  void clear(String meshType) {
+  private boolean setsSuccessful;
+
+
+  public void clear(String meshType) {
     vertexCount = polygonCount = 0;
     vertices = null;
     polygonIndexes = null;
   }
   
-  int addVertexCopy(Point3f vertex, float value) {
+  public int addVertexCopy(Point3f vertex, float value) {
     if (vertexCount == 0)
       vertexValues = new float[SEED_COUNT];
     else if (vertexCount >= vertexValues.length)
@@ -143,7 +150,7 @@ class MeshData {
     return addVertexCopy(vertex);
   }
 
-  int addVertexCopy(Point3f vertex) {
+  public int addVertexCopy(Point3f vertex) {
     if (vertexCount == 0)
       vertices = new Point3f[SEED_COUNT];
     else if (vertexCount == vertices.length)
@@ -153,7 +160,7 @@ class MeshData {
     return vertexCount++;
   }
 
-  void addTriangleCheck(int vertexA, int vertexB, int vertexC, int check) {
+  public void addTriangleCheck(int vertexA, int vertexB, int vertexC, int check) {
   if (vertexValues != null && (Float.isNaN(vertexValues[vertexA])||Float.isNaN(vertexValues[vertexB])||Float.isNaN(vertexValues[vertexC])))
     return;
   if (Float.isNaN(vertices[vertexA].x)||Float.isNaN(vertices[vertexB].x)||Float.isNaN(vertices[vertexC].x))
@@ -165,12 +172,7 @@ class MeshData {
   polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC, check};
  }
   
-  BitSet[] surfaceSet;
-  int[] vertexSets;
-  int nSets = 0;
-  boolean setsSuccessful;
-
-  BitSet[] getSurfaceSet(int level) {
+  public BitSet[] getSurfaceSet(int level) {
     if (level == 0) {
       surfaceSet = new BitSet[100];
       nSets = 0;
@@ -229,14 +231,14 @@ class MeshData {
     return surfaceSet;
   }
 
-  int findSet(int vertex) {
+  private int findSet(int vertex) {
     for (int i = 0; i < nSets; i++)
       if (surfaceSet[i] != null && surfaceSet[i].get(vertex))
         return i;
     return -1;
   }
 
-  void createSet(int v1, int v2, int v3) {
+  private void createSet(int v1, int v2, int v3) {
     int i;
     for (i = 0; i < nSets; i++)
       if (surfaceSet[i] == null)
@@ -253,7 +255,7 @@ class MeshData {
     surfaceSet[i].set(v3);
   }
 
-  void mergeSets(int a, int b) {
+  private void mergeSets(int a, int b) {
     surfaceSet[a].or(surfaceSet[b]);
     surfaceSet[b] = null;
   }  

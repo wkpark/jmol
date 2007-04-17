@@ -111,51 +111,53 @@
  * 
  */
 
-package org.openscience.jvxl.readers;
+package org.openscience.jvxl.data;
 
 import javax.vecmath.Point4f;
 
-class JvxlData {
-  JvxlData() {    
+public class JvxlData {
+  public JvxlData() {    
   }
  
-  String jvxlFileMessage;
-  String jvxlFileHeader;
-  String jvxlExtraLine;
-  String jvxlDefinitionLine;
-  String jvxlSurfaceData;
-  String jvxlEdgeData;
-  String jvxlColorData;
-  String jvxlInfoLine;
+  //for now, all public, no accessors
   
-  int edgeFractionBase;
-  int edgeFractionRange;
-  int colorFractionBase;
-  int colorFractionRange;
-
-  Point4f jvxlPlane;
-
-  int jvxlCompressionRatio;
-  boolean isJvxlPrecisionColor;
-  boolean jvxlDataIsColorMapped;
-  boolean jvxlDataIs2dContour;
+  public String jvxlFileMessage;
+  public String jvxlFileHeader;
+  public String jvxlExtraLine;
+  public String jvxlDefinitionLine;
+  public String jvxlSurfaceData;
+  public String jvxlEdgeData;
+  public String jvxlColorData;
+  public String jvxlInfoLine;
   
-  boolean isXLowToHigh;
-  boolean isContoured;
-  boolean isBicolorMap;
-  float mappedDataMin;
-  float mappedDataMax;
-  float valueMappedToRed;
-  float valueMappedToBlue;
-  float cutoff;
-  
-  int nPointsX, nPointsY, nPointsZ;
-  int nBytes;
-  int nContours;
-  int nEdges;
-  int nSurfaceInts;
+  public int edgeFractionBase;
+  public int edgeFractionRange;
+  public int colorFractionBase;
+  public int colorFractionRange;
 
-  String[] title;
+  public Point4f jvxlPlane;
+
+  public int jvxlCompressionRatio;
+  public boolean isJvxlPrecisionColor;
+  public boolean jvxlDataIsColorMapped;
+  public boolean jvxlDataIs2dContour;
+  
+  public boolean isXLowToHigh;
+  public boolean isContoured;
+  public boolean isBicolorMap;
+  public float mappedDataMin;
+  public float mappedDataMax;
+  public float valueMappedToRed;
+  public float valueMappedToBlue;
+  public float cutoff;
+  
+  public int nPointsX, nPointsY, nPointsZ;
+  public int nBytes;
+  public int nContours;
+  public int nEdges;
+  public int nSurfaceInts;
+
+  public String[] title;
   
   
 }

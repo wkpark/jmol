@@ -24,10 +24,13 @@
 package org.openscience.jvxl.readers;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 import javax.vecmath.Point4f;
 import java.io.BufferedReader;
 
 import org.openscience.jvxl.util.*;
+import org.openscience.jvxl.data.JvxlData;
+import org.openscience.jvxl.data.VolumeData;
 
 class JvxlReader extends VolumeFileReader {
 
@@ -278,10 +281,10 @@ class JvxlReader extends VolumeFileReader {
       // could be plane or functionXY
       params.isContoured = (param3 != 0);
       int nContoursRead = parseInt();
-      if (nContours == 0 && nContoursRead != Integer.MIN_VALUE
-          && nContoursRead != 0 && nContoursRead <= nContourMax) {
-        nContours = nContoursRead;
-        Logger.info("JVXL read: contours " + nContours);
+      if (params.nContours == 0 && nContoursRead != Integer.MIN_VALUE
+          && nContoursRead != 0) {
+        params.nContours = nContoursRead;
+        Logger.info("JVXL read: contours " + params.nContours);
       }
     } else {
       params.isContoured = false;
@@ -340,17 +343,12 @@ class JvxlReader extends VolumeFileReader {
       Logger.info("JVXL read: color red/blue: " + params.valueMappedToRed + "/"
           + params.valueMappedToBlue);
     }
-    jvxlSetMapRanges(jvxlData, params.valueMappedToRed, params.valueMappedToBlue,params.mappedDataMin,params.mappedDataMax);
+    jvxlData.valueMappedToRed = params.valueMappedToRed;
+    jvxlData.valueMappedToBlue = params.valueMappedToBlue;
+    jvxlData.mappedDataMin = params.mappedDataMin;
+    jvxlData.mappedDataMax = params.mappedDataMax;
   }
 
-  static void jvxlSetMapRanges(JvxlData jvxlData, float red, float blue,
-                               float min, float max) {
-    jvxlData.valueMappedToRed = red;
-    jvxlData.valueMappedToBlue = blue;
-    jvxlData.mappedDataMin = min;
-    jvxlData.mappedDataMax = max;
-  }
-  
   private String jvxlReadData(String type, int nPoints) {
     String str = "";
     try {
@@ -432,13 +430,13 @@ class JvxlReader extends VolumeFileReader {
   }
   
   float readSurfacePoint(float cutoff, boolean isCutoffAbsolute, float valueA,
-                         float valueB, Point3f surfacePoint) {
+                         float valueB, Point3f pointA, Vector3f edgeVector,
+                         Point3f surfacePoint) {
     float fraction;
     if (edgeDataCount <= 0)
       return super.readSurfacePoint(cutoff, isCutoffAbsolute, valueA, valueB,
-          surfacePoint);
+          pointA, edgeVector, surfacePoint);
     fraction = jvxlGetNextFraction(edgeFractionBase, edgeFractionRange, 0.5f);
-    edgeVector.sub(pointB, pointA);
     surfacePoint.scaleAdd(fraction, edgeVector, pointA);
     return fraction;
   }
@@ -490,8 +488,8 @@ class JvxlReader extends VolumeFileReader {
         : params.mappedDataMax)
         - min;
     float colorRange = params.valueMappedToBlue - params.valueMappedToRed;
-    contourPlaneMinimumValue = Float.MAX_VALUE;
-    contourPlaneMaximumValue = -Float.MAX_VALUE;
+    float contourPlaneMinimumValue = Float.MAX_VALUE;
+    float contourPlaneMaximumValue = -Float.MAX_VALUE;
     if (colors == null || colors.length < vertexCount)
       meshData.vertexColors = colors = new int[vertexCount];
     int n = (params.isContoured ? contourVertexCount : vertexCount);
@@ -523,7 +521,7 @@ class JvxlReader extends VolumeFileReader {
         contourPlaneMaximumValue = value;
 
       if (params.isContoured) {
-        contourVertexes[i].setValue(value);
+        marchingSquares.setContourData(i, value);
       } else if (params.colorBySign) {
         colors[i] = ((params.isColorReversed ? value > 0 : value <= 0) ? params.colorNeg
             : params.colorPos);

@@ -33,6 +33,8 @@ class VolumeDataReader extends VoxelReader {
 
   // UNTESTED -- reads a pre-calculated volume data set -- UNTESTED
 
+  // needs to also define the volumetric origin and vectors and counts, etc.
+  
   void readVoxelData(boolean isMapData) throws Exception {
     /* 
      * This routine is used twice in the case of color mapping. 
@@ -48,12 +50,7 @@ class VolumeDataReader extends VoxelReader {
      * the plane; in the second pass we just calculate the new voxel values and return.
      * 
      */
-    if (nPointsX <= 0 || nPointsY <= 0 || nPointsZ <= 0)
-      return;
-    if (!isMapData && params.thePlane != null) {
-      readPlaneData();
-      return;
-    }
+
     voxelData = volumeData.voxelData;
     if (isMapData)
       return;

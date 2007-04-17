@@ -22,7 +22,6 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-
 /*
  
  * The JVXL file format
@@ -113,25 +112,79 @@
 
 package org.openscience.jvxl.readers;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
+import javax.vecmath.Point4f;
 
-class VolumeData {
- 
-  final Point3f volumetricOrigin = new Point3f();
-  final Vector3f[] volumetricVectors = new Vector3f[3];
-  final int[] voxelCounts = new int[3];
-  float[][][] voxelData;
+class Parameters {
 
-  VolumeData() {   
-    volumetricVectors[0] = new Vector3f();
-    volumetricVectors[1] = new Vector3f();
-    volumetricVectors[2] = new Vector3f();
-  }
+  float mappedDataMin;
+  float mappedDataMax;
+  String[] title;
+  boolean blockCubeData;
+  int fileIndex; //one-based    
+  boolean insideOut;
+  float cutoff = Float.MAX_VALUE;
+  boolean rangeDefined;
+  float valueMappedToRed, valueMappedToBlue;
+
+  boolean isColorReversed;
+
+  Point4f thePlane;
+  boolean isContoured;
+  int nContours;
+  int thisContour;
   
-  void setVoxelData(float[][][] voxelData) {
-    this.voxelData = voxelData;
+  boolean isBicolorMap;
+  boolean isCutoffAbsolute;
+  boolean isPositiveOnly;
+  boolean isProgressive;
+
+  boolean colorBySign;
+  boolean colorByPhase;
+  boolean colorBySets;
+  int colorNeg;
+  int colorPos;
+  int minColor;
+  int maxColor;
+  int colorPhase;
+  float resolution;
+
+  void initialize() {
+    mappedDataMin = Float.MAX_VALUE;
+    blockCubeData = false; // Gaussian standard, but we allow for multiple surfaces one per data block
+    isColorReversed = false;
+    colorBySign = colorByPhase = colorBySets = false;
+    resolution = Float.MAX_VALUE;
+    //anisotropy[0] = anisotropy[1] = anisotropy[2] = 1f;
+    cutoff = Float.MAX_VALUE;
+    thePlane = null;
+    //surface_data = null;
+    isContoured = false;
+    rangeDefined = false;
+    isBicolorMap = isCutoffAbsolute = isPositiveOnly = false;
   }
-  
+
+  void setMapRanges(VoxelReader voxelReader) {
+    if (colorByPhase || colorBySign || isBicolorMap && !isContoured) {
+      mappedDataMin = -1;
+      mappedDataMax = 1;
+    }
+    if (mappedDataMin == Float.MAX_VALUE || mappedDataMin == mappedDataMax) {
+      mappedDataMin = voxelReader.getMinMappedValue();
+      mappedDataMax = voxelReader.getMaxMappedValue();
+    }
+    if (mappedDataMin == 0 && mappedDataMax == 0) {
+      //just set default -1/1 if there is no obvious data
+      mappedDataMin = -1;
+      mappedDataMax = 1;
+    }
+
+    if (!rangeDefined) {
+      valueMappedToRed = mappedDataMin;
+      valueMappedToBlue = mappedDataMax;
+    }
+
+    minColor = (isColorReversed ? colorPos : colorNeg);
+    maxColor = (isColorReversed ? colorNeg : colorPos);
+
+  }
 }
-

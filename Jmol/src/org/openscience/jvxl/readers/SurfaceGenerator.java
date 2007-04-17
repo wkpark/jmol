@@ -118,6 +118,9 @@ import javax.vecmath.Point4f;
 
 import org.jmol.util.Logger;
 import org.openscience.jvxl.util.*;
+import org.openscience.jvxl.data.JvxlData;
+import org.openscience.jvxl.data.VolumeData;
+import org.openscience.jvxl.data.MeshData;
 
 public class SurfaceGenerator { 
 
@@ -141,77 +144,6 @@ public class SurfaceGenerator {
   private final static int STATE_DATA_READ = 2;
   private final static int STATE_DATA_COLORED = 3;
 
-  class Parameters {
-
-    float mappedDataMin;
-    float mappedDataMax;
-    String[] title;
-    boolean blockCubeData;
-    int fileIndex; //one-based    
-    boolean insideOut;
-    float cutoff = Float.MAX_VALUE;
-    boolean rangeDefined;
-    float valueMappedToRed, valueMappedToBlue;
-
-    boolean isColorReversed;
-
-    Point4f thePlane;
-    boolean isContoured;
-    boolean isBicolorMap;
-    boolean isCutoffAbsolute;
-    boolean isPositiveOnly;
-    boolean isProgressive;
-
-    boolean colorBySign;
-    boolean colorByPhase;
-    boolean colorBySets;
-    int colorNeg;
-    int colorPos;
-    int minColor;
-    int maxColor;
-    int colorPhase;
-    float resolution;
-    
-    void initialize() {
-      mappedDataMin = Float.MAX_VALUE;
-      blockCubeData = false; // Gaussian standard, but we allow for multiple surfaces one per data block
-      isColorReversed = false;
-      colorBySign = colorByPhase = colorBySets = false;
-      resolution = Float.MAX_VALUE;
-      //anisotropy[0] = anisotropy[1] = anisotropy[2] = 1f;
-      cutoff = Float.MAX_VALUE;
-      thePlane = null;
-      //surface_data = null;
-      isContoured = false;
-      rangeDefined = false;
-      isBicolorMap = isCutoffAbsolute = isPositiveOnly = false;
-    }
-
-   void setMapRanges() {
-      if (colorByPhase || colorBySign || isBicolorMap && !isContoured) {
-        mappedDataMin = -1;
-        mappedDataMax = 1;
-      }
-      if (mappedDataMin == Float.MAX_VALUE || mappedDataMin == mappedDataMax) {
-        mappedDataMin = voxelReader.getMinMappedValue();
-        mappedDataMax = voxelReader.getMaxMappedValue();
-      }
-      if (mappedDataMin == 0 && mappedDataMax == 0) {
-        //just set default -1/1 if there is no obvious data
-        mappedDataMin = -1;
-        mappedDataMax = 1;
-      }
-
-      if (!rangeDefined) {
-        valueMappedToRed = mappedDataMin;
-        valueMappedToBlue = mappedDataMax;
-      }
-
-      minColor = (isColorReversed ? colorPos : colorNeg);
-      maxColor = (isColorReversed ? colorNeg : colorPos);
-
-    }
-  }
   //////////////////////////////////////////////////////////////
    
   int colorPtr;
@@ -298,8 +230,20 @@ public class SurfaceGenerator {
 
     if ("plane" == propertyName) {
       params.thePlane = (Point4f) value;
+      if (params.thePlane.x == 0 && params.thePlane.y == 0 && params.thePlane.z == 0)
+        params.thePlane.z = 1; //{0 0 0 w} becomes {0 0 1 w}
       params.isContoured = true;
       ++state;
+      return;
+    }
+
+    if ("contour" == propertyName) {
+      params.isContoured = true;
+      int n = ((Integer) value).intValue();
+      if (n >= 0)
+        params.nContours = n;
+      else
+        params.thisContour = -n;
       return;
     }
 
@@ -334,8 +278,6 @@ public class SurfaceGenerator {
         Logger.error("Could not create isosurface");
         return;
       }
-      if (params.isContoured && params.thePlane == null)
-        voxelReader.setPlanarVectors();
       if (jvxlData.jvxlDataIs2dContour)
        voxelReader.colorIsosurface();
       if (params.colorBySign) {

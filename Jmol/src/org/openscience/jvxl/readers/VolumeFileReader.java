@@ -122,7 +122,6 @@ class VolumeFileReader extends VoxelReader {
           readVoxelVector(i);
           Logger.info("voxel grid vector:" + volumetricVectors[i]);
         }
-      setupMatrix(volumetricMatrix, volumetricVectors);
       JvxlReader.jvxlReadAtoms(br, jvxlFileHeaderBuffer, atomCount, volumeData);
       return readExtraLine();
     } catch (Exception e) {
@@ -164,12 +163,12 @@ class VolumeFileReader extends VoxelReader {
     voxelVector.set(parseFloat(), parseFloat(), parseFloat());
     if (!isAngstroms)
       voxelVector.scale(ANGSTROMS_PER_BOHR);
-    volumetricVectorLengths[voxelVectorIndex] = voxelVector.length();
+    volumeData.volumetricVectorLengths[voxelVectorIndex] = voxelVector.length();
 
-    unitVolumetricVectors[voxelVectorIndex].normalize(voxelVector);
+    volumeData.unitVolumetricVectors[voxelVectorIndex].normalize(voxelVector);
     for (int i = 0; i < voxelVectorIndex; i++) {
-      float orthoTest = Math.abs(unitVolumetricVectors[i]
-          .dot(unitVolumetricVectors[voxelVectorIndex]));
+      float orthoTest = Math.abs(volumeData.unitVolumetricVectors[i]
+          .dot(volumeData.unitVolumetricVectors[voxelVectorIndex]));
       if (orthoTest > 1.001 || orthoTest < 0.999 && orthoTest > 0.001)
         Logger.warn("Warning: voxel coordinate vectors are not orthogonal.");
     }
@@ -213,20 +212,10 @@ class VolumeFileReader extends VoxelReader {
      * 
      */
 
-    if (nPointsX <= 0 || nPointsY <= 0 || nPointsZ <= 0)
-      return;
-
+    next[0] = 0;
     boolean inside = false;
     int dataCount = 0;
-    next[0] = 0;
-    int nPoints = nPointsX * nPointsY * nPointsZ;
-    gotoData(params.fileIndex - 1, nPoints);
-    if (!isMapData && params.thePlane != null) {
-      readPlaneData();
-      return;
-    }
     if (params.thePlane != null) {
-      setPlaneParameters(params.thePlane);
       params.cutoff = 0f;
     } else if (isJvxl) {
       params.cutoff = (params.isBicolorMap || params.colorBySign ? 0.01f : 0.5f);

@@ -785,6 +785,8 @@ class Isosurface extends MeshFileCollection {
         propertyName = "mapColor";
       } else {
         colorBySign = true;
+        if (colorByPhase && colorPhase == 0)
+          colorByPhase = false;
         //colorByPhase = true;
         //colorPhase = 0;
         if (cutoff == Float.MAX_VALUE)

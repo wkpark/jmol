@@ -7864,16 +7864,8 @@ class Eval { //implements Runnable {
       invalidArgument();
     case Token.identifier:
       str = parameterAsString(1);
-      boolean isHomo = false;
-      if ((isHomo = str.equalsIgnoreCase("HOMO"))|| str.equalsIgnoreCase("LUMO")) {
+      if ((offset = moOffset(1)) != Integer.MAX_VALUE) {
         moNumber = 0;
-        offset = (isHomo ? 0 : 1);
-        if (tokAt(2) == Token.integer && intParameter(2) < 0)
-          offset += intParameter(2);
-        else if (tokAt(2) == Token.plus)
-          offset += intParameter(3);
-        else if (tokAt(2) == Token.hyphen)
-          offset -= intParameter(3);
         break;
       }
       if (str.equalsIgnoreCase("CUTOFF")) {
@@ -7936,6 +7928,22 @@ class Eval { //implements Runnable {
     return true;
   }
 
+  int moOffset(int index) throws ScriptException {
+    String str = parameterAsString(index++);
+    boolean isHomo = false;
+    int offset = Integer.MAX_VALUE;
+    if ((isHomo = str.equalsIgnoreCase("HOMO"))|| str.equalsIgnoreCase("LUMO")) {
+      offset = (isHomo ? 0 : 1);
+      if (tokAt(index) == Token.integer && intParameter(index) < 0)
+        offset += intParameter(index);
+      else if (tokAt(index) == Token.plus)
+        offset += intParameter(index+1);
+      else if (tokAt(index) == Token.hyphen)
+        offset -= intParameter(index+1);
+    }
+    return offset;
+  }
+  
   void setMoData(int shape, int moNumber, int offset, int modelIndex,
                  String title) throws ScriptException {
     if (isSyntaxCheck)
@@ -8410,8 +8418,15 @@ class Eval { //implements Runnable {
         //mo 1-based-index 
         if (++i == statementLength)
           badArgumentCount();
-        int moNumber = intParameter(i);
-        setMoData(iShape, moNumber, Integer.MAX_VALUE, modelIndex, null);
+        int moNumber = Integer.MAX_VALUE;
+        int offset = Integer.MAX_VALUE;
+        if (tokAt(i) == Token.integer) {
+          moNumber = intParameter(i);
+        } else if ((offset = moOffset(i)) != Integer.MAX_VALUE) {
+          moNumber = 0;
+          i = iToken;
+        }
+        setMoData(iShape, moNumber, offset, modelIndex, null);
         surfaceObjectSeen = true;
         continue;
       case Token.mep:

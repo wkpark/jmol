@@ -512,6 +512,7 @@ public class VoxelReader {
       if (value >= params.valueMappedToBlue)
         value = params.valueMappedToBlue;
       meshData.vertexColors[vertexIndex] = getColorFromPalette(value);
+      System.out.println(Integer.toHexString(getColorFromPalette(value)));
     }
     return datum;
   }

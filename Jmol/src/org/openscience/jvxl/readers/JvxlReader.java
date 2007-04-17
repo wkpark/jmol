@@ -633,7 +633,7 @@ class JvxlReader extends VolumeFileReader {
     int nSurfaceInts = jvxlData.nSurfaceInts;//jvxlData.jvxlSurfaceData.length();
     int bytesUncompressedEdgeData = (jvxlData.jvxlEdgeData.length() - 1);
     int nColorData = (jvxlData.jvxlColorData.length() - 1);
-    String info = "# nSurfaceInts = "
+    String info = "# cutoff = " + jvxlData.cutoff + "; nSurfaceInts = "
         + nSurfaceInts
         + "; nBytesData = "
         + (jvxlData.jvxlSurfaceData.length() + bytesUncompressedEdgeData + (jvxlData.jvxlColorData

@@ -1695,7 +1695,7 @@ class Isosurface extends MeshFileCollection {
     // several JVXL variables and the plane will be defined here
     gotoData(fileIndex - 1, nPoints);
 
-    thisInside = !(!isJvxl || !isContoured);
+    thisInside = (!isJvxl || !isContoured);
     //if (insideOut)
       //thisInside = !thisInside;
 

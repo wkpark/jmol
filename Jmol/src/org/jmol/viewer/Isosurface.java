@@ -907,13 +907,6 @@ class Isosurface extends MeshFileCollection {
             + (System.currentTimeMillis() - timeBegin) + " ms");
       initializeMesh(thePlane != null ? Mesh.FULLYLIT : lighting);
       jvxlFileMessage = (jvxlDataIsColorMapped ? "mapped" : "");
-      if (isContoured && thePlane == null) {
-        planarVectors[0].set(volumetricVectors[0]);
-        planarVectors[1].set(volumetricVectors[1]);
-        pixelCounts[0] = voxelCounts[0];
-        pixelCounts[1] = voxelCounts[1];
-      }
-
       if (jvxlDataIs2dContour)
         colorIsosurface();
       thisMesh.nBytes = nBytes;
@@ -1167,6 +1160,8 @@ class Isosurface extends MeshFileCollection {
     setMapRanges();
     if (isContoured) { //did NOT work here.
       generateContourData(jvxlDataIs2dContour);
+      thisMesh.vertexColixes = new short[thisMesh.vertexCount];
+      thisMesh.isColorSolid = false;
       initializeMesh(thePlane != null ? Mesh.FULLYLIT : lighting);
       if (!colorByContourOnly)
         applyColorScale(thisMesh);
@@ -1700,7 +1695,7 @@ class Isosurface extends MeshFileCollection {
     // several JVXL variables and the plane will be defined here
     gotoData(fileIndex - 1, nPoints);
 
-    thisInside = (!isJvxl || !isContoured);
+    thisInside = !(!isJvxl || !isContoured);
     //if (insideOut)
       //thisInside = !thisInside;
 
@@ -2459,9 +2454,6 @@ class Isosurface extends MeshFileCollection {
     return v1 + fy * (v2 - v1);
   }
 
-  float contourPlaneMinimumValue;
-  float contourPlaneMaximumValue;
-
   void jvxlReadColorData(IsosurfaceMesh mesh) {
 
     // standard jvxl file read for color 
@@ -2489,8 +2481,8 @@ class Isosurface extends MeshFileCollection {
         : mappedDataMax)
         - min;
     float colorRange = valueMappedToBlue - valueMappedToRed;
-    contourPlaneMinimumValue = Float.MAX_VALUE;
-    contourPlaneMaximumValue = -Float.MAX_VALUE;
+    float contourPlaneMinimumValue = Float.MAX_VALUE;
+    float contourPlaneMaximumValue = -Float.MAX_VALUE;
     if (colixes == null || colixes.length < vertexCount)
       mesh.vertexColixes = colixes = new short[vertexCount];
     int n = (isContoured ? contourVertexCount : vertexCount);
@@ -3271,7 +3263,6 @@ class Isosurface extends MeshFileCollection {
   }
 
   final Point3f voxelOrigin = new Point3f();
-  final Point3f voxelT = new Point3f();
   final Point3f pointA = new Point3f();
   final Point3f pointB = new Point3f();
   final Vector3f edgeVector = new Vector3f();
@@ -3932,7 +3923,13 @@ class Isosurface extends MeshFileCollection {
   // the 4th entry (0b0100; 2**3), corresponding to only the third corner inside, is 6 (0b1100). 
   // Bits 2 and 3 are set, so edges 2 and 3 intersect the contour.
 
-
+  void setPlanarVectors() { 
+    planarVectors[0].set(volumetricVectors[0]);
+    planarVectors[1].set(volumetricVectors[1]);
+    pixelCounts[0] = voxelCounts[0];
+    pixelCounts[1] = voxelCounts[1];
+  }
+  
   void generateContourData(boolean iHaveContourVertexesAlready) {
 
     /*
@@ -3962,8 +3959,8 @@ class Isosurface extends MeshFileCollection {
       Logger.info(dumpArray("generateContourData", pixelData, n - 4, n + 4,
           n - 4, n + 4));
     }
-    createContours();
-    triangulateContours();
+    boolean centerIsLow = createContours();
+    triangulateContours(centerIsLow);
   }
 
   // (1) define the plane
@@ -4008,9 +4005,11 @@ class Isosurface extends MeshFileCollection {
 
     planarVectors[2].set(0, 0, 0);
 
-    if (thePlane == null)
-      return; //done already
-
+    if (thePlane == null){
+      setPlanarVectors(); //3D contour
+      return;
+    }
+    
     Vector3f vZ = volumetricVectors[contourType];
     float vZdotNorm = vZ.dot(thePlaneNormal);
     switch (contourType) {
@@ -4146,7 +4145,6 @@ class Isosurface extends MeshFileCollection {
     for (int i = 4; --i >= 0;)
       contourPoints[i] = new Point3f();
   }
-  final int[] contourPointIndexes = new int[4];
   int squareCountX, squareCountY;
 
   PlanarSquare[] planarSquares;
@@ -4246,8 +4244,6 @@ class Isosurface extends MeshFileCollection {
     int x, y;
     Logger.info("loadPixelData haveContourVertices? "
         + iHaveContourVertexesAlready);
-    contourPlaneMinimumValue = Float.MAX_VALUE;
-    contourPlaneMaximumValue = -Float.MAX_VALUE;
     for (int i = 0; i < contourVertexCount; i++) {
       ContourVertex c = contourVertexes[i];
       Point3i pt = locatePixel(c.vertexXYZ);
@@ -4259,10 +4255,6 @@ class Isosurface extends MeshFileCollection {
         value = lookupInterpolatedVoxelValue(c.vertexXYZ);
         c.setValue(value);
       }
-      if (value < contourPlaneMinimumValue)
-        contourPlaneMinimumValue = value;
-      if (value > contourPlaneMaximumValue)
-        contourPlaneMaximumValue = value;
       //if (i < 10)
         //Logger.info("loadPixelData " + c.vertexXYZ + value + pt);
       if ((x = pt.x) >= 0 && x < pixelCounts[0] && (y = pt.y) >= 0
@@ -4285,13 +4277,15 @@ class Isosurface extends MeshFileCollection {
 
   int contourIndex;
 
-  void createContours() {
+  boolean createContours() {
     colorFractionBase = defaultColorFractionBase;
     colorFractionRange = defaultColorFractionRange;
     setMapRanges();
     float min = valueMappedToRed;
     float max = valueMappedToBlue;
     float diff = max - min;
+    boolean centerIsLow = true; //molecular surface-like
+    int lastInside = -1;
     Logger.info("generateContourData min=" + min + " max=" + max
         + " nContours=" + nContours);
     for (int i = 0; i < nContours; i++) {
@@ -4301,12 +4295,17 @@ class Isosurface extends MeshFileCollection {
        * cutoffs right near zero cause problems, so we adjust just a tad
        * 
        */
-      generateContourData(cutoff);
+      int insideCount = generateContourData(cutoff);
+      if (lastInside < 0)
+        lastInside = insideCount;
+      else if (lastInside > insideCount)
+        centerIsLow = false;
     }
     thisMesh.realVertexCount = thisMesh.vertexCount;
+    return centerIsLow;
   }
 
-  void generateContourData(float contourCutoff) {
+  int generateContourData(float contourCutoff) {
 
     /*
      * Y
@@ -4325,7 +4324,7 @@ class Isosurface extends MeshFileCollection {
       isoPointIndexes2d[i][0] = isoPointIndexes2d[i][1] = isoPointIndexes2d[i][2] = isoPointIndexes2d[i][3] = -1;
 
     if (Math.abs(contourCutoff) < 0.0001)
-      contourCutoff = (contourCutoff <= 0 ? -0.0001f : 0.0001f);
+      contourCutoff = (contourCutoff < 0 ? -0.0001f : 0.0001f);
     int insideCount = 0, outsideCount = 0, contourCount = 0;
     for (int x = squareCountX; --x >= 0;) {
       for (int y = squareCountY; --y >= 0;) {
@@ -4361,13 +4360,15 @@ class Isosurface extends MeshFileCollection {
       }
     }
 
-    if (logMessages)
-      Logger.info("contourCutoff=" + contourCutoff + " pixel squares="
+    if (true || logMessages)
+      Logger.info(contourIndex + " contourCutoff=" + contourCutoff + " pixel squares="
           + squareCountX + "," + squareCountY + "," + " total="
-          + (squareCountX * squareCountY) + "\n" + " insideCount="
+          + (squareCountX * squareCountY) + " insideCount="
           + insideCount + " outsideCount=" + outsideCount + " contourCount="
           + contourCount + " total="
           + (insideCount + outsideCount + contourCount));
+    
+    return insideCount;
   }
 
   boolean isInside2d(float voxelValue, float max) {
@@ -4500,9 +4501,7 @@ class Isosurface extends MeshFileCollection {
     return v;
   }
 
-  void triangulateContours() {
-    thisMesh.vertexColixes = new short[thisMesh.vertexCount];
-    thisMesh.isColorSolid = false;
+  void triangulateContours(boolean centerIsLow) {
 
     /*
      * Y
@@ -4590,9 +4589,8 @@ class Isosurface extends MeshFileCollection {
      *  b(n-1). If f(n) < f(n-1), then we should start with n.
      *  
      */
-
-    for (int contourIndex = 0; contourIndex < nContours; contourIndex++) {
-      if (thisContour <= 0 || thisContour == contourIndex + 1)
+    for (int contourIndex = (centerIsLow ? 0 : 1); contourIndex < nContours; contourIndex++) {
+      if (thisContour <= 0 || thisContour == contourIndex + 1) {
         for (int squareIndex = 0; squareIndex < nSquares; squareIndex++) {
 
           /*
@@ -4601,35 +4599,30 @@ class Isosurface extends MeshFileCollection {
            */
 
           PlanarSquare square = planarSquares[squareIndex];
-          int edgeMask0 = square.edgeMask12[contourIndex] & 0xFF;
-          if (edgeMask0 == 0) // all outside
+          int edgeMask0 = square.edgeMask12[contourIndex];
+          edgeMask0 &= 0xFF;
+
+          // way outside
+          if (edgeMask0 == 0 && contourIndex > 0
+              && square.edgeMask12[contourIndex - 1] == 0)
             continue;
-          // unnecessary inside square drawn by different contour?
-          // full square and also inside next inner contour
+          //way inside
           if (edgeMask0 == 0xF && contourIndex > 0
               && square.edgeMask12[contourIndex - 1] == 0xF)
             continue;
-
-          //still working here.... not efficient; stubbornly trying to avoid just
-          // writing the damn triangle table.
-
-      //    if (squareIndex != 281 && squareIndex != 303)
-        //    continue;
+          //    if (squareIndex != 281 && squareIndex != 303) continue;
           boolean isOK = true;
           int edgeMask = edgeMask0;
-          if (contourIndex > 0) {
+          if (contourIndex == 0) {
+            
+          } else {
             edgeMask0 = square.edgeMask12[contourIndex - 1];
             if (edgeMask0 != 0) {
               int andMask = (edgeMask & edgeMask0 & 0xF0) >> 4;
               int orMask = ((edgeMask | edgeMask0) & 0xF0) >> 4;
-//              System.out.println(squareIndex + " " + Integer.toBinaryString(edgeMask) + " " + Integer.toBinaryString(edgeMask0));
               if (andMask != 0) {
-                //isOK = false;
-                //at least one edge is common
                 for (int i = 0; i < 4; i++)
                   if ((andMask & (1 << i)) != 0) {
-                    //isOK = false;
-  //                  System.out.println (square.fractions[contourIndex][i] +" " + square.fractions[contourIndex - 1][i]);
                     if (square.fractions[contourIndex][i] > square.fractions[contourIndex - 1][i]) {
                       isOK = false;
                     }
@@ -4641,15 +4634,15 @@ class Isosurface extends MeshFileCollection {
               edgeMask ^= edgeMask0 & 0x0F0F;
             }
           }
-          if (contourIndex > 0 && edgeMask == 0)
-            continue;
+          if (edgeMask == 0 && contourIndex > 0) {
+              continue;
+          }
 
     //      System.out.println("trianglate " + squareIndex + " " + Integer.toBinaryString(edgeMask0) + " " + Integer.toBinaryString(edgeMask));
 
           fillSquare(square, contourIndex, edgeMask, !isOK);
- //         if (!isOK) // a lazy hack instead of really figuring out the order
-   //         fillSquare(square, contourIndex, edgeMask, true);
         }
+      }
     }
   }
 

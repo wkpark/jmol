@@ -121,11 +121,14 @@ class Resolver {
 
     // run these loops forward ... easier for people to understand
     //file starts with added 4/26 to ensure no issue with NWChem files
+    
+    String leader = llr.getLeader(LEADER_CHAR_MAX);
+
     for (int i = 0; i < fileStartsWithRecords.length; ++i) {
       String[] recordTags = fileStartsWithRecords[i];
       for (int j = 0; j < recordTags.length; ++j) {
         String recordTag = recordTags[j];
-        if (lines[0].startsWith(recordTag))
+        if (leader.startsWith(recordTag))
           return fileStartsWithFormats[i];
       }
     }
@@ -295,8 +298,10 @@ class Resolver {
   // these test files that startWith one of these strings
   ////////////////////////////////////////////////////////////////
 
+  final static int LEADER_CHAR_MAX = 20;
+  
   final static String[] cubeRecords =
-  {"JVXL"};
+  {"JVXL", "#JVXL"};
 
   final static String[] mol2Records =
   {"@<TRIPOS>"};
@@ -424,6 +429,10 @@ class LimitedLineReader {
     bufferedReader.reset();
   }
 
+  String getLeader(int n) {
+    return new String(buf, 0, Math.min(cchBuf, n));  
+  }
+  
   String getHeader() {
     return new String(buf);  
   }

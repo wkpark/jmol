@@ -48,7 +48,7 @@ import java.io.BufferedReader;
  * these orbitals are interspersed -- all orbital values are
  * given together for each coordinate point.
  * 
- * also used for JVXL file format
+ * also used for JVXL and JVXL+ file format
  * 
  */
 
@@ -86,19 +86,22 @@ class CubeReader extends AtomSetCollectionReader {
   }
 
   void readTitleLines() throws Exception {
-    String title = readLineTrimmed() + " - ";
-    atomSetCollection.setAtomSetName(title + readLineTrimmed());
+    if (readLine().indexOf("#JVXL") == 0)
+      while (readLine().indexOf("#") == 0) {
+      }
+    atomSetCollection.setAtomSetName(line.trim() + " - " + readLineTrimmed());
   }
 
   void readAtomCountAndOrigin() throws Exception {
     readLine();
-    while (line != null && line.indexOf("#") == 0)
-      readLine();
     isAngstroms = (line.indexOf("ANGSTROMS") >= 0); //JVXL flag for Angstroms
-    atomCount = parseInt(line);
-    origin[0] = parseFloat();
-    origin[1] = parseFloat();
-    origin[2] = parseFloat();
+    String[] tokens = getTokens();
+    if (tokens[0].charAt(0) == '+') //Jvxl progressive reader -- ignore and consider negative
+      tokens[0] = '-' + tokens[0].substring(1);
+    atomCount = parseInt(tokens[0]);
+    origin[0] = parseFloat(tokens[1]);
+    origin[1] = parseFloat(tokens[2]);
+    origin[2] = parseFloat(tokens[3]);
     if (atomCount < 0) {
       atomCount = -atomCount;
       negativeAtomCount = true;

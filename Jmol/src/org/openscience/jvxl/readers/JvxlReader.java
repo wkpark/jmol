@@ -93,8 +93,8 @@ class JvxlReader extends VolumeFileReader {
     }
   }
   
-  int nThisValue;
-  boolean thisInside;
+  private int nThisValue;
+  private boolean thisInside;
   
   protected void initializeVoxelData() {
     thisInside = !params.isContoured;
@@ -445,8 +445,8 @@ class JvxlReader extends VolumeFileReader {
     return fraction;
   }
 
-  int fractionPtr;
-  String strFractionTemp = "";
+  private int fractionPtr;
+  private String strFractionTemp = "";
 
   private float jvxlGetNextFraction(int base, int range, float fracOffset) {
     if (fractionPtr >= strFractionTemp.length()) {

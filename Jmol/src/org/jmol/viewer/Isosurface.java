@@ -4360,7 +4360,7 @@ class Isosurface extends MeshFileCollection {
       }
     }
 
-    if (true || logMessages)
+    if (logMessages)
       Logger.info(contourIndex + " contourCutoff=" + contourCutoff + " pixel squares="
           + squareCountX + "," + squareCountY + "," + " total="
           + (squareCountX * squareCountY) + " insideCount="
@@ -4589,7 +4589,8 @@ class Isosurface extends MeshFileCollection {
      *  b(n-1). If f(n) < f(n-1), then we should start with n.
      *  
      */
-    for (int contourIndex = (centerIsLow ? 0 : 1); contourIndex < nContours; contourIndex++) {
+    int offset = (centerIsLow ? -1 : 1);
+    for (int contourIndex = 0; contourIndex < nContours; contourIndex++) {
       if (thisContour <= 0 || thisContour == contourIndex + 1) {
         for (int squareIndex = 0; squareIndex < nSquares; squareIndex++) {
 
@@ -4602,28 +4603,25 @@ class Isosurface extends MeshFileCollection {
           int edgeMask0 = square.edgeMask12[contourIndex];
           edgeMask0 &= 0xFF;
 
+          boolean isTerminal = (contourIndex + offset < 0 || contourIndex + offset == nContours);
           // way outside
-          if (edgeMask0 == 0 && contourIndex > 0
-              && square.edgeMask12[contourIndex - 1] == 0)
+          if (edgeMask0 == 0 && !isTerminal && square.edgeMask12[contourIndex +offset] == 0)
             continue;
           //way inside
-          if (edgeMask0 == 0xF && contourIndex > 0
-              && square.edgeMask12[contourIndex - 1] == 0xF)
+          if (edgeMask0 == 0xF && !isTerminal && square.edgeMask12[contourIndex +offset] == 0xF)
             continue;
           //    if (squareIndex != 281 && squareIndex != 303) continue;
           boolean isOK = true;
           int edgeMask = edgeMask0;
-          if (contourIndex == 0) {
-            
-          } else {
-            edgeMask0 = square.edgeMask12[contourIndex - 1];
+          if (!isTerminal) {
+            edgeMask0 = square.edgeMask12[contourIndex + offset];
             if (edgeMask0 != 0) {
               int andMask = (edgeMask & edgeMask0 & 0xF0) >> 4;
               int orMask = ((edgeMask | edgeMask0) & 0xF0) >> 4;
               if (andMask != 0) {
                 for (int i = 0; i < 4; i++)
                   if ((andMask & (1 << i)) != 0) {
-                    if (square.fractions[contourIndex][i] > square.fractions[contourIndex - 1][i]) {
+                    if (square.fractions[contourIndex][i] > square.fractions[contourIndex +offset][i]) {
                       isOK = false;
                     }
                     break;
@@ -4634,13 +4632,13 @@ class Isosurface extends MeshFileCollection {
               edgeMask ^= edgeMask0 & 0x0F0F;
             }
           }
-          if (edgeMask == 0 && contourIndex > 0) {
+          if (edgeMask == 0 && !isTerminal) {
               continue;
           }
 
     //      System.out.println("trianglate " + squareIndex + " " + Integer.toBinaryString(edgeMask0) + " " + Integer.toBinaryString(edgeMask));
 
-          fillSquare(square, contourIndex, edgeMask, !isOK);
+          fillSquare(square, contourIndex, edgeMask, !isOK, offset);
         }
       }
     }
@@ -4649,7 +4647,7 @@ class Isosurface extends MeshFileCollection {
   final int[] triangleVertexList = new int[20];
 
   void fillSquare(PlanarSquare square, int contourIndex, int edgeMask,
-                  boolean reverseWinding) {
+                  boolean reverseWinding, int offset) {
     int vPt = 0;
     boolean lowerFirst = reverseWinding;
     int mesh1 = -1, mesh2 = -1;
@@ -4668,7 +4666,7 @@ class Isosurface extends MeshFileCollection {
       //intersection of next lower contour on this edge?
       if (lowerFirst && lowerIntersect) {
         lowerLast = true;
-        triangleVertexList[vPt++] = square.intersectionPoints[contourIndex - 1][i];
+        triangleVertexList[vPt++] = square.intersectionPoints[contourIndex + offset][i];
       }
       
       //intersection point of this contour on this edge?
@@ -4686,7 +4684,7 @@ class Isosurface extends MeshFileCollection {
 
       if (!lowerFirst && lowerIntersect) {
         lowerLast = true;
-        triangleVertexList[vPt++] = square.intersectionPoints[contourIndex - 1][i];
+        triangleVertexList[vPt++] = square.intersectionPoints[contourIndex + offset][i];
       }
       if (lowerLast && newVertex)
         lowerFirst = true;

@@ -39,7 +39,6 @@ class IsosurfaceMesh extends Mesh {
   int firstViewableVertex;
   boolean hasGridPoints;
 
-  BitSet[] surfaceSet;
   float[] vertexValues;  
   short[] vertexColixes;
   
@@ -60,6 +59,8 @@ class IsosurfaceMesh extends Mesh {
     jvxlData.jvxlSurfaceData = "";
     jvxlData.jvxlEdgeData = "";
     jvxlData.jvxlColorData = "";
+    surfaceSet = null;
+    nSets = 0;
   }
   
   void allocVertexColixes() {
@@ -69,6 +70,20 @@ class IsosurfaceMesh extends Mesh {
         vertexColixes[i] = colix;
     }
     isColorSolid = false;
+  }
+
+  public void setColorSchemeSets() {
+    allocVertexColixes();
+    int n = 0;
+    for (int i = 0; i < surfaceSet.length; i++)
+      if (surfaceSet[i] != null) {
+        int c = Graphics3D.getColorArgb(++n);
+        //System.out.println(n + " " + Integer.toHexString(c));
+        short colix = Graphics3D.getColix(c);
+        for (int j = 0; j < vertexCount; j++)
+          if (surfaceSet[i].get(j))
+            vertexColixes[j] = colix; //not black
+      }
   }
 
   int addVertexCopy(Point3f vertex, float value) {
@@ -122,4 +137,112 @@ class IsosurfaceMesh extends Mesh {
       polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
     polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC, check};
   }
+
+  
+  public BitSet[] surfaceSet;
+  public int[] vertexSets;
+  public int nSets = 0;
+  
+  private boolean setsSuccessful;
+
+  public BitSet[] getSurfaceSet() {
+    return (surfaceSet == null ? getSurfaceSet(0) : surfaceSet);
+  }
+
+  void invalidateSurfaceSet(int i) {
+    for (int j = surfaceSet[i].length(); --j >= 0;)
+      if (surfaceSet[i].get(j))
+        vertexValues[j] = Float.NaN;
+    surfaceSet[i] = null;
+  }
+
+  public BitSet[] getSurfaceSet(int level) {
+    if (level == 0) {
+      surfaceSet = new BitSet[100];
+      nSets = 0;
+    }
+    setsSuccessful = true;
+    for (int i = 0; i < polygonCount; i++) {
+      int[] p = polygonIndexes[i];
+      int pt0 = findSet(p[0]);
+      int pt1 = findSet(p[1]);
+      int pt2 = findSet(p[2]);
+      if (pt0 < 0 && pt1 < 0 && pt2 < 0) {
+        createSet(p[0], p[1], p[2]);
+        continue;
+      }
+      if (pt0 == pt1 && pt1 == pt2)
+        continue;
+      if (pt0 >= 0) {
+        surfaceSet[pt0].set(p[1]);
+        surfaceSet[pt0].set(p[2]);
+        if (pt1 >= 0 && pt1 != pt0)
+          mergeSets(pt0, pt1);
+        if (pt2 >= 0 && pt2 != pt0 && pt2 != pt1)
+          mergeSets(pt0, pt2);
+        continue;
+      }
+      if (pt1 >= 0) {
+        surfaceSet[pt1].set(p[0]);
+        surfaceSet[pt1].set(p[2]);
+        if (pt2 >= 0 && pt2 != pt1)
+          mergeSets(pt1, pt2);
+        continue;
+      }
+      surfaceSet[pt2].set(p[0]);
+      surfaceSet[pt2].set(p[1]);
+    }
+    int n = 0;
+    for (int i = 0; i < nSets; i++)
+      if (surfaceSet[i] != null)
+        n++;
+    BitSet[] temp = new BitSet[n];
+    n = 0;
+    for (int i = 0; i < nSets; i++)
+      if (surfaceSet[i] != null)
+        temp[n++] = surfaceSet[i];
+    nSets = n;
+    surfaceSet = temp;
+    if (!setsSuccessful && level < 2)
+      getSurfaceSet(++level);
+    if (level == 0) {
+      vertexSets = new int[vertexCount];
+      for (int i = 0; i < nSets; i++)
+        for (int j = 0; j < vertexCount; j++)
+          if (surfaceSet[i].get(j))
+            vertexSets[j] = i;
+    }
+    return surfaceSet;
+  }
+
+  private int findSet(int vertex) {
+    for (int i = 0; i < nSets; i++)
+      if (surfaceSet[i] != null && surfaceSet[i].get(vertex))
+        return i;
+    return -1;
+  }
+
+  private void createSet(int v1, int v2, int v3) {
+    int i;
+    for (i = 0; i < nSets; i++)
+      if (surfaceSet[i] == null)
+        break;
+    if (i >= 100) {
+      setsSuccessful = false;
+      return;
+    }
+    if (i == nSets)
+      nSets = i + 1;
+    surfaceSet[i] = new BitSet();
+    surfaceSet[i].set(v1);
+    surfaceSet[i].set(v2);
+    surfaceSet[i].set(v3);
+  }
+
+  private void mergeSets(int a, int b) {
+    surfaceSet[a].or(surfaceSet[b]);
+    surfaceSet[b] = null;
+  }
+
+  
 }

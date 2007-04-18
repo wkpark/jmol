@@ -527,8 +527,8 @@ class Isosurface extends MeshFileCollection {
       colorScheme = ((String) value);
       viewer.setColorScheme(colorScheme);
       if (thisMesh != null && colorScheme.equals("sets")) {
-        thisMesh.surfaceSet = getSurfaceSet();
-        setColorSchemeSets();
+        thisMesh.getSurfaceSet();
+        thisMesh.setColorSchemeSets();
       } else {
         return;
       }
@@ -897,12 +897,12 @@ class Isosurface extends MeshFileCollection {
       if (pocket != null)
         selectPocket();
       if (minSet > 0) {
-        getSurfaceSet();
-        for (int i = 0; i < nSets; i++) {
+        thisMesh.getSurfaceSet();
+        for (int i = thisMesh.nSets; --i >= 0;) {
           //System.out.println(" set " + i + " " + Viewer.cardinalityOf(surfaceSet[i]));
-          if (surfaceSet[i] != null
-              && Viewer.cardinalityOf(surfaceSet[i]) < minSet)
-            invalidateSurfaceSet(i);
+          if (thisMesh.surfaceSet[i] != null
+              && Viewer.cardinalityOf(thisMesh.surfaceSet[i]) < minSet)
+            thisMesh.invalidateSurfaceSet(i);
         }
         thisMesh.updateSurfaceData(cJvxlEdgeNaN);
       }
@@ -919,8 +919,8 @@ class Isosurface extends MeshFileCollection {
         applyColorScale(thisMesh);
       }
       if (colorScheme.equals("sets")) {
-        thisMesh.surfaceSet = getSurfaceSet();
-        setColorSchemeSets();
+        thisMesh.getSurfaceSet();
+        thisMesh.setColorSchemeSets();
       }
       setModelIndex();
       if (logMessages && thePlane == null && !isSilent
@@ -1103,8 +1103,6 @@ class Isosurface extends MeshFileCollection {
     isCavity = false;
     envelopeRadius = 10f;
     solvent_dots = null;
-    surfaceSet = null;
-    nSets = 0;
     iUseBitSets = false;
     solventExtendedAtomRadius = 0;
     solventAtomRadiusFactor = 1;
@@ -1343,7 +1341,6 @@ class Isosurface extends MeshFileCollection {
     planarSquares = null;
     contourVertexes = null;
     contourVertexCount = 0;
-    surfaceSet = null;
     atomSet = null;
     jvxlFileHeader = null;
     solvent_atomNo = null;
@@ -1353,6 +1350,7 @@ class Isosurface extends MeshFileCollection {
     solvent_ptAtom = null;
     surfaceData = null;
     title = null;
+    thisMesh.surfaceSet = null;
   } ////////////////////////////////////////////////////////////////
 
   // default color stuff
@@ -2188,19 +2186,6 @@ class Isosurface extends MeshFileCollection {
   ////////////////////////////////////////////////////////////////
 
   //String remainderString;
-  void setColorSchemeSets() {
-    thisMesh.allocVertexColixes();
-    int n = 0;
-    for (int i = 0; i < thisMesh.surfaceSet.length; i++)
-      if (thisMesh.surfaceSet[i] != null) {
-        int c = Graphics3D.getColorArgb(++n);
-        //System.out.println(n + " " + Integer.toHexString(c));
-        short colix = Graphics3D.getColix(c);
-        for (int j = 0; j < thisMesh.vertexCount; j++)
-          if (thisMesh.surfaceSet[i].get(j))
-            thisMesh.vertexColixes[j] = colix; //not black
-      }
-  }
 
   void applyColorScale(IsosurfaceMesh mesh) {
     // ONLY the current mesh now. Previous was just too weird.
@@ -5682,37 +5667,31 @@ class Isosurface extends MeshFileCollection {
         }
       }
     }
-    getSurfaceSet();
+    thisMesh.getSurfaceSet();
+    int nSets = thisMesh.nSets;
     BitSet pocketSet = new BitSet(nSets);
+    BitSet ss;
     for (int i = 0; i < nSets; i++)
-      if (surfaceSet[i] != null)
-        for (int j = surfaceSet[i].length(); --j >= 0;)
-          if (surfaceSet[i].get(j) && Float.isNaN(thisMesh.vertexValues[j])) {
+      if ((ss = thisMesh.surfaceSet[i]) != null)
+        for (int j = ss.length(); --j >= 0;)
+          if (ss.get(j) && Float.isNaN(thisMesh.vertexValues[j])) {
             pocketSet.set(i);
             //System.out.println("pocket " + i + " " + j + " " + surfaceSet[i]);
             break;
           }
-
     //now clear all vertices that match the pocket toggle
     //"POCKET"   --> pocket TRUE means "show just the pockets"
     //"INTERIOR" --> pocket FALSE means "show everything that is not a pocket"
     boolean doExclude = !pocket.booleanValue();
     for (int i = 0; i < nSets; i++)
-      if (surfaceSet[i] != null) {
+      if (thisMesh.surfaceSet[i] != null) {
         if (pocketSet.get(i) == doExclude)
-          invalidateSurfaceSet(i);
+          thisMesh.invalidateSurfaceSet(i);
       }
 
     thisMesh.updateSurfaceData(cJvxlEdgeNaN);
     if (!doExclude)
-      surfaceSet = null;
-  }
-
-  void invalidateSurfaceSet(int i) {
-    for (int j = surfaceSet[i].length(); --j >= 0;)
-      if (surfaceSet[i].get(j))
-        thisMesh.vertexValues[j] = Float.NaN;
-    surfaceSet[i] = null;
+      thisMesh.surfaceSet = null;
   }
 
     void generateSolventCube(boolean isFirstPass) {
@@ -6212,102 +6191,6 @@ class Isosurface extends MeshFileCollection {
     return V;
   }
 
-  BitSet[] surfaceSet;
-  int nSets = 0;
-  boolean setsSuccessful;
-
-  BitSet[] getSurfaceSet() {
-    return (surfaceSet == null ? getSurfaceSet(0) : surfaceSet);
-  }
-  
-  BitSet[] getSurfaceSet(int level) {
-    if (thisMesh == null)
-      return null;
-    if (level == 0) {
-      surfaceSet = new BitSet[100];
-      nSets = 0;
-    }
-    setsSuccessful = true;
-    for (int i = 0; i < thisMesh.polygonCount; i++) {
-      int[] p = thisMesh.polygonIndexes[i];
-      if (p == null)
-        continue;
-      int pt0 = p[0];
-      int pt1 = p[1];
-      int pt2 = p[2];
-      pt0 = findSet(pt0);
-      pt1 = findSet(pt1);
-      pt2 = findSet(pt2);
-      if (pt0 < 0 && pt1 < 0 && pt2 < 0) {
-        createSet(p[0], p[1], p[2]);
-        continue;
-      }
-      if (pt0 == pt1 && pt1 == pt2)
-        continue;
-      if (pt0 >= 0) {
-        surfaceSet[pt0].set(p[1]);
-        surfaceSet[pt0].set(p[2]);
-        if (pt1 >= 0 && pt1 != pt0)
-          mergeSets(pt0, pt1);
-        if (pt2 >= 0 && pt2 != pt0 && pt2 != pt1)
-          mergeSets(pt0, pt2);
-        continue;
-      }
-      if (pt1 >= 0) {
-        surfaceSet[pt1].set(p[0]);
-        surfaceSet[pt1].set(p[2]);
-        if (pt2 >= 0 && pt2 != pt1)
-          mergeSets(pt1, pt2);
-        continue;
-      }
-      surfaceSet[pt2].set(p[0]);
-      surfaceSet[pt2].set(p[1]);
-    }
-    int n = 0;
-    for (int i = 0; i < nSets; i++)
-      if (surfaceSet[i] != null)
-        n++;
-    BitSet[] temp = new BitSet[n];
-    n = 0;
-    for (int i = 0; i < nSets; i++)
-      if (surfaceSet[i] != null)
-        temp[n++] = surfaceSet[i];
-    nSets = n;
-    surfaceSet = temp;
-    if (!setsSuccessful && level < 2)
-      getSurfaceSet(++level);
-    return surfaceSet;
-  }
-
-  int findSet(int vertex) {
-    for (int i = 0; i < nSets; i++)
-      if (surfaceSet[i] != null && surfaceSet[i].get(vertex))
-        return i;
-    return -1;
-  }
-
-  void createSet(int v1, int v2, int v3) {
-    int i;
-    for (i = 0; i < nSets; i++)
-      if (surfaceSet[i] == null)
-        break;
-    if (i >= 100) {
-      setsSuccessful = false;
-      return;
-    }
-    if (i == nSets)
-      nSets = i + 1;
-    surfaceSet[i] = new BitSet();
-    surfaceSet[i].set(v1);
-    surfaceSet[i].set(v2);
-    surfaceSet[i].set(v3);
-  }
-
-  void mergeSets(int a, int b) {
-    surfaceSet[a].or(surfaceSet[b]);
-    surfaceSet[b] = null;
-  }
-  
   ////////// debug utility methods /////////
 
   String dumpArray(String msg, float[][] A, int x1, int x2, int y1, int y2) {

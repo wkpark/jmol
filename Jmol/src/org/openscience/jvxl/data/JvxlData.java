@@ -121,6 +121,8 @@ public class JvxlData {
  
   //for now, all public, no accessors
   
+  public boolean wasCubic;
+  
   public String jvxlFileMessage;
   public String jvxlFileHeader;
   public String jvxlExtraLine;

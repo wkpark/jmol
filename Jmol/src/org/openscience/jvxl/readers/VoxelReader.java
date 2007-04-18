@@ -110,8 +110,7 @@ public class VoxelReader implements MarchingReader {
   protected int nDataPoints;
   protected int nPointsX, nPointsY, nPointsZ;
 
-  protected boolean isJvxl;
-  protected boolean isApbsDx;
+  protected boolean isJvxl, isCubic, isApbsDx;
 
   protected boolean isAngstroms;
   protected int edgeFractionBase;
@@ -162,6 +161,7 @@ public class VoxelReader implements MarchingReader {
     jvxlData.nPointsX = nPointsX;
     jvxlData.nPointsY = nPointsY;
     jvxlData.nPointsZ = nPointsZ;
+    jvxlData.wasCubic = isCubic;
     
     if (jvxlDataIsColorMapped)
       jvxlData.jvxlColorData = readColorData();

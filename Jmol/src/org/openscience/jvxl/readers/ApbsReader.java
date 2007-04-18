@@ -32,7 +32,7 @@ class ApbsReader extends VolumeFileReader {
 
   ApbsReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
-    isApbsDx = true;
+    isApbsDx = isCubic = true;
   }
   
   protected void readTitleLines() throws Exception {

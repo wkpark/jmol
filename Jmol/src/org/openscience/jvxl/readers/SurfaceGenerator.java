@@ -321,11 +321,11 @@ public class SurfaceGenerator {
     if (property == "plane")
       return (jvxlData.jvxlPlane);
     if (property == "jvxlFileData")
-      return JvxlReader.jvxlGetFile(params.title, jvxlData, "", true, index);
+      return JvxlReader.jvxlGetFile(jvxlData, params.title, "", true, index, null, null);
     if (property == "jvxlFileInfo")
       return jvxlData.jvxlInfoLine;
     if (property == "jvxlSurfaceData")
-      return JvxlReader.jvxlGetFile(params.title, jvxlData, "", false, 1);
+      return JvxlReader.jvxlGetFile(jvxlData, params.title, "", false, 1, null, null);
     if (property == "volumeData")
       return volumeData;
     if (property == "meshData")

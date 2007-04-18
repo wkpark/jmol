@@ -31,6 +31,7 @@ class CubeReader extends VolumeFileReader {
   CubeReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
     isAngstroms = false;
+    isCubic = true;
   }
 
   protected void readTitleLines() throws Exception {

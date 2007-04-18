@@ -691,23 +691,25 @@ class JvxlReader extends VolumeFileReader {
     //0.9e adds color contours for planes and min/max range, contour settings
   }
 
-  static String jvxlGetFile(String[] title, JvxlData jvxlData, String msg,
-                            boolean includeHeader, int nSurfaces) {
-    String data = "";
+  static String jvxlGetFile(JvxlData jvxlData, String[] title, String msg,
+                            boolean includeHeader, int nSurfaces, String state, String comment) {
+    
+    StringBuffer data = new StringBuffer();
     if (includeHeader) {
-      data = jvxlData.jvxlFileHeader
+      String s = jvxlData.jvxlFileHeader
           + (nSurfaces > 0 ? (-nSurfaces) + jvxlData.jvxlExtraLine.substring(2)
               : jvxlData.jvxlExtraLine);
-      if (data.indexOf("#JVXL") != 0)
-        data = "#JVXL" + (jvxlData.isXLowToHigh ? "+\n" : "\n") + data;
+      if (s.indexOf("#JVXL") != 0)
+        data.append("#JVXL").append(jvxlData.isXLowToHigh ? "+\n" : "\n");
+      data.append(s);
     }
-    data += "# " + msg + "\n";
+    data.append("# ").append(msg).append('\n');
     if (title != null)
       for (int i = 0; i < title.length; i++)
-        data += "# " + title[i] + "\n";
-    data += jvxlData.jvxlDefinitionLine + "\n";
-    String compressedData = (jvxlData.jvxlPlane == null ? jvxlData.jvxlSurfaceData
-        : "");
+        data.append("# ").append(title[i]).append('\n');
+    data.append(jvxlData.jvxlDefinitionLine + " rendering:" + state).append('\n');
+    
+    String compressedData = (jvxlData.jvxlPlane == null ? jvxlData.jvxlSurfaceData : "");
     if (jvxlData.jvxlPlane == null) {
       //no real point in compressing this unless it's a sign-based coloring 
       compressedData += jvxlCompressString(jvxlData.jvxlEdgeData
@@ -715,14 +717,24 @@ class JvxlReader extends VolumeFileReader {
     } else {
       compressedData += jvxlCompressString(jvxlData.jvxlColorData);
     }
-    //if (!isJvxl &&jvxlData.nBytes > 0)
-    //jvxlData.jvxlCompressionRatio = (int) (((float)jvxlData.nBytes + jvxlData.jvxlFileHeader
-    //  .length()) / (data.length() + compressedData.length()));
-    data += compressedData;
+    int r = 0;
+    if (jvxlData.wasCubic && jvxlData.nBytes > 0 && compressedData.length() > 0)
+      jvxlData.jvxlCompressionRatio = r = (int) (((float) jvxlData.nBytes) / compressedData.length());
+    data.append(compressedData);
     if (msg != null)
-      data += "#-------end of jvxl file data-------\n";
-    data += jvxlData.jvxlInfoLine + "\n";
-    return data;
+      data.append("#-------end of jvxl file data-------\n");
+    data.append(jvxlData.jvxlInfoLine).append('\n');
+    if (comment != null)
+      data.append("# ").append(comment).append('\n');
+    if (state != null)
+      data.append("# ").append(state).append('\n');
+    if (r > 0) {
+      String s = "bytes read: " + jvxlData.nBytes + "; approximate voxel-only input/output byte ratio: " + r + ":1\n";
+      Logger.info("\n" + s);
+      data.append(s);
+    }
+
+    return data.toString();
   }
 
   private static String jvxlCompressString(String data) {

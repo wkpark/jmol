@@ -562,15 +562,16 @@ public class MarchingSquares {
            // + " " + (pixelPointIndexes[3]  >= 0 ? squareFractions[3] : -1));
       }
     }
-
-//    if (logMessages)
+/*
+    if (logMessages)
       Logger.info("contourCutoff=" + contourCutoff + " pixel squares="
           + squareCountX + "," + squareCountY + "," + " total="
           + (squareCountX * squareCountY) + "\n" + " insideCount="
           + insideCount + " outsideCount=" + outsideCount + " contourCount="
           + contourCount + " total="
           + (insideCount + outsideCount + contourCount));
-      return insideCount;
+*/
+    return insideCount;
   }
 
   private boolean isInside2d(float voxelValue, float max) {

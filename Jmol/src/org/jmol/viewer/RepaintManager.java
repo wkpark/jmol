@@ -494,7 +494,6 @@ class RepaintManager {
             refresh();
           sleepTime = targetTime
               - (int) (System.currentTimeMillis() - timeBegin);
-          System.out.println("animation sleeping: " + sleepTime);
           if (sleepTime > 0)
             Thread.sleep(sleepTime);
           /*if (false && autoFps) {

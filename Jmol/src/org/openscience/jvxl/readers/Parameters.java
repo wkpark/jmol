@@ -114,6 +114,7 @@ package org.openscience.jvxl.readers;
 
 import javax.vecmath.Point4f;
 
+
 class Parameters {
 
   float mappedDataMin;
@@ -143,8 +144,6 @@ class Parameters {
   boolean colorBySets;
   int colorNeg;
   int colorPos;
-  int minColor;
-  int maxColor;
   int colorPhase;
   float resolution;
 
@@ -182,9 +181,5 @@ class Parameters {
       valueMappedToRed = mappedDataMin;
       valueMappedToBlue = mappedDataMax;
     }
-
-    minColor = (isColorReversed ? colorPos : colorNeg);
-    maxColor = (isColorReversed ? colorNeg : colorPos);
-
   }
 }

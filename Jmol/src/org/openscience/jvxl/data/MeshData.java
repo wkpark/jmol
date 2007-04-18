@@ -116,6 +116,7 @@ package org.openscience.jvxl.data;
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
+
 import org.openscience.jvxl.util.*;
 
 public class MeshData {
@@ -123,7 +124,7 @@ public class MeshData {
   
   public int polygonCount;
   public Point3f[] vertices;
-  public int[] vertexColors;
+  public short[] vertexColixes;
   public int vertexCount;
   public float[] vertexValues;
   public int[][] polygonIndexes;
@@ -171,6 +172,10 @@ public class MeshData {
     polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
   polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC, check};
  }
+  
+  public BitSet[] getSurfaceSet() {
+    return (surfaceSet == null ? getSurfaceSet(0) : surfaceSet);
+  }
   
   public BitSet[] getSurfaceSet(int level) {
     if (level == 0) {
@@ -258,6 +263,14 @@ public class MeshData {
   private void mergeSets(int a, int b) {
     surfaceSet[a].or(surfaceSet[b]);
     surfaceSet[b] = null;
-  }  
+  }
+  
+  public void invalidateSurfaceSet(int i) {
+    for (int j = surfaceSet[i].length(); --j >= 0;)
+      if (surfaceSet[i].get(j))
+        vertexValues[j] = Float.NaN;
+    surfaceSet[i] = null;
+  }
+  
 }
 

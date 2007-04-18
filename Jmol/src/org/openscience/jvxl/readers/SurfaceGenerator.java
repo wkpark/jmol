@@ -124,20 +124,43 @@ import org.openscience.jvxl.data.MeshData;
 
 public class SurfaceGenerator { 
 
-  ColorEncoder colorEncoder;
-  Parameters params;
-  MeshData meshData = new MeshData();
-  JvxlData jvxlData = new JvxlData();
-  VolumeData volumeData;
+  private ColorEncoder colorEncoder;
+  private JvxlData jvxlData;
+  private MeshData meshData;
+  private Parameters params;
+  private VolumeData volumeData;
 
-  public SurfaceGenerator(ColorEncoder colorEncoder) {
+  public SurfaceGenerator(ColorEncoder colorEncoder, MeshData meshData,
+      JvxlData jvxlData) {
     params = new Parameters();
+    this.colorEncoder = (colorEncoder == null ? new ColorEncoder() : colorEncoder);
+    this.meshData = (meshData == null ? new MeshData() : meshData);
+    this.jvxlData = (jvxlData == null ? new JvxlData() : jvxlData);
     initializeIsosurface();
     params.colorPos = colorEncoder.getColorPositive();
     params.colorNeg = colorEncoder.getColorNegative();
-    this.colorEncoder = colorEncoder;
   }
   
+  public ColorEncoder getColorEncoder() {
+    return colorEncoder;
+  }
+    
+  public JvxlData getJvxlData() {
+    return jvxlData;
+  }
+  
+  public MeshData getMeshData() {
+    return meshData;
+  }
+  
+  public Parameters getParams() {
+    return params;
+  }
+    
+  public VolumeData getVolumeData() {
+    return volumeData;
+  }
+    
   private int state;
   
   private final static int STATE_INITIALIZED = 1;
@@ -149,83 +172,91 @@ public class SurfaceGenerator {
   int colorPtr;
   VoxelReader voxelReader;
   
-  public void setProperty(String propertyName, Object value) {
+  /**
+   * setProperty is the main interface for surface generation. 
+   * 
+   * @param propertyName
+   * @param value
+   * @return         True if handled; False if not
+   * 
+   */
+  public boolean setProperty(String propertyName, Object value) {
 
     
     if ("init" == propertyName) {
       initializeIsosurface();
-      return;
+      return true;
     }
     
     if ("fileIndex" == propertyName) {
       params.fileIndex = ((Integer) value).intValue();
       if (params.fileIndex < 1)
         params.fileIndex = 1;
-      return;
+      return true;
     }
 
     if ("blockData" == propertyName) {
       boolean TF = ((Boolean) value).booleanValue();
       params.blockCubeData = TF;
-      return;
+      return true;
     }
 
     if ("title" == propertyName) {
       if (value == null) {
         params.title = null;
-        return;
+        return true;
       } else if (value instanceof String[]) {
         params.title = (String[]) value;
       }
-      return;
+      return true;
     }
 
     if ("cutoff" == propertyName) {
       params.cutoff = ((Float) value).floatValue();
       params.isPositiveOnly = false;
-      return;
+      return true;
     }
 
     if ("cutoffPositive" == propertyName) {
       params.cutoff = ((Float) value).floatValue();
       params.isPositiveOnly = true;
-      return;
+      return true;
     }
 
     /// color options 
 
     if ("insideOut" == propertyName) {
       params.insideOut = true;
-      return;
+      return true;
     }
 
     if ("sign" == propertyName) {
       params.isCutoffAbsolute = true;
       params.colorBySign = true;
       colorPtr = 0;
-      return;
+      return true;
     }
 
     if ("red" == propertyName) {
       params.valueMappedToRed = ((Float) value).floatValue();
-      return;
+      return true;
     }
 
     if ("blue" == propertyName) {
       params.valueMappedToBlue = ((Float) value).floatValue();
       params.rangeDefined = true;
-      return;
+      return true;
     }
 
     if ("reverseColor" == propertyName) {
       params.isColorReversed = true;
-      return;
+      return true;
     }
 
     if ("setColorScheme" == propertyName) {
       String colorScheme = (String) value;
       colorEncoder.setColorScheme(colorScheme);
-      return;
+      return true;
     }
 
     if ("plane" == propertyName) {
@@ -234,7 +265,7 @@ public class SurfaceGenerator {
         params.thePlane.z = 1; //{0 0 0 w} becomes {0 0 1 w}
       params.isContoured = true;
       ++state;
-      return;
+      return true;
     }
 
     if ("contour" == propertyName) {
@@ -244,12 +275,12 @@ public class SurfaceGenerator {
         params.nContours = n;
       else
         params.thisContour = -n;
-      return;
+      return true;
     }
 
     if ("progressive" == propertyName) { 
       params.isXLowToHigh = true;
-      return;
+      return true;
     }
     
     if ("phase" == propertyName) {
@@ -262,21 +293,21 @@ public class SurfaceGenerator {
         Logger.warn(" invalid color phase: " + color);
         params.colorPhase = 1;
       }
-      return;
+      return true;
     }
 
     if ("readData" == propertyName) {
       if (++state != STATE_DATA_READ)
-        return;
+        return true;
       if ((voxelReader = setData(value)) == null) {
         Logger.error("Could not set the data");
-        return;
+        return true;
       }
       if (params.colorBySign)
         params.isBicolorMap = true;
       if (!voxelReader.createIsosurface()) {
         Logger.error("Could not create isosurface");
-        return;
+        return true;
       }
       if (jvxlData.jvxlDataIs2dContour)
        voxelReader.colorIsosurface();
@@ -287,18 +318,18 @@ public class SurfaceGenerator {
       voxelReader.jvxlUpdateInfo();
       voxelReader.discardTempData(false);
       params.mappedDataMin = Float.MAX_VALUE;
-      return;
+      return true;
     }
 
     if ("mapColor" == propertyName) {
       if (++state != STATE_DATA_COLORED)
-        return;
+        return true;
       if (value instanceof String && ((String)value).equalsIgnoreCase("sets")) {
         meshData.getSurfaceSet(0);
         params.colorBySets = true;
       } else if ((voxelReader = setData(value)) == null) {
         Logger.error("Could not set the mapping data");
-        return;
+        return true;
       }
       if (params.thePlane != null) {
         voxelReader.createIsosurface(); //for the plane
@@ -309,8 +340,9 @@ public class SurfaceGenerator {
       voxelReader.colorIsosurface();
       voxelReader.jvxlUpdateInfo();
       voxelReader.discardTempData(true);
-      return;
+      return true;
     }
+    return false;
   }
 
   public Object getProperty(String property, int index) {
@@ -326,10 +358,6 @@ public class SurfaceGenerator {
       return jvxlData.jvxlInfoLine;
     if (property == "jvxlSurfaceData")
       return JvxlReader.jvxlGetFile(jvxlData, params.title, "", false, 1, null, null);
-    if (property == "volumeData")
-      return volumeData;
-    if (property == "meshData")
-      return meshData;
     return null;
   }
 

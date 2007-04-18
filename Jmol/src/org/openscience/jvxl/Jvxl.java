@@ -257,7 +257,7 @@ public class Jvxl {
 
     // compose the surface
 
-    SurfaceGenerator sg = new SurfaceGenerator(new ColorEncoder());
+    SurfaceGenerator sg = new SurfaceGenerator(new ColorEncoder(), null, null);
 
     // input file
 

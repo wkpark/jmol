@@ -54,7 +54,7 @@ public class VoxelReader implements MarchingReader {
    * 
    */
 
-  private ColorEncoder colorEncoder;
+  protected ColorEncoder colorEncoder;
   
   protected Parameters params;
   protected MeshData meshData;
@@ -65,12 +65,12 @@ public class VoxelReader implements MarchingReader {
   protected boolean isXLowToHigh = false; //can be overridden in some readers by --progressive
 
   VoxelReader(SurfaceGenerator sg) {
-    this.colorEncoder = sg.colorEncoder;
-    this.params = sg.params;
+    this.colorEncoder = sg.getColorEncoder();
+    this.params = sg.getParams();
     isXLowToHigh = params.isXLowToHigh;
-    this.meshData = sg.meshData;
-    this.jvxlData = sg.jvxlData;
-    setVolumeData(sg.volumeData);
+    this.meshData = sg.getMeshData();
+    this.jvxlData = sg.getJvxlData();
+    setVolumeData(sg.getVolumeData());
   }
     
   final static float ANGSTROMS_PER_BOHR = 0.5291772f;
@@ -397,14 +397,14 @@ public class VoxelReader implements MarchingReader {
     if (params.colorPhase == 0)
       params.colorPhase = 1;
     int vertexCount = meshData.vertexCount;
-    int[] colors = meshData.vertexColors;
+    short[] colixes = meshData.vertexColixes;
     colorFractionBase = defaultColorFractionBase;
     colorFractionRange = defaultColorFractionRange;
     params.setMapRanges(this);
     float min = params.mappedDataMin;
     float max = params.mappedDataMax;
-    if (colors == null)
-      meshData.vertexColors = colors = new int[vertexCount];
+    if (colixes == null)
+      meshData.vertexColixes = colixes = new short[vertexCount];
     StringBuffer list = null, list1 = null;
     //colorBySign is true when colorByPhase is true, but not vice-versa
     //old: boolean saveColorData = !(params.colorByPhase && !params.isBicolorMap && !params.colorBySign); //sorry!
@@ -417,8 +417,14 @@ public class VoxelReader implements MarchingReader {
     char[] remainder = new char[1];
     boolean writePrecisionColor = (jvxlDataIsPrecisionColor || params.isContoured);
     int lastVertex = (contourVertexCount > 0 ? contourVertexCount : vertexCount);
+    short minColorIndex = -1;
+    short maxColorIndex = 0;
+    if (params.isBicolorMap && !params.isContoured || params.colorBySign) {
+      minColorIndex = ColorEncoder.getColorIndex(params.isColorReversed ? params.colorPos : params.colorNeg);
+      maxColorIndex = ColorEncoder.getColorIndex(params.isColorReversed ? params.colorNeg : params.colorPos);
+    }
     for (int i = 0; i < vertexCount; i += incr) {
-      float value = getVertexColorValue(i);
+      float value = getVertexColorValue(i, minColorIndex, maxColorIndex);
       if (i < lastVertex) {
         char ch;
         if (writePrecisionColor) {
@@ -444,7 +450,7 @@ public class VoxelReader implements MarchingReader {
     jvxlData.mappedDataMax = params.mappedDataMax;
   }
 
-  private float getVertexColorValue(int vertexIndex) {
+  private float getVertexColorValue(int vertexIndex, short minColorIndex, short maxColorIndex) {
     float value, datum;
     /* but RETURNS the actual value, not the truncated one
      * right, so what we are doing here is setting a range within the 
@@ -463,11 +469,11 @@ public class VoxelReader implements MarchingReader {
       datum = value = marchingSquares.getInterpolatedPixelValue(meshData.vertices[vertexIndex]);
     else
       datum = value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[vertexIndex]);
-    if (params.isBicolorMap && !params.isContoured || params.colorBySign) {
+    if (minColorIndex >= 0) {
       if (value <= 0)
-        meshData.vertexColors[vertexIndex] = params.minColor;
+        meshData.vertexColixes[vertexIndex] = minColorIndex;
       else if (value > 0)
-        meshData.vertexColors[vertexIndex] = params.maxColor;
+        meshData.vertexColixes[vertexIndex] = maxColorIndex;
       if (!params.isContoured)
         datum = (value > 0 ? 0.999f : -0.999f);
     } else {
@@ -475,7 +481,7 @@ public class VoxelReader implements MarchingReader {
         value = params.valueMappedToRed;
       if (value >= params.valueMappedToBlue)
         value = params.valueMappedToBlue;
-      meshData.vertexColors[vertexIndex] = getColorFromPalette(value);
+      meshData.vertexColixes[vertexIndex] = getColorIndexFromPalette(value);
     }
     return datum;
   }
@@ -557,11 +563,11 @@ public class VoxelReader implements MarchingReader {
     return max;
   }
 
-  protected int getColorFromPalette(float value) {
+  protected short getColorIndexFromPalette(float value) {
     if (params.isColorReversed)
-      return colorEncoder.getColorFromPalette(-value, -params.valueMappedToBlue,
+      return colorEncoder.getColorIndexFromPalette(-value, -params.valueMappedToBlue,
           -params.valueMappedToRed);
-    return colorEncoder.getColorFromPalette(value, params.valueMappedToRed,
+    return colorEncoder.getColorIndexFromPalette(value, params.valueMappedToRed,
         params.valueMappedToBlue);
   }
   

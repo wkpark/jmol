@@ -469,7 +469,7 @@ class JvxlReader extends VolumeFileReader {
 
     fractionPtr = 0;
     int vertexCount = meshData.vertexCount;
-    int[] colors = meshData.vertexColors;
+    short[] colixes = meshData.vertexColixes;
     fractionData = new StringBuffer();
     strFractionTemp = (isJvxl ? jvxlColorDataRead : "");
     if (isJvxl && strFractionTemp.length() == 0) {
@@ -494,11 +494,20 @@ class JvxlReader extends VolumeFileReader {
     float colorRange = params.valueMappedToBlue - params.valueMappedToRed;
     float contourPlaneMinimumValue = Float.MAX_VALUE;
     float contourPlaneMaximumValue = -Float.MAX_VALUE;
-    if (colors == null || colors.length < vertexCount)
-      meshData.vertexColors = colors = new int[vertexCount];
+    if (colixes == null || colixes.length < vertexCount)
+      meshData.vertexColixes = colixes = new short[vertexCount];
     int n = (params.isContoured ? contourVertexCount : vertexCount);
     String data = jvxlColorDataRead;
     int cpt = 0;
+    short colixNeg = 0, colixPos = 0;
+    if (params.colorBySign) {
+      colixPos = ColorEncoder
+          .getColorIndex(params.isColorReversed ? params.colorNeg
+              : params.colorPos);
+      colixNeg = ColorEncoder
+          .getColorIndex(params.isColorReversed ? params.colorPos
+              : params.colorNeg);
+    }
     for (int i = 0; i < n; i++) {
       float fraction, value;
       if (jvxlDataIsPrecisionColor) {
@@ -527,10 +536,10 @@ class JvxlReader extends VolumeFileReader {
       if (params.isContoured) {
         marchingSquares.setContourData(i, value);
       } else if (params.colorBySign) {
-        colors[i] = ((params.isColorReversed ? value > 0 : value <= 0) ? params.colorNeg
-            : params.colorPos);
+        colixes[i] = ((params.isColorReversed ? value > 0 : value <= 0) ? colixNeg
+            : colixPos);
       } else {
-        colors[i] = getColorFromPalette(value);
+        colixes[i] = getColorIndexFromPalette(value);
       }
     }
     if (params.mappedDataMin == Float.MAX_VALUE) {

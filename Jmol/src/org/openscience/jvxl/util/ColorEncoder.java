@@ -23,6 +23,15 @@
  */
 package org.openscience.jvxl.util;
 
+import java.util.Hashtable;
+
+/*
+ * 
+ * just a simple class using crude color encoding
+ * 
+ * 
+ */
+
 public class ColorEncoder {
   public ColorEncoder() {
   }
@@ -43,24 +52,61 @@ public class ColorEncoder {
     return BLUE;
   }
   
-  public int getColorFromPalette(float val, float lo, float hi) {
+  public short getColorIndexFromPalette(float val, float lo, float hi) {
+    int c = 0;
     switch (palette) {
     case ROYGB:
-      return argbsRoygbScale[quantize(val, lo, hi, argbsRoygbScale.length)];
+      c = argbsRoygbScale[quantize(val, lo, hi, argbsRoygbScale.length)];
+      break;
     case BGYOR:
-      return argbsRoygbScale[quantize(-val, -hi, -lo, argbsRoygbScale.length)];
+      c = argbsRoygbScale[quantize(-val, -hi, -lo, argbsRoygbScale.length)];
+      break;
     case LOW:
-      return argbsRoygbScale[quantize(val, lo, hi, ihalf)];
+      c = argbsRoygbScale[quantize(val, lo, hi, ihalf)];
+      break;
     case HIGH:
-      return argbsRoygbScale[ihalf + quantize(val, lo, hi, ihalf)];
+      c = argbsRoygbScale[ihalf + quantize(val, lo, hi, ihalf)];
+      break;
     case RWB:
-      return argbsRwbScale[quantize(val, lo, hi, argbsRwbScale.length)];
+      c = argbsRwbScale[quantize(val, lo, hi, argbsRwbScale.length)];
+      break;
     case BWR:
-      return argbsRwbScale[quantize(-val, -hi, -lo, argbsRwbScale.length)];
+      c = argbsRwbScale[quantize(-val, -hi, -lo, argbsRwbScale.length)];
+      break;
+    default:
+      c = GRAY;
     }
-    return GRAY;
+    return getColorIndex(c);
   }
 
+  static Hashtable htColorMap = new Hashtable();
+  
+  public static short getColorIndex(int c) {
+    Integer ic = new Integer(c);
+    Integer cx = (Integer) htColorMap.get(ic);
+    if (cx == null)
+      cx = allocateColorIndex(ic);
+    return cx.shortValue();
+  }
+  
+  public static int getColorFromIndex(short colix) {
+    if (colix < 0)
+      return GRAY;
+    Integer ic = (Integer) htColorMap.get(new Integer(colix));
+    return (ic == null ? 0 : ic.intValue());    
+  }
+  
+  static int nColors;
+  
+  synchronized private static Integer allocateColorIndex(Integer ic) {
+    Integer cx = new Integer(nColors++);
+    htColorMap.put(ic, cx);
+    htColorMap.put(cx, ic);
+    //System.out.println("the color index of " + Integer.toHexString(ic.intValue())  + " is " + cx + " decoded as " + 
+      //  Integer.toHexString(getColorFromIndex(cx.shortValue())));
+    return cx;
+  }
+  
   private static int quantize(float val, float lo, float hi, int segmentCount) {
     float range = hi - lo;
     if (range <= 0 || Float.isNaN(val))

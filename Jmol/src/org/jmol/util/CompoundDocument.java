@@ -349,7 +349,7 @@ public class CompoundDocument extends BinaryDocument {
           thisEntry = new CmpDocDirectoryEntry();
           thisEntry.readData();
           if (thisEntry.lenStream > 0)
-            directory.add(thisEntry);
+            directory.addElement(thisEntry);
           if (thisEntry.entryType == 5)
             rootEntry = thisEntry;
         }

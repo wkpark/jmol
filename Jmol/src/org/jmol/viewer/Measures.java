@@ -243,7 +243,7 @@ class Measures extends Shape {
       int nPoints = atomCountPlusIndices[0];
       for (int i = 1; i <= nPoints; i++) {
         Atom atom = frame.atoms[atomCountPlusIndices[i]];
-        measureList.add(viewer.getAtomBits("atomno", atom.getAtomNumber()));
+        measureList.addElement(viewer.getAtomBits("atomno", atom.getAtomNumber()));
       }
       define(measureList, isDelete, false, false);
       return;
@@ -384,7 +384,7 @@ class Measures extends Shape {
   private Vector getAllInfo() {
     Vector info = new Vector();
     for (int i = 0; i< measurementCount; i++) {
-      info.add(getInfo(i));
+      info.addElement(getInfo(i));
     }
     return info;
   }
@@ -413,7 +413,7 @@ class Measures extends Shape {
       atomInfo.put("_ipt", new Integer(atom.atomIndex));
       atomInfo.put("atomno", new Integer(atom.getAtomNumber()));
       atomInfo.put("info", atom.getInfo());
-      atomsInfo.add(atomInfo);
+      atomsInfo.addElement(atomInfo);
     }
     info.put("atoms", atomsInfo);
     return info;

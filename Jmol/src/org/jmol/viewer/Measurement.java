@@ -289,8 +289,8 @@ class Measurement {
 
   Vector toVector() {
     Vector V = new Vector();
-    for (int i = 0; i < count + 1; i++ ) V.add(new Integer(countPlusIndices[i]));
-    V.add(strMeasurement);
+    for (int i = 0; i < count + 1; i++ ) V.addElement(new Integer(countPlusIndices[i]));
+    V.addElement(strMeasurement);
     return V;  
   }
 }

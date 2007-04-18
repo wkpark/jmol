@@ -218,7 +218,7 @@ void processAtomicCharges() throws Exception {
           Hashtable info = new Hashtable();
           info.put("freq", new Float(freq));
           info.put("label", "");
-          freqs.add(info);
+          freqs.addElement(info);
           baseAtomIndex = atomSetCollection.atomCount;
           atomSetCollection.cloneLastAtomSet();
           Atom[] atoms = atomSetCollection.atoms;
@@ -232,12 +232,12 @@ void processAtomicCharges() throws Exception {
             float dz = parseFloat(data[dataPt++][i + 1]);
             atoms[baseAtomIndex + iatom].addVibrationVector(dx, dy, dz);
             Vector vibatom = new Vector();
-            vibatom.add(new Float(dx));
-            vibatom.add(new Float(dy));
-            vibatom.add(new Float(dz));
-            vib.add(vibatom);
+            vibatom.addElement(new Float(dx));
+            vibatom.addElement(new Float(dy));
+            vibatom.addElement(new Float(dz));
+            vib.addElement(vibatom);
           }
-          vibrations.add(vib);
+          vibrations.addElement(vib);
         }
       }
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("VibFreqs", freqs);

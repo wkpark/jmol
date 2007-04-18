@@ -895,14 +895,14 @@ class Draw extends MeshCollection {
             mInfo.put("axis", mesh.axes[k]);
           Vector v = new Vector();
           for (int ipt = 0; ipt < nPoints; ipt++)
-            v.add(mesh.vertices[mesh.polygonIndexes[k][ipt]]);
+            v.addElement(mesh.vertices[mesh.polygonIndexes[k][ipt]]);
           mInfo.put("vertices", v);
           if (mesh.drawTypes[k] == DrawMesh.DRAW_LINE) {
             float d = mesh.vertices[mesh.polygonIndexes[k][0]]
                 .distance(mesh.vertices[mesh.polygonIndexes[k][1]]);
             mInfo.put("length_Ang", new Float(d));
           }
-          m.add(mInfo);
+          m.addElement(mInfo);
         }
         info.put("models", m);
       } else {
@@ -912,13 +912,13 @@ class Draw extends MeshCollection {
           info.put("axis", mesh.axis);
         Vector v = new Vector();
         for (int j = 0; j < mesh.vertexCount; j++)
-          v.add(mesh.vertices[j]);
+          v.addElement(mesh.vertices[j]);
         info.put("vertices", v);
         if (mesh.drawType == DrawMesh.DRAW_LINE)
           info.put("length_Ang", new Float(mesh.vertices[0]
               .distance(mesh.vertices[1])));
       }
-      V.add(info);
+      V.addElement(info);
     }
     return V;
   }

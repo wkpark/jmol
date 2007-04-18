@@ -167,7 +167,7 @@ class Eval { //implements Runnable {
     int atomCount = viewer.getAtomCount();
     for (int i = 0; i < atomCount; i++)
       if (bs.get(i))
-        V.add(new Integer(i));
+        V.addElement(new Integer(i));
     return V;
   }
 
@@ -337,10 +337,10 @@ class Eval { //implements Runnable {
     if (errorMessage != null)
       return errorMessage;
     Vector info = new Vector();
-    info.add(compiler.getScript());
-    info.add(compiler.getAatokenCompiled());
-    info.add(compiler.getLineNumbers());
-    info.add(compiler.getLineIndices());
+    info.addElement(compiler.getScript());
+    info.addElement(compiler.getAatokenCompiled());
+    info.addElement(compiler.getLineNumbers());
+    info.addElement(compiler.getLineIndices());
     return info;
   }
 
@@ -2705,7 +2705,7 @@ class Eval { //implements Runnable {
           }
           Vector v = new Vector();
           while (isCenterParameter(i + 1)) {
-            v.add(centerParameter(++i));
+            v.addElement(centerParameter(++i));
             i = iToken;
           }
           if (v.size() > 0) {
@@ -3803,7 +3803,7 @@ class Eval { //implements Runnable {
       if (isAll) {
         if (++expressionCount > 4)
           badArgumentCount();
-        monitorExpressions.add(bs);
+        monitorExpressions.addElement(bs);
         nAtoms = expressionCount;
       } else {
         if (++nAtoms > 4)
@@ -8349,11 +8349,11 @@ class Eval { //implements Runnable {
           Vector v = new Vector();
           if (getToken(++i).tok != Token.string)
             invalidArgument();
-          v.add(statement[i++].value);
-          v.add(getPoint3f(i, false));
-          v.add(getPoint4f(++iToken));
-          v.add(getPoint4f(++iToken));
-          v.add(getPoint4f(++iToken));
+          v.addElement(statement[i++].value);
+          v.addElement(getPoint3f(i, false));
+          v.addElement(getPoint4f(++iToken));
+          v.addElement(getPoint4f(++iToken));
+          v.addElement(getPoint4f(++iToken));
           i = iToken;
           propertyName = "functionXY";
           propertyValue = v;

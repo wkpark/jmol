@@ -222,10 +222,10 @@ class WebMOReader extends MopacDataReader {
         float[] data = new float[nData];
         for (int d = 0; d < nData; d++)
           data[d] = parseFloat(strData[d]);
-        gdata.add(data);
+        gdata.addElement(data);
         gaussianPtr++;
       }
-      sdata.add(slater);
+      sdata.addElement(slater);
     }
     float[][] garray = new float[gaussianPtr][];
     for (int i = 0; i < gaussianPtr; i++)
@@ -277,7 +277,7 @@ class WebMOReader extends MopacDataReader {
       if (line.length() == 0)
         continue;
       String[] tokens = getTokens();
-      data.add(tokens[1]);
+      data.addElement(tokens[1]);
     }
     float[] coefs = new float[data.size()];
     for (int i = data.size(); --i >= 0;)
@@ -285,7 +285,7 @@ class WebMOReader extends MopacDataReader {
     mo.put("energy", new Float(energy));
     mo.put("occupancy", new Integer(occupancy));
     mo.put("coefficients", coefs);
-    orbitals.add(mo);
+    orbitals.addElement(mo);
     setMOs("eV");
   }
 }

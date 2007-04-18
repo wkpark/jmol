@@ -86,7 +86,7 @@ final public class CommandHistory {
     this.maxSize = maxSize; 
     commandList = new Vector();
     nextCommand = 0;
-    commandList.add("");
+    commandList.addElement("");
     cursorPos = 0;
   }
 
@@ -101,7 +101,7 @@ final public class CommandHistory {
     if (maxSize < 2)
       maxSize = 2;
     while (nextCommand > maxSize) {
-      commandList.remove(0);
+      commandList.removeElementAt(0);
       nextCommand--;
     }
     if (nextCommand > maxSize)
@@ -221,7 +221,7 @@ final public class CommandHistory {
     if (n < 0 || n >= nextCommand)
       return "";
     String str = (String) commandList.get(n);
-    commandList.remove(n);
+    commandList.removeElementAt(n);
     nextCommand--;
     return str; 
   }
@@ -232,20 +232,20 @@ final public class CommandHistory {
    * @param command the String value of a command.
    */
   private void addCommandLine(String command) {
-    if(command == null || command.length() == 0)
+    if (command == null || command.length() == 0)
       return;
     if (command.endsWith(NOHISTORYLINE_FLAG))
       return;
     if (nextCommand >= maxSize) {
-      commandList.remove(0);
+      commandList.removeElementAt(0);
       nextCommand = maxSize - 1;
     }
-    commandList.add(nextCommand, command);
+    commandList.insertElementAt(command, nextCommand);
     nextCommand++;
     cursorPos = nextCommand;
-    commandList.add(nextCommand, "");
+    commandList.insertElementAt("", nextCommand);
     //for (int i = 0; i < nextCommand; i++)
-      //System.out.println("HISTORY:" + i+" "+commandList.get(i));
+    //System.out.println("HISTORY:" + i+" "+commandList.get(i));
   }
   
 }

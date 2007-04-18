@@ -63,8 +63,8 @@ abstract class MopacDataReader extends AtomSetCollectionReader {
   void addSlater(int i0, int i1, int i2, int i3, int i4, 
                         float zeta, float coef) {
     //System.out.println (i0 + " " + i1 + " " + i2 +  " " + i3 + " " + i4 + " " + zeta + " " + coef);
-    intinfo.add(new int[] {i0, i1, i2, i3, i4});
-    floatinfo.add(new float[] {zeta, coef});
+    intinfo.addElement(new int[] {i0, i1, i2, i3, i4});
+    floatinfo.addElement(new float[] {zeta, coef});
   }
   
   void setSlaters() {

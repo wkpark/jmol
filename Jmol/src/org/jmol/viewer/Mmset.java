@@ -508,7 +508,7 @@ final class Mmset {
   Vector getStructureInfo() {
     Vector info = new Vector();
     for (int i = 0; i < structureCount; i++)
-      info.add(structures[i].toHashtable());
+      info.addElement(structures[i].toHashtable());
     return info;
   }
 

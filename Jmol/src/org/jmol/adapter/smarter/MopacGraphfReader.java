@@ -197,7 +197,7 @@ class MopacGraphfReader extends MopacDataReader {
       mo.put("energy", new Float(values[0]));
       mo.put("occupancy", new Integer((int) values[1]));
       mo.put("coefficients", list2[iMo]);
-      orbitals.add(mo); 
+      orbitals.addElement(mo); 
     }
     setMOs("eV");
   }

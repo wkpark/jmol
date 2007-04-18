@@ -335,10 +335,10 @@ class GaussianReader extends AtomSetCollectionReader {
       int nGaussians = parseInt(tokens[5]);
       slater.put("gaussianPtr", new Integer(gaussianCount)); // or parseInt(tokens[7]) - 1
       slater.put("nGaussians", new Integer(nGaussians));
-      sdata.add(slater);
+      sdata.addElement(slater);
       gaussianCount += nGaussians;
       for (int i = 0; i < nGaussians; i++)
-        gdata.add(getTokens(readLine()));
+        gdata.addElement(getTokens(readLine()));
     }
     if (atomCount == -1)
       atomCount = 0;
@@ -395,7 +395,7 @@ class GaussianReader extends AtomSetCollectionReader {
       }
       try {
         for (int i = 0; i < nThisLine; i++)
-          data[i].add(tokens[i + ptData]);
+          data[i].addElement(tokens[i + ptData]);
       } catch (Exception e) {
         Logger.error("Error reading Gaussian file Molecular Orbitals at line: "
             + line);
@@ -411,7 +411,7 @@ class GaussianReader extends AtomSetCollectionReader {
         for (int j = coefs.length; --j >= 0;)
           coefs[j] = parseFloat((String) data[i].get(j));
         mos[i].put("coefficients", coefs);
-        orbitals.add(mos[i]);
+        orbitals.addElement(mos[i]);
       }
   }
 

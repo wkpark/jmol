@@ -463,14 +463,14 @@ class Dipoles extends Shape {
         atomInfo = new Hashtable();
         viewer.getAtomIdentityInfo(dipole.atoms[0].atomIndex, atomInfo);
         Vector atoms = new Vector();
-        atoms.add(atomInfo);
+        atoms.addElement(atomInfo);
         atomInfo = new Hashtable();
         viewer.getAtomIdentityInfo(dipole.atoms[1].atomIndex, atomInfo);
-        atoms.add(atomInfo);
+        atoms.addElement(atomInfo);
         info.put("atoms", atoms);
         info.put("magnitude", new Float(dipole.vector.length()));
       }
-      V.add(info);
+      V.addElement(info);
     }
     return V;
   }

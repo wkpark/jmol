@@ -6200,7 +6200,7 @@ class Isosurface extends MeshFileCollection {
       info.put("modelIndex", new Integer(mesh.modelIndex));
       if (mesh.title != null)
         info.put("title", mesh.title);
-      V.add(info);
+      V.addElement(info);
     }
     return V;
   }

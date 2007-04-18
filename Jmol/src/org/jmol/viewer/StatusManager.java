@@ -319,10 +319,10 @@ class StatusManager {
     statusPtr++;
     Vector statusRecordSet;
     Vector msgRecord = new Vector();
-    msgRecord.add(new Integer(statusPtr));
-    msgRecord.add(statusName);
-    msgRecord.add(new Integer(intInfo));
-    msgRecord.add(statusInfo);
+    msgRecord.addElement(new Integer(statusPtr));
+    msgRecord.addElement(statusName);
+    msgRecord.addElement(new Integer(intInfo));
+    msgRecord.addElement(statusInfo);
     if (isReplace && messageQueue.containsKey(statusName)) {
       messageQueue.remove(statusName);
     }
@@ -332,9 +332,9 @@ class StatusManager {
       statusRecordSet = new Vector();
     }
     if (statusRecordSet.size() == MAXIMUM_QUEUE_LENGTH)
-      statusRecordSet.remove(0);
+      statusRecordSet.removeElementAt(0);
     
-    statusRecordSet.add(msgRecord);
+    statusRecordSet.addElement(msgRecord);
     messageQueue.put(statusName, statusRecordSet);
   }
   
@@ -354,7 +354,7 @@ class StatusManager {
     int n = 0;
     while (e.hasMoreElements()) {
       String statusName = (String)e.nextElement();
-      msgList.add(messageQueue.remove(statusName));
+      msgList.addElement(messageQueue.remove(statusName));
       n++;
     }
     return msgList;

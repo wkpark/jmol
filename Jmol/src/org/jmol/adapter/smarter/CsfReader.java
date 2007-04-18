@@ -558,7 +558,7 @@ class CsfReader extends MopacDataReader {
        System.out.print(" " + list[iMo][i]);
        System.out.println();
        */
-      orbitals.add(mo);
+      orbitals.addElement(mo);
     }
     setMOs("eV");
   }
@@ -634,10 +634,10 @@ class CsfReader extends MopacDataReader {
           }
           slater.put("gaussianPtr", new Integer(gaussianCount));
           slater.put("nGaussians", new Integer(nZ));
-          sdata.add(slater);
+          sdata.addElement(slater);
           gaussianCount += nZ;
           for (int i = 0; i < nZ; i++)
-            gdata.add(new float[] {zetas[ipt][i], contractionCoefs[ipt][i]});
+            gdata.addElement(new float[] {zetas[ipt][i], contractionCoefs[ipt][i]});
         }
       }
       float[][] garray = new float[gaussianCount][];

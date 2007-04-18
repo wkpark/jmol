@@ -899,7 +899,7 @@ String getAtomInfoChime(int i) {
       props = viewer.getModelProperties(i);
       if (props != null)
         model.put("modelProperties", props);
-      models.add(model);
+      models.addElement(model);
     }
     info.put("models",models);
     return info;
@@ -913,7 +913,7 @@ String getAtomInfoChime(int i) {
     int modelCount = viewer.getModelCount();
     for (int i = 0; i < modelCount; ++i) {
       Hashtable modelinfo = getModelAuxiliaryInfo(i);
-      models.add(modelinfo);
+      models.addElement(modelinfo);
     }
     info.put("models",models);
     return info;
@@ -924,7 +924,7 @@ String getAtomInfoChime(int i) {
     int atomCount = viewer.getAtomCount();
     for (int i = 0; i < atomCount; i++) 
       if (bs.get(i))
-        V.add(getAtomInfoLong(i));
+        V.addElement(getAtomInfoLong(i));
     return V;
   }
 
@@ -1000,7 +1000,7 @@ String getAtomInfoChime(int i) {
     for (int i = 0; i < bondCount; i++)
       if (bs.get(frame.getBondAt(i).getAtom1().atomIndex) 
           && bs.get(frame.getBondAt(i).getAtom2().atomIndex)) 
-        V.add(getBondInfo(i));
+        V.addElement(getBondInfo(i));
     return V;
   }
 
@@ -1068,7 +1068,7 @@ String getAtomInfoChime(int i) {
       if (info.size() > 0) {
         modelInfo.put("modelIndex",new Integer(i));
         modelInfo.put("chains",info);
-        modelVector.add(modelInfo);
+        modelVector.addElement(modelInfo);
       }
     }
     finalInfo.put("models",modelVector);
@@ -1089,14 +1089,14 @@ String getAtomInfoChime(int i) {
         Vector3f[] vectors = polymer.wingVectors;
         for (int j = 0; j < polymer.monomerCount; j++)
           if (bs.get(polymer.monomers[j].getLeadAtomIndex())) {
-            vList.add(new Point3f[] { points[j], new Point3f(vectors[j]) });
+            vList.addElement(new Point3f[] { points[j], new Point3f(vectors[j]) });
             last = j;
           } else if (last != Integer.MAX_VALUE - 1) {
-            vList.add(new Point3f[] { points[j], new Point3f(vectors[j]) });
+            vList.addElement(new Point3f[] { points[j], new Point3f(vectors[j]) });
             last = Integer.MAX_VALUE - 1;
           }
         if (last + 1 < polymer.monomerCount)
-          vList.add(new Point3f[] { points[last + 1],
+          vList.addElement(new Point3f[] { points[last + 1],
               new Point3f(vectors[last + 1]) });
       }
     }
@@ -1124,11 +1124,11 @@ String getAtomInfoChime(int i) {
         infoGroup.put("atomInfo1", getAtomInfo(group.firstAtomIndex));
         infoGroup.put("atomInfo2", getAtomInfo(group.lastAtomIndex));
         infoGroup.put("visibilityFlags", new Integer(group.shapeVisibilityFlags));
-        infoChain.add(infoGroup);
+        infoChain.addElement(infoGroup);
       }
       if (! infoChain.isEmpty()) { 
         arrayName.put("residues",infoChain);
-        infoChains.add(arrayName);
+        infoChains.addElement(arrayName);
       }
     }
     return infoChains;
@@ -1145,12 +1145,12 @@ String getAtomInfoChime(int i) {
       for (int ip = 0; ip < polymerCount; ip++) {
         Hashtable polyInfo = getPolymerInfo(i, ip, bs); 
         if (! polyInfo.isEmpty())
-          info.add(polyInfo);
+          info.addElement(polyInfo);
       }
       if (info.size() > 0) {
         modelInfo.put("modelIndex",new Integer(i));
         modelInfo.put("polymers",info);
-        modelVector.add(modelInfo);
+        modelVector.addElement(modelInfo);
       }
     }
     finalInfo.put("models",modelVector);
@@ -1189,7 +1189,7 @@ String getAtomInfoChime(int i) {
       if (bs.get(polymer.monomers[i].getLeadAtomIndex())) {
         Hashtable monomerInfo = polymer.monomers[i].getMyInfo();
         monomerInfo.put("monomerIndex", new Integer(i));
-        info.add(monomerInfo);
+        info.addElement(monomerInfo);
         sequence += polymer.monomers[i].getGroup1();
       }
     }
@@ -1232,6 +1232,8 @@ String getAtomInfoChime(int i) {
     for (int i = 1; i < JmolConstants.SHAPE_MAX; i++)
       if (frame.shapes[i] != null)
         frame.shapes[i].setVisibilityFlags(bs);
+    //s(bs);
+    //
     // BALLS sets the JmolConstants.ATOM_IN_MODEL flag.
     frame.shapes[JmolConstants.SHAPE_BALLS]
         .setVisibilityFlags(bs);
@@ -1369,7 +1371,7 @@ String getAtomInfoChime(int i) {
   }
   
   void setAtomCoord(int atomIndex, float x, float y, float z) {
-    frame.setAtomCoord(atomIndex,x,y,z);
+    frame.setAtomCoord(atomIndex,x,y,z); 
   }
 
   void setAtomCoordRelative(int atomIndex, float x, float y, float z) {

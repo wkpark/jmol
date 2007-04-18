@@ -199,7 +199,7 @@ class PsiReader extends AtomSetCollectionReader {
         }
         if (ipt > 1) {
           if (slater != null)
-            sdata.add(slater);
+            sdata.addElement(slater);
           slater = new Hashtable();
           slater.put("atomCenter", new Integer(atomCenter));
           shellCount++;
@@ -207,13 +207,13 @@ class PsiReader extends AtomSetCollectionReader {
           slater.put("gaussianPtr", new Integer(gaussianCount));
         }
         nGaussians++;
-        gdata.add(new String[] { tokens[ipt], tokens[ipt + 1] });
+        gdata.addElement(new String[] { tokens[ipt], tokens[ipt + 1] });
         slater.put("nGaussians", new Integer(nGaussians));
       }
-      sdata.add(slater);
+      sdata.addElement(slater);
       gaussianCount += nGaussians;
       if (slater != null)
-        sdata.add(slater);
+        sdata.addElement(slater);
       readLine();
     }
     float[][] garray = new float[gaussianCount][];
@@ -354,7 +354,7 @@ Orbital energies (a.u.):
       }
       try {
         for (int i = 0; i < nThisLine; i++)
-          data[i].add(tokens[i + ptData]);
+          data[i].addElement(tokens[i + ptData]);
       } catch (Exception e) {
         Logger.error("Error reading Psi3 file molecular orbitals at line: "
             + line);
@@ -370,7 +370,7 @@ Orbital energies (a.u.):
       for (int j = coefs.length; --j >= 0;)
         coefs[j] = parseFloat((String) data[i].get(j));
       mos[i].put("coefficients", coefs);
-      orbitals.add(mos[i]);
+      orbitals.addElement(mos[i]);
     }
   }
 }

@@ -232,7 +232,7 @@ class SpartanArchive {
       slater.put("basisType", basisType);
       slater.put("nGaussians", new Integer(nGaussians));
       slater.put("gaussianPtr", new Integer(gaussianPtr));
-      sdata.add(slater);
+      sdata.addElement(slater);
     }
     for (int i = 0; i < gaussianCount; i++) {
       float alpha = parseFloat(readLine());
@@ -293,7 +293,7 @@ class SpartanArchive {
       mo.put("energy", new Float(energies[i]));
       //mo.put("occupancy", new Integer(-1));
       mo.put("coefficients", coefficients[i]);
-      orbitals.add(mo);
+      orbitals.addElement(mo);
     }
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug(orbitals.size() + " molecular orbitals read");
@@ -350,19 +350,19 @@ class SpartanArchive {
           && !line.substring(0, 3).equals("END")) {
         if (isString) {
           value = getQuotedString("\"");
-          vector.add(value);
+          vector.addElement(value);
         } else {
           String tokens2[] = getTokens();
           for (int i = 0; i < tokens2.length; i++) {
             if (isArray) {
-              atomInfo.add(new Float(parseFloat(tokens2[i])));
+              atomInfo.addElement(new Float(parseFloat(tokens2[i])));
               if ((i + 1) % nValues == 0) {
-                vector.add(atomInfo);
+                vector.addElement(atomInfo);
                 atomInfo = new Vector();
               }
             } else {
               value = new Float(parseFloat(tokens2[i]));
-              vector.add(value);
+              vector.addElement(value);
             }
           }
         }
@@ -403,7 +403,7 @@ class SpartanArchive {
       if (line.length() > 15
           && !(label = line.substring(15, line.length())).equals("???"))
         info.put("label", label);
-      freqs.add(info);
+      freqs.addElement(info);
       atomSetCollection.setAtomSetName(label + " " + freq + " cm^-1");
       atomSetCollection.setAtomSetProperty(SmarterJmolAdapter.PATH_KEY,
           "Frequencies");
@@ -422,20 +422,20 @@ class SpartanArchive {
       for (int i = 0; i < tokens2.length; i++) {
         float f = parseFloat(tokens2[i]);
         atomInfo[i % nValues] = f;
-        vibatom.add(new Float(f));
+        vibatom.addElement(new Float(f));
         if ((i + 1) % nValues == 0) {
           //Logger.debug(ifreq + " atom " + iatom + "/" + atomCount
           //      + " vectors: " + atomInfo[0] + " " + atomInfo[1] + " "
           //      + atomInfo[2]);
           atoms[iatom]
               .addVibrationVector(atomInfo[0], atomInfo[1], atomInfo[2]);
-          vib.add(vibatom);
+          vib.addElement(vibatom);
           vibatom = new Vector();
           ++iatom;
         }
       }
       if (iatom % atomCount == 0) {
-        vibrations.add(vib);
+        vibrations.addElement(vib);
         vib = new Vector();
         if (++ifreq == frequencyCount)
           break; ///loop exit

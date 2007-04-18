@@ -200,7 +200,7 @@ OR:
         if (!tokens[0].equals(thisShell)) {
           if (slater != null) {
             slater.put("nGaussians", new Integer(nGaussians));
-            sdata.add(slater);
+            sdata.addElement(slater);
           }
           thisShell = tokens[0];
           shellCount++;
@@ -222,15 +222,15 @@ OR:
             if (i >= 3)i += 2;
             j++;
           }
-          gdata.add(s);
+          gdata.addElement(s);
         } else {
-          gdata.add(tokens);
+          gdata.addElement(tokens);
         }
       }
     }
     if (slater != null) {
       slater.put("nGaussians", new Integer(nGaussians));
-      sdata.add(slater);
+      sdata.addElement(slater);
     }
     float[][] garray = new float[gaussianCount][];
     for (int i = 0; i < gaussianCount; i++) {
@@ -278,7 +278,7 @@ OR:
           for (int j = coefs.length; --j >= 0;)
             coefs[j] = parseFloat((String) data[i].get(j));
           mos[i].put("coefficients", coefs);
-          orbitals.add(mos[i]);
+          orbitals.addElement(mos[i]);
         }
         nThisLine = 0;
         continue;
@@ -302,7 +302,7 @@ OR:
       }
       int nSkip = tokens.length - nThisLine;
       for (int i = 0; i < nThisLine; i++)
-        data[i].add(tokens[i + nSkip]);
+        data[i].addElement(tokens[i + nSkip]);
     }
     Logger.debug(orbitals.size() + " molecular orbitals read in model " + modelNumber);
   }

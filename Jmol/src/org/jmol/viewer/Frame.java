@@ -1530,7 +1530,7 @@ public final class Frame {
 
   void rebond() {
     // from eval "connect" or from app preferences panel
-    stateScripts.add("connect;");
+    stateScripts.addElement("connect;");
     deleteAllBonds();
     autoBond(null, null, null);
   }
@@ -1784,7 +1784,7 @@ public final class Frame {
       script = "frame " + (iFrame < 0 ? "" + iFrame : getModelName(-iFrame))
           + ";\n" + script;
     }
-    stateScripts.add(script);
+    stateScripts.addElement(script);
   }
 
   int makeConnections(float minDistance, float maxDistance, short order,
@@ -1800,7 +1800,7 @@ public final class Frame {
       stateScript += JmolConstants.getBondOrderNameFromOrder(order) + " "
           + JmolConstants.connectOperationName(connectOperation);
       stateScript += ";";
-      stateScripts.add(stateScript);
+      stateScripts.addElement(stateScript);
     }
     if (connectOperation == JmolConstants.CONNECT_DELETE_BONDS)
       return deleteConnections(minDistance, maxDistance, order, bsA, bsB,
@@ -2808,7 +2808,7 @@ public final class Frame {
       bsTemp = (BitSet) bsAtoms.clone();
       bsTemp.and(molecules[i].atomList);
       if (bsTemp.length() > 0)
-        V.add(molecules[i].getInfo());
+        V.addElement(molecules[i].getInfo());
     }
     return V;
   }

@@ -56,17 +56,17 @@ class ScriptManager {
                           String statusList, boolean isScriptFile,
                           boolean isQuiet) {
     Vector scriptItem = new Vector();
-    scriptItem.add(strScript);
-    scriptItem.add(statusList);
-    scriptItem.add(returnType);
-    scriptItem.add(isScriptFile ? Boolean.TRUE : Boolean.FALSE);
-    scriptItem.add(isQuiet ? Boolean.TRUE : Boolean.FALSE);
+    scriptItem.addElement(strScript);
+    scriptItem.addElement(statusList);
+    scriptItem.addElement(returnType);
+    scriptItem.addElement(isScriptFile ? Boolean.TRUE : Boolean.FALSE);
+    scriptItem.addElement(isQuiet ? Boolean.TRUE : Boolean.FALSE);
     
     if (!useQueue) {
       clearQueue();
       viewer.haltScriptExecution();
     }
-    scriptQueue.add(scriptItem);
+    scriptQueue.addElement(scriptItem);
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug(scriptQueue.size() + " scripts; added: " + strScript);
     }
@@ -109,7 +109,7 @@ class ScriptManager {
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug(scriptQueue.size() + " scripts; running: " + script);
     }
-    scriptQueue.remove(0);
+    scriptQueue.removeElementAt(0);
     Object returnInfo = runScript(returnType, script, statusList, isScriptFile,
         isQuiet);
     if (scriptQueue.size() == 0) // might have been cleared with an exit

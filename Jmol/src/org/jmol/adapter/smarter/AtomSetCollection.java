@@ -679,7 +679,7 @@ class AtomSetCollection {
       trajectory = new Point3f[atomCount];
     for (int i = 0; i < atomCount; i++)
       trajectory[i] = new Point3f(atoms[i]);
-    trajectories.add(trajectory);
+    trajectories.addElement(trajectory);
     nTrajectories++;
     //System.out.println(" nTrajectories:" + nTrajectories + " coord 4: " + trajectory[4]);
   }

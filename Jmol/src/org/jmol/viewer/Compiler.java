@@ -224,7 +224,7 @@ class Compiler {
             && tokAttr(tokCommand, Token.setparam)) {
           tokenCommand = Token.getTokenFromName("set");
           tokCommand = Token.set;
-          ltoken.add(0, tokenCommand);
+          ltoken.insertElementAt(tokenCommand, 0);
           cchToken = 1;
           continue;
         }
@@ -394,8 +394,8 @@ class Compiler {
             // set x   or   x = 
             if (tok == Token.opEQ) {
               token = (Token) ltoken.get(0);
-              ltoken.remove(0);
-              ltoken.add(Token.getTokenFromName("set"));
+              ltoken.removeElementAt(0);
+              ltoken.addElement(Token.getTokenFromName("set"));
               tok = token.tok;
               tokCommand = Token.set;
             }
@@ -431,7 +431,7 @@ class Compiler {
           } else if (nTokens == 2 && tok == Token.opEQ) {
             // we are looking at @x =.... just insert a SET command
             // and ignore the =. It's the same as set @x ... 
-            ltoken.add(0, Token.getTokenFromName("set"));
+            ltoken.insertElementAt(Token.getTokenFromName("set"), 0);
             continue;
           } else {
             // we are looking at the expression

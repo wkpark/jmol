@@ -305,7 +305,7 @@ class Text {
       return;
     this.text = text;
     textUnformatted = text;
-    doFormatText = (viewer != null && text.indexOf("%{") >= 0);
+    doFormatText = (viewer != null && text != null && text.indexOf("%{") >= 0);
     if (!doFormatText)
       recalc();
   }

@@ -117,10 +117,12 @@ class Isosurface extends MeshFileCollection {
 
   IsosurfaceMesh[] isomeshes = new IsosurfaceMesh[4];
   IsosurfaceMesh thisMesh;
+  JvxlData jvxlData;
   
   void allocMesh(String thisID) {
     meshes = isomeshes = (IsosurfaceMesh[])ArrayUtil.ensureLength(isomeshes, meshCount + 1);
     currentMesh = thisMesh = isomeshes[meshCount++] = new IsosurfaceMesh(thisID, g3d, colix);
+    jvxlData = thisMesh.jvxlData = new JvxlData();
   }
 
   void initShape() {
@@ -566,7 +568,7 @@ class Isosurface extends MeshFileCollection {
         dataType = surfaceType;
         state = STATE_DATA_COLORED;
         if (thisMesh != null) {
-          thisMesh.isBicolorMap = true;
+          jvxlData.isBicolorMap = true;
           applyColorScale(thisMesh);
         }
       }
@@ -911,7 +913,7 @@ class Isosurface extends MeshFileCollection {
       jvxlFileMessage = (jvxlDataIsColorMapped ? "mapped" : "");
       if (jvxlDataIs2dContour)
         colorIsosurface();
-      thisMesh.nBytes = nBytes;
+      jvxlData.nBytes = nBytes;
       if (colorBySign) {
         state = STATE_DATA_COLORED;
         applyColorScale(thisMesh);
@@ -923,7 +925,7 @@ class Isosurface extends MeshFileCollection {
       setModelIndex();
       if (logMessages && thePlane == null && !isSilent
           && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
-        Logger.debug("\n" + jvxlGetFile(thisMesh, jvxlFileMessage, true, 1));
+        Logger.debug("\n" + jvxlGetFile(jvxlData, title, jvxlFileMessage, true, 1, "", ""));
       discardTempData(jvxlDataIs2dContour);
       dataType = SURFACE_NONE;
       mappedDataMin = Float.MAX_VALUE;
@@ -974,7 +976,7 @@ class Isosurface extends MeshFileCollection {
         }
       }
       colorIsosurface();
-      thisMesh.nBytes = nBytes;
+      jvxlData.nBytes = nBytes;
       //if (logMessages && !isSilent)
       //  Logger.debug("\n" + jvxlGetFile(thisMesh, jvxlFileMessage, true, 1));
       setModelIndex();
@@ -996,7 +998,8 @@ class Isosurface extends MeshFileCollection {
   void setPropertySuper(String propertyName, Object value, BitSet bs) {
     currentMesh = thisMesh;
     super.setProperty(propertyName, value, bs);
-    thisMesh = (IsosurfaceMesh)currentMesh;  
+    thisMesh = (IsosurfaceMesh)currentMesh;
+    jvxlData = (thisMesh == null ? null : thisMesh.jvxlData);
   }
   
   Object getProperty(String property, int index) {
@@ -1007,14 +1010,18 @@ class Isosurface extends MeshFileCollection {
     if (thisMesh == null)
       return "no current isosurface";
     if (property == "plane")
-      return (thisMesh).jvxlPlane;
+      return jvxlData.jvxlPlane;
     if (property == "jvxlFileData")
-      return jvxlGetFile(thisMesh, "", true, index);
+      return jvxlGetFile(jvxlData, title, "", true, index, thisMesh.getState(myType), shortScript());
     if (property == "jvxlSurfaceData")
-      return jvxlGetFile(thisMesh, "", false, 1);
+      return jvxlGetFile(jvxlData, title, "", false, 1, thisMesh.getState(myType), shortScript());
     return super.getProperty(property, index);
   }
 
+  String shortScript() {
+    return thisMesh.scriptCommand.substring(0, (thisMesh.scriptCommand+";").indexOf(";"));
+  }
+  
   boolean getScriptBitSets() {
     if (script == null)
       return false;
@@ -1170,7 +1177,7 @@ class Isosurface extends MeshFileCollection {
     } else {
       applyColorScale(thisMesh);
     }
-    thisMesh.jvxlExtraLine = jvxlExtraLine(1);
+    jvxlData.jvxlExtraLine = jvxlExtraLine(1);
     jvxlFileMessage = "mapped: min = " + valueMappedToRed + "; max = "
         + valueMappedToBlue;
   }
@@ -1204,10 +1211,10 @@ class Isosurface extends MeshFileCollection {
     if (logMessages)
       Logger.debug("setMapRanges: " + mappedDataMin + " " + mappedDataMax + " "
           + valueMappedToRed + " " + valueMappedToBlue);
-    thisMesh.valueMappedToRed = valueMappedToRed;
-    thisMesh.valueMappedToBlue = valueMappedToBlue;
-    thisMesh.mappedDataMin = mappedDataMin;
-    thisMesh.mappedDataMax = mappedDataMax;
+    jvxlData.valueMappedToRed = valueMappedToRed;
+    jvxlData.valueMappedToBlue = valueMappedToBlue;
+    jvxlData.mappedDataMin = mappedDataMin;
+    jvxlData.mappedDataMax = mappedDataMax;
   }
 
   void checkFlags() {
@@ -1238,18 +1245,21 @@ class Isosurface extends MeshFileCollection {
     }
     thisMesh.realVertexCount = (thisMesh.firstViewableVertex > 0 ? thisMesh.firstViewableVertex
         : thisMesh.vertexCount);
-    thisMesh.vertexIncrement =   (thisMesh.hasGridPoints && thisMesh.jvxlPlane == null ? 3 : 1);
-    thisMesh.jvxlFileHeader = "" + jvxlFileHeader;
-    thisMesh.cutoff = (isJvxl ? jvxlCutoff : cutoff);
-    thisMesh.jvxlColorData = "";
-    thisMesh.jvxlEdgeData = "" + fractionData;
-    thisMesh.isBicolorMap = isBicolorMap;
-    thisMesh.isContoured = isContoured;
-    thisMesh.nContours = nContours;
+    thisMesh.vertexIncrement =   (thisMesh.hasGridPoints && jvxlData.jvxlPlane == null ? 3 : 1);
+    
+    jvxlData.jvxlFileHeader = "" + jvxlFileHeader;
+    jvxlData.cutoff = (isJvxl ? jvxlCutoff : cutoff);
+    jvxlData.jvxlColorData = "";
+    jvxlData.jvxlEdgeData = "" + fractionData;
+    jvxlData.isBicolorMap = isBicolorMap;
+    jvxlData.isContoured = isContoured;
+    jvxlData.nContours = nContours;
+    jvxlData.wasCubic = isCubic;
+    jvxlData.isXLowToHigh = isXLowToHigh;
     if (jvxlDataIsColorMapped)
       jvxlReadColorData(thisMesh);
     thisMesh.colix = getDefaultColix();
-    thisMesh.jvxlExtraLine = jvxlExtraLine(1);
+    jvxlData.jvxlExtraLine = jvxlExtraLine(1);
     if (isJvxl && jvxlRenderingData != null)
       setRendering(jvxlRenderingData);
     //if (thePlane != null && iAddGridPoints)
@@ -1273,21 +1283,10 @@ class Isosurface extends MeshFileCollection {
   void resetIsosurface() {
     if (thisMesh == null)
       allocMesh(null);
-    thisMesh.clear("isosurface");
-    thisMesh.vertexColixes = null;
-    thisMesh.vertexValues = null;
-    thisMesh.isColorSolid = true;
-    thisMesh.realVertexCount = 0;
+    thisMesh.clear("isosurface", iAddGridPoints, showTriangles);
     contourVertexCount = 0;
-    thisMesh.firstViewableVertex = 0;
-    thisMesh.hasGridPoints = iAddGridPoints;
-    thisMesh.showPoints = iAddGridPoints;
-    thisMesh.showTriangles = showTriangles;
     if (cutoff == Float.MAX_VALUE)
       cutoff = defaultCutoff;
-    thisMesh.jvxlSurfaceData = "";
-    thisMesh.jvxlEdgeData = "";
-    thisMesh.jvxlColorData = "";
     edgeCount = 0;
   }
 /*
@@ -1301,12 +1300,13 @@ class Isosurface extends MeshFileCollection {
         }
   }
 */  
-  boolean isJvxl, isApbsDx;
+  boolean isJvxl, isApbsDx, isCubic;
   boolean endOfData;
 
   void readData(boolean isMapData) {
     isJvxl = false;
     isApbsDx = false;
+    isCubic = false;
     endOfData = false;
     mappedDataMin = Float.MAX_VALUE;
     nSurfaces = readVolumetricHeader();
@@ -1623,9 +1623,12 @@ class Isosurface extends MeshFileCollection {
     line = br.readLine();
     Logger.info("Reading extra orbital/JVXL information line: " + line);
     int nSurfaces = parseInt(line);
-    if (!(isJvxl = (nSurfaces < 0)))
+    isJvxl = (nSurfaces < 0);
+    isCubic = !isJvxl;
+    if (!isJvxl)
       return nSurfaces;
     nSurfaces = -nSurfaces;
+    
     Logger.info("jvxl file surfaces: " + nSurfaces);
     int ich;
     if ((ich = parseInt()) == Integer.MIN_VALUE) {
@@ -1832,8 +1835,8 @@ class Isosurface extends MeshFileCollection {
     if (!isJvxl)
       surfaceData.append(' ').append(dataCount).append('\n');
     if (!isMapData) {
-      thisMesh.jvxlSurfaceData = (thePlane == null ? surfaceData.toString() : "");
-      thisMesh.jvxlPlane = thePlane;
+      jvxlData.jvxlSurfaceData = (thePlane == null ? surfaceData.toString() : "");
+      jvxlData.jvxlPlane = thePlane;
     }
     if (!isSilent && Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug("Successfully read " + nPointsX + " x " + nPointsY + " x "
@@ -2256,11 +2259,11 @@ class Isosurface extends MeshFileCollection {
       if (saveColorData)
         list.append(ch);
     }
-    mesh.isJvxlPrecisionColor = jvxlWritePrecisionColor;
-    mesh.jvxlColorData = (saveColorData ? list.append(list1).append('\n')
+    mesh.jvxlData.isJvxlPrecisionColor = jvxlWritePrecisionColor;
+    mesh.jvxlData.jvxlColorData = (saveColorData ? list.append(list1).append('\n')
         .toString() : "");
     if (logMessages)
-      Logger.info("color data: " + mesh.jvxlColorData);
+      Logger.info("color data: " + mesh.jvxlData.jvxlColorData);
   }
 
   float getVertexColorValue(IsosurfaceMesh mesh, int vertexIndex) {
@@ -2533,7 +2536,7 @@ class Isosurface extends MeshFileCollection {
       mappedDataMin = contourPlaneMinimumValue;
       mappedDataMax = contourPlaneMaximumValue;
     }
-    mesh.jvxlColorData = data + "\n";
+    mesh.jvxlData.jvxlColorData = data + "\n";
   }
 
   short getColixFromPalette(float value) {
@@ -2645,50 +2648,52 @@ class Isosurface extends MeshFileCollection {
     //0.9e adds color contours for planes and min/max range, contour settings
   }
 
-  String jvxlGetFile(IsosurfaceMesh mesh, String msg, boolean includeHeader, int nSurfaces) {
+  static String jvxlGetFile(JvxlData jvxlData, String[] title, String msg,
+                            boolean includeHeader, int nSurfaces, String state, String comment) {
+    
     StringBuffer data = new StringBuffer();
     if (includeHeader) {
-      String s = mesh.jvxlFileHeader
-          + (nSurfaces > 0 ? (-nSurfaces) + mesh.jvxlExtraLine.substring(2)
-              : mesh.jvxlExtraLine);
-      data.append(!isXLowToHigh && data.indexOf("JVXL") != 0 && data.indexOf("#") != 0 ?
-        "JVXL ": isXLowToHigh && data.indexOf("#JVXL+") != 0 ? "#JVXL+\n": "");
+      String s = jvxlData.jvxlFileHeader
+          + (nSurfaces > 0 ? (-nSurfaces) + jvxlData.jvxlExtraLine.substring(2)
+              : jvxlData.jvxlExtraLine);
+      if (s.indexOf("#JVXL") != 0)
+        data.append("#JVXL").append(jvxlData.isXLowToHigh ? "+\n" : "\n");
       data.append(s);
     }
     data.append("# ").append(msg).append('\n');
     if (title != null)
       for (int i = 0; i < title.length; i++)
         data.append("# ").append(title[i]).append('\n');
-    String state = mesh.getState(myType);
-    data.append(mesh.jvxlDefinitionLine + " rendering:" + state).append('\n');
-    String compressedData = (mesh.jvxlPlane == null ? mesh.jvxlSurfaceData : "");
-    if (logMessages)
-      Logger.info(" jvxlGetFile: " + mesh.jvxlSurfaceData + "\n"
-          + mesh.jvxlEdgeData + "\n" + mesh.jvxlColorData + "\n"
-          + mesh.jvxlPlane);
-
-    if (mesh.jvxlPlane == null) {
+    data.append(jvxlData.jvxlDefinitionLine + " rendering:" + state).append('\n');
+    
+    String compressedData = (jvxlData.jvxlPlane == null ? jvxlData.jvxlSurfaceData : "");
+    if (jvxlData.jvxlPlane == null) {
       //no real point in compressing this unless it's a sign-based coloring 
-      compressedData += jvxlCompressString(mesh.jvxlEdgeData
-          + mesh.jvxlColorData);
+      compressedData += jvxlCompressString(jvxlData.jvxlEdgeData
+          + jvxlData.jvxlColorData);
     } else {
-      compressedData += jvxlCompressString(mesh.jvxlColorData);
+      compressedData += jvxlCompressString(jvxlData.jvxlColorData);
     }
-    if (!isJvxl && mesh.nBytes > 0)
-      mesh.jvxlCompressionRatio = (int) (((float) mesh.nBytes + mesh.jvxlFileHeader
-          .length()) / (data.length() + compressedData.length()));
+    int r = 0;
+    if (jvxlData.wasCubic && jvxlData.nBytes > 0 && compressedData.length() > 0)
+      jvxlData.jvxlCompressionRatio = r = (int) (((float) jvxlData.nBytes) / compressedData.length());
     data.append(compressedData);
     if (msg != null)
       data.append("#-------end of jvxl file data-------\n");
-    data.append(mesh.jvxlInfoLine).append('\n');
-    int n = (mesh.scriptCommand+";").indexOf(";");
-    data.append("# ").append(mesh.scriptCommand.substring(0, n)).append('\n');
-    data.append("# ").append(state).append('\n');
+    data.append(jvxlData.jvxlInfoLine).append('\n');
+    if (comment != null)
+      data.append("# ").append(comment).append('\n');
+    if (state != null)
+      data.append("# ").append(state).append('\n');
+    if (r > 0) {
+      String s = "bytes read: " + jvxlData.nBytes + "; approximate voxel-only input/output byte ratio: " + r + ":1\n";
+      data.append("# ").append(s);
+    }
     return data.toString();
   }
 
-  String jvxlGetDefinitionLine(IsosurfaceMesh mesh, boolean isInfo) {
-    String definitionLine = mesh.cutoff + " ";
+  String jvxlGetDefinitionLine(JvxlData jvxlData, boolean isInfo) {
+    String definitionLine = jvxlData.cutoff + " ";
 
     // cutoff        param1              param2         param3
     //                 |                   |              |
@@ -2700,18 +2705,18 @@ class Isosurface extends MeshFileCollection {
     //   when        < -1      &&    >  0 ==> contourable functionXY
     //   when        > 0       &&    <  0 ==> jvxlDataisBicolorMap
 
-    if (mesh.jvxlSurfaceData == null)
+    if (jvxlData.jvxlSurfaceData == null)
       return "";
-    int nSurfaceData = mesh.jvxlSurfaceData.length();
-    int nEdgeData = (mesh.jvxlEdgeData.length() - 1);
-    int nColorData = (mesh.jvxlColorData.length() - 1);
+    int nSurfaceData = jvxlData.jvxlSurfaceData.length();
+    int nEdgeData = (jvxlData.jvxlEdgeData.length() - 1);
+    int nColorData = (jvxlData.jvxlColorData.length() - 1);
     String info = "# nSurfaceData = " + nSurfaceData + "; nEdgeData = "
         + nEdgeData;
-    if (mesh.jvxlPlane == null) {
-      if (mesh.isContoured) {
+    if (jvxlData.jvxlPlane == null) {
+      if (jvxlData.isContoured) {
         definitionLine += (-nSurfaceData) + " " + nEdgeData;
         info += "; contoured";
-      } else if (mesh.isBicolorMap) {
+      } else if (jvxlData.isBicolorMap) {
         definitionLine += (nSurfaceData) + " " + (-nEdgeData);
         info += "; bicolor map";
       } else {
@@ -2719,38 +2724,38 @@ class Isosurface extends MeshFileCollection {
         if (nColorData > 0)
           info += "; colormapped";
       }
-      if (mesh.isJvxlPrecisionColor && nColorData != -1)
+      if (jvxlData.isJvxlPrecisionColor && nColorData != -1)
         info += "; precision colored";
       definitionLine += " "
-          + (mesh.isJvxlPrecisionColor && nColorData != -1 ? -nColorData
+          + (jvxlData.isJvxlPrecisionColor && nColorData != -1 ? -nColorData
               : nColorData);
     } else {
-      String s = " " + mesh.jvxlPlane.x + " " + mesh.jvxlPlane.y + " "
-          + mesh.jvxlPlane.z + " " + mesh.jvxlPlane.w;
+      String s = " " + jvxlData.jvxlPlane.x + " " + jvxlData.jvxlPlane.y + " "
+          + jvxlData.jvxlPlane.z + " " + jvxlData.jvxlPlane.w;
       definitionLine += "-1 -2 " + (-nColorData) + s;
       info += "; " + (nColorData > 0 ? "color mapped " : "") + "plane: {" + s
           + " }";
     }
-    if (mesh.isContoured) {
-      definitionLine += " " + mesh.nContours;
-      info += "; " + mesh.nContours + " contours";
+    if (jvxlData.isContoured) {
+      definitionLine += " " + jvxlData.nContours;
+      info += "; " + jvxlData.nContours + " contours";
     }
     // ...  mappedDataMin  mappedDataMax  valueMappedToRed  valueMappedToBlue ... 
-    definitionLine += " " + mesh.mappedDataMin + " " + mesh.mappedDataMax + " "
-        + mesh.valueMappedToRed + " " + mesh.valueMappedToBlue;
-    if (mesh.jvxlColorData.length() > 0 && !mesh.isBicolorMap)
-      info += "\n# data minimum = " + mesh.mappedDataMin + "; data maximum = "
-          + mesh.mappedDataMax + " " + "\n# value mapped to red = "
-          + mesh.valueMappedToRed + "; value mapped to blue = "
-          + mesh.valueMappedToBlue;
-    if (mesh.jvxlCompressionRatio > 0)
-      info += "; approximate compressionRatio=" + mesh.jvxlCompressionRatio
+    definitionLine += " " + jvxlData.mappedDataMin + " " + jvxlData.mappedDataMax + " "
+        + jvxlData.valueMappedToRed + " " + jvxlData.valueMappedToBlue;
+    if (jvxlData.jvxlColorData.length() > 0 && !jvxlData.isBicolorMap)
+      info += "\n# data minimum = " + jvxlData.mappedDataMin + "; data maximum = "
+          + jvxlData.mappedDataMax + " " + "\n# value mapped to red = "
+          + jvxlData.valueMappedToRed + "; value mapped to blue = "
+          + jvxlData.valueMappedToBlue;
+    if (jvxlData.jvxlCompressionRatio > 0)
+      info += "; approximate compressionRatio=" + jvxlData.jvxlCompressionRatio
           + ":1";
     info += "\n# created using Jmol Version " + Viewer.getJmolVersion();
     return (isInfo ? info : definitionLine);
   }
 
-  String jvxlCompressString(String data) {
+  static String jvxlCompressString(String data) {
     /* just a simple compression, but allows 2000-6000:1 CUBE:JVXL for planes!
      * 
      *   "X~nnn " means "nnn copies of character X" 
@@ -2759,8 +2764,8 @@ class Isosurface extends MeshFileCollection {
      *   ~ becomes "~~" 
      *
      */
-    if (logCompression)
-      Logger.info(data.length() + " compressing\n" + data);
+    //if (logCompression)
+      //Logger.info(data.length() + " compressing\n" + data);
     String dataOut = "";
     String dataBuffer = "";
     char chLast = '\0';
@@ -2784,11 +2789,11 @@ class Isosurface extends MeshFileCollection {
         chLast = ch;
       }
     }
-    if (logCompression) {
-      Logger.info(dataOut.length() + "\n" + dataOut);
-      data = jvxlUncompressString(dataOut);
-      Logger.info(data.length() + " uncompressing\n" + data);
-    }
+    //if (logCompression) {
+      //Logger.info(dataOut.length() + "\n" + dataOut);
+     // data = jvxlUncompressString(dataOut);
+     // Logger.info(data.length() + " uncompressing\n" + data);
+   // }
     return dataOut;
   }
 
@@ -6181,8 +6186,8 @@ class Isosurface extends MeshFileCollection {
     setModelIndex(atomIndex, modelIndex);
     thisMesh.ptCenter.set(center);
     thisMesh.title = title;
-    thisMesh.jvxlDefinitionLine = jvxlGetDefinitionLine(thisMesh, false);
-    thisMesh.jvxlInfoLine = jvxlGetDefinitionLine(thisMesh, true);
+    jvxlData.jvxlDefinitionLine = jvxlGetDefinitionLine(jvxlData, false);
+    jvxlData.jvxlInfoLine = jvxlGetDefinitionLine(jvxlData, true);
     thisMesh.scriptCommand = fixScript();
   }
 
@@ -6197,8 +6202,8 @@ class Isosurface extends MeshFileCollection {
       info.put("vertexCount", new Integer(mesh.vertexCount));
       if (mesh.ptCenter.x != Float.MAX_VALUE)
         info.put("center", mesh.ptCenter);
-      if (mesh.jvxlDefinitionLine != null)
-        info.put("jvxlDefinitionLine", mesh.jvxlDefinitionLine);
+      if (mesh.jvxlData.jvxlDefinitionLine != null)
+        info.put("jvxlDefinitionLine", mesh.jvxlData.jvxlDefinitionLine);
       info.put("modelIndex", new Integer(mesh.modelIndex));
       if (mesh.title != null)
         info.put("title", mesh.title);

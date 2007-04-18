@@ -730,8 +730,8 @@ class JvxlReader extends VolumeFileReader {
       data.append("# ").append(state).append('\n');
     if (r > 0) {
       String s = "bytes read: " + jvxlData.nBytes + "; approximate voxel-only input/output byte ratio: " + r + ":1\n";
+      data.append("# ").append(s);
       Logger.info("\n" + s);
-      data.append(s);
     }
 
     return data.toString();

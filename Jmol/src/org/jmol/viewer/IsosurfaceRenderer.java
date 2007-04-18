@@ -66,9 +66,9 @@ class IsosurfaceRenderer extends MeshRenderer {
     iHideBackground = (isPlane && imesh.hideBackground);
     if (iHideBackground)
       backgroundColix = Graphics3D.getColix(viewer.getBackgroundArgb());
-    isPlane = (imesh.jvxlPlane != null);
-    isContoured = imesh.isContoured;
-    isBicolorMap = imesh.isBicolorMap;
+    isPlane = (imesh.jvxlData.jvxlPlane != null);
+    isContoured = imesh.jvxlData.isContoured;
+    isBicolorMap = imesh.jvxlData.isBicolorMap;
     super.render2();
   }
   
@@ -84,7 +84,7 @@ class IsosurfaceRenderer extends MeshRenderer {
         g3d.setColix(imesh.vertexColixes[i]);
       g3d.fillSphereCentered(4, screens[i]);
     }
-    if (!imesh.hasGridPoints)
+    if (!imesh.hasGridPoints || isContoured)
       return;
     int iFirst = imesh.firstViewableVertex;
     if (iFirst > 0 || !isContoured) {

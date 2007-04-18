@@ -27,31 +27,12 @@ package org.jmol.viewer;
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
-
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ArrayUtil;
 
 class IsosurfaceMesh extends Mesh {
-  String jvxlFileHeader;
-  String jvxlExtraLine;
-  int jvxlCompressionRatio;
-  String jvxlSurfaceData;
-  String jvxlEdgeData;
-  String jvxlColorData;
-  boolean isJvxlPrecisionColor;
-  Point4f jvxlPlane;
-  String jvxlDefinitionLine;
-  String jvxlInfoLine;
-  boolean isContoured;
-  boolean isBicolorMap;
-  float mappedDataMin;
-  float mappedDataMax;
-  float valueMappedToRed;
-  float valueMappedToBlue;
-  float cutoff;
-  int nBytes;
-  int nContours;  
+  JvxlData jvxlData;
+
   boolean hideBackground;
   int realVertexCount;
   int vertexIncrement = 1;
@@ -66,6 +47,21 @@ class IsosurfaceMesh extends Mesh {
     super(thisID, g3d, colix);
   }
 
+  void clear(String meshType, boolean iAddGridPoints, boolean showTriangles) {
+    super.clear(meshType);  
+    vertexColixes = null;
+    vertexValues = null;
+    isColorSolid = true;
+    realVertexCount = 0;
+    firstViewableVertex = 0;
+    hasGridPoints = iAddGridPoints;
+    showPoints = iAddGridPoints;
+    this.showTriangles = showTriangles;
+    jvxlData.jvxlSurfaceData = "";
+    jvxlData.jvxlEdgeData = "";
+    jvxlData.jvxlColorData = "";
+  }
+  
   void allocVertexColixes() {
     if (vertexColixes == null) {
       vertexColixes = new short[vertexCount];
@@ -94,11 +90,11 @@ class IsosurfaceMesh extends Mesh {
 
   void updateSurfaceData(char isNaN) {
     invalidateTriangles();
-    char[] chars = jvxlEdgeData.toCharArray();
+    char[] chars = jvxlData.jvxlEdgeData.toCharArray();
     for (int i = 0; i < realVertexCount; i+= vertexIncrement)
       if (Float.isNaN(vertexValues[i]))
           chars[i] = isNaN;
-    jvxlEdgeData = String.copyValueOf(chars);
+    jvxlData.jvxlEdgeData = String.copyValueOf(chars);
   }
   
   void invalidateTriangles() {

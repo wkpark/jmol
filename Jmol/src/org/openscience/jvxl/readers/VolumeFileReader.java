@@ -31,11 +31,11 @@ import org.openscience.jvxl.util.Logger;
 
 class VolumeFileReader extends VoxelReader {
 
-  BufferedReader br;
-  boolean endOfData;
+  protected BufferedReader br;
+  protected boolean endOfData;
 
-  int atomCount;
-  boolean negativeAtomCount;
+  protected int atomCount;
+  protected boolean negativeAtomCount;
   private int nSurfaces;
   
   
@@ -108,7 +108,7 @@ class VolumeFileReader extends VoxelReader {
         + " data points");
   }
 
-  int readVolumetricHeader() {
+  protected int readVolumetricHeader() {
     edgeFractionBase = defaultEdgeFractionBase;
     edgeFractionRange = defaultEdgeFractionRange;
     colorFractionBase = defaultColorFractionBase;
@@ -130,11 +130,11 @@ class VolumeFileReader extends VoxelReader {
     }
   }
   
-  void readTitleLines() throws Exception {
+  protected void readTitleLines() throws Exception {
     //implemented in CubeReader, ApbsReader, and JvxlReader  
   }
   
-  int skipComments(boolean addToHeader) throws Exception {
+  protected int skipComments(boolean addToHeader) throws Exception {
     int n = 1;
     while ((line = br.readLine()) != null && 
         (!addToHeader && line.length() == 0 || line.indexOf("#") == 0)) {
@@ -145,15 +145,15 @@ class VolumeFileReader extends VoxelReader {
     return n;
   }
   
-  void readAtomCountAndOrigin() throws Exception {
+  protected void readAtomCountAndOrigin() throws Exception {
     //reader-specific
   }
 
-  void adjustVoxelVectorLine(int voxelVectorIndex) {
+  protected void adjustVoxelVectorLine(int voxelVectorIndex) {
     //for APBS reader
   }
 
-  void readVoxelVector(int voxelVectorIndex) throws Exception {    
+  protected void readVoxelVector(int voxelVectorIndex) throws Exception {    
     line = br.readLine();
     adjustVoxelVectorLine(voxelVectorIndex);
     jvxlFileHeaderBuffer.append(line).append('\n');
@@ -174,7 +174,7 @@ class VolumeFileReader extends VoxelReader {
     }
   }
 
-  int readExtraLine() throws Exception {
+  protected int readExtraLine() throws Exception {
     if (!negativeAtomCount)
       return 1;
     line = br.readLine();
@@ -182,7 +182,7 @@ class VolumeFileReader extends VoxelReader {
     return parseInt(line);
   }
 
-  void readVoxelData(boolean isMapData) throws Exception {
+  protected void readVoxelData(boolean isMapData) throws Exception {
     /*
      * possibilities:
      * 
@@ -277,7 +277,7 @@ class VolumeFileReader extends VoxelReader {
     volumeData.setVoxelData(voxelData);
   }
 
-  float getNextVoxelValue(StringBuffer sb) throws Exception {
+  protected float getNextVoxelValue(StringBuffer sb) throws Exception {
     //overloaded in JvxlReader, where sb is appended to
     float voxelValue = 0;
     if (nSurfaces > 1 && !params.blockCubeData) {
@@ -310,7 +310,7 @@ class VolumeFileReader extends VoxelReader {
     return voxelValue;
   }
 
-  void gotoData(int n, int nPoints) throws Exception {
+  protected void gotoData(int n, int nPoints) throws Exception {
     if (!params.blockCubeData)
       return;
     if (n > 0)
@@ -319,7 +319,7 @@ class VolumeFileReader extends VoxelReader {
       skipData(nPoints);
   }
 
-  void skipData(int nPoints) throws Exception {
+  private void skipData(int nPoints) throws Exception {
     int iV = 0;
     while (iV < nPoints) {
       line = br.readLine();

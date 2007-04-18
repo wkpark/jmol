@@ -47,7 +47,7 @@ public class Jvxl {
 
     boolean blockData = false;
     int fileIndex = Integer.MAX_VALUE;
-    String inputFile = "example.dx";
+    String inputFile = null;
     String mapFile = null;
     String outputFile = null;
 
@@ -73,6 +73,7 @@ public class Jvxl {
      *  jvxl ethene-HOMO.cub --bicolor --output ethene.jvxl
      *  jvxl d_orbitals.jvxl --index 2 --phase yz
      *  jvxl d_orbitals.jvxl --map sets
+     *  jvxl --plane xy  --min=0.0 --max=0.2 --map data/ch3cl-density.cub 
      */
 
     // file options
@@ -80,7 +81,7 @@ public class Jvxl {
         "multiple cube data are in blocks, not interspersed");
 
     options.addOption("P", "progressive", false,
-    "create JVXL+ progressive X low-to-high format");
+        "create JVXL+ progressive X low-to-high format");
 
     OptionBuilder.withLongOpt("file");
     OptionBuilder.withDescription("file containing surface data");
@@ -134,13 +135,12 @@ public class Jvxl {
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("s"));
 
-/*    OptionBuilder.withLongOpt("phase");
+    OptionBuilder.withLongOpt("phase");
     OptionBuilder
         .withDescription("color by phase: x, y, z, xy, xz, yz, z2, x2-y2");
     OptionBuilder.withValueSeparator('=');
     OptionBuilder.hasArg();
-    options.addOption(OptionBuilder.create("P"));
-*/
+    options.addOption(OptionBuilder.create("F"));
 
     OptionBuilder.withLongOpt("min");
     OptionBuilder.withDescription("color absolute minimum value");
@@ -198,6 +198,8 @@ public class Jvxl {
       Logger.info("using plane " + plane);
       if (mapFile == null)
         mapFile = inputFile;
+      if (inputFile == null)
+        inputFile = mapFile;
     }
 
     if (line.hasOption("o")) {
@@ -247,12 +249,12 @@ public class Jvxl {
         max = Parser.parseFloat(line.getOptionValue("x"));
     }
 
-//    if (line.hasOption("P")) {
-//      phase = line.getOptionValue("P");
-//    }
+    //    if (line.hasOption("P")) {
+    //      phase = line.getOptionValue("P");
+    //    }
 
     boolean progressive = line.hasOption("P");
-    
+
     // compose the surface
 
     SurfaceGenerator sg = new SurfaceGenerator(new ColorEncoder());
@@ -262,8 +264,8 @@ public class Jvxl {
     if (blockData)
       sg.setProperty("blockData", Boolean.TRUE);
     if (!Float.isNaN(cutoff))
-      sg.setProperty("cutoff" + (isPositiveOnly ? "Positive" : ""),
-          new Float(cutoff));
+      sg.setProperty(isPositiveOnly ? "cutoffPositive" : "cutoff", new Float(
+          cutoff));
     if (bicolor)
       sg.setProperty("sign", null);
     if (reverseColor)
@@ -281,6 +283,8 @@ public class Jvxl {
         sg.setProperty("fileIndex", new Integer(fileIndex));
       sg.setProperty("readData", inputFile);
     }
+
+    sg.setProperty("title", line.toString());
 
     //color scheme is only for VMRL
 

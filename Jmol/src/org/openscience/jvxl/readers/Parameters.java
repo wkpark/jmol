@@ -131,12 +131,12 @@ class Parameters {
   Point4f thePlane;
   boolean isContoured;
   int nContours;
-  int thisContour;
+  int thisContour;  
   
   boolean isBicolorMap;
   boolean isCutoffAbsolute;
   boolean isPositiveOnly;
-  boolean isProgressive;
+  boolean isXLowToHigh;
 
   boolean colorBySign;
   boolean colorByPhase;

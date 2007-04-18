@@ -33,26 +33,26 @@ class CubeReader extends VolumeFileReader {
     isAngstroms = false;
   }
 
-  void readTitleLines() throws Exception {
+  protected void readTitleLines() throws Exception {
     jvxlFileHeaderBuffer = new StringBuffer();
     jvxlFileHeaderBuffer.append(br.readLine()).append('\n');
     jvxlFileHeaderBuffer.append(br.readLine()).append('\n');
   }
 
-  void readAtomCountAndOrigin() throws Exception {
+  protected void readAtomCountAndOrigin() throws Exception {
     String atomLine = br.readLine();
     String[] tokens = Parser.getTokens(atomLine, 0);
     atomCount = parseInt(tokens[0]);
-    negativeAtomCount = (atomCount < 0);  // MO list
+    negativeAtomCount = (atomCount < 0); // MO list
     if (negativeAtomCount)
       atomCount = -atomCount;
-    volumetricOrigin.set(parseFloat(tokens[1]), parseFloat(tokens[2]), parseFloat(tokens[3]));
-    JvxlReader.jvxlCheckAtomLine(isXLowToHigh, isAngstroms, tokens[0], atomLine, jvxlFileHeaderBuffer);
+    volumetricOrigin.set(parseFloat(tokens[1]), parseFloat(tokens[2]),
+        parseFloat(tokens[3]));
+    JvxlReader.jvxlCheckAtomLine(isXLowToHigh, isAngstroms, tokens[0],
+        atomLine, jvxlFileHeaderBuffer);
     if (!isAngstroms)
       volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
-}
-
-
+  }
 }
 
 

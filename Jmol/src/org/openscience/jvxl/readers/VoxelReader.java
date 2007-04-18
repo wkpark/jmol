@@ -23,20 +23,16 @@
  */
 package org.openscience.jvxl.readers;
 
-import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
 import org.openscience.jvxl.util.*;
-import org.openscience.jvxl.data.JvxlData;
-import org.openscience.jvxl.data.VolumeData;
-import org.openscience.jvxl.data.MeshData;
-import org.openscience.jvxl.calc.MarchingCubes;
-import org.openscience.jvxl.calc.MarchingSquares;
+import org.openscience.jvxl.data.*;
+import org.openscience.jvxl.calc.*;
 
-public class VoxelReader {
+public class VoxelReader implements MarchingReader {
   
   //main class for reading any of the file formats
   
@@ -46,7 +42,7 @@ public class VoxelReader {
    *           and then instantiates a voxel reader 
    * 
    * 
-   *     VoxelReader
+   *     VoxelReader (a MarchingReader)
    *          |
    *          |_______VolumeDataReader  (still needs work)
    *          |
@@ -58,18 +54,20 @@ public class VoxelReader {
    * 
    */
 
-  ColorEncoder colorEncoder;
-  Parameters params;
-  MeshData meshData;
-  JvxlData jvxlData;
-  VolumeData volumeData; 
-  boolean isProgressive = false;
-  boolean isXLowToHigh = false; //can be overridden in some readers by --progressive
+  private ColorEncoder colorEncoder;
+  
+  protected Parameters params;
+  protected MeshData meshData;
+  protected JvxlData jvxlData;
+  protected VolumeData volumeData;
+  
+  protected boolean isProgressive = false;
+  protected boolean isXLowToHigh = false; //can be overridden in some readers by --progressive
 
   VoxelReader(SurfaceGenerator sg) {
     this.colorEncoder = sg.colorEncoder;
     this.params = sg.params;
-    isXLowToHigh = params.isProgressive;
+    isXLowToHigh = params.isXLowToHigh;
     this.meshData = sg.meshData;
     this.jvxlData = sg.jvxlData;
     setVolumeData(sg.volumeData);
@@ -84,22 +82,13 @@ public class VoxelReader {
   final static float defaultMappedDataMax = 1.0f;
   final static float defaultCutoff = 0.02f;
 
-  boolean isAngstroms;
-  int edgeFractionBase;
-  int edgeFractionRange;
-  int colorFractionBase;
-  int colorFractionRange;
-
-  StringBuffer jvxlFileHeaderBuffer;
-  StringBuffer fractionData;
-  String  jvxlEdgeDataRead = "";
-  String  jvxlColorDataRead = "";
-  boolean jvxlDataIsColorMapped;
-  boolean jvxlDataIsPrecisionColor;
-  boolean jvxlDataIs2dContour;
-  float   jvxlCutoff;
-  int     jvxlNSurfaceInts;
+  private int edgeCount;
   
+  protected Point3f volumetricOrigin;
+  protected Vector3f[] volumetricVectors;
+  protected int[] voxelCounts;
+  protected float[][][] voxelData;
+
   void setVolumeData(VolumeData v) {
     nBytes = 0;
     volumetricOrigin = v.volumetricOrigin;
@@ -109,11 +98,6 @@ public class VoxelReader {
     volumeData = v;
   }
   
-  Point3f volumetricOrigin;
-  Vector3f[] volumetricVectors;
-  int[] voxelCounts;
-  float[][][] voxelData;
-
   void readData(boolean isMapData) {
     params.mappedDataMin = Float.MAX_VALUE;
   }
@@ -122,15 +106,31 @@ public class VoxelReader {
   // CUBE/APBS/JVXL file reading stuff
   ////////////////////////////////////////////////////////////////
 
-  int nBytes;
-  int nDataPoints;
-  int nPointsX, nPointsY, nPointsZ;
+  protected int nBytes;
+  protected int nDataPoints;
+  protected int nPointsX, nPointsY, nPointsZ;
 
-  private int edgeCount;
+  protected boolean isJvxl;
+  protected boolean isApbsDx;
+
+  protected boolean isAngstroms;
+  protected int edgeFractionBase;
+  protected int edgeFractionRange;
+  protected int colorFractionBase;
+  protected int colorFractionRange;
+
+  protected StringBuffer jvxlFileHeaderBuffer;
+  protected StringBuffer fractionData;
+  protected String  jvxlEdgeDataRead = "";
+  protected String  jvxlColorDataRead = "";
+  protected boolean jvxlDataIsColorMapped;
+  protected boolean jvxlDataIsPrecisionColor;
+  protected boolean jvxlDataIs2dContour;
+  protected float   jvxlCutoff;
+  protected int     jvxlNSurfaceInts;
   
-  boolean isJvxl;
-  boolean isApbsDx;
-
+  protected int contourVertexCount;
+  
   void jvxlUpdateInfo() {
     JvxlReader.jvxlUpdateInfo(jvxlData, params.title, nBytes);
   }
@@ -172,8 +172,6 @@ public class VoxelReader {
     return true;
   }
 
-  int contourVertexCount;
-  
   void resetIsosurface() {
     meshData.clear("isosurface");
     contourVertexCount = 0;
@@ -193,28 +191,22 @@ public class VoxelReader {
     marchingCubes = null;
   }
  
-  static void setupMatrix(Matrix3f mat, Vector3f[] cols) {
-    for (int i = 0; i < 3; i++)
-      mat.setColumn(i, cols[i]);
-  }
-
-
-  void initializeVolumetricData() {
+  protected void initializeVolumetricData() {
     nPointsX = voxelCounts[0];
     nPointsY = voxelCounts[1];
     nPointsZ = voxelCounts[2];
   }
   
-  void readVoxelData(boolean isMapData) throws Exception {
+  protected void readVoxelData(boolean isMapData) throws Exception {
     //overridden in every implementation.
     Logger.error("VoxelReader.readVoxelData has not been overridden!");
   }
 
-  void gotoData(int n, int nPoints) throws Exception {
+  protected void gotoData(int n, int nPoints) throws Exception {
     //only for file reader
   }
   
-  void readVolumetricData(boolean isMapData) {
+  protected void readVolumetricData(boolean isMapData) {
     initializeVolumetricData();
     if (nPointsX <= 0 || nPointsY <= 0 || nPointsZ <= 0)
       return;
@@ -231,12 +223,7 @@ public class VoxelReader {
     }
   }
 
-  /*
-   * called by VolumeDataReader or VolumeFileReader
-   * when there is a plane involved
-   * 
-   */
-  void readPlaneData() throws Exception {
+  private void readPlaneData() throws Exception {
     boolean inside = false;
     int dataCount = 0; 
     volumeData.setPlaneParameters(params.thePlane);
@@ -274,7 +261,7 @@ public class VoxelReader {
     volumeData.setVoxelData(voxelData);  
   }
   
-  String readColorData() {
+  protected String readColorData() {
     //jvxl only -- overloaded
     return "";
   }
@@ -283,23 +270,26 @@ public class VoxelReader {
   // marching cube stuff
   ////////////////////////////////////////////////////////////////
 
-  MarchingSquares marchingSquares;
-  MarchingCubes marchingCubes;
+  protected MarchingSquares marchingSquares;
+  private MarchingCubes marchingCubes;
 
   private void generateSurfaceData() {
     fractionData = new StringBuffer();
     contourVertexCount = 0;
     int contourType = -1;
-    MarchingSquares marchingSquares = null;
+    marchingSquares = null;
     if (params.thePlane != null || params.isContoured) {
       marchingSquares = new MarchingSquares(this, volumeData, params.thePlane,
           params.nContours, params.thisContour);
       contourType = marchingSquares.getContourType();
+      marchingSquares.setMinMax(params.valueMappedToRed, params.valueMappedToBlue);
+
     }
 
-    marchingCubes = new MarchingCubes(this, volumeData, params.isContoured, contourType,
+    marchingCubes = new MarchingCubes(this, volumeData, 
+        params.isContoured, contourType,
         params.cutoff, params.isCutoffAbsolute);
-    
+
     edgeCount = marchingCubes.generateSurfaceData(isXLowToHigh);
     
     if (isJvxl)
@@ -307,10 +297,34 @@ public class VoxelReader {
     fractionData.append('\n');
   }
 
-  static boolean isInside(float voxelValue, float max, boolean isAbsolute) {
+  protected static boolean isInside(float voxelValue, float max, boolean isAbsolute) {
     return MarchingCubes.isInside(voxelValue, max, isAbsolute);
   }
 
+  public int getSurfacePointIndex(float cutoff, boolean isCutoffAbsolute,
+                                  int x, int y, int z, Point3i offset,
+                                  float valueA, float valueB, Point3f pointA,
+                                  Vector3f edgeVector, Point3f surfacePoint,
+                                  boolean isContourType) {
+
+    float thisValue = readSurfacePoint(cutoff, isCutoffAbsolute, valueA,
+        valueB, pointA, edgeVector, surfacePoint);
+    /* 
+     * In the case of a setup for a Marching Squares calculation,
+     * we are collecting just the desired type of intersection for the 2D marching
+     * square contouring -- x, y, or z. In the case of a contoured f(x,y) surface, 
+     * we take every point.
+     * 
+     */
+    return (marchingSquares == null ? addContourVertex(surfacePoint,
+        thisValue) : isContourType ? marchingSquares.addContourData(x, y, z,
+        offset, surfacePoint, cutoff) : Integer.MAX_VALUE);
+  }
+  
+  public int addContourVertex(Point3f vertexXYZ, float value) {
+    return meshData.addVertexCopy(vertexXYZ, value);
+  }
+  
   public void addTriangleCheck(int iA, int iB, int iC, int check, boolean isAbsolute) {
     if (!isAbsolute || checkCutoff(iA, iB, iC))
       meshData.addTriangleCheck(iA, iB, iC, check);
@@ -332,27 +346,7 @@ public class VoxelReader {
         || val1 <= 0 && val2 <= 0 && val3 <= 0);
   }
 
-  public int getSurfacePointIndex(float cutoff, boolean isCutoffAbsolute,
-                                  int x, int y, int z, Point3i offset,
-                                  float valueA, float valueB, Point3f pointA,
-                                  Vector3f edgeVector, Point3f surfacePoint,
-                                  boolean isContourType) {
-
-    float thisValue = readSurfacePoint(cutoff, isCutoffAbsolute, valueA,
-        valueB, pointA, edgeVector, surfacePoint);
-    /* 
-     * In the case of a Marching Squares calculation,
-     * we are collecting just the desired type of intersection for the 2D marching
-     * square contouring -- x, y, or z. In the case of a contoured f(x,y) surface, 
-     * we take every point.
-     * 
-     */
-    return (marchingSquares == null ? addContourVertex(surfacePoint,
-        thisValue) : isContourType ? marchingSquares.addContourData(x, y, z,
-        offset, surfacePoint, cutoff) : Integer.MAX_VALUE);
-  }
-  
-  float readSurfacePoint(float cutoff, boolean isCutoffAbsolute, float valueA,
+  protected float readSurfacePoint(float cutoff, boolean isCutoffAbsolute, float valueA,
                          float valueB, Point3f pointA, Vector3f edgeVector,
                          Point3f surfacePoint) {
 
@@ -378,30 +372,7 @@ public class VoxelReader {
     return thisValue;
   }
   
-  ////////// debug utility methods /////////
-/*
-  String dumpArray(String msg, float[][] A, int x1, int x2, int y1, int y2) {
-    String s = "dumpArray: " + msg + "\n";
-    for (int x = x1; x <= x2; x++)
-      s += "\t*" + x + "*";
-    for (int y = y2; y >= y1; y--) {
-      s += "\n*" + y + "*";
-      for (int x = x1; x <= x2; x++)
-        s += "\t" + (x < A.length && y < A[x].length ? A[x][y] : Float.NaN);
-    }
-    return s;
-  }
-
-  String dumpIntArray(int[] A, int n) {
-    String str = "";
-    for (int i = 0; i < n; i++)
-      str += " " + A[i];
-    return str;
-  }
-*/
-  
-  
-  ////////////////////////////////////////////////////////////////
+   ////////////////////////////////////////////////////////////////
   // color mapping methods
   ////////////////////////////////////////////////////////////////
 
@@ -421,10 +392,6 @@ public class VoxelReader {
         + params.valueMappedToBlue;
   }
 
-  public int addContourVertex(Point3f vertexXYZ, float value) {
-    return meshData.addVertexCopy(vertexXYZ, value);
-  }
-  
   void applyColorScale() {
     if (params.colorPhase == 0)
       params.colorPhase = 1;
@@ -432,7 +399,7 @@ public class VoxelReader {
     int[] colors = meshData.vertexColors;
     colorFractionBase = defaultColorFractionBase;
     colorFractionRange = defaultColorFractionRange;
-    setMapRanges();
+    params.setMapRanges(this);
     float min = params.mappedDataMin;
     float max = params.mappedDataMax;
     if (colors == null)
@@ -476,10 +443,6 @@ public class VoxelReader {
     jvxlData.mappedDataMax = params.mappedDataMax;
   }
 
-  private void setMapRanges() {
-    params.setMapRanges(this);
-  }
-
   private float getVertexColorValue(int vertexIndex) {
     float value, datum;
     /* but RETURNS the actual value, not the truncated one
@@ -512,7 +475,6 @@ public class VoxelReader {
       if (value >= params.valueMappedToBlue)
         value = params.valueMappedToBlue;
       meshData.vertexColors[vertexIndex] = getColorFromPalette(value);
-      System.out.println(Integer.toHexString(getColorFromPalette(value)));
     }
     return datum;
   }
@@ -594,9 +556,7 @@ public class VoxelReader {
     return max;
   }
 
-  final Vector3f pointVector = new Vector3f();
-
-  int getColorFromPalette(float value) {
+  protected int getColorFromPalette(float value) {
     if (params.isColorReversed)
       return colorEncoder.getColorFromPalette(-value, -params.valueMappedToBlue,
           -params.valueMappedToRed);
@@ -604,7 +564,6 @@ public class VoxelReader {
         params.valueMappedToBlue);
   }
   
-
 }
 
 

@@ -41,7 +41,7 @@ class JvxlReader extends VolumeFileReader {
     isXLowToHigh = false;
   }
 
-  static void jvxlUpdateInfo(JvxlData jvxlData, String[] title, int nBytes) {
+  protected static void jvxlUpdateInfo(JvxlData jvxlData, String[] title, int nBytes) {
     jvxlData.title = title;
     jvxlData.nBytes = nBytes;
     jvxlData.jvxlDefinitionLine = jvxlGetDefinitionLine(jvxlData, false);
@@ -56,7 +56,7 @@ class JvxlReader extends VolumeFileReader {
   private int edgeDataCount;
   private int colorDataCount;
 
-  void readData(boolean isMapData) {
+  protected void readData(boolean isMapData) {
     super.readData(isMapData);
     if (isMapData)
       try {
@@ -76,7 +76,7 @@ class JvxlReader extends VolumeFileReader {
   }
 
 
-  void readVolumetricData(boolean isMapData) {
+  protected void readVolumetricData(boolean isMapData) {
     initializeVolumetricData();
     if (nPointsX <= 0 || nPointsY <= 0 || nPointsZ <= 0)
       return;
@@ -96,14 +96,14 @@ class JvxlReader extends VolumeFileReader {
   int nThisValue;
   boolean thisInside;
   
-  void initializeVoxelData() {
+  protected void initializeVoxelData() {
     thisInside = !params.isContoured;
     if (params.insideOut)
       thisInside = !thisInside;
     nThisValue = 0;
   }
   
-  void readVoxelData(boolean isMapDataIgnored) throws Exception {
+  protected void readVoxelData(boolean isMapDataIgnored) throws Exception {
     initializeVoxelData();
     //calls VolumeFileReader.readVoxelData; no mapping allowed
     super.readVoxelData(false);
@@ -129,7 +129,7 @@ class JvxlReader extends VolumeFileReader {
   // ascii-encoded fractional color data
   // # optional comments
 
-  void readTitleLines() throws Exception {
+  protected void readTitleLines() throws Exception {
     jvxlFileHeaderBuffer = new StringBuffer();
     skipComments(true);
     int nLines = 1;
@@ -154,7 +154,7 @@ class JvxlReader extends VolumeFileReader {
    * @param bs
    * @return  isAngstroms
    */
-  static boolean jvxlCheckAtomLine(boolean isXLowToHigh, boolean isAngstroms,
+  protected static boolean jvxlCheckAtomLine(boolean isXLowToHigh, boolean isAngstroms,
                                    String strAtomCount, String atomLine,
                                    StringBuffer bs) {
     if (strAtomCount != null) {
@@ -180,7 +180,7 @@ class JvxlReader extends VolumeFileReader {
     return isAngstroms;
   }
   
-  void readAtomCountAndOrigin() throws Exception {
+  protected void readAtomCountAndOrigin() throws Exception {
       skipComments(true);
       String atomLine = line;
       String[] tokens = Parser.getTokens(atomLine, 0);
@@ -200,7 +200,7 @@ class JvxlReader extends VolumeFileReader {
         volumetricOrigin.scale(ANGSTROMS_PER_BOHR);
   }
 
-  static void jvxlReadAtoms(BufferedReader br, StringBuffer bs, int atomCount,
+  protected static void jvxlReadAtoms(BufferedReader br, StringBuffer bs, int atomCount,
                             VolumeData v) throws Exception {
     //mostly ignored
     for (int i = 0; i < atomCount; ++i)
@@ -209,7 +209,7 @@ class JvxlReader extends VolumeFileReader {
       //jvxlAddDummyAtomList(v, bs);
   }
 
-  int readExtraLine() throws Exception {
+  protected int readExtraLine() throws Exception {
     line = br.readLine();
     Logger.info("Reading extra JVXL information line: " + line);
     int nSurfaces = parseInt(line);
@@ -401,7 +401,7 @@ class JvxlReader extends VolumeFileReader {
     return dataOut;
   }
 
-  float getNextVoxelValue(StringBuffer sb) throws Exception {
+  protected float getNextVoxelValue(StringBuffer sb) throws Exception {
 
     //called by VolumeFileReader.readVoxelData
 
@@ -428,13 +428,13 @@ class JvxlReader extends VolumeFileReader {
     return (thisInside ? 1f : 0f);
   }
 
-  static void setSurfaceInfo(JvxlData jvxlData, Point4f thePlane, int nSurfaceInts, StringBuffer surfaceData) {
+  protected static void setSurfaceInfo(JvxlData jvxlData, Point4f thePlane, int nSurfaceInts, StringBuffer surfaceData) {
     jvxlData.jvxlSurfaceData = surfaceData.toString();
     jvxlData.jvxlPlane = thePlane;
     jvxlData.nSurfaceInts = nSurfaceInts;
   }
   
-  float readSurfacePoint(float cutoff, boolean isCutoffAbsolute, float valueA,
+  protected float readSurfacePoint(float cutoff, boolean isCutoffAbsolute, float valueA,
                          float valueB, Point3f pointA, Vector3f edgeVector,
                          Point3f surfacePoint) {
     float fraction;
@@ -449,7 +449,7 @@ class JvxlReader extends VolumeFileReader {
   int fractionPtr;
   String strFractionTemp = "";
 
-  float jvxlGetNextFraction(int base, int range, float fracOffset) {
+  private float jvxlGetNextFraction(int base, int range, float fracOffset) {
     if (fractionPtr >= strFractionTemp.length()) {
       if (!endOfData)
         Logger.error("end of file reading compressed fraction data at point "
@@ -464,7 +464,7 @@ class JvxlReader extends VolumeFileReader {
         base, range, fracOffset);
   }
 
-  String readColorData() {
+  protected String readColorData() {
     // overloads VoxelReader
     // standard jvxl file read for color 
 
@@ -541,7 +541,7 @@ class JvxlReader extends VolumeFileReader {
     return data + "\n";
   }
 
-  void gotoData(int n, int nPoints) throws Exception {
+  protected void gotoData(int n, int nPoints) throws Exception {
 
     //called by VolumeFileReader.readVoxelData
 
@@ -577,7 +577,7 @@ class JvxlReader extends VolumeFileReader {
     }
   }
 
-  int countData(String str) {
+  private int countData(String str) {
     int count = 0;
     int n = parseInt(str);
     while (n != Integer.MIN_VALUE) {
@@ -589,9 +589,8 @@ class JvxlReader extends VolumeFileReader {
 
   //// methods for creating the JVXL code  
 
-  static void jvxlCreateHeader(String line1, String line2, VolumeData v,
+  protected static void jvxlCreateHeader(String line1, String line2, VolumeData v,
                                StringBuffer bs) {
-    //unchecked
     bs.append(line1).append('\n');
     bs.append(line2).append('\n');
     bs.append("-2 " + v.volumetricOrigin.x + " " + v.volumetricOrigin.y + " "
@@ -602,7 +601,7 @@ class JvxlReader extends VolumeFileReader {
     jvxlAddDummyAtomList(v, bs);
   }
   
-  static void jvxlAddDummyAtomList(VolumeData v, StringBuffer bs) {
+  private static void jvxlAddDummyAtomList(VolumeData v, StringBuffer bs) {
     Point3f pt = new Point3f(v.volumetricOrigin);
     bs.append("1 1.0 " + pt.x + " " + pt.y + " " + pt.z
         + " //BOGUS H ATOM ADDED FOR JVXL FORMAT\n");
@@ -612,7 +611,7 @@ class JvxlReader extends VolumeFileReader {
         + " //BOGUS He ATOM ADDED FOR JVXL FORMAT\n");
   }
 
-  static String jvxlGetDefinitionLine(JvxlData jvxlData, boolean isInfo) {
+  private static String jvxlGetDefinitionLine(JvxlData jvxlData, boolean isInfo) {
     String definitionLine = jvxlData.cutoff + " ";
 
     //  cutoff       nInts     (+/-)bytesEdgeData (+/-)bytesColorData
@@ -686,7 +685,7 @@ class JvxlReader extends VolumeFileReader {
     return (isInfo ? info : definitionLine);
   }
 
-  static String jvxlExtraLine(JvxlData jvxlData, int n) {
+  protected static String jvxlExtraLine(JvxlData jvxlData, int n) {
     return (-n) + " " + jvxlData.edgeFractionBase + " "
         + jvxlData.edgeFractionRange + " " + jvxlData.colorFractionBase + " "
         + jvxlData.colorFractionRange + " Jmol voxel format version 1.1\n";
@@ -727,7 +726,7 @@ class JvxlReader extends VolumeFileReader {
     return data;
   }
 
-  static String jvxlCompressString(String data) {
+  private static String jvxlCompressString(String data) {
     /* just a simple compression, but allows 2000-6000:1 CUBE:JVXL for planes!
      * 
      *   "X~nnn " means "nnn copies of character X" 
@@ -764,7 +763,7 @@ class JvxlReader extends VolumeFileReader {
 
   //  to/from ascii-encoded data
 
-  static float jvxlFractionFromCharacter(int ich, int base, int range,
+  protected static float jvxlFractionFromCharacter(int ich, int base, int range,
                                          float fracOffset) {
     if (ich == base + range)
       return Float.NaN;
@@ -788,26 +787,26 @@ class JvxlReader extends VolumeFileReader {
   }
   */
 
-  static float jvxlValueFromCharacter2(int ich, int ich2, float min, float max,
+  protected static float jvxlValueFromCharacter2(int ich, int ich2, float min, float max,
                                        int base, int range) {
     float fraction = jvxlFractionFromCharacter2(ich, ich2, base, range);
     return (max == min ? fraction : min + fraction * (max - min));
   }
 
-  static float jvxlFractionFromCharacter2(int ich1, int ich2, int base,
+  protected static float jvxlFractionFromCharacter2(int ich1, int ich2, int base,
                                           int range) {
     float fraction = jvxlFractionFromCharacter(ich1, base, range, 0);
     float remains = jvxlFractionFromCharacter(ich2, base, range, 0.5f);
     return fraction + remains / range;
   }
 
-  static char jvxlValueAsCharacter(float value, float min, float max, int base,
+  protected static char jvxlValueAsCharacter(float value, float min, float max, int base,
                                    int range) {
     float fraction = (min == max ? value : (value - min) / (max - min));
     return jvxlFractionAsCharacter(fraction, base, range);
   }
 
-  static char jvxlFractionAsCharacter(float fraction, int base, int range) {
+  protected static char jvxlFractionAsCharacter(float fraction, int base, int range) {
     if (fraction > 0.9999f)
       fraction = 0.9999f;
     else if (Float.isNaN(fraction))
@@ -822,7 +821,7 @@ class JvxlReader extends VolumeFileReader {
     return (char) ich;
   }
 
-  static char jvxlValueAsCharacter2(float value, float min, float max,
+  protected static char jvxlValueAsCharacter2(float value, float min, float max,
                                     int base, int range, char[] remainder) {
     float fraction = (min == max ? value : (value - min) / (max - min));
     char ch1 = jvxlFractionAsCharacter(fraction, base, range);

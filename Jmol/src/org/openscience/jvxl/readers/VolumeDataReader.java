@@ -35,7 +35,7 @@ class VolumeDataReader extends VoxelReader {
 
   // needs to also define the volumetric origin and vectors and counts, etc.
   
-  void readVoxelData(boolean isMapData) throws Exception {
+  protected void readVoxelData(boolean isMapData) throws Exception {
     /* 
      * This routine is used twice in the case of color mapping. 
      * First (isMapData = false) to read the surface values, which

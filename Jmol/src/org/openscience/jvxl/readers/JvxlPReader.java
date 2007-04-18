@@ -38,9 +38,4 @@ class JvxlPReader extends JvxlReader {
     isProgressive = true;
   }
   
-  void readVoxelData(boolean isMapDataIgnored) throws Exception {
-    initializeVoxelData();
-    
-  }
-
 }

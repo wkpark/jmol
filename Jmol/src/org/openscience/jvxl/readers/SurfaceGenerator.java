@@ -248,7 +248,7 @@ public class SurfaceGenerator {
     }
 
     if ("progressive" == propertyName) { 
-      params.isProgressive = true;
+      params.isXLowToHigh = true;
       return;
     }
     

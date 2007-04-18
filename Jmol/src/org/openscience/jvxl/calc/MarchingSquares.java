@@ -165,8 +165,8 @@ public class MarchingSquares {
       getPixelCounts();
     createPlanarSquares();
     loadPixelData(haveData);
-    createContours(valueMin, valueMax);
-    triangulateContours();
+    boolean centerIsLow = createContours(valueMin, valueMax);
+    triangulateContours(centerIsLow);
     
     return contourVertexCount;
   }
@@ -486,8 +486,10 @@ public class MarchingSquares {
 
   private int contourIndex;
 
-  public void createContours(float min, float max) {
+  public boolean createContours(float min, float max) {
     float diff = max - min;
+    boolean centerIsLow = true; //molecular surface-like
+    int lastInside = -1;
     Logger.info("generateContourData min=" + min + " max=" + max
         + " nContours=" + nContours);
     for (int i = 0; i < nContours; i++) {
@@ -497,11 +499,16 @@ public class MarchingSquares {
        * cutoffs right near zero cause problems, so we adjust just a tad
        * 
        */
-      generateContourData(cutoff);
+      int insideCount = generateContourData(cutoff);
+      if (lastInside < 0)
+        lastInside = insideCount;
+      else if (lastInside > insideCount)
+        centerIsLow = false;
     }
+    return centerIsLow;
   }
 
-  private void generateContourData(float contourCutoff) {
+  private int generateContourData(float contourCutoff) {
 
     /*
      * Y
@@ -520,7 +527,7 @@ public class MarchingSquares {
       isoPointIndexes2d[i][0] = isoPointIndexes2d[i][1] = isoPointIndexes2d[i][2] = isoPointIndexes2d[i][3] = -1;
 
     if (Math.abs(contourCutoff) < 0.0001)
-      contourCutoff = (contourCutoff <= 0 ? -0.0001f : 0.0001f);
+      contourCutoff = (contourCutoff < 0 ? -0.0001f : 0.0001f);
     int insideCount = 0, outsideCount = 0, contourCount = 0;
     for (int x = squareCountX; --x >= 0;) {
       for (int y = squareCountY; --y >= 0;) {
@@ -563,6 +570,7 @@ public class MarchingSquares {
           + insideCount + " outsideCount=" + outsideCount + " contourCount="
           + contourCount + " total="
           + (insideCount + outsideCount + contourCount));
+      return insideCount;
   }
 
   private boolean isInside2d(float voxelValue, float max) {
@@ -682,16 +690,11 @@ public class MarchingSquares {
 
   private void calcPixelVertexVectors() {
     for (int i = 4; --i >= 0;)
-      pixelVertexVectors[i] = calcPixelVertexVector(squareVertexVectors[i]);
+      planarMatrix.transform(pixelVertexVectors[i] = new Vector3f(),
+          squareVertexVectors[i]);
   }
 
-  private Vector3f calcPixelVertexVector(Vector3f squareVector) {
-    Vector3f v = new Vector3f();
-    planarMatrix.transform(squareVector, v);
-    return v;
-  }
-
-  private void triangulateContours() {
+  void triangulateContours(boolean centerIsLow) {
 
     /*
      * Y
@@ -779,9 +782,9 @@ public class MarchingSquares {
      *  b(n-1). If f(n) < f(n-1), then we should start with n.
      *  
      */
-
+    int offset = (centerIsLow ? -1 : 1);
     for (int contourIndex = 0; contourIndex < nContours; contourIndex++) {
-      if (thisContour <= 0 || thisContour == contourIndex + 1)
+      if (thisContour <= 0 || thisContour == contourIndex + 1) {
         for (int squareIndex = 0; squareIndex < nSquares; squareIndex++) {
 
           /*
@@ -790,36 +793,28 @@ public class MarchingSquares {
            */
 
           PlanarSquare square = planarSquares[squareIndex];
-          int edgeMask0 = square.edgeMask12[contourIndex] & 0xFF;
-          if (edgeMask0 == 0) // all outside
-            continue;
-          // unnecessary inside square drawn by different contour?
-          // full square and also inside next inner contour
-          if (edgeMask0 == 0xF && contourIndex > 0
-              && square.edgeMask12[contourIndex - 1] == 0xF)
-            continue;
+          int edgeMask0 = square.edgeMask12[contourIndex];
+          edgeMask0 &= 0xFF;
 
-          //still working here.... not efficient; stubbornly trying to avoid just
-          // writing the damn triangle table.
-
-      //    if (squareIndex != 281 && squareIndex != 303)
-        //    continue;
+          boolean isTerminal = (contourIndex + offset < 0 || contourIndex + offset == nContours);
+          // way outside
+          if (edgeMask0 == 0 && !isTerminal && square.edgeMask12[contourIndex +offset] == 0)
+            continue;
+          //way inside
+          if (edgeMask0 == 0xF && !isTerminal && square.edgeMask12[contourIndex +offset] == 0xF)
+            continue;
+          //    if (squareIndex != 281 && squareIndex != 303) continue;
           boolean isOK = true;
           int edgeMask = edgeMask0;
-          if (contourIndex > 0) {
-            edgeMask0 = square.edgeMask12[contourIndex - 1];
+          if (!isTerminal) {
+            edgeMask0 = square.edgeMask12[contourIndex + offset];
             if (edgeMask0 != 0) {
               int andMask = (edgeMask & edgeMask0 & 0xF0) >> 4;
               int orMask = ((edgeMask | edgeMask0) & 0xF0) >> 4;
-//              System.out.println(squareIndex + " " + Integer.toBinaryString(edgeMask) + " " + Integer.toBinaryString(edgeMask0));
               if (andMask != 0) {
-                //isOK = false;
-                //at least one edge is common
                 for (int i = 0; i < 4; i++)
                   if ((andMask & (1 << i)) != 0) {
-                    //isOK = false;
-  //                  System.out.println (square.fractions[contourIndex][i] +" " + square.fractions[contourIndex - 1][i]);
-                    if (square.fractions[contourIndex][i] > square.fractions[contourIndex - 1][i]) {
+                    if (square.fractions[contourIndex][i] > square.fractions[contourIndex +offset][i]) {
                       isOK = false;
                     }
                     break;
@@ -830,22 +825,22 @@ public class MarchingSquares {
               edgeMask ^= edgeMask0 & 0x0F0F;
             }
           }
-          if (contourIndex > 0 && edgeMask == 0)
-            continue;
+          if (edgeMask == 0 && !isTerminal) {
+              continue;
+          }
 
     //      System.out.println("trianglate " + squareIndex + " " + Integer.toBinaryString(edgeMask0) + " " + Integer.toBinaryString(edgeMask));
 
-          fillSquare(square, contourIndex, edgeMask, !isOK);
- //         if (!isOK) // a lazy hack instead of really figuring out the order
-   //         fillSquare(square, contourIndex, edgeMask, true);
+          fillSquare(square, contourIndex, edgeMask, !isOK, offset);
         }
+      }
     }
   }
 
-  private final int[] triangleVertexList = new int[20];
+  final int[] triangleVertexList = new int[20];
 
-  private void fillSquare(PlanarSquare square, int contourIndex, int edgeMask,
-                  boolean reverseWinding) {
+  void fillSquare(PlanarSquare square, int contourIndex, int edgeMask,
+                  boolean reverseWinding, int offset) {
     int vPt = 0;
     boolean lowerFirst = reverseWinding;
     int mesh1 = -1, mesh2 = -1;
@@ -864,7 +859,7 @@ public class MarchingSquares {
       //intersection of next lower contour on this edge?
       if (lowerFirst && lowerIntersect) {
         lowerLast = true;
-        triangleVertexList[vPt++] = square.intersectionPoints[contourIndex - 1][i];
+        triangleVertexList[vPt++] = square.intersectionPoints[contourIndex + offset][i];
       }
       
       //intersection point of this contour on this edge?
@@ -882,7 +877,7 @@ public class MarchingSquares {
 
       if (!lowerFirst && lowerIntersect) {
         lowerLast = true;
-        triangleVertexList[vPt++] = square.intersectionPoints[contourIndex - 1][i];
+        triangleVertexList[vPt++] = square.intersectionPoints[contourIndex + offset][i];
       }
       if (lowerLast && newVertex)
         lowerFirst = true;

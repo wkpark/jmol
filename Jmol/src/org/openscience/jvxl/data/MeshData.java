@@ -150,7 +150,7 @@ public class MeshData {
     return addVertexCopy(vertex);
   }
 
-  public int addVertexCopy(Point3f vertex) {
+  private int addVertexCopy(Point3f vertex) {
     if (vertexCount == 0)
       vertices = new Point3f[SEED_COUNT];
     else if (vertexCount == vertices.length)

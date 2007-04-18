@@ -99,7 +99,7 @@ abstract class MeshCollection extends Shape {
     if ("thisID" == propertyName) {
       String id = (String) value;
       setMesh(id);
-      explicitID = !id.equals(Mesh.PREVIOUS_MESH_ID);
+      explicitID = id != null && !id.equals(Mesh.PREVIOUS_MESH_ID);
       return;
     }
 

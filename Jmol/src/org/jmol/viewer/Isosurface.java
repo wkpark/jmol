@@ -640,6 +640,8 @@ class Isosurface extends MeshFileCollection {
     }
 
     if ("lcaoCartoon" == propertyName) {
+      if (!explicitID)
+        setPropertySuper("thisID", null, null);
       if (++state != STATE_DATA_READ)
         return;
       Vector3f[] info = (Vector3f[]) value;

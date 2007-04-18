@@ -8386,7 +8386,7 @@ class Eval { //implements Runnable {
         surfaceObjectSeen = true;
         String lcaoType = parameterAsString(++i);
         setShapeProperty(iShape, "lcaoType", lcaoType);
-        switch (statement[++i].tok) {
+        switch (getToken(++i).tok) {
         case Token.bitset:
         case Token.expressionBegin:
           propertyName = "lcaoCartoon";

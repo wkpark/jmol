@@ -81,11 +81,8 @@ public class MarchingCubes {
 
   private final float[] vertexValues = new float[8];
   private final Point3i[] vertexPoints = new Point3i[8];
-  private final Point3f[] surfacePoints = new Point3f[12];
   private final Vector3f[] edgeVectors = new Vector3f[12];
   {
-    for (int i = 12; --i >= 0;)
-      surfacePoints[i] = new Point3f();
     for (int i = 12; --i >= 0;)
       edgeVectors[i] = new Vector3f();
     for (int i = 8; --i >= 0;)
@@ -323,7 +320,7 @@ public class MarchingCubes {
           cutoff, isCutoffAbsolute, 
           x, y, z, cubeVertexOffsets[vertexA], 
           valueA, valueB, pointA, edgeVectors[iEdge], 
-          surfacePoints[iEdge], edgeTypeTable[iEdge] == contourType);
+          edgeTypeTable[iEdge] == contourType);
     }
     return !isNaN;
   }

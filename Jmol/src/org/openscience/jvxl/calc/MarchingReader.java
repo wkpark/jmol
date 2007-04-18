@@ -12,10 +12,18 @@ public interface MarchingReader {
    * a vertex created by the Marching Cube algorithm when it finds an 
    * edge. If a vertex is discarded, then Integer.MAX_VALUE should be returned.
    * 
-   * surfacePoint must be filled with the coordinated of the surface point.
-   * In the case of a Jvxl file, the fractional distance is simply 
-   * read from the file and not calculated from the surface data, because the
-   * surface data values do not exist any longer.  
+   * the 3D coordinate of the point can be calculated using 
+   * 
+   * surfacePoint.scaleAdd(fraction, edgeVector, pointA);
+   * 
+   * where fraction is generally calculated as:
+   * 
+   *  fraction = (cutoff - valueA) / (valueB - valueA);
+   *  if (isCutoffAbsolute && (fraction < 0 || fraction > 1))
+   *  fraction = (-cutoff - valueA) / (valueB - valueA);
+   *  
+   *  This method is also used by MarchingCubes to deliver the appropriate
+   *  oblique planar coordinate to MarchingSquares for later contouring.
    * 
    * @param cutoff
    * @param isCutoffAbsolute
@@ -27,7 +35,6 @@ public interface MarchingReader {
    * @param valueB
    * @param pointA
    * @param edgeVector      vector from A to B
-   * @param surfacePoint    intersection point
    * @param isContourType
    * @return                 new vertex index or Integer.MAX_VALUE
    */
@@ -36,19 +43,20 @@ public interface MarchingReader {
                                            int y, int z, Point3i offset,
                                            float valueA, float valueB,
                                            Point3f pointA, Vector3f edgeVector,
-                                           Point3f surfacePoint,
                                            boolean isContourType);
 
   /**
-   * addContourVertex is used by the Marching Squares algorithm to
-   * uniquely identify a new vertex when an edge is crossed in the 2D plane
+   * addVertexCopy is used by the Marching Squares algorithm to
+   * uniquely identify a new vertex when an edge is crossed in the 2D plane.
+   * 
+   * The implementing method should COPY the Point3f using Point3f.set(). 
    *  
    * @param vertexXYZ
    * @param value
    * @return             new vertex index
    * 
    */
-  public abstract int addContourVertex(Point3f vertexXYZ, float value);
+  public abstract int addVertexCopy(Point3f vertexXYZ, float value);
 
   /**
    * addTriangleCheck adds a triangle along with a 3-bit check indicating

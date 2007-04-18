@@ -435,12 +435,11 @@ class JvxlReader extends VolumeFileReader {
   }
   
   protected float readSurfacePoint(float cutoff, boolean isCutoffAbsolute, float valueA,
-                         float valueB, Point3f pointA, Vector3f edgeVector,
-                         Point3f surfacePoint) {
+                         float valueB, Point3f pointA, Vector3f edgeVector) {
     float fraction;
     if (edgeDataCount <= 0)
       return super.readSurfacePoint(cutoff, isCutoffAbsolute, valueA, valueB,
-          pointA, edgeVector, surfacePoint);
+          pointA, edgeVector);
     fraction = jvxlGetNextFraction(edgeFractionBase, edgeFractionRange, 0.5f);
     surfacePoint.scaleAdd(fraction, edgeVector, pointA);
     return fraction;

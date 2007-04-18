@@ -301,14 +301,16 @@ public class VoxelReader implements MarchingReader {
     return MarchingCubes.isInside(voxelValue, max, isAbsolute);
   }
 
+  protected final Point3f surfacePoint = new Point3f();
+  
   public int getSurfacePointIndex(float cutoff, boolean isCutoffAbsolute,
                                   int x, int y, int z, Point3i offset,
                                   float valueA, float valueB, Point3f pointA,
-                                  Vector3f edgeVector, Point3f surfacePoint,
-                                  boolean isContourType) {
+                                  Vector3f edgeVector, boolean isContourType) {
 
+    
     float thisValue = readSurfacePoint(cutoff, isCutoffAbsolute, valueA,
-        valueB, pointA, edgeVector, surfacePoint);
+        valueB, pointA, edgeVector);
     /* 
      * In the case of a setup for a Marching Squares calculation,
      * we are collecting just the desired type of intersection for the 2D marching
@@ -316,12 +318,12 @@ public class VoxelReader implements MarchingReader {
      * we take every point.
      * 
      */
-    return (marchingSquares == null ? addContourVertex(surfacePoint,
-        thisValue) : isContourType ? marchingSquares.addContourData(x, y, z,
+    return (marchingSquares == null ? addVertexCopy(surfacePoint,
+        thisValue) : isContourType ? marchingSquares.addContourVertex(x, y, z,
         offset, surfacePoint, cutoff) : Integer.MAX_VALUE);
   }
   
-  public int addContourVertex(Point3f vertexXYZ, float value) {
+  public int addVertexCopy(Point3f vertexXYZ, float value) {
     return meshData.addVertexCopy(vertexXYZ, value);
   }
   
@@ -347,8 +349,7 @@ public class VoxelReader implements MarchingReader {
   }
 
   protected float readSurfacePoint(float cutoff, boolean isCutoffAbsolute, float valueA,
-                         float valueB, Point3f pointA, Vector3f edgeVector,
-                         Point3f surfacePoint) {
+                         float valueB, Point3f pointA, Vector3f edgeVector) {
 
     //JvxlReader may or may not call this
 

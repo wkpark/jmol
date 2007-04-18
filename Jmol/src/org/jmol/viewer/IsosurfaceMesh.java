@@ -31,7 +31,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ArrayUtil;
 
 class IsosurfaceMesh extends Mesh {
-  JvxlData jvxlData;
+  JvxlData jvxlData = new JvxlData();
 
   boolean hideBackground;
   int realVertexCount;

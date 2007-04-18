@@ -122,7 +122,7 @@ class Isosurface extends MeshFileCollection {
   void allocMesh(String thisID) {
     meshes = isomeshes = (IsosurfaceMesh[])ArrayUtil.ensureLength(isomeshes, meshCount + 1);
     currentMesh = thisMesh = isomeshes[meshCount++] = new IsosurfaceMesh(thisID, g3d, colix);
-    jvxlData = thisMesh.jvxlData = new JvxlData();
+    jvxlData = thisMesh.jvxlData;
   }
 
   void initShape() {

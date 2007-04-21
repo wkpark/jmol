@@ -128,7 +128,7 @@ class Colix3D {
     if (argbsGreyscale != null)
       return;
     int[] a = new int[argbs.length];
-    for (int i = argbsGreyscale.length; --i >= Graphics3D.SPECIAL_COLIX_MAX;)
+    for (int i = argbs.length; --i >= Graphics3D.SPECIAL_COLIX_MAX;)
       a[i] = Graphics3D.calcGreyscaleRgbFromRgb(argbs[i]);
     argbsGreyscale = a;
   }

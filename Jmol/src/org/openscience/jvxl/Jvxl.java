@@ -38,8 +38,8 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.HelpFormatter;
 
-import org.openscience.jvxl.readers.*;
-import org.openscience.jvxl.util.*;
+import org.jmol.jvxl.readers.*;
+import org.jmol.util.*;
 
 public class Jvxl {
 
@@ -257,45 +257,45 @@ public class Jvxl {
 
     // compose the surface
 
-    SurfaceGenerator sg = new SurfaceGenerator(new ColorEncoder(), null, null);
+    SurfaceGenerator sg = new SurfaceGenerator();
 
     // input file
 
     if (blockData)
-      sg.setProperty("blockData", Boolean.TRUE);
+      sg.setParameter("blockData", Boolean.TRUE);
     if (!Float.isNaN(cutoff))
-      sg.setProperty(isPositiveOnly ? "cutoffPositive" : "cutoff", new Float(
+      sg.setParameter(isPositiveOnly ? "cutoffPositive" : "cutoff", new Float(
           cutoff));
     if (bicolor)
-      sg.setProperty("sign", null);
+      sg.setParameter("sign", null);
     if (reverseColor)
-      sg.setProperty("reverseColor", null);
+      sg.setParameter("reverseColor", null);
     if (phase != null)
-      sg.setProperty("phase", phase);
+      sg.setParameter("phase", phase);
 
     if (progressive)
-      sg.setProperty("progressive", null);
+      sg.setParameter("progressive", null);
 
     if (plane != null)
-      sg.setProperty("plane", plane);
+      sg.setParameter("plane", plane);
     else {
       if (fileIndex != Integer.MAX_VALUE)
-        sg.setProperty("fileIndex", new Integer(fileIndex));
-      sg.setProperty("readData", inputFile);
+        sg.setParameter("fileIndex", new Integer(fileIndex));
+      sg.setParameter("readFile", inputFile);
     }
 
-    sg.setProperty("title", line.toString());
+    sg.setParameter("title", line.toString());
 
     //color scheme is only for VMRL
 
     if (colorScheme != null)
-      sg.setProperty("colorScheme", colorScheme);
+      sg.setParameter("colorScheme", colorScheme);
     if (!Float.isNaN(min))
-      sg.setProperty("red", new Float(min));
+      sg.setParameter("red", new Float(min));
     if (!Float.isNaN(max))
-      sg.setProperty("blue", new Float(max));
+      sg.setParameter("blue", new Float(max));
     if (mapFile != null)
-      sg.setProperty("mapColor", mapFile);
+      sg.setParameter("mapColor", mapFile);
 
     writeFile(outputFile, (String) sg.getProperty("jvxlFileData", 0));
     Logger.info((String) sg.getProperty("jvxlFileInfo", 0));

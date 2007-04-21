@@ -486,7 +486,8 @@ Cada páginaCada página      </p>
 	<br/>
 	Añade el elemento optgroup como uno más en el <code>grupoElementosMenú</code>.
 	Para él, el primer elemento de la matriz secundaria debe ser "#optgroup" (en lugar de un guión);
-	el segundo elemento, el texto mostrado para el grupo ("label" en sintaxis html); 
+	el segundo elemento, el texto mostrado para el grupo ("label" en sintaxis html;
+	no puede contener una comilla simple o apóstrofo); 
 	el tercer elemento no se usará.
 	Luego añade un elemento más para señalar el fin del grupo, cuyo
 	primer elemento debe ser "#optgroupEnd" (los elementos segundo y tercero se ignoran).
@@ -494,7 +495,7 @@ Cada páginaCada página      </p>
 	  </i>
 					<pre><![CDATA[
  jmolMenu([
- [null, ".... selecciona ....", "selected"],
+ [null, ".... selecciona ....", true],
  ["color cpk", "patrón CPK"],
  ["#optgroup", "... Colorear por: ...."],
  ["color structure", "estructura"],
@@ -567,6 +568,11 @@ Cada páginaCada página      </p>
 	<br/><i>Caso especial:</i> si se indica "all" como <code>sufijoDiana</code>,
 	el <code>guión</code>se aplicará a todas las miniaplicaciones presentes.
 	</p>
+				<p>
+					<i>Nota:  recuerda que el uso de <a href="#jmolSetTarget"><code>jmolSetTarget</code></a> 
+	no afecta a <code>jmolScript</code>, <code>jmolScriptWait</code> 
+	o <code>jmolScriptWaitAsArray</code>.</i>
+				</p>
 			</section>
 			<section title="jmolScriptWait">
 				<code>jmolScriptWait(guión, {sufijoDiana})</code>

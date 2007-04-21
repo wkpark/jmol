@@ -468,7 +468,8 @@
 	<br/>
 	Add the optgroup entry as one more element in the <code>arrayOfMenuItems</code>.
 	For that entry, the first element in the sub-array must be "#optgroup" (instead of a script);
-	the second element, the caption wanted for the group ("label" in html syntax); 
+	the second element, the caption wanted for the group ("label" in html syntax; 
+	cannot contain single quotation mark or apostrophe); 
 	the third element will not be used. 
 	Then add an extra entry to mark the end of the group, whose 
 	first element must be "#optgroupEnd" (second and third elements are ignored).
@@ -477,7 +478,7 @@
 	</i>
 					<pre><![CDATA[
  jmolMenu([
- [null, ".... select ....", "selected"],
+ [null, ".... select ....", true],
  ["color cpk", "CPK pattern"],
  ["#optgroup", "... Color by: ...."],
  ["color structure", "structure"],
@@ -549,6 +550,11 @@
 	<br/><i>Special case:</i> if "all" is used for <code>targetSuffix</code>,
 	the <code>script</code> will be applied to all JmolApplets present.
 	</p>
+				<p>
+					<i>Note:  please, be aware that setting <a href="#jmolSetTarget"><code>jmolSetTarget</code></a> 
+	does not apply to <code>jmolScript</code>, <code>jmolScriptWait</code> 
+	or <code>jmolScriptWaitAsArray</code>.</i>
+				</p>
 			</section>
 			<section title="jmolScriptWait">
 				<code>jmolScriptWait(script, {targetSuffix})</code>

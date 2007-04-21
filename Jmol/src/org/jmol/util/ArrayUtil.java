@@ -180,4 +180,24 @@ final public class ArrayUtil {
     array[indexA] = array[indexB];
     array[indexB] = t;
   }
+  
+  public static String dumpArray(String msg, float[][] A, int x1, int x2, int y1, int y2) {
+    String s = "dumpArray: " + msg + "\n";
+    for (int x = x1; x <= x2; x++)
+      s += "\t*" + x + "*";
+    for (int y = y2; y >= y1; y--) {
+      s += "\n*" + y + "*";
+      for (int x = x1; x <= x2; x++)
+        s += "\t" + (x < A.length && y < A[x].length ? A[x][y] : Float.NaN);
+    }
+    return s;
+  }
+
+  public static String dumpIntArray(int[] A, int n) {
+    String str = "";
+    for (int i = 0; i < n; i++)
+      str += " " + A[i];
+    return str;
+  }
+
 }

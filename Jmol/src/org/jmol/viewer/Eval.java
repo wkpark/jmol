@@ -8453,7 +8453,7 @@ class Eval { //implements Runnable {
         break;
       case Token.string:
         propertyName = surfaceObjectSeen || planeSeen ? "mapColor"
-            : "getSurface";
+            : "readData";
         /*
          * a file name, optionally followed by an integer file index.
          * OR empty. In that case, if the model auxiliary info has the

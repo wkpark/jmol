@@ -511,6 +511,10 @@ String getAtomInfoChime(int i) {
     return frame.getAtomAt(i).getRadius();
   }
 
+  float getAtomVdwRadius(int i) {
+    return frame.getAtomAt(i).getVanderwaalsRadiusFloat();
+  }
+
   short getAtomColix(int i) {
     return frame.getAtomAt(i).getColix();
   }
@@ -1515,4 +1519,7 @@ String getAtomInfoChime(int i) {
     return frame.calculateSurface(bsSelected, bsIgnore, envelopeRadius);
   }
   
+  AtomIterator getWithinModelIterator(Atom atom, float distance) {
+    return frame.getWithinModelIterator(atom, distance);
+  }
 }

@@ -26,6 +26,7 @@ package org.jmol.viewer;
 import org.jmol.util.Logger;
 import java.util.BitSet;
 import org.jmol.g3d.*;
+import org.jmol.util.ColorEncoder;
 
 class ColorManager {
 
@@ -147,7 +148,7 @@ class ColorManager {
           altArgbsCpk[id]);
     case JmolConstants.PALETTE_PARTIAL_CHARGE:
       // This code assumes that the range of partial charges is [-1, 1].
-      index = quantize(atom.getPartialCharge(), -1, 1,
+      index = ColorEncoder.quantize(atom.getPartialCharge(), -1, 1,
           JmolConstants.PARTIAL_CHARGE_RANGE_SIZE);
       return g3d.getChangeableColix(
           (short) (JmolConstants.PARTIAL_CHARGE_COLIX_RED + index),
@@ -167,14 +168,14 @@ class ColorManager {
         lo = 0;
         hi = 100 * 100; // scaled by 100
       }
-      index = quantize(atom.getBfactor100(), lo, hi,
+      index = ColorEncoder.quantize(atom.getBfactor100(), lo, hi,
           JmolConstants.argbsRwbScale.length);
       index = JmolConstants.argbsRwbScale.length - 1 - index;
       argb = JmolConstants.argbsRwbScale[index];
       break;
     case JmolConstants.PALETTE_SURFACE:
       hi = viewer.getFrame().getSurfaceDistanceMax();
-      index = quantize(atom.getSurfaceDistance100(), 0, hi,
+      index = ColorEncoder.quantize(atom.getSurfaceDistance100(), 0, hi,
           JmolConstants.argbsRwbScale.length);
       //index = JmolConstants.argbsRwbScale.length - 1 - index;
       argb = JmolConstants.argbsRwbScale[index];
@@ -210,7 +211,7 @@ class ColorManager {
       // however, do not call it here because it will get recalculated
       // for each atom
       // therefore, we call it in Eval.colorObject();
-      index = quantize(atom.getSelectedGroupIndexWithinChain(), 0, atom
+      index = ColorEncoder.quantize(atom.getSelectedGroupIndexWithinChain(), 0, atom
           .getSelectedGroupCountWithinChain() - 1,
           JmolConstants.argbsRoygbScale.length);
       index = JmolConstants.argbsRoygbScale.length - 1 - index;
@@ -218,7 +219,7 @@ class ColorManager {
       break;
     case JmolConstants.PALETTE_MONOMER:
       // viewer.calcSelectedMonomersCount() must be called first ...
-      index = quantize(atom.getSelectedMonomerIndexWithinPolymer(), 0, atom
+      index = ColorEncoder.quantize(atom.getSelectedMonomerIndexWithinPolymer(), 0, atom
           .getSelectedMonomerCountWithinPolymer() - 1,
           JmolConstants.argbsRoygbScale.length);
       index = JmolConstants.argbsRoygbScale.length - 1 - index;
@@ -226,7 +227,7 @@ class ColorManager {
       break;
     case JmolConstants.PALETTE_MOLECULE:
       frame = viewer.getFrame();
-      index = quantize(frame.getMoleculeIndex(atom.atomIndex), 0, frame
+      index = ColorEncoder.quantize(frame.getMoleculeIndex(atom.atomIndex), 0, frame
           .getMoleculeCountInModel(atom.modelIndex) - 1,
           JmolConstants.argbsRoygbScale.length);
       argb = JmolConstants.argbsRoygbScale[index];
@@ -234,7 +235,7 @@ class ColorManager {
     case JmolConstants.PALETTE_ALTLOC:
       frame = viewer.getFrame();
       //very inefficient!
-      index = quantize(frame.getAltLocIndexInModel(atom.modelIndex,
+      index = ColorEncoder.quantize(frame.getAltLocIndexInModel(atom.modelIndex,
           (char) atom.alternateLocationID), 0, frame
           .getAltLocCountInModel(atom.modelIndex),
           JmolConstants.argbsRoygbScale.length);
@@ -243,7 +244,7 @@ class ColorManager {
     case JmolConstants.PALETTE_INSERTION:
       frame = viewer.getFrame();
       //very inefficient!
-      index = quantize(frame.getInsertionCodeIndexInModel(atom.modelIndex, atom
+      index = ColorEncoder.quantize(frame.getInsertionCodeIndexInModel(atom.modelIndex, atom
           .getInsertionCode()), 0, frame
           .getInsertionCountInModel(atom.modelIndex),
           JmolConstants.argbsRoygbScale.length);
@@ -251,60 +252,6 @@ class ColorManager {
       break;
     }
     return (argb == 0 ? Graphics3D.HOTPINK : Graphics3D.getColix(argb));
-  }
-
-  static int quantize(float val, float lo, float hi, int segmentCount) {
-    /* oy! Say you have an array with 10 values, so segmentCount=10
-     * then we expect 0,1,2,...,9  EVENLY
-     * If f = fractional distance from lo to hi, say 0.0 to 10.0 again,
-     * then one might expect 10 even placements. BUT:
-     * (int) (f * segmentCount + 0.5) gives
-     * 
-     * 0.0 ---> 0
-     * 0.5 ---> 1
-     * 1.0 ---> 1
-     * 1.5 ---> 2
-     * 2.0 ---> 2
-     * ...
-     * 8.5 ---> 9
-     * 9.0 ---> 9
-     * 9.5 ---> 10 --> 9
-     * 
-     * so the first bin is underloaded, and the last bin is overloaded.
-     * With integer quantities, one would not notice this, because
-     * 0, 1, 2, 3, .... --> 0, 1, 2, 3, .....
-     * 
-     * but with fractional quantities, it will be noticeable.
-     * 
-     * What we really want is:
-     * 
-     * 0.0 ---> 0
-     * 0.5 ---> 0
-     * 1.0 ---> 1
-     * 1.5 ---> 1
-     * 2.0 ---> 2
-     * ...
-     * 8.5 ---> 8
-     * 9.0 ---> 9
-     * 9.5 ---> 9
-     * 
-     * that is, no addition of 0.5. 
-     * Instead, I add 0.0001, just for discreteness sake.
-     * 
-     * Bob Hanson, 5/2006
-     * 
-     */
-    float range = hi - lo;
-    if (range <= 0 || Float.isNaN(val))
-      return segmentCount / 2;
-    float t = val - lo;
-    if (t <= 0)
-      return 0;
-    float quanta = range / segmentCount;
-    int q = (int)(t / quanta + 0.0001f);  //was 0.5f!
-    if (q >= segmentCount)
-      q = segmentCount - 1;
-    return q;
   }
 
   private float colorHi, colorLo;
@@ -333,47 +280,14 @@ class ColorManager {
     return getColixFromPalette(colorData[iAtom], colorLo, colorHi);
   }
 
-  private final static String[] colorSchemes = {"roygb", "bgyor", "rwb", "bwr", "low", "high"}; 
-  private final static int ROYGB = 0;
-  private final static int BGYOR = 1;
-  private final static int RWB   = 2;
-  private final static int BWR   = 3;
-  private final static int LOW   = 4;
-  private final static int HIGH  = 5;
-  private final static int ihalf = JmolConstants.argbsRoygbScale.length/3;
-  
   int palette = 0;
   
   int setColorScheme(String colorScheme) {
-    palette = 0;
-    for (int i = 0; i < colorSchemes.length; i++)
-      if (colorSchemes[i].equalsIgnoreCase(colorScheme))
-        return (palette = i);
-    return palette;
+    return palette = ColorEncoder.getColorScheme(colorScheme);
   }
   
   short getColixFromPalette(float val, float lo, float hi) {
-    switch (palette) {
-    case RWB:
-      return Graphics3D.getColix(JmolConstants.argbsRwbScale[quantize(val, lo,
-          hi, JmolConstants.argbsRwbScale.length)]);
-    case BWR:
-      return Graphics3D.getColix(JmolConstants.argbsRwbScale[quantize(-val,
-          -hi, -lo, JmolConstants.argbsRwbScale.length)]);
-    case ROYGB:
-      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[quantize(val,
-          lo, hi, JmolConstants.argbsRoygbScale.length)]);
-    case BGYOR:
-      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[quantize(-val,
-          -hi, -lo, JmolConstants.argbsRoygbScale.length)]);
-    case LOW:
-      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[quantize(val,
-          lo, hi, ihalf)]);
-    case HIGH:
-      return Graphics3D.getColix(JmolConstants.argbsRoygbScale[ihalf
-          + quantize(val, lo, hi, ihalf * 2)]);
-    }
-    return Graphics3D.GRAY;
+    return ColorEncoder.getColorIndexFromPalette(val, lo, hi, palette);    
   }
 
   static short getColixHbondType(short order) {

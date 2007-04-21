@@ -1546,11 +1546,15 @@ public class Viewer extends JmolViewer {
   // delegated to ModelManager
   // ///////////////////////////////////////////////////////////////
 
-  Point3f[] calculateSurface(BitSet bsSelected, BitSet bsIgnore,
+  public Point3f[] calculateSurface(BitSet bsSelected, BitSet bsIgnore,
                              float envelopeRadius) {
     if (bsSelected == null)
       bsSelected = getSelectionSet();
     return modelManager.calculateSurface(bsSelected, bsIgnore, envelopeRadius);
+  }
+  
+  public AtomIterator getWithinModelIterator(Atom atom, float distance) {
+   return modelManager.getWithinModelIterator(atom, distance);
   }
   
   void addStateScript(String script) {
@@ -1819,7 +1823,7 @@ public class Viewer extends JmolViewer {
     return modelManager.getModelFileNumber(modelIndex);
   }
 
-  String getModelNumberDotted(int modelIndex) {
+  public String getModelNumberDotted(int modelIndex) {
     if (modelIndex < 0)
       return "0";
     return getModelName(-1 - modelIndex);
@@ -5008,6 +5012,10 @@ public class Viewer extends JmolViewer {
     return modelManager.getAtomRadius(i);
   }
 
+  public float getAtomVdwRadius(int i) {
+    return modelManager.getAtomVdwRadius(i);
+  }
+
   public int getAtomArgb(int i) {
     return g3d.getColixArgb(modelManager.getAtomColix(i));
   }
@@ -5165,7 +5173,7 @@ public class Viewer extends JmolViewer {
     modelManager.checkObjectDragged(prevX, prevY, deltaX, deltaY, modifiers);
   }
 
-  static int cardinalityOf(BitSet bs) {
+  public static int cardinalityOf(BitSet bs) {
     int nbitset = 0;
     if (bs != null)
       for (int i = bs.size(); --i >= 0;)
@@ -5333,7 +5341,7 @@ public class Viewer extends JmolViewer {
     modelManager.rotateSelected(mNew, matrixRotate, selectionManager.bsSelection, fullMolecule);
   }
 
-  float functionXY(String functionName, int x, int y) {
+  public float functionXY(String functionName, int x, int y) {
     return statusManager.functionXY(functionName, x, y);
   }
 
@@ -5341,7 +5349,7 @@ public class Viewer extends JmolViewer {
     return statusManager.eval(strEval);
   }
 
-  Point3f[] getAdditionalHydrogens(BitSet atomSet) {
+  public Point3f[] getAdditionalHydrogens(BitSet atomSet) {
     return modelManager.getAdditionalHydrogens(atomSet);
   }
 

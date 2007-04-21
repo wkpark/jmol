@@ -27,14 +27,11 @@ import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.Hashtable;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
-
 import netscape.javascript.JSObject;
 
 import org.jmol.util.Logger;
 import org.xml.sax.*;
-
+import org.jmol.jvxl.data.VolumeData;
 /**
  * An chem3d c3xml reader
  */
@@ -117,30 +114,31 @@ class XmlChem3dReader extends XmlReader {
     }
 
     if ("gridData".equals(localName)) {
+      VolumeData vd = new VolumeData();
       int nPointsX = parseInt((String) atts.get("gridDatXDim"));
       int nPointsY = parseInt((String) atts.get("gridDatYDim"));
       int nPointsZ = parseInt((String) atts.get("gridDatZDim"));
+      vd.voxelCounts[0] = nPointsX;
+      vd.voxelCounts[1] = nPointsY;
+      vd.voxelCounts[2] = nPointsZ;
+
       float xStep = parseFloat((String) atts.get("gridDatXSize"))
           / (nPointsX);
       float yStep = parseFloat((String) atts.get("gridDatYSize"))
           / (nPointsY);
       float zStep = parseFloat((String) atts.get("gridDatZSize"))
           / (nPointsZ);
-      String xyz = (String) atts.get("gridDatOrigin");
-      tokens = getTokens(xyz);
-      float originX = parseFloat(tokens[0]);
-      float originY = parseFloat(tokens[1]);
-      float originZ = parseFloat(tokens[2]);
+      vd.setVolumetricVector(0, xStep, 0, 0);
+      vd.setVolumetricVector(1, 0, yStep, 0);
+      vd.setVolumetricVector(2, 0, 0, zStep);
+
+      tokens = getTokens((String) atts.get("gridDatOrigin"));
+      vd.volumetricOrigin.set(parseFloat(tokens[0]), parseFloat(tokens[1]), parseFloat(tokens[2]));
+      
       tokens = getTokens((String) atts.get("gridDatData"));
       int nData = parseInt(tokens[0]);
       int pt = 1;
-      float[][][] voxelData = new float[nPointsX][][];
-      for (int x = 0; x < nPointsX; ++x) {
-        voxelData[x] = new float[nPointsY][];
-        for (int y = 0; y < nPointsY; ++y) {
-          voxelData[x][y] = new float[nPointsZ];
-        }
-      }
+      float[][][] voxelData = new float[nPointsX][nPointsY][nPointsZ];
       // this is pure speculation for now.
       // seems to work for one test case.
       // could EASILY be backward.
@@ -162,20 +160,12 @@ In Chem3D, all grid data in following format:
         for (int y = 0; y < nPointsY; y++)
           for (int x = 0; x < nPointsX; x++)
             voxelData[x][y][z] = parseFloat(tokens[pt++]);
-      int[] voxelCounts = new int[] { nPointsX, nPointsY, nPointsZ };
-      Point3f volumetricOrigin = new Point3f(originX, originY, originZ);
-      Vector3f[] volumetricVectors = new Vector3f[3];
-      volumetricVectors[0] = new Vector3f(xStep, 0, 0);
-      volumetricVectors[1] = new Vector3f(0, yStep, 0);
-      volumetricVectors[2] = new Vector3f(0, 0, zStep);
+      vd.setVoxelData(voxelData);
       Hashtable surfaceInfo = new Hashtable();
       surfaceInfo.put("surfaceDataType", "mo");
       surfaceInfo.put("defaultCutoff", new Float(0.01));
-      surfaceInfo.put("volumetricOrigin", volumetricOrigin);
-      surfaceInfo.put("voxelCounts", voxelCounts);
-      surfaceInfo.put("volumetricVectors", volumetricVectors);
       surfaceInfo.put("nCubeData", new Integer(nData));
-      surfaceInfo.put("voxelData", voxelData);
+      surfaceInfo.put("volumeData", vd);
       atomSetCollection.setAtomSetAuxiliaryInfo("jmolSurfaceInfo", surfaceInfo);
       Logger.debug("Chem3D molecular orbital data displayable using:  isosurface sign \"\" ");
       return;

@@ -23,7 +23,7 @@
  */
 package org.jmol.viewer;
 
-interface AtomIterator {
+public interface AtomIterator {
   boolean hasNext();
   Atom next();
   void release();

@@ -373,7 +373,7 @@ final public class Atom extends Point3fi implements Tuple {
     return Graphics3D.isColixTranslucent(colixAtom);
   }
 
-  short getElementNumber() {
+  public short getElementNumber() {
     return (short) (atomicAndIsotopeNumber % 128);
   }
   
@@ -430,7 +430,7 @@ final public class Atom extends Point3fi implements Tuple {
     return JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 128];
   }
 
-  float getVanderwaalsRadiusFloat() {
+  public float getVanderwaalsRadiusFloat() {
     return JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 128] / 1000f;
   }
 
@@ -439,7 +439,7 @@ final public class Atom extends Point3fi implements Tuple {
                                        formalChargeAndFlags >> 3);
   }
 
-  float getBondingRadiusFloat() {
+  public float getBondingRadiusFloat() {
     return getBondingMar() / 1000f;
   }
 
@@ -485,7 +485,7 @@ final public class Atom extends Point3fi implements Tuple {
     return Math.abs(madAtom / (1000f * 2));
   }
 
-  int getAtomIndex() {
+  public int getAtomIndex() {
     return atomIndex;
   }
 
@@ -639,7 +639,7 @@ final public class Atom extends Point3fi implements Tuple {
      return str.substring(1);
    }
    
-   int getModelIndex() {
+   public int getModelIndex() {
      return modelIndex;
    }
    

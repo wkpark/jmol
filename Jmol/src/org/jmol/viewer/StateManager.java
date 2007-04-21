@@ -39,7 +39,7 @@ import org.jmol.util.Parser;
 
 import java.util.Arrays;
 
-class StateManager {
+public class StateManager {
 
   
 
@@ -1038,7 +1038,7 @@ class StateManager {
    return sb.toString();
   }
   
-  static String escape(Tuple3f xyz) {
+  public static String escape(Tuple3f xyz) {
     return "{" + xyz.x + " " + xyz.y + " " + xyz.z +"}";
   }
   

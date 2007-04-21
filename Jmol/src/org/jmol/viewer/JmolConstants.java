@@ -306,7 +306,7 @@ final public class JmolConstants {
   }
 
   /* .cube files need this */
-  final static float ANGSTROMS_PER_BOHR = 0.5291772f;
+  public final static float ANGSTROMS_PER_BOHR = 0.5291772f;
 
   public final static int[] argbsHbondType =
   {

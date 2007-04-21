@@ -27,11 +27,12 @@ package org.jmol.viewer;
 
 import java.util.BitSet;
 import java.util.Vector;
+import java.util.Hashtable;
 
 import javax.vecmath.Point4f;
 
 import org.jmol.util.Logger;
-import java.util.Hashtable;
+import org.jmol.jvxl.readers.Parameters;
 
 class MolecularOrbital extends Isosurface {
 
@@ -208,7 +209,7 @@ class MolecularOrbital extends Isosurface {
     if (propertyName == "showMO") {
       StringBuffer str = new StringBuffer();
       String infoType = "jvxlFileData";
-      Vector mos = (Vector) (moData.get("mos"));
+      Vector mos = (Vector) (sg.getMoData().get("mos"));
       int nOrb = (mos == null ? 0 : mos.size());
       if (nOrb == 0)
         return "";
@@ -246,9 +247,9 @@ class MolecularOrbital extends Isosurface {
     moPlane = (Point4f)thisModel.get("moPlane");
     moCutoff = (Float )thisModel.get("moCutoff");
     if (moCutoff == null)
-      moCutoff = (Float)moData.get("defaultCutoff");
+      moCutoff = (Float)sg.getMoData().get("defaultCutoff");
     if (moCutoff == null) {
-      moCutoff = new Float(Isosurface.defaultQMOrbitalCutoff);
+      moCutoff = new Float(Parameters.defaultQMOrbitalCutoff);
     }
     moResolution = (Float)thisModel.get("moResolution");
     moScale = (Float)thisModel.get("moScale");
@@ -316,7 +317,7 @@ class MolecularOrbital extends Isosurface {
     if (modelCount > 1)
       appendCmd(s, "frame " + viewer.getModelNumber(modelIndex));
     if (moCutoff != null)
-      appendCmd(s, "mo cutoff " + (isPositiveOnly ? "+" : "") + moCutoff);
+      appendCmd(s, "mo cutoff " + (sg.getIsPositiveOnly() ? "+" : "") + moCutoff);
     if (moScale != null)
       appendCmd(s, "mo scale " + moScale);
     if (moResolution != null)

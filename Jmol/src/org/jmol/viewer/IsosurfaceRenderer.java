@@ -33,7 +33,6 @@ class IsosurfaceRenderer extends MeshRenderer {
 
   private boolean iShowNormals;
   private boolean iHideBackground;
-  private boolean isContoured;
   private boolean isPlane;
   private boolean isBicolorMap;
   private short backgroundColix;
@@ -67,7 +66,6 @@ class IsosurfaceRenderer extends MeshRenderer {
     if (iHideBackground)
       backgroundColix = Graphics3D.getColix(viewer.getBackgroundArgb());
     isPlane = (imesh.jvxlData.jvxlPlane != null);
-    isContoured = imesh.jvxlData.isContoured;
     isBicolorMap = imesh.jvxlData.isBicolorMap;
     super.render2();
   }
@@ -76,33 +74,26 @@ class IsosurfaceRenderer extends MeshRenderer {
   private final Point3i ptTempi = new Point3i();
 
   void renderPoints() {
-    for (int i = imesh.realVertexCount; --i >= 0;) {
-      if (vertexValues != null && Float.isNaN(vertexValues[i])
-          || frontOnly && transformedVectors[normixes[i]].z < 0)
+    int incr = imesh.vertexIncrement;
+    for (int i = 1; i < vertexCount; i += incr) {
+      if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
+          && transformedVectors[normixes[i]].z < 0)
         continue;
       if (imesh.vertexColixes != null)
         g3d.setColix(imesh.vertexColixes[i]);
       g3d.fillSphereCentered(4, screens[i]);
     }
-    if (!imesh.hasGridPoints || isContoured)
+    if (incr != 3)
       return;
-    int iFirst = imesh.firstViewableVertex;
-    if (iFirst > 0 || !isContoured) {
-      g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
-          Graphics3D.GRAY, true, 0.5f) : Graphics3D.GRAY);
-      if (iFirst > 0)
-        for (int i = 0; i < iFirst; i++)
-          g3d.fillSphereCentered(2, screens[i]);
-      if (!isContoured)
-        for (int i = 1; i < vertexCount; i += 3)
-          g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 1, screens[i],
-              screens[i + 1]);
-    }
+    g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
+        Graphics3D.GRAY, true, 0.5f) : Graphics3D.GRAY);
+    for (int i = 1; i < vertexCount; i += 3)
+      g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 1, screens[i],
+          screens[i + 1]);
     g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
         Graphics3D.YELLOW, true, 0.5f) : Graphics3D.YELLOW);
     for (int i = 1; i < vertexCount; i += 3)
       g3d.fillSphereCentered(4, screens[i]);
-
     g3d.setColix(isTranslucent ? Graphics3D.getColixTranslucent(
         Graphics3D.BLUE, true, 0.5f) : Graphics3D.BLUE);
     for (int i = 2; i < vertexCount; i += 3)

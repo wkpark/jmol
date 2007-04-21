@@ -25,10 +25,15 @@
 package org.jmol.viewer;
 
 import java.util.BitSet;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
+
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ArrayUtil;
+import org.jmol.jvxl.data.JvxlData;
 
 class IsosurfaceMesh extends Mesh {
   JvxlData jvxlData = new JvxlData();
@@ -50,8 +55,10 @@ class IsosurfaceMesh extends Mesh {
     super.clear(meshType);  
     vertexColixes = null;
     vertexValues = null;
+    assocGridPointMap = null;
+    assocGridPointNormals = null;
+    vertexSets = null;
     isColorSolid = true;
-    realVertexCount = 0;
     firstViewableVertex = 0;
     hasGridPoints = iAddGridPoints;
     showPoints = iAddGridPoints;
@@ -61,8 +68,8 @@ class IsosurfaceMesh extends Mesh {
     jvxlData.jvxlColorData = "";
     surfaceSet = null;
     nSets = 0;
-  }
-  
+  }  
+
   void allocVertexColixes() {
     if (vertexColixes == null) {
       vertexColixes = new short[vertexCount];
@@ -86,6 +93,34 @@ class IsosurfaceMesh extends Mesh {
       }
   }
 
+  Hashtable assocGridPointMap ;
+  Hashtable assocGridPointNormals;
+
+  int addVertexCopy(Point3f vertex, float value, int assocVertex, boolean associateNormals) {
+    //if (vertexCount == 1619 || vertexCount == 320)
+      //System.out.println(vertex);
+    int vPt = addVertexCopy(vertex, value);
+    switch (assocVertex) {
+    case -1:
+      break;
+    case -3:
+      vertexIncrement = 3;
+      break;
+    default:
+      if (associateNormals) {
+        if (assocGridPointMap == null) {
+          assocGridPointMap = new Hashtable();
+          assocGridPointNormals = new Hashtable();
+        }
+        Integer key = new Integer(assocVertex);
+        assocGridPointMap.put(new Integer(vPt), key);
+        if (!assocGridPointNormals.containsKey(key))
+          assocGridPointNormals.put(key, new Vector3f(0, 0, 0));
+      }
+    }
+    return vPt;
+  }
+
   int addVertexCopy(Point3f vertex, float value) {
     if (vertexCount == 0)
       vertexValues = new float[SEED_COUNT];
@@ -103,13 +138,17 @@ class IsosurfaceMesh extends Mesh {
           Graphics3D.getColixTranslucent(vertexColixes[i], isTranslucent, iLevel);
   }
 
-  void updateSurfaceData(char isNaN) {
-    invalidateTriangles();
-    char[] chars = jvxlData.jvxlEdgeData.toCharArray();
-    for (int i = 0; i < realVertexCount; i+= vertexIncrement)
-      if (Float.isNaN(vertexValues[i]))
-          chars[i] = isNaN;
-    jvxlData.jvxlEdgeData = String.copyValueOf(chars);
+  void addTriangleCheck(int vertexA, int vertexB, int vertexC, int check) {
+    if (vertexValues != null && (Float.isNaN(vertexValues[vertexA])||Float.isNaN(vertexValues[vertexB])||Float.isNaN(vertexValues[vertexC])))
+      return;
+    if (Float.isNaN(vertices[vertexA].x)||Float.isNaN(vertices[vertexB].x)||Float.isNaN(vertices[vertexC].x))
+      return;
+    //System.out.println("adding triangle " + vertexA + vertices[vertexA] + " " + vertexB +  vertices[vertexB] + " " + vertexC + vertices[vertexC]);
+    if (polygonCount == 0)
+      polygonIndexes = new int[SEED_COUNT][];
+    else if (polygonCount == polygonIndexes.length)
+      polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
+    polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC, check};
   }
   
   void invalidateTriangles() {
@@ -126,29 +165,10 @@ class IsosurfaceMesh extends Mesh {
     }
   }
   
-  void addTriangleCheck(int vertexA, int vertexB, int vertexC, int check) {
-    if (vertexValues != null && (Float.isNaN(vertexValues[vertexA])||Float.isNaN(vertexValues[vertexB])||Float.isNaN(vertexValues[vertexC])))
-      return;
-    if (Float.isNaN(vertices[vertexA].x)||Float.isNaN(vertices[vertexB].x)||Float.isNaN(vertices[vertexC].x))
-      return;
-    if (polygonCount == 0)
-      polygonIndexes = new int[SEED_COUNT][];
-    else if (polygonCount == polygonIndexes.length)
-      polygonIndexes = (int[][]) ArrayUtil.doubleLength(polygonIndexes);
-    polygonIndexes[polygonCount++] = new int[] {vertexA, vertexB, vertexC, check};
-  }
-
-  
   public BitSet[] surfaceSet;
   public int[] vertexSets;
   public int nSets = 0;
   
-  private boolean setsSuccessful;
-
-  public BitSet[] getSurfaceSet() {
-    return (surfaceSet == null ? getSurfaceSet(0) : surfaceSet);
-  }
-
   void invalidateSurfaceSet(int i) {
     for (int j = surfaceSet[i].length(); --j >= 0;)
       if (surfaceSet[i].get(j))
@@ -156,93 +176,37 @@ class IsosurfaceMesh extends Mesh {
     surfaceSet[i] = null;
   }
 
-  public BitSet[] getSurfaceSet(int level) {
-    if (level == 0) {
-      surfaceSet = new BitSet[100];
-      nSets = 0;
-    }
-    setsSuccessful = true;
-    for (int i = 0; i < polygonCount; i++) {
-      int[] p = polygonIndexes[i];
-      int pt0 = findSet(p[0]);
-      int pt1 = findSet(p[1]);
-      int pt2 = findSet(p[2]);
-      if (pt0 < 0 && pt1 < 0 && pt2 < 0) {
-        createSet(p[0], p[1], p[2]);
-        continue;
+  void initialize(int lighting) {
+    /* 
+     * OK, so if there is an associated grid point (because the 
+     * point is so close to one), we now declare that associated
+     * point to be used for the vectorSum instead of a new, 
+     * independent one for the point itself.
+     *  
+     *  Bob Hanson, 05/2006
+     *  
+     *  having 2-sided normixes is INCOMPATIBLE with this when not a plane 
+     *  
+     */
+
+    Vector3f[] vectorSums = new Vector3f[vertexCount];
+    for (int i = vertexCount; --i >= 0;)
+      vectorSums[i] = new Vector3f();
+    sumVertexNormals(vectorSums, true);
+    if (assocGridPointMap != null) {
+      Enumeration e = assocGridPointMap.keys();
+      while (e.hasMoreElements()) {
+        Integer I = (Integer) e.nextElement();
+        ((Vector3f) assocGridPointNormals.get(assocGridPointMap.get(I)))
+            .add(vectorSums[I.intValue()]);
       }
-      if (pt0 == pt1 && pt1 == pt2)
-        continue;
-      if (pt0 >= 0) {
-        surfaceSet[pt0].set(p[1]);
-        surfaceSet[pt0].set(p[2]);
-        if (pt1 >= 0 && pt1 != pt0)
-          mergeSets(pt0, pt1);
-        if (pt2 >= 0 && pt2 != pt0 && pt2 != pt1)
-          mergeSets(pt0, pt2);
-        continue;
+      e = assocGridPointMap.keys();
+      while (e.hasMoreElements()) {
+        Integer I = (Integer) e.nextElement();
+        vectorSums[I.intValue()] = ((Vector3f) assocGridPointNormals
+            .get(assocGridPointMap.get(I)));
       }
-      if (pt1 >= 0) {
-        surfaceSet[pt1].set(p[0]);
-        surfaceSet[pt1].set(p[2]);
-        if (pt2 >= 0 && pt2 != pt1)
-          mergeSets(pt1, pt2);
-        continue;
-      }
-      surfaceSet[pt2].set(p[0]);
-      surfaceSet[pt2].set(p[1]);
     }
-    int n = 0;
-    for (int i = 0; i < nSets; i++)
-      if (surfaceSet[i] != null)
-        n++;
-    BitSet[] temp = new BitSet[n];
-    n = 0;
-    for (int i = 0; i < nSets; i++)
-      if (surfaceSet[i] != null)
-        temp[n++] = surfaceSet[i];
-    nSets = n;
-    surfaceSet = temp;
-    if (!setsSuccessful && level < 2)
-      getSurfaceSet(++level);
-    if (level == 0) {
-      vertexSets = new int[vertexCount];
-      for (int i = 0; i < nSets; i++)
-        for (int j = 0; j < vertexCount; j++)
-          if (surfaceSet[i].get(j))
-            vertexSets[j] = i;
-    }
-    return surfaceSet;
+    initializeNormixes(lighting, vectorSums);
   }
-
-  private int findSet(int vertex) {
-    for (int i = 0; i < nSets; i++)
-      if (surfaceSet[i] != null && surfaceSet[i].get(vertex))
-        return i;
-    return -1;
-  }
-
-  private void createSet(int v1, int v2, int v3) {
-    int i;
-    for (i = 0; i < nSets; i++)
-      if (surfaceSet[i] == null)
-        break;
-    if (i >= 100) {
-      setsSuccessful = false;
-      return;
-    }
-    if (i == nSets)
-      nSets = i + 1;
-    surfaceSet[i] = new BitSet();
-    surfaceSet[i].set(v1);
-    surfaceSet[i].set(v2);
-    surfaceSet[i].set(v3);
-  }
-
-  private void mergeSets(int a, int b) {
-    surfaceSet[a].or(surfaceSet[b]);
-    surfaceSet[b] = null;
-  }
-
-  
 }

@@ -794,20 +794,7 @@ public class SurfaceGenerator {
       volumeData = (VolumeData)((Hashtable) value).get("volumeData");
       return new VolumeDataReader(this);
     }
-    BufferedReader br = null;
-    if (value instanceof String) {
-      Object t = FileReader
-          .getBufferedReaderOrErrorMessageFromName((String) value);
-      if (t instanceof String) {
-        Logger.error((String) t);
-        return null;
-      }
-      br = (BufferedReader) t;
-    } else if (value instanceof BufferedReader) {
-      br = (BufferedReader) value;
-    }
-    if (br == null)
-      return null;
+    BufferedReader br = (BufferedReader) value;
     String fileType = VolumeFileReader.determineFileType(br);
     Logger.info("data file type was determined to be " + fileType);
     if (fileType.equals("Jvxl+"))

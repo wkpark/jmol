@@ -23,9 +23,16 @@
  */
 package org.openscience.jvxl;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 import javax.vecmath.Point4f;
@@ -281,7 +288,15 @@ public class Jvxl {
     else {
       if (fileIndex != Integer.MAX_VALUE)
         sg.setParameter("fileIndex", new Integer(fileIndex));
-      sg.setParameter("readFile", inputFile);
+      Object t = FileReader
+      .getBufferedReaderOrErrorMessageFromName(inputFile);
+      if (t instanceof String) {
+        Logger.error((String) t);
+        return;
+      }
+      BufferedReader br = (BufferedReader) t;
+
+      sg.setParameter("readFile", br);
     }
 
     sg.setParameter("title", line.toString());
@@ -337,5 +352,110 @@ public class Jvxl {
           next), Parser.parseFloat(str, next), Parser.parseFloat(str, next));
     }
     return null;
+  }
+}
+class FileReader {
+  
+  FileReader() {
+    
+  }
+  
+  static Object getBufferedReaderOrErrorMessageFromName(String name) {
+    Object t = getInputStreamOrErrorMessageFromName(name);
+    if (t instanceof String)
+      return t;
+    try {
+      BufferedInputStream bis = new BufferedInputStream((InputStream)t, 8192);
+      InputStream is = bis;
+      return new BufferedReader(new InputStreamReader(is));
+    } catch (Exception ioe) {
+      return ioe.getMessage();
+    }
+  }
+
+  private static Object getInputStreamOrErrorMessageFromName(String name) {
+    String errorMessage = null;
+    try {
+        Logger.info("opening " + name);
+        File file = new File(name);
+        int length = (int) file.length();
+        InputStream in = new FileInputStream(file);
+        return new MonitorInputStream(in, length);
+    } catch (Exception e) {
+      errorMessage = "" + e;
+    }
+    return errorMessage;
+  }
+}
+
+class MonitorInputStream extends FilterInputStream {
+  int length;
+  int position;
+  int markPosition;
+  int readEventCount;
+  long timeBegin;
+
+  MonitorInputStream(InputStream in, int length) {
+    super(in);
+    this.length = length;
+    this.position = 0;
+    timeBegin = System.currentTimeMillis();
+  }
+
+  public int read() throws IOException{
+    ++readEventCount;
+    int nextByte = super.read();
+    if (nextByte >= 0)
+      ++position;
+    return nextByte;
+  }
+
+  public int read(byte[] b) throws IOException {
+    ++readEventCount;
+    int cb = super.read(b);
+    if (cb > 0)
+      position += cb;
+    return cb;
+  }
+
+  public int read(byte[] b, int off, int len) throws IOException {
+    ++readEventCount;
+    int cb = super.read(b, off, len);
+    if (cb > 0)
+      position += cb;
+    return cb;
+  }
+
+  public long skip(long n) throws IOException {
+    long cb = super.skip(n);
+    // this will only work in relatively small files ... 2Gb
+    position = (int)(position + cb);
+    return cb;
+  }
+
+  public void mark(int readlimit) {
+    super.mark(readlimit);
+    markPosition = position;
+  }
+
+  public void reset() throws IOException {
+    position = markPosition;
+    super.reset();
+  }
+
+  int getPosition() {
+    return position;
+  }
+
+  int getLength() {
+    return length;
+  }
+
+  int getPercentageRead() {
+    return position * 100 / length;
+  }
+
+  int getReadingTimeMillis() {
+    return (int)(System.currentTimeMillis() - timeBegin);
   }
 }

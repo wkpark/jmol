@@ -35,6 +35,10 @@ import org.jmol.util.JpegEncoder;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Parser;
 
+import org.jmol.jvxl.data.AtomData;
+import org.jmol.jvxl.api.AtomDataServer;
+import org.jmol.jvxl.api.AtomIndexIterator;
+
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -82,7 +86,7 @@ import java.io.Reader;
  * ****************************************************************
  */
 
-public class Viewer extends JmolViewer {
+public class Viewer extends JmolViewer implements AtomDataServer {
 
   protected void finalize() throws Throwable {
     Logger.debug("viewer finalize " + this);
@@ -1555,6 +1559,15 @@ public class Viewer extends JmolViewer {
   
   public AtomIterator getWithinModelIterator(Atom atom, float distance) {
    return modelManager.getWithinModelIterator(atom, distance);
+  }
+  
+  public AtomIndexIterator getWithinAtomSetIterator(int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly) {
+    return modelManager.getWithinAtomSetIterator(atomIndex, distance, bsSelected, isGreaterOnly);
+  }
+  
+  public void fillAtomData(AtomData atomData, int mode) {
+    atomData.fileName = getFileName();
+    modelManager.fillAtomData(atomData, mode);
   }
   
   void addStateScript(String script) {
@@ -5341,16 +5354,38 @@ public class Viewer extends JmolViewer {
     modelManager.rotateSelected(mNew, matrixRotate, selectionManager.bsSelection, fullMolecule);
   }
 
-  public float functionXY(String functionName, int x, int y) {
-    return statusManager.functionXY(functionName, x, y);
+  /**
+   *  fills an array with data -- if nX < 0 and this would involve JavaScript, then this reads a full 
+   *  set of Double[][] in one function call. Otherwise it reads the values using
+   *  individual function calls, which each return Double. 
+   *  
+   *  If the functionName begins with "file:" then data are read from 
+   *  a file specified after the colon. The sign of nX is not relevant in that case.
+   *  The file may contain mixed numeric and non-numeric values;
+   *  the non-numeric values will be skipped by Parser.parseFloatArray 
+   *   
+   * @param functionName
+   * @param nX
+   * @param nY
+   * @return    nX by nY array of floating values
+   */
+  public float[][] functionXY(String functionName, int nX, int nY) {
+    if (functionName.indexOf("file:") < 0)
+      return statusManager.functionXY(functionName, nX, nY);
+    String data = getFileAsString(functionName.substring(5));
+    nX = Math.abs(nX);
+    nY = Math.abs(nY);
+    float[] f = new float[nX * nY];
+    Parser.parseFloatArray(data, null, f);
+    float[][] fdata = new float[nX][nY];
+    for (int i = 0, n = 0; i < nX; i++)
+      for (int j = 0; j < nY; j++)
+        fdata[i][j] = f[n++];
+    return fdata;
   }
 
   String eval(String strEval) {
     return statusManager.eval(strEval);
-  }
-
-  public Point3f[] getAdditionalHydrogens(BitSet atomSet) {
-    return modelManager.getAdditionalHydrogens(atomSet);
   }
 
   private void setHelpPath(String url) {

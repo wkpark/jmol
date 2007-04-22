@@ -116,7 +116,6 @@ import java.io.BufferedReader;
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
-import org.jmol.viewer.Viewer;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
@@ -126,31 +125,32 @@ import org.jmol.util.*;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.data.MeshData;
+import org.jmol.jvxl.api.AtomDataServer;
 import org.jmol.jvxl.api.MeshDataServer;
 
 public class SurfaceGenerator {
 
-  private Viewer viewer;
   private ColorEncoder colorEncoder;
   private JvxlData jvxlData;
   private MeshData meshData;
   private Parameters params;
   private VolumeData volumeData;
   private MeshDataServer meshDataServer;
+  private AtomDataServer atomDataServer;
   VoxelReader voxelReader;
 
   public SurfaceGenerator() {
     setup(null, null, null, null, null);
   }
 
-  public SurfaceGenerator(Viewer viewer, MeshDataServer meshDataServer,
+  public SurfaceGenerator(AtomDataServer atomDataServer, MeshDataServer meshDataServer,
                           ColorEncoder colorEncoder, MeshData meshData, JvxlData jvxlData) {
-    setup(viewer, meshDataServer, colorEncoder, meshData, jvxlData);
+    setup(atomDataServer, meshDataServer, colorEncoder, meshData, jvxlData);
   }
 
-  private void setup(Viewer viewer, MeshDataServer meshDataServer,
+  private void setup(AtomDataServer atomDataServer, MeshDataServer meshDataServer,
       ColorEncoder colorEncoder, MeshData meshData, JvxlData jvxlData) {
-    this.viewer = viewer;
+    this.atomDataServer = atomDataServer;
     this.meshDataServer = meshDataServer;
     params = new Parameters();
     this.colorEncoder = (colorEncoder == null ? new ColorEncoder()
@@ -161,12 +161,12 @@ public class SurfaceGenerator {
     initializeIsosurface();
   }
   
-  public Viewer getViewer() {
-    return viewer;
-  }
-  
   public MeshDataServer getMeshDataServer() {
     return meshDataServer;
+  }
+
+  public AtomDataServer getAtomDataServer() {
+    return atomDataServer;
   }
 
   public ColorEncoder getColorEncoder() {
@@ -621,22 +621,7 @@ public class SurfaceGenerator {
     if ("molecular" == propertyName || "solvent" == propertyName
         || "sasurface" == propertyName || "nomap" == propertyName) {
       params.setSolvent(propertyName, ((Float) value).floatValue());
-      switch (params.dataType) {
-      case Parameters.SURFACE_NOMAP:
-        break;
-      case Parameters.SURFACE_MOLECULAR:
-        Logger.info("creating molecular surface with radius "
-            + params.solventRadius);
-        break;
-      case Parameters.SURFACE_SOLVENT:
-        Logger.info("creating solvent-excluded surface with radius "
-            + params.solventRadius);
-        break;
-      case Parameters.SURFACE_SASURFACE:
-        Logger.info("creating solvent-accessible surface with radius "
-            + params.solventExtendedAtomRadius);
-        break;
-      }
+      Logger.info(params.calculationType);
       if (state == STATE_DATA_READ) {
         mapSurface(null);
       } else {
@@ -663,6 +648,7 @@ public class SurfaceGenerator {
 
     if ("molecularOrbital" == propertyName) {
       params.setMO(((Integer) value).intValue(), state == STATE_DATA_READ);
+      Logger.info(params.calculationType);
       if (state == STATE_DATA_READ) {
         mapSurface(null);
       } else {
@@ -727,7 +713,7 @@ public class SurfaceGenerator {
   }
   
   private void generateSurface() {    
-    boolean havemeshDataServer = (meshDataServer != null);
+    boolean haveMeshDataServer = (meshDataServer != null);
     setReader();    
     if (params.colorBySign)
       params.isBicolorMap = true;
@@ -740,39 +726,13 @@ public class SurfaceGenerator {
       return;
     }
     
-    if (params.pocket != null){
-      if (havemeshDataServer)
-        meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
-      boolean doExclude = !params.pocket.booleanValue();
-      if (voxelReader.selectPocket()) {
-        voxelReader.updateSurfaceData();
-        if (!doExclude)
-          meshData.surfaceSet = null;
-        if (havemeshDataServer && params.minSet <= 0) {
-          meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
-          meshData = new MeshData();
-        }
-      }
-    }
+    if (params.pocket != null && haveMeshDataServer)
+      voxelReader.selectPocket();
 
-    if (params.minSet > 0) {
-      if (havemeshDataServer && params.pocket == null)
-        meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
-      meshData.getSurfaceSet();
-      for (int i = meshData.nSets; --i >= 0;) {
-        //System.out.println(" set " + i + " " + Viewer.cardinalityOf(surfaceSet[i]));
-        if (meshData.surfaceSet[i] != null
-            && Viewer.cardinalityOf(meshData.surfaceSet[i]) < params.minSet)
-          meshData.invalidateSurfaceSet(i);
-      }
-      voxelReader.updateSurfaceData();
-      if (havemeshDataServer) {
-        meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
-        meshData = new MeshData();
-      }
-    }
+    if (params.minSet > 0)
+      voxelReader.excludeMinimumSet();
 
-    if (havemeshDataServer)
+    if (haveMeshDataServer)
       meshDataServer.notifySurfaceGenerationCompleted();
     
     if (jvxlData.jvxlDataIs2dContour)

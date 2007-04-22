@@ -23,6 +23,8 @@
  */
 package org.jmol.jvxl.readers;
 
+import java.util.BitSet;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
@@ -31,6 +33,7 @@ import org.jmol.util.*;
 import org.jmol.jvxl.data.*;
 import org.jmol.jvxl.calc.*;
 import org.jmol.jvxl.api.*;
+
 public abstract class VoxelReader implements VertexDataServer {
  
   /*
@@ -160,11 +163,9 @@ ascii-encoded fractional color data
    * 
    */
 
-  protected int atomCount;
-  protected boolean negativeAtomCount;
-
   protected SurfaceGenerator sg;
   protected MeshDataServer meshDataServer;
+  
   protected ColorEncoder colorEncoder;
   
   protected Parameters params;
@@ -228,7 +229,6 @@ ascii-encoded fractional color data
 
   protected boolean isJvxl, isApbsDx;
 
-  protected boolean isAngstroms;
   protected int edgeFractionBase;
   protected int edgeFractionRange;
   protected int colorFractionBase;
@@ -688,6 +688,26 @@ ascii-encoded fractional color data
   boolean selectPocket() {
     return false;
     // solvent reader implements this
+  }
+  
+  void excludeMinimumSet() {
+    if (meshDataServer != null)
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
+    meshData.getSurfaceSet();
+    BitSet bs;
+    for (int i = meshData.nSets; --i >= 0;) 
+      //System.out.println(" set " + i + " " + Viewer.cardinalityOf(surfaceSet[i]));
+      if ((bs = meshData.surfaceSet[i]) != null) {
+        int n = 0;
+        for (int j = bs.size(); --j >= 0; )   // cardinality
+          if (bs.get(j))
+            n++;
+        if (n < params.minSet)
+          meshData.invalidateSurfaceSet(i);
+    }
+    updateSurfaceData();
+    if (meshDataServer != null)
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
   }
 }
 

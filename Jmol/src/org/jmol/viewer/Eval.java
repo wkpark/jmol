@@ -8349,11 +8349,20 @@ class Eval { //implements Runnable {
           Vector v = new Vector();
           if (getToken(++i).tok != Token.string)
             invalidArgument();
-          v.addElement(statement[i++].value);
+          String fName;
+          v.addElement(fName = parameterAsString(i++));
           v.addElement(getPoint3f(i, false));
+          Point4f pt;
+          int nX, nY;
+          v.addElement(pt = getPoint4f(++iToken));
+          nX = (int) pt.x;
+          v.addElement(pt = getPoint4f(++iToken));
+          nY = (int) pt.x;
           v.addElement(getPoint4f(++iToken));
-          v.addElement(getPoint4f(++iToken));
-          v.addElement(getPoint4f(++iToken));
+          if (nX <= 0 || nY <= 0)
+            invalidArgument();
+          if (!isSyntaxCheck)
+             v.addElement(viewer.functionXY(fName, nX, nY));
           i = iToken;
           propertyName = "functionXY";
           propertyValue = v;
@@ -8453,7 +8462,7 @@ class Eval { //implements Runnable {
         break;
       case Token.string:
         propertyName = surfaceObjectSeen || planeSeen ? "mapColor"
-            : "readData";
+            : "readFile";
         /*
          * a file name, optionally followed by an integer file index.
          * OR empty. In that case, if the model auxiliary info has the

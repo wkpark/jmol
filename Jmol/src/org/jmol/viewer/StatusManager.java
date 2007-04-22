@@ -360,9 +360,9 @@ class StatusManager {
     return msgList;
   }
   
-  float functionXY(String functionName, int x, int y) {
-    return (jmolStatusListener == null ? 0 :
-      jmolStatusListener.functionXY(functionName, x, y));
+  float[][] functionXY(String functionName, int nX, int nY) {
+    return (jmolStatusListener == null ? new float[Math.abs(nX)][Math.abs(nY)] :
+      jmolStatusListener.functionXY(functionName, nX, nY));
   }
   
   String eval(String strEval) {

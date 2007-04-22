@@ -33,12 +33,14 @@ class IsoFxyReader extends VolumeDataReader {
     precalculateVoxelData = false;
   }
 
-  String functionName;
-
-  boolean isPlanarMapping = false;
+  private String functionName;
+  private float[][] data;
+  private boolean isAngstroms;
+  private boolean isPlanarMapping;
   
-  void setup() {
-    isPlanarMapping = (sg.getPlane() != null);
+  protected void setup() {
+    isAngstroms = params.isAngstroms;
+    isPlanarMapping = (params.thePlane != null);
     functionName = (String) params.functionXYinfo.get(0);
     jvxlFileHeaderBuffer = new StringBuffer();
     jvxlFileHeaderBuffer.append("functionXY\n").append(functionName).append("\n");
@@ -52,21 +54,11 @@ class IsoFxyReader extends VolumeDataReader {
       if (!isAngstroms)
         volumetricVectors[i].scale(ANGSTROMS_PER_BOHR);
     }
-    JvxlReader.jvxlCreateHeader(null, null, volumeData, Integer.MAX_VALUE,
-        jvxlFileHeaderBuffer);
-    atomCount = 0;
-    negativeAtomCount = false;
+    data = (float[][]) params.functionXYinfo.get(5);
+    JvxlReader.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
   }
 
-  float zlast;
   float getValue(int x, int y, int z) {
-    try {
-      float zvalue = (z == 0 ? (zlast = viewer.functionXY(functionName, x, y))
-          : zlast);
-      return (isPlanarMapping ? zvalue : zvalue - z);
-    } catch (Exception e) {
-      return 0;
-    }
+    return (isPlanarMapping ? data[x][y] : data[x][y] - z);
   }
-
 }

@@ -27,28 +27,26 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Matrix3f;
 
 import org.jmol.util.Logger;
-import org.jmol.viewer.Viewer;
-
-import org.jmol.viewer.Atom;
 
 class VolumeDataReader extends VoxelReader {
 
-  
-  /*
-   *                        |-- IsoMOReader, IsoMepReader
-   *        IsoPlaneR.      |         (precalculated)
-   *            \           |--IsoFxyReader, IsoShapeReader 
-   *         IsoSolventR.  /          (not precalculated)
-   *              \       /
-   *            VolumeDataR.        
+  /*        (requires AtomDataServer)
+   *                |-- IsoSolventReader
+   *                |-- IsoMOReader, IsoMepReader
+   *                |-- IsoPlaneReader
+   *                |
+   *            AtomDataReader (abstract)
+   *                |
+   *                |         |-- IsoFxyReader (not precalculated)
+   *                |         |-- IsoShapeReader (not precalculated)  
+   *                |         |         
+   *            VolumeDataReader (precalculated data)       
    *                   |
    *                VoxelReader
    * 
    * 
    */
   
-  
-  protected Viewer viewer;
   protected int dataType;
   protected boolean precalculateVoxelData;
   protected boolean allowMapData;
@@ -64,7 +62,6 @@ class VolumeDataReader extends VoxelReader {
 
   VolumeDataReader(SurfaceGenerator sg) {
     super(sg);
-    viewer = sg.getViewer();
     dataType = params.dataType;
     precalculateVoxelData = true;
     allowMapData = true;    
@@ -83,8 +80,7 @@ class VolumeDataReader extends VoxelReader {
     //as is, just the volumeData as we have it.
     //but subclasses can modify this behavior.
     jvxlFileHeaderBuffer = new StringBuffer("volume data read from file\n\n");
-    JvxlReader.jvxlCreateHeader(null, null, volumeData, Integer.MAX_VALUE,
-        jvxlFileHeaderBuffer);
+    JvxlReader.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
   }
   
   void readVolumeParameters() {
@@ -218,26 +214,5 @@ class VolumeDataReader extends VoxelReader {
   
   protected void generateCube() {
     //generic VolumeData reader does not require this; others do.
-  }
-  
-  protected void setRangesAndAddAtoms(Point3f xyzMin, Point3f xyzMax,
-                                      float ptsPerAngstrom, int maxGrid, Atom[] atoms,
-                                      int iAtom, int nAtoms, int modelIndex) {
-
-    setVoxelRange(0, xyzMin.x, xyzMax.x, ptsPerAngstrom, maxGrid);
-    setVoxelRange(1, xyzMin.y, xyzMax.y, ptsPerAngstrom, maxGrid);
-    setVoxelRange(2, xyzMin.z, xyzMax.z, ptsPerAngstrom, maxGrid);
-    JvxlReader.jvxlCreateHeader(null, null, volumeData, iAtom,
-        jvxlFileHeaderBuffer);
-    for (int i = 0; i < nAtoms; i++) {
-      Atom atom = atoms[i];
-      if (atom.getModelIndex() != modelIndex)
-        continue;
-      int n = atom.getElementNumber();
-      jvxlFileHeaderBuffer.append(n + " " + n + ".0 " + atoms[i].x + " " + atoms[i].y + " "
-          + atoms[i].z + "\n");
-    }
-    atomCount = -Integer.MAX_VALUE;
-    negativeAtomCount = false;
-  }
+  }  
  }

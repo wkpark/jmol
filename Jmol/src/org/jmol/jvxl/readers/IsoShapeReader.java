@@ -138,10 +138,7 @@ class IsoShapeReader extends VolumeDataReader {
     jvxlFileHeaderBuffer.append(
             isAnisotropic ? " anisotropy=(" + anisotropy[0] + ","
                 + anisotropy[1] + "," + anisotropy[2] + ")\n" : "\n");
-    JvxlReader.jvxlCreateHeader(null, null, volumeData, Integer.MAX_VALUE,
-        jvxlFileHeaderBuffer);
-    atomCount = 0;
-    negativeAtomCount = false;
+    JvxlReader.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
   }
   
   float autoScaleOrbital() {

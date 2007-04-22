@@ -1648,8 +1648,8 @@ public class Jmol extends JPanel {
         scriptWindow.hide();
     }
     
-    public float functionXY(String functionName, int x, int y) {
-      return 0;  // for user-defined isosurface functions (testing only -- bob hanson)
+    public float[][] functionXY(String functionName, int nX, int nY) {
+      return new float[Math.abs(nX)][Math.abs(nY)];  // for user-defined isosurface functions (testing only -- bob hanson)
     }
 
   }

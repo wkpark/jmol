@@ -578,6 +578,11 @@ class Isosurface extends MeshFileCollection implements MeshDataServer {
     setModelIndex();
   }
 
+  public Point3f[] calculateGeodesicSurface(BitSet bsSelected, BitSet bsIgnored,
+                                    float envelopeRadius) {
+    return viewer.calculateSurface(bsSelected, bsIgnored, envelopeRadius);
+  }
+
   ////////////////////////////////////////////////////////////////
   // associated vertex normalization
   ////////////////////////////////////////////////////////////////
@@ -636,4 +641,6 @@ class Isosurface extends MeshFileCollection implements MeshDataServer {
                                   Point3f pointA, Vector3f edgeVector,
                                   boolean isContourType) {return 0;} 
 
+
+ 
 }

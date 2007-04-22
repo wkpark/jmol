@@ -66,7 +66,7 @@ public interface JmolStatusListener {
 
   public void showConsole(boolean showConsole);
   
-  public float functionXY(String functionName, int x, int y);
+  public float[][] functionXY(String functionName, int x, int y);
   
   public String eval(String strEval);
   

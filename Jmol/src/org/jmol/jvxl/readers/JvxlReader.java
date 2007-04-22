@@ -585,8 +585,13 @@ public class JvxlReader extends VolumeFileReader {
 
   //// methods for creating the JVXL code  
 
+  protected static void jvxlCreateHeaderWithoutTitleOrAtoms(VolumeData v, StringBuffer bs) {
+    jvxlCreateHeader(null, null, v, Integer.MAX_VALUE, null, null, bs);
+  }
+
   protected static void jvxlCreateHeader(String line1, String line2,
-                                         VolumeData v, int nAtoms,
+                                         VolumeData v, int nAtoms, 
+                                         Point3f[] atomXyz, int[] atomNo,
                                          StringBuffer bs) {
     if (line1 != null)
       bs.append(line1).append('\n');
@@ -601,8 +606,14 @@ public class JvxlReader extends VolumeFileReader {
         .append(v.volumetricVectors[i].x).append(' ')
         .append(v.volumetricVectors[i].y).append(' ')
         .append(v.volumetricVectors[i].z).append('\n');
-    if (nAtoms == Integer.MAX_VALUE)
+    if (nAtoms == Integer.MAX_VALUE) {
       jvxlAddDummyAtomList(v, bs);
+      return;
+    }
+    nAtoms = Math.abs(nAtoms);
+      for (int i = 0, n = 0; i < nAtoms; i++)
+        bs.append((n = Math.abs(atomNo[i])) + " " + n + ".0 "
+            + atomXyz[i].x + " " + atomXyz[i].y + " " + atomXyz[i].z + "\n");
   }
   
   private static void jvxlAddDummyAtomList(VolumeData v, StringBuffer bs) {
@@ -697,13 +708,15 @@ public class JvxlReader extends VolumeFileReader {
       definitionLine += " " + jvxlData.nContours;
       info += "; " + jvxlData.nContours + " contours";
     }
-    // ...  mappedDataMin  mappedDataMax  valueMappedToRed  valueMappedToBlue ... 
-    definitionLine += " " + jvxlData.mappedDataMin + " "
+    // ...  mappedDataMin  mappedDataMax  valueMappedToRed  valueMappedToBlue ...
+    float min = (jvxlData.mappedDataMin == Float.MAX_VALUE ? 0f : jvxlData.mappedDataMin);
+    definitionLine += " " 
+        + min + " "
         + jvxlData.mappedDataMax + " " + jvxlData.valueMappedToRed + " "
         + jvxlData.valueMappedToBlue;
 
     if (jvxlData.jvxlColorData.length() > 0 && !jvxlData.isBicolorMap)
-      info += "\n# data minimum = " + jvxlData.mappedDataMin
+      info += "\n# data minimum = " + min
         + "; data maximum = " + jvxlData.mappedDataMax + " "
         + "\n# value mapped to red = " + jvxlData.valueMappedToRed
         + "; value mapped to blue = " + jvxlData.valueMappedToBlue;
@@ -723,9 +736,10 @@ public class JvxlReader extends VolumeFileReader {
     //0.9e adds color contours for planes and min/max range, contour settings
   }
 
-  public static String jvxlGetFile(JvxlData jvxlData, String[] title, String msg,
-                            boolean includeHeader, int nSurfaces, String state, String comment) {
-    
+  public static String jvxlGetFile(JvxlData jvxlData, String[] title,
+                                   String msg, boolean includeHeader,
+                                   int nSurfaces, String state, String comment) {
+
     StringBuffer data = new StringBuffer();
     if (includeHeader) {
       String s = jvxlData.jvxlFileHeader
@@ -739,9 +753,11 @@ public class JvxlReader extends VolumeFileReader {
     if (title != null)
       for (int i = 0; i < title.length; i++)
         data.append("# ").append(title[i]).append('\n');
-    data.append(jvxlData.jvxlDefinitionLine + " rendering:" + state).append('\n');
-    
-    String compressedData = (jvxlData.jvxlPlane == null ? jvxlData.jvxlSurfaceData : "");
+    data.append(jvxlData.jvxlDefinitionLine + " rendering:" + state).append(
+        '\n');
+
+    String compressedData = (jvxlData.jvxlPlane == null ? jvxlData.jvxlSurfaceData
+        : "");
     if (jvxlData.jvxlPlane == null) {
       //no real point in compressing this unless it's a sign-based coloring 
       compressedData += jvxlCompressString(jvxlData.jvxlEdgeData
@@ -750,8 +766,16 @@ public class JvxlReader extends VolumeFileReader {
       compressedData += jvxlCompressString(jvxlData.jvxlColorData);
     }
     int r = 0;
-    if (jvxlData.wasCubic && jvxlData.nBytes > 0 && compressedData.length() > 0)
-      jvxlData.jvxlCompressionRatio = r = (int) (((float) jvxlData.nBytes) / compressedData.length());
+    if (compressedData.length() > 0) {
+      if (jvxlData.wasCubic && jvxlData.nBytes > 0)
+        jvxlData.jvxlCompressionRatio = r = (int) (((float) jvxlData.nBytes) / compressedData
+            .length());
+      else
+        jvxlData.jvxlCompressionRatio = r = (int) (((float) (jvxlData.nPointsX
+            * jvxlData.nPointsY * jvxlData.nPointsZ * 13)) / compressedData
+            .length());
+    }
+    
     data.append(compressedData);
     if (msg != null)
       data.append("#-------end of jvxl file data-------\n");
@@ -761,7 +785,8 @@ public class JvxlReader extends VolumeFileReader {
     if (state != null)
       data.append("# ").append(state).append('\n');
     if (r > 0) {
-      String s = "bytes read: " + jvxlData.nBytes + "; approximate voxel-only input/output byte ratio: " + r + ":1\n";
+      String s = "bytes read: " + jvxlData.nBytes
+          + "; approximate voxel-only input/output byte ratio: " + r + ":1\n";
       data.append("# ").append(s);
       Logger.info("\n" + s);
     }

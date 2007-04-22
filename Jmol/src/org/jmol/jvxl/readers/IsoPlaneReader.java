@@ -23,16 +23,19 @@
  */
 package org.jmol.jvxl.readers;
 
-class IsoPlaneReader extends IsoSolventReader {
+class IsoPlaneReader extends AtomDataReader {
 
   IsoPlaneReader(SurfaceGenerator sg) {
     super(sg);
     precalculateVoxelData = false;
   }
 
-  void setup() {
-    super.setup(); // get ranges based on solvent setup
-    volumeData.setPlaneParameters(params.thePlane);
+  protected void setup() {
+    super.setup();
+    doAddHydrogens = false;
+    getAtoms(params.mep_marginAngstroms, false, false);
+    setHeader("PLANE", params.thePlane.toString());
+    setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax, Math.min(myAtomCount, 100)); 
     params.cutoff = 0;
   }
 

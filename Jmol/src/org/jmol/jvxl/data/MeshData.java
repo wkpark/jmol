@@ -136,6 +136,8 @@ public class MeshData {
   public int[] vertexSets;
   public int nSets = 0;
   
+  public Point3f[] dots;
+  
   private boolean setsSuccessful;
   public int vertexIncrement = 1;
 

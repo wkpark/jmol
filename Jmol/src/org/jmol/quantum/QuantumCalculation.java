@@ -27,7 +27,6 @@ import org.jmol.util.Logger;
 import javax.vecmath.Point3f;
 import java.util.Vector;
 import java.util.Hashtable;
-import org.jmol.viewer.Atom;
 
 /*
  * See J. Computational Chemistry, vol 7, p 359, 1986.
@@ -112,7 +111,7 @@ public class QuantumCalculation {
 
   String calculationType;
   Point3f[] atomCoordBohr;
-  Atom[] atoms;
+  Point3f[] atomCoordAngstroms;
   Vector shells;
   float[][] gaussians;
   //Hashtable aoOrdersDF;
@@ -131,11 +130,11 @@ public class QuantumCalculation {
   public QuantumCalculation() {
   }
 
-  public QuantumCalculation(String calculationType, Atom[] atoms,
+  public QuantumCalculation(String calculationType, Point3f[] atomCoordAngstroms,
       Vector shells, float[][] gaussians, Hashtable aoOrdersDF,
       int[][] slaterInfo, float[][] slaterData, float[] moCoefficients) {
     this.calculationType = calculationType;
-    this.atoms = atoms;
+    this.atomCoordAngstroms = atomCoordAngstroms;
     this.shells = shells;
     this.gaussians = gaussians;
     //this.aoOrdersDF = aoOrdersDF;
@@ -225,11 +224,11 @@ public class QuantumCalculation {
      * atoms from the rendering. Maybe a first time this has ever been done?
      * 
      */
-    this.atomCoordBohr = new Point3f[atoms.length];
-    for (int i = 0; i < atoms.length; i++) {
-      if (atoms[i] == null)
+    this.atomCoordBohr = new Point3f[atomCoordAngstroms.length];
+    for (int i = 0; i < atomCoordAngstroms.length; i++) {
+      if (atomCoordAngstroms[i] == null)
         continue;
-      this.atomCoordBohr[i] = new Point3f(atoms[i]);
+      this.atomCoordBohr[i] = new Point3f(atomCoordAngstroms[i]);
       this.atomCoordBohr[i].scale(bohr_per_angstrom);
     }
 

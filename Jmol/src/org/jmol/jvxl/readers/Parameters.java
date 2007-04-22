@@ -177,6 +177,7 @@ public class Parameters {
     blockCubeData = false; // Gaussian standard, but we allow for multiple surfaces one per data block
     bsIgnore = null;
     bsSolvent = null;
+    calculationType = "";
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     colorBySign = colorByPhase = colorBySets = false;
     colorNeg = defaultColorNegative;
@@ -215,6 +216,8 @@ public class Parameters {
     title = null;
     useIonic = false;
   }
+  
+  String calculationType = "";
   
   //solvent/molecular-related:
   boolean addHydrogens;
@@ -390,6 +393,23 @@ public class Parameters {
         : "molecular" == propertyName ? SURFACE_MOLECULAR
             : "sasurface" == propertyName || solventRadius == 0f ? SURFACE_SASURFACE
                 : SURFACE_SOLVENT);
+
+    switch (dataType) {
+    case Parameters.SURFACE_NOMAP:
+      calculationType = "unmapped plane";
+      break;
+    case Parameters.SURFACE_MOLECULAR:
+      calculationType = "molecular surface with radius " + solventRadius;
+      break;
+    case Parameters.SURFACE_SOLVENT:
+      calculationType = "solvent-excluded surface with radius " + solventRadius;
+      break;
+    case Parameters.SURFACE_SASURFACE:
+      calculationType = "solvent-accessible surface with radius "
+          + solventExtendedAtomRadius;
+      break;
+    }
+
     switch (dataType) {
     case SURFACE_NOMAP:
       solventExtendedAtomRadius = solventRadius;
@@ -499,8 +519,9 @@ public class Parameters {
     } else {
       Vector mos = (Vector) (moData.get("mos"));
       qmOrbitalCount = mos.size();
-      Logger.info("Molecular orbital #" + qm_moNumber + "/" + qmOrbitalCount
-          + " " + moData.get("calculationType"));
+      calculationType = (String) moData.get("calculationType");
+      calculationType = "Molecular orbital #" + qm_moNumber + "/" + qmOrbitalCount
+      + " " + (calculationType == null ? "" : calculationType);
       mo = (Hashtable) mos.get(qm_moNumber - 1);
 
       if (title == null) {

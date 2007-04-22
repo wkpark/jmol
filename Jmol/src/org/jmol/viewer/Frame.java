@@ -32,6 +32,8 @@ import org.jmol.util.TextFormat;
 
 import org.jmol.api.JmolAdapter;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.jvxl.api.AtomIndexIterator;
+import org.jmol.jvxl.data.AtomData;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.SphereIterator;
 import org.jmol.bspt.Tuple;
@@ -1448,6 +1450,9 @@ public final class Frame {
     return bspf.getBsptCount();
   }
 
+  ////////////////// iterators ///////////////
+  
+  
   private final WithinModelIterator withinModelIterator = new WithinModelIterator();
 
   AtomIterator getWithinModelIterator(Atom atomCenter, float radius) {
@@ -1479,6 +1484,86 @@ public final class Frame {
     }
   }
 
+///////////////////
+  
+  private final WithinAtomSetIterator withinAtomSetIterator = new WithinAtomSetIterator();
+
+  AtomIndexIterator getWithinAtomSetIterator(int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly) {
+    withinAtomSetIterator.initialize(atoms[atomIndex].modelIndex, atomIndex, distance, bsSelected, isGreaterOnly);
+    return withinAtomSetIterator;
+  }
+  
+  class WithinAtomSetIterator implements AtomIndexIterator {
+
+    SphereIterator bsptIter;
+    BitSet bsSelected;
+    boolean isGreaterOnly;
+    int atomIndex;
+
+    void initialize(int bsptIndex,int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly) {
+      initializeBspf();
+      bsptIter = bspf.getSphereIterator(bsptIndex);
+      bsptIter.initialize(atoms[atomIndex], distance);
+      this.atomIndex = atomIndex;
+      this.bsSelected = bsSelected;
+      this.isGreaterOnly = isGreaterOnly;
+    }
+
+    int iNext;
+    public boolean hasNext() {
+      while (bsptIter.hasMoreElements()) {
+        Atom atom = (Atom)bsptIter.nextElement();
+        if ((iNext = atom.atomIndex) > (isGreaterOnly ? atomIndex : -1) && bsSelected.get(iNext))
+          return true;
+      }
+      iNext = -1;
+      return false;
+    }
+
+    public int next() {
+      return iNext;
+    }
+
+    public void release() {
+      bsptIter.release();
+      bsptIter = null;
+    }
+  }
+
+
+  ////////////////// atomData filling ////////////
+
+  void fillAtomData(AtomData atomData, int mode) {
+    if (mode == AtomData.MODE_GET_ATTACHED_HYDROGENS) {
+      int[] nH = new int[1];
+      atomData.hAtomRadius = JmolConstants.vanderwaalsMars[1] / 1000f;
+      atomData.hAtoms = getAdditionalHydrogens(atomData.bsSelected, nH);
+      atomData.hydrogenAtomCount = nH[0];
+      return;
+    }
+    atomData.atomCount = atomCount;
+    atomData.atomXyz = atoms;
+    atomData.atomicNumber = new int[atomCount];
+    boolean includeRadii = (mode == AtomData.MODE_FILL_COORDS_AND_RADII);
+    if (includeRadii)
+      atomData.atomRadius = new float[atomCount];
+    int iFirstModel = -1;
+    for (int i = 0; i < atomCount; i++) {
+      if (includeRadii)
+        atomData.atomRadius[i] = (atomData.useIonic ? atoms[i]
+            .getBondingRadiusFloat() : atoms[i].getVanderwaalsRadiusFloat());
+      atomData.atomicNumber[i] = atoms[i].getElementNumber();
+      if (iFirstModel == -1 && (atomData.bsSelected == null || atomData.bsSelected.get(i)))
+        iFirstModel = atomData.modelIndex = atoms[i].modelIndex;
+      if (iFirstModel != atoms[i].modelIndex)
+        atomData.bsIgnored.set(i);
+    }
+    atomData.modelName = (iFirstModel >= 0 ? getModelName(-1 - iFirstModel)
+        : "");
+  }
+
+  
+/*  
   private final WithinAnyModelIterator withinAnyModelIterator = new WithinAnyModelIterator();
 
   AtomIterator getWithinAnyModelIterator(Atom atomCenter, float radius) {
@@ -1522,7 +1607,7 @@ public final class Frame {
       bsptIter = null;
     }
   }
-
+*/
   ////////////////////////////////////////////////////////////////
   // autobonding/connection stuff
   ////////////////////////////////////////////////////////////////
@@ -3407,14 +3492,17 @@ public final class Frame {
     return true;
   }
 
-  Point3f[] getAdditionalHydrogens(BitSet atomSet) {
-    int n = 0;
+  private Point3f[][] getAdditionalHydrogens(BitSet atomSet, int[] nTotal) {
     Vector3f z = new Vector3f();
     Vector3f x = new Vector3f();
+    Point3f[][] hAtoms = new Point3f[atomCount][];
     Point3f pt;
+    int nH = 0;
     // just not doing aldehydes here -- all A-X-B bent == sp3 for now
-    for (int i = 0; i < atomCount; i++)
+    for (int i = 0; i < atomCount; i++) {
       if (atomSet.get(i) && atoms[i].getElementNumber() == 6) {
+
+        int n = 0;
         Atom atom = atoms[i];
         int nBonds = (atom.getCovalentHydrogenCount() > 0 ? 0 : atom
             .getCovalentBondCount());
@@ -3425,28 +3513,23 @@ public final class Frame {
         }
         if (nBonds > 0 && nBonds <= 4)
           n += 4 - nBonds;
-      }
-    Point3f[] hAtoms = new Point3f[n];
-    n = 0;
-    for (int i = 0; i < atomCount; i++)
-      if (atomSet.get(i) && atoms[i].getElementNumber() == 6) {
-        Atom atom = atoms[i];
-        int nBonds = (atom.getCovalentHydrogenCount() > 0 ? 0 : atom
-            .getCovalentBondCount());
+        hAtoms[i] = new Point3f[n];
+        nH += n;
+        n = 0;
         switch (nBonds) {
         case 1:
           viewer.getPrincipalAxes(i, z, x, "sp3a", false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, atom);
-          hAtoms[n++] = pt;
+          hAtoms[i][n++] = pt;
           viewer.getPrincipalAxes(i, z, x, "sp3b", false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, atom);
-          hAtoms[n++] = pt;
+          hAtoms[i][n++] = pt;
           viewer.getPrincipalAxes(i, z, x, "sp3c", false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, atom);
-          hAtoms[n++] = pt;
+          hAtoms[i][n++] = pt;
           break;
         case 2:
           if (viewer.getPrincipalAxes(i, z, x, "sp3", true)
@@ -3454,22 +3537,25 @@ public final class Frame {
             viewer.getPrincipalAxes(i, z, x, "lpa", false);
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, atom);
-            hAtoms[n++] = pt;
+            hAtoms[i][n++] = pt;
             viewer.getPrincipalAxes(i, z, x, "lpb", false);
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, atom);
-            hAtoms[n++] = pt;
+            hAtoms[i][n++] = pt;
           }
           break;
         case 3:
           if (viewer.getPrincipalAxes(i, z, x, "sp3", true)) {
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, atom);
-            hAtoms[n++] = pt;
+            hAtoms[i][n++] = pt;
           }
         default:
         }
+
       }
+    }
+    nTotal[0] = nH;
     return hAtoms;
   }
 

@@ -24,6 +24,8 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.jvxl.api.AtomIndexIterator;
+import org.jmol.jvxl.data.AtomData;
 import org.jmol.symmetry.SpaceGroup;
 import org.jmol.symmetry.UnitCell;
 import org.jmol.util.Logger;
@@ -1400,10 +1402,6 @@ String getAtomInfoChime(int i) {
         hybridizationCompatible);
   }
   
-  Point3f[] getAdditionalHydrogens(BitSet atomSet) {
-    return frame.getAdditionalHydrogens(atomSet);
-  }
-
   String getUnitCellInfoText() {
     int modelIndex = viewer.getCurrentModelIndex();
     if (modelIndex < 0)
@@ -1522,4 +1520,13 @@ String getAtomInfoChime(int i) {
   AtomIterator getWithinModelIterator(Atom atom, float distance) {
     return frame.getWithinModelIterator(atom, distance);
   }
+  
+  AtomIndexIterator getWithinAtomSetIterator(int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly) {
+    return frame.getWithinAtomSetIterator(atomIndex, distance, bsSelected, isGreaterOnly);
+  }
+  
+  void fillAtomData(AtomData atomData, int mode) {
+    frame.fillAtomData(atomData, mode);
+  }
+  
 }

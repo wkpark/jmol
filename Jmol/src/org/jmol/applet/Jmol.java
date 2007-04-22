@@ -849,13 +849,29 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       showStatusAndConsole(statusMessage);
     }
 
-    public float functionXY(String functionName, int x, int y) {
+    public float[][] functionXY(String functionName, int nX, int nY) {
+      //two options -- using -n for x
+      float[][] fxy = new float[Math.abs(nX)][Math.abs(nY)];
+      if (nX == 0 || nY == 0)
+        return fxy;
       try {
-        return ((Double) jsoWindow.call(functionName, new Object[] { htmlName,
-            new Integer(x), new Integer(y) })).floatValue();
+        if (nX > 0) {
+          for (int i = 0; i < nX; i++)
+            for (int j = 0; j < nY; j++)
+              fxy[i][j] = ((Double) jsoWindow.call(functionName, new Object[] {
+                  htmlName, new Integer(nX), new Integer(nY) })).floatValue();
+        } else {
+          Double[][] xy = (Double[][]) jsoWindow.call(functionName,
+              new Object[] { htmlName, new Integer(nX), new Integer(nY) });
+          nX = Math.abs(nX);
+          nY = Math.abs(nY);
+          for (int i = 0; i < nX; i++)
+            for (int j = 0; j < nY; j++)
+              fxy[i][j] = (xy[i][j]).floatValue();
+        }
       } catch (Exception e) {
-        return 0;
       }
+      return fxy;
     }
     
     public void notifyNewPickingModeMeasurement(int iatom, String strMeasure) {

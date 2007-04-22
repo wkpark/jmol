@@ -33,8 +33,11 @@ class VolumeFileReader extends VoxelReader {
 
   protected BufferedReader br;
   protected boolean endOfData;
-  
+  protected boolean negativeAtomCount;
+  protected int atomCount;
   private int nSurfaces;
+  protected boolean isAngstroms;
+
  
   VolumeFileReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg);

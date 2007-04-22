@@ -25,8 +25,6 @@ package org.jmol.quantum;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.viewer.Atom;
-
 /*
  * a simple molecular electrostatic potential cube generator
  * just using q/r here
@@ -52,7 +50,7 @@ public class MepCalculation {
   float[] Y2 = new float[MAX_GRID];
   float[] Z2 = new float[MAX_GRID];
 
-  Atom[] atoms;
+  Point3f[] atomCoordAngstroms;
   float[] mepCharges;
   
   Point3f[] atomCoordBohr;
@@ -67,8 +65,8 @@ public class MepCalculation {
   public MepCalculation() {
   }
 
-  public MepCalculation(Atom[] atoms, float[] mepCharges) {
-    this.atoms = atoms;
+  public MepCalculation(Point3f[] atomCoordAngstroms, float[] mepCharges) {
+    this.atomCoordAngstroms = atomCoordAngstroms;
     this.mepCharges = mepCharges;
   }
 
@@ -100,11 +98,11 @@ public class MepCalculation {
      * atoms from the rendering. Maybe a first time this has ever been done?
      * 
      */
-    atomCoordBohr = new Point3f[atoms.length];
-    for (int i = 0; i < atoms.length; i++) {
-      if (atoms[i] == null)
+    atomCoordBohr = new Point3f[atomCoordAngstroms.length];
+    for (int i = 0; i < atomCoordAngstroms.length; i++) {
+      if (atomCoordAngstroms[i] == null)
         continue;
-      atomCoordBohr[i] = new Point3f(atoms[i]);
+      atomCoordBohr[i] = new Point3f(atomCoordAngstroms[i]);
       atomCoordBohr[i].scale(bohr_per_angstrom);
     }
   }

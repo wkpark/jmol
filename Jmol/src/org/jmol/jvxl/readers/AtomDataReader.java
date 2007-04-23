@@ -89,7 +89,7 @@ class AtomDataReader extends VolumeDataReader {
                           boolean addNearbyAtoms) {
 
     atomData.useIonic = params.useIonic;
-    atomData.modelIndex = modelIndex;
+    atomData.modelIndex = modelIndex; //-1 here means fill ALL atoms; any other means "this model only"
     atomData.bsSelected = (doUseIterator ? null : params.bsSelected);
     atomData.bsIgnored = bsMyIgnored;
     atomDataServer.fillAtomData(atomData, AtomData.MODE_FILL_COORDS_AND_RADII);

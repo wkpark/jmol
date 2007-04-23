@@ -365,7 +365,7 @@ public final class Frame {
     finalizeBuild();
     calcAverageAtomPoint();
     calcBoundBoxDimensions();
-
+    setFirstAtomIndexes();
     if (merging) {
       for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
         if ((shapes[i] = mergeFrame.shapes[i]) != null)
@@ -1503,6 +1503,7 @@ public final class Frame {
     BitSet bsSelected;
     boolean isGreaterOnly;
     int atomIndex;
+    int zerobase;
 
     void initialize(int bsptIndex,int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly) {
       initializeBspf();
@@ -1511,6 +1512,7 @@ public final class Frame {
       this.atomIndex = atomIndex;
       this.bsSelected = bsSelected;
       this.isGreaterOnly = isGreaterOnly;
+      zerobase = mmset.getFirstAtomIndex(bsptIndex);
     }
 
     int iNext;
@@ -1525,7 +1527,7 @@ public final class Frame {
     }
 
     public int next() {
-      return iNext;
+      return iNext - zerobase;
     }
 
     public void release() {
@@ -1535,6 +1537,13 @@ public final class Frame {
   }
 
 
+  void setFirstAtomIndexes() {
+    int iLast = -1;
+    for (int i = 0;i < atomCount; i++)
+      if (atoms[i].modelIndex != iLast)
+        mmset.setFirstAtomIndex(iLast = atoms[i].modelIndex, i);
+  }
+  
   ////////////////// atomData filling ////////////
 
   void fillAtomData(AtomData atomData, int mode) {
@@ -1545,25 +1554,28 @@ public final class Frame {
       atomData.hydrogenAtomCount = nH[0];
       return;
     }
-    atomData.atomCount = atomCount;
+    if(atomData.modelIndex < 0)
+      atomData.firstAtom = Math.max(0, firstAtomOf(atomData.bsSelected));
+    else
+      atomData.firstAtom = mmset.getFirstAtomIndex(atomData.modelIndex);
+    atomData.firstModelIndex = atoms[atomData.firstAtom].modelIndex;
+    atomData.modelName = getModelName(-1 - atomData.modelIndex);
     atomData.atomXyz = atoms;
+    atomData.atomCount = atomCount;
     atomData.atomicNumber = new int[atomCount];
     boolean includeRadii = (mode == AtomData.MODE_FILL_COORDS_AND_RADII);
     if (includeRadii)
       atomData.atomRadius = new float[atomCount];
-    int iFirstModel = -1;
     for (int i = 0; i < atomCount; i++) {
+      if (atoms[i].modelIndex != atomData.modelIndex) {
+        atomData.bsIgnored.set(i);
+        continue;
+      }
+      atomData.atomicNumber[i] = atoms[i].getElementNumber();
       if (includeRadii)
         atomData.atomRadius[i] = (atomData.useIonic ? atoms[i]
             .getBondingRadiusFloat() : atoms[i].getVanderwaalsRadiusFloat());
-      atomData.atomicNumber[i] = atoms[i].getElementNumber();
-      if (iFirstModel == -1 && (atomData.bsSelected == null || atomData.bsSelected.get(i)))
-        iFirstModel = atomData.modelIndex = atoms[i].modelIndex;
-      if (iFirstModel != atoms[i].modelIndex)
-        atomData.bsIgnored.set(i);
     }
-    atomData.modelName = (iFirstModel >= 0 ? getModelName(-1 - iFirstModel)
-        : "");
   }
 
   

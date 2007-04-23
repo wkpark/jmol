@@ -79,11 +79,11 @@ class IsoSolventReader extends AtomDataReader {
         && (dataType == Parameters.SURFACE_SOLVENT || dataType == Parameters.SURFACE_MOLECULAR));  
     doUseIterator = doCalculateTroughs;
     super.setup();
-    modelIndex = -1;
     isCavity = (params.isCavity && meshDataServer != null); // Jvxl cannot do this calculation on its own.
     if (isCavity && meshData.dots == null)
       meshData.dots = meshDataServer.calculateGeodesicSurface(
           params.bsSelected, bsMyIgnored, envelopeRadius);
+    modelIndex = -1;
     getAtoms(Float.NaN, false, true);
     setHeader("solvent/molecular surface", params.calculationType);
     setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax,

@@ -77,6 +77,7 @@ final class Model {
   int preSymmetryAtomIndex = -1;
   int preSymmetryAtomCount;
   int firstMolecule;
+  int firstAtomIndex;
   int moleculeCount;
   int nAltLocs;
   int nInsertions;

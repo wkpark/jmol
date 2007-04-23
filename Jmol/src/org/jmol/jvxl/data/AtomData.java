@@ -136,7 +136,9 @@ public class AtomData {
   
   /// to be filled:
   
+  public int firstAtom;
   public int firstModelIndex; 
+
   // if modelIndex < 0, this gets filled with the model of the first atom
   // for now we do NOT include indexes to model for each atom, because we do not need them.
   
@@ -148,6 +150,7 @@ public class AtomData {
   public Point3f[][] hAtoms;
   public int atomCount;
   public int hydrogenAtomCount;
- 
+
+  
 }
 

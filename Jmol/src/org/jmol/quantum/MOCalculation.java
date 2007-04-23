@@ -105,12 +105,14 @@ public class MOCalculation extends QuantumCalculation {
   float[] moCoefficients;
   int moCoeff;
   int gaussianPtr;
+  int firstAtomOffset;
 
   public MOCalculation(String calculationType, Point3f[] atomCoordAngstroms,
-      Vector shells, float[][] gaussians, Hashtable aoOrdersDF,
+      int firstAtomOffset, Vector shells, float[][] gaussians, Hashtable aoOrdersDF,
       int[][] slaterInfo, float[][] slaterData, float[] moCoefficients) {
     this.calculationType = calculationType;
     this.atomCoordAngstroms = atomCoordAngstroms;
+    this.firstAtomOffset = firstAtomOffset;
     this.shells = shells;
     this.gaussians = gaussians;
     //this.aoOrdersDF = aoOrdersDF;
@@ -126,7 +128,7 @@ public class MOCalculation extends QuantumCalculation {
     if ((atomSet = bsSelected) == null)
       atomSet = new BitSet();
     setupCoordinates(volumeData.origin, volumeData.volumetricVectorLengths);
-    atomIndex = -1;
+    atomIndex = firstAtomOffset -1;
     moCoeff = 0;
     doDebug = (Logger.isActiveLevel(Logger.LEVEL_DEBUG));
     // each STO shell is the combination of one or more gaussians
@@ -144,7 +146,7 @@ public class MOCalculation extends QuantumCalculation {
     if ((atomSet = bsSelected) == null)
       atomSet = new BitSet();
     setupCoordinates(volumeData.origin, volumeData.volumetricVectorLengths);
-    atomIndex = -1;
+    atomIndex = firstAtomOffset - 1;
     int nShells = shells.size();
     doDebug = (Logger.isActiveLevel(Logger.LEVEL_DEBUG));
     // each STO shell is the combination of one or more gaussians
@@ -188,7 +190,7 @@ public class MOCalculation extends QuantumCalculation {
     Hashtable shell = (Hashtable) shells.get(iShell);
     gaussianPtr = ((Integer) shell.get("gaussianPtr")).intValue();
     int nGaussians = ((Integer) shell.get("nGaussians")).intValue();
-    atomIndex = ((Integer) shell.get("atomIndex")).intValue();
+    atomIndex = ((Integer) shell.get("atomIndex")).intValue() + firstAtomOffset;
     String basisType = (String) shell.get("basisType");
     if (doDebug)
       Logger.debug("processShell: " + iShell + " " + basisType + " nGaussians="

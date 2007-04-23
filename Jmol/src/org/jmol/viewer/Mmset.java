@@ -43,6 +43,7 @@ final class Mmset {
   private Properties[] modelProperties = new Properties[1];
   private Hashtable[] modelAuxiliaryInfo = new Hashtable[1];
   private Model[] models = new Model[1];
+  private int[] firstAtomInModel;
 
   private int structureCount = 0;
   private Structure[] structures = new Structure[10];
@@ -164,7 +165,15 @@ final class Mmset {
         modelCount);
   }
 
- int setSymmetryAtomInfo(int modelIndex, int atomIndex, int atomCount) {
+  int getFirstAtomIndex(int modelIndex) {
+    return models[modelIndex].firstAtomIndex;  
+  }
+  
+  void setFirstAtomIndex(int modelIndex, int atomIndex) {
+    models[modelIndex].firstAtomIndex = atomIndex;  
+  }
+  
+  int setSymmetryAtomInfo(int modelIndex, int atomIndex, int atomCount) {
     models[modelIndex].preSymmetryAtomIndex = atomIndex;
     return models[modelIndex].preSymmetryAtomCount = atomCount;
   }

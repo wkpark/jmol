@@ -2023,6 +2023,21 @@ final public class Graphics3D {
 
   private final static String[] colorNames = {
     "black",                // 000000
+    "pewhite",              // ffffff
+    "pecyan",               // 00ffff
+    "pepurple",             // d020ff
+    "pegreen",              // 00ff00
+    "peblue",               // 6060ff
+    "peviolet",             // ff80c0
+    "pebrown",              // a42028
+    "pepink",               // ffd8d8
+    "peyellow",             // ffff00
+    "pedarkgreen",          // 00c000
+    "peorange",             // ffb000
+    "pelightblue",          // b0b0ff
+    "pedarkcyan",           // 00a0a0
+    "pedarkgray",           // 606060
+
     "aliceblue",            // F0F8FF
     "antiquewhite",         // FAEBD7
     "aqua",                 // 00FFFF
@@ -2170,20 +2185,6 @@ final public class Graphics3D {
     "pinktint",             // FFABBB
     "redorange",            // FF4500
     "yellowtint",           // F6F675
-    "pecyan",               // 00ffff
-    "pepurple",             // d020ff
-    "pegreen",              // 00ff00
-    "peblue",               // 6060ff
-    "peviolet",             // ff80c0
-    "pebrown",              // a42028
-    "pepink",               // ffd8d8
-    "peyellow",             // ffff00
-    "pedarkgreen",          // 00c000
-    "peorange",             // ffb000
-    "pelightblue",          // b0b0ff
-    "pedarkcyan",           // 00a0a0
-    "pedarkgray",           // 606060
-    "pewhite",              // ffffff
   };
 
   public static int getColorArgb(int i) {
@@ -2192,6 +2193,22 @@ final public class Graphics3D {
 
   private final static int[] colorArgbs = {
     0xFF000000, // black
+    // plus the PE chain colors
+    0xFFffffff, // pewhite
+    0xFF00ffff, // pecyan
+    0xFFd020ff, // pepurple
+    0xFF00ff00, // pegreen
+    0xFF6060ff, // peblue
+    0xFFff80c0, // peviolet
+    0xFFa42028, // pebrown
+    0xFFffd8d8, // pepink
+    0xFFffff00, // peyellow
+    0xFF00c000, // pedarkgreen
+    0xFFffb000, // peorange
+    0xFFb0b0ff, // pelightblue
+    0xFF00a0a0, // pedarkcyan
+    0xFF606060, // pedarkgray
+    // standard JavaScript
     0xFFF0F8FF, // aliceblue
     0xFFFAEBD7, // antiquewhite
     0xFF00FFFF, // aqua
@@ -2340,21 +2357,6 @@ final public class Graphics3D {
     0xFFFFABBB, // pinktint
     0xFFFF4500, // redorange
     0xFFF6F675, // yellowtint
-    // plus the PE chain colors
-    0xFF00ffff, // pecyan
-    0xFFd020ff, // pepurple
-    0xFF00ff00, // pegreen
-    0xFF6060ff, // peblue
-    0xFFff80c0, // peviolet
-    0xFFa42028, // pebrown
-    0xFFffd8d8, // pepink
-    0xFFffff00, // peyellow
-    0xFF00c000, // pedarkgreen
-    0xFFffb000, // peorange
-    0xFFb0b0ff, // pelightblue
-    0xFF00a0a0, // pedarkcyan
-    0xFF606060, // pedarkgray
-    0xFFffffff, // pewhite
   };
 
   private static final Hashtable mapJavaScriptColors = new Hashtable();

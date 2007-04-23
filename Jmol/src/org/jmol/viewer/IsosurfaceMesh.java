@@ -35,13 +35,15 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ArrayUtil;
 import org.jmol.jvxl.data.JvxlData;
 
+import org.jmol.jvxl.calc.MarchingSquares;
+
 class IsosurfaceMesh extends Mesh {
   JvxlData jvxlData = new JvxlData();
 
   boolean hideBackground;
   int realVertexCount;
   int vertexIncrement = 1;
-  int firstViewableVertex;
+  int firstRealVertex = -1;
   boolean hasGridPoints;
 
   float[] vertexValues;  
@@ -59,7 +61,7 @@ class IsosurfaceMesh extends Mesh {
     assocGridPointNormals = null;
     vertexSets = null;
     isColorSolid = true;
-    firstViewableVertex = 0;
+    firstRealVertex = -1;
     hasGridPoints = iAddGridPoints;
     showPoints = iAddGridPoints;
     this.showTriangles = showTriangles;
@@ -101,12 +103,19 @@ class IsosurfaceMesh extends Mesh {
       //System.out.println(vertex);
     int vPt = addVertexCopy(vertex, value);
     switch (assocVertex) {
-    case -1:
+    case MarchingSquares.CONTOUR_POINT:
+      if (firstRealVertex < 0)
+        firstRealVertex = vPt;
       break;
-    case -3:
+    case MarchingSquares.VERTEX_POINT:
+      hasGridPoints = true;
+      break;
+    case MarchingSquares.EDGE_POINT:
       vertexIncrement = 3;
       break;
     default:
+      if (firstRealVertex < 0)
+        firstRealVertex = vPt;
       if (associateNormals) {
         if (assocGridPointMap == null) {
           assocGridPointMap = new Hashtable();

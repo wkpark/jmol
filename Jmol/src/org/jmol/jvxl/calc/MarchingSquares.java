@@ -44,6 +44,11 @@ public class MarchingSquares {
    *  
    */
 
+  public final static int CONTOUR_POINT = -1;
+  public final static int VERTEX_POINT = -2;
+  public final static int EDGE_POINT = -3;
+
+
   private boolean logMessages = false;
   
   private VertexDataServer voxelReader;
@@ -319,7 +324,7 @@ public class MarchingSquares {
     x += offsets.x;
     y += offsets.y;
     z += offsets.z;
-    int vPt = voxelReader.addVertexCopy(vertexXYZ, value, -1);
+    int vPt = voxelReader.addVertexCopy(vertexXYZ, value, VERTEX_POINT);
     contourVertexes[contourVertexCount++] = new ContourVertex(x, y, z,
         vertexXYZ, vPt);
     return vPt;
@@ -646,7 +651,7 @@ public class MarchingSquares {
       squareFractions[iEdge] = calcContourPoint(cutoff, valueA, valueB, contourPoints[iEdge]);
       //System.out.println("x y iEdge cutoff A B f " + x + " " + y + " " + iEdge + " :: " + cutoff + " " + valueA + " " + valueB + " " + squareFractions[iEdge]);
       //System.out.println(pointA+ " pta/b " + pointB);
-      pixelPointIndexes[iEdge] = voxelReader.addVertexCopy(contourPoints[iEdge], cutoff, -1);
+      pixelPointIndexes[iEdge] = voxelReader.addVertexCopy(contourPoints[iEdge], cutoff, CONTOUR_POINT);
     }
     //this must be a square that is involved in this particular contour
     planarSquares[x * squareCountY + y].setIntersectionPoints(contourIndex,

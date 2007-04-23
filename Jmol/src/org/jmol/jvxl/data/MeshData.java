@@ -124,14 +124,14 @@ public class MeshData {
   
   public final static int MODE_GET_VERTICES = 1;
   public final static int MODE_PUT_SETS = 2;
-  
+
   public int polygonCount;
   public Point3f[] vertices;
   public short[] vertexColixes;
   public int vertexCount;
   public float[] vertexValues;
   public int[][] polygonIndexes;
-
+  
   public BitSet[] surfaceSet;
   public int[] vertexSets;
   public int nSets = 0;

@@ -75,7 +75,7 @@ class IsosurfaceRenderer extends MeshRenderer {
 
   void renderPoints() {
     int incr = imesh.vertexIncrement;
-    for (int i = 1; i < vertexCount; i += incr) {
+    for (int i = (!imesh.hasGridPoints || imesh.firstRealVertex < 0 ? 0 : imesh.firstRealVertex); i < vertexCount; i += incr) {
       if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
           && transformedVectors[normixes[i]].z < 0)
         continue;
@@ -125,13 +125,23 @@ class IsosurfaceRenderer extends MeshRenderer {
       int iA = vertexIndexes[0];
       int iB = vertexIndexes[1];
       int iC = vertexIndexes[2];
+      
       short nA = normixes[iA];
       short nB = normixes[iB];
       short nC = normixes[iC];
+/*
+      if ((vertexIndexes[3] & 1) == 1)
+        System.out.println(iA + " " + vertices[iA] + ", "+iB + " "+ vertices[iB]);
+      if ((vertexIndexes[3] & 2) == 2)
+        System.out.println(iB + " " + vertices[iB] + ", "+iC + " "+ vertices[iC]);
+      if ((vertexIndexes[3] & 4) == 4)
+        System.out.println(iC + " " + vertices[iC] + ", "+iA + " "+ vertices[iA]);
+*/
+           
       //if (frontOnly && (nA < 0 || nB < 0 || nC < 0))
-        //frontOnly = false;
-      //if (frontOnly)
-      //System.out.println(renderCount+": "+iA + " " + transformedVectors[normixes[iA]] + ", "+iB + " " + transformedVectors[normixes[iB]] + ", "+iC + " " + transformedVectors[normixes[iC]]);
+      //frontOnly = false;
+    //if (frontOnly)
+      
       if (frontOnly && transformedVectors[nA].z < 0
           && transformedVectors[nB].z < 0 && transformedVectors[nC].z < 0)
         continue;

@@ -411,14 +411,14 @@ ascii-encoded fractional color data
       return isContourType ? marchingSquares.addContourVertex(x, y, z, offset,
           ptTemp, cutoff) : Integer.MAX_VALUE;
     int assocVertex = (assocCutoff > 0 ? (fReturn[0] < assocCutoff ? vA
-        : fReturn[0] > 1 - assocCutoff ? vB : -1) : -1);
+        : fReturn[0] > 1 - assocCutoff ? vB : MarchingSquares.CONTOUR_POINT) : MarchingSquares.CONTOUR_POINT);
     if (assocVertex >= 0)
       assocVertex = marchingCubes.getLinearOffset(x, y, z, assocVertex);
     int iV = addVertexCopy(ptTemp, thisValue, assocVertex);
     if (params.iAddGridPoints) {
       marchingCubes.calcVertexPoint(x, y, z, vB, ptTemp);
-      addVertexCopy(valueA < valueB ? pointA : ptTemp, Float.NaN, -3);
-      addVertexCopy(valueA < valueB ? ptTemp : pointA, Float.NaN, -3);
+      addVertexCopy(valueA < valueB ? pointA : ptTemp, Float.NaN, MarchingSquares.EDGE_POINT);
+      addVertexCopy(valueA < valueB ? ptTemp : pointA, Float.NaN, MarchingSquares.EDGE_POINT);
     }
     return iV;
   }

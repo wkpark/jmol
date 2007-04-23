@@ -136,11 +136,11 @@ class VolumeDataReader extends VoxelReader {
     volumeData.setVoxelData(voxelData);
   }
   
-  float getValue(int x, int y, int z) {
+  protected float getValue(int x, int y, int z) {
     return 0;
   }
 
-  int setVoxelRange(int index, float min, float max, float ptsPerAngstrom,
+  protected int setVoxelRange(int index, float min, float max, float ptsPerAngstrom,
                     int gridMax) {
     float range = max - min;
     int nGrid;
@@ -185,17 +185,6 @@ class VolumeDataReader extends VoxelReader {
       eccentricityMatrix.transform(volumetricVectors[index]);
     return voxelCounts[index];
   }
-
-  void getCalcPoint(Point3f pt) {
-    pt.sub(center);
-    if (isEccentric)
-      eccentricityMatrixInverse.transform(pt);
-    if (isAnisotropic) {
-      pt.x /= anisotropy[0];
-      pt.y /= anisotropy[1];
-      pt.z /= anisotropy[2];
-    }
-  }  
 
   protected void readVoxelData(boolean isMapData) throws Exception {
     //precalculated -- just creating the JVXL equivalent

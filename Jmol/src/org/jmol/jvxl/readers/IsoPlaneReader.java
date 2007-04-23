@@ -39,7 +39,7 @@ class IsoPlaneReader extends AtomDataReader {
     params.cutoff = 0;
   }
 
-  float getValue(int x, int y, int z) {    
+  protected float getValue(int x, int y, int z) {    
     return  volumeData.calcVoxelPlaneDistance(x, y, z);
   }
 

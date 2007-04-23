@@ -27,6 +27,12 @@ import javax.vecmath.Point3f;
 
 class IsoShapeReader extends VolumeDataReader {
 
+  private int psi_n = 2;
+  private int psi_l = 1;
+  private int psi_m = 1;
+  private float psi_Znuc = 1; // hydrogen
+  private float sphere_radiusAngstroms;
+
   IsoShapeReader(SurfaceGenerator sg, float radius) {
     super(sg);
     sphere_radiusAngstroms = radius;    
@@ -46,34 +52,29 @@ class IsoShapeReader extends VolumeDataReader {
     precalculateVoxelData = false;
   }
 
-  boolean allowNegative = true;
+  private boolean allowNegative = true;
   
-  float lobe_sizeAngstroms = 1.0f;
-  int lobe_gridMax = 21;
-  int lobe_ptsPerAngstrom = 10;
+  private float lobe_sizeAngstroms = 1.0f;
+  private int lobe_gridMax = 21;
+  private int lobe_ptsPerAngstrom = 10;
 
 
-  int psi_gridMax = 40;
-  float psi_ptsPerAngstrom = 5f;
-  float psi_radiusAngstroms;
+  private int psi_gridMax = 40;
+  private float psi_ptsPerAngstrom = 5f;
+  private float psi_radiusAngstroms;
 
-  double[] rfactor = new double[10];
-  double[] pfactor = new double[10];
+  private double[] rfactor = new double[10];
+  private double[] pfactor = new double[10];
 
   final static double A0 = 0.52918f; //x10^-10 meters
 
-  final static double ROOT2 = 1.414214;
-  int psi_n = 2;
-  int psi_l = 1;
-  int psi_m = 1;
-  float psi_Znuc = 1; // hydrogen
+  private final static double ROOT2 = 1.414214;
 
-  int sphere_gridMax = 20;
-  float sphere_ptsPerAngstrom = 10f;
-  float sphere_radiusAngstroms;
+  private int sphere_gridMax = 20;
+  private float sphere_ptsPerAngstrom = 10f;
 
   
-  void setup() {
+  protected void setup() {
     float radius;
     int maxGrid;
     float ppa;
@@ -115,7 +116,7 @@ class IsoShapeReader extends VolumeDataReader {
       setVoxelRange(2, 0, radius / eccentricityRatio, ppa, maxGrid);
   }
 
-  float getValue(int x, int y, int z) {
+  protected float getValue(int x, int y, int z) {
     volumeData.voxelPtToXYZ(x, y, z, ptPsi);
     getCalcPoint(ptPsi);
     float value = (float) hydrogenAtomPsiAt(ptPsi, psi_n, psi_l, psi_m);
@@ -123,7 +124,19 @@ class IsoShapeReader extends VolumeDataReader {
     return value;
   }
 
-  void setHeader(String line1) {
+  private void getCalcPoint(Point3f pt) {
+    pt.sub(center);
+    if (isEccentric)
+      eccentricityMatrixInverse.transform(pt);
+    if (isAnisotropic) {
+      pt.x /= anisotropy[0];
+      pt.y /= anisotropy[1];
+      pt.z /= anisotropy[2];
+    }
+  }  
+
+
+  private void setHeader(String line1) {
     jvxlFileHeaderBuffer = new StringBuffer(line1);
     if(sphere_radiusAngstroms > 0) {
     jvxlFileHeaderBuffer.append(" rad=").append(sphere_radiusAngstroms);
@@ -142,7 +155,7 @@ class IsoShapeReader extends VolumeDataReader {
     JvxlReader.jvxlCreateHeaderWithoutTitleOrAtoms(volumeData, jvxlFileHeaderBuffer);
   }
   
-  float autoScaleOrbital() {
+  private float autoScaleOrbital() {
     float w = (psi_n * (psi_n + 3) - 5f) / psi_Znuc;
     if (w < 1)
       w = 1;
@@ -158,14 +171,14 @@ class IsoShapeReader extends VolumeDataReader {
   }
 
 
-  static float[] fact = new float[20];
+  private final static float[] fact = new float[20];
   static {
     fact[0] = 1;
     for (int i = 1; i < 20; i++)
       fact[i] = fact[i - 1] * i;
   }
 
-  void calcFactors(int n, int el, int m) {
+  private void calcFactors(int n, int el, int m) {
     int abm = Math.abs(m);
     double Nnl = Math.pow(2 * psi_Znuc / n / A0, 1.5)
         * Math.sqrt(fact[n - el - 1] / 2 / n / Math.pow(fact[n + el], 3));
@@ -181,9 +194,9 @@ class IsoShapeReader extends VolumeDataReader {
           / fact[el - p] / fact[p - abm];
   }
 
-  final Point3f ptPsi = new Point3f();
+  private final Point3f ptPsi = new Point3f();
 
-  double hydrogenAtomPsiAt(Point3f pt, int n, int el, int m) {
+  private double hydrogenAtomPsiAt(Point3f pt, int n, int el, int m) {
     // ref: http://www.stolaf.edu/people/hansonr/imt/concept/schroed.pdf
     int abm = Math.abs(m);
     double x2y2 = pt.x * pt.x + pt.y * pt.y;

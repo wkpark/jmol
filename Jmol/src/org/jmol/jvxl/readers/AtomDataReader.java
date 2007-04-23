@@ -136,9 +136,10 @@ class AtomDataReader extends VolumeDataReader {
         hAtoms = new Point3f[nH = atomData.hydrogenAtomCount];
         for (int i = 0; i < atomData.hAtoms.length; i++)
           if (atomData.hAtoms[i] != null)
-            for (int j = atomData.hAtoms[i].length; j >= 0;)
+            for (int j = atomData.hAtoms[i].length; --j >= 0;)
               hAtoms[--nH] = atomData.hAtoms[i][j];
         nH = hAtoms.length;
+        Logger.info(nH + " attached hydrogens added");
       }
       int n = nH + myAtomCount;
       atomRadius = new float[n];
@@ -155,7 +156,8 @@ class AtomDataReader extends VolumeDataReader {
         atomRadius[i] = rH;
         atomXyz[i] = hAtoms[i];
         atomNo[i] = -1;
-        atomProp[i] = Float.NaN;
+        if (atomProp != null)
+          atomProp[i] = Float.NaN;
         //if (params.logMessages)
         //Logger.debug("draw {" + hAtoms[i].x + " " + hAtoms[i].y + " "
         //  + hAtoms[i].z + "};");

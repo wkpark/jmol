@@ -341,38 +341,47 @@ public class Parameters {
 
   void setSphere(float radius) {
     dataType = SURFACE_SPHERE;
+    distance = radius;
+    setEccentricity(new Point4f(0, 0, 1, 1));
     cutoff = Float.MIN_VALUE;
     isCutoffAbsolute = false;
     isSilent = !logMessages;
-    setEccentricity(new Point4f(0, 0, 1, 1));
     script = " center " + StateManager.escape(center) + " SPHERE "
          + radius;
   }
   
   void setEllipsoid(Point4f v) {
     dataType = SURFACE_ELLIPSOID;
+    distance = 1f;
+    setEccentricity(v);
     cutoff = Float.MIN_VALUE;
     isCutoffAbsolute = false;
     isSilent = !logMessages;
-    setEccentricity(v);
     script = " center " + StateManager.escape(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale) + " ELLIPSOID {" + v.x
         + " " + v.y + " " + v.z + " " + v.w + "}";
   }
 
-  String lcaoType;
-
-  void setLobe(Point4f v) {
+    void setLobe(Point4f v) {
     dataType = SURFACE_LOBE;
+    setEccentricity(v);
     if (cutoff == Float.MAX_VALUE)
       cutoff = defaultOrbitalCutoff;
     isSilent = !logMessages;
-    setEccentricity(v);
     script = " center " + StateManager.escape(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale) + " LOBE {" + v.x + " "
         + v.y + " " + v.z + " " + v.w + "}";
   }
   
+  String lcaoType;
+
+  void setLcao(String type, int colorPtr) {
+    lcaoType = type;
+    if (colorPtr == 1)
+      colorPosLCAO = colorNegLCAO;
+    isSilent = !logMessages;
+  }
+    
   void setRadius(boolean useIonic, float radius) {
     this.useIonic = useIonic;
     if (radius >= 100)

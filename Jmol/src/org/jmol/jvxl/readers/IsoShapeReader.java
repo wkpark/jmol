@@ -49,62 +49,49 @@ class IsoShapeReader extends VolumeDataReader {
     psi_m = m;
     psi_Znuc = z_eff;    
     sphere_radiusAngstroms = 0;
-    precalculateVoxelData = false;
   }
 
   private boolean allowNegative = true;
   
-  private float lobe_sizeAngstroms = 1.0f;
-  private int lobe_gridMax = 21;
-  private int lobe_ptsPerAngstrom = 10;
-
-
-  private int psi_gridMax = 40;
-  private float psi_ptsPerAngstrom = 5f;
-  private float psi_radiusAngstroms;
-
   private double[] rfactor = new double[10];
   private double[] pfactor = new double[10];
 
-  final static double A0 = 0.52918f; //x10^-10 meters
-
+  private final static double A0 = 0.52918f; //x10^-10 meters
   private final static double ROOT2 = 1.414214;
 
-  private int sphere_gridMax = 20;
-  private float sphere_ptsPerAngstrom = 10f;
-
   
+  private float radius;
+  private float ppa;
+  private int maxGrid;
+
   protected void setup() {
-    float radius;
-    int maxGrid;
-    float ppa;
+    precalculateVoxelData = false;
     if (center.x == Float.MAX_VALUE)
       center.set(0, 0, 0);
     switch (dataType) {
     case Parameters.SURFACE_ATOMICORBITAL:
-      setHeader("hydrogen-like orbital\n");
       calcFactors(psi_n, psi_l, psi_m);
-      radius = psi_radiusAngstroms = autoScaleOrbital();
-      maxGrid = psi_gridMax;
-      ppa = psi_ptsPerAngstrom;
+      radius = autoScaleOrbital();
+      ppa = 5f;
+      maxGrid = 40;
+      setHeader("hydrogen-like orbital\n");
       break;
     case Parameters.SURFACE_LOBE:
       allowNegative = false;
-      radius = lobe_sizeAngstroms * 1.1f * eccentricityRatio
-          * eccentricityScale;
+      calcFactors(psi_n, psi_l, psi_m);
+      radius = 1.1f * eccentricityRatio * eccentricityScale;
       if (eccentricityScale > 0 && eccentricityScale < 1)
         radius /= eccentricityScale;
-      ppa = lobe_ptsPerAngstrom;
-      maxGrid = lobe_gridMax;
+      ppa = 10f;
+      maxGrid = 21;
       setHeader("lobe\n");
-      calcFactors(psi_n, psi_l, psi_m);
       break;
     //case Parameters.SURFACE_SPHERE:
     //case Parameters.SURFACE_ELLIPSOID:
     default:
-      radius = sphere_radiusAngstroms * 1.1f * eccentricityScale;
-      ppa = sphere_ptsPerAngstrom;
-      maxGrid = sphere_gridMax;
+      radius = 1.1f * sphere_radiusAngstroms * eccentricityScale;
+      ppa = 10f;
+      maxGrid = 22;
       setHeader("sphere\n");
       break;
     }
@@ -119,9 +106,12 @@ class IsoShapeReader extends VolumeDataReader {
   protected float getValue(int x, int y, int z) {
     volumeData.voxelPtToXYZ(x, y, z, ptPsi);
     getCalcPoint(ptPsi);
+    if (sphere_radiusAngstroms > 0)
+      return sphere_radiusAngstroms
+          - (float) Math.sqrt(ptPsi.x * ptPsi.x + ptPsi.y * ptPsi.y + ptPsi.z
+              * ptPsi.z);
     float value = (float) hydrogenAtomPsiAt(ptPsi, psi_n, psi_l, psi_m);
-    value = (sphere_radiusAngstroms > 0 ? sphere_radiusAngstroms - value : value >= 0 || allowNegative ? value : 0);
-    return value;
+    return (allowNegative || value >= 0 ? value : 0);
   }
 
   private void getCalcPoint(Point3f pt) {
@@ -135,7 +125,6 @@ class IsoShapeReader extends VolumeDataReader {
     }
   }  
 
-
   private void setHeader(String line1) {
     jvxlFileHeaderBuffer = new StringBuffer(line1);
     if(sphere_radiusAngstroms > 0) {
@@ -146,8 +135,8 @@ class IsoShapeReader extends VolumeDataReader {
       .append(", l=").append(psi_l)
       .append(", m=").append(psi_m)
       .append(" Znuc=").append(psi_Znuc)
-      .append(" res=").append(psi_ptsPerAngstrom)
-      .append(" rad=").append(psi_radiusAngstroms);
+      .append(" res=").append(ppa)
+      .append(" rad=").append(radius);
     }
     jvxlFileHeaderBuffer.append(
             isAnisotropic ? " anisotropy=(" + anisotropy[0] + ","

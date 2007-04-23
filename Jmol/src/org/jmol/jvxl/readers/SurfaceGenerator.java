@@ -271,8 +271,6 @@ public class SurfaceGenerator {
     return setParameter(propertyName, value, null);
   }
 
-  float fparam;
-
   public boolean setParameter(String propertyName, Object value, BitSet bs) {
 
     if ("debug" == propertyName) {
@@ -558,16 +556,17 @@ public class SurfaceGenerator {
       return true;
     }
 
+    //these next four set the reader themselves.
     if ("sphere" == propertyName) {
-      params.setSphere(fparam = ((Float) value).floatValue());
-      voxelReader = new IsoShapeReader(this, fparam);
+      params.setSphere(((Float) value).floatValue());
+      voxelReader = new IsoShapeReader(this, params.distance);
       generateSurface();
       return true;
     }
 
     if ("ellipsoid" == propertyName) {
       params.setEllipsoid((Point4f) value);
-      voxelReader = new IsoShapeReader(this, 1.0f);
+      voxelReader = new IsoShapeReader(this, params.distance);
       generateSurface();
       return true;
     }
@@ -597,10 +596,7 @@ public class SurfaceGenerator {
     }
 
     if ("lcaoType" == propertyName) {
-      params.lcaoType = (String) value;
-      if (colorPtr == 1)
-        params.colorPosLCAO = params.colorNegLCAO;
-      params.isSilent = !params.logMessages;
+      params.setLcao((String) value, colorPtr);
       return true;
     }
 
@@ -680,6 +676,8 @@ public class SurfaceGenerator {
     }
   }
   private void setReader() {
+    if (voxelReader != null)
+      return;
     switch (params.dataType) {
     case Parameters.SURFACE_NOMAP:
       voxelReader = new IsoPlaneReader(this);
@@ -705,8 +703,8 @@ public class SurfaceGenerator {
   private void generateSurface() {       
     if (++state != STATE_DATA_READ)
       return;
-    boolean haveMeshDataServer = (meshDataServer != null);
     setReader();    
+    boolean haveMeshDataServer = (meshDataServer != null);
     if (params.colorBySign)
       params.isBicolorMap = true;
     if (voxelReader == null) {

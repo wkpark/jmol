@@ -637,7 +637,7 @@ public class SurfaceGenerator {
     }
 
     if ("mep" == propertyName) {
-      params.setMep((float[]) value, rangeDefined, state == STATE_DATA_READ); // mep charges
+      params.setMep((float[]) value, state == STATE_DATA_READ, rangeDefined); // mep charges
       if (state == STATE_DATA_READ) {
         mapSurface(null);
       } else {
@@ -712,7 +712,9 @@ public class SurfaceGenerator {
     }
   }
   
-  private void generateSurface() {    
+  private void generateSurface() {       
+    if (++state != STATE_DATA_READ)
+      return;
     boolean haveMeshDataServer = (meshDataServer != null);
     setReader();    
     if (params.colorBySign)

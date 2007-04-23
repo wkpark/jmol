@@ -25,7 +25,7 @@ package org.jmol.jvxl.readers;
 
 import java.util.Hashtable;
 import java.util.Vector;
-import org.jmol.quantum.QuantumCalculation;
+import org.jmol.quantum.MOCalculation;
 import org.jmol.util.TextFormat;
 
 class IsoMOReader extends AtomDataReader {
@@ -72,17 +72,17 @@ class IsoMOReader extends AtomDataReader {
   
   protected void generateCube() {
     Hashtable moData = params.moData;
-    QuantumCalculation q;
+    MOCalculation q;
     switch (params.qmOrbitalType) {
     case Parameters.QM_TYPE_GAUSSIAN:
-      q = new QuantumCalculation((String) moData.get("calculationType"),
+      q = new MOCalculation((String) moData.get("calculationType"),
           atomData.atomXyz, (Vector) moData.get("shells"), (float[][]) moData
               .get("gaussians"), (Hashtable) moData.get("atomicOrbitalOrder"),
           null, null, params.moCoefficients);
       q.createGaussianCube(volumeData, bsMySelected);
       break;
     case Parameters.QM_TYPE_SLATER:
-      q = new QuantumCalculation((String) moData.get("calculationType"),
+      q = new MOCalculation((String) moData.get("calculationType"),
           atomData.atomXyz, (Vector) moData.get("shells"), null, null, (int[][]) moData
               .get("slaterInfo"), (float[][]) moData.get("slaterData"),
           params.moCoefficients);

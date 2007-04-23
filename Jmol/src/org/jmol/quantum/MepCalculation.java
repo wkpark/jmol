@@ -38,42 +38,16 @@ import org.jmol.jvxl.data.VolumeData;
  * applying some of the tricks in QuantumCalculation for speed
  * 
  */
-public class MepCalculation {
+public class MepCalculation extends QuantumCalculation {
 
-  private final static float bohr_per_angstrom = 1 / 0.52918f;
+  public static int MAX_GRID = 40;
 
-  public final static int MAX_GRID = 40;
-
-  // grid coordinates relative t  o charge center in Bohr 
-  float[] X = new float[MAX_GRID];
-  float[] Y = new float[MAX_GRID];
-  float[] Z = new float[MAX_GRID];
-
-  // grid coordinate squares relative to charge center in Bohr
-  float[] X2 = new float[MAX_GRID];
-  float[] Y2 = new float[MAX_GRID];
-  float[] Z2 = new float[MAX_GRID];
-
-  Point3f[] atomCoordAngstroms;
-  float[] mepCharges;
+  float[] charges;
   
-  Point3f[] atomCoordBohr;
-  // absolute grid coordinates in Bohr 
-  float[][] xyzBohr = new float[MAX_GRID][3];
-
-  float[][][] voxelData;
-  int[] countsXYZ;
-  float[] originBohr = new float[3];
-  float[] stepBohr = new float[3];
-
-  BitSet atomSet;
-  
-  public MepCalculation() {
-  }
-
-  public MepCalculation(Point3f[] atomCoordAngstroms, float[] mepCharges) {
+  public MepCalculation(Point3f[] atomCoordAngstroms, float[] charges) {
     this.atomCoordAngstroms = atomCoordAngstroms;
-    this.mepCharges = mepCharges;
+    this.charges = charges;
+    initialize(MAX_GRID);
   }
 
   public void createMepCube(VolumeData volumeData, BitSet bsSelected) {    
@@ -83,35 +57,6 @@ public class MepCalculation {
       atomSet = new BitSet();
     setupCoordinates(volumeData.origin, volumeData.volumetricVectorLengths);
     processMep();
-  }
-
-  private void setupCoordinates(float[] originXYZ, float[] stepsXYZ) {
-
-    // all coordinates come in as angstroms, not bohr, and are converted here into bohr
-
-    for (int i = 3; --i >= 0;) {
-      originBohr[i] = originXYZ[i] * bohr_per_angstrom;
-      stepBohr[i] = stepsXYZ[i] * bohr_per_angstrom;
-    }
-    for (int i = 3; --i >= 0;) {
-      xyzBohr[0][i] = originBohr[i];
-      int n = countsXYZ[i];
-      float inc = stepBohr[i];
-      for (int j = 0; ++j < n;)
-        xyzBohr[j][i] = xyzBohr[j - 1][i] + inc;
-    }
-    /* 
-     * allowing null atoms allows for selectively removing
-     * atoms from the rendering. Maybe a first time this has ever been done?
-     * 
-     */
-    atomCoordBohr = new Point3f[atomCoordAngstroms.length];
-    for (int i = 0; i < atomCoordAngstroms.length; i++) {
-      if (!atomSet.get(i))
-        continue;
-      atomCoordBohr[i] = new Point3f(atomCoordAngstroms[i]);
-      atomCoordBohr[i].scale(bohr_per_angstrom);
-    }
   }
 
   private void processMep() {
@@ -135,7 +80,7 @@ public class MepCalculation {
       float x = atomCoordBohr[atomIndex].x;
       float y = atomCoordBohr[atomIndex].y;
       float z = atomCoordBohr[atomIndex].z;
-      float charge = mepCharges[atomIndex];
+      float charge = charges[atomIndex];
       for (int i = countsXYZ[0]; --i >= 0;) {
         X2[i] = X[i] = xyzBohr[i][0] - x;
         X2[i] *= X[i];
@@ -157,23 +102,6 @@ public class MepCalculation {
           }
       }
     }
-  }
-
-  int xMin;
-  int xMax;
-  int yMin;
-  int yMax;
-  int zMin;
-  int zMax;
-
-  private void setMinMax() {
-    // optimization will come later
-    xMin = 0;
-    yMin = 0;
-    zMin = 0;
-    xMax = countsXYZ[0];
-    yMax = countsXYZ[1];
-    zMax = countsXYZ[2];
   }
 
 }

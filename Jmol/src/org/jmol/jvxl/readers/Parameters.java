@@ -123,7 +123,7 @@ import java.util.BitSet;
 import java.util.Vector;
 
 import org.jmol.quantum.MepCalculation;
-import org.jmol.quantum.QuantumCalculation;
+import org.jmol.quantum.MOCalculation;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
@@ -502,7 +502,7 @@ public class Parameters {
   
   Hashtable moData, mo;
   float[] moCoefficients;
-  int qm_gridMax = QuantumCalculation.MAX_GRID;
+  int qm_gridMax = MOCalculation.MAX_GRID;
   float qm_ptsPerAngstrom = 10f;
   float qm_marginAngstroms = 1f; // may have to adjust this
   int qm_nAtoms;

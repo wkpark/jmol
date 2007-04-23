@@ -470,7 +470,7 @@ public class SurfaceGenerator {
         params.colorPhase = 0;
       }
       params.colorByPhase = params.colorPhase != 0;
-      if (state == STATE_DATA_READ) {
+      if (state >= STATE_DATA_READ) {
         params.dataType = params.surfaceType;
         state = STATE_DATA_COLORED;
         params.isBicolorMap = true;
@@ -580,15 +580,11 @@ public class SurfaceGenerator {
     }
 
     if ("hydrogenOrbital" == propertyName) {
-      if (!params.setAtomicOrbital((float[]) value, state == STATE_DATA_READ))
+      if (!params.setAtomicOrbital((float[]) value, state >= STATE_DATA_READ))
         return true;
-      voxelReader = new IsoShapeReader(this, params.psi_n,
-          params.psi_l, params.psi_m, params.psi_Znuc);
-      if (state == STATE_DATA_READ) {
-        mapSurface(null);
-      } else {
-        generateSurface();
-      }
+      voxelReader = new IsoShapeReader(this, params.psi_n, params.psi_l,
+          params.psi_m, params.psi_Znuc);
+      processState();
       return true;
     }
 
@@ -622,12 +618,9 @@ public class SurfaceGenerator {
         || "sasurface" == propertyName || "nomap" == propertyName) {
       params.setSolvent(propertyName, ((Float) value).floatValue());
       Logger.info(params.calculationType);
-      if (state == STATE_DATA_READ) {
-        mapSurface(null);
-      } else {
+      if (state < STATE_DATA_READ)
         params.cutoff = 0.0f;
-        generateSurface();
-      }
+      processState();
       return true;
     }
 
@@ -637,23 +630,15 @@ public class SurfaceGenerator {
     }
 
     if ("mep" == propertyName) {
-      params.setMep((float[]) value, state == STATE_DATA_READ, rangeDefined); // mep charges
-      if (state == STATE_DATA_READ) {
-        mapSurface(null);
-      } else {
-        generateSurface();
-      }
+      params.setMep((float[]) value, state >= STATE_DATA_READ, rangeDefined); // mep charges
+      processState();
       return true;
     }
 
     if ("molecularOrbital" == propertyName) {
-      params.setMO(((Integer) value).intValue(), state == STATE_DATA_READ);
+      params.setMO(((Integer) value).intValue(), state >= STATE_DATA_READ);
       Logger.info(params.calculationType);
-      if (state == STATE_DATA_READ) {
-        mapSurface(null);
-      } else {
-        generateSurface();
-      }
+      processState();
       return true;
     }
 
@@ -685,6 +670,13 @@ public class SurfaceGenerator {
     return false;
   }
 
+  private void processState() {    
+    if (state >= STATE_DATA_READ) {
+      mapSurface(null);
+    } else {
+      generateSurface();
+    }
+  }
   private void setReader() {
     switch (params.dataType) {
     case Parameters.SURFACE_NOMAP:

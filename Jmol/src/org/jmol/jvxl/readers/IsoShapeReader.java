@@ -43,6 +43,7 @@ class IsoShapeReader extends VolumeDataReader {
     psi_m = m;
     psi_Znuc = z_eff;    
     sphere_radiusAngstroms = 0;
+    precalculateVoxelData = false;
   }
 
   boolean allowNegative = true;

@@ -23,6 +23,8 @@
  */
 package org.jmol.quantum;
 
+import java.util.BitSet;
+
 import javax.vecmath.Point3f;
 
 import org.jmol.jvxl.data.VolumeData;
@@ -64,6 +66,8 @@ public class MepCalculation {
   float[] originBohr = new float[3];
   float[] stepBohr = new float[3];
 
+  BitSet atomSet;
+  
   public MepCalculation() {
   }
 
@@ -72,9 +76,11 @@ public class MepCalculation {
     this.mepCharges = mepCharges;
   }
 
-  public void createMepCube(VolumeData volumeData) {    
+  public void createMepCube(VolumeData volumeData, BitSet bsSelected) {    
     voxelData = volumeData.voxelData;
     countsXYZ = volumeData.voxelCounts;
+    if ((atomSet = bsSelected) == null)
+      atomSet = new BitSet();
     setupCoordinates(volumeData.origin, volumeData.volumetricVectorLengths);
     processMep();
   }
@@ -101,7 +107,7 @@ public class MepCalculation {
      */
     atomCoordBohr = new Point3f[atomCoordAngstroms.length];
     for (int i = 0; i < atomCoordAngstroms.length; i++) {
-      if (atomCoordAngstroms[i] == null)
+      if (!atomSet.get(i))
         continue;
       atomCoordBohr[i] = new Point3f(atomCoordAngstroms[i]);
       atomCoordBohr[i].scale(bohr_per_angstrom);
@@ -113,18 +119,18 @@ public class MepCalculation {
     int firstAtom = 0;
     int lastAtom = atomCoordBohr.length;
     for (int i = 0; i < lastAtom; i++)
-      if (atomCoordBohr[i] != null) {
+      if (atomSet.get(i)) {
         firstAtom = i;
         break;
       }
     for (int i = lastAtom; --i >= firstAtom;)
-      if (atomCoordBohr[i] != null) {
+      if (atomSet.get(i)) {
         lastAtom = i + 1;
         break;
     }
 
     for (int atomIndex = firstAtom; atomIndex < lastAtom; atomIndex++) {
-      if (atomCoordBohr[atomIndex] == null)
+      if (!atomSet.get(atomIndex))
         continue;
       float x = atomCoordBohr[atomIndex].x;
       float y = atomCoordBohr[atomIndex].y;

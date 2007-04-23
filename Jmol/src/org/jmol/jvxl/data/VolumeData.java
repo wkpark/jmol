@@ -130,16 +130,14 @@ public class VolumeData {
 
   public final float[] volumetricVectorLengths = new float[3];
   public final Vector3f[] unitVolumetricVectors = new Vector3f[3];
-  {
-    unitVolumetricVectors[0] = new Vector3f();
-    unitVolumetricVectors[1] = new Vector3f();
-    unitVolumetricVectors[2] = new Vector3f();
-  }
-  
+
   public VolumeData() {   
     volumetricVectors[0] = new Vector3f();
     volumetricVectors[1] = new Vector3f();
     volumetricVectors[2] = new Vector3f();
+    unitVolumetricVectors[0] = new Vector3f();
+    unitVolumetricVectors[1] = new Vector3f();
+    unitVolumetricVectors[2] = new Vector3f();
   }
   
   public void setVoxelData(float[][][] voxelData) {

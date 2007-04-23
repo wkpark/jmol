@@ -28,6 +28,7 @@ import org.jmol.util.Logger;
 import javax.vecmath.Point3f;
 import java.util.Vector;
 import java.util.Hashtable;
+import java.util.BitSet;
 
 /*
  * See J. Computational Chemistry, vol 7, p 359, 1986.
@@ -114,6 +115,7 @@ public class QuantumCalculation {
   Point3f[] atomCoordBohr;
   Point3f[] atomCoordAngstroms;
   Vector shells;
+  BitSet atomSet;
   float[][] gaussians;
   //Hashtable aoOrdersDF;
   int[][] slaterInfo;
@@ -144,9 +146,11 @@ public class QuantumCalculation {
     this.moCoefficients = moCoefficients;
   }
 
-  public void createSlaterCube(VolumeData volumeData) {    
+  public void createSlaterCube(VolumeData volumeData, BitSet bsSelected) {    
     voxelData = volumeData.voxelData;
     countsXYZ = volumeData.voxelCounts;
+    if ((atomSet = bsSelected) == null)
+      atomSet = new BitSet();
     setupCoordinates(volumeData.origin, volumeData.volumetricVectorLengths);
     atomIndex = -1;
     moCoeff = 0;
@@ -158,11 +162,13 @@ public class QuantumCalculation {
     }
   }
 
-  public void createGaussianCube(VolumeData volumeData) {    
+  public void createGaussianCube(VolumeData volumeData, BitSet bsSelected) {    
     if (!checkCalculationType())
       return;
     voxelData = volumeData.voxelData;
     countsXYZ = volumeData.voxelCounts;
+    if ((atomSet = bsSelected) == null)
+      atomSet = new BitSet();
     setupCoordinates(volumeData.origin, volumeData.volumetricVectorLengths);
     atomIndex = -1;
     int nShells = shells.size();
@@ -225,7 +231,7 @@ public class QuantumCalculation {
      */
     this.atomCoordBohr = new Point3f[atomCoordAngstroms.length];
     for (int i = 0; i < atomCoordAngstroms.length; i++) {
-      if (atomCoordAngstroms[i] == null)
+      if (!atomSet.get(i))
         continue;
       this.atomCoordBohr[i] = new Point3f(atomCoordAngstroms[i]);
       this.atomCoordBohr[i].scale(bohr_per_angstrom);
@@ -286,7 +292,7 @@ public class QuantumCalculation {
   int zMax;
 
   private void addDataS(int nGaussians) {
-    if (atomCoordBohr[atomIndex] == null) {
+    if (!atomSet.get(atomIndex)) {
       moCoeff++;
       return;
     }
@@ -324,7 +330,7 @@ public class QuantumCalculation {
   }
 
   private void addDataP(int nGaussians) {
-    if (atomCoordBohr[atomIndex] == null) {
+    if (!atomSet.get(atomIndex)) {
       moCoeff += 3;
       return;
     }
@@ -346,7 +352,7 @@ public class QuantumCalculation {
   }
 
   private void addDataSP(int nGaussians) {
-    if (atomCoordBohr[atomIndex] == null) {
+    if (!atomSet.get(atomIndex)) {
       moCoeff += 4;
       return;
     }
@@ -399,7 +405,7 @@ public class QuantumCalculation {
 
   private void addDataD(int nGaussians) {
     //for now just assumes 6 orbitals in the order XX YY ZZ XY XZ YZ
-    if (atomCoordBohr[atomIndex] == null) {
+    if (!atomSet.get(atomIndex)) {
       moCoeff += 6;
       return;
     }
@@ -490,7 +496,7 @@ public class QuantumCalculation {
 
     atomIndex = slaterInfo[slaterIndex][0];
     float minuszeta = -slaterData[slaterIndex][0];
-    if (atomCoordBohr[atomIndex] == null) {
+    if (!atomSet.get(atomIndex)) {
       if (minuszeta <= 0)
         moCoeff++;
       return;

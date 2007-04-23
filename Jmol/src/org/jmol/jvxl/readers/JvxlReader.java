@@ -93,7 +93,14 @@ public class JvxlReader extends VolumeFileReader {
   protected void readVoxelData(boolean isMapDataIgnored) throws Exception {
     initializeVoxelData();
     //calls VolumeFileReader.readVoxelData; no mapping allowed
-    super.readVoxelData(false);
+    if (params.thePlane == null) {
+      super.readVoxelData(false);
+      return;
+    }
+    volumeData.setDataDistanceToPlane(params.thePlane);
+    setVolumeData(volumeData);
+    params.cutoff = 0f;
+    setSurfaceInfo(jvxlData, params.thePlane, 0, new StringBuffer());
   }
 
   // #comments (optional)
@@ -484,7 +491,7 @@ public class JvxlReader extends VolumeFileReader {
     float contourPlaneMaximumValue = -Float.MAX_VALUE;
     if (colixes == null || colixes.length < vertexCount)
       meshData.vertexColixes = colixes = new short[vertexCount];
-    int n = (params.isContoured ? contourVertexCount : vertexCount);
+    int n = (vertexCount);
     String data = jvxlColorDataRead;
     int cpt = 0;
     short colixNeg = 0, colixPos = 0;
@@ -700,7 +707,7 @@ public class JvxlReader extends VolumeFileReader {
 
       String s = " " + jvxlData.jvxlPlane.x + " " + jvxlData.jvxlPlane.y + " "
           + jvxlData.jvxlPlane.z + " " + jvxlData.jvxlPlane.w;
-      definitionLine += "-1 -2 " + (-nColorData) + s;
+      definitionLine += (jvxlData.isContoured ? "-1 -2 " : "-1 -1 ") + (-nColorData) + s;
       info += "; " + (nColorData > 0 ? "color mapped " : "") + "plane: {" + s
           + " }";
     }

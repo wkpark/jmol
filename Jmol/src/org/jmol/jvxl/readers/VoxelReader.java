@@ -267,6 +267,7 @@ ascii-encoded fractional color data
     jvxlData.jvxlFileHeader = jvxlFileHeaderBuffer.toString();
     jvxlData.cutoff = (isJvxl ? jvxlCutoff : params.cutoff);
     jvxlData.jvxlColorData = "";
+    jvxlData.jvxlPlane = params.thePlane;
     jvxlData.jvxlEdgeData = fractionData.toString();
     jvxlData.isBicolorMap = params.isBicolorMap;
     jvxlData.isContoured = params.isContoured;
@@ -283,8 +284,11 @@ ascii-encoded fractional color data
     jvxlData.nPointsY = nPointsY;
     jvxlData.nPointsZ = nPointsZ;
 
-    if (jvxlDataIsColorMapped)
+    if (jvxlDataIsColorMapped) {
+      if (meshDataServer != null)
+        meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
       jvxlData.jvxlColorData = readColorData();
+    }
     jvxlData.jvxlExtraLine = JvxlReader.jvxlExtraLine(jvxlData, 1);
     return true;
   }

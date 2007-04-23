@@ -535,7 +535,7 @@ public class SurfaceGenerator {
           && params.thePlane.z == 0)
         params.thePlane.z = 1; //{0 0 0 w} becomes {0 0 1 w}
       params.isContoured = true;
-      ++state;
+//      ++state;
       return true;
     }
 
@@ -670,7 +670,9 @@ public class SurfaceGenerator {
     return false;
   }
 
-  private void processState() {    
+  private void processState() {   
+    if (state == STATE_INITIALIZED && params.thePlane != null)
+      state++;
     if (state >= STATE_DATA_READ) {
       mapSurface(null);
     } else {

@@ -560,11 +560,14 @@ class Isosurface extends MeshFileCollection implements MeshDataServer {
       if (thisMesh.vertexColixes == null || thisMesh.vertexCount > thisMesh.vertexColixes.length)
         thisMesh.vertexColixes = new short[thisMesh.vertexCount];
       meshData.vertexColixes = thisMesh.vertexColixes;
+      meshData.polygonCount = thisMesh.polygonCount;
+      meshData.polygonIndexes = thisMesh.polygonIndexes;
       return;
     case MeshData.MODE_PUT_SETS:
       thisMesh.surfaceSet = meshData.surfaceSet;
       thisMesh.vertexSets = meshData.vertexSets;
       thisMesh.nSets = meshData.nSets;
+      thisMesh.setColorSchemeSets();
       return;
     }
   }

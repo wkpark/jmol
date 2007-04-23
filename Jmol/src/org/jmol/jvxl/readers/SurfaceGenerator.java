@@ -433,8 +433,12 @@ public class SurfaceGenerator {
 
     if ("setColorScheme" == propertyName) {
       String colorScheme = (String) value;
-      colorEncoder.setColorScheme(colorScheme);
-      return true;
+      if (colorScheme.equals("sets")) {
+        propertyName = "mapColor";
+      } else {
+        colorEncoder.setColorScheme(colorScheme);
+        return true;
+      }
     }
 
     if ("center" == propertyName) {

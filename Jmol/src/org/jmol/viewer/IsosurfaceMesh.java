@@ -81,10 +81,10 @@ class IsosurfaceMesh extends Mesh {
 
   public void setColorSchemeSets() {
     allocVertexColixes();
-    int n = 0;
+    int n = 2; //skipping the first two
     for (int i = 0; i < surfaceSet.length; i++)
       if (surfaceSet[i] != null) {
-        int c = Graphics3D.getColorArgb(++n);
+        int c = Graphics3D.getColorArgb(n++);
         //System.out.println(n + " " + Integer.toHexString(c));
         short colix = Graphics3D.getColix(c);
         for (int j = 0; j < vertexCount; j++)

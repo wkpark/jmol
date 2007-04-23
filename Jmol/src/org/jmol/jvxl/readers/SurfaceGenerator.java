@@ -745,6 +745,8 @@ public class SurfaceGenerator {
   }
 
   private void mapSurface(Object value) {
+    if (state == STATE_INITIALIZED && params.thePlane != null)
+      state++;
     if (++state != STATE_DATA_COLORED)
       return;
     setReader();    

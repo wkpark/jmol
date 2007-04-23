@@ -317,7 +317,7 @@ class Isosurface extends MeshFileCollection implements MeshDataServer {
   }
 
   String shortScript() {
-    return thisMesh.scriptCommand.substring(0, (thisMesh.scriptCommand+";").indexOf(";"));
+    return (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand.substring(0, (thisMesh.scriptCommand+";").indexOf(";")));
   }
   
   boolean getScriptBitSets() {

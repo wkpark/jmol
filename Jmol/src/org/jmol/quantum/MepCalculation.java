@@ -25,6 +25,8 @@ package org.jmol.quantum;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.jvxl.data.VolumeData;
+
 /*
  * a simple molecular electrostatic potential cube generator
  * just using q/r here
@@ -70,11 +72,10 @@ public class MepCalculation {
     this.mepCharges = mepCharges;
   }
 
-  public void createMepCube(float[][][] voxelData, int[] countsXYZ,
-                               float[] originXYZ, float[] stepsXYZ) {
-    this.voxelData = voxelData;
-    this.countsXYZ = countsXYZ;
-    setupCoordinates(originXYZ, stepsXYZ);
+  public void createMepCube(VolumeData volumeData) {    
+    voxelData = volumeData.voxelData;
+    countsXYZ = volumeData.voxelCounts;
+    setupCoordinates(volumeData.origin, volumeData.volumetricVectorLengths);
     processMep();
   }
 

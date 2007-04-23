@@ -122,6 +122,8 @@ import javax.vecmath.Matrix3f;
 public class VolumeData {
  
   public final Point3f volumetricOrigin = new Point3f();
+  public final float[] origin = new float[3];
+  
   public final Vector3f[] volumetricVectors = new Vector3f[3];
   public final int[] voxelCounts = new int[3];
   public float[][][] voxelData;
@@ -196,7 +198,9 @@ public class VolumeData {
       volumetricVectorLengths[i] = volumetricVectors[i].length();
       unitVolumetricVectors[i].normalize(volumetricVectors[i]);
     }
-    
+    origin[0] = volumetricOrigin.x;
+    origin[1] = volumetricOrigin.y;
+    origin[2] = volumetricOrigin.z;
   }
   private final Vector3f pointVector = new Vector3f();
 

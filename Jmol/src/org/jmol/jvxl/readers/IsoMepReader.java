@@ -43,6 +43,6 @@ class IsoMepReader extends AtomDataReader {
 
   protected void generateCube() {
     MepCalculation m = new MepCalculation(atomData.atomXyz, params.theProperty);
-    m.createMepCube(voxelData, voxelCounts, origin, volumeData.volumetricVectorLengths);
+    m.createMepCube(volumeData);
   }
 }

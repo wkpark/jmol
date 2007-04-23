@@ -65,8 +65,6 @@ class AtomDataReader extends VolumeDataReader {
 
   private Point3f xyzMin, xyzMax;
 
-  protected float[] origin;
-  
   protected boolean doAddHydrogens;
   protected boolean doUsePlane;
   protected boolean doUseIterator;
@@ -74,8 +72,6 @@ class AtomDataReader extends VolumeDataReader {
 
   protected void setup() {
     //CANNOT BE IN HERE IF atomDataServer is not valid
-    origin = new float[] { volumetricOrigin.x, volumetricOrigin.y,
-        volumetricOrigin.z };
     params.iUseBitSets = true;
     doAddHydrogens = (atomDataServer != null && params.addHydrogens); //Jvxl cannot do this on its own
     modelIndex = params.modelIndex;
@@ -102,7 +98,7 @@ class AtomDataReader extends VolumeDataReader {
     int nSelected = 0;
     boolean needRadius = false;
     for (int i = 0; i < atomCount; i++) {
-      if (params.bsSelected.get(i) && (!bsMyIgnored.get(i))) {
+      if ((params.bsSelected == null || params.bsSelected.get(i)) && (!bsMyIgnored.get(i))) {
         if (doUsePlane
             && Math.abs(volumeData.distancePointToPlane(atomData.atomXyz[i])) > 2 * (atomData.atomRadius[i] = getWorkingRadius(
                 i, marginAtoms)))

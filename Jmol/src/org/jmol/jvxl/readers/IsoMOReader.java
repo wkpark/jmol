@@ -41,7 +41,7 @@ class IsoMOReader extends AtomDataReader {
     doAddHydrogens = false;
     getAtoms(params.qm_marginAngstroms, true, false);
     setHeader("MO", "calculation type: " + params.moData.get("calculationType"));
-    setRangesAndAddAtoms(params.qm_ptsPerAngstrom, params.qm_gridMax, atomCount);
+    setRangesAndAddAtoms(params.qm_ptsPerAngstrom, params.qm_gridMax, myAtomCount);
     for (int i = params.title.length; --i >= 0;)
       fixTitleLine(i, params.mo);
   }
@@ -79,16 +79,14 @@ class IsoMOReader extends AtomDataReader {
           atomData.atomXyz, (Vector) moData.get("shells"), (float[][]) moData
               .get("gaussians"), (Hashtable) moData.get("atomicOrbitalOrder"),
           null, null, params.moCoefficients);
-      q.createGaussianCube(voxelData, voxelCounts, origin,
-          volumeData.volumetricVectorLengths);
+      q.createGaussianCube(volumeData);
       break;
     case Parameters.QM_TYPE_SLATER:
       q = new QuantumCalculation((String) moData.get("calculationType"),
           atomData.atomXyz, (Vector) moData.get("shells"), null, null, (int[][]) moData
               .get("slaterInfo"), (float[][]) moData.get("slaterData"),
           params.moCoefficients);
-      q.createSlaterCube(voxelData, voxelCounts, origin,
-          volumeData.volumetricVectorLengths);
+      q.createSlaterCube(volumeData);
       break;
     default:
     }

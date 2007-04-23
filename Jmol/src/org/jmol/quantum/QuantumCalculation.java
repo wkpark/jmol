@@ -23,6 +23,7 @@
  */
 package org.jmol.quantum;
 
+import org.jmol.jvxl.data.VolumeData;
 import org.jmol.util.Logger;
 import javax.vecmath.Point3f;
 import java.util.Vector;
@@ -143,11 +144,10 @@ public class QuantumCalculation {
     this.moCoefficients = moCoefficients;
   }
 
-  public void createSlaterCube(float[][][] voxelData, int[] countsXYZ,
-                               float[] originXYZ, float[] stepsXYZ) {
-    this.voxelData = voxelData;
-    this.countsXYZ = countsXYZ;
-    setupCoordinates(originXYZ, stepsXYZ);
+  public void createSlaterCube(VolumeData volumeData) {    
+    voxelData = volumeData.voxelData;
+    countsXYZ = volumeData.voxelCounts;
+    setupCoordinates(volumeData.origin, volumeData.volumetricVectorLengths);
     atomIndex = -1;
     moCoeff = 0;
     doDebug = (Logger.isActiveLevel(Logger.LEVEL_DEBUG));
@@ -158,13 +158,12 @@ public class QuantumCalculation {
     }
   }
 
-  public void createGaussianCube(float[][][] voxelData, int[] countsXYZ,
-                                 float[] originXYZ, float[] stepsXYZ) {
+  public void createGaussianCube(VolumeData volumeData) {    
     if (!checkCalculationType())
       return;
-    this.voxelData = voxelData;
-    this.countsXYZ = countsXYZ;
-    setupCoordinates(originXYZ, stepsXYZ);
+    voxelData = volumeData.voxelData;
+    countsXYZ = volumeData.voxelCounts;
+    setupCoordinates(volumeData.origin, volumeData.volumetricVectorLengths);
     atomIndex = -1;
     int nShells = shells.size();
     doDebug = (Logger.isActiveLevel(Logger.LEVEL_DEBUG));

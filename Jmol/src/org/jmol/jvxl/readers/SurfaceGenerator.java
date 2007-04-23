@@ -437,6 +437,8 @@ public class SurfaceGenerator {
         propertyName = "mapColor";
       } else {
         colorEncoder.setColorScheme(colorScheme);
+        if(state == STATE_DATA_COLORED)
+          voxelReader.applyColorScale();
         return true;
       }
     }
@@ -729,8 +731,10 @@ public class SurfaceGenerator {
     if (haveMeshDataServer)
       meshDataServer.notifySurfaceGenerationCompleted();
     
-    if (jvxlData.jvxlDataIs2dContour)
+    if (jvxlData.jvxlDataIs2dContour) {
       voxelReader.colorIsosurface();
+      state = STATE_DATA_COLORED;
+    }
     if (params.colorBySign || params.isBicolorMap) {
       state = STATE_DATA_COLORED;
       voxelReader.applyColorScale();

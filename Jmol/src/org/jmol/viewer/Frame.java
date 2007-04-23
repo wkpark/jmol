@@ -1567,7 +1567,7 @@ public final class Frame {
     if (includeRadii)
       atomData.atomRadius = new float[atomCount];
     for (int i = 0; i < atomCount; i++) {
-      if (atoms[i].modelIndex != atomData.modelIndex) {
+      if (atoms[i].modelIndex != atomData.firstModelIndex) {
         atomData.bsIgnored.set(i);
         continue;
       }

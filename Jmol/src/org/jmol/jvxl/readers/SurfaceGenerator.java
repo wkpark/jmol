@@ -658,8 +658,6 @@ public class SurfaceGenerator {
     }
 
     if ("readFile" == propertyName) {
-      if (++state != STATE_DATA_READ)
-        return true;
       if ((voxelReader = setFileData(value)) == null) {
         Logger.error("Could not set the data");
         return true;
@@ -669,8 +667,6 @@ public class SurfaceGenerator {
     }
 
     if ("mapColor" == propertyName) {
-      if (++state != STATE_DATA_COLORED)
-        return true;
       if (value instanceof String && ((String) value).equalsIgnoreCase("sets")) {
         if (meshDataServer == null) {
           meshData.getSurfaceSet(0);
@@ -749,6 +745,8 @@ public class SurfaceGenerator {
   }
 
   private void mapSurface(Object value) {
+    if (++state != STATE_DATA_COLORED)
+      return;
     setReader();    
     if (params.thePlane != null) {
       params.cutoff = 0;

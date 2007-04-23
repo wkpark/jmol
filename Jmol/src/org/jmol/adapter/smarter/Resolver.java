@@ -27,6 +27,7 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
 import org.jmol.util.Logger;
+import java.util.Hashtable;
 
 class Resolver {
 
@@ -42,7 +43,7 @@ class Resolver {
     return resolve(name, bufferedReader, null);
   }
 
-  static Object resolve(String name, BufferedReader bufferedReader, int[] params)
+  static Object resolve(String name, BufferedReader bufferedReader, Hashtable htParams)
       throws Exception {
     AtomSetCollectionReader atomSetCollectionReader;
     String atomSetCollectionReaderName = determineAtomSetCollectionReader(
@@ -62,7 +63,7 @@ class Resolver {
       Logger.error(err, e);
       return err;
     }
-    atomSetCollectionReader.initialize(params);
+    atomSetCollectionReader.initialize(htParams);
     AtomSetCollection atomSetCollection = atomSetCollectionReader
         .readAtomSetCollection(bufferedReader);
     bufferedReader.close();

@@ -53,14 +53,14 @@ public class SmarterJmolAdapter extends JmolAdapter {
 
   public Object openBufferedReader(String name,
                                    BufferedReader bufferedReader) {
-    return openBufferedReader(name, bufferedReader, (int[]) null);
+    return openBufferedReader(name, bufferedReader, (Hashtable) null);
   }
 
   public Object openBufferedReader(String name,
-                                   BufferedReader bufferedReader, int[] params) {
+                                   BufferedReader bufferedReader, Hashtable htParams) {
     try {
       Object atomSetCollectionOrErrorMessage =
-        Resolver.resolve(name, bufferedReader, params);
+        Resolver.resolve(name, bufferedReader, htParams);
       if (atomSetCollectionOrErrorMessage instanceof String)
         return atomSetCollectionOrErrorMessage;
       if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {
@@ -247,7 +247,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
     public int getAtomSetIndex() { return atom.atomSetIndex; }
     public BitSet getAtomSymmetry() { return atom.bsSymmetry; }
-    public int getAtomSite() { return atom.atomSite; }
+    public int getAtomSite() { return atom.atomSite + 1; }
     public Object getUniqueID() { return new Integer(atom.atomIndex); }
     public String getElementSymbol() {
       if (atom.elementSymbol != null)

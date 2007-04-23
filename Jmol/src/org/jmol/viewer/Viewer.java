@@ -1306,28 +1306,28 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + StateManager.escape(TextFormat.simpleReplace(name, "\\", "/")));
   }
 
-  void openFile(String name, int[] params, String loadScript, boolean isMerge) {
+  void openFile(String name, Hashtable htParams, String loadScript, boolean isMerge) {
     //Eval
     if (name == null)
       return;
     if (name.equalsIgnoreCase("string")) {
-      openStringInline(fileManager.inlineData, params, isMerge);
+      openStringInline(fileManager.inlineData, htParams, isMerge);
       return;
     }
     if (name.equalsIgnoreCase("string[]")) {
-      openStringInline(fileManager.inlineDataArray, params, isMerge);
+      openStringInline(fileManager.inlineDataArray, htParams, isMerge);
       return;
     }
     if (!isMerge)
       zap(false);
     long timeBegin = System.currentTimeMillis();
-    fileManager.openFile(name, params, loadScript, isMerge);
+    fileManager.openFile(name, htParams, loadScript, isMerge);
     long ms = System.currentTimeMillis() - timeBegin;
     setStatusFileLoaded(1, name, "", getModelSetName(), null, null);
     String sp = "";
-    if (params != null)
-      for (int i = 0; i < params.length; i++)
-        sp += "," + params[i];
+    //if (params != null)
+      //for (int i = 0; i < params.length; i++)
+        //sp += "," + params[i];
     Logger.info("openFile(" + name + sp + ")" + ms + " ms");
   }
 
@@ -1355,21 +1355,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     openStringInline(strModel, null, false);
   }
 
-  private void openStringInline(String strModel, int[] params, boolean isMerge) {
+  private void openStringInline(String strModel, Hashtable htParams, boolean isMerge) {
     //loadInline, openFile, openStringInline
     if (!isMerge)
       clear();
-    fileManager.openStringInline(strModel, params, isMerge);
+    fileManager.openStringInline(strModel, htParams, isMerge);
     String errorMsg = getOpenFileError(isMerge);
     if (errorMsg == null)
       setStatusFileLoaded(1, "string", "", getModelSetName(), null, null);
   }
 
-  private void openStringInline(String[] arrayModels, int[] params, boolean isMerge) {
+  private void openStringInline(String[] arrayModels, Hashtable htParams, boolean isMerge) {
     //loadInline, openFile, openStringInline
     if (!isMerge)
       clear();
-    fileManager.openStringInline(arrayModels, params, isMerge);
+    fileManager.openStringInline(arrayModels, htParams, isMerge);
     String errorMsg = getOpenFileError(isMerge);
     if (errorMsg == null)
       setStatusFileLoaded(1, "string[]", "", getModelSetName(), null, null);
@@ -1392,7 +1392,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (strModel == null)
       return;
     int i;
-    int[] A = global.getDefaultLatticeArray();
+    int[] params = global.getDefaultLatticeArray();
+    Hashtable A = new Hashtable();
+    A.put("params", params);
+    if (global.applySymmetryToBonds)
+      A.put("applySymmetryToBonds", Boolean.TRUE);
+    
     Logger.debug(strModel);
     if (newLine != 0 && newLine != '\n') {
       int len = strModel.length();
@@ -1431,10 +1436,22 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //loadInline
     if (arrayModels == null || arrayModels.length == 0)
       return;
-    int[] A = global.getDefaultLatticeArray();
+    int[] params = global.getDefaultLatticeArray();
+    Hashtable A = new Hashtable();
+    A.put("params", params);
+    if (global.applySymmetryToBonds)
+      A.put("applySymmetryToBonds", Boolean.TRUE);
     openStringInline(arrayModels, A, isMerge);
   }
 
+  boolean getApplySymmetryToBonds() {
+    return global.applySymmetryToBonds;
+  }
+  
+  void setApplySymmetryToBonds(boolean TF) {
+    global.applySymmetryToBonds = TF;
+  }
+  
   void loadCoordinates(String coordinateData) {
     modelManager.loadCoordinates(coordinateData);
   }
@@ -3991,6 +4008,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   boolean setBooleanProperty(String key, boolean value, boolean defineNew) {
     boolean notFound = false;
     while (true) {
+      
+      //11.1.29
+      
+      if (key.equalsIgnoreCase("applySymmetryToBonds")) {
+        setApplySymmetryToBonds(value);
+        break;
+      }
+
    
       //11.1.22
       
@@ -4237,7 +4262,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (setAxesMode(key, value))
           break;
-   
+
+      
       //these next are deprecated because they don't 
       //give much indication what they really do:
       if (key.equalsIgnoreCase("frank"))

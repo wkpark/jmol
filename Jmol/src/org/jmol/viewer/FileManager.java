@@ -24,6 +24,7 @@
 package org.jmol.viewer;
 
 import org.jmol.util.CompoundDocument;
+
 import org.jmol.util.Logger;
 
 import org.jmol.api.JmolAdapter;
@@ -43,6 +44,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.Reader;
 import java.util.zip.GZIPInputStream;
+import java.util.Hashtable;
+
 /****************************************************************
  * will not work with applet
 import java.net.URI;
@@ -111,12 +114,12 @@ class FileManager {
     loadScript += "\n"+viewer.getLoadState() + script + "\n";
   }
 
-  void openFile(String name, int[] params, String loadScript, boolean isMerge) {
+  void openFile(String name, Hashtable htParams, String loadScript, boolean isMerge) {
     setLoadScript(loadScript, isMerge);
     String sp = "";
-    if (params != null)
-      for (int i = 0; i < params.length; i++)
-        sp+="," + params[i];
+    //if (params != null)
+      //for (int i = 0; i < params.length; i++)
+        //sp+="," + params[i];
     Logger.info("\nFileManager.openFile(" + name + sp + ")");
     nameAsGiven = name;
     openErrorMessage = fullPathName = fileName = null;
@@ -125,7 +128,7 @@ class FileManager {
       Logger.error("file ERROR: " + openErrorMessage);
       return;
     }
-    fileOpenThread = new FileOpenThread(fullPathName, name, params);
+    fileOpenThread = new FileOpenThread(fullPathName, name, htParams);
     fileOpenThread.run();
   }
 
@@ -155,30 +158,30 @@ class FileManager {
     openStringInline(strModel, null, isMerge);
   }
 
-  void openStringInline(String strModel, int[] params, boolean isMerge) {
+  void openStringInline(String strModel, Hashtable htParams, boolean isMerge) {
     String tag = (isMerge ? "append" : "model");
     String script = "data \""+tag+" inline\"" + strModel + "end \""+tag+" inline\";";
     setLoadScript(script, isMerge);
     String sp = "";
-    if (params != null)
-      for (int i = 0; i < params.length; i++)
-        sp += "," + params[i];
+//    if (htParams != null)
+  //    for (int i = 0; i < params.length; i++)
+    //    sp += "," + params[i];
     Logger.info("FileManager.openStringInline(" + sp + ")");
     openErrorMessage = null;
     fullPathName = fileName = "string";
     inlineData = strModel;
     //isInline = true;
     //isDOM = false;
-    if (params == null)
+    if (htParams == null)
       fileOpenThread = new FileOpenThread(fullPathName, new BufferedReader(new StringReader(
           strModel)));
     else
       fileOpenThread = new FileOpenThread(fullPathName, new BufferedReader(new StringReader(
-          strModel)), params);
+          strModel)), htParams);
     fileOpenThread.run();
   }
 
-  void openStringInline(String[] arrayModels, int[] params, boolean isMerge) {
+  void openStringInline(String[] arrayModels, Hashtable htParams, boolean isMerge) {
     loadScript = "dataSeparator = \"~~~next file~~~\";\ndata \"model inline\"";
     for (int i = 0; i < arrayModels.length; i++) {
       if (i > 0)
@@ -189,9 +192,9 @@ class FileManager {
     setLoadScript(loadScript, isMerge);
 
     String sp = "";
-    if (params != null)
-      for (int i = 0; i < params.length; i++)
-        sp += "," + params[i];
+    //if (params != null)
+      //for (int i = 0; i < params.length; i++)
+        //sp += "," + params[i];
     Logger.info("FileManager.openStringInline(string[]" + sp + ")");
     openErrorMessage = null;
     fullPathName = fileName = "string[]";
@@ -480,24 +483,24 @@ class FileManager {
     String nameAsGivenInThread;
     Object clientFile;
     BufferedReader reader;
-    int[] params;
+    Hashtable htParams;
 
     FileOpenThread(String fullPathName, String nameAsGiven) {
       this.fullPathNameInThread = fullPathName;
       this.nameAsGivenInThread = nameAsGiven;
-      this.params = null;
+      this.htParams = null;
     }
 
-    FileOpenThread(String fullPathName, String nameAsGiven, int[] params) {
+    FileOpenThread(String fullPathName, String nameAsGiven, Hashtable htParams) {
       this.fullPathNameInThread = fullPathName;
       this.nameAsGivenInThread = nameAsGiven;
-      this.params = params;
+      this.htParams = htParams;
     }
 
-    FileOpenThread(String name, BufferedReader reader, int[] params) {
+    FileOpenThread(String name, BufferedReader reader, Hashtable htParams) {
       nameAsGivenInThread = fullPathNameInThread = name;
       this.reader = reader;
-      this.params = params;
+      this.htParams = htParams;
     }
 
     FileOpenThread(String name, BufferedReader reader) {
@@ -524,7 +527,7 @@ class FileManager {
 
     private void openBufferedReader(BufferedReader reader) {
       Object clientFile = modelAdapter.openBufferedReader(fullPathNameInThread,
-          reader, params);
+          reader, htParams);
       if (clientFile instanceof String)
         errorMessage = (String) clientFile;
       else

@@ -335,7 +335,7 @@ class CifReader extends AtomSetCollectionReader {
       return;
     }
     if (str.startsWith("_geom_bond")) {
-      if (doApplySymmetry) //not reading bonds when symmetry is enabled yet
+      if (doApplySymmetry && !applySymmetryToBonds)
         skipLoop();
       else
         processGeomBondLoopBlock();
@@ -647,7 +647,7 @@ class CifReader extends AtomSetCollectionReader {
   final static String[] geomBondFields = { 
       "_geom_bond_atom_site_label_1",
       "_geom_bond_atom_site_label_2", 
-      "_geom_bond_site_symmetry_2",
+//      "_geom_bond_site_symmetry_2",
   };
 
   /**
@@ -693,7 +693,7 @@ class CifReader extends AtomSetCollectionReader {
           break;
         }
       }
-      if (symmetry != null || atomIndex1 < 0 || atomIndex2 < 0)
+      if (/*symmetry != null || */ atomIndex1 < 0 || atomIndex2 < 0)
         continue;
       Bond bond = new Bond();
       bond.atomIndex1 = atomIndex1;

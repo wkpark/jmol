@@ -371,6 +371,7 @@ public class StateManager {
 
     char inlineNewlineChar     = '|';    //pseudo static
     boolean appendNew          = true;
+    boolean applySymmetryToBonds  = false; //new 11.1.29
     boolean zeroBasedXyzRasmol = false;
     boolean forceAutoBond      = false;
     boolean autoBond           = true;
@@ -401,6 +402,7 @@ public class StateManager {
         setParameterValue("allowEmbeddedScripts", true);
       appendCmd(str, "autoBond = " + autoBond);
       appendCmd(str, "appendNew = " + appendNew);
+      appendCmd(str, "applySymmetryToBonds = " + applySymmetryToBonds);
       if (viewer.getAxesOrientationRasmol())
         appendCmd(str, "axesOrientationRasmol = true");
       appendCmd(str, "bondRadiusMilliAngstroms = " + bondRadiusMilliAngstroms);
@@ -622,7 +624,7 @@ public class StateManager {
       //settings won't be reflected in the load state, which is determined
       //earlier, when the file loads. 
         ";refreshing;defaults;backgroundmodel;stereo;"
-      + ";appendnew;backgroundcolor;axescolor;axis1color;axis2color;axis3color;boundboxcolor;unitcellcolor;"
+      + ";appendnew;bondsymmetryatoms;backgroundcolor;axescolor;axis1color;axis2color;axis3color;boundboxcolor;unitcellcolor;"
       + ";ambientpercent;diffusepercent;specular;specularexponent;specularpower;specularpercent;"
       + ";debugscript;showfrank;showaxes;showaxis1;showaxis2;showaxis3;showunitcell;showboundbox;"
       + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;"
@@ -829,6 +831,7 @@ public class StateManager {
       setParameterValue("ambientPercent",ambientPercent);
 //      setParameterValue("argbBackground",argbBackground);
       setParameterValue("appendNew",appendNew);
+      setParameterValue("applySymmetryToBonds",applySymmetryToBonds);
       setParameterValue("autoBond",autoBond);
       setParameterValue("autoFps",autoFps);
       setParameterValue("axesMode",axesMode);

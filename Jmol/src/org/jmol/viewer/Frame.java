@@ -339,9 +339,10 @@ public final class Frame {
     if (adapter != null) {
       doUnitcellStuff();
       // perform bonding if necessary
-      boolean doBond = (bondCount == baseBondIndex || isMultiFile || isPDB
-          && (bondCount - baseBondIndex) < (atomCount - baseAtomIndex) / 2 || someModelsHaveSymmetry
-          && maxSymOp < 2);
+      boolean doBond = (bondCount == baseBondIndex 
+          || isMultiFile 
+          || isPDB && (bondCount - baseBondIndex) < (atomCount - baseAtomIndex) / 2 
+          || someModelsHaveSymmetry && !viewer.getApplySymmetryToBonds());
       if (viewer.getForceAutoBond() || doBond && viewer.getAutoBond()
           && getModelSetProperty("noautobond") == null) {
         BitSet bs = null;
@@ -350,7 +351,10 @@ public final class Frame {
           for (int i = baseAtomIndex; i < atomCount; i++)
             bs.set(i);
         }
+        Logger.info("Frame: autobonding; use  autobond=false  to not generate bonds automatically");
         autoBond(bs, bs, null);
+      } else {
+        Logger.info("Frame: not autobonding; use forceAutobond=true to force automatic bond creation");        
       }
     }
     finalizeGroupBuild(); // set group offsets and build monomers

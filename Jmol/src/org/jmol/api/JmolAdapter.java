@@ -105,12 +105,12 @@ public abstract class JmolAdapter {
   /**
    * @param name File name, String or URL acting as the source of the reader
    * @param bufferedReader The BufferedReader
-   * @param params Optional integer parameters
+   * @param htParams Optional hashtable containing symmetry/cell information
    * @return The clientFile or String with an error message
    * @see #openBufferedReader(String, BufferedReader)
    */
   public Object openBufferedReader(String name,
-                                   BufferedReader bufferedReader, int[] params) {
+                                   BufferedReader bufferedReader, Hashtable htParams) {
     return null;
   }
 

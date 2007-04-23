@@ -312,7 +312,7 @@ class AtomSetCollection {
     }
      */
     atom.atomSetIndex = currentAtomSetIndex;
-    atom.atomSite = ++atomSetAtomCounts[currentAtomSetIndex];
+    atom.atomSite = atomSetAtomCounts[currentAtomSetIndex]++;
   }
 
   void addAtomWithMappedName(Atom atom) {
@@ -392,7 +392,7 @@ class AtomSetCollection {
       setGlobalBoolean(GLOBAL_FRACTCOORD);    
   }
   
-  void setLatticeCells(int[] latticeCells) {
+  void setLatticeCells(int[] latticeCells, boolean applySymmetryToBonds) {
     //set when unit cell is determined
     // x <= 555 and y >= 555 indicate a range of cells to load
     // AROUND the central cell 555 and that
@@ -400,6 +400,7 @@ class AtomSetCollection {
     this.latticeCells = latticeCells;
     isLatticeRange = (latticeCells[2] == 0 || latticeCells[2] == 1) && (latticeCells[0] <= 555  && latticeCells[1] >= 555);
     doNormalize = (!isLatticeRange || latticeCells[2] == 1);
+    setApplySymmetryToBonds(applySymmetryToBonds);
   }
   
   boolean setNotionalUnitCell(float[] info) {
@@ -453,6 +454,8 @@ class AtomSetCollection {
      
     int count = getLastAtomSetAtomCount();
     int atomIndex = getLastAtomSetAtomIndex();
+    bondCount0 = bondCount;
+    
     SymmetryOperation[] finalOperations = spaceGroup.getFinalOperations(atoms,
         atomIndex, count, doNormalize);
     for (int i = 0; i < count; i++)
@@ -508,65 +511,83 @@ class AtomSetCollection {
   }
   
   Point3f[] cartesians;
+  int bondCount0;
+  int bondIndex0;
+  boolean applySymmetryToBonds = false;
   
-  private int symmetryAddAtoms(SymmetryOperation[] finalOperations, int atomIndex,
-                        int count, int transX, int transY, int transZ, int pt) throws Exception {
+  void setApplySymmetryToBonds(boolean TF) {
+    applySymmetryToBonds = TF;
+  }
+  
+  private int symmetryAddAtoms(SymmetryOperation[] finalOperations,
+                               int atomIndex, int count, int transX,
+                               int transY, int transZ, int pt) throws Exception {
     boolean isBaseCell = (transX == 0 && transY == 0 && transZ == 0);
     int nOperations = finalOperations.length;
     if (isBaseCell)
       pt = 0;
-      for (; pt < count; pt++) {
-        Atom atom = atoms[atomIndex + pt];
-        cartesians[pt] = new Point3f(atom);
-        finalOperations[0].transform(cartesians[pt]);
-        unitCell.toCartesian(cartesians[pt]);
-        atom.bsSymmetry.set(0);
-      }
+    for (; pt < count; pt++) {
+      Atom atom = atoms[atomIndex + pt];
+      cartesians[pt] = new Point3f(atom);
+      finalOperations[0].transform(cartesians[pt]);
+      unitCell.toCartesian(cartesians[pt]);
+      atom.bsSymmetry.set(0);
+    }
+    int[] atomMap = new int[count];
     for (int iSym = 0; iSym < nOperations; iSym++) {
+      if (isBaseCell && finalOperations[iSym].getXyz().equals("x,y,z"))
+        continue;
       int pt0 = pt;
-      if (!isBaseCell || !finalOperations[iSym].getXyz().equals("x,y,z")) {
-        int i1 = atomIndex;
-        int i2 = i1 + count;
-        for (int i = i1; i < i2; i++) {
-          Atom atom = new Atom();
-          finalOperations[iSym]
-              .newPoint(atoms[i], atom, transX, transY, transZ);
-          Point3f cartesian = new Point3f(atom);
-          unitCell.toCartesian(cartesian);
+      int i1 = atomIndex;
+      int i2 = i1 + count;
+      for (int i = i1; i < i2; i++) {
+        Atom atom = new Atom();
+        finalOperations[iSym].newPoint(atoms[i], atom, transX, transY, transZ);
+        Point3f cartesian = new Point3f(atom);
+        unitCell.toCartesian(cartesian);
 
-          
-          //System.out.println((Point3f) atoms[i] + " " + (Point3f) atom + " "
-          //    + transX + " " + transY + " " + transZ + " " + cartesian
-          //    + finalOperations[iSym].getXyz());
-          
-  
-          Atom special = null;
-          for (int j = pt0; --j >= 0;) {
-//            System.out.println(j + ": " + cartesians[j] + " ?cart? " + cartesian + " d=" + cartesian.distance(cartesians[j]));
+        //System.out.println((Point3f) atoms[i] + " " + (Point3f) atom + " "
+        //    + transX + " " + transY + " " + transZ + " " + cartesian
+        //    + finalOperations[iSym].getXyz());
 
-            if (cartesian.distance(cartesians[j]) < 0.01) {
-              special = atoms[atomIndex + j];
-              break;
-            }
+        Atom special = null;
+        for (int j = pt0; --j >= 0;) {
+          //            System.out.println(j + ": " + cartesians[j] + " ?cart? " + cartesian + " d=" + cartesian.distance(cartesians[j]));
+
+          if (cartesian.distance(cartesians[j]) < 0.01) {
+            special = atoms[atomIndex + j];
+            break;
           }
-          if (special == null) {
-            Atom atom1 = newCloneAtom(atoms[i]);
-            atom1.x = atom.x;
-            atom1.y = atom.y;
-            atom1.z = atom.z;
-  //          System.out.println(cartesian + " " + (Point3f)atom + "X" + finalOperations[iSym].getXyz() + " " + transX+" "+transY+" "+transZ);
-            atom1.atomSite = atoms[i].atomSite;
-            atom1.bsSymmetry = new BitSet();
-            atom1.bsSymmetry.set(iSym);
-            cartesians[pt++] = cartesian;
-          } else {
-            special.bsSymmetry.set(iSym);
-            
-            // System.out.println(iSym + " " + finalOperations[iSym].getXyz()
-            // + " special set: " + i + " " + " " + special.bsSymmetry);
-            
-    //        System.out.println(cartesian+"Y" + "X" + finalOperations[iSym].getXyz() + " " + transX+" "+transY+" "+transZ);
-          }
+        }
+        if (special != null) {
+          atomMap[atoms[i].atomSite] = special.atomIndex;
+          special.bsSymmetry.set(iSym);
+
+          // System.out.println(iSym + " " + finalOperations[iSym].getXyz()
+          // + " special set: " + i + " " + " " + special.bsSymmetry);
+
+          //        System.out.println(cartesian+"Y" + "X" + finalOperations[iSym].getXyz() + " " + transX+" "+transY+" "+transZ);
+        } else {
+          atomMap[atoms[i].atomSite] = atomCount;
+          Atom atom1 = newCloneAtom(atoms[i]);
+          atom1.x = atom.x;
+          atom1.y = atom.y;
+          atom1.z = atom.z;
+          //          System.out.println(cartesian + " " + (Point3f)atom + "X" + finalOperations[iSym].getXyz() + " " + transX+" "+transY+" "+transZ);
+          atom1.atomSite = atoms[i].atomSite;
+          atom1.bsSymmetry = new BitSet();
+          atom1.bsSymmetry.set(iSym);
+          cartesians[pt++] = cartesian;
+        }
+      }
+      if (bondCount0 > bondIndex0 && applySymmetryToBonds) {
+        // Clone bonds
+        for (int bondNum = bondIndex0; bondNum < bondCount0; bondNum++) {
+          Bond bond = bonds[bondNum];
+          int iAtom1 = atomMap[atoms[bond.atomIndex1].atomSite];
+          int iAtom2 = atomMap[atoms[bond.atomIndex2].atomSite];
+          if (iAtom1 >= i2 || iAtom2 >= i2)
+          addNewBond(iAtom1, iAtom2, bond.order);
         }
       }
     }
@@ -696,6 +717,7 @@ class AtomSetCollection {
   }
   
   void newAtomSet() {
+    bondIndex0 = bondCount;
     if (isTrajectory) {
       if (trajectory == null && atomCount > 0)
         trajectory = new Point3f[0];

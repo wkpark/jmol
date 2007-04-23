@@ -3511,6 +3511,10 @@ class Eval { //implements Runnable {
     StringBuffer loadScript = new StringBuffer("load");
     int[] params = new int[4];
     Point3f unitCells = viewer.getDefaultLattice();
+    Hashtable htParams = new Hashtable();
+    if (viewer.getApplySymmetryToBonds())
+      htParams.put("applySymmetryToBonds", Boolean.TRUE);
+    htParams.put("params", params);
     //params[0] will be a designated model number or -1 for a trajectory
     params[1] = (int) unitCells.x;
     params[2] = (int) unitCells.y;
@@ -3547,7 +3551,7 @@ class Eval { //implements Runnable {
         filename = fixFileName(filename);
       loadScript.append(" ").append(StateManager.escape(filename)).append(";");
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
-        viewer.openFile(filename, params, loadScript.toString(), isMerge);
+        viewer.openFile(filename, htParams, loadScript.toString(), isMerge);
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.integer) {
       if ((filename = parameterAsString(i++)).length() == 0)
@@ -3589,6 +3593,7 @@ class Eval { //implements Runnable {
             p[j] = params[j];
           p[4] = iGroup;
           params = p;
+          htParams.put("params", params);
         }
         if (tokAt(i) == Token.unitcell) {
           ++i;
@@ -3605,11 +3610,12 @@ class Eval { //implements Runnable {
           }
           loadScript.append("}");
           params = p;
+          htParams.put("params", params);
         }
       }
       loadScript.append(";");
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
-        viewer.openFile(filename, params, loadScript.toString(), isMerge);
+        viewer.openFile(filename, htParams, loadScript.toString(), isMerge);
     } else {
       String modelName;
       if (i == 2) {

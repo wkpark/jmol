@@ -32,6 +32,7 @@ import org.jmol.viewer.JmolConstants;
 
 import java.io.BufferedReader;
 
+import java.util.Hashtable;
 
 /*
  * Notes 9/2006 Bob Hanson
@@ -182,6 +183,7 @@ abstract class AtomSetCollectionReader {
   boolean ignoreFileSymmetryOperators;
   boolean ignoreFileSpaceGroupName;
   boolean isTrajectory;
+  boolean applySymmetryToBonds;
   
 
   // state variables
@@ -225,6 +227,7 @@ abstract class AtomSetCollectionReader {
     ignoreFileSymmetryOperators = false;
     doConvertToFractional = false;
     doApplySymmetry = false;
+    applySymmetryToBonds = false;
 
     fileCoordinatesAreFractional = false;
 
@@ -236,10 +239,15 @@ abstract class AtomSetCollectionReader {
     initializeSymmetry();
   }
 
-  void initialize(int[] params) {
+  void initialize(Hashtable htParams) {
     initialize();
-    if (params == null)
-      return;
+    int[] params = null;
+    if (htParams != null) {
+      params = (int[]) htParams.get("params");
+      if (params == null)
+        return;
+      applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
+    }
 
     // params is of variable length: 4, 5, or 11
     // [desiredModelNumber, i, j, k, 
@@ -318,7 +326,7 @@ abstract class AtomSetCollectionReader {
   void setSymmetryOperator(String jonesFaithful) {
     if (ignoreFileSymmetryOperators)
       return;
-    atomSetCollection.setLatticeCells(latticeCells);
+    atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds);
     if (!atomSetCollection.addSymmetry(jonesFaithful))
       Logger.warn("Skipping symmetry operation " + jonesFaithful);
     iHaveSymmetryOperators = true;
@@ -406,7 +414,7 @@ abstract class AtomSetCollectionReader {
     atomSetCollection.setNotionalUnitCell(notionalUnitCell);
     atomSetCollection.setAtomSetSpaceGroupName(spaceGroup);
     if (doConvertToFractional || fileCoordinatesAreFractional) {
-      atomSetCollection.setLatticeCells(latticeCells);
+      atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds);
       if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
         SpaceGroup sg = SpaceGroup.createSpaceGroup(desiredSpaceGroupIndex,
             (spaceGroup.indexOf("*")>=0 ? "P1" : spaceGroup), notionalUnitCell);

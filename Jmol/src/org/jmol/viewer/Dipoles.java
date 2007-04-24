@@ -24,6 +24,7 @@
 
 package org.jmol.viewer;
 
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 
@@ -232,14 +233,14 @@ class Dipoles extends Shape {
       BitSet atomset = (BitSet) value;
       startCoord = viewer.getAtomSetCenter(atomset);
       tempDipole.set(startCoord, new Point3f(0, 0, 0), dipoleValue);
-      if (Viewer.cardinalityOf(atomset) == 1)
-        atomIndex1 = viewer.firstAtomOf(atomset);
+      if (BitSetUtil.cardinalityOf(atomset) == 1)
+        atomIndex1 = BitSetUtil.firstSetBit(atomset);
       return;
     }
 
     if ("atomBitSet" == propertyName) {
       BitSet atomset = (BitSet) value;
-      atomIndex1 = viewer.firstAtomOf(atomset);
+      atomIndex1 = BitSetUtil.firstSetBit(atomset);
       startCoord = frame.atoms[atomIndex1];
       atomset.clear(atomIndex1);
       value = atomset;
@@ -250,8 +251,8 @@ class Dipoles extends Shape {
     if ("endSet" == propertyName) {
       iHaveTwoEnds = true;
       BitSet atomset = (BitSet) value;
-      if (atomIndex1 >= 0 && Viewer.cardinalityOf(atomset) == 1) {
-        atomIndex2 = viewer.firstAtomOf(atomset);
+      if (atomIndex1 >= 0 && BitSetUtil.cardinalityOf(atomset) == 1) {
+        atomIndex2 = BitSetUtil.firstSetBit(atomset);
         tempDipole.set(frame.atoms[atomIndex1], frame.atoms[atomIndex2], 1);
         currentDipole = findDipole(tempDipole.thisID, tempDipole.dipoleInfo);
         tempDipole.thisID = currentDipole.thisID;

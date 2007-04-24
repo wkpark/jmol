@@ -33,6 +33,7 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.g3d.Graphics3D;
 
@@ -224,7 +225,7 @@ class Draw extends MeshCollection {
     }
 
     if ("atomSet" == propertyName) {
-      if (Viewer.cardinalityOf((BitSet) value) == 0)
+      if (BitSetUtil.cardinalityOf((BitSet) value) == 0)
         return;
       ptBitSets[nbitsets++] = (BitSet) value;
       bsAllAtoms.or((BitSet) value);
@@ -399,7 +400,7 @@ class Draw extends MeshCollection {
       BitSet bs = (BitSet) ptBitSets[i].clone();
       if (bsModel != null)
         bs.and(bsModel);
-      if (Viewer.cardinalityOf(bs) > 0) {
+      if (BitSetUtil.cardinalityOf(bs) > 0) {
         addPoint(viewer.getAtomSetCenter(bs));
       }
     }

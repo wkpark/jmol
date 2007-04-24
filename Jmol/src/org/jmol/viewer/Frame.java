@@ -25,6 +25,7 @@
 
 package org.jmol.viewer;
 
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.Parser;
@@ -95,7 +96,7 @@ public final class Frame {
   byte[] specialAtomIDs;
   String[] group3Lists;
   int[][] group3Counts;
-  BitSet tainted;
+  BitSet tainted;  // not final -- can be set to null
 
   BitSet bsHidden = new BitSet();
 
@@ -814,9 +815,9 @@ public final class Frame {
       if (conformationIndex >= 0)
         for (int c = getAltLocCountInModel(modelIndex); --c >= 0;)
           if (c != conformationIndex)
-            bsConformation
-                .andNot(getSpecAlternate(altLocs.substring(c, c + 1)));
-      if (bsConformation.length() > 0) {
+            BitSetUtil.andNot(bsConformation,
+                getSpecAlternate(altLocs.substring(c, c + 1)));
+      if (BitSetUtil.length(bsConformation) > 0) {
         setConformation(modelIndex, bsConformation);
         bs.or(bsConformation);
       }
@@ -1555,7 +1556,7 @@ public final class Frame {
       return;
     }
     if(atomData.modelIndex < 0)
-      atomData.firstAtom = Math.max(0, firstAtomOf(atomData.bsSelected));
+      atomData.firstAtom = Math.max(0, BitSetUtil.firstSetBit(atomData.bsSelected));
     else
       atomData.firstAtom = mmset.getFirstAtomIndex(atomData.modelIndex);
     atomData.firstModelIndex = atoms[atomData.firstAtom].modelIndex;
@@ -1784,7 +1785,7 @@ public final class Frame {
       if (mmset != null)
         mmset.calcHydrogenBonds(bsA, bsB);
       bsBonds = bsPseudoHBonds;
-      return Viewer.cardinalityOf(bsBonds);
+      return BitSetUtil.cardinalityOf(bsBonds);
     }
     // this method is not enabled and is probably error-prone.
     // it does not take into account anything but distance, 
@@ -2110,7 +2111,7 @@ public final class Frame {
 
   Point3f getAtomSetCenter(BitSet bs) {
     Point3f ptCenter = new Point3f(0, 0, 0);
-    int nPoints = Viewer.cardinalityOf(bs);
+    int nPoints = BitSetUtil.cardinalityOf(bs);
     if (nPoints == 0)
       return ptCenter;
     for (int i = atomCount; --i >= 0;) {
@@ -2119,16 +2120,6 @@ public final class Frame {
     }
     ptCenter.scale(1.0f / nPoints);
     return ptCenter;
-  }
-
-  int firstAtomOf(BitSet bs) {
-    if (bs == null)
-      return -1;
-    for (int i = 0; i < atomCount; i++)
-      if (bs.get(i)) {
-        return i;
-      }
-    return -1;
   }
 
   Atom getSymmetryBaseAtom(int modelIndex, int site, int symop) {
@@ -2192,7 +2183,7 @@ public final class Frame {
     BitSet bs = new BitSet(atomCount);
     for (int i = atomCount; --i >= 0;) {
       BitSet bsSym = atoms[i].getAtomSymmetry();
-      if (bsSym != null && Viewer.cardinalityOf(bsSym) > 1)
+      if (bsSym != null && BitSetUtil.cardinalityOf(bsSym) > 1)
         bs.set(i);
     }
     return bs;
@@ -2614,10 +2605,9 @@ public final class Frame {
     selectedMolecules.xor(selectedMolecules);
     selectedMoleculeCount = 0;
     for (int i = 0; i < moleculeCount; i++) {
-      bsTemp.clear();
-      bsTemp.or(bsSelected);
+      BitSetUtil.copy(bsSelected, bsTemp);
       bsTemp.and(molecules[i].atomList);
-      if (bsTemp.length() > 0) {
+      if (BitSetUtil.length(bsTemp) > 0) {
         selectedMolecules.set(i);
         selectedMoleculeCount++;
       }
@@ -2673,7 +2663,7 @@ public final class Frame {
     surfaceDistanceMax = 0;
     bsSurface = (ec.bsSurface == null ? null : (BitSet) ec.bsSurface.clone());
     surfaceDistance100s = new int[atomCount];
-    nSurfaceAtoms = Viewer.cardinalityOf(bsSurface);
+    nSurfaceAtoms = BitSetUtil.cardinalityOf(bsSurface);
     if (nSurfaceAtoms == 0 || points == null || points.length == 0)
       return points;
     for (int i = 0; i < atomCount; i++) {
@@ -2824,9 +2814,9 @@ public final class Frame {
     BitSet bsResult = (BitSet) bs.clone();
     BitSet bsInitial = (BitSet) bs.clone();
     int iLastBit;
-    while ((iLastBit = bsInitial.length()) > 0) {
+    while ((iLastBit = BitSetUtil.length(bsInitial)) > 0) {
       bsTemp = getMoleculeBitSet(iLastBit - 1);
-      bsInitial.andNot(bsTemp);
+      BitSetUtil.andNot(bsInitial, bsTemp);
       bsResult.or(bsTemp);
     }
     return bsResult;
@@ -2906,9 +2896,9 @@ public final class Frame {
       getMolecules();
     Vector V = new Vector();
     for (int i = 0; i < moleculeCount; i++) {
-      bsTemp = (BitSet) bsAtoms.clone();
+      bsTemp = BitSetUtil.copy(bsAtoms);
       bsTemp.and(molecules[i].atomList);
-      if (bsTemp.length() > 0)
+      if (BitSetUtil.length(bsTemp) > 0)
         V.addElement(molecules[i].getInfo());
     }
     return V;
@@ -3186,8 +3176,7 @@ public final class Frame {
     }
     if (tainted == null)
       tainted = new BitSet(atomCount);
-    tainted.clear();
-    tainted.or(bs);
+    BitSetUtil.copy(bs, tainted);
   }
 
   void loadCoordinates(String data) {

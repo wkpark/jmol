@@ -24,6 +24,7 @@
 package org.jmol.viewer;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
 
 import org.jmol.api.JmolSelectionListener;
 import org.jmol.i18n.GT;
@@ -41,7 +42,6 @@ class SelectionManager {
     this.viewer = viewer;
   }
 
-  private final BitSet bsNull = new BitSet();
   final BitSet bsSelection = new BitSet();
   BitSet bsSubset; // only a copy of the Eval subset
   // this is a tri-state. the value -1 means unknown
@@ -60,7 +60,7 @@ class SelectionManager {
   }
   
   void hide(BitSet bs, boolean isQuiet) {
-    bsHidden.and(bsNull);
+    BitSetUtil.clear(bsHidden);
     if (bs != null)
       bsHidden.or(bs);
     if (viewer.getFrame() != null)
@@ -68,21 +68,22 @@ class SelectionManager {
     if (!isQuiet)
       viewer.reportSelection(GT._(
           "{0} atoms hidden",
-          "" + Viewer.cardinalityOf(bsHidden)));
+          "" + BitSetUtil.cardinalityOf(bsHidden)));
   }
 
   void display(BitSet bsAll, BitSet bs, boolean isQuiet) {
-    bsHidden.or(bsNull);
-    if (bs != null) {
+    if (bs == null) {
+      BitSetUtil.clear(bsHidden);
+    } else {
       bsHidden.or(bsAll);
-      bsHidden.andNot(bs);
+      BitSetUtil.andNot(bsHidden, bs);
     }
     if (viewer.getFrame() != null)
       viewer.getFrame().bsHidden = bsHidden;
     if (!isQuiet)
       viewer.reportSelection(GT._(
           "{0} atoms hidden",
-          "" + Viewer.cardinalityOf(bsHidden)));
+          "" + BitSetUtil.cardinalityOf(bsHidden)));
   }
 
   BitSet getHiddenSet() {
@@ -115,7 +116,7 @@ class SelectionManager {
   }
 
   void removeSelection(BitSet set) {
-    bsSelection.andNot(set);
+    BitSetUtil.andNot(bsSelection, set);
     if (empty != TRUE)
       empty = UNKNOWN;
     selectionChanged();
@@ -185,7 +186,7 @@ class SelectionManager {
       selectionModeAtoms = true;
       return;
     }
-    bsBonds.and(bsNull);
+    BitSetUtil.clear(bsBonds);
     bsBonds.or(bs);
     selectionModeAtoms = false;
   }
@@ -205,20 +206,20 @@ class SelectionManager {
   void clearSelection() {
     selectionModeAtoms = true;
     hideNotSelected = false;
-    bsSelection.and(bsNull);
+    BitSetUtil.clear(bsSelection);
     empty = TRUE;
     selectionChanged();
   }
 
   void setSelection(int atomIndex) {
-    bsSelection.and(bsNull);
+    BitSetUtil.clear(bsSelection);
     bsSelection.set(atomIndex);
     empty = FALSE;
     selectionChanged();
   }
 
   void setSelectionSet(BitSet set) {
-    bsSelection.and(bsNull);
+    BitSetUtil.clear(bsSelection);
     if (set != null)
       bsSelection.or(set);
     empty = UNKNOWN;
@@ -342,9 +343,9 @@ class SelectionManager {
     StringBuffer commands = new StringBuffer("# selection state;\n");
     String cmd = null;
     Hashtable temp = new Hashtable();
-    if (viewer.firstAtomOf(bsHidden) >= 0)
+    if (BitSetUtil.firstSetBit(bsHidden) >= 0)
       temp.put("hide selected", bsHidden);
-    if (viewer.firstAtomOf(bsSubset) >= 0)
+    if (BitSetUtil.firstSetBit(bsSubset) >= 0)
       temp.put("subset selected", bsSubset);
     cmd = StateManager.getCommands(temp);
     if (cmd != null)

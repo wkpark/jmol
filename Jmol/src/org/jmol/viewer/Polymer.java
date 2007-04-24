@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 
 import javax.vecmath.Point3f;
@@ -446,7 +447,6 @@ abstract class Polymer {
   }
 
   int selectedMonomerCount;
-  private final static BitSet bsNull = new BitSet();
   BitSet bsSelectedMonomers;
 
   void calcSelectedMonomersCount(BitSet bsSelected) {
@@ -454,7 +454,7 @@ abstract class Polymer {
     if (bsSelectedMonomers == null)
       bsSelectedMonomers = new BitSet();
     else
-      bsSelectedMonomers.and(bsNull);
+      BitSetUtil.clear(bsSelectedMonomers);
     for (int i = monomerCount; --i >= 0; ) {
       if (monomers[i].isSelected(bsSelected)) {
         ++selectedMonomerCount;

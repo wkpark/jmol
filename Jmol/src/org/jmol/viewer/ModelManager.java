@@ -256,10 +256,6 @@ class ModelManager {
     return frame.getAtomSetCenter(bs);
   }
 
-  int firstAtomOf(BitSet bs) {
-    return frame.firstAtomOf(bs);
-  }
-
   BitSet getAtomBits(String setType) {
     return frame.getAtomBits(setType);
   }

@@ -26,6 +26,7 @@ package org.jmol.viewer;
 import java.util.BitSet;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
 
 final class Chain {
 
@@ -36,7 +37,6 @@ final class Chain {
   int selectedGroupCount;
   boolean isDna, isRna;
   BitSet bsSelectedGroups;
-  private final static BitSet bsNull = new BitSet();
   Group[] groups = new Group[16];
 
 
@@ -84,7 +84,7 @@ final class Chain {
     if (bsSelectedGroups == null)
       bsSelectedGroups = new BitSet();
     else
-      bsSelectedGroups.and(bsNull);
+      BitSetUtil.clear(bsSelectedGroups);
     for (int i = groupCount; --i >= 0; ) {
       if (groups[i].isSelected(bsSelected)) {
         ++selectedGroupCount;

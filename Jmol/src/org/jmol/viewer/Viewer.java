@@ -28,6 +28,7 @@ import org.jmol.i18n.GT;
 
 import org.jmol.api.*;
 import org.jmol.g3d.*;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
 import org.jmol.util.Base64;
@@ -441,7 +442,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //Eval 
     //setCenterSelected
 
-    Point3f center = (bsCenter != null && cardinalityOf(bsCenter) > 0 ? getAtomSetCenter(bsCenter)
+    Point3f center = (bsCenter != null && BitSetUtil.cardinalityOf(bsCenter) > 0 ? getAtomSetCenter(bsCenter)
         : null);
     transformManager.setNewRotationCenter(center, doScale);
     refresh(0, "Viewer:setCenterBitSet()");
@@ -1236,10 +1237,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   Vector getAtomBitSetVector(Object atomExpression) {
     return Eval.getAtomBitSetVector(eval, this, atomExpression);
-  }
-
-  int firstAtomOf(BitSet bs) {
-    return modelManager.firstAtomOf(bs);
   }
 
   Point3f getAtomSetCenter(BitSet bs) {
@@ -5212,21 +5209,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelManager.checkObjectDragged(prevX, prevY, deltaX, deltaY, modifiers);
   }
 
-  public static int cardinalityOf(BitSet bs) {
-    int nbitset = 0;
-    if (bs != null)
-      for (int i = bs.size(); --i >= 0;)
-        if (bs.get(i))
-          nbitset++;
-    return nbitset;
-  }
-
-  /* *******************************************************
-   * 
-   * methods for spinning and rotating
-   * 
-   * ********************************************************/
-
   void rotateAxisAngleAtCenter(Point3f rotCenter, Vector3f rotAxis,
                                float degrees, float endDegrees, boolean isSpin, boolean isSelected) {
     // Eval: rotate FIXED
@@ -5396,6 +5378,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * @return    nX by nY array of floating values
    */
   public float[][] functionXY(String functionName, int nX, int nY) {
+    System.out.println("functionXY:::  " + functionName);
     if (functionName.indexOf("file:") < 0)
       return statusManager.functionXY(functionName, nX, nY);
     String data = getFileAsString(functionName.substring(5));

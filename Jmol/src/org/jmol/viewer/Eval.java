@@ -25,6 +25,7 @@ package org.jmol.viewer;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
@@ -1125,6 +1126,7 @@ class Eval { //implements Runnable {
     iToken = 1000;
     boolean ignoreSubset = (pcStart < 0);
     boolean isInMath = false;
+    int atomCount = viewer.getAtomCount();
     if (ignoreSubset)
       pcStart = -pcStart;
     int pcStop = pcStart + 1;
@@ -1195,22 +1197,22 @@ class Eval { //implements Runnable {
         rpn.addOp(instruction);
         break;
       case Token.all:
-        rpn.addX(bsAll());
+        rpn.addX(BitSetUtil.setAll(atomCount));
         break;
       case Token.none:
         rpn.addX(new BitSet());
         break;
       case Token.selected:
-        rpn.addX(copyBitSet(viewer.getSelectionSet()));
+        rpn.addX(BitSetUtil.copy(viewer.getSelectionSet()));
         break;
       case Token.subset:
-        rpn.addX(copyBitSet(bsSubset == null ? bsAll() : bsSubset));
+        rpn.addX(BitSetUtil.copy(bsSubset == null ? BitSetUtil.setAll(atomCount) : bsSubset));
         break;
       case Token.hidden:
-        rpn.addX(copyBitSet(viewer.getHiddenSet()));
+        rpn.addX(BitSetUtil.copy(viewer.getHiddenSet()));
         break;
       case Token.displayed:
-        rpn.addX(invertBitSet(viewer.getHiddenSet()));
+        rpn.addX(BitSetUtil.copyInvert(viewer.getHiddenSet(), atomCount));
         break;
       case Token.visible:
         if (!isSyntaxCheck && !refreshed)
@@ -1405,30 +1407,6 @@ class Eval { //implements Runnable {
         .intValue());
   }
 
-  BitSet toggle(BitSet A, BitSet B) {
-    for (int i = viewer.getAtomCount(); --i >= 0;) {
-      if (!B.get(i))
-        continue;
-      if (A.get(i)) { //both set --> clear A
-        A.clear(i);
-      } else {
-        A.or(B); //A is not set --> return all on
-        break;
-      }
-    }
-    return A;
-  }
-
-  BitSet notSet(BitSet bs) {
-    for (int i = viewer.getAtomCount(); --i >= 0;) {
-      if (bs.get(i))
-        bs.clear(i);
-      else
-        bs.set(i);
-    }
-    return bs;
-  }
-
   BitSet lookupIdentifierValue(String identifier) throws ScriptException {
     // all variables and possible residue names for PDB
     // or atom names for non-pdb atoms are processed here.
@@ -1437,7 +1415,7 @@ class Eval { //implements Runnable {
 
     BitSet bs = lookupValue(identifier, false);
     if (bs != null)
-      return copyBitSet(bs);
+      return BitSetUtil.copy(bs);
 
     // next we look for names of groups (PDB) or atoms (non-PDB)
     bs = getAtomBits("IdentifierOrNull", identifier);
@@ -2191,18 +2169,6 @@ class Eval { //implements Runnable {
       booleanOrNumberExpected("DOTTED");
     }
     return mad;
-  }
-
-  static BitSet copyBitSet(BitSet bitSet) {
-    BitSet copy = new BitSet();
-    copy.or(bitSet);
-    return copy;
-  }
-
-  private BitSet invertBitSet(BitSet bitSet) {
-    BitSet copy = bsAll();
-    copy.andNot(bitSet);
-    return copy;
   }
 
   boolean isColorParam(int i) {
@@ -3793,7 +3759,7 @@ class Eval { //implements Runnable {
         isExpression = true;
         bs = expression(i);
         i = iToken;
-        atomIndex = viewer.firstAtomOf(bs);
+        atomIndex = BitSetUtil.firstSetBit(bs);
         break;
       default:
         expressionOrIntegerExpected();
@@ -3873,10 +3839,10 @@ class Eval { //implements Runnable {
     select();
     if (isSyntaxCheck)
       return;
-    BitSet bsSelected = copyBitSet(viewer.getSelectionSet());
+    BitSet bsSelected = BitSetUtil.copy(viewer.getSelectionSet());
     viewer.invertSelection();
     if (bsSubset != null) {
-      BitSet bs = copyBitSet(viewer.getSelectionSet());
+      BitSet bs = BitSetUtil.copy(viewer.getSelectionSet());
       bs.and(bsSubset);
       viewer.setSelectionSet(bs);
     }
@@ -4257,21 +4223,14 @@ class Eval { //implements Runnable {
   }
 
   void display() throws ScriptException {
+    int atomCount = viewer.getAtomCount();
     if (statementLength == 1) {
-      viewer.display(bsAll(), null, tQuiet);
+      viewer.display(BitSetUtil.setAll(atomCount), null, tQuiet);
       return;
     }
     BitSet bs = expression(1);
     if (!isSyntaxCheck)
-      viewer.display(bsAll(), bs, tQuiet);
-  }
-
-  BitSet bsAll() {
-    int atomCount = viewer.getAtomCount();
-    BitSet bs = new BitSet(atomCount);
-    for (int i = atomCount; --i >= 0;)
-      bs.set(i);
-    return bs;
+      viewer.display(BitSetUtil.setAll(atomCount), bs, tQuiet);
   }
 
   void select() throws ScriptException {
@@ -5702,12 +5661,12 @@ class Eval { //implements Runnable {
       } else if (v instanceof String) {
         setStringProperty(key, (String) v);
       } else if (v instanceof BondSet) {
-        setIntProperty(key, Viewer.cardinalityOf((BitSet) v));
+        setIntProperty(key, BitSetUtil.cardinalityOf((BitSet) v));
         setStringProperty(key + "_set", StateManager.escape((BitSet) v, false));
         if (showing)
           viewer.showParameter(key + "_set", true, 80);
       } else if (v instanceof BitSet) {
-        setIntProperty(key, Viewer.cardinalityOf((BitSet) v));
+        setIntProperty(key, BitSetUtil.cardinalityOf((BitSet) v));
         setStringProperty(key + "_set", StateManager.escape((BitSet) v));
         if (showing)
           viewer.showParameter(key + "_set", true, 80);
@@ -8356,19 +8315,19 @@ class Eval { //implements Runnable {
           if (getToken(++i).tok != Token.string)
             invalidArgument();
           String fName;
-          v.addElement(fName = parameterAsString(i++));
-          v.addElement(getPoint3f(i, false));
+          v.addElement(fName = parameterAsString(i++)); //(0) = name
+          v.addElement(getPoint3f(i, false));  //(1) = {origin}
           Point4f pt;
           int nX, nY;
-          v.addElement(pt = getPoint4f(++iToken));
+          v.addElement(pt = getPoint4f(++iToken)); //(2) = {ni ix iy iz}
           nX = (int) pt.x;
-          v.addElement(pt = getPoint4f(++iToken));
+          v.addElement(pt = getPoint4f(++iToken)); //(3) = {nj jx jy jz}
           nY = (int) pt.x;
-          v.addElement(getPoint4f(++iToken));
-          if (nX <= 0 || nY <= 0)
+          v.addElement(getPoint4f(++iToken));      //(4) = {nk kx ky kz}
+          if (nX == 0 || nY == 0)
             invalidArgument();
           if (!isSyntaxCheck)
-             v.addElement(viewer.functionXY(fName, nX, nY));
+             v.addElement(viewer.functionXY(fName, nX, nY)); //(5) = float[][] data
           i = iToken;
           propertyName = "functionXY";
           propertyValue = v;
@@ -8407,7 +8366,7 @@ class Eval { //implements Runnable {
           propertyName = "lcaoCartoon";
           BitSet bs = expression(i);
           i = iToken;
-          int atomIndex = viewer.firstAtomOf(bs);
+          int atomIndex = BitSetUtil.firstSetBit(bs);
           modelIndex = 0;
           Point3f pt;
           if (atomIndex < 0) {
@@ -9715,7 +9674,7 @@ class Eval { //implements Runnable {
         fmin = JmolConstants.DEFAULT_MIN_CONNECT_DISTANCE;
       }
       if (atoms1 == null)
-        atoms1 = bsAll();
+        atoms1 = BitSetUtil.setAll(viewer.getAtomCount());
       if (haveDecimal && atoms2 == null)
         atoms2 = atoms1;
       if (atoms2 != null) {
@@ -9760,7 +9719,7 @@ class Eval { //implements Runnable {
       //unary:
 
       if (op.tok == Token.opNot)
-        return (x2.tok == Token.bitset ? addX(notSet(Token.bsSelect(x2)))
+        return (x2.tok == Token.bitset ? addX(BitSetUtil.invertInPlace(Token.bsSelect(x2), viewer.getAtomCount()))
             : addX(!Token.bValue(x2)));
 
       int iv = op.intValue & ~Token.minmaxmask;
@@ -9819,7 +9778,7 @@ class Eval { //implements Runnable {
       case Token.opToggle:
         if (x1.tok != Token.bitset || x2.tok != Token.bitset)
           return false;
-        return addX(toggle(Token.bsSelect(x1), Token.bsSelect(x2)));
+        return addX(BitSetUtil.toggleInPlace(Token.bsSelect(x1), Token.bsSelect(x2), viewer.getAtomCount()));
       case Token.opLE:
         return addX(Token.fValue(x1) <= Token.fValue(x2));
       case Token.opGE:

@@ -24,7 +24,7 @@
 
 package org.jmol.g3d;
 
-//import org.jmol.util.Bmp;
+import org.jmol.util.BitSetUtil;
 
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
@@ -155,7 +155,6 @@ class Normix3D {
     }
   }
 
-  final BitSet bsNull = new BitSet();
   final BitSet bsConsidered = new BitSet();
 
   short getNormix(Vector3f v) {
@@ -176,7 +175,7 @@ class Normix3D {
       champion = 11;
       t = z - (-1);
     }
-    bsConsidered.and(bsNull);
+    BitSetUtil.clear(bsConsidered);
     bsConsidered.set(champion);
     double championDist2 = x*x + y*y + t*t;
     for (int lvl = 0; lvl <= geodesicLevel; ++lvl) {

@@ -31,6 +31,7 @@ import java.util.BitSet;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 
+import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
@@ -429,7 +430,7 @@ public class Token {
     case Token.point4f:
       return (int)fValue(x);
     case Token.bitset:
-      return Viewer.cardinalityOf(bsSelect(x));
+      return BitSetUtil.cardinalityOf(bsSelect(x));
     default:
       return 0;
     }
@@ -524,7 +525,7 @@ public class Token {
     case Token.list:
       return ((String[]) x.value).length;
     case Token.bitset:
-      return Viewer.cardinalityOf(bsSelect(x));
+      return BitSetUtil.cardinalityOf(bsSelect(x));
     default:
       return 0;
     }

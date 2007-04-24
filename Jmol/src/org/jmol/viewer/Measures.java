@@ -26,6 +26,7 @@ package org.jmol.viewer;
 
 import org.jmol.g3d.*;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.BitSetUtil;
 
 import java.util.BitSet;
 import java.util.Vector;
@@ -68,7 +69,7 @@ class Measures extends Shape {
     // the following can be used with "select measures ({bitset})"
     if ("select".equals(propertyName)) {
       BitSet bs = (BitSet) value;
-      if (bs == null || Viewer.cardinalityOf(bs) == 0) {
+      if (bs == null || BitSetUtil.cardinalityOf(bs) == 0) {
         bsSelected = null;
       } else {
         bsSelected = new BitSet();
@@ -219,7 +220,7 @@ class Measures extends Shape {
       return;
     boolean isOneToOne = true;
     for (int i = 0; i < nPoints && isOneToOne; i++)
-      if (Viewer.cardinalityOf((BitSet) monitorExpressions.get(i)) > 1)
+      if (BitSetUtil.cardinalityOf((BitSet) monitorExpressions.get(i)) > 1)
         isOneToOne = false;
     int[] atomCountPlusIndices = new int[5];
     atomCountPlusIndices[0] = nPoints;

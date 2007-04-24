@@ -179,7 +179,7 @@ class IsosurfaceMesh extends Mesh {
   public int nSets = 0;
   
   void invalidateSurfaceSet(int i) {
-    for (int j = surfaceSet[i].length(); --j >= 0;)
+    for (int j = surfaceSet[i].size(); --j >= 0;)
       if (surfaceSet[i].get(j))
         vertexValues[j] = Float.NaN;
     surfaceSet[i] = null;

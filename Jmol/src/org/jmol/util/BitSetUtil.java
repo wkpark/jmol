@@ -94,6 +94,11 @@ final public class BitSetUtil {
     b.or(a);
   }
   
+  /*
+   * same as BitSet.clear(), except this preserves the
+   * overall number of bytes of storage (probably)
+   * 
+   */
   private final static BitSet bsNull = new BitSet();
   public static void clear(BitSet bs) {
     bs.and(bsNull);
@@ -105,6 +110,14 @@ final public class BitSetUtil {
     return allButN;
   }
   
+  /**
+   * inverts the bitset bits 0 through n-1, 
+   * and returns a reference to the modified bitset
+   * 
+   * @param bs
+   * @param n
+   * @return  pointer to original bitset, now inverted
+   */
   public static BitSet invertInPlace(BitSet bs, int n) {
     for (int i = n; --i >= 0;) {
       if (bs.get(i))
@@ -118,19 +131,20 @@ final public class BitSetUtil {
   /**
    * a perhaps curious method: 
    * 
+   * b is a reference set, perhaps all atoms in a certain molecule
+   * a is the working set, perhaps representing all displayed atoms
+   * 
    * For each set bit in b: 
    *   a) if a is also set, then clear a's bit UNLESS
    *   b) if a is not set, then add to a all set bits of b
    *   
-   * b is a reference set, perhaps all atoms in a certain molecule
-   * a is the working set, perhaps representing all displayed atoms
-   * 
    * In "toggle" mode, when you click on any atom of the molecule, 
    * you want either:
    * 
-   * (a) all the atoms in the molecule to be displayed, if not
+   * (a) all the atoms in the molecule to be displayed if not
    *     all are already displayed,
    * or
+   * 
    * (b) the whole molecule to be hidden if all the atoms of the 
    *     molecule are already displayed.
    *          

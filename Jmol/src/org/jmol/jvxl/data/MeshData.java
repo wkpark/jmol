@@ -291,7 +291,6 @@ public class MeshData {
     float val1 = vertexValues[iA];
     float val2 = vertexValues[iB];
     float val3 = vertexValues[iC];
-
     return (val1 >= 0 && val2 >= 0 && val3 >= 0 
         || val1 <= 0 && val2 <= 0 && val3 <= 0);
   }

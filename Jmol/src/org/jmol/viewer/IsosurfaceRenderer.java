@@ -152,7 +152,8 @@ class IsosurfaceRenderer extends MeshRenderer {
         colixC = vertexColixes[iC];
         if (isBicolorMap && (colixA != colixB || colixB != colixC))
           continue;
-        //System.out.println("meshrender " + iA + " " + iB + " " + iC + " " + colixA + " " + colixB + " " + colixC);
+        //if (iA >90 && iA < 100)
+          //System.out.println("isosurfacemeshrender " + iA + " " + iB + " " + iC + " " + colixA + " " + colixB + " " + colixC + " " + imesh.vertexValues[iA]+screens[iA] + " " + imesh.vertexValues[iB]+screens[iB] + " " + imesh.vertexValues[iC]+screens[iC]);
       } else {
         colixA = colixB = colixC = colix;
       }

@@ -41,13 +41,16 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import org.jmol.util.Logger;
 
+import org.jmol.util.Parser;
 /*
- * these are *required*
+ * these are *required*:
  * 
  * [param name="progressbar" value="true" /] [param name="progresscolor"
  * value="blue" /] [param name="boxmessage" value="your-favorite-message" /]
  * [param name="boxbgcolor" value="#112233" /] [param name="boxfgcolor"
  * value="#778899" /]
+ * 
+ * these are *optional*:
  * 
  * [param name="loadInline" value=" | do | it | this | way " /]
  * 
@@ -57,16 +60,37 @@ import org.jmol.util.Logger;
  *  // this is *required* if you want the applet to be able to // call your
  * callbacks
  * 
- * mayscript="true" is required as an applet tag (for true callbacks only)
- * but this is being taken over by setTimeout() polling using getPropertyAsString()
- * and getPropertyAsJSON() [JavaScript Object Notation]
+ * mayscript="true" is required as an applet/object for any callback, eval, or text/textarea setting)
+ *
+ * To disable ALL access to JavaScript (as, for example, in a Wiki) 
+ * remove the MAYSCRIPT tag or set MAYSCRIPT="false"
  * 
- * [param name="AnimFrameCallback" value="yourJavaScriptMethodName" /] [param
- * name="LoadStructCallback" value="yourJavaScriptMethodName" /] [param
- * name="MessageCallback" value="yourJavaScriptMethodName" /] [param
- * name="HoverCallback" value="yourJavaScriptMethodName" /] [param
- * name="ResizeCallback" value="yourJavaScriptMethodName" /] [param
- * name="PickCallback" value="yourJavaScriptMethodName" /]
+ * You can check that it is set correctly using 
+ * 
+ * [param name="debug" value="true"]
+ * 
+ * and then checking the console for a message about MAYSCRIPT
+ * 
+ * In addition, you can turn off JUST EVAL, by setting on the web page
+ * 
+ * _jmol.noEval = true
+ * 
+ * This allows callbacks but does not allow the script constructs: 
+ * 
+ *  script javascript:...
+ *  javascript ...
+ *  x = eval(...) 
+ * 
+ * callbacks include:
+ * 
+ * [param name="AnimFrameCallback" value="yourJavaScriptMethodName" /]
+ * [param name="LoadStructCallback" value="yourJavaScriptMethodName" /]
+ * [param name="MessageCallback" value="yourJavaScriptMethodName" /] 
+ * [param name="HoverCallback" value="yourJavaScriptMethodName" /] 
+ * [param name="ResizeCallback" value="yourJavaScriptMethodName" /] 
+ * [param name="PickCallback" value="yourJavaScriptMethodName" /]
+ * 
+ * The use of jmolButtons is NOT recommended.
  * 
  */
 
@@ -102,10 +126,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
    * Therefore, do *not* call System.out.println("" + jsoWindow);
    */
   JSObject jsoWindow;
-
   JSObject jsoDocument;
-
   boolean mayScript;
+  boolean haveDocumentAccess;
 
   String animFrameCallback;
   String resizeCallback;
@@ -156,36 +179,48 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     // to enable CDK
     // viewer = new JmolViewer(this, new CdkJmolAdapter(null));
     viewer = JmolViewer.allocateViewer(appletWrapper, new SmarterJmolAdapter());
-    viewer.setAppletContext(htmlName, appletWrapper.getDocumentBase(), appletWrapper
-        .getCodeBase(), getValue("JmolAppletProxy", null));
+    viewer.setAppletContext(htmlName, appletWrapper.getDocumentBase(),
+        appletWrapper.getCodeBase(), getValue("JmolAppletProxy", null));
     myStatusListener = new MyStatusListener();
     viewer.setJmolStatusListener(myStatusListener);
-
 
     jvm12orGreater = viewer.isJvm12orGreater();
     if (jvm12orGreater)
       jvm12 = new Jvm12(appletWrapper, viewer);
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-      Logger.debug("checking for jsoWindow mayScript="+mayScript);
+      Logger.debug("checking for jsoWindow mayScript=" + mayScript);
     }
     if (mayScript) {
+      mayScript = haveDocumentAccess = false;
       try {
         jsoWindow = JSObject.getWindow(appletWrapper);
         if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-          Logger.debug("jsoWindow="+jsoWindow);
+          Logger.debug("jsoWindow=" + jsoWindow);
         }
-        if (jsoWindow == null)
-          Logger.error("jsoWindow returned null ... no JavaScript callbacks :-(");
+        if (jsoWindow == null) {
+          Logger
+              .error("jsoWindow returned null ... no JavaScript callbacks :-(");
+        } else {
+          mayScript = true;
+        }
         jsoDocument = (JSObject) jsoWindow.getMember("document");
-        if (jsoDocument == null)
-          Logger.error("jsoDocument returned null ... no DOM manipulations :-(");
+        if (jsoDocument == null) {
+          Logger
+              .error("jsoDocument returned null ... no DOM manipulations :-(");
+        } else {
+          haveDocumentAccess = true;
+        }
       } catch (Exception e) {
         jsoWindow = null;
         jsoDocument = null;
-        Logger.error("Microsoft MSIE bug -- http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5012558 " + e);
+        Logger
+            .error("Microsoft MSIE bug -- http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=5012558 "
+                + e);
       }
       if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-        Logger.debug("jsoWindow:" + jsoWindow+ " jsoDocument:" + jsoDocument);
+        Logger.debug("jsoWindow:" + jsoWindow + " jsoDocument:" + jsoDocument
+            + " mayScript:" + mayScript + " haveDocumentAccess:"
+            + haveDocumentAccess);
       }
     }
   }
@@ -312,7 +347,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
           // || pauseCallback != null
           || pickCallback != null || statusForm != null || statusText != null) {
         if (!mayScript)
-          Logger.warn("WARNING!! MAYSCRIPT not found");
+          Logger.warn("MAYSCRIPT missing -- all applet JavaScript calls disabled");
       }
       if (messageCallback != null || statusForm != null || statusText != null) {
         if (!haveTranslateFlag) {
@@ -350,8 +385,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   void sendMessageCallback(String strMsg) {
+    if (!mayScript || messageCallback == null)
+      return;
     try {
-      if (messageCallback != null && jsoWindow != null)
         if (messageCallback.equals("alert"))
           jsoWindow.call(messageCallback, new Object[] { strMsg });
         else
@@ -367,7 +403,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
   
   void sendJsTextStatus(String message) {
-    if (statusForm == null || statusText == null)
+    if (!haveDocumentAccess || statusForm == null || statusText == null)
       return;
     try {
       JSObject jsoForm = (JSObject) jsoDocument.getMember(statusForm);
@@ -382,7 +418,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
   
   void sendJsTextareaStatus(String message) {
-    if (statusForm == null || statusTextarea == null)
+    if (!haveDocumentAccess || statusForm == null || statusTextarea == null)
       return;
     try {
       JSObject jsoForm = (JSObject) jsoDocument.getMember(statusForm);
@@ -533,31 +569,29 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   boolean buttonCallbackNotificationPending;
 
   String buttonCallback;
-
   String buttonName;
-
   JSObject buttonWindow;
 
   public void scriptButton(JSObject buttonWindow, String buttonName,
-      String script, String buttonCallback) {
-    Logger.info(htmlName + " JmolApplet.scriptButton(" + buttonWindow
-        + "," + buttonName + "," + script + "," + buttonCallback);
-    if (buttonWindow != null && buttonCallback != null) {
-      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-        Logger.debug("!!!! calling back " + buttonCallback);
-      }
-      buttonCallbackBefore[0] = buttonName;
-      Logger.debug("trying...");
-      buttonWindow.call(buttonCallback, buttonCallbackBefore);
-      Logger.debug("made it");
-
-      buttonCallbackNotificationPending = true;
-      this.buttonCallback = buttonCallback;
-      this.buttonWindow = buttonWindow;
-      this.buttonName = buttonName;
-    } else {
+                           String script, String buttonCallback) {
+    if (!mayScript || buttonWindow == null || buttonCallback == null) {
       buttonCallbackNotificationPending = false;
+      return;
     }
+    Logger.info(htmlName + " JmolApplet.scriptButton(" + buttonWindow + ","
+        + buttonName + "," + script + "," + buttonCallback);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug("!!!! calling back " + buttonCallback);
+    }
+    buttonCallbackBefore[0] = buttonName;
+    Logger.debug("trying...");
+    buttonWindow.call(buttonCallback, buttonCallbackBefore);
+    Logger.debug("made it");
+
+    buttonCallbackNotificationPending = true;
+    this.buttonCallback = buttonCallback;
+    this.buttonWindow = buttonWindow;
+    this.buttonName = buttonName;
     scriptProcessor(script, null, SCRIPT_NOWAIT);
   }
 
@@ -713,6 +747,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   public void loadNodeId(String nodeId) {
+    if (!haveDocumentAccess)
+      return;
     if (nodeId != null) {
       // Retrieve Node ...
       // First try to find by ID
@@ -780,7 +816,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
     public String eval(String strEval) {
       try {
-        if(((Boolean)jsoDocument.eval("!!_jmol.noEval")).booleanValue())
+        if(!haveDocumentAccess || ((Boolean)jsoDocument.eval("!!_jmol.noEval")).booleanValue())
           return "NO EVAL ALLOWED";
       } catch (Exception e) {
         Logger.error("# no _jmol in evaluating " + strEval + ":" + e.toString());
@@ -807,21 +843,21 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         showStatusAndConsole(GT._("File Error:") + errorMsg);
         return;
       }
+      if (!mayScript || loadStructCallback == null || fullPathName == null)
+        return;
       try {
-        if (fullPathName != null)
-          if (loadStructCallback != null && jsoWindow != null)
-            if (loadStructCallback.equals("alert"))
-              jsoWindow.call(loadStructCallback, new Object[] { fullPathName });
-            else
-              jsoWindow.call(loadStructCallback, new Object[] { htmlName,
-                  fullPathName });
+        if (loadStructCallback.equals("alert"))
+          jsoWindow.call(loadStructCallback, new Object[] { fullPathName });
+        else
+          jsoWindow.call(loadStructCallback, new Object[] { htmlName,
+              fullPathName });
       } catch (Exception e) {
         if (!haveNotifiedError)
           if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-            Logger.debug(
-                "loadStructCallback call error to " + loadStructCallback + ": " + e);
+            Logger.debug("loadStructCallback call error to "
+                + loadStructCallback + ": " + e);
           }
-          haveNotifiedError = true;
+        haveNotifiedError = true;
       }
 
       //      if (jmolpopup != null)
@@ -829,48 +865,70 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     }
 
     public void notifyScriptStart(String statusMessage, String additionalInfo) {
+      if (!mayScript || messageCallback == null)
+        return;
       try {
-        if (messageCallback != null && jsoWindow != null)
-          if (messageCallback.equals("alert"))
-            jsoWindow.call(messageCallback, new Object[] { statusMessage
-                + " ; " + additionalInfo });
-          else
-            jsoWindow.call(messageCallback, new Object[] { htmlName,
-                statusMessage, additionalInfo });
+        if (messageCallback.equals("alert"))
+          jsoWindow.call(messageCallback, new Object[] { statusMessage + " ; "
+              + additionalInfo });
+        else
+          jsoWindow.call(messageCallback, new Object[] { htmlName,
+              statusMessage, additionalInfo });
       } catch (Exception e) {
         if (!haveNotifiedError)
           if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-            Logger.debug(
-                "messageCallback call error to " + messageCallback + ": " + e);
+            Logger.debug("messageCallback call error to " + messageCallback
+                + ": " + e);
           }
-          haveNotifiedError = true;
+        haveNotifiedError = true;
       }
 
       showStatusAndConsole(statusMessage);
     }
 
     public float[][] functionXY(String functionName, int nX, int nY) {
-      //two options -- using -n for x
+      /*three options:
+       * 
+       *  nX > 0  and  nY > 0        return one at a time, with (slow) individual function calls
+       *  nX < 0  and  nY > 0        return a string that can be parsed to give the list of values
+       *  nX < 0  and  nY < 0        fill the supplied float[-nX][-nY] array directly in JavaScript 
+       *  
+       */
+ 
+      //System.out.println("functionXY" + nX + " " + nY  + " " + functionName);
+      
       float[][] fxy = new float[Math.abs(nX)][Math.abs(nY)];
-      if (nX == 0 || nY == 0)
+      if (!mayScript || nX == 0 || nY == 0)
         return fxy;
       try {
-        if (nX > 0) {
+        if (nX > 0 && nY > 0) {    // fill with individual function calls (slow)
           for (int i = 0; i < nX; i++)
-            for (int j = 0; j < nY; j++)
+            for (int j = 0; j < nY; j++) {
               fxy[i][j] = ((Double) jsoWindow.call(functionName, new Object[] {
-                  htmlName, new Integer(nX), new Integer(nY) })).floatValue();
-        } else {
-          Double[][] xy = (Double[][]) jsoWindow.call(functionName,
-              new Object[] { htmlName, new Integer(nX), new Integer(nY) });
+                  htmlName, new Integer(i), new Integer(j) })).floatValue();
+            }
+        } else if (nY > 0){       // fill with parsed values from a string (pretty fast)
+          String data =  (String) jsoWindow.call(functionName, new Object[] {
+              htmlName, new Integer(nX), new Integer(nY) });
+          System.out.println(data);
           nX = Math.abs(nX);
-          nY = Math.abs(nY);
-          for (int i = 0; i < nX; i++)
-            for (int j = 0; j < nY; j++)
-              fxy[i][j] = (xy[i][j]).floatValue();
+          float[] fdata = new float[nX * nY]; 
+          Parser.parseFloatArray(data, null, fdata);
+          for (int i = 0, ipt = 0; i < nX; i++) {
+            for (int j = 0; j < nY; j++, ipt++) {
+              fxy[i][j] = fdata[ipt];
+            }
+          }
+        } else {                 // fill float[][] directly using JavaScript
+          jsoWindow.call(functionName,
+              new Object[] { htmlName, new Integer(nX), new Integer(nY), fxy });
         }
       } catch (Exception e) {
+        Logger.error("Exception " + e.getMessage() + " with nX, nY: "+ nX + " " + nY);
       }
+      for (int i = 0; i < nX; i++)
+        for (int j = 0; j < nY; j++) 
+          System.out.println("i j fxy " + i + " " + j + " " + fxy[i][j]);
       return fxy;
     }
     
@@ -884,8 +942,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     }
 
     public void notifyResized(int newWidth, int newHeight) {
+      if (!mayScript || resizeCallback == null)
+        return;
       try {
-        if (resizeCallback != null && jsoWindow != null)
           jsoWindow.call(resizeCallback, new Object[] { htmlName,
               new Integer(newWidth), new Integer(newHeight)});
       } catch (Exception e) {
@@ -900,20 +959,20 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
     public void notifyFrameChanged(int frameNo, int fileNo, int modelNo,
                                    int firstNo, int lastNo) {
+      if (!mayScript || animFrameCallback == null)
+        return;
       boolean isAnimationRunning = (frameNo <= -2);
       try {
-        if (animFrameCallback != null && jsoWindow != null)
-          jsoWindow.call(animFrameCallback, new Object[] { htmlName,
-              new Integer(Math.max(frameNo, -2 - frameNo)),
-              new Integer(fileNo), new Integer(modelNo), new Integer(firstNo),
-              new Integer(lastNo) });
+        jsoWindow.call(animFrameCallback, new Object[] { htmlName,
+            new Integer(Math.max(frameNo, -2 - frameNo)), new Integer(fileNo),
+            new Integer(modelNo), new Integer(firstNo), new Integer(lastNo) });
       } catch (Exception e) {
         if (!haveNotifiedError)
           if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-            Logger.debug(
-                "animFrameCallback call error to " + animFrameCallback + ": " + e);
+            Logger.debug("animFrameCallback call error to " + animFrameCallback
+                + ": " + e);
           }
-          haveNotifiedError = true;
+        haveNotifiedError = true;
       }
       if (jmolpopup == null || isAnimationRunning)
         return;
@@ -922,38 +981,40 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
     public void notifyAtomPicked(int atomIndex, String strInfo) {
       showStatusAndConsole(strInfo);
+      if (!mayScript || pickCallback == null)
+        return;
       try {
-        if (pickCallback != null && jsoWindow != null)
-          if (pickCallback.equals("alert"))
-            jsoWindow.call(pickCallback, new Object[] { strInfo });
-          else
-            jsoWindow.call(pickCallback, new Object[] { htmlName, strInfo,
-                new Integer(atomIndex) });
+        if (pickCallback.equals("alert"))
+          jsoWindow.call(pickCallback, new Object[] { strInfo });
+        else
+          jsoWindow.call(pickCallback, new Object[] { htmlName, strInfo,
+              new Integer(atomIndex) });
       } catch (Exception e) {
         if (!haveNotifiedError)
           if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-            Logger.debug(
-                "pickCallback call error to " + pickCallback + ": " + e);
+            Logger.debug("pickCallback call error to " + pickCallback + ": "
+                + e);
           }
-          haveNotifiedError = true;
+        haveNotifiedError = true;
       }
     }
 
     public void notifyAtomHovered(int atomIndex, String strInfo) {
+      if (!mayScript || hoverCallback == null)
+        return;
       try {
-        if (hoverCallback != null && jsoWindow != null)
-          if (hoverCallback.equals("alert"))
-            jsoWindow.call(hoverCallback, new Object[] { strInfo });
-          else
-            jsoWindow.call(hoverCallback, new Object[] { htmlName, strInfo,
-                new Integer(atomIndex) });
+        if (hoverCallback.equals("alert"))
+          jsoWindow.call(hoverCallback, new Object[] { strInfo });
+        else
+          jsoWindow.call(hoverCallback, new Object[] { htmlName, strInfo,
+              new Integer(atomIndex) });
       } catch (Exception e) {
         if (!haveNotifiedError)
           if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-            Logger.debug(
-                "hoverCallback call error to " + hoverCallback + ": " + e);
+            Logger.debug("hoverCallback call error to " + hoverCallback + ": "
+                + e);
           }
-          haveNotifiedError = true;
+        haveNotifiedError = true;
       }
     }
     

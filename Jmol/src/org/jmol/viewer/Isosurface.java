@@ -122,6 +122,8 @@ class Isosurface extends MeshFileCollection implements MeshDataServer {
     meshes = isomeshes = (IsosurfaceMesh[])ArrayUtil.ensureLength(isomeshes, meshCount + 1);
     currentMesh = thisMesh = isomeshes[meshCount++] = new IsosurfaceMesh(thisID, g3d, colix);
     sg.setJvxlData(jvxlData = thisMesh.jvxlData);
+    System.out.println("Isosurface allocMesh thisMesh:" + thisMesh.vertexColixes);
+
   }
 
   void initShape() {
@@ -154,6 +156,13 @@ class Isosurface extends MeshFileCollection implements MeshDataServer {
     }
 
     ////isosurface-only (no calculation required; no calculation parameters to set)
+
+    if ("delete" == propertyName) {
+      setPropertySuper(propertyName, value, bs);
+      if (!explicitID)
+        nLCAO = nUnnamed = 0;
+      return;
+    }
 
     if ("thisID" == propertyName) {
       setPropertySuper("thisID", value, null);
@@ -268,12 +277,6 @@ class Isosurface extends MeshFileCollection implements MeshDataServer {
       return;
     }
 
-    if ("delete" == propertyName) {
-      if (!explicitID)
-        nLCAO = nUnnamed = 0;
-      setPropertySuper(propertyName, value, bs);
-      return;
-    }
    /*
      if ("background" == propertyName) {
      boolean doHide = !((Boolean) value).booleanValue();

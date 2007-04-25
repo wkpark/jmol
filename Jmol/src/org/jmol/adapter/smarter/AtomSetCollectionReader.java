@@ -244,10 +244,10 @@ abstract class AtomSetCollectionReader {
     int[] params = null;
     if (htParams != null) {
       params = (int[]) htParams.get("params");
-      if (params == null)
-        return;
       applySymmetryToBonds = htParams.containsKey("applySymmetryToBonds");
     }
+    if (params == null)
+      return;
 
     // params is of variable length: 4, 5, or 11
     // [desiredModelNumber, i, j, k, 

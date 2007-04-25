@@ -87,6 +87,11 @@ class Mesh {
     scale = 1;
     vertices = null;
     polygonIndexes = null;
+    showPoints = false;
+    drawTriangles = false;
+    fillTriangles = true;
+    showTriangles = false; //as distinct entitities
+    frontOnly = false;
     this.meshType = meshType;
   }
 

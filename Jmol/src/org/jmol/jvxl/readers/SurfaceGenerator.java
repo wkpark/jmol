@@ -127,6 +127,7 @@ import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.data.MeshData;
 import org.jmol.jvxl.api.AtomDataServer;
 import org.jmol.jvxl.api.MeshDataServer;
+import org.jmol.jvxl.calc.MarchingSquares;
 
 public class SurfaceGenerator {
 
@@ -137,6 +138,8 @@ public class SurfaceGenerator {
   private VolumeData volumeData;
   private MeshDataServer meshDataServer;
   private AtomDataServer atomDataServer;
+  private MarchingSquares marchingSquares;
+  
   VoxelReader voxelReader;
 
   public SurfaceGenerator() {
@@ -156,20 +159,21 @@ public class SurfaceGenerator {
     this.colorEncoder = (colorEncoder == null ? new ColorEncoder()
         : colorEncoder);
     this.meshData = (meshData == null ? new MeshData() : meshData);
+    //System.out.println("SurfaceGenerator setup vertexColixs =" + this.meshData.vertexColixes);
     this.jvxlData = (jvxlData == null ? new JvxlData() : jvxlData);
     volumeData = new VolumeData();
     initializeIsosurface();
   }
   
-  public MeshDataServer getMeshDataServer() {
+  MeshDataServer getMeshDataServer() {
     return meshDataServer;
   }
 
-  public AtomDataServer getAtomDataServer() {
+  AtomDataServer getAtomDataServer() {
     return atomDataServer;
   }
 
-  public ColorEncoder getColorEncoder() {
+  ColorEncoder getColorEncoder() {
     return colorEncoder;
   }
 
@@ -177,19 +181,27 @@ public class SurfaceGenerator {
     this.jvxlData = jvxlData;
   }
 
-  public JvxlData getJvxlData() {
+  JvxlData getJvxlData() {
     return jvxlData;
   }
 
-  public MeshData getMeshData() {
+  MeshData getMeshData() {
     return meshData;
   }
-
+/*
   public void setMeshData(MeshData meshData) {
     this.meshData = meshData;
   }
-
-  public Parameters getParams() {
+*/
+  void setMarchingSquares(MarchingSquares marchingSquares) {
+    this.marchingSquares = marchingSquares;  
+  }
+  
+  MarchingSquares getMarchingSquares() {
+    return marchingSquares;
+  }
+  
+  Parameters getParams() {
     return params;
   }
 
@@ -197,7 +209,7 @@ public class SurfaceGenerator {
     return params.script;
   }
   
-  public VolumeData getVolumeData() {
+  VolumeData getVolumeData() {
     return volumeData;
   }
 
@@ -220,11 +232,11 @@ public class SurfaceGenerator {
     }
     return 0;
   }
-  
+/*  
   public void setScript(String script) {
     params.script = script;
   }
-  
+*/  
   public void setModelIndex(int modelIndex) {
     params.modelIndex = modelIndex;
   }
@@ -663,13 +675,15 @@ public class SurfaceGenerator {
           meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
         }
         params.colorBySets = true;
-      } else if ((voxelReader = setFileData(value)) == null) {
-        Logger.error("Could not set the mapping data");
-        return true;
+      } else {
+         if ((voxelReader = setFileData(value)) == null) {
+           Logger.error("Could not set the mapping data");
+           return true;
+         }
       }
       mapSurface(value);
     }
-    return false;
+    return true;
   }
 
   private void processState() {   
@@ -740,7 +754,9 @@ public class SurfaceGenerator {
       voxelReader.applyColorScale();
     }
     voxelReader.jvxlUpdateInfo();
+    setMarchingSquares(voxelReader.marchingSquares);
     voxelReader.discardTempData(false);
+    voxelReader = null;
     params.mappedDataMin = Float.MAX_VALUE;
   }
 
@@ -764,6 +780,7 @@ public class SurfaceGenerator {
     }
     voxelReader.colorIsosurface();
     voxelReader.jvxlUpdateInfo();
+    voxelReader.updateTriangles();
     voxelReader.discardTempData(true);
     if (meshDataServer != null)
       meshDataServer.notifySurfaceMappingCompleted();
@@ -814,6 +831,7 @@ public class SurfaceGenerator {
     params.initialize();
     colorPtr = 0;
     voxelReader = null;
+    marchingSquares = null;
     initState();
   }
 

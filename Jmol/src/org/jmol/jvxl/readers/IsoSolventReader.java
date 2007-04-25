@@ -354,8 +354,11 @@ class IsoSolventReader extends AtomDataReader {
         }
     }
 
-    if (dataType == Parameters.SURFACE_PROPERTY)
-      voxelData = property;
+    if (isProperty) {
+      volumeData.voxelData = property;
+      setVolumeData(volumeData);
+      initializeVolumetricData();
+    }
     if (params.thePlane == null) {
       for (int x = 0; x < nPointsX; ++x)
         for (int y = 0; y < nPointsY; ++y)

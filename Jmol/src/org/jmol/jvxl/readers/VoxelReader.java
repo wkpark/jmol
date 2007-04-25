@@ -181,7 +181,7 @@ ascii-encoded fractional color data
     this.sg = sg;
     this.colorEncoder = sg.getColorEncoder();
     this.params = sg.getParams();
-    
+    this.marchingSquares = sg.getMarchingSquares();
     assocCutoff = params.assocCutoff;
     isXLowToHigh = params.isXLowToHigh;
     this.meshData = sg.getMeshData();
@@ -312,10 +312,10 @@ ascii-encoded fractional color data
   }
 
   void discardTempData(boolean discardAll) {
-    if (!discardAll)
+    if (!discardAll) 
       return;
     voxelData = null;
-    marchingSquares = null;
+    sg.setMarchingSquares(marchingSquares = null);
     marchingCubes = null;
   }
  
@@ -473,7 +473,8 @@ ascii-encoded fractional color data
   ////////////////////////////////////////////////////////////////
 
   void colorIsosurface() {
-    if (params.isContoured && !(jvxlDataIs2dContour || params.thePlane != null)) {
+    if (params.isContoured && marchingSquares == null) {
+//    if (params.isContoured && !(jvxlDataIs2dContour || params.thePlane != null)) {
       Logger.error("Isosurface error: Cannot contour this type of data.");
       return;
     }
@@ -568,15 +569,18 @@ ascii-encoded fractional color data
      *  
      */
     if (params.colorBySets)
-      datum = value = meshData.vertexSets[vertexIndex];
+      value = meshData.vertexSets[vertexIndex];
     else if (params.colorByPhase)
-      datum = value = getPhase(meshData.vertices[vertexIndex]);
+      value = getPhase(meshData.vertices[vertexIndex]);
     else if (params.isBicolorMap && !params.isContoured) // will be current mesh only
-      datum = value = meshData.vertexValues[vertexIndex];
+      value = meshData.vertexValues[vertexIndex];
     else if (jvxlDataIs2dContour)
-      datum = value = marchingSquares.getInterpolatedPixelValue(meshData.vertices[vertexIndex]);
+      value = marchingSquares.getInterpolatedPixelValue(meshData.vertices[vertexIndex]);
     else
-      datum = value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[vertexIndex]);
+      value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[vertexIndex]);
+    
+    datum = meshData.vertexValues[vertexIndex] = value;
+    
     if (minColorIndex >= 0) {
       if (value <= 0)
         meshData.vertexColixes[vertexIndex] = minColorIndex;
@@ -589,6 +593,8 @@ ascii-encoded fractional color data
         value = params.valueMappedToRed;
       if (value >= params.valueMappedToBlue)
         value = params.valueMappedToBlue;
+      //if (vertexIndex > 90 && vertexIndex < 100)
+        //System.out.println("applycolor " + meshData.vertexColixes + " " +  getColorIndexFromPalette(value) + " " + vertexIndex + " " + value +" " + params.valueMappedToRed + " " + params.valueMappedToBlue );
       meshData.vertexColixes[vertexIndex] = getColorIndexFromPalette(value);
     }
     return datum;
@@ -679,12 +685,16 @@ ascii-encoded fractional color data
         params.valueMappedToBlue);
   }
   
-  public void updateSurfaceData() {
+  void updateTriangles() {
     if (meshDataServer == null) {
       meshData.invalidateTriangles();
     } else {
       meshDataServer.invalidateTriangles();
     }
+  }
+  
+  void updateSurfaceData() {
+    updateTriangles();
     JvxlReader.jvxlUpdateSurfaceData(jvxlData, meshData.vertexValues,
         meshData.vertexCount, meshData.vertexIncrement, cJvxlEdgeNaN);
   }

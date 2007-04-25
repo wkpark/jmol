@@ -3494,11 +3494,13 @@ class Eval { //implements Runnable {
       if (getToken(1).tok == Token.trajectory) {
         params[0] = -1;  // 
         i = 2;
-      } else if (theTok == Token.identifier) {
+      } else if (theTok == Token.identifier || parameterAsString(1).equals("fileset")) {
         filename = parameterAsString(1);
         loadScript.append(" " + filename);
+        if (filename.equals("fileset"))
+          filename = parameterAsString(2);
         isMerge = (filename.equalsIgnoreCase("append"));
-        i = 2;
+        i =  2;
         if (isMerge)
           clearPredefined();
       }
@@ -5332,7 +5334,7 @@ class Eval { //implements Runnable {
       int pt = m % 1000000;
       if (pt == 0) {
         int model1 = viewer.getModelNumberIndex(m + 1, false);
-        int model2 = viewer.getModelNumberIndex(m + 1000001, false);
+        int model2 = (m==0 ? modelCount : viewer.getModelNumberIndex(m + 1000001, false));
         if (model1 < 0)
           model1 = 0;
         if (model2 < 0)
@@ -7257,10 +7259,10 @@ class Eval { //implements Runnable {
     viewer.loadShape(JmolConstants.SHAPE_PMESH);
     if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_PMESH))
       return;
-    initIsosurface(JmolConstants.SHAPE_PMESH);
     Object t;
     boolean idSeen = false;
-    for (int i = 1; i < statementLength; ++i) {
+    initIsosurface(JmolConstants.SHAPE_PMESH);
+    for (int i = iToken; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
@@ -7338,15 +7340,15 @@ class Eval { //implements Runnable {
     viewer.loadShape(JmolConstants.SHAPE_DRAW);
     if (tokAt(1) == Token.list && listIsosurface(JmolConstants.SHAPE_DRAW))
       return;
-    setShapeProperty(JmolConstants.SHAPE_DRAW, "init", null);
     boolean havePoints = false;
-    boolean idSeen = false;
     boolean isInitialized = false;
     boolean isTranslucent = false;
     float translucentLevel = Float.MAX_VALUE;
     int colorArgb = Integer.MIN_VALUE;
     int intScale = 0;
-    for (int i = 1; i < statementLength; ++i) {
+    boolean idSeen = false;
+    initIsosurface(JmolConstants.SHAPE_DRAW);
+    for (int i = iToken; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
@@ -7960,14 +7962,30 @@ class Eval { //implements Runnable {
     setShapeProperty(shape, "clear", null);
   }
 
-  void initIsosurface(int iShape) throws ScriptException {
+  private void initIsosurface(int iShape) throws ScriptException {
+
+    //handle isosurface/mo/pmesh delete and id delete here
+
     setShapeProperty(iShape, "init", thisCommand);
-    if (!setMeshDisplayProperty(iShape, 0, tokAt(1)))
+    iToken = 0;
+    if (tokAt(1) == Token.delete || tokAt(2) == Token.delete
+        && tokAt(++iToken) == Token.all) {
+      setShapeProperty(iShape, "delete", null);
+      iToken += 2;
+      if (statementLength > iToken) {
+        setShapeProperty(iShape, "init", thisCommand);
+        setShapeProperty(iShape, "thisID", Mesh.PREVIOUS_MESH_ID);
+      }
+      return;
+    }
+    iToken = 1;
+    if (!setMeshDisplayProperty(iShape, 0, tokAt(1))) {
       setShapeProperty(iShape, "thisID", Mesh.PREVIOUS_MESH_ID);
-    setShapeProperty(iShape, "title", new String[] { thisCommand });
+      setShapeProperty(iShape, "title", new String[] { thisCommand });
+    }
   }
   
-  boolean listIsosurface(int iShape) throws ScriptException {
+  private boolean listIsosurface(int iShape) throws ScriptException {
     checkLength2();
     if (!isSyntaxCheck)
       showString((String) viewer.getShapeProperty(iShape, "list"));
@@ -7978,13 +7996,11 @@ class Eval { //implements Runnable {
     viewer.loadShape(iShape);
     if (tokAt(1) == Token.list && listIsosurface(iShape))
       return;
-    initIsosurface(iShape);
     int colorRangeStage = 0;
     int signPt = 0;
     boolean isIsosurface = (iShape == JmolConstants.SHAPE_ISOSURFACE);
     boolean surfaceObjectSeen = false;
     boolean planeSeen = false;
-    boolean idSeen = false;
     boolean isCavity = false;
     float[] nlmZ = new float[5];
     float[] data = null;
@@ -7992,8 +8008,9 @@ class Eval { //implements Runnable {
     int modelIndex = (isSyntaxCheck ? 0 : viewer.getDisplayModelIndex());
     if (!isSyntaxCheck)
       viewer.setCursor(Viewer.CURSOR_WAIT);
-    
-    for (int i = 1; i < statementLength; ++i) {
+    boolean idSeen = false;
+    initIsosurface(iShape);
+    for (int i = iToken; i < statementLength; ++i) {
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {

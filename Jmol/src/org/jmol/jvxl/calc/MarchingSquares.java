@@ -327,6 +327,7 @@ public class MarchingSquares {
     int vPt = voxelReader.addVertexCopy(vertexXYZ, value, VERTEX_POINT);
     contourVertexes[contourVertexCount++] = new ContourVertex(x, y, z,
         vertexXYZ, vPt);
+    //System.out.println("vertex xyz " + x + " " + y + " " + z + " " + vPt + " coord:" + vertexXYZ);
     return vPt;
   }
 
@@ -517,8 +518,11 @@ public class MarchingSquares {
       int insideCount = generateContourData(cutoff);
       if (lastInside < 0)
         lastInside = insideCount;
-      else if (lastInside > insideCount)
+      else if (lastInside > insideCount) {
         centerIsLow = false;
+        lastInside = 0;
+      }
+      System.out.println("generatcont " + insideCount + " " + contourIndex + " " + centerIsLow);
     }
     return centerIsLow;
   }
@@ -543,7 +547,7 @@ public class MarchingSquares {
 
     if (Math.abs(contourCutoff) < 0.0001)
       contourCutoff = (contourCutoff < 0 ? -0.0001f : 0.0001f);
-    int insideCount = 0, outsideCount = 0, contourCount = 0;
+    int insideCount = 0, contourCount = 0;
     for (int x = squareCountX; --x >= 0;) {
       for (int y = squareCountY; --y >= 0;) {
         int[] pixelPointIndexes = propagateNeighborPointIndexes2d(x, y,
@@ -553,15 +557,14 @@ public class MarchingSquares {
           Point3i offset = squareVertexOffsets[i];
           float vertexValue = pixelData[x + offset.x][y + offset.y];
           vertexValues2d[i] = vertexValue;
-          if (isInside2d(vertexValue, contourCutoff))
+          //if (contourIndex == 5 || contourIndex==6)
+            //System.out.println(contourIndex + " xy " + x + " " + y + " " + i + " " + vertexValue +  " " + contourCutoff + " " + (isInside2d(vertexValue, contourCutoff)));
+          if (isInside2d(vertexValue, contourCutoff)) {
             insideMask |= 1 << i;
-        }
-        if (insideMask == 0) {
-          ++outsideCount;
-          continue;
+            ++insideCount;
+          }
         }
         if (insideMask == 0x0F) {
-          ++insideCount;
           planarSquares[x * squareCountY + y]
               .addEdgeMask(contourIndex, 0, 0x0F);
           continue;
@@ -682,6 +685,8 @@ public class MarchingSquares {
     }
     ContourVertex c = contourVertexes[i];
     pt.set(c.vertexXYZ);
+    //System.out.println("draw pt" + ix + "_" + iy+ " " + org.jmol.viewer.StateManager.escape(pt) + " \"" + pt + " " + ix + " " + iy + "\";");
+    
   }
 
   private int findContourVertex(int ix, int iy) {

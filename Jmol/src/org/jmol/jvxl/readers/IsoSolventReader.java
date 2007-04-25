@@ -60,7 +60,6 @@ class IsoSolventReader extends AtomDataReader {
    *  
    */
 
-  private Point3f[] dots;
   private float cavityRadius;
   private float envelopeRadius;
 
@@ -78,7 +77,6 @@ class IsoSolventReader extends AtomDataReader {
         && solventRadius > 0 
         && (dataType == Parameters.SURFACE_SOLVENT || dataType == Parameters.SURFACE_MOLECULAR));  
     doUseIterator = doCalculateTroughs;
-    super.setup();
     isCavity = (params.isCavity && meshDataServer != null); // Jvxl cannot do this calculation on its own.
     if (isCavity && meshData.dots == null)
       meshData.dots = meshDataServer.calculateGeodesicSurface(
@@ -192,7 +190,7 @@ class IsoSolventReader extends AtomDataReader {
     //3) rerun the calculation to mark a solvent around these!
     BitSet bs = new BitSet(nPointsX * nPointsY * nPointsZ);
     int i = 0;
-    int nDots = dots.length;
+    int nDots = meshData.dots.length;
     int n = 0;
     //surface_data = new float[1000];
     for (int x = 0; x < nPointsX; ++x)
@@ -204,7 +202,7 @@ class IsoSolventReader extends AtomDataReader {
             //float dMin = Float.MAX_VALUE;
             //float d;
             for (int j = 0; j < nDots; j++) {
-              if (dots[j].distance(ptXyzTemp) < envelopeRadius)
+              if (meshData.dots[j].distance(ptXyzTemp) < envelopeRadius)
                 continue out;
             }
             bs.set(i);

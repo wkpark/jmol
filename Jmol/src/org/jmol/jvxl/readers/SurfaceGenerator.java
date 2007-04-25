@@ -682,8 +682,11 @@ public class SurfaceGenerator {
          }
       }
       mapSurface(value);
+      return true;
     }
-    return true;
+    
+    // continue with operations in calling class...
+    return false;
   }
 
   private void processState() {   

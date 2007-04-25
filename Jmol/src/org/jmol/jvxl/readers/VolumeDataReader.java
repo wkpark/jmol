@@ -142,6 +142,10 @@ class VolumeDataReader extends VoxelReader {
 
   protected int setVoxelRange(int index, float min, float max, float ptsPerAngstrom,
                     int gridMax) {
+    if (min >= max) {
+      min = -10;
+      max = 10;
+    }
     float range = max - min;
     int nGrid;
     float resolution = params.resolution;

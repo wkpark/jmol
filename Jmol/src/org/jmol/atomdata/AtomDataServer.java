@@ -1,8 +1,7 @@
-package org.jmol.jvxl.api;
+package org.jmol.atomdata;
 
 import java.util.BitSet;
 
-import org.jmol.jvxl.data.AtomData;
 
 public interface AtomDataServer {
   public AtomIndexIterator getWithinAtomSetIterator(int atomIndex,

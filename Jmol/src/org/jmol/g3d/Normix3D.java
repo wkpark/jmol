@@ -24,6 +24,7 @@
 
 package org.jmol.g3d;
 
+import org.jmol.geodesic.Geodesic;
 import org.jmol.util.BitSetUtil;
 
 import javax.vecmath.Vector3f;
@@ -44,25 +45,25 @@ class Normix3D {
 
   final static int NORMIX_GEODESIC_LEVEL = 3;
 
-  final Graphics3D g3d;
-  final Vector3f[] transformedVectors;
-  final byte[] intensities;
-  final byte[] intensities2Sided;
-  final int normixCount;
+  private final static int normixCount = Geodesic.getVertexCount(NORMIX_GEODESIC_LEVEL);
+  private final static Vector3f[] vertexVectors = Geodesic.getVertexVectors(); 
+  private final static short[][] faceVertexesArrays = Geodesic.getFaceVertexesArrays();
+  private final static short[][] neighborVertexesArrays = Geodesic.getNeighborVertexesArrays();
 
-  static short[][] faceNormixesArrays;
+  private final Vector3f[] transformedVectors;
+  private final byte[] intensities;
+  private final byte[] intensities2Sided;
+
+  private static short[][] faceNormixesArrays;
     // not "final" = new short[NORMIX_GEODESIC_LEVEL + 1][];
 
   private final static boolean TIMINGS = false;
   private final static boolean DEBUG_WITH_SEQUENTIAL_SEARCH = false;
 
-
   private final Matrix3f rotationMatrix = new Matrix3f();
 
-  Normix3D(Graphics3D g3d) {
+  Normix3D() {
     // 12, 42, 162, 642
-    this.g3d = g3d;
-    normixCount = Geodesic3D.getVertexCount(NORMIX_GEODESIC_LEVEL);
     intensities = new byte[normixCount];
     intensities2Sided = new byte[normixCount];
     transformedVectors = new Vector3f[normixCount];
@@ -72,15 +73,12 @@ class Normix3D {
     if (TIMINGS) {
       Logger.debug("begin timings!");
       for (int i = 0; i < normixCount; ++i) {
-        short normix = getNormix(Geodesic3D.vertexVectors[i]);
+        short normix = getNormix(vertexVectors[i]);
         if (normix != i)
           if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
             Logger.debug("" + i + " -> " + normix);
           }
       }
-      short[] neighborVertexes =
-        Geodesic3D.neighborVertexesArrays[NORMIX_GEODESIC_LEVEL];
-      
       Random rand = new Random();
       Vector3f vFoo = new Vector3f();
       Vector3f vBar = new Vector3f();
@@ -88,7 +86,7 @@ class Normix3D {
       
       int runCount = 100000;
       long timeBegin, runTime;
-      
+      short[] neighborVertexes = neighborVertexesArrays[NORMIX_GEODESIC_LEVEL];
       timeBegin = System.currentTimeMillis();
       for (int i = 0; i < runCount; ++i) {
         short foo = (short)(rand.nextDouble() * normixCount);
@@ -98,9 +96,9 @@ class Normix3D {
           offsetNeighbor = foo * 6 + (int)(rand.nextDouble() * 6);
           bar = neighborVertexes[offsetNeighbor];
         } while (bar == -1);
-        vFoo.set(Geodesic3D.vertexVectors[foo]);
+        vFoo.set(vertexVectors[foo]);
         vFoo.scale(rand.nextFloat());
-        vBar.set(Geodesic3D.vertexVectors[bar]);
+        vBar.set(vertexVectors[bar]);
         vBar.scale(rand.nextFloat());
         vSum.add(vFoo, vBar);
         vSum.normalize();
@@ -120,9 +118,9 @@ class Normix3D {
           offsetNeighbor = foo * 6 + (int)(rand.nextDouble() * 6);
           bar = neighborVertexes[offsetNeighbor];
         } while (bar == -1);
-        vFoo.set(Geodesic3D.vertexVectors[foo]);
+        vFoo.set(vertexVectors[foo]);
         vFoo.scale(rand.nextFloat());
-        vBar.set(Geodesic3D.vertexVectors[bar]);
+        vBar.set(vertexVectors[bar]);
         vBar.scale(rand.nextFloat());
         vSum.add(vFoo, vBar);
         short sum = getNormix(vSum);
@@ -130,14 +128,14 @@ class Normix3D {
           if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
             Logger.debug(
                 "foo:" + foo + " -> " +
-                Geodesic3D.vertexVectors[foo] + "\n" +
+                vertexVectors[foo] + "\n" +
                 "bar:" + bar + " -> " +
-                Geodesic3D.vertexVectors[bar] + "\n" +
+                vertexVectors[bar] + "\n" +
                 "sum:" + sum + " -> " +
-                Geodesic3D.vertexVectors[sum] + "\n" +
-                "foo.dist="+dist2(vSum, Geodesic3D.vertexVectors[foo])+"\n"+
-                "bar.dist="+dist2(vSum, Geodesic3D.vertexVectors[bar])+"\n"+
-                "sum.dist="+dist2(vSum, Geodesic3D.vertexVectors[sum])+"\n"+
+                vertexVectors[sum] + "\n" +
+                "foo.dist="+dist2(vSum, vertexVectors[foo])+"\n"+
+                "bar.dist="+dist2(vSum, vertexVectors[bar])+"\n"+
+                "sum.dist="+dist2(vSum, vertexVectors[sum])+"\n"+
                 "\nvSum:" + vSum + "\n");
           }
           throw new NullPointerException();
@@ -162,7 +160,7 @@ class Normix3D {
   }
 
   Vector3f getVector(short normix) {
-    return Geodesic3D.vertexVectors[normix];
+    return vertexVectors[normix];
   }
   
   short getNormix(double x, double y, double z, int geodesicLevel) {
@@ -179,7 +177,7 @@ class Normix3D {
     bsConsidered.set(champion);
     double championDist2 = x*x + y*y + t*t;
     for (int lvl = 0; lvl <= geodesicLevel; ++lvl) {
-      short[] neighborVertexes = Geodesic3D.neighborVertexesArrays[lvl];
+      short[] neighborVertexes = neighborVertexesArrays[lvl];
       for (int offsetNeighbors = 6 * champion,
              i = offsetNeighbors + (champion < 12 ? 5 : 6);
            --i >= offsetNeighbors; ) {
@@ -188,7 +186,7 @@ class Normix3D {
             continue;
         bsConsidered.set(challenger);
         //Logger.debug("challenger=" + challenger);
-        Vector3f v = Geodesic3D.vertexVectors[challenger];
+        Vector3f v = vertexVectors[challenger];
         double d;
         // d = dist2(v, x, y, z);
         //Logger.debug("challenger d2=" + (d*d));
@@ -211,9 +209,9 @@ class Normix3D {
 
     if (DEBUG_WITH_SEQUENTIAL_SEARCH) {
       int champSeq = 0;
-      double champSeqD2 = dist2(Geodesic3D.vertexVectors[champSeq], x, y, z);
-      for (int k = Geodesic3D.getVertexCount(geodesicLevel); --k > 0; ) {
-        double challengerD2 = dist2(Geodesic3D.vertexVectors[k], x, y, z);
+      double champSeqD2 = dist2(vertexVectors[champSeq], x, y, z);
+      for (int k = Geodesic.getVertexCount(geodesicLevel); --k > 0; ) {
+        double challengerD2 = dist2(vertexVectors[k], x, y, z);
         if (challengerD2 < champSeqD2) {
           champSeq = k;
           champSeqD2 = challengerD2;
@@ -241,7 +239,7 @@ class Normix3D {
   void calculateInverseNormixes() {
     inverseNormixes = new short[normixCount];
     for (int n = normixCount; --n >= 0; ) {
-      Vector3f v = Geodesic3D.vertexVectors[n];
+      Vector3f v = vertexVectors[n];
       inverseNormixes[n] = getNormix(-v.x, -v.y, -v.z, NORMIX_GEODESIC_LEVEL);
       }
     // validate that everyone's inverse is themselves
@@ -260,7 +258,7 @@ class Normix3D {
     this.rotationMatrix.set(rotationMatrix);
     for (int i = normixCount; --i >= 0; ) {
       Vector3f tv = transformedVectors[i];
-      rotationMatrix.transform(Geodesic3D.vertexVectors[i], tv);
+      rotationMatrix.transform(vertexVectors[i], tv);
       float x = tv.x;
       float y = -tv.y;
       float z = tv.z;
@@ -320,20 +318,20 @@ class Normix3D {
     if (faceNormixes != null)
       return faceNormixes;
     Vector3f t = new Vector3f();
-    short[] faceVertexes = Geodesic3D.faceVertexesArrays[level];
+    short[] faceVertexes = faceVertexesArrays[level];
     int j = faceVertexes.length;
     int faceCount = j / 3;
     faceNormixes = new short[faceCount];
     for (int i = faceCount; --i >= 0; ) {
-      Vector3f vA = Geodesic3D.vertexVectors[faceVertexes[--j]];
-      Vector3f vB = Geodesic3D.vertexVectors[faceVertexes[--j]];
-      Vector3f vC = Geodesic3D.vertexVectors[faceVertexes[--j]];
+      Vector3f vA = vertexVectors[faceVertexes[--j]];
+      Vector3f vB = vertexVectors[faceVertexes[--j]];
+      Vector3f vC = vertexVectors[faceVertexes[--j]];
       t.add(vA, vB);
       t.add(vC);
       short normix = getNormix(t);
       faceNormixes[i] = normix;
       if (DEBUG_FACE_VECTORS) {
-        Vector3f vN = Geodesic3D.vertexVectors[normix];
+        Vector3f vN = vertexVectors[normix];
         
         double d2At = dist2(t, vA);
         double d2Bt = dist2(t, vB);
@@ -353,10 +351,10 @@ class Normix3D {
       }
  
       /*
-      double champD = dist2(Geodesic3D.vertexVectors[normix], t);
+      double champD = dist2(vertexVectors[normix], t);
       int champ = normix;
       for (int k = normixCount; --k >= 0; ) {
-        double d = dist2(Geodesic3D.vertexVectors[k], t);
+        double d = dist2(vertexVectors[k], t);
         if (d < champD) {
           champ = k;
           champD = d;
@@ -364,10 +362,10 @@ class Normix3D {
       }
       if (champ != normix) {
         Logger.debug("normix " + normix + " @ " +
-                           dist2(Geodesic3D.vertexVectors[normix], t) +
+                           dist2(vertexVectors[normix], t) +
                            "\n" +
                            "champ " + champ + " @ " +
-                           dist2(Geodesic3D.vertexVectors[champ], t) +
+                           dist2(vertexVectors[champ], t) +
                            "\n");
       }
       */
@@ -391,13 +389,13 @@ class Normix3D {
     if (minMapped < 0)
       return -1;
     int maxMapped = Bmp.getMaxMappedBit(visibilityBitmap);
-    int maxVisible = Geodesic3D.vertexCounts[level];
+    int maxVisible = Geodesic.getVertexCount(level);
     int max = maxMapped < maxVisible ? maxMapped : maxVisible;
     Vector3f v;
     double d;
     double championDist2;
     int champion = minMapped;
-    v = Geodesic3D.vertexVectors[champion];
+    v = vertexVectors[champion];
     d = x - v.x;
     championDist2 = d * d;
     d = y - v.y;
@@ -408,7 +406,7 @@ class Normix3D {
     for (int challenger = minMapped + 1; challenger < max; ++challenger) {
       if (! Bmp.getBit(visibilityBitmap, challenger))
         continue;
-      double challengerDist2 = dist2(Geodesic3D.vertexVectors[challenger],
+      double challengerDist2 = dist2(vertexVectors[challenger],
                                      x, y, z);
       if (challengerDist2 < championDist2) {
         champion = challenger;

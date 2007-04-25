@@ -62,6 +62,10 @@ abstract class MeshRenderer extends ShapeRenderer {
       return false;
     vertices = mesh.vertices;
     normixes = mesh.normixes;
+    if (normixes == null || vertices == null)
+      return false; 
+    //this can happen when user switches windows 
+    // during a surface calculation
     lighting = mesh.lighting;
     frontOnly = mesh.frontOnly && !mesh.isTwoSided;
     screens = viewer.allocTempScreens(vertexCount);

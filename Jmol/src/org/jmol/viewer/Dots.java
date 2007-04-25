@@ -26,6 +26,8 @@ package org.jmol.viewer;
 
 import org.jmol.util.Logger;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.geodesic.EnvelopeCalculation;
+
 import java.util.BitSet;
 import java.util.Hashtable;
 
@@ -36,7 +38,7 @@ class Dots extends AtomShape {
   final static float SURFACE_DISTANCE_FOR_CALCULATION = 10f;
 
   BitSet bsOn = new BitSet();
-  BitSet bsSelected;
+  private BitSet bsSelected, bsIgnore;
   
   static int MAX_LEVEL = EnvelopeCalculation.MAX_LEVEL;
   
@@ -60,8 +62,7 @@ class Dots extends AtomShape {
 
     translucentAllowed = false; //except for geosurface
     super.initShape();
-    ec = new EnvelopeCalculation(frame, atoms, mads);
-    
+    ec = new EnvelopeCalculation(viewer, atomCount, mads);
   }
 
   boolean isSurface = false;
@@ -82,7 +83,7 @@ class Dots extends AtomShape {
     }
 
     if ("ignore" == propertyName) {
-      ec.setIgnore((BitSet) value);
+      bsIgnore = (BitSet) value;
       return;
     }
 
@@ -103,7 +104,7 @@ class Dots extends AtomShape {
     if ("atom" == propertyName) {
       thisAtom = ((Integer) value).intValue();
       atoms[thisAtom].setShapeVisibility(myVisibilityFlag, true);
-      ec.dotsConvexMax = Math.max(thisAtom + 1, ec.dotsConvexMax);
+      ec.allocDotsConvexMaps(thisAtom + 1);
       return;
     }
     if ("dots" == propertyName) {
@@ -111,10 +112,11 @@ class Dots extends AtomShape {
       ec.setFromBits(thisAtom, (BitSet) value);
       atoms[thisAtom].setShapeVisibility(myVisibilityFlag, true);
       if (mads == null) {
+        ec.setMads(null);
         mads = new short[atomCount];
         for (int i = 0; i < atomCount; i++)
           if (atoms[i].isShapeVisible(myVisibilityFlag))
-            mads[i] = (short) (ec.getAppropriateRadius(atoms[i]) * 1000);
+            mads[i] = (short) (ec.getAppropriateRadius(i) * 1000);
         ec.setMads(mads);
       }
       mads[thisAtom] = (short) (thisRadius * 1000f);
@@ -135,10 +137,10 @@ class Dots extends AtomShape {
   
   void initialize() {
     bsSelected = null;
+    bsIgnore = null;
     isActive = false;
     if (ec == null)
-      ec = new EnvelopeCalculation(frame, atoms, mads);
-    ec.initialize();
+      ec = new EnvelopeCalculation(viewer, atomCount, mads);
   }
   
   void setSize(int size, BitSet bsSelected) {
@@ -187,7 +189,7 @@ class Dots extends AtomShape {
 
     // combine current and selected set
     boolean newSet = (lastSolventRadius != addRadius || mad != 0
-        && mad != lastMad || ec.dotsConvexMax == 0);
+        && mad != lastMad || ec.getDotsConvexMax() == 0);
 
     // for an solvent-accessible surface there is no torus/cavity issue. 
     // we just increment the atom radius and set the probe radius = 0;
@@ -213,25 +215,23 @@ class Dots extends AtomShape {
       lastSolventRadius = addRadius;
     }
     // always delete old surfaces for selected atoms
-
-    if (isVisible && ec.dotsConvexMaps != null) {
+    int[][] dotsConvexMaps = ec.getDotsConvexMaps();
+    if (isVisible && dotsConvexMaps != null) {
       for (int i = atomCount; --i >= 0;)
         if (bsOn.get(i)) {
-          ec.dotsConvexMaps[i] = null;
+          dotsConvexMaps[i] = null;
         }
     }
     // now, calculate surface for selected atoms
     if (isVisible) {
       lastMad = mad;
-      if (ec.dotsConvexMaps == null) {
+      if (dotsConvexMaps == null) {
         colixes = new short[atomCount];
         paletteIDs = new byte[atomCount];
       }
       boolean disregardNeighbors = (viewer.getDotSurfaceFlag() == false);
       boolean onlySelectedDots = (viewer.getDotsSelectedOnlyFlag() == true);
-      ec.setSelected(bsOn);
-      ec
-          .calculate(addRadius, setRadius, scale, maxRadius,
+      ec.calculate(addRadius, setRadius, scale, maxRadius, bsOn, bsIgnore,
               useVanderwaalsRadius, disregardNeighbors, onlySelectedDots,
               isSurface);
     }
@@ -252,20 +252,21 @@ class Dots extends AtomShape {
   }
 
   String getShapeState() {
-    if (ec.dotsConvexMaps == null || ec.dotsConvexMax == 0)
+    int[][] dotsConvexMaps = ec.getDotsConvexMaps();
+    if (dotsConvexMaps == null || ec.getDotsConvexMax() == 0)
       return "";
     StringBuffer s = new StringBuffer();
     Hashtable temp = new Hashtable();
     int atomCount = viewer.getAtomCount();
     String type = (isSurface ? "geoSurface " : "dots ");
     for (int i = 0; i < atomCount; i++) {
-      if (ec.dotsConvexMaps[i] == null
+      if (dotsConvexMaps[i] == null
           || !atoms[i].isShapeVisible(myVisibilityFlag))
         continue;
       if (!isSurface && bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp, i, getColorCommand(type, paletteIDs[i], colixes[i]));
       BitSet bs = new BitSet();
-      int[] map = ec.dotsConvexMaps[i];
+      int[] map = dotsConvexMaps[i];
       int iDot = map.length << 5;
       int n = 0;
       while (--iDot >= 0)
@@ -274,7 +275,7 @@ class Dots extends AtomShape {
           bs.set(iDot);
         }
       if (n > 0) {
-        appendCmd(s, type + i + " radius " + ec.getAppropriateRadius(atoms[i])
+        appendCmd(s, type + i + " radius " + ec.getAppropriateRadius(i)
             + " " + StateManager.escape(bs));
       }
     }

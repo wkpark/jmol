@@ -122,10 +122,10 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.*;
+import org.jmol.atomdata.AtomDataServer;
 import org.jmol.jvxl.data.JvxlData;
 import org.jmol.jvxl.data.VolumeData;
 import org.jmol.jvxl.data.MeshData;
-import org.jmol.jvxl.api.AtomDataServer;
 import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.calc.MarchingSquares;
 

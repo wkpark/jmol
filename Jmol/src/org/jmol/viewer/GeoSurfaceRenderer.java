@@ -25,7 +25,9 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.g3d.Geodesic3D;
+import org.jmol.geodesic.EnvelopeCalculation;
+import org.jmol.geodesic.Geodesic;
+
 import javax.vecmath.Point3i;
 
 /*
@@ -65,7 +67,7 @@ class GeoSurfaceRenderer extends DotsRenderer {
   private void renderSurface(int[] points) {
     if (faceMap == null)
       return;
-    short[] faces = Geodesic3D.getFaceVertexes(screenLevel);
+    short[] faces = Geodesic.getFaceVertexes(screenLevel);
     int[] coords = screenCoordinates;
     short p1, p2, p3;
     int mapMax = (points.length << 5);

@@ -25,7 +25,9 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.g3d.Geodesic3D;
+import org.jmol.geodesic.EnvelopeCalculation;
+import org.jmol.geodesic.Geodesic;
+
 import javax.vecmath.Vector3f;
 
 
@@ -41,7 +43,7 @@ class DotsRenderer extends ShapeRenderer {
   
   void initRenderer() {
     screenLevel = Dots.MAX_LEVEL;
-    screenDotCount = Geodesic3D.getVertexCount(Dots.MAX_LEVEL);
+    screenDotCount = Geodesic.getVertexCount(Dots.MAX_LEVEL);
     verticesTransformed = new Vector3f[screenDotCount];
     for (int i = screenDotCount; --i >= 0; )
       verticesTransformed[i] = new Vector3f();
@@ -60,17 +62,18 @@ class DotsRenderer extends ShapeRenderer {
     int sppa = (int) viewer.getScalePixelsPerAngstrom();
     screenLevel = (iShowSolid || sppa > 20 ? 3 : sppa > 10 ? 2 : sppa > 5 ? 1
         : 0);
-    screenDotCount = Geodesic3D.getVertexCount(screenLevel);
+    screenDotCount = Geodesic.getVertexCount(screenLevel);
     for (int i = screenDotCount; --i >= 0;)
-      viewer.transformVector(Geodesic3D.getVertexVector(i),
+      viewer.transformVector(Geodesic.getVertexVector(i),
           verticesTransformed[i]);
-    for (int i = dots.ec.dotsConvexMax; --i >= 0;) {
+    int[][] maps = dots.ec.getDotsConvexMaps();
+    for (int i = dots.ec.getDotsConvexMax(); --i >= 0;) {
       Atom atom = frame.atoms[i];
-      int[] map = dots.ec.dotsConvexMaps[i];
-      if (!atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i)
+      int[] map = maps[i];
+      if (map == null || !atom.isShapeVisible(myVisibilityFlag) || frame.bsHidden.get(i)
           || !g3d.isInDisplayRange(atom.screenX, atom.screenY))
         continue;
-      int nPoints = calcScreenPoints(map, dots.ec.getAppropriateRadius(atom),
+      int nPoints = calcScreenPoints(map, dots.ec.getAppropriateRadius(i),
           atom.screenX, atom.screenY, atom.screenZ);
       if (nPoints != 0)
         renderConvex(Graphics3D.getColixInherited(dots.colixes[i],

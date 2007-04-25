@@ -125,7 +125,6 @@ class IsosurfaceRenderer extends MeshRenderer {
       int iA = vertexIndexes[0];
       int iB = vertexIndexes[1];
       int iC = vertexIndexes[2];
-      
       short nA = normixes[iA];
       short nB = normixes[iB];
       short nC = normixes[iC];

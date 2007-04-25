@@ -111,7 +111,7 @@
  * 
  */
 
-package org.jmol.jvxl.data;
+package org.jmol.atomdata;
 
 import java.util.BitSet;
 

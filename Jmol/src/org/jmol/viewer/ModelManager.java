@@ -24,14 +24,14 @@
  */
 package org.jmol.viewer;
 
-import org.jmol.jvxl.api.AtomIndexIterator;
-import org.jmol.jvxl.data.AtomData;
 import org.jmol.symmetry.SpaceGroup;
 import org.jmol.symmetry.UnitCell;
 import org.jmol.util.Logger;
 import org.jmol.viewer.Frame.CellInfo;
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.atomdata.AtomData;
+import org.jmol.atomdata.AtomIndexIterator;
 
 import java.util.BitSet;
 import java.util.Enumeration;

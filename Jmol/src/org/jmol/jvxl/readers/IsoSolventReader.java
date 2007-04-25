@@ -30,8 +30,8 @@ import javax.vecmath.Point3i;
 
 import org.jmol.util.Logger;
 
+import org.jmol.atomdata.AtomIndexIterator;
 import org.jmol.jvxl.data.MeshData;
-import org.jmol.jvxl.api.AtomIndexIterator;
 
 class IsoSolventReader extends AtomDataReader {
 

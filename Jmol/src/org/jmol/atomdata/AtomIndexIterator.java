@@ -1,4 +1,4 @@
-package org.jmol.jvxl.api;
+package org.jmol.atomdata;
 
 public interface AtomIndexIterator {
   boolean hasNext();

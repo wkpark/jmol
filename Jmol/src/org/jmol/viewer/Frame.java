@@ -32,9 +32,10 @@ import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 
 import org.jmol.api.JmolAdapter;
+import org.jmol.atomdata.AtomData;
+import org.jmol.atomdata.AtomIndexIterator;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.jvxl.api.AtomIndexIterator;
-import org.jmol.jvxl.data.AtomData;
+import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.SphereIterator;
 import org.jmol.bspt.Tuple;
@@ -1499,6 +1500,8 @@ public final class Frame {
   }
   
   class WithinAtomSetIterator implements AtomIndexIterator {
+    
+    //does NOT return i == atomIndex
 
     SphereIterator bsptIter;
     BitSet bsSelected;
@@ -1519,8 +1522,10 @@ public final class Frame {
     int iNext;
     public boolean hasNext() {
       while (bsptIter.hasMoreElements()) {
-        Atom atom = (Atom)bsptIter.nextElement();
-        if ((iNext = atom.atomIndex) > (isGreaterOnly ? atomIndex : -1) && bsSelected.get(iNext))
+        Atom atom = (Atom) bsptIter.nextElement();
+        if ((iNext = atom.atomIndex) != atomIndex 
+            && iNext > (isGreaterOnly ? atomIndex : -1)
+            && (bsSelected == null || bsSelected.get(iNext)))
           return true;
       }
       iNext = -1;
@@ -2653,15 +2658,12 @@ public final class Frame {
                              float envelopeRadius) {
     if (envelopeRadius < 0)
       envelopeRadius = EnvelopeCalculation.SURFACE_DISTANCE_FOR_CALCULATION;
-    EnvelopeCalculation ec = new EnvelopeCalculation(this, atoms, null);
-    ec.initialize();
-    ec.setIgnore(bsIgnore);
-    ec.setSelected(bsSelected);
-    ec.calculate(Float.MAX_VALUE, envelopeRadius, 1, Float.MAX_VALUE, false,
-        false, false, false);
+    EnvelopeCalculation ec = new EnvelopeCalculation(viewer, atomCount, null);
+    ec.calculate(Float.MAX_VALUE, envelopeRadius, 1, Float.MAX_VALUE, 
+        bsSelected, bsIgnore, false, false, false, false);
     Point3f[] points = ec.getPoints();
     surfaceDistanceMax = 0;
-    bsSurface = (ec.bsSurface == null ? null : (BitSet) ec.bsSurface.clone());
+    bsSurface = ec.getBsSurfaceClone();
     surfaceDistance100s = new int[atomCount];
     nSurfaceAtoms = BitSetUtil.cardinalityOf(bsSurface);
     if (nSurfaceAtoms == 0 || points == null || points.length == 0)

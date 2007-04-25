@@ -110,7 +110,7 @@ final public class Graphics3D {
     this.triangle3d = new Triangle3D(this);
     this.cylinder3d = new Cylinder3D(this);
     this.hermite3d = new Hermite3D(this);
-    this.normix3d = new Normix3D(this);
+    this.normix3d = new Normix3D();
     //    setFontOfSize(13);
   }
   

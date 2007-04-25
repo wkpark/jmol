@@ -5039,7 +5039,8 @@ class Eval { //implements Runnable {
   }
 
   void dots(int ipt, int iShape) throws ScriptException {
-    viewer.loadShape(iShape);
+    if (!isSyntaxCheck)
+      viewer.loadShape(iShape);
     setShapeProperty(iShape, "init", null);
     if (statementLength == ipt) {
       setShapeSize(iShape, 1);

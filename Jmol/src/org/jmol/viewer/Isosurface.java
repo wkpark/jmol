@@ -112,6 +112,8 @@ import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.readers.SurfaceGenerator;
 
 
+
+
 class Isosurface extends MeshFileCollection implements MeshDataServer {
 
   IsosurfaceMesh[] isomeshes = new IsosurfaceMesh[4];
@@ -529,22 +531,10 @@ class Isosurface extends MeshFileCollection implements MeshDataServer {
     setProperty("lobe", lcaoDir, null);
   }
 
-  void updateSurfaceData(char isNaN) {
-    thisMesh.invalidateTriangles();
-    JvxlReader.jvxlUpdateSurfaceData(thisMesh.jvxlData, thisMesh.vertexValues,
-        thisMesh.vertexCount, thisMesh.vertexIncrement, isNaN);
-  }
-  
-  public void setVertexIncrement(int incr) {
-    thisMesh.vertexIncrement = incr;
-  }
+  /////////////// meshDataServer interface /////////////////
   
   public void invalidateTriangles() {
     thisMesh.invalidateTriangles();
-  }
-  
-  public void invalidateSurfaceSet(int i) {
-    thisMesh.invalidateSurfaceSet(i);
   }
   
   public void fillMeshData(MeshData meshData, int mode) {
@@ -592,13 +582,18 @@ class Isosurface extends MeshFileCollection implements MeshDataServer {
     return viewer.calculateSurface(bsSelected, bsIgnored, envelopeRadius);
   }
 
-  ////////////////////////////////////////////////////////////////
-  // associated vertex normalization
-  ////////////////////////////////////////////////////////////////
-  boolean associateNormals;
-
-  /////////////////  MarchingReader Interface Methods ///////////////////
   
+  /////////////  VertexDataServer interface methods ////////////////
+  
+  public int getSurfacePointIndex(float cutoff, boolean isCutoffAbsolute,
+                                  int x, int y, int z, Point3i offset, int vA,
+                                  int vB, float valueA, float valueB,
+                                  Point3f pointA, Vector3f edgeVector,
+                                  boolean isContourType) {return 0;} 
+
+  
+  private boolean associateNormals;
+
   public int addVertexCopy(Point3f vertexXYZ, float value, int assocVertex) {
     return thisMesh.addVertexCopy(vertexXYZ, value, assocVertex, associateNormals);
   }
@@ -642,14 +637,5 @@ class Isosurface extends MeshFileCollection implements MeshDataServer {
     }
     return V;
   }
-
-  // handled by VoxelReader
-  public int getSurfacePointIndex(float cutoff, boolean isCutoffAbsolute,
-                                  int x, int y, int z, Point3i offset, int vA,
-                                  int vB, float valueA, float valueB,
-                                  Point3f pointA, Vector3f edgeVector,
-                                  boolean isContourType) {return 0;} 
-
-
  
 }

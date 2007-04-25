@@ -32,8 +32,8 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
-import org.jmol.jvxl.api.AtomDataServer;
-import org.jmol.jvxl.data.AtomData;
+import org.jmol.atomdata.AtomData;
+import org.jmol.atomdata.AtomDataServer;
 
 class AtomDataReader extends VolumeDataReader {
 

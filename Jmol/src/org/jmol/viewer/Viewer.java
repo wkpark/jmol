@@ -27,6 +27,9 @@ import org.jmol.symmetry.UnitCell;
 import org.jmol.i18n.GT;
 
 import org.jmol.api.*;
+import org.jmol.atomdata.AtomData;
+import org.jmol.atomdata.AtomDataServer;
+import org.jmol.atomdata.AtomIndexIterator;
 import org.jmol.g3d.*;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.CommandHistory;
@@ -36,9 +39,6 @@ import org.jmol.util.JpegEncoder;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Parser;
 
-import org.jmol.jvxl.data.AtomData;
-import org.jmol.jvxl.api.AtomDataServer;
-import org.jmol.jvxl.api.AtomIndexIterator;
 
 import java.awt.Cursor;
 import java.awt.Graphics;

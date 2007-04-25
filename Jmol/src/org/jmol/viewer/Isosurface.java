@@ -261,9 +261,8 @@ class Isosurface extends MeshFileCollection implements MeshDataServer {
 
     if ("init" == propertyName) {
       setPropertySuper("thisID", Mesh.PREVIOUS_MESH_ID, null);
-      if (!(iHaveBitSets = getScriptBitSets())) {
+      if (!(iHaveBitSets = getScriptBitSets(script = (String)value))) {
         sg.setParameter("select", bs);
-        bsSelected = bs; //THIS MAY BE NULL
       } else {
         sg.setParameter("select", bsSelected);
         sg.setParameter("ignore", bsIgnore);
@@ -325,7 +324,7 @@ class Isosurface extends MeshFileCollection implements MeshDataServer {
     return (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand.substring(0, (thisMesh.scriptCommand+";").indexOf(";")));
   }
   
-  boolean getScriptBitSets() {
+  boolean getScriptBitSets(String script) {
     if (script == null)
       return false;
     int i = script.indexOf("# ({");
@@ -340,7 +339,7 @@ class Isosurface extends MeshFileCollection implements MeshDataServer {
     return true;
   }
 
-  String fixScript() {
+  String fixScript(String script, BitSet bsSelected, BitSet bsIgnore) {
     if (script == null)
       return null;
     if (script.indexOf("# ({") >= 0)
@@ -571,10 +570,14 @@ class Isosurface extends MeshFileCollection implements MeshDataServer {
   public void notifySurfaceGenerationCompleted() {
     setModelIndex();
     thisMesh.initialize(sg.getPlane() != null ? Mesh.FULLYLIT : lighting);
+    setScriptInfo();
+    setJvxlInfo();
   }
 
   public void notifySurfaceMappingCompleted() {
     setModelIndex();
+    setScriptInfo();
+    setJvxlInfo();
   }
 
   public Point3f[] calculateGeodesicSurface(BitSet bsSelected, BitSet bsIgnored,
@@ -607,12 +610,18 @@ class Isosurface extends MeshFileCollection implements MeshDataServer {
   ////////////////////////////////////////////////////////////////////
   
 
-  void setModelIndex() {
+  private void setModelIndex() {
     setModelIndex(atomIndex, modelIndex);
     thisMesh.ptCenter.set(center);
+  }
+
+  private void setScriptInfo() {
     thisMesh.title = title;
-    script = sg.getScript();
-    thisMesh.scriptCommand = fixScript();
+    thisMesh.scriptCommand = fixScript(sg.getScript(), sg.getBsSelected(), sg
+        .getBsIgnore());
+  }
+  
+  private void setJvxlInfo() {
     jvxlData.jvxlDefinitionLine = JvxlReader.jvxlGetDefinitionLine(jvxlData, false);
     jvxlData.jvxlInfoLine = JvxlReader.jvxlGetDefinitionLine(jvxlData, true);
   }

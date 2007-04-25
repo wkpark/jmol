@@ -209,6 +209,14 @@ public class SurfaceGenerator {
     return params.script;
   }
   
+  public BitSet getBsSelected() {
+    return params.bsSelected;
+  }
+  
+  public BitSet getBsIgnore() {
+    return params.bsIgnore;
+  }
+  
   VolumeData getVolumeData() {
     return volumeData;
   }

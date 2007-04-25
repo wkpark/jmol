@@ -505,6 +505,7 @@ ascii-encoded fractional color data
       meshData.vertexColixes = new short[meshData.vertexCount];  
     } else {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
+      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_COLOR_INDEXES);
     }
     int vertexCount = meshData.vertexCount;
     colorFractionBase = defaultColorFractionBase;
@@ -699,8 +700,7 @@ ascii-encoded fractional color data
         meshData.vertexCount, meshData.vertexIncrement, cJvxlEdgeNaN);
   }
   
-  boolean selectPocket() {
-    return false;
+  public void selectPocket(boolean doExclude) {
     // solvent reader implements this
   }
   

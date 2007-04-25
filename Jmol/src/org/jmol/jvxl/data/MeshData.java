@@ -123,7 +123,8 @@ public class MeshData {
   private final static int SEED_COUNT = 25;
   
   public final static int MODE_GET_VERTICES = 1;
-  public final static int MODE_PUT_SETS = 2;
+  public final static int MODE_GET_COLOR_INDEXES = 2;
+  public final static int MODE_PUT_SETS = 3;
 
   public int polygonCount;
   public Point3f[] vertices;
@@ -191,36 +192,37 @@ public class MeshData {
       nSets = 0;
     }
     setsSuccessful = true;
-    for (int i = 0; i < polygonCount; i++) {
-      int[] p = polygonIndexes[i];
-      int pt0 = findSet(p[0]);
-      int pt1 = findSet(p[1]);
-      int pt2 = findSet(p[2]);
-      if (pt0 < 0 && pt1 < 0 && pt2 < 0) {
-        createSet(p[0], p[1], p[2]);
-        continue;
+    for (int i = 0; i < polygonCount; i++)
+      if (polygonIndexes[i] != null) {
+        int[] p = polygonIndexes[i];
+        int pt0 = findSet(p[0]);
+        int pt1 = findSet(p[1]);
+        int pt2 = findSet(p[2]);
+        if (pt0 < 0 && pt1 < 0 && pt2 < 0) {
+          createSet(p[0], p[1], p[2]);
+          continue;
+        }
+        if (pt0 == pt1 && pt1 == pt2)
+          continue;
+        if (pt0 >= 0) {
+          surfaceSet[pt0].set(p[1]);
+          surfaceSet[pt0].set(p[2]);
+          if (pt1 >= 0 && pt1 != pt0)
+            mergeSets(pt0, pt1);
+          if (pt2 >= 0 && pt2 != pt0 && pt2 != pt1)
+            mergeSets(pt0, pt2);
+          continue;
+        }
+        if (pt1 >= 0) {
+          surfaceSet[pt1].set(p[0]);
+          surfaceSet[pt1].set(p[2]);
+          if (pt2 >= 0 && pt2 != pt1)
+            mergeSets(pt1, pt2);
+          continue;
+        }
+        surfaceSet[pt2].set(p[0]);
+        surfaceSet[pt2].set(p[1]);
       }
-      if (pt0 == pt1 && pt1 == pt2)
-        continue;
-      if (pt0 >= 0) {
-        surfaceSet[pt0].set(p[1]);
-        surfaceSet[pt0].set(p[2]);
-        if (pt1 >= 0 && pt1 != pt0)
-          mergeSets(pt0, pt1);
-        if (pt2 >= 0 && pt2 != pt0 && pt2 != pt1)
-          mergeSets(pt0, pt2);
-        continue;
-      }
-      if (pt1 >= 0) {
-        surfaceSet[pt1].set(p[0]);
-        surfaceSet[pt1].set(p[2]);
-        if (pt2 >= 0 && pt2 != pt1)
-          mergeSets(pt1, pt2);
-        continue;
-      }
-      surfaceSet[pt2].set(p[0]);
-      surfaceSet[pt2].set(p[1]);
-    }
     int n = 0;
     for (int i = 0; i < nSets; i++)
       if (surfaceSet[i] != null)

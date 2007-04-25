@@ -338,6 +338,13 @@ public class Parameters {
       center.set(0, 0, 0);
   }
 
+  void setPlane(Point4f plane) {
+    thePlane = plane;
+    if (thePlane.x == 0 && thePlane.y == 0
+        && thePlane.z == 0)
+      thePlane.z = 1; //{0 0 0 w} becomes {0 0 1 w}
+    isContoured = true;
+  }
 
   void setSphere(float radius) {
     dataType = SURFACE_SPHERE;

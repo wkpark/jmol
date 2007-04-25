@@ -546,11 +546,7 @@ public class SurfaceGenerator {
     }
 
     if ("plane" == propertyName) {
-      params.thePlane = (Point4f) value;
-      if (params.thePlane.x == 0 && params.thePlane.y == 0
-          && params.thePlane.z == 0)
-        params.thePlane.z = 1; //{0 0 0 w} becomes {0 0 1 w}
-      params.isContoured = true;
+      params.setPlane((Point4f) value);
 //      ++state;
       return true;
     }
@@ -740,7 +736,7 @@ public class SurfaceGenerator {
     }
     
     if (params.pocket != null && haveMeshDataServer)
-      voxelReader.selectPocket();
+      voxelReader.selectPocket(!params.pocket.booleanValue());
 
     if (params.minSet > 0)
       voxelReader.excludeMinimumSet();

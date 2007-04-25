@@ -43,7 +43,7 @@ final class Mmset {
   private Properties[] modelProperties = new Properties[1];
   private Hashtable[] modelAuxiliaryInfo = new Hashtable[1];
   private Model[] models = new Model[1];
-  private int[] firstAtomInModel;
+  //private int[] firstAtomInModel;
 
   private int structureCount = 0;
   private Structure[] structures = new Structure[10];

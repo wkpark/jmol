@@ -671,7 +671,7 @@ class CifReader extends AtomSetCollectionReader {
     while (tokenizer.getData()) {
       int atomIndex1 = -1;
       int atomIndex2 = -1;
-      String symmetry = null;
+      //String symmetry = null;
       for (int i = 0; i < fieldCount; ++i) {
         String field = loopData[i];
         if (field.length() == 0)
@@ -689,7 +689,7 @@ class CifReader extends AtomSetCollectionReader {
           atomIndex2 = atomSetCollection.getAtomNameIndex(field);
           break;
         case GEOM_BOND_SITE_SYMMETRY_2:
-          symmetry = field;
+          //symmetry = field;
           break;
         }
       }

@@ -310,7 +310,7 @@ final public class Atom extends Point3fi implements Tuple {
     } else if (size == -1001) // ionic
       size = (getBondingMar() * 2);
     else if (size == -100) { // simple van der waals
-      size = (int)(getVanderwaalsMar() * -2);
+      size = (int)(getVanderwaalsMar() * 2);
     } else if (size < 0) {
       size = -size;
       if (size > 200)

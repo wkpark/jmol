@@ -36,6 +36,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.jvxl.data.JvxlData;
 
 import org.jmol.jvxl.calc.MarchingSquares;
+import org.jmol.shape.Mesh;
 
 public class IsosurfaceMesh extends Mesh {
   JvxlData jvxlData = new JvxlData();
@@ -139,7 +140,7 @@ public class IsosurfaceMesh extends Mesh {
     return addVertexCopy(vertex);
   }
 
-  void setTranslucent(boolean isTranslucent, float iLevel) {
+  public void setTranslucent(boolean isTranslucent, float iLevel) {
     super.setTranslucent(isTranslucent, iLevel);
     if (vertexColixes != null)
       for (int i = vertexCount; --i >= 0; )

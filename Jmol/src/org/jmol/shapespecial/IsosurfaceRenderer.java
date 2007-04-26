@@ -27,6 +27,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.shape.MeshRenderer;
 import org.jmol.util.Logger;
 
 public class IsosurfaceRenderer extends MeshRenderer {
@@ -60,7 +61,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
     }
   }
   
-  void render2() {
+  protected void render2() {
     isTranslucent = Graphics3D.isColixTranslucent(imesh.colix);
     iHideBackground = (isPlane && imesh.hideBackground);
     if (iHideBackground)

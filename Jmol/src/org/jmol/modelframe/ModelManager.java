@@ -26,7 +26,7 @@ package org.jmol.modelframe;
 
 import org.jmol.shape.Dipoles;
 import org.jmol.shape.Shape;
-import org.jmol.shapespecial.MeshCollection;
+import org.jmol.shape.MeshCollection;
 import org.jmol.symmetry.SpaceGroup;
 import org.jmol.symmetry.UnitCell;
 import org.jmol.util.Logger;

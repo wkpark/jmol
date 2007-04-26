@@ -70,7 +70,7 @@ public abstract class MeshCollection extends Shape {
     currentMesh = meshes[meshCount++] = new Mesh(thisID, g3d, colix);
   }
 
- public void initShape() {
+  public void initShape() {
     colix = Graphics3D.ORANGE;
     modelCount = viewer.getModelCount();
   }

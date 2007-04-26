@@ -27,6 +27,7 @@ package org.jmol.shapespecial;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.shape.Mesh;
 import org.jmol.g3d.Graphics3D;
 
 public class DrawMesh extends Mesh {

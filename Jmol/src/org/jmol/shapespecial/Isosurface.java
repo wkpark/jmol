@@ -97,6 +97,7 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.ArrayUtil;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.jvxl.readers.JvxlReader;
+import org.jmol.shape.MeshFileCollection;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -122,7 +123,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   IsosurfaceMesh thisMesh;
   boolean logMessages;
   
-  void allocMesh(String thisID) {
+  public void allocMesh(String thisID) {
     meshes = isomeshes = (IsosurfaceMesh[])ArrayUtil.ensureLength(isomeshes, meshCount + 1);
     currentMesh = thisMesh = isomeshes[meshCount++] = new IsosurfaceMesh(thisID, g3d, colix);
     sg.setJvxlData(jvxlData = thisMesh.jvxlData);

@@ -32,8 +32,8 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelframe.Atom;
-import org.jmol.shapespecial.Mesh;
-import org.jmol.shapespecial.MeshRenderer;
+import org.jmol.shape.MeshRenderer;
+import org.jmol.shape.Mesh;
 import org.jmol.viewer.JmolConstants;
 
 import java.util.BitSet;

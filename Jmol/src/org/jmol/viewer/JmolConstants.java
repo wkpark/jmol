@@ -2501,12 +2501,13 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_MIN_NAMED_OBJECT = 24;
   public final static int SHAPE_DIPOLES    = 24;
   public final static int SHAPE_MIN_MESH_COLLECTION = 25;
-  public final static int SHAPE_PMESH      = 25;
-  public final static int SHAPE_MO         = 26;
-  public final static int SHAPE_ISOSURFACE = 27;
-  public final static int SHAPE_LCAOCARTOON = 28;
-  public final static int SHAPE_DRAW       = 29;
-  public final static int SHAPE_MAX_SPECIAL = 30;
+  public final static int SHAPE_MO         = 25;
+  public final static int SHAPE_ISOSURFACE = 26;
+  public final static int SHAPE_LCAOCARTOON = 27;
+  public final static int SHAPE_DRAW       = 28;
+  public final static int SHAPE_MAX_SPECIAL = 29;
+  
+  public final static int SHAPE_PMESH      = 29;
   
   // last should be frank:
   public final static int SHAPE_FRANK      = 30;
@@ -2540,8 +2541,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   
   //see Jmol 10.2 for programming information --- pruned from 11.0
   //Bob Hanson 7/17/06
-  //public final static int SHAPE_PRUEBA     = 28;
-  //public final static int SHAPE_SASURFACE  = 29;
   
   // note that these next two arrays *MUST* be in the same sequence 
   // given in SHAPE_* and they must be capitalized exactly as in their class name 
@@ -2552,9 +2551,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Backbone", "Trace", "Cartoon", "Strands", 
     "MeshRibbon", "Ribbons", "Rockets", "Stars", "Halos",
     "Axes", "Bbcage", "Uccage", "Echo", "Hover", 
-    "Polyhedra", "Dipoles", 
-    "Pmesh", "MolecularOrbital", "Isosurface", "LcaoCartoon", "Draw", "Frank"
-    //,"Prueba","Sasurface"
+    "Polyhedra", "Dipoles", "MolecularOrbital", "Isosurface", 
+    "LcaoCartoon", "Draw", "Pmesh", "Frank"
      };
 
   static {
@@ -2586,8 +2584,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     Token.backbone, Token.trace, Token.cartoon, Token.strands,
     Token.meshRibbon, Token.ribbon, Token.rocket, Token.star, Token.halo, 
     Token.axes, Token.boundbox, Token.unitcell, Token.echo, Token.hover,
-    Token.polyhedra, Token.dipole,
-    Token.pmesh, Token.mo, Token.isosurface, Token.lcaocartoon, Token.draw, Token.frank
+    Token.polyhedra, Token.dipole, Token.mo, Token.isosurface, 
+    Token.lcaocartoon, Token.draw, Token.pmesh, Token.frank
       };
 
   static {

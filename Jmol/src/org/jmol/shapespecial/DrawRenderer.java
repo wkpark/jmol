@@ -28,6 +28,7 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.shape.MeshRenderer;
 import org.jmol.viewer.JmolConstants;
 
 public class DrawRenderer extends MeshRenderer {
@@ -49,7 +50,7 @@ public class DrawRenderer extends MeshRenderer {
     }
   }
   
-  boolean isPolygonDisplayable(int i) {
+  protected boolean isPolygonDisplayable(int i) {
       return (dmesh.polygonIndexes[i].length > 0 
           && (dmesh.modelFlags == null || dmesh.modelFlags[i] != 0)); 
   }
@@ -57,7 +58,7 @@ public class DrawRenderer extends MeshRenderer {
   private final Point3i pt0 = new Point3i();
   private final Point3i pt3 = new Point3i();
 
-  void render2() {
+  protected void render2() {
     boolean isDrawPickMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
     drawType = dmesh.drawType;
     if ((drawType == DrawMesh.DRAW_CURVE || drawType == DrawMesh.DRAW_ARROW)

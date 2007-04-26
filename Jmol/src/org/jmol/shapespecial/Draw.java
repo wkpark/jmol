@@ -39,6 +39,8 @@ import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.MouseManager;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.shape.Mesh;
+import org.jmol.shape.MeshCollection;
 
 public class Draw extends MeshCollection {
 
@@ -47,7 +49,7 @@ public class Draw extends MeshCollection {
   DrawMesh[] dmeshes = new DrawMesh[4];
   DrawMesh thisMesh;
   
-  void allocMesh(String thisID) {
+  public void allocMesh(String thisID) {
     meshes = dmeshes = (DrawMesh[])ArrayUtil.ensureLength(dmeshes, meshCount + 1);
     currentMesh = thisMesh = dmeshes[meshCount++] = new DrawMesh(thisID, g3d, colix);
   }

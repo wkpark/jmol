@@ -21,25 +21,24 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.shapespecial;
+package org.jmol.shape;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3i;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.shape.ShapeRenderer;
 
 public abstract class MeshRenderer extends ShapeRenderer {
 
-  Point3f[] vertices;
-  short[] normixes;
-  Point3i[] screens;
-  Vector3f[] transformedVectors;
-  int vertexCount;
-  int lighting;
-  boolean frontOnly;
+  protected Point3f[] vertices;
+  protected short[] normixes;
+  protected Point3i[] screens;
+  protected Vector3f[] transformedVectors;
+  protected int vertexCount;
+  protected int lighting;
+  protected boolean frontOnly;
   
-  Mesh mesh;
+  protected Mesh mesh;
 
   protected void render() {
     MeshCollection mc = (MeshCollection) shape;
@@ -83,11 +82,11 @@ public abstract class MeshRenderer extends ShapeRenderer {
       viewer.transformPoint(vertices[i], screens[i]);
   }
   
-  boolean isPolygonDisplayable(int i) {
+  protected boolean isPolygonDisplayable(int i) {
     return true;
   }
 
-  void render2() {
+  protected void render2() {
     if (mesh.showPoints)
       renderPoints();
     if (mesh.drawTriangles)

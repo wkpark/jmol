@@ -36,7 +36,7 @@ import org.jmol.modelframe.Mmset;
 import org.jmol.modelframe.Model;
 import org.jmol.shape.Closest;
 import org.jmol.shape.Shape;
-import org.jmol.shapespecial.Mesh;
+import org.jmol.shape.Mesh;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 /****************************************************************

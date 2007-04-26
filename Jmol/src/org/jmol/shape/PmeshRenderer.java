@@ -23,7 +23,6 @@
  */
 package org.jmol.shape;
 
-import org.jmol.shapespecial.MeshRenderer;
 
 
 public class PmeshRenderer extends MeshRenderer {

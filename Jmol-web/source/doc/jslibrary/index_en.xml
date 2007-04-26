@@ -551,7 +551,8 @@
 	the <code>script</code> will be applied to all JmolApplets present.
 	</p>
 				<p>
-					<i>Note:  please, be aware that setting <a href="#jmolSetTarget"><code>jmolSetTarget</code></a> 
+					<i>Warning:  please, be aware that, except for the first applet in the page, you must 
+	specify a <code>targetSuffix</code>; setting <a href="#jmolSetTarget"><code>jmolSetTarget</code></a> 
 	does not apply to <code>jmolScript</code>, <code>jmolScriptWait</code> 
 	or <code>jmolScriptWaitAsArray</code>.</i>
 				</p>
@@ -893,6 +894,11 @@
 	  Similar to <code>jmolLoadInline</code>, but also allows to 
 	  execute a script after the model has loaded.
 	</p>
+				<p>
+					<i>Warning:  please, be aware that, except for the first applet in the page, you must 
+	specify a <code>targetSuffix</code>; setting <a href="#jmolSetTarget"><code>jmolSetTarget</code></a> 
+	does not apply to <code>jmolLoadInlineScript</code>.</i>
+				</p>
 			</section>
 			<section title="jmolSetCallback">
 				<code>jmolSetCallback(callbackName, "functionName")</code>

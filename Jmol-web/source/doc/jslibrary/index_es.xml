@@ -569,7 +569,9 @@ Cada páginaCada página      </p>
 	el <code>guión</code>se aplicará a todas las miniaplicaciones presentes.
 	</p>
 				<p>
-					<i>Nota:  recuerda que el uso de <a href="#jmolSetTarget"><code>jmolSetTarget</code></a> 
+					<i>Advertencia:  excepto para la primera miniaplicación de la página,
+	debes indicar un <code>sufijoDiana</code>; el uso de 
+	<a href="#jmolSetTarget"><code>jmolSetTarget</code></a> 
 	no afecta a <code>jmolScript</code>, <code>jmolScriptWait</code> 
 	o <code>jmolScriptWaitAsArray</code>.</i>
 				</p>
@@ -920,6 +922,10 @@ Cada páginaCada página      </p>
 	  Es similar a <code>jmolLoadInline</code>, pero permite además 
 	  ejecutar un guión de instrucciones tras la carga de la molécula.
 	</p>
+				<i>Advertencia:  excepto para la primera miniaplicación de la página,
+	debes indicar un <code>sufijoDiana</code>; el uso de 
+	<a href="#jmolSetTarget"><code>jmolSetTarget</code></a> 
+	no afecta a <code>jmolLoadInlineScript</code>.</i>
 			</section>
 			<section title="jmolSetCallback">
 				<code>jmolSetCallback(nombreCallback, "nombreFunción")</code>

@@ -26,6 +26,7 @@ package org.jmol.viewer;
 import org.jmol.util.Logger;
 
 import org.jmol.i18n.GT;
+import org.jmol.modelframe.Frame;
 
 class PickingManager {
 

@@ -32,6 +32,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
@@ -479,11 +480,11 @@ public class Token {
     case Token.integer:
       return "" + x.intValue;
     case Token.point3f:
-      return StateManager.escape((Point3f) x.value);
+      return Escape.escape((Point3f) x.value);
     case Token.point4f:
-      return StateManager.escape((Point4f) x.value);
+      return Escape.escape((Point4f) x.value);
     case Token.bitset:
-      return StateManager.escape((BitSet) x.value, !(x.value instanceof BondSet));
+      return Escape.escape((BitSet) x.value, !(x.value instanceof BondSet));
     case Token.list:
       String[] list = (String[]) x.value;
       i = x.intValue;

@@ -23,45 +23,130 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.modelframe.Frame;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
+import org.jmol.util.Measure;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.AxisAngle4f;
 import java.util.Vector;
 
-class Measurement {
-
-  final static float radiansPerDegree = (float) (2 * Math.PI / 360);
+public class Measurement {
 
   Frame frame;
   Viewer viewer;
-  int count;
-  int[] countPlusIndices;
-  String strMeasurement;
+  
+  protected int count;
+  
+  public int getCount() {
+    return count;
+  }
+  
+  protected int[] countPlusIndices;
+  
+  public int[] getCountPlusIndices() {
+    return countPlusIndices;
+  }
+  
+  public int getIndex(int n) {
+    return (n > 0 && n <= count ? countPlusIndices[n] : -1);
+  }
+  
+  public int getLastIndex() {
+    return (count > 0 ? countPlusIndices[count] : -1);
+  }
+  
+  public int getPreviousIndex() {
+    return (count > 0 ? countPlusIndices[count - 1] : -1);
+  }
+  
+  private String strMeasurement;
+  
+  public String getString() {
+    return strMeasurement;
+  }
+  
   String strFormat;
+  
+  public String getStrFormat() {
+    return strFormat;
+  }
+  
   float value;
-  boolean isVisible = true;
-  boolean isHidden = false;
-  boolean isDynamic = false;
-  short colix;
-  int index;
   
-  AxisAngle4f aa;
-  Point3f pointArc;
+  public float getValue() {
+    return value;
+  }
   
-  Measurement(Frame frame, int[] atomCountPlusIndices, float value,
+  private boolean isVisible = true;
+  private boolean isHidden = false;
+  private boolean isDynamic = false;
+  
+  public boolean isVisible() {
+    return isVisible;
+  }
+  public boolean isHidden() {
+    return isHidden;
+  }
+  public boolean isDynamic() {
+    return isDynamic;
+  }
+  
+  public void setVisible(boolean TF) {
+    this.isVisible = TF;
+  }
+  public void setHidden(boolean TF) {
+    this.isHidden = TF;
+  }
+  public void setDynamic(boolean TF) {
+    this.isDynamic = TF;
+  }
+  
+  
+  private short colix;
+  
+  public short getColix() {
+    return colix;
+  }
+  
+  public void setColix(short colix) {
+    this.colix = colix;
+  }
+  
+  private int index;
+  
+  public void setIndex(int index) {
+    this.index = index;
+  }
+  
+  public int getIndex() {
+    return index;
+  }
+  
+  private AxisAngle4f aa;
+  
+  public AxisAngle4f getAxisAngle() {
+    return aa;
+  }
+  
+  private Point3f pointArc;
+  public Point3f getPointArc() {
+    return pointArc;
+  }
+  
+  public Measurement(Frame frame, int[] atomCountPlusIndices, float value,
       short colix, String strFormat, int index) {
     //value Float.isNaN ==> pending
     this.frame = frame;
-    this.viewer = frame.viewer;
+    this.viewer = frame.getViewer();
     this.colix = colix;
     this.strFormat = strFormat;
     setInfo(frame, atomCountPlusIndices, value, index);
   }   
 
-  void refresh() {
+  public void refresh() {
     value = frame.getMeasurement(countPlusIndices);
     formatMeasurement();
   }
@@ -80,10 +165,6 @@ class Measurement {
     return str;  
   }
   
-  void setIndex(int index) {
-    this.index = index;
-  }
-  
   void setInfo(Frame frame, int[] atomCountPlusIndices, float value, int index) {
     if (atomCountPlusIndices == null)
       count = 0;
@@ -100,68 +181,12 @@ class Measurement {
     formatMeasurement();
   }
 
-  static float computeAngle(Point3f pointA, Point3f pointB, Point3f pointC, boolean asDegrees) {
-    Vector3f vectorBA = new Vector3f();
-    Vector3f vectorBC = new Vector3f();        
-    return computeAngle(pointA, pointB, pointC, vectorBA, vectorBC, asDegrees);
-  }
-
-  static float computeAngle(Point3f pointA, Point3f pointB, Point3f pointC, Vector3f vectorBA, Vector3f vectorBC, boolean asDegrees) {
-    vectorBA.sub(pointA, pointB);
-    vectorBC.sub(pointC, pointB);
-    float angle = vectorBA.angle(vectorBC);
-    return (asDegrees ? angle / radiansPerDegree : angle);
-  }
-
-  static float computeTorsion(Point3f p1, Point3f p2, Point3f p3, Point3f p4, boolean asDegrees) {
-
-    float ijx = p1.x - p2.x;
-    float ijy = p1.y - p2.y;
-    float ijz = p1.z - p2.z;
-
-    float kjx = p3.x - p2.x;
-    float kjy = p3.y - p2.y;
-    float kjz = p3.z - p2.z;
-
-    float klx = p3.x - p4.x;
-    float kly = p3.y - p4.y;
-    float klz = p3.z - p4.z;
-
-    float ax = ijy * kjz - ijz * kjy;
-    float ay = ijz * kjx - ijx * kjz;
-    float az = ijx * kjy - ijy * kjx;
-    float cx = kjy * klz - kjz * kly;
-    float cy = kjz * klx - kjx * klz;
-    float cz = kjx * kly - kjy * klx;
-
-    float ai2 = 1f / (ax * ax + ay * ay + az * az);
-    float ci2 = 1f / (cx * cx + cy * cy + cz * cz);
-
-    float ai = (float) Math.sqrt(ai2);
-    float ci = (float) Math.sqrt(ci2);
-    float denom = ai * ci;
-    float cross = ax * cx + ay * cy + az * cz;
-    float cosang = cross * denom;
-    if (cosang > 1) {
-      cosang = 1;
-    }
-    if (cosang < -1) {
-      cosang = -1;
-    }
-
-    float torsion = (float) Math.acos(cosang);
-    float dot = ijx * cx + ijy * cy + ijz * cz;
-    float absDot = Math.abs(dot);
-    torsion = (dot / absDot > 0) ? torsion : -torsion;
-    return (asDegrees ? torsion / radiansPerDegree : torsion);
-  }
-
   void setFormat(String strFormat) {
    this.strFormat = strFormat; 
 //   System.out.println("setFOrmat" + strFormat);
   }
 
-  void formatMeasurement(String strFormat, boolean useDefault) {
+  public void formatMeasurement(String strFormat, boolean useDefault) {
     if (strFormat != null && strFormat.length() == 0)
       strFormat = null;
     if (!useDefault && strFormat != null && strFormat.indexOf(countPlusIndices[0]+":")!=0)
@@ -188,7 +213,7 @@ class Measurement {
       } else {
         Vector3f vectorBA = new Vector3f();
         Vector3f vectorBC = new Vector3f();        
-        float radians = computeAngle(getAtomPoint3f(1), getAtomPoint3f(2), getAtomPoint3f(3), vectorBA, vectorBC, false);
+        float radians = Measure.computeAngle(getAtomPoint3f(1), getAtomPoint3f(2), getAtomPoint3f(3), vectorBA, vectorBC, false);
         Vector3f vectorAxis = new Vector3f();
         vectorAxis.cross(vectorBA, vectorBC);
         aa = new AxisAngle4f(vectorAxis.x, vectorAxis.y, vectorAxis.z, radians);
@@ -206,7 +231,7 @@ class Measurement {
     }
   }
   
-  void reformatDistanceIfSelected() {
+  public void reformatDistanceIfSelected() {
     if (count != 2)
       return;
     Viewer viewer = frame.viewer;
@@ -263,7 +288,7 @@ class Measurement {
     return label;
   }
 
-  boolean sameAs(int[] atomCountPlusIndices) {
+  public boolean sameAs(int[] atomCountPlusIndices) {
     if (count != atomCountPlusIndices[0])
       return false;
     if (count == 2)
@@ -287,7 +312,7 @@ class Measurement {
              atomCountPlusIndices[4] == this.countPlusIndices[1]));
   }
 
-  Vector toVector() {
+  public Vector toVector() {
     Vector V = new Vector();
     for (int i = 0; i < count + 1; i++ ) V.addElement(new Integer(countPlusIndices[i]));
     V.addElement(strMeasurement);

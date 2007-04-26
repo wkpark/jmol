@@ -28,6 +28,7 @@ import org.jmol.util.BitSetUtil;
 
 import org.jmol.api.JmolSelectionListener;
 import org.jmol.i18n.GT;
+import org.jmol.modelframe.Frame;
 
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -63,8 +64,9 @@ class SelectionManager {
     BitSetUtil.clear(bsHidden);
     if (bs != null)
       bsHidden.or(bs);
-    if (viewer.getFrame() != null)
-      viewer.getFrame().bsHidden = bsHidden;
+    Frame frame = viewer.getFrame();
+    if (frame != null)
+      frame.setBsHidden(bsHidden);
     if (!isQuiet)
       viewer.reportSelection(GT._(
           "{0} atoms hidden",
@@ -78,8 +80,9 @@ class SelectionManager {
       bsHidden.or(bsAll);
       BitSetUtil.andNot(bsHidden, bs);
     }
-    if (viewer.getFrame() != null)
-      viewer.getFrame().bsHidden = bsHidden;
+    Frame frame = viewer.getFrame();
+    if (frame != null)
+      frame.setBsHidden(bsHidden);
     if (!isQuiet)
       viewer.reportSelection(GT._(
           "{0} atoms hidden",

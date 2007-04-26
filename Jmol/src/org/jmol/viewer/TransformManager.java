@@ -32,6 +32,7 @@ import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import java.util.Hashtable;
@@ -145,7 +146,7 @@ abstract class TransformManager {
     commands.append("cameraDepth = ").append(cameraDepth).append(";\n");
     if (isNavigationMode)
       commands.append("navigationMode = true;\n");
-    commands.append("center ").append(StateManager.escape(fixedRotationCenter)).append(";\n");
+    commands.append("center ").append(Escape.escape(fixedRotationCenter)).append(";\n");
     commands.append(getMoveToText(0)).append(";\n");
     if (!isNavigationMode && !zoomEnabled)
       commands.append("zoom off;\n");
@@ -163,7 +164,7 @@ abstract class TransformManager {
                append(" ").append(depthPlane.z).
                append(" ").append(depthPlane.w).append(" };\n");
     if (depthPlane != null || slabPlane != null)
-      commands.append("slab reference ").append(StateManager.escape(slabRef)).
+      commands.append("slab reference ").append(Escape.escape(slabRef)).
                append(slabEnabled || isNavigationMode? ";slab on" : "").append(";\n");
     commands.append(getSpinState(true)).append("\n");
     if (viewer.modelSetHasVibrationVectors()) {
@@ -187,15 +188,15 @@ abstract class TransformManager {
       if (isAll)
         s += "\nrefreshing = true;refresh;";
       if (isSpinSelected)
-          s +="\nselect " + StateManager.escape(viewer.getSelectionSet()) + ";\nrotateSelected ";
+          s +="\nselect " + Escape.escape(viewer.getSelectionSet()) + ";\nrotateSelected ";
       if (isSpinInternal) {
         Point3f pt = new Point3f(internalRotationCenter);
         pt.add(rotationAxis);
         s += "spin " + rotationRate + " "
-            + StateManager.escape(internalRotationCenter) + " "
-            + StateManager.escape(pt);
+            + Escape.escape(internalRotationCenter) + " "
+            + Escape.escape(pt);
       } else if (isSpinFixed) {
-        s += "spin axisangle " + StateManager.escape(rotationAxis) + " "
+        s += "spin axisangle " + Escape.escape(rotationAxis) + " "
             + rotationRate;
       } else {
         s += "spin on";
@@ -554,7 +555,7 @@ abstract class TransformManager {
     info.put("modelRadius", new Float(modelRadius));
     if (isNavigationMode) {
       info.put("navigationCenter", "navigate center "
-          + StateManager.escape(navigationCenter));
+          + Escape.escape(navigationCenter));
       info.put("navigationOffsetXPercent", new Float(
           getNavigationOffsetPercent('X')));
       info.put("navigationOffsetYPercent", new Float(
@@ -1631,7 +1632,7 @@ abstract class TransformManager {
   }
 
   private String getCenterText() {
-    return StateManager.escape(fixedRotationCenter);
+    return Escape.escape(fixedRotationCenter);
   }
 
   private String getMoveToText() {
@@ -1696,7 +1697,7 @@ abstract class TransformManager {
       sb.append(";");
     }      
     if (isNavigationMode) {
-      sb.append("navigate 0 center ").append(StateManager.escape(navigationCenter));
+      sb.append("navigate 0 center ").append(Escape.escape(navigationCenter));
       sb.append(";navigate 0 translate");
       truncate2(sb, getNavigationOffsetPercent('X'));
       truncate2(sb, getNavigationOffsetPercent('Y'));

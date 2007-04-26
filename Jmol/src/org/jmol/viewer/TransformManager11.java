@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 
 import javax.vecmath.Point3f;
@@ -728,7 +729,7 @@ class TransformManager11 extends TransformManager {
   protected String getNavigationText() {
     transformPoint(navigationCenter, navigationOffset);
     return " /* navigation center, translation, depth */ "
-        + StateManager.escape(navigationCenter) + " "
+        + Escape.escape(navigationCenter) + " "
         + getNavigationOffsetPercent('X') + " "
         + getNavigationOffsetPercent('Y') + " " + getNavigationDepthPercent();
   }
@@ -737,7 +738,7 @@ class TransformManager11 extends TransformManager {
     if (!isNavigationMode)
       return "";
     return "# navigation state;\nnavigate 0 center "
-        + StateManager.escape(getNavigationCenter())
+        + Escape.escape(getNavigationCenter())
         + ";\nnavigate 0 translate " + getNavigationOffsetPercent('X') + " "
         + getNavigationOffsetPercent('Y') + ";\nset navigationDepth "
         + getNavigationDepthPercent() + ";\nset navigationSlab "

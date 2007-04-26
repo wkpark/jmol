@@ -25,8 +25,10 @@ package org.jmol.viewer;
 
 import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
+import org.jmol.util.Parser;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
+import org.jmol.modelframe.Group;
 
 import java.util.Vector;
 import java.util.BitSet;
@@ -489,10 +491,6 @@ class Compiler {
     return (ch == ';' || ch == '\r' || ch == '\n');  
   }
   
-  static boolean isOneOf(String key, String semiList) {
-    return (';' + semiList + ';').indexOf(';' + key + ';') >= 0;
-  }
-
   private boolean lookingAtLeadingWhitespace() {
     //log("lookingAtLeadingWhitespace");
     int ichT = ichToken;
@@ -1422,7 +1420,7 @@ class Compiler {
         //distance was specified, but to what?
         getToken();
         key = ((String) theValue).toLowerCase();
-        if (isOneOf(key, "plane;hkl;coord")) {
+        if (Parser.isOneOf(key, "plane;hkl;coord")) {
           addTokenToPostfix(new Token(Token.string, key));
         } else {
           returnToken();
@@ -1432,7 +1430,7 @@ class Compiler {
           }
         }
       }
-      if (isOneOf(key, "plane;hkl;coord"))
+      if (Parser.isOneOf(key, "plane;hkl;coord"))
         isCoordOrPlane = true;
       addNextTokenIf(Token.comma);
       if (isCoordOrPlane) {

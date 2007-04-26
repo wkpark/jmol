@@ -25,9 +25,13 @@ package org.jmol.viewer;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
+import org.jmol.shape.Text;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.CommandHistory;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
+import org.jmol.util.Measure;
+import org.jmol.util.PatternMatcher;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Parser;
 
@@ -39,6 +43,11 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point4f;
 import org.jmol.i18n.*;
+import org.jmol.modelframe.Atom;
+import org.jmol.modelframe.Bond;
+import org.jmol.modelframe.Frame;
+import org.jmol.modelframe.Group;
+import org.jmol.modelframe.Mmset;
 
 class Context {
   String filename;
@@ -667,12 +676,12 @@ class Eval { //implements Runnable {
     if (s == null || s.length() == 0)
       return s;
     if (s.charAt(0) == '{')
-      v = StateManager.unescapePoint(s);
+      v = Escape.unescapePoint(s);
     else if (s.indexOf("({") == 0)
-      v = StateManager.unescapeBitset(s);
+      v = Escape.unescapeBitset(s);
     else if (s.indexOf("[{") == 0)
       return new Token(Token.bitset,
-          new BondSet(StateManager.unescapeBitset(s)));
+          new BondSet(Escape.unescapeBitset(s)));
     if (v instanceof Point3f)
       return new Token(Token.point3f, v);
     else if (v instanceof Point4f)
@@ -1633,7 +1642,7 @@ class Eval { //implements Runnable {
     case Token.atomno:
       return atom.getAtomNumber();
     case Token.atomIndex:
-      return atom.atomIndex;
+      return atom.getAtomIndex();
     case Token.elemno:
       return atom.getElementNumber();
     case Token.element:
@@ -2812,7 +2821,7 @@ class Eval { //implements Runnable {
         i = iToken;
         if (colorpt == 1)
           colors[colorpt] = ~colors[0];
-        state += " " + StateManager.escapeColor(colors[colorpt - 1]);
+        state += " " + Escape.escapeColor(colors[colorpt - 1]);
         break;
       case Token.integer:
       case Token.decimal:
@@ -3121,7 +3130,7 @@ class Eval { //implements Runnable {
       argb = getArgbOrPaletteParam(2);
       checkStatementLength(iToken + 1);
       if (str.equalsIgnoreCase("axes")) {
-        setStringProperty("axesColor", StateManager.escapeColor(argb));
+        setStringProperty("axesColor", Escape.escapeColor(argb));
         return;
       } else if (StateManager.getObjectIdFromName(str) >= 0) {
         if (!isSyntaxCheck)
@@ -3196,6 +3205,7 @@ class Eval { //implements Runnable {
     Object colorvalue = null;
     BitSet bs = null;
     String prefix = "";
+    int typeMask = 0;
     float translucentLevel = Float.MAX_VALUE;
     if (index < 0) {
       bs = expression(-index);
@@ -3302,15 +3312,25 @@ class Eval { //implements Runnable {
         viewer.calcSelectedMoleculesCount();
         break;
       }
-      viewer.loadShape(shapeType);
-      if (shapeType == JmolConstants.SHAPE_STICKS)
-        viewer.setShapeProperty(shapeType, prefix + "color", colorvalue, viewer
-            .getSelectedAtomsOrBonds());
-      else
+      typeMask = (shapeType == JmolConstants.SHAPE_HSTICKS ? JmolConstants.BOND_HYDROGEN_MASK
+          : shapeType == JmolConstants.SHAPE_SSSTICKS ? JmolConstants.BOND_SULFUR_MASK
+              : shapeType == JmolConstants.SHAPE_STICKS ? JmolConstants.BOND_COVALENT_MASK
+                  : 0);
+      if (typeMask == 0) {
+        viewer.loadShape(shapeType);
         setShapeProperty(shapeType, prefix + "color", colorvalue);
+      } else {
+        viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "type",
+            new Integer(typeMask));
+        viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, prefix + "color",
+            colorvalue, viewer.getSelectedAtomsOrBonds());
+      }
     }
     if (translucency != null)
       setShapeTranslucency(shapeType, prefix, translucency, translucentLevel);
+    if (typeMask != 0)
+      viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
+          JmolConstants.BOND_COVALENT_MASK));
   }
 
   void setShapeTranslucency (int shapeType, String prefix, String translucency, float translucentLevel) {
@@ -3517,7 +3537,7 @@ class Eval { //implements Runnable {
       }
       if (filename.length() > 0 && filename.charAt(0) == '=')
         filename = fixFileName(filename);
-      loadScript.append(" ").append(StateManager.escape(filename)).append(";");
+      loadScript.append(" ").append(Escape.escape(filename)).append(";");
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
         viewer.openFile(filename, htParams, loadScript.toString(), isMerge);
     } else if (getToken(i + 1).tok == Token.leftbrace
@@ -3526,7 +3546,7 @@ class Eval { //implements Runnable {
         filename = viewer.getFullPathName();
       if (filename.length() > 0 && filename.charAt(0) == '=')
         filename = fixFileName(filename);
-      loadScript.append(" ").append(StateManager.escape(filename));
+      loadScript.append(" ").append(Escape.escape(filename));
       if (getToken(i).tok == Token.integer) {
         params[0] = intParameter(i++);
         loadScript.append(" ").append(params[0]);
@@ -3538,14 +3558,14 @@ class Eval { //implements Runnable {
         params[1] = (int) unitCells.x;
         params[2] = (int) unitCells.y;
         params[3] = (int) unitCells.z;
-        loadScript.append(" ").append(StateManager.escape(unitCells));
+        loadScript.append(" ").append(Escape.escape(unitCells));
         int iGroup = -1;
         int[] p;
         if (tokAt(i) == Token.spacegroup) {
           ++i;
           String spacegroup = TextFormat.simpleReplace(parameterAsString(i++),
               "''", "\"");
-          loadScript.append(" ").append(StateManager.escape(spacegroup));
+          loadScript.append(" ").append(Escape.escape(spacegroup));
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
             iGroup = -999;
           } else {
@@ -3590,7 +3610,7 @@ class Eval { //implements Runnable {
         modelName = filename;
       } else {
         modelName = parameterAsString(i++);
-        loadScript.append(" ").append(StateManager.escape(modelName));
+        loadScript.append(" ").append(Escape.escape(modelName));
       }
       String[] filenames = new String[statementLength - i];
       while (i < statementLength) {
@@ -3598,7 +3618,7 @@ class Eval { //implements Runnable {
         if (modelName.length() > 0 && modelName.charAt(0) == '=')
           modelName = fixFileName(modelName);
         filenames[filenames.length - statementLength + i] = modelName;
-        loadScript.append(" ").append(StateManager.escape(modelName));
+        loadScript.append(" ").append(Escape.escape(modelName));
         i++;
       }
       loadScript.append(";");
@@ -4722,14 +4742,18 @@ class Eval { //implements Runnable {
 
   void wireframe() throws ScriptException {
     short mad = getMadParameter();
-    if (!isSyntaxCheck)
-      viewer.setShapeSize(JmolConstants.SHAPE_STICKS, mad, viewer
-          .getSelectedAtomsOrBonds());
+    if (isSyntaxCheck)
+      return;
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", 
+        new Integer(JmolConstants.BOND_COVALENT_MASK));
+    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, mad, viewer
+        .getSelectedAtomsOrBonds());
   }
 
   void ssbond() throws ScriptException {
-    viewer.loadShape(JmolConstants.SHAPE_SSSTICKS);
-    setShapeSize(JmolConstants.SHAPE_SSSTICKS, getMadParameter());
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(JmolConstants.BOND_SULFUR_MASK));
+    setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter());
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(JmolConstants.BOND_COVALENT_MASK));
   }
 
   void hbond(boolean isCommand) throws ScriptException {
@@ -4740,7 +4764,9 @@ class Eval { //implements Runnable {
       scriptStatus(GT._("{0} hydrogen bonds", n));
       return;
     }
-    setShapeSize(JmolConstants.SHAPE_HSTICKS, getMadParameter());
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(JmolConstants.BOND_HYDROGEN_MASK));
+    setShapeSize(JmolConstants.SHAPE_STICKS, getMadParameter());
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(JmolConstants.BOND_COVALENT_MASK));
   }
 
   void configuration() throws ScriptException {
@@ -4751,7 +4777,7 @@ class Eval { //implements Runnable {
     if (statementLength == 1) {
       bsConfigurations = viewer.setConformation();
       viewer.addStateScript("select "
-          + StateManager.escape(viewer.getSelectionSet()));
+          + Escape.escape(viewer.getSelectionSet()));
       viewer.addStateScript("configuration;");
     } else {
       checkLength2();
@@ -4761,8 +4787,11 @@ class Eval { //implements Runnable {
       bsConfigurations = viewer.setConformation(n - 1);
       viewer.addStateScript("configuration " + n + ";");
     }
+    if (isSyntaxCheck)
+      return;
     boolean addHbonds = viewer.hbondsAreVisible();
-    viewer.setShapeSize(JmolConstants.SHAPE_HSTICKS, 0, bsConfigurations);
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(JmolConstants.BOND_HYDROGEN_MASK));
+    viewer.setShapeSize(JmolConstants.SHAPE_STICKS, 0, bsConfigurations);
     if (addHbonds)
       viewer.autoHbond(bsConfigurations, bsConfigurations, null);
     viewer.select(bsConfigurations, tQuiet);
@@ -5394,7 +5423,7 @@ class Eval { //implements Runnable {
 
   int getShapeType(int tok) throws ScriptException {
     int iShape = JmolConstants.shapeTokenIndex(tok);
-    if (iShape < 0)
+    if (iShape < 0) 
       unrecognizedObject();
     return iShape;
   }
@@ -5630,7 +5659,7 @@ class Eval { //implements Runnable {
           viewer.setBackgroundModel(statement[2].intValue);
         return;
       }
-      if (Compiler.isOneOf(key.toLowerCase(), "spinx;spiny;spinz;spinfps")) {
+      if (Parser.isOneOf(key.toLowerCase(), "spinx;spiny;spinz;spinfps")) {
         checkLength3();
         setSpin(key.substring(4), (int) floatParameter(2));
         return;
@@ -5665,23 +5694,23 @@ class Eval { //implements Runnable {
         setStringProperty(key, (String) v);
       } else if (v instanceof BondSet) {
         setIntProperty(key, BitSetUtil.cardinalityOf((BitSet) v));
-        setStringProperty(key + "_set", StateManager.escape((BitSet) v, false));
+        setStringProperty(key + "_set", Escape.escape((BitSet) v, false));
         if (showing)
           viewer.showParameter(key + "_set", true, 80);
       } else if (v instanceof BitSet) {
         setIntProperty(key, BitSetUtil.cardinalityOf((BitSet) v));
-        setStringProperty(key + "_set", StateManager.escape((BitSet) v));
+        setStringProperty(key + "_set", Escape.escape((BitSet) v));
         if (showing)
           viewer.showParameter(key + "_set", true, 80);
       } else if (v instanceof Point3f) {
         //drawPoint(key, (Point3f) v, false);
-        str = StateManager.escape((Point3f) v);
+        str = Escape.escape((Point3f) v);
         setStringProperty(key, str);
         //if (showing)
         //showString("to visualize, use DRAW @" + key);
       } else if (v instanceof Point4f) {
         //drawPlane(key, (Point4f) v, false);
-        str = StateManager.escape((Point4f) v);
+        str = Escape.escape((Point4f) v);
         setStringProperty(key, str);
         //if (showing)
         //showString("to visualize, use ISOSURFACE PLANE @" + key);
@@ -5861,7 +5890,7 @@ class Eval { //implements Runnable {
 
   void assignBitsetVariable(String variable, BitSet bs) {
     variables.put(variable, bs);
-    setStringProperty("@" + variable, StateManager.escape(bs));
+    setStringProperty("@" + variable, Escape.escape(bs));
   }
 
   int[] getAtomIndices(BitSet bs) {
@@ -5878,12 +5907,12 @@ class Eval { //implements Runnable {
   BitSet getAtomBitsetFromBonds(BitSet bsBonds) {
     BitSet bsAtoms = new BitSet();
     int bondCount = viewer.getBondCount();
-    Bond[] bonds = viewer.getFrame().bonds;
+    Bond[] bonds = viewer.getFrame().getBonds();
     for (int i = bondCount; --i >= 0;) {
       if (!bsBonds.get(i))
         continue;
-      bsAtoms.set(bonds[i].atom1.atomIndex);
-      bsAtoms.set(bonds[i].atom2.atomIndex);
+      bsAtoms.set(bonds[i].getAtomIndex1());
+      bsAtoms.set(bonds[i].getAtomIndex2());
     }
     return bsAtoms;
   }
@@ -5944,8 +5973,8 @@ class Eval { //implements Runnable {
             str = bond.getIdentity();
           else {
             str = bond.formatLabel(str, indices);
-            int ia1 = bond.atom1.atomIndex;
-            int ia2 = bond.atom2.atomIndex;
+            int ia1 = bond.getAtomIndex1();
+            int ia2 = bond.getAtomIndex2();
             for (int k = 0; k < nProp; k++)
               if (ia1 < propArray[k].length)
                 str = TextFormat.formatString(str, props[k]+"1", propArray[k][ia1]);
@@ -6180,7 +6209,7 @@ class Eval { //implements Runnable {
             break;
           case Token.color:
             pt.add(Graphics3D.colorPointFromInt(viewer
-                .getColixArgb(atom.colixAtom), ptT));
+                .getColixArgb(atom.getColix()), ptT));
             break;
           default:
             unrecognizedAtomProperty(Token.nameOf(tok));
@@ -6207,7 +6236,7 @@ class Eval { //implements Runnable {
           Bond bond = frame.getBondAt(i);
           switch (tok) {
           case Token.length:
-            float fv = bond.atom1.distance(bond.atom2);
+            float fv = bond.getAtom1().distance(bond.getAtom2());
             fvMin = Math.min(fvMin, fv);
             fvMax = Math.max(fvMax, fv);
             fvAvg += fv;
@@ -6215,13 +6244,13 @@ class Eval { //implements Runnable {
               list[i] = fv;
             break;
           case Token.xyz:
-            pt.add(bond.atom1);
-            pt.add(bond.atom2);
+            pt.add(bond.getAtom1());
+            pt.add(bond.getAtom2());
             n++;
             break;
           case Token.color:
             pt.add(Graphics3D.colorPointFromInt(
-                viewer.getColixArgb(bond.colix), ptT));
+                viewer.getColixArgb(bond.getColix()), ptT));
             break;
           default:
             unrecognizedBondProperty(Token.nameOf(tok));
@@ -6246,7 +6275,7 @@ class Eval { //implements Runnable {
     if (isAll && opValue == null) //not operating
       return list;
     if (isAll)
-      return StateManager.escape(list);
+      return Escape.escape(list);
     if (isInt && (ivAvg / n) * n == ivAvg)
       return new Integer(ivAvg / n);
     return new Float((isInt ? ivAvg * 1f : fvAvg) / n);
@@ -6259,7 +6288,7 @@ class Eval { //implements Runnable {
     }
     String type = optParameterAsString(index).toLowerCase();
     if (statementLength == index + 1
-        && Compiler.isOneOf(type, "window;unitcell;molecular")) {
+        && Parser.isOneOf(type, "window;unitcell;molecular")) {
       viewer.setAxesMode("axes" + type, true);
       return;
     }
@@ -6588,7 +6617,7 @@ class Eval { //implements Runnable {
   }
 
   void setSpin(String key, int value) throws ScriptException {
-    if (Compiler.isOneOf(key, "x;y;z;fps")) {
+    if (Parser.isOneOf(key, "x;y;z;fps")) {
       if (isSyntaxCheck)
         return;
       switch ("x;y;z".indexOf(key)) {
@@ -6612,7 +6641,7 @@ class Eval { //implements Runnable {
   void setSsbond() throws ScriptException {
     checkLength3();
     boolean ssbondsBackbone = false;
-    viewer.loadShape(JmolConstants.SHAPE_SSSTICKS);
+    //viewer.loadShape(JmolConstants.SHAPE_SSSTICKS);
     switch (statement[2].tok) {
     case Token.backbone:
       ssbondsBackbone = true;
@@ -6912,8 +6941,8 @@ class Eval { //implements Runnable {
       else
         type = "XYZ";
     }
-    boolean isImage = Compiler.isOneOf(type, "JPEG;JPG64;JPG;PPM;PNG");
-    if (!isImage && !Compiler.isOneOf(type, "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB"))
+    boolean isImage = Parser.isOneOf(type, "JPEG;JPG64;JPG;PPM;PNG");
+    if (!isImage && !Parser.isOneOf(type, "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB"))
       evalError(GT._("write what? {0} or {1} \"filename\"", new Object[] {
           "STATE|HISTORY|IMAGE|ISOSURFACE|MO CLIPBOARD|VAR x|DATA",
           "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB" }));
@@ -7001,7 +7030,7 @@ class Eval { //implements Runnable {
       if (str.equalsIgnoreCase("historyLevel")) {
         value = "" + commandHistoryLevelMax;
       } else if (str.equalsIgnoreCase("defaultLattice")) {
-        value = StateManager.escape(viewer.getDefaultLattice());
+        value = Escape.escape(viewer.getDefaultLattice());
       } else if (str.equalsIgnoreCase("logLevel")) {
         value = "" + Viewer.getLogLevel();
       } else if (str.equalsIgnoreCase("fileHeader")) {
@@ -7083,7 +7112,7 @@ class Eval { //implements Runnable {
         msg = (data == null ? "no data" : "data \""
             + data[0]
             + "\"\n"
-            + (data[1] instanceof float[] ? StateManager
+            + (data[1] instanceof float[] ? Escape
                 .escape((float[]) data[1]) : "" + data[1]));
       }
       break;
@@ -7115,7 +7144,7 @@ class Eval { //implements Runnable {
       break;
     case Token.center:
       if (!isSyntaxCheck)
-        msg = "center " + StateManager.escape(viewer.getRotationCenter());
+        msg = "center " + Escape.escape(viewer.getRotationCenter());
       break;
     case Token.draw:
       if (!isSyntaxCheck)
@@ -7975,13 +8004,13 @@ class Eval { //implements Runnable {
       iToken += 2;
       if (statementLength > iToken) {
         setShapeProperty(iShape, "init", thisCommand);
-        setShapeProperty(iShape, "thisID", Mesh.PREVIOUS_MESH_ID);
+        setShapeProperty(iShape, "thisID", JmolConstants.PREVIOUS_MESH_ID);
       }
       return;
     }
     iToken = 1;
     if (!setMeshDisplayProperty(iShape, 0, tokAt(1))) {
-      setShapeProperty(iShape, "thisID", Mesh.PREVIOUS_MESH_ID);
+      setShapeProperty(iShape, "thisID", JmolConstants.PREVIOUS_MESH_ID);
       setShapeProperty(iShape, "title", new String[] { thisCommand });
     }
   }
@@ -8424,7 +8453,7 @@ class Eval { //implements Runnable {
       case Token.mep:
         float[] partialCharges = null;
         try {
-          partialCharges = viewer.getFrame().partialCharges;
+          partialCharges = viewer.getPartialCharges();
         } catch (Exception e) {
         }
         if (!isSyntaxCheck && partialCharges == null)
@@ -8569,15 +8598,15 @@ class Eval { //implements Runnable {
       break;
     case Token.frontlit:
       propertyName = "lighting";
-      propertyValue = new Integer(Mesh.FRONTLIT);
+      propertyValue = new Integer(JmolConstants.FRONTLIT);
       break;
     case Token.backlit:
       propertyName = "lighting";
-      propertyValue = new Integer(Mesh.BACKLIT);
+      propertyValue = new Integer(JmolConstants.BACKLIT);
       break;
     case Token.fullylit:
       propertyName = "lighting";
-      propertyValue = new Integer(Mesh.FULLYLIT);
+      propertyValue = new Integer(JmolConstants.FULLYLIT);
       break;
     case Token.opaque:
     case Token.translucent:
@@ -9362,9 +9391,9 @@ class Eval { //implements Runnable {
       case 2:
         return addX(pts[0].distance(pts[1]));
       case 3:
-        return addX(Measurement.computeAngle(pts[0], pts[1], pts[2], true));
+        return addX(Measure.computeAngle(pts[0], pts[1], pts[2], true));
       case 4:
-        return addX(Measurement.computeTorsion(pts[0], pts[1], pts[2], pts[3],
+        return addX(Measure.computeTorsion(pts[0], pts[1], pts[2], pts[3],
             true));
       }
       return false;
@@ -9545,7 +9574,7 @@ class Eval { //implements Runnable {
         if (f2 != null)
           for (int i = Math.min(f1.length, f2.length); --i >= 0;)
             f1[i] += f2[i];
-        return addX(StateManager.escape(f1));
+        return addX(Escape.escape(f1));
       }
 
       // some other data type -- just return it
@@ -9585,7 +9614,7 @@ class Eval { //implements Runnable {
       float distance = 0;
       boolean isSequence = false;
       if (withinSpec instanceof String)
-        isSequence = !Compiler.isOneOf(withinStr,
+        isSequence = !Parser.isOneOf(withinStr,
             "element;site;group;chain;molecule;model");
       else if (withinSpec instanceof Float)
         distance = Token.fValue(args[0]);
@@ -9593,7 +9622,7 @@ class Eval { //implements Runnable {
         return false;
       if (args.length == 3) {
         withinStr = Token.sValue(args[1]);
-        if (!Compiler.isOneOf(withinStr, "plane;hkl;coord"))
+        if (!Parser.isOneOf(withinStr, "plane;hkl;coord"))
           return false;
       }
       if (isSyntaxCheck)
@@ -9751,7 +9780,7 @@ class Eval { //implements Runnable {
           String s = (String) x2.value;
           s = TextFormat.simpleReplace(s, "\n\r", "\n");
           s = TextFormat.simpleReplace(s, "\r", "\n");
-          return addX(Text.split(s, '\n'));
+          return addX(TextFormat.split(s, '\n'));
         }
         if (iv == Token.color && x2.tok == Token.string) {
           Point3f pt = new Point3f();

@@ -30,7 +30,7 @@ import org.jmol.util.Logger;
 import java.awt.event.*;
 import java.awt.Component;
 
-abstract class MouseManager implements KeyListener {
+public abstract class MouseManager implements KeyListener {
 
   Viewer viewer;
 
@@ -161,7 +161,7 @@ abstract class MouseManager implements KeyListener {
   final static int ALT = Event.ALT_MASK;     // 8 and ALT are the same
   final static int RIGHT = Event.META_MASK;  // 4
   final static int CTRL = Event.CTRL_MASK;   // 2
-  final static int SHIFT = Event.SHIFT_MASK; // 1
+  public final static int SHIFT = Event.SHIFT_MASK; // 1
   final static int MIDDLE_RIGHT = MIDDLE | RIGHT;
   final static int LEFT_MIDDLE_RIGHT = LEFT | MIDDLE | RIGHT;
   final static int CTRL_SHIFT = CTRL | SHIFT;
@@ -169,9 +169,9 @@ abstract class MouseManager implements KeyListener {
   final static int CTRL_RIGHT = CTRL | RIGHT;
   final static int CTRL_MIDDLE = CTRL | MIDDLE;
   final static int CTRL_ALT_LEFT = CTRL | ALT | LEFT;
-  final static int ALT_LEFT = ALT | LEFT;
-  final static int ALT_SHIFT_LEFT = ALT | SHIFT | LEFT;
-  final static int SHIFT_LEFT = SHIFT | LEFT;
+  public final static int ALT_LEFT = ALT | LEFT;
+  public final static int ALT_SHIFT_LEFT = ALT | SHIFT | LEFT;
+  public final static int SHIFT_LEFT = SHIFT | LEFT;
   final static int CTRL_SHIFT_LEFT = CTRL | SHIFT | LEFT;
   final static int CTRL_ALT_SHIFT_LEFT = CTRL | ALT | SHIFT | LEFT;
   final static int SHIFT_MIDDLE = SHIFT | MIDDLE;
@@ -179,7 +179,7 @@ abstract class MouseManager implements KeyListener {
   final static int SHIFT_RIGHT = SHIFT | RIGHT;
   final static int CTRL_SHIFT_RIGHT = CTRL | SHIFT | RIGHT;
   final static int CTRL_ALT_SHIFT_RIGHT = CTRL | ALT | SHIFT | RIGHT;
-  final static int BUTTON_MODIFIER_MASK =
+  public final static int BUTTON_MODIFIER_MASK =
     CTRL | ALT | SHIFT | LEFT | MIDDLE | RIGHT;
 
   int previousPressedX, previousPressedY;

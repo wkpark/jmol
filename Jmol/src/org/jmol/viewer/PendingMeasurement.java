@@ -23,16 +23,27 @@
  */
 package org.jmol.viewer;
 
-class PendingMeasurement extends Measurement {
+import org.jmol.modelframe.Frame;
 
-  boolean isActive = false;
+public class PendingMeasurement extends Measurement {
 
-  PendingMeasurement(Frame frame) {
+  private boolean isActive = false;
+  
+  public boolean getIsActive() {
+    return isActive;
+  }
+  public void setIsActive(boolean TF) {
+    isActive = TF;
+  }
+  
+  
+
+  public PendingMeasurement(Frame frame) {
     super(frame, null, Float.NaN, (short) 0, null, 0);
     this.countPlusIndices = new int[5];
   }
 
-  void setCountPlusIndices(int[] countPlusIndices) {
+  public void setCountPlusIndices(int[] countPlusIndices) {
     
     if (countPlusIndices == null) {
       count = 0;

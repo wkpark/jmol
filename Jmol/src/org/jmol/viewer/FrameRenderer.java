@@ -25,10 +25,13 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.*;
+import org.jmol.modelframe.Frame;
 //import java.awt.Rectangle;
+import org.jmol.shape.Shape;
+import org.jmol.shape.ShapeRenderer;
 import org.jmol.util.Logger;
 
-class FrameRenderer {
+public class FrameRenderer {
 
   boolean logTime;
   long timeBegin;
@@ -54,7 +57,7 @@ class FrameRenderer {
       timeBegin = System.currentTimeMillis();
 
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = frame.shapes[i];
+      Shape shape = frame.getShape(i);
 
       if (shape == null)
         continue;
@@ -71,22 +74,20 @@ class FrameRenderer {
     return renderers[shapeID];
   }
   
-  void clear() {
+  public void clear() {
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i)
       renderers[i] = null;
   }
 
   ShapeRenderer allocateRenderer(int shapeID, Graphics3D g3d) {
-    String classBase =
-      JmolConstants.shapeClassBases[shapeID] + "Renderer";
-    String className = "org.jmol.viewer." + classBase;
+    String className = JmolConstants.getShapeClassName(shapeID) + "Renderer";
     try {
       Class shapeClass = Class.forName(className);
       ShapeRenderer renderer = (ShapeRenderer)shapeClass.newInstance();
       renderer.setViewerG3dShapeID(viewer, g3d, shapeID);
       return renderer;
     } catch (Exception e) {
-      Logger.error("Could not instantiate renderer:" + classBase, e);
+      Logger.error("Could not instantiate renderer:" + className, e);
     }
     return null;
   }

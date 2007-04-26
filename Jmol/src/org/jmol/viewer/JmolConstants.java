@@ -308,6 +308,22 @@ final public class JmolConstants {
   /* .cube files need this */
   public final static float ANGSTROMS_PER_BOHR = 0.5291772f;
 
+  /*
+   * for mesh lighting
+   * 
+   */
+  
+  public final static int FRONTLIT = 0;
+  public final static int BACKLIT = 1;
+  public final static int FULLYLIT = 2;
+
+  /*
+   * lighting options for isosurfaces
+   * 
+   */
+  
+  
+  
   public final static int[] argbsHbondType =
   {
     0xFFFF69B4, // unused - pink
@@ -1250,7 +1266,7 @@ final public class JmolConstants {
   // this is only here for truly pathological cases
   public final static int MAXIMUM_AUTO_BOND_COUNT = 20;
   
-  static byte pidOf(Object value) {
+  public static byte pidOf(Object value) {
     return (value instanceof Byte ? ((Byte) value).byteValue()
         : PALETTE_UNKNOWN);
   }
@@ -2288,7 +2304,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static String group3List = getGroup3List();
   public final static int group3Count = group3List.length() / 6;
   
-  public final static String[] predefinedGroup1Names = {
+  public final static char[] predefinedGroup1Names = {
     /* rmh
      * 
      * G   Glycine   Gly                   P   Proline   Pro
@@ -2302,43 +2318,43 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
      * E   Glutamic Acid   Glu             D   Aspartic Acid   Asp
      * S   Serine    Ser                   T   Threonine   Thr
      */
-    "", //  0 this is the null group
+    '\0', //  0 this is the null group
     
-    "A", // 1
-    "R",
-    "N",
-    "D",
-    "C",
-    "Q",
-    "E",
-    "G",
-    "H",
-    "I",
-    "L",
-    "K",
-    "M",
-    "F",
-    "P", // 15 Proline
-    "S",
-    "T",
-    "W",
-    "Y",
-    "V",
-    "A", // 21 ASP/ASN ambiguous
-    "G", // 22 GLU/GLN ambiguous
-    "?", // 23 unknown -- 23
-    "A", // 24 the purines
-    "A",
-    "G", // 26
-    "G",
-    "I", // 28
-    "I",
-    "C", // 30 the pyrimidines
-    "C",
-    "T", // 32
-    "T",
-    "U", // 34
-    "U",
+    'A', // 1
+    'R',
+    'N',
+    'D',
+    'C',
+    'Q',
+    'E',
+    'G',
+    'H',
+    'I',
+    'L',
+    'K',
+    'M',
+    'F',
+    'P', // 15 Proline
+    'S',
+    'T',
+    'W',
+    'Y',
+    'V',
+    'A', // 21 ASP/ASN ambiguous
+    'G', // 22 GLU/GLN ambiguous
+    '?', // 23 unknown -- 23
+    'A', // 24 the purines
+    'A',
+    'G', // 26
+    'G',
+    'I', // 28
+    'I',
+    'C', // 30 the pyrimidines
+    'C',
+    'T', // 32
+    'T',
+    'U', // 34
+    'U',
     };
 
   ////////////////////////////////////////////////////////////////
@@ -2451,8 +2467,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
 
   public final static int SHAPE_BALLS      = 0;
   public final static int SHAPE_STICKS     = 1;
-  public final static int SHAPE_HSTICKS    = 2;
-  public final static int SHAPE_SSSTICKS   = 3;
+  public final static int SHAPE_HSTICKS    = 2;  //placeholder only; handled by SHAPE_STICKS
+  public final static int SHAPE_SSSTICKS   = 3;  //placeholder only; handled by SHAPE_STICKS
   public final static int SHAPE_LABELS     = 4;
   
   public final static int SHAPE_VECTORS    = 5;
@@ -2479,6 +2495,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_UCCAGE     = 20;
   public final static int SHAPE_ECHO       = 21;
   public final static int SHAPE_HOVER      = 22;
+  
+  public final static int SHAPE_MIN_SPECIAL= 23;
   public final static int SHAPE_POLYHEDRA  = 23;
   public final static int SHAPE_MIN_NAMED_OBJECT = 24;
   public final static int SHAPE_DIPOLES    = 24;
@@ -2488,6 +2506,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_ISOSURFACE = 27;
   public final static int SHAPE_LCAOCARTOON = 28;
   public final static int SHAPE_DRAW       = 29;
+  public final static int SHAPE_MAX_SPECIAL = 30;
   
   // last should be frank:
   public final static int SHAPE_FRANK      = 30;
@@ -2502,15 +2521,17 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   
   public final static int ATOM_SLABBED     = 2;
 
+  public final static String PREVIOUS_MESH_ID = "+PREVIOUS_MESH+";
+
   // these atom flags get tainted with scripts and frame changes
   // and must be reset with setModelVisibility() prior to rendering
  
-  final static int getShapeVisibilityFlag(int shapeID) {
+  public final static int getShapeVisibilityFlag(int shapeID) {
     return (4 << shapeID);
   }
 
-  static int CARTOON_VISIBILITY_FLAG = getShapeVisibilityFlag(SHAPE_CARTOON);
-  static int ALPHA_CARBON_VISIBILITY_FLAG = CARTOON_VISIBILITY_FLAG 
+  public static int CARTOON_VISIBILITY_FLAG = getShapeVisibilityFlag(SHAPE_CARTOON);
+  public static int ALPHA_CARBON_VISIBILITY_FLAG = CARTOON_VISIBILITY_FLAG 
       | getShapeVisibilityFlag(SHAPE_TRACE)
       | getShapeVisibilityFlag(SHAPE_STRANDS)
       | getShapeVisibilityFlag(SHAPE_MESHRIBBON)
@@ -2526,7 +2547,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // given in SHAPE_* and they must be capitalized exactly as in their class name 
 
   public final static String[] shapeClassBases = {
-    "Balls", "Sticks", "Hsticks", "Sssticks",
+    "Balls", "Sticks", "Hsticks", "Sssticks",   //Hsticks and Sssticks classes do not exist, but this returns Token for them
     "Labels", "Vectors", "Measures", "Dots", "GeoSurface",
     "Backbone", "Trace", "Cartoon", "Strands", 
     "MeshRibbon", "Ribbons", "Rockets", "Stars", "Halos",
@@ -2543,6 +2564,22 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     }
   }
 
+  public final static int CLASS_BASE_BIO = -1;
+  public final static int CLASS_BASE_SPECIAL = -2;
+  
+  public final static String getShapeClassName(int shapeID) {
+    return (shapeID == CLASS_BASE_BIO || shapeID >= JmolConstants.SHAPE_MIN_SECONDARY
+        && shapeID < JmolConstants.SHAPE_MAX_SECONDARY ? 
+            "org.jmol.shapebio." : shapeID == CLASS_BASE_SPECIAL || shapeID >= JmolConstants.SHAPE_MIN_SPECIAL
+            && shapeID < JmolConstants.SHAPE_MAX_SPECIAL ? 
+                "org.jmol.shapespecial." : "org.jmol.shape.")
+        + (shapeID >=0 ? shapeClassBases[shapeID] : "");
+  }
+  //.hbond and .ssbonds will return a class, 
+  //but the class is never loaded, so it is skipped in each case.
+  //coloring and sizing of hydrogen bonds and S-S bonds is now 
+  //done by Sticks.
+  
   public final static int[] shapeToks = { 
     Token.atom, Token.bonds, Token.hbond, Token.ssbond, 
     Token.label, Token.vector, Token.monitor, Token.dots, Token.geosurface, 
@@ -2598,4 +2635,5 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       throw new NullPointerException();
     }
   }
+
 }

@@ -24,8 +24,6 @@
 package org.jmol.viewer;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Tuple3f;
-import javax.vecmath.Point4f;
 import javax.vecmath.Matrix3f;
 
 import java.util.Hashtable;
@@ -33,9 +31,11 @@ import java.util.BitSet;
 import java.util.Enumeration;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.modelframe.Bond;
+import org.jmol.modelframe.Frame;
 import org.jmol.util.CommandHistory;
+import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
-import org.jmol.util.Parser;
 
 import java.util.Arrays;
 
@@ -57,15 +57,15 @@ public class StateManager {
   
   */
 
-  final static int OBJ_BACKGROUND = 0;
-  final static int OBJ_AXIS1 = 1;
-  final static int OBJ_AXIS2 = 2;
-  final static int OBJ_AXIS3 = 3;
-  final static int OBJ_BOUNDBOX = 4;
-  final static int OBJ_UNITCELL = 5;
-  final static int OBJ_FRANK = 6;
-  final static int OBJ_MAX = 7;
-  final static String objectNameList =
+  public final static int OBJ_BACKGROUND = 0;
+  public final static int OBJ_AXIS1 = 1;
+  public final static int OBJ_AXIS2 = 2;
+  public final static int OBJ_AXIS3 = 3;
+  public final static int OBJ_BOUNDBOX = 4;
+  public final static int OBJ_UNITCELL = 5;
+  public final static int OBJ_FRANK = 6;
+  public final static int OBJ_MAX = 7;
+  private final static String objectNameList =
       "background axis1      axis2      axis3      boundbox   unitcell   frank      ";
   
   static int getObjectIdFromName(String name) {
@@ -287,13 +287,13 @@ public class StateManager {
       Frame frame = viewer.getFrame();
       if (frame == null)
         return;
-      bondCount = frame.bondCount;
+      bondCount = frame.getBondCount();
       connections = new Connection[bondCount + 1];
-      Bond[] bonds = frame.bonds;
+      Bond[] bonds = frame.getBonds();
       for (int i = bondCount; --i >= 0;) {
         Bond b = bonds[i];
-        connections[i] = new Connection(b.atom1.atomIndex, b.atom2.atomIndex,
-            b.mad, b.colix, b.order, b.shapeVisibilityFlags);
+        connections[i] = new Connection(b.getAtomIndex1(), b.getAtomIndex2(),
+            b.getMad(), b.getColix(), b.getOrder(), b.getShapeVisibilityFlags());
       }
     }
 
@@ -304,15 +304,16 @@ public class StateManager {
       frame.deleteAllBonds();
       for (int i = bondCount; --i >= 0;) {
         Connection c = connections[i];
-        if (c.atomIndex1 >= frame.atomCount || c.atomIndex2 >= frame.atomCount)
+        int atomCount = frame.getAtomCount();
+        if (c.atomIndex1 >= atomCount || c.atomIndex2 >= atomCount)
           continue;
         Bond b = frame.bondAtoms(frame.atoms[c.atomIndex1],
             frame.atoms[c.atomIndex2], c.order, c.mad, null);
-        b.colix = c.colix;
-        b.shapeVisibilityFlags = c.shapeVisibilityFlags;
+        b.setColix(c.colix);
+        b.setShapeVisibilityFlags(c.shapeVisibilityFlags);
       }
       for (int i = bondCount; --i >= 0;)
-        frame.bonds[i].index = i;
+        frame.getBondAt(i).setIndex(i);
       viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "reportAll", null);
     }
   }
@@ -408,12 +409,12 @@ public class StateManager {
       appendCmd(str, "bondRadiusMilliAngstroms = " + bondRadiusMilliAngstroms);
       appendCmd(str, "bondTolerance = " + bondTolerance);
       if (defaultDirectory != null)
-        appendCmd(str, "defaultDirectory = " + escape(defaultDirectory));
-      appendCmd(str, "defaultLattice = " + escape(ptDefaultLattice));
+        appendCmd(str, "defaultDirectory = " + Escape.escape(defaultDirectory));
+      appendCmd(str, "defaultLattice = " + Escape.escape(ptDefaultLattice));
       appendCmd(str, "defaultLoadScript = \"\"");
       if (defaultLoadScript.length() > 0)
         setParameterValue("defaultLoadScript", defaultLoadScript);
-      appendCmd(str, "loadFormat = " + escape(loadFormat));
+      appendCmd(str, "loadFormat = " + Escape.escape(loadFormat));
 
       appendCmd(str, "forceAutoBond = " + forceAutoBond);
       appendCmd(str, "minBondDistance = " + minBondDistance);
@@ -551,7 +552,7 @@ public class StateManager {
       for (int i = 0; i < OBJ_MAX; i++)
         if (objColors[i] != 0)
           appendCmd(str, getObjectNameFromId(i) + "Color = \""
-              + escapeColor(objColors[i]) + '"');
+              + Escape.escapeColor(objColors[i]) + '"');
       str.append(getSpecularState());
       if (stereoState != null)
         appendCmd(str, "stereo" + stereoState);
@@ -702,7 +703,7 @@ public class StateManager {
     String getParameterEscaped(String name, int nMax) {
       name = name.toLowerCase();
       if (htParameterValues.containsKey(name)) {
-        String sv = StateManager.escape(htParameterValues.get(name));
+        String sv = Escape.escape(htParameterValues.get(name));
         if (nMax > 0 && sv.length() > nMax)
           sv = sv.substring(0, nMax) + "\n#...(" + sv.length()
               + " bytes -- use SHOW " + name + " or MESSAGE @" + name
@@ -749,7 +750,7 @@ public class StateManager {
         if (key.charAt(0) != '@' && key.charAt(0) != '_') {
           Object value = htParameterValues.get(key);
             if (value instanceof String)
-              value = escape((String) value);
+              value = Escape.escape((String) value);
             list[n++] = key + " = " + value;
         }
       }
@@ -788,7 +789,7 @@ public class StateManager {
               key = " " + key;
             key += " = ";
             if (value instanceof String)
-              value = escape((String) value);
+              value = Escape.escape((String) value);
           }
           list[n++] = key +  value;
         }
@@ -916,144 +917,7 @@ public class StateManager {
 
   ///////// state serialization 
 
-  static String escape(Object x) {
-    if (x instanceof String)
-      return escape("" + x);
-    return x.toString();
-  }
-  
-  static String escape(BitSet bs) {
-    return escape(bs, true);
-  }
-    
-  static String escape(BitSet bs, boolean isAtoms) {
-    char chOpen = (isAtoms ? '(' : '[');   
-    char chClose = (isAtoms ? ')' : ']');   
-    if (bs == null)
-      return chOpen + "{}" + chClose;
-    StringBuffer s = new StringBuffer(chOpen + "{");
-    int imax = bs.size();
-    int iLast = -1;
-    int iFirst = -2;
-    int i = -1;
-    while (++i <= imax) {
-      boolean isSet = bs.get(i);
-      if (i == imax || iLast >= 0 && !isSet) {
-        if (iLast >= 0 && iFirst != iLast)
-          s.append((iFirst == iLast - 1 ? " " : ":") + iLast);
-        if (i == imax)
-          break;
-        iLast = -1;
-      }
-      if (bs.get(i)) {
-        if (iLast < 0) {
-          s.append((iFirst == -2 ? "" : " ") + i);
-          iFirst = i;
-        }
-        iLast = i;
-      }
-    }
-    s.append("}").append(chClose);
-    return s.toString();
-  }
- 
-  static BitSet unescapeBitset(String strBitset) {
-    if (strBitset == "{null}")
-      return null;
-    BitSet bs = new BitSet();
-    int len = strBitset.length();
-    int iPrev = -1;
-    int iThis = -2;
-    char ch;
-    if (len < 3)
-      return bs;
-    for (int i = 0; i < len; i++) {
-      switch (ch = strBitset.charAt(i)) {
-      case '}':
-      case '{':
-      case ' ':
-        if (iThis < 0)
-          break;
-        if (iPrev < 0) 
-          iPrev = iThis;
-        for (int j = iPrev; j<= iThis; j++)
-          bs.set(j);
-        iPrev = -1;
-        iThis = -2;
-        break;
-      case ':':
-        iPrev = iThis;
-        iThis = -2;
-        break;
-      default:
-        if (Character.isDigit(ch)) {
-          if (iThis < 0)
-            iThis = 0;
-          iThis = (iThis << 3) + (iThis << 1) + (ch - '0');
-        }
-      }
-    }
-    return bs;
-  }
-  
-  static Object unescapePoint(String strPoint) {
-    if (strPoint == null || strPoint.length() == 0 
-        || strPoint.charAt(0) != '{' || strPoint.charAt(strPoint.length() - 1) != '}')
-      return strPoint;
-    float[] points = new float[5];
-    int nPoints = 0;
-    String str = strPoint.substring(1, strPoint.length() - 1);
-    int[] next = new int[1];
-    for (; nPoints < 5;nPoints++) {
-      points[nPoints] = Parser.parseFloat(str, next);
-      if (Float.isNaN(points[nPoints]))
-        break;
-    }
-    if (nPoints == 3)
-      return new Point3f(points[0], points[1], points[2]);
-    if (nPoints == 4)
-      return new Point4f(points[0], points[1], points[2], points[3]);
-    return strPoint;    
-  }
-  
-  static String escape(String str) {
-    if (str == null)
-      return "\"\"";
-    int pt = -2;
-    while ((pt = str.indexOf("\"", pt + 2)) >= 0)
-      str = str.substring(0, pt) + '\\' + str.substring(pt);
-    str = TextFormat.simpleReplace(str, "\n", "\1");
-    str = TextFormat.simpleReplace(str, "\1", "\\n");
-    for (int i = str.length(); --i >= 0;)
-      if (str.charAt(i) > 0x7F)
-        str = str.substring(0, i) + "\\u" + Integer.toHexString(str.charAt(i))
-            + str.substring(i + 1);
-    return "\"" + str + "\"";
-  }
-  
-  static String escape(float[] f) {
-   StringBuffer sb = new StringBuffer();
-   for (int i = 0; i < f.length; i++) {
-     if (i > 0)
-       sb.append('\n');
-     sb.append(""+f[i]);
-   }
-   return sb.toString();
-  }
-  
-  public static String escape(Tuple3f xyz) {
-    return "{" + xyz.x + " " + xyz.y + " " + xyz.z +"}";
-  }
-  
-  static String escape(Point4f xyzw) {
-    return "{" + xyzw.x + " " + xyzw.y + " " + xyzw.z + " " + xyzw.w + "}";
-  }
-  
-  static String escapeColor(int argb) {
-    return "[x" + Graphics3D.getHexColorFromRGB(argb) + "]";
-  }
-  
-  static void setStateInfo(Hashtable ht, int i1, int i2, String key) {
+  public static void setStateInfo(Hashtable ht, int i1, int i2, String key) {
     BitSet bs;
     if (ht.containsKey(key)) {
       bs = (BitSet) ht.get(key);
@@ -1065,15 +929,15 @@ public class StateManager {
       bs.set(i);
   }
 
-  static String getCommands(Hashtable ht) {
+  public static String getCommands(Hashtable ht) {
     return getCommands(ht, null, -1, "select");
   }
 
-  static String getCommands(Hashtable htDefine, Hashtable htMore, int nAll) {
+  public static String getCommands(Hashtable htDefine, Hashtable htMore, int nAll) {
     return getCommands(htDefine, htMore, nAll, "select");
   }
 
-  static String getCommands(Hashtable htDefine, Hashtable htMore, int nAll, String selectCmd) {
+  public static String getCommands(Hashtable htDefine, Hashtable htMore, int nAll, String selectCmd) {
     StringBuffer s = new StringBuffer();
     String setPrev = getCommands(htDefine, s, null, nAll, selectCmd);
     if (htMore != null)
@@ -1081,7 +945,7 @@ public class StateManager {
     return s.toString();
   }
 
-  static String getCommands(Hashtable ht, StringBuffer s, String setPrev,
+  public static String getCommands(Hashtable ht, StringBuffer s, String setPrev,
                             int nAll, String selectCmd) {
     if (ht == null)
       return "";
@@ -1089,7 +953,7 @@ public class StateManager {
     Enumeration e = ht.keys();
     while (e.hasMoreElements()) {
       String key = (String) e.nextElement();
-      String set = escape((BitSet) ht.get(key));
+      String set = Escape.escape((BitSet) ht.get(key));
       if (set.length() < 5) // nothing selected
         continue;
       if (!set.equals(setPrev))
@@ -1101,7 +965,7 @@ public class StateManager {
     return setPrev;
   } 
 
-  static void appendCmd(StringBuffer s, String cmd) {
+  public static void appendCmd(StringBuffer s, String cmd) {
     if (cmd.length() == 0)
       return;
     s.append(cmd).append(";\n");

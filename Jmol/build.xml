@@ -10,7 +10,7 @@
   <!-- for some reason, I can't get ant to use this ${java.version}
        property as the value of the source parameter -->
   <property name="java.version" value="1.4" />
-  <property name="debug" value="on" />
+  <property name="debug" value="off" />
   <property name="deprecation" value="off" />
   <property name="optimization" value="off" />
 
@@ -478,66 +478,69 @@ support for assertions (which were introduced in 1.4).
     <touch file="build/appletjars.timestamp"/>
   </target>
 
-  <target name="applet-jar" id="applet-jar"
-          depends="applet-classes,appletjars">
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet.jar"
-         manifest="manifest/application.txt" index="true" >
-      <fileset dir="${applet.classes.dir}" >
-        <include name="**/*" />
-      </fileset>
-      <fileset dir="${appletjars.dir}" includes="**/*"/>
-    </jar>
-
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet1.jar" manifest="manifest/applet1.txt" >
-      <fileset dir="${applet.classes.dir}">
-        <include name="org/jmol/api/**" />
-        <!-- note that this class is included in JmolApplet0.jar -->
-        <exclude name="org/jmol/api/JmolAppletInterface.class" />
-        <include name="org/jmol/applet/**" />
-        <include name="org/jmol/i18n/**" />
-        <include name="org/jmol/popup/**" />
-      </fileset>
-    </jar>
-
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet2.jar" manifest="manifest/applet2.txt" >
-      <!-- javax/vecmath -->
-      <fileset dir="${appletjars.dir}" includes="**/*"/>
-    </jar>
-
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet3.jar" manifest="manifest/applet3.txt" >
-      <fileset dir="${applet.classes.dir}">
-        <include name="org/jmol/g3d/**" />
-        <include name="org/jmol/quantum/**" />
-        <include name="org/jmol/symmetry/**" />
-        <include name="org/jmol/jvxl/**" />
-        <include name="org/jmol/geodesic/**" />
-      </fileset>
-    </jar>
-
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet4.jar" manifest="manifest/applet4.txt" >
-      <fileset dir="${applet.classes.dir}">
-        <include name="org/jmol/adapter/smarter/**" />
-      </fileset>
-    </jar>
-
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet5.jar" manifest="manifest/applet5.txt" >
-      <fileset dir="${applet.classes.dir}">
-        <include name="org/openscience/jmol/**" />
-        <include name="org/jmol/bspt/**" />
-        <include name="org/jmol/util/**" />
-        <include name="org/jmol/smiles/**" />
-        <include name="org/jmol/vecmath/**" />
-      </fileset>
-    </jar>
-
-    <jar destfile="${jmol.applet.build.dir}/JmolApplet6.jar" manifest="manifest/applet6.txt" >
-      <fileset dir="${applet.classes.dir}">
-        <include name="org/jmol/viewer/**" />
-        <include name="org/jmol/atomdata/**" />
-        <include name="org/jmol/Jmol.properties" />
-      </fileset>
-    </jar>
-
+	  <target name="applet-jar" id="applet-jar"
+	          depends="applet-classes,appletjars">
+	    <jar destfile="${jmol.applet.build.dir}/JmolApplet.jar"
+	         manifest="manifest/application.txt" index="true" >
+	      <fileset dir="${applet.classes.dir}" >
+	        <include name="**/*" />
+	      </fileset>
+	      <fileset dir="${appletjars.dir}" includes="**/*"/>
+	    </jar>
+	
+	    <jar destfile="${jmol.applet.build.dir}/JmolApplet1.jar" manifest="manifest/applet1.txt" >
+	      <fileset dir="${applet.classes.dir}">
+	        <include name="org/jmol/api/**" />
+	        <!-- note that this class is included in JmolApplet0.jar -->
+	        <exclude name="org/jmol/api/JmolAppletInterface.class" />
+	        <include name="org/jmol/applet/**" />
+	        <include name="org/jmol/i18n/**" />
+	        <include name="org/jmol/popup/**" />
+	      </fileset>
+	    </jar>
+	
+	    <jar destfile="${jmol.applet.build.dir}/JmolApplet2.jar" manifest="manifest/applet2.txt" >
+	      <!-- javax/vecmath -->
+	      <fileset dir="${appletjars.dir}" includes="**/*"/>
+	    </jar>
+	
+	    <jar destfile="${jmol.applet.build.dir}/JmolApplet3.jar" manifest="manifest/applet3.txt" >
+	      <fileset dir="${applet.classes.dir}">
+	        <include name="org/jmol/g3d/**" />
+	        <include name="org/jmol/geodesic/**" />
+	        <include name="org/jmol/bspt/**" />
+	        <include name="org/jmol/util/**" />
+	        <include name="org/jmol/vecmath/**" />
+	      </fileset>
+	    </jar>
+	
+	    <jar destfile="${jmol.applet.build.dir}/JmolApplet4.jar" manifest="manifest/applet4.txt" >
+	      <fileset dir="${applet.classes.dir}">
+	        <include name="org/jmol/adapter/smarter/**" />
+	        <include name="org/jmol/symmetry/**" />
+	      </fileset>
+	    </jar>
+	
+	    <jar destfile="${jmol.applet.build.dir}/JmolApplet5.jar" manifest="manifest/applet5.txt" >
+	      <fileset dir="${applet.classes.dir}">
+	        <include name="org/openscience/jmol/**" />
+	        <include name="org/jmol/smiles/**" />
+	        <include name="org/jmol/quantum/**" />
+	        <include name="org/jmol/jvxl/**" />
+	        <include name="org/jmol/shapebio/**" />
+	        <include name="org/jmol/shapespecial/**" />
+	      </fileset>
+	    </jar>
+	
+	    <jar destfile="${jmol.applet.build.dir}/JmolApplet6.jar" manifest="manifest/applet6.txt" >
+	      <fileset dir="${applet.classes.dir}">
+	        <include name="org/jmol/shape/**" />
+	        <include name="org/jmol/viewer/**" />
+	        <include name="org/jmol/atomdata/**" />
+	        <include name="org/jmol/Jmol.properties" />
+	      </fileset>
+	    </jar>
+	
     <jar destfile="${jmol.applet.build.dir}/JmolApplet_i18n.jar" manifest="manifest/applet_i18n.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/translation/**" />

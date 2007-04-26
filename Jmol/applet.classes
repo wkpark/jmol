@@ -15,6 +15,15 @@ org/jmol/symmetry/*.java
 org/jmol/util/*.java
 org/jmol/vecmath/*.java
 org/jmol/viewer/*.java
+//
+org/jmol/atomdata/*.java
+org/jmol/geodesic/*.java
+org/jmol/modelframe/*.java
+org/jmol/shape/*.java
+org/jmol/shapebio/*.java
+org/jmol/shapespecial/*.java
+
+
 
 
 

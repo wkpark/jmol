@@ -290,4 +290,8 @@ public class TextFormat {
       m -= len;
     return str.substring(k, m + len);
   }
+
+  public static String[] split(String text, char ch) {
+    return split(text, "" + ch);
+  }
 }

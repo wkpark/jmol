@@ -336,5 +336,9 @@ public class Parser {
     char ch;
     return ((ch = str.charAt(ich)) == ' ' || ch == '\t' || ch == '\n');
   }
+
+  public static boolean isOneOf(String key, String semiList) {
+    return (';' + semiList + ';').indexOf(';' + key + ';') >= 0;
+  }
   
 }

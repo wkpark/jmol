@@ -77,7 +77,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   // DO NOT change parameters without first checking for the
   // same method in a subclass.
   
-  void transform() {
+  protected void transform() {
     for (int i = vertexCount; --i >= 0;)
       viewer.transformPoint(vertices[i], screens[i]);
   }
@@ -95,13 +95,13 @@ public abstract class MeshRenderer extends ShapeRenderer {
       renderTriangles(true, mesh.showTriangles);
   }
   
-  void renderPoints() {
+  protected void renderPoints() {
     for (int i = vertexCount; --i >= 0;)
       if (!frontOnly || transformedVectors[normixes[i]].z >= 0)
         g3d.fillSphereCentered(4, screens[i]);
   }
 
-  void renderTriangles(boolean fill, boolean iShowTriangles) {
+  protected void renderTriangles(boolean fill, boolean iShowTriangles) {
     int[][] polygonIndexes = mesh.polygonIndexes;
     short colix = mesh.colix;
     //vertexColixes are only isosurface properties of IsosurfaceMesh, not Mesh

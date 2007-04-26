@@ -50,7 +50,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       render1(imesh = (IsosurfaceMesh) isosurface.meshes[i]);
   }
 
-  void transform() {
+  protected void transform() {
     vertexValues = imesh.vertexValues;
     for (int i = vertexCount; --i >= 0;) {
       if (vertexValues == null || !Float.isNaN(vertexValues[i])
@@ -74,7 +74,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
   private final Point3f ptTemp = new Point3f();
   private final Point3i ptTempi = new Point3i();
 
-  void renderPoints() {
+  protected void renderPoints() {
     int incr = imesh.vertexIncrement;
     for (int i = (!imesh.hasGridPoints || imesh.firstRealVertex < 0 ? 0 : imesh.firstRealVertex); i < vertexCount; i += incr) {
       if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
@@ -101,7 +101,7 @@ public class IsosurfaceRenderer extends MeshRenderer {
       g3d.fillSphereCentered(4, screens[i]);
   }
 
-  void renderTriangles(boolean fill, boolean iShowTriangles) {
+  protected void renderTriangles(boolean fill, boolean iShowTriangles) {
     int[][] polygonIndexes = imesh.polygonIndexes;
     short colix = imesh.colix;
     short[] vertexColixes = imesh.vertexColixes;

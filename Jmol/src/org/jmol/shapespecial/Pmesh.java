@@ -75,7 +75,7 @@ public class Pmesh extends MeshFileCollection {
       currentMesh.clear("pmesh");
       currentMesh.isValid = readPmesh(br);
       if(currentMesh.isValid) {
-        currentMesh.initialize(Mesh.FULLYLIT);
+        currentMesh.initialize(JmolConstants.FULLYLIT);
         currentMesh.visible = true;
         currentMesh.title = title;
       }

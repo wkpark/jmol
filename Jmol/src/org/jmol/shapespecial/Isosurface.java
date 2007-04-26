@@ -238,7 +238,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
 
     if ("pocket" == propertyName) {
       Boolean pocket = (Boolean) value;
-      lighting = (pocket.booleanValue() ? Mesh.FULLYLIT : Mesh.FRONTLIT);
+      lighting = (pocket.booleanValue() ? JmolConstants.FULLYLIT : JmolConstants.FRONTLIT);
     }
     
     if ("colorRGB" == propertyName) {
@@ -356,7 +356,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   }
 
   void initializeIsosurface() {
-    lighting = Mesh.FRONTLIT;
+    lighting = JmolConstants.FRONTLIT;
     modelIndex = viewer.getCurrentModelIndex();
     isFixed = (modelIndex < 0);
     if (modelIndex < 0)
@@ -571,7 +571,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   
   public void notifySurfaceGenerationCompleted() {
     setModelIndex();
-    thisMesh.initialize(sg.getPlane() != null ? Mesh.FULLYLIT : lighting);
+    thisMesh.initialize(sg.getPlane() != null ? JmolConstants.FULLYLIT : lighting);
     setScriptInfo();
     setJvxlInfo();
   }

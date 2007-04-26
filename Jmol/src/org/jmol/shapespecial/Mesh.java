@@ -25,6 +25,7 @@
 package org.jmol.shapespecial;
 
 import org.jmol.util.ArrayUtil;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.g3d.*;
 
 import javax.vecmath.Point3f;
@@ -33,10 +34,6 @@ import javax.vecmath.Vector3f;
 public class Mesh {
   
   final static String PREVIOUS_MESH_ID = "+PREVIOUS_MESH+";
-  public final static int FRONTLIT = 0;
-  public final static int BACKLIT = 1;
-  public final static int FULLYLIT = 2;
-
   Graphics3D g3d;
   
   String[] title = null;
@@ -100,7 +97,7 @@ public class Mesh {
     this.meshType = meshType;
   }
 
-  int lighting = Mesh.FRONTLIT;
+  int lighting = JmolConstants.FRONTLIT;
   
   public void initialize(int lighting) {//used by mps
     Vector3f[] vectorSums = new Vector3f[vertexCount];
@@ -112,11 +109,11 @@ public class Mesh {
   }
 
   void initializeNormixes(int lighting, Vector3f[] vectorSums) {
-    isTwoSided = (lighting == Mesh.FULLYLIT);
+    isTwoSided = (lighting == JmolConstants.FULLYLIT);
     normixes = new short[vertexCount];
     for (int i = vertexCount; --i >= 0;)
       normixes[i] = g3d.getNormix(vectorSums[i]);
-    this.lighting = Mesh.FRONTLIT;
+    this.lighting = JmolConstants.FRONTLIT;
     setLighting(lighting);  
   }
   
@@ -124,19 +121,19 @@ public class Mesh {
      if (lighting == this.lighting)
       return;
     switch (lighting < 0 ? this.lighting : lighting) {
-    case BACKLIT:
-      if (this.lighting == FULLYLIT)
+    case JmolConstants.BACKLIT:
+      if (this.lighting == JmolConstants.FULLYLIT)
         setLighting(-1);
       for (int i = vertexCount; --i >= 0;)
         normixes[i] = g3d.getInverseNormix(normixes[i]);
       break;
-    case FULLYLIT:
-      if (lighting == BACKLIT)
+    case JmolConstants.FULLYLIT:
+      if (lighting == JmolConstants.BACKLIT)
         setLighting(-1); //reverses previous
       for (int i = vertexCount; --i >= 0;)
         normixes[i] = (short)~normixes[i];
       break;
-    case FRONTLIT:
+    case JmolConstants.FRONTLIT:
       setLighting(-1); //reverses previous
       break;
     }
@@ -241,8 +238,8 @@ public class Mesh {
     s.append(frontOnly ? " frontOnly" : " notFrontOnly");
     if (showTriangles)
       s.append(" triangles");
-    s.append(lighting == BACKLIT ? " backlit"
-        : lighting == FULLYLIT ? " fullylit" : " frontlit");
+    s.append(lighting == JmolConstants.BACKLIT ? " backlit"
+        : lighting == JmolConstants.FULLYLIT ? " fullylit" : " frontlit");
     if (!visible)
       s.append(" off");
     return s.toString();

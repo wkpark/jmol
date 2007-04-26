@@ -246,8 +246,8 @@ public abstract class MeshCollection extends Shape {
     if ((test = ("lighting" == propertyName))
         || Parser.isOneOf(propertyName, "backlit;frontlit;fulllit")) {
       int lighting = (test ? ((Integer) value).intValue()
-          : "frontlit" == propertyName ? Mesh.FRONTLIT
-              : "backlit" == propertyName ? Mesh.BACKLIT : Mesh.FULLYLIT);
+          : "frontlit" == propertyName ? JmolConstants.FRONTLIT
+              : "backlit" == propertyName ? JmolConstants.BACKLIT : JmolConstants.FULLYLIT);
       if (currentMesh != null)
         currentMesh.setLighting(lighting);
       else {

@@ -565,7 +565,7 @@ abstract class MpsRenderer extends MeshRenderer {
       for (int k = hermiteLevel * 2; --k >= 0;)
         mesh.addQuad(nPoints - k - 1, nPoints - nPer + (nPer - k) % nPer,
             nPoints - nPer + k + 1, nPoints - nPer + k + 2);
-    mesh.initialize(Mesh.FRONTLIT);
+    mesh.initialize(JmolConstants.FRONTLIT);
     //System.out.sprintln("mesh "+ mesh.thisID + " " + mesh.vertexCount+" "+mesh.vertices.length + " " + mesh.polygonCount + " " + mesh.polygonIndexes.length);
     meshReady[i] = true;
     mesh.setVisibilityFlags(1);
@@ -597,7 +597,7 @@ abstract class MpsRenderer extends MeshRenderer {
       mesh.addTriangle((k + 1) % nPer, nPer, k);
     for (int k = level * 2; --k >= 0;)
       mesh.addQuad(k + 2, k + 1, (nPer - k) % nPer, nPer - k - 1);
-    mesh.initialize(Mesh.FRONTLIT);
+    mesh.initialize(JmolConstants.FRONTLIT);
     meshReady[i] = true;
     mesh.setVisibilityFlags(1);
   }

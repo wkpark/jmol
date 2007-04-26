@@ -185,7 +185,7 @@ public class Draw extends MeshCollection {
       if (thisMesh != null) {
         // no points in this script statement
         scaleDrawing(thisMesh, newScale);
-        thisMesh.initialize(Mesh.FULLYLIT);
+        thisMesh.initialize(JmolConstants.FULLYLIT);
       }
       return;
     }
@@ -246,7 +246,7 @@ public class Draw extends MeshCollection {
             && newScale == 1)
           newScale = length;
         scaleDrawing(thisMesh, newScale);
-        thisMesh.initialize(Mesh.FULLYLIT);
+        thisMesh.initialize(JmolConstants.FULLYLIT);
         setAxes(thisMesh);
         thisMesh.title = title;
         thisMesh.visible = isVisible; 

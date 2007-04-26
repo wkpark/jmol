@@ -72,6 +72,7 @@ class IsoSolventReader extends AtomDataReader {
     cavityRadius = params.cavityRadius;
     envelopeRadius = params.envelopeRadius;
     solventRadius = params.solventRadius;
+    point = params.point;
 
     doCalculateTroughs = (atomDataServer != null && !isCavity  // Jvxl needs an atom iterator to do this.
         && solventRadius > 0 

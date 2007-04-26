@@ -124,9 +124,9 @@ import java.util.Vector;
 
 import org.jmol.quantum.MepCalculation;
 import org.jmol.quantum.MOCalculation;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.StateManager;
 
 public class Parameters {
 
@@ -353,7 +353,7 @@ public class Parameters {
     cutoff = Float.MIN_VALUE;
     isCutoffAbsolute = false;
     isSilent = !logMessages;
-    script = " center " + StateManager.escape(center) + " SPHERE "
+    script = " center " + Escape.escape(center) + " SPHERE "
          + radius;
   }
   
@@ -364,7 +364,7 @@ public class Parameters {
     cutoff = Float.MIN_VALUE;
     isCutoffAbsolute = false;
     isSilent = !logMessages;
-    script = " center " + StateManager.escape(center)
+    script = " center " + Escape.escape(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale) + " ELLIPSOID {" + v.x
         + " " + v.y + " " + v.z + " " + v.w + "}";
   }
@@ -375,7 +375,7 @@ public class Parameters {
     if (cutoff == Float.MAX_VALUE)
       cutoff = defaultOrbitalCutoff;
     isSilent = !logMessages;
-    script = " center " + StateManager.escape(center)
+    script = " center " + Escape.escape(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale) + " LOBE {" + v.x + " "
         + v.y + " " + v.z + " " + v.w + "}";
   }

@@ -726,7 +726,7 @@ support for assertions (which were introduced in 1.4).
     </copy>
 
     <!-- Jvxl -->
-    <copy file="build/Jvxl.jar" tofile="build/dist/Jvxl-${jvxl_version}.jar" />
+    <copy file="build/Jvxl.jar" tofile="build/dist/Jvxl-${jvxl_version}.jar" failonerror="false" />
 
     <!-- remove if really obsolete - for now only uncommented -->
     <!-- <copy todir="build/dist/jmol-${version}/samples" >

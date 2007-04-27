@@ -65,6 +65,10 @@ class Text3D {
   int size;
   int[] bitmap;
   
+  public int getWidth() {
+    return width;
+  }
+  
   static void plot(int x, int y, int z, int argb, int argbBackground,
                    String text, Font3D font3d, Graphics3D g3d) {
     if (text.length() == 0)
@@ -72,6 +76,8 @@ class Text3D {
     //setColix has presumably been carried out for argb, and the two 
     //are assumed to be both the same -- translucent or not. 
     Text3D text3d = getText3D(text, font3d, g3d.platform);
+    if (text3d.width == 0)
+      return;
     int[] bitmap = text3d.bitmap;
     int textWidth = text3d.width;
     int textHeight = text3d.height;
@@ -159,18 +165,20 @@ class Text3D {
   }
 
   private Text3D(String text, Font3D font3d, Platform3D platform) {
-    calcMetrics(text, font3d);
+    if (!calcMetrics(text, font3d))
+      return;
     platform.checkOffscreenSize(width, height);
     renderOffscreen(text, font3d, platform);
     rasterize(platform);
   }
 
-  private void calcMetrics(String text, Font3D font3d) {
+  private boolean calcMetrics(String text, Font3D font3d) {
     FontMetrics fontMetrics = font3d.fontMetrics;
     ascent = fontMetrics.getAscent();
     height = ascent + fontMetrics.getDescent();
     width = fontMetrics.stringWidth(text);
-    size = width*height;
+    size = width * height;
+    return (width > 0);
   }
 
   private void renderOffscreen(String text, Font3D font3d, Platform3D platform) {
@@ -252,7 +260,8 @@ class Text3D {
       htFont3d.put(font3d, htForThisFont);
     }
     Text3D text3d = new Text3D(text, font3d, platform);
-    htForThisFont.put(text, text3d);
+    if (text3d != null)
+      htForThisFont.put(text, text3d);
     return text3d;
   }
 }

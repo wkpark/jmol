@@ -10,7 +10,7 @@
   <!-- for some reason, I can't get ant to use this ${java.version}
        property as the value of the source parameter -->
   <property name="java.version" value="1.4" />
-  <property name="debug" value="on" />
+  <property name="debug" value="off" />
   <property name="deprecation" value="off" />
   <property name="optimization" value="off" />
 
@@ -517,10 +517,18 @@ support for assertions (which were introduced in 1.4).
 	    <jar destfile="${jmol.applet.build.dir}/JmolApplet4.jar" manifest="manifest/applet4.txt" >
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/adapter/smarter/**" />
+	        <include name="org/jmol/adapter/readers/**" />
 	        <include name="org/jmol/symmetry/**" />
 	      </fileset>
 	    </jar>
-	
+
+	    <jar destfile="${jmol.applet.build.dir}/JmolApplet4b.jar" manifest="manifest/applet4b.txt" >
+	      <fileset dir="${applet.classes.dir}">
+	        <include name="org/jmol/adapter/smarter/**" />
+	        <include name="org/jmol/symmetry/**" />
+	      </fileset>
+	    </jar>
+
 	    <jar destfile="${jmol.applet.build.dir}/JmolApplet5.jar" manifest="manifest/applet5.txt" >
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/openscience/jmol/**" />

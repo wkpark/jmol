@@ -27,12 +27,13 @@ package org.jmol.adapter.smarter;
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
-import org.jmol.adapter.readers.XmlReader;
 import org.jmol.util.Logger;
 import java.util.Hashtable;
 
 class Resolver {
 
+  private final static String classBase = "org.jmol.adapter.readers.";
+  
   static String getFileType(BufferedReader br) {
     try {
       return determineAtomSetCollectionReader(br, false);
@@ -47,7 +48,7 @@ class Resolver {
 
   static Object resolve(String name, BufferedReader bufferedReader,
                         Hashtable htParams) throws Exception {
-    AtomSetCollectionReader atomSetCollectionReader;
+    AtomSetCollectionReader atomSetCollectionReader = null;
     String atomSetCollectionReaderName = determineAtomSetCollectionReader(
         bufferedReader, true);
     if (atomSetCollectionReaderName.indexOf("\n") >= 0)
@@ -56,16 +57,27 @@ class Resolver {
     Logger.info("The Resolver thinks " + atomSetCollectionReaderName);
     String className = null;
     Class atomSetCollectionReaderClass;
-    String classBase = "org.jmol.adapter.readers.";
+    String err = null;
     try {
       className = classBase + atomSetCollectionReaderName + "Reader";
       atomSetCollectionReaderClass = Class.forName(className);
       atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
           .newInstance();
     } catch (Exception e) {
-      String err = "File reader was not found:" + classBase + className;
-      Logger.error(err, e);
-      return err;
+        err = "File reader was not found:" + "./org/jmol/adapter/readers/" + className;
+        Logger.error(err, e);
+    }
+    if (err != null) {
+      try {
+        className = atomSetCollectionReaderName + "Reader";
+        atomSetCollectionReaderClass = Class.forName(className);
+        atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
+            .newInstance();
+      } catch (Exception e) { 
+          err = "File reader was not found:" + className;
+          Logger.error(err, e);
+          return err;
+      }      
     }
     atomSetCollectionReader.initialize(htParams);
     AtomSetCollection atomSetCollection = atomSetCollectionReader
@@ -76,10 +88,19 @@ class Resolver {
   }
 
   static Object DOMResolve(Object DOMNode) throws Exception {
-    AtomSetCollectionReader atomSetCollectionReader = new XmlReader();
-
+    String className = null;
+    Class atomSetCollectionReaderClass;
+    AtomSetCollectionReader atomSetCollectionReader; 
+    try {
+      className = classBase + "XmlReader";
+      atomSetCollectionReaderClass = Class.forName(className);
+      atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass.newInstance();
+    } catch (Exception e) {
+      String err = "File reader was not found:" + "./org/jmol/adapter/readers/" + className;
+      Logger.error(err, e);
+      return err;
+    }
     atomSetCollectionReader.initialize();
-
     AtomSetCollection atomSetCollection =
       atomSetCollectionReader.readAtomSetCollectionFromDOM(DOMNode);
     return finalize(atomSetCollection, "DOM node");

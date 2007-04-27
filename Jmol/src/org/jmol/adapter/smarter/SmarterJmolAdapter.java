@@ -177,7 +177,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
    * **************************************************************/
 
   public int getEstimatedAtomCount(Object clientFile) {
-    return ((AtomSetCollection)clientFile).atomCount;
+    return ((AtomSetCollection)clientFile).getAtomCount();
   }
 
   public boolean coordinatesAreFractional(Object clientFile) {
@@ -234,15 +234,19 @@ public class SmarterJmolAdapter extends JmolAdapter {
     AtomSetCollection atomSetCollection;
     int iatom;
     Atom atom;
+    int atomCount;
+    Atom[] atoms;
 
     AtomIterator(AtomSetCollection atomSetCollection) {
       this.atomSetCollection = atomSetCollection;
+      this.atomCount = atomSetCollection.atomCount;
+      this.atoms = atomSetCollection.atoms;
       iatom = 0;
     }
     public boolean hasNext() {
-      if (iatom == atomSetCollection.atomCount)
+      if (iatom == atomCount)
         return false;
-      atom = atomSetCollection.atoms[iatom++];
+      atom = atoms[iatom++];
       return true;
     }
     public int getAtomSetIndex() { return atom.atomSetIndex; }
@@ -283,15 +287,18 @@ public class SmarterJmolAdapter extends JmolAdapter {
     Bond[] bonds;
     int ibond;
     Bond bond;
-
+    int bondCount;
+    
     BondIterator(AtomSetCollection atomSetCollection) {
       this.atomSetCollection = atomSetCollection;
       //atoms = atomSetCollection.atoms;
       bonds = atomSetCollection.bonds;
+      bondCount = atomSetCollection.bondCount;
+      
       ibond = 0;
     }
     public boolean hasNext() {
-      if (ibond == atomSetCollection.bondCount)
+      if (ibond == bondCount)
         return false;
       bond = bonds[ibond++];
       return true;

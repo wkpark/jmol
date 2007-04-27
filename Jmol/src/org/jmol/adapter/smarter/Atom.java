@@ -27,32 +27,32 @@ package org.jmol.adapter.smarter;
 import javax.vecmath.Point3f;
 import java.util.BitSet;
 
-class Atom extends Point3f implements Cloneable {
-  int atomSetIndex;
-  int atomIndex;
-  BitSet bsSymmetry;
-  int atomSite;
-  String elementSymbol;
-  short elementNumber = -1;
-  String atomName;
-  int formalCharge = Integer.MIN_VALUE;
+public class Atom extends Point3f implements Cloneable {
+  public int atomSetIndex;
+  public int atomIndex;
+  public BitSet bsSymmetry;
+  public int atomSite;
+  public String elementSymbol;
+  public short elementNumber = -1;
+  public String atomName;
+  public int formalCharge = Integer.MIN_VALUE;
   {set(Float.NaN, Float.NaN, Float.NaN);}
-  float partialCharge = Float.NaN;
-  float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
-  float bfactor = Float.NaN;
-  int occupancy = 100;
-  boolean isHetero;
-  int atomSerial = Integer.MIN_VALUE;
-  char chainID = '\0';
-  char alternateLocationID = '\0';
-  String group3;
-  int sequenceNumber = Integer.MIN_VALUE;
-  char insertionCode = '\0';
+  public float partialCharge = Float.NaN;
+  public float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
+  public float bfactor = Float.NaN;
+  public int occupancy = 100;
+  public boolean isHetero;
+  public int atomSerial = Integer.MIN_VALUE;
+  public char chainID = '\0';
+  public char alternateLocationID = '\0';
+  public String group3;
+  public int sequenceNumber = Integer.MIN_VALUE;
+  public char insertionCode = '\0';
 
-  Atom() {
+  public Atom() {
   }
 
-  Atom cloneAtom() throws Exception {
+  public Atom cloneAtom() throws Exception {
     try {
       return (Atom)super.clone();
     } catch (Exception cnse) {
@@ -60,7 +60,7 @@ class Atom extends Point3f implements Cloneable {
       }
   }
 
-  String getElementSymbol() {
+  public String getElementSymbol() {
     if (elementSymbol == null)
       if (atomName != null) {
         int len = atomName.length();
@@ -88,7 +88,7 @@ class Atom extends Point3f implements Cloneable {
     return elementSymbol;
   }
 
-  void addVibrationVector(float vectorX, float vectorY, float vectorZ) {
+  public void addVibrationVector(float vectorX, float vectorY, float vectorZ) {
     this.vectorX = vectorX;
     this.vectorY = vectorY;
     this.vectorZ = vectorZ;
@@ -245,17 +245,17 @@ class Atom extends Point3f implements Cloneable {
     1 << ('r' - 'a')
   };
 
-  static boolean isValidElementSymbol(char ch) {
+  public static boolean isValidElementSymbol(char ch) {
     return ch >= 'A' && ch <= 'Z' && elementCharMasks[ch - 'A'] < 0;
   }
 
-  static boolean isValidElementSymbol(char chFirst, char chSecond) {
+  public static boolean isValidElementSymbol(char chFirst, char chSecond) {
     if (chFirst < 'A' || chFirst > 'Z' || chSecond < 'a' || chSecond > 'z')
       return false;
     return ((elementCharMasks[chFirst - 'A'] >> (chSecond - 'a')) & 1) != 0;
   }
 
-  static boolean isValidElementSymbolNoCaseSecondChar(char chFirst,
+  public static boolean isValidElementSymbolNoCaseSecondChar(char chFirst,
                                                       char chSecond) {
     if (chSecond >= 'A' && chSecond <= 'Z')
       chSecond += 'a' - 'A';
@@ -264,11 +264,11 @@ class Atom extends Point3f implements Cloneable {
     return ((elementCharMasks[chFirst - 'A'] >> (chSecond - 'a')) & 1) != 0;
   }
 
-  static boolean isValidFirstSymbolChar(char ch) {
+  public static boolean isValidFirstSymbolChar(char ch) {
     return ch >= 'A' && ch <= 'Z' && elementCharMasks[ch - 'A'] != 0;
   }
 
-  static boolean isValidElementSymbolNoCaseSecondChar(String str) {
+  public static boolean isValidElementSymbolNoCaseSecondChar(String str) {
     if (str == null)
       return false;
     int length = str.length();

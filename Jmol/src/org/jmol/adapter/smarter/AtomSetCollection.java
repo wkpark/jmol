@@ -36,7 +36,7 @@ import org.jmol.symmetry.UnitCell;
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
 
-class AtomSetCollection {
+public class AtomSetCollection {
   String fileTypeName;
   String collectionName;
   Properties atomSetCollectionProperties = new Properties();
@@ -49,7 +49,7 @@ class AtomSetCollection {
   final static int GLOBAL_SYMMETRY = 1;
   final static int GLOBAL_latticeCells = 2;
   
-   final static String[] notionalUnitcellTags =
+   final public static String[] notionalUnitcellTags =
   { "a", "b", "c", "alpha", "beta", "gamma" };
 
   final static String[] dictRefUnitcellTags =
@@ -58,13 +58,48 @@ class AtomSetCollection {
    "cif:_cell_length_gamma"};
 
   int atomCount;
+  public int getAtomCount() {
+    return atomCount;
+  }
+  
   Atom[] atoms = new Atom[256];
+  
+  public Atom[] getAtoms() {
+    return atoms;
+  }
+  
+  public Atom getAtom(int i) {
+    return atoms[i];
+  }
+  
   int bondCount;
+  
+  public int getBondCount() {
+    return bondCount;
+  }
+  
   Bond[] bonds = new Bond[256];
+  
+  public Bond[] getBonds() {
+    return bonds;
+  }
+  
+  public Bond getBond(int i) {
+    return bonds[i];
+  }
+  
   int structureCount;
   Structure[] structures = new Structure[16];
   int atomSetCount;
+  public int getAtomSetCount() {
+    return atomSetCount;
+  }
+  
   int currentAtomSetIndex = -1;
+  public int getCurrentAtomSetIndex() {
+    return currentAtomSetIndex;
+  }
+
   int[] atomSetNumbers = new int[16];
   String[] atomSetNames = new String[16];
   int[] atomSetAtomCounts = new int[16];
@@ -72,7 +107,7 @@ class AtomSetCollection {
   Hashtable[] atomSetAuxiliaryInfo = new Hashtable[16];
   int[] latticeCells;
 
-  String errorMessage;
+  public String errorMessage;
 
   //float wavelength = Float.NaN;
   boolean coordinatesAreFractional;
@@ -84,7 +119,7 @@ class AtomSetCollection {
   SpaceGroup spaceGroup;
   UnitCell unitCell;
 
-  AtomSetCollection(String fileTypeName) {
+  public AtomSetCollection(String fileTypeName) {
     this.fileTypeName = fileTypeName;
     // set the default PATH properties as defined in the SmarterJmolAdapter
     atomSetCollectionProperties.put("PATH_KEY",
@@ -100,7 +135,7 @@ class AtomSetCollection {
    * @param array Array of AtomSetCollection
    */
   
-  AtomSetCollection(AtomSetCollection[] array) {
+  public AtomSetCollection(AtomSetCollection[] array) {
     this("Array");
     setAtomSetCollectionAuxiliaryInfo("isMultiFile", Boolean.TRUE);
     for (int i = 0; i < array.length; i++) {
@@ -112,7 +147,7 @@ class AtomSetCollection {
    * Just sets the overall file type after the fact.
    * @param type
    */
-  void setFileTypeName(String type) {
+  public void setFileTypeName(String type) {
     fileTypeName = type;
   }
   
@@ -216,7 +251,7 @@ class AtomSetCollection {
     getInsertionLists();
   }
 
-  void discardPreviousAtoms() {
+  public void discardPreviousAtoms() {
     for (int i = atomCount; --i >= 0; )
       atoms[i] = null;
     atomCount = 0;
@@ -229,7 +264,7 @@ class AtomSetCollection {
     }
   }
 
-  void removeAtomSet() {
+  public void removeAtomSet() {
     if (currentAtomSetIndex < 0)
       return;
     currentAtomSetIndex--;
@@ -246,13 +281,13 @@ class AtomSetCollection {
   // FIX ME This should really also clone the other things pertaining
   // to an atomSet, like the bonds (which probably should be remade...)
   // but also the atomSetProperties and atomSetName...
-  void cloneFirstAtomSet() throws Exception {
+  public void cloneFirstAtomSet() throws Exception {
     newAtomSet();
     for (int i = 0, firstCount = atomSetAtomCounts[0]; i < firstCount; ++i)
       newCloneAtom(atoms[i]);
   }
 
-  void cloneFirstAtomSetWithBonds(int nBonds) throws Exception {
+  public void cloneFirstAtomSetWithBonds(int nBonds) throws Exception {
     cloneFirstAtomSet();
     int firstCount = atomSetAtomCounts[0];
     for (int bondNum = 0; bondNum < nBonds; bondNum++) {
@@ -263,7 +298,7 @@ class AtomSetCollection {
 
   }
 
-  void cloneLastAtomSet() throws Exception {
+  public void cloneLastAtomSet() throws Exception {
     //Logger.debug("cloneLastAtomSet");
     //Logger.debug("b4 atomCount=" + atomCount);
     //Logger.debug("atomSetCount=" + atomSetCount);
@@ -277,26 +312,26 @@ class AtomSetCollection {
     //Logger.debug("after atomCount=" + atomCount);
   }
   
-  int getFirstAtomSetAtomCount() {
+  public int getFirstAtomSetAtomCount() {
     return atomSetAtomCounts[0];
   }
 
-  int getLastAtomSetAtomCount() {
+  public int getLastAtomSetAtomCount() {
     return atomSetAtomCounts[currentAtomSetIndex];
   }
 
-  int getLastAtomSetAtomIndex() {
+  public int getLastAtomSetAtomIndex() {
     //Logger.debug("atomSetCount=" + atomSetCount);
     return atomCount - atomSetAtomCounts[currentAtomSetIndex];
   }
 
-  Atom addNewAtom() {
+  public Atom addNewAtom() {
     Atom atom = new Atom();
     addAtom(atom);
     return atom;
   }
 
-  void addAtom(Atom atom) {
+  public void addAtom(Atom atom) {
     if (atomCount == atoms.length)
       atoms = (Atom[])ArrayUtil.doubleLength(atoms);
     atom.atomIndex = atomCount;
@@ -315,17 +350,17 @@ class AtomSetCollection {
     atom.atomSite = atomSetAtomCounts[currentAtomSetIndex]++;
   }
 
-  void addAtomWithMappedName(Atom atom) {
+  public void addAtomWithMappedName(Atom atom) {
     addAtom(atom);
     mapMostRecentAtomName();
   }
 
-  void addAtomWithMappedSerialNumber(Atom atom) {
+  public void addAtomWithMappedSerialNumber(Atom atom) {
     addAtom(atom);
     mapMostRecentAtomSerialNumber();
   }
 
-  Bond addNewBond(int atomIndex1, int atomIndex2) {
+  public Bond addNewBond(int atomIndex1, int atomIndex2) {
     return addNewBond(atomIndex1, atomIndex2, 1);
   }
 
@@ -333,7 +368,7 @@ class AtomSetCollection {
     return addNewBond(atomName1, atomName2, 1);
   }
 
-  Bond addNewBond(int atomIndex1, int atomIndex2, int order) {
+  public Bond addNewBond(int atomIndex1, int atomIndex2, int order) {
     if (atomIndex1 < 0 || atomIndex1 >= atomCount ||
         atomIndex2 < 0 || atomIndex2 >= atomCount)
       return null;
@@ -342,20 +377,20 @@ class AtomSetCollection {
     return bond;
   }
   
-  Bond addNewBond(String atomName1, String atomName2, int order) {
+  public Bond addNewBond(String atomName1, String atomName2, int order) {
     return addNewBond(getAtomNameIndex(atomName1),
                       getAtomNameIndex(atomName2),
                       order);
   }
 
-  Bond addNewBondWithMappedSerialNumbers(int atomSerial1, int atomSerial2,
+  public Bond addNewBondWithMappedSerialNumbers(int atomSerial1, int atomSerial2,
                                          int order) {
     return addNewBond(getAtomSerialNumberIndex(atomSerial1),
                       getAtomSerialNumberIndex(atomSerial2),
                       order);
   }
 
-  void addBond(Bond bond) {
+  public void addBond(Bond bond) {
     if (bond.atomIndex1 < 0 ||
         bond.atomIndex2 < 0 ||
         bond.order < 0) {
@@ -371,7 +406,7 @@ class AtomSetCollection {
     bonds[bondCount++] = bond;
   }
 
-  void addStructure(Structure structure) {
+  public void addStructure(Structure structure) {
     if (structureCount == structures.length)
       structures = (Structure[])ArrayUtil.setLength(structures,
                                                       structureCount + 32);
@@ -425,7 +460,7 @@ class AtomSetCollection {
     return true;
   }
   
-  void setLatticeParameter(int latt) {
+  public void setLatticeParameter(int latt) {
     if (spaceGroup == null)
       spaceGroup = new SpaceGroup(doNormalize);
     spaceGroup.setLattice(latt);
@@ -596,7 +631,7 @@ class AtomSetCollection {
   
   
   
-  void setCollectionName(String collectionName) {
+  public void setCollectionName(String collectionName) {
     if (collectionName != null) {
       collectionName = collectionName.trim();
       if (collectionName.length() > 0)
@@ -630,7 +665,7 @@ class AtomSetCollection {
     atomSymbolicMap.put(atomName, new Integer(atomIndex));
   }
 
-  int getAtomNameIndex(String atomName) {
+  public int getAtomNameIndex(String atomName) {
     //for new Bond -- inconsistent with mmCIF altLoc
     int index = -1;
     Object value = atomSymbolicMap.get(atomName);
@@ -652,7 +687,7 @@ class AtomSetCollection {
    * @param key The poperty key.
    * @param value The property value.
    */
-  void setAtomSetCollectionProperty(String key, String value) {
+  public void setAtomSetCollectionProperty(String key, String value) {
     atomSetCollectionProperties.put(key, value);
   }
   
@@ -660,7 +695,7 @@ class AtomSetCollection {
     return (String) atomSetCollectionProperties.get(key);
   }
   
-  void setAtomSetCollectionAuxiliaryInfo(String key, Object value) {
+  public void setAtomSetCollectionAuxiliaryInfo(String key, Object value) {
     atomSetCollectionAuxiliaryInfo.put(key, value);
   }
   
@@ -671,7 +706,7 @@ class AtomSetCollection {
    * @return true if the data exist; false if not  
    */
 
-  boolean setAtomSetCollectionPartialCharges(String auxKey) {
+  public boolean setAtomSetCollectionPartialCharges(String auxKey) {
     if (! atomSetCollectionAuxiliaryInfo.containsKey(auxKey))
       return false;
     Vector atomData = (Vector) atomSetCollectionAuxiliaryInfo.get(auxKey);
@@ -680,11 +715,11 @@ class AtomSetCollection {
     return true;
   }
   
-  void mapPartialCharge(String atomName, float charge) {
+  public void mapPartialCharge(String atomName, float charge) {
     atoms[getAtomNameIndex(atomName)].partialCharge = charge;  
   }
   
-  Object getAtomSetCollectionAuxiliaryInfo(String key) {
+  public Object getAtomSetCollectionAuxiliaryInfo(String key) {
     return atomSetCollectionAuxiliaryInfo.get(key);
   }
   
@@ -716,7 +751,7 @@ class AtomSetCollection {
     setAtomSetCollectionAuxiliaryInfo("trajectories", trajectories);
   }
   
-  void newAtomSet() {
+  public void newAtomSet() {
     bondIndex0 = bondCount;
     if (isTrajectory) {
       if (trajectory == null && atomCount > 0)
@@ -752,7 +787,7 @@ class AtomSetCollection {
   *
   * @param atomSetName The name to be associated with the current AtomSet
   */
-  void setAtomSetName(String atomSetName) {
+  public void setAtomSetName(String atomSetName) {
     atomSetNames[currentAtomSetIndex] = atomSetName;
   }
   
@@ -762,7 +797,7 @@ class AtomSetCollection {
   * @param atomSetName The number to be associated with the AtomSet
   * @param atomSetIndex The index of the AtomSet that needs the association
   */
-  void setAtomSetName(String atomSetName, int atomSetIndex) {
+  public void setAtomSetName(String atomSetName, int atomSetIndex) {
     atomSetNames[atomSetIndex] = atomSetName;
   }
   
@@ -771,7 +806,7 @@ class AtomSetCollection {
    * @param atomSetName The name
    * @param n The number of last AtomSets that need these set
    */
-  void setAtomSetNames(String atomSetName, int n) {
+  public void setAtomSetNames(String atomSetName, int n) {
     for (int idx = currentAtomSetIndex; --n >= 0; --idx)
       setAtomSetName( atomSetName, idx);
   }
@@ -781,7 +816,7 @@ class AtomSetCollection {
   *
   * @param atomSetNumber The number for the current AtomSet.
   */
-  void setAtomSetNumber(int atomSetNumber) {
+  public void setAtomSetNumber(int atomSetNumber) {
     atomSetNumbers[currentAtomSetIndex] = atomSetNumber;
   }
   
@@ -791,7 +826,7 @@ class AtomSetCollection {
   * @param key The key for the property
   * @param value The value to be associated with the key
   */
-  void setAtomSetProperty(String key, String value) {
+  public void setAtomSetProperty(String key, String value) {
     setAtomSetProperty(key, value, currentAtomSetIndex);
   }
 
@@ -801,7 +836,7 @@ class AtomSetCollection {
   * @param key The key for the property
   * @param value The value to be associated with the key
   */
-  void setAtomSetAuxiliaryInfo(String key, Object value) {
+  public void setAtomSetAuxiliaryInfo(String key, Object value) {
     setAtomSetAuxiliaryInfo(key, value, currentAtomSetIndex);
   }
 
@@ -829,7 +864,7 @@ class AtomSetCollection {
   * @param value The value for the property
   * @param atomSetIndex The index of the AtomSet to get the property
   */
-  void setAtomSetProperty(String key, String value, int atomSetIndex) {
+  public void setAtomSetProperty(String key, String value, int atomSetIndex) {
     // lazy instantiation of the Properties object
     if (atomSetProperties[atomSetIndex] == null)
       atomSetProperties[atomSetIndex] = new Properties();
@@ -856,7 +891,7 @@ class AtomSetCollection {
    * @param value The value of the property
    * @param n The number of last AtomSets that need these set
    */
-  void setAtomSetProperties(String key, String value, int n) {
+  public void setAtomSetProperties(String key, String value, int n) {
     for (int idx=currentAtomSetIndex; --n >= 0; --idx) {
       setAtomSetProperty(key, value, idx);
     }    
@@ -867,7 +902,7 @@ class AtomSetCollection {
    * Clones the properties of the last atom set and associates it
    * with the current atom set. 
    */
-  void cloneLastAtomSetProperties() {
+  public void cloneLastAtomSetProperties() {
     cloneAtomSetProperties(currentAtomSetIndex-1);
   }
 

@@ -75,131 +75,132 @@ import java.util.Hashtable;
  * 
  */
 
-abstract class AtomSetCollectionReader {
-  AtomSetCollection atomSetCollection;
-  BufferedReader reader;
-  String line, prevline;
-  long ptLine;
+public abstract class AtomSetCollectionReader {
+  public AtomSetCollection atomSetCollection;
+  public BufferedReader reader;
+  public String line, prevline;
+  
+  private long ptLine;
   
 
-  final static float ANGSTROMS_PER_BOHR = 0.5291772f;
+  public final static float ANGSTROMS_PER_BOHR = 0.5291772f;
 
-  int desiredModelNumber;
-  int modelNumber;
-  boolean iHaveDesiredModel;
+  public int desiredModelNumber;
+  public int modelNumber;
+  public boolean iHaveDesiredModel;
 
-  String spaceGroup;
-  UnitCell unitcell;
-  float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
-  int[] latticeCells = new int[3];
-  int desiredSpaceGroupIndex;
+  public String spaceGroup;
+  public UnitCell unitcell;
+  public float[] notionalUnitCell; //0-5 a b c alpha beta gamma; 6-21 matrix c->f
+  public int[] latticeCells = new int[3];
+  public int desiredSpaceGroupIndex;
 
-  int[] next = new int[1];
+  public int[] next = new int[1];
   
   // parser functions are static, so they need notstatic counterparts
    
   
-  String[] getTokens() {
+  protected String[] getTokens() {
     return Parser.getTokens(line);  
   }
   
-  static void getTokensFloat(String s, float[] f, int n) {
+  protected static void getTokensFloat(String s, float[] f, int n) {
     Parser.parseFloatArray(getTokens(s), f, n);
   }
   
-  static String[] getTokens(String s) {
+  protected static String[] getTokens(String s) {
     return Parser.getTokens(s);  
   }
   
-  static String[] getTokens(String s, int iStart) {
+  protected static String[] getTokens(String s, int iStart) {
     return Parser.getTokens(s, iStart);  
   }
   
-  float parseFloat() {
+  protected float parseFloat() {
     return Parser.parseFloat(line, next);
   }
 
-  float parseFloat(String s) {
+  public float parseFloat(String s) {
     next[0] = 0;
     return Parser.parseFloat(s, next);
   }
 
-  float parseFloat(String s, int iStart, int iEnd) {
+  protected float parseFloat(String s, int iStart, int iEnd) {
     next[0] = iStart;
     return Parser.parseFloat(s, iEnd, next);
   }
   
-  int parseInt() {
+  protected int parseInt() {
     return Parser.parseInt(line, next);
   }
   
-  int parseInt(String s) {
+  public int parseInt(String s) {
     next[0] = 0;
     return Parser.parseInt(s, next);
   }
   
-  int parseInt(String s, int iStart) {
+  protected int parseInt(String s, int iStart) {
     next[0] = iStart;
     return Parser.parseInt(s, next);
   }
   
-  int parseInt(String s, int iStart, int iEnd) {
+  protected int parseInt(String s, int iStart, int iEnd) {
     next[0] = iStart;
     return Parser.parseInt(s, iEnd, next);
   }
 
-  String parseToken() {
+  protected String parseToken() {
     return Parser.parseToken(line, next);
   }
   
-  String parseToken(String s) {
+  protected String parseToken(String s) {
     next[0] = 0;
     return Parser.parseToken(s, next);
   }
   
-  String parseTokenNext(String s) {
+  protected String parseTokenNext(String s) {
     return Parser.parseToken(s, next);
   }
 
-  String parseToken(String s, int iStart, int iEnd) {
+  protected String parseToken(String s, int iStart, int iEnd) {
     next[0] = iStart;
     return Parser.parseToken(s, iEnd, next);
   }
   
-  static String parseTrimmed(String s, int iStart) {
+  protected static String parseTrimmed(String s, int iStart) {
     return Parser.parseTrimmed(s, iStart);
   }
   
-  static String parseTrimmed(String s, int iStart, int iEnd) {
+  protected static String parseTrimmed(String s, int iStart, int iEnd) {
     return Parser.parseTrimmed(s, iStart, iEnd);
   }
   
   // load options:
 
-  boolean doApplySymmetry;
+  protected boolean doApplySymmetry;
   boolean doConvertToFractional;
   boolean fileCoordinatesAreFractional;
   boolean ignoreFileUnitCell;
-  boolean ignoreFileSymmetryOperators;
+  protected boolean ignoreFileSymmetryOperators;
   boolean ignoreFileSpaceGroupName;
   boolean isTrajectory;
-  boolean applySymmetryToBonds;
+  protected boolean applySymmetryToBonds;
   
 
   // state variables
-  boolean iHaveUnitCell;
+  public boolean iHaveUnitCell;
   //boolean iHaveCartesianToFractionalMatrix;
-  boolean iHaveFractionalCoordinates;
-  boolean iHaveSymmetryOperators;
-  boolean needToApplySymmetry;
+  private boolean iHaveFractionalCoordinates;
+  private boolean iHaveSymmetryOperators;
+  public boolean needToApplySymmetry;
 
-  abstract AtomSetCollection readAtomSetCollection(BufferedReader reader);
+  public abstract AtomSetCollection readAtomSetCollection(BufferedReader reader);
 
-  AtomSetCollection readAtomSetCollectionFromDOM(Object DOMNode) {
+  public AtomSetCollection readAtomSetCollectionFromDOM(Object DOMNode) {
     return null;
   }
 
-  AtomSetCollection setError(Exception e) {
+  public AtomSetCollection setError(Exception e) {
     e.printStackTrace();
     if (line == null)
       atomSetCollection.errorMessage = "Unexpected end of file after line "
@@ -210,7 +211,7 @@ abstract class AtomSetCollectionReader {
     return atomSetCollection;
   }
   
-  void initialize() {
+  public void initialize() {
     // called by the resolver
     modelNumber = 0;
     desiredModelNumber = -1;
@@ -239,7 +240,7 @@ abstract class AtomSetCollectionReader {
     initializeSymmetry();
   }
 
-  void initialize(Hashtable htParams) {
+  public void initialize(Hashtable htParams) {
     initialize();
     int[] params = null;
     if (htParams != null) {
@@ -306,7 +307,7 @@ abstract class AtomSetCollectionReader {
     needToApplySymmetry = false;
   }
 
-  void newAtomSet(String name) {
+  public void newAtomSet(String name) {
     if (atomSetCollection.currentAtomSetIndex >= 0) {
       atomSetCollection.newAtomSet();
       atomSetCollection.setCollectionName("<collection of "
@@ -317,13 +318,13 @@ abstract class AtomSetCollectionReader {
     Logger.debug(name);
   }
 
-  void setSpaceGroupName(String name) {
+  public void setSpaceGroupName(String name) {
     if (ignoreFileSpaceGroupName)
       return;
     spaceGroup = name.trim();
   }
 
-  void setSymmetryOperator(String jonesFaithful) {
+  public void setSymmetryOperator(String jonesFaithful) {
     if (ignoreFileSymmetryOperators)
       return;
     atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds);
@@ -332,8 +333,8 @@ abstract class AtomSetCollectionReader {
     iHaveSymmetryOperators = true;
   }
 
-  int nMatrixElements = 0;
-  void initializeCartesianToFractional() {
+  private int nMatrixElements = 0;
+  public void initializeCartesianToFractional() {
     for (int i = 0; i < 16; i++)
       if (!Float.isNaN(notionalUnitCell[6 + i]))
         return; //just do this once
@@ -342,7 +343,7 @@ abstract class AtomSetCollectionReader {
     nMatrixElements = 0;
   }
 
-  void setUnitCellItem(int i, float x) {
+  public void setUnitCellItem(int i, float x) {
     if (ignoreFileUnitCell)
       return;
     if (i >= 6 && Float.isNaN(notionalUnitCell[6]))
@@ -357,7 +358,7 @@ abstract class AtomSetCollectionReader {
       checkUnitCell(22);
   }
 
-  void setUnitCell(float a, float b, float c, float alpha, float beta,
+  public void setUnitCell(float a, float b, float c, float alpha, float beta,
                    float gamma) {
     if (ignoreFileUnitCell)
       return;
@@ -381,18 +382,18 @@ abstract class AtomSetCollectionReader {
     return true;
   }
 
-  void setFractionalCoordinates(boolean TF) {
+  public void setFractionalCoordinates(boolean TF) {
     iHaveFractionalCoordinates = fileCoordinatesAreFractional = TF;
   }
 
-  void setAtomCoord(Atom atom, float x, float y, float z) {
+  public void setAtomCoord(Atom atom, float x, float y, float z) {
     atom.x = x;
     atom.y = y;
     atom.z = z;
     setAtomCoord(atom);
   }
 
-  void setAtomCoord(Atom atom) {
+  public void setAtomCoord(Atom atom) {
     if (doConvertToFractional && !fileCoordinatesAreFractional
         && unitcell != null) {
       unitcell.toFractional(atom);
@@ -403,7 +404,7 @@ abstract class AtomSetCollectionReader {
     needToApplySymmetry = true;
   }
 
-  void applySymmetry() throws Exception {
+  public void applySymmetry() throws Exception {
     if (isTrajectory)
       atomSetCollection.setTrajectory();
     if (!needToApplySymmetry || !iHaveUnitCell) {
@@ -431,50 +432,50 @@ abstract class AtomSetCollectionReader {
     initializeSymmetry();
   }
 
-  static String getElementSymbol(int elementNumber) {
+  public static String getElementSymbol(int elementNumber) {
     return JmolConstants.elementSymbolFromNumber(elementNumber);
   }
   
-  void fillDataBlock(String[][] data) throws Exception {
+  protected void fillDataBlock(String[][] data) throws Exception {
     int nLines = data.length;
     for (int i = 0; i < nLines; i++)
       data[i] = getTokens(discardLinesUntilNonBlank());
   }
 
-  void discardLines(int nLines) throws Exception {
+  protected void discardLines(int nLines) throws Exception {
     for (int i = nLines; --i >= 0;)
       readLine();
   }
 
-  String discardLinesUntilStartsWith(String startsWith) throws Exception {
+  protected String discardLinesUntilStartsWith(String startsWith) throws Exception {
     while (readLine() != null && !line.startsWith(startsWith)) {
     }
     return line;
   }
 
-  String discardLinesUntilContains(String containsMatch) throws Exception {
+  protected String discardLinesUntilContains(String containsMatch) throws Exception {
     while (readLine() != null && line.indexOf(containsMatch) < 0) {
     }
     return line;
   }
 
-  void discardLinesUntilBlank() throws Exception {
+  protected void discardLinesUntilBlank() throws Exception {
     while (readLine() != null && line.trim().length() != 0) {
     }
   }
 
-  String discardLinesUntilNonBlank() throws Exception {
+  protected String discardLinesUntilNonBlank() throws Exception {
     while (readLine() != null && line.trim().length() == 0) {
     }
     return line;
   }
 
-  void checkLineForScript(String line) {
+  protected void checkLineForScript(String line) {
     this.line = line;
     checkLineForScript();
   }
   
-  void checkLineForScript() {
+  public void checkLineForScript() {
     if (line.endsWith("#noautobond")) {
       line = line.substring(0, line.lastIndexOf('#')).trim();
       atomSetCollection.setAtomSetCollectionProperty("noautobond", "true");
@@ -498,21 +499,21 @@ abstract class AtomSetCollectionReader {
     }
   }
 
-  String readLine() throws Exception {
+  public String readLine() throws Exception {
     prevline = line;
     line = reader.readLine();
     ptLine++;
     return line;
   }
 
-  String readLineTrimmed() throws Exception {
+  protected String readLineTrimmed() throws Exception {
     readLine();
     if (line == null)
       line = "";
     return line = line.trim();
   }
   
-  String[] getStrings(String sinfo, int nFields, int width) {
+  protected String[] getStrings(String sinfo, int nFields, int width) {
     String[] fields = new String[nFields];
     int pt = 0;
     for (int i = 0; i < nFields; i++)

@@ -23,19 +23,19 @@
  */
 
 package org.jmol.adapter.smarter;
-class Structure {
-  String structureType;
-  char startChainID = ' ';
-  int startSequenceNumber;
-  char startInsertionCode = ' ';
-  char endChainID = ' ';
-  int endSequenceNumber;
-  char endInsertionCode = ' ';
-  int modelIndex;
+public class Structure {
+  public String structureType;
+  public char startChainID = ' ';
+  public int startSequenceNumber;
+  public char startInsertionCode = ' ';
+  public char endChainID = ' ';
+  public int endSequenceNumber;
+  public char endInsertionCode = ' ';
+  public int modelIndex;
 
-  Structure() { }
+  public Structure() { }
 
-  Structure(int modelIndex, String structureType,
+  public Structure(int modelIndex, String structureType,
             char startChainID, int startSequenceNumber, char startInsertionCode,
             char endChainID, int endSequenceNumber, char endInsertionCode) {
     this.modelIndex = modelIndex;

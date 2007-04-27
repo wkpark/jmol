@@ -26,6 +26,8 @@ package org.jmol.adapter.smarter;
 
 import java.io.BufferedReader;
 import java.util.StringTokenizer;
+
+import org.jmol.adapter.readers.XmlReader;
 import org.jmol.util.Logger;
 import java.util.Hashtable;
 
@@ -43,8 +45,8 @@ class Resolver {
     return resolve(name, bufferedReader, null);
   }
 
-  static Object resolve(String name, BufferedReader bufferedReader, Hashtable htParams)
-      throws Exception {
+  static Object resolve(String name, BufferedReader bufferedReader,
+                        Hashtable htParams) throws Exception {
     AtomSetCollectionReader atomSetCollectionReader;
     String atomSetCollectionReaderName = determineAtomSetCollectionReader(
         bufferedReader, true);
@@ -52,16 +54,27 @@ class Resolver {
       return "unrecognized file format for file " + name + "\n"
           + atomSetCollectionReaderName;
     Logger.info("The Resolver thinks " + atomSetCollectionReaderName);
-    String className = "org.jmol.adapter.smarter."
-        + atomSetCollectionReaderName + "Reader";
+    String className = null;
+    Class atomSetCollectionReaderClass;
+    String classBase = "org.jmol.adapter.readers.";
     try {
-      Class atomSetCollectionReaderClass = Class.forName(className);
+      className = classBase + atomSetCollectionReaderName + "Reader";
+      atomSetCollectionReaderClass = Class.forName(className);
       atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
           .newInstance();
     } catch (Exception e) {
-      String err = "Could not instantiate:" + className;
-      Logger.error(err, e);
-      return err;
+      //new trick: look in the CURRENT directory (of the applet) for the class file itself
+      //because the readers jar file is not being loaded (to save time).
+      try {
+        className = atomSetCollectionReaderName + "Reader";
+        atomSetCollectionReaderClass = Class.forName(className);
+        atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
+            .newInstance();
+      } catch (Exception e2) {
+        String err = "File reader was not found:" + classBase + className + " or " + className;
+        Logger.error(err, e2);
+        return err;
+      }
     }
     atomSetCollectionReader.initialize(htParams);
     AtomSetCollection atomSetCollection = atomSetCollectionReader
@@ -414,15 +427,12 @@ class Resolver {
 }
 
 class LimitedLineReader {
-  int readLimit;
   char[] buf;
   int cchBuf;
   int ichCurrent;
 
   LimitedLineReader(BufferedReader bufferedReader, int readLimit)
     throws Exception {
-    this.readLimit = readLimit;
-    //TODO Nico: BindBugs reports this.readLimit is never used
     bufferedReader.mark(readLimit);
     buf = new char[readLimit];
     cchBuf = bufferedReader.read(buf);

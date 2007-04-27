@@ -63,18 +63,9 @@ class Resolver {
       atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
           .newInstance();
     } catch (Exception e) {
-      //new trick: look in the CURRENT directory (of the applet) for the class file itself
-      //because the readers jar file is not being loaded (to save time).
-      try {
-        className = atomSetCollectionReaderName + "Reader";
-        atomSetCollectionReaderClass = Class.forName(className);
-        atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
-            .newInstance();
-      } catch (Exception e2) {
-        String err = "File reader was not found:" + classBase + className + " or " + className;
-        Logger.error(err, e2);
-        return err;
-      }
+      String err = "File reader was not found:" + classBase + className;
+      Logger.error(err, e);
+      return err;
     }
     atomSetCollectionReader.initialize(htParams);
     AtomSetCollection atomSetCollection = atomSetCollectionReader

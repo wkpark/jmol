@@ -522,13 +522,6 @@ support for assertions (which were introduced in 1.4).
 	      </fileset>
 	    </jar>
 
-	    <jar destfile="${jmol.applet.build.dir}/JmolApplet4b.jar" manifest="manifest/applet4b.txt" >
-	      <fileset dir="${applet.classes.dir}">
-	        <include name="org/jmol/adapter/smarter/**" />
-	        <include name="org/jmol/symmetry/**" />
-	      </fileset>
-	    </jar>
-
 	    <jar destfile="${jmol.applet.build.dir}/JmolApplet5.jar" manifest="manifest/applet5.txt" >
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/openscience/jmol/**" />

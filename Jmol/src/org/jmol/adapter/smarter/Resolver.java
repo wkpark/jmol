@@ -28,6 +28,8 @@ import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
 import org.jmol.util.Logger;
+//import org.jmol.viewer.JmolConstants;
+
 import java.util.Hashtable;
 
 class Resolver {
@@ -60,24 +62,13 @@ class Resolver {
     String err = null;
     try {
       className = classBase + atomSetCollectionReaderName + "Reader";
-      atomSetCollectionReaderClass = Class.forName(className);
+      atomSetCollectionReaderClass = Class.forName(className);//,true, Thread.currentThread().getContextClassLoader());
       atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
           .newInstance();
     } catch (Exception e) {
-        err = "File reader was not found:" + "./org/jmol/adapter/readers/" + className;
-        Logger.error(err, e);
-    }
-    if (err != null) {
-      try {
-        className = atomSetCollectionReaderName + "Reader";
-        atomSetCollectionReaderClass = Class.forName(className);
-        atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
-            .newInstance();
-      } catch (Exception e) { 
-          err = "File reader was not found:" + className;
-          Logger.error(err, e);
-          return err;
-      }      
+        err = "File reader was not found:" + className;
+        Logger.error(err);
+        return err;
     }
     atomSetCollectionReader.initialize(htParams);
     AtomSetCollection atomSetCollection = atomSetCollectionReader
@@ -92,11 +83,11 @@ class Resolver {
     Class atomSetCollectionReaderClass;
     AtomSetCollectionReader atomSetCollectionReader; 
     try {
-      className = classBase + "XmlReader";
+      className = classBase + "xml.XmlReader";
       atomSetCollectionReaderClass = Class.forName(className);
       atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass.newInstance();
     } catch (Exception e) {
-      String err = "File reader was not found:" + "./org/jmol/adapter/readers/" + className;
+      String err = "File reader was not found:" + className;
       Logger.error(err, e);
       return err;
     }
@@ -128,22 +119,22 @@ class Resolver {
 
     if (nLines == 1 && lines[0].length() > 0
         && Character.isDigit(lines[0].charAt(0)))
-      return "Jme"; //only one line, and that line starts with a number 
+      return "more.Jme"; //only one line, and that line starts with a number 
 
     if (checkV3000(lines))
-      return "V3000";
+      return "more.V3000";
     if (checkMol(lines))
-      return "Mol";
+      return "molxyz.Mol";
     if (checkXyz(lines))
-      return "Xyz";
+      return "molxyz.Xyz";
     if (checkMopacGraphf(lines))
-      return "MopacGraphf"; //must be prior to checkFoldingXyz
+      return "more.MopacGraphf"; //must be prior to checkFoldingXyz
     if (checkFoldingXyz(lines))
-      return "FoldingXyz";
+      return "more.FoldingXyz";
     if (checkCube(lines))
-      return "Cube";
+      return "more.Cube";
     if (checkOdyssey(lines))
-      return "Odyssey";
+      return "more.Odyssey";
 
     // run these loops forward ... easier for people to understand
     //file starts with added 4/26 to ensure no issue with NWChem files
@@ -339,7 +330,7 @@ class Resolver {
   { cubeRecords, mol2Records, webmoRecords};
 
   final static String[] fileStartsWithFormats =
-  { "Cube", "Mol2", "WebMO"};
+  { "more.Cube", "more.Mol2", "more.WebMO"};
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings
@@ -384,8 +375,8 @@ class Resolver {
     spartanSmolRecords, csfRecords};
 
   final static String[] lineStartsWithFormats =
-  { "Pdb", "Shelx", "Cif", "GhemicalMM",
-    "Jaguar", "Hin", "Mol", "SpartanSmol", "Csf"};
+  { "cifpdb.Pdb", "more.Shelx", "cifpdb.Cif", "more.GhemicalMM",
+    "more.Jaguar", "more.Hin", "more.Mol", "more.SpartanSmol", "more.Csf"};
 
   ////////////////////////////////////////////////////////////////
   // contains formats
@@ -433,9 +424,9 @@ class Resolver {
   };
 
   final static String[] containsFormats =
-  { "Xml", "Gaussian", "Mopac", "Qchem", "Gamess",
-    "SpartanSmol", "Spartan" , "Mol2", "Adf", "Psi",
-    "NWChem", "JmolData"};
+  { "xml.Xml", "more.Gaussian", "more.Mopac", "more.Qchem", "more.Gamess",
+    "more.SpartanSmol", "more.Spartan" , "more.Mol2", "more.Adf", "more.Psi",
+    "more.NWChem", "more.JmolData"};
 }
 
 class LimitedLineReader {

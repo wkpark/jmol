@@ -31,6 +31,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 
 /**
  * Reader for Psi3 output files. -- http://www.psicode.org/
@@ -40,7 +41,7 @@ import org.jmol.util.Logger;
  *  -- final geometry only; not reading steps
  *  -- no charges
  *  -- no frequencies
- *  -- no orbitals
+ *  -- no orbitals (Can't handle irreducible representations here.)
  *  
  **/
 public class PsiReader extends AtomSetCollectionReader {
@@ -73,16 +74,18 @@ public class PsiReader extends AtomSetCollectionReader {
           readAtoms(true); // initial geometry
           iHaveAtoms = true;
         }
+        if (line.indexOf("-Unique atoms in the canonical coordinate system (a.u.):") >= 0)
+          readUniqueAtoms();
         if (iHaveAtoms && line.indexOf("New Cartesian Geometry in a.u.") >= 0) {
           readAtoms(false); // replaced with final geometry
         } else if (iHaveAtoms && line.startsWith("  label        = ")) {
           moData.put("calculationType", line.substring(17).trim());
         } else if (iHaveAtoms && line.startsWith("molecular orbitals for ")) {
           moData.put("energyUnits", "");
-        } else if (false && line.startsWith("  -BASIS SETS:")) {
+        } else if (line.startsWith("  -BASIS SETS:")) {
           readBasis();
           atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
-        } else if (false && iHaveAtoms
+        } else if (iHaveAtoms
             && line.indexOf("Molecular Orbital Coefficients") >= 0) {
           readMolecularOrbitals();
           if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
@@ -127,6 +130,7 @@ public class PsiReader extends AtomSetCollectionReader {
    1.0   0.0000000000  -1.3972759189   0.9709968388
    */
 
+  Vector atomNames = new Vector();
   private void readAtoms(boolean isInitial) throws Exception {
     if (isInitial) {
       atomSetCollection.newAtomSet();
@@ -138,7 +142,10 @@ public class PsiReader extends AtomSetCollectionReader {
       String[] tokens = getTokens(); // get the tokens in the line
       Atom atom = (isInitial ? atomSetCollection.addNewAtom()
           : atomSetCollection.getAtom(atomPt++));
-      atom.elementNumber = (byte) parseInt(tokens[0]);
+      if (isInitial)
+        atomNames.addElement(tokens[0]);
+      else
+        atom.elementNumber = (byte) parseInt(tokens[0]);
       if (atom.elementNumber < 0)
         atom.elementNumber = 0; // dummy atoms have -1 -> 0
       atom.x = parseFloat(tokens[1]) * ANGSTROMS_PER_BOHR;
@@ -179,43 +186,47 @@ public class PsiReader extends AtomSetCollectionReader {
 
    */
 
+  
+  Vector shellsByUniqueAtom = new Vector();
   void readBasis() throws Exception {
-    Vector sdata = new Vector();
     Vector gdata = new Vector();
     //atomCount = -1;
     gaussianCount = 0;
     shellCount = 0;
     String[] tokens;
-    Hashtable slater = null;
-    int atomCenter = 0;
-    int nGaussians = 0;
+    int[] slater = null;
+    Vector slatersByUniqueAtom = null;
+    readLine();
     while (readLine() != null && line.startsWith("   -Basis set on")) {
-      atomCenter = parseInt(line.substring(31));
+      slatersByUniqueAtom = new Vector();
+      int nGaussians = 0;
       while (readLine() != null && !line.startsWith("       )")) {
+        line = TextFormat.simpleReplace(line, "(", " ");
+        line = TextFormat.simpleReplace(line, ")", " ");
+        //System.out.println(line);
         tokens = getTokens();
-        int ipt = 1;
-        if (line.startsWith("        (")) {
-          ipt = 2;
-        } else if (line.startsWith("      ( (")) {
-          ipt = 3;
-        }
-        if (ipt > 1) {
+        int ipt = 0;
+        switch (tokens.length) {
+        case 3:
           if (slater != null)
-            sdata.addElement(slater);
-          slater = new Hashtable();
-          slater.put("atomCenter", new Integer(atomCenter));
+            slatersByUniqueAtom.addElement(slater);
+          ipt = 1;
+          slater = new int[3];
+          slater[0] = AtomSetCollection.getQuantumShellTagID(tokens[0]);
+          slater[1] = gaussianCount;
           shellCount++;
-          slater.put("basisType", "" + tokens[1].charAt(0));
-          slater.put("gaussianPtr", new Integer(gaussianCount));
+          break;
+        case 2:
+          break;
         }
         nGaussians++;
         gdata.addElement(new String[] { tokens[ipt], tokens[ipt + 1] });
-        slater.put("nGaussians", new Integer(nGaussians));
+        slater[2] = nGaussians;
       }
-      sdata.addElement(slater);
-      gaussianCount += nGaussians;
       if (slater != null)
-        sdata.addElement(slater);
+        slatersByUniqueAtom.addElement(slater);
+      shellsByUniqueAtom.addElement(slatersByUniqueAtom);
+      gaussianCount += nGaussians;
       readLine();
     }
     float[][] garray = new float[gaussianCount][];
@@ -225,7 +236,6 @@ public class PsiReader extends AtomSetCollectionReader {
       for (int j = 0; j < tokens.length; j++)
         garray[i][j] = parseFloat(tokens[j]);
     }
-    moData.put("shells", sdata);
     moData.put("gaussians", garray);
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug(shellCount + " slater shells read");
@@ -233,6 +243,44 @@ public class PsiReader extends AtomSetCollectionReader {
     }
   }
 
+  /*
+   *        Center              X                  Y                   Z
+    ------------   -----------------  -----------------  -----------------
+          OXYGEN      0.000000000000    -0.000000000000    -0.129476880255
+        HYDROGEN      0.000000000000     1.494186636402     1.027446024483
+
+ */
+  
+  Hashtable uniqueAtomMap = new Hashtable();
+  private void readUniqueAtoms() throws Exception {
+    Vector sdata = new Vector();
+    discardLinesUntilContains("----");
+    int n = 0;
+    while (readLine() != null && line.length() > 0) {
+      String[] tokens = getTokens(); // get the tokens in the line
+      uniqueAtomMap.put(tokens[0], new Integer(n++));
+    }
+    int atomCount = atomNames.size();
+    for (int i = 0; i < atomCount; i++) {
+      String atomType = (String) atomNames.elementAt(i);
+      int iUnique = ((Integer)uniqueAtomMap.get(atomType)).intValue();
+      Vector slaters = (Vector) shellsByUniqueAtom.elementAt(iUnique);
+      if (slaters == null) {
+        Logger.error("slater for atom " + i + " atomType " + atomType
+            + " was not found in listing. Ignoring molecular orbitals");
+        return;
+      }
+      for (int j = 0; j < slaters.size(); j++) {
+        int[] slater = (int[]) slaters.elementAt(j);
+        sdata.addElement(new int[] { i, slater[0], slater[1], slater[2] });
+        //System.out.println(atomType + " " + i + " " + slater[0] + " " + slater[1] + " "+ slater[2]);
+          
+      }
+    }
+    moData.put("shells", sdata);
+
+  }
+  
   /*
 
  molecular orbitals for irrep A1 

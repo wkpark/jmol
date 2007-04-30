@@ -206,34 +206,13 @@ public class SpartanArchive {
     for (int i = 0; i < shellCount; i++) {
       readLine();
       String[] tokens = getTokens();
-      Hashtable slater = new Hashtable();
-      int iBasis = parseInt(tokens[0]);
-      String basisType;
-      switch (iBasis) {
-      case 0:
-        basisType = "S";
-        break;
-      case 1:
-        basisType = "SP";
-        break;
-      case 2:
-        basisType = "D";
-        break;
-      case 3:
-        basisType = "F";
-        break;
-      default:
-        basisType = "SMOL unknown basis type will be ignored: " + iBasis;
-        break;
-      }
-      int nGaussians = parseInt(tokens[1]);
-      int gaussianPtr = parseInt(tokens[2]) - 1;
+      int[] slater = new int[4];
+      slater[0]= parseInt(tokens[3]) - 1;
+      int iBasis = slater[1] = parseInt(tokens[0]); //0 = S, 1 = SP, 2 = D, 3 = F
+      int gaussianPtr = slater[2] = parseInt(tokens[2]) - 1;
+      int nGaussians = slater[3] = parseInt(tokens[1]);
       for (int j = 0; j < nGaussians; j++)
         typeArray[gaussianPtr + j] = iBasis;
-      slater.put("atomIndex", new Integer(parseInt(tokens[3]) - 1));
-      slater.put("basisType", basisType);
-      slater.put("nGaussians", new Integer(nGaussians));
-      slater.put("gaussianPtr", new Integer(gaussianPtr));
       sdata.addElement(slater);
     }
     for (int i = 0; i < gaussianCount; i++) {

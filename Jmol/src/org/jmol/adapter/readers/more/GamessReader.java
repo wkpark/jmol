@@ -111,9 +111,11 @@ public class GamessReader extends AtomSetCollectionReader {
       atom.x = x * angstromsPerBohr;
       atom.y = y * angstromsPerBohr;
       atom.z = z * angstromsPerBohr;
+      atomNames.addElement(atomName);
     }
   }
 
+  Vector atomNames = new Vector();
   void readAtomsInAngstromCoordinates() throws Exception {
     readLine(); 
     readLine(); // discard two lines
@@ -142,6 +144,7 @@ public class GamessReader extends AtomSetCollectionReader {
       atom.x = x;
       atom.y = y;
       atom.z = z;
+      atomNames.addElement(atomName);
     }
   }
   /*
@@ -163,11 +166,11 @@ public class GamessReader extends AtomSetCollectionReader {
    2   L    4             3.6649800      -.395895162119       .236459946619
    2   L    5              .7705450      1.215834355681       .860618805716
 
-OR:
+   OR:
 
- SHELL TYPE PRIM    EXPONENT          CONTRACTION COEFFICIENTS
+   SHELL TYPE PRIM    EXPONENT          CONTRACTION COEFFICIENTS
 
- C         
+   C         
 
    1   S    1      71.616837    2.707814 (  0.154329) 
    1   S    2      13.045096    2.618880 (  0.535328) 
@@ -179,9 +182,7 @@ OR:
 
    */
   void readGaussianBasis() throws Exception {
-    Vector sdata = new Vector();
     Vector gdata = new Vector();
-    atomCount = 0;
     gaussianCount = 0;
     int nGaussians = 0;
     shellCount = 0;
@@ -189,43 +190,53 @@ OR:
     String[] tokens;
     discardLinesUntilContains("SHELL TYPE");
     readLine();
-    Hashtable slater = null;
+    int[] slater = null;
+    Hashtable shellsByAtomType = new Hashtable();
+    Vector slatersByAtomType = new Vector();
+    String atomType = null;
+    
     while (readLine() != null && line.indexOf("TOTAL") < 0) {
+      //System.out.println(line);
       tokens = getTokens();
       switch (tokens.length) {
       case 1:
-        atomCount++;
+        if (atomType != null) {
+          if (slater != null) {
+            slater[2] = nGaussians;
+            slatersByAtomType.addElement(slater);
+            slater = null;
+          }
+          shellsByAtomType.put(atomType, slatersByAtomType);
+        }
+        slatersByAtomType = new Vector();
+        atomType = tokens[0];
         break;
       case 0:
         break;
       default:
-        //TODO: there's a bug here reading water.out -  
-        // the file specifies "O" and "H", so we are assigning
-        // just two atoms instead of three. 
-        // also, I'm not convinced we are loading L shells correctly.
         if (!tokens[0].equals(thisShell)) {
           if (slater != null) {
-            slater.put("nGaussians", new Integer(nGaussians));
-            sdata.addElement(slater);
+            slater[2] = nGaussians;
+            slatersByAtomType.addElement(slater);
           }
           thisShell = tokens[0];
           shellCount++;
-          slater = new Hashtable();
-          slater.put("atomIndex", new Integer(atomCount - 1));
-          slater.put("basisType", tokens[1]);
-          slater.put("gaussianPtr", new Integer(gaussianCount)); // or parseInt(tokens[2]) - 1
+          slater = new int[] {
+              AtomSetCollection.getQuantumShellTagID(tokens[1]), gaussianCount,
+              0 };
           nGaussians = 0;
         }
         ++nGaussians;
         ++gaussianCount;
         if (line.indexOf("(") >= 0) {
-          String[] s = new String[4 + (tokens.length - 4)/3];
+          String[] s = new String[4 + (tokens.length - 4) / 3];
           int j = 0;
           for (int i = 0; i < tokens.length; i++) {
             s[j] = tokens[i];
             if (s[j].indexOf(")") >= 0)
               s[j] = s[j].substring(0, s[j].indexOf(")"));
-            if (i >= 3)i += 2;
+            if (i >= 3)
+              i += 2;
             j++;
           }
           gdata.addElement(s);
@@ -235,8 +246,27 @@ OR:
       }
     }
     if (slater != null) {
-      slater.put("nGaussians", new Integer(nGaussians));
-      sdata.addElement(slater);
+      slater[2] = nGaussians;
+      slatersByAtomType.addElement(slater);
+    }
+    if (atomType != null)
+      shellsByAtomType.put(atomType, slatersByAtomType);
+    Vector sdata = new Vector();
+    atomCount = atomNames.size();
+    for (int i = 0; i < atomCount; i++) {
+      atomType = (String) atomNames.elementAt(i);
+      Vector slaters = (Vector) shellsByAtomType.get(atomType);
+      if (slaters == null) {
+        Logger.error("slater for atom " + i + " atomType " + atomType
+            + " was not found in listing. Ignoring molecular orbitals");
+        return;
+      }
+      for (int j = 0; j < slaters.size(); j++) {
+        slater = (int[]) slaters.elementAt(j);
+        sdata.addElement(new int[] { i, slater[0], slater[1], slater[2] });
+        //System.out.println(atomType + " " + i + " " + slater[0] + " " + slater[1] + " "+ slater[2]);
+          
+      }
     }
     float[][] garray = new float[gaussianCount][];
     for (int i = 0; i < gaussianCount; i++) {

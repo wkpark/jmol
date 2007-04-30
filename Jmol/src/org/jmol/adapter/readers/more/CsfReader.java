@@ -623,27 +623,31 @@ public class CsfReader extends MopacDataReader {
       int iShell = 0;
       int gaussianCount = 0;
       for (int ipt = 0; ipt < nGaussians; ipt++) {
-        if(shells[ipt] != iShell) {
+        if (shells[ipt] != iShell) {
           iShell = shells[ipt];
-          Hashtable slater = new Hashtable();
-          int iAtom = atomSetCollection.getAtomNameIndex(((String[]) (connectors
-              .get(sto_gto + "_basis_fxn" + (ipt + 1))))[0]);
-          slater.put("atomIndex", new Integer(iAtom));
-          slater.put("basisType", types[ipt].substring(0,1));
+          int[] slater = new int[4];
+          int iAtom = atomSetCollection
+              .getAtomNameIndex(((String[]) (connectors.get(sto_gto
+                  + "_basis_fxn" + (ipt + 1))))[0]);
+          slater[0] = iAtom;
+          slater[1] = AtomSetCollection.getQuantumShellTagID(types[ipt]
+              .substring(0, 1));
           int nZ = 0;
           while (++nZ < nZetas && zetas[ipt][nZ] != 0) {
           }
-          slater.put("gaussianPtr", new Integer(gaussianCount));
-          slater.put("nGaussians", new Integer(nZ));
+          slater[2] = gaussianCount; //pointer
+          slater[3] = nZ;
+          System.out.println(slater[0] + " " + slater[1] + " " + slater[2] + " " + slater[3]);
           sdata.addElement(slater);
           gaussianCount += nZ;
           for (int i = 0; i < nZ; i++)
-            gdata.addElement(new float[] {zetas[ipt][i], contractionCoefs[ipt][i]});
+            gdata.addElement(new float[] { zetas[ipt][i],
+                contractionCoefs[ipt][i] });
         }
       }
       float[][] garray = new float[gaussianCount][];
       for (int i = 0; i < gaussianCount; i++)
-        garray[i] = (float[]) gdata.get(i); 
+        garray[i] = (float[]) gdata.get(i);
       moData.put("shells", sdata);
       moData.put("gaussians", garray);
     } else {

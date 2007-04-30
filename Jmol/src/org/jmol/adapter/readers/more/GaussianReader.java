@@ -328,15 +328,15 @@ public class GaussianReader extends AtomSetCollectionReader {
     while (readLine() != null && line.startsWith(" Atom")) {
       shellCount++;
       tokens = getTokens();
-      Hashtable slater = new Hashtable();
+      int[] slater = new int[4];
       if (!tokens[1].equals(lastAtom))
         atomCount++;
       lastAtom = tokens[1];
-      slater.put("atomIndex", new Integer(atomCount));
-      slater.put("basisType", tokens[4]);
+      slater[0] = atomCount;
+      slater[1] = AtomSetCollection.getQuantumShellTagID(tokens[4]);
       int nGaussians = parseInt(tokens[5]);
-      slater.put("gaussianPtr", new Integer(gaussianCount)); // or parseInt(tokens[7]) - 1
-      slater.put("nGaussians", new Integer(nGaussians));
+      slater[2] = gaussianCount; // or parseInt(tokens[7]) - 1
+      slater[3] = nGaussians;
       sdata.addElement(slater);
       gaussianCount += nGaussians;
       for (int i = 0; i < nGaussians; i++)

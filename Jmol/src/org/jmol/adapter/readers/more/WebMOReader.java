@@ -209,15 +209,14 @@ public class WebMOReader extends MopacDataReader {
         continue;
       if (tokens.length != 1) // VERY unlikely event -- might as well note it, though.
         throw new Exception("Error reading GTOs: missing atom index");
-      Hashtable slater = new Hashtable();
+      int[] slater = new int[4];
       atomIndex = parseInt(tokens[0]) - 1;
       tokens = getTokens(readLine());
-      String basisType = tokens[0];
       int nGaussians = parseInt(tokens[1]);
-      slater.put("atomIndex", new Integer(atomIndex));
-      slater.put("basisType", basisType);
-      slater.put("nGaussians", new Integer(nGaussians));
-      slater.put("gaussianPtr", new Integer(gaussianPtr));
+      slater[0] = atomIndex;
+      slater[1] = AtomSetCollection.getQuantumShellTagID(tokens[0]);
+      slater[2] = gaussianPtr;
+      slater[3] = nGaussians;
       for (int i = 0; i < nGaussians; i++) {
         String[] strData = getTokens(readLine());
         int nData = strData.length;

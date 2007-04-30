@@ -185,13 +185,14 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
 
   private void processShell(int iShell) {
     int lastAtom = atomIndex;
-    Hashtable shell = (Hashtable) shells.get(iShell);
-    gaussianPtr = ((Integer) shell.get("gaussianPtr")).intValue();
-    int nGaussians = ((Integer) shell.get("nGaussians")).intValue();
-    atomIndex = ((Integer) shell.get("atomIndex")).intValue() + firstAtomOffset;
-    String basisType = (String) shell.get("basisType");
+    int[] shell = (int[]) shells.get(iShell);
+    atomIndex = shell[0] + firstAtomOffset;
+    int basisType = shell[1];
+    gaussianPtr = shell[2];
+    int nGaussians = shell[3];
+    
     if (doDebug)
-      Logger.debug("processShell: " + iShell + " " + basisType + " nGaussians="
+      Logger.debug("processShell: " + iShell + " type=" + basisType + " nGaussians="
           + nGaussians + " atom=" + atomIndex);
     if (atomIndex != lastAtom && atomCoordBohr[atomIndex] != null) {
       //Logger.("processSTO center " + atomCoordBohr[atomIndex]);
@@ -211,16 +212,23 @@ public class MOCalculation extends QuantumCalculation implements MOCalculationIn
         Z2[i] *= Z[i];
       }
     }
-    if (basisType.equals("S"))
+    switch(basisType) {
+    case 0:
       addDataS(nGaussians);
-    else if (basisType.equals("SP") || basisType.equals("L"))
-      addDataSP(nGaussians);
-    else if (basisType.equals("P"))
+      break;
+    case 1:
       addDataP(nGaussians);
-    else if (basisType.equals("D"))
+      break;
+    case 2:
+      addDataSP(nGaussians);
+      break;
+    case 3:
       addDataD(nGaussians);
-    else
-      Logger.warn(" Unsupported basis type: " + basisType);
+      break;
+    default:
+      Logger.warn(" Unsupported basis type for atomno=" + (atomIndex + 1) + " -- use \"set loglevel 5\" to debug.");
+      return;
+    }
   }
 
   private void addDataS(int nGaussians) {

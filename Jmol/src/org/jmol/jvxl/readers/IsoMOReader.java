@@ -83,14 +83,15 @@ class IsoMOReader extends AtomDataReader {
         q.calculate(volumeData, bsMySelected, (String) moData
             .get("calculationType"), atomData.atomXyz, atomData.firstAtom,
             (Vector) moData.get("shells"), (float[][]) moData.get("gaussians"),
-            (Hashtable) moData.get("atomicOrbitalOrder"), null, null,
+            (Hashtable) moData.get("atomicOrbitalOrder"), 
+            null, null,
             params.moCoefficients);
         break;
       case Parameters.QM_TYPE_SLATER:
         q.calculate(volumeData, bsMySelected, (String) moData
             .get("calculationType"), atomData.atomXyz, atomData.firstAtom,
-            (Vector) moData.get("shells"), null, null, (int[][]) moData
-                .get("slaterInfo"), (float[][]) moData.get("slaterData"),
+            null, null, null, 
+            (int[][]) moData.get("slaterInfo"), (float[][]) moData.get("slaterData"),
             params.moCoefficients);
         break;
       default:

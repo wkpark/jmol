@@ -23,6 +23,7 @@
  */
 package org.jmol.viewer;
 
+import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
 import org.jmol.shape.Text;
@@ -31,7 +32,6 @@ import org.jmol.util.CommandHistory;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
-import org.jmol.util.PatternMatcher;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Parser;
 
@@ -9749,8 +9749,10 @@ class Eval { //implements Runnable {
       String smiles = Token.sValue(args[0]);
       if (smiles.length() == 0)
         return false;
-      PatternMatcher matcher = new PatternMatcher(viewer);
+      
       try {
+        SmilesMatcherInterface matcher = (SmilesMatcherInterface)Class.forName(JmolConstants.CLASSBASE_OPTIONS + "org.jmol.smiles.PatternMatcher").newInstance();
+        matcher.setViewer(viewer);
         bs = matcher.getSubstructureSet(smiles);
       } catch (Exception e) {
         evalError(e.getMessage());

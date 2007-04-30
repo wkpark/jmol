@@ -122,8 +122,6 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Vector;
 
-import org.jmol.quantum.MepCalculation;
-import org.jmol.quantum.MOCalculation;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
@@ -484,7 +482,8 @@ public class Parameters {
   }  
   
  
-  int mep_gridMax = MepCalculation.MAX_GRID;
+  public static int MEP_MAX_GRID = 40;
+  int mep_gridMax = MEP_MAX_GRID;
   float mep_ptsPerAngstrom = 3f;
   float mep_marginAngstroms = 1f; // may have to adjust this
 
@@ -518,7 +517,8 @@ public class Parameters {
   
   Hashtable moData, mo;
   float[] moCoefficients;
-  int qm_gridMax = MOCalculation.MAX_GRID;
+  public static int MO_MAX_GRID = 80;
+  int qm_gridMax = MO_MAX_GRID;
   float qm_ptsPerAngstrom = 10f;
   float qm_marginAngstroms = 1f; // may have to adjust this
   int qm_nAtoms;

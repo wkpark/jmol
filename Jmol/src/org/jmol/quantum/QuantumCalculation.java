@@ -25,6 +25,7 @@ package org.jmol.quantum;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.jvxl.data.VolumeData;
 import org.jmol.util.Logger;
 
 import java.util.BitSet;
@@ -35,6 +36,13 @@ public class QuantumCalculation {
 
   protected final static float bohr_per_angstrom = 1 / 0.52918f;
 
+  protected void setVolume(VolumeData volumeData, BitSet bsSelected) {
+    voxelData = volumeData.voxelData;
+    countsXYZ = volumeData.voxelCounts;
+    if ((atomSet = bsSelected) == null)
+      atomSet = new BitSet();
+    setupCoordinates(volumeData.origin, volumeData.volumetricVectorLengths);
+  }
   // absolute grid coordinates in Bohr 
   protected float[][] xyzBohr;
 

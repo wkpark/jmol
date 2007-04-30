@@ -135,7 +135,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private boolean jvm12orGreater = false;
   private boolean jvm14orGreater = false;
 
-  Viewer(Component display, JmolAdapter modelAdapter) {
+  public Viewer(Component display, JmolAdapter modelAdapter) {
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug("Viewer constructor " + this);
     }

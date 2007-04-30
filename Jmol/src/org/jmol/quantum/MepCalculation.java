@@ -27,7 +27,9 @@ import java.util.BitSet;
 
 import javax.vecmath.Point3f;
 
+import org.jmol.api.MepCalculationInterface;
 import org.jmol.jvxl.data.VolumeData;
+import org.jmol.jvxl.readers.Parameters;
 
 /*
  * a simple molecular electrostatic potential cube generator
@@ -38,24 +40,18 @@ import org.jmol.jvxl.data.VolumeData;
  * applying some of the tricks in QuantumCalculation for speed
  * 
  */
-public class MepCalculation extends QuantumCalculation {
-
-  public static int MAX_GRID = 40;
+public class MepCalculation extends QuantumCalculation implements MepCalculationInterface {
 
   float[] charges;
   
-  public MepCalculation(Point3f[] atomCoordAngstroms, float[] charges) {
+  public MepCalculation() {
+  }
+  
+  public void calculate(VolumeData volumeData, BitSet bsSelected, Point3f[] atomCoordAngstroms, float[] charges) {
     this.atomCoordAngstroms = atomCoordAngstroms;
     this.charges = charges;
-    initialize(MAX_GRID);
-  }
-
-  public void createMepCube(VolumeData volumeData, BitSet bsSelected) {    
-    voxelData = volumeData.voxelData;
-    countsXYZ = volumeData.voxelCounts;
-    if ((atomSet = bsSelected) == null)
-      atomSet = new BitSet();
-    setupCoordinates(volumeData.origin, volumeData.volumetricVectorLengths);
+    initialize(Parameters.MEP_MAX_GRID);
+    setVolume(volumeData, bsSelected);
     processMep();
   }
 

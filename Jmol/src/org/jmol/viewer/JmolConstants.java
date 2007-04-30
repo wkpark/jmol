@@ -35,6 +35,9 @@ import java.util.Properties;
 
 final public class JmolConstants {
 
+  public final static String CLASSBASE_OPTIONS = "org.jmol.";
+  public final static String CLASSBASE_QUANTUM = "org.jmol.quantum.";
+
   public final static String copyright = "(C) 2007 Jmol Development";
   public final static String version;
 
@@ -47,7 +50,7 @@ final public class JmolConstants {
       BufferedInputStream bis = null;
       InputStream is = null;
       try {
-        is = JmolConstants.class.getClassLoader().getResourceAsStream("org/jmol/Jmol.properties");
+        is = JmolConstants.class.getClassLoader().getResourceAsStream("org/jmol/viewer/Jmol.properties");
         bis = new BufferedInputStream(is);
         props.load(bis);
         tmpVersion = props.getProperty("version", tmpVersion);
@@ -2568,9 +2571,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static String getShapeClassName(int shapeID) {
     return (shapeID == CLASS_BASE_BIO || shapeID >= JmolConstants.SHAPE_MIN_SECONDARY
         && shapeID < JmolConstants.SHAPE_MAX_SECONDARY ? 
-            "org.jmol.shapebio." : shapeID == CLASS_BASE_SPECIAL || shapeID >= JmolConstants.SHAPE_MIN_SPECIAL
+            CLASSBASE_OPTIONS + "shapebio." : shapeID == CLASS_BASE_SPECIAL || shapeID >= JmolConstants.SHAPE_MIN_SPECIAL
             && shapeID < JmolConstants.SHAPE_MAX_SPECIAL ? 
-                "org.jmol.shapespecial." : "org.jmol.shape.")
+                CLASSBASE_OPTIONS + "shapespecial." : "org.jmol.shape.")
         + (shapeID >=0 ? shapeClassBases[shapeID] : "");
   }
   //.hbond and .ssbonds will return a class, 

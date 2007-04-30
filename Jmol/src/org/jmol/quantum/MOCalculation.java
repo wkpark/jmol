@@ -23,7 +23,9 @@
  */
 package org.jmol.quantum;
 
+import org.jmol.api.MOCalculationInterface;
 import org.jmol.jvxl.data.VolumeData;
+import org.jmol.jvxl.readers.Parameters;
 import org.jmol.util.Logger;
 import javax.vecmath.Point3f;
 import java.util.Vector;
@@ -77,10 +79,9 @@ import java.util.BitSet;
  C WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-public class MOCalculation extends QuantumCalculation {
+public class MOCalculation extends QuantumCalculation implements MOCalculationInterface {
 
-  public static int MAX_GRID = 80;
-
+  private static int MAX_GRID = Parameters.MO_MAX_GRID;
   // slater coefficients in Bohr
   float[] CX = new float[MAX_GRID];
   float[] CY = new float[MAX_GRID];
@@ -107,7 +108,11 @@ public class MOCalculation extends QuantumCalculation {
   int gaussianPtr;
   int firstAtomOffset;
 
-  public MOCalculation(String calculationType, Point3f[] atomCoordAngstroms,
+  public MOCalculation() {
+  }
+  
+  
+  public void calculate(VolumeData volumeData, BitSet bsSelected, String calculationType, Point3f[] atomCoordAngstroms,
       int firstAtomOffset, Vector shells, float[][] gaussians, Hashtable aoOrdersDF,
       int[][] slaterInfo, float[][] slaterData, float[] moCoefficients) {
     this.calculationType = calculationType;
@@ -120,17 +125,17 @@ public class MOCalculation extends QuantumCalculation {
     this.slaterData = slaterData;
     this.moCoefficients = moCoefficients;
     initialize(MAX_GRID);
+    setVolume(volumeData, bsSelected);
+    atomIndex = firstAtomOffset -1;
+    doDebug = (Logger.isActiveLevel(Logger.LEVEL_DEBUG));
+    if (slaterInfo != null)
+      createSlaterCube();
+    else
+      createGaussianCube();
   }
 
-  public void createSlaterCube(VolumeData volumeData, BitSet bsSelected) {    
-    voxelData = volumeData.voxelData;
-    countsXYZ = volumeData.voxelCounts;
-    if ((atomSet = bsSelected) == null)
-      atomSet = new BitSet();
-    setupCoordinates(volumeData.origin, volumeData.volumetricVectorLengths);
-    atomIndex = firstAtomOffset -1;
+  private void createSlaterCube() {    
     moCoeff = 0;
-    doDebug = (Logger.isActiveLevel(Logger.LEVEL_DEBUG));
     // each STO shell is the combination of one or more gaussians
     int nSlaters = slaterInfo.length;
     for (int i = 0; i < nSlaters; i++) {
@@ -138,17 +143,10 @@ public class MOCalculation extends QuantumCalculation {
     }
   }
 
-  public void createGaussianCube(VolumeData volumeData, BitSet bsSelected) {    
+  private void createGaussianCube() {    
     if (!checkCalculationType())
       return;
-    voxelData = volumeData.voxelData;
-    countsXYZ = volumeData.voxelCounts;
-    if ((atomSet = bsSelected) == null)
-      atomSet = new BitSet();
-    setupCoordinates(volumeData.origin, volumeData.volumetricVectorLengths);
-    atomIndex = firstAtomOffset - 1;
     int nShells = shells.size();
-    doDebug = (Logger.isActiveLevel(Logger.LEVEL_DEBUG));
     // each STO shell is the combination of one or more gaussians
     moCoeff = 0;
     for (int i = 0; i < nShells; i++) {

@@ -1985,7 +1985,7 @@ abstract class TransformManager {
           setVibrationT(t);
           viewer.refresh(0, "TransformationManager:VibrationThread:run()");
         } while (!isInterrupted());
-      } catch (InterruptedException ie) {
+      } catch (Exception e) { //may be arithmetic %0/0
       }
     }
   }

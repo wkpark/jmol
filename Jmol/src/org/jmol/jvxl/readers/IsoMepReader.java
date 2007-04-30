@@ -23,7 +23,9 @@
  */
 package org.jmol.jvxl.readers;
 
-import org.jmol.quantum.MepCalculation;
+import org.jmol.api.MepCalculationInterface;
+import org.jmol.util.Logger;
+import org.jmol.viewer.JmolConstants;
 
 class IsoMepReader extends AtomDataReader {
 
@@ -42,7 +44,14 @@ class IsoMepReader extends AtomDataReader {
   }
 
   protected void generateCube() {
-    MepCalculation m = new MepCalculation(atomData.atomXyz, params.theProperty);
-    m.createMepCube(volumeData, bsMySelected);
+    try {
+      MepCalculationInterface m = (MepCalculationInterface) Class.forName(
+          JmolConstants.CLASSBASE_QUANTUM + "MepCalculation").newInstance();
+      m.calculate(volumeData, bsMySelected, atomData.atomXyz,
+          params.theProperty);
+    } catch (Exception e) {
+      Logger.error("Error in MO calculation " + e.getMessage());
+    }
+
   }
 }

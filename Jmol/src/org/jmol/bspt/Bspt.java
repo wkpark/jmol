@@ -22,7 +22,7 @@
  */
 package org.jmol.bspt;
 
-import org.jmol.util.Logger;
+//import org.jmol.util.Logger;
 
 /**
  *<p>
@@ -114,11 +114,11 @@ public final class Bspt {
    * prints some simple stats to stdout
    */
   public void stats() {
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-      Logger.debug(
-          "bspt treeDepth=" + treeDepth +
-          " count=" + eleRoot.count);
-    }
+//    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+//      Logger.debug(
+//          "bspt treeDepth=" + treeDepth +
+//          " count=" + eleRoot.count);
+//    }
   }
 
   /*

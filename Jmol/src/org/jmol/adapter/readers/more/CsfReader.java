@@ -61,7 +61,6 @@ public class CsfReader extends MopacDataReader {
       readLine();
       while (line != null) {
         if (line.startsWith("object_class")) {
-          //System.out.println(line);
           processObjectClass();
           // there is already an unprocessed line in the firing chamber
           continue; 
@@ -119,7 +118,6 @@ public class CsfReader extends MopacDataReader {
                           byte[] fieldMap) throws Exception {
     
     fieldCount = -1;
-    //System.out.println(line);
     if (line == null || line.startsWith("property_flags:"))
       readLine();
     if (line == null || line.startsWith("object_class"))
@@ -144,7 +142,6 @@ public class CsfReader extends MopacDataReader {
       for (int i = fields.length; --i >= 0; )
         if (field.equals(fields[i])) {
           fieldTypes[fpt] = fieldMap[i];
-          //System.out.println(fpt + " " + fields[i] + " " + fieldMap[i] + " " + getPropertyCount(fields[i]));
           fieldCount = ipt + 1;
           break;
         }
@@ -159,13 +156,11 @@ public class CsfReader extends MopacDataReader {
     // handles the continuation. i0 should be 1 for actual continuation, I think.
     int n = getPropertyCount(property);
     int ioffset = i0;
-    //System.out.println(property);
     boolean isInteger = (f instanceof int[]);
     for (int i = 0; i < n; i++) {
       int ipt = ioffset + i;
       if (ipt == tokens.length) {
         tokens = getTokens(readLine());
-        //System.out.println(line);
         ioffset -= ipt - i0;
         ipt = i0;
       }
@@ -637,7 +632,6 @@ public class CsfReader extends MopacDataReader {
           }
           slater[2] = gaussianCount; //pointer
           slater[3] = nZ;
-          System.out.println(slater[0] + " " + slater[1] + " " + slater[2] + " " + slater[3]);
           sdata.addElement(slater);
           gaussianCount += nZ;
           for (int i = 0; i < nZ; i++)
@@ -652,7 +646,6 @@ public class CsfReader extends MopacDataReader {
       moData.put("gaussians", garray);
     } else {
       for (int ipt = 0; ipt < nSlaters; ipt++) {
-        //System.out.println("orbitals for atom " + iAtom + " at.no. " + atomicNumber);
         int iAtom = atomSetCollection.getAtomNameIndex(((String[]) (connectors
             .get(sto_gto + "_basis_fxn" + (ipt + 1))))[0]);
         int atomicNumber = parseInt(atomNos[iAtom]);

@@ -742,12 +742,20 @@ support for assertions (which were introduced in 1.4).
         <include name="org/jmol/api/JmolAppletInterface.class" />
       </fileset>
       <indexjars>
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned1.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned2.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned3.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned4.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned5.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned6.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedMain.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedCore.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedJars.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedJvxl.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedPopup.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedQuantum.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedReadersCifPdb.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedReadersMolXyz.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedReadersMore.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedReadersXml.jar" /> 
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedShapeBio.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedShapeSpecial.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedSmiles.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedViewer.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned_i18n.jar" />
       </indexjars>
     </jar>

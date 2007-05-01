@@ -69,8 +69,9 @@ public class Jmol extends JPanel {
   public AtomSetChooser atomSetChooser;
   private ExecuteScriptAction executeScriptAction;
   protected JFrame frame;
-   protected static File currentDir;
+  protected static File currentDir;
   FileChooser openChooser;
+  FilePreview openPreview;
   private JFileChooser saveChooser;
   private FileTyper fileTyper;
   JFileChooser exportChooser;
@@ -266,7 +267,7 @@ public class Jmol extends JPanel {
       openChooser.setCurrentDirectory(currentDir);
       String previewProperty = System.getProperty("openFilePreview", "true");
       if (Boolean.valueOf(previewProperty).booleanValue()) {
-        new FilePreview(openChooser, modelAdapter);
+        openPreview = new FilePreview(openChooser, modelAdapter);
       }
       saveChooser = new JFileChooser();
       fileTyper = new FileTyper();
@@ -1279,7 +1280,11 @@ public class Jmol extends JPanel {
       int retval = openChooser.showOpenDialog(Jmol.this);
       if (retval == 0) {
         File file = openChooser.getSelectedFile();
-        viewer.openFile(file.getAbsolutePath());
+        if ((openPreview != null) && (openPreview.isAppendSelected())) {
+          viewer.scriptWait("load append " + Escape.escape(file.getAbsolutePath()));
+        } else {
+          viewer.openFile(file.getAbsolutePath());
+        }
         return;
       }
       historyFile.addWindowInfo(FILE_OPEN_WINDOW_NAME, 

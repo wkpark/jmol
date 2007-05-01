@@ -47,6 +47,7 @@ import org.jmol.i18n.GT;
 public class FilePreview extends JPanel implements PropertyChangeListener {
 
   JCheckBox active = null;
+  JCheckBox append = null;
   JFileChooser chooser = null;
   private JmolPanel display = null;
 
@@ -82,12 +83,26 @@ public class FilePreview extends JPanel implements PropertyChangeListener {
     display.setMinimumSize(new Dimension(50, 50));
     box.add(display);
 
+    // Add a checkbox to append date
+    append = new JCheckBox(GT._("Append models"), false);
+    box.add(append);
+
     // Add the preview to the File Chooser
     add(box);
     fileChooser.setAccessory(this);
     fileChooser.addPropertyChangeListener(this);
   }
-	
+
+  /**
+   * @return Indicates if Append is selected.
+   */
+  public boolean isAppendSelected() {
+    if (append != null) {
+      return append.isSelected();
+    }
+    return false;
+  }
+
   /* (non-Javadoc)
    * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
    */

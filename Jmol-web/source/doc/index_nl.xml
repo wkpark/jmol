@@ -1,267 +1,259 @@
 <?xml version="1.0"?>
 <document>
-  <body>
-    <title>Jmol</title>
-
-    <header>
-      <table border="1" width="600" bgcolor="#FFFAF0"
-	     cellpadding="10">
-	<tr>
-	  <td><script type="text/javascript">
+	<body>
+		<title>Jmol</title>
+		<header>
+			<table border="1" width="600" bgcolor="#FFFAF0" cellpadding="10">
+				<tr>
+					<td><script type="text/javascript">
 	    jmolApplet(300, "script script/promotion1.nl.txt");
 	  </script></td>
-	  <td>
-	    <p>
+					<td>
+						<p>
 	      Dit is de Jmol applet in actie.
 	    </p>
-	    <p>
+						<p>
               Het draait een script geschreven in de
               Jmol/Rasmol/Chime scripttaal.
 	    </p>
-	    <p>
+						<p>
 	      Het is <i>geen</i> filmpje, slide show, of andersinds geanimeerd bestand ...
 	      Jmol is een interactieve webbrowser applet.
 	    </p>
-	  </td>
-	</tr>
-      </table>
-      <p>
-	<i>Ga naar de </i><a href="./demo/">Demonstratiepagina's</a>
-	<i>om knoppen en menu's in actie te zien</i>
-      </p>
-      <hr />
-    </header>
-    
-    <section title="Overzicht">
-      <p>
+					</td>
+				</tr>
+			</table>
+			<p>
+				<i>Ga naar de </i><a href="./demo/">Demonstratiepagina's</a>
+				<i>om knoppen en menu's in actie te zien</i>
+			</p>
+			<hr/>
+		</header>
+		<section title="Overzicht">
+			<p>
 	Jmol is een gratis, opensource moleculaire visualisatieprogramma voor studenten,
         docenten en onderzoekers in de chemie en biochemie.
         Het draait op Windows, Max OS/X en Linux/Unix-systemen.
 	<ul>
-	  <li>
-        De JmolApplet is een webbrowserapplet die ge&#x00EF;ntegreerd kan worden
+					<li>
+        De JmolApplet is een webbrowserapplet die geïntegreerd kan worden
         met internetpagina's.
 	  </li>
-	  <li>
+					<li>
         De Jmol applicatie is een op zich staand programma dat op elke
         computer draait.
 	  </li>
-	  <li>
+					<li>
         De JmolViewer is een softwareontwikkelings-toolkit waarmee de
         visualisatiefunctionaliteit in andere Java-programma's gebruikt kan
         worden.
 	  </li>
-	</ul>
+				</ul>
+			</p>
+		</section>
+		<section title="Jmol Version 11 is uitgebracht">
+			<p>
+	Jmol Version $VERSION$ is uitgebracht.
       </p>
-    </section>
-
-    <section title="Jmol Version 10 is uitgebracht">
-      <p>
-	Jmol Version 10 is uitgebracht op vrijdag 17 December 2004.
-      </p>
-      <p>
+			<p>
     Jmol v10 is een compleet herschreven versie van Jmol met een nieuwe
     architectuur. De ontwikkeling is begonnen in de lente van 2003 met het
     specifieke doel Jmol tot volwaardige Chime-vervanger om te vormen.
       </p>
-      <p>
+			<p>
 	Jmol v10 bevat bijna alle mogelijkheden van eerdere Jmol versies en biedt
     bovendien enkele significante verbeteringen:
 	<ul>
-	  <li>echte 3D-engine zonder speciale hardware</li>
-	  <li>24-bit kleuren met nauwkeurige licht en schaduw</li>
-	  <li>veel snellere rendering-snelheid</li>
-	  <li>werkt met grote macromoleculen in uitmuntende snelheid</li>
-	  <li>eiwit/DNA/RNA secondaire structuur weergave</li>
-	  <li>RasMol/Chime-script compatibel</li>
-	</ul>
-      </p>
-    </section>
-
-    <section title="Wat de recencenten zeggen">
-      <i>
-	Jmol v10: I kan het niet geloven dat dit Java is!<br />
-    En het is allemaal opensource, zodat ik alleen maar kan zeggen:<br />
-    Haal het programma over voordat ze op zijn!<br />
+					<li>echte 3D-engine zonder speciale hardware</li>
+					<li>24-bit kleuren met nauwkeurige licht en schaduw</li>
+					<li>veel snellere rendering-snelheid</li>
+					<li>werkt met grote macromoleculen in uitmuntende snelheid</li>
+					<li>eiwit/DNA/RNA secondaire structuur weergave</li>
+					<li>RasMol/Chime-script compatibel</li>
+				</ul>
+			</p>
+		</section>
+		<section title="Wat de recencenten zeggen">
+			<i>
+	Jmol v10: I kan het niet geloven dat dit Java is!<br/>
+    En het is allemaal opensource, zodat ik alleen maar kan zeggen:<br/>
+    Haal het programma over voordat ze op zijn!<br/>
 	Het is <i>just-in-time (JIT)</i> voor kerstmis!
       </i>
-      <blockquote>
-	Warren L. DeLano, C/Python-ontwikkelaar<br />
+			<blockquote>
+	Warren L. DeLano, C/Python-ontwikkelaar<br/>
 	Principal Scientist, <a href="http://www.delanoscientific.com">
 	DeLano Scientific</a>,
-	Auteur van <a href="http://pymol.sourceforge.net">PyMOL</a><br />
+	Auteur van <a href="http://pymol.sourceforge.net">PyMOL</a><br/>
 	December 2004.
       </blockquote>
-    </section>
-    
-    <section title="Jmol v10 Eigenschappen">
-
-      <ul>
-	<li>
+		</section>
+		<section title="Jmol v10 Eigenschappen">
+			<ul>
+				<li>
 	  Gratis opensource programma met de 
 	  <a href="www.gnu.org/licenses/licenses.html#LGPL">
 	    GNU Lesser General Public Licentie (LGPL)
 	  </a>
-	</li>
-	<li>
+				</li>
+				<li>
 	  Applet, applicatie, en componenten-bibliotheek
 	  <ul>
-	    <li>
+						<li>
 	      De JmolApplet is een webbrowser applet de in internetpagina's gebruikt
           kan worden. Het is perfect voor webgebaseerde cursussen en databases.
           De JmolApplet biedt een manier op gebruikers van de
           <a href="http://www.mdli.com">Chime</a> plugin over te stappen op
           Jmol.
 	    </li>
-	    <li>
+						<li>
           De Jmol applicatie is een Java programma dat op elke desktop draait.
 	    </li>
-	    <li>
+						<li>
           De JmolViewer is een Java component dat ingebed kan worden in andere
           Java-programma's.
 	    </li>
-	  </ul>
-	</li>
-	<li>
+					</ul>
+				</li>
+				<li>
 	  Alle Java platformen
 	  <ul>
-	    <li>Windows</li>
-	    <li>Mac OS X</li>
-	    <li>Linux/Unix</li>
-	  </ul>
-	</li>
-	<li>
+						<li>Windows</li>
+						<li>Mac OS X</li>
+						<li>Linux/Unix</li>
+					</ul>
+				</li>
+				<li>
 	  Ondersteund alle grote webbrowsers
 	  <ul>
-	    <li>Internet Explorer (Win32)</li>
-	    <li>Mozilla/Firefox (Win32, OSX, *nix)</li>
-	    <li>Safari (Mac OS X)</li>
-	    <li>Opera 7.5.4 (Win32 only)</li>
-	  </ul>
-	</li>
-	<li>
+						<li>Internet Explorer (Win32)</li>
+						<li>Mozilla/Firefox (Win32, OSX, *nix)</li>
+						<li>Safari (Mac OS X)</li>
+						<li>Opera 7.5.4 (Win32 only)</li>
+					</ul>
+				</li>
+				<li>
 	  Zeer snelle 3D-weergave zonder hardware eisen
 	</li>
-	<li>
+				<li>
 	  Bestandsformaten
 	  <ul>
-	    <li>
-	      <a href="http://journals.iucr.org/c/services/cifguide.html">
+						<li>
+							<a href="http://journals.iucr.org/c/services/cifguide.html">
 		CIF/mmCIF
 	      </a>
 	      - International Union of Crystallography standard
 	    </li>
-	    <li>
-	      <a href="http://www.xml-cml.org">CML</a>
+						<li>
+							<a href="http://www.xml-cml.org">CML</a>
 	      - Chemical Markup Language
 	    </li>
-	    <li>
-	      <a href="http://www.msg.ameslab.gov/GAMESS/GAMESS.html">
+						<li>
+							<a href="http://www.msg.ameslab.gov/GAMESS/GAMESS.html">
 		GAMESS
 	      </a>
 	      - Gordon Research Group, Iowa State University
 	    </li>
-	    <li>
-	      <a href="http://www.gaussian.com/">Gaussian 94/98/03</a>
+						<li>
+							<a href="http://www.gaussian.com/">Gaussian 94/98/03</a>
 	      - Gaussian, Inc.
 	    </li>
-	    <li>
-	      <a href="http://www.bioinformatics.org/ghemical/">Ghemical</a>
-	    </li>
-	    <li>
-	      <a href="http://www.hyper.com/">HIN</a>
+						<li>
+							<a href="http://www.bioinformatics.org/ghemical/">Ghemical</a>
+						</li>
+						<li>
+							<a href="http://www.hyper.com/">HIN</a>
 	      - HyperChem from Hypercube, Inc.
 	    </li>
-	    <li>
-	      <a href="http://www.schrodinger.com/Products/jaguar.html">
+						<li>
+							<a href="http://www.schrodinger.com/Products/jaguar.html">
 		Jaguar
 	      </a>
 	      - Schrodinger, LLC 
 	    </li>
-	    <li>
-	      <a href="http://www.mdli.com/">MOL/SDF</a>
+						<li>
+							<a href="http://www.mdli.com/">MOL/SDF</a>
 	      - MDL Information Systems, Inc.
 	    </li>
-	    <li>
-	      <a href="http://www.schrodinger.com/Products/mopac.html">
+						<li>
+							<a href="http://www.schrodinger.com/Products/mopac.html">
 		MOPAC 93/97/2002
 	      </a>
 	      - Schrodinger, LLC 
 	    </li>
-	    <li>
-	      <a href="http://www.rcsb.org/pdb/">PDB</a>
+						<li>
+							<a href="http://www.rcsb.org/pdb/">PDB</a>
 	      - Protein Data Bank
 	    </li>
-	    <li>
-	      <a href="http://www.q-chem.com/">
+						<li>
+							<a href="http://www.q-chem.com/">
 		Q-Chem
 	      </a>
 	      - Q-Chem, Inc.
 	    </li>
-	    <li>
-	      <a href="http://shelx.uni-ac.gwdg.de/SHELX/">SHELX</a>
-	    </li>
-	    <li>
-	      <a href="http://www.wavefun.com">Spartan</a>
+						<li>
+							<a href="http://shelx.uni-ac.gwdg.de/SHELX/">SHELX</a>
+						</li>
+						<li>
+							<a href="http://www.wavefun.com">Spartan</a>
 	      - Wavefunction, Inc.
 	    </li>
-	    <li>
-	      <a href="http://www.uku.fi/~thassine/ghemical/">
+						<li>
+							<a href="http://www.uku.fi/~thassine/ghemical/">
 		Ghemical
 	      </a>
-	    </li>
-	    <li>
-	      <a href="http://www.emsl.pnl.gov/docs/nwchem/nwchem.html">
+						</li>
+						<li>
+							<a href="http://www.emsl.pnl.gov/docs/nwchem/nwchem.html">
 		NWChem
 	      </a>
-	    </li>
-	    <li>XYZ</li>
-	  </ul>
-	  <i>
+						</li>
+						<li>XYZ</li>
+					</ul>
+					<i>
 	    * Bestanden die met gzip zijn gecomprimeerd worden automatisch uitgepakt
 	  </i>
-	</li>
-	<li>
+				</li>
+				<li>
 	  Animaties
 	</li>
-	<li>
+				<li>
 	  Vibraties
 	</li>
-	<li>
+				<li>
 	  Minimale weergave van de eenheidscel
 	</li>
-	<li>
+				<li>
 	  schematische weergave van secundaire structuren
 	</li>
-	<li>
+				<li>
 	  metingen
 	  <ul>
-	    <li>afstanden</li>
-	    <li>hoeken</li>
-	    <li>torsiehoeken</li>
-	  </ul>
-	</li>
-	<li>
+						<li>afstanden</li>
+						<li>hoeken</li>
+						<li>torsiehoeken</li>
+					</ul>
+				</li>
+				<li>
 	  ondersteuning RasMol/Chime scripttaal
 	</li>
-	<li>
+				<li>
 	  JavaScript-bibliotheek voor het gebruiken van de applet
 	</li>
-	<li>
+				<li>
 	  Exporteren naar .jpg, .pdf, en PovRay
 	</li>
-      </ul>
-    </section>
-
-    <section title="Emaillijsten">
-      <p>
+			</ul>
+		</section>
+		<section title="Emaillijsten">
+			<p>
         Diegenen die interesse hebben in moleculaire visualisatie, en speciaal
         de educatieve en onderzoeksrichtingen worden met klem uigenodigd zich
         aan te melden op de 
 	<a href="http://lists.sourceforge.net/lists/listinfo/jmol-users">
 	  jmol-users emaillijst
 	</a>
-        waar u ide&#x00EB;en en ervaringen kunt uitwisselen, help kunt vragen
+        waar u ideëen en ervaringen kunt uitwisselen, help kunt vragen
         en uw wensen over Jmol kenbaar kunt maken.
 	De
 	<a href="http://sourceforge.net/mailarchive/forum.php?forum=jmol-users">
@@ -269,9 +261,8 @@
 	</a>
 	kunnen u veel informatie geven.
       </p>
-      
-      <p>
-        Diegenen die serieus ge&#x00EF;nteresseerd zijn in het deelnemen aan de
+			<p>
+        Diegenen die serieus geïnteresseerd zijn in het deelnemen aan de
         Jmol-gemeenschap worden aangeraden zich aan te melden op de
 	<a href="http://lists.sourceforge.net/lists/listinfo/jmol-developers">
 	  jmol-developers emaillijst
@@ -285,8 +276,6 @@
 	</a>
 	beschikbaar.
       </p>
-      
-    </section>
-    
-  </body>
+		</section>
+	</body>
 </document>

@@ -77,7 +77,7 @@
 		</section>
 		<section title="Jmol version 11">
 			<p>
-	Jmol v11.0 is the latest official, stable version. 
+	Jmol v. $VERSION$ is the latest official, stable version. 
 	<br/>
 	You can also get prerelease versions that are being developed 
 	for enhanced functionality from the download page.

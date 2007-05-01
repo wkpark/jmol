@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
   Spanish translation 
-  Translated from default version : index_en.xml (v 1.4)
+  Translated from default version : index_en.xml
 -->
 <document>
 	<body>
@@ -82,7 +82,7 @@
 		</section>
 		<section title="La versión 11 de Jmol">
 			<p>
-	Jmol v11.0 es la última versión oficial y estable.
+	Jmol v. $VERSION$ es la última versión oficial y estable.
 	<br/>
 	Puedes conseguir también versiones preliminares, que están en desarrollo
 	para ampliar la funcionalidad, en la página de descargas.

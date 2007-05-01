@@ -22,7 +22,9 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.adapter.smarter;
+package org.jmol.adapter.readers.cifpdb;
+
+import org.jmol.adapter.smarter.*;
 
 
 import org.jmol.api.JmolAdapter;
@@ -54,7 +56,7 @@ import java.util.Hashtable;
  *  
  */
 
-class PdbReader extends AtomSetCollectionReader {
+public class PdbReader extends AtomSetCollectionReader {
   int lineLength;
   // index into atoms array + 1
   // so that 0 can be used for the null value
@@ -66,7 +68,7 @@ class PdbReader extends AtomSetCollectionReader {
   String currentGroup3;
   Hashtable htElementsInCurrentGroup;
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("pdb");
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
@@ -260,7 +262,7 @@ class PdbReader extends AtomSetCollectionReader {
 
     atomSetCollection.addAtom(atom);
     // note that values are +1 in this serial map
-    serialMap[serial] = atomSetCollection.atomCount;
+    serialMap[serial] = atomSetCollection.getAtomCount();
 
     if (isHetero) {
       if (htHetero != null) {
@@ -313,8 +315,8 @@ class PdbReader extends AtomSetCollectionReader {
         int targetIndex = serialMap[targetSerial] - 1;
         if (targetIndex < 0)
           continue;
-        if (atomSetCollection.bondCount > 0) {
-          Bond bond = atomSetCollection.bonds[atomSetCollection.bondCount - 1];
+        if (atomSetCollection.getBondCount() > 0) {
+          Bond bond = atomSetCollection.getBond(atomSetCollection.getBondCount() - 1);
           if (i < 4 &&
               bond.atomIndex1 == sourceIndex &&
               bond.atomIndex2 == targetIndex) {
@@ -493,7 +495,7 @@ class PdbReader extends AtomSetCollectionReader {
     //Logger.debug("hetero: "+groupName+" "+hetName);
   }
   
-  void applySymmetry() throws Exception {
+  public void applySymmetry() throws Exception {
     if (needToApplySymmetry && !isNMRdata) {
       // problem with PDB is that they don't give origins, 
       // so we must force the issue

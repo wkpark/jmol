@@ -21,7 +21,9 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.adapter.smarter;
+package org.jmol.adapter.readers.cifpdb;
+
+import org.jmol.adapter.smarter.*;
 
 
 import java.io.BufferedReader;
@@ -54,7 +56,7 @@ import org.jmol.viewer.JmolConstants;
  *  applySymmetry()
  *  
  */
-class CifReader extends AtomSetCollectionReader {
+public class CifReader extends AtomSetCollectionReader {
 
   RidiculousFileFormatTokenizer tokenizer = new RidiculousFileFormatTokenizer();
 
@@ -65,7 +67,7 @@ class CifReader extends AtomSetCollectionReader {
   
   Hashtable htHetero;
 
-  AtomSetCollection readAtomSetCollection(BufferedReader reader) {
+ public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     int nAtoms = 0;
     this.reader = reader;
     atomSetCollection = new AtomSetCollection("cif");
@@ -97,14 +99,14 @@ class CifReader extends AtomSetCollectionReader {
             chemicalName = "";
             thisStructuralFormula = "";
             thisFormula = "";
-            if (nAtoms == atomSetCollection.atomCount)
+            if (nAtoms == atomSetCollection.getAtomCount())
               // we found no atoms -- must revert
               atomSetCollection.removeAtomSet();
             else
               applySymmetry();
             processDataParameter();
             iHaveDesiredModel = (desiredModelNumber > 0);
-            nAtoms = atomSetCollection.atomCount;
+            nAtoms = atomSetCollection.getAtomCount();
           }
           continue;
         }
@@ -158,12 +160,12 @@ class CifReader extends AtomSetCollectionReader {
         }
       }
 
-      if (atomSetCollection.atomCount == nAtoms)
+      if (atomSetCollection.getAtomCount() == nAtoms)
         atomSetCollection.removeAtomSet();
       else
         applySymmetry();
       atomSetCollection.setCollectionName("<collection of "
-          + atomSetCollection.atomSetCount + " models>");
+          + atomSetCollection.getAtomSetCount() + " models>");
     } catch (Exception e) {
       return setError(e);
     }
@@ -182,7 +184,7 @@ class CifReader extends AtomSetCollectionReader {
     tokenizer.getTokenPeeked();
     thisDataSetName = (key.length() < 6 ? "" : key.substring(5));
     if (thisDataSetName.length() > 0) {
-      if (atomSetCollection.currentAtomSetIndex >= 0) {
+      if (atomSetCollection.getCurrentAtomSetIndex() >= 0) {
         // note that there can be problems with multi-data mmCIF sets each with
         // multiple models; and we could be loading multiple files!
         atomSetCollection.newAtomSet();
@@ -221,7 +223,7 @@ class CifReader extends AtomSetCollectionReader {
     setSpaceGroupName(data);
   }
 
-  final static String[] cellParamNames = { "_cell_length_a", "_cell_length_b",
+  final public static String[] cellParamNames = { "_cell_length_a", "_cell_length_b",
       "_cell_length_c", "_cell_angle_alpha", "_cell_angle_beta",
       "_cell_angle_gamma", "_cell.length_a", "_cell.length_b",
       "_cell.length_c", "_cell.angle_alpha", "_cell.angle_beta",
@@ -671,7 +673,6 @@ class CifReader extends AtomSetCollectionReader {
     while (tokenizer.getData()) {
       int atomIndex1 = -1;
       int atomIndex2 = -1;
-      //String symmetry = null;
       for (int i = 0; i < fieldCount; ++i) {
         String field = loopData[i];
         if (field.length() == 0)

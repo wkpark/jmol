@@ -489,15 +489,15 @@ support for assertions (which were introduced in 1.4).
 
 	  <target name="applet-jar" id="applet-jar"
 	          depends="applet-classes,appletjars">
-	    <jar destfile="${jmol.applet.build.dir}/JmolApplet.jar"
-	         manifest="manifest/application.txt" index="true" >
+        <jar destfile="${jmol.applet.build.dir}/JmolApplet.jar"
+        	manifest="manifest/appletMonolithic.txt" index="true" >
 	      <fileset dir="${applet.classes.dir}" >
 	        <include name="**/*" />
 	      </fileset>
 	      <fileset dir="${appletjars.dir}" includes="**/*"/>
 	    </jar>
 	
-	    <jar destfile="${jmol.applet.build.dir}/JmolAppletMain.jar">
+	    <jar destfile="${jmol.applet.build.dir}/JmolAppletMain.jar" manifest="manifest/appletMain.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/api/**" />
 	        <!-- note that this class is included in JmolApplet0.jar -->
@@ -507,12 +507,12 @@ support for assertions (which were introduced in 1.4).
 	      </fileset>
 	    </jar>
 
-	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletJars.jar">
+	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletJars.jar" manifest="manifest/applet.txt">
 	      <!-- javax/vecmath -->
 	      <fileset dir="${appletjars.dir}" includes="**/*"/>
 	    </jar>
 	
-	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletCore.jar">
+	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletCore.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/g3d/**" />
 	        <include name="org/jmol/geodesic/**" />
@@ -524,7 +524,7 @@ support for assertions (which were introduced in 1.4).
 	      </fileset>
 	    </jar>
 
-	    <jar destfile="${jmol.applet.build.dir}/JmolAppletViewer.jar" >
+	    <jar destfile="${jmol.applet.build.dir}/JmolAppletViewer.jar" manifest="manifest/applet.txt" >
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/atomdata/**" />
 	        <include name="org/jmol/modelframe/**" />
@@ -535,64 +535,64 @@ support for assertions (which were introduced in 1.4).
 	    </jar>
 
 
-	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletJvxl.jar" >
+	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletJvxl.jar" manifest="manifest/applet.txt" >
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/jvxl/**" />
 	      </fileset>
 	    </jar>
 
-	    <jar destfile="${jmol.applet.build.dir}/JmolAppletPopup.jar">
+	    <jar destfile="${jmol.applet.build.dir}/JmolAppletPopup.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/popup/**" />
 	      </fileset>
 	    </jar>
 
-	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletQuantum.jar">
+	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletQuantum.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/quantum/**" />
 	      </fileset>
 	    </jar>
 
-	    <jar destfile="${jmol.applet.build.dir}/JmolAppletReadersMolXyz.jar">
+	    <jar destfile="${jmol.applet.build.dir}/JmolAppletReadersMolXyz.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/adapter/readers/molxyz/**" />
 	      </fileset>
 	    </jar>
 
-	    <jar destfile="${jmol.applet.build.dir}/JmolAppletReadersCifPdb.jar">
+	    <jar destfile="${jmol.applet.build.dir}/JmolAppletReadersCifPdb.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/adapter/readers/cifpdb/**" />
 	      </fileset>
 	    </jar>
 
 
-	    <jar destfile="${jmol.applet.build.dir}/JmolAppletReadersMore.jar">
+	    <jar destfile="${jmol.applet.build.dir}/JmolAppletReadersMore.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/adapter/readers/more/**" />
 	      </fileset>
 	    </jar>
 	  	
 	  	
-	    <jar destfile="${jmol.applet.build.dir}/JmolAppletReadersXml.jar">
+	    <jar destfile="${jmol.applet.build.dir}/JmolAppletReadersXml.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/adapter/readers/xml/**" />
 	      </fileset>
 	    </jar>
 
 	  	
-     	<jar destfile="${jmol.applet.build.dir}/JmolAppletShapeBio.jar" >
+     	<jar destfile="${jmol.applet.build.dir}/JmolAppletShapeBio.jar" manifest="manifest/applet.txt" >
 		  <fileset dir="${applet.classes.dir}">
 		    <include name="org/jmol/shapebio/**" />
 		  </fileset>
 		</jar>
 	  	
-	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletShapeSpecial.jar" >
+	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletShapeSpecial.jar" manifest="manifest/applet.txt" >
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/shapespecial/**" />
 	      </fileset>
 	    </jar>
 
-	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletSmiles.jar">
+	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletSmiles.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/smiles/**" />
 	      </fileset>
@@ -740,7 +740,7 @@ support for assertions (which were introduced in 1.4).
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
         <include name="org/jmol/api/JmolAppletInterface.class" />
-      </fileset>
+      </fileset>    	
       <indexjars>
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedMain.jar" />
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedCore.jar" />

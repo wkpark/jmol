@@ -3494,8 +3494,11 @@ class Eval { //implements Runnable {
 
   void load() throws ScriptException {
     boolean isMerge = false;
+    int modelCount = viewer.getModelCount() - (viewer.getFileName().equals("zapped") ? 1 : 0);
+    boolean appendNew = viewer.getAppendNew();
     StringBuffer loadScript = new StringBuffer("load");
     int[] params = new int[4];
+    int nFiles = 1;
     Point3f unitCells = viewer.getDefaultLattice();
     Hashtable htParams = new Hashtable();
     if (viewer.getApplySymmetryToBonds())
@@ -3621,6 +3624,7 @@ class Eval { //implements Runnable {
         loadScript.append(" ").append(Escape.escape(modelName));
         i++;
       }
+      nFiles = filenames.length;
       loadScript.append(";");
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
         viewer.openFiles(modelName, filenames, loadScript.toString(), isMerge);
@@ -3632,6 +3636,11 @@ class Eval { //implements Runnable {
     // Logger.debug("!!!!!!!!! took " + millis + " ms");
     if (errMsg != null && !isScriptCheck)
       evalError(errMsg);
+    
+    if (isMerge && (appendNew || nFiles > 1)) {
+      viewer.setAnimationRange(-1, -1, false);
+      viewer.setCurrentModelIndex(modelCount);
+    }
     if (logMessages)
       scriptStatus("Successfully loaded:" + filename);
     String defaultScript = viewer.getDefaultLoadScript();

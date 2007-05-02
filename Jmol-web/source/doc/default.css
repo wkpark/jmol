@@ -68,3 +68,6 @@ td.btfah input {
 	background-position:left; 
 	background-repeat:no-repeat;
 }
+.optP {
+	border-bottom: 2px dotted #666;
+}

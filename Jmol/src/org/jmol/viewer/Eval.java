@@ -2420,6 +2420,26 @@ class Eval { //implements Runnable {
       viewer.getHelp(what);
   }
 
+  
+  void move() throws ScriptException {
+    if (statementLength > 11)
+      badArgumentCount();
+    //rotx roty rotz zoom transx transy transz slab seconds fps
+    Vector3f dRot = new Vector3f(floatParameter(1), floatParameter(2),
+        floatParameter(3));
+    float dZoom = floatParameter(4);
+    Vector3f dTrans = new Vector3f(intParameter(5), intParameter(6),
+        intParameter(7));
+    float dSlab = floatParameter(8);
+    float floatSecondsTotal = floatParameter(9);
+    int fps = (statementLength == 11 ? intParameter(10) : 30);
+    if (isSyntaxCheck)
+      return;
+    refresh();
+    viewer.move(dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
+  }
+
+
   void moveto() throws ScriptException {
     //moveto time
     //moveto [time] { x y z deg} zoom xTrans yTrans (rotCenter) rotationRadius (navCenter) xNav yNav navDepth    
@@ -2491,12 +2511,21 @@ class Eval { //implements Runnable {
           floatParameter(i++));
       degrees = floatParameter(i++);
     }
+    
+    boolean isChange = !viewer.isInPosition(pt, degrees);
     //zoom xTrans yTrans (center) rotationRadius 
-    if (i != statementLength && !isCenterParameter(i))
+    if (i != statementLength && !isCenterParameter(i)) {
       zoom = floatParameter(i++);
+      if (!isChange && Math.abs(zoom - viewer.getZoomPercentFloat()) >= 1)
+        isChange = true;
+    }
     if (i != statementLength && !isCenterParameter(i)) {
       xTrans = floatParameter(i++);
       yTrans = floatParameter(i++);
+      if (!isChange && Math.abs(xTrans - viewer.getTranslationXPercent()) >= 1)
+        isChange = true;
+      if (!isChange && Math.abs(yTrans - viewer.getTranslationYPercent()) >= 1)
+        isChange = true;
     }
     float rotationRadius = 0;
     if (i != statementLength) {
@@ -2504,6 +2533,11 @@ class Eval { //implements Runnable {
       i = iToken + 1;
       if (i != statementLength && !isCenterParameter(i))
         rotationRadius = floatParameter(i++);
+      if (!isChange && center.distance(viewer.getRotationCenter()) >= 0.1)
+        isChange = true;
+      if (!isChange
+          && Math.abs(rotationRadius - viewer.getRotationRadius()) >= 0.1)
+        isChange = true;
     }
     // (navCenter) xNav yNav navDepth 
 
@@ -2526,12 +2560,14 @@ class Eval { //implements Runnable {
     if (i != statementLength)
       badArgumentCount();
 
-    if (!isSyntaxCheck) {
-      if (floatSecondsTotal > 0)
-        refresh();
-      viewer.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans,
-          yTrans, rotationRadius, navCenter, xNav, yNav, navDepth);
-    }
+    if (isSyntaxCheck)
+      return;
+    if (!isChange)
+      floatSecondsTotal = 0;
+    if (floatSecondsTotal > 0)
+      refresh();
+    viewer.moveTo(floatSecondsTotal, center, pt, degrees, zoom, xTrans, yTrans,
+        rotationRadius, navCenter, xNav, yNav, navDepth);
   }
 
   void navigate() throws ScriptException {
@@ -4460,9 +4496,12 @@ class Eval { //implements Runnable {
       xTrans = viewer.getTranslationXPercent();
       yTrans = viewer.getTranslationYPercent();
     }
-    if (!isSyntaxCheck)
-      viewer.moveTo(time, center, new Point3f(0, 0, 0), Float.NaN, factor,
-          xTrans, yTrans, radius, null, Float.NaN, Float.NaN, Float.NaN);
+    if (isSyntaxCheck)
+      return;
+    if (isSameAtom && Math.abs(zoom - factor) < 1)
+      time = 0;
+    viewer.moveTo(time, center, new Point3f(0, 0, 0), Float.NaN, factor,
+        xTrans, yTrans, radius, null, Float.NaN, Float.NaN, Float.NaN);
   }
 
   void gotocmd() throws ScriptException {
@@ -4519,24 +4558,6 @@ class Eval { //implements Runnable {
       }
       viewer.pushHoldRepaint();
     }
-  }
-
-  void move() throws ScriptException {
-    if (statementLength > 11)
-      badArgumentCount();
-    //rotx roty rotz zoom transx transy transz slab seconds fps
-    Vector3f dRot = new Vector3f(floatParameter(1), floatParameter(2),
-        floatParameter(3));
-    float dZoom = floatParameter(4);
-    Vector3f dTrans = new Vector3f(intParameter(5), intParameter(6),
-        intParameter(7));
-    float dSlab = floatParameter(8);
-    float floatSecondsTotal = floatParameter(9);
-    int fps = (statementLength == 11 ? intParameter(10) : 30);
-    if (isSyntaxCheck)
-      return;
-    refresh();
-    viewer.move(dRot, dZoom, dTrans, dSlab, floatSecondsTotal, fps);
   }
 
   void slab(boolean isDepth) throws ScriptException {

@@ -492,6 +492,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return transformManager.getNavigating();
   }
 
+  boolean isInPosition(Point3f pt, float degrees) {
+     return transformManager.isInPosition(pt, degrees);
+  }
+  
   void move(Vector3f dRot, float dZoom, Vector3f dTrans, float dSlab,
             float floatSecondsTotal, int fps) {
     //from Eval

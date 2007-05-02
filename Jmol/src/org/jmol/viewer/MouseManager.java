@@ -599,7 +599,8 @@ public abstract class MouseManager implements KeyListener {
             long currentTime = System.currentTimeMillis();
             int howLong = (int) (currentTime - mouseMovedTime);
             if (howLong > hoverDelay) {
-              if (!viewer.checkObjectHovered(xCurrent, yCurrent)) {
+              if (!viewer.getInMotion() && !viewer.getSpinOn() 
+                  && !viewer.checkObjectHovered(xCurrent, yCurrent)) {
                 int atomIndex = viewer.findNearestAtomIndex(xCurrent, yCurrent);
                 if (atomIndex >= 0)
                   hoverOn(atomIndex);

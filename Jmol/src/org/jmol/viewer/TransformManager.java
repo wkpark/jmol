@@ -1438,16 +1438,31 @@ abstract class TransformManager {
     //    viewer.setInMotion(false);
   }
 
+  protected final Point3f ptTest1 = new Point3f();
+  protected final Point3f ptTest2 = new Point3f();
+  protected final Point3f ptTest3 = new Point3f();
+  protected final AxisAngle4f aaTest1 = new AxisAngle4f();
   protected final AxisAngle4f aaMoveTo = new AxisAngle4f();
   protected final AxisAngle4f aaStep = new AxisAngle4f();
   protected final AxisAngle4f aaTotal = new AxisAngle4f();
   protected final Matrix3f matrixStart = new Matrix3f();
   protected final Matrix3f matrixInverse = new Matrix3f();
   protected final Matrix3f matrixStep = new Matrix3f();
+  protected final Matrix3f matrixTest = new Matrix3f();
   protected final Matrix3f matrixEnd = new Matrix3f();
   protected final Vector3f aaStepCenter = new Vector3f();
   protected final Vector3f aaStepNavCenter = new Vector3f();
   protected Point3f ptMoveToCenter;
+
+  boolean isInPosition(Point3f pt, float degrees) {
+    aaTest1.set(new Vector3f(pt), degrees * (float) Math.PI / 180);
+    ptTest1.set(4.321f, 1.23456f, 3.14159f);
+    getRotation(matrixTest);
+    matrixTest.transform(ptTest1, ptTest2);
+    matrixTest.set(aaTest1);
+    matrixTest.transform(ptTest1, ptTest3);
+    return (ptTest3.distance(ptTest2) < 0.1);
+  } 
 
   void moveTo(float floatSecondsTotal, Point3f center, Point3f pt,
               float degrees, float zoom, float xTrans, float yTrans,
@@ -1845,7 +1860,10 @@ abstract class TransformManager {
         int currentTime = (int) (System.currentTimeMillis() - timeBegin);
         int sleepTime = targetTime - currentTime;
         if (sleepTime > 0) {
-          if (refreshNeeded && spinOn) {
+          boolean isInMotion = viewer.getInMotion();
+          if (isInMotion)
+            sleepTime += 1000;
+          if (refreshNeeded && spinOn && !isInMotion) {
             float angle = 0;
             if (isSelected)
               setRotateSelected(true);

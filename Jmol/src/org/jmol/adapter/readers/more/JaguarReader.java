@@ -25,10 +25,10 @@
 package org.jmol.adapter.readers.more;
 
 import org.jmol.adapter.smarter.*;
+import org.jmol.util.Parser;
 
 
 import java.io.BufferedReader;
-import java.util.StringTokenizer;
 
 /**
  * Jaguar reader tested for the two samples files in CVS. Both
@@ -117,7 +117,7 @@ public class JaguarReader extends AtomSetCollectionReader {
       return;
     // determine number of freqs on this line (starting with "frequencies")
     do {
-      int freqCount = new StringTokenizer(line).countTokens() - 1;
+      int freqCount = Parser.countTokens(line, 0) - 1;
       while (readLine() != null && !line.startsWith("  intensities ")) {
       }
       for (int atomCenterNumber = 0; atomCenterNumber < atomCount; atomCenterNumber++) {
@@ -138,14 +138,11 @@ public class JaguarReader extends AtomSetCollectionReader {
 
   void recordAtomVector(int modelNumber, int atomCenterNumber,
                         float x, float y, float z) throws Exception {
-    if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
-      return; // line is too short -- no data found
-    if (atomCenterNumber <= 0 || atomCenterNumber > atomCount)
+    if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z)
+        || atomCenterNumber <= 0 || atomCenterNumber > atomCount)
       return;
-    if (atomCenterNumber == 1) {
-      if (modelNumber > 1)
+    if (atomCenterNumber == 1 && modelNumber > 1)
         atomSetCollection.cloneFirstAtomSet();
-    }
     Atom atom = atomSetCollection.getAtom((modelNumber - 1) * atomCount +
                             atomCenterNumber - 1);
     atom.vectorX = x;

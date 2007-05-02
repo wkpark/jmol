@@ -1804,7 +1804,12 @@ abstract class TransformManager {
     //back to the Chime defaults
   }
 
-  boolean spinOn;
+  protected boolean spinOn;
+  
+  boolean getSpinOn() {
+    return spinOn;
+  }
+  
   private SpinThread spinThread;
 
   void setSpinOn(boolean spinOn) {
@@ -1813,6 +1818,7 @@ abstract class TransformManager {
 
   private void setSpinOn(boolean spinOn, float endDegrees, boolean isSelected) {
     this.spinOn = spinOn;
+    viewer.setBooleanProperty("_spinon", spinOn);
     if (spinOn) {
       if (spinThread == null) {
         spinThread = new SpinThread(endDegrees, isSelected);

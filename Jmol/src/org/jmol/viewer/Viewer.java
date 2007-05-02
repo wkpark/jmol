@@ -866,7 +866,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   boolean getSpinOn() {
-    return transformManager.spinOn;
+    return transformManager.getSpinOn();
   }
 
   String getOrientationText() {

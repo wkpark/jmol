@@ -77,42 +77,32 @@ public abstract class JmolAdapter {
     return adapterName;
   }
   
-  /**
-   * Associate a clientFile object with a bufferedReader.
-   * 
-   * <p>Given the BufferedReader, return an object which represents the file
-   * contents. The parameter <code>name</code> is assumed to be the
-   * file name or URL which is the source of reader. Note that this 'file'
-   * may have been automatically decompressed. Also note that the name
-   * may be 'String', representing a string constant. Therefore, few
-   * assumptions should be made about the <code>name</code> parameter.
-   *
-   * The return value is an object which represents a <code>clientFile</code>.
-   * This <code>clientFile</code> will be passed back in to other methods.
-   * If the return value is <code>instanceof String</code> then it is
-   * considered an error condition and the returned String is the error
-   * message. 
-   *
-   * @param name File name, String or URL acting as the source of the reader
-   * @param bufferedReader The BufferedReader
-   * @return The clientFile or String with an error message
-   */
-  public Object openBufferedReader(String name,
-                                   BufferedReader bufferedReader) {
-    return openBufferedReader(name, bufferedReader, null);
-  }
-
-  /**
-   * @param name File name, String or URL acting as the source of the reader
-   * @param bufferedReader The BufferedReader
-   * @param htParams Optional hashtable containing symmetry/cell information
-   * @return The clientFile or String with an error message
-   * @see #openBufferedReader(String, BufferedReader)
-   */
-  public Object openBufferedReader(String name,
-                                   BufferedReader bufferedReader, Hashtable htParams) {
-    return null;
-  }
+/**
+ * Associate a clientFile object with a bufferedReader.
+ * 
+ * <p>Given the BufferedReader, return an object which represents the file
+ * contents. The parameter <code>name</code> is assumed to be the
+ * file name or URL which is the source of reader. Note that this 'file'
+ * may have been automatically decompressed. Also note that the name
+ * may be 'String', representing a string constant. Therefore, few
+ * assumptions should be made about the <code>name</code> parameter.
+ *
+ * The return value is an object which represents a <code>clientFile</code>.
+ * This <code>clientFile</code> will be passed back in to other methods.
+ * If the return value is <code>instanceof String</code> then it is
+ * considered an error condition and the returned String is the error
+ * message. 
+ *
+ * @param name File name, String or URL acting as the source of the reader
+ * @param type File type, if known, or null
+ * @param bufferedReader The BufferedReader
+ * @param htParams a hash table containing parameter information
+ * @return The clientFile or String with an error message
+ */
+public Object openBufferedReader(String name, String type,
+                                 BufferedReader bufferedReader, Hashtable htParams) {
+  return null;
+}
 
 
   /**
@@ -132,14 +122,39 @@ public abstract class JmolAdapter {
    * considered an error condition and the returned String is the error
    * message. 
    *
-   * @param name File names, String or URL acting as the source of each reader
+   * @param names File names, String or URL acting as the source of each reader
+   * @param types File types, if known, or null
    * @param bufferedReader The array of BufferedReader
    * @return The clientFile or String with an error message
    */
-  public Object openBufferedReaders(String[] name,
+  public Object openBufferedReaders(String[] names, String[] types,
                                     BufferedReader[] bufferedReader) {
     return null;
   }
+
+ // alternative settings, for posterity:
+
+  public Object openBufferedReader(String name, BufferedReader bufferedReader) {
+    return openBufferedReader(name, null, bufferedReader, null);
+  }
+
+  public Object openBufferedReader(String name, BufferedReader bufferedReader,
+                                   Hashtable htParams) {
+    return openBufferedReader(name, null, bufferedReader, htParams);
+  }
+
+  public Object openBufferedReader(String name, String type,
+                                   BufferedReader bufferedReader) {
+    return openBufferedReader(name, type, bufferedReader, null);
+  }
+
+  public Object openBufferedReaders(String[] name,
+                                    BufferedReader[] bufferedReader) {
+    return openBufferedReaders(name, null, bufferedReader);
+  }
+
+
+
 
   public Object openDOMReader(Object DOMNode) {
     return null;

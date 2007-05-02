@@ -35,6 +35,21 @@ import java.util.Hashtable;
 class Resolver {
 
   private final static String classBase = "org.jmol.adapter.readers.";
+  private final static String[] readerSets = new String[] {
+    "cifpdb.", "Cif;Pdb;",
+    "molxyz.", "Mol;Xyz;",
+    "xml.", "Xml;"
+  };
+  
+  private final static String getReaderClassBase(String type) {
+    String base = "more.";
+    for (int i = 1; i < readerSets.length; i += 2)
+      if (readerSets[i].indexOf(type + ";") >= 0) {
+        base = readerSets[i - 1];
+        break;
+      }
+    return classBase + base + type + "Reader";
+  }
   
   static String getFileType(BufferedReader br) {
     try {
@@ -44,38 +59,46 @@ class Resolver {
     }
   }
   
-  static Object resolve(String name, BufferedReader bufferedReader) throws Exception {
-    return resolve(name, bufferedReader, null);
+  static Object resolve(String name, String type, BufferedReader bufferedReader) throws Exception {
+    return resolve(name, type, bufferedReader, null);
   }
 
-  static Object resolve(String name, BufferedReader bufferedReader,
+  static Object resolve(String fullName, String type, BufferedReader bufferedReader,
                         Hashtable htParams) throws Exception {
     AtomSetCollectionReader atomSetCollectionReader = null;
-    String atomSetCollectionReaderName = determineAtomSetCollectionReader(
-        bufferedReader, true);
-    if (atomSetCollectionReaderName.indexOf("\n") >= 0)
-      return "unrecognized file format for file " + name + "\n"
-          + atomSetCollectionReaderName;
-    Logger.info("The Resolver thinks " + atomSetCollectionReaderName);
+    String atomSetCollectionReaderName;
+    if (type != null) {
+      atomSetCollectionReaderName = getReaderFromType(type);
+      if (atomSetCollectionReaderName == null)
+        return "unrecognized file format type " + type;
+      Logger.info("The Resolver assumes " + atomSetCollectionReaderName);
+    } else {
+      atomSetCollectionReaderName = determineAtomSetCollectionReader(
+          bufferedReader, true);
+      if (atomSetCollectionReaderName.indexOf("\n") >= 0)
+        return "unrecognized file format for file " + fullName + "\n"
+            + atomSetCollectionReaderName;
+      Logger.info("The Resolver thinks " + atomSetCollectionReaderName);
+    }
     String className = null;
     Class atomSetCollectionReaderClass;
     String err = null;
     try {
-      className = classBase + atomSetCollectionReaderName + "Reader";
+      className = getReaderClassBase(atomSetCollectionReaderName);
       atomSetCollectionReaderClass = Class.forName(className);//,true, Thread.currentThread().getContextClassLoader());
       atomSetCollectionReader = (AtomSetCollectionReader) atomSetCollectionReaderClass
           .newInstance();
     } catch (Exception e) {
-        err = "File reader was not found:" + className;
-        Logger.error(err);
-        return err;
+      err = "File reader was not found:" + className;
+      Logger.error(err);
+      return err;
     }
     atomSetCollectionReader.initialize(htParams);
     AtomSetCollection atomSetCollection = atomSetCollectionReader
         .readAtomSetCollection(bufferedReader);
     bufferedReader.close();
     bufferedReader = null;
-    return finalize(atomSetCollection, "file " + name);
+    return finalize(atomSetCollection, "file " + fullName);
   }
 
   static Object DOMResolve(Object DOMNode) throws Exception {
@@ -119,22 +142,22 @@ class Resolver {
 
     if (nLines == 1 && lines[0].length() > 0
         && Character.isDigit(lines[0].charAt(0)))
-      return "more.Jme"; //only one line, and that line starts with a number 
-
+      return "Jme"; //only one line, and that line starts with a number 
     if (checkV3000(lines))
-      return "more.V3000";
+      return "V3000";
     if (checkMol(lines))
-      return "molxyz.Mol";
+      return "Mol";
     if (checkXyz(lines))
-      return "molxyz.Xyz";
+      return "Xyz";
     if (checkMopacGraphf(lines))
-      return "more.MopacGraphf"; //must be prior to checkFoldingXyz
+      return "MopacGraphf"; //must be prior to checkFoldingXyz
     if (checkFoldingXyz(lines))
-      return "more.FoldingXyz";
+      return "FoldingXyz";
     if (checkCube(lines))
-      return "more.Cube";
+      return "Cube";
     if (checkOdyssey(lines))
-      return "more.Odyssey";
+      return "Odyssey";
+
 
     // run these loops forward ... easier for people to understand
     //file starts with added 4/26 to ensure no issue with NWChem files
@@ -143,19 +166,19 @@ class Resolver {
 
     for (int i = 0; i < fileStartsWithRecords.length; ++i) {
       String[] recordTags = fileStartsWithRecords[i];
-      for (int j = 0; j < recordTags.length; ++j) {
+      for (int j = 1; j < recordTags.length; ++j) {
         String recordTag = recordTags[j];
         if (leader.startsWith(recordTag))
-          return fileStartsWithFormats[i];
+          return recordTags[0];
       }
     }
     for (int i = 0; i < lineStartsWithRecords.length; ++i) {
       String[] recordTags = lineStartsWithRecords[i];
-      for (int j = 0; j < recordTags.length; ++j) {
+      for (int j = 1; j < recordTags.length; ++j) {
         String recordTag = recordTags[j];
         for (int k = 0; k < lines.length; ++k) {
           if (lines[k].startsWith(recordTag))
-            return lineStartsWithFormats[i];
+            return recordTags[0];
         }
       }
     }
@@ -163,15 +186,45 @@ class Resolver {
     String header = llr.getHeader();
     for (int i = 0; i < containsRecords.length; ++i) {
       String[] recordTags = containsRecords[i];
-      for (int j = 0; j < recordTags.length; ++j) {
+      for (int j = 1; j < recordTags.length; ++j) {
         String recordTag = recordTags[j];
         if (header.indexOf(recordTag) != -1)
-          return containsFormats[i];
+          return recordTags[0];
       }
     }
 
     return (returnLines ? "\n" + lines[0] + "\n" + lines[1] + "\n" + lines[2] + "\n" : null);
   }
+
+  final public static String getReaderFromType(String type) {
+    type = type.toLowerCase();
+    String base = null;
+    if ((base = checkType(checkSpecialTags, type)) != null)
+      return base;
+    if ((base = checkType(fileStartsWithRecords, type)) != null)
+      return base;
+    if ((base = checkType(lineStartsWithRecords, type)) != null)
+      return base;
+    return checkType(containsRecords, type);
+  }
+  
+  final private static String checkType(String[][] typeTags, String type) {
+    for (int i = 0; i < typeTags.length; ++i)
+      if (typeTags[i][0].toLowerCase().equals(type))
+        return typeTags[i][0];
+    return null;
+  }
+  
+  final static String[][] checkSpecialTags = {
+    { "Jme" },
+    { "V3000" },
+    { "Mol" },
+    { "Xyz" },
+    { "MopacGraphf" },
+    { "FoldingXyz" },
+    { "Cube" },
+    { "Odyssey" },    
+  };
 
   ////////////////////////////////////////////////////////////////
   // file types that need special treatment
@@ -311,6 +364,7 @@ class Resolver {
   }
 
 */
+  
   ////////////////////////////////////////////////////////////////
   // these test files that startWith one of these strings
   ////////////////////////////////////////////////////////////////
@@ -318,26 +372,23 @@ class Resolver {
   final static int LEADER_CHAR_MAX = 20;
   
   final static String[] cubeRecords =
-  {"JVXL", "#JVXL"};
+  {"Cube", "JVXL", "#JVXL"};
 
   final static String[] mol2Records =
-  {"@<TRIPOS>"};
+  {"Mol2", "mol2", "@<TRIPOS>"};
 
   final static String[] webmoRecords =
-  {"[HEADER]"};
+  {"WebMO", "[HEADER]"};
 
   final static String[][] fileStartsWithRecords =
   { cubeRecords, mol2Records, webmoRecords};
-
-  final static String[] fileStartsWithFormats =
-  { "more.Cube", "more.Mol2", "more.WebMO"};
 
   ////////////////////////////////////////////////////////////////
   // these test lines that startWith one of these strings
   ////////////////////////////////////////////////////////////////
 
   final static String[] pdbRecords = {
-    "HEADER", "OBSLTE", "TITLE ", "CAVEAT", "COMPND", "SOURCE", "KEYWDS",
+    "Pdb", "HEADER", "OBSLTE", "TITLE ", "CAVEAT", "COMPND", "SOURCE", "KEYWDS",
     "EXPDTA", "AUTHOR", "REVDAT", "SPRSDE", "JRNL  ", "REMARK",
     "DBREF ", "SEQADV", "SEQRES", "MODRES", 
     "HELIX ", "SHEET ", "TURN  ",
@@ -346,76 +397,72 @@ class Resolver {
   };
 
   final static String[] shelxRecords =
-  { "TITL ", "ZERR ", "LATT ", "SYMM ", "CELL " };
+  { "Shelx", "TITL ", "ZERR ", "LATT ", "SYMM ", "CELL " };
 
   final static String[] cifRecords =
-  { "data_", "_publ" };
+  { "Cif", "data_", "_publ" };
 
   final static String[] ghemicalMMRecords =
-  { "!Header mm1gp", "!Header gpr" };
+  { "GhemicalMM", "!Header mm1gp", "!Header gpr" };
 
   final static String[] jaguarRecords =
-  { "  |  Jaguar version", };
+  { "Jaguar", "  |  Jaguar version", };
 
   final static String[] hinRecords = 
-  {"mol "};
+  { "Hin", "mol "};
 
   final static String[] mdlRecords = 
-  {"$MDL "};
+  { "Mol", "$MDL "};
 
   final static String[] spartanSmolRecords =
-  {"INPUT="};
+  { "SpartanSmol", "INPUT="};
 
   final static String[] csfRecords =
-  {"local_transform"};
+  { "Csf", "local_transform"};
   
   final static String[][] lineStartsWithRecords =
   { pdbRecords, shelxRecords, cifRecords, ghemicalMMRecords,
     jaguarRecords, hinRecords , mdlRecords, 
     spartanSmolRecords, csfRecords};
 
-  final static String[] lineStartsWithFormats =
-  { "cifpdb.Pdb", "more.Shelx", "cifpdb.Cif", "more.GhemicalMM",
-    "more.Jaguar", "more.Hin", "more.Mol", "more.SpartanSmol", "more.Csf"};
-
   ////////////////////////////////////////////////////////////////
   // contains formats
   ////////////////////////////////////////////////////////////////
-  
-  final static String[] xmlRecords =
-  { "<?xml", "<atom", "<molecule", "<reaction", "<cml", "<bond", ".dtd\"",
+
+  final static String[] xmlRecords = 
+  { "Xml", "<?xml", "<atom", "<molecule", "<reaction", "<cml", "<bond", ".dtd\"",
     "<list>", "<entry", "<identifier", "http://www.xml-cml.org/schema/cml2/core" };
 
   final static String[] gaussianRecords =
-  { "Entering Gaussian System", "Entering Link 1", "1998 Gaussian, Inc." };
+  { "Gaussian", "Entering Gaussian System", "Entering Link 1", "1998 Gaussian, Inc." };
 
   final static String[] mopacRecords =
-  { "MOPAC 93 (c) Fujitsu", "MOPAC2002 (c) Fujitsu",
+  { "Mopac", "MOPAC 93 (c) Fujitsu", "MOPAC2002 (c) Fujitsu",
     "MOPAC FOR LINUX (PUBLIC DOMAIN VERSION)"};
 
   final static String[] qchemRecords = 
-  { "Welcome to Q-Chem", "A Quantum Leap Into The Future Of Chemistry" };
+  { "Qchem", "Welcome to Q-Chem", "A Quantum Leap Into The Future Of Chemistry" };
 
   final static String[] gamessRecords =
-  { "GAMESS" };
-
-  final static String[] spartanRecords =
-  { "Spartan" };
+  { "Gamess", "GAMESS" };
 
   final static String[] spartanBinaryRecords =
-  { "|PropertyArchive" };
+  { "SpartanSmol" , "|PropertyArchive" };
+
+  final static String[] spartanRecords =
+  { "Spartan", "Spartan" };
 
   final static String[] adfRecords =
-  { "Amsterdam Density Functional" };
+  { "Adf", "Amsterdam Density Functional" };
   
   final static String[] psiRecords =
-  {"    PSI  3"};
+  { "Psi", "    PSI  3"};
  
   final static String[] nwchemRecords =
-  {" argument  1 = "};
+  { "NWChem", " argument  1 = "};
 
   final static String[] jmolDataRecords =
-  { "Jmol Coordinate Data" };
+  { "JmolData", "Jmol Coordinate Data" };
 
   final static String[][] containsRecords =
   { xmlRecords, gaussianRecords, mopacRecords, qchemRecords, gamessRecords,
@@ -423,10 +470,6 @@ class Resolver {
     nwchemRecords, jmolDataRecords
   };
 
-  final static String[] containsFormats =
-  { "xml.Xml", "more.Gaussian", "more.Mopac", "more.Qchem", "more.Gamess",
-    "more.SpartanSmol", "more.Spartan" , "more.Mol2", "more.Adf", "more.Psi",
-    "more.NWChem", "more.JmolData"};
 }
 
 class LimitedLineReader {

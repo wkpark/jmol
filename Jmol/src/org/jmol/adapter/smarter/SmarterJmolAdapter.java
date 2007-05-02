@@ -45,22 +45,16 @@ public class SmarterJmolAdapter extends JmolAdapter {
   public final static String PATH_SEPARATOR =
     System.getProperty("path.separator");
   
-
-
   public void finish(Object clientFile) {
     ((AtomSetCollection)clientFile).finish();
   }
 
-  public Object openBufferedReader(String name,
-                                   BufferedReader bufferedReader) {
-    return openBufferedReader(name, bufferedReader, (Hashtable) null);
-  }
-
-  public Object openBufferedReader(String name,
+  public Object openBufferedReader(String name, String type,
                                    BufferedReader bufferedReader, Hashtable htParams) {
+    //FileOpenThread, TesetSmarterJmolAdapter
     try {
       Object atomSetCollectionOrErrorMessage =
-        Resolver.resolve(name, bufferedReader, htParams);
+        Resolver.resolve(name, type, bufferedReader, htParams);
       if (atomSetCollectionOrErrorMessage instanceof String)
         return atomSetCollectionOrErrorMessage;
       if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {
@@ -78,14 +72,15 @@ public class SmarterJmolAdapter extends JmolAdapter {
     }
   }
 
-  public Object openBufferedReaders(String[] name,
+  public Object openBufferedReaders(String[] names, String[] types,
                                     BufferedReader[] bufferedReader) {
-    int size = Math.min(name.length, bufferedReader.length);
+    //FilesOpenThread
+    int size = Math.min(names.length, bufferedReader.length);
     AtomSetCollection[] atomSetCollections = new AtomSetCollection[size];
     for (int i = 0; i < size; i++) {
       try {
         Object atomSetCollectionOrErrorMessage =
-          Resolver.resolve(name[i], bufferedReader[i]);
+          Resolver.resolve(names[i], types[i], bufferedReader[i]);
         if (atomSetCollectionOrErrorMessage instanceof String)
           return atomSetCollectionOrErrorMessage;
         if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {

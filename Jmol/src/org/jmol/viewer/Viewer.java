@@ -1325,7 +1325,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return;
     }
     if (name.equalsIgnoreCase("string[]")) {
-      openStringInline(fileManager.inlineDataArray, htParams, isMerge);
+      openStringsInline(fileManager.inlineDataArray, htParams, isMerge);
       return;
     }
     if (!isMerge)
@@ -1377,12 +1377,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       setStatusFileLoaded(1, "string", "", getModelSetName(), null, null);
   }
 
-  private void openStringInline(String[] arrayModels, Hashtable htParams,
+  private void openStringsInline(String[] arrayModels, Hashtable htParams,
                                 boolean isMerge) {
     //loadInline, openFile, openStringInline
     if (!isMerge)
       clear();
-    fileManager.openStringInline(arrayModels, htParams, isMerge);
+    fileManager.openStringsInline(arrayModels, htParams, isMerge);
     String errorMsg = getOpenFileError(isMerge);
     if (errorMsg == null)
       setStatusFileLoaded(1, "string[]", "", getModelSetName(), null, null);
@@ -1435,7 +1435,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         strModels[i] = strModel.substring(pt0, pt);
         pt0 = pt + datasep.length();
       }
-      openStringInline(strModels, A, isMerge);
+      openStringsInline(strModels, A, isMerge);
       return;
     }
     openStringInline(strModel, A, isMerge);
@@ -1455,7 +1455,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     A.put("params", params);
     if (global.applySymmetryToBonds)
       A.put("applySymmetryToBonds", Boolean.TRUE);
-    openStringInline(arrayModels, A, isMerge);
+    openStringsInline(arrayModels, A, isMerge);
   }
 
   public boolean getApplySymmetryToBonds() {
@@ -1510,6 +1510,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return getOpenFileError(false);
   }
 
+  /**
+   * the opener for Jmol
+   * 
+   * @param isMerge
+   * @return errorMsg
+   */
   String getOpenFileError(boolean isMerge) {
     String fullPathName = getFullPathName();
     String fileName = getFileName();

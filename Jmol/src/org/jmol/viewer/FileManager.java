@@ -68,9 +68,10 @@ class FileManager {
 
   // for expanding names into full path names
   //private boolean isURL;
-  private String nameAsGiven;
+  private String nameAsGiven = "zapped";
   private String fullPathName;
   String fileName;
+  String fileType;
   String inlineData;
   String[] inlineDataArray;
   //boolean isInline;
@@ -98,6 +99,9 @@ class FileManager {
   }
 
   String getFileTypeName(String fileName) {
+    int pt = fileName.indexOf("::");
+    if (pt >= 0)
+      return fileName.substring(0, pt);
     Object br = getUnzippedBufferedReaderOrErrorMessageFromName(fileName);
     if (! (br instanceof BufferedReader))
       return null;
@@ -116,46 +120,46 @@ class FileManager {
 
   void openFile(String name, Hashtable htParams, String loadScript, boolean isMerge) {
     setLoadScript(loadScript, isMerge);
-    String sp = "";
-    //if (params != null)
-      //for (int i = 0; i < params.length; i++)
-        //sp+="," + params[i];
-    Logger.info("\nFileManager.openFile(" + name + sp + ")");
-    nameAsGiven = name;
+    int pt = name.indexOf("::");
+    nameAsGiven = (pt >= 0 ? name.substring(pt + 2) : name);
+    fileType = (pt >= 0 ? name.substring(0, pt) : null);
+    Logger.info("\nFileManager.openFile(" + nameAsGiven + ") //" + name);
     openErrorMessage = fullPathName = fileName = null;
-    classifyName(name);
+    classifyName(nameAsGiven);
     if (openErrorMessage != null) {
       Logger.error("file ERROR: " + openErrorMessage);
       return;
     }
-    fileOpenThread = new FileOpenThread(fullPathName, name, htParams);
+    fileOpenThread = new FileOpenThread(fullPathName, nameAsGiven, fileType, null, htParams);
     fileOpenThread.run();
   }
 
   void openFiles(String modelName, String[] names, String loadScript, boolean isMerge) {
     setLoadScript(loadScript, isMerge);
     String[] fullPathNames = new String[names.length];
+    String[] namesAsGiven = new String[names.length];
+    String[] fileTypes = new String[names.length];
     for (int i = 0; i < names.length; i++) {
-      nameAsGiven = names[i];
+      int pt = names[i].indexOf("::");
+      nameAsGiven = (pt >= 0 ? names[i].substring(pt + 2) : names[i]);
+      fileType = (pt >= 0 ? names[i].substring(0, pt) : null);
       openErrorMessage = fullPathName = fileName = null;
-      classifyName(names[i]);
+      classifyName(nameAsGiven);
       if (openErrorMessage != null) {
         Logger.error("file ERROR: " + openErrorMessage);
         return;
       }
       fullPathNames[i] = fullPathName;
+      fileTypes[i] = fileType;
+      namesAsGiven[i] = nameAsGiven;
     }
     
     fullPathName = fileName = nameAsGiven = modelName;
     inlineData = "";
     //isInline = false;
     //isDOM = false;
-    filesOpenThread = new FilesOpenThread(fullPathNames, names);
+    filesOpenThread = new FilesOpenThread(fullPathNames, namesAsGiven, fileTypes, null);
     filesOpenThread.run();
-  }
-
-  void openStringInline(String strModel, boolean isMerge) {
-    openStringInline(strModel, null, isMerge);
   }
 
   void openStringInline(String strModel, Hashtable htParams, boolean isMerge) {
@@ -172,16 +176,12 @@ class FileManager {
     inlineData = strModel;
     //isInline = true;
     //isDOM = false;
-    if (htParams == null)
-      fileOpenThread = new FileOpenThread(fullPathName, new BufferedReader(new StringReader(
-          strModel)));
-    else
-      fileOpenThread = new FileOpenThread(fullPathName, new BufferedReader(new StringReader(
-          strModel)), htParams);
+    fileOpenThread = new FileOpenThread(fullPathName, fullPathName, null, new BufferedReader(new StringReader(
+        strModel)), htParams);
     fileOpenThread.run();
   }
 
-  void openStringInline(String[] arrayModels, Hashtable htParams, boolean isMerge) {
+  void openStringsInline(String[] arrayModels, Hashtable htParams, boolean isMerge) {
     loadScript = "dataSeparator = \"~~~next file~~~\";\ndata \"model inline\"";
     for (int i = 0; i < arrayModels.length; i++) {
       if (i > 0)
@@ -207,7 +207,7 @@ class FileManager {
       fullPathNames[i] = "string["+i+"]";
       readers[i] = new StringReader(arrayModels[i]);
     }
-    filesOpenThread = new FilesOpenThread(fullPathNames, readers);
+    filesOpenThread = new FilesOpenThread(fullPathNames, fullPathNames, null, readers);
     filesOpenThread.run();
   }
 
@@ -221,6 +221,13 @@ class FileManager {
     aDOMOpenThread.run();
   }
 
+  /**
+   * not used in Jmol project
+   * 
+   * @param fullPathName
+   * @param name
+   * @param reader
+   */
   void openReader(String fullPathName, String name, Reader reader) {
     openBufferedReader(fullPathName, name, new BufferedReader(reader));
   }
@@ -229,7 +236,8 @@ class FileManager {
     openErrorMessage = null;
     this.fullPathName = fullPathName;
     fileName = name;
-    fileOpenThread = new FileOpenThread(fullPathName, reader);
+    fileType = null;
+    fileOpenThread = new FileOpenThread(fullPathName, fullPathName, fileType, reader, null);
     fileOpenThread.run();
   }
 
@@ -280,6 +288,11 @@ class FileManager {
     }
   }
 
+  /**
+   * the real entry point 
+   * 
+   * @return string error or an AtomSetCollection
+   */
   Object waitForClientFileOrErrorMessage() {
     Object clientFile = null;
     if (fileOpenThread != null) {
@@ -372,7 +385,7 @@ class FileManager {
         fullPathName = url.toString();
         // we add one to lastIndexOf(), so don't worry about -1 return value
         fileName = fullPathName.substring(fullPathName.lastIndexOf('/') + 1,
-                                          fullPathName.length());
+                fullPathName.length());
       } catch (MalformedURLException e) {
         openErrorMessage = e.getMessage();
       }
@@ -385,7 +398,7 @@ class FileManager {
           URL url = new URL(name);
           fullPathName = url.toString();
           fileName = fullPathName.substring(fullPathName.lastIndexOf('/') + 1,
-          fullPathName.length());
+              fullPathName.length());
         } catch (MalformedURLException e) {
           openErrorMessage = e.getMessage();
         }
@@ -481,31 +494,18 @@ class FileManager {
     String errorMessage;
     String fullPathNameInThread;
     String nameAsGivenInThread;
+    String fileTypeInThread;
     Object clientFile;
     BufferedReader reader;
     Hashtable htParams;
+    
 
-    FileOpenThread(String fullPathName, String nameAsGiven) {
-      this.fullPathNameInThread = fullPathName;
-      this.nameAsGivenInThread = nameAsGiven;
-      this.htParams = null;
-    }
-
-    FileOpenThread(String fullPathName, String nameAsGiven, Hashtable htParams) {
-      this.fullPathNameInThread = fullPathName;
-      this.nameAsGivenInThread = nameAsGiven;
-      this.htParams = htParams;
-    }
-
-    FileOpenThread(String name, BufferedReader reader, Hashtable htParams) {
-      nameAsGivenInThread = fullPathNameInThread = name;
+    FileOpenThread(String name, String nameAsGiven, String type, BufferedReader reader, Hashtable htParams) {
+      fullPathNameInThread = name;
+      nameAsGivenInThread = nameAsGiven;
+      fileTypeInThread = type;
       this.reader = reader;
       this.htParams = htParams;
-    }
-
-    FileOpenThread(String name, BufferedReader reader) {
-      nameAsGivenInThread = fullPathNameInThread = name;
-      this.reader = reader;
     }
 
     public void run() {
@@ -526,7 +526,7 @@ class FileManager {
     }
 
     private void openBufferedReader(BufferedReader reader) {
-      Object clientFile = modelAdapter.openBufferedReader(fullPathNameInThread,
+      Object clientFile = modelAdapter.openBufferedReader(fullPathNameInThread, fileTypeInThread,
           reader, htParams);
       if (clientFile instanceof String)
         errorMessage = (String) clientFile;
@@ -538,18 +538,17 @@ class FileManager {
   class FilesOpenThread implements Runnable {
     //boolean terminated;
     String errorMessage;
-    String[] fullPathNameInThread;
-    String[] nameAsGivenInThread;
+    String[] fullPathNamesInThread;
+    String[] namesAsGivenInThread;
+    String[] fileTypesInThread;
     Object clientFile;
     Reader[] reader;
+    
 
-    FilesOpenThread(String[] fullPathName, String[] nameAsGiven) {
-      this.fullPathNameInThread = fullPathName;
-      this.nameAsGivenInThread = nameAsGiven;
-    }
-
-    FilesOpenThread(String[] name, Reader[] reader) {
-      nameAsGivenInThread = fullPathNameInThread = name;
+    FilesOpenThread(String[] name, String[] nameAsGiven, String[] types, Reader[] reader) {
+      fullPathNamesInThread = name;
+      namesAsGivenInThread = nameAsGiven;
+      fileTypesInThread = types;
       this.reader = reader;
     }
 
@@ -557,12 +556,12 @@ class FileManager {
       if (reader != null) {
         openReader(reader);
       } else {
-        InputStream[] istream = new InputStream[nameAsGivenInThread.length];
-        for (int i = 0; i < nameAsGivenInThread.length; i++) {
-          Object t = getInputStreamOrErrorMessageFromName(nameAsGivenInThread[i]);
+        InputStream[] istream = new InputStream[namesAsGivenInThread.length];
+        for (int i = 0; i < namesAsGivenInThread.length; i++) {
+          Object t = getInputStreamOrErrorMessageFromName(namesAsGivenInThread[i]);
           if (! (t instanceof InputStream)) {
             errorMessage = (t == null
-                            ? "error opening:" + nameAsGivenInThread[i]
+                            ? "error opening:" + namesAsGivenInThread[i]
                             : (String)t);
             //terminated = true;
             return;
@@ -604,7 +603,7 @@ class FileManager {
         buffered[i] = new BufferedReader(reader[i]);
       }
       Object clientFile =
-        modelAdapter.openBufferedReaders(fullPathNameInThread,
+        modelAdapter.openBufferedReaders(fullPathNamesInThread, fileTypesInThread,
                                          buffered);
       if (clientFile instanceof String)
         errorMessage = (String)clientFile;

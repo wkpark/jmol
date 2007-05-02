@@ -111,38 +111,29 @@ public class JaguarReader extends AtomSetCollectionReader {
   void readFrequencies() throws Exception {
     atomCount = atomSetCollection.getFirstAtomSetAtomCount();
     int modelNumber = 1;
-    while (readLine() != null &&
-           ! line.startsWith("  frequencies ")) {
+    while (readLine() != null && !line.startsWith("  frequencies ")) {
     }
     if (line == null)
       return;
     // determine number of freqs on this line (starting with "frequencies")
     do {
       int freqCount = new StringTokenizer(line).countTokens() - 1;
-      while (readLine() != null &&
-           ! line.startsWith("  intensities ")) {
+      while (readLine() != null && !line.startsWith("  intensities ")) {
       }
       for (int atomCenterNumber = 0; atomCenterNumber < atomCount; atomCenterNumber++) {
         // this assumes that the atoms are given in the same order as their
         // atomic coordinates, and disregards the label which is should use
-        readLine();
-        StringTokenizer tokenizerX = new StringTokenizer(line);
-        tokenizerX.nextToken(); tokenizerX.nextToken(); // disregard label and X/Y/Z
-        StringTokenizer tokenizerY = new StringTokenizer(readLine());
-        tokenizerY.nextToken(); tokenizerY.nextToken();
-        StringTokenizer tokenizerZ = new StringTokenizer(readLine());
-        tokenizerZ.nextToken(); tokenizerZ.nextToken();
-        for (int j = 0; j < freqCount; j++) {
-          float x = parseFloat(tokenizerX.nextToken());
-          float y = parseFloat(tokenizerY.nextToken());
-          float z = parseFloat(tokenizerZ.nextToken());
-          recordAtomVector(modelNumber + j, atomCenterNumber, x, y, z);
-        }
+        String[] tokensX = getTokens(readLine());
+        String[] tokensY = getTokens(readLine());
+        String[] tokensZ = getTokens(readLine());
+        for (int j = 0; j < freqCount; j++)
+          recordAtomVector(modelNumber + j, atomCenterNumber,
+              parseFloat(tokensX[j + 2]), parseFloat(tokensY[j + 2]),
+              parseFloat(tokensZ[j + 2]));
       }
       discardLines(1);
       modelNumber += freqCount;
-    } while (readLine() != null &&
-             (line.startsWith("  frequencies ")));
+    } while (readLine() != null && (line.startsWith("  frequencies ")));
   }
 
   void recordAtomVector(int modelNumber, int atomCenterNumber,
@@ -155,7 +146,7 @@ public class JaguarReader extends AtomSetCollectionReader {
       if (modelNumber > 1)
         atomSetCollection.cloneFirstAtomSet();
     }
-    Atom atom = atomSetCollection.getAtom(modelNumber - 1 * atomCount +
+    Atom atom = atomSetCollection.getAtom((modelNumber - 1) * atomCount +
                             atomCenterNumber - 1);
     atom.vectorX = x;
     atom.vectorY = y;

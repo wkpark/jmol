@@ -218,7 +218,7 @@ class TestSmarterJmolAdapterImpl extends TestCase {
         fail("Wrong type for " + file.getPath() + ": " + fileType + " instead of " + typeAllowed);
       }
     }
-    Object result = adapter.openBufferedReader(file.getName(), bReader);
+    Object result = adapter.openBufferedReader(file.getName(), null, bReader, null);
     assertNotNull("Nothing read for " + file.getPath(), result);
     assertFalse("Error returned for " + file.getPath() + ": " + result, result instanceof String);
     assertTrue("Not an AtomSetCollection for " + file.getPath(), result instanceof AtomSetCollection);

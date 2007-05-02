@@ -86,8 +86,7 @@
 			<ul>
 				<li>
 	  You must create a directory or folder on your web server that contains
-	  Jmol.js, JmolApplet(0 to 6).jar, JmolApplet_i18n.jar, 
-	  and any other Jmol-specific
+	  Jmol.js, JmolApplet0.jar, the other JmolApplet(whatever).jar's, and any other Jmol-specific
 	  files. For the purposes of this discussion we will
 	  call this directory <code>JmolFolder</code>.
 	  <br/>If you intend to run your web pages from a local disk 
@@ -144,7 +143,7 @@
 			</ul>
 		</section>
 		<section title="Basic Scripting Commands">
-    (Parameters between braces <code>{}</code> are optional)
+    (Parameters with <span class="optP">dotted underline</span> are optional)
       <section title="jmolInitialize">
 				<p>
 					<code>jmolInitialize(JmolFolder)</code>
@@ -155,13 +154,15 @@
 	<code>&lt;body&gt;</code> of the HTML page. 
 	The first parameter, <code>JmolFolder</code>, is compulsory and specifies
 	(between quotes)
-	the relative path of the directory (folder) containing the Jmol applet files, 
-	<code>JmolApplet0.jar</code> through <code>JmolApplet6.jar</code>.
+	the relative path of the directory (folder) containing  
+	<code>JmolApplet0.jar</code> and the other applet files.
 	</p>
-				<p><i>Advanced: 
-	  <code>jmolInitialize()</code> may be omitted if you want to use 
+				<blockquote>
+					<i>Advanced:</i>
+					<br/>
+					<code>jmolInitialize()</code> may be omitted if you want to use 
 	  <code>JmolApplet.jar</code> and that file is in the same directory as the HTML page. 
-				</i></p>
+				</blockquote>
 				<section title="Using signed applet or custom applets">
 					<p><i>Advanced:</i>
 					</p>
@@ -173,7 +174,7 @@
 		If the second parameter is a string (e.g. "myJarFile.jar"), 
 		it will be interpreted as the filename 
 		of your own, custom, <code>jar</code> file to be used.
-		(And if it's "JmolApplet0.jar", then all six jar files will be used.)
+		(And if it's "JmolApplet0.jar", then all the other jar files will also be used.)
 		<br/>
 		If it's not a filename, it will be interpreted as a logical (true/false) value for 
 		using or not the signed applet
@@ -194,10 +195,10 @@
 			</section>
 			<section title="jmolApplet">
 				<p>
-					<code>jmolApplet(size, {script}, {nameSuffix})</code>
+					<code>jmolApplet(size, <span class="optP">script</span>, <span class="optP">nameSuffix</span>)</code>
 				</p>
 				<p>
-	Allocates a JmolApplet. 
+	Defines and inserts a JmolApplet into the page.  
 				</p>
 				<p>
 					<code>size</code> can be:
@@ -218,13 +219,9 @@
 	by 100 and interpreted as percent.
 				</li>
 				</ul>
-				<p>
-					<code>script</code> is a script that will be run;
-	this usually loads a model and then modifies its rendering.
-	</p>
-				<p>
+				<blockquote>
 					<i>Note 1:</i> Percent values for size, and numbers below 1, are only available in Jmol.js 
-	accompanying Jmol version 11.1.28 or later.
+	accompanying Jmol version 11.0.2 or later in the 11.0 series, and version 11.1.28 or later.
 	<br/>
 					<i>Note 2:</i> Be cautious using percent values for size, as it may give undesired
 	results in old browsers.
@@ -238,10 +235,13 @@
 	This can be a pixel count or, if you want height to be relative to 
 	window height, you must specify a CSS height attribute of 100% for both 
 	<code>html</code> and <code>body</code>.
+				</blockquote>
+				<p>
+					<code>script</code> (optional) is a script that will be run;
+	this usually loads a model and then modifies its rendering.
 	</p>
 				<p>
-					<i>
-	    Advanced: <code>nameSuffix</code> should
+					<code>nameSuffix</code> (optional) needs
 	    only be specified if you want to explicitly control the
 	    <code>name</code> and <code>id</code> attributes used as
 	    part of the <code>applet</code> tag. The suffix which you
@@ -254,52 +254,59 @@
 		applets will take by default the names <code>jmolApplet0</code>, 
 		<code>jmolApplet1</code>, etc., in the order they are inserted 
 		into the page.
-	  </i>
-				</p>
-				<p>
-					<i>
-	    Advanced: If your layout requires a rectangular JmolApplet,
+	<br/>
+	When several applets are inserted in one page, the <code>nameSuffix</code>, explicit or implicit, 
+	is important so that later commands that set an action, like <code>jmolSetTarget</code>, 
+	<code>jmolScript</code>, or <code>jmolLoadInlineScript</code>, are applied to the 
+	intended applet.
+	  			</p>
+				<blockquote>
+					<i>Advanced:</i>
+					<br/>
+		If your layout requires a rectangular JmolApplet,
 	    then the <code>size</code> parameter may be specified
 	    as an array containing two elements, width and height,
 	    specified in pixel counts, percents or fractional numbers. This is usually 
 	    easiest to do using JavaScript square bracket notation for
 	    array constants, as in <code>[400, 200]</code>,
 	    <code>["50%", "100%"]</code> or <code>[0.5, 1.0]</code>.
-	  </i>
-				</p>
-				<p>
-					<i>
-	    Advanced (for testing or debugging):
-	    Applet will not be inserted into the web page, but an
-	    informative textarea will show instead, if you 
-	    place "?NOAPPLET" (uppercase) 
-	    at the end of the URL in the browser. 
+				</blockquote>
+				<blockquote>
+					<i>Advanced (for testing or debugging):</i>
+					<br/>
+	    If you place "?NOAPPLET" (uppercase) 
+	    at the end of the URL in the browser,
+	    the applet will not be inserted into the web page, but instead 
+	    an informative textarea will be shown.
 		<br/>
 	    This can be used for testing the action of buttons and other controls.
 		They still work, but instead of effecting script commands, they display
 		in the textarea the command that would have been sent to the applet if the
 		applet had been there.
-	  </i>
-				</p>
+				</blockquote>
 			</section>
 			<section title="jmolButton">
-				<code>jmolButton(script, {label}, {id}, {title})</code>
+				<code>jmolButton(script, <span class="optP">label</span>, <span class="optP">id</span>, <span class="optP">title</span>)</code>
 				<p>
-	  Draws a button with a text label. If <code>label</code> is
-	  not specified it defaults to the first 32 characters of the script.
-	  <code>script</code> is run when the button is pressed.
+	  Draws a button with a text label. 
+				</p>
+				<p>
+					<code>script</code> is run when the button is pressed.
+	If the page contains several Jmol applets, commands will be applied to
+	the immediately previous applet, or to that specified by a previous 
+	<a href="#jmolSetTarget"><code>jmolSetTarget</code></a> command.
+				</p>
+				<p>
+					<code>label</code> is the text in the button; if 
+	  not specified, it defaults to the first 32 characters of the script.
 	</p>
 				<p>
-					<code>id</code> will be set as both the HTML id and HTML name. It
+					<code>id</code> (optional) will be set as both the HTML id and HTML name. It
 	  will default to jmolButton0, jmolButton1, etc. 
 	</p>
-				<p>
-	If the page contains several Jmol applets, commands in the <code>script</code> will be applied to
-	the immediately previous applet, or to that specified by a previous <code>jmolSetTarget</code> command.
-	</p>
-				<p>
-					<i>
-	  Advanced: 
+				<blockquote>
+					<i>Advanced:</i>
+					<br/>
 	  In addition, the button will be included in a <code>&lt;span&gt;</code> 
 	  element that will have 
 	  an HTML id of "span_" plus the given <code>id</code>, 
@@ -307,27 +314,27 @@
 	  <br/>
 	  Browsers will hence show <code>title</code> as a tooltip when mouse pointer 
 	  stays over the button. 
-	  </i>
-				</p>
+				</blockquote>
 			</section>
 			<section title="jmolLink">
-				<code>jmolLink(script, {text}, {id}, {title})</code>
+				<code>jmolLink(script, <span class="optP">text</span>, <span class="optP">id</span>, <span class="optP">title</span>)</code>
+				<p>
+					<code>script</code> is run when the user clicks on the link.
+	If the page contains several Jmol applets, commands will be applied to
+	the immediately previous applet, or to that specified by a previous 
+	<a href="#jmolSetTarget"><code>jmolSetTarget</code></a> command.
+	</p>
 				<p>
 					<code>text</code> is written to the page as a link. If it is
 	  not specified, it defaults to the first 32 characters of <code>script</code>. 
-	<code>script</code> is run when the user clicks on the link.
 	</p>
 				<p>
 					<code>id</code> will be set as both the HTML id and HTML name. It
 	  will default to jmolLink0, jmolLink1, etc. 
 	</p>
-				<p>
-	If the page contains several Jmol applets, commands in the <code>script</code> will be applied to
-	the immediately previous applet, or to that specified by a previous <code>jmolSetTarget</code> command.
-	</p>
-				<p>
-					<i>
-	  Advanced: 
+				<blockquote>
+					<i>Advanced:</i>
+					<br/>
 	  In addition, the link text will be included in a <code>&lt;span&gt;</code> 
 	  element that will have 
 	  an HTML id of "span_" plus the given <code>id</code>, 
@@ -335,52 +342,53 @@
 	  <br/>
 	  Browsers will hence show <code>title</code> as a tooltip when mouse pointer 
 	  stays over the link. 
-	  </i>
-				</p>
+				</blockquote>
 			</section>
 			<section title="jmolCheckbox">
 				<code>
 	  jmolCheckbox(scriptWhenChecked, scriptWhenUnchecked,
-	  labelHtml, {isChecked}, {id}, {title})
+	  labelHtml, <span class="optP">isChecked</span>, <span class="optP">id</span>, <span class="optP">title</span>)
 	</code>
 				<p>
 	  Displays a checkbox, followed immediately by <code>labelHtml</code>.
-	<br/>
+	</p>
+				<p>
 					<code>scriptWhenChecked</code> is run when
 	  the checkbox is checked by the user. 
 	<br/>
 					<code>scriptWhenUnchecked</code>
 	  is run when the user unchecks the checkbox. 
 	<br/>
-					<code>isChecked</code> should
-	  be set to a non-false value if you want the checkbox to be checked 
-	  upon page loading.
+	If the page contains several Jmol applets, commands in the <code>scripts</code> 
+	will be applied to the immediately previous applet, or to that specified by a previous 
+	<a href="#jmolSetTarget"><code>jmolSetTarget</code></a> command.
+	</p>
+				<p>
+					Optional <code>isChecked</code> should
+	  be set to a non-false value (e.g.: <code>true</code>) if you want 
+	  the checkbox to be checked or marked
+	  upon page loading (default: unchecked).
 	</p>
 				<p>
 					<code>id</code> will be set as both the HTML id and HTML name. It
 	  will default to jmolCheckbox0, jmolCheckbox1, etc. 
 	</p>
-				<p>
-	If the page contains several Jmol applets, commands in the <code>scripts</code> will be applied to
-	the immediately previous applet, or to that specified by a previous <code>jmolSetTarget</code> command.
-	</p>
-				<p>
-					<i>
-	  Advanced: 
+				<blockquote>
+					<i>Advanced:</i>
+					<br/>
 	  In addition, the checkbox and its label will be included in a <code>&lt;span&gt;</code> 
 	  element that will have 
 	  an HTML id of "span_" plus the given <code>id</code>, 
-	  and an HTML title of the given <code>title</code>.
+	  and an HTML title of the given <code>title</code> (optional).
 	  <br/>
 	  Browsers will hence show <code>title</code> as a tooltip when mouse pointer 
-	  stays over the checkbox or its accompanying <code>labelHtml</code>. 
-	  </i>
-				</p>
+	  stays over the checkbox or over its accompanying <code>labelHtml</code>. 
+				</blockquote>
 			</section>
 			<section title="jmolRadioGroup">
 				<code>
-	  jmolRadioGroup(arrayOfRadioButtons, {separatorHtml}, {groupName},
-	  {id}, {title})
+	  jmolRadioGroup(arrayOfRadioButtons, <span class="optP">separatorHtml</span>, <span class="optP">groupName</span>,
+	  <span class="optP">id</span>, <span class="optP">title</span>)
 	</code>
 				<p>
 	  Used to put up a group of mutually-exclusive radio buttons.
@@ -391,38 +399,37 @@
 	  optional isChecked flag. If an <code>entry</code> is a single string
 	  instead of an array, then that string is used for both the script
 	  and the label.
+	<br/>
+	If the page contains several Jmol applets, commands in the scripts will be applied to
+	the immediately previous applet, or to that specified by a previous 
+	<a href="#jmolSetTarget"><code>jmolSetTarget</code></a> command.
 	</p>
 				<p>
 					<code>separatorHtml</code> is used to specify HTML code that should
 	  be placed after each radio button. For example, to put the radio
 	  buttons on separate lines you should pass in <code>"&lt;br&gt;"</code>
 	  as the actual parameter. If <code>separatorHtml</code> is not
-	  specified it defaults to <code>"&amp;nbsp;"</code> (i.e., a non-breaking space).
+	  specified, it defaults to <code>"&amp;nbsp;"</code> (i.e., a non-breaking space).
 	</p>
 				<p>
 					<code>groupName</code> will be used as the common HTML name for
 	  all radio buttons in the group. It will default to jmolRadioGroup0,
 	  jmolRadioGroup1, etc. 
 	</p>
-				<p>
-	If the page contains several Jmol applets, commands in the scripts will be applied to
-	the immediately previous applet, or to that specified by a previous <code>jmolSetTarget</code> command.
-	</p>
-				<p>
-					<i>
-	  Advanced:
+				<blockquote>
+					<i>Advanced:</i>
+					<br/>
 	  The whole group of radio buttons will be included in a <code>&lt;span&gt;</code> 
 	  element that will have as its HTML id the value of <code>id</code> or, if this 
-	  is not given, the value of <code>groupName</code>.
+	  is not given, the value of <code>groupName</code> (optional).
 	  <br/>In turn, each radio button + label will have 
 	  as its HTML id "span_" plus the group's id plus an underscore plus 
 	  a sequential number (starting at zero),
-	  and as its HTML title, the common <code>title</code>.
-	  </i>
-				</p>
+	  and as its HTML title, the common <code>title</code> (optional).
+				</blockquote>
 			</section>
 			<section title="jmolMenu">
-				<code>jmolMenu(arrayOfMenuItems, {menuHeight}, {id}, {title})</code>
+				<code>jmolMenu(arrayOfMenuItems, <span class="optP">menuHeight</span>, <span class="optP">id</span>, <span class="optP">title</span>)</code>
 				<p>
 	  Used to display a menu of items along with associated scripts.
 	  <code>arrayOfMenuItems</code> is usually specified using the JavaScript
@@ -431,52 +438,46 @@
 	  optional isChecked flag. If an <code>item</code> is a single string
 	  instead of an array, then that string is used for both the script
 	  and the label.
+	<br/>
+	If the page contains several Jmol applets, commands in the scripts will be applied to
+	the immediately previous applet, or to that specified by a previous 
+	<a href="#jmolSetTarget"><code>jmolSetTarget</code></a> command.
 	</p>
 				<p>
 					<code>menuHeight</code> is used to specify the height of the menu.
 	  If unspecified or 1, the menu is a combo-box that drops down when
 	  the user clicks on it. If it is 2 or greater then a menu with
-	  the specified number of lines will be displayed. If the value of
-	  the <code>menuHeight</code> parameter is -1 then the menu height
-	  will automatically be calculated to be the same length as the
-	  number of items, thereby eliminating any scrolling.
+	  the specified number of lines will be displayed. If the value is -1, then the menu 
+	  will be high enough to show all items, thereby eliminating any scrolling.
 	</p>
 				<p>
 					<code>id</code> will be set as both the HTML id and HTML name. It
 	  will default to jmolMenu0, jmolMenu1, etc. 
 	</p>
-				<p>
-	If the page contains several Jmol applets, commands in the scripts will be applied to
-	the immediately previous applet, or to that specified by a previous <code>jmolSetTarget</code> command.
-	</p>
-				<p>
-					<i>
-	  Advanced: 
+				<blockquote>
+					<i>Advanced:</i>
 	  In addition, the menu will be included in a <code>&lt;span&gt;</code> 
 	  element that will have 
 	  an HTML id of "span_" plus the given <code>id</code>, 
-	  and an HTML title of the given <code>title</code>.
+	  and an HTML title of the given <code>title</code> (optional).
 	  <br/>
 	  Browsers will hence show <code>title</code> as a tooltip when mouse pointer 
 	  stays over the menu. 
-	  </i>
-				</p>
-				<p>
-					<i>
-	  Advanced: 
-	  Option groups can be set (in html, <code>optgroup</code>) in this way:
+				</blockquote>
+				<blockquote>
+					<i>Advanced:</i> 
+	  Option groups can be set (in HTML syntax, <code>optgroup</code>) in this way:
 	<br/>
 	Add the optgroup entry as one more element in the <code>arrayOfMenuItems</code>.
 	For that entry, the first element in the sub-array must be "#optgroup" (instead of a script);
-	the second element, the caption wanted for the group ("label" in html syntax; 
+	the second element, the caption wanted for the group ("label" in HTML syntax; 
 	cannot contain single quotation mark or apostrophe); 
 	the third element will not be used. 
 	Then add an extra entry to mark the end of the group, whose 
 	first element must be "#optgroupEnd" (second and third elements are ignored).
 	<br/>
 	Example:
-	</i>
-					<pre><![CDATA[
+	<pre><![CDATA[
  jmolMenu([
  [null, ".... select ....", true],
  ["color cpk", "CPK pattern"],
@@ -487,36 +488,39 @@
  ["#optgroupEnd"],
  ["#optgroup", ".... Other colors: ...."],
  ["color formalcharge", "electric charge"],
- ["color amino", "amino acids"],
- ["color shapely", "nucleotides"],
+ ["color amino", "amino pattern"],
+ ["color shapely", "shapely pattern"],
  ["#optgroupEnd"]
  ]);
 ]]></pre>
-				</p>
+				</blockquote>
 			</section>
 		</section>
 		<section title="Intermediate Scripting Commands">
 			<section title="jmolSetAppletColor">
 				<code>
-	  jmolSetAppletColor(boxbgcolor, {boxfgcolor}, {progresscolor})
+	  jmolSetAppletColor(boxbgcolor, <span class="optP">boxfgcolor</span>, <span class="optP">progresscolor</span>)
 	</code>
 				<p>
 	Used to set the background color of the applet. Colors are
 	specified using HTML "#RRGGBB" notation (Red, Green, Blue, hexadecimal values) or as one of the 
-	<a href="http://www.mywebsite.force9.co.uk/web-colors/color-guide.htm" target="colors140">
-	  140 JavaScript color names</a>.
+	<a href="../jscolors/index.en.html#JavaScript%20colors">
+	  JavaScript color names</a>.
 	</p>
 				<p>This command must be issued before <code>jmolApplet</code>.
 	</p>
-				<p>
-					<i>Advanced: The text color and progress bar
-	  color for the Java Plug-in can optionally be set.</i>
-				</p>
+				<blockquote>
+					<i>Advanced:</i>
+					<br/>
+				The text color and progress bar
+	  color for the Java Plug-in can optionally be set. 
+	  (These are not used by modern versions of Java.)
+				</blockquote>
 			</section>
 			<section title="jmolHtml">
 				<code>jmolHtml(htmlText)</code>
 				<p>
-	  Allows you to pass arbitrary text, possibly containing html tags,
+	  Allows you to pass arbitrary text, possibly containing HTML tags,
 	  directly to the page; sometimes this is more convenient than
 	  closing and reopening the <code>script</code> tags. The effect is
 	  exactly the same as:<br/>
@@ -535,30 +539,32 @@
 				</p>
 			</section>
 			<section title="jmolScript">
-				<code>jmolScript(script, {targetSuffix})</code>
+				<code>jmolScript(script, <span class="optP">targetSuffix</span>)</code>
 				<p>
-	  Use this if you want to construct your own UI controls or to
+	  Use this if you want to construct your own user interface controls or to
 	  execute <code>script</code> based upon JavaScript events.
 	<br/>
-	  (This <code>jmolScript</code> function is used internally to
+	  (This <code>jmolScript</code> function is also used internally to
 	implement the UI controls above.)
 	</p>
 				<p>
 	  When more than one JmolApplet is being displayed,
 	  <code>targetSuffix</code> is used to specify on which one the 
-	script will be applied. Default <code>targetSuffix</code> is "0".
+	script will be applied. Default <code>targetSuffix</code> is "0"
+	(i.e., the first applet in the page).
 	<br/><i>Special case:</i> if "all" is used for <code>targetSuffix</code>,
 	the <code>script</code> will be applied to all JmolApplets present.
 	</p>
 				<p>
-					<i>Warning:  please, be aware that, except for the first applet in the page, you must 
-	specify a <code>targetSuffix</code>; setting <a href="#jmolSetTarget"><code>jmolSetTarget</code></a> 
+					<i>Warning:</i>
+					<br/>please, be aware that, except for the first applet in the page, you must 
+	specify a <code>targetSuffix</code> here; setting <a href="#jmolSetTarget"><code>jmolSetTarget</code></a> 
 	does not apply to <code>jmolScript</code>, <code>jmolScriptWait</code> 
-	or <code>jmolScriptWaitAsArray</code>.</i>
+	or <code>jmolScriptWaitAsArray</code>.
 				</p>
 			</section>
 			<section title="jmolScriptWait">
-				<code>jmolScriptWait(script, {targetSuffix})</code>
+				<code>jmolScriptWait(script, <span class="optP">targetSuffix</span>)</code>
 				<p>
 	  This function adds two improvements over <code>jmolScript</code>:
 	<br/>1) it waits until the script has completed running before returning control (thus stopping 
@@ -567,28 +573,29 @@
 	or diagnose problems.
 				</p>
 				<p>
+	  When more than one JmolApplet is being displayed,
+	  <code>targetSuffix</code> is used to specify on which one the 
+	script will be applied. Default <code>targetSuffix</code> is "0"
+	(i.e., the first applet in the page).
+	</p>
+				<p>
 					<i>Examples:</i>
 				</p>
 				<ul>
-					<li><i><code>result = jmolScriptWait("load myFile.mol")	</code>
+					<li><code>result = jmolScriptWait("load myFile.mol")</code>
 		loads the model and puts into the "result" variable a string with the status messages, 
 		which for example contains, among other things, "FileNotFoundException" 
-		if <code>myFile.mol</code> file is not found.</i>
+		if <code>myFile.mol</code> file is not found.
 					</li>
-					<li><i><code>result = jmolScriptWait("show orientation")</code>
+					<li><code>result = jmolScriptWait("show orientation")</code>
 		puts into the "result" variable the instructions needed to restore the current orientation 
-		(although the returned string may need parsing to be useful as a command).</i>
+		(although the returned string may need parsing to be useful as a command).
 					</li>
 				</ul>
 				<p>See also <code>jmolScriptWaitAsArray</code>, below.</p>
-				<p>
-	  When more than one JmolApplet is being displayed,
-	  <code>targetSuffix</code> is used to specify on which one the 
-	script will be applied. Default <code>targetSuffix</code> is "0".
-	</p>
 			</section>
 			<section title="jmolScriptWaitAsArray">
-				<code>jmolScriptWaitAsArray(script, {targetSuffix})</code>
+				<code>jmolScriptWaitAsArray(script, <span class="optP">targetSuffix</span>)</code>
 				<p>
 	  This function adds two improvements over <code>jmolScript</code>:
 	<br/>1) it waits until the script has completed running before returning control (thus stopping 
@@ -596,50 +603,52 @@
 	<br/>2) if assigned to a variable, it returns in that variable an array of status messages that can be used to detect errors or diagnose problems.
 				</p>
 				<p>
-					<i>See also <code>jmolScriptWait</code> above, 
-	which returns a single text string instead of an array.
-	(Actually, it works by calling <code>jmolScriptWaitAsArray</code> 
-	and concatenating its array elements with newline characters.)</i>
-				</p>
-				<p>
 	  When more than one JmolApplet is being displayed,
 	  <code>targetSuffix</code> is used to specify on which one the 
-	script will be applied. Default <code>targetSuffix</code> is "0".
+	script will be applied. Default <code>targetSuffix</code> is "0"
+	(i.e., the first applet in the page).
 	</p>
+				<p>
+	See also <code>jmolScriptWait</code> above, 
+	which returns a single text string instead of an array.
+	(Actually, it works by calling <code>jmolScriptWaitAsArray</code> 
+	and concatenating its array elements with newline characters.)
+				</p>
 			</section>
 			<section title="jmolCommandInput">
-				<code>jmolCommandInput({label}, {size}, {id}, {title})</code>
+				<code>jmolCommandInput(<span class="optP">label</span>, <span class="optP">size</span>, <span class="optP">id</span>, <span class="optP">title</span>)</code>
 				<p>
 	  Displays an empty one-line textbox followed by a button labeled with text <code>label</code>. 
 	When the user presses the button, any script written in the textbox will be executed on the applet.
 	(Thus, this gives a sort of command-line console.)
-	<br/>If no <code>label</code> is given, "Execute" will be used by default. 
-	<code>size</code> is the width of the textbox (as number of characters; default is 60).
-	</p>
-				<p>
-					<code>id</code> will be set as both the HTML id and HTML name. It
-	  will default to jmolCmd0, jmolCmd1, etc. 
-				</p>
-				<p>
+				<br/>
 	If the page contains several Jmol applets, commands in the textbox will be 
 	applied to the immediately previous applet, or to that specified by a 
 	previous <code>jmolSetTarget</code> command.
 				</p>
 				<p>
-					<i>
-	  Advanced: 
+	If no <code>label</code> is given, "Execute" will be used by default. 
+				</p>
+				<p>
+					<code>size</code> is the width of the textbox (as number of characters; default is 60).
+				</p>
+				<p>
+					<code>id</code> will be set as both the HTML id and HTML name. It
+	  will default to jmolCmd0, jmolCmd1, etc. 
+				</p>
+				<blockquote>
+					<i>Advanced:</i>
 	  In addition, the textbox + button will be included in a <code>&lt;span&gt;</code> 
 	  element that will have 
 	  an HTML id of "span_" plus the given <code>id</code>, 
-	  and an HTML title of the given <code>title</code>.
+	  and an HTML title of the given <code>title</code> (optional).
 	  <br/>
 	  Browsers will hence show <code>title</code> as a tooltip when mouse pointer 
 	  stays over the textbox or the button. 
-	  </i>
-				</p>
+				</blockquote>
 			</section>
 			<section title="jmolSaveOrientation">
-				<code>jmolSaveOrientation(id, {targetSuffix})</code>
+				<code>jmolSaveOrientation(id, <span class="optP">targetSuffix</span>)</code>
 				<p>
 	Allows to save the current orientation of the model into an internal variable identified 
 	by <code>id</code>, so that it can be recovered later by calling 
@@ -647,11 +656,12 @@
 	</p>
 				<p>
 	  When more than one JmolApplet is being displayed,
-	  <code>targetSuffix</code> is used to specify on which one to act (default is "0").
+	  <code>targetSuffix</code> is used to specify on which one to act; default is "0"
+	  (i.e., the first applet in the page).
 	</p>
 			</section>
 			<section title="jmolRestoreOrientation">
-				<code>jmolRestoreOrientation(id, {targetSuffix})</code>
+				<code>jmolRestoreOrientation(id, <span class="optP">targetSuffix</span>)</code>
 				<p>
 	Allows to return the model to an orientation previously saved 
 	by using <code>jmolSaveOrientation</code> with the same <code>id</code>.
@@ -661,11 +671,12 @@
 	</p>
 				<p>
 	  When more than one JmolApplet is being displayed,
-	  <code>targetSuffix</code> is used to specify on which one to act (default is "0").
+	  <code>targetSuffix</code> is used to specify on which one to act; default is "0"
+	  (i.e., the first applet in the page).
 	</p>
 			</section>
 			<section title="jmolRestoreOrientationDelayed">
-				<code>jmolRestoreOrientationDelayed(id, {delay}, {targetSuffix})</code>
+				<code>jmolRestoreOrientationDelayed(id, <span class="optP">delay</span>, <span class="optP">targetSuffix</span>)</code>
 				<p>
 	Allows to return the model to an orientation previously saved 
 	by using <code>jmolSaveOrientation</code> with the same <code>id</code>.
@@ -674,13 +685,14 @@
 	</p>
 				<p>
 	  When more than one JmolApplet is being displayed,
-	  <code>targetSuffix</code> is used to specify on which one to act (default is "0").
+	  <code>targetSuffix</code> is used to specify on which one to act; default is "0"
+	  (i.e., the first applet in the page).
 	</p>
 			</section>
 		</section>
 		<section title="Advanced Applet Scripting">
 			<section title="jmolDebugAlert">
-				<code>jmolDebugAlert({enableAlerts})</code>
+				<code>jmolDebugAlert(<span class="optP">enableAlerts</span>)</code>
 				<p>
 	  Puts up alert boxes for debugging. Use carefully or
 	  you will get a <i>lot</i> of alerts. Explicitly
@@ -695,19 +707,20 @@
 	</p>
 			</section>
 			<section title="jmolGetStatus">
-				<code>jmolGetStatus(strStatus,targetSuffix)</code>
+				<code>jmolGetStatus(strStatus, <span class="optP">targetSuffix</span>)</code>
 				<p>
 	  (...needs documentation)
 	</p>
 				<p>
 	  When more than one JmolApplet is being displayed,
-	  <code>targetSuffix</code> is used to specify on which one to act (default is "0").
+	  <code>targetSuffix</code> is used to specify on which one to act (default is "0",
+	  i.e., the first applet in the page).
 	</p>
 			</section>
 			<section title="jmolSetTarget">
 				<code>jmolSetTarget(targetSuffix)</code>
 				<p>
-	  This specifies upon which JmolApplet the following UI controls must act.
+	  This specifies upon which JmolApplet the following user interface controls must act.
 	  It is only needed if you are displaying multiple applets
 	  on the same page and your <code>jmolButton, jmolLink, jmolCheckbox,
 	  jmolRadioGroup,  jmolMenu, jmolRadio</code>
@@ -728,14 +741,21 @@
 			</section>
 			<section title="jmolRadio">
 				<code>
-	  jmolRadio(script, {labelHtml}, {isChecked}, {separatorHtml}, {groupName},
-	  {id}, {title})
+	  jmolRadio(script, <span class="optP">labelHtml</span>, <span class="optP">isChecked</span>, <span class="optP">separatorHtml</span>, <span class="optP">groupName</span>,
+	  <span class="optP">id</span>, <span class="optP">title</span>)
 	</code>
 				<p>
 	  First, try very hard to use <code>jmolRadioGroup</code>.
 	  If your layout does not allow you to do that, then
 	  use this to allocate individual radio buttons. 
-	<br/>Radio
+	</p>
+				<p>
+	  For description of <code>script</code>, <code>labelHtml</code>, 
+	  <code>isChecked</code>, and <code>separatorHtml</code> parameters,
+	  see <a href="#jmolRadioGroup"><code>jmolRadioGroup</code></a> command.
+	</p>
+				<p>
+  	Radio
 	  buttons will be assigned to the group specified by <code>groupName</code>.
 	In other words, linked radio buttons (those mutually exclusive in their checked state) will 
 	be those that share the same value of <code>groupName</code>.
@@ -748,15 +768,15 @@
 	If the page contains several Jmol applets, commands in the <code>script</code> will be applied to
 	the immediately previous applet, or to that specified by a previous <code>jmolSetTarget</code> command.
 	</p>
-				<p>
-					<i>
-	  Advanced:
+				<blockquote>
+					<i>Advanced:</i>
+					<br/>
 	  The radio button plus its label will have 
 	  as their HTML id "span_" plus the given <code>id</code>,
-	  and as their HTML title, the given <code>title</code>.
-	In addition, the radio buttom itself will have the given <code>id</code> as its HTML id.
-	  </i>
-				</p>
+	  and as their HTML title, the given <code>title</code> (optional).
+	In addition, the radio buttom itself will have the given <code>id</code> as its HTML id
+	(optional).
+				</blockquote>
 			</section>
 			<section title="jmolStartNewRadioGroup">
 				<code>jmolStartNewRadioGroup()</code>
@@ -764,14 +784,15 @@
 	  Do not use this unless you are working with multiple
 	  radio groups whose layout is so complicated that you cannot
 	  use <code>jmolRadioGroup</code>.
-	<br/>Read <code>jmolRadio</code> for an explanation of how to use this function.
+	<br/>Read <code>jmolRadio</code>, above, for an explanation of how to use this function.
 	</p>
 			</section>
 			<section title="jmolSetCheckboxGroup">
-				<code>jmolSetCheckboxGroup(chkMaster,chkBox)</code>
+				<code>jmolSetCheckboxGroup(chkMaster, chkBoxes)</code>
 				<p>
-	Starting with previously inserted checkboxes (using <code>jmolCheckbox</code>), allows to establish 
-	a relation between one "parent" or "leader" checkbox and one or more "child" or "follower" checkboxes,
+	Starting with previously inserted checkboxes (using <code>jmolCheckbox</code>), 
+	this allows to establish a relation between one "parent" or "leader" 
+	checkbox and one or more "child" or "follower" checkboxes,
 	according to these rules:
 				</p>
 				<ul>
@@ -789,7 +810,7 @@
 	(if ID was not specified, sequential numeric IDs are assigned by default, starting from zero).
 				</p>
 				<p>
-					<code>chkBox</code> is one or more IDs or numbers (separated by commas), pointing to the 
+					<code>chkBoxes</code> is one or more IDs or numbers (separated by commas), pointing to the 
 	checkboxes that will act as followers.
 				</p>
 				<p>
@@ -797,18 +818,19 @@
 	Nesting groups within other groups is also possible (i.e., a follower in one group may be the leader for an inner group).
 				</p>
 				<p>
-					<i>Examples:
-	<pre>jmolSetCheckboxGroup(0, 1, 4)</pre>
-	Sets 1st checkbox in the page as leader, 2nd and 5th as followers.
-	<pre>jmolSetCheckboxGroup(4, 5, "chkH")</pre>
-	Sets 5th checkbox as leader, 6th and that identifed as "chkH" as followers.
-	<pre>jmolSetCheckboxGroup("chkH", "chkMethine", "chkMethyl")</pre>
-	Sets "chkH" checkbox as leader, those identifed as "chkMethine" and "chkMethyl" as followers.
-	</i>
+					<i>Examples:</i>
 				</p>
+				<ul>
+					<li><pre>jmolSetCheckboxGroup(0, 1, 4)</pre>
+	Sets 1st checkbox in the page as leader, 2nd and 5th as followers.</li>
+					<li><pre>jmolSetCheckboxGroup(4, 5, "chkH")</pre>
+	Sets 5th checkbox as leader, 6th and that identifed as "chkH" as followers.</li>
+					<li><pre>jmolSetCheckboxGroup("chkH", "chkMethine", "chkMethyl")</pre>
+	Sets "chkH" checkbox as leader, those identifed as "chkMethine" and "chkMethyl" as followers.</li>
+				</ul>
 			</section>
 			<section title="jmolCheckBrowser">
-				<code>jmolCheckBrowser(action, urlOrMessage, nowOrOnClick)</code>
+				<code>jmolCheckBrowser(action, urlOrMessage, <span class="optP">nowOrOnClick</span>)</code>
 				<p>
 	  Checks user's web browser for compliance and compatibility
 	  with Jmol. Also, allows to redirect the user to a custom message 
@@ -830,17 +852,16 @@
 	</p>
 				<p>
 					<code>nowOrOnClick</code> is a string saying either
-	  "now" or "onClick". It specifies when the browser
+	  "now" or "onClick" (default). It specifies when the browser
 	  check is to take place. <br/>
 	"now" specifies that the
 	  check is to take place immediately. <br/>
 	"onClick" indicates
 	  that the check is to take place the first time a
-	  control such as a <code>jmolButton()</code> is clicked.<br/>
-					<code>nowOrOnClick</code> defaults to "onClick".
+	  control, such as a <code>jmolButton()</code>, is clicked.
 	</p>
 				<p>
-	  If this call is not made then a default alert
+	  If this call is not made, a default alert
 	  message is displayed when a user with a non-compliant
 	  browser clicks on a Jmol control. 
 	</p>
@@ -849,55 +870,76 @@
 				<code>jmolSetDocument(doc)</code>
 				<p>By default, Jmol.js writes applets and controls to the page. 
 	Using this function allows other targets:
-	<ul>
-						<li><code>jmolSetDocument(win2.document)</code> 
+				</p>
+				<ul>
+					<li><code>jmolSetDocument(win2.document)</code> 
 	will write the applet and controls in another window (named "win2" in this example)
 		</li>
-						<li><code>jmolSetDocument(0)</code> or <code>jmolSetDocument(false)</code> 
-	will turn off writing of the code to the page as the page loads. 
-	Instead, the code can be returned in a JavaScript variable, e.g.:
+					<li><code>jmolSetDocument(0)</code> or <code>jmolSetDocument(false)</code> 
+	will turn off writing the code as the page loads. 
+	The code will be retained and can be returned in a JavaScript variable, e.g.:
 	<br/>
-							<code>var myApplet = jmolApplet(...)</code>
-							<br/>
-							<code>var myControls = jmolRadioGroup(...)</code>
-							<br/>variables which can later be used to write a page or to write into a div, 
+						<code>var myApplet = jmolApplet(...)</code>
+						<br/>
+						<code>var myControls = jmolRadioGroup(...)</code>
+						<br/>variables which can later be used to write a page or to write into a div, 
 	using JavaScript.
 		</li>
-					</ul>
-				</p>
+				</ul>
 			</section>
 			<section title="jmolAppletInline">
-				<code>jmolAppletInline(size, inlineModel, {script}, {nameSuffix})</code>
+				<code>jmolAppletInline(size, inlineModel, <span class="optP">script</span>, <span class="optP">nameSuffix</span>)</code>
 				<p>
-	  Creates an instance of the JmolApplet, but passes in the
+	  Creates an instance of the JmolApplet, but passes to it the
 	  <i>contents</i> of the molecular model rather than
 	  a file name or URL. You probably do not want
 	  to use this, unless you are pulling your molecular
 	  model data from a database.
 	</p>
+				<p>
+					<code>script</code> and <code>nameSuffix</code> work as in 
+		<a href="#jmolApplet"><code>jmolApplet</code></a>.
+	</p>
 			</section>
 			<section title="jmolLoadInline">
-				<code>jmolLoadInline(model, {targetSuffix})</code>
+				<code>jmolLoadInline(model, <span class="optP">targetSuffix</span>)</code>
 				<p>
 	  Used in database applications where the molecular model
 	  is available as a string. This directly loads
-	  <code>model</code> into the applet. Note that this is
+	  <code>model</code> data into the applet. Note that this is
 	  <i>not</i> the file name ... it is the <i>contents</i> of
 	  the file.
 <br/>
 					<code>model</code> can also be an array of molecular models (between brackets and separated by commas), even in different file formats.
 	</p>
+				<p>
+					<code>targetSuffix</code> works as in 
+		<a href="#jmolScript"><code>jmolScript</code></a>.
+	</p>
+				<p>
+					<i>Warning:</i>
+					<br/>
+			please, be aware that, except for the first applet in the page, you must 
+	specify a <code>targetSuffix</code>; setting <a href="#jmolSetTarget"><code>jmolSetTarget</code></a> 
+	does not apply to <code>jmolLoadInline</code>.
+				</p>
 			</section>
 			<section title="jmolLoadInlineScript">
-				<code>jmolLoadInlineScript(model, script, {targetSuffix})</code>
+				<code>jmolLoadInlineScript(model, script, <span class="optP">targetSuffix</span>)</code>
 				<p>
 	  Similar to <code>jmolLoadInline</code>, but also allows to 
 	  execute a script after the model has loaded.
 	</p>
 				<p>
-					<i>Warning:  please, be aware that, except for the first applet in the page, you must 
+					<code>script</code> and <code>targetSuffix</code> work as in 
+		<a href="#jmolScript"><code>jmolScript</code></a>.
+	</p>
+				<p>
+					<i>Warning:</i>
+					<br/>
+			please, be aware that, except for the first applet in the page, you must 
 	specify a <code>targetSuffix</code>; setting <a href="#jmolSetTarget"><code>jmolSetTarget</code></a> 
-	does not apply to <code>jmolLoadInlineScript</code>.</i>
+	does not apply to <code>jmolLoadInlineScript</code>.
 				</p>
 			</section>
 			<section title="jmolSetCallback">
@@ -1072,7 +1114,7 @@
 	applicable, and a JavaScript string when not. 
 	<!--See the script 
 	documentation for a full discussion of key options and their return 
-	values.-->
+	values. -->
 	One example:
 	<pre>
 	var atoms = jmolGetPropertyAsArray("atomInfo","all")

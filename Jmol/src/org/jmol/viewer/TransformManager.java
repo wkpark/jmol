@@ -1818,7 +1818,7 @@ abstract class TransformManager {
 
   private void setSpinOn(boolean spinOn, float endDegrees, boolean isSelected) {
     this.spinOn = spinOn;
-    viewer.setBooleanProperty("_spinon", spinOn);
+    viewer.setBooleanProperty("_spinning", spinOn);
     if (spinOn) {
       if (spinThread == null) {
         spinThread = new SpinThread(endDegrees, isSelected);

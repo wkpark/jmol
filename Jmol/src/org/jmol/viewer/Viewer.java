@@ -359,7 +359,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void resetAllParameters() {
     global = stateManager.getGlobalSettings();
-    setIntProperty("_version", getJmolVersionInt());
+    setIntProperty("_version", getJmolVersionInt(), true);
     colorManager.resetElementColors();
     setObjectColor("background", "black");
     setObjectColor("axis1", "red");
@@ -3923,6 +3923,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setIntProperty(String key, int value) {
+    if (key.charAt(0) == '_') {
+      global.setParameterValue(key, value);
+      return;
+    }
+
     //Eval
     setIntProperty(key, value, true);
   }
@@ -4035,6 +4040,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void setBooleanProperty(String key, boolean value) {
+    if (key.charAt(0) == '_') {
+      global.setParameterValue(key, value);
+      return;
+    }
     setBooleanProperty(key, value, true);
   }
 

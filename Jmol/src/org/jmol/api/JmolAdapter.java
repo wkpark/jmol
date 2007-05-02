@@ -374,6 +374,7 @@ public Object openBufferedReader(String name, String type,
     public String getAtomName() { return null; }
     public int getFormalCharge() { return 0; }
     public float getPartialCharge() { return Float.NaN; }
+    public float getRadius() { return Float.NaN; }
     abstract public float getX();
     abstract public float getY();
     abstract public float getZ();

@@ -346,7 +346,7 @@ public final class Frame {
                 .getAtomSerial(), iterAtom.getChainID(), iterAtom.getGroup3(),
             iterAtom.getSequenceNumber(), iterAtom.getInsertionCode(), iterAtom
                 .getVectorX(), iterAtom.getVectorY(), iterAtom.getVectorZ(),
-            alternateLocation, iterAtom.getClientAtomReference());
+            alternateLocation, iterAtom.getClientAtomReference(), iterAtom.getRadius());
       }
 
       JmolAdapter.BondIterator iterBond = adapter.getBondIterator(clientFile);
@@ -490,7 +490,7 @@ public final class Frame {
                int atomSerial, char chainID, String group3,
                int groupSequenceNumber, char groupInsertionCode, float vectorX,
                float vectorY, float vectorZ, char alternateLocationID,
-               Object clientAtomReference) {
+               Object clientAtomReference, float radius) {
 
     checkNewGroup(atomCount, modelIndex, chainID, group3, groupSequenceNumber,
         groupInsertionCode);
@@ -502,7 +502,7 @@ public final class Frame {
         atomSite, atomicAndIsotopeNumber, atomName, mad, formalCharge,
         partialCharge, occupancy, bfactor, x, y, z, isHetero, atomSerial,
         chainID, group3, vectorX, vectorY, vectorZ, alternateLocationID,
-        clientAtomReference);
+        clientAtomReference, radius);
     atoms[atomCount] = atom;
     ++atomCount;
     htAtomMap.put(atomUid, atom);

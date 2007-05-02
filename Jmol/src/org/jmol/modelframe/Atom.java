@@ -50,6 +50,7 @@ final public class Atom extends Point3fi implements Tuple {
   BitSet atomSymmetry;
   int atomSite;
   public short screenDiameter;
+  public float radius;
   
   public int getScreenRadius() {
     return screenDiameter / 2;
@@ -105,7 +106,7 @@ final public class Atom extends Point3fi implements Tuple {
        boolean isHetero, int atomSerial, char chainID, String group3,
        float vibrationX, float vibrationY, float vibrationZ,
        char alternateLocationID,
-       Object clientAtomReference) {
+       Object clientAtomReference, float radius) {
     this.group = frame.nullGroup;
     this.modelIndex = (short)modelIndex;
     this.atomSymmetry = atomSymmetry;
@@ -115,6 +116,7 @@ final public class Atom extends Point3fi implements Tuple {
     setFormalCharge(formalCharge);
     this.colixAtom = frame.viewer.getColixAtomPalette(this, JmolConstants.PALETTE_CPK);
     this.alternateLocationID = (byte)alternateLocationID;
+    this.radius = radius;
     setMadAtom(mad);
     this.x = x; this.y = y; this.z = z;
     if (isHetero)
@@ -454,7 +456,7 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   public float getVanderwaalsRadiusFloat() {
-    return JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 128] / 1000f;
+    return (Float.isNaN(radius) ? JmolConstants.vanderwaalsMars[atomicAndIsotopeNumber % 128] / 1000f : radius);
   }
 
   short getBondingMar() {

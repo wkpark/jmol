@@ -64,13 +64,14 @@ public class PdbReader extends AtomSetCollectionReader {
   boolean isNMRdata;
   final Hashtable htFormul = new Hashtable();
   Hashtable htHetero = null;
-
+  protected String fileType = "pdb";
+  
   String currentGroup3;
   Hashtable htElementsInCurrentGroup;
 
  public AtomSetCollection readAtomSetCollection(BufferedReader reader) {
     this.reader = reader;
-    atomSetCollection = new AtomSetCollection("pdb");
+    atomSetCollection = new AtomSetCollection(fileType);
     atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
     setFractionalCoordinates(false);
     htFormul.clear();
@@ -188,7 +189,7 @@ public class PdbReader extends AtomSetCollectionReader {
 
     ////////////////////////////////////////////////////////////////
     // extract elementSymbol
-    String elementSymbol = deduceElementSymbol();
+    String elementSymbol = deduceElementSymbol(isHetero);
 
     /****************************************************************
      * atomName
@@ -219,21 +220,10 @@ public class PdbReader extends AtomSetCollectionReader {
       }
     }
 
-    /****************************************************************
-     * read the bfactor from cols 61-66 (1-based)
-     ****************************************************************/
-    float bfactor = parseFloat(line, 60, 66);
-
-    /****************************************************************
-     * read the occupancy from cols 55-60 (1-based)
-     * should be in the range 0.00 - 1.00
-     ****************************************************************/
-    int occupancy = 100;
-    float floatOccupancy = parseFloat(line, 54, 60);
-    if (!Float.isNaN(floatOccupancy))
-      occupancy = (int) (floatOccupancy * 100);
-
-    /****************************************************************/
+    float bfactor = readBFactor();
+    int occupancy = readOccupancy();
+    float partialCharge = readPartialCharge();
+    float radius = readRadius();
 
     /****************************************************************
      * coordinates
@@ -250,6 +240,8 @@ public class PdbReader extends AtomSetCollectionReader {
     if (charAlternateLocation != ' ')
       atom.alternateLocationID = charAlternateLocation;
     atom.formalCharge = charge;
+    if (partialCharge != Float.MAX_VALUE)
+      atom.partialCharge = partialCharge;
     atom.occupancy = occupancy;
     atom.bfactor = bfactor;
     setAtomCoord(atom, x, y, z);
@@ -259,7 +251,7 @@ public class PdbReader extends AtomSetCollectionReader {
     atom.group3 = currentGroup3;
     atom.sequenceNumber = sequenceNumber;
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(insertionCode);
-
+    atom.radius = radius;
     atomSetCollection.addAtom(atom);
     // note that values are +1 in this serial map
     serialMap[serial] = atomSetCollection.getAtomCount();
@@ -272,7 +264,35 @@ public class PdbReader extends AtomSetCollectionReader {
     }
   }
 
-  String deduceElementSymbol() {
+  protected int readOccupancy() {
+
+    /****************************************************************
+     * read the occupancy from cols 55-60 (1-based)
+     * should be in the range 0.00 - 1.00
+     ****************************************************************/
+    int occupancy = 100;
+    float floatOccupancy = parseFloat(line, 54, 60);
+    if (!Float.isNaN(floatOccupancy))
+      occupancy = (int) (floatOccupancy * 100);
+    return occupancy;
+  }
+  
+  protected float readBFactor() {
+    /****************************************************************
+     * read the bfactor from cols 61-66 (1-based)
+     ****************************************************************/
+    return parseFloat(line, 60, 66);
+  }
+  
+  protected float readPartialCharge() {
+    return Float.MAX_VALUE; 
+  }
+  
+  protected float readRadius() {
+    return Float.NaN; 
+  }
+  
+  String deduceElementSymbol(boolean isHetero) {
     if (lineLength >= 78) {
       char ch76 = line.charAt(76);
       char ch77 = line.charAt(77);
@@ -286,7 +306,7 @@ public class PdbReader extends AtomSetCollectionReader {
     if ((htElementsInCurrentGroup == null ||
          htElementsInCurrentGroup.get(line.substring(12, 14)) != null) &&
         Atom.isValidElementSymbolNoCaseSecondChar(ch12, ch13))
-      return "" + ch12 + ch13;
+      return (isHetero || ch12 != 'H' ? "" + ch12 + ch13 : "H");
     if ((htElementsInCurrentGroup == null ||
          htElementsInCurrentGroup.get("" + ch13) != null) &&
         Atom.isValidElementSymbol(ch13))

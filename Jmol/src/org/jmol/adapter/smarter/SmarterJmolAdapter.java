@@ -257,6 +257,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     public String getAtomName() { return atom.atomName; }
     public int getFormalCharge() { return atom.formalCharge; }
     public float getPartialCharge() { return atom.partialCharge; }
+    public float getRadius() { return atom.radius; }
     public float getX() { return atom.x; }
     public float getY() { return atom.y; }
     public float getZ() { return atom.z; }

@@ -41,6 +41,7 @@ public class Atom extends Point3f implements Cloneable {
   public float vectorX = Float.NaN, vectorY = Float.NaN, vectorZ = Float.NaN;
   public float bfactor = Float.NaN;
   public int occupancy = 100;
+  public float radius = Float.NaN;
   public boolean isHetero;
   public int atomSerial = Integer.MIN_VALUE;
   public char chainID = '\0';

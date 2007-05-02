@@ -380,6 +380,7 @@ public class Token {
   final static int site          = atomproperty | 19;
   final static int structure     = atomproperty | 20;
   final static int symop         = atomproperty | 21;
+  final static int vanderwaals   = atomproperty | 22;
 
   final static int atomX           = atompropertyfloat | 0;
   final static int atomY           = atompropertyfloat | 1;
@@ -683,7 +684,6 @@ public class Token {
   final static int nomesh       = misc | 51;
   final static int fill         = misc | 52;
   final static int nofill       = misc | 53;
-  final static int vanderwaals  = misc | 54;
   final static int ionic        = misc | 55;
   final static int resume       = misc | 56;
   final static int play         = misc | 57;

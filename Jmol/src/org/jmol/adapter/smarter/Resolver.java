@@ -387,6 +387,9 @@ class Resolver {
   // these test lines that startWith one of these strings
   ////////////////////////////////////////////////////////////////
 
+  final static String[] pqrRecords = 
+  { "Pqr", "REMARK   1 PQR" };
+
   final static String[] pdbRecords = {
     "Pdb", "HEADER", "OBSLTE", "TITLE ", "CAVEAT", "COMPND", "SOURCE", "KEYWDS",
     "EXPDTA", "AUTHOR", "REVDAT", "SPRSDE", "JRNL  ", "REMARK",
@@ -421,9 +424,9 @@ class Resolver {
   { "Csf", "local_transform"};
   
   final static String[][] lineStartsWithRecords =
-  { pdbRecords, shelxRecords, cifRecords, ghemicalMMRecords,
-    jaguarRecords, hinRecords , mdlRecords, 
-    spartanSmolRecords, csfRecords};
+  { pqrRecords, pdbRecords, shelxRecords, cifRecords, 
+    ghemicalMMRecords, jaguarRecords, hinRecords, 
+    mdlRecords, spartanSmolRecords, csfRecords};
 
   ////////////////////////////////////////////////////////////////
   // contains formats

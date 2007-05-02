@@ -1679,6 +1679,8 @@ class Eval { //implements Runnable {
       return atom.getProteinStructureType();
     case Token.radius:
       return atom.getRasMolRadius();
+    case Token.vanderwaals:
+      return atom.getVanderwaalsRadiusFloat();
     case Token.psi:
       propertyValue = atom.getGroupPsi();
       return asInt ? propertyValue * 100 : propertyValue;
@@ -3086,6 +3088,7 @@ class Eval { //implements Runnable {
     case Token.formalCharge:
     case Token.partialCharge:
     case Token.surfacedistance:
+    case Token.vanderwaals:
     case Token.monomer:
     case Token.molecule:
     case Token.altloc:
@@ -6196,6 +6199,9 @@ class Eval { //implements Runnable {
             break;
           case Token.radius:
             fv = atom.getRadius();
+            break;
+          case Token.vanderwaals:
+            fv = atom.getVanderwaalsRadiusFloat();
             break;
           case Token.partialCharge:
             fv = atom.getPartialCharge();

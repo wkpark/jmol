@@ -65,9 +65,17 @@ import org.jmol.util.Parser;
  * To disable ALL access to JavaScript (as, for example, in a Wiki) 
  * remove the MAYSCRIPT tag or set MAYSCRIPT="false"
  * 
+ * You can specify a language (French in this case) using  
+ * 
+ * [param name="language" value="fr"]
+ * 
  * You can check that it is set correctly using 
  * 
  * [param name="debug" value="true"]
+ *  
+ *  or
+ *  
+ * [param name="logLevel" value="5"]
  * 
  * and then checking the console for a message about MAYSCRIPT
  * 
@@ -129,7 +137,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   JSObject jsoDocument;
   boolean mayScript;
   boolean haveDocumentAccess;
-
+  boolean doTranslate = true;
+  
   String animFrameCallback;
   String resizeCallback;
   String loadStructCallback;
@@ -157,8 +166,16 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     this.appletWrapper = appletWrapper;
   }
 
+  String language;
+  
   public void init() {
+    System.out.println("Init jmol");
     htmlName = getParameter("name");
+    language = getParameter("language");
+    if (language != null) {
+      System.out.println("language=" + language);
+      new GT(language);
+    }
     System.out.println("Jmol applet "+htmlName);
     setLogging();
     String ms = getParameter("mayscript");
@@ -225,11 +242,12 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     }
   }
 
-  
-  void setLogging(){
-    int iLevel = (getValue("logLevel", "") + "4").charAt(0) - '0';
+  void setLogging() {
+    int iLevel = (getValue("logLevel", "")
+        + (getBooleanValue("debug", false) ? "5" : "4")).charAt(0) - '0';
     if (iLevel != 4)
-      System.out.println("setting logLevel="+iLevel+" -- To change, use script \"set logLevel [0-5]\"");
+      System.out.println("setting logLevel=" + iLevel
+          + " -- To change, use script \"set logLevel [0-5]\"");
     Logger.setLogLevel(iLevel);
   }
   /*
@@ -283,14 +301,19 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     return value;
   }
 
+  
+  
+  
+  boolean needPopupMenu;
+  
   public void initApplication() {
     viewer.pushHoldRepaint();
     {
       // REQUIRE that the progressbar be shown
       hasProgressBar = getBooleanValue("progressbar", false);
       // should the popupMenu be loaded ?
-      boolean popupMenu = getBooleanValue("popupMenu", true);
-      if (popupMenu)
+      needPopupMenu = getBooleanValue("popupMenu", true);
+      if (needPopupMenu)
         loadPopupMenuAsBackgroundTask();
 
       emulate = getValueLowerCase("emulate", "jmol");
@@ -318,9 +341,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       statusForm = getValue("StatusForm", null);
       statusText = getValue("StatusText", null); //text
       statusTextarea = getValue("StatusTextarea", null); //textarea
-
       boolean haveTranslateFlag = (getValue("doTranslate", null) != null);
-      boolean doTranslate = getBooleanValue("doTranslate", true);
+      doTranslate = (language != null || getBooleanValue("doTranslate",
+          true));
 
       if (animFrameCallback != null)
         Logger.info("animFrameCallback=" + animFrameCallback);
@@ -347,10 +370,11 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
           // || pauseCallback != null
           || pickCallback != null || statusForm != null || statusText != null) {
         if (!mayScript)
-          Logger.warn("MAYSCRIPT missing -- all applet JavaScript calls disabled");
+          Logger
+              .warn("MAYSCRIPT missing -- all applet JavaScript calls disabled");
       }
       if (messageCallback != null || statusForm != null || statusText != null) {
-        if (!haveTranslateFlag) {
+        if (language == null && !haveTranslateFlag) {
           doTranslate = false;
           Logger
               .warn("Note -- Presence of message callback will disable translation; "
@@ -360,6 +384,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
           Logger
               .warn("Note -- language translation may affect parsing of callback messages");
       }
+      if ("none".equals(language))
+        doTranslate = false;
       if (!doTranslate) {
         GT.setDoTranslate(false);
         Logger.warn("Note -- language translation disabled");
@@ -367,7 +393,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       String loadParam;
       String scriptParam = getValue("script", "");
       if ((loadParam = getValue("loadInline", null)) != null) {
-        loadInlineSeparated(loadParam, (scriptParam.length() > 0 ? scriptParam : null));
+        loadInlineSeparated(loadParam, (scriptParam.length() > 0 ? scriptParam
+            : null));
       } else {
         if ((loadParam = getValue("load", null)) != null)
           scriptParam = "load \"" + loadParam + "\";" + scriptParam;
@@ -793,22 +820,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       // long beginTime = System.currentTimeMillis();
       // Logger.debug("LoadPopupThread starting ");
       // this is a background task
-      JmolPopup popup;
-      try {
-        popup = JmolPopup.newJmolPopup(viewer);
-      } catch (Exception e) {
-        Logger.error("JmolPopup not loaded");
-        return;
-      }
-      jmolpopup = popup;
-      // long runTime = System.currentTimeMillis() - beginTime;
-      // Logger.debug("LoadPopupThread finished " + runTime + " ms");
-      try {
-        popup.updateComputedMenus();
-      } catch (NullPointerException e) {
-        // ignore -- the frame just wasn't ready yet;
-        // updateComputedMenus() will be called again when the frame is ready; 
-      }
+      jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate);
     }
   }
 
@@ -1039,6 +1051,13 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     }
 
     public void setCallbackFunction(String callbackType, String callbackFunction) {
+      //also serves to change language for callbacks and menu
+      if (callbackType.equalsIgnoreCase("language")) {
+        new GT(language = callbackFunction);
+        if (needPopupMenu)
+          jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate);  
+        return;
+      }
       if (callbackType.equalsIgnoreCase("AnimFrameCallback"))
         animFrameCallback = callbackFunction;
       else if (callbackType.equalsIgnoreCase("HoverCallback"))

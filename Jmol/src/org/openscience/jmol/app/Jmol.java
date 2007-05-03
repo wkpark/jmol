@@ -285,7 +285,7 @@ public class Jmol extends JPanel {
           viewMeasurementTableAction);
       pcs.addPropertyChangeListener(chemFileProperty, atomSetChooser);
 
-      jmolpopup = JmolPopup.newJmolPopup(viewer);
+      jmolpopup = JmolPopup.newJmolPopup(viewer, true);
 
     }
 
@@ -1543,7 +1543,10 @@ public class Jmol extends JPanel {
     }
     
     public void setCallbackFunction(String callbackType, String callbackFunction) {
-      // applet only?
+      if (callbackType.equalsIgnoreCase("language")) {
+        new GT(callbackFunction);
+        jmolpopup = JmolPopup.newJmolPopup(viewer, true);  
+      }
     }
 
     public void notifyResized(int width, int height){

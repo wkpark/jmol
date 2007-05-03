@@ -87,10 +87,27 @@ abstract public class JmolPopup {
     cmil = new CheckboxMenuItemListener();
   }
 
-  static public JmolPopup newJmolPopup(JmolViewer viewer) {
-    if (! viewer.isJvm12orGreater() || forceAwt)
-      return new JmolPopupAwt(viewer);
-    return new JmolPopupSwing(viewer);
+  static public JmolPopup newJmolPopup(JmolViewer viewer, boolean doTranslate) {
+    GT.setDoTranslate(true);
+    JmolPopup popup;
+    try {
+      popup = (!viewer.isJvm12orGreater() || forceAwt ?
+          (JmolPopup) new JmolPopupAwt(viewer) :
+            (JmolPopup) new JmolPopupSwing(viewer));
+    } catch (Exception e) {
+      Logger.error("JmolPopup not loaded");
+      return null;
+    }
+    // long runTime = System.currentTimeMillis() - beginTime;
+    // Logger.debug("LoadPopupThread finished " + runTime + " ms");
+    try {
+      popup.updateComputedMenus();
+    } catch (NullPointerException e) {
+      // ignore -- the frame just wasn't ready yet;
+      // updateComputedMenus() will be called again when the frame is ready; 
+    }
+    GT.setDoTranslate(doTranslate);
+    return popup;
   }
 
   void build(Object popupMenu) {
@@ -116,6 +133,7 @@ abstract public class JmolPopup {
     updateSYMMETRYComputedMenu();
     updateFRAMESbyModelComputedMenu();
     updateModelSetComputedMenu();
+    updateLanguageSubmenu();
     updateAboutSubmenu();
   }
 
@@ -503,6 +521,37 @@ abstract public class JmolPopup {
       addMenuItem(menu, GT._("unknown processor count", true));
   }
 
+  private void updateLanguageSubmenu() {
+    Object menu = htMenus.get("languageComputedMenu");
+    if (menu == null)
+      return;
+    for (int i = getMenuItemCount(menu); --i >= 0;)
+      removeMenuItem(menu, i);
+    String language = GT.getLanguage();
+    String id = getId(menu);
+    // the # here indicates that the command is complete; no need for TRUE or FALSE
+    addCheckboxMenuItem(menu, GT._("Catalan", true), "language = \"ca\" #Catalan",
+        id + ".ca", language.equals("ca"));
+    addCheckboxMenuItem(menu, GT._("Czech", true), "language = \"cs\" #Czech",
+        id + ".cs", language.equals("cs"));
+    addCheckboxMenuItem(menu, GT._("Dutch", true), "language = \"nl\" #Dutch",
+        id + ".nl", language.equals("nl"));
+    addCheckboxMenuItem(menu, GT._("English", true), "language = \"en\" #English",
+        id + ".en", language.equals("en"));
+    addCheckboxMenuItem(menu, GT._("Estonian", true), "language = \"et\" #Estonian",
+        id + ".et", language.equals("et"));
+    addCheckboxMenuItem(menu, GT._("French", true), "language = \"fr\" #French",
+        id + ".fr", language.equals("fr"));
+    addCheckboxMenuItem(menu, GT._("German", true), "language = \"de\" #German",
+        id + ".de", language.equals("de"));
+    addCheckboxMenuItem(menu, GT._("Portugese", true), "language = \"pt\" #Portugese",
+        id + ".pt", language.equals("pt"));
+    addCheckboxMenuItem(menu, GT._("Spanish", true), "language = \"es\" #Spanish",
+        id + ".es", language.equals("es"));
+    addCheckboxMenuItem(menu, GT._("Turkish", true), "language = \"tr\" #Turkish",
+        id + ".tr", language.equals("tr"));
+  }
+
   private long convertToMegabytes(long num) {
     if (num <= Long.MAX_VALUE - 512*1024)
       num += 512*1024;
@@ -732,6 +781,7 @@ abstract public class JmolPopup {
     thisx = x;
     thisy = y;
     String id = currentMenuItemId;
+    System.out.println (id);
     updateForShow();
     for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements();) {
       String key = (String) keys.nextElement();

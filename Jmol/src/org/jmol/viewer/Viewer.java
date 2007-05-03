@@ -3112,6 +3112,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.defaultLoadScript;
   }
 
+  private void setLanguage(String language) {
+    statusManager.setCallbackFunction("language", language);
+  }
+  
   private void setLoadFormat(String format) {
     //Eval
     global.loadFormat = format;
@@ -3682,6 +3686,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setStringProperty(String key, String value) {
     //Eval
     while (true) {
+      
+      ///11.1.30//
+      if (key.equalsIgnoreCase("language")) {
+        setLanguage(value); //fr cs en none, etc.
+        break;
+      }
+      
+      
       ///11.1.22//
 
       if (key.equalsIgnoreCase("loadFormat")) {

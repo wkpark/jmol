@@ -34,6 +34,7 @@ public interface JmolStatusListener {
  * has been done PRIOR to these functions being called.   Bob Hanson
  * 
  */
+
   public void handlePopupMenu(int x, int y);
 
   public void notifyAtomPicked(int atomIndex, String strInfo);

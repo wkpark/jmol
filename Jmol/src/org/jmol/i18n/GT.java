@@ -34,42 +34,65 @@ public class GT {
   private ResourceBundle[] translationResources = null;
   private int translationResourcesCount = 0;
   private static boolean doTranslate = true;
+  private static String language;
 
-  private GT() {
-    Locale locale = Locale.getDefault();
-    if ((locale != null) && (locale.getLanguage() != null)) {
-      String language = locale.getLanguage();
-      if ((language.equals(""))
-          || (language.equals(Locale.ENGLISH.getLanguage()))) {
-        Logger.debug("English: no need for gettext wrapper");
-        return;
-      }
+  public static String getLanguage() {
+    return language;
+  }
+  
+  private void getTranslation(String la) {
+    if (la != null) {
+      language = la;
+      doTranslate = true;
     }
-    Logger.debug("Instantiating gettext wrapper...");
+    Locale locale = Locale.getDefault();
+    translationResources = null;
+    translationResourcesCount = 0;
+    getTextWrapper = null;
+    
+    if ("en".equals(language) || 
+        (language == null || language == "none") &&
+        ((locale = Locale.getDefault()) == null
+          || (language = locale.getLanguage()) == null
+          || language.equals("") 
+          || language.equals(Locale.ENGLISH.getLanguage())
+        )) {
+      Logger.debug("English: no need for gettext wrapper");
+      return;
+    }
+    
+    Logger.debug("Instantiating gettext wrapper for " + language + "...");
     try {
       if (!ignoreApplicationBundle) {
-        addBundles("org.jmol.translation.Jmol.Messages");
+        addBundle("org.jmol.translation.Jmol.Messages_" + language);
       }
     } catch (Exception exception) {
-      Logger.error("Some exception occured!", exception);
+      Logger.error("Some exception occurred!", exception);
       translationResources = null;
     }
     try {
-      addBundles("org.jmol.translation.JmolApplet.Messages");
+      addBundle("org.jmol.translation.JmolApplet.Messages_" + language);
     } catch (Exception exception) {
       Logger.error("Some exception occured!", exception);
     }
   }
-
-  private void addBundles(String name) {
-    Locale locale = Locale.getDefault();
+  
+  public GT(String la) {
+    getTranslation(la);
+  }
+  
+  private GT() {
+    getTranslation(null);
+  }
+/*
+  private void addBundles(String name, Locale locale) {
     if ((locale != null) && (locale.getLanguage() != null)) {
       if (locale.getCountry() != null) {
         if (locale.getVariant() != null) {
           // NOTE: Currently, there's no need for variants
-          /*addBundle(
+          addBundle(
            name + "_" + locale.getLanguage() +
-           "_" + locale.getCountry() + "_" + locale.getVariant());*/
+           "_" + locale.getCountry() + "_" + locale.getVariant());
         }
         // NOTE: Currently, there's no need for countries
         //addBundle(name + "_" + locale.getLanguage() + "_" + locale.getCountry());
@@ -79,15 +102,15 @@ public class GT {
     // NOTE: Currently, there's no base class
     //addBundle(name);
   }
-
-  private void addBundle(String name) {
+*/
+  private void addBundle(String name_lang) {
     ClassLoader loader = getClass().getClassLoader();
     Class bundleClass = null;
     try {
       if (loader != null) {
-        bundleClass = loader.loadClass(name);
+        bundleClass = loader.loadClass(name_lang);
       } else {
-        bundleClass = Class.forName(name);
+        bundleClass = Class.forName(name_lang);
       }
     } catch (ClassNotFoundException e) {
       // Class not found: can be normal
@@ -113,10 +136,7 @@ public class GT {
   }
 
   private static GT getTextWrapper() {
-    if (getTextWrapper == null) {
-      getTextWrapper = new GT();
-    }
-    return getTextWrapper;
+    return (getTextWrapper == null ? getTextWrapper = new GT() : getTextWrapper);
   }
 
   public static void ignoreApplicationBundle() {

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-05-03 22:26+0200\n"
-"PO-Revision-Date: 2007-04-15 22:12+0100\n"
+"PO-Revision-Date: 2007-05-03 22:53+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -48,9 +48,7 @@ msgstr "Charger"
 
 #: org/jmol/applet/Console.java:91
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"Appuyer sur Ctrl+Entrée pour une nouvelle ligne ou copier les données d'un "
-"modèle et appuyer sur Load"
+msgstr "Appuyer sur Ctrl+Entrée pour une nouvelle ligne ou copier les données d'un modèle et appuyer sur Load"
 
 #: org/jmol/applet/Jmol.java:713
 #, java-format
@@ -90,7 +88,8 @@ msgstr "Sélectionner ({0})"
 msgid "All {0} models"
 msgstr "Tous les {0} modèles"
 
-#: org/jmol/popup/JmolPopup.java:384 org/jmol/popup/JmolPopup.java:418
+#: org/jmol/popup/JmolPopup.java:384
+#: org/jmol/popup/JmolPopup.java:418
 msgid "all"
 msgstr "tout"
 
@@ -172,44 +171,43 @@ msgstr "Nombre de processeurs inconnu"
 
 #: org/jmol/popup/JmolPopup.java:533
 msgid "Catalan"
-msgstr ""
+msgstr "Catalan"
 
 #: org/jmol/popup/JmolPopup.java:535
 msgid "Czech"
-msgstr ""
+msgstr "Tchèque"
 
 #: org/jmol/popup/JmolPopup.java:537
 msgid "Dutch"
-msgstr ""
+msgstr "Néerlandais"
 
 #: org/jmol/popup/JmolPopup.java:539
 msgid "English"
-msgstr ""
+msgstr "Anglais"
 
 #: org/jmol/popup/JmolPopup.java:541
 msgid "Estonian"
-msgstr ""
+msgstr "Estonien"
 
 #: org/jmol/popup/JmolPopup.java:543
 msgid "French"
-msgstr ""
+msgstr "Français"
 
 #: org/jmol/popup/JmolPopup.java:545
-#, fuzzy
 msgid "German"
-msgstr "Gris"
+msgstr "Allemand"
 
 #: org/jmol/popup/JmolPopup.java:547
 msgid "Portugese"
-msgstr ""
+msgstr "Portugais"
 
 #: org/jmol/popup/JmolPopup.java:549
 msgid "Spanish"
-msgstr ""
+msgstr "Espagnol"
 
 #: org/jmol/popup/JmolPopup.java:551
 msgid "Turkish"
-msgstr ""
+msgstr "Turc"
 
 #: org/jmol/popup/JmolPopup.java:822
 msgid "Main Menu"
@@ -229,11 +227,13 @@ msgstr "élément d'expression incorrect: {0}"
 msgid "unrecognized token: {0}"
 msgstr "élément non reconnu: {0}"
 
-#: org/jmol/viewer/Compiler.java:1908 org/jmol/viewer/Eval.java:8769
+#: org/jmol/viewer/Compiler.java:1908
+#: org/jmol/viewer/Eval.java:8769
 msgid "unexpected end of script command"
 msgstr "fin inattendue du script de commande"
 
-#: org/jmol/viewer/Compiler.java:1912 org/jmol/viewer/Eval.java:8773
+#: org/jmol/viewer/Compiler.java:1912
+#: org/jmol/viewer/Eval.java:8773
 msgid "bad argument count"
 msgstr "mauvais nombre d'arguments"
 
@@ -270,7 +270,8 @@ msgstr "opérateur de comparaison attendu"
 msgid "equal sign expected"
 msgstr "signe égal attendu"
 
-#: org/jmol/viewer/Compiler.java:1948 org/jmol/viewer/Eval.java:8735
+#: org/jmol/viewer/Compiler.java:1948
+#: org/jmol/viewer/Eval.java:8735
 msgid "number expected"
 msgstr "nombre attendu"
 
@@ -278,7 +279,8 @@ msgstr "nombre attendu"
 msgid "number or variable name expected"
 msgstr "nombre ou nom de variable attendu"
 
-#: org/jmol/viewer/Compiler.java:1956 org/jmol/viewer/Eval.java:8781
+#: org/jmol/viewer/Compiler.java:1956
+#: org/jmol/viewer/Eval.java:8781
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "Paramètre {0} non reconnu"
@@ -303,7 +305,8 @@ msgstr "spécification de modèle incorrecte"
 msgid "invalid atom specification"
 msgstr "spécification d'atome incorrecte"
 
-#: org/jmol/viewer/Compiler.java:1985 org/jmol/viewer/Eval.java:8740
+#: org/jmol/viewer/Compiler.java:1985
+#: org/jmol/viewer/Eval.java:8740
 msgid "quoted string expected"
 msgstr "chaîne de caractères entre guillemets attendue"
 
@@ -320,19 +323,16 @@ msgstr "trop de niveaux de script"
 msgid "Too many nested {0} commands"
 msgstr "Trop de commandes {0} imbriquées"
 
-#: org/jmol/viewer/Eval.java:763 org/jmol/viewer/Eval.java:769
+#: org/jmol/viewer/Eval.java:763
+#: org/jmol/viewer/Eval.java:769
 #, java-format
 msgid "Invalid {0} command"
 msgstr "Commande {0} incorrect"
 
 #: org/jmol/viewer/Eval.java:2069
 #, java-format
-msgid ""
-"plane expected -- either three points or atom expressions or {0} or {1} or "
-"{2}"
-msgstr ""
-"plan attendu -- soit 3 points ou une expression d''atomes ou {0} ou {1} ou "
-"{2}"
+msgid "plane expected -- either three points or atom expressions or {0} or {1} or {2}"
+msgstr "plan attendu -- soit 3 points ou une expression d''atomes ou {0} ou {1} ou {2}"
 
 #: org/jmol/viewer/Eval.java:2082
 msgid "No unit cell"
@@ -404,7 +404,8 @@ msgstr "sauver quoi?"
 msgid "restore what?"
 msgstr "restaurer quoi?"
 
-#: org/jmol/viewer/Eval.java:6933 org/jmol/viewer/Eval.java:6988
+#: org/jmol/viewer/Eval.java:6933
+#: org/jmol/viewer/Eval.java:6988
 #, java-format
 msgid "The {0} command is not available for the applet."
 msgstr "La commande {0} n'est pas disponible pour l'applet."
@@ -418,7 +419,8 @@ msgstr "écrire quoi? {0} ou {1} \"nom de fichier\""
 msgid "No data available"
 msgstr "Pas de données disponibles"
 
-#: org/jmol/viewer/Eval.java:7312 org/jmol/viewer/Eval.java:7996
+#: org/jmol/viewer/Eval.java:7312
+#: org/jmol/viewer/Eval.java:7996
 msgid "no MO basis/coefficient data available for this frame"
 msgstr ""
 
@@ -441,12 +443,8 @@ msgid "An MO index from 1 to {0} is required"
 msgstr ""
 
 #: org/jmol/viewer/Eval.java:8497
-msgid ""
-"No partial charges were read from the file; Jmol needs these to render the "
-"MEP data."
-msgstr ""
-"Aucune charge partielle n'a été lue depuis le fichier; Jmol en a besoin pour "
-"générer les données MEP."
+msgid "No partial charges were read from the file; Jmol needs these to render the MEP data."
+msgstr "Aucune charge partielle n'a été lue depuis le fichier; Jmol en a besoin pour générer les données MEP."
 
 #: org/jmol/viewer/Eval.java:8686
 msgid "MO isosurfaces require that only one model be displayed"
@@ -583,8 +581,7 @@ msgstr "trop de parenthèses"
 
 #: org/jmol/viewer/PickingManager.java:168
 msgid "pick one more atom in order to spin the model around an axis"
-msgstr ""
-"Choisir un atome supplémentaire pour faire tourner le modèle autour d'un axe"
+msgstr "Choisir un atome supplémentaire pour faire tourner le modèle autour d'un axe"
 
 #: org/jmol/viewer/PickingManager.java:169
 msgid "pick two atoms in order to spin the model around an axis"
@@ -603,829 +600,558 @@ msgstr "{0} atomes sélectionnés"
 
 #: org/jmol/viewer/Viewer.java:4046
 #, java-format
-msgid ""
-"ERROR: Cannot set value of a boolean to another type. use \"{0}\" first."
+msgid "ERROR: Cannot set value of a boolean to another type. use \"{0}\" first."
 msgstr ""
 
 #: org/jmol/viewer/Viewer.java:4392
 #, java-format
-msgid ""
-"ERROR: Cannot set value of this variable to a boolean. use \"{0}\" first."
+msgid "ERROR: Cannot set value of this variable to a boolean. use \"{0}\" first."
 msgstr ""
 
 #~ msgid "No atoms loaded"
 #~ msgstr "Aucun atome chargé"
-
 #~ msgid "Configurations"
 #~ msgstr "Configurations"
-
 #~ msgid "Model information"
 #~ msgstr "Informations du modèle"
-
 #~ msgid "Select"
 #~ msgstr "Sélectionner"
-
 #~ msgid "Element"
 #~ msgstr "Elément"
-
 #~ msgid "All"
 #~ msgstr "Tout"
-
 #~ msgid "None"
 #~ msgstr "Aucun"
-
 #~ msgid "Display Selected Only"
 #~ msgstr "Afficher uniquement la sélection"
-
 #~ msgid "Invert Selection"
 #~ msgstr "Inverser la sélection"
-
 #~ msgid "View"
 #~ msgstr "Vue"
-
 #~ msgid "Front"
 #~ msgstr "Face"
-
 #~ msgid "Left"
 #~ msgstr "Gauche"
-
 #~ msgid "Right"
 #~ msgstr "Droite"
-
 #~ msgid "Top"
 #~ msgstr "Haut"
-
 #~ msgid "Bottom"
 #~ msgstr "Bas"
-
 #~ msgid "Back"
 #~ msgstr "Fond"
-
 #~ msgid "Protein"
 #~ msgstr "Protéine"
-
 #~ msgid "Backbone"
 #~ msgstr "Squelette"
-
 #~ msgid "Side Chains"
 #~ msgstr "Chaînes latérales"
-
 #~ msgid "Polar Residues"
 #~ msgstr "Résidus polaires"
-
 #~ msgid "Nonpolar Residues"
 #~ msgstr "Résidus non polaires"
-
 #~ msgid "Basic Residues (+)"
 #~ msgstr "Résidues basiques (+)"
-
 #~ msgid "Acidic Residues (-)"
 #~ msgstr "Résidus acides (-)"
-
 #~ msgid "Uncharged Residues"
 #~ msgstr "Résidus non chargés"
-
 #~ msgid "By Residue Name"
 #~ msgstr "Par nom de résidu"
-
 #~ msgid "By HETATM"
 #~ msgstr " Par HETATM"
-
 #~ msgid "Nucleic"
 #~ msgstr "Nucléique"
-
 #~ msgid "DNA"
 #~ msgstr "ADM"
-
 #~ msgid "RNA"
 #~ msgstr "ARN"
-
 #~ msgid "Bases"
 #~ msgstr "Bases"
-
 #~ msgid "AT pairs"
 #~ msgstr "Paires AT"
-
 #~ msgid "GC pairs"
 #~ msgstr "Paires GC"
-
 #~ msgid "AU pairs"
 #~ msgstr "Paires AU"
-
 #~ msgid "Hetero"
 #~ msgstr "Hétéro"
-
 #~ msgid "All PDB \"HETATM\""
 #~ msgstr "Tous les \"HETATM\" PDB"
-
 #~ msgid "All Solvent"
 #~ msgstr "Tout Solvant"
-
 #~ msgid "All Water"
 #~ msgstr "Tout Eau"
-
 #~ msgid "Nonaqueous Solvent"
 #~ msgstr "Solvant non-aqueux"
-
 #~ msgid "Nonaqueous HETATM"
 #~ msgstr "HETATM non-aqueux"
-
 #~ msgid "Ligand"
 #~ msgstr "Ligand"
-
 #~ msgid "Carbohydrate"
 #~ msgstr "Glucide"
-
 #~ msgid "None of the above"
 #~ msgstr "Aucun des précédents"
-
 #~ msgid "Model/Frame"
 #~ msgstr "Modèle/Frame"
-
 #~ msgid "Style"
 #~ msgstr "Style"
-
 #~ msgid "Scheme"
 #~ msgstr "Combinaison"
-
 #~ msgid "CPK Spacefill"
 #~ msgstr "CPK Remplissage"
-
 #~ msgid "Ball and Stick"
 #~ msgstr "Boule et bâton"
-
 #~ msgid "Sticks"
 #~ msgstr "Bâtons"
-
 #~ msgid "Wireframe"
 #~ msgstr "Fil de fer"
-
 #~ msgid "Cartoon"
 #~ msgstr "Cartoon"
-
 #~ msgid "Trace"
 #~ msgstr "Trace"
-
 #~ msgid "Atoms"
 #~ msgstr "Atomes"
-
 #~ msgid "Off"
 #~ msgstr "Off"
-
 #~ msgid "{0}% van der Waals"
 #~ msgstr "{0}% van der Waals"
-
 #~ msgid "Bonds"
 #~ msgstr "Liens"
-
 #~ msgid "On"
 #~ msgstr "On"
-
 #~ msgid "{0} Å"
 #~ msgstr "{0} Å"
-
 #~ msgid "Hydrogen Bonds"
 #~ msgstr "Liens Hydrogène"
-
 #~ msgid "Calculate"
 #~ msgstr "Calculer"
-
 #~ msgid "Set H-Bonds Side Chain"
 #~ msgstr "Liens H sur la chaîne latérale"
-
 #~ msgid "Set H-Bonds Backbone"
 #~ msgstr "Liens H sur le squelette"
-
 #~ msgid "Disulfide Bonds"
 #~ msgstr "Liens disulfure"
-
 #~ msgid "Set SS-Bonds Side Chain"
 #~ msgstr "Liens SS sur la chaîne latérale"
-
 #~ msgid "Set SS-Bonds Backbone"
 #~ msgstr "Liens SS sur le squelette"
-
 #~ msgid "Structures"
 #~ msgstr "Structures"
-
 #~ msgid "Ribbons"
 #~ msgstr "Rubans"
-
 #~ msgid "Vibration"
 #~ msgstr "Vibration"
-
 #~ msgid "Vectors"
 #~ msgstr "Vecteurs"
-
 #~ msgid "{0} pixels"
 #~ msgstr "{0} pixels"
-
 #~ msgid "Scale {0}"
 #~ msgstr "Echelle {0}"
-
 #~ msgid "Stereographic"
 #~ msgstr "Stéréographique"
-
 #~ msgid "Red+Cyan glasses"
 #~ msgstr "Lunettes Rouge+Cyan"
-
 #~ msgid "Red+Blue glasses"
 #~ msgstr "Lunettes Rouge+Bleu"
-
 #~ msgid "Red+Green glasses"
 #~ msgstr "Lunettes Rouge+Vert"
-
 #~ msgid "Cross-eyed viewing"
 #~ msgstr "Vision yeux croisés"
-
 #~ msgid "Wall-eyed viewing"
 #~ msgstr "Vision yeux parallèles"
-
 #~ msgid "Labels"
 #~ msgstr "Textes"
-
 #~ msgid "With Element Symbol"
 #~ msgstr "Avec le symbole de l'élément"
-
 #~ msgid "With Atom Name"
 #~ msgstr "Avec le nom de l'atome"
-
 #~ msgid "With Atom Number"
 #~ msgstr "Avec le numéro de l'atome"
-
 #~ msgid "Position Label on Atom"
 #~ msgstr "Position du texte par rapport à l'atome"
-
 #~ msgid "Centered"
 #~ msgstr "Centré"
-
 #~ msgid "Upper Right"
 #~ msgstr "Haut droite"
-
 #~ msgid "Lower Right"
 #~ msgstr "Bas droite"
-
 #~ msgid "Upper Left"
 #~ msgstr "Haut gauche"
-
 #~ msgid "Lower Left"
 #~ msgstr "Bas gauche"
-
 #~ msgid "Color"
 #~ msgstr "Couleur"
-
 #~ msgid "By Scheme"
 #~ msgstr "Par combinaison"
-
 #~ msgid "Element (CPK)"
 #~ msgstr "Elément (CPK)"
-
 #~ msgid "Molecule"
 #~ msgstr "Molécule"
-
 #~ msgid "Formal Charge"
 #~ msgstr "Charge formelle"
-
 #~ msgid "Partial Charge"
 #~ msgstr "Charge partielle"
-
 #~ msgid "Amino Acid"
 #~ msgstr "Aicde Aminé"
-
 #~ msgid "Secondary Structure"
 #~ msgstr "Structure secondaire"
-
 #~ msgid "Chain"
 #~ msgstr "Chaîne"
-
 #~ msgid "Inherit"
 #~ msgstr "Hérite"
-
 #~ msgid "Black"
 #~ msgstr "Noir"
-
 #~ msgid "White"
 #~ msgstr "Blanc"
-
 #~ msgid "Cyan"
 #~ msgstr "Cyan"
-
 #~ msgid "Red"
 #~ msgstr "Rouge"
-
 #~ msgid "Orange"
 #~ msgstr "Orange"
-
 #~ msgid "Yellow"
 #~ msgstr "Jaune"
-
 #~ msgid "Green"
 #~ msgstr "Vert"
-
 #~ msgid "Blue"
 #~ msgstr "Bleu"
-
 #~ msgid "Indigo"
 #~ msgstr "Indigo"
-
 #~ msgid "Violet"
 #~ msgstr "Violet"
-
 #~ msgid "Salmon"
 #~ msgstr "Saumon"
-
 #~ msgid "Olive"
 #~ msgstr "Olive"
-
 #~ msgid "Maroon"
 #~ msgstr "Marron"
-
 #~ msgid "Slate Blue"
 #~ msgstr "Bleu ardoise"
-
 #~ msgid "Gold"
 #~ msgstr "Or"
-
 #~ msgid "Orchid"
 #~ msgstr "Orchidée"
-
 #~ msgid "Make Opaque"
 #~ msgstr "Rendre opaque"
-
 #~ msgid "Make Translucent"
 #~ msgstr "Rendre translucide"
-
 #~ msgid "Structure"
 #~ msgstr "Structure"
-
 #~ msgid "Background"
 #~ msgstr "Fond"
-
 #~ msgid "Surface"
 #~ msgstr "Surface"
-
 #~ msgid "Axes"
 #~ msgstr "Axes"
-
 #~ msgid "Boundbox"
 #~ msgstr "Boîte englobante"
-
 #~ msgid "Unitcell"
 #~ msgstr "Cellule unitaire"
-
 #~ msgid "Zoom"
 #~ msgstr "Zoom"
-
 #~ msgid "Zoom In"
 #~ msgstr "Zoom avant"
-
 #~ msgid "Zoom Out"
 #~ msgstr "Zoom arrière"
-
 #~ msgid "Spin"
 #~ msgstr "Rotation"
-
 #~ msgid "Set X Rate"
 #~ msgstr "Changer la vitesse X"
-
 #~ msgid "Set Y Rate"
 #~ msgstr "Changer la vitesse Y"
-
 #~ msgid "Set Z Rate"
 #~ msgstr "Changer la vitesse Z"
-
 #~ msgid "Set FPS"
 #~ msgstr "Changer FPS"
-
 #~ msgid "Animation"
 #~ msgstr "Animation"
-
 #~ msgid "Animation Mode"
 #~ msgstr "Mode d'Animation"
-
 #~ msgid "Play Once"
 #~ msgstr "Une fois"
-
 #~ msgid "Palindrome"
 #~ msgstr "Palindrome"
-
 #~ msgid "Loop"
 #~ msgstr "En boucle"
-
 #~ msgid "Play"
 #~ msgstr "Lancer"
-
 #~ msgid "Pause"
 #~ msgstr "Pause"
-
 #~ msgid "Resume"
 #~ msgstr "Reprendre"
-
 #~ msgid "Stop"
 #~ msgstr "Arrêter"
-
 #~ msgid "Next Frame"
 #~ msgstr "Trame suivante"
-
 #~ msgid "Previous Frame"
 #~ msgstr "Trame précédente"
-
 #~ msgid "Rewind"
 #~ msgstr "Revenir au début"
-
 #~ msgid "Reverse"
 #~ msgstr "En arrière"
-
 #~ msgid "Restart"
 #~ msgstr "Redémarrer"
-
 #~ msgid "Measurement"
 #~ msgstr "Mesures"
-
 #~ msgid "Double-Click begins and ends all measurements"
 #~ msgstr "Double-clic commence et finit toutes les mesures"
-
 #~ msgid "Click for distance measurement"
 #~ msgstr "Cliquer pour une mesure de distance"
-
 #~ msgid "Click for angle measurement"
 #~ msgstr "Cliquer pour une mesure d'angle"
-
 #~ msgid "Click for torsion (dihedral) measurement"
 #~ msgstr "Cliquer pour une mesure de torsion (dihédrale)"
-
 #~ msgid "Delete measurements"
 #~ msgstr "Effacer les mesures"
-
 #~ msgid "List measurements"
 #~ msgstr "Donner la liste des mesures"
-
 #~ msgid "Distance units nanometers"
 #~ msgstr "Unité pour les distances en nanomètres"
-
 #~ msgid "Distance units Angstroms"
 #~ msgstr "Unité pour les distances en Angstroms"
-
 #~ msgid "Distance units picometers"
 #~ msgstr "Unité pour les distances en picomètres"
-
 #~ msgid "Center"
 #~ msgstr "Centre"
-
 #~ msgid "Label"
 #~ msgstr "Texte"
-
 #~ msgid "Select atom"
 #~ msgstr "Sélectionner atome"
-
 #~ msgid "Select chain"
 #~ msgstr "Sélectionner chaîne"
-
 #~ msgid "Select element"
 #~ msgstr "Sélectionner élément"
-
 #~ msgid "Select group"
 #~ msgstr "Sélectionner groupe"
-
 #~ msgid "Select molecule"
 #~ msgstr "Sélectionner molécule"
-
 #~ msgid "Select site"
 #~ msgstr "Sélectionner site"
-
 #~ msgid "Show"
 #~ msgstr "Afficher"
-
 #~ msgid "Console"
 #~ msgstr "Console"
-
 #~ msgid "File Contents"
 #~ msgstr "Contenu du fichier"
-
 #~ msgid "File Header"
 #~ msgstr "Entête du fichier"
-
 #~ msgid "Isosurface JVXL data"
 #~ msgstr "Données isosurface au format JVXL"
-
 #~ msgid "Measure"
 #~ msgstr "Mesure"
-
 #~ msgid "Molecular orbital JVXL data"
 #~ msgstr "Données orbites moléculaires au format JVXL"
-
 #~ msgid "Model"
 #~ msgstr "Modèle"
-
 #~ msgid "Orientation"
 #~ msgstr "Orientation"
-
 #~ msgid "Space group"
 #~ msgstr "Groupe spatial"
-
 #~ msgid "Symmetry"
 #~ msgstr "Symétrie"
-
 #~ msgid "Current state"
 #~ msgstr "Etat courant"
-
 #~ msgid "Unit cell"
 #~ msgstr "Cellule unitaire"
-
 #~ msgid "Extract MOL data"
 #~ msgstr "Extraire les données MOL"
-
 #~ msgid "Surfaces"
 #~ msgstr "Surfaces"
-
 #~ msgid "Dot Surface"
 #~ msgstr "Surface pointillée"
-
 #~ msgid "van der Waals Surface"
 #~ msgstr "Surface de van der Waals"
-
 #~ msgid "Molecular Surface"
 #~ msgstr "Surface moléculaire"
-
 #~ msgid "Solvent Surface ({0}-Angstrom probe)"
 #~ msgstr "Surface du solvant (sonde de {0} Å)"
-
 #~ msgid "Solvent-Accessible Surface (VDW + {0} Angstrom)"
 #~ msgstr "Surface accessible au solvant (VDW + {0} Å)"
-
 #~ msgid "Molecular Electrostatic Potential"
 #~ msgstr "Potentiel électrostatic moléculaire"
-
 #~ msgid "Molecular Orbitals"
 #~ msgstr "Orbites moléculaires"
-
 #~ msgid "Reload {0}"
 #~ msgstr "Recharger {0}"
-
 #~ msgid "Reload + Polyhedra"
 #~ msgstr "Recharger + Polyhèdre"
-
 #~ msgid "Hide"
 #~ msgstr "Masquer"
-
 #~ msgid "Dotted"
 #~ msgstr "Pointillé"
-
 #~ msgid "Pixel Width"
 #~ msgstr "Largeur en Pixels"
-
 #~ msgid "{0} px"
 #~ msgstr "{0} px"
-
 #~ msgid "Angstrom Width"
 #~ msgstr "Largeur en Angströms"
-
 #~ msgid "Compatibility"
 #~ msgstr "Compatibilité"
-
 #~ msgid "Selection Halos"
 #~ msgstr "Halos de sélection"
-
 #~ msgid "Show Hydrogens"
 #~ msgstr "Afficher les Hydrogènes"
-
 #~ msgid "Show Measurements"
 #~ msgstr "Afficher les mesures"
-
 #~ msgid "Perspective Depth"
 #~ msgstr "Profondeur de la perspective"
-
 #~ msgid "Bound Box"
 #~ msgstr "Boîte englobante"
-
 #~ msgid "Unit Cell"
 #~ msgstr "Cellule Unitaire"
-
 #~ msgid "RasMol/Chime Settings"
 #~ msgstr "Options RasMol/Chime"
-
 #~ msgid "RasMol Colors"
 #~ msgstr "Couleurs RasMol"
-
 #~ msgid "Axes RasMol/Chime"
 #~ msgstr "Axes RasMol/Chime"
-
 #~ msgid "Zero-Based Xyz Rasmol"
 #~ msgstr "Origine Xyz en zéro (Rasmol)"
-
 #~ msgid "About Jmol"
 #~ msgstr "A propos de Jmol"
-
 #~ msgid "Mouse Manual"
 #~ msgstr "Manuel Souris"
-
 #~ msgid "Translations"
 #~ msgstr "Traductions"
-
 #~ msgid "the {0} command requires that only one model be displayed"
 #~ msgstr "La commande {0} requiert qu'un seul modèle soit affiché"
-
 #~ msgid "command ignored (not implemented): {0}"
 #~ msgstr "commande ignorée (non implémentée): {0}"
-
 #~ msgid "left parenthesis expected"
 #~ msgstr "parenthèse ouvrante attendue"
-
 #~ msgid "comma expected"
 #~ msgstr "virgule attendue"
-
 #~ msgid "nonnegative integer expected"
 #~ msgstr "entier positif attendu"
-
 #~ msgid "boolean or percent expected"
 #~ msgstr "booléen ou pourcentage attendu"
-
 #~ msgid "(atom expression) or decimal number expected"
 #~ msgstr "(expression d'atomes) ou nombre décimal attendu"
-
 #~ msgid "variable undefined"
 #~ msgstr "variable non définie"
-
 #~ msgid "number out of range"
 #~ msgstr "nombre en dehors de la plage de valeurs"
-
 #~ msgid "atom expression compiler error - stack over/underflow"
 #~ msgstr "Erreur du compilateur d'expression d'atomes - stack over/underflow"
-
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Jmol exécute un script ..."
-
 #~ msgid "interpreter error - setspecial should not be here"
 #~ msgstr "Erreur de l'interpéteur - setspecial ne devrait pas être ici"
-
 #~ msgid "Unrecognized {0} parameter"
 #~ msgstr "Paramètre {0} non reconnu"
-
 #~ msgid "use {0}"
 #~ msgstr "utiliser {0}"
-
 #~ msgid "unrecognized subcommand"
 #~ msgstr "sous-commande non reconnue"
-
 #~ msgid "error loading script"
 #~ msgstr "erreur au chargement du script"
-
 #~ msgid "Currently the {0} command only works for the applet"
 #~ msgstr "Actuellement, la commande {0} ne marche que pour l'applet"
-
 #~ msgid "zapped"
 #~ msgstr "vide"
-
 #~ msgid "Animate"
 #~ msgstr "Animer"
-
 #~ msgid "surfaces require that only one model be displayed"
 #~ msgstr "Les surfaces requièrent qu'un seul modèle soit affiché"
-
 #~ msgid "Frame"
 #~ msgstr "Trame"
-
 #~ msgid "All Frames"
 #~ msgstr "Toutes les trames"
-
 #~ msgid "Set Select Mode"
 #~ msgstr "Choisir le mode de sélection"
-
 #~ msgid "Replace Selection"
 #~ msgstr "Remplacer la sélection"
-
 #~ msgid "Add to Selection (OR)"
 #~ msgstr "Ajouter à la sélection (OU)"
-
 #~ msgid "Narrow Selection (AND)"
 #~ msgstr "Restreindre la sélection (ET)"
-
 #~ msgid "Render"
 #~ msgstr "Rendu"
-
 #~ msgid "Crimson"
 #~ msgstr "Cramoisi"
-
 #~ msgid "Dark Red"
 #~ msgstr "Rouge sombre"
-
 #~ msgid "Firebrick"
 #~ msgstr "Rouge brique"
-
 #~ msgid "Indian Red"
 #~ msgstr "Rouge indien"
-
 #~ msgid "Dark Magenta"
 #~ msgstr "Magenta foncé"
-
 #~ msgid "Dark Salmon"
 #~ msgstr "Saumon foncé"
-
 #~ msgid "Light Salmon"
 #~ msgstr "Saumon clair"
-
 #~ msgid "Deep Pink"
 #~ msgstr "Rose foncé"
-
 #~ msgid "Light Pink"
 #~ msgstr "Rose clair"
-
 #~ msgid "Goldenrod"
 #~ msgstr "Doré"
-
 #~ msgid "Lemon Chiffon"
 #~ msgstr "Jaune citron"
-
 #~ msgid "Yellow-Green"
 #~ msgstr "Jaune-vert"
-
 #~ msgid "Lime"
 #~ msgstr "Lime"
-
 #~ msgid "Seagreen"
 #~ msgstr "Vert d'eau"
-
 #~ msgid "Green-Blue"
 #~ msgstr "Vert-Bleu"
-
 #~ msgid "Spring Green"
 #~ msgstr "Vert printemps"
-
 #~ msgid "Aqua"
 #~ msgstr "Aqua"
-
 #~ msgid "Azure"
 #~ msgstr "Azur"
-
 #~ msgid "Carolina Blue"
 #~ msgstr "Bleu Caroline"
-
 #~ msgid "Cadet Blue"
 #~ msgstr "Cadet blue"
-
 #~ msgid "Cornflower"
 #~ msgstr "Bleu barbeau"
-
 #~ msgid "Dark Slate Blue"
 #~ msgstr "Bleu ardoise foncé"
-
 #~ msgid "Light Steel Blue"
 #~ msgstr "Bleu acier clair"
-
 #~ msgid "Charge"
 #~ msgstr "Charge"
-
 #~ msgid "Crystal"
 #~ msgstr "Cristal"
-
 #~ msgid "Aquamarine"
 #~ msgstr "Aigue marine"
-
 #~ msgid "Forest Green"
 #~ msgstr "Vert forêt"
-
 #~ msgid "Hot Pink"
 #~ msgstr "Rose vif"
-
 #~ msgid "Options"
 #~ msgstr "Options"
-
 #~ msgid "Show Selected Atoms"
 #~ msgstr "Afficher les atomes sélectionnés"
-
 #~ msgid "Jmol Colors"
 #~ msgstr "Couleurs Jmol"
 
 #, fuzzy
 #~ msgid "or dotted"
 #~ msgstr "Pointillé"
-
 #~ msgid "Except Solvent"
 #~ msgstr "Excepté le solvant"
-
 #~ msgid "Except Water"
 #~ msgstr "Excepté l'eau"
-
 #~ msgid "Other"
 #~ msgstr "Autre"
-
 #~ msgid "Lipid"
 #~ msgstr "Lipide"
-
 #~ msgid "Nanometers"
 #~ msgstr "Nanomètres"
-
 #~ msgid "Angstroms"
 #~ msgstr "Angströms"
-
 #~ msgid "Picometers"
 #~ msgstr "Picomètres"
-
 #~ msgid "Open"
 #~ msgstr "Ouvrir"
-
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol Visualisation Moléculaire http://www.jmol.org"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotation fil de fer"
+

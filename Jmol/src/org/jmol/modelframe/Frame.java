@@ -1584,7 +1584,7 @@ public final class Frame {
       atomData.firstAtom = Math.max(0, BitSetUtil.firstSetBit(atomData.bsSelected));
     else
       atomData.firstAtom = mmset.getFirstAtomIndex(atomData.modelIndex);
-    atomData.firstModelIndex = atoms[atomData.firstAtom].modelIndex;
+    atomData.firstModelIndex = (atomCount == 0 ? 0 : atoms[atomData.firstAtom].modelIndex);
     atomData.modelName = getModelName(-1 - atomData.modelIndex);
     atomData.atomXyz = atoms;
     atomData.atomCount = atomCount;

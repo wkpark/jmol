@@ -76,23 +76,25 @@ public class Parser {
     for (int iLine = 0; iLine < nLines; iLine++) {
       String[] tokens = getTokens(str.substring(pt, lines[iLine]));
       pt = lines[iLine];
-      if (tokens.length >= field && tokens.length > fieldMatch - 1) {
-        int iData;
-        if (isMatch) {
-          iData = parseInt(tokens[fieldMatch - 1]);
-          if (iData == Integer.MIN_VALUE || iData < 0 || iData >= len
-              || (iData = matchData[iData]) < 0)
-            continue;
-        } else {
-          while (++i < len && bs != null && !bs.get(i)) {
-          }
-          if (i >= len)
-            return;
-          iData = i;
+      float f;
+      if (tokens.length < field || tokens.length < fieldMatch
+          || Float.isNaN(f = parseFloat(tokens[field - 1])))
+        continue;
+      int iData;
+      if (isMatch) {
+        iData = parseInt(tokens[fieldMatch - 1]);
+        if (iData == Integer.MIN_VALUE || iData < 0 || iData >= len
+            || (iData = matchData[iData]) < 0)
+          continue;
+      } else {
+        while (++i < len && bs != null && !bs.get(i)) {
         }
-        data[iData] = parseFloat(tokens[field - 1]);
-        //System.out.println("assigning " + data[iData] + " to " + iData);
+        if (i >= len)
+          return;
+        iData = i;
       }
+      data[iData] = f;
+      //System.out.println("assigning " + data[iData] + " to " + iData);
     }
   }
   

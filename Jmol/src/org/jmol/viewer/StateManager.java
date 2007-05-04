@@ -632,7 +632,7 @@ public class StateManager {
       + ";cameradepth;navigationmode;rotationradius;"
       + ";zerobasedxyzrasmol;axesorientationrasmol;"
       + ";_spinning;_modelnumber;_modelname;_currentmodelnumberinfile;_currentfilenumber;_version;_memory;"
-      + ";_width;_height;_atompicked;_atomhovered;";
+      + ";_width;_height;_atompicked;_atomhovered;_modelfile;_modeltitle;";
 
     void clearVolatileProperties() {
       Enumeration e;

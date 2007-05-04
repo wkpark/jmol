@@ -74,6 +74,8 @@ public final class Model {
   int modelFileNumber;  // file * 1000000 + modelInFile (1-based)
   String modelNumberDotted = "1.1";
   String modelTag;
+  String modelTitle;
+  String modelFile;
   int preSymmetryAtomIndex = -1;
   int preSymmetryAtomCount;
   int firstMolecule;
@@ -89,11 +91,13 @@ public final class Model {
 
 
   Model(Mmset mmset, int modelIndex, int modelNumber,
-      String modelTag) {
+      String modelTag, String modelTitle, String modelFile) {
     this.mmset = mmset;
     this.modelIndex = modelIndex;
     this.modelNumber = modelNumber;
     this.modelTag = modelTag;
+    this.modelTitle = modelTitle;
+    this.modelFile = modelFile;
   }
 
   void setSymmetryAtomInfo(int atomIndex, int atomCount) {

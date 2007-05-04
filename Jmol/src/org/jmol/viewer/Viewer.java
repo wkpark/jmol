@@ -3548,6 +3548,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setParameterValue("_modelNumber", s);
     global.setParameterValue("_modelName", (modelIndex < 0 ? ""
         : getModelName(modelIndex)));
+    global.setParameterValue("_modelTitle", (modelIndex < 0 ? ""
+        : modelManager.getModelTitle(modelIndex)));
+    global.setParameterValue("_modelFile", (modelIndex < 0 ? ""
+        : modelManager.getModelFile(modelIndex)));
 
     s = statusManager.getCallbackScript("animframecallback");
     if (s != null)

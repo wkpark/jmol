@@ -121,11 +121,16 @@ class Resolver {
   }
 
   static Object finalize(AtomSetCollection atomSetCollection, String filename) {
+    for (int i = atomSetCollection.getAtomSetCount(); --i >= 0;) {
+      atomSetCollection.setAtomSetAuxiliaryInfo("fileName", filename, i);
+    }
     atomSetCollection.freeze();
     if (atomSetCollection.errorMessage != null)
-      return atomSetCollection.errorMessage + "\nfor " + filename + "\ntype " + atomSetCollection.fileTypeName;
+      return atomSetCollection.errorMessage + "\nfor " + filename + "\ntype "
+          + atomSetCollection.fileTypeName;
     if (atomSetCollection.atomCount == 0)
-      return "No atoms found\nfor " + filename  + "\ntype " + atomSetCollection.fileTypeName;
+      return "No atoms found\nfor " + filename + "\ntype "
+          + atomSetCollection.fileTypeName;
     return atomSetCollection;
   }
 

@@ -165,6 +165,14 @@ public final class Mmset {
         modelCount);
   }
 
+  String getModelTitle(int modelIndex) {
+    return models[modelIndex].modelTitle;
+  }
+  
+  String getModelFile(int modelIndex) {
+    return models[modelIndex].modelFile;
+  }
+  
   int getFirstAtomIndex(int modelIndex) {
     return models[modelIndex].firstAtomIndex;  
   }
@@ -271,19 +279,25 @@ public final class Mmset {
   }
     
   boolean setModelNameNumberProperties(int modelIndex, String modelName,
-                                    int modelNumber,
-                                    Properties modelProperties,
-                                    Hashtable modelAuxiliaryInfo, boolean isPDB) {
-    
+                                       int modelNumber,
+                                       Properties modelProperties,
+                                       Hashtable modelAuxiliaryInfo,
+                                       boolean isPDB) {
+
     this.modelProperties[modelIndex] = modelProperties;
     this.modelAuxiliaryInfo[modelIndex] = modelAuxiliaryInfo;
+
+    String modelTitle = (String) getModelAuxiliaryInfo( modelIndex, "title");
+    String modelFile = (String) getModelAuxiliaryInfo( modelIndex, "fileName");
     if (modelNumber != Integer.MAX_VALUE)
-      models[modelIndex] = new Model(this, modelIndex, modelNumber, modelName);
+      models[modelIndex] = new Model(this, modelIndex, modelNumber, modelName,
+          modelTitle, modelFile);
     String codes = (String) getModelAuxiliaryInfo(modelIndex, "altLocs");
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
     codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
     models[modelIndex].setNInsertions(codes == null ? 0 : codes.length());
-    return models[modelIndex].isPDB = isPDB || getModelAuxiliaryInfoBoolean(modelIndex, "isPDB");
+    return models[modelIndex].isPDB = isPDB
+        || getModelAuxiliaryInfoBoolean(modelIndex, "isPDB");
   }
   
   /**

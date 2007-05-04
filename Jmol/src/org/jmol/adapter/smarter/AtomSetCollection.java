@@ -177,10 +177,13 @@ public class AtomSetCollection {
                                          AtomSetCollection collection) {
     // Initialisations
     int existingAtomsCount = atomCount;
+    // auxiliary info
     // Clone each AtomSet
     int clonedAtoms = 0;
     for (int atomSetNum = 0; atomSetNum < collection.atomSetCount; atomSetNum++) {
       newAtomSet();
+      atomSetAuxiliaryInfo[currentAtomSetIndex] = collection.atomSetAuxiliaryInfo[atomSetNum];
+      setAtomSetAuxiliaryInfo("title", collection.collectionName, currentAtomSetIndex);    
       setAtomSetName(collection.getAtomSetName(atomSetNum));
       Properties properties = collection.getAtomSetProperties(atomSetNum);
       if (properties != null) {
@@ -199,8 +202,6 @@ public class AtomSetCollection {
         clonedAtoms++;
       }
 
-      // auxiliary info
-      atomSetAuxiliaryInfo[currentAtomSetIndex] = collection.atomSetAuxiliaryInfo[atomSetNum];
       int modelFileNumber = ((Integer)atomSetAuxiliaryInfo[currentAtomSetIndex].get("modelFileNumber")).intValue();
       modelFileNumber += (collectionIndex + 1) * 1000000;
       atomSetAuxiliaryInfo[currentAtomSetIndex].put("modelFileNumber", new Integer(modelFileNumber));
@@ -643,7 +644,8 @@ public class AtomSetCollection {
   public void setCollectionName(String collectionName) {
     if (collectionName != null) {
       collectionName = collectionName.trim();
-      if (collectionName.length() > 0)
+      if (collectionName.length() == 0)
+        return;
         this.collectionName = collectionName;
     }
   }
@@ -789,6 +791,7 @@ public class AtomSetCollection {
     atomSymbolicMap.clear();
     setAtomSetAuxiliaryInfo("modelFileNumber", new Integer(
         currentAtomSetIndex + 1));
+    setAtomSetAuxiliaryInfo("title", collectionName);    
   }
 
   /**
@@ -797,7 +800,7 @@ public class AtomSetCollection {
   * @param atomSetName The name to be associated with the current AtomSet
   */
   public void setAtomSetName(String atomSetName) {
-    atomSetNames[currentAtomSetIndex] = atomSetName;
+    setAtomSetName(atomSetName, currentAtomSetIndex);
   }
   
   /**
@@ -859,11 +862,14 @@ public class AtomSetCollection {
   boolean setAtomSetPartialCharges(String auxKey) {
     if (!atomSetAuxiliaryInfo[currentAtomSetIndex].containsKey(auxKey))
       return false;
-    Vector atomData = (Vector) atomSetAuxiliaryInfo[currentAtomSetIndex]
-        .get(auxKey);
+    Vector atomData = (Vector) getAtomSetAuxiliaryInfo(currentAtomSetIndex, auxKey);
     for (int i = atomData.size(); --i >= 0;)
       atoms[i].partialCharge = ((Float) atomData.get(i)).floatValue();
     return true;
+  }
+  
+  Object getAtomSetAuxiliaryInfo(int index, String key) {
+    return  atomSetAuxiliaryInfo[index].get(key);
   }
   
   /**
@@ -891,6 +897,8 @@ public class AtomSetCollection {
     if (atomSetAuxiliaryInfo[atomSetIndex] == null)
       atomSetAuxiliaryInfo[atomSetIndex] = new Hashtable();
     //Logger.debug(atomSetIndex + " key="+ key + " value="+ value);
+    if (value == null)
+      return;
     atomSetAuxiliaryInfo[atomSetIndex].put(key, value);
   }
 

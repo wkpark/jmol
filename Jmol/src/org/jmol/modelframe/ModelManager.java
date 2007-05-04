@@ -189,7 +189,7 @@ public class ModelManager {
     str = str.concat(listProperties(props));
     for (int i = 0; i < modelCount; ++i) {
       str = str.concat("\n" + i + ":" + getModelName(-1 -i) +
-                 ":" + getModelName(i) +
+                 ":" + getModelTitle(i) +
                  "\nmodelHasVibrationVectors:" +
                  modelHasVibrationVectors(i));
       //str = str.concat(listProperties(getModelProperties(i)));
@@ -210,6 +210,16 @@ public class ModelManager {
   public String getModelName(int modelIndex) {
     //necessary for status manager frame change?
     return frame == null ? null : frame.getModelName(modelIndex);
+  }
+
+  public String getModelTitle(int modelIndex) {
+    //necessary for status manager frame change?
+    return frame == null ? null : frame.getModelTitle(modelIndex);
+  }
+
+  public String getModelFile(int modelIndex) {
+    //necessary for status manager frame change?
+    return frame == null ? null : frame.getModelFile(modelIndex);
   }
 
   public int getModelNumber(int modelIndex) {
@@ -894,7 +904,12 @@ String getAtomInfoChime(int i) {
       Hashtable model = new Hashtable();
       model.put("_ipt",new Integer(i));
       model.put("num",new Integer(viewer.getModelNumber(i)));
-      model.put("name",viewer.getModelName(i));
+      //model.put("name",viewer.getModelName(i));
+      model.put("name", getModelName(i));
+      String s = getModelTitle(i);
+      if (s != null)
+        model.put("title", s);
+      model.put("file", getModelFile(i));
       model.put("vibrationVectors", Boolean.valueOf(modelHasVibrationVectors(i)));
       model.put("atomCount",new Integer(getAtomCountInModel(i)));
       model.put("bondCount",new Integer(getBondCountInModel(i)));

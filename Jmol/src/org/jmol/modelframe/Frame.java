@@ -990,6 +990,14 @@ public final class Frame {
     return mmset.getModelName(modelIndex);
   }
 
+  String getModelTitle(int modelIndex) {
+    return mmset.getModelTitle(modelIndex);
+  }
+
+  String getModelFile(int modelIndex) {
+    return mmset.getModelFile(modelIndex);
+  }
+
   String getModelSetTypeName() {
     return modelSetTypeName;
   }

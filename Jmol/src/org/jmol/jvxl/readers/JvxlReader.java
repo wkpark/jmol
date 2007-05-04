@@ -473,7 +473,7 @@ public class JvxlReader extends VolumeFileReader {
       return "";
     }
     fractionPtr = 0;
-    Logger.info("JVXL reading color data base/range: " + params.mappedDataMin
+    Logger.info("JVXL reading color data mapped min/max: " + params.mappedDataMin
         + "/" + params.mappedDataMax + " for " + vertexCount + " vertices."
         + " using encoding keys " + colorFractionBase + " "
         + colorFractionRange);

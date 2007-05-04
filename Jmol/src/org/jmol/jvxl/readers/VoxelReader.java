@@ -285,8 +285,10 @@ ascii-encoded fractional color data
     jvxlData.nPointsZ = nPointsZ;
 
     if (jvxlDataIsColorMapped) {
-      if (meshDataServer != null)
+      if (meshDataServer != null) {
         meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
+        meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_COLOR_INDEXES);
+      }
       jvxlData.jvxlColorData = readColorData();
     }
     jvxlData.jvxlExtraLine = JvxlReader.jvxlExtraLine(jvxlData, 1);

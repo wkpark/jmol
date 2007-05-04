@@ -822,23 +822,18 @@ public class StateManager {
     void registerAllValues() {
       htParameterValues = new Hashtable();
       htPropertyFlags = new Hashtable();
-      setParameterValue("showaxes",false);
-      setParameterValue("showunitcell",false);
-      setParameterValue("showboundbox",false);
-      setParameterValue("showfrank",false);
 
       setParameterValue("allowEmbeddedScripts",allowEmbeddedScripts);
       setParameterValue("allowRotateSelected",allowRotateSelected);
       setParameterValue("ambientPercent",ambientPercent);
-//      setParameterValue("argbBackground",argbBackground);
       setParameterValue("appendNew",appendNew);
       setParameterValue("applySymmetryToBonds",applySymmetryToBonds);
       setParameterValue("autoBond",autoBond);
       setParameterValue("autoFps",autoFps);
       setParameterValue("axesMode",axesMode);
       setParameterValue("axesScale",axesScale);
-      setParameterValue("bondRadiusMilliAngstroms",bondRadiusMilliAngstroms);
       setParameterValue("bondModeOr",bondModeOr);
+      setParameterValue("bondRadiusMilliAngstroms",bondRadiusMilliAngstroms);
       setParameterValue("bondTolerance",bondTolerance);
       setParameterValue("cameraDepth",cameraDepth);
       setParameterValue("cartoonRockets",cartoonRockets);
@@ -847,24 +842,20 @@ public class StateManager {
       setParameterValue("defaultAngleLabel",defaultAngleLabel);
       setParameterValue("defaultDirectory",defaultDirectory);
       setParameterValue("defaultDistanceLabel",defaultDistanceLabel);
-      setParameterValue("defaultTranslucent",defaultTranslucent);
-      setParameterValue("helpPath",defaultHelpPath);
       setParameterValue("defaultLoadScript",defaultLoadScript);
       setParameterValue("defaultTorsionLabel",defaultTorsionLabel);
-      setParameterValue("vectorScale",vectorScale);
-      setParameterValue("vibrationPeriod",vibrationPeriod);
-      setParameterValue("vibrationScale",vibrationScale);
+      setParameterValue("defaultTranslucent",defaultTranslucent);
       setParameterValue("diffusePercent",diffusePercent);
       setParameterValue("disablePopupMenu",disablePopupMenu);
       setParameterValue("displayCellParameters",displayCellParameters);
       setParameterValue("dotsSelectedOnly",dotsSelectedOnly);
       setParameterValue("dotSurface",dotSurface);
       setParameterValue("dynamicMeasurements",dynamicMeasurements);
-//nah      setParameterValue("enableFullSceneAntialiasing",enableFullSceneAntialiasing);
       setParameterValue("forceAutoBond",forceAutoBond);
       setParameterValue("greyscaleRendering",greyscaleRendering);
       setParameterValue("hbondsBackbone",hbondsBackbone);
       setParameterValue("hbondsSolid",hbondsSolid);
+      setParameterValue("helpPath",defaultHelpPath);
       setParameterValue("helpPath",helpPath);
       setParameterValue("hermiteLevel",hermiteLevel);
       setParameterValue("hideNameInPopup",hideNameInPopup);
@@ -882,18 +873,24 @@ public class StateManager {
       setParameterValue("percentVdwAtom",percentVdwAtom);
       setParameterValue("pickingSpinRate",pickingSpinRate);
       setParameterValue("propertyColorScheme",propertyColorScheme);
+      setParameterValue("propertyDataField",0);
+      setParameterValue("propertyAtomNumberField",0);
       setParameterValue("rangeSelected",rangeSelected);
-      setParameterValue("selectHetero",rasmolHeteroSetting);
-      setParameterValue("selectHydrogen",rasmolHydrogenSetting);
       setParameterValue("ribbonAspectRatio",ribbonAspectRatio);
       setParameterValue("ribbonBorder",ribbonBorder);
       setParameterValue("scriptDelay",scriptDelay);
+      setParameterValue("selectHetero",rasmolHeteroSetting);
+      setParameterValue("selectHydrogen",rasmolHydrogenSetting);
       setParameterValue("sheetSmoothing",sheetSmoothing);
+      setParameterValue("showaxes",false);
+      setParameterValue("showboundbox",false);
+      setParameterValue("showfrank",false);
       setParameterValue("showHiddenSelectionHalos",showHiddenSelectionHalos);
       setParameterValue("showHydrogens",showHydrogens);
       setParameterValue("showMeasurements",showMeasurements);
       setParameterValue("showMultipleBonds",showMultipleBonds);
       setParameterValue("showNavigationPointAlways",showNavigationPointAlways);
+      setParameterValue("showunitcell",false);
       setParameterValue("solvent",solventOn);
       setParameterValue("solventProbeRadius",solventProbeRadius);
       setParameterValue("specular",specular);
@@ -909,9 +906,14 @@ public class StateManager {
       setParameterValue("testFlag4",testFlag4);
       setParameterValue("traceAlpha",traceAlpha);
       setParameterValue("useNumberLocalization",useNumberLocalization);
-//nah    setParameterValue("zeroBasedXyzRasmol",zeroBasedXyzRasmol);
+      setParameterValue("vectorScale",vectorScale);
+      setParameterValue("vibrationPeriod",vibrationPeriod);
+      setParameterValue("vibrationScale",vibrationScale);
       setParameterValue("zoomLarge",zoomLarge);
       setParameterValue("zShade",zShade);
+//      setParameterValue("argbBackground",argbBackground);
+//nah      setParameterValue("enableFullSceneAntialiasing",enableFullSceneAntialiasing);
+//nah    setParameterValue("zeroBasedXyzRasmol",zeroBasedXyzRasmol);
     }
   }
 

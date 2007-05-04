@@ -58,6 +58,43 @@ public class Parser {
       data[i] = f;
     }
   }
+
+  public static void parseFloatArrayFromMatchAndField(String str, BitSet bs,
+                                                      int fieldMatch,
+                                                      int[] matchData,
+                                                      int field, float[] data) {
+    if (field <= 0) {
+      parseFloatArray(str, bs, data);
+      return;
+    }
+    int len = data.length;
+    int i = -1;
+    boolean isMatch = (matchData != null);
+    int[] lines = markLines(str, '\n');
+    int nLines = lines.length;
+    int pt = 0;
+    for (int iLine = 0; iLine < nLines; iLine++) {
+      String[] tokens = getTokens(str.substring(pt, lines[iLine]));
+      pt = lines[iLine];
+      if (tokens.length >= field && tokens.length > fieldMatch - 1) {
+        int iData;
+        if (isMatch) {
+          iData = parseInt(tokens[fieldMatch - 1]);
+          if (iData == Integer.MIN_VALUE || iData < 0 || iData >= len
+              || (iData = matchData[iData]) < 0)
+            continue;
+        } else {
+          while (++i < len && bs != null && !bs.get(i)) {
+          }
+          if (i >= len)
+            return;
+          iData = i;
+        }
+        data[iData] = parseFloat(tokens[field - 1]);
+        //System.out.println("assigning " + data[iData] + " to " + iData);
+      }
+    }
+  }
   
   /**
    * parses a string array for floats. Returns NaN for nonfloats.
@@ -80,11 +117,12 @@ public class Parser {
     for (int i = nData; --i >= 0;)
       data[i] = (i >= tokens.length ? Float.NaN : Parser.parseFloat(tokens[i]));
   }
-  
+ 
   public static float parseFloat(String str) {
     return parseFloat(str, new int[] {0});
   }
 
+   
   public static int parseInt(String str) {
     return parseInt(str, new int[] {0});
   }

@@ -37,11 +37,7 @@ import org.jmol.g3d.Graphics3D;
  public class ColorEncoder {
   public ColorEncoder() {
   }
-  
-  private final static int RED  = Graphics3D.RED;
-  private final static int BLUE = Graphics3D.BLUE;
-  private final static int GRAY = Graphics3D.GRAY;
-  
+    
   private int palette = 0;
   
   private final static String[] colorSchemes = {"roygb", "bgyor", "rwb", "bwr", "low", "high"}; 
@@ -55,7 +51,7 @@ import org.jmol.g3d.Graphics3D;
   public int setColorScheme(String colorScheme) {
     return palette = getColorScheme(colorScheme);
   }
-  
+
   public final static int getColorScheme(String colorScheme) {
     for (int i = 0; i < colorSchemes.length; i++)
       if (colorSchemes[i].equalsIgnoreCase(colorScheme))
@@ -63,19 +59,15 @@ import org.jmol.g3d.Graphics3D;
     return 0;
   }
 
-  public int getColorNegative() {
-    return RED;
-  }
-
-  public int getColorPositive() {
-    return BLUE;
-  }
-  
   private final static int ihalf = JmolConstants.argbsRoygbScale.length/3;
 
-  public final static short getColorIndexFromPalette(float val, float lo, float hi, int palette) {
+  public final static short getColorIndexFromPalette(float val, float lo, float hi, int palette) {//, int rgbRed, int rgbGreen, int rgbBlue) {
     int c = 0;
     switch (palette) {
+/*    case RGB:
+      c = quantizeRgb(val, lo, hi, rgbRed, rgbGreen, rgbBlue);
+      break;
+*/
     case ROYGB:
       c = JmolConstants.argbsRoygbScale[quantize(val, lo, hi, JmolConstants.argbsRoygbScale.length)];
       break;
@@ -95,19 +87,16 @@ import org.jmol.g3d.Graphics3D;
       c = JmolConstants.argbsRwbScale[quantize(-val, -hi, -lo, JmolConstants.argbsRwbScale.length)];
       break;
     default:
-      c = GRAY;
+      c = 0x808080; // GRAY
     }
     return getColorIndex(c);
   }
 
-  public short getColorIndexFromPalette(float val, float lo, float hi) {
-    return getColorIndexFromPalette(val, lo, hi, palette);
-  }
 
   public final static short getColorIndex(int c) {
     return Graphics3D.getColix(c);
   }
-  
+
   public final static int quantize(float val, float lo, float hi, int segmentCount) {
     /* oy! Say you have an array with 10 values, so segmentCount=10
      * then we expect 0,1,2,...,9  EVENLY
@@ -161,4 +150,69 @@ import org.jmol.g3d.Graphics3D;
       q = segmentCount - 1;
     return q;
   }
+
+  public short getColorIndexFromPalette(float val, float lo, float hi) {
+    return getColorIndexFromPalette(val, lo, hi, palette);
+  }
+
+/*  
+  //an idea that didn't work
+  public short getColorIndexFromPalette(float val, float lo, float hi) {
+    return getColorIndexFromPalette(val, lo, hi, palette, rgbRed, rgbGreen, rgbBlue);
+  }
+  private final static int RGB   = 6;
+  private final static String[] colorSchemes = {"roygb", "bgyor", "rwb", "bwr", "low", "high", "rgb"}; 
+  private int rgbRed = 0xFFFF0000;
+  private int rgbGreen = 0xFF008000;
+  private int rgbBlue = 0xFF0000FF;
+  
+  public void setRgbRed(int color) {
+    rgbRed = color;
+  }
+  
+  public void setRgbGreen(int color) {
+    rgbGreen = color;
+  }
+  
+  public void setRgbBlue(int color) {
+    rgbBlue = color;
+  }
+  
+  public int getColorLow() {
+    return rgbRed;
+  }
+
+  public int getColorCentral() {
+    return rgbGreen;
+  }
+
+  public int getColorHigh() {
+    return rgbBlue;
+  }
+  
+  public final static int quantizeRgb(float val, float lo, float hi,
+                                      int rgbLow, int rgbMid, int rgbHigh) {
+    int pt = quantize(val, lo, hi, 256);
+    int r, g, b;
+    if (pt < 128) {
+      r = interpolate(pt, (rgbLow & 0xFF0000) >> 16, (rgbMid & 0xFF0000) >> 16);
+      g = interpolate(pt, (rgbLow & 0xFF00) >> 8, (rgbMid & 0xFF00) >> 8);
+      b = interpolate(pt, (rgbLow & 0xFF), (rgbMid & 0xFF));
+    } else {
+      r = interpolate(pt - 128, (rgbMid & 0xFF0000) >> 16,
+          (rgbHigh & 0xFF0000) >> 16);
+      g = interpolate(pt - 128, (rgbMid & 0xFF00) >> 8, (rgbHigh & 0xFF00) >> 8);
+      b = interpolate(pt - 128, (rgbMid & 0xFF), (rgbHigh & 0xFF));
+    }
+    System.out.println(Integer.toHexString(0xFF000000 | r << 16 | g << 8 | b));
+    return 0xFF000000 | r << 16 | g << 8 | b;
+  }
+  
+  private final static int interpolate(int pt, int a, int b) {
+    if (pt >= 127)
+      return b; //corrects for FF being the upper limit; all others truncated
+    return ((int) (pt / 128.0 * (b - a) + a) * 2) & 0xFF;
+  }
+  
+*/
 }

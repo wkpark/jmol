@@ -3396,7 +3396,7 @@ class Eval { //implements Runnable {
       dataLabel = parameterAsString(1);
       if (dataLabel.equalsIgnoreCase("clear")) {
         if (!isSyntaxCheck)
-          Viewer.setData(null, null, 0);
+          Viewer.setData(null, null, 0, 0, 0);
         return;
       }
       if ((i = dataLabel.indexOf("@")) >= 0) {
@@ -3414,12 +3414,35 @@ class Eval { //implements Runnable {
     data[1] = dataString;
     boolean isModel = dataType.equalsIgnoreCase("model");
     boolean isAppend = dataType.equalsIgnoreCase("append");
-    if (!isSyntaxCheck || isScriptCheck && (isModel|| isAppend) && fileOpenCheck) {
+    if (!isSyntaxCheck || isScriptCheck && (isModel || isAppend)
+        && fileOpenCheck) {
       if (dataType.toLowerCase().indexOf("property_") == 0) {
-        data[2] = viewer.getSelectedAtomsOrBonds();
-        Viewer.setData(dataType, data, viewer.getAtomCount());
+        BitSet bs = viewer.getSelectedAtomsOrBonds();
+        int dataField = ((Integer) viewer.getParameter("propertyDataField")).intValue();
+        int matchField = ((Integer) viewer.getParameter("propertyAtomNumberField")).intValue();
+        int atomCount = viewer.getAtomCount();
+        int[] atomMap = null;
+        BitSet bsAtoms = new BitSet(atomCount);
+        if (matchField > 0) {
+          atomMap = new int[atomCount + 1];
+          for (int j = 0; j < atomCount; j++)
+            atomMap[j] = -1;
+          for (int j = 0; j < atomCount; j++) {
+            if (!bs.get(j))
+              continue;
+            int atomNo = viewer.getAtomNumber(j);
+            if (bsAtoms.get(atomNo) || atomNo > atomCount + 1 || atomNo < 0)
+              continue;
+            bsAtoms.set(atomNo);
+            atomMap[atomNo] = j;
+          }
+          data[2] = atomMap;
+        } else {
+          data[2] = bs;
+        }
+        Viewer.setData(dataType, data, atomCount, matchField, dataField);
       } else {
-        Viewer.setData(dataType, data, 0);
+        Viewer.setData(dataType, data, 0, 0, 0);
       }
     }
     if ((isModel || isAppend)

@@ -1046,7 +1046,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public short getObjectMad(int objId) {
     return (global.objStateOn[objId] ? global.objMad[objId] : 0);
   }
-
+/*
+  private void setRgbs(int rgorb, String color) {
+    colorManager.setRgb(rgorb, Graphics3D.getArgbFromString(color));
+  }
+  
+  int getRgb(int rgorb) {
+    return colorManager.getRgb(rgorb);
+  }  
+*/
+  
   void setPropertyColorScheme(String scheme) {
     global.propertyColorScheme = scheme;
   }
@@ -2178,12 +2187,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   static Hashtable dataValues = new Hashtable();
 
-  static void setData(String type, Object[] data, int atomCount) {
+  static void setData(String type, Object[] data, int atomCount, int matchField, int field) {
     //Eval
     /*
      * data[0] -- label
      * data[1] -- string or float[]
-     * data[2] -- selection bitset
+     * data[2] -- selection bitset or int[] atomMap when field < 0
      * 
      */
     if (type == null) {
@@ -2192,7 +2201,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (data[2] != null) {
       float[] f = new float[atomCount];
-      Parser.parseFloatArray((String) data[1], (BitSet) data[2], f);
+      String stringData = (String) data[1];
+      if (field == 0)
+        Parser.parseFloatArray(stringData, (BitSet) data[2], f);
+      else if (matchField == 0)
+        Parser.parseFloatArrayFromMatchAndField(stringData, (BitSet) data[2],
+            0, null, field, f);
+      else
+        Parser.parseFloatArrayFromMatchAndField(stringData, null, matchField,
+            (int[]) data[2], field, f);
       data[1] = f;
     }
     dataValues.put(type, data);
@@ -3686,7 +3703,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setStringProperty(String key, String value) {
     //Eval
     while (true) {
-      
+      ///11.1.31//
+      /*  didn't work      
+      if (key.equalsIgnoreCase("rgbRed")) {
+        setRgbs(0, value);
+        break;
+      }
+      if (key.equalsIgnoreCase("rgbGreen")) {
+        setRgbs(1, value);
+        break;
+      }
+      if (key.equalsIgnoreCase("rgbBlue")) {
+        setRgbs(2, value);
+        break;
+      }
+      */
       ///11.1.30//
       if (key.equalsIgnoreCase("language")) {
         setLanguage(value); //fr cs en none, etc.
@@ -3946,6 +3977,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setIntProperty(String key, int value, boolean defineNew) {
     while (true) {
+      
+      ///11.1.31//
+      
+      if (key.equalsIgnoreCase("propertyDataField")) {
+        break;
+      }
+
+      
       ///11.1///
 
       if (key.equalsIgnoreCase("strandCount")) {

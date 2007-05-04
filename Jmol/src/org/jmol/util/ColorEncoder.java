@@ -78,7 +78,7 @@ import org.jmol.g3d.Graphics3D;
       c = JmolConstants.argbsRoygbScale[quantize(val, lo, hi, ihalf)];
       break;
     case HIGH:
-      c = JmolConstants.argbsRoygbScale[ihalf + quantize(val, lo, hi, ihalf)];
+      c = JmolConstants.argbsRoygbScale[ihalf + quantize(val, lo, hi, ihalf) * 2];
       break;
     case RWB:
       c = JmolConstants.argbsRwbScale[quantize(val, lo, hi, JmolConstants.argbsRwbScale.length)];

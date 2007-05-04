@@ -3316,7 +3316,7 @@ class Eval { //implements Runnable {
           } else if (!isSyntaxCheck) {
             viewer.setCurrentColorRange(name);
           }
-          if (tokAt(index + 1) == Token.range) {
+          if (tokAt(index + 1) == Token.absolute) {
             float min = floatParameter(index + 2);
             float max = floatParameter(index + 3);
             viewer.setCurrentColorRange(min, max);

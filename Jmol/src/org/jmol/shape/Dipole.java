@@ -196,8 +196,6 @@ class Dipole {
       return "";
     StringBuffer s = new StringBuffer();
     s.append("dipole ").append(thisID);
-    if (isUserValue)
-      s.append(" value ").append(dipoleValue);
     if (haveAtoms)
       s.append(" ({").append(atoms[0].getAtomIndex()).append(" ").
                       append(atoms[1].getAtomIndex()).append("})");
@@ -206,6 +204,8 @@ class Dipole {
     else
       s.append(" ").append(Escape.escape(coords[0])).
         append(" ").append(Escape.escape(coords[1]));
+    if (isUserValue)
+      s.append(" value ").append(dipoleValue);
     if (mad != Dipoles.DEFAULT_MAD)
       s.append(" width ").append(mad / 1000f);
     if (offsetAngstroms != 0)

@@ -242,12 +242,11 @@ public class Dipoles extends Shape {
       return;
     }
 
-    if ("atomBitSet" == propertyName) {
+    if ("atomBitset" == propertyName) {
       BitSet atomset = (BitSet) value;
       atomIndex1 = BitSetUtil.firstSetBit(atomset);
       startCoord = frame.atoms[atomIndex1];
       atomset.clear(atomIndex1);
-      value = atomset;
       propertyName = "endSet";
       //passes to endSet
     }

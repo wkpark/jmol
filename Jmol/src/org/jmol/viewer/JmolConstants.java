@@ -2502,7 +2502,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_MIN_SPECIAL= 23;
   public final static int SHAPE_POLYHEDRA  = 23;
   public final static int SHAPE_MIN_NAMED_OBJECT = 24;
-  public final static int SHAPE_DIPOLES    = 24;
+  public final static int SHAPE_DIPOLES    = 24;  // has to be right here :(
   public final static int SHAPE_MIN_MESH_COLLECTION = 25;
   public final static int SHAPE_MO         = 25;
   public final static int SHAPE_ISOSURFACE = 26;
@@ -2557,7 +2557,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "Polyhedra", "Dipoles", "MolecularOrbital", "Isosurface", 
     "LcaoCartoon", "Draw", "Pmesh", "Frank"
      };
-
   static {
     if (shapeClassBases.length != SHAPE_MAX) {
       Logger.error("the shapeClassBases array has the wrong length");
@@ -2569,12 +2568,12 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int CLASS_BASE_SPECIAL = -2;
   
   public final static String getShapeClassName(int shapeID) {
-    return (shapeID == CLASS_BASE_BIO || shapeID >= JmolConstants.SHAPE_MIN_SECONDARY
-        && shapeID < JmolConstants.SHAPE_MAX_SECONDARY ? 
-            CLASSBASE_OPTIONS + "shapebio." : shapeID == CLASS_BASE_SPECIAL || shapeID >= JmolConstants.SHAPE_MIN_SPECIAL
-            && shapeID < JmolConstants.SHAPE_MAX_SPECIAL ? 
+    return (shapeID == CLASS_BASE_BIO || shapeID >= SHAPE_MIN_SECONDARY
+        && shapeID < SHAPE_MAX_SECONDARY ? CLASSBASE_OPTIONS + "shapebio."
+        : shapeID == CLASS_BASE_SPECIAL || shapeID >= SHAPE_MIN_SPECIAL
+            && shapeID < SHAPE_MAX_SPECIAL && shapeID != SHAPE_DIPOLES ? 
                 CLASSBASE_OPTIONS + "shapespecial." : "org.jmol.shape.")
-        + (shapeID >=0 ? shapeClassBases[shapeID] : "");
+        + (shapeID >= 0 ? shapeClassBases[shapeID] : "");
   }
   //.hbond and .ssbonds will return a class, 
   //but the class is never loaded, so it is skipped in each case.

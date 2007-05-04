@@ -3316,6 +3316,12 @@ class Eval { //implements Runnable {
           } else if (!isSyntaxCheck) {
             viewer.setCurrentColorRange(name);
           }
+          if (tokAt(index + 1) == Token.range) {
+            float min = floatParameter(index + 2);
+            float max = floatParameter(index + 3);
+            viewer.setCurrentColorRange(min, max);
+            index += 3;
+          }
         }
         if (pid == JmolConstants.PALETTE_VARIABLE) {
           name = parameterAsString(++index);

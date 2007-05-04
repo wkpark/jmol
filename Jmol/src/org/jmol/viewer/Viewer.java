@@ -2241,6 +2241,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     colorManager.setCurrentColorRange(data, bs, global.propertyColorScheme);
   }
 
+  void setCurrentColorRange(float min, float max) {
+    colorManager.setCurrentColorRange(min, max);
+  }
+
   static public float[] getDataFloat(String label) {
     if (dataValues == null)
       return null;

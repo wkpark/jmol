@@ -494,13 +494,13 @@ public class PdbReader extends AtomSetCollectionReader {
   void het() {
     if (htHetero == null)
       htHetero = new Hashtable();
-    String groupName = parseToken(line, 7, 10);
-    String hetName = line.substring(30, 70).trim();
-    String htName = (String) htHetero.get(groupName);
-    if (htName != null)
+    if (line.length() < 30)
       return;
+    String groupName = parseToken(line, 7, 10);
+    if (htHetero.contains(groupName))
+      return;
+    String hetName = line.substring(30, Math.min(line.length(),70)).trim();
     htHetero.put(groupName, hetName);
-    //Logger.debug("het: "+groupName);
   }
   
   void hetnam() {

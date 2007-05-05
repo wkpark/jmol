@@ -23,6 +23,18 @@
  */
 package org.jmol.popup;
 
+/*
+ * Bob Hanson 5/2007
+ * 
+ * A class that allows xgettext to find the messages, but for them
+ * to not be processed until later, so that languages can be switched
+ * at will. 
+ * 
+ * Underscore indicates that the REAL GT will need to be run;
+ * Vertical bar means we either have a replacement or we have some trailer text.
+ * The presence of left brace will later indicate we need a replacement.
+ * 
+ */
 class GT {
 
   static String _(String s) {

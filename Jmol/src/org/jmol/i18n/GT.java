@@ -31,8 +31,8 @@ public class GT {
 
   private static boolean ignoreApplicationBundle = false;
   private static GT getTextWrapper;
-  private static ResourceBundle[] translationResources = null;
-  private static int translationResourcesCount = 0;
+  private ResourceBundle[] translationResources = null;
+  private int translationResourcesCount = 0;
   private static boolean doTranslate = true;
   private static String language;
 
@@ -40,11 +40,7 @@ public class GT {
     return language;
   }
   
-  private GT() {
-    getTranslation(null);
-  }
-
-  public static void getTranslation(String la) {
+  private void getTranslation(String la) {
     if (la != null) {
       language = la;
       doTranslate = true;
@@ -81,6 +77,13 @@ public class GT {
     }
   }
   
+  public GT(String la) {
+    getTranslation(la);
+  }
+  
+  private GT() {
+    getTranslation(null);
+  }
 /*
   private void addBundles(String name, Locale locale) {
     if ((locale != null) && (locale.getLanguage() != null)) {
@@ -100,15 +103,15 @@ public class GT {
     //addBundle(name);
   }
 */
-  private static void addBundle(String name_lang) {
-//    ClassLoader loader = Class.forName(getClass().getClassLoader();
+  private void addBundle(String name_lang) {
+    ClassLoader loader = getClass().getClassLoader();
     Class bundleClass = null;
     try {
-//      if (loader != null) {
-  //      bundleClass = loader.loadClass(name_lang);
-    //  } else {
+      if (loader != null) {
+        bundleClass = loader.loadClass(name_lang);
+      } else {
         bundleClass = Class.forName(name_lang);
-      //}
+      }
     } catch (ClassNotFoundException e) {
       // Class not found: can be normal
     }

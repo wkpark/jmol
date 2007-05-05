@@ -499,7 +499,7 @@ public class PdbReader extends AtomSetCollectionReader {
     String groupName = parseToken(line, 7, 10);
     if (htHetero.contains(groupName))
       return;
-    String hetName = line.substring(30, Math.min(line.length(),70)).trim();
+    String hetName = parseTrimmed(line, 30, 70);
     htHetero.put(groupName, hetName);
   }
   

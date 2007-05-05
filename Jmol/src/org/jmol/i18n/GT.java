@@ -234,4 +234,62 @@ public class GT {
     }
     return trans;
   }
+  
+  /**
+   * marks a string for later localization. A few assumptions are made here:
+   * 
+   * 1) that "{0}" will be used to replace nontranslatable text in the message
+   * 2) that the message does not contain vertical bar. 
+   * 
+   * These are satisfied by Jmol's menuing system, but a more general solution
+   * might modify the marking to suit.
+   *  
+   * @author Bob Hanson
+   * @param s1
+   * @param s2
+   * @return   a pre-marked string for later localization
+   */
+  public final static String markStringPair(String s1, String s2) {
+    return "_" + s1+ (s2 == null ? "" : "|"+s2);
+  }
+
+  /** 
+   * Takes a set of pairs of pre-marked string identifiers and string messages and does the
+   * localization of them on the fly.
+   * 
+   * Not perfectly general, but for our purposes generally perfect. 
+   *  
+   * @author Bob Hanson
+   * @param wordContents
+   * @param words
+   */
+  public final static void localizePropertiesFromStringPairs(
+                                                             String[][] wordContents,
+                                                             Properties words) {
+    boolean wasTranslating;
+    if (!(wasTranslating = doTranslate))
+      setDoTranslate(true);
+    for (int i = 0; i < wordContents.length; i++) {
+      String[] info = wordContents[i];
+      String data = info[1];
+      if (data.charAt(0) == '_') {
+        data = GT._(data.substring(1));
+        boolean doReplace = (data.indexOf("{0}") >= 0);
+        int ipt = data.indexOf("|");
+        if (ipt >= 0) {
+          String trailer = data.substring(ipt + 1);
+          data = data.substring(0, ipt);
+          if (doReplace)
+            data = GT._(data, trailer);
+          else
+            data = GT._(data) + trailer;
+        }
+      }
+      words.setProperty(info[0], data);
+    }
+    if (!wasTranslating)
+      setDoTranslate(false);
+  }
+  
+
 }

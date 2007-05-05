@@ -27,9 +27,36 @@ import java.util.Properties;
 
 class PopupResourceBundle {
 
+  /*  Note: The GT._ calls in wordContents are to org.jmol.popup.GT._()
+   *  That class simply tags the messages for later processing (below).
+   *  The constructor for PopupResourceBundle now requests localization, so
+   *  whenever a language is selected, the initializer takes care of 
+   *  creating String[][] wordContents in an efficient manner, and
+   *  we can still do the language localization on the fly. 
+   *  
+   *  In a sense, what I am accomplishing by this is a separation of
+   *  internationalization (in the wordContents static initialization)
+   *  and localization (in public static void resetMenu)
+   *  
+   *  The problem with the old way is that static initialization is only
+   *  carried out once for a class. (I think I have that right.) So if
+   *  we were to call org.jmol.i18n.GT._ directly, we get just one shot at
+   *  it. 
+   *  
+   *  And the problem with putting it all in a method is that you can't use
+   *  array contents syntax within a method for creating a static structure. 
+   *  
+   *  So this proposal is a happy medium -- wordContents is constructed
+   *  as a static class; the GT._ calls are caught be xgettext properly,
+   *  and in the end we can still localize on the fly.
+   *  
+   *  Bob Hanson 5/2007
+   *  
+   */  
+    
   
   PopupResourceBundle() {
-    resetMenu();
+    org.jmol.i18n.GT.localizePropertiesFromStringPairs(wordContents, words);
   }
 
   String getStructure(String key) {
@@ -846,52 +873,5 @@ class PopupResourceBundle {
     { "aboutComputedMenu", GT._("About Jmol") },
     { "jmolUrl", "http://www.jmol.org" },
     { "mouseManualUrl", GT._("Mouse Manual") },
-    { "translatingUrl", GT._("Translations") }, };
-
-/*  Note: The above GT._ calls are to org.jmol.popup.GT._()
- *  That class simply tags the messages for later processing (below).
- *  The constructor for PopupResourceBundle now calls resetMenu(), so
- *  whenever a language is selected, the initializer takes care of 
- *  creating String[][] wordContents in an efficient manner, and
- *  we can still do the language localization. 
- *  
- *  In a sense, what I am accomplishing by this is a separation of
- *  internationalization (in the wordContents static initialization)
- *  and localization (in public static void resetMenu)
- *  
- *  The problem with the old way is that static initialization is only
- *  carried out once for a class. (I think I have that right.) So if
- *  we were to call org.jmol.i18n.GT._ directly, we get just one shot at
- *  it. 
- *  
- *  And the problem with putting it all in a method is that you can't use
- *  array contents syntax within a method for creating a static structure. 
- *  
- *  So this proposal is a happy medium -- wordContents is constructed
- *  as a static class; the GT._ calls are caught be xgettext properly,
- *  and in the end we can still localize on the fly.
- *  
- *  Bob Hanson 5/2007
- *  
- */  
-  public static void resetMenu() {
-    for (int i = 0; i < wordContents.length; i++) {
-      String[] info = wordContents[i];
-      String data = info[1];
-      boolean doReplace = (data.indexOf("{") >= 0);
-      int ipt = data.indexOf("|");
-      if (data.charAt(0) == '_') {
-        data = org.jmol.i18n.GT._(data.substring(1), true);
-      } else if (ipt >= 0) {
-        String trailer = data.substring(ipt + 1);
-        data = data.substring(0, ipt);
-        if (doReplace)
-          data = org.jmol.i18n.GT._(data, trailer, true);
-        else
-          data = org.jmol.i18n.GT._(data,true) + trailer;
-      }
-      words.setProperty(info[0], data);
-    }
-  }
-  
+    { "translatingUrl", GT._("Translations") }, };  
 }

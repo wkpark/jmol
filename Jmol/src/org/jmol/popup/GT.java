@@ -38,10 +38,10 @@ package org.jmol.popup;
 class GT {
 
   static String _(String s) {
-    return "_" + s;
+    return org.jmol.i18n.GT.markStringPair(s, null);
   }
 
   static String _(String s1, String s2) {
-    return s1+"|"+s2;
+    return org.jmol.i18n.GT.markStringPair(s1, s2);
   }
 }

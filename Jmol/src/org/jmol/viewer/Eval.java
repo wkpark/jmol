@@ -1680,7 +1680,7 @@ class Eval { //implements Runnable {
     case Token.radius:
       return atom.getRasMolRadius();
     case Token.vanderwaals:
-      return atom.getVanderwaalsRadiusFloat();
+      return (asInt ? 100 : 1) * atom.getVanderwaalsRadiusFloat();
     case Token.psi:
       propertyValue = atom.getGroupPsi();
       return asInt ? propertyValue * 100 : propertyValue;
@@ -6082,6 +6082,8 @@ class Eval { //implements Runnable {
     boolean isMin = Compiler.tokAttr(tok, Token.min);
     boolean isMax = Compiler.tokAttr(tok, Token.max);
     boolean isAll = Compiler.tokAttr(tok, Token.minmaxmask);
+    if (isAll) 
+      isMin = isMax = false;
     tok &= ~Token.minmaxmask;
     float[] list = null;
     BitSet bsNew = null;
@@ -6127,12 +6129,12 @@ class Eval { //implements Runnable {
     Point3f ptT = (tok == Token.color ? new Point3f() : null);
     Frame frame = viewer.getFrame();
     float[]data = (tok == Token.property ? Viewer.getDataFloat((String)opValue) : null); 
-    
+    int count = 0;
     if (isAtoms) {
-      int atomCount = (isSyntaxCheck ? 0 : viewer.getAtomCount());
+      count = (isSyntaxCheck ? 0 : viewer.getAtomCount());
       if (isAll)
-        list = new float[atomCount];
-      for (int i = 0; i < atomCount; i++)
+        list = new float[count];
+      for (int i = 0; i < count; i++)
         if (bs == null || bs.get(i)) {
           n++;
           Atom atom = frame.getAtomAt(i);
@@ -6292,10 +6294,10 @@ class Eval { //implements Runnable {
           }
         }
     } else {
-      int bondCount = viewer.getBondCount();
+      count = viewer.getBondCount();
       if (isAll)
-        list = new float[bondCount];
-      for (int i = 0; i < bondCount; i++)
+        list = new float[count];
+      for (int i = 0; i < count; i++)
         if (bs == null || bs.get(i)) {
           n++;
           Bond bond = frame.getBondAt(i);
@@ -6336,11 +6338,15 @@ class Eval { //implements Runnable {
       n = 1;
       ivAvg = ivMax;
       fvAvg = fvMax;
+    } else if (isAll) {
+      float[] list1 = new float[n];
+      for (int i = 0, j = 0; i < count; i++)
+        if (bs == null || bs.get(i))
+          list1[j++] = list[i];
+      if (opValue == null) //not operating -- I don't think this is possible, because opValue is not ever null when minmax is set
+        return list1;
+      return Escape.escape(list1);
     }
-    if (isAll && opValue == null) //not operating
-      return list;
-    if (isAll)
-      return Escape.escape(list);
     if (isInt && (ivAvg / n) * n == ivAvg)
       return new Integer(ivAvg / n);
     return new Float((isInt ? ivAvg * 1f : fvAvg) / n);

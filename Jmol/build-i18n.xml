@@ -89,6 +89,7 @@
         <apply executable="${gettext.xgettext}" dir="${basedir}/${src.dir}" parallel="true"
                verbose="true" relative="true" forwardslash="true">
           <arg value="-kGT._" />
+          <arg value="--from-code=utf-8" />
           <arg value="--language=Java" />
           <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
           <arg value="--output-dir=${basedir}/${Jmol.po.dir}/tmp" />
@@ -165,6 +166,7 @@
         <apply executable="${gettext.xgettext}" dir="${basedir}/${src.dir}" parallel="true"
                verbose="true" relative="true" forwardslash="true">
           <arg value="-kGT._" />
+          <arg value="--from-code=utf-8" />
           <arg value="--language=Java" />
           <arg value="--msgid-bugs-address=jmol-developers@lists.sourceforge.net"/>
           <arg value="--output-dir=${basedir}/${JmolApplet.po.dir}/tmp" />

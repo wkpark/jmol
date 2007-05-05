@@ -1544,7 +1544,7 @@ public class Jmol extends JPanel {
     
     public void setCallbackFunction(String callbackType, String callbackFunction) {
       if (callbackType.equalsIgnoreCase("language")) {
-        GT.getTranslation(callbackFunction);
+        new GT(callbackFunction);
         jmolpopup = JmolPopup.newJmolPopup(viewer, true);  
       }
     }

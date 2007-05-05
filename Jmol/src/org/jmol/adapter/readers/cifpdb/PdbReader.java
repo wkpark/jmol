@@ -492,10 +492,10 @@ public class PdbReader extends AtomSetCollectionReader {
   }
   
   void het() {
-    if (htHetero == null)
-      htHetero = new Hashtable();
     if (line.length() < 30)
       return;
+    if (htHetero == null)
+      htHetero = new Hashtable();
     String groupName = parseToken(line, 7, 10);
     if (htHetero.contains(groupName))
       return;

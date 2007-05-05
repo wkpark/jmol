@@ -781,7 +781,7 @@ abstract public class JmolPopup {
     thisx = x;
     thisy = y;
     String id = currentMenuItemId;
-    System.out.println (id);
+    //System.out.println (id);
     updateForShow();
     for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements();) {
       String key = (String) keys.nextElement();

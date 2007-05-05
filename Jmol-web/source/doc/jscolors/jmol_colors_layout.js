@@ -1,8 +1,8 @@
 /*	Support file for building color tables in jscolors/index.html (Jmol's website)
 	-- Do not translate anything in this file --
-	Angel Herráez, 29 july 2005
+	Angel Herraez, 29 july 2005
 	Contributions by Nicolas Vervelle
-	Last updated: 11 august 2005
+	Last updated: 5 may 2007
 */
 
 function sectionMenu()
@@ -82,6 +82,21 @@ function buildElementTable()
 	document.writeln("</table>")
 	document.close()
 }
+function buildIsotopeTable()
+{
+	document.writeln("<table border='0' cellspacing='0' cellpadding='4' class='colorTable'>")
+	document.writeln("<tr><th>&nbsp;</th><th>&nbsp;<br>&nbsp;</th><th colspan='3'>Jmol</th>")
+	document.writeln("</tr>")
+	for (i=1;i<isotParams.length;i++)
+	{	document.write("<tr><td><a name='color_" + isotParams[i][0] + "'></a>" + isotParams[i][2] + "</td><td class='symbols'>" + isotParams[i][0] + "</td><td>")
+		document.write("<tt>" + hexColorToDecColor(isotParams[i][1]) + "</tt></td><td>")
+		document.write(isotParams[i][1] + "</td><td bgcolor='#" + isotParams[i][1] + "'>&nbsp;&nbsp;</td>")
+		document.writeln("</tr>")
+	}
+	document.writeln("</table>")
+	document.close()
+}
+
 
 function buildStructTable(titleProt, lbProt, footerProt, titleNuc, lbNuc, footerNuc)
 {	// a 3-column table that contains the protein and nucleic color tables plus a central separation
@@ -234,17 +249,23 @@ function buildHbondsTable(tit,lb)
 	document.close()
 }
 
-function buildRwbTable(t1,t2)
-{
-	var hhh = rwbParams.length/2
+function buildRwbTable(t1,t2,direction)
+{	var hhh = rwbParams.length/2
 	var hh = parseInt(hhh)
 	hhh = hh + (hhh - hh)*2		// +1 (odd) or +0 (even)
 	document.writeln("<table border='0' cellspacing='0' cellpadding='4' class='colorTable'>")
 	document.writeln("<tr><td colspan='" + hhh + "' style='text-align:left;'>" + t1 + "</td>")
 	document.writeln("<td colspan='" + hh + "' style='text-align:right;'>" + t2 + "</td></tr>")
 	document.write("<tr>")
-	for (i=0;i<rwbParams.length;i++)
-	{	document.write("<td bgcolor='#" + rwbParams[i] + "'>&nbsp;&nbsp;</td>")
+	if (!direction || direction==1)
+	{	for (i=0;i<rwbParams.length;i++)
+		{	document.write("<td bgcolor='#" + rwbParams[i] + "'>&nbsp;&nbsp;</td>")
+		}
+	}
+	else 
+	{	for (i=rwbParams.length-1;i>=0;i--)
+		{	document.write("<td bgcolor='#" + rwbParams[i] + "'>&nbsp;&nbsp;</td>")
+		}
 	}
 	document.writeln("</tr>")
 	document.writeln("</table>")

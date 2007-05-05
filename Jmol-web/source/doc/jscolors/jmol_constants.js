@@ -5,7 +5,8 @@
 	-- Do not translate anything in this file --
 	Angel Herráez, 29 july 2005
 	Contributions by Nicolas Vervelle
-	Last updated: 11 august 2005
+	Updated: 11 august 2005
+	Last updated: 21 april 2007 - A.H. - Isotopes
 */
 
 var elemParams = new Array(110)
@@ -122,6 +123,18 @@ elemParams[106] = ['Sg','D90045','FF1493']
 elemParams[107] = ['Bh','E00038','FF1493']
 elemParams[108] = ['Hs','E6002E','FF1493']
 elemParams[109] = ['Mt','EB0026','FF1493']
+
+var isotParams = new Array(5)
+for (i=0;i<isotParams.length;i++) { isotParams[i] = new Array(2) }
+/*	first is element symbol,
+	 second is Jmol's CPK color
+	 third is atomic nr.
+*/
+isotParams[1]  = ['D,<sup>2</sup>H','FFFFC0', 1]
+isotParams[2]  = ['T,<sup>3</sup>H','FFFFA0', 1]
+isotParams[3]  = ['<sup>13</sup>C','505050', 6]
+isotParams[4]  = ['<sup>14</sup>C','404040', 6]
+isotParams[5]  = ['<sup>15</sup>N','105050', 7]
 
 
 /*	CPKnew from Rasmol2.7.3

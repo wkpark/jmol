@@ -1093,6 +1093,28 @@
 	for an example of their use.)</i>
 					</p>
 				</section>
+				<section title="language">
+					<p><i>(New in 11.1.31)</i></p>
+					<p>
+						This is special: it is not called by an event, only by design, and does not return anything. 
+	Instead, it changes the interface language for the applet pop-up menu and messages in the console. 
+	It must be called before <code>jmolApplet</code>. The same functionality is available after the applet
+	has been loaded, by means of the scripting language (e.g. <code>language = "de"</code>), as well as
+	from the pop-up menu itself.
+				</p>
+					<p>
+	The first parameter must be "language" and the second, the two-letter code of the language wanted
+	(provided that locale has been built into Jmol).
+	<br/>
+						<i>Examples</i>:
+				</p>
+					<ul>
+						<li><code>jmolSetCallback("language", "de")</code> (German)</li>
+						<li><code>jmolSetCallback("language", "en")</code> (English)</li>
+						<li><code>jmolSetCallback("language", "es")</code> (Spanish)</li>
+						<li><code>jmolSetCallback("language", "fr")</code> (French)</li>
+					</ul>
+				</section>
 			</section>
 			<section title="jmolAppletAddParam">
 				<code>jmolAppletAddParam(appletCode, name, value)</code>

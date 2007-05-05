@@ -1122,6 +1122,30 @@ Cada páginaCada página      </p>
 	http://www.stolaf.edu/academics/chemapps/jmol/docs/examples-11/simple2.htm .)</i>
 					</p>
 				</section>
+				<section title="language">
+					<p><i>(Nuevo en 11.1.31)</i></p>
+					<p>
+						Esta llamada es especial: no se invoca mediante un evento, sino tan
+	sólo intencionadamente, y no devuelve nada. 
+	En su lugar, cambia el idioma de la interfaz en el menú emergente de la miniaplicación y en los
+	mensajes de la consola.
+	Debe llamarse antes que <code>jmolApplet</code>. Se puede conseguir lo mismo una vez cargada
+	la miniaplicación, empleando el lenguaje de guiones (por ej., <code>language = "de"</code>), así como
+	desde el propio menú emergente.
+				</p>
+					<p>
+	El primer parámetro debe ser "language" y el segundo, el código de dos letras del idioma deseado
+	(siempre y cuando esa localización esté incluida en Jmol).
+	<br/>
+						<i>Ejemplos</i>:
+				</p>
+					<ul>
+						<li><code>jmolSetCallback("language", "de")</code> (Alemán)</li>
+						<li><code>jmolSetCallback("language", "en")</code> (Inglés)</li>
+						<li><code>jmolSetCallback("language", "es")</code> (Español)</li>
+						<li><code>jmolSetCallback("language", "fr")</code> (Francés)</li>
+					</ul>
+				</section>
 			</section>
 			<section title="jmolAppletAddParam">
 				<code>jmolAppletAddParam(códigoApplet, nombre, valor)</code>

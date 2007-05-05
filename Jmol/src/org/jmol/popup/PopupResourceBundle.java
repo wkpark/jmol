@@ -843,14 +843,14 @@ class PopupResourceBundle {
       boolean doReplace = (data.indexOf("{") >= 0);
       int ipt = data.indexOf("|");
       if (data.charAt(0) == '_') {
-        data = org.jmol.i18n.GT._(data.substring(1));
+        data = org.jmol.i18n.GT._(data.substring(1), true);
       } else if (ipt >= 0) {
         String trailer = data.substring(ipt + 1);
         data = data.substring(0, ipt);
         if (doReplace)
-          data = org.jmol.i18n.GT._(data, trailer);
+          data = org.jmol.i18n.GT._(data, trailer, true);
         else
-          data = org.jmol.i18n.GT._(data) + trailer;
+          data = org.jmol.i18n.GT._(data,true) + trailer;
       }
       words.setProperty(info[0], data);
     }

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-05-01 20:52+0200\n"
-"PO-Revision-Date: 2007-04-15 22:08+0100\n"
+"PO-Revision-Date: 2007-05-06 09:32+0100\n"
 "Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
 "Language-Team: French <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -159,7 +159,7 @@ msgstr "Prévisualisation"
 
 #: org/openscience/jmol/app/FilePreview.java:87
 msgid "Append models"
-msgstr ""
+msgstr "Ajouter les modèles"
 
 #: org/openscience/jmol/app/GuiMap.java:45
 msgid "&File"
@@ -637,8 +637,7 @@ msgstr "Qualité JPEG"
 
 #: org/openscience/jmol/app/Jmol.java:129
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr ""
-"Erreur au démarrage de Jmol: la propriété 'user.home' n'est pas définie."
+msgstr "Erreur au démarrage de Jmol: la propriété 'user.home' n'est pas définie."
 
 #: org/openscience/jmol/app/Jmol.java:168
 msgid "Initializing 3D display..."
@@ -748,8 +747,7 @@ msgstr "Par exemple:"
 
 #: org/openscience/jmol/app/Jmol.java:449
 msgid "The -D options are as follows (defaults in parathesis):"
-msgstr ""
-"Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
+msgstr "Les options -D sont les suivantes (valeurs par défaut entre parenthèses):"
 
 #: org/openscience/jmol/app/Jmol.java:587
 msgid "Executing script..."
@@ -817,12 +815,8 @@ msgid "Filename Stem"
 msgstr "Racine du nom de fichier"
 
 #: org/openscience/jmol/app/PovrayDialog.java:158
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
-msgstr ""
-"Une seule trame: 'caffine' -> 'caffine.pov'; Plusieurs trames: 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgstr "Une seule trame: 'caffine' -> 'caffine.pov'; Plusieurs trames: 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:168
 msgid "Working Directory"
@@ -858,9 +852,7 @@ msgstr "Calculer toutes les images"
 
 #: org/openscience/jmol/app/PovrayDialog.java:219
 msgid "Render each model (not only the currently displayed one)"
-msgstr ""
-"Crée une image pour chaque modèle (pas seulement pour celui actuellement "
-"affiché)"
+msgstr "Crée une image pour chaque modèle (pas seulement pour celui actuellement affiché)"
 
 #: org/openscience/jmol/app/PovrayDialog.java:228
 msgid "Turn on POV-Ray anti-aliasing"
@@ -868,8 +860,7 @@ msgstr "Activer l'anti-aliasing de POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:230
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr ""
-"Utiliser l'anti-aliasing de povray, plus lent mais de meilleure qualité"
+msgstr "Utiliser l'anti-aliasing de povray, plus lent mais de meilleure qualité"
 
 #: org/openscience/jmol/app/PovrayDialog.java:239
 msgid "Display While Rendering"
@@ -1140,76 +1131,54 @@ msgstr "Les nouveautés de Jmol"
 #, fuzzy
 #~ msgid "CLIP or JPG|PNG|PPM:filename"
 #~ msgstr " JPG|PNG|PPM:nomFichier"
-
 #~ msgid "no display"
 #~ msgstr "sans affichage"
-
 #~ msgid "run script and exit"
 #~ msgstr "exécuter le script et terminer"
 
 #, fuzzy
 #~ msgid "atoms selected"
 #~ msgstr "groupe d'atomes"
-
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Exécution du script par Jmol..."
-
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "Rotation &fil de fer"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotation fil de fer"
-
 #~ msgid "Colors"
 #~ msgstr "Couleurs"
-
 #~ msgid "Background"
 #~ msgstr "Arrière-plan"
-
 #~ msgid "Set the Background Color"
 #~ msgstr "Régler la couleur d'Arrière-plan"
-
 #~ msgid "Background Color"
 #~ msgstr "Couleur d'Arrière-plan"
-
 #~ msgid "Picked Atoms"
 #~ msgstr "Atomes Choisis"
-
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Régler la Couleur pour les Atomes Choisis"
-
 #~ msgid "Picked Atom Color"
 #~ msgstr "Couleur de l'Atome Choisi"
-
 #~ msgid "Text"
 #~ msgstr "Texte"
-
 #~ msgid "Set the Color for Text"
 #~ msgstr "Régler la Couleur pour le Texte"
-
 #~ msgid "Text Color"
 #~ msgstr "Couleur du Texte"
-
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Régler la Couleur pour les Liens"
-
 #~ msgid "Bond Color"
 #~ msgstr "Couleur des Liens"
-
 #~ msgid "Vectors"
 #~ msgstr "Vecteurs"
-
 #~ msgid "Set the Vector Color"
 #~ msgstr "Régler la Couleur de Vecteur"
-
 #~ msgid "Vector Color"
 #~ msgstr "Couleur de Vecteur"
-
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Couleur pour les mesures de distance, angle & torsion"
-
 #~ msgid "Measurements Color"
 #~ msgstr "Couleur des Mesures"
-
 #~ msgid "Loading plugins..."
 #~ msgstr "Chargement des plugins..."
+

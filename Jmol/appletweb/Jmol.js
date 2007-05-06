@@ -619,11 +619,11 @@ function jmolSetLogLevel(n) {
 		By (re)setting these variables in the webpage before calling jmolApplet(), 
 		a custom message can be provided (e.g. localized for user's language) when no Java is installed.
 	*/
-var noJavaMsg = 
+if (noJavaMsg==undefined) var noJavaMsg = 
         "You do not have Java applets enabled in your web browser, or your browser is blocking this applet.<br />\n" +
         "Check the warning message from your browser and/or enable Java applets in<br />\n" +
         "your web browser preferences, or install the Java Runtime Environment from <a href='http://www.java.com'>www.java.com</a><br />";
-var noJavaMsg2 = 
+if (noJavaMsg2==undefined) var noJavaMsg2 = 
         "You do not have the<br />\n" +
         "Java Runtime Environment<br />\n" +
         "installed for applet support.<br />\n" +
@@ -684,7 +684,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
 		var szY = "height:" + sz[1]
 		if ( szY.indexOf("%")==-1 ) szY+="px" 
       visitJava =
-        "<p style='background-color:yellow;" +
+        "<p style='background-color:yellow; color:black; " +
 		szX + ";" + szY + ";" +
         // why doesn't this vertical-align work?
 	"text-align:center;vertical-align:middle;'>\n" +
@@ -693,9 +693,9 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     } else {
       visitJava =
         "<table bgcolor='yellow'><tr>" +
-        "<td align='center' valign='middle' " + widthAndHeight + ">\n" +
+        "<td align='center' valign='middle' " + widthAndHeight + "><font color='black'>\n" +
 		noJavaMsg2 +
-        "</td></tr></table>";
+        "</font></td></tr></table>";
     }
     params.loadInline = (inlineModel ? inlineModel : "");
     params.script = (script ? _jmolSterilizeScript(script) : "");
@@ -792,7 +792,7 @@ function _jmolSterilizeInline(model) {
 	/*  AngelH, mar2007:
 		By (re)setting this variable in the webpage before calling jmolApplet(), limits for applet size can be overriden.
 	*/
-var allowedJmolSize = [25, 2000, 300]   // min, max, default (pixels)
+if (allowedJmolSize==undefined) var allowedJmolSize = [25, 2000, 300]   // min, max, default (pixels)
 function _jmolGetAppletSize(size) {
 	/*  AngelH, mar2007
 		Accepts single number or 2-value array, each one can be either:

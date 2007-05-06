@@ -51,7 +51,7 @@ import org.jmol.viewer.Viewer;
  * </code></pre>
  * 
  * @author Nicolas Vervelle
- * @see org.openscience.jmol.options.smiles.SmilesMolecule
+ * @see org.jmol.smiles.SmilesMolecule
  */
 public class PatternMatcher implements SmilesMatcherInterface {
 

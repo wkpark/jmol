@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-05-05 16:05+0200\n"
+"POT-Creation-Date: 2007-05-06 09:28+0200\n"
 "PO-Revision-Date: 2006-11-01 18:39+0200\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -51,7 +51,7 @@ msgstr ""
 "Yeni satır için CTRL-ENTER'a basın ya da model veri yapıştırın ve Yükle'ye "
 "basın"
 
-#: org/jmol/applet/Jmol.java:713
+#: org/jmol/applet/Jmol.java:715
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -66,7 +66,7 @@ msgstr ""
 "\n"
 "Daha fazla bilgi için http://www.jmol.org 'u ziyaret ediniz"
 
-#: org/jmol/applet/Jmol.java:855
+#: org/jmol/applet/Jmol.java:857
 msgid "File Error:"
 msgstr "Dosya Hatası:"
 
@@ -214,146 +214,146 @@ msgstr ""
 msgid "Main Menu"
 msgstr "Ana Menü"
 
-#: org/jmol/popup/PopupResourceBundle.java:478
+#: org/jmol/popup/PopupResourceBundle.java:484
 #, fuzzy
 msgid "No atoms loaded"
 msgstr "Hiç atom yüklenmemiş"
 
-#: org/jmol/popup/PopupResourceBundle.java:479
+#: org/jmol/popup/PopupResourceBundle.java:485
 msgid "Configurations"
 msgstr "Ayarlar"
 
-#: org/jmol/popup/PopupResourceBundle.java:480
+#: org/jmol/popup/PopupResourceBundle.java:486
 msgid "Model information"
 msgstr "Model bilgisi"
 
-#: org/jmol/popup/PopupResourceBundle.java:482
+#: org/jmol/popup/PopupResourceBundle.java:488
 msgid "Select"
 msgstr "Seç"
 
-#: org/jmol/popup/PopupResourceBundle.java:483
+#: org/jmol/popup/PopupResourceBundle.java:489
 msgid "Element"
 msgstr "Element"
 
-#: org/jmol/popup/PopupResourceBundle.java:484
-#: org/jmol/popup/PopupResourceBundle.java:498
-#: org/jmol/popup/PopupResourceBundle.java:511
+#: org/jmol/popup/PopupResourceBundle.java:490
+#: org/jmol/popup/PopupResourceBundle.java:504
+#: org/jmol/popup/PopupResourceBundle.java:517
 #: org/jmol/popup/PopupResourceBundle.java:534
 msgid "All"
 msgstr "Tümü"
 
-#: org/jmol/popup/PopupResourceBundle.java:485
+#: org/jmol/popup/PopupResourceBundle.java:491
 #: org/jmol/popup/PopupResourceBundle.java:616
 #: org/jmol/popup/PopupResourceBundle.java:625
 msgid "None"
 msgstr "Hiçbiri"
 
-#: org/jmol/popup/PopupResourceBundle.java:486
+#: org/jmol/popup/PopupResourceBundle.java:492
 msgid "Display Selected Only"
 msgstr "Sadece Seçileni Göster"
 
-#: org/jmol/popup/PopupResourceBundle.java:487
+#: org/jmol/popup/PopupResourceBundle.java:493
 msgid "Invert Selection"
 msgstr "Seçimi Tersine Çevir"
 
-#: org/jmol/popup/PopupResourceBundle.java:489
+#: org/jmol/popup/PopupResourceBundle.java:495
 msgid "View"
 msgstr "Görünüm"
 
-#: org/jmol/popup/PopupResourceBundle.java:490
+#: org/jmol/popup/PopupResourceBundle.java:496
 msgid "Front"
 msgstr "Yazı Tipi"
 
-#: org/jmol/popup/PopupResourceBundle.java:491
+#: org/jmol/popup/PopupResourceBundle.java:497
 msgid "Left"
 msgstr "Sol"
 
-#: org/jmol/popup/PopupResourceBundle.java:492
+#: org/jmol/popup/PopupResourceBundle.java:498
 msgid "Right"
 msgstr "Sağ"
 
-#: org/jmol/popup/PopupResourceBundle.java:493
+#: org/jmol/popup/PopupResourceBundle.java:499
 msgid "Top"
 msgstr "Üst"
 
-#: org/jmol/popup/PopupResourceBundle.java:494
+#: org/jmol/popup/PopupResourceBundle.java:500
 msgid "Bottom"
 msgstr "Aşağı"
 
-#: org/jmol/popup/PopupResourceBundle.java:495
+#: org/jmol/popup/PopupResourceBundle.java:501
 msgid "Back"
 msgstr "Geri"
 
-#: org/jmol/popup/PopupResourceBundle.java:497
+#: org/jmol/popup/PopupResourceBundle.java:503
 msgid "Protein"
 msgstr "Protein"
 
-#: org/jmol/popup/PopupResourceBundle.java:499
-#: org/jmol/popup/PopupResourceBundle.java:514
+#: org/jmol/popup/PopupResourceBundle.java:505
+#: org/jmol/popup/PopupResourceBundle.java:520
 #: org/jmol/popup/PopupResourceBundle.java:592
 #: org/jmol/popup/PopupResourceBundle.java:679
 msgid "Backbone"
 msgstr "Omurga"
 
-#: org/jmol/popup/PopupResourceBundle.java:500
+#: org/jmol/popup/PopupResourceBundle.java:506
 msgid "Side Chains"
 msgstr "Yan Zincirler"
 
-#: org/jmol/popup/PopupResourceBundle.java:501
+#: org/jmol/popup/PopupResourceBundle.java:507
 msgid "Polar Residues"
 msgstr "Polar Artıklar"
 
-#: org/jmol/popup/PopupResourceBundle.java:502
+#: org/jmol/popup/PopupResourceBundle.java:508
 msgid "Nonpolar Residues"
 msgstr "Apolar Artıklar"
 
-#: org/jmol/popup/PopupResourceBundle.java:503
+#: org/jmol/popup/PopupResourceBundle.java:509
 msgid "Basic Residues (+)"
 msgstr "Temel Artıklar (+)"
 
-#: org/jmol/popup/PopupResourceBundle.java:504
+#: org/jmol/popup/PopupResourceBundle.java:510
 msgid "Acidic Residues (-)"
 msgstr "Asidik Artıklar (-)"
 
-#: org/jmol/popup/PopupResourceBundle.java:505
+#: org/jmol/popup/PopupResourceBundle.java:511
 msgid "Uncharged Residues"
 msgstr "Yüklenmemiş Artıklar"
 
-#: org/jmol/popup/PopupResourceBundle.java:506
-#: org/jmol/popup/PopupResourceBundle.java:507
-#: org/jmol/popup/PopupResourceBundle.java:508
+#: org/jmol/popup/PopupResourceBundle.java:512
+#: org/jmol/popup/PopupResourceBundle.java:513
+#: org/jmol/popup/PopupResourceBundle.java:514
 msgid "By Residue Name"
 msgstr "Artık Adına Göre"
 
-#: org/jmol/popup/PopupResourceBundle.java:509
+#: org/jmol/popup/PopupResourceBundle.java:515
 msgid "By HETATM"
 msgstr "HETATM' e Göre"
 
-#: org/jmol/popup/PopupResourceBundle.java:510
+#: org/jmol/popup/PopupResourceBundle.java:516
 msgid "Nucleic"
 msgstr "Nükleik"
 
-#: org/jmol/popup/PopupResourceBundle.java:512
+#: org/jmol/popup/PopupResourceBundle.java:518
 msgid "DNA"
 msgstr "DNA"
 
-#: org/jmol/popup/PopupResourceBundle.java:513
+#: org/jmol/popup/PopupResourceBundle.java:519
 msgid "RNA"
 msgstr "RNA"
 
-#: org/jmol/popup/PopupResourceBundle.java:515
+#: org/jmol/popup/PopupResourceBundle.java:521
 msgid "Bases"
 msgstr "Bazlar"
 
-#: org/jmol/popup/PopupResourceBundle.java:516
+#: org/jmol/popup/PopupResourceBundle.java:522
 msgid "AT pairs"
 msgstr "AT çiftleri"
 
-#: org/jmol/popup/PopupResourceBundle.java:517
+#: org/jmol/popup/PopupResourceBundle.java:523
 msgid "GC pairs"
 msgstr "GC çiftleri"
 
-#: org/jmol/popup/PopupResourceBundle.java:518
+#: org/jmol/popup/PopupResourceBundle.java:524
 msgid "AU pairs"
 msgstr "AU çiftleri"
 
@@ -494,11 +494,11 @@ msgstr "Açık"
 #: org/jmol/popup/PopupResourceBundle.java:588
 #: org/jmol/popup/PopupResourceBundle.java:607
 #: org/jmol/popup/PopupResourceBundle.java:608
-#: org/jmol/popup/PopupResourceBundle.java:814
-#: org/jmol/popup/PopupResourceBundle.java:815
-#: org/jmol/popup/PopupResourceBundle.java:816
-#: org/jmol/popup/PopupResourceBundle.java:817
 #: org/jmol/popup/PopupResourceBundle.java:818
+#: org/jmol/popup/PopupResourceBundle.java:819
+#: org/jmol/popup/PopupResourceBundle.java:820
+#: org/jmol/popup/PopupResourceBundle.java:821
+#: org/jmol/popup/PopupResourceBundle.java:822
 #, java-format
 msgid "{0} Å"
 msgstr "{0} Å"
@@ -782,17 +782,17 @@ msgstr "Yüzey"
 
 #: org/jmol/popup/PopupResourceBundle.java:689
 #: org/jmol/popup/PopupResourceBundle.java:804
-#: org/jmol/popup/PopupResourceBundle.java:826
+#: org/jmol/popup/PopupResourceBundle.java:830
 msgid "Axes"
 msgstr "Eksenler"
 
 #: org/jmol/popup/PopupResourceBundle.java:690
-#: org/jmol/popup/PopupResourceBundle.java:804
+#: org/jmol/popup/PopupResourceBundle.java:805
 msgid "Boundbox"
 msgstr "Bağlıkutu"
 
 #: org/jmol/popup/PopupResourceBundle.java:691
-#: org/jmol/popup/PopupResourceBundle.java:805
+#: org/jmol/popup/PopupResourceBundle.java:806
 msgid "Unitcell"
 msgstr "Birimhücre"
 
@@ -1065,86 +1065,87 @@ msgstr "Tekrar Yükle {0}"
 msgid "Reload + Polyhedra"
 msgstr ""
 
-#: org/jmol/popup/PopupResourceBundle.java:807
+#: org/jmol/popup/PopupResourceBundle.java:808
 msgid "Hide"
 msgstr "Gizle"
 
-#: org/jmol/popup/PopupResourceBundle.java:807
+#: org/jmol/popup/PopupResourceBundle.java:809
 msgid "Dotted"
 msgstr "Noktalanmış"
 
-#: org/jmol/popup/PopupResourceBundle.java:809
+#: org/jmol/popup/PopupResourceBundle.java:811
 msgid "Pixel Width"
 msgstr "Benek (Pixel) Genişliği"
 
-#: org/jmol/popup/PopupResourceBundle.java:809
-#: org/jmol/popup/PopupResourceBundle.java:810
-#: org/jmol/popup/PopupResourceBundle.java:811
+#: org/jmol/popup/PopupResourceBundle.java:812
+#: org/jmol/popup/PopupResourceBundle.java:813
+#: org/jmol/popup/PopupResourceBundle.java:814
+#: org/jmol/popup/PopupResourceBundle.java:815
 #, java-format
 msgid "{0} px"
 msgstr "{0} benek"
 
-#: org/jmol/popup/PopupResourceBundle.java:813
+#: org/jmol/popup/PopupResourceBundle.java:817
 msgid "Angstrom Width"
 msgstr "Angstrom Genişliği"
 
-#: org/jmol/popup/PopupResourceBundle.java:820
+#: org/jmol/popup/PopupResourceBundle.java:824
 msgid "Compatibility"
 msgstr "Uygunluk"
 
-#: org/jmol/popup/PopupResourceBundle.java:821
+#: org/jmol/popup/PopupResourceBundle.java:825
 msgid "Selection Halos"
 msgstr "Seçme Işık Halkaları"
 
-#: org/jmol/popup/PopupResourceBundle.java:822
+#: org/jmol/popup/PopupResourceBundle.java:826
 msgid "Show Hydrogens"
 msgstr "Hidorjenleri Göster"
 
-#: org/jmol/popup/PopupResourceBundle.java:823
+#: org/jmol/popup/PopupResourceBundle.java:827
 msgid "Show Measurements"
 msgstr "Ölçümleri Göster"
 
-#: org/jmol/popup/PopupResourceBundle.java:824
+#: org/jmol/popup/PopupResourceBundle.java:828
 msgid "Perspective Depth"
 msgstr "Bakış Açısı Derinliği"
 
-#: org/jmol/popup/PopupResourceBundle.java:825
+#: org/jmol/popup/PopupResourceBundle.java:829
 msgid "Bound Box"
 msgstr "Bağlantı Kutusu"
 
-#: org/jmol/popup/PopupResourceBundle.java:827
+#: org/jmol/popup/PopupResourceBundle.java:831
 msgid "Unit Cell"
 msgstr "Birim Hücre"
 
-#: org/jmol/popup/PopupResourceBundle.java:828
+#: org/jmol/popup/PopupResourceBundle.java:832
 msgid "RasMol/Chime Settings"
 msgstr "RasMol/Uyum Ayarları"
 
-#: org/jmol/popup/PopupResourceBundle.java:829
+#: org/jmol/popup/PopupResourceBundle.java:833
 msgid "RasMol Colors"
 msgstr "RasMol Renkleri"
 
-#: org/jmol/popup/PopupResourceBundle.java:830
+#: org/jmol/popup/PopupResourceBundle.java:834
 msgid "Axes RasMol/Chime"
 msgstr "RasMol/Uyum Eksenleri"
 
-#: org/jmol/popup/PopupResourceBundle.java:831
+#: org/jmol/popup/PopupResourceBundle.java:835
 msgid "Zero-Based Xyz Rasmol"
 msgstr "Sıfır tabanlı Xyz Rasmol"
 
-#: org/jmol/popup/PopupResourceBundle.java:833
+#: org/jmol/popup/PopupResourceBundle.java:837
 msgid "Language"
 msgstr ""
 
-#: org/jmol/popup/PopupResourceBundle.java:834
+#: org/jmol/popup/PopupResourceBundle.java:838
 msgid "About Jmol"
 msgstr "Jmol Hakkında"
 
-#: org/jmol/popup/PopupResourceBundle.java:836
+#: org/jmol/popup/PopupResourceBundle.java:840
 msgid "Mouse Manual"
 msgstr "Fare Elle"
 
-#: org/jmol/popup/PopupResourceBundle.java:837
+#: org/jmol/popup/PopupResourceBundle.java:841
 msgid "Translations"
 msgstr "Çeviriler"
 
@@ -1163,11 +1164,11 @@ msgstr "geçersiz ekleme kodu"
 msgid "unrecognized token: {0}"
 msgstr "tanınmayan nesne"
 
-#: org/jmol/viewer/Compiler.java:1908 org/jmol/viewer/Eval.java:8798
+#: org/jmol/viewer/Compiler.java:1908 org/jmol/viewer/Eval.java:8804
 msgid "unexpected end of script command"
 msgstr "beklenmeyen komut satırı sonu komutu"
 
-#: org/jmol/viewer/Compiler.java:1912 org/jmol/viewer/Eval.java:8802
+#: org/jmol/viewer/Compiler.java:1912 org/jmol/viewer/Eval.java:8808
 msgid "bad argument count"
 msgstr "Yanlış bağımsız değişken hesabı"
 
@@ -1210,7 +1211,7 @@ msgstr "boole veya yüzde gerekli"
 msgid "equal sign expected"
 msgstr "Tırnak içindeki karakter dizgisi gerekli"
 
-#: org/jmol/viewer/Compiler.java:1948 org/jmol/viewer/Eval.java:8764
+#: org/jmol/viewer/Compiler.java:1948 org/jmol/viewer/Eval.java:8770
 msgid "number expected"
 msgstr "sayı gerekli"
 
@@ -1219,7 +1220,7 @@ msgstr "sayı gerekli"
 msgid "number or variable name expected"
 msgstr "{ number number number } gerekli"
 
-#: org/jmol/viewer/Compiler.java:1956 org/jmol/viewer/Eval.java:8810
+#: org/jmol/viewer/Compiler.java:1956 org/jmol/viewer/Eval.java:8816
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "tanınmayan {0} parametre"
@@ -1245,7 +1246,7 @@ msgstr ""
 msgid "invalid atom specification"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:1985 org/jmol/viewer/Eval.java:8769
+#: org/jmol/viewer/Compiler.java:1985 org/jmol/viewer/Eval.java:8775
 msgid "quoted string expected"
 msgstr "Tırnak içindeki karakter dizgisi gerekli"
 
@@ -1339,52 +1340,52 @@ msgstr "bu bağlamda kesirli koordinatlara izin verilmiyor"
 msgid "invalid {0} control keyword"
 msgstr "geçersiz {0} kontrol anahtar sözcüğü"
 
-#: org/jmol/viewer/Eval.java:6861
+#: org/jmol/viewer/Eval.java:6867
 msgid "save what?"
 msgstr "neyi kaydet?"
 
-#: org/jmol/viewer/Eval.java:6898
+#: org/jmol/viewer/Eval.java:6904
 msgid "restore what?"
 msgstr "neyi geri yükle?"
 
-#: org/jmol/viewer/Eval.java:6962 org/jmol/viewer/Eval.java:7017
+#: org/jmol/viewer/Eval.java:6968 org/jmol/viewer/Eval.java:7023
 #, java-format
 msgid "The {0} command is not available for the applet."
 msgstr "{0} komutu applet için kullanılabilir değil."
 
-#: org/jmol/viewer/Eval.java:7011
+#: org/jmol/viewer/Eval.java:7017
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "neyi yaz? {0} ya da {1} \"dosyaadı\""
 
-#: org/jmol/viewer/Eval.java:7040
+#: org/jmol/viewer/Eval.java:7046
 #, fuzzy
 msgid "No data available"
 msgstr "Kullanılabilir MO katsayı verisi yok"
 
-#: org/jmol/viewer/Eval.java:7341 org/jmol/viewer/Eval.java:8025
+#: org/jmol/viewer/Eval.java:7347 org/jmol/viewer/Eval.java:8031
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "Bu çerçeve için kullanılabilir MO taban/katsayı verisi yok"
 
-#: org/jmol/viewer/Eval.java:8029
+#: org/jmol/viewer/Eval.java:8035
 msgid "no MO coefficient data available"
 msgstr "Kullanılabilir MO katsayı verisi yok"
 
-#: org/jmol/viewer/Eval.java:8031
+#: org/jmol/viewer/Eval.java:8037
 msgid "Only one molecular orbital is available in this file"
 msgstr "Bu dosyada sadece bir kullanılabilir moleküler orbital var"
 
-#: org/jmol/viewer/Eval.java:8040
+#: org/jmol/viewer/Eval.java:8046
 #, fuzzy
 msgid "no MO occupancy data available"
 msgstr "Kullanılabilir MO katsayı verisi yok"
 
-#: org/jmol/viewer/Eval.java:8050
+#: org/jmol/viewer/Eval.java:8056
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "1 den {0} 'a bir MO dizini gerekli"
 
-#: org/jmol/viewer/Eval.java:8526
+#: org/jmol/viewer/Eval.java:8532
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
@@ -1392,137 +1393,137 @@ msgstr ""
 "Dosyadan hiç kısmi yük okunmadı; Jmol MEP verisini işlemek için bunlara "
 "ihtiyaç duyuyor."
 
-#: org/jmol/viewer/Eval.java:8715
+#: org/jmol/viewer/Eval.java:8721
 msgid "MO isosurfaces require that only one model be displayed"
 msgstr "MO eşyüzeyler sadece bir model gösterilmesine izin verir"
 
-#: org/jmol/viewer/Eval.java:8719
+#: org/jmol/viewer/Eval.java:8725
 msgid "unrecognized command"
 msgstr "tanınmayan komut"
 
-#: org/jmol/viewer/Eval.java:8723
+#: org/jmol/viewer/Eval.java:8729
 msgid "unrecognized atom property"
 msgstr "tanınmayan atom özelliği"
 
-#: org/jmol/viewer/Eval.java:8727
+#: org/jmol/viewer/Eval.java:8733
 #, fuzzy
 msgid "unrecognized bond property"
 msgstr "tanınmayan atom özelliği"
 
-#: org/jmol/viewer/Eval.java:8731
+#: org/jmol/viewer/Eval.java:8737
 msgid "filename expected"
 msgstr "dosyaadı gerekli"
 
-#: org/jmol/viewer/Eval.java:8735
+#: org/jmol/viewer/Eval.java:8741
 msgid "boolean expected"
 msgstr "boole gerekli"
 
-#: org/jmol/viewer/Eval.java:8739
+#: org/jmol/viewer/Eval.java:8745
 msgid "boolean or number expected"
 msgstr "boole veya sayı gerekli"
 
-#: org/jmol/viewer/Eval.java:8743
+#: org/jmol/viewer/Eval.java:8749
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "boole, sayı, veya {0} gerekli"
 
-#: org/jmol/viewer/Eval.java:8747
+#: org/jmol/viewer/Eval.java:8753
 msgid "(atom expression) or integer expected"
 msgstr "(atom ifadesi) veya tam sayı gerekli"
 
-#: org/jmol/viewer/Eval.java:8751
+#: org/jmol/viewer/Eval.java:8757
 msgid "valid (atom expression) expected"
 msgstr "geçerli (atom ifadesi) gerekli"
 
-#: org/jmol/viewer/Eval.java:8755
+#: org/jmol/viewer/Eval.java:8761
 msgid "bad [R,G,B] color"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:8759
+#: org/jmol/viewer/Eval.java:8765
 msgid "integer expected"
 msgstr "tamsayı gerekli"
 
-#: org/jmol/viewer/Eval.java:8774
+#: org/jmol/viewer/Eval.java:8780
 msgid "quoted string or identifier expected"
 msgstr "tırnak içindeki karakter dizgisi veya tanımlayıcı gerekli"
 
-#: org/jmol/viewer/Eval.java:8778
+#: org/jmol/viewer/Eval.java:8784
 msgid "property name expected"
 msgstr "özellik adı gerekli"
 
-#: org/jmol/viewer/Eval.java:8782
+#: org/jmol/viewer/Eval.java:8788
 msgid "x y z axis expected"
 msgstr "x y z eksenleri gerekli"
 
-#: org/jmol/viewer/Eval.java:8786
+#: org/jmol/viewer/Eval.java:8792
 msgid "color expected"
 msgstr "renk gerekli"
 
-#: org/jmol/viewer/Eval.java:8790
+#: org/jmol/viewer/Eval.java:8796
 msgid "unrecognized object"
 msgstr "tanınmayan nesne"
 
-#: org/jmol/viewer/Eval.java:8794
+#: org/jmol/viewer/Eval.java:8800
 msgid "runtime unrecognized expression"
 msgstr "tanınmayan çalışma zamanı deyimi"
 
-#: org/jmol/viewer/Eval.java:8806
+#: org/jmol/viewer/Eval.java:8812
 msgid "invalid argument"
 msgstr "geçersiz bağımsız değişken"
 
-#: org/jmol/viewer/Eval.java:8814
+#: org/jmol/viewer/Eval.java:8820
 #, fuzzy, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "tanınmayan {0} parametre --  {1} kullan"
 
-#: org/jmol/viewer/Eval.java:8818
+#: org/jmol/viewer/Eval.java:8824
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "alan dışı tamsayı ({0} - {1})"
 
-#: org/jmol/viewer/Eval.java:8823
+#: org/jmol/viewer/Eval.java:8829
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "alan dışı ondalık sayı ({0} - {1})"
 
-#: org/jmol/viewer/Eval.java:8828
+#: org/jmol/viewer/Eval.java:8834
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "sayı  ({0} veya {1}) olmalı"
 
-#: org/jmol/viewer/Eval.java:8833
+#: org/jmol/viewer/Eval.java:8839
 msgid "file not found"
 msgstr "dosya bulunamadı"
 
-#: org/jmol/viewer/Eval.java:8837
+#: org/jmol/viewer/Eval.java:8843
 msgid "draw object not defined"
 msgstr "çizim nesnesi tanımlanmamış"
 
-#: org/jmol/viewer/Eval.java:8841
+#: org/jmol/viewer/Eval.java:8847
 msgid "object name expected after '$'"
 msgstr " '$' 'dan sonra nesne adı gerekli"
 
-#: org/jmol/viewer/Eval.java:8846
+#: org/jmol/viewer/Eval.java:8852
 msgid " {x y z} or $name or (atom expression) required"
 msgstr " {x y z} veya $ad veya (atom ifadesi) gerekli"
 
-#: org/jmol/viewer/Eval.java:8850
+#: org/jmol/viewer/Eval.java:8856
 msgid "keyword expected"
 msgstr "anahtar sözcük gerekli"
 
-#: org/jmol/viewer/Eval.java:8854
+#: org/jmol/viewer/Eval.java:8860
 msgid "invalid parameter order"
 msgstr "geçersiz parametre dizisi"
 
-#: org/jmol/viewer/Eval.java:8858
+#: org/jmol/viewer/Eval.java:8864
 msgid "incompatible arguments"
 msgstr "uyumsuz bağımsız değişkenler"
 
-#: org/jmol/viewer/Eval.java:8862
+#: org/jmol/viewer/Eval.java:8868
 msgid "insufficient arguments"
 msgstr "yetersiz bağımsız değişken"
 
-#: org/jmol/viewer/Eval.java:10073
+#: org/jmol/viewer/Eval.java:10079
 #, fuzzy
 msgid "too many parentheses"
 msgstr "çok fazla betik düzeyi"

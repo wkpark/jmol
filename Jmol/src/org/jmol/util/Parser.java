@@ -63,6 +63,14 @@ public class Parser {
                                                       int fieldMatch,
                                                       int[] matchData,
                                                       int field, float[] data) {
+    float f;
+    if (field == Integer.MIN_VALUE) { //just one value
+      f = parseFloat(str);
+      for (int i = 0; i < data.length; i++) 
+        if (bs == null || bs.get(i))
+          data[i] = f;
+      return; 
+    }
     if (field <= 0) {
       parseFloatArray(str, bs, data);
       return;
@@ -76,7 +84,6 @@ public class Parser {
     for (int iLine = 0; iLine < nLines; iLine++) {
       String[] tokens = getTokens(str.substring(pt, lines[iLine]));
       pt = lines[iLine];
-      float f;
       if (tokens.length < field || tokens.length < fieldMatch
           || Float.isNaN(f = parseFloat(tokens[field - 1])))
         continue;

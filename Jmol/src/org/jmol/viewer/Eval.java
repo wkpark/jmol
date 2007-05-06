@@ -3391,6 +3391,7 @@ class Eval { //implements Runnable {
   void data() throws ScriptException {
     String dataString = null;
     String dataLabel = null;
+    boolean isOneValue = false;
     int i;
     switch (iToken = statementLength) {
     case 5:
@@ -3408,6 +3409,10 @@ class Eval { //implements Runnable {
       if ((i = dataLabel.indexOf("@")) >= 0) {
         dataString = "" + viewer.getParameter(dataLabel.substring(i + 1));
         dataLabel = dataLabel.substring(0, i).trim();
+      } else if ((i = dataLabel.indexOf(" ")) >= 0) {
+        dataString = dataLabel.substring(i + 1).trim();
+        dataLabel = dataLabel.substring(0, i).trim();
+        isOneValue = true;
       }
       break;
     default:
@@ -3424,8 +3429,8 @@ class Eval { //implements Runnable {
         && fileOpenCheck) {
       if (dataType.toLowerCase().indexOf("property_") == 0) {
         BitSet bs = viewer.getSelectedAtomsOrBonds();
-        int dataField = ((Integer) viewer.getParameter("propertyDataField")).intValue();
-        int matchField = ((Integer) viewer.getParameter("propertyAtomNumberField")).intValue();
+        int dataField = isOneValue ? Integer.MIN_VALUE : ((Integer) viewer.getParameter("propertyDataField")).intValue();
+        int matchField = isOneValue ? 0 : ((Integer) viewer.getParameter("propertyAtomNumberField")).intValue();
         int atomCount = viewer.getAtomCount();
         int[] atomMap = null;
         BitSet bsAtoms = new BitSet(atomCount);
@@ -5574,8 +5579,13 @@ class Eval { //implements Runnable {
       setMonitor(2);
       return;
     case Token.property: // huh? why?
-      setProperty();
-      return;
+      key = parameterAsString(1).toLowerCase();
+      if (key.startsWith("property_")) {
+      } else {
+        setProperty();
+        return;
+      }
+      break;
     case Token.scale3d:
       setScale3d();
       return;
@@ -5738,7 +5748,7 @@ class Eval { //implements Runnable {
     String str = "";
     boolean showing = (!isSyntaxCheck && scriptLevel <= scriptReportingLevel);
 
-    if (setParameter(key, val)) {
+    if (key != null && setParameter(key, val)) {
       if (isSyntaxCheck)
         return;
     } else {
@@ -5746,6 +5756,12 @@ class Eval { //implements Runnable {
           key);
       if (isSyntaxCheck)
         return;
+      if (key.startsWith("property_")) {
+        n = viewer.getAtomCount();
+        Viewer.setData(key, new Object[] { key, "" + v,
+            viewer.getSelectedAtomsOrBonds() }, n, 0, Integer.MIN_VALUE);
+        return;
+      }
       if (v instanceof Boolean) {
         setBooleanProperty(key, ((Boolean) v).booleanValue());
       } else if (v instanceof Integer) {

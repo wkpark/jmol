@@ -2194,6 +2194,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
      * data[1] -- string or float[]
      * data[2] -- selection bitset or int[] atomMap when field < 0
      * 
+     * matchField = Integer.MIN_VALUE ==> one SINGLE data value should be used for all selected atoms
      */
     if (type == null) {
       dataValues.clear();

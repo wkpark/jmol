@@ -172,7 +172,11 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     System.out.println("Init jmol");
     htmlName = getParameter("name");
     language = getParameter("language");
-    if (language != null) {
+    doTranslate = (language != null || getBooleanValue("doTranslate",
+        true));
+    if (language == null) {
+      language = GT.getLanguage();
+    } else {
       System.out.println("language=" + language);
       new GT(language);
     }
@@ -342,8 +346,6 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       statusText = getValue("StatusText", null); //text
       statusTextarea = getValue("StatusTextarea", null); //textarea
       boolean haveTranslateFlag = (getValue("doTranslate", null) != null);
-      doTranslate = (language != null || getBooleanValue("doTranslate",
-          true));
 
       if (animFrameCallback != null)
         Logger.info("animFrameCallback=" + animFrameCallback);
@@ -1075,8 +1077,13 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     }
     
     public void handlePopupMenu(int x, int y) {
-      if (jmolpopup != null)
-        jmolpopup.show(x, y);
+      if (jmolpopup == null)
+        return;
+      if (!language.equals(GT.getLanguage())) {
+        jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate);
+        language = GT.getLanguage();
+      }
+      jmolpopup.show(x, y);
     }
 
     public void showUrl(String urlString) {

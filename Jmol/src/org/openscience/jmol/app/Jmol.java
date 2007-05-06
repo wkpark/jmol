@@ -76,6 +76,8 @@ public class Jmol extends JPanel {
   private FileTyper fileTyper;
   JFileChooser exportChooser;
   JmolPopup jmolpopup;
+  String language;
+  
   // private CDKPluginManager pluginManager;
 
   private GuiMap guimap = new GuiMap();
@@ -163,6 +165,7 @@ public class Jmol extends JPanel {
 
     setBorder(BorderFactory.createEtchedBorder());
     setLayout(new BorderLayout());
+    language = GT.getLanguage();
 
     status = (StatusBar) createStatusBar();
     say(GT._("Initializing 3D display..."));
@@ -184,9 +187,6 @@ public class Jmol extends JPanel {
       report("unrecognized model adapter:" + adapter + " -- using Smarter");
       modelAdapter = new SmarterJmolAdapter();
     }
-
-    
-    
     viewer = JmolViewer.allocateViewer(display, modelAdapter);
     viewer.setAppletContext("", null, null, commandOptions);
 
@@ -1619,6 +1619,10 @@ public class Jmol extends JPanel {
     }
 
     public void handlePopupMenu(int x, int y) {
+      if (!language.equals(GT.getLanguage())) {
+        jmolpopup = JmolPopup.newJmolPopup(viewer, true);
+        language = GT.getLanguage();
+      }
       jmolpopup.show(x, y);
     }
 

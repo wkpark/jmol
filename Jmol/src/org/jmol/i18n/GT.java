@@ -33,14 +33,22 @@ public class GT {
   private static GT getTextWrapper;
   private ResourceBundle[] translationResources = null;
   private int translationResourcesCount = 0;
-  private static boolean doTranslate = true;
-  private static String language;
+  private boolean doTranslate = true;
+  private String language;
 
-  public static String getLanguage() {
-    return language;
+  public GT(String la) {
+    getTranslation(la);
   }
   
-  private void getTranslation(String la) {
+  private GT() {
+    getTranslation(null);
+  }
+
+  public static String getLanguage() {
+    return getTextWrapper().language;
+  }
+  
+  synchronized private void getTranslation(String la) {
     if (la != null) {
       language = la;
       doTranslate = true;
@@ -48,7 +56,7 @@ public class GT {
     Locale locale = Locale.getDefault();
     translationResources = null;
     translationResourcesCount = 0;
-    getTextWrapper = null;
+    getTextWrapper = this;
     
     if ("en".equals(language) || 
         (language == null || language == "none") &&
@@ -77,13 +85,6 @@ public class GT {
     }
   }
   
-  public GT(String la) {
-    getTranslation(la);
-  }
-  
-  private GT() {
-    getTranslation(null);
-  }
 /*
   private void addBundles(String name, Locale locale) {
     if ((locale != null) && (locale.getLanguage() != null)) {
@@ -145,12 +146,12 @@ public class GT {
   }
 
   public static void setDoTranslate(boolean TF) {
-    doTranslate = TF;
+    getTextWrapper().doTranslate = TF;
 //    System.out.println("setDoTranslate " + doTranslate.booleanValue());
   }
 
   public static boolean getDoTranslate() {
-    return doTranslate;
+    return getTextWrapper().doTranslate;
   }
 
   public static String _(String string) {
@@ -186,7 +187,7 @@ public class GT {
 
   public static synchronized String _(String string, Object[] objects, boolean t) {
     boolean wasTranslating;
-    if (!(wasTranslating = doTranslate))
+    if (!(wasTranslating = getTextWrapper().doTranslate))
       setDoTranslate(true);
     String str = (objects == null ? _(string) : _(string, objects));
     if (!wasTranslating)

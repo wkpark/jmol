@@ -29,11 +29,11 @@ import org.jmol.i18n.GT;
 
 class PopupResourceBundle {
 
-  
   PopupResourceBundle() {
+    buildStructure();
     localize();
   }
-
+  
   String getStructure(String key) {
     return structure.getProperty(key);
   }
@@ -48,8 +48,8 @@ class PopupResourceBundle {
   }
 
   // Properties to store menu structure and contents
-  private final static Properties structure = new Properties();
-  private final static Properties words = new Properties();
+  private Properties structure = new Properties();
+  private Properties words = new Properties();
 
   final static String INHERIT = "none";
   final static String COLOR = "black white red orange yellow green cyan blue indigo violet";
@@ -61,7 +61,7 @@ class PopupResourceBundle {
   private static String Box(String cmd) {
     return "if not(showBoundBox);if not(showUnitcell);boundbox on;"+cmd+";boundbox off;else;"+cmd+";endif;endif;";
   }
-  private static final String[][] structureContents = {
+  private static String[][] structureContents = {
       {
           "popupMenu",
           "modelSetMenu FRAMESbyModelComputedMenu CONFIGURATIONComputedMenu - selectMenu viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYunitCellMenu - "
@@ -465,8 +465,7 @@ class PopupResourceBundle {
       { "mouseManualUrl", "http://wiki.jmol.org/index.php/Mouse_Manual" },
       { "translatingUrl", "http://wiki.jmol.org/index.php/Internationalisation" }, };
   
-  // Initialize structure properties
-  static {
+  private void buildStructure() {
     String previous = "";
     for (int i = 0; i < structureContents.length; i++) {
       String str = structureContents[i][1];
@@ -477,7 +476,7 @@ class PopupResourceBundle {
     }
   }
   
-  private static void localize() {
+  private void localize() {
     boolean wasTranslating = GT.getDoTranslate();
     if (!wasTranslating)
       GT.setDoTranslate(true);

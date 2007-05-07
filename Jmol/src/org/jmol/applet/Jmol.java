@@ -377,7 +377,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
               .warn("MAYSCRIPT missing -- all applet JavaScript calls disabled");
       }
       if (messageCallback != null || statusForm != null || statusText != null) {
-        if (language == null && !haveTranslateFlag) {
+        if (!haveTranslateFlag) {
           doTranslate = false;
           Logger
               .warn("Note -- Presence of message callback will disable translation; "

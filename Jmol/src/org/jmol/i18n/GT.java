@@ -49,10 +49,8 @@ public class GT {
   }
   
   synchronized private void getTranslation(String la) {
-    if (la != null) {
+    if (la != null)
       language = la;
-      doTranslate = true;
-    }
     Locale locale = Locale.getDefault();
     translationResources = null;
     translationResourcesCount = 0;
@@ -81,7 +79,7 @@ public class GT {
     try {
       addBundle("org.jmol.translation.JmolApplet.Messages_" + language);
     } catch (Exception exception) {
-      Logger.error("Some exception occured!", exception);
+      Logger.error("Some exception occurred!", exception);
     }
   }
   

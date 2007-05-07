@@ -437,11 +437,12 @@ abstract public class JmolPopup {
     enableMenu(htMenus.get("pickingMenu"), !isZapped);
     if (modelSetName == null || isZapped)
       return;
-    if (modelSetName.length() > 25)
-      modelSetName = modelSetName.substring(0, 20) + "...";
-    renameMenu(menu,
-        viewer.getBooleanProperty("hideNameInPopup") ? hiddenModelSetName
-            : modelSetName);
+    if (isMultiFrame) {
+      modelSetName = GT._("Collection of {0} models", modelCount);
+    } else if (viewer.getBooleanProperty("hideNameInPopup")) {
+      modelSetName = hiddenModelSetName;
+    }
+    renameMenu(menu, modelSetName);
     enableMenu(menu, true);
     addMenuSeparator(menu);
     addMenuItem(menu, GT._("atoms: {0}", atomCount, true));
@@ -529,27 +530,13 @@ abstract public class JmolPopup {
       removeMenuItem(menu, i);
     String language = GT.getLanguage();
     String id = getId(menu);
-    // the # here indicates that the command is complete; no need for TRUE or FALSE
-    addCheckboxMenuItem(menu, GT._("Catalan", true), "language = \"ca\" #Catalan",
-        id + ".ca", language.equals("ca"));
-    addCheckboxMenuItem(menu, GT._("Czech", true), "language = \"cs\" #Czech",
-        id + ".cs", language.equals("cs"));
-    addCheckboxMenuItem(menu, GT._("Dutch", true), "language = \"nl\" #Dutch",
-        id + ".nl", language.equals("nl"));
-    addCheckboxMenuItem(menu, GT._("English", true), "language = \"en\" #English",
-        id + ".en", language.equals("en"));
-    addCheckboxMenuItem(menu, GT._("Estonian", true), "language = \"et\" #Estonian",
-        id + ".et", language.equals("et"));
-    addCheckboxMenuItem(menu, GT._("French", true), "language = \"fr\" #French",
-        id + ".fr", language.equals("fr"));
-    addCheckboxMenuItem(menu, GT._("German", true), "language = \"de\" #German",
-        id + ".de", language.equals("de"));
-    addCheckboxMenuItem(menu, GT._("Portugese", true), "language = \"pt\" #Portugese",
-        id + ".pt", language.equals("pt"));
-    addCheckboxMenuItem(menu, GT._("Spanish", true), "language = \"es\" #Spanish",
-        id + ".es", language.equals("es"));
-    addCheckboxMenuItem(menu, GT._("Turkish", true), "language = \"tr\" #Turkish",
-        id + ".tr", language.equals("tr"));
+    String[][] languages = GT.getLanguageList();
+    for (int i = 0; i < languages.length; i++) {
+      String code = languages[i][0];
+      String name = languages[i][1];
+      addCheckboxMenuItem(menu, GT._(name, true), "language = \"" + code
+          + "\" #" + name, id + "." + code, language.equals(code));
+    }
   }
 
   private long convertToMegabytes(long num) {

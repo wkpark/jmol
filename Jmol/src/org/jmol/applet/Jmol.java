@@ -172,12 +172,12 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     System.out.println("Init jmol");
     htmlName = getParameter("name");
     language = getParameter("language");
-    if (language == null) {
-      language = GT.getLanguage();
-    } else {
-      System.out.println("language=" + language);
+    if (language != null) {
+      System.out.print("requested language=" + language + "; ");
       new GT(language);
     }
+    language = GT.getLanguage();
+    System.out.println("language=" + language);
     doTranslate = getBooleanValue("doTranslate", true);
     System.out.println("Jmol applet "+htmlName);
     setLogging();
@@ -1054,7 +1054,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     public void setCallbackFunction(String callbackType, String callbackFunction) {
       //also serves to change language for callbacks and menu
       if (callbackType.equalsIgnoreCase("language")) {
-        new GT(language = callbackFunction);
+        new GT(callbackFunction);
+        language = GT.getLanguage();
         if (needPopupMenu)
           jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate);  
         return;

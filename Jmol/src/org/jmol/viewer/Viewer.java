@@ -254,6 +254,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       fileManager.setAppletContext(documentBase, codeBase,
           appletProxyOrCommandOptions);
     zap(false); //here to allow echos
+    global.setParameterValue("_language", GT.getLanguage());
   }
 
   public static String getJmolVersion() {
@@ -3136,6 +3137,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setLanguage(String language) {
     statusManager.setCallbackFunction("language", language);
+    global.setParameterValue("_language", GT.getLanguage());
   }
   
   private void setLoadFormat(String format) {

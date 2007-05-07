@@ -44,6 +44,50 @@ public class GT {
     getTranslation(null);
   }
 
+  private static String[][] languageList;
+  
+  public static String[][] getLanguageList() {
+    return (languageList != null ? languageList : getTextWrapper().createLanguageList());
+  }
+
+  /**
+   * This is the place to put the list of supported languages. It is accessed
+   * by JmolPopup to create the menu list. Note that the names are in GT._
+   * even though we set doTranslate false. That ensures that the language name
+   * IN THIS LIST is untranslated, but it provides the code xgettext needs in
+   * order to provide the list of names that will need translation by translators
+   * (the .po files). Later, in JmolPopup.updateLanguageMenu(), GT._() is used
+   * again to create the actual, localized menu item name. 
+   * Introduced in Jmol 11.1.34 
+   * @author Bob Hanson May 7, 2007
+   * @return  list of codes and untranslated names
+   */
+  synchronized private String[][] createLanguageList() {
+    boolean wasTranslating = doTranslate;
+    doTranslate = false;
+    languageList = new String[][] {
+    {"ca", GT._("Catalan")},
+    {"cs", GT._("Czech")},
+    {"nl", GT._("Dutch")},
+    {"en", GT._("English")},
+    {"et", GT._("Estonian")},
+    {"fr", GT._("French")},
+    {"de", GT._("German")},
+    {"pt", GT._("Portugese")},
+    {"es", GT._("Spanish")},
+    {"tr", GT._("Turkish")},};
+    doTranslate = wasTranslating;
+    return languageList;
+  }
+
+  private boolean isSupported(String languageCode) {
+    for (int i = 0; i < languageList.length; i++) {
+      if (languageList[i][0].equals(languageCode))
+        return true;
+    }
+    return false;
+  }
+ 
   public static String getLanguage() {
     return getTextWrapper().language;
   }
@@ -64,6 +108,11 @@ public class GT {
           || language.equals(Locale.ENGLISH.getLanguage())
         )) {
       Logger.debug("English: no need for gettext wrapper");
+      return;
+    }
+ 
+    if (!isSupported(language)) {
+      language = "en";
       return;
     }
     
@@ -103,14 +152,9 @@ public class GT {
   }
 */
   private void addBundle(String name_lang) {
-    ClassLoader loader = getClass().getClassLoader();
     Class bundleClass = null;
     try {
-      if (loader != null) {
-        bundleClass = loader.loadClass(name_lang);
-      } else {
-        bundleClass = Class.forName(name_lang);
-      }
+      bundleClass = Class.forName(name_lang);
     } catch (ClassNotFoundException e) {
       // Class not found: can be normal
     }

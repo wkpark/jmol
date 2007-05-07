@@ -631,7 +631,7 @@ public class StateManager {
       + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;"
       + ";cameradepth;navigationmode;rotationradius;"
       + ";zerobasedxyzrasmol;axesorientationrasmol;"
-      + ";_language;_spinning;_modelnumber;_modelname;_currentmodelnumberinfile;_currentfilenumber;_version;_memory;"
+      + ";language;_spinning;_modelnumber;_modelname;_currentmodelnumberinfile;_currentfilenumber;_version;_memory;"
       + ";_width;_height;_atompicked;_atomhovered;_modelfile;_modeltitle;";
 
     void clearVolatileProperties() {

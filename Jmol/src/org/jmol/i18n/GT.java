@@ -69,7 +69,7 @@ public class GT {
     {"ca", GT._("Catalan")},
     {"cs", GT._("Czech")},
     {"nl", GT._("Dutch")},
-    {"en", GT._("English")},
+    {"en_US", GT._("English (US)")},
     {"et", GT._("Estonian")},
     {"fr", GT._("French")},
     {"de", GT._("German")},
@@ -80,83 +80,136 @@ public class GT {
     return languageList;
   }
 
-  private boolean isSupported(String languageCode) {
+  private String getSupported(String languageCode) {
+    if (languageCode == null)
+      return null;
+    if (languageList == null)
+      createLanguageList();
     for (int i = 0; i < languageList.length; i++) {
-      if (languageList[i][0].equals(languageCode))
-        return true;
+      if (languageList[i][0].equalsIgnoreCase(languageCode))
+        return languageList[i][0];
     }
-    return false;
+    return findClosest(languageCode);
   }
  
+  /**
+   * 
+   * @param la
+   * @return   a localization of the desired language, but not it exactly 
+   */
+  private String findClosest(String la) {
+    for (int i = 0; i < languageList.length; i++) {
+      if (languageList[i][0].startsWith(la))
+        return languageList[i][0];
+    }
+    return null;    
+  }
+  
   public static String getLanguage() {
     return getTextWrapper().language;
   }
   
-  synchronized private void getTranslation(String la) {
-    if (la != null)
-      language = la;
-    Locale locale = Locale.getDefault();
+  synchronized private void getTranslation(String langCode) {
+    Locale locale;
     translationResources = null;
     translationResourcesCount = 0;
     getTextWrapper = this;
-    
-    if ("en".equals(language) || 
-        (language == null || language == "none") &&
-        ((locale = Locale.getDefault()) == null
-          || (language = locale.getLanguage()) == null
-          || language.equals("") 
-          || language.equals(Locale.ENGLISH.getLanguage())
-        )) {
+    if (langCode != null)
+      language = langCode;
+    if ("none".equals(language))
+      language = null;
+    if (language == null && (locale = Locale.getDefault()) != null) {
+      language = locale.getLanguage();
+      if (locale.getCountry() != null) {
+        language += "_" + locale.getCountry();
+        if (locale.getVariant() != null && locale.getVariant().length() > 0)
+          language += "_" + locale.getVariant();
+      }
+    }
+    if (language == null)
+      language = "en_US";
+
+    int i;
+    String la = language;
+    String la_co = language;
+    String la_co_va = language;
+    if ((i = language.indexOf("_")) >= 0) {
+      la = la.substring(0, i);
+      if ((i = language.indexOf("_", ++i)) >= 0) {
+        la_co = la.substring(0, i);
+      } else {
+        la_co_va = null;
+      }
+    } else {
+      la_co = null;
+      la_co_va = null;
+    }
+
+    if ((language = getSupported(la_co_va)) != null) {
+    } else if ((language = getSupported(la_co)) != null) {
+      la_co_va = null;
+    } else if ((language = getSupported(la)) != null) {
+      la_co_va = null;
+      la_co = null;
+    } else {
+      la = language = "en";
+      la_co = null;
+      la_co_va = null;
       Logger.debug("English: no need for gettext wrapper");
       return;
     }
- 
-    if (!isSupported(language)) {
-      language = "en";
-      return;
+    switch (language.length()) {
+    case 2:
+      la = language;
+      break;
+    case 5:
+      la_co = language;
+      la = language.substring(0, 2);
+      break;
+    default:
+      la_co_va = language;
+      la_co = language.substring(0, 5);
+      la = language.substring(0, 2);
     }
-    
+
+    if (la.equals("en")) //no variants on Engish for now
+      return;
+
     Logger.debug("Instantiating gettext wrapper for " + language + "...");
+    String className;
     try {
       if (!ignoreApplicationBundle) {
-        addBundle("org.jmol.translation.Jmol.Messages_" + language);
+        className = "org.jmol.translation.Jmol.Messages_";
+        if (la_co_va != null)
+          addBundle(className + la_co_va);
+        if (la_co != null)
+          addBundle(className + la_co);
+        if (la != null)
+          addBundle(className + la);
       }
     } catch (Exception exception) {
       Logger.error("Some exception occurred!", exception);
       translationResources = null;
     }
     try {
-      addBundle("org.jmol.translation.JmolApplet.Messages_" + language);
+      className = "org.jmol.translation.JmolApplet.Messages_";
+      if (la_co_va != null)
+        addBundle(className + la_co_va);
+      if (la_co != null)
+        addBundle(className + la_co);
+      if (la != null)
+        addBundle(className + la);
     } catch (Exception exception) {
       Logger.error("Some exception occurred!", exception);
     }
   }
   
-/*
-  private void addBundles(String name, Locale locale) {
-    if ((locale != null) && (locale.getLanguage() != null)) {
-      if (locale.getCountry() != null) {
-        if (locale.getVariant() != null) {
-          // NOTE: Currently, there's no need for variants
-          addBundle(
-           name + "_" + locale.getLanguage() +
-           "_" + locale.getCountry() + "_" + locale.getVariant());
-        }
-        // NOTE: Currently, there's no need for countries
-        //addBundle(name + "_" + locale.getLanguage() + "_" + locale.getCountry());
-      }
-      addBundle(name + "_" + locale.getLanguage());
-    }
-    // NOTE: Currently, there's no base class
-    //addBundle(name);
-  }
-*/
   private void addBundle(String name_lang) {
     Class bundleClass = null;
     try {
       bundleClass = Class.forName(name_lang);
     } catch (ClassNotFoundException e) {
-      // Class not found: can be normal
+      Logger.error("GT could not find the class " + name_lang);
     }
     if ((bundleClass != null)
         && ResourceBundle.class.isAssignableFrom(bundleClass)) {

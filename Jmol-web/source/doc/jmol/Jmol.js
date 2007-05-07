@@ -1,7 +1,7 @@
 
-/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 12:54 AM 1/9/2007
+/* Jmol 11.0 script library Jmol.js (aka Jmol-11.js) 1:34 AM 3/19/2007
 
- first pass at checkbox heirarchy -- see http://www.stolaf.edu/academics/jmol/docs/examples-11/check.htm
+ checkbox heirarchy -- see http://www.stolaf.edu/academics/jmol/docs/examples-11/check.htm
 
     based on:
  *
@@ -31,6 +31,10 @@ try{if(typeof(_jmol)!="undefined")exit()
 
 // place "?NOAPPLET" on your command line to check applet control action with a textarea
 
+// bob hanson -- jmolResize(w,h) -- resizes absolutely or by percent (w or h 0.5 means 50%)
+// bob hanson -- jmolEvaluate -- evaluates molecular math 8:37 AM 2/23/2007
+// bob hanson -- jmolScriptMessage -- returns all "scriptStatus" messages 8:37 AM 2/23/2007
+// bob hanson -- jmolScriptEcho -- returns all "scriptEcho" messages 8:37 AM 2/23/2007
 // bob hanson -- jmolScriptWait -- 11:31 AM 5/2/2006
 // bob hanson -- remove trailing separatorHTML in radio groups -- 12:18 PM 5/6/2006
 // bob hanson -- adds support for dynamic DOM script nodes 7:04 AM 5/19/2006
@@ -294,10 +298,16 @@ function jmolMenu(arrayOfMenuItems, size, id, title) {
         script = text = menuItem;
       }
       if (text == undefined || text == null)
-        text = script;
-      var scriptIndex = _jmolAddScript(script);
-      var selectedText = isSelected ? "' selected>" : "'>";
-      t += "<option value='" + scriptIndex + selectedText + text + "</option>";
+        text = script;		
+	  if (script=="#optgroup") {
+        t += "<optgroup label='" + text + "'>";	  
+	  } else if (script=="#optgroupEnd") {
+        t += "</optgroup>";	  
+	  } else {		
+        var scriptIndex = _jmolAddScript(script);
+        var selectedText = isSelected ? "' selected>" : "'>";
+        t += "<option value='" + scriptIndex + selectedText + text + "</option>";
+	  }
     }
     t += "</select></span>";
     if (_jmol.debugAlert)
@@ -605,7 +615,24 @@ function jmolSetLogLevel(n) {
   _jmol.params.logLevel = ''+n;
 }
 
+	/*  AngelH, mar2007:
+		By (re)setting these variables in the webpage before calling jmolApplet(), 
+		a custom message can be provided (e.g. localized for user's language) when no Java is installed.
+	*/
+if (noJavaMsg==undefined) var noJavaMsg = 
+        "You do not have Java applets enabled in your web browser, or your browser is blocking this applet.<br />\n" +
+        "Check the warning message from your browser and/or enable Java applets in<br />\n" +
+        "your web browser preferences, or install the Java Runtime Environment from <a href='http://www.java.com'>www.java.com</a><br />";
+if (noJavaMsg2==undefined) var noJavaMsg2 = 
+        "You do not have the<br />\n" +
+        "Java Runtime Environment<br />\n" +
+        "installed for applet support.<br />\n" +
+        "Visit <a href='http://www.java.com'>www.java.com</a>";
 function _jmolApplet(size, inlineModel, script, nameSuffix) {
+	/*  AngelH, mar2007
+		Fixed percent / pixel business, to avoid browser errors:
+		put "px" where needed, avoid where not.		
+	*/
   with (_jmol) {
     if (! nameSuffix)
       nameSuffix = appletCount;
@@ -614,8 +641,7 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
     if (! script)
       script = "select *";
     var sz = _jmolGetAppletSize(size);
-    var widthAndHeight = " width='" + sz[0] + "px' height='" + sz[1] + "px' ";
-
+    var widthAndHeight = " width='" + sz[0] + "' height='" + sz[1] + "' ";
     var tHeader, tFooter;
 
     if (useIEObject || useHtml4Object) {
@@ -647,34 +673,29 @@ function _jmolApplet(size, inlineModel, script, nameSuffix) {
         "' " + appletCssText +
         " code='JmolApplet'" +
         " archive='" + archivePath + "' codebase='" + codebase + "'\n" +
-        " width='" + sz[0] + "' height='" + sz[1] +
-        "' mayscript='true'>\n";
+		widthAndHeight +
+        " mayscript='true'>\n";
       tFooter = "</applet>";
     }
-        
     var visitJava;
     if (isIEWin || useHtml4Object) {
+		var szX = "width:" + sz[0]
+		if ( szX.indexOf("%")==-1 ) szX+="px" 
+		var szY = "height:" + sz[1]
+		if ( szY.indexOf("%")==-1 ) szY+="px" 
       visitJava =
-        "<p style='background-color:yellow;" +
-        "width:" + sz[0] + "px;height:" + sz[1] + "px;" + 
+        "<p style='background-color:yellow; color:black; " +
+		szX + ";" + szY + ";" +
         // why doesn't this vertical-align work?
 	"text-align:center;vertical-align:middle;'>\n" +
-        "You do not have Java applets<br />\n" +
-        "enabled in your web browser.<br />\n" +
-        "Install the Java Runtime Environment<br />\n" +
-        "from <a href='http://www.java.com'>www.java.com</a><br />" +
-        "and/or enable Java applets in<br />\n" +
-        "your web browser preferences." +
+		noJavaMsg +
         "</p>";
     } else {
       visitJava =
-        "<table bgcolor='yellow' width='" + sz[0] + "'><tr>" +
-        "<td align='center' valign='middle' height='" + sz[1] + "'>\n" +
-        "You do not have the<br />\n" +
-        "Java Runtime Environment<br />\n" +
-        "installed for applet support.<br />\n" +
-        "Visit <a href='http://www.java.com'>www.java.com</a>" +
-        "</td></tr></table>";
+        "<table bgcolor='yellow'><tr>" +
+        "<td align='center' valign='middle' " + widthAndHeight + "><font color='black'>\n" +
+		noJavaMsg2 +
+        "</font></td></tr></table>";
     }
     params.loadInline = (inlineModel ? inlineModel : "");
     params.script = (script ? _jmolSterilizeScript(script) : "");
@@ -768,18 +789,35 @@ function _jmolSterilizeInline(model) {
   return inlineModel;
 }
 
+	/*  AngelH, mar2007:
+		By (re)setting this variable in the webpage before calling jmolApplet(), limits for applet size can be overriden.
+	*/
+if (allowedJmolSize==undefined) var allowedJmolSize = [25, 2000, 300]   // min, max, default (pixels)
 function _jmolGetAppletSize(size) {
+	/*  AngelH, mar2007
+		Accepts single number or 2-value array, each one can be either:
+	   percent (text string ending %), decimal 0 to 1 (percent/100), number, or text string (interpreted as nr.)
+	   Size is now returned as string or number, no "px".
+	*/
   var width, height;
-  var type = typeof size;
-  if (type == "number")
-    width = height = size;
-  else if (type == "object" && size != null) {
+  if ( (typeof size) == "object" && size != null ) {
     width = size[0]; height = size[1];
+  } else {
+    width = height = size;
   }
-  if (! (width >= 25 && width <= 2000))
-    width = 300;
-  if (! (height >= 25 && height <= 2000))
-    height = 300;
+  // if percent, leave it as it is:
+  if ( width.toString().charAt(width.toString().length-1) != "%" ) {
+    width = parseFloat(width);	// convert to nr., or strip text, or make zero
+	if ( width <= 1 && width > 0 ) { width = (width*100)+"%" }	// decimal: convert to percent and quit
+	else if ( width >= allowedJmolSize[0] && width <= allowedJmolSize[1] ) { width = parseInt(width) }	// accept only that range (pixels)
+	else { width = allowedJmolSize[2] }	// default size 300 pixels
+  }
+  if ( height.toString().charAt(height.toString().length-1) != "%" ) {
+    height = parseFloat(height);
+	if ( height <= 1 && height > 0 ) { height = (height*100)+"%" }
+	else if ( height >= allowedJmolSize[0] && height <= allowedJmolSize[1] ) { height = parseInt(height) }
+	else { height = allowedJmolSize[2] }
+  }
   return [width, height];
 }
 
@@ -1134,6 +1172,43 @@ function jmolScriptWait(script, targetSuffix) {
   return s
 }
 
+function jmolEvaluate(molecularMath, targetSuffix) {
+
+  //carries out molecular math on a model
+
+  if(!targetSuffix)targetSuffix="0"
+  var result = "" + jmolGetPropertyAsJavaObject("evaluate", molecularMath, targetSuffix);
+  var s = result.replace(/\-*\d+/,"")
+  if (s == "" && !isNaN(parseInt(result)))return parseInt(result);
+  var s = result.replace(/\-*\d*\.\d*/,"")
+  if (s == "" && !isNaN(parseFloat(result)))return parseFloat(result);
+  return result;
+}
+
+function jmolScriptEcho(script, targetSuffix) {
+  // returns a newline-separated list of all echos from a script
+  if(!targetSuffix)targetSuffix="0"
+  var Ret=jmolScriptWaitAsArray(script, targetSuffix)
+  var s = ""
+  for(i=Ret.length;--i>=0;)
+  for(j=Ret[i].length;--j>=0;)
+        if (Ret[i][j][1] == "scriptEcho")s+=Ret[i][j][3]+"\n"
+  return s.replace(/ \| /g, "\n")
+}
+
+
+function jmolScriptMessage(script, targetSuffix) {
+  // returns a newline-separated list of all messages from a script, ending with "script completed\n"
+  if(!targetSuffix)targetSuffix="0"
+  var Ret=jmolScriptWaitAsArray(script, targetSuffix)
+  var s = ""
+  for(i=Ret.length;--i>=0;)
+  for(j=Ret[i].length;--j>=0;)
+        if (Ret[i][j][1] == "scriptStatus")s+=Ret[i][j][3]+"\n"
+  return s.replace(/ \| /g, "\n")
+}
+
+
 function jmolScriptWaitAsArray(script, targetSuffix) {
  var ret = ""
  try{
@@ -1324,4 +1399,28 @@ if(document.location.search.indexOf("NOAPPLET")>=0){
 
 
 ///////////////////////////////////////////
+
+//new 9:49 AM 3/6/2007:
+
+//both w and h are optional. 
+//if either is between 0 and 1, then it is taken as percent/100.
+//if either is greater than 1, then it is taken as a size. 
+function jmolResize(w,h) {
+ _jmol.alerted = true;
+ var percentW = (!w ? 100 : w <= 1  && w > 0 ? w * 100 : 0)
+ var percentH = (!h ? percentW : h <= 1 && h > 0 ? h * 100 : 0)
+ if (_jmol.browser=="msie") {
+   var width=document.body.clientWidth;
+   var height=document.body.clientHeight;
+ } else {
+   var netscapeScrollWidth=15;
+   var width=window.innerWidth - netscapeScrollWidth;
+   var height=window.innerHeight-netscapeScrollWidth;
+ }
+ var applet = _jmolGetApplet(0);
+ if(!applet)return;
+ applet.style.width = (percentW ? width * percentW/100 : w)+"px"
+ applet.style.height = (percentH ? height * percentH/100 : h)+"px"
+ title=width +  " " + height + " " + (new Date())
+}
 

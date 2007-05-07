@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-05-01 20:52+0200\n"
-"PO-Revision-Date: 2006-04-09 11:48+0100\n"
+"PO-Revision-Date: 2007-05-07 19:45+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -158,7 +158,7 @@ msgstr "Preview"
 
 #: org/openscience/jmol/app/FilePreview.java:87
 msgid "Append models"
-msgstr ""
+msgstr "Modellen toevoegen"
 
 #: org/openscience/jmol/app/GuiMap.java:45
 msgid "&File"
@@ -193,9 +193,8 @@ msgid "&Export"
 msgstr "&Exporteren"
 
 #: org/openscience/jmol/app/GuiMap.java:53
-#, fuzzy
 msgid "Export Image or Script..."
-msgstr "Exporteer Figuur..."
+msgstr "Exporteer Figuur of Script..."
 
 #: org/openscience/jmol/app/GuiMap.java:54
 msgid "Render in pov-ray..."
@@ -245,7 +244,7 @@ msgstr "Kopieer plaatje"
 
 #: org/openscience/jmol/app/GuiMap.java:65
 msgid "Copy Script"
-msgstr ""
+msgstr "Script kopi&euml;ren"
 
 #: org/openscience/jmol/app/GuiMap.java:66
 msgid "&Preferences..."
@@ -563,9 +562,8 @@ msgid "What's New"
 msgstr "Wat is Nieuw"
 
 #: org/openscience/jmol/app/GuiMap.java:160
-#, fuzzy
 msgid "Jmol Java &Console"
-msgstr "Jmol Java Console"
+msgstr "Jmol Java &Console"
 
 #: org/openscience/jmol/app/GuiMap.java:161
 msgid "Hydrogens"
@@ -597,9 +595,8 @@ msgid "Open a file."
 msgstr "Open een bestand."
 
 #: org/openscience/jmol/app/GuiMap.java:172
-#, fuzzy
 msgid "Export view to an image or script file."
-msgstr "Exporteer de weergave naar bestand."
+msgstr "Exporteer de weergave of een script naar bestand."
 
 #: org/openscience/jmol/app/GuiMap.java:173
 msgid "Render in pov-ray."
@@ -711,7 +708,7 @@ msgstr "geen scherm (en sluit ook af wanneer klaar)"
 
 #: org/openscience/jmol/app/Jmol.java:393
 msgid "check script syntax only"
-msgstr ""
+msgstr "Alleen de syntax van het script controleren"
 
 #: org/openscience/jmol/app/Jmol.java:394
 msgid "silent startup operation"
@@ -734,9 +731,9 @@ msgid "supported options are given below"
 msgstr "ondersteunde waarde staan hieronder"
 
 #: org/openscience/jmol/app/Jmol.java:414
-#, fuzzy, java-format
+#, java-format
 msgid "window width x height, e.g. {0}"
-msgstr "windowgrootte, bv. {0}"
+msgstr "windowhoogte, bv. {0}"
 
 #: org/openscience/jmol/app/Jmol.java:421
 #, java-format
@@ -817,12 +814,8 @@ msgid "Filename Stem"
 msgstr "Begin Bestandsnaam"
 
 #: org/openscience/jmol/app/PovrayDialog.java:158
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
-msgstr ""
-"Enkel frame: bv. 'caffeine' => 'caffeine.pov'; meerdere frames: bv. "
-"'caffeine' => 'caffeine_1.pov', 'caffeine_2.pov'"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgstr "Enkel frame: bv. 'caffeine' => 'caffeine.pov'; meerdere frames: bv. 'caffeine' => 'caffeine_1.pov', 'caffeine_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:168
 msgid "Working Directory"
@@ -1108,9 +1101,8 @@ msgid "History"
 msgstr "Geschiedenis"
 
 #: org/openscience/jmol/app/ScriptWindow.java:104
-#, fuzzy
 msgid "State"
-msgstr "Opslaan"
+msgstr "Toestand"
 
 #: org/openscience/jmol/app/ScriptWindow.java:108
 msgid "Help"
@@ -1118,11 +1110,11 @@ msgstr "Help"
 
 #: org/openscience/jmol/app/ScriptWindow.java:116
 msgid "Undo"
-msgstr ""
+msgstr "Ongedaan maken"
 
 #: org/openscience/jmol/app/ScriptWindow.java:120
 msgid "Redo"
-msgstr ""
+msgstr "Opnieuw uitvoeren"
 
 #: org/openscience/jmol/app/Splash.java:45
 msgid "Loading..."
@@ -1134,3 +1126,4 @@ msgstr "Wat is nieuw in Jmol"
 
 #~ msgid "File not loaded"
 #~ msgstr "Bestand niet geladen"
+

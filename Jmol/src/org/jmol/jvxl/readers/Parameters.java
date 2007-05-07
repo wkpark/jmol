@@ -477,6 +477,8 @@ public class Parameters {
       if (colorBySign) {
         isBicolorMap = true;
       }
+      if (resolution == Float.MAX_VALUE)
+        resolution = 6;
     }
     return (psi_Znuc > 0 && Math.abs(psi_m) <= psi_l && psi_l < psi_n);
   }  

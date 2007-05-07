@@ -534,8 +534,9 @@ abstract public class JmolPopup {
     for (int i = 0; i < languages.length; i++) {
       String code = languages[i][0];
       String name = languages[i][1];
-      addCheckboxMenuItem(menu, GT._(name, true), "language = \"" + code
-          + "\" #" + name, id + "." + code, language.equals(code));
+      addCheckboxMenuItem(menu, GT._(name, true) + " (" + code + ")",
+          "language = \"" + code + "\" #" + name, id + "." + code, language
+              .equals(code));
     }
   }
 

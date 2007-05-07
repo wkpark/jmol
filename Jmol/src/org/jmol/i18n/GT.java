@@ -69,7 +69,7 @@ public class GT {
     {"ca", GT._("Catalan")},
     {"cs", GT._("Czech")},
     {"nl", GT._("Dutch")},
-    {"en_US", GT._("English (US)")},
+    {"en_US", GT._("English")},
     {"et", GT._("Estonian")},
     {"fr", GT._("French")},
     {"de", GT._("German")},

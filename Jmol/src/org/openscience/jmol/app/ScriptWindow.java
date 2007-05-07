@@ -174,7 +174,7 @@ public final class ScriptWindow extends JDialog
       try {
         executeCommand(strCommand);
       } catch (Exception ie) {
-        Logger.debug("execution command interrupted!"+ie);
+        Logger.error("execution command interrupted!",ie);
       }
     }
   }

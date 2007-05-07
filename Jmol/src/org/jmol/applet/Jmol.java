@@ -318,7 +318,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       // should the popupMenu be loaded ?
       needPopupMenu = getBooleanValue("popupMenu", true);
       if (needPopupMenu)
-        loadPopupMenuAsBackgroundTask();
+        jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate);  
+      //if (needPopupMenu)
+        //loadPopupMenuAsBackgroundTask();
 
       emulate = getValueLowerCase("emulate", "jmol");
       if (emulate.equals("chime")) {
@@ -873,9 +875,6 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
           }
         haveNotifiedError = true;
       }
-
-      //      if (jmolpopup != null)
-      //      jmolpopup.updateComputedMenus();
     }
 
     public void notifyScriptStart(String statusMessage, String additionalInfo) {
@@ -973,20 +972,21 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
     public void notifyFrameChanged(int frameNo, int fileNo, int modelNo,
                                    int firstNo, int lastNo) {
-      if (!mayScript || animFrameCallback == null)
-        return;
       boolean isAnimationRunning = (frameNo <= -2);
-      try {
-        jsoWindow.call(animFrameCallback, new Object[] { htmlName,
-            new Integer(Math.max(frameNo, -2 - frameNo)), new Integer(fileNo),
-            new Integer(modelNo), new Integer(firstNo), new Integer(lastNo) });
-      } catch (Exception e) {
-        if (!haveNotifiedError)
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-            Logger.debug("animFrameCallback call error to " + animFrameCallback
-                + ": " + e);
-          }
-        haveNotifiedError = true;
+      if (mayScript && animFrameCallback != null) {
+        try {
+          jsoWindow.call(animFrameCallback, new Object[] { htmlName,
+              new Integer(Math.max(frameNo, -2 - frameNo)),
+              new Integer(fileNo), new Integer(modelNo), new Integer(firstNo),
+              new Integer(lastNo) });
+        } catch (Exception e) {
+          if (!haveNotifiedError)
+            if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+              Logger.debug("animFrameCallback call error to "
+                  + animFrameCallback + ": " + e);
+            }
+          haveNotifiedError = true;
+        }
       }
       if (jmolpopup == null || isAnimationRunning)
         return;

@@ -7459,6 +7459,7 @@ class Eval { //implements Runnable {
       return;
     boolean havePoints = false;
     boolean isInitialized = false;
+    boolean isSavedState = false;
     boolean isTranslucent = false;
     float translucentLevel = Float.MAX_VALUE;
     int colorArgb = Integer.MIN_VALUE;
@@ -7476,6 +7477,24 @@ class Eval { //implements Runnable {
       case Token.length:
         propertyValue = new Float(floatParameter(++i));
         propertyName = "length";
+        break;
+      case Token.decimal:
+        // $drawObject
+        propertyValue = new Float(floatParameter(i));
+        propertyName = "length";
+        break;
+      case Token.integer:
+        if (isSavedState) {
+          propertyName = "modelIndex";
+          propertyValue = new Integer(intParameter(i));
+        } else {
+          intScale = intParameter(i);
+        }
+        break;
+      case Token.rightsquare:
+      case Token.leftsquare:
+        if ((isSavedState = !isSavedState) == (theTok == Token.rightsquare))
+          invalidArgument();
         break;
       case Token.identifier:
         propertyValue = theToken.value;
@@ -7580,14 +7599,6 @@ class Eval { //implements Runnable {
           continue;
         }
         invalidArgument();
-      case Token.decimal:
-        // $drawObject
-        propertyValue = new Float(floatParameter(i));
-        propertyName = "length";
-        break;
-      case Token.integer:
-        intScale = intParameter(i);
-        break;
       case Token.leftbrace:
       case Token.point3f:
         // {X, Y, Z}
@@ -7626,7 +7637,8 @@ class Eval { //implements Runnable {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "colorRGB", new Integer(
           colorArgb));
     if (isTranslucent)
-      setShapeTranslucency(JmolConstants.SHAPE_DRAW, "", "translucent", translucentLevel);
+      setShapeTranslucency(JmolConstants.SHAPE_DRAW, "", "translucent",
+          translucentLevel);
     if (intScale != 0) {
       setShapeProperty(JmolConstants.SHAPE_DRAW, "scale", new Integer(intScale));
     }
@@ -8098,7 +8110,8 @@ class Eval { //implements Runnable {
     iToken = 1;
     if (!setMeshDisplayProperty(iShape, 0, tokAt(1))) {
       setShapeProperty(iShape, "thisID", JmolConstants.PREVIOUS_MESH_ID);
-      setShapeProperty(iShape, "title", new String[] { thisCommand });
+      if (iShape != JmolConstants.SHAPE_DRAW)
+        setShapeProperty(iShape, "title", new String[] { thisCommand });
     }
   }
   

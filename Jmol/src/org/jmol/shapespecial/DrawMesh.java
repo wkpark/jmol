@@ -38,14 +38,15 @@ public class DrawMesh extends Mesh {
 
   final static int DRAW_MULTIPLE = -1;
   final static int DRAW_NONE = 0;
-  final static int DRAW_ARROW = 1;
-  final static int DRAW_CIRCLE = 2;
-  final static int DRAW_CURVE = 3;
-  final static int DRAW_LINE = 4;
-  final static int DRAW_PLANE = 5;
-  final static int DRAW_POINT = 6;
-  final static int DRAW_TRIANGLE = 7;
-  final static int ISOSURFACE_BICOLOR = 8;
+  //next are same as number of points
+  final static int DRAW_POINT = 1;
+  final static int DRAW_LINE = 2;
+  final static int DRAW_TRIANGLE = 3;
+  final static int DRAW_PLANE = 4;
+  //next are special
+  final static int DRAW_ARROW = 15;
+  final static int DRAW_CIRCLE = 16;
+  final static int DRAW_CURVE = 17;
   
   int drawType = DRAW_TRIANGLE;
   int[] drawTypes;
@@ -54,6 +55,7 @@ public class DrawMesh extends Mesh {
   Vector3f axes[];
   int drawVertexCount;
   int[] drawVertexCounts;
+  boolean isFixed;
 
   String getDrawType() {
     switch (drawType) {

@@ -1411,8 +1411,7 @@ class Eval { //implements Runnable {
   }
 
   static int getSeqCode(Token instruction) {
-    return (instruction.intValue != Integer.MAX_VALUE ? Group.getSeqcode(Math
-        .abs(instruction.intValue), ' ') : ((Integer) instruction.value)
+    return (instruction.intValue != Integer.MAX_VALUE ? Group.getSeqcode(instruction.intValue, ' ') : ((Integer) instruction.value)
         .intValue());
   }
 

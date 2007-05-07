@@ -46,25 +46,11 @@ public class JmolApplet
   }
 
   private final static String[] preloadClasses = {
-    "javax.vecmath.Point3f+",
-    "javax.vecmath.Vector3f+",
-    ".Matrix3f+", ".Point3i+",
-    "org.jmol.g3d.Graphics3D",
+    "javax.vecmath.Point3f+", ".Vector3f+", ".Matrix3f+", ".Point3i+",
+    "org.jmol.g3d.Graphics3D", ".Sphere3D", ".Line3D", ".Cylinder3D", ".Colix3D", ".Shade3D",
     "org.jmol.adapter.smarter.SmarterJmolAdapter",
-    "org.jmol.g3d.Sphere3D",
-    ".Line3D", ".Cylinder3D", ".Colix3D", ".Shade3D",
-
-    "org.jmol.adapter.smarter.Atom",
-    ".Bond", ".AtomSetCollection", ".AtomSetCollectionReader",
-    ".Resolver",
-
-    /*
-     * TEMPORARY ONLY -- for performance comparision
-
+    "org.jmol.adapter.smarter.Atom", ".Bond", ".AtomSetCollection", ".AtomSetCollectionReader", ".Resolver", 
     "org.jmol.popup.JmolPopup",
-
-     */
-    
   };
 
   public String getPropertyAsString(String infoType) {

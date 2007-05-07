@@ -172,14 +172,13 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     System.out.println("Init jmol");
     htmlName = getParameter("name");
     language = getParameter("language");
-    doTranslate = (language != null || getBooleanValue("doTranslate",
-        true));
     if (language == null) {
       language = GT.getLanguage();
     } else {
       System.out.println("language=" + language);
       new GT(language);
     }
+    doTranslate = getBooleanValue("doTranslate", true);
     System.out.println("Jmol applet "+htmlName);
     setLogging();
     String ms = getParameter("mayscript");

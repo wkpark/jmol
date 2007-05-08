@@ -254,6 +254,10 @@ public class ModelManager {
   public float calcRotationRadius(Point3f center) {
     return frame.calcRotationRadius(center);
   }
+  
+  public float calcRotationRadius(BitSet bs) {
+    return frame.calcRotationRadius(bs);
+  }
 
   public Point3f getBoundBoxCenter() {
     return frame.getBoundBoxCenter();

@@ -1844,6 +1844,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelManager.calcRotationRadius(center);
   }
 
+  float calcRotationRadius(BitSet bs) {
+    return modelManager.calcRotationRadius(bs);
+  }
+
   public Vector3f getBoundBoxCornerVector() {
     return modelManager.getBoundBoxCornerVector();
   }

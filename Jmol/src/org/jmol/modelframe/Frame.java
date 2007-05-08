@@ -1295,6 +1295,22 @@ public final class Frame {
     return (maxRadius == 0 ? 10 : maxRadius);
   }
 
+  float calcRotationRadius(BitSet bs) {
+    Point3f center = getAtomSetCenter(bs);
+    float maxRadius = 0;
+    for (int i = atomCount; --i >= 0;)
+      if (bs.get(i)) {
+        Atom atom = atoms[i];
+        float distAtom = center.distance(atom);
+        float radiusVdw = atom.getVanderwaalsRadiusFloat();
+        float outerVdw = distAtom + radiusVdw;
+        if (outerVdw > maxRadius)
+          maxRadius = outerVdw;
+      }
+    return (maxRadius == 0 ? 10 : maxRadius);
+  }
+
+
   /*==============================================================*
    * selection handling
    *==============================================================*/

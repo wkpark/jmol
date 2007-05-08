@@ -4483,12 +4483,26 @@ class Eval { //implements Runnable {
 
     boolean isSameAtom = (center != null && currentCenter.distance(center) < 0.1);
 
-    //zoom/zoomTo percent|-factor|+factor|*factor|/factor 
-    float factor = (isFloatParameter(i) ? floatParameter(i++) : 0f);
-    if (factor < 0)
-      factor += zoom;
+    //zoom/zoomTo percent|-factor|+factor|*factor|/factor | 0
+    float factor0 = zoom;
+    float factor = (isFloatParameter(i) ? floatParameter(i++) : Float.NaN);
     if (factor == 0) {
-      factor = zoom;
+      BitSet bs = null;
+      switch (statement[ptCenter].tok) {
+      case Token.bitset:
+      case Token.expressionBegin:
+        bs = expression(statement, ptCenter, true, false, false);
+      }
+      if (bs == null)
+        invalidArgument();
+      float r = viewer.calcRotationRadius(bs);
+      factor0 = radius / r * 100; 
+      factor = (isFloatParameter(i) ? floatParameter(i++) : Float.NaN);
+    }
+    if (factor < 0) {
+      factor += factor0;
+    } else if (Float.isNaN(factor)) {
+      factor = factor0;
       if (isFloatParameter(i + 1)) {
         float value = floatParameter(i + 1);
         switch (getToken(i).tok) {

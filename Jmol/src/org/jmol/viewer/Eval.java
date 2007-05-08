@@ -6203,10 +6203,10 @@ class Eval { //implements Runnable {
               iv = atom.getPolymerLength();
               break;
             case Token.resno:
-              iv = atom.getResno() + 1;
+              iv = atom.getResno();
               break;
             case Token.groupID:
-              iv = atom.getGroupID() + 1;
+              iv = atom.getGroupID();
               break;
             case Token.atomID:
               iv = atom.getSpecialAtomID();

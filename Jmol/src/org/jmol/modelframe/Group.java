@@ -224,7 +224,7 @@ public class Group {
   ////////////////////////////////////////////////////////////////
 
   public final int getResno() {
-    return (seqcode == Integer.MIN_VALUE ? 1 : seqcode >> 8); 
+    return (seqcode == Integer.MIN_VALUE ? 0 : seqcode >> 8); 
   }
 
   public final int getSeqcode() {

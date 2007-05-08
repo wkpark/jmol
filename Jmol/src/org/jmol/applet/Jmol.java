@@ -346,7 +346,6 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       statusForm = getValue("StatusForm", null);
       statusText = getValue("StatusText", null); //text
       statusTextarea = getValue("StatusTextarea", null); //textarea
-      boolean haveTranslateFlag = (getValue("doTranslate", null) != null);
 
       if (animFrameCallback != null)
         Logger.info("animFrameCallback=" + animFrameCallback);
@@ -377,15 +376,18 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
               .warn("MAYSCRIPT missing -- all applet JavaScript calls disabled");
       }
       if (messageCallback != null || statusForm != null || statusText != null) {
-        if (!haveTranslateFlag) {
+        if ((getValue("doTranslate", null) == null)) {
           doTranslate = false;
           Logger
-              .warn("Note -- Presence of message callback will disable translation; "
-                  + "unless you use jmolSetTranslation(true) prior to jmolApplet()");
+              .warn("Note -- Presence of message callback will disable translation;" +
+                  " to enable message translation" +
+                  " use jmolSetTranslation(true) prior to jmolApplet()");
         }
         if (doTranslate)
           Logger
-              .warn("Note -- language translation may affect parsing of callback messages");
+              .warn("Note -- Automatic language translation may affect parsing of callback" +
+                  " messages; to disable language translation of callback messages," +
+                  " use jmolSetTranslation(false) prior to jmolApplet()");
       }
       if ("none".equals(language))
         doTranslate = false;

@@ -57,7 +57,39 @@ public class GT {
    * IN THIS LIST is untranslated, but it provides the code xgettext needs in
    * order to provide the list of names that will need translation by translators
    * (the .po files). Later, in JmolPopup.updateLanguageMenu(), GT._() is used
-   * again to create the actual, localized menu item name. 
+   * again to create the actual, localized menu item name.
+   *
+   * list order:
+   * 
+   * The order presented here is the order in which the list will be presented in the 
+   * popup menu. In addition, the order of variants is significant. In all cases, place
+   * common-language entries in the following order:
+   * 
+   * la_co_va
+   * la_co
+   * la
+   * 
+   * In addition, there really is no need for "la" by itself. Every translator introduces
+   * a bias from their originating country. It would be perfectly fine if we had NO "la"
+   * items, and just la_co. Thus, we could have just:
+   * 
+   * pt_BR
+   * pt_PT
+   * 
+   * In this case, the "default" language translation should be entered LAST.
+   * 
+   * If a user selects pt_ZQ, the code below will find (a) that we don't support pt_ZQ, 
+   * (b) that we don't support pt_ZQ_anything, (c) that we don't support pt, and, finally,
+   * that we do support pt_PT, and it will select that one, returning to the user the message
+   * that language = "pt_PT" instead of pt_ZQ.
+   *  
+   * For that matter, we don't even need anything more than 
+   * 
+   * la_co_va
+   * 
+   * because the algorithm will track that down from anything starting with la, and in all cases
+   * find the closest match. 
+   * 
    * Introduced in Jmol 11.1.34 
    * Author Bob Hanson May 7, 2007
    * @return  list of codes and untranslated names
@@ -81,7 +113,7 @@ public class GT {
     return languageList;
   }
 
-  private String getSupported(String languageCode) {
+  private String getSupported(String languageCode, boolean isExact) {
     if (languageCode == null)
       return null;
     if (languageList == null)
@@ -90,7 +122,7 @@ public class GT {
       if (languageList[i][0].equalsIgnoreCase(languageCode))
         return languageList[i][0];
     }
-    return findClosest(languageCode);
+    return (isExact ? null : findClosest(languageCode));
   }
  
   /**
@@ -99,7 +131,7 @@ public class GT {
    * @return   a localization of the desired language, but not it exactly 
    */
   private String findClosest(String la) {
-    for (int i = 0; i < languageList.length; i++) {
+    for (int i = languageList.length; --i >= 0; ) {
       if (languageList[i][0].startsWith(la))
         return languageList[i][0];
     }
@@ -137,7 +169,7 @@ public class GT {
     if ((i = language.indexOf("_")) >= 0) {
       la = la.substring(0, i);
       if ((i = language.indexOf("_", ++i)) >= 0) {
-        la_co = la.substring(0, i);
+        la_co = language.substring(0, i);
       } else {
         la_co_va = null;
       }
@@ -146,19 +178,28 @@ public class GT {
       la_co_va = null;
     }
 
-    if ((language = getSupported(la_co_va)) != null) {
-    } else if ((language = getSupported(la_co)) != null) {
-      la_co_va = null;
-    } else if ((language = getSupported(la)) != null) {
-      la_co_va = null;
-      la_co = null;
-    } else {
+    /*
+     * find the best match. In each case, if the match is not found,
+     * but a variation at the next level higher exists, pick that variation.
+     * So, for example, if fr_CA does not exist, but fr_FR does, then 
+     * we choose fr_FR, because that is taken as the "base" class for French.
+     * 
+     * Or, if the language requested is "fr", and there is no fr.po, but there
+     * is an fr_FR.po, then return that. 
+     * 
+     * Thus, the user is informed of which country/variant is in effect,
+     * if they want to know. 
+     * 
+     */
+    if ((language = getSupported(la_co_va, false)) == null
+        && (language = getSupported(la_co, false)) == null
+        && (language = getSupported(la, false)) == null) {
       la = language = "en";
-      la_co = null;
-      la_co_va = null;
       Logger.debug("English: no need for gettext wrapper");
       return;
     }
+    la_co_va = null;
+    la_co = null;
     switch (language.length()) {
     case 2:
       la = language;
@@ -173,8 +214,11 @@ public class GT {
       la = language.substring(0, 2);
     }
 
-    if (la.equals("en")) //no variants on Engish for now
+    if ("en".equals(la)) //no variants on Engish for now
       return;
+
+    la_co = getSupported(la_co, true);
+    la = getSupported(la, true);
 
     Logger.debug("Instantiating gettext wrapper for " + language + "...");
     String className;

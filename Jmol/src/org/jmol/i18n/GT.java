@@ -73,7 +73,7 @@ public class GT {
     {"et", GT._("Estonian")},
     {"fr", GT._("French")},
     {"de", GT._("German")},
-    {"pt_BR", GT._("Portugese (Brazil)")},
+    {"pt_BR", GT._("Portugese - Brazil")},
     {"pt", GT._("Portugese")},
     {"es", GT._("Spanish")},
     {"tr", GT._("Turkish")},};

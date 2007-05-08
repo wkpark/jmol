@@ -105,7 +105,7 @@ public class GT {
     {"et", GT._("Estonian")},
     {"fr", GT._("French")},
     {"de", GT._("German")},
-    {"pt_BR", GT._("Portugese - Brazil")},
+    {"pt_BR", GT._("Portuguese - Brazil")},
     {"pt", GT._("Portugese")},
     {"es", GT._("Spanish")},
     {"tr", GT._("Turkish")},};
@@ -114,7 +114,7 @@ public class GT {
   }
 
   private String getSupported(String languageCode, boolean isExact) {
-    if (languageCode == null)
+    if (  languageCode == null)
       return null;
     if (languageList == null)
       createLanguageList();

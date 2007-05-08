@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-05-08 10:56+0200\n"
+"POT-Creation-Date: 2007-05-08 14:39+0200\n"
 "PO-Revision-Date: 2007-05-07 22:24-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Portuguese <Jmol-developers@lists.sf.net>\n"
@@ -51,7 +51,7 @@ msgstr ""
 "pressione CTRL-ENTER para uma nova linha ou cole os dados do modelo e "
 "pressione Carregar"
 
-#: org/jmol/applet/Jmol.java:716
+#: org/jmol/applet/Jmol.java:718
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -66,7 +66,7 @@ msgstr ""
 "\n"
 "Veja http://www.jmol.org para mais informações"
 
-#: org/jmol/applet/Jmol.java:858
+#: org/jmol/applet/Jmol.java:860
 msgid "File Error:"
 msgstr "Erro no arquivo:"
 
@@ -109,7 +109,7 @@ msgstr "Alemão"
 
 #: org/jmol/i18n/GT.java:76
 #, fuzzy
-msgid "Portugese (Brazil)"
+msgid "Portugese - Brazil"
 msgstr "Português"
 
 #: org/jmol/i18n/GT.java:77

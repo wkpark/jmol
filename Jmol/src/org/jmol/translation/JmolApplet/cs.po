@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-05-08 10:56+0200\n"
+"POT-Creation-Date: 2007-05-08 14:39+0200\n"
 "PO-Revision-Date: 2007-02-20 20:15+0100\n"
 "Last-Translator: Martin Slavík <martin.slavik@tul.cz>\n"
 "Language-Team: Czech <Jmol-developers@lists.sf.net>\n"
@@ -53,7 +53,7 @@ msgstr ""
 "stisknout CTRL-ENTER pro vložení nového řádku nebo vložit údaje o modelu a "
 "stisknout Load"
 
-#: org/jmol/applet/Jmol.java:716
+#: org/jmol/applet/Jmol.java:718
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -68,7 +68,7 @@ msgstr ""
 "\n"
 "Pro více informací navštivte  http://www.jmol.org"
 
-#: org/jmol/applet/Jmol.java:858
+#: org/jmol/applet/Jmol.java:860
 msgid "File Error:"
 msgstr "Chyba:"
 
@@ -111,7 +111,7 @@ msgid "German"
 msgstr "Šedá"
 
 #: org/jmol/i18n/GT.java:76
-msgid "Portugese (Brazil)"
+msgid "Portugese - Brazil"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:77

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-05-08 10:56+0200\n"
+"POT-Creation-Date: 2007-05-08 14:39+0200\n"
 "PO-Revision-Date: 2006-11-01 18:39+0200\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -51,7 +51,7 @@ msgstr ""
 "Yeni satır için CTRL-ENTER'a basın ya da model veri yapıştırın ve Yükle'ye "
 "basın"
 
-#: org/jmol/applet/Jmol.java:716
+#: org/jmol/applet/Jmol.java:718
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -66,7 +66,7 @@ msgstr ""
 "\n"
 "Daha fazla bilgi için http://www.jmol.org 'u ziyaret ediniz"
 
-#: org/jmol/applet/Jmol.java:858
+#: org/jmol/applet/Jmol.java:860
 msgid "File Error:"
 msgstr "Dosya Hatası:"
 
@@ -109,7 +109,7 @@ msgid "German"
 msgstr "Gri"
 
 #: org/jmol/i18n/GT.java:76
-msgid "Portugese (Brazil)"
+msgid "Portugese - Brazil"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:77

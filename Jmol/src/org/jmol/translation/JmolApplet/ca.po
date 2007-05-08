@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-05-08 10:56+0200\n"
+"POT-Creation-Date: 2007-05-08 14:39+0200\n"
 "PO-Revision-Date: 2006-11-01 19:17+0100\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
@@ -51,7 +51,7 @@ msgstr ""
 "premeu Ctrl+Retorn per a una nova línia o enganxeu les dades del model i "
 "premeu Carrega"
 
-#: org/jmol/applet/Jmol.java:716
+#: org/jmol/applet/Jmol.java:718
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -66,7 +66,7 @@ msgstr ""
 "\n"
 "Consulteu http://www.jmol.org per a més informació"
 
-#: org/jmol/applet/Jmol.java:858
+#: org/jmol/applet/Jmol.java:860
 msgid "File Error:"
 msgstr "Error de fitxer:"
 
@@ -109,7 +109,7 @@ msgid "German"
 msgstr "Gris"
 
 #: org/jmol/i18n/GT.java:76
-msgid "Portugese (Brazil)"
+msgid "Portugese - Brazil"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:77

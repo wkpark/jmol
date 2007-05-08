@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-05-08 10:56+0200\n"
+"POT-Creation-Date: 2007-05-08 14:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,7 +48,7 @@ msgstr ""
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
 msgstr ""
 
-#: org/jmol/applet/Jmol.java:716
+#: org/jmol/applet/Jmol.java:718
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -58,7 +58,7 @@ msgid ""
 "See http://www.jmol.org for more information"
 msgstr ""
 
-#: org/jmol/applet/Jmol.java:858
+#: org/jmol/applet/Jmol.java:860
 msgid "File Error:"
 msgstr ""
 
@@ -100,7 +100,7 @@ msgid "German"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:76
-msgid "Portugese (Brazil)"
+msgid "Portugese - Brazil"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:77

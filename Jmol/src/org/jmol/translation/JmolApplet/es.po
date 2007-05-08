@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-05-08 10:56+0200\n"
+"POT-Creation-Date: 2007-05-08 14:39+0200\n"
 "PO-Revision-Date: 2007-05-06 01:53+0100\n"
 "Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
@@ -47,7 +47,7 @@ msgstr ""
 "pulsa Ctrl+Enter para un salto de línea o pega datos de un modelo y pulsa "
 "Cargar"
 
-#: org/jmol/applet/Jmol.java:716
+#: org/jmol/applet/Jmol.java:718
 #, java-format
 msgid ""
 "Jmol Applet version {0} {1}.\n"
@@ -61,7 +61,7 @@ msgstr ""
 "Un proyecto OpenScience.\n"
 "Para más información, vea http://www.jmol.org"
 
-#: org/jmol/applet/Jmol.java:858
+#: org/jmol/applet/Jmol.java:860
 msgid "File Error:"
 msgstr "Error de archivo:"
 
@@ -104,7 +104,7 @@ msgstr "Alemán"
 
 #: org/jmol/i18n/GT.java:76
 #, fuzzy
-msgid "Portugese (Brazil)"
+msgid "Portugese - Brazil"
 msgstr "Portugués"
 
 #: org/jmol/i18n/GT.java:77

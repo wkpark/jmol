@@ -2441,6 +2441,9 @@ class Eval { //implements Runnable {
   void moveto() throws ScriptException {
     //moveto time
     //moveto [time] { x y z deg} zoom xTrans yTrans (rotCenter) rotationRadius (navCenter) xNav yNav navDepth    
+    //moveto [time] { x y z deg} 0 xTrans yTrans (rotCenter) [zoom factor] (navCenter) xNav yNav navDepth    
+    //moveto [time] { x y z deg} (rotCenter) [zoom factor] (navCenter) xNav yNav navDepth
+    //where zoom factor is z [[+|-|*|/] n] including 0
     //moveto [time] front|back|left|right|top|bottom
     if (statementLength == 2 && isFloatParameter(1)) {
       float f = floatParameter(1);
@@ -2458,7 +2461,7 @@ class Eval { //implements Runnable {
     float floatSecondsTotal = (isFloatParameter(i) ? floatParameter(i++) : 2.0f);
     if (floatSecondsTotal < 0)
       invalidArgument();
-    float zoom = 100;
+    float zoom = Float.NaN;
     float xTrans = 0;
     float yTrans = 0;
     float degrees = 90;
@@ -2512,10 +2515,9 @@ class Eval { //implements Runnable {
     
     boolean isChange = !viewer.isInPosition(pt, degrees);
     //zoom xTrans yTrans (center) rotationRadius 
+    float zoom0 = viewer.getZoomPercentFloat();
     if (i != statementLength && !isCenterParameter(i)) {
       zoom = floatParameter(i++);
-      if (!isChange && Math.abs(zoom - viewer.getZoomPercentFloat()) >= 1)
-        isChange = true;
     }
     if (i != statementLength && !isCenterParameter(i)) {
       xTrans = floatParameter(i++);
@@ -2527,16 +2529,33 @@ class Eval { //implements Runnable {
     }
     float rotationRadius = 0;
     if (i != statementLength) {
+      int ptCenter = i;
       center = centerParameter(i);
-      i = iToken + 1;
-      if (i != statementLength && !isCenterParameter(i))
-        rotationRadius = floatParameter(i++);
       if (!isChange && center.distance(viewer.getRotationCenter()) >= 0.1)
         isChange = true;
-      if (!isChange
-          && Math.abs(rotationRadius - viewer.getRotationRadius()) >= 0.1)
-        isChange = true;
+      i = iToken + 1;
+      float radius = viewer.getRotationRadius();
+      if (i != statementLength && !isCenterParameter(i)) {
+        //alternative (center) zoomFactor 
+        if (zoom == 0 || Float.isNaN(zoom)) {
+          //alternative (atom expression) zoom 
+          float factor = getZoomFactor(i, ptCenter, radius, zoom0);
+          i = iToken + 1;
+          if (Float.isNaN(factor))
+            invalidArgument();
+          zoom = factor;
+        } else {
+          rotationRadius = floatParameter(i++);
+          if (!isChange
+              && Math.abs(rotationRadius - viewer.getRotationRadius()) >= 0.1)
+            isChange = true;
+        }
+      }
     }
+    if (zoom ==0 || Float.isNaN(zoom))
+      zoom = 100;
+    if (!isChange && Math.abs(zoom - zoom0) >= 1)
+      isChange = true;
     // (navCenter) xNav yNav navDepth 
 
     Point3f navCenter = null;
@@ -4483,48 +4502,18 @@ class Eval { //implements Runnable {
 
     boolean isSameAtom = (center != null && currentCenter.distance(center) < 0.1);
 
+    
     //zoom/zoomTo percent|-factor|+factor|*factor|/factor | 0
-    float factor0 = zoom;
-    float factor = (isFloatParameter(i) ? floatParameter(i++) : Float.NaN);
-    if (factor == 0) {
-      BitSet bs = null;
-      switch (statement[ptCenter].tok) {
-      case Token.bitset:
-      case Token.expressionBegin:
-        bs = expression(statement, ptCenter, true, false, false);
-      }
-      if (bs == null)
-        invalidArgument();
-      float r = viewer.calcRotationRadius(bs);
-      factor0 = radius / r * 100; 
-      factor = (isFloatParameter(i) ? floatParameter(i++) : Float.NaN);
-    }
-    if (factor < 0) {
-      factor += factor0;
-    } else if (Float.isNaN(factor)) {
-      factor = factor0;
-      if (isFloatParameter(i + 1)) {
-        float value = floatParameter(i + 1);
-        switch (getToken(i).tok) {
-        case Token.slash:
-          factor /= value;
-          break;
-        case Token.asterisk:
-          factor *= value;
-          break;
-        case Token.plus:
-          factor += value;
-          break;
-        default:
-          invalidArgument();
-        }
-      } else if (isZoomTo) {
+    float factor = getZoomFactor(i, ptCenter, radius, zoom);
+      
+    if (Float.isNaN(factor) && isZoomTo) {
         // no factor -- check for no center (zoom out) or same center (zoom in)
         if (statementLength == 1 || isSameAtom)
           factor *= 2;
         else if (center == null)
           factor /= 2;
-      }
+        else
+          factor = zoom;
     }
     float xTrans = 0;
     float yTrans = 0;
@@ -4550,6 +4539,49 @@ class Eval { //implements Runnable {
         xTrans, yTrans, radius, null, Float.NaN, Float.NaN, Float.NaN);
   }
 
+  float getZoomFactor(int i, int ptCenter, float radius, float factor0) throws ScriptException {
+    float factor = (isFloatParameter(i) ? floatParameter(i) : Float.NaN);    
+    if (factor == 0) {
+      BitSet bs = null;
+      switch (statement[ptCenter].tok) {
+      case Token.bitset:
+      case Token.expressionBegin:
+        bs = expression(statement, ptCenter, true, false, false);
+      }
+      if (bs == null)
+        invalidArgument();
+      float r = viewer.calcRotationRadius(bs);
+      factor0 = radius / r * 100;
+      factor = Float.NaN;
+      i++;
+    }
+    if (factor < 0) {
+      factor += factor0;
+    } else if (Float.isNaN(factor)) {
+      factor = factor0;
+      if (isFloatParameter(i + 1)) {
+        float value = floatParameter(i+1);
+        switch (getToken(i++).tok) {
+        case Token.slash:
+          factor /= value;
+          break;
+        case Token.asterisk:
+          factor *= value;
+          break;
+        case Token.plus:
+          factor += value;
+          break;
+        default:
+          invalidArgument();
+        }
+      } else {
+        --i;
+      }
+    }
+   iToken = i;
+   return factor;  
+  }
+  
   void gotocmd() throws ScriptException {
     String strTo = null;
     strTo = parameterAsString(1);

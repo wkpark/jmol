@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-05-08 14:39+0200\n"
+"POT-Creation-Date: 2007-05-08 16:45+0200\n"
 "PO-Revision-Date: 2006-04-14 18:00+0100\n"
 "Last-Translator: Sebastian Lisken <sebastianlisken at users.sourceforge."
 "net>\n"
@@ -78,48 +78,48 @@ msgstr ""
 msgid "  {0} seconds"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:69
+#: org/jmol/i18n/GT.java:101
 msgid "Catalan"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:70
+#: org/jmol/i18n/GT.java:102
 msgid "Czech"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:71
+#: org/jmol/i18n/GT.java:103
 msgid "Dutch"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:72
+#: org/jmol/i18n/GT.java:104
 msgid "English"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:73
+#: org/jmol/i18n/GT.java:105
 msgid "Estonian"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:74
+#: org/jmol/i18n/GT.java:106
 msgid "French"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:75
+#: org/jmol/i18n/GT.java:107
 #, fuzzy
 msgid "German"
 msgstr "Grau"
 
-#: org/jmol/i18n/GT.java:76
-msgid "Portugese - Brazil"
+#: org/jmol/i18n/GT.java:108
+msgid "Portuguese - Brazil"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:77
-msgid "Portugese"
+#: org/jmol/i18n/GT.java:109
+msgid "Portuguese"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:78
+#: org/jmol/i18n/GT.java:110
 msgid "Spanish"
 msgstr ""
 
-#: org/jmol/i18n/GT.java:79
+#: org/jmol/i18n/GT.java:111
 msgid "Turkish"
 msgstr ""
 

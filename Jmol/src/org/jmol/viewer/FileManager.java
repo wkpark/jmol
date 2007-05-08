@@ -46,7 +46,7 @@ import java.io.Reader;
 import java.util.zip.GZIPInputStream;
 import java.util.Hashtable;
 
-/****************************************************************
+/* ***************************************************************
  * will not work with applet
 import java.net.URI;
 import java.net.URISyntaxException;

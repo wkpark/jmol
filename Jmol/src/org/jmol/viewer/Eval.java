@@ -1667,8 +1667,7 @@ class Eval { //implements Runnable {
     case Token.polymerLength:
       return atom.getPolymerLength();
     case Token.resno:
-      propertyValue = atom.getResno();
-      return (propertyValue == -1 ? Integer.MAX_VALUE : propertyValue);
+      return  atom.getResno();
     case Token.groupID:
       propertyValue = atom.getGroupID();
       return (propertyValue < 0 ? Integer.MAX_VALUE : propertyValue);

@@ -690,10 +690,12 @@ public class PreferencesDialog extends JDialog implements ActionListener {
       } else if (key.equals("Prefs.showAxes")) {
         showAxes = isSelected;
         viewer.setBooleanProperty("showAxes", isSelected);
+        viewer.refresh(0, "pref.showAxes");
         currentProperties.put("showAxes", strSelected);
       } else if (key.equals("Prefs.showBoundingBox")) {
         showBoundingBox = isSelected;
         viewer.setBooleanProperty("showBoundBox", isSelected);
+        viewer.refresh(0, "pref.showBoundingBox");
         currentProperties.put("showBoundingBox", strSelected);
       } else if (key.equals("Prefs.axesOrientationRasmol")) {
         axesOrientationRasmol = isSelected;

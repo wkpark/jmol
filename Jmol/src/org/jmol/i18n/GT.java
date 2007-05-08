@@ -217,10 +217,24 @@ public class GT {
     if ("en".equals(la)) //no variants on Engish for now
       return;
 
-    la_co = getSupported(la_co, true);
-    la = getSupported(la, true);
+    /*
+     * Time to determine exactly what .po files we actually have.
+     * No need to check a file twice.
+     * 
+     */
 
-    Logger.debug("Instantiating gettext wrapper for " + language + "...");
+    la_co = getSupported(la_co, false);
+    la = getSupported(la, false);
+
+    if (la == la_co)
+      la = null;
+    if (la_co == la_co_va)
+      la_co = null;
+
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+      Logger.debug("Instantiating gettext wrapper for " + language
+          + " using files for language:" + la + " country:" + la_co
+          + " variant:" + la_co_va);
     String className;
     try {
       if (!ignoreApplicationBundle) {
@@ -267,6 +281,7 @@ public class GT {
           }
           translationResources[translationResourcesCount] = myBundle;
           translationResourcesCount++;
+          Logger.debug("GT adding " + name_lang);
         }
       } catch (IllegalAccessException e) {
         Logger.warn("Illegal Access Exception: " + e.getMessage());
@@ -281,13 +296,11 @@ public class GT {
   }
 
   public static void ignoreApplicationBundle() {
-    //Logger.warn("Ignore");
     ignoreApplicationBundle = true;
   }
 
   public static void setDoTranslate(boolean TF) {
     getTextWrapper().doTranslate = TF;
-//    System.out.println("setDoTranslate " + doTranslate.booleanValue());
   }
 
   public static boolean getDoTranslate() {

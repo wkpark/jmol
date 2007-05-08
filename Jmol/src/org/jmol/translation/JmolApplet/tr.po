@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-05-07 19:36+0200\n"
+"POT-Creation-Date: 2007-05-08 10:56+0200\n"
 "PO-Revision-Date: 2006-11-01 18:39+0200\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
@@ -109,14 +109,18 @@ msgid "German"
 msgstr "Gri"
 
 #: org/jmol/i18n/GT.java:76
-msgid "Portugese"
+msgid "Portugese (Brazil)"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:77
-msgid "Spanish"
+msgid "Portugese"
 msgstr ""
 
 #: org/jmol/i18n/GT.java:78
+msgid "Spanish"
+msgstr ""
+
+#: org/jmol/i18n/GT.java:79
 msgid "Turkish"
 msgstr ""
 
@@ -1169,11 +1173,11 @@ msgstr "geçersiz ekleme kodu"
 msgid "unrecognized token: {0}"
 msgstr "tanınmayan nesne"
 
-#: org/jmol/viewer/Compiler.java:1908 org/jmol/viewer/Eval.java:8833
+#: org/jmol/viewer/Compiler.java:1908 org/jmol/viewer/Eval.java:8831
 msgid "unexpected end of script command"
 msgstr "beklenmeyen komut satırı sonu komutu"
 
-#: org/jmol/viewer/Compiler.java:1912 org/jmol/viewer/Eval.java:8837
+#: org/jmol/viewer/Compiler.java:1912 org/jmol/viewer/Eval.java:8835
 msgid "bad argument count"
 msgstr "Yanlış bağımsız değişken hesabı"
 
@@ -1216,7 +1220,7 @@ msgstr "boole veya yüzde gerekli"
 msgid "equal sign expected"
 msgstr "Tırnak içindeki karakter dizgisi gerekli"
 
-#: org/jmol/viewer/Compiler.java:1948 org/jmol/viewer/Eval.java:8799
+#: org/jmol/viewer/Compiler.java:1948 org/jmol/viewer/Eval.java:8797
 msgid "number expected"
 msgstr "sayı gerekli"
 
@@ -1225,7 +1229,7 @@ msgstr "sayı gerekli"
 msgid "number or variable name expected"
 msgstr "{ number number number } gerekli"
 
-#: org/jmol/viewer/Compiler.java:1956 org/jmol/viewer/Eval.java:8845
+#: org/jmol/viewer/Compiler.java:1956 org/jmol/viewer/Eval.java:8843
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "tanınmayan {0} parametre"
@@ -1251,7 +1255,7 @@ msgstr ""
 msgid "invalid atom specification"
 msgstr ""
 
-#: org/jmol/viewer/Compiler.java:1985 org/jmol/viewer/Eval.java:8804
+#: org/jmol/viewer/Compiler.java:1985 org/jmol/viewer/Eval.java:8802
 msgid "quoted string expected"
 msgstr "Tırnak içindeki karakter dizgisi gerekli"
 
@@ -1274,7 +1278,7 @@ msgstr "Çok fazla iç içe {0} komut"
 msgid "Invalid {0} command"
 msgstr "Geçersiz {0} komut"
 
-#: org/jmol/viewer/Eval.java:2069
+#: org/jmol/viewer/Eval.java:2067
 #, fuzzy, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
@@ -1282,115 +1286,115 @@ msgid ""
 msgstr ""
 "düzlem bekleniyor -- ya üç nokta ya atom ifadeleri ya da {0} veya {1}  "
 
-#: org/jmol/viewer/Eval.java:2082
+#: org/jmol/viewer/Eval.java:2080
 msgid "No unit cell"
 msgstr "Birim hücre yok"
 
-#: org/jmol/viewer/Eval.java:2092
+#: org/jmol/viewer/Eval.java:2090
 msgid "Miller indices cannot all be zero."
 msgstr "Miller dizinlerinin hepsi sıfır olamaz."
 
-#: org/jmol/viewer/Eval.java:2232
+#: org/jmol/viewer/Eval.java:2230
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "bir renk ya da palet adı (Jmol,Rasmol) gerekli"
 
-#: org/jmol/viewer/Eval.java:3031
+#: org/jmol/viewer/Eval.java:3029
 #, java-format
 msgid "{0} connections deleted"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:3053
+#: org/jmol/viewer/Eval.java:3051
 #, java-format
 msgid "{0} connections modified or created"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:3653
+#: org/jmol/viewer/Eval.java:3651
 #, java-format
 msgid "space group {0} was not found."
 msgstr "Uzay grubu {0} bulunamadı."
 
-#: org/jmol/viewer/Eval.java:3876
+#: org/jmol/viewer/Eval.java:3874
 msgid "bad atom number"
 msgstr "yanlış ato numarası"
 
-#: org/jmol/viewer/Eval.java:4142
+#: org/jmol/viewer/Eval.java:4140
 msgid "too many rotation points were specified"
 msgstr "çok fazla dönme noktası belirtilmiş"
 
-#: org/jmol/viewer/Eval.java:4178
+#: org/jmol/viewer/Eval.java:4176
 msgid "rotation points cannot be identical"
 msgstr "dönme noktaları aynı olamaz"
 
-#: org/jmol/viewer/Eval.java:4831
+#: org/jmol/viewer/Eval.java:4829
 #, fuzzy, java-format
 msgid "{0} hydrogen bonds"
 msgstr "Hidrojen Bağları"
 
-#: org/jmol/viewer/Eval.java:4841
+#: org/jmol/viewer/Eval.java:4839
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr "{0} arkaplan model gösterimiyle birlikte izin verilmez"
 
-#: org/jmol/viewer/Eval.java:5134
+#: org/jmol/viewer/Eval.java:5132
 msgid "Calculate what?"
 msgstr "Neyi hesapla?"
 
-#: org/jmol/viewer/Eval.java:5355
+#: org/jmol/viewer/Eval.java:5353
 #, fuzzy
 msgid "trajectory not applicable in this context"
 msgstr "bu bağlamda kesirli koordinatlara izin verilmiyor"
 
-#: org/jmol/viewer/Eval.java:5488
+#: org/jmol/viewer/Eval.java:5486
 #, java-format
 msgid "invalid {0} control keyword"
 msgstr "geçersiz {0} kontrol anahtar sözcüğü"
 
-#: org/jmol/viewer/Eval.java:6883
+#: org/jmol/viewer/Eval.java:6881
 msgid "save what?"
 msgstr "neyi kaydet?"
 
-#: org/jmol/viewer/Eval.java:6920
+#: org/jmol/viewer/Eval.java:6918
 msgid "restore what?"
 msgstr "neyi geri yükle?"
 
-#: org/jmol/viewer/Eval.java:6984 org/jmol/viewer/Eval.java:7039
+#: org/jmol/viewer/Eval.java:6982 org/jmol/viewer/Eval.java:7037
 #, java-format
 msgid "The {0} command is not available for the applet."
 msgstr "{0} komutu applet için kullanılabilir değil."
 
-#: org/jmol/viewer/Eval.java:7033
+#: org/jmol/viewer/Eval.java:7031
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "neyi yaz? {0} ya da {1} \"dosyaadı\""
 
-#: org/jmol/viewer/Eval.java:7062
+#: org/jmol/viewer/Eval.java:7060
 #, fuzzy
 msgid "No data available"
 msgstr "Kullanılabilir MO katsayı verisi yok"
 
-#: org/jmol/viewer/Eval.java:7363 org/jmol/viewer/Eval.java:8059
+#: org/jmol/viewer/Eval.java:7361 org/jmol/viewer/Eval.java:8057
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "Bu çerçeve için kullanılabilir MO taban/katsayı verisi yok"
 
-#: org/jmol/viewer/Eval.java:8063
+#: org/jmol/viewer/Eval.java:8061
 msgid "no MO coefficient data available"
 msgstr "Kullanılabilir MO katsayı verisi yok"
 
-#: org/jmol/viewer/Eval.java:8065
+#: org/jmol/viewer/Eval.java:8063
 msgid "Only one molecular orbital is available in this file"
 msgstr "Bu dosyada sadece bir kullanılabilir moleküler orbital var"
 
-#: org/jmol/viewer/Eval.java:8074
+#: org/jmol/viewer/Eval.java:8072
 #, fuzzy
 msgid "no MO occupancy data available"
 msgstr "Kullanılabilir MO katsayı verisi yok"
 
-#: org/jmol/viewer/Eval.java:8084
+#: org/jmol/viewer/Eval.java:8082
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "1 den {0} 'a bir MO dizini gerekli"
 
-#: org/jmol/viewer/Eval.java:8561
+#: org/jmol/viewer/Eval.java:8559
 msgid ""
 "No partial charges were read from the file; Jmol needs these to render the "
 "MEP data."
@@ -1398,137 +1402,137 @@ msgstr ""
 "Dosyadan hiç kısmi yük okunmadı; Jmol MEP verisini işlemek için bunlara "
 "ihtiyaç duyuyor."
 
-#: org/jmol/viewer/Eval.java:8750
+#: org/jmol/viewer/Eval.java:8748
 msgid "MO isosurfaces require that only one model be displayed"
 msgstr "MO eşyüzeyler sadece bir model gösterilmesine izin verir"
 
-#: org/jmol/viewer/Eval.java:8754
+#: org/jmol/viewer/Eval.java:8752
 msgid "unrecognized command"
 msgstr "tanınmayan komut"
 
-#: org/jmol/viewer/Eval.java:8758
+#: org/jmol/viewer/Eval.java:8756
 msgid "unrecognized atom property"
 msgstr "tanınmayan atom özelliği"
 
-#: org/jmol/viewer/Eval.java:8762
+#: org/jmol/viewer/Eval.java:8760
 #, fuzzy
 msgid "unrecognized bond property"
 msgstr "tanınmayan atom özelliği"
 
-#: org/jmol/viewer/Eval.java:8766
+#: org/jmol/viewer/Eval.java:8764
 msgid "filename expected"
 msgstr "dosyaadı gerekli"
 
-#: org/jmol/viewer/Eval.java:8770
+#: org/jmol/viewer/Eval.java:8768
 msgid "boolean expected"
 msgstr "boole gerekli"
 
-#: org/jmol/viewer/Eval.java:8774
+#: org/jmol/viewer/Eval.java:8772
 msgid "boolean or number expected"
 msgstr "boole veya sayı gerekli"
 
-#: org/jmol/viewer/Eval.java:8778
+#: org/jmol/viewer/Eval.java:8776
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "boole, sayı, veya {0} gerekli"
 
-#: org/jmol/viewer/Eval.java:8782
+#: org/jmol/viewer/Eval.java:8780
 msgid "(atom expression) or integer expected"
 msgstr "(atom ifadesi) veya tam sayı gerekli"
 
-#: org/jmol/viewer/Eval.java:8786
+#: org/jmol/viewer/Eval.java:8784
 msgid "valid (atom expression) expected"
 msgstr "geçerli (atom ifadesi) gerekli"
 
-#: org/jmol/viewer/Eval.java:8790
+#: org/jmol/viewer/Eval.java:8788
 msgid "bad [R,G,B] color"
 msgstr ""
 
-#: org/jmol/viewer/Eval.java:8794
+#: org/jmol/viewer/Eval.java:8792
 msgid "integer expected"
 msgstr "tamsayı gerekli"
 
-#: org/jmol/viewer/Eval.java:8809
+#: org/jmol/viewer/Eval.java:8807
 msgid "quoted string or identifier expected"
 msgstr "tırnak içindeki karakter dizgisi veya tanımlayıcı gerekli"
 
-#: org/jmol/viewer/Eval.java:8813
+#: org/jmol/viewer/Eval.java:8811
 msgid "property name expected"
 msgstr "özellik adı gerekli"
 
-#: org/jmol/viewer/Eval.java:8817
+#: org/jmol/viewer/Eval.java:8815
 msgid "x y z axis expected"
 msgstr "x y z eksenleri gerekli"
 
-#: org/jmol/viewer/Eval.java:8821
+#: org/jmol/viewer/Eval.java:8819
 msgid "color expected"
 msgstr "renk gerekli"
 
-#: org/jmol/viewer/Eval.java:8825
+#: org/jmol/viewer/Eval.java:8823
 msgid "unrecognized object"
 msgstr "tanınmayan nesne"
 
-#: org/jmol/viewer/Eval.java:8829
+#: org/jmol/viewer/Eval.java:8827
 msgid "runtime unrecognized expression"
 msgstr "tanınmayan çalışma zamanı deyimi"
 
-#: org/jmol/viewer/Eval.java:8841
+#: org/jmol/viewer/Eval.java:8839
 msgid "invalid argument"
 msgstr "geçersiz bağımsız değişken"
 
-#: org/jmol/viewer/Eval.java:8849
+#: org/jmol/viewer/Eval.java:8847
 #, fuzzy, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "tanınmayan {0} parametre --  {1} kullan"
 
-#: org/jmol/viewer/Eval.java:8853
+#: org/jmol/viewer/Eval.java:8851
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "alan dışı tamsayı ({0} - {1})"
 
-#: org/jmol/viewer/Eval.java:8858
+#: org/jmol/viewer/Eval.java:8856
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "alan dışı ondalık sayı ({0} - {1})"
 
-#: org/jmol/viewer/Eval.java:8863
+#: org/jmol/viewer/Eval.java:8861
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "sayı  ({0} veya {1}) olmalı"
 
-#: org/jmol/viewer/Eval.java:8868
+#: org/jmol/viewer/Eval.java:8866
 msgid "file not found"
 msgstr "dosya bulunamadı"
 
-#: org/jmol/viewer/Eval.java:8872
+#: org/jmol/viewer/Eval.java:8870
 msgid "draw object not defined"
 msgstr "çizim nesnesi tanımlanmamış"
 
-#: org/jmol/viewer/Eval.java:8876
+#: org/jmol/viewer/Eval.java:8874
 msgid "object name expected after '$'"
 msgstr " '$' 'dan sonra nesne adı gerekli"
 
-#: org/jmol/viewer/Eval.java:8881
+#: org/jmol/viewer/Eval.java:8879
 msgid " {x y z} or $name or (atom expression) required"
 msgstr " {x y z} veya $ad veya (atom ifadesi) gerekli"
 
-#: org/jmol/viewer/Eval.java:8885
+#: org/jmol/viewer/Eval.java:8883
 msgid "keyword expected"
 msgstr "anahtar sözcük gerekli"
 
-#: org/jmol/viewer/Eval.java:8889
+#: org/jmol/viewer/Eval.java:8887
 msgid "invalid parameter order"
 msgstr "geçersiz parametre dizisi"
 
-#: org/jmol/viewer/Eval.java:8893
+#: org/jmol/viewer/Eval.java:8891
 msgid "incompatible arguments"
 msgstr "uyumsuz bağımsız değişkenler"
 
-#: org/jmol/viewer/Eval.java:8897
+#: org/jmol/viewer/Eval.java:8895
 msgid "insufficient arguments"
 msgstr "yetersiz bağımsız değişken"
 
-#: org/jmol/viewer/Eval.java:10108
+#: org/jmol/viewer/Eval.java:10106
 #, fuzzy
 msgid "too many parentheses"
 msgstr "çok fazla betik düzeyi"

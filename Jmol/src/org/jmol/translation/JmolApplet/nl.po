@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
-"POT-Creation-Date: 2007-05-07 19:36+0200\n"
+"POT-Creation-Date: 2007-05-08 10:56+0200\n"
 "PO-Revision-Date: 2007-05-07 20:24+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Nederlands <jmol-developers@lists.sourceforge.net>\n"
@@ -35,8 +35,7 @@ msgstr "Wis uitvoer"
 msgid "Clear Input"
 msgstr "Wissen uitvoer"
 
-#: org/jmol/applet/Console.java:44
-#: org/jmol/popup/PopupResourceBundle.java:771
+#: org/jmol/applet/Console.java:44 org/jmol/popup/PopupResourceBundle.java:771
 msgid "History"
 msgstr "Geschiedenis"
 
@@ -50,7 +49,8 @@ msgstr "Laden"
 
 #: org/jmol/applet/Console.java:91
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr "Druk CTRL-ENTER for een nieuwe regel of het plakken van data en daarnd Load"
+msgstr ""
+"Druk CTRL-ENTER for een nieuwe regel of het plakken van data en daarnd Load"
 
 #: org/jmol/applet/Jmol.java:716
 #, java-format
@@ -63,7 +63,8 @@ msgid ""
 msgstr ""
 "Jmol Applet versie {0} {1}.\n"
 " \n"
-"Onderdeel van het OpenScience project. Zie http://www.jmol.org voor meer informatie."
+"Onderdeel van het OpenScience project. Zie http://www.jmol.org voor meer "
+"informatie."
 
 #: org/jmol/applet/Jmol.java:858
 msgid "File Error:"
@@ -107,14 +108,19 @@ msgid "German"
 msgstr "Duits"
 
 #: org/jmol/i18n/GT.java:76
-msgid "Portugese"
+#, fuzzy
+msgid "Portugese (Brazil)"
 msgstr "Portugees"
 
 #: org/jmol/i18n/GT.java:77
+msgid "Portugese"
+msgstr "Portugees"
+
+#: org/jmol/i18n/GT.java:78
 msgid "Spanish"
 msgstr "Spaans"
 
-#: org/jmol/i18n/GT.java:78
+#: org/jmol/i18n/GT.java:79
 msgid "Turkish"
 msgstr "Turks"
 
@@ -128,8 +134,7 @@ msgstr "Selecteren ({0})"
 msgid "All {0} models"
 msgstr "Alle {0} modellen"
 
-#: org/jmol/popup/JmolPopup.java:384
-#: org/jmol/popup/JmolPopup.java:418
+#: org/jmol/popup/JmolPopup.java:384 org/jmol/popup/JmolPopup.java:418
 msgid "all"
 msgstr "Alles"
 
@@ -1162,13 +1167,11 @@ msgstr "ongeldige expressie woord: {0}"
 msgid "unrecognized token: {0}"
 msgstr "onbekend woord: {0}"
 
-#: org/jmol/viewer/Compiler.java:1908
-#: org/jmol/viewer/Eval.java:8833
+#: org/jmol/viewer/Compiler.java:1908 org/jmol/viewer/Eval.java:8831
 msgid "unexpected end of script command"
 msgstr "overwacht einde van het script"
 
-#: org/jmol/viewer/Compiler.java:1912
-#: org/jmol/viewer/Eval.java:8837
+#: org/jmol/viewer/Compiler.java:1912 org/jmol/viewer/Eval.java:8835
 msgid "bad argument count"
 msgstr "injuist aantal parameters"
 
@@ -1205,8 +1208,7 @@ msgstr "vergelijkingsoperator verwacht"
 msgid "equal sign expected"
 msgstr "gelijkheidsteken verwacht"
 
-#: org/jmol/viewer/Compiler.java:1948
-#: org/jmol/viewer/Eval.java:8799
+#: org/jmol/viewer/Compiler.java:1948 org/jmol/viewer/Eval.java:8797
 msgid "number expected"
 msgstr "getal verwacht"
 
@@ -1214,8 +1216,7 @@ msgstr "getal verwacht"
 msgid "number or variable name expected"
 msgstr "getal of variabelenaam verwacht"
 
-#: org/jmol/viewer/Compiler.java:1956
-#: org/jmol/viewer/Eval.java:8845
+#: org/jmol/viewer/Compiler.java:1956 org/jmol/viewer/Eval.java:8843
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "onbekende {0} parameter"
@@ -1240,8 +1241,7 @@ msgstr "ongeldige modelspecificatie"
 msgid "invalid atom specification"
 msgstr "ongeldige atoomspecificatie"
 
-#: org/jmol/viewer/Compiler.java:1985
-#: org/jmol/viewer/Eval.java:8804
+#: org/jmol/viewer/Compiler.java:1985 org/jmol/viewer/Eval.java:8802
 msgid "quoted string expected"
 msgstr "string in haakjes verwacht"
 
@@ -1258,258 +1258,262 @@ msgstr "te veel scriptnivo's"
 msgid "Too many nested {0} commands"
 msgstr "Te veel geneste {0} commando's"
 
-#: org/jmol/viewer/Eval.java:763
-#: org/jmol/viewer/Eval.java:769
+#: org/jmol/viewer/Eval.java:763 org/jmol/viewer/Eval.java:769
 #, java-format
 msgid "Invalid {0} command"
 msgstr "Ongeldig {0} commando"
 
-#: org/jmol/viewer/Eval.java:2069
+#: org/jmol/viewer/Eval.java:2067
 #, java-format
-msgid "plane expected -- either three points or atom expressions or {0} or {1} or {2}"
-msgstr "Vlak verwacht -- of drie punten of een atoomexpressie of {0} or {1} or {2}"
+msgid ""
+"plane expected -- either three points or atom expressions or {0} or {1} or "
+"{2}"
+msgstr ""
+"Vlak verwacht -- of drie punten of een atoomexpressie of {0} or {1} or {2}"
 
-#: org/jmol/viewer/Eval.java:2082
+#: org/jmol/viewer/Eval.java:2080
 msgid "No unit cell"
 msgstr "Geen eenheidscel"
 
-#: org/jmol/viewer/Eval.java:2092
+#: org/jmol/viewer/Eval.java:2090
 msgid "Miller indices cannot all be zero."
 msgstr "De Miller-indices kunnen niet allemaal nul zijn."
 
-#: org/jmol/viewer/Eval.java:2232
+#: org/jmol/viewer/Eval.java:2230
 msgid "a color or palette name (Jmol, Rasmol) is required"
 msgstr "een kleur of kleurenset (Jmol, Rasmol) is vereist"
 
-#: org/jmol/viewer/Eval.java:3031
+#: org/jmol/viewer/Eval.java:3029
 #, java-format
 msgid "{0} connections deleted"
 msgstr "{0} bindingen verwijderd"
 
-#: org/jmol/viewer/Eval.java:3053
+#: org/jmol/viewer/Eval.java:3051
 #, java-format
 msgid "{0} connections modified or created"
 msgstr "{0} bindingen gewijzigd of gemaakt"
 
-#: org/jmol/viewer/Eval.java:3653
+#: org/jmol/viewer/Eval.java:3651
 #, java-format
 msgid "space group {0} was not found."
 msgstr "ruimtegroep {0} is niet bekend"
 
-#: org/jmol/viewer/Eval.java:3876
+#: org/jmol/viewer/Eval.java:3874
 msgid "bad atom number"
 msgstr "Ongeldig atoomnummer"
 
-#: org/jmol/viewer/Eval.java:4142
+#: org/jmol/viewer/Eval.java:4140
 msgid "too many rotation points were specified"
 msgstr "te veel rotatiepunten gedefinieerd"
 
-#: org/jmol/viewer/Eval.java:4178
+#: org/jmol/viewer/Eval.java:4176
 msgid "rotation points cannot be identical"
 msgstr "rotatiepunten kunnen niet identiek zijn"
 
-#: org/jmol/viewer/Eval.java:4831
+#: org/jmol/viewer/Eval.java:4829
 #, java-format
 msgid "{0} hydrogen bonds"
 msgstr "{0} waterstofbruggen"
 
-#: org/jmol/viewer/Eval.java:4841
+#: org/jmol/viewer/Eval.java:4839
 #, java-format
 msgid "{0} not allowed with background model displayed"
 msgstr "{0} is niet toegestaan als een achtergrondmodel is weergegeven"
 
-#: org/jmol/viewer/Eval.java:5134
+#: org/jmol/viewer/Eval.java:5132
 msgid "Calculate what?"
 msgstr "wat berekenen?"
 
-#: org/jmol/viewer/Eval.java:5355
+#: org/jmol/viewer/Eval.java:5353
 msgid "trajectory not applicable in this context"
 msgstr "Trajectorie is niet van toepassing in deze context"
 
-#: org/jmol/viewer/Eval.java:5488
+#: org/jmol/viewer/Eval.java:5486
 #, java-format
 msgid "invalid {0} control keyword"
 msgstr "Ongeldig {0} controllewoord"
 
-#: org/jmol/viewer/Eval.java:6883
+#: org/jmol/viewer/Eval.java:6881
 msgid "save what?"
 msgstr "wat opslaan?"
 
-#: org/jmol/viewer/Eval.java:6920
+#: org/jmol/viewer/Eval.java:6918
 msgid "restore what?"
 msgstr "wat inladen?"
 
-#: org/jmol/viewer/Eval.java:6984
-#: org/jmol/viewer/Eval.java:7039
+#: org/jmol/viewer/Eval.java:6982 org/jmol/viewer/Eval.java:7037
 #, java-format
 msgid "The {0} command is not available for the applet."
 msgstr "Het {0} commando is niet beschikbaar in de applet"
 
-#: org/jmol/viewer/Eval.java:7033
+#: org/jmol/viewer/Eval.java:7031
 #, java-format
 msgid "write what? {0} or {1} \"filename\""
 msgstr "wat opslaan? {0} of {1} \"bestandsnaam\""
 
-#: org/jmol/viewer/Eval.java:7062
+#: org/jmol/viewer/Eval.java:7060
 msgid "No data available"
 msgstr "Geen data beschikbaar"
 
-#: org/jmol/viewer/Eval.java:7363
-#: org/jmol/viewer/Eval.java:8059
+#: org/jmol/viewer/Eval.java:7361 org/jmol/viewer/Eval.java:8057
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "geen MO basis set of coefficienten beschikbaar voor dit frame"
 
-#: org/jmol/viewer/Eval.java:8063
+#: org/jmol/viewer/Eval.java:8061
 msgid "no MO coefficient data available"
 msgstr "geen MO-coefficienten beschikbaar"
 
-#: org/jmol/viewer/Eval.java:8065
+#: org/jmol/viewer/Eval.java:8063
 msgid "Only one molecular orbital is available in this file"
 msgstr "Maar een moleculaire orbitaal is aanwezig in dit bestand"
 
-#: org/jmol/viewer/Eval.java:8074
+#: org/jmol/viewer/Eval.java:8072
 msgid "no MO occupancy data available"
 msgstr "Geen MO-data beschikbaar"
 
-#: org/jmol/viewer/Eval.java:8084
+#: org/jmol/viewer/Eval.java:8082
 #, java-format
 msgid "An MO index from 1 to {0} is required"
 msgstr "Een MO-index van 1 tot {0} is verwacht"
 
-#: org/jmol/viewer/Eval.java:8561
-msgid "No partial charges were read from the file; Jmol needs these to render the MEP data."
-msgstr "Geen partiele ladingen zijn gelezen van het bestaand. Jmol heeft deze nodig om MEP data te visualiseren."
+#: org/jmol/viewer/Eval.java:8559
+msgid ""
+"No partial charges were read from the file; Jmol needs these to render the "
+"MEP data."
+msgstr ""
+"Geen partiele ladingen zijn gelezen van het bestaand. Jmol heeft deze nodig "
+"om MEP data te visualiseren."
 
-#: org/jmol/viewer/Eval.java:8750
+#: org/jmol/viewer/Eval.java:8748
 msgid "MO isosurfaces require that only one model be displayed"
 msgstr "MO oppervlakken vereisen dat maar een model getoond wordt"
 
-#: org/jmol/viewer/Eval.java:8754
+#: org/jmol/viewer/Eval.java:8752
 msgid "unrecognized command"
 msgstr "onbekend commando"
 
-#: org/jmol/viewer/Eval.java:8758
+#: org/jmol/viewer/Eval.java:8756
 msgid "unrecognized atom property"
 msgstr "onbekend atoomeigenschap"
 
-#: org/jmol/viewer/Eval.java:8762
+#: org/jmol/viewer/Eval.java:8760
 msgid "unrecognized bond property"
 msgstr "onbekende bindingseigenschap"
 
-#: org/jmol/viewer/Eval.java:8766
+#: org/jmol/viewer/Eval.java:8764
 msgid "filename expected"
 msgstr "bestandsnaam verwacht"
 
-#: org/jmol/viewer/Eval.java:8770
+#: org/jmol/viewer/Eval.java:8768
 msgid "boolean expected"
 msgstr "bool verwacht"
 
-#: org/jmol/viewer/Eval.java:8774
+#: org/jmol/viewer/Eval.java:8772
 msgid "boolean or number expected"
 msgstr "boolean of getal verwacht"
 
-#: org/jmol/viewer/Eval.java:8778
+#: org/jmol/viewer/Eval.java:8776
 #, java-format
 msgid "boolean, number, or {0} expected"
 msgstr "boolean, getal, of {0} vereist"
 
-#: org/jmol/viewer/Eval.java:8782
+#: org/jmol/viewer/Eval.java:8780
 msgid "(atom expression) or integer expected"
 msgstr "atoomexpressie of geheel getal verwacht"
 
-#: org/jmol/viewer/Eval.java:8786
+#: org/jmol/viewer/Eval.java:8784
 msgid "valid (atom expression) expected"
 msgstr "geldige atoomexpressie verwacht"
 
-#: org/jmol/viewer/Eval.java:8790
+#: org/jmol/viewer/Eval.java:8788
 msgid "bad [R,G,B] color"
 msgstr "ongeldige [R,G,B] kleur"
 
-#: org/jmol/viewer/Eval.java:8794
+#: org/jmol/viewer/Eval.java:8792
 msgid "integer expected"
 msgstr "geheel getal verwacht"
 
-#: org/jmol/viewer/Eval.java:8809
+#: org/jmol/viewer/Eval.java:8807
 msgid "quoted string or identifier expected"
 msgstr "String-inhaakjes of geheel getal verwacht"
 
-#: org/jmol/viewer/Eval.java:8813
+#: org/jmol/viewer/Eval.java:8811
 msgid "property name expected"
 msgstr "naam van eigenschap verwacht"
 
-#: org/jmol/viewer/Eval.java:8817
+#: org/jmol/viewer/Eval.java:8815
 msgid "x y z axis expected"
 msgstr "x-y-z-as verwacht"
 
-#: org/jmol/viewer/Eval.java:8821
+#: org/jmol/viewer/Eval.java:8819
 msgid "color expected"
 msgstr "kleur verwacht"
 
-#: org/jmol/viewer/Eval.java:8825
+#: org/jmol/viewer/Eval.java:8823
 msgid "unrecognized object"
 msgstr "onbekend object"
 
-#: org/jmol/viewer/Eval.java:8829
+#: org/jmol/viewer/Eval.java:8827
 msgid "runtime unrecognized expression"
 msgstr "ongeldige expressie"
 
-#: org/jmol/viewer/Eval.java:8841
+#: org/jmol/viewer/Eval.java:8839
 msgid "invalid argument"
 msgstr "ongeldig argument"
 
-#: org/jmol/viewer/Eval.java:8849
+#: org/jmol/viewer/Eval.java:8847
 #, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
 msgstr "onbekend SHOW parameter -- gebruik {0}"
 
-#: org/jmol/viewer/Eval.java:8853
+#: org/jmol/viewer/Eval.java:8851
 #, java-format
 msgid "integer out of range ({0} - {1})"
 msgstr "geheel getal buiten bereik ({0} - {1})"
 
-#: org/jmol/viewer/Eval.java:8858
+#: org/jmol/viewer/Eval.java:8856
 #, java-format
 msgid "decimal number out of range ({0} - {1})"
 msgstr "getal buiten bereik ({0} - {1})"
 
-#: org/jmol/viewer/Eval.java:8863
+#: org/jmol/viewer/Eval.java:8861
 #, java-format
 msgid "number must be ({0} or {1})"
 msgstr "getal moet zijn ({0}  of {1})"
 
-#: org/jmol/viewer/Eval.java:8868
+#: org/jmol/viewer/Eval.java:8866
 msgid "file not found"
 msgstr "bestand niet gevonden"
 
-#: org/jmol/viewer/Eval.java:8872
+#: org/jmol/viewer/Eval.java:8870
 msgid "draw object not defined"
 msgstr "object niet gedefinieerd"
 
-#: org/jmol/viewer/Eval.java:8876
+#: org/jmol/viewer/Eval.java:8874
 msgid "object name expected after '$'"
 msgstr "objectnaam verwacht na '$'"
 
-#: org/jmol/viewer/Eval.java:8881
+#: org/jmol/viewer/Eval.java:8879
 msgid " {x y z} or $name or (atom expression) required"
 msgstr " {x y z} of $naam of atoomexpressie verwacht"
 
-#: org/jmol/viewer/Eval.java:8885
+#: org/jmol/viewer/Eval.java:8883
 msgid "keyword expected"
 msgstr "commandowoord verwacht"
 
-#: org/jmol/viewer/Eval.java:8889
+#: org/jmol/viewer/Eval.java:8887
 msgid "invalid parameter order"
 msgstr "ongeldige parametervolgorde"
 
-#: org/jmol/viewer/Eval.java:8893
+#: org/jmol/viewer/Eval.java:8891
 msgid "incompatible arguments"
 msgstr "Ongeldige combinatie van parameters"
 
-#: org/jmol/viewer/Eval.java:8897
+#: org/jmol/viewer/Eval.java:8895
 msgid "insufficient arguments"
 msgstr "te weinig parameters"
 
-#: org/jmol/viewer/Eval.java:10108
+#: org/jmol/viewer/Eval.java:10106
 msgid "too many parentheses"
 msgstr "te veel haakjes"
 
@@ -1534,13 +1538,19 @@ msgstr "{0} atomen geselecteerd"
 
 #: org/jmol/viewer/Viewer.java:4096
 #, java-format
-msgid "ERROR: Cannot set value of a boolean to another type. use \"{0}\" first."
-msgstr "FOUT: Kan de waarde van een boolean niet veranden naar een ander type. gebruik eerst \"{0}\"."
+msgid ""
+"ERROR: Cannot set value of a boolean to another type. use \"{0}\" first."
+msgstr ""
+"FOUT: Kan de waarde van een boolean niet veranden naar een ander type. "
+"gebruik eerst \"{0}\"."
 
 #: org/jmol/viewer/Viewer.java:4442
 #, java-format
-msgid "ERROR: Cannot set value of this variable to a boolean. use \"{0}\" first."
-msgstr "FOUT: Kan de waarde van deze variabele niet veranden naar een boolean. gebruik eerst \"{0}\"."
+msgid ""
+"ERROR: Cannot set value of this variable to a boolean. use \"{0}\" first."
+msgstr ""
+"FOUT: Kan de waarde van deze variabele niet veranden naar een boolean. "
+"gebruik eerst \"{0}\"."
 
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Jmol voert script uit ..."
@@ -1548,82 +1558,121 @@ msgstr "FOUT: Kan de waarde van deze variabele niet veranden naar een boolean. g
 #, fuzzy
 #~ msgid "use {0}"
 #~ msgstr "groepen: {0}"
+
 #~ msgid "Animate"
 #~ msgstr "Animatie"
+
 #~ msgid "Frame"
 #~ msgstr "Frame"
+
 #~ msgid "All Frames"
 #~ msgstr "Alle Frames"
+
 #~ msgid "Set Select Mode"
 #~ msgstr "Kies Selectiemodus"
+
 #~ msgid "Replace Selection"
 #~ msgstr "Vervang Selectie"
+
 #~ msgid "Add to Selection (OR)"
 #~ msgstr "Toevoegen aan Selectie (OF)"
+
 #~ msgid "Narrow Selection (AND)"
 #~ msgstr "Verklein Selectie (EN)"
+
 #~ msgid "Render"
 #~ msgstr "Render"
+
 #~ msgid "Crimson"
 #~ msgstr "Crimson"
+
 #~ msgid "Dark Red"
 #~ msgstr "Donkerrood"
+
 #~ msgid "Firebrick"
 #~ msgstr "Firebrick"
+
 #~ msgid "Indian Red"
 #~ msgstr "Indian Red"
+
 #~ msgid "Dark Magenta"
 #~ msgstr "Dark Magenta"
+
 #~ msgid "Dark Salmon"
 #~ msgstr "Dark Salmon"
+
 #~ msgid "Light Salmon"
 #~ msgstr "Light Salmon"
+
 #~ msgid "Deep Pink"
 #~ msgstr "Deep Pink"
+
 #~ msgid "Light Pink"
 #~ msgstr "Light Pink"
+
 #~ msgid "Goldenrod"
 #~ msgstr "Goldenrod"
+
 #~ msgid "Lemon Chiffon"
 #~ msgstr "Lemon Chiffon"
+
 #~ msgid "Yellow-Green"
 #~ msgstr "Yellow-Green"
+
 #~ msgid "Lime"
 #~ msgstr "Lime"
+
 #~ msgid "Seagreen"
 #~ msgstr "Seagreen"
+
 #~ msgid "Green-Blue"
 #~ msgstr "Green-Blue"
+
 #~ msgid "Spring Green"
 #~ msgstr "Spring Green"
+
 #~ msgid "Aqua"
 #~ msgstr "Aqua"
+
 #~ msgid "Azure"
 #~ msgstr "Azure"
+
 #~ msgid "Carolina Blue"
 #~ msgstr "Carolina Blue"
+
 #~ msgid "Cadet Blue"
 #~ msgstr "Cadet Blue"
+
 #~ msgid "Cornflower"
 #~ msgstr "Cornflower"
+
 #~ msgid "Dark Slate Blue"
 #~ msgstr "Dark Slate Blue"
+
 #~ msgid "Light Steel Blue"
 #~ msgstr "Light Steel Blue"
+
 #~ msgid "Charge"
 #~ msgstr "Lading"
+
 #~ msgid "Crystal"
 #~ msgstr "Kristal"
+
 #~ msgid "Aquamarine"
 #~ msgstr "Aquamarijn"
+
 #~ msgid "Forest Green"
 #~ msgstr "Groen"
+
 #~ msgid "Hot Pink"
 #~ msgstr "Fel roze"
+
 #~ msgid "Options"
 #~ msgstr "Opties"
+
 #~ msgid "Show Selected Atoms"
 #~ msgstr "Laat geselecteerde atomen zien"
+
 #~ msgid "Jmol Colors"
 #~ msgstr "Jmol-kleuren"
 
@@ -1634,34 +1683,46 @@ msgstr "FOUT: Kan de waarde van deze variabele niet veranden naar een boolean. g
 #, fuzzy
 #~ msgid "space group "
 #~ msgstr "Ruimtegroep"
+
 #~ msgid "1.0 Å"
 #~ msgstr "1.0 Å"
+
 #~ msgid "Except Solvent"
 #~ msgstr "Behalve Oplosmiddel"
+
 #~ msgid "Except Water"
 #~ msgstr "Behalve Water"
+
 #~ msgid "Other"
 #~ msgstr "Anders"
+
 #~ msgid "Lipid"
 #~ msgstr "Lipide"
+
 #~ msgid "pick "
 #~ msgstr "selecteer"
+
 #~ msgid "Nanometers"
 #~ msgstr "Nanometers"
+
 #~ msgid "Angstroms"
 #~ msgstr "Angstroms"
+
 #~ msgid "Picometers"
 #~ msgstr "Picometers"
+
 #~ msgid "Open"
 #~ msgstr "Openen"
+
 #~ msgid "Jmol Molecular Visualization http://www.jmol.org"
 #~ msgstr "Jmol Moleculaire Visualisatie http://www.jmol.org"
+
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Draadmodelrotatie"
+
 #~ msgid ""
 #~ "Jmol Applet.  Part of the OpenScience project. See http://www.jmol.org "
 #~ "for more information"
 #~ msgstr ""
 #~ "Jmol Applet.  Onderdeel van het OpenScience project. Zie http://www.jmol."
 #~ "org voor meer informatie."
-

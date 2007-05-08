@@ -59,7 +59,7 @@ public class GT {
    * (the .po files). Later, in JmolPopup.updateLanguageMenu(), GT._() is used
    * again to create the actual, localized menu item name. 
    * Introduced in Jmol 11.1.34 
-   * @author Bob Hanson May 7, 2007
+   * Author Bob Hanson May 7, 2007
    * @return  list of codes and untranslated names
    */
   synchronized private String[][] createLanguageList() {
@@ -73,6 +73,7 @@ public class GT {
     {"et", GT._("Estonian")},
     {"fr", GT._("French")},
     {"de", GT._("German")},
+    {"pt_BR", GT._("Portugese (Brazil)")},
     {"pt", GT._("Portugese")},
     {"es", GT._("Spanish")},
     {"tr", GT._("Turkish")},};

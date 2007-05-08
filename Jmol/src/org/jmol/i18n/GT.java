@@ -106,7 +106,7 @@ public class GT {
     {"fr", GT._("French")},
     {"de", GT._("German")},
     {"pt_BR", GT._("Portuguese - Brazil")},
-    {"pt", GT._("Portugese")},
+    {"pt", GT._("Portuguese")},
     {"es", GT._("Spanish")},
     {"tr", GT._("Turkish")},};
     doTranslate = wasTranslating;

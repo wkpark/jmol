@@ -833,7 +833,7 @@ public class Draw extends MeshCollection {
     if (iModel < 0)
       iModel = 0;
     if (mesh.diameter > 0)
-      appendCmd(str, " diameter " + mesh.diameter);
+      str.append(" diameter ").append(mesh.diameter);
     int nVertices = 0;
     switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
     case DrawMesh.DRAW_ARROW:

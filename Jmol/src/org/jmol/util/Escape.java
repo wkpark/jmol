@@ -77,11 +77,16 @@ public class Escape {
     str = TextFormat.simpleReplace(str, "\1", "\\n");
     for (int i = str.length(); --i >= 0;)
       if (str.charAt(i) > 0x7F)
-        str = str.substring(0, i) + "\\u" + Integer.toHexString(str.charAt(i))
+        str = str.substring(0, i) + unicode(str.charAt(i))
             + str.substring(i + 1);
     return "\"" + str + "\"";
   }
 
+  private static String unicode(char c) {
+    String s = "0000" + Integer.toHexString(c);
+    return "\\u" + s.substring(s.length() - 4);
+  }
+  
   public static Object unescapePoint(String strPoint) {
     if (strPoint == null || strPoint.length() == 0 
         || strPoint.charAt(0) != '{' || strPoint.charAt(strPoint.length() - 1) != '}')

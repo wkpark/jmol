@@ -826,44 +826,31 @@ support for assertions (which were introduced in 1.4).
     </copy>
 
     <copy todir="build/dist/jmol-${version}/src" >
-      <fileset dir="src">
-        <exclude name="**/CVS"/>
-      </fileset>
+      <fileset dir="src" />
     </copy>
 
     <copy todir="build/dist/jmol-${version}/${lib.dir}" >
-      <fileset dir="${lib.dir}">
-        <exclude name="**/CVS"/>
-      </fileset>
+      <fileset dir="${lib.dir}" />
     </copy>
 
     <copy todir="build/dist/jmol-${version}/${plugin.dir}" >
-      <fileset dir="${plugin.dir}">
-        <exclude name="**/CVS"/>
-      </fileset>
+      <fileset dir="${plugin.dir}" />
     </copy>
 
     <copy todir="build/dist/jmol-${version}/appletweb" >
-      <fileset dir="appletweb">
-        <exclude name="**/CVS"/>
-      </fileset>
+      <fileset dir="appletweb" />
+    </copy>
+
+    <copy todir="build/dist/jmol-${version}/manifest" >
+      <fileset dir="manifest" />
     </copy>
 
     <copy todir="build/dist/jmol-${version}/doc" >
-      <fileset dir="doc">
-        <exclude name="**/CVS"/>
-      </fileset>
+      <fileset dir="doc" />
     </copy>
 
     <!-- Jvxl -->
     <copy file="build/Jvxl.jar" tofile="build/dist/Jvxl-${jvxl_version}.jar" failonerror="false" />
-
-    <!-- remove if really obsolete - for now only uncommented -->
-    <!-- <copy todir="build/dist/jmol-${version}/samples" >
-      <fileset dir="samples">
-        <exclude name="**/CVS"/>
-      </fileset>
-    </copy> -->
 
     <copy   file="build/doc/JmolDevelopersGuide.html"
             tofile="build/dist/jmol-${version}/doc/JmolDevelopersGuide.html" />
@@ -920,13 +907,11 @@ support for assertions (which were introduced in 1.4).
     <copy todir="build/dist/jmolapisio-${version}/src" >
       <fileset dir="src">
         <includesfile name="apisio.classes"/>
-        <exclude name="**/CVS"/>
       </fileset>
     </copy>
 
     <copy todir="build/dist/jmolapisio-${version}/${lib.dir}" >
       <fileset dir="${lib.dir}">
-        <exclude name="**/CVS"/>
         <include name="${vecmath.jar}"/>
         <include name="netscape.jar"/>
       </fileset>

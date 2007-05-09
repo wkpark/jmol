@@ -200,6 +200,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
 
     if ("modelIndex" == propertyName) {
       modelIndex = ((Integer) value).intValue();
+      sg.setModelIndex(modelIndex);
       return;
     }
 

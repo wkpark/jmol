@@ -1618,6 +1618,8 @@ public final class Frame {
       atomData.atomRadius = new float[atomCount];
     for (int i = 0; i < atomCount; i++) {
       if (atoms[i].modelIndex != atomData.firstModelIndex) {
+        if (atomData.bsIgnored == null)
+          atomData.bsIgnored = new BitSet();
         atomData.bsIgnored.set(i);
         continue;
       }

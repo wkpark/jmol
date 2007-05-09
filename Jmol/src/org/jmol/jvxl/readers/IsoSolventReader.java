@@ -82,7 +82,7 @@ class IsoSolventReader extends AtomDataReader {
     if (isCavity && meshData.dots == null)
       meshData.dots = meshDataServer.calculateGeodesicSurface(
           params.bsSelected, bsMyIgnored, envelopeRadius);
-    modelIndex = -1;
+    modelIndex = params.modelIndex;
     getAtoms(Float.NaN, false, true);
     setHeader("solvent/molecular surface", params.calculationType);
     setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax,

@@ -60,6 +60,8 @@ public abstract class MeshCollection extends Shape {
     } else {
       allocMesh(thisID);
     }
+    
+    //System.out.println("setMesh: " + currentMesh.thisID + " " + currentMesh);
     if (currentMesh.thisID == null)
       currentMesh.thisID = myType + (++nUnnamed);
     return currentMesh;
@@ -271,7 +273,11 @@ public abstract class MeshCollection extends Shape {
         if (meshes[i] == null || meshes[i].vertexCount == 0)
           continue;
         Mesh m = meshes[i];
-        sb.append((++k)).append(" id:"+m.thisID).append("; vertices:" + m.vertexCount).append("; polygons:" + m.polygonCount).append("; visible:" + m.visible); 
+        sb.append((++k)).append(" id:"+m.thisID)
+        .append("; model:" + viewer.getModelNumberDotted(m.modelIndex))
+        .append("; vertices:" + m.vertexCount)
+        .append("; polygons:" + m.polygonCount)
+        .append("; visible:" + m.visible); 
         if (m.title != null) {
           String s = "";
           for (int j = 0; j < m.title.length; j++)
@@ -319,6 +325,7 @@ public abstract class MeshCollection extends Shape {
   }
   
   public void setModelIndex(int atomIndex, int modelIndex) {
+    //System.out.println("setModelIndex " + atomIndex + " " + modelIndex);
     if (currentMesh == null)
       return;
     currentMesh.visible = true; 
@@ -333,6 +340,7 @@ public abstract class MeshCollection extends Shape {
     else
       currentMesh.modelIndex = viewer.getCurrentModelIndex();
     currentMesh.scriptCommand = script;
+    //System.out.println("setModelIndex " + atomIndex + " " + modelIndex + " " + currentMesh.modelIndex + " " + currentMesh);
   }
 
  public String getShapeState() {

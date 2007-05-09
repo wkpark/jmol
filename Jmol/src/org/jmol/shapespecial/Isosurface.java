@@ -127,7 +127,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     meshes = isomeshes = (IsosurfaceMesh[])ArrayUtil.ensureLength(isomeshes, meshCount + 1);
     currentMesh = thisMesh = isomeshes[meshCount++] = new IsosurfaceMesh(thisID, g3d, colix);
     sg.setJvxlData(jvxlData = thisMesh.jvxlData);
-    //System.out.println("Isosurface allocMesh thisMesh:" + thisMesh.vertexColixes);
+    //System.out.println("Isosurface allocMesh thisMesh:" + thisMesh.thisID + " " + thisMesh);
 
   }
 
@@ -273,7 +273,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       }
       initializeIsosurface();
       sg.setModelIndex(modelIndex);
-      setModelIndex();
+      //setModelIndex();
       return;
     }
 

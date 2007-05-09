@@ -1,6 +1,0 @@
-Sealed: true
-Name: org/jmol/api/
-Sealed: false
-
-Name: org/jmol/applet/
-Sealed: true

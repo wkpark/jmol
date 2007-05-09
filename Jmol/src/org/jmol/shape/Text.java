@@ -369,10 +369,8 @@ public class Text {
     lines = TextFormat.split(text, '|');
     textWidth = 0;
     widths = new int[lines.length];
-    for (int i = lines.length; --i >= 0;) {
-      widths[i] = fm.stringWidth(lines[i]);
-      textWidth = Math.max(textWidth, widths[i]);
-    }
+    for (int i = lines.length; --i >= 0;)
+      textWidth = Math.max(textWidth, widths[i] = stringWidth(lines[i]));
     textHeight = lines.length * lineHeight;
     boxWidth = textWidth + 8;
     boxHeight = textHeight + 8;
@@ -594,5 +592,37 @@ public class Text {
   public boolean checkObjectClicked(int x, int y) {
     return (script != null && 
         x >= boxX && x <= boxX + boxWidth && y >= boxY && y <= boxY + boxHeight);
+  }
+  
+  private int stringWidth(String str) {
+    int w = 0;
+    int f = 1;
+    int subscale = 1; //could be something less than that
+    if (str == null)
+      return 0;
+    if (str.indexOf("<su") < 0)
+      return fm.stringWidth(str);
+    int len = str.length();
+    String s;
+    for (int i = 0; i < len; i++) {
+      if (str.charAt(i) == '<') {
+        if (i + 4 < len
+            && ((s = str.substring(i, i + 5)).equals("<sub>") || s
+                .equals("<sup>"))) {
+          i += 4;
+          f = subscale;
+          continue;
+        }
+        if (i + 5 < len
+            && ((s = str.substring(i, i + 6)).equals("</sub>") || s
+                .equals("</sup>"))) {
+          i += 5;
+          f = 1;
+          continue;
+        }
+      }
+      w += fm.stringWidth(str.substring(i, i + 1)) * f;
+    }
+    return w;
   }
 }

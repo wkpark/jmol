@@ -85,7 +85,7 @@ public class LabelsRenderer extends ShapeRenderer {
       if (zBox < 1)
         zBox = 1;
 
-      boolean isSimple = (textAlign == 0 && label.indexOf("|") < 0);
+      boolean isSimple = (textAlign == 0 && label.indexOf("|") < 0 && label.indexOf("<su") < 0);
 
       Text text = (isSimple ? null : (Text) labels.atomLabels.get(atom));
       if (text != null) {

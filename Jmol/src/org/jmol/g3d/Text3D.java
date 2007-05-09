@@ -69,21 +69,24 @@ class Text3D {
     return width;
   }
   
-  static void plot(int x, int y, int z, int argb, int argbBackground,
+  static int plot(int x, int y, int z, int argb, int argbBackground,
                    String text, Font3D font3d, Graphics3D g3d) {
     if (text.length() == 0)
-      return;
+      return 0;
+    if (text.indexOf("<su") >= 0)
+      return plotByCharacter(x, y, z, argb, argbBackground, text, font3d, g3d);
+      
     //setColix has presumably been carried out for argb, and the two 
     //are assumed to be both the same -- translucent or not. 
     Text3D text3d = getText3D(text, font3d, g3d.platform);
     if (text3d.width == 0)
-      return;
+      return 0;
     int[] bitmap = text3d.bitmap;
     int textWidth = text3d.width;
     int textHeight = text3d.height;
     if (x + textWidth < 0 || x > g3d.width ||
         y + textHeight < 0 || y > g3d.height)
-      return;
+      return textWidth;
     if (x < 0 || x + textWidth > g3d.width ||
         y < 0 || y + textHeight > g3d.height)
       plotClipped(x, y, z, argb, argbBackground,
@@ -91,9 +94,45 @@ class Text3D {
     else
       plotUnclipped(x, y, z, argb, argbBackground,
                     g3d, textWidth, textHeight, bitmap);
+    return textWidth;
   }
 
-  static void plotUnclipped(int x, int y, int z, int argb, int argbBackground,
+  private static int plotByCharacter(int x, int y, int z, int argb, int argbBackground,
+                                      String text, Font3D font3d, Graphics3D g3d) {
+    //int subscale = 1; //could be something less than that
+    int w = 0;
+    int len = text.length();
+    int suboffset = (int)(font3d.fontMetrics.getHeight() * 0.25);
+    int supoffset = -(int)(font3d.fontMetrics.getHeight() * 0.3);
+    for (int i = 0; i < len; i++) {
+      if (text.charAt(i) == '<') {
+        if (i + 4 < len && text.substring(i, i + 5).equals("<sub>")) {
+          i += 4;
+          y += suboffset;
+          continue;
+        }
+        if (i + 4 < len && text.substring(i, i + 5).equals("<sup>")) {
+          i += 4;
+          y += supoffset;
+          continue;
+        }
+        if (i + 5 < len  && text.substring(i, i + 6).equals("</sub>")) {
+          i += 5;
+          y -= suboffset;
+          continue;
+        }
+        if (i + 5 < len  && text.substring(i, i + 6).equals("</sup>")) {
+          i += 5;
+          y -= supoffset;
+          continue;
+        }
+      }
+      w += plot(x + w, y, z, argb, argbBackground, text.substring(i, i + 1), font3d, g3d);
+    }
+    return w;
+  }
+  
+  private static void plotUnclipped(int x, int y, int z, int argb, int argbBackground,
                             Graphics3D g3d, int textWidth, int textHeight,
                             int[] bitmap) {
     int offset = 0;
@@ -133,7 +172,7 @@ class Text3D {
     }
   }
   
-  static void plotClipped(int x, int y, int z, int argb, int argbBackground,
+  private static void plotClipped(int x, int y, int z, int argb, int argbBackground,
                           Graphics3D g3d,
                           int textWidth, int textHeight, int[] bitmap) {
     int offset = 0;

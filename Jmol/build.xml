@@ -496,7 +496,7 @@ support for assertions (which were introduced in 1.4).
 	      <fileset dir="${appletjars.dir}" includes="**/*"/>
 	    </jar>
 	
-	    <jar destfile="${jmol.applet.build.dir}/JmolAppletMain.jar" manifest="manifest/appletMain.txt">
+	    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Main.jar" manifest="manifest/appletMain.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/api/**" />
 	        <!-- note that this class is included in JmolApplet0.jar -->
@@ -506,12 +506,12 @@ support for assertions (which were introduced in 1.4).
 	      </fileset>
 	    </jar>
 
-	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletJars.jar" manifest="manifest/applet.txt">
+	  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_Jars.jar" manifest="manifest/applet.txt">
 	      <!-- javax/vecmath -->
 	      <fileset dir="${appletjars.dir}" includes="**/*"/>
 	    </jar>
 	
-	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletCore.jar" manifest="manifest/applet.txt">
+	  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_Core.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/g3d/**" />
 	        <include name="org/jmol/geodesic/**" />
@@ -523,7 +523,7 @@ support for assertions (which were introduced in 1.4).
 	      </fileset>
 	    </jar>
 
-	    <jar destfile="${jmol.applet.build.dir}/JmolAppletViewer.jar" manifest="manifest/applet.txt" >
+	    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Viewer.jar" manifest="manifest/applet.txt" >
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/atomdata/**" />
 	        <include name="org/jmol/modelframe/**" />
@@ -534,70 +534,70 @@ support for assertions (which were introduced in 1.4).
 	    </jar>
 
 
-	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletJvxl.jar" manifest="manifest/applet.txt" >
+	  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_Jvxl.jar" manifest="manifest/applet.txt" >
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/jvxl/**" />
 	      </fileset>
 	    </jar>
 
-	    <jar destfile="${jmol.applet.build.dir}/JmolAppletPopup.jar" manifest="manifest/applet.txt">
+	    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Popup.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/popup/**" />
 	      </fileset>
 	    </jar>
 
-	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletQuantum.jar" manifest="manifest/applet.txt">
+	  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_Quantum.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/quantum/**" />
 	      </fileset>
 	    </jar>
 
-	    <jar destfile="${jmol.applet.build.dir}/JmolAppletReadersMolXyz.jar" manifest="manifest/applet.txt">
+	    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersMolXyz.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/adapter/readers/molxyz/**" />
 	      </fileset>
 	    </jar>
 
-	    <jar destfile="${jmol.applet.build.dir}/JmolAppletReadersCifPdb.jar" manifest="manifest/applet.txt">
+	    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersCifPdb.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/adapter/readers/cifpdb/**" />
 	      </fileset>
 	    </jar>
 
 
-	    <jar destfile="${jmol.applet.build.dir}/JmolAppletReadersMore.jar" manifest="manifest/applet.txt">
+	    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersMore.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/adapter/readers/more/**" />
 	      </fileset>
 	    </jar>
 	  	
 	  	
-	    <jar destfile="${jmol.applet.build.dir}/JmolAppletReadersXml.jar" manifest="manifest/applet.txt">
+	    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_ReadersXml.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/adapter/readers/xml/**" />
 	      </fileset>
 	    </jar>
 
 	  	
-     	<jar destfile="${jmol.applet.build.dir}/JmolAppletShapeBio.jar" manifest="manifest/applet.txt" >
+     	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar" manifest="manifest/applet.txt" >
 		  <fileset dir="${applet.classes.dir}">
 		    <include name="org/jmol/shapebio/**" />
 		  </fileset>
 		</jar>
 	  	
-	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletShapeSpecial.jar" manifest="manifest/applet.txt" >
+	  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_ShapeSpecial.jar" manifest="manifest/applet.txt" >
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/shapespecial/**" />
 	      </fileset>
 	    </jar>
 
-	  	<jar destfile="${jmol.applet.build.dir}/JmolAppletSmiles.jar" manifest="manifest/applet.txt">
+	  	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_Smiles.jar" manifest="manifest/applet.txt">
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/smiles/**" />
 	      </fileset>
 	    </jar>
 
-	  <jar destfile="${jmol.applet.build.dir}/JmolApplet_i18n.jar" manifest="manifest/applet_i18n.txt" >
+	  <jar destfile="${jmol.applet.build.dir}/JmolApplet0_i18n.jar" manifest="manifest/applet_i18n.txt" >
       <fileset dir="${applet.classes.dir}">
         <include name="org/jmol/translation/**" />
       </fileset>
@@ -616,21 +616,21 @@ support for assertions (which were introduced in 1.4).
       </fileset>
       <!-- changes to this must be replicated below for the signed applet -->
       <indexjars>
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletMain.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletCore.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletJars.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletJvxl.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletPopup.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletQuantum.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletReadersCifPdb.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletReadersMolXyz.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletReadersMore.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletReadersXml.jar" /> 
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletShapeBio.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletShapeSpecial.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSmiles.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletViewer.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolApplet_i18n.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Main.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Core.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Jars.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Jvxl.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Popup.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Quantum.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersCifPdb.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersMolXyz.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersMore.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ReadersXml.jar" /> 
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_ShapeSpecial.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Smiles.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_Viewer.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolApplet0_i18n.jar" />
       </indexjars>
     </jar>
     <!-- changes to this must be replicated below for the signed applet -->
@@ -644,86 +644,86 @@ support for assertions (which were introduced in 1.4).
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
   	
-    <signjar jar="${jmol.applet.build.dir}/JmolAppletMain.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSignedMain.jar"
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Main.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Main.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
-    <signjar jar="${jmol.applet.build.dir}/JmolAppletCore.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSignedCore.jar"
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Core.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Core.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
-    <signjar jar="${jmol.applet.build.dir}/JmolAppletJars.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSignedJars.jar"
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Jars.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Jars.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
   	
-    <signjar jar="${jmol.applet.build.dir}/JmolAppletJvxl.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSignedJvxl.jar"
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Jvxl.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Jvxl.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
-    <signjar jar="${jmol.applet.build.dir}/JmolAppletPopup.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSignedPopup.jar"
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Popup.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
   	
-    <signjar jar="${jmol.applet.build.dir}/JmolAppletQuantum.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSignedQuantum.jar"
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Quantum.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Quantum.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
-    <signjar jar="${jmol.applet.build.dir}/JmolAppletReadersCifPdb.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSignedReadersCifPdb.jar"
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ReadersCifPdb.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersCifPdb.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
-    <signjar jar="${jmol.applet.build.dir}/JmolAppletReadersMolXyz.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSignedReadersMolXyz.jar"
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ReadersMolXyz.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMolXyz.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
-    <signjar jar="${jmol.applet.build.dir}/JmolAppletReadersMore.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSignedReadersMore.jar"
-             keystore="selfSignedCertificate/selfSignedCertificate.store"
-             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
-
-    	
-    <signjar jar="${jmol.applet.build.dir}/JmolAppletReadersXml.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSignedReadersXml.jar"
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ReadersMore.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMore.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
     	
-    <signjar jar="${jmol.applet.build.dir}/JmolAppletShapeBio.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSignedShapeBio.jar"
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ReadersXml.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXml.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
     	
-    <signjar jar="${jmol.applet.build.dir}/JmolAppletShapeSpecial.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSignedShapeSpecial.jar"
-             keystore="selfSignedCertificate/selfSignedCertificate.store"
-             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
-
-    <signjar jar="${jmol.applet.build.dir}/JmolAppletSmiles.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSignedSmiles.jar"
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeBio.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
     	
-  	
-    <signjar jar="${jmol.applet.build.dir}/JmolAppletViewer.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSignedViewer.jar"
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_ShapeSpecial.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSpecial.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
-    	
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Smiles.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Smiles.jar"
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+
     	
   	
-  	<signjar jar="${jmol.applet.build.dir}/JmolApplet_i18n.jar"
-             signedjar="${jmol.applet.build.dir}/JmolAppletSigned_i18n.jar"
+    <signjar jar="${jmol.applet.build.dir}/JmolApplet0_Viewer.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_Viewer.jar"
+             keystore="selfSignedCertificate/selfSignedCertificate.store"
+             storepass="selfSignedCertificate" alias="selfSignedCertificate" />
+
+    	
+    	
+  	
+  	<signjar jar="${jmol.applet.build.dir}/JmolApplet0_i18n.jar"
+             signedjar="${jmol.applet.build.dir}/JmolAppletSigned0_i18n.jar"
              keystore="selfSignedCertificate/selfSignedCertificate.store"
              storepass="selfSignedCertificate" alias="selfSignedCertificate" />
 
@@ -741,21 +741,21 @@ support for assertions (which were introduced in 1.4).
         <include name="org/jmol/api/JmolAppletInterface.class" />
       </fileset>    	
       <indexjars>
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedMain.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedCore.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedJars.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedJvxl.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedPopup.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedQuantum.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedReadersCifPdb.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedReadersMolXyz.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedReadersMore.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedReadersXml.jar" /> 
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedShapeBio.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedShapeSpecial.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedSmiles.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSignedViewer.jar" />
-        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned_i18n.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Main.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Core.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Jars.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Jvxl.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Popup.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Quantum.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersCifPdb.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMolXyz.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersMore.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ReadersXml.jar" /> 
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeBio.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_ShapeSpecial.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Smiles.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Viewer.jar" />
+        <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_i18n.jar" />
       </indexjars>
     </jar>
     <signjar jar="${jmol.applet.build.dir}/JmolAppletSigned0.jar"
@@ -1004,7 +1004,7 @@ support for assertions (which were introduced in 1.4).
     </delete>
   </target>
 
-  <target name="xclean" id="xclean">
+  <target name="cxlean" id="cxlean">
   </target>
 
   <target name="spotless" id="spotless" depends="clean,spotless-i18n">

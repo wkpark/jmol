@@ -3324,31 +3324,43 @@
   <fah_proj number="1418" name="p1418_extended-polyQ44-anhydrous" public="n" file="y"
     server="171.64.122.110" atoms="748" preferred="16" deadline="23"
     credit="72" frames="100" code="G" contact="nwkelley" contrib="efishy"/>
-  <fah_proj number="1420" name="p1420_" public="n"
-    credit="745"/>
-  <fah_proj number="1421" name="p1421_" public="n"
-    credit="734"/>
-  <fah_proj number="1422" name="p1422_" public="n"
-    credit="717"/>
-  <fah_proj number="1423" name="p1423_" public="n"
-    credit="742"/>
-  <fah_proj number="1424" name="p1424_" public="n"
-    credit="393"/>
-  <fah_proj number="1425" name="p1425_" public="n"
-    credit="393"/>
-  <fah_proj number="1426" name="p1426_" public="n"
-    credit="881"/>
-  <fah_proj number="1427" name="p1427_" public="n"
-    credit="881"/>
+  <fah_proj number="1420" name="p1420_POLYQ MEWHELIX" public="n"
+    server="171.64.122.131" atoms="34657" preferred="137" deadline="205"
+    credit="745" frames="100" code="G" contact="nwkelley"/>
+  <fah_proj number="1421" name="p1421_POLYQ MEWHELIX" public="n"
+    server="171.64.122.131" atoms="34431" preferred="135" deadline="202"
+    credit="734" frames="100" code="G" contact="nwkelley"/>
+  <fah_proj number="1422" name="p1422_POLYQ MEWHELIX" public="n"
+    server="171.64.122.131" atoms="34423" preferred="132" deadline="198"
+    credit="717" frames="100" code="G" contact="nwkelley"/>
+  <fah_proj number="1423" name="p1423_POLYQ MEWHELIX" public="n"
+    server="171.64.122.131" atoms="34432" preferred="137" deadline="204"
+    credit="742" frames="100" code="G" contact="nwkelley"/>
+  <fah_proj number="1424" name="p1424_POLYQ ANTI-BETASHEET" public="n"
+    server="171.64.122.131" atoms="1496" preferred="73" deadline="109"
+    credit="393" frames="100" code="G" contact="nwkelley"/>
+  <fah_proj number="1425" name="p1425_POLYQ PARA-BETASHEET" public="n"
+    server="171.64.122.131" atoms="1496" preferred="73" deadline="109"
+    credit="393" frames="100" code="G" contact="nwkelley"/>
+  <fah_proj number="1426" name="p1426_POLYQ BETA-STRAND" public="n"
+    server="171.64.122.131" atoms="235226" preferred="162" deadline="242"
+    credit="881" frames="100" code="G" contact="nwkelley"/>
+  <fah_proj number="1427" name="p1427_POLYQ BETA-STRAND" public="n"
+    server="171.64.122.131" atoms="235172" preferred="162" deadline="242"
+    credit="881" frames="100" code="G" contact="nwkelley"/>
   <fah_proj number="1428" name="p1428_POLYQ BETA-STRAND" public="n"
     server="171.64.122.131" atoms="136608" preferred="96" deadline="143"
     credit="516" frames="100" code="G" contact="nwkelley"/>
   <fah_proj number="1429" name="p1429_" public="n"
     credit="516"/>
-  <fah_proj number="1430" name="p1430_" public="n"
-    credit="195"/>
+  <fah_proj number="1430" name="p1430_POLYQ BETA-STRAND" public="n"
+    server="171.64.122.131" atoms="51374" preferred="37" deadline="55"
+    credit="195" frames="100" code="G" contact="nwkelley"/>
   <fah_proj number="1431" name="p1431_" public="n"
     credit="195"/>
+  <fah_proj number="1432" name="p1432_POLYQ BETA-STRAND" public="n"
+    server="171.64.122.131" atoms="29501" preferred="22" deadline="32"
+    credit="112" frames="100" code="G" contact="nwkelley"/>
   <fah_proj number="1475" name="p1475_tet1_03_1" public="y" file="y"
     server="171.64.122.128" atoms="126006" preferred="35" deadline="52"
     credit="364" frames="100" code="G" contact="kasson"/>
@@ -5141,7 +5153,10 @@
   <fah_proj number="3405" name="p3405_dpdp-ii TIP3P ff03" public="y" file="y"
     server="171.65.103.160" atoms="14312" preferred="39" deadline="58"
     credit="206" frames="100" code="G" contact="vvoelz" contrib="John Deas"/>
-  <fah_proj number="3406" name="p3406_dpdp-ii" public="y"
+  <fah_proj number="3406" name="p3406_dpdp-ii" public="y" file="y"
+    server="171.65.103.160" atoms="14312" preferred="39" deadline="58"
+    credit="206" frames="100" code="G" contact="vvoelz" contrib="uncle_fungus"/>
+  <fah_proj number="3407" name="p3407_dpdp-ii" public="y"
     server="171.65.103.160" atoms="14312" preferred="39" deadline="58"
     credit="206" frames="100" code="G" contact="vvoelz"/>
 

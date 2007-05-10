@@ -265,7 +265,7 @@ function addMissingProject(name) {
 
 function showProjectInfo(value) {
   var varArray = value.split(";");
-  jmolScript("load ../fah/projects/" + varArray[1] + ".xyz.gz", "Fah");
+  jmolScript("set perspectiveModel 11;load ../fah/projects/" + varArray[1] + ".xyz.gz", "Fah");
   document.fahForm.infoNumber.value = varArray[0];
   document.fahForm.infoName.value = varArray[2];
   document.fahForm.infoCredit.value = varArray[3];
@@ -282,6 +282,8 @@ function showProjectInfo(value) {
     document.fahForm.infoCode.value = "Double Gromacs";
   } else if (code == "G") {
     document.fahForm.infoCode.value = "Gromacs";
+  } else if (code == "G3") {
+    document.fahForm.infoCode.value = "Gromacs PS3";
   } else if (code == "GB") {
     document.fahForm.infoCode.value = "GB Gromacs";
   } else if (code == "GG") {

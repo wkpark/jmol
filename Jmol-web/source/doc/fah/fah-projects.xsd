@@ -91,7 +91,11 @@
     <xs:enumeration value="A0"/>
     <xs:enumeration value="DG"/>
     <xs:enumeration value="G"/>
+    <xs:enumeration value="G3"/>
     <xs:enumeration value="GB"/>
+    <xs:enumeration value="GG"/>
+    <xs:enumeration value="GS"/>
+    <xs:enumeration value="GT"/>
     <xs:enumeration value="Q"/>
     <xs:enumeration value="T"/>
   </xs:restriction>

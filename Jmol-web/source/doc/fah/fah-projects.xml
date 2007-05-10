@@ -3348,9 +3348,9 @@
   <fah_proj number="1427" name="p1427_POLYQ BETA-STRAND" public="n"
     server="171.64.122.131" atoms="235172" preferred="162" deadline="242"
     credit="881" frames="100" code="G" contact="nwkelley"/>
-  <fah_proj number="1428" name="p1428_POLYQ BETA-STRAND" public="n"
+  <fah_proj number="1428" name="p1428_POLYQ BETA-STRAND" public="n" file="y"
     server="171.64.122.131" atoms="136608" preferred="96" deadline="143"
-    credit="516" frames="100" code="G" contact="nwkelley"/>
+    credit="516" frames="100" code="G" contact="nwkelley" contrib="daveb"/>
   <fah_proj number="1429" name="p1429_" public="n"
     credit="516"/>
   <fah_proj number="1430" name="p1430_POLYQ BETA-STRAND" public="n"
@@ -4765,6 +4765,9 @@
   <fah_proj number="2614" name="p2614_LIPID ONLY" public="y" file="y"
     server="171.64.65.65" atoms="149277" preferred="20" deadline="40"
     credit="287" frames="100" code="A0" contact="kasson" contrib="Flathead74"/>
+  <fah_proj number="2615" name="p2615_Protein" public="n"
+    server="171.64.65.65" atoms="126108" preferred="30" deadline="50"
+    credit="664" frames="100" code="G" contact="kasson"/>
   <fah_proj number="2650" name="p2650_Protein" public="n" file="y"
     server="171.64.65.64" preferred="3" deadline="3"
     credit="1148" code="GS" contrib="7up1n3"/>

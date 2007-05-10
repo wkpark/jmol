@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-05-01 20:52+0200\n"
-"PO-Revision-Date: 2006-11-01 18:39+0200\n"
+"PO-Revision-Date: 2007-05-10 16:31+0200\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
 "MIME-Version: 1.0\n"
@@ -157,7 +157,7 @@ msgstr "Önizleme"
 
 #: org/openscience/jmol/app/FilePreview.java:87
 msgid "Append models"
-msgstr ""
+msgstr "Modelleri Birleştir"
 
 #: org/openscience/jmol/app/GuiMap.java:45
 msgid "&File"
@@ -192,14 +192,12 @@ msgid "&Export"
 msgstr "Dışa Aktar"
 
 #: org/openscience/jmol/app/GuiMap.java:53
-#, fuzzy
 msgid "Export Image or Script..."
-msgstr "Resmi Dışa Aktar..."
+msgstr "Görüntüyü veya Betiği Dışa Aktar..."
 
 #: org/openscience/jmol/app/GuiMap.java:54
-#, fuzzy
 msgid "Render in pov-ray..."
-msgstr "Pov-ray'de kapla..."
+msgstr "POV-Ray'de Kapla"
 
 #: org/openscience/jmol/app/GuiMap.java:55
 msgid "Export PDF..."
@@ -245,7 +243,7 @@ msgstr "Resmi Kopyala"
 
 #: org/openscience/jmol/app/GuiMap.java:65
 msgid "Copy Script"
-msgstr ""
+msgstr "Betik Kopyala"
 
 #: org/openscience/jmol/app/GuiMap.java:66
 msgid "&Preferences..."
@@ -563,7 +561,6 @@ msgid "What's New"
 msgstr "Neler Yeni"
 
 #: org/openscience/jmol/app/GuiMap.java:160
-#, fuzzy
 msgid "Jmol Java &Console"
 msgstr "Jmol Java Uçbirimi"
 
@@ -597,9 +594,8 @@ msgid "Open a file."
 msgstr "Dosya aç."
 
 #: org/openscience/jmol/app/GuiMap.java:172
-#, fuzzy
 msgid "Export view to an image or script file."
-msgstr "Görüntüyü bir resim dosyasına aktar."
+msgstr "Görünümü bir resim ya da betik dosyasına aktar."
 
 #: org/openscience/jmol/app/GuiMap.java:173
 msgid "Render in pov-ray."
@@ -711,7 +707,7 @@ msgstr "görüntü yok (ve tamamlanınca çık)"
 
 #: org/openscience/jmol/app/Jmol.java:393
 msgid "check script syntax only"
-msgstr ""
+msgstr "yalnızca betik söz dizimini kontrol et"
 
 #: org/openscience/jmol/app/Jmol.java:394
 msgid "silent startup operation"
@@ -734,9 +730,9 @@ msgid "supported options are given below"
 msgstr "desteklenen seçenekler aşağıda verilmiştir"
 
 #: org/openscience/jmol/app/Jmol.java:414
-#, fuzzy, java-format
+#, java-format
 msgid "window width x height, e.g. {0}"
-msgstr "pencere büyüklüğü, örneğin {0}"
+msgstr "pencere genişliği x yüksekliği, örneğin {0}"
 
 #: org/openscience/jmol/app/Jmol.java:421
 #, java-format
@@ -749,9 +745,7 @@ msgstr "Örneğin:"
 
 #: org/openscience/jmol/app/Jmol.java:449
 msgid "The -D options are as follows (defaults in parathesis):"
-msgstr ""
-"-D seçenekleri aşağıda listenenmiştir (parantez içindekiler varsayılan "
-"seçeneklerdir):"
+msgstr "-D seçenekleri aşağıda listenenmiştir (parantez içindekiler varsayılan seçeneklerdir):"
 
 #: org/openscience/jmol/app/Jmol.java:587
 msgid "Executing script..."
@@ -819,12 +813,8 @@ msgid "Filename Stem"
 msgstr "Dosyaadı kökü"
 
 #: org/openscience/jmol/app/PovrayDialog.java:158
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
-msgstr ""
-"Tek çerçeve: örneğin 'caffine' -> 'caffine.pov'; Çoklu çerçeve: örneğin "
-"'caffine' ->'caffine_1.pov', 'caffine_2.pov'"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgstr "Tek çerçeve: örneğin 'caffine' -> 'caffine.pov'; Çoklu çerçeve: örneğin 'caffine' ->'caffine_1.pov', 'caffine_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:168
 msgid "Working Directory"
@@ -1110,9 +1100,8 @@ msgid "History"
 msgstr "Geçmiş"
 
 #: org/openscience/jmol/app/ScriptWindow.java:104
-#, fuzzy
 msgid "State"
-msgstr "Kaydet"
+msgstr "Durum"
 
 #: org/openscience/jmol/app/ScriptWindow.java:108
 msgid "Help"
@@ -1120,11 +1109,11 @@ msgstr "Yardım"
 
 #: org/openscience/jmol/app/ScriptWindow.java:116
 msgid "Undo"
-msgstr ""
+msgstr "Geri Al"
 
 #: org/openscience/jmol/app/ScriptWindow.java:120
 msgid "Redo"
-msgstr ""
+msgstr "Yinele"
 
 #: org/openscience/jmol/app/Splash.java:45
 msgid "Loading..."
@@ -1136,3 +1125,4 @@ msgstr "Jmol'da Neler Yeni"
 
 #~ msgid "File not loaded"
 #~ msgstr "Dosya yüklenmedi"
+

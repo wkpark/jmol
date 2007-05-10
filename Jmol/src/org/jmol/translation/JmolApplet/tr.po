@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: JmolApplet\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-05-08 16:45+0200\n"
-"PO-Revision-Date: 2006-11-01 18:39+0200\n"
+"PO-Revision-Date: 2007-05-10 19:34+0200\n"
 "Last-Translator: Muhammet Kara <muhammet.k@gmail.com>\n"
 "Language-Team: Turkish <yerellestirme@kde.org.tr>\n"
 "MIME-Version: 1.0\n"
@@ -32,14 +32,14 @@ msgstr "Çıktıyı Sil"
 msgid "Clear Input"
 msgstr "Girdiyi Sil"
 
-#: org/jmol/applet/Console.java:44 org/jmol/popup/PopupResourceBundle.java:771
+#: org/jmol/applet/Console.java:44
+#: org/jmol/popup/PopupResourceBundle.java:771
 msgid "History"
 msgstr "Geçmiş"
 
 #: org/jmol/applet/Console.java:45
-#, fuzzy
 msgid "State"
-msgstr "Z Hızını Ayarla"
+msgstr "Durum"
 
 #: org/jmol/applet/Console.java:46
 msgid "Load"
@@ -47,9 +47,7 @@ msgstr "Yükle"
 
 #: org/jmol/applet/Console.java:91
 msgid "press CTRL-ENTER for new line or paste model data and press Load"
-msgstr ""
-"Yeni satır için CTRL-ENTER'a basın ya da model veri yapıştırın ve Yükle'ye "
-"basın"
+msgstr "Yeni satır için CTRL-ENTER'a basın ya da model veri yapıştırın ve Yükle'ye basın"
 
 #: org/jmol/applet/Jmol.java:718
 #, java-format
@@ -81,48 +79,47 @@ msgstr "  {0} saniye"
 
 #: org/jmol/i18n/GT.java:101
 msgid "Catalan"
-msgstr ""
+msgstr "Katalanca"
 
 #: org/jmol/i18n/GT.java:102
 msgid "Czech"
-msgstr ""
+msgstr "Çekçe"
 
 #: org/jmol/i18n/GT.java:103
 msgid "Dutch"
-msgstr ""
+msgstr "Hollandaca"
 
 #: org/jmol/i18n/GT.java:104
 msgid "English"
-msgstr ""
+msgstr "İngilizce"
 
 #: org/jmol/i18n/GT.java:105
 msgid "Estonian"
-msgstr ""
+msgstr "Estonyaca"
 
 #: org/jmol/i18n/GT.java:106
 msgid "French"
-msgstr ""
+msgstr "Fransızca"
 
 #: org/jmol/i18n/GT.java:107
-#, fuzzy
 msgid "German"
-msgstr "Gri"
+msgstr "Almanca"
 
 #: org/jmol/i18n/GT.java:108
 msgid "Portuguese - Brazil"
-msgstr ""
+msgstr "Portekizce - Brezilya"
 
 #: org/jmol/i18n/GT.java:109
 msgid "Portuguese"
-msgstr ""
+msgstr "Portekizce"
 
 #: org/jmol/i18n/GT.java:110
 msgid "Spanish"
-msgstr ""
+msgstr "İspanyolca"
 
 #: org/jmol/i18n/GT.java:111
 msgid "Turkish"
-msgstr ""
+msgstr "Türkçe"
 
 #: org/jmol/popup/JmolPopup.java:180
 #, java-format
@@ -134,7 +131,8 @@ msgstr "Seç ({0})"
 msgid "All {0} models"
 msgstr "Tüm {0} modeller"
 
-#: org/jmol/popup/JmolPopup.java:384 org/jmol/popup/JmolPopup.java:418
+#: org/jmol/popup/JmolPopup.java:384
+#: org/jmol/popup/JmolPopup.java:418
 msgid "all"
 msgstr "tümü"
 
@@ -144,9 +142,9 @@ msgid "Configurations ({0})"
 msgstr "Ayarlar  ({0})"
 
 #: org/jmol/popup/JmolPopup.java:441
-#, fuzzy, java-format
+#, java-format
 msgid "Collection of {0} models"
-msgstr "Tüm {0} modeller"
+msgstr "{0} modellik koleksiyon"
 
 #: org/jmol/popup/JmolPopup.java:448
 #, java-format
@@ -224,9 +222,8 @@ msgid "Main Menu"
 msgstr "Ana Menü"
 
 #: org/jmol/popup/PopupResourceBundle.java:484
-#, fuzzy
 msgid "No atoms loaded"
-msgstr "Hiç atom yüklenmemiş"
+msgstr "Hiç atom yüklenmedi"
 
 #: org/jmol/popup/PopupResourceBundle.java:485
 msgid "Configurations"
@@ -375,12 +372,10 @@ msgid "All PDB \"HETATM\""
 msgstr "Tüm PDB \"HETATM\""
 
 #: org/jmol/popup/PopupResourceBundle.java:527
-#, fuzzy
 msgid "All Solvent"
 msgstr "Tümü Çözücü"
 
 #: org/jmol/popup/PopupResourceBundle.java:528
-#, fuzzy
 msgid "All Water"
 msgstr "Tümü Su"
 
@@ -674,9 +669,8 @@ msgid "Molecule"
 msgstr "Molekül"
 
 #: org/jmol/popup/PopupResourceBundle.java:644
-#, fuzzy
 msgid "Formal Charge"
-msgstr "Biçimsel Yük"
+msgstr "Formülsel Yük"
 
 #: org/jmol/popup/PopupResourceBundle.java:645
 msgid "Partial Charge"
@@ -751,7 +745,6 @@ msgid "Maroon"
 msgstr "Kestane Rengi"
 
 #: org/jmol/popup/PopupResourceBundle.java:667
-#, fuzzy
 msgid "Gray"
 msgstr "Gri"
 
@@ -1019,7 +1012,7 @@ msgstr "Simetri"
 
 #: org/jmol/popup/PopupResourceBundle.java:779
 msgid "Current state"
-msgstr ""
+msgstr "Mevcut durum"
 
 #: org/jmol/popup/PopupResourceBundle.java:781
 msgid "Unit cell"
@@ -1072,7 +1065,7 @@ msgstr "Tekrar Yükle {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:801
 msgid "Reload + Polyhedra"
-msgstr ""
+msgstr "Yenidenyükle + Çokyüzlü"
 
 #: org/jmol/popup/PopupResourceBundle.java:808
 msgid "Hide"
@@ -1144,7 +1137,7 @@ msgstr "Sıfır tabanlı Xyz Rasmol"
 
 #: org/jmol/popup/PopupResourceBundle.java:837
 msgid "Language"
-msgstr ""
+msgstr "Dil"
 
 #: org/jmol/popup/PopupResourceBundle.java:838
 msgid "About Jmol"
@@ -1159,110 +1152,105 @@ msgid "Translations"
 msgstr "Çeviriler"
 
 #: org/jmol/viewer/Compiler.java:1896
-#, fuzzy
 msgid "command expected"
-msgstr "altkomut gerekli"
+msgstr "komut bekleniyor"
 
 #: org/jmol/viewer/Compiler.java:1900
-#, fuzzy, java-format
+#, java-format
 msgid "invalid expression token: {0}"
-msgstr "geçersiz ekleme kodu"
+msgstr "geçersiz ifade belirtkesi: {0}"
 
 #: org/jmol/viewer/Compiler.java:1904
-#, fuzzy, java-format
+#, java-format
 msgid "unrecognized token: {0}"
-msgstr "tanınmayan nesne"
+msgstr "tanınmayan belirtke: {0}"
 
-#: org/jmol/viewer/Compiler.java:1908 org/jmol/viewer/Eval.java:8831
+#: org/jmol/viewer/Compiler.java:1908
+#: org/jmol/viewer/Eval.java:8831
 msgid "unexpected end of script command"
 msgstr "beklenmeyen komut satırı sonu komutu"
 
-#: org/jmol/viewer/Compiler.java:1912 org/jmol/viewer/Eval.java:8835
+#: org/jmol/viewer/Compiler.java:1912
+#: org/jmol/viewer/Eval.java:8835
 msgid "bad argument count"
 msgstr "Yanlış bağımsız değişken hesabı"
 
 #: org/jmol/viewer/Compiler.java:1916
-#, fuzzy
 msgid "end of expression expected"
-msgstr "geçerli (atom ifadesi) gerekli"
+msgstr "ifade sonu bekleniyor"
 
 #: org/jmol/viewer/Compiler.java:1920
-#, fuzzy
 msgid "right parenthesis expected"
-msgstr "tamsayı gerekli"
+msgstr "sağ parantez bekleniyor"
 
 #: org/jmol/viewer/Compiler.java:1924
-#, fuzzy
 msgid "right brace expected"
-msgstr "tamsayı gerekli"
+msgstr "kaşlı ayraç (sağ) bekleniyor"
 
 #: org/jmol/viewer/Compiler.java:1928
-#, fuzzy
 msgid "right bracket expected"
-msgstr "tamsayı gerekli"
+msgstr "köşeli ayraç (sağ) bekleniyor"
 
 #: org/jmol/viewer/Compiler.java:1932
 msgid "{ number number number } expected"
 msgstr "{ number number number } gerekli"
 
 #: org/jmol/viewer/Compiler.java:1936
-#, fuzzy, java-format
+#, java-format
 msgid "unrecognized expression token: {0}"
-msgstr "tanınmayan çalışma zamanı deyimi"
+msgstr "tanınmayan ifade belirtkesi: {0}"
 
 #: org/jmol/viewer/Compiler.java:1940
-#, fuzzy
 msgid "comparison operator expected"
-msgstr "boole veya yüzde gerekli"
+msgstr "karşılaştırma operatörü bekleniyor"
 
 #: org/jmol/viewer/Compiler.java:1944
-#, fuzzy
 msgid "equal sign expected"
-msgstr "Tırnak içindeki karakter dizgisi gerekli"
+msgstr "eşittir işareti bekleniyor"
 
-#: org/jmol/viewer/Compiler.java:1948 org/jmol/viewer/Eval.java:8797
+#: org/jmol/viewer/Compiler.java:1948
+#: org/jmol/viewer/Eval.java:8797
 msgid "number expected"
 msgstr "sayı gerekli"
 
 #: org/jmol/viewer/Compiler.java:1952
-#, fuzzy
 msgid "number or variable name expected"
-msgstr "{ number number number } gerekli"
+msgstr "sayı ya da değişken adı bekleniyor"
 
-#: org/jmol/viewer/Compiler.java:1956 org/jmol/viewer/Eval.java:8843
+#: org/jmol/viewer/Compiler.java:1956
+#: org/jmol/viewer/Eval.java:8843
 #, java-format
 msgid "unrecognized {0} parameter"
 msgstr "tanınmayan {0} parametre"
 
 #: org/jmol/viewer/Compiler.java:1960
 msgid "identifier or residue specification expected"
-msgstr ""
+msgstr "tanımlayıcı ya da artık belirtimi bekleniyor"
 
 #: org/jmol/viewer/Compiler.java:1964
 msgid "residue specification (ALA, AL?, A*) expected"
-msgstr ""
+msgstr "artık belirtimi (ALA, AL?, A*) bekleniyor"
 
 #: org/jmol/viewer/Compiler.java:1968
-#, fuzzy
 msgid "invalid chain specification"
-msgstr "geçersiz ekleme kodu"
+msgstr "geçersiz zincir belirtimi"
 
 #: org/jmol/viewer/Compiler.java:1972
 msgid "invalid model specification"
-msgstr ""
+msgstr "geçersiz model belirtimi"
 
 #: org/jmol/viewer/Compiler.java:1976
 msgid "invalid atom specification"
-msgstr ""
+msgstr "geçersiz atom belirtimi"
 
-#: org/jmol/viewer/Compiler.java:1985 org/jmol/viewer/Eval.java:8802
+#: org/jmol/viewer/Compiler.java:1985
+#: org/jmol/viewer/Eval.java:8802
 msgid "quoted string expected"
 msgstr "Tırnak içindeki karakter dizgisi gerekli"
 
 #: org/jmol/viewer/Compiler.java:1989
-#, fuzzy
 msgid "comma or right parenthesis expected"
-msgstr "boole veya yüzde gerekli"
+msgstr "virgül ya da parantez (sağ) bekleniyor"
 
 #: org/jmol/viewer/Eval.java:272
 msgid "too many script levels"
@@ -1273,18 +1261,16 @@ msgstr "çok fazla betik düzeyi"
 msgid "Too many nested {0} commands"
 msgstr "Çok fazla iç içe {0} komut"
 
-#: org/jmol/viewer/Eval.java:763 org/jmol/viewer/Eval.java:769
+#: org/jmol/viewer/Eval.java:763
+#: org/jmol/viewer/Eval.java:769
 #, java-format
 msgid "Invalid {0} command"
 msgstr "Geçersiz {0} komut"
 
 #: org/jmol/viewer/Eval.java:2067
-#, fuzzy, java-format
-msgid ""
-"plane expected -- either three points or atom expressions or {0} or {1} or "
-"{2}"
-msgstr ""
-"düzlem bekleniyor -- ya üç nokta ya atom ifadeleri ya da {0} veya {1}  "
+#, java-format
+msgid "plane expected -- either three points or atom expressions or {0} or {1} or {2}"
+msgstr "düzlem bekleniyor -- ya üç nokta ya atom ifadeleri ya da {0} veya {1} veya {2}"
 
 #: org/jmol/viewer/Eval.java:2080
 msgid "No unit cell"
@@ -1301,12 +1287,12 @@ msgstr "bir renk ya da palet adı (Jmol,Rasmol) gerekli"
 #: org/jmol/viewer/Eval.java:3029
 #, java-format
 msgid "{0} connections deleted"
-msgstr ""
+msgstr "{0} bağlantı(lar) silindi"
 
 #: org/jmol/viewer/Eval.java:3051
 #, java-format
 msgid "{0} connections modified or created"
-msgstr ""
+msgstr "{0} bağlantı(lar) değiştirildi ya da silindi"
 
 #: org/jmol/viewer/Eval.java:3651
 #, java-format
@@ -1326,9 +1312,9 @@ msgid "rotation points cannot be identical"
 msgstr "dönme noktaları aynı olamaz"
 
 #: org/jmol/viewer/Eval.java:4829
-#, fuzzy, java-format
+#, java-format
 msgid "{0} hydrogen bonds"
-msgstr "Hidrojen Bağları"
+msgstr "{0} hidrojen bağ(lar)ı"
 
 #: org/jmol/viewer/Eval.java:4839
 #, java-format
@@ -1340,9 +1326,8 @@ msgid "Calculate what?"
 msgstr "Neyi hesapla?"
 
 #: org/jmol/viewer/Eval.java:5353
-#, fuzzy
 msgid "trajectory not applicable in this context"
-msgstr "bu bağlamda kesirli koordinatlara izin verilmiyor"
+msgstr "bu bağlamda yörünge uygulanabilir değil"
 
 #: org/jmol/viewer/Eval.java:5486
 #, java-format
@@ -1357,7 +1342,8 @@ msgstr "neyi kaydet?"
 msgid "restore what?"
 msgstr "neyi geri yükle?"
 
-#: org/jmol/viewer/Eval.java:6982 org/jmol/viewer/Eval.java:7037
+#: org/jmol/viewer/Eval.java:6982
+#: org/jmol/viewer/Eval.java:7037
 #, java-format
 msgid "The {0} command is not available for the applet."
 msgstr "{0} komutu applet için kullanılabilir değil."
@@ -1368,11 +1354,11 @@ msgid "write what? {0} or {1} \"filename\""
 msgstr "neyi yaz? {0} ya da {1} \"dosyaadı\""
 
 #: org/jmol/viewer/Eval.java:7060
-#, fuzzy
 msgid "No data available"
-msgstr "Kullanılabilir MO katsayı verisi yok"
+msgstr "Kullanılabilir veri yok"
 
-#: org/jmol/viewer/Eval.java:7361 org/jmol/viewer/Eval.java:8057
+#: org/jmol/viewer/Eval.java:7361
+#: org/jmol/viewer/Eval.java:8057
 msgid "no MO basis/coefficient data available for this frame"
 msgstr "Bu çerçeve için kullanılabilir MO taban/katsayı verisi yok"
 
@@ -1385,9 +1371,8 @@ msgid "Only one molecular orbital is available in this file"
 msgstr "Bu dosyada sadece bir kullanılabilir moleküler orbital var"
 
 #: org/jmol/viewer/Eval.java:8072
-#, fuzzy
 msgid "no MO occupancy data available"
-msgstr "Kullanılabilir MO katsayı verisi yok"
+msgstr "Kullanılabilir MO işgal verisi yok"
 
 #: org/jmol/viewer/Eval.java:8082
 #, java-format
@@ -1395,12 +1380,8 @@ msgid "An MO index from 1 to {0} is required"
 msgstr "1 den {0} 'a bir MO dizini gerekli"
 
 #: org/jmol/viewer/Eval.java:8559
-msgid ""
-"No partial charges were read from the file; Jmol needs these to render the "
-"MEP data."
-msgstr ""
-"Dosyadan hiç kısmi yük okunmadı; Jmol MEP verisini işlemek için bunlara "
-"ihtiyaç duyuyor."
+msgid "No partial charges were read from the file; Jmol needs these to render the MEP data."
+msgstr "Dosyadan hiç kısmi yük okunmadı; Jmol MEP verisini işlemek için bunlara ihtiyaç duyuyor."
 
 #: org/jmol/viewer/Eval.java:8748
 msgid "MO isosurfaces require that only one model be displayed"
@@ -1415,9 +1396,8 @@ msgid "unrecognized atom property"
 msgstr "tanınmayan atom özelliği"
 
 #: org/jmol/viewer/Eval.java:8760
-#, fuzzy
 msgid "unrecognized bond property"
-msgstr "tanınmayan atom özelliği"
+msgstr "tanınmayan bağ özelliği"
 
 #: org/jmol/viewer/Eval.java:8764
 msgid "filename expected"
@@ -1446,7 +1426,7 @@ msgstr "geçerli (atom ifadesi) gerekli"
 
 #: org/jmol/viewer/Eval.java:8788
 msgid "bad [R,G,B] color"
-msgstr ""
+msgstr "hatalı [R,G,B] rengi"
 
 #: org/jmol/viewer/Eval.java:8792
 msgid "integer expected"
@@ -1481,9 +1461,9 @@ msgid "invalid argument"
 msgstr "geçersiz bağımsız değişken"
 
 #: org/jmol/viewer/Eval.java:8847
-#, fuzzy, java-format
+#, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
-msgstr "tanınmayan {0} parametre --  {1} kullan"
+msgstr "tanınmayan GÖSTER parametresi --  {0} kullanın"
 
 #: org/jmol/viewer/Eval.java:8851
 #, java-format
@@ -1533,9 +1513,8 @@ msgid "insufficient arguments"
 msgstr "yetersiz bağımsız değişken"
 
 #: org/jmol/viewer/Eval.java:10106
-#, fuzzy
 msgid "too many parentheses"
-msgstr "çok fazla betik düzeyi"
+msgstr "çok fazla parantez"
 
 #: org/jmol/viewer/PickingManager.java:168
 msgid "pick one more atom in order to spin the model around an axis"
@@ -1552,21 +1531,19 @@ msgid "{0} atoms hidden"
 msgstr "{0} atomlar gizli"
 
 #: org/jmol/viewer/SelectionManager.java:180
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms selected"
-msgstr "atomlar seçili"
+msgstr "{0} atom(lar) seçildi"
 
 #: org/jmol/viewer/Viewer.java:4096
 #, java-format
-msgid ""
-"ERROR: Cannot set value of a boolean to another type. use \"{0}\" first."
-msgstr ""
+msgid "ERROR: Cannot set value of a boolean to another type. use \"{0}\" first."
+msgstr "HATA: Bir bool'un değeri başka bir türe ayarlanamaz. önce \"{0}\" kullanın."
 
 #: org/jmol/viewer/Viewer.java:4442
 #, java-format
-msgid ""
-"ERROR: Cannot set value of this variable to a boolean. use \"{0}\" first."
-msgstr ""
+msgid "ERROR: Cannot set value of this variable to a boolean. use \"{0}\" first."
+msgstr "HATA: Bu değişkenin değeri bir bool'a ayarlanamaz. önce \"{0}\" kullanın."
 
 #~ msgid "the {0} command requires that only one model be displayed"
 #~ msgstr "{0} komutu sadece bir model gösterilmesine ihtiyaç duyuyor"
@@ -1582,45 +1559,32 @@ msgstr ""
 #, fuzzy
 #~ msgid "nonnegative integer expected"
 #~ msgstr "tamsayı gerekli"
-
 #~ msgid "boolean or percent expected"
 #~ msgstr "boole veya yüzde gerekli"
-
 #~ msgid "(atom expression) or decimal number expected"
 #~ msgstr "(atom ifadesi) veya ondalık sayı gerekli"
-
 #~ msgid "variable undefined"
 #~ msgstr "değişken tanımlanmamış"
-
 #~ msgid "number out of range"
 #~ msgstr "alan dışı sayı"
-
 #~ msgid "atom expression compiler error - stack over/underflow"
 #~ msgstr "Atom ifade derleyici hatası - fazla yığılma/aşağı taşma"
-
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Jmol betiği yürütüyor ..."
-
 #~ msgid "interpreter error - setspecial should not be here"
 #~ msgstr "Yorumlayıcı hatası - özelayar burda olmamalıydı"
-
 #~ msgid "Unrecognized {0} parameter"
 #~ msgstr "Tanınmayan {0} parametre"
-
 #~ msgid "use {0}"
 #~ msgstr "{0} kullan"
-
 #~ msgid "unrecognized subcommand"
 #~ msgstr "tanınmayan altkomut"
-
 #~ msgid "error loading script"
 #~ msgstr "Komut dosyası yüklemede hata oluştu"
-
 #~ msgid "Currently the {0} command only works for the applet"
 #~ msgstr "Şu anda {0} komutu sadece küçük uygulama için çalışır"
-
 #~ msgid "Animate"
 #~ msgstr "Canlandır"
-
 #~ msgid "surfaces require that only one model be displayed"
 #~ msgstr "yüzeyler sadece bir model gösterilmesine ihtiyaç duyuyor"
+

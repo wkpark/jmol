@@ -207,7 +207,8 @@ ActionListener, ChangeListener, Runnable {
     JSplitPane splitPane = new JSplitPane(
         JSplitPane.VERTICAL_SPLIT, treePanel, propertiesPanel); 
     astPanel.add(splitPane, BorderLayout.CENTER);
-    splitPane.setResizeWeight(1.0);
+    splitPane.setResizeWeight(0.5);
+
     container.add(astPanel, BorderLayout.CENTER);
     
     //////////////////////////////////////////////////////////

@@ -1020,7 +1020,8 @@ public class Token {
     "normal",       new Token(normal),
     "rasmol",       new Token(rasmol),
     "torsion",      new Token(torsion),
-    "coord",        new Token(coord),
+    "coords",       new Token(coord),
+    "coord",        null,
     "shapely",      new Token(shapely),
 
     "amino",        new Token(amino),

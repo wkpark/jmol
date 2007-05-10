@@ -7075,7 +7075,7 @@ class Eval { //implements Runnable {
     boolean isImage = Parser.isOneOf(type, "JPEG;JPG64;JPG;PPM;PNG");
     if (!isImage && !Parser.isOneOf(type, "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB"))
       evalError(GT._("write what? {0} or {1} \"filename\"", new Object[] {
-          "STATE|HISTORY|IMAGE|ISOSURFACE|MO CLIPBOARD|VAR x|DATA",
+          "COORDS|HISTORY|IMAGE|ISOSURFACE|MO|STATE|VAR x  CLIPBOARD",
           "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB" }));
     if (isSyntaxCheck)
       return;

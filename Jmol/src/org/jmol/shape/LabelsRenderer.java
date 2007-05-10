@@ -90,11 +90,13 @@ public class LabelsRenderer extends ShapeRenderer {
       Text text = (isSimple ? null : (Text) labels.atomLabels.get(atom));
       if (text != null) {
         text.setColix(colix);
-        text.setXYZs(atom.screenX, atom.screenY, zBox, zSlab);
+        text.setBgColix(bgcolix);
+        text.setXYZs(atom.screenX, atom.screenY - 8, zBox, zSlab);
+        text.setPointer(pointer);
         text.render();
         continue;
       }
-      if (fid != fidPrevious) {
+      if (fid != fidPrevious || ascent == 0) {
         g3d.setFont(fid);
         fidPrevious = fid;
         font3d = g3d.getFont3DCurrent();
@@ -115,8 +117,9 @@ public class LabelsRenderer extends ShapeRenderer {
                 .getYOffset(offset), ascent, descent, doPointer, pointercolix);
       } else {
         text = new Text(g3d, font3d, label, colix, bgcolix, atom.screenX,
-            atom.screenY, zBox, zSlab, textAlign);
+            atom.screenY - 8, zBox, zSlab, textAlign);
         labels.atomLabels.put(atom, text);
+        text.setPointer(pointer);
         text.setOffset(offset);
         text.render();
       }

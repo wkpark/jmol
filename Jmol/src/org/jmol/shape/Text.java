@@ -269,7 +269,7 @@ public class Text {
     }
 
     // adjust positions if necessary
-    
+
     setBoxOffsetsInWindow();
 
   }
@@ -428,7 +428,7 @@ public class Text {
         y += lineHeight;
       }
     }
-    // now daw the pointer, if requested
+    // now draw the pointer, if requested
 
     if ((pointer & POINTER_ON) != 0) {
       g3d

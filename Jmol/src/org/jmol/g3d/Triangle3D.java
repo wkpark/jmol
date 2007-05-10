@@ -312,7 +312,7 @@ class Triangle3D {
     }
     g3d.setZMargin(5);
     fillRaster(yMin, nLines, useGouraud, isClipped,
-        g3d.haveAlphaTranslucent ? 1 : 0);
+        g3d.isPass2 ? 1 : 0);
     g3d.setZMargin(0);
   }
 

@@ -420,8 +420,8 @@ public class ModelManager {
     return frame.getAtomIndexFromAtomNumber(atomNumber);
   }
 
-  public BitSet getElementsPresentBitSet() {
-    return frame.getElementsPresentBitSet();
+  public BitSet getElementsPresentBitSet(int modelIndex) {
+    return frame.getElementsPresentBitSet(modelIndex);
   }
 
   public Hashtable getHeteroList(int modelIndex) {

@@ -261,6 +261,7 @@ public class Token {
   final static int purine        = predefinedset | 10;
   final static int pyrimidine    = predefinedset | 11;
   final static int surface       = predefinedset | 12;
+  final static int thismodel     = predefinedset | 13;
 
   // these next are predefined in the sense that they are known quantities
   final static int visible       = predefinedset | 17;
@@ -718,6 +719,7 @@ public class Token {
   final static int backlit      = misc | 87;
   final static int fullylit     = misc | 88;
 
+
   // predefined Tokens: 
   
   final static Token tokenOn  = new Token(on, 1, "on");
@@ -872,6 +874,7 @@ public class Token {
     "rotateSelected",    new Token(rotateSelected,  varArgCount),
     "model",             new Token(model,           varArgCount),
     "models",            null, 
+    "thisModel",         new Token(thismodel),
     "file",              new Token(file,                      1),
                           
     //                   setparams 

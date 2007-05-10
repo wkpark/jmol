@@ -123,7 +123,7 @@ abstract public class JmolPopup {
     updateMode = UPDATE_ALL;
     getViewerData();
     updateSelectMenu();
-    updateElementsComputedMenu(viewer.getElementsPresentBitSet());
+    updateElementsComputedMenu(viewer.getElementsPresentBitSet(modelIndex));
     updateHeteroComputedMenu(viewer.getHeteroList(modelIndex));
     updateSurfMoComputedMenu((Hashtable) modelInfo.get("moData"));
     updateFileTypeDependentMenus();
@@ -214,6 +214,7 @@ abstract public class JmolPopup {
     if (menu == null)
       return;
     removeAll(menu);
+    enableMenu(menu, false);
     if (htHetero == null)
       return;
     Enumeration e = htHetero.keys();
@@ -280,10 +281,8 @@ abstract public class JmolPopup {
     Object menu2 = htMenus.get("PDBcarboResiduesComputedMenu");
     removeAll(menu2);
     enableMenu(menu2, false);
-
-    if (!isPDB)
+    if (modelSetInfo == null)
       return;
-    
     int n = (modelIndex < 0 ? modelCount : modelIndex);
     String[] lists = ((String[]) modelSetInfo.get("group3Lists"));
     group3List = (lists == null ? null : lists[n]);
@@ -742,7 +741,7 @@ abstract public class JmolPopup {
       // two spaces means "ignore after this"
       if ((pt = script.indexOf("  ")) >= 0)
         script = script.substring(0,pt);
-      return (script.indexOf("set") == 0 ? script : "select " + script);
+      return (script.indexOf("set") == 0 ? script : "select thisModel and (" + script+")");
     }
     if (id.indexOf(".color") >= 0) {
       // colorFooMenu

@@ -2093,8 +2093,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelManager.getAtomIndexFromAtomNumber(atomNumber);
   }
 
-  public BitSet getElementsPresentBitSet() {
-    return modelManager.getElementsPresentBitSet();
+  public BitSet getElementsPresentBitSet(int modelIndex) {
+    return modelManager.getElementsPresentBitSet(modelIndex);
   }
 
   public Hashtable getHeteroList(int modelIndex) {

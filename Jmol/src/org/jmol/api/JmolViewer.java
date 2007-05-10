@@ -98,7 +98,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
 
   abstract public Component getAwtComponent();
 
-  abstract public BitSet getElementsPresentBitSet();
+  abstract public BitSet getElementsPresentBitSet(int modelIndex);
 
   abstract public int getAnimationFps();
 

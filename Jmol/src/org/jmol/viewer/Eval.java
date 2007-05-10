@@ -1303,6 +1303,9 @@ class Eval { //implements Runnable {
         rpn.addX(getAtomBits("Cell", new int[] { (int) (pt.x * 1000),
             (int) (pt.y * 1000), (int) (pt.z * 1000) }));
         break;
+      case Token.thismodel:
+        rpn.addX(viewer.getModelAtomBitSet(viewer.getCurrentModelIndex()));
+        break;
       case Token.amino:
       case Token.backbone:
       case Token.solvent:

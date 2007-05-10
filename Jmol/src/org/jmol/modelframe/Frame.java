@@ -111,7 +111,7 @@ public final class Frame {
   Molecule[] molecules = new Molecule[4];
   int modelCount, adapterModelCount;
 
-  private BitSet elementsPresent;
+  private BitSet[] elementsPresent;
 
   ////////////////////////////////////////////////////////////////
   // these may or may not be allocated
@@ -2607,7 +2607,7 @@ public final class Frame {
   BitSet getModelAtomBitSet(int modelIndex) {
     BitSet bs = new BitSet();
     for (int i = 0; i < atomCount; i++)
-      if (atoms[i].modelIndex == modelIndex)
+      if (modelIndex < 0 || atoms[i].modelIndex == modelIndex)
         bs.set(i);
     return bs;
   }
@@ -2624,18 +2624,25 @@ public final class Frame {
   }
 
   void findElementsPresent() {
-    elementsPresent = new BitSet();
+    elementsPresent = new BitSet[modelCount];
+    for (int i = 0; i < modelCount; i++)
+      elementsPresent[i] = new BitSet();
     for (int i = atomCount; --i >= 0;) {
       int n = atoms[i].getAtomicAndIsotopeNumber();
       if (n >= 128)
         n = JmolConstants.elementNumberMax
             + JmolConstants.altElementIndexFromNumber(n);
-      elementsPresent.set(n);
+      elementsPresent[atoms[i].modelIndex].set(n);
     }
   }
 
-  BitSet getElementsPresentBitSet() {
-    return elementsPresent;
+  BitSet getElementsPresentBitSet(int modelIndex) {
+    if (modelIndex >= 0)
+      return elementsPresent[modelIndex];
+    BitSet bs = new BitSet();
+    for (int i = 0; i < modelIndex; i++)
+      bs.or(elementsPresent[i]);
+    return bs;
   }
 
   void calcSelectedGroupsCount(BitSet bsSelected) {

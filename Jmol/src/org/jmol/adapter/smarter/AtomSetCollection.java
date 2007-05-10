@@ -43,7 +43,7 @@ public class AtomSetCollection {
   Hashtable atomSetCollectionAuxiliaryInfo = new Hashtable();
   
   final static String[] globalBooleans = {"someModelsHaveFractionalCoordinates",
-    "someModelsHaveSymmetry", "someModelsHaveUnitcells"};
+    "someModelsHaveSymmetry", "someModelsHaveUnitcells", "isPDB"};
 
   final static int GLOBAL_FRACTCOORD = 0;
   final static int GLOBAL_SYMMETRY = 1;

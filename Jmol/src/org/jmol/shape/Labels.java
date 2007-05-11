@@ -420,10 +420,11 @@ public class Labels extends AtomShape {
         int offset = offsets[i];
         setStateInfo(temp2, i, "labelOffset = "
             + Text.getXOffset(offset >> 6) + " "
-            + (-Text.getYOffset(offset >> 6)));
+            + (-Text.getYOffset(offset >> 6)));         
         String align = Text.getAlignment(offset >> 2);
-        if (align.length() >= 5) // disallows "left"
-          setStateInfo(temp2, i, "labelAlignment = " + align);
+        if (align.length() == 0)
+          align = "left";//if (align.length() >= 5) // disallows "left"
+        setStateInfo(temp2, i, "labelAlignment = " + align);
         String pointer = Text.getPointer(offset);
         if (pointer.length() > 0)
           setStateInfo(temp2, i, "labelPointer = " + pointer);

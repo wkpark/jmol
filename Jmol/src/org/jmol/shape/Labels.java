@@ -407,6 +407,7 @@ public class Labels extends AtomShape {
       return "";
     Hashtable temp = new Hashtable();
     Hashtable temp2 = new Hashtable();
+    Hashtable temp3 = new Hashtable();
     for (int i = atomCount; --i >= 0;) {
       if (bsSizeSet == null || !bsSizeSet.get(i))
         continue;
@@ -422,10 +423,6 @@ public class Labels extends AtomShape {
             + Text.getXOffset(offset >> 6) + " "
             + (-Text.getYOffset(offset >> 6)));         
         String align = Text.getAlignment(offset >> 2);
-        if (align.length() > 0)
-//          align = "left";//if (align.length() >= 5) // disallows "left"
-        //the space here 
-        setStateInfo(temp2, i, " labelAlignment = " + align);
         String pointer = Text.getPointer(offset);
         if (pointer.length() > 0)
           setStateInfo(temp2, i, "labelPointer = " + pointer);
@@ -433,12 +430,16 @@ public class Labels extends AtomShape {
           setStateInfo(temp2, i, "set labelFront");
         if ((offset & GROUP_FLAG) != 0)
           setStateInfo(temp2, i, "set labelGroup");
+        //labelAlignment must come last, so we put it in a separate hash table
+        if (align.length() > 0)
+        setStateInfo(temp3, i, "labelAlignment = " + align);
       }
       if (bsFontSet != null && bsFontSet.get(i))
         setStateInfo(temp2, i, getFontCommand("label", Font3D
             .getFont3D(fids[i])));
     }
-    return getShapeCommands(temp, temp2, atomCount);
+    return getShapeCommands(temp, temp2, atomCount)
+        + getShapeCommands(null, temp3, atomCount) ;
   }
   
 }

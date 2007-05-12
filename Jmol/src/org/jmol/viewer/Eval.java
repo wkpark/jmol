@@ -3308,6 +3308,8 @@ class Eval { //implements Runnable {
           //checkStatementLength(index + 1);
           //iToken = index;
         }
+      } else if (shapeType == JmolConstants.SHAPE_LCAOCARTOON){
+        iToken--; //back up one
       } else {
         // must not be a color, but rather a color SCHEME
         // this could be a problem for properties, which can't be
@@ -7921,6 +7923,11 @@ class Eval { //implements Runnable {
           continue;
         }
         invalidArgument();
+      case Token.translucent:
+      case Token.opaque:
+        setMeshDisplayProperty(JmolConstants.SHAPE_LCAOCARTOON, i, theTok);
+        i = iToken;
+        continue;        
       case Token.string:
         propertyName = "create";
         propertyValue = stringParameter(i);

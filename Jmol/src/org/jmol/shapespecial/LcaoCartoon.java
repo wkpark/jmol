@@ -38,6 +38,7 @@ public class LcaoCartoon extends Isosurface {
  public void initShape() {
     super.initShape();
     myType = "lcaoCartoon";
+    allowMesh = false;
   }
   
   Integer lcaoColorPos;
@@ -48,6 +49,8 @@ public class LcaoCartoon extends Isosurface {
   String lcaoID;
   BitSet thisSet;
   boolean isMolecular;
+  boolean isTranslucent;
+  float translucentLevel;
 
  public void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -124,6 +127,15 @@ public class LcaoCartoon extends Isosurface {
       //pass through
     }
 
+    if ("translucency" == propertyName) {
+      isTranslucent = (((String) value).equals("translucent"));
+      //pass through
+    }
+    if (propertyName == "translucentLevel") {
+      translucentLevel = ((Float) value).floatValue();
+      //pass through
+    }
+
     super.setProperty(propertyName,value,bs);
   }
 
@@ -177,7 +189,6 @@ public class LcaoCartoon extends Isosurface {
     }
     super.setProperty("lcaoType", thisType, null);
     super.setProperty("atomIndex", new Integer(iAtom), null);
-
     Vector3f[] axes = { new Vector3f(), new Vector3f(),
         new Vector3f(frame.atoms[iAtom]) };
     if (isMolecular) {
@@ -198,6 +209,11 @@ public class LcaoCartoon extends Isosurface {
     if (isMolecular || thisType.equalsIgnoreCase("s")
         || viewer.getPrincipalAxes(iAtom, axes[0], axes[1], thisType, true))
       super.setProperty("lcaoCartoon", axes, null);
+    
+    if (isTranslucent)
+      for (int i = meshCount; --i >=0;)
+        if (meshes[i].thisID.indexOf(id) == 0)
+          meshes[i].setTranslucent(true, translucentLevel);
   }
     
   String getID(String id, int i) {

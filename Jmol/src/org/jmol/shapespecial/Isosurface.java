@@ -523,6 +523,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug("creating isosurface " + thisMesh.thisID);
     }
+    thisMesh.colix = defaultColix;
     if (lobeAxis == null) {
       setProperty("sphere", new Float(factor / 2f), null);
       return;
@@ -532,6 +533,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     lcaoDir.z = lobeAxis.z * factor;
     lcaoDir.w = 0.7f;
     setProperty("lobe", lcaoDir, null);
+    System.out.println("createl " + defaultColix);
   }
 
   /////////////// meshDataServer interface /////////////////

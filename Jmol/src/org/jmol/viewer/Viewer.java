@@ -286,7 +286,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
       // Revision number
       s = s.substring(i + 1);
-      version += Integer.parseInt(s);
+      i = s.indexOf("_");
+      if (i < 0)
+        i = s.length();
+      version += Integer.parseInt(s.substring(0, i));
     } catch (NumberFormatException e) {
       // We simply keep the version currently found
     }

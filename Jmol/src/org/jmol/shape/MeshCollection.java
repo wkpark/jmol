@@ -48,6 +48,7 @@ public abstract class MeshCollection extends Shape {
   public String myType;
   public boolean explicitID;
   public String[] title;
+  protected boolean allowMesh = true;
   
   private Mesh setMesh(String thisID) {
     if (thisID == null) {
@@ -354,6 +355,7 @@ public abstract class MeshCollection extends Shape {
         appendCmd(s, "frame " + viewer.getModelNumber(mesh.modelIndex));
       s.append(cmd).append("\n");
       if (cmd.charAt(0) != '#') {
+        if (allowMesh)
         appendCmd(s, mesh.getState(myType));
         if (mesh.isColorSolid)
           appendCmd(s, getColorCommand("$" + mesh.thisID, mesh.colix));

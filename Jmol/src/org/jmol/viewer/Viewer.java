@@ -261,7 +261,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return JmolConstants.version + "  " + JmolConstants.date;
   }
 
-  static int getJmolVersionInt() {
+  private static int getJmolVersionInt() {
     //11.9.999 --> 1109999
     String s = JmolConstants.version;
     int version = -1;
@@ -1684,7 +1684,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelManager.clear();
     mouseManager.clear();
     statusManager.clear();
-    stateManager.clear(global);
+    StateManager.clear(global);
     tempManager.clear();
     //setRefreshing(true);
     refresh(0, "Viewer:clear()");

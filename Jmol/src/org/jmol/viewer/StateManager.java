@@ -98,7 +98,7 @@ public class StateManager {
     return g;  
   }
   
-  void clear(GlobalSettings global) {
+  static void clear(GlobalSettings global) {
     global.clear();
     //other state clearing? -- place here
   }
@@ -649,6 +649,8 @@ public class StateManager {
         if (volatileProperties.indexOf(";" + key + ";") >= 0 || key.charAt(0) == '@') 
           htParameterValues.remove(key);
       }
+      setParameterValue("_atompicked", -1);
+      setParameterValue("_atomhovered", -1);
     }
 
     void removeParameter(String key) {

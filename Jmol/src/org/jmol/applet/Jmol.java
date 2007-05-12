@@ -979,7 +979,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
           jsoWindow.call(animFrameCallback, new Object[] { htmlName,
               new Integer(Math.max(frameNo, -2 - frameNo)),
               new Integer(fileNo), new Integer(modelNo), new Integer(firstNo),
-              new Integer(lastNo) });
+              new Integer(lastNo), new Integer(isAnimationRunning ? 1: 0) });
         } catch (Exception e) {
           if (!haveNotifiedError)
             if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {

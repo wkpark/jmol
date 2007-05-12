@@ -68,7 +68,8 @@ class RepaintManager {
       setStatusFrameChanged();
   }
 
-  void setStatusFrameChanged() {
+  
+  private void setStatusFrameChanged() {
     int i = (isTrajectory ? currentTrajectory : currentModelIndex);
     viewer.setStatusFrameChanged(animationOn ? -2 - i : i);
   }
@@ -302,6 +303,11 @@ class RepaintManager {
   }
 
   boolean animationOn = false;
+  private void animationOn(boolean TF) {
+    animationOn = TF; 
+    viewer.setBooleanProperty("_animating", TF);
+  }
+  
   boolean animationPaused = false;
   void setAnimationOn(boolean animationOn) {
     if (! animationOn || ! viewer.haveFrame()) {
@@ -320,7 +326,7 @@ class RepaintManager {
     }
     animationPaused = isPaused;
     viewer.refresh(0, "Viewer:setAnimationOff");
-    animationOn = false;
+    animationOn(false);
     setStatusFrameChanged();
   }
 
@@ -340,10 +346,10 @@ class RepaintManager {
       setAnimationRange(firstModelIndex, lastModelIndex, isTrajectory);
     int nModels = (isTrajectory ? viewer.getTrajectoryCount() : viewer.getModelCount());
     if (nModels <= 1) {
-      animationOn = false;
+      animationOn(false);
       return;
     }
-    animationOn = true;
+    animationOn(true);
     animationPaused = false;
     if (animationThread == null) {
       intAnimThread++;

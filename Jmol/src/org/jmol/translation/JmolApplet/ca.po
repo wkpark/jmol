@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-05-08 16:45+0200\n"
-"PO-Revision-Date: 2006-11-01 19:17+0100\n"
+"PO-Revision-Date: 2007-05-12 15:53+0200\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <Jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -37,9 +37,8 @@ msgid "History"
 msgstr "Historial"
 
 #: org/jmol/applet/Console.java:45
-#, fuzzy
 msgid "State"
-msgstr "Defineix la velocitat Z"
+msgstr "Estat"
 
 #: org/jmol/applet/Console.java:46
 msgid "Load"
@@ -81,48 +80,47 @@ msgstr " {0} segons"
 
 #: org/jmol/i18n/GT.java:101
 msgid "Catalan"
-msgstr ""
+msgstr "Català"
 
 #: org/jmol/i18n/GT.java:102
 msgid "Czech"
-msgstr ""
+msgstr "Txec"
 
 #: org/jmol/i18n/GT.java:103
 msgid "Dutch"
-msgstr ""
+msgstr "Holandès"
 
 #: org/jmol/i18n/GT.java:104
 msgid "English"
-msgstr ""
+msgstr "Anglès"
 
 #: org/jmol/i18n/GT.java:105
 msgid "Estonian"
-msgstr ""
+msgstr "Estonià"
 
 #: org/jmol/i18n/GT.java:106
 msgid "French"
-msgstr ""
+msgstr "Francès"
 
 #: org/jmol/i18n/GT.java:107
-#, fuzzy
 msgid "German"
-msgstr "Gris"
+msgstr "Alemany"
 
 #: org/jmol/i18n/GT.java:108
 msgid "Portuguese - Brazil"
-msgstr ""
+msgstr "Portuguès de Brazil"
 
 #: org/jmol/i18n/GT.java:109
 msgid "Portuguese"
-msgstr ""
+msgstr "Portuguès"
 
 #: org/jmol/i18n/GT.java:110
 msgid "Spanish"
-msgstr ""
+msgstr "Espanyol"
 
 #: org/jmol/i18n/GT.java:111
 msgid "Turkish"
-msgstr ""
+msgstr "Turc"
 
 #: org/jmol/popup/JmolPopup.java:180
 #, java-format
@@ -144,9 +142,9 @@ msgid "Configurations ({0})"
 msgstr "Configuracions ({0})"
 
 #: org/jmol/popup/JmolPopup.java:441
-#, fuzzy, java-format
+#, java-format
 msgid "Collection of {0} models"
-msgstr "Tots els {0} models"
+msgstr "Col·lecció de {0} models"
 
 #: org/jmol/popup/JmolPopup.java:448
 #, java-format
@@ -747,7 +745,6 @@ msgid "Maroon"
 msgstr "Granat"
 
 #: org/jmol/popup/PopupResourceBundle.java:667
-#, fuzzy
 msgid "Gray"
 msgstr "Gris"
 
@@ -1015,7 +1012,7 @@ msgstr "Simetria"
 
 #: org/jmol/popup/PopupResourceBundle.java:779
 msgid "Current state"
-msgstr ""
+msgstr "Estat actual"
 
 #: org/jmol/popup/PopupResourceBundle.java:781
 msgid "Unit cell"
@@ -1068,7 +1065,7 @@ msgstr "Recarrega {0}"
 
 #: org/jmol/popup/PopupResourceBundle.java:801
 msgid "Reload + Polyhedra"
-msgstr ""
+msgstr "Recàrrega + polihedres"
 
 #: org/jmol/popup/PopupResourceBundle.java:808
 msgid "Hide"
@@ -1140,7 +1137,7 @@ msgstr "Coordenades Xyz en zero del RasMol"
 
 #: org/jmol/popup/PopupResourceBundle.java:837
 msgid "Language"
-msgstr ""
+msgstr "Llengua"
 
 #: org/jmol/popup/PopupResourceBundle.java:838
 msgid "About Jmol"
@@ -1155,19 +1152,18 @@ msgid "Translations"
 msgstr "Translacions"
 
 #: org/jmol/viewer/Compiler.java:1896
-#, fuzzy
 msgid "command expected"
-msgstr "s'esperava una subordre"
+msgstr "s'esperava una ordre"
 
 #: org/jmol/viewer/Compiler.java:1900
-#, fuzzy, java-format
+#, java-format
 msgid "invalid expression token: {0}"
-msgstr "el codi d'inserció no és vàlid"
+msgstr "el testimoni d'expressió no és vàlid: {0}"
 
 #: org/jmol/viewer/Compiler.java:1904
-#, fuzzy, java-format
+#, java-format
 msgid "unrecognized token: {0}"
-msgstr "l'objecte no està reconegut"
+msgstr "no es reconeix el testimoni: {0}"
 
 #: org/jmol/viewer/Compiler.java:1908 org/jmol/viewer/Eval.java:8831
 msgid "unexpected end of script command"
@@ -1178,52 +1174,45 @@ msgid "bad argument count"
 msgstr "recompte incorrecte dels arguments"
 
 #: org/jmol/viewer/Compiler.java:1916
-#, fuzzy
 msgid "end of expression expected"
-msgstr "s'esperava una (expressió atòmica) vàlida"
+msgstr "s'esperava la fi d'una expressió"
 
 #: org/jmol/viewer/Compiler.java:1920
-#, fuzzy
 msgid "right parenthesis expected"
-msgstr "s'esperava un enter"
+msgstr "s'esperava un parèntesis dret"
 
 #: org/jmol/viewer/Compiler.java:1924
-#, fuzzy
 msgid "right brace expected"
-msgstr "s'esperava un enter"
+msgstr "s'esperava un claudàtor dret"
 
 #: org/jmol/viewer/Compiler.java:1928
-#, fuzzy
 msgid "right bracket expected"
-msgstr "s'esperava un enter"
+msgstr "s'esperava un claudàtor dret"
 
 #: org/jmol/viewer/Compiler.java:1932
 msgid "{ number number number } expected"
 msgstr "s'esperava { nombre nombre nombre }"
 
 #: org/jmol/viewer/Compiler.java:1936
-#, fuzzy, java-format
+#, java-format
 msgid "unrecognized expression token: {0}"
-msgstr "l'expressió d'execució no està reconeguda"
+msgstr "no es reconeix el testimoni de l'expressió: {0}"
 
 #: org/jmol/viewer/Compiler.java:1940
-#, fuzzy
 msgid "comparison operator expected"
-msgstr "s'esperava un booleà o un percentatge"
+msgstr "s'esperava un operador de comparació"
 
 #: org/jmol/viewer/Compiler.java:1944
-#, fuzzy
 msgid "equal sign expected"
-msgstr "s'esperava una cadena entre cometes"
+msgstr "s'esperava un signe igual"
 
 #: org/jmol/viewer/Compiler.java:1948 org/jmol/viewer/Eval.java:8797
 msgid "number expected"
 msgstr "s'esperava un nombre"
 
 #: org/jmol/viewer/Compiler.java:1952
-#, fuzzy
 msgid "number or variable name expected"
-msgstr "s'esperava { nombre nombre nombre }"
+msgstr "s'esperava un nombre o nom de variable"
 
 #: org/jmol/viewer/Compiler.java:1956 org/jmol/viewer/Eval.java:8843
 #, java-format
@@ -1232,33 +1221,31 @@ msgstr "el paràmetre {0} no està reconegut"
 
 #: org/jmol/viewer/Compiler.java:1960
 msgid "identifier or residue specification expected"
-msgstr ""
+msgstr "s'esperava un identificador o una especifació de residu"
 
 #: org/jmol/viewer/Compiler.java:1964
 msgid "residue specification (ALA, AL?, A*) expected"
-msgstr ""
+msgstr "s'esperava una especificació de residu (ALA, AL?, A*)"
 
 #: org/jmol/viewer/Compiler.java:1968
-#, fuzzy
 msgid "invalid chain specification"
-msgstr "el codi d'inserció no és vàlid"
+msgstr "l'especificació de cadena no és vàlida"
 
 #: org/jmol/viewer/Compiler.java:1972
 msgid "invalid model specification"
-msgstr ""
+msgstr "l'especificació de model no és vàlida"
 
 #: org/jmol/viewer/Compiler.java:1976
 msgid "invalid atom specification"
-msgstr ""
+msgstr "l'especificació d'àtom no és vàlida"
 
 #: org/jmol/viewer/Compiler.java:1985 org/jmol/viewer/Eval.java:8802
 msgid "quoted string expected"
 msgstr "s'esperava una cadena entre cometes"
 
 #: org/jmol/viewer/Compiler.java:1989
-#, fuzzy
 msgid "comma or right parenthesis expected"
-msgstr "s'esperava un booleà o un percentatge"
+msgstr "s'esperava una coma o un parèntesis dret"
 
 #: org/jmol/viewer/Eval.java:272
 msgid "too many script levels"
@@ -1275,12 +1262,11 @@ msgid "Invalid {0} command"
 msgstr "Ordre {0} invàlida"
 
 #: org/jmol/viewer/Eval.java:2067
-#, fuzzy, java-format
+#, java-format
 msgid ""
 "plane expected -- either three points or atom expressions or {0} or {1} or "
 "{2}"
-msgstr ""
-"s'esperava un pla -- tres punts, unes expressions atòmiques, {0}, o {1}"
+msgstr "s'esperava un pla -- tres punts, unes expressions atòmiques, {0}, {1} o {2}"
 
 #: org/jmol/viewer/Eval.java:2080
 msgid "No unit cell"
@@ -1297,12 +1283,12 @@ msgstr "cal un nom de color o de paleta (Jmol, Rasmol)"
 #: org/jmol/viewer/Eval.java:3029
 #, java-format
 msgid "{0} connections deleted"
-msgstr ""
+msgstr "s'han suprimit {0} connexions"
 
 #: org/jmol/viewer/Eval.java:3051
 #, java-format
 msgid "{0} connections modified or created"
-msgstr ""
+msgstr "s'han modificat o creat {0} connexions"
 
 #: org/jmol/viewer/Eval.java:3651
 #, java-format
@@ -1322,9 +1308,9 @@ msgid "rotation points cannot be identical"
 msgstr "els punts de rotació no poden ser idèntics"
 
 #: org/jmol/viewer/Eval.java:4829
-#, fuzzy, java-format
+#, java-format
 msgid "{0} hydrogen bonds"
-msgstr "Enllaços d'hidrogen"
+msgstr "{0} enllaços d'hidrogen"
 
 #: org/jmol/viewer/Eval.java:4839
 #, java-format
@@ -1336,9 +1322,8 @@ msgid "Calculate what?"
 msgstr "Què s'ha de calcular?"
 
 #: org/jmol/viewer/Eval.java:5353
-#, fuzzy
 msgid "trajectory not applicable in this context"
-msgstr "no es permeten les coordenades fraccionals en aquest context"
+msgstr "no es permet una trajectoria en aquest context"
 
 #: org/jmol/viewer/Eval.java:5486
 #, java-format
@@ -1364,9 +1349,8 @@ msgid "write what? {0} or {1} \"filename\""
 msgstr "què s'ha d'escriure? {0} o \\\"nomdefitxer\\\" {1}"
 
 #: org/jmol/viewer/Eval.java:7060
-#, fuzzy
 msgid "No data available"
-msgstr "no hi ha dades del coeficient d'OM disponibles"
+msgstr "no hi ha dades disponibles"
 
 #: org/jmol/viewer/Eval.java:7361 org/jmol/viewer/Eval.java:8057
 msgid "no MO basis/coefficient data available for this frame"
@@ -1381,9 +1365,8 @@ msgid "Only one molecular orbital is available in this file"
 msgstr "Només hi ha un orbital molecular disponible en aquest fitxer"
 
 #: org/jmol/viewer/Eval.java:8072
-#, fuzzy
 msgid "no MO occupancy data available"
-msgstr "no hi ha dades del coeficient d'OM disponibles"
+msgstr "no hi ha dades d'ocupació d'OM disponibles"
 
 #: org/jmol/viewer/Eval.java:8082
 #, java-format
@@ -1411,9 +1394,8 @@ msgid "unrecognized atom property"
 msgstr "la propietat de l'àtom no està reconeguda"
 
 #: org/jmol/viewer/Eval.java:8760
-#, fuzzy
 msgid "unrecognized bond property"
-msgstr "la propietat de l'àtom no està reconeguda"
+msgstr "no es reconeix la propietat de l'enllaç"
 
 #: org/jmol/viewer/Eval.java:8764
 msgid "filename expected"
@@ -1442,7 +1424,7 @@ msgstr "s'esperava una (expressió atòmica) vàlida"
 
 #: org/jmol/viewer/Eval.java:8788
 msgid "bad [R,G,B] color"
-msgstr ""
+msgstr "el color [R,G,B] és incorrecte"
 
 #: org/jmol/viewer/Eval.java:8792
 msgid "integer expected"
@@ -1477,9 +1459,9 @@ msgid "invalid argument"
 msgstr "l'argument no és vàlid"
 
 #: org/jmol/viewer/Eval.java:8847
-#, fuzzy, java-format
+#, java-format
 msgid "unrecognized SHOW parameter --  use {0}"
-msgstr "el paràmetre {0} no està reconegut -- utilitzeu {1}"
+msgstr "no es reconeix el paràmetre SHOW -- utilitzeu {0}"
 
 #: org/jmol/viewer/Eval.java:8851
 #, java-format
@@ -1529,9 +1511,8 @@ msgid "insufficient arguments"
 msgstr "arguments insuficients"
 
 #: org/jmol/viewer/Eval.java:10106
-#, fuzzy
 msgid "too many parentheses"
-msgstr "masses nivells d'script"
+msgstr "masses parèntesis"
 
 #: org/jmol/viewer/PickingManager.java:168
 msgid "pick one more atom in order to spin the model around an axis"
@@ -1548,21 +1529,21 @@ msgid "{0} atoms hidden"
 msgstr "{0} àtoms amagats"
 
 #: org/jmol/viewer/SelectionManager.java:180
-#, fuzzy, java-format
+#, java-format
 msgid "{0} atoms selected"
-msgstr "àtoms seleccionats"
+msgstr "{0} àtoms seleccionats"
 
 #: org/jmol/viewer/Viewer.java:4096
 #, java-format
 msgid ""
 "ERROR: Cannot set value of a boolean to another type. use \"{0}\" first."
-msgstr ""
+msgstr "ERROR: No es pot definir el valor d'un booleà a un altre tipus. Utilitzeu «{0}» primer."
 
 #: org/jmol/viewer/Viewer.java:4442
 #, java-format
 msgid ""
 "ERROR: Cannot set value of this variable to a boolean. use \"{0}\" first."
-msgstr ""
+msgstr "ERROR: No es pot definir el valor d'aquesta variable a un booleà. Utilitzeu «{0}» primer."
 
 #~ msgid "the {0} command requires that only one model be displayed"
 #~ msgstr "l'ordre {0} requereix que només es mostri un model"

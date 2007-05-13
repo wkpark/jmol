@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-05-01 20:52+0200\n"
-"PO-Revision-Date: 2006-11-01 19:31+0100\n"
+"PO-Revision-Date: 2007-05-13 18:40+0200\n"
 "Last-Translator: Toni Hermoso Pulido <toniher@softcatala.org>\n"
 "Language-Team: Catalan <jmol-developers@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -158,7 +158,7 @@ msgstr "Visualització prèvia"
 
 #: org/openscience/jmol/app/FilePreview.java:87
 msgid "Append models"
-msgstr ""
+msgstr "Afegeix els models"
 
 #: org/openscience/jmol/app/GuiMap.java:45
 msgid "&File"
@@ -177,9 +177,8 @@ msgid "Open &URL"
 msgstr "Obre un &URL"
 
 #: org/openscience/jmol/app/GuiMap.java:49
-#, fuzzy
 msgid "Scrip&t..."
-msgstr "Sc&ript..."
+msgstr "Scrip&t..."
 
 #: org/openscience/jmol/app/GuiMap.java:50
 msgid "AtomSetChooser..."
@@ -194,9 +193,8 @@ msgid "&Export"
 msgstr "&Exporta"
 
 #: org/openscience/jmol/app/GuiMap.java:53
-#, fuzzy
 msgid "Export Image or Script..."
-msgstr "Exporta com a imatge..."
+msgstr "Exporta com a imatge o script..."
 
 #: org/openscience/jmol/app/GuiMap.java:54
 msgid "Render in pov-ray..."
@@ -245,9 +243,8 @@ msgid "Copy Image"
 msgstr "Còpia la imatge"
 
 #: org/openscience/jmol/app/GuiMap.java:65
-#, fuzzy
 msgid "Copy Script"
-msgstr "Scripts de RasMol"
+msgstr "Copia l'script"
 
 #: org/openscience/jmol/app/GuiMap.java:66
 msgid "&Preferences..."
@@ -565,9 +562,8 @@ msgid "What's New"
 msgstr "Novetats"
 
 #: org/openscience/jmol/app/GuiMap.java:160
-#, fuzzy
 msgid "Jmol Java &Console"
-msgstr "Consola Java del Jmol"
+msgstr "&Consola de Java del Jmol"
 
 #: org/openscience/jmol/app/GuiMap.java:161
 msgid "Hydrogens"
@@ -599,9 +595,8 @@ msgid "Open a file."
 msgstr "Obre un fitxer."
 
 #: org/openscience/jmol/app/GuiMap.java:172
-#, fuzzy
 msgid "Export view to an image or script file."
-msgstr "Exporta la visualització a un fitxer d'imatge."
+msgstr "Exporta la visualització a un fitxer d'imatge o script."
 
 #: org/openscience/jmol/app/GuiMap.java:173
 msgid "Render in pov-ray."
@@ -641,9 +636,7 @@ msgstr "Qualitat de JPEG"
 
 #: org/openscience/jmol/app/Jmol.java:129
 msgid "Error starting Jmol: the property 'user.home' is not defined."
-msgstr ""
-"S'ha produït un error en iniciar el Jmol: la propietat 'user.home' no està "
-"definida."
+msgstr "S'ha produït un error en iniciar el Jmol: la propietat 'user.home' no està definida."
 
 #: org/openscience/jmol/app/Jmol.java:168
 msgid "Initializing 3D display..."
@@ -715,7 +708,7 @@ msgstr "no mostris res (i també surt quan s'acabi)"
 
 #: org/openscience/jmol/app/Jmol.java:393
 msgid "check script syntax only"
-msgstr ""
+msgstr "comprova només la sintaxi dels scripts"
 
 #: org/openscience/jmol/app/Jmol.java:394
 msgid "silent startup operation"
@@ -738,9 +731,9 @@ msgid "supported options are given below"
 msgstr "les opcions implementades es descriuen a continuació"
 
 #: org/openscience/jmol/app/Jmol.java:414
-#, fuzzy, java-format
+#, java-format
 msgid "window width x height, e.g. {0}"
-msgstr "mida de la finestra, ex. {0}"
+msgstr "amplada x altura de la finestra, ex. {0}"
 
 #: org/openscience/jmol/app/Jmol.java:421
 #, java-format
@@ -753,9 +746,7 @@ msgstr "Per exemple:"
 
 #: org/openscience/jmol/app/Jmol.java:449
 msgid "The -D options are as follows (defaults in parathesis):"
-msgstr ""
-"Les opcions són -D són com es descriu a continuació (paràmetres per defecte "
-"en parèntesis):"
+msgstr "Les opcions són -D són com es descriu a continuació (paràmetres per defecte en parèntesis):"
 
 #: org/openscience/jmol/app/Jmol.java:587
 msgid "Executing script..."
@@ -823,12 +814,8 @@ msgid "Filename Stem"
 msgstr "Arrel del nom de fitxer"
 
 #: org/openscience/jmol/app/PovrayDialog.java:158
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
-msgstr ""
-"Un únic fotograma: p.ex. «caffine» -> «caffine.pov»; Múltiples fotogrames: p."
-"ex. «caffine» -> «caffine_1.pov», «caffine_2.pov»"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgstr "Un únic fotograma: p.ex. «caffine» -> «caffine.pov»; Múltiples fotogrames: p.ex. «caffine» -> «caffine_1.pov», «caffine_2.pov»"
 
 #: org/openscience/jmol/app/PovrayDialog.java:168
 msgid "Working Directory"
@@ -1114,9 +1101,8 @@ msgid "History"
 msgstr "Historial"
 
 #: org/openscience/jmol/app/ScriptWindow.java:104
-#, fuzzy
 msgid "State"
-msgstr "Desa"
+msgstr "Estat"
 
 #: org/openscience/jmol/app/ScriptWindow.java:108
 msgid "Help"
@@ -1124,11 +1110,11 @@ msgstr "Ajuda"
 
 #: org/openscience/jmol/app/ScriptWindow.java:116
 msgid "Undo"
-msgstr ""
+msgstr "Desfés"
 
 #: org/openscience/jmol/app/ScriptWindow.java:120
 msgid "Redo"
-msgstr ""
+msgstr "Refés"
 
 #: org/openscience/jmol/app/Splash.java:45
 msgid "Loading..."
@@ -1140,72 +1126,50 @@ msgstr "Novetats del Jmol"
 
 #~ msgid "File not loaded"
 #~ msgstr "No s'ha carregat el fitxer"
-
 #~ msgid "no display"
 #~ msgstr "sense visualització"
-
 #~ msgid "atoms selected"
 #~ msgstr "àtoms seleccionats"
-
 #~ msgid "Jmol executing script ..."
 #~ msgstr "El Jmol està executant l'script..."
-
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "Rotació en mode filfe&rro"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotació en mode filferro"
-
 #~ msgid "Colors"
 #~ msgstr "Colors"
-
 #~ msgid "Background"
 #~ msgstr "Fons"
-
 #~ msgid "Set the Background Color"
 #~ msgstr "Defineix el color de fons"
-
 #~ msgid "Background Color"
 #~ msgstr "Color de fons"
-
 #~ msgid "Picked Atoms"
 #~ msgstr "Àtoms triats"
-
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Defineix el color per als àtoms triats"
-
 #~ msgid "Picked Atom Color"
 #~ msgstr "Color dels àtoms triats"
-
 #~ msgid "Text"
 #~ msgstr "Text"
-
 #~ msgid "Set the Color for Text"
 #~ msgstr "Defineix el color per al text"
-
 #~ msgid "Text Color"
 #~ msgstr "Color del text"
-
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Defineix el color dels enllaços"
-
 #~ msgid "Bond Color"
 #~ msgstr "Color dels enllaços"
-
 #~ msgid "Vectors"
 #~ msgstr "Vectors"
-
 #~ msgid "Set the Vector Color"
 #~ msgstr "Defineix el color dels vectors"
-
 #~ msgid "Vector Color"
 #~ msgstr "Color dels vectors"
-
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Color per a les mesures de distància, angle i torsió"
-
 #~ msgid "Measurements Color"
 #~ msgstr "Color de les mesures"
-
 #~ msgid "Loading plugins..."
 #~ msgstr "S'estan carregant els connectors..."
+

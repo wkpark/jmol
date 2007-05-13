@@ -231,7 +231,7 @@ public class LcaoCartoon extends Isosurface {
     // remove "-" from "-px" "-py" "-pz" because we never want to have
     // both "pz" and "-pz" on the same atom
     // but we can have "-sp3a" and "sp3a"
-    return (id != null ? id : "lcao_" + (i + 1))
+    return (id != null ? id : "lcao_" + (i + 1) + "_")
         + (thisType == null ? "" : TextFormat.simpleReplace(thisType, "-",
             (thisType.indexOf("-p") == 0 ? "" : "_")));
   }

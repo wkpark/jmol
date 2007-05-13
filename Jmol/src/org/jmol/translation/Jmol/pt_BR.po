@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-05-01 20:52+0200\n"
-"PO-Revision-Date: 2007-05-08 20:08-0300\n"
+"PO-Revision-Date: 2007-05-12 20:24-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -27,7 +27,7 @@ msgstr "Sobre o Jmol"
 #: org/openscience/jmol/app/WhatsNewDialog.java:68
 #, java-format
 msgid "Unable to find url \"{0}\"."
-msgstr "A url \"{0}\" não pôde ser encontrada."
+msgstr "A URL \"{0}\" não pôde ser encontrada."
 
 #: org/openscience/jmol/app/AboutDialog.java:95
 #: org/openscience/jmol/app/HelpDialog.java:106
@@ -38,11 +38,11 @@ msgstr "OK"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:163
 msgid "AtomSetChooser"
-msgstr "\"AtomSetChooser\""
+msgstr "Selecionador de Conjunto de Átomos"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:168
 msgid "No AtomSets"
-msgstr "Nenhum \"AtomSets\""
+msgstr "Nenhum Conjunto de Átomos"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:197
 msgid "Properties"
@@ -50,7 +50,7 @@ msgstr "Propriedades"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:205
 msgid "Atom Set Collection"
-msgstr "Coleção de conjuntos de átomos"
+msgstr "Coleção de Conjuntos de Átomos"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:225
 msgid "Collection"
@@ -67,7 +67,7 @@ msgstr "Informação"
 #: org/openscience/jmol/app/PovrayDialog.java:618
 #: org/openscience/jmol/app/PovrayDialog.java:639
 msgid "Select"
-msgstr "Selecionar"
+msgstr "&Selecionar"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:252
 msgid "Repeat"
@@ -100,7 +100,7 @@ msgstr "Período"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:353
 msgid "Controller"
-msgstr "Controlador"
+msgstr "Controles"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:360
 msgid "atom set"
@@ -113,12 +113,12 @@ msgstr "vetor"
 #: org/openscience/jmol/app/AtomSetChooser.java:365
 #, java-format
 msgid "Go to first {0} in the collection"
-msgstr "Ir para o(s) primeiro(s) {0} na coleção"
+msgstr "Voltar para o primeiro {0} na coleção"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:366
 #, java-format
 msgid "Go to previous {0} in the collection"
-msgstr "Ir para o(s) {0} anterior(es) na coleção"
+msgstr "Voltar para o {0} anterior na coleção"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:367
 #, java-format
@@ -132,12 +132,12 @@ msgstr "Pausa"
 #: org/openscience/jmol/app/AtomSetChooser.java:369
 #, java-format
 msgid "Go to next {0} in the collection"
-msgstr "Ir para o(s) {0} seguinte(s) na coleção"
+msgstr "Avançar para o {0} seguinte na coleção"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:370
 #, java-format
 msgid "Jump to last {0} in the collection"
-msgstr "Ir para o último {0} na coleção"
+msgstr "Avançar para o último {0} na coleção"
 
 #: org/openscience/jmol/app/ConsoleTextArea.java:87
 #, java-format
@@ -146,7 +146,7 @@ msgstr "Erro de leitura em \"BufferedReader\": {0}"
 
 #: org/openscience/jmol/app/DisplayPanel.java:153
 msgid "Delete Atoms"
-msgstr "Eliminar átomos"
+msgstr "Apagar átomos"
 
 #: org/openscience/jmol/app/DisplayPanel.java:154
 msgid "Select Atoms"
@@ -162,11 +162,11 @@ msgstr "Anexar modelos"
 
 #: org/openscience/jmol/app/GuiMap.java:45
 msgid "&File"
-msgstr "A&rquivo"
+msgstr "&Arquivo"
 
 #: org/openscience/jmol/app/GuiMap.java:46
 msgid "New"
-msgstr "Novo"
+msgstr "&Novo"
 
 #: org/openscience/jmol/app/GuiMap.java:47
 msgid "&Open"
@@ -182,7 +182,7 @@ msgstr "Scrip&t..."
 
 #: org/openscience/jmol/app/GuiMap.java:50
 msgid "AtomSetChooser..."
-msgstr "AtomSetChooser..."
+msgstr "Selecionador de Conjunto de Átomos..."
 
 #: org/openscience/jmol/app/GuiMap.java:51
 msgid "&Save As..."
@@ -194,11 +194,11 @@ msgstr "&Exportar"
 
 #: org/openscience/jmol/app/GuiMap.java:53
 msgid "Export Image or Script..."
-msgstr "Exportar Imagem ou Script..."
+msgstr "Exportar imagem ou script..."
 
 #: org/openscience/jmol/app/GuiMap.java:54
 msgid "Render in pov-ray..."
-msgstr "Renderizar em pov-ray..."
+msgstr "Renderizar no POV-Ray..."
 
 #: org/openscience/jmol/app/GuiMap.java:55
 msgid "Export PDF..."
@@ -211,7 +211,7 @@ msgstr "&Imprimir..."
 #: org/openscience/jmol/app/GuiMap.java:57
 #: org/openscience/jmol/app/ScriptWindow.java:112
 msgid "Close"
-msgstr "Fechar"
+msgstr "&Fechar"
 
 #: org/openscience/jmol/app/GuiMap.java:58
 msgid "E&xit"
@@ -219,7 +219,7 @@ msgstr "&Sair"
 
 #: org/openscience/jmol/app/GuiMap.java:59
 msgid "Recent Files..."
-msgstr "Arquivos Recentes..."
+msgstr "Arquivos &recentes..."
 
 #: org/openscience/jmol/app/GuiMap.java:60
 msgid "&Edit"
@@ -227,12 +227,12 @@ msgstr "&Editar"
 
 #: org/openscience/jmol/app/GuiMap.java:61
 msgid "Make crystal..."
-msgstr "Fazer cristal..."
+msgstr "C&onstruir cristal..."
 
 #: org/openscience/jmol/app/GuiMap.java:62
 #: org/openscience/jmol/app/GuiMap.java:68
 msgid "Select All"
-msgstr "Selecionar todos"
+msgstr "Selecionar &todos"
 
 #: org/openscience/jmol/app/GuiMap.java:63
 msgid "Deselect All"
@@ -240,11 +240,11 @@ msgstr "Reverter seleção de todos"
 
 #: org/openscience/jmol/app/GuiMap.java:64
 msgid "Copy Image"
-msgstr "Copiar Imagem"
+msgstr "Copiar &imagem"
 
 #: org/openscience/jmol/app/GuiMap.java:65
 msgid "Copy Script"
-msgstr "Copiar Script"
+msgstr "Copiar script"
 
 #: org/openscience/jmol/app/GuiMap.java:66
 msgid "&Preferences..."
@@ -292,11 +292,11 @@ msgstr "Enxofre"
 
 #: org/openscience/jmol/app/GuiMap.java:78
 msgid "Amino"
-msgstr "Amino"
+msgstr "Aminoácido"
 
 #: org/openscience/jmol/app/GuiMap.java:79
 msgid "Nucleic"
-msgstr "Nucléico"
+msgstr "Ácido nucléico"
 
 #: org/openscience/jmol/app/GuiMap.java:80
 msgid "Water"
@@ -320,7 +320,7 @@ msgstr "Átomo"
 #: org/openscience/jmol/app/GuiMap.java:88
 #, java-format
 msgid "{0}% vanderWaals"
-msgstr "{0}% vanderWaals"
+msgstr "{0}% van der Waals"
 
 #: org/openscience/jmol/app/GuiMap.java:89
 msgid "Bond"
@@ -328,7 +328,7 @@ msgstr "Ligação"
 
 #: org/openscience/jmol/app/GuiMap.java:91
 msgid "Wireframe"
-msgstr "Arame"
+msgstr "Arames"
 
 #: org/openscience/jmol/app/GuiMap.java:92
 #: org/openscience/jmol/app/GuiMap.java:93
@@ -397,7 +397,7 @@ msgstr "{0}%"
 #: org/openscience/jmol/app/GuiMap.java:119
 #: org/openscience/jmol/app/GuiMap.java:163
 msgid "Perspective Depth"
-msgstr "Profundidade da perspectiva"
+msgstr "Profundidade de perspectiva"
 
 #: org/openscience/jmol/app/GuiMap.java:120
 #: org/openscience/jmol/app/GuiMap.java:164
@@ -407,7 +407,7 @@ msgstr "Eixos"
 #: org/openscience/jmol/app/GuiMap.java:121
 #: org/openscience/jmol/app/GuiMap.java:165
 msgid "Bounding Box"
-msgstr "Caixa de ligação"
+msgstr "Caixa de Ligação"
 
 #: org/openscience/jmol/app/GuiMap.java:122
 msgid "&Hydrogens"
@@ -460,7 +460,7 @@ msgstr "&Ferramentas"
 #: org/openscience/jmol/app/GuiMap.java:134
 #: org/openscience/jmol/app/MeasurementTable.java:65
 msgid "Measurements..."
-msgstr "Medições..."
+msgstr "Medidas..."
 
 #: org/openscience/jmol/app/GuiMap.java:135
 msgid "Distance Units"
@@ -508,7 +508,7 @@ msgstr "Repetição"
 
 #: org/openscience/jmol/app/GuiMap.java:146
 msgid "Palindrome"
-msgstr "Palíndrome"
+msgstr "Palíndromo (vai-volta)"
 
 #: org/openscience/jmol/app/GuiMap.java:147
 msgid "Stop animation"
@@ -517,17 +517,17 @@ msgstr "Parar a animação"
 #: org/openscience/jmol/app/GuiMap.java:148
 #: org/openscience/jmol/app/GuiMap.java:179
 msgid "Rewind to first frame"
-msgstr "Rebobinar para o primeiro quadro"
+msgstr "Voltar ao primeiro quadro"
 
 #: org/openscience/jmol/app/GuiMap.java:149
 #: org/openscience/jmol/app/GuiMap.java:180
 msgid "Go to next frame"
-msgstr "Ir para o próximo quadro"
+msgstr "Avançar para o próximo quadro"
 
 #: org/openscience/jmol/app/GuiMap.java:150
 #: org/openscience/jmol/app/GuiMap.java:181
 msgid "Go to previous frame"
-msgstr "Ir para o quadro anterior"
+msgstr "Voltar para o quadro anterior"
 
 #: org/openscience/jmol/app/GuiMap.java:151
 msgid "Start vibration"
@@ -575,20 +575,20 @@ msgstr "Medições"
 
 #: org/openscience/jmol/app/GuiMap.java:166
 msgid "RasMol/Chime compatible axes orientation/rotations"
-msgstr "Orientação/rotação dos eixos compatíveis com RasMol/Chime"
+msgstr "Orientação/rotação de eixos compatível com RasMol/Chime"
 
 #: org/openscience/jmol/app/GuiMap.java:167
 msgid "File Preview (needs restarting Jmol)"
-msgstr "Pré-visualização do arquivo (necessário reiniciar o Jmol)"
+msgstr "Pré-visualização de arquivo (necessário reiniciar o Jmol)"
 
 #: org/openscience/jmol/app/GuiMap.java:168
 msgid "Clear console button (needs restarting Jmol)"
-msgstr "Limpar botão do console (necessário reiniciar o Jmol)"
+msgstr "Apagar o botão do console (necessário reiniciar o Jmol)"
 
 #: org/openscience/jmol/app/GuiMap.java:169
 #: org/openscience/jmol/app/GuiMap.java:170
 msgid "Use Atom Color"
-msgstr "Usar cor do átomo"
+msgstr "Usar cor de átomo"
 
 #: org/openscience/jmol/app/GuiMap.java:171
 msgid "Open a file."
@@ -596,11 +596,11 @@ msgstr "Abrir um arquivo."
 
 #: org/openscience/jmol/app/GuiMap.java:172
 msgid "Export view to an image or script file."
-msgstr "Exportar visualização para um arquivo de imagem ou de script"
+msgstr "Exportar visualização para um arquivo de imagem ou de script."
 
 #: org/openscience/jmol/app/GuiMap.java:173
 msgid "Render in pov-ray."
-msgstr "Renderizar no pov-ray"
+msgstr "Renderizar no POV-Ray."
 
 #: org/openscience/jmol/app/GuiMap.java:174
 msgid "Print view."
@@ -616,7 +616,7 @@ msgstr "Selecionar um átomo ou região."
 
 #: org/openscience/jmol/app/GuiMap.java:177
 msgid "View measurement table."
-msgstr "Ver tabela de medições."
+msgstr "Ver a tabela de medições."
 
 #: org/openscience/jmol/app/GuiMap.java:178
 msgid "Return molecule to home position."
@@ -656,7 +656,7 @@ msgstr "Iniciando a Janela de script..."
 
 #: org/openscience/jmol/app/Jmol.java:203
 msgid "Initializing AtomSetChooser Window..."
-msgstr "Iniciando a Janela  AtomSetChooser..."
+msgstr "Iniciando a Janela do Selecionador de Conjunto de Átomos..."
 
 #: org/openscience/jmol/app/Jmol.java:211
 msgid "Initializing Measurements..."
@@ -664,7 +664,7 @@ msgstr "Iniciando Medições..."
 
 #: org/openscience/jmol/app/Jmol.java:235
 msgid "Building Command Hooks..."
-msgstr "Montando Command Hooks..."
+msgstr "Montando o \"Command Hooks\"..."
 
 #: org/openscience/jmol/app/Jmol.java:246
 msgid "Building Menubar..."
@@ -676,15 +676,15 @@ msgstr "Iniciando a visualização..."
 
 #: org/openscience/jmol/app/Jmol.java:265
 msgid "Setting up File Choosers..."
-msgstr "Definindo File Choosers..."
+msgstr "Ativando o \"File Choosers\"..."
 
 #: org/openscience/jmol/app/Jmol.java:318
 msgid "Setting up Drag-and-Drop..."
-msgstr "Definindo Drag-and-Drop..."
+msgstr "Ativando o \"Drag-and-Drop\"..."
 
 #: org/openscience/jmol/app/Jmol.java:339
 msgid "Launching main frame..."
-msgstr "Lançando o quadro principal..."
+msgstr "Executando o quadro principal..."
 
 #: org/openscience/jmol/app/Jmol.java:357
 msgid "Creating main window..."
@@ -692,11 +692,11 @@ msgstr "Criando janela principal..."
 
 #: org/openscience/jmol/app/Jmol.java:358
 msgid "Initializing Swing..."
-msgstr "Iniciando Swing..."
+msgstr "Iniciando o \"Swing\"..."
 
 #: org/openscience/jmol/app/Jmol.java:370
 msgid "Initializing Jmol..."
-msgstr "Iniciando Jmol..."
+msgstr "Iniciando o Jmol..."
 
 #: org/openscience/jmol/app/Jmol.java:390
 msgid "give this help page"
@@ -704,7 +704,7 @@ msgstr "fornecer esta página de ajuda"
 
 #: org/openscience/jmol/app/Jmol.java:392
 msgid "no display (and also exit when done)"
-msgstr "sem visualização (também saindo quando completado)"
+msgstr "sem visualização (também sair quando completado)"
 
 #: org/openscience/jmol/app/Jmol.java:393
 msgid "check script syntax only"
@@ -712,7 +712,7 @@ msgstr "conferir somente a sintaxe do script"
 
 #: org/openscience/jmol/app/Jmol.java:394
 msgid "silent startup operation"
-msgstr "operação de início silenciosa"
+msgstr "operação inicial silenciosa"
 
 #: org/openscience/jmol/app/Jmol.java:396
 msgid "no console -- all output to sysout"
@@ -759,7 +759,7 @@ msgstr "Console Java do Jmol"
 #: org/openscience/jmol/app/Jmol.java:607
 #: org/openscience/jmol/app/ScriptWindow.java:96
 msgid "Clear"
-msgstr "Limpar"
+msgstr "Apagar"
 
 #: org/openscience/jmol/app/Jmol.java:621
 msgid "Could not create ConsoleTextArea: "
@@ -767,11 +767,11 @@ msgstr "Não foi possível criar \"ConsoleTextArea\":"
 
 #: org/openscience/jmol/app/Jmol.java:699
 msgid "Closing Jmol..."
-msgstr "Fechando Jmol..."
+msgstr "Fechando o Jmol..."
 
 #: org/openscience/jmol/app/Jmol.java:935
 msgid "Macros"
-msgstr "Macros"
+msgstr "Ma&cros"
 
 #: org/openscience/jmol/app/Jmol.java:1302
 msgid "Open URL"
@@ -779,7 +779,7 @@ msgstr "Abrir URL"
 
 #: org/openscience/jmol/app/Jmol.java:1303
 msgid "Enter URL of molecular model"
-msgstr "Fornecer URL de um modelo molecular"
+msgstr "Fornecer a URL de um modelo molecular"
 
 #: org/openscience/jmol/app/Jmol.java:1737
 msgid "IO Exception:"
@@ -787,15 +787,15 @@ msgstr "Entrada/saída anormal:"
 
 #: org/openscience/jmol/app/MeasurementTable.java:123
 msgid "Delete"
-msgstr "Eliminar"
+msgstr "Apagar"
 
 #: org/openscience/jmol/app/MeasurementTable.java:132
 msgid "DeleteAll"
-msgstr "Eliminar todos"
+msgstr "Apagar todos"
 
 #: org/openscience/jmol/app/MeasurementTable.java:150
 msgid "Dismiss"
-msgstr "Rejeitar"
+msgstr "Cancelar"
 
 #: org/openscience/jmol/app/MeasurementTable.java:200
 msgid "Value"
@@ -803,15 +803,15 @@ msgstr "Valor"
 
 #: org/openscience/jmol/app/PovrayDialog.java:114
 msgid "Render in POV-Ray"
-msgstr "Renderizar em POV-Ray"
+msgstr "Renderizar no POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:152
 msgid "Jmol-to-POV-Ray Conversion"
-msgstr "Conversão Jmol para POV-Ray"
+msgstr "Conversão do Jmol para POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:156
 msgid "Filename Stem"
-msgstr "\"Filename Stem\""
+msgstr "Nome-base para o arquivo"
 
 #: org/openscience/jmol/app/PovrayDialog.java:158
 msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
@@ -831,11 +831,11 @@ msgstr "Opções de excecução do POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:195
 msgid "Run POV-Ray directly"
-msgstr "Executar POV-Ray diretamente"
+msgstr "Executar o POV-Ray diretamente"
 
 #: org/openscience/jmol/app/PovrayDialog.java:197
 msgid "Launch povray from within Jmol"
-msgstr "Lançar povray de dentro do Jmol"
+msgstr "Executar o POV-Ray a partir do Jmol"
 
 #: org/openscience/jmol/app/PovrayDialog.java:206
 msgid "Use .ini file"
@@ -843,7 +843,7 @@ msgstr "Usar arquivo .ini"
 
 #: org/openscience/jmol/app/PovrayDialog.java:208
 msgid "Save options in a .ini file"
-msgstr "Gravar opções em um arquivo .ini"
+msgstr "Gravar as opções em um arquivo .ini"
 
 #: org/openscience/jmol/app/PovrayDialog.java:217
 msgid "Render all frames"
@@ -855,11 +855,11 @@ msgstr "Renderizar cada modelo (não somente o que está sendo visualizado)"
 
 #: org/openscience/jmol/app/PovrayDialog.java:228
 msgid "Turn on POV-Ray anti-aliasing"
-msgstr "Ligar \"anti-aliasing\" do POV-Ray"
+msgstr "Ligar o \"anti-aliasing\" do POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:230
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr "Usar modo\" anti-aliasing\" mais lento (mas com melhor qualidade) do povray"
+msgstr "Usar o modo\" anti-aliasing\" mais lento (melhor qualidade) do POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:239
 msgid "Display While Rendering"
@@ -867,7 +867,7 @@ msgstr "Visualizar enquanto renderiza"
 
 #: org/openscience/jmol/app/PovrayDialog.java:241
 msgid "Should povray attempt to display while rendering?"
-msgstr "O povray pode tentar exibir enquanto renderiza?"
+msgstr "O POV-Ray deve tentar exibir enquanto renderiza?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:250
 #: org/openscience/jmol/app/PovrayDialog.java:252
@@ -924,7 +924,7 @@ msgstr "N - PNG"
 
 #: org/openscience/jmol/app/PovrayDialog.java:355
 msgid "P - PPM"
-msgstr "N - PNG"
+msgstr "P - PPM"
 
 #: org/openscience/jmol/app/PovrayDialog.java:357
 msgid "T - Uncompressed Targa-24"
@@ -944,7 +944,7 @@ msgstr "Pré-visualização em mosaico"
 
 #: org/openscience/jmol/app/PovrayDialog.java:390
 msgid "Render the image in several passes"
-msgstr "Renderizar imagem em várias passagens"
+msgstr "Renderizar a imagem em várias passagens"
 
 #: org/openscience/jmol/app/PovrayDialog.java:400
 msgid "Start size : "
@@ -964,11 +964,11 @@ msgstr "Tamanho final dos mosaicos"
 
 #: org/openscience/jmol/app/PovrayDialog.java:441
 msgid "POV-Ray Executable Location"
-msgstr "Localização do executável Pov-Ray"
+msgstr "Localização do executável POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:443
 msgid "Location of the povray Executable"
-msgstr "Localização do executável povray"
+msgstr "Localização do executável POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:462
 msgid "Command Line to Execute"
@@ -982,11 +982,11 @@ msgstr "O comando a ser executado"
 #: org/openscience/jmol/app/PovrayDialog.java:477
 #: org/openscience/jmol/app/PovrayDialog.java:749
 msgid "Go!"
-msgstr "Adiante!"
+msgstr "Executar"
 
 #: org/openscience/jmol/app/PovrayDialog.java:479
 msgid "Save file and possibly launch povray"
-msgstr "Gravar arquivo e possivelmente lançar povray"
+msgstr "Gravar arquivo e possivelmente executar POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:488
 #: org/openscience/jmol/app/PreferencesDialog.java:165
@@ -1036,7 +1036,7 @@ msgstr "Aplicar"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:197
 msgid "Show All"
-msgstr "Mostrar todos"
+msgstr "Exibir todos"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:296
 msgid "Default atom size"
@@ -1044,11 +1044,11 @@ msgstr "Tamanho de átomo pré-definido"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:297
 msgid "(percentage of vanDerWaals radius)"
-msgstr "(percentagem do raio de vanDerWaals)"
+msgstr "(percentagem do raio de van der Waals)"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:349
 msgid "Compute Bonds"
-msgstr "Calcular Ligações"
+msgstr "Calcular as ligações"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:351
 msgid "Automatically"
@@ -1060,7 +1060,7 @@ msgstr "Não calcular as ligações"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:379
 msgid "Default Bond Radius"
-msgstr "Raio das Ligações pré-definido"
+msgstr "Raio de Ligação pré-definido"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:380
 #: org/openscience/jmol/app/PreferencesDialog.java:418
@@ -1070,11 +1070,11 @@ msgstr "(Angstroms)"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:417
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr "Tolerância da ligação - somatório de dois raios covalentes + este valor"
+msgstr "Tolerância de Ligação - somatório de dois raios covalentes + este valor"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:468
 msgid "Minimum Bonding Distance"
-msgstr "Distância Mínima de Ligação"
+msgstr "Distância de Ligação Mínima"
 
 #: org/openscience/jmol/app/RecentFilesDialog.java:60
 msgid "Recent Files"
@@ -1086,7 +1086,7 @@ msgstr "Abrir"
 
 #: org/openscience/jmol/app/ScriptWindow.java:68
 msgid "Jmol Script Console"
-msgstr "Console de Script do Jmol"
+msgstr "Console de script do Jmol"
 
 #: org/openscience/jmol/app/ScriptWindow.java:87
 msgid "Run"

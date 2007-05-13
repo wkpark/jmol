@@ -7934,8 +7934,14 @@ class Eval { //implements Runnable {
         propertyName = (optParameterAsString(++i).equalsIgnoreCase("molecular") ? "molecular" : "create");
         break;
       case Token.select:
-        propertyName = "selectType";
-        propertyValue = parameterAsString(++i);
+        if (tokAt(i + 1) == Token.bitset || tokAt(i + 1) == Token.expressionBegin) {
+          propertyName = "select";
+          propertyValue = expression(i + 1);
+          i = iToken;
+        } else {
+          propertyName = "selectType";
+          propertyValue = parameterAsString(++i);
+        }
         break;
       case Token.identifier:
         String str = parameterAsString(i);

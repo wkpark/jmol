@@ -7917,6 +7917,7 @@ class Eval { //implements Runnable {
         if (isColorParam(++i)) {
           setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "colorRGB",
               new Integer(getArgbParam(i)));
+          i = iToken;
           setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "colorRGB",
               new Integer(getArgbParam(isColorParam(i + 1) ? i + 1 : i)));
           i = iToken;
@@ -7927,16 +7928,10 @@ class Eval { //implements Runnable {
       case Token.opaque:
         setMeshDisplayProperty(JmolConstants.SHAPE_LCAOCARTOON, i, theTok);
         i = iToken;
-        continue;        
+        continue;    
       case Token.string:
-        propertyName = "create";
         propertyValue = stringParameter(i);
-        if (i + 1 < statementLength
-            && statement[i + 1].tok == Token.identifier
-            && ((String) (statement[i + 1].value))
-                .equalsIgnoreCase("molecular")) {
-          setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "molecular", null);
-        }
+        propertyName = (optParameterAsString(++i).equalsIgnoreCase("molecular") ? "molecular" : "create");
         break;
       case Token.select:
         propertyName = "selectType";
@@ -7949,9 +7944,13 @@ class Eval { //implements Runnable {
           propertyValue = new Float(floatParameter(++i));
           break;
         }
+        if (str.equalsIgnoreCase("MOLECULAR")) {
+          propertyName = "molecular";
+          break;
+        }
         if (str.equalsIgnoreCase("CREATE")) {
-          propertyName = "create";
           propertyValue = parameterAsString(++i);
+          propertyName = (optParameterAsString(++i).equalsIgnoreCase("molecular") ? "molecular" : "create");
           break;
         }
         propertyValue = str;

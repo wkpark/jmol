@@ -339,7 +339,7 @@ public class SurfaceGenerator {
         params.title = (String[]) value;
         for (int i = 0; i < params.title.length; i++)
           if (params.title[i].length() > 0)
-            Logger.info("TITLE " + params.title[i]);
+            Logger.info(params.title[i]);
       }
       return true;
     }

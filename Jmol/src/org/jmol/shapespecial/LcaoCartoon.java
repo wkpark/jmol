@@ -28,6 +28,7 @@ package org.jmol.shapespecial;
 import java.util.BitSet;
 import javax.vecmath.Vector3f;
 
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
@@ -40,17 +41,20 @@ public class LcaoCartoon extends Isosurface {
     myType = "lcaoCartoon";
     allowMesh = false;
   }
-  
-  Integer lcaoColorPos;
-  Integer lcaoColorNeg;
+ 
+  //transient
   String thisType;
-  Float lcaoScale;
   int myColorPt;
   String lcaoID;
   BitSet thisSet;
   boolean isMolecular;
+ 
+  //persistent
+  Float lcaoScale;
   boolean isTranslucent;
   float translucentLevel;
+  Integer lcaoColorPos;
+  Integer lcaoColorNeg;
 
  public void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -67,33 +71,13 @@ public class LcaoCartoon extends Isosurface {
       thisSet = bs;
       isMolecular = false;
       thisType = null;
-      lcaoScale = null;
       // overide bitset selection
       super.setProperty("init", null, null);
       return;
     }
 
-    if ("molecular" == propertyName) {
-      isMolecular = (thisType != null && (thisType.indexOf("px") >= 0
-          || thisType.indexOf("py") >= 0 || thisType.indexOf("pz") >= 0));
-      return;
-    }
-
-    if ("on" == propertyName) {
-      setLcaoOn(true);
-      return;
-    }
-
-    if ("off" == propertyName) {
-      setLcaoOn(false);
-      return;
-    }
-
-    if ("delete" == propertyName) {
-      deleteLcaoCartoon();
-      return;
-    }
-
+    //setup
+    
     if ("lcaoID" == propertyName) {
       lcaoID = (String) value;
       return;
@@ -101,12 +85,6 @@ public class LcaoCartoon extends Isosurface {
 
     if ("selectType" == propertyName) {
       thisType = (String) value;
-      return;
-    }
-
-    if ("create" == propertyName) {
-      thisType = (String) value;
-      createLcaoCartoon();
       return;
     }
 
@@ -127,13 +105,44 @@ public class LcaoCartoon extends Isosurface {
       //pass through
     }
 
+    if (propertyName == "translucentLevel") {
+      translucentLevel = ((Float) value).floatValue();
+      //pass through
+    }
+
     if ("translucency" == propertyName) {
       isTranslucent = (((String) value).equals("translucent"));
       //pass through
     }
-    if (propertyName == "translucentLevel") {
-      translucentLevel = ((Float) value).floatValue();
-      //pass through
+
+    //final operations
+    if ("molecular" == propertyName) {
+      isMolecular = true;
+      if (value == null)
+        return;
+      propertyName = "create";
+      //continue
+    }
+
+    if ("create" == propertyName) {
+      thisType = (String) value;
+      createLcaoCartoon();
+      return;
+    }
+
+    if ("on" == propertyName) {
+      setLcaoOn(true);
+      return;
+    }
+
+    if ("off" == propertyName) {
+      setLcaoOn(false);
+      return;
+    }
+
+    if ("delete" == propertyName) {
+      deleteLcaoCartoon();
+      return;
     }
 
     super.setProperty(propertyName,value,bs);
@@ -168,6 +177,8 @@ public class LcaoCartoon extends Isosurface {
   }
     
   void createLcaoCartoon() {
+    isMolecular = (isMolecular && (thisType.indexOf("px") >= 0
+        || thisType.indexOf("py") >= 0 || thisType.indexOf("pz") >= 0));
     int atomCount = viewer.getAtomCount();
     for (int i = 0; i < atomCount; i++)
       if (thisSet.get(i))
@@ -225,4 +236,16 @@ public class LcaoCartoon extends Isosurface {
             (thisType.indexOf("-p") == 0 ? "" : "_")));
   }
 
+  public String getShapeState() {
+    StringBuffer sb = new StringBuffer();
+    if (lcaoScale != null)
+      appendCmd(sb, "lcaoCartoon scale " + lcaoScale.floatValue());
+    if (lcaoColorNeg != null)
+      appendCmd(sb, "lcaoCartoon color "
+          + Escape.escapeColor(lcaoColorNeg.intValue()) + " "
+          + Escape.escapeColor(lcaoColorPos.intValue()));
+    if (isTranslucent)
+      appendCmd(sb, "lcaoCartoon translucent " + translucentLevel);
+    return super.getShapeState() + sb.toString();
+  }
 }

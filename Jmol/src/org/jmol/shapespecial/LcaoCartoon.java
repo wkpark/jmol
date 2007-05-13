@@ -151,7 +151,7 @@ public class LcaoCartoon extends Isosurface {
   void setLcaoOn(boolean TF) {
     int atomCount = viewer.getAtomCount();
     for (int i = atomCount; --i >= 0;)
-      if (thisSet.get(i))
+      if (lcaoID != null || thisSet.get(i))
         setLcaoOn(i, TF);
   }
 
@@ -165,7 +165,7 @@ public class LcaoCartoon extends Isosurface {
   void deleteLcaoCartoon() {
     int atomCount = viewer.getAtomCount();
     for (int i = atomCount; --i >= 0;)
-      if (thisSet.get(i))
+      if (lcaoID != null || thisSet.get(i))
         deleteLcaoCartoon(i);
   }
 
@@ -246,6 +246,9 @@ public class LcaoCartoon extends Isosurface {
           + Escape.escapeColor(lcaoColorPos.intValue()));
     if (isTranslucent)
       appendCmd(sb, "lcaoCartoon translucent " + translucentLevel);
+    for (int i = meshCount; --i >= 0;)
+      if (!meshes[i].visible)
+        appendCmd(sb, "lcaoCartoon " + meshes[i].thisID + " off");
     return super.getShapeState() + sb.toString();
   }
 }

@@ -533,7 +533,6 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     lcaoDir.z = lobeAxis.z * factor;
     lcaoDir.w = 0.7f;
     setProperty("lobe", lcaoDir, null);
-    System.out.println("createl " + defaultColix);
   }
 
   /////////////// meshDataServer interface /////////////////

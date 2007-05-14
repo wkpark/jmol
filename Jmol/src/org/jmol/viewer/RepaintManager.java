@@ -227,8 +227,8 @@ class RepaintManager {
             viewer.getModelNumberDotted(0)).append(";\n# last ").append(
             viewer.getModelNumberDotted(modelCount - 1)).append(";\n");
     if (backgroundModelIndex >= 0)
-      commands.append("background model ").append(backgroundModelIndex).append(
-          ";\n");
+      commands.append("set backgroundModel ").append(
+          viewer.getModelNumberDotted(backgroundModelIndex)).append(";\n");
     commands.append(
         "frame RANGE " + viewer.getModelNumberDotted(firstModelIndex) + " "
             + viewer.getModelNumberDotted(lastModelIndex)).append(";\n");
@@ -241,9 +241,10 @@ class RepaintManager {
     commands.append("frame " + viewer.getModelNumberDotted(currentModelIndex)
         + ";\n");
     if (currentTrajectory > -1)
-    commands.append("trajectory " + currentTrajectory + ";\n");
+      commands.append("trajectory " + currentTrajectory + ";\n");
     commands.append(
-        "animation " + (!animationOn ? "OFF" : currentDirection == 1 ? "PLAY"
+        "animation "
+            + (!animationOn ? "OFF" : currentDirection == 1 ? "PLAY"
                 : "PLAYREV")).append(";\n");
     if (animationOn && animationPaused)
       commands.append("animation PAUSE;\n");

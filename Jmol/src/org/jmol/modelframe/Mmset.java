@@ -375,11 +375,11 @@ public final class Mmset {
         sNum = "" + getModelNumber(i);
         filenumber = 1;
       } else {
-        //if only one file, just return the integer file number
-        if (modelnumber == 1
-            && (i + 1 == modelCount || models[i + 1].modelNumber / 1000000 != filenumber))
-          sNum = filenumber + "";
-        else
+//        //if only one file, just return the integer file number
+  //      if (modelnumber == 1
+    //        && (i + 1 == modelCount || models[i + 1].modelNumber / 1000000 != filenumber))
+      //    sNum = filenumber + "";
+       // else
           sNum = filenumber + "." + modelnumber;
       }
       models[i].modelNumberDotted = sNum;

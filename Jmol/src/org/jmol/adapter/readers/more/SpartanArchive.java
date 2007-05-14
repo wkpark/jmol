@@ -207,8 +207,9 @@ public class SpartanArchive {
       readLine();
       String[] tokens = getTokens();
       int[] slater = new int[4];
-      slater[0]= parseInt(tokens[3]) - 1;
-      int iBasis = slater[1] = parseInt(tokens[0]); //0 = S, 1 = SP, 2 = D, 3 = F
+      slater[0]= parseInt(tokens[3]) - 1; //atom pointer; 1-based
+      int iBasis = parseInt(tokens[0]); //0 = S, 1 = SP, 2 = D, 3 = F
+      slater[1] = (iBasis == 0 ? 0 : iBasis + 1);//0 = S, 1 = P, 2 = SP, 3 = D, 4 = F
       int gaussianPtr = slater[2] = parseInt(tokens[2]) - 1;
       int nGaussians = slater[3] = parseInt(tokens[1]);
       for (int j = 0; j < nGaussians; j++)
@@ -217,8 +218,7 @@ public class SpartanArchive {
     }
     for (int i = 0; i < gaussianCount; i++) {
       float alpha = parseFloat(readLine());
-      readLine();
-      String[] tokens = getTokens();
+      String[] tokens = getTokens(readLine());
       int nData = tokens.length;
       float[] data = new float[nData + 1];
       data[0] = alpha;

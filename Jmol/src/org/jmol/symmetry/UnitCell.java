@@ -73,13 +73,19 @@ public class UnitCell {
     matrixCartesianToFractional.transform(pt);
   }
   
-  public final void toUnitCell(Point3f pt, Point3f offset) {
+  public final void toFractionalUnitCell(Point3f pt) {
     if (matrixCartesianToFractional == null)
       return;
     matrixCartesianToFractional.transform(pt);
     pt.x = (float)(pt.x - Math.floor(pt.x));
     pt.y = (float)(pt.y - Math.floor(pt.y));
-    pt.z = (float)(pt.z - Math.floor(pt.z));
+    pt.z = (float)(pt.z - Math.floor(pt.z));    
+  }
+  
+  public final void toUnitCell(Point3f pt, Point3f offset) {
+    if (matrixCartesianToFractional == null)
+      return;
+    toFractionalUnitCell(pt);
     if (offset == null)
       offset = fractionalOffset;
     pt.add(offset);

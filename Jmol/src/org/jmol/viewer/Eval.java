@@ -5439,7 +5439,7 @@ class Eval { //implements Runnable {
             nFrames = 2;
           else if (!isHyphen && modelIndex2 != modelIndex)
             isHyphen = true;
-          isRange = (isRange || !isHyphen && modelIndex2 != modelIndex);
+          isRange = isRange || modelIndex == modelIndex2;//(isRange || !isHyphen && modelIndex2 != modelIndex);
         }
       }
     }

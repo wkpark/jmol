@@ -632,8 +632,8 @@ public class CifReader extends AtomSetCollectionReader {
       }
     }
     if (isPDB) {
-      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.valueOf(isPDB));
-      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.valueOf(isPDB));
+      atomSetCollection.setAtomSetCollectionAuxiliaryInfo("isPDB", Boolean.TRUE);
+      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     }
     return true;
   }

@@ -253,6 +253,8 @@ public class PdbReader extends AtomSetCollectionReader {
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(insertionCode);
     atom.radius = radius;
     atomSetCollection.addAtom(atom);
+    if (atom.atomIndex == 0)
+      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     // note that values are +1 in this serial map
     serialMap[serial] = atomSetCollection.getAtomCount();
 
@@ -432,6 +434,7 @@ public class PdbReader extends AtomSetCollectionReader {
         endModelColumn = lineLength;
       int modelNumber = parseInt(line, startModelColumn, endModelColumn);
       atomSetCollection.newAtomSet();
+      atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
       atomSetCollection.setAtomSetNumber(modelNumber);
     } catch (NumberFormatException e) {
       //ingore model number errors

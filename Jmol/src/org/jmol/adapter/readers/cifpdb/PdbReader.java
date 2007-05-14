@@ -169,6 +169,7 @@ public class PdbReader extends AtomSetCollectionReader {
     return atomSetCollection;
   }
 
+ int atomCount;
   void atom() {
     boolean isHetero = line.startsWith("HETATM");
     char charAlternateLocation = line.charAt(16);
@@ -253,7 +254,7 @@ public class PdbReader extends AtomSetCollectionReader {
     atom.insertionCode = JmolAdapter.canonizeInsertionCode(insertionCode);
     atom.radius = radius;
     atomSetCollection.addAtom(atom);
-    if (atom.atomIndex == 0)
+    if (atomCount++ == 0)
       atomSetCollection.setAtomSetAuxiliaryInfo("isPDB", Boolean.TRUE);
     // note that values are +1 in this serial map
     serialMap[serial] = atomSetCollection.getAtomCount();

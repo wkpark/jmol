@@ -89,7 +89,7 @@ class IsoShapeReader extends VolumeDataReader {
     //case Parameters.SURFACE_SPHERE:
     //case Parameters.SURFACE_ELLIPSOID:
     default:
-      radius = 1.1f * sphere_radiusAngstroms * eccentricityScale;
+      radius = 1.2f * sphere_radiusAngstroms * eccentricityScale;
       ppa = 10f;
       maxGrid = 22;
       setHeader("sphere\n");

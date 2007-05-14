@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-05-01 20:52+0200\n"
-"PO-Revision-Date: 2007-05-12 20:24-0300\n"
+"PO-Revision-Date: 2007-05-14 12:02-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -67,7 +67,7 @@ msgstr "Informação"
 #: org/openscience/jmol/app/PovrayDialog.java:618
 #: org/openscience/jmol/app/PovrayDialog.java:639
 msgid "Select"
-msgstr "&Selecionar"
+msgstr "Selecionar"
 
 #: org/openscience/jmol/app/AtomSetChooser.java:252
 msgid "Repeat"
@@ -166,7 +166,7 @@ msgstr "&Arquivo"
 
 #: org/openscience/jmol/app/GuiMap.java:46
 msgid "New"
-msgstr "&Novo"
+msgstr "Novo"
 
 #: org/openscience/jmol/app/GuiMap.java:47
 msgid "&Open"
@@ -211,7 +211,7 @@ msgstr "&Imprimir..."
 #: org/openscience/jmol/app/GuiMap.java:57
 #: org/openscience/jmol/app/ScriptWindow.java:112
 msgid "Close"
-msgstr "&Fechar"
+msgstr "Fechar"
 
 #: org/openscience/jmol/app/GuiMap.java:58
 msgid "E&xit"
@@ -219,7 +219,7 @@ msgstr "&Sair"
 
 #: org/openscience/jmol/app/GuiMap.java:59
 msgid "Recent Files..."
-msgstr "Arquivos &recentes..."
+msgstr "Arquivos recentes..."
 
 #: org/openscience/jmol/app/GuiMap.java:60
 msgid "&Edit"
@@ -227,12 +227,12 @@ msgstr "&Editar"
 
 #: org/openscience/jmol/app/GuiMap.java:61
 msgid "Make crystal..."
-msgstr "C&onstruir cristal..."
+msgstr "Construir cristal..."
 
 #: org/openscience/jmol/app/GuiMap.java:62
 #: org/openscience/jmol/app/GuiMap.java:68
 msgid "Select All"
-msgstr "Selecionar &todos"
+msgstr "Selecionar todos"
 
 #: org/openscience/jmol/app/GuiMap.java:63
 msgid "Deselect All"
@@ -240,7 +240,7 @@ msgstr "Reverter seleção de todos"
 
 #: org/openscience/jmol/app/GuiMap.java:64
 msgid "Copy Image"
-msgstr "Copiar &imagem"
+msgstr "Copiar imagem"
 
 #: org/openscience/jmol/app/GuiMap.java:65
 msgid "Copy Script"
@@ -551,7 +551,7 @@ msgstr "Freqüência anterior"
 
 #: org/openscience/jmol/app/GuiMap.java:156
 msgid "&Help"
-msgstr "&Ajuda"
+msgstr "A&juda"
 
 #: org/openscience/jmol/app/GuiMap.java:158
 msgid "User Guide"
@@ -771,7 +771,7 @@ msgstr "Fechando o Jmol..."
 
 #: org/openscience/jmol/app/Jmol.java:935
 msgid "Macros"
-msgstr "Ma&cros"
+msgstr "Macros"
 
 #: org/openscience/jmol/app/Jmol.java:1302
 msgid "Open URL"

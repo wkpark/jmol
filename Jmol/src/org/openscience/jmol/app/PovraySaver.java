@@ -651,8 +651,8 @@ public class PovraySaver {
   	  int length = path.length;
   	  boolean loop =
   	    (path[0].x == path[length - 1].x) &&
-		(path[0].y == path[length - 1].y) &&
-		(path[0].z == path[length - 1].z);
+        (path[0].y == path[length - 1].y) &&
+        (path[0].z == path[length - 1].z);
   	  
   	  if (!loop) {
   	    if (length > 2) {
@@ -704,14 +704,14 @@ public class PovraySaver {
   	      Point3f[] points = new Point3f[length + 2];
   	      points[0] = new Point3f(
   	          2 * path[0].x - path[1].x,
-			  2 * path[0].y - path[1].y,
-			  2 * path[0].z - path[1].z);
+              2 * path[0].y - path[1].y,
+              2 * path[0].z - path[1].z);
   	      points[1] = new Point3f(path[0]);
   	      points[2] = new Point3f(path[1]);
   	      points[3] = new Point3f(
   	          2 * path[1].x - path[0].x,
-			  2 * path[1].y - path[0].y,
-			  2 * path[1].z - path[0].z);
+              2 * path[1].y - path[0].y,
+              2 * path[1].z - path[0].z);
   	      controls = points;
   	    }
   	    
@@ -769,17 +769,17 @@ public class PovraySaver {
           double cz2 = values[length - 2].z - results1[length - 2].z;
           points[0].set(
               (float) ((cx1 * bx2 - cx2 * bx1) / (ax1 * bx2 - ax2 * bx1)),
-			  (float) ((cy1 * by2 - cy2 * by1) / (ay1 * by2 - ay2 * by1)),
-			  (float) ((cz1 * bz2 - cz2 * bz1) / (az1 * bz2 - az2 * bz1)));
+              (float) ((cy1 * by2 - cy2 * by1) / (ay1 * by2 - ay2 * by1)),
+              (float) ((cz1 * bz2 - cz2 * bz1) / (az1 * bz2 - az2 * bz1)));
           points[1].set(
               (float) ((cx1 * ax2 - cx2 * ax1) / (ax2 * bx1 - ax1 * bx2)),
-			  (float) ((cy1 * ay2 - cy2 * ay1) / (ay2 * by1 - ay1 * by2)),
-			  (float) ((cz1 * az2 - cz2 * az1) / (az2 * bz1 - az1 * bz2)));
+              (float) ((cy1 * ay2 - cy2 * ay1) / (ay2 * by1 - ay1 * by2)),
+              (float) ((cz1 * az2 - cz2 * az1) / (az2 * bz1 - az1 * bz2)));
           for (int i = 2; i < length - 1; i++) {
           	points[i].set(
           	    (float) (results1[i].x + results2[i].x * points[0].x + results3[i].x * points[1].x),
-				(float) (results1[i].y + results2[i].y * points[0].y + results3[i].y * points[1].y),
-				(float) (results1[i].z + results2[i].z * points[0].z + results3[i].z * points[1].z));
+                (float) (results1[i].y + results2[i].y * points[0].y + results3[i].y * points[1].y),
+                (float) (results1[i].z + results2[i].z * points[0].z + results3[i].z * points[1].z));
           }
           points[length - 1] = new Point3f(points[0]);
           points[length    ] = new Point3f(points[1]);
@@ -789,14 +789,14 @@ public class PovraySaver {
   	      Point3f[] points = new Point3f[4];
   	      points[0] = new Point3f(
   	          2 * path[0].x - path[1].x,
-			  2 * path[0].y - path[1].y,
-			  2 * path[0].z - path[1].z);
+              2 * path[0].y - path[1].y,
+              2 * path[0].z - path[1].z);
   	      points[1] = new Point3f(path[0]);
   	      points[2] = new Point3f(path[1]);
   	      points[3] = new Point3f(
   	          2 * path[1].x - path[0].x,
-			  2 * path[1].y - path[0].y,
-			  2 * path[1].z - path[0].z);
+              2 * path[1].y - path[0].y,
+              2 * path[1].z - path[0].z);
   	      controls = points;
   	    }
   	  }

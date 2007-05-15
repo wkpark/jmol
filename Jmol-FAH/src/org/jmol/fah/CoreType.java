@@ -48,23 +48,26 @@ public class CoreType {
         return DGROMACS;
       }
       if (code.equalsIgnoreCase(GBGROMACS._code)) {
-          return GBGROMACS;
+        return GBGROMACS;
       }
       if (code.equalsIgnoreCase(GROGPU._code)) {
-          return GROGPU;
-        }
+        return GROGPU;
+      }
       if (code.equalsIgnoreCase(GROMACS._code)) {
         return GROMACS;
       }
       if (code.equalsIgnoreCase(GROMACS_PS3._code)) {
         return GROMACS_PS3;
       }
+      if (code.equalsIgnoreCase(GROMACS_SIMT._code)) {
+        return GROMACS_SIMT;
+      }
       if (code.equalsIgnoreCase(GROMACS_SMP._code)) {
-    	return GROMACS_SMP;
+        return GROMACS_SMP;
       }
       if (code.equalsIgnoreCase(GROMACS_ST._code)) {
       	return GROMACS_ST;
-        }
+      }
       if (code.equalsIgnoreCase(QMD._code)) {
         return QMD;
       }
@@ -93,23 +96,26 @@ public class CoreType {
         return DGROMACS;
       }
       if (name.equalsIgnoreCase(GBGROMACS._name)) {
-          return GBGROMACS;
+        return GBGROMACS;
       }
       if (name.equalsIgnoreCase(GROGPU._name)) {
-          return GROGPU;
-        }
+        return GROGPU;
+      }
       if (name.equalsIgnoreCase(GROMACS._name)) {
         return GROMACS;
       }
       if (name.equalsIgnoreCase(GROMACS_PS3._name)) {
         return GROMACS_PS3;
       }
+      if (name.equalsIgnoreCase(GROMACS_SIMT._name)) {
+        return GROMACS_SIMT;
+      }
       if (name.equalsIgnoreCase(GROMACS_SMP._name)) {
-    	return GROMACS_SMP;
+        return GROMACS_SMP;
       }
       if (name.equalsIgnoreCase(GROMACS_ST._name)) {
       	return GROMACS_ST;
-        }
+      }
       if (name.equalsIgnoreCase(QMD._name)) {
         return QMD;
       }
@@ -142,18 +148,19 @@ public class CoreType {
   }
 
   // Cores
-  static public final CoreType UNKNOWN     = new CoreType(null, null, true);
-  static public final CoreType A0GROMACS   = new CoreType("Gromacs33", "A0", true); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType AMBER       = new CoreType("Amber", "A", true); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType DGROMACS    = new CoreType("DGromacs", "DG", true); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType GBGROMACS   = new CoreType("GBGromacs", "GB", true); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType GROGPU      = new CoreType("GroGPU", "GG", false);  //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType GROMACS     = new CoreType("Gromacs", "G", true);  //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType GROMACS_PS3 = new CoreType("Gro-PS3", "G3", false);  //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType GROMACS_SMP = new CoreType("Gro-SMP", "GS", true);  //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType GROMACS_ST  = new CoreType("GroST", "GT", true);  //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType QMD         = new CoreType("QMD", "Q", true); //$NON-NLS-1$ //$NON-NLS-2$
-  static public final CoreType TINKER      = new CoreType("Tinker", "T", true);   //$NON-NLS-1$//$NON-NLS-2$
+  static public final CoreType UNKNOWN      = new CoreType(null, null, true);
+  static public final CoreType A0GROMACS    = new CoreType("Gromacs33", "A0", true); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType AMBER        = new CoreType("Amber", "A", true); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType DGROMACS     = new CoreType("DGromacs", "DG", true); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GBGROMACS    = new CoreType("GBGromacs", "GB", true); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GROGPU       = new CoreType("GroGPU", "GG", false);  //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GROMACS      = new CoreType("Gromacs", "G", true);  //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GROMACS_PS3  = new CoreType("Gro-PS3", "G3", false);  //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GROMACS_SIMT = new CoreType("GroSimT", "GST", true);  //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GROMACS_SMP  = new CoreType("Gro-SMP", "GS", true);  //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType GROMACS_ST   = new CoreType("GroST", "GT", true);  //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType QMD          = new CoreType("QMD", "Q", true); //$NON-NLS-1$ //$NON-NLS-2$
+  static public final CoreType TINKER       = new CoreType("Tinker", "T", true);   //$NON-NLS-1$//$NON-NLS-2$
 
   // Attributes
   private final String _name;

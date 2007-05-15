@@ -256,7 +256,8 @@ class RepaintManager {
   int currentDirection = 1;
   void setAnimationDirection(int animationDirection) {
     this.animationDirection = animationDirection;
-    currentDirection = 1;
+    //if (animationReplayMode != ANIMATION_LOOP)
+      //currentDirection = 1;
   }
 
   int animationFps = 10;
@@ -392,7 +393,8 @@ class RepaintManager {
         && modelIndexNext > lastModelIndex || modelIndexNext < firstModelIndex
         && modelIndexNext < lastModelIndex);
     
-/*     System.out.println("setAnimationRelative: " +
+/*
+     System.out.println("setAnimationRelative: " +
      " firstModelIndex=" + firstModelIndex +
      " displayModelIndex=" + currentModelIndex +
      " trajectory=" + currentTrajectory +
@@ -404,14 +406,14 @@ class RepaintManager {
      " modelIndexNext=" + modelIndexNext +
      " modelCount=" + viewer.getModelCount() +
      " animationReplayMode=" + animationReplayMode +
-     " animationDirection=" + animationDirection);
-*/     
+     " animationDirection=" + animationDirection);     
+*/
     if (isDone) {
       switch (animationReplayMode) {
       case ANIMATION_ONCE:
         return false;
       case ANIMATION_LOOP:
-        modelIndexNext = (animationDirection > 0 ? firstModelIndex
+        modelIndexNext = (animationDirection == currentDirection ? firstModelIndex
             : lastModelIndex);
         break;
       case ANIMATION_PALINDROME:

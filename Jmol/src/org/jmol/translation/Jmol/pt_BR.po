@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-05-01 20:52+0200\n"
-"PO-Revision-Date: 2007-05-14 12:02-0300\n"
+"PO-Revision-Date: 2007-05-16 14:19-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -855,11 +855,11 @@ msgstr "Renderizar cada modelo (não somente o que está sendo visualizado)"
 
 #: org/openscience/jmol/app/PovrayDialog.java:228
 msgid "Turn on POV-Ray anti-aliasing"
-msgstr "Ligar o \"anti-aliasing\" do POV-Ray"
+msgstr "Ligar filtro anti-serrilhado do POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:230
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr "Usar o modo\" anti-aliasing\" mais lento (melhor qualidade) do POV-Ray"
+msgstr "Usar o modo anti-serrilhado (mais lento, melhor qualidade) do POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:239
 msgid "Display While Rendering"

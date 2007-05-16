@@ -42,7 +42,9 @@ import java.awt.print.*;
 import java.beans.*;
 import java.io.*;
 import java.util.*;
+
 import javax.swing.*;
+
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -379,7 +381,52 @@ public class Jmol extends JPanel {
     return window;
   }
 
+  /**
+   * Setup the UIManager (for i18n) 
+   */
+  static void setupUIManager() {
+    UIManager.put("FileChooser.acceptAllFileFilterText", GT._("All Files"));
+    UIManager.put("FileChooser.cancelButtonText", GT._("Cancel"));
+    UIManager.put("FileChooser.cancelButtonToolTipText", GT._("Abort file chooser dialog"));
+    UIManager.put("FileChooser.detailsViewButtonAccessibleName", GT._("Details"));
+    UIManager.put("FileChooser.detailsViewButtonToolTipText", GT._("Details"));
+    UIManager.put("FileChooser.directoryDescriptionText", GT._("Directory"));
+    UIManager.put("FileChooser.directoryOpenButtonText", GT._("Open"));
+    UIManager.put("FileChooser.directoryOpenButtonToolTipText", GT._("Open selected directory"));
+    UIManager.put("FileChooser.fileAttrHeaderText", GT._("Attributes"));
+    UIManager.put("FileChooser.fileDateHeaderText", GT._("Modified"));
+    UIManager.put("FileChooser.fileDescriptionText", GT._("Generic File"));
+    UIManager.put("FileChooser.fileNameHeaderText", GT._("Name"));
+    UIManager.put("FileChooser.fileNameLabelText", GT._("File Name:"));
+    UIManager.put("FileChooser.fileSizeHeaderText", GT._("Size"));
+    UIManager.put("FileChooser.filesOfTypeLabelText", GT._("Files of Type:"));
+    UIManager.put("FileChooser.fileTypeHeaderText", GT._("Type"));
+    UIManager.put("FileChooser.helpButtonText", GT._("Help"));
+    UIManager.put("FileChooser.helpButtonToolTipText", GT._("FileChooser help"));
+    UIManager.put("FileChooser.homeFolderAccessibleName", GT._("Home"));
+    UIManager.put("FileChooser.homeFolderToolTipText", GT._("Home"));
+    UIManager.put("FileChooser.listViewButtonAccessibleName", GT._("List"));
+    UIManager.put("FileChooser.listViewButtonToolTipText", GT._("List"));
+    UIManager.put("FileChooser.lookInLabelText", GT._("Look In:"));
+    UIManager.put("FileChooser.newFolderErrorText", GT._("Error creating new folder"));
+    UIManager.put("FileChooser.newFolderAccessibleName", GT._("New Folder"));
+    UIManager.put("FileChooser.newFolderToolTipText", GT._("Create New Folder"));
+    UIManager.put("FileChooser.openButtonText", GT._("Open"));
+    UIManager.put("FileChooser.openButtonToolTipText", GT._("Open selected file"));
+    UIManager.put("FileChooser.openDialogTitleText", GT._("Open"));
+    UIManager.put("FileChooser.saveButtonText", GT._("Save"));
+    UIManager.put("FileChooser.saveButtonToolTipText", GT._("Save selected file"));
+    UIManager.put("FileChooser.saveDialogTitleText", GT._("Save"));
+    UIManager.put("FileChooser.saveInLabelText", GT._("Save In:"));
+    UIManager.put("FileChooser.updateButtonText", GT._("Update"));
+    UIManager.put("FileChooser.updateButtonToolTipText", GT._("Update directory listing"));
+    UIManager.put("FileChooser.upFolderAccessibleName", GT._("Up"));
+    UIManager.put("FileChooser.upFolderToolTipText", GT._("Up One Level"));
+  }
+
   public static void main(String[] args) {
+
+    setupUIManager();
 
     Jmol jmol = null;
 
@@ -1546,7 +1593,8 @@ public class Jmol extends JPanel {
       if (callbackType.equalsIgnoreCase("language")) {
         new GT(callbackFunction);
         language = GT.getLanguage();
-        jmolpopup = JmolPopup.newJmolPopup(viewer, true);  
+        jmolpopup = JmolPopup.newJmolPopup(viewer, true);
+        setupUIManager();
       }
     }
 

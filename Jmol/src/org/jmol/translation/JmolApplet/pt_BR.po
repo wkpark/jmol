@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-05-08 16:45+0200\n"
-"PO-Revision-Date: 2007-05-12 20:14-0300\n"
+"PO-Revision-Date: 2007-05-16 14:35-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -76,7 +76,7 @@ msgstr "Carregando o applet Jmol ..."
 #: org/jmol/appletwrapper/AppletWrapper.java:143
 #, java-format
 msgid "  {0} seconds"
-msgstr "  {0} segundo(s)"
+msgstr "  {0} segundos"
 
 #: org/jmol/i18n/GT.java:101
 msgid "Catalan"
@@ -615,15 +615,15 @@ msgstr "Rótulos"
 
 #: org/jmol/popup/PopupResourceBundle.java:626
 msgid "With Element Symbol"
-msgstr "Com o símbolo do elemento"
+msgstr "Símbolo do elemento"
 
 #: org/jmol/popup/PopupResourceBundle.java:627
 msgid "With Atom Name"
-msgstr "Com o nome do átomo"
+msgstr "Nome do átomo"
 
 #: org/jmol/popup/PopupResourceBundle.java:628
 msgid "With Atom Number"
-msgstr "Com o número do átomo"
+msgstr "Número do átomo"
 
 #: org/jmol/popup/PopupResourceBundle.java:630
 msgid "Position Label on Atom"
@@ -805,11 +805,11 @@ msgstr "Zoom"
 
 #: org/jmol/popup/PopupResourceBundle.java:700
 msgid "Zoom In"
-msgstr "Aumentar Zoom"
+msgstr "Zoom [+]"
 
 #: org/jmol/popup/PopupResourceBundle.java:701
 msgid "Zoom Out"
-msgstr "Diminuir Zoom"
+msgstr "Zoom [-]"
 
 #: org/jmol/popup/PopupResourceBundle.java:703
 #: org/jmol/popup/PopupResourceBundle.java:765
@@ -931,7 +931,7 @@ msgstr "Unidade de distância em picometros"
 
 #: org/jmol/popup/PopupResourceBundle.java:754
 msgid "Set picking"
-msgstr "Ajustar modo de seleção"
+msgstr "Modo de seleção"
 
 #: org/jmol/popup/PopupResourceBundle.java:756
 msgid "Center"
@@ -1138,7 +1138,7 @@ msgstr "Rasmol Xyz \"zero-based\""
 
 #: org/jmol/popup/PopupResourceBundle.java:837
 msgid "Language"
-msgstr "Linguagem"
+msgstr "Idioma"
 
 #: org/jmol/popup/PopupResourceBundle.java:838
 msgid "About Jmol"

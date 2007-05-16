@@ -181,19 +181,6 @@ public final class Mmset {
     models[modelIndex].firstAtomIndex = atomIndex;  
   }
   
-  int setSymmetryAtomInfo(int modelIndex, int atomIndex, int atomCount) {
-    models[modelIndex].preSymmetryAtomIndex = atomIndex;
-    return models[modelIndex].preSymmetryAtomCount = atomCount;
-  }
-
-  int getPreSymmetryAtomIndex(int modelIndex) {
-    return models[modelIndex].preSymmetryAtomIndex;
-  }
-
-  int getPreSymmetryAtomCount(int modelIndex) {
-    return models[modelIndex].preSymmetryAtomCount;
-  }
-
   String getModelName(int modelIndex) {
     if (modelIndex < 0)
       return getModelNumberDotted(-1 - modelIndex);

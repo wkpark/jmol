@@ -76,8 +76,6 @@ public final class Model {
   String modelTag;
   String modelTitle;
   String modelFile;
-  int preSymmetryAtomIndex = -1;
-  int preSymmetryAtomCount;
   int firstMolecule;
   int firstAtomIndex;
   int moleculeCount;
@@ -100,11 +98,6 @@ public final class Model {
     this.modelFile = modelFile;
   }
 
-  void setSymmetryAtomInfo(int atomIndex, int atomCount) {
-    preSymmetryAtomIndex = atomIndex;
-    preSymmetryAtomCount = atomCount;
-  }
-  
   void setNAltLocs(int nAltLocs) {
     this.nAltLocs = nAltLocs;  
   }

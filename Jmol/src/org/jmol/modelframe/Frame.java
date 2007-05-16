@@ -285,6 +285,7 @@ public final class Frame {
       group3Counts = new int[modelCount + 1][];
       if (merging) {
         mmset.merge(mergeFrame.mmset);
+        bsSymmetry = mergeFrame.bsSymmetry;
         if (mergeFrame.group3Lists != null) {
           for (int i = 0; i < baseModelCount; i++) {
             group3Lists[i] = mergeFrame.group3Lists[i];
@@ -2093,19 +2094,20 @@ public final class Frame {
         cellInfos[i] = new CellInfo(i, doPdbScale);
     }
     if (someModelsHaveSymmetry) {
-      for (int i = baseModelCount; i < modelCount; i++) {
-        mmset.setSymmetryAtomInfo(i, mmset.getModelAuxiliaryInfoInt(i,
-            "presymmetryAtomIndex"), mmset.getModelAuxiliaryInfoInt(i,
-            "presymmetryAtomCount"));
-      }
-    } else {
-      int ipt = 0;
-      for (int i = baseModelCount; i < modelCount; i++) {
-        ipt = mmset.setSymmetryAtomInfo(i, ipt, getAtomCountInModel(i));
+      getSymmetrySet();
+      for (int iAtom = baseAtomIndex, iModel = -1, i0 = 0; iAtom < atomCount; iAtom++) {
+        if (atoms[iAtom].modelIndex != iModel) {
+          iModel = atoms[iAtom].modelIndex;
+          i0 = baseAtomIndex
+              + mmset.getModelAuxiliaryInfoInt(iModel, "presymmetryAtomIndex")
+              + mmset.getModelAuxiliaryInfoInt(iModel, "presymmetryAtomCount");
+        }
+        if (iAtom >= i0)
+          bsSymmetry.set(iAtom);
       }
     }
     if (someModelsHaveFractionalCoordinates) {
-      for (int i = atomCount; --i >= 0;) {
+      for (int i = baseAtomIndex; i < atomCount; i++) {
         int modelIndex = atoms[i].modelIndex;
         if (!cellInfos[modelIndex].coordinatesAreFractional)
           continue;
@@ -2255,20 +2257,9 @@ public final class Frame {
     return bsCell;
   }
 
+  BitSet bsSymmetry;
   private BitSet getSymmetrySet() {
-    //presumption here is that one cannot DELETE atoms
-    BitSet bs = new BitSet(atomCount);
-    for (int i = atomCount; --i >= 0;)
-      bs.set(i);
-    for (int i = 0; i < modelCount; i++) {
-      int atomIndex = mmset.getPreSymmetryAtomIndex(i);
-      int preSymAtomCount = mmset.getPreSymmetryAtomCount(i);
-      if (atomIndex < 0)
-        continue;
-      for (int iatom = atomIndex + preSymAtomCount; --iatom >= atomIndex;)
-        bs.clear(iatom);
-    }
-    return bs;
+    return (bsSymmetry == null ? bsSymmetry = new BitSet(atomCount) : bsSymmetry);
   }
 
   private BitSet getHeteroSet() {

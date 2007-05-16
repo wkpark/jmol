@@ -525,13 +525,13 @@ public class AtomSetCollection {
         * (maxY - minY) * (maxZ - minZ)];
     int pt = 0;
     if (cartesians.length > 0)
-      pt = symmetryAddAtoms(finalOperations, atomIndex, count, 0, 0, 0, pt);
+      pt = symmetryAddAtoms(finalOperations, atomIndex, count, 0, 0, 0, pt, true);
     for (int tx = minX; tx < maxX; tx++)
       for (int ty = minY; ty < maxY; ty++)
         for (int tz = minZ; tz < maxZ; tz++)
           if (tx != 0 || ty != 0 || tz != 0)
             pt = symmetryAddAtoms(finalOperations, atomIndex, count, tx, ty,
-                tz, pt);
+                tz, pt, false);
     if (operationCount > 0) {
       String[] symmetryList = new String[operationCount];
       for (int i = 0; i < operationCount; i++)
@@ -566,7 +566,7 @@ public class AtomSetCollection {
   
   private int symmetryAddAtoms(SymmetryOperation[] finalOperations,
                                int atomIndex, int count, int transX,
-                               int transY, int transZ, int pt) throws Exception {
+                               int transY, int transZ, int pt, boolean is555) throws Exception {
     boolean isBaseCell = (transX == 0 && transY == 0 && transZ == 0);
     int nOperations = finalOperations.length;
     if (isBaseCell)
@@ -606,7 +606,8 @@ public class AtomSetCollection {
         }
         if (special != null) {
           atomMap[atoms[i].atomSite] = special.atomIndex;
-          special.bsSymmetry.set(iSym);
+          if (is555)
+            special.bsSymmetry.set(iSym);
 
           // System.out.println(iSym + " " + finalOperations[iSym].getXyz()
           // + " special set: " + i + " " + " " + special.bsSymmetry);

@@ -2259,7 +2259,7 @@ public final class Frame {
 
   BitSet bsSymmetry;
   private BitSet getSymmetrySet() {
-    return (bsSymmetry == null ? bsSymmetry = new BitSet(atomCount) : bsSymmetry);
+    return BitSetUtil.copy(bsSymmetry == null ? bsSymmetry = new BitSet(atomCount) : bsSymmetry);
   }
 
   private BitSet getHeteroSet() {

@@ -48,11 +48,18 @@ public class AtomShape extends Shape {
   
   protected void initFrame() {
     atomCount = frame.getAtomCount();
+    //in case this is due to "load append"
+    if (mads != null)
+      mads = ArrayUtil.setLength(mads, atomCount);
+    if (colixes != null)
+      colixes = ArrayUtil.setLength(colixes, atomCount);
+    if (paletteIDs != null)
+      paletteIDs = ArrayUtil.setLength(paletteIDs, atomCount);
     atoms = frame.atoms;  
   }
   
   public void setSize(int size, BitSet bsSelected) {
-    //Halos Stars Vectors only
+    //Halos Stars Vectors Labels only
     isActive = true;
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
@@ -68,7 +75,7 @@ public class AtomShape extends Shape {
       }
   }
 
- public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("color" == propertyName) {
       isActive = true;
       short colix = Graphics3D.getColix(value);

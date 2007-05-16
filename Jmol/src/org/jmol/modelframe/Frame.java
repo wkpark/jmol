@@ -2256,12 +2256,18 @@ public final class Frame {
           modelIndex = atom.modelIndex;
           nOps = getModelSymmetryCount(modelIndex);
         }
+        //special positions are characterized by
+        //multiple operator bits set in the first (overall)
+        //block of nOpts bits.
+        //only strictly true with load {nnn mmm 1}
+        
         int n = 0;
-        for (int j = nOps * 2; --j>= nOps; )
+        for (int j = nOps; --j>= 0; )
           if (bsSym.get(j))
-            n++;
-        if (n > 1)
-          bs.set(i);
+            if (++n > 1) {
+              bs.set(i);
+              break;
+            }
       }
     }
     return bs;

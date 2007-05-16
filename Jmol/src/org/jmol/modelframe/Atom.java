@@ -56,7 +56,7 @@ final public class Atom extends Point3fi implements Tuple {
     return screenDiameter / 2;
   }
   
-  short modelIndex; // we want this here for the BallsRenderer
+  short modelIndex;
   private short atomicAndIsotopeNumber;
   byte formalChargeAndFlags;
   byte alternateLocationID;
@@ -647,22 +647,48 @@ final public class Atom extends Point3fi implements Tuple {
      return bfactor100s[atomIndex];
    }
 
+   /**
+    * Given a symmetry operation number, the set of cells in the model, and the
+    * number of operations, this method returns either 0 or the cell number (555, 666)
+    * of the translated symmetry operation corresponding to this atom.
+    * 
+    * atomSymmetry is a bitset that is created in adapter.smarter.AtomSetCollection
+    * 
+    * It is arranged as follows:
+    * 
+    * |--overall--|---cell1---|---cell2---|---cell3---|...
+    * 
+    * |012..nOps-1|012..nOps-1|012..nOp-1s|012..nOps-1|...
+    * 
+    * If a bit is set, it means that the atom was created using that operator
+    * operating on the base file set and translated for that cell.
+    * 
+    * If any bit is set in any of the cell block, then the same
+    * bit will also be set in the overall block. This allows for
+    * rapid determination of special positions and also of
+    * atom membership in any operation set.
+    * 
+    *  Note that it is not necessarily true that an atom is IN the designated
+    *  cell, because one can load {nnn mmm 0}, and then, for example, the {-x,-y,-z}
+    *  operator sends atoms from 555 to 444. Still, those atoms would be marked as
+    *  cell 555 here, because no translation was carried out. 
+    *  
+    *  That is, the numbers 444 in symop=3444 do not refer to a cell, per se. 
+    *  What they refer to is the file-designated operator plus a translation of
+    *  {-1 -1 -1/1}. 
+    * 
+    * @param symop        = 0, 1, 2, 3, ....
+    * @param cellRange    = {444, 445, 446, 454, 455, 456, .... }
+    * @param nOps         = 2 for x,y,z;-x,-y,-z, for example
+    * @return cell number such as 565
+    */
    public int getSymmetryTranslation(int symop, int[] cellRange, int nOps) {
-     for (int i = 0; i < cellRange.length; i++) {
-       int pt = (i + 1) * nOps + symop;
-       if (atomSymmetry.get(pt))
+     int pt = symop;
+     for (int i = 0; i < cellRange.length; i++)
+       if (atomSymmetry.get(pt += nOps))
          return cellRange[i];
-     }
      return 0;
-/*    Frame f = group.chain.frame;
-    if (f.cellInfos == null || f.cellInfos[modelIndex] == null)
-      return 0;
-    Point3f pt0 = getFractionalCoord();
-    Point3f pt1 = f.getSymmetryBaseAtom(modelIndex, atomSite, symop).getFractionalCoord();
-    return ((int) (pt0.x - pt1.x  + 5.01)) * 100
-        + ((int) (pt0.y - pt1.y  + 5.01)) * 10
-        + ((int) (pt0.z - pt1.z  + 5.01));
-*/  }
+   }
    
    private String getSymmetryOperatorList() {
     String str = "";
@@ -677,7 +703,6 @@ final public class Atom extends Point3fi implements Tuple {
       for (int j = 0; j < nOps; j++)
         if (atomSymmetry.get(pt++))
           str += "," + (j + 1) + "" + cellRange[i];
-    //System.out.println(atomIndex + "" + atomSymmetry);
     return str.substring(1);
   }
    

@@ -73,7 +73,7 @@ public class UnitCell {
     matrixCartesianToFractional.transform(pt);
   }
   
-  public final void toFractionalUnitCell(Point3f pt) {
+  private final void toFractionalUnitCell(Point3f pt) {
     if (matrixCartesianToFractional == null)
       return;
     matrixCartesianToFractional.transform(pt);

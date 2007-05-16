@@ -132,12 +132,14 @@ public class ProjectInformation {
    * @return Informations for project
    */
   Information createInfo(int projectNum) {
-    if (this._projectInfo.size() <= projectNum) {
+    Information info = new Information();
+    if (projectNum < 9999) { // To avoid test projects
+      if (this._projectInfo.size() <= projectNum) {
         this._projectInfo.setSize(projectNum + 1);
       }
-      Information info = new Information();
       this._projectInfo.set(projectNum, info);
-      return info;
+    }
+    return info;
   }
   
   /**

@@ -2217,7 +2217,7 @@ public final class Frame {
    * @return BitSet; or null if we mess up the type
    */
   BitSet getAtomBits(String setType) {
-    if (setType.equals("specialPosition"))
+    if (setType.equals("specialposition"))
       return getSpecialPosition();
     if (setType.equals("symmetry"))
       return getSymmetrySet();

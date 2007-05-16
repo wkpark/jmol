@@ -24,6 +24,7 @@ polling = false;
 Callbacks=new Array("-atomPicked","-fileLoaded","-fileLoadError","-frameChanged","-measurePending","-measureCompleted","-measurePicked","-scriptStarted","-scriptEcho","-scriptStatus","-scriptError","-scriptMessage", "-scriptTerminated","-userAction","-viewerRefreshed","-newOrientation")
 
 function setFunction(f,isSilent){
+return;
   myfunction = (arguments.length<1?document.getElementById("fOfXY").value:f)
   var x=1
   var y=1
@@ -33,7 +34,7 @@ function setFunction(f,isSilent){
 	alert("Your function is invalid")
 	myfunction = "(x*x+y*y)"
   }
-  try{eval("curveXY = function(app, x, y){  title = x + ' '  + y;return 1.000001*("+myfunction+") }")}catch(e){alert(e);return}
+  try{eval("curveXY = function(app, x, y){ return 1.000001*("+myfunction+") }")}catch(e){alert(e);return}
   if (!isSilent)alert(curveXY)
   
 }
@@ -41,10 +42,35 @@ function setFunction(f,isSilent){
 myfunction = "(x*x + y*y)/15"
 function curveXY(app, x, y) {
  //note: x and y are integers -- we must multiply by a double to return a double in JavaScript
- return 1.000001*(x*x + y*y)/15;
+ return (1.000001*x*x + y*y)/15;
 }
 
-setFunction(myfunction,1)
+
+//setFunction(myfunction,1)
+
+
+function curveAsStringXY(app, nX, nY) {
+  var i1 = Math.abs(parseInt(""+nX));
+  var i2 = Math.abs(0.0 + parseInt(""+nY));
+  var s = ""
+  for (var i = 0; i < i1; i++)
+    for (var j = 0; j < i2; j++)
+      s+= "X"+i+" \ty"+j+" \t"+ curveXY("",i, j) + "\n";
+dowritenew("<pre>" + s + "</pre>");
+  return s;
+
+}
+
+
+function curveAsArrayXY(app, nX, nY, Fxy) {
+  var i1 = Math.abs(parseInt(""+nX));
+  var i2 = Math.abs(0.0 + parseInt(""+nY));
+  var ipt = 0;
+  for (var i = 0; i < i1; i++)
+    for (var j = 0; j < i2; j++)
+      Fxy[i][j] = curveXY("",i, j);
+}
+
 
 function getCheckList(){
  var s=""
@@ -100,7 +126,7 @@ Scripts=new Array(" "
 //,'set debugscript on;load 1crn.pdb;isosurface delete select (1-4) solvent select (5-8) map solvent'
 
 
-,'### see also <a href=new.htm>new.htm</a> ###'
+,'### see also <a href=new.htm>new.htm</a> and <a href=new.htm>new0.htm</a> ###'
 
 ,'###slices through a molecular surface and new way to define plane <br><img src=img/molslice.jpg width=100 height=100 />###'
 ,'# Jmol uses a unique algorithm to calculate surfaces. Each position in space is given a value that is its distance from the nearest surface point. What this means is that a "surface" is really an "isosurface with cutoff 0". And what that means is that a surface is no different in terms of visualization from a molecular orbital or other atom-based spacial property. Jmol 10.9.71 allows you to generate slices through a surface.'
@@ -108,7 +134,7 @@ Scripts=new Array(" "
 ,'# generated from the following command (which takes several seconds on my machine). Note the new way to define a plane simply in terms of three points -- (atom)s or {coordinate}s'
 ,'load 2ptn.cif;isosurface plane {1 0 10} {0 1 10} {1 1 10} ignore(solvent) molecular'
 ,'# and, yes, of course, with JVXL you can show as many planes as you like:'
-,'load 2ptn.cif;isosurface "2ptn-molecular_slice2.jvxl";moveto 1.0 -976 76 204 77.4 100;isosurface "2ptn-molecular_slice3.jvxl"'
+,'load 2ptn.cif;isosurface s1 "2ptn-molecular_slice2.jvxl";moveto 1.0 -976 76 204 77.4 100;isosurface s2 "2ptn-molecular_slice3.jvxl"'
 
 
 ,'###isosurface hkl -- planar slices using Miller indices <br><img src=img/xtalslice.jpg width=100 height=100 />###'
@@ -120,34 +146,13 @@ Scripts=new Array(" "
 ,'select *;isosurface delete hkl {1 0 1} resolution 4 solvent 0;'
 ,'select *;isosurface delete hkl {1 0 0} resolution 4 solvent 0;'
 
-
-,'###select symop=nijk ###'
-,'# Jmol 10.9.71/79 allows you to select the exact lattice translation for a given symmetry operation. The reference point is the untransformed, untranslated file atoms - Jones-Faithful x,y,z - which are always designated n555.'
-,'load maleic.cif 7 {2 1 1};moveto 1.0 -995 89 43 71.8;selectionHalos on;select none;'
-,'select symop=1'
-,'select symop=2'
-,'select symop=3'
-,'# The extension to lattice translations is to move the symmetry operation number over three digits and add the selected translation ijk:'
-,'select symop=1555'
-,'select symop=1655'
-,'select symop=2555'
-,'select symop=2655'
-,'select symop=3555'
-,'select symop=3655'
-,'select symop=4555'
-,'select symop=4655'
-,'# Note that you can use other comparisons -- !=, &lt;, >, &lt;=, and >=. If you use any of these comparisons with a simple symmetry operation, the usual comparison will be returned. If you use this new nijk syntax, then the atom must match the given symmetry operation; the comparison is ONLY for the ijk part.' 
-,'select symop>1555'
-,'# Note that the following two are not the same:' 
-,'select symop!=2555'
-,'select not symop=2555'
-
-
 ,'###faster solvent/molecular surfaces and isosurface colorscheme "sets" <br><img src=img/2ptn.jpg width=114 height=100>###'
 ,'# Jmol 10.9.71 has significantly more capability in the area of solvent/molecular surface visualization.'
 ,'load 2ptn.cif;moveto 1.0 245 959 140 66.2;'
-,'isosurface ignore(solvent) sasurface'
-,'isosurface ignore(solvent) molecular colorscheme "sets" '
+,'isosurface delete ignore(solvent) sasurface'
+,'isosurface delete ignore(solvent) molecular colorscheme "sets"; color isosurface translucent;slab on;slab 70 '
+,'slab off'
+
 ,'###molecular electrostatic potentials###'
 ,'# Jmol 10.9.63 introduces <b>isosurface MEP</b>, with which you can display molecular electrostatic potentials. These potentials are calculated from partial charge data present in a file; Jmol cannot calculate these charges.'
 ,'# Just the MEP:'
@@ -166,7 +171,7 @@ Scripts=new Array(" "
 
 
 
-,'# NOTE -- in testing 10.x.19 and writing up documentation I have changed some of the isosurface parameters. Namely, "fileindex n" is gone. One simply indicates the surface number after the quoted filename similarly to the way you can indicate a model number after a quoted filename in a "load" command. In addition, I have simplified the command syntax by allowing ALL construction/color parameters up front. See also <a target=_blank href=isosurface.txt>isosurface.txt</a>'
+,'# NOTE -- in testing 10.x.19 and writing up documentation I have changed some of the isosurface parameters. Namely, "fileindex n" is gone. One simply indicates the surface number after the quoted filename similarly to the way you can indicate a model number after a quoted filename in a "load" command. In addition, I have simplified the command syntax by allowing ALL construction/color parameters up front. See <a href=..>the documentation</a>'
 
 ,'### the JVXL file format ###'
 ,'# Jmol 10.x.09 introduces VERY compact orbitals and other molecular properties as isosurfaces.  These files are generated by Jmol from Gaussian CUBE files with compression ratios on the order of 400 to 600:1. This is possible because JVXL files do not allow for variable cutoffs. check out the new "Jmol Voxel File" format at <a href=data/ch3cl.jvxl target=_blank >ch3cl.jvxl</a>. For a discussion see <a href=../misc/JVXL-format.pdf>JVXL-format.pdf</a>. Many examples follow. '
@@ -245,48 +250,48 @@ Scripts=new Array(" "
 ,'# a WebMO file:'
 ,'load ch2o_homo.mo;moveto 1.0 940 -340 -34 67.0;'
 ,'# with and without phasing'
+,'isosurface delete mo 1 translucent white'
 ,'isosurface delete mo 1 translucent'
-,'isosurface delete phase mo 1 translucent'
-,'isosurface delete color yellow purple phase mo 1 translucent'
+,'isosurface delete color yellow purple mo 1 translucent'
 ,'# note that, like solvent surfaces, the calculation depends upon which atoms are selected. If no atoms are selected, then all orbitals are calculated.'
-,'select atomno=2;isosurface delete phase mo 1 translucent'
-,'select *;isosurface delete phase mo 1 translucent'
+,'select atomno=2;isosurface delete mo 1 translucent'
+,'select *;isosurface delete mo 1 translucent'
 ,'# <a target=_blank href=http://www.wavefunction.com>Wavefunction</a>\'s Spartan SMOL files contain a full set of MOs'
 ,'load C6H6.smol;moveto 1.0 -998 -58 20 61.0;'
-,'isosurface delete cutoff 0.008 phase mo 1 translucent'
-,'isosurface delete cutoff 0.008 phase mo 16 translucent'
-,'isosurface delete cutoff 0.008 phase mo 20 translucent'
+,'isosurface delete cutoff 0.008 mo 1 translucent'
+,'isosurface delete cutoff 0.008 mo 16 translucent'
+,'isosurface delete cutoff 0.008 mo 20 translucent'
 ,'# The isosurface command can be used to manipulate the phased sections of the MO independently. The key is to indicate the cutoff with an explicit "+" or "-" sign.'
 ,'isosurface mo1pos cutoff +0.008 color green mo 20 opaque'
 ,'isosurface mo1neg cutoff -0.008 color red mo 20 translucent'
 
 ,'# A lower resolution can speed browsing.'
-,'isosurface delete  cutoff 0.008 resolution 4 phase mo 20 translucent'
-,'isosurface delete  cutoff 0.008 resolution 4 phase mo 21 translucent'
-,'isosurface delete  cutoff 0.008 resolution 4 phase mo 22 translucent'
-,'isosurface delete cutoff 0.008 resolution 4 phase mo 33 translucent'
-,'isosurface delete cutoff 0.008 resolution 4 phase mo 66 translucent'
+,'isosurface delete  cutoff 0.008 resolution 4 mo 20 translucent'
+,'isosurface delete  cutoff 0.008 resolution 4 mo 21 translucent'
+,'isosurface delete  cutoff 0.008 resolution 4 mo 22 translucent'
+,'isosurface delete cutoff 0.008 resolution 4 mo 33 translucent'
+,'isosurface delete cutoff 0.008 resolution 4 mo 66 translucent'
 ,'# You can retrieve the data used for these calculations using getProperty "auxiliaryInfo", which returns JavaScript Object Notation (JSON), which is being translated into JavaScript array notation here.'
 ,'# Gaussian output: The second frame holds the information we want'
 ,'load H2-OPT.LOG;frame 2;center visible;moveto 1.0 -118 983 -141 86.9 86'
 ,'frame 1'
 ,'frame 2'
-,'isosurface delete phase mo 1 translucent'
-,'isosurface delete phase mo 2 translucent'
-,'isosurface delete phase mo 3 translucent'
-,'isosurface delete phase mo 4 translucent'
+,'isosurface delete mo 1 translucent'
+,'isosurface delete mo 2 translucent'
+,'isosurface delete mo 3 translucent'
+,'isosurface delete mo 4 translucent'
 ,'load "water-G03W.out"; getproperty "auxiliaryinfo";frame 2;center visible;moveto 1.0 -571 -817 -75 120.5;'
-,'isosurface delete cutoff 0.08 phase mo 4 translucent'
-,'isosurface delete cutoff 0.08 phase mo 5 translucent'
-,'isosurface delete cutoff 0.08 phase mo 6 translucent'
+,'isosurface delete cutoff 0.08 mo 4 translucent'
+,'isosurface delete cutoff 0.08 mo 5 translucent'
+,'isosurface delete cutoff 0.08 mo 6 translucent'
 ,'# Spartan SPARCHIVE files can now be read by Jmol, and they also contain molecular orbitals.'
 ,'load water-AM1.sparchive;moveto 1.0 -567 -732 -379 132.8;'
-,'isosurface delete phase mo 1 translucent'
-,'isosurface delete phase mo 2 translucent'
-,'isosurface delete phase mo 3 translucent'
-,'isosurface delete phase mo 4 translucent'
-,'isosurface delete phase mo 5 translucent'
-,'isosurface delete phase mo 6 translucent'
+,'isosurface delete mo 1 translucent'
+,'isosurface delete mo 2 translucent'
+,'isosurface delete mo 3 translucent'
+,'isosurface delete mo 4 translucent'
+,'isosurface delete mo 5 translucent'
+,'isosurface delete mo 6 translucent'
 
 //,'# Gaussian output files can contain an atomic orbital basis description  and a full set of MOs. We can load all the orientations; model 2 has the basis. (Cannot read molecular orbital data yet, though, for Gaussian files because I do not have a copy of a .)'
 //,'load water-AM1.log;model 2;moveto 1.0 -998 -58 20 61.0;'
@@ -295,24 +300,24 @@ Scripts=new Array(" "
 //,'load "water-AM1.log" 2;moveto 1.0 -998 -58 20 61.0;'
 //,'getProperty "auxiliaryInfo"'
 ,'# GAMESS output files can contain an atomic orbital basis description along with the set of eigenvectors. '
-,'load gamess-RHF-3-21G.log; isosurface phase mo 8'
-,'load gamess-UHF-3-21G.log; isosurface phase mo 8 #alpha'
-,'load gamess-UHF-3-21G.log; isosurface phase mo 30 #beta'
+,'load gamess-RHF-3-21G.log; isosurface mo 8'
+,'load gamess-UHF-3-21G.log; isosurface mo 8 #alpha'
+,'load gamess-UHF-3-21G.log; isosurface mo 30 #beta'
 ,'# SMOL RHF/3-21G calc on XeF4 from <a target=_blank href=http://introchem.chem.okstate.edu/jmol/molecules/>http://introchem.chem.okstate.edu/jmol/molecules/</a>. I have removed the unnecessary encoded isosurface data (1.0MB --> 147KB), so this is no longer a true SMOL file. This file contains 75 molecular orbitals.'
 ,'load XeF4.smo; moveto 1.0 922 52 385 55.3;'
-,'isosurface delete cutoff 0.008 resolution 5 phase mo 68 translucent'
+,'isosurface delete cutoff 0.008 resolution 5 mo 68 translucent'
 ,'# WebMO 6-31G(D) calc on water from <a target=_blank href=http://buchner.chem.hope.edu/~webmodemo/cgi-bin/webmo/jobmgr.cgi>WebMO</a>'
 ,'load water19.mo; moveto 1.0 922 52 385 55.3;'
-,'isosurface delete cutoff 0.008 resolution 10 phase mo 17 translucent'
+,'isosurface delete cutoff 0.008 resolution 10 mo 17 translucent'
 ,'# WebMO 6-311+G(P,D) calc on water from <a target=_blank href=http://buchner.chem.hope.edu/~webmodemo/cgi-bin/webmo/jobmgr.cgi>WebMO</a>'
 ,'load water35.mo; moveto 1.0 922 52 385 55.3;'
-,'isosurface delete cutoff 0.008 resolution 10 phase mo 20 translucent'
+,'isosurface delete cutoff 0.008 resolution 10 mo 20 translucent'
 ,'# WebMO AM1 calculation -- slater functions are no problem!'
 ,'load job656_density.mo;wireframe 0.07;spacefill 10%'
-,'isosurface delete phase mo 9'
-,'isosurface delete phase mo 10'
-,'isosurface delete phase mo 11'
-,'isosurface delete phase mo 12'
+,'isosurface delete mo 9'
+,'isosurface delete mo 10'
+,'isosurface delete mo 11'
+,'isosurface delete mo 12'
 
 
 ,'### cartoon orbital lobes ###<br><img src=img/cartoonorb.jpg width=100 height=100>'
@@ -463,15 +468,15 @@ Scripts=new Array(" "
 	+'They are the x and y coordinates of the point in the "voxel cube" defined by the origin and three vector definitions '
 	+'listed after the function name in the command. Each vector definition includes the number of voxels along that direction '
 	+'and the xyz coordinates defining the grid size in that direction. These vectors can be in any direction, '
-	+'but they should be perpendicular if the surface is to be color-mapped. Units are Bohr unless the ANGSTROMS keyword has been used. (Go ahead and change that function, '
+	+'but they should be perpendicular if the surface is to be color-mapped. Units are Angstroms. (Go ahead and change that function, '
 	+'click <a href=javascript:setFunction()>here</a> to "set" the function, and then see what happens when you click the link below again.) '
-,'load d_orbitals.jvxl; restrict none; set axesMolecular; axes on; moveto 1.0 -909 -267 -320 80 70;set echo top left;echo " generating the surface..."; refresh; isosurface ANGSTROMS functionXY "curveXY" {-5 -5 -5} {11 1 0 0} {11 0 1 0} {11 0 0 1}; echo ""; show isosurface'
+,'load d_orbitals.jvxl; restrict none; set axesMolecular; axes on; moveto 1.0 -909 -267 -320 80 70;set echo top left;echo " generating the surface..."; refresh; isosurface functionXY "curveAsArrayXY" {-5 -5 -5} {-11 1 0 0} {11 0 1 0} {11 0 0 1}; echo ""; show isosurface'
 ,'# the JVXL equivalent:'
 ,'load d_orbitals.jvxl; restrict none; set axesMolecular; axes on; moveto 1.0 -909 -267 -320 80 70;set echo top left;echo " JVXL equivalent"; refresh; isosurface "functionxy.jvxl"'
 ,'# color-mapping a curved surface -- a bit crude looking because mapped functions are not contoured automatically.'
-,'load ch3cl.mol; moveto 1.0 -982 -66 -176 75.9 70;set echo top left;echo " generating the surface..."; refresh; isosurface ANGSTROMS functionXY "curveXY" {-2 -2 -2} {21 .2 0 0} {21 0 .2 0} {21 0 0 .2} color absolute 0.1 0.5 "ch3cl-esp.cub.gz"; echo ""; show isosurface'
+,'load ch3cl.mol; moveto 1.0 -982 -66 -176 75.9 70;set echo top left;echo " generating the surface..."; refresh; isosurface functionXY "curveAsStringXY" {-2 -2 -2} {-21 .2 0 0} {-21 0 .2 0} {21 0 0 .2} color absolute 0.1 0.5 "ch3cl-esp.cub.gz"; echo ""; show isosurface'
 ,'# color-mapping a curved surface with contours is as simple as adding the CONTOUR keyword.'
-,'load ch3cl.mol; moveto 1.0 -982 -66 -176 75.9 70;set echo top left;echo " generating contoured surface..."; refresh; isosurface contour ANGSTROMS functionXY "curveXY" {-2 -2 -2} {21 .2 0 0} {21 0 .2 0} {21 0 0 .2} color absolute 0.1 0.5 "ch3cl-esp.cub.gz"; echo ""; show isosurface'
+,'load ch3cl.mol; moveto 1.0 -982 -66 -176 75.9 70;set echo top left;echo " generating contoured surface..."; refresh; isosurface contour functionXY "curveXY" {-2 -2 -2} {21 .2 0 0} {21 0 .2 0} {21 0 0 .2} color absolute 0.1 0.5 "ch3cl-esp.cub.gz"; echo ""; show isosurface'
 ,'# and the JVXL equivalent:'
 ,'# color-mapping a curved surface with contours'
 ,'load ch3cl.mol; moveto 1.0 -982 -66 -176 75.9 70;isosurface delete "contourf.jvxl"'
@@ -504,10 +509,10 @@ Scripts=new Array(" "
 ,'load 1crn.pdb;select 1-3;isosurface ~pdb color yellow solvent;moveto 2.0 968 237 84 158.3;'
 ,'load 1crn.pdb;select 4-10;isosurface color yellow resolution 1 solvent'
 ,'# the RESOLUTION keyword allows control over the fineness of detail of the surface. The default resolution is 2 points per Angstrom.'
-,'load C6H6.smol;isosurface ~benzene solvent mesh nofill'
-,'load C6H6.smol;isosurface ~benzene resolution 4 solvent mesh nofill'
-,'load caffeine.xyz;isosurface ~caffeine solvent mesh nofill '
-,'load caffeine.xyz;isosurface ~caffeine resolution 1 solvent mesh nofill'
+,'load C6H6.smol;isosurface ~benzene solvent mesh nofill frontonly'
+,'load C6H6.smol;isosurface ~benzene resolution 4 solvent mesh nofill frontonly'
+,'load caffeine.xyz;isosurface ~caffeine solvent mesh nofill frontonly '
+,'load caffeine.xyz;isosurface ~caffeine resolution 1 solvent mesh nofill frontonly'
 ,'# for enzymes, a very low resolution may still be suitable'
 ,'load 1crn.pdb;select 4-10;isosurface ~pdb color white resolution 1 solvent translucent'
 ,'# this next one takes a few seconds. Be patient:'
@@ -534,8 +539,8 @@ Scripts=new Array(" "
 ,'# first, the 3.7Mb cube file:'
 ,'load ch3cl.cub;moveto 1.0 -935 -354 -21 67.2;'
 ,'# a file containing two isosurfaces. "load" only reads the coordinates.'
-,'isosurface pos05 cutoff 0.05 "ch3cl.cub" 1;show isosurface'
-,'isosurface pos05 cutoff 0.05 "ch3cl.cub" 2;show isosurface'
+,'isosurface pos05 cutoff 0.05 blockdata "ch3cl.cub" 1;show isosurface'
+,'isosurface pos05 cutoff 0.05 blockdata "ch3cl.cub" 2;show isosurface'
 ,'#'
 ,'# now compare the 7Kb (490:1 compressed) Jmol voxel file'
 ,'load ch3cl.jvxl;moveto 1.0 -935 -354 -21 67.2;'
@@ -580,8 +585,8 @@ Scripts=new Array(" "
 ,'# The key turns out to be an adaptation of the 3D "Marching Cubes" data interpolation algorithm to two dimensions -- "Marching Squares". For the JVXL equivalent, we opt for a higher level of precision in the data compression. The files are larger than before, but still afford 400-500:1 compression ratios.'
 ,'load plane2.jvxl;isosurface delete myiso "";moveto 0.0 647 144 749 11.4 114;restrict none;'
 ,'# What you are looking at is a set of 10 contours that have then been triangulated using the Marching Square algorithm with linear shading through each triangle. Here is a closeup:'
-,'set testflag3; moveto 4.0 -292 184 939 67.9 1090 81 -90 1000;'
-,'set testflag3 off;'
+,'isosurface triangles;moveto 4.0 -292 184 939 67.9 1090 81 -90;'
+,'isosurface notriangles;'
 ,'#'
 ,'# When the surface is a plane, our eyes are particularly sensitive to differences in shading and color. JVXL files are not quite the same as CUBE files, and this is noticeable for slices. Still, the effect is subtle, because it is only slight variations in the square-contour intersection points that we are seeing.'
 ,'#'
@@ -599,13 +604,14 @@ Scripts=new Array(" "
 ,'load contour.jvxl;moveto 0 -853 -521 13 167.5 194;set axesMolecular; isosurface delete myiso "" 2'
 ,'#'
 ,'# CUBE file dots only:'
-,'load contour.jvxl;isosurface delete myiso plane {0 0 1 1.5} dots nofill color absolute  0.1 1 map "ch3cl-esp.cub.gz";moveto 0 -853 -521 13 167.5 194;show isosurface;'
+,'load contour.jvxl;isosurface delete myiso plane {0 0 1 1.5}  color absolute  0.1 1 map "ch3cl-esp.cub.gz" dots nofill;moveto 0 -853 -521 13 167.5 194;show isosurface;'
 
 ,'# JVXL equivalent dots only:'
-,'load contour.jvxl;moveto 0 -853 -521 13 167.5 194;set axesMolecular; isosurface delete myiso dots nofill "" 2'
+,'load contour.jvxl;moveto 0 -853 -521 13 167.5 194;set axesMolecular; isosurface delete myiso "" 2 dots nofill '
 ,'#'
-,'isosurface dots nofill'
-,'isosurface nodots fill'
+,'isosurface dots nomesh nofill'
+,'isosurface fill nomesh nodots'
+,'isosurface mesh nodots nofill'
 
 ,'### obtaining JVXL file data ###'
 ,'# The SHOW ISOSURFACE command delivers the jvxl equivalent of an isosurface to the message queue.'

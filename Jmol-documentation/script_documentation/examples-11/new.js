@@ -10,6 +10,36 @@ width=350
 
 logLevel = 4
 
+function resize(n)
+{
+ document.getElementById("jmolApplet0").width = n
+ document.getElementById("jmolApplet0").height = n
+}
+
+function resizeCSS(n)
+{
+ document.getElementById("jmolApplet0").style.width = n+"px"
+ document.getElementById("jmolApplet0").style.height = n+"px"
+}
+
+function newAppletWindow() {
+ var sm=""+Math.random()
+ sm=sm.substring(2,10)
+ var newwin=open("JmolPopup.htm","jmol_"+sm,woptions)
+}
+
+/// this next code is all you need in 11.1.17 to open a new resizable applet window
+
+woptions="menubar=yes,resizable=1,scrollbars,alwaysRaised,width=600,height=600,left=50"
+
+function dowritenew(s){
+ var sm=""+Math.random()
+ sm=sm.substring(2,10)
+ var newwin=open("","jmol_"+sm,woptions)
+ newwin.document.write(s)
+ newwin.document.close()
+}
+
 function jmolGetLogLevelRadios() {
   var S = [["set logLevel 0","0",0,"radio0","Java console silent"]
 	,["set logLevel 1","1",0,"radio1","only fatal errors to the Java Console"]
@@ -21,6 +51,8 @@ function jmolGetLogLevelRadios() {
   var s = jmolRadioGroup(S)
   return s
 }
+
+////////////////////////////////////////////////////////
 
 
 addRCSBlink=true
@@ -76,27 +108,22 @@ Scripts=new Array("reset")
 ref=""
 remark=""
 FTREF250="<a class=\"ftnote\" href=\"javascript:showref(250)\"><sup>*</sup></a>"
-woptions="menubar=yes,scrollbars,alwaysRaised,width=700,height=600,left=50"
+
 loadscript=";"
 docsearch = document.location.search.substring(1)
 iscript = (docsearch.indexOf("scriptno=")>=0 ? parseInt(docsearch.split("scriptno=")[1].split("&")[0]) : 0)
 listScripts = (docsearch.indexOf("LISTONLY")>=0)
+useSigned = (docsearch.indexOf("SIGNED")>=0)
+language = (docsearch.indexOf("language=")>=0 ? docsearch.split("language=")[1].split("&")[0] : 0)
+//alert(docsearch + " "+ language);
 function showref(n){
  if(n==250)alert("Integer distances in Jmol indicate Rasmol units (0.004 Angstrom), now deprecated.")
 }
 
 
-function dowritenew(s){
- var sm=""+Math.random()
- sm=sm.substring(2,10)
- var newwin=open("","jmol_"+sm,woptions)
- newwin.document.write(s)
- newwin.document.close()
-}
-
 function getapplet(name, model, codebase, height, width, script, msgcallback,animcallback,pickcallback,hovercallback,loadstructcallback) {
 
-//  if (!isinitialized)jmolInitialize(".")
+//if (!isinitialized && useSigned)jmolInitialize(".", useSigned) //signed
   if(force_useHtml4Object)_jmol.useHtml4Object=1
   if(force_useIEObject)_jmol.useIEObject=1
   isinitialized = 1
@@ -104,17 +131,25 @@ function getapplet(name, model, codebase, height, width, script, msgcallback,ani
 
 //  jmolSetTranslation(true)
 
-  jmolSetLogLevel(logLevel);
+ // jmolSetLogLevel(logLevel);
 
 
   if (model)script = "set defaultDirectory \""+datadir+"\"; load " + model + ";" + script
+//script = "load " + model;
+  script = script.replace(/load \;/,";")
   if (defaultloadscript != "")script = "set defaultLoadScript \""+defaultloadscript+"\";"+script
   if (msgcallback)jmolSetCallback("MessageCallback",msgcallback)
   if (animcallback)jmolSetCallback("AnimFrameCallback",animcallback)
   if (pickcallback)jmolSetCallback("PickCallback",pickcallback)
   if (hovercallback)jmolSetCallback("HoverCallback",hovercallback)
   if (loadstructcallback)jmolSetCallback("LoadStructCallback",loadstructcallback)
+
+//  jmolSetCallback("debug", true)
+  if (language)jmolSetCallback("language",language)
+
   var s = jmolApplet([width,height], script)
+ //s=s.replace(/mayscript/,"maynotscript")
+//  alert(s)
   return s
 }
 
@@ -125,7 +160,7 @@ function getinfo(){
 theref = (model.length==8 && model.indexOf(".pdb")==4?"<a target=_blank href=http://www.rcsb.org/pdb/files/"+model+">["+model.substring(0,4)+"]</a>":
 model.indexOf('"')<0?"<a target=_blank href="+model.split(";")[0]+">"+model+"</a>":model)
 
- if(model)s+=" The script run in this case was <b>load "+theref+"</b>."
+ if(model)s+=" The script run in this case was <b>"+(theref.indexOf(";") == 0 ? "" : "load ")+theref+"</b>."
  if(defaultloadscript != "")s+=" The default load script used here is \""+defaultloadscript+"\"."
  return "<p>"+s+"</p><table><tr height=1000><td></td></tr></table>"
 }
@@ -161,7 +196,11 @@ function getscriptlink(i,isul){
 		+"</a>")
 	+(isul?"</li>":"")
 
-	if (S[j].indexOf("<span")<0 && S[j].indexOf("<a href")<0)scriptList+=S[j]+"\n"
+	if (S[j].indexOf("<span")<0 && S[j].indexOf("<a href")<0 
+		&& S[j].indexOf("quit")<0 && S[j].indexOf("loop")<0 
+		&& S[j].indexOf("exit")<0 && S[j].indexOf("pause")<0
+		&& S[j].indexOf("exit")<0 && S[j].indexOf("resume")<0
+	        )scriptList+=S[j]+"\n"
 	if(S.length>1)s+=(isul?"\n</ul>":"")+"\n</td>"
  }
  if(S.length>1)s+="\n</tr></tbody></table>"+(isul?"\n<ul>":"")
@@ -170,11 +209,12 @@ function getscriptlink(i,isul){
 
 nTopics=0;
 nFirst=0;
+nSkip = 2;
 scriptList = ""
 function getscripts(){
  nTopics = 1;
  for (var i=1;i<Scripts.length;i++)if(Scripts[i].indexOf("###")>=0)nTopics++;
- nFirst=nTopics-2;
+ nFirst=nTopics-nSkip;
  
  var s=""
  var isul=true
@@ -339,7 +379,10 @@ function getpage(){
 	+'<a href="javascript:void(open(\'getimage.htm\',\'_blank\'))">image</a> '
 	+'<a href="javascript:void(open(\'getstereo.htm\',\'_blank\'))">stereo</a> '
 	+'(images not available with MSIE)<br />'
-	+'<a href="javascript:jmolScript(\'save state\')">save</a>/<a href="javascript:jmolScript(\'console;show state\')">show</a>/<a href="javascript:jmolScript(\'restore state\')">restore</a> state<br/>'
+	+'<a href="javascript:jmolScript(\'save state\')">save</a>/<a href="javascript:jmolScript(\'console;show state\')">show</a>/<a href="javascript:jmolScript(\'restore state\')">restore</a> state'
+
+	+' <a href="javascript:newAppletWindow()">new resizable Window</a>'
+	+'<br/>'
 
 	+'\n<center>Java Console Log level: '+jmolGetLogLevelRadios()+'</center>'
 	+'\n</p><form action="javascript:showcmd()"><p>'
@@ -351,7 +394,7 @@ function getpage(){
 	+'\n</p></form>'
 	+'\n</div>'
  if(isxhtmltest)s=s.replace(/\</g,"<br />&lt;")
- if(listScripts)s="<pre>"+scriptList+"</pre>"
+ if(listScripts)s="<pre>#"+document.location+"\n\n"+scriptList+"</pre>"
  return s
 }
 
@@ -361,6 +404,10 @@ function usercallback(s){}
 function showscript(i,j,script){
 	if(!j)j=0
 	var s=(script?script:i>=0?Scripts[i].split(" ~~ ")[j]:document.getElementById("cmd").value)
+	if(s.indexOf("javascript:") == 0) {
+		alert(eval(s.substring(11)))
+		return
+	}
 	showmsg("user",s+"\n")
 	thiscommand=s
 	usercallback(s)

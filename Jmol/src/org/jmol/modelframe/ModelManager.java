@@ -1417,7 +1417,7 @@ String getAtomInfoChime(int i) {
     } else {
       sg = SpaceGroup.determineSpaceGroup(spaceGroup);
       if (sg == null)
-        sg = SpaceGroup.createSpaceGroup(spaceGroup);
+        sg = SpaceGroup.createSpaceGroup(spaceGroup, false);
     }
     if (sg == null)
       return "could not identify space group from name: " + spaceGroup;

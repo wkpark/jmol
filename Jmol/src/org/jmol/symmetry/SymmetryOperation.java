@@ -131,6 +131,8 @@ public class SymmetryOperation extends Matrix4f {
       switch (ch) {
       case '\'':
       case ' ':
+      case '{':
+      case '}':
         continue;
       case '-':
         isNegative = true;

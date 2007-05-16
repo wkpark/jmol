@@ -195,7 +195,7 @@ public class SpaceGroup {
       latticeParameter = - latticeParameter;
   }
   
-  public final static SpaceGroup createSpaceGroup(String name) {
+  public final static SpaceGroup createSpaceGroup(String name, boolean doNormalize) {
     SpaceGroup sg = determineSpaceGroup(name);
     HallInfo hallInfo;
     if (sg == null) {
@@ -210,6 +210,7 @@ public class SpaceGroup {
         sg.hallInfo = hallInfo;
       } else if (name.indexOf(",") >= 0) {
         sg = new SpaceGroup("0 -- -- --");
+        sg.doNormalize = false;
         sg.generateOperatorsFromXyzInfo(name);
       } else {
         sg = null;
@@ -222,18 +223,18 @@ public class SpaceGroup {
   
   public final static SpaceGroup createSpaceGroup(int desiredSpaceGroupIndex,
                                                   String name,
-                                                  float[] notionalUnitcell) {
+                                                  float[] notionalUnitcell, boolean doNormalize) {
 
     SpaceGroup sg = null;
     if (desiredSpaceGroupIndex >= 0) {
       if (desiredSpaceGroupIndex == SPACE_GROUP_QUERY)
-        sg = createSpaceGroup((String) query[0]);
+        sg = createSpaceGroup((String) query[0], doNormalize);
       else
         sg = spaceGroupDefinitions[desiredSpaceGroupIndex];
     } else {
       sg = determineSpaceGroup(name, notionalUnitcell);
       if (sg == null)
-        sg = createSpaceGroup(name);
+        sg = createSpaceGroup(name, doNormalize);
     }
     if (sg != null)
       sg.generateAllOperators(null);

@@ -418,7 +418,7 @@ public abstract class AtomSetCollectionReader {
       atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds);
       if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {
         SpaceGroup sg = SpaceGroup.createSpaceGroup(desiredSpaceGroupIndex,
-            (spaceGroup.indexOf("*")>=0 ? "P1" : spaceGroup), notionalUnitCell);
+            (spaceGroup.indexOf("*")>=0 ? "P1" : spaceGroup), notionalUnitCell, atomSetCollection.doNormalize);
         if (sg != null) {
           if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
             Logger.debug("using generated space group " + sg.dumpInfo());

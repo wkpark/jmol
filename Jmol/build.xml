@@ -784,6 +784,7 @@ support for assertions (which were introduced in 1.4).
         <include name="*.txt" />
       </fileset>
     </copy>
+    <copy file="src/org/jmol/viewer/Jmol.properties" tofile="build/dist/jmol-${version}/CHANGES.txt" />
     <chmod perm="ugo+rx">
       <fileset dir="build/dist/jmol-${version}">
         <include name="jmol"/>

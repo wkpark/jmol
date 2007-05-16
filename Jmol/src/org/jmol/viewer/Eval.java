@@ -1502,6 +1502,9 @@ class Eval { //implements Runnable {
     int atomCount = viewer.getAtomCount();
     int imax = 0;
     int imin = 0;
+    int iModel = -1;
+    int[] cellRange = null;
+    int nOps = 0;
     float propertyFloat = 0;
     Frame frame = viewer.getFrame();
     for (int i = 0; i < atomCount; ++i) {
@@ -1560,13 +1563,17 @@ class Eval { //implements Runnable {
            * 
            * Bob Hanson - 10/2006
            */
-
           comparisonValue = bitsetBaseValue % 1000;
+          if (atom.getModelIndex() != iModel) {
+            iModel = atom.getModelIndex();
+            cellRange = frame.getModelCellRange(iModel);
+            nOps = frame.getModelSymmetryCount(iModel);
+          }
           int symop = bitsetBaseValue / 1000 - 1;
-          if (symop < 0 || !(match = propertyBitSet.get(symop)))
+          if (nOps == 0 || symop < 0 || !(match = propertyBitSet.get(symop)))
             continue;
           bitsetComparator = Token.none;
-          propertyValue = atom.getSymmetryTranslation(symop);
+          propertyValue = atom.getSymmetryTranslation(symop, cellRange, nOps);
         }
         break;
       }

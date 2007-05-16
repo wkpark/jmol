@@ -352,7 +352,8 @@ abstract public class JmolPopup {
     String[] list = (String[]) modelInfo.get("symmetryOperations");
     if (list == null)
       return;
-    boolean haveUnitCellRange = (modelInfo.get("unitCellRange") != null);
+    int[] cellRange = (int[]) modelInfo.get("unitCellRange");
+    boolean haveUnitCellRange = (cellRange != null);
     Object subMenu = menu;
     int nmod = MAX_ITEMS;
     int pt = (list.length > MAX_ITEMS ? 0 : Integer.MIN_VALUE);

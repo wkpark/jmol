@@ -647,8 +647,14 @@ final public class Atom extends Point3fi implements Tuple {
      return bfactor100s[atomIndex];
    }
 
-   public int getSymmetryTranslation(int symop) {
-    Frame f = group.chain.frame;
+   public int getSymmetryTranslation(int symop, int[] cellRange, int nOps) {
+     for (int i = 0; i < cellRange.length; i++) {
+       int pt = (i + 1) * nOps + symop;
+       if (atomSymmetry.get(pt))
+         return cellRange[i];
+     }
+     return 0;
+/*    Frame f = group.chain.frame;
     if (f.cellInfos == null || f.cellInfos[modelIndex] == null)
       return 0;
     Point3f pt0 = getFractionalCoord();
@@ -656,17 +662,24 @@ final public class Atom extends Point3fi implements Tuple {
     return ((int) (pt0.x - pt1.x  + 5.01)) * 100
         + ((int) (pt0.y - pt1.y  + 5.01)) * 10
         + ((int) (pt0.z - pt1.z  + 5.01));
-  }
+*/  }
    
-   String getSymmetryOperatorList() {
-     String str = "";
-     if (atomSymmetry == null)
-       return str;
-     for (int i = 0; i < atomSymmetry.size(); i++)
-       if (atomSymmetry.get(i))
-         str += "," + (i + 1);
-     return str.substring(1);
-   }
+   private String getSymmetryOperatorList() {
+    String str = "";
+    Frame f = group.chain.frame;
+    if (atomSymmetry == null || f.cellInfos == null
+        || f.cellInfos[modelIndex] == null)
+      return str;
+    int[] cellRange = f.getModelCellRange(modelIndex);
+    int nOps = f.getModelSymmetryCount(modelIndex);
+    int pt = nOps;
+    for (int i = 0; i < cellRange.length; i++)
+      for (int j = 0; j < nOps; j++)
+        if (atomSymmetry.get(pt++))
+          str += "," + (j + 1) + "" + cellRange[i];
+    //System.out.println(atomIndex + "" + atomSymmetry);
+    return str.substring(1);
+  }
    
    public int getModelIndex() {
      return modelIndex;
@@ -1048,7 +1061,7 @@ final public class Atom extends Point3fi implements Tuple {
          case 'Q': occupancy 0.00 - 1.00
          case 'r': residue sequence code
          case 'R': residue number
-         case 'S': crystllographic Site
+         case 'S': crystallographic Site
          case 's': strand (chain)
          case 't': temperature factor
          case 'U': identity

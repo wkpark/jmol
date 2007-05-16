@@ -929,8 +929,9 @@ public final class Frame {
   }
 
   String getModelSymmetryList(int modelIndex) {
-    String[] list = (String[]) getModelAuxiliaryInfo(modelIndex,
-        "symmetryOperations");
+    if (cellInfos == null || cellInfos[modelIndex] == null)
+      return "";
+    String[] list = cellInfos[modelIndex].symmetryOperations;
     String str = "";
     if (list != null)
       for (int i = 0; i < list.length; i++)
@@ -938,6 +939,11 @@ public final class Frame {
     return str;
   }
 
+  public int getModelSymmetryCount(int modelIndex) {
+    return (cellInfos == null || cellInfos[modelIndex] == null ?
+        0 : cellInfos[modelIndex].symmetryOperations.length);
+  }
+  
   public int getAltLocCountInModel(int modelIndex) {
     return mmset.getNAltLocs(modelIndex);
   }
@@ -946,6 +952,12 @@ public final class Frame {
     return mmset.getNInsertions(modelIndex);
   }
 
+  public int[] getModelCellRange(int modelIndex) {
+    if (cellInfos == null)
+      return null;
+    return cellInfos[modelIndex].getCellRange();
+  }
+  
   Properties getModelSetProperties() {
     return mmset.getModelSetProperties();
   }
@@ -2174,7 +2186,7 @@ public final class Frame {
     ptCenter.scale(1.0f / nPoints);
     return ptCenter;
   }
-
+/*
   Atom getSymmetryBaseAtom(int modelIndex, int site, int symop) {
     Frame.CellInfo[] c = cellInfos;
     if (c != null)
@@ -2184,7 +2196,7 @@ public final class Frame {
           return atoms[i];
     return null;
   }
-
+*/
   BitSet getAtomsWithin(float distance, Point4f plane) {
     BitSet bsResult = new BitSet();
     for (int i = getAtomCount(); --i >= 0;) {
@@ -2234,10 +2246,23 @@ public final class Frame {
 
   private BitSet getSpecialPosition() {
     BitSet bs = new BitSet(atomCount);
+    int modelIndex = -1;
+    int nOps = 0;
     for (int i = atomCount; --i >= 0;) {
-      BitSet bsSym = atoms[i].getAtomSymmetry();
-      if (bsSym != null && BitSetUtil.cardinalityOf(bsSym) > 1)
-        bs.set(i);
+      Atom atom = atoms[i];
+      BitSet bsSym = atom.getAtomSymmetry();
+      if (bsSym != null) {
+        if (atom.modelIndex!=modelIndex) {
+          modelIndex = atom.modelIndex;
+          nOps = getModelSymmetryCount(modelIndex);
+        }
+        int n = 0;
+        for (int j = nOps * 2; --j>= nOps; )
+          if (bsSym.get(j))
+            n++;
+        if (n > 1)
+          bs.set(i);
+      }
     }
     return bs;
   }
@@ -3096,6 +3121,7 @@ public final class Frame {
     String symmetryInfoString;
     UnitCell unitCell;
     Point3f periodicOriginXyz;
+    int[] cellRange;
     
     public boolean isPeriodic() {
       return periodicOriginXyz != null;
@@ -3104,6 +3130,8 @@ public final class Frame {
     CellInfo(int modelIndex, boolean doPdbScale) {
       notionalUnitcell = (float[]) mmset.getModelAuxiliaryInfo(modelIndex,
           "notionalUnitcell");
+      cellRange = (int[]) mmset.getModelAuxiliaryInfo(modelIndex,
+      "unitCellRange");
       this.modelIndex = modelIndex;
      if(( periodicOriginXyz = (Point3f) getModelAuxiliaryInfo(modelIndex, "periodicOriginXyz"))!= null)
          someModelsHaveSymmetry = true;
@@ -3139,6 +3167,10 @@ public final class Frame {
       return unitCell;
     }
 
+    int[] getCellRange() {
+      return cellRange;
+    }
+    
     float[] getNotionalUnitCell() {
       return (unitCell == null ? null : unitCell.getNotionalUnitCell());
     }

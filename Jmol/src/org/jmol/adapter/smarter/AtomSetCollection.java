@@ -503,8 +503,6 @@ public class AtomSetCollection {
     
     SymmetryOperation[] finalOperations = spaceGroup.getFinalOperations(atoms,
         atomIndex, count, doNormalize);
-    for (int i = 0; i < count; i++)
-      atoms[i + atomIndex].bsSymmetry = new BitSet();
     int operationCount = finalOperations.length;
     int minX = 0;
     int minY = 0;
@@ -521,17 +519,38 @@ public class AtomSetCollection {
       maxZ = (maxY % 10) - 4;
       maxY = (maxY % 100) / 10 - 4;
     }
-    cartesians = new Point3f[count * operationCount * (maxX - minX)
-        * (maxY - minY) * (maxZ - minZ)];
+    int nCells = (maxX - minX) * (maxY - minY) * (maxZ - minZ);
+    cartesians = new Point3f[count * operationCount * nCells];
+    for (int i = 0; i < count; i++)
+      atoms[i + atomIndex].bsSymmetry = new BitSet(operationCount * (nCells + 1));
     int pt = 0;
-    if (cartesians.length > 0)
-      pt = symmetryAddAtoms(finalOperations, atomIndex, count, 0, 0, 0, pt, true);
+    int[] unitCells = new int[nCells];
+    int iCell = 0;
     for (int tx = minX; tx < maxX; tx++)
       for (int ty = minY; ty < maxY; ty++)
-        for (int tz = minZ; tz < maxZ; tz++)
-          if (tx != 0 || ty != 0 || tz != 0)
+        for (int tz = minZ; tz < maxZ; tz++) {
+          unitCells[iCell++] = 555 + tx * 100 + ty * 10 + tz;
+          if (tx == 0 && ty == 0 && tz == 0 && cartesians.length > 0) {
+              for (pt = 0; pt < count; pt++) {
+                Atom atom = atoms[atomIndex + pt];
+                cartesians[pt] = new Point3f(atom);
+                finalOperations[0].transform(cartesians[pt]);
+                unitCell.toCartesian(cartesians[pt]);
+                atom.bsSymmetry.set(iCell * operationCount);
+                atom.bsSymmetry.set(0);
+              }
+              pt = symmetryAddAtoms(finalOperations, atomIndex, count, 0, 0, 0, pt, iCell * operationCount);
+            }            
+        }
+    iCell = 0;
+    for (int tx = minX; tx < maxX; tx++)
+      for (int ty = minY; ty < maxY; ty++)
+        for (int tz = minZ; tz < maxZ; tz++) {
+          iCell++;
+          if (tx != 0 || ty != 0 || tz != 0) 
             pt = symmetryAddAtoms(finalOperations, atomIndex, count, tx, ty,
-                tz, pt, false);
+                tz, pt, iCell * operationCount);
+        }
     if (operationCount > 0) {
       String[] symmetryList = new String[operationCount];
       for (int i = 0; i < operationCount; i++)
@@ -545,14 +564,11 @@ public class AtomSetCollection {
     setAtomSetAuxiliaryInfo("symmetryCount", new Integer(operationCount));
     setAtomSetAuxiliaryInfo("latticeDesignation", spaceGroup
         .getLatticeDesignation());
-    if (minX != maxX || minY != maxY || minZ != maxZ)
-      setAtomSetAuxiliaryInfo("unitCellRange", new int[] {minX, minY, minZ, maxX, maxY, maxZ});
+    setAtomSetAuxiliaryInfo("unitCellRange", unitCells);
     spaceGroup = null;
     notionalUnitCell = new float[6];
     coordinatesAreFractional = false; //turn off global fractional conversion -- this wil be model by model
     setGlobalBoolean(GLOBAL_SYMMETRY);
-    
-    
   }
   
   Point3f[] cartesians;
@@ -566,18 +582,9 @@ public class AtomSetCollection {
   
   private int symmetryAddAtoms(SymmetryOperation[] finalOperations,
                                int atomIndex, int count, int transX,
-                               int transY, int transZ, int pt, boolean is555) throws Exception {
+                               int transY, int transZ, int pt, int iCellOpPt) throws Exception {
     boolean isBaseCell = (transX == 0 && transY == 0 && transZ == 0);
     int nOperations = finalOperations.length;
-    if (isBaseCell)
-      pt = 0;
-    for (; pt < count; pt++) {
-      Atom atom = atoms[atomIndex + pt];
-      cartesians[pt] = new Point3f(atom);
-      finalOperations[0].transform(cartesians[pt]);
-      unitCell.toCartesian(cartesians[pt]);
-      atom.bsSymmetry.set(0);
-    }
     int[] atomMap = new int[count];
     for (int iSym = 0; iSym < nOperations; iSym++) {
       if (isBaseCell && finalOperations[iSym].getXyz().equals("x,y,z"))
@@ -606,8 +613,8 @@ public class AtomSetCollection {
         }
         if (special != null) {
           atomMap[atoms[i].atomSite] = special.atomIndex;
-          if (is555)
-            special.bsSymmetry.set(iSym);
+          special.bsSymmetry.set(iCellOpPt + iSym);
+          special.bsSymmetry.set(iSym);
 
           // System.out.println(iSym + " " + finalOperations[iSym].getXyz()
           // + " special set: " + i + " " + " " + special.bsSymmetry);
@@ -622,6 +629,7 @@ public class AtomSetCollection {
           //          System.out.println(cartesian + " " + (Point3f)atom + "X" + finalOperations[iSym].getXyz() + " " + transX+" "+transY+" "+transZ);
           atom1.atomSite = atoms[i].atomSite;
           atom1.bsSymmetry = new BitSet();
+          atom1.bsSymmetry.set(iCellOpPt + iSym);
           atom1.bsSymmetry.set(iSym);
           cartesians[pt++] = cartesian;
         }

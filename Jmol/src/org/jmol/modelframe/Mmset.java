@@ -393,14 +393,15 @@ public final class Mmset {
   private void propogateSecondaryStructure() {
     // issue arises with multiple file loading and multi-_data  mmCIF files
     // that structural information may be model-specific
-    
     for (int i = structureCount; --i >= 0;) {
       Structure structure = structures[i];
       for (int j = modelCount; --j >= 0;)
-        if (structure.modelIndex == j || structure.modelIndex == -1)
+        if (structure.modelIndex == j || structure.modelIndex == -1) {
+          System.out.println("adding " + structureCount + " structures from file -- model "+ structure.modelIndex);
           models[j].addSecondaryStructure(structure.type,
               structure.startChainID, structure.startSeqcode,
               structure.endChainID, structure.endSeqcode);
+        }
     }
   }
 

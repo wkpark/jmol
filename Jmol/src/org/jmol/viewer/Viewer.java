@@ -1546,6 +1546,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     }
     if (isMerge) {
       modelManager.merge(modelAdapter, clientFile);
+      selectAll();
       setTainted(true);
     } else {
       openClientFile(fullPathName, fileName, clientFile);

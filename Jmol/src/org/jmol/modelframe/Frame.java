@@ -361,7 +361,7 @@ public final class Frame {
       if (iterStructure != null)
         while (iterStructure.hasNext()) {
           if (!iterStructure.getStructureType().equals("turn"))
-            defineStructure(iterStructure.getModelIndex(), iterStructure
+            defineStructure(iterStructure.getModelIndex() + baseModelIndex, iterStructure
                 .getStructureType(), iterStructure.getStartChainID(),
                 iterStructure.getStartSequenceNumber(), iterStructure
                     .getStartInsertionCode(), iterStructure.getEndChainID(),
@@ -376,7 +376,7 @@ public final class Frame {
       if (iterStructure != null)
         while (iterStructure.hasNext()) {
           if (iterStructure.getStructureType().equals("turn"))
-            defineStructure(iterStructure.getModelIndex(), iterStructure
+            defineStructure(iterStructure.getModelIndex() + baseModelIndex, iterStructure
                 .getStructureType(), iterStructure.getStartChainID(),
                 iterStructure.getStartSequenceNumber(), iterStructure
                     .getStartInsertionCode(), iterStructure.getEndChainID(),

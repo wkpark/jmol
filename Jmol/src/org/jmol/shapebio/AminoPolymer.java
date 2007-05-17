@@ -274,6 +274,7 @@ public class AminoPolymer extends AlphaPolymer {
 
   public void calculateStructures() {
     //deprecated: calcHydrogenBonds();
+    System.out.println("calculateStructures for model " + this.model.getModelIndex());
     char[] structureTags = new char[monomerCount];
 
     for (int i = 0; i < monomerCount - 1; ++i) {
@@ -360,6 +361,7 @@ public class AminoPolymer extends AlphaPolymer {
       }
     }
 
+    System.out.println("done calculateStructures for model " + this.model.getModelIndex());
   }
   
   

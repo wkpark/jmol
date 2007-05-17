@@ -124,8 +124,10 @@ public final class Model {
   void addSecondaryStructure(byte type,
                              char startChainID, int startSeqcode,
                              char endChainID, int endSeqcode) {
+    System.out.println ("model.addsecondarystructure model= " + modelIndex + " bioPolymerCount = " + bioPolymerCount);
     for (int i = bioPolymerCount; --i >= 0; ) {
       Polymer polymer = bioPolymers[i];
+      //System.out.println(i+" ; " + polymer);
       polymer.addSecondaryStructure(type, startChainID, startSeqcode,
                                     endChainID, endSeqcode);
     }
@@ -133,8 +135,9 @@ public final class Model {
 
   void calculateStructures() {
     //Logger.debug("Model.calculateStructures");
-    for (int i = bioPolymerCount; --i >= 0; )
+    for (int i = bioPolymerCount; --i >= 0; ) 
       bioPolymers[i].calculateStructures();
+    //System.out.println("model:calculateStructures for model " +modelIndex);
   }
 
   void setConformation(BitSet bsConformation) {

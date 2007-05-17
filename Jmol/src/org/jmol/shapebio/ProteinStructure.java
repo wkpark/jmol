@@ -48,8 +48,8 @@ abstract class ProteinStructure {
     
     if(Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug(
-          "Creating ProteinStructure" + type + " from " + monomerIndex +
-          " through "+(monomerIndex+monomerCount -1));
+          "Creating ProteinStructure type " + type + " from " + monomerIndex +
+          " through "+(monomerIndex+monomerCount -1) + " in polymer " + apolymer);
     
     this.monomerIndex = monomerIndex;
     this.monomerCount = monomerCount;

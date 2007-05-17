@@ -420,7 +420,7 @@ public class AtomSetCollection {
     if (structureCount == structures.length)
       structures = (Structure[])ArrayUtil.setLength(structures,
                                                       structureCount + 32);
-    structure.modelIndex = currentAtomSetIndex;
+    structure.modelIndex = (currentAtomSetIndex < 0 ? 0 : currentAtomSetIndex);
     structures[structureCount++] = structure;
   }
 

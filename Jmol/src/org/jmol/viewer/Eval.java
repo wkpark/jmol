@@ -443,10 +443,10 @@ class Eval { //implements Runnable {
     return str.toString();
   }
 
-  void clearPredefined() {
-    int cPredef = JmolConstants.predefinedSets.length;
+  private void clearPredefined(String[] list) {
+    int cPredef = list.length;
     for (int iPredef = 0; iPredef < cPredef; iPredef++)
-      predefine(JmolConstants.predefinedSets[iPredef]);
+      predefine(list[iPredef]);
   }
   
   void clearDefinitionsAndLoadPredefined() {
@@ -456,7 +456,8 @@ class Eval { //implements Runnable {
     viewer.setSelectionSubset(null);
     if (viewer.getFrame() == null || viewer.getAtomCount() == 0)
       return;
-    clearPredefined();
+    clearPredefined(JmolConstants.predefinedStatic);
+    clearPredefined(JmolConstants.predefinedVariable);
     // Now, define all the elements as predefined sets
     // hydrogen is handled specially, so don't define it
 
@@ -3629,8 +3630,6 @@ class Eval { //implements Runnable {
           filename = parameterAsString(2);
         isMerge = (filename.equalsIgnoreCase("append"));
         i =  2;
-        if (isMerge)
-          clearPredefined();
       }
       if (getToken(i).tok != Token.string)
         filenameExpected();
@@ -4790,13 +4789,16 @@ class Eval { //implements Runnable {
       invalidArgument();
     switch (tokAt(2)) {
     case Token.bitset:
-    case Token.expression:
+    case Token.expressionBegin:
       bs = expression(2);
       checkStatementLength(iToken + 1);
       break;
     default:
       checkLength2();
     }
+    if (isSyntaxCheck)
+      return;
+    clearPredefined(JmolConstants.predefinedVariable);
     viewer.setProteinType(iType, bs);
   }
   
@@ -5197,6 +5199,7 @@ class Eval { //implements Runnable {
 
   void calculate() throws ScriptException {
     if ((iToken = statementLength) >= 2) {
+      clearPredefined(JmolConstants.predefinedVariable);
       switch (getToken(1).tok) {
       case Token.surface:
         viewer.calculateSurface(null, null, -1);
@@ -9976,7 +9979,7 @@ class Eval { //implements Runnable {
         return false;
       
       try {
-        SmilesMatcherInterface matcher = (SmilesMatcherInterface)Class.forName(JmolConstants.CLASSBASE_OPTIONS + "org.jmol.smiles.PatternMatcher").newInstance();
+        SmilesMatcherInterface matcher = (SmilesMatcherInterface)Class.forName(JmolConstants.CLASSBASE_OPTIONS + "smiles.PatternMatcher").newInstance();
         matcher.setViewer(viewer);
         bs = matcher.getSubstructureSet(smiles);
       } catch (Exception e) {

@@ -2372,7 +2372,19 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // predefined sets
   ////////////////////////////////////////////////////////////////
 
-  public static String[] predefinedSets = {
+  // these must be removed after various script commands so that they stay current
+  
+  public static String[] predefinedVariable = {
+    "@water _g>=70 & _g<=72, oxygen & connected(2, hydrogen or deuterium or tritium), (hydrogen or deuterium and tritium) & connected(oxygen & connected(2, hydrogen or deuterium or tritium))",
+    "@turn structure=1",
+    "@sheet structure=2",
+    "@helix structure=3",
+    "@bonded bondcount>0",
+  };
+  
+  // these are only updated once per file load or file append
+  
+  public static String[] predefinedStatic = {
     //
     // main isotope
     //
@@ -2432,7 +2444,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     //
     "@solvent _g>=70 & _g<=74", // water or ions
     "@hoh water",
-    "@water _g>=70 & _g<=72, oxygen & connected(2, hydrogen or deuterium or tritium), (hydrogen or deuterium and tritium) & connected(oxygen & connected(2, hydrogen or deuterium or tritium))",
     "@ions _g=73,_g=74",
 
     //
@@ -2443,11 +2454,6 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "@sidechain (protein,nucleic) & !backbone",
     "@base nucleic & !backbone",
 
-    "@turn structure=1",
-    "@sheet structure=2",
-    "@helix structure=3",
-
-    "@bonded bondcount>0",
     //    "@hetero", handled specially
 
   };

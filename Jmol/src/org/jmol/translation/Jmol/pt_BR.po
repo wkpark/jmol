@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-05-16 21:43+0200\n"
-"PO-Revision-Date: 2007-05-16 14:19-0300\n"
+"PO-Revision-Date: 2007-05-16 18:53-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -701,7 +701,7 @@ msgstr "Iniciando o Jmol..."
 
 #: org/openscience/jmol/app/Jmol.java:397
 msgid "All Files"
-msgstr ""
+msgstr "Todos os arquivos"
 
 #: org/openscience/jmol/app/Jmol.java:398
 #: org/openscience/jmol/app/PovrayDialog.java:488
@@ -712,17 +712,16 @@ msgstr "Cancelar"
 
 #: org/openscience/jmol/app/Jmol.java:399
 msgid "Abort file chooser dialog"
-msgstr ""
+msgstr "Abortar o diálogo do selecionador de arquivos"
 
 #: org/openscience/jmol/app/Jmol.java:400
 #: org/openscience/jmol/app/Jmol.java:401
 msgid "Details"
-msgstr ""
+msgstr "Detalhes"
 
 #: org/openscience/jmol/app/Jmol.java:402
-#, fuzzy
 msgid "Directory"
-msgstr "Diretório de trabalho"
+msgstr "Diretório"
 
 #: org/openscience/jmol/app/Jmol.java:403
 #: org/openscience/jmol/app/Jmol.java:423
@@ -733,36 +732,35 @@ msgstr "Abrir"
 
 #: org/openscience/jmol/app/Jmol.java:404
 msgid "Open selected directory"
-msgstr ""
+msgstr "Abrir o diretório selecionado"
 
 #: org/openscience/jmol/app/Jmol.java:405
 msgid "Attributes"
-msgstr ""
+msgstr "Atributos"
 
 #: org/openscience/jmol/app/Jmol.java:406
 msgid "Modified"
-msgstr ""
+msgstr "Modificado"
 
 #: org/openscience/jmol/app/Jmol.java:407
 msgid "Generic File"
-msgstr ""
+msgstr "Arquivo genérico"
 
 #: org/openscience/jmol/app/Jmol.java:409
-#, fuzzy
 msgid "File Name:"
-msgstr "Nome-base para o arquivo"
+msgstr "Nome do arquivo:"
 
 #: org/openscience/jmol/app/Jmol.java:410
 msgid "Size"
-msgstr ""
+msgstr "Tamanho"
 
 #: org/openscience/jmol/app/Jmol.java:411
 msgid "Files of Type:"
-msgstr ""
+msgstr "Arquivos do tipo:"
 
 #: org/openscience/jmol/app/Jmol.java:412
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: org/openscience/jmol/app/Jmol.java:413
 #: org/openscience/jmol/app/ScriptWindow.java:108
@@ -771,38 +769,37 @@ msgstr "Ajuda"
 
 #: org/openscience/jmol/app/Jmol.java:414
 msgid "FileChooser help"
-msgstr ""
+msgstr "Ajuda do selecionador de arquivos"
 
 #: org/openscience/jmol/app/Jmol.java:415
 #: org/openscience/jmol/app/Jmol.java:416
 msgid "Home"
-msgstr ""
+msgstr "Início"
 
 #: org/openscience/jmol/app/Jmol.java:417
 #: org/openscience/jmol/app/Jmol.java:418
 msgid "List"
-msgstr ""
+msgstr "Listar"
 
 #: org/openscience/jmol/app/Jmol.java:419
 msgid "Look In:"
-msgstr ""
+msgstr "Ver em:"
 
 #: org/openscience/jmol/app/Jmol.java:420
 msgid "Error creating new folder"
-msgstr ""
+msgstr "Erro ao criar nova pasta"
 
 #: org/openscience/jmol/app/Jmol.java:421
 msgid "New Folder"
-msgstr ""
+msgstr "Nova pasta"
 
 #: org/openscience/jmol/app/Jmol.java:422
 msgid "Create New Folder"
-msgstr ""
+msgstr "Criar nova pasta"
 
 #: org/openscience/jmol/app/Jmol.java:424
-#, fuzzy
 msgid "Open selected file"
-msgstr "Abrir um arquivo."
+msgstr "Abrir arquivo selecionado"
 
 #: org/openscience/jmol/app/Jmol.java:426
 #: org/openscience/jmol/app/Jmol.java:428
@@ -811,30 +808,28 @@ msgid "Save"
 msgstr "Gravar"
 
 #: org/openscience/jmol/app/Jmol.java:427
-#, fuzzy
 msgid "Save selected file"
-msgstr "Grupo de átomos"
+msgstr "Gravar arquivo selecionado"
 
 #: org/openscience/jmol/app/Jmol.java:429
-#, fuzzy
 msgid "Save In:"
-msgstr "Gravar"
+msgstr "Gravar em:"
 
 #: org/openscience/jmol/app/Jmol.java:430
 msgid "Update"
-msgstr ""
+msgstr "Atualizar"
 
 #: org/openscience/jmol/app/Jmol.java:431
 msgid "Update directory listing"
-msgstr ""
+msgstr "Atualizar a listagem do diretório"
 
 #: org/openscience/jmol/app/Jmol.java:432
 msgid "Up"
-msgstr ""
+msgstr "Para cima"
 
 #: org/openscience/jmol/app/Jmol.java:433
 msgid "Up One Level"
-msgstr ""
+msgstr "Para cima um nível"
 
 #: org/openscience/jmol/app/Jmol.java:446
 msgid "give this help page"
@@ -952,12 +947,8 @@ msgid "Filename Stem"
 msgstr "Nome-base para o arquivo"
 
 #: org/openscience/jmol/app/PovrayDialog.java:158
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
-msgstr ""
-"Quadro único: por exemplo, 'caffine' -> 'caffine.pov';  Quadro múltiplo: por "
-"exemplo, 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgstr "Quadro único: por exemplo, 'caffine' -> 'caffine.pov';  Quadro múltiplo: por exemplo, 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:168
 msgid "Working Directory"
@@ -1202,8 +1193,7 @@ msgstr "(Angstroms)"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:417
 msgid "Bond Tolerance - sum of two covalent radii + this value"
-msgstr ""
-"Tolerância de Ligação - somatório de dois raios covalentes + este valor"
+msgstr "Tolerância de Ligação - somatório de dois raios covalentes + este valor"
 
 #: org/openscience/jmol/app/PreferencesDialog.java:468
 msgid "Minimum Bonding Distance"
@@ -1259,111 +1249,76 @@ msgstr "Novidades no Jmol"
 #, fuzzy
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Executando um script..."
-
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "Rotação de FrameLi&gado"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotação de frame"
-
 #~ msgid "Colors"
 #~ msgstr "Cores"
-
 #~ msgid "Background"
 #~ msgstr "Fundo"
-
 #~ msgid "Set the Background Color"
 #~ msgstr "Definir cor de fundo"
-
 #~ msgid "Background Color"
 #~ msgstr "Cores do fundo"
-
 #~ msgid "Picked Atoms"
 #~ msgstr "Átomos escolhidos"
-
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Definir cor de átomos escolhidos"
-
 #~ msgid "Picked Atom Color"
 #~ msgstr "Cor do átomo escolhido"
-
 #~ msgid "Text"
 #~ msgstr "Texto"
-
 #~ msgid "Set the Color for Text"
 #~ msgstr "Definir cor do texto"
-
 #~ msgid "Text Color"
 #~ msgstr "Cor do texto"
-
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Definir cor para as ligações"
-
 #~ msgid "Bond Color"
 #~ msgstr "Cor da ligação"
-
 #~ msgid "Vectors"
 #~ msgstr "Vectores"
-
 #~ msgid "Set the Vector Color"
 #~ msgstr "Definir cor do Vector"
-
 #~ msgid "Vector Color"
 #~ msgstr "Cor do vector"
-
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Cor para a distância, ângulo, e medições de torção"
-
 #~ msgid "Measurements Color"
 #~ msgstr "Cor das meidções"
-
 #~ msgid "Loading plugins..."
 #~ msgstr "Carregamento de plugins..."
-
 #~ msgid "15% vanderWaals"
 #~ msgstr "15% vanderWaals"
-
 #~ msgid "25% vanderWaals"
 #~ msgstr "20% vanderWaals"
-
 #~ msgid "100% vanderWaals"
 #~ msgstr "20% vanderWaals"
-
 #~ msgid "0.10 Å"
 #~ msgstr "0.10 Å"
-
 #~ msgid "0.15 Å"
 #~ msgstr "0.15 Å"
-
 #~ msgid "0.20 Å"
 #~ msgstr "0.15 Å"
-
 #~ msgid "0.05 Å"
 #~ msgstr "0.05 Å"
-
 #~ msgid "Scale 0.5"
 #~ msgstr "Escala 0.5"
-
 #~ msgid "Scale 1"
 #~ msgstr "Escala 1"
-
 #~ msgid "Scale 2"
 #~ msgstr "Escala 2"
-
 #~ msgid "Scale 5"
 #~ msgstr "Escala 5"
-
 #~ msgid "100%"
 #~ msgstr "100%"
-
 #~ msgid "150%"
 #~ msgstr "150%"
-
 #~ msgid "200%"
 #~ msgstr "200%"
-
 #~ msgid "400%"
 #~ msgstr "400%"
-
 #~ msgid "800%"
 #~ msgstr "800%"
+

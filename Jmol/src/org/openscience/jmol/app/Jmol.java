@@ -148,6 +148,11 @@ public class Jmol extends JPanel {
   
   Jmol(Splash splash, JFrame frame, Jmol parent, int startupWidth,
       int startupHeight, String commandOptions) {
+    this(splash, frame, parent, startupWidth, startupHeight, commandOptions, null);
+  }
+
+  Jmol(Splash splash, JFrame frame, Jmol parent, int startupWidth,
+      int startupHeight, String commandOptions, Point loc) {
     super(true);
     this.frame = frame;
     this.startupWidth = startupWidth;
@@ -292,7 +297,9 @@ public class Jmol extends JPanel {
     }
 
     // prevent new Jmol from covering old Jmol
-    if (parent != null) {
+    if (loc != null) {
+      frame.setLocation(loc);    
+    }else if (parent != null) {
       Point location = parent.frame.getLocationOnScreen();
       int maxX = screenSize.width - 50;
       int maxY = screenSize.height - 50;
@@ -731,26 +738,43 @@ public class Jmol extends JPanel {
   }
 
   void doClose() {
-      // Save window positions and status in the history
-      if (historyFile != null) {
-        historyFile.addWindowInfo(JMOL_WINDOW_NAME, this.frame, border);
-        //System.out.println("doClose border: " + border);
-        //historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
-        if (scriptWindow != null)
-          historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, scriptWindow, null);
-      }
-      
-      // Close Jmol
-      numWindows--;
-      if (numWindows <= 1) {
-          report(GT._("Closing Jmol..."));
-          // pluginManager.closePlugins();
-          System.exit(0);
-      } else {
-          this.frame.dispose();
-      }
+    // Save window positions and status in the history
+    if (historyFile != null) {
+      historyFile.addWindowInfo(JMOL_WINDOW_NAME, this.frame, border);
+      //System.out.println("doClose border: " + border);
+      //historyFile.addWindowInfo(CONSOLE_WINDOW_NAME, consoleframe);
+    }
+    dispose(this.frame);
   }
-
+  
+  private void dispose(JFrame f) {
+    if (historyFile != null && scriptWindow != null)
+      historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, scriptWindow, null);
+    if (numWindows <= 1) {
+      // Close Jmol
+      report(GT._("Closing Jmol..."));
+      // pluginManager.closePlugins();
+      System.exit(0);
+    } else {
+      numWindows--;
+      f.dispose();
+      if (scriptWindow != null) {
+        scriptWindow.dispose();
+      }
+    }
+  }
+  
+  protected void setupNewFrame(String state) {
+    JFrame newFrame = new JFrame();
+    JFrame f = this.frame;
+    Jmol j = new Jmol(null, newFrame, Jmol.this, startupWidth, startupHeight,
+        "", (state == null ? null : f.getLocationOnScreen()));
+    newFrame.show();
+    if (state != null) {
+      dispose(f);
+      j.viewer.script(state);
+    }
+  }
   
   /**
    * @return The hosting frame, for the file-chooser dialog.
@@ -1593,8 +1617,9 @@ public class Jmol extends JPanel {
       if (callbackType.equalsIgnoreCase("language")) {
         new GT(callbackFunction);
         language = GT.getLanguage();
-        jmolpopup = JmolPopup.newJmolPopup(viewer, true);
         setupUIManager();
+        String state = viewer.getStateInfo();
+        setupNewFrame(state);          
       }
     }
 

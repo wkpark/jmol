@@ -52,6 +52,8 @@ public abstract class Mps extends Shape {
   public final void initFrame() {
     mmset = frame.getMmset();
     atoms = frame.atoms;
+    mpsmodels = null;
+    initialize();
   }
 
   public void setSize(int size, BitSet bsSelected) {

@@ -6928,6 +6928,10 @@ class Eval { //implements Runnable {
         if (!isSyntaxCheck)
           viewer.saveState(saveName);
         return;
+      case Token.shape:
+        if (!isSyntaxCheck)
+          viewer.saveShape(saveName);
+        return;
       case Token.identifier:
         if (parameterAsString(1).equalsIgnoreCase("selection")) {
           if (!isSyntaxCheck)
@@ -6936,7 +6940,7 @@ class Eval { //implements Runnable {
         }
       }
     }
-    evalError(GT._("save what?") + " bonds? orientation? selection? state?");
+    evalError(GT._("save what?") + " bonds? orientation? selection? shape? state?");
   }
 
   void restore() throws ScriptException {
@@ -6965,6 +6969,14 @@ class Eval { //implements Runnable {
           invalidArgument();
         runScript(state);
         return;
+      case Token.shape:
+        if (isSyntaxCheck)
+          return;
+        String shape = viewer.getSavedShape(saveName);
+        if (shape == null)
+          invalidArgument();
+        runScript(shape);
+        return;
       case Token.identifier:
         if (parameterAsString(1).equalsIgnoreCase("selection")) {
           if (!isSyntaxCheck)
@@ -6973,7 +6985,7 @@ class Eval { //implements Runnable {
         }
       }
     }
-    evalError(GT._("restore what?") + " bonds? orientation? selection?");
+    evalError(GT._("restore what?") + " bonds? orientation? selection? shape? state?");
   }
 
   void write() throws ScriptException {
@@ -7247,6 +7259,16 @@ class Eval { //implements Runnable {
       String name = parameterAsString(2);
       if (!isSyntaxCheck)
         msg = viewer.getSavedState(name);
+      break;
+    case Token.shape:
+      if ((len = statementLength) == 2) {
+        if (!isSyntaxCheck)
+          msg = viewer.getShape();
+        break;
+      }
+      String shape = parameterAsString(2);
+      if (!isSyntaxCheck)
+        msg = viewer.getSavedShape(shape);
       break;
     case Token.data:
       String type = ((len = statementLength) == 3 ? parameterAsString(2) : null);

@@ -2757,7 +2757,6 @@ public final class Frame {
                 + " \"" + d + " ? " + atom.getIdentity() + "\"");
           dMin = Math.min(d, dMin);
         }
-        //System.out.println("frame calcsurf " + i + " " + dMin);
         int d = surfaceDistance100s[i] = (int) (dMin * 100);
         surfaceDistanceMax = Math.max(surfaceDistanceMax, d);
       }
@@ -3282,7 +3281,6 @@ public final class Frame {
   void setTrajectory(int iTraj) {
     if (trajectories == null || iTraj < 0 || iTraj >= trajectories.size())
       return;
-    //System.out.println("setting trajectory " + iTraj);
     Point3f[] trajectory = (Point3f[]) trajectories.get(iTraj);
       for (int i = atomCount; --i >= 0;)
         atoms[i].set(trajectory[i]);

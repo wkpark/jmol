@@ -33,7 +33,6 @@ import java.util.Enumeration;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelframe.Bond;
 import org.jmol.modelframe.Frame;
-import org.jmol.util.CommandHistory;
 import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
 
@@ -87,6 +86,7 @@ public class StateManager {
   String lastConnections = "";
   String lastSelected = "";
   String lastState = "";
+  String lastShape = "";
 
   StateManager(Viewer viewer) {
     this.viewer = viewer;
@@ -190,7 +190,7 @@ public class StateManager {
     String script = (String) saved.get(name);
     return (script == null ? "" : script); 
   }
-  
+/*  
   boolean restoreState(String saveName) {
     //not used -- more efficient just to run the script 
     String name = (saveName.length() > 0 ? "State_" + saveName
@@ -201,7 +201,19 @@ public class StateManager {
     viewer.script(script + CommandHistory.NOHISTORYATALL_FLAG);
     return true;
   }
+*/
+  void saveShape(String saveName) {
+    saveName = lastShape = "Shape_" + saveName;
+    saved.put(saveName, viewer.getShape());
+  }
 
+  String getSavedShape(String saveName) {
+    String name = (saveName.length() > 0 ? "Shape_" + saveName
+        : lastShape);
+    String script = (String) saved.get(name);
+    return (script == null ? "" : script); 
+  }
+  
   void saveOrientation(String saveName) {
     Orientation o = new Orientation();
     o.saveName = lastOrientation = "Orientation_" + saveName;
@@ -962,7 +974,7 @@ public class StateManager {
       if (set.length() < 5) // nothing selected
         continue;
       if (!set.equals(setPrev))
-        appendCmd(s, selectCmd + " " + (set.equals(strAll) ? "*" : set));
+        appendCmd(s, selectCmd + " " + (set.equals(strAll) && false? "*" : set));
       setPrev = set;
       if (key.indexOf("-") != 0) // - for key means none required
         appendCmd(s, key);

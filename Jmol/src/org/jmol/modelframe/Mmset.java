@@ -397,7 +397,6 @@ public final class Mmset {
       Structure structure = structures[i];
       for (int j = modelCount; --j >= 0;)
         if (structure.modelIndex == j || structure.modelIndex == -1) {
-          System.out.println("adding " + structureCount + " structures from file -- model "+ structure.modelIndex);
           models[j].addSecondaryStructure(structure.type,
               structure.startChainID, structure.startSeqcode,
               structure.endChainID, structure.endSeqcode);

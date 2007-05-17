@@ -411,9 +411,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return stateManager.getSavedState(saveName);
   }
 
-  boolean restoreState(String saveName) {
+  void saveShape(String saveName) {
     //from Eval
-    return stateManager.restoreState(saveName);
+    stateManager.saveShape(saveName);
+  }
+
+  String getSavedShape(String saveName) {
+    return stateManager.getSavedShape(saveName);
   }
 
   void saveSelection(String saveName) {
@@ -2193,6 +2197,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     return s.toString();
   }
+
+  public String getShape() {
+    return modelManager.getState();
+  }
+
 
   static Hashtable dataValues = new Hashtable();
 

@@ -718,6 +718,7 @@ public class Token {
   final static int frontlit     = misc | 86;
   final static int backlit      = misc | 87;
   final static int fullylit     = misc | 88;
+  final static int shape        = misc | 89;
 
 
   // predefined Tokens: 
@@ -936,6 +937,7 @@ public class Token {
     "transform",         new Token(transform),
     "orientation",       new Token(orientation),
     "state",             new Token(state),
+    "shape",             new Token(shape),
     "url",               new Token(url),
 
     // atom expressions

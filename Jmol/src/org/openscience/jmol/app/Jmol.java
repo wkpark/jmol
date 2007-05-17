@@ -392,6 +392,8 @@ public class Jmol extends JPanel {
    * Setup the UIManager (for i18n) 
    */
   static void setupUIManager() {
+
+    // FileChooser strings
     UIManager.put("FileChooser.acceptAllFileFilterText", GT._("All Files"));
     UIManager.put("FileChooser.cancelButtonText", GT._("Cancel"));
     UIManager.put("FileChooser.cancelButtonToolTipText", GT._("Abort file chooser dialog"));
@@ -429,7 +431,22 @@ public class Jmol extends JPanel {
     UIManager.put("FileChooser.updateButtonToolTipText", GT._("Update directory listing"));
     UIManager.put("FileChooser.upFolderAccessibleName", GT._("Up"));
     UIManager.put("FileChooser.upFolderToolTipText", GT._("Up One Level"));
+
+    // OptionPane strings
+    UIManager.put("OptionPane.cancelButtonText", GT._("Cancel"));
+    UIManager.put("OptionPane.noButtonText", GT._("No"));
+    UIManager.put("OptionPane.okButtonText", GT._("OK"));
+    UIManager.put("OptionPane.yesButtonText", GT._("Yes"));
   }
+  /* Convenient method to get values of UIManager strings
+  private static void analyzeUIManagerString(String name, String value) {
+    System.err.println(name);
+    System.err.println(" en=[" + UIManager.getString(name) + "]");
+    System.err.println(" de=[" + UIManager.getString(name, Locale.GERMAN) + "]");
+    System.err.println(" es=[" + UIManager.getString(name, new Locale("es")) + "]");
+    System.err.println(" fr=[" + UIManager.getString(name, Locale.FRENCH) + "]");
+    UIManager.put(name, value);
+  }*/
 
   public static void main(String[] args) {
 

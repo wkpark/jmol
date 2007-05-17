@@ -21,9 +21,7 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.viewer;
-
-import org.jmol.modelframe.Frame;
+package org.jmol.modelframe;
 
 public class PendingMeasurement extends Measurement {
 
@@ -36,8 +34,6 @@ public class PendingMeasurement extends Measurement {
     isActive = TF;
   }
   
-  
-
   public PendingMeasurement(Frame frame) {
     super(frame, null, Float.NaN, (short) 0, null, 0);
     this.countPlusIndices = new int[5];
@@ -57,7 +53,7 @@ public class PendingMeasurement extends Measurement {
     }
 
     if (this.countPlusIndices != null) 
-      this.value = frame.getMeasurement(this.countPlusIndices);
+      value = frame.getMeasurement(this.countPlusIndices);
     formatMeasurement();
   }
 }

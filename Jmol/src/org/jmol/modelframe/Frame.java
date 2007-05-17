@@ -64,118 +64,144 @@ import java.awt.Rectangle;
 
 public final class Frame {
 
-  public Viewer viewer;
-  
-  public Viewer getViewer() {
-    return viewer;
-  }
-
-  
-  Frame mergeFrame;
-  boolean merging;
-  private String modelSetTypeName;
-  boolean isXYZ;
-  boolean isPDB;
-  boolean isMultiFile;
-  //boolean isArrayOfFiles;
-  boolean isZeroBased;
+  Viewer viewer;
   Mmset mmset;
   Graphics3D g3d;
-  // the maximum BondingRadius seen in this set of atoms
-  // used in autobonding
-  float maxBondingRadius = Float.MIN_VALUE;
-  float maxVanderwaalsRadius = Float.MIN_VALUE;
+  
+  private Frame mergeFrame;
+  private boolean merging;
+  private String modelSetTypeName;
+  private boolean isZeroBased;
+  private boolean isMultiFile;
+  private boolean isXYZ;
+  private boolean isPDB;
+
+  boolean isPDB() {
+    return isPDB;
+  }
+  
   CellInfo[] cellInfos;
   
   public CellInfo[] getCellInfos() {
     return cellInfos;
   }
   
-  int atomCount;
   public Atom[] atoms;
-  int bondCount;
+  
+  Atom[] getAtoms() {
+    return atoms;
+  }
+
+  public Atom getAtomAt(int atomIndex) {
+    return atoms[atomIndex];
+  }
+
+  int atomCount;
+
+  public int getAtomCount() {
+    return atomCount;
+  }
+
+  String[] atomNames;
+
+  public String[] getAtomNames() {
+    return atomNames;
+  }
+  
   Bond[] bonds;
 
   public Bond[] getBonds() {
     return bonds;
   }
 
-  int groupCount;
-  Group[] groups;
+  public Bond getBondAt(int bondIndex) {
+    return bonds[bondIndex];
+  }
+
+  int bondCount;
+  
+  /**
+   * not necessarily the REAL bond count; this is an ARRAY MAXIMUM
+   * 
+   * @return  SIZE OF BOND ARRAY
+   */
+  public int getBondCount() {
+    return bondCount;
+  }
+  
+  private int groupCount;
+  private Group[] groups;
   
   public Group getGroup(int i) {
     return groups[i];
   }
+  
   //note: Molecules is set up to only be calculated WHEN NEEDED
-  int moleculeCount;
-  Molecule[] molecules = new Molecule[4];
-  int modelCount, adapterModelCount;
+  private int moleculeCount;
+  private Molecule[] molecules = new Molecule[4];
+  
+  private int modelCount;
+  private int adapterModelCount;
 
   private BitSet[] elementsPresent;
 
   ////////////////////////////////////////////////////////////////
   // these may or may not be allocated
   // depending upon the AtomSetCollection characteristics
+  //
+  // used by Atom:
+  //
+  int[] atomSerials;
+  byte[] specialAtomIDs;
   Object[] clientAtomReferences;
   Vector3f[] vibrationVectors;
   byte[] occupancies;
   short[] bfactor100s;
   float[] partialCharges;
   
-  public float[] getPartialCharges() {
+  float[] getPartialCharges() {
     return partialCharges;
   }
 
-  int[] surfaceDistance100s;
-  String[] atomNames;
-  int[] atomSerials;
-  byte[] specialAtomIDs;
-  String[] group3Lists;
-  int[][] group3Counts;
-  BitSet tainted;  // not final -- can be set to null
+  private int[] surfaceDistance100s;
+  private final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
+  private String[] group3Lists;
+  private int[][] group3Counts;
 
-  BitSet bsHidden = new BitSet();
+  private BitSet bsHidden = new BitSet();
+
+  public void setBsHidden(BitSet bs) { //from selection manager
+    bsHidden = bs;
+  }
 
   public boolean isAtomHidden(int iAtom) {
     return bsHidden.get(iAtom);
   }
   
-  public void setBsHidden(BitSet bs) { //from selection manager
-    bsHidden = bs;
-  }
   ////////////////////////////////////////////////////////////////
-
-  private final static int growthIncrement = 250;
 
   //deprecated due to multimodel issue:
 
   float[] notionalUnitcell; //required by an interface -- do NOT remove.
 
-  // new way:
+  //new way:
+  
   boolean someModelsHaveSymmetry;
-  boolean someModelsHaveUnitcells;
-  boolean someModelsHaveFractionalCoordinates;
+  private boolean someModelsHaveUnitcells;
+  private boolean someModelsHaveFractionalCoordinates;
 
-  boolean hasVibrationVectors;
+  private boolean hasVibrationVectors;
   
   public boolean hasVibrationVectors(){
     return hasVibrationVectors;
   }
   
-  //boolean fileHasHbonds;
-
-  boolean structuresDefined;
-
-  boolean hasBfactorRange;
-  int bfactor100Lo;
-  int bfactor100Hi;
-
   //////// initialization and model loading ///////
 
   Frame(Viewer viewer, String name) {
     this.viewer = viewer;
     initializeFrame(name, 1, null, null);
-    initializeModel(null, null);
+    initializeModelSet(null, null);
   }
 
   Frame(Viewer viewer, JmolAdapter adapter, Object clientFile, Frame mergeFrame) {
@@ -186,22 +212,38 @@ public final class Frame {
         adapter.getEstimatedAtomCount(clientFile), adapter
             .getAtomSetCollectionProperties(clientFile), adapter
             .getAtomSetCollectionAuxiliaryInfo(clientFile));
-    initializeModel(adapter, clientFile);
+    initializeModelSet(adapter, clientFile);
     adapter.finish(clientFile);
     // dumpAtomSetNameDiagnostics(adapter, clientFile);
   }
+/*
+  private void dumpAtomSetNameDiagnostics(JmolAdapter adapter, Object clientFile) {
+    int frameModelCount = getModelCount();
+    int adapterAtomSetCount = adapter.getAtomSetCount(clientFile);
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+      Logger.debug(
+          "----------------\n" + "debugging of AtomSetName stuff\n" +
+          "\nframeModelCount=" + frameModelCount +
+          "\nadapterAtomSetCount=" + adapterAtomSetCount + "\n -- \n");
+      for (int i = 0; i < adapterAtomSetCount; ++i) {
+        Logger.debug(
+            "atomSetName[" + i + "]=" + adapter.getAtomSetName(clientFile, i) +
+            " atomSetNumber[" + i + "]=" + adapter.getAtomSetNumber(clientFile, i));
+      }
+    }
+  }
+*/
 
-  void initializeFrame(String name, int nAtoms, Properties properties,
+  private void initializeFrame(String name, int nAtoms, Properties properties,
                        Hashtable info) {
+    g3d = viewer.getGraphics3D();
     //long timeBegin = System.currentTimeMillis();
     modelSetTypeName = name;
     isXYZ = (modelSetTypeName == "xyz");
-    //isArrayOfFiles = (modelSetTypeName == "array");
     setZeroBased();
     mmset = new Mmset(this);
     mmset.setModelSetProperties(properties);
     mmset.setModelSetAuxiliaryInfo(info);
-    g3d = viewer.getGraphics3D();
     isMultiFile = mmset.getModelSetAuxiliaryInfoBoolean("isMultiFile");
     isPDB = mmset.getModelSetAuxiliaryInfoBoolean("isPDB");
     trajectories = (Vector) mmset.getModelSetAuxiliaryInfo("trajectories");
@@ -220,36 +262,112 @@ public final class Frame {
       someModelsHaveFractionalCoordinates |= mergeFrame.mmset
           .getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
     }
-    //fileHasHbonds = false;
     initializeBuild(nAtoms);
   }
 
-  public Mmset getMmset() {
-    return mmset;
+  private final static int ATOM_GROWTH_INCREMENT = 2000;
+  private final Hashtable htAtomMap = new Hashtable();
+
+  private void initializeBuild(int atomCountEstimate) {
+    if (atomCountEstimate <= 0)
+      atomCountEstimate = ATOM_GROWTH_INCREMENT;
+    if (merging) {
+      atoms = mergeFrame.atoms;
+      bonds = mergeFrame.bonds;
+    } else {
+      atoms = new Atom[atomCountEstimate];
+      bonds = new Bond[250 + atomCountEstimate]; // was "2 *" -- WAY overkill.
+    }
+    htAtomMap.clear();
+    initializeGroupBuild();
   }
-  
+
+  private final static int defaultGroupCount = 32;
+  private Chain[] chains;
+  private String[] group3s;
+  private int[] seqcodes;
+  private int[] firstAtomIndexes;
+
+  private int currentModelIndex;
+  private Model currentModel;
+  private char currentChainID;
+  private Chain currentChain;
+  private int currentGroupSequenceNumber;
+  private char currentGroupInsertionCode;
+  private String currentGroup3;
+
+  /**
+   * also from calculateStructures
+   * 
+   */
+  private void initializeGroupBuild() {
+    groupCount = 0;
+    chains = new Chain[defaultGroupCount];
+    group3s = new String[defaultGroupCount];
+    seqcodes = new int[defaultGroupCount];
+    firstAtomIndexes = new int[defaultGroupCount];
+    currentChainID = '\uFFFF';
+    currentChain = null;
+    currentGroupInsertionCode = '\uFFFF';
+    currentGroup3 = "xxxxx";
+    currentModelIndex = -1;
+    currentModel = null;
+  }
+
   Chain nullChain;
   Group nullGroup;
 
-  int baseModelIndex = 0;
-  int baseModelCount = 0;
-  int baseAtomIndex = 0;
-  int baseBondIndex = 0;
-  //int baseGroupIndex = 0;
-  boolean appendNew = true;
-  boolean isTrajectory = false;
-  Vector trajectories;
+  private int baseModelIndex = 0;
+  private int baseModelCount = 0;
+  private int baseAtomIndex = 0;
+  private int baseBondIndex = 0;
+  private boolean appendNew = true;
+  private boolean isTrajectory = false;
+  private Vector trajectories;
 
-  void initializeModel(JmolAdapter adapter, Object clientFile) {
-    currentModel = null;
-    currentModelIndex = -1;
-    atomCount = 0;
-    bondCount = 0;
+  private void initializeModelSet(JmolAdapter adapter, Object clientFile) {
     modelCount = adapterModelCount = (adapter == null ? 1 : adapter
         .getAtomSetCount(clientFile));
+    initializeAtomBondModelCounts();
+    if (adapter == null) {
+      mmset.setModelNameNumberProperties(0, "", 1, null, null, false);
+    } else {
+      appendNew = (modelCount > 1 || viewer.getAppendNew());
+      if (modelCount > 0) {
+        Logger.info("frame: haveSymmetry:" + someModelsHaveSymmetry
+            + " haveUnitcells:" + someModelsHaveUnitcells
+            + " haveFractionalCoord:" + someModelsHaveFractionalCoordinates);
+        Logger.info(modelCount + " model" + (modelCount == 1 ? "" : "s") 
+            + (isTrajectory ? ", " + trajectories.size() + " trajectories" : "")
+            + " in this collection. Use getProperty \"modelInfo\" or"
+            + " getProperty \"auxiliaryInfo\" to inspect them.");
+      }
+
+      iterateOverAllNewModels(adapter, clientFile);
+      iterateOverAllNewAtoms(adapter, clientFile);
+      iterateOverAllNewBonds(adapter, clientFile);
+      iterateOverAllNewStructures(adapter, clientFile);
+      
+      initializeUnitCellAndSymmetry();
+      initializeBonding();
+    }
+    
+    finalizeGroupBuild(); // set group offsets and build monomers
+    //only now can we access all of the atom's properties
+    saveGroup3Info();
+    buildBioPolymers();
+    freeze();
+    calcAverageAtomPoint();
+    calcBoundBoxDimensions();
+    setFirstAtomIndexes();
+    finalizeShapes();
+  }
+
+  private void initializeAtomBondModelCounts() {
+    atomCount = 0;
+    bondCount = 0;
     if (merging) {
       baseModelCount = mergeFrame.modelCount;
-      appendNew = (modelCount > 1 || viewer.getAppendNew());
       if (appendNew) {
         baseModelIndex = baseModelCount;
         modelCount += baseModelCount;
@@ -264,234 +382,101 @@ public final class Frame {
       //baseGroupIndex = mergeFrame.groupCount;
     }
     mmset.setModelCount(modelCount);
+  }
 
-    if (adapter == null) {
-      mmset.setModelNameNumberProperties(0, "", 1, null, null, false);
-    } else {
-      if (modelCount > 0) {
-        Logger.info("frame: haveSymmetry:" + someModelsHaveSymmetry
-            + " haveUnitcells:" + someModelsHaveUnitcells
-            + " haveFractionalCoord:" + someModelsHaveFractionalCoordinates);
-        Logger.info(modelCount + " model" + (modelCount == 1 ? "" : "s") 
-            + (isTrajectory ? ", " + trajectories.size() + " trajectories" : "")
-            + " in this collection. Use getProperty \"modelInfo\" or"
-            + " getProperty \"auxiliaryInfo\" to inspect them.");
-
-        nullChain = new Chain(this, mmset.getModel(baseModelIndex), ' ');
-        nullGroup = new Group(nullChain, "", 0, -1, -1);
+  private void initializeMerge() {
+    mmset.merge(mergeFrame.mmset);
+    bsSymmetry = mergeFrame.bsSymmetry;
+    if (mergeFrame.group3Lists != null) {
+      for (int i = 0; i < baseModelCount; i++) {
+        group3Lists[i] = mergeFrame.group3Lists[i];
+        group3Counts[i] = mergeFrame.group3Counts[i];
       }
-
-      group3Lists = new String[modelCount + 1];
-      group3Counts = new int[modelCount + 1][];
-      if (merging) {
-        mmset.merge(mergeFrame.mmset);
-        bsSymmetry = mergeFrame.bsSymmetry;
-        if (mergeFrame.group3Lists != null) {
-          for (int i = 0; i < baseModelCount; i++) {
-            group3Lists[i] = mergeFrame.group3Lists[i];
-            group3Counts[i] = mergeFrame.group3Counts[i];
-          }
-          group3Lists[modelCount] = mergeFrame.group3Lists[baseModelCount];
-          group3Counts[modelCount] = mergeFrame.group3Counts[baseModelCount];
-        }
-
-        clientAtomReferences = mergeFrame.clientAtomReferences;
-        vibrationVectors = mergeFrame.vibrationVectors;
-        occupancies = mergeFrame.occupancies;
-        bfactor100s = mergeFrame.bfactor100s;
-        partialCharges = mergeFrame.partialCharges;
-        surfaceDistance100s = null;
-        atomNames = mergeFrame.atomNames;
-        specialAtomIDs = mergeFrame.specialAtomIDs;
-      }
-
-      int ipt = baseModelIndex;
-      for (int i = 0; i < adapterModelCount; ++i, ipt++) {
-        int modelNumber = (appendNew ? adapter.getAtomSetNumber(clientFile, i) : Integer.MAX_VALUE);
-        String modelName = adapter.getAtomSetName(clientFile, i);
-        if (modelName == null)
-          modelName = (modelNumber == Integer.MAX_VALUE ? "" : "" + modelNumber);
-        Properties modelProperties = adapter
-            .getAtomSetProperties(clientFile, i);
-        Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
-            clientFile, i);
-        boolean isPDBModel = mmset.setModelNameNumberProperties(ipt, modelName,
-            modelNumber, modelProperties, modelAuxiliaryInfo, isPDB);
-        if (isPDBModel) {
-          group3Lists[ipt] = JmolConstants.group3List;
-          group3Counts[ipt] = new int[JmolConstants.group3Count + 10];
-          if (group3Lists[modelCount] == null) {
-            group3Lists[modelCount] = JmolConstants.group3List;
-            group3Counts[modelCount] = new int[JmolConstants.group3Count + 10];
-          }
-        }
-      }
-      mmset.finalizeModelNumbers(baseModelCount);
-
-      // atom is created, but not all methods are safe, because it
-      // has no group -- this is only an issue for debugging
-
-      short mad = viewer.getMadAtom();
-      for (JmolAdapter.AtomIterator iterAtom = adapter
-          .getAtomIterator(clientFile); iterAtom.hasNext();) {
-        short elementNumber = (short) iterAtom.getElementNumber();
-        if (elementNumber <= 0)
-          elementNumber = JmolConstants.elementNumberFromSymbol(iterAtom
-              .getElementSymbol());
-        char alternateLocation = iterAtom.getAlternateLocationID();
-        addAtom(iterAtom.getAtomSetIndex() + baseModelIndex, iterAtom.getAtomSymmetry(), iterAtom.getAtomSite(),
-            iterAtom.getUniqueID(), elementNumber, iterAtom.getAtomName(), mad,
-            iterAtom.getFormalCharge(), iterAtom.getPartialCharge(), iterAtom
-                .getOccupancy(), iterAtom.getBfactor(), iterAtom.getX(),
-            iterAtom.getY(), iterAtom.getZ(), iterAtom.getIsHetero(), iterAtom
-                .getAtomSerial(), iterAtom.getChainID(), iterAtom.getGroup3(),
-            iterAtom.getSequenceNumber(), iterAtom.getInsertionCode(), iterAtom
-                .getVectorX(), iterAtom.getVectorY(), iterAtom.getVectorZ(),
-            alternateLocation, iterAtom.getClientAtomReference(), iterAtom.getRadius());
-      }
-
-      JmolAdapter.BondIterator iterBond = adapter.getBondIterator(clientFile);
-      if (iterBond != null)
-        while (iterBond.hasNext()) {
-          bondAtoms(iterBond.getAtomUniqueID1(), iterBond.getAtomUniqueID2(),
-              (short) iterBond.getEncodedOrder());
-        }
-      JmolAdapter.StructureIterator iterStructure = adapter
-          .getStructureIterator(clientFile);
-      if (iterStructure != null)
-        while (iterStructure.hasNext()) {
-          if (!iterStructure.getStructureType().equals("turn"))
-            defineStructure(iterStructure.getModelIndex() + baseModelIndex, iterStructure
-                .getStructureType(), iterStructure.getStartChainID(),
-                iterStructure.getStartSequenceNumber(), iterStructure
-                    .getStartInsertionCode(), iterStructure.getEndChainID(),
-                iterStructure.getEndSequenceNumber(), iterStructure
-                    .getEndInsertionCode());
-        }
-
-      // define turns LAST. (pulled by the iterator first)
-      // so that if they overlap they get overwritten:
-
-      iterStructure = adapter.getStructureIterator(clientFile);
-      if (iterStructure != null)
-        while (iterStructure.hasNext()) {
-          if (iterStructure.getStructureType().equals("turn"))
-            defineStructure(iterStructure.getModelIndex() + baseModelIndex, iterStructure
-                .getStructureType(), iterStructure.getStartChainID(),
-                iterStructure.getStartSequenceNumber(), iterStructure
-                    .getStartInsertionCode(), iterStructure.getEndChainID(),
-                iterStructure.getEndSequenceNumber(), iterStructure
-                    .getEndInsertionCode());
-        }
+      group3Lists[modelCount] = mergeFrame.group3Lists[baseModelCount];
+      group3Counts[modelCount] = mergeFrame.group3Counts[baseModelCount];
     }
 
-    /****************************************************************
-     * crystal cell must come first, in case atom coordinates
-     * need to be transformed to fit in the crystal cell
-     ****************************************************************/
+    atomNames = mergeFrame.atomNames;
+    clientAtomReferences = mergeFrame.clientAtomReferences;
+    vibrationVectors = mergeFrame.vibrationVectors;
+    occupancies = mergeFrame.occupancies;
+    bfactor100s = mergeFrame.bfactor100s;
+    partialCharges = mergeFrame.partialCharges;
+    specialAtomIDs = mergeFrame.specialAtomIDs;
+    surfaceDistance100s = null;
+  }
 
-    if (adapter != null) {
-      doUnitcellStuff();
-      // perform bonding if necessary
-      boolean doBond = (bondCount == baseBondIndex 
-          || isMultiFile 
-          || isPDB && (bondCount - baseBondIndex) < (atomCount - baseAtomIndex) / 2 
-          || someModelsHaveSymmetry && !viewer.getApplySymmetryToBonds());
-      if (viewer.getForceAutoBond() || doBond && viewer.getAutoBond()
-          && getModelSetProperty("noautobond") == null) {
-        BitSet bs = null;
-        if (merging) {
-          bs = new BitSet(atomCount);
-          for (int i = baseAtomIndex; i < atomCount; i++)
-            bs.set(i);
+  private void iterateOverAllNewModels(JmolAdapter adapter, Object clientFile) {
+
+    if (modelCount > 0) {
+      nullChain = new Chain(this, mmset.getModel(baseModelIndex), ' ');
+      nullGroup = new Group(nullChain, "", 0, -1, -1);
+    }
+
+    group3Lists = new String[modelCount + 1];
+    group3Counts = new int[modelCount + 1][];
+    
+    if (merging)
+      initializeMerge();
+
+    int ipt = baseModelIndex;
+    for (int i = 0; i < adapterModelCount; ++i, ipt++) {
+      int modelNumber = (appendNew ? adapter.getAtomSetNumber(clientFile, i) : Integer.MAX_VALUE);
+      String modelName = adapter.getAtomSetName(clientFile, i);
+      if (modelName == null)
+        modelName = (modelNumber == Integer.MAX_VALUE ? "" : "" + modelNumber);
+      Properties modelProperties = adapter
+          .getAtomSetProperties(clientFile, i);
+      Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
+          clientFile, i);
+      boolean isPDBModel = mmset.setModelNameNumberProperties(ipt, modelName,
+          modelNumber, modelProperties, modelAuxiliaryInfo, isPDB);
+      if (isPDBModel) {
+        group3Lists[ipt] = JmolConstants.group3List;
+        group3Counts[ipt] = new int[JmolConstants.group3Count + 10];
+        if (group3Lists[modelCount] == null) {
+          group3Lists[modelCount] = JmolConstants.group3List;
+          group3Counts[modelCount] = new int[JmolConstants.group3Count + 10];
         }
-        Logger.info("Frame: autobonding; use  autobond=false  to not generate bonds automatically");
-        autoBond(bs, bs, null);
-      } else {
-        Logger.info("Frame: not autobonding; use forceAutobond=true to force automatic bond creation");        
       }
     }
-    finalizeGroupBuild(); // set group offsets and build monomers
-    //only now can we access all of the atom's properties
-    saveGroup3Info();
-    buildBioPolymers();
-    freeze();
-    finalizeBuild();
-    calcAverageAtomPoint();
-    calcBoundBoxDimensions();
-    setFirstAtomIndexes();
-    if (merging) {
-      for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
-        if ((shapes[i] = mergeFrame.shapes[i]) != null)
-          shapes[i].setFrame(this);
-      viewer.getFrameRenderer().clear();  
-      merging = false;
-    } else {
-      loadShape(JmolConstants.SHAPE_BALLS);
-      loadShape(JmolConstants.SHAPE_STICKS);
-      //loadShape(JmolConstants.SHAPE_HSTICKS);
-      loadShape(JmolConstants.SHAPE_MEASURES);
-      loadShape(JmolConstants.SHAPE_BBCAGE);
-      loadShape(JmolConstants.SHAPE_UCCAGE);
+    mmset.finalizeModelNumbers(baseModelCount);
+  }
+    
+  private void iterateOverAllNewAtoms(JmolAdapter adapter, Object clientFile) {
+    // atom is created, but not all methods are safe, because it
+    // has no group -- this is only an issue for debugging
+
+    short mad = viewer.getMadAtom();
+    for (JmolAdapter.AtomIterator iterAtom = adapter
+        .getAtomIterator(clientFile); iterAtom.hasNext();) {
+      short elementNumber = (short) iterAtom.getElementNumber();
+      if (elementNumber <= 0)
+        elementNumber = JmolConstants.elementNumberFromSymbol(iterAtom
+            .getElementSymbol());
+      char alternateLocation = iterAtom.getAlternateLocationID();
+      addAtom(iterAtom.getAtomSetIndex() + baseModelIndex, iterAtom.getAtomSymmetry(), iterAtom.getAtomSite(),
+          iterAtom.getUniqueID(), elementNumber, iterAtom.getAtomName(), mad,
+          iterAtom.getFormalCharge(), iterAtom.getPartialCharge(), iterAtom
+              .getOccupancy(), iterAtom.getBfactor(), iterAtom.getX(),
+          iterAtom.getY(), iterAtom.getZ(), iterAtom.getIsHetero(), iterAtom
+              .getAtomSerial(), iterAtom.getChainID(), iterAtom.getGroup3(),
+          iterAtom.getSequenceNumber(), iterAtom.getInsertionCode(), iterAtom
+              .getVectorX(), iterAtom.getVectorY(), iterAtom.getVectorZ(),
+          alternateLocation, iterAtom.getClientAtomReference(), iterAtom.getRadius());
     }
   }
 
-  void dumpAtomSetNameDiagnostics(JmolAdapter adapter, Object clientFile) {
-    int frameModelCount = getModelCount();
-    int adapterAtomSetCount = adapter.getAtomSetCount(clientFile);
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-      Logger.debug(
-          "----------------\n" + "debugging of AtomSetName stuff\n" +
-          "\nframeModelCount=" + frameModelCount +
-          "\nadapterAtomSetCount=" + adapterAtomSetCount + "\n -- \n");
-      for (int i = 0; i < adapterAtomSetCount; ++i) {
-        Logger.debug(
-            "atomSetName[" + i + "]=" + adapter.getAtomSetName(clientFile, i) +
-            " atomSetNumber[" + i + "]=" + adapter.getAtomSetNumber(clientFile, i));
-      }
-    }
-  }
-
-  private final static int ATOM_GROWTH_INCREMENT = 2000;
-
-  int currentModelIndex;
-  Model currentModel;
-  char currentChainID;
-  Chain currentChain;
-  int currentGroupSequenceNumber;
-  char currentGroupInsertionCode;
-  String currentGroup3;
-
-  private final Hashtable htAtomMap = new Hashtable();
-
-  void initializeBuild(int atomCountEstimate) {
-    if (atomCountEstimate <= 0)
-      atomCountEstimate = ATOM_GROWTH_INCREMENT;
-    if (merging) {
-      atoms = mergeFrame.atoms;
-      bonds = mergeFrame.bonds;
-    } else {
-      atoms = new Atom[atomCountEstimate];
-      bonds = new Bond[250 + atomCountEstimate]; // was "2 *" -- WAY overkill.
-    }
-    htAtomMap.clear();
-    initializeGroupBuild();
-  }
-
-  void finalizeBuild() {
-    currentModel = null;
-    currentChain = null;
-    htAtomMap.clear();
-  }
-
-  void addAtom(int modelIndex, BitSet atomSymmetry, int atomSite,
-               Object atomUid, short atomicAndIsotopeNumber, String atomName,
-               short mad, int formalCharge, float partialCharge, int occupancy,
-               float bfactor, float x, float y, float z, boolean isHetero,
-               int atomSerial, char chainID, String group3,
-               int groupSequenceNumber, char groupInsertionCode, float vectorX,
-               float vectorY, float vectorZ, char alternateLocationID,
-               Object clientAtomReference, float radius) {
+  private void addAtom(int modelIndex, BitSet atomSymmetry, int atomSite,
+                       Object atomUid, short atomicAndIsotopeNumber,
+                       String atomName, short mad, int formalCharge,
+                       float partialCharge, int occupancy, float bfactor,
+                       float x, float y, float z, boolean isHetero,
+                       int atomSerial, char chainID, String group3,
+                       int groupSequenceNumber, char groupInsertionCode,
+                       float vectorX, float vectorY, float vectorZ,
+                       char alternateLocationID, Object clientAtomReference,
+                       float radius) {
 
     checkNewGroup(atomCount, modelIndex, chainID, group3, groupSequenceNumber,
         groupInsertionCode);
@@ -509,18 +494,9 @@ public final class Frame {
     htAtomMap.put(atomUid, atom);
   }
 
-  void checkNewGroup(int atomIndex) {
-    Atom atom = atoms[atomIndex];
-    if (atom.group == null)
-      checkNewGroup(atomIndex, atom.modelIndex, '\0', null, 0, '\0');
-    else
-      checkNewGroup(atomIndex, atom.modelIndex, atom.getChainID(), atom
-          .getGroup3(), atom.getSeqNumber(), atom.getInsertionCode());
-  }
-
-  void checkNewGroup(int atomIndex, int modelIndex, char chainID,
-                     String group3, int groupSequenceNumber,
-                     char groupInsertionCode) {
+  private void checkNewGroup(int atomIndex, int modelIndex, char chainID,
+                             String group3, int groupSequenceNumber,
+                             char groupInsertionCode) {
     String group3i = (group3 == null ? null : group3.intern());
     if (modelIndex != currentModelIndex) {
       currentModel = mmset.getModel(modelIndex);
@@ -544,10 +520,43 @@ public final class Frame {
           atomIndex);
     }
   }
+          
+  private void growAtomArrays(int byHowMuch) {
+    int newLength = atomCount + byHowMuch;
+    atoms = (Atom[]) ArrayUtil.setLength(atoms, newLength);
+    if (clientAtomReferences != null)
+      clientAtomReferences = (Object[]) ArrayUtil.setLength(
+          clientAtomReferences, newLength);
+    if (vibrationVectors != null)
+      vibrationVectors = (Vector3f[]) ArrayUtil.setLength(vibrationVectors,
+          newLength);
+    if (occupancies != null)
+      occupancies = ArrayUtil.setLength(occupancies, newLength);
+    if (bfactor100s != null)
+      bfactor100s = ArrayUtil.setLength(bfactor100s, newLength);
+    if (partialCharges != null)
+      partialCharges = ArrayUtil.setLength(partialCharges, newLength);
+    if (atomNames != null)
+      atomNames = ArrayUtil.setLength(atomNames, newLength);
+    if (atomSerials != null)
+      atomSerials = ArrayUtil.setLength(atomSerials, newLength);
+    if (specialAtomIDs != null)
+      specialAtomIDs = ArrayUtil.setLength(specialAtomIDs, newLength);
+  }
 
-  short defaultCovalentMad;
 
-  void bondAtoms(Object atomUid1, Object atomUid2, short order) {
+  private void iterateOverAllNewBonds(JmolAdapter adapter, Object clientFile) {
+    JmolAdapter.BondIterator iterBond = adapter.getBondIterator(clientFile);
+  if (iterBond != null)
+    while (iterBond.hasNext()) {
+      bondAtoms(iterBond.getAtomUniqueID1(), iterBond.getAtomUniqueID2(),
+          (short) iterBond.getEncodedOrder());
+    }
+  }
+  
+  private short defaultCovalentMad;
+
+  private void bondAtoms(Object atomUid1, Object atomUid2, short order) {
     if (defaultCovalentMad == 0)
       defaultCovalentMad = viewer.getMadBond();
     Atom atom1 = (Atom) htAtomMap.get(atomUid1);
@@ -573,54 +582,306 @@ public final class Frame {
       //fileHasHbonds = true;
   }
 
-  void growAtomArrays(int byHowMuch) {
-    int newLength = atomCount + byHowMuch;
-    atoms = (Atom[]) ArrayUtil.setLength(atoms, newLength);
-    if (clientAtomReferences != null)
-      clientAtomReferences = (Object[]) ArrayUtil.setLength(
-          clientAtomReferences, newLength);
-    if (vibrationVectors != null)
-      vibrationVectors = (Vector3f[]) ArrayUtil.setLength(vibrationVectors,
-          newLength);
-    if (occupancies != null)
-      occupancies = ArrayUtil.setLength(occupancies, newLength);
-    if (bfactor100s != null)
-      bfactor100s = ArrayUtil.setLength(bfactor100s, newLength);
-    if (partialCharges != null)
-      partialCharges = ArrayUtil.setLength(partialCharges, newLength);
-    if (atomNames != null)
-      atomNames = ArrayUtil.setLength(atomNames, newLength);
-    if (atomSerials != null)
-      atomSerials = ArrayUtil.setLength(atomSerials, newLength);
-    if (specialAtomIDs != null)
-      specialAtomIDs = ArrayUtil.setLength(specialAtomIDs, newLength);
+  private void iterateOverAllNewStructures(JmolAdapter adapter,
+                                           Object clientFile) {
+    JmolAdapter.StructureIterator iterStructure = adapter
+        .getStructureIterator(clientFile);
+    if (iterStructure != null)
+      while (iterStructure.hasNext()) {
+        if (!iterStructure.getStructureType().equals("turn"))
+          defineStructure(iterStructure.getModelIndex() + baseModelIndex,
+              iterStructure.getStructureType(),
+              iterStructure.getStartChainID(), iterStructure
+                  .getStartSequenceNumber(), iterStructure
+                  .getStartInsertionCode(), iterStructure.getEndChainID(),
+              iterStructure.getEndSequenceNumber(), iterStructure
+                  .getEndInsertionCode());
+      }
+
+    // define turns LAST. (pulled by the iterator first)
+    // so that if they overlap they get overwritten:
+
+    iterStructure = adapter.getStructureIterator(clientFile);
+    if (iterStructure != null)
+      while (iterStructure.hasNext()) {
+        if (iterStructure.getStructureType().equals("turn"))
+          defineStructure(iterStructure.getModelIndex() + baseModelIndex,
+              iterStructure.getStructureType(),
+              iterStructure.getStartChainID(), iterStructure
+                  .getStartSequenceNumber(), iterStructure
+                  .getStartInsertionCode(), iterStructure.getEndChainID(),
+              iterStructure.getEndSequenceNumber(), iterStructure
+                  .getEndInsertionCode());
+      }
+  }
+  
+  private boolean fileHadDefinedStructures;
+
+  private void defineStructure(int modelIndex, String structureType, char startChainID,
+                       int startSequenceNumber, char startInsertionCode,
+                       char endChainID, int endSequenceNumber,
+                       char endInsertionCode) {
+    fileHadDefinedStructures = true; //(in file)
+    mmset.defineStructure(modelIndex, structureType, startChainID,
+        startSequenceNumber, startInsertionCode, endChainID, endSequenceNumber,
+        endInsertionCode);
   }
 
-  ////////////////////////////////////////////////////////////////
-  // special handling for groups
-  ////////////////////////////////////////////////////////////////
+  ////// symmetry ///////
+  
+  private void initializeUnitCellAndSymmetry() {
+    /*
+     * really THREE issues here:
+     * 1) does a model have an associated unit cell that could be displayed?
+     * 2) are the coordinates fractional and so need to be transformed?
+     * 3) does the model have symmetry operations that were applied?
+     * 
+     * This must be done for each model individually.
+     * 
+     */
 
-  final static int defaultGroupCount = 32;
-  Chain[] chains;
-  String[] group3s;
-  int[] seqcodes;
-  int[] firstAtomIndexes;
-
-  final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
-
-  void initializeGroupBuild() {
-    groupCount = 0;
-    chains = new Chain[defaultGroupCount];
-    group3s = new String[defaultGroupCount];
-    seqcodes = new int[defaultGroupCount];
-    firstAtomIndexes = new int[defaultGroupCount];
-    currentChainID = '\uFFFF';
-    currentChain = null;
-    currentGroupInsertionCode = '\uFFFF';
-    currentGroup3 = "xxxxx";
-    currentModelIndex = -1;
-    currentModel = null;
+    if (someModelsHaveUnitcells) {
+      boolean doPdbScale = (adapterModelCount == 1);
+      cellInfos = new CellInfo[modelCount];
+      for (int i = 0; i < baseModelCount; i++)
+        cellInfos[i] = (mergeFrame.cellInfos != null ? mergeFrame.cellInfos[i]
+            : new CellInfo(i, false));
+      for (int i = baseModelCount; i < modelCount; i++)
+        cellInfos[i] = new CellInfo(i, doPdbScale);
+    }
+    if (someModelsHaveSymmetry) {
+      getSymmetrySet();
+      for (int iAtom = baseAtomIndex, iModel = -1, i0 = 0; iAtom < atomCount; iAtom++) {
+        if (atoms[iAtom].modelIndex != iModel) {
+          iModel = atoms[iAtom].modelIndex;
+          i0 = baseAtomIndex
+              + mmset.getModelAuxiliaryInfoInt(iModel, "presymmetryAtomIndex")
+              + mmset.getModelAuxiliaryInfoInt(iModel, "presymmetryAtomCount");
+        }
+        if (iAtom >= i0)
+          bsSymmetry.set(iAtom);
+      }
+    }
+    if (someModelsHaveFractionalCoordinates) {
+      for (int i = baseAtomIndex; i < atomCount; i++) {
+        int modelIndex = atoms[i].modelIndex;
+        if (!cellInfos[modelIndex].coordinatesAreFractional)
+          continue;
+        cellInfos[modelIndex].toCartesian(atoms[i]);
+        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+          Logger.debug("atom " + i + ": " + (Point3f) atoms[i]);
+      }
+    }
   }
+
+  private void initializeBonding() {
+    // perform bonding if necessary
+    boolean doBond = (bondCount == baseBondIndex 
+        || isMultiFile 
+        || isPDB && (bondCount - baseBondIndex) < (atomCount - baseAtomIndex) / 2 
+        || someModelsHaveSymmetry && !viewer.getApplySymmetryToBonds());
+    if (viewer.getForceAutoBond() || doBond && viewer.getAutoBond()
+        && getModelSetProperty("noautobond") == null) {
+      BitSet bs = null;
+      if (merging) {
+        bs = new BitSet(atomCount);
+        for (int i = baseAtomIndex; i < atomCount; i++)
+          bs.set(i);
+      }
+      Logger.info("Frame: autobonding; use  autobond=false  to not generate bonds automatically");
+      autoBond(bs, bs, null);
+    } else {
+      Logger.info("Frame: not autobonding; use forceAutobond=true to force automatic bond creation");        
+    }
+  }
+
+  //// average point, bounding box, and rotation radius ////
+  
+  final Point3f averageAtomPoint = new Point3f();
+
+  Point3f getAverageAtomPoint() {
+    return averageAtomPoint;
+  }
+
+  final Point3f centerBoundBox = new Point3f();
+
+  Point3f getBoundBoxCenter() {
+    return centerBoundBox;
+  }
+
+  final Vector3f boundBoxCornerVector = new Vector3f();
+
+  Vector3f getBoundBoxCornerVector() {
+    return boundBoxCornerVector;
+  }
+
+  final Point3f[] bboxVertices = new Point3f[8];
+
+  public Point3f[] getBboxVertices() {
+    return bboxVertices;
+  }
+
+  private final Point3f pointMin = new Point3f();
+  private final Point3f pointMax = new Point3f();
+
+  private final static Point3f[] unitBboxPoints = { new Point3f(1, 1, 1),
+      new Point3f(1, 1, -1), new Point3f(1, -1, 1), new Point3f(1, -1, -1),
+      new Point3f(-1, 1, 1), new Point3f(-1, 1, -1), new Point3f(-1, -1, 1),
+      new Point3f(-1, -1, -1), };
+
+  private void calcBoundBoxDimensions() {
+    calcAtomsMinMax();
+    if (cellInfos != null)
+      calcUnitCellMinMax();
+    centerBoundBox.add(pointMin, pointMax);
+    centerBoundBox.scale(0.5f);
+    boundBoxCornerVector.sub(pointMax, centerBoundBox);
+
+    for (int i = 8; --i >= 0;) {
+      Point3f bbcagePoint = bboxVertices[i] = new Point3f(unitBboxPoints[i]);
+      bbcagePoint.x *= boundBoxCornerVector.x;
+      bbcagePoint.y *= boundBoxCornerVector.y;
+      bbcagePoint.z *= boundBoxCornerVector.z;
+      bbcagePoint.add(centerBoundBox);
+    }
+  }
+
+  private void calcAtomsMinMax() {
+    if (atomCount < 2) {
+      pointMin.set(-10, -10, -10);
+      pointMax.set(10, 10, 10);
+      return;
+    }
+    pointMin.set(atoms[0]);
+    pointMax.set(atoms[0]);
+    for (int i = atomCount; --i > 0;) {
+      // note that the 0 element was set above
+      checkMinMax(atoms[i]);
+    }
+  }
+
+  private void calcUnitCellMinMax() {
+    for (int i = 0; i < modelCount; i++) {
+      if (!cellInfos[i].coordinatesAreFractional)
+        continue;
+      Point3f[] vertices = cellInfos[i].unitCell.getVertices();
+      for (int j = 0; j < 8; j++)
+        checkMinMax(vertices[j]);
+    }
+  }
+
+  private void checkMinMax(Point3f pt) {
+    float t = pt.x;
+    if (t < pointMin.x)
+      pointMin.x = t;
+    else if (t > pointMax.x)
+      pointMax.x = t;
+    t = pt.y;
+    if (t < pointMin.y)
+      pointMin.y = t;
+    else if (t > pointMax.y)
+      pointMax.y = t;
+    t = pt.z;
+    if (t < pointMin.z)
+      pointMin.z = t;
+    else if (t > pointMax.z)
+      pointMax.z = t;
+  }
+
+  /// methods accessed by ModelManager:
+  
+  float calcRotationRadius(Point3f center) {
+    float maxRadius = 0;
+    for (int i = atomCount; --i >= 0;) {
+      Atom atom = atoms[i];
+      float distAtom = center.distance(atom);
+      float radiusVdw = atom.getVanderwaalsRadiusFloat();
+      float outerVdw = distAtom + radiusVdw;
+      if (outerVdw > maxRadius)
+        maxRadius = outerVdw;
+    }
+    return (maxRadius == 0 ? 10 : maxRadius);
+  }
+
+  float calcRotationRadius(BitSet bs) {
+    Point3f center = getAtomSetCenter(bs);
+    float maxRadius = 0;
+    for (int i = atomCount; --i >= 0;)
+      if (bs.get(i)) {
+        Atom atom = atoms[i];
+        float distAtom = center.distance(atom);
+        float radiusVdw = atom.getVanderwaalsRadiusFloat();
+        float outerVdw = distAtom + radiusVdw;
+        if (outerVdw > maxRadius)
+          maxRadius = outerVdw;
+      }
+    return (maxRadius == 0 ? 10 : maxRadius);
+  }
+
+  
+  ///////////////  shapes ///////////////
+  
+  private void finalizeShapes() {
+    if (merging) {
+      for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
+        if ((shapes[i] = mergeFrame.shapes[i]) != null)
+          shapes[i].setFrame(this);
+      viewer.getFrameRenderer().clear();
+      merging = false;
+      return;
+    }
+    loadShape(JmolConstants.SHAPE_BALLS);
+    loadShape(JmolConstants.SHAPE_STICKS);
+    loadShape(JmolConstants.SHAPE_MEASURES);
+    loadShape(JmolConstants.SHAPE_BBCAGE);
+    loadShape(JmolConstants.SHAPE_UCCAGE);
+  }
+  
+  Shape allocateShape(int shapeID) {
+    if (shapeID == JmolConstants.SHAPE_HSTICKS || shapeID == JmolConstants.SHAPE_SSSTICKS)
+      return null;
+    String className = JmolConstants.getShapeClassName(shapeID);
+    try {
+      Class shapeClass = Class.forName(className);
+      Shape shape = (Shape) shapeClass.newInstance();
+      shape.setViewerG3dFrame(viewer, g3d, this, shapeID);
+      return shape;
+    } catch (Exception e) {
+      Logger.error("Could not instantiate shape:" + className, e);
+    }
+    return null;
+  }
+
+  final Shape[] shapes = new Shape[JmolConstants.SHAPE_MAX];
+
+  public Shape getShape(int i) {
+    return shapes[i];
+  }
+
+  void loadShape(int shapeID) {
+    if (shapes[shapeID] == null) {
+      shapes[shapeID] = allocateShape(shapeID);
+    }
+  }
+
+  void setShapeSize(int shapeID, int size, BitSet bsSelected) {
+    if (size != 0)
+      loadShape(shapeID);
+    if (shapes[shapeID] != null)
+      shapes[shapeID].setSize(size, bsSelected);
+  }
+
+  void setShapeProperty(int shapeID, String propertyName, Object value,
+                        BitSet bsSelected) {
+    if (shapes[shapeID] != null)
+      shapes[shapeID].setProperty(propertyName, value, bsSelected);
+  }
+
+  Object getShapeProperty(int shapeID, String propertyName, int index) {
+    return (shapes[shapeID] == null ? null : shapes[shapeID].getProperty(
+        propertyName, index));
+  }
+
 
   void startGroup(Chain chain, String group3, int groupSequenceNumber,
                   char groupInsertionCode, int firstAtomIndex) {
@@ -653,16 +914,6 @@ public final class Frame {
     }
     chains = null;
     group3s = null;
-  }
-
-  void saveGroup3Info() {
-    if (group3Lists == null)
-      return;
-    Hashtable info = getModelSetAuxiliaryInfo();
-    if (info == null)
-      return;
-    info.put("group3Lists", group3Lists);
-    info.put("group3Counts", group3Counts);
   }
 
   void distinguishAndPropagateGroup(int groupIndex, Chain chain, String group3,
@@ -752,6 +1003,16 @@ public final class Frame {
 
   ////////////////////////////////////////////////////////////////
 
+  void saveGroup3Info() {
+    if (group3Lists == null)
+      return;
+    Hashtable info = getModelSetAuxiliaryInfo();
+    if (info == null)
+      return;
+    info.put("group3Lists", group3Lists);
+    info.put("group3Counts", group3Counts);
+  }
+
   void buildBioPolymers() {
     for (int i = 0; i < groupCount; ++i) {
       Group group = groups[i];
@@ -762,12 +1023,7 @@ public final class Frame {
     }
   }
 
-  void clearBioPolymers() {
-    if (jbr != null && groupCount > 0)
-      jbr.clearBioPolymers(groups, groupCount);
-  }
-
-  void freeze() {
+  private void freeze() {
 
     // resize arrays
     if (atomCount < atoms.length)
@@ -787,41 +1043,66 @@ public final class Frame {
 
     // finalize all group business
     calculateStructures(merging);
-    
+
     // reset molecules -- important if merging
-    
+
     molecules = null;
     moleculeCount = 0;
+    currentModel = null;
+    currentChain = null;
+    htAtomMap.clear();
+  }
+
+  private void calcAverageAtomPoint() {
+    Point3f average = averageAtomPoint;
+    average.set(0, 0, 0);
+    if (atomCount == 0)
+      return;
+    for (int i = atomCount; --i >= 0;)
+      average.add(atoms[i]);
+    average.scale(1f / atomCount);
   }
 
   /**
-   * allows rebuilding of PDB structures
+   * allows rebuilding of PDB structures;
+   * also accessed by ModelManager from Eval
    * 
    * @param rebuild 
    *  
    */
   void calculateStructures(boolean rebuild) {
     if (rebuild) {
-      for (int i = JmolConstants.SHAPE_MAX; --i >= 0; )
+      for (int i = JmolConstants.SHAPE_MAX; --i >= 0;)
         if (JmolConstants.isShapeSecondary(i))
           shapes[i] = null;
-      clearBioPolymers();
+      if (jbr != null && groupCount > 0)
+        jbr.clearBioPolymers(groups, groupCount);
       mmset.clearStructures();
       initializeGroupBuild();
-      for (int i = 0; i < atomCount; i++)
-        checkNewGroup(i);
+      for (int i = 0; i < atomCount; i++) {
+        Atom atom = atoms[i];
+        if (atom.group == null)
+          checkNewGroup(i, atom.modelIndex, '\0', null, 0, '\0');
+        else
+          checkNewGroup(i, atom.modelIndex, atom.getChainID(),
+              atom.getGroup3(), atom.getSeqNumber(), atom.getInsertionCode());
+      }
       finalizeGroupBuild();
       buildBioPolymers();
-      structuresDefined = false;
+      fileHadDefinedStructures = false;
       moleculeCount = 0;
     }
-    if (!structuresDefined)
+    if (!fileHadDefinedStructures)
       mmset.calculateStructures();
     mmset.freeze();
   }
 
   /////// end of initialization and model building ///////
 
+  public Mmset getMmset() {
+    return mmset;
+  }
+  
   BitSet setConformation(int modelIndex, int conformationIndex) {
     BitSet bs = new BitSet();
     String altLocs = getAltLocListInModel(modelIndex);
@@ -878,29 +1159,9 @@ public final class Frame {
       }
   }
 
-  public String[] getAtomNames() {
-    return atomNames;
-  }
+  //////////////  models ////////////////
   
-  void defineStructure(int modelIndex, String structureType, char startChainID,
-                       int startSequenceNumber, char startInsertionCode,
-                       char endChainID, int endSequenceNumber,
-                       char endInsertionCode) {
-    structuresDefined = true; //(in file)
-    mmset.defineStructure(modelIndex, structureType, startChainID,
-        startSequenceNumber, startInsertionCode, endChainID, endSequenceNumber,
-        endInsertionCode);
-  }
-
-  int getAtomIndexFromAtomNumber(int atomNumber) {
-    //definitely want FIRST (model) not last here
-    for (int i = 0; i < atomCount; i++) {
-      if (atoms[i].getAtomNumber() == atomNumber)
-        return i;
-    }
-    return -1;
-  }
-
+  
   public int getAltLocIndexInModel(int modelIndex, char alternateLocationID) {
     if (alternateLocationID == '\0')
       return 0;
@@ -1039,37 +1300,9 @@ public final class Frame {
   int getModelNumberIndex(int modelNumber, boolean useModelNumber) {
     return mmset.getModelNumberIndex(modelNumber, useModelNumber);
   }
-
-  ////////////////////////////////////////////////////////////////
-
-  int getChainCount() {
-    return mmset.getChainCount();
-  }
-
-  int getBioPolymerCount() {
-    return mmset.getBioPolymerCount();
-  }
-
-  int getChainCountInModel(int modelIndex) {
-    return mmset.getChainCountInModel(modelIndex);
-  }
-
-  int getBioPolymerCountInModel(int modelIndex) {
-    return mmset.getBioPolymerCountInModel(modelIndex);
-  }
-
-  public int getGroupCount() {
-    return mmset.getGroupCount();
-  }
-
-  int getGroupCountInModel(int modelIndex) {
-    return mmset.getGroupCountInModel(modelIndex);
-  }
-
-  public int getAtomCount() {
-    return atomCount;
-  }
-
+  
+  //////////// atoms //////////////
+  
   int getAtomCountInModel(int modelIndex) {
     if (modelIndex < 0)
       return atomCount;
@@ -1079,28 +1312,19 @@ public final class Frame {
         n++;
     return n;
   }
-
-  Atom[] getAtoms() {
-    return atoms;
+  
+  int getAtomIndexFromAtomNumber(int atomNumber) {
+    //definitely want FIRST (model) not last here
+    for (int i = 0; i < atomCount; i++) {
+      if (atoms[i].getAtomNumber() == atomNumber)
+        return i;
+    }
+    return -1;
   }
 
-  public Atom getAtomAt(int atomIndex) {
-    return atoms[atomIndex];
-  }
-
-  public Point3f getAtomPoint3f(int atomIndex) {
-    return atoms[atomIndex];
-  }
-
-  /**
-   * For use for setting a for() construct bound ONLY
-   * @return size of the bonds array;
-   */
-  public int getBondCount() {
-    //not necessarily the REAL bond count; this is an ARRAY MAXIMUM
-    return bondCount;
-  }
-
+  ///////////// bonds ////////////////////////
+  
+  
   /**
    * for general use
    * 
@@ -1113,10 +1337,6 @@ public final class Frame {
       if (modelIndex < 0 || bonds[i].atom1.modelIndex == modelIndex)
         n++;
     return n;
-  }
-
-  public Bond getBondAt(int bondIndex) {
-    return bonds[bondIndex];
   }
 
   BitSet getBondsForSelectedAtoms(BitSet bsAtoms) {
@@ -1147,6 +1367,8 @@ public final class Frame {
     return getOrAddBond(atom1, atom2, order, mad, bsBonds);
   }
 
+  private final static int bondGrowthIncrement = 250;
+
   private Bond getOrAddBond(Atom atom, Atom atomOther, short order, short mad,
                             BitSet bsBonds) {
     int i;
@@ -1155,7 +1377,7 @@ public final class Frame {
     } else {
       if (bondCount == bonds.length)
         bonds = (Bond[]) ArrayUtil
-            .setLength(bonds, bondCount + growthIncrement);
+            .setLength(bonds, bondCount + bondGrowthIncrement);
       if (order < 0)
         order = 1;
       i = setBond(bondCount++, bondMutually(atom, atomOther, order, mad)).index;
@@ -1194,136 +1416,32 @@ public final class Frame {
     if (atom1InSetA && atom2InSetB || atom1InSetB && atom2InSetA)
       getOrAddBond(atom1, atom2, order, (short) 1, bsPseudoHBonds);
   }
+ 
+  //////////////// groups ///////////////////
 
-  Shape allocateShape(int shapeID) {
-    if (shapeID == JmolConstants.SHAPE_HSTICKS || shapeID == JmolConstants.SHAPE_SSSTICKS)
-      return null;
-    String className = JmolConstants.getShapeClassName(shapeID);
-    try {
-      Class shapeClass = Class.forName(className);
-      Shape shape = (Shape) shapeClass.newInstance();
-      shape.setViewerG3dFrame(viewer, g3d, this, shapeID);
-      return shape;
-    } catch (Exception e) {
-      Logger.error("Could not instantiate shape:" + className, e);
-    }
-    return null;
+  int getChainCount() {
+    return mmset.getChainCount();
   }
 
-  final Shape[] shapes = new Shape[JmolConstants.SHAPE_MAX];
-
-  public Shape getShape(int i) {
-    return shapes[i];
+  int getBioPolymerCount() {
+    return mmset.getBioPolymerCount();
   }
 
-  void loadShape(int shapeID) {
-    if (shapes[shapeID] == null) {
-      shapes[shapeID] = allocateShape(shapeID);
-    }
+  int getChainCountInModel(int modelIndex) {
+    return mmset.getChainCountInModel(modelIndex);
   }
 
-  void setShapeSize(int shapeID, int size, BitSet bsSelected) {
-    if (size != 0)
-      loadShape(shapeID);
-    if (shapes[shapeID] != null)
-      shapes[shapeID].setSize(size, bsSelected);
+  int getBioPolymerCountInModel(int modelIndex) {
+    return mmset.getBioPolymerCountInModel(modelIndex);
   }
 
-  void setShapeProperty(int shapeID, String propertyName, Object value,
-                        BitSet bsSelected) {
-    if (shapes[shapeID] != null)
-      shapes[shapeID].setProperty(propertyName, value, bsSelected);
+  public int getGroupCount() {
+    return mmset.getGroupCount();
   }
 
-  Object getShapeProperty(int shapeID, String propertyName, int index) {
-    return (shapes[shapeID] == null ? null : shapes[shapeID].getProperty(
-        propertyName, index));
+  int getGroupCountInModel(int modelIndex) {
+    return mmset.getGroupCountInModel(modelIndex);
   }
-
-  final Point3f averageAtomPoint = new Point3f();
-
-  final Point3f centerBoundBox = new Point3f();
-  final Vector3f boundBoxCornerVector = new Vector3f();
-  final Point3f minBoundBox = new Point3f();
-  final Point3f maxBoundBox = new Point3f();
-
-  Point3f getBoundBoxCenter() {
-    return centerBoundBox;
-  }
-
-  Point3f getAverageAtomPoint() {
-    return averageAtomPoint;
-  }
-
-  Vector3f getBoundBoxCornerVector() {
-    return boundBoxCornerVector;
-  }
-
-  private void calcAverageAtomPoint() {
-    Point3f average = averageAtomPoint;
-    average.set(0, 0, 0);
-    if (atomCount == 0)
-      return;
-    for (int i = atomCount; --i >= 0;)
-      average.add(atoms[i]);
-    average.scale(1f / atomCount);
-  }
-
-  final static Point3f[] unitBboxPoints = { new Point3f(1, 1, 1),
-      new Point3f(1, 1, -1), new Point3f(1, -1, 1), new Point3f(1, -1, -1),
-      new Point3f(-1, 1, 1), new Point3f(-1, 1, -1), new Point3f(-1, -1, 1),
-      new Point3f(-1, -1, -1), };
-
-  final Point3f[] bboxVertices = new Point3f[8];
-
-  public Point3f[] getBboxVertices() {
-    return bboxVertices;
-  }
-
-  private void calcBoundBoxDimensions() {
-    calcAtomsMinMax(minBoundBox, maxBoundBox);
-    calcUnitCellMinMax(minBoundBox, maxBoundBox);
-    centerBoundBox.add(minBoundBox, maxBoundBox);
-    centerBoundBox.scale(0.5f);
-    boundBoxCornerVector.sub(maxBoundBox, centerBoundBox);
-
-    for (int i = 8; --i >= 0;) {
-      Point3f bbcagePoint = bboxVertices[i] = new Point3f(unitBboxPoints[i]);
-      bbcagePoint.x *= boundBoxCornerVector.x;
-      bbcagePoint.y *= boundBoxCornerVector.y;
-      bbcagePoint.z *= boundBoxCornerVector.z;
-      bbcagePoint.add(centerBoundBox);
-    }
-  }
-
-  float calcRotationRadius(Point3f center) {
-    float maxRadius = 0;
-    for (int i = atomCount; --i >= 0;) {
-      Atom atom = atoms[i];
-      float distAtom = center.distance(atom);
-      float radiusVdw = atom.getVanderwaalsRadiusFloat();
-      float outerVdw = distAtom + radiusVdw;
-      if (outerVdw > maxRadius)
-        maxRadius = outerVdw;
-    }
-    return (maxRadius == 0 ? 10 : maxRadius);
-  }
-
-  float calcRotationRadius(BitSet bs) {
-    Point3f center = getAtomSetCenter(bs);
-    float maxRadius = 0;
-    for (int i = atomCount; --i >= 0;)
-      if (bs.get(i)) {
-        Atom atom = atoms[i];
-        float distAtom = center.distance(atom);
-        float radiusVdw = atom.getVanderwaalsRadiusFloat();
-        float outerVdw = distAtom + radiusVdw;
-        if (outerVdw > maxRadius)
-          maxRadius = outerVdw;
-      }
-    return (maxRadius == 0 ? 10 : maxRadius);
-  }
-
 
   /*==============================================================*
    * selection handling
@@ -1723,6 +1841,11 @@ public final class Frame {
     return 0;
   }
 
+  // the maximum BondingRadius seen in this set of atoms
+  // used in autobonding
+  private float maxBondingRadius = Float.MIN_VALUE;
+  private float maxVanderwaalsRadius = Float.MIN_VALUE;
+
   private int autoBond(BitSet bsA, BitSet bsB, BitSet bsBonds) {
     if (atomCount == 0)
       return 0;
@@ -2084,95 +2207,6 @@ public final class Frame {
     if (maxVanderwaalsRadius == Float.MIN_VALUE)
       findMaxRadii();
     return maxVanderwaalsRadius;
-  }
-
-  void doUnitcellStuff() {
-    /*
-     * really THREE issues here:
-     * 1) does a model have an associated unit cell that could be displayed?
-     * 2) are the coordinates fractional and so need to be transformed?
-     * 3) does the model have symmetry operations that were applied?
-     * 
-     * This must be done for each model individually.
-     * 
-     */
-
-    if (someModelsHaveUnitcells) {
-      boolean doPdbScale = (adapterModelCount == 1);
-      cellInfos = new CellInfo[modelCount];
-      for (int i = 0; i < baseModelCount; i++)
-        cellInfos[i] = (mergeFrame.cellInfos != null ? mergeFrame.cellInfos[i]
-            : new CellInfo(i, false));
-      for (int i = baseModelCount; i < modelCount; i++)
-        cellInfos[i] = new CellInfo(i, doPdbScale);
-    }
-    if (someModelsHaveSymmetry) {
-      getSymmetrySet();
-      for (int iAtom = baseAtomIndex, iModel = -1, i0 = 0; iAtom < atomCount; iAtom++) {
-        if (atoms[iAtom].modelIndex != iModel) {
-          iModel = atoms[iAtom].modelIndex;
-          i0 = baseAtomIndex
-              + mmset.getModelAuxiliaryInfoInt(iModel, "presymmetryAtomIndex")
-              + mmset.getModelAuxiliaryInfoInt(iModel, "presymmetryAtomCount");
-        }
-        if (iAtom >= i0)
-          bsSymmetry.set(iAtom);
-      }
-    }
-    if (someModelsHaveFractionalCoordinates) {
-      for (int i = baseAtomIndex; i < atomCount; i++) {
-        int modelIndex = atoms[i].modelIndex;
-        if (!cellInfos[modelIndex].coordinatesAreFractional)
-          continue;
-        cellInfos[modelIndex].toCartesian(atoms[i]);
-        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
-          Logger.debug("atom " + i + ": " + (Point3f) atoms[i]);
-      }
-    }
-  }
-
-  void calcAtomsMinMax(Point3f pointMin, Point3f pointMax) {
-    if (atomCount < 2) {
-      pointMin.set(-10, -10, -10);
-      pointMax.set(10, 10, 10);
-      return;
-    }
-    pointMin.set(atoms[0]);
-    pointMax.set(atoms[0]);
-    for (int i = atomCount; --i > 0;) {
-      // note that the 0 element was set above
-      checkMinMax(atoms[i], pointMin, pointMax);
-    }
-  }
-
-  void calcUnitCellMinMax(Point3f pointMin, Point3f pointMax) {
-    if (cellInfos == null)
-      return;
-    for (int i = 0; i < modelCount; i++) {
-      if (!cellInfos[i].coordinatesAreFractional)
-        continue;
-      Point3f[] vertices = cellInfos[i].unitCell.getVertices();
-      for (int j = 0; j < 8; j++)
-        checkMinMax(vertices[j], pointMin, pointMax);
-    }
-  }
-
-  void checkMinMax(Point3f pt, Point3f pointMin, Point3f pointMax) {
-    float t = pt.x;
-    if (t < pointMin.x)
-      pointMin.x = t;
-    else if (t > pointMax.x)
-      pointMax.x = t;
-    t = pt.y;
-    if (t < pointMin.y)
-      pointMin.y = t;
-    else if (t > pointMax.y)
-      pointMax.y = t;
-    t = pt.z;
-    if (t < pointMin.z)
-      pointMin.z = t;
-    else if (t > pointMax.z)
-      pointMax.z = t;
   }
 
   Point3f getAtomSetCenter(BitSet bs) {
@@ -2765,12 +2799,16 @@ public final class Frame {
     return points;
   }
 
-  void calcBfactorRange() {
-    calcBfactorRange(null);
-  }
+  private boolean hasBfactorRange;
+  private int bfactor100Lo;
+  private int bfactor100Hi;
 
   void clearBfactorRange() {
     hasBfactorRange = false;
+  }
+
+  void calcBfactorRange() {
+    calcBfactorRange(null);
   }
 
   void calcBfactorRange(BitSet bs) {
@@ -3244,6 +3282,12 @@ public final class Frame {
     reportFormalCharges = true;
   }
 
+  private BitSet tainted;  // not final -- can be set to null
+
+  BitSet getTaintedAtoms() {
+    return tainted;
+  }
+  
   void taint(int atomIndex) {
     if (tainted == null)
       tainted = new BitSet(atomCount);

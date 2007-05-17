@@ -21,16 +21,19 @@
  *  License along with this library; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-package org.jmol.viewer;
+package org.jmol.modelframe;
 
-import org.jmol.modelframe.Frame;
 import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Measure;
 
+import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Viewer;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.AxisAngle4f;
+
 import java.util.Vector;
 
 public class Measurement {
@@ -140,7 +143,7 @@ public class Measurement {
       short colix, String strFormat, int index) {
     //value Float.isNaN ==> pending
     this.frame = frame;
-    this.viewer = frame.getViewer();
+    this.viewer = frame.viewer;
     this.colix = colix;
     this.strFormat = strFormat;
     setInfo(frame, atomCountPlusIndices, value, index);
@@ -156,7 +159,7 @@ public class Measurement {
    * @param countPlusIndexes
    * @return measure (atomIndex=1) (atomIndex=2)....
    */
-  static String getMeasurementScript(int[] countPlusIndexes) {
+  public static String getMeasurementScript(int[] countPlusIndexes) {
     String str = "measure";
     int nAtoms = countPlusIndexes[0];
     for (int i = 0; i < nAtoms; i++) {
@@ -182,8 +185,7 @@ public class Measurement {
   }
 
   void setFormat(String strFormat) {
-   this.strFormat = strFormat; 
-//   System.out.println("setFOrmat" + strFormat);
+    this.strFormat = strFormat; 
   }
 
   public void formatMeasurement(String strFormat, boolean useDefault) {
@@ -197,7 +199,6 @@ public class Measurement {
 
   void formatMeasurement() {
     strMeasurement = null;
- //   System.out.println("formatMeaurement" + index + " " + strFormat);
     if (Float.isNaN(value) || count == 0) {
       strMeasurement = null;
       return;
@@ -234,20 +235,19 @@ public class Measurement {
   public void reformatDistanceIfSelected() {
     if (count != 2)
       return;
-    Viewer viewer = frame.viewer;
     if (viewer.isSelected(countPlusIndices[1]) &&
         viewer.isSelected(countPlusIndices[2]))
       formatMeasurement();
   }
 
   Point3f getAtomPoint3f(int i) {
-    return frame.getAtomPoint3f(countPlusIndices[i]);
+    return frame.getAtomAt(countPlusIndices[i]);
   }
 
   String formatDistance(float dist) {
     int nDist = (int)(dist * 100 + 0.5f);
     float value = nDist;
-    String units = frame.viewer.getMeasureDistanceUnits();
+    String units = viewer.getMeasureDistanceUnits();
     if (units == "nanometers") {
       units = "nm";
       value = nDist / 1000f;

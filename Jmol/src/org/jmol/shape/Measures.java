@@ -26,12 +26,12 @@ package org.jmol.shape;
 
 import org.jmol.g3d.*;
 import org.jmol.modelframe.Atom;
+import org.jmol.modelframe.Measurement;
+import org.jmol.modelframe.PendingMeasurement;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.Measurement;
-import org.jmol.viewer.PendingMeasurement;
 
 import java.util.BitSet;
 import java.util.Vector;

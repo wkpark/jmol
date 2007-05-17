@@ -1197,7 +1197,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return selectionManager.getHiddenSet();
   }
 
-  boolean isSelected(int atomIndex) {
+  public boolean isSelected(int atomIndex) {
     return selectionManager.isSelected(atomIndex);
   }
 
@@ -2372,7 +2372,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * delegated to MeasurementManager
    ****************************************************************************/
 
-  String getDefaultMeasurementLabel(int nPoints) {
+  public String getDefaultMeasurementLabel(int nPoints) {
     switch (nPoints) {
     case 2:
       return global.defaultDistanceLabel;

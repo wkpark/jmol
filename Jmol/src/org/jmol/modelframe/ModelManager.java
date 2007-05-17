@@ -86,7 +86,7 @@ public class ModelManager {
   public void merge(JmolAdapter adapter, Object clientFile ) {
     frame = new Frame(viewer, adapter, clientFile, frame);
     //haveFile = true;
-    if (frame.atomCount == 0)
+    if (frame.getAtomCount() == 0)
       zap();
   }
   
@@ -108,7 +108,7 @@ public class ModelManager {
     clearFrame();
     frame = new Frame(viewer, adapter, clientFile, null);
     //haveFile = true;
-    if (frame.atomCount == 0)
+    if (frame.getAtomCount() == 0)
       zap();
   }
 
@@ -169,7 +169,7 @@ public class ModelManager {
   }
 
   boolean isPDB() {
-    return frame.isPDB;
+    return frame.isPDB();
   }
 
   boolean isPDB(int modelIndex) {
@@ -762,7 +762,7 @@ String getAtomInfoChime(int i) {
     int bondCount = getBondCount();
     int i;
     for (int ibond = 0; ibond < bondCount; ibond++) {
-      Bond bond = frame.bonds[ibond];
+      Bond bond = frame.getBondAt(ibond);
       if (intType == JmolConstants.BOND_ORDER_ANY || bond.order == intType) {
         if (bs.get(bond.atom1.atomIndex)) {
           nBonded[i = bond.atom2.atomIndex]++;
@@ -860,7 +860,7 @@ String getAtomInfoChime(int i) {
   final static String[] pdbRecords = { "ATOM  ", "MODEL ", "HETATM" };
 
   public String getFileHeader() {
-    if (frame.isPDB) 
+    if (frame.isPDB()) 
       return getFullPDBHeader();
     String info = getModelSetProperty("fileHeader");
     if (info == null)
@@ -870,7 +870,7 @@ String getAtomInfoChime(int i) {
   }
 
   public String getPDBHeader() {
-    return (frame.isPDB ? getFullPDBHeader() : getFileHeader());
+    return (frame.isPDB() ? getFullPDBHeader() : getFileHeader());
   }
   
   String getFullPDBHeader() {
@@ -1328,7 +1328,7 @@ String getAtomInfoChime(int i) {
 
   public boolean hbondsAreVisible(int modelIndex) {
     int bondCount = getBondCount();
-    Bond[] bonds = frame.bonds;
+    Bond[] bonds = frame.getBonds();
     for (int i = bondCount; --i >= 0;)
       if (modelIndex < 0 || modelIndex == bonds[i].atom1.modelIndex)
         if (bonds[i].isHydrogen() && bonds[i].mad > 0)
@@ -1452,7 +1452,7 @@ String getAtomInfoChime(int i) {
   }
 
   public boolean havePartialCharges() {
-    return frame.partialCharges != null;
+    return frame.getPartialCharges() != null;
   }
 
   public void setFormalCharges(BitSet bs, int formalCharge) {    
@@ -1491,7 +1491,7 @@ String getAtomInfoChime(int i) {
   }
   
   public BitSet getTaintedAtoms() {
-    return frame.tainted;
+    return frame.getTaintedAtoms();
   }
   
   public void setTaintedAtoms(BitSet bs) {

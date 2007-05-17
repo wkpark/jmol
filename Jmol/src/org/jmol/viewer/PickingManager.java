@@ -27,6 +27,7 @@ import org.jmol.util.Logger;
 
 import org.jmol.i18n.GT;
 import org.jmol.modelframe.Frame;
+import org.jmol.modelframe.Measurement;
 
 class PickingManager {
 

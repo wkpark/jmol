@@ -242,7 +242,7 @@ class Eval { //implements Runnable {
 
   void setErrorMessage(String err) {
     if (errorMessage == null) //there could be a compiler error from a script command
-      errorMessage = "script ERROR: ";
+      errorMessage = GT._("script ERROR: ");
     errorMessage += err;
   }
 
@@ -4299,7 +4299,7 @@ class Eval { //implements Runnable {
       fileOpenCheck = saveLoadCheck;
       popContext();
     } else {
-      Logger.error("script ERROR: " + errorMessage);
+      Logger.error(GT._("script ERROR: ") + errorMessage);
       popContext();
       if (wasScriptCheck) {
         error = false;

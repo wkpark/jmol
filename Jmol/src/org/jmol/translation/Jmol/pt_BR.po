@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-05-16 21:43+0200\n"
-"PO-Revision-Date: 2007-05-16 18:53-0300\n"
+"PO-Revision-Date: 2007-05-17 16:50-0300\n"
 "Last-Translator: Sérgio Ceroni da Silva <ceroni@cbiot.ufrgs.br>\n"
 "Language-Team: Portuguese <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -182,7 +182,7 @@ msgstr "Scrip&t..."
 
 #: org/openscience/jmol/app/GuiMap.java:50
 msgid "AtomSetChooser..."
-msgstr "Selecionador de Conjunto de Átomos..."
+msgstr "Selec. de Conj. de Átomos..."
 
 #: org/openscience/jmol/app/GuiMap.java:51
 msgid "&Save As..."
@@ -769,7 +769,7 @@ msgstr "Ajuda"
 
 #: org/openscience/jmol/app/Jmol.java:414
 msgid "FileChooser help"
-msgstr "Ajuda do selecionador de arquivos"
+msgstr "Ajuda do selec. de arquivos"
 
 #: org/openscience/jmol/app/Jmol.java:415
 #: org/openscience/jmol/app/Jmol.java:416
@@ -783,7 +783,7 @@ msgstr "Listar"
 
 #: org/openscience/jmol/app/Jmol.java:419
 msgid "Look In:"
-msgstr "Ver em:"
+msgstr "Procurar em:"
 
 #: org/openscience/jmol/app/Jmol.java:420
 msgid "Error creating new folder"
@@ -837,7 +837,7 @@ msgstr "fornecer esta página de ajuda"
 
 #: org/openscience/jmol/app/Jmol.java:448
 msgid "no display (and also exit when done)"
-msgstr "sem visualização (também sair quando completado)"
+msgstr "sem visualização (e sair quando completado)"
 
 #: org/openscience/jmol/app/Jmol.java:449
 msgid "check script syntax only"

@@ -1540,6 +1540,14 @@ final public class JmolConstants {
   public final static byte PROTEIN_STRUCTURE_DNA = 4;
   public final static byte PROTEIN_STRUCTURE_RNA = 5;
 
+  public final static String[] proteinStructureNames = {
+    "none", "turn", "sheet", "helix", "dna", "rna"
+  };
+  
+  public final static String getProteinStructureName(int itype) {
+    return (itype >= 0 && itype <= 5 ? proteinStructureNames[itype] : "");
+  }
+  
   /****************************************************************
    * In DRuMS, RasMol, and Chime, quoting from
    * http://www.umass.edu/microbio/rasmol/rascolor.htm
@@ -2515,7 +2523,12 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // last should be frank:
   public final static int SHAPE_FRANK      = 30;
   public final static int SHAPE_MAX        = SHAPE_FRANK + 1;
+
+  public final static boolean isShapeSecondary(int i ) {
+    return i < JmolConstants.SHAPE_MAX_SECONDARY && i >= JmolConstants.SHAPE_MIN_SECONDARY;
+  }
   
+
   // this atom flag simply associates an atom with the current model
   // but doesn't necessarily mean it is visible
 

@@ -361,8 +361,7 @@ public class AminoPolymer extends AlphaPolymer {
       }
     }
   }
-  
-  
+ 
   private void calcPhiPsiAngles(AminoMonomer leadingResidue,
                         AminoMonomer trailingResidue) {
     Point3f nitrogen1 = leadingResidue.getNitrogenAtomPoint();

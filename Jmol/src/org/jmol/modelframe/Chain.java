@@ -72,7 +72,7 @@ public final class Chain {
     groups[groupCount++] = group;
   }
   
-  Group getGroup(int groupIndex) {
+  public Group getGroup(int groupIndex) {
     return groups[groupIndex];
   }
   

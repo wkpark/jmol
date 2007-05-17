@@ -163,8 +163,16 @@ public class Group {
     return -1;
   }
 
+  public int getProteinStructureIndex() {
+    return Integer.MIN_VALUE;
+  }
+  
   public byte getProteinStructureType() {
     return JmolConstants.PROTEIN_STRUCTURE_NONE;
+  }
+
+  public int setProteinStructureType(byte iType, int index, int monomerIndexLast) {
+    return -1;
   }
 
   public Hashtable getMyInfo() {

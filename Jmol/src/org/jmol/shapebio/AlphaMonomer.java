@@ -67,6 +67,10 @@ public class AlphaMonomer extends Monomer {
         : proteinStructure.type;
   }
 
+  public int getProteinStructureIndex() {
+    return proteinStructure != null ? proteinStructure.index : -1;
+  }
+
   public boolean isHelix() {
     return proteinStructure != null &&
       proteinStructure.type == JmolConstants.PROTEIN_STRUCTURE_HELIX;
@@ -77,6 +81,34 @@ public class AlphaMonomer extends Monomer {
       proteinStructure.type == JmolConstants.PROTEIN_STRUCTURE_SHEET;
   }
 
+  public int setProteinStructureType(byte iType, int index, int monomerIndexLast) {
+    if (index < 0)
+      switch (iType) {
+      case JmolConstants.PROTEIN_STRUCTURE_HELIX:
+        proteinStructure = new Helix((AlphaPolymer) bioPolymer, monomerIndex, 1);
+        proteinStructure.index = -index;
+        return monomerIndex;
+      case JmolConstants.PROTEIN_STRUCTURE_SHEET:
+        proteinStructure = new Sheet((AminoPolymer) bioPolymer, monomerIndex, 1);
+        proteinStructure.index = -index;
+        return monomerIndex;
+      case JmolConstants.PROTEIN_STRUCTURE_TURN:
+        proteinStructure = new Turn((AlphaPolymer) bioPolymer, monomerIndex, 1);
+        proteinStructure.index = -index;
+        return monomerIndex;
+      case JmolConstants.PROTEIN_STRUCTURE_NONE:
+        proteinStructure = null;
+        return monomerIndex;
+      }
+    if ((proteinStructure = getBioPolymer().getProteinStructure(monomerIndexLast)) != null) {
+        if (monomerIndex >= proteinStructure.monomerIndex
+            + proteinStructure.monomerCount)
+      proteinStructure.monomerCount = monomerIndex
+          - proteinStructure.monomerIndex + 1;
+    }    
+    return monomerIndex;
+  }
+  
   public Atom getAtom(byte specialAtomID) {
     return (specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
             ? getLeadAtom()

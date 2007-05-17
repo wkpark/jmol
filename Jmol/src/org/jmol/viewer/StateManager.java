@@ -202,12 +202,12 @@ public class StateManager {
     return true;
   }
 */
-  void saveShape(String saveName) {
+  void saveStructure(String saveName) {
     saveName = lastShape = "Shape_" + saveName;
-    saved.put(saveName, viewer.getShape());
+    saved.put(saveName, viewer.getStructureState());
   }
 
-  String getSavedShape(String saveName) {
+  String getSavedStructure(String saveName) {
     String name = (saveName.length() > 0 ? "Shape_" + saveName
         : lastShape);
     String script = (String) saved.get(name);

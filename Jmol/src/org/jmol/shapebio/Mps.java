@@ -467,9 +467,10 @@ public abstract class Mps extends Shape {
       for (int i = 0; i < monomerCount; i++) {
         int atomIndex1 = monomers[i].getFirstAtomIndex();
         int atomIndex2 = monomers[i].getLastAtomIndex();
-        if (bsSizeSet != null && bsSizeSet.get(i)) //shapes MUST have been set with a size
+        if (bsSizeSet != null && bsSizeSet.get(i)) {//shapes MUST have been set with a size
           setStateInfo(temp, atomIndex1, atomIndex2, type + " "
             + (mads[i] / 2000f));
+        }
         if (bsColixSet != null && bsColixSet.get(i))
           setStateInfo(temp2, atomIndex1, atomIndex2, getColorCommand(type, 
               paletteIDs[i], colixes[i]));

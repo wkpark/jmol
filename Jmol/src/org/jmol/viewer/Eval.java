@@ -899,6 +899,9 @@ class Eval { //implements Runnable {
       case Token.star:
         star();
         break;
+      case Token.structure:
+        structure();
+        break;
       case Token.halo:
         halo();
         break;
@@ -4771,6 +4774,32 @@ class Eval { //implements Runnable {
     setShapeSize(JmolConstants.SHAPE_STARS, mad);
   }
 
+  void structure() throws ScriptException {
+    String type = parameterAsString(1).toLowerCase();
+    byte iType = 0;
+    BitSet bs = null;
+    if (type.equals("helix"))
+      iType = JmolConstants.PROTEIN_STRUCTURE_HELIX;
+    else if (type.equals("sheet"))
+      iType = JmolConstants.PROTEIN_STRUCTURE_SHEET;
+    else if (type.equals("turn"))
+      iType = JmolConstants.PROTEIN_STRUCTURE_TURN;
+    else if (type.equals("none"))
+      iType = JmolConstants.PROTEIN_STRUCTURE_NONE;
+    else
+      invalidArgument();
+    switch (tokAt(2)) {
+    case Token.bitset:
+    case Token.expression:
+      bs = expression(2);
+      checkStatementLength(iToken + 1);
+      break;
+    default:
+      checkLength2();
+    }
+    viewer.setProteinType(iType, bs);
+  }
+  
   void halo() throws ScriptException {
     short mad = 0;
     switch (diameterToken()) {
@@ -6928,9 +6957,9 @@ class Eval { //implements Runnable {
         if (!isSyntaxCheck)
           viewer.saveState(saveName);
         return;
-      case Token.shape:
+      case Token.structure:
         if (!isSyntaxCheck)
-          viewer.saveShape(saveName);
+          viewer.saveStructure(saveName);
         return;
       case Token.identifier:
         if (parameterAsString(1).equalsIgnoreCase("selection")) {
@@ -6940,7 +6969,7 @@ class Eval { //implements Runnable {
         }
       }
     }
-    evalError(GT._("save what?") + " bonds? orientation? selection? shape? state?");
+    evalError(GT._("save what?") + " bonds? orientation? selection? state? structure?");
   }
 
   void restore() throws ScriptException {
@@ -6969,10 +6998,10 @@ class Eval { //implements Runnable {
           invalidArgument();
         runScript(state);
         return;
-      case Token.shape:
+      case Token.structure:
         if (isSyntaxCheck)
           return;
-        String shape = viewer.getSavedShape(saveName);
+        String shape = viewer.getSavedStructure(saveName);
         if (shape == null)
           invalidArgument();
         runScript(shape);
@@ -6985,7 +7014,7 @@ class Eval { //implements Runnable {
         }
       }
     }
-    evalError(GT._("restore what?") + " bonds? orientation? selection? shape? state?");
+    evalError(GT._("restore what?") + " bonds? orientation? selection? state? structure?");
   }
 
   void write() throws ScriptException {
@@ -7260,15 +7289,15 @@ class Eval { //implements Runnable {
       if (!isSyntaxCheck)
         msg = viewer.getSavedState(name);
       break;
-    case Token.shape:
+    case Token.structure:
       if ((len = statementLength) == 2) {
         if (!isSyntaxCheck)
-          msg = viewer.getShape();
+          msg = viewer.getStructureState();
         break;
       }
       String shape = parameterAsString(2);
       if (!isSyntaxCheck)
-        msg = viewer.getSavedShape(shape);
+        msg = viewer.getSavedStructure(shape);
       break;
     case Token.data:
       String type = ((len = statementLength) == 3 ? parameterAsString(2) : null);

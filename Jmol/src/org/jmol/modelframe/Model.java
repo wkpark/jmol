@@ -221,5 +221,5 @@ public final class Model {
 
   public int getModelIndex() {
     return modelIndex;
-  }
+  }  
 }

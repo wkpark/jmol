@@ -1193,7 +1193,11 @@ String getAtomInfoChime(int i) {
   }
  
   public String getState() {
-    return frame.getState();
+    return frame.getState(true);
+  }
+  
+  public String getStructureState() {
+    return frame.getState(false);
   }
   
   public Hashtable getBoundBoxInfo() {
@@ -1513,6 +1517,10 @@ String getAtomInfoChime(int i) {
 
   public float[] getPartialCharges() {
     return frame.getPartialCharges();
+  }
+  
+  public void setProteinType(BitSet bs, byte iType) {
+    frame.setProteinType(bs, iType);
   }
   
 }

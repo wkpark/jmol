@@ -511,6 +511,9 @@ public abstract class BioPolymer extends Polymer {
     for (int i = group1; i < monomerCount && i < max; i++)
        monomers[i].getMonomerSequenceAtoms(bsInclude, bsResult);
   }
-
+  
+  public ProteinStructure getProteinStructure(int monomerIndex) {
+    return monomers[monomerIndex].getProteinStructure();
+  }
 
 }

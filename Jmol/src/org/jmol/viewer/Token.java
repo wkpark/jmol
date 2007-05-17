@@ -379,7 +379,7 @@ public class Token {
   final static int radius        = atomproperty | 17 | setparam;
   final static int resno         = atomproperty | 18;
   final static int site          = atomproperty | 19;
-  final static int structure     = atomproperty | 20;
+  final static int structure     = atomproperty | 20 | command;
   final static int symop         = atomproperty | 21;
   final static int vanderwaals   = atomproperty | 22;
 
@@ -888,6 +888,8 @@ public class Token {
     "picking",           new Token(picking),
     "pickingStyle",      new Token(pickingStyle),
     "radius",            new Token(radius),
+    "structure",         new Token(structure,       varArgCount),
+    "_structure",        null,
     //                   solvent 
     "transparent",       new Token(transparent),
     "cell",              new Token(cell),
@@ -1003,8 +1005,6 @@ public class Token {
     "atomID",            new Token(atomID),
     "_atomID",           null,
     "_a",                null, 
-    "structure",         new Token(structure),
-    "_structure",        null,
     "occupancy",         new Token(occupancy),
     "polymerLength",     new Token(polymerLength),
     "site",              new Token(site),

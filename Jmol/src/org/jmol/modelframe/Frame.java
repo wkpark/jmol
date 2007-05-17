@@ -802,8 +802,9 @@ public final class Frame {
    */
   void calculateStructures(boolean rebuild) {
     if (rebuild) {
-      for (int i = JmolConstants.SHAPE_MAX_SECONDARY; --i >= JmolConstants.SHAPE_MIN_SECONDARY;)
-        shapes[i] = null;
+      for (int i = JmolConstants.SHAPE_MAX; --i >= 0; )
+        if (JmolConstants.isShapeSecondary(i))
+          shapes[i] = null;
       clearBioPolymers();
       mmset.clearStructures();
       initializeGroupBuild();
@@ -3667,10 +3668,10 @@ public final class Frame {
     echoShapeActive = TF;
   }
 
-  String getState() {
+  String getState(boolean isAll) {
     StringBuffer commands = new StringBuffer();
     String cmd;
-    if (reportFormalCharges) {
+    if (isAll && reportFormalCharges) {
       commands.append("\n# charges;\n");
       Hashtable ht = new Hashtable();
       for (int i = 0; i < atomCount; i++)
@@ -3681,49 +3682,53 @@ public final class Frame {
 
     // positions
 
-    if (tainted != null) {
+    if (isAll && tainted != null) {
       commands.append("\n# positions;\n");
       StringBuffer s = new StringBuffer();
       int n = 0;
       for (int i = 0; i < atomCount; i++)
         if (tainted.get(i)) {
-          s.append(i + 1).
-            append(" ").append(atoms[i].getElementSymbol()).
-            append(" ").append(TextFormat.simpleReplace(atoms[i].getIdentity(), " ", "_")).
-            append(" ").append(atoms[i].x).
-            append(" ").append(atoms[i].y).
-            append(" ").append(atoms[i].z).append(" ;\n");
+          s.append(i + 1).append(" ").append(atoms[i].getElementSymbol())
+              .append(" ").append(
+                  TextFormat.simpleReplace(atoms[i].getIdentity(), " ", "_"))
+              .append(" ").append(atoms[i].x).append(" ").append(atoms[i].y)
+              .append(" ").append(atoms[i].z).append(" ;\n");
           ++n;
         }
-      commands.append("DATA \"coord set\"\n").append(n).
-               append(" ;\nJmol Coordinate Data Format 1 -- Jmol ").
-               append(Viewer.getJmolVersion()).
-               append(";\n");
+      commands.append("DATA \"coord set\"\n").append(n).append(
+          " ;\nJmol Coordinate Data Format 1 -- Jmol ").append(
+          Viewer.getJmolVersion()).append(";\n");
       commands.append(s);
       commands.append("end \"coord set\";\n");
     }
 
     // connections
 
-    commands.append("\n# connections;\n");
-    Vector fs = stateScripts;
-    int len = fs.size();
-    for (int i = 0; i < len; i++)
-      commands.append(fs.get(i)).append("\n");
+    if (isAll) {
+      commands.append("\n# connections;\n");
+      Vector fs = stateScripts;
+      int len = fs.size();
+      for (int i = 0; i < len; i++)
+        commands.append(fs.get(i)).append("\n");
 
-    viewer.loadShape(JmolConstants.SHAPE_LABELS);
-    ((Labels) shapes[JmolConstants.SHAPE_LABELS]).getDefaultState(commands);
+      // labels
 
-    commands.append("\n# model state;\n");
-    // shape construction
+      viewer.loadShape(JmolConstants.SHAPE_LABELS);
+      ((Labels) shapes[JmolConstants.SHAPE_LABELS]).getDefaultState(commands);
+
+      commands.append("\n# model state;\n");
+      // shape construction
+
+    }
 
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapes[i];
-      if (shape != null && (cmd = shape.getShapeState()) != null
-          && cmd.length() > 1)
+      if (shape != null && (isAll || JmolConstants.isShapeSecondary(i)) 
+          && (cmd = shape.getShapeState()) != null && cmd.length() > 1)
         commands.append(cmd);
     }
     commands.append("\n");
+    commands.append(getProteinStructureState());
     return commands.toString();
   }
 
@@ -3737,7 +3742,56 @@ public final class Frame {
     else
       userProperties.put(name, property);
   }
+  
+  private String getProteinStructureState() {
+    BitSet bs = null;
+    StringBuffer cmd = new StringBuffer();
+    int itype = 0;
+    int index = 0;
+    int iLastAtom = 0;
+    int lastIndex = -1;
+    int res1 = 0;
+    int res2 = 0;
+    for (int i = 0; i <= atomCount; i++) {
+      index = Integer.MIN_VALUE;
+      if (i == atomCount
+          || (index = atoms[i].getProteinStructureIndex()) != lastIndex) {
+        if (bs != null) {
+          cmd.append("structure ")
+              .append(JmolConstants.getProteinStructureName(itype))
+              .append(" ").append(Escape.escape(bs))
+              .append("    \t# model=").append(getModelName(-1 - atoms[iLastAtom].modelIndex))
+              .append(" & (").append(res1).append(" - ").append(res2).append(");\n");
+          bs = null;
+        }
+        if (index == Integer.MIN_VALUE)
+          continue;
+        res1 = atoms[i].getResno();
+      }
+      if (bs == null) {
+        bs = new BitSet();
+        itype = atoms[i].getProteinStructureType();
+      }
+      bs.set(i);
+      lastIndex = index;
+      res2 = atoms[i].getResno();
+      iLastAtom = i;
+    }
+    return cmd.toString();
+  }
 
+  int psIndex = Integer.MAX_VALUE;
+  void setProteinType(BitSet bs, byte iType) {
+    int indexLast = 0;
+    psIndex = (psIndex == Integer.MAX_VALUE ? -atomCount : -psIndex) -1;
+    for (int i = 0; i < atomCount; i++)
+      if (bs.get(i)) {
+        indexLast = atoms[i].setProteinStructureType(iType, psIndex, indexLast);
+        if (psIndex < 0)
+          indexLast = atoms[i].setProteinStructureType(iType, psIndex = -psIndex, indexLast);
+      }
+  }
+  
   class Molecule {
     int moleculeIndex;
     int modelIndex;

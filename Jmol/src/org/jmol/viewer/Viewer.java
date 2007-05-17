@@ -411,13 +411,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return stateManager.getSavedState(saveName);
   }
 
-  void saveShape(String saveName) {
+  void saveStructure(String saveName) {
     //from Eval
-    stateManager.saveShape(saveName);
+    stateManager.saveStructure(saveName);
   }
 
-  String getSavedShape(String saveName) {
-    return stateManager.getSavedShape(saveName);
+  String getSavedStructure(String saveName) {
+    return stateManager.getSavedStructure(saveName);
   }
 
   void saveSelection(String saveName) {
@@ -2198,10 +2198,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return s.toString();
   }
 
-  public String getShape() {
-    return modelManager.getState();
+  public String getStructureState() {
+    return modelManager.getStructureState();
   }
-
 
   static Hashtable dataValues = new Hashtable();
 
@@ -5672,6 +5671,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public float[] getPartialCharges() {
     return modelManager.getPartialCharges();
   }
+
+  void setProteinType(byte iType, BitSet bs) {
+    modelManager.setProteinType(bs == null ? selectionManager.bsSelection : bs, iType);
+  }
+  
 
   /*  
    void debugStack(String msg) {

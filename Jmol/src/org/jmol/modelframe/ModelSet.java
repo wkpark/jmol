@@ -717,7 +717,7 @@ abstract public class ModelSet {
     if (modelIndex >= 0)
       return elementsPresent[modelIndex];
     BitSet bs = new BitSet();
-    for (int i = 0; i < modelIndex; i++)
+    for (int i = 0; i < modelCount; i++)
       bs.or(elementsPresent[i]);
     return bs;
   }

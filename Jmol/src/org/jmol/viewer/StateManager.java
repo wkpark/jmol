@@ -32,7 +32,7 @@ import java.util.Enumeration;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelframe.Bond;
-import org.jmol.modelframe.Frame;
+import org.jmol.modelframe.ModelSet;
 import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
 
@@ -296,12 +296,12 @@ public class StateManager {
     Connection[] connections;
 
     Connections() {
-      Frame frame = viewer.getFrame();
-      if (frame == null)
+      ModelSet modelSet = viewer.getModelSet();
+      if (modelSet == null)
         return;
-      bondCount = frame.getBondCount();
+      bondCount = modelSet.getBondCount();
       connections = new Connection[bondCount + 1];
-      Bond[] bonds = frame.getBonds();
+      Bond[] bonds = modelSet.getBonds();
       for (int i = bondCount; --i >= 0;) {
         Bond b = bonds[i];
         connections[i] = new Connection(b.getAtomIndex1(), b.getAtomIndex2(),
@@ -310,22 +310,22 @@ public class StateManager {
     }
 
     void restore() {
-      Frame frame = viewer.getFrame();
-      if (frame == null)
+      ModelSet modelSet = viewer.getModelSet();
+      if (modelSet == null)
         return;
-      frame.deleteAllBonds();
+      modelSet.deleteAllBonds();
       for (int i = bondCount; --i >= 0;) {
         Connection c = connections[i];
-        int atomCount = frame.getAtomCount();
+        int atomCount = modelSet.getAtomCount();
         if (c.atomIndex1 >= atomCount || c.atomIndex2 >= atomCount)
           continue;
-        Bond b = frame.bondAtoms(frame.atoms[c.atomIndex1],
-            frame.atoms[c.atomIndex2], c.order, c.mad, null);
+        Bond b = modelSet.bondAtoms(modelSet.atoms[c.atomIndex1],
+            modelSet.atoms[c.atomIndex2], c.order, c.mad, null);
         b.setColix(c.colix);
         b.setShapeVisibilityFlags(c.shapeVisibilityFlags);
       }
       for (int i = bondCount; --i >= 0;)
-        frame.getBondAt(i).setIndex(i);
+        modelSet.getBondAt(i).setIndex(i);
       viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "reportAll", null);
     }
   }

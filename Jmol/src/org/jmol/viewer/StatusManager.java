@@ -168,7 +168,7 @@ class StatusManager {
   }
 
   synchronized void setStatusFrameChanged(int frameNo, int fileNo, int modelNo, int firstNo, int lastNo) {
-    if (viewer.getFrame() == null)
+    if (viewer.getModelSet() == null)
       return;
     boolean isAnimationRunning = (frameNo <= -2);
     int f = frameNo;

@@ -45,7 +45,7 @@ import javax.vecmath.Point4f;
 import org.jmol.i18n.*;
 import org.jmol.modelframe.Atom;
 import org.jmol.modelframe.Bond;
-import org.jmol.modelframe.Frame;
+import org.jmol.modelframe.ModelSet;
 import org.jmol.modelframe.Group;
 import org.jmol.modelframe.Mmset;
 
@@ -454,7 +454,7 @@ class Eval { //implements Runnable {
     variables.clear();
     bsSubset = null;
     viewer.setSelectionSubset(null);
-    if (viewer.getFrame() == null || viewer.getAtomCount() == 0)
+    if (viewer.getModelSet() == null || viewer.getAtomCount() == 0)
       return;
     clearPredefined(JmolConstants.predefinedStatic);
     clearPredefined(JmolConstants.predefinedVariable);
@@ -1510,13 +1510,13 @@ class Eval { //implements Runnable {
     int[] cellRange = null;
     int nOps = 0;
     float propertyFloat = 0;
-    Frame frame = viewer.getFrame();
+    ModelSet modelSet = viewer.getModelSet();
     for (int i = 0; i < atomCount; ++i) {
       boolean match = false;
-      Atom atom = frame.getAtomAt(i);
+      Atom atom = modelSet.getAtomAt(i);
       switch (tokWhat) {
       default:
-        propertyValue = (int) atomProperty(frame, atom, tokWhat, true);
+        propertyValue = (int) atomProperty(modelSet, atom, tokWhat, true);
         if (propertyValue == Integer.MAX_VALUE)
           continue;
         break;
@@ -1570,8 +1570,8 @@ class Eval { //implements Runnable {
           comparisonValue = bitsetBaseValue % 1000;
           if (atom.getModelIndex() != iModel) {
             iModel = atom.getModelIndex();
-            cellRange = frame.getModelCellRange(iModel);
-            nOps = frame.getModelSymmetryCount(iModel);
+            cellRange = modelSet.getModelCellRange(iModel);
+            nOps = modelSet.getModelSymmetryCount(iModel);
           }
           int symop = bitsetBaseValue / 1000 - 1;
           if (nOps == 0 || symop < 0 || !(match = propertyBitSet.get(symop)))
@@ -1648,7 +1648,7 @@ class Eval { //implements Runnable {
     return bs;
   }
 
-  float atomProperty(Frame frame, Atom atom, int tokWhat, boolean asInt)
+  float atomProperty(ModelSet modelSet, Atom atom, int tokWhat, boolean asInt)
       throws ScriptException {
     float propertyValue = 0;
     switch (tokWhat) {
@@ -1673,7 +1673,7 @@ class Eval { //implements Runnable {
       propertyValue = atom.getBfactor100();
       return (propertyValue < 0 ? Integer.MAX_VALUE : asInt ? propertyValue : propertyValue / 100f);
     case Token.surfacedistance:
-      frame.getSurfaceDistanceMax();
+      modelSet.getSurfaceDistanceMax();
       propertyValue = atom.getSurfaceDistance100();
       return (asInt ? propertyValue : propertyValue / 100f);
     case Token.occupancy:
@@ -3374,7 +3374,7 @@ class Eval { //implements Runnable {
       //color values. 
       switch (tok) {
       case Token.surfacedistance:
-        viewer.getFrame().getSurfaceDistanceMax();
+        viewer.getModelSet().getSurfaceDistanceMax();
         break;
       case Token.temperature:
         if (viewer.isRangeSelected())
@@ -6062,7 +6062,7 @@ class Eval { //implements Runnable {
   int[] getAtomIndices(BitSet bs) {
     int len = bs.size();
     int n = 0;
-    int atomCount = viewer.getFrame().getAtomCount();
+    int atomCount = viewer.getModelSet().getAtomCount();
     int[] indices = new int[atomCount];
     for (int j = 0; j < len; j++)
       if (bs.get(j))
@@ -6073,7 +6073,7 @@ class Eval { //implements Runnable {
   BitSet getAtomBitsetFromBonds(BitSet bsBonds) {
     BitSet bsAtoms = new BitSet();
     int bondCount = viewer.getBondCount();
-    Bond[] bonds = viewer.getFrame().getBonds();
+    Bond[] bonds = viewer.getModelSet().getBonds();
     for (int i = bondCount; --i >= 0;) {
       if (!bsBonds.get(i))
         continue;
@@ -6090,7 +6090,7 @@ class Eval { //implements Runnable {
       return (label == null ? "" : label);
     StringBuffer s = new StringBuffer();
     int len = bs.size();
-    Frame frame = viewer.getFrame();
+    ModelSet modelSet = viewer.getModelSet();
     int n = 0;
     boolean isAtoms = !(tokenValue instanceof BondSet);
     int[] indices = (isAtoms || !useAtomMap ? null
@@ -6126,15 +6126,15 @@ class Eval { //implements Runnable {
         String str = label;
         if (isAtoms) {
           if (str == null) {
-            str = frame.getAtomAt(j).getIdentity();
+            str = modelSet.getAtomAt(j).getIdentity();
           } else {
-            str = frame.getAtomAt(j).formatLabel(str, '\0', indices);
+            str = modelSet.getAtomAt(j).formatLabel(str, '\0', indices);
             for (int k = 0; k < nProp; k++)
               if (j < propArray[k].length)
                 str = TextFormat.formatString(str, props[k], propArray[k][j]);
           }
         } else {
-          Bond bond = frame.getBondAt(j); 
+          Bond bond = modelSet.getBondAt(j); 
           if (str == null)
             str = bond.getIdentity();
           else {
@@ -6231,7 +6231,7 @@ class Eval { //implements Runnable {
 
     boolean isInt = true;
     Point3f ptT = (tok == Token.color ? new Point3f() : null);
-    Frame frame = viewer.getFrame();
+    ModelSet modelSet = viewer.getModelSet();
     float[]data = (tok == Token.property ? Viewer.getDataFloat((String)opValue) : null); 
     int count = 0;
     if (isAtoms) {
@@ -6241,7 +6241,7 @@ class Eval { //implements Runnable {
       for (int i = 0; i < count; i++)
         if (bs == null || bs.get(i)) {
           n++;
-          Atom atom = frame.getAtomAt(i);
+          Atom atom = modelSet.getAtomAt(i);
           if (isInt) {
             int iv = 0;
             switch (tok) {
@@ -6369,7 +6369,7 @@ class Eval { //implements Runnable {
             fv = atom.getGroupPsi();
             break;
           case Token.surfacedistance:
-            frame.getSurfaceDistanceMax();
+            modelSet.getSurfaceDistanceMax();
             fv = atom.getSurfaceDistance100() / 100f;
             break;
           case Token.temperature: // 0 - 9999
@@ -6404,7 +6404,7 @@ class Eval { //implements Runnable {
       for (int i = 0; i < count; i++)
         if (bs == null || bs.get(i)) {
           n++;
-          Bond bond = frame.getBondAt(i);
+          Bond bond = modelSet.getBondAt(i);
           switch (tok) {
           case Token.length:
             float fv = bond.getAtom1().distance(bond.getAtom2());
@@ -8298,12 +8298,12 @@ class Eval { //implements Runnable {
         if (isCavity)//not implemented: && tokProperty != Token.surfacedistance)
           invalidArgument();
         if (!isSyntaxCheck && !isCavity) {
-          Frame frame = viewer.getFrame();
-          Atom[] atoms = frame.atoms;
+          ModelSet modelSet = viewer.getModelSet();
+          Atom[] atoms = modelSet.atoms;
           if (tokProperty == Token.surfacedistance)
-            viewer.getFrame().getSurfaceDistanceMax();
+            viewer.getModelSet().getSurfaceDistanceMax();
           for (int iAtom = atomCount; --iAtom >= 0;) {
-            data[iAtom] = atomProperty(frame, atoms[iAtom], tokProperty, false);
+            data[iAtom] = atomProperty(modelSet, atoms[iAtom], tokProperty, false);
           }
         }
         propertyValue = data;

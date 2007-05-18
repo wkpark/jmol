@@ -25,7 +25,7 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.*;
-import org.jmol.modelframe.Frame;
+import org.jmol.modelframe.ModelSet;
 //import java.awt.Rectangle;
 import org.jmol.shape.Shape;
 import org.jmol.shape.ShapeRenderer;
@@ -44,9 +44,9 @@ public class FrameRenderer {
     this.viewer = viewer;
   }
 
-  void render(Graphics3D g3d, Frame frame) {  //, Rectangle rectClip
+  void render(Graphics3D g3d, ModelSet modelSet) {  //, Rectangle rectClip
 
-    if (frame == null || !viewer.mustRenderFlag())
+    if (modelSet == null || !viewer.mustRenderFlag())
       return;
     //System.out.println("Frame: rendering viewer "+ viewer + " thread " + Thread.currentThread());    
     logTime = viewer.getTestFlag1();
@@ -57,11 +57,11 @@ public class FrameRenderer {
       timeBegin = System.currentTimeMillis();
 
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = frame.getShape(i);
+      Shape shape = modelSet.getShape(i);
 
       if (shape == null)
         continue;
-      getRenderer(i, g3d).render(g3d, frame, shape); //, rectClip
+      getRenderer(i, g3d).render(g3d, modelSet, shape); //, rectClip
     }
     if (logTime)
       Logger.info("render time: " + (System.currentTimeMillis() - timeBegin)

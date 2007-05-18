@@ -27,18 +27,18 @@ package org.jmol.viewer;
 import org.jmol.api.JmolAdapter;
 import org.jmol.modelframe.Atom;
 import org.jmol.modelframe.Bond;
-import org.jmol.modelframe.Frame;
+import org.jmol.modelframe.ModelSet;
 
 
 final public class FrameExportJmolAdapter extends JmolAdapter {
 
   Viewer viewer;
-  Frame frame;
+  ModelSet modelSet;
 
-  FrameExportJmolAdapter(Viewer viewer, Frame frame) {
+  FrameExportJmolAdapter(Viewer viewer, ModelSet modelSet) {
     super("FrameExportJmolAdapter");
     this.viewer = viewer;
-    this.frame = frame;
+    this.modelSet = modelSet;
   }
 
   public String getAtomSetCollectionName(Object clientFile) {
@@ -46,11 +46,11 @@ final public class FrameExportJmolAdapter extends JmolAdapter {
   }
 
   public int getEstimatedAtomCount(Object clientFile) {
-    return frame.getAtomCount();
+    return modelSet.getAtomCount();
   }
 
   public float[] getNotionalUnitcell(Object clientFile) {
-    return frame.getNotionalUnitcell();
+    return modelSet.getNotionalUnitcell();
   }
 
   public JmolAdapter.AtomIterator
@@ -68,9 +68,9 @@ final public class FrameExportJmolAdapter extends JmolAdapter {
     Atom atom;
 
     public boolean hasNext() {
-      if (iatom == frame.getAtomCount())
+      if (iatom == modelSet.getAtomCount())
         return false;
-      atom = frame.atoms[iatom++];
+      atom = modelSet.atoms[iatom++];
       return true;
     }
     public Object getUniqueID() { return new Integer(iatom); }
@@ -88,9 +88,9 @@ final public class FrameExportJmolAdapter extends JmolAdapter {
     Bond bond;
 
     public boolean hasNext() {
-      if (ibond >= frame.getBondCount())
+      if (ibond >= modelSet.getBondCount())
         return false;
-      bond = frame.getBonds()[ibond++];
+      bond = modelSet.getBonds()[ibond++];
       return true;
     }
     public Object getAtomUniqueID1(){

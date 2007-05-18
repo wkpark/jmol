@@ -26,7 +26,7 @@ package org.jmol.viewer;
 import org.jmol.util.Logger;
 
 import org.jmol.i18n.GT;
-import org.jmol.modelframe.Frame;
+import org.jmol.modelframe.ModelSet;
 import org.jmol.modelframe.Measurement;
 
 class PickingManager {
@@ -69,7 +69,7 @@ class PickingManager {
     }
 
     String value;
-    Frame frame = viewer.getFrame();
+    ModelSet modelSet = viewer.getModelSet();
     switch (pickingMode) {
     case JmolConstants.PICKING_OFF:
       break;
@@ -83,7 +83,7 @@ class PickingManager {
       queueAtom(atomIndex);
       if (queuedAtomCount < 2)
         break;
-      float distance = frame.getDistance(queuedAtomIndexes[0], atomIndex);
+      float distance = modelSet.getDistance(queuedAtomIndexes[0], atomIndex);
       value = "Distance " + viewer.getAtomInfo(queuedAtomIndexes[0]) + " - "
           + viewer.getAtomInfo(queuedAtomIndexes[1]) + " : " + distance;
       viewer.setStatusNewPickingModeMeasurement(2, value);
@@ -97,7 +97,7 @@ class PickingManager {
       queueAtom(atomIndex);
       if (queuedAtomCount < 3)
         break;
-      float angle = frame.getAngle(queuedAtomIndexes[0], queuedAtomIndexes[1],
+      float angle = modelSet.getAngle(queuedAtomIndexes[0], queuedAtomIndexes[1],
           atomIndex);
       value = "Angle " + viewer.getAtomInfo(queuedAtomIndexes[0]) + " - "
           + viewer.getAtomInfo(queuedAtomIndexes[1]) + " - "
@@ -112,7 +112,7 @@ class PickingManager {
       queueAtom(atomIndex);
       if (queuedAtomCount < 4)
         break;
-      float torsion = frame.getTorsion(queuedAtomIndexes[0],
+      float torsion = modelSet.getTorsion(queuedAtomIndexes[0],
           queuedAtomIndexes[1], queuedAtomIndexes[2], atomIndex);
       value = "Torsion " + viewer.getAtomInfo(queuedAtomIndexes[0]) + " - "
           + viewer.getAtomInfo(queuedAtomIndexes[1]) + " - "

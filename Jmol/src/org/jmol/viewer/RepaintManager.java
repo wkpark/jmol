@@ -26,7 +26,7 @@ package org.jmol.viewer;
 import org.jmol.util.Logger;
 
 import org.jmol.g3d.*;
-import org.jmol.modelframe.Frame;
+import org.jmol.modelframe.ModelSet;
 
 import java.awt.Rectangle;
 import java.util.Hashtable;
@@ -53,10 +53,10 @@ class RepaintManager {
   }
   
   void setCurrentModelIndex(int modelIndex) {
-    Frame frame = viewer.getFrame();
+    ModelSet modelSet = viewer.getModelSet();
     if (modelIndex != 0 && isTrajectory)
       viewer.setTrajectory(-1);
-    if (frame == null || modelIndex < 0 || modelIndex >= frame.getModelCount())
+    if (modelSet == null || modelIndex < 0 || modelIndex >= modelSet.getModelCount())
       currentModelIndex = -1;
     else
       currentModelIndex = modelIndex;
@@ -64,7 +64,7 @@ class RepaintManager {
       setBackgroundModelIndex(-1);
     viewer.setTainted(true);
     setFrameRangeVisible();
-    if (frame != null)
+    if (modelSet != null)
       setStatusFrameChanged();
   }
 
@@ -77,8 +77,8 @@ class RepaintManager {
   int backgroundModelIndex = -1;
   void setBackgroundModelIndex(int modelIndex) {
     // no background unless only a SINGLE model is being displayed (for now)
-    Frame frame = viewer.getFrame();
-    if (frame == null || modelIndex < 0 || modelIndex >= frame.getModelCount() ||
+    ModelSet modelSet = viewer.getModelSet();
+    if (modelSet == null || modelIndex < 0 || modelIndex >= modelSet.getModelCount() ||
         currentModelIndex == -1)
       modelIndex = -1;
     backgroundModelIndex = modelIndex;
@@ -162,8 +162,8 @@ class RepaintManager {
   }
   */
 
-  void render(Graphics3D g3d, Frame frame) {//, Rectangle rectClip
-    frameRenderer.render(g3d, frame); //, rectClip
+  void render(Graphics3D g3d, ModelSet modelSet) {//, Rectangle rectClip
+    frameRenderer.render(g3d, modelSet); //, rectClip
     Rectangle band = viewer.getRubberBandSelection();
     if (band != null && g3d.setColix(viewer.getColixRubberband()))
       g3d.drawRect(band.x, band.y, 0, 0, band.width, band.height);
@@ -312,7 +312,7 @@ class RepaintManager {
   
   boolean animationPaused = false;
   void setAnimationOn(boolean animationOn) {
-    if (! animationOn || ! viewer.haveFrame()) {
+    if (! animationOn || ! viewer.haveModelSet()) {
       setAnimationOff(false);
       return;
     }

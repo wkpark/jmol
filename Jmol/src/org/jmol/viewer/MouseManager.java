@@ -311,7 +311,7 @@ public abstract class MouseManager implements KeyListener {
                          ",clickCount="+clickCount+
                          ",time=" + (time - previousClickTime) +
                          ")");
-    if (! viewer.haveFrame())
+    if (! viewer.haveModelSet())
       return;
 
     int nearestAtomIndex = (drawMode ? -1 : viewer.findNearestAtomIndex(x, y));

@@ -27,7 +27,7 @@ import org.jmol.util.Logger;
 import java.util.BitSet;
 import org.jmol.g3d.*;
 import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.Frame;
+import org.jmol.modelframe.ModelSet;
 import org.jmol.util.ColorEncoder;
 
 class ColorManager {
@@ -125,7 +125,7 @@ class ColorManager {
     int argb = 0;
     int index;
     short id;
-    Frame frame;
+    ModelSet modelSet;
     int modelIndex;
     float lo, hi;
     switch (pid) {
@@ -164,9 +164,9 @@ class ColorManager {
       case JmolConstants.PALETTE_TEMP:
       case JmolConstants.PALETTE_FIXEDTEMP:
       if (pid == JmolConstants.PALETTE_TEMP) {
-        frame = viewer.getFrame();
-        lo = frame.getBfactor100Lo();
-        hi = frame.getBfactor100Hi();
+        modelSet = viewer.getModelSet();
+        lo = modelSet.getBfactor100Lo();
+        hi = modelSet.getBfactor100Hi();
       } else {
         lo = 0;
         hi = 100 * 100; // scaled by 100
@@ -177,7 +177,7 @@ class ColorManager {
       argb = JmolConstants.argbsRwbScale[index];
       break;
     case JmolConstants.PALETTE_SURFACE:
-      hi = viewer.getFrame().getSurfaceDistanceMax();
+      hi = viewer.getModelSet().getSurfaceDistanceMax();
       index = ColorEncoder.quantize(atom.getSurfaceDistance100(), 0, hi,
           JmolConstants.argbsRwbScale.length);
       //index = JmolConstants.argbsRwbScale.length - 1 - index;
@@ -229,28 +229,28 @@ class ColorManager {
       argb = JmolConstants.argbsRoygbScale[index];
       break;
     case JmolConstants.PALETTE_MOLECULE:
-      frame = viewer.getFrame();
-      index = ColorEncoder.quantize(frame.getMoleculeIndex(atom.getAtomIndex()), 0, frame
+      modelSet = viewer.getModelSet();
+      index = ColorEncoder.quantize(modelSet.getMoleculeIndex(atom.getAtomIndex()), 0, modelSet
           .getMoleculeCountInModel(atom.getModelIndex()) - 1,
           JmolConstants.argbsRoygbScale.length);
       argb = JmolConstants.argbsRoygbScale[index];
       break;
     case JmolConstants.PALETTE_ALTLOC:
-      frame = viewer.getFrame();
+      modelSet = viewer.getModelSet();
       //very inefficient!
       modelIndex = atom.getModelIndex();
-      index = ColorEncoder.quantize(frame.getAltLocIndexInModel(modelIndex,
-          (char) atom.getAlternateLocationID()), 0, frame
+      index = ColorEncoder.quantize(modelSet.getAltLocIndexInModel(modelIndex,
+          (char) atom.getAlternateLocationID()), 0, modelSet
           .getAltLocCountInModel(modelIndex),
           JmolConstants.argbsRoygbScale.length);
       argb = JmolConstants.argbsRoygbScale[index];
       break;
     case JmolConstants.PALETTE_INSERTION:
-      frame = viewer.getFrame();
+      modelSet = viewer.getModelSet();
       //very inefficient!
       modelIndex = atom.getModelIndex();
-      index = ColorEncoder.quantize(frame.getInsertionCodeIndexInModel(modelIndex, atom
-          .getInsertionCode()), 0, frame
+      index = ColorEncoder.quantize(modelSet.getInsertionCodeIndexInModel(modelIndex, atom
+          .getInsertionCode()), 0, modelSet
           .getInsertionCountInModel(modelIndex),
           JmolConstants.argbsRoygbScale.length);
       argb = JmolConstants.argbsRoygbScale[index];

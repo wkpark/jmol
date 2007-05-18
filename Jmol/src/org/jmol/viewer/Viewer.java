@@ -28,7 +28,7 @@ import org.jmol.symmetry.UnitCell;
 import org.jmol.i18n.GT;
 import org.jmol.modelframe.Atom;
 import org.jmol.modelframe.AtomIterator;
-import org.jmol.modelframe.Frame;
+import org.jmol.modelframe.ModelSet;
 import org.jmol.modelframe.ModelManager;
 
 import org.jmol.api.*;
@@ -325,7 +325,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //initializeModel
     transformManager.homePosition();
     if (modelManager.useXtalDefaults())
-      stateManager.setCrystallographicDefaults();//frame.someModelsHavePeriodicOrigin);
+      stateManager.setCrystallographicDefaults();//modelSet.someModelsHavePeriodicOrigin);
     refresh(1, "Viewer:homePosition()");
   }
 
@@ -1683,7 +1683,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void clear() {
-    if (modelManager.getFrame() == null)
+    if (modelManager.getModelSet() == null)
       return;
     fileManager.clear();
     repaintManager.clear();
@@ -1758,7 +1758,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public boolean haveFrame() {
-    return modelManager.getFrame() != null;
+    return haveModelSet();
+  }
+
+  boolean haveModelSet() {
+    return modelManager.getModelSet() != null;
   }
 
   public void calculateStructures() {
@@ -1832,14 +1836,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   JmolAdapter getExportJmolAdapter() {
     /*  
      * 
-     return new FrameExportJmolAdapter(this, getFrame());
+     return new FrameExportJmolAdapter(this, getModelSet());
 
      */
     return null;
   }
 
-  public Frame getFrame() {
-    return modelManager.getFrame();
+  public ModelSet getModelSet() {
+    return modelManager.getModelSet();
   }
 
   public Point3f getBoundBoxCenter() {
@@ -2841,9 +2845,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean twoPass = !getTestFlag1();
     g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         matrixRotate, antialias, twoPass);
-    repaintManager.render(g3d, modelManager.getFrame()); //, rectClip
+    repaintManager.render(g3d, modelManager.getModelSet()); //, rectClip
     if (twoPass && g3d.setPass2())
-      repaintManager.render(g3d, modelManager.getFrame()); //, rectClip
+      repaintManager.render(g3d, modelManager.getModelSet()); //, rectClip
     // mth 2003-01-09 Linux Sun JVM 1.4.2_02
     // Sun is throwing a NullPointerExceptions inside graphics routines
     // while the window is resized.
@@ -2855,15 +2859,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean twoPass = !getTestFlag1();
     g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         transformManager.getStereoRotationMatrix(true), antialias, twoPass);
-    Frame frame = modelManager.getFrame();
-    repaintManager.render(g3d, frame);//, rectClip
+    ModelSet modelSet = modelManager.getModelSet();
+    repaintManager.render(g3d, modelSet);//, rectClip
     if (twoPass && g3d.setPass2())
-      repaintManager.render(g3d, frame);//, rectClip      
+      repaintManager.render(g3d, modelSet);//, rectClip      
     g3d.endRendering();
     g3d.snapshotAnaglyphChannelBytes();
     g3d.beginRendering(//rectClip.x, rectClip.y, rectClip.width, rectClip.height,
         transformManager.getStereoRotationMatrix(false), antialias, twoPass);
-    repaintManager.render(g3d, frame);//, rectClip
+    repaintManager.render(g3d, modelSet);//, rectClip
     g3d.endRendering();
     switch (stereoMode) {
     case JmolConstants.STEREO_REDCYAN:
@@ -4703,7 +4707,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setSelectionHalos(boolean TF) {
     // display panel can hit this without a frame, apparently
-    if (TF == getSelectionHaloEnabled() || getFrame() == null)
+    if (TF == getSelectionHaloEnabled() || getModelSet() == null)
       return;
     global.setParameterValue("selectionHalos", TF);
     loadShape(JmolConstants.SHAPE_HALOS);

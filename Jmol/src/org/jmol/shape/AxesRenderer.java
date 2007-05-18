@@ -55,7 +55,7 @@ public class AxesRenderer extends ShapeRenderer {
       axes.initShape();
     int nPoints = 6;
     int labelPtr = 0;
-    CellInfo[] cellInfos = frame.getCellInfos();
+    CellInfo[] cellInfos = modelSet.getCellInfos();
     if (viewer.getAxesMode() == JmolConstants.AXES_MODE_UNITCELL
         && cellInfos != null) {
       int modelIndex = viewer.getDisplayModelIndex();

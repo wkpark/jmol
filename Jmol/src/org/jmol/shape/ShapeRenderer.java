@@ -25,7 +25,7 @@
 package org.jmol.shape;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelframe.Frame;
+import org.jmol.modelframe.ModelSet;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 //import java.awt.Rectangle;
@@ -49,13 +49,13 @@ public abstract class ShapeRenderer {
 
   protected Graphics3D g3d;
   //Rectangle rectClip; //not implemented
-  protected Frame frame;
+  protected ModelSet modelSet;
   protected Shape shape;
 
-  public void render(Graphics3D g3d, Frame frame, Shape shape) { //, Rectangle rectClip
+  public void render(Graphics3D g3d, ModelSet modelSet, Shape shape) { //, Rectangle rectClip
     this.g3d = g3d;
     //this.rectClip = rectClip; //not implemented -- could be a place for optimization
-    this.frame = frame;
+    this.modelSet = modelSet;
     this.shape = shape;
     render();
   }

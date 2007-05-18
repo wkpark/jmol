@@ -57,7 +57,7 @@ public class UccageRenderer extends ShapeRenderer {
   }
 
   void render1(short mad) {
-    CellInfo[] cellInfos = frame.getCellInfos();
+    CellInfo[] cellInfos = modelSet.getCellInfos();
     if (cellInfos == null)
       return;
     UnitCell unitCell = viewer.getCurrentUnitCell();

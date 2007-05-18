@@ -53,7 +53,7 @@ public class Axes extends FontLineShape {
     font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
     super.initShape();
     int axesMode = viewer.getAxesMode();
-    if (axesMode == JmolConstants.AXES_MODE_UNITCELL && frame.getCellInfos() != null) {
+    if (axesMode == JmolConstants.AXES_MODE_UNITCELL && modelSet.getCellInfos() != null) {
       UnitCell unitcell = viewer.getCurrentUnitCell();
       if (unitcell == null)
         return;

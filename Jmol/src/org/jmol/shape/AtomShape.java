@@ -46,8 +46,8 @@ public class AtomShape extends Shape {
   public Atom[] atoms;
   public boolean isActive;
   
-  protected void initFrame() {
-    atomCount = frame.getAtomCount();
+  protected void initModelSet() {
+    atomCount = modelSet.getAtomCount();
     //in case this is due to "load append"
     if (mads != null)
       mads = ArrayUtil.setLength(mads, atomCount);
@@ -55,7 +55,7 @@ public class AtomShape extends Shape {
       colixes = ArrayUtil.setLength(colixes, atomCount);
     if (paletteIDs != null)
       paletteIDs = ArrayUtil.setLength(paletteIDs, atomCount);
-    atoms = frame.atoms;  
+    atoms = modelSet.atoms;  
   }
   
   public void setSize(int size, BitSet bsSelected) {
@@ -127,7 +127,7 @@ public class AtomShape extends Shape {
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       if ((atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
-          || frame.isAtomHidden(i))
+          || modelSet.isAtomHidden(i))
         continue;
       atom.setClickable(myVisibilityFlag);
     }

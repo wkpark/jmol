@@ -33,10 +33,10 @@ public class StarsRenderer extends ShapeRenderer {
     Stars stars = (Stars) shape;
     if (stars.mads == null)
       return;
-    Atom[] atoms = frame.atoms;
-    for (int i = frame.getAtomCount(); --i >= 0;) {
+    Atom[] atoms = modelSet.atoms;
+    for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
-      if (!atom.isShapeVisible(myVisibilityFlag) || frame.isAtomHidden(i)
+      if (!atom.isShapeVisible(myVisibilityFlag) || modelSet.isAtomHidden(i)
           || !g3d.setColix(Shape.getColix(stars.colixes, i, atom)))
         continue;
       render1(atom, stars.mads[i]);

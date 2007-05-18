@@ -43,7 +43,7 @@ public class BbcageRenderer extends ShapeRenderer {
     if (mad == 0 || !g3d.checkTranslucent(false))
       return;
     g3d.setColix(viewer.getObjectColix(StateManager.OBJ_BOUNDBOX));
-    render(viewer, g3d, mad, frame.getBboxVertices(), screens, 0);
+    render(viewer, g3d, mad, modelSet.getBboxVertices(), screens, 0);
   }
 
   static void render(Viewer viewer, Graphics3D g3d,

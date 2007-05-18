@@ -27,7 +27,7 @@ package org.jmol.shape;
 public class Uccage extends FontLineShape {
   
  public String getShapeState() {
-    if (frame.getCellInfos() == null)
+    if (modelSet.getCellInfos() == null)
       return "";
     return super.getShapeState();
   }

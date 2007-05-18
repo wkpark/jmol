@@ -373,7 +373,7 @@ public abstract class MeshCollection extends Shape {
       Mesh mesh = meshes[i];
       mesh.visibilityFlags = (mesh.visible && mesh.isValid
           && (mesh.modelIndex < 0 || bs.get(mesh.modelIndex)
-          && (mesh.atomIndex < 0 || !frame.isAtomHidden(mesh.atomIndex))
+          && (mesh.atomIndex < 0 || !modelSet.isAtomHidden(mesh.atomIndex))
           ) ? myVisibilityFlag
           : 0);
     }

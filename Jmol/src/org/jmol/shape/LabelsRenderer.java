@@ -52,12 +52,12 @@ public class LabelsRenderer extends ShapeRenderer {
     int[] offsets = labels.offsets;
     if (labelStrings == null)
       return;
-    Atom[] atoms = frame.atoms;
+    Atom[] atoms = modelSet.atoms;
     short backgroundColixContrast = viewer.getColixBackgroundContrast();
     int backgroundColor = viewer.getBackgroundArgb();
     for (int i = labelStrings.length; --i >= 0;) {
       Atom atom = atoms[i];
-      if (!atom.isShapeVisible(myVisibilityFlag) || frame.isAtomHidden(i))
+      if (!atom.isShapeVisible(myVisibilityFlag) || modelSet.isAtomHidden(i))
         continue;
       String label = labelStrings[i];
       if (label == null || label.length() == 0)

@@ -32,7 +32,7 @@ import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.g3d.*;
 import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.Frame;
+import org.jmol.modelframe.ModelSet;
 
 import javax.vecmath.Point3f;
 import java.util.BitSet;
@@ -79,7 +79,7 @@ import java.util.Hashtable;
 public abstract class Shape {
 
   public Viewer viewer; //public for now for Backbone
-  public Frame frame;
+  public ModelSet modelSet;
   protected Graphics3D g3d;
   public int shapeID;
   public int myVisibilityFlag;
@@ -90,22 +90,22 @@ public abstract class Shape {
     return viewer;
   }
   
-  final public void setViewerG3dFrame(Viewer viewer, Graphics3D g3d, Frame frame,
+  final public void initializeShape(Viewer viewer, Graphics3D g3d, ModelSet modelSet,
                                int shapeID) {
     this.viewer = viewer;
     this.g3d = g3d;
     this.shapeID = shapeID;
     this.myVisibilityFlag = JmolConstants.getShapeVisibilityFlag(shapeID);
-    setFrame(frame);
+    setModelSet(modelSet);
     initShape();
   }
 
-  public void setFrame(Frame frame) {
-    this.frame = frame;
-    initFrame();
+  public void setModelSet(ModelSet modelSet) {
+    this.modelSet = modelSet;
+    initModelSet();
   }
   
-  protected void initFrame() {
+  protected void initModelSet() {
   }
 
   public void initShape() {
@@ -154,7 +154,7 @@ public abstract class Shape {
   }
 
   public short setColix(short colix, byte paletteID, int atomIndex) {
-    return setColix(colix, paletteID, frame.getAtomAt(atomIndex));
+    return setColix(colix, paletteID, modelSet.getAtomAt(atomIndex));
   }
 
   protected short setColix(short colix, byte paletteID, Atom atom) {

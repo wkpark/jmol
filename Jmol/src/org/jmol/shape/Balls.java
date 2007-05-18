@@ -88,7 +88,7 @@ public class Balls extends AtomShape {
       Atom atom = atoms[i];
       atom.setClickable(0);
       if ((atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
-          || frame.isAtomHidden(i))
+          || modelSet.isAtomHidden(i))
         continue;
       atom.setClickable(myVisibilityFlag);
     }
@@ -109,7 +109,7 @@ public class Balls extends AtomShape {
       if (! isOneFrame && bs.get(modelIndex) 
           || modelIndex == displayModelIndex) { 
         atom.setShapeVisibility(JmolConstants.ATOM_IN_MODEL, true);
-        if (atom.getMadAtom() != 0 &&  !frame.isAtomHidden(i))
+        if (atom.getMadAtom() != 0 &&  !modelSet.isAtomHidden(i))
           atom.setShapeVisibility(myVisibilityFlag, true);
       }
     }

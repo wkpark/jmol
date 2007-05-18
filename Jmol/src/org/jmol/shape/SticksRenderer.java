@@ -62,8 +62,8 @@ public class SticksRenderer extends ShapeRenderer {
     hbondsBackbone = viewer.getHbondsBackbone();
     bondsBackbone = hbondsBackbone | ssbondsBackbone;
     hbondsSolid = viewer.getHbondsSolid();
-    Bond[] bonds = frame.getBonds();
-    for (int i = frame.getBondCount(); --i >= 0; ) {
+    Bond[] bonds = modelSet.getBonds();
+    for (int i = modelSet.getBondCount(); --i >= 0; ) {
       bond = bonds[i];
       if ((bond.getShapeVisibilityFlags() & myVisibilityFlag) != 0) 
         renderBond();
@@ -79,8 +79,8 @@ public class SticksRenderer extends ShapeRenderer {
         || !atomB.isModelVisible()
         || !g3d.isInDisplayRange(atomA.screenX, atomA.screenY)
         || !g3d.isInDisplayRange(atomB.screenX, atomB.screenY)
-        || frame.isAtomHidden(atomA.getAtomIndex()) 
-        || frame.isAtomHidden(atomB.getAtomIndex()))
+        || modelSet.isAtomHidden(atomA.getAtomIndex()) 
+        || modelSet.isAtomHidden(atomB.getAtomIndex()))
       return;
 
     short colix = bond.getColix();

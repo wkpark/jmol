@@ -56,8 +56,8 @@ public class Measures extends Shape {
   float[] rangeMinMax = {Float.MAX_VALUE, Float.MAX_VALUE};
   
 
-  protected void initFrame() {
-    pendingMeasurement = new MeasurementPending(frame);
+  protected void initModelSet() {
+    pendingMeasurement = new MeasurementPending(modelSet);
   }
   
   public void initShape() {
@@ -248,7 +248,7 @@ public class Measures extends Shape {
       Vector measureList = new Vector();
       int nPoints = atomCountPlusIndices[0];
       for (int i = 1; i <= nPoints; i++) {
-        Atom atom = frame.atoms[atomCountPlusIndices[i]];
+        Atom atom = modelSet.atoms[atomCountPlusIndices[i]];
         measureList.addElement(viewer.getAtomBits("atomno", atom.getAtomNumber()));
       }
       define(measureList, isDelete, false, false);
@@ -267,7 +267,7 @@ public class Measures extends Shape {
         || count > 2 && atomCountPlusIndices[1] == atomCountPlusIndices[3]
         || count == 4 && atomCountPlusIndices[2] == atomCountPlusIndices[4])
       return;
-    float value = frame.getMeasurement(atomCountPlusIndices);
+    float value = modelSet.getMeasurement(atomCountPlusIndices);
     if (rangeMinMax[0] != Float.MAX_VALUE
         && (value < rangeMinMax[0] || value > rangeMinMax[1]))
       return;
@@ -285,7 +285,7 @@ public class Measures extends Shape {
       }
       return;
     }
-    Measurement measureNew = new Measurement(frame, atomCountPlusIndices,
+    Measurement measureNew = new Measurement(modelSet, atomCountPlusIndices,
         value, colix, strFormat, measurementCount);
     if (measurementCount == measurements.length) {
       measurements = (Measurement[]) ArrayUtil.setLength(measurements,
@@ -313,12 +313,12 @@ public class Measures extends Shape {
                    int[] atomCountPlusIndices, int thisModel, boolean isDelete,
                    boolean isShow, boolean isHide) {
     BitSet bs = (BitSet) monitorExpressions.get(thispt);
-    int iMax = frame.getAtomCount();
+    int iMax = modelSet.getAtomCount();
     for (int i = 0; i < iMax; i++) {
       if (bs.get(i)) {
         if (thispt > 0 && i == atomCountPlusIndices[thispt])
           continue;
-        int modelIndex = frame.atoms[i].getModelIndex();
+        int modelIndex = modelSet.atoms[i].getModelIndex();
         if (thisModel >= 0) {
           if (thispt == 0) {
             thisModel = modelIndex;
@@ -351,7 +351,7 @@ public class Measures extends Shape {
   }
     
   private boolean isConnected(int[] atomCountPlusIndices) {
-    Atom[] atoms = frame.atoms;
+    Atom[] atoms = modelSet.atoms;
     for (int i = atomCountPlusIndices[0]; i > 1; --i)
       if (!atoms[atomCountPlusIndices[i]].isBonded(atoms[atomCountPlusIndices[i-1]]))
         return false;
@@ -415,7 +415,7 @@ public class Measures extends Shape {
     Vector atomsInfo = new Vector();
     for (int i = 0; i < count; i++) {
       Hashtable atomInfo = new Hashtable();
-      Atom atom = frame.atoms[measurements[index].getIndex(i + 1)];
+      Atom atom = modelSet.atoms[measurements[index].getIndex(i + 1)];
       atomInfo.put("_ipt", new Integer(atom.getAtomIndex()));
       atomInfo.put("atomno", new Integer(atom.getAtomNumber()));
       atomInfo.put("info", atom.getInfo());
@@ -431,7 +431,7 @@ public class Measures extends Shape {
         + " \t" + measurements[index].getValue() + " \t"
         + measurements[index].getString();
     for (int i = 0; i < count; i++) {
-      Atom atom = frame.atoms[measurements[index].getIndex(i + 1)];
+      Atom atom = modelSet.atoms[measurements[index].getIndex(i + 1)];
       info += " \t" + atom.getInfo();
     }
     return info;
@@ -444,7 +444,7 @@ public class Measures extends Shape {
       if(mad == 0 || measurements[i].isHidden())
         continue;
       for (int iAtom = measurements[i].getCount(); iAtom > 0; iAtom--) { 
-        Atom atom = frame.getAtomAt(measurements[i].getIndex(iAtom));
+        Atom atom = modelSet.getAtomAt(measurements[i].getIndex(iAtom));
         if (!atom.isClickable())
           continue out;
       }

@@ -69,9 +69,9 @@ public class DotsRenderer extends ShapeRenderer {
           verticesTransformed[i]);
     int[][] maps = dots.ec.getDotsConvexMaps();
     for (int i = dots.ec.getDotsConvexMax(); --i >= 0;) {
-      Atom atom = frame.atoms[i];
+      Atom atom = modelSet.atoms[i];
       int[] map = maps[i];
-      if (map == null || !atom.isShapeVisible(myVisibilityFlag) || frame.isAtomHidden(i)
+      if (map == null || !atom.isShapeVisible(myVisibilityFlag) || modelSet.isAtomHidden(i)
           || !g3d.isInDisplayRange(atom.screenX, atom.screenY))
         continue;
       int nPoints = calcScreenPoints(map, dots.ec.getAppropriateRadius(i),

@@ -181,7 +181,7 @@ public class Dots extends AtomShape {
       addRadius = (mad - 11002) / 1000f;
       scale = 1;
     }
-    float maxRadius = !useVanderwaalsRadius ? setRadius : frame
+    float maxRadius = !useVanderwaalsRadius ? setRadius : modelSet
         .getMaxVanderwaalsRadius();
     float solventRadius = viewer.getCurrentSolventProbeRadius();
     if (addRadius == Float.MAX_VALUE)
@@ -247,7 +247,7 @@ public class Dots extends AtomShape {
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       if ((atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
-          || frame.isAtomHidden(i))
+          || modelSet.isAtomHidden(i))
         continue;
       atom.setClickable(myVisibilityFlag);
     }

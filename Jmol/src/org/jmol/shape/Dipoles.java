@@ -245,7 +245,7 @@ public class Dipoles extends Shape {
     if ("atomBitset" == propertyName) {
       BitSet atomset = (BitSet) value;
       atomIndex1 = BitSetUtil.firstSetBit(atomset);
-      startCoord = frame.atoms[atomIndex1];
+      startCoord = modelSet.atoms[atomIndex1];
       atomset.clear(atomIndex1);
       propertyName = "endSet";
       //passes to endSet
@@ -256,7 +256,7 @@ public class Dipoles extends Shape {
       BitSet atomset = (BitSet) value;
       if (atomIndex1 >= 0 && BitSetUtil.cardinalityOf(atomset) == 1) {
         atomIndex2 = BitSetUtil.firstSetBit(atomset);
-        tempDipole.set(frame.atoms[atomIndex1], frame.atoms[atomIndex2], 1);
+        tempDipole.set(modelSet.atoms[atomIndex1], modelSet.atoms[atomIndex2], 1);
         currentDipole = findDipole(tempDipole.thisID, tempDipole.dipoleInfo);
         tempDipole.thisID = currentDipole.thisID;
         if (isSameAtoms(currentDipole, tempDipole.dipoleInfo)) {
@@ -314,7 +314,7 @@ public class Dipoles extends Shape {
   private void setColixDipole(short colix, short bondTypeMask, BitSet bs) {
     if (colix == Graphics3D.USE_PALETTE)
       return; // not implemented
-    BondIterator iter = frame.getBondIterator(bondTypeMask, bs);
+    BondIterator iter = modelSet.getBondIterator(bondTypeMask, bs);
     while (iter.hasNext()) {
       Dipole d = findBondDipole(iter.next());
       if (d != null)

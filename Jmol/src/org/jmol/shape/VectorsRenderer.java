@@ -41,9 +41,9 @@ public class VectorsRenderer extends ShapeRenderer {
       return;
     Atom[] atoms = vectors.atoms;
     short[] colixes = vectors.colixes;
-    for (int i = frame.getAtomCount(); --i >= 0;) {
+    for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
-      if (!atom.isShapeVisible(myVisibilityFlag) || frame.isAtomHidden(i))
+      if (!atom.isShapeVisible(myVisibilityFlag) || modelSet.isAtomHidden(i))
         continue;
       Vector3f vibrationVector = atom.getVibrationVector();
       if (vibrationVector == null)

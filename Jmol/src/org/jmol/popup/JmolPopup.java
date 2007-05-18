@@ -203,6 +203,7 @@ abstract public class JmolPopup {
         String elementName = JmolConstants.elementNameFromNumber(n);
         String elementSymbol = JmolConstants.elementSymbolFromNumber(n);
         String entryName = elementSymbol + " - " + elementName;
+        System.out.println("adding "+ entryName + " " + elementName);
         addMenuItem(menu, entryName, elementName, null);
       }
     }

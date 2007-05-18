@@ -54,7 +54,7 @@ public class Sticks extends Shape {
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
     boolean isBonds = viewer.isBondSelection();
-    BondIterator iter = (isBonds ? frame.getBondIterator(bsSelected) : frame
+    BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected) : modelSet
         .getBondIterator(myMask, bsSelected));
     short mad = (short) size;
     while (iter.hasNext()) {
@@ -91,7 +91,7 @@ public class Sticks extends Shape {
       if (bsOrderSet == null)
         bsOrderSet = new BitSet();
       short order = ((Short) value).shortValue();
-      BondIterator iter = (isBonds ? frame.getBondIterator(bsSelected) : frame
+      BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected) : modelSet
           .getBondIterator(myMask, bsSelected));
       while (iter.hasNext()) {
         bsOrderSet.set(iter.nextIndex());
@@ -106,8 +106,8 @@ public class Sticks extends Shape {
       byte pid = JmolConstants.pidOf(value);
       if (pid == JmolConstants.PALETTE_TYPE) {
         //only for hydrogen bonds
-        BondIterator iter = (isBonds ? frame.getBondIterator(bsSelected)
-            : frame.getBondIterator(myMask, bsSelected));
+        BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected)
+            : modelSet.getBondIterator(myMask, bsSelected));
         while (iter.hasNext()) {
           bsColixSet.set(iter.nextIndex());
           Bond bond = iter.next();
@@ -117,7 +117,7 @@ public class Sticks extends Shape {
       }
       if (colix == Graphics3D.USE_PALETTE)
         return; //palettes not implemented for bonds
-      BondIterator iter = (isBonds ? frame.getBondIterator(bsSelected) : frame
+      BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected) : modelSet
           .getBondIterator(myMask, bsSelected));
       while (iter.hasNext()) {
         int iBond = iter.nextIndex();
@@ -131,7 +131,7 @@ public class Sticks extends Shape {
       if (bsColixSet == null)
         bsColixSet = new BitSet();
       boolean isTranslucent = (((String) value).equals("translucent"));
-      BondIterator iter = (isBonds ? frame.getBondIterator(bsSelected) : frame
+      BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected) : modelSet
           .getBondIterator(myMask, bsSelected));
       while (iter.hasNext()) {
         bsColixSet.set(iter.nextIndex());
@@ -143,12 +143,12 @@ public class Sticks extends Shape {
   }
 
  public void setModelClickability() {
-    Bond[] bonds = frame.getBonds();
-    for (int i = frame.getBondCount(); --i >= 0;) {
+    Bond[] bonds = modelSet.getBonds();
+    for (int i = modelSet.getBondCount(); --i >= 0;) {
       Bond bond = bonds[i];
       if ((bond.getShapeVisibilityFlags() & myVisibilityFlag) == 0
-          || frame.isAtomHidden(bond.getAtomIndex1())
-          || frame.isAtomHidden(bond.getAtomIndex2()))
+          || modelSet.isAtomHidden(bond.getAtomIndex1())
+          || modelSet.isAtomHidden(bond.getAtomIndex2()))
         continue;
       bond.getAtom1().setClickable(myVisibilityFlag);
       bond.getAtom2().setClickable(myVisibilityFlag);
@@ -157,8 +157,8 @@ public class Sticks extends Shape {
   
  public String getShapeState() {
     Hashtable temp = new Hashtable();
-    Bond[] bonds = frame.getBonds();
-    for (int i = frame.getBondCount(); --i >= 0;) {
+    Bond[] bonds = modelSet.getBonds();
+    for (int i = modelSet.getBondCount(); --i >= 0;) {
       Bond bond = bonds[i];
       short r;
       if (reportAll || bsSizeSet != null && bsSizeSet.get(i))

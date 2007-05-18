@@ -31,10 +31,10 @@ public class Vectors extends AtomShape {
 
   float scale = Float.NaN;
   
- protected void initFrame() {
-    if (!(isActive = frame.modelSetHasVibrationVectors()))
+ protected void initModelSet() {
+    if (!(isActive = modelSet.modelSetHasVibrationVectors()))
       return;
-    super.initFrame();
+    super.initModelSet();
   }
 
  public void setProperty(String propertyName, Object value, BitSet bsSelected) {

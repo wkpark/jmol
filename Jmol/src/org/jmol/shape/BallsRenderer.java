@@ -47,8 +47,8 @@ public class BallsRenderer extends ShapeRenderer {
       minZ = g3d.getSlab();
       maxZ = g3d.getDepth();
     }
-    Atom[] atoms = frame.atoms;
-    int atomCount = frame.getAtomCount();
+    Atom[] atoms = modelSet.atoms;
+    int atomCount = modelSet.getAtomCount();
     for (int i = 0; i < atomCount; i++) {
       Group group = atoms[i].getGroup();
       group.setMinZ(Integer.MAX_VALUE);
@@ -86,7 +86,7 @@ public class BallsRenderer extends ShapeRenderer {
         renderBall(atom);
     }
 
-    if (frame.getAtomCount() > 0 && viewer.getShowNavigationPoint()) {
+    if (modelSet.getAtomCount() > 0 && viewer.getShowNavigationPoint()) {
       //testing here
       Point3f T = new Point3f(viewer.getNavigationOffset());
       int x = Math.max(Math.min(viewer.getScreenWidth(),(int) T.x),0);

@@ -378,8 +378,8 @@ public class Labels extends AtomShape {
       return;
     for (int i = strings.length; --i >= 0;) {
       String label = strings[i];
-      if (label != null && frame.atoms.length > i && !frame.isAtomHidden(i))
-        frame.atoms[i].setClickable(myVisibilityFlag);
+      if (label != null && modelSet.atoms.length > i && !modelSet.isAtomHidden(i))
+        modelSet.atoms[i].setClickable(myVisibilityFlag);
     }
   }
   

@@ -107,8 +107,8 @@ public class MeasuresRenderer extends ShapeRenderer {
 
   void renderDistance() {
     
-    renderDistance(frame.getAtomAt(measurement.getIndex(1)),
-                   frame.getAtomAt(measurement.getIndex(2)));
+    renderDistance(modelSet.getAtomAt(measurement.getIndex(1)),
+                   modelSet.getAtomAt(measurement.getIndex(2)));
   }
 
   void renderDistance(Atom atomA, Atom atomB) {
@@ -130,9 +130,9 @@ public class MeasuresRenderer extends ShapeRenderer {
   Point3f pointT = new Point3f();
 
   void renderAngle(boolean renderArcs) {
-    renderAngle(frame.getAtomAt(measurement.getIndex(1)),
-                frame.getAtomAt(measurement.getIndex(2)),
-                frame.getAtomAt(measurement.getIndex(3)),
+    renderAngle(modelSet.getAtomAt(measurement.getIndex(1)),
+                modelSet.getAtomAt(measurement.getIndex(2)),
+                modelSet.getAtomAt(measurement.getIndex(3)),
                 renderArcs);
   }
 
@@ -191,10 +191,10 @@ public class MeasuresRenderer extends ShapeRenderer {
   }
 
   void renderTorsion(boolean renderArcs) {
-    renderTorsion(frame.getAtomAt(measurement.getIndex(1)),
-                  frame.getAtomAt(measurement.getIndex(2)),
-                  frame.getAtomAt(measurement.getIndex(3)),
-                  frame.getAtomAt(measurement.getIndex(4)),
+    renderTorsion(modelSet.getAtomAt(measurement.getIndex(1)),
+                  modelSet.getAtomAt(measurement.getIndex(2)),
+                  modelSet.getAtomAt(measurement.getIndex(3)),
+                  modelSet.getAtomAt(measurement.getIndex(4)),
                   renderArcs);
   }
 
@@ -254,7 +254,7 @@ public class MeasuresRenderer extends ShapeRenderer {
       return;
     if (count > 2)
       renderMeasurement(count - 1, pendingMeasurement, false);
-    Atom atomLast = frame.getAtomAt(pendingMeasurement.getPreviousIndex());
+    Atom atomLast = modelSet.getAtomAt(pendingMeasurement.getPreviousIndex());
     int lastZ = atomLast.screenZ - atomLast.screenDiameter - 10;
     drawSegment(atomLast.screenX, atomLast.screenY, lastZ,
                 viewer.getCursorX(), viewer.getCursorY(), 0);

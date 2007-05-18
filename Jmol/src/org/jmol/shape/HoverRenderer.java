@@ -31,7 +31,7 @@ public class HoverRenderer extends ShapeRenderer {
       return;
     Hover hover = (Hover) shape;
     if (hover.atomIndex >= 0) {
-      Atom atom = frame.getAtomAt(hover.atomIndex);
+      Atom atom = modelSet.getAtomAt(hover.atomIndex);
       String label = (hover.atomFormats != null
           && hover.atomFormats[hover.atomIndex] != null ? 
               atom.formatLabel(hover.atomFormats[hover.atomIndex])

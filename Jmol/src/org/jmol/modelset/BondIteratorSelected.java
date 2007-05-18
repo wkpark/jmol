@@ -33,7 +33,7 @@ import java.util.BitSet;
  * the second half are accessed after model set creation.
  *  
  */
-class SelectedBondIterator implements BondIterator {
+class BondIteratorSelected implements BondIterator {
 
   ModelSet modelSet;
   short bondType;
@@ -42,7 +42,7 @@ class SelectedBondIterator implements BondIterator {
   boolean bondSelectionModeOr;
   boolean isBondBitSet;
 
-  SelectedBondIterator(ModelSet modelSet, short bondType, BitSet bsSelected, boolean bondSelectionModeOr) {
+  BondIteratorSelected(ModelSet modelSet, short bondType, BitSet bsSelected, boolean bondSelectionModeOr) {
     this.modelSet = modelSet;
     this.bondType = bondType;
     this.bsSelected = bsSelected;
@@ -51,7 +51,7 @@ class SelectedBondIterator implements BondIterator {
     iBond = 0;
   }
 
-  SelectedBondIterator(ModelSet modelSet, BitSet bsSelected) {
+  BondIteratorSelected(ModelSet modelSet, BitSet bsSelected) {
     this.modelSet = modelSet;
     this.bsSelected = bsSelected;
     isBondBitSet = true;

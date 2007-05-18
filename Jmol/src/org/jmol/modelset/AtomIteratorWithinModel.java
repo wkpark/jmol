@@ -29,7 +29,7 @@ import org.jmol.bspt.Bspf;
 import org.jmol.bspt.SphereIterator;
 import org.jmol.bspt.Tuple;
 
-public class WithinModelIterator implements AtomIterator {
+public class AtomIteratorWithinModel implements AtomIterator {
 
   SphereIterator bsptIter;
 

@@ -129,7 +129,7 @@ abstract public class ModelSet {
     return atomNames;
   }
   
-  private final WithinModelIterator withinModelIterator = new WithinModelIterator();
+  private final AtomIteratorWithinModel withinModelIterator = new AtomIteratorWithinModel();
 
   AtomIterator getWithinModelIterator(Atom atomCenter, float radius) {
     //Polyhedra
@@ -138,7 +138,7 @@ abstract public class ModelSet {
     return withinModelIterator;
   }
 
-  private final WithinAtomSetIterator withinAtomSetIterator = new WithinAtomSetIterator();
+  private final AtomIteratorWithinSet withinAtomSetIterator = new AtomIteratorWithinSet();
 
   AtomIndexIterator getWithinAtomSetIterator(int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly) {
     //EnvelopeCalculation, IsoSolventReader
@@ -169,12 +169,12 @@ abstract public class ModelSet {
   
   public BondIterator getBondIterator(short bondType, BitSet bsSelected) {
     //Dipoles, Sticks
-    return new SelectedBondIterator(this, bondType, bsSelected,   viewer.getBondSelectionModeOr());
+    return new BondIteratorSelected(this, bondType, bsSelected,   viewer.getBondSelectionModeOr());
   }
 
   public BondIterator getBondIterator(BitSet bsSelected) {
     //Sticks
-    return new SelectedBondIterator(this, bsSelected);
+    return new BondIteratorSelected(this, bsSelected);
   }
 
   //note: Molecules is set up to only be calculated WHEN NEEDED

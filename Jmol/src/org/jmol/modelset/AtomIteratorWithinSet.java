@@ -30,7 +30,7 @@ import org.jmol.bspt.Bspf;
 import org.jmol.bspt.SphereIterator;
 import java.util.BitSet;
 
-class WithinAtomSetIterator implements AtomIndexIterator {
+class AtomIteratorWithinSet implements AtomIndexIterator {
   
   //does NOT return i == atomIndex
 

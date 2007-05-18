@@ -27,7 +27,7 @@ package org.jmol.shapebio;
 
 import java.util.BitSet;
 
-import org.jmol.modelframe.Atom;
+import org.jmol.modelset.Atom;
 
 public class Backbone extends Mps {
 

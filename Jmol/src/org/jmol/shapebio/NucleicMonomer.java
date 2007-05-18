@@ -26,8 +26,8 @@ package org.jmol.shapebio;
 
 import javax.vecmath.Point3f;
 
-import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.Chain;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.Chain;
 import org.jmol.shape.Closest;
 import org.jmol.viewer.JmolConstants;
 

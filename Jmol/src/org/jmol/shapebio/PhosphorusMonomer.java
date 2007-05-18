@@ -23,8 +23,8 @@
  */
 package org.jmol.shapebio;
 
-import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.Chain;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.Chain;
 import org.jmol.viewer.JmolConstants;
 
 public class PhosphorusMonomer extends Monomer {

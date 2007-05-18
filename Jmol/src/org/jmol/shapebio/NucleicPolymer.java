@@ -25,7 +25,7 @@ package org.jmol.shapebio;
 
 import java.util.BitSet;
 
-import org.jmol.modelframe.Atom;
+import org.jmol.modelset.Atom;
 import org.jmol.viewer.JmolConstants;
 
 public class NucleicPolymer extends BioPolymer {

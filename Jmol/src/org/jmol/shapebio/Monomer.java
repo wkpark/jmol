@@ -23,9 +23,9 @@
  */
 package org.jmol.shapebio;
 
-import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.Chain;
-import org.jmol.modelframe.Group;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.Chain;
+import org.jmol.modelset.Group;
 import org.jmol.shape.Closest;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;

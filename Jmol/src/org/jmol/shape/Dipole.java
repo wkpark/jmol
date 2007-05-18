@@ -28,8 +28,8 @@ import java.util.BitSet;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3f;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.Bond;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
 import org.jmol.util.Escape;
 
 class Dipole {

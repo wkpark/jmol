@@ -28,7 +28,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.geodesic.EnvelopeCalculation;
-import org.jmol.modelframe.Atom;
+import org.jmol.modelset.Atom;
 
 import java.util.BitSet;
 import java.util.Hashtable;

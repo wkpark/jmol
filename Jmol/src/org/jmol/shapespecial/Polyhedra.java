@@ -24,9 +24,9 @@
 
 package org.jmol.shapespecial;
 
-import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.AtomIterator;
-import org.jmol.modelframe.Bond;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.AtomIterator;
+import org.jmol.modelset.Bond;
 import org.jmol.shape.AtomShape;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;

@@ -31,9 +31,9 @@ import java.util.Hashtable;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.Mmset;
-import org.jmol.modelframe.Model;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.Mmset;
+import org.jmol.modelset.Model;
 import org.jmol.shape.Closest;
 import org.jmol.shape.Shape;
 import org.jmol.shape.Mesh;

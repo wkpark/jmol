@@ -23,7 +23,7 @@
  */
 package org.jmol.shapebio;
 
-import org.jmol.modelframe.Atom;
+import org.jmol.modelset.Atom;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.viewer.JmolConstants;

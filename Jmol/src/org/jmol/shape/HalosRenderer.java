@@ -26,7 +26,7 @@
 package org.jmol.shape;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelframe.Atom;
+import org.jmol.modelset.Atom;
 import org.jmol.viewer.JmolConstants;
 
 import java.util.BitSet;

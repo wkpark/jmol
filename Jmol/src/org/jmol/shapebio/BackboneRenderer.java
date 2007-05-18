@@ -26,7 +26,7 @@
 package org.jmol.shapebio;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelframe.Atom;
+import org.jmol.modelset.Atom;
 
 public class BackboneRenderer extends MpsRenderer {
 

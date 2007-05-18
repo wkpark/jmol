@@ -26,7 +26,7 @@
 package org.jmol.shape;
 
 import org.jmol.g3d.*;
-import org.jmol.modelframe.Atom;
+import org.jmol.modelset.Atom;
 
 import javax.vecmath.*;
 

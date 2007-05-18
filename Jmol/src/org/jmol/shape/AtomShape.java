@@ -29,7 +29,7 @@ import java.util.BitSet;
 import java.util.Hashtable;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelframe.Atom;
+import org.jmol.modelset.Atom;
 import org.jmol.util.ArrayUtil;
 import org.jmol.viewer.JmolConstants;
 

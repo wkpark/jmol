@@ -30,9 +30,9 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.viewer.JmolConstants;
 
 import org.jmol.g3d.*;
-import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.Bond;
-import org.jmol.modelframe.BondIterator;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
+import org.jmol.modelset.BondIterator;
 
 import java.util.BitSet;
 import java.util.Vector;

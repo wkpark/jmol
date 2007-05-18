@@ -34,8 +34,8 @@ import java.util.BitSet;
 import java.util.Hashtable;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelframe.Bond;
-import org.jmol.modelframe.BondIterator;
+import org.jmol.modelset.Bond;
+import org.jmol.modelset.BondIterator;
 
 public class Sticks extends Shape {
   

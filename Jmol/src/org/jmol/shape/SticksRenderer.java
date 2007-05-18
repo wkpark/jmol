@@ -26,8 +26,8 @@
 package org.jmol.shape;
 
 import org.jmol.g3d.*;
-import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.Bond;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
 import org.jmol.viewer.JmolConstants;
 
 public class SticksRenderer extends ShapeRenderer {

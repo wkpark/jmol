@@ -25,9 +25,9 @@
 package org.jmol.shape;
 
 import org.jmol.g3d.*;
-import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.Measurement;
-import org.jmol.modelframe.MeasurementPending;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.Measurement;
+import org.jmol.modelset.MeasurementPending;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;

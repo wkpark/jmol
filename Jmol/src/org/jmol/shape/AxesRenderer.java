@@ -27,7 +27,7 @@ import java.awt.FontMetrics;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelframe.CellInfo;
+import org.jmol.modelset.CellInfo;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 

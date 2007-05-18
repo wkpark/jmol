@@ -24,7 +24,7 @@
 package org.jmol.shapespecial;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelframe.Atom;
+import org.jmol.modelset.Atom;
 import org.jmol.shape.ShapeRenderer;
 
 public class PolyhedraRenderer extends ShapeRenderer {

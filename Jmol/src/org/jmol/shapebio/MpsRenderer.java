@@ -31,7 +31,7 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelframe.Atom;
+import org.jmol.modelset.Atom;
 import org.jmol.shape.MeshRenderer;
 import org.jmol.shape.Mesh;
 import org.jmol.viewer.JmolConstants;

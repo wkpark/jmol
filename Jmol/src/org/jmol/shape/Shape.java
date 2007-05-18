@@ -31,8 +31,8 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 import org.jmol.viewer.Viewer;
 import org.jmol.g3d.*;
-import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.ModelSet;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.ModelSet;
 
 import javax.vecmath.Point3f;
 import java.util.BitSet;

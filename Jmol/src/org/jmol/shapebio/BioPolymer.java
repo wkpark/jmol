@@ -23,8 +23,8 @@
  */
 package org.jmol.shapebio;
 
-import org.jmol.modelframe.Group;
-import org.jmol.modelframe.Polymer;
+import org.jmol.modelset.Group;
+import org.jmol.modelset.Polymer;
 import org.jmol.shape.Closest;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;

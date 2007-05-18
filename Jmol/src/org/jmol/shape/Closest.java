@@ -24,7 +24,7 @@
 
 package org.jmol.shape;
 
-import org.jmol.modelframe.Atom;
+import org.jmol.modelset.Atom;
 
 public final class Closest {
   public Atom atom;

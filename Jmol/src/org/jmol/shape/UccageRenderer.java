@@ -27,7 +27,7 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
 import java.text.NumberFormat;
 
-import org.jmol.modelframe.CellInfo;
+import org.jmol.modelset.CellInfo;
 import org.jmol.symmetry.UnitCell;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;

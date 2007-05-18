@@ -25,7 +25,7 @@
 
 package org.jmol.shape;
 
-import org.jmol.modelframe.Atom;
+import org.jmol.modelset.Atom;
 
 public class StarsRenderer extends ShapeRenderer {
 

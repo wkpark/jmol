@@ -52,7 +52,8 @@ import java.awt.Rectangle;
 public class ModelManager {
 
   private final Viewer viewer;
-  private FrameLoader frame;
+  private FrameLoader frameLoader;
+  private Frame frame;
 
   private String fullPathName;
   private String fileName;
@@ -73,17 +74,18 @@ public class ModelManager {
   void clearFrame() {
     //just a bit cleaner -- never two frames in memory,
     //even if one would always be "empty"
-    frame = null;
+    frame = frameLoader = null;
     //System.gc();
   }
   public void zap() {
     clear();
     fullPathName = fileName = modelSetName = "zapped";
-    frame = new FrameLoader(viewer, "empty");
+    frame = frameLoader = new FrameLoader(viewer, "empty");
   }
   
   public void merge(JmolAdapter adapter, Object clientFile ) {
-    frame = new FrameLoader(viewer, adapter, clientFile, frame);
+    frame = frameLoader = new FrameLoader(viewer, adapter, clientFile,
+        frameLoader);
     //haveFile = true;
     if (frame.getAtomCount() == 0)
       zap();
@@ -105,7 +107,7 @@ public class ModelManager {
     if (modelSetName == null)
       modelSetName = reduceFilename(fileName);
     clearFrame();
-    frame = new FrameLoader(viewer, adapter, clientFile, null);
+    frame = frameLoader = new FrameLoader(viewer, adapter, clientFile, null);
     //haveFile = true;
     if (frame.getAtomCount() == 0)
       zap();
@@ -1401,7 +1403,7 @@ String getAtomInfoChime(int i) {
   }
 
   public void calculateStructures() {
-    frame.calculateStructures(true);
+    frameLoader.calculateStructures(true);
   }
   
   public boolean getEchoStateActive() {

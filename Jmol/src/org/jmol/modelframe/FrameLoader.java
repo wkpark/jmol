@@ -41,12 +41,16 @@ import java.util.Properties;
 import java.util.Vector;
 
 /* 
- * This subclass contains all of the methods used to 
- * load a model. Methods only after model loading
- * are not included here.
  * 
+ * Except for calculateStructures this subclass contains 
+ * only the private methods used to load a model. 
+ * Methods exclusively after file loading are included
+ * only in the superclass, Frame.
+ * 
+ * Bob Hanson, 5/2007
  *  
  */
+
 public final class FrameLoader extends Frame {
 
   private FrameLoader mergeFrame;
@@ -60,7 +64,6 @@ public final class FrameLoader extends Frame {
   private Group[] groups;
   private int groupCount;
   
-
   FrameLoader(Viewer viewer, String name) {
     this.viewer = viewer;
     initializeFrame(name, 1, null, null);
@@ -223,7 +226,6 @@ public final class FrameLoader extends Frame {
     finalizeGroupBuild(); // set group offsets and build monomers
     //only now can we access all of the atom's properties
 
-    buildBioPolymers();
     freeze();
     calcAverageAtomPoint();
     calcBoundBoxDimensions();
@@ -669,6 +671,18 @@ public final class FrameLoader extends Frame {
         info.put("group3Counts", group3Counts);
       }
     }
+    
+    group3Counts = null;
+    group3Lists = null;
+
+    for (int i = 0; i < groupCount; ++i) {
+      Group group = groups[i];
+      if (merging)
+        group.setFrame(this);
+      if (jbr != null)
+        jbr.buildBioPolymer(group, groups, i);
+    }
+
   }
 
   private boolean haveBioClasses = true;
@@ -758,16 +772,6 @@ public final class FrameLoader extends Frame {
       countGroup(modelCount, code, group3);
   }
 
-  private void buildBioPolymers() {
-    for (int i = 0; i < groupCount; ++i) {
-      Group group = groups[i];
-      if (merging)
-        group.setFrame(this);
-      if (jbr != null)
-        jbr.buildBioPolymer(group, groups, i);
-    }
-  }
-
   private void freeze() {
 
     // resize arrays
@@ -847,40 +851,6 @@ public final class FrameLoader extends Frame {
     }
   }
 
-  /**
-   * allows rebuilding of PDB structures;
-   * also accessed by ModelManager from Eval
-   * 
-   * @param rebuild 
-   *  
-   */
-  void calculateStructures(boolean rebuild) {
-    if (rebuild) {
-      for (int i = JmolConstants.SHAPE_MAX; --i >= 0;)
-        if (JmolConstants.isShapeSecondary(i))
-          shapes[i] = null;
-      if (jbr != null && groupCount > 0)
-        jbr.clearBioPolymers(groups, groupCount);
-      mmset.clearStructures();
-      initializeGroupBuild();
-      for (int i = 0; i < atomCount; i++) {
-        Atom atom = atoms[i];
-        if (atom.group == null)
-          checkNewGroup(i, atom.modelIndex, '\0', null, 0, '\0');
-        else
-          checkNewGroup(i, atom.modelIndex, atom.getChainID(),
-              atom.getGroup3(), atom.getSeqNumber(), atom.getInsertionCode());
-      }
-      finalizeGroupBuild();
-      buildBioPolymers();
-      fileHadDefinedStructures = false;
-      moleculeCount = 0;
-    }
-    if (!fileHadDefinedStructures)
-      mmset.calculateStructures();
-    mmset.freeze();
-  }
-
   private void calcAverageAtomPoint() {
     averageAtomPoint.set(0, 0, 0);
     if (atomCount == 0)
@@ -908,4 +878,40 @@ public final class FrameLoader extends Frame {
     loadShape(JmolConstants.SHAPE_BBCAGE);
     loadShape(JmolConstants.SHAPE_UCCAGE);
   }
+
+  // the ONLY nonprivate method in this class
+  
+  /**
+   * allows rebuilding of PDB structures;
+   * also accessed by ModelManager from Eval
+   * 
+   * @param rebuild 
+   *  
+   */
+  void calculateStructures(boolean rebuild) {
+    if (rebuild) {
+      for (int i = JmolConstants.SHAPE_MAX; --i >= 0;)
+        if (JmolConstants.isShapeSecondary(i))
+          shapes[i] = null;
+      if (jbr != null && groupCount > 0)
+        jbr.clearBioPolymers(groups, groupCount);
+      mmset.clearStructures();
+      initializeGroupBuild();
+      for (int i = 0; i < atomCount; i++) {
+        Atom atom = atoms[i];
+        if (atom.group == null)
+          checkNewGroup(i, atom.modelIndex, '\0', null, 0, '\0');
+        else
+          checkNewGroup(i, atom.modelIndex, atom.getChainID(),
+              atom.getGroup3(), atom.getSeqNumber(), atom.getInsertionCode());
+      }
+      finalizeGroupBuild();
+      fileHadDefinedStructures = false;
+      moleculeCount = 0;
+    }
+    if (!fileHadDefinedStructures)
+      mmset.calculateStructures();
+    mmset.freeze();
+  }
+
 }

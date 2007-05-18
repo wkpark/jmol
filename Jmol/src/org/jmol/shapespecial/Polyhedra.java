@@ -268,7 +268,7 @@ public class Polyhedra extends AtomShape {
   Polyhedron constructRadiusPolyhedron(int atomIndex) {
     Atom atom = atoms[atomIndex];
     int otherAtomCount = 0;
-    AtomIterator withinIterator = frame.getWithinModelIterator(atom, radius);
+    AtomIterator withinIterator = viewer.getWithinModelIterator(atom, radius);
     while (withinIterator.hasNext()) {
       Atom other = withinIterator.next();
       if (other == atom || bsVertices != null

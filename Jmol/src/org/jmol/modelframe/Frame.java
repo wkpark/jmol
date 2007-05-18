@@ -59,6 +59,28 @@ import java.util.Properties;
 import java.util.Vector;
 import java.awt.Rectangle;
 
+
+/*
+ * An abstract class always created using new FrameLoader(...)
+ * 
+ * FrameLoader simply pulls out all private classes that are
+ * necessary only for file loading (and structure recalculation).
+ * 
+ * What is left here are all the methods that are 
+ * necessary AFTER a model is loaded, when it is being 
+ * accessed by ModelManager or other classes.
+ * 
+ * Please:
+ * 
+ * 1) designate any methods accessed only by ModelManager as default
+ * 2) designate any methods accessed only by FrameLoader as protected
+ * 3) designate any methods used only here as private
+ * 
+ * methods needing access outside this package, of course, are designated public
+ * 
+ * Bob Hanson, 5/2007
+ * 
+ */
 abstract public class Frame {
 
   Viewer viewer;
@@ -107,6 +129,24 @@ abstract public class Frame {
     return atomNames;
   }
   
+  private final WithinModelIterator withinModelIterator = new WithinModelIterator();
+
+  AtomIterator getWithinModelIterator(Atom atomCenter, float radius) {
+    //Polyhedra
+    initializeBspf();
+    withinModelIterator.initialize(bspf, atomCenter.modelIndex, atomCenter, radius);
+    return withinModelIterator;
+  }
+
+  private final WithinAtomSetIterator withinAtomSetIterator = new WithinAtomSetIterator();
+
+  AtomIndexIterator getWithinAtomSetIterator(int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly) {
+    //EnvelopeCalculation, IsoSolventReader
+    initializeBspf();
+    withinAtomSetIterator.initialize(this, bspf, atoms[atomIndex].modelIndex, atomIndex, distance, bsSelected, isGreaterOnly);
+    return withinAtomSetIterator;
+  }
+  
   Bond[] bonds;
   int bondCount;
   
@@ -127,6 +167,16 @@ abstract public class Frame {
     return bondCount;
   }
   
+  public BondIterator getBondIterator(short bondType, BitSet bsSelected) {
+    //Dipoles, Sticks
+    return new SelectedBondIterator(this, bondType, bsSelected,   viewer.getBondSelectionModeOr());
+  }
+
+  public BondIterator getBondIterator(BitSet bsSelected) {
+    //Sticks
+    return new SelectedBondIterator(this, bsSelected);
+  }
+
   //note: Molecules is set up to only be calculated WHEN NEEDED
   protected Molecule[] molecules = new Molecule[4];
   protected int moleculeCount;
@@ -2687,35 +2737,6 @@ abstract public class Frame {
       iLastAtom = i;
     }
     return cmd.toString();
-  }
-
-  
-  /////////// iterators ////////////
-    
-  private final WithinModelIterator withinModelIterator = new WithinModelIterator();
-
-  public AtomIterator getWithinModelIterator(Atom atomCenter, float radius) {
-    initializeBspf();
-    withinModelIterator.initialize(bspf, atomCenter.modelIndex, atomCenter, radius);
-    return withinModelIterator;
-  }
-
-  private final WithinAtomSetIterator withinAtomSetIterator = new WithinAtomSetIterator();
-
-  AtomIndexIterator getWithinAtomSetIterator(int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly) {
-    initializeBspf();
-    withinAtomSetIterator.initialize(this, bspf, atoms[atomIndex].modelIndex, atomIndex, distance, bsSelected, isGreaterOnly);
-    return withinAtomSetIterator;
-  }
-  
-  public BondIterator getBondIterator(short bondType, BitSet bsSelected) {
-    //Dipoles, Sticks
-    return new SelectedBondIterator(this, bondType, bsSelected,   viewer.getBondSelectionModeOr());
-  }
-
-  public BondIterator getBondIterator(BitSet bsSelected) {
-    //Sticks
-    return new SelectedBondIterator(this, bsSelected);
   }
 
 }

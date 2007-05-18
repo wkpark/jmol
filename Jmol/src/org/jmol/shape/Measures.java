@@ -27,7 +27,7 @@ package org.jmol.shape;
 import org.jmol.g3d.*;
 import org.jmol.modelframe.Atom;
 import org.jmol.modelframe.Measurement;
-import org.jmol.modelframe.PendingMeasurement;
+import org.jmol.modelframe.MeasurementPending;
 import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
@@ -45,7 +45,7 @@ public class Measures extends Shape {
   final static int measurementGrowthIncrement = 16;
   int measurementCount = 0;
   Measurement[] measurements = new Measurement[measurementGrowthIncrement];
-  PendingMeasurement pendingMeasurement;
+  MeasurementPending pendingMeasurement;
   short mad = (short)-1;
   short colix; // default to none in order to contrast with background
   String strFormat;
@@ -57,7 +57,7 @@ public class Measures extends Shape {
   
 
   protected void initFrame() {
-    pendingMeasurement = new PendingMeasurement(frame);
+    pendingMeasurement = new MeasurementPending(frame);
   }
   
   public void initShape() {

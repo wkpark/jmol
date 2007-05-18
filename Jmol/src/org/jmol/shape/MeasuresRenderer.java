@@ -27,7 +27,7 @@ package org.jmol.shape;
 import org.jmol.g3d.*;
 import org.jmol.modelframe.Atom;
 import org.jmol.modelframe.Measurement;
-import org.jmol.modelframe.PendingMeasurement;
+import org.jmol.modelframe.MeasurementPending;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
@@ -237,7 +237,7 @@ public class MeasuresRenderer extends ShapeRenderer {
     g3d.drawString(strMeasurement, font3d, xT, yT, zT, zT);
   }
 
-  void renderPendingMeasurement(PendingMeasurement pendingMeasurement) {
+  void renderPendingMeasurement(MeasurementPending pendingMeasurement) {
     int count = pendingMeasurement.getCount();
     if (! pendingMeasurement.getIsActive() || count < 2)
       return;
@@ -248,7 +248,7 @@ public class MeasuresRenderer extends ShapeRenderer {
       renderMeasurement(pendingMeasurement);
   }
   
-  public void renderPendingWithCursor(PendingMeasurement pendingMeasurement) {
+  public void renderPendingWithCursor(MeasurementPending pendingMeasurement) {
     int count = pendingMeasurement.getCount();
     if (count < 2)
       return;

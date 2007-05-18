@@ -23,7 +23,7 @@
  */
 package org.jmol.modelframe;
 
-public class PendingMeasurement extends Measurement {
+public class MeasurementPending extends Measurement {
 
   private boolean isActive = false;
   
@@ -34,7 +34,7 @@ public class PendingMeasurement extends Measurement {
     isActive = TF;
   }
   
-  public PendingMeasurement(Frame frame) {
+  public MeasurementPending(Frame frame) {
     super(frame, null, Float.NaN, (short) 0, null, 0);
     this.countPlusIndices = new int[5];
   }

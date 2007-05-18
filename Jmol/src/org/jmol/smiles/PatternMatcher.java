@@ -29,7 +29,7 @@ import java.util.BitSet;
 import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.modelframe.Atom;
 import org.jmol.modelframe.Bond;
-import org.jmol.modelframe.Frame;
+import org.jmol.modelframe.ModelSet;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
@@ -56,7 +56,7 @@ import org.jmol.viewer.Viewer;
 public class PatternMatcher implements SmilesMatcherInterface {
 
   private int atomCount = 0;
-  private Frame frame = null;
+  private ModelSet modelSet = null;
 
   /**
    * Constructs a <code>PatternMatcher</code>.
@@ -65,7 +65,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
   public PatternMatcher() {
   }
   public void setViewer(Viewer viewer) {
-    this.frame = viewer.getFrame();
+    this.modelSet = viewer.getModelSet();
     this.atomCount = viewer.getAtomCount();     
   }
   /**
@@ -107,7 +107,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
       SmilesBond patternBond = patternAtom.getBond(i);
       if (patternBond.getAtom2() == patternAtom) {
         int matchingAtom = patternBond.getAtom1().getMatchingAtom();
-        Atom atom = frame.getAtomAt(matchingAtom);
+        Atom atom = modelSet.getAtomAt(matchingAtom);
         Bond[] bonds = atom.getBonds();
         if (bonds != null) {
           for (int j = 0; j < bonds.length; j++) {
@@ -146,7 +146,7 @@ public class PatternMatcher implements SmilesMatcherInterface {
       }
     }
     
-    Atom atom = frame.getAtomAt(i);
+    Atom atom = modelSet.getAtomAt(i);
 
     // Check symbol -- not isotope-sensitive
     String targetSym = patternAtom.getSymbol();

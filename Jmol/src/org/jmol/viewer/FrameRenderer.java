@@ -25,7 +25,7 @@
 package org.jmol.viewer;
 
 import org.jmol.g3d.*;
-import org.jmol.modelframe.ModelSet;
+import org.jmol.modelset.ModelSet;
 //import java.awt.Rectangle;
 import org.jmol.shape.Shape;
 import org.jmol.shape.ShapeRenderer;

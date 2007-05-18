@@ -26,8 +26,8 @@ package org.jmol.viewer;
 import org.jmol.util.Logger;
 import java.util.BitSet;
 import org.jmol.g3d.*;
-import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.ModelSet;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.ModelSet;
 import org.jmol.util.ColorEncoder;
 
 class ColorManager {

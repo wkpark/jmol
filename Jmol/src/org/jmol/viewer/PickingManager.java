@@ -26,8 +26,8 @@ package org.jmol.viewer;
 import org.jmol.util.Logger;
 
 import org.jmol.i18n.GT;
-import org.jmol.modelframe.ModelSet;
-import org.jmol.modelframe.Measurement;
+import org.jmol.modelset.Measurement;
+import org.jmol.modelset.ModelSet;
 
 class PickingManager {
 

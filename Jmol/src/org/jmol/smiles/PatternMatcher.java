@@ -27,9 +27,9 @@ package org.jmol.smiles;
 import java.util.BitSet;
 
 import org.jmol.api.SmilesMatcherInterface;
-import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.Bond;
-import org.jmol.modelframe.ModelSet;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
+import org.jmol.modelset.ModelSet;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 

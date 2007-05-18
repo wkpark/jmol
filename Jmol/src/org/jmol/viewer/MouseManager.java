@@ -27,7 +27,7 @@ package org.jmol.viewer;
 import java.awt.Rectangle;
 import java.awt.Event;
 
-import org.jmol.modelframe.Measurement;
+import org.jmol.modelset.Measurement;
 import org.jmol.util.Logger;
 import java.awt.event.*;
 import java.awt.Component;

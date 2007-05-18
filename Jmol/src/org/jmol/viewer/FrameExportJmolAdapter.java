@@ -25,9 +25,9 @@
 package org.jmol.viewer;
 
 import org.jmol.api.JmolAdapter;
-import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.Bond;
-import org.jmol.modelframe.ModelSet;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
+import org.jmol.modelset.ModelSet;
 
 
 final public class FrameExportJmolAdapter extends JmolAdapter {

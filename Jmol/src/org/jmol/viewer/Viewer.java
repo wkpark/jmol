@@ -26,10 +26,10 @@ package org.jmol.viewer;
 import org.jmol.shape.Shape;
 import org.jmol.symmetry.UnitCell;
 import org.jmol.i18n.GT;
-import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.AtomIterator;
-import org.jmol.modelframe.ModelSet;
-import org.jmol.modelframe.ModelManager;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.AtomIterator;
+import org.jmol.modelset.ModelManager;
+import org.jmol.modelset.ModelSet;
 
 import org.jmol.api.*;
 import org.jmol.atomdata.AtomData;

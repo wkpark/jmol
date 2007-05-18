@@ -28,7 +28,7 @@ import org.jmol.util.BitSetUtil;
 
 import org.jmol.api.JmolSelectionListener;
 import org.jmol.i18n.GT;
-import org.jmol.modelframe.ModelSet;
+import org.jmol.modelset.ModelSet;
 
 import java.util.BitSet;
 import java.util.Hashtable;

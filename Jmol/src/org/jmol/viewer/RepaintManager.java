@@ -26,7 +26,7 @@ package org.jmol.viewer;
 import org.jmol.util.Logger;
 
 import org.jmol.g3d.*;
-import org.jmol.modelframe.ModelSet;
+import org.jmol.modelset.ModelSet;
 
 import java.awt.Rectangle;
 import java.util.Hashtable;

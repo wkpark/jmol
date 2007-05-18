@@ -43,11 +43,11 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point4f;
 import org.jmol.i18n.*;
-import org.jmol.modelframe.Atom;
-import org.jmol.modelframe.Bond;
-import org.jmol.modelframe.ModelSet;
-import org.jmol.modelframe.Group;
-import org.jmol.modelframe.Mmset;
+import org.jmol.modelset.Atom;
+import org.jmol.modelset.Bond;
+import org.jmol.modelset.Group;
+import org.jmol.modelset.Mmset;
+import org.jmol.modelset.ModelSet;
 
 class Context {
   String filename;

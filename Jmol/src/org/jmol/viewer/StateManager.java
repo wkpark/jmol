@@ -31,8 +31,8 @@ import java.util.BitSet;
 import java.util.Enumeration;
 
 import org.jmol.g3d.Graphics3D;
-import org.jmol.modelframe.Bond;
-import org.jmol.modelframe.ModelSet;
+import org.jmol.modelset.Bond;
+import org.jmol.modelset.ModelSet;
 import org.jmol.util.Escape;
 import org.jmol.util.TextFormat;
 

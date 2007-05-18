@@ -28,7 +28,7 @@ import org.jmol.util.CommandHistory;
 import org.jmol.util.Parser;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
-import org.jmol.modelframe.Group;
+import org.jmol.modelset.Group;
 
 import java.util.Vector;
 import java.util.BitSet;

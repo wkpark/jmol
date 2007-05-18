@@ -455,7 +455,7 @@ abstract class MpsRenderer extends MeshRenderer {
     if (controlPoints[i].distance(controlPoints[iNext]) == 0)
       return;
     if (isHelix(i)) {
-      ProteinStructure p = ((AlphaMonomer) monomers[i]).proteinStructure;
+      ProteinStructure p = ((AlphaMonomer) monomers[i]).getProteinStructure();
       p.calcAxis();
       /*
        * 

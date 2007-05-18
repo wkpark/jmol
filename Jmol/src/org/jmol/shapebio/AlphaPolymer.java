@@ -46,28 +46,25 @@ public class AlphaPolymer extends BioPolymer {
 
   void addSecondaryStructure(byte type, int indexStart, int indexEnd) {
     
-    int structureCount = indexEnd - indexStart + 1;
-    if (structureCount < 1) {
+    if (indexEnd <= indexStart) {
       Logger.error("structure definition error\n" +
                          " indexStart:" + indexStart +
                          " indexEnd:" + indexEnd);
       return;
     }
+    int structureCount = indexEnd - indexStart + 1;
     ProteinStructure proteinstructure = null;
     switch(type) {
     case JmolConstants.PROTEIN_STRUCTURE_HELIX:
       proteinstructure = new Helix(this, indexStart, structureCount);
-      proteinstructure.index = ++structureCount;
       break;
     case JmolConstants.PROTEIN_STRUCTURE_SHEET:
       if (this instanceof AminoPolymer)
         proteinstructure = new Sheet((AminoPolymer)this,
                                    indexStart, structureCount);
-      proteinstructure.index = ++structureCount;
       break;
     case JmolConstants.PROTEIN_STRUCTURE_TURN:
       proteinstructure = new Turn(this, indexStart, structureCount);
-      proteinstructure.index = ++structureCount;
       break;
     default:
       Logger.error("unrecognized secondary structure type");

@@ -55,20 +55,21 @@ public class AlphaMonomer extends Monomer {
 
   boolean isAlphaMonomer() { return true; }
 
-  ProteinStructure proteinStructure;
+  private ProteinStructure proteinStructure;
+  
+  ProteinStructure getProteinStructure() { return proteinStructure; }
+
   void setStructure(ProteinStructure proteinStructure) {
     this.proteinStructure = proteinStructure;
   }
-
-  ProteinStructure getProteinStructure() { return proteinStructure; }
 
   public byte getProteinStructureType() {
     return proteinStructure == null ? JmolConstants.PROTEIN_STRUCTURE_NONE
         : proteinStructure.type;
   }
 
-  public int getProteinStructureIndex() {
-    return proteinStructure != null ? proteinStructure.index : -1;
+  public int getProteinStructureID() {
+    return proteinStructure != null ? proteinStructure.uniqueID : -1;
   }
 
   public boolean isHelix() {
@@ -81,41 +82,47 @@ public class AlphaMonomer extends Monomer {
       proteinStructure.type == JmolConstants.PROTEIN_STRUCTURE_SHEET;
   }
 
-  public int setProteinStructureType(byte iType, int index, int monomerIndexLast) {
-    if (index < 0)
+  /**
+   * 
+   * @param iType
+   * @param monomerIndexCurrent   a pointer to the current ProteinStructure
+   * @return                      a pointer to this ProteinStructure
+   */
+  public int setProteinStructureType(byte iType, int monomerIndexCurrent) {
+    if (monomerIndexCurrent < 0) {
+      if (proteinStructure != null) {
+        int nAbandoned = proteinStructure.removeMonomer(monomerIndex);
+        if (nAbandoned > 0)
+          getBioPolymer().removeProteinStructure(monomerIndex + 1, nAbandoned);
+      }
       switch (iType) {
       case JmolConstants.PROTEIN_STRUCTURE_HELIX:
-        proteinStructure = new Helix((AlphaPolymer) bioPolymer, monomerIndex, 1);
-        proteinStructure.index = -index;
-        return monomerIndex;
+        setStructure(new Helix((AlphaPolymer) bioPolymer, monomerIndex, 1));
+        break;
       case JmolConstants.PROTEIN_STRUCTURE_SHEET:
-        proteinStructure = new Sheet((AminoPolymer) bioPolymer, monomerIndex, 1);
-        proteinStructure.index = -index;
-        return monomerIndex;
+        setStructure(new Sheet((AminoPolymer) bioPolymer, monomerIndex, 1));
+        break;
       case JmolConstants.PROTEIN_STRUCTURE_TURN:
-        proteinStructure = new Turn((AlphaPolymer) bioPolymer, monomerIndex, 1);
-        proteinStructure.index = -index;
-        return monomerIndex;
+        setStructure(new Turn((AlphaPolymer) bioPolymer, monomerIndex, 1));
+        break;
       case JmolConstants.PROTEIN_STRUCTURE_NONE:
-        proteinStructure = null;
-        return monomerIndex;
+        setStructure(null);
       }
-    if ((proteinStructure = getBioPolymer().getProteinStructure(monomerIndexLast)) != null) {
-        if (monomerIndex >= proteinStructure.monomerIndex
-            + proteinStructure.monomerCount)
-      proteinStructure.monomerCount = monomerIndex
-          - proteinStructure.monomerIndex + 1;
-    }    
+    } else {
+      setStructure(getBioPolymer().getProteinStructure(monomerIndexCurrent));
+      if (proteinStructure != null)
+        proteinStructure.addMonomer(monomerIndex);
+    }
     return monomerIndex;
   }
   
-  public Atom getAtom(byte specialAtomID) {
+  final public Atom getAtom(byte specialAtomID) {
     return (specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
             ? getLeadAtom()
             : null);
   }
 
-  public Point3f getAtomPoint(byte specialAtomID) {
+  final public Point3f getAtomPoint(byte specialAtomID) {
     return (specialAtomID == JmolConstants.ATOMID_ALPHA_CARBON
             ? getLeadAtomPoint()
             : null);

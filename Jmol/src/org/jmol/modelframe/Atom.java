@@ -1001,12 +1001,12 @@ final public class Atom extends Point3fi implements Tuple {
     return group.getProteinStructureType();
   }
   
-  public int getProteinStructureIndex() {
-    return group.getProteinStructureIndex();
+  public int getProteinStructureID() {
+    return group.getProteinStructureID();
   }
 
-  public int setProteinStructureType(byte type, int index, int indexLast) {
-    return group.setProteinStructureType(type, index, indexLast);
+  public int setProteinStructureType(byte type, int indexCurrent) {
+    return group.setProteinStructureType(type, indexCurrent);
   }
 
   public short getGroupID() {

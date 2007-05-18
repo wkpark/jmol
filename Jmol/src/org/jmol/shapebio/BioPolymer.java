@@ -190,6 +190,12 @@ public abstract class BioPolymer extends Polymer {
     return monomers;
   }
 
+  
+  void removeProteinStructure(int monomerIndex, int count) {
+    for (int i = 0, pt = monomerIndex; i < count && pt < monomerCount; i++, pt++)
+      monomers[pt].setStructure(null);
+  }
+
   int[] getLeadAtomIndices() {
     if (leadAtomIndices == null) {
       leadAtomIndices = new int[monomerCount];

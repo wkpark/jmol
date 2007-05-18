@@ -41,13 +41,13 @@ class Sheet extends ProteinStructure {
     if (axisA != null)
       return;
     if (monomerCount == 2) {
-      axisA = aminoPolymer.getLeadPoint(monomerIndex);
-      axisB = aminoPolymer.getLeadPoint(monomerIndex + 1);
+      axisA = aminoPolymer.getLeadPoint(monomerIndexFirst);
+      axisB = aminoPolymer.getLeadPoint(monomerIndexFirst + 1);
     } else {
       axisA = new Point3f();
-      aminoPolymer.getLeadMidPoint(monomerIndex + 1, axisA);
+      aminoPolymer.getLeadMidPoint(monomerIndexFirst + 1, axisA);
       axisB = new Point3f();
-      aminoPolymer.getLeadMidPoint(monomerIndex + monomerCount - 1, axisB);
+      aminoPolymer.getLeadMidPoint(monomerIndexFirst + monomerCount - 1, axisB);
     }
 
     axisUnitVector = new Vector3f();
@@ -55,14 +55,14 @@ class Sheet extends ProteinStructure {
     axisUnitVector.normalize();
 
     Point3f tempA = new Point3f();
-    aminoPolymer.getLeadMidPoint(monomerIndex, tempA);
+    aminoPolymer.getLeadMidPoint(monomerIndexFirst, tempA);
     if (lowerNeighborIsHelixOrSheet()) {
       //System.out.println("ok"); 
     } else {
       Graphics3D.projectOntoAxis(tempA, axisA, axisUnitVector, vectorProjection);
     }
     Point3f tempB = new Point3f();
-    aminoPolymer.getLeadMidPoint(monomerIndex + monomerCount, tempB);
+    aminoPolymer.getLeadMidPoint(monomerIndexFirst + monomerCount, tempB);
     if (upperNeighborIsHelixOrSheet()) {
       //System.out.println("ok");       
     } else {
@@ -79,7 +79,7 @@ class Sheet extends ProteinStructure {
     if (widthUnitVector == null) {
       Vector3f vectorCO = new Vector3f();
       Vector3f vectorCOSum = new Vector3f();
-      AminoMonomer amino = (AminoMonomer)aminoPolymer.monomers[monomerIndex];
+      AminoMonomer amino = (AminoMonomer)aminoPolymer.monomers[monomerIndexFirst];
       vectorCOSum.sub(amino.getCarbonylOxygenAtomPoint(),
                       amino.getCarbonylCarbonAtomPoint());
       for (int i = monomerCount; --i > 0; ) {

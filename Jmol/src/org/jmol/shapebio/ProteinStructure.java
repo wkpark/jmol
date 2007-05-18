@@ -27,32 +27,66 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.util.Logger;
+import org.jmol.viewer.JmolConstants;
 
 abstract class ProteinStructure {
 
+  static int globalSerialID = 0;
   AlphaPolymer apolymer;
   byte type;
-  int monomerIndex;
+  int monomerIndexFirst;
+  int monomerIndexLast;
   int monomerCount;
   Point3f axisA, axisB;
   Vector3f axisUnitVector;
   final Vector3f vectorProjection = new Vector3f();
   Point3f[] segments;
-  int index;
+  int uniqueID;
   //Point3f center;
 
   ProteinStructure(AlphaPolymer apolymer, byte type,
                    int monomerIndex, int monomerCount) {
+    uniqueID = ++globalSerialID;
     this.apolymer = apolymer;
-    this.type = type;
+    this.type = type;    
+    monomerIndexFirst = monomerIndex;
+    addMonomer(monomerIndex + monomerCount - 1);
     
     if(Logger.isActiveLevel(Logger.LEVEL_DEBUG))
       Logger.debug(
-          "Creating ProteinStructure type " + type + " from " + monomerIndex +
-          " through "+(monomerIndex+monomerCount -1) + " in polymer " + apolymer);
-    
-    this.monomerIndex = monomerIndex;
-    this.monomerCount = monomerCount;
+          "Creating ProteinStructure " + uniqueID 
+          + " " + JmolConstants.getProteinStructureName(type) 
+          + " from " + monomerIndexFirst + " through "+(monomerIndexLast)
+          + " in polymer " + apolymer);
+  }
+  
+  /**
+   * Note that this method does not check to see 
+   * that there are no overlapping protein structures.
+   *  
+   * @param index
+   */
+  void addMonomer(int index) {
+    monomerIndexFirst = Math.min(monomerIndexFirst, index);
+    monomerIndexLast = Math.max(monomerIndexLast, index);
+    monomerCount = monomerIndexLast - monomerIndexFirst + 1;
+  }
+
+  /**
+   * should be OK here to remove the first -- we just get a 
+   * monomerCount of 0; but we don't remove monomers that aren't
+   * part of this structure.
+   * 
+   * @param monomerIndex
+   * @return the number of monomers AFTER this one that have been abandoned
+   */
+  int removeMonomer(int monomerIndex) {
+    if (monomerIndex > monomerIndexLast || monomerIndex < monomerIndexFirst)
+      return 0;
+    int ret = monomerIndexLast - monomerIndex;
+    monomerIndexLast = Math.max(monomerIndexFirst, monomerIndex) - 1;
+    monomerCount = monomerIndexLast - monomerIndexFirst + 1;
+    return ret;
   }
 
   void calcAxis() {
@@ -82,14 +116,14 @@ abstract class ProteinStructure {
   }
 
   boolean lowerNeighborIsHelixOrSheet() {
-    if (monomerIndex == 0)
+    if (monomerIndexFirst == 0)
       return false;
-    return apolymer.monomers[monomerIndex - 1].isHelix()
-        || apolymer.monomers[monomerIndex - 1].isSheet();
+    return apolymer.monomers[monomerIndexFirst - 1].isHelix()
+        || apolymer.monomers[monomerIndexFirst - 1].isSheet();
   }
 
   boolean upperNeighborIsHelixOrSheet() {
-    int upperNeighborIndex = monomerIndex + monomerCount;
+    int upperNeighborIndex = monomerIndexFirst + monomerCount;
     if (upperNeighborIndex == apolymer.monomerCount)
       return false;
     return apolymer.monomers[upperNeighborIndex].isHelix()
@@ -101,14 +135,14 @@ abstract class ProteinStructure {
   }
 
   int getMonomerIndex() {
-    return monomerIndex;
+    return monomerIndexFirst;
   }
 
   int getIndex(Monomer monomer) {
     Monomer[] monomers = apolymer.monomers;
     int i;
     for (i = monomerCount; --i >= 0; )
-      if (monomers[monomerIndex + i] == monomer)
+      if (monomers[monomerIndexFirst + i] == monomer)
         break;
     return i;
   }

@@ -163,7 +163,7 @@ public class Group {
     return -1;
   }
 
-  public int getProteinStructureIndex() {
+  public int getProteinStructureID() {
     return Integer.MIN_VALUE;
   }
   
@@ -171,7 +171,7 @@ public class Group {
     return JmolConstants.PROTEIN_STRUCTURE_NONE;
   }
 
-  public int setProteinStructureType(byte iType, int index, int monomerIndexLast) {
+  public int setProteinStructureType(byte iType, int monomerIndexCurrent) {
     return -1;
   }
 

@@ -3777,15 +3777,15 @@ public final class Frame {
     BitSet bs = null;
     StringBuffer cmd = new StringBuffer();
     int itype = 0;
-    int index = 0;
+    int id = 0;
     int iLastAtom = 0;
-    int lastIndex = -1;
+    int lastId = -1;
     int res1 = 0;
     int res2 = 0;
     for (int i = 0; i <= atomCount; i++) {
-      index = Integer.MIN_VALUE;
+      id = Integer.MIN_VALUE;
       if (i == atomCount
-          || (index = atoms[i].getProteinStructureIndex()) != lastIndex) {
+          || (id = atoms[i].getProteinStructureID()) != lastId) {
         if (bs != null) {
           cmd.append("structure ")
               .append(JmolConstants.getProteinStructureName(itype))
@@ -3794,7 +3794,7 @@ public final class Frame {
               .append(" & (").append(res1).append(" - ").append(res2).append(");\n");
           bs = null;
         }
-        if (index == Integer.MIN_VALUE)
+        if (id == Integer.MIN_VALUE)
           continue;
         res1 = atoms[i].getResno();
       }
@@ -3803,22 +3803,23 @@ public final class Frame {
         itype = atoms[i].getProteinStructureType();
       }
       bs.set(i);
-      lastIndex = index;
+      lastId = id;
       res2 = atoms[i].getResno();
       iLastAtom = i;
     }
     return cmd.toString();
   }
 
-  int psIndex = Integer.MAX_VALUE;
   void setProteinType(BitSet bs, byte iType) {
-    int indexLast = 0;
-    psIndex = (psIndex == Integer.MAX_VALUE ? -atomCount : -psIndex) -1;
+    int monomerIndexCurrent = -1;
+    int iLast = -1;
     for (int i = 0; i < atomCount; i++)
       if (bs.get(i)) {
-        indexLast = atoms[i].setProteinStructureType(iType, psIndex, indexLast);
-        if (psIndex < 0)
-          indexLast = atoms[i].setProteinStructureType(iType, psIndex = -psIndex, indexLast);
+        if (iLast != i - 1)
+          monomerIndexCurrent = -1;
+        iLast = i;
+        monomerIndexCurrent = atoms[i].setProteinStructureType(iType,
+            monomerIndexCurrent);
       }
   }
   

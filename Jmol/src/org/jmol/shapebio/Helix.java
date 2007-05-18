@@ -42,7 +42,7 @@ class Helix extends ProteinStructure {
     Point3f[] points = new Point3f[monomerCount + 1];
     for (int i = 0; i <= monomerCount; i++) {
       points[i] = new Point3f();
-      apolymer.getLeadMidPoint(monomerIndex + i, points[i]);
+      apolymer.getLeadMidPoint(monomerIndexFirst + i, points[i]);
     }
     axisA = new Point3f();
     axisUnitVector = new Vector3f();

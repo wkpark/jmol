@@ -272,7 +272,7 @@ public abstract class Monomer extends Group {
       info.put("psi", new Float(psi));
     ProteinStructure structure = getProteinStructure();
     if(structure != null) {
-      info.put("structureIndex", new Integer(structure.index));
+      info.put("structureId", new Integer(structure.uniqueID));
       info.put("structureType", getStructureTypeName(structure.type));
     }
     info.put("shapeVisibilityFlags", new Integer(shapeVisibilityFlags));

@@ -48,9 +48,14 @@ public class BallsRenderer extends ShapeRenderer {
       maxZ = g3d.getDepth();
     }
     Atom[] atoms = frame.atoms;
-    for (int i = frame.getGroupCount(); --i >= 0;)
-      frame.getGroup(i).setMinZ(Integer.MAX_VALUE);
-    for (int i = frame.getAtomCount(); --i >= 0;) {
+    int atomCount = frame.getAtomCount();
+    for (int i = 0; i < atomCount; i++) {
+      Group group = atoms[i].getGroup();
+      group.setMinZ(Integer.MAX_VALUE);
+      i = Math.max(group.getLastAtomIndex(), i); //just in case!
+    }
+    
+    for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       if ((atom.getShapeVisibilityFlags() & JmolConstants.ATOM_IN_MODEL) == 0)
         continue;

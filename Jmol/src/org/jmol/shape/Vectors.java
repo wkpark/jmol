@@ -32,7 +32,7 @@ public class Vectors extends AtomShape {
   float scale = Float.NaN;
   
  protected void initFrame() {
-    if (!(isActive = frame.hasVibrationVectors()))
+    if (!(isActive = frame.modelSetHasVibrationVectors()))
       return;
     super.initFrame();
   }

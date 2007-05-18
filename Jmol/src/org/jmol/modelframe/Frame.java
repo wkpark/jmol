@@ -87,6 +87,9 @@ public final class Frame {
   }
   
   public Atom[] atoms;
+  int atomCount;
+  String[] atomNames;
+
   
   Atom[] getAtoms() {
     return atoms;
@@ -96,20 +99,17 @@ public final class Frame {
     return atoms[atomIndex];
   }
 
-  int atomCount;
-
   public int getAtomCount() {
     return atomCount;
   }
-
-  String[] atomNames;
-
+  
   public String[] getAtomNames() {
     return atomNames;
   }
   
   Bond[] bonds;
-
+  int bondCount;
+  
   public Bond[] getBonds() {
     return bonds;
   }
@@ -118,8 +118,6 @@ public final class Frame {
     return bonds[bondIndex];
   }
 
-  int bondCount;
-  
   /**
    * not necessarily the REAL bond count; this is an ARRAY MAXIMUM
    * 
@@ -129,19 +127,19 @@ public final class Frame {
     return bondCount;
   }
   
-  private int groupCount;
   private Group[] groups;
-  
-  public Group getGroup(int i) {
-    return groups[i];
-  }
+  private int groupCount;
   
   //note: Molecules is set up to only be calculated WHEN NEEDED
-  private int moleculeCount;
   private Molecule[] molecules = new Molecule[4];
+  private int moleculeCount;
   
   private int modelCount;
-  private int adapterModelCount;
+  
+  public int getModelCount() {
+    return modelCount;
+  }
+
 
   private BitSet[] elementsPresent;
 
@@ -189,11 +187,9 @@ public final class Frame {
   boolean someModelsHaveSymmetry;
   private boolean someModelsHaveUnitcells;
   private boolean someModelsHaveFractionalCoordinates;
-
-  private boolean hasVibrationVectors;
   
-  public boolean hasVibrationVectors(){
-    return hasVibrationVectors;
+  public boolean modelSetHasVibrationVectors(){
+    return (vibrationVectors != null);
   }
   
   //////// initialization and model loading ///////
@@ -218,7 +214,7 @@ public final class Frame {
   }
 /*
   private void dumpAtomSetNameDiagnostics(JmolAdapter adapter, Object clientFile) {
-    int frameModelCount = getModelCount();
+    int frameModelCount = modelCount;
     int adapterAtomSetCount = adapter.getAtomSetCount(clientFile);
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug(
@@ -326,8 +322,8 @@ public final class Frame {
   private Vector trajectories;
 
   private void initializeModelSet(JmolAdapter adapter, Object clientFile) {
-    modelCount = adapterModelCount = (adapter == null ? 1 : adapter
-        .getAtomSetCount(clientFile));
+    int adapterModelCount = modelCount = 
+      (adapter == null ? 1 : adapter.getAtomSetCount(clientFile));
     initializeAtomBondModelCounts();
     if (adapter == null) {
       mmset.setModelNameNumberProperties(0, "", 1, null, null, false);
@@ -343,12 +339,12 @@ public final class Frame {
             + " getProperty \"auxiliaryInfo\" to inspect them.");
       }
 
-      iterateOverAllNewModels(adapter, clientFile);
+      iterateOverAllNewModels(adapter, clientFile, adapterModelCount);
       iterateOverAllNewAtoms(adapter, clientFile);
       iterateOverAllNewBonds(adapter, clientFile);
       iterateOverAllNewStructures(adapter, clientFile);
       
-      initializeUnitCellAndSymmetry();
+      initializeUnitCellAndSymmetry(adapterModelCount);
       initializeBonding();
     }
     
@@ -406,7 +402,7 @@ public final class Frame {
     surfaceDistance100s = null;
   }
 
-  private void iterateOverAllNewModels(JmolAdapter adapter, Object clientFile) {
+  private void iterateOverAllNewModels(JmolAdapter adapter, Object clientFile, int adapterModelCount) {
 
     if (modelCount > 0) {
       nullChain = new Chain(this, mmset.getModel(baseModelIndex), ' ');
@@ -629,7 +625,7 @@ public final class Frame {
 
   ////// symmetry ///////
   
-  private void initializeUnitCellAndSymmetry() {
+  private void initializeUnitCellAndSymmetry(int adapterModelCount) {
     /*
      * really THREE issues here:
      * 1) does a model have an associated unit cell that could be displayed?
@@ -1033,9 +1029,6 @@ public final class Frame {
 
     freeBondsCache();
 
-    // see if there are any vectors
-    hasVibrationVectors = vibrationVectors != null;
-
     setAtomNamesAndNumbers();
 
     // find things for the popup menus
@@ -1046,11 +1039,64 @@ public final class Frame {
 
     // reset molecules -- important if merging
 
+    modelCount = mmset.getModelCount();
     molecules = null;
     moleculeCount = 0;
     currentModel = null;
     currentChain = null;
     htAtomMap.clear();
+  }
+
+  void freeBondsCache() {
+    for (int i = MAX_BONDS_LENGTH_TO_CACHE; --i > 0;) { // .GT. 0
+      numCached[i] = 0;
+      Bond[][] bondsCache = freeBonds[i];
+      for (int j = bondsCache.length; --j >= 0;)
+        bondsCache[j] = null;
+    }
+  }
+
+  private void setAtomNamesAndNumbers() {
+    // first, validate that all atomSerials are NaN
+    if (atomSerials == null)
+      atomSerials = new int[atomCount];
+    // now, we'll assign 1-based atom numbers within each model
+    int lastModelIndex = Integer.MAX_VALUE;
+    int modelAtomIndex = 0;
+    for (int i = 0; i < atomCount; ++i) {
+      Atom atom = atoms[i];
+      if (atom.modelIndex != lastModelIndex) {
+        lastModelIndex = atom.modelIndex;
+        modelAtomIndex = (isZeroBased ? 0 : 1);
+      }
+      // 1) do not change numbers assigned by adapter
+      // 2) do not change the number already assigned when merging
+      // 3) restart numbering with new atoms, not a continuation of old
+      
+      if (atomSerials[i] == 0)
+        atomSerials[i] = (i < baseAtomIndex ? mergeFrame.atomSerials[i]
+            : modelAtomIndex++);
+    }
+    if (atomNames == null)
+      atomNames = new String[atomCount];
+    for (int i = 0; i < atomCount; ++i)
+      if (atomNames[i] == null) {
+        Atom atom = atoms[i];
+        atomNames[i] = atom.getElementSymbol() + atom.getAtomNumber();
+      }
+  }
+
+  private void findElementsPresent() {
+    elementsPresent = new BitSet[modelCount];
+    for (int i = 0; i < modelCount; i++)
+      elementsPresent[i] = new BitSet();
+    for (int i = atomCount; --i >= 0;) {
+      int n = atoms[i].getAtomicAndIsotopeNumber();
+      if (n >= 128)
+        n = JmolConstants.elementNumberMax
+            + JmolConstants.altElementIndexFromNumber(n);
+      elementsPresent[atoms[i].modelIndex].set(n);
+    }
   }
 
   private void calcAverageAtomPoint() {
@@ -1127,36 +1173,6 @@ public final class Frame {
 
   void setZeroBased() {
     isZeroBased = isXYZ && viewer.getZeroBasedXyzRasmol();
-  }
-
-  private void setAtomNamesAndNumbers() {
-    // first, validate that all atomSerials are NaN
-    if (atomSerials == null)
-      atomSerials = new int[atomCount];
-    // now, we'll assign 1-based atom numbers within each model
-    int lastModelIndex = Integer.MAX_VALUE;
-    int modelAtomIndex = 0;
-    for (int i = 0; i < atomCount; ++i) {
-      Atom atom = atoms[i];
-      if (atom.modelIndex != lastModelIndex) {
-        lastModelIndex = atom.modelIndex;
-        modelAtomIndex = (isZeroBased ? 0 : 1);
-      }
-      // 1) do not change numbers assigned by adapter
-      // 2) do not change the number already assigned when merging
-      // 3) restart numbering with new atoms, not a continuation of old
-      
-      if (atomSerials[i] == 0)
-        atomSerials[i] = (i < baseAtomIndex ? mergeFrame.atomSerials[i]
-            : modelAtomIndex++);
-    }
-    if (atomNames == null)
-      atomNames = new String[atomCount];
-    for (int i = 0; i < atomCount; ++i)
-      if (atomNames[i] == null) {
-        Atom atom = atoms[i];
-        atomNames[i] = atom.getElementSymbol() + atom.getAtomNumber();
-      }
   }
 
   //////////////  models ////////////////
@@ -1236,10 +1252,6 @@ public final class Frame {
     return mmset.getModelSetAuxiliaryInfo(keyName);
   }
 
-  boolean modelSetHasVibrationVectors() {
-    return hasVibrationVectors;
-  }
-
   boolean modelHasVibrationVectors(int modelIndex) {
     if (vibrationVectors != null)
       for (int i = atomCount; --i >= 0;)
@@ -1247,10 +1259,6 @@ public final class Frame {
             && vibrationVectors[i] != null && vibrationVectors[i].length() > 0)
           return true;
     return false;
-  }
-
-  public int getModelCount() {
-    return mmset.getModelCount();
   }
 
   int getModelNumber(int modelIndex) {
@@ -2680,19 +2688,6 @@ public final class Frame {
   void setLabel(String label, int atomIndex) {
   }
 
-  void findElementsPresent() {
-    elementsPresent = new BitSet[modelCount];
-    for (int i = 0; i < modelCount; i++)
-      elementsPresent[i] = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      int n = atoms[i].getAtomicAndIsotopeNumber();
-      if (n >= 128)
-        n = JmolConstants.elementNumberMax
-            + JmolConstants.altElementIndexFromNumber(n);
-      elementsPresent[atoms[i].modelIndex].set(n);
-    }
-  }
-
   BitSet getElementsPresentBitSet(int modelIndex) {
     if (modelIndex >= 0)
       return elementsPresent[modelIndex];
@@ -3091,15 +3086,6 @@ public final class Frame {
         freeBonds[oldLength][numCached[oldLength]++] = oldBonds;
     }
     return newBonds;
-  }
-
-  void freeBondsCache() {
-    for (int i = MAX_BONDS_LENGTH_TO_CACHE; --i > 0;) { // .GT. 0
-      numCached[i] = 0;
-      Bond[][] bondsCache = freeBonds[i];
-      for (int j = bondsCache.length; --j >= 0;)
-        bondsCache[j] = null;
-    }
   }
 
   Point3f getAveragePosition(int atomIndex1, int atomIndex2) {

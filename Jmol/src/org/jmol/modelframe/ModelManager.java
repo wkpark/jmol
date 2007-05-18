@@ -1070,18 +1070,6 @@ String getAtomInfoChime(int i) {
     return str;
   }
 
-  Hashtable listPropertiesAsObject(Properties props) {
-    Hashtable info = new Hashtable();
-    if (props == null)
-      return info;
-    Enumeration e = props.propertyNames();
-    while (e.hasMoreElements()) {
-      String propertyName = (String)e.nextElement();
-      info.put(propertyName,props.getProperty(propertyName));
-    }
-    return info;
-  }
-
   public Hashtable getAllChainInfo(BitSet bs) {
     Hashtable finalInfo = new Hashtable();
     Vector modelVector = new Vector();
@@ -1304,7 +1292,7 @@ String getAtomInfoChime(int i) {
   }
 
   public boolean useXtalDefaults() {
-    return (frame.someModelsHaveSymmetry);
+    return frame.someModelsHaveSymmetry;
   }
 
   public BitSet setConformation(int modelIndex, BitSet bsConformation) {
@@ -1522,5 +1510,19 @@ String getAtomInfoChime(int i) {
   public void setProteinType(BitSet bs, byte iType) {
     frame.setProteinType(bs, iType);
   }
-  
+
+  /*
+  Hashtable listPropertiesAsObject(Properties props) {
+    Hashtable info = new Hashtable();
+    if (props == null)
+      return info;
+    Enumeration e = props.propertyNames();
+    while (e.hasMoreElements()) {
+      String propertyName = (String)e.nextElement();
+      info.put(propertyName,props.getProperty(propertyName));
+    }
+    return info;
+  }
+*/
+
 }

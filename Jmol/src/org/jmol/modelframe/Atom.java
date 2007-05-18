@@ -92,7 +92,7 @@ final public class Atom extends Point3fi implements Tuple {
     madAtom = 0;
   }
   
-  Atom(Frame frame,
+  Atom(FrameLoader frame,
        int modelIndex,
        int atomIndex,
        BitSet atomSymmetry,
@@ -734,7 +734,7 @@ final public class Atom extends Point3fi implements Tuple {
   }
     
   Point3f getFractionalCoord() {
-    Frame.CellInfo[] c = group.chain.frame.cellInfos;
+    CellInfo[] c = group.chain.frame.cellInfos;
     if (c == null)
       return this;
     Point3f pt = new Point3f(this);

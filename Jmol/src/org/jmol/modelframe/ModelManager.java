@@ -48,12 +48,11 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 import java.awt.Rectangle;
-import org.jmol.modelframe.Frame.CellInfo;
 
 public class ModelManager {
 
   private final Viewer viewer;
-  private Frame frame;
+  private FrameLoader frame;
 
   private String fullPathName;
   private String fileName;
@@ -80,11 +79,11 @@ public class ModelManager {
   public void zap() {
     clear();
     fullPathName = fileName = modelSetName = "zapped";
-    frame = new Frame(viewer, "empty");
+    frame = new FrameLoader(viewer, "empty");
   }
   
   public void merge(JmolAdapter adapter, Object clientFile ) {
-    frame = new Frame(viewer, adapter, clientFile, frame);
+    frame = new FrameLoader(viewer, adapter, clientFile, frame);
     //haveFile = true;
     if (frame.getAtomCount() == 0)
       zap();
@@ -106,7 +105,7 @@ public class ModelManager {
     if (modelSetName == null)
       modelSetName = reduceFilename(fileName);
     clearFrame();
-    frame = new Frame(viewer, adapter, clientFile, null);
+    frame = new FrameLoader(viewer, adapter, clientFile, null);
     //haveFile = true;
     if (frame.getAtomCount() == 0)
       zap();
@@ -402,17 +401,14 @@ public class ModelManager {
   }
 
   public int getShapeIdFromObjectName(String objectName) {
-    int i;
-    for (i = JmolConstants.SHAPE_MIN_MESH_COLLECTION; 
-        i < JmolConstants.SHAPE_FRANK; ++i) {
-      MeshCollection shape = (MeshCollection) frame.shapes[i];
+    for (int i = JmolConstants.SHAPE_MIN_MESH_COLLECTION; i < JmolConstants.SHAPE_FRANK; ++i) {
+      MeshCollection shape = (MeshCollection) frame.getShape(i);
       if (shape != null && shape.getIndexFromName(objectName) >= 0)
         return i;
     }
-    i = JmolConstants.SHAPE_DIPOLES;
-    Dipoles dipoles = (Dipoles) frame.shapes[i];
+    Dipoles dipoles = (Dipoles) frame.getShape(JmolConstants.SHAPE_DIPOLES);
     if (dipoles != null && dipoles.getIndexFromName(objectName) >= 0)
-      return i;    
+      return JmolConstants.SHAPE_DIPOLES;
     return -1;
   }
 
@@ -1198,49 +1194,25 @@ String getAtomInfoChime(int i) {
   public void setModelVisibility() {
 
     if (frame == null) //necessary for file chooser
-      return;
-
-    //named objects must be set individually
-    //in the future, we might include here a BITSET of models rather than just a modelIndex
-
-    // all these isTranslucent = f() || isTranslucent are that way because
-    // in general f() does MORE than just check translucency. 
-    // so isTranslucent = isTranslucent || f() would NOT work.
-    
-    BitSet bs = viewer.getVisibleFramesBitSet();
-    //NOT balls (yet)
-    for (int i = 1; i < JmolConstants.SHAPE_MAX; i++)
-      if (frame.shapes[i] != null)
-        frame.shapes[i].setVisibilityFlags(bs);
-    //s(bs);
-    //
-    // BALLS sets the JmolConstants.ATOM_IN_MODEL flag.
-    frame.shapes[JmolConstants.SHAPE_BALLS]
-        .setVisibilityFlags(bs);
-
-    //set clickability -- this enables measures and such
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = frame.shapes[i];
-      if (shape != null)
-        shape.setModelClickability();
-    }
+      return;    
+    frame.setModelVisibility();
   }
  
   public boolean checkObjectClicked(int x, int y, int modifiers) {
-    Shape shape = frame.shapes[JmolConstants.SHAPE_ECHO];
+    Shape shape = frame.getShape(JmolConstants.SHAPE_ECHO);
     if (shape != null && shape.checkObjectClicked(x, y, modifiers))
       return true;
-    return ((shape = frame.shapes[JmolConstants.SHAPE_DRAW]) != null
+    return ((shape = frame.getShape(JmolConstants.SHAPE_DRAW)) != null
         && shape.checkObjectClicked(x, y, modifiers));
   }
  
   public boolean checkObjectHovered(int x, int y) {
     if (frame == null)
       return false;
-    Shape shape = frame.shapes[JmolConstants.SHAPE_ECHO];
+    Shape shape = frame.getShape(JmolConstants.SHAPE_ECHO);
     if (shape != null && shape.checkObjectHovered(x, y))
       return true;
-    shape = frame.shapes[JmolConstants.SHAPE_DRAW];
+    shape = frame.getShape(JmolConstants.SHAPE_DRAW);
     if (shape == null || !viewer.getDrawHover())
       return false;
     return shape.checkObjectHovered(x, y);
@@ -1249,7 +1221,7 @@ String getAtomInfoChime(int i) {
   public void checkObjectDragged(int prevX, int prevY, int deltaX, int deltaY,
                           int modifiers) {
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = frame.shapes[i];
+      Shape shape = frame.getShape(i);
       if (shape != null
           && shape.checkObjectDragged(prevX, prevY, deltaX, deltaY, modifiers))
         break;
@@ -1260,7 +1232,7 @@ String getAtomInfoChime(int i) {
     Hashtable info = new Hashtable();
     StringBuffer commands = new StringBuffer();
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
-      Shape shape = frame.shapes[i];
+      Shape shape = frame.getShape(i);
       if (shape != null) {
         String shapeType = JmolConstants.shapeClassBases[i];
         if ("Draw,Dipoles,Isosurface,LcaoOrbital,MolecularOrbital".indexOf(shapeType) >= 0) {
@@ -1292,7 +1264,7 @@ String getAtomInfoChime(int i) {
   }
 
   public boolean useXtalDefaults() {
-    return frame.someModelsHaveSymmetry;
+    return frame.haveSymmetry();
   }
 
   public BitSet setConformation(int modelIndex, BitSet bsConformation) {
@@ -1450,7 +1422,7 @@ String getAtomInfoChime(int i) {
   public UnitCell getUnitCell(int modelIndex) {
     if (modelIndex < 0)
       return null;
-    return (frame.cellInfos == null ? null : frame.cellInfos[modelIndex].unitCell);
+    return (frame.cellInfos == null ? null : frame.cellInfos[modelIndex].getUnitCell());
   }
 
   public Point3f getUnitCellOffset(int modelIndex) {

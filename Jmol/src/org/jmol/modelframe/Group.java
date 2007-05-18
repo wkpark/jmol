@@ -90,8 +90,8 @@ public class Group {
     this.lastAtomIndex = lastAtomIndex;
   }
 
-  public void setFrame(Frame frame) {
-    chain.frame = frame;  
+  public void setModelSet(ModelSet modelSet) {
+    chain.modelSet = modelSet;  
   }
   
   public final void setShapeVisibility(int visFlag, boolean isVisible) {
@@ -303,15 +303,15 @@ public class Group {
   }
 
   protected int scaleToScreen(int Z, int mar) {
-    return chain.frame.viewer.scaleToScreen(Z, mar);
+    return chain.modelSet.viewer.scaleToScreen(Z, mar);
   }
   
   protected boolean isCursorOnTopOf(Atom atom, int x, int y, int radius, Atom champ) {
-    return chain.frame.isCursorOnTopOf(atom , x, y, radius, champ);
+    return chain.modelSet.isCursorOnTopOf(atom , x, y, radius, champ);
   }
   
   protected boolean isAtomHidden(int atomIndex) {
-    return chain.frame.isAtomHidden(atomIndex);
+    return chain.modelSet.isAtomHidden(atomIndex);
   }
 
   public Model getModel() {

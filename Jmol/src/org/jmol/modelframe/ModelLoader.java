@@ -51,9 +51,9 @@ import java.util.Vector;
  *  
  */
 
-public final class FrameLoader extends Frame {
+public final class ModelLoader extends ModelSet {
 
-  private FrameLoader mergeFrame;
+  private ModelLoader mergeModelSet;
   private boolean merging;
   private boolean isMultiFile;
   private boolean isTrajectory = false;
@@ -64,17 +64,17 @@ public final class FrameLoader extends Frame {
   private Group[] groups;
   private int groupCount;
   
-  FrameLoader(Viewer viewer, String name) {
+  ModelLoader(Viewer viewer, String name) {
     this.viewer = viewer;
-    initializeFrame(name, 1, null, null);
+    initializeInfo(name, 1, null, null);
     initializeModelSet(null, null);
   }
 
-  FrameLoader(Viewer viewer, JmolAdapter adapter, Object clientFile, FrameLoader mergeFrame) {
-    this.mergeFrame = mergeFrame;
-    merging = (mergeFrame != null && mergeFrame.atomCount > 0);
+  ModelLoader(Viewer viewer, JmolAdapter adapter, Object clientFile, ModelLoader mergeModelSet) {
+    this.mergeModelSet = mergeModelSet;
+    merging = (mergeModelSet != null && mergeModelSet.atomCount > 0);
     this.viewer = viewer;
-    initializeFrame(adapter.getFileTypeName(clientFile).toLowerCase().intern(),
+    initializeInfo(adapter.getFileTypeName(clientFile).toLowerCase().intern(),
         adapter.getEstimatedAtomCount(clientFile), adapter
             .getAtomSetCollectionProperties(clientFile), adapter
             .getAtomSetCollectionAuxiliaryInfo(clientFile));
@@ -103,7 +103,7 @@ public final class FrameLoader extends Frame {
   private boolean someModelsHaveUnitcells;
   private boolean someModelsHaveFractionalCoordinates;
 
-  private void initializeFrame(String name, int nAtoms, Properties properties,
+  private void initializeInfo(String name, int nAtoms, Properties properties,
                        Hashtable info) {
     g3d = viewer.getGraphics3D();
     //long timeBegin = System.currentTimeMillis();
@@ -124,11 +124,11 @@ public final class FrameLoader extends Frame {
     someModelsHaveFractionalCoordinates = mmset
         .getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
     if (merging) {
-      someModelsHaveSymmetry |= mergeFrame.mmset
+      someModelsHaveSymmetry |= mergeModelSet.mmset
           .getModelSetAuxiliaryInfoBoolean("someModelsHaveSymmetry");
-      someModelsHaveUnitcells |= mergeFrame.mmset
+      someModelsHaveUnitcells |= mergeModelSet.mmset
           .getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
-      someModelsHaveFractionalCoordinates |= mergeFrame.mmset
+      someModelsHaveFractionalCoordinates |= mergeModelSet.mmset
           .getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
     }
     initializeBuild(nAtoms);
@@ -141,8 +141,8 @@ public final class FrameLoader extends Frame {
     if (atomCountEstimate <= 0)
       atomCountEstimate = ATOM_GROWTH_INCREMENT;
     if (merging) {
-      atoms = mergeFrame.atoms;
-      bonds = mergeFrame.bonds;
+      atoms = mergeModelSet.atoms;
+      bonds = mergeModelSet.bonds;
     } else {
       atoms = new Atom[atomCountEstimate];
       bonds = new Bond[250 + atomCountEstimate]; // was "2 *" -- WAY overkill.
@@ -201,7 +201,7 @@ public final class FrameLoader extends Frame {
     } else {
       appendNew = (modelCount > 1 || viewer.getAppendNew());
       if (modelCount > 0) {
-        Logger.info("frame: haveSymmetry:" + someModelsHaveSymmetry
+        Logger.info("ModelSet: haveSymmetry:" + someModelsHaveSymmetry
             + " haveUnitcells:" + someModelsHaveUnitcells
             + " haveFractionalCoord:" + someModelsHaveFractionalCoordinates);
         Logger
@@ -237,7 +237,7 @@ public final class FrameLoader extends Frame {
     atomCount = 0;
     bondCount = 0;
     if (merging) {
-      baseModelCount = mergeFrame.modelCount;
+      baseModelCount = mergeModelSet.modelCount;
       if (appendNew) {
         baseModelIndex = baseModelCount;
         modelCount += baseModelCount;
@@ -247,32 +247,32 @@ public final class FrameLoader extends Frame {
           baseModelIndex = baseModelCount - 1;
         modelCount = baseModelCount;
       }
-      atomCount = baseAtomIndex = mergeFrame.atomCount;
-      bondCount = baseBondIndex = mergeFrame.bondCount;
+      atomCount = baseAtomIndex = mergeModelSet.atomCount;
+      bondCount = baseBondIndex = mergeModelSet.bondCount;
       //baseGroupIndex = mergeFrame.groupCount;
     }
     mmset.setModelCount(modelCount);
   }
 
   private void initializeMerge() {
-    mmset.merge(mergeFrame.mmset);
-    bsSymmetry = mergeFrame.bsSymmetry;
-    if (mergeFrame.group3Lists != null) {
+    mmset.merge(mergeModelSet.mmset);
+    bsSymmetry = mergeModelSet.bsSymmetry;
+    if (mergeModelSet.group3Lists != null) {
       for (int i = 0; i < baseModelCount; i++) {
-        group3Lists[i] = mergeFrame.group3Lists[i];
-        group3Counts[i] = mergeFrame.group3Counts[i];
+        group3Lists[i] = mergeModelSet.group3Lists[i];
+        group3Counts[i] = mergeModelSet.group3Counts[i];
       }
-      group3Lists[modelCount] = mergeFrame.group3Lists[baseModelCount];
-      group3Counts[modelCount] = mergeFrame.group3Counts[baseModelCount];
+      group3Lists[modelCount] = mergeModelSet.group3Lists[baseModelCount];
+      group3Counts[modelCount] = mergeModelSet.group3Counts[baseModelCount];
     }
 
-    atomNames = mergeFrame.atomNames;
-    clientAtomReferences = mergeFrame.clientAtomReferences;
-    vibrationVectors = mergeFrame.vibrationVectors;
-    occupancies = mergeFrame.occupancies;
-    bfactor100s = mergeFrame.bfactor100s;
-    partialCharges = mergeFrame.partialCharges;
-    specialAtomIDs = mergeFrame.specialAtomIDs;
+    atomNames = mergeModelSet.atomNames;
+    clientAtomReferences = mergeModelSet.clientAtomReferences;
+    vibrationVectors = mergeModelSet.vibrationVectors;
+    occupancies = mergeModelSet.occupancies;
+    bfactor100s = mergeModelSet.bfactor100s;
+    partialCharges = mergeModelSet.partialCharges;
+    specialAtomIDs = mergeModelSet.specialAtomIDs;
     surfaceDistance100s = null;
   }
 
@@ -529,7 +529,7 @@ public final class FrameLoader extends Frame {
       boolean doPdbScale = (adapterModelCount == 1);
       cellInfos = new CellInfo[modelCount];
       for (int i = 0; i < baseModelCount; i++)
-        cellInfos[i] = (mergeFrame.cellInfos != null ? mergeFrame.cellInfos[i]
+        cellInfos[i] = (mergeModelSet.cellInfos != null ? mergeModelSet.cellInfos[i]
             : new CellInfo(i, false, mmset.getModelAuxiliaryInfo(i)));
       for (int i = baseModelCount; i < modelCount; i++)
         cellInfos[i] = new CellInfo(i, doPdbScale, mmset.getModelAuxiliaryInfo(i));
@@ -573,10 +573,10 @@ public final class FrameLoader extends Frame {
         for (int i = baseAtomIndex; i < atomCount; i++)
           bs.set(i);
       }
-      Logger.info("Frame: autobonding; use  autobond=false  to not generate bonds automatically");
+      Logger.info("ModelSet: autobonding; use  autobond=false  to not generate bonds automatically");
       autoBond(bs, bs, null);
     } else {
-      Logger.info("Frame: not autobonding; use forceAutobond=true to force automatic bond creation");        
+      Logger.info("ModelSet: not autobonding; use forceAutobond=true to force automatic bond creation");        
     }
   }
 
@@ -678,7 +678,7 @@ public final class FrameLoader extends Frame {
     for (int i = 0; i < groupCount; ++i) {
       Group group = groups[i];
       if (merging)
-        group.setFrame(this);
+        group.setModelSet(this);
       if (jbr != null)
         jbr.buildBioPolymer(group, groups, i);
     }
@@ -826,7 +826,7 @@ public final class FrameLoader extends Frame {
       // 3) restart numbering with new atoms, not a continuation of old
       
       if (atomSerials[i] == 0)
-        atomSerials[i] = (i < baseAtomIndex ? mergeFrame.atomSerials[i]
+        atomSerials[i] = (i < baseAtomIndex ? mergeModelSet.atomSerials[i]
             : modelAtomIndex++);
     }
     if (atomNames == null)
@@ -866,8 +866,8 @@ public final class FrameLoader extends Frame {
   private void finalizeShapes() {
     if (merging) {
       for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
-        if ((shapes[i] = mergeFrame.shapes[i]) != null)
-          shapes[i].setFrame(this);
+        if ((shapes[i] = mergeModelSet.shapes[i]) != null)
+          shapes[i].setModelSet(this);
       viewer.getFrameRenderer().clear();
       merging = false;
       return;

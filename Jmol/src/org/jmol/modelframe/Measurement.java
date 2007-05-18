@@ -38,7 +38,7 @@ import java.util.Vector;
 
 public class Measurement {
 
-  Frame frame;
+  ModelSet modelSet;
   Viewer viewer;
   
   protected int count;
@@ -139,18 +139,18 @@ public class Measurement {
     return pointArc;
   }
   
-  public Measurement(Frame frame, int[] atomCountPlusIndices, float value,
+  public Measurement(ModelSet modelSet, int[] atomCountPlusIndices, float value,
       short colix, String strFormat, int index) {
     //value Float.isNaN ==> pending
-    this.frame = frame;
-    this.viewer = frame.viewer;
+    this.modelSet = modelSet;
+    this.viewer = modelSet.viewer;
     this.colix = colix;
     this.strFormat = strFormat;
-    setInfo(frame, atomCountPlusIndices, value, index);
+    setInfo(modelSet, atomCountPlusIndices, value, index);
   }   
 
   public void refresh() {
-    value = frame.getMeasurement(countPlusIndices);
+    value = modelSet.getMeasurement(countPlusIndices);
     formatMeasurement();
   }
   
@@ -168,7 +168,7 @@ public class Measurement {
     return str;  
   }
   
-  void setInfo(Frame frame, int[] atomCountPlusIndices, float value, int index) {
+  void setInfo(ModelSet modelSet, int[] atomCountPlusIndices, float value, int index) {
     if (atomCountPlusIndices == null)
       count = 0;
     else {
@@ -177,7 +177,7 @@ public class Measurement {
       System.arraycopy(atomCountPlusIndices, 0, countPlusIndices, 0, count+1);
     }
     if (countPlusIndices != null && Float.isNaN(value)) 
-      value = frame.getMeasurement(countPlusIndices);
+      value = modelSet.getMeasurement(countPlusIndices);
     
     this.value = value;
     this.index = index;
@@ -241,7 +241,7 @@ public class Measurement {
   }
 
   Point3f getAtomPoint3f(int i) {
-    return frame.getAtomAt(countPlusIndices[i]);
+    return modelSet.getAtomAt(countPlusIndices[i]);
   }
 
   String formatDistance(float dist) {
@@ -281,7 +281,7 @@ public class Measurement {
     for (int i = countPlusIndices[0]; i >= 1;--i) {
       if (label.indexOf("%") < 0)
         break;
-      label = frame.atoms[countPlusIndices[i]].formatLabel(label, (char)('0' + i), null);
+      label = modelSet.atoms[countPlusIndices[i]].formatLabel(label, (char)('0' + i), null);
     }
     if (label == null)
       return "";

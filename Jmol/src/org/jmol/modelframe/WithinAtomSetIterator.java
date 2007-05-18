@@ -34,20 +34,20 @@ class WithinAtomSetIterator implements AtomIndexIterator {
   
   //does NOT return i == atomIndex
 
-  Frame frame;
+  ModelSet modelSet;
   SphereIterator bsptIter;
   BitSet bsSelected;
   boolean isGreaterOnly;
   int atomIndex;
   int zerobase;
 
-  void initialize(Frame frame, Bspf bspf, int bsptIndex, int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly) {
+  void initialize(ModelSet modelSet, Bspf bspf, int bsptIndex, int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly) {
     bsptIter = bspf.getSphereIterator(bsptIndex);
-    bsptIter.initialize(frame.atoms[atomIndex], distance);
+    bsptIter.initialize(modelSet.atoms[atomIndex], distance);
     this.atomIndex = atomIndex;
     this.bsSelected = bsSelected;
     this.isGreaterOnly = isGreaterOnly;
-    zerobase = frame.getFirstAtomIndexInModel(bsptIndex);
+    zerobase = modelSet.getFirstAtomIndexInModel(bsptIndex);
   }
 
   int iNext;

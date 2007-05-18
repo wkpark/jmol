@@ -35,7 +35,7 @@ import org.jmol.viewer.JmolConstants;
 // Mmset == Molecular Model set
 
 public final class Mmset {
-  Frame frame;
+  ModelSet modelSet;
 
   Properties modelSetProperties;
   Hashtable modelSetAuxiliaryInfo;
@@ -48,8 +48,8 @@ public final class Mmset {
   private int structureCount = 0;
   private Structure[] structures = new Structure[10];
 
-  Mmset(Frame frame) {
-    this.frame = frame;
+  Mmset(ModelSet modelSet) {
+    this.modelSet = modelSet;
   }
 
   void merge(Mmset mmset) {

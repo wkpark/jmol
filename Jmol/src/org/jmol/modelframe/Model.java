@@ -191,7 +191,7 @@ public final class Model {
       return chain;
     if (chainCount == chains.length)
       chains = (Chain[])ArrayUtil.doubleLength(chains);
-    return chains[chainCount++] = new Chain(mmset.frame, this, chainID);
+    return chains[chainCount++] = new Chain(mmset.modelSet, this, chainID);
   }
 
   public void addBioPolymer(Polymer polymer) {
@@ -212,11 +212,11 @@ public final class Model {
   }
   
   public boolean isAtomHidden(int index) {
-    return mmset.frame.isAtomHidden(index);
+    return mmset.modelSet.isAtomHidden(index);
   }
   
   public void addHydrogenBond(Atom atom1, Atom atom2, short order, BitSet bsA, BitSet bsB) {
-    mmset.frame.addHydrogenBond(atom1, atom2, order, bsA, bsB);
+    mmset.modelSet.addHydrogenBond(atom1, atom2, order, bsA, bsB);
   }
 
   public int getModelIndex() {

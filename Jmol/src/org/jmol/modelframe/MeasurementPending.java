@@ -34,8 +34,8 @@ public class MeasurementPending extends Measurement {
     isActive = TF;
   }
   
-  public MeasurementPending(Frame frame) {
-    super(frame, null, Float.NaN, (short) 0, null, 0);
+  public MeasurementPending(ModelSet modelSet) {
+    super(modelSet, null, Float.NaN, (short) 0, null, 0);
     this.countPlusIndices = new int[5];
   }
 
@@ -53,7 +53,7 @@ public class MeasurementPending extends Measurement {
     }
 
     if (this.countPlusIndices != null) 
-      value = frame.getMeasurement(this.countPlusIndices);
+      value = modelSet.getMeasurement(this.countPlusIndices);
     formatMeasurement();
   }
 }

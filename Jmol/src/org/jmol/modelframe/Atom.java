@@ -92,7 +92,7 @@ final public class Atom extends Point3fi implements Tuple {
     madAtom = 0;
   }
   
-  Atom(FrameLoader frame,
+  Atom(ModelLoader modelSet,
        int modelIndex,
        int atomIndex,
        BitSet atomSymmetry,
@@ -107,14 +107,14 @@ final public class Atom extends Point3fi implements Tuple {
        float vibrationX, float vibrationY, float vibrationZ,
        char alternateLocationID,
        Object clientAtomReference, float radius) {
-    this.group = frame.nullGroup;
+    this.group = modelSet.nullGroup;
     this.modelIndex = (short)modelIndex;
     this.atomSymmetry = atomSymmetry;
     this.atomSite = atomSite;
     this.atomIndex = atomIndex;
     this.atomicAndIsotopeNumber = atomicAndIsotopeNumber;
     setFormalCharge(formalCharge);
-    this.colixAtom = frame.viewer.getColixAtomPalette(this, JmolConstants.PALETTE_CPK);
+    this.colixAtom = modelSet.viewer.getColixAtomPalette(this, JmolConstants.PALETTE_CPK);
     this.alternateLocationID = (byte)alternateLocationID;
     this.radius = radius;
     setMadAtom(mad);
@@ -123,9 +123,9 @@ final public class Atom extends Point3fi implements Tuple {
       formalChargeAndFlags |= IS_HETERO_FLAG;
 
     if (atomName != null) {
-      if (frame.atomNames == null)
-        frame.atomNames = new String[frame.atoms.length];
-      frame.atomNames[atomIndex] = atomName.intern();
+      if (modelSet.atomNames == null)
+        modelSet.atomNames = new String[modelSet.atoms.length];
+      modelSet.atomNames[atomIndex] = atomName.intern();
     }
 
     byte specialAtomID = lookupSpecialAtomID(atomName);
@@ -136,9 +136,9 @@ final public class Atom extends Point3fi implements Tuple {
     }
     //Logger.debug("atom - "+atomName+" specialAtomID=" + specialAtomID);
     if (specialAtomID != 0) {
-      if (frame.specialAtomIDs == null)
-        frame.specialAtomIDs = new byte[frame.atoms.length];
-      frame.specialAtomIDs[atomIndex] = specialAtomID;
+      if (modelSet.specialAtomIDs == null)
+        modelSet.specialAtomIDs = new byte[modelSet.atoms.length];
+      modelSet.specialAtomIDs[atomIndex] = specialAtomID;
     }
 
     if (occupancy < 0)
@@ -146,41 +146,41 @@ final public class Atom extends Point3fi implements Tuple {
     else if (occupancy > 100)
       occupancy = 100;
     if (occupancy != 100) {
-      if (frame.occupancies == null)
-        frame.occupancies = new byte[frame.atoms.length];
-      frame.occupancies[atomIndex] = (byte)occupancy;
+      if (modelSet.occupancies == null)
+        modelSet.occupancies = new byte[modelSet.atoms.length];
+      modelSet.occupancies[atomIndex] = (byte)occupancy;
     }
 
     if (atomSerial != Integer.MIN_VALUE) {
-      if (frame.atomSerials == null)
-        frame.atomSerials = new int[frame.atoms.length];
-      frame.atomSerials[atomIndex] = atomSerial;
+      if (modelSet.atomSerials == null)
+        modelSet.atomSerials = new int[modelSet.atoms.length];
+      modelSet.atomSerials[atomIndex] = atomSerial;
     }
 
     if (! Float.isNaN(partialCharge)) {
-      if (frame.partialCharges == null)
-        frame.partialCharges = new float[frame.atoms.length];
-      frame.partialCharges[atomIndex] = partialCharge;
+      if (modelSet.partialCharges == null)
+        modelSet.partialCharges = new float[modelSet.atoms.length];
+      modelSet.partialCharges[atomIndex] = partialCharge;
     }
 
     if (! Float.isNaN(bfactor) && bfactor != 0) {
-      if (frame.bfactor100s == null)
-        frame.bfactor100s = new short[frame.atoms.length];
-      frame.bfactor100s[atomIndex] = (short)(bfactor * 100);
+      if (modelSet.bfactor100s == null)
+        modelSet.bfactor100s = new short[modelSet.atoms.length];
+      modelSet.bfactor100s[atomIndex] = (short)(bfactor * 100);
     }
 
     if (!Float.isNaN(vibrationX) && !Float.isNaN(vibrationY) &&
         !Float.isNaN(vibrationZ)) {
-      if (frame.vibrationVectors == null)
-        frame.vibrationVectors = new Vector3f[frame.atoms.length];
-      frame.vibrationVectors[atomIndex] = 
+      if (modelSet.vibrationVectors == null)
+        modelSet.vibrationVectors = new Vector3f[modelSet.atoms.length];
+      modelSet.vibrationVectors[atomIndex] = 
         new Vector3f(vibrationX, vibrationY, vibrationZ);
       formalChargeAndFlags |= VIBRATION_VECTOR_FLAG;
     }
     if (clientAtomReference != null) {
-      if (frame.clientAtomReferences == null)
-        frame.clientAtomReferences = new Object[frame.atoms.length];
-      frame.clientAtomReferences[atomIndex] = clientAtomReference;
+      if (modelSet.clientAtomReferences == null)
+        modelSet.clientAtomReferences = new Object[modelSet.atoms.length];
+      modelSet.clientAtomReferences[atomIndex] = clientAtomReference;
     }
     //System.out.println(this + " " + getIdentity());
   }
@@ -550,7 +550,7 @@ final public class Atom extends Point3fi implements Tuple {
    // a dummy group and chain
 
    public Vector3f getVibrationVector() {
-     Vector3f[] vibrationVectors = group.chain.frame.vibrationVectors;
+     Vector3f[] vibrationVectors = group.chain.modelSet.vibrationVectors;
      return vibrationVectors == null ? null : vibrationVectors[atomIndex];
    }
 
@@ -558,7 +558,7 @@ final public class Atom extends Point3fi implements Tuple {
      Point3i screen;
      Vector3f[] vibrationVectors;
      if ((formalChargeAndFlags & VIBRATION_VECTOR_FLAG) == 0 ||
-         (vibrationVectors = group.chain.frame.vibrationVectors) == null)
+         (vibrationVectors = group.chain.modelSet.vibrationVectors) == null)
        screen = viewer.transformPoint(this);
      else 
        screen = viewer.transformPoint(this, vibrationVectors[atomIndex]);
@@ -569,7 +569,7 @@ final public class Atom extends Point3fi implements Tuple {
    }
 
    String getAtomNameOrNull() {
-     String[] atomNames = group.chain.frame.atomNames;
+     String[] atomNames = group.chain.modelSet.atomNames;
      return atomNames == null ? null : atomNames[atomIndex];
    }
 
@@ -605,9 +605,9 @@ final public class Atom extends Point3fi implements Tuple {
    }
    
    public int getAtomNumber() {
-     int[] atomSerials = group.chain.frame.atomSerials;
+     int[] atomSerials = group.chain.modelSet.atomSerials;
      return (atomSerials != null ? atomSerials[atomIndex] : atomIndex);
-//        : group.chain.frame.isZeroBased ? atomIndex : atomIndex);
+//        : group.chain.modelSet.isZeroBased ? atomIndex : atomIndex);
    }
 
    public boolean isModelVisible() {
@@ -624,24 +624,24 @@ final public class Atom extends Point3fi implements Tuple {
    }
 
    public float getPartialCharge() {
-     float[] partialCharges = group.chain.frame.partialCharges;
+     float[] partialCharges = group.chain.modelSet.partialCharges;
      return partialCharges == null ? 0 : partialCharges[atomIndex];
    }
 
    int getArgb() {
-     return group.chain.frame.viewer.getColixArgb(colixAtom);
+     return group.chain.modelSet.viewer.getColixArgb(colixAtom);
    }
 
    // a percentage value in the range 0-100
    public int getOccupancy() {
-     byte[] occupancies = group.chain.frame.occupancies;
+     byte[] occupancies = group.chain.modelSet.occupancies;
      return occupancies == null ? 100 : occupancies[atomIndex];
    }
 
    // This is called bfactor100 because it is stored as an integer
    // 100 times the bfactor(temperature) value
    public int getBfactor100() {
-     short[] bfactor100s = group.chain.frame.bfactor100s;
+     short[] bfactor100s = group.chain.modelSet.bfactor100s;
      if (bfactor100s == null)
        return 0;
      return bfactor100s[atomIndex];
@@ -692,7 +692,7 @@ final public class Atom extends Point3fi implements Tuple {
    
    private String getSymmetryOperatorList() {
     String str = "";
-    Frame f = group.chain.frame;
+    ModelSet f = group.chain.modelSet;
     if (atomSymmetry == null || f.cellInfos == null
         || f.cellInfos[modelIndex] == null)
       return str;
@@ -711,20 +711,20 @@ final public class Atom extends Point3fi implements Tuple {
    }
    
    public int getMoleculeNumber() {
-     return (group.chain.frame.getMoleculeIndex(atomIndex) + 1);
+     return (group.chain.modelSet.getMoleculeIndex(atomIndex) + 1);
    }
    
    String getClientAtomStringProperty(String propertyName) {
-     Object[] clientAtomReferences = group.chain.frame.clientAtomReferences;
+     Object[] clientAtomReferences = group.chain.modelSet.clientAtomReferences;
      return
        ((clientAtomReferences==null || clientAtomReferences.length<=atomIndex)
-        ? null : (group.chain.frame.viewer.
+        ? null : (group.chain.modelSet.viewer.
            getClientAtomStringProperty(clientAtomReferences[atomIndex],
                                        propertyName)));
    }
 
    public byte getSpecialAtomID() {
-     byte[] specialAtomIDs = group.chain.frame.specialAtomIDs;
+     byte[] specialAtomIDs = group.chain.modelSet.specialAtomIDs;
      return specialAtomIDs == null ? 0 : specialAtomIDs[atomIndex];
    }
    
@@ -734,7 +734,7 @@ final public class Atom extends Point3fi implements Tuple {
   }
     
   Point3f getFractionalCoord() {
-    CellInfo[] c = group.chain.frame.cellInfos;
+    CellInfo[] c = group.chain.modelSet.cellInfos;
     if (c == null)
       return this;
     Point3f pt = new Point3f(this);
@@ -777,7 +777,7 @@ final public class Atom extends Point3fi implements Tuple {
    *  DEVELOPER NOTE (BH):
    *  
    *  The following methods may not return 
-   *  correct values until after frame.finalizeGroupBuild()
+   *  correct values until after modelSet.finalizeGroupBuild()
    *  
    */
    
@@ -821,7 +821,7 @@ final public class Atom extends Point3fi implements Tuple {
       info.append("%");
       info.append((char) alternateLocationID);
     }
-    if (group.chain.frame.getModelCount() > 1) {
+    if (group.chain.modelSet.getModelCount() > 1) {
       info.append("/");
       info.append(getModelNumberDotted());
     }
@@ -914,7 +914,7 @@ final public class Atom extends Point3fi implements Tuple {
    */
   boolean isVisible() {
     // Is the atom's model visible? Is the atom NOT hidden?
-    if (!isModelVisible() || group.chain.frame.isAtomHidden(atomIndex))
+    if (!isModelVisible() || group.chain.modelSet.isAtomHidden(atomIndex))
       return false;
     // Is any shape associated with this atom visible? 
     int flags = shapeVisibilityFlags;
@@ -942,7 +942,7 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   public int getSurfaceDistance100() {
-    return group.chain.frame.getSurfaceDistance100(atomIndex);
+    return group.chain.modelSet.getSurfaceDistance100(atomIndex);
   }
 
   public int getPolymerLength() {

@@ -61,9 +61,9 @@ import java.awt.Rectangle;
 
 
 /*
- * An abstract class always created using new FrameLoader(...)
+ * An abstract class always created using new ModelLoader(...)
  * 
- * FrameLoader simply pulls out all private classes that are
+ * ModelLoader simply pulls out all private classes that are
  * necessary only for file loading (and structure recalculation).
  * 
  * What is left here are all the methods that are 
@@ -73,7 +73,7 @@ import java.awt.Rectangle;
  * Please:
  * 
  * 1) designate any methods accessed only by ModelManager as default
- * 2) designate any methods accessed only by FrameLoader as protected
+ * 2) designate any methods accessed only by ModelLoader as protected
  * 3) designate any methods used only here as private
  * 
  * methods needing access outside this package, of course, are designated public
@@ -81,7 +81,7 @@ import java.awt.Rectangle;
  * Bob Hanson, 5/2007
  * 
  */
-abstract public class Frame {
+abstract public class ModelSet {
 
   Viewer viewer;
   Mmset mmset;
@@ -200,7 +200,7 @@ abstract public class Frame {
     try {
       Class shapeClass = Class.forName(className);
       Shape shape = (Shape) shapeClass.newInstance();
-      shape.setViewerG3dFrame(viewer, g3d, this, shapeID);
+      shape.initializeShape(viewer, g3d, this, shapeID);
       return shape;
     } catch (Exception e) {
       Logger.error("Could not instantiate shape:" + className, e);

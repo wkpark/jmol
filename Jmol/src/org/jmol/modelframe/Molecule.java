@@ -32,7 +32,7 @@ import java.util.Hashtable;
 
 class Molecule {
   
-  Frame frame;
+  ModelSet modelSet;
   int moleculeIndex;
   int modelIndex;
   int indexInModel;
@@ -45,8 +45,9 @@ class Molecule {
   String mf;
   BitSet atomList;
 
-  Molecule(Frame frame, int moleculeIndex, BitSet atomList, int modelIndex,
+  Molecule(ModelSet modelSet, int moleculeIndex, BitSet atomList, int modelIndex,
       int indexInModel) {
+    this.modelSet = modelSet;
     this.atomList = atomList;
     this.moleculeIndex = moleculeIndex;
     this.modelIndex = modelIndex;
@@ -60,10 +61,10 @@ class Molecule {
   }
 
   void getElementAndAtomCount(BitSet atomList) {
-    for (int i = 0; i < frame.atomCount; i++)
+    for (int i = 0; i < modelSet.atomCount; i++)
       if (atomList.get(i)) {
         nAtoms++;
-        int n = frame.atoms[i].getAtomicAndIsotopeNumber();
+        int n = modelSet.atoms[i].getAtomicAndIsotopeNumber();
         if (n < 128) {
           elementCounts[n]++;
           if (elementCounts[n] == 1)
@@ -105,7 +106,7 @@ class Molecule {
   Hashtable getInfo() {
     Hashtable info = new Hashtable();
     info.put("number", new Integer(moleculeIndex + 1)); //for now
-    info.put("modelNumber", frame.getModelName(-1 - modelIndex));
+    info.put("modelNumber", modelSet.getModelName(-1 - modelIndex));
     info.put("numberInModel", new Integer(indexInModel + 1));
     info.put("nAtoms", new Integer(nAtoms));
     info.put("nElements", new Integer(nElements));

@@ -191,7 +191,7 @@ public class Bond {
   }
 
   int getArgb1() {
-    return atom1.group.chain.frame.viewer.getColixArgb(getColix1());
+    return atom1.group.chain.modelSet.viewer.getColixArgb(getColix1());
   }
 
   short getColix2() {
@@ -199,7 +199,7 @@ public class Bond {
   }
 
   int getArgb2() {
-    return atom1.group.chain.frame.viewer.getColixArgb(getColix2());
+    return atom1.group.chain.modelSet.viewer.getColixArgb(getColix2());
   }
 
   Atom getOtherAtom(Atom thisAtom) {

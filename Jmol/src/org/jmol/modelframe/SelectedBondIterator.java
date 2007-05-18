@@ -35,15 +35,15 @@ import java.util.BitSet;
  */
 class SelectedBondIterator implements BondIterator {
 
-  Frame frame;
+  ModelSet modelSet;
   short bondType;
   int iBond;
   BitSet bsSelected;
   boolean bondSelectionModeOr;
   boolean isBondBitSet;
 
-  SelectedBondIterator(Frame frame, short bondType, BitSet bsSelected, boolean bondSelectionModeOr) {
-    this.frame = frame;
+  SelectedBondIterator(ModelSet modelSet, short bondType, BitSet bsSelected, boolean bondSelectionModeOr) {
+    this.modelSet = modelSet;
     this.bondType = bondType;
     this.bsSelected = bsSelected;
     this.bondSelectionModeOr = bondSelectionModeOr;
@@ -51,16 +51,16 @@ class SelectedBondIterator implements BondIterator {
     iBond = 0;
   }
 
-  SelectedBondIterator(Frame frame, BitSet bsSelected) {
-    this.frame = frame;
+  SelectedBondIterator(ModelSet modelSet, BitSet bsSelected) {
+    this.modelSet = modelSet;
     this.bsSelected = bsSelected;
     isBondBitSet = true;
     iBond = 0;
   }
 
   public boolean hasNext() {
-    for (; iBond < frame.bondCount; ++iBond) {
-      Bond bond = frame.bonds[iBond];
+    for (; iBond < modelSet.bondCount; ++iBond) {
+      Bond bond = modelSet.bonds[iBond];
       if (isBondBitSet) {
         if (bsSelected.get(iBond))
           return true;
@@ -83,6 +83,6 @@ class SelectedBondIterator implements BondIterator {
   }
 
   public Bond next() {
-    return frame.bonds[iBond++];
+    return modelSet.bonds[iBond++];
   }
 }

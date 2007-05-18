@@ -30,7 +30,7 @@ import org.jmol.util.BitSetUtil;
 
 public final class Chain {
 
-  Frame frame;
+  ModelSet modelSet;
   Model model;
   char chainID;
   int groupCount;
@@ -42,8 +42,8 @@ public final class Chain {
 
   //  private Group[] mainchain;
 
-  public Chain(Frame frame, Model model, char chainID) {
-    this.frame = frame;
+  public Chain(ModelSet modelSet, Model model, char chainID) {
+    this.modelSet = modelSet;
     this.model = model;
     this.chainID = chainID;
   }
@@ -52,8 +52,8 @@ public final class Chain {
     return chainID;
   }
   
-  public Frame getFrame() {
-    return frame;
+  public ModelSet getModelSet() {
+    return modelSet;
   }
   
   public void freeze() {
@@ -81,7 +81,7 @@ public final class Chain {
   }
 
   public Atom getAtom(int index) {
-    return frame.atoms[index];
+    return modelSet.atoms[index];
   }
   
   public void calcSelectedGroupsCount(BitSet bsSelected) {
@@ -163,7 +163,7 @@ public final class Chain {
                                                   int firstAtomIndex,
                                                   int lastAtomIndex) {
 
-    String[] atomNames = frame.getAtomNames();
+    String[] atomNames = modelSet.getAtomNames();
     for (int offsetIndex = offsets.length; --offsetIndex >= 0;) {
       int offset = offsets[offsetIndex] & 0xFF;
       if (offset == 255)

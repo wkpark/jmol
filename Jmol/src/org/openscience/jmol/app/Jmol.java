@@ -28,6 +28,7 @@ import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 import org.jmol.util.*;
+import org.jmol.viewer.JmolConstants;
 
 import Acme.JPM.Encoders.PpmEncoder;
 import com.lowagie.text.Document;
@@ -774,6 +775,7 @@ public class Jmol extends JPanel {
       System.exit(0);
     } else {
       numWindows--;
+      viewer.setModeMouse(JmolConstants.MOUSE_NONE);
       f.dispose();
       if (scriptWindow != null) {
         scriptWindow.dispose();

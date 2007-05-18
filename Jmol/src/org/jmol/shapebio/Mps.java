@@ -49,9 +49,9 @@ public abstract class Mps extends Shape {
   
   Mpsmodel[] mpsmodels;
 
-  public final void initFrame() {
-    mmset = frame.getMmset();
-    atoms = frame.atoms;
+  public final void initModelSet() {
+    mmset = modelSet.getMmset();
+    atoms = modelSet.atoms;
     mpsmodels = null;
     initialize();
   }
@@ -86,7 +86,7 @@ public abstract class Mps extends Shape {
     Hashtable temp2 = new Hashtable();
     for (int m = mpsmodels.length; --m >= 0; )
       mpsmodels[m].setShapeState(temp, temp2);
-    return getShapeCommands(temp, temp2, frame.getAtomCount());
+    return getShapeCommands(temp, temp2, modelSet.getAtomCount());
   }
 
   abstract MpsShape allocateMpspolymer(BioPolymer polymer);

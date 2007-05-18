@@ -42,10 +42,10 @@ public class BackboneRenderer extends MpsRenderer {
     for (int i = monomerCount - 1; --i >= 0;) {
       if (!bsVisible.get(i))
         continue;
-      Atom atomA = frame.getAtomAt(leadAtomIndices[i]);
-      Atom atomB = frame.getAtomAt(leadAtomIndices[i + 1]);
+      Atom atomA = modelSet.getAtomAt(leadAtomIndices[i]);
+      Atom atomB = modelSet.getAtomAt(leadAtomIndices[i + 1]);
       if (atomA.getNBackbonesDisplayed() == 0 || atomB.getNBackbonesDisplayed() == 0
-          || frame.isAtomHidden(atomB.getAtomIndex()))
+          || modelSet.isAtomHidden(atomB.getAtomIndex()))
         continue;
       int xA = atomA.screenX, yA = atomA.screenY, zA = atomA
           .screenZ;

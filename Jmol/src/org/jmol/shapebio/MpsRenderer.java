@@ -145,9 +145,9 @@ abstract class MpsRenderer extends MeshRenderer {
       if (invalidate)
         schain.falsifyMesh(i, false);
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
-          || frame.isAtomHidden(leadAtomIndices[i]))
+          || modelSet.isAtomHidden(leadAtomIndices[i]))
         continue;
-      Atom lead = frame.atoms[leadAtomIndices[i]];
+      Atom lead = modelSet.atoms[leadAtomIndices[i]];
       if (!g3d.isInDisplayRange(lead.screenX, lead.screenY))
         continue;
       bsVisible.set(i);

@@ -563,7 +563,7 @@ public class Polyhedra extends AtomShape {
     for (int i = polyhedronCount; --i >= 0;) {
       Polyhedron p = polyhedrons[i];
       p.visibilityFlags = (p.visible && bs.get(p.centralAtom.getModelIndex())
-          && !frame.isAtomHidden(p.centralAtom.getAtomIndex()) ? myVisibilityFlag
+          && !modelSet.isAtomHidden(p.centralAtom.getAtomIndex()) ? myVisibilityFlag
           : 0);
     }
   }

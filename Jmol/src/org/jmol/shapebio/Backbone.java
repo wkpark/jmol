@@ -56,8 +56,8 @@ public class Backbone extends Mps {
         boolean isAtom2 = bsSelected.get(index2);
         if (isAtom1 && isAtom2 || bondSelectionModeOr && (isAtom1 || isAtom2)) {
           monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
-          Atom atomA = frame.getAtomAt(index1);
-          Atom atomB = frame.getAtomAt(index2);
+          Atom atomA = modelSet.getAtomAt(index1);
+          Atom atomB = modelSet.getAtomAt(index2);
           boolean wasVisible = (mads[i] != 0); 
           if (wasVisible != isVisible) {
             atomA.addDisplayedBackbone(myVisibilityFlag, isVisible);
@@ -74,8 +74,8 @@ public class Backbone extends Mps {
    public void setModelClickability() {
       int[] atomIndices = polymer.getLeadAtomIndices();
       for (int i = monomerCount; --i >= 0; ) {
-        Atom atom = frame.getAtomAt(atomIndices[i]);
-        if (atom.getNBackbonesDisplayed() > 0 && !frame.isAtomHidden(i))
+        Atom atom = modelSet.getAtomAt(atomIndices[i]);
+        if (atom.getNBackbonesDisplayed() > 0 && !modelSet.isAtomHidden(i))
           atom.setClickable(myVisibilityFlag);
       }
     }

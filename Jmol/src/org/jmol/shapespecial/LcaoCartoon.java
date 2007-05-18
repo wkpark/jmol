@@ -203,7 +203,7 @@ public class LcaoCartoon extends Isosurface {
     super.setProperty("lcaoType", thisType, null);
     super.setProperty("atomIndex", new Integer(iAtom), null);
     Vector3f[] axes = { new Vector3f(), new Vector3f(),
-        new Vector3f(frame.atoms[iAtom]) };
+        new Vector3f(modelSet.atoms[iAtom]) };
     if (isMolecular) {
       if (thisType.indexOf("px") >= 0) {
         axes[0].set(0, -1, 0);

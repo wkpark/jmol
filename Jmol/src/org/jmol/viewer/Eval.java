@@ -6901,7 +6901,7 @@ class Eval { //implements Runnable {
       str = "bond";
       break;
     }
-    if (JmolConstants.GetPickingMode(str) < 0)
+    if (JmolConstants.getPickingMode(str) < 0)
       unrecognizedParameter("SET PICKING " + type, str);
     setStringProperty("picking", str);
   }
@@ -6933,7 +6933,7 @@ class Eval { //implements Runnable {
         str = "measure";
       break;
     }
-    if (JmolConstants.GetPickingStyle(str) < 0)
+    if (JmolConstants.getPickingStyle(str) < 0)
       unrecognizedParameter("SET PICKINGSTYLE " + type, str);
     setStringProperty("pickingStyle", str);
   }

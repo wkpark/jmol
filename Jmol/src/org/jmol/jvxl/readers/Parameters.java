@@ -484,7 +484,7 @@ public class Parameters {
   }  
   
  
-  public static int MEP_MAX_GRID = 40;
+  public final static int MEP_MAX_GRID = 40;
   int mep_gridMax = MEP_MAX_GRID;
   float mep_ptsPerAngstrom = 3f;
   float mep_marginAngstroms = 1f; // may have to adjust this
@@ -519,7 +519,7 @@ public class Parameters {
   
   Hashtable moData, mo;
   float[] moCoefficients;
-  public static int MO_MAX_GRID = 80;
+  public final static int MO_MAX_GRID = 80;
   int qm_gridMax = MO_MAX_GRID;
   float qm_ptsPerAngstrom = 10f;
   float qm_marginAngstroms = 1f; // may have to adjust this

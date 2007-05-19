@@ -3436,7 +3436,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void setPickingMode(String mode) {
-    int pickingMode = JmolConstants.GetPickingMode(mode);
+    int pickingMode = JmolConstants.getPickingMode(mode);
     if (pickingMode < 0)
       pickingMode = JmolConstants.PICKING_IDENT;
     pickingManager.setPickingMode(pickingMode);
@@ -3447,7 +3447,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void setPickingStyle(String style) {
-    int pickingStyle = JmolConstants.GetPickingStyle(style);
+    int pickingStyle = JmolConstants.getPickingStyle(style);
     if (pickingStyle < 0)
       pickingStyle = JmolConstants.PICKINGSTYLE_SELECT_JMOL;
     pickingManager.setPickingStyle(pickingStyle);

@@ -178,7 +178,7 @@ final public class JmolConstants {
         : pickingModeNames[pickingMode]);
   }
   
-  public final static int GetPickingMode(String str) {
+  public final static int getPickingMode(String str) {
     for (int i = pickingModeNames.length; --i >= 0; )
       if (str.equalsIgnoreCase(pickingModeNames[i]))
         return i;
@@ -204,7 +204,7 @@ final public class JmolConstants {
         : pickingModeNames[pickingStyle]);
   }
   
-  public final static int GetPickingStyle(String str) {
+  public final static int getPickingStyle(String str) {
     for (int i = pickingStyleNames.length; --i >= 0; )
       if (str.equalsIgnoreCase(pickingStyleNames[i]))
         return i;

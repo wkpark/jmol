@@ -346,12 +346,12 @@ public class MarchingCubes {
     pt.add(pt0, voxelVertexVectors[vertex]);
   }
 
-  public final static Point3i[] cubeVertexOffsets = { new Point3i(0, 0, 0),
+  final static Point3i[] cubeVertexOffsets = { new Point3i(0, 0, 0),
       new Point3i(1, 0, 0), new Point3i(1, 0, 1), new Point3i(0, 0, 1),
       new Point3i(0, 1, 0), new Point3i(1, 1, 0), new Point3i(1, 1, 1),
       new Point3i(0, 1, 1) };
 
-  public static Vector3f[] cubeVertexVectors = { new Vector3f(0, 0, 0),
+  static Vector3f[] cubeVertexVectors = { new Vector3f(0, 0, 0),
       new Vector3f(1, 0, 0), new Vector3f(1, 0, 1), new Vector3f(0, 0, 1),
       new Vector3f(0, 1, 0), new Vector3f(1, 1, 0), new Vector3f(1, 1, 1),
       new Vector3f(0, 1, 1) };

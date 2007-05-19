@@ -72,7 +72,7 @@ public class Mesh {
   public boolean isTwoSided = true;
   public boolean isColorSolid = true;
   
-  public static int SEED_COUNT = 25; //optimized for cartoon mesh hermites
+  public final static int SEED_COUNT = 25; //optimized for cartoon mesh hermites
   
   public Mesh() {}
   

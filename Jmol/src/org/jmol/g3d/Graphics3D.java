@@ -52,7 +52,7 @@ final public class Graphics3D {
   Line3D line3d;
   Circle3D circle3d;
   Sphere3D sphere3d;
-  Colix3D colix3d;
+  //Colix3D colix3d;
   Triangle3D triangle3d;
   Cylinder3D cylinder3d;
   Hermite3D hermite3d;
@@ -106,7 +106,7 @@ final public class Graphics3D {
     this.line3d = new Line3D(this);
     this.circle3d = new Circle3D(this);
     this.sphere3d = new Sphere3D(this);
-    this.colix3d = new Colix3D();
+    //this.colix3d = new Colix3D();
     this.triangle3d = new Triangle3D(this);
     this.cylinder3d = new Cylinder3D(this);
     this.hermite3d = new Hermite3D(this);

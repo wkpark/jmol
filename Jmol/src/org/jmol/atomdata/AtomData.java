@@ -121,9 +121,9 @@ public class AtomData {
   public AtomData() {    
   }
  
-  static public int MODE_FILL_COORDS = 1;
-  static public int MODE_FILL_COORDS_AND_RADII = 2;
-  static public int MODE_GET_ATTACHED_HYDROGENS = 3;
+  final static public int MODE_FILL_COORDS = 1;
+  final static public int MODE_FILL_COORDS_AND_RADII = 2;
+  final static public int MODE_GET_ATTACHED_HYDROGENS = 3;
     
   public String fileName;
   public String modelName;

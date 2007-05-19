@@ -291,7 +291,7 @@ public class MarchingSquares {
   int contourVertexCount;
   ContourVertex[] contourVertexes;
 
-  class ContourVertex {
+  static class ContourVertex {
     Point3f vertexXYZ = new Point3f();
     Point3i voxelLocation;
     int[] pixelLocation = new int[2];
@@ -411,7 +411,7 @@ public class MarchingSquares {
   private PlanarSquare[] planarSquares;
   int nSquares;
 
-  private class PlanarSquare {
+  private static class PlanarSquare {
     int[] edgeMask12; //one per contour
     int edgeMask12All;
     int nInside;

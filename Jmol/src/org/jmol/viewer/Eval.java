@@ -3442,7 +3442,7 @@ class Eval { //implements Runnable {
       if ((i = dataLabel.indexOf("@")) >= 0) {
         dataString = "" + viewer.getParameter(dataLabel.substring(i + 1));
         dataLabel = dataLabel.substring(0, i).trim();
-      } else if ((i = dataLabel.indexOf(" ")) >= 0) {
+      } else if (dataString == null && (i = dataLabel.indexOf(" ")) >= 0) {
         dataString = dataLabel.substring(i + 1).trim();
         dataLabel = dataLabel.substring(0, i).trim();
         isOneValue = true;

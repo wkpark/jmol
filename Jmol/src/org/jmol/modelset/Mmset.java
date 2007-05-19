@@ -72,14 +72,16 @@ public final class Mmset {
         Group.getSeqcode(endSequenceNumber, endInsertionCode));
   }
 
-  void clearStructures() {
+  void clearStructures(BitSet alreadyDefined) {
     for (int i = modelCount; --i >= 0;)
-      models[i].clearStructures();
+      if (models[i].isPDB && !alreadyDefined.get(i))
+        models[i].clearStructures();
   }
 
-  void calculateStructures() {
+  void calculateStructuresAllExcept(BitSet alreadyDefined) {
     for (int i = modelCount; --i >= 0;)
-      models[i].calculateStructures();
+      if (models[i].isPDB && !alreadyDefined.get(i))
+        models[i].calculateStructures();
   }
 
   void setConformation(int modelIndex, BitSet bsConformation) {

@@ -318,6 +318,10 @@ public class Group {
     return chain.model;
   }
   
+  public int getModelIndex() {
+    return chain.model.getModelIndex();
+  }
+  
   public int getSelectedMonomerCount() {
     return 0;
   }

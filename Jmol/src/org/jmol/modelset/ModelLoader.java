@@ -190,6 +190,7 @@ public final class ModelLoader extends ModelSet {
   private int baseModelCount = 0;
   private int baseAtomIndex = 0;
   private int baseBondIndex = 0;
+  private int baseGroupIndex = 0;
   private boolean appendNew = true;
 
   private void initializeModelSet(JmolAdapter adapter, Object clientFile) {
@@ -249,11 +250,13 @@ public final class ModelLoader extends ModelSet {
       }
       atomCount = baseAtomIndex = mergeModelSet.atomCount;
       bondCount = baseBondIndex = mergeModelSet.bondCount;
-      //baseGroupIndex = mergeFrame.groupCount;
+      groupCount = baseGroupIndex = mergeModelSet.groupCount;
     }
     mmset.setModelCount(modelCount);
   }
 
+  private BitSet structuresDefinedInFile = new BitSet();
+  
   private void initializeMerge() {
     mmset.merge(mergeModelSet.mmset);
     bsSymmetry = mergeModelSet.bsSymmetry;
@@ -273,6 +276,7 @@ public final class ModelLoader extends ModelSet {
     bfactor100s = mergeModelSet.bfactor100s;
     partialCharges = mergeModelSet.partialCharges;
     specialAtomIDs = mergeModelSet.specialAtomIDs;
+    structuresDefinedInFile = mergeModelSet.structuresDefinedInFile;
     surfaceDistance100s = null;
   }
 
@@ -286,6 +290,8 @@ public final class ModelLoader extends ModelSet {
     group3Lists = new String[modelCount + 1];
     group3Counts = new int[modelCount + 1][];
     
+    structuresDefinedInFile = new BitSet();
+
     if (merging)
       initializeMerge();
 
@@ -393,7 +399,7 @@ public final class ModelLoader extends ModelSet {
       currentGroupSequenceNumber = groupSequenceNumber;
       currentGroupInsertionCode = groupInsertionCode;
       currentGroup3 = group3i;
-      if (groupCount == group3s.length) {
+      while (groupCount >= group3s.length) {
         chains = (Chain[]) ArrayUtil.doubleLength(chains);
         group3s = ArrayUtil.doubleLength(group3s);
         seqcodes = ArrayUtil.doubleLength(seqcodes);
@@ -467,6 +473,16 @@ public final class ModelLoader extends ModelSet {
       //fileHasHbonds = true;
   }
 
+  /**
+   * Pull in all spans of helix, etc. in the file(s)
+   * 
+   * We do turn first, because sometimes a group is defined
+   * twice, and this way it gets marked as helix or sheet
+   * if it is both one of those and turn.
+   * 
+   * @param adapter
+   * @param clientFile
+   */
   private void iterateOverAllNewStructures(JmolAdapter adapter,
                                            Object clientFile) {
     JmolAdapter.StructureIterator iterStructure = adapter
@@ -500,13 +516,11 @@ public final class ModelLoader extends ModelSet {
       }
   }
   
-  private boolean fileHadDefinedStructures;
-
   private void defineStructure(int modelIndex, String structureType, char startChainID,
                        int startSequenceNumber, char startInsertionCode,
                        char endChainID, int endSequenceNumber,
                        char endInsertionCode) {
-    fileHadDefinedStructures = true; //(in file)
+    structuresDefinedInFile.set(modelIndex);
     mmset.defineStructure(modelIndex, structureType, startChainID,
         startSequenceNumber, startInsertionCode, endChainID, endSequenceNumber,
         endInsertionCode);
@@ -654,7 +668,13 @@ public final class ModelLoader extends ModelSet {
     // run this loop in increasing order so that the
     // groups get defined going up
     groups = new Group[groupCount];
-    for (int i = 0; i < groupCount; ++i) {
+    if (merging) {
+      for (int i = 0; i < baseGroupIndex; i++) {
+        groups[i] = mergeModelSet.groups[i];
+        groups[i].setModelSet(this);
+      }
+    }  
+    for (int i = baseGroupIndex; i < groupCount; ++i) {
       distinguishAndPropagateGroup(i, chains[i], group3s[i], seqcodes[i],
           firstAtomIndexes[i], (i == groupCount - 1 ? atomCount
               : firstAtomIndexes[i + 1]));
@@ -675,10 +695,8 @@ public final class ModelLoader extends ModelSet {
     group3Counts = null;
     group3Lists = null;
 
-    for (int i = 0; i < groupCount; ++i) {
+    for (int i = baseGroupIndex; i < groupCount; ++i) {
       Group group = groups[i];
-      if (merging)
-        group.setModelSet(this);
       if (jbr != null)
         jbr.buildBioPolymer(group, groups, i);
     }
@@ -796,7 +814,8 @@ public final class ModelLoader extends ModelSet {
     findElementsPresent();
 
     // finalize all group business
-    calculateStructures(merging);
+    if (isPDB)
+      calculateStructures(merging, structuresDefinedInFile);
 
     // reset molecules -- important if merging
 
@@ -886,16 +905,17 @@ public final class ModelLoader extends ModelSet {
    * also accessed by ModelManager from Eval
    * 
    * @param rebuild 
+   * @param alreadyDefined    set to skip calculation
    *  
    */
-  void calculateStructures(boolean rebuild) {
+  void calculateStructures(boolean rebuild, BitSet alreadyDefined) {
     if (rebuild) {
-      for (int i = JmolConstants.SHAPE_MAX; --i >= 0;)
-        if (JmolConstants.isShapeSecondary(i))
-          shapes[i] = null;
+//      for (int i = JmolConstants.SHAPE_MAX; --i >= 0;)
+  //      if (JmolConstants.isShapeSecondary(i))
+    //      shapes[i] = null;
       if (jbr != null && groupCount > 0)
-        jbr.clearBioPolymers(groups, groupCount);
-      mmset.clearStructures();
+        jbr.clearBioPolymers(groups, groupCount, alreadyDefined);
+      mmset.clearStructures(alreadyDefined);
       initializeGroupBuild();
       for (int i = 0; i < atomCount; i++) {
         Atom atom = atoms[i];
@@ -906,11 +926,10 @@ public final class ModelLoader extends ModelSet {
               atom.getGroup3(), atom.getSeqNumber(), atom.getInsertionCode());
       }
       finalizeGroupBuild();
-      fileHadDefinedStructures = false;
       moleculeCount = 0;
     }
-    if (!fileHadDefinedStructures)
-      mmset.calculateStructures();
+    structuresDefinedInFile.or(alreadyDefined);
+    mmset.calculateStructuresAllExcept(alreadyDefined);
     mmset.freeze();
   }
 

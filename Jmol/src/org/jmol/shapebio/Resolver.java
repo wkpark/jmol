@@ -24,6 +24,8 @@
 
 package org.jmol.shapebio;
 
+import java.util.BitSet;
+
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
@@ -114,12 +116,14 @@ public final class Resolver implements JmolBioResolver {
       BioPolymer.allocateBioPolymer(groups, i);
   }
   
-  public void clearBioPolymers(Group[] groups, int groupCount)  {
+  public void clearBioPolymers(Group[] groups, int groupCount,
+                               BitSet alreadyDefined) {
     for (int i = 0; i < groupCount; ++i) {
       Group group = groups[i];
       if (group instanceof Monomer) {
         Monomer monomer = (Monomer) group;
-        if (monomer.getBioPolymer() != null)
+        if (monomer.getBioPolymer() != null
+            && !alreadyDefined.get(monomer.getModelIndex()))
           monomer.setBioPolymer(null, -1);
       }
     }

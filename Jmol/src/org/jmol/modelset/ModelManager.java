@@ -1401,8 +1401,13 @@ String getAtomInfoChime(int i) {
     return modelSet.getSelectionHaloEnabled();
   }
 
-  public void calculateStructures() {
-    modelLoader.calculateStructures(true);
+  public void calculateStructures(int modelIndex) {
+    int modelCount = modelSet.getModelCount();
+    BitSet bsDefined = new BitSet(modelCount);
+    for (int i = 0; i < modelCount; i++)
+      if (modelIndex < 0 || i != modelIndex)
+        bsDefined.set(i);
+    modelLoader.calculateStructures(true, bsDefined);
   }
   
   public boolean getEchoStateActive() {

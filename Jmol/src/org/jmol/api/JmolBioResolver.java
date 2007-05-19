@@ -1,5 +1,7 @@
 package org.jmol.api;
 
+import java.util.BitSet;
+
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import org.jmol.modelset.Group;
@@ -14,6 +16,6 @@ public interface JmolBioResolver {
   
   public void buildBioPolymer(Group group, Group[] groups, int i);
   
-  public void clearBioPolymers(Group[] groups, int groupCount);
+  public void clearBioPolymers(Group[] groups, int groupCount, BitSet alreadyDefined);
 }
 

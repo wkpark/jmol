@@ -52,7 +52,7 @@ public abstract class Mps extends Shape {
   public final void initModelSet() {
     mmset = modelSet.getMmset();
     atoms = modelSet.atoms;
-    mpsmodels = null;
+    //mpsmodels = null;
     initialize();
   }
 
@@ -92,13 +92,15 @@ public abstract class Mps extends Shape {
   abstract MpsShape allocateMpspolymer(BioPolymer polymer);
 
   void initialize() {
-    if (mpsmodels == null) {
-      int modelCount = mmset == null ? 0 : mmset.getModelCount();
-      Model[] models = mmset.getModels();
-      mpsmodels = new Mpsmodel[modelCount];
-      for (int i = modelCount; --i >= 0; )
-        mpsmodels[i] = new Mpsmodel(this, models[i]);
-    }
+    int modelCount = mmset == null ? 0 : mmset.getModelCount();
+    Model[] models = mmset.getModels();
+    Mpsmodel[] m = new Mpsmodel[modelCount];
+    for (int i = modelCount; --i >= 0;)
+      if (mpsmodels == null || mpsmodels.length <= i)
+        m[i] = new Mpsmodel(this, models[i]);
+      else
+        m[i] = mpsmodels[i];
+    mpsmodels = m;
   }
 
   int getMpsmodelCount() {

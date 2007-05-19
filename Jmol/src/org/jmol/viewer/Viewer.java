@@ -1767,7 +1767,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void calculateStructures() {
     //Eval
-    modelManager.calculateStructures();
+    modelManager.calculateStructures(getCurrentModelIndex());
     addStateScript("calculate structure");
   }
 

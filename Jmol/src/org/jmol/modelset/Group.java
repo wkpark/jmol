@@ -288,11 +288,9 @@ public class Group {
   }
 
   public boolean isSelected(BitSet bs) {
-    System.out.println("group selected? " + firstAtomIndex+" " + lastAtomIndex);
     for (int i = firstAtomIndex; i <= lastAtomIndex; ++i)
       if (bs.get(i))
         return true;
-    System.out.println("no");
     return false;
   }
 

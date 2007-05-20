@@ -43,56 +43,51 @@ public class Backbone extends BioShapeCollection {
   public void setSize(int size, BitSet bsSelected) {
     short mad = (short) size;
     initialize();
-    for (int i = bioShapes.length; --i >= 0;) {
-      BioShape bioShape = bioShapes[i];
-      if (bioShape.monomerCount > 0)
-        setMad(bioShape, mad, bsSelected);
+    for (int iShape = bioShapes.length; --iShape >= 0;) {
+      BioShape bioShape = bioShapes[iShape];
+      if (bioShape.monomerCount ==0)
+        continue;
+      boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
+      int[] atomIndices = bioShape.bioPolymer.getLeadAtomIndices();
+      // note that i is initialized to monomerCount - 1
+      // in order to skip the last atom
+      // but it is picked up within the loop by looking at i+1
+      boolean isVisible = (mad != 0);
+      if (bioShape.bsSizeSet == null)
+        bioShape.bsSizeSet = new BitSet();
+      for (int i = bioShape.monomerCount - 1; --i >= 0;) {
+        int index1 = atomIndices[i];
+        int index2 = atomIndices[i + 1];
+        boolean isAtom1 = bsSelected.get(index1);
+        boolean isAtom2 = bsSelected.get(index2);
+        if (isAtom1 && isAtom2 || bondSelectionModeOr && (isAtom1 || isAtom2)) {
+          bioShape.monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
+          Atom atomA = modelSet.getAtomAt(index1);
+          Atom atomB = modelSet.getAtomAt(index2);
+          boolean wasVisible = (bioShape.mads[i] != 0); 
+          if (wasVisible != isVisible) {
+            atomA.addDisplayedBackbone(myVisibilityFlag, isVisible);
+            atomB.addDisplayedBackbone(myVisibilityFlag, isVisible);
+          }
+          bioShape.mads[i] = mad;
+          bioShape.bsSizeSet.set(i, isVisible);
+        }
+      }
     }
   }
   
-  private void setMad(BioShape bioShape, short mad, BitSet bsSelected) {
-    boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
-    int[] atomIndices = bioShape.bioPolymer.getLeadAtomIndices();
-    // note that i is initialized to monomerCount - 1
-    // in order to skip the last atom
-    // but it is picked up within the loop by looking at i+1
-    boolean isVisible = (mad != 0);
-    if (bioShape.bsSizeSet == null)
-      bioShape.bsSizeSet = new BitSet();
-    for (int i = bioShape.monomerCount - 1; --i >= 0;) {
-      int index1 = atomIndices[i];
-      int index2 = atomIndices[i + 1];
-      boolean isAtom1 = bsSelected.get(index1);
-      boolean isAtom2 = bsSelected.get(index2);
-      if (isAtom1 && isAtom2 || bondSelectionModeOr && (isAtom1 || isAtom2)) {
-        bioShape.monomers[i].setShapeVisibility(myVisibilityFlag, isVisible);
-        Atom atomA = modelSet.getAtomAt(index1);
-        Atom atomB = modelSet.getAtomAt(index2);
-        boolean wasVisible = (bioShape.mads[i] != 0); 
-        if (wasVisible != isVisible) {
-          atomA.addDisplayedBackbone(myVisibilityFlag, isVisible);
-          atomB.addDisplayedBackbone(myVisibilityFlag, isVisible);
-        }
-        bioShape.mads[i] = mad;
-        bioShape.bsSizeSet.set(i, isVisible);
+  public void setModelClickability() {
+    if (bioShapes == null)
+      return;
+    for (int iShape = bioShapes.length; --iShape >= 0; ) {
+      BioShape bioShape = bioShapes[iShape];
+      int[] atomIndices = bioShape.bioPolymer.getLeadAtomIndices();
+      for (int i = bioShape.monomerCount; --i >= 0; ) {
+        Atom atom = modelSet.getAtomAt(atomIndices[i]);
+        if (atom.getNBackbonesDisplayed() > 0 && !modelSet.isAtomHidden(i))
+          atom.setClickable(myVisibilityFlag);
       }
     }
   }
 
-  public void setModelClickability() {
-    if (bioShapes == null)
-      return;
-    for (int i = bioShapes.length; --i >= 0; )
-      setModelClickability(bioShapes[i]);
-  }
-
-  private void setModelClickability(BioShape bioShape) {
-    int[] atomIndices = bioShape.bioPolymer.getLeadAtomIndices();
-    for (int i = bioShape.monomerCount; --i >= 0; ) {
-      Atom atom = modelSet.getAtomAt(atomIndices[i]);
-      if (atom.getNBackbonesDisplayed() > 0 && !modelSet.isAtomHidden(i))
-        atom.setClickable(myVisibilityFlag);
-    }
-  }
-  
 }

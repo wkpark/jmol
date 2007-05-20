@@ -136,9 +136,8 @@ public final class EnvelopeCalculation {
   
   public EnvelopeCalculation(AtomDataServer viewer, int atomCount, short[] mads) {
     this.viewer = viewer;
-    this.atomCount = atomCount;
+    this.atomCount = atomCount; //preliminary, for setFromBits()
     this.mads = mads;
-    //? atomCount = atomData.atomCount;
     geodesicCount = Geodesic.getVertexVectorsCount();
     geodesicMap = allocateBitmap(geodesicCount);
     mapT = allocateBitmap(geodesicCount);
@@ -230,9 +229,10 @@ public final class EnvelopeCalculation {
     this.scale = scale;
     atomData.useIonic = !useVanderwaalsRadius;
     viewer.fillAtomData(atomData, AtomData.MODE_FILL_COORDS_AND_RADII);
+    atomCount = atomData.atomCount;
     setRadii(useVanderwaalsRadius);    
     bsMySelected = (onlySelectedDots && bsSelected != null ? BitSetUtil.copy(bsSelected)
-        : bsIgnore != null ? BitSetUtil.setAll(atomData.atomCount) : null);
+        : bsIgnore != null ? BitSetUtil.setAll(atomCount) : null);
     if (bsIgnore != null)
       BitSetUtil.andNot(bsMySelected, bsIgnore);
     this.disregardNeighbors = disregardNeighbors;
@@ -251,7 +251,7 @@ public final class EnvelopeCalculation {
   }
   
   private void setRadii(boolean useVanderwaalsRadius) {
-    for (int i = 0; i < atomData.atomCount; i++) {
+    for (int i = 0; i < atomCount; i++) {
       atomData.atomRadius[i] = (mads != null ? mads[i] / 1000f : addRadius
           + (setRadius != Float.MAX_VALUE ? setRadius : atomData.atomRadius[i]
               * (useVanderwaalsRadius ? 1 : scale)));

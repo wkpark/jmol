@@ -291,7 +291,7 @@ public class MarchingSquares {
   int contourVertexCount;
   ContourVertex[] contourVertexes;
 
-  static class ContourVertex {
+  private static class ContourVertex {
     Point3f vertexXYZ = new Point3f();
     Point3i voxelLocation;
     int[] pixelLocation = new int[2];

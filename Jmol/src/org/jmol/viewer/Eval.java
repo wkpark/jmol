@@ -642,7 +642,7 @@ class Eval { //implements Runnable {
           else
             // identifiers cannot have periods; file names can, though
             fixed[j] = new Token(
-                (isSelect || ((String) v).indexOf(".") >= 0 ? Token.string
+                (isSelect ? Token.select : ((String) v).indexOf(".") >= 0 ? Token.string
                     : Token.identifier), (String) v);
         } else {
           Point3f center = getDrawObjectCenter(var);
@@ -1176,25 +1176,25 @@ class Eval { //implements Runnable {
           val = lookupIdentifierValue((String) value);
         rpn.addX(val);
         break;
+      case Token.select:
+        rpn.addX(getAtomBitSet(this, viewer, (String) value));
+        break;
       case Token.string:
+        rpn.addX(instruction);
         val = (String) value;
         if (val.equals("plane")) {
-          rpn.addX(instruction);
           rpn.addX(new Token(Token.point4f, planeParameter(pc + 2)));
           pc = iToken;
           break;
         } else if (val.equals("hkl")) {
-          rpn.addX(instruction);
           rpn.addX(new Token(Token.point4f, hklParameter(pc + 2)));
           pc = iToken;
           break;
         } else if (val.equals("coord")) {
-          rpn.addX(instruction);
           rpn.addX(getPoint3f(pc + 2, true));
           pc = iToken;
           break;
         }
-        rpn.addX(getAtomBitSet(this, viewer, (String) value));
         break;
       case Token.within:
       case Token.substructure:

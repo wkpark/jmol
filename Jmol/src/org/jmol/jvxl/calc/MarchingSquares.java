@@ -288,8 +288,8 @@ public class MarchingSquares {
 
   // (2) calculate the grid points
 
-  int contourVertexCount;
-  ContourVertex[] contourVertexes;
+  private int contourVertexCount;
+  private ContourVertex[] contourVertexes;
 
   private static class ContourVertex {
     Point3f vertexXYZ = new Point3f();
@@ -409,7 +409,7 @@ public class MarchingSquares {
   private int squareCountX, squareCountY;
 
   private PlanarSquare[] planarSquares;
-  int nSquares;
+  private int nSquares;
 
   private static class PlanarSquare {
     int[] edgeMask12; //one per contour
@@ -717,7 +717,7 @@ public class MarchingSquares {
     }
   }
 
-  void triangulateContours(boolean centerIsLow) {
+  private void triangulateContours(boolean centerIsLow) {
 
     /*
      * Y
@@ -862,9 +862,9 @@ public class MarchingSquares {
     }
   }
 
-  final int[] triangleVertexList = new int[20];
+  private final int[] triangleVertexList = new int[20];
 
-  void fillSquare(PlanarSquare square, int contourIndex, int edgeMask,
+  private void fillSquare(PlanarSquare square, int contourIndex, int edgeMask,
                   boolean reverseWinding, int offset) {
     int vPt = 0;
     boolean lowerFirst = reverseWinding;

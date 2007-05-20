@@ -84,16 +84,23 @@ public final class Chain {
     return modelSet.atoms[index];
   }
   
+  /**
+   * prior to coloring by group, we need the chain count per chain
+   * that is selected
+   * 
+   * @param bsSelected
+   */
   public void calcSelectedGroupsCount(BitSet bsSelected) {
     selectedGroupCount = 0;
     if (bsSelectedGroups == null)
       bsSelectedGroups = new BitSet();
-    else
-      BitSetUtil.clear(bsSelectedGroups);
-    for (int i = groupCount; --i >= 0; ) {
+    BitSetUtil.clear(bsSelectedGroups);
+    for (int i = 0; i < groupCount; i++) {
       if (groups[i].isSelected(bsSelected)) {
-        ++selectedGroupCount;
+        groups[i].selectedIndex = selectedGroupCount++;
         bsSelectedGroups.set(i);
+      } else {
+        groups[i].selectedIndex = -1;
       }
     }
   }
@@ -145,16 +152,13 @@ public final class Chain {
     return selectedGroupCount;
   }
 
+  /**
+   * 
+   * @param group
+   * @return      selection index within selection set
+   */
   int getSelectedGroupIndex(Group group) {
-    int selectedGroupIndex = 0;
-    for (int i = 0; i < groupCount; ++i) {
-      if (bsSelectedGroups.get(i)) {
-        if (groups[i] == group)
-          return selectedGroupIndex;
-        ++selectedGroupIndex;
-      }
-    }
-    return -1;
+    return group.selectedIndex;
   }
   
   public final void updateOffsetsForAlternativeLocations(BitSet bsSelected,

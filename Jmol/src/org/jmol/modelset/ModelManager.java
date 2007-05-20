@@ -1402,12 +1402,13 @@ String getAtomInfoChime(int i) {
   }
 
   public void calculateStructures(int modelIndex) {
+    //for now, redefine all, because I don't know what is wrong.
     int modelCount = modelSet.getModelCount();
     BitSet bsDefined = new BitSet(modelCount);
     for (int i = 0; i < modelCount; i++)
-      if (modelIndex < 0 || i != modelIndex)
+      if (modelIndex >= 0 && i != modelIndex)
         bsDefined.set(i);
-    modelLoader.calculateStructures(true, bsDefined);
+    modelLoader.calculateStructures(true, null);//bsDefined);
   }
   
   public boolean getEchoStateActive() {

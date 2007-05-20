@@ -170,7 +170,6 @@ public final class ModelLoader extends ModelSet {
    * 
    */
   private void initializeGroupBuild() {
-    groupCount = 0;
     chains = new Chain[defaultGroupCount];
     group3s = new String[defaultGroupCount];
     seqcodes = new int[defaultGroupCount];
@@ -759,7 +758,7 @@ public final class ModelLoader extends ModelSet {
     }
     if (group3 != null)
       countGroup(modelIndex, key, group3);
-    
+    System.out.println("adding group to " + chain + " g "+groupIndex + " m " + modelIndex+" "+group3);
     chain.addGroup(group);
     groups[groupIndex] = group;
 
@@ -899,7 +898,7 @@ public final class ModelLoader extends ModelSet {
   }
 
   // the ONLY nonprivate method in this class
-  
+
   /**
    * allows rebuilding of PDB structures;
    * also accessed by ModelManager from Eval
@@ -910,20 +909,26 @@ public final class ModelLoader extends ModelSet {
    */
   void calculateStructures(boolean rebuild, BitSet alreadyDefined) {
     if (rebuild) {
-//      for (int i = JmolConstants.SHAPE_MAX; --i >= 0;)
-  //      if (JmolConstants.isShapeSecondary(i))
-    //      shapes[i] = null;
+      //      for (int i = JmolConstants.SHAPE_MAX; --i >= 0;)
+      //      if (JmolConstants.isShapeSecondary(i))
+      //      shapes[i] = null;
       if (jbr != null && groupCount > 0)
         jbr.clearBioPolymers(groups, groupCount, alreadyDefined);
+      if (alreadyDefined == null) {
+        alreadyDefined = new BitSet();
+        groupCount = 0;
+      }
       mmset.clearStructures(alreadyDefined);
       initializeGroupBuild();
       for (int i = 0; i < atomCount; i++) {
         Atom atom = atoms[i];
-        if (atom.group == null)
-          checkNewGroup(i, atom.modelIndex, '\0', null, 0, '\0');
-        else
-          checkNewGroup(i, atom.modelIndex, atom.getChainID(),
-              atom.getGroup3(), atom.getSeqNumber(), atom.getInsertionCode());
+        if (!alreadyDefined.get(atom.modelIndex)) {
+          if (atom.group == null)
+            checkNewGroup(i, atom.modelIndex, '\0', null, 0, '\0');
+          else
+            checkNewGroup(i, atom.modelIndex, atom.getChainID(), atom
+                .getGroup3(), atom.getSeqNumber(), atom.getInsertionCode());
+        }
       }
       finalizeGroupBuild();
       moleculeCount = 0;

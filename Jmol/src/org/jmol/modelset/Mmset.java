@@ -421,7 +421,7 @@ public final class Mmset {
     return chainCount;
   }
 
-  int getBioPolymerCount() {
+  public int getBioPolymerCount() {
     int polymerCount = 0;
     for (int i = modelCount; --i >= 0;)
       polymerCount += models[i].getBioPolymerCount();

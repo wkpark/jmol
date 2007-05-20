@@ -526,7 +526,7 @@ support for assertions (which were introduced in 1.4).
 	    <jar destfile="${jmol.applet.build.dir}/JmolApplet0_Viewer.jar" manifest="manifest/applet.txt" >
 	      <fileset dir="${applet.classes.dir}">
 	        <include name="org/jmol/atomdata/**" />
-	        <include name="org/jmol/modelframe/**" />
+	        <include name="org/jmol/modelset/**" />
 	        <include name="org/jmol/shape/**" />
 	        <include name="org/jmol/viewer/**" />
 <!--	        <include name="org/jmol/Jmol.properties" /    -->      
@@ -581,6 +581,7 @@ support for assertions (which were introduced in 1.4).
 	  	
      	<jar destfile="${jmol.applet.build.dir}/JmolApplet0_ShapeBio.jar" manifest="manifest/applet.txt" >
 		  <fileset dir="${applet.classes.dir}">
+		    <include name="org/jmol/modelsetbio/**" />
 		    <include name="org/jmol/shapebio/**" />
 		  </fileset>
 		</jar>

@@ -152,15 +152,6 @@ public final class Chain {
     return selectedGroupCount;
   }
 
-  /**
-   * 
-   * @param group
-   * @return      selection index within selection set
-   */
-  int getSelectedGroupIndex(Group group) {
-    return group.selectedIndex;
-  }
-  
   public final void updateOffsetsForAlternativeLocations(BitSet bsSelected,
                                                   int nAltLocInModel,
                                                   byte[] offsets,

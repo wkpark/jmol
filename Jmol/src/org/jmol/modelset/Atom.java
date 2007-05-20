@@ -958,7 +958,7 @@ final public class Atom extends Point3fi implements Tuple {
   }
 
   public int getSelectedGroupIndexWithinChain() {
-    return group.chain.getSelectedGroupIndex(group);
+    return group.getSelectedGroupIndex();
   }
 
   public int getSelectedMonomerCountWithinPolymer() {
@@ -1081,6 +1081,7 @@ final public class Atom extends Point3fi implements Tuple {
          case 'D': atom inDex (was "X")
          case 'e': element symbol
          case 'E': insErtion code
+         case 'g': selected group index (for testing)
          case 'i': atom number
          case 'I': Ionic radius
          case 'L': polymer Length
@@ -1136,6 +1137,9 @@ final public class Atom extends Point3fi implements Tuple {
         case 'E':
           ch = getInsertionCode();
           strT = (ch == '\0' ? "" : "" + ch);
+          break;
+        case 'g':
+          strT = "" + getSelectedGroupIndexWithinChain();
           break;
         case 'x':
           floatT = x;

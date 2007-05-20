@@ -331,6 +331,10 @@ public class Group {
     return -1;
   }
   
+  public int getSelectedGroupIndex() {
+    return selectedIndex;
+  }
+  
   public Atom getLeadAtom(Atom atom) { //for sticks
     Atom a = getLeadAtom();
     return (a == null ? atom : a);

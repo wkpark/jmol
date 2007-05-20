@@ -217,7 +217,6 @@ class ColorManager {
       index = ColorEncoder.quantize(atom.getSelectedGroupIndexWithinChain(), 0, atom
           .getSelectedGroupCountWithinChain() - 1,
           JmolConstants.argbsRoygbScale.length);
-      index = JmolConstants.argbsRoygbScale.length - 1 - index;
       argb = JmolConstants.argbsRoygbScale[index];
       break;
     case JmolConstants.PALETTE_MONOMER:
@@ -225,7 +224,6 @@ class ColorManager {
       index = ColorEncoder.quantize(atom.getSelectedMonomerIndexWithinPolymer(), 0, atom
           .getSelectedMonomerCountWithinPolymer() - 1,
           JmolConstants.argbsRoygbScale.length);
-      index = JmolConstants.argbsRoygbScale.length - 1 - index;
       argb = JmolConstants.argbsRoygbScale[index];
       break;
     case JmolConstants.PALETTE_MOLECULE:

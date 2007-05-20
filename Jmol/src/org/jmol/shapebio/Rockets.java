@@ -25,15 +25,14 @@
 package org.jmol.shapebio;
 
 
-public class Rockets extends Mps {
+public class Rockets extends BioShapeCollection {
 
-  Mps.MpsShape allocateMpspolymer(BioPolymer polymer) {
-    return new Cchain(polymer);
+  BioShape allocateBioShape(BioPolymer polymer) {
+    return new Shape(polymer);
   }
 
-  class Cchain extends Mps.MpsShape {
-
-    Cchain(BioPolymer polymer) {
+  class Shape extends BioShape {
+    Shape(BioPolymer polymer) {
       super(polymer, -2, 3000, 500, 5000);
     }
   }

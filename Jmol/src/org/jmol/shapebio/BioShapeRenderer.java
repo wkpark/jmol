@@ -38,10 +38,8 @@ import org.jmol.viewer.JmolConstants;
 
 import java.util.BitSet;
 
-abstract class MpsRenderer extends MeshRenderer {
+abstract class BioShapeRenderer extends MeshRenderer {
 
-  //Mps.MpsShape thisChain;
-  
   //ultimately this renderer calls MeshRenderer.render1(mesh)
 
   int aspectRatio;
@@ -76,17 +74,14 @@ abstract class MpsRenderer extends MeshRenderer {
     if (shape == null)
       return;
     //frontOnly = viewer.getTestFlag2();
-    Mps mcps = (Mps) shape;
-    for (int m = mcps.getMpsmodelCount(); --m >= 0;) {
-      Mps.Mpsmodel mcpsmodel = mcps.getMpsmodel(m);
-      if ((mcpsmodel.modelVisibilityFlags & myVisibilityFlag) == 0)
+    BioShapeCollection mps = (BioShapeCollection) shape;
+    for (int c = mps.bioShapes.length; --c >= 0;) {
+      BioShape bioShape = mps.getBioShape(c);
+      if ((bioShape.modelVisibilityFlags & myVisibilityFlag) == 0)
         continue;
-      for (int c = mcpsmodel.getMpspolymerCount(); --c >= 0;) {
-        Mps.MpsShape mpspolymer = mcpsmodel.getMpspolymer(c);
-        if (mpspolymer.monomerCount >= 2 && initializePolymer(mpspolymer)) {
-          renderMpspolymer(mpspolymer);
-          freeTempArrays();
-        }
+      if (bioShape.monomerCount >= 2 && initializePolymer(bioShape)) {
+        renderBioShape(bioShape);
+        freeTempArrays();
       }
     }
   }
@@ -97,11 +92,11 @@ abstract class MpsRenderer extends MeshRenderer {
     viewer.freeTempBytes(structureTypes);
   }
 
-  abstract void renderMpspolymer(Mps.MpsShape mpspolymer);
+  protected abstract void renderBioShape(BioShape bioShape);
 
   //Point3f[] tempPoints;
 
-  private boolean initializePolymer(Mps.MpsShape schain) {
+  private boolean initializePolymer(BioShape bioShape) {
 
     boolean invalidate = false;
     boolean TF = viewer.getHighResolution();
@@ -134,16 +129,16 @@ abstract class MpsRenderer extends MeshRenderer {
       invalidate = true;
     }
 
-    controlPoints = schain.polymer.getControlPoints(isTraceAlpha, sheetSmoothing);
-    monomerCount = schain.monomerCount;
-    monomers = schain.monomers;
-    leadAtomIndices = schain.polymer.getLeadAtomIndices();
+    controlPoints = bioShape.bioPolymer.getControlPoints(isTraceAlpha, sheetSmoothing);
+    monomerCount = bioShape.monomerCount;
+    monomers = bioShape.monomers;
+    leadAtomIndices = bioShape.bioPolymer.getLeadAtomIndices();
 
     bsVisible.clear();
     boolean haveVisible = false;
     for (int i = monomerCount; --i >= 0;) {
       if (invalidate)
-        schain.falsifyMesh(i, false);
+        bioShape.falsifyMesh(i, false);
       if ((monomers[i].shapeVisibilityFlags & myVisibilityFlag) == 0
           || modelSet.isAtomHidden(leadAtomIndices[i]))
         continue;
@@ -162,15 +157,15 @@ abstract class MpsRenderer extends MeshRenderer {
     // as nucleic because we are not calculating the wing
     // vector correctly.
     // if/when we do that then this test will become
-    // isNucleic = schain.polymer.isNucleic();    
-    isNucleic = schain.polymer instanceof NucleicPolymer;
-    isCarbohydrate = schain.polymer instanceof CarbohydratePolymer;
+    // isNucleic = schain.bioPolymer.isNucleic();    
+    isNucleic = bioShape.bioPolymer instanceof NucleicPolymer;
+    isCarbohydrate = bioShape.bioPolymer instanceof CarbohydratePolymer;
     haveControlPointScreens = false;
-    wingVectors = schain.wingVectors;
-    meshReady = schain.meshReady;
-    meshes = schain.meshes;
-    mads = schain.mads;
-    colixes = schain.colixes;
+    wingVectors = bioShape.wingVectors;
+    meshReady = bioShape.meshReady;
+    meshes = bioShape.meshes;
+    mads = bioShape.mads;
+    colixes = bioShape.colixes;
     setStructureTypes();
     return true;
   }

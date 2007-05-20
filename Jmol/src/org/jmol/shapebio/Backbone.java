@@ -29,22 +29,22 @@ import java.util.BitSet;
 
 import org.jmol.modelset.Atom;
 
-public class Backbone extends Mps {
+public class Backbone extends BioShapeCollection {
 
-  Mps.MpsShape allocateMpspolymer(BioPolymer polymer) {
-    return new Bbpolymer(polymer);
+  BioShape allocateBioShape(BioPolymer polymer) {
+    return new Shape(polymer);
   }
 
-  class Bbpolymer extends Mps.MpsShape {
+  class Shape extends BioShape {
 
-    Bbpolymer(BioPolymer polymer) {
+    Shape(BioPolymer polymer) {
       super(polymer, 1, 1500, 500, 2000);
       isActive = true;
     }
 
     void setMad(short mad, BitSet bsSelected) {
       boolean bondSelectionModeOr = viewer.getBondSelectionModeOr();
-      int[] atomIndices = polymer.getLeadAtomIndices();
+      int[] atomIndices = bioPolymer.getLeadAtomIndices();
       // note that i is initialized to monomerCount - 1
       // in order to skip the last atom
       // but it is picked up within the loop by looking at i+1
@@ -72,7 +72,7 @@ public class Backbone extends Mps {
     }
 
    public void setModelClickability() {
-      int[] atomIndices = polymer.getLeadAtomIndices();
+      int[] atomIndices = bioPolymer.getLeadAtomIndices();
       for (int i = monomerCount; --i >= 0; ) {
         Atom atom = modelSet.getAtomAt(atomIndices[i]);
         if (atom.getNBackbonesDisplayed() > 0 && !modelSet.isAtomHidden(i))

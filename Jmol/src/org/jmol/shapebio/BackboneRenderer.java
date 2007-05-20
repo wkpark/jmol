@@ -28,17 +28,9 @@ package org.jmol.shapebio;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 
-public class BackboneRenderer extends MpsRenderer {
+public class BackboneRenderer extends BioShapeRenderer {
 
-  void renderMpspolymer(Mps.MpsShape mpspolymer) {
-    renderBackboneChain((Backbone.Bbpolymer)mpspolymer);
-  }
-  
-  void renderBackboneChain(Backbone.Bbpolymer bbpolymer) {
-    render1();
-  }
-
-  void render1() {
+  protected void renderBioShape(BioShape bioShape) {
     for (int i = monomerCount - 1; --i >= 0;) {
       if (!bsVisible.get(i))
         continue;

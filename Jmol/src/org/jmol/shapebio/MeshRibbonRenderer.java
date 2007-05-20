@@ -27,7 +27,7 @@ package org.jmol.shapebio;
 
 public class MeshRibbonRenderer extends StrandsRenderer {
 
-  void renderMpspolymer(Mps.MpsShape mpspolymer) {
+  protected void renderBioShape(BioShape bioShape) {
     if (wingVectors == null)
       return;
     setStrandCount(7);
@@ -36,7 +36,7 @@ public class MeshRibbonRenderer extends StrandsRenderer {
     render1();
   }
 
-  void render2Strand(boolean doFill, float offsetTop, float offsetBottom) {
+  protected void render2Strand(boolean doFill, float offsetTop, float offsetBottom) {
     calcScreenControlPoints();
     ribbonTopScreens = calcScreens(offsetTop);
     ribbonBottomScreens = calcScreens(-offsetBottom);

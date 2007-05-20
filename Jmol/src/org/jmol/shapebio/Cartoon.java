@@ -25,15 +25,15 @@
 package org.jmol.shapebio;
 
 
-public class Cartoon extends Mps {
+public class Cartoon extends BioShapeCollection {
 
-  Mps.MpsShape allocateMpspolymer(BioPolymer polymer) {
-    return new Cchain(polymer);
+  BioShape allocateBioShape(BioPolymer polymer) {
+    return new Shape(polymer);
   }
 
-  class Cchain extends Mps.MpsShape {
+  class Shape extends BioShape {
 
-    Cchain(BioPolymer polymer) {
+    Shape(BioPolymer polymer) {
       super(polymer, -2, 3000, 500, 1000);
     }
   }

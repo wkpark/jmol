@@ -26,27 +26,27 @@ package org.jmol.shapebio;
 
 import javax.vecmath.Point3i;
 
-public class StrandsRenderer extends MpsRenderer {
+public class StrandsRenderer extends BioShapeRenderer {
 
-  int strandCount;
-  float strandSeparation;
-  float baseOffset;
+  protected int strandCount;
+  protected float strandSeparation;
+  protected float baseOffset;
 
-  void renderMpspolymer(Mps.MpsShape mpspolymer) {
+  protected void renderBioShape(BioShape bioShape) {
     if (wingVectors == null)
       return;
     setStrandCount(((Strands) shape).strandCount);
     render1();
   }
   
-  void setStrandCount(int strandCount) {
+  protected void setStrandCount(int strandCount) {
     this.strandCount = strandCount;
     strandSeparation = (strandCount <= 1) ? 0 : 1f / (strandCount - 1);
     baseOffset = ((strandCount & 1) == 0 ? strandSeparation / 2
         : strandSeparation);
   }
 
-  void render1() {
+  protected void render1() {
     Point3i[] screens;
     for (int i = strandCount >> 1; --i >= 0;) {
       float f = (i * strandSeparation) + baseOffset;
@@ -64,7 +64,7 @@ public class StrandsRenderer extends MpsRenderer {
     }
   }
 
-  void render1Strand(Point3i[] screens) {
+  private void render1Strand(Point3i[] screens) {
     for (int i = monomerCount; --i >= 0;)
       if (bsVisible.get(i))
         renderHermiteCylinder(screens, i);

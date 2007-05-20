@@ -29,13 +29,12 @@ import org.jmol.g3d.Graphics3D;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
-public class RocketsRenderer extends MpsRenderer {
+public class RocketsRenderer extends BioShapeRenderer {
 
-  final static float MIN_CONE_HEIGHT = 0.05f;
+  private final static float MIN_CONE_HEIGHT = 0.05f;
 
-  void renderMpspolymer(Mps.MpsShape mpspolymer) {
-    Rockets.Cchain cchain = (Rockets.Cchain)mpspolymer;
-    if (!(cchain.polymer instanceof AminoPolymer))
+  protected void renderBioShape(BioShape bioShape) {
+    if (!(bioShape.bioPolymer instanceof AminoPolymer))
       return;
     calcRopeMidPoints(false);    
     calcScreenControlPoints(cordMidPoints);
@@ -44,9 +43,9 @@ public class RocketsRenderer extends MpsRenderer {
     viewer.freeTempPoints(cordMidPoints);
   }
 
-  Point3f[] cordMidPoints;
+  protected Point3f[] cordMidPoints;
 
-  void calcRopeMidPoints(boolean isNewStyle) {
+  protected void calcRopeMidPoints(boolean isNewStyle) {
     int midPointCount = monomerCount + 1;
     cordMidPoints = viewer.allocTempPoints(midPointCount);
     ProteinStructure proteinstructurePrev = null;
@@ -79,7 +78,7 @@ public class RocketsRenderer extends MpsRenderer {
     }
   }
 
-  void render1() {
+  protected void render1() {
     tPending = false;
     for (int i = 0; i < monomerCount; ++i)
       if (bsVisible.get(i)) {
@@ -93,7 +92,7 @@ public class RocketsRenderer extends MpsRenderer {
     renderPending();
   }
 
-  void renderSpecialSegment(Monomer monomer, short colix, short mad) {
+  protected void renderSpecialSegment(Monomer monomer, short colix, short mad) {
     ProteinStructure proteinstructure = monomer.getProteinStructure();
     if (tPending) {
       if (proteinstructure == proteinstructurePending && mad == madPending
@@ -111,14 +110,14 @@ public class RocketsRenderer extends MpsRenderer {
     tPending = true;
   }
 
-  boolean tPending;
-  ProteinStructure proteinstructurePending;
-  int startIndexPending;
-  int endIndexPending;
-  short madPending;
-  short colixPending;
+  protected boolean tPending;
+  private ProteinStructure proteinstructurePending;
+  private int startIndexPending;
+  private int endIndexPending;
+  private short madPending;
+  private short colixPending;
 
-  void renderPending() {
+  protected void renderPending() {
     if (!tPending)
       return;
     Point3f[] segments = proteinstructurePending.getSegments();
@@ -133,11 +132,11 @@ public class RocketsRenderer extends MpsRenderer {
     tPending = false;
   }
 
-  Point3f screenA = new Point3f();
-  Point3f screenB = new Point3f();
-  Point3f screenC = new Point3f();
+  private Point3f screenA = new Point3f();
+  private Point3f screenB = new Point3f();
+  private Point3f screenC = new Point3f();
 
-  void renderPendingRocketSegment(int i, Point3f pointStart,
+  private void renderPendingRocketSegment(int i, Point3f pointStart,
                                   Point3f pointBeforeEnd, Point3f pointEnd,
                                   boolean tEnd) {
     viewer.transformPoint(pointStart, screenA);
@@ -164,7 +163,7 @@ public class RocketsRenderer extends MpsRenderer {
       g3d.fillCylinderBits(Graphics3D.ENDCAPS_FLAT, diameter, screenA, screenB);
   }
 
-  void renderPendingSheet(Point3f pointStart, Point3f pointBeforeEnd,
+  private void renderPendingSheet(Point3f pointStart, Point3f pointBeforeEnd,
                           Point3f pointEnd, boolean tEnd) {
     if (!g3d.setColix(colixPending))
       return;
@@ -176,7 +175,7 @@ public class RocketsRenderer extends MpsRenderer {
     }
   }
 
-  final static byte[] boxFaces =
+  private final static byte[] boxFaces =
   {
     0, 1, 3, 2,
     0, 2, 6, 4,
@@ -185,8 +184,8 @@ public class RocketsRenderer extends MpsRenderer {
     7, 6, 2, 3,
     7, 3, 1, 5 };
 
-  final Point3f[] corners = new Point3f[8];
-  final Point3f[] screenCorners = new Point3f[8];
+  private final Point3f[] corners = new Point3f[8];
+  private final Point3f[] screenCorners = new Point3f[8];
   {
     for (int i = 8; --i >= 0; ) {
       screenCorners[i] = new Point3f();
@@ -194,14 +193,12 @@ public class RocketsRenderer extends MpsRenderer {
     }
   }
 
-  final Point3f pointTipOffset = new Point3f();
-  final Point3f pointArrow2 = new Point3f();
-  final Vector3f vectorNormal = new Vector3f();
+  private final Point3f pointTipOffset = new Point3f();
 
-  final Vector3f scaledWidthVector = new Vector3f();
-  final Vector3f scaledHeightVector = new Vector3f();
+  private final Vector3f scaledWidthVector = new Vector3f();
+  private final Vector3f scaledHeightVector = new Vector3f();
 
-  final static byte arrowHeadFaces[] =
+  private final static byte arrowHeadFaces[] =
   {0, 1, 3, 2,
    0, 4, 5, 2,
    1, 4, 5, 3};
@@ -238,8 +235,8 @@ public class RocketsRenderer extends MpsRenderer {
     viewer.transformPoint(corners[5], screenCorners[5]);
   }
 
-  final Vector3f lengthVector = new Vector3f();
-  final Point3f pointCorner = new Point3f();
+  private final Vector3f lengthVector = new Vector3f();
+  private final Point3f pointCorner = new Point3f();
 
   void drawBox(Point3f pointA, Point3f pointB) {
     Sheet sheet = (Sheet)proteinstructurePending;

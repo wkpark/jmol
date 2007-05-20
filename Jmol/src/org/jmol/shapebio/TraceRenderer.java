@@ -25,14 +25,10 @@
 package org.jmol.shapebio;
 
 
-public class TraceRenderer extends MpsRenderer {
+public class TraceRenderer extends BioShapeRenderer {
 
-  void renderMpspolymer(Mps.MpsShape mpspolymer) {
+  protected void renderBioShape(BioShape bioShape) {
     calcScreenControlPoints();
-    render1();
-  }
-
-  void render1() {
     for (int i = monomerCount; --i >= 0;)
       if (bsVisible.get(i))
         renderHermiteConic(i, false);

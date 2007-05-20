@@ -25,14 +25,14 @@
 package org.jmol.shapebio;
 
 
-public class Trace extends Mps {
+public class Trace extends BioShapeCollection {
 
-  Mps.MpsShape allocateMpspolymer(BioPolymer polymer) {
-    return new Tchain(polymer);
+  BioShape allocateBioShape(BioPolymer polymer) {
+    return new Shape(polymer);
   }
 
-  class Tchain extends Mps.MpsShape {
-    Tchain(BioPolymer polymer) {
+  class Shape extends BioShape {
+    Shape(BioPolymer polymer) {
       super(polymer, 600, 1500, 500, 1500);
     }    
   }

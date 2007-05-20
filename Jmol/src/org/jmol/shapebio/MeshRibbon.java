@@ -25,14 +25,14 @@
 package org.jmol.shapebio;
 
 
-public class MeshRibbon extends Mps {
+public class MeshRibbon extends BioShapeCollection {
 
-  Mps.MpsShape allocateMpspolymer(BioPolymer polymer) {
-    return new Schain(polymer);
+  BioShape allocateBioShape(BioPolymer polymer) {
+    return new Shape(polymer);
   }
 
-  class Schain extends Mps.MpsShape {
-    Schain(BioPolymer polymer) {
+  class Shape extends BioShape {
+    Shape(BioPolymer polymer) {
       super(polymer, -2, 3000, 800, 5000);
     }
   }

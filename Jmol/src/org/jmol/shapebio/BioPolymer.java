@@ -452,9 +452,8 @@ public abstract class BioPolymer extends Polymer {
     selectedMonomerCount = 0;
     if (bsSelectedMonomers == null)
       bsSelectedMonomers = new BitSet();
-    else
-      BitSetUtil.clear(bsSelectedMonomers);
-    for (int i = monomerCount; --i >= 0; ) {
+    BitSetUtil.clear(bsSelectedMonomers);
+    for (int i = 0; i < monomerCount; i++) {
       if (monomers[i].isSelected(bsSelected)) {
         ++selectedMonomerCount;
         bsSelectedMonomers.set(i);

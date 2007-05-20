@@ -27,13 +27,9 @@ package org.jmol.shapebio;
 
 public class RibbonsRenderer extends MeshRibbonRenderer {
 
-  void renderMpspolymer(Mps.MpsShape mpspolymer) {
+  protected void renderBioShape(BioShape bioShape) {
     if (wingVectors == null)
       return;
-    render1(isNucleic ? 1f : 0.5f, isNucleic ? 0f : 0.5f);
+    render2Strand(true, isNucleic ? 1f : 0.5f, isNucleic ? 0f : 0.5f);
   }
-
-  private void render1(float offsetTop, float offsetBottom) {
-    render2Strand(true, offsetTop, offsetBottom);
-  }  
 }

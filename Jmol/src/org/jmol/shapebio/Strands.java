@@ -26,7 +26,7 @@ package org.jmol.shapebio;
 import java.util.BitSet;
 
 
-public class Strands extends Mps {
+public class Strands extends BioShapeCollection {
 
   /*==============================================================*
    * M. Carson and C.E. Bugg (1986)
@@ -36,9 +36,15 @@ public class Strands extends Mps {
 
   int strandCount = 5;
 
-  Mps.MpsShape allocateMpspolymer(BioPolymer polymer) {
-    return new Schain(polymer);
+  BioShape allocateBioShape(BioPolymer polymer) {
+    return new Shape(polymer);
   }
+
+  class Shape extends BioShape {
+    Shape(BioPolymer polymer) {
+      super(polymer, -2, 3000, 800, 5000);
+    }
+  }  
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
     initialize();
@@ -54,12 +60,6 @@ public class Strands extends Mps {
       return new Integer(strandCount);
     }
     return "";
-  }
-  
-  class Schain extends Mps.MpsShape {
-    Schain(BioPolymer polymer) {
-      super(polymer, -2, 3000, 800, 5000);
-    }
   }
   
   public String getShapeState() {

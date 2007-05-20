@@ -34,9 +34,8 @@ public class CartoonRenderer extends RocketsRenderer {
   boolean newRockets = true;
   boolean renderAsRockets;
   
-  void renderMpspolymer(Mps.MpsShape mpspolymer) {
-    Cartoon.Cchain schain = (Cartoon.Cchain) mpspolymer;
-    if (schain.wingVectors == null || isCarbohydrate)
+  protected void renderBioShape(BioShape bioShape) {
+    if (bioShape.wingVectors == null || isCarbohydrate)
       return;
     calcScreenControlPoints();
     if (isNucleic) {
@@ -46,7 +45,7 @@ public class CartoonRenderer extends RocketsRenderer {
     boolean val = viewer.getCartoonRocketFlag();
     if (renderAsRockets != val) {
       for (int i = 0; i < monomerCount; i++)
-        schain.falsifyMesh(i, false);
+        bioShape.falsifyMesh(i, false);
       renderAsRockets = val;
     }
     ribbonTopScreens = calcScreens(0.5f);
@@ -77,7 +76,7 @@ public class CartoonRenderer extends RocketsRenderer {
         }
   }
 
-  void render1() {
+  protected void render1() {
     boolean lastWasSheet = false;
     boolean lastWasHelix = false;
     ProteinStructure previousStructure = null;
@@ -121,7 +120,7 @@ public class CartoonRenderer extends RocketsRenderer {
       renderRockets();
   }
 
-  void renderRockets() {
+  private void renderRockets() {
     //doing the cylinders separately because we want to connect them if we can.
 
     // Key structures that must render properly
@@ -138,10 +137,10 @@ public class CartoonRenderer extends RocketsRenderer {
   
   //// nucleic acid base rendering
   
-  final Point3f[] ring6Points = new Point3f[6];
-  final Point3i[] ring6Screens = new Point3i[6];
-  final Point3f[] ring5Points = new Point3f[5];
-  final Point3i[] ring5Screens = new Point3i[5];
+  private final Point3f[] ring6Points = new Point3f[6];
+  private final Point3i[] ring6Screens = new Point3i[6];
+  private final Point3f[] ring5Points = new Point3f[5];
+  private final Point3i[] ring5Screens = new Point3i[5];
 
   {
     ring6Screens[5] = new Point3i();
@@ -151,7 +150,7 @@ public class CartoonRenderer extends RocketsRenderer {
     }
   }
 
-  void renderNucleicBaseStep(NucleicMonomer nucleotide,
+  private void renderNucleicBaseStep(NucleicMonomer nucleotide,
                              short mad, Point3i backboneScreen) {
     nucleotide.getBaseRing6Points(ring6Points);
     viewer.transformPoints(ring6Points, ring6Screens);
@@ -188,7 +187,7 @@ public class CartoonRenderer extends RocketsRenderer {
     }
   }
 
-  void renderRing6() {
+  private void renderRing6() {
     g3d.calcSurfaceShade(ring6Screens[0], ring6Screens[2], ring6Screens[4]);
     g3d.fillTriangle(ring6Screens[0], ring6Screens[2], ring6Screens[4]);
     g3d.fillTriangle(ring6Screens[0], ring6Screens[1], ring6Screens[2]);
@@ -196,7 +195,7 @@ public class CartoonRenderer extends RocketsRenderer {
     g3d.fillTriangle(ring6Screens[2], ring6Screens[3], ring6Screens[4]);
   }
 
-  void renderRing5() {
+  private void renderRing5() {
     // shade was calculated previously by renderRing6();
     g3d.fillTriangle(ring5Screens[0], ring5Screens[2], ring5Screens[3]);
     g3d.fillTriangle(ring5Screens[0], ring5Screens[1], ring5Screens[2]);

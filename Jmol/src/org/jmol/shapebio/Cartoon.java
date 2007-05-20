@@ -24,19 +24,13 @@
 
 package org.jmol.shapebio;
 
-import org.jmol.modelsetbio.BioPolymer;
-
-
 public class Cartoon extends BioShapeCollection {
 
-  BioShape allocateBioShape(BioPolymer polymer) {
-    return new Shape(polymer);
-  }
-
-  class Shape extends BioShape {
-
-    Shape(BioPolymer polymer) {
-      super(polymer, -2, 3000, 500, 1000);
-    }
+  public void initShape() {
+    madOn = -2;
+    madHelixSheet = 3000;
+    madTurnRandom = 500;
+    madDnaRna = 1000;
+    super.initShape();
   }
 }

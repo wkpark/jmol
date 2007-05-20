@@ -130,15 +130,15 @@ public abstract class ProteinStructure {
         || apolymer.monomers[upperNeighborIndex].isSheet();
   }
 
-  int getMonomerCount() {
+  public int getMonomerCount() {
     return monomerCount;
   }
 
-  int getMonomerIndex() {
+  public int getMonomerIndex() {
     return monomerIndexFirst;
   }
 
-  int getIndex(Monomer monomer) {
+  public int getIndex(Monomer monomer) {
     Monomer[] monomers = apolymer.monomers;
     int i;
     for (i = monomerCount; --i >= 0; )
@@ -147,18 +147,18 @@ public abstract class ProteinStructure {
     return i;
   }
 
-  Point3f[] getSegments() {
+  public Point3f[] getSegments() {
     if (segments == null)
       calcSegments();
     return segments;
   }
 
-  Point3f getAxisStartPoint() {
+  public Point3f getAxisStartPoint() {
     calcAxis();
     return axisA;
   }
 
-  Point3f getAxisEndPoint() {
+  public Point3f getAxisEndPoint() {
     calcAxis();
     return axisB;
   }

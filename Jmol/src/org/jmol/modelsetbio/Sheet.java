@@ -28,7 +28,7 @@ import javax.vecmath.Vector3f;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.viewer.JmolConstants;
 
-class Sheet extends ProteinStructure {
+public class Sheet extends ProteinStructure {
 
   AminoPolymer aminoPolymer;
   Sheet(AminoPolymer aminoPolymer, int monomerIndex, int monomerCount) {
@@ -99,13 +99,13 @@ class Sheet extends ProteinStructure {
     }
   }
 
-  Vector3f getWidthUnitVector() {
+  public Vector3f getWidthUnitVector() {
     if (widthUnitVector == null)
       calcSheetUnitVectors();
     return widthUnitVector;
   }
 
-  Vector3f getHeightUnitVector() {
+  public Vector3f getHeightUnitVector() {
     if (heightUnitVector == null)
       calcSheetUnitVectors();
     return heightUnitVector;

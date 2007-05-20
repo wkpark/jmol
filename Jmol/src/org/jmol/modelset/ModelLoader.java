@@ -733,12 +733,12 @@ public final class ModelLoader extends ModelSet {
     Group group = null;
     if (group3 != null && specialAtomIDs != null && haveBioClasses) {
       if (jbr == null && haveBioClasses) {
-        String className = JmolConstants.getShapeClassName(JmolConstants.CLASS_BASE_BIO)+"Resolver";
         try {
-          Class shapeClass = Class.forName(className);
+          Class shapeClass = Class.forName("org.jmol.modelsetbio.Resolver");
           jbr = (JmolBioResolver) shapeClass.newInstance();
           haveBioClasses = true;
         } catch (Exception e) {
+          Logger.error("developer error: org.jmol.modelsetbio.Resolver could not be found");
           haveBioClasses = false;
         }
       }
@@ -758,7 +758,6 @@ public final class ModelLoader extends ModelSet {
     }
     if (group3 != null)
       countGroup(modelIndex, key, group3);
-    System.out.println("adding group to " + chain + " g "+groupIndex + " m " + modelIndex+" "+group3);
     chain.addGroup(group);
     groups[groupIndex] = group;
 

@@ -42,7 +42,7 @@ import org.jmol.shape.Mesh;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
-abstract class BioShape {
+class BioShape {
 
   int modelIndex;
   int modelVisibilityFlags = 0;
@@ -54,11 +54,6 @@ abstract class BioShape {
   Mesh[] meshes;
   boolean[] meshReady;
 
-  short madOn;
-  short madHelixSheet;
-  short madTurnRandom;
-  short madDnaRna;
-  
   short[] mads;
   short[] colixes;
   byte[] paletteIDs;
@@ -75,13 +70,11 @@ abstract class BioShape {
   Vector3f[] wingVectors;
   int[] leadAtomIndices;
 
-  BioShape(BioPolymer bioPolymer, int madOn,
-            int madHelixSheet, int madTurnRandom, int madDnaRna) {
+  BioShape(BioShapeCollection shape, int modelIndex, BioPolymer bioPolymer) {
+    this.shape = shape;
+    this.modelIndex = modelIndex;
     this.bioPolymer = bioPolymer;
-    this.madOn = (short)madOn;
-    this.madHelixSheet = (short)madHelixSheet;
-    this.madTurnRandom = (short)madTurnRandom;
-    this.madDnaRna = (short)madDnaRna;
+    isActive = shape.isActive;
     monomerCount = bioPolymer.getMonomerCount();
     if (monomerCount > 0) {
       colixes = new short[monomerCount];
@@ -96,11 +89,6 @@ abstract class BioShape {
     }
   }
 
-  void setShapeModel(BioShapeCollection shape, int modelIndex) {
-    this.shape = shape;
-    this.modelIndex = modelIndex;
-  }
-  
   boolean hasBfactorRange = false;
   int bfactorMin, bfactorMax;
   int range;
@@ -221,9 +209,9 @@ abstract class BioShape {
     //undocumented
     switch (mad) {
     case -1: // trace on
-      if (madOn >= 0)
-        return madOn;
-      if (madOn != -2) {
+      if (shape.madOn >= 0)
+        return shape.madOn;
+      if (shape.madOn != -2) {
         Logger.error("not supported?");
         return 0;
       }
@@ -232,12 +220,12 @@ abstract class BioShape {
       switch (monomers[groupIndex].getProteinStructureType()) {
       case JmolConstants.PROTEIN_STRUCTURE_SHEET:
       case JmolConstants.PROTEIN_STRUCTURE_HELIX:
-        return madHelixSheet;
+        return shape.madHelixSheet;
       case JmolConstants.PROTEIN_STRUCTURE_DNA:
       case JmolConstants.PROTEIN_STRUCTURE_RNA:
-        return madDnaRna;
+        return shape.madDnaRna;
       default:
-        return madTurnRandom;
+        return shape.madTurnRandom;
       }
     case -3: // trace temperature
       {

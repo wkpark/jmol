@@ -23,10 +23,8 @@
  */
 
 package org.jmol.shapebio;
+
 import java.util.BitSet;
-
-import org.jmol.modelsetbio.BioPolymer;
-
 
 public class Strands extends BioShapeCollection {
 
@@ -37,16 +35,6 @@ public class Strands extends BioShapeCollection {
    *==============================================================*/
 
   int strandCount = 5;
-
-  BioShape allocateBioShape(BioPolymer polymer) {
-    return new Shape(polymer);
-  }
-
-  class Shape extends BioShape {
-    Shape(BioPolymer polymer) {
-      super(polymer, -2, 3000, 800, 5000);
-    }
-  }  
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
     initialize();

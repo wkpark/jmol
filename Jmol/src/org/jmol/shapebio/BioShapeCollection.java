@@ -55,6 +55,12 @@ public abstract class BioShapeCollection extends Shape {
   Mmset mmset;
   Atom[] atoms;
   
+  short madOn = -2;
+  short madHelixSheet = 3000;
+  short madTurnRandom = 800;
+  short madDnaRna = 5000;
+  boolean isActive = false;
+
   BioShape[] bioShapes;
   
   public final void initModelSet() {
@@ -106,8 +112,6 @@ public abstract class BioShapeCollection extends Shape {
     return getShapeCommands(temp, temp2, modelSet.getAtomCount());
   }
 
-  abstract BioShape allocateBioShape(BioPolymer bioPolymer);
-
   void initialize() {
     int modelCount = mmset == null ? 0 : mmset.getModelCount();
     Model[] models = mmset.getModels();
@@ -118,8 +122,7 @@ public abstract class BioShapeCollection extends Shape {
       for (int j = models[i].getBioPolymerCount(); --j >= 0;) {
         n--;
         if (bioShapes == null || bioShapes.length <= n || bioShapes[n] == null) {
-          m[n] = allocateBioShape((BioPolymer) models[i].getBioPolymer(j));
-          m[n].setShapeModel(this, i);
+          m[n] = new BioShape(this, i, (BioPolymer) models[i].getBioPolymer(j));
         } else {
           m[n] = bioShapes[n];
         }

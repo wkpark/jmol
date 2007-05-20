@@ -24,18 +24,14 @@
 
 package org.jmol.shapebio;
 
-import org.jmol.modelsetbio.BioPolymer;
-
-
 public class Trace extends BioShapeCollection {
 
-  BioShape allocateBioShape(BioPolymer polymer) {
-    return new Shape(polymer);
+  public void initShape() {
+    madOn = 600;
+    madHelixSheet = 1500;
+    madTurnRandom = 500;
+    madDnaRna = 1500;
+    super.initShape();
   }
 
-  class Shape extends BioShape {
-    Shape(BioPolymer polymer) {
-      super(polymer, 600, 1500, 500, 1500);
-    }    
-  }
 }

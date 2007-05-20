@@ -191,7 +191,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
     return getAtomFromOffsetIndex(26);
   }
 
-  void getBaseRing6Points(Point3f[] ring6Points) {
+  public void getBaseRing6Points(Point3f[] ring6Points) {
     for (int i = 6; --i >= 0; ) {
       Atom atom = getAtomFromOffsetIndex(i + 3);
       ring6Points[i] = atom;
@@ -200,7 +200,7 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
   final static byte[] ring5OffsetIndexes = {3, 10, 11, 12, 8};
 
-  boolean maybeGetBaseRing5Points(Point3f[] ring5Points) {
+  public boolean maybeGetBaseRing5Points(Point3f[] ring5Points) {
     if (isPurine)
       for (int i = 5; --i >= 0; ) {
         Atom atom = getAtomFromOffsetIndex(ring5OffsetIndexes[i]);

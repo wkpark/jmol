@@ -24,18 +24,9 @@
 
 package org.jmol.shapebio;
 
-import org.jmol.modelsetbio.BioPolymer;
-
-
 public class Rockets extends BioShapeCollection {
 
-  BioShape allocateBioShape(BioPolymer polymer) {
-    return new Shape(polymer);
-  }
-
-  class Shape extends BioShape {
-    Shape(BioPolymer polymer) {
-      super(polymer, -2, 3000, 500, 5000);
-    }
+  public void initShape() {
+    madTurnRandom = 500;
   }
 }

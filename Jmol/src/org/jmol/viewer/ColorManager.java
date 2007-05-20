@@ -217,6 +217,8 @@ class ColorManager {
       index = ColorEncoder.quantize(atom.getSelectedGroupIndexWithinChain(), 0, atom
           .getSelectedGroupCountWithinChain() - 1,
           JmolConstants.argbsRoygbScale.length);
+      //I guess this is "blue to red" for some reason -- also for color xxx monomer
+      index = JmolConstants.argbsRoygbScale.length - 1 - index;
       argb = JmolConstants.argbsRoygbScale[index];
       break;
     case JmolConstants.PALETTE_MONOMER:
@@ -224,6 +226,7 @@ class ColorManager {
       index = ColorEncoder.quantize(atom.getSelectedMonomerIndexWithinPolymer(), 0, atom
           .getSelectedMonomerCountWithinPolymer() - 1,
           JmolConstants.argbsRoygbScale.length);
+      index = JmolConstants.argbsRoygbScale.length - 1 - index;
       argb = JmolConstants.argbsRoygbScale[index];
       break;
     case JmolConstants.PALETTE_MOLECULE:

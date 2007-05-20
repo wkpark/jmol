@@ -245,6 +245,25 @@ public class TextFormat {
   }
 
   /**
+   * Does a clean replace of any of the characters in str with strTo
+   * If strTo contains strFrom, then only a single pass is done.
+   * Otherwise, multiple passes are made until no more replacements can be made.
+   * 
+   * @param str
+   * @param strFrom
+   * @param strTo
+   * @return  replaced string
+   */
+  public static String replaceAllCharacters(String str, String strFrom,
+                                            String strTo) {
+    for (int i = strFrom.length(); --i >= 0;) {
+      String chFrom = strFrom.substring(i, i + 1);
+      str = simpleReplace(str, chFrom, strTo);
+    }
+    return str;
+  }
+  
+  /**
    * Does a clean replace of strFrom in str with strTo
    * If strTo contains strFrom, then only a single pass is done.
    * Otherwise, multiple passes are made until no more replacements can be made.

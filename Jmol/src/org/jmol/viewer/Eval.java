@@ -34,6 +34,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.util.TextFormat;
 import org.jmol.util.Parser;
+import org.jmol.modelset.Bond.BondSet;
 
 import java.io.*;
 import java.util.BitSet;
@@ -49,41 +50,24 @@ import org.jmol.modelset.Group;
 import org.jmol.modelset.Mmset;
 import org.jmol.modelset.ModelSet;
 
-class Context {
-  String filename;
-  String script;
-  short[] linenumbers;
-  int[] lineIndices;
-  Token[][] aatoken;
-  Token[] statement;
-  int statementLength;
-  int pc;
-  int pcEnd = Integer.MAX_VALUE;
-  int lineEnd = Integer.MAX_VALUE;
-  int iToken;
-  int ifs[];
-  StringBuffer outputBuffer;
-}
-
-class BondSet extends BitSet {
-  int[] associatedAtoms;
-
-  BondSet() {
-  }
-
-  BondSet(BitSet bs) {
-    for (int i = bs.size(); --i >= 0;)
-      if (bs.get(i))
-        set(i);
-  }
-
-  BondSet(BitSet bs, int[] atoms) {
-    this(bs);
-    associatedAtoms = atoms;
-  }
-}
-
 class Eval { //implements Runnable {
+  
+  static class Context {
+    String filename;
+    String script;
+    short[] linenumbers;
+    int[] lineIndices;
+    Token[][] aatoken;
+    Token[] statement;
+    int statementLength;
+    int pc;
+    int pcEnd = Integer.MAX_VALUE;
+    int lineEnd = Integer.MAX_VALUE;
+    int iToken;
+    int ifs[];
+    StringBuffer outputBuffer;
+  }
+
   final static int scriptLevelMax = 10;
   final static int MAX_IF_DEPTH = 10; //should be plenty
 
@@ -160,7 +144,10 @@ class Eval { //implements Runnable {
     BitSet bs = new BitSet();
     try {
       e.pushContext();
-      if (e.loadScript(null, "select (" + atomExpression + ")")) {
+      String scr = "select (" + atomExpression + ")";
+      scr = TextFormat.replaceAllCharacters(scr, "\n\r", "),(");
+      scr = TextFormat.simpleReplace(scr, "()", "(none)");
+      if (e.loadScript(null, scr)) {
         e.statement = e.aatoken[0];
         bs = e.expression(e.statement, 1, false, false, true);
       }
@@ -635,6 +622,7 @@ class Eval { //implements Runnable {
       return;
     fixed = new Token[statementLength];
     fixed[0] = statement[0];
+    boolean isSelect = (statement[0].tok == Token.select);
     int j = 1;
     for (i = 1; i < statementLength; i++) {
       if (statement[i].tok == Token.define) {
@@ -651,9 +639,11 @@ class Eval { //implements Runnable {
           v = getStringObjectAsToken((String) v);
           if (v instanceof Token)
             fixed[j] = (Token) v;
-          else  // identifiers cannot have periods; file names can, though
-            fixed[j] = new Token((((String) v).indexOf(".") >= 0 ? Token.string
-                : Token.identifier), (String) v);
+          else
+            // identifiers cannot have periods; file names can, though
+            fixed[j] = new Token(
+                (isSelect || ((String) v).indexOf(".") >= 0 ? Token.string
+                    : Token.identifier), (String) v);
         } else {
           Point3f center = getDrawObjectCenter(var);
           if (center == null)
@@ -1188,20 +1178,23 @@ class Eval { //implements Runnable {
         break;
       case Token.string:
         val = (String) value;
-        rpn.addX(instruction);
         if (val.equals("plane")) {
+          rpn.addX(instruction);
           rpn.addX(new Token(Token.point4f, planeParameter(pc + 2)));
           pc = iToken;
           break;
         } else if (val.equals("hkl")) {
+          rpn.addX(instruction);
           rpn.addX(new Token(Token.point4f, hklParameter(pc + 2)));
           pc = iToken;
           break;
         } else if (val.equals("coord")) {
+          rpn.addX(instruction);
           rpn.addX(getPoint3f(pc + 2, true));
           pc = iToken;
           break;
         }
+        rpn.addX(getAtomBitSet(this, viewer, (String) value));
         break;
       case Token.within:
       case Token.substructure:
@@ -6085,6 +6078,9 @@ class Eval { //implements Runnable {
 
   String getBitsetIdent(BitSet bs, String label, Object tokenValue,
                         boolean useAtomMap) {
+    boolean isAtoms = !(tokenValue instanceof BondSet);
+    if (isAtoms && label == null)
+      label = viewer.getStandardLabelFormat();
     int pt = (label == null ? -1 : label.indexOf("%"));
     if (bs == null || isSyntaxCheck || pt < 0)
       return (label == null ? "" : label);
@@ -6092,9 +6088,8 @@ class Eval { //implements Runnable {
     int len = bs.size();
     ModelSet modelSet = viewer.getModelSet();
     int n = 0;
-    boolean isAtoms = !(tokenValue instanceof BondSet);
     int[] indices = (isAtoms || !useAtomMap ? null
-        : ((BondSet) tokenValue).associatedAtoms);
+        : ((BondSet) tokenValue).getAssociatedAtoms());
     if (indices == null && label != null && label.indexOf("%D") > 0)
       indices = getAtomIndices(bs);
     int nProp = 0;

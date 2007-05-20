@@ -37,6 +37,7 @@ import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.modelset.Bond.BondSet;
 
 
 public class Token {

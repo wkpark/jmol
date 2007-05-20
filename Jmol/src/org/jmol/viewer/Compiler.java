@@ -29,6 +29,7 @@ import org.jmol.util.Parser;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Group;
+import org.jmol.modelset.Bond.BondSet;
 
 import java.util.Vector;
 import java.util.BitSet;

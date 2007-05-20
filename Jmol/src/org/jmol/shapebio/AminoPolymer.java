@@ -24,6 +24,7 @@
 package org.jmol.shapebio;
 
 import org.jmol.modelset.Atom;
+import org.jmol.shapebio.AlphaPolymer;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.viewer.JmolConstants;

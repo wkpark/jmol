@@ -23,6 +23,7 @@
  */
 package org.jmol.shapebio;
 
+import org.jmol.shapebio.AlphaPolymer;
 import org.jmol.viewer.JmolConstants;
 
 public class Turn extends ProteinStructure {

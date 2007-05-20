@@ -23,6 +23,13 @@
  */
 package org.jmol.shapebio;
 
+import org.jmol.shapebio.AminoPolymer;
+import org.jmol.shapebio.BioPolymer;
+import org.jmol.shapebio.Helix;
+import org.jmol.shapebio.Monomer;
+import org.jmol.shapebio.ProteinStructure;
+import org.jmol.shapebio.Sheet;
+import org.jmol.shapebio.Turn;
 import org.jmol.util.Logger;
 import org.jmol.util.Measure;
 import org.jmol.viewer.JmolConstants;

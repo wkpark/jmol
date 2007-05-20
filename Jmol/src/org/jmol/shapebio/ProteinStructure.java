@@ -26,6 +26,7 @@ package org.jmol.shapebio;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
+import org.jmol.shapebio.AlphaPolymer;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 

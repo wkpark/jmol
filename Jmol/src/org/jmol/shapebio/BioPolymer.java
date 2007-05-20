@@ -25,6 +25,7 @@ package org.jmol.shapebio;
 
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Polymer;
+import org.jmol.shapebio.AlphaPolymer; 
 import org.jmol.shape.Closest;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;

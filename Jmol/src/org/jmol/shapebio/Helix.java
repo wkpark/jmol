@@ -27,6 +27,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.shapebio.AlphaPolymer;
 import org.jmol.viewer.JmolConstants;
 
 class Helix extends ProteinStructure {

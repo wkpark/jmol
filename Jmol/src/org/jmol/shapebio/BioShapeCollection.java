@@ -89,6 +89,7 @@ public abstract class BioShapeCollection extends Shape {
         if (bioShape.monomerCount > 0)
           bioShape.setColix(colix, pid, bsSelected);
       }
+      return;
     }
     if ("translucency" == propertyName) {
       boolean isTranslucent = ("translucent".equals(value));
@@ -97,6 +98,7 @@ public abstract class BioShapeCollection extends Shape {
         if (bioShape.monomerCount > 0)
           bioShape.setTranslucent(isTranslucent, bsSelected, translucentLevel);
       }
+      return;
     }
     super.setProperty(propertyName, value, bsSelected);
   }

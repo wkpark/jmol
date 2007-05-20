@@ -63,7 +63,7 @@ import java.util.Hashtable;
  *                  Isosurface
  *                      |________ LcaoCartoon, MolecularOrbital
  * 
- * Mps
+ * BioShapeCollection
  *   |
  *   Backbone, Cartoon, MeshRibbon, Ribbons, Rockets, Strands, Trace
  * 

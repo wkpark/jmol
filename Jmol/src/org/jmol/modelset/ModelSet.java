@@ -553,6 +553,18 @@ abstract public class ModelSet {
     }
   }
 
+  /**
+   * allows rebuilding of PDB structures;
+   * also accessed by ModelManager from Eval
+   * 
+   * @param alreadyDefined    set to skip calculation
+   *  
+   */
+  void calculateStructuresAllExcept(BitSet alreadyDefined) {
+    mmset.calculateStructuresAllExcept(alreadyDefined);
+    mmset.freeze();
+  }
+
   BitSet setConformation(int modelIndex, int conformationIndex) {
     BitSet bs = new BitSet();
     String altLocs = getAltLocListInModel(modelIndex);

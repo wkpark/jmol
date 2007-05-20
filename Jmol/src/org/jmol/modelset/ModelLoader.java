@@ -42,10 +42,9 @@ import java.util.Vector;
 
 /* 
  * 
- * Except for calculateStructures this subclass contains 
- * only the private methods used to load a model. 
- * Methods exclusively after file loading are included
- * only in the superclass, Frame.
+ * This subclass contains only the private methods 
+ * used to load a model. Methods exclusively after 
+ * file loading are included only in the superclass, Frame.
  * 
  * Bob Hanson, 5/2007
  *  
@@ -359,20 +358,16 @@ public final class ModelLoader extends ModelSet {
                        float vectorX, float vectorY, float vectorZ,
                        char alternateLocationID, Object clientAtomReference,
                        float radius) {
-
     checkNewGroup(atomCount, modelIndex, chainID, group3, groupSequenceNumber,
         groupInsertionCode);
-
     if (atomCount == atoms.length)
       growAtomArrays(ATOM_GROWTH_INCREMENT);
-
     Atom atom = new Atom(this, currentModelIndex, atomCount, atomSymmetry,
         atomSite, atomicAndIsotopeNumber, atomName, mad, formalCharge,
         partialCharge, occupancy, bfactor, x, y, z, isHetero, atomSerial,
         chainID, group3, vectorX, vectorY, vectorZ, alternateLocationID,
         clientAtomReference, radius);
-    atoms[atomCount] = atom;
-    ++atomCount;
+    atoms[atomCount++] = atom;
     htAtomMap.put(atomUid, atom);
   }
 
@@ -672,7 +667,7 @@ public final class ModelLoader extends ModelSet {
         groups[i] = mergeModelSet.groups[i];
         groups[i].setModelSet(this);
       }
-    }  
+    }
     for (int i = baseGroupIndex; i < groupCount; ++i) {
       distinguishAndPropagateGroup(i, chains[i], group3s[i], seqcodes[i],
           firstAtomIndexes[i], (i == groupCount - 1 ? atomCount
@@ -682,7 +677,7 @@ public final class ModelLoader extends ModelSet {
     }
     chains = null;
     group3s = null;
-    
+
     if (group3Lists != null) {
       Hashtable info = getModelSetAuxiliaryInfo();
       if (info != null) {
@@ -690,7 +685,7 @@ public final class ModelLoader extends ModelSet {
         info.put("group3Counts", group3Counts);
       }
     }
-    
+
     group3Counts = null;
     group3Lists = null;
 
@@ -813,9 +808,7 @@ public final class ModelLoader extends ModelSet {
 
     // finalize all group business
     if (isPDB)
-      calculateStructures(merging, structuresDefinedInFile);
-
-    // reset molecules -- important if merging
+      calculateStructuresAllExcept(structuresDefinedInFile);
 
     modelCount = mmset.getModelCount();
     molecules = null;
@@ -894,47 +887,6 @@ public final class ModelLoader extends ModelSet {
     loadShape(JmolConstants.SHAPE_MEASURES);
     loadShape(JmolConstants.SHAPE_BBCAGE);
     loadShape(JmolConstants.SHAPE_UCCAGE);
-  }
-
-  // the ONLY nonprivate method in this class
-
-  /**
-   * allows rebuilding of PDB structures;
-   * also accessed by ModelManager from Eval
-   * 
-   * @param rebuild 
-   * @param alreadyDefined    set to skip calculation
-   *  
-   */
-  void calculateStructures(boolean rebuild, BitSet alreadyDefined) {
-    if (rebuild) {
-      //      for (int i = JmolConstants.SHAPE_MAX; --i >= 0;)
-      //      if (JmolConstants.isShapeSecondary(i))
-      //      shapes[i] = null;
-      if (jbr != null && groupCount > 0)
-        jbr.clearBioPolymers(groups, groupCount, alreadyDefined);
-      if (alreadyDefined == null) {
-        alreadyDefined = new BitSet();
-        groupCount = 0;
-      }
-      mmset.clearStructures(alreadyDefined);
-      initializeGroupBuild();
-      for (int i = 0; i < atomCount; i++) {
-        Atom atom = atoms[i];
-        if (!alreadyDefined.get(atom.modelIndex)) {
-          if (atom.group == null)
-            checkNewGroup(i, atom.modelIndex, '\0', null, 0, '\0');
-          else
-            checkNewGroup(i, atom.modelIndex, atom.getChainID(), atom
-                .getGroup3(), atom.getSeqNumber(), atom.getInsertionCode());
-        }
-      }
-      finalizeGroupBuild();
-      moleculeCount = 0;
-    }
-    structuresDefinedInFile.or(alreadyDefined);
-    mmset.calculateStructuresAllExcept(alreadyDefined);
-    mmset.freeze();
   }
 
 }

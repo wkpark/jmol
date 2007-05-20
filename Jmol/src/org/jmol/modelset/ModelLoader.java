@@ -262,11 +262,16 @@ public final class ModelLoader extends ModelSet {
       for (int i = 0; i < baseModelCount; i++) {
         group3Lists[i] = mergeModelSet.group3Lists[i];
         group3Counts[i] = mergeModelSet.group3Counts[i];
+        structuresDefinedInFile.set(i);
       }
       group3Lists[modelCount] = mergeModelSet.group3Lists[baseModelCount];
       group3Counts[modelCount] = mergeModelSet.group3Counts[baseModelCount];
     }
-
+    //if merging PDB data into an already-present model, and the 
+    //structure is defined, consider the current structures in that 
+    //model to be undefined. Not guarantee to work.
+    if (!appendNew && isPDB) 
+      structuresDefinedInFile.clear(baseModelIndex);
     atomNames = mergeModelSet.atomNames;
     clientAtomReferences = mergeModelSet.clientAtomReferences;
     vibrationVectors = mergeModelSet.vibrationVectors;
@@ -274,7 +279,6 @@ public final class ModelLoader extends ModelSet {
     bfactor100s = mergeModelSet.bfactor100s;
     partialCharges = mergeModelSet.partialCharges;
     specialAtomIDs = mergeModelSet.specialAtomIDs;
-    structuresDefinedInFile = mergeModelSet.structuresDefinedInFile;
     surfaceDistance100s = null;
   }
 
@@ -809,6 +813,38 @@ public final class ModelLoader extends ModelSet {
     // finalize all group business
     if (isPDB)
       calculateStructuresAllExcept(structuresDefinedInFile);
+
+    /*
+     * old code; attempting to redefine biopolymers; please save
+     * I don't think this is necessary now; Bob Hanson 5/2007
+   
+       if (rebuild) {
+        for (int i = JmolConstants.SHAPE_MAX; --i >= 0;)
+          if (JmolConstants.isShapeSecondary(i))
+            shapes[i] = null;
+        if (jbr != null && groupCount > 0)
+          jbr.clearBioPolymers(groups, groupCount, alreadyDefined);
+        if (alreadyDefined == null) {
+          alreadyDefined = new BitSet();
+          groupCount = 0;
+        }
+        mmset.clearStructures(alreadyDefined);
+        initializeGroupBuild();
+        for (int i = 0; i < atomCount; i++) {
+          Atom atom = atoms[i];
+          if (!alreadyDefined.get(atom.modelIndex)) {
+            if (atom.group == null)
+              checkNewGroup(i, atom.modelIndex, '\0', null, 0, '\0');
+            else
+              checkNewGroup(i, atom.modelIndex, atom.getChainID(), atom
+                  .getGroup3(), atom.getSeqNumber(), atom.getInsertionCode());
+          }
+        }
+        finalizeGroupBuild();
+        moleculeCount = 0;
+      }
+
+     */
 
     modelCount = mmset.getModelCount();
     molecules = null;

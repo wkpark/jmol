@@ -27,11 +27,31 @@ package org.jmol.modelset;
 
 import org.jmol.g3d.Graphics3D;
 
+import java.util.BitSet;
 import java.util.Hashtable;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 
 public class Bond {
+
+  public static class BondSet extends BitSet {
+    private int[] associatedAtoms;
+    
+    public int[] getAssociatedAtoms() {
+      return associatedAtoms;
+    }
+
+    public BondSet(BitSet bs) {
+      for (int i = bs.size(); --i >= 0;)
+        if (bs.get(i))
+          set(i);
+    }
+
+    public BondSet(BitSet bs, int[] atoms) {
+      this(bs);
+      associatedAtoms = atoms;
+    }
+  }
 
   Atom atom1;
   Atom atom2;

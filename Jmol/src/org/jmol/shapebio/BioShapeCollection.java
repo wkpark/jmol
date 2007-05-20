@@ -32,6 +32,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Mmset;
 import org.jmol.modelset.Model;
+import org.jmol.modelsetbio.BioPolymer;
 import org.jmol.shape.Closest;
 import org.jmol.shape.Shape;
 import org.jmol.viewer.JmolConstants;

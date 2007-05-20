@@ -25,6 +25,8 @@
 package org.jmol.shapebio;
 import java.util.BitSet;
 
+import org.jmol.modelsetbio.BioPolymer;
+
 
 public class Strands extends BioShapeCollection {
 

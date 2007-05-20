@@ -32,6 +32,11 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
+import org.jmol.modelsetbio.AlphaMonomer;
+import org.jmol.modelsetbio.CarbohydratePolymer;
+import org.jmol.modelsetbio.Monomer;
+import org.jmol.modelsetbio.NucleicPolymer;
+import org.jmol.modelsetbio.ProteinStructure;
 import org.jmol.shape.MeshRenderer;
 import org.jmol.shape.Mesh;
 import org.jmol.viewer.JmolConstants;

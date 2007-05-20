@@ -28,6 +28,7 @@ package org.jmol.shapebio;
 import java.util.BitSet;
 
 import org.jmol.modelset.Atom;
+import org.jmol.modelsetbio.BioPolymer;
 
 public class Backbone extends BioShapeCollection {
 

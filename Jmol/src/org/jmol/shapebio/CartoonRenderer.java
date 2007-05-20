@@ -25,6 +25,8 @@
 package org.jmol.shapebio;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.modelsetbio.NucleicMonomer;
+import org.jmol.modelsetbio.ProteinStructure;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;

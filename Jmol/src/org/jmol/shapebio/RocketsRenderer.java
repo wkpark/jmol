@@ -25,6 +25,11 @@
 package org.jmol.shapebio;
 
 import org.jmol.g3d.Graphics3D;
+import org.jmol.modelsetbio.AminoPolymer;
+import org.jmol.modelsetbio.Helix;
+import org.jmol.modelsetbio.Monomer;
+import org.jmol.modelsetbio.ProteinStructure;
+import org.jmol.modelsetbio.Sheet;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;

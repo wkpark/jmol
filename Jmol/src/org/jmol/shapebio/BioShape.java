@@ -32,6 +32,10 @@ import javax.vecmath.Vector3f;
 
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
+import org.jmol.modelsetbio.BioPolymer;
+import org.jmol.modelsetbio.Monomer;
+import org.jmol.modelsetbio.NucleicMonomer;
+import org.jmol.modelsetbio.NucleicPolymer;
 import org.jmol.shape.Closest;
 import org.jmol.shape.Shape;
 import org.jmol.shape.Mesh;
@@ -78,12 +82,12 @@ abstract class BioShape {
     this.madHelixSheet = (short)madHelixSheet;
     this.madTurnRandom = (short)madTurnRandom;
     this.madDnaRna = (short)madDnaRna;
-    monomerCount = bioPolymer.monomerCount;
+    monomerCount = bioPolymer.getMonomerCount();
     if (monomerCount > 0) {
       colixes = new short[monomerCount];
       paletteIDs = new byte[monomerCount];
       mads = new short[monomerCount + 1];
-      monomers = bioPolymer.monomers;
+      monomers = bioPolymer.getMonomers();
       meshReady = new boolean[monomerCount];
       meshes = new Mesh[monomerCount];
       wingVectors = bioPolymer.getWingVectors();

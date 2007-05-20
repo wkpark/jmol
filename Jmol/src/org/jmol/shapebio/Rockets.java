@@ -24,6 +24,8 @@
 
 package org.jmol.shapebio;
 
+import org.jmol.modelsetbio.BioPolymer;
+
 
 public class Rockets extends BioShapeCollection {
 

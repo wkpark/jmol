@@ -24,6 +24,8 @@
 
 package org.jmol.shapebio;
 
+import org.jmol.modelsetbio.BioPolymer;
+
 
 public class Trace extends BioShapeCollection {
 

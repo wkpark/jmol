@@ -12,9 +12,23 @@
 // Jpeg Group's Jpeg 6a library, Copyright Thomas G. Lane.
 // See license.txt for details 
 
-// The JpegEncoder and its associated classes are Copyright (c) 1998, James R. Weeks and BioElectroMech
-// see(Jmol/src/com/obrador/license.txt)
-// minor coding efficiencies by Bob Hanson 5/2007
+
+/*
+ * JpegEncoder and its associated classes are Copyright (c) 1998, James R. Weeks and BioElectroMech
+ * see(Jmol/src/com/obrador/license.txt)
+ * 
+ * Jmol.src.org.jmol.util.JpegEncoder.java was adapted by Bob Hanson
+ * for Jmol in the following ways:
+ * 
+ * 1) minor coding efficiencies were made in some for() loops.
+ * 2) methods not used by Jmol were commented out
+ * 3) method and variable signatures were modified to provide 
+ *    more appropriate method privacy. 
+ * 
+ * Original files are maintained in the Jmol.src.com.obrador package, but
+ * these original files are not distributed with Jmol.
+ *   
+*/
 
 package org.jmol.util;
 

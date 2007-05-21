@@ -1,37 +1,40 @@
 JmolApplet.java
 JmolAppletControl.java
+org/jmol/adapter/readers/*.java
+org/jmol/adapter/readers/cifpdb/*.java
+org/jmol/adapter/readers/molxyz/*.java
+org/jmol/adapter/readers/more/*.java
+org/jmol/adapter/readers/xml/*.java
 org/jmol/adapter/smarter/*.java
 org/jmol/api/*.java
 org/jmol/applet/*.java
 org/jmol/appletwrapper/*.java
+org/jmol/atomdata/*.java
 org/jmol/bspt/*.java
 org/jmol/g3d/*.java
+org/jmol/geodesic/*.java
 org/jmol/i18n/*.java
 
 /////org/jmol/jcamp/*.java
+
+org/jmol/jvxl/*.java
+
+org/jmol/modelset/*.java
+org/jmol/modelsetbio/*.java
+
+org/jmol/popup/*.java
+org/jmol/quantum/*.java
+org/jmol/shape/*.java
+org/jmol/shapebio/*.java
+org/jmol/shapespecial/*.java
+
+org/jmol/smiles/*.java
 
 org/jmol/symmetry/*.java
 org/jmol/util/*.java
 org/jmol/vecmath/*.java
 org/jmol/viewer/*.java
-//
-org/jmol/atomdata/*.java
-org/jmol/geodesic/*.java
-org/jmol/modelframe/*.java
-org/jmol/shape/*.java
 
-org/jmol/popup/*.java
-org/jmol/quantum/*.java
-org/jmol/adapter/readers/*.java
-org/jmol/smiles/*.java
-org/jmol/shapebio/*.java
-org/jmol/shapespecial/*.java
-org/jmol/jvxl/*.java
-
-org/jmol/adapter/readers/cifpdb/*.java
-org/jmol/adapter/readers/molxyz/*.java
-org/jmol/adapter/readers/more/*.java
-org/jmol/adapter/readers/xml/*.java
 
 
 

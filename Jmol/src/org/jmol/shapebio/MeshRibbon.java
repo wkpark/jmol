@@ -25,4 +25,5 @@
 package org.jmol.shapebio;
 
 public class MeshRibbon extends BioShapeCollection {
+  //differences are in renderer only
 }

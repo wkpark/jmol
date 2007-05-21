@@ -614,6 +614,7 @@ support for assertions (which were introduced in 1.4).
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
         <include name="org/jmol/api/JmolAppletInterface.class" />
+        <include name="com/obrador/license.txt" />
       </fileset>
       <!-- changes to this must be replicated below for the signed applet -->
       <indexjars>
@@ -740,6 +741,7 @@ support for assertions (which were introduced in 1.4).
         <include name="JmolApplet*.class" />
         <include name="jmol75x29x8.gif" />
         <include name="org/jmol/api/JmolAppletInterface.class" />
+        <include name="com/obrador/license.txt" />
       </fileset>    	
       <indexjars>
         <pathelement path="${jmol.applet.build.dir}/JmolAppletSigned0_Main.jar" />

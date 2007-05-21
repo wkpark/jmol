@@ -361,14 +361,14 @@ class DCT
   /**
    * Quantitization Matrix for luminace.
    */
-  public int quantum_luminance[]     = new int[N*N];
-  public double DivisorsLuminance[] = new double[N*N];
+  private int quantum_luminance[]     = new int[N*N];
+  private double DivisorsLuminance[] = new double[N*N];
   
   /**
    * Quantitization Matrix for chrominance.
    */
-  public int quantum_chrominance[]     = new int[N*N];
-  public double DivisorsChrominance[] = new double[N*N];
+  private int quantum_chrominance[]     = new int[N*N];
+  private double DivisorsChrominance[] = new double[N*N];
   
   /**
    * Constructs a new DCT object. Initializes the cosine transform matrix
@@ -495,78 +495,33 @@ class DCT
         // implemented.
         // DivisorsLuminance[index] = ((double) quantum_luminance[index]) << 3;
         // The divisors for the AAN method (the float method used in jpeg 6a library.
-        DivisorsLuminance[index] = (1.0/(quantum_luminance[index] * AANscaleFactor[i] * AANscaleFactor[j] * 8.0));
+        DivisorsLuminance[index] = (0.125/(quantum_luminance[index] * AANscaleFactor[i] * AANscaleFactor[j]));
         index++;
       }
     }
     
     
     // Creating the chrominance matrix
+  
+    for (i = 4; i < 64; i++)
+      quantum_chrominance[i]=99;
     
     quantum_chrominance[0]=17;
     quantum_chrominance[1]=18;
     quantum_chrominance[2]=24;
     quantum_chrominance[3]=47;
-    quantum_chrominance[4]=99;
-    quantum_chrominance[5]=99;
-    quantum_chrominance[6]=99;
-    quantum_chrominance[7]=99;
+    
     quantum_chrominance[8]=18;
     quantum_chrominance[9]=21;
     quantum_chrominance[10]=26;
     quantum_chrominance[11]=66;
-    quantum_chrominance[12]=99;
-    quantum_chrominance[13]=99;
-    quantum_chrominance[14]=99;
-    quantum_chrominance[15]=99;
+    
     quantum_chrominance[16]=24;
     quantum_chrominance[17]=26;
     quantum_chrominance[18]=56;
-    quantum_chrominance[19]=99;
-    quantum_chrominance[20]=99;
-    quantum_chrominance[21]=99;
-    quantum_chrominance[22]=99;
-    quantum_chrominance[23]=99;
+
     quantum_chrominance[24]=47;
     quantum_chrominance[25]=66;
-    quantum_chrominance[26]=99;
-    quantum_chrominance[27]=99;
-    quantum_chrominance[28]=99;
-    quantum_chrominance[29]=99;
-    quantum_chrominance[30]=99;
-    quantum_chrominance[31]=99;
-    quantum_chrominance[32]=99;
-    quantum_chrominance[33]=99;
-    quantum_chrominance[34]=99;
-    quantum_chrominance[35]=99;
-    quantum_chrominance[36]=99;
-    quantum_chrominance[37]=99;
-    quantum_chrominance[38]=99;
-    quantum_chrominance[39]=99;
-    quantum_chrominance[40]=99;
-    quantum_chrominance[41]=99;
-    quantum_chrominance[42]=99;
-    quantum_chrominance[43]=99;
-    quantum_chrominance[44]=99;
-    quantum_chrominance[45]=99;
-    quantum_chrominance[46]=99;
-    quantum_chrominance[47]=99;
-    quantum_chrominance[48]=99;
-    quantum_chrominance[49]=99;
-    quantum_chrominance[50]=99;
-    quantum_chrominance[51]=99;
-    quantum_chrominance[52]=99;
-    quantum_chrominance[53]=99;
-    quantum_chrominance[54]=99;
-    quantum_chrominance[55]=99;
-    quantum_chrominance[56]=99;
-    quantum_chrominance[57]=99;
-    quantum_chrominance[58]=99;
-    quantum_chrominance[59]=99;
-    quantum_chrominance[60]=99;
-    quantum_chrominance[61]=99;
-    quantum_chrominance[62]=99;
-    quantum_chrominance[63]=99;
     
     for (j = 0; j < 64; j++)
     {
@@ -583,8 +538,8 @@ class DCT
         // implemented.
         //                        DivisorsChrominance[index] = ((double) quantum_chrominance[index]) << 3;
         // The divisors for the AAN method (the float method used in jpeg 6a library.
-        DivisorsChrominance[index] = 1.0 / (
-            quantum_chrominance[index] * AANscaleFactor[i] * AANscaleFactor[j] * 8.0
+        DivisorsChrominance[index] = 0.125 / (
+            quantum_chrominance[index] * AANscaleFactor[i] * AANscaleFactor[j]
         );
         index++;
       }

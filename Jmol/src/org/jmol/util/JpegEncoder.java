@@ -10,35 +10,34 @@
 // studwww.eurecom.fr/~raemy.
 // It borrows a great deal of code and structure from the Independent
 // Jpeg Group's Jpeg 6a library, Copyright Thomas G. Lane.
-// See license.txt for details.
+// See license.txt for details 
+
+// The JpegEncoder and its associated classes are Copyright (c) 1998, James R. Weeks and BioElectroMech
+// see(Jmol/src/com/obrador/license.txt)
+// minor coding efficiencies by Bob Hanson 5/2007
 
 package org.jmol.util;
 
 import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
-import java.util.*;
 
 /*
- * The JpegEncoder and its associated classes are Copyright (c) 1998, James R. Weeks and BioElectroMech
- * 
- * see com/obrador/license.txt
- * 
  * JpegEncoder - The JPEG main program which performs a jpeg compression of
  * an image.
  */
 
 public class JpegEncoder extends Frame
 {
-  Thread runner;
-  BufferedOutputStream outStream;
-  Image image;
-  JpegInfo JpegObj;
-  Huffman Huf;
-  DCT dct;
-  int imageHeight, imageWidth;
-  int Quality;
-  int code;
+  //Thread runner;
+  private BufferedOutputStream outStream;
+  //Image image;
+  private JpegInfo JpegObj;
+  private Huffman Huf;
+  private DCT dct;
+  private int imageHeight, imageWidth;
+  private int Quality;
+  //int code;
 
   public JpegEncoder(Image image, int quality, OutputStream out)
   {
@@ -73,14 +72,14 @@ public class JpegEncoder extends Frame
   public void setQuality(int quality) {
     dct = new DCT(quality);
   }
-  
+/*  
   public int getQuality() {
     return Quality;
   }
-  
+*/  
   public void Compress() {
-    WriteHeaders(outStream);
-    WriteCompressedData(outStream);
+    WriteHeaders(outStream, JpegObj, dct);
+    WriteCompressedData(outStream, JpegObj, dct, Huf);
     WriteEOI(outStream);
     try {
       outStream.flush();
@@ -89,20 +88,22 @@ public class JpegEncoder extends Frame
     }
   }
   
-  public void WriteCompressedData(BufferedOutputStream outStream) {
-    int i, j, r, c,a ,b;
+  static private void WriteCompressedData(BufferedOutputStream outStream,
+                                          JpegInfo JpegObj, DCT dct,
+                                          Huffman Huf) {
+    int i, j, r, c, a, b;
     int comp, xpos, ypos, xblockoffset, yblockoffset;
     float inputArray[][];
     float dctArray1[][] = new float[8][8];
     double dctArray2[][] = new double[8][8];
-    int dctArray3[] = new int[8*8];
-    
+    int dctArray3[] = new int[8 * 8];
+
     /*
      * This method controls the compression of the image.
      * Starting at the upper left of the image, it compresses 8x8 blocks
      * of data until the entire image has been compressed.
      */
-    
+
     int lastDCvalue[] = new int[JpegObj.NumberOfComponents];
     //int zeroArray[] = new int[64]; // initialized to hold all zeros
     //int Width = 0, Height = 0;
@@ -110,12 +111,10 @@ public class JpegEncoder extends Frame
     int MinBlockWidth, MinBlockHeight;
     // This initial setting of MinBlockWidth and MinBlockHeight is done to
     // ensure they start with values larger than will actually be the case.
-    MinBlockWidth = ((imageWidth%8 != 0) ? 
-        (int) (Math.floor(imageWidth/8.0) + 1) * 8 : 
-          imageWidth);
-    MinBlockHeight = ((imageHeight%8 != 0) ? 
-        (int) (Math.floor(imageHeight/8.0) + 1) * 8 :
-          imageHeight);
+    MinBlockWidth = ((Huf.ImageWidth % 8 != 0) ? (int) (Math
+        .floor(Huf.ImageWidth / 8.0) + 1) * 8 : Huf.ImageWidth);
+    MinBlockHeight = ((Huf.ImageHeight % 8 != 0) ? (int) (Math
+        .floor(Huf.ImageHeight / 8.0) + 1) * 8 : Huf.ImageHeight);
     for (comp = 0; comp < JpegObj.NumberOfComponents; comp++) {
       MinBlockWidth = Math.min(MinBlockWidth, JpegObj.BlockWidth[comp]);
       MinBlockHeight = Math.min(MinBlockHeight, JpegObj.BlockHeight[comp]);
@@ -123,8 +122,8 @@ public class JpegEncoder extends Frame
     xpos = 0;
     for (r = 0; r < MinBlockHeight; r++) {
       for (c = 0; c < MinBlockWidth; c++) {
-        xpos = c*8;
-        ypos = r*8;
+        xpos = c * 8;
+        ypos = r * 8;
         for (comp = 0; comp < JpegObj.NumberOfComponents; comp++) {
           //Width = JpegObj.BlockWidth[comp];
           //Height = JpegObj.BlockHeight[comp];
@@ -134,37 +133,38 @@ public class JpegEncoder extends Frame
           int QNumber = JpegObj.QtableNumber[comp];
           int DCNumber = JpegObj.DCtableNumber[comp];
           int ACNumber = JpegObj.ACtableNumber[comp];
-          
-          for(i = 0; i < VsampF; i++) {
-            for(j = 0; j < HsampF; j++) {
+
+          for (i = 0; i < VsampF; i++) {
+            for (j = 0; j < HsampF; j++) {
               xblockoffset = j * 8;
               yblockoffset = i * 8;
               for (a = 0; a < 8; a++) {
                 for (b = 0; b < 8; b++) {
-                  
+
                   // I believe this is where the dirty line at the bottom of
                   // the image is coming from.
                   // I need to do a check here to make sure I'm not reading past
                   // image data.
                   // This seems to not be a big issue right now. (04/04/98)
-                  
-                  dctArray1[a][b] = 
-                    inputArray[ypos + yblockoffset + a][xpos + xblockoffset + b];
+
+                  dctArray1[a][b] = inputArray[ypos + yblockoffset + a][xpos
+                      + xblockoffset + b];
                 }
               }
               // The following code commented out because on some images this technique
               // results in poor right and bottom borders.
               // if ((!JpegObj.lastColumnIsDummy[comp] || c < Width - 1) &&
               //       (!JpegObj.lastRowIsDummy[comp] || r < Height - 1)) {
-              dctArray2 = dct.forwardDCT(dctArray1);
-              dctArray3 = dct.quantizeBlock(dctArray2, QNumber);
+              dctArray2 = DCT.forwardDCT(dctArray1);
+              dctArray3 = DCT.quantizeBlock(dctArray2, QNumber, dct.Divisors);
               // }
               // else {
               //   zeroArray[0] = dctArray3[0];
               //   zeroArray[0] = lastDCvalue[comp];
               //   dctArray3 = zeroArray;
               // }
-              Huf.HuffmanBlockEncoder(outStream, dctArray3, lastDCvalue[comp], DCNumber, ACNumber);
+              Huf.HuffmanBlockEncoder(outStream, dctArray3, lastDCvalue[comp],
+                  DCNumber, ACNumber);
               lastDCvalue[comp] = dctArray3[0];
             }
           }
@@ -174,12 +174,12 @@ public class JpegEncoder extends Frame
     Huf.flushBuffer(outStream);
   }
   
-  public void WriteEOI(BufferedOutputStream out) {
+  static private void WriteEOI(BufferedOutputStream out) {
     byte[] EOI = {(byte) 0xFF, (byte) 0xD9};
     WriteMarker(EOI, out);
   }
   
-  public void WriteHeaders(BufferedOutputStream out) {
+  static private void WriteHeaders(BufferedOutputStream out, JpegInfo JpegObj, DCT dct) {
     int i, j, index, offset, length;
     int tempArray[];
     
@@ -233,7 +233,7 @@ public class JpegEncoder extends Frame
     offset = 4;
     for (i = 0; i < 2; i++) {
       DQT[offset++] = (byte) ((0 << 4) + i);
-      tempArray = (int[]) dct.quantum[i];
+      tempArray = dct.quantum[i];
       for (j = 0; j < 64; j++) {
         DQT[offset++] = (byte) tempArray[Huffman.jpegNaturalOrder[j]];
       }
@@ -260,42 +260,10 @@ public class JpegEncoder extends Frame
     }
     WriteArray(SOF, out);
     
-    // The DHT Header
-    byte DHT1[], DHT2[], DHT3[], DHT4[];
-    int bytes, temp, oldindex, intermediateindex;
-    length = 2;
-    index = 4;
-    oldindex = 4;
-    DHT1 = new byte[17];
-    DHT4 = new byte[4];
-    DHT4[0] = (byte) 0xFF;
-    DHT4[1] = (byte) 0xC4;
-    for (i = 0; i < 4; i++ ) {
-      bytes = 0;
-      int[] bits = (int[]) Huf.bits.elementAt(i);
-      DHT1[index++ - oldindex] = (byte) bits[0];
-      for (j = 1; j < 17; j++) {
-        temp = bits[j];
-        DHT1[index++ - oldindex] =(byte) temp;
-        bytes += temp;
-      }
-      intermediateindex = index;
-      DHT2 = new byte[bytes];
-      int[] val = (int[]) Huf.val.elementAt(i);
-      for (j = 0; j < bytes; j++) {
-        DHT2[index++ - intermediateindex] = (byte) val[j];
-      }
-      DHT3 = new byte[index];
-      java.lang.System.arraycopy(DHT4, 0, DHT3, 0, oldindex);
-      java.lang.System.arraycopy(DHT1, 0, DHT3, oldindex, 17);
-      java.lang.System.arraycopy(DHT2, 0, DHT3, oldindex + 17, bytes);
-      DHT4 = DHT3;
-      oldindex = index;
-    }
-    DHT4[2] = (byte) (((index - 2) >> 8)& 0xFF);
-    DHT4[3] = (byte) ((index -2) & 0xFF);
-    WriteArray(DHT4, out);
-    
+    WriteDHTHeader(Huffman.bitsDCluminance, Huffman.valDCluminance, out);
+    WriteDHTHeader(Huffman.bitsACluminance, Huffman.valACluminance, out);
+    WriteDHTHeader(Huffman.bitsDCchrominance, Huffman.valDCchrominance, out);
+    WriteDHTHeader(Huffman.bitsACchrominance, Huffman.valACchrominance, out);
     
     // Start of Scan Header
     byte SOS[] = new byte[14];
@@ -316,8 +284,40 @@ public class JpegEncoder extends Frame
     WriteArray(SOS, out);
     
   }
+
+  static void WriteDHTHeader(int[] bits, int[] val, BufferedOutputStream out) {
+    byte DHT1[], DHT2[], DHT3[], DHT4[];
+    int bytes, temp, oldindex, intermediateindex;
+    int index = 4;
+    oldindex = 4;
+    DHT1 = new byte[17];
+    DHT4 = new byte[4];
+    DHT4[0] = (byte) 0xFF;
+    DHT4[1] = (byte) 0xC4;
+    bytes = 0;
+    DHT1[index++ - oldindex] = (byte) bits[0];
+    for (int j = 1; j < 17; j++) {
+      temp = bits[j];
+      DHT1[index++ - oldindex] = (byte) temp;
+      bytes += temp;
+    }
+    intermediateindex = index;
+    DHT2 = new byte[bytes];
+    for (int j = 0; j < bytes; j++) {
+      DHT2[index++ - intermediateindex] = (byte) val[j];
+    }
+    DHT3 = new byte[index];
+    java.lang.System.arraycopy(DHT4, 0, DHT3, 0, oldindex);
+    java.lang.System.arraycopy(DHT1, 0, DHT3, oldindex, 17);
+    java.lang.System.arraycopy(DHT2, 0, DHT3, oldindex + 17, bytes);
+    DHT4 = DHT3;
+    oldindex = index;
+    DHT4[2] = (byte) (((index - 2) >> 8) & 0xFF);
+    DHT4[3] = (byte) ((index - 2) & 0xFF);
+    WriteArray(DHT4, out);
+  }
   
-  void WriteMarker(byte[] data, BufferedOutputStream out) {
+  static void WriteMarker(byte[] data, BufferedOutputStream out) {
     try {
       out.write(data, 0, 2);
     } catch (IOException e) {
@@ -325,7 +325,7 @@ public class JpegEncoder extends Frame
     }
   }
   
-  void WriteArray(byte[] data, BufferedOutputStream out) {
+  static void WriteArray(byte[] data, BufferedOutputStream out) {
     int length;
     try {
       length = ((data[2] & 0xFF) << 8) + (data[3] & 0xFF) + 2;
@@ -345,18 +345,19 @@ public class JpegEncoder extends Frame
 
 class DCT
 {
+
   /**
    * DCT Block Size - default 8
    */
-  public int N        = 8;
+  private final static int N        = 8;
   
   /**
    * Image Quality (0-100) - default 80 (good image / good compression)
    */
-  public int QUALITY = 80;
+  //public int QUALITY = 80;
   
-  public Object quantum[] = new Object[2];
-  public Object Divisors[] = new Object[2];
+  int[][] quantum = new int[2][];
+  double[][] Divisors = new double[2][];
   
   /**
    * Quantitization Matrix for luminace.
@@ -377,12 +378,12 @@ class DCT
    * the image quality can be worse than 25 however the image will be
    * extemely pixelated, usually to a block size of N.
    *
-   * @param QUALITY The quality of the image (0 worst - 100 best)
+   * @param quality The quality of the image (0 worst - 100 best)
    *
    */
-  public DCT(int QUALITY)
+  DCT(int quality)
   {
-    initMatrix(QUALITY);
+    initMatrix(quality);
   }
   
   
@@ -392,13 +393,8 @@ class DCT
    */
   private void initMatrix(int quality)
   {
-    double[] AANscaleFactor = { 1.0, 1.387039845, 1.306562965, 1.175875602,
-        1.0, 0.785694958, 0.541196100, 0.275899379};
     int i;
-    int j;
-    int index;
     int Quality;
-    int temp;
     
     // converting quality setting to that specified in the jpeg_quality_scaling
     // method in the IJG Jpeg-6a C libraries
@@ -480,27 +476,9 @@ class DCT
     quantum_luminance[62]=103;
     quantum_luminance[63]=99;
     
-    for (j = 0; j < 64; j++)
-    {
-      temp = (quantum_luminance[j] * Quality + 50) / 100;
-      if ( temp <= 0) temp = 1;
-      if (temp > 255) temp = 255;
-      quantum_luminance[j] = temp;
-    }
-    index = 0;
-    for (i = 0; i < 8; i++) {
-      for (j = 0; j < 8; j++) {
-        // The divisors for the LL&M method (the slow integer method used in
-        // jpeg 6a library).  This method is currently (04/04/98) incompletely
-        // implemented.
-        // DivisorsLuminance[index] = ((double) quantum_luminance[index]) << 3;
-        // The divisors for the AAN method (the float method used in jpeg 6a library.
-        DivisorsLuminance[index] = (0.125/(quantum_luminance[index] * AANscaleFactor[i] * AANscaleFactor[j]));
-        index++;
-      }
-    }
+    AANscale(DivisorsLuminance, quantum_luminance, Quality);
     
-    
+       
     // Creating the chrominance matrix
   
     for (i = 4; i < 64; i++)
@@ -523,37 +501,45 @@ class DCT
     quantum_chrominance[24]=47;
     quantum_chrominance[25]=66;
     
-    for (j = 0; j < 64; j++)
-    {
-      temp = (quantum_chrominance[j] * Quality + 50) / 100;
-      if ( temp <= 0) temp = 1;
-      if (temp >= 255) temp = 255;
-      quantum_chrominance[j] = temp;
-    }
-    index = 0;
-    for (i = 0; i < 8; i++) {
-      for (j = 0; j < 8; j++) {
-        // The divisors for the LL&M method (the slow integer method used in
-        // jpeg 6a library).  This method is currently (04/04/98) incompletely
-        // implemented.
-        //                        DivisorsChrominance[index] = ((double) quantum_chrominance[index]) << 3;
-        // The divisors for the AAN method (the float method used in jpeg 6a library.
-        DivisorsChrominance[index] = 0.125 / (
-            quantum_chrominance[index] * AANscaleFactor[i] * AANscaleFactor[j]
-        );
-        index++;
-      }
-    }
+
+    AANscale(DivisorsChrominance, quantum_chrominance, Quality);
     
     // quantum and Divisors are objects used to hold the appropriate matices
     
     quantum[0] = quantum_luminance;
-    Divisors[0] = DivisorsLuminance;
     quantum[1] = quantum_chrominance;
+
+    Divisors[0] = DivisorsLuminance;
     Divisors[1] = DivisorsChrominance;
     
-    
   }
+  
+  private final static double[] AANscaleFactor = { 1.0, 1.387039845, 1.306562965, 1.175875602,
+    1.0, 0.785694958, 0.541196100, 0.275899379};
+
+  static private void AANscale(double[] divisors, int[] values, int Quality) {
+
+    for (int j = 0; j < 64; j++)
+    {
+      int temp = (values[j] * Quality + 50) / 100;
+      if ( temp <= 0) temp = 1;
+      if (temp > 255) temp = 255;
+      values[j] = temp;
+    }
+    
+    for (int i = 0, index = 0; i < 8; i++) {
+      for (int j = 0; j < 8; j++) {
+        // The divisors for the LL&M method (the slow integer method used in
+        // jpeg 6a library).  This method is currently (04/04/98) incompletely
+        // implemented.
+        // DivisorsLuminance[index] = ((double) quantum_luminance[index]) << 3;
+        // The divisors for the AAN method (the float method used in jpeg 6a library.
+        divisors[index] = (0.125/(values[index] * AANscaleFactor[i] * AANscaleFactor[j]));
+        index++;
+      }
+    }
+  }
+
   
   /*
    * This method preforms forward DCT on a block of image data using
@@ -591,7 +577,7 @@ class DCT
    * This method preforms a DCT on a block of image data using the AAN
    * method as implemented in the IJG Jpeg-6a library.
    */
-  public double[][] forwardDCT(float input[][])
+  static double[][] forwardDCT(float input[][])
   {
     double output[][] = new double[N][N];
     double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;
@@ -695,7 +681,7 @@ class DCT
   /*
    * This method quantitizes data and rounds it to the nearest integer.
    */
-  public int[] quantizeBlock(double inputData[][], int code)
+  static int[] quantizeBlock(double inputData[][], int code, double[][] divisors)
   {
     int outputData[] = new int[N*N];
     int i, j;
@@ -704,7 +690,7 @@ class DCT
     for (i = 0; i < 8; i++) {
       for (j = 0; j < 8; j++) {
         // The second line results in significantly better compression.
-        outputData[index] = (int)(Math.round(inputData[i][j] * (((double[]) (Divisors[code]))[index])));
+        outputData[index] = (int)(Math.round(inputData[i][j] * divisors[code][index]));
         //                        outputData[index] = (int)(((inputData[i][j] * (((double[]) (Divisors[code]))[index])) + 16384.5) -16384);
         index++;
       }
@@ -764,24 +750,24 @@ class DCT
 
 class Huffman
 {
-  int bufferPutBits, bufferPutBuffer;    
-  public int ImageHeight;
-  public int ImageWidth;
-  public int DC_matrix0[][];
-  public int AC_matrix0[][];
-  public int DC_matrix1[][];
-  public int AC_matrix1[][];
-  public Object DC_matrix[];
-  public Object AC_matrix[];
-  public int code;
-  public int NumOfDCTables;
-  public int NumOfACTables;
-  public final static int[] bitsDCluminance = { 0x00, 0, 1, 5, 1, 1,1,1,1,1,0,0,0,0,0,0,0};
-  public final static int[] valDCluminance = { 0,1,2,3,4,5,6,7,8,9,10,11 };
-  public final static int[] bitsDCchrominance = { 0x01,0,3,1,1,1,1,1,1,1,1,1,0,0,0,0,0 };
-  public final static int[] valDCchrominance = { 0,1,2,3,4,5,6,7,8,9,10,11 };
-  public final static int[] bitsACluminance = {0x10,0,2,1,3,3,2,4,3,5,5,4,4,0,0,1,0x7d };
-  public final static int[] valACluminance =
+  private int bufferPutBits, bufferPutBuffer;    
+  int ImageHeight;
+  int ImageWidth;
+  private int DC_matrix0[][];
+  private int AC_matrix0[][];
+  private int DC_matrix1[][];
+  private int AC_matrix1[][];
+  private int[][] DC_matrix[];
+  private int[][] AC_matrix[];
+  //private int code;
+  int NumOfDCTables;
+  int NumOfACTables;
+  final static int[] bitsDCluminance = { 0x00, 0, 1, 5, 1, 1,1,1,1,1,0,0,0,0,0,0,0};
+  final static int[] valDCluminance = { 0,1,2,3,4,5,6,7,8,9,10,11 };
+  final static int[] bitsDCchrominance = { 0x01,0,3,1,1,1,1,1,1,1,1,1,0,0,0,0,0 };
+  final static int[] valDCchrominance = { 0,1,2,3,4,5,6,7,8,9,10,11 };
+  final static int[] bitsACluminance = {0x10,0,2,1,3,3,2,4,3,5,5,4,4,0,0,1,0x7d };
+  final static int[] valACluminance =
   { 0x01, 0x02, 0x03, 0x00, 0x04, 0x11, 0x05, 0x12,
       0x21, 0x31, 0x41, 0x06, 0x13, 0x51, 0x61, 0x07,
       0x22, 0x71, 0x14, 0x32, 0x81, 0x91, 0xa1, 0x08,
@@ -803,8 +789,8 @@ class Huffman
       0xe3, 0xe4, 0xe5, 0xe6, 0xe7, 0xe8, 0xe9, 0xea,
       0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8,
       0xf9, 0xfa };
-  public final static int[] bitsACchrominance = { 0x11,0,2,1,2,4,4,3,4,7,5,4,4,0,1,2,0x77 };
-  public final static int[] valACchrominance = 
+  final static int[] bitsACchrominance = { 0x11,0,2,1,2,4,4,3,4,7,5,4,4,0,1,2,0x77 };
+  final static int[] valACchrominance = 
   { 0x00, 0x01, 0x02, 0x03, 0x11, 0x04, 0x05, 0x21,
       0x31, 0x06, 0x12, 0x41, 0x51, 0x07, 0x61, 0x71,
       0x13, 0x22, 0x32, 0x81, 0x08, 0x14, 0x42, 0x91,
@@ -826,14 +812,12 @@ class Huffman
       0xe2, 0xe3, 0xe4, 0xe5, 0xe6, 0xe7, 0xe8, 0xe9, 
       0xea, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8,
       0xf9, 0xfa };
-  public Vector bits;
-  public Vector val;
   
   /*
    * jpegNaturalOrder[i] is the natural-order position of the i'th element
    * of zigzag order.
    */
-  public final static int[] jpegNaturalOrder = {
+  final static int[] jpegNaturalOrder = {
       0,  1,  8, 16,  9,  2,  3, 10,
       17, 24, 32, 25, 18, 11,  4,  5,
       12, 19, 26, 33, 40, 48, 41, 34,
@@ -844,22 +828,8 @@ class Huffman
       53, 60, 61, 54, 47, 55, 62, 63,
   };
 
-  /*
-   * The Huffman class constructor
-   */
-  public Huffman(int Width,int Height)
-  {
-    
-    bits = new Vector();
-    bits.addElement(bitsDCluminance);
-    bits.addElement(bitsACluminance);
-    bits.addElement(bitsDCchrominance);
-    bits.addElement(bitsACchrominance);
-    val = new Vector();
-    val.addElement(valDCluminance);
-    val.addElement(valACluminance);
-    val.addElement(valDCchrominance);
-    val.addElement(valACchrominance);
+  Huffman(int Width,int Height)
+  {    
     initHuf();
     ImageWidth=Width;
     ImageHeight=Height;
@@ -876,15 +846,15 @@ class Huffman
    * @param ACcode
    **/
   
-  public void HuffmanBlockEncoder(BufferedOutputStream outStream, int zigzag[], int prec, int DCcode, int ACcode)
+  void HuffmanBlockEncoder(BufferedOutputStream outStream, int zigzag[], int prec, int DCcode, int ACcode)
   {
     int temp, temp2, nbits, k, r, i;
     
     NumOfDCTables = 2;
     NumOfACTables = 2;
     
-    int[][] matrixDC = (int[][])DC_matrix[DCcode];
-    int[][] matrixAC = (int[][])AC_matrix[ACcode];
+    int[][] matrixDC = DC_matrix[DCcode];
+    int[][] matrixAC = AC_matrix[ACcode];
     
     // The DC portion
     
@@ -1021,14 +991,14 @@ class Huffman
    * library.
    */
   
-  public void initHuf()
+  private void initHuf()
   {
     DC_matrix0=new int[12][2];
     DC_matrix1=new int[12][2];
     AC_matrix0=new int[255][2];
     AC_matrix1=new int[255][2];
-    DC_matrix = new Object[2];
-    AC_matrix = new Object[2];
+    DC_matrix = new int[2][][];
+    AC_matrix = new int[2][][];
     int p, l, i, lastp, si, code;
     int[] huffsize = new int[257];
     int[] huffcode= new int[257];
@@ -1071,7 +1041,7 @@ class Huffman
     }
     
     /*
-     * Init of the AC hufmann code for the chrominance
+     * Init of the AC huffman code for the chrominance
      * matrix [][][0] is the code & matrix[][][1] is the number of bit needed
      */
     
@@ -1144,7 +1114,7 @@ class Huffman
     }
     
     /*
-     * Init of the AC hufmann code for luminance
+     * Init of the AC huffman code for luminance
      * matrix [][][0] is the code & matrix[][][1] is the number of bit
      */
     
@@ -1195,31 +1165,30 @@ class Huffman
 class JpegInfo
 {
   String Comment;
-  public Image imageobj;
-  public int imageHeight;
-  public int imageWidth;
-  public int BlockWidth[];
-  public int BlockHeight[];
+  private Image imageobj;
+  int imageHeight;
+  int imageWidth;
+  int BlockWidth[];
+  int BlockHeight[];
   
-  // the following are set as the default
-  public int Precision = 8;
-  public int NumberOfComponents = 3;
-  public Object Components[];
-  public int[] CompID = {1, 2, 3};
-  public int[] HsampFactor = {1, 1, 1};
-  public int[] VsampFactor = {1, 1, 1};
-  public int[] QtableNumber = {0, 1, 1};
-  public int[] DCtableNumber = {0, 1, 1};
-  public int[] ACtableNumber = {0, 1, 1};
-  public boolean[] lastColumnIsDummy = {false, false, false};
-  public boolean[] lastRowIsDummy = {false, false, false};
-  public int Ss = 0;
-  public int Se = 63;
-  public int Ah = 0;
-  public int Al = 0;
-  public int compWidth[], compHeight[];
-  public int MaxHsampFactor;
-  public int MaxVsampFactor;
+  int Precision = 8;
+  int NumberOfComponents = 3;
+  Object Components[];
+  int[] CompID = {1, 2, 3};
+  int[] HsampFactor = {1, 1, 1};
+  int[] VsampFactor = {1, 1, 1};
+  int[] QtableNumber = {0, 1, 1};
+  int[] DCtableNumber = {0, 1, 1};
+  int[] ACtableNumber = {0, 1, 1};
+  private boolean[] lastColumnIsDummy = {false, false, false};
+  private boolean[] lastRowIsDummy = {false, false, false};
+  int Ss = 0;
+  int Se = 63;
+  int Ah = 0;
+  int Al = 0;
+  private int compWidth[], compHeight[];
+  private int MaxHsampFactor;
+  private int MaxVsampFactor;
   
   
   public JpegInfo(Image image)
@@ -1235,12 +1204,12 @@ class JpegInfo
     Comment = "JPEG Encoder Copyright 1998, James R. Weeks and BioElectroMech.  ";
     getYCCArray();
   }
-  
+/*  
   public void setComment(String comment) {
     Comment.concat(comment);
   }
-  
-  public String getComment() {
+*/  
+  String getComment() {
     return Comment;
   }
   

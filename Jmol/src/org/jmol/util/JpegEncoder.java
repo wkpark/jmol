@@ -35,7 +35,6 @@ public class JpegEncoder extends Frame
   private JpegInfo JpegObj;
   private Huffman Huf;
   private DCT dct;
-  private int imageHeight, imageWidth;
   private int Quality;
   //int code;
 
@@ -62,11 +61,9 @@ public class JpegEncoder extends Frame
      */
     JpegObj = new JpegInfo(image);
     
-    imageHeight=JpegObj.imageHeight;
-    imageWidth=JpegObj.imageWidth;
     outStream = new BufferedOutputStream(out);
     dct = new DCT(Quality);
-    Huf=new Huffman(imageWidth,imageHeight);
+    Huf=new Huffman(JpegObj.imageWidth,JpegObj.imageHeight);
   }
   
   public void setQuality(int quality) {
@@ -156,7 +153,7 @@ public class JpegEncoder extends Frame
               // if ((!JpegObj.lastColumnIsDummy[comp] || c < Width - 1) &&
               //       (!JpegObj.lastRowIsDummy[comp] || r < Height - 1)) {
               dctArray2 = DCT.forwardDCT(dctArray1);
-              dctArray3 = DCT.quantizeBlock(dctArray2, QNumber, dct.Divisors);
+              dctArray3 = DCT.quantizeBlock(dctArray2, dct.divisors[QNumber]);
               // }
               // else {
               //   zeroArray[0] = dctArray3[0];
@@ -349,7 +346,8 @@ class DCT
   /**
    * DCT Block Size - default 8
    */
-  private final static int N        = 8;
+  private final static int N = 8;
+  private final static int NN = N * N;
   
   /**
    * Image Quality (0-100) - default 80 (good image / good compression)
@@ -357,19 +355,19 @@ class DCT
   //public int QUALITY = 80;
   
   int[][] quantum = new int[2][];
-  double[][] Divisors = new double[2][];
+  double[][] divisors = new double[2][];
   
   /**
    * Quantitization Matrix for luminace.
    */
-  private int quantum_luminance[]     = new int[N*N];
-  private double DivisorsLuminance[] = new double[N*N];
+  private int quantum_luminance[]     = new int[NN];
+  private double DivisorsLuminance[] = new double[NN];
   
   /**
    * Quantitization Matrix for chrominance.
    */
-  private int quantum_chrominance[]     = new int[N*N];
-  private double DivisorsChrominance[] = new double[N*N];
+  private int quantum_chrominance[]     = new int[NN];
+  private double DivisorsChrominance[] = new double[NN];
   
   /**
    * Constructs a new DCT object. Initializes the cosine transform matrix
@@ -391,23 +389,12 @@ class DCT
    * This method sets up the quantization matrix for luminance and
    * chrominance using the Quality parameter.
    */
-  private void initMatrix(int quality)
-  {
-    int i;
-    int Quality;
-    
+  private void initMatrix(int quality) {
     // converting quality setting to that specified in the jpeg_quality_scaling
     // method in the IJG Jpeg-6a C libraries
     
-    Quality = quality;
-    if (Quality <= 0)
-      Quality = 1;
-    if (Quality > 100)
-      Quality = 100;
-    if (Quality < 50)
-      Quality = 5000 / Quality;
-    else
-      Quality = 200 - Quality * 2;
+    quality = (quality < 1 ? 1 : quality > 100 ? 100 : quality);
+    quality = (quality < 50 ? 5000 / quality : 200 - quality * 2);
     
     // Creating the luminance matrix
     
@@ -476,12 +463,12 @@ class DCT
     quantum_luminance[62]=103;
     quantum_luminance[63]=99;
     
-    AANscale(DivisorsLuminance, quantum_luminance, Quality);
+    AANscale(DivisorsLuminance, quantum_luminance, quality);
     
        
     // Creating the chrominance matrix
   
-    for (i = 4; i < 64; i++)
+    for (int i = 4; i < 64; i++)
       quantum_chrominance[i]=99;
     
     quantum_chrominance[0]=17;
@@ -502,42 +489,36 @@ class DCT
     quantum_chrominance[25]=66;
     
 
-    AANscale(DivisorsChrominance, quantum_chrominance, Quality);
+    AANscale(DivisorsChrominance, quantum_chrominance, quality);
     
     // quantum and Divisors are objects used to hold the appropriate matices
     
     quantum[0] = quantum_luminance;
     quantum[1] = quantum_chrominance;
 
-    Divisors[0] = DivisorsLuminance;
-    Divisors[1] = DivisorsChrominance;
+    divisors[0] = DivisorsLuminance;
+    divisors[1] = DivisorsChrominance;
     
   }
   
   private final static double[] AANscaleFactor = { 1.0, 1.387039845, 1.306562965, 1.175875602,
     1.0, 0.785694958, 0.541196100, 0.275899379};
 
-  static private void AANscale(double[] divisors, int[] values, int Quality) {
+  static private void AANscale(double[] divisors, int[] values, int quality) {
 
-    for (int j = 0; j < 64; j++)
-    {
-      int temp = (values[j] * Quality + 50) / 100;
-      if ( temp <= 0) temp = 1;
-      if (temp > 255) temp = 255;
-      values[j] = temp;
+    for (int j = 0; j < 64; j++) {
+      int temp = (values[j] * quality + 50) / 100;
+      values[j] = (temp < 1 ? 1 : temp > 255 ? 255 : temp);
     }
-    
-    for (int i = 0, index = 0; i < 8; i++) {
-      for (int j = 0; j < 8; j++) {
+
+    for (int i = 0, index = 0; i < 8; i++)
+      for (int j = 0; j < 8; j++, index++)
         // The divisors for the LL&M method (the slow integer method used in
         // jpeg 6a library).  This method is currently (04/04/98) incompletely
         // implemented.
         // DivisorsLuminance[index] = ((double) quantum_luminance[index]) << 3;
         // The divisors for the AAN method (the float method used in jpeg 6a library.
-        divisors[index] = (0.125/(values[index] * AANscaleFactor[i] * AANscaleFactor[j]));
-        index++;
-      }
-    }
+        divisors[index] = (0.125 / (values[index] * AANscaleFactor[i] * AANscaleFactor[j]));
   }
 
   
@@ -583,19 +564,13 @@ class DCT
     double tmp0, tmp1, tmp2, tmp3, tmp4, tmp5, tmp6, tmp7;
     double tmp10, tmp11, tmp12, tmp13;
     double z1, z2, z3, z4, z5, z11, z13;
-    int i;
-    int j;
-    
     // Subtracts 128 from the input values
-    for (i = 0; i < 8; i++) {
-      for(j = 0; j < 8; j++) {
+    for (int i = 0; i < 8; i++)
+      for(int j = 0; j < 8; j++)
         output[i][j] = (input[i][j] - 128.0);
         // input[i][j] -= 128;
-        
-      }
-    }
     
-    for (i = 0; i < 8; i++) {
+    for (int i = 0; i < 8; i++) {
       tmp0 = output[i][0] + output[i][7];
       tmp7 = output[i][0] - output[i][7];
       tmp1 = output[i][1] + output[i][6];
@@ -635,7 +610,7 @@ class DCT
       output[i][7] = z11 - z4;
     }
     
-    for (i = 0; i < 8; i++) {
+    for (int i = 0; i < 8; i++) {
       tmp0 = output[0][i] + output[7][i];
       tmp7 = output[0][i] - output[7][i];
       tmp1 = output[1][i] + output[6][i];
@@ -681,21 +656,13 @@ class DCT
   /*
    * This method quantitizes data and rounds it to the nearest integer.
    */
-  static int[] quantizeBlock(double inputData[][], int code, double[][] divisors)
-  {
-    int outputData[] = new int[N*N];
-    int i, j;
-    int index;
-    index = 0;
-    for (i = 0; i < 8; i++) {
-      for (j = 0; j < 8; j++) {
+  static int[] quantizeBlock(double inputData[][], double[] divisorsCode) {
+    int outputData[] = new int[NN];
+    for (int i = 0, index = 0 ; i < 8; i++)
+      for (int j = 0; j < 8; j++, index++)
         // The second line results in significantly better compression.
-        outputData[index] = (int)(Math.round(inputData[i][j] * divisors[code][index]));
+        outputData[index] = (int)(Math.round(inputData[i][j] * divisorsCode[index]));
         //                        outputData[index] = (int)(((inputData[i][j] * (((double[]) (Divisors[code]))[index])) + 16384.5) -16384);
-        index++;
-      }
-    }
-    
     return outputData;
   }
   
@@ -729,7 +696,7 @@ class DCT
 /*
   public int[] quantizeBlockExtreme(double inputData[][], int code)
   {
-    int outputData[] = new int[N*N];
+    int outputData[] = new int[NN];
     int i, j;
     int index;
     index = 0;
@@ -818,7 +785,7 @@ class Huffman
    * of zigzag order.
    */
   final static int[] jpegNaturalOrder = {
-      0,  1,  8, 16,  9,  2,  3, 10,
+       0,  1,  8, 16,  9,  2,  3, 10,
       17, 24, 32, 25, 18, 11,  4,  5,
       12, 19, 26, 33, 40, 48, 41, 34,
       27, 20, 13,  6,  7, 14, 21, 28,
@@ -1173,7 +1140,7 @@ class JpegInfo
   
   int Precision = 8;
   int NumberOfComponents = 3;
-  Object Components[];
+  float[][] Components[];
   int[] CompID = {1, 2, 3};
   int[] HsampFactor = {1, 1, 1};
   int[] VsampFactor = {1, 1, 1};
@@ -1193,7 +1160,7 @@ class JpegInfo
   
   public JpegInfo(Image image)
   {
-    Components = new Object[NumberOfComponents];
+    Components = new float[NumberOfComponents][][];
     compWidth = new int[NumberOfComponents];
     compHeight = new int[NumberOfComponents];
     BlockWidth = new int[NumberOfComponents];

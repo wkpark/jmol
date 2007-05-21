@@ -20,6 +20,10 @@ import java.io.*;
 import java.util.*;
 
 /*
+ * The JpegEncoder and its associated classes are Copyright (c) 1998, James R. Weeks and BioElectroMech
+ * 
+ * see com/obrador/license.txt
+ * 
  * JpegEncoder - The JPEG main program which performs a jpeg compression of
  * an image.
  */
@@ -35,17 +39,7 @@ public class JpegEncoder extends Frame
   int imageHeight, imageWidth;
   int Quality;
   int code;
-  public static int[] jpegNaturalOrder = {
-      0,  1,  8, 16,  9,  2,  3, 10,
-      17, 24, 32, 25, 18, 11,  4,  5,
-      12, 19, 26, 33, 40, 48, 41, 34,
-      27, 20, 13,  6,  7, 14, 21, 28,
-      35, 42, 49, 56, 57, 50, 43, 36,
-      29, 22, 15, 23, 30, 37, 44, 51,
-      58, 59, 52, 45, 38, 31, 39, 46,
-      53, 60, 61, 54, 47, 55, 62, 63,
-  };
-  
+
   public JpegEncoder(Image image, int quality, OutputStream out)
   {
     MediaTracker tracker = new MediaTracker(this);
@@ -135,9 +129,14 @@ public class JpegEncoder extends Frame
           //Width = JpegObj.BlockWidth[comp];
           //Height = JpegObj.BlockHeight[comp];
           inputArray = (float[][]) JpegObj.Components[comp];
+          int VsampF = JpegObj.VsampFactor[comp];
+          int HsampF = JpegObj.HsampFactor[comp];
+          int QNumber = JpegObj.QtableNumber[comp];
+          int DCNumber = JpegObj.DCtableNumber[comp];
+          int ACNumber = JpegObj.ACtableNumber[comp];
           
-          for(i = 0; i < JpegObj.VsampFactor[comp]; i++) {
-            for(j = 0; j < JpegObj.HsampFactor[comp]; j++) {
+          for(i = 0; i < VsampF; i++) {
+            for(j = 0; j < HsampF; j++) {
               xblockoffset = j * 8;
               yblockoffset = i * 8;
               for (a = 0; a < 8; a++) {
@@ -158,14 +157,14 @@ public class JpegEncoder extends Frame
               // if ((!JpegObj.lastColumnIsDummy[comp] || c < Width - 1) &&
               //       (!JpegObj.lastRowIsDummy[comp] || r < Height - 1)) {
               dctArray2 = dct.forwardDCT(dctArray1);
-              dctArray3 = dct.quantizeBlock(dctArray2, JpegObj.QtableNumber[comp]);
+              dctArray3 = dct.quantizeBlock(dctArray2, QNumber);
               // }
               // else {
               //   zeroArray[0] = dctArray3[0];
               //   zeroArray[0] = lastDCvalue[comp];
               //   dctArray3 = zeroArray;
               // }
-              Huf.HuffmanBlockEncoder(outStream, dctArray3, lastDCvalue[comp], JpegObj.DCtableNumber[comp], JpegObj.ACtableNumber[comp]);
+              Huf.HuffmanBlockEncoder(outStream, dctArray3, lastDCvalue[comp], DCNumber, ACNumber);
               lastDCvalue[comp] = dctArray3[0];
             }
           }
@@ -236,7 +235,7 @@ public class JpegEncoder extends Frame
       DQT[offset++] = (byte) ((0 << 4) + i);
       tempArray = (int[]) dct.quantum[i];
       for (j = 0; j < 64; j++) {
-        DQT[offset++] = (byte) tempArray[jpegNaturalOrder[j]];
+        DQT[offset++] = (byte) tempArray[Huffman.jpegNaturalOrder[j]];
       }
     }
     WriteArray(DQT, out);
@@ -273,16 +272,18 @@ public class JpegEncoder extends Frame
     DHT4[1] = (byte) 0xC4;
     for (i = 0; i < 4; i++ ) {
       bytes = 0;
-      DHT1[index++ - oldindex] = (byte) ((int[]) Huf.bits.elementAt(i))[0];
+      int[] bits = (int[]) Huf.bits.elementAt(i);
+      DHT1[index++ - oldindex] = (byte) bits[0];
       for (j = 1; j < 17; j++) {
-        temp = ((int[]) Huf.bits.elementAt(i))[j];
+        temp = bits[j];
         DHT1[index++ - oldindex] =(byte) temp;
         bytes += temp;
       }
       intermediateindex = index;
       DHT2 = new byte[bytes];
+      int[] val = (int[]) Huf.val.elementAt(i);
       for (j = 0; j < bytes; j++) {
-        DHT2[index++ - intermediateindex] = (byte) ((int[]) Huf.val.elementAt(i))[j];
+        DHT2[index++ - intermediateindex] = (byte) val[j];
       }
       DHT3 = new byte[index];
       java.lang.System.arraycopy(DHT4, 0, DHT3, 0, oldindex);
@@ -610,7 +611,7 @@ class DCT
   
   // For now the final output is unusable.  The associated quantization step
   // needs some tweaking.  If you get this part working, please let me know.
-  
+/*
   public double[][] forwardDCTExtreme(float input[][])
   {
     double output[][] = new double[N][N];
@@ -630,7 +631,7 @@ class DCT
     return output;
   }
   
-  
+*/  
   /*
    * This method preforms a DCT on a block of image data using the AAN
    * method as implemented in the IJG Jpeg-6a library.
@@ -761,6 +762,30 @@ class DCT
    * This is the method for quantizing a block DCT'ed with forwardDCTExtreme
    * This method quantitizes data and rounds it to the nearest integer.
    */
+  
+/*
+
+  public double[][] forwardDCTExtreme(float input[][])
+  {
+    double output[][] = new double[N][N];
+    int v, u, x, y;
+    for (v = 0; v < 8; v++) {
+      for (u = 0; u < 8; u++) {
+        for (x = 0; x < 8; x++) {
+          for (y = 0; y < 8; y++) {
+            output[v][u] += input[x][y] * 
+                Math.cos(((double)(2*x + 1)*(double)u*Math.PI)/16)*
+                Math.cos(((double)(2*y + 1)*(double)v*Math.PI)/16);
+          }
+        }
+        output[v][u] *= (0.25)*((u == 0) ? (1.0/Math.sqrt(2)) : (double) 1.0)*((v == 0) ? (1.0/Math.sqrt(2)) : (double) 1.0);
+      }
+    }
+    return output;
+  }
+
+ */  
+/*
   public int[] quantizeBlockExtreme(double inputData[][], int code)
   {
     int outputData[] = new int[N*N];
@@ -776,8 +801,8 @@ class DCT
     
     return outputData;
   }
+*/
 }
-
 // This class was modified by James R. Weeks on 3/27/98.
 // It now incorporates Huffman table derivation as in the C jpeg library
 // from the IJG, Jpeg-6a.
@@ -796,12 +821,12 @@ class Huffman
   public int code;
   public int NumOfDCTables;
   public int NumOfACTables;
-  public int[] bitsDCluminance = { 0x00, 0, 1, 5, 1, 1,1,1,1,1,0,0,0,0,0,0,0};
-  public int[] valDCluminance = { 0,1,2,3,4,5,6,7,8,9,10,11 };
-  public int[] bitsDCchrominance = { 0x01,0,3,1,1,1,1,1,1,1,1,1,0,0,0,0,0 };
-  public int[] valDCchrominance = { 0,1,2,3,4,5,6,7,8,9,10,11 };
-  public int[] bitsACluminance = {0x10,0,2,1,3,3,2,4,3,5,5,4,4,0,0,1,0x7d };
-  public int[] valACluminance =
+  public final static int[] bitsDCluminance = { 0x00, 0, 1, 5, 1, 1,1,1,1,1,0,0,0,0,0,0,0};
+  public final static int[] valDCluminance = { 0,1,2,3,4,5,6,7,8,9,10,11 };
+  public final static int[] bitsDCchrominance = { 0x01,0,3,1,1,1,1,1,1,1,1,1,0,0,0,0,0 };
+  public final static int[] valDCchrominance = { 0,1,2,3,4,5,6,7,8,9,10,11 };
+  public final static int[] bitsACluminance = {0x10,0,2,1,3,3,2,4,3,5,5,4,4,0,0,1,0x7d };
+  public final static int[] valACluminance =
   { 0x01, 0x02, 0x03, 0x00, 0x04, 0x11, 0x05, 0x12,
       0x21, 0x31, 0x41, 0x06, 0x13, 0x51, 0x61, 0x07,
       0x22, 0x71, 0x14, 0x32, 0x81, 0x91, 0xa1, 0x08,
@@ -823,8 +848,8 @@ class Huffman
       0xe3, 0xe4, 0xe5, 0xe6, 0xe7, 0xe8, 0xe9, 0xea,
       0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7, 0xf8,
       0xf9, 0xfa };
-  public int[] bitsACchrominance = { 0x11,0,2,1,2,4,4,3,4,7,5,4,4,0,1,2,0x77 };
-  public int[] valACchrominance = 
+  public final static int[] bitsACchrominance = { 0x11,0,2,1,2,4,4,3,4,7,5,4,4,0,1,2,0x77 };
+  public final static int[] valACchrominance = 
   { 0x00, 0x01, 0x02, 0x03, 0x11, 0x04, 0x05, 0x21,
       0x31, 0x06, 0x12, 0x41, 0x51, 0x07, 0x61, 0x71,
       0x13, 0x22, 0x32, 0x81, 0x08, 0x14, 0x42, 0x91,
@@ -853,7 +878,7 @@ class Huffman
    * jpegNaturalOrder[i] is the natural-order position of the i'th element
    * of zigzag order.
    */
-  public static int[] jpegNaturalOrder = {
+  public final static int[] jpegNaturalOrder = {
       0,  1,  8, 16,  9,  2,  3, 10,
       17, 24, 32, 25, 18, 11,  4,  5,
       12, 19, 26, 33, 40, 48, 41, 34,
@@ -863,6 +888,7 @@ class Huffman
       58, 59, 52, 45, 38, 31, 39, 46,
       53, 60, 61, 54, 47, 55, 62, 63,
   };
+
   /*
    * The Huffman class constructor
    */
@@ -902,6 +928,9 @@ class Huffman
     NumOfDCTables = 2;
     NumOfACTables = 2;
     
+    int[][] matrixDC = (int[][])DC_matrix[DCcode];
+    int[][] matrixAC = (int[][])AC_matrix[ACcode];
+    
     // The DC portion
     
     temp = temp2 = zigzag[0] - prec;
@@ -915,7 +944,7 @@ class Huffman
       temp >>= 1;
     }
     //        if (nbits > 11) nbits = 11;
-    bufferIt(outStream, ((int[][])DC_matrix[DCcode])[nbits][0], ((int[][])DC_matrix[DCcode])[nbits][1]);
+    bufferIt(outStream, matrixDC[nbits][0], matrixDC[nbits][1]);
     // The arguments in bufferIt are code and size.
     if (nbits != 0) {
       bufferIt(outStream, temp2, nbits);
@@ -931,7 +960,7 @@ class Huffman
       }
       else {
         while (r > 15) {
-          bufferIt(outStream, ((int[][])AC_matrix[ACcode])[0xF0][0], ((int[][])AC_matrix[ACcode])[0xF0][1]);
+          bufferIt(outStream, matrixAC[0xF0][0], matrixAC[0xF0][1]);
           r -= 16;
         }
         temp2 = temp;
@@ -944,7 +973,7 @@ class Huffman
           nbits++;
         }
         i = (r << 4) + nbits;
-        bufferIt(outStream, ((int[][])AC_matrix[ACcode])[i][0], ((int[][])AC_matrix[ACcode])[i][1]);
+        bufferIt(outStream, matrixAC[i][0], matrixAC[i][1]);
         bufferIt(outStream, temp2, nbits);
         
         r = 0;
@@ -952,7 +981,7 @@ class Huffman
     }
     
     if (r > 0) {
-      bufferIt(outStream, ((int[][])AC_matrix[ACcode])[0][0], ((int[][])AC_matrix[ACcode])[0][1]);
+      bufferIt(outStream, matrixAC[0][0], matrixAC[0][1]);
     }
     
   }
@@ -1057,9 +1086,10 @@ class Huffman
     p = 0;
     for (l = 1; l <= 16; l++)
     {
-      for (i = 1; i <= bitsDCchrominance[l]; i++)
+//      for (i = 1; i <= bitsDCchrominance[l]; i++)
+      for (i = bitsDCchrominance[l]; --i >= 0;)
       {
-        huffsize[p++] = l;
+        huffsize[p++] = l; //that's an "el", not a "one"
       }
     }
     huffsize[p] = 0;
@@ -1093,7 +1123,8 @@ class Huffman
     p = 0;
     for (l = 1; l <= 16; l++)
     {
-      for (i = 1; i <= bitsACchrominance[l]; i++)
+      for (i = bitsACchrominance[l]; --i >= 0;)
+//      for (i = 1; i <= bitsACchrominance[l]; i++)
       {
         huffsize[p++] = l;
       }
@@ -1128,7 +1159,8 @@ class Huffman
     p = 0;
     for (l = 1; l <= 16; l++)
     {
-      for (i = 1; i <= bitsDCluminance[l]; i++)
+//      for (i = 1; i <= bitsDCluminance[l]; i++)
+      for (i = bitsDCluminance[l]; --i >= 0;)
       {
         huffsize[p++] = l;
       }
@@ -1164,7 +1196,8 @@ class Huffman
     p = 0;
     for (l = 1; l <= 16; l++)
     {
-      for (i = 1; i <= bitsACluminance[l]; i++)
+//      for (i = 1; i <= bitsACluminance[l]; i++)
+      for (i = bitsACluminance[l]; --i >= 0; )
       {
         huffsize[p++] = l;
       }
@@ -1346,7 +1379,7 @@ class JpegInfo
     //        Cr2 = DownSample(Cr1, 2);
     Components[2] = Cr1;
   }
-  
+/*  
   float[][] DownSample(float[][] C, int comp)
   {
     int inrow, incol;
@@ -1355,10 +1388,13 @@ class JpegInfo
     int bias;
     inrow = 0;
     incol = 0;
-    output = new float[compHeight[comp]][compWidth[comp]];
-    for (outrow = 0; outrow < compHeight[comp]; outrow++) {
+    int cHeight = compHeight[comp];
+    int cWidth = compWidth[comp];
+    output = new float[cHeight][cWidth];
+    
+    for (outrow = 0; outrow < cHeight; outrow++) {
       bias = 1;
-      for (outcol = 0; outcol < compWidth[comp]; outcol++) {
+      for (outcol = 0; outcol < cWidth; outcol++) {
         output[outrow][outcol] = (C[inrow][incol++] + C[inrow++][incol--] 
                  + C[inrow][incol++] + C[inrow--][incol++] + bias)/(float)4.0;
         bias ^= 3;
@@ -1368,4 +1404,6 @@ class JpegInfo
     }
     return output;
   }
+*/
+  
 }

@@ -45,8 +45,10 @@ public class AlphaPolymer extends BioPolymer {
   }
 
   void addSecondaryStructure(byte type, int indexStart, int indexEnd) {
+
+    //these two can be the same if this is a carbon-only polymer
     
-    if (indexEnd <= indexStart) {
+    if (indexEnd < indexStart) {
       Logger.error("structure definition error\n" +
                          " indexStart:" + indexStart +
                          " indexEnd:" + indexEnd);

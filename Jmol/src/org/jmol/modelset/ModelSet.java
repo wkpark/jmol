@@ -1187,6 +1187,8 @@ abstract public class ModelSet {
    */
   void addHydrogenBond(Atom atom1, Atom atom2, short order, BitSet bsA,
                        BitSet bsB) {
+    if (atom1 == null || atom2 == null)
+      return;
     boolean atom1InSetA = bsA == null || bsA.get(atom1.atomIndex);
     boolean atom1InSetB = bsB == null || bsB.get(atom1.atomIndex);
     boolean atom2InSetA = bsA == null || bsA.get(atom2.atomIndex);

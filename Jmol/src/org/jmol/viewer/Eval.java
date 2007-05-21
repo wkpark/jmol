@@ -615,6 +615,7 @@ class Eval { //implements Runnable {
   void fixVariables() throws ScriptException {
     Token[] fixed;
     int i;
+    int tok;
     for (i = 1; i < statementLength; i++)
       if (statement[i].tok == Token.define)
         break;
@@ -622,17 +623,23 @@ class Eval { //implements Runnable {
       return;
     fixed = new Token[statementLength];
     fixed[0] = statement[0];
-    boolean isSelect = (statement[0].tok == Token.select);
+    boolean isExpression = false;
     int j = 1;
     for (i = 1; i < statementLength; i++) {
-      if (statement[i].tok == Token.define) {
+      switch (tok = statement[i].tok) {
+      case Token.define:
         String var = parameterAsString(++i);
         Object v = viewer.getParameter(var);
+        Object var_set;
         if (v instanceof Boolean) {
           fixed[j] = (((Boolean) v).booleanValue() ? Token.tokenOn
               : Token.tokenOff);
         } else if (v instanceof Integer) {
-          fixed[j] = new Token(Token.integer, ((Integer) v).intValue(), v);
+          if (isExpression && (var_set = viewer.getParameter(var + "_set")) != null)
+            fixed[j] = new Token(Token.select, "" + var_set);
+          else
+            fixed[j] = new Token(Token.integer, ((Integer) v).intValue(), v);
+
         } else if (v instanceof Float) {
           fixed[j] = new Token(Token.decimal, Compiler.modelValue("" + v), v);
         } else if (v instanceof String && ((String) v).length() > 0) {
@@ -642,8 +649,10 @@ class Eval { //implements Runnable {
           else
             // identifiers cannot have periods; file names can, though
             fixed[j] = new Token(
-                (isSelect ? Token.select : ((String) v).indexOf(".") >= 0 ? Token.string
-                    : Token.identifier), (String) v);
+                (isExpression ? Token.select 
+                    : ((String) v).indexOf(".") >= 0 ? Token.string
+                    : Token.identifier)
+                , (String) v);
         } else {
           Point3f center = getDrawObjectCenter(var);
           if (center == null)
@@ -653,9 +662,17 @@ class Eval { //implements Runnable {
         if (j == 1 && statement[0].tok == Token.set
             && fixed[j].tok != Token.identifier)
           invalidArgument();
-      } else {
+      break;
+      case Token.expressionBegin:
+      case Token.expressionEnd:
+        //@ in expression will be taken as SELECT
+        isExpression = (tok == Token.expressionBegin);
+        fixed[j] = statement[i];
+      break;
+      default:
         fixed[j] = statement[i];
       }
+      
       j++;
     }
     statement = fixed;
@@ -9050,15 +9067,16 @@ class Eval { //implements Runnable {
       case Token.rightsquare:
         break;
       case Token.define:
-        if (i > 0) {
+        if (i > 0)
           sb.append("@");
-          continue;
-        }
+        break;
       case Token.on:
         sb.append("true");
         continue;
       case Token.off:
         sb.append("false");
+        break;
+      case Token.select:
         break;
       case Token.integer:
         sb.append(token.intValue);
@@ -9123,9 +9141,8 @@ class Eval { //implements Runnable {
       case Token.cell:
         if (token.value instanceof Point3f) {
           Point3f pt = (Point3f) token.value;
-          sb.append("cell={").append(pt.x).append(" ").
-                              append(pt.y).append(" ").
-                              append(pt.z).append("}");
+          sb.append("cell={").append(pt.x).append(" ").append(pt.y).append(" ")
+              .append(pt.z).append("}");
           continue;
         }
         break;
@@ -9140,7 +9157,7 @@ class Eval { //implements Runnable {
       case Token.opNE:
         //not quite right -- for "inmath"
         if (token.intValue == Token.property) {
-          sb.append((String)statement[++i].value).append(" ");
+          sb.append((String) statement[++i].value).append(" ");
         } else if (token.intValue != Integer.MAX_VALUE)
           sb.append(Token.nameOf(token.intValue)).append(" ");
         break;

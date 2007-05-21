@@ -107,7 +107,7 @@ public class Labels extends AtomShape {
           strings[i] = label;
           formats[i] = strLabel;
           bsSizeSet.set(i, (strLabel != null));
-          text = (Text) atomLabels.get(atoms[i]);
+          text = getLabel(i);
           if (text != null)
             text.setText(label);
           if (defaultOffset != zeroOffset)
@@ -272,9 +272,20 @@ public class Labels extends AtomShape {
     }
   }
 
+  void putLabel(int i, Text text) {
+    if (text == null)
+      atomLabels.remove(atoms[i]);
+    else
+      atomLabels.put(atoms[i], text);
+  }
+  
+  Text getLabel(int i) {
+    return (Text) atomLabels.get(atoms[i]);
+  }
+  
   void setColix(int i, short colix, byte pid, int n) {
     setColixAndPalette(colix, pid, i);
-    text = (Text) atomLabels.get(atoms[i]);
+    text = getLabel(i);
     if (text != null)
       text.setColix(colixes[i]);
   }
@@ -287,7 +298,7 @@ public class Labels extends AtomShape {
     }
     bgcolixes[i] = bgcolix;
     bsBgColixSet.set(i, bgcolix != 0);
-    text = (Text) atomLabels.get(atoms[i]);
+    text = getLabel(i);
     if (text != null)
       text.setBgColix(bgcolix);
   }
@@ -313,7 +324,7 @@ public class Labels extends AtomShape {
       offsets = ArrayUtil.ensureLength(offsets, i + 1);
     }
     offsets[i] = (offsets[i] & FLAGS) + (offset << 6);
-    text = (Text) atomLabels.get(atoms[i]);
+    text = getLabel(i);
     if (text != null)
       text.setOffset(offset);
   }
@@ -325,7 +336,7 @@ public class Labels extends AtomShape {
       offsets = ArrayUtil.ensureLength(offsets, i + 1);
     }
     offsets[i] = (offsets[i] & ~ALIGN_FLAGS) + (alignment << 2);
-    text = (Text) atomLabels.get(atoms[i]);
+    text = getLabel(i);
     if (text != null)
       text.setAlignment(alignment);
   }
@@ -337,7 +348,7 @@ public class Labels extends AtomShape {
       offsets = ArrayUtil.ensureLength(offsets, i + 1);
     }
     offsets[i] = (offsets[i] & ~POINTER_FLAGS) + pointer;
-    text = (Text) atomLabels.get(atoms[i]);
+    text = getLabel(i);
     if (text != null)
       text.setPointer(pointer);
   }
@@ -368,7 +379,7 @@ public class Labels extends AtomShape {
     }
     fids[i] = fid;
     bsFontSet.set(i);
-    text = (Text) atomLabels.get(atoms[i]);
+    text = getLabel(i);
     if (text != null)
       text.setFid(fid);  
   }

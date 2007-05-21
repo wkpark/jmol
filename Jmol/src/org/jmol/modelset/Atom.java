@@ -1259,4 +1259,11 @@ final public class Atom extends Point3fi implements Tuple {
       return null;
     return strLabel.intern();
   }
+  
+  public int hashCode() {
+    //this overrides the Point3fi hashcode, which would
+    //give a different hashcode for an atom depending upon
+    //its screen location! Bug fix for 11.1.43 Bob Hanson
+    return atomIndex;
+  }
 }

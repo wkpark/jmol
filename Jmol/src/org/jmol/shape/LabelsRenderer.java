@@ -87,7 +87,7 @@ public class LabelsRenderer extends ShapeRenderer {
 
       boolean isSimple = (textAlign == 0 && label.indexOf("|") < 0 && label.indexOf("<su") < 0);
 
-      Text text = (isSimple ? null : (Text) labels.atomLabels.get(atom));
+      Text text = (isSimple ? null : labels.getLabel(i));
       if (text != null) {
         text.setColix(colix);
         text.setBgColix(bgcolix);
@@ -118,7 +118,7 @@ public class LabelsRenderer extends ShapeRenderer {
       } else {
         text = new Text(g3d, font3d, label, colix, bgcolix, atom.screenX,
             atom.screenY - 8, zBox, zSlab, textAlign);
-        labels.atomLabels.put(atom, text);
+        labels.putLabel(i, text);
         text.setPointer(pointer);
         text.setOffset(offset);
         text.render();

@@ -788,7 +788,7 @@ public class Draw extends MeshCollection {
           && m.visibilityFlags != 0) {
         int mCount = (m.modelFlags == null ? 1 : modelCount);
         for (int iModel = mCount; --iModel >= 0;) {
-          if (m.modelFlags != null && m.modelFlags[iModel] == 0)
+          if (m.modelFlags != null && m.modelFlags[iModel] == 0 || m.polygonIndexes == null)
             continue;
           for (int iVertex = m.polygonIndexes[iModel].length; --iVertex >= 0;) {
             Point3f v = new Point3f();

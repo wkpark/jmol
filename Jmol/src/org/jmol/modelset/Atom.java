@@ -1260,6 +1260,10 @@ final public class Atom extends Point3fi implements Tuple {
     return strLabel.intern();
   }
   
+  public boolean equals(Object obj) {
+    return (this == obj);
+  }
+
   public int hashCode() {
     //this overrides the Point3fi hashcode, which would
     //give a different hashcode for an atom depending upon

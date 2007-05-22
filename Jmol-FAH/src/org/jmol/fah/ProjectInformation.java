@@ -621,7 +621,7 @@ public class ProjectInformation {
           info._fciCore = CoreType.GROMACS_SMP;
         } else if ("GROST".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.GROMACS_ST;
-        } else if ("GST".equalsIgnoreCase(core)) {
+        } else if ("GROSIMT".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.GROMACS_SIMT;
         } else if ("QMD".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.QMD;

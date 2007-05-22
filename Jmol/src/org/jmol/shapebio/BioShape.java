@@ -208,6 +208,8 @@ class BioShape {
   private short setMad(int groupIndex, short mad) {
     //undocumented
     bsSizeDefault.set(groupIndex, mad == -1 || mad == -2);
+    if (mad >= 0)
+      return mad;      
     switch (mad) {
     case -1: // trace on
     case -2: // trace structure

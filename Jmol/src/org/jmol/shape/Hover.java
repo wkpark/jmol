@@ -46,16 +46,17 @@ public class Hover extends TextShape {
   String labelFormat = "%U";
   String[] atomFormats;
 
- public void initShape() {
+  public void initShape() {
+    super.initShape();
     Font3D font3d = g3d.getFont3D(FONTFACE, FONTSTYLE, FONTSIZE);
     short bgcolix = Graphics3D.getColix("#FFFFC3"); // 255, 255, 195
     short colix = Graphics3D.BLACK;
-    currentText = hoverText = new Text(g3d, font3d, null, colix, bgcolix,
-        0, 0, 1, Integer.MIN_VALUE, Text.LEFT);
+    currentText = hoverText = new Text(g3d, font3d, null, colix, bgcolix, 0, 0,
+        1, Integer.MIN_VALUE, Text.LEFT);
     hoverText.setAdjustForWindow(true);
   }
 
- public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
 
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug("Hover.setProperty(" + propertyName + "," + value + ")");
@@ -71,14 +72,14 @@ public class Hover extends TextShape {
       }
       return;
     }
-    
+
     if ("text" == propertyName) {
       text = (String) value;
       if (text != null && text.length() == 0)
         text = null;
       return;
     }
-    
+
     if ("atomLabel" == propertyName) {
       String text = (String) value;
       if (text != null && text.length() == 0)
@@ -86,16 +87,16 @@ public class Hover extends TextShape {
       int count = viewer.getAtomCount();
       if (atomFormats == null)
         atomFormats = new String[count];
-      for (int i = count; --i >= 0; ) 
-      if (bsSelected.get(i))
-        atomFormats[i] = text;
+      for (int i = count; --i >= 0;)
+        if (bsSelected.get(i))
+          atomFormats[i] = text;
       return;
     }
-    
+
     if ("xy" == propertyName) {
       xy = (Point3i) value;
     }
-    
+
     if ("label" == propertyName) {
       labelFormat = (String) value;
       if (labelFormat != null && labelFormat.length() == 0)
@@ -104,17 +105,16 @@ public class Hover extends TextShape {
     }
 
     super.setProperty(propertyName, value, null);
-    
+
   }
 
- public String getShapeState() {
+  public String getShapeState() {
     Hashtable temp = new Hashtable();
     int atomCount = viewer.getAtomCount();
     if (atomFormats != null)
       for (int i = atomCount; --i >= 0;)
         if (atomFormats[i] != null)
-          setStateInfo(temp, i, "hover = "
-              + Escape.escape(atomFormats[i]));
+          setStateInfo(temp, i, "hover = " + Escape.escape(atomFormats[i]));
     return getShapeCommands(temp, null, atomCount);
-  }  
+  }
 }

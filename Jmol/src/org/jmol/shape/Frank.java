@@ -23,13 +23,14 @@
  */
 
 package org.jmol.shape;
+
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
 
 import java.awt.FontMetrics;
 
 public class Frank extends FontLineShape {
-  
+
   // Axes, Bbcage, Frank, Uccage
 
   final static String frankString = "Jmol";
@@ -44,11 +45,10 @@ public class Frank extends FontLineShape {
   int frankAscent;
   int frankDescent;
 
-
- public void initShape() {
+  public void initShape() {
+    super.initShape();
     myType = "frank";
     font3d = g3d.getFont3D(defaultFontName, defaultFontStyle, defaultFontSize);
-    super.initShape();
   }
 
   public boolean wasClicked(int x, int y) {
@@ -58,10 +58,8 @@ public class Frank extends FontLineShape {
       x *= 2;
       y *= 2;
     }
-    return (width > 0 &&
-            height > 0 &&
-            x > width - frankWidth - frankMargin &&
-            y > height - frankAscent - frankMargin);
+    return (width > 0 && height > 0 && x > width - frankWidth - frankMargin && y > height
+        - frankAscent - frankMargin);
   }
 
   void calcMetrics() {

@@ -24,11 +24,10 @@
 
 package org.jmol.shapebio;
 
-public class Cartoon extends BioShapeCollection {
+public class Cartoon extends Rockets {
 
   public void initShape() {
-    madTurnRandom = 500;
-    madDnaRna = 1000;
     super.initShape();
+    madDnaRna = 1000;
   }
 }

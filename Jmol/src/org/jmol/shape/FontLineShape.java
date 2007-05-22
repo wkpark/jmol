@@ -29,24 +29,25 @@ import org.jmol.g3d.Font3D;
 import java.util.BitSet;
 
 public abstract class FontLineShape extends Shape {
-  
+
   // Axes, Bbcage, Frank, Uccage
 
   Font3D font3d;
   String myType;
 
- public void initShape() {
+  public void initShape() {
+    super.initShape();
     translucentAllowed = false;
   }
-  
- public void setProperty(String propertyName, Object value, BitSet bs) {
+
+  public void setProperty(String propertyName, Object value, BitSet bs) {
     if ("font" == propertyName) {
-      font3d = (Font3D)value;
+      font3d = (Font3D) value;
       return;
     }
   }
-  
- public String getShapeState() {
+
+  public String getShapeState() {
     return viewer.getObjectState(myType) + Shape.getFontCommand(myType, font3d)
         + ";\n";
   }

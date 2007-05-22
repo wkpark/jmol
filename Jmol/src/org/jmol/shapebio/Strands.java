@@ -35,11 +35,12 @@ public class Strands extends BioShapeCollection {
    *==============================================================*/
 
   int strandCount = 5;
-
+  boolean isMesh = false;
+  
   public void setProperty(String propertyName, Object value, BitSet bs) {
     initialize();
     if ("strandCount" == propertyName) {
-      strandCount = Math.min(20, Math.max(0, ((Integer) value).intValue()));
+      strandCount = Math.min(20, Math.max(0, ((Integer)value).intValue()));    
       return;
     }
     super.setProperty(propertyName, value, bs);
@@ -53,7 +54,7 @@ public class Strands extends BioShapeCollection {
   }
   
   public String getShapeState() {
-    return "strandCount = " + strandCount + ";\n"
+    return (isMesh ? "" : "strandCount = " + strandCount + ";\n")
       + super.getShapeState();
   }
 }

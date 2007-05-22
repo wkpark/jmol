@@ -34,7 +34,7 @@ import java.util.Enumeration;
 
 import javax.vecmath.Point3f;
 
-public class TextShape extends Shape {
+public abstract class TextShape extends Shape {
 
   // echo, hover
   

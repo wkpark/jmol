@@ -4021,8 +4021,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       ///11.1///
 
       if (key.equalsIgnoreCase("strandCount")) {
+        loadShape(JmolConstants.SHAPE_STRANDS);
         setShapeProperty(JmolConstants.SHAPE_STRANDS, "strandCount",
-            new Integer(value >= 0 && value <= 20 ? value : 5));
+            new Integer(value));
+        loadShape(JmolConstants.SHAPE_MESHRIBBON);
+        setShapeProperty(JmolConstants.SHAPE_MESHRIBBON, "strandCount",
+            new Integer(value));
+        refresh(0, "set strandCount");
         break;
       }
       if (key.equalsIgnoreCase("perspectiveModel")) {

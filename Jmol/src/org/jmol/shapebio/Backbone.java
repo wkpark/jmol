@@ -32,12 +32,12 @@ import org.jmol.modelset.Atom;
 public class Backbone extends BioShapeCollection {
 
   public void initShape() {
+    super.initShape();
     madOn = 1;
     madHelixSheet = 1500;
     madTurnRandom = 500;
     madDnaRna = 2000;
     isActive = true;
-    super.initShape();
   }
 
   public void setSize(int size, BitSet bsSelected) {

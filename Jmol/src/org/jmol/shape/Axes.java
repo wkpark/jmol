@@ -31,7 +31,7 @@ import org.jmol.viewer.JmolConstants;
 
 public class Axes extends FontLineShape {
 
-  final static Point3f[] unitAxisPoints = {
+  private final static Point3f[] unitAxisPoints = {
     new Point3f( 1, 0, 0),
     new Point3f( 0, 1, 0),
     new Point3f( 0, 0, 1),
@@ -47,11 +47,12 @@ public class Axes extends FontLineShape {
       axisPoints[i] = new Point3f();
   }
 
-  final static float MIN_AXIS_LEN = 1.5f;
- public void initShape() {
+  private final static float MIN_AXIS_LEN = 1.5f;
+  
+  public void initShape() {
+    super.initShape();
     myType = "axes";
     font3d = g3d.getFont3D(JmolConstants.AXES_DEFAULT_FONTSIZE);
-    super.initShape();
     int axesMode = viewer.getAxesMode();
     if (axesMode == JmolConstants.AXES_MODE_UNITCELL && modelSet.getCellInfos() != null) {
       UnitCell unitcell = viewer.getCurrentUnitCell();

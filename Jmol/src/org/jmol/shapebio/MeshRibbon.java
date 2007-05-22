@@ -24,6 +24,12 @@
 
 package org.jmol.shapebio;
 
-public class MeshRibbon extends BioShapeCollection {
-  //differences are in renderer only
+public class MeshRibbon extends Strands {
+  
+  public void initShape() {
+    super.initShape();
+    strandCount = 7;
+    isMesh = true;
+  }
+  
 }

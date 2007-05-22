@@ -43,7 +43,7 @@ public class Labels extends AtomShape {
 
   Hashtable atomLabels = new Hashtable();
   Text text;
-  
+
   BitSet bsFontSet, bsBgColixSet;
 
   int defaultOffset;
@@ -57,23 +57,21 @@ public class Labels extends AtomShape {
   int zeroOffset;
 
   boolean defaultsOnlyForNone = true;
-  
 
   //labels
-    
- public void initShape() {
+
+  public void initShape() {
+    super.initShape();
     defaultFontId = zeroFontId = g3d.getFont3D(JmolConstants.DEFAULT_FONTFACE,
-                                  JmolConstants.DEFAULT_FONTSTYLE,
-                                  JmolConstants.LABEL_DEFAULT_FONTSIZE).fid;
+        JmolConstants.DEFAULT_FONTSTYLE, JmolConstants.LABEL_DEFAULT_FONTSIZE).fid;
     defaultColix = 0; //"none" -- inherit from atom
     defaultBgcolix = 0; //"none" -- off
     defaultOffset = zeroOffset = (JmolConstants.LABEL_DEFAULT_X_OFFSET << 8)
-         | JmolConstants.LABEL_DEFAULT_Y_OFFSET;
+        | JmolConstants.LABEL_DEFAULT_Y_OFFSET;
     translucentAllowed = false;
-    super.initShape();
   }
 
- public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
     isActive = true;
     if ("color" == propertyName) {
       isActive = true;
@@ -89,7 +87,7 @@ public class Labels extends AtomShape {
       }
       return;
     }
-    
+
     if ("label" == propertyName) {
       isActive = true;
       if (bsSizeSet == null)
@@ -142,7 +140,7 @@ public class Labels extends AtomShape {
     }
 
     // the rest require bsFontSet setting
-    
+
     if (bsFontSet == null)
       bsFontSet = new BitSet();
 
@@ -163,7 +161,7 @@ public class Labels extends AtomShape {
     }
 
     if ("font" == propertyName) {
-      byte fid =  ((Font3D) value).fid;
+      byte fid = ((Font3D) value).fid;
       int n = 0;
       for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
@@ -209,7 +207,7 @@ public class Labels extends AtomShape {
     }
 
     if ("pointer" == propertyName) {
-      int pointer = ((Integer)value).intValue();
+      int pointer = ((Integer) value).intValue();
       int n = 0;
       for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
@@ -220,7 +218,7 @@ public class Labels extends AtomShape {
     }
 
     if ("front" == propertyName) {
-      boolean TF = ((Boolean)value).booleanValue();
+      boolean TF = ((Boolean) value).booleanValue();
       int n = 0;
       for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
@@ -229,12 +227,12 @@ public class Labels extends AtomShape {
         defaultOffset = defaultOffset & ~ZPOS_FLAGS | (TF ? FRONT_FLAG : 0);
       //FindBugs mission accomplished!
       //if (n == 0 || !defaultsOnlyForNone)
-        //defaultZpos = TF ? GROUP_FLAG : 0;
+      //defaultZpos = TF ? GROUP_FLAG : 0;
       return;
     }
 
     if ("group" == propertyName) {
-      boolean TF = ((Boolean)value).booleanValue();
+      boolean TF = ((Boolean) value).booleanValue();
       int n = 0;
       for (int i = atomCount; --i >= 0;)
         if (bsSelected.get(i))
@@ -243,7 +241,7 @@ public class Labels extends AtomShape {
         defaultOffset = defaultOffset & ~ZPOS_FLAGS | (TF ? GROUP_FLAG : 0);
       //FindBugs mission accomplished!
       //if (n == 0 || !defaultsOnlyForNone)
-        //defaultZpos = TF ? GROUP_FLAG : 0;
+      //defaultZpos = TF ? GROUP_FLAG : 0;
       return;
     }
 
@@ -278,18 +276,18 @@ public class Labels extends AtomShape {
     else
       atomLabels.put(atoms[i], text);
   }
-  
+
   Text getLabel(int i) {
     return (Text) atomLabels.get(atoms[i]);
   }
-  
+
   void setColix(int i, short colix, byte pid, int n) {
     setColixAndPalette(colix, pid, i);
     text = getLabel(i);
     if (text != null)
       text.setColix(colixes[i]);
   }
-  
+
   void setBgcolix(int i, short bgcolix, int n) {
     if (bgcolixes == null || i >= bgcolixes.length) {
       if (bgcolix == 0)
@@ -302,14 +300,14 @@ public class Labels extends AtomShape {
     if (text != null)
       text.setBgColix(bgcolix);
   }
-  
+
   final static int ZPOS_FLAGS = 0x30;
   final static int FRONT_FLAG = 0x20;
   final static int GROUP_FLAG = 0x10;
   final static int POINTER_FLAGS = 0x3;
   final static int ALIGN_FLAGS = 0xC;
   final static int FLAGS = 0x3F;
-  
+
   void setOffsets(int i, int offset, int n) {
     //entry is just xxxxxxxxyyyyyyyy
     // xxxxxxxxyyyyyyyyfgaabp
@@ -340,7 +338,7 @@ public class Labels extends AtomShape {
     if (text != null)
       text.setAlignment(alignment);
   }
-  
+
   void setPointer(int i, int pointer, int n) {
     if (offsets == null || i >= offsets.length) {
       if (pointer == Text.POINTER_NONE)
@@ -352,25 +350,25 @@ public class Labels extends AtomShape {
     if (text != null)
       text.setPointer(pointer);
   }
-  
+
   void setFront(int i, boolean TF, int n) {
     if (offsets == null || i >= offsets.length) {
       if (!TF)
         return;
       offsets = ArrayUtil.ensureLength(offsets, i + 1);
     }
-    offsets[i] = (offsets[i] & ~ZPOS_FLAGS) + (TF? FRONT_FLAG : 0);
+    offsets[i] = (offsets[i] & ~ZPOS_FLAGS) + (TF ? FRONT_FLAG : 0);
   }
-  
+
   void setGroup(int i, boolean TF, int n) {
     if (offsets == null || i >= offsets.length) {
       if (!TF)
         return;
       offsets = ArrayUtil.ensureLength(offsets, i + 1);
     }
-    offsets[i] = (offsets[i] & ~ZPOS_FLAGS) + (TF? GROUP_FLAG : 0);
+    offsets[i] = (offsets[i] & ~ZPOS_FLAGS) + (TF ? GROUP_FLAG : 0);
   }
-  
+
   void setFont(int i, byte fid, int n) {
     if (fids == null || i >= fids.length) {
       if (fid == zeroFontId)
@@ -381,39 +379,38 @@ public class Labels extends AtomShape {
     bsFontSet.set(i);
     text = getLabel(i);
     if (text != null)
-      text.setFid(fid);  
+      text.setFid(fid);
   }
-  
- public void setModelClickability() {
+
+  public void setModelClickability() {
     if (strings == null)
       return;
     for (int i = strings.length; --i >= 0;) {
       String label = strings[i];
-      if (label != null && modelSet.atoms.length > i && !modelSet.isAtomHidden(i))
+      if (label != null && modelSet.atoms.length > i
+          && !modelSet.isAtomHidden(i))
         modelSet.atoms[i].setClickable(myVisibilityFlag);
     }
   }
-  
+
   public void getDefaultState(StringBuffer s) {
     appendCmd(s, "\n# label defaults;\nselect none");
-    appendCmd(s, getColorCommand("label", defaultPaletteID,
-        defaultColix));
+    appendCmd(s, getColorCommand("label", defaultPaletteID, defaultColix));
     appendCmd(s, "background label " + encodeColor(defaultBgcolix));
     appendCmd(s, "labelOffset = " + Text.getXOffset(defaultOffset) + " "
         + (-Text.getYOffset(defaultOffset)));
     String align = Text.getAlignment(defaultAlignment);
     appendCmd(s, "labelAlignment = " + (align.length() < 5 ? "left" : align));
     String pointer = Text.getPointer(defaultPointer);
-    appendCmd(s, "labelPointer = "
-        + (pointer.length() == 0 ? "off" : pointer));
+    appendCmd(s, "labelPointer = " + (pointer.length() == 0 ? "off" : pointer));
     if ((defaultOffset & FRONT_FLAG) != 0)
       appendCmd(s, "set labelFront");
     if ((defaultOffset & GROUP_FLAG) != 0)
       appendCmd(s, "set labelGroup");
     appendCmd(s, getFontCommand("label", Font3D.getFont3D(defaultFontId)));
-  }  
+  }
 
- public String getShapeState() {
+  public String getShapeState() {
     if (!isActive)
       return "";
     Hashtable temp = new Hashtable();
@@ -430,9 +427,8 @@ public class Labels extends AtomShape {
         setStateInfo(temp2, i, "background label " + encodeColor(bgcolixes[i]));
       if (offsets != null && offsets.length > i) {
         int offset = offsets[i];
-        setStateInfo(temp2, i, "labelOffset = "
-            + Text.getXOffset(offset >> 6) + " "
-            + (-Text.getYOffset(offset >> 6)));         
+        setStateInfo(temp2, i, "labelOffset = " + Text.getXOffset(offset >> 6)
+            + " " + (-Text.getYOffset(offset >> 6)));
         String align = Text.getAlignment(offset >> 2);
         String pointer = Text.getPointer(offset);
         if (pointer.length() > 0)
@@ -443,14 +439,14 @@ public class Labels extends AtomShape {
           setStateInfo(temp2, i, "set labelGroup");
         //labelAlignment must come last, so we put it in a separate hash table
         if (align.length() > 0)
-        setStateInfo(temp3, i, "labelAlignment = " + align);
+          setStateInfo(temp3, i, "labelAlignment = " + align);
       }
       if (bsFontSet != null && bsFontSet.get(i))
         setStateInfo(temp2, i, getFontCommand("label", Font3D
             .getFont3D(fids[i])));
     }
     return getShapeCommands(temp, temp2, atomCount)
-        + getShapeCommands(null, temp3, atomCount) ;
+        + getShapeCommands(null, temp3, atomCount);
   }
-  
+
 }

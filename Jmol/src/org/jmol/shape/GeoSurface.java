@@ -24,29 +24,12 @@
 
 package org.jmol.shape;
 
-import java.util.BitSet;
-
-import org.jmol.util.Logger;
-
 public class GeoSurface extends Dots {
   
  public void initShape() {
-    isSurface = true;
-    super.initShape();
-  }
-
- public void setProperty(String propertyName, Object value, BitSet bs) {
-
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-      Logger.debug("GeoSurface.setProperty: " + propertyName + " " + value);
-    }
-
-    if ("translucency" == propertyName) {
-      //skip dots and go straight to AtomShape
-      super.setSuperProperty(propertyName, value, bs);
-      return;
-    }    
-    super.setProperty(propertyName, value, bs);
+   super.initShape();
+   isSurface = true;
+   translucentAllowed = true;
   }
 
 }

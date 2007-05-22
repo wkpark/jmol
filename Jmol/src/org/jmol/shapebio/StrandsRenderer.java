@@ -33,17 +33,19 @@ public class StrandsRenderer extends BioShapeRenderer {
   protected float baseOffset;
 
   protected void renderBioShape(BioShape bioShape) {
-    if (wingVectors == null)
+    if (!setStrandCount())
       return;
-    setStrandCount(((Strands) shape).strandCount);
     render1();
   }
   
-  protected void setStrandCount(int strandCount) {
-    this.strandCount = strandCount;
+  protected boolean setStrandCount() {
+    if (wingVectors == null)
+      return false;
+    strandCount =((Strands) shape).strandCount;
     strandSeparation = (strandCount <= 1) ? 0 : 1f / (strandCount - 1);
     baseOffset = ((strandCount & 1) == 0 ? strandSeparation / 2
         : strandSeparation);
+    return true;
   }
 
   protected void render1() {

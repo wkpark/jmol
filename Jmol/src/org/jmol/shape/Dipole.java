@@ -24,7 +24,6 @@
 
 package org.jmol.shape;
 
-import java.util.BitSet;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point3f;
 import org.jmol.g3d.Graphics3D;
@@ -81,12 +80,6 @@ class Dipole {
     this.mad = mad;
     this.visible = visible;
     this.type = DIPOLE_TYPE_UNKNOWN;
-  }
-
- public void initShape() {
-  }
-
- public void setProperty(String propertyName, Object value, BitSet bsSelected) {
   }
 
   void setTranslucent(boolean isTranslucent, float translucentLevel) {

@@ -74,6 +74,7 @@ public abstract class MeshCollection extends Shape {
   }
 
   public void initShape() {
+    super.initShape();
     colix = Graphics3D.ORANGE;
     modelCount = viewer.getModelCount();
   }

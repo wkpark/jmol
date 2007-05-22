@@ -36,14 +36,14 @@ import java.util.Hashtable;
 public class Dots extends AtomShape {
 
   EnvelopeCalculation ec;
-  
+
   final static float SURFACE_DISTANCE_FOR_CALCULATION = 10f;
 
   BitSet bsOn = new BitSet();
   private BitSet bsSelected, bsIgnore;
-  
+
   static int MAX_LEVEL = EnvelopeCalculation.MAX_LEVEL;
-  
+
   int thisAtom;
   float thisRadius;
   int thisArgb;
@@ -51,25 +51,23 @@ public class Dots extends AtomShape {
   //short mad = 0;
   short lastMad = 0;
   float lastSolventRadius = 0;
-  
+
   long timeBeginExecution;
   long timeEndExecution;
+
   int getExecutionWalltime() {
     return (int) (timeEndExecution - timeBeginExecution);
   }
 
- public void initShape() {
-
-    //these next two are for the geodesic fragment at a distance
-
-    translucentAllowed = false; //except for geosurface
+  public void initShape() {
     super.initShape();
+    translucentAllowed = false; //except for geosurface
     ec = new EnvelopeCalculation(viewer, atomCount, mads);
   }
 
   boolean isSurface = false;
-  
- public void setProperty(String propertyName, Object value, BitSet bs) {
+
+  public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug("Dots.setProperty: " + propertyName + " " + value);
@@ -81,7 +79,8 @@ public class Dots extends AtomShape {
     }
 
     if ("translucency" == propertyName) {
-      return; // no translucent dots
+      if (!translucentAllowed)
+        return; // no translucent dots, but ok for geosurface
     }
 
     if ("ignore" == propertyName) {
@@ -133,10 +132,6 @@ public class Dots extends AtomShape {
     super.setProperty(propertyName, value, bs);
   }
 
-  void setSuperProperty(String propertyName, Object value, BitSet bs) {
-    super.setProperty(propertyName, value, bs);
-  }
-  
   void initialize() {
     bsSelected = null;
     bsIgnore = null;
@@ -144,8 +139,8 @@ public class Dots extends AtomShape {
     if (ec == null)
       ec = new EnvelopeCalculation(viewer, atomCount, mads);
   }
-  
- public void setSize(int size, BitSet bsSelected) {
+
+  public void setSize(int size, BitSet bsSelected) {
     if (this.bsSelected != null)
       bsSelected = this.bsSelected;
 
@@ -233,7 +228,8 @@ public class Dots extends AtomShape {
       }
       boolean disregardNeighbors = (viewer.getDotSurfaceFlag() == false);
       boolean onlySelectedDots = (viewer.getDotsSelectedOnlyFlag() == true);
-      ec.calculate(addRadius, setRadius, scale, maxRadius, bsOn, bsIgnore,
+      ec
+          .calculate(addRadius, setRadius, scale, maxRadius, bsOn, bsIgnore,
               useVanderwaalsRadius, disregardNeighbors, onlySelectedDots,
               isSurface);
     }
@@ -243,7 +239,7 @@ public class Dots extends AtomShape {
     }
   }
 
- public void setModelClickability() {
+  public void setModelClickability() {
     for (int i = atomCount; --i >= 0;) {
       Atom atom = atoms[i];
       if ((atom.getShapeVisibilityFlags() & myVisibilityFlag) == 0
@@ -253,7 +249,7 @@ public class Dots extends AtomShape {
     }
   }
 
- public String getShapeState() {
+  public String getShapeState() {
     int[][] dotsConvexMaps = ec.getDotsConvexMaps();
     if (dotsConvexMaps == null || ec.getDotsConvexMax() == 0)
       return "";
@@ -277,8 +273,8 @@ public class Dots extends AtomShape {
           bs.set(iDot);
         }
       if (n > 0) {
-        appendCmd(s, type + i + " radius " + ec.getAppropriateRadius(i)
-            + " " + Escape.escape(bs));
+        appendCmd(s, type + i + " radius " + ec.getAppropriateRadius(i) + " "
+            + Escape.escape(bs));
       }
     }
     s.append(getShapeCommands(temp, null, atomCount));

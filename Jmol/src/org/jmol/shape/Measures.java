@@ -61,6 +61,7 @@ public class Measures extends Shape {
   }
   
   public void initShape() {
+    super.initShape();
     font3d = g3d.getFont3D(JmolConstants.MEASURE_DEFAULT_FONTSIZE);
   }
 

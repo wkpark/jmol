@@ -28,9 +28,8 @@ package org.jmol.shapebio;
 public class MeshRibbonRenderer extends StrandsRenderer {
 
   protected void renderBioShape(BioShape bioShape) {
-    if (wingVectors == null)
+    if (!setStrandCount())
       return;
-    setStrandCount(7);
     float offset = ((strandCount >> 1) * strandSeparation) + baseOffset;
     render2Strand(false, offset, offset);
     render1();

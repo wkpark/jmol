@@ -33,7 +33,7 @@ import org.jmol.modelset.Atom;
 import org.jmol.util.ArrayUtil;
 import org.jmol.viewer.JmolConstants;
 
-public class AtomShape extends Shape {
+public abstract class AtomShape extends Shape {
 
   // Balls, Dots, Halos, Labels, Polyhedra, Stars, Vectors
   

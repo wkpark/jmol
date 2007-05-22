@@ -29,7 +29,6 @@ import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
-
 import java.util.BitSet;
 import java.util.Hashtable;
 
@@ -38,39 +37,40 @@ import org.jmol.modelset.Bond;
 import org.jmol.modelset.BondIterator;
 
 public class Sticks extends Shape {
-  
-  short myMask;  
+
+  short myMask;
   boolean reportAll;
   BitSet bsOrderSet;
   BitSet bsSizeSet;
   BitSet bsColixSet;
-  
- public void initShape() {
+
+  public void initShape() {
+    super.initShape();
     myMask = JmolConstants.BOND_COVALENT_MASK;
     reportAll = false;
   }
 
- public void setSize(int size, BitSet bsSelected) {
+  public void setSize(int size, BitSet bsSelected) {
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
     boolean isBonds = viewer.isBondSelection();
-    BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected) : modelSet
-        .getBondIterator(myMask, bsSelected));
+    BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected)
+        : modelSet.getBondIterator(myMask, bsSelected));
     short mad = (short) size;
     while (iter.hasNext()) {
       bsSizeSet.set(iter.nextIndex());
       iter.next().setMad(mad);
     }
   }
-  
- public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+
+  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug(propertyName + " " + value + " " + bsSelected);
     }
     boolean isBonds = viewer.isBondSelection();
 
     if ("type" == propertyName) {
-      myMask = ((Integer)value).shortValue();
+      myMask = ((Integer) value).shortValue();
       return;
     }
     if ("reportAll" == propertyName) {
@@ -91,8 +91,8 @@ public class Sticks extends Shape {
       if (bsOrderSet == null)
         bsOrderSet = new BitSet();
       short order = ((Short) value).shortValue();
-      BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected) : modelSet
-          .getBondIterator(myMask, bsSelected));
+      BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected)
+          : modelSet.getBondIterator(myMask, bsSelected));
       while (iter.hasNext()) {
         bsOrderSet.set(iter.nextIndex());
         iter.next().setOrder(order);
@@ -117,8 +117,8 @@ public class Sticks extends Shape {
       }
       if (colix == Graphics3D.USE_PALETTE)
         return; //palettes not implemented for bonds
-      BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected) : modelSet
-          .getBondIterator(myMask, bsSelected));
+      BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected)
+          : modelSet.getBondIterator(myMask, bsSelected));
       while (iter.hasNext()) {
         int iBond = iter.nextIndex();
         Bond bond = iter.next();
@@ -131,8 +131,8 @@ public class Sticks extends Shape {
       if (bsColixSet == null)
         bsColixSet = new BitSet();
       boolean isTranslucent = (((String) value).equals("translucent"));
-      BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected) : modelSet
-          .getBondIterator(myMask, bsSelected));
+      BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected)
+          : modelSet.getBondIterator(myMask, bsSelected));
       while (iter.hasNext()) {
         bsColixSet.set(iter.nextIndex());
         iter.next().setTranslucent(isTranslucent, translucentLevel);
@@ -142,7 +142,7 @@ public class Sticks extends Shape {
     super.setProperty(propertyName, value, bsSelected);
   }
 
- public void setModelClickability() {
+  public void setModelClickability() {
     Bond[] bonds = modelSet.getBonds();
     for (int i = modelSet.getBondCount(); --i >= 0;) {
       Bond bond = bonds[i];
@@ -154,8 +154,8 @@ public class Sticks extends Shape {
       bond.getAtom2().setClickable(myVisibilityFlag);
     }
   }
-  
- public String getShapeState() {
+
+  public String getShapeState() {
     Hashtable temp = new Hashtable();
     Bond[] bonds = modelSet.getBonds();
     for (int i = modelSet.getBondCount(); --i >= 0;) {
@@ -171,5 +171,5 @@ public class Sticks extends Shape {
         setStateInfo(temp, i, getColorCommand("bonds", bond.getColix()));
     }
     return getShapeCommands(temp, null, -1, "select BONDS") + "\n";
-  }  
+  }
 }

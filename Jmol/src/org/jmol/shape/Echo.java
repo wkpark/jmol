@@ -34,7 +34,6 @@ import java.util.Enumeration;
 
 public class Echo extends TextShape {
 
-  
   /*
    * set echo Text.TOP    [Text.LEFT|Text.CENTER|Text.RIGHT]
    * set echo MIDDLE [Text.LEFT|Text.CENTER|Text.RIGHT]
@@ -44,17 +43,17 @@ public class Echo extends TextShape {
    * set echo none  to initiate setting default settings
    * 
    */
-  
 
   private final static String FONTFACE = "Serif";
   private final static int FONTSIZE = 20;
   private final static short COLOR = Graphics3D.RED;
-  
- public void initShape() {
+
+  public void initShape() {
+    super.initShape();
     setProperty("target", "top", null);
   }
 
- public void setProperty(String propertyName, Object value, BitSet bsSelected) {
+  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
 
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug("Echo.setProperty(" + propertyName + "," + value + ")");
@@ -62,7 +61,7 @@ public class Echo extends TextShape {
 
     if ("script" == propertyName) {
       if (currentText != null)
-        currentText.setScript((String)value);
+        currentText.setScript((String) value);
       return;
     }
     if ("target" == propertyName) {
@@ -81,8 +80,8 @@ public class Echo extends TextShape {
           } else if ("bottom" == target) {
             valign = Text.BOTTOM;
           }
-          text = new Text(viewer, g3d, g3d.getFont3D(FONTFACE, FONTSIZE), target,
-              COLOR, valign, halign);
+          text = new Text(viewer, g3d, g3d.getFont3D(FONTFACE, FONTSIZE),
+              target, COLOR, valign, halign);
           text.setAdjustForWindow(true); // when a box is around it
           texts.put(target, text);
           if (currentFont != null)
@@ -102,8 +101,8 @@ public class Echo extends TextShape {
     }
     super.setProperty(propertyName, value, null);
   }
-  
- public String getShapeState() {
+
+  public String getShapeState() {
     StringBuffer s = new StringBuffer();
     String lastFormat = "";
     Enumeration e = texts.elements();
@@ -118,7 +117,7 @@ public class Echo extends TextShape {
     }
     return s.toString();
   }
-  
+
   public boolean checkObjectClicked(int x, int y, int modifiers) {
     Enumeration e = texts.elements();
     while (e.hasMoreElements()) {
@@ -152,6 +151,4 @@ public class Echo extends TextShape {
     return false;
   }
 
-
 }
-

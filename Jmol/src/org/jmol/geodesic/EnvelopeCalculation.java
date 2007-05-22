@@ -342,7 +342,7 @@ public final class EnvelopeCalculation {
   }
 */  
   public float getAppropriateRadius(int atomIndex) {
-    return atomData.atomRadius[atomIndex];
+    return (mads != null ? mads[atomIndex]/1000f : atomData.atomRadius[atomIndex]);
   }
 
   private int indexI;

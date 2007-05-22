@@ -105,7 +105,7 @@ public class Dots extends AtomShape {
     if ("atom" == propertyName) {
       thisAtom = ((Integer) value).intValue();
       atoms[thisAtom].setShapeVisibility(myVisibilityFlag, true);
-      ec.allocDotsConvexMaps(thisAtom + 1);
+      ec.allocDotsConvexMaps(atomCount);
       return;
     }
     if ("dots" == propertyName) {
@@ -261,7 +261,7 @@ public class Dots extends AtomShape {
       if (dotsConvexMaps[i] == null
           || !atoms[i].isShapeVisible(myVisibilityFlag))
         continue;
-      if (!isSurface && bsColixSet != null && bsColixSet.get(i))
+      if (bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp, i, getColorCommand(type, paletteIDs[i], colixes[i]));
       BitSet bs = new BitSet();
       int[] map = dotsConvexMaps[i];

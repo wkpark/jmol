@@ -1291,7 +1291,11 @@ final public class JmolConstants {
   
   public final static byte PALETTE_SHAPELY = 9;
   public final static byte PALETTE_CHAIN = 10;
-  public final static byte PALETTE_GROUP = 11 | PALETTE_VOLATILE;
+  //these next three are volatile because their color
+  //depends upon which groups are selected.
+  //When it comes to defining the state, we need to 
+  //just show the individual color names.
+  public final static byte PALETTE_GROUP = 11 | PALETTE_VOLATILE; 
   public final static byte PALETTE_MONOMER = 12 | PALETTE_VOLATILE;
   public final static byte PALETTE_MOLECULE = 13 | PALETTE_VOLATILE;
   public final static byte PALETTE_ALTLOC = 14;

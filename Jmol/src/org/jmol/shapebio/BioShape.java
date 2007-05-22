@@ -60,6 +60,7 @@ class BioShape {
 
   BitSet bsColixSet;
   BitSet bsSizeSet;
+  BitSet bsSizeDefault = new BitSet();
   boolean isActive;
   
   int monomerCount;
@@ -192,9 +193,8 @@ class BioShape {
     int flag = shape.myVisibilityFlag;
     for (int i = monomerCount; --i >= 0; ) {
       int leadAtomIndex = leadAtomIndices[i];
-      if (bsSelected.get(leadAtomIndex)) { 
-        mads[i] = mad >= 0 ? mad : getMadSpecial(mad, i);
-        boolean isVisible = (mads[i] > 0);
+      if (bsSelected.get(leadAtomIndex)) {
+        boolean isVisible = ((mads[i] = setMad(i, mad)) > 0);
         bsSizeSet.set(i, isVisible);
         monomers[i].setShapeVisibility(flag, isVisible);
         shape.atoms[leadAtomIndex].setShapeVisibility(flag,isVisible);
@@ -205,18 +205,14 @@ class BioShape {
       mads[monomerCount] = mads[monomerCount - 1];
   }
 
-  private short getMadSpecial(short mad, int groupIndex) {
+  private short setMad(int groupIndex, short mad) {
     //undocumented
+    bsSizeDefault.set(groupIndex, mad == -1 || mad == -2);
     switch (mad) {
     case -1: // trace on
-      if (shape.madOn >= 0)
-        return shape.madOn;
-      if (shape.madOn != -2) {
-        Logger.error("not supported?");
-        return 0;
-      }
-      // fall into;
     case -2: // trace structure
+      if (mad == -1 && shape.madOn >= 0)
+        return shape.madOn;
       switch (monomers[groupIndex].getProteinStructureType()) {
       case JmolConstants.PROTEIN_STRUCTURE_SHEET:
       case JmolConstants.PROTEIN_STRUCTURE_HELIX:
@@ -248,7 +244,7 @@ class BioShape {
           (short)(2 * calcMeanPositionalDisplacement(atom.getBfactor100()));
       }
     }
-    Logger.error("unrecognized Mps.getSpecial(" + mad + ")");
+    Logger.error("unrecognized setMad(" + mad + ")");
     return 0;
   }
 
@@ -297,12 +293,15 @@ class BioShape {
       int atomIndex1 = monomers[i].getFirstAtomIndex();
       int atomIndex2 = monomers[i].getLastAtomIndex();
       if (bsSizeSet != null && bsSizeSet.get(i)) {//shapes MUST have been set with a size
-        Shape.setStateInfo(temp, atomIndex1, atomIndex2, type + " "
-          + (mads[i] / 2000f));
+        if (bsSizeDefault.get(i))
+          Shape.setStateInfo(temp, atomIndex1, atomIndex2, type + " on");
+        else
+          Shape.setStateInfo(temp, atomIndex1, atomIndex2, type + " "
+              + (mads[i] / 2000f));
       }
       if (bsColixSet != null && bsColixSet.get(i))
-        Shape.setStateInfo(temp2, atomIndex1, atomIndex2, shape.getColorCommand(type, 
-            paletteIDs[i], colixes[i]));
+        Shape.setStateInfo(temp2, atomIndex1, atomIndex2, shape
+            .getColorCommand(type, paletteIDs[i], colixes[i]));
     }
   }  
 

@@ -27,8 +27,6 @@ package org.jmol.shapebio;
 public class Cartoon extends BioShapeCollection {
 
   public void initShape() {
-    madOn = -2;
-    madHelixSheet = 3000;
     madTurnRandom = 500;
     madDnaRna = 1000;
     super.initShape();

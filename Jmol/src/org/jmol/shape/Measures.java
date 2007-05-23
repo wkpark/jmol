@@ -458,7 +458,7 @@ public class Measures extends Shape {
     for (int i = 0; i < measurementCount; i++)
       commands.append(getState(i));
     if (!showMeasurementNumbers)
-      commands.append("measures off; # numbers off\n");
+      commands.append("set measures off; # numbers off\n");
     appendCmd(commands, "measures = " + viewer.getMeasureDistanceUnits());
     appendCmd(commands, getFontCommand("measures", font3d));
     int n = 0;

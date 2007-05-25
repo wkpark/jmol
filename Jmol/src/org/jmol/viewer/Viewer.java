@@ -2033,6 +2033,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelManager.toUnitCell(modelIndex, pt, offset);
   }
 
+  void toFractional(Point3f pt) {
+    int modelIndex = getCurrentModelIndex();
+    if (modelIndex < 0)
+      return;
+    modelManager.toFractional(modelIndex, pt);
+  }
+
   public void setCenterSelected() {
     //depricated
     setCenterBitSet(selectionManager.bsSelection, true);

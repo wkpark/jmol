@@ -1729,6 +1729,15 @@ class Eval { //implements Runnable {
     case Token.atomZ:
       propertyValue = atom.z;
       return asInt ? propertyValue * 100 : propertyValue;
+    case Token.fracX:
+      propertyValue = atom.getFractionalCoord('X');
+      return asInt ? propertyValue * 100 : propertyValue;
+    case Token.fracY:
+      propertyValue = atom.getFractionalCoord('Y');
+      return asInt ? propertyValue * 100 : propertyValue;
+    case Token.fracZ:
+      propertyValue = atom.getFractionalCoord('Z');
+      return asInt ? propertyValue * 100 : propertyValue;
     default:
       unrecognizedAtomProperty(Token.nameOf(tokWhat));
     }
@@ -6359,6 +6368,15 @@ class Eval { //implements Runnable {
           case Token.atomZ:
             fv = atom.z;
             break;
+          case Token.fracX:
+            fv = atom.getFractionalCoord('X');
+            break;
+          case Token.fracY:
+            fv = atom.getFractionalCoord('Y');
+            break;
+          case Token.fracZ:
+            fv = atom.getFractionalCoord('Z');
+            break;
           case Token.distance:
             if (planeRef != null)
               fv = Graphics3D.distanceToPlane(planeRef, atom);
@@ -10027,6 +10045,22 @@ class Eval { //implements Runnable {
         if (iv == Token.color && x2.tok == Token.string) {
           Point3f pt = new Point3f();
           return addX(Graphics3D.colorPointFromString(Token.sValue(x2), pt));
+        }
+        if (x2.tok == Token.point3f) {
+          switch (op.intValue) {
+          case Token.atomX:
+            return addX(((Point3f)x2.value).x); 
+          case Token.atomY:
+            return addX(((Point3f)x2.value).y); 
+          case Token.atomZ:
+            return addX(((Point3f)x2.value).z);
+          case Token.fracX:
+          case Token.fracY:
+          case Token.fracZ:
+            Point3f ptf = new Point3f((Point3f)x2.value);
+            viewer.toFractional(ptf);
+            return addX(op.intValue == Token.fracX ? ptf.x : op.intValue == Token.fracY ? ptf.y : ptf.z);
+          }
         }
         if (x2.tok != Token.bitset)
           return false;

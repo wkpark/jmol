@@ -387,11 +387,14 @@ public class Token {
   final static int atomX           = atompropertyfloat | 0;
   final static int atomY           = atompropertyfloat | 1;
   final static int atomZ           = atompropertyfloat | 2;
-  final static int partialCharge   = atompropertyfloat | 3;
-  final static int phi             = atompropertyfloat | 4;
-  final static int psi             = atompropertyfloat | 5;
-  final static int surfacedistance = atompropertyfloat | 6;
-  final static int temperature     = atompropertyfloat | 7;
+  final static int fracX           = atompropertyfloat | 3;
+  final static int fracY           = atompropertyfloat | 4;
+  final static int fracZ           = atompropertyfloat | 5;
+  final static int partialCharge   = atompropertyfloat | 6;
+  final static int phi             = atompropertyfloat | 7;
+  final static int psi             = atompropertyfloat | 8;
+  final static int surfacedistance = atompropertyfloat | 9;
+  final static int temperature     = atompropertyfloat |10;
   
  // math-related Token static methods
   
@@ -1019,6 +1022,9 @@ public class Token {
     "atomx",             new Token(atomX),
     "atomy",             new Token(atomY),
     "atomz",             new Token(atomZ),
+    "fx",             new Token(fracX),
+    "fy",             new Token(fracY),
+    "fz",             new Token(fracZ),
     "all",          tokenAll,
     "none",         new Token(none),
     "null",         null,

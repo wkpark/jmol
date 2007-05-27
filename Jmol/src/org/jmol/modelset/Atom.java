@@ -728,9 +728,9 @@ final public class Atom extends Point3fi implements Tuple {
      return specialAtomIDs == null ? 0 : specialAtomIDs[atomIndex];
    }
    
-   private float getFractionalCoord(char ch) {
-     Point3f pt = getFractionalCoord();
-     return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
+  public float getFractionalCoord(char ch) {
+    Point3f pt = getFractionalCoord();
+    return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
   }
     
   Point3f getFractionalCoord() {
@@ -846,7 +846,6 @@ final public class Atom extends Point3fi implements Tuple {
   boolean isGroup3Match(String strWildcard) {
     return group.isGroup3Match(strWildcard);
   }
-
 
   boolean isProtein() {
     return group.isProtein();

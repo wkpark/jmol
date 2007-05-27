@@ -1307,6 +1307,11 @@ String getAtomInfoChime(int i) {
     return;
   }
   
+  public void toFractional(int modelIndex, Point3f pt) {
+    modelSet.toFractional(modelIndex, pt);
+    return;
+  }
+  
   public void clearBfactorRange(){
     modelSet.clearBfactorRange();
   }

@@ -760,6 +760,15 @@ abstract public class ModelSet {
     cellInfos[modelIndex].toUnitCell(pt, offset);
   }
   
+  void toFractional(int modelIndex, Point3f pt) {
+    if (modelIndex < 0)
+      return;
+    if (cellInfos == null || modelIndex >= cellInfos.length
+        || cellInfos[modelIndex] == null)
+      return;
+    cellInfos[modelIndex].toFractional(pt);
+  }
+  
   //////////// atoms //////////////
   
   int getAtomCountInModel(int modelIndex) {

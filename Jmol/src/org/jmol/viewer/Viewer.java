@@ -5570,6 +5570,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void getHelp(String what) {
+    if (what.length() > 0 && what.indexOf("?") != 0 
+        && global.helpPath.indexOf("?") < 0)
+      what = "?search=" + what;
     showUrl(global.helpPath + what);
   }
 

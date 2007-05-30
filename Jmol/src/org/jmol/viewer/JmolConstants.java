@@ -81,7 +81,7 @@ final public class JmolConstants {
     
   public final static boolean officialRelease = false;
 
-  public final static String DEFAULT_HELP_PATH = "http://www.stolaf.edu/academics/chemapps/jmol/docs/index.htm?search=";
+  public final static String DEFAULT_HELP_PATH = "http://www.stolaf.edu/academics/chemapps/jmol/docs/index.htm";
 
   public final static int DEFAULT_PERCENT_VDW_ATOM = 20;
   public final static float DEFAULT_BOND_RADIUS = 0.15f;

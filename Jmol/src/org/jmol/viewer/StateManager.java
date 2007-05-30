@@ -870,7 +870,7 @@ public class StateManager {
       setParameterValue("hbondsBackbone",hbondsBackbone);
       setParameterValue("hbondsSolid",hbondsSolid);
       setParameterValue("helpPath",defaultHelpPath);
-      setParameterValue("helpPath",helpPath);
+//      setParameterValue("helpPath",helpPath);
       setParameterValue("hermiteLevel",hermiteLevel);
       setParameterValue("hideNameInPopup",hideNameInPopup);
       setParameterValue("hideNavigationPoint",hideNavigationPoint);

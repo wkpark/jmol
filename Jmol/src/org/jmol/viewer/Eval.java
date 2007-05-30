@@ -2444,11 +2444,13 @@ class Eval { //implements Runnable {
    */
 
   void help() throws ScriptException {
-    if (!viewer.isApplet())
+    if (isSyntaxCheck)
       return;
     String what = (statementLength == 1 ? "" : parameterAsString(1));
-    if (!isSyntaxCheck)
-      viewer.getHelp(what);
+    Token t = Token.getTokenFromName(what);
+    if (t != null && (t.tok & Token.command) != 0)
+      what = "?command=" + what;
+    viewer.getHelp(what);
   }
 
   

@@ -1742,6 +1742,9 @@ public class Jmol extends JPanel {
     }
     
     public void showUrl(String url) {
+      if (scriptWindow != null) {
+        scriptWindow.sendConsoleMessage(url);
+      }      
     }
 
     public void showConsole(boolean showConsole) {

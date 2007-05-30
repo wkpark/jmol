@@ -25,6 +25,8 @@
 
 package org.jmol.shape;
 
+import org.jmol.util.BitSetUtil;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
@@ -43,6 +45,7 @@ public class Sticks extends Shape {
   BitSet bsOrderSet;
   BitSet bsSizeSet;
   BitSet bsColixSet;
+  BitSet selectedBonds;
 
   public void initShape() {
     super.initShape();
@@ -50,11 +53,20 @@ public class Sticks extends Shape {
     reportAll = false;
   }
 
+  /**
+   * sets the size of a bond, or sets the selectedBonds set
+   * 
+   * @param size
+   * @param bsSelected
+   */
   public void setSize(int size, BitSet bsSelected) {
+    if (size == Integer.MAX_VALUE) {
+      selectedBonds = (bsSelected == null ? null : BitSetUtil.copy(bsSelected));
+      return;
+    }
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
-    boolean isBonds = viewer.isBondSelection();
-    BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected)
+    BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
         : modelSet.getBondIterator(myMask, bsSelected));
     short mad = (short) size;
     while (iter.hasNext()) {
@@ -67,8 +79,6 @@ public class Sticks extends Shape {
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug(propertyName + " " + value + " " + bsSelected);
     }
-    boolean isBonds = viewer.isBondSelection();
-
     if ("type" == propertyName) {
       myMask = ((Integer) value).shortValue();
       return;
@@ -84,6 +94,7 @@ public class Sticks extends Shape {
       bsOrderSet = null;
       bsSizeSet = null;
       bsColixSet = null;
+      selectedBonds = null;
       return;
     }
 
@@ -91,7 +102,7 @@ public class Sticks extends Shape {
       if (bsOrderSet == null)
         bsOrderSet = new BitSet();
       short order = ((Short) value).shortValue();
-      BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected)
+      BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
           : modelSet.getBondIterator(myMask, bsSelected));
       while (iter.hasNext()) {
         bsOrderSet.set(iter.nextIndex());
@@ -106,7 +117,7 @@ public class Sticks extends Shape {
       byte pid = JmolConstants.pidOf(value);
       if (pid == JmolConstants.PALETTE_TYPE) {
         //only for hydrogen bonds
-        BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected)
+        BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
             : modelSet.getBondIterator(myMask, bsSelected));
         while (iter.hasNext()) {
           bsColixSet.set(iter.nextIndex());
@@ -117,7 +128,7 @@ public class Sticks extends Shape {
       }
       if (colix == Graphics3D.USE_PALETTE)
         return; //palettes not implemented for bonds
-      BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected)
+      BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
           : modelSet.getBondIterator(myMask, bsSelected));
       while (iter.hasNext()) {
         int iBond = iter.nextIndex();
@@ -131,7 +142,7 @@ public class Sticks extends Shape {
       if (bsColixSet == null)
         bsColixSet = new BitSet();
       boolean isTranslucent = (((String) value).equals("translucent"));
-      BondIterator iter = (isBonds ? modelSet.getBondIterator(bsSelected)
+      BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
           : modelSet.getBondIterator(myMask, bsSelected));
       while (iter.hasNext()) {
         bsColixSet.set(iter.nextIndex());
@@ -140,6 +151,12 @@ public class Sticks extends Shape {
       return;
     }
     super.setProperty(propertyName, value, bsSelected);
+  }
+
+  public Object getProperty(String property, int index) {
+    if (property.equals("selectionState"))
+      return (selectedBonds != null ? "select BONDS " + Escape.escape(selectedBonds) + "\n":"");
+    return null;
   }
 
   public void setModelClickability() {

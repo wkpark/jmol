@@ -166,7 +166,6 @@ class SelectionManager {
   }
 
   void select(BitSet bs, boolean isQuiet) {
-    selectionModeAtoms = true;
     if (bs == null) {
       if (!viewer.getRasmolHydrogenSetting())
         excludeSelectionSet(viewer.getAtomBits("hydrogen"));
@@ -181,21 +180,8 @@ class SelectionManager {
           "" + getSelectionCount()));
   }
 
-  boolean selectionModeAtoms = true;
-  
-  final BitSet bsBonds = new BitSet();
-  void selectBonds(BitSet bs) {
-    if (bs == null) {
-      selectionModeAtoms = true;
-      return;
-    }
-    BitSetUtil.clear(bsBonds);
-    bsBonds.or(bs);
-    selectionModeAtoms = false;
-  }
-  
-  BitSet getSelectedAtomsOrBonds() {
-    return (selectionModeAtoms ? bsSelection : bsBonds);
+  BitSet getSelectedAtoms() {
+    return bsSelection;
   }
   
   void selectAll() {
@@ -207,7 +193,6 @@ class SelectionManager {
   }
 
   void clearSelection() {
-    selectionModeAtoms = true;
     hideNotSelected = false;
     BitSetUtil.clear(bsSelection);
     empty = TRUE;
@@ -332,7 +317,6 @@ class SelectionManager {
   }
 
   private void selectionChanged() {
-    selectionModeAtoms = true;
     if (hideNotSelected)
       hideNotSelected();
     for (int i = listeners.length; --i >= 0; ) {
@@ -360,7 +344,7 @@ class SelectionManager {
       commands.append("select none;");
     else
       commands.append(cmd);
-    
+    commands.append(viewer.getShapeProperty(JmolConstants.SHAPE_STICKS, "selectionState"));
     commands.append("\n");
     return commands.toString();
   }

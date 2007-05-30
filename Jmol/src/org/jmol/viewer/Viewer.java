@@ -1165,22 +1165,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void select(BitSet bs, boolean isQuiet) {
     //Eval
     selectionManager.select(bs, isQuiet);
+    modelManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE, null);
   }
 
   void selectBonds(BitSet bs) {
-    selectionManager.selectBonds(bs);
+    modelManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE, bs);
   }
 
-  public boolean isBondSelection() {
-    return !selectionManager.selectionModeAtoms;
-  }
-
-  BitSet getSelectedAtomsOrBonds() {
-    return selectionManager.getSelectedAtomsOrBonds();
-  }
-
-  BitSet getSelectedBonds() {
-    return selectionManager.bsBonds;
+  BitSet getSelectedAtoms() {
+    return selectionManager.getSelectedAtoms();
   }
 
   void hide(BitSet bs, boolean isQuiet) {
@@ -4035,7 +4028,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setShapeProperty(JmolConstants.SHAPE_MESHRIBBON, "strandCount",
             new Integer(value));
         refresh(0, "set strandCount");
-        break;
+        return;
       }
       if (key.equalsIgnoreCase("perspectiveModel")) {
         setPerspectiveModel(value);

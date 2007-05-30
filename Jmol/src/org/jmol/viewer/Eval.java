@@ -2821,9 +2821,7 @@ class Eval { //implements Runnable {
     default:
       invalidArgument();
     }
-    if (!isSyntaxCheck)
-      viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder",
-          new Short(order), viewer.getSelectedAtomsOrBonds());
+    setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder", new Short(order));
   }
 
   void console() throws ScriptException {
@@ -3097,7 +3095,6 @@ class Eval { //implements Runnable {
         viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "translucency",
             translucency, bsBonds);
       }
-      viewer.selectBonds(null);
     }
     if (!(tQuiet || scriptLevel > scriptReportingLevel))
       scriptStatus(GT._("{0} connections modified or created", n));
@@ -3338,7 +3335,7 @@ class Eval { //implements Runnable {
           //checkStatementLength(index + 1);
           //iToken = index;
         }
-      } else if (shapeType == JmolConstants.SHAPE_LCAOCARTOON){
+      } else if (shapeType == JmolConstants.SHAPE_LCAOCARTOON) {
         iToken--; //back up one
       } else {
         // must not be a color, but rather a color SCHEME
@@ -3417,10 +3414,10 @@ class Eval { //implements Runnable {
         viewer.loadShape(shapeType);
         setShapeProperty(shapeType, prefix + "color", colorvalue);
       } else {
-        viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, "type",
-            new Integer(typeMask));
-        viewer.setShapeProperty(JmolConstants.SHAPE_STICKS, prefix + "color",
-            colorvalue, viewer.getSelectedAtomsOrBonds());
+        setShapeProperty(JmolConstants.SHAPE_STICKS, "type", new Integer(
+            typeMask));
+        setShapeProperty(JmolConstants.SHAPE_STICKS, prefix + "color",
+            colorvalue);
       }
     }
     if (translucency != null)
@@ -3480,7 +3477,7 @@ class Eval { //implements Runnable {
     if (!isSyntaxCheck || isScriptCheck && (isModel || isAppend)
         && fileOpenCheck) {
       if (dataType.toLowerCase().indexOf("property_") == 0) {
-        BitSet bs = viewer.getSelectedAtomsOrBonds();
+        BitSet bs = viewer.getSelectedAtoms();
         int dataField = isOneValue ? Integer.MIN_VALUE : ((Integer) viewer.getParameter("propertyDataField")).intValue();
         int matchField = isOneValue ? 0 : ((Integer) viewer.getParameter("propertyAtomNumberField")).intValue();
         int atomCount = viewer.getAtomCount();
@@ -4441,7 +4438,7 @@ class Eval { //implements Runnable {
     if (statementLength == 1) {
       if (isSyntaxCheck)
         return;
-      BitSet bs = viewer.getSelectedAtomsOrBonds();
+      BitSet bs = viewer.getSelectedAtoms();
       pt = viewer.getAtomSetCenter(bs);
       viewer.invertSelected(pt, bs);
       return;
@@ -4920,7 +4917,7 @@ class Eval { //implements Runnable {
     setShapeProperty(JmolConstants.SHAPE_STICKS, "type", 
         new Integer(JmolConstants.BOND_COVALENT_MASK));
     viewer.setShapeSize(JmolConstants.SHAPE_STICKS, mad, viewer
-        .getSelectedAtomsOrBonds());
+        .getSelectedAtoms());
   }
 
   void ssbond() throws ScriptException {
@@ -5866,7 +5863,7 @@ class Eval { //implements Runnable {
       if (key.startsWith("property_")) {
         n = viewer.getAtomCount();
         Viewer.setData(key, new Object[] { key, "" + v,
-            viewer.getSelectedAtomsOrBonds() }, n, 0, Integer.MIN_VALUE);
+            viewer.getSelectedAtoms() }, n, 0, Integer.MIN_VALUE);
         return;
       }
       if (v instanceof Boolean) {

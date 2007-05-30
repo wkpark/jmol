@@ -2714,6 +2714,7 @@ abstract public class ModelSet {
 
     }
 
+    setModelVisibility();
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapes[i];
       if (shape != null && (isAll || JmolConstants.isShapeSecondary(i)) 

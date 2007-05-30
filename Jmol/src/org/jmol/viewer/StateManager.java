@@ -519,7 +519,6 @@ public class StateManager {
     boolean traceAlpha            = true;
     boolean highResolutionFlag    = false;
     int ribbonAspectRatio         = 16;
-    int strandCount               = 5;
     int hermiteLevel              = 0;
     float sheetSmoothing          = 1; // 0: traceAlpha on alphas for helix, 1 on midpoints
 
@@ -914,7 +913,6 @@ public class StateManager {
       setParameterValue("specularPower",specularPower);
       setParameterValue("ssbondsBackbone",ssbondsBackbone);
       setParameterValue("stereoState",stereoState);
-      setParameterValue("strandCount",strandCount);
       setParameterValue("testFlag1",testFlag1);
       setParameterValue("testFlag2",testFlag2);
       setParameterValue("testFlag3",testFlag3);

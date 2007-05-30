@@ -61,6 +61,7 @@ public class FrameRenderer {
 
       if (shape == null)
         continue;
+      //System.out.println("FrameRenderer: " + JmolConstants.getShapeClassName(i));
       getRenderer(i, g3d).render(g3d, modelSet, shape); //, rectClip
     }
     if (logTime)

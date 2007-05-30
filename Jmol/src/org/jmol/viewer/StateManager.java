@@ -586,8 +586,7 @@ public class StateManager {
     float axesScale            = 2;        
     int pickingSpinRate        = 10;
     
-    String helpPath            = null;
-    String defaultHelpPath     = JmolConstants.DEFAULT_HELP_PATH;
+    String helpPath = JmolConstants.DEFAULT_HELP_PATH;
 
     //testing
 
@@ -869,8 +868,7 @@ public class StateManager {
       setParameterValue("greyscaleRendering",greyscaleRendering);
       setParameterValue("hbondsBackbone",hbondsBackbone);
       setParameterValue("hbondsSolid",hbondsSolid);
-      setParameterValue("helpPath",defaultHelpPath);
-//      setParameterValue("helpPath",helpPath);
+      setParameterValue("helpPath",helpPath);
       setParameterValue("hermiteLevel",hermiteLevel);
       setParameterValue("hideNameInPopup",hideNameInPopup);
       setParameterValue("hideNavigationPoint",hideNavigationPoint);

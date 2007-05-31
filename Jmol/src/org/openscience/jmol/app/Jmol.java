@@ -1463,7 +1463,13 @@ public class Jmol extends JPanel {
         file = exportChooser.getSelectedFile();
         if (file != null) {
           ImageCreator c = new ImageCreator(viewer, status);
-          c.createImage(file.getAbsolutePath(), it.getType(), it.getQuality());
+          int iQuality = it.getQuality();
+          String sType = it.getType();
+          if (sType.equals("SPT")) {
+            sType = viewer.getStateInfo();
+            iQuality = Integer.MIN_VALUE;
+          }
+          c.createImage(file.getAbsolutePath(), sType, iQuality);
         }
       }
     }

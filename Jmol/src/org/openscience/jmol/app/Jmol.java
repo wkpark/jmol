@@ -1460,6 +1460,7 @@ public class Jmol extends JPanel {
 
       int retval = exportChooser.showSaveDialog(Jmol.this);
       if (retval == 0) {
+        it.memorizeDefaultType();
         file = exportChooser.getSelectedFile();
         if (file != null) {
           ImageCreator c = new ImageCreator(viewer, status);

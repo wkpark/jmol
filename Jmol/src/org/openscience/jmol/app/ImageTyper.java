@@ -41,7 +41,7 @@ public class ImageTyper extends JPanel {
 
   private final String[] Choices = { "JPEG", "PNG", "PPM", "SPT" };
   final String[] Extensions = { "jpg", "png", "ppm", "spt" };
-  private int def = 0;
+  private static int def = 0;
   String result = Choices[def];
   String extension = Extensions[def];
   JSlider qSlider;
@@ -106,6 +106,15 @@ public class ImageTyper extends JPanel {
     qSlider.setEnabled(true);
     qPanel.add(qSlider, BorderLayout.SOUTH);
     add(qPanel, BorderLayout.SOUTH);
+  }
+
+  /**
+   * Memorize the default type for the next time.
+   */
+  public void memorizeDefaultType() {
+    if ((cb != null) && (cb.getSelectedIndex() >= 0)) {
+      def = cb.getSelectedIndex();
+    }
   }
 
   /**

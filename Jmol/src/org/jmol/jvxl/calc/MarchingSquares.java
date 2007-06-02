@@ -522,7 +522,7 @@ public class MarchingSquares {
         centerIsLow = false;
         lastInside = 0;
       }
-      System.out.println("generatcont " + insideCount + " " + contourIndex + " " + centerIsLow);
+      //System.out.println("generatcont " + insideCount + " " + contourIndex + " " + centerIsLow);
     }
     return centerIsLow;
   }

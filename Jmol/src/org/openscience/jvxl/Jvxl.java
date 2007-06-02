@@ -309,8 +309,16 @@ public class Jvxl {
       sg.setParameter("red", new Float(min));
     if (!Float.isNaN(max))
       sg.setParameter("blue", new Float(max));
-    if (mapFile != null)
-      sg.setParameter("mapColor", mapFile);
+    if (mapFile != null) {
+      Object t = FileReader
+      .getBufferedReaderOrErrorMessageFromName(mapFile);
+      if (t instanceof String) {
+        Logger.error((String) t);
+        return;
+      }
+      BufferedReader br2 = (BufferedReader) t;
+      sg.setParameter("mapColor", br2);
+    }
 
     writeFile(outputFile, (String) sg.getProperty("jvxlFileData", 0));
     Logger.info((String) sg.getProperty("jvxlFileInfo", 0));

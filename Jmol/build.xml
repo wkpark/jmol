@@ -398,14 +398,16 @@ support for assertions (which were introduced in 1.4).
         <exclude name="**/.*" />
         <exclude name="**/*.dx" />
         <exclude name="**/Test*.class" />
-        <include name="org/openscience/jvxl/jvxl.java" />
+        <include name="org/openscience/jvxl/*" />
         <include name="org/jmol/jvxl/**" />
         <include name="org/jmol/util/**" />
+        <include name="org/jmol/g3d/**" />
         <include name="org/jmol/api/**" />
         <include name="org/jmol/atomdata/**" />
         <include name="org/jmol/quantum/**" />
-        <include name="org/jmol/viewer/JmolConstants.java" />
+        <include name="org/jmol/viewer/JmolConstants.class" />
       </fileset>
+      <fileset dir="${appjars.dir}" includes="**/*"/>
     </jar>
 
   	<signjar jar="${jmol.build.dir}/JvxlUnsigned.jar"
@@ -975,7 +977,7 @@ support for assertions (which were introduced in 1.4).
     </signjar>
   </target>
 
-  <target name="clean" id="clean">
+  <target name="xclean" id="xclean">
     <delete dir="${classes.dir}"/>
     <delete dir="${applet.classes.dir}"/>
     <delete dir="${apisio.classes.dir}"/>
@@ -993,7 +995,7 @@ support for assertions (which were introduced in 1.4).
     </delete>
   </target>
 
-  <target name="cxlean" id="cxlean">
+  <target name="clean" id="clean">
   </target>
 
   <target name="spotless" id="spotless" depends="clean,spotless-i18n">

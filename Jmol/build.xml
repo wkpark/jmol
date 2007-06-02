@@ -977,7 +977,7 @@ support for assertions (which were introduced in 1.4).
     </signjar>
   </target>
 
-  <target name="xclean" id="xclean">
+  <target name="clean" id="clean">
     <delete dir="${classes.dir}"/>
     <delete dir="${applet.classes.dir}"/>
     <delete dir="${apisio.classes.dir}"/>
@@ -995,7 +995,7 @@ support for assertions (which were introduced in 1.4).
     </delete>
   </target>
 
-  <target name="clean" id="clean">
+  <target name="xclean" id="xclean">
   </target>
 
   <target name="spotless" id="spotless" depends="clean,spotless-i18n">

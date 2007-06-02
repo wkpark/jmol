@@ -42,6 +42,8 @@ import java.awt.event.*;
 import java.awt.print.*;
 import java.beans.*;
 import java.io.*;
+import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.*;
 
 import javax.swing.*;
@@ -1762,9 +1764,21 @@ public class Jmol extends JPanel {
     }
     
     public void showUrl(String url) {
-      if (scriptWindow != null) {
-        scriptWindow.sendConsoleMessage(url);
-      }      
+      try {        
+        Class c = Class.forName("java.awt.Desktop");
+        Method getDesktop = c.getMethod("getDesktop",new Class[] {});
+        Object deskTop = getDesktop.invoke(null,new Class[] {});
+        Method browse = c.getMethod("browse",new Class[] {URI.class});
+        Object arguments[] = {new URI(url)};
+        browse.invoke(deskTop, arguments);
+      } catch (Exception e) {
+        System.out.println(e.getMessage());
+        if (scriptWindow != null) {
+          scriptWindow.sendConsoleMessage("Java 6 Desktop.browse() capability unavailable. Could not open " + url);
+        } else {
+          Logger.error("Java 6 Desktop.browse() capability unavailable. Could not open " + url);
+        }
+      }
     }
 
     public void showConsole(boolean showConsole) {

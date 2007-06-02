@@ -3583,6 +3583,8 @@ class Eval { //implements Runnable {
   }
   
   void pause() throws ScriptException {
+    if (isSyntaxCheck)
+      return;
     pauseExecution();
     String msg = optParameterAsString(1);
     if (msg.length() == 0)

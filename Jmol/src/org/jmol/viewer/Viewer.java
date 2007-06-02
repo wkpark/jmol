@@ -3586,8 +3586,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (s != null)
       evalStringQuiet(s);
     else
-      statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo, firstNo,
-          lastNo);
+      statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo, (repaintManager.animationDirection < 0 ? -firstNo : firstNo),
+          (repaintManager.currentDirection < 0 ? -lastNo : lastNo));
   }
 
   private void setStatusFileLoaded(int ptLoad, String fullPathName,

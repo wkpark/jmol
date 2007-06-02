@@ -1689,8 +1689,21 @@ public class Jmol extends JPanel {
       // Note: twos-complement. To get actual frame number, use 
       // Math.max(frameNo, -2 - frameNo)
       // -1 means all frames are now displayed
-      
       boolean isAnimationRunning = (frameNo <= -2);
+      
+      /*
+       * animationDirection is set solely by the "animation direction +1|-1" script command
+       * currentDirection is set by operations such as "anim playrev" and coming to the end of 
+       * a sequence in "anim mode palindrome"
+       * 
+       * It is the PRODUCT of these two numbers that determines what direction the animation is
+       * going.
+       * 
+       */
+      //int animationDirection = (firstNo < 0 ? -1 : 1);
+      //int currentDirection = (lastNo < 0 ? -1 : 1);
+      //System.out.println("notifyFrameChange " + frameNo + " " + fileNo + " " + modelNo + " " + firstNo + " " + lastNo + " " + animationDirection + " " + currentDirection);
+
       if (jmolpopup == null || isAnimationRunning)
         return;
       jmolpopup.updateComputedMenus();

@@ -973,13 +973,28 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
 
     public void notifyFrameChanged(int frameNo, int fileNo, int modelNo,
                                    int firstNo, int lastNo) {
+      // Note: twos-complement. To get actual frame number, use 
+      // Math.max(frameNo, -2 - frameNo)
+      // -1 means all frames are now displayed
       boolean isAnimationRunning = (frameNo <= -2);
+      int animationDirection = (firstNo < 0 ? -1 : 1);
+      int currentDirection = (lastNo < 0 ? -1 : 1);
+      
+      /*
+       * animationDirection is set solely by the "animation direction +1|-1" script command
+       * currentDirection is set by operations such as "anim playrev" and coming to the end of 
+       * a sequence in "anim mode palindrome"
+       * 
+       * It is the PRODUCT of these two numbers that determines what direction the animation is
+       * going.
+       * 
+       */
       if (mayScript && animFrameCallback != null) {
         try {
           jsoWindow.call(animFrameCallback, new Object[] { htmlName,
               new Integer(Math.max(frameNo, -2 - frameNo)),
-              new Integer(fileNo), new Integer(modelNo), new Integer(firstNo),
-              new Integer(lastNo), new Integer(isAnimationRunning ? 1: 0) });
+              new Integer(fileNo), new Integer(modelNo), new Integer(Math.abs(firstNo)),
+              new Integer(Math.abs(lastNo)), new Integer(isAnimationRunning ? 1: 0), new Integer(animationDirection), new Integer(currentDirection) });
         } catch (Exception e) {
           if (!haveNotifiedError)
             if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {

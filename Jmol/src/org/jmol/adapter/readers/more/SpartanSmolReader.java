@@ -84,8 +84,11 @@ public class SpartanSmolReader extends AtomSetCollectionReader {
           Float n = (Float) atomSetCollection.getAtomSetCollectionAuxiliaryInfo("HOMO_N");
           if (moData != null && n != null)
             moData.put("HOMO", new Integer(n.intValue()));
+        } else if (line.indexOf("5D shell") >= 0) {
+          moData.put("calculationType", line);
         }
         readLine();
+        System.out.println(line);
       }
     } catch (Exception e) {
       return setError(e);

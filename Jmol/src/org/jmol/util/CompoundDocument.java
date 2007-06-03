@@ -99,8 +99,9 @@ public class CompoundDocument extends BinaryDocument {
     return str;
   }
 
+  StringBuffer data;
   public StringBuffer getAllData() {
-    StringBuffer data = new StringBuffer();
+    data = new StringBuffer();
     data.append("Compound Document File Directory: ");
     data.append(getDirectoryListing("|"));
     data.append("\n");
@@ -323,13 +324,17 @@ public class CompoundDocument extends BinaryDocument {
   private void getShortSectorAllocationTable() {
     int nSSID = 0;
     int thisSID = header.SID_SSAT_start;
-    SSAT = new int[header.nSATsectors * nIntPerSector];
+    //BH: I had to multiply this by 2 to read the Fe.spartan file
+    //    I don't know why -- I probably misread the CompoundDocument documentation 
+    //    anyway, this just gives a larger table that may or may not be accessed.
+    int nMax = header.nSATsectors * nIntPerSector * 2;
+    SSAT = new int[nMax];
     try {
-      while (thisSID > 0) {
+      while (thisSID > 0 && nSSID < nMax) {
         gotoSector(thisSID);
         for (int j = 0; j < nIntPerSector; j++) {
           SSAT[nSSID++] = readInt();
-          //Logger.debug("short: " + thisSID+"."+j+" SSID=" +(nSSID-1)+" "+SSAT[nSSID-1]);
+          //System.out.println("short: " + thisSID+"."+j+" SSID=" +(nSSID-1)+" "+SSAT[nSSID-1]);
         }
         thisSID = SAT[thisSID];
       }
@@ -365,6 +370,7 @@ public class CompoundDocument extends BinaryDocument {
   private StringBuffer getFileAsString(CmpDocDirectoryEntry thisEntry) {
     if(thisEntry.isEmpty)
       return new StringBuffer();
+    //System.out.println(thisEntry.entryName + " " + thisEntry.entryType + " " + thisEntry.lenStream + " " + thisEntry.isStandard + " " + thisEntry.SIDfirstSector);
     return (thisEntry.isStandard ? getStandardStringData(
             thisEntry.SIDfirstSector, thisEntry.lenStream)
             : getShortStringData(thisEntry.SIDfirstSector, thisEntry.lenStream));
@@ -420,8 +426,10 @@ public class CompoundDocument extends BinaryDocument {
         shortSID = SSAT[shortSID];
       }
     } catch (Exception e) {
+      Logger.error(data.toString());
       Logger.error(null, e);
     }
+    //System.out.println(data);
     return data;
   }
 }

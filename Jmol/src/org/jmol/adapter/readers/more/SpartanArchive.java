@@ -124,6 +124,9 @@ public class SpartanArchive {
     gaussianCount = parseInt(tokens[3]);
     //overallCharge = parseInt(tokens[4]);
     calculationType = tokens[9];
+    String s = (String) moData.get("calculationType");
+    if (s != null)
+      calculationType += s;
     moData.put("calculationType", calculationType);
     return atomCount;
   }

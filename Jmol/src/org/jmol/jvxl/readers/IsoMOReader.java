@@ -97,6 +97,7 @@ class IsoMOReader extends AtomDataReader {
       default:
       }
     } catch (Exception e) {
+      e.printStackTrace();
       Logger.error("Error in MO calculation " + e.getMessage());
     }
   }

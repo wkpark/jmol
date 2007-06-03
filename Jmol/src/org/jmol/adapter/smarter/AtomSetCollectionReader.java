@@ -503,6 +503,7 @@ public abstract class AtomSetCollectionReader {
     prevline = line;
     line = reader.readLine();
     ptLine++;
+    //System.out.println("readLine " + ptLine + " " + line);
     return line;
   }
 

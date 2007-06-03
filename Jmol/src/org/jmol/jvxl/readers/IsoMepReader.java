@@ -50,7 +50,7 @@ class IsoMepReader extends AtomDataReader {
       m.calculate(volumeData, bsMySelected, atomData.atomXyz,
           params.theProperty);
     } catch (Exception e) {
-      Logger.error("Error in MO calculation " + e.getMessage());
+      Logger.error("Error in MEP calculation " + e.getMessage());
     }
 
   }

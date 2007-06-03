@@ -5076,9 +5076,9 @@
   <fah_proj number="3043" name="p3043_p3029_SMP-emsv-03" public="y" file="y"
     server="171.64.65.63" atoms="9684" preferred="1.5" deadline="3"
     credit="1440" frames="100" code="GS" contact="densign" contrib="Macaholic"/>
-  <fah_proj number="3044" name="p3044_Human Hpin1 mutant 4" public="y"
+  <fah_proj number="3044" name="p3044_Human Hpin1 mutant 4" public="y" file="y"
     server="171.64.65.58" atoms="8810" preferred="42" deadline="61"
-    credit="218" frames="100" code="G" contact="densign"/>
+    credit="218" frames="100" code="G" contact="densign" contrib="Ivoshiee"/>
   <fah_proj number="3045" name="p3045_FORMIN BINDING PROTEIN" public="y"
     server="171.64.65.58" atoms="8433" preferred="59" deadline="88"
     credit="314" frames="100" code="G" contact="densign"/>
@@ -5094,9 +5094,9 @@
   <fah_proj number="3049" name="p3049_human_hpin1_m1_99p_373K" public="y"
     server="171.64.65.58" atoms="9590" preferred="45" deadline="66"
     credit="236" frames="100" code="G" contact="densign"/>
-  <fah_proj number="3050" name="p3050_SMP-svE4A-03" public="y"
+  <fah_proj number="3050" name="p3050_SMP-svE4A-03" public="y" file="y"
     server="171.64.65.63" atoms="9679" preferred="1.5" deadline="3"
-    credit="1440" frames="100" code="GS" contact="densign"/>
+    credit="1440" frames="100" code="GS" contact="densign" contrib="bingles"/>
   <fah_proj number="3051" name="p3051_SMP-svV9A-03" public="y" file="y"
     server="171.64.65.63" atoms="9678" preferred="1.5" deadline="3"
     credit="1440" frames="100" code="GS" contact="densign" contrib="bingles"/>

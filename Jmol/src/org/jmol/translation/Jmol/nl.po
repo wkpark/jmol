@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Jmol\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-05-17 23:46+0200\n"
-"PO-Revision-Date: 2007-05-07 19:45+0100\n"
+"PO-Revision-Date: 2007-06-03 21:26+0100\n"
 "Last-Translator: Egon Willighagen <egonw@jmol.org>\n"
 "Language-Team: Dutch <jmol-developer@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
@@ -702,7 +702,7 @@ msgstr "Initialiseren Jmol...."
 
 #: org/openscience/jmol/app/Jmol.java:397
 msgid "All Files"
-msgstr ""
+msgstr "Alle bestanden"
 
 #: org/openscience/jmol/app/Jmol.java:398
 #: org/openscience/jmol/app/Jmol.java:436
@@ -714,15 +714,14 @@ msgstr "Afbreken"
 
 #: org/openscience/jmol/app/Jmol.java:399
 msgid "Abort file chooser dialog"
-msgstr ""
+msgstr "Sluit BestandKiezer"
 
 #: org/openscience/jmol/app/Jmol.java:400
 #: org/openscience/jmol/app/Jmol.java:401
 msgid "Details"
-msgstr ""
+msgstr "Details"
 
 #: org/openscience/jmol/app/Jmol.java:402
-#, fuzzy
 msgid "Directory"
 msgstr "Werkfolder"
 
@@ -734,38 +733,36 @@ msgid "Open"
 msgstr "Open"
 
 #: org/openscience/jmol/app/Jmol.java:404
-#, fuzzy
 msgid "Open selected directory"
-msgstr "Niets Selecteren"
+msgstr "Geselecteerde folder openen"
 
 #: org/openscience/jmol/app/Jmol.java:405
 msgid "Attributes"
-msgstr ""
+msgstr "Eigenschappen"
 
 #: org/openscience/jmol/app/Jmol.java:406
 msgid "Modified"
-msgstr ""
+msgstr "Veranderd"
 
 #: org/openscience/jmol/app/Jmol.java:407
 msgid "Generic File"
-msgstr ""
+msgstr "Onbekend formaat"
 
 #: org/openscience/jmol/app/Jmol.java:409
-#, fuzzy
 msgid "File Name:"
-msgstr "Begin Bestandsnaam"
+msgstr "Bestandsnaam:"
 
 #: org/openscience/jmol/app/Jmol.java:410
 msgid "Size"
-msgstr ""
+msgstr "Grootte"
 
 #: org/openscience/jmol/app/Jmol.java:411
 msgid "Files of Type:"
-msgstr ""
+msgstr "Bestanden van het type:"
 
 #: org/openscience/jmol/app/Jmol.java:412
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: org/openscience/jmol/app/Jmol.java:413
 #: org/openscience/jmol/app/ScriptWindow.java:108
@@ -774,38 +771,37 @@ msgstr "Help"
 
 #: org/openscience/jmol/app/Jmol.java:414
 msgid "FileChooser help"
-msgstr ""
+msgstr "Help BestandsKiezer"
 
 #: org/openscience/jmol/app/Jmol.java:415
 #: org/openscience/jmol/app/Jmol.java:416
 msgid "Home"
-msgstr ""
+msgstr "Thuis"
 
 #: org/openscience/jmol/app/Jmol.java:417
 #: org/openscience/jmol/app/Jmol.java:418
 msgid "List"
-msgstr ""
+msgstr "Lijst"
 
 #: org/openscience/jmol/app/Jmol.java:419
 msgid "Look In:"
-msgstr ""
+msgstr "Kijken in:"
 
 #: org/openscience/jmol/app/Jmol.java:420
 msgid "Error creating new folder"
-msgstr ""
+msgstr "Fout tijdens maken van nieuwe folder"
 
 #: org/openscience/jmol/app/Jmol.java:421
 msgid "New Folder"
-msgstr ""
+msgstr "Nieuwe folder"
 
 #: org/openscience/jmol/app/Jmol.java:422
 msgid "Create New Folder"
-msgstr ""
+msgstr "Nieuw folder maken"
 
 #: org/openscience/jmol/app/Jmol.java:424
-#, fuzzy
 msgid "Open selected file"
-msgstr "Niets Selecteren"
+msgstr "Geselecteerd bestand openen"
 
 #: org/openscience/jmol/app/Jmol.java:426
 #: org/openscience/jmol/app/Jmol.java:428
@@ -814,39 +810,36 @@ msgid "Save"
 msgstr "Opslaan"
 
 #: org/openscience/jmol/app/Jmol.java:427
-#, fuzzy
 msgid "Save selected file"
-msgstr "Niets Selecteren"
+msgstr "Geselecteerd bestand opslaan"
 
 #: org/openscience/jmol/app/Jmol.java:429
-#, fuzzy
 msgid "Save In:"
-msgstr "Opslaan"
+msgstr "Opslaan in:"
 
 #: org/openscience/jmol/app/Jmol.java:430
 msgid "Update"
-msgstr ""
+msgstr "Verversen"
 
 #: org/openscience/jmol/app/Jmol.java:431
 msgid "Update directory listing"
-msgstr ""
+msgstr "Folderinhoud verversen"
 
 #: org/openscience/jmol/app/Jmol.java:432
 msgid "Up"
-msgstr ""
+msgstr "Omhoog"
 
 #: org/openscience/jmol/app/Jmol.java:433
 msgid "Up One Level"
-msgstr ""
+msgstr "Een nivo omhoog"
 
 #: org/openscience/jmol/app/Jmol.java:437
-#, fuzzy
 msgid "No"
 msgstr "Geen"
 
 #: org/openscience/jmol/app/Jmol.java:439
 msgid "Yes"
-msgstr ""
+msgstr "Ja"
 
 #: org/openscience/jmol/app/Jmol.java:460
 msgid "give this help page"
@@ -964,12 +957,8 @@ msgid "Filename Stem"
 msgstr "Begin Bestandsnaam"
 
 #: org/openscience/jmol/app/PovrayDialog.java:158
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
-msgstr ""
-"Enkel frame: bv. 'caffeine' => 'caffeine.pov'; meerdere frames: bv. "
-"'caffeine' => 'caffeine_1.pov', 'caffeine_2.pov'"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgstr "Enkel frame: bv. 'caffeine' => 'caffeine.pov'; meerdere frames: bv. 'caffeine' => 'caffeine_1.pov', 'caffeine_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:168
 msgid "Working Directory"
@@ -1262,3 +1251,4 @@ msgstr "Wat is nieuw in Jmol"
 
 #~ msgid "File not loaded"
 #~ msgstr "Bestand niet geladen"
+

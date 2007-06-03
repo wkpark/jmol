@@ -88,7 +88,6 @@ public class SpartanSmolReader extends AtomSetCollectionReader {
           moData.put("calculationType", line);
         }
         readLine();
-        System.out.println(line);
       }
     } catch (Exception e) {
       return setError(e);

@@ -111,7 +111,7 @@ abstract public class JmolPopup {
   }
 
   void build(Object popupMenu) {
-    addMenuItems("", "popupMenu", popupMenu, new PopupResourceBundle());
+    addMenuItems("", "popupMenu", popupMenu, new PopupResourceBundle(), viewer.isJvm12orGreater());
   }
 
   final static int UPDATE_ALL = 0;
@@ -548,7 +548,7 @@ abstract public class JmolPopup {
   }
 
   private void addMenuItems(String parentId, String key, Object menu,
-                            PopupResourceBundle popupResourceBundle) {
+                            PopupResourceBundle popupResourceBundle, boolean isJVM12orGreater) {
     String id = parentId + "." + key;
     String value = popupResourceBundle.getStructure(key);
     //Logger.debug(id + " --- " + value);
@@ -586,16 +586,17 @@ abstract public class JmolPopup {
         if (st.hasMoreTokens())
           continue;
         popupResourceBundle.addStructure(key, colorSet);
-        addMenuItems(parentId, key, menu, popupResourceBundle);
+        addMenuItems(parentId, key, menu, popupResourceBundle, isJVM12orGreater);
         return;
       }
+      boolean isDisabled = (!isJVM12orGreater && item.indexOf("JVM12") >= 0);
       String word = popupResourceBundle.getWord(item);
       if (item.indexOf("Menu") >= 0) {
         Object subMenu = newMenu(word, id + "." + item);
         addMenuSubMenu(menu, subMenu);
         htMenus.put(item, subMenu);
         if (item.indexOf("Computed") < 0)
-          addMenuItems(id, item, subMenu, popupResourceBundle);
+          addMenuItems(id, item, subMenu, popupResourceBundle, isJVM12orGreater);
         // these will need tweaking:
         if ("aboutComputedMenu".equals(item)) {
           aboutComputedMenuBaseCount = getMenuItemCount(subMenu);
@@ -606,6 +607,8 @@ abstract public class JmolPopup {
           enableMenu(subMenu, false);
         }
         newMenu = subMenu;
+        if (isDisabled)
+          enableMenu(newMenu, false);
       } else if ("-".equals(item)) {
         addMenuSeparator(menu);
       } else if (item.endsWith("Checkbox")) {
@@ -618,6 +621,8 @@ abstract public class JmolPopup {
         if (script == null)
           script = item;
         newMenu = addMenuItem(menu, word, script, id + "." + item);
+        if (isDisabled)
+          enableMenuItem(newMenu, false);
       }
 
       // menus or menu items:

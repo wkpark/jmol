@@ -5,7 +5,7 @@
 -->
 <document>
 	<body>
-		<title>Jmol</title>
+		<title>Jmol: un visor Java de código abierto para la estructura tridimensional de moléculas.</title>
 		<header>
 			<script type="text/javascript">
 				function changePromoDisplay()
@@ -79,6 +79,18 @@
 	  </li>
 				</ul>
 			</p>
+		</section>
+		<section title="Cómo citar Jmol">
+			<p>La forma recomendada de citar Jmol es:<br/>
+				<b>Jmol: An open-source Java viewer for three-dimensional molecular structures. http://www.jmol.org/ 
+	</b>
+			</p>
+			<p>Recuerda usar siempre 'J' mayúscula y 'mol' en minúsculas.
+	(<a href="faqs/index.es.html#%C2%BFC%C3%B3mo%20se%20escribe%20Jmol?">explicación</a>).
+	</p>
+			<p>Si lo prefieres, hay una lista de artículos que describen Jmol en la
+	<a href="http://wiki.jmol.org:81/index.php/Literature">Wiki de Jmol</a>.
+	</p>
 		</section>
 		<section title="La versión 11 de Jmol">
 			<p>

@@ -129,13 +129,14 @@ class RepaintManager {
     }
   }
 
-  void refresh() {
+  boolean refresh() {
     if (repaintPending)
-      return;
+      return false;
     repaintPending = true;
     if (holdRepaint == 0) {
       viewer.repaint();
     }
+    return true;
   }
 
 
@@ -472,6 +473,7 @@ class RepaintManager {
         sleepTime = targetTime - (int) (System.currentTimeMillis() - timeBegin);
         if (sleepTime > 0)
           Thread.sleep(sleepTime);
+        boolean isFirst = true;
         while (!isInterrupted() && animationOn) {
           int i = (isTrajectory ? currentTrajectory : currentModelIndex);
           if (i == framePointer) {
@@ -488,11 +490,13 @@ class RepaintManager {
             if (sleepTime > 0)
               Thread.sleep(sleepTime);
           }
-          if (!setAnimationNext()) {
+          //System.out.println(repaintPending + " frame " + currentModelIndex);
+          if (!isFirst && !repaintPending && !setAnimationNext()) {
             Logger.debug("animation thread " + intThread + " exiting");
             setAnimationOff(false);
             return;
           }
+          isFirst = false;
           targetTime += (1000 / animationFps);
           sleepTime = targetTime
               - (int) (System.currentTimeMillis() - timeBegin);
@@ -501,10 +505,10 @@ class RepaintManager {
             //System.out.println("requesting repaint for " + currentModelIndex);
             //requestRepaintAndWait();
           //} else
-            refresh();
+          refresh();
           sleepTime = targetTime
               - (int) (System.currentTimeMillis() - timeBegin);
-          if (sleepTime > 0)
+          if (sleepTime > 0)  
             Thread.sleep(sleepTime);
           /*if (false && autoFps) {
             if (holdTime <= 0)
@@ -518,7 +522,6 @@ class RepaintManager {
             holdTime *=(nHold - 1);
             if (nHold == 1)
               holdTime = holdTime / 2;
-            Logger.info("repaint man autoFPS hold time " + holdTime + " ms; cycles "+nHold + " frame " + currentModelIndex);
          } */
         }
       } catch (InterruptedException ie) {

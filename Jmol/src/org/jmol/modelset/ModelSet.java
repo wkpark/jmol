@@ -2097,7 +2097,8 @@ abstract public class ModelSet {
         z.normalize();
         y1.scaleAdd(1.2f, x3, z);
         y2.scaleAdd(-1.2f, x3, z);
-        z.set(lcaoType.indexOf("b") >= 0 ? y2 : y1);
+        if (!lcaoType.equals("lp"))
+          z.set(lcaoType.indexOf("b") >= 0 ? y2 : y1);
         x.cross(z, x3);
         break;
       }

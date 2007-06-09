@@ -85,6 +85,7 @@ public class Polyhedra extends AtomShape {
       bondedOnly = isCollapsed = iHaveCenterBitSet = false;
       drawEdges = EDGES_NONE;
       haveBitSetVertices = false;
+      return;
     }
 
     if ("generate" == propertyName) {

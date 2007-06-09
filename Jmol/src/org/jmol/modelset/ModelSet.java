@@ -2133,14 +2133,16 @@ abstract public class ModelSet {
           z.scale(-1);
           x.set(y1);
         } else { //needs testing here
+          if (lcaoType.indexOf("lp") == 0 && nBonds == 3) { // align z as lone pair            
+            hybridization = "lp"; //any is OK
+          }
           x.cross(z, x);
         }
         break;
       }
       hybridization = "sp2";
       if (lcaoType.indexOf("sp") == 0) { // align z as sp2 orbital
-        z
-            .set(lcaoType.equalsIgnoreCase("sp3") || lcaoType.indexOf("d") >= 0 ? x4
+        z.set(lcaoType.equalsIgnoreCase("sp3") || lcaoType.indexOf("d") >= 0 ? x4
                 : lcaoType.indexOf("c") >= 0 ? x3
                     : lcaoType.indexOf("b") >= 0 ? x2 : x);
         z.scale(-1);

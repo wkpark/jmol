@@ -47,7 +47,7 @@ public class Polyhedra extends AtomShape {
   final static int EDGES_NONE = 0;
   final static int EDGES_ALL = 1;
   final static int EDGES_FRONT = 2;
-  final static int MAX_VERTICES = 90;
+  final static int MAX_VERTICES = 150;
   final static int FACE_COUNT_MAX = MAX_VERTICES - 3;
   Atom[] otherAtoms = new Atom[MAX_VERTICES];
 

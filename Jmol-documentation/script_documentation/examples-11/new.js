@@ -97,7 +97,7 @@ codebase="."
 archive="jmolApplet.jar"
 messagecallback="showmsg"
 thiscommand=""
-animcallback="showmsg"
+animcallback="animFrameCallback"
 pickcallback="showmsg"
 hovercallback="showmsg"
 loadstructcallback="showmsg"
@@ -149,7 +149,7 @@ function getapplet(name, model, codebase, height, width, script, msgcallback,ani
 
   var s = jmolApplet([width,height], script)
  //s=s.replace(/mayscript/,"maynotscript")
-//  alert(s)
+  //alert(s)
   return s
 }
 
@@ -280,7 +280,14 @@ function showjsoninfo(){
  showmsg("",what,"")
 }
 
+function animFrameCallback(app, frameNo, fileNo, modelNo, firstNo, lastNo, 
+isAnimationRunning, animationDirection, currentDirection) {
+ showmsg("","animation running, range = " + isAnimationRunning + " " + firstNo + " " + lastNo
+	+"\ncurrent direction = " + currentDirection
+	+"\ncurrent frame,file,model = " + frameNo + " " + fileNo + " " + modelNo
+	)
 
+}
 
 function showmsg(n,objwhat,moreinfo){
  var what=objwhat+(moreinfo?"\n"+moreinfo:"")

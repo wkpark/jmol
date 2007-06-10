@@ -1,10 +1,10 @@
 <script type="text/javascript" src="Jmol.js"></script>
 <table><tr><td>
 <script type="text/javascript">
-jmolSetCallback("animFrameCallback", "myfunc2")
-jmolSetCallback("loadStructCallback", "myfunc3")
-jmolSetCallback("messageCallback", "myfunc4")
-jmolSetCallback("hoverCallback", "myfunc")
+jmolSetCallback("xanimFrameCallback", "myfunc2")
+jmolSetCallback("xloadStructCallback", "myfunc3")
+jmolSetCallback("xmessageCallback", "myfunc4")
+jmolSetCallback("xhoverCallback", "myfunc")
 jmolSetTranslation(true);
 jmolApplet(200,"load data/caffeine.xyz")
 jmolApplet(200,"load data/caffeine.xyz")
@@ -24,6 +24,7 @@ function myfunc2(a,mess) {
 }
 
 function myfunc3(a,mess) {
+alert(mess)
  document.myform.mytextarea.value+="\nload: "+mess
 }
 
@@ -39,6 +40,7 @@ function app(a) {
 }
 
 function myfunc(a,mess) {
+alert(mess)
   var msg
   var s = mess + ""  // NEVER operate on the 2nd parameter itself
   if (s.charAt(0) == 'C')

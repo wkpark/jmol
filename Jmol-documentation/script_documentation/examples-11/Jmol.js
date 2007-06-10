@@ -1285,6 +1285,7 @@ function jmolLoadAjax_STOLAF_RCSB(fileformat,pdbid,optionalscript,targetSuffix){
  _jmol.thisurl=url
  _jmol.modelArray = new Array()
  url=_jmol.serverURL+"?returnfunction=_jmolLoadModel&returnArray=_jmol.modelArray&id="+targetSuffix+_jmolExtractPostData(url)
+open(url)
  _jmolDomScriptLoad(url)
  return url
 }

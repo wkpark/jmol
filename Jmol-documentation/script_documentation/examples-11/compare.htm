@@ -17,7 +17,12 @@ function loadPDB() {
  jmolScriptWait("zap;set echo top left;echo loading... ","A")
  jmolScriptWait("zap;set echo top left;echo loading... ","B")
   _jmol.RCSBserver = "http://pdb202.sdsc.edu" //temporarily only 4/17/06
- jmolLoadAjax_STOLAF_RCSB("CIF",pdbID,"","A")
+ jmolLoadAjax_STOLAF_RCSB("PDB",pdbID,"","A")
+}
+
+function loadPDB() {
+ jmolScriptWait("load data/1crn.pdb","A")
+ jmolScriptWait("load data/1crn.pdb","B") 
 }
 
 function myfunc(app,message,param) {

@@ -3,8 +3,8 @@ isxhtmltest=0/1
 isinitialized=0
 MAXMSG=100000
 msglog=""
-height=250
-width=250
+height=350
+width=350
 
 force_useHtml4Object=0
 force_useIEObject=0
@@ -272,7 +272,7 @@ function showscript(i,j,script){
 
 if(typeof(_jmol)=="undefined"){
 	document.write('<link rel="stylesheet" type="text/css" href="styles.css" />')
-	document.write('<script type="text/javascript" src="../Jmol-11.js"></script>')
+	document.write('<script type="text/javascript" src="Jmol.js"></script>')
 	isDOM=0
 	window.onload=fixlinks
 }else{

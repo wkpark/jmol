@@ -148,14 +148,14 @@ class Resolver {
     if (nLines == 1 && lines[0].length() > 0
         && Character.isDigit(lines[0].charAt(0)))
       return "Jme"; //only one line, and that line starts with a number 
+    if (checkMopacGraphf(lines))
+      return "MopacGraphf"; //must be prior to checkFoldingXyz and checkMol
     if (checkV3000(lines))
       return "V3000";
     if (checkMol(lines))
       return "Mol";
     if (checkXyz(lines))
       return "Xyz";
-    if (checkMopacGraphf(lines))
-      return "MopacGraphf"; //must be prior to checkFoldingXyz
     if (checkFoldingXyz(lines))
       return "FoldingXyz";
     if (checkCube(lines))

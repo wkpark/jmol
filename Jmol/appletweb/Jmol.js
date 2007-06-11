@@ -792,7 +792,12 @@ function _jmolSterilizeInline(model) {
 	/*  AngelH, mar2007:
 		By (re)setting this variable in the webpage before calling jmolApplet(), limits for applet size can be overriden.
 	*/
-if (allowedJmolSize==undefined) var allowedJmolSize = [25, 2000, 300]   // min, max, default (pixels)
+
+	/* hansonr, jun2007:
+		2048 standard for GeoWall (http://geowall.geo.lsa.umich.edu/home.html)
+	*/
+
+if (allowedJmolSize==undefined) var allowedJmolSize = [25, 2048, 300]   // min, max, default (pixels)
 function _jmolGetAppletSize(size) {
 	/*  AngelH, mar2007
 		Accepts single number or 2-value array, each one can be either:

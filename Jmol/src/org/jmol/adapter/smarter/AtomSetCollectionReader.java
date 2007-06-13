@@ -80,7 +80,7 @@ public abstract class AtomSetCollectionReader {
   public BufferedReader reader;
   public String line, prevline;
   
-  private long ptLine;
+  protected long ptLine;
   
 
   public final static float ANGSTROMS_PER_BOHR = 0.5291772f;

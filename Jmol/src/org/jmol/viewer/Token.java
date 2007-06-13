@@ -494,6 +494,8 @@ public class Token {
     case Token.list:
       String[] list = (String[]) x.value;
       i = x.intValue;
+      if (i <= 0)
+        i = list.length - i;
       if (i != Integer.MAX_VALUE)
         return (i < 1 || i > list.length ? "" : list[i - 1]);
       StringBuffer sb = new StringBuffer();
@@ -503,6 +505,8 @@ public class Token {
     case Token.string:
       String s = (String) x.value;
       i = x.intValue;
+      if (i <= 0)
+        i = s.length() - i;
       if (i == Integer.MAX_VALUE)
         return s;
       if (i < 1 || i > s.length())
@@ -596,8 +600,13 @@ public class Token {
     }
 
     token.intValue = Integer.MAX_VALUE;
-    if (i1 < 0)
-      i1 = len + i1 + 1;
+    // "testing"[0] gives "g"
+    // "testing"[-1] gives "n"
+    // "testing"[3][0] gives "sting"
+    // "testing"[-1][0] gives "ng"
+    // "testing"[0][-2] gives just "g" as well
+    if (i1 <= 0)
+      i1 = len + i1;
     if (i1 < 1)
       i1 = 1;
     if (i2 == 0)

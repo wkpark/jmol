@@ -748,7 +748,7 @@ class Eval { //implements Runnable {
           continue;
       } else {
         if (debugScript)
-          logDebugScript();
+          logDebugScript(ifLevel + (token.tok == Token.elsecmd || token.tok == Token.endifcmd ? -1 : 0));
         if (logMessages)
           Logger.debug(token.toString());
         if (ifLevel > 0 && ifs[ifLevel] < 0 && token.tok != Token.endifcmd
@@ -1097,7 +1097,7 @@ class Eval { //implements Runnable {
 
   final StringBuffer strbufLog = new StringBuffer(80);
 
-  void logDebugScript() {
+  void logDebugScript(int ifLevel) {
     strbufLog.setLength(0);
     if (logMessages) {
       Logger.debug(statement[0].toString());
@@ -1105,7 +1105,8 @@ class Eval { //implements Runnable {
         Logger.debug(statement[i].toString());
     }
     iToken = -2;
-    strbufLog.append(statementAsString());
+    String s = (ifLevel > 0 ? "                          ".substring(0,ifLevel*2) : "");
+    strbufLog.append(s).append(statementAsString());
     viewer.scriptStatus(strbufLog.toString());
   }
 

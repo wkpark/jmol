@@ -588,7 +588,7 @@ public class Token {
     switch (token.tok) {
     case Token.bitset:
       bs = (BitSet) token.value;
-      len = bs.size();
+      len = BitSetUtil.length(bs);
       break;
     case Token.list:
       st = (String[]) token.value;

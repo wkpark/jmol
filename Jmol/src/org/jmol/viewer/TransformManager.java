@@ -1435,7 +1435,7 @@ abstract class TransformManager {
       }
     }
     viewer.requestRepaintAndWait();
-    //    viewer.setInMotion(false);
+    viewer.setInMotion(false);
   }
 
   protected final Point3f ptTest1 = new Point3f();
@@ -1855,7 +1855,7 @@ abstract class TransformManager {
         }
         if (myFps == 0 || !spinOn) {
           setSpinOn(false);
-          return;
+          break;
         }
         boolean refreshNeeded = (isSpinInternal
             && internalRotationAxis.angle != 0 || isSpinFixed
@@ -1901,6 +1901,7 @@ abstract class TransformManager {
               setSpinOn(false);
           }
           try {
+            //System.out.println("sleeping "+sleepTime);
             Thread.sleep(sleepTime);
           } catch (InterruptedException e) {
             break;

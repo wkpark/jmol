@@ -480,9 +480,9 @@ public abstract class AtomSetCollectionReader {
       line = line.substring(0, line.lastIndexOf('#')).trim();
       atomSetCollection.setAtomSetCollectionProperty("noautobond", "true");
     }
-    int pt = line.indexOf("#jmolscript:");
+    int pt = line.indexOf("jmolscript:");
     if (pt >= 0) {
-      String script = line.substring(pt + 12, line.length());
+      String script = line.substring(pt + 11, line.length());
       if (script.indexOf("#") >= 0) {
         script = script.substring(0, script.indexOf("#"));
       }

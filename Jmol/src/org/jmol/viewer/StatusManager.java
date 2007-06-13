@@ -131,6 +131,9 @@ class StatusManager {
       htCallbacks.remove(callbackType.toLowerCase());
     else if (callbackFunction.toLowerCase().indexOf("script:") == 0)
       htCallbacks.put(callbackType.toLowerCase(), callbackFunction.substring(7));
+    // either format is ok; jmolscript: preferred, because that is the same as embedded scripts.
+    else if (callbackFunction.toLowerCase().indexOf("jmolscript:") == 0)
+      htCallbacks.put(callbackType.toLowerCase(), callbackFunction.substring(11));
     if (jmolStatusListener != null)
       jmolStatusListener.setCallbackFunction(callbackType, callbackFunction);
   }

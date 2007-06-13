@@ -533,6 +533,7 @@ public class Parameters {
         : moData.containsKey("slaterInfo") ? QM_TYPE_SLATER : QM_TYPE_UNKNOWN);
     if (qmOrbitalType == QM_TYPE_UNKNOWN) {
  //TODO     value = moData; // must be generic surface info
+      Logger.error("MO ERROR: No basis functions found in file for MO calculation. (GAUSSIAN 'gfprint' keyword may be missing?)");
       mo = null;
     } else {
       Vector mos = (Vector) (moData.get("mos"));

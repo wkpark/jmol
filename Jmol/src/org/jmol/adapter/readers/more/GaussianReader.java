@@ -372,6 +372,10 @@ public class GaussianReader extends AtomSetCollectionReader {
    5        2PZ        -0.00134  -0.09475   0.00000   0.55774   0.00000
    6        3S          0.00415   0.43535   0.00000   0.32546   0.00000
 
+but:
+
+ 105        4S        -47.27845  63.29565-100.44035   1.98362 -51.35328
+
    */
   void readMolecularOrbitals() throws Exception {
     Hashtable[] mos = new Hashtable[5];
@@ -379,12 +383,11 @@ public class GaussianReader extends AtomSetCollectionReader {
     int nThisLine = 0;
     while (readLine() != null
         && line.toUpperCase().indexOf("DENS") < 0) {
-      String[] tokens = getTokens();
-      int ptData = (line.charAt(5) == ' ' ? 2 : 4);
+      String[] tokens;
       if (line.indexOf("                    ") == 0) {
         addMOData(nThisLine, data, mos);
-        nThisLine = tokens.length;
         tokens = getTokens(readLine());
+        nThisLine = tokens.length;
         for (int i = 0; i < nThisLine; i++) {
           mos[i] = new Hashtable();
           data[i] = new Vector();
@@ -394,10 +397,13 @@ public class GaussianReader extends AtomSetCollectionReader {
         for (int i = 0; i < nThisLine; i++)
           mos[i].put("energy", new Float(tokens[i]));
         continue;
+      } else if (line.length() < 21 || line.charAt(11) != ' ') {
+        continue;
       }
       try {
+        tokens = getStrings(line.substring(21), nThisLine, 10);
         for (int i = 0; i < nThisLine; i++)
-          data[i].addElement(tokens[i + ptData]);
+          data[i].addElement(tokens[i]);
       } catch (Exception e) {
         Logger.error("Error reading Gaussian file Molecular Orbitals at line: "
             + line);

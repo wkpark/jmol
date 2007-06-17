@@ -882,6 +882,7 @@ public class StateManager {
       setParameterValue("navigationMode",navigationMode);
       setParameterValue("navigationPeriodic",navigationPeriodic);
       setParameterValue("navigationSpeed",navigationSpeed);
+      setParameterValue("perspectiveModel",11);
       setParameterValue("percentVdwAtom",percentVdwAtom);
       setParameterValue("pickingSpinRate",pickingSpinRate);
       setParameterValue("propertyColorScheme",propertyColorScheme);

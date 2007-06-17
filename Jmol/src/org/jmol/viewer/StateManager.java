@@ -634,7 +634,7 @@ public class StateManager {
       //handle these specially for the CURRENT FILE, their current
       //settings won't be reflected in the load state, which is determined
       //earlier, when the file loads. 
-        ";refreshing;defaults;backgroundmodel;stereo;"
+        ";refreshing;defaults;backgroundmodel;stereo;perspectivemodel;"
       + ";appendnew;bondsymmetryatoms;backgroundcolor;axescolor;axis1color;axis2color;axis3color;boundboxcolor;unitcellcolor;"
       + ";ambientpercent;diffusepercent;specular;specularexponent;specularpower;specularpercent;"
       + ";debugscript;showfrank;showaxes;showaxis1;showaxis2;showaxis3;showunitcell;showboundbox;"

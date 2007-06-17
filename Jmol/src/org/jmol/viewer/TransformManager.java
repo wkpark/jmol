@@ -45,6 +45,7 @@ abstract class TransformManager {
   final static float radiansPerDegree = (float) (2 * Math.PI / 360);
   final static float degreesPerRadian = (float) (360 / (2 * Math.PI));
 
+  protected int perspectiveModel = 11;
   protected float cameraScaleFactor;
   protected float referencePlaneOffset;
   protected float modelCenterOffset;
@@ -141,6 +142,7 @@ abstract class TransformManager {
   String getState() {
     StringBuffer commands = new StringBuffer(
         "# orientation/center/spin state;\nset refreshing false;\n");
+    commands.append("perspectiveModel = "+ perspectiveModel +";\n");
     if (!isWindowCentered())
       commands.append("windowCentered = false;\n");
     commands.append("cameraDepth = ").append(cameraDepth).append(";\n");

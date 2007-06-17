@@ -27,12 +27,15 @@ import org.jmol.util.Logger;
 
 class TransformManager10 extends TransformManager {
 
+
   TransformManager10(Viewer viewer) {
     super(viewer);
+    perspectiveModel = 10;
   }
 
   TransformManager10(Viewer viewer, int width, int height) {
     super(viewer, width, height);
+    perspectiveModel = 10;
   }
 
   // older Jmol 10 method 

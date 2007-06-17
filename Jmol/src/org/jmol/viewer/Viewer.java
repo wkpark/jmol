@@ -156,8 +156,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     initialize();
     statusManager = new StatusManager(this);
     scriptManager = new ScriptManager(this);
-    //transformManager = new TransformManager11(this);
-    transformManager = new TransformManager10(this);
+    transformManager = new TransformManager11(this);
+    //transformManager = new TransformManager10(this);
     selectionManager = new SelectionManager(this);
     if (jvm14orGreater)
       mouseManager = MouseWrapper14.alloc(display, this);

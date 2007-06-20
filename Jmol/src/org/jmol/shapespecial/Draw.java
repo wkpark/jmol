@@ -295,8 +295,11 @@ public class Draw extends MeshCollection {
   }
 
   Point3f getSpinCenter(String axisID, int modelIndex) {
-    int meshIndex = getIndexFromName(axisID);
-    return (meshIndex < 0 ? null : getSpinCenter(meshIndex, modelIndex));
+    int pt = axisID.indexOf(".");
+    String id = (pt > 0 ? axisID.substring(0, pt) : axisID);
+    int meshIndex = getIndexFromName(id);
+    int vertexIndex = (pt > 0 ? Integer.parseInt(axisID.substring(pt + 1)) : 0) - 1;
+    return (meshIndex < 0 ? null : getSpinCenter(meshIndex, vertexIndex, modelIndex));
    }
    
   Vector3f getSpinAxis(String axisID, int modelIndex) {
@@ -591,7 +594,7 @@ public class Draw extends MeshCollection {
     return nPoly + 1;
   }
 
-  private void scaleDrawing(DrawMesh mesh, float newScale) {
+  private static void scaleDrawing(DrawMesh mesh, float newScale) {
     /*
      * allows for Draw to scale object
      * have to watch out for double-listed vertices
@@ -623,11 +626,12 @@ public class Draw extends MeshCollection {
     }
   }
 
-  final Point3f getSpinCenter(int meshIndex, int modelIndex) {
+  final Point3f getSpinCenter(int meshIndex, int vertexIndex, int modelIndex) {
     DrawMesh m = dmeshes[meshIndex];
-    if (m.vertices == null)
+    if (m.vertices == null || m.vertexCount <= vertexIndex)
       return null;
-    Point3f pt = (m.ptCenters == null || modelIndex < 0 ? m.ptCenter : m.ptCenters[modelIndex]);
+    Point3f pt = (vertexIndex >= 0 ? m.vertices[vertexIndex]
+        : m.ptCenters == null || modelIndex < 0 ? m.ptCenter : m.ptCenters[modelIndex]);
     pt.add(offset);
     return pt;
   }
@@ -639,7 +643,7 @@ public class Draw extends MeshCollection {
     return (m.ptCenters == null || modelIndex < 0 ? m.axis : m.axes[modelIndex]);
   }
   
-  final void setAxes(DrawMesh m) {
+  final static void setAxes(DrawMesh m) {
     m.axis = new Vector3f(0, 0, 0);
     m.axes = new Vector3f[m.polygonCount > 0 ? m.polygonCount : 1];
     if (m.vertices == null)
@@ -855,7 +859,7 @@ public class Draw extends MeshCollection {
 
     if (mesh.modelIndex < 0 && !mesh.isFixed) {
       for (int i = 0; i < modelCount; i++)
-        if (mesh.polygonIndexes[i] != null) {
+        if (isPolygonDisplayable(mesh, i)) {
           str.append(" [ " + i);
           str.append(getVertexList(mesh, i, nVertices));
           str.append(" ] ");
@@ -867,17 +871,25 @@ public class Draw extends MeshCollection {
       str.append(" " + Escape.escape(mesh.title[0]));
     str.append(";\n");
     appendCmd(str, mesh.getState("draw"));
-    str.append(getColorCommand("draw", mesh.colix));
+    appendCmd(str, getColorCommand("draw", mesh.colix));
     return str.toString();
   }
 
-  private String getVertexList(Mesh mesh, int iModel, int nVertices) {
+  static boolean isPolygonDisplayable(Mesh mesh, int i) {
+    return (mesh.polygonIndexes[i] != null && mesh.polygonIndexes[i].length > 0 && mesh.polygonIndexes[i].length > 0);
+  }
+  
+  private static String getVertexList(Mesh mesh, int iModel, int nVertices) {
     String str = "";
     if (nVertices == 0)
       nVertices = mesh.polygonIndexes[iModel].length;
     for (int i = 0; i < nVertices; i++) {
       Point3f v = new Point3f();
+      try{
       v.set(mesh.vertices[mesh.polygonIndexes[iModel][i]]);
+      }catch(Exception e) {
+        System.out.println("OHOH");
+      }
       str += " " + Escape.escape(v);
     }
     return str;

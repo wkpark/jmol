@@ -51,8 +51,8 @@ public class DrawRenderer extends MeshRenderer {
   }
   
   protected boolean isPolygonDisplayable(int i) {
-      return (dmesh.polygonIndexes[i].length > 0 
-          && (dmesh.modelFlags == null || dmesh.modelFlags[i] != 0)); 
+      return Draw.isPolygonDisplayable(dmesh, i) 
+          && (mesh.modelFlags == null || mesh.modelFlags[i] != 0); 
   }
   
   private final Point3i pt0 = new Point3i();

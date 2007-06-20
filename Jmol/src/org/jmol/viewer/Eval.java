@@ -1997,6 +1997,12 @@ class Eval { //implements Runnable {
       switch (getToken(i).tok) {
       case Token.dollarsign:
         String id = objectNameParameter(++i);
+        // allow for $pt2.3 -- specific vertex
+        if (tokAt(i + 1) == Token.leftsquare) {
+          id += "." + intParameter(i + 2);
+          if (getToken(i + 3).tok != Token.rightsquare)
+            invalidArgument();
+        }
         if (isSyntaxCheck)
           return new Point3f();
         if ((center = getDrawObjectCenter(id)) == null)

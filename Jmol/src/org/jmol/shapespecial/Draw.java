@@ -784,7 +784,7 @@ public class Draw extends MeshCollection {
     pickedMesh = null;
     for (int i = 0; i < meshCount; i++) {
       DrawMesh m = dmeshes[i];
-      if ((isPicking || m.drawType == DrawMesh.DRAW_LINE || m.drawType == DrawMesh.DRAW_MULTIPLE)
+      if ((true || isPicking || m.drawType == DrawMesh.DRAW_LINE || m.drawType == DrawMesh.DRAW_MULTIPLE)
           && m.visibilityFlags != 0) {
         int mCount = (m.modelFlags == null ? 1 : modelCount);
         for (int iModel = mCount; --iModel >= 0;) {

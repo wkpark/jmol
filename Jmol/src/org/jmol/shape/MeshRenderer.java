@@ -57,10 +57,10 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
   
   private boolean setVariables() {
+    vertices = mesh.vertices; //because DRAW might have a text associated with it
     if (mesh == null || mesh.visibilityFlags == 0 || !g3d.setColix(mesh.colix)
         || (vertexCount = mesh.vertexCount) == 0)
       return false;
-    vertices = mesh.vertices;
     normixes = mesh.normixes;
     if (normixes == null || vertices == null)
       return false; 

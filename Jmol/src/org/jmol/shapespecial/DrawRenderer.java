@@ -131,15 +131,15 @@ public class DrawRenderer extends MeshRenderer {
   private final Point3i xyz = new Point3i();
   
   private void renderInfo() {
-    if (dmesh == null || dmesh.title == null || dmesh.visibilityFlags == 0 
-        || !g3d.setColix(viewer.getColixBackgroundContrast()))
+    if (dmesh == null || dmesh.title == null || dmesh.visibilityFlags == 0
+        || viewer.getDrawHover() || !g3d.setColix(viewer.getColixBackgroundContrast()))
       return;
+    //just the first line of the title -- nothing fancy here.
     byte fid = g3d.getFontFid("SansSerif", 14);
     g3d.setFont(fid);
-    for (int i = 0; i < dmesh.title.length; i++)
-      if (dmesh.title[i].length() > 0) {
-        viewer.transformPoint(vertices[i], xyz);
-        g3d.drawString(dmesh.title[i], null, xyz.x + 5, xyz.y - 5, xyz.z, xyz.z);
-      }
+    if (dmesh.title[0].length() > 0) {
+      viewer.transformPoint(vertices[0], xyz);
+      g3d.drawString(dmesh.title[0], null, xyz.x + 5, xyz.y - 5, xyz.z, xyz.z);
+    }
   }
 }

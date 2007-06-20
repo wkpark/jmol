@@ -95,6 +95,7 @@ public class Hover extends TextShape {
 
     if ("xy" == propertyName) {
       xy = (Point3i) value;
+      return;
     }
 
     if ("label" == propertyName) {

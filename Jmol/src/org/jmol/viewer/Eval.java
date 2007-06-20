@@ -4156,6 +4156,21 @@ class Eval { //implements Runnable {
         }
         break;
       case Token.dollarsign:
+        // $drawObject[n]
+        if (tokAt(i + 2) == Token.leftsquare) {
+          Point3f pt1 = centerParameter(i);
+          i = iToken;
+          if (isAxisAngle) {
+            if (axesOrientationRasmol)
+              pt1.y = -pt1.y;
+            rotAxis.set(pt1);
+            isAxisAngle = false;
+          } else {
+            points[nPoints++].set(pt1);
+          }
+          break;
+        }
+
         // $drawObject
         isInternal = true;
         axisID = objectNameParameter(++i);
@@ -7727,7 +7742,17 @@ class Eval { //implements Runnable {
         propertyName = "thisID";
         break;
       case Token.dollarsign:
+        // $drawObject[m]
+        if (tokAt(i + 2) == Token.leftsquare) {
+          Point3f pt = centerParameter(i);
+          i = iToken;
+          propertyName = "coord";
+          propertyValue = pt;
+          havePoints = true;
+          break;
+        }
         // $drawObject
+        
         propertyValue = objectNameParameter(++i);
         propertyName = "identifier";
         havePoints = true;

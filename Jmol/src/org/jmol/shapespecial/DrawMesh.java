@@ -85,7 +85,7 @@ public class DrawMesh extends Mesh {
     int ipt = 0;
     int n = 0;
     for (int i = polygonCount; --i >= 0;) {
-      if (iModel >=0 && i != iModel)
+      if (iModel >=0 && i != iModel || polygonIndexes[i] == null)
         continue;
       iptlast = -1;
       for (int iV = polygonIndexes[i].length; --iV >= 0;) {

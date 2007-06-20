@@ -147,6 +147,7 @@ public class Text {
   void setXYZ(Point3f xyz) {
     valign = XYZ;
     this.xyz = xyz;
+    setAdjustForWindow(false);
   }
   
   void setAdjustForWindow(boolean TF) {

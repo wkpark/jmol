@@ -2704,6 +2704,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setRefreshing(boolean TF) {
     refreshing = TF;
   }
+  
+  boolean getRefreshing() {
+    return refreshing;
+  }
 
   /**
    * initiate a repaint/update sequence if it has not already been requested.

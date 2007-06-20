@@ -3561,7 +3561,8 @@ class Eval { //implements Runnable {
     String text = optParameterAsString(index);
     if (viewer.getEchoStateActive())
       setShapeProperty(JmolConstants.SHAPE_ECHO, "text", text);
-    showString(viewer.formatText(text));
+    if (viewer.getRefreshing())
+      showString(viewer.formatText(text));
   }
 
   void message() throws ScriptException {
@@ -6618,10 +6619,11 @@ class Eval { //implements Runnable {
     default:
       invalidArgument();
     }
-    if (!isSyntaxCheck)
+    if (!isSyntaxCheck) {
       viewer.setEchoStateActive(echoShapeActive);
-    viewer.loadShape(JmolConstants.SHAPE_ECHO);
-    setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
+      viewer.loadShape(JmolConstants.SHAPE_ECHO);
+      setShapeProperty(JmolConstants.SHAPE_ECHO, propertyName, propertyValue);
+    }
     if (statementLength == 3)
       return;
     propertyName = "align";

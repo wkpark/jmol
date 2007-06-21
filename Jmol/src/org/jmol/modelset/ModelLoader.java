@@ -317,7 +317,7 @@ public final class ModelLoader extends ModelSet {
           group3Counts[modelCount] = new int[JmolConstants.group3Count + 10];
         }
       }
-      if (modelAuxiliaryInfo.containsKey("periodicOriginXyz"))
+      if (mmset.getModelAuxiliaryInfo(ipt, "periodicOriginXyz") != null)
         someModelsHaveSymmetry = true;
     }
     mmset.finalizeModelNumbers(baseModelCount);

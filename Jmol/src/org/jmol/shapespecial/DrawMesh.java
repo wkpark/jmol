@@ -28,6 +28,7 @@ import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
 import org.jmol.shape.Mesh;
+import org.jmol.viewer.JmolConstants;
 import org.jmol.g3d.Graphics3D;
 
 public class DrawMesh extends Mesh {
@@ -36,19 +37,7 @@ public class DrawMesh extends Mesh {
     super(thisID, g3d, colix);
   }
 
-  final static int DRAW_MULTIPLE = -1;
-  final static int DRAW_NONE = 0;
-  //next are same as number of points
-  final static int DRAW_POINT = 1;
-  final static int DRAW_LINE = 2;
-  final static int DRAW_TRIANGLE = 3;
-  final static int DRAW_PLANE = 4;
-  //next are special
-  final static int DRAW_ARROW = 15;
-  final static int DRAW_CIRCLE = 16;
-  final static int DRAW_CURVE = 17;
-  
-  int drawType = DRAW_TRIANGLE;
+  int drawType = JmolConstants.DRAW_TRIANGLE;
   int[] drawTypes;
   Point3f ptCenters[];
   Vector3f axis = new Vector3f(1,0,0);
@@ -59,21 +48,21 @@ public class DrawMesh extends Mesh {
 
   String getDrawType() {
     switch (drawType) {
-    case DRAW_MULTIPLE:
+    case JmolConstants.DRAW_MULTIPLE:
       return "multiple";
-    case DRAW_ARROW:
+    case JmolConstants.DRAW_ARROW:
       return "arrow";
-    case DRAW_CIRCLE:
+    case JmolConstants.DRAW_CIRCLE:
       return "circle";
-    case DRAW_CURVE:
+    case JmolConstants.DRAW_CURVE:
       return "curve";
-    case DRAW_POINT:
+    case JmolConstants.DRAW_POINT:
       return "point";
-    case DRAW_LINE:
+    case JmolConstants.DRAW_LINE:
       return "line";
-    case DRAW_TRIANGLE:
+    case JmolConstants.DRAW_TRIANGLE:
       return "triangle";
-    case DRAW_PLANE:
+    case JmolConstants.DRAW_PLANE:
       return "plane";
     }
     return "type is not identified in mesh.getDrawType()";

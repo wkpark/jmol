@@ -193,15 +193,15 @@ abstract class TransformManager {
           s +="\nselect " + Escape.escape(viewer.getSelectionSet()) + ";\nrotateSelected ";
       if (isSpinInternal) {
         Point3f pt = new Point3f(internalRotationCenter);
-        pt.add(rotationAxis);
-        s += "spin " + rotationRate + " "
+        pt.sub(rotationAxis);
+        s += "\nspin " + rotationRate + " "
             + Escape.escape(internalRotationCenter) + " "
             + Escape.escape(pt);
       } else if (isSpinFixed) {
-        s += "spin axisangle " + Escape.escape(rotationAxis) + " "
+        s += "\nspin axisangle " + Escape.escape(rotationAxis) + " "
             + rotationRate;
       } else {
-        s += "spin on";
+        s += "\nspin on";
       }
       s += ";";
     }

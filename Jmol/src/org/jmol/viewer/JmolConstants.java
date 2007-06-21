@@ -35,6 +35,18 @@ import java.util.Properties;
 
 final public class JmolConstants {
 
+  public final static int DRAW_MULTIPLE = -1;
+  public final static int DRAW_NONE = 0;
+  //next are same as number of points
+  public final static int DRAW_POINT = 1;
+  public final static int DRAW_LINE = 2;
+  public final static int DRAW_TRIANGLE = 3;
+  public final static int DRAW_PLANE = 4;
+  //next are special
+  public final static int DRAW_ARROW = 15;
+  public final static int DRAW_CIRCLE = 16;
+  public final static int DRAW_CURVE = 17;
+  
   public final static String CLASSBASE_OPTIONS = "org.jmol.";
   public final static String CLASSBASE_QUANTUM = "org.jmol.quantum.";
 

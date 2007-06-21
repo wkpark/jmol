@@ -287,6 +287,8 @@ public class Draw extends MeshCollection {
       return getDrawCommand(thisMesh);
     if (property == "vertices")
       return getPath(thisMesh);
+    if (property == "type")
+      return new Integer(thisMesh == null ? JmolConstants.DRAW_NONE : thisMesh.drawType);
     if (property.indexOf("getSpinCenter:") == 0)
       return getSpinCenter(property.substring(14), index);
     if (property.indexOf("getSpinAxis:") == 0)
@@ -375,7 +377,7 @@ public class Draw extends MeshCollection {
             thisMesh.drawTypes[i] = thisMesh.drawVertexCounts[i] = ncoord;
           }
         }
-        thisMesh.drawType = DrawMesh.DRAW_MULTIPLE;
+        thisMesh.drawType = JmolConstants.DRAW_MULTIPLE;
         thisMesh.drawVertexCount = -1;
         modelVertices = null;
       } else {
@@ -387,10 +389,10 @@ public class Draw extends MeshCollection {
             thisMesh.setCenter(iModel);
             thisMesh.drawTypes[iModel] = thisMesh.drawType;
             thisMesh.drawVertexCounts[iModel] = thisMesh.drawVertexCount;
-            thisMesh.drawType = DrawMesh.DRAW_MULTIPLE;
+            thisMesh.drawType = JmolConstants.DRAW_MULTIPLE;
             thisMesh.drawVertexCount = -1;
           } else {
-            thisMesh.drawTypes[iModel] = DrawMesh.DRAW_NONE;
+            thisMesh.drawTypes[iModel] = JmolConstants.DRAW_NONE;
             thisMesh.polygonIndexes[iModel] = new int[0];
           }
           nPoly++;
@@ -475,11 +477,11 @@ public class Draw extends MeshCollection {
      * though a bit redundant. We could reuse the fixed ones -- no matter
      */
 
-    int drawType = DrawMesh.DRAW_POINT;
+    int drawType = JmolConstants.DRAW_POINT;
     if ((isCurve || isArrow || isCircle) && nVertices >= 2)
-      drawType = (isCurve ? DrawMesh.DRAW_CURVE : isArrow ? DrawMesh.DRAW_ARROW
-          : DrawMesh.DRAW_CIRCLE);
-    if (drawType == DrawMesh.DRAW_POINT) {
+      drawType = (isCurve ? JmolConstants.DRAW_CURVE : isArrow ? JmolConstants.DRAW_ARROW
+          : JmolConstants.DRAW_CIRCLE);
+    if (drawType == JmolConstants.DRAW_POINT) {
       Point3f pt;
       Point3f center = new Point3f();
       Vector3f normal = new Vector3f();
@@ -568,10 +570,10 @@ public class Draw extends MeshCollection {
       case 1:
         break;
       case 2:
-        drawType = DrawMesh.DRAW_LINE;
+        drawType = JmolConstants.DRAW_LINE;
         break;
       default:
-        drawType = DrawMesh.DRAW_PLANE;
+        drawType = JmolConstants.DRAW_PLANE;
       }
     }
     mesh.drawType = drawType;
@@ -788,7 +790,7 @@ public class Draw extends MeshCollection {
     pickedMesh = null;
     for (int i = 0; i < meshCount; i++) {
       DrawMesh m = dmeshes[i];
-      if ((true || isPicking || m.drawType == DrawMesh.DRAW_LINE || m.drawType == DrawMesh.DRAW_MULTIPLE)
+      if ((true || isPicking || m.drawType == JmolConstants.DRAW_LINE || m.drawType == JmolConstants.DRAW_MULTIPLE)
           && m.visibilityFlags != 0) {
         int mCount = (m.modelFlags == null ? 1 : modelCount);
         for (int iModel = mCount; --iModel >= 0;) {
@@ -825,7 +827,7 @@ public class Draw extends MeshCollection {
   }
 
   private String getDrawCommand(DrawMesh mesh, int iModel) {
-    if (mesh.drawType == DrawMesh.DRAW_NONE)
+    if (mesh.drawType == JmolConstants.DRAW_NONE)
       return "";
     StringBuffer str = new StringBuffer();
     if (!mesh.isFixed && iModel >= 0 && modelCount > 1)
@@ -840,19 +842,19 @@ public class Draw extends MeshCollection {
       str.append(" diameter ").append(mesh.diameter);
     int nVertices = 0;
     switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
-    case DrawMesh.DRAW_ARROW:
+    case JmolConstants.DRAW_ARROW:
       str.append(" ARROW");
       break;
-    case DrawMesh.DRAW_CIRCLE:
+    case JmolConstants.DRAW_CIRCLE:
       str.append(" CIRCLE"); //not yet implemented
       break;
-    case DrawMesh.DRAW_CURVE:
+    case JmolConstants.DRAW_CURVE:
       str.append(" CURVE");
       break;
-    case DrawMesh.DRAW_POINT:
+    case JmolConstants.DRAW_POINT:
       nVertices = 1;
       break;
-    case DrawMesh.DRAW_LINE:
+    case JmolConstants.DRAW_LINE:
       nVertices = 2;
       break;
     }
@@ -910,7 +912,7 @@ public class Draw extends MeshCollection {
       if (mesh.diameter > 0)
         info.put("diameter", new Integer(mesh.diameter));
       info.put("scale", new Float(mesh.scale));
-      if (mesh.drawType == DrawMesh.DRAW_MULTIPLE) {
+      if (mesh.drawType == JmolConstants.DRAW_MULTIPLE) {
         Vector m = new Vector();
         for (int k = 0; k < modelCount; k++) {
           if (mesh.ptCenters[k] == null)
@@ -927,7 +929,7 @@ public class Draw extends MeshCollection {
           for (int ipt = 0; ipt < nPoints; ipt++)
             v.addElement(mesh.vertices[mesh.polygonIndexes[k][ipt]]);
           mInfo.put("vertices", v);
-          if (mesh.drawTypes[k] == DrawMesh.DRAW_LINE) {
+          if (mesh.drawTypes[k] == JmolConstants.DRAW_LINE) {
             float d = mesh.vertices[mesh.polygonIndexes[k][0]]
                 .distance(mesh.vertices[mesh.polygonIndexes[k][1]]);
             mInfo.put("length_Ang", new Float(d));
@@ -944,7 +946,7 @@ public class Draw extends MeshCollection {
         for (int j = 0; j < mesh.vertexCount; j++)
           v.addElement(mesh.vertices[j]);
         info.put("vertices", v);
-        if (mesh.drawType == DrawMesh.DRAW_LINE)
+        if (mesh.drawType == JmolConstants.DRAW_LINE)
           info.put("length_Ang", new Float(mesh.vertices[0]
               .distance(mesh.vertices[1])));
       }

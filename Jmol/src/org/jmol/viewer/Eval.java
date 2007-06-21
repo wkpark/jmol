@@ -4170,7 +4170,6 @@ class Eval { //implements Runnable {
           }
           break;
         }
-
         // $drawObject
         isInternal = true;
         axisID = objectNameParameter(++i);
@@ -4178,6 +4177,9 @@ class Eval { //implements Runnable {
           rotCenter = new Point3f();
           rotAxis = new Vector3f();
         } else {
+          //I was going to make this dependent upon type, but
+          //upon reflection, I think it is correct.
+          //bh
           rotCenter = getDrawObjectCenter(axisID);
           rotAxis = getDrawObjectAxis(axisID);
           if (rotCenter == null)
@@ -4261,6 +4263,11 @@ class Eval { //implements Runnable {
   Point3f getDrawObjectCenter(String axisID) {
     return (Point3f) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
         "getSpinCenter:" + axisID);
+  }
+
+  int getDrawObjectType(String axisID) {
+    return ((Integer) viewer.getShapeProperty(JmolConstants.SHAPE_DRAW,
+        "getType:" + axisID)).intValue();
   }
 
   Vector3f getDrawObjectAxis(String axisID) {

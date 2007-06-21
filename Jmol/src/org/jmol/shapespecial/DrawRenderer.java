@@ -61,7 +61,7 @@ public class DrawRenderer extends MeshRenderer {
   protected void render2() {
     boolean isDrawPickMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
     drawType = dmesh.drawType;
-    if ((drawType == DrawMesh.DRAW_CURVE || drawType == DrawMesh.DRAW_ARROW)
+    if ((drawType == JmolConstants.DRAW_CURVE || drawType == JmolConstants.DRAW_ARROW)
         && vertexCount >= 2) {
       int diameter = (dmesh.diameter > 0 ? dmesh.diameter : 3);
       for (int i = 0, i0 = 0; i < vertexCount - 1; i++) {
@@ -72,7 +72,7 @@ public class DrawRenderer extends MeshRenderer {
       }
     }
     switch (drawType) {
-    case DrawMesh.DRAW_ARROW:
+    case JmolConstants.DRAW_ARROW:
       Point3i pt1 = screens[vertexCount - 2];
       Point3i pt2 = screens[vertexCount - 1];
       Vector3f tip = new Vector3f(pt2.x - pt1.x, pt2.y - pt1.y, pt2.z - pt1.z);
@@ -89,10 +89,10 @@ public class DrawRenderer extends MeshRenderer {
         g3d.fillCone(Graphics3D.ENDCAPS_FLAT, diameter * 5, pt0, pt3);
       }
       break;
-    case DrawMesh.DRAW_CIRCLE:
+    case JmolConstants.DRAW_CIRCLE:
       //unimplemented
       break;
-    case DrawMesh.DRAW_CURVE:
+    case JmolConstants.DRAW_CURVE:
       //unnecessary
       break;
     default:
@@ -105,13 +105,13 @@ public class DrawRenderer extends MeshRenderer {
   
   private void renderHandles() {
     switch (drawType) {
-    case DrawMesh.DRAW_POINT:
-    case DrawMesh.DRAW_ARROW:
-    case DrawMesh.DRAW_CURVE:
-    case DrawMesh.DRAW_LINE:
-    case DrawMesh.DRAW_PLANE:
-    case DrawMesh.DRAW_CIRCLE:
-    case DrawMesh.DRAW_MULTIPLE:
+    case JmolConstants.DRAW_POINT:
+    case JmolConstants.DRAW_ARROW:
+    case JmolConstants.DRAW_CURVE:
+    case JmolConstants.DRAW_LINE:
+    case JmolConstants.DRAW_PLANE:
+    case JmolConstants.DRAW_CIRCLE:
+    case JmolConstants.DRAW_MULTIPLE:
       for (int i = dmesh.polygonCount; --i >= 0;) {
         if (!isPolygonDisplayable(i))
           continue;

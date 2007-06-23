@@ -5,8 +5,9 @@
 -->
 <document>
 	<body>
-		<title>Jmol: un visor Java de código abierto para la estructura tridimensional de moléculas.</title>
+		<title>Jmol: un visor Java de código abierto para estructuras químicas en tres dimensiones.</title>
 		<header>
+			<h2>con prestaciones para compuestos químicos, cristales, materiales y biomoléculas</h2>
 			<script type="text/javascript">
 				function changePromoDisplay()
 				{
@@ -82,7 +83,7 @@
 		</section>
 		<section title="Cómo citar Jmol">
 			<p>La forma recomendada de citar Jmol es:<br/>
-				<b>Jmol: An open-source Java viewer for three-dimensional molecular structures. http://www.jmol.org/ 
+				<b>Jmol: un visor Java de código abierto para estructuras químicas en tres dimensiones. http://www.jmol.org/ 
 	</b>
 			</p>
 			<p>Recuerda usar siempre 'J' mayúscula y 'mol' en minúsculas.

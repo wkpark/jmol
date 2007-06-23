@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <document>
 	<body>
-		<title>Jmol: An open-source Java viewer for three-dimensional molecular structures</title>
+		<title>Jmol: an open-source Java viewer for chemical structures in 3D</title>
 		<header>
+			<h2>with features for chemicals, crystals, materials and biomolecules</h2>
 			<script type="text/javascript">
 				function changePromoDisplay()
 				{
@@ -77,7 +78,7 @@
 		</section>
 		<section title="How to cite Jmol">
 			<p>The recommended way to cite Jmol is:<br/>
-				<b>Jmol: An open-source Java viewer for three-dimensional molecular structures. http://www.jmol.org/ 
+				<b>Jmol: an open-source Java viewer for chemical structures in 3D. http://www.jmol.org/ 
 	</b>
 			</p>
 			<p>Remember to always use uppercase 'J', lowercase 'mol' 

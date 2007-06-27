@@ -6,6 +6,8 @@
   <param name="progressbar" value="true">
   <param name="script" value="
   load jmol.mol;
+  set perspectiveModel 10;
+  set zoomLarge off;
   select all; cpk off; wireframe 10; color yellow;
   move 0 0 0 400 0 0 0 0 2;
   cpk 10; wireframe  5; delay 0.1;

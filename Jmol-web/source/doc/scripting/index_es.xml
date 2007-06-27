@@ -6,8 +6,6 @@
 <!DOCTYPE somethingOrAnything [
 <!ENTITY eye_candy          SYSTEM "eye_candy.xml" >
 <!ENTITY basic_scripting    SYSTEM "basic_scripting_es.xml" >
-<!ENTITY advanced_scripting SYSTEM "advanced_scripting_es.xml" >
-<!ENTITY showing_animations SYSTEM "showing_animations_es.xml" >
 ]>
 <document>
 	<body>
@@ -89,14 +87,9 @@
 		</section>
 		<section title="Instrucciones avanzadas">
 			<p>
-        Este ejemplo muestra una interacción más avanzada entre una página HTML 
-        y la miniaplicación.
-        <appletExample>&advanced_scripting;</appletExample>
-			</p>
-		</section>
-		<section title="Cómo mostrar animaciones">
-			<p>
-				<appletExample>&showing_animations;</appletExample>
+        Los métodos de interacción más sofisticados y más fáciles
+        de codificar están basados en JavaScript y se 
+        proporcionan en la biblioteca Jmol.js.
 			</p>
 		</section>
 	</body>

@@ -2,8 +2,6 @@
 <!DOCTYPE somethingOrAnything [
 <!ENTITY eye_candy          SYSTEM "eye_candy.xml" >
 <!ENTITY basic_scripting    SYSTEM "basic_scripting.xml" >
-<!ENTITY advanced_scripting SYSTEM "advanced_scripting.xml" >
-<!ENTITY showing_animations SYSTEM "showing_animations.xml" >
 ]>
 <document>
 	<body>
@@ -81,15 +79,9 @@
 		</section>
 		<section title="Advanced Scripting">
 			<p>
-        This examples shows more advanced interaction of a HTML page with
-        the applet.
-        <appletExample>&advanced_scripting;</appletExample>
-			</p>
-		</section>
-		<section title="Showing Animations">
-			<p>
-				<appletExample>&showing_animations;</appletExample>
-			</p>
+        More sophisticated and easier to code methods of interaction 
+        are based on JavaScript, and provided by Jmol.js library.                	
+        	</p>
 		</section>
 	</body>
 </document>

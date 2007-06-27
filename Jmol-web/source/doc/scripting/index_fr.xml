@@ -2,8 +2,6 @@
 <!DOCTYPE somethingOrAnything [
 <!ENTITY eye_candy          SYSTEM "eye_candy.xml" >
 <!ENTITY basic_scripting    SYSTEM "basic_scripting.xml" >
-<!ENTITY advanced_scripting SYSTEM "advanced_scripting.xml" >
-<!ENTITY showing_animations SYSTEM "showing_animations.xml" >
 ]>
 <!--
   French translation 
@@ -99,14 +97,8 @@
 		</section>
 		<section title="Langage de Script Avancé">
 			<p>
-        Cet exemple montre des interactions plus avancées d'une
-        page HTML avec l'applet.
-        <appletExample>&advanced_scripting;</appletExample>
-			</p>
-		</section>
-		<section title="Afficher des Animations">
-			<p>
-				<appletExample>&showing_animations;</appletExample>
+        Plus sophistiqué et plus facile de coder les méthodes d'interaction 
+        sont basés sur JavaScript et fourni par la bibliothèque Jmol.js
 			</p>
 		</section>
 	</body>

@@ -18,7 +18,7 @@
 			</i></p>
 			<p>
         Tanto la aplicación como la miniaplicación admiten guiones, 
-        o conjuntos de instrucciones (<i>scripts</i>).
+        es decir, conjuntos de instrucciones (<i>scripts</i>).
         Los siguientes ejemplos usan la miniaplicación, pero los
         guiones se pueden usar también en la aplicación.
 	Recomendamos probar y depurar los guiones largos dentro de la
@@ -27,28 +27,34 @@
       </p>
 			<p>
         Jmol implementa una buena parte del lenguaje de instrucciones 
-    de RasMol/Chime para la visualización molecular.
-	Se puede consultar una descripción completa de dicho lenguaje 
-	en el manual de RasMol, en la sede web de Open RasMol:
+    de RasMol/Chime para la visualización molecular, así como un
+    conjunto considerable de instrucciones nuevas.
+			</p>
+			<p>
+	Se puede consultar una descripción completa del lenguaje de RasMol
+	en su manual, en la sede web de Open RasMol:
 	<a href="http://www.openrasmol.org/">http://www.openrasmol.org</a>.
 	También se puede consultar la ampliación del lenguaje para el conector
 	MDL Chime en
 	<a href="http://www.mdlchime.com/">http://www.mdlchime.com</a>.
       </p>
 			<p>
-        Por último, hay una descripción de la implementación de este lenguaje 
-        en Jmol incluida en la <a href="../docs/JmolUserGuide">guía de usuario de Jmol</a>. 
+        La descripción de la implementación de este lenguaje 
+        en Jmol está en la página de documentación de guiones interactiva 
+        (en inglés, 
+	<a href="http://www.stolaf.edu/academics/chemapps/jmol/docs/">
+	Interactive Online Scripting Documentation</a>. 
       </p>
 			<p>
-        Para los guiones simples y para moléculas pequeñas, 
+        Para los guiones simples, 
     la transición desde Chime a Jmol debería ser sencilla. 
 	Para aplicaciones Chime mayores y más complejas, es posible que haya 
 	cierta dificultad debido a que el mecanismo de botón y evento
 	es diferente. 
-	Con las moléculas muy grandes Jmol tiene actualmente problemas de rendimiento.
-	Además, muchas de las instrucciones y opciones específicas para la
-	visualización de proteínas aún no están implementadas en Jmol
-	(caricaturas, cintas, etc.). 
+	Se recomeinda encarecidamente que utilices la funcionalidad
+	incorporada en <a href="../jslibrary/">Jmol.js</a>, una biblioteca 
+	escrita en JavaScript que forma parte del paquete estándar de
+	Jmol que se descarga.
       </p>
 			<p>
         Los guiones sencillos que se ejecutan al tiempo de cargar la 
@@ -56,15 +62,18 @@
     parte de la definición de la etiqueta APPLET en HTML.
 	Esos guiones se ejecutarán correctamente en los navegadores que no admiten
 	JavaScript o la interfaz LiveConnect de comunicación entre JavaScript y Java.
+	Si eliges usar este método, estudia los ejemplos que hay a continuación.
       </p>
 			<p>
         Para desarrollar aplicaciones web más flexibles utilizando la 
-    miniaplicación Jmol, debes escribir código javascript que pase cadenas de texto
-    utilizando el método "script" de la miniaplicación.
+    miniaplicación Jmol, debes escribir código JavaScript que pase cadenas de texto
+    utilizando el método "script" de la miniaplicación; sin embargo, no
+    es preciso que escribas ese código, pues esto se hace fácilmente
+    mediante las funciones incluidas en la biblioteca Jmol.js.
       </p>
 			<p>
         Hay ejemplos adicionales y documentación sobre los guiones para Jmol 
-	en la <a href="../docs">página de documentación</a>.
+	en la <a href="../docs/">página de documentación</a>.
       </p>
 		</header>
 		<section title="Vistoso sin javascript">

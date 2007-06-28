@@ -471,6 +471,8 @@ public abstract class MouseManager implements KeyListener {
       Logger.debug("mouseMoved("+x+","+y+","+modifiers"+)");
     */
     hoverOff();
+    if (hoverWatcherThread == null)
+      startHoverWatcher(true);
     timeCurrent = mouseMovedTime = time;
     mouseMovedX = xCurrent = x; mouseMovedY = yCurrent = y;
     if (measurementMode || hoverActive) {

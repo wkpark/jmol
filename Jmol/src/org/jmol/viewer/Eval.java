@@ -4565,19 +4565,15 @@ class Eval { //implements Runnable {
     }
 
     boolean isSameAtom = (center != null && currentCenter.distance(center) < 0.1);
-
-    
     //zoom/zoomTo percent|-factor|+factor|*factor|/factor | 0
     float factor = getZoomFactor(i, ptCenter, radius, zoom);
       
-    if (Float.isNaN(factor) && isZoomTo) {
+    if (isZoomTo) {
         // no factor -- check for no center (zoom out) or same center (zoom in)
         if (statementLength == 1 || isSameAtom)
           factor *= 2;
         else if (center == null)
           factor /= 2;
-        else
-          factor = zoom;
     }
     float xTrans = 0;
     float yTrans = 0;
@@ -9153,7 +9149,7 @@ class Eval { //implements Runnable {
           sb.append(Group.getSeqcodeString(getSeqCode(token)));
         token = statement[++i];
         sb.append(' ');
-        if (token.intValue == Integer.MAX_VALUE)
+//        if (token.intValue == Integer.MAX_VALUE)
           sb.append("- ");
       //fall through
       case Token.spec_seqcode:

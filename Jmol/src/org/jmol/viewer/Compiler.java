@@ -1724,8 +1724,14 @@ class Compiler {
       return false;
     int tok = tokPeek();
     if (tok == Token.hyphen || tok == Token.integer && intPeek() < 0) {
-      if (tok == Token.hyphen)
+      if (tok == Token.hyphen) {
         tokenNext();
+      } else if (tokPeek() == Token.integer && intPeek() < 0) {
+         // hyphen masquerading as neg int
+          int i = -intPeek();
+          tokenNext().intValue = i;
+          returnToken();
+      }
       seqToken.tok = Token.spec_seqcode_range;
       generateResidueSpecCode(seqToken);
       seqToken = getSequenceCode(true);
@@ -1734,21 +1740,33 @@ class Compiler {
     return generateResidueSpecCode(seqToken);
   }
 
-  private Token getSequenceCode(boolean allowNull) {
+  private Token getSequenceCode(boolean isSecond) {
+    // problem is that some commands, like zoomTo allow negative numbers,
+    // while other, like center, do not.
+    // 
+    // (25 [-] 35)     ==> 25 - 35
+    // (25 -35)        ==> 25 - 35
+    
+    // (25 [-] [-] 35) ==> 25 - -35
+    // (25 [-] -35)    ==> 25 - -35
+    
+    // ([-] 25 [-] 35) ==> -25 - 35
+    // (-25 -35)       ==> -25 - 35
+    
     boolean negative = false;
     int seqcode = Integer.MAX_VALUE;
     int seqvalue = Integer.MAX_VALUE;
     int tokPeek = tokPeek();
     if (tokPeek == Token.hyphen) {
       tokenNext();
-      negative = true;
       tokPeek = tokPeek();
+      negative = true;
     }
     if (tokPeek == Token.seqcode)
       seqcode = tokenNext().intValue * (negative ? -1 : 1);
     else if (tokPeek == Token.integer)
       seqvalue = tokenNext().intValue * (negative ? -1 : 1);
-    else if (!allowNull){
+    else if (!isSecond){
       if (negative)
         returnToken();
       return null;

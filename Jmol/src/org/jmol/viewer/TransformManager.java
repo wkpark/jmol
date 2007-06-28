@@ -1395,14 +1395,14 @@ abstract class TransformManager {
     long timeBegin = System.currentTimeMillis();
     int timePerStep = 1000 / fps;
     int totalSteps = (int) (fps * floatSecondsTotal);
+    if (totalSteps == 0)
+      totalSteps = 1; // to catch a zero secondsTotal parameter
     float radiansPerDegreePerStep = (float) Math.PI / 180 / totalSteps;
     float radiansXStep = radiansPerDegreePerStep * dRot.x;
     float radiansYStep = radiansPerDegreePerStep * dRot.y;
     float radiansZStep = radiansPerDegreePerStep * dRot.z;
     viewer.setInMotion(true);
     float zoomPercent0 = zoomPercent;
-    if (totalSteps == 0)
-      totalSteps = 1; // to catch a zero secondsTotal parameter
     for (int i = 1; i <= totalSteps; ++i) {
       if (dRot.x != 0)
         rotateXRadians(radiansXStep);

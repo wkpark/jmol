@@ -1151,6 +1151,7 @@ abstract class TransformManager {
     // translate to the middle of the screen
     fixedTranslation.set(width * (andCenter ? 0.5f : xTranslationFraction), height
         * (andCenter ? 0.5f : yTranslationFraction), 0);
+    setTranslationFractions();
     resetNavigationPoint();
     // 2005 02 22
     // switch to finding larger screen dimension

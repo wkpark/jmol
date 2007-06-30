@@ -9105,6 +9105,7 @@ class Eval { //implements Runnable {
     int tok = statement[0].tok;
     boolean addParens = (Compiler.tokAttr(tok, Token.embeddedExpression));
     boolean useBraces = (tok == Token.ifcmd || tok == Token.set);
+    boolean inBrace = false;
     for (int i = 0; i < statementLength; ++i) {
       if (iToken == i - 1)
         sb.append(" <<");
@@ -9128,6 +9129,10 @@ class Eval { //implements Runnable {
         continue;
       case Token.leftsquare:
       case Token.rightsquare:
+        break;
+      case Token.leftbrace:
+      case Token.rightbrace:
+        inBrace = (token.tok == Token.leftbrace);
         break;
       case Token.define:
         if (i > 0)
@@ -9157,7 +9162,7 @@ class Eval { //implements Runnable {
         token = statement[++i];
         sb.append(' ');
 //        if (token.intValue == Integer.MAX_VALUE)
-          sb.append("- ");
+        sb.append(inBrace ? "-" : "- ");
       //fall through
       case Token.spec_seqcode:
         if (token.intValue != Integer.MAX_VALUE)

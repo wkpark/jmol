@@ -496,8 +496,8 @@ public class Parameters {
     if (cutoff == Float.MAX_VALUE)
       cutoff = defaultMepCutoff;
     isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
-    colorBySign = false;
-    isBicolorMap = false;
+    //colorBySign = false;
+    //isBicolorMap = false;
     if (isMapping || thePlane != null) {
       if (!rangeDefined) {
         valueMappedToRed = defaultMepMin;
@@ -556,8 +556,8 @@ public class Parameters {
       moCoefficients = (float[]) mo.get("coefficients");
       dataType = SURFACE_MOLECULARORBITAL;
     }
-    colorBySign = false;
-    isBicolorMap = false;
+  //  colorBySign = false;
+  //  isBicolorMap = false;
     if (cutoff == Float.MAX_VALUE)
       cutoff = defaultQMOrbitalCutoff;
     isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);

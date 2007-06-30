@@ -3328,7 +3328,7 @@ class Eval { //implements Runnable {
     if (isBackground)
       prefix = "bg";
     if (!isSyntaxCheck && shapeType == JmolConstants.SHAPE_MO && !mo(true))
-      invalidArgument();
+      return;
     if (theTok == Token.translucent || theTok == Token.opaque) {
       translucency = parameterAsString(index++);
       if (theTok == Token.translucent && isFloatParameter(index))

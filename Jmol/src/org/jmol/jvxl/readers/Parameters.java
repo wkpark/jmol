@@ -470,10 +470,10 @@ public class Parameters {
     psi_Znuc = nlmZ[3];
     psi_ptsPerAngstrom = 10;
     // quantum rule is abs(m) <= l < n
-    if (!isMapping) {
-      if (cutoff == Float.MAX_VALUE)
-        cutoff = defaultOrbitalCutoff;
-      isCutoffAbsolute = true;
+    if (cutoff == Float.MAX_VALUE)
+      cutoff = defaultOrbitalCutoff;
+    isCutoffAbsolute = true;
+    if (!isMapping && thePlane == null) {
       if (colorBySign) {
         isBicolorMap = true;
       }
@@ -493,7 +493,12 @@ public class Parameters {
     dataType = SURFACE_MEP;
     theProperty = charges;
     isEccentric = isAnisotropic = false;
-    if (isMapping) {
+    if (cutoff == Float.MAX_VALUE)
+      cutoff = defaultMepCutoff;
+    isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
+    colorBySign = false;
+    isBicolorMap = false;
+    if (isMapping || thePlane != null) {
       if (!rangeDefined) {
         valueMappedToRed = defaultMepMin;
         valueMappedToBlue = defaultMepMax;
@@ -503,9 +508,6 @@ public class Parameters {
       colorBySign = true;
       //colorByPhase = true;
       //colorPhase = 0;
-      if (cutoff == Float.MAX_VALUE)
-        cutoff = defaultMepCutoff;
-      isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
       isBicolorMap = true;
     }
   }
@@ -554,14 +556,16 @@ public class Parameters {
       moCoefficients = (float[]) mo.get("coefficients");
       dataType = SURFACE_MOLECULARORBITAL;
     }
-    if (isMapping)
+    colorBySign = false;
+    isBicolorMap = false;
+    if (cutoff == Float.MAX_VALUE)
+      cutoff = defaultQMOrbitalCutoff;
+    isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
+    if (isMapping || thePlane != null)
       return;
     colorBySign = true;
     if (colorByPhase && colorPhase == 0)
       colorByPhase = false;
-    if (cutoff == Float.MAX_VALUE)
-      cutoff = defaultQMOrbitalCutoff;
-    isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
     isBicolorMap = true;
   }
   

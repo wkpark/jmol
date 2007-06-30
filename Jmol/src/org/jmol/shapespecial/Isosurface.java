@@ -147,6 +147,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   private int moNumber;
   private short defaultColix;
   private Point3f center;
+  private boolean isPhaseColored;
  
   protected SurfaceGenerator sg;
   private JvxlData jvxlData;
@@ -256,7 +257,11 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       center.set((Point3f) value);
     }
     
-    //surface generator only (return TRUE) or shared (return FALSE)
+    if ("phase" == propertyName) {
+      isPhaseColored = true;
+    }
+
+      //surface generator only (return TRUE) or shared (return FALSE)
 
     if (sg.setParameter(propertyName, value, bs))
       return;
@@ -367,6 +372,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     atomIndex = -1;
     defaultColix = 0;
     bsIgnore = null;
+    isPhaseColored = false;
     center = new Point3f(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
     initState();
   }
@@ -546,6 +552,8 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       if (thisMesh == null)
         allocMesh(null);
       thisMesh.clear("isosurface", sg.getIAddGridPoints(), thisMesh.showTriangles);
+      if (isPhaseColored)
+        thisMesh.isColorSolid = false;
       return;
     }
     switch (mode) {

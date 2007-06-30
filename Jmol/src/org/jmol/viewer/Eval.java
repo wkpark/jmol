@@ -2364,6 +2364,7 @@ class Eval { //implements Runnable {
         return (Point4f) getToken(index).value;
       invalidArgument();
     }
+    int multiplier = 1;
     out: for (int i = index; i < statement.length; i++) {
       switch (getToken(i).tok) {
       case Token.leftbrace:
@@ -2373,12 +2374,18 @@ class Eval { //implements Runnable {
         break;
       case Token.rightbrace:
         break out;
-      case Token.integer:
       case Token.spec_seqcode_range:
+        if (n == 6)          
+          invalidArgument();
+        coord[n++] = theToken.intValue;
+        multiplier = -1;
+        break;
+      case Token.integer:
       case Token.spec_seqcode:
         if (n == 6)
           invalidArgument();
-        coord[n++] = theToken.intValue;
+        coord[n++] = theToken.intValue * multiplier;
+        multiplier = 1;
         break;
       case Token.slash:
         getToken(++i);

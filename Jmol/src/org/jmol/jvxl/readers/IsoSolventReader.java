@@ -287,7 +287,7 @@ class IsoSolventReader extends AtomDataReader {
     }
     if (isCavity && isFirstPass)
       return;
-    if (doCalculateTroughs) {
+    if (doCalculateTroughs && !isCavity) {
       Point3i ptA0 = new Point3i();
       Point3i ptB0 = new Point3i();
       Point3i ptA1 = new Point3i();

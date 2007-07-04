@@ -132,7 +132,7 @@ public class Pmesh extends MeshFileCollection {
       }
     } else {
       for (int i = 0; i < currentMesh.vertexCount; ++i) {
-        String line = br.readLine();
+        line = br.readLine();
         float x = parseFloat(line);
         float y = parseFloat();
         float z = parseFloat();

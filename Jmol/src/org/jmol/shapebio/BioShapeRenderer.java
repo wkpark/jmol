@@ -272,8 +272,13 @@ abstract class BioShapeRenderer extends MeshRenderer {
     if (isTraceAlpha) {
       if (!thisTypeOnly || structureTypes[i] == structureTypes[iNext]) {
         madEnd = mads[iNext];
-        if (madEnd == 0)
-          madEnd = madBeg;
+        if (madEnd == 0 ) {
+          if (this instanceof TraceRenderer) {
+            madEnd = madBeg;
+          } else {
+            madEnd = madBeg;
+          }
+        }
         madMid = (madBeg + madEnd) >> 1;
       }
     } else {

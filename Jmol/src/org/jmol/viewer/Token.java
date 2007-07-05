@@ -213,6 +213,8 @@ public class Token {
   final static int gotocmd       = command | 117;
   final static int invertSelected = command | 118 | negnums | embeddedExpression;
   final static int rotateSelected = command | 119 | negnums | embeddedExpression;
+  final static int quaternion     = command | 120;
+  final static int ramachandran   = command | 121;
 
   //the following are listed with atomproperty because they must be registered as atom property names
   //final static int model           = atomproperty | 5 | command;
@@ -886,6 +888,10 @@ public class Token {
     "conformation",      null, 
     "invertSelected",    new Token(invertSelected,  varArgCount),
     "rotateSelected",    new Token(rotateSelected,  varArgCount),
+    "quaternion",        new Token(quaternion,      varArgCount),
+    "quaternions",       null,
+    "ramachandran",      new Token(ramachandran,              0),
+    "rama",              null, 
     "model",             new Token(model,           varArgCount),
     "models",            null, 
     "thisModel",         new Token(thismodel),

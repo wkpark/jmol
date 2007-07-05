@@ -1380,7 +1380,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     openStringInline(strModel, null, false);
   }
 
-  private void openStringInline(String strModel, Hashtable htParams,
+  private boolean openStringInline(String strModel, Hashtable htParams,
                                 boolean isMerge) {
     //loadInline, openFile, openStringInline
     if (!isMerge)
@@ -1389,6 +1389,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String errorMsg = getOpenFileError(isMerge);
     if (errorMsg == null)
       setStatusFileLoaded(1, "string", "", getModelSetName(), null, null);
+    return (errorMsg == null);
   }
 
   private void openStringsInline(String[] arrayModels, Hashtable htParams,
@@ -1415,9 +1416,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     loadInline(strModel, newLine, false);
   }
 
-  void loadInline(String strModel, char newLine, boolean isMerge) {
+  boolean loadInline(String strModel, char newLine, boolean isMerge) {
     if (strModel == null)
-      return;
+      return false;
     int i;
     int[] params = global.getDefaultLatticeArray();
     Hashtable A = new Hashtable();
@@ -1449,10 +1450,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         strModels[i] = strModel.substring(pt0, pt);
         pt0 = pt + datasep.length();
       }
-      openStringsInline(strModels, A, isMerge);
-      return;
     }
-    openStringInline(strModel, A, isMerge);
+    return openStringInline(strModel, A, isMerge);
   }
 
   public void loadInline(String[] arrayModels) {
@@ -1537,7 +1536,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (clientFile instanceof String || clientFile == null) {
       String errorMsg = (String) clientFile;
       setStatusFileNotLoaded(fullPathName, errorMsg);
-      if (errorMsg != null)
+      if (errorMsg != null && !isMerge)
         zap(errorMsg);
       return errorMsg;
     }
@@ -1598,6 +1597,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getFileName() {
     return fileManager.getFileName();
+  }
+  
+  String[] getFileInfo() {
+    return fileManager.getFileInfo();
+  }
+  
+  void setFileInfo(String[] fileInfo) {
+    fileManager.setFileInfo(fileInfo);    
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -2626,6 +2633,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refresh(0, "Viewer:rewindAnimation()");
   }
 
+  boolean isDataFrame(int modelIndex) {
+    return (modelIndex >= 0 && getModelAuxiliaryInfo(modelIndex, "jmolData") != null);
+  }
+  
   void setCurrentModelIndex(int modelIndex) {
     //Eval
     //initializeModel
@@ -3132,7 +3143,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     checking = false;
     if (obj instanceof String)
       return (String) obj;
-    return null;
+    return null;  
   }
 
   public boolean isScriptExecuting() {
@@ -5478,6 +5489,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (!atomExpression.equals("selected"))
       exp = TextFormat.simpleReplace(exp, "selected", atomExpression);
     return (String) Eval.evaluateExpression(this, exp);
+  }
+
+  String getPdbData(String type) {
+    return modelManager.getPdbData(type, selectionManager.bsSelection);
   }
 
   public void setAtomCoord(int atomIndex, float x, float y, float z) {

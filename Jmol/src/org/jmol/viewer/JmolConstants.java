@@ -2152,6 +2152,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_O1              = 41;
   public final static byte ATOMID_H5T_TERMINUS    = 45;
   public final static byte ATOMID_O5T_TERMINUS    = 46;
+  public final static byte ATOMID_O1P             = 47;
+  public final static byte ATOMID_O2P             = 48;
   public final static byte ATOMID_RNA_O2PRIME     = 50;
   public final static byte ATOMID_H3T_TERMINUS    = 59;
   public final static byte ATOMID_N1 = 64;

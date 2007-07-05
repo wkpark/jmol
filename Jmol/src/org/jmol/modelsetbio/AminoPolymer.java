@@ -276,13 +276,12 @@ public class AminoPolymer extends AlphaPolymer {
     //deprecated: calcHydrogenBonds();
     //System.out.println("calculateStructures for model " + this.model.getModelIndex());
     char[] structureTags = new char[monomerCount];
-
+    calcPhiPsiAngles();
     for (int i = 0; i < monomerCount - 1; ++i) {
       AminoMonomer leadingResidue = (AminoMonomer) monomers[i];
       AminoMonomer trailingResidue = (AminoMonomer) monomers[i + 1];
-      calcPhiPsiAngles(leadingResidue, trailingResidue);
       float phi = trailingResidue.getPhi();
-        float psi = leadingResidue.getPsi();
+      float psi = leadingResidue.getPsi();
       if (isHelix(psi, phi)) {
         //this next is just Bob's attempt to separate different helices
         //it is CONSERVATIVE -- it displays fewer helices than before
@@ -362,8 +361,22 @@ public class AminoPolymer extends AlphaPolymer {
     }
   }
  
+  protected boolean calcPhiPsiAngles() {
+    for (int i = 0; i < monomerCount - 1; ++i)
+      calcPhiPsiAngles((AminoMonomer) monomers[i], (AminoMonomer) monomers[i + 1]);
+    return true;
+  }
+  
   private void calcPhiPsiAngles(AminoMonomer leadingResidue,
                         AminoMonomer trailingResidue) {
+    
+    /*
+     *   N1-Ca1-CO1-N2-Ca2-CO2
+     *   "leading"   "trailing"
+     *   high <-------------low   atomIndex
+     * 
+     * 
+     */
     Point3f nitrogen1 = leadingResidue.getNitrogenAtomPoint();
     Point3f alphacarbon1 = leadingResidue.getLeadAtomPoint();
     Point3f carbon1 = leadingResidue.getCarbonylCarbonAtomPoint();
@@ -374,7 +387,9 @@ public class AminoPolymer extends AlphaPolymer {
     trailingResidue.setPhi(Measure.computeTorsion(carbon1, nitrogen2,
                                             alphacarbon2, carbon2, true));
     leadingResidue.setPsi(Measure.computeTorsion(nitrogen1, alphacarbon1,
-                                            carbon1, nitrogen2, true));
+      carbon1, nitrogen2, true));
+    leadingResidue.setOmega(Measure.computeTorsion(alphacarbon1,
+	        carbon1, nitrogen2, alphacarbon2, true));
   }
   
   
@@ -404,129 +419,134 @@ public class AminoPolymer extends AlphaPolymer {
    * old code for assigning SS
    *
 
-  void calculateStructures() {
-    calcHydrogenBonds();
-    char[] structureTags = new char[monomerCount];
+   void calculateStructures() {
+   calcHydrogenBonds();
+   char[] structureTags = new char[monomerCount];
 
-    findHelixes(structureTags);
-    for (int iStart = 0; iStart < monomerCount; ++iStart) {
-      if (structureTags[iStart] != 'n') {
-        int iMax;
-        for (iMax = iStart + 1;
-             iMax < monomerCount && structureTags[iMax] != 'n';
-             ++iMax)
-          {}
-        int iLast = iMax - 1;
-        addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX,
-                              iStart, iLast);
-        iStart = iLast;
-      }
-    }
+   findHelixes(structureTags);
+   for (int iStart = 0; iStart < monomerCount; ++iStart) {
+   if (structureTags[iStart] != 'n') {
+   int iMax;
+   for (iMax = iStart + 1;
+   iMax < monomerCount && structureTags[iMax] != 'n';
+   ++iMax)
+   {}
+   int iLast = iMax - 1;
+   addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_HELIX,
+   iStart, iLast);
+   iStart = iLast;
+   }
+   }
 
-    // reset structureTags
-    // for some reason if these are not reset, all helices are classified
-    // as sheets. - tim 2205 10 12
-        for (int i = monomerCount; --i >= 0; )
-          structureTags[i] = 'n';
+   // reset structureTags
+   // for some reason if these are not reset, all helices are classified
+   // as sheets. - tim 2205 10 12
+   for (int i = monomerCount; --i >= 0; )
+   structureTags[i] = 'n';
 
-    findSheets(structureTags);
-    
-    if (debugHbonds)
-      for (int i = 0; i < monomerCount; ++i)
-        Logger.debug("" + i + ":" + structureTags[i] +
-                           " " + min1Indexes[i] + " " + min2Indexes[i]);
-    for (int iStart = 0; iStart < monomerCount; ++iStart) {
-      if (structureTags[iStart] != 'n') {
-        int iMax;
-        for (iMax = iStart + 1;
-             iMax < monomerCount && structureTags[iMax] != 'n';
-             ++iMax)
-          {}
-        int iLast = iMax - 1;
-        addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_SHEET,
-                              iStart, iLast);
-        iStart = iLast;
-      }
-    }
+   findSheets(structureTags);
+   
+   if (debugHbonds)
+   for (int i = 0; i < monomerCount; ++i)
+   Logger.debug("" + i + ":" + structureTags[i] +
+   " " + min1Indexes[i] + " " + min2Indexes[i]);
+   for (int iStart = 0; iStart < monomerCount; ++iStart) {
+   if (structureTags[iStart] != 'n') {
+   int iMax;
+   for (iMax = iStart + 1;
+   iMax < monomerCount && structureTags[iMax] != 'n';
+   ++iMax)
+   {}
+   int iLast = iMax - 1;
+   addSecondaryStructure(JmolConstants.PROTEIN_STRUCTURE_SHEET,
+   iStart, iLast);
+   iStart = iLast;
+   }
+   }
+   }
+
+   void findHelixes(char[] structureTags) {
+   findPitch(3, 4, '4', structureTags);
+   }
+
+   void findPitch(int minRunLength, int pitch, char tag, char[] tags) {
+   int runLength = 0;
+   for (int i = 0; i < monomerCount; ++i) {
+   if (mainchainHbondOffsets[i] == pitch) {
+   ++runLength;
+   if (runLength == minRunLength)
+   for (int j = minRunLength; --j >= 0; )
+   tags[i - j] = tag;
+   else if (runLength > minRunLength)
+   tags[i] = tag;
+   } else {
+   runLength = 0;
+   }
+   }
+   }
+
+   void findSheets(char[] structureTags) {
+   if (debugHbonds)
+   Logger.debug("findSheets(...)");
+   for (int a = 0; a < monomerCount; ++a) {
+   //if (structureTags[a] == '4')
+   //continue;
+   for (int b = 0; b < monomerCount; ++b) {
+   //if (structureTags[b] == '4')
+   //continue;
+   // tim 2005 10 11
+   // changed tests to reflect actual hbonding patterns in 
+   // beta sheets.
+   if ( ( isHbonded(a, b) && isHbonded(b+2, a) ) || 
+   ( isHbonded(b, a) && isHbonded(a, b+2) ) )  {
+   if (debugHbonds)
+   Logger.debug("parallel found a=" + a + " b=" + b);
+   structureTags[a] = structureTags[b] = 
+   structureTags[a+1] = structureTags[b+1] = 
+   structureTags[a+2] = structureTags[b+2] = 'p';
+   } else if (isHbonded(a, b) && isHbonded(b, a)) {
+   if (debugHbonds)
+   Logger.debug("antiparallel found a=" + a + " b=" + b);
+   structureTags[a] = structureTags[b] = 'a';
+   // tim 2005 10 11
+   // gap-filling feature: if n is sheet, and n+2 or n-2 are sheet, 
+   // make n-1 and n+1 sheet as well.
+   if ( (a+2 < monomerCount) && (b-2 > 0) && 
+   (structureTags[a+2] == 'a') && (structureTags[b-2] == 'a') ) 
+   structureTags[a+1] = structureTags[b-1] = 'a';
+   if ( (b+2 < monomerCount) && (a-2 > 0) && 
+   (structureTags[a-2] == 'a') && (structureTags[b+2] == 'a') ) 
+   structureTags[a-1] = structureTags[b+1] = 'a';
+   } 
+   else if ( (isHbonded(a, b+1) && isHbonded(b, a+1) ) || 
+   ( isHbonded(b+1, a) && isHbonded(a+1, b) ) ) {
+   if (debugHbonds)
+   Logger.debug("antiparallel found a=" + a + " b=" + b);
+   structureTags[a] = structureTags[a+1] =
+   structureTags[b] = structureTags[b+1] = 'A';
+   }
+   }
+   }
+   }
+   
+   
+   boolean isHbonded(int indexDonor, int indexAcceptor) {
+   if (indexDonor < 0 || indexDonor >= monomerCount ||
+   indexAcceptor < 0 || indexAcceptor >= monomerCount)
+   return false;
+   return ((min1Indexes[indexDonor] == indexAcceptor &&
+   min1Energies[indexDonor] <= -500) ||
+   (min2Indexes[indexDonor] == indexAcceptor &&
+   min2Energies[indexDonor] <= -500));
+   }
+
+   *
+   * end old code for assigning SS.
+   */
+
+  public void getPdbData(char ctype, boolean isDerivative, BitSet bsAtoms,
+                         StringBuffer pdbATOM, StringBuffer pdbCONECT) {
+    getPdbData(this, ctype, isDerivative, bsAtoms, pdbATOM, pdbCONECT);
   }
-
-  void findHelixes(char[] structureTags) {
-    findPitch(3, 4, '4', structureTags);
-  }
-
-  void findPitch(int minRunLength, int pitch, char tag, char[] tags) {
-    int runLength = 0;
-    for (int i = 0; i < monomerCount; ++i) {
-      if (mainchainHbondOffsets[i] == pitch) {
-        ++runLength;
-        if (runLength == minRunLength)
-          for (int j = minRunLength; --j >= 0; )
-            tags[i - j] = tag;
-        else if (runLength > minRunLength)
-          tags[i] = tag;
-      } else {
-        runLength = 0;
-      }
-    }
-  }
-
-  void findSheets(char[] structureTags) {
-    if (debugHbonds)
-      Logger.debug("findSheets(...)");
-    for (int a = 0; a < monomerCount; ++a) {
-      //if (structureTags[a] == '4')
-       //continue;
-      for (int b = 0; b < monomerCount; ++b) {
-        //if (structureTags[b] == '4')
-          //continue;
-        // tim 2005 10 11
-        // changed tests to reflect actual hbonding patterns in 
-        // beta sheets.
-        if ( ( isHbonded(a, b) && isHbonded(b+2, a) ) || 
-           ( isHbonded(b, a) && isHbonded(a, b+2) ) )  {
-          if (debugHbonds)
-            Logger.debug("parallel found a=" + a + " b=" + b);
-          structureTags[a] = structureTags[b] = 
-          structureTags[a+1] = structureTags[b+1] = 
-          structureTags[a+2] = structureTags[b+2] = 'p';
-         } else if (isHbonded(a, b) && isHbonded(b, a)) {
-          if (debugHbonds)
-            Logger.debug("antiparallel found a=" + a + " b=" + b);
-          structureTags[a] = structureTags[b] = 'a';
-          // tim 2005 10 11
-          // gap-filling feature: if n is sheet, and n+2 or n-2 are sheet, 
-          // make n-1 and n+1 sheet as well.
-          if ( (a+2 < monomerCount) && (b-2 > 0) && 
-             (structureTags[a+2] == 'a') && (structureTags[b-2] == 'a') ) 
-            structureTags[a+1] = structureTags[b-1] = 'a';
-          if ( (b+2 < monomerCount) && (a-2 > 0) && 
-             (structureTags[a-2] == 'a') && (structureTags[b+2] == 'a') ) 
-            structureTags[a-1] = structureTags[b+1] = 'a';
-        } 
-        else if ( (isHbonded(a, b+1) && isHbonded(b, a+1) ) || 
-                ( isHbonded(b+1, a) && isHbonded(a+1, b) ) ) {
-          if (debugHbonds)
-            Logger.debug("antiparallel found a=" + a + " b=" + b);
-          structureTags[a] = structureTags[a+1] =
-          structureTags[b] = structureTags[b+1] = 'A';
-        }
-      }
-    }
-  }
-  
-  
-  boolean isHbonded(int indexDonor, int indexAcceptor) {
-    if (indexDonor < 0 || indexDonor >= monomerCount ||
-        indexAcceptor < 0 || indexAcceptor >= monomerCount)
-      return false;
-    return ((min1Indexes[indexDonor] == indexAcceptor &&
-             min1Energies[indexDonor] <= -500) ||
-            (min2Indexes[indexDonor] == indexAcceptor &&
-             min2Energies[indexDonor] <= -500));
-  }
-
-  *
-  * end old code for assigning SS.
-  */
 
 }

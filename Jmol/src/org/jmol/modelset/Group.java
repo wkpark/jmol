@@ -25,6 +25,7 @@ package org.jmol.modelset;
 
 import org.jmol.util.Logger;
 import org.jmol.util.ArrayUtil;
+import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 
 import java.util.Hashtable;
@@ -61,6 +62,7 @@ public class Group {
   
   protected float phi = Float.NaN;
   protected float psi = Float.NaN;
+  protected float omega = Float.NaN;
 
   public float getPhi() {
     return phi;
@@ -78,7 +80,14 @@ public class Group {
     this.psi = psi;
   }
   
-
+  public void setOmega(float omega) {
+    this.omega = omega;
+  }
+  
+  public float getOmega() {
+    return omega;
+  }
+  
   public Group(Chain chain, String group3, int seqcode,
         int firstAtomIndex, int lastAtomIndex) {
     this.chain = chain;
@@ -342,6 +351,10 @@ public class Group {
   
   public Atom getLeadAtom() {
     return null; // but see Monomer class
+  }
+  
+  public Quaternion getQuaternion() {
+    return null;
   }
   
 }

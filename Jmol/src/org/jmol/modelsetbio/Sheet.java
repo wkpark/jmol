@@ -22,6 +22,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 package org.jmol.modelsetbio;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -30,24 +31,25 @@ import org.jmol.viewer.JmolConstants;
 
 public class Sheet extends ProteinStructure {
 
-  AminoPolymer aminoPolymer;
-  Sheet(AminoPolymer aminoPolymer, int monomerIndex, int monomerCount) {
-    super(aminoPolymer, JmolConstants.PROTEIN_STRUCTURE_SHEET,
-          monomerIndex, monomerCount);
-    this.aminoPolymer = aminoPolymer;
+  AlphaPolymer alphaPolymer;
+
+  Sheet(AlphaPolymer alphaPolymer, int monomerIndex, int monomerCount) {
+    super(alphaPolymer, JmolConstants.PROTEIN_STRUCTURE_SHEET, monomerIndex,
+        monomerCount);
+    this.alphaPolymer = alphaPolymer;
   }
 
   public void calcAxis() {
     if (axisA != null)
       return;
     if (monomerCount == 2) {
-      axisA = aminoPolymer.getLeadPoint(monomerIndexFirst);
-      axisB = aminoPolymer.getLeadPoint(monomerIndexFirst + 1);
+      axisA = alphaPolymer.getLeadPoint(monomerIndexFirst);
+      axisB = alphaPolymer.getLeadPoint(monomerIndexFirst + 1);
     } else {
       axisA = new Point3f();
-      aminoPolymer.getLeadMidPoint(monomerIndexFirst + 1, axisA);
+      alphaPolymer.getLeadMidPoint(monomerIndexFirst + 1, axisA);
       axisB = new Point3f();
-      aminoPolymer.getLeadMidPoint(monomerIndexFirst + monomerCount - 1, axisB);
+      alphaPolymer.getLeadMidPoint(monomerIndexFirst + monomerCount - 1, axisB);
     }
 
     axisUnitVector = new Vector3f();
@@ -55,18 +57,20 @@ public class Sheet extends ProteinStructure {
     axisUnitVector.normalize();
 
     Point3f tempA = new Point3f();
-    aminoPolymer.getLeadMidPoint(monomerIndexFirst, tempA);
+    alphaPolymer.getLeadMidPoint(monomerIndexFirst, tempA);
     if (lowerNeighborIsHelixOrSheet()) {
       //System.out.println("ok"); 
     } else {
-      Graphics3D.projectOntoAxis(tempA, axisA, axisUnitVector, vectorProjection);
+      Graphics3D
+          .projectOntoAxis(tempA, axisA, axisUnitVector, vectorProjection);
     }
     Point3f tempB = new Point3f();
-    aminoPolymer.getLeadMidPoint(monomerIndexFirst + monomerCount, tempB);
+    alphaPolymer.getLeadMidPoint(monomerIndexFirst + monomerCount, tempB);
     if (upperNeighborIsHelixOrSheet()) {
       //System.out.println("ok");       
     } else {
-      Graphics3D.projectOntoAxis(tempB, axisA, axisUnitVector, vectorProjection);
+      Graphics3D
+          .projectOntoAxis(tempB, axisA, axisUnitVector, vectorProjection);
     }
     axisA = tempA;
     axisB = tempB;
@@ -74,19 +78,21 @@ public class Sheet extends ProteinStructure {
 
   Vector3f widthUnitVector;
   Vector3f heightUnitVector;
-  
+
   void calcSheetUnitVectors() {
+    if (!(alphaPolymer instanceof AminoPolymer))
+      return;
     if (widthUnitVector == null) {
       Vector3f vectorCO = new Vector3f();
       Vector3f vectorCOSum = new Vector3f();
-      AminoMonomer amino = (AminoMonomer)aminoPolymer.monomers[monomerIndexFirst];
-      vectorCOSum.sub(amino.getCarbonylOxygenAtomPoint(),
-                      amino.getCarbonylCarbonAtomPoint());
-      for (int i = monomerCount; --i > 0; ) {
-        amino = (AminoMonomer)aminoPolymer.monomers[i];
-        vectorCO.sub(amino.getCarbonylOxygenAtomPoint(),
-                     amino.getCarbonylCarbonAtomPoint());
-        if (vectorCOSum.angle(vectorCO) < (float)Math.PI/2)
+      AminoMonomer amino = (AminoMonomer) alphaPolymer.monomers[monomerIndexFirst];
+      vectorCOSum.sub(amino.getCarbonylOxygenAtomPoint(), amino
+          .getCarbonylCarbonAtomPoint());
+      for (int i = monomerCount; --i > 0;) {
+        amino = (AminoMonomer) alphaPolymer.monomers[i];
+        vectorCO.sub(amino.getCarbonylOxygenAtomPoint(), amino
+            .getCarbonylCarbonAtomPoint());
+        if (vectorCOSum.angle(vectorCO) < (float) Math.PI / 2)
           vectorCOSum.add(vectorCO);
         else
           vectorCOSum.sub(vectorCO);

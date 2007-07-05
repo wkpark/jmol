@@ -133,10 +133,10 @@ public class AlphaMonomer extends Monomer {
       return true;
     if (! (possiblyPreviousMonomer instanceof AlphaMonomer))
       return false;
-    float distance =
-      getLeadAtomPoint().distance(possiblyPreviousMonomer.getLeadAtomPoint());
+    Atom atom1 = getLeadAtom();
+    Atom atom2 = possiblyPreviousMonomer.getLeadAtom();
+    return atom1.isBonded(atom2) || atom1.distance(atom2) <= 4.2f;
     // jan reichert in email to miguel on 10 May 2004 said 4.2 looked good
-    return distance <= 4.2f;
   }
 
 }

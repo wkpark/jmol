@@ -2658,7 +2658,7 @@ abstract public class ModelSet {
     int iModel = viewer.getCurrentModelIndex();
     if (thisStateModel != iModel) {
       thisStateModel = iModel;
-      script = "frame " + (iModel < 0 ? "" + iModel : getModelName(-iModel))
+      script = "frame " + (iModel < 0 ? "" + iModel : getModelName(-1 - iModel))
           + ";\n" + script;
     }
     stateScripts.addElement(script);
@@ -2756,8 +2756,8 @@ abstract public class ModelSet {
       }
       if (bs == null) {
         bs = new BitSet();
-        itype = atoms[i].getProteinStructureType();
       }
+      itype = atoms[i].getProteinStructureType();
       bs.set(i);
       lastId = id;
       res2 = atoms[i].getResno();
@@ -2766,4 +2766,9 @@ abstract public class ModelSet {
     return cmd.toString();
   }
 
+  String getPdbData(String type, char ctype, BitSet bsAtoms) {
+    boolean isDerivative = (type.indexOf(" deriv") >= 0);
+    return mmset.getPdbData(type, ctype, bsAtoms, isDerivative);
+  }
+ 
 }

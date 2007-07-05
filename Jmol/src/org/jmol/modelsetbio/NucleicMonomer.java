@@ -25,10 +25,12 @@
 package org.jmol.modelsetbio;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import org.jmol.shape.Closest;
+import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 
 public class NucleicMonomer extends PhosphorusMonomer {
@@ -69,6 +71,8 @@ public class NucleicMonomer extends PhosphorusMonomer {
     JmolConstants.ATOMID_O3_PRIME,      // 24 O3' terminus
     ~JmolConstants.ATOMID_NUCLEIC_PHOSPHORUS,    // 25 P phosphorus
     JmolConstants.ATOMID_C3_PRIME,              // 26 C3'
+    ~JmolConstants.ATOMID_O1P,  // 27 Phosphorus O1
+    ~JmolConstants.ATOMID_O2P,  // 28 Phosphorus O2
   };
 
   public static Monomer
@@ -131,8 +135,16 @@ public class NucleicMonomer extends PhosphorusMonomer {
 
   ////////////////////////////////////////////////////////////////
 
+  Atom getC6() {
+    return getAtomFromOffsetIndex(4);
+  }
+
   Atom getN1() {
     return getAtomFromOffsetIndex(5);
+  }
+
+  Atom getC2() {
+    return getAtomFromOffsetIndex(6);
   }
 
   Atom getN3() {
@@ -162,7 +174,20 @@ public class NucleicMonomer extends PhosphorusMonomer {
   Atom getO4() {
     return getAtomFromOffsetIndex(13);
   }
-/*
+
+  Atom getP() {
+    return getAtomFromOffsetIndex(25);
+  }
+
+  Atom getO1P() {
+    return getAtomFromOffsetIndex(27);
+  }
+
+  Atom getO2P() {
+    return getAtomFromOffsetIndex(28);
+  }
+
+  /*
   public Atom getAtom(byte specialAtomID) {
     return getSpecialAtom(interestingNucleicAtomIDs, specialAtomID);
   }
@@ -257,4 +282,46 @@ public class NucleicMonomer extends PhosphorusMonomer {
         atom.setClickable(JmolConstants.CARTOON_VISIBILITY_FLAG);
     }
   }
+ 
+ public Quaternion getQuaternion() {
+   /*
+    * also AminoMonomer
+    *   
+    */
+    
+   /*
+   Point3f ptP = getP(); 
+   Point3f ptO1P = getO1P();
+   Point3f ptO2P = getO2P();
+   if(ptP == null || ptO1P == null || ptO2P == null)
+     return null;
+   //vA = ptO1P - ptP
+   Vector3f vA = new Vector3f(ptO1P);
+   vA.sub(ptP);
+   
+   //vB = ptO2P - ptP
+   Vector3f vB = new Vector3f(ptO2P);
+   vB.sub(ptP);
+   return Quaternion.getQuaternionFrame(vA, vB);   
+   
+   */
+   
+   Point3f ptN1 = getN1(); 
+   Point3f ptC2 = getC2();
+   Point3f ptC6 = getC6();
+   
+   if(ptN1 == null || ptC2 == null || ptC6 == null)
+     return null;
+
+   Vector3f vA = new Vector3f(ptC2);
+   vA.sub(ptN1);
+   
+   Vector3f vB = new Vector3f(ptC6);
+   vB.sub(ptN1);
+
+   return (isPurine ? Quaternion.getQuaternionFrame(vB, vA) : Quaternion.getQuaternionFrame(vA, vB));   
+ }
+   
+ 
+
 }

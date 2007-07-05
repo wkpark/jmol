@@ -30,6 +30,7 @@ import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.bspt.Tuple;
+import org.jmol.util.Quaternion;
 import org.jmol.util.TextFormat;
 
 import java.util.Hashtable;
@@ -192,6 +193,7 @@ final public class Atom extends Point3fi implements Tuple {
       if (specialAtomName != null) {
         Integer boxedI = new Integer(i);
         htAtom.put(specialAtomName, boxedI);
+        //System.out.println("atom: "+specialAtomName+" "+i);
       }
     }
   }
@@ -216,6 +218,8 @@ final public class Atom extends Point3fi implements Tuple {
     if (atomName != null) {
       atomName = generatePrimeAtomName(atomName);
       Integer boxedAtomID = (Integer)htAtom.get(atomName);
+      //if (atomName.equals("O2P"))
+        //System.out.println("looking up "+atomName);
       if (boxedAtomID != null)
         return (byte)(boxedAtomID.intValue());
     }
@@ -1268,5 +1272,9 @@ final public class Atom extends Point3fi implements Tuple {
     //give a different hashcode for an atom depending upon
     //its screen location! Bug fix for 11.1.43 Bob Hanson
     return atomIndex;
+  }
+  
+  public Quaternion getQuaternion() {
+    return group.getQuaternion();
   }
 }

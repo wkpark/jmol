@@ -476,6 +476,8 @@ public abstract class AtomSetCollectionReader {
   }
   
   public void checkLineForScript() {
+    if (line.indexOf("Jmol PDB-encoded data") >= 0) 
+       atomSetCollection.setAtomSetCollectionAuxiliaryInfo("jmolData", "" + line);
     if (line.endsWith("#noautobond")) {
       line = line.substring(0, line.lastIndexOf('#')).trim();
       atomSetCollection.setAtomSetCollectionProperty("noautobond", "true");

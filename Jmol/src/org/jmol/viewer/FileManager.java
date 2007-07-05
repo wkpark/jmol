@@ -112,6 +112,10 @@ class FileManager {
     setLoadScript("", false);
   }
   
+  String getLoadScript() {
+    return loadScript;
+  }
+  
   void setLoadScript(String script, boolean isMerge) {
     if (loadScript == null || !isMerge)
       loadScript = "";
@@ -173,7 +177,8 @@ class FileManager {
     Logger.info("FileManager.openStringInline(" + sp + ")");
     openErrorMessage = null;
     fullPathName = fileName = "string";
-    inlineData = strModel;
+    if (!isMerge)
+      inlineData = strModel;
     //isInline = true;
     //isDOM = false;
     fileOpenThread = new FileOpenThread(fullPathName, fullPathName, null, new BufferedReader(new StringReader(
@@ -324,7 +329,22 @@ class FileManager {
   String getFullPathName() {
     return fullPathName != null ? fullPathName : nameAsGiven;
   }
+  
+  void setFileInfo(String[] fileInfo) {
+    try {
+    fullPathName = fileInfo[0];
+    fileName = fileInfo[1];
+    inlineData = fileInfo[2];
+    loadScript = fileInfo[3];
+    } catch (Exception e) {
+      Logger.error("Exception saving file info: " + e.getMessage());
+    }
+  }
 
+  String[] getFileInfo() {
+    return new String[]{fullPathName, fileName, inlineData, loadScript};
+  }
+  
   String getFileName() {
     return fileName != null ? fileName : nameAsGiven;
   }

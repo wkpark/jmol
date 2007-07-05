@@ -55,6 +55,7 @@ public final class ModelLoader extends ModelSet {
   private ModelLoader mergeModelSet;
   private boolean merging;
   private boolean isMultiFile;
+  private String jmolData;
   private boolean isTrajectory = false;
 
   private final int[] specialAtomIndexes = new int[JmolConstants.ATOMID_MAX];
@@ -114,6 +115,7 @@ public final class ModelLoader extends ModelSet {
     mmset.setModelSetAuxiliaryInfo(info);
     isMultiFile = mmset.getModelSetAuxiliaryInfoBoolean("isMultiFile");
     isPDB = mmset.getModelSetAuxiliaryInfoBoolean("isPDB");
+    jmolData = (String) getModelSetAuxiliaryInfo("jmolData");
     trajectories = (Vector) mmset.getModelSetAuxiliaryInfo("trajectories");
     isTrajectory = (trajectories != null);
     someModelsHaveSymmetry = mmset
@@ -196,7 +198,7 @@ public final class ModelLoader extends ModelSet {
         .getAtomSetCount(clientFile));
     initializeAtomBondModelCounts();
     if (adapter == null) {
-      mmset.setModelNameNumberProperties(0, "", 1, null, null, false);
+      mmset.setModelNameNumberProperties(0, "", 1, null, null, false, null);
     } else {
       appendNew = (modelCount > 1 || viewer.getAppendNew());
       if (modelCount > 0) {
@@ -282,7 +284,8 @@ public final class ModelLoader extends ModelSet {
     surfaceDistance100s = null;
   }
 
-  private void iterateOverAllNewModels(JmolAdapter adapter, Object clientFile, int adapterModelCount) {
+  private void iterateOverAllNewModels(JmolAdapter adapter, Object clientFile,
+                                       int adapterModelCount) {
 
     if (modelCount > 0) {
       nullChain = new Chain(this, mmset.getModel(baseModelIndex), ' ');
@@ -291,7 +294,7 @@ public final class ModelLoader extends ModelSet {
 
     group3Lists = new String[modelCount + 1];
     group3Counts = new int[modelCount + 1][];
-    
+
     structuresDefinedInFile = new BitSet();
 
     if (merging)
@@ -299,16 +302,18 @@ public final class ModelLoader extends ModelSet {
 
     int ipt = baseModelIndex;
     for (int i = 0; i < adapterModelCount; ++i, ipt++) {
-      int modelNumber = (appendNew ? adapter.getAtomSetNumber(clientFile, i) : Integer.MAX_VALUE);
+      int modelNumber = (appendNew ? adapter.getAtomSetNumber(clientFile, i)
+          : Integer.MAX_VALUE);
       String modelName = adapter.getAtomSetName(clientFile, i);
       if (modelName == null)
-        modelName = (modelNumber == Integer.MAX_VALUE ? "" : "" + modelNumber);
-      Properties modelProperties = adapter
-          .getAtomSetProperties(clientFile, i);
+        modelName = (jmolData != null ? jmolData.substring(jmolData
+            .indexOf(":") + 2, jmolData.indexOf("data("))
+            : modelNumber == Integer.MAX_VALUE ? "" : "" + modelNumber);
+      Properties modelProperties = adapter.getAtomSetProperties(clientFile, i);
       Hashtable modelAuxiliaryInfo = adapter.getAtomSetAuxiliaryInfo(
           clientFile, i);
       boolean isPDBModel = mmset.setModelNameNumberProperties(ipt, modelName,
-          modelNumber, modelProperties, modelAuxiliaryInfo, isPDB);
+          modelNumber, modelProperties, modelAuxiliaryInfo, isPDB, jmolData);
       if (isPDBModel) {
         group3Lists[ipt] = JmolConstants.group3List;
         group3Counts[ipt] = new int[JmolConstants.group3Count + 10];
@@ -438,16 +443,18 @@ public final class ModelLoader extends ModelSet {
 
   private void iterateOverAllNewBonds(JmolAdapter adapter, Object clientFile) {
     JmolAdapter.BondIterator iterBond = adapter.getBondIterator(clientFile);
-  if (iterBond != null)
+    if (iterBond == null)
+      return;
+    short mad = viewer.getMadBond();
+    defaultCovalentMad = (jmolData == null ? mad : 0);
     while (iterBond.hasNext()) {
       bondAtoms(iterBond.getAtomUniqueID1(), iterBond.getAtomUniqueID2(),
           (short) iterBond.getEncodedOrder());
     }
+    defaultCovalentMad = mad;
   }
   
   private void bondAtoms(Object atomUid1, Object atomUid2, short order) {
-    if (defaultCovalentMad == 0)
-      defaultCovalentMad = viewer.getMadBond();
     Atom atom1 = (Atom) htAtomMap.get(atomUid1);
     if (atom1 == null) {
       Logger.error("bondAtoms cannot find atomUid1?:" + atomUid1);
@@ -487,6 +494,8 @@ public final class ModelLoader extends ModelSet {
         .getStructureIterator(clientFile);
     if (iterStructure != null)
       while (iterStructure.hasNext()) {
+        //System.out.println(iterStructure.getStructureType() + iterStructure
+          //  .getStartSequenceNumber()+" "+iterStructure.getEndSequenceNumber());
         if (!iterStructure.getStructureType().equals("turn"))
           defineStructure(iterStructure.getModelIndex() + baseModelIndex,
               iterStructure.getStructureType(),
@@ -573,9 +582,9 @@ public final class ModelLoader extends ModelSet {
 
   private void initializeBonding() {
     // perform bonding if necessary
-    boolean doBond = (bondCount == baseBondIndex 
+    boolean doBond = (bondCount == baseBondIndex
         || isMultiFile 
-        || isPDB && (bondCount - baseBondIndex) < (atomCount - baseAtomIndex) / 2 
+        || isPDB && (jmolData == null) && (bondCount - baseBondIndex) < (atomCount - baseAtomIndex) / 2 
         || someModelsHaveSymmetry && !viewer.getApplySymmetryToBonds());
     if (viewer.getForceAutoBond() || doBond && viewer.getAutoBond()
         && getModelSetProperty("noautobond") == null) {

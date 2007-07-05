@@ -23,11 +23,14 @@
  */
 package org.jmol.modelsetbio;
 
+import org.jmol.modelset.Atom;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Polymer;
 import org.jmol.shape.Closest;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Logger;
+import org.jmol.util.Quaternion;
+import org.jmol.util.TextFormat;
 
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -525,5 +528,98 @@ public abstract class BioPolymer extends Polymer {
   public ProteinStructure getProteinStructure(int monomerIndex) {
     return monomers[monomerIndex].getProteinStructure();
   }
-
+  
+  protected boolean calcPhiPsiAngles() {
+    return false;
+  }
+  
+  final public static void getPdbData(BioPolymer p, char ctype, boolean isDerivative, BitSet bsAtoms,
+                         StringBuffer pdbATOM, StringBuffer pdbCONECT) {
+    int atomno = Integer.MIN_VALUE;
+    Quaternion qlast = null;
+    Quaternion qprev = null;
+    float factor = (ctype == 'r' ? 0.1f : 10f);
+    float x = 0, y = 0, z = 0, w = 0;
+    //boolean isQuaternion = ("wxyz".indexOf(ctype) >= 0);
+    boolean isRamachandran = (ctype == 'r');
+    if (isRamachandran && !p.calcPhiPsiAngles())
+      return;    
+    for (int m = 0; m < p.monomerCount; m++) {
+      Monomer monomer = p.monomers[m];
+      if (bsAtoms.get(monomer.getLeadAtomIndex())) {
+        Atom a = monomer.getLeadAtom();
+        if (ctype != 'r') {
+          Quaternion q = a.getQuaternion();
+          if (q == null) {
+            qlast = null;
+            atomno = Integer.MIN_VALUE;
+            continue;
+          }
+          if (isDerivative) {
+            if (qprev == null) {
+              qprev = q;
+              continue;
+            }
+            Quaternion qthis = q;
+            q = qprev.inv().mul(q);
+            //System.out.println("" + qprev+q+ qprev.mul(q) + qthis);
+            qprev = qthis;
+          }
+          if (qlast != null && q.dot(qlast) < 0)
+            q = q.mul(-1);
+          qlast = q;
+          switch (ctype) {
+          case 'w':
+            x = q.q1;
+            y = q.q2;
+            z = q.q3;
+            w = q.q0;
+            break;
+          case 'x':
+            x = q.q0;
+            y = q.q1;
+            z = q.q2;
+            w = q.q3;
+            break;
+          case 'y':
+            x = q.q3;
+            y = q.q0;
+            z = q.q1;
+            w = q.q2;
+            break;
+          case 'z':
+            x = q.q2;
+            y = q.q3;
+            z = q.q0;
+            w = q.q1;
+            break;
+          }
+        } else {
+          x = monomer.getPhi();
+          y = monomer.getPsi();
+          z = monomer.getOmega();
+          if (z < -90)
+            z += 360;
+          z -= 180;
+          if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
+            continue;
+          w = a.getPartialCharge();
+        }
+        pdbATOM.append(a.formatLabel("ATOM  %5i  %-3a%1A%3n %1c%4R%1E   "));
+        pdbATOM.append(TextFormat.formatString("%8.3x", "x", x * factor));
+        pdbATOM.append(TextFormat.formatString("%8.3x", "x", y * factor));
+        pdbATOM.append(TextFormat.formatString("%8.3x", "x", z * factor));
+        pdbATOM.append(TextFormat.formatString("%6.2x", "x", w * factor));
+        pdbATOM.append("                 C    \n");
+        if (atomno != Integer.MIN_VALUE) {
+          pdbCONECT.append("CONECT");
+          pdbCONECT.append(TextFormat.formatString("%5i", "i", atomno));
+          pdbCONECT.append(TextFormat.formatString("%5i", "i", a
+              .getAtomNumber()));
+          pdbCONECT.append('\n');
+        }
+        atomno = a.getAtomNumber();
+      }
+    }
+  }
 }

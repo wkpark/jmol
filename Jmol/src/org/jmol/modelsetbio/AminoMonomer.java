@@ -25,11 +25,13 @@ package org.jmol.modelsetbio;
 
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 import org.jmol.modelset.Atom;
 import org.jmol.modelset.Chain;
 import org.jmol.shape.Closest;
 import org.jmol.util.Logger;
+import org.jmol.util.Quaternion;
 import org.jmol.viewer.JmolConstants;
 
 public class AminoMonomer extends AlphaMonomer {
@@ -177,4 +179,73 @@ public class AminoMonomer extends AlphaMonomer {
         || isCursorOnTopOf(ccarbon, x, y, radiusEnd, competitor))
       closest.atom = alpha;
   }
+  
+  public Quaternion getQuaternion() {
+    /*
+     * also NucleicMonomer
+     *  
+     * see:
+     * 
+     *  Hanson and Thakur: http://www.cs.indiana.edu/~hanson/  http://www.cs.indiana.edu/~sithakur/
+     *  
+     *  Albrecht, Hart, Shaw, Dunker: 
+     *  
+     *   Contact Ribbons: a New Tool for Visualizing Intra- and Intermolecular Interactions in Proteins
+     *   Electronic Proceedings for the 1996 Pacific Symposium on Biocomputing
+     *   http://psb.stanford.edu/psb-online/proceedings/psb96/albrecht.pdfx
+     *   
+     *  Kneller and Calligari:
+     *  
+     *   Efficient characterization of protein secondary structure in terms of screw motion
+     *   Acta Cryst. (2006). D62, 302-311    [ doi:10.1107/S0907444905042654 ]
+     *   http://scripts.iucr.org/cgi-bin/paper?ol5289
+     * 
+     *  Wang and Zang:
+     *   
+     *   Protein secondary structure prediction with Bayesian learning method
+     *   http://cat.inist.fr/?aModele=afficheN&cpsidt=15618506
+     *
+     *  Geetha:
+     *  
+     *   Distortions in protein helices
+     *   International Journal of Biological Macromolecules, Volume 19, Number 2, August 1996 , pp. 81-89(9)
+     *   http://www.ingentaconnect.com/content/els/01418130/1996/00000019/00000002/art01106
+     *   DOI: 10.1016/0141-8130(96)01106-3
+     *    
+     *  Kavraki:
+     *  
+     *   Representing Proteins in Silico and Protein Forward Kinematics
+     *   http://cnx.org/content/m11621/latest
+     *   
+     */
+      
+    Point3f ptC = getCarbonylCarbonAtomPoint(); 
+    Point3f ptCa = getLeadAtomPoint();
+    
+    
+    //vA = ptC - ptCa
+    Vector3f vA = new Vector3f(ptC);
+    vA.sub(ptCa);
+    
+    //vB = ptN - ptCa
+    Point3f ptN = getNitrogenAtomPoint();
+    Vector3f vB = new Vector3f(ptN);
+    vB.sub(ptCa);
+    
+    /* alternative frame:
+     
+    Point3f ptO = getCarbonylOxygenAtomPoint(); 
+    //vA = ptO - ptC
+    Vector3f vA = new Vector3f(ptO);
+    vA.sub(ptC);
+    
+    //vB = ptCa - ptC
+    Vector3f vB = new Vector3f(ptCa);
+    vB.sub(ptC);
+  
+   */    
+    
+    return Quaternion.getQuaternionFrame(vA, vB);   
+  }
+  
 }

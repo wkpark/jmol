@@ -271,16 +271,21 @@ public final class Mmset {
                                        int modelNumber,
                                        Properties modelProperties,
                                        Hashtable modelAuxiliaryInfo,
-                                       boolean isPDB) {
+                                       boolean isPDB, String jmolData) {
 
     this.modelProperties[modelIndex] = modelProperties;
+    if (modelAuxiliaryInfo == null)
+      modelAuxiliaryInfo = new Hashtable();
     this.modelAuxiliaryInfo[modelIndex] = modelAuxiliaryInfo;
-
     String modelTitle = (String) getModelAuxiliaryInfo( modelIndex, "title");
+    if (jmolData != null) {
+      modelAuxiliaryInfo.put("jmolData", jmolData);
+      modelTitle = jmolData;
+    }
     String modelFile = (String) getModelAuxiliaryInfo( modelIndex, "fileName");
     if (modelNumber != Integer.MAX_VALUE)
       models[modelIndex] = new Model(this, modelIndex, modelNumber, modelName,
-          modelTitle, modelFile);
+          modelTitle, modelFile, jmolData);
     String codes = (String) getModelAuxiliaryInfo(modelIndex, "altLocs");
     models[modelIndex].setNAltLocs(codes == null ? 0 : codes.length());
     codes = (String) getModelAuxiliaryInfo(modelIndex, "insertionCodes");
@@ -339,7 +344,8 @@ public final class Mmset {
         for (int i = 0; i < baseModelCount; i++) {
           models[i].modelNumber = 1000000 + i + 1;
           models[i].modelNumberDotted = "1." + (i + 1);
-          models[i].modelTag = "" + models[i].modelNumber;
+          if (models[i].modelTag.length() == 0)
+            models[i].modelTag = "" + models[i].modelNumber;
         }
       }
       modelnumber = models[baseModelCount - 1].modelNumber;
@@ -349,7 +355,8 @@ public final class Mmset {
       for (int i = baseModelCount; i < modelCount; i++) {
         models[i].modelNumber += modelnumber;
         models[i].modelNumberDotted = (modelnumber / 1000000) + "." + (modelnumber % 1000000);
-        models[i].modelTag = "" + models[i].modelNumber;
+        if (models[i].modelTag.length() == 0)
+          models[i].modelTag = "" + models[i].modelNumber;
       }
     }
     for (int i = baseModelCount; i < modelCount; ++i) {
@@ -519,4 +526,18 @@ public final class Mmset {
     return info;
   }
 
+  String getPdbData(String type, char ctype, BitSet bsAtoms,
+                    boolean isDerivative) {
+    StringBuffer pdbATOM = new StringBuffer();
+    StringBuffer pdbCONECT = new StringBuffer();
+    for (int i = modelCount; --i >= 0;)
+      if (models[i].jmolData == null) {
+        int nPoly = models[i].getBioPolymerCount();
+        for (int p = 0; p < nPoly; p++)
+          models[i]
+              .getPdbData(ctype, isDerivative, bsAtoms, pdbATOM, pdbCONECT);
+      }
+    pdbATOM.append(pdbCONECT);
+    return pdbATOM.toString();
+  }
 }

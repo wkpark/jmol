@@ -703,7 +703,7 @@ class Eval { //implements Runnable {
     long timeBegin = 0;
     int ifLevel = 0;
     ifs = new int[MAX_IF_DEPTH + 1];
-    ifs[0] = 0;
+    ifs[0] = 0; 
     debugScript = (!isSyntaxCheck && viewer.getDebugScript());
     logMessages = (debugScript && Logger.isActiveLevel(Logger.LEVEL_DEBUG));
     if (logMessages) {
@@ -1049,8 +1049,14 @@ class Eval { //implements Runnable {
       case Token.restore:
         restore();
         break;
+      case Token.ramachandran:
+        ramachandran();
+        break;
+      case Token.quaternion:
+        quaternion();
+        break;
       case Token.write:
-        write();
+        write(1, null);
         break;
       case Token.pause: //resume is done differently
         pause();
@@ -3634,7 +3640,7 @@ class Eval { //implements Runnable {
   }
 
   void load() throws ScriptException {
-    boolean isMerge = false;
+    boolean isAppend = false;
     int modelCount = viewer.getModelCount() - (viewer.getFileName().equals("zapped") ? 1 : 0);
     boolean appendNew = viewer.getAppendNew();
     StringBuffer loadScript = new StringBuffer("load");
@@ -3663,11 +3669,15 @@ class Eval { //implements Runnable {
         loadScript.append(" " + filename);
         if (filename.equals("fileset"))
           filename = parameterAsString(2);
-        isMerge = (filename.equalsIgnoreCase("append"));
+        isAppend = (filename.equalsIgnoreCase("append"));
         i =  2;
       }
-      if (getToken(i).tok != Token.string)
+      switch (getToken(i).tok) {
+      case Token.string:
+        break;
+      default:
         filenameExpected();
+      }
     }
     // long timeBegin = System.currentTimeMillis();
     if (statementLength == i + 1) {
@@ -3681,7 +3691,7 @@ class Eval { //implements Runnable {
         filename = fixFileName(filename);
       loadScript.append(" ").append(Escape.escape(filename)).append(";");
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
-        viewer.openFile(filename, htParams, loadScript.toString(), isMerge);
+        viewer.openFile(filename, htParams, loadScript.toString(), isAppend);
     } else if (getToken(i + 1).tok == Token.leftbrace
         || theTok == Token.integer) {
       if ((filename = parameterAsString(i++)).length() == 0)
@@ -3745,7 +3755,7 @@ class Eval { //implements Runnable {
       }
       loadScript.append(";");
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
-        viewer.openFile(filename, htParams, loadScript.toString(), isMerge);
+        viewer.openFile(filename, htParams, loadScript.toString(), isAppend);
     } else {
       String modelName;
       if (i == 2) {
@@ -3766,17 +3776,17 @@ class Eval { //implements Runnable {
       nFiles = filenames.length;
       loadScript.append(";");
       if (!isSyntaxCheck || isScriptCheck && fileOpenCheck)
-        viewer.openFiles(modelName, filenames, loadScript.toString(), isMerge);
+        viewer.openFiles(modelName, filenames, loadScript.toString(), isAppend);
     }
     if (isSyntaxCheck && !(isScriptCheck && fileOpenCheck))
       return;
-    String errMsg = viewer.getOpenFileError(isMerge);
+    String errMsg = viewer.getOpenFileError(isAppend);
     // int millis = (int)(System.currentTimeMillis() - timeBegin);
     // Logger.debug("!!!!!!!!! took " + millis + " ms");
     if (errMsg != null && !isScriptCheck)
       evalError(errMsg);
     
-    if (isMerge && (appendNew || nFiles > 1)) {
+    if (isAppend && (appendNew || nFiles > 1)) {
       viewer.setAnimationRange(-1, -1, false);
       viewer.setCurrentModelIndex(modelCount);
     }
@@ -3804,7 +3814,7 @@ class Eval { //implements Runnable {
         .getFullPathName()
         : "test.xyz");
     if (filename == null)
-      invalidArgument();
+      invalidArgument();  
     return filename;
   }
   
@@ -3813,6 +3823,49 @@ class Eval { //implements Runnable {
     showString("Loading " + s);
     return s;
   }
+
+  void ramachandran() throws ScriptException {
+    //11.3.3
+    if (isSyntaxCheck) //just in case we later add parameter options to this
+      return;
+    loadPdbDataWithScript("ramachandran", 
+        "frame 0.0; frame last; reset; center {0 0 0};zoomTo 0 (visible) 0;"
+        + "select visible; color structure; select *;"
+        + "draw ramaAxisX%N% {-10 0 0} {10 0 0};draw ramaAxisY%N% {0 -10 0} {0 10 0};"
+        );
+  }
+
+  void quaternion() throws ScriptException {
+    // org.jmol.modelsetbio/AminoMonomer::quaternion()
+    
+    //11.3.3
+    String type = (statementLength == 1 ? "w" : optParameterAsString(1));
+    boolean isDerivative = (optParameterAsString(statementLength - 1).indexOf(
+        "deriv") == 0);
+    if (isDerivative && statementLength == 2)
+      type = "w";
+    if (!Parser.isOneOf(type, "w;x;y;z"))
+      evalError("QUATERNION [w,x,y,z] [derivative]");
+    if (isSyntaxCheck)
+      return;
+    loadPdbDataWithScript("quaternion " + type + (isDerivative ? " derivative" : ""),
+        "frame 0.0; frame last; reset; center {0 0 0};zoomTo 0 (visible) 0;"
+        + "select visible; trace 0.1; color trace structure; select *;"
+        + "isosurface quatSphere%N% resolution 1.0 sphere 10.0 mesh nofill translucent 0.8;"
+        );
+  }
+
+  void loadPdbDataWithScript(String type, String script) throws ScriptException {
+    String[] fileInfo = viewer.getFileInfo();
+    boolean isOK = viewer.loadInline(viewer.getPdbData(type), '\n', true);
+    viewer.setFileInfo(fileInfo);
+    if (!isOK)
+      return;
+    int modelCount = viewer.getModelCount();
+    runScript(TextFormat.simpleReplace(script, "%N%", ""+modelCount));
+    showString("frame " + viewer.getModelName(-modelCount) + " created: " + type);
+  }
+
   //measure() see monitor()
 
   void monitor() throws ScriptException {
@@ -7085,19 +7138,43 @@ class Eval { //implements Runnable {
     evalError(GT._("restore what?") + " bonds? orientation? selection? state? structure?");
   }
 
-  void write() throws ScriptException {
+  String write(int pt, StringBuffer loadScript) throws ScriptException {
+    boolean isLoad = (loadScript != null);
     boolean isApplet = viewer.isApplet();
-    int tok = (statementLength == 1 ? Token.clipboard : statement[1].tok);
-    int pt = 1;
+    int tok = (statementLength == 1 ? Token.clipboard : statement[pt].tok);
     int len = 0;
     int width = -1;
     int height = -1;
     String type = "SPT";
     String data = "";
+    String type2 = "";
+    String fileName = null;
     boolean isCoord = false;
+    boolean isShow = false;
     switch (tok) {
+    case Token.quaternion:
+      pt++;
+      type2 = optParameterAsString(pt).toLowerCase();
+      if (Parser.isOneOf(type2, "w;x;y;z"))
+        pt++;
+      else
+        type2 = "w";
+      type2 = "quaternion " + type2;
+      type = optParameterAsString(pt);
+      if (type.indexOf("deriv") == 0) {
+        type2 += " derivative";
+        pt++;
+      }
+      type = "QUAT";
+      break;
+    case Token.ramachandran:
+      type = "RAMA";
+      type2 = "ramachandran";
+      pt++;
+      break;
     case Token.coord:
     case Token.data:
+      type = optParameterAsString(pt + 1).toLowerCase();
       type = "data";
       isCoord = true;
       pt++;
@@ -7129,26 +7206,20 @@ class Eval { //implements Runnable {
       } else if (type.equals("var")) {
         pt += 2;
         type = "VAR";
-      } else { 
+      } else {
         type = "image";
       }
       break;
     }
-    if (pt >= statementLength)
-      badArgumentCount();
-
-    tok = statement[pt].tok;
-    String val = parameterAsString(pt);
-
-    //write [image|history|state] clipboard
-
+    String val = optParameterAsString(pt);
     if (val.equalsIgnoreCase("clipboard")) {
       if (isSyntaxCheck)
-        return;
-      if (isApplet)
-        evalError(GT._("The {0} command is not available for the applet.",
-            "WRITE CLIPBOARD"));
+        return "";
+//      if (isApplet)
+  //      evalError(GT._("The {0} command is not available for the applet.",
+    //        "WRITE CLIPBOARD"));
     }
+    //write [image|history|state] clipboard
 
     //write [optional image|history|state] [JPG|JPG64|PNG|PPM|SPT] "filename"
     //write script "filename"
@@ -7159,10 +7230,10 @@ class Eval { //implements Runnable {
       if (data.charAt(0) != '.')
         type = val.toUpperCase();
     }
-    if (pt + 1 != statementLength)
-      badArgumentCount();
-    String fileName = null;
-    switch (getToken(pt).tok) {
+    switch (tokAt(pt)) {
+    case Token.nada:
+      isShow = true;
+      break;
     case Token.identifier:
     case Token.string:
       fileName = parameterAsString(pt);
@@ -7194,19 +7265,24 @@ class Eval { //implements Runnable {
         type = "XYZ";
     }
     boolean isImage = Parser.isOneOf(type, "JPEG;JPG64;JPG;PPM;PNG");
-    if (!isImage && !Parser.isOneOf(type, "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB"))
-      evalError(GT._("write what? {0} or {1} \"filename\"", new Object[] {
-          "COORDS|HISTORY|IMAGE|ISOSURFACE|MO|STATE|VAR x  CLIPBOARD",
-          "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB" }));
+    if (isImage && (isApplet || isShow))
+      type = "JPG64";
+    if (!isImage
+        && !Parser.isOneOf(type, "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB;QUAT;RAMA"))
+      evalError(GT
+          ._(
+              "write what? {0} or {1} \"filename\"",
+              new Object[] {
+                  "COORDS|HISTORY|IMAGE|ISOSURFACE|MO|QUATERNION [w,x,y,z] [derivative]|RAMACHANDRAN;STATE|VAR x  CLIPBOARD",
+                  "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB" }));
     if (isSyntaxCheck)
-      return;
-    if (isImage && isApplet)
-      evalError(GT._("The {0} command is not available for the applet.",
-          "WRITE image"));
-    int quality = Integer.MIN_VALUE;
+      return "";
     data = type.intern();
+    int quality = Integer.MIN_VALUE;
     if (data == "PDB" || data == "XYZ" || data == "MOL") {
       data = viewer.getData("selected", data);
+    } else if (data == "QUAT" || data == "RAMA") {
+      data = viewer.getPdbData(type2);
     } else if (data == "VAR") {
       data = "" + viewer.getParameter(parameterAsString(2));
     } else if (data == "SPT") {
@@ -7237,11 +7313,16 @@ class Eval { //implements Runnable {
       if (height < 0)
         height = viewer.getScreenHeight();
     }
-    viewer.createImage(fileName, data, quality, width, height);
-    scriptStatus("type=" + type + "; file="
-        + (fileName == null ? "CLIPBOARD" : fileName)
-        + (len >= 0 ? "; length=" + len : "")
-        + (isImage ? "; width=" + width + "; height=" + height : ""));
+    if (isShow) {
+      showString(data);
+    } else if (!isLoad) {
+      viewer.createImage(fileName, data, quality, width, height);
+      scriptStatus("type=" + type + "; file="
+          + (fileName == null ? "CLIPBOARD" : fileName)
+          + (len >= 0 ? "; length=" + len : "")
+          + (isImage ? "; width=" + width + "; height=" + height : ""));
+    }
+    return data;
   }
 
   /* ****************************************************************************
@@ -7277,6 +7358,14 @@ class Eval { //implements Runnable {
       break;
     case Token.scale3d:
       str = "scaleAngstromsPerInch";
+      break;
+    case Token.quaternion:
+      if (isSyntaxCheck)
+        return;
+      msg = viewer.getPdbData("quaternion w");
+      break;
+    case Token.ramachandran:
+      msg = viewer.getPdbData("ramachandran");
       break;
     case Token.identifier:
       if (str.equalsIgnoreCase("historyLevel")) {

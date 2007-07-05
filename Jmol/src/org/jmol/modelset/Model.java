@@ -82,6 +82,7 @@ public final class Model {
   int nAltLocs;
   int nInsertions;
   boolean isPDB = false;
+  String jmolData; // from a PDB remark "Jmol PDB-encoded data" 
   private int chainCount = 0;
   private Chain[] chains = new Chain[8];
   private int bioPolymerCount = 0;
@@ -89,13 +90,14 @@ public final class Model {
 
 
   Model(Mmset mmset, int modelIndex, int modelNumber,
-      String modelTag, String modelTitle, String modelFile) {
+      String modelTag, String modelTitle, String modelFile, String jmolData) {
     this.mmset = mmset;
     this.modelIndex = modelIndex;
     this.modelNumber = modelNumber;
     this.modelTag = modelTag;
     this.modelTitle = modelTitle;
     this.modelFile = modelFile;
+    this.jmolData = jmolData;
   }
 
   void setNAltLocs(int nAltLocs) {
@@ -222,4 +224,9 @@ public final class Model {
   public int getModelIndex() {
     return modelIndex;
   }  
+  
+  public void getPdbData(char ctype, boolean isDerivative, BitSet bsAtoms, StringBuffer pdbATOM, StringBuffer pdbCONECT) {
+    for (int p = 0; p < bioPolymerCount; p++)
+      bioPolymers[p].getPdbData(ctype, isDerivative, bsAtoms, pdbATOM, pdbCONECT);
+  }
 }

@@ -53,15 +53,33 @@ class RepaintManager {
   }
   
   void setCurrentModelIndex(int modelIndex) {
-    ModelSet modelSet = viewer.getModelSet();
+      ModelSet modelSet = viewer.getModelSet();
     if (modelIndex != 0 && isTrajectory)
       viewer.setTrajectory(-1);
-    if (modelSet == null || modelIndex < 0 || modelIndex >= modelSet.getModelCount())
+    if (modelSet != null && currentModelIndex != modelIndex) {
+      boolean fromDataFrame = viewer.isDataFrame(currentModelIndex);
+      boolean toDataFrame = viewer.isDataFrame(modelIndex);
+      int n = (fromDataFrame ? currentModelIndex : 0);
+      viewer.saveOrientation("frame" + n);
+      // leaving or entering data frame? Then restore new frame's index 
+      if (fromDataFrame || toDataFrame) {
+        n = (toDataFrame ? modelIndex : 0);
+        viewer.restoreOrientation("frame" + n, 0);
+      }
+    }
+    if (modelSet == null || modelIndex < 0
+        || modelIndex >= modelSet.getModelCount())
       currentModelIndex = -1;
     else
       currentModelIndex = modelIndex;
     if (currentModelIndex == -1)
       setBackgroundModelIndex(-1);
+    if (modelSet != null && currentModelIndex >= 0) {
+      // entering data frame
+      if (viewer.getModelAuxiliaryInfo(currentModelIndex, "jmolData") != null) {
+        viewer.restoreOrientation("frameIndex" + currentModelIndex, 0);
+      }
+    }
     viewer.setTainted(true);
     setFrameRangeVisible();
     if (modelSet != null)

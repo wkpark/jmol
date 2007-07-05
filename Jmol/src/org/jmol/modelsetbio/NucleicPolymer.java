@@ -87,4 +87,10 @@ public class NucleicPolymer extends BioPolymer {
       }
     }
   }
+
+  public void getPdbData(char ctype, boolean isDerivative, BitSet bsAtoms,
+                         StringBuffer pdbATOM, StringBuffer pdbCONECT) {
+    getPdbData(this, ctype, isDerivative, bsAtoms, pdbATOM, pdbCONECT);
+  }
+
 }

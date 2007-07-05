@@ -61,9 +61,8 @@ public class AlphaPolymer extends BioPolymer {
       proteinstructure = new Helix(this, indexStart, structureCount);
       break;
     case JmolConstants.PROTEIN_STRUCTURE_SHEET:
-      if (this instanceof AminoPolymer)
-        proteinstructure = new Sheet((AminoPolymer)this,
-                                   indexStart, structureCount);
+//      if (this instanceof AminoPolymer)
+        proteinstructure = new Sheet(this, indexStart, structureCount);
       break;
     case JmolConstants.PROTEIN_STRUCTURE_TURN:
       proteinstructure = new Turn(this, indexStart, structureCount);

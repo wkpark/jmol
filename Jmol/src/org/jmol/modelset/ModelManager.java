@@ -30,6 +30,7 @@ import org.jmol.shape.MeshCollection;
 import org.jmol.symmetry.SpaceGroup;
 import org.jmol.symmetry.UnitCell;
 import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
 
@@ -67,6 +68,7 @@ public class ModelManager {
 
   public void clear() {
     fullPathName = fileName = modelSetName = null;
+    pdbHeader = null; //faster retrieval if cached.
     //haveFile = false;
     clearFrame();
   }
@@ -870,8 +872,9 @@ String getAtomInfoChime(int i) {
     return (modelSet.isPDB() ? getFullPDBHeader() : getFileHeader());
   }
   
+  String pdbHeader;
   String getFullPDBHeader() {
-    String info = viewer.getCurrentFileAsString();
+    String info = (pdbHeader == null ? (pdbHeader = viewer.getCurrentFileAsString()) : pdbHeader);
     int ichMin = info.length();
     for (int i = pdbRecords.length; --i >= 0;) {
       int ichFound;
@@ -890,6 +893,27 @@ String getAtomInfoChime(int i) {
     return info.substring(0, ichMin);
   }
 
+  public String getPDBStructureInfo() {
+    if (!modelSet.isPDB())
+      return "";
+    getFullPDBHeader();
+    int lines[] = Parser.markLines(pdbHeader, '\n');
+    StringBuffer str = new StringBuffer();
+    int n = lines.length - 1;
+    for (int i = 0; i < n; i++) {
+      String line = pdbHeader.substring(lines[i], lines[i + 1]);
+      if (
+          line.indexOf("HEADER") == 0 || 
+          line.indexOf("COMPND") == 0 || 
+          line.indexOf("SOURCE") == 0 || 
+          line.indexOf("HELIX") == 0 || 
+          line.indexOf("SHEET") == 0 || 
+          line.indexOf("TURN") == 0)
+        str.append(line);
+    }
+    return str.toString();
+  }
+  
   public Hashtable getModelInfo() {
     Hashtable info = new Hashtable();
     int modelCount = viewer.getModelCount();
@@ -1495,17 +1519,40 @@ String getAtomInfoChime(int i) {
   }
 
   /*
-  Hashtable listPropertiesAsObject(Properties props) {
-    Hashtable info = new Hashtable();
-    if (props == null)
-      return info;
-    Enumeration e = props.propertyNames();
-    while (e.hasMoreElements()) {
-      String propertyName = (String)e.nextElement();
-      info.put(propertyName,props.getProperty(propertyName));
-    }
-    return info;
-  }
-*/
+   Hashtable listPropertiesAsObject(Properties props) {
+   Hashtable info = new Hashtable();
+   if (props == null)
+   return info;
+   Enumeration e = props.propertyNames();
+   while (e.hasMoreElements()) {
+   String propertyName = (String)e.nextElement();
+   info.put(propertyName,props.getProperty(propertyName));
+   }
+   return info;
+   }
+   */
 
+  public String getPdbData(String type, BitSet bsAtoms) {
+    char ctype = (type.length() > 11 && type.indexOf("quaternion ") >= 0 ? type.charAt(11) : 'r');
+    String remark = "REMARK 999 Jmol PDB-encoded data: " + type
+        + " data(x,y,z,charge)=";
+    switch (ctype) {  
+    case 'w':
+      remark += "(x,y,z,w)";
+      break;
+    case 'x':
+      remark += "(y,z,w,x)";
+      break;
+    case 'y':
+      remark += "(z,w,x,y)";
+      break;
+    case 'z':
+      remark += "(w,x,y,z)";
+      break;
+    case 'r':
+      remark += "(phi,psi,omega,partialCharge)";
+    }
+    remark += "\n";
+    return remark + getPDBStructureInfo() + modelSet.getPdbData(type, ctype, bsAtoms);
+  }
 }

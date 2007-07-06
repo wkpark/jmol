@@ -39,10 +39,12 @@ public abstract class ShapeRenderer {
   protected String generatorType;
   protected StringBuffer generatorOutput;
 
-  public Object initializeGenerator(Object exporter, String type, StringBuffer output) {
+  public void initializeGenerator(Object exporter, String type, StringBuffer output) {
+    
+    //Object exporter is only used by org.jmol.export extentions
+    
     generatorType = type;
     generatorOutput = output;
-    return null;
   }
 
   public final void setViewerG3dShapeID(Viewer viewer, Graphics3D g3d, int shapeID) {

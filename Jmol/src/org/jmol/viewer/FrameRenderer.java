@@ -24,11 +24,13 @@
 
 package org.jmol.viewer;
 
+import org.jmol.api.JmolExportInterface;
 import org.jmol.g3d.*;
 import org.jmol.modelset.ModelSet;
 //import java.awt.Rectangle;
 import org.jmol.shape.Shape;
 import org.jmol.shape.ShapeRenderer;
+import org.jmol.viewer.Viewer;
 import org.jmol.util.Logger;
 
 public class FrameRenderer {
@@ -94,8 +96,19 @@ public class FrameRenderer {
   }
 
   String generateOutput(String type, Graphics3D g3d, ModelSet modelSet) {
+    JmolExportInterface exporter = null;
     StringBuffer output = new StringBuffer();
-    Object exporter = null;
+    try {
+      Class exporterClass = Class.forName("org.jmol.export."+type+"Exporter");
+      exporter = (JmolExportInterface) exporterClass.newInstance();
+    } catch (Exception e) {
+      Logger.error("Cannot export " + type);
+      return "";
+    }
+    
+    exporter.initialize(viewer, g3d, output);
+    exporter.getHeader();
+
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = modelSet.getShape(i);
       if (shape == null)
@@ -103,14 +116,17 @@ public class FrameRenderer {
       ShapeRenderer generator = getGenerator(i, g3d);
       if (generator == null)
         continue;
-      exporter = generator.initializeGenerator(exporter, type, output);
+      generator.initializeGenerator(exporter, type, output);
       generator.render(g3d, modelSet, shape);
     }
+
+    exporter.getFooter();
+    
     return output.toString();
   }
 
   ShapeRenderer getGenerator(int shapeID, Graphics3D g3d) {
-    String className = "org.jmol.shapegenerator."
+    String className = "org.jmol.export."
         + JmolConstants.getShapeClassName(~shapeID) + "Generator";
     try {
       Class shapeClass = Class.forName(className);

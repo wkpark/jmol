@@ -35,6 +35,10 @@ import java.util.Properties;
 
 final public class JmolConstants {
 
+  //note: Eval.write() processing requires drivers to be first-letter-capitalized.
+  //do not capitalize any other letter in the word. Separate by semicolon.
+  public static final String EXPORT_DRIVER_LIST = "Maya;Vrml";
+
   public final static int DRAW_MULTIPLE = -1;
   public final static int DRAW_NONE = 0;
   //next are same as number of points

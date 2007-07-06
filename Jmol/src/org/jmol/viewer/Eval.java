@@ -7141,6 +7141,7 @@ class Eval { //implements Runnable {
   String write(int pt, StringBuffer loadScript) throws ScriptException {
     boolean isLoad = (loadScript != null);
     boolean isApplet = viewer.isApplet();
+    String driverList = viewer.getExportDriverList();
     int tok = (statementLength == 1 ? Token.clipboard : statement[pt].tok);
     int len = 0;
     int width = -1;
@@ -7151,6 +7152,7 @@ class Eval { //implements Runnable {
     String fileName = null;
     boolean isCoord = false;
     boolean isShow = false;
+    boolean isExport = false;
     switch (tok) {
     case Token.quaternion:
       pt++;
@@ -7206,9 +7208,10 @@ class Eval { //implements Runnable {
       } else if (type.equals("var")) {
         pt += 2;
         type = "VAR";
-      } else if (type.equals("maya")) {
+      } else if (Parser.isOneOf(type, driverList.toLowerCase())) {
         pt++;
-        type = "MAYA";
+        type = type.substring(0, 1).toUpperCase() + type.substring(1);
+        isExport = true;
       } else {
         type = "image";
       }
@@ -7218,9 +7221,9 @@ class Eval { //implements Runnable {
     if (val.equalsIgnoreCase("clipboard")) {
       if (isSyntaxCheck)
         return "";
-//      if (isApplet)
-  //      evalError(GT._("The {0} command is not available for the applet.",
-    //        "WRITE CLIPBOARD"));
+      //      if (isApplet)
+      //      evalError(GT._("The {0} command is not available for the applet.",
+      //        "WRITE CLIPBOARD"));
     }
     //write [image|history|state] clipboard
 
@@ -7270,26 +7273,29 @@ class Eval { //implements Runnable {
     boolean isImage = Parser.isOneOf(type, "JPEG;JPG64;JPG;PPM;PNG");
     if (isImage && (isApplet || isShow))
       type = "JPG64";
-    if (!isImage
-        && !Parser.isOneOf(type, "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB;QUAT;RAMA;MAYA"))
+    if (!isImage && !isExport
+        && !Parser.isOneOf(type,
+            "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB;QUAT;RAMA;"))
       evalError(GT
           ._(
               "write what? {0} or {1} \"filename\"",
               new Object[] {
-                  "COORDS|HISTORY|IMAGE|ISOSURFACE|MO|QUATERNION [w,x,y,z] [derivative]|RAMACHANDRAN;STATE|VAR x  CLIPBOARD",
-                  "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB|MAYA" }));
+                  "COORDS|HISTORY|IMAGE|ISOSURFACE|MO|QUATERNION [w,x,y,z] [derivative]"
+                  +"|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
+                  "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB|"
+                      + TextFormat.simpleReplace(driverList.toUpperCase(), ";", "|") }));
     if (isSyntaxCheck)
       return "";
     data = type.intern();
     int quality = Integer.MIN_VALUE;
-    if (data == "PDB" || data == "XYZ" || data == "MOL") {
+    if (isExport) {
+      data = "" + viewer.generateOutput(data);
+    } else if (data == "PDB" || data == "XYZ" || data == "MOL") {
       data = viewer.getData("selected", data);
     } else if (data == "QUAT" || data == "RAMA") {
       data = viewer.getPdbData(type2);
     } else if (data == "VAR") {
       data = "" + viewer.getParameter(parameterAsString(2));
-    } else if (data == "MAYA") {
-      data = "" + viewer.generateOutput("maya");
     } else if (data == "SPT") {
       if (isCoord) {
         BitSet tainted = viewer.getTaintedAtoms();

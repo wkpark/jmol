@@ -641,6 +641,7 @@ public class StateManager {
       + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;"
       + ";cameradepth;navigationmode;rotationradius;"
       + ";zerobasedxyzrasmol;axesorientationrasmol;"
+      + ";exportdrivers;"
       + ";language;_spinning;_animating;_modelnumber;_modelname;_currentmodelnumberinfile;"
       + ";_currentfilenumber;_modelfile;_modeltitle;_version;_memory;"
       + ";_width;_height;_atompicked;_atomhovered;";
@@ -864,6 +865,7 @@ public class StateManager {
       setParameterValue("dotsSelectedOnly",dotsSelectedOnly);
       setParameterValue("dotSurface",dotSurface);
       setParameterValue("dynamicMeasurements",dynamicMeasurements);
+      setParameterValue("exportDrivers", JmolConstants.EXPORT_DRIVER_LIST);
       setParameterValue("forceAutoBond",forceAutoBond);
       setParameterValue("greyscaleRendering",greyscaleRendering);
       setParameterValue("hbondsBackbone",hbondsBackbone);

@@ -261,6 +261,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return JmolConstants.version + "  " + JmolConstants.date;
   }
 
+  public String getExportDriverList() {
+    return (String) global.getParameter("exportDrivers");
+  }
+  
   private static int getJmolVersionInt() {
     //11.9.999 --> 1109999
     String s = JmolConstants.version;

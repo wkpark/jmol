@@ -32,26 +32,26 @@ import org.jmol.viewer.JmolConstants;
 
 public class SticksRenderer extends ShapeRenderer {
 
-  boolean showMultipleBonds;
-  byte modeMultipleBond;
+  protected boolean showMultipleBonds;
+  protected byte modeMultipleBond;
   //boolean showHydrogens;
-  byte endcaps;
+  protected byte endcaps;
 
-  boolean ssbondsBackbone;
-  boolean hbondsBackbone;
-  boolean bondsBackbone;
-  boolean hbondsSolid;
+  protected boolean ssbondsBackbone;
+  protected boolean hbondsBackbone;
+  protected boolean bondsBackbone;
+  protected boolean hbondsSolid;
   
-  Atom atomA, atomB;
-  Bond bond;
+  protected Atom atomA, atomB;
+  protected Bond bond;
   int xA, yA, zA;
   int xB, yB, zB;
   int dx, dy;
   int mag2d;
-  short colixA, colixB;
-  int width;
-  int bondOrder;
-  short madBond;
+  protected short colixA, colixB;
+  protected int width;
+  protected int bondOrder;
+  protected short madBond;
 
   protected void render() {
     endcaps = Graphics3D.ENDCAPS_SPHERICAL;
@@ -70,7 +70,7 @@ public class SticksRenderer extends ShapeRenderer {
     }
   }
 
-  void renderBond() {
+  protected void renderBond() {
     madBond = bond.getMad();
     int order = bond.getOrder();
     atomA = bond.getAtom1();
@@ -164,7 +164,7 @@ public class SticksRenderer extends ShapeRenderer {
     return order;
   }
 
-  private void renderCylinder(int dottedMask) {
+  protected void renderCylinder(int dottedMask) {
     boolean lineBond = (width <= 1);
     if (dx == 0 && dy == 0) {
       // end-on view

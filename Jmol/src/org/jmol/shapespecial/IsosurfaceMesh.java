@@ -41,14 +41,14 @@ import org.jmol.shape.Mesh;
 public class IsosurfaceMesh extends Mesh {
   JvxlData jvxlData = new JvxlData();
 
-  boolean hideBackground;
-  int realVertexCount;
-  int vertexIncrement = 1;
-  int firstRealVertex = -1;
-  boolean hasGridPoints;
+  public boolean hideBackground;
+  public int realVertexCount;
+  public int vertexIncrement = 1;
+  public int firstRealVertex = -1;
+  public boolean hasGridPoints;
 
-  float[] vertexValues;  
-  short[] vertexColixes;
+  public float[] vertexValues;  
+  public short[] vertexColixes;
   
   IsosurfaceMesh(String thisID, Graphics3D g3d, short colix) {
     super(thisID, g3d, colix);

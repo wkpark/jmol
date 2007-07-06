@@ -33,15 +33,15 @@ import org.jmol.util.Logger;
 public class IsosurfaceRenderer extends MeshRenderer {
 
   private boolean iShowNormals;
-  private boolean iHideBackground;
+  protected boolean iHideBackground;
   private boolean isPlane;
-  private boolean isBicolorMap;
-  private short backgroundColix;
-  private boolean isTranslucent;
-  private int nError = 0;
-  private float[] vertexValues;
+  protected boolean isBicolorMap;
+  protected short backgroundColix;
+  protected boolean isTranslucent;
+  protected int nError = 0;
+  protected float[] vertexValues;
 
-  IsosurfaceMesh imesh;
+  protected IsosurfaceMesh imesh;
 
   protected void render() {
     iShowNormals = viewer.getTestFlag4();

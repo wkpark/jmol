@@ -2605,7 +2605,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int CLASS_BASE_SPECIAL = -2;
   
   public final static String getShapeClassName(int shapeID) {
-    return (shapeID == CLASS_BASE_BIO || shapeID >= SHAPE_MIN_SECONDARY
+    return (shapeID < 0 ? shapeClassBases[~shapeID] : 
+      shapeID == CLASS_BASE_BIO || shapeID >= SHAPE_MIN_SECONDARY
         && shapeID < SHAPE_MAX_SECONDARY ? CLASSBASE_OPTIONS + "shapebio."
         : shapeID == CLASS_BASE_SPECIAL || shapeID >= SHAPE_MIN_SPECIAL
             && shapeID < SHAPE_MAX_SPECIAL && shapeID != SHAPE_DIPOLES ? 

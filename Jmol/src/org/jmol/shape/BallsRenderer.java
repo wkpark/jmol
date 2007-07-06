@@ -41,7 +41,7 @@ public class BallsRenderer extends ShapeRenderer {
     //maxX = minX + rectClip.width;
     //minY = rectClip.y;
     //maxY = minY + rectClip.height;
-    boolean slabbing = viewer.getSlabEnabled();
+    boolean slabbing = viewer.getSlabEnabled() && !isGenerator;
     //isNav = viewer.getNavigationMode();
     if (slabbing) {
       minZ = g3d.getSlab();
@@ -86,7 +86,7 @@ public class BallsRenderer extends ShapeRenderer {
         renderBall(atom);
     }
 
-    if (modelSet.getAtomCount() > 0 && viewer.getShowNavigationPoint()) {
+    if (modelSet.getAtomCount() > 0 && viewer.getShowNavigationPoint() && !isGenerator) {
       //testing here
       Point3f T = new Point3f(viewer.getNavigationOffset());
       int x = Math.max(Math.min(viewer.getScreenWidth(),(int) T.x),0);
@@ -100,7 +100,7 @@ public class BallsRenderer extends ShapeRenderer {
     }
   }
 
-  void renderBall(Atom atom) {
+  protected void renderBall(Atom atom) {
     if (!g3d.setColix(atom.getColix()))
         return;    
     g3d.fillSphereCentered(atom.screenDiameter,

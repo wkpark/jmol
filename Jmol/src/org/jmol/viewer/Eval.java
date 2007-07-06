@@ -7206,6 +7206,9 @@ class Eval { //implements Runnable {
       } else if (type.equals("var")) {
         pt += 2;
         type = "VAR";
+      } else if (type.equals("maya")) {
+        pt++;
+        type = "MAYA";
       } else {
         type = "image";
       }
@@ -7268,13 +7271,13 @@ class Eval { //implements Runnable {
     if (isImage && (isApplet || isShow))
       type = "JPG64";
     if (!isImage
-        && !Parser.isOneOf(type, "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB;QUAT;RAMA"))
+        && !Parser.isOneOf(type, "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB;QUAT;RAMA;MAYA"))
       evalError(GT
           ._(
               "write what? {0} or {1} \"filename\"",
               new Object[] {
                   "COORDS|HISTORY|IMAGE|ISOSURFACE|MO|QUATERNION [w,x,y,z] [derivative]|RAMACHANDRAN;STATE|VAR x  CLIPBOARD",
-                  "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB" }));
+                  "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB|MAYA" }));
     if (isSyntaxCheck)
       return "";
     data = type.intern();
@@ -7285,6 +7288,8 @@ class Eval { //implements Runnable {
       data = viewer.getPdbData(type2);
     } else if (data == "VAR") {
       data = "" + viewer.getParameter(parameterAsString(2));
+    } else if (data == "MAYA") {
+      data = "" + viewer.generateOutput("maya");
     } else if (data == "SPT") {
       if (isCoord) {
         BitSet tainted = viewer.getTaintedAtoms();

@@ -35,6 +35,15 @@ public abstract class ShapeRenderer {
   protected Viewer viewer;
   protected int myVisibilityFlag;
   protected int shapeID;
+  protected boolean isGenerator;
+  protected String generatorType;
+  protected StringBuffer generatorOutput;
+
+  public Object initializeGenerator(Object exporter, String type, StringBuffer output) {
+    generatorType = type;
+    generatorOutput = output;
+    return null;
+  }
 
   public final void setViewerG3dShapeID(Viewer viewer, Graphics3D g3d, int shapeID) {
     this.viewer = viewer;

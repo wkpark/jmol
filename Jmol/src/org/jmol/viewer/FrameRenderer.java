@@ -69,17 +69,17 @@ public class FrameRenderer {
           + " ms");
   }
 
+  public void clear() {
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i)
+      renderers[i] = null;
+  }
+
   ShapeRenderer getRenderer(int shapeID, Graphics3D g3d) {
     if (renderers[shapeID] == null)
       renderers[shapeID] = allocateRenderer(shapeID, g3d);
     return renderers[shapeID];
   }
   
-  public void clear() {
-    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i)
-      renderers[i] = null;
-  }
-
   ShapeRenderer allocateRenderer(int shapeID, Graphics3D g3d) {
     String className = JmolConstants.getShapeClassName(shapeID) + "Renderer";
     try {
@@ -92,4 +92,35 @@ public class FrameRenderer {
     }
     return null;
   }
+
+  String generateOutput(String type, Graphics3D g3d, ModelSet modelSet) {
+    StringBuffer output = new StringBuffer();
+    Object exporter = null;
+    for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
+      Shape shape = modelSet.getShape(i);
+      if (shape == null)
+        continue;
+      ShapeRenderer generator = getGenerator(i, g3d);
+      if (generator == null)
+        continue;
+      exporter = generator.initializeGenerator(exporter, type, output);
+      generator.render(g3d, modelSet, shape);
+    }
+    return output.toString();
+  }
+
+  ShapeRenderer getGenerator(int shapeID, Graphics3D g3d) {
+    String className = "org.jmol.shapegenerator."
+        + JmolConstants.getShapeClassName(~shapeID) + "Generator";
+    try {
+      Class shapeClass = Class.forName(className);
+      ShapeRenderer renderer = (ShapeRenderer) shapeClass.newInstance();
+      renderer.setViewerG3dShapeID(viewer, g3d, shapeID);
+      return renderer;
+    } catch (Exception e) {
+      //that's ok -- just not implemented;
+    }
+    return null;
+  }
+
 }

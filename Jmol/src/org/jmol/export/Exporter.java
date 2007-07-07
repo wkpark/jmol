@@ -25,6 +25,7 @@
 
 package org.jmol.export;
 
+import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 
@@ -128,11 +129,13 @@ public abstract class Exporter implements JmolExportInterface {
   String name;
   String id;
 
+  Point3f center = new Point3f();
   Vector3f tempV = new Vector3f();
   Vector3f tempR = new Vector3f();
   Point3f tempP = new Point3f();
   Vector3f temp2 = new Vector3f();
-
+  AxisAngle4f tempA = new AxisAngle4f();
+  
   public Exporter() {  
   }
   
@@ -140,12 +143,13 @@ public abstract class Exporter implements JmolExportInterface {
     this.viewer = viewer;
     this.g3d = g3d;
     this.output = output;
+    center.set(viewer.getRotationCenter());
   }
  
   final protected static float degreesPerRadian = (float) (360 / (2 * Math.PI));
   protected Vector3f getRotation(Vector3f v) {
     tempR.set(v);
-    tempR.normalize();
+    tempR.normalize();  
     float r = (float) Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
     float rX = (float) Math.acos(v.y / r) * degreesPerRadian;
     if (v.x < 0)
@@ -154,16 +158,32 @@ public abstract class Exporter implements JmolExportInterface {
     tempR.set(rX, rY, 0);
     return tempR;
   }
-  
-
-/*
-  String rgbFromColix(short colix) {
-    int argb = g3d.getColixArgb(colix);
-    return new StringBuffer("(")
-    .append((argb >> 8) & 0xFF).append(',')
-    .append((argb >> 16) & 0xFF).append(',')
-    .append((argb >> 24) & 0xFF).append(')').toString();
+ 
+  protected AxisAngle4f getAxisAngle(Vector3f v) {
+    tempR.set(0, 1, 0);
+    temp2.set(v);
+    temp2.normalize();
+    tempR.add(temp2);
+    tempA.set(tempR.x, tempR.y, tempR.z, 3.14159f);
+    return tempA;
   }
-*/
+ 
+  protected String rgbFromColix(short colix, char sep) {
+    int argb = g3d.getColixArgb(colix);
+    return new StringBuffer()
+    .append((argb >> 16) & 0xFF).append(sep)
+    .append((argb >> 8) & 0xFF).append(sep)
+    .append((argb) & 0xFF).toString();
+  }
+  
+  protected String rgbFractionalFromColix(short colix, char sep) {
+    int argb = g3d.getColixArgb(colix);
+//    System.out.println(Integer.toHexString(argb));
+    return new StringBuffer()
+    .append(((argb >> 16) & 0xFF)/255f).append(sep)
+    .append(((argb >> 8) & 0xFF)/255f).append(sep)
+    .append(((argb  ) & 0xFF)/255f).toString();
+    
+  }
 
 }

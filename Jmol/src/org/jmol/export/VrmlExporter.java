@@ -25,53 +25,46 @@
 
 package org.jmol.export;
 
+import java.util.BitSet;
+
 import javax.vecmath.Point3f;
 import org.jmol.modelset.Atom;
 
 public class VrmlExporter extends Exporter {
   
-  //VERY preliminary -- in process -- 7/2007 Bob Hanson
+  //VERY  preliminary -- in process -- 7/2007 Bob Hanson
 
   public void getHeader() {
     output.append("#VRML V2.0 utf8\n");
-    output.append("Separator {\n");
-    output.append("  DEF SceneInfo Info {\n");
-    output.append("  string \"WebLab Viewer\"\n");
-    output.append("  }\n");
-    output.append("  DEF Title Info {\n");
-    output.append("  string \"molecule-name-here\"\n");
-    output.append("  }\n");
-    output.append("  DEF Viewer Info {\n");
-    output.append("  string \"Jmol \"\n");
-    output.append("  }\n");
-    output.append("");
-    //header stuff
+    output.append("Transform {\n");
+    output.append("translation " + -center.x + " " + -center.y + " " + -center.z +"\n");
+    output.append("children [\n");
   }
 
   public void getFooter() {
+    output.append("]\n");
+    output.append("}\n");
   }
 
   public void renderAtom(Atom atom, short colix) {
-    //String color = rgbFromColix(colix);
+    String color = rgbFractionalFromColix(colix, ' ');
+    float r = atom.getMadAtom() / 2000f;
     output.append("Transform {\n");
     output.append("translation " + atom.x + " " + atom.y + " " + atom.z +"\n");
-    output.append("children [\"+\"]\n");
-    output.append("        Shape {\n");
-    output.append("          appearance Appearance {\n");
-    output.append("            material Material {\n");
-    output.append("              diffuseColor 0.0 1.0 0.0\n");
-    output.append("            }\n");
-    output.append("          }\n");
-    output.append("          geometry Sphere {\n");
-    output.append("          }\n");
-    output.append("        }\n");
-    output.append("      ]\n");
-    output.append("    }\n");
+    output.append("children [\n");
+    output.append("Shape {\n");
+    output.append("geometry Sphere { radius " + r + " }\n");
+    output.append("appearance Appearance {\n");
+    output.append("material Material { diffuseColor "+ color +" }\n");
+    output.append("}\n");
+    output.append("}\n");
+    output.append("]\n");
+    output.append("}\n");
     nBalls++;
   }
 
   public void renderBond(Atom atom1, Atom atom2, short colix1, short colix2,
-                      byte endcaps, int madBond) {
+                           byte endcaps, int madBond) {
     if (colix1 == colix2) {
       renderCylinder(atom1, atom2, colix1, endcaps, madBond);
       return;
@@ -84,21 +77,69 @@ public class VrmlExporter extends Exporter {
     renderCylinder(tempP, atom2, colix2, endcaps, madBond);
   }
 
-  public void renderCylinder(Point3f pt1, Point3f pt2, short colix, byte endcaps,
-                      int madBond) {
+  public void renderCylinder(Point3f pt1, Point3f pt2, short colix,
+                             byte endcaps, int madBond) {
     nCyl++;
-    //TODO
+    String color = rgbFractionalFromColix(colix, ' ');
+    float length = pt1.distance(pt2);
+    float r = madBond / 2000f;
+    tempV.set(pt2);
+    tempV.add(pt1);
+    tempV.scale(0.5f);
+    output.append("Transform {\n");
+    output.append("translation "+ tempV.x + " " + tempV.y + " " + tempV.z +"\n");
+    tempV.sub(pt1);
+    getAxisAngle(tempV);
+    output.append("rotation "+ tempA.x + " " + tempA.y + " " + tempA.z + " " + tempA.angle + "\n");
+    output.append("children[\n");
+    output.append("Shape {\n");
+    output.append("geometry Cylinder { height " + length + " radius " + r + " }\n");
+    output.append("appearance Appearance {\n");
+    output.append("material Material { diffuseColor " + color + " }\n");
+    output.append("}\n");
+    output.append("}\n");
+    output.append("]\n");
+    output.append("}\n");
   }
 
-  public void fillSphereCentered(int radius, Point3f pt, short colix) {
+  public void fillSphereCentered(int mad, Point3f pt, short colix) {
    //not a mad -- a number of pixels?
    //TODO
   }
   
-  public void fillTriangle(Point3f ptA, short colixA, short nA, 
-                             Point3f ptB, short colixB, short nB, 
-                             Point3f ptC, short colixC, short nC) {
-   //this would fill an array, not write directly
-   //TODO
+  public void renderIsosurface(Point3f[] vertices, short colix,
+                                  short[] colixes, short[] normals,
+                                  int[][] indices, BitSet bsFaces,
+                                  int nVertices, int nPoints) {
+    
+    String color = rgbFractionalFromColix(colix, ' ');
+    output.append("Shape {\n");
+    output.append("appearance Appearance {\n");
+    output.append("material Material { diffuseColor "+color+" }\n");
+    output.append("}\n");
+    output.append("geometry IndexedFaceSet {\n");
+    output.append("coord Coordinate {\n");
+    output.append("point [\n");
+    for (int i = 0; i < nVertices; i++) {
+      String sep = " ";
+      output.append(sep + vertices[i].x + " " + vertices[i].y + " " + vertices[i].z + "\n");
+      if (i== 0)
+        sep = ",";
+    }
+    output.append("]\n");
+    output.append("}\n");
+    output.append("coordIndex [\n");
+    String sep = " ";
+    for (int i = 0; i < nPoints; i++)
+      if (bsFaces.get(i)) {        
+        output.append(sep + indices[i][0] + " " + indices[i][1] + " "
+            + indices[i][2] + " -1\n");   
+        if (i== 0)
+          sep = ",";
+      }
+    output.append("]\n");
+    output.append("}\n");
+    output.append("}\n");
   }
+            
 }

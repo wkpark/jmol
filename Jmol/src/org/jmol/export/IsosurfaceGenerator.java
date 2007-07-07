@@ -25,6 +25,8 @@
 
 package org.jmol.export;
 
+import java.util.BitSet;
+
 import org.jmol.shapespecial.*;
 
 public class IsosurfaceGenerator extends IsosurfaceRenderer {
@@ -53,6 +55,7 @@ public class IsosurfaceGenerator extends IsosurfaceRenderer {
     short colix = imesh.colix;
     short[] vertexColixes = imesh.vertexColixes;
     short hideColix = 0;
+    BitSet bsFaces = new BitSet();
     try {
       hideColix = vertexColixes[imesh.polygonIndexes[0][0]];
     } catch (Exception e) {
@@ -65,7 +68,7 @@ public class IsosurfaceGenerator extends IsosurfaceRenderer {
       //if (!mesh.isPolygonDisplayable(i))
       // continue;
       //if (i !=20)
-        //continue;
+      //continue;
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes == null)
         continue;
@@ -75,9 +78,9 @@ public class IsosurfaceGenerator extends IsosurfaceRenderer {
       short nA = normixes[iA];
       short nB = normixes[iB];
       short nC = normixes[iC];
-//      if (frontOnly && transformedVectors[nA].z < 0
-  //        && transformedVectors[nB].z < 0 && transformedVectors[nC].z < 0)
-    //    continue;
+      if (frontOnly && transformedVectors[nA].z < 0
+          && transformedVectors[nB].z < 0 && transformedVectors[nC].z < 0)
+        continue;
       short colixA, colixB, colixC;
       if (vertexColixes != null) {
         colixA = vertexColixes[iA];
@@ -98,23 +101,10 @@ public class IsosurfaceGenerator extends IsosurfaceRenderer {
         if (colixC == hideColix)
           colixC = backgroundColix;
       }
-
-      //      if (fill) {
-            exporter.fillTriangle(vertices[iA], colixA, nA, vertices[iB], colixB, nB,
-                vertices[iC], colixC, nC);
-        /*
-      } else {
-        int check = vertexIndexes[3];
-        if (check == 0)
-          continue;
-        if (vertexColixes == null)
-          exporter.drawTriangle(screens[iA], screens[iB], screens[iC], check);
-        else
-          exporter.drawTriangle(screens[iA], colixA, screens[iB], colixB,
-              screens[iC], colixC, check);
-              */
-  //    }
+      bsFaces.set(i);
     }
-
+    exporter.renderIsosurface(imesh.vertices, imesh.colix, imesh.vertexColixes,
+        imesh.normixes, imesh.polygonIndexes, bsFaces, imesh.vertexCount,
+        imesh.polygonCount);
   }
 }

@@ -25,6 +25,8 @@
 
 package org.jmol.export;
 
+import java.util.BitSet;
+
 import javax.vecmath.Point3f;
 import javax.vecmath.Tuple3f;
 import org.jmol.modelset.Atom;
@@ -91,14 +93,11 @@ public class MayaExporter extends Exporter {
     output.append(" createNode transform -n \"" + name + "\";\n");
     float length = pt1.distance(pt2);
     tempV.set(pt2);
-    tempV.sub(pt1);
-    tempV.scale(0.5f);
     tempV.add(pt1);
+    tempV.scale(0.5f);
     setAttr("t", tempV);
     tempV.sub(pt1);
     setAttr("r", getRotation(tempV));
-    //    output.append(" setAttr \".t\" -type \"double3\" -0.27200355743991733 3.0727117892444111 -0.05978379897102204 ;\n");
-    //   output.append(" setAttr \".r\" -type \"double3\" 55.997780776782392 37.250030773306385 3.8482339713562377 ;\n");
     output.append(" createNode nurbsSurface -n \"" + id + "\" -p \"" + name
         + "\";\n");
     addAttr();
@@ -139,15 +138,15 @@ public class MayaExporter extends Exporter {
         + ".iog\" \":initialShadingGroup.dsm\" -na;\n");
   }
 
-  public void fillSphereCentered(int radius, Point3f pt, short colix) {
+  public void fillSphereCentered(int mad  , Point3f pt, short colix) {
    //not a mad -- a number of pixels?
    //TODO
   }
   
-  public void fillTriangle(Point3f ptA, short colixA, short nA, 
-                             Point3f ptB, short colixB, short nB, 
-                             Point3f ptC, short colixC, short nC) {
-   //this would fill an array, not write directly
-   //TODO
+  public void renderIsosurface(Point3f[] vertices, short colix,
+                               short[] colixes, short[] normals,
+                               int[][] indices, BitSet bsFaces,
+                               int nVertices, int nPoints) {
   }
+         
 }

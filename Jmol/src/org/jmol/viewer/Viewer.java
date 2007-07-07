@@ -447,7 +447,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager.setRotationRadius(angstroms);
   }
 
-  Point3f getRotationCenter() {
+  public Point3f getRotationCenter() {
     return transformManager.getRotationCenter();
   }
 

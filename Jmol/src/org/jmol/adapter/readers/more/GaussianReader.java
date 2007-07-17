@@ -51,12 +51,6 @@ public class GaussianReader extends AtomSetCollectionReader {
    */
   private final static int FREQ_FIRST_VECTOR_OFFSET = 2;
   
-  /**
-   * The default offset for the coordinate output is that for G98 or G03.
-   * If it turns out to be a G94 file, this will be reset.
-   */
-  private int firstCoordinateOffset = 3;
-  
   /** Calculated energy with units (if possible). */
   private String energyString = "";
   /**
@@ -188,11 +182,6 @@ public class GaussianReader extends AtomSetCollectionReader {
           atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
         } else if (line.startsWith(" Normal termination of Gaussian")) {
           ++calculationNumber;
-        } else if (lineNum < 25) {
-          if ((line.indexOf("This is part of the Gaussian 94(TM) system") >= 0)
-              || line.startsWith(" Gaussian 94:")) {
-            firstCoordinateOffset = 2;
-          }
         }
         lineNum++;
       }
@@ -239,8 +228,9 @@ public class GaussianReader extends AtomSetCollectionReader {
   }
   
   /* GAUSSIAN STRUCTURAL INFORMATION THAT IS EXPECTED
-   NB I currently use the firstCoordinateOffset value to determine where
-   X starts, I could use the number of tokens - 3, and read the last 3...
+   It looks like sometimes it is possible to have in g03's standard
+   orientation section a 'space' for the atomic type, so reading
+   the last three tokens as x, y, and z should always work
    */
   
   // GAUSSIAN 04 format
@@ -279,7 +269,7 @@ public class GaussianReader extends AtomSetCollectionReader {
         (byte)parseInt(tokens[STD_ORIENTATION_ATOMIC_NUMBER_OFFSET]);
       if (atom.elementNumber < 0)
         atom.elementNumber = 0; // dummy atoms have -1 -> 0
-      int offset = firstCoordinateOffset;
+      int offset = tokens.length-3;
       atom.x = parseFloat(tokens[offset]);
       atom.y = parseFloat(tokens[++offset]);
       atom.z = parseFloat(tokens[++offset]);

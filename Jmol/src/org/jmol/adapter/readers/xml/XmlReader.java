@@ -230,6 +230,7 @@ public class XmlReader extends AtomSetCollectionReader {
   }
 
   protected void parseReaderXML(XMLReader xmlReader) {
+    xmlReader.setEntityResolver(new DummyResolver());
     InputSource is = new InputSource(reader);
     is.setSystemId("foo");
     try {
@@ -323,6 +324,20 @@ public class XmlReader extends AtomSetCollectionReader {
      */
   }
 
+  public class DummyResolver implements EntityResolver {
+    public InputSource resolveEntity(String publicID, String systemID)
+        throws SAXException {
+      if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
+        Logger.debug(
+            "Jmol SAX EntityResolver not resolving:" +
+            "\n  publicID: " + publicID +
+            "\n  systemID: " + systemID
+          );
+      }
+      return new InputSource(new BufferedReader(new StringReader("")));
+    }
+  }
+  
   public class JmolXmlHandler extends DefaultHandler implements ErrorHandler {
 
     public JmolXmlHandler() {

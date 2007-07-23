@@ -64,7 +64,7 @@ class IsoSolventReader extends AtomDataReader {
   private float envelopeRadius;
 
   private boolean doCalculateTroughs;
-  private boolean isCavity;
+  private boolean isCavity, isPocket;
   private float solventRadius;
   
   protected void setup() {
@@ -74,14 +74,17 @@ class IsoSolventReader extends AtomDataReader {
     solventRadius = params.solventRadius;
     point = params.point;
 
+    isCavity = (params.isCavity && meshDataServer != null); // Jvxl cannot do this calculation on its own.
+    isPocket = (params.pocket != null && meshDataServer != null);
+
+    if (isCavity || isPocket)
+      meshData.dots = meshDataServer.calculateGeodesicSurface(
+          params.bsSelected, bsMyIgnored, envelopeRadius);
+    
     doCalculateTroughs = (atomDataServer != null && !isCavity  // Jvxl needs an atom iterator to do this.
         && solventRadius > 0 
         && (dataType == Parameters.SURFACE_SOLVENT || dataType == Parameters.SURFACE_MOLECULAR));  
     doUseIterator = doCalculateTroughs;
-    isCavity = (params.isCavity && meshDataServer != null); // Jvxl cannot do this calculation on its own.
-    if (isCavity && meshData.dots == null)
-      meshData.dots = meshDataServer.calculateGeodesicSurface(
-          params.bsSelected, bsMyIgnored, envelopeRadius);
     modelIndex = params.modelIndex;
     getAtoms(Float.NaN, false, true);
     setHeader("solvent/molecular surface", params.calculationType);
@@ -94,9 +97,6 @@ class IsoSolventReader extends AtomDataReader {
   public void selectPocket(boolean doExclude) {
     if (meshDataServer == null)
       return; //can't do this without help!
-    if (meshData.dots == null)
-      meshData.dots = meshDataServer.calculateGeodesicSurface(params.bsSelected,
-          bsMyIgnored, envelopeRadius);
     meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
     //mark VERTICES for proximity to surface
     Point3f[] v = meshData.vertices;

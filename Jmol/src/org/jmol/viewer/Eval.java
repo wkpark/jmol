@@ -6910,6 +6910,7 @@ class Eval { //implements Runnable {
   }
 
   void setSpin(String key, int value) throws ScriptException {
+    key = key.toLowerCase();
     if (Parser.isOneOf(key, "x;y;z;fps")) {
       if (isSyntaxCheck)
         return;

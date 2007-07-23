@@ -247,9 +247,9 @@ public class Labels extends AtomShape {
 
     if ("toggleLabel" == propertyName) {
       // toggle
-      for (int atomIndex = atomCount; --atomIndex >= 0;)
+      for (int atomIndex = atomCount; --atomIndex >= 0;) {
+        Atom atom = atoms[atomIndex];
         if (bsSelected.get(atomIndex)) {
-          Atom atom = atoms[atomIndex];
           if (formats == null || atomIndex >= formats.length)
             formats = ArrayUtil.ensureLength(formats, atomIndex + 1);
           if (strings != null && strings.length > atomIndex
@@ -264,8 +264,11 @@ public class Labels extends AtomShape {
             formats[atomIndex] = strLabel;
             bsSizeSet.set(atomIndex);
           }
-          atom.setShapeVisibility(myVisibilityFlag, strings[atomIndex] != null);
+        } else if (strings != null && atomIndex < strings.length) {
+          strings[atomIndex] = null;          
         }
+        atom.setShapeVisibility(myVisibilityFlag, strings != null && atomIndex < strings.length && strings[atomIndex] != null);
+      }
       return;
     }
   }

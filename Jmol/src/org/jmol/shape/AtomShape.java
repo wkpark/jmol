@@ -65,7 +65,7 @@ public abstract class AtomShape extends Shape {
       bsSizeSet = new BitSet();
     boolean isVisible = (size != 0);
     for (int i = atomCount; --i >= 0;)
-      if (bsSelected.get(i)) {
+      if (bsSelected == null || bsSelected.get(i)) {
         if (mads == null)
           mads = new short[atomCount];
         Atom atom = atoms[i];

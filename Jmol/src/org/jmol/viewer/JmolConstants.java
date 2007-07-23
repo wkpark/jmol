@@ -2106,6 +2106,8 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "O4",  // 79 - base carbonyl O4, only in T and U
     "S4",  // 80 - base thiol sulfur, unique to thio-U
 
+    "C7", // 81 - base methyl carbon, unique to DT
+
   };
 
   public final static int ATOMID_MAX = specialAtomNames.length;
@@ -2177,6 +2179,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static byte ATOMID_O6 = 78;
   public final static byte ATOMID_O4 = 79;
   public final static byte ATOMID_S4 = 80;
+  public final static byte ATOMID_C7 = 81;
 
   // this is currently defined as C6
   public final static byte ATOMID_NUCLEIC_WING = 69;
@@ -2455,7 +2458,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     "@g nucleic & within(group,_a=75)", // ATOMID_N2
     "@cg c,g",
     "@a nucleic & within(group,_a=76)", // ATOMID_N6
-    "@t nucleic & within(group,_a=77)", // ATOMID_C5M
+    "@t nucleic & within(group,_a=77 | _a=81)", // ATOMID_C5M or ATOMID_C7
     "@at a,t",
     "@i nucleic & within(group,_a=78) & !g", // ATOMID_O6
     "@u nucleic & within(group,_a=79) & !t", // ATOMID_O4

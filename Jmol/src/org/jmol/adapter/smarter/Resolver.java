@@ -28,6 +28,7 @@ import java.io.BufferedReader;
 import java.util.StringTokenizer;
 
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 //import org.jmol.viewer.JmolConstants;
 
 import java.util.Hashtable;
@@ -152,6 +153,8 @@ class Resolver {
       return "MopacGraphf"; //must be prior to checkFoldingXyz and checkMol
     if (checkV3000(lines))
       return "V3000";
+    if (checkOdyssey(lines))
+      return "Odyssey";
     if (checkMol(lines))
       return "Mol";
     if (checkXyz(lines))
@@ -160,8 +163,6 @@ class Resolver {
       return "FoldingXyz";
     if (checkCube(lines))
       return "Cube";
-    if (checkOdyssey(lines))
-      return "Odyssey";
 
 
     // run these loops forward ... easier for people to understand
@@ -240,9 +241,11 @@ class Resolver {
     for (i = 0; i < lines.length; i++)
       if (!lines[i].startsWith("C "))
         break;
-    return (i + 2 < lines.length 
-        && lines[i].charAt(0) == ' ' 
-        && lines[i + 2].equals("0 1\n"));
+    if (lines[i].charAt(0) != ' ' 
+      || (i = i + 2) >= lines.length
+      || !TextFormat.replaceAllCharacters(lines[i], "\r\n", "").equals("0 1"))
+        return false;
+    return true;
   }
   
   private static boolean checkV3000(String[] lines) {

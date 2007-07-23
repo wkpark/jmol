@@ -83,7 +83,7 @@ public class XmlCmlReader extends XmlReader {
       "elementType", "formalCharge", //atom
       "atomId", //atomArray
       "atomRefs2", "order", //bond
-      "atomRef1", "atomRef2", //bondArray 
+      "atomRef1", "atomRef2", //bondArray
       "dictRef", //scalar
       "spaceGroup", //symmetry
   };
@@ -112,7 +112,8 @@ public class XmlCmlReader extends XmlReader {
   final protected int START = 0, CML = 1, CRYSTAL = 2, CRYSTAL_SCALAR = 3,
       CRYSTAL_SYMMETRY = 4, CRYSTAL_SYMMETRY_TRANSFORM3 = 5, MOLECULE = 6,
       MOLECULE_ATOM_ARRAY = 7, MOLECULE_ATOM = 8, MOLECULE_ATOM_SCALAR = 9,
-      MOLECULE_BOND_ARRAY = 10, MOLECULE_BOND = 11, MOLECULE_FORMULA = 12;
+      MOLECULE_BOND_ARRAY = 10, MOLECULE_BOND = 11, MOLECULE_FORMULA = 12,
+      MOLECULE_ATOM_BUILTIN = 13, MOLECULE_BOND_BUILTIN = 14;
 
   /**
    * the current state
@@ -309,6 +310,7 @@ public class XmlCmlReader extends XmlReader {
       if (name.equals("bond")) {
         state = MOLECULE_BOND;
         int order = -1;
+        tokenCount = 0;
         if (atts.containsKey("atomRefs2"))
           breakOutTokens((String) atts.get("atomRefs2"));
         if (atts.containsKey("order"))
@@ -343,7 +345,7 @@ public class XmlCmlReader extends XmlReader {
           atom.y = parseFloat((String) atts.get("y3"));
           atom.z = parseFloat((String) atts.get("z3"));
         }
-        if (atts.containsKey("x2") && !coords3D) {
+        if (atts.containsKey("x2") && !coords3D ) {
           atom.x = parseFloat((String) atts.get("x2"));
           atom.y = parseFloat((String) atts.get("y2"));
           atom.z = 0;
@@ -357,6 +359,11 @@ public class XmlCmlReader extends XmlReader {
 
       break;
     case MOLECULE_BOND:
+      if (atts.containsKey("builtin")) {
+        setKeepChars(true);
+        state = MOLECULE_BOND_BUILTIN;
+        scalarDictValue = (String) atts.get("builtin"); 
+      }
       break;
     case MOLECULE_ATOM:
       if (name.equals("scalar")) {
@@ -370,11 +377,19 @@ public class XmlCmlReader extends XmlReader {
           //scalarDictKey = scalarDictRef
             //  .substring(0, (iColon >= 0 ? iColon : 0));
         }
+      } else if (atts.containsKey("builtin")) {
+        setKeepChars(true);
+        state = MOLECULE_ATOM_BUILTIN;
+        scalarDictValue = (String) atts.get("builtin"); 
       }
       break;
     case MOLECULE_ATOM_SCALAR:
       break;
     case MOLECULE_FORMULA:
+      break;
+    case MOLECULE_ATOM_BUILTIN:
+      break;
+    case MOLECULE_BOND_BUILTIN:
       break;
     }
   }
@@ -498,6 +513,34 @@ public class XmlCmlReader extends XmlReader {
       setKeepChars(false);
       scalarTitle = null;
       scalarDictRef = null;
+      break;
+    case MOLECULE_ATOM_BUILTIN:
+      state = MOLECULE_ATOM;
+      if (scalarDictValue.equals("x3"))
+        atom.x = parseFloat(chars);
+      else if (scalarDictValue.equals("y3"))
+        atom.y = parseFloat(chars);
+      else if (scalarDictValue.equals("z3"))
+        atom.z = parseFloat(chars);
+      else if (scalarDictValue.equals("elementType"))
+        atom.elementSymbol = chars;
+      if (atom.elementSymbol != null && !Float.isNaN(atom.z))
+        atomSetCollection.addAtomWithMappedName(atom);
+      setKeepChars(false);
+      break;
+    case MOLECULE_BOND_BUILTIN:  //ACD Labs
+      state = MOLECULE_BOND;
+      if (scalarDictValue.equals("atomRef")) {
+        if (tokenCount == 0)
+          tokens = new String[2];
+        if (tokenCount < 2)
+          tokens[tokenCount++] = chars;
+      } else if (scalarDictValue.equals("order")) {
+        int order = parseBondToken(chars);
+        if (order > 0 && tokenCount == 2)
+          atomSetCollection.addNewBond(tokens[0], tokens[1], order);
+      }
+      setKeepChars(false);
       break;
     case MOLECULE_FORMULA:
       state = MOLECULE;

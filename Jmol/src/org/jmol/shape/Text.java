@@ -100,8 +100,6 @@ public class Text {
       short bgcolix, int offsetX, int offsetY, int z, int zSlab, int textAlign) {
     this.viewer = null;
     this.g3d = g3d;
-    windowWidth = g3d.getRenderWidth();
-    windowHeight = g3d.getRenderHeight();
     atomBased = true;
     setText(text);
     this.colix = colix;
@@ -115,8 +113,6 @@ public class Text {
   Text(Viewer viewer, Graphics3D g3d, Font3D font, String target, short colix, int valign, int align) {
     this.viewer = viewer;
     this.g3d = g3d;
-    windowWidth = g3d.getRenderWidth();
-    windowHeight = g3d.getRenderHeight();
     atomBased = false;
     this.target = target;
     if (target.equals("error"))
@@ -268,12 +264,8 @@ public class Text {
           : movableYPercent * windowHeight / 100);
       boxY = (atomBased|| xyz != null ? y : (windowHeight - y)) + offsetY;
     }
-
-    // adjust positions if necessary
-
-    setBoxOffsetsInWindow();
-
   }
+  
   void setOffset(int offset) {
     //Labels only
     offsetX = getXOffset(offset);
@@ -386,10 +378,17 @@ public class Text {
   void render() {
     if (text == null)
       return;
+    windowWidth = g3d.getRenderWidth();
+    windowHeight = g3d.getRenderHeight();
 
     if (doFormatText)
       formatText();
     setPositions();
+
+    // adjust positions if necessary
+
+    setBoxOffsetsInWindow();
+
 
     // draw the box if necessary
 

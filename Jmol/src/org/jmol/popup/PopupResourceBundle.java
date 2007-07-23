@@ -374,11 +374,12 @@ class PopupResourceBundle {
 
       {
           "pickingMenu",
-          "pickOff pickCenter pickLabel pickAtom "
+          "pickOff pickCenter pickIdent pickLabel pickAtom "
               + "pickMolecule pickElement pickPDBChain pickPDBGroup pickSYMMETRYSite pickSpin" },
       { "pickOff", "set picking off" },
       { "pickCenter", "set picking center" },
       //    { "pickDraw" , "set picking draw" },
+      { "pickIdent", "set picking ident" },
       { "pickLabel", "set picking label" },
       { "pickAtom", "set picking atom" },
       { "pickPDBChain", "set picking chain" },
@@ -755,6 +756,7 @@ class PopupResourceBundle {
         "pickOff", GT._("Off"),
         "pickCenter", GT._("Center"),
         //    "pickDraw" , GT._("moves arrows"),
+        "pickIdent", GT._("Identity"),
         "pickLabel", GT._("Label"),
         "pickAtom", GT._("Select atom"),
         "pickPDBChain", GT._("Select chain"),

@@ -705,6 +705,8 @@ public class Draw extends MeshCollection {
       return false;
     if (!findPickedObject(x, y, false))
       return false;
+    if (pickedMesh.polygonIndexes[pickedModel][0] == pickedMesh.polygonIndexes[pickedModel][1])
+      return false; // single point
     if (pickedVertex == 0) {
       viewer.startSpinningAxis(
           pickedMesh.vertices[pickedMesh.polygonIndexes[pickedModel][0]],

@@ -266,7 +266,10 @@ class Resolver {
       try {
         Integer.parseInt(lines[3].substring(0, 3).trim());
         Integer.parseInt(lines[3].substring(3, 6).trim());
-        return true;
+        return (lines[0].indexOf("@<TRIPOS>") != 0 
+            && lines[1].indexOf("@<TRIPOS>") != 0
+            && lines[2].indexOf("@<TRIPOS>") != 0
+            );
       } catch (NumberFormatException nfe) {
       }
     }
@@ -434,7 +437,7 @@ class Resolver {
   final static String[][] lineStartsWithRecords =
   { pqrRecords, pdbRecords, shelxRecords, cifRecords, 
     ghemicalMMRecords, jaguarRecords, hinRecords, 
-    mdlRecords, spartanSmolRecords, csfRecords};
+    mdlRecords, spartanSmolRecords, csfRecords, mol2Records};
 
   ////////////////////////////////////////////////////////////////
   // contains formats

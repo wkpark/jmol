@@ -1502,8 +1502,13 @@ String getAtomInfoChime(int i) {
     return modelSet.getWithinModelIterator(atom, distance);
   }
   
-  public AtomIndexIterator getWithinAtomSetIterator(int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly) {
-    return modelSet.getWithinAtomSetIterator(atomIndex, distance, bsSelected, isGreaterOnly);
+  public AtomIndexIterator getWithinAtomSetIterator(int atomIndex,
+                                                    float distance,
+                                                    BitSet bsSelected,
+                                                    boolean isGreaterOnly,
+                                                    boolean modelZeroBased) {
+    return modelSet.getWithinAtomSetIterator(atomIndex, distance, bsSelected,
+        isGreaterOnly, modelZeroBased);
   }
   
   public void fillAtomData(AtomData atomData, int mode) {

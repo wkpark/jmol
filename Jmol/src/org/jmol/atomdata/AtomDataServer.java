@@ -7,7 +7,8 @@ public interface AtomDataServer {
   public AtomIndexIterator getWithinAtomSetIterator(int atomIndex,
                                                     float distance,
                                                     BitSet bsSelected,
-                                                    boolean isGreaterOnly);
+                                                    boolean isGreaterOnly,
+                                                    boolean modelZeroBased);
   
   public void fillAtomData(AtomData atomData, int mode);
 }

@@ -140,10 +140,10 @@ abstract public class ModelSet {
 
   private final AtomIteratorWithinSet withinAtomSetIterator = new AtomIteratorWithinSet();
 
-  AtomIndexIterator getWithinAtomSetIterator(int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly) {
+  AtomIndexIterator getWithinAtomSetIterator(int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly, boolean modelZeroBased) {
     //EnvelopeCalculation, IsoSolventReader
     initializeBspf();
-    withinAtomSetIterator.initialize(this, bspf, atoms[atomIndex].modelIndex, atomIndex, distance, bsSelected, isGreaterOnly);
+    withinAtomSetIterator.initialize(this, bspf, atoms[atomIndex].modelIndex, atomIndex, distance, bsSelected, isGreaterOnly, modelZeroBased);
     return withinAtomSetIterator;
   }
   
@@ -968,7 +968,7 @@ abstract public class ModelSet {
       envelopeRadius = EnvelopeCalculation.SURFACE_DISTANCE_FOR_CALCULATION;
     EnvelopeCalculation ec = new EnvelopeCalculation(viewer, atomCount, null);
     ec.calculate(Float.MAX_VALUE, envelopeRadius, 1, Float.MAX_VALUE, 
-        bsSelected, bsIgnore, false, false, false, false);
+        bsSelected, bsIgnore, false, false, false, false, true);
     Point3f[] points = ec.getPoints();
     surfaceDistanceMax = 0;
     bsSurface = ec.getBsSurfaceClone();
@@ -1878,10 +1878,10 @@ abstract public class ModelSet {
       return;
     }
     if(atomData.modelIndex < 0)
-      atomData.firstAtom = Math.max(0, BitSetUtil.firstSetBit(atomData.bsSelected));
+      atomData.firstAtomIndex = Math.max(0, BitSetUtil.firstSetBit(atomData.bsSelected));
     else
-      atomData.firstAtom = getFirstAtomIndexInModel(atomData.modelIndex);
-    atomData.firstModelIndex = (atomCount == 0 ? 0 : atoms[atomData.firstAtom].modelIndex);
+      atomData.firstAtomIndex = getFirstAtomIndexInModel(atomData.modelIndex);
+    atomData.lastModelIndex = atomData.firstModelIndex = (atomCount == 0 ? 0 : atoms[atomData.firstAtomIndex].modelIndex);
     atomData.modelName = getModelName(-1 - atomData.modelIndex);
     atomData.atomXyz = atoms;
     atomData.atomCount = atomCount;
@@ -1890,13 +1890,14 @@ abstract public class ModelSet {
     if (includeRadii)
       atomData.atomRadius = new float[atomCount];
     for (int i = 0; i < atomCount; i++) {
-      if (atoms[i].modelIndex != atomData.firstModelIndex) {
+      if (atomData.modelIndex >= 0 && atoms[i].modelIndex != atomData.firstModelIndex) {
         if (atomData.bsIgnored == null)
           atomData.bsIgnored = new BitSet();
         atomData.bsIgnored.set(i);
         continue;
       }
       atomData.atomicNumber[i] = atoms[i].getElementNumber();
+      atomData.lastModelIndex = atoms[i].modelIndex;
       if (includeRadii)
         atomData.atomRadius[i] = (atomData.useIonic ? atoms[i]
             .getBondingRadiusFloat() : atoms[i].getVanderwaalsRadiusFloat());

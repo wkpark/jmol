@@ -77,16 +77,16 @@ class IsoSolventReader extends AtomDataReader {
     isCavity = (params.isCavity && meshDataServer != null); // Jvxl cannot do this calculation on its own.
     isPocket = (params.pocket != null && meshDataServer != null);
 
-    if (isCavity || isPocket)
-      meshData.dots = meshDataServer.calculateGeodesicSurface(
-          params.bsSelected, bsMyIgnored, envelopeRadius);
-    
     doCalculateTroughs = (atomDataServer != null && !isCavity  // Jvxl needs an atom iterator to do this.
         && solventRadius > 0 
         && (dataType == Parameters.SURFACE_SOLVENT || dataType == Parameters.SURFACE_MOLECULAR));  
     doUseIterator = doCalculateTroughs;
     modelIndex = params.modelIndex;
     getAtoms(Float.NaN, false, true);
+    if (isCavity || isPocket)
+      meshData.dots = meshDataServer.calculateGeodesicSurface(
+          bsMySelected, bsMyIgnored, envelopeRadius);
+    
     setHeader("solvent/molecular surface", params.calculationType);
     setRangesAndAddAtoms(params.solvent_ptsPerAngstrom, params.solvent_gridMax,
         params.thePlane != null ? Integer.MAX_VALUE : Math.min(firstNearbyAtom, 100));
@@ -194,19 +194,49 @@ class IsoSolventReader extends AtomDataReader {
     int nDots = meshData.dots.length;
     int n = 0;
     //surface_data = new float[1000];
+
+   // for (int j = 0; j < nDots; j++) {
+   //   System.out.println("draw pt"+j+" {"+meshData.dots[j].x + " " +meshData.dots[j].y + " " +meshData.dots[j].z + "} " );
+   // }
+    /*
+    Point3f pt = new Point3f(15.3375f, 1.0224999f, 5.1125f);
+    for (int x = 0; x < nPointsX; ++x)
+      for (int y = 0; y < nPointsY; ++y) {
+        out: for (int z = 0; z < nPointsZ; ++z, ++i) {
+          float d = voxelData[x][y][z]; 
+          volumeData.voxelPtToXYZ(x, y, z, ptXyzTemp);
+          if (d < Float.MAX_VALUE && d >= cavityRadius)
+          if (ptXyzTemp.distance(pt) < 3f)
+            System.out.println("draw pt"+(n++)+" {"+ptXyzTemp.x + " " +ptXyzTemp.y + " " +ptXyzTemp.z + "} # " +x + " " + y + " " + z + " " + voxelData[x][y][z]);
+          if (false && d < Float.MAX_VALUE &&
+               d >= cavityRadius) {
+            volumeData.voxelPtToXYZ(x, y, z, ptXyzTemp);
+            if (ptXyzTemp.x > 0 && ptXyzTemp.y > 0 && ptXyzTemp.z > 0)
+            System.out.println("draw pt"+(n++)+" {"+ptXyzTemp.x + " " +ptXyzTemp.y + " " +ptXyzTemp.z + "} " );
+          }
+        }
+      }
+    n = 0;
+    i = 0;
+*/
+    float d;
+    float r2 =  envelopeRadius;// - cavityRadius;
+    
     for (int x = 0; x < nPointsX; ++x)
       for (int y = 0; y < nPointsY; ++y) {
         out: for (int z = 0; z < nPointsZ; ++z, ++i)
-          if (voxelData[x][y][z] < Float.MAX_VALUE
-              && voxelData[x][y][z] >= cavityRadius) {
+          if ((d = voxelData[x][y][z]) < Float.MAX_VALUE &&
+               d >= cavityRadius) {
             volumeData.voxelPtToXYZ(x, y, z, ptXyzTemp);
             //float dMin = Float.MAX_VALUE;
             //float d;
             for (int j = 0; j < nDots; j++) {
-              if (meshData.dots[j].distance(ptXyzTemp) < envelopeRadius)
+              if (meshData.dots[j].distance(ptXyzTemp) < r2)
                 continue out;
             }
             bs.set(i);
+            //if (n < 1069)
+              //System.out.println("draw pt"+n+" {"+ptXyzTemp.x + " " +ptXyzTemp.y + " " +ptXyzTemp.z + "} " );
             n++;
           }
       }
@@ -253,6 +283,7 @@ class IsoSolventReader extends AtomDataReader {
             property[x][y][z] = Float.NaN;
     }
     float maxRadius = 0;
+    float r0 = (isFirstPass && isCavity ? cavityRadius : 0);
     boolean isWithin = (isFirstPass && distance != Float.MAX_VALUE);
     for (int iAtom = 0; iAtom < myAtomCount; iAtom++) {
       ptA = atomXyz[iAtom];
@@ -262,7 +293,7 @@ class IsoSolventReader extends AtomDataReader {
       if (isWithin && ptA.distance(point) > distance + rA + 0.5)
         continue;
       boolean isNearby = (iAtom >= firstNearbyAtom);
-      setGridLimitsForAtom(ptA, rA, pt0, pt1);
+      setGridLimitsForAtom(ptA, rA + r0, pt0, pt1);
       volumeData.voxelPtToXYZ(pt0.x, pt0.y, pt0.z, ptXyzTemp);
       for (int i = pt0.x; i < pt1.x; i++) {
         ptY0.set(ptXyzTemp);
@@ -287,7 +318,7 @@ class IsoSolventReader extends AtomDataReader {
     }
     if (isCavity && isFirstPass)
       return;
-    if (doCalculateTroughs && !isCavity) {
+    if (doCalculateTroughs) {
       Point3i ptA0 = new Point3i();
       Point3i ptB0 = new Point3i();
       Point3i ptA1 = new Point3i();
@@ -301,7 +332,7 @@ class IsoSolventReader extends AtomDataReader {
             continue;
           setGridLimitsForAtom(ptA, rA - solventRadius, ptA0, ptA1);
           AtomIndexIterator iter = atomDataServer.getWithinAtomSetIterator(iatomA, rA
-              + solventRadius + maxRadius, bsMySelected, true); //true ==> only atom index > this atom accepted
+              + solventRadius + maxRadius, bsMySelected, true, true); //true ==> only atom index > this atom accepted
           while (iter.hasNext()) {
             int iatomB = iter.next();
             Point3f ptB = atomXyz[myIndex[iatomB]]; 

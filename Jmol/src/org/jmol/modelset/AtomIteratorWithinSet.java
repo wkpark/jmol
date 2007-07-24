@@ -41,13 +41,13 @@ class AtomIteratorWithinSet implements AtomIndexIterator {
   int atomIndex;
   int zerobase;
 
-  void initialize(ModelSet modelSet, Bspf bspf, int bsptIndex, int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly) {
+  void initialize(ModelSet modelSet, Bspf bspf, int bsptIndex, int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly, boolean modelZeroBased) {
     bsptIter = bspf.getSphereIterator(bsptIndex);
     bsptIter.initialize(modelSet.atoms[atomIndex], distance);
     this.atomIndex = atomIndex;
     this.bsSelected = bsSelected;
     this.isGreaterOnly = isGreaterOnly;
-    zerobase = modelSet.getFirstAtomIndexInModel(bsptIndex);
+    zerobase = (modelZeroBased ? modelSet.getFirstAtomIndexInModel(bsptIndex) : 0);
   }
 
   int iNext;

@@ -81,7 +81,7 @@ class IsoMOReader extends AtomDataReader {
       switch (params.qmOrbitalType) {
       case Parameters.QM_TYPE_GAUSSIAN:
         q.calculate(volumeData, bsMySelected, (String) moData
-            .get("calculationType"), atomData.atomXyz, atomData.firstAtom,
+            .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
             (Vector) moData.get("shells"), (float[][]) moData.get("gaussians"),
             (Hashtable) moData.get("atomicOrbitalOrder"), 
             null, null,
@@ -89,7 +89,7 @@ class IsoMOReader extends AtomDataReader {
         break;
       case Parameters.QM_TYPE_SLATER:
         q.calculate(volumeData, bsMySelected, (String) moData
-            .get("calculationType"), atomData.atomXyz, atomData.firstAtom,
+            .get("calculationType"), atomData.atomXyz, atomData.firstAtomIndex,
             null, null, null, 
             (int[][]) moData.get("slaterInfo"), (float[][]) moData.get("slaterData"),
             params.moCoefficients);

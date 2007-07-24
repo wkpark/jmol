@@ -231,7 +231,7 @@ public class Dots extends AtomShape {
       ec
           .calculate(addRadius, setRadius, scale, maxRadius, bsOn, bsIgnore,
               useVanderwaalsRadius, disregardNeighbors, onlySelectedDots,
-              isSurface);
+              isSurface, true);
     }
     timeEndExecution = System.currentTimeMillis();
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {

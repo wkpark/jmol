@@ -151,6 +151,7 @@ public final class EnvelopeCalculation {
   private float scale = 1f;
   private float setRadius = Float.MAX_VALUE;
   private float addRadius = Float.MAX_VALUE;
+  private boolean modelZeroBased;
 
   private int[][] dotsConvexMaps;
   public int[][] getDotsConvexMaps() {
@@ -222,12 +223,15 @@ public final class EnvelopeCalculation {
                  float maxRadius, BitSet bsSelected, BitSet bsIgnore,
                  boolean useVanderwaalsRadius,
                  boolean disregardNeighbors, boolean onlySelectedDots,
-                 boolean isSurface) {
+                 boolean isSurface, boolean multiModel) {
     this.addRadius = (addRadius == Float.MAX_VALUE ? 0 : addRadius);
     this.setRadius = (setRadius == Float.MAX_VALUE && !useVanderwaalsRadius ? SURFACE_DISTANCE_FOR_CALCULATION
         : setRadius);
     this.scale = scale;
     atomData.useIonic = !useVanderwaalsRadius;
+    atomData.modelIndex = (multiModel ? -1 : 0);
+    modelZeroBased = !multiModel;
+    
     viewer.fillAtomData(atomData, AtomData.MODE_FILL_COORDS_AND_RADII);
     atomCount = atomData.atomCount;
     setRadii(useVanderwaalsRadius);    
@@ -263,7 +267,7 @@ public final class EnvelopeCalculation {
   public Point3f[] getPoints() {
     if (dotsConvexMaps == null) {
       calculate(Float.MAX_VALUE, SURFACE_DISTANCE_FOR_CALCULATION, 1f,
-          Float.MAX_VALUE, bsMySelected, null, false, false, false, false);
+          Float.MAX_VALUE, bsMySelected, null, false, false, false, false, false);
     }
     if (currentPoints != null)
       return currentPoints;
@@ -513,7 +517,7 @@ public final class EnvelopeCalculation {
     if (disregardNeighbors)
       return;
     AtomIndexIterator iter = viewer.getWithinAtomSetIterator(indexI, radiusI + diameterP
-        + maxRadius, bsMySelected, false); //true ==> only atom index > this atom accepted
+        + maxRadius, bsMySelected, false, modelZeroBased); //true ==> only atom index > this atom accepted
 
     while (iter.hasNext()) {
       int indexN = iter.next();

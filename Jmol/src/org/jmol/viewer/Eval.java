@@ -758,13 +758,14 @@ class Eval { //implements Runnable {
       switch (token.tok) {
       case Token.ifcmd:
         for (int i = 1; i <= ifLevel; i++)
-          if (ifs[ifLevel] == pc || ifs[ifLevel] == -1 - pc) {
+          if (ifs[i] == pc || ifs[i] == -1 - pc) {
             ifLevel = i - 1;
             break;
           }
         if (++ifLevel == MAX_IF_DEPTH)
           evalError(GT._("Too many nested {0} commands", "IF"));
         ifs[ifLevel] = (ifs[ifLevel - 1] >= 0 && ifCmd() ? pc : -1 - pc);
+        //System.out.println("if " + ifLevel + " = " + ifs[ifLevel]);
         break;
       case Token.elsecmd:
         if (ifLevel < 1)
@@ -773,6 +774,7 @@ class Eval { //implements Runnable {
           ifs[ifLevel] = -1 - ifs[ifLevel];
         break;
       case Token.endifcmd:
+        //System.out.println("if " + pc +" " + ifLevel);
         if (--ifLevel < 0)
           evalError(GT._("Invalid {0} command", "ENDIF"));
         break;

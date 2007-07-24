@@ -110,7 +110,11 @@ class Compiler {
     if (pt > 0 && (i = Integer.parseInt(strDecimal.substring(0, pt))) < 0)
       i = -i;
     if (pt < strDecimal.length() - 1)
-      j = Integer.parseInt(strDecimal.substring(pt + 1));
+      try {
+         j = Integer.parseInt(strDecimal.substring(pt + 1));
+      } catch(NumberFormatException e) {
+        // not a problem
+      }
     return i * 1000000 + j;
   }
   

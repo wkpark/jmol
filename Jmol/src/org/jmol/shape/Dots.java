@@ -126,6 +126,7 @@ public class Dots extends AtomShape {
         paletteIDs = new byte[atomCount];
       }
       colixes[thisAtom] = Graphics3D.getColix(thisArgb);
+      bsOn.set(thisAtom);
       //all done!
       return;
     }
@@ -255,11 +256,12 @@ public class Dots extends AtomShape {
       return "";
     StringBuffer s = new StringBuffer();
     Hashtable temp = new Hashtable();
+  //  Hashtable temp2 = new Hashtable();
     int atomCount = viewer.getAtomCount();
     String type = (isSurface ? "geoSurface " : "dots ");
+  //  boolean areOff = false;
     for (int i = 0; i < atomCount; i++) {
-      if (dotsConvexMaps[i] == null
-          || !atoms[i].isShapeVisible(myVisibilityFlag))
+      if (dotsConvexMaps[i] == null || !bsOn.get(i))
         continue;
       if (bsColixSet != null && bsColixSet.get(i))
         setStateInfo(temp, i, getColorCommand(type, paletteIDs[i], colixes[i]));
@@ -272,12 +274,22 @@ public class Dots extends AtomShape {
           n++;
           bs.set(iDot);
         }
+      
       if (n > 0) {
-        appendCmd(s, type + i + " radius " + ec.getAppropriateRadius(i) + " "
+        float r = ec.getAppropriateRadius(i);
+        appendCmd(s, type + i + " radius " + r + " "
             + Escape.escape(bs));
+  //      if (bsOn.get(i))
+  //        setStateInfo(temp2, i, "dots " + r);
+  //      else
+  //        areOff = true;
       }
     }
     s.append(getShapeCommands(temp, null, atomCount));
+   // if (areOff) {
+   //   appendCmd(s, "select *; dots off");
+   //   s.append(getShapeCommands(temp2, null, atomCount));
+   //  }
     return s.toString();
   }
 

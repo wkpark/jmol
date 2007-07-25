@@ -465,6 +465,7 @@ public class JvxlReader extends VolumeFileReader {
     fractionPtr = 0;
     int vertexCount = meshData.vertexCount;
     short[] colixes = meshData.vertexColixes;
+    float[] vertexValues = meshData.vertexValues;
     fractionData = new StringBuffer();
     strFractionTemp = (isJvxl ? jvxlColorDataRead : "");
     if (isJvxl && strFractionTemp.length() == 0) {
@@ -522,12 +523,15 @@ public class JvxlReader extends VolumeFileReader {
             colorFractionBase, colorFractionRange, 0.5f);
         value = params.valueMappedToRed + fraction * colorRange;
       }
+      vertexValues[i] = value;
       ++cpt;
       if (value < contourPlaneMinimumValue)
         contourPlaneMinimumValue = value;
       if (value > contourPlaneMaximumValue)
         contourPlaneMaximumValue = value;
-
+      
+      //note: these are just default colorings
+      //orbital color had a bug through 11.2.6/11.3.6
       if (params.isContoured) {
         marchingSquares.setContourData(i, value);
       } else if (params.colorBySign) {

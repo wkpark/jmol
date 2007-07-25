@@ -524,8 +524,6 @@ public class XmlCmlReader extends XmlReader {
         atom.z = parseFloat(chars);
       else if (scalarDictValue.equals("elementType"))
         atom.elementSymbol = chars;
-      if (atom.elementSymbol != null && !Float.isNaN(atom.z))
-        atomSetCollection.addAtomWithMappedName(atom);
       setKeepChars(false);
       break;
     case MOLECULE_BOND_BUILTIN:  //ACD Labs

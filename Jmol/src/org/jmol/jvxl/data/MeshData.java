@@ -147,6 +147,7 @@ public class MeshData {
     vertexCount = polygonCount = 0;
     vertices = null;
     polygonIndexes = null;
+    surfaceSet = null;
   }
   
   public int addVertexCopy(Point3f vertex, float value, int assocVertex) {

@@ -179,13 +179,14 @@ public class IsosurfaceMesh extends Mesh {
   public int[] vertexSets;
   public int nSets = 0;
   
+/*  // see MeshData
   void invalidateSurfaceSet(int i) {
     for (int j = surfaceSet[i].size(); --j >= 0;)
       if (surfaceSet[i].get(j))
         vertexValues[j] = Float.NaN;
     surfaceSet[i] = null;
   }
-
+*/
   public void initialize(int lighting) {
     /* 
      * OK, so if there is an associated grid point (because the 

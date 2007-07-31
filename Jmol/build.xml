@@ -1194,6 +1194,7 @@ support for assertions (which were introduced in 1.4).
         <pathelement location="./jars/junit.jar" />
       </classpath>
     </javac>
+    <mkdir dir="${tests.dir}"/>
     <jar destfile="${tests.dir}/Tests.jar" basedir="${test-classes.dir}" />
   </target>
 

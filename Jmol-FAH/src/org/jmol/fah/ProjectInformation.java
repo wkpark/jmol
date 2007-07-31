@@ -603,6 +603,8 @@ public class ProjectInformation {
       if (core != null) {
         if ("AMBER".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.AMBER;
+        } else if ("DB".equalsIgnoreCase(core)) {
+          info._fciCore = CoreType.DGROMACSB;
         } else if ("DGROMACS".equalsIgnoreCase(core)) {
           info._fciCore = CoreType.DGROMACS;
         } else if ("GBGROMACS".equalsIgnoreCase(core)) {

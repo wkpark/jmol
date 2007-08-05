@@ -30,7 +30,6 @@ import java.text.NumberFormat;
 import org.jmol.modelset.CellInfo;
 import org.jmol.symmetry.UnitCell;
 import org.jmol.util.TextFormat;
-import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.StateManager;
 
 public class UccageRenderer extends ShapeRenderer {
@@ -68,8 +67,8 @@ public class UccageRenderer extends ShapeRenderer {
     Point3f offset = unitCell.getCartesianOffset();
     for (int i = 8; --i >= 0;)
       verticesT[i].add(vertices[i], offset);
-    int firstLine = (viewer.getObjectMad(StateManager.OBJ_AXIS1) == 0  || viewer.getAxesMode() != JmolConstants.AXES_MODE_UNITCELL ? 0 : 3);
-    BbcageRenderer.render(viewer, g3d, mad, verticesT, screens, firstLine);
+    Point3f[] axisPoints = viewer.getAxisPoints();
+    BbcageRenderer.render(viewer, g3d, mad, verticesT, screens, axisPoints, viewer.getAxesScale() < 2 ? 0 : 3);
     if (!viewer.getDisplayCellParameters() || cellInfo.isPeriodic())
       return;
     if (nf == null) {

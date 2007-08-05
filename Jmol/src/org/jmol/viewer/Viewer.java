@@ -4685,6 +4685,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refresh(0, "set axesScale");
   }
 
+  public Point3f[] getAxisPoints() {
+    return (getObjectMad(StateManager.OBJ_AXIS1) == 0
+        || getAxesMode() != JmolConstants.AXES_MODE_UNITCELL ? null
+        : (Point3f[]) getShapeProperty(JmolConstants.SHAPE_AXES, "axisPoints"));
+  }
+  
   public float getAxesScale() {
     return global.axesScale;
   }

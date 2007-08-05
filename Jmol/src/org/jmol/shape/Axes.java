@@ -31,6 +31,7 @@ import org.jmol.viewer.JmolConstants;
 
 public class Axes extends FontLineShape {
 
+  
   private final static Point3f[] unitAxisPoints = {
     new Point3f( 1, 0, 0),
     new Point3f( 0, 1, 0),
@@ -61,9 +62,15 @@ public class Axes extends FontLineShape {
       Point3f[] vectors = unitcell.getVertices();
       Point3f offset = unitcell.getCartesianOffset();
       originPoint.set(offset);
-      axisPoints[0].add(offset, vectors[4]);
-      axisPoints[1].add(offset, vectors[2]);
-      axisPoints[2].add(offset, vectors[1]);
+      float scale = viewer.getAxesScale() / 2;
+      // We must divide by 2 because that is the default for ALL axis types.
+      // Not great, but it will have to do. 
+      axisPoints[0].scaleAdd(scale, vectors[4], offset);
+      axisPoints[1].scaleAdd(scale, vectors[2], offset);
+      axisPoints[2].scaleAdd(scale, vectors[1], offset);
+      //axisPoints[0].add(offset, vectors[4]);
+      //axisPoints[1].add(offset, vectors[2]);
+      //axisPoints[2].add(offset, vectors[1]);
       return;
     } else if (axesMode == JmolConstants.AXES_MODE_MOLECULAR) {
       originPoint.set(0, 0, 0);
@@ -73,6 +80,12 @@ public class Axes extends FontLineShape {
     setScale(viewer.getAxesScale());
   }
   
+  public Object getProperty(String property, int index) {
+    if (property.equals("axisPoints"))
+      return axisPoints;
+    return null;
+  }
+
   void setScale(float scale) {
     Vector3f corner = viewer.getBoundBoxCornerVector();
     for (int i = 6; --i >= 0;) {

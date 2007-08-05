@@ -370,6 +370,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       modelIndex = 0;
     title = null;
     atomIndex = -1;
+    colix = Graphics3D.ORANGE;
     defaultColix = 0;
     bsIgnore = null;
     isPhaseColored = false;
@@ -423,7 +424,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   }
   
   ////////////////////////////////////////////////////////////////
-  // default color stuff
+  // default color stuff (deprecated in 11.2)
   ////////////////////////////////////////////////////////////////
 
   int indexColorPositive;
@@ -432,6 +433,8 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   short getDefaultColix() {
     if (defaultColix != 0)
       return defaultColix;
+    if (!sg.isCubeData())
+      return colix;  // orange
     int argb;
     if (sg.getCutoff() >= 0) {
       indexColorPositive = (indexColorPositive % JmolConstants.argbsIsosurfacePositive.length);
@@ -444,7 +447,6 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   }
 
   ///////////////////////////////////////////////////
-  
   ////  LCAO Cartoons  are sets of lobes ////
 
   int nLCAO = 0;
@@ -552,7 +554,8 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       if (thisMesh == null)
         allocMesh(null);
       thisMesh.clear("isosurface", sg.getIAddGridPoints(), thisMesh.showTriangles);
-      if (isPhaseColored)
+      thisMesh.colix = getDefaultColix();
+      if (isPhaseColored) 
         thisMesh.isColorSolid = false;
       return;
     }

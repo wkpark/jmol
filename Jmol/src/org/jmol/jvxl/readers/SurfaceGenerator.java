@@ -269,6 +269,10 @@ public class SurfaceGenerator {
     return params.moData;
   }
   
+  public boolean isCubeData() {
+    return jvxlData.wasCubic;
+  }
+  
   private final static int STATE_INITIALIZED = 1;
   private final static int STATE_DATA_READ = 2;
   private final static int STATE_DATA_COLORED = 3;

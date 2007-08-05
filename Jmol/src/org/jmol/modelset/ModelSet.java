@@ -2719,14 +2719,16 @@ abstract public class ModelSet {
     }
 
     setModelVisibility();
+
+    commands.append(getProteinStructureState());
+    commands.append("\n");
+    
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapes[i];
       if (shape != null && (isAll || JmolConstants.isShapeSecondary(i)) 
           && (cmd = shape.getShapeState()) != null && cmd.length() > 1)
         commands.append(cmd);
     }
-    commands.append("\n");
-    commands.append(getProteinStructureState());
     return commands.toString();
   }
 

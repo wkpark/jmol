@@ -70,8 +70,8 @@ public class GamessReader extends AtomSetCollectionReader {
           moData.put("calculationType", calculationType);
           atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);
           continue;
-        } else if (iHaveAtoms && (line.indexOf("EIGENVECTORS") >= 0  
-            || line.indexOf("MOLECULAR ORBITALS") >= 0)) {
+        } else if (iHaveAtoms && (line.indexOf("  EIGENVECTORS") >= 0  
+            || line.indexOf("  MOLECULAR ORBITALS") >= 0)) {
           readMolecularOrbitals();
           moData.put("mos", orbitals);
           atomSetCollection.setAtomSetAuxiliaryInfo("moData", moData);

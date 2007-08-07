@@ -3715,6 +3715,12 @@ class Eval { //implements Runnable {
         loadScript.append(" ").append(Escape.escape(unitCells));
         int iGroup = -1;
         int[] p;
+        float distance = 0;
+        if (isFloatParameter(i)) {
+          distance = floatParameter(i++);
+          loadScript.append(" ").append(distance);
+        }
+        htParams.put("symmetryRange", new Float(distance));
         if (tokAt(i) == Token.spacegroup) {
           ++i;
           String spacegroup = TextFormat.simpleReplace(parameterAsString(i++),

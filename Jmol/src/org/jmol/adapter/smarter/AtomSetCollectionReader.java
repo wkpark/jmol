@@ -185,7 +185,7 @@ public abstract class AtomSetCollectionReader {
   boolean ignoreFileSpaceGroupName;
   boolean isTrajectory;
   protected boolean applySymmetryToBonds;
-  
+  float symmetryRange;  
 
   // state variables
   public boolean iHaveUnitCell;
@@ -249,6 +249,7 @@ public abstract class AtomSetCollectionReader {
     }
     if (params == null)
       return;
+    symmetryRange = ((Float) htParams.get("symmetryRange")).floatValue();
 
     // params is of variable length: 4, 5, or 11
     // [desiredModelNumber, i, j, k, 
@@ -414,6 +415,7 @@ public abstract class AtomSetCollectionReader {
     atomSetCollection.setCoordinatesAreFractional(iHaveFractionalCoordinates);
     atomSetCollection.setNotionalUnitCell(notionalUnitCell);
     atomSetCollection.setAtomSetSpaceGroupName(spaceGroup);
+    atomSetCollection.setSymmetryRange(symmetryRange);
     if (doConvertToFractional || fileCoordinatesAreFractional) {
       atomSetCollection.setLatticeCells(latticeCells, applySymmetryToBonds);
       if (ignoreFileSpaceGroupName || !iHaveSymmetryOperators) {

@@ -159,6 +159,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     transformManager = new TransformManager11(this);
     //transformManager = new TransformManager10(this);
     selectionManager = new SelectionManager(this);
+    pickingManager = new PickingManager(this);
     if (jvm14orGreater)
       mouseManager = MouseWrapper14.alloc(display, this);
     else if (jvm11orGreater)
@@ -168,7 +169,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelManager = new ModelManager(this);
     propertyManager = new PropertyManager(this);
     tempManager = new TempArray();
-    pickingManager = new PickingManager(this);
     fileManager = new FileManager(this, modelAdapter);
     repaintManager = new RepaintManager(this);
     eval = new Eval(this);
@@ -2752,14 +2752,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    * 
    */
   public void refresh(int isOrientationChange, String strWhy) {
-    //System.out.println("refresh: " +strWhy);
     repaintManager.refresh();
     statusManager.setStatusViewerRefreshed(isOrientationChange, strWhy);
   }
 
   void requestRepaintAndWait() {
-    if (haveDisplay)
-      repaintManager.requestRepaintAndWait();
+    if (!haveDisplay)
+      return;
+    repaintManager.requestRepaintAndWait();
+    statusManager.setStatusViewerRefreshed(1, "move/navigate/refresh");
+
   }
 
   public void repaintView() {

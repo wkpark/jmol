@@ -50,7 +50,7 @@ measureCompleted
 measurePending
 measurePicked
 
-newOrientation
+newOrientation 
 
 scriptEcho
 scriptError
@@ -244,8 +244,9 @@ class StatusManager {
   int minSyncRepeatMs = 100;
   int lastSyncTimeMs = 0;
   synchronized void setStatusViewerRefreshed(int isOrientationChange, String strWhy) {
+    //System.out.println( "ViewerRefreshed " + isOrientationChange + " " + strWhy);
     if(isOrientationChange == 1){
-      setStatusChanged("newOrientation", 0, strWhy, true);
+      //setStatusChanged("newOrientation", 0, strWhy, true);
       if(isSynced && drivingSync) {
         int time = (int) System.currentTimeMillis();
         if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
@@ -317,7 +318,8 @@ class StatusManager {
 
   synchronized void setStatusChanged(String statusName,
       int intInfo, Object statusInfo, boolean isReplace) {
-    if (!allowStatusReporting || statusList != "all" && statusList.indexOf(statusName) < 0)
+    if (!allowStatusReporting || statusList.length() == 0 
+        || statusList != "all" && statusList.indexOf(statusName) < 0)
       return;
     statusPtr++;
     Vector statusRecordSet;

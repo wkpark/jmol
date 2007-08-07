@@ -624,7 +624,7 @@ public class AtomSetCollection {
             minDist = d;
         }
         //System.out.println(transX + " " + transY + " " + transZ + " " + isBaseCell + " " + atomIndex + " " + count + " " + minDist + " " + symmetryRange);
-        if (checkSymmetryRange && minDist >= symmetryRange)
+        if (checkSymmetryRange && minDist > symmetryRange)
           continue;
         if (special != null) {
           atomMap[atoms[i].atomSite] = special.atomIndex;

@@ -249,7 +249,8 @@ public abstract class AtomSetCollectionReader {
     }
     if (params == null)
       return;
-    symmetryRange = ((Float) htParams.get("symmetryRange")).floatValue();
+    Float distance = (Float) htParams.get("symmetryRange");
+    symmetryRange = (distance == null ? 0 : distance.floatValue());
 
     // params is of variable length: 4, 5, or 11
     // [desiredModelNumber, i, j, k, 

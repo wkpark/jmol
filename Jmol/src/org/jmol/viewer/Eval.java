@@ -3716,16 +3716,17 @@ class Eval { //implements Runnable {
         int iGroup = -1;
         int[] p;
         float distance = 0;
-        if (isFloatParameter(i)) {
+        if (tokAt(i) == Token.range) {
+          i++;
           distance = floatParameter(i++);
-          loadScript.append(" ").append(distance);
+          loadScript.append(" range ").append(distance);
         }
         htParams.put("symmetryRange", new Float(distance));
         if (tokAt(i) == Token.spacegroup) {
           ++i;
           String spacegroup = TextFormat.simpleReplace(parameterAsString(i++),
               "''", "\"");
-          loadScript.append(" ").append(Escape.escape(spacegroup));
+          loadScript.append(" spacegroup ").append(Escape.escape(spacegroup));
           if (spacegroup.equalsIgnoreCase("ignoreOperators")) {
             iGroup = -999;
           } else {
@@ -3751,7 +3752,7 @@ class Eval { //implements Runnable {
           p[4] = iGroup;
           float[] fparams = new float[6];
           i = floatParameterSet(i, fparams);
-          loadScript.append(" {");
+          loadScript.append(" unitcell {");
           for (int j = 0; j < 6; j++) {
             p[5 + j] = (int) (fparams[j] * 10000f);
             loadScript.append((j == 0 ? "" : " ")).append(p[5 + j]);

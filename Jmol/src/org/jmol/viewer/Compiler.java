@@ -972,11 +972,10 @@ class Compiler {
   }
 
   private boolean charToken() {
-    if (ichToken == cchScript)
+    if (ichToken == cchScript || script.charAt(ichToken)== '"')
       return false;
     int ichT = ichToken;
-    while (ichT < cchScript
-        && !isSpaceOrTab(script.charAt(ichT)))
+    while (ichT < cchScript && !isSpaceOrTab(script.charAt(ichT)))
         ++ichT;
     cchToken = ichT - ichToken;
     return true;

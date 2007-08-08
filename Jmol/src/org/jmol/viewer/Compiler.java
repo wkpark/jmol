@@ -246,11 +246,9 @@ class Compiler {
             getData(str);
           continue;
         }
-        if (tokCommand == Token.sync) {
-          if (nTokens == 1 && charToken()) {
-            String ident = script.substring(ichToken, ichToken + cchToken);
-            addTokenToPrefix(new Token(Token.identifier, ident));
-          }
+        if (tokCommand == Token.sync && nTokens == 1 && charToken()) {
+          String ident = script.substring(ichToken, ichToken + cchToken);
+          addTokenToPrefix(new Token(Token.identifier, ident));
           continue;
         }
         if (tokCommand == Token.load) {

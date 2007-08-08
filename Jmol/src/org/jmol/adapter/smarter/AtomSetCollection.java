@@ -594,7 +594,9 @@ public class AtomSetCollection {
     boolean isBaseCell = (baseCount == 0);
     int nOperations = finalOperations.length;
     int[] atomMap = new int[count];
-    boolean checkSymmetryRange = (!isBaseCell && symmetryRange > 0);
+    boolean checkSymmetryRange = (symmetryRange < 0 || !isBaseCell && symmetryRange > 0);
+    if (symmetryRange < 0)
+      baseCount = count;
     for (int iSym = 0; iSym < nOperations; iSym++) {
       if (isBaseCell && finalOperations[iSym].getXyz().equals("x,y,z"))
         continue;
@@ -613,6 +615,7 @@ public class AtomSetCollection {
 
         Atom special = null;
         float minDist = Float.MAX_VALUE;
+        float range = Math.abs(symmetryRange);
         for (int j = pt0; --j >= 0;) {
           //            System.out.println(j + ": " + cartesians[j] + " ?cart? " + cartesian + " d=" + cartesian.distance(cartesians[j]));
           float d = cartesian.distance(cartesians[j]);
@@ -624,7 +627,7 @@ public class AtomSetCollection {
             minDist = d;
         }
         //System.out.println(transX + " " + transY + " " + transZ + " " + isBaseCell + " " + atomIndex + " " + count + " " + minDist + " " + symmetryRange);
-        if (checkSymmetryRange && minDist > symmetryRange)
+        if (checkSymmetryRange && minDist > range)
           continue;
         if (special != null) {
           atomMap[atoms[i].atomSite] = special.atomIndex;

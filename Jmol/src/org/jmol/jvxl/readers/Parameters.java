@@ -211,6 +211,7 @@ public class Parameters {
     thePlane = null;
     theProperty = null;
     thisContour = -1;
+    contourFromZero = true;
     title = null;
     useIonic = false;
   }
@@ -496,6 +497,7 @@ public class Parameters {
     if (cutoff == Float.MAX_VALUE)
       cutoff = defaultMepCutoff;
     isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
+    contourFromZero = false;
     //colorBySign = false;
     //isBicolorMap = false;
     if (isMapping || thePlane != null) {
@@ -601,7 +603,8 @@ public class Parameters {
   Point4f thePlane;
   boolean isContoured;
   int nContours;
-  int thisContour;  
+  int thisContour; 
+  boolean contourFromZero;
  
   float resolution;
 

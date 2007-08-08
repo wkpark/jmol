@@ -82,15 +82,20 @@ public class MarchingSquares {
     unitPlanarVectors[2] = new Vector3f();
   }
 
-  public MarchingSquares(VertexDataServer voxelReader, VolumeData volumeData, Point4f thePlane, 
-      int nContours, int thisContour) {
+  private boolean contourFromZero = true;
+   
+  public MarchingSquares(VertexDataServer voxelReader, VolumeData volumeData,
+      Point4f thePlane, int nContours, int thisContour, boolean contourFromZero) {
     this.voxelReader = voxelReader;
     this.volumeData = volumeData;
     this.thePlane = thePlane;
-    this.nContours = (nContours == 0 ? defaultContourCount
-        : nContours > nContourMax ? nContourMax : nContours);
     this.thisContour = thisContour;
     is3DContour = (thePlane == null);
+    this.contourFromZero = contourFromZero;
+    int i = (contourFromZero || is3DContour ? 0 : 1);
+    this.nContours = (nContours == 0 ? defaultContourCount + i
+        : nContours + i > nContourMax ? nContourMax : nContours + i);
+    
     setContourType();
   }
 
@@ -510,7 +515,12 @@ public class MarchingSquares {
         + " nContours=" + nContours);
     for (int i = 0; i < nContours; i++) {
       contourIndex = i;
-      float cutoff = min + (i * 1f / nContours) * diff;
+      float cutoff = 
+        (contourFromZero ? min + (i * 1f / nContours) * diff : 
+            i == 0 ? -Float.MAX_VALUE : i == nContours - 1 ? Float.MAX_VALUE 
+                : min + ((i - 1) * 1f / (nContours-1)) * diff);
+        
+
       /*
        * cutoffs right near zero cause problems, so we adjust just a tad
        * 
@@ -593,7 +603,9 @@ public class MarchingSquares {
   }
 
   private boolean isInside2d(float voxelValue, float max) {
-    return (max > 0 && voxelValue >= max) || (max <= 0 && voxelValue <= max);
+    return contourFromZero ? 
+        (max > 0 && voxelValue >= max) || (max <= 0 && voxelValue <= max)
+        : voxelValue < max;
   }
 
   private float[] squareFractions;

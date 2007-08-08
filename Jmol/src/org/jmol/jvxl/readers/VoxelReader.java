@@ -368,7 +368,7 @@ ascii-encoded fractional color data
     marchingSquares = null;
     if (params.thePlane != null || params.isContoured) {
       marchingSquares = new MarchingSquares(this, volumeData, params.thePlane,
-          params.nContours, params.thisContour);
+          params.nContours, params.thisContour, params.contourFromZero);
       contourType = marchingSquares.getContourType();
       marchingSquares.setMinMax(params.valueMappedToRed, params.valueMappedToBlue);
     }

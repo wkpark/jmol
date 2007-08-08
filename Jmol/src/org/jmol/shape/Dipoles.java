@@ -59,6 +59,7 @@ public class Dipoles extends Shape {
   int atomIndex1;
   int atomIndex2;
   short colix;
+  Vector3f calculatedDipole;
   
  public void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -73,12 +74,20 @@ public class Dipoles extends Shape {
       atomIndex1 = -1;
       tempDipole.modelIndex = -1;
       dipoleValue = 0;
+      calculatedDipole = null;
       isUserValue = isBond = iHaveTwoEnds = false;
       if (currentDipole != null)
         Logger.debug("current dipole: " + currentDipole.thisID);
       return;
     }
 
+    if ("calculate" == propertyName) {
+      calculatedDipole = viewer.calculateMolecularDipole();
+      Logger.info("calculated molecular dipole = " + calculatedDipole + " " 
+          + (calculatedDipole == null ? "" : "" + calculatedDipole.length()));
+      return;
+    }
+    
     if ("thisID" == propertyName) {
       if (value == null) {
         currentDipole = null;
@@ -91,8 +100,13 @@ public class Dipoles extends Shape {
       Logger.debug("current dipole now " + currentDipole.thisID);
       tempDipole = currentDipole;
       if (thisID.equals("molecular")) {
-        Vector3f v = viewer.getModelDipole();
-        Logger.info("file molecular dipole = " + v);
+        Vector3f v  = calculatedDipole;
+        if (v == null) {
+          v = viewer.getModelDipole();
+          Logger.info("file molecular dipole = " + v + " " + (v != null ? "" + v.length() : ""));
+        }
+        if (v == null)
+          calculatedDipole = v = viewer.calculateMolecularDipole();
         if (v == null) {
           Logger.warn("No molecular dipole found in file; setting to {0 0 0}");
           v = new Vector3f();

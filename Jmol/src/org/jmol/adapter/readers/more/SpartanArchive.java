@@ -306,7 +306,7 @@ public class SpartanArchive {
       return;
     Vector3f dipole = new Vector3f(parseFloat(tokens[0]),
         parseFloat(tokens[1]), parseFloat(tokens[2]));
-    atomSetCollection.setAtomSetCollectionAuxiliaryInfo("dipole", dipole);
+    atomSetCollection.setAtomSetAuxiliaryInfo("dipole", dipole);
   }
 
   void readProperty() throws Exception {

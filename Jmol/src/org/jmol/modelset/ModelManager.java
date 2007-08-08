@@ -1280,8 +1280,16 @@ String getAtomInfoChime(int i) {
     return modelSet.getAtomVector(atomIndex1, atomIndex2);
   }
 
-  public Vector3f getModelDipole() {
-    return modelSet.getModelDipole();
+  public Vector3f getModelDipole(int modelIndex) {
+    if (modelIndex < 0)
+      return null;
+    return modelSet.getModelDipole(modelIndex);
+  }
+
+  public Vector3f calculateMolecularDipole(int modelIndex) {
+    if (modelIndex < 0)
+      return null;
+    return modelSet.calculateMolecularDipole(modelIndex);
   }
 
   public void getBondDipoles() {

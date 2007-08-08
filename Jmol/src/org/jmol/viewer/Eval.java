@@ -5201,7 +5201,8 @@ class Eval { //implements Runnable {
         propertyName = "bonds";
         break;
       case Token.calculate:
-        continue; // ignored
+        propertyName = "calculate";
+        break;
       case Token.identifier:
         String cmd = parameterAsString(i);
         if (cmd.equalsIgnoreCase("cross")) {
@@ -5248,7 +5249,7 @@ class Eval { //implements Runnable {
       default:
         invalidArgument();
       }
-      idSeen = (theTok != Token.delete);
+      idSeen = (theTok != Token.delete && theTok != Token.calculate);
       if (propertyName != null)
         setShapeProperty(JmolConstants.SHAPE_DIPOLES, propertyName,
             propertyValue);

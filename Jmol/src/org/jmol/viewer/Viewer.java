@@ -5460,7 +5460,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public Vector3f getModelDipole() {
-    return modelManager.getModelDipole();
+    return modelManager.getModelDipole(getDisplayModelIndex());
+  }
+
+  public Vector3f calculateMolecularDipole() {
+    return modelManager.calculateMolecularDipole(getDisplayModelIndex());
   }
 
   public void getBondDipoles() {

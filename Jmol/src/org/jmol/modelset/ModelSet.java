@@ -1155,14 +1155,47 @@ abstract public class ModelSet {
     return newBonds;
   }
 
-  Vector3f getModelDipole() {
-    Vector3f dipole;
-    dipole = (Vector3f) mmset.getModelSetAuxiliaryInfo("dipole");
+  Vector3f getModelDipole(int modelIndex) {
+    Vector3f dipole = (Vector3f) mmset.getModelAuxiliaryInfo(modelIndex, "dipole");
     if (dipole == null)
-      dipole = (Vector3f) mmset.getModelSetAuxiliaryInfo("DIPOLE_VEC");
+      dipole = (Vector3f) mmset.getModelAuxiliaryInfo(modelIndex, "DIPOLE_VEC");
     return dipole;
   }
 
+  Vector3f calculateMolecularDipole(int modelIndex) {
+    if (partialCharges == null)
+      return null;
+    int nPos = 0;
+    int nNeg = 0;
+    float cPos = 0;
+    float cNeg = 0;
+    Vector3f pos = new Vector3f();
+    Vector3f neg = new Vector3f();
+    for (int i = 0; i < atomCount; i++) {
+      if (atoms[i].modelIndex != modelIndex)
+        continue;
+      float c = partialCharges[i];
+      if (c < 0) {
+        nNeg++;
+        cNeg += c;
+        neg.scaleAdd(c, atoms[i], neg);
+      } else if (c > 0) {
+        nPos++;
+        cPos += c;
+        pos.scaleAdd(c, atoms[i], pos);
+      }
+    }
+    if (nNeg == 0 || nPos == 0)
+      return null;
+    neg.scale(-1f/cNeg);
+    pos.scale(-1f/cPos);
+    pos.add(neg);
+    pos.scale(1e-10f * 1.6e-19f/ 3.336e-30f);
+    //http://www.chemistry.mcmaster.ca/esam/Chapter_7/section_3.html
+    // 1 Debye = 3.336e-30 Coulomb-meter; C_e = 1.6022e-19 C
+    return pos;
+  }
+  
   void getBondDipoles() {
     if (partialCharges == null)
       return;
@@ -1179,7 +1212,7 @@ abstract public class ModelSet {
       if (c1 != c2) 
         dipoles.setDipole(atom1, atom2, c1, c2);
     }
-  }
+  } 
 
   private BitSet bsPseudoHBonds;
 

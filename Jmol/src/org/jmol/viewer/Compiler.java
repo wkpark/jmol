@@ -59,12 +59,11 @@ class Compiler {
   }
 
   boolean compile(String filename, String script, boolean isPredefining,
-                  boolean isSilent) {
+                  boolean isSilent, boolean debugScript) {
     this.filename = filename;
     this.isSilent = isSilent;
     this.script = cleanScriptComments(script);
-    logMessages = (!isSilent && !isPredefining && Logger
-        .isActiveLevel(Logger.LEVEL_DEBUG));
+    logMessages = (!isSilent && !isPredefining && debugScript);
     lineNumbers = null;
     lineIndices = null;
     aatokenCompiled = null;
@@ -245,6 +244,13 @@ class Compiler {
           iHaveQuotedString = true;
           if (tokCommand == Token.data && str.indexOf("@") < 0)
             getData(str);
+          continue;
+        }
+        if (tokCommand == Token.sync) {
+          if (nTokens == 1 && charToken() || (cchToken = cchScript - ichToken) > 0) {
+            String ident = script.substring(ichToken, ichToken + cchToken);
+            addTokenToPrefix(new Token(Token.identifier, ident));
+          }
           continue;
         }
         if (tokCommand == Token.load) {
@@ -963,6 +969,17 @@ class Compiler {
         ++ichT;
       break;
     }
+    cchToken = ichT - ichToken;
+    return true;
+  }
+
+  private boolean charToken() {
+    if (ichToken == cchScript)
+      return false;
+    int ichT = ichToken;
+    while (ichT < cchScript
+        && !isSpaceOrTab(script.charAt(ichT)))
+        ++ichT;
     cchToken = ichT - ichToken;
     return true;
   }

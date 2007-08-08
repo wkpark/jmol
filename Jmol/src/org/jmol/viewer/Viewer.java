@@ -334,7 +334,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public void homePosition() {
-    script("reset");
+    evalString("reset");
   }
 
   /*
@@ -1329,7 +1329,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String type = fileManager.getFileTypeName(name);
     checkHalt("exit");
     // assumes a Jmol script file if no other file type
-    script((type == null ? "script " : "load ")
+    evalString((type == null ? "script " : "load ")
         + Escape.escape(TextFormat.simpleReplace(name, "\\", "/")));
   }
 
@@ -2449,7 +2449,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void clearMeasurements() {
     //depricated but in the API -- use "script" directly
     //see clearAllMeasurements()
-    script("measures delete");
+    evalString("measures delete");
   }
 
   private void setJustifyMeasurements(boolean TF) {
@@ -2998,7 +2998,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String evalString(String strScript) {
-    getInterruptScript();
+    return evalStringQuiet(strScript, false);
+  }
+
+  public String evalStringQuiet(String strScript) {
+    return evalStringQuiet(strScript, true);
+  }
+
+  private String evalStringQuiet(String strScript, boolean isQuiet) {
+    //System.out.println(htmlName + " evalString " + strScript);
+    interruptScript = "";
     boolean isInterrupt = (strScript.length() > 0 && strScript.charAt(0) == '!');
     if (isInterrupt)
       strScript = strScript.substring(1);
@@ -3010,7 +3019,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       interruptScript = strScript;
       return "!" + strScript;
     }
-    return scriptManager.addScript(strScript, false, false);
+    //System.out.println(htmlName + " addScript " + strScript);
+    return scriptManager.addScript(strScript, false, isQuiet);
   }
 
   boolean usingScriptQueue() {
@@ -3053,14 +3063,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return str.equals("quit");
     }
     return false;
-  }
-
-  public String evalStringQuiet(String strScript) {
-    if (checkResume(strScript))
-      return "script processing resumed";
-    if (checkHalt(strScript))
-      return "script execution halted";
-    return scriptManager.addScript(strScript, false, true);
   }
 
   /// direct no-queue use:
@@ -3525,7 +3527,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String s = statusManager.getCallbackScript("pickcallback");
     global.setParameterValue("_atompicked", atomIndex);
     if (s != null)
-      evalStringQuiet(s);
+      evalStringQuiet(s, true);
     else
       statusManager.setStatusAtomPicked(atomIndex, info);
   }
@@ -3534,7 +3536,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String s = statusManager.getCallbackScript("hovercallback");
     global.setParameterValue("_atomhovered", atomIndex);
     if (s != null)
-      evalStringQuiet(s);
+      evalStringQuiet(s, true);
     else
       statusManager.setStatusAtomHovered(atomIndex, info);
   }
@@ -3553,7 +3555,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setStatusResized(int width, int height) {
     String s = statusManager.getCallbackScript("resizecallback");
     if (s != null)
-      evalStringQuiet(s);
+      evalStringQuiet(s, true);
     else
       statusManager.setStatusResized(width, height);
   }
@@ -3615,7 +3617,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     s = statusManager.getCallbackScript("animframecallback");
     if (s != null)
-      evalStringQuiet(s);
+      evalStringQuiet(s, true);
     else
       statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo, (repaintManager.animationDirection < 0 ? -firstNo : firstNo),
           (repaintManager.currentDirection < 0 ? -lastNo : lastNo));
@@ -3626,7 +3628,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
                                    Object clientFile, String strError) {
     String s = statusManager.getCallbackScript("loadstructcallback");
     if (s != null)
-      evalStringQuiet(s);
+      evalStringQuiet(s, true);
     else
       statusManager.setStatusFileLoaded(fullPathName, fileName, modelName,
           clientFile, strError, ptLoad);
@@ -5709,20 +5711,48 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       resizeImage(saveWidth, saveHeight, true);
   }
 
-  //////////unimplemented
-
-  public void setSyncDriver(int syncMode) {
-    //it was an idea...
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-      Logger.debug(htmlName + " viewer setting sync driver " + syncMode);
+  public void syncScript(String script, String applet) {
+    boolean isAll = ("*".equals(applet));
+    boolean allButMe = (">".equals(applet));
+    boolean disableSend = ("~".equals(applet));
+    boolean justMe = disableSend || (".".equals(applet)); 
+    //null same as ">" -- "all others"
+    if (justMe) {
+    } else {
+      statusManager.syncSend(script, (isAll || allButMe ? null : applet));
+      if (!isAll)
+        return;
     }
-    statusManager.setSyncDriver(syncMode);
+    if (script.equalsIgnoreCase("on")) {
+      statusManager.setSyncDriver(StatusManager.SYNC_DRIVER);
+      return;
+    }
+    if (script.equalsIgnoreCase("off")) {
+      statusManager.setSyncDriver(StatusManager.SYNC_OFF);
+      return;
+    }
+    if (script.equalsIgnoreCase("slave")) {
+      statusManager.setSyncDriver(StatusManager.SYNC_SLAVE);
+      return;
+    }
+    //System.out.println("syncmode=" + statusManager.getSyncMode());
+    int syncMode = statusManager.getSyncMode();
+    if (syncMode == StatusManager.SYNC_OFF)
+      return;
+    if (syncMode != StatusManager.SYNC_DRIVER)
+      disableSend = false;
+    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+      Logger.debug(htmlName + " syncing with script: " + script);
+    //driver is being positioned by another driver -- don't pass on the change
+    if (disableSend)
+      statusManager.setSyncDriver(StatusManager.SYNC_DISABLE);
+    evalStringQuiet(script, true);
   }
-
-  public int getSyncMode() {
-    return statusManager.getSyncMode();
+  
+  void setSyncDriver(int mode) {
+    statusManager.setSyncDriver(mode);  
   }
-
+  
   public float[] getPartialCharges() {
     return modelManager.getPartialCharges();
   }

@@ -140,12 +140,13 @@ class ScriptManager {
       while (scriptQueue.size() != 0) {
         runNextScript();
       }
-      scriptQueueRunning = false;
       queueThread = null;
+      stop();
     }
     
     public void stop() {
       scriptQueueRunning = false;
+      viewer.setSyncDriver(StatusManager.SYNC_ENABLE);
     }
   }
   

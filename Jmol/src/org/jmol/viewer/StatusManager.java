@@ -247,11 +247,9 @@ class StatusManager {
     //System.out.println( "ViewerRefreshed " + isOrientationChange + " " + strWhy);
     if(isOrientationChange == 1){
       //setStatusChanged("newOrientation", 0, strWhy, true);
-      if(isSynced && drivingSync) {
+      if(isSynced && drivingSync && !syncDisabled) {
         int time = (int) System.currentTimeMillis();
-        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-          Logger.debug(" syncing" + time + " " + lastSyncTimeMs + " " + minSyncRepeatMs );
-        }
+        //System.out.println(" syncing" + time + " " + lastSyncTimeMs + " " + minSyncRepeatMs );
         if (lastSyncTimeMs == 0 || time - lastSyncTimeMs >= minSyncRepeatMs) {
           lastSyncTimeMs = time;
           Logger.debug("sending sync");
@@ -259,7 +257,7 @@ class StatusManager {
         }
       }
     } else {
-      setStatusChanged("viewerRefreshed", 0, strWhy, false);   
+      //setStatusChanged("viewerRefreshed", 0, strWhy, false);   
     }
   }
 
@@ -270,33 +268,57 @@ class StatusManager {
 
   boolean drivingSync = false;
   boolean isSynced = false;
-  public void setSyncDriver(int syncMode) {
+  boolean syncDisabled = false;
+  
+  final static int SYNC_OFF = 0;
+  final static int SYNC_DRIVER = 1;
+  final static int SYNC_SLAVE = 2;
+  final static int SYNC_DISABLE = 3;
+  final static int SYNC_ENABLE = 4;
+  
+  void setSyncDriver(int syncMode) {
  
     // -1 slave   turn off driving, but not syncing
     //  0 off
     //  1 driving on as driver
-  
-    //  2 sync    turn on, but set as slave  
-    
-    drivingSync = (syncMode == 1 ? true : false);
-    isSynced = (syncMode > 0 || 
-        isSynced && syncMode < 0? true : false);
+    //  2 sync    turn on, but set as slave
+    //System.out.println(viewer.getHtmlName() +" setting mode=" + syncMode);
+    switch (syncMode) {
+    case SYNC_ENABLE:
+      if (!syncDisabled)
+        return;
+      syncDisabled = false;
+      
+      break;
+    case SYNC_DISABLE:
+      syncDisabled = true;
+      break;
+    case SYNC_DRIVER:
+      drivingSync = true;
+      isSynced = true;
+      break;
+    case SYNC_SLAVE:
+      drivingSync = false;
+      isSynced = true;
+      break;
+    default:
+      drivingSync = false;
+      isSynced = false;
+    }
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug(
-          viewer.getHtmlName() + " " + syncMode +
-          " synced? " + isSynced + " driving?" + drivingSync);
+          viewer.getHtmlName() + " sync mode=" + syncMode +
+          "; synced? " + isSynced + "; driving? " + drivingSync + "; disabled? " + syncDisabled);
     }
   }
 
-  public void syncSend(String script, String appletName) {
+  void syncSend(String script, String appletName) {
     if (jmolStatusListener != null)
       jmolStatusListener.sendSyncScript(script, appletName);
   }
   
-  public int getSyncMode() {
-    if (! isSynced)
-      return 0;
-    return (drivingSync ? 1 : -1);
+  int getSyncMode() {
+    return (!isSynced ? SYNC_OFF : drivingSync ? SYNC_DRIVER : SYNC_SLAVE);
   }
   
   synchronized void showUrl(String urlString) {
@@ -374,7 +396,7 @@ class StatusManager {
     return (jmolStatusListener == null ? "" : jmolStatusListener.eval(strEval));
   }
 
-  public void createImage(String file, String type, int quality) {
+  void createImage(String file, String type, int quality) {
     if (jmolStatusListener == null)
       return;
     jmolStatusListener.createImage(file, type, quality);

@@ -24,20 +24,23 @@
 
 package org.jmol.applet;
 import org.jmol.api.JmolAppletInterface;
+import org.jmol.appletwrapper.AppletWrapper;
 
 import java.applet.*;
 import java.util.Hashtable;
 import java.util.Enumeration;
+import java.util.Vector;
 
 import netscape.javascript.JSObject;
 import org.jmol.util.Logger;
 public class JmolAppletRegistry {
 
+  public static Hashtable htRegistry = new Hashtable();
+
   String name;
   boolean mayScript;
   Applet applet;
   AppletContext appletContext;
-  //String strJavaVendor, strJavaVersion, strOSName;
 
   public JmolAppletRegistry(String name, boolean mayScript, Applet applet) {
     if (name == null || name.length() == 0)
@@ -46,34 +49,39 @@ public class JmolAppletRegistry {
     this.mayScript = mayScript;
     this.applet = applet;
     this.appletContext = applet.getAppletContext();
-    //strJavaVendor = System.getProperty("java.vendor");
-    //strJavaVersion = System.getProperty("java.version");
-    //strOSName = System.getProperty("os.name");
-    /*
-    if (mayScript) {
-      try {
-        jsoWindow = JSObject.getWindow(applet);
-        Logger.debug("JmolAppletRegistry: jsoWindow=" + jsoWindow);
-      } catch (Exception e) {
-        Logger.debug("exception trying to get jsoWindow");
-      }
-    }
-    */
     checkIn(name, applet);
   }
 
-  public Enumeration applets() {
+  public synchronized Enumeration applets() {
     return htRegistry.elements();
   }
 
-  public static Hashtable htRegistry = new Hashtable();
-
-  void checkIn(String name, Applet applet) {
+  synchronized static void checkIn(String name, Applet applet) {
+    cleanRegistry();
     Logger.info("AppletRegistry.checkIn(" + name + ")");
     if (name != null)
       htRegistry.put(name, applet);
   }
 
+  synchronized static void cleanRegistry() {
+    Enumeration keys = htRegistry.keys();
+    while (keys.hasMoreElements()) {
+      String theApplet = (String) keys.nextElement();
+      try {
+        JmolAppletInterface app = (JmolAppletInterface) (htRegistry
+            .get(theApplet));
+        JSObject theWindow = JSObject.getWindow((AppletWrapper) app);
+        if (theWindow.hashCode() != 0) {
+          //System.out.println("Preserving registered applet " + theApplet);
+          //System.out.println();
+        }
+      } catch (Exception e) {
+        Logger.error("Dereferencing registered applet " + theApplet);
+        htRegistry.remove(theApplet);
+      }
+    }
+  }
+  
   JSObject getJsoWindow() {
     JSObject jsoWindow = null;
     if (mayScript) {
@@ -120,13 +128,36 @@ public class JmolAppletRegistry {
     Logger.error("unable to find target:" + targetName);
   }
 
-  private boolean tryDirect(String targetName, String script,
+  synchronized public static Vector findApplets(String appletName, String mySyncId,
+                            String excludeName) {
+    if (appletName != null && appletName.indexOf("[") < 0)
+      appletName += "[" + mySyncId + "]";
+    Vector apps = new Vector();
+    if (appletName != null && htRegistry.containsKey(appletName)) {
+      apps.addElement(appletName);
+      return apps;
+    }
+    Enumeration keys = htRegistry.keys();
+    while (keys.hasMoreElements()) {
+      String theApplet = (String) keys.nextElement();
+      if (excludeName != null && theApplet.equals(excludeName))
+        continue;
+      if (appletName == null && theApplet.indexOf("[" + mySyncId + "]") > 0
+          || theApplet.equals(appletName))
+        apps.addElement(theApplet);
+    }
+    return apps;
+  }
+  
+  synchronized private boolean tryDirect(String targetName, String script,
                             String callbackJavaScript) {
     Logger.debug("tryDirect trying appletContext");
     Object target = appletContext.getApplet(targetName);
     if (target == null) {
       Logger.debug("... trying registry");
-      target = htRegistry.get(targetName);
+      Vector apps = findApplets(targetName, null, null);
+      if (apps.size() > 0)
+        target = htRegistry.get(apps.elementAt(0));
     }
     if (target == null) {
       Logger.error("tryDirect failed to find applet:" + targetName);

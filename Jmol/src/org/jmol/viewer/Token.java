@@ -215,6 +215,8 @@ public class Token {
   final static int rotateSelected = command | 119 | negnums | embeddedExpression;
   final static int quaternion     = command | 120;
   final static int ramachandran   = command | 121;
+  final static int sync           = command | 122;
+
 
   //the following are listed with atomproperty because they must be registered as atom property names
   //final static int model           = atomproperty | 5 | command;
@@ -1112,6 +1114,7 @@ public class Token {
     "play",         new Token(play),
     "range",        new Token(range),
     "saSurface",    new Token(sasurface),
+    "sync",         new Token(sync),
     "top",          new Token(top),    
     "bottom",       new Token(bottom),    
     "left",         new Token(left),    

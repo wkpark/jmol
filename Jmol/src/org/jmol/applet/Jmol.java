@@ -27,21 +27,19 @@ package org.jmol.applet;
 import org.jmol.api.*;
 import org.jmol.appletwrapper.*;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
-// import org.openscience.jmol.adapters.CdkJmolAdapter;
 import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
-
-import netscape.javascript.JSObject;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.util.Logger;
+import org.jmol.util.Parser;
 
 import java.awt.*;
 import java.net.URL;
 import java.net.MalformedURLException;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import org.jmol.util.Logger;
+import java.util.Vector;
 
-import org.jmol.util.Parser;
+import netscape.javascript.JSObject;
+
 /*
  * these are *required*:
  * 
@@ -51,6 +49,13 @@ import org.jmol.util.Parser;
  * value="#778899" /]
  * 
  * these are *optional*:
+ * 
+ * [param name="syncId" value="nnnnn" /]
+ * 
+ * determines the subset of applets *across pages* that are to be synchronized
+ * (usually just a random number assigned in Jmol.js)
+ * if this is fiddled with, it still should be a random number, not
+ * one that is assigned statically for a given web page.
  * 
  * [param name="loadInline" value=" | do | it | this | way " /]
  * 
@@ -115,6 +120,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   JmolPopup jmolpopup;
 
   String htmlName;
+  String fullName;
+  String syncId;
 
   public JmolAppletRegistry appletRegistry;
 
@@ -171,6 +178,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   public void init() {
     System.out.println("Init jmol");
     htmlName = getParameter("name");
+    syncId = getParameter("syncId");
+    fullName = htmlName + "[" + syncId + "]";
     language = getParameter("language");
     if (language != null) {
       System.out.print("requested language=" + language + "; ");
@@ -179,11 +188,12 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     language = GT.getLanguage();
     System.out.println("language=" + language);
     doTranslate = getBooleanValue("doTranslate", true);
-    System.out.println("Jmol applet "+htmlName);
+    System.out.println("Jmol applet " + fullName);
     setLogging();
     String ms = getParameter("mayscript");
     mayScript = (ms != null) && (!ms.equalsIgnoreCase("false"));
-    appletRegistry = new JmolAppletRegistry(htmlName, mayScript, appletWrapper);    
+    appletRegistry = new JmolAppletRegistry(fullName,
+        mayScript, appletWrapper);
     initWindows();
     initApplication();
   }
@@ -635,7 +645,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   private String scriptProcessor(String script, String statusParams, int processType) {
     /*
      * Idea here is to provide a single point of entry
-     * Synchronization does not work, because it is possible for the NOWAIT variety of
+     * Synchronization may not work, because it is possible for the NOWAIT variety of
      * scripts to return prior to full execution 
      * 
      */
@@ -685,31 +695,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     return scriptProcessor(script, statusParams, SCRIPT_WAIT);
   }   
 
-  // not implemented:
   synchronized public void syncScript(String script) {
-    if (script.equalsIgnoreCase("on")) {
-      myStatusListener.sendSyncScript("SLAVE",null);
-      viewer.setSyncDriver(1);
-      return;
-    }
-    if (script.equalsIgnoreCase("off")) {
-      viewer.setSyncDriver(0);
-      return;
-    }
-    if (script.equalsIgnoreCase("slave")) {
-      viewer.setSyncDriver(-1);
-      return;
-    }
-    if (script.equalsIgnoreCase("sync")) {
-      viewer.setSyncDriver(2);
-      return;
-    }
-    if (viewer.getSyncMode() != 0)
-      return;
-    if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-      Logger.debug(htmlName + " syncing with script: " + script);
-    }
-    script(script);
+    viewer.syncScript(script, "~");
   }
   
   public String getAppletInfo() {
@@ -1124,29 +1111,24 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     }
   
     public void sendSyncScript(String script, String appletName) {
-      //how to get rid of this warning? - RMH
-      Hashtable h = JmolAppletRegistry.htRegistry;
-      Enumeration keys = h.keys();
-      while (keys.hasMoreElements()) {
-        String theApplet = (String)keys.nextElement();
-        if (! theApplet.equals(htmlName) &&
-            (appletName == null || appletName == theApplet)) {
-          if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-            Logger.debug("sendSyncScript class "+h.get(theApplet).getClass().getName());
-          }
-          JmolAppletInterface app = (JmolAppletInterface)(h.get(theApplet));
-          try {
-            if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-              Logger.debug(htmlName + " sending " + script + " to " + theApplet);
-            }
-            app.syncScript(script);
-          } catch (Exception e) {
-            Logger.debug(htmlName + " couldn't send " + script + " to " + theApplet + ": " + e);
-          }
-        }
+      Vector apps = JmolAppletRegistry.findApplets(appletName, syncId, fullName);
+      if (apps == null || apps.size() == 0) {
+        Logger.error(fullName + " couldn't find applet " + appletName);
+        return;
       }
-    }
-    
+      for (int i = 0; i < apps.size(); i++) {
+        String theApplet = (String)apps.elementAt(i);
+        JmolAppletInterface app = (JmolAppletInterface)JmolAppletRegistry.htRegistry.get(theApplet);
+        if (Logger.isActiveLevel(Logger.LEVEL_DEBUG))
+          Logger.debug(fullName + " sending to " + theApplet + ": "
+              + script);
+        try {
+          app.syncScript(script);
+        } catch (Exception e) {
+          Logger.error(htmlName + " couldn't send to " + theApplet + ": "
+              + script + ": " + e);
+        } 
+      }
+    }    
   }
-
 }

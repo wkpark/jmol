@@ -125,7 +125,7 @@ class Eval { //implements Runnable {
     // Text.formatText for MESSAGE and ECHO
     Eval e = new Eval(viewer);
     try {
-      if (e.loadScript(null, EXPRESSION_KEY + " = " + expr)) {
+      if (e.loadScript(null, EXPRESSION_KEY + " = " + expr, false)) {
         e.statement = e.aatoken[0];
         e.statementLength = e.statement.length;
         return e.parameterExpression(2, "");
@@ -147,7 +147,7 @@ class Eval { //implements Runnable {
       String scr = "select (" + atomExpression + ")";
       scr = TextFormat.replaceAllCharacters(scr, "\n\r", "),(");
       scr = TextFormat.simpleReplace(scr, "()", "(none)");
-      if (e.loadScript(null, scr)) {
+      if (e.loadScript(null, scr, false)) {
         e.statement = e.aatoken[0];
         bs = e.expression(e.statement, 1, false, false, true);
       }
@@ -240,7 +240,7 @@ class Eval { //implements Runnable {
   private void runScript(String script) throws ScriptException {
     //load, restore
     pushContext();
-    if (loadScript(null, script))
+    if (loadScript(null, script, false))
       instructionDispatchLoop(false);
     popContext();
   }
@@ -249,7 +249,7 @@ class Eval { //implements Runnable {
     //a = script("xxxx")
     pushContext();
     this.outputBuffer = outputBuffer;
-    if (loadScript(null, script))
+    if (loadScript(null, script, false))
       instructionDispatchLoop(false);
     popContext();
   }
@@ -298,10 +298,10 @@ class Eval { //implements Runnable {
     outputBuffer = context.outputBuffer;
   }
 
-  boolean loadScript(String filename, String script) {
+  private boolean loadScript(String filename, String script, boolean debugCompiler) {
     //use runScript, not loadScript from within Eval
     this.filename = filename;
-    if (!compiler.compile(filename, script, false, false)) {
+    if (!compiler.compile(filename, script, false, false, debugCompiler)) {
       error = true;
       errorMessage = compiler.getErrorMessage();
       return false;
@@ -315,7 +315,7 @@ class Eval { //implements Runnable {
   }
 
   Object checkScriptSilent(String script) {
-    if (!compiler.compile(null, script, false, true))
+    if (!compiler.compile(null, script, false, true, false))
       return compiler.getErrorMessage();
     isSyntaxCheck = true;
     isScriptCheck = false;
@@ -353,7 +353,7 @@ class Eval { //implements Runnable {
   boolean loadScriptString(String script, boolean tQuiet) {
     //from Viewer.evalStringWaitStatus()
     clearState(tQuiet);
-    return loadScript(null, script);
+    return loadScript(null, script, debugScript);
   }
 
   boolean loadScriptFile(String filename, boolean tQuiet) {
@@ -365,7 +365,7 @@ class Eval { //implements Runnable {
   private boolean loadScriptFileInternal(String filename) {
     //from "script" command, with push/pop surrounding or viewer
     if (filename.toLowerCase().indexOf("javascript:") == 0)
-      return loadScript(filename, viewer.eval(filename.substring(11)));
+      return loadScript(filename, viewer.eval(filename.substring(11)), debugScript);
     Object t = viewer.getInputStreamOrErrorMessageFromName(filename);
     if (!(t instanceof InputStream))
       return loadError((String) t);
@@ -393,7 +393,7 @@ class Eval { //implements Runnable {
       reader = null;
     } catch (IOException ioe) {
     }
-    return loadScript(filename, script.toString());
+    return loadScript(filename, script.toString(), debugScript);
   }
 
   boolean loadError(String msg) {
@@ -484,7 +484,7 @@ class Eval { //implements Runnable {
   }
 
   void predefine(String script) {
-    if (compiler.compile("#predefine", script, true, false)) {
+    if (compiler.compile("#predefine", script, true, false, false)) {
       Token[][] aatoken = compiler.getAatokenCompiled();
       if (aatoken.length != 1) {
         viewer
@@ -841,6 +841,9 @@ class Eval { //implements Runnable {
       case Token.javascript:
         script(token.tok == Token.javascript);
         break;
+      case Token.sync:
+        sync();
+        break;
       case Token.history:
         history(1);
         break;
@@ -1069,6 +1072,9 @@ class Eval { //implements Runnable {
       if (!isSyntaxCheck)
         viewer.setCursor(Viewer.CURSOR_DEFAULT);
     }
+    String script = viewer.getInterruptScript();
+    if (script != "")
+      runScript(script);
   }
 
   boolean ifCmd() throws ScriptException {
@@ -4403,7 +4409,7 @@ class Eval { //implements Runnable {
     pushContext();
     boolean isOK;
     if (theScript != null)
-      isOK = loadScript(null, theScript);
+      isOK = loadScript(null, theScript, false);
     else
       isOK = loadScriptFileInternal(filename);
     if (isOK) {
@@ -4432,6 +4438,41 @@ class Eval { //implements Runnable {
     isScriptCheck = wasScriptCheck;
   }
 
+  void sync() throws ScriptException {
+    //new 11.3.9
+    String text = "";
+    String applet = "";
+    switch (statementLength) {
+    case 1:
+      applet = "*";
+      text = "ON";
+      break;
+    case 2:
+      applet = parameterAsString(1);
+      if (applet.indexOf("jmolApplet") == 0 
+          || Parser.isOneOf(applet, "*;.;^")) {
+        text = "ON";
+        if (!isSyntaxCheck)
+          viewer.syncScript(text, applet);
+        applet = ".";
+        break;
+      }
+      text = applet;
+      applet = "*";
+      break;
+    case 3:
+      applet = parameterAsString(1);
+      text = parameterAsString(2);
+      break;
+    default:
+      applet = parameterAsString(1);
+      for (int i = 2; i < statementLength; i++)
+        text += (i > 2 ? " " : "") + parameterAsString(i);
+    }
+    if (!isSyntaxCheck)
+      viewer.syncScript(text, applet);
+  }
+  
   void history(int pt) throws ScriptException {
     //history or set history
     if (statementLength == 1) {

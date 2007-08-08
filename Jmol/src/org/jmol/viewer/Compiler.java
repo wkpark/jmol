@@ -247,7 +247,7 @@ class Compiler {
           continue;
         }
         if (tokCommand == Token.sync) {
-          if (nTokens == 1 && charToken() || (cchToken = cchScript - ichToken) > 0) {
+          if (nTokens == 1 && charToken()) {
             String ident = script.substring(ichToken, ichToken + cchToken);
             addTokenToPrefix(new Token(Token.identifier, ident));
           }

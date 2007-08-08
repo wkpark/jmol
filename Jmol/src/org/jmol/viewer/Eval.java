@@ -4464,10 +4464,6 @@ class Eval { //implements Runnable {
       applet = parameterAsString(1);
       text = parameterAsString(2);
       break;
-    default:
-      applet = parameterAsString(1);
-      for (int i = 2; i < statementLength; i++)
-        text += (i > 2 ? " " : "") + parameterAsString(i);
     }
     if (!isSyntaxCheck)
       viewer.syncScript(text, applet);

@@ -242,7 +242,7 @@ class StatusManager {
   }
   
   int minSyncRepeatMs = 100;
-  int lastSyncTimeMs = 0;
+  int lastSyncTimeMs = Integer.MAX_VALUE;
   synchronized void setStatusViewerRefreshed(int isOrientationChange, String strWhy) {
     //System.out.println( "ViewerRefreshed " + isOrientationChange + " " + strWhy);
     if(isOrientationChange == 1){
@@ -250,10 +250,10 @@ class StatusManager {
       if(isSynced && drivingSync && !syncDisabled) {
         int time = (int) System.currentTimeMillis();
         //System.out.println(" syncing" + time + " " + lastSyncTimeMs + " " + minSyncRepeatMs );
-        if (lastSyncTimeMs == 0 || time - lastSyncTimeMs >= minSyncRepeatMs) {
+        if (time < lastSyncTimeMs || time >= lastSyncTimeMs + minSyncRepeatMs) {
           lastSyncTimeMs = time;
           Logger.debug("sending sync");
-          syncSend(viewer.getMoveToText(minSyncRepeatMs/1000f), null);
+          syncSend("!" + viewer.getMoveToText(minSyncRepeatMs/1000f), null);
         }
       }
     } else {

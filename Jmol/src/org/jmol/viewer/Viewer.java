@@ -131,7 +131,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private String strOSName;
   private String htmlName = "";
   private String fullName = "";
-  //private String syncId = "";
+  private String syncId = "";
   private String appletDocumentBase = "";
   private String appletCodeBase = "";
 
@@ -214,7 +214,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     this.appletCodeBase = (codeBase == null ? "" :  codeBase.toString());
     int i = fullName.lastIndexOf("[");
     this.htmlName = (i < 0 ? fullName : fullName.substring(0, i));
-    //this.syncId = (i < 0 ? "" : fullName.substring(i + 1, fullName.length() - 1));
+    this.syncId = (i < 0 ? "" : fullName.substring(i + 1, fullName.length() - 1));
     isApplet = (documentBase != null);
     String str = appletProxyOrCommandOptions;
     if (!isApplet) {
@@ -358,6 +358,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   Hashtable getAppletInfo() {
     Hashtable info = new Hashtable();
     info.put("htmlName", htmlName);
+    info.put("syncId", syncId);
+    info.put("fullName", fullName);
+    if (isApplet) {
+      info.put("documentBase", appletDocumentBase);
+      info.put("codeBase", appletCodeBase);
+    }
     info.put("version", JmolConstants.version);
     info.put("date", JmolConstants.date);
     info.put("javaVendor", strJavaVendor);

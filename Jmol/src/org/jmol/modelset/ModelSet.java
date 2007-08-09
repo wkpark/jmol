@@ -1189,11 +1189,16 @@ abstract public class ModelSet {
       return null;
     pos.scale(1f/cPos);
     neg.scale(1f/cNeg);
-    //System.out.print("draw ptn {" + neg.x + " " + neg.y + " " + neg.z + "};draw ptp {" + pos.x + " " + pos.y + " " + pos.z + " }#" + cNeg + " " + cPos+" ");
+    System.out.print("draw ptn {" + neg.x + " " + neg.y + " " + neg.z + "};draw ptp {" + pos.x + " " + pos.y + " " + pos.z + " }#" + cNeg + " " + cPos+" ");
     pos.sub(neg);
-    //System.out.println(pos.length() + " " + cPos);
+    System.out.println(pos.length() + " " + cPos);
     System.out.println (" this is an untested result -- needs checking");
     pos.scale(cPos * 4.8f); //1e-10f * 1.6e-19f/ 3.336e-30f;
+    
+    // SUM_Q[(SUM_pos Q_iRi) / SUM_Q   -  (SUM_neg Q_iRi) / (-SUM_Q) ]    
+    // this is really just SUM_i (Q_iR_i). Don't know why that would not work. 
+    
+    
     //http://www.chemistry.mcmaster.ca/esam/Chapter_7/section_3.html
     // 1 Debye = 3.336e-30 Coulomb-meter; C_e = 1.6022e-19 C
     return pos;

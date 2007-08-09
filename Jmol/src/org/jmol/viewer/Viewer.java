@@ -130,6 +130,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private String strJavaVersion;
   private String strOSName;
   private String htmlName = "";
+  private String fullName = "";
+  //private String syncId = "";
+  private String appletDocumentBase = "";
+  private String appletCodeBase = "";
 
   private boolean jvm11orGreater = false;
   private boolean jvm12orGreater = false;
@@ -203,9 +207,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (htmlName.length() > 0);
   }
 
-  public void setAppletContext(String htmlName, URL documentBase, URL codeBase,
+  public void setAppletContext(String fullName, URL documentBase, URL codeBase,
                                String appletProxyOrCommandOptions) {
-    this.htmlName = htmlName;
+    this.fullName = fullName = (fullName == null ? "" : fullName);
+    this.appletDocumentBase = (documentBase == null ? "" : documentBase.toString());
+    this.appletCodeBase = (codeBase == null ? "" :  codeBase.toString());
+    int i = fullName.lastIndexOf("[");
+    this.htmlName = (i < 0 ? fullName : fullName.substring(0, i));
+    //this.syncId = (i < 0 ? "" : fullName.substring(i + 1, fullName.length() - 1));
     isApplet = (documentBase != null);
     String str = appletProxyOrCommandOptions;
     if (!isApplet) {
@@ -231,7 +240,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       writeInfo = null;
       if (str.indexOf("-w") >= 0) {
-        int i = str.indexOf("\1");
+        i = str.indexOf("\1");
         int j = str.lastIndexOf("\1");
         writeInfo = str.substring(i + 1, j);
       }
@@ -1772,7 +1781,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void calculateStructures() {
     //Eval
-    modelManager.calculateStructures(getCurrentModelIndex());
+    modelManager.calculateStructures(repaintManager.currentModelIndex);
     addStateScript("calculate structure");
   }
 
@@ -1934,6 +1943,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelManager.getModelProperty(modelIndex, propertyName);
   }
 
+  public String getModelFileInfo() {
+    return modelManager.getModelFileInfo(getVisibleFramesBitSet());
+  }
+  
   public Hashtable getModelAuxiliaryInfo(int modelIndex) {
     return modelManager.getModelAuxiliaryInfo(modelIndex);
   }
@@ -2025,21 +2038,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void toCartesian(Point3f pt) {
-    int modelIndex = getCurrentModelIndex();
+    int modelIndex = repaintManager.currentModelIndex;
     if (modelIndex < 0)
       return;
     modelManager.toCartesian(modelIndex, pt);
   }
 
   void toUnitCell(Point3f pt, Point3f offset) {
-    int modelIndex = getCurrentModelIndex();
+    int modelIndex = repaintManager.currentModelIndex;
     if (modelIndex < 0)
       return;
     modelManager.toUnitCell(modelIndex, pt, offset);
   }
 
   void toFractional(Point3f pt) {
-    int modelIndex = getCurrentModelIndex();
+    int modelIndex = repaintManager.currentModelIndex;
     if (modelIndex < 0)
       return;
     modelManager.toFractional(modelIndex, pt);
@@ -2193,7 +2206,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public String getStateInfo() {
     StringBuffer s = new StringBuffer("# Jmol state version "
-        + getJmolVersion() + ";\n\n");
+        + getJmolVersion() + ";\n");
+    if (isApplet) {
+      StateManager.appendCmd(s, "# fullName = " + Escape.escape(fullName));
+      StateManager.appendCmd(s, "# documentBase = " + Escape.escape(appletDocumentBase));
+      StateManager.appendCmd(s, "# codeBase = " + Escape.escape(appletCodeBase));
+      s.append("\n");
+    }
     //  window state
     s.append(global.getWindowState());
     //  file state
@@ -2338,7 +2357,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   // AKA "configuration"
   public BitSet setConformation(int conformationIndex) {
-    return modelManager.setConformation(getCurrentModelIndex(),
+    return modelManager.setConformation(repaintManager.currentModelIndex,
         conformationIndex);
   }
 
@@ -2355,7 +2374,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   boolean hbondsAreVisible() {
-    return modelManager.hbondsAreVisible(getCurrentModelIndex());
+    return modelManager.hbondsAreVisible(repaintManager.currentModelIndex);
   }
 
   public boolean havePartialCharges() {
@@ -2371,14 +2390,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void setCurrentUnitCellOffset(int offset) {
-    int modelIndex = getCurrentModelIndex();
+    int modelIndex = repaintManager.currentModelIndex;
     if (modelManager.setUnitCellOffset(modelIndex, offset))
       global.setParameterValue("_frame " + getModelNumber(modelIndex)
           + "; unitcell = ", offset);
   }
 
   void setCurrentUnitCellOffset(Point3f pt) {
-    int modelIndex = getCurrentModelIndex();
+    int modelIndex = repaintManager.currentModelIndex;
     if (modelManager.setUnitCellOffset(modelIndex, pt))
       global.setParameterValue("_frame " + getModelNumber(modelIndex)
           + "; unitcell = ", Escape.escape(pt));

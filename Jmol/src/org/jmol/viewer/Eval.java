@@ -7573,6 +7573,9 @@ class Eval { //implements Runnable {
       if (!isSyntaxCheck)
         msg = viewer.getFileAsString(value);
       break;
+    case Token.frame:
+      msg = viewer.getModelFileInfo();
+      break;
     case Token.history:
       int n = ((len = statementLength) == 2 ? Integer.MAX_VALUE
           : intParameter(2));

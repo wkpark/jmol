@@ -29,6 +29,7 @@ import org.jmol.shape.Shape;
 import org.jmol.shape.MeshCollection;
 import org.jmol.symmetry.SpaceGroup;
 import org.jmol.symmetry.UnitCell;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.viewer.JmolConstants;
@@ -916,7 +917,7 @@ String getAtomInfoChime(int i) {
   
   public Hashtable getModelInfo() {
     Hashtable info = new Hashtable();
-    int modelCount = viewer.getModelCount();
+    int modelCount = getModelCount();
     info.put("modelSetName",getModelSetName());
     info.put("modelCount",new Integer(modelCount));
     info.put("modelSetHasVibrationVectors", 
@@ -928,8 +929,8 @@ String getAtomInfoChime(int i) {
     for (int i = 0; i < modelCount; ++i) {
       Hashtable model = new Hashtable();
       model.put("_ipt",new Integer(i));
-      model.put("num",new Integer(viewer.getModelNumber(i)));
-      //model.put("name",viewer.getModelName(i));
+      model.put("num",new Integer(getModelNumber(i)));
+      model.put("file_model",getModelName(-1 - i));
       model.put("name", getModelName(i));
       String s = getModelTitle(i);
       if (s != null)
@@ -941,7 +942,7 @@ String getAtomInfoChime(int i) {
       model.put("groupCount",new Integer(getGroupCountInModel(i)));
       model.put("polymerCount",new Integer(getBioPolymerCountInModel(i)));
       model.put("chainCount",new Integer(getChainCountInModel(i)));      
-      props = viewer.getModelProperties(i);
+      props = getModelProperties(i);
       if (props != null)
         model.put("modelProperties", props);
       models.addElement(model);
@@ -950,6 +951,22 @@ String getAtomInfoChime(int i) {
     return info;
   }
 
+  public String getModelFileInfo(BitSet frames) {
+    String str = "";
+    int modelCount = getModelCount();
+    for (int i = 0; i < modelCount; ++i) {
+      if (!frames.get(i))
+        continue;
+      String file_model = getModelName(-1 - i);
+      str += "\n\nfile[\"" + file_model + "\"] = " 
+          + Escape.escape(getModelFile(i)) 
+          + "\ntitle[\"" + file_model + "\"] = " 
+          + Escape.escape(getModelTitle(i))
+          + "\nname[\"" + file_model + "\"] = "
+          + Escape.escape(getModelName(i));
+    }
+    return str;
+  }
   public Hashtable getAuxiliaryInfo() {
     Hashtable info = getModelSetAuxiliaryInfo();
     if (info == null)

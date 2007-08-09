@@ -30,6 +30,7 @@ import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 
@@ -209,7 +210,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     // to enable CDK
     // viewer = new JmolViewer(this, new CdkJmolAdapter(null));
     viewer = JmolViewer.allocateViewer(appletWrapper, new SmarterJmolAdapter());
-    viewer.setAppletContext(htmlName, appletWrapper.getDocumentBase(),
+    viewer.setAppletContext(fullName, appletWrapper.getDocumentBase(),
         appletWrapper.getCodeBase(), getValue("JmolAppletProxy", null));
     myStatusListener = new MyStatusListener();
     viewer.setJmolStatusListener(myStatusListener);
@@ -703,7 +704,11 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
     return GT
         ._(
             "Jmol Applet version {0} {1}.\n\nAn OpenScience project.\n\nSee http://www.jmol.org for more information",
-            new Object[] { JmolConstants.version, JmolConstants.date });
+            new Object[] { JmolConstants.version, JmolConstants.date })
+            + "\nhtmlName = " + Escape.escape(htmlName)
+            + "\nsyncId = " + Escape.escape(syncId)
+            + "\ndocumentBase = " + Escape.escape("" + appletWrapper.getDocumentBase())
+            + "\ncodeBase = " + Escape.escape("" + appletWrapper.getCodeBase());
   }
 
   public Object getProperty(String infoType) {

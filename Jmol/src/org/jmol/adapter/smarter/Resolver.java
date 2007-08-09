@@ -99,7 +99,7 @@ class Resolver {
         .readAtomSetCollection(bufferedReader);
     bufferedReader.close();
     bufferedReader = null;
-    return finalize(atomSetCollection, "file " + fullName);
+    return finalize(atomSetCollection, fullName);
   }
 
   static Object DOMResolve(Object DOMNode) throws Exception {
@@ -127,10 +127,10 @@ class Resolver {
     }
     atomSetCollection.freeze();
     if (atomSetCollection.errorMessage != null)
-      return atomSetCollection.errorMessage + "\nfor " + filename + "\ntype "
+      return atomSetCollection.errorMessage + "\nfor file " + filename + "\ntype "
           + atomSetCollection.fileTypeName;
     if (atomSetCollection.atomCount == 0)
-      return "No atoms found\nfor " + filename + "\ntype "
+      return "No atoms found\nfor file " + filename + "\ntype "
           + atomSetCollection.fileTypeName;
     return atomSetCollection;
   }

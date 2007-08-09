@@ -258,7 +258,7 @@ public final class EnvelopeCalculation {
     for (int i = 0; i < atomCount; i++) {
       atomData.atomRadius[i] = (mads != null ? mads[i] / 1000f : addRadius
           + (setRadius != Float.MAX_VALUE ? setRadius : atomData.atomRadius[i]
-              * (useVanderwaalsRadius ? 1 : scale)));
+              * scale));
     }
   }
   

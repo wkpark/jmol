@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1"
+ http-equiv="content-type">
+  <title>Resizable Instructions</title>
+  <meta content="J. Gutow" name="author">
+  <meta
+ content="Instructions for the resizable tab in Jmol_Web_Page_Maker"
+ name="description">
+</head>
+<body>
+<div style="text-align: center;"><span style="font-weight: bold;">Resizable
+Jmol Instructions</span><br>
+</div>
+<span style="font-style: italic;">Description</span> - This tab is
+designed to produce a web page template (no explanatory text) that
+displays a resizable Jmol with a scrolling pane containing text and
+buttons next to it.&nbsp; The buttons can change what is displayed in
+the Jmol applet.&nbsp; What they do can be defined by setting up Jmol
+with the view you want the user to see. An example picture of
+such a page is shown below:<br>
+<img style="border: 1px solid ; width: 250px; height: 268px;"
+ alt="picture of a Resizable web page" src="Resizable.png"><br>
+<br>
+<span style="font-style: italic;">Instructions </span><br>
+1) Set the relative path to the Jmol applet on you web site from where
+you will put the folder (directory) containing the files created by
+this program.&nbsp; Each "../" means step up one directory level.&nbsp;
+Do not forget to account for the fact that the page produced by this
+program is inside a folder (directory) that you will be adding to your
+web site.&nbsp; Example: Jmol applet is in directory
+/www/applets/java/jmol and your web site is in the directory
+/www/yourname.&nbsp; You will be adding one more level for this page
+(e.g. /www/yourname/thispage).&nbsp; The correct path to the Jmol
+applet is ../../applets/java/jmol.<br>
+2) Set the percentage of the window width that you want Jmol to occupy.<br>
+3) Open the first file you want to appear in your page using the
+File..Open.. menu in the Jmol viewer.<br>
+4) Zoom, rotate, select, change colors, add orbitals, set the molecule
+spinning or what ever you want to do.<br>
+5) Click on the "Add Present Jmol State as Instance" button.<br>
+6) Repeat for as many different displays as you wish. A button will be
+added to the web page that will create each display when the user
+clicks on them.&nbsp; You do not need to load a new file each time if
+you are just modifying the way the previous one is displayed.<br>
+7) When done click on "Save .html as..".&nbsp; Provide a name without
+an extension.&nbsp; This will be used for the directory in which all
+the necessary files will be created.&nbsp; The .html file will be in
+this directory, have the same name, but with the extension .html.<br>
+8) Open the .html file in your favorite web editor and add you
+explanatory text and anything else you wish.&nbsp; As long as you do
+not alter the inside of the tables where Jmol will be displayed you
+should be able to change the page without disrupting the JavaScript
+that controls the behavior of Jmol.<br>
+<div style="text-align: right;"><small><small><small>Last Update: Aug.
+2, 2007<br>
+Author: J. Gutow<br>
+</small></small></small></div>
+<span style="font-style: italic;"><span style="font-style: italic;"><span
+ style="font-style: italic;"><span style="font-style: italic;"></span></span></span></span>
+</body>
+</html>

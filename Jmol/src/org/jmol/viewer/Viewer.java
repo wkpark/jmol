@@ -1607,7 +1607,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getFileAsString(String pathName) {
-    return fileManager.getFileAsString(pathName);
+    return (pathName == null ? getCurrentFileAsString()
+        : fileManager.getFileAsString(pathName));
   }
 
   public String getFullPathName() {

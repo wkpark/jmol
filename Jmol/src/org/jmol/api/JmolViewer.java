@@ -119,6 +119,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
   abstract public String getModelSetName();
   abstract public String getModelSetFileName();
   abstract public String getModelSetPathName();
+  abstract public String getFileAsString(String filename);
   abstract public Properties getModelSetProperties();
   abstract public Hashtable getModelSetAuxiliaryInfo();
   abstract public int getModelNumber(int atomSetIndex);

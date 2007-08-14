@@ -1180,7 +1180,7 @@ public class Jmol extends JPanel {
   private static final String recentFilesAction = "recentFiles";
   private static final String povrayActionProperty = "povray";
   private static final String pdfActionProperty = "pdf";
-  private static final String toWebActionProperty = "toWeb";
+  private static final String toWebActionProperty = "toweb";
   private static final String scriptAction = "script";
   private static final String atomsetchooserAction = "atomsetchooser";
   private static final String copyImageActionProperty = "copyImage";

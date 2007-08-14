@@ -61,12 +61,12 @@ final public class JmolConstants {
     String tmpVersion = null;
     Properties props = new Properties();
 
-    // Reading version from resource inside jar
+    // Reading version from resource   inside jar
     if (tmpVersion == null) {
       BufferedInputStream bis = null;
       InputStream is = null;
       try {
-        is = JmolConstants.class.getClassLoader().getResourceAsStream("org/jmol/viewer/Jmol.properties");
+        is = JmolConstants.class.getClassLoader().getResourceAsStream("org/jmol/viewer/Jmol.properties");        
         bis = new BufferedInputStream(is);
         props.load(bis);
         tmpVersion = props.getProperty("version", tmpVersion);

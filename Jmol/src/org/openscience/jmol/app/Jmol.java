@@ -29,8 +29,8 @@ import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 import org.jmol.util.*;
 import org.jmol.viewer.JmolConstants;
+import org.openscience.jmol.app.webexport.WebExport;
 
-import Acme.JPM.Encoders.PpmEncoder;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfContentByte;
@@ -55,6 +55,7 @@ import org.apache.commons.cli.PosixParser;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.HelpFormatter;
+
 
 public class Jmol extends JPanel {
 
@@ -290,6 +291,7 @@ public class Jmol extends JPanel {
       pcs.addPropertyChangeListener(chemFileProperty, exportAction);
       pcs.addPropertyChangeListener(chemFileProperty, povrayAction);
       pcs.addPropertyChangeListener(chemFileProperty, pdfAction);
+      pcs.addPropertyChangeListener(chemFileProperty, toWebAction);
       pcs.addPropertyChangeListener(chemFileProperty, printAction);
       pcs.addPropertyChangeListener(chemFileProperty,
           viewMeasurementTableAction);
@@ -1178,6 +1180,7 @@ public class Jmol extends JPanel {
   private static final String recentFilesAction = "recentFiles";
   private static final String povrayActionProperty = "povray";
   private static final String pdfActionProperty = "pdf";
+  private static final String toWebActionProperty = "toWeb";
   private static final String scriptAction = "script";
   private static final String atomsetchooserAction = "atomsetchooser";
   private static final String copyImageActionProperty = "copyImage";
@@ -1190,6 +1193,7 @@ public class Jmol extends JPanel {
   private ExportAction exportAction = new ExportAction();
   private PovrayAction povrayAction = new PovrayAction();
   private PdfAction pdfAction = new PdfAction();
+  private ToWebAction toWebAction = new ToWebAction();
   private PrintAction printAction = new PrintAction();
   private CopyImageAction copyImageAction = new CopyImageAction();
   private CopyScriptAction copyScriptAction = new CopyScriptAction();
@@ -1208,7 +1212,7 @@ public class Jmol extends JPanel {
     pasteClipboardAction,
     new AboutAction(), new WhatsNewAction(),
     new UguideAction(), new ConsoleAction(),
-    new RecentFilesAction(), povrayAction, pdfAction,
+    new RecentFilesAction(), povrayAction, pdfAction, toWebAction,
     new ScriptWindowAction(), new AtomSetChooserAction(),
     viewMeasurementTableAction
   };
@@ -1583,6 +1587,21 @@ public class Jmol extends JPanel {
 
   }
 
+ class ToWebAction extends MoleculeDependentAction{
+    
+    public ToWebAction(){
+      super(toWebActionProperty);
+    }
+    
+    public void actionPerformed(ActionEvent e){
+    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+    public void run() {
+      WebExport.createAndShowGUI(viewer);
+      }
+    });
+    }
+  }
+ 
   class ViewMeasurementTableAction extends MoleculeDependentAction {
 
     public ViewMeasurementTableAction() {
@@ -1806,76 +1825,4 @@ public class Jmol extends JPanel {
     }
   }
   
-}
-
-class ImageCreator {
-  
-  JmolViewer viewer;
-  StatusBar status;
-  
-  ImageCreator(JmolViewer viewer, StatusBar status) {
-    this.viewer = viewer;
-    this.status = status;
-  }
- 
-  void clipImage(String text) {
-    if (text == null) {
-      Image eImage = viewer.getScreenImage();
-      ImageSelection.setClipboard(eImage);
-      viewer.releaseScreenImage();
-      return;
-    }
-    ImageSelection.setClipboard(text);
-  }
-  
-  void createImage(String fileName, String type_or_text, int quality) {
-    boolean isText = (quality == Integer.MIN_VALUE);
-    if (fileName == null) {
-      clipImage(type_or_text);
-      return;
-    }
-    try {
-      FileOutputStream os = new FileOutputStream(fileName);
-      if (isText) {
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os), 8192);
-        bw.write(type_or_text);
-        bw.close();
-        os = null;
-      } else {
-        Image eImage = viewer.getScreenImage();
-        if (type_or_text.equalsIgnoreCase("JPEG") || type_or_text.equalsIgnoreCase("JPG")) {
-          JpegEncoder jc = new JpegEncoder(eImage, quality, os);
-          jc.Compress();
-        } else if (type_or_text.equalsIgnoreCase("PPM")) {
-          PpmEncoder pc = new PpmEncoder(eImage, os);
-          pc.encode();
-        } else if (type_or_text.equalsIgnoreCase("PNG")) {
-          PngEncoder png = new PngEncoder(eImage);
-          png.setCompressionLevel(2); //reasonable? 500x500 is 38K
-          byte[] pngbytes = png.pngEncode();
-          os.write(pngbytes);
-        } else if (type_or_text.equalsIgnoreCase("JPG64")) {
-          ByteArrayOutputStream osb = new ByteArrayOutputStream();
-          JpegEncoder jc = new JpegEncoder(eImage, quality, osb);
-          jc.Compress();
-          osb.flush();
-          osb.close();
-          StringBuffer jpg = Base64.getBase64(osb.toByteArray());
-          os.write(Base64.toBytes(jpg));
-        }
-        os.flush();
-        os.close();
-        viewer.releaseScreenImage();
-      }
-    } catch (IOException exc) {
-      viewer.releaseScreenImage();
-      if (exc != null) {
-        if (status != null) {
-          status.setStatus(1, GT._("IO Exception:"));
-          status.setStatus(2, exc.toString());
-        }
-        Logger.error("IO Exception", exc);
-      }
-    }
-  }
 }

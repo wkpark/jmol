@@ -5724,7 +5724,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     createImage(file, type_text, quality, -1, -1);
   }
 
-  void createImage(String file, String type_text, int quality, int width,
+  public void createImage(String file, String type_text, int quality, int width,
                    int height) {
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;

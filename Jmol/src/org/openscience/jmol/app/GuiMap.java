@@ -53,6 +53,7 @@ class GuiMap {
       labels.put("export", GT._("Export Image or Script..."));
       labels.put("povray", GT._("Render in pov-ray..."));
       labels.put("pdf", GT._("Export PDF..."));
+      labels.put("toWeb", GT._("Export to web page(s)..."));
       labels.put("print", GT._("&Print..."));
       labels.put("close", GT._("Close"));
       labels.put("exit", GT._("E&xit"));

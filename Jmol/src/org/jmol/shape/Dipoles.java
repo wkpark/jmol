@@ -108,7 +108,7 @@ public class Dipoles extends Shape {
         if (v == null)
           calculatedDipole = v = viewer.calculateMolecularDipole();
         if (v == null) {
-          Logger.warn("No molecular dipole found in file; setting to {0 0 0}");
+          Logger.warn("No molecular dipole found for this model; setting to {0 0 0}");
           v = new Vector3f();
         }
         tempDipole.set(new Point3f(0, 0, 0), new Vector3f(-v.x, -v.y, -v.z));
@@ -344,6 +344,7 @@ public class Dipoles extends Shape {
         tempDipole.offsetAngstroms, tempDipole.offsetPercent, tempDipole.offsetSide, tempDipole.origin,
         tempDipole.vector);
     currentDipole.isUserValue = isUserValue;
+    currentDipole.modelIndex = viewer.getCurrentModelIndex();
   }
 
   final private static float E_ANG_PER_DEBYE = 0.208194f;

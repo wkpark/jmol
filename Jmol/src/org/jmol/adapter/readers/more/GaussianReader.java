@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.vecmath.Vector3f;
+
 import org.jmol.util.Logger;
 
 /**
@@ -160,6 +162,8 @@ public class GaussianReader extends AtomSetCollectionReader {
           // the molecule since it does not list the values for the
           // dummy atoms in the z-matrix
           readPartialCharges();
+        } else if (iHaveAtoms && line.startsWith(" Dipole moment")) {
+          readDipoleMoment();
         } else if (iHaveAtoms && line.startsWith(" Standard basis:")) {
           Logger.debug(line);
           moData.put("energyUnits", "");
@@ -535,6 +539,19 @@ but:
       }
     }
   }
+  
+  void readDipoleMoment() throws Exception {
+    //  X=     0.0000    Y=     0.0000    Z=    -1.2917  Tot=     1.2917
+    String tokens[] = getTokens(readLine());
+    if (tokens.length != 8)
+      return;
+    Vector3f dipole = new Vector3f(parseFloat(tokens[1]),
+        parseFloat(tokens[3]), parseFloat(tokens[5]));
+    Logger.info("Molecular dipole for model " + atomSetCollection.getAtomSetCount()
+        + " = " + dipole);
+    atomSetCollection.setAtomSetAuxiliaryInfo("dipole", dipole);
+  }
+
   
   /* SAMPLE Mulliken Charges OUTPUT from G98 */
   /*

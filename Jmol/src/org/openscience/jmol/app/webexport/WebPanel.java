@@ -54,7 +54,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
   String templateName;
   String description;
   String infoFile;
-  static String appletInfoDivs;
+  String appletInfoDivs;
+  String htmlAppletTemplate;
+  String appletTemplateName;
+  boolean useAppletJS;
 
   WebPanel(JmolViewer viewer) {
     this.viewer = viewer;
@@ -64,6 +67,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     appletPath.setText(WebExport.getAppletPath());
   }
 
+  
   class InstanceCellRenderer extends JLabel implements ListCellRenderer {
     public Component getListCellRendererComponent(JList list, // the list
                                                   Object value, // value to display
@@ -86,6 +90,31 @@ abstract class WebPanel extends JPanel implements ActionListener {
       return this;
     }
   }
+
+  URL getResource(String fileName) {
+    URL url = this.getClass().getResource(fileName);
+    if (url == null) {
+      System.err.println("Couldn't find file: " + infoFile);
+    }
+    return url;
+  }
+  
+  String getResourceString (String name) throws IOException {
+    URL templateFile = this.getClass().getResource(name);
+    if (templateFile == null)
+      throw new FileNotFoundException("Error loading resource " + name);
+    String filename = templateFile.getFile();
+    BufferedReader br = new BufferedReader(new FileReader(filename));
+    StringBuffer htmlBuf = new StringBuffer();
+    String line;
+    while ((line = br.readLine()) != null)
+      htmlBuf.append(line).append("\n");
+    br.close();
+    String html = htmlBuf.toString();
+    //LogPanel.Log("Loading html template " + templateFile + "("
+      //  + html.length() + " bytes)");
+    return html;
+    }
 
   //Need the panel maker and the action listener.
   protected JPanel getPanel(JComponent centerPanel, JPanel appletSizePanel) {
@@ -206,15 +235,13 @@ abstract class WebPanel extends JPanel implements ActionListener {
     //Create the instructions sub window (scrolling to read html file)
     JEditorPane instructions = new JEditorPane();
     instructions.setEditable(false);
-    URL InstructionsURL = this.getClass().getResource(infoFile);
+    URL InstructionsURL = getResource(infoFile);
     if (InstructionsURL != null) {
       try {
         instructions.setPage(InstructionsURL);
       } catch (IOException e) {
         System.err.println("Attempted to read a bad URL: " + InstructionsURL);
       }
-    } else {
-      System.err.println("Couldn't find file: " + infoFile);
     }
 
     //Put the editor pane in a scroll pane.
@@ -236,7 +263,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       String name = JOptionPane
           .showInputDialog("Give the occurance of Jmol a one word name:");
       if (name != null) {
-        name = TextFormat.simpleReplace(name, " ", "_");
+        name = TextFormat.replaceAllCharacters(name, "' \"","_");
         //need to get the script...
         String script = viewer.getStateInfo();
         if (script == null) {
@@ -300,7 +327,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
   boolean FileWriter(File file, JList InstanceList, String appletPath)
       throws IOException { //returns true if successful.
-  //          JOptionPane.showMessageDialog(null, "Creating directory for data...");
+    //          JOptionPane.showMessageDialog(null, "Creating directory for data...");
     String datadirPath = file.getPath();
     String datadirName = file.getName();
     String fileName = null;
@@ -317,7 +344,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     if (made_datadir) {
       LogPanel.Log("Created directory: " + datadirPath);
       LogPanel.Log("Writing javascript file JmolPopIn.js...");
-      URL url = this.getClass().getResource("JmolPopIn.js");
+      URL url = getResource("JmolPopIn.js");
       PrintStream out = null;
       try {
         String outfilename = datadirPath + "/JmolPopIn.js";
@@ -387,28 +414,25 @@ abstract class WebPanel extends JPanel implements ActionListener {
           throw IOe;
         }
       }
-      URL templateFile = this.getClass().getResource(templateName);
-      String filename = templateFile.getFile();
-      BufferedReader br = new BufferedReader(new FileReader(filename));
-      StringBuffer htmlBuf = new StringBuffer();
-      String line;
-      while ((line = br.readLine()) != null)
-        htmlBuf.append(line).append("\n");
-      br.close();
-      String html = htmlBuf.toString();
-      LogPanel.Log("Loading html template " + templateFile + "("
-          + html.length() + " bytes)");
-      if (html == null)
-        throw new FileNotFoundException("Error loading pop_in_template.html");
+      String html = getResourceString(templateName);
       html = fixHtml(html);
       appletInfoDivs = "";
       StringBuffer appletDefs = new StringBuffer();
+      if (!useAppletJS)
+        htmlAppletTemplate = getResourceString(appletTemplateName);
       for (int i = 0; i < listModel.getSize(); i++)
-        html = getAppletDefs(i, html, appletDefs, (JmolInstance) listModel.getElementAt(i));
+        html = getAppletDefs(i, html, appletDefs, (JmolInstance) listModel
+            .getElementAt(i));
       html = TextFormat.simpleReplace(html, "@APPLETPATH@", appletPath);
       html = TextFormat.simpleReplace(html, "@DATADIRNAME@", datadirName);
+      if (appletInfoDivs.length() > 0)
+        appletInfoDivs = "\n<div style='display:none'>\n" + appletInfoDivs
+            + "\n</div>\n";
+      String str = appletDefs.toString();
+      if (htmlAppletTemplate == null)
+        str = "<script type='text/javascript'>\n" + str + "\n</script>";
       html = TextFormat.simpleReplace(html, "@APPLETINFO@", appletInfoDivs);
-      html = TextFormat.simpleReplace(html, "@APPLETDEFS@", appletDefs.toString());
+      html = TextFormat.simpleReplace(html, "@APPLETDEFS@", str);
       html = TextFormat.simpleReplace(html, "@CREATIONDATA@", WebExport
           .TimeStamp_WebLink());
       LogPanel.Log("Writing HTML file for this web page at " + datadirPath

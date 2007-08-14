@@ -26,7 +26,7 @@ package org.openscience.jmol.app.webexport;
 
 import javax.swing.*;
 import org.jmol.api.JmolViewer;
-
+import org.jmol.util.TextFormat;
 
 public class PopInJmol extends WebPanel {
 
@@ -35,6 +35,8 @@ public class PopInJmol extends WebPanel {
     description = "Create a web page with images that convert to live Jmol on user click...";
     infoFile = "pop_in_instructions.html";
     templateName = "pop_in_template.html";
+    appletTemplateName = "pop_in_template2.html";
+    useAppletJS = false;
   }
 
   //Need the panel maker and the action listener.
@@ -64,14 +66,24 @@ public class PopInJmol extends WebPanel {
   }
 
   String getAppletDefs(int i, String html, StringBuffer appletDefs, JmolInstance instance) {
+    String divClass = (i % 2 == 0 ? "floatRightDiv" : "floatLeftDiv");
     String name = instance.name;
     int JmolSizeW = instance.width;
     int JmolSizeH = instance.height;
+    if (useAppletJS) {
     appletInfoDivs += "\n<div id=\""+name+"_caption\">\ninsert caption for "+name+" here\n</div>";
     appletInfoDivs += "\n<div id=\""+name+"_note\">\ninsert note for "+name+" here\n</div>";
-    String floatDiv = (i % 2 == 0 ? "floatRightDiv" : "floatLeftDiv");
-    appletDefs.append("\naddJmolDiv(" + i + ",'"+floatDiv+"','" + name + "',"
+    appletDefs.append("\naddJmolDiv(" + i + ",'"+divClass+"','" + name + "',"
         + JmolSizeW + "," + JmolSizeH + ")");
+    } else {
+      String s = htmlAppletTemplate;
+      s = TextFormat.simpleReplace(s, "@CLASS@", "" + divClass);
+      s = TextFormat.simpleReplace(s, "@I@", "" + i);
+      s = TextFormat.simpleReplace(s, "@WIDTH@", "" + JmolSizeW);
+      s = TextFormat.simpleReplace(s, "@HEIGHT@", "" + JmolSizeH);
+      s = TextFormat.simpleReplace(s, "@NAME@", name);
+      appletDefs.append(s);
+    }
     return html;
   }
 }

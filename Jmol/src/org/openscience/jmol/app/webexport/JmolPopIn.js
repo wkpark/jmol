@@ -27,7 +27,7 @@ function putJmolDiv(molNr, molFileName,imageFileName,appletWidth,appletHeight) {
 	  + ' style="width:' + appletWidth + 'px; height:' + appletHeight + 'px;'
 	  + ' background-image:URL('+imageFileName+')"'
 	  + '>';
-	tx += '<br><table cellpadding="10"><tr><td style="background-color:white">';
+	tx += '<br><table cellpadding="10"><tr><td style="background-color:white;opacity:0.3">';
 	tx += 'To get a 3-D model you can manipulate, click ';
 	tx += '<a href="javascript:void(popInJmol(' + molNr + ', \'' + molFileName + '\','+ appletWidth + ','+ appletHeight + '))">here</a>.';
 	tx += ' Download time may be significant the first time the applet is loaded.</td></tr></table></div>';
@@ -35,7 +35,7 @@ function putJmolDiv(molNr, molFileName,imageFileName,appletWidth,appletHeight) {
 }
 
 function popInJmol(n,fileName,width,height) {
-	document.getElementById("Jmol"+n).innerHTML = jmolApplet([width,height],"script "+fileName+"",n);
+	document.getElementById("Jmol"+n).innerHTML = jmolApplet([width,height],"defaultDirectory = \""+dataDir+"\";script "+fileName+"",n);
 }
 
 function getHTML(element) {
@@ -46,13 +46,12 @@ function getHTML(element) {
 function addJmolDiv(i,floatdiv,name,width,height,caption,note) {
     if (arguments.length < 6) caption = getHTML(name+"_caption");
     if (arguments.length < 7) note = getHTML(name+"_note");
-    var s = "\n<br><div \"style='height:"+(height+100)+"px'\">\n<div class = \""+floatdiv+"\">";
+    var s = "\n\n<tr><td>\n<br><div>\n<div class = \""+floatdiv+"\">";
 	s += "\n<table style=\"text-align: left; width: "+width+"px;\" border='1' cellpadding='2'";
 	s += "\n cellspacing='2'>";
 	s += "\n    <tr>";
 	s += "\n      <td style=\"vertical-align: top; width: "+width+"px; height: "+height+"px;\">";
 	document.write(s);//.replace(/\</g,"&lt;"));
-
 	putJmolDiv(i, name+".spt",name+".png",width, height);
 
 	s = "\n      </td>";
@@ -63,9 +62,8 @@ function addJmolDiv(i,floatdiv,name,width,height,caption,note) {
 	s += "\n    </tr>";
 	s += "\n</table>";
 	s += "\n</div>";
-	s += "\n<div>"+note+"</div></div>";
+	s += "\n<div>"+note+"</div></div></td></tr>\n";
 	document.write(s);//.replace(/\</g,"&lt;"));
-
 }
 
 function addAppletButton(i, name, label, info) {

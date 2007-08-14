@@ -37,6 +37,8 @@ public class ScriptButtons extends WebPanel {
     description = "Create a web page where a text and button pane scrolls next to a resizable Jmol.";
     infoFile = "script_button_instructions.html";
     templateName = "script_button_template.html";
+    appletTemplateName = "script_button_template2.html";
+    useAppletJS = false;
   }
 
   //Need the panel maker and the action listener.
@@ -91,17 +93,29 @@ public class ScriptButtons extends WebPanel {
     } else {
       label = buttonname;
     }
-    String info = "info for " + name;
-    appletDefs.append("\naddAppletButton("+i+",'"+ name +"',\""+label+"\",\""+info+"\");");
+    if (useAppletJS) {
+      String info = "info for " + name;
+      appletDefs.append("\naddAppletButton("+i+",'"+ name +"',\""+label+"\",\""+info+"\");");
+    } else {
+      String s = htmlAppletTemplate;    
+      s = TextFormat.simpleReplace(s, "@NAME@", name);
+      s = TextFormat.simpleReplace(s, "@LABEL@", label);
+      appletDefs.append(s);
+    }
     return html;
   }
 
   String fixScript(String script) {
-    script = TextFormat.simpleReplace(script, "set refreshing false;",
-    "set refreshing true;");
-    script = TextFormat.simpleReplace(script,
-    "moveto /* time, axisAngle */ 0.0",
-    "moveto /* time, axisAngle */ 5.0");
+    // I'm not convinced this is appropriate -- perhaps as 
+    // an option, but not by default -- we want the script being
+    // precisely what it is with "show state". 
+    // If you want it different, that can be accomplished in JavaScript.
+    
+    //script = TextFormat.simpleReplace(script, "set refreshing false;",
+    //"set refreshing true;");
+    //script = TextFormat.simpleReplace(script,
+    //"moveto /* time, axisAngle */ 0.0",
+    //"moveto /* time, axisAngle */ 5.0");
     return script;    
   }
 

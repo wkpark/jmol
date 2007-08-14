@@ -68,8 +68,11 @@ class JmolInstance {
     this.pictIsScratchFile = true;
   }
 
-  public boolean movepict(String dirpath) throws IOException {
+  boolean movepict(String dirpath) throws IOException {
     //need the file writing stuff...
+    String imagename = dirpath + "/" + this.name + ".png";
+    if (this.pictFile == imagename)
+      return false;
     String scratchname = this.pictFile;
     FileInputStream is = null;
     try {
@@ -77,7 +80,6 @@ class JmolInstance {
     } catch (IOException ise) {
       throw ise;
     }
-    String imagename = dirpath + "/" + this.name + ".png";
     FileOutputStream os = null;
     try {
       os = new FileOutputStream(imagename);

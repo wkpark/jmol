@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <meta name="Author" content="Angel Herr&aacute;ez">
+<!-- Template for building web pages with Jmol
+
+	by Angel Herráez; version 2007.04.24 (based on v.0.7a)
+
+	
+
+	Available from  http://biomodel.uah.es/Jmol/  and  http://wiki.jmol.org/
+
+
+
+	Use according to Creative Commons "Attribution-ShareAlike" License, 
+
+	http://creativecommons.org/licenses/by-sa/3.0/
+
+-->
+  <title>Dynamically resized Jmol</title>
+  <style type="text/css">
+/* These are important, don't change: */
+html, body { height:100%; overflow:hidden; margin:0; padding:0; }
+.JmolPanels { position:absolute; overflow:hidden; }
+.textPanels { position:absolute; overflow:auto; }
+/* Don't add margin nor padding to textPane; if needed, use an inner div with desired style (like 'contents' below) */
+
+/* These are aesthetic, can be customized: */
+.content { padding:0.5em 1ex; }
+.textPanels, .JmolPanels { background-color:rgb(102, 255, 255); }
+  </style>
+<script src="@APPLETPATH@/Jmol.js" type="text/javascript"></script>
+<script src="pop_Jmol.js" type="text/javascript"></script>
+<script type="text/javascript">
+//  	USER'S SETTINGS: 
+	var side = "right"	// sets the side of the page that the model appears on, you can set this to "left" or "right"
+	var w = @WIDTHPERCENT@	// you can set this to any integer, meaning percent of window width assigned to Jmol
+							// (Jmol.js, JmolApplet0.jar and the others) 
+							// If you place them in the same directory as this file, use "./"
+  jmolInitialize("@APPLETPATH@");
+//jmolSetAppletColor("#CCFFCC")	//Only set if you don't like the default
+//      --------------
+
+var cssTx = '<style type="text/css">'
+	cssTx += '#JmolPane { left:' + ( (side=="left") ? "0px" : ((100-w)+"%") ) + '; width:' + w + '%; top:0px; height:100%; } '	
+	cssTx += '#mainPane { left:' + ( (side=="left") ? (w+"%") : "0px" ) + '; width:' + (100-w) + '%; top:0px; height:100%;} '
+	cssTx += '</style>'
+document.writeln(cssTx)
+</script>
+</head>
+<body style="color: rgb(0, 0, 0); background-color: rgb(102, 255, 255);"
+ alink="#000099" link="#000099" vlink="#990099">
+<div id="JmolPane" class="JmolPanels">
+<script type="text/javascript">
+	jmolApplet("100%", "script @APPLETNAME0@.scpt")		// DO NOT change 100% 
+		// of course, you should change the script to load your model or run your script
+</script></div>
+<div id="mainPane" class="textPanels">
+<div class="content">&lt;Insert your TITLE and INTRODUCTION here.&gt;<br>
+<script type="text/javascript">
+@APPLETDEFS@ 
+</script>
+<div style="text-align: right;">Based on template by A. Herraez as modified by J. Gutow</div>
+<div style="text-align: right;">
+@CREATIONDATA@
+</div>
+</div><!--content-->
+</div><!--mainPane-->
+</body>
+</html>

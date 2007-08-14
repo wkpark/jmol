@@ -62,3 +62,12 @@ function addJmolDiv(i,floatdiv,name,width,height,caption,note) {
 	document.write(s);//.replace(/\</g,"&lt;"));
 
 }
+
+function addAppletButton(i, name, label, info) {
+  var s = '\n<table style="text-align: center; width: 100%" border="1" cellpadding="2" cellspacing="2">'
+  s += '<tr><td>'
+  document.write(s)
+  jmolButton('Script '+name+'.scpt', label); 
+  var s = '</td></tr></table>\n' + info + "\n</br>";
+  document.write(s)
+}

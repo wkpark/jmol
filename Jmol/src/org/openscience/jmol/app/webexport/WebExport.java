@@ -29,7 +29,6 @@ import java.util.*;
 import java.awt.*;
 import javax.swing.*;
 import java.text.*;
-import org.jmol.viewer.*;
 import org.jmol.api.*;
 
 public class WebExport extends JPanel{
@@ -52,10 +51,10 @@ public class WebExport extends JPanel{
 		
 		//Add tabs to the tabbed pane
 		PopInJmol pop_in_Creator = new PopInJmol(viewer);
-		JComponent pop_in = pop_in_Creator.Panel();
-		Maintabs.addTab("Pop in Jmol", pop_in);
-		Resizable_User_Activated_Scripts resizable_Creator = new Resizable_User_Activated_Scripts((Viewer)viewer);
-		JComponent resizable = resizable_Creator.Panel();
+		JComponent pop_in = pop_in_Creator.getPanel();
+		Maintabs.addTab("Pop-In Jmol", pop_in);
+		ScriptButtons resizable_Creator = new ScriptButtons(viewer);
+		JComponent resizable = resizable_Creator.getPanel();
 		Maintabs.addTab("Resizable Jmol", resizable);
 		Orbitals OrbitalCreator = new Orbitals();
 		JComponent Orbitals = OrbitalCreator.Panel();
@@ -134,5 +133,13 @@ public class WebExport extends JPanel{
                 createAndShowGUI(null);
            }
         });
+    }
+    
+    static String appletPath;
+    static String getAppletPath() {
+      return (appletPath == null ? ".." : appletPath);
+    }
+    static void setAppletPath(String path) {
+      appletPath = path;
     }
 }

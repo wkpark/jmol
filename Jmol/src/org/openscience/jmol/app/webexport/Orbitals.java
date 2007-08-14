@@ -66,7 +66,7 @@ implements ActionListener {
 		//Create the text field for the path to the JMol applet
 		appletPath = new JTextField(20);
 		appletPath.addActionListener(this);
-		appletPath.setText("../../Applets/Java/Jmol");
+		appletPath.setText(WebExport.getAppletPath());
 		
 		//Path to applet panel
 		JPanel pathPanel = new JPanel(); 

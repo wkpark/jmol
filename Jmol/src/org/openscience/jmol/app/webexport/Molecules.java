@@ -40,7 +40,6 @@ implements ActionListener{
 	//The constants used to generate panels, etc.
 	JButton saveButton, MolecopenButton, MolecdeleteButton;
 	JTextField appletPath;
-	ArrayListTransferHandler arrayListHandler;
 	JFileChooser fc;
 	JList MolecList;
 	JComboBox RenderMode, FormatBox;
@@ -54,122 +53,123 @@ implements ActionListener{
 	private static final int BallandStick = 2;
 	private static final int Spacefilling = 3;
 	
-//Need the panel maker and the action listener.
-	public JComponent Panel(){
-		
-		//Create the brief discription text
-		JLabel Description = new JLabel("Create a web page with one Jmol Applet to display molecules chosen by user.");
-		
-		//Create the text field for the path to the JMol applet
-		appletPath = new JTextField(20);
-		appletPath.addActionListener(this);
-		appletPath.setText("../../Applets/Java/Jmol");
-		
-		//Path to applet panel
-		JPanel pathPanel = new JPanel(); 
-		pathPanel.setLayout(new BorderLayout());
-//		JLabel pathLabel = new JLabel("Relative Path to Jmol Applet:");
-//		pathPanel.add(pathLabel, BorderLayout.PAGE_START);
-		pathPanel.add(appletPath, BorderLayout.PAGE_END);
-		pathPanel.setBorder(BorderFactory.createTitledBorder("Relative Path to Jmol Applet:"));
-				
-		//For layout purposes, put things in separate panels
-		
-		//Create the ComboBox (popup menu) for the Rendering Mode
-		JLabel RenderModeLabel = new JLabel("Rendering Mode:");
-		String[] RenderModes = { "Wireframe", "BallandStick", "Spacefilling"};
-		RenderMode = new JComboBox(RenderModes);
-		RenderMode.setSelectedIndex(2);
-		//Attached no action listener.  Will just read for selection.
-		//Put in panel with label
-		JPanel RenderPanel = new JPanel();
-		RenderPanel.add(RenderModeLabel);
-		RenderPanel.add(RenderMode);
-		
-		//Combine applet path, coordinate file and Rendering mode panels
-		JPanel PathCoorRendPanel = new JPanel();
-		PathCoorRendPanel.setLayout(new BorderLayout());
-		PathCoorRendPanel.add(pathPanel, BorderLayout.PAGE_START);
-//		PathCoorRendPanel.add(CoorPanel,BorderLayout.CENTER);
-		PathCoorRendPanel.add(RenderPanel,BorderLayout.PAGE_END);
-		
-		//Create the ComboBox (popup menu) for the Page Format
-		JLabel PageFormatLabel = new JLabel("Page Format:");
-		String[] PageFormats = {
-			"Molecules from links (best with 4 or less)",
-			"Molecules from popup menu"
-		};
-		FormatBox = new JComboBox(PageFormats);
-		FormatBox.setSelectedIndex(0);
-		//Put in panel with a label
-		JPanel FormatPanel = new JPanel();
-		FormatPanel.add(PageFormatLabel);
-		FormatPanel.add(FormatBox);
-	
-		//Create the save button. 
-        saveButton = new JButton("Save .html as...");
-        saveButton.addActionListener(this);
-		
-		//save file selection panel
-		JPanel savePanel = new JPanel();
-		savePanel.add(saveButton);
-		
-		//Combine previous three panels into one
-		JPanel leftpanel = new JPanel();
-		leftpanel.setLayout(new BorderLayout());
-		leftpanel.add(PathCoorRendPanel, BorderLayout.PAGE_START);
-		leftpanel.add(FormatPanel, BorderLayout.CENTER);
-		leftpanel.add(savePanel, BorderLayout.PAGE_END);
-		
-        //Create file chooser
-        fc = new JFileChooser();
-		
-		//Create the list and list view to handle the list of 
-		//orbital files.
-		arrayListHandler = new ArrayListTransferHandler();
-		DefaultListModel Molecfilelist = new DefaultListModel();
-		MolecList = new JList(Molecfilelist);
-		MolecList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        MolecList.setTransferHandler(arrayListHandler);
-        MolecList.setDragEnabled(true);
-        JScrollPane MolecListView = new JScrollPane(MolecList);
-        MolecListView.setPreferredSize(new Dimension(300, 200));
-        
-		//Create the label for the orbital file area
-		//JLabel MolecLabel = new JLabel("Molecule Files (Drag to Preferred Order):");
-		
-        //Create the Molecule file add button.
-        MolecopenButton = new JButton("Add File(s)...");
-        MolecopenButton.addActionListener(this);
-		
-		//Create the delete file button
-		MolecdeleteButton = new JButton("Delete Selected");
-		MolecdeleteButton.addActionListener(this);
-		
-				
-		//Molecule file selection
-		JPanel MolecButtonsPanel = new JPanel();
-		MolecButtonsPanel.add(MolecopenButton);
-		MolecButtonsPanel.add(MolecdeleteButton);
-		
-		//Title and border for the Molecule file selection
-		JPanel MolecPanel = new JPanel();
-		MolecPanel.setLayout(new BorderLayout());
-		MolecPanel.add(MolecButtonsPanel, BorderLayout.PAGE_START);
-		MolecPanel.add(MolecListView, BorderLayout.PAGE_END);
-    	MolecPanel.setBorder(BorderFactory.createTitledBorder("Molecule Files (Drag to Preferred Order):"));
 
-		//Create the overall panel
-		JPanel MoleculePanel = new JPanel();
-		MoleculePanel.setLayout(new BorderLayout());
-		
-        //Add everything to this panel.
-        MoleculePanel.add(Description, BorderLayout.PAGE_START);
-        MoleculePanel.add(leftpanel, BorderLayout.CENTER);
-		MoleculePanel.add(MolecPanel, BorderLayout.LINE_END);
-		
-		return (MoleculePanel);
-	}
+  //Need the panel maker and the action listener.
+  public JComponent Panel() {
+
+    //Create the brief discription text
+    JLabel Description = new JLabel(
+        "Create a web page with one Jmol Applet to display molecules chosen by user.");
+
+    //Create the text field for the path to the JMol applet
+    appletPath = new JTextField(20);
+    appletPath.addActionListener(this);
+    appletPath.setText("../../Applets/Java/Jmol");
+
+    //Path to applet panel
+    JPanel pathPanel = new JPanel();
+    pathPanel.setLayout(new BorderLayout());
+    //		JLabel pathLabel = new JLabel("Relative Path to Jmol Applet:");
+    //		pathPanel.add(pathLabel, BorderLayout.PAGE_START);
+    pathPanel.add(appletPath, BorderLayout.PAGE_END);
+    pathPanel.setBorder(BorderFactory
+        .createTitledBorder("Relative Path to Jmol Applet:"));
+
+    //For layout purposes, put things in separate panels
+
+    //Create the ComboBox (popup menu) for the Rendering Mode
+    JLabel RenderModeLabel = new JLabel("Rendering Mode:");
+    String[] RenderModes = { "Wireframe", "BallandStick", "Spacefilling" };
+    RenderMode = new JComboBox(RenderModes);
+    RenderMode.setSelectedIndex(2);
+    //Attached no action listener.  Will just read for selection.
+    //Put in panel with label
+    JPanel RenderPanel = new JPanel();
+    RenderPanel.add(RenderModeLabel);
+    RenderPanel.add(RenderMode);
+
+    //Combine applet path, coordinate file and Rendering mode panels
+    JPanel PathCoorRendPanel = new JPanel();
+    PathCoorRendPanel.setLayout(new BorderLayout());
+    PathCoorRendPanel.add(pathPanel, BorderLayout.PAGE_START);
+    //		PathCoorRendPanel.add(CoorPanel,BorderLayout.CENTER);
+    PathCoorRendPanel.add(RenderPanel, BorderLayout.PAGE_END);
+
+    //Create the ComboBox (popup menu) for the Page Format
+    JLabel PageFormatLabel = new JLabel("Page Format:");
+    String[] PageFormats = { "Molecules from links (best with 4 or less)",
+        "Molecules from popup menu" };
+    FormatBox = new JComboBox(PageFormats);
+    FormatBox.setSelectedIndex(0);
+    //Put in panel with a label
+    JPanel FormatPanel = new JPanel();
+    FormatPanel.add(PageFormatLabel);
+    FormatPanel.add(FormatBox);
+
+    //Create the save button. 
+    saveButton = new JButton("Save .html as...");
+    saveButton.addActionListener(this);
+
+    //save file selection panel
+    JPanel savePanel = new JPanel();
+    savePanel.add(saveButton);
+
+    //Combine previous three panels into one
+    JPanel leftpanel = new JPanel();
+    leftpanel.setLayout(new BorderLayout());
+    leftpanel.add(PathCoorRendPanel, BorderLayout.PAGE_START);
+    leftpanel.add(FormatPanel, BorderLayout.CENTER);
+    leftpanel.add(savePanel, BorderLayout.PAGE_END);
+
+    //Create file chooser
+    fc = new JFileChooser();
+
+    //Create the list and list view to handle the list of 
+    //orbital files.
+    ArrayListTransferHandler arrayListHandler = new ArrayListTransferHandler();
+    DefaultListModel Molecfilelist = new DefaultListModel();
+    MolecList = new JList(Molecfilelist);
+    MolecList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+    MolecList.setTransferHandler(arrayListHandler);
+    MolecList.setDragEnabled(true);
+    JScrollPane MolecListView = new JScrollPane(MolecList);
+    MolecListView.setPreferredSize(new Dimension(300, 200));
+
+    //Create the label for the orbital file area
+    //JLabel MolecLabel = new JLabel("Molecule Files (Drag to Preferred Order):");
+
+    //Create the Molecule file add button.
+    MolecopenButton = new JButton("Add File(s)...");
+    MolecopenButton.addActionListener(this);
+
+    //Create the delete file button
+    MolecdeleteButton = new JButton("Delete Selected");
+    MolecdeleteButton.addActionListener(this);
+
+    //Molecule file selection
+    JPanel MolecButtonsPanel = new JPanel();
+    MolecButtonsPanel.add(MolecopenButton);
+    MolecButtonsPanel.add(MolecdeleteButton);
+
+    //Title and border for the Molecule file selection
+    JPanel MolecPanel = new JPanel();
+    MolecPanel.setLayout(new BorderLayout());
+    MolecPanel.add(MolecButtonsPanel, BorderLayout.PAGE_START);
+    MolecPanel.add(MolecListView, BorderLayout.PAGE_END);
+    MolecPanel.setBorder(BorderFactory
+        .createTitledBorder("Molecule Files (Drag to Preferred Order):"));
+
+    //Create the overall panel
+    JPanel MoleculePanel = new JPanel();
+    MoleculePanel.setLayout(new BorderLayout());
+
+    //Add everything to this panel.
+    MoleculePanel.add(Description, BorderLayout.PAGE_START);
+    MoleculePanel.add(leftpanel, BorderLayout.CENTER);
+    MoleculePanel.add(MolecPanel, BorderLayout.LINE_END);
+
+    return (MoleculePanel);
+  }
 	
 	public void actionPerformed(ActionEvent e) {
 		

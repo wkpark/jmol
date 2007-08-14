@@ -26,6 +26,9 @@ package org.openscience.jmol.app.webexport;
 
 import java.io.*;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.*;
 
 import javax.swing.*;
@@ -34,6 +37,7 @@ import org.jmol.api.JmolViewer;
 import org.jmol.util.TextFormat;
 
 import java.net.*;
+import java.util.ArrayList;
 import java.io.IOException;
 
 abstract class WebPanel extends JPanel implements ActionListener {
@@ -43,7 +47,6 @@ abstract class WebPanel extends JPanel implements ActionListener {
   JTextField appletPath;
   JSpinner appletSizeSpinnerW;
   JSpinner appletSizeSpinnerH;
-  ArrayListTransferHandler arrayListHandler;
   JFileChooser fc;
   JList instanceList, scriptList;
   JmolViewer viewer;
@@ -51,6 +54,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
   String templateName;
   String description;
   String infoFile;
+  static String appletInfoDivs;
 
   WebPanel(JmolViewer viewer) {
     this.viewer = viewer;
@@ -92,7 +96,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     //For layout purposes, put things in separate panels
 
     //Create the save button. 
-    saveButton = new JButton("Save .html as...");
+    saveButton = new JButton("Save HTML as...");
     saveButton.addActionListener(this);
 
     //save file selection panel
@@ -104,15 +108,17 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
     //Create the list and list view to handle the list of 
     //Jmol Instances.
-    arrayListHandler = new ArrayListTransferHandler();
-    DefaultListModel InstanceFilelist = new DefaultListModel();
-    instanceList = new JList(InstanceFilelist);
+    instanceList = new JList(new DefaultListModel());
     instanceList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-    //        InstanceList.setTransferHandler(arrayListHandler);
+    instanceList.setTransferHandler(new ArrayListTransferHandler());
     instanceList.setCellRenderer(new InstanceCellRenderer());
     instanceList.setDragEnabled(true);
     JScrollPane instanceListView = new JScrollPane(instanceList);
     instanceListView.setPreferredSize(new Dimension(300, 200));
+    JPanel instanceSet = new JPanel();
+    instanceSet.setLayout(new BorderLayout());
+    instanceSet.add(instanceListView, BorderLayout.NORTH);
+    instanceSet.add(new JLabel("double-click and drag to reorder"), BorderLayout.SOUTH);
 
     //Create the Instance add button.
     addInstanceButton = new JButton("Add Present Jmol State as Instance...");
@@ -132,9 +138,9 @@ abstract class WebPanel extends JPanel implements ActionListener {
     instancePanel.setLayout(new BorderLayout());
     instancePanel.add(instanceButtonsPanel, BorderLayout.PAGE_START);
     instancePanel.add(centerPanel, BorderLayout.CENTER);
-    instancePanel.add(instanceListView, BorderLayout.PAGE_END);
+    instancePanel.add(instanceSet, BorderLayout.PAGE_END);
     instancePanel.setBorder(BorderFactory
-        .createTitledBorder("Jmol Instances (Reorder by deleting):"));
+        .createTitledBorder("Jmol Instances:"));
 
     //Create the overall panel
     JPanel panel = new JPanel();
@@ -230,6 +236,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       String name = JOptionPane
           .showInputDialog("Give the occurance of Jmol a one word name:");
       if (name != null) {
+        name = TextFormat.simpleReplace(name, " ", "_");
         //need to get the script...
         String script = viewer.getStateInfo();
         if (script == null) {
@@ -247,18 +254,14 @@ abstract class WebPanel extends JPanel implements ActionListener {
           LogPanel
               .Log("Error trying to get name and path to file containing structure in pop_in_Jmol.");
         }
-        JmolInstance Instance = new JmolInstance(viewer, name, StructureFile,
+        JmolInstance instance = new JmolInstance(viewer, name, StructureFile,
             script, width, height);
-        if (Instance == null) {
+        if (instance == null) {
           LogPanel
               .Log("Error creating new instance containing script and image in pop_in_Jmol.");
         }
-        listModel.addElement(Instance);
-        LogPanel.Log("Successfully added Instance " + Instance.name
-            + " to pop_in_Jmol list.");
-        //            JmolInstance check = new JmolInstance("","");
-        //            check = (JmolInstance)(listModel.getElementAt(listModel.getSize()-1));
-        //            LogPanel.Log("Script is:\n"+check.InstanceScript);
+        listModel.addElement(instance);
+        LogPanel.Log("added Instance " + instance.name);
       } else {
         LogPanel.Log("Add instance cancelled by user.");
       }
@@ -269,10 +272,9 @@ abstract class WebPanel extends JPanel implements ActionListener {
       DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
       //find out which are selected and remove them.
       int[] todelete = instanceList.getSelectedIndices();
-      for (int i = 0; i < todelete.length; i++) {
-        listModel.remove(todelete[i]);
-        LogPanel.Log("Successfully removed Instances from pop_in_Jmol list.");
-      }
+      int nDeleted = 0;
+      for (int i = 0; i < todelete.length; i++)
+        listModel.remove(todelete[i] - nDeleted++);
       //Handle save button action.
     } else if (e.getSource() == saveButton) {
       fc.setDialogTitle("Save file as (please do not use an extension):");
@@ -314,18 +316,18 @@ abstract class WebPanel extends JPanel implements ActionListener {
     DefaultListModel listModel = (DefaultListModel) InstanceList.getModel();
     if (made_datadir) {
       LogPanel.Log("Created directory: " + datadirPath);
-      LogPanel.Log("Writing javascript file pop_Jmol.js...");
-      URL pop_JmolURL = this.getClass().getResource("pop_Jmol.js");
+      LogPanel.Log("Writing javascript file JmolPopIn.js...");
+      URL url = this.getClass().getResource("JmolPopIn.js");
       PrintStream out = null;
       try {
-        String outfilename = datadirPath + "/pop_Jmol.js";
+        String outfilename = datadirPath + "/JmolPopIn.js";
         out = new PrintStream(new FileOutputStream(outfilename));
       } catch (FileNotFoundException IOe) {
         throw IOe;
       }
       BufferedReader in = null;
       try {
-        in = new BufferedReader(new FileReader(pop_JmolURL.getPath()));
+        in = new BufferedReader(new FileReader(url.getPath()));
       } catch (IOException IOe) {
         throw IOe;
       }
@@ -377,7 +379,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
             '"' + structureFileName + '"', '"' + newstructurefile + '"');
         script = fixScript(script);
         try {
-          String scriptname = datadirPath + "/" + name + ".scpt";
+          String scriptname = datadirPath + "/" + name + ".spt";
           out = new PrintStream(new FileOutputStream(scriptname));
           out.print(script);
           out.close();
@@ -399,13 +401,14 @@ abstract class WebPanel extends JPanel implements ActionListener {
       if (html == null)
         throw new FileNotFoundException("Error loading pop_in_template.html");
       html = fixHtml(html);
+      appletInfoDivs = "";
       StringBuffer appletDefs = new StringBuffer();
       for (int i = 0; i < listModel.getSize(); i++)
         html = getAppletDefs(i, html, appletDefs, (JmolInstance) listModel.getElementAt(i));
       html = TextFormat.simpleReplace(html, "@APPLETPATH@", appletPath);
       html = TextFormat.simpleReplace(html, "@DATADIRNAME@", datadirName);
-      html = TextFormat.simpleReplace(html, "@APPLETDEFS@", appletDefs
-          .toString());
+      html = TextFormat.simpleReplace(html, "@APPLETINFO@", appletInfoDivs);
+      html = TextFormat.simpleReplace(html, "@APPLETDEFS@", appletDefs.toString());
       html = TextFormat.simpleReplace(html, "@CREATIONDATA@", WebExport
           .TimeStamp_WebLink());
       LogPanel.Log("Writing .html file for this web page at " + datadirPath
@@ -430,4 +433,215 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return html;
   }
 
+}
+
+
+class ArrayListTransferHandler extends TransferHandler {
+  DataFlavor localArrayListFlavor, serialArrayListFlavor;
+  String localArrayListType = DataFlavor.javaJVMLocalObjectMimeType +
+  ";class=java.util.ArrayList";
+  JList source = null;
+  int[] sourceIndices = null;
+  int addIndex = -1; //Location where items were added
+  int addCount = 0;  //Number of items added
+  
+
+  public ArrayListTransferHandler() {
+      try {
+          localArrayListFlavor = new DataFlavor(localArrayListType);
+      } catch (ClassNotFoundException e) {
+          System.out.println(
+               "ArrayListTransferHandler: unable to create data flavor");
+      }
+      serialArrayListFlavor = new DataFlavor(ArrayList.class,
+                       "ArrayList");
+  }
+
+  public boolean importData(JComponent c, Transferable t) {
+      if (sourceIndices == null || !canImport(c, t.getTransferDataFlavors())) {
+          return false;
+      }
+      JList target = null;
+      ArrayList alist = null;
+      try {
+          target = (JList)c;
+          if (hasLocalArrayListFlavor(t.getTransferDataFlavors())) {
+              alist = (ArrayList)t.getTransferData(localArrayListFlavor);
+          } else if (hasSerialArrayListFlavor(t.getTransferDataFlavors())) {
+              alist = (ArrayList)t.getTransferData(serialArrayListFlavor);
+          } else {
+              return false;
+          }
+      } catch (UnsupportedFlavorException ufe) {
+          System.out.println("importData: unsupported data flavor");
+          return false;
+      } catch (IOException ioe) {
+          System.out.println("importData: I/O exception");
+          return false;
+      }
+  
+      //At this point we use the same code to retrieve the data
+      //locally or serially.
+  
+      //We'll drop at the current selected index.
+      int targetIndex = target.getSelectedIndex();
+  
+      //Prevent the user from dropping data back on itself.
+      //For example, if the user is moving items #4,#5,#6 and #7 and
+      //attempts to insert the items after item #5, this would
+      //be problematic when removing the original items.
+      //This is interpreted as dropping the same data on itself
+      //and has no effect.
+      if (source.equals(target)) {
+        //System.out.print("checking indices index TO: " + targetIndex + " FROM:");
+        //for (int i = 0; i < sourceIndices.length;i++)
+          //System.out.print(" "+sourceIndices[i]);
+        //System.out.println("");
+          if (targetIndex >= sourceIndices[0] && targetIndex <= sourceIndices[sourceIndices.length - 1]) {
+            //System.out.println("setting indices null : " + targetIndex + " " + sourceIndices[0] + " " + sourceIndices[sourceIndices.length - 1]);
+              sourceIndices = null;
+              return true;
+          }
+      }
+  
+      DefaultListModel listModel = (DefaultListModel)target.getModel();
+      int max = listModel.getSize();
+      if (targetIndex < 0) {
+          targetIndex = max; 
+      } else {
+          if (sourceIndices[0] < targetIndex)
+            targetIndex++;
+          if (targetIndex > max) {
+              targetIndex = max;
+          }
+      }
+      addIndex = targetIndex;
+      addCount = alist.size();
+      for (int i=0; i < alist.size(); i++) {
+          listModel.add(targetIndex++, objectOf(listModel, alist.get(i)));
+       }
+      return true;
+  }
+
+  private Object objectOf(DefaultListModel listModel, Object objectName) {
+    if (objectName instanceof String) {
+      String name = (String) objectName;
+      Object o;
+      for (int i = listModel.size(); --i >= 0;) 
+        if (!((o=listModel.get(i)) instanceof String) && o.toString().equals(name))
+            return listModel.get(i);
+    }
+    return objectName;
+  }
+  
+  protected void exportDone(JComponent c, Transferable data, int action) {
+    //System.out.println("action="+action + " " + addCount + " " + sourceIndices);
+      if ((action == MOVE) && (sourceIndices != null)) {
+          DefaultListModel model = (DefaultListModel)source.getModel();
+    
+          //If we are moving items around in the same list, we
+          //need to adjust the indices accordingly since those
+          //after the insertion point have moved.
+          if (addCount > 0) {
+              for (int i = 0; i < sourceIndices.length; i++) {
+                  if (sourceIndices[i] > addIndex) {
+                      sourceIndices[i] += addCount;
+                  }
+              }
+          }
+          for (int i = sourceIndices.length -1; i >= 0; i--)
+              model.remove(sourceIndices[i]);
+          ((JList)c).setSelectedIndices(new int[]{});
+      }
+      sourceIndices = null;
+      addIndex = -1;
+      addCount = 0;
+  }
+
+  private boolean hasLocalArrayListFlavor(DataFlavor[] flavors) {
+      if (localArrayListFlavor == null) {
+          return false;
+      }
+  
+      for (int i = 0; i < flavors.length; i++) {
+          if (flavors[i].equals(localArrayListFlavor)) {
+              return true;
+          }
+      }
+      return false;
+  }
+
+  private boolean hasSerialArrayListFlavor(DataFlavor[] flavors) {
+      if (serialArrayListFlavor == null) {
+          return false;
+      }
+  
+      for (int i = 0; i < flavors.length; i++) {
+          if (flavors[i].equals(serialArrayListFlavor)) {
+              return true;
+          }
+      }
+      return false;
+  }
+
+  public boolean canImport(JComponent c, DataFlavor[] flavors) {
+      if (hasLocalArrayListFlavor(flavors))  { return true; }
+      if (hasSerialArrayListFlavor(flavors)) { return true; }
+      return false;
+  }
+
+  protected Transferable createTransferable(JComponent c) {
+      if (c instanceof JList) {
+          source = (JList)c;
+          sourceIndices = source.getSelectedIndices();
+          Object[] values = source.getSelectedValues();
+          if (values == null || values.length == 0) {
+              return null;
+          }
+          ArrayList alist = new ArrayList(values.length);
+          for (int i = 0; i < values.length; i++) {
+              Object o = values[i];
+              String str = o.toString();
+              if (str == null) str = "";
+              alist.add(str);
+          }
+          return new ArrayListTransferable(alist);
+      }
+      return null;
+  }
+
+  public int getSourceActions(JComponent c) {
+      return COPY_OR_MOVE;
+  }
+
+  public class ArrayListTransferable implements Transferable {
+      ArrayList data;
+  
+      public ArrayListTransferable(ArrayList alist) {
+          data = alist;
+      }
+  
+      public Object getTransferData(DataFlavor flavor)
+    throws UnsupportedFlavorException {
+      if (!isDataFlavorSupported(flavor)) {
+        throw new UnsupportedFlavorException(flavor);
+      }
+      return data;
+    }
+  
+      public DataFlavor[] getTransferDataFlavors() {
+          return new DataFlavor[] { localArrayListFlavor,
+      serialArrayListFlavor };
+      }
+  
+      public boolean isDataFlavorSupported(DataFlavor flavor) {
+          if (localArrayListFlavor.equals(flavor)) {
+              return true;
+          }
+          if (serialArrayListFlavor.equals(flavor)) {
+              return true;
+          }
+          return false;
+      }
+  }
 }

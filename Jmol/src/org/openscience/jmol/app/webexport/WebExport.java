@@ -88,6 +88,7 @@ public class WebExport extends JPanel{
 		return out;	
 	}
 	
+  private static JFrame webFrame;
     /*
    	 * Create the GUI and show it.  For thread safety,
      * this method should be invoked from the
@@ -96,24 +97,28 @@ public class WebExport extends JPanel{
     public static void createAndShowGUI(JmolViewer viewer) {
 		
         //Create and set up the window.
-        JFrame frame = new JFrame("Jmol Web Page Maker");
+        if (webFrame != null) {
+          webFrame.toFront();
+          return;
+        }
+        webFrame = new JFrame("Jmol Web Page Maker");
         if (RunStatus == StandAlone) {
             //Make sure we have nice window decorations.
             JFrame.setDefaultLookAndFeelDecorated(true);
             JDialog.setDefaultLookAndFeelDecorated(true);
-        	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        	webFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         } else {
-        	frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        	webFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         }
 		
         //Create and set up the content pane.
         JComponent newContentPane = new WebExport(viewer);
         newContentPane.setOpaque(true); //content panes must be opaque
-        frame.setContentPane(newContentPane);
+        webFrame.setContentPane(newContentPane);
 		
         //Display the window.
-        frame.pack();
-        frame.setVisible(true);
+        webFrame.pack();
+        webFrame.setVisible(true);
         if (RunStatus == StandAlone){
             LogPanel.Log("Jmol_Web_Page_Maker is running as a standalone application");
         } else {

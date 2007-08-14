@@ -40,7 +40,6 @@ implements ActionListener {
     JButton OrbopenButton, OrbdeleteButton, CooropenButton, saveButton;
 	JTextField Coorfile, appletPath;
     JFileChooser fc;
-	ArrayListTransferHandler arrayListHandler;
 	JList OrbList;
 	JComboBox RenderMode, FormatBox;
 	
@@ -56,141 +55,140 @@ implements ActionListener {
 	private static final int SmallAtomDot = 1;
 	private static final int Wireframe = 2;
 	//private static final int BallandStick = 3;
-	
-	
-	public JComponent Panel(){
-		
-		//Create the brief discription text
-		JLabel Description = new JLabel("Create a web page with one Jmol Applet to display orbitals on one molecule or atom.");
-		
-		//Create the text field for the path to the JMol applet
-		appletPath = new JTextField(20);
-		appletPath.addActionListener(this);
-		appletPath.setText(WebExport.getAppletPath());
-		
-		//Path to applet panel
-		JPanel pathPanel = new JPanel(); 
-		pathPanel.setLayout(new BorderLayout());
-//		JLabel pathLabel = new JLabel("Relative Path to Jmol Applet:");
-//		pathPanel.add(pathLabel, BorderLayout.PAGE_START);
-		pathPanel.add(appletPath, BorderLayout.PAGE_END);
-		pathPanel.setBorder(BorderFactory.createTitledBorder("Relative Path to Jmol Applet:"));
-		
-		//Create the Coordinate file text
-		Coorfile = new JTextField(20);
-		Coorfile.addActionListener(this);
-		Coorfile.setText("");
-		
-		//Create the coordinate file open button.
-		CooropenButton = new JButton("Select Coordinate File...");
-        CooropenButton.addActionListener(this);
-		
-		//For layout purposes, put things in separate panels
-        //Coordinate file selection
-//		JLabel CoorLabel = new JLabel("File containing atom coordinates:");
-		JPanel CoorPanel = new JPanel(); 
-		CoorPanel.setLayout(new BorderLayout());
-//		CoorPanel.add(CoorLabel, BorderLayout.PAGE_START);
-        CoorPanel.add(Coorfile, BorderLayout.CENTER);
-		CoorPanel.add(CooropenButton, BorderLayout.PAGE_END);
-		CoorPanel.setBorder(BorderFactory.createTitledBorder("File containing atom coordinates:"));
-		
-		//Create the ComboBox (popup menu) for the Rendering Mode
-		JLabel RenderModeLabel = new JLabel("Rendering Mode:");
-		String[] RenderModes = { "Small Atom Dot", "Wireframe"};
-		RenderMode = new JComboBox(RenderModes);
-		RenderMode.setSelectedIndex(0);
-		//Attached no action listener.  Will just read for selection.
-		//Put in panel with label
-		JPanel RenderPanel = new JPanel();
-		RenderPanel.add(RenderModeLabel);
-		RenderPanel.add(RenderMode);
-		
-		//Combine applet path, coordinate file and Rendering mode panels
-		JPanel PathCoorRendPanel = new JPanel();
-		PathCoorRendPanel.setLayout(new BorderLayout());
-		PathCoorRendPanel.add(pathPanel, BorderLayout.PAGE_START);
-		PathCoorRendPanel.add(CoorPanel,BorderLayout.CENTER);
-		PathCoorRendPanel.add(RenderPanel,BorderLayout.PAGE_END);
-		
-		//Create the ComboBox (popup menu) for the Page Format
-		JLabel PageFormatLabel = new JLabel("Page Format:");
-		String[] PageFormats = {
-			"Single orbital",
-			"Up to 2 orbitals at once",
-			"Up to 3 orbitals at once",
-			"Up to 4 orbitals at once",
-			//			"One orbital, wide display",
-			//			"Two orbitals, wide display",
-		};
-		FormatBox = new JComboBox(PageFormats);
-		FormatBox.setSelectedIndex(3);
-		//Put in panel with a label
-		JPanel FormatPanel = new JPanel();
-		FormatPanel.add(PageFormatLabel);
-		FormatPanel.add(FormatBox);
-	
-		//Create the save button. 
-        saveButton = new JButton("Save .html as...");
-        saveButton.addActionListener(this);
-		
-		//save file selection panel
-		JPanel savePanel = new JPanel();
-		savePanel.add(saveButton);
-		
-		//Combine previous three panels into one
-		JPanel leftpanel = new JPanel();
-		leftpanel.setLayout(new BorderLayout());
-		leftpanel.add(PathCoorRendPanel, BorderLayout.PAGE_START);
-		leftpanel.add(FormatPanel, BorderLayout.CENTER);
-		leftpanel.add(savePanel, BorderLayout.PAGE_END);
-		
-        //Create file chooser
-        fc = new JFileChooser();
-		
-		//Create the list and list view to handle the list of 
-		//orbital files.
-		arrayListHandler = new ArrayListTransferHandler();
-		DefaultListModel orbfilelist = new DefaultListModel();
-		OrbList = new JList(orbfilelist);
-		OrbList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        OrbList.setTransferHandler(arrayListHandler);
-        OrbList.setDragEnabled(true);
-        JScrollPane OrbListView = new JScrollPane(OrbList);
-        OrbListView.setPreferredSize(new Dimension(300, 200));
-        
-		//Create the orbital file add button.
-        OrbopenButton = new JButton("Add File(s)...");
-        OrbopenButton.addActionListener(this);
-		
-		//Create the delete file button
-		OrbdeleteButton = new JButton("Delete Selected");
-		OrbdeleteButton.addActionListener(this);
-		
-				
-		//Orbital file selection
-		JPanel OrbButtonsPanel = new JPanel();
-		OrbButtonsPanel.add(OrbopenButton);
-		OrbButtonsPanel.add(OrbdeleteButton);
-		
-		//Title and border for the orbital file selection
-		JPanel OrbPanel = new JPanel();
-		OrbPanel.setLayout(new BorderLayout());
-		OrbPanel.add(OrbButtonsPanel, BorderLayout.PAGE_START);
-		OrbPanel.add(OrbListView, BorderLayout.PAGE_END);
-    	OrbPanel.setBorder(BorderFactory.createTitledBorder("Orbital Files (Drag to Preferred Order):"));
 
-		//Create the overall panel
-		JPanel OrbitalPanel = new JPanel();
-		OrbitalPanel.setLayout(new BorderLayout());
-		
-        //Add everything to this panel.
-        OrbitalPanel.add(Description, BorderLayout.PAGE_START);
-        OrbitalPanel.add(leftpanel, BorderLayout.CENTER);
-		OrbitalPanel.add(OrbPanel, BorderLayout.LINE_END);
-		
-		return (OrbitalPanel);
-	}
+  public JComponent Panel() {
+
+    //Create the brief discription text
+    JLabel Description = new JLabel(
+        "Create a web page with one Jmol Applet to display orbitals on one molecule or atom.");
+
+    //Create the text field for the path to the JMol applet
+    appletPath = new JTextField(20);
+    appletPath.addActionListener(this);
+    appletPath.setText(WebExport.getAppletPath());
+
+    //Path to applet panel
+    JPanel pathPanel = new JPanel();
+    pathPanel.setLayout(new BorderLayout());
+    //		JLabel pathLabel = new JLabel("Relative Path to Jmol Applet:");
+    //		pathPanel.add(pathLabel, BorderLayout.PAGE_START);
+    pathPanel.add(appletPath, BorderLayout.PAGE_END);
+    pathPanel.setBorder(BorderFactory
+        .createTitledBorder("Relative Path to Jmol Applet:"));
+
+    //Create the Coordinate file text
+    Coorfile = new JTextField(20);
+    Coorfile.addActionListener(this);
+    Coorfile.setText("");
+
+    //Create the coordinate file open button.
+    CooropenButton = new JButton("Select Coordinate File...");
+    CooropenButton.addActionListener(this);
+
+    //For layout purposes, put things in separate panels
+    //Coordinate file selection
+    //		JLabel CoorLabel = new JLabel("File containing atom coordinates:");
+    JPanel CoorPanel = new JPanel();
+    CoorPanel.setLayout(new BorderLayout());
+    //		CoorPanel.add(CoorLabel, BorderLayout.PAGE_START);
+    CoorPanel.add(Coorfile, BorderLayout.CENTER);
+    CoorPanel.add(CooropenButton, BorderLayout.PAGE_END);
+    CoorPanel.setBorder(BorderFactory
+        .createTitledBorder("File containing atom coordinates:"));
+
+    //Create the ComboBox (popup menu) for the Rendering Mode
+    JLabel RenderModeLabel = new JLabel("Rendering Mode:");
+    String[] RenderModes = { "Small Atom Dot", "Wireframe" };
+    RenderMode = new JComboBox(RenderModes);
+    RenderMode.setSelectedIndex(0);
+    //Attached no action listener.  Will just read for selection.
+    //Put in panel with label
+    JPanel RenderPanel = new JPanel();
+    RenderPanel.add(RenderModeLabel);
+    RenderPanel.add(RenderMode);
+
+    //Combine applet path, coordinate file and Rendering mode panels
+    JPanel PathCoorRendPanel = new JPanel();
+    PathCoorRendPanel.setLayout(new BorderLayout());
+    PathCoorRendPanel.add(pathPanel, BorderLayout.PAGE_START);
+    PathCoorRendPanel.add(CoorPanel, BorderLayout.CENTER);
+    PathCoorRendPanel.add(RenderPanel, BorderLayout.PAGE_END);
+
+    //Create the ComboBox (popup menu) for the Page Format
+    JLabel PageFormatLabel = new JLabel("Page Format:");
+    String[] PageFormats = { "Single orbital", "Up to 2 orbitals at once",
+        "Up to 3 orbitals at once", "Up to 4 orbitals at once",
+    //			"One orbital, wide display",
+    //			"Two orbitals, wide display",
+    };
+    FormatBox = new JComboBox(PageFormats);
+    FormatBox.setSelectedIndex(3);
+    //Put in panel with a label
+    JPanel FormatPanel = new JPanel();
+    FormatPanel.add(PageFormatLabel);
+    FormatPanel.add(FormatBox);
+
+    //Create the save button. 
+    saveButton = new JButton("Save .html as...");
+    saveButton.addActionListener(this);
+
+    //save file selection panel
+    JPanel savePanel = new JPanel();
+    savePanel.add(saveButton);
+
+    //Combine previous three panels into one
+    JPanel leftpanel = new JPanel();
+    leftpanel.setLayout(new BorderLayout());
+    leftpanel.add(PathCoorRendPanel, BorderLayout.PAGE_START);
+    leftpanel.add(FormatPanel, BorderLayout.CENTER);
+    leftpanel.add(savePanel, BorderLayout.PAGE_END);
+
+    //Create file chooser
+    fc = new JFileChooser();
+
+    //Create the list and list view to handle the list of 
+    //orbital files.
+    ArrayListTransferHandler arrayListHandler = new ArrayListTransferHandler();
+    DefaultListModel orbfilelist = new DefaultListModel();
+    OrbList = new JList(orbfilelist);
+    OrbList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+    OrbList.setTransferHandler(arrayListHandler);
+    OrbList.setDragEnabled(true);
+    JScrollPane OrbListView = new JScrollPane(OrbList);
+    OrbListView.setPreferredSize(new Dimension(300, 200));
+
+    //Create the orbital file add button.
+    OrbopenButton = new JButton("Add File(s)...");
+    OrbopenButton.addActionListener(this);
+
+    //Create the delete file button
+    OrbdeleteButton = new JButton("Delete Selected");
+    OrbdeleteButton.addActionListener(this);
+
+    //Orbital file selection
+    JPanel OrbButtonsPanel = new JPanel();
+    OrbButtonsPanel.add(OrbopenButton);
+    OrbButtonsPanel.add(OrbdeleteButton);
+
+    //Title and border for the orbital file selection
+    JPanel OrbPanel = new JPanel();
+    OrbPanel.setLayout(new BorderLayout());
+    OrbPanel.add(OrbButtonsPanel, BorderLayout.PAGE_START);
+    OrbPanel.add(OrbListView, BorderLayout.PAGE_END);
+    OrbPanel.setBorder(BorderFactory
+        .createTitledBorder("Orbital Files (Drag to Preferred Order):"));
+
+    //Create the overall panel
+    JPanel OrbitalPanel = new JPanel();
+    OrbitalPanel.setLayout(new BorderLayout());
+
+    //Add everything to this panel.
+    OrbitalPanel.add(Description, BorderLayout.PAGE_START);
+    OrbitalPanel.add(leftpanel, BorderLayout.CENTER);
+    OrbitalPanel.add(OrbPanel, BorderLayout.LINE_END);
+
+    return (OrbitalPanel);
+  }
 	
 	public void actionPerformed(ActionEvent e) {
 		

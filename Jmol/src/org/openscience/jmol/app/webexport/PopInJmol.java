@@ -67,9 +67,11 @@ public class PopInJmol extends WebPanel {
     String name = instance.name;
     int JmolSizeW = instance.width;
     int JmolSizeH = instance.height;
+    appletInfoDivs += "\n<div id=\""+name+"_caption\">\ninsert caption for "+name+" here\n</div>";
+    appletInfoDivs += "\n<div id=\""+name+"_note\">\ninsert note for "+name+" here\n</div>";
     String floatDiv = (i % 2 == 0 ? "floatRightDiv" : "floatLeftDiv");
     appletDefs.append("\naddJmolDiv(" + i + ",'"+floatDiv+"','" + name + "',"
-        + JmolSizeW + "," + JmolSizeH + ",'insert caption here','insert note here')");
+        + JmolSizeW + "," + JmolSizeH + ")");
     return html;
   }
 }

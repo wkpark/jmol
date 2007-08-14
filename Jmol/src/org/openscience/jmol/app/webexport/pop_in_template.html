@@ -29,7 +29,7 @@
 .floatLeftDiv { padding:0.3em 0.5ex; font-size:0.9em; float:left;}
   </style>
   <script src="@APPLETPATH@/Jmol.js" type="text/javascript"></script>
-  <script src="pop_Jmol.js" type="text/javascript"></script>
+  <script src="JmolPopIn.js" type="text/javascript"></script>
   <meta content="J. Gutow" name="author">
   <meta content="Based  on javascript by A.  Herraez" name="description">
 </head>
@@ -38,6 +38,9 @@
 <div style="text-align: center;">&lt;Insert Your TITLE HERE&gt;<br>
 </div>
 &lt;Insert Your INTRODUCTION HERE&gt;</div>
+<div style="display:none">
+@APPLETINFO@
+</div>
 <script type='text/javascript'>
 jmolInitialize("@APPLETPATH@");
 jmolSetDocument(false);

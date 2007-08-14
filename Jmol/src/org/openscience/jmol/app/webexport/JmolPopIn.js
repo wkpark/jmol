@@ -30,7 +30,7 @@ function putJmolDiv(molNr, molFileName,imageFileName,appletWidth,appletHeight) {
 	tx += '<br><table cellpadding="10"><tr><td style="background-color:white">';
 	tx += 'To get a 3-D model you can manipulate, click ';
 	tx += '<a href="javascript:void(popInJmol(' + molNr + ', \'' + molFileName + '\','+ appletWidth + ','+ appletHeight + '))">here</a>.';
-	tx += 'Download time may be significant the first time the applet is loaded.</td></tr></table></div>';
+	tx += ' Download time may be significant the first time the applet is loaded.</td></tr></table></div>';
 	document.writeln(tx);
 }
 
@@ -38,17 +38,22 @@ function popInJmol(n,fileName,width,height) {
 	document.getElementById("Jmol"+n).innerHTML = jmolApplet([width,height],"script "+fileName+"",n);
 }
 
+function getHTML(element) {
+  var d = document.getElementById(element)
+  return (d ? d.innerHTML : "missing div with id: " + element)
+}
+
 function addJmolDiv(i,floatdiv,name,width,height,caption,note) {
-
-        var s = "\n<br><div \"style='height:"+(height+100)+"px'\">\n<div class = \""+floatdiv+"\">";
-
+    if (arguments.length < 6) caption = getHTML(name+"_caption");
+    if (arguments.length < 7) note = getHTML(name+"_note");
+    var s = "\n<br><div \"style='height:"+(height+100)+"px'\">\n<div class = \""+floatdiv+"\">";
 	s += "\n<table style=\"text-align: left; width: "+width+"px;\" border='1' cellpadding='2'";
 	s += "\n cellspacing='2'>";
 	s += "\n    <tr>";
 	s += "\n      <td style=\"vertical-align: top; width: "+width+"px; height: "+height+"px;\">";
 	document.write(s);//.replace(/\</g,"&lt;"));
 
-	putJmolDiv(i, name+".scpt",name+".png",width, height);
+	putJmolDiv(i, name+".spt",name+".png",width, height);
 
 	s = "\n      </td>";
 	s += "\n    </tr>";
@@ -67,7 +72,7 @@ function addAppletButton(i, name, label, info) {
   var s = '\n<table style="text-align: center; width: 100%" border="1" cellpadding="2" cellspacing="2">'
   s += '<tr><td>'
   document.write(s)
-  jmolButton('Script '+name+'.scpt', label); 
+  jmolButton('Script '+name+'.spt', label); 
   var s = '</td></tr></table>\n' + info + "\n</br>";
   document.write(s)
 }

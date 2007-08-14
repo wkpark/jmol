@@ -71,7 +71,7 @@ class JmolInstance {
   boolean movepict(String dirpath) throws IOException {
     //need the file writing stuff...
     String imagename = dirpath + "/" + this.name + ".png";
-    if (this.pictFile == imagename)
+    if (this.pictFile.equals(imagename))
       return false;
     String scratchname = this.pictFile;
     FileInputStream is = null;

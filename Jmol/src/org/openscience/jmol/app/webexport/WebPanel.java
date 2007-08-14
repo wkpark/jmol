@@ -184,7 +184,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     }
 
     //Create the save button. 
-    saveButton = new JButton("Save .html as...");
+    saveButton = new JButton("Save HTML as...");
     saveButton.addActionListener(this);
 
     //save file selection panel
@@ -411,7 +411,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       html = TextFormat.simpleReplace(html, "@APPLETDEFS@", appletDefs.toString());
       html = TextFormat.simpleReplace(html, "@CREATIONDATA@", WebExport
           .TimeStamp_WebLink());
-      LogPanel.Log("Writing .html file for this web page at " + datadirPath
+      LogPanel.Log("Writing HTML file for this web page at " + datadirPath
           + "/" + fileName);
       viewer.createImage(datadirPath + "/" + fileName, html, Integer.MIN_VALUE,
           0, 0);

@@ -3141,12 +3141,15 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     getProperty("String", "jmolStatus", statusList);
     if (checkScriptOnly)
       Logger.info("--checking script:\n" + eval.script + "\n----\n");
+    boolean historyDisabled = (strScript.indexOf(")") == 0);
+    if (historyDisabled)
+      strScript = strScript.substring(1);
     boolean isOK = (isScriptFile ? eval.loadScriptFile(strScript, isQuiet)
         : eval.loadScriptString(strScript, isQuiet));
     String strErrorMessage = eval.getErrorMessage();
     if (isOK) {
       statusManager.setStatusScriptStarted(++scriptIndex, strScript);
-      eval.runEval(checkScriptOnly, !checkScriptOnly || fileOpenCheck);
+      eval.runEval(checkScriptOnly, !checkScriptOnly || fileOpenCheck, historyDisabled);
       int msWalltime = eval.getExecutionWalltime();
       strErrorMessage = eval.getErrorMessage();
       statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
@@ -3179,6 +3182,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (strScript == null || checking)
       return null;
     checking = true;
+    if (strScript.indexOf(")") == 0) // history disabled
+      strScript = strScript.substring(1); 
     Object obj = eval.checkScriptSilent(strScript);
     checking = false;
     if (obj instanceof String)

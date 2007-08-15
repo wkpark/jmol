@@ -94,7 +94,7 @@ class Eval { //implements Runnable {
   BitSet bsSubset;
   int iToken;
   int[] ifs;
-  boolean isSyntaxCheck, isScriptCheck;
+  boolean isSyntaxCheck, isScriptCheck, historyDisabled;
 
   //Thread myThread;
 
@@ -188,7 +188,7 @@ class Eval { //implements Runnable {
 
   Thread currentThread = null;
 
-  public void runEval(boolean checkScriptOnly, boolean openFiles) {
+  public void runEval(boolean checkScriptOnly, boolean openFiles, boolean historyDisabled) {
     // only one reference now -- in Viewer
     //refresh();
     boolean tempOpen = fileOpenCheck;
@@ -200,6 +200,7 @@ class Eval { //implements Runnable {
     currentThread = Thread.currentThread();
     isSyntaxCheck = isScriptCheck = checkScriptOnly;
     timeBeginExecution = System.currentTimeMillis();
+    this.historyDisabled = historyDisabled;
     try {
       instructionDispatchLoop(false);
     } catch (ScriptException e) {
@@ -213,7 +214,7 @@ class Eval { //implements Runnable {
       errorMessage = "execution interrupted";
     else if (!tQuiet && !isSyntaxCheck)
       viewer.scriptStatus("Script completed");
-    isExecuting = isSyntaxCheck = isScriptCheck = false;
+    isExecuting = isSyntaxCheck = isScriptCheck = historyDisabled = false;
     viewer.setTainted(true);
     viewer.popHoldRepaint();
 
@@ -711,7 +712,7 @@ class Eval { //implements Runnable {
       viewer.scriptStatus("Eval.instructionDispatchLoop():" + timeBegin);
       viewer.scriptStatus(toString());
     }
-    if (!isSyntaxCheck && scriptLevel <= commandHistoryLevelMax)
+    if (!historyDisabled && !isSyntaxCheck && scriptLevel <= commandHistoryLevelMax)
       viewer.addCommand(script);
     if (pcEnd == 0)
       pcEnd = Integer.MAX_VALUE;
@@ -5987,7 +5988,7 @@ class Eval { //implements Runnable {
     }
 
     String str = "";
-    boolean showing = (!isSyntaxCheck && scriptLevel <= scriptReportingLevel);
+    boolean showing = (!isSyntaxCheck && !tQuiet && scriptLevel <= scriptReportingLevel);
 
     if (key != null && setParameter(key, val)) {
       if (isSyntaxCheck)

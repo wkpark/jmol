@@ -311,7 +311,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       //create an instance with this name.  Each instance is just a container for a string with the Jmol state
       //which contains the full information on the file that is loaded and manipulations done.
       String label = (instanceList.getSelectedIndices().length != 1 ? "" 
-          : ((JmolInstance)instanceList.getModel().getElementAt(instanceList.getSelectedIndex())).name);
+          : getInstanceName(-1));
       String name = JOptionPane
           .showInputDialog("Give the occurance of Jmol a one word name:", label);
       if (name == null)
@@ -343,9 +343,20 @@ abstract class WebPanel extends JPanel implements ActionListener {
         LogPanel
             .Log("Error creating new instance containing script and image in pop_in_Jmol.");
       }
-      listModel.addElement(instance);
-      instanceList.setSelectedIndices(new int[] { listModel.getSize() - 1 });
-      LogPanel.Log("added Instance " + instance.name);
+      
+      int i;
+      for (i = instanceList.getModel().getSize(); --i >= 0; )
+        if (getInstanceName(i).equals(instance.name))
+          break;
+      if (i < 0) {
+        i = listModel.getSize();
+        listModel.addElement(instance);
+        LogPanel.Log("added Instance " + instance.name);
+      } else {
+        listModel.setElementAt(instance, i);
+        LogPanel.Log("updated Instance " + instance.name);
+      }
+      instanceList.setSelectedIndex(i);
       syncLists();
       return;
     }
@@ -368,7 +379,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       if (list.length != 1)
         return;
       JmolInstance instance = (JmolInstance) listModel.get(list[0]);
-      viewer.evalStringQuiet(instance.script);
+      viewer.evalStringQuiet(")" + instance.script); //leading paren disabled history
       return;
     }
 
@@ -392,6 +403,13 @@ abstract class WebPanel extends JPanel implements ActionListener {
     }
   }
 
+  String getInstanceName(int i) {
+    if (i < 0) 
+      i = instanceList.getSelectedIndex();
+    JmolInstance instance = (JmolInstance)instanceList.getModel().getElementAt(i);
+    return (instance == null ? "" : instance.name);
+  }
+  
   boolean FileWriter(File file, JList InstanceList, String appletPath)
       throws IOException { //returns true if successful.
     //          JOptionPane.showMessageDialog(null, "Creating directory for data...");

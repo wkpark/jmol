@@ -34,38 +34,16 @@ public class PopInJmol extends WebPanel {
   PopInJmol(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels, int panelIndex) {
     super(viewer, fc, webPanels, panelIndex);
     description = "Create a web page with images that convert to live Jmol applets when a user clicks a link";
+    listLabel = "These names will be used as filenames for the applets";
     infoFile = "pop_in_instructions.html";
     templateName = "pop_in_template.html";
     appletTemplateName = "pop_in_template2.html";
-    useAppletJS = false;
   }
 
-
-  public JPanel getPanel() {
-
-    //Create the appletSize spinner so the user can decide how big
-    //the applet should be.
-    SpinnerNumberModel appletSizeModelW = new SpinnerNumberModel(300, //initial value
-        50, //min
-        500, //max
-        25); //step size
-    SpinnerNumberModel appletSizeModelH = new SpinnerNumberModel(300, //initial value
-        50, //min
-        500, //max
-        25); //step size
-    appletSizeSpinnerW = new JSpinner(appletSizeModelW);
-    appletSizeSpinnerH = new JSpinner(appletSizeModelH);
-
-    //panel to hold spinner and label
-    JPanel appletSizePanel = new JPanel();
-    appletSizePanel.add(new JLabel("Applet width:"));
-    appletSizePanel.add(appletSizeSpinnerW);
-    appletSizePanel.add(new JLabel("height:"));
-    appletSizePanel.add(appletSizeSpinnerH);
-
-    return getPanel(appletSizePanel, "These names will be used as filenames for the applets");
+  String fixHtml(String html) {
+    return html;
   }
-
+  
   String getAppletDefs(int i, String html, StringBuffer appletDefs, JmolInstance instance) {
     String divClass = (i % 2 == 0 ? "floatRightDiv" : "floatLeftDiv");
     String name = instance.name;

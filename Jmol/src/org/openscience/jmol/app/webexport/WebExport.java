@@ -39,6 +39,11 @@ public class WebExport extends JPanel{
   
   JmolViewer viewer;
 	
+  static boolean checkOption(JmolViewer viewer, String option) {
+    Object testFlag = viewer.getParameter("webMakerAllTabs");
+    return (testFlag instanceof Boolean && ((Boolean)testFlag).booleanValue());
+  }
+  
 	private static final long serialVersionUID = 1L;
 	//run status
 	static final int STAND_ALONE = 0; 
@@ -61,7 +66,7 @@ public class WebExport extends JPanel{
 		webPanels[1] = new ScriptButtons(viewer, fc, webPanels, 1);
 		Maintabs.addTab("ScriptButton Jmol", ((ScriptButtons) webPanels[1]).getPanel());
     
-    showMoleculesAndOrbitals = runStatus == STAND_ALONE || (((Boolean)viewer.getParameter("testFlag4")).booleanValue());
+    showMoleculesAndOrbitals = runStatus == STAND_ALONE || checkOption(viewer, "webMakerAllTabs");    
     if (showMoleculesAndOrbitals) {
   		Orbitals OrbitalCreator = new Orbitals();
 	  	JComponent Orbitals = OrbitalCreator.Panel();

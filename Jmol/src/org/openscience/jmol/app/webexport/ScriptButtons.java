@@ -34,41 +34,14 @@ public class ScriptButtons extends WebPanel {
   ScriptButtons(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels, int panelIndex) {
     super(viewer, fc, webPanels, panelIndex);
     description = "Create a web page containing a text and button pane scrolls next to a resizable Jmol applet";
+    listLabel = "These names will be used for button labels";
     infoFile = "script_button_instructions.html";
     templateName = "script_button_template.html";
     appletTemplateName = "script_button_template2.html";
-    useAppletJS = false;
-  }
-
-  //Need the panel maker and the action listener.
-  public JPanel getPanel() {
-
-    //Create the appletSize spinner so the user can decide what %
-    // of the window width the applet should be.
-    SpinnerNumberModel appletSizeModelW = new SpinnerNumberModel(60, //initial value
-        20, //min
-        100, //max
-        5); //step size
-    appletSizeSpinnerW = new JSpinner(appletSizeModelW);
-    //panel to hold spinner and label
-    
-    JPanel appletSizePanel = new JPanel();
-    appletSizePanel.add(new JLabel("% of window for applet width:"));
-    appletSizePanel.add(appletSizeSpinnerW);
-/*    SpinnerNumberModel appletSizeModelH = new SpinnerNumberModel(60, //initial value
-        20, //min
-        100, //max
-        5); //step size
-    appletSizeSpinnerH = new JSpinner(appletSizeModelH);
-    appletSizePanel.add(new JLabel("height:"));
-    appletSizePanel.add(appletSizeSpinnerH);
-*/
-    //Create the overall panel
-    return getPanel(appletSizePanel, "These names will be used for button labels");
   }
 
   String fixHtml(String html) {
-      int size = ((SpinnerNumberModel) (appletSizeSpinnerW.getModel()))
+      int size = ((SpinnerNumberModel) (appletSizeSpinnerP.getModel()))
           .getNumber().intValue();
       html = TextFormat.simpleReplace(html, "@WIDTHPERCENT@", "" + size);
       return html;
@@ -77,14 +50,9 @@ public class ScriptButtons extends WebPanel {
   String getAppletDefs(int i, String html, StringBuffer appletDefs, JmolInstance instance) {
     String name = instance.name;
     String buttonname = instance.name;
-    name = TextFormat.simpleReplace(buttonname, " ", "_");
-    String label;
-    if (i == 0) {
+    String label = buttonname;
+    if (i == 0)
       html = TextFormat.simpleReplace(html, "@APPLETNAME0@", buttonname);
-      label = "reset view";
-    } else {
-      label = buttonname;
-    }
     if (useAppletJS) {
       String info = "info for " + name;
       appletDefs.append("\naddAppletButton("+i+",'"+ name +"',\""+label+"\",\""+info+"\");");
@@ -96,19 +64,4 @@ public class ScriptButtons extends WebPanel {
     }
     return html;
   }
-
-  String fixScript(String script) {
-    // I'm not convinced this is appropriate -- perhaps as 
-    // an option, but not by default -- we want the script being
-    // precisely what it is with "show state". 
-    // If you want it different, that can be accomplished in JavaScript.
-    
-    //script = TextFormat.simpleReplace(script, "set refreshing false;",
-    //"set refreshing true;");
-    //script = TextFormat.simpleReplace(script,
-    //"moveto /* time, axisAngle */ 0.0",
-    //"moveto /* time, axisAngle */ 5.0");
-    return script;    
-  }
-
 }

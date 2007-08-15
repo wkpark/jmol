@@ -42,27 +42,35 @@ import java.io.IOException;
 
 abstract class WebPanel extends JPanel implements ActionListener {
 
+  abstract String getAppletDefs(int i, String html, StringBuffer appletDefs,
+                                JmolInstance instance);
+
+  abstract String fixHtml(String html);
+
   //The constants used to generate panels, etc.
-  JButton saveButton, addInstanceButton, deleteInstanceButton, showInstanceButton;
+  JButton saveButton, addInstanceButton, deleteInstanceButton,
+      showInstanceButton;
   JTextField appletPath;
   JSpinner appletSizeSpinnerW;
   JSpinner appletSizeSpinnerH;
+  JSpinner appletSizeSpinnerP;
   JFileChooser fc;
   JList instanceList;
   JmolViewer viewer;
-  
+
   String templateName;
-  String description;
+  String description, listLabel;
   String infoFile;
   String appletInfoDivs;
   String htmlAppletTemplate;
   String appletTemplateName;
   boolean useAppletJS;
-  
+
   int panelIndex;
   WebPanel[] webPanels;
 
-  WebPanel(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels, int panelIndex) {
+  WebPanel(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels,
+      int panelIndex) {
     this.viewer = viewer;
     this.fc = fc;
     this.webPanels = webPanels;
@@ -73,80 +81,57 @@ abstract class WebPanel extends JPanel implements ActionListener {
     appletPath.setText(WebExport.getAppletPath());
   }
 
-  void syncLists() {
-    JList list = webPanels[1-panelIndex].instanceList;
-    DefaultListModel model1 = (DefaultListModel)instanceList.getModel();
-    DefaultListModel model2 = (DefaultListModel)list.getModel();
-    model2.clear();
-    int n = model1.getSize();
-    for (int i = 0; i < n; i++)
-      model2.addElement(model1.get(i));
-    list.setSelectedIndices(new int[]{});
-    enableButtons(instanceList);
-    webPanels[1-panelIndex].enableButtons(list);
-  }
-  
-  void enableButtons(JList list) {
-    int nSelected = list.getSelectedIndices().length;
-    int nListed = list.getModel().getSize();
-    saveButton.setEnabled(nListed > 0);
-    deleteInstanceButton.setEnabled(nSelected > 0);
-    showInstanceButton.setEnabled(nSelected == 1);
-  }
-  
-  
-  class InstanceCellRenderer extends JLabel implements ListCellRenderer {
-    
-    public Component getListCellRendererComponent(JList list, Object value,
-                                                  int index,
-                                                  boolean isSelected,
-                                                  boolean cellHasFocus) {
-      setText(" " + ((JmolInstance) value).name);
-      if (isSelected) {
-        setBackground(list.getSelectionBackground());
-        setForeground(list.getSelectionForeground());
-      } else {
-        setBackground(list.getBackground());
-        setForeground(list.getForeground());
-      }
-      setEnabled(list.isEnabled());
-      setFont(list.getFont());
-      setOpaque(true);
-      enableButtons(list);
-      return this;
-    }
-  }
-
-  URL getResource(String fileName) {
-    URL url = this.getClass().getResource(fileName);
-    if (url == null) {
-      System.err.println("Couldn't find file: " + infoFile);
-    }
-    return url;
-  }
-  
-  String getResourceString (String name) throws IOException {
-    URL templateFile = this.getClass().getResource(name);
-    if (templateFile == null)
-      throw new FileNotFoundException("Error loading resource " + name);
-    String filename = templateFile.getFile();
-    BufferedReader br = new BufferedReader(new FileReader(filename));
-    StringBuffer htmlBuf = new StringBuffer();
-    String line;
-    while ((line = br.readLine()) != null)
-      htmlBuf.append(line).append("\n");
-    br.close();
-    String html = htmlBuf.toString();
-    //LogPanel.Log("Loading html template " + templateFile + "("
-      //  + html.length() + " bytes)");
-    return html;
-    }
-
   //Need the panel maker and the action listener.
-  protected JPanel getPanel(JComponent appletSizePanel, String label) {
+  JPanel getPanel() {
 
-    appletSizePanel.setMaximumSize(new Dimension(350, 50));
+    useAppletJS = WebExport.checkOption(viewer, "webMakerCreateJS");
 
+    //Create the appletSize spinner so the user can decide how big
+    //the applet should be.
+    SpinnerNumberModel appletSizeModelW = new SpinnerNumberModel(300, //initial value
+        50, //min
+        500, //max
+        25); //step size
+    SpinnerNumberModel appletSizeModelH = new SpinnerNumberModel(300, //initial value
+        50, //min
+        500, //max
+        25); //step size
+    appletSizeSpinnerW = new JSpinner(appletSizeModelW);
+    appletSizeSpinnerH = new JSpinner(appletSizeModelH);
+
+    //panel to hold spinner and label
+    JPanel appletSizeWHPanel = new JPanel();
+    appletSizeWHPanel.add(new JLabel("Applet width:"));
+    appletSizeWHPanel.add(appletSizeSpinnerW);
+    appletSizeWHPanel.add(new JLabel("height:"));
+    appletSizeWHPanel.add(appletSizeSpinnerH);
+
+    //Create the appletSize percent spinner so the user can decide what %
+    // of the window width the applet should be.
+    SpinnerNumberModel appletSizeModel = new SpinnerNumberModel(60, //initial value
+        20, //min
+        100, //max
+        5); //step size
+    appletSizeSpinnerP = new JSpinner(appletSizeModel);
+    //panel to hold spinner and label
+
+    JPanel appletSizePPanel = new JPanel();
+    appletSizePPanel.add(new JLabel("% of window for applet width:"));
+    appletSizePPanel.add(appletSizeSpinnerP);
+    /*    SpinnerNumberModel appletSizeModelH = new SpinnerNumberModel(60, //initial value
+     20, //min
+     100, //max
+     5); //step size
+     appletSizeSpinnerH = new JSpinner(appletSizeModelH);
+     appletSizePanel.add(new JLabel("height:"));
+     appletSizePanel.add(appletSizeSpinnerH);
+     */
+    //Create the overall panel
+
+    JPanel appletSizePanel = new JPanel(new BorderLayout());
+    appletSizePanel.setMaximumSize(new Dimension(350, 70));
+    appletSizePanel.add(appletSizeWHPanel, BorderLayout.NORTH);
+    appletSizePanel.add(appletSizePPanel, BorderLayout.SOUTH);
 
     //Create the brief description text
     JLabel jDescription = new JLabel("      " + description + "\n\n");
@@ -158,7 +143,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     saveButton.addActionListener(this);
 
     //save file selection panel
-    JPanel savePanel = new JPanel();  
+    JPanel savePanel = new JPanel();
     savePanel.add(saveButton);
 
     //Create the list and list view to handle the list of 
@@ -172,9 +157,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
     instanceListView.setPreferredSize(new Dimension(350, 200));
     JPanel instanceSet = new JPanel();
     instanceSet.setLayout(new BorderLayout());
-    instanceSet.add(new JLabel(label), BorderLayout.NORTH);
+    instanceSet.add(new JLabel(listLabel), BorderLayout.NORTH);
     instanceSet.add(instanceListView, BorderLayout.CENTER);
-    instanceSet.add(new JLabel("double-click and drag to reorder"), BorderLayout.SOUTH);
+    instanceSet.add(new JLabel("double-click and drag to reorder"),
+        BorderLayout.SOUTH);
 
     //Create the Instance add button.
     addInstanceButton = new JButton("Add Present Jmol State as Instance...");
@@ -182,7 +168,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
     //Instance selection
     JPanel instanceButtonPanel = new JPanel();
-    instanceButtonPanel.add(addInstanceButton);    
+    instanceButtonPanel.add(addInstanceButton);
 
     JPanel buttonPanel = new JPanel();
     buttonPanel.setMaximumSize(new Dimension(350, 50));
@@ -193,7 +179,6 @@ abstract class WebPanel extends JPanel implements ActionListener {
     buttonPanel.add(showInstanceButton);
     buttonPanel.add(deleteInstanceButton);
 
-    
     //Title and border for the Instance selection
     JPanel instancePanel = new JPanel();
     instancePanel.setLayout(new BorderLayout());
@@ -207,8 +192,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     rightPanel.setMaximumSize(new Dimension(350, 1000));
     rightPanel.add(appletSizePanel, BorderLayout.PAGE_START);
     rightPanel.add(instancePanel, BorderLayout.PAGE_END);
-    rightPanel.setBorder(BorderFactory
-        .createTitledBorder("Jmol Instances:"));
+    rightPanel.setBorder(BorderFactory.createTitledBorder("Jmol Instances:"));
 
     //Create the overall panel
     JPanel panel = new JPanel();
@@ -224,6 +208,31 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
     enableButtons(instanceList);
     return panel;
+  }
+
+  URL getResource(String fileName) {
+    URL url = this.getClass().getResource(fileName);
+    if (url == null) {
+      System.err.println("Couldn't find file: " + infoFile);
+    }
+    return url;
+  }
+
+  String getResourceString(String name) throws IOException {
+    URL templateFile = this.getClass().getResource(name);
+    if (templateFile == null)
+      throw new FileNotFoundException("Error loading resource " + name);
+    String filename = templateFile.getFile();
+    BufferedReader br = new BufferedReader(new FileReader(filename));
+    StringBuffer htmlBuf = new StringBuffer();
+    String line;
+    while ((line = br.readLine()) != null)
+      htmlBuf.append(line).append("\n");
+    br.close();
+    String html = htmlBuf.toString();
+    //LogPanel.Log("Loading html template " + templateFile + "("
+    //  + html.length() + " bytes)");
+    return html;
   }
 
   private JPanel getLeftPanel(JPanel sizePanel) {
@@ -246,7 +255,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
     if (sizePanel == null) {
       pathSizePanel = pathPanel;
-      pathSizePanel.setSize(new Dimension(300,60));
+      pathSizePanel.setSize(new Dimension(300, 60));
     } else {
       pathSizePanel = new JPanel();
       pathSizePanel.setLayout(new BorderLayout());
@@ -316,10 +325,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
       int width = 300;
       int height = 300;
       if (appletSizeSpinnerH != null) {
-        width = ((SpinnerNumberModel) (appletSizeSpinnerW
-            .getModel())).getNumber().intValue();
-        height = ((SpinnerNumberModel) (appletSizeSpinnerH
-            .getModel())).getNumber().intValue();
+        width = ((SpinnerNumberModel) (appletSizeSpinnerW.getModel()))
+            .getNumber().intValue();
+        height = ((SpinnerNumberModel) (appletSizeSpinnerH.getModel()))
+            .getNumber().intValue();
       }
       String StructureFile = viewer.getModelSetPathName();
       if (StructureFile == null) {
@@ -333,7 +342,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
             .Log("Error creating new instance containing script and image in pop_in_Jmol.");
       }
       listModel.addElement(instance);
-      instanceList.setSelectedIndices(new int[] {listModel.getSize() - 1});
+      instanceList.setSelectedIndices(new int[] { listModel.getSize() - 1 });
       LogPanel.Log("added Instance " + instance.name);
       syncLists();
       return;
@@ -356,7 +365,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       int[] list = instanceList.getSelectedIndices();
       if (list.length != 1)
         return;
-      JmolInstance instance = (JmolInstance)listModel.get(list[0]);
+      JmolInstance instance = (JmolInstance) listModel.get(list[0]);
       viewer.evalStringQuiet(instance.script);
       return;
     }
@@ -471,7 +480,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
         }
         script = TextFormat.simpleReplace(script,
             '"' + structureFileName + '"', '"' + newName + '"');
-        script = fixScript(script);
+        //script = fixScript(script);
         LogPanel.Log("      ...adding " + name + ".spt");
         try {
           String scriptname = datadirPath + "/" + name + ".spt";
@@ -518,228 +527,265 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return true;
   }
 
-  abstract String getAppletDefs(int i, String html, StringBuffer appletDefs, JmolInstance instance);
-
-  String fixScript(String script) {
-    return script;    
+  void syncLists() {
+    JList list = webPanels[1 - panelIndex].instanceList;
+    DefaultListModel model1 = (DefaultListModel) instanceList.getModel();
+    DefaultListModel model2 = (DefaultListModel) list.getModel();
+    model2.clear();
+    int n = model1.getSize();
+    for (int i = 0; i < n; i++)
+      model2.addElement(model1.get(i));
+    list.setSelectedIndices(new int[] {});
+    enableButtons(instanceList);
+    webPanels[1 - panelIndex].enableButtons(list);
   }
-  
-  String fixHtml(String html) {
-    return html;
+
+  void enableButtons(JList list) {
+    int nSelected = list.getSelectedIndices().length;
+    int nListed = list.getModel().getSize();
+    saveButton.setEnabled(nListed > 0);
+    deleteInstanceButton.setEnabled(nSelected > 0);
+    showInstanceButton.setEnabled(nSelected == 1);
+  }
+
+  class InstanceCellRenderer extends JLabel implements ListCellRenderer {
+
+    public Component getListCellRendererComponent(JList list, Object value,
+                                                  int index,
+                                                  boolean isSelected,
+                                                  boolean cellHasFocus) {
+      setText(" " + ((JmolInstance) value).name);
+      if (isSelected) {
+        setBackground(list.getSelectionBackground());
+        setForeground(list.getSelectionForeground());
+      } else {
+        setBackground(list.getBackground());
+        setForeground(list.getForeground());
+      }
+      setEnabled(list.isEnabled());
+      setFont(list.getFont());
+      setOpaque(true);
+      enableButtons(list);
+      return this;
+    }
   }
 
 }
 
-
 class ArrayListTransferHandler extends TransferHandler {
   DataFlavor localArrayListFlavor, serialArrayListFlavor;
-  String localArrayListType = DataFlavor.javaJVMLocalObjectMimeType +
-  ";class=java.util.ArrayList";
+  String localArrayListType = DataFlavor.javaJVMLocalObjectMimeType
+      + ";class=java.util.ArrayList";
   JList source = null;
   int[] sourceIndices = null;
   int addIndex = -1; //Location where items were added
-  int addCount = 0;  //Number of items added
-  WebPanel webPanel;  
+  int addCount = 0; //Number of items added
+  WebPanel webPanel;
 
   public ArrayListTransferHandler(WebPanel webPanel) {
     this.webPanel = webPanel;
-      try {
-          localArrayListFlavor = new DataFlavor(localArrayListType);
-      } catch (ClassNotFoundException e) {
-          System.out.println(
-               "ArrayListTransferHandler: unable to create data flavor");
-      }
-      serialArrayListFlavor = new DataFlavor(ArrayList.class,
-                       "ArrayList");
+    try {
+      localArrayListFlavor = new DataFlavor(localArrayListType);
+    } catch (ClassNotFoundException e) {
+      System.out
+          .println("ArrayListTransferHandler: unable to create data flavor");
+    }
+    serialArrayListFlavor = new DataFlavor(ArrayList.class, "ArrayList");
   }
 
   public boolean importData(JComponent c, Transferable t) {
-      if (sourceIndices == null || !canImport(c, t.getTransferDataFlavors())) {
-          return false;
-      }
-      JList target = null;
-      ArrayList alist = null;
-      try {
-          target = (JList)c;
-          if (hasLocalArrayListFlavor(t.getTransferDataFlavors())) {
-              alist = (ArrayList)t.getTransferData(localArrayListFlavor);
-          } else if (hasSerialArrayListFlavor(t.getTransferDataFlavors())) {
-              alist = (ArrayList)t.getTransferData(serialArrayListFlavor);
-          } else {
-              return false;
-          }
-      } catch (UnsupportedFlavorException ufe) {
-          System.out.println("importData: unsupported data flavor");
-          return false;
-      } catch (IOException ioe) {
-          System.out.println("importData: I/O exception");
-          return false;
-      }
-  
-      //At this point we use the same code to retrieve the data
-      //locally or serially.
-  
-      //We'll drop at the current selected index.
-      int targetIndex = target.getSelectedIndex();
-  
-      //Prevent the user from dropping data back on itself.
-      //For example, if the user is moving items #4,#5,#6 and #7 and
-      //attempts to insert the items after item #5, this would
-      //be problematic when removing the original items.
-      //This is interpreted as dropping the same data on itself
-      //and has no effect.
-      if (source.equals(target)) {
-        //System.out.print("checking indices index TO: " + targetIndex + " FROM:");
-        //for (int i = 0; i < sourceIndices.length;i++)
-          //System.out.print(" "+sourceIndices[i]);
-        //System.out.println("");
-          if (targetIndex >= sourceIndices[0] && targetIndex <= sourceIndices[sourceIndices.length - 1]) {
-            //System.out.println("setting indices null : " + targetIndex + " " + sourceIndices[0] + " " + sourceIndices[sourceIndices.length - 1]);
-              sourceIndices = null;
-              return true;
-          }
-      }
-  
-      DefaultListModel listModel = (DefaultListModel)target.getModel();
-      int max = listModel.getSize();
-      if (targetIndex < 0) {
-          targetIndex = max; 
+    if (sourceIndices == null || !canImport(c, t.getTransferDataFlavors())) {
+      return false;
+    }
+    JList target = null;
+    ArrayList alist = null;
+    try {
+      target = (JList) c;
+      if (hasLocalArrayListFlavor(t.getTransferDataFlavors())) {
+        alist = (ArrayList) t.getTransferData(localArrayListFlavor);
+      } else if (hasSerialArrayListFlavor(t.getTransferDataFlavors())) {
+        alist = (ArrayList) t.getTransferData(serialArrayListFlavor);
       } else {
-          if (sourceIndices[0] < targetIndex)
-            targetIndex++;
-          if (targetIndex > max) {
-              targetIndex = max;
-          }
+        return false;
       }
-      addIndex = targetIndex;
-      addCount = alist.size();
-      for (int i=0; i < alist.size(); i++) {
-          listModel.add(targetIndex++, objectOf(listModel, alist.get(i)));
-       }
-      return true;
+    } catch (UnsupportedFlavorException ufe) {
+      System.out.println("importData: unsupported data flavor");
+      return false;
+    } catch (IOException ioe) {
+      System.out.println("importData: I/O exception");
+      return false;
+    }
+
+    //At this point we use the same code to retrieve the data
+    //locally or serially.
+
+    //We'll drop at the current selected index.
+    int targetIndex = target.getSelectedIndex();
+
+    //Prevent the user from dropping data back on itself.
+    //For example, if the user is moving items #4,#5,#6 and #7 and
+    //attempts to insert the items after item #5, this would
+    //be problematic when removing the original items.
+    //This is interpreted as dropping the same data on itself
+    //and has no effect.
+    if (source.equals(target)) {
+      //System.out.print("checking indices index TO: " + targetIndex + " FROM:");
+      //for (int i = 0; i < sourceIndices.length;i++)
+      //System.out.print(" "+sourceIndices[i]);
+      //System.out.println("");
+      if (targetIndex >= sourceIndices[0]
+          && targetIndex <= sourceIndices[sourceIndices.length - 1]) {
+        //System.out.println("setting indices null : " + targetIndex + " " + sourceIndices[0] + " " + sourceIndices[sourceIndices.length - 1]);
+        sourceIndices = null;
+        return true;
+      }
+    }
+
+    DefaultListModel listModel = (DefaultListModel) target.getModel();
+    int max = listModel.getSize();
+    if (targetIndex < 0) {
+      targetIndex = max;
+    } else {
+      if (sourceIndices[0] < targetIndex)
+        targetIndex++;
+      if (targetIndex > max) {
+        targetIndex = max;
+      }
+    }
+    addIndex = targetIndex;
+    addCount = alist.size();
+    for (int i = 0; i < alist.size(); i++) {
+      listModel.add(targetIndex++, objectOf(listModel, alist.get(i)));
+    }
+    return true;
   }
 
   private Object objectOf(DefaultListModel listModel, Object objectName) {
     if (objectName instanceof String) {
       String name = (String) objectName;
       Object o;
-      for (int i = listModel.size(); --i >= 0;) 
-        if (!((o=listModel.get(i)) instanceof String) && o.toString().equals(name))
-            return listModel.get(i);
+      for (int i = listModel.size(); --i >= 0;)
+        if (!((o = listModel.get(i)) instanceof String)
+            && o.toString().equals(name))
+          return listModel.get(i);
     }
     return objectName;
   }
-  
+
   protected void exportDone(JComponent c, Transferable data, int action) {
     //System.out.println("action="+action + " " + addCount + " " + sourceIndices);
-      if ((action == MOVE) && (sourceIndices != null)) {
-          DefaultListModel model = (DefaultListModel)source.getModel();
-    
-          //If we are moving items around in the same list, we
-          //need to adjust the indices accordingly since those
-          //after the insertion point have moved.
-          if (addCount > 0) {
-              for (int i = 0; i < sourceIndices.length; i++) {
-                  if (sourceIndices[i] > addIndex) {
-                      sourceIndices[i] += addCount;
-                  }
-              }
+    if ((action == MOVE) && (sourceIndices != null)) {
+      DefaultListModel model = (DefaultListModel) source.getModel();
+
+      //If we are moving items around in the same list, we
+      //need to adjust the indices accordingly since those
+      //after the insertion point have moved.
+      if (addCount > 0) {
+        for (int i = 0; i < sourceIndices.length; i++) {
+          if (sourceIndices[i] > addIndex) {
+            sourceIndices[i] += addCount;
           }
-          for (int i = sourceIndices.length -1; i >= 0; i--)
-              model.remove(sourceIndices[i]);
-          ((JList)c).setSelectedIndices(new int[]{});
-          if (webPanel != null)
-            webPanel.syncLists();
+        }
       }
-      sourceIndices = null;
-      addIndex = -1;
-      addCount = 0;
+      for (int i = sourceIndices.length - 1; i >= 0; i--)
+        model.remove(sourceIndices[i]);
+      ((JList) c).setSelectedIndices(new int[] {});
+      if (webPanel != null)
+        webPanel.syncLists();
+    }
+    sourceIndices = null;
+    addIndex = -1;
+    addCount = 0;
   }
 
   private boolean hasLocalArrayListFlavor(DataFlavor[] flavors) {
-      if (localArrayListFlavor == null) {
-          return false;
-      }
-  
-      for (int i = 0; i < flavors.length; i++) {
-          if (flavors[i].equals(localArrayListFlavor)) {
-              return true;
-          }
-      }
+    if (localArrayListFlavor == null) {
       return false;
+    }
+
+    for (int i = 0; i < flavors.length; i++) {
+      if (flavors[i].equals(localArrayListFlavor)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private boolean hasSerialArrayListFlavor(DataFlavor[] flavors) {
-      if (serialArrayListFlavor == null) {
-          return false;
-      }
-  
-      for (int i = 0; i < flavors.length; i++) {
-          if (flavors[i].equals(serialArrayListFlavor)) {
-              return true;
-          }
-      }
+    if (serialArrayListFlavor == null) {
       return false;
+    }
+
+    for (int i = 0; i < flavors.length; i++) {
+      if (flavors[i].equals(serialArrayListFlavor)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public boolean canImport(JComponent c, DataFlavor[] flavors) {
-      if (hasLocalArrayListFlavor(flavors))  { return true; }
-      if (hasSerialArrayListFlavor(flavors)) { return true; }
-      return false;
+    if (hasLocalArrayListFlavor(flavors)) {
+      return true;
+    }
+    if (hasSerialArrayListFlavor(flavors)) {
+      return true;
+    }
+    return false;
   }
 
   protected Transferable createTransferable(JComponent c) {
-      if (c instanceof JList) {
-          source = (JList)c;
-          sourceIndices = source.getSelectedIndices();
-          Object[] values = source.getSelectedValues();
-          if (values == null || values.length == 0) {
-              return null;
-          }
-          ArrayList alist = new ArrayList(values.length);
-          for (int i = 0; i < values.length; i++) {
-              Object o = values[i];
-              String str = o.toString();
-              if (str == null) str = "";
-              alist.add(str);
-          }
-          return new ArrayListTransferable(alist);
+    if (c instanceof JList) {
+      source = (JList) c;
+      sourceIndices = source.getSelectedIndices();
+      Object[] values = source.getSelectedValues();
+      if (values == null || values.length == 0) {
+        return null;
       }
-      return null;
+      ArrayList alist = new ArrayList(values.length);
+      for (int i = 0; i < values.length; i++) {
+        Object o = values[i];
+        String str = o.toString();
+        if (str == null)
+          str = "";
+        alist.add(str);
+      }
+      return new ArrayListTransferable(alist);
+    }
+    return null;
   }
 
   public int getSourceActions(JComponent c) {
-      return COPY_OR_MOVE;
+    return COPY_OR_MOVE;
   }
 
   public class ArrayListTransferable implements Transferable {
-      ArrayList data;
-  
-      public ArrayListTransferable(ArrayList alist) {
-          data = alist;
-      }
-  
-      public Object getTransferData(DataFlavor flavor)
-    throws UnsupportedFlavorException {
+    ArrayList data;
+
+    public ArrayListTransferable(ArrayList alist) {
+      data = alist;
+    }
+
+    public Object getTransferData(DataFlavor flavor)
+        throws UnsupportedFlavorException {
       if (!isDataFlavorSupported(flavor)) {
         throw new UnsupportedFlavorException(flavor);
       }
       return data;
     }
-  
-      public DataFlavor[] getTransferDataFlavors() {
-          return new DataFlavor[] { localArrayListFlavor,
-      serialArrayListFlavor };
+
+    public DataFlavor[] getTransferDataFlavors() {
+      return new DataFlavor[] { localArrayListFlavor, serialArrayListFlavor };
+    }
+
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
+      if (localArrayListFlavor.equals(flavor)) {
+        return true;
       }
-  
-      public boolean isDataFlavorSupported(DataFlavor flavor) {
-          if (localArrayListFlavor.equals(flavor)) {
-              return true;
-          }
-          if (serialArrayListFlavor.equals(flavor)) {
-              return true;
-          }
-          return false;
+      if (serialArrayListFlavor.equals(flavor)) {
+        return true;
       }
+      return false;
+    }
   }
 }

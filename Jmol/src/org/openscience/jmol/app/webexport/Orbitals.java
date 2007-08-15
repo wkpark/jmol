@@ -148,7 +148,7 @@ implements ActionListener {
 
     //Create the list and list view to handle the list of 
     //orbital files.
-    ArrayListTransferHandler arrayListHandler = new ArrayListTransferHandler();
+    ArrayListTransferHandler arrayListHandler = new ArrayListTransferHandler(null);
     DefaultListModel orbfilelist = new DefaultListModel();
     OrbList = new JList(orbfilelist);
     OrbList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);

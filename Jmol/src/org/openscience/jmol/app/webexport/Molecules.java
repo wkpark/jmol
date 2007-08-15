@@ -126,7 +126,7 @@ implements ActionListener{
 
     //Create the list and list view to handle the list of 
     //orbital files.
-    ArrayListTransferHandler arrayListHandler = new ArrayListTransferHandler();
+    ArrayListTransferHandler arrayListHandler = new ArrayListTransferHandler(null);
     DefaultListModel Molecfilelist = new DefaultListModel();
     MolecList = new JList(Molecfilelist);
     MolecList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);

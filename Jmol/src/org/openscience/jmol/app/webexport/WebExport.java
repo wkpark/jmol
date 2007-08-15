@@ -28,6 +28,7 @@ package org.openscience.jmol.app.webexport;
 import java.util.*;
 import java.awt.*;
 import javax.swing.*;
+
 import java.text.*;
 import org.jmol.api.*;
 
@@ -48,14 +49,17 @@ public class WebExport extends JPanel{
 		super(new GridLayout(1,1));
 		//Define the tabbed pane
 		JTabbedPane Maintabs = new JTabbedPane();
-		
-		//Add tabs to the tabbed pane
-		PopInJmol pop_in_Creator = new PopInJmol(viewer);
-		JComponent pop_in = pop_in_Creator.getPanel();
-		Maintabs.addTab("Pop-In Jmol", pop_in);
-		ScriptButtons resizable_Creator = new ScriptButtons(viewer);
-		JComponent resizable = resizable_Creator.getPanel();
-		Maintabs.addTab("Resizable Jmol", resizable);
+
+    //Create file chooser
+    JFileChooser fc = new JFileChooser();
+
+    WebPanel webPanels[] = new WebPanel[2];
+    
+    //Add tabs to the tabbed pane
+    webPanels[0] = new PopInJmol(viewer, fc, webPanels, 0);
+		Maintabs.addTab("Pop-In Jmol", ((PopInJmol) webPanels[0]).getPanel());
+		webPanels[1] = new ScriptButtons(viewer, fc, webPanels, 1);
+		Maintabs.addTab("ScriptButton Jmol", ((ScriptButtons) webPanels[1]).getPanel());
 		Orbitals OrbitalCreator = new Orbitals();
 		JComponent Orbitals = OrbitalCreator.Panel();
 		Maintabs.addTab("Orbitals", Orbitals);
@@ -98,6 +102,7 @@ public class WebExport extends JPanel{
 		
         //Create and set up the window.
         if (webFrame != null) {
+          webFrame.setVisible(true);
           webFrame.toFront();
           return;
         }

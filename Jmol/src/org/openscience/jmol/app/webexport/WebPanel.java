@@ -43,12 +43,12 @@ import java.io.IOException;
 abstract class WebPanel extends JPanel implements ActionListener {
 
   //The constants used to generate panels, etc.
-  JButton saveButton, addInstanceButton, deleteInstanceButton;
+  JButton saveButton, addInstanceButton, deleteInstanceButton, showInstanceButton;
   JTextField appletPath;
   JSpinner appletSizeSpinnerW;
   JSpinner appletSizeSpinnerH;
   JFileChooser fc;
-  JList instanceList, scriptList;
+  JList instanceList;
   JmolViewer viewer;
   
   String templateName;
@@ -58,24 +58,50 @@ abstract class WebPanel extends JPanel implements ActionListener {
   String htmlAppletTemplate;
   String appletTemplateName;
   boolean useAppletJS;
+  
+  int panelIndex;
+  WebPanel[] webPanels;
 
-  WebPanel(JmolViewer viewer) {
+  WebPanel(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels, int panelIndex) {
     this.viewer = viewer;
+    this.fc = fc;
+    this.webPanels = webPanels;
+    this.panelIndex = panelIndex;
     //Create the text field for the path to the Jmol applet
     appletPath = new JTextField(20);
     appletPath.addActionListener(this);
     appletPath.setText(WebExport.getAppletPath());
   }
 
+  void syncLists() {
+    JList list = webPanels[1-panelIndex].instanceList;
+    DefaultListModel model1 = (DefaultListModel)instanceList.getModel();
+    DefaultListModel model2 = (DefaultListModel)list.getModel();
+    model2.clear();
+    int n = model1.getSize();
+    for (int i = 0; i < n; i++)
+      model2.addElement(model1.get(i));
+    list.setSelectedIndices(new int[]{});
+    enableButtons(instanceList);
+    webPanels[1-panelIndex].enableButtons(list);
+  }
+  
+  void enableButtons(JList list) {
+    int nSelected = list.getSelectedIndices().length;
+    int nListed = list.getModel().getSize();
+    saveButton.setEnabled(nListed > 0);
+    deleteInstanceButton.setEnabled(nSelected > 0);
+    showInstanceButton.setEnabled(nSelected == 1);
+  }
+  
   
   class InstanceCellRenderer extends JLabel implements ListCellRenderer {
-    public Component getListCellRendererComponent(JList list, // the list
-                                                  Object value, // value to display
-                                                  int index, // cell index
-                                                  boolean isSelected, // is the cell selected
-                                                  boolean cellHasFocus) // does the cell have focus
-    {
-      setText(" " +((JmolInstance) value).name);
+    
+    public Component getListCellRendererComponent(JList list, Object value,
+                                                  int index,
+                                                  boolean isSelected,
+                                                  boolean cellHasFocus) {
+      setText(" " + ((JmolInstance) value).name);
       if (isSelected) {
         setBackground(list.getSelectionBackground());
         setForeground(list.getSelectionForeground());
@@ -86,6 +112,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       setEnabled(list.isEnabled());
       setFont(list.getFont());
       setOpaque(true);
+      enableButtons(list);
       return this;
     }
   }
@@ -116,16 +143,13 @@ abstract class WebPanel extends JPanel implements ActionListener {
     }
 
   //Need the panel maker and the action listener.
-  protected JPanel getPanel(JComponent centerPanel, String label) {
+  protected JPanel getPanel(JComponent appletSizePanel, String label) {
 
-    JPanel appletSizePanel = new JPanel();   
-    appletSizePanel.setLayout(new BorderLayout());
-    appletSizePanel.add(centerPanel, BorderLayout.NORTH);
-    appletSizePanel.add(new JLabel(label), BorderLayout.SOUTH);
+    appletSizePanel.setMaximumSize(new Dimension(350, 50));
 
 
     //Create the brief description text
-    JLabel jDescription = new JLabel(description);
+    JLabel jDescription = new JLabel("      " + description + "\n\n");
 
     //For layout purposes, put things in separate panels
 
@@ -137,56 +161,68 @@ abstract class WebPanel extends JPanel implements ActionListener {
     JPanel savePanel = new JPanel();  
     savePanel.add(saveButton);
 
-    //Create file chooser
-    fc = new JFileChooser();
-
     //Create the list and list view to handle the list of 
     //Jmol Instances.
     instanceList = new JList(new DefaultListModel());
     instanceList.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-    instanceList.setTransferHandler(new ArrayListTransferHandler());
+    instanceList.setTransferHandler(new ArrayListTransferHandler(this));
     instanceList.setCellRenderer(new InstanceCellRenderer());
     instanceList.setDragEnabled(true);
     JScrollPane instanceListView = new JScrollPane(instanceList);
-    instanceListView.setPreferredSize(new Dimension(300, 200));
+    instanceListView.setPreferredSize(new Dimension(350, 200));
     JPanel instanceSet = new JPanel();
     instanceSet.setLayout(new BorderLayout());
-    instanceSet.add(instanceListView, BorderLayout.NORTH);
+    instanceSet.add(new JLabel(label), BorderLayout.NORTH);
+    instanceSet.add(instanceListView, BorderLayout.CENTER);
     instanceSet.add(new JLabel("double-click and drag to reorder"), BorderLayout.SOUTH);
 
     //Create the Instance add button.
     addInstanceButton = new JButton("Add Present Jmol State as Instance...");
     addInstanceButton.addActionListener(this);
 
-    //Create the delete Instance button
+    //Instance selection
+    JPanel instanceButtonPanel = new JPanel();
+    instanceButtonPanel.add(addInstanceButton);    
+
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setMaximumSize(new Dimension(350, 50));
+    showInstanceButton = new JButton("Show Selected");
+    showInstanceButton.addActionListener(this);
     deleteInstanceButton = new JButton("Delete Selected");
     deleteInstanceButton.addActionListener(this);
+    buttonPanel.add(showInstanceButton);
+    buttonPanel.add(deleteInstanceButton);
 
-    //Instance selection
-    JPanel instanceButtonsPanel = new JPanel();
-    instanceButtonsPanel.add(addInstanceButton);
-    instanceButtonsPanel.add(deleteInstanceButton);
-
+    
     //Title and border for the Instance selection
     JPanel instancePanel = new JPanel();
     instancePanel.setLayout(new BorderLayout());
-    instancePanel.add(instanceButtonsPanel, BorderLayout.PAGE_START);
-    instancePanel.add(appletSizePanel, BorderLayout.CENTER);
-    instancePanel.add(instanceSet, BorderLayout.PAGE_END);
-    instancePanel.setBorder(BorderFactory
+    instancePanel.add(instanceSet, BorderLayout.PAGE_START);
+    instancePanel.add(instanceButtonPanel, BorderLayout.CENTER);
+    instancePanel.add(buttonPanel, BorderLayout.PAGE_END);
+
+    JPanel rightPanel = new JPanel();
+    rightPanel.setLayout(new BorderLayout());
+    rightPanel.setMinimumSize(new Dimension(350, 350));
+    rightPanel.setMaximumSize(new Dimension(350, 1000));
+    rightPanel.add(appletSizePanel, BorderLayout.PAGE_START);
+    rightPanel.add(instancePanel, BorderLayout.PAGE_END);
+    rightPanel.setBorder(BorderFactory
         .createTitledBorder("Jmol Instances:"));
 
     //Create the overall panel
     JPanel panel = new JPanel();
     panel.setLayout(new BorderLayout());
 
-    JPanel leftpanel = getLeftPanel(null);
+    JPanel leftPanel = getLeftPanel(null);
+    leftPanel.setMaximumSize(new Dimension(350, 1000));
 
     //Add everything to this panel.
     panel.add(jDescription, BorderLayout.PAGE_START);
-    panel.add(leftpanel, BorderLayout.CENTER);
-    panel.add(instancePanel, BorderLayout.LINE_END);
+    panel.add(leftPanel, BorderLayout.CENTER);
+    panel.add(rightPanel, BorderLayout.LINE_END);
 
+    enableButtons(instanceList);
     return panel;
   }
 
@@ -210,6 +246,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
     if (sizePanel == null) {
       pathSizePanel = pathPanel;
+      pathSizePanel.setSize(new Dimension(300,60));
     } else {
       pathSizePanel = new JPanel();
       pathSizePanel.setLayout(new BorderLayout());
@@ -228,10 +265,9 @@ abstract class WebPanel extends JPanel implements ActionListener {
     //Combine previous three panels into one
     JPanel leftpanel = new JPanel();
     leftpanel.setLayout(new BorderLayout());
-    leftpanel.add(pathSizePanel, BorderLayout.PAGE_START);
-    leftpanel.add(editorScrollPane, BorderLayout.CENTER);
+    leftpanel.add(editorScrollPane, BorderLayout.PAGE_START);
+    leftpanel.add(pathSizePanel, BorderLayout.CENTER);
     leftpanel.add(savePanel, BorderLayout.PAGE_END);
-
     return leftpanel;
   }
 
@@ -253,7 +289,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     JScrollPane editorScrollPane = new JScrollPane(instructions);
     editorScrollPane
         .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-    editorScrollPane.setPreferredSize(new Dimension(250, 145));
+    editorScrollPane.setPreferredSize(new Dimension(250, 350));
     editorScrollPane.setMinimumSize(new Dimension(10, 10));
     return editorScrollPane;
   }
@@ -297,6 +333,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       }
       listModel.addElement(instance);
       LogPanel.Log("added Instance " + instance.name);
+      syncLists();
       return;
     }
 
@@ -307,6 +344,18 @@ abstract class WebPanel extends JPanel implements ActionListener {
       int nDeleted = 0;
       for (int i = 0; i < todelete.length; i++)
         listModel.remove(todelete[i] - nDeleted++);
+      syncLists();
+      return;
+    }
+
+    if (e.getSource() == showInstanceButton) {
+      DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
+      //find out which are selected and remove them.
+      int[] list = instanceList.getSelectedIndices();
+      if (list.length != 1)
+        return;
+      JmolInstance instance = (JmolInstance)listModel.get(list[0]);
+      viewer.evalStringQuiet(instance.script);
       return;
     }
 
@@ -488,9 +537,10 @@ class ArrayListTransferHandler extends TransferHandler {
   int[] sourceIndices = null;
   int addIndex = -1; //Location where items were added
   int addCount = 0;  //Number of items added
-  
+  WebPanel webPanel;  
 
-  public ArrayListTransferHandler() {
+  public ArrayListTransferHandler(WebPanel webPanel) {
+    this.webPanel = webPanel;
       try {
           localArrayListFlavor = new DataFlavor(localArrayListType);
       } catch (ClassNotFoundException e) {
@@ -596,6 +646,8 @@ class ArrayListTransferHandler extends TransferHandler {
           for (int i = sourceIndices.length -1; i >= 0; i--)
               model.remove(sourceIndices[i]);
           ((JList)c).setSelectedIndices(new int[]{});
+          if (webPanel != null)
+            webPanel.syncLists();
       }
       sourceIndices = null;
       addIndex = -1;

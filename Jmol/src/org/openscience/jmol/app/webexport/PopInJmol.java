@@ -31,9 +31,9 @@ import org.jmol.util.TextFormat;
 
 public class PopInJmol extends WebPanel {
 
-  PopInJmol(JmolViewer viewer) {
-    super(viewer);
-    description = "Create a web page with images that convert to live Jmol on user click...";
+  PopInJmol(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels, int panelIndex) {
+    super(viewer, fc, webPanels, panelIndex);
+    description = "Create a web page with images that convert to live Jmol applets on user click";
     infoFile = "pop_in_instructions.html";
     templateName = "pop_in_template.html";
     appletTemplateName = "pop_in_template2.html";

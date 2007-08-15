@@ -171,6 +171,7 @@ class GuiMap {
       labels.put("Prefs.isBondAtomColor", GT._("Use Atom Color"));
       labels.put("openTip", GT._("Open a file."));
       labels.put("exportTip", GT._("Export view to an image or script file."));
+      labels.put("towebTip", GT._("Export one or more views to a web page."));
       labels.put("povrayTip", GT._("Render in pov-ray."));
       labels.put("printTip", GT._("Print view."));
       labels.put("rotateTip", GT._("Rotate molecule."));

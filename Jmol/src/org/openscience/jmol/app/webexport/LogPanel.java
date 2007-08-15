@@ -30,12 +30,19 @@ import javax.swing.*;
 public class LogPanel {
 	
 	private static JTextArea log;
-	
-	public static void Log(String Message){
-		log.append(Message + "\n");
+	private static boolean resetFlag;
+	public static void Log(String message){
+    if (resetFlag)
+      log.setText("");
+    resetFlag = (message.length() == 0);
+		log.append(message + "\n");
 		log.setCaretPosition(log.getDocument().getLength());
 	}
 	
+  public static String getText() {
+    return log.getText();
+  }
+  
 	public JComponent logPanel(){
 		//Now layout the LogPanel.  It will be added to the tabs in the main class.
 		

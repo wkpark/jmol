@@ -120,9 +120,9 @@ public class WebExport extends JPanel{
         webFrame.pack();
         webFrame.setVisible(true);
         if (RunStatus == StandAlone){
-            LogPanel.Log("Jmol_Web_Page_Maker is running as a standalone application");
+            //LogPanel.Log("Jmol_Web_Page_Maker is running as a standalone application");
         } else {
-        	LogPanel.Log("Jmol_Web_Page_Maker is running as a plug-in");
+        	//LogPanel.Log("Jmol_Web_Page_Maker is running as a plug-in");
          }
     }
 	

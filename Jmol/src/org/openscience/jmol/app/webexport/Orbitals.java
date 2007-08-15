@@ -210,7 +210,7 @@ implements ActionListener {
 				}
                 
             } else {
-                LogPanel.Log("Orbital file selection cancelled by user.");
+                //LogPanel.Log("Orbital file selection cancelled by user.");
             }
 			//Handle Delete button
 		} else if (e.getSource() == OrbdeleteButton){

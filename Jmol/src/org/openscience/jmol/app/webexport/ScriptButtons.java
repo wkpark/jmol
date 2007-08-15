@@ -24,7 +24,6 @@
  */
 package org.openscience.jmol.app.webexport;
 
-import java.awt.*;
 import javax.swing.*;
 
 import org.jmol.api.JmolViewer;
@@ -52,6 +51,7 @@ public class ScriptButtons extends WebPanel {
         5); //step size
     appletSizeSpinnerW = new JSpinner(appletSizeModelW);
     //panel to hold spinner and label
+    
     JPanel appletSizePanel = new JPanel();
     appletSizePanel.add(new JLabel("% of window for applet width:"));
     appletSizePanel.add(appletSizeSpinnerW);
@@ -63,16 +63,8 @@ public class ScriptButtons extends WebPanel {
     appletSizePanel.add(new JLabel("height:"));
     appletSizePanel.add(appletSizeSpinnerH);
 */
-    //Text info on the name choices for the instance
-    JEditorPane nameChoice = new JEditorPane();
-    nameChoice.setEditable(false);
-    nameChoice.setPreferredSize(new Dimension(300, 1));
-    nameChoice.setText("The names you choose will be used as the button labels");
-
-
     //Create the overall panel
-    JPanel PopInPanel = getPanel(nameChoice, appletSizePanel);
-    return PopInPanel;
+    return getPanel(appletSizePanel, "These names will be used for button labels");
   }
 
   String fixHtml(String html) {

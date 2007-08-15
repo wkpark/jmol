@@ -25,6 +25,7 @@
 package org.openscience.jmol.app.webexport;
 
 import javax.swing.*;
+
 import org.jmol.api.JmolViewer;
 import org.jmol.util.TextFormat;
 
@@ -39,7 +40,7 @@ public class PopInJmol extends WebPanel {
     useAppletJS = false;
   }
 
-  //Need the panel maker and the action listener.
+
   public JPanel getPanel() {
 
     //Create the appletSize spinner so the user can decide how big
@@ -62,7 +63,7 @@ public class PopInJmol extends WebPanel {
     appletSizePanel.add(new JLabel("height:"));
     appletSizePanel.add(appletSizeSpinnerH);
 
-    return getPanel(appletSizePanel, null);
+    return getPanel(appletSizePanel, "These names will be used as filenames for the applets");
   }
 
   String getAppletDefs(int i, String html, StringBuffer appletDefs, JmolInstance instance) {

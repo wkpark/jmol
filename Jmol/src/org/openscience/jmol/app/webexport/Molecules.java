@@ -185,13 +185,13 @@ implements ActionListener{
                 //This is where a real application would open the file.
 				//Were're just making a list since we only use the file names.
 				for (int i = 0; i < files.length; i++){
-					LogPanel.Log("Molecule file "+i+"slected: " + files[i].getName() + ".");
+					//LogPanel.Log("Molecule file "+i+" selected: " + files[i].getName());
 					String str = files[i].getName();
 					listModel.addElement(str);
 				}
                 
             } else {
-                LogPanel.Log("Molecule file selection cancelled by user.");
+                //LogPanel.Log("Molecule file selection cancelled by user.");
             }
 			//Handle Delete button
 		} else if (e.getSource() == MolecdeleteButton){

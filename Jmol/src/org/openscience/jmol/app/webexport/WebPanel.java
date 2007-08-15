@@ -75,8 +75,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
                                                   boolean isSelected, // is the cell selected
                                                   boolean cellHasFocus) // does the cell have focus
     {
-      String s = ((JmolInstance) value).name;
-      setText(s);
+      setText(" " +((JmolInstance) value).name);
       if (isSelected) {
         setBackground(list.getSelectionBackground());
         setForeground(list.getSelectionForeground());
@@ -117,7 +116,13 @@ abstract class WebPanel extends JPanel implements ActionListener {
     }
 
   //Need the panel maker and the action listener.
-  protected JPanel getPanel(JComponent centerPanel, JPanel appletSizePanel) {
+  protected JPanel getPanel(JComponent centerPanel, String label) {
+
+    JPanel appletSizePanel = new JPanel();   
+    appletSizePanel.setLayout(new BorderLayout());
+    appletSizePanel.add(centerPanel, BorderLayout.NORTH);
+    appletSizePanel.add(new JLabel(label), BorderLayout.SOUTH);
+
 
     //Create the brief description text
     JLabel jDescription = new JLabel(description);
@@ -129,7 +134,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     saveButton.addActionListener(this);
 
     //save file selection panel
-    JPanel savePanel = new JPanel();
+    JPanel savePanel = new JPanel();  
     savePanel.add(saveButton);
 
     //Create file chooser
@@ -166,7 +171,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     JPanel instancePanel = new JPanel();
     instancePanel.setLayout(new BorderLayout());
     instancePanel.add(instanceButtonsPanel, BorderLayout.PAGE_START);
-    instancePanel.add(centerPanel, BorderLayout.CENTER);
+    instancePanel.add(appletSizePanel, BorderLayout.CENTER);
     instancePanel.add(instanceSet, BorderLayout.PAGE_END);
     instancePanel.setBorder(BorderFactory
         .createTitledBorder("Jmol Instances:"));
@@ -175,7 +180,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     JPanel panel = new JPanel();
     panel.setLayout(new BorderLayout());
 
-    JPanel leftpanel = getLeftPanel(appletSizePanel);
+    JPanel leftpanel = getLeftPanel(null);
 
     //Add everything to this panel.
     panel.add(jDescription, BorderLayout.PAGE_START);
@@ -262,39 +267,39 @@ abstract class WebPanel extends JPanel implements ActionListener {
       //which contains the full information on the file that is loaded and manipulations done.
       String name = JOptionPane
           .showInputDialog("Give the occurance of Jmol a one word name:");
-      if (name != null) {
-        name = TextFormat.replaceAllCharacters(name, "' \"","_");
-        //need to get the script...
-        String script = viewer.getStateInfo();
-        if (script == null) {
-          LogPanel.Log("Error trying to get Jmol State within pop_in_Jmol.");
-        }
-        DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
-        SpinnerNumberModel sizeModelW = (SpinnerNumberModel) (appletSizeSpinnerW
-            .getModel());
-        int width = sizeModelW.getNumber().intValue();
-        SpinnerNumberModel sizeModelH = (appletSizeSpinnerH == null ? null : (SpinnerNumberModel) (appletSizeSpinnerH
-            .getModel()));
-        int height = (sizeModelH == null ? width : sizeModelH.getNumber().intValue());
-        String StructureFile = viewer.getModelSetPathName();
-        if (StructureFile == null) {
-          LogPanel
-              .Log("Error trying to get name and path to file containing structure in pop_in_Jmol.");
-        }
-        JmolInstance instance = new JmolInstance(viewer, name, StructureFile,
-            script, width, height);
-        if (instance == null) {
-          LogPanel
-              .Log("Error creating new instance containing script and image in pop_in_Jmol.");
-        }
-        listModel.addElement(instance);
-        LogPanel.Log("added Instance " + instance.name);
-      } else {
-        LogPanel.Log("Add instance cancelled by user.");
+      if (name == null)
+        return;
+      name = TextFormat
+          .replaceAllCharacters(name, "[]/\\#*&^%$?.,%<>' \"", "_");
+      //need to get the script...
+      String script = viewer.getStateInfo();
+      if (script == null) {
+        LogPanel.Log("Error trying to get Jmol State within pop_in_Jmol.");
       }
+      DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
+      SpinnerNumberModel sizeModelW = (SpinnerNumberModel) (appletSizeSpinnerW
+          .getModel());
+      int width = sizeModelW.getNumber().intValue();
+      SpinnerNumberModel sizeModelH = (appletSizeSpinnerH == null ? null
+          : (SpinnerNumberModel) (appletSizeSpinnerH.getModel()));
+      int height = (sizeModelH == null ? width : sizeModelH.getNumber()
+          .intValue());
+      String StructureFile = viewer.getModelSetPathName();
+      if (StructureFile == null) {
+        LogPanel
+            .Log("Error trying to get name and path to file containing structure in pop_in_Jmol.");
+      }
+      JmolInstance instance = new JmolInstance(viewer, name, StructureFile,
+          script, width, height);
+      if (instance == null) {
+        LogPanel
+            .Log("Error creating new instance containing script and image in pop_in_Jmol.");
+      }
+      listModel.addElement(instance);
+      LogPanel.Log("added Instance " + instance.name);
+      return;
     }
 
-    //Handle Delete button
     if (e.getSource() == deleteInstanceButton) {
       DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
       //find out which are selected and remove them.
@@ -302,25 +307,25 @@ abstract class WebPanel extends JPanel implements ActionListener {
       int nDeleted = 0;
       for (int i = 0; i < todelete.length; i++)
         listModel.remove(todelete[i] - nDeleted++);
-      //Handle save button action.
-    } else if (e.getSource() == saveButton) {
+      return;
+    }
+
+    if (e.getSource() == saveButton) {
       fc.setDialogTitle("Save file as (please do not use an extension):");
       int returnVal = fc.showSaveDialog(this);
-      if (returnVal == JFileChooser.APPROVE_OPTION) {
-        File file = fc.getSelectedFile();
-        boolean retVal = true;
-        try {
-          String path = appletPath.getText();
-          WebExport.setAppletPath(path);
-          retVal = FileWriter(file, instanceList, path);
-        } catch (IOException IOe) {
-          LogPanel.Log(IOe.getMessage());
-        }
-        if (!retVal) {
-          LogPanel.Log("Call to FileWriter unsuccessful.");
-        }
-      } else {
-        LogPanel.Log("Save command cancelled by user.");
+      if (returnVal != JFileChooser.APPROVE_OPTION)
+        return;
+      File file = fc.getSelectedFile();
+      boolean retVal = true;
+      try {
+        String path = appletPath.getText();
+        WebExport.setAppletPath(path);
+        retVal = FileWriter(file, instanceList, path);
+      } catch (IOException IOe) {
+        LogPanel.Log(IOe.getMessage());
+      }
+      if (!retVal) {
+        LogPanel.Log("Call to FileWriter unsuccessful.");
       }
     }
   }
@@ -341,9 +346,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
     }
     boolean made_datadir = (file.exists() && file.isDirectory() || file.mkdir());
     DefaultListModel listModel = (DefaultListModel) InstanceList.getModel();
+    LogPanel.Log("");
     if (made_datadir) {
-      LogPanel.Log("Created directory: " + datadirPath);
-      LogPanel.Log("Writing javascript file JmolPopIn.js...");
+      LogPanel.Log("Using directory " + datadirPath);
+      LogPanel.Log("  adding JmolPopIn.js");
       URL url = getResource("JmolPopIn.js");
       PrintStream out = null;
       try {
@@ -368,31 +374,41 @@ abstract class WebPanel extends JPanel implements ActionListener {
       } catch (IOException IOe) {
         throw IOe;
       }
+      String lastFile = "";
+      String lastName = "";
+      String outfilename = "";
       for (int i = 0; i < listModel.getSize(); i++) {
         JmolInstance thisInstance = (JmolInstance) (listModel.getElementAt(i));
         String name = thisInstance.name;
         String script = thisInstance.script;
-        LogPanel.Log("Writing Data for " + name + ".");
-        LogPanel.Log("  Copying image file from scratch...");
+        LogPanel.Log("  ...jmolApplet" + i);
+        LogPanel.Log("      ...adding " + name + ".png");
         try {
           thisInstance.movepict(datadirPath);
         } catch (IOException IOe) {
           throw IOe;
         }
-        LogPanel.Log("  Copying the structure data file...");
         out = null;
         //Get the path to the file from the Jmol
+
         String structureFile = thisInstance.file;
         String extension = structureFile.substring(structureFile
             .lastIndexOf(".") + 1, structureFile.length());
-        String outfilename = datadirPath + "/" + name + "." + extension;
-
-        String data = viewer.getFileAsString(structureFile);
-        viewer.createImage(outfilename, data, Integer.MIN_VALUE, 0, 0);
-        //          JOptionPane.showMessageDialog(null, "Writing Script file...");
-        LogPanel.Log("  Writing script for this instance...");
+        String newName = lastName;
+        if (!structureFile.equals(lastFile)) {
+          newName = name + "." + extension; //assuming things are relative to calling page.
+          outfilename = datadirPath
+              + (datadirPath.indexOf("\\") >= 0 ? "\\" : "/") + newName;
+          LogPanel
+              .Log("      ...copying " + newName + " from " + structureFile);
+          String data = viewer.getFileAsString(structureFile);
+          viewer.createImage(outfilename, data, Integer.MIN_VALUE, 0, 0);
+          lastFile = structureFile;
+          lastName = newName;
+        } else {
+          LogPanel.Log("      ..." + name + " uses " + outfilename);
+        }
         //First modify to use the newly copied structure file
-        String newstructurefile = name + "." + extension; //assuming things are relative to calling page.
         String structureFileName = (new File(structureFile)).getName();
         int pt = script.indexOf("/" + structureFileName + "\"");
         if (pt > 0) {
@@ -403,8 +419,9 @@ abstract class WebPanel extends JPanel implements ActionListener {
           structureFileName = script.substring(pt0, pt + 1) + structureFileName;
         }
         script = TextFormat.simpleReplace(script,
-            '"' + structureFileName + '"', '"' + newstructurefile + '"');
+            '"' + structureFileName + '"', '"' + newName + '"');
         script = fixScript(script);
+        LogPanel.Log("      ...adding " + name + ".spt");
         try {
           String scriptname = datadirPath + "/" + name + ".spt";
           out = new PrintStream(new FileOutputStream(scriptname));
@@ -435,8 +452,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
       html = TextFormat.simpleReplace(html, "@APPLETDEFS@", str);
       html = TextFormat.simpleReplace(html, "@CREATIONDATA@", WebExport
           .TimeStamp_WebLink());
-      LogPanel.Log("Writing HTML file for this web page at " + datadirPath
-          + "/" + fileName);
+      LogPanel.Log("      ...creating " + fileName);
+      html = TextFormat.simpleReplace(html, "</body>",
+          "<div style='display:none'>\n<pre>\n" + LogPanel.getText()
+              + "\n</pre></div>\n</body>");
       viewer.createImage(datadirPath + "/" + fileName, html, Integer.MIN_VALUE,
           0, 0);
     } else {
@@ -444,6 +463,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
           + datadirPath);
       throw IOe;
     }
+    LogPanel.Log("");
     return true;
   }
 

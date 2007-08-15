@@ -310,8 +310,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
       //make dialog to get name for instance
       //create an instance with this name.  Each instance is just a container for a string with the Jmol state
       //which contains the full information on the file that is loaded and manipulations done.
+      String label = (instanceList.getSelectedIndices().length != 1 ? "" 
+          : ((JmolInstance)instanceList.getModel().getElementAt(instanceList.getSelectedIndex())).name);
       String name = JOptionPane
-          .showInputDialog("Give the occurance of Jmol a one word name:");
+          .showInputDialog("Give the occurance of Jmol a one word name:", label);
       if (name == null)
         return;
       name = TextFormat

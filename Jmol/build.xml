@@ -199,6 +199,7 @@
       <fileset dir="src">
         <include name="**/*.jpg" />
         <include name="**/*.gif" />
+      	<include name="**/*.png" />
         <include name="**/*.html" />
         <include name="**/*.dtd" />
         <include name="**/*.properties" />

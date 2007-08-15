@@ -313,13 +313,14 @@ abstract class WebPanel extends JPanel implements ActionListener {
         LogPanel.Log("Error trying to get Jmol State within pop_in_Jmol.");
       }
       DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
-      SpinnerNumberModel sizeModelW = (SpinnerNumberModel) (appletSizeSpinnerW
-          .getModel());
-      int width = sizeModelW.getNumber().intValue();
-      SpinnerNumberModel sizeModelH = (appletSizeSpinnerH == null ? null
-          : (SpinnerNumberModel) (appletSizeSpinnerH.getModel()));
-      int height = (sizeModelH == null ? width : sizeModelH.getNumber()
-          .intValue());
+      int width = 300;
+      int height = 300;
+      if (appletSizeSpinnerH != null) {
+        width = ((SpinnerNumberModel) (appletSizeSpinnerW
+            .getModel())).getNumber().intValue();
+        height = ((SpinnerNumberModel) (appletSizeSpinnerH
+            .getModel())).getNumber().intValue();
+      }
       String StructureFile = viewer.getModelSetPathName();
       if (StructureFile == null) {
         LogPanel

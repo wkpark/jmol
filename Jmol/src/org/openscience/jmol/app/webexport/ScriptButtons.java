@@ -33,7 +33,7 @@ public class ScriptButtons extends WebPanel {
 
   ScriptButtons(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels, int panelIndex) {
     super(viewer, fc, webPanels, panelIndex);
-    description = "Create a web page where a text and button pane scrolls next to a resizable Jmol";
+    description = "Create a web page containing a text and button pane scrolls next to a resizable Jmol applet";
     infoFile = "script_button_instructions.html";
     templateName = "script_button_template.html";
     appletTemplateName = "script_button_template2.html";

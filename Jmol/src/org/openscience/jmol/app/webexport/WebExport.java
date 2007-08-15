@@ -24,26 +24,26 @@
  */
 package org.openscience.jmol.app.webexport;
 
-
-import java.util.*;
-import java.awt.*;
+import java.awt.GridLayout;
+import java.text.DateFormat;
+import java.util.Date;
 import javax.swing.*;
 
-import java.text.*;
-import org.jmol.api.*;
+import org.jmol.api.JmolViewer;
 
 public class WebExport extends JPanel{
 	
-	/**
-	 * 
-	 */
-	JmolViewer viewer;
+  private boolean showMoleculesAndOrbitals = false;
+  //for development purposes, set testFlag4 prior to opening
+  //this panel to see these pages.
+  
+  JmolViewer viewer;
 	
 	private static final long serialVersionUID = 1L;
 	//run status
-	static final int StandAlone = 0; 
-	static final int inJmol = 1;
-	static int RunStatus = inJmol; //assume running inside Jmol
+	static final int STAND_ALONE = 0; 
+	static final int IN_JMOL = 1;
+	static int runStatus = IN_JMOL; //assume running inside Jmol
 	
 	public WebExport(JmolViewer viewer){
 		super(new GridLayout(1,1));
@@ -60,12 +60,17 @@ public class WebExport extends JPanel{
 		Maintabs.addTab("Pop-In Jmol", ((PopInJmol) webPanels[0]).getPanel());
 		webPanels[1] = new ScriptButtons(viewer, fc, webPanels, 1);
 		Maintabs.addTab("ScriptButton Jmol", ((ScriptButtons) webPanels[1]).getPanel());
-		Orbitals OrbitalCreator = new Orbitals();
-		JComponent Orbitals = OrbitalCreator.Panel();
-		Maintabs.addTab("Orbitals", Orbitals);
-		Molecules MoleculeCreator = new Molecules();
-		JComponent Molecules = MoleculeCreator.Panel();
-		Maintabs.addTab("Molecules", Molecules);
+    
+    showMoleculesAndOrbitals = runStatus == STAND_ALONE || (((Boolean)viewer.getParameter("testFlag4")).booleanValue());
+    if (showMoleculesAndOrbitals) {
+  		Orbitals OrbitalCreator = new Orbitals();
+	  	JComponent Orbitals = OrbitalCreator.Panel();
+		  Maintabs.addTab("Orbitals", Orbitals);
+		  Molecules MoleculeCreator = new Molecules();
+		  JComponent Molecules = MoleculeCreator.Panel();
+		  Maintabs.addTab("Molecules", Molecules);
+    }
+    
 // Uncomment to activate the test panel
 //		Test TestCreator = new Test((Viewer)viewer);
 //		JComponent Test = TestCreator.Panel();
@@ -107,7 +112,7 @@ public class WebExport extends JPanel{
           return;
         }
         webFrame = new JFrame("Jmol Web Page Maker");
-        if (RunStatus == StandAlone) {
+        if (runStatus == STAND_ALONE) {
             //Make sure we have nice window decorations.
             JFrame.setDefaultLookAndFeelDecorated(true);
             JDialog.setDefaultLookAndFeelDecorated(true);
@@ -124,7 +129,7 @@ public class WebExport extends JPanel{
         //Display the window.
         webFrame.pack();
         webFrame.setVisible(true);
-        if (RunStatus == StandAlone){
+        if (runStatus == STAND_ALONE){
             //LogPanel.Log("Jmol_Web_Page_Maker is running as a standalone application");
         } else {
         	//LogPanel.Log("Jmol_Web_Page_Maker is running as a plug-in");
@@ -134,7 +139,7 @@ public class WebExport extends JPanel{
     //can we do this? -BH
     public static void main(String[] args) {
 		//If we start here it is running as standalone
-		RunStatus = StandAlone;
+		runStatus = STAND_ALONE;
 		System.out.println("Jmol_Web_Page_Maker is running as a standalone application");
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.

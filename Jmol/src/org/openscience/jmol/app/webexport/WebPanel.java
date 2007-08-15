@@ -332,6 +332,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
             .Log("Error creating new instance containing script and image in pop_in_Jmol.");
       }
       listModel.addElement(instance);
+      instanceList.setSelectedIndices(new int[] {listModel.getSize() - 1});
       LogPanel.Log("added Instance " + instance.name);
       syncLists();
       return;

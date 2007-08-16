@@ -89,7 +89,8 @@ public class AlphaMonomer extends Monomer {
    * @return                      a pointer to this ProteinStructure
    */
   public int setProteinStructureType(byte iType, int monomerIndexCurrent) {
-    if (monomerIndexCurrent < 0) {
+    if (monomerIndexCurrent < 0 
+        || monomerIndexCurrent > 0 && monomerIndex == 0) {
       if (proteinStructure != null) {
         int nAbandoned = proteinStructure.removeMonomer(monomerIndex);
         if (nAbandoned > 0)

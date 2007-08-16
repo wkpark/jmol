@@ -4,27 +4,23 @@
 <table style="text-align: left; width: @WIDTH@px;" border='1' cellpadding='2' cellspacing='2'>
     <tr>
       <td style="vertical-align: top; width: @WIDTH@px; height: @HEIGHT@px;">
-      
-        <script type="text/javascript">
-       
-        	putJmolDiv(@I@, "@NAME@.spt", "@NAME@.png", @WIDTH@, @HEIGHT@);      
-      
-        </script>
-      
+  		<div id="Jmol@I@" class="JmolDiv" style="width: @WIDTH@px; height: @HEIGHT@px; background-image:URL(@NAME@.png)">
+
+		<script type="text/javascript">
+       		putJmolDiv(@I@, "@NAME@.spt", "@NAME@.png", @WIDTH@, @HEIGHT@);      
+		</script>
+
+		</div>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">
-      
-		insert caption for @NAME@ here
-		
+      <td style="vertical-align: top;">     
+		insert caption for @NAME@ here		
       </td>
     </tr>
 </table>
 </div>
 <div>
-
- insert note for @NAME@ here
-	
+Insert additonal explanatory text here. Long text will wrap around the Jmol model @NAME@.
 </div></div></td></tr>
 

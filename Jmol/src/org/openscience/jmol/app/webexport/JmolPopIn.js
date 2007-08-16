@@ -20,17 +20,16 @@
 
 */
 
+function addJavaScript(path, file) {
+ document.write("<"+"script src=\"" + path + "/" + file + "\" type=\"text/javascript\"><" + "/script>"); 
+}
+
+
 function putJmolDiv(molNr, molFileName,imageFileName,appletWidth,appletHeight) {
- //molFileName can be the name of a molecule or script file.
-	var tx = '<div id="Jmol' + molNr 
-	  + '" class="JmolDiv"'
-	  + ' style="width:' + appletWidth + 'px; height:' + appletHeight + 'px;'
-	  + ' background-image:URL('+imageFileName+')"'
-	  + '>';
-	tx += '<br><table cellpadding="10"><tr><td style="background-color:white;opacity:0.3">';
+	var tx = '<table cellpadding="10"><tr><td style="color: rgb(255, 255, 51);">';
 	tx += 'To get a 3-D model you can manipulate, click ';
 	tx += '<a href="javascript:void(popInJmol(' + molNr + ', \'' + molFileName + '\','+ appletWidth + ','+ appletHeight + '))">here</a>.';
-	tx += ' Download time may be significant the first time the applet is loaded.</td></tr></table></div>';
+	tx += ' Download time may be significant the first time the applet is loaded.</td></tr></table>';
 	document.writeln(tx);
 }
 

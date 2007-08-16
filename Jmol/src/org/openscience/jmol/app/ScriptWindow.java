@@ -34,6 +34,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.text.Position;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.BadLocationException;
@@ -196,7 +197,7 @@ public final class ScriptWindow extends JDialog
       
     if (strCommand.length() > 0) {
       execThread = new ExecuteCommandThread(strCommand);
-      execThread.start();
+      SwingUtilities.invokeLater(execThread);
     }
   }
 

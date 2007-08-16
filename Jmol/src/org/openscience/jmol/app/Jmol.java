@@ -97,7 +97,7 @@ public class Jmol extends JPanel {
   // Window names for the history file
   private final static String JMOL_WINDOW_NAME = "Jmol";
   private final static String CONSOLE_WINDOW_NAME = "Console";
-  private final static String SCRIPT_WINDOW_NAME = "Script";
+  private final static String SCRIPT_WINDOW_NAME = "ScriptWindow";
   private final static String FILE_OPEN_WINDOW_NAME = "FileOpen";
 
   static Point border;
@@ -327,7 +327,7 @@ public class Jmol extends JPanel {
 
     // Repositionning windows
     if (scriptWindow != null)
-      historyFile.repositionWindow(SCRIPT_WINDOW_NAME, scriptWindow);
+      historyFile.repositionWindow(SCRIPT_WINDOW_NAME, scriptWindow, 645, 100);
 
     say(GT._("Setting up Drag-and-Drop..."));
     FileDropper dropper = new FileDropper();

@@ -69,7 +69,7 @@ public final class ScriptWindow extends JDialog
     super(frame, GT._("Jmol Script Console"), false);
     this.viewer = viewer;
     layoutWindow(getContentPane());
-    setSize(600, 400);
+    setSize(645, 400);
     setLocationRelativeTo(frame);
   }
 

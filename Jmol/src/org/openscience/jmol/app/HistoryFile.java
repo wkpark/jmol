@@ -301,8 +301,11 @@ class HistoryFile {
    * 
    * @param name Window name
    * @param window Window
+   * @param minWidth
+   * @param minHeight
    */
-  void repositionWindow(String name, Component window) {
+  void repositionWindow(String name, Component window, 
+                        int minWidth, int minHeight) {
     if (window != null) {
       Point position = getWindowPosition(name);
       Dimension size = getWindowSize(name);
@@ -311,12 +314,26 @@ class HistoryFile {
         window.setLocation(position);
       }
       if (size != null) {
+        if (size.width < minWidth)
+          size.width = minWidth;
+        if (size.height < minHeight)
+          size.height = minHeight;
         window.setSize(size);
       }
       if ((visible != null) && (visible.equals(Boolean.TRUE))) {
         window.show();
       }
     }
+  }
+
+  /**
+   * Uses the informations in the history to reposition the window.
+   * 
+   * @param name Window name
+   * @param window Window
+   */
+  void repositionWindow(String name, Component window) {
+    repositionWindow(name, window, 10, 10);
   }
 
   /**

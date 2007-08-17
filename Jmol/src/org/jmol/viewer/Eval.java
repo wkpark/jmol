@@ -7202,6 +7202,7 @@ class Eval { //implements Runnable {
     boolean isCoord = false;
     boolean isShow = false;
     boolean isExport = false;
+    int quality = Integer.MIN_VALUE;
     switch (tok) {
     case Token.quaternion:
       pt++;
@@ -7273,10 +7274,13 @@ class Eval { //implements Runnable {
       //      if (isApplet)
       //      evalError(GT._("The {0} command is not available for the applet.",
       //        "WRITE CLIPBOARD"));
+    } else if (Parser.isOneOf(val.toLowerCase(), "jpg;jpeg;jpg64") && tokAt(pt + 1) == Token.integer) {
+        quality = intParameter(++pt);
     }
+
     //write [image|history|state] clipboard
 
-    //write [optional image|history|state] [JPG|JPG64|PNG|PPM|SPT] "filename"
+    //write [optional image|history|state] [JPG quality|JPEG  quality|JPG64 quality|PNG|PPM|SPT] "filename"
     //write script "filename"
     //write isosurface t.jvxl 
 
@@ -7323,20 +7327,15 @@ class Eval { //implements Runnable {
     if (isImage && (isApplet || isShow))
       type = "JPG64";
     if (!isImage && !isExport
-        && !Parser.isOneOf(type,
-            "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB;QUAT;RAMA;"))
-      evalError(GT
-          ._(
-              "write what? {0} or {1} \"filename\"",
-              new Object[] {
-                  "COORDS|HISTORY|IMAGE|ISOSURFACE|MO|QUATERNION [w,x,y,z] [derivative]"
-                  +"|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
-                  "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB|"
-                      + TextFormat.simpleReplace(driverList.toUpperCase(), ";", "|") }));
+        && !Parser.isOneOf(type, "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB;QUAT;RAMA;"))
+      evalError(GT._("write what? {0} or {1} \"filename\"", new Object[] {
+          "COORDS|HISTORY|IMAGE|ISOSURFACE|MO|QUATERNION [w,x,y,z] [derivative]"
+              + "|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
+          "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB|"
+              + TextFormat.simpleReplace(driverList.toUpperCase(), ";", "|") }));
     if (isSyntaxCheck)
       return "";
     data = type.intern();
-    int quality = Integer.MIN_VALUE;
     if (isExport) {
       data = "" + viewer.generateOutput(data);
     } else if (data == "PDB" || data == "XYZ" || data == "MOL") {
@@ -7363,11 +7362,13 @@ class Eval { //implements Runnable {
         evalError(GT._("No data available"));
     } else {
       len = -1;
-      quality = 100;
+      if (quality <= 0)
+        quality = 100;
     }
     if (len == 0)
       len = data.length();
     if (isImage) {
+      refresh();
       if (width < 0)
         width = viewer.getScreenWidth();
       if (height < 0)
@@ -7380,7 +7381,8 @@ class Eval { //implements Runnable {
       scriptStatus("type=" + type + "; file="
           + (fileName == null ? "CLIPBOARD" : fileName)
           + (len >= 0 ? "; length=" + len : "")
-          + (isImage ? "; width=" + width + "; height=" + height : ""));
+          + (isImage ? "; width=" + width + "; height=" + height : "")
+          + (quality > 0 ? "; quality=" + quality : ""));
     }
     return data;
   }

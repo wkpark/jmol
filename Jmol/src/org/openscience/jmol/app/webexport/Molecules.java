@@ -55,7 +55,7 @@ implements ActionListener{
 	
 
   //Need the panel maker and the action listener.
-  public JComponent Panel() {
+  public JComponent getPanel() {
 
     //Create the brief discription text
     JLabel Description = new JLabel(

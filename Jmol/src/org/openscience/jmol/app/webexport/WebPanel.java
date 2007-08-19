@@ -84,8 +84,6 @@ abstract class WebPanel extends JPanel implements ActionListener {
   //Need the panel maker and the action listener.
   JPanel getPanel() {
 
-    useAppletJS = WebExport.checkOption(viewer, "webMakerCreateJS");
-
     //Create the appletSize spinner so the user can decide how big
     //the applet should be.
     SpinnerNumberModel appletSizeModelW = new SpinnerNumberModel(300, //initial value
@@ -413,6 +411,9 @@ abstract class WebPanel extends JPanel implements ActionListener {
   boolean FileWriter(File file, JList InstanceList, String appletPath)
       throws IOException { //returns true if successful.
     //          JOptionPane.showMessageDialog(null, "Creating directory for data...");
+    
+    useAppletJS = WebExport.checkOption(viewer, "webMakerCreateJS");
+
     String datadirPath = file.getPath();
     String datadirName = file.getName();
     String fileName = null;

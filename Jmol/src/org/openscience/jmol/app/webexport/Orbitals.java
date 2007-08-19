@@ -56,7 +56,7 @@ implements ActionListener {
 	private static final int Wireframe = 2;
 	//private static final int BallandStick = 3;
 
-  public JComponent Panel() {
+  public JComponent getPanel() {
 
     //Create the brief discription text
     JLabel Description = new JLabel(

@@ -147,7 +147,7 @@ public class WebExport extends JPanel {
         .println("Jmol_Web_Page_Maker is running as a standalone application");
     //Schedule a job for the event-dispatching thread:
     //creating and showing this application's GUI.
-    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+    SwingUtilities.invokeLater(new Runnable() {
       public void run() {
         createAndShowGUI(null);
       }

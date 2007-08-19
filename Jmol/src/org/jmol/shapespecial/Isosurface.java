@@ -103,6 +103,8 @@ import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import javax.vecmath.AxisAngle4f;
+import javax.vecmath.Matrix3f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point4f;
@@ -206,12 +208,13 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     }
 
     if ("lcaoCartoon" == propertyName) {
+      // z x center rotationAxis (x, y, or z; scaled by radians) 
       Vector3f[] info = (Vector3f[]) value;
       if (!explicitID)
         setPropertySuper("thisID", null, null);
       if (sg.setParameter("lcaoCartoon", value))
         return;
-      drawLcaoCartoon(info[0], info[1]);
+      drawLcaoCartoon(info[0], info[1], info[3]);
       return;
     }
 
@@ -451,8 +454,9 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
 
   int nLCAO = 0;
 
-  void drawLcaoCartoon(Vector3f z, Vector3f x) {
+  private void drawLcaoCartoon(Vector3f z, Vector3f x, Vector3f rotAxis) {
     String lcaoCartoon = sg.setLcao();
+    float rotRadians = rotAxis.x + rotAxis.y + rotAxis.z;
     defaultColix = Graphics3D.getColix(sg.getColor(1));
     int colorNeg = sg.getColor(-1);
     Vector3f y = new Vector3f();
@@ -461,6 +465,20 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       lcaoCartoon = lcaoCartoon.substring(1);
     int sense = (isReverse ? -1 : 1);
     y.cross(z, x);
+    if (rotRadians != 0) {
+      AxisAngle4f a = new AxisAngle4f();
+      if (rotAxis.x != 0)
+        a.set(x, rotRadians);
+      else if (rotAxis.y != 0)
+        a.set(y, rotRadians);
+      else
+        a.set(z, rotRadians);
+      Matrix3f m = new Matrix3f();
+      m.set(a);
+      m.transform(x);
+      m.transform(y);
+      m.transform(z);
+    }
     String id = (thisMesh == null ? "lcao" + (++nLCAO) + "_" + lcaoCartoon
         : thisMesh.thisID);
     if (thisMesh == null)

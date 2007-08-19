@@ -8183,6 +8183,31 @@ class Eval { //implements Runnable {
         //serialized lcaoCartoon in isosurface format
         isosurface(JmolConstants.SHAPE_LCAOCARTOON);
         return;
+      case Token.rotate:
+        Vector3f rotAxis = new Vector3f();
+        switch (getToken(++i).tok) {
+        case Token.identifier:
+          String str = parameterAsString(i);
+          float radians = floatParameter(++i) * TransformManager.radiansPerDegree;
+          if (str.equalsIgnoreCase("x")) {
+            rotAxis.set(radians, 0, 0);
+            break;
+          }
+          if (str.equalsIgnoreCase("y")) {
+            rotAxis.set(0, radians, 0);
+            break;
+          }
+          if (str.equalsIgnoreCase("z")) {
+            rotAxis.set(0, 0, radians);
+            break;
+          }
+          invalidArgument();
+        default:
+          invalidArgument();
+        }
+        propertyName = "rotationAxis";
+        propertyValue = rotAxis;
+        break;
       case Token.on:
         propertyName = "on";
         break;

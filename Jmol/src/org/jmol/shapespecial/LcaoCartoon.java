@@ -48,6 +48,7 @@ public class LcaoCartoon extends Isosurface {
   String lcaoID;
   BitSet thisSet;
   boolean isMolecular;
+  Vector3f rotationAxis;
  
   //persistent
   Float lcaoScale;
@@ -55,6 +56,7 @@ public class LcaoCartoon extends Isosurface {
   float translucentLevel;
   Integer lcaoColorPos;
   Integer lcaoColorNeg;
+  
 
  public void setProperty(String propertyName, Object value, BitSet bs) {
 
@@ -71,6 +73,7 @@ public class LcaoCartoon extends Isosurface {
       thisSet = bs;
       isMolecular = false;
       thisType = null;
+      rotationAxis = null;
       // overide bitset selection
       super.setProperty("init", null, null);
       return;
@@ -85,6 +88,11 @@ public class LcaoCartoon extends Isosurface {
 
     if ("selectType" == propertyName) {
       thisType = (String) value;
+      return;
+    }
+
+    if ("rotationAxis" == propertyName) {
+      rotationAxis = (Vector3f) value;
       return;
     }
 
@@ -203,7 +211,9 @@ public class LcaoCartoon extends Isosurface {
     super.setProperty("lcaoType", thisType, null);
     super.setProperty("atomIndex", new Integer(iAtom), null);
     Vector3f[] axes = { new Vector3f(), new Vector3f(),
-        new Vector3f(modelSet.atoms[iAtom]) };
+        new Vector3f(modelSet.atoms[iAtom]), new Vector3f() };
+    if (rotationAxis != null)
+      axes[3].set(rotationAxis);
     if (isMolecular) {
       if (thisType.indexOf("px") >= 0) {
         axes[0].set(0, -1, 0);
@@ -215,14 +225,12 @@ public class LcaoCartoon extends Isosurface {
         axes[0].set(0, 0, 1);
         axes[1].set(1, 0, 0);
       }
-      if (isMolecular && thisType.indexOf("-") == 0) {
+      if (thisType.indexOf("-") == 0)
         axes[0].scale(-1);
-      }
-    }
+    }     
     if (isMolecular || thisType.equalsIgnoreCase("s")
         || viewer.getHybridizationAndAxes(iAtom, axes[0], axes[1], thisType, true) != null)
       super.setProperty("lcaoCartoon", axes, null);
-    
     if (isTranslucent)
       for (int i = meshCount; --i >=0;)
         if (meshes[i].thisID.indexOf(id) == 0)

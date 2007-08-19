@@ -1397,9 +1397,9 @@ String getAtomInfoChime(int i) {
     modelSet.rotateSelected(mNew, matrixRotate, bs, fullMolecule);
   }
 
-  public boolean getPrincipalAxes(int atomIndex, Vector3f z, Vector3f x,
+  public String getHybridizationAndAxes(int atomIndex, Vector3f z, Vector3f x,
                            String lcaoType, boolean hybridizationCompatible) {
-    return modelSet.getPrincipalAxes(atomIndex, z, x, lcaoType,
+    return modelSet.getHybridizationAndAxes(atomIndex, z, x, lcaoType,
         hybridizationCompatible);
   }
   

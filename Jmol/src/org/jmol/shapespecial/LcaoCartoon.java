@@ -220,7 +220,7 @@ public class LcaoCartoon extends Isosurface {
       }
     }
     if (isMolecular || thisType.equalsIgnoreCase("s")
-        || viewer.getPrincipalAxes(iAtom, axes[0], axes[1], thisType, true))
+        || viewer.getHybridizationAndAxes(iAtom, axes[0], axes[1], thisType, true) != null)
       super.setProperty("lcaoCartoon", axes, null);
     
     if (isTranslucent)

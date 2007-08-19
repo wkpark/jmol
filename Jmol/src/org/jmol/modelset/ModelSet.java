@@ -1945,8 +1945,6 @@ abstract public class ModelSet {
     }
   }
 
-  private String hybridization;
-
   private Point3f[][] getAdditionalHydrogens(BitSet atomSet, int[] nTotal) {
     Vector3f z = new Vector3f();
     Vector3f x = new Vector3f();
@@ -1962,8 +1960,8 @@ abstract public class ModelSet {
         int nBonds = (atom.getCovalentHydrogenCount() > 0 ? 0 : atom
             .getCovalentBondCount());
         if (nBonds == 3 || nBonds == 2) { //could be XA3 sp2 or XA2 sp
-          if (!viewer.getPrincipalAxes(i, z, x, "sp3", true)
-              || hybridization == "sp")
+          String hybridization = getHybridizationAndAxes(i, z, x, "sp3", true);
+          if (hybridization == null || hybridization.equals("sp"))
             nBonds = 0;
         }
         if (nBonds > 0 && nBonds <= 4)
@@ -1973,34 +1971,34 @@ abstract public class ModelSet {
         n = 0;
         switch (nBonds) {
         case 1:
-          viewer.getPrincipalAxes(i, z, x, "sp3a", false);
+          getHybridizationAndAxes(i, z, x, "sp3a", false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, atom);
           hAtoms[i][n++] = pt;
-          viewer.getPrincipalAxes(i, z, x, "sp3b", false);
+          getHybridizationAndAxes(i, z, x, "sp3b", false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, atom);
           hAtoms[i][n++] = pt;
-          viewer.getPrincipalAxes(i, z, x, "sp3c", false);
+          getHybridizationAndAxes(i, z, x, "sp3c", false);
           pt = new Point3f(z);
           pt.scaleAdd(1.1f, atom);
           hAtoms[i][n++] = pt;
           break;
         case 2:
-          if (viewer.getPrincipalAxes(i, z, x, "sp3", true)
-              && hybridization != "sp") {
-            viewer.getPrincipalAxes(i, z, x, "lpa", false);
+          String hybridization = getHybridizationAndAxes(i, z, x, "sp3", true);
+          if (hybridization != null && !hybridization.equals("sp")) {
+            getHybridizationAndAxes(i, z, x, "lpa", false);
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, atom);
             hAtoms[i][n++] = pt;
-            viewer.getPrincipalAxes(i, z, x, "lpb", false);
+            getHybridizationAndAxes(i, z, x, "lpb", false);
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, atom);
             hAtoms[i][n++] = pt;
           }
           break;
         case 3:
-          if (viewer.getPrincipalAxes(i, z, x, "sp3", true)) {
+          if (getHybridizationAndAxes(i, z, x, "sp3", true) != null) {
             pt = new Point3f(z);
             pt.scaleAdd(1.1f, atom);
             hAtoms[i][n++] = pt;
@@ -2016,13 +2014,13 @@ abstract public class ModelSet {
 
   ////// special method for lcaoCartoons
   
-  boolean getPrincipalAxes(int atomIndex, Vector3f z, Vector3f x,
+  String getHybridizationAndAxes(int atomIndex, Vector3f z, Vector3f x,
                            String lcaoTypeRaw, boolean hybridizationCompatible) {
     String lcaoType = (lcaoTypeRaw.length() > 0 && lcaoTypeRaw.charAt(0) == '-' ? lcaoTypeRaw
         .substring(1)
         : lcaoTypeRaw);
     Atom atom = atoms[atomIndex];
-    hybridization = "";
+    String hybridization = "";
     z.set(0, 0, 0);
     x.set(0, 0, 0);
     Atom atom1 = atom;
@@ -2093,7 +2091,7 @@ abstract public class ModelSet {
       hybridization = "sp";
       if (atom1.getCovalentBondCount() == 3) {
         //special case, for example R2C=O oxygen
-        getPrincipalAxes(atom1.atomIndex, z, x3, lcaoType, false);
+        getHybridizationAndAxes(atom1.atomIndex, z, x3, lcaoType, false);
         x3.set(x);
         if (lcaoType.indexOf("sp2") == 0) { // align z as sp2 orbital
           hybridization = "sp2";
@@ -2111,7 +2109,7 @@ abstract public class ModelSet {
             atom1 = atom2;
           if (atom1.getCovalentBondCount() == 3) {
             //special case, for example R2C=C=CR2 central carbon
-            getPrincipalAxes(atom1.atomIndex, x, z, "pz", false);
+            getHybridizationAndAxes(atom1.atomIndex, x, z, "pz", false);
             if (lcaoType.equals("px"))
               x.scale(-1);
             z.set(x2);
@@ -2168,8 +2166,7 @@ abstract public class ModelSet {
       if (Math.abs(y2.dot(y1)) < 0.95f) {
         hybridization = "sp3";
         if (lcaoType.indexOf("sp") == 0) { // align z as sp3 orbital
-          z
-              .set(lcaoType.equalsIgnoreCase("sp3")
+          z.set(lcaoType.equalsIgnoreCase("sp3")
                   || lcaoType.indexOf("d") >= 0 ? x4
                   : lcaoType.indexOf("c") >= 0 ? x3
                       : lcaoType.indexOf("b") >= 0 ? x2 : x);
@@ -2208,16 +2205,16 @@ abstract public class ModelSet {
     }
     if (hybridizationCompatible) {
       if (hybridization == "")
-        return false;
+        return null;
       if (lcaoType.indexOf("p") == 0) {
         if (hybridization == "sp3")
-          return false;
+          return null;
       } else {
         if (lcaoType.indexOf(hybridization) < 0)
-          return false;
+          return null;
       }
     }
-    return true;
+    return hybridization;
   }
   
   /* ******************************************************

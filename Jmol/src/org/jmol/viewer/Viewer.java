@@ -1797,10 +1797,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelManager.clearBfactorRange();
   }
 
-  public boolean getPrincipalAxes(int atomIndex, Vector3f z, Vector3f x,
+  public String getHybridizationAndAxes(int atomIndex, Vector3f z, Vector3f x,
                                   String lcaoType,
                                   boolean hybridizationCompatible) {
-    return modelManager.getPrincipalAxes(atomIndex, z, x, lcaoType,
+    return modelManager.getHybridizationAndAxes(atomIndex, z, x, lcaoType,
         hybridizationCompatible);
   }
 

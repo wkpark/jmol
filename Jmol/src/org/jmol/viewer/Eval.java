@@ -8884,7 +8884,7 @@ class Eval { //implements Runnable {
           setShapeProperty(iShape, "modelIndex", new Integer(modelIndex));
           Vector3f[] axes = { new Vector3f(), new Vector3f(), new Vector3f(pt) };
           if (!isSyntaxCheck)
-            viewer.getPrincipalAxes(atomIndex, axes[0], axes[1], lcaoType,
+            viewer.getHybridizationAndAxes(atomIndex, axes[0], axes[1], lcaoType,
                 false);
           propertyValue = axes;
           break;

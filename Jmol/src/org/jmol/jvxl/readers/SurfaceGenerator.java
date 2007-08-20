@@ -835,6 +835,8 @@ public class SurfaceGenerator {
       return new ApbsReader(this, br);
     if (fileType.equals("Cube"))
       return new CubeReader(this, br);
+    if (fileType.equals("Jaguar"))
+      return new JaguarReader(this, br);
     return null;
   }
 

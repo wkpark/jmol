@@ -58,6 +58,8 @@ class VolumeFileReader extends VoxelReader {
       return "Jvxl+";
     if (line.indexOf("#JVXL") == 0)
       return "Jvxl";
+    if (line.indexOf("&plot") == 0)
+      return "Jaguar";
     line = br.readNonCommentLine();
     if (line.indexOf("object 1 class gridpositions counts") == 0)
       return "Apbs";
@@ -113,10 +115,10 @@ class VolumeFileReader extends VoxelReader {
         Logger.info(jvxlFileHeaderBuffer.toString());
         readAtomCountAndOrigin();
         Logger.info("voxel grid origin:" + volumetricOrigin);
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 3; ++i)
           readVoxelVector(i);
+        for (int i = 0; i < 3; ++i)
           Logger.info("voxel grid vector:" + volumetricVectors[i]);
-        }
       JvxlReader.jvxlReadAtoms(br, jvxlFileHeaderBuffer, atomCount, volumeData);
       return readExtraLine();
     } catch (Exception e) {
@@ -278,7 +280,7 @@ class VolumeFileReader extends VoxelReader {
     return voxelValue;
   }
 
-  private float nextVoxel() throws Exception {
+  protected float nextVoxel() throws Exception {
     float voxelValue = parseFloat();
     if (Float.isNaN(voxelValue)) {
       while ((line = br.readLine()) != null

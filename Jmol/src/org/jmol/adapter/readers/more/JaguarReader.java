@@ -152,7 +152,7 @@ public class JaguarReader extends AtomSetCollectionReader {
  C1          3   -1  0  1    0     103.9486850       0.0688426       1.5972825
 
 */
-  private final static float ROOT3 = 1.73205080756887729f;
+  //private final static float ROOT3 = 1.73205080756887729f;
 
   void readBasis() throws Exception {
     String lastAtom = "";
@@ -280,6 +280,7 @@ public class JaguarReader extends AtomSetCollectionReader {
     readLine();
     readLine();
     readLine();
+    int nMo = 0;
     while (line != null) {
       readLine();
       readLine();
@@ -295,10 +296,10 @@ public class JaguarReader extends AtomSetCollectionReader {
         float energy = parseFloat(eigenValues[iOrb + 1]);
         mo.put("energy", new Float(energy));
         if (Math.abs(energy - lumoEnergy) < 0.0001) {
-          moData.put("HOMO", new Integer(iOrb));
+          moData.put("HOMO", new Integer(nMo));
           lumoEnergy = Float.MAX_VALUE;
         }
-        
+        nMo++;
         for (int i = 0; i < moCount; i++)
           coefs[i] = parseFloat((String) dataBlock[i][iOrb + 3]);
         mo.put("coefficients", coefs);

@@ -167,7 +167,6 @@ public class JaguarReader extends AtomSetCollectionReader {
     int iAtom = -1;
     int[][] sdata = new int[moCount][4];
     Vector[] sgdata = new Vector[moCount];
-    Vector gdata = new Vector();
     String[] tokens;
     gaussianCount = 0;
 
@@ -191,7 +190,7 @@ public class JaguarReader extends AtomSetCollectionReader {
           sdata[iFunc][3] = 0; //count
           sgdata[iFunc] = new Vector();
         }
-        float factor = 1;//(iType == 3 ? ROOT3 : 1);
+        float factor = 1;//(iType == 3 ? 1.73205080756887729f : 1);
         //System.out.println("slater: " + iAtom + " " + iType + " " + gaussianCount + " " + nGaussians);
         sgdata[iFunc].addElement(new float[] { parseFloat(tokens[6]),
             parseFloat(tokens[8]) * factor });

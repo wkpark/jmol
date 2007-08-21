@@ -40,7 +40,7 @@ class JaguarReader extends VolumeFileReader {
 
   JaguarReader(SurfaceGenerator sg, BufferedReader br) {
     super(sg, br);
-    isAngstroms = true; //? 
+    isAngstroms = false; //? 
     jvxlData.wasCubic = true;
   }
 
@@ -123,22 +123,27 @@ class JaguarReader extends VolumeFileReader {
     voxelCounts[0] = parseInt(tokens[1]);
     voxelCounts[1] = parseInt(tokens[2]);
     voxelCounts[2] = parseInt(tokens[3]);
-    float factor = (isAngstroms ? 1 : ANGSTROMS_PER_BOHR);    
-    float d = extents[0]/(voxelCounts[0]);
+    float factor = (isAngstroms ? 1 : ANGSTROMS_PER_BOHR);
+    float d = extents[0] / (voxelCounts[0] - 1);
     volumetricVectors[0].set(d * factor, 0, 0);
     jvxlFileHeaderBuffer.append(voxelCounts[0] + " " + d + " 0.0 0.0\n");
-    
-    d = extents[1]/(voxelCounts[1]);
+
+    d = extents[1] / (voxelCounts[1] - 1);
     volumetricVectors[1].set(0, d * factor, 0);
     jvxlFileHeaderBuffer.append(voxelCounts[1] + " 0.0 " + d + " 0.0\n");
 
-    d = extents[2]/(voxelCounts[2]);
+    d = extents[2] / (voxelCounts[2] - 1);
     volumetricVectors[2].set(0, 0, d * factor);
     jvxlFileHeaderBuffer.append(voxelCounts[2] + " 0.0 0.0 " + d + "\n");
+
+    // Note -- the "-1" is necessary, above, even though this
+    // creates a nonuniform grid. Someone made a mistake somewhere, 
+    // I think, because if you don't use -1 here, then the grid
+    // distances are the same, but the surface is in the wrong place!
     
     br.readLine();
   }
-
+    
   /**
    * read one value per line
    * 
@@ -157,4 +162,5 @@ class JaguarReader extends VolumeFileReader {
     return voxelValue;
   }
 
+ 
 }

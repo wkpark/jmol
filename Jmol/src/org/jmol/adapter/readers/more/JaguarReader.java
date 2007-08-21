@@ -52,6 +52,8 @@ public class JaguarReader extends AtomSetCollectionReader {
       while (readLine() != null) {
         if (line.startsWith(" Input geometry:")) {
           readAtoms();
+        } else if (line.startsWith(" Symmetrized geometry:")) {
+          readAtoms();
         } else if (line.startsWith("  final geometry:")) {
           readAtoms();
         } else if (line.startsWith("  Atomic charges from electrostatic potential:")) {

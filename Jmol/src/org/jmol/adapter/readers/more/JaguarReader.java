@@ -141,66 +141,84 @@ public class JaguarReader extends AtomSetCollectionReader {
 
   /*
 
-  Gaussian Functions - Shell information
-  
-             s    j
-             h    c  i       n
-             e    o  s       f
-             l    n  h       s
-  atom       l    t  l  l    h          z              coef            rcoef
---------    ---  --- -- --  ---     ----------      ----------       ---------
- C1          1    6  0  1    0    3047.5248800       0.0018347       0.5363452
- C1          2   -1  0  1    0     457.3695180       0.0140373       0.9894521
- C1          3   -1  0  1    0     103.9486850       0.0688426       1.5972825
+   Gaussian Functions - Shell information
+   
+   s    j
+   h    c  i       n
+   e    o  s       f
+   l    n  h       s
+   atom       l    t  l  l    h          z              coef            rcoef
+   --------    ---  --- -- --  ---     ----------      ----------       ---------
+   C1          1    3  0  1    0      71.6168373       0.1543290       2.7078144
+   C1          2   -1  0  1    0      13.0450963       0.5353281       2.6188802
+   C1          3   -1  0  1    0       3.5305122       0.4446345       0.8161906
+   C1          4    2  2  1    1       2.9412494      -0.2956454      -0.4732386
+   C1          5   -4  2  1    1       0.6834831       1.1815287       0.6329949
+   C1          6    2 -1  2    2       2.9412494       0.2213487       1.2152952
+   C1          7   -6 -1  2    2       0.6834831       0.8627064       0.7642102
+   C1          8    1  1  1    1       0.2222899       1.0000000       0.2307278
+   C1          9    1 -1  2    2       0.2222899       1.0000000       0.2175654
 
-*/
+
+   */
   //private final static float ROOT3 = 1.73205080756887729f;
-
   void readBasis() throws Exception {
     String lastAtom = "";
     int iAtom = -1;
-    int iShell = -1;
-    int jCont = 0;
-    discardLinesUntilContains("--------");
-    Vector sdata = new Vector();
+    int[][] sdata = new int[moCount][4];
+    Vector[] sgdata = new Vector[moCount];
     Vector gdata = new Vector();
-    gaussianCount = 0;
     String[] tokens;
-    float factor = 1;
+    gaussianCount = 0;
+
+    // trouble is that these can be out of order!
+
+    discardLinesUntilContains("--------");
     while (readLine() != null && (tokens = getTokens()).length == 9) {
-      jCont = parseInt(tokens[2]);
+      int jCont = parseInt(tokens[2]);
       if (jCont > 0) {
-        iShell++;
         if (!tokens[0].equals(lastAtom))
           iAtom++;
         lastAtom = tokens[0];
+        int iFunc = parseInt(tokens[5]);
         int iType = parseInt(tokens[4]);
         if (iType <= 2)
-          iType--;  // s,p --> 0,1 because SP is 2
-        int[] slater = new int[4];
-        int nGaussians = jCont;
-        slater[0] = iAtom;
-        slater[1] = iType;
-        slater[2] = gaussianCount;
-        slater[3] = nGaussians;
-        factor = 1;//(iType == 3 ? ROOT3 : 1);
+          iType--; // s,p --> 0,1 because SP is 2
+        if (sgdata[iFunc] == null) {
+          sdata[iFunc][0] = iAtom;
+          sdata[iFunc][1] = iType;
+          sdata[iFunc][2] = 0; //pointer
+          sdata[iFunc][3] = 0; //count
+          sgdata[iFunc] = new Vector();
+        }
+        float factor = 1;//(iType == 3 ? ROOT3 : 1);
         //System.out.println("slater: " + iAtom + " " + iType + " " + gaussianCount + " " + nGaussians);
-        sdata.addElement(slater);
-        gaussianCount += nGaussians;
-        gdata.addElement(new float[] {parseFloat(tokens[6]), parseFloat(tokens[8]) * factor});
-        for (int i = nGaussians -1; --i >= 0;) {
+        sgdata[iFunc].addElement(new float[] { parseFloat(tokens[6]),
+            parseFloat(tokens[8]) * factor });
+        gaussianCount += jCont;
+        for (int i = jCont - 1; --i >= 0;) {
           tokens = getTokens(readLine());
-          gdata.addElement(new float[] {parseFloat(tokens[6]), parseFloat(tokens[8]) * factor});
+          sgdata[iFunc].addElement(new float[] { parseFloat(tokens[6]),
+              parseFloat(tokens[8]) * factor });
         }
       }
     }
     float[][] garray = new float[gaussianCount][];
-    for (int i = 0; i < gaussianCount; i++)
-      garray[i] = (float[]) gdata.get(i);
-    moData.put("shells", sdata);
+    Vector sarray = new Vector();
+    gaussianCount = 0;
+    for (int i = 0; i < moCount; i++)
+      if (sgdata[i] != null) {
+        int n = sgdata[i].size();
+        sdata[i][2] = gaussianCount;
+        sdata[i][3] = n;
+        for (int j = 0; j < n; j++)
+          garray[gaussianCount++] = (float[]) sgdata[i].get(j);
+        sarray.addElement(sdata[i]);
+      }
+    moData.put("shells", sarray);
     moData.put("gaussians", garray);
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-      Logger.debug(sdata.size() + " slater shells read");
+      Logger.debug(sarray.size() + " slater shells read");
       Logger.debug(gaussianCount + " gaussian primitives read");
     }
   }

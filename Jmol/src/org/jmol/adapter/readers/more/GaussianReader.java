@@ -72,12 +72,9 @@ public class GaussianReader extends AtomSetCollectionReader {
    */
   private int equivalentAtomSets = 0;
   
-  //String modelName = "";
   int atomCount = 0;
-  //int moCount = 0;
   int shellCount = 0;
   int gaussianCount = 0;
-  //String calculationType = "";
   Hashtable moData = new Hashtable();
   Vector orbitals = new Vector();
 

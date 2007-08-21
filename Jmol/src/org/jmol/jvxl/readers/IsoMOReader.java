@@ -57,17 +57,19 @@ class IsoMOReader extends AtomDataReader {
     if (line.length() == 0 || pt < 0)
       return;
     int rep = 0;
-    if (line.indexOf("%I") > 0)
+    if (line.indexOf("%F") >= 0)
+      line = TextFormat.formatString(line, "F", params.fileName);
+    if (line.indexOf("%I") >= 0)
       line = TextFormat.formatString(line, "I", "" + params.qm_moNumber);
-    if (line.indexOf("%N") > 0)
+    if (line.indexOf("%N") >= 0)
       line = TextFormat.formatString(line, "N", "" + params.qmOrbitalCount);
-    if (line.indexOf("%E") > 0)
+    if (line.indexOf("%E") >= 0)
       line = TextFormat.formatString(line, "E", "" + mo.get("energy"));
-    if (line.indexOf("%U") > 0)
+    if (line.indexOf("%U") >= 0)
       line = TextFormat.formatString(line, "U", params.moData.containsKey("energyUnits") && ++rep != 0 ? (String) params.moData.get("energyUnits") : "");
-    if (line.indexOf("%S") > 0)
+    if (line.indexOf("%S") >= 0)
       line = TextFormat.formatString(line, "S", mo.containsKey("symmetry") && ++rep != 0 ? "" + mo.get("symmetry") : "");
-    if (line.indexOf("%O") > 0)
+    if (line.indexOf("%O") >= 0)
       line = TextFormat.formatString(line, "O", mo.containsKey("occupancy") && ++rep != 0  ? "" + mo.get("occupancy") : "");
     boolean isOptional = (line.indexOf("?") == 0);
     params.title[iLine] = (!isOptional ? line : rep > 0 ? line.substring(1) : "");

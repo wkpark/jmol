@@ -287,6 +287,7 @@ public class MolecularOrbital extends Isosurface {
         super.setProperty("colorRGB", moColorPos, null);
     }
     super.setProperty("title", moTitleFormat, null);
+    super.setProperty("fileName", viewer.getFileName(), null);
     super.setProperty("molecularOrbital", new Integer(moNumber), null);
     if (moTranslucentLevel != null)
       super.setProperty("translucenctLevel", moTranslucentLevel, null);

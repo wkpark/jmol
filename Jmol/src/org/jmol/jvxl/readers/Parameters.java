@@ -186,6 +186,7 @@ public class Parameters {
     distance = Float.MAX_VALUE;
     envelopeRadius = 10f;
     fileIndex = 1;
+    fileName = "";
     iAddGridPoints = false;
     isAngstroms = false;
     isBicolorMap = isCutoffAbsolute = isPositiveOnly = false;
@@ -584,7 +585,8 @@ public class Parameters {
   
   String[] title;
   boolean blockCubeData;
-  int fileIndex; //one-based    
+  int fileIndex; //one-based
+  String fileName;
   int modelIndex; // zero-based
   boolean isXLowToHigh;
   

@@ -209,6 +209,10 @@ public class SurfaceGenerator {
     return params.script;
   }
   
+  public String[] getTitle() {
+    return params.title;
+  }
+  
   public BitSet getBsSelected() {
     return params.bsSelected;
   }
@@ -661,6 +665,11 @@ public class SurfaceGenerator {
       params.setMO(((Integer) value).intValue(), state >= STATE_DATA_READ);
       Logger.info(params.calculationType);
       processState();
+      return true;
+    }
+
+    if ("fileName" == propertyName) {
+      params.fileName = (String) value;
       return true;
     }
 

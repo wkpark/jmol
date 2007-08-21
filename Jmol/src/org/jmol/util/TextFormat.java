@@ -203,8 +203,8 @@ public class TextFormat {
       }
     }
     strLabel += strFormat.substring(ich);
-    if (strLabel.length() == 0)
-      return null;
+    //if (strLabel.length() == 0)
+      //return null;
     return strLabel;
   }
 

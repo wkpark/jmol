@@ -225,7 +225,11 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     }
     
     if ("title" == propertyName) {
+      if (value instanceof String && "-".equals((String)value))
+        value = null;
       setPropertySuper(propertyName, value, bs);
+      sg.setParameter("title", title, bs);
+      return;
     }
 
     if ("select" == propertyName) {
@@ -650,7 +654,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   }
 
   private void setScriptInfo() {
-    thisMesh.title = title;
+    thisMesh.title = sg.getTitle();
     thisMesh.scriptCommand = fixScript(sg.getScript(), sg.getBsSelected(), sg
         .getBsIgnore());
   }

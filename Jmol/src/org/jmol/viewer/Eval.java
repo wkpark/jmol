@@ -2603,7 +2603,7 @@ class Eval { //implements Runnable {
         //alternative (center) zoomFactor 
         if (zoom == 0 || Float.isNaN(zoom)) {
           //alternative (atom expression) zoom 
-          float factor = getZoomFactor(i, ptCenter, radius, zoom0);
+          float factor = Math.abs(getZoomFactor(i, ptCenter, radius, zoom0));
           i = iToken + 1;
           if (Float.isNaN(factor))
             invalidArgument();
@@ -4675,12 +4675,15 @@ class Eval { //implements Runnable {
     //zoom/zoomTo percent|-factor|+factor|*factor|/factor | 0
     float factor = getZoomFactor(i, ptCenter, radius, zoom);
       
-    if (isZoomTo) {
+    if (factor < 0) {
+      factor = -factor;
+      if (isZoomTo) {
         // no factor -- check for no center (zoom out) or same center (zoom in)
         if (statementLength == 1 || isSameAtom)
           factor *= 2;
         else if (center == null)
           factor /= 2;
+      }
     }
     float xTrans = 0;
     float yTrans = 0;
@@ -4742,6 +4745,7 @@ class Eval { //implements Runnable {
           invalidArgument();
         }
       } else {
+        factor = -factor;
         --i;
       }
     }

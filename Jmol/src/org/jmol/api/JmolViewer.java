@@ -51,7 +51,7 @@ abstract public class JmolViewer extends JmolSimpleViewer {
     return Viewer.allocateViewer(awtComponent, jmolAdapter);
   }
 
-  static public static String getJmolVersion() {
+  static public String getJmolVersion() {
     return Viewer.getJmolVersion();
   }
 

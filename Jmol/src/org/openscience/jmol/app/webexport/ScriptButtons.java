@@ -29,12 +29,12 @@ import javax.swing.*;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.TextFormat;
 
-public class ScriptButtons extends WebPanel {
+class ScriptButtons extends WebPanel {
 
   ScriptButtons(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels,
       int panelIndex) {
     super(viewer, fc, webPanels, panelIndex);
-    description = "Create a web page containing a text and button pane that scrolls next to a resizable Jmol applet";
+    //description = "Create a web page containing a text and button pane that scrolls next to a resizable Jmol applet";
     listLabel = "These names will be used for button labels";
     infoFile = "script_button_instructions.html";
     templateName = "script_button_template.html";

@@ -24,21 +24,20 @@
  */
 package org.openscience.jmol.app.webexport;
 
-import java.io.*;
 import java.awt.*;
+import java.io.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.net.URL;
+import java.util.ArrayList;
 
 import javax.swing.*;
 
 import org.jmol.api.JmolViewer;
 import org.jmol.util.TextFormat;
-
-import java.net.*;
-import java.util.ArrayList;
-import java.io.IOException;
 
 abstract class WebPanel extends JPanel implements ActionListener {
 
@@ -49,29 +48,29 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
   abstract JPanel appletParamPanel(); //should be defined in the code for the specific case e.g. ScriptButtons.java
 
-  //The constants used to generate panels, etc.
-  JButton saveButton, addInstanceButton, deleteInstanceButton,
-      showInstanceButton;
-  JTextField appletPath, webPageAuthor, webPageTitle;
-  JSpinner appletSizeSpinnerW;
-  JSpinner appletSizeSpinnerH;
-  JSpinner appletSizeSpinnerP;
-  JFileChooser fc;
-  JList instanceList;
-  JmolViewer viewer;
+  protected String templateName;
+  protected String listLabel;
+  protected String infoFile;
+  protected String appletInfoDivs;
+  protected String htmlAppletTemplate;
+  protected String appletTemplateName;
+  protected boolean useAppletJS;
 
-  String templateName;
-  String description, listLabel;
-  String infoFile;
-  String appletInfoDivs;
-  String htmlAppletTemplate;
-  String appletTemplateName;
-  boolean useAppletJS;
+  protected JSpinner appletSizeSpinnerW;
+  protected JSpinner appletSizeSpinnerH;
+  protected JSpinner appletSizeSpinnerP;
 
-  int panelIndex;
-  WebPanel[] webPanels;
+  private JScrollPane editorScrollPane;
+  private JButton saveButton, addInstanceButton;
+  private JButton deleteInstanceButton, showInstanceButton;
+  private JTextField appletPath;
+  private JFileChooser fc;
+  private JList instanceList;
+  private JmolViewer viewer;
+  private int panelIndex;
+  private WebPanel[] webPanels;
 
-  WebPanel(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels,
+  protected WebPanel(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels,
       int panelIndex) {
     this.viewer = viewer;
     this.fc = fc;
@@ -85,13 +84,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
   //Need the panel maker and the action listener.
 
-  JPanel getPanel() {
-
-    JPanel paramPanel = appletParamPanel();
-    paramPanel.setMaximumSize(new Dimension(350, 70));
-
-    //Create the brief description text
-    JLabel jDescription = new JLabel("      " + description + "\n\n");
+  JPanel getPanel(int infoWidth, int infoHeight) {
 
     //For layout purposes, put things in separate panels
 
@@ -110,6 +103,8 @@ abstract class WebPanel extends JPanel implements ActionListener {
     instanceList.setTransferHandler(new ArrayListTransferHandler(this));
     instanceList.setCellRenderer(new InstanceCellRenderer());
     instanceList.setDragEnabled(true);
+    instanceList.setPreferredSize(new Dimension(350, 200));
+
     JScrollPane instanceListView = new JScrollPane(instanceList);
     instanceListView.setPreferredSize(new Dimension(350, 200));
     JPanel instanceSet = new JPanel();
@@ -123,10 +118,6 @@ abstract class WebPanel extends JPanel implements ActionListener {
     addInstanceButton = new JButton("Add Present Jmol State as Instance...");
     addInstanceButton.addActionListener(this);
 
-    //Instance selection
-    JPanel instanceButtonPanel = new JPanel();
-    instanceButtonPanel.add(addInstanceButton);
-
     JPanel buttonPanel = new JPanel();
     buttonPanel.setMaximumSize(new Dimension(350, 50));
     showInstanceButton = new JButton("Show Selected");
@@ -136,38 +127,58 @@ abstract class WebPanel extends JPanel implements ActionListener {
     buttonPanel.add(showInstanceButton);
     buttonPanel.add(deleteInstanceButton);
 
-    //Title and border for the Instance selection
+    // width height or %width
+
+    JPanel paramPanel = appletParamPanel();
+    paramPanel.setMaximumSize(new Dimension(350, 70));
+
+    //Instance selection
+    JPanel instanceButtonPanel = new JPanel();
+    instanceButtonPanel.add(addInstanceButton);
+    instanceButtonPanel.setSize(300, 70);
+
+    JPanel p = new JPanel();
+    p.setLayout(new BorderLayout());
+    p.add(instanceButtonPanel, BorderLayout.NORTH);
+    p.add(buttonPanel, BorderLayout.SOUTH);
+
     JPanel instancePanel = new JPanel();
     instancePanel.setLayout(new BorderLayout());
-    instancePanel.add(instanceSet, BorderLayout.PAGE_START);
-    instancePanel.add(instanceButtonPanel, BorderLayout.CENTER);
-    instancePanel.add(buttonPanel, BorderLayout.PAGE_END);
+    instancePanel.add(instanceSet, BorderLayout.CENTER);
+    instancePanel.add(p, BorderLayout.SOUTH);
 
     JPanel rightPanel = new JPanel();
     rightPanel.setLayout(new BorderLayout());
     rightPanel.setMinimumSize(new Dimension(350, 350));
     rightPanel.setMaximumSize(new Dimension(350, 1000));
-    rightPanel.add(paramPanel, BorderLayout.PAGE_START);
-    rightPanel.add(instancePanel, BorderLayout.PAGE_END);
+    rightPanel.add(paramPanel, BorderLayout.NORTH);
+    rightPanel.add(instancePanel, BorderLayout.CENTER);
     rightPanel.setBorder(BorderFactory.createTitledBorder("Jmol Instances:"));
 
     //Create the overall panel
     JPanel panel = new JPanel();
     panel.setLayout(new BorderLayout());
 
-    JPanel leftPanel = getLeftPanel(null);
+    JPanel leftPanel = getLeftPanel(infoWidth, infoHeight);
     leftPanel.setMaximumSize(new Dimension(350, 1000));
 
     //Add everything to this panel.
-    panel.add(jDescription, BorderLayout.PAGE_START);
     panel.add(leftPanel, BorderLayout.CENTER);
-    panel.add(rightPanel, BorderLayout.LINE_END);
+    panel.add(rightPanel, BorderLayout.EAST);
 
     enableButtons(instanceList);
     return panel;
   }
 
-  URL getResource(String fileName) {
+  int getInfoWidth() {
+    return editorScrollPane.getWidth();
+  }
+
+  int getInfoHeight() {
+    return editorScrollPane.getHeight();
+  }
+
+  private URL getResource(String fileName) {
     URL url = this.getClass().getResource(fileName);
     if (url == null) {
       System.err.println("Couldn't find file: " + infoFile);
@@ -175,7 +186,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return url;
   }
 
-  String getResourceString(String name) throws IOException {
+  private String getResourceString(String name) throws IOException {
     URL templateFile = this.getClass().getResource(name);
     if (templateFile == null)
       throw new FileNotFoundException("Error loading resource " + name);
@@ -192,52 +203,34 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return html;
   }
 
-  private JPanel getLeftPanel(JPanel sizePanel) {
+  private JPanel getLeftPanel(int w, int h) {
 
-    //Path to applet panel
-    JPanel pathPanel = new JPanel();
-    pathPanel.setLayout(new BorderLayout());
-    //    JLabel pathLabel = new JLabel("Relative Path to Jmol Applet:");
-    //    pathPanel.add(pathLabel, BorderLayout.PAGE_START);
-    pathPanel.add(appletPath, BorderLayout.PAGE_END);
-    pathPanel.setBorder(BorderFactory
-        .createTitledBorder("Relative Path to Jmol Applet:"));
-
-    JScrollPane editorScrollPane = getInstructionPane();
-
-    //For layout purposes, put things in separate panels
-
-    //For layout combine path and size into one panel
-    JPanel pathSizePanel = null;
-
-    if (sizePanel == null) {
-      pathSizePanel = pathPanel;
-      pathSizePanel.setSize(new Dimension(300, 60));
-    } else {
-      pathSizePanel = new JPanel();
-      pathSizePanel.setLayout(new BorderLayout());
-      pathSizePanel.add(pathPanel, BorderLayout.PAGE_START);
-      pathSizePanel.add(sizePanel, BorderLayout.CENTER);
-    }
+    editorScrollPane = getInstructionPane(w, h);
 
     //Create the save button. 
     saveButton = new JButton("Save HTML as...");
     saveButton.addActionListener(this);
-
-    //save file selection panel
     JPanel savePanel = new JPanel();
     savePanel.add(saveButton);
+    
+    //Path to applet panel
+
+    JPanel pathPanel = new JPanel();
+    pathPanel.setLayout(new BorderLayout());
+    pathPanel.setBorder(BorderFactory
+        .createTitledBorder("Relative Path to Jmol Applet:"));
+    pathPanel.add(appletPath, BorderLayout.NORTH);
+    pathPanel.add(savePanel, BorderLayout.SOUTH);
 
     //Combine previous three panels into one
     JPanel leftpanel = new JPanel();
     leftpanel.setLayout(new BorderLayout());
-    leftpanel.add(editorScrollPane, BorderLayout.PAGE_START);
-    leftpanel.add(pathSizePanel, BorderLayout.CENTER);
-    leftpanel.add(savePanel, BorderLayout.PAGE_END);
+    leftpanel.add(editorScrollPane, BorderLayout.CENTER);
+    leftpanel.add(pathPanel, BorderLayout.SOUTH);
     return leftpanel;
   }
 
-  private JScrollPane getInstructionPane() {
+  private JScrollPane getInstructionPane(int w, int h) {
 
     //Create the instructions sub window (scrolling to read html file)
     JEditorPane instructions = new JEditorPane();
@@ -255,12 +248,18 @@ abstract class WebPanel extends JPanel implements ActionListener {
     JScrollPane editorScrollPane = new JScrollPane(instructions);
     editorScrollPane
         .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-    editorScrollPane.setPreferredSize(new Dimension(300, 350));
+    editorScrollPane.setPreferredSize(new Dimension(w, h));
     editorScrollPane.setMinimumSize(new Dimension(250, 10));
     return editorScrollPane;
   }
 
   public void actionPerformed(ActionEvent e) {
+
+    if (e.getSource() == appletPath) {
+      String path = appletPath.getText();
+      WebExport.setAppletPath(path);
+      return;
+    }
 
     //Handle open button action.
     if (e.getSource() == addInstanceButton) {
@@ -276,7 +275,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       //need to get the script...
       String script = viewer.getStateInfo();
       if (script == null) {
-        LogPanel.Log("Error trying to get Jmol State within pop_in_Jmol.");
+        LogPanel.log("Error trying to get Jmol State within pop_in_Jmol.");
       }
       DefaultListModel listModel = (DefaultListModel) instanceList.getModel();
       int width = 300;
@@ -290,13 +289,13 @@ abstract class WebPanel extends JPanel implements ActionListener {
       String StructureFile = viewer.getModelSetPathName();
       if (StructureFile == null) {
         LogPanel
-            .Log("Error trying to get name and path to file containing structure in pop_in_Jmol.");
+            .log("Error trying to get name and path to file containing structure in pop_in_Jmol.");
       }
       JmolInstance instance = new JmolInstance(viewer, name, StructureFile,
           script, width, height);
       if (instance == null) {
         LogPanel
-            .Log("Error creating new instance containing script and image in pop_in_Jmol.");
+            .log("Error creating new instance containing script and image in pop_in_Jmol.");
       }
 
       int i;
@@ -306,10 +305,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
       if (i < 0) {
         i = listModel.getSize();
         listModel.addElement(instance);
-        LogPanel.Log("added Instance " + instance.name);
+        LogPanel.log("added Instance " + instance.name);
       } else {
         listModel.setElementAt(instance, i);
-        LogPanel.Log("updated Instance " + instance.name);
+        LogPanel.log("updated Instance " + instance.name);
       }
       instanceList.setSelectedIndex(i);
       syncLists();
@@ -350,10 +349,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
         WebExport.setAppletPath(path);
         retVal = fileWriter(file, instanceList, path);
       } catch (IOException IOe) {
-        LogPanel.Log(IOe.getMessage());
+        LogPanel.log(IOe.getMessage());
       }
       if (!retVal) {
-        LogPanel.Log("Call to FileWriter unsuccessful.");
+        LogPanel.log("Call to FileWriter unsuccessful.");
       }
     }
   }
@@ -368,7 +367,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
   boolean fileWriter(File file, JList InstanceList, String appletPath)
       throws IOException { //returns true if successful.
-    useAppletJS = WebExport.checkOption(viewer, "webMakerCreateJS");
+    useAppletJS = JmolViewer.checkOption(viewer, "webMakerCreateJS");
     //          JOptionPane.showMessageDialog(null, "Creating directory for data...");
     String datadirPath = file.getPath();
     String datadirName = file.getName();
@@ -383,10 +382,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
     }
     boolean made_datadir = (file.exists() && file.isDirectory() || file.mkdir());
     DefaultListModel listModel = (DefaultListModel) InstanceList.getModel();
-    LogPanel.Log("");
+    LogPanel.log("");
     if (made_datadir) {
-      LogPanel.Log("Using directory " + datadirPath);
-      LogPanel.Log("  adding JmolPopIn.js");
+      LogPanel.log("Using directory " + datadirPath);
+      LogPanel.log("  adding JmolPopIn.js");
       URL url = getResource("JmolPopIn.js");
       PrintStream out = null;
       try {
@@ -418,8 +417,8 @@ abstract class WebPanel extends JPanel implements ActionListener {
         JmolInstance thisInstance = (JmolInstance) (listModel.getElementAt(i));
         String javaname = thisInstance.javaname;
         String script = thisInstance.script;
-        LogPanel.Log("  ...jmolApplet" + i);
-        LogPanel.Log("      ...adding " + javaname + ".png");
+        LogPanel.log("  ...jmolApplet" + i);
+        LogPanel.log("      ...adding " + javaname + ".png");
         try {
           thisInstance.movepict(datadirPath);
         } catch (IOException IOe) {
@@ -437,13 +436,13 @@ abstract class WebPanel extends JPanel implements ActionListener {
           outfilename = datadirPath
               + (datadirPath.indexOf("\\") >= 0 ? "\\" : "/") + newName;
           LogPanel
-              .Log("      ...copying " + newName + " from " + structureFile);
+              .log("      ...copying " + newName + " from " + structureFile);
           String data = viewer.getFileAsString(structureFile);
           viewer.createImage(outfilename, data, Integer.MIN_VALUE, 0, 0);
           lastFile = structureFile;
           lastName = newName;
         } else {
-          LogPanel.Log("      ..." + javaname + " uses " + outfilename);
+          LogPanel.log("      ..." + javaname + " uses " + outfilename);
         }
         //First modify to use the newly copied structure file
         String structureFileName = (new File(structureFile)).getName();
@@ -458,7 +457,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
         script = TextFormat.simpleReplace(script,
             '"' + structureFileName + '"', '"' + newName + '"');
         //script = fixScript(script);
-        LogPanel.Log("      ...adding " + javaname + ".spt");
+        LogPanel.log("      ...adding " + javaname + ".spt");
         try {
           String scriptname = datadirPath + "/" + javaname + ".spt";
           out = new PrintStream(new FileOutputStream(scriptname));
@@ -489,10 +488,11 @@ abstract class WebPanel extends JPanel implements ActionListener {
       html = TextFormat.simpleReplace(html, "@APPLETDEFS@", str);
       html = TextFormat.simpleReplace(html, "@CREATIONDATA@", WebExport
           .TimeStamp_WebLink());
-      LogPanel.Log("      ...creating " + fileName);
-      html = TextFormat.simpleReplace(html, "</body>",
-          "<div style='display:none'>\n<pre>\n" + LogPanel.getText()
-              + "\n</pre></div>\n</body>");
+      html = TextFormat.simpleReplace(html, "@AUTHORDATA@",
+          "Based on template by A. Herr&aacute;ez as modified by J. Gutow");
+      html = TextFormat.simpleReplace(html, "@LOGDATA@", "<pre>\n"
+          + LogPanel.getText() + "\n</pre>\n");
+      LogPanel.log("      ...creating " + fileName);
       viewer.createImage(datadirPath + "/" + fileName, html, Integer.MIN_VALUE,
           0, 0);
     } else {
@@ -500,7 +500,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
           + datadirPath);
       throw IOe;
     }
-    LogPanel.Log("");
+    LogPanel.log("");
     return true;
   }
 
@@ -559,7 +559,7 @@ class ArrayListTransferHandler extends TransferHandler {
   int addCount = 0; //Number of items added
   WebPanel webPanel;
 
-  public ArrayListTransferHandler(WebPanel webPanel) {
+  ArrayListTransferHandler(WebPanel webPanel) {
     this.webPanel = webPanel;
     try {
       localArrayListFlavor = new DataFlavor(localArrayListType);
@@ -736,10 +736,10 @@ class ArrayListTransferHandler extends TransferHandler {
     return COPY_OR_MOVE;
   }
 
-  public class ArrayListTransferable implements Transferable {
+  class ArrayListTransferable implements Transferable {
     ArrayList data;
 
-    public ArrayListTransferable(ArrayList alist) {
+    ArrayListTransferable(ArrayList alist) {
       data = alist;
     }
 

@@ -51,6 +51,16 @@ abstract public class JmolViewer extends JmolSimpleViewer {
     return Viewer.allocateViewer(awtComponent, jmolAdapter);
   }
 
+  static public static String getJmolVersion() {
+    return Viewer.getJmolVersion();
+  }
+
+  static public boolean checkOption(JmolViewer viewer, String option) {
+    Object testFlag = viewer.getParameter(option);
+    return (testFlag instanceof Boolean && ((Boolean) testFlag).booleanValue()
+        || testFlag instanceof Integer && ((Integer) testFlag).intValue() != 0);
+  }
+
   abstract public void setJmolStatusListener(JmolStatusListener jmolStatusListener);
 
   abstract public void setAppletContext(String htmlName, URL documentBase, URL codeBase,

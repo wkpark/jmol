@@ -29,11 +29,12 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class Molecules extends JPanel implements ActionListener {
+class Molecules extends JPanel implements ActionListener {
 
-  /**
-   * NOTE: This code has not been tested in the context of Trunk jmol
+  /*
+   * old code -- not implemented in Jmol 11.3 -- needs clean-up
    */
+
   private static final long serialVersionUID = 1L;
   //The constants used to generate panels, etc.
   JButton saveButton, MolecopenButton, MolecdeleteButton;
@@ -52,7 +53,7 @@ public class Molecules extends JPanel implements ActionListener {
   private static final int Spacefilling = 3;
 
   //Need the panel maker and the action listener.
-  public JComponent getPanel() {
+  JComponent getPanel() {
 
     //Create the brief discription text
     JLabel Description = new JLabel(
@@ -207,9 +208,9 @@ public class Molecules extends JPanel implements ActionListener {
         File file = fc.getSelectedFile();
         //This is where a real application would save the file.
         DefaultListModel listModel = (DefaultListModel) MolecList.getModel();
-        LogPanel.Log("Saving: " + file.getName() + ".\n");
+        LogPanel.log("Saving: " + file.getName() + ".\n");
         for (int i = 0; i < listModel.getSize(); i++) {
-          LogPanel.Log("  Molecule file #" + i + " is "
+          LogPanel.log("  Molecule file #" + i + " is "
               + listModel.getElementAt(i) + ".");
         }
         boolean retVal = true;
@@ -217,13 +218,13 @@ public class Molecules extends JPanel implements ActionListener {
           retVal = molectohtml((FormatBox.getSelectedIndex() + 1), (RenderMode
               .getSelectedIndex() + 1), file, MolecList, appletPath.getText());
         } catch (IOException IOe) {
-          LogPanel.Log(IOe.getMessage());
+          LogPanel.log(IOe.getMessage());
         }
         if (!retVal) {
-          LogPanel.Log("Call to molectohtml unsuccessful.");
+          LogPanel.log("Call to molectohtml unsuccessful.");
         }
       } else {
-        LogPanel.Log("Save command cancelled by \"user\".");
+        LogPanel.log("Save command cancelled by \"user\".");
       }
       //Handle choose Coordinate file button
     }

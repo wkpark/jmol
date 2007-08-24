@@ -31,8 +31,8 @@ import javax.swing.*;
 
 public class Orbitals extends JPanel implements ActionListener {
 
-  /**
-   * NOTE: This code has not been tested in the context of Trunk jmol
+  /*
+   * old code -- not implemented in Jmol 11.3 -- needs clean-up
    */
   
     private static final long serialVersionUID = 1L;
@@ -230,12 +230,12 @@ public class Orbitals extends JPanel implements ActionListener {
           File file = fc.getSelectedFile();
           //This is where a real application would save the file.
           DefaultListModel listModel = (DefaultListModel) OrbList.getModel();
-          LogPanel.Log("Saving: " + file.getName() + "." + newline);
+          LogPanel.log("Saving: " + file.getName() + "." + newline);
           //Let's make sure we can get out the file names.
           LogPanel
-              .Log("  Coordinate file: " + Coorfile.getText() + "." + newline);
+              .log("  Coordinate file: " + Coorfile.getText() + "." + newline);
           for (int i = 0; i < listModel.getSize(); i++) {
-            LogPanel.Log("  Orbital file #" + i + " is "
+            LogPanel.log("  Orbital file #" + i + " is "
                 + listModel.getElementAt(i) + ".");
           }
           String str = Coorfile.getText();
@@ -245,13 +245,13 @@ public class Orbitals extends JPanel implements ActionListener {
                 .getSelectedIndex() + 1), file, str, OrbList, appletPath
                 .getText());
           } catch (IOException IOe) {
-            LogPanel.Log(IOe.getMessage());
+            LogPanel.log(IOe.getMessage());
           }
           if (!retVal) {
-            LogPanel.Log("Call to orbtohtml unsuccessful.");
+            LogPanel.log("Call to orbtohtml unsuccessful.");
           }
         } else {
-          LogPanel.Log("Save command cancelled by \"user\".");
+          LogPanel.log("Save command cancelled by \"user\".");
         }
         //Handle choose Coordinate file button
       } else if (e.getSource() == CooropenButton) {
@@ -267,7 +267,7 @@ public class Orbitals extends JPanel implements ActionListener {
           Coorfile.setText(str);
           //        LogPanel.Log("Coordinate file: " + file.getName() + ".");
         } else {
-          LogPanel.Log("Coordinate file selection cancelled by user.");
+          LogPanel.log("Coordinate file selection cancelled by user.");
         }
       }
     }

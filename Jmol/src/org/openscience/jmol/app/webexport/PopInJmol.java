@@ -29,12 +29,12 @@ import javax.swing.*;
 import org.jmol.api.JmolViewer;
 import org.jmol.util.TextFormat;
 
-public class PopInJmol extends WebPanel {
+class PopInJmol extends WebPanel {
 
   PopInJmol(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels,
       int panelIndex) {
     super(viewer, fc, webPanels, panelIndex);
-    description = "Create a web page with images that convert to live Jmol applets when a user clicks a link";
+    //description = "Create a web page with images that convert to live Jmol applets when a user clicks a link";
     listLabel = "These names will be used as filenames for the applets";
     infoFile = "pop_in_instructions.html";
     templateName = "pop_in_template.html";

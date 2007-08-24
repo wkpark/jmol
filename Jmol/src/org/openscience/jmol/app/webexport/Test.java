@@ -37,9 +37,10 @@ import org.jmol.viewer.*;
 
 public class Test extends JPanel implements ActionListener {
 
-  /**
-   * 
+  /*
+   * old code -- not implemented in Jmol 11.3
    */
+  
   private static final long serialVersionUID = 1L;
   // The constants used to generate panels, etc.
   JButton StateButton, FileButton, PathButton, movetoTime,
@@ -112,34 +113,34 @@ public class Test extends JPanel implements ActionListener {
       Str = viewer.getStateInfo();
       if (Str == null) {
         LogPanel
-            .Log("Something didn't work when selecting the State Button in Test module");
+            .log("Something didn't work when selecting the State Button in Test module");
       }
-      LogPanel.Log(Str);
+      LogPanel.log(Str);
     }
     if (e.getSource() == FileButton) { // Handle getting the file name...
       String Str = null;
       Str = viewer.getFileName();
       if (Str == null) {
         LogPanel
-            .Log("Something didn't work when selecting the file button in Test module");
+            .log("Something didn't work when selecting the file button in Test module");
       }
-      LogPanel.Log(Str);
+      LogPanel.log(Str);
     }
     if (e.getSource() == PathButton) {// Handle getting the path to the file...
       String Str = null;
       Str = viewer.getFullPathName();
       if (Str == null) {
         LogPanel
-            .Log("Something didn't work when selecting the Path button in Test module");
+            .log("Something didn't work when selecting the Path button in Test module");
       }
-      LogPanel.Log(Str);
+      LogPanel.log(Str);
     }
     if (e.getSource() == movetoTime) {// Handle getting the path to the file...
       String statestr = null;
       statestr = viewer.getStateInfo();
       if (statestr == null) {
         LogPanel
-            .Log("Something didn't work when reading the state while trying to add a moveto time.");
+            .log("Something didn't work when reading the state while trying to add a moveto time.");
       }
       // Change the state string so that it will work as a script with an
       // animated moveto...
@@ -148,8 +149,8 @@ public class Test extends JPanel implements ActionListener {
       statestr = TextFormat.simpleReplace(statestr,
           "moveto /* time, axisAngle */ 0.0",
           "moveto /* time, axisAngle */ 5.0");
-      LogPanel.Log("The state below should have a 5 second moveto time...");
-      LogPanel.Log(statestr);
+      LogPanel.log("The state below should have a 5 second moveto time...");
+      LogPanel.log(statestr);
     }
     if (e.getSource() == StringtoScriptButton) {
       String Str = "This is a test string to stand in for the script;";
@@ -157,12 +158,12 @@ public class Test extends JPanel implements ActionListener {
       try {
         out = new PrintStream(new FileOutputStream("Test.scpt"));
       } catch (FileNotFoundException IOe) {
-        LogPanel.Log("Open file error in StringtoScriptButton"); // Pass the
+        LogPanel.log("Open file error in StringtoScriptButton"); // Pass the
       }
       out.print(Str);
       out.close();
       LogPanel
-          .Log("The file Test.scpt should have been written to the default directory.");
+          .log("The file Test.scpt should have been written to the default directory.");
     }
   }
 }

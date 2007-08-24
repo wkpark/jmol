@@ -99,6 +99,8 @@ public class Jmol extends JPanel {
   private final static String CONSOLE_WINDOW_NAME = "Console";
   private final static String SCRIPT_WINDOW_NAME = "ScriptWindow";
   private final static String FILE_OPEN_WINDOW_NAME = "FileOpen";
+  private final static String WEB_MAKER_WINDOW_NAME = "JmolWebPageMaker";
+
 
   static Point border;
   static Boolean haveBorder = Boolean.FALSE;
@@ -772,6 +774,8 @@ public class Jmol extends JPanel {
   private void dispose(JFrame f) {
     if (historyFile != null && scriptWindow != null)
       historyFile.addWindowInfo(SCRIPT_WINDOW_NAME, scriptWindow, null);
+    if (historyFile != null && webExport != null)
+      WebExport.saveHistory();
     if (numWindows <= 1) {
       // Close Jmol
       report(GT._("Closing Jmol..."));
@@ -1587,6 +1591,8 @@ public class Jmol extends JPanel {
 
   }
 
+ WebExport webExport;
+ 
  class ToWebAction extends MoleculeDependentAction{
     
     public ToWebAction(){
@@ -1596,8 +1602,9 @@ public class Jmol extends JPanel {
     public void actionPerformed(ActionEvent e){
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
     public void run() {
-      WebExport.createAndShowGUI(viewer);
-      }
+          webExport = WebExport.createAndShowGUI(viewer, historyFile,
+              WEB_MAKER_WINDOW_NAME);
+        }
     });
     }
   }

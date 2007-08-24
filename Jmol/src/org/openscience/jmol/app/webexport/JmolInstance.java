@@ -64,7 +64,7 @@ class JmolInstance {
     if (!(scratchfile.exists())) {//make the directory if necessary. we will delete when done
       boolean made_scratchdir = scratchfile.mkdir();
       if (!(made_scratchdir)) {
-        LogPanel.Log("Attempt to make scratch directory failed.");
+        LogPanel.log("Attempt to make scratch directory failed.");
       }
     }
     String pictfile = scratchpath + "/" + javaname + ".png";

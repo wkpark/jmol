@@ -54,21 +54,26 @@ html, body { height:100%; overflow:hidden; margin:0; padding:0; }
 
 
 <div id="mainPane" class="textPanels">
-<div class="content">
-Insert your TITLE and INTRODUCTION here.<br>
+<div id="mainContent" class="content">
+Insert your TITLE and INTRODUCTION here.
+<br />
 
 @APPLETDEFS@ 
 
+<br />
 
-<div style="text-align: right;">Based on template by A. Herr&aacute;ez as modified by J. Gutow and B. Hanson</div>
-<div style="text-align: right;">@CREATIONDATA@</div>
-
+<div id="authordiv" style="text-align: right;">
+@AUTHORDATA@
+</div>
+<div id="creationdiv" style="text-align: right;">
+@CREATIONDATA@
+</div>
+<div id="logdiv" style="display:none">
+@LOGDATA@
+</div>
 
 </div><!--content-->
 </div><!--mainPane-->
-
-
-
 
 </body>
 </html>

@@ -27,32 +27,32 @@ package org.openscience.jmol.app.webexport;
 import java.awt.*;
 import javax.swing.*;
 
-public class LogPanel {
+class LogPanel {
 
-  private static JTextArea log;
+  private static JTextArea logArea;
   private static boolean resetFlag;
 
-  public static void Log(String message) {
+  static void log(String message) {
     if (resetFlag)
-      log.setText("");
+      logArea.setText("");
     resetFlag = (message.length() == 0);
-    log.append(message + "\n");
-    log.setCaretPosition(log.getDocument().getLength());
+    logArea.append(message + "\n");
+    logArea.setCaretPosition(logArea.getDocument().getLength());
   }
 
-  public static String getText() {
-    return log.getText();
+  static String getText() {
+    return logArea.getText();
   }
 
-  public JComponent logPanel() {
+  JComponent getPanel() {
     //Now layout the LogPanel.  It will be added to the tabs in the main class.
 
     //Create the log first, because the action listeners
     //need to refer to it.
-    log = new JTextArea(20, 20);
-    log.setMargin(new Insets(5, 5, 5, 5));
-    log.setEditable(false);
-    JScrollPane logScrollPane = new JScrollPane(log);
+    logArea = new JTextArea(20, 20);
+    logArea.setMargin(new Insets(5, 5, 5, 5));
+    logArea.setEditable(false);
+    JScrollPane logScrollPane = new JScrollPane(logArea);
 
     //Create a label for the log
     JLabel logLabel = new JLabel("Log and Error Messages:");
@@ -68,5 +68,4 @@ public class LogPanel {
 
     return (logPanel);
   }
-
 }

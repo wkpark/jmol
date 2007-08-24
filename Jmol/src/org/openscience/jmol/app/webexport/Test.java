@@ -35,7 +35,6 @@ import javax.swing.*;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.*;
 
-
 public class Test extends JPanel implements ActionListener {
 
   /**
@@ -146,7 +145,8 @@ public class Test extends JPanel implements ActionListener {
       // animated moveto...
       statestr = TextFormat.simpleReplace(statestr, "set refreshing false;",
           "set refreshing true;");
-      statestr = TextFormat.simpleReplace(statestr, "moveto /* time, axisAngle */ 0.0",
+      statestr = TextFormat.simpleReplace(statestr,
+          "moveto /* time, axisAngle */ 0.0",
           "moveto /* time, axisAngle */ 5.0");
       LogPanel.Log("The state below should have a 5 second moveto time...");
       LogPanel.Log(statestr);

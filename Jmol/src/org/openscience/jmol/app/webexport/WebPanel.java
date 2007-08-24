@@ -47,10 +47,12 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
   abstract String fixHtml(String html);
 
+  abstract JPanel appletParamPanel(); //should be defined in the code for the specific case e.g. ScriptButtons.java
+
   //The constants used to generate panels, etc.
   JButton saveButton, addInstanceButton, deleteInstanceButton,
       showInstanceButton;
-  JTextField appletPath;
+  JTextField appletPath, webPageAuthor, webPageTitle;
   JSpinner appletSizeSpinnerW;
   JSpinner appletSizeSpinnerH;
   JSpinner appletSizeSpinnerP;
@@ -82,54 +84,11 @@ abstract class WebPanel extends JPanel implements ActionListener {
   }
 
   //Need the panel maker and the action listener.
+
   JPanel getPanel() {
 
-    //Create the appletSize spinner so the user can decide how big
-    //the applet should be.
-    SpinnerNumberModel appletSizeModelW = new SpinnerNumberModel(300, //initial value
-        50, //min
-        500, //max
-        25); //step size
-    SpinnerNumberModel appletSizeModelH = new SpinnerNumberModel(300, //initial value
-        50, //min
-        500, //max
-        25); //step size
-    appletSizeSpinnerW = new JSpinner(appletSizeModelW);
-    appletSizeSpinnerH = new JSpinner(appletSizeModelH);
-
-    //panel to hold spinner and label
-    JPanel appletSizeWHPanel = new JPanel();
-    appletSizeWHPanel.add(new JLabel("Applet width:"));
-    appletSizeWHPanel.add(appletSizeSpinnerW);
-    appletSizeWHPanel.add(new JLabel("height:"));
-    appletSizeWHPanel.add(appletSizeSpinnerH);
-
-    //Create the appletSize percent spinner so the user can decide what %
-    // of the window width the applet should be.
-    SpinnerNumberModel appletSizeModel = new SpinnerNumberModel(60, //initial value
-        20, //min
-        100, //max
-        5); //step size
-    appletSizeSpinnerP = new JSpinner(appletSizeModel);
-    //panel to hold spinner and label
-
-    JPanel appletSizePPanel = new JPanel();
-    appletSizePPanel.add(new JLabel("% of window for applet width:"));
-    appletSizePPanel.add(appletSizeSpinnerP);
-    /*    SpinnerNumberModel appletSizeModelH = new SpinnerNumberModel(60, //initial value
-     20, //min
-     100, //max
-     5); //step size
-     appletSizeSpinnerH = new JSpinner(appletSizeModelH);
-     appletSizePanel.add(new JLabel("height:"));
-     appletSizePanel.add(appletSizeSpinnerH);
-     */
-    //Create the overall panel
-
-    JPanel appletSizePanel = new JPanel(new BorderLayout());
-    appletSizePanel.setMaximumSize(new Dimension(350, 70));
-    appletSizePanel.add(appletSizeWHPanel, BorderLayout.NORTH);
-    appletSizePanel.add(appletSizePPanel, BorderLayout.SOUTH);
+    JPanel paramPanel = appletParamPanel();
+    paramPanel.setMaximumSize(new Dimension(350, 70));
 
     //Create the brief description text
     JLabel jDescription = new JLabel("      " + description + "\n\n");
@@ -188,7 +147,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     rightPanel.setLayout(new BorderLayout());
     rightPanel.setMinimumSize(new Dimension(350, 350));
     rightPanel.setMaximumSize(new Dimension(350, 1000));
-    rightPanel.add(appletSizePanel, BorderLayout.PAGE_START);
+    rightPanel.add(paramPanel, BorderLayout.PAGE_START);
     rightPanel.add(instancePanel, BorderLayout.PAGE_END);
     rightPanel.setBorder(BorderFactory.createTitledBorder("Jmol Instances:"));
 
@@ -296,8 +255,8 @@ abstract class WebPanel extends JPanel implements ActionListener {
     JScrollPane editorScrollPane = new JScrollPane(instructions);
     editorScrollPane
         .setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-    editorScrollPane.setPreferredSize(new Dimension(250, 350));
-    editorScrollPane.setMinimumSize(new Dimension(10, 10));
+    editorScrollPane.setPreferredSize(new Dimension(300, 350));
+    editorScrollPane.setMinimumSize(new Dimension(250, 10));
     return editorScrollPane;
   }
 
@@ -308,14 +267,12 @@ abstract class WebPanel extends JPanel implements ActionListener {
       //make dialog to get name for instance
       //create an instance with this name.  Each instance is just a container for a string with the Jmol state
       //which contains the full information on the file that is loaded and manipulations done.
-      String label = (instanceList.getSelectedIndices().length != 1 ? "" 
+      String label = (instanceList.getSelectedIndices().length != 1 ? ""
           : getInstanceName(-1));
-      String name = JOptionPane
-          .showInputDialog("Give the occurance of Jmol a one word name:", label);
+      String name = JOptionPane.showInputDialog(
+          "Give the occurance of Jmol a name:", label);
       if (name == null)
         return;
-      name = TextFormat
-          .replaceAllCharacters(name, "[]/\\#*&^%$?.,%<>' \"", "_");
       //need to get the script...
       String script = viewer.getStateInfo();
       if (script == null) {
@@ -341,9 +298,9 @@ abstract class WebPanel extends JPanel implements ActionListener {
         LogPanel
             .Log("Error creating new instance containing script and image in pop_in_Jmol.");
       }
-      
+
       int i;
-      for (i = instanceList.getModel().getSize(); --i >= 0; )
+      for (i = instanceList.getModel().getSize(); --i >= 0;)
         if (getInstanceName(i).equals(instance.name))
           break;
       if (i < 0) {
@@ -391,7 +348,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       try {
         String path = appletPath.getText();
         WebExport.setAppletPath(path);
-        retVal = FileWriter(file, instanceList, path);
+        retVal = fileWriter(file, instanceList, path);
       } catch (IOException IOe) {
         LogPanel.Log(IOe.getMessage());
       }
@@ -402,18 +359,17 @@ abstract class WebPanel extends JPanel implements ActionListener {
   }
 
   String getInstanceName(int i) {
-    if (i < 0) 
+    if (i < 0)
       i = instanceList.getSelectedIndex();
-    JmolInstance instance = (JmolInstance)instanceList.getModel().getElementAt(i);
+    JmolInstance instance = (JmolInstance) instanceList.getModel()
+        .getElementAt(i);
     return (instance == null ? "" : instance.name);
   }
-  
-  boolean FileWriter(File file, JList InstanceList, String appletPath)
-      throws IOException { //returns true if successful.
-    //          JOptionPane.showMessageDialog(null, "Creating directory for data...");
-    
-    useAppletJS = WebExport.checkOption(viewer, "webMakerCreateJS");
 
+  boolean fileWriter(File file, JList InstanceList, String appletPath)
+      throws IOException { //returns true if successful.
+    useAppletJS = WebExport.checkOption(viewer, "webMakerCreateJS");
+    //          JOptionPane.showMessageDialog(null, "Creating directory for data...");
     String datadirPath = file.getPath();
     String datadirName = file.getName();
     String fileName = null;
@@ -460,10 +416,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
       String outfilename = "";
       for (int i = 0; i < listModel.getSize(); i++) {
         JmolInstance thisInstance = (JmolInstance) (listModel.getElementAt(i));
-        String name = thisInstance.name;
+        String javaname = thisInstance.javaname;
         String script = thisInstance.script;
         LogPanel.Log("  ...jmolApplet" + i);
-        LogPanel.Log("      ...adding " + name + ".png");
+        LogPanel.Log("      ...adding " + javaname + ".png");
         try {
           thisInstance.movepict(datadirPath);
         } catch (IOException IOe) {
@@ -477,7 +433,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
             .lastIndexOf(".") + 1, structureFile.length());
         String newName = lastName;
         if (!structureFile.equals(lastFile)) {
-          newName = name + "." + extension; //assuming things are relative to calling page.
+          newName = javaname + "." + extension; //assuming things are relative to calling page.
           outfilename = datadirPath
               + (datadirPath.indexOf("\\") >= 0 ? "\\" : "/") + newName;
           LogPanel
@@ -487,7 +443,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
           lastFile = structureFile;
           lastName = newName;
         } else {
-          LogPanel.Log("      ..." + name + " uses " + outfilename);
+          LogPanel.Log("      ..." + javaname + " uses " + outfilename);
         }
         //First modify to use the newly copied structure file
         String structureFileName = (new File(structureFile)).getName();
@@ -502,9 +458,9 @@ abstract class WebPanel extends JPanel implements ActionListener {
         script = TextFormat.simpleReplace(script,
             '"' + structureFileName + '"', '"' + newName + '"');
         //script = fixScript(script);
-        LogPanel.Log("      ...adding " + name + ".spt");
+        LogPanel.Log("      ...adding " + javaname + ".spt");
         try {
-          String scriptname = datadirPath + "/" + name + ".spt";
+          String scriptname = datadirPath + "/" + javaname + ".spt";
           out = new PrintStream(new FileOutputStream(scriptname));
           out.print(script);
           out.close();
@@ -527,7 +483,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
         appletInfoDivs = "\n<div style='display:none'>\n" + appletInfoDivs
             + "\n</div>\n";
       String str = appletDefs.toString();
-      if (htmlAppletTemplate == null)
+      if (useAppletJS)
         str = "<script type='text/javascript'>\n" + str + "\n</script>";
       html = TextFormat.simpleReplace(html, "@APPLETINFO@", appletInfoDivs);
       html = TextFormat.simpleReplace(html, "@APPLETDEFS@", str);

@@ -37,6 +37,10 @@ function popInJmol(n,fileName,width,height) {
 	document.getElementById("Jmol"+n).innerHTML = jmolApplet([width,height],"defaultDirectory = \""+dataDir+"\";script "+fileName+"",n);
 }
 
+function scriptbuttonJmol(fileName) {
+	document.getElementById("Jmol0").innerHTML = jmolApplet("100%","defaultDirectory = \""+dataDir+"\";script "+fileName+"");
+}
+
 function getHTML(element) {
   var d = document.getElementById(element)
   return (d ? d.innerHTML : "missing div with id: " + element)

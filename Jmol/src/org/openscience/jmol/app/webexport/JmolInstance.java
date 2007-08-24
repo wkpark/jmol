@@ -32,9 +32,11 @@ import java.io.IOException;
 import javax.swing.filechooser.FileSystemView;
 
 import org.jmol.api.JmolViewer;
+import org.jmol.util.TextFormat;
 
 class JmolInstance {
   String name;
+  String javaname;
   String file;
   String script;
   int width;
@@ -43,9 +45,12 @@ class JmolInstance {
   boolean pictIsScratchFile;
   JmolViewer viewer;
 
-  JmolInstance(JmolViewer viewer, String name, String file, String script, int width, int height) {
+  JmolInstance(JmolViewer viewer, String name, String file, String script,
+      int width, int height) {
     this.viewer = viewer;
     this.name = name;
+    this.javaname = TextFormat.replaceAllCharacters(name,
+        "[]/\\#*&^%$?.,%<>' \"", "_"); //makes things computer OK
     this.file = file;
     this.script = script;
     this.width = width;
@@ -62,7 +67,7 @@ class JmolInstance {
         LogPanel.Log("Attempt to make scratch directory failed.");
       }
     }
-    String pictfile = scratchpath + "/" + name + ".png";
+    String pictfile = scratchpath + "/" + javaname + ".png";
     this.pictFile = pictfile;
     viewer.createImage(pictfile, "PNG", 0, width, height);
     this.pictIsScratchFile = true;
@@ -70,7 +75,7 @@ class JmolInstance {
 
   boolean movepict(String dirpath) throws IOException {
     //need the file writing stuff...
-    String imagename = dirpath + "/" + this.name + ".png";
+    String imagename = dirpath + "/" + this.javaname + ".png";
     if (this.pictFile.equals(imagename))
       return false;
     String scratchname = this.pictFile;
@@ -98,8 +103,8 @@ class JmolInstance {
       File scratchtoerase = new File(scratchname);
       boolean deleteOK = scratchtoerase.delete();
       if (!(deleteOK)) {
-        IOException IOe = (IOException) (new IOException(
-            "Failed to delete scratch file " + scratchname + "."));
+        IOException IOe = (new IOException("Failed to delete scratch file "
+            + scratchname + "."));
         throw IOe;
       }
     }
@@ -108,4 +113,3 @@ class JmolInstance {
     return true;
   }
 }
-

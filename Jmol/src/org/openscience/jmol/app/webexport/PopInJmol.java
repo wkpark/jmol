@@ -31,7 +31,8 @@ import org.jmol.util.TextFormat;
 
 public class PopInJmol extends WebPanel {
 
-  PopInJmol(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels, int panelIndex) {
+  PopInJmol(JmolViewer viewer, JFileChooser fc, WebPanel[] webPanels,
+      int panelIndex) {
     super(viewer, fc, webPanels, panelIndex);
     description = "Create a web page with images that convert to live Jmol applets when a user clicks a link";
     listLabel = "These names will be used as filenames for the applets";
@@ -40,20 +41,47 @@ public class PopInJmol extends WebPanel {
     appletTemplateName = "pop_in_template2.html";
   }
 
+  JPanel appletParamPanel() {
+    //Create the appletSize spinner so the user can decide how big
+    //the applet should be.
+    SpinnerNumberModel appletSizeModelW = new SpinnerNumberModel(300, //initial value
+        50, //min
+        500, //max
+        25); //step size
+    SpinnerNumberModel appletSizeModelH = new SpinnerNumberModel(300, //initial value
+        50, //min
+        500, //max
+        25); //step size
+    appletSizeSpinnerW = new JSpinner(appletSizeModelW);
+    appletSizeSpinnerH = new JSpinner(appletSizeModelH);
+
+    //panel to hold spinner and label
+    JPanel appletSizeWHPanel = new JPanel();
+    appletSizeWHPanel.add(new JLabel("Applet width:"));
+    appletSizeWHPanel.add(appletSizeSpinnerW);
+    appletSizeWHPanel.add(new JLabel("height:"));
+    appletSizeWHPanel.add(appletSizeSpinnerH);
+    return (appletSizeWHPanel);
+  }
+
   String fixHtml(String html) {
     return html;
   }
-  
-  String getAppletDefs(int i, String html, StringBuffer appletDefs, JmolInstance instance) {
+
+  String getAppletDefs(int i, String html, StringBuffer appletDefs,
+                       JmolInstance instance) {
     String divClass = (i % 2 == 0 ? "floatRightDiv" : "floatLeftDiv");
     String name = instance.name;
+    String javaname = instance.javaname;
     int JmolSizeW = instance.width;
     int JmolSizeH = instance.height;
     if (useAppletJS) {
-    appletInfoDivs += "\n<div id=\""+name+"_caption\">\ninsert caption for "+name+" here\n</div>";
-    appletInfoDivs += "\n<div id=\""+name+"_note\">\ninsert note for "+name+" here\n</div>";
-    appletDefs.append("\naddJmolDiv(" + i + ",'"+divClass+"','" + name + "',"
-        + JmolSizeW + "," + JmolSizeH + ")");
+      appletInfoDivs += "\n<div id=\"" + javaname
+          + "_caption\">\ninsert caption for " + name + " here\n</div>";
+      appletInfoDivs += "\n<div id=\"" + javaname + "_note\">\ninsert note for "
+          + name + " here\n</div>";
+      appletDefs.append("\naddJmolDiv(" + i + ",'" + divClass + "','" + javaname
+          + "'," + JmolSizeW + "," + JmolSizeH + ")");
     } else {
       String s = htmlAppletTemplate;
       s = TextFormat.simpleReplace(s, "@CLASS@", "" + divClass);
@@ -61,6 +89,7 @@ public class PopInJmol extends WebPanel {
       s = TextFormat.simpleReplace(s, "@WIDTH@", "" + JmolSizeW);
       s = TextFormat.simpleReplace(s, "@HEIGHT@", "" + JmolSizeH);
       s = TextFormat.simpleReplace(s, "@NAME@", name);
+      s = TextFormat.simpleReplace(s, "@APPLETNAME0@", javaname);
       appletDefs.append(s);
     }
     return html;

@@ -28,44 +28,45 @@ import java.awt.*;
 import javax.swing.*;
 
 public class LogPanel {
-	
-	private static JTextArea log;
-	private static boolean resetFlag;
-	public static void Log(String message){
+
+  private static JTextArea log;
+  private static boolean resetFlag;
+
+  public static void Log(String message) {
     if (resetFlag)
       log.setText("");
     resetFlag = (message.length() == 0);
-		log.append(message + "\n");
-		log.setCaretPosition(log.getDocument().getLength());
-	}
-	
+    log.append(message + "\n");
+    log.setCaretPosition(log.getDocument().getLength());
+  }
+
   public static String getText() {
     return log.getText();
   }
-  
-	public JComponent logPanel(){
-		//Now layout the LogPanel.  It will be added to the tabs in the main class.
-		
-		//Create the log first, because the action listeners
-        //need to refer to it.
-        log = new JTextArea(20,20);
-        log.setMargin(new Insets(5,5,5,5));
-        log.setEditable(false);
-        JScrollPane logScrollPane = new JScrollPane(log);
-		
-		//Create a label for the log
-		JLabel logLabel = new JLabel("Log and Error Messages:");
-		//put in its own panel so that it will be centered
-		JPanel logLabelPanel = new JPanel();
-		logLabelPanel.add(logLabel);
-		
-		//Create a panel of the log and its label
-		JPanel logPanel = new JPanel();
-		logPanel.setLayout(new BorderLayout());
-		logPanel.add(logLabelPanel, BorderLayout.PAGE_START);
-		logPanel.add(logScrollPane, BorderLayout.PAGE_END);
-		
-		return(logPanel);
-	}
-	
+
+  public JComponent logPanel() {
+    //Now layout the LogPanel.  It will be added to the tabs in the main class.
+
+    //Create the log first, because the action listeners
+    //need to refer to it.
+    log = new JTextArea(20, 20);
+    log.setMargin(new Insets(5, 5, 5, 5));
+    log.setEditable(false);
+    JScrollPane logScrollPane = new JScrollPane(log);
+
+    //Create a label for the log
+    JLabel logLabel = new JLabel("Log and Error Messages:");
+    //put in its own panel so that it will be centered
+    JPanel logLabelPanel = new JPanel();
+    logLabelPanel.add(logLabel);
+
+    //Create a panel of the log and its label
+    JPanel logPanel = new JPanel();
+    logPanel.setLayout(new BorderLayout());
+    logPanel.add(logLabelPanel, BorderLayout.PAGE_START);
+    logPanel.add(logScrollPane, BorderLayout.PAGE_END);
+
+    return (logPanel);
+  }
+
 }

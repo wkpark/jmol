@@ -234,7 +234,7 @@
         - formato de salida de NWChem, <em>Pacific Northwest National Laboratory</em>
 						</li>
 						<li>
-							<a href="http://www.wavefun.com/products/odyssey/odyssey.html">odedata</a>
+							<a href="http://www.wavefun.com/products/odyssey/odyssey.html">odydata</a>
 	      - datos de Odyssey, <em>WaveFunction, Inc.
         </em></li>
 						<li>
@@ -259,7 +259,7 @@
         - datos de Spartan, <em>Wavefunction, Inc.</em>
 						</li>
 						<li>
-							<a href="http://www.wavefun.com/products/odyssey/odyssey.html">xodedata</a>
+							<a href="http://www.wavefun.com/products/odyssey/odyssey.html">xodydata</a>
 	      - datos XML de Odyssey, <em>WaveFunction, Inc.
         </em></li>
 						<li>XYZ

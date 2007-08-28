@@ -2400,7 +2400,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   // these must be removed after various script commands so that they stay current
   
   public static String[] predefinedVariable = {
-    "@water _g>=70 & _g<=72, oxygen & connected(2, hydrogen or deuterium or tritium), (hydrogen or deuterium and tritium) & connected(oxygen & connected(2, hydrogen or deuterium or tritium))",
+    "@water _g>=70 & _g<=72, oxygen & connected(2, hydrogen or deuterium or tritium), (hydrogen or deuterium or tritium) & connected(oxygen & connected(2, hydrogen or deuterium or tritium))",
     "@turn structure=1",
     "@sheet structure=2",
     "@helix structure=3",

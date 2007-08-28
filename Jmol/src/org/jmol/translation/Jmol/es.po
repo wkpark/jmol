@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: Jmol 10\n"
 "Report-Msgid-Bugs-To: jmol-developers@lists.sourceforge.net\n"
 "POT-Creation-Date: 2007-08-17 06:30+0200\n"
-"PO-Revision-Date: 2007-05-17 23:49+0100\n"
-"Last-Translator: Nicolas Vervelle <nicove@users.sourceforge.net>\n"
+"PO-Revision-Date: 2007-08-28 16:25+0100\n"
+"Last-Translator: Angel Herráez <angel.herraez@uah.es>\n"
 "Language-Team: Spanish <Jmol-developers@lists.sf.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -196,24 +196,20 @@ msgid "&Export"
 msgstr "&Exportar"
 
 #: org/openscience/jmol/app/GuiMap.java:53
-#, fuzzy
 msgid "Export &Image or Script..."
-msgstr "Exportar imagen o guión..."
+msgstr "Exportar &imagen o guión..."
 
 #: org/openscience/jmol/app/GuiMap.java:54
-#, fuzzy
 msgid "Export to &Web Page..."
-msgstr "Exportar PDF..."
+msgstr "Exportar a página &web..."
 
 #: org/openscience/jmol/app/GuiMap.java:55
-#, fuzzy
 msgid "Render in POV-&Ray..."
-msgstr "Generar en POV-Ray"
+msgstr "Generar en POV-&Ray"
 
 #: org/openscience/jmol/app/GuiMap.java:56
-#, fuzzy
 msgid "Export &PDF..."
-msgstr "Exportar PDF..."
+msgstr "Exportar &PDF..."
 
 #: org/openscience/jmol/app/GuiMap.java:57
 msgid "&Print..."
@@ -612,7 +608,7 @@ msgstr "Exportar vista a archivo de imagen o de guión"
 
 #: org/openscience/jmol/app/GuiMap.java:174
 msgid "Export one or more views to a web page."
-msgstr ""
+msgstr "Exportar una o varias vistas a una página web"
 
 #: org/openscience/jmol/app/GuiMap.java:175
 msgid "Render in pov-ray."
@@ -971,12 +967,8 @@ msgid "Filename Stem"
 msgstr "Raíz del nombre de archivo"
 
 #: org/openscience/jmol/app/PovrayDialog.java:158
-msgid ""
-"Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> "
-"'caffine_1.pov', 'caffine_2.pov'"
-msgstr ""
-"Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p."
-"ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
+msgid "Single frame: eg 'caffine' -> 'caffine.pov'; Multiple frame: eg 'caffine' -> 'caffine_1.pov', 'caffine_2.pov'"
+msgstr "Fotograma único: p.ej., 'cafeina' -> 'cafeina.pov'; Fotogramas múltiples: p.ej., 'cafeina' -> 'cafeina_1.pov', 'cafeina_2.pov'"
 
 #: org/openscience/jmol/app/PovrayDialog.java:168
 msgid "Working Directory"
@@ -1020,9 +1012,7 @@ msgstr "Activar el suavizado de bordes en POV-Ray"
 
 #: org/openscience/jmol/app/PovrayDialog.java:230
 msgid "Use povray's slower but higher quality anti-aliasing mode"
-msgstr ""
-"Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor "
-"calidad"
+msgstr "Utilizar el suavizado de bordes propio de POV-Ray, más lento pero de mejor calidad"
 
 #: org/openscience/jmol/app/PovrayDialog.java:239
 msgid "Display While Rendering"
@@ -1030,8 +1020,7 @@ msgstr "Mostrar mientras se está representando"
 
 #: org/openscience/jmol/app/PovrayDialog.java:241
 msgid "Should povray attempt to display while rendering?"
-msgstr ""
-"¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
+msgstr "¿Debe POV-Ray intentar mostrar mientras se está generando la representación?"
 
 #: org/openscience/jmol/app/PovrayDialog.java:250
 #: org/openscience/jmol/app/PovrayDialog.java:252
@@ -1272,88 +1261,62 @@ msgstr "Novedades en Jmol"
 
 #~ msgid "Render in pov-ray..."
 #~ msgstr "Preparar para POV-Ray..."
-
 #~ msgid "File not loaded"
 #~ msgstr "El archivo no se ha cargado"
 
 #, fuzzy
 #~ msgid "CLIP or JPG|PNG|PPM:filename"
 #~ msgstr " nombre de archivo JPG|PNG|PPM"
-
 #~ msgid "no display"
 #~ msgstr "sin mostrar"
-
 #~ msgid "run script and exit"
 #~ msgstr "ejecutar guión y salir"
-
 #~ msgid "pick one more atom in order to spin the model around an axis"
 #~ msgstr "elige uno o varios átomos para que el modelo gire en torno a un eje"
-
 #~ msgid "pick two atoms in order to spin the model around an axis"
 #~ msgstr "elige dos átomos para que el modelo gire en torno a un eje"
-
 #~ msgid "Jmol executing script ..."
 #~ msgstr "Jmol ejecutando guión..."
-
 #~ msgid "pick "
 #~ msgstr "elige"
-
 #~ msgid "Wi&reframe Rotation"
 #~ msgstr "&Rotar en modelo de alambres"
-
 #~ msgid "Wireframe Rotation"
 #~ msgstr "Rotar en modelo de alambres"
-
 #~ msgid "Colors"
 #~ msgstr "Colores"
-
 #~ msgid "Background"
 #~ msgstr "Fondo"
-
 #~ msgid "Set the Background Color"
 #~ msgstr "Elegir el color de fondo"
-
 #~ msgid "Background Color"
 #~ msgstr "Color de fondo"
-
 #~ msgid "Picked Atoms"
 #~ msgstr "Atomos seleccionados"
-
 #~ msgid "Set the Color for Picked Atoms"
 #~ msgstr "Elegir color para átomos seleccionados"
-
 #~ msgid "Picked Atom Color"
 #~ msgstr "Color del átomo elegido"
-
 #~ msgid "Text"
 #~ msgstr "Texto"
-
 #~ msgid "Set the Color for Text"
 #~ msgstr "Elegir color del texto"
-
 #~ msgid "Text Color"
 #~ msgstr "Color de texto"
-
 #~ msgid "Set the Color for Bonds"
 #~ msgstr "Elegir color para enlaces"
-
 #~ msgid "Bond Color"
 #~ msgstr "Color de enlaces"
-
 #~ msgid "Vectors"
 #~ msgstr "Vectores"
-
 #~ msgid "Set the Vector Color"
 #~ msgstr "Elegir color para vectores"
-
 #~ msgid "Vector Color"
 #~ msgstr "Color de vectores"
-
 #~ msgid "Color for distance, angle, & torsion measurements"
 #~ msgstr "Color para mediciones de distancia, ángulo y torsión"
-
 #~ msgid "Measurements Color"
 #~ msgstr "Color de mediciones"
-
 #~ msgid "Loading plugins..."
 #~ msgstr "Cargando conectores..."
+

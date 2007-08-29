@@ -359,7 +359,7 @@ public class JaguarReader extends AtomSetCollectionReader {
     // determine number of freqs on this line (starting with "frequencies")
     do {
       int freqCount = Parser.countTokens(line, 0) - 1;
-      while (readLine() != null && !line.startsWith("  intensities ")) {
+      while (readLine() != null && !line.startsWith("  intensities ") && !line.startsWith("  force ")) {
       }
       for (int atomCenterNumber = 0; atomCenterNumber < atomCount; atomCenterNumber++) {
         // this assumes that the atoms are given in the same order as their

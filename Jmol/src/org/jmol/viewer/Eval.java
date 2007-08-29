@@ -2235,9 +2235,10 @@ class Eval { //implements Runnable {
     return mad;
   }
 
-  boolean isColorParam(int i) {
+  boolean isColorParam(int i) throws ScriptException {
     int tok = tokAt(i);
-    return (tok == Token.colorRGB || tok == Token.leftsquare);
+    return (tok == Token.colorRGB || tok == Token.leftsquare || tok == Token.point3f
+        || optParameterAsString(i).startsWith("[x"));
   }
 
   int getArgbParam(int index) throws ScriptException {
@@ -2253,12 +2254,16 @@ class Eval { //implements Runnable {
   int getArgbParam(int index, boolean allowNone) throws ScriptException {
     if (checkToken(index)) {
       switch (getToken(index).tok) {
+      case Token.identifier:
       case Token.string:
         return Graphics3D.getArgbFromString(parameterAsString(index));
       case Token.leftsquare:
         return getColorTriad(++index);
       case Token.colorRGB:
         return theToken.intValue;
+      case Token.point3f:
+        Point3f pt = (Point3f)theToken.value;
+        return  0xFF000000 | (int)pt.x << 16 | (int)pt.y << 8 | (int)pt.z;
       case Token.none:
         if (allowNone)
           return 0;
@@ -3215,6 +3220,27 @@ class Eval { //implements Runnable {
     case Token.property:
       colorObject(Token.atom, 1);
       return;
+    case Token.string:
+      String strColor = stringParameter(1);
+      if (!isSyntaxCheck) {
+        viewer.setColorScheme(strColor);
+        viewer.setStringProperty("propertyColorScheme", strColor);
+      }
+      if (tokAt(2) == Token.range || tokAt(2) == Token.absolute) {
+        float min = floatParameter(3);
+        float max = floatParameter(4);
+        if (!isSyntaxCheck)
+          viewer.setCurrentColorRange(min, max);        
+      }
+      return;
+    case Token.range:
+    case Token.absolute:
+      checkLength4();
+      float min = floatParameter(2);
+      float max = floatParameter(3);
+      if (!isSyntaxCheck)
+        viewer.setCurrentColorRange(min, max);
+      return;
     case Token.background:
       argb = getArgbParamLast(2, true);
       if (!isSyntaxCheck)
@@ -3383,31 +3409,40 @@ class Eval { //implements Runnable {
             && shapeType != JmolConstants.SHAPE_HSTICKS)
           invalidArgument();
         if (pid == JmolConstants.PALETTE_PROPERTY) {
+          Object data = null;
+          float min = 0;
+          float max = Float.MAX_VALUE;
           if (name.equals("property")
               && Compiler.tokAttr(getToken(++index).tok, Token.atomproperty)) {
             if (!isSyntaxCheck) {
-              Object data = getBitsetProperty(null, getToken(index).tok
+              data = getBitsetProperty(null, getToken(index).tok
                   | Token.minmaxmask, null, null, null, null, false);
-              if (data instanceof float[])
-                viewer.setCurrentColorRange((float[]) data, null);
-              else
+              if (!(data instanceof float[]))
                 invalidArgument();
             }
-          } else if (!isSyntaxCheck) {
-            viewer.setCurrentColorRange(name);
           }
-          if (tokAt(index + 1) == Token.absolute) {
-            float min = floatParameter(index + 2);
-            float max = floatParameter(index + 3);
-            viewer.setCurrentColorRange(min, max);
+          if (optParameterAsString(index+1).length() > 0) 
+            setStringProperty("propertyColorScheme", optParameterAsString(++index));          
+          if (tokAt(index + 1) == Token.absolute || tokAt(index + 1) == Token.range) {
+            min = floatParameter(index + 2);
+            max = floatParameter(index + 3);
             index += 3;
+          }
+          if (!isSyntaxCheck) {
+            if (data == null)              
+              viewer.setCurrentColorRange(name);
+            else
+              viewer.setCurrentColorRange((float[]) data, null);
+            if (max != Float.MAX_VALUE)
+              viewer.setCurrentColorRange(min, max);
           }
         }
         if (pid == JmolConstants.PALETTE_VARIABLE) {
           name = parameterAsString(++index);
           float[] data = new float[viewer.getAtomCount()];
           Parser.parseFloatArray("" + viewer.getParameter(name), null, data);
-          viewer.setCurrentColorRange(data, null);
+          if (!isSyntaxCheck)
+            viewer.setCurrentColorRange(data, null);
           pid = JmolConstants.PALETTE_PROPERTY;
         }
         colorvalue = new Byte((byte) pid);
@@ -5933,6 +5968,10 @@ class Eval { //implements Runnable {
         setDefaultColors();
         return;
       }
+      if (key.equalsIgnoreCase("userColorScheme")) {
+        setUserColors();
+        return;
+      }
       if (key.equalsIgnoreCase("measurementNumbers")
           || key.equalsIgnoreCase("measurementLabels")) {
         setMonitor(2);
@@ -6690,6 +6729,22 @@ class Eval { //implements Runnable {
     if (!type.equalsIgnoreCase("rasmol") && !type.equalsIgnoreCase("jmol"))
       invalidArgument();
     setStringProperty("defaultColorScheme", type);
+  }
+
+  void setUserColors() throws ScriptException {
+    Vector v = new Vector();
+    for (int i = 2; i < statementLength; i++) {
+      int argb = getArgbParam(i);
+      v.addElement(new Integer(argb));
+      i = iToken;
+    }
+    if (isSyntaxCheck)
+      return;
+    int n = v.size();
+    int[] scale = new int[n];
+    for (int i = n; --i >= 0;)
+      scale[i] = ((Integer) v.elementAt(i)).intValue();
+    Viewer.setUserScale(scale);
   }
 
   void setBondmode() throws ScriptException {
@@ -7450,6 +7505,16 @@ class Eval { //implements Runnable {
           msg = viewer.getPDBHeader();
       } else if (str.equalsIgnoreCase("debugScript")) {
         value = "" + viewer.getDebugScript();
+      } else if (str.equalsIgnoreCase("colorScheme")) {
+        String name = optParameterAsString(2);
+        if (name.length() > 0)
+          len = 3;
+        int[] scheme = (isSyntaxCheck ? new int[0] :
+            viewer.getColorSchemeArray(name));
+        String colors = "";
+        for (int i = 0; i < scheme.length; i++)
+          colors += (i == 0 ? "" : " ") + Escape.escapeColor(scheme[i]);
+        value = colors;
       }
       break;
     case Token.axes:
@@ -7534,8 +7599,8 @@ class Eval { //implements Runnable {
         msg = (data == null ? "no data" : "data \""
             + data[0]
             + "\"\n"
-            + (data[1] instanceof float[] ? Escape
-                .escape((float[]) data[1]) : "" + data[1]));
+            + (data[1] instanceof float[] ? Escape.escape((float[]) data[1])
+                : "" + data[1]));
       }
       break;
     case Token.spacegroup:
@@ -8603,8 +8668,12 @@ class Eval { //implements Runnable {
          *  
          */
         colorRangeStage = 0;
+        if (getToken(i + 1).tok == Token.string) { 
+          setShapeProperty(iShape, "setColorScheme",parameterAsString(++i));
+        }
         switch (getToken(i + 1).tok) {
         case Token.absolute:
+        case Token.range:
           ++i;
           colorRangeStage = 1;
           continue;
@@ -10280,9 +10349,21 @@ class Eval { //implements Runnable {
           s = TextFormat.simpleReplace(s, "\r", "\n");
           return addX(TextFormat.split(s, '\n'));
         }
-        if (iv == Token.color && x2.tok == Token.string) {
-          Point3f pt = new Point3f();
-          return addX(Graphics3D.colorPointFromString(Token.sValue(x2), pt));
+        if (iv == Token.color) {
+          switch (x2.tok) {
+          case Token.string:
+            Point3f pt = new Point3f();
+            return addX(Graphics3D.colorPointFromString(Token.sValue(x2), pt));
+          case Token.integer:
+          case Token.decimal:
+            return addX(viewer.getColorPointForPropertyValue(Token.fValue(x2)));
+          case Token.point3f:
+            int argb = 0xFF000000 | ((int)((Point3f)x2.value).x) << 16
+            |  ((int)((Point3f)x2.value).y) << 8 |  ((int)((Point3f)x2.value).z);
+            return addX(Escape.escapeColor(argb));
+          default:
+            //handle bitset later
+          }          
         }
         if (x2.tok == Token.point3f) {
           switch (op.intValue) {

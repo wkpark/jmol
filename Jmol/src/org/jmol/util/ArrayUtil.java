@@ -133,6 +133,21 @@ final public class ArrayUtil {
     return t;
   }
 
+  public static int[] arrayCopy(int[] array, int i0, int n, boolean isReverse) {
+    if (array == null)
+      return null;
+    int oldLength = array.length;
+    if (n == -1) n = oldLength;
+    if (n == -2) n = oldLength / 2;
+    n = n - i0;
+    int[] t = new int[n];
+    System.arraycopy(array, i0, t, 0, n);
+    if (isReverse)
+      for (int i = n / 2; --i >= 0;)
+        swap(t, i, n - 1 - i);
+    return t;
+  }
+
   public static short[] setLength(short[] array, int newLength) {
     short[] t = new short[newLength];
     if (array != null) {

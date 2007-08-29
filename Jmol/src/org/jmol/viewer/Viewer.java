@@ -1084,6 +1084,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 */
   
   void setPropertyColorScheme(String scheme) {
+    Logger.info("Property color scheme: " + scheme);
     global.propertyColorScheme = scheme;
   }
 
@@ -1172,9 +1173,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return colorManager.setColorScheme(colorScheme);
   }
 
+  public int[] getColorSchemeArray(String colorScheme) {
+    return colorManager.getColorSchemeArray(colorScheme);  
+  }
+  
+  public static void setUserScale(int[] scale) {
+    ColorManager.setUserScale(scale);
+  }
+  
   short getColixFromPalette(float val, float rangeMin, float rangeMax) {
     //isosurface
     return colorManager.getColixFromPalette(val, rangeMin, rangeMax);
+  }
+  
+  Point3f getColorPointForPropertyValue(float val) {
+    //x = {atomno=3}.partialcharge.color
+    short colix = colorManager.getColixForPropertyValue(val);
+    Point3f pt = new Point3f();
+    return Graphics3D.colorPointFromInt(g3d.getColixArgb(colix), pt);
   }
 
   // ///////////////////////////////////////////////////////////////

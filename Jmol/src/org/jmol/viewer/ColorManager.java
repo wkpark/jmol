@@ -340,6 +340,18 @@ class ColorManager {
     return palette = ColorEncoder.getColorScheme(colorScheme);
   }
   
+  static void setUserScale(int[] scale) {
+    ColorEncoder.setUserScale(scale);
+  }
+  
+  public int[] getColorSchemeArray(String colorScheme) {
+    return ColorEncoder.getColorSchemeArray(colorScheme == null || colorScheme.length() == 0 ? palette : ColorEncoder.getColorScheme(colorScheme));  
+  }
+  
+  short getColixForPropertyValue(float val) {
+    return ColorEncoder.getColorIndexFromPalette(val, colorLo, colorHi, palette); //, rgbRed, rgbGreen, rgbBlue);    
+  }
+
   short getColixFromPalette(float val, float lo, float hi) {
     return ColorEncoder.getColorIndexFromPalette(val, lo, hi, palette); //, rgbRed, rgbGreen, rgbBlue);    
   }

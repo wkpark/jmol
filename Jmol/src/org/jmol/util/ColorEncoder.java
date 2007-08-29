@@ -25,6 +25,7 @@ package org.jmol.util;
 
 import org.jmol.viewer.JmolConstants;
 import org.jmol.g3d.Graphics3D;
+import org.jmol.util.ArrayUtil;
 
 /*
  * 
@@ -40,13 +41,15 @@ import org.jmol.g3d.Graphics3D;
     
   private int palette = 0;
   
-  private final static String[] colorSchemes = {"roygb", "bgyor", "rwb", "bwr", "low", "high"}; 
+  private final static String[] colorSchemes = {"roygb", "bgyor", "rwb", "bwr", "low", "high", "user", "resu"}; 
   private final static int ROYGB = 0;
   private final static int BGYOR = 1;
   private final static int RWB   = 2;
   private final static int BWR   = 3;
   private final static int LOW   = 4;
   private final static int HIGH  = 5;
+  private final static int USER = 6;
+  private final static int RESU = 7;
 
   public int setColorScheme(String colorScheme) {
     return palette = getColorScheme(colorScheme);
@@ -60,7 +63,44 @@ import org.jmol.g3d.Graphics3D;
   }
 
   private final static int ihalf = JmolConstants.argbsRoygbScale.length/3;
+  private static int[] userScale = new int[0];
+  
+  public final static void setUserScale(int[] scale) {
+    userScale = scale;  
+  }
+  
+  public final static int[] getColorSchemeArray(int palette) {
+    switch (palette) {
+    /*    case RGB:
+     c = quantizeRgb(val, lo, hi, rgbRed, rgbGreen, rgbBlue);
+     break;
+     */
+    case ROYGB:
+      return ArrayUtil.arrayCopy(JmolConstants.argbsRoygbScale, 0, -1, false);
+    case BGYOR:
+      return ArrayUtil.arrayCopy(JmolConstants.argbsRoygbScale, 0, -1, true);
+    case LOW:
+      return ArrayUtil.arrayCopy(JmolConstants.argbsRoygbScale, 0, ihalf, false);
+    case HIGH:
+      int[] a = ArrayUtil.arrayCopy(JmolConstants.argbsRoygbScale, ihalf, -1, false);
+      int[] b = new int[ihalf];
+      for (int i = ihalf; --i >= 0;)
+        b[i] = a[i + i];
+      return b;
+    case RWB:
+      return ArrayUtil.arrayCopy(JmolConstants.argbsRwbScale, 0, -1, false);
+    case BWR:
+      return ArrayUtil.arrayCopy(JmolConstants.argbsRwbScale, 0, -1, true);
+    case USER:
+      return ArrayUtil.arrayCopy(userScale, 0, -1, false);
+    case RESU:
+      return ArrayUtil.arrayCopy(userScale, 0, -1, true);
+    default:
+      return null;
+    }
 
+  }
+  
   public final static short getColorIndexFromPalette(float val, float lo, float hi, int palette) {//, int rgbRed, int rgbGreen, int rgbBlue) {
     int c = 0;
     switch (palette) {
@@ -85,6 +125,12 @@ import org.jmol.g3d.Graphics3D;
       break;
     case BWR:
       c = JmolConstants.argbsRwbScale[quantize(-val, -hi, -lo, JmolConstants.argbsRwbScale.length)];
+      break;
+    case USER:
+      c = userScale[quantize(val, lo, hi, userScale.length)];
+      break;
+    case RESU:
+      c = userScale[quantize(-val, -hi, -lo, userScale.length)];
       break;
     default:
       c = 0x808080; // GRAY

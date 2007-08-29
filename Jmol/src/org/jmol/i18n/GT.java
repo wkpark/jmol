@@ -147,6 +147,8 @@ public class GT {
     translationResources = null;
     translationResourcesCount = 0;
     getTextWrapper = this;
+    if (langCode != null && langCode.length() == 0)
+      langCode="none";
     if (langCode != null)
       language = langCode;
     if ("none".equals(language))

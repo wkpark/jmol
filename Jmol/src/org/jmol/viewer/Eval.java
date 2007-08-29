@@ -5977,6 +5977,11 @@ class Eval { //implements Runnable {
           viewer.setBackgroundModel(statement[2].intValue);
         return;
       }
+      if (key.equalsIgnoreCase("language")) {
+        checkLength3();
+        setStringProperty(key, parameterAsString(2));
+        return;
+      }
       if (Parser.isOneOf(key.toLowerCase(), "spinx;spiny;spinz;spinfps")) {
         checkLength3();
         setSpin(key.substring(4), (int) floatParameter(2));

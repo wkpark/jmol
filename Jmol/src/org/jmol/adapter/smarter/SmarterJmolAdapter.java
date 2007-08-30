@@ -80,7 +80,7 @@ public class SmarterJmolAdapter extends JmolAdapter {
     for (int i = 0; i < size; i++) {
       try {
         Object atomSetCollectionOrErrorMessage =
-          Resolver.resolve(names[i], types[i], bufferedReader[i]);
+          Resolver.resolve(names[i], (types == null ? null : types[i]), bufferedReader[i]);
         if (atomSetCollectionOrErrorMessage instanceof String)
           return atomSetCollectionOrErrorMessage;
         if (atomSetCollectionOrErrorMessage instanceof AtomSetCollection) {

@@ -329,7 +329,7 @@ public class Jmol extends JPanel {
 
     // Repositionning windows
     if (scriptWindow != null)
-      historyFile.repositionWindow(SCRIPT_WINDOW_NAME, scriptWindow, 645, 100);
+      historyFile.repositionWindow(SCRIPT_WINDOW_NAME, scriptWindow, 200, 100);
 
     say(GT._("Setting up Drag-and-Drop..."));
     FileDropper dropper = new FileDropper();

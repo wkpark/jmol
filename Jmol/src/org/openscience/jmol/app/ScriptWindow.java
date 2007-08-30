@@ -27,12 +27,14 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.*;
 import java.net.URL;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JFrame;
+import javax.swing.JSplitPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.text.Position;
@@ -74,16 +76,11 @@ public final class ScriptWindow extends JDialog
   }
 
   void layoutWindow(Container container) {
-    container.setLayout(new BorderLayout());
-
-    console = new ConsoleTextPane(this);
-    
-    
+    console = new ConsoleTextPane(this);    
     console.setPrompt();
-    container.add(new JScrollPane(console), BorderLayout.CENTER);
-
+    JScrollPane consolePane = new JScrollPane(console);
+        
     JPanel buttonPanel = new JPanel();
-    container.add(buttonPanel, BorderLayout.SOUTH);
 
     runButton = new JButton(GT._("Run"));
     runButton.addActionListener(this);
@@ -121,6 +118,28 @@ public final class ScriptWindow extends JDialog
     redoButton = new JButton(GT._("Redo"));
     redoButton.addActionListener(this);
     buttonPanel.add(redoButton);
+
+    
+//    container.setLayout(new BorderLayout());
+  //  container.add(consolePane, BorderLayout.CENTER);
+    JPanel buttonPanelWrapper = new JPanel();
+    buttonPanelWrapper.setLayout(new BorderLayout());
+    buttonPanelWrapper.add(buttonPanel, BorderLayout.CENTER);
+
+    JSplitPane spane = new JSplitPane(
+        JSplitPane.VERTICAL_SPLIT,
+        consolePane, buttonPanelWrapper);
+    consolePane.setMinimumSize(new Dimension(300,300));
+    consolePane.setPreferredSize(new Dimension(5000,5000));
+    buttonPanelWrapper.setMinimumSize(new Dimension(60,60));
+    buttonPanelWrapper.setMaximumSize(new Dimension(1000,60));
+    buttonPanelWrapper.setPreferredSize(new Dimension(60,60));
+    spane.setDividerSize(0);
+    spane.setResizeWeight(0.95);
+    container.add(spane);
+//    container.setLayout(new BorderLayout());
+  //  container.add(consolePane,BorderLayout.CENTER);
+    //container.add(buttonPanelWrapper,BorderLayout.SOUTH);
 
   }
 

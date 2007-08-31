@@ -395,7 +395,7 @@ abstract public class ModelSet {
   private final Point3f ptTemp = new Point3f();
 
   void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate, BitSet bsInput,
-                      boolean fullMolecule) {
+                      boolean fullMolecule, boolean isInternal) {
     bspf = null;
     BitSet bs = (fullMolecule ? getMoleculeBitSet(bsInput) : bsInput);
     matInv.set(matrixRotate);
@@ -412,6 +412,8 @@ abstract public class ModelSet {
         taint(i);
         n++;
       }
+    if (isInternal)
+      return;
     ptTemp.scale(1f / n);
     for (int i = atomCount; --i >= 0;)
       if (bs.get(i))

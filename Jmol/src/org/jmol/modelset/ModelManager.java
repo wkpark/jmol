@@ -1393,8 +1393,8 @@ String getAtomInfoChime(int i) {
     modelSet.invertSelected(pt, plane, bs);
   }
   
-  public void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate, BitSet bs, boolean fullMolecule) {
-    modelSet.rotateSelected(mNew, matrixRotate, bs, fullMolecule);
+  public void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate, BitSet bs, boolean fullMolecule, boolean isInternal) {
+    modelSet.rotateSelected(mNew, matrixRotate, bs, fullMolecule, isInternal);
   }
 
   public String getHybridizationAndAxes(int atomIndex, Vector3f z, Vector3f x,

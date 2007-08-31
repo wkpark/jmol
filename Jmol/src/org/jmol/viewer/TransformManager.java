@@ -312,30 +312,30 @@ abstract class TransformManager {
     matrixRotate.rotZ(angleRadians);
   }
 
-  void applyRotation(Matrix3f mNew) {
+  void applyRotation(Matrix3f mNew, boolean isInternal) {
     if (rotateSelected)
-      viewer.rotateSelected(mNew, matrixRotate, rotateMolecule);
+      viewer.rotateSelected(mNew, matrixRotate, rotateMolecule, isInternal);
     else
       matrixRotate.mul(mNew, matrixRotate);
   }
   
   synchronized void rotateXRadians(float angleRadians) {
     matrixTemp3.rotX(angleRadians);
-    applyRotation(matrixTemp3);
+    applyRotation(matrixTemp3, false);
   }
 
   synchronized void rotateYRadians(float angleRadians) {
     if (axesOrientationRasmol)
       angleRadians = -angleRadians;
     matrixTemp3.rotY(angleRadians);
-    applyRotation(matrixTemp3);
+    applyRotation(matrixTemp3, false);
   }
 
   synchronized void rotateZRadians(float angleRadians) {
     if (axesOrientationRasmol)
       angleRadians = -angleRadians;
     matrixTemp3.rotZ(angleRadians);
-    applyRotation(matrixTemp3);
+    applyRotation(matrixTemp3, false);
   }
 
   protected void rotateAxisAngle(Vector3f rotAxis, float radians) {
@@ -346,7 +346,7 @@ abstract class TransformManager {
   synchronized void rotateAxisAngle(AxisAngle4f axisAngle) {
     matrixTemp3.setIdentity();
     matrixTemp3.set(axisAngle);
-    applyRotation(matrixTemp3);
+    applyRotation(matrixTemp3, false);
   }
 
   /* ***************************************************************
@@ -440,7 +440,7 @@ abstract class TransformManager {
     // NOW apply that rotation  
 
     matrixTemp3.set(axisangleT);
-    applyRotation(matrixTemp3);
+    applyRotation(matrixTemp3, true);
     if (!rotateSelected)
       getNewFixedRotationCenter();
   }

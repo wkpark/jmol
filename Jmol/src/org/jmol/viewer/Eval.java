@@ -4187,7 +4187,13 @@ class Eval { //implements Runnable {
      *  
      *  The MOLECULAR keyword indicates that spins or rotations are to be
      *  carried out in the internal molecular coordinate frame, not the
-     *  fixed room frame. Fractional coordinates may be indicated:
+     *  fixed room frame. 
+     *  
+     *  In the case of rotateSelected, all rotations are internal
+     *  and the absense of the MOLECULAR keyword indicates to 
+     *  rotate about the geometric center of the molecule, not {0 0 0}
+     *  
+     *  Fractional coordinates may be indicated:
      *   
      *  spin 20 {0 0 0/} {1 1 1/}
      *  

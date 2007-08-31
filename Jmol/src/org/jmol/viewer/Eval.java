@@ -2237,7 +2237,8 @@ class Eval { //implements Runnable {
 
   boolean isColorParam(int i) throws ScriptException {
     int tok = tokAt(i);
-    return (tok == Token.colorRGB || tok == Token.leftsquare || tok == Token.point3f
+    return (tok == Token.colorRGB || tok == Token.leftsquare
+        || tok == Token.point3f || isPoint3f(i) 
         || optParameterAsString(i).startsWith("[x"));
   }
 
@@ -2252,6 +2253,7 @@ class Eval { //implements Runnable {
   }
 
   int getArgbParam(int index, boolean allowNone) throws ScriptException {
+    Point3f pt = null;
     if (checkToken(index)) {
       switch (getToken(index).tok) {
       case Token.identifier:
@@ -2262,18 +2264,26 @@ class Eval { //implements Runnable {
       case Token.colorRGB:
         return theToken.intValue;
       case Token.point3f:
-        Point3f pt = (Point3f)theToken.value;
-        return  0xFF000000 | (int)pt.x << 16 | (int)pt.y << 8 | (int)pt.z;
+        pt = (Point3f)theToken.value;
+        break;
+      case Token.leftbrace:
+        pt = getPoint3f(index, false);
+        break;
       case Token.none:
         if (allowNone)
           return 0;
       }
     }
-    colorExpected();
-    //impossible return
-    return 0;
+    if (pt == null)
+      colorExpected();
+    return  colorPtToInt(pt);
   }
 
+  static int colorPtToInt(Point3f pt) {
+    return 0xFF000000 | (((int)pt.x) & 0xFF) << 16 
+    | (((int)pt.y) & 0xFF) << 8 | (((int)pt.z) & 0xFF);
+  }
+  
   int getArgbOrPaletteParam(int index) throws ScriptException {
     if (checkToken(index)) {
       switch (getToken(index).tok) {
@@ -2311,11 +2321,11 @@ class Eval { //implements Runnable {
         case Token.spec_seqcode:
           if (n > 2)
             badRGBColor();
-          colors[n++] = ((Integer) theToken.value).intValue();
+          colors[n++] = ((Integer) theToken.value).intValue() % 256;
           continue;
         case Token.rightsquare:
           if (n == 3)
-            return 0xFF000000 | colors[0] << 16 | colors[1] << 8 | colors[2];
+            return colorPtToInt(new Point3f(colors[0], colors[1], colors[2]));
         default:
           badRGBColor();
         }
@@ -2325,8 +2335,7 @@ class Eval { //implements Runnable {
       Point3f pt = (Point3f) theToken.value;
       if (getToken(++i).tok != Token.rightsquare)
         badRGBColor();
-      return 0xFF000000 | (((int) pt.x) << 16) | (((int) pt.y) << 8)
-          | ((int) pt.z);
+      return colorPtToInt(pt);
     case Token.identifier:
       String hex = parameterAsString(i);
       if (getToken(++i).tok == Token.rightsquare && hex.length() == 7
@@ -10358,9 +10367,7 @@ class Eval { //implements Runnable {
           case Token.decimal:
             return addX(viewer.getColorPointForPropertyValue(Token.fValue(x2)));
           case Token.point3f:
-            int argb = 0xFF000000 | ((int)((Point3f)x2.value).x) << 16
-            |  ((int)((Point3f)x2.value).y) << 8 |  ((int)((Point3f)x2.value).z);
-            return addX(Escape.escapeColor(argb));
+            return addX(Escape.escapeColor(colorPtToInt((Point3f)x2.value)));
           default:
             //handle bitset later
           }          

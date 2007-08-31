@@ -210,11 +210,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setAppletContext(String fullName, URL documentBase, URL codeBase,
                                String appletProxyOrCommandOptions) {
     this.fullName = fullName = (fullName == null ? "" : fullName);
-    this.appletDocumentBase = (documentBase == null ? "" : documentBase.toString());
-    this.appletCodeBase = (codeBase == null ? "" :  codeBase.toString());
+    this.appletDocumentBase = (documentBase == null ? "" : documentBase
+        .toString());
+    this.appletCodeBase = (codeBase == null ? "" : codeBase.toString());
     int i = fullName.lastIndexOf("[");
     this.htmlName = (i < 0 ? fullName : fullName.substring(0, i));
-    this.syncId = (i < 0 ? "" : fullName.substring(i + 1, fullName.length() - 1));
+    this.syncId = (i < 0 ? "" : fullName
+        .substring(i + 1, fullName.length() - 1));
     isApplet = (documentBase != null);
     String str = appletProxyOrCommandOptions;
     if (!isApplet) {
@@ -273,7 +275,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String getExportDriverList() {
     return (String) global.getParameter("exportDrivers");
   }
-  
+
   private static int getJmolVersionInt() {
     //11.9.999 --> 1109999
     String s = JmolConstants.version;
@@ -520,9 +522,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   boolean isInPosition(Point3f pt, float degrees) {
-     return transformManager.isInPosition(pt, degrees);
+    return transformManager.isInPosition(pt, degrees);
   }
-  
+
   void move(Vector3f dRot, float dZoom, Vector3f dTrans, float dSlab,
             float floatSecondsTotal, int fps) {
     //from Eval
@@ -1073,16 +1075,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public short getObjectMad(int objId) {
     return (global.objStateOn[objId] ? global.objMad[objId] : 0);
   }
-/*
-  private void setRgbs(int rgorb, String color) {
-    colorManager.setRgb(rgorb, Graphics3D.getArgbFromString(color));
-  }
-  
-  int getRgb(int rgorb) {
-    return colorManager.getRgb(rgorb);
-  }  
-*/
-  
+
+  /*
+   private void setRgbs(int rgorb, String color) {
+   colorManager.setRgb(rgorb, Graphics3D.getArgbFromString(color));
+   }
+   
+   int getRgb(int rgorb) {
+   return colorManager.getRgb(rgorb);
+   }  
+   */
+
   void setPropertyColorScheme(String scheme) {
     Logger.info("Property color scheme: " + scheme);
     global.propertyColorScheme = scheme;
@@ -1174,18 +1177,18 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public int[] getColorSchemeArray(String colorScheme) {
-    return colorManager.getColorSchemeArray(colorScheme);  
+    return colorManager.getColorSchemeArray(colorScheme);
   }
-  
+
   public static void setUserScale(int[] scale) {
     ColorManager.setUserScale(scale);
   }
-  
+
   short getColixFromPalette(float val, float rangeMin, float rangeMax) {
     //isosurface
     return colorManager.getColixFromPalette(val, rangeMin, rangeMax);
   }
-  
+
   Point3f getColorPointForPropertyValue(float val) {
     //x = {atomno=3}.partialcharge.color
     short colix = colorManager.getColixForPropertyValue(val);
@@ -1200,11 +1203,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   void select(BitSet bs, boolean isQuiet) {
     //Eval
     selectionManager.select(bs, isQuiet);
-    modelManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE, null);
+    modelManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE,
+        null);
   }
 
   void selectBonds(BitSet bs) {
-    modelManager.setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE, bs);
+    modelManager
+        .setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MAX_VALUE, bs);
   }
 
   BitSet getSelectedAtoms() {
@@ -1416,7 +1421,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private boolean openStringInline(String strModel, Hashtable htParams,
-                                boolean isMerge) {
+                                   boolean isMerge) {
     //loadInline, openFile, openStringInline
     if (!isMerge)
       clear();
@@ -1428,7 +1433,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void openStringsInline(String[] arrayModels, Hashtable htParams,
-                                boolean isMerge) {
+                                 boolean isMerge) {
     //loadInline, openFile, openStringInline
     if (!isMerge)
       clear();
@@ -1623,8 +1628,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getFileAsString(String pathName) {
-    return (pathName == null ? getCurrentFileAsString()
-        : fileManager.getFileAsString(pathName));
+    return (pathName == null ? getCurrentFileAsString() : fileManager
+        .getFileAsString(pathName));
   }
 
   public String getFullPathName() {
@@ -1634,13 +1639,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String getFileName() {
     return fileManager.getFileName();
   }
-  
+
   String[] getFileInfo() {
     return fileManager.getFileInfo();
   }
-  
+
   void setFileInfo(String[] fileInfo) {
-    fileManager.setFileInfo(fileInfo);    
+    fileManager.setFileInfo(fileInfo);
   }
 
   // ///////////////////////////////////////////////////////////////
@@ -1814,8 +1819,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getHybridizationAndAxes(int atomIndex, Vector3f z, Vector3f x,
-                                  String lcaoType,
-                                  boolean hybridizationCompatible) {
+                                        String lcaoType,
+                                        boolean hybridizationCompatible) {
     return modelManager.getHybridizationAndAxes(atomIndex, z, x, lcaoType,
         hybridizationCompatible);
   }
@@ -1969,7 +1974,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public String getModelFileInfo() {
     return modelManager.getModelFileInfo(getVisibleFramesBitSet());
   }
-  
+
   public Hashtable getModelAuxiliaryInfo(int modelIndex) {
     return modelManager.getModelAuxiliaryInfo(modelIndex);
   }
@@ -2232,8 +2237,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         + getJmolVersion() + ";\n");
     if (isApplet) {
       StateManager.appendCmd(s, "# fullName = " + Escape.escape(fullName));
-      StateManager.appendCmd(s, "# documentBase = " + Escape.escape(appletDocumentBase));
-      StateManager.appendCmd(s, "# codeBase = " + Escape.escape(appletCodeBase));
+      StateManager.appendCmd(s, "# documentBase = "
+          + Escape.escape(appletDocumentBase));
+      StateManager
+          .appendCmd(s, "# codeBase = " + Escape.escape(appletCodeBase));
       s.append("\n");
     }
     //  window state
@@ -2264,7 +2271,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   static Hashtable dataValues = new Hashtable();
 
-  static void setData(String type, Object[] data, int atomCount, int matchField, int field) {
+  static void setData(String type, Object[] data, int atomCount,
+                      int matchField, int field) {
     //Eval
     /*
      * data[0] -- label
@@ -2683,7 +2691,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   boolean isDataFrame(int modelIndex) {
     return (modelIndex >= 0 && getModelAuxiliaryInfo(modelIndex, "jmolData") != null);
   }
-  
+
   void setCurrentModelIndex(int modelIndex) {
     //Eval
     //initializeModel
@@ -2762,7 +2770,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   private void setRefreshing(boolean TF) {
     refreshing = TF;
   }
-  
+
   boolean getRefreshing() {
     return refreshing;
   }
@@ -3165,7 +3173,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     String strErrorMessage = eval.getErrorMessage();
     if (isOK) {
       statusManager.setStatusScriptStarted(++scriptIndex, strScript);
-      eval.runEval(checkScriptOnly, !checkScriptOnly || fileOpenCheck, historyDisabled);
+      eval.runEval(checkScriptOnly, !checkScriptOnly || fileOpenCheck,
+          historyDisabled);
       int msWalltime = eval.getExecutionWalltime();
       strErrorMessage = eval.getErrorMessage();
       statusManager.setStatusScriptTermination(strErrorMessage, msWalltime);
@@ -3199,12 +3208,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       return null;
     checking = true;
     if (strScript.indexOf(")") == 0) // history disabled
-      strScript = strScript.substring(1); 
+      strScript = strScript.substring(1);
     Object obj = eval.checkScriptSilent(strScript);
     checking = false;
     if (obj instanceof String)
       return (String) obj;
-    return null;  
+    return null;
   }
 
   public boolean isScriptExecuting() {
@@ -3237,7 +3246,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     statusManager.setCallbackFunction("language", language);
     global.setParameterValue("language", GT.getLanguage());
   }
-  
+
   private void setLoadFormat(String format) {
     //Eval
     global.loadFormat = format;
@@ -3358,12 +3367,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   int n;
+
   void togglePickingLabel(BitSet bs) {
     //eval set toggleLabel (atomset)
     loadShape(JmolConstants.SHAPE_LABELS);
     setShapeSize(JmolConstants.SHAPE_LABELS, 0, null);
     modelManager.setShapeProperty(JmolConstants.SHAPE_LABELS, "toggleLabel",
-        null, bs);  
+        null, bs);
     refresh(0, "Viewer:");
   }
 
@@ -3657,16 +3667,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.setParameterValue("_modelNumber", s);
     global.setParameterValue("_modelName", (modelIndex < 0 ? ""
         : getModelName(modelIndex)));
-    global.setParameterValue("_modelTitle", (modelIndex < 0 ? ""
-        : modelManager.getModelTitle(modelIndex)));
-    global.setParameterValue("_modelFile", (modelIndex < 0 ? ""
-        : modelManager.getModelFile(modelIndex)));
+    global.setParameterValue("_modelTitle", (modelIndex < 0 ? "" : modelManager
+        .getModelTitle(modelIndex)));
+    global.setParameterValue("_modelFile", (modelIndex < 0 ? "" : modelManager
+        .getModelFile(modelIndex)));
 
     s = statusManager.getCallbackScript("animframecallback");
     if (s != null)
       evalStringQuiet(s, true);
     else
-      statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo, (repaintManager.animationDirection < 0 ? -firstNo : firstNo),
+      statusManager.setStatusFrameChanged(frameNo, fileNo, modelNo,
+          (repaintManager.animationDirection < 0 ? -firstNo : firstNo),
           (repaintManager.currentDirection < 0 ? -lastNo : lastNo));
   }
 
@@ -3818,26 +3829,25 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     while (true) {
       ///11.1.31//
       /*  didn't work      
-      if (key.equalsIgnoreCase("rgbRed")) {
-        setRgbs(0, value);
-        break;
-      }
-      if (key.equalsIgnoreCase("rgbGreen")) {
-        setRgbs(1, value);
-        break;
-      }
-      if (key.equalsIgnoreCase("rgbBlue")) {
-        setRgbs(2, value);
-        break;
-      }
-      */
+       if (key.equalsIgnoreCase("rgbRed")) {
+       setRgbs(0, value);
+       break;
+       }
+       if (key.equalsIgnoreCase("rgbGreen")) {
+       setRgbs(1, value);
+       break;
+       }
+       if (key.equalsIgnoreCase("rgbBlue")) {
+       setRgbs(2, value);
+       break;
+       }
+       */
       ///11.1.30//
       if (key.equalsIgnoreCase("language")) {
         setLanguage(value); //fr cs en none, etc.
         return;
       }
-      
-      
+
       ///11.1.22//
 
       if (key.equalsIgnoreCase("loadFormat")) {
@@ -4090,14 +4100,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private void setIntProperty(String key, int value, boolean defineNew) {
     while (true) {
-      
+
       ///11.1.31//
-      
+
       if (key.equalsIgnoreCase("propertyDataField")) {
         break;
       }
 
-      
       ///11.1///
 
       if (key.equalsIgnoreCase("strandCount")) {
@@ -4741,7 +4750,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         || getAxesMode() != JmolConstants.AXES_MODE_UNITCELL ? null
         : (Point3f[]) getShapeProperty(JmolConstants.SHAPE_AXES, "axisPoints"));
   }
-  
+
   public float getAxesScale() {
     return global.axesScale;
   }
@@ -5618,7 +5627,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelManager.invertSelected(pt, plane, selectionManager.bsSelection);
   }
 
-  void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate, boolean fullMolecule, boolean isInternal) {
+  void rotateSelected(Matrix3f mNew, Matrix3f matrixRotate,
+                      boolean fullMolecule, boolean isInternal) {
     modelManager.rotateSelected(mNew, matrixRotate,
         selectionManager.bsSelection, fullMolecule, isInternal);
   }
@@ -5664,7 +5674,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void getHelp(String what) {
-    if (what.length() > 0 && what.indexOf("?") != 0 
+    if (what.length() > 0 && what.indexOf("?") != 0
         && global.helpPath.indexOf("?") < 0)
       what = "?search=" + what;
     showUrl(global.helpPath + what);
@@ -5721,33 +5731,47 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   // image export
   // ///////////////////////////////////////////////////////////////
 
-  void createImage(String type_name) { // or script now
+  private void createImage(String type_name) { // or script now
+    int quality, width, height;
     if (type_name == null)
       return;
     if (type_name.length() == 0)
       type_name = "JPG:jmol.jpg";
-    int i = type_name.indexOf(":");
-    if (i < 0) {
-      i = type_name.length();
+    if (type_name.indexOf(":") < 0)
       type_name += ":jmol.jpg";
-    }
+    int i = type_name.indexOf(":");
     String type = type_name.substring(0, i);
     String file = type_name.substring(i + 1);
-    createImage(file, type, 100);
+    String swidth = "-1";
+    String sheight = "-1";
+    String squality = "75";
+    i = file.indexOf('\t');
+    if (i > 0) {
+      swidth = file.substring(i + 1);
+      file = file.substring(0, i);
+    }
+    i = swidth.indexOf('\t');
+    if (i > 0) {
+      sheight = swidth.substring(i + 1);
+      swidth = swidth.substring(0, i);
+    }
+    i = sheight.indexOf('\t');
+    if (i > 0) {
+      squality = sheight.substring(i + 1);
+      sheight = sheight.substring(0, i);
+    }
+    try {
+      width = Integer.parseInt(swidth);
+      height = Integer.parseInt(sheight);
+      quality = Integer.parseInt(squality);
+      createImage(file, type, quality, width, height);
+    } catch (Exception e) {
+      System.out.println("error processing write request: " + type_name);
+    }
   }
 
-  /**
-   * 
-   * @param file filename or null for clipboard
-   * @param type_text = data type if quality < Integer.MAX_VALUE; otherwise text
-   * @param quality up to 100 for JPG quality; Integer.MAX_VALUE for text
-   */
-  public void createImage(String file, String type_text, int quality) {
-    createImage(file, type_text, quality, -1, -1);
-  }
-
-  public void createImage(String file, String type_text, int quality, int width,
-                   int height) {
+  public void createImage(String file, String type_text, int quality,
+                          int width, int height) {
     int saveWidth = dimScreen.width;
     int saveHeight = dimScreen.height;
     if (width > 0 && height > 0)
@@ -5766,7 +5790,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean isAll = ("*".equals(applet));
     boolean allButMe = (">".equals(applet));
     boolean disableSend = ("~".equals(applet));
-    boolean justMe = disableSend || (".".equals(applet)); 
+    boolean justMe = disableSend || (".".equals(applet));
     //null same as ">" -- "all others"
     if (justMe) {
     } else {
@@ -5799,19 +5823,19 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       statusManager.setSyncDriver(StatusManager.SYNC_DISABLE);
     evalStringQuiet(script, true);
   }
-  
+
   void setSyncDriver(int mode) {
-    statusManager.setSyncDriver(mode);  
+    statusManager.setSyncDriver(mode);
   }
-  
+
   public float[] getPartialCharges() {
     return modelManager.getPartialCharges();
   }
 
   void setProteinType(byte iType, BitSet bs) {
-    modelManager.setProteinType(bs == null ? selectionManager.bsSelection : bs, iType);
+    modelManager.setProteinType(bs == null ? selectionManager.bsSelection : bs,
+        iType);
   }
-  
 
   /*  
    void debugStack(String msg) {

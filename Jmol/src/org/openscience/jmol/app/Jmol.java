@@ -495,6 +495,13 @@ public class Jmol extends JPanel {
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("g"));
 
+    OptionBuilder.withLongOpt("quality");
+    // OptionBuilder.withDescription(GT._("overall window width x height, e.g. {0}", "-g512x616"));
+    OptionBuilder.withDescription(GT._("JPG image quality (1-100)"));
+    OptionBuilder.withValueSeparator();
+    OptionBuilder.hasArg();
+    options.addOption(OptionBuilder.create("q"));
+
     OptionBuilder.withLongOpt("write");
     OptionBuilder.withDescription(GT._("{0} or {1}:filename", new Object[] {
         "CLIP", "JPG|JPG64|PNG|PPM" }));
@@ -586,11 +593,10 @@ public class Jmol extends JPanel {
     if (line.hasOption("x")) {
       commandOptions += "-x";
     }
-
+    String imageType_name = null;
     //write image to clipboard or image file  
     if (line.hasOption("w")) {
-      String type_name = line.getOptionValue("w");
-      commandOptions += "-w\1" + type_name + "\1";
+      imageType_name = line.getOptionValue("w");
     }
 
     try {
@@ -629,16 +635,30 @@ public class Jmol extends JPanel {
       //note -- the first time this is run after changes it will not work
       //because there is a bootstrap problem.
       
+      int width = -1;
+      int height = -1;
+      int quality = 75;
       //INNER frame dimensions
-      if (line.hasOption("g") && haveDisplay.booleanValue()) {
+      if (line.hasOption("g")) {
         String geometry = line.getOptionValue("g");
         int indexX = geometry.indexOf('x');
         if (indexX > 0) {
-          startupWidth = parseInt(geometry.substring(0, indexX)) + border.x;
-          startupHeight = parseInt(geometry.substring(indexX + 1)) + border.y;
+          width = parseInt(geometry.substring(0, indexX));
+          height = parseInt(geometry.substring(indexX + 1));
           //System.out.println("setting geometry to " + geometry + " " + border + " " + startupWidth + startupHeight);
         }
+        if (haveDisplay.booleanValue()) {
+          startupWidth = width + border.x;
+          startupHeight = height + border.y;
+        }
       }
+      
+      if (line.hasOption("q"))
+        quality = parseInt(line.getOptionValue("q"));
+
+      if (imageType_name != null)
+        commandOptions += "-w\1" + imageType_name + "\t"+width+"\t"+height + "\t" + quality + "\1";
+
       if (startupWidth <= 0 || startupHeight <= 0) {
         startupWidth = 500 + border.x;
         startupHeight = 500 + border.y;

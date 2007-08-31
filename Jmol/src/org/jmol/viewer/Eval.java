@@ -7442,7 +7442,7 @@ class Eval { //implements Runnable {
     } else {
       len = -1;
       if (quality <= 0)
-        quality = 100;
+        quality = 75;
     }
     if (len == 0)
       len = data.length();

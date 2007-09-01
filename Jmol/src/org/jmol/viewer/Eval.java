@@ -2235,11 +2235,11 @@ class Eval { //implements Runnable {
     return mad;
   }
 
-  boolean isColorParam(int i) throws ScriptException {
+  boolean isColorParam(int i) {
     int tok = tokAt(i);
     return (tok == Token.colorRGB || tok == Token.leftsquare
         || tok == Token.point3f || isPoint3f(i) 
-        || optParameterAsString(i).startsWith("[x"));
+        || tok == Token.string && ((String) statement[tok].value).startsWith("[x"));
   }
 
   int getArgbParam(int index) throws ScriptException {
@@ -2356,12 +2356,14 @@ class Eval { //implements Runnable {
   boolean isPoint3f(int i) {
     ignoreError = true;
     boolean isOK = true;
+    int t = iToken;
     try {
       getPoint3f(i, true);
     } catch (Exception e) {
       isOK = false;
     }
     ignoreError = false;
+    iToken = t;
     return isOK;
   }
 
@@ -2930,6 +2932,18 @@ class Eval { //implements Runnable {
     int colorpt = 0;
     String state = "";
     for (int i = 1; i < statementLength; ++i) {
+      if (isColorParam(i)) {
+        if (colorpt > 1)
+          badArgumentCount();
+        if (!degreesSeen)
+          degrees = 3;
+        colors[colorpt++] = getArgbParam(i);
+        i = iToken;
+        if (colorpt == 1)
+          colors[colorpt] = ~colors[0];
+        state += " " + Escape.escapeColor(colors[colorpt - 1]);
+        continue;
+      }
       switch (getToken(i).tok) {
       case Token.on:
         checkLength2();
@@ -2941,18 +2955,6 @@ class Eval { //implements Runnable {
         iToken = 1;
         stereoMode = JmolConstants.STEREO_NONE;
         state = " off";
-        break;
-      case Token.leftsquare:
-      case Token.colorRGB:
-        if (colorpt > 1)
-          badArgumentCount();
-        if (!degreesSeen)
-          degrees = 3;
-        colors[colorpt++] = getArgbParam(i);
-        i = iToken;
-        if (colorpt == 1)
-          colors[colorpt] = ~colors[0];
-        state += " " + Escape.escapeColor(colors[colorpt - 1]);
         break;
       case Token.integer:
       case Token.decimal:
@@ -3026,6 +3028,12 @@ class Eval { //implements Runnable {
     }
 
     for (int i = 1; i < statementLength; ++i) {
+      if(isColorParam(i)) {
+        color = getArgbParam(i);
+        i = iToken;
+        isColorOrRadius = true;
+        continue;
+      }
       switch_tag: switch (getToken(i).tok) {
       case Token.on:
       case Token.off:
@@ -3081,12 +3089,6 @@ class Eval { //implements Runnable {
         break;
       case Token.radius:
         radius = floatParameter(++i);
-        isColorOrRadius = true;
-        break;
-      case Token.leftsquare:
-      case Token.colorRGB:
-        color = getArgbParam(i);
-        i = iToken;
         isColorOrRadius = true;
         break;
       case Token.none:
@@ -3198,12 +3200,14 @@ class Eval { //implements Runnable {
 
   void color() throws ScriptException {
     int argb;
+    if (isColorParam(1)) {
+      colorObject(Token.atom, 1);
+      return;
+    }
     switch (getToken(1).tok) {
     case Token.dollarsign:
       colorNamedObject(2);
       return;
-    case Token.colorRGB:
-    case Token.leftsquare:
     case Token.none:
     case Token.spacefill:
     case Token.amino:
@@ -3506,7 +3510,8 @@ class Eval { //implements Runnable {
     if (translucentLevel ==  Float.MAX_VALUE)
       translucentLevel = viewer.getDefaultTranslucent();
     setShapeProperty(shapeType, "translucentLevel", new Float(translucentLevel));
-    setShapeProperty(shapeType, prefix + "translucency", translucency);  
+    if (prefix != null)
+      setShapeProperty(shapeType, prefix + "translucency", translucency);  
   }
   
   Hashtable variables = new Hashtable();
@@ -7796,6 +7801,7 @@ class Eval { //implements Runnable {
       return;
     Object t;
     boolean idSeen = false;
+    String translucency = null;
     initIsosurface(JmolConstants.SHAPE_PMESH);
     for (int i = iToken; i < statementLength; ++i) {
       String propertyName = null;
@@ -7828,6 +7834,11 @@ class Eval { //implements Runnable {
         propertyName = "modelIndex";
         propertyValue = new Integer(modelIndex);
         break;
+      case Token.color:
+        translucency = setColorOptions(i + 1, JmolConstants.SHAPE_PMESH, -1);
+        i = iToken;
+        idSeen = true;
+        continue;
       case Token.string:
         String filename = stringParameter(i);
         propertyName = "bufferedReader";
@@ -7869,6 +7880,8 @@ class Eval { //implements Runnable {
       if (propertyName != null)
         setShapeProperty(JmolConstants.SHAPE_PMESH, propertyName, propertyValue);
     }
+    if (translucency != null)
+      setShapeProperty(JmolConstants.SHAPE_PMESH, "translucency", translucency);
   }
 
   void draw() throws ScriptException {
@@ -8012,21 +8025,27 @@ class Eval { //implements Runnable {
         break;
       case Token.color:
         isTranslucent = false;
+        boolean isColor = false;
         if (tokAt(++i) == Token.translucent) {
           isTranslucent = true;
           if (isFloatParameter(++i))
             translucentLevel = floatParameter(i++);
+          isColor = true;
+        } else if (tokAt(i) == Token.opaque) {
+          ++i;
+          isColor = true;
         }
         if (isColorParam(i)) {
           colorArgb = getArgbParam(i);
           i = iToken;
           setShapeProperty(JmolConstants.SHAPE_DRAW, "colorRGB", new Integer(
               colorArgb));
-          continue;
-        } else if (isTranslucent) {
-          continue;
-        }
-        invalidArgument();
+          isColor = true;
+        } 
+        if (!isColor)
+          invalidArgument();
+        idSeen = true;
+        continue;
       case Token.leftbrace:
       case Token.point3f:
         // {X, Y, Z}
@@ -8119,6 +8138,11 @@ class Eval { //implements Runnable {
     float translucentLevel = Float.MAX_VALUE;
     int color = Integer.MIN_VALUE;
     for (int i = 1; i < statementLength; ++i) {
+      if (isColorParam(i)) {
+        color = getArgbParam(i);
+        i = iToken;
+        continue;
+      }
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
@@ -8137,11 +8161,6 @@ class Eval { //implements Runnable {
       case Token.translucent:
       case Token.opaque:
         translucency = parameterAsString(i);
-        continue;
-      case Token.colorRGB:
-      case Token.leftsquare:
-        color = getArgbParam(i);
-        i = iToken;
         continue;
       case Token.identifier:
         String str = parameterAsString(i);
@@ -8264,6 +8283,8 @@ class Eval { //implements Runnable {
       setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "lcaoID", null);
       return;
     }
+    boolean idSeen = false;
+    String translucency = null;
     for (int i = 1; i < statementLength; i++) {
       String propertyName = null;
       Object propertyValue = null;
@@ -8318,20 +8339,17 @@ class Eval { //implements Runnable {
         i = iToken;
         break;
       case Token.color:
-        if (isColorParam(++i)) {
-          setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "colorRGB",
-              new Integer(getArgbParam(i)));
-          i = iToken;
-          setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "colorRGB",
-              new Integer(getArgbParam(isColorParam(i + 1) ? i + 1 : i)));
-          i = iToken;
-          continue;
-        }
-        invalidArgument();
+        translucency = setColorOptions(i + 1, JmolConstants.SHAPE_LCAOCARTOON, -2);
+        if (translucency != null)
+          setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, "settranslucency", translucency);
+        i = iToken;
+        idSeen = true;
+        continue;
       case Token.translucent:
       case Token.opaque:
         setMeshDisplayProperty(JmolConstants.SHAPE_LCAOCARTOON, i, theTok);
         i = iToken;
+        idSeen = true;
         continue;    
       case Token.string:
         propertyValue = stringParameter(i);
@@ -8372,10 +8390,15 @@ class Eval { //implements Runnable {
           break;
         }
         propertyValue = str;
+        //fall through
       case Token.all:
+        if (idSeen)
+          invalidArgument();
         propertyName = "lcaoID";
         break;
       }
+      if (theTok != Token.delete)
+        idSeen = true;
       if (propertyName == null)
         invalidArgument();
       setShapeProperty(JmolConstants.SHAPE_LCAOCARTOON, propertyName,
@@ -8399,7 +8422,7 @@ class Eval { //implements Runnable {
     int moNumber = ((Integer) viewer.getShapeProperty(JmolConstants.SHAPE_MO,
           "moNumber")).intValue();
     if (isInitOnly)
-      return (moNumber != 0);
+      return true;//(moNumber != 0);
     if (moNumber == 0 && !isSyntaxCheck) {
       lastMoNumber = 0;
       moNumber = Integer.MAX_VALUE;
@@ -8418,17 +8441,8 @@ class Eval { //implements Runnable {
       moNumber = lastMoNumber - 1;
       break;
     case Token.color:
-      //mo color color1 color2
-      if (tokAt(2) == Token.colorRGB || tokAt(2) == Token.leftsquare) {
-        setShapeProperty(JmolConstants.SHAPE_MO, "colorRGB", new Integer(
-            getArgbParam(2)));
-        if (tokAt(++iToken) == Token.colorRGB
-            || tokAt(iToken) == Token.leftsquare)
-          setShapeProperty(JmolConstants.SHAPE_MO, "colorRGB", new Integer(
-              getArgbParam(iToken)));
-        break;
-      }
-      invalidArgument();
+      setColorOptions(2, JmolConstants.SHAPE_MO, 2);
+      break;
     case Token.identifier:
       str = parameterAsString(1);
       if ((offset = moOffset(1)) != Integer.MAX_VALUE) {
@@ -8495,6 +8509,37 @@ class Eval { //implements Runnable {
     return true;
   }
 
+  String setColorOptions(int index, int iShape, int nAllowed)
+      throws ScriptException {
+    getToken(index);
+    String translucency = "opaque";
+    if (theTok == Token.translucent) {
+      translucency = "translucent";
+      if (nAllowed < 0) {
+        float value = (isFloatParameter(index + 1) ? floatParameter(++index) : Float.MAX_VALUE);
+        setShapeTranslucency (iShape, null, "translucent", value);
+      } else {
+        setMeshDisplayProperty(iShape, index, theTok);
+      }
+    } else if (theTok == Token.opaque) {
+      if (nAllowed >= 0)
+        setMeshDisplayProperty(iShape, index, theTok);
+    } else {
+      iToken--;
+    }
+    nAllowed = Math.abs(nAllowed);
+    for (int i = 0; i < nAllowed; i++) {
+      if (isColorParam(iToken + 1)) {
+        setShapeProperty(iShape, "colorRGB", new Integer(getArgbParam(++iToken)));
+      } else if (iToken < index) {
+        invalidArgument();
+      } else {
+        break;
+      }
+    }
+    return translucency;
+  }
+  
   int moOffset(int index) throws ScriptException {
     String str = parameterAsString(index++);
     boolean isHomo = false;
@@ -8610,8 +8655,18 @@ class Eval { //implements Runnable {
     if (!isSyntaxCheck)
       viewer.setCursor(Viewer.CURSOR_WAIT);
     boolean idSeen = false;
+    String translucency = null;
     initIsosurface(iShape);
     for (int i = iToken; i < statementLength; ++i) {
+      if (isColorParam(i)) {
+        if (i != signPt)
+          invalidParameterOrder();
+        setShapeProperty(iShape, "colorRGB", new Integer(getArgbParam(i)));
+        i = iToken;
+        signPt = i + 1;
+        idSeen = true;
+        continue;
+      }
       String propertyName = null;
       Object propertyValue = null;
       switch (getToken(i).tok) {
@@ -8646,7 +8701,8 @@ class Eval { //implements Runnable {
           if (tokProperty == Token.surfacedistance)
             viewer.getModelSet().getSurfaceDistanceMax();
           for (int iAtom = atomCount; --iAtom >= 0;) {
-            data[iAtom] = atomProperty(modelSet, atoms[iAtom], tokProperty, false);
+            data[iAtom] = atomProperty(modelSet, atoms[iAtom], tokProperty,
+                false);
           }
         }
         propertyValue = data;
@@ -8683,21 +8739,22 @@ class Eval { //implements Runnable {
          *  
          */
         colorRangeStage = 0;
-        if (getToken(i + 1).tok == Token.string) { 
-          setShapeProperty(iShape, "setColorScheme",parameterAsString(++i));
+        if (getToken(i + 1).tok == Token.string) {
+          setShapeProperty(iShape, "setColorScheme", parameterAsString(++i));
         }
-        switch (getToken(i + 1).tok) {
+        if ((theTok = tokAt(i + 1)) == Token.translucent
+            || tokAt(i + 1) == Token.opaque) {
+          translucency = setColorOptions(i + 1, JmolConstants.SHAPE_ISOSURFACE, -2);
+          i = iToken;
+        }
+        switch (tokAt(i + 1)) {
         case Token.absolute:
         case Token.range:
-          ++i;
+          getToken(++i);
           colorRangeStage = 1;
           continue;
-        case Token.colorRGB:
-        case Token.leftsquare:
-          signPt = i + 1;
-          continue;
         default:
-          //ignore
+          signPt = i + 1;
           continue;
         }
       case Token.file:
@@ -8716,15 +8773,6 @@ class Eval { //implements Runnable {
         propertyValue = new Float(floatParameter(i));
         if (colorRangeStage > 0)
           ++colorRangeStage;
-        break;
-      case Token.leftsquare:
-      case Token.colorRGB:
-        if (i != signPt)
-          invalidParameterOrder();
-        propertyName = "colorRGB";
-        propertyValue = new Integer(getArgbParam(i));
-        i = iToken;
-        signPt = i + 1;
         break;
       case Token.ionic:
         propertyName = "ionicRadius";
@@ -8938,18 +8986,18 @@ class Eval { //implements Runnable {
             invalidArgument();
           String fName;
           v.addElement(fName = parameterAsString(i++)); //(0) = name
-          v.addElement(getPoint3f(i, false));  //(1) = {origin}
+          v.addElement(getPoint3f(i, false)); //(1) = {origin}
           Point4f pt;
           int nX, nY;
           v.addElement(pt = getPoint4f(++iToken)); //(2) = {ni ix iy iz}
           nX = (int) pt.x;
           v.addElement(pt = getPoint4f(++iToken)); //(3) = {nj jx jy jz}
           nY = (int) pt.x;
-          v.addElement(getPoint4f(++iToken));      //(4) = {nk kx ky kz}
+          v.addElement(getPoint4f(++iToken)); //(4) = {nk kx ky kz}
           if (nX == 0 || nY == 0)
             invalidArgument();
           if (!isSyntaxCheck)
-             v.addElement(viewer.functionXY(fName, nX, nY)); //(5) = float[][] data
+            v.addElement(viewer.functionXY(fName, nX, nY)); //(5) = float[][] data
           i = iToken;
           propertyName = "functionXY";
           propertyValue = v;
@@ -9002,8 +9050,8 @@ class Eval { //implements Runnable {
           setShapeProperty(iShape, "modelIndex", new Integer(modelIndex));
           Vector3f[] axes = { new Vector3f(), new Vector3f(), new Vector3f(pt) };
           if (!isSyntaxCheck)
-            viewer.getHybridizationAndAxes(atomIndex, axes[0], axes[1], lcaoType,
-                false);
+            viewer.getHybridizationAndAxes(atomIndex, axes[0], axes[1],
+                lcaoType, false);
           propertyValue = axes;
           break;
         default:
@@ -9048,8 +9096,7 @@ class Eval { //implements Runnable {
         propertyValue = new Float(radius);
         break;
       case Token.string:
-        propertyName = surfaceObjectSeen || planeSeen ? "mapColor"
-            : "readFile";
+        propertyName = surfaceObjectSeen || planeSeen ? "mapColor" : "readFile";
         /*
          * a file name, optionally followed by an integer file index.
          * OR empty. In that case, if the model auxiliary info has the
@@ -9101,7 +9148,6 @@ class Eval { //implements Runnable {
         setShapeProperty(iShape, "bsSolvent", lookupIdentifierValue("solvent"));
         setShapeProperty(iShape, "sasurface", new Float(0));
       }
-
       if (propertyName != null)
         setShapeProperty(iShape, propertyName, propertyValue);
     }
@@ -9122,6 +9168,8 @@ class Eval { //implements Runnable {
       if (id != null)
         showString(id + " created; number of isosurfaces = " + n);
     }
+    if (translucency != null)
+      setShapeProperty(iShape, "translucency", translucency);
     setShapeProperty(iShape, "clear", null);
   }
 

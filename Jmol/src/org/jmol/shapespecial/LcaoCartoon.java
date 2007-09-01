@@ -118,6 +118,11 @@ public class LcaoCartoon extends Isosurface {
       //pass through
     }
 
+    if ("settranslucency" == propertyName) {
+      isTranslucent = (((String) value).equals("translucent"));
+      return;
+    }
+
     if ("translucency" == propertyName) {
       isTranslucent = (((String) value).equals("translucent"));
       if (lcaoID == null)

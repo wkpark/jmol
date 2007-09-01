@@ -3451,6 +3451,14 @@ class Eval { //implements Runnable {
             min = floatParameter(index + 1);
             max = floatParameter(index + 2);
             index += 3;
+            if (min == max && shapeType == JmolConstants.SHAPE_ISOSURFACE) {
+              float[] range = (float[]) viewer.getShapeProperty(shapeType, "dataRange");
+              if (range != null) {
+                min = range[0];
+                max = range[1];
+              }
+            } else if (min == max)
+              max = Float.MAX_VALUE;
           }
           if (!isSyntaxCheck) {
             if (shapeType != JmolConstants.SHAPE_ISOSURFACE) {

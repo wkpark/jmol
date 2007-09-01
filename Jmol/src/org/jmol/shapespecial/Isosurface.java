@@ -327,6 +327,9 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   }
   
  public Object getProperty(String property, int index) {
+    if (property == "dataRange")
+      return (thisMesh == null ? null : new float[] {
+          thisMesh.jvxlData.mappedDataMin, thisMesh.jvxlData.mappedDataMax });
     if (property == "moNumber")
       return new Integer(moNumber);
     if (thisMesh == null)
@@ -334,9 +337,11 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     if (property == "plane")
       return jvxlData.jvxlPlane;
     if (property == "jvxlFileData")
-      return JvxlReader.jvxlGetFile(jvxlData, title, "", true, index, thisMesh.getState(myType), shortScript());
+      return JvxlReader.jvxlGetFile(jvxlData, title, "", true, index, thisMesh
+          .getState(myType), shortScript());
     if (property == "jvxlSurfaceData")
-      return JvxlReader.jvxlGetFile(jvxlData, title, "", false, 1, thisMesh.getState(myType), shortScript());
+      return JvxlReader.jvxlGetFile(jvxlData, title, "", false, 1, thisMesh
+          .getState(myType), shortScript());
     return super.getProperty(property, index);
   }
 
@@ -700,9 +705,10 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     JvxlData jvxlData = thisMesh.jvxlData;
     float[] vertexValues = thisMesh.vertexValues;
     short[] vertexColixes = thisMesh.vertexColixes;
-    if (vertexValues == null || vertexColixes == null
-        || jvxlData.isBicolorMap || jvxlData.vertexCount == 0)
+    if (vertexValues == null || jvxlData.isBicolorMap || jvxlData.vertexCount == 0)
       return;
+    if (vertexColixes == null)
+      vertexColixes = thisMesh.vertexColixes = new short[thisMesh.vertexCount];
     for (int i = thisMesh.vertexCount; --i >= 0;) {
       vertexColixes[i] = viewer.getColixForPropertyValue(vertexValues[i]);
     }
@@ -712,5 +718,6 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     jvxlData.isJvxlPrecisionColor = true;
     JvxlReader.jvxlCreateColorData(jvxlData, vertexValues);
     thisMesh.colorCommand = "color $" + thisMesh.thisID + " \"" + viewer.getPropertyColorScheme() + "\" range " + range[0] + " " + range[1];
+    thisMesh.isColorSolid = false;
   }
 }

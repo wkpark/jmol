@@ -264,8 +264,13 @@ public abstract class MeshCollection extends Shape {
   }
 
  public Object getProperty(String property, int index) {
-    if (property == "count")
-      return new Integer(meshCount);
+    if (property == "count") {
+      int n = 0;
+      for (int i = 0; i < meshCount; i++)
+        if (meshes[i] != null && meshes[i].vertexCount > 0)
+          n++;
+      return new Integer(n);
+    }
     if (property == "ID")
       return (currentMesh == null ? (String) null : currentMesh.thisID);
     if (property == "list") {
@@ -360,6 +365,8 @@ public abstract class MeshCollection extends Shape {
         appendCmd(s, mesh.getState(myType));
         if (mesh.isColorSolid)
           appendCmd(s, getColorCommand("$" + mesh.thisID, mesh.colix));
+        else if (mesh.colorCommand != null)
+          appendCmd(s, mesh.colorCommand);
       }
     }
     return s.toString();

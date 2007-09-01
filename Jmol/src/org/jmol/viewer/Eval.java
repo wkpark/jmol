@@ -3236,7 +3236,6 @@ class Eval { //implements Runnable {
     case Token.string:
       String strColor = stringParameter(1);
       if (!isSyntaxCheck) {
-        viewer.setColorScheme(strColor);
         viewer.setStringProperty("propertyColorScheme", strColor);
       }
       if (tokAt(2) == Token.range || tokAt(2) == Token.absolute) {
@@ -3415,51 +3414,61 @@ class Eval { //implements Runnable {
         // "cpk" value would be "spacefill"
 
         String name = parameterAsString(index).toLowerCase();
-        byte pid = (tok == Token.spacefill ? JmolConstants.PALETTE_CPK
-            : JmolConstants.getPaletteID(name));
+        byte pid = (shapeType == JmolConstants.SHAPE_ISOSURFACE ? JmolConstants.PALETTE_PROPERTY
+            : tok == Token.spacefill ? JmolConstants.PALETTE_CPK
+                : JmolConstants.getPaletteID(name));
         if (pid == JmolConstants.PALETTE_UNKNOWN
             || pid == JmolConstants.PALETTE_TYPE
             && shapeType != JmolConstants.SHAPE_HSTICKS)
           invalidArgument();
+        Object data = null;
         if (pid == JmolConstants.PALETTE_PROPERTY) {
-          Object data = null;
-          float min = 0;
-          float max = Float.MAX_VALUE;
+          if (shapeType != JmolConstants.SHAPE_ISOSURFACE)
+            index++;
           if (name.equals("property")
-              && Compiler.tokAttr(getToken(++index).tok, Token.atomproperty)) {
+              && Compiler.tokAttr(getToken(index).tok, Token.atomproperty)) {
             if (!isSyntaxCheck) {
-              data = getBitsetProperty(null, getToken(index).tok
+              data = getBitsetProperty(null, getToken(index++).tok
                   | Token.minmaxmask, null, null, null, null, false);
               if (!(data instanceof float[]))
                 invalidArgument();
             }
           }
-          if (optParameterAsString(index+1).length() > 0) 
-            setStringProperty("propertyColorScheme", optParameterAsString(++index));          
-          if (tokAt(index + 1) == Token.absolute || tokAt(index + 1) == Token.range) {
-            min = floatParameter(index + 2);
-            max = floatParameter(index + 3);
+        } else if (pid == JmolConstants.PALETTE_VARIABLE) {
+          index++;
+          name = parameterAsString(index++);
+          data = new float[viewer.getAtomCount()];
+          Parser.parseFloatArray("" + viewer.getParameter(name), null,
+              (float[]) data);
+          pid = JmolConstants.PALETTE_PROPERTY;
+        }
+        if (pid == JmolConstants.PALETTE_PROPERTY) {
+          if (tokAt(index) == Token.string)
+            setStringProperty("propertyColorScheme", parameterAsString(index++));
+          float min = 0;
+          float max = Float.MAX_VALUE;
+          if (tokAt(index) == Token.absolute || tokAt(index) == Token.range) {
+            min = floatParameter(index + 1);
+            max = floatParameter(index + 2);
             index += 3;
           }
           if (!isSyntaxCheck) {
-            if (data == null)              
-              viewer.setCurrentColorRange(name);
-            else
-              viewer.setCurrentColorRange((float[]) data, null);
+            if (shapeType != JmolConstants.SHAPE_ISOSURFACE) {
+              if (data == null)
+                viewer.setCurrentColorRange(name);
+              else
+                viewer.setCurrentColorRange((float[]) data, null);
+            }
             if (max != Float.MAX_VALUE)
               viewer.setCurrentColorRange(min, max);
           }
-        }
-        if (pid == JmolConstants.PALETTE_VARIABLE) {
-          name = parameterAsString(++index);
-          float[] data = new float[viewer.getAtomCount()];
-          Parser.parseFloatArray("" + viewer.getParameter(name), null, data);
-          if (!isSyntaxCheck)
-            viewer.setCurrentColorRange(data, null);
-          pid = JmolConstants.PALETTE_PROPERTY;
+          if (shapeType == JmolConstants.SHAPE_ISOSURFACE)
+            prefix = "remap";
+        } else {
+          index++;
         }
         colorvalue = new Byte((byte) pid);
-        checkStatementLength(index + 1);
+        checkStatementLength(index);
       }
       if (isSyntaxCheck)
         return;

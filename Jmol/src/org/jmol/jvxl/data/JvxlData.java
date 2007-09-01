@@ -139,6 +139,7 @@ public class JvxlData {
   public boolean isJvxlPrecisionColor;
   public boolean jvxlDataIsColorMapped;
   public boolean jvxlDataIs2dContour;
+  public boolean isColorReversed;
   
   public int edgeFractionBase;
   public int edgeFractionRange;
@@ -148,6 +149,7 @@ public class JvxlData {
   public boolean isXLowToHigh;
   public boolean isContoured;
   public boolean isBicolorMap;
+  public boolean isTruncated;
   public float mappedDataMin;
   public float mappedDataMax;
   public float valueMappedToRed;
@@ -159,9 +161,12 @@ public class JvxlData {
   public int nContours;
   public int nEdges;
   public int nSurfaceInts;
+  public int vertexCount;
+
+  public short minColorIndex = -1;
+  public short maxColorIndex = 0;
 
   public String[] title;
-  
   
 }
 

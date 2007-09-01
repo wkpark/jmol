@@ -45,10 +45,13 @@ public class JvxlReader extends VolumeFileReader {
   protected static void jvxlUpdateInfo(JvxlData jvxlData, String[] title, int nBytes) {
     jvxlData.title = title;
     jvxlData.nBytes = nBytes;
+    jvxlUpdateInfoLines(jvxlData);
+  }
+
+  public static void jvxlUpdateInfoLines(JvxlData jvxlData) {
     jvxlData.jvxlDefinitionLine = jvxlGetDefinitionLine(jvxlData, false);
     jvxlData.jvxlInfoLine = jvxlGetDefinitionLine(jvxlData, true);
   }
-
   //// methods used for reading any file format, but creating a JVXL file
 
   /////////////reading the format///////////
@@ -492,7 +495,7 @@ public class JvxlReader extends VolumeFileReader {
     float contourPlaneMaximumValue = -Float.MAX_VALUE;
     if (colixes == null || colixes.length < vertexCount)
       meshData.vertexColixes = colixes = new short[vertexCount];
-    int n = (vertexCount);
+    jvxlData.vertexCount = vertexCount;
     String data = jvxlColorDataRead;
     int cpt = 0;
     short colixNeg = 0, colixPos = 0;
@@ -504,7 +507,7 @@ public class JvxlReader extends VolumeFileReader {
           .getColorIndex(params.isColorReversed ? params.colorPos
               : params.colorNeg);
     }
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < vertexCount; i++) {
       float fraction, value;
       if (jvxlDataIsPrecisionColor) {
         // this COULD be an option for mapped surfaces; 
@@ -514,7 +517,7 @@ public class JvxlReader extends VolumeFileReader {
         // the two parts of the "double-character-precision" value
         // are in separate lines, separated by n characters.
         fraction = jvxlFractionFromCharacter2(data.charAt(cpt), data.charAt(cpt
-            + n), colorFractionBase, colorFractionRange);
+            + vertexCount), colorFractionBase, colorFractionRange);
         value = min + fraction * range;
       } else {
         // my original encoding scheme
@@ -660,7 +663,7 @@ public class JvxlReader extends VolumeFileReader {
         }
     sb.append(' ').append(dataCount).append('\n');
     ++nSurfaceInts;
-    JvxlReader.setSurfaceInfo(jvxlData,null, nSurfaceInts, sb);
+    setSurfaceInfo(jvxlData,null, nSurfaceInts, sb);
     return nDataPoints;
   }
   
@@ -917,5 +920,42 @@ public class JvxlReader extends VolumeFileReader {
     jvxlData.jvxlEdgeData = String.copyValueOf(chars);
   }
   
+  public static void jvxlCreateColorData(JvxlData jvxlData, float[] vertexValues) {
+    if (vertexValues == null) {
+      jvxlData.jvxlColorData = "";
+      return;
+    }
+    boolean writePrecisionColor = jvxlData.isJvxlPrecisionColor;
+    boolean doTruncate = jvxlData.isTruncated;
+    int colorFractionBase = jvxlData.colorFractionBase;
+    int colorFractionRange = jvxlData.colorFractionRange;
+    float valueBlue = jvxlData.valueMappedToBlue;
+    float valueRed = jvxlData.valueMappedToRed;
+    int vertexCount = jvxlData.vertexCount;
+    float min = jvxlData.mappedDataMin;
+    float max = jvxlData.mappedDataMax;
+    StringBuffer list = null, list1 = null;
+    list = new StringBuffer();
+    list1 = new StringBuffer();
+    char[] remainder = new char[1];
+    for (int i = 0; i < vertexCount; i++) {
+      float value = vertexValues[i];
+      if (doTruncate)
+        value = (value > 0 ? 0.999f : -0.999f);
+        char ch;
+        if (writePrecisionColor) {
+          ch = jvxlValueAsCharacter2(value, min, max,
+              colorFractionBase, colorFractionRange, remainder);
+          list1.append(remainder[0]);
+        } else {
+          //isColorReversed
+          ch = jvxlValueAsCharacter(value, valueRed,
+              valueBlue, colorFractionBase, colorFractionRange);
+        }
+        list.append(ch);
+    }
+    jvxlData.jvxlColorData = list.append(list1).append('\n').toString();
+    jvxlUpdateInfoLines(jvxlData);
+  }
 
 }

@@ -55,6 +55,14 @@ import org.jmol.util.ArrayUtil;
     return palette = getColorScheme(colorScheme);
   }
 
+  public String getColorSchemeName() {
+    return colorSchemes[palette];  
+  }
+  
+  public final static String getColorSchemeName(int i) {
+    return (i < colorSchemes.length && i >= 0 ? colorSchemes[i] : null);  
+  }
+  
   public final static int getColorScheme(String colorScheme) {
     for (int i = 0; i < colorSchemes.length; i++)
       if (colorSchemes[i].equalsIgnoreCase(colorScheme))

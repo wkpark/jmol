@@ -263,9 +263,13 @@ class ColorManager {
   private float colorHi, colorLo;
   private float[] colorData;
   
+  float[] getCurrentColorRange() {
+    return new float[] {colorLo, colorHi};
+  }
+
   void setCurrentColorRange(float[] data, BitSet bs, String colorScheme) {
     colorData = data;
-    setColorScheme(colorScheme);
+    palette = ColorEncoder.getColorScheme(colorScheme);
     colorHi = Float.MIN_VALUE;
     colorLo = Float.MAX_VALUE;
     if (data == null)
@@ -284,62 +288,23 @@ class ColorManager {
   void setCurrentColorRange(float min, float max) {
     colorHi = max;
     colorLo = min;
-    Logger.info("Property color value range: " + colorLo + " to " + colorHi);
+    Logger.info("color \"" + ColorEncoder.getColorSchemeName(palette) + "\" range " + colorLo + " " + colorHi);
   }
 
-  short getPropertyColix(int iAtom) {
+  private short getPropertyColix(int iAtom) {
     if (colorData == null || iAtom >= colorData.length)
       return Graphics3D.GRAY;
-    return getColixFromPalette(colorData[iAtom], colorLo, colorHi);
+    return getColixForPropertyValue(colorData[iAtom]);    
   }
 
   int palette = 0;
   
-/* didn't work
-  private int rgbRed = 0xFFFF0000;
-  private int rgbGreen = 0xFF008000;
-  private int rgbBlue = 0xFF0000FF;
-  void setRgb(int rgorb, int color) {
-    switch (rgorb) {
-    case 0:
-      rgbRed = color;
-      break;
-    case 1:
-      rgbGreen = color;
-      break;
-    case 2:
-      rgbBlue = color;
-    }
-  }
-  
-  int getRgb(int rgorb) {
-    switch (rgorb) {
-    case 0:
-      return rgbRed;
-    case 1:
-      return rgbGreen;
-    case 2:
-    default:
-      return rgbBlue;
-    }
-  }
-  
-  int getRgbRed() {
-    return rgbRed;
-  }
-
-  int getRgbGreen() {
-    return rgbGreen;
-  }
-
-  int getRgbBlue() {
-    return rgbBlue;
-  }
-*/  
   int setColorScheme(String colorScheme) {
-    return palette = ColorEncoder.getColorScheme(colorScheme);
+    palette = ColorEncoder.getColorScheme(colorScheme);
+    Logger.info("Property color scheme \"" + ColorEncoder.getColorSchemeName(palette) + "\" color value range: " + colorLo + " to " + colorHi);
+    return palette;
   }
-  
+
   static void setUserScale(int[] scale) {
     ColorEncoder.setUserScale(scale);
   }
@@ -349,11 +314,9 @@ class ColorManager {
   }
   
   short getColixForPropertyValue(float val) {
-    return ColorEncoder.getColorIndexFromPalette(val, colorLo, colorHi, palette); //, rgbRed, rgbGreen, rgbBlue);    
-  }
-
-  short getColixFromPalette(float val, float lo, float hi) {
-    return ColorEncoder.getColorIndexFromPalette(val, lo, hi, palette); //, rgbRed, rgbGreen, rgbBlue);    
+    return (colorLo < colorHi ? 
+        ColorEncoder.getColorIndexFromPalette(val, colorLo, colorHi, palette)
+        :ColorEncoder.getColorIndexFromPalette(-val, -colorLo, -colorHi, palette));    
   }
 
   static short getColixHbondType(short order) {

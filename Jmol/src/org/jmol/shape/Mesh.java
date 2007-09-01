@@ -40,6 +40,7 @@ public class Mesh {
   public String thisID;
   public boolean isValid = true;
   public String scriptCommand;
+  public String colorCommand;
  
   public boolean visible = true;
   public short colix;

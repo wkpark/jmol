@@ -35,7 +35,7 @@ import org.jmol.jvxl.calc.*;
 import org.jmol.jvxl.api.*;
 
 public abstract class VoxelReader implements VertexDataServer {
- 
+
   /*
    * JVXL VoxelReader Class
    * ----------------------
@@ -137,25 +137,25 @@ public abstract class VoxelReader implements VertexDataServer {
    * given below:
    * 
 
-#comments (optional)
-info line1
-info line2
--na originx originy originz   [ANGSTROMS/BOHR] optional; BOHR assumed
-n1 x y z
-n2 x y z
-n3 x y z
-a1 a1.0 x y z
-a2 a2.0 x y z
-a3 a3.0 x y z
-a4 a4.0 x y z 
-etc. -- na atoms
--ns 35 90 35 90 Jmol voxel format version 1.0
-# more comments
-cutoff +/-nEdges +/-nVertices [more here]
-integer inside/outside edge data
-ascii-encoded fractional edge data
-ascii-encoded fractional color data
-# optional comments
+   #comments (optional)
+   info line1
+   info line2
+   -na originx originy originz   [ANGSTROMS/BOHR] optional; BOHR assumed
+   n1 x y z
+   n2 x y z
+   n3 x y z
+   a1 a1.0 x y z
+   a2 a2.0 x y z
+   a3 a3.0 x y z
+   a4 a4.0 x y z 
+   etc. -- na atoms
+   -ns 35 90 35 90 Jmol voxel format version 1.0
+   # more comments
+   cutoff +/-nEdges +/-nVertices [more here]
+   integer inside/outside edge data
+   ascii-encoded fractional edge data
+   ascii-encoded fractional color data
+   # optional comments
 
    * 
    * 
@@ -165,18 +165,18 @@ ascii-encoded fractional color data
 
   protected SurfaceGenerator sg;
   protected MeshDataServer meshDataServer;
-  
+
   protected ColorEncoder colorEncoder;
-  
+
   protected Parameters params;
   protected MeshData meshData;
   protected JvxlData jvxlData;
   protected VolumeData volumeData;
-  
+
   protected boolean isProgressive = false;
   protected boolean isXLowToHigh = false; //can be overridden in some readers by --progressive
-  private float assocCutoff = 0.3f; 
-  
+  private float assocCutoff = 0.3f;
+
   VoxelReader(SurfaceGenerator sg) {
     this.sg = sg;
     this.colorEncoder = sg.getColorEncoder();
@@ -190,7 +190,7 @@ ascii-encoded fractional color data
     this.meshDataServer = sg.getMeshDataServer();
     cJvxlEdgeNaN = (char) (defaultEdgeFractionBase + defaultEdgeFractionRange);
   }
-    
+
   final static float ANGSTROMS_PER_BOHR = 0.5291772f;
   final static int defaultEdgeFractionBase = 35; //#$%.......
   final static int defaultEdgeFractionRange = 90;
@@ -201,7 +201,7 @@ ascii-encoded fractional color data
   final static float defaultCutoff = 0.02f;
 
   private int edgeCount;
-  
+
   protected Point3f volumetricOrigin;
   protected Vector3f[] volumetricVectors;
   protected int[] voxelCounts;
@@ -215,10 +215,11 @@ ascii-encoded fractional color data
     voxelData = v.voxelData;
     volumeData = v;
   }
-  
+
   abstract void readVolumeParameters();
+
   abstract void readVolumeData(boolean isMapData);
-  
+
   ////////////////////////////////////////////////////////////////
   // CUBE/APBS/JVXL file reading stuff
   ////////////////////////////////////////////////////////////////
@@ -236,18 +237,17 @@ ascii-encoded fractional color data
 
   protected StringBuffer jvxlFileHeaderBuffer;
   protected StringBuffer fractionData;
-  protected String  jvxlEdgeDataRead = "";
-  protected String  jvxlColorDataRead = "";
+  protected String jvxlEdgeDataRead = "";
+  protected String jvxlColorDataRead = "";
   protected boolean jvxlDataIsColorMapped;
   protected boolean jvxlDataIsPrecisionColor;
   protected boolean jvxlDataIs2dContour;
-  protected float   jvxlCutoff;
-  protected int     jvxlNSurfaceInts;
-  protected char    cJvxlEdgeNaN;
+  protected float jvxlCutoff;
+  protected int jvxlNSurfaceInts;
+  protected char cJvxlEdgeNaN;
 
-  
   protected int contourVertexCount;
-  
+
   void jvxlUpdateInfo() {
     JvxlReader.jvxlUpdateInfo(jvxlData, params.title, nBytes);
   }
@@ -258,7 +258,7 @@ ascii-encoded fractional color data
     if (justForPlane) {
       volumeData.setDataDistanceToPlane(params.thePlane);
       if (meshDataServer != null)
-      meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
+        meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
       params.setMapRanges(this);
     } else {
       readVolumeData(false);
@@ -314,13 +314,13 @@ ascii-encoded fractional color data
   }
 
   void discardTempData(boolean discardAll) {
-    if (!discardAll) 
+    if (!discardAll)
       return;
     voxelData = null;
     sg.setMarchingSquares(marchingSquares = null);
     marchingCubes = null;
   }
- 
+
   protected void initializeVolumetricData() {
     nPointsX = voxelCounts[0];
     nPointsY = voxelCounts[1];
@@ -328,9 +328,9 @@ ascii-encoded fractional color data
     volumeData.setUnitVectors();
     setVolumeData(volumeData);
   }
-  
+
   // this needs to be specific for each reader
-  abstract protected void readVoxelData(boolean isMapData) throws Exception ;
+  abstract protected void readVoxelData(boolean isMapData) throws Exception;
 
   protected void gotoAndReadVoxelData(boolean isMapData) {
     initializeVolumetricData();
@@ -348,12 +348,12 @@ ascii-encoded fractional color data
   protected void gotoData(int n, int nPoints) throws Exception {
     //only for file reader
   }
-  
+
   protected String readColorData() {
     //jvxl only -- overloaded
     return "";
   }
-  
+
   ////////////////////////////////////////////////////////////////
   // marching cube stuff
   ////////////////////////////////////////////////////////////////
@@ -370,30 +370,31 @@ ascii-encoded fractional color data
       marchingSquares = new MarchingSquares(this, volumeData, params.thePlane,
           params.nContours, params.thisContour, params.contourFromZero);
       contourType = marchingSquares.getContourType();
-      marchingSquares.setMinMax(params.valueMappedToRed, params.valueMappedToBlue);
+      marchingSquares.setMinMax(params.valueMappedToRed,
+          params.valueMappedToBlue);
     }
 
-    marchingCubes = new MarchingCubes(this, volumeData, 
-        params.isContoured, contourType,
-        params.cutoff, params.isCutoffAbsolute);
+    marchingCubes = new MarchingCubes(this, volumeData, params.isContoured,
+        contourType, params.cutoff, params.isCutoffAbsolute);
 
     edgeCount = marchingCubes.generateSurfaceData(isXLowToHigh);
-    
+
     if (isJvxl)
       fractionData = new StringBuffer(jvxlEdgeDataRead);
     fractionData.append('\n');
   }
 
-  protected static boolean isInside(float voxelValue, float max, boolean isAbsolute) {
+  protected static boolean isInside(float voxelValue, float max,
+                                    boolean isAbsolute) {
     return MarchingCubes.isInside(voxelValue, max, isAbsolute);
   }
 
   /////////////////  MarchingReader Interface Methods ///////////////////
-  
+
   protected final Point3f ptTemp = new Point3f();
 
   final float[] fReturn = new float[1];
-  
+
   public int getSurfacePointIndex(float cutoff, boolean isCutoffAbsolute,
                                   int x, int y, int z, Point3i offset, int vA,
                                   int vB, float valueA, float valueB,
@@ -413,70 +414,75 @@ ascii-encoded fractional color data
       return isContourType ? marchingSquares.addContourVertex(x, y, z, offset,
           ptTemp, cutoff) : Integer.MAX_VALUE;
     int assocVertex = (assocCutoff > 0 ? (fReturn[0] < assocCutoff ? vA
-        : fReturn[0] > 1 - assocCutoff ? vB : MarchingSquares.CONTOUR_POINT) : MarchingSquares.CONTOUR_POINT);
+        : fReturn[0] > 1 - assocCutoff ? vB : MarchingSquares.CONTOUR_POINT)
+        : MarchingSquares.CONTOUR_POINT);
     if (assocVertex >= 0)
       assocVertex = marchingCubes.getLinearOffset(x, y, z, assocVertex);
     int iV = addVertexCopy(ptTemp, thisValue, assocVertex);
     if (params.iAddGridPoints) {
       marchingCubes.calcVertexPoint(x, y, z, vB, ptTemp);
-      addVertexCopy(valueA < valueB ? pointA : ptTemp, Float.NaN, MarchingSquares.EDGE_POINT);
-      addVertexCopy(valueA < valueB ? ptTemp : pointA, Float.NaN, MarchingSquares.EDGE_POINT);
+      addVertexCopy(valueA < valueB ? pointA : ptTemp, Float.NaN,
+          MarchingSquares.EDGE_POINT);
+      addVertexCopy(valueA < valueB ? ptTemp : pointA, Float.NaN,
+          MarchingSquares.EDGE_POINT);
     }
     return iV;
   }
 
-  protected float readSurfacePoint(float cutoff, boolean isCutoffAbsolute, float valueA,
-                                   float valueB, Point3f pointA, Vector3f edgeVector, float[] fReturn) {
+  protected float readSurfacePoint(float cutoff, boolean isCutoffAbsolute,
+                                   float valueA, float valueB, Point3f pointA,
+                                   Vector3f edgeVector, float[] fReturn) {
 
-              //JvxlReader may or may not call this
+    //JvxlReader may or may not call this
 
-              float fraction, thisValue;
-              float diff = valueB - valueA;
-              fraction = (cutoff - valueA) / diff;
-              if (isCutoffAbsolute && (fraction < 0 || fraction > 1))
-                fraction = (-cutoff - valueA) / diff;
+    float fraction, thisValue;
+    float diff = valueB - valueA;
+    fraction = (cutoff - valueA) / diff;
+    if (isCutoffAbsolute && (fraction < 0 || fraction > 1))
+      fraction = (-cutoff - valueA) / diff;
 
-              if (fraction < 0 || fraction > 1) {
-                //Logger.error("problem with unusual fraction=" + fraction + " cutoff="
-                //  + cutoff + " A:" + valueA + " B:" + valueB);
-                fraction = Float.NaN;
-              }
-              fReturn[0] = fraction;
-              if (!isJvxl)
-                fractionData.append(JvxlReader.jvxlFractionAsCharacter(fraction,
-                    edgeFractionBase, edgeFractionRange));
+    if (fraction < 0 || fraction > 1) {
+      //Logger.error("problem with unusual fraction=" + fraction + " cutoff="
+      //  + cutoff + " A:" + valueA + " B:" + valueB);
+      fraction = Float.NaN;
+    }
+    fReturn[0] = fraction;
+    if (!isJvxl)
+      fractionData.append(JvxlReader.jvxlFractionAsCharacter(fraction,
+          edgeFractionBase, edgeFractionRange));
 
-              thisValue = valueA + fraction * diff;
-              ptTemp.scaleAdd(fraction, edgeVector, pointA);
-              return thisValue;
-            }
-            
+    thisValue = valueA + fraction * diff;
+    ptTemp.scaleAdd(fraction, edgeVector, pointA);
+    return thisValue;
+  }
+
   public int addVertexCopy(Point3f vertexXYZ, float value, int assocVertex) {
     if (meshDataServer == null)
       return meshData.addVertexCopy(vertexXYZ, value, assocVertex);
     return meshDataServer.addVertexCopy(vertexXYZ, value, assocVertex);
   }
-  
-  public void addTriangleCheck(int iA, int iB, int iC, int check, boolean isAbsolute) {
+
+  public void addTriangleCheck(int iA, int iB, int iC, int check,
+                               boolean isAbsolute) {
     if (meshDataServer == null) {
-      if (isAbsolute && !MeshData.checkCutoff(iA, iB, iC, meshData.vertexValues))
+      if (isAbsolute
+          && !MeshData.checkCutoff(iA, iB, iC, meshData.vertexValues))
         return;
       meshData.addTriangleCheck(iA, iB, iC, check);
     } else {
       meshDataServer.addTriangleCheck(iA, iB, iC, check, isAbsolute);
     }
   }
-  
+
   ////////////////////////////////////////////////////////////////////
-  
-  
-   ////////////////////////////////////////////////////////////////
+
+  ////////////////////////////////////////////////////////////////
   // color mapping methods
   ////////////////////////////////////////////////////////////////
 
   void colorIsosurface() {
     if (params.isContoured && marchingSquares == null) {
-//    if (params.isContoured && !(jvxlDataIs2dContour || params.thePlane != null)) {
+      //    if (params.isContoured && !(jvxlDataIs2dContour || params.thePlane != null)) {
       Logger.error("Isosurface error: Cannot contour this type of data.");
       return;
     }
@@ -485,126 +491,118 @@ ascii-encoded fractional color data
     }
     if (params.isContoured) {
       params.setMapRanges(this);
-      marchingSquares.setMinMax(params.valueMappedToRed, params.valueMappedToBlue);
-      contourVertexCount = marchingSquares.generateContourData(jvxlDataIs2dContour);
+      marchingSquares.setMinMax(params.valueMappedToRed,
+          params.valueMappedToBlue);
+      contourVertexCount = marchingSquares
+          .generateContourData(jvxlDataIs2dContour);
       if (meshDataServer != null)
         meshDataServer.notifySurfaceGenerationCompleted();
     }
-      
+
     applyColorScale();
     jvxlData.nContours = params.nContours;
-    jvxlData.jvxlExtraLine = JvxlReader.jvxlExtraLine(jvxlData,1);
-    
-    jvxlData.jvxlFileMessage = "mapped: min = " + params.valueMappedToRed + "; max = "
-        + params.valueMappedToBlue;
+    jvxlData.jvxlExtraLine = JvxlReader.jvxlExtraLine(jvxlData, 1);
+
+    jvxlData.jvxlFileMessage = "mapped: min = " + params.valueMappedToRed
+        + "; max = " + params.valueMappedToBlue;
   }
 
-  
   void applyColorScale() {
+    colorFractionBase = jvxlData.colorFractionBase = defaultColorFractionBase;
+    colorFractionRange = jvxlData.colorFractionRange = defaultColorFractionRange;
     if (params.colorPhase == 0)
       params.colorPhase = 1;
     if (meshDataServer == null) {
-      meshData.vertexColixes = new short[meshData.vertexCount];  
+      meshData.vertexColixes = new short[meshData.vertexCount];
     } else {
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_COLOR_INDEXES);
     }
-    int vertexCount = meshData.vertexCount;
-    colorFractionBase = defaultColorFractionBase;
-    colorFractionRange = defaultColorFractionRange;
     params.setMapRanges(this);
-    float min = params.mappedDataMin;
-    float max = params.mappedDataMax;
-    StringBuffer list = null, list1 = null;
     //colorBySign is true when colorByPhase is true, but not vice-versa
     //old: boolean saveColorData = !(params.colorByPhase && !params.isBicolorMap && !params.colorBySign); //sorry!
-    boolean saveColorData = params.isBicolorMap || params.colorBySign || !params.colorByPhase;
-    if (saveColorData) {
-      list = new StringBuffer();
-      list1 = new StringBuffer();
-    }
-    int incr = 1;
-    char[] remainder = new char[1];
-    boolean writePrecisionColor = (jvxlDataIsPrecisionColor || params.isContoured || params.remappable);
-    int lastVertex = (contourVertexCount > 0 ? contourVertexCount : vertexCount);
-    short minColorIndex = -1;
-    short maxColorIndex = 0;
-    if (params.isBicolorMap && !params.isContoured || params.colorBySign) {
-      minColorIndex = ColorEncoder.getColorIndex(params.isColorReversed ? params.colorPos : params.colorNeg);
-      maxColorIndex = ColorEncoder.getColorIndex(params.isColorReversed ? params.colorNeg : params.colorPos);
-    }
-    for (int i = 0; i < vertexCount; i += incr) {
-      float value = getVertexColorValue(i, minColorIndex, maxColorIndex);
-      if (i < lastVertex) {
-        char ch;
-        if (writePrecisionColor) {
-          ch = JvxlReader.jvxlValueAsCharacter2(value, min, max,
-              colorFractionBase, colorFractionRange, remainder);
-          if (saveColorData)
-            list1.append(remainder[0]);
-        } else {
-          //isColorReversed
-          ch = JvxlReader.jvxlValueAsCharacter(value, params.valueMappedToRed,
-              params.valueMappedToBlue, colorFractionBase, colorFractionRange);
-        }
-        if (saveColorData)
-          list.append(ch);
-      }
-    }
-    jvxlData.isJvxlPrecisionColor = writePrecisionColor;
-    jvxlData.jvxlColorData = (saveColorData ? list.append(list1).append('\n')
-        .toString() : "");
+    boolean saveColorData = params.isBicolorMap || params.colorBySign
+        || !params.colorByPhase;
+    jvxlData.isJvxlPrecisionColor = (jvxlDataIsPrecisionColor
+        || params.isContoured || params.remappable);
     jvxlData.valueMappedToRed = params.valueMappedToRed;
     jvxlData.valueMappedToBlue = params.valueMappedToBlue;
     jvxlData.mappedDataMin = params.mappedDataMin;
     jvxlData.mappedDataMax = params.mappedDataMax;
+    jvxlData.vertexCount = (contourVertexCount > 0 ? contourVertexCount
+        : meshData.vertexCount);
+    jvxlData.minColorIndex = -1;
+    jvxlData.maxColorIndex = 0;
+    jvxlData.isColorReversed = params.isColorReversed;
+    if (params.isBicolorMap && !params.isContoured || params.colorBySign) {
+      jvxlData.minColorIndex = ColorEncoder
+          .getColorIndex(params.isColorReversed ? params.colorPos
+              : params.colorNeg);
+      jvxlData.maxColorIndex = ColorEncoder
+          .getColorIndex(params.isColorReversed ? params.colorNeg
+              : params.colorPos);
+    }
+    jvxlData.isTruncated = (jvxlData.minColorIndex >= 0 && !params.isContoured);
+    
+    float value;
+    for (int i = meshData.vertexCount; --i >= 0;) {
+      /* right, so what we are doing here is setting a range within the 
+       * data for which we want red-->blue, but returning the actual
+       * number so it can be encoded more precisely. This turned out to be
+       * the key to making the JVXL contours work.
+       *  
+       */
+      if (params.colorBySets)
+        value = meshData.vertexSets[i];
+      else if (params.colorByPhase)
+        value = getPhase(meshData.vertices[i]);
+      else if (params.isBicolorMap && !params.isContoured) // will be current mesh only
+        value = meshData.vertexValues[i];
+      else if (jvxlDataIs2dContour)
+        value = marchingSquares.getInterpolatedPixelValue(meshData.vertices[i]);
+      else
+        value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[i]);
+      meshData.vertexValues[i] = value;
+    }
+
+    colorData();
+    
+    JvxlReader.jvxlCreateColorData(jvxlData, 
+        (saveColorData ? null : meshData.vertexValues));
+
     if (meshDataServer != null && params.colorBySets)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
   }
 
-  private float getVertexColorValue(int vertexIndex, short minColorIndex, short maxColorIndex) {
-    float value, datum;
-    /* but RETURNS the actual value, not the truncated one
-     * right, so what we are doing here is setting a range within the 
-     * data for which we want red-->blue, but returning the actual
-     * number so it can be encoded more precisely. This turned out to be
-     * the key to making the JVXL contours work.
-     *  
-     */
-    if (params.colorBySets)
-      value = meshData.vertexSets[vertexIndex];
-    else if (params.colorByPhase)
-      value = getPhase(meshData.vertices[vertexIndex]);
-    else if (params.isBicolorMap && !params.isContoured) // will be current mesh only
-      value = meshData.vertexValues[vertexIndex];
-    else if (jvxlDataIs2dContour)
-      value = marchingSquares.getInterpolatedPixelValue(meshData.vertices[vertexIndex]);
-    else
-      value = volumeData.lookupInterpolatedVoxelValue(meshData.vertices[vertexIndex]);
-    
-    datum = meshData.vertexValues[vertexIndex] = value;
-    
-    if (minColorIndex >= 0) {
-      if (value <= 0)
-        meshData.vertexColixes[vertexIndex] = minColorIndex;
-      else if (value > 0)
-        meshData.vertexColixes[vertexIndex] = maxColorIndex;
-      if (!params.isContoured)
-        datum = (value > 0 ? 0.999f : -0.999f);
-    } else {
-      if (value < params.valueMappedToRed)
-        value = params.valueMappedToRed;
-      if (value >= params.valueMappedToBlue)
-        value = params.valueMappedToBlue;
-      //if (vertexIndex > 90 && vertexIndex < 100)
-        //System.out.println("applycolor " + meshData.vertexColixes + " " +  getColorIndexFromPalette(value) + " " + vertexIndex + " " + value +" " + params.valueMappedToRed + " " + params.valueMappedToBlue );
-      meshData.vertexColixes[vertexIndex] = getColorIndexFromPalette(value);
-    }
-    return datum;
-  }
+  private void colorData() {
 
-  private final static String[] colorPhases = { "_orb", "x", "y", "z", "xy", "yz",
-    "xz", "x2-y2", "z2" };
+    float[] vertexValues = meshData.vertexValues;
+    short[] vertexColixes = meshData.vertexColixes;
+    
+    float valueBlue = jvxlData.valueMappedToBlue;
+    float valueRed = jvxlData.valueMappedToRed;
+    short minColorIndex = jvxlData.minColorIndex;
+    short maxColorIndex = jvxlData.maxColorIndex;
+    
+    for (int i = meshData.vertexCount; --i >= 0;) {
+      float value = vertexValues[i];
+      if (minColorIndex >= 0) {
+        if (value <= 0)
+          vertexColixes[i] = minColorIndex;
+        else if (value > 0)
+          vertexColixes[i] = maxColorIndex;
+      } else {
+        if (value < valueRed)
+          value = valueRed;
+        if (value >= valueBlue)
+          value = valueBlue;
+        vertexColixes[i] = getColorIndexFromPalette(value);
+      }
+    }
+  }
+  
+  private final static String[] colorPhases = { "_orb", "x", "y", "z", "xy",
+      "yz", "xz", "x2-y2", "z2" };
 
   static int getColorPhaseIndex(String color) {
     int colorPhase = -1;
@@ -615,7 +613,7 @@ ascii-encoded fractional color data
       }
     return colorPhase;
   }
-  
+
   private float getPhase(Point3f pt) {
     switch (params.colorPhase) {
     case 0:
@@ -639,15 +637,15 @@ ascii-encoded fractional color data
     }
     return 1;
   }
-  
+
   float getMinMappedValue() {
     if (params.colorBySets)
       return 0;
-    int vertexCount = (contourVertexCount > 0 ? contourVertexCount : meshData.vertexCount);
+    int vertexCount = (contourVertexCount > 0 ? contourVertexCount
+        : meshData.vertexCount);
     Point3f[] vertexes = meshData.vertices;
     float min = Float.MAX_VALUE;
-    int incr = 1;
-    for (int i = 0; i < vertexCount; i += incr) {
+    for (int i = 0; i < vertexCount; i++) {
       float challenger;
       if (jvxlDataIs2dContour)
         challenger = marchingSquares.getInterpolatedPixelValue(vertexes[i]);
@@ -662,7 +660,8 @@ ascii-encoded fractional color data
   float getMaxMappedValue() {
     if (params.colorBySets)
       return Math.max(meshData.nSets - 1, 0);
-    int vertexCount = (contourVertexCount > 0 ? contourVertexCount : meshData.vertexCount);
+    int vertexCount = (contourVertexCount > 0 ? contourVertexCount
+        : meshData.vertexCount);
     Point3f[] vertexes = meshData.vertices;
     float max = -Float.MAX_VALUE;
     int incr = 1;
@@ -682,12 +681,12 @@ ascii-encoded fractional color data
 
   protected short getColorIndexFromPalette(float value) {
     if (params.isColorReversed)
-      return colorEncoder.getColorIndexFromPalette(-value, -params.valueMappedToBlue,
-          -params.valueMappedToRed);
-    return colorEncoder.getColorIndexFromPalette(value, params.valueMappedToRed,
-        params.valueMappedToBlue);
+      return colorEncoder.getColorIndexFromPalette(-value,
+          -params.valueMappedToBlue, -params.valueMappedToRed);
+    return colorEncoder.getColorIndexFromPalette(value,
+        params.valueMappedToRed, params.valueMappedToBlue);
   }
-  
+
   void updateTriangles() {
     if (meshDataServer == null) {
       meshData.invalidateTriangles();
@@ -695,36 +694,35 @@ ascii-encoded fractional color data
       meshDataServer.invalidateTriangles();
     }
   }
-  
+
   void updateSurfaceData() {
     updateTriangles();
     JvxlReader.jvxlUpdateSurfaceData(jvxlData, meshData.vertexValues,
         meshData.vertexCount, meshData.vertexIncrement, cJvxlEdgeNaN);
   }
-  
+
   public void selectPocket(boolean doExclude) {
     // solvent reader implements this
   }
-  
+
   void excludeMinimumSet() {
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_GET_VERTICES);
     meshData.getSurfaceSet();
     BitSet bs;
-    for (int i = meshData.nSets; --i >= 0;) 
+    for (int i = meshData.nSets; --i >= 0;)
       //System.out.println(" set " + i + " " + Viewer.cardinalityOf(surfaceSet[i]));
       if ((bs = meshData.surfaceSet[i]) != null) {
         int n = 0;
-        for (int j = bs.size(); --j >= 0; )   // cardinality
+        for (int j = bs.size(); --j >= 0;)
+          // cardinality
           if (bs.get(j))
             n++;
         if (n < params.minSet)
           meshData.invalidateSurfaceSet(i);
-    }
+      }
     updateSurfaceData();
     if (meshDataServer != null)
       meshDataServer.fillMeshData(meshData, MeshData.MODE_PUT_SETS);
   }
 }
-
-

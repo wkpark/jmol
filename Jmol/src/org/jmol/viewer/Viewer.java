@@ -1086,12 +1086,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    }  
    */
 
-  void setPropertyColorScheme(String scheme) {
-    Logger.info("Property color scheme: " + scheme);
+  public void setPropertyColorScheme(String scheme) {
     global.propertyColorScheme = scheme;
+    colorManager.setColorScheme(scheme);
   }
 
-  String getPropertyColorScheme() {
+  public String getPropertyColorScheme() {
     return global.propertyColorScheme;
   }
 
@@ -1171,11 +1171,6 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return ColorManager.getColixHbondType(order);
   }
 
-  int setColorScheme(String colorScheme) {
-    //isosurface
-    return colorManager.setColorScheme(colorScheme);
-  }
-
   public int[] getColorSchemeArray(String colorScheme) {
     return colorManager.getColorSchemeArray(colorScheme);
   }
@@ -1184,9 +1179,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     ColorManager.setUserScale(scale);
   }
 
-  short getColixFromPalette(float val, float rangeMin, float rangeMax) {
+  public short getColixForPropertyValue(float val) {
     //isosurface
-    return colorManager.getColixFromPalette(val, rangeMin, rangeMax);
+    return colorManager.getColixForPropertyValue(val);
   }
 
   Point3f getColorPointForPropertyValue(float val) {
@@ -2327,10 +2322,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     colorManager.setCurrentColorRange(data, bs, global.propertyColorScheme);
   }
 
-  void setCurrentColorRange(float min, float max) {
+  public void setCurrentColorRange(float min, float max) {
     colorManager.setCurrentColorRange(min, max);
   }
 
+  public float[] getCurrentColorRange() {
+    return colorManager.getCurrentColorRange();
+  }
+  
   static public float[] getDataFloat(String label) {
     if (dataValues == null)
       return null;

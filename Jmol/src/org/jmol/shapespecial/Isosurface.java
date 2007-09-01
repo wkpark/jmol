@@ -172,6 +172,12 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
       return;
     }
 
+    if ("remapcolor" == propertyName) {
+      if (thisMesh != null)
+        remapColors();
+      return;
+    }
+    
     if ("thisID" == propertyName) {
       setPropertySuper("thisID", value, null);
       return;
@@ -321,8 +327,6 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   }
   
  public Object getProperty(String property, int index) {
-    if (property == "list")
-      return super.getProperty(property, index);
     if (property == "moNumber")
       return new Integer(moNumber);
     if (thisMesh == null)
@@ -616,6 +620,13 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     setModelIndex();
     setScriptInfo();
     setJvxlInfo();
+    String schemeName = colorEncoder.getColorSchemeName();
+    viewer.setPropertyColorScheme(schemeName);
+    viewer.setCurrentColorRange(jvxlData.mappedDataMin, jvxlData.mappedDataMax);
+    thisMesh.isColorSolid = false;
+    thisMesh.colorCommand = "color $" + thisMesh.thisID + " \"" + schemeName + "\" range " 
+    + (jvxlData.isColorReversed ? jvxlData.mappedDataMax + " " + jvxlData.mappedDataMin : 
+      jvxlData.mappedDataMin + " " + jvxlData.mappedDataMax);
   }
 
   public Point3f[] calculateGeodesicSurface(BitSet bsSelected, BitSet bsIgnored,
@@ -684,5 +695,22 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     }
     return V;
   }
- 
+
+  protected void remapColors() {
+    JvxlData jvxlData = thisMesh.jvxlData;
+    float[] vertexValues = thisMesh.vertexValues;
+    short[] vertexColixes = thisMesh.vertexColixes;
+    if (vertexValues == null || vertexColixes == null
+        || jvxlData.isBicolorMap || jvxlData.vertexCount == 0)
+      return;
+    for (int i = thisMesh.vertexCount; --i >= 0;) {
+      vertexColixes[i] = viewer.getColixForPropertyValue(vertexValues[i]);
+    }
+    float[] range = viewer.getCurrentColorRange();
+    jvxlData.valueMappedToRed = Math.min(range[0], range[1]);
+    jvxlData.valueMappedToBlue = Math.max(range[0], range[1]);
+    jvxlData.isJvxlPrecisionColor = true;
+    JvxlReader.jvxlCreateColorData(jvxlData, vertexValues);
+    thisMesh.colorCommand = "color $" + thisMesh.thisID + " \"" + viewer.getPropertyColorScheme() + "\" range " + range[0] + " " + range[1];
+  }
 }

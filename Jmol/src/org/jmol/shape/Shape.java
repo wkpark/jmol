@@ -162,6 +162,10 @@ public abstract class Shape {
         paletteID) : colix);
   }
 
+  protected void remapColors() {
+    
+  }
+  
   public Vector getShapeDetail() {
     return null;
   }

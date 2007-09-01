@@ -2239,7 +2239,7 @@ class Eval { //implements Runnable {
     int tok = tokAt(i);
     return (tok == Token.colorRGB || tok == Token.leftsquare
         || tok == Token.point3f || isPoint3f(i) 
-        || tok == Token.string && ((String) statement[tok].value).startsWith("[x"));
+        || tok == Token.string && ((String) statement[i].value).startsWith("[x"));
   }
 
   int getArgbParam(int index) throws ScriptException {

@@ -724,10 +724,6 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   
   private String getUserColorScheme(String schemeName) {
     String colors = viewer.getColorSchemeList(schemeName, false);
-    if (colors.length() == 0)
-      return "\"" + schemeName + "\"";
-    colors = "_iso=" + colors;
-    viewer.setPropertyColorScheme(colors);
-    return "\"" + colors + "\" ";
+      return "\"" + (colors.length() == 0 ? schemeName : colors) + "\"";
   }
 }

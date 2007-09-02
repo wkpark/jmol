@@ -2237,9 +2237,12 @@ class Eval { //implements Runnable {
 
   boolean isColorParam(int i) {
     int tok = tokAt(i);
+    String s;
     return (tok == Token.colorRGB || tok == Token.leftsquare
         || tok == Token.point3f || isPoint3f(i) 
-        || tok == Token.string && ((String) statement[i].value).startsWith("[x"));
+        || tok == Token.string 
+           && (s = (String) statement[i].value).startsWith("[x")
+           && s.indexOf("[") == s.lastIndexOf("["));
   }
 
   int getArgbParam(int index) throws ScriptException {
@@ -3445,8 +3448,11 @@ class Eval { //implements Runnable {
           pid = JmolConstants.PALETTE_PROPERTY;
         }
         if (pid == JmolConstants.PALETTE_PROPERTY) {
-          if (tokAt(index) == Token.string)
+          if (tokAt(index) == Token.string) {
+            if (index == 1 && shapeType == JmolConstants.SHAPE_BALLS)
+              shapeType = -1;
             setStringProperty("propertyColorScheme", parameterAsString(index++));
+          }
           float min = 0;
           float max = Float.MAX_VALUE;
           if (tokAt(index) == Token.absolute || tokAt(index) == Token.range) {
@@ -3480,7 +3486,7 @@ class Eval { //implements Runnable {
         colorvalue = new Byte((byte) pid);
         checkStatementLength(index);
       }
-      if (isSyntaxCheck)
+      if (isSyntaxCheck || shapeType < 0)
         return;
 
       //ok, the following five options require precalculation.

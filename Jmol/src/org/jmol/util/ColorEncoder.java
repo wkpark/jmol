@@ -50,8 +50,8 @@ import org.jmol.util.ArrayUtil;
   private final static int BWR   = 3;
   private final static int LOW   = 4;
   private final static int HIGH  = 5;
-  private final static int USER = 6;
-  private final static int RESU = 7;
+  private final static int USER = -6;
+  private final static int RESU = -7;
 
   private int palette = ROYGB;
 
@@ -79,13 +79,15 @@ import org.jmol.util.ArrayUtil;
   }
   
   public final static String getColorSchemeName(int i) {
-    return (i == -1 ? thisName : i < colorSchemes.length && i >= 0 ? colorSchemes[i] : null);  
+    int absi = Math.abs(i);
+    return (i == -1 ? thisName : absi < colorSchemes.length && absi >= 0 ? colorSchemes[absi] : null);  
   }
   
   public final static int getColorScheme(String colorScheme) {
-    int pt = colorScheme.indexOf("=");
+    int pt = colorScheme.indexOf("[");
     if (pt >= 0) {
-      String name = colorScheme.substring(0, pt);
+      String name = TextFormat.replaceAllCharacters(
+          colorScheme.substring(0, pt), " =:", "");
       int n = 0;
       pt = -1;
       while ((pt = colorScheme.indexOf("[", pt + 1)) >= 0)
@@ -97,8 +99,10 @@ import org.jmol.util.ArrayUtil;
       n = 0;
       int c;
       while ((pt = colorScheme.indexOf("[", pt + 1)) >= 0) {
-        scale[n++] = c = Graphics3D.getArgbFromString(colorScheme.substring(pt, pt + 9));
-        if (c == 0) return ROYGB;
+        scale[n++] = c = Graphics3D.getArgbFromString(colorScheme.substring(pt,
+            pt + 9));
+        if (c == 0)
+          return ROYGB;
       }
       if (name.equals("user")) {
         setUserScale(scale);
@@ -121,19 +125,22 @@ import org.jmol.util.ArrayUtil;
   
   public final static void setUserScale(int[] scale) {
     userScale = scale;  
+    makeColorScheme("user", scale);
   }
   
   public final static String getState() {
-    StringBuffer s = new StringBuffer("select none;\n");
+    StringBuffer s = new StringBuffer("");
     Enumeration e = schemes.keys();
+    int n = 0;
     while (e.hasMoreElements()) {
       String name = (String) e.nextElement();
-      s.append("color \"" + name + "=" + getColorSchemeList((int[])schemes.get(name)) + "\";\n");
+      if (name.length() > 0 & n++ >= 0) 
+        s.append("color \"" + name + "=" + getColorSchemeList((int[])schemes.get(name)) + "\";\n");
     }
-    String colors = getColorSchemeList(getColorSchemeArray(USER));
-    if (colors.length() > 0)
-      s.append("userColorScheme = " + colors + ";\n");
-    return s.append("\n").toString();
+    //String colors = getColorSchemeList(getColorSchemeArray(USER));
+    //if (colors.length() > 0)
+      //s.append("userColorScheme = " + colors + ";\n");
+    return (n > 0 ? s.append("\n").toString() : "");
   }
   
   public static String getColorSchemeList(int[] scheme) {

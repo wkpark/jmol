@@ -209,11 +209,21 @@ public class JmolPopupSwing extends JmolPopup {
       enableMenuItem(menu, enable);
       return;
     }
-    ((JMenu)menu).setEnabled(enable);
+    try{
+      ((JMenu)menu).setEnabled(enable);
+    } 
+    catch(Exception e) {
+      //no menu item;
+    }
   }
 
   void enableMenuItem(Object item, boolean enable) {
-    ((JMenuItem)item).setEnabled(enable);
+    try{
+      ((JMenuItem)item).setEnabled(enable);
+    } 
+    catch(Exception e) {
+      //no menu item;
+    }
   }
 
   long maxMemoryForNewerJvm() {

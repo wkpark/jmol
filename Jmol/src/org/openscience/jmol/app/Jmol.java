@@ -83,6 +83,8 @@ public class Jmol extends JPanel {
   JFileChooser exportChooser;
   JmolPopup jmolpopup;
   String language;
+  static String menuStructure;
+
   
   // private CDKPluginManager pluginManager;
 
@@ -299,7 +301,7 @@ public class Jmol extends JPanel {
           viewMeasurementTableAction);
       pcs.addPropertyChangeListener(chemFileProperty, atomSetChooser);
 
-      jmolpopup = JmolPopup.newJmolPopup(viewer, true);
+      jmolpopup = JmolPopup.newJmolPopup(viewer, true, menuStructure);
 
     }
 
@@ -1688,6 +1690,10 @@ public class Jmol extends JPanel {
     }
     
     public void setCallbackFunction(String callbackType, String callbackFunction) {
+      if (callbackType.equalsIgnoreCase("menu")) {
+        menuStructure = callbackFunction;
+        callbackType = "language";
+      }
       if (callbackType.equalsIgnoreCase("language")) {
         new GT(callbackFunction);
         language = GT.getLanguage();
@@ -1695,6 +1701,7 @@ public class Jmol extends JPanel {
         String state = viewer.getStateInfo();
         setupNewFrame(state);          
       }
+
     }
 
     public void notifyResized(int width, int height){
@@ -1781,7 +1788,7 @@ public class Jmol extends JPanel {
 
     public void handlePopupMenu(int x, int y) {
       if (!language.equals(GT.getLanguage())) {
-        jmolpopup = JmolPopup.newJmolPopup(viewer, true);
+        jmolpopup = JmolPopup.newJmolPopup(viewer, true, menuStructure);
         language = GT.getLanguage();
       }
       jmolpopup.show(x, y);

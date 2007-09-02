@@ -3750,6 +3750,12 @@ class Eval { //implements Runnable {
       } else if (theTok == Token.identifier || parameterAsString(1).equals("fileset")) {
         filename = parameterAsString(1);
         loadScript.append(" " + filename);
+        if (filename.equals("menu")) {
+          checkLength3();
+          if (!isSyntaxCheck)
+            viewer.setMenu(parameterAsString(2), true);
+          return;
+        }
         if (filename.equals("fileset"))
           filename = parameterAsString(2);
         isAppend = (filename.equalsIgnoreCase("append"));

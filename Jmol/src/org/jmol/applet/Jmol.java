@@ -175,6 +175,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   }
 
   String language;
+  String menuStructure;
   
   public void init() {
     System.out.println("Init jmol");
@@ -328,7 +329,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       // should the popupMenu be loaded ?
       needPopupMenu = getBooleanValue("popupMenu", true);
       if (needPopupMenu)
-        jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate);  
+        jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate, menuStructure);  
       //if (needPopupMenu)
         //loadPopupMenuAsBackgroundTask();
 
@@ -817,7 +818,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       // long beginTime = System.currentTimeMillis();
       // Logger.debug("LoadPopupThread starting ");
       // this is a background task
-      jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate);
+      jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate, menuStructure);
     }
   }
 
@@ -1060,13 +1061,20 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       consoleMessage(strMsg);
     }
 
+    
     public void setCallbackFunction(String callbackType, String callbackFunction) {
       //also serves to change language for callbacks and menu
+      if (callbackType.equalsIgnoreCase("menu")) {
+        menuStructure = callbackFunction;
+        if (needPopupMenu)
+          jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate, menuStructure);  
+        return;
+      }
       if (callbackType.equalsIgnoreCase("language")) {
         new GT(callbackFunction);
         language = GT.getLanguage();
         if (needPopupMenu)
-          jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate);  
+          jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate, menuStructure);  
         return;
       }
       if (callbackType.equalsIgnoreCase("AnimFrameCallback"))
@@ -1089,7 +1097,7 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
       if (jmolpopup == null)
         return;
       if (!language.equals(GT.getLanguage())) {
-        jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate);
+        jmolpopup = JmolPopup.newJmolPopup(viewer, doTranslate, menuStructure);
         language = GT.getLanguage();
       }
       jmolpopup.show(x, y);

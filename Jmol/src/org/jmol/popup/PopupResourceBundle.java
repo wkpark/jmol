@@ -519,18 +519,15 @@ class PopupResourceBundle {
       return;
     BufferedReader br = new BufferedReader(new StringReader(slist));
     String line;
-    //char ch;
+    int pt;
     try {
       while ((line = br.readLine()) != null) {
-        if (line.length() == 0 || (/*ch = */line.charAt(0)) == '#')
+        if (line.length() == 0 || line.charAt(0) == '#' 
+          || (pt = line.indexOf("=")) < 0)
           continue;
-        int pt = line.indexOf("=");
-        if (pt < 0) {
-          pt = line.length();
-        }
         String name = line.substring(0, pt).trim();
-        String value = (pt < 0 ? "" : line.substring(pt + 1).trim());
-        if (pt >= 0 && value.length() > 0)
+        String value = line.substring(pt + 1).trim();
+        if (value.length() > 0)
           structure.setProperty(name, value);
       }
     } catch (Exception e) {

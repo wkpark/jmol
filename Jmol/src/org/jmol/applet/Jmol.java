@@ -58,6 +58,10 @@ import netscape.javascript.JSObject;
  * if this is fiddled with, it still should be a random number, not
  * one that is assigned statically for a given web page.
  * 
+ * [param name="menuFile" value="myMenu.mnu" /]
+ * 
+ * optional file to load containing menu data in the format of Jmol.mnu (Jmol 11.3.15)
+ * 
  * [param name="loadInline" value=" | do | it | this | way " /]
  * 
  * [param name="script" value="your-script" /]
@@ -215,7 +219,9 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
         appletWrapper.getCodeBase(), getValue("JmolAppletProxy", null));
     myStatusListener = new MyStatusListener();
     viewer.setJmolStatusListener(myStatusListener);
-
+    String menuFile = getParameter("menuFile");
+    if (menuFile != null)
+      menuStructure = viewer.getFileAsString(menuFile);
     jvm12orGreater = viewer.isJvm12orGreater();
     if (jvm12orGreater)
       jvm12 = new Jvm12(appletWrapper, viewer);

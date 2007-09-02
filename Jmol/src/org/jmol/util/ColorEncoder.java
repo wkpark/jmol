@@ -23,6 +23,9 @@
  */
 package org.jmol.util;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+
 import org.jmol.viewer.JmolConstants;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.ArrayUtil;
@@ -39,7 +42,6 @@ import org.jmol.util.ArrayUtil;
   public ColorEncoder() {
   }
     
-  private int palette = 0;
   
   private final static String[] colorSchemes = {"roygb", "bgyor", "rwb", "bwr", "low", "high", "user", "resu"}; 
   private final static int ROYGB = 0;
@@ -51,38 +53,104 @@ import org.jmol.util.ArrayUtil;
   private final static int USER = 6;
   private final static int RESU = 7;
 
+  private int palette = ROYGB;
+
+  private static int[] userScale = new int[0];
+  private static int[] thisScale = new int[0];
+  private static String thisName = "scheme";
+
+  private static Hashtable schemes = new Hashtable();
+
+  private static synchronized int makeColorScheme(String name, int[] scale) {
+    if (scale == null) {
+      schemes.remove(name);
+      return getColorScheme(name);
+    }
+    schemes.put(thisName = name, thisScale = scale);
+    return -1;
+  }
+  
   public int setColorScheme(String colorScheme) {
     return palette = getColorScheme(colorScheme);
   }
 
   public String getColorSchemeName() {
-    return colorSchemes[palette];  
+    return getColorSchemeName(palette);  
   }
   
   public final static String getColorSchemeName(int i) {
-    return (i < colorSchemes.length && i >= 0 ? colorSchemes[i] : null);  
+    return (i == -1 ? thisName : i < colorSchemes.length && i >= 0 ? colorSchemes[i] : null);  
   }
   
   public final static int getColorScheme(String colorScheme) {
+    int pt = colorScheme.indexOf("=");
+    if (pt >= 0) {
+      String name = colorScheme.substring(0, pt);
+      int n = 0;
+      pt = -1;
+      while ((pt = colorScheme.indexOf("[", pt + 1)) >= 0)
+        n++;
+      if (n == 0)
+        return makeColorScheme(name, null);
+      int[] scale = new int[n];
+      pt = -1;
+      n = 0;
+      int c;
+      while ((pt = colorScheme.indexOf("[", pt + 1)) >= 0) {
+        scale[n++] = c = Graphics3D.getArgbFromString(colorScheme.substring(pt, pt + 9));
+        if (c == 0) return ROYGB;
+      }
+      if (name.equals("user")) {
+        setUserScale(scale);
+        return USER;
+      }
+      return makeColorScheme(name, scale);
+    }
+    if (schemes.containsKey(colorScheme)) {
+      thisName = colorScheme;
+      thisScale = (int[]) schemes.get(colorScheme);
+      return -1;
+    }
     for (int i = 0; i < colorSchemes.length; i++)
       if (colorSchemes[i].equalsIgnoreCase(colorScheme))
         return i;
-    return 0;
+    return ROYGB;
   }
 
   private final static int ihalf = JmolConstants.argbsRoygbScale.length/3;
-  private static int[] userScale = new int[0];
   
   public final static void setUserScale(int[] scale) {
     userScale = scale;  
   }
   
+  public final static String getState() {
+    StringBuffer s = new StringBuffer("select none;\n");
+    Enumeration e = schemes.keys();
+    while (e.hasMoreElements()) {
+      String name = (String) e.nextElement();
+      s.append("color \"" + name + "=" + getColorSchemeList((int[])schemes.get(name)) + "\";\n");
+    }
+    String colors = getColorSchemeList(getColorSchemeArray(USER));
+    if (colors.length() > 0)
+      s.append("userColorScheme = " + colors + ";\n");
+    return s.append("\n").toString();
+  }
+  
+  public static String getColorSchemeList(int[] scheme) {
+    String colors = "";
+    for (int i = 0; i < scheme.length; i++)
+      colors += (i == 0 ? "" : " ") + Escape.escapeColor(scheme[i]);
+    return colors;
+  }
+
   public final static int[] getColorSchemeArray(int palette) {
     switch (palette) {
     /*    case RGB:
      c = quantizeRgb(val, lo, hi, rgbRed, rgbGreen, rgbBlue);
      break;
      */
+    case -1:
+      return ArrayUtil.arrayCopy(thisScale, 0, -1, false);      
     case ROYGB:
       return ArrayUtil.arrayCopy(JmolConstants.argbsRoygbScale, 0, -1, false);
     case BGYOR:
@@ -116,6 +184,9 @@ import org.jmol.util.ArrayUtil;
       c = quantizeRgb(val, lo, hi, rgbRed, rgbGreen, rgbBlue);
       break;
 */
+    case -1:
+      c = thisScale[quantize(val, lo, hi, thisScale.length)];
+      break;
     case ROYGB:
       c = JmolConstants.argbsRoygbScale[quantize(val, lo, hi, JmolConstants.argbsRoygbScale.length)];
       break;
@@ -135,13 +206,13 @@ import org.jmol.util.ArrayUtil;
       c = JmolConstants.argbsRwbScale[quantize(-val, -hi, -lo, JmolConstants.argbsRwbScale.length)];
       break;
     case USER:
-      c = userScale[quantize(val, lo, hi, userScale.length)];
+      c = (userScale.length == 0 ? 0xFF808080 : userScale[quantize(val, lo, hi, userScale.length)]);
       break;
     case RESU:
-      c = userScale[quantize(-val, -hi, -lo, userScale.length)];
+      c = (userScale.length == 0 ? 0xFF808080 : userScale[quantize(-val, -hi, -lo, userScale.length)]);
       break;
     default:
-      c = 0x808080; // GRAY
+      c = 0xFF808080; // GRAY
     }
     return getColorIndex(c);
   }

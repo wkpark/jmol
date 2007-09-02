@@ -1174,6 +1174,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public int[] getColorSchemeArray(String colorScheme) {
     return colorManager.getColorSchemeArray(colorScheme);
   }
+  
+  public String getColorSchemeList(String colorScheme, boolean ifDefault) {
+    return colorManager.getColorSchemeList(colorScheme, ifDefault);
+  }
 
   public static void setUserScale(int[] scale) {
     ColorManager.setUserScale(scale);
@@ -2249,6 +2253,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     getDataState(s);
     //  definitions, connections, atoms, bonds, labels, echos, shapes
     s.append(modelManager.getState());
+    //  color scheme
+    s.append(ColorManager.getState());
     //  frame information
     s.append(repaintManager.getState());
     //  orientation and slabbing

@@ -2306,8 +2306,10 @@ class Eval { //implements Runnable {
     int[] colors = new int[3];
     int n = 0;
     getToken(i);
+    System.out.println(theTok + " " + Token.integer);
     switch (theTok) {
     case Token.integer:
+    case Token.spec_seqcode:
       for (; i < statementLength; i++) {
         getToken(i);
         switch (theTok) {
@@ -7546,12 +7548,8 @@ class Eval { //implements Runnable {
         String name = optParameterAsString(2);
         if (name.length() > 0)
           len = 3;
-        int[] scheme = (isSyntaxCheck ? new int[0] :
-            viewer.getColorSchemeArray(name));
-        String colors = "";
-        for (int i = 0; i < scheme.length; i++)
-          colors += (i == 0 ? "" : " ") + Escape.escapeColor(scheme[i]);
-        value = colors;
+        if (!isSyntaxCheck)
+          value = viewer.getColorSchemeList(name, true);
       }
       break;
     case Token.axes:

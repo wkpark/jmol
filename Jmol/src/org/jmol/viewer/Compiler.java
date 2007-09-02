@@ -1379,6 +1379,14 @@ class Compiler {
         break;
       if (!clauseItemSelector())
         return false;
+      if (addNextTokenIf(Token.comma)) {
+        if (!clauseItemSelector())
+          return false;
+        if (!addNextTokenIf(Token.comma))
+          return false;
+        if (!clauseItemSelector())
+          return false;        
+      }
       if (!addNextTokenIf(Token.rightsquare))
         return rightBracketExpected();
     }

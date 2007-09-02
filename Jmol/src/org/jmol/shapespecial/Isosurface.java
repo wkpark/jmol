@@ -629,7 +629,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     viewer.setPropertyColorScheme(schemeName);
     viewer.setCurrentColorRange(jvxlData.mappedDataMin, jvxlData.mappedDataMax);
     thisMesh.isColorSolid = false;
-    thisMesh.colorCommand = "color $" + thisMesh.thisID + " \"" + schemeName + "\" range " 
+    thisMesh.colorCommand = "color $" + thisMesh.thisID + " " + getUserColorScheme(schemeName) + " range " 
     + (jvxlData.isColorReversed ? jvxlData.mappedDataMax + " " + jvxlData.mappedDataMin : 
       jvxlData.mappedDataMin + " " + jvxlData.mappedDataMax);
   }
@@ -717,7 +717,17 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     jvxlData.valueMappedToBlue = Math.max(range[0], range[1]);
     jvxlData.isJvxlPrecisionColor = true;
     JvxlReader.jvxlCreateColorData(jvxlData, vertexValues);
-    thisMesh.colorCommand = "color $" + thisMesh.thisID + " \"" + viewer.getPropertyColorScheme() + "\" range " + range[0] + " " + range[1];
+    String schemeName = viewer.getPropertyColorScheme();
+    thisMesh.colorCommand = "color $" + thisMesh.thisID + " " + getUserColorScheme(schemeName) + " range "  + range[0] + " " + range[1];
     thisMesh.isColorSolid = false;
+  }
+  
+  private String getUserColorScheme(String schemeName) {
+    String colors = viewer.getColorSchemeList(schemeName, false);
+    if (colors.length() == 0)
+      return "\"" + schemeName + "\"";
+    colors = "_iso=" + colors;
+    viewer.setPropertyColorScheme(colors);
+    return "\"" + colors + "\" ";
   }
 }

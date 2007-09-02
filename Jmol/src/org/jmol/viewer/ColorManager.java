@@ -305,12 +305,22 @@ class ColorManager {
     return palette;
   }
 
+  static String getState() {
+    return ColorEncoder.getState();
+  }
+  
   static void setUserScale(int[] scale) {
     ColorEncoder.setUserScale(scale);
   }
   
-  public int[] getColorSchemeArray(String colorScheme) {
+  int[] getColorSchemeArray(String colorScheme) {
     return ColorEncoder.getColorSchemeArray(colorScheme == null || colorScheme.length() == 0 ? palette : ColorEncoder.getColorScheme(colorScheme));  
+  }
+  
+  String getColorSchemeList(String colorScheme, boolean ifDefault) {
+    if (!ifDefault && ColorEncoder.getColorScheme(colorScheme) >= 0)
+      return "";
+    return ColorEncoder.getColorSchemeList(getColorSchemeArray(colorScheme));
   }
   
   short getColixForPropertyValue(float val) {

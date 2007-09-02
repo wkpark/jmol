@@ -1088,6 +1088,7 @@ final public class Atom extends Point3fi implements Tuple {
          case 'i': atom number
          case 'I': Ionic radius
          case 'L': polymer Length
+         case 'l': atomic element number
          case 'm': group1
          case 'M': Model number
          case 'n': group3
@@ -1126,6 +1127,9 @@ final public class Atom extends Point3fi implements Tuple {
         switch (ch) {
         case 'i':
           strT = "" + getAtomNumber();
+          break;
+        case 'l':
+          strT = "" + getElementNumber();
           break;
         case 'A':
           strT = (alternateLocationID != 0 ? ((char) alternateLocationID) + ""

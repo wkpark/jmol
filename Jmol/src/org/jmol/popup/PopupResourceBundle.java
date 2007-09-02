@@ -519,10 +519,10 @@ class PopupResourceBundle {
       return;
     BufferedReader br = new BufferedReader(new StringReader(slist));
     String line;
-    char ch;
+    //char ch;
     try {
       while ((line = br.readLine()) != null) {
-        if (line.length() == 0 || (ch = line.charAt(0)) == '#')
+        if (line.length() == 0 || (/*ch = */line.charAt(0)) == '#')
           continue;
         int pt = line.indexOf("=");
         if (pt < 0) {

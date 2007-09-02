@@ -55,8 +55,8 @@ import org.jmol.util.ArrayUtil;
 
   private int palette = ROYGB;
 
-  private static int[] userScale = new int[0];
-  private static int[] thisScale = new int[0];
+  private static int[] userScale = new int[] {0xFF808080};
+  private static int[] thisScale = new int[] {0xFF808080};
   private static String thisName = "scheme";
 
   private static Hashtable schemes = new Hashtable();
@@ -117,7 +117,7 @@ import org.jmol.util.ArrayUtil;
     }
     for (int i = 0; i < colorSchemes.length; i++)
       if (colorSchemes[i].equalsIgnoreCase(colorScheme))
-        return i;
+        return (i < -USER ? i : -i);
     return ROYGB;
   }
 

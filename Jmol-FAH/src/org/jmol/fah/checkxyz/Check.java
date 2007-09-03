@@ -173,11 +173,15 @@ public class Check implements ActionListener {
     if (files == null) {
       return;
     }
+    System.out.println("Checking directory " + directory.getAbsolutePath());
+    for (int i = 0; i < files.length; i++) {
+      if (files[i].isFile()) {
+        processFile(files[i]);
+      }
+    }
     for (int i = 0; i < files.length; i++) {
       if (files[i].isDirectory()) {
         processDirectory(files[i]);
-      } else if (files[i].isFile()) {
-        processFile(files[i]);
       }
     }
   }
@@ -280,6 +284,7 @@ public class Check implements ActionListener {
       }
     }
     try {
+      System.out.println(" Found one file for project " + project);
       MailSender sender = new MailSender(configuration, project, file, false);
       sender.sendMail();
       configuration.addSentFile(project);

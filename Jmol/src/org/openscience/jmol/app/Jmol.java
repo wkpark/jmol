@@ -29,6 +29,7 @@ import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 import org.jmol.util.*;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Viewer;
 import org.openscience.jmol.app.webexport.WebExport;
 
 import com.lowagie.text.Document;
@@ -84,6 +85,7 @@ public class Jmol extends JPanel {
   JmolPopup jmolpopup;
   String language;
   static String menuStructure;
+  static String menuFile;
 
   
   // private CDKPluginManager pluginManager;
@@ -300,7 +302,10 @@ public class Jmol extends JPanel {
       pcs.addPropertyChangeListener(chemFileProperty,
           viewMeasurementTableAction);
       pcs.addPropertyChangeListener(chemFileProperty, atomSetChooser);
-
+      
+      if (menuFile != null) {
+        menuStructure = viewer.getFileAsString(menuFile);
+      }
       jmolpopup = JmolPopup.newJmolPopup(viewer, true, menuStructure);
 
     }
@@ -483,6 +488,12 @@ public class Jmol extends JPanel {
     OptionBuilder.hasArg();
     options.addOption(OptionBuilder.create("s"));
 
+    OptionBuilder.withLongOpt("menu");
+    OptionBuilder.withDescription("menu file to use");
+    OptionBuilder.withValueSeparator('=');
+    OptionBuilder.hasArg();
+    options.addOption(OptionBuilder.create("m"));
+
     OptionBuilder.withArgName(GT._("property=value"));
     OptionBuilder.hasArg();
     OptionBuilder.withValueSeparator();
@@ -589,6 +600,11 @@ public class Jmol extends JPanel {
     if (line.hasOption("s")) {
       commandOptions += "-s";
       scriptFilename = line.getOptionValue("s");
+    }
+
+    //menu file
+    if (line.hasOption("m")) {
+      menuFile = line.getOptionValue("m");
     }
 
     //exit when script completes (or file is read)
@@ -1680,6 +1696,8 @@ public class Jmol extends JPanel {
   class MyStatusListener implements JmolStatusListener {
     
     public String eval(String strEval) {
+      if (strEval.equals("_GET_MENU"))
+        return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version " + Viewer.getJmolVersion()));
       sendConsoleMessage("javascript: " + strEval);
       return "# 'eval' is implemented only for the applet.";
     }
@@ -1692,14 +1710,15 @@ public class Jmol extends JPanel {
     public void setCallbackFunction(String callbackType, String callbackFunction) {
       if (callbackType.equalsIgnoreCase("menu")) {
         menuStructure = callbackFunction;
-        callbackType = "language";
+        menuFile = null;
+        setupNewFrame(viewer.getStateInfo());
+        return;
       }
       if (callbackType.equalsIgnoreCase("language")) {
         new GT(callbackFunction);
         language = GT.getLanguage();
         setupUIManager();
-        String state = viewer.getStateInfo();
-        setupNewFrame(state);          
+        setupNewFrame(viewer.getStateInfo());
       }
 
     }

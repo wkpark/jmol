@@ -7562,6 +7562,9 @@ class Eval { //implements Runnable {
           len = 3;
         if (!isSyntaxCheck)
           value = viewer.getColorSchemeList(name, true);
+      } else if (str.equalsIgnoreCase("menu")) {
+        if (!isSyntaxCheck)
+          value = viewer.getMenu();
       }
       break;
     case Token.axes:
@@ -9490,7 +9493,7 @@ class Eval { //implements Runnable {
         continue;
       case Token.off:
         sb.append("false");
-        break;
+        continue;
       case Token.select:
         break;
       case Token.integer:

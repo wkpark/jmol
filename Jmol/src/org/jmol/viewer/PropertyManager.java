@@ -85,6 +85,7 @@ class PropertyManager {
     "dataInfo"        , "<data type>", "types",
     "image"           , "", "",
     "evaluate"        , "<expression>", "",
+    "menu"            , "", "",
   };
 
   final static int PROP_APPLET_INFO = 0;
@@ -121,7 +122,8 @@ class PropertyManager {
   final static int PROP_DATA_INFO = 26;
   final static int PROP_IMAGE = 27;
   final static int PROP_EVALUATE = 28;
-  final static int PROP_COUNT = 29;
+  final static int PROP_MENU = 29;
+  final static int PROP_COUNT = 30;
 
   static int getPropertyNumber(String infoType) {
     if (infoType == null)
@@ -151,7 +153,7 @@ class PropertyManager {
   }
   
   final static String[] readableTypes = {
-    "", "stateinfo", "extractmodel", "filecontents", "fileheader", "image"};
+    "", "stateinfo", "extractmodel", "filecontents", "fileheader", "image", "menu"};
   
   boolean isReadableAsString(String infoType) {
     for (int i = readableTypes.length; --i >= 0; )
@@ -224,6 +226,8 @@ class PropertyManager {
       return viewer.getViewer();
     case PROP_MEASUREMENT_INFO:
       return viewer.getMeasurementInfo();
+    case PROP_MENU:
+      return viewer.getMenu();
     case PROP_MESSAGE_QUEUE:
       return viewer.getMessageQueue();
     case PROP_MODEL_INFO:

@@ -5857,7 +5857,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   void setMenu(String fileOrText, boolean isFile) {
     if (isFile)
+      Logger.info("Setting menu " + (fileOrText.length() == 0 ? "to Jmol defaults" : "from file " + fileOrText));
+    if (fileOrText.length() == 0)
+      fileOrText = null;
+    else if (isFile)
       fileOrText = fileManager.getFileAsString(fileOrText);
     statusManager.setCallbackFunction("menu", fileOrText);
   }
+  
+  String getMenu() {
+    return statusManager.eval("_GET_MENU");
+  }
+  
 }

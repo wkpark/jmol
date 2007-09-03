@@ -26,6 +26,7 @@ package org.jmol.popup;
 import org.jmol.api.*;
 import org.jmol.i18n.GT;
 import org.jmol.util.Logger;
+import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
 
 import java.awt.Component;
@@ -33,6 +34,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.BitSet;
 import java.util.Hashtable;
@@ -52,10 +54,13 @@ abstract public class JmolPopup {
   CheckboxMenuItemListener cmil;
 
   Hashtable htMenus = new Hashtable();
+  Properties menuText = new Properties();
+  
   Object frankPopup;
 
   int aboutComputedMenuBaseCount;
-  String nullModelSetName, hiddenModelSetName, modelSetName;
+  String nullModelSetName, modelSetName;
+  
   Hashtable modelSetInfo, modelInfo;
   Vector PDBOnly = new Vector();
   Vector UnitcellOnly = new Vector();
@@ -114,14 +119,24 @@ abstract public class JmolPopup {
   }
 
   void build(Object popupMenu) {
-    addMenuItems("", "popupMenu", popupMenu, new PopupResourceBundle(menuStructure), viewer
+    addMenuItems("", "popupMenu", popupMenu, new PopupResourceBundle(menuStructure, menuText), viewer
         .isJvm12orGreater());
   }
 
+  public String getMenu(String title) {
+    return (new PopupResourceBundle(menuStructure, null)).getMenu(title);
+  }
+  
   final static int UPDATE_ALL = 0;
   final static int UPDATE_CONFIG = 1;
   final static int UPDATE_SHOW = 2;
   int updateMode;
+
+  private String getMenuText(String key) {
+    String str = menuText.getProperty(key);
+    return (str == null ? key : str);
+  }
+
 
   public void updateComputedMenus() {
     updateMode = UPDATE_ALL;
@@ -133,7 +148,7 @@ abstract public class JmolPopup {
     updateFileTypeDependentMenus();
     updatePDBComputedMenus();
     updateMode = UPDATE_CONFIG;
-    updateCONFIGURATIONComputedMenu();
+    updateConfigurationComputedMenu();
     updateSYMMETRYComputedMenu();
     updateFRAMESbyModelComputedMenu();
     updateModelSetComputedMenu();
@@ -181,7 +196,7 @@ abstract public class JmolPopup {
     if (menu == null)
       return;
     enableMenu(menu, atomCount != 0);
-    setLabel(menu, GT._("Select ({0})", viewer.getSelectionCount(), true));
+    setLabel(menu, GT._(getMenuText("selectMenuText"), viewer.getSelectionCount(), true));
   }
 
   void updateElementsComputedMenu(BitSet elementsPresentBitSet) {
@@ -281,10 +296,14 @@ abstract public class JmolPopup {
     enableMenu(menu, false);
 
     Object menu1 = htMenus.get("PDBnucleicResiduesComputedMenu");
+    if (menu1 == null)
+      return;
     removeAll(menu1);
     enableMenu(menu1, false);
 
     Object menu2 = htMenus.get("PDBcarboResiduesComputedMenu");
+    if (menu2 == null)
+      return;
     removeAll(menu2);
     enableMenu(menu2, false);
     if (modelSetInfo == null)
@@ -383,13 +402,15 @@ abstract public class JmolPopup {
   void updateFRAMESbyModelComputedMenu() {
     //allowing this in case we move it later
     Object menu = htMenus.get("FRAMESbyModelComputedMenu");
+    if (menu == null)
+      return;
     enableMenu(menu, (modelCount > 1));
-    setLabel(menu, (modelIndex < 0 ? GT._("All {0} models", modelCount, true)
+    setLabel(menu, (modelIndex < 0 ? GT._(getMenuText("allModelsText"), modelCount, true)
         : getModelLabel()));
     removeAll(menu);
     if (modelCount < 2)
       return;
-    addCheckboxMenuItem(menu, GT._("all", true), "frame 0 #", null,
+    addCheckboxMenuItem(menu, GT._("all", true), "frame 0 ##", null,
         (modelIndex < 0));
 
     Object subMenu = menu;
@@ -411,26 +432,28 @@ abstract public class JmolPopup {
         entryName = script + ": " + entryName;
       if (entryName.length() > 30)
         entryName = entryName.substring(0, 20) + "...";
-      addCheckboxMenuItem(subMenu, entryName, "model " + script + " #", null,
+      addCheckboxMenuItem(subMenu, entryName, "model " + script + " ##", null,
           (modelIndex == i));
     }
   }
 
   String configurationSelected = "";
 
-  void updateCONFIGURATIONComputedMenu() {
-    Object menu = htMenus.get("CONFIGURATIONComputedMenu");
+  void updateConfigurationComputedMenu() {
+    Object menu = htMenus.get("configurationComputedMenu");
+    if (menu == null)
+      return;
     enableMenu(menu, isMultiConfiguration);
     if (!isMultiConfiguration)
       return;
     int nAltLocs = altlocs.length();
-    setLabel(menu, GT._("Configurations ({0})", nAltLocs, true));
+    setLabel(menu, GT._(getMenuText("configurationMenuText"), nAltLocs, true));
     removeAll(menu);
-    String script = "hide none #CONFIG";
+    String script = "hide none ##CONFIG";
     addCheckboxMenuItem(menu, GT._("all", true), script, null,
         (updateMode == UPDATE_CONFIG && configurationSelected.equals(script)));
     for (int i = 0; i < nAltLocs; i++) {
-      script = "configuration " + (i + 1) + "; hide not selected #CONFIG";
+      script = "configuration " + (i + 1) + "; hide thisModel and not selected ##CONFIG";
       String entryName = "" + (i + 1) + " -- \"" + altlocs.charAt(i) + "\"";
       addCheckboxMenuItem(menu, entryName, script, null,
           (updateMode == UPDATE_CONFIG && configurationSelected.equals(script)));
@@ -450,29 +473,29 @@ abstract public class JmolPopup {
     if (modelSetName == null || isZapped)
       return;
     if (isMultiFrame) {
-      modelSetName = GT._("Collection of {0} models", modelCount);
+      modelSetName = GT._(getMenuText("modelSetCollectionText"), modelCount);
     } else if (viewer.getBooleanProperty("hideNameInPopup")) {
-      modelSetName = hiddenModelSetName;
+      modelSetName = getMenuText("hiddenModelSetText");
     }
     renameMenu(menu, modelSetName);
     enableMenu(menu, true);
     addMenuSeparator(menu);
-    addMenuItem(menu, GT._("atoms: {0}", atomCount, true));
-    addMenuItem(menu, GT._("bonds: {0}",
+    addMenuItem(menu, GT._(getMenuText("atomsText"), atomCount, true));
+    addMenuItem(menu, GT._(getMenuText("bondsText"),
         viewer.getBondCountInModel(modelIndex), true));
     if (isPDB) {
       addMenuSeparator(menu);
-      addMenuItem(menu, GT._("groups: {0}", viewer
+      addMenuItem(menu, GT._(getMenuText("groupsText"), viewer
           .getGroupCountInModel(modelIndex), true));
-      addMenuItem(menu, GT._("chains: {0}", viewer
+      addMenuItem(menu, GT._(getMenuText("chainsText"), viewer
           .getChainCountInModel(modelIndex), true));
-      addMenuItem(menu, GT._("polymers: {0}", viewer
+      addMenuItem(menu, GT._(getMenuText("polymersText"), viewer
           .getPolymerCountInModel(modelIndex), true));
     }
     if (isApplet && viewer.showModelSetDownload()
         && !viewer.getBooleanProperty("hideNameInPopup")) {
       addMenuSeparator(menu);
-      addMenuItem(menu, GT._("View {0}", viewer.getModelSetFileName(), true),
+      addMenuItem(menu, GT._(getMenuText("viewMenuText"), viewer.getModelSetFileName(), true),
           "show url", null);
     }
   }
@@ -495,7 +518,7 @@ abstract public class JmolPopup {
   }
 
   String getModelLabel() {
-    return GT._("model {0}", (modelIndex + 1) + "/" + modelCount, true);
+    return GT._(getMenuText("modelMenuText"), (modelIndex + 1) + "/" + modelCount, true);
   }
 
   private void updateAboutSubmenu() {
@@ -547,7 +570,7 @@ abstract public class JmolPopup {
       String code = languages[i][0];
       String name = languages[i][1];
       addCheckboxMenuItem(menu, GT._(name, true) + " (" + code + ")",
-          "language = \"" + code + "\" #" + name, id + "." + code, language
+          "language = \"" + code + "\" ##" + name, id + "." + code, language
               .equals(code));
     }
   }
@@ -568,39 +591,21 @@ abstract public class JmolPopup {
       addMenuItem(menu, "#" + key, "", "");
       return;
     }
-    boolean isColorScheme = false;
-    String colorSet = "";
-    String colorCode = "";
+    // process predefined @terms
     StringTokenizer st = new StringTokenizer(value);
+    String item;
+    while (value.indexOf("@") >= 0) {
+      String s = "";
+      while (st.hasMoreTokens())
+        s += " " + ((item = st.nextToken()).startsWith("@") 
+            ? popupResourceBundle.getStructure(item) : item);
+      value = s.substring(1);
+      st = new StringTokenizer(value);
+    }
     while (st.hasMoreTokens()) {
       Object newMenu = null;
       String script = "";
-      String item = st.nextToken();
-      if (item.equals("@")) {
-        isColorScheme = true;
-        continue;
-      }
-      if (isColorScheme) {
-        colorCode += item;
-        if (colorSet.length() > 0)
-          colorSet += " -";
-        if (item.equals("INHERIT_ALL")) {
-          colorSet += " " + PopupResourceBundle.INHERIT;
-        } else if (item.equals("COLOR")) {
-          colorSet += " " + PopupResourceBundle.COLOR;
-        } else if (item.equals("SCHEME")) {
-          colorSet += " " + PopupResourceBundle.SCHEME;
-        } else if (item.equals("TRANSLUCENCY")) {
-          colorSet += " " + PopupResourceBundle.TRANSLUCENCY;
-        } else if (item.equals("AXESCOLOR")) {
-          colorSet += " " + PopupResourceBundle.AXESCOLOR;
-        }
-        if (st.hasMoreTokens())
-          continue;
-        popupResourceBundle.addStructure(key, colorSet);
-        addMenuItems(parentId, key, menu, popupResourceBundle, isJVM12orGreater);
-        return;
-      }
+      item = st.nextToken();
       boolean isDisabled = (!isJVM12orGreater && item.indexOf("JVM12") >= 0);
       String word = popupResourceBundle.getWord(item);
       if (item.indexOf("Menu") >= 0) {
@@ -614,8 +619,6 @@ abstract public class JmolPopup {
           aboutComputedMenuBaseCount = getMenuItemCount(subMenu);
         } else if ("modelSetMenu".equals(item)) {
           nullModelSetName = word;
-          hiddenModelSetName = popupResourceBundle
-              .getWord("hiddenModelSetName");
           enableMenu(subMenu, false);
         }
         newMenu = subMenu;
@@ -624,9 +627,12 @@ abstract public class JmolPopup {
       } else if ("-".equals(item)) {
         addMenuSeparator(menu);
       } else if (item.endsWith("Checkbox")) {
+        script = popupResourceBundle.getStructure(item);
         String basename = item.substring(0, item.length() - 8);
-        newMenu = addCheckboxMenuItem(menu, word, basename, id + "." + item);
-        script = "set " + basename + " [true|false]";
+        if (script == null || script.length() == 0)
+          script = "set " + basename + " T/F";
+        newMenu = addCheckboxMenuItem(menu, word, basename 
+            + ":" + script, id + "." + item);
       } else {
         script = popupResourceBundle.getStructure(item);
         if (script == null)
@@ -639,11 +645,11 @@ abstract public class JmolPopup {
       // menus or menu items:
       if (item.indexOf("PDB") >= 0) {
         PDBOnly.add(newMenu);
-      } else if (item.indexOf("Url") >= 0) {
+      } else if (item.indexOf("URL") >= 0) {
         AppletOnly.add(newMenu);
       } else if (item.indexOf("CHARGE") >= 0) {
         ChargesOnly.add(newMenu);
-      } else if (item.indexOf("nitCell") >= 0) {
+      } else if (item.indexOf("UNITCELL") >= 0) {
         UnitcellOnly.add(newMenu);
       } else if (item.indexOf("FRAMES") >= 0) {
         FramesOnly.add(newMenu);
@@ -675,26 +681,21 @@ abstract public class JmolPopup {
    * @param TF   true or false
    */
   void setCheckBoxValue(String what, boolean TF) {
-    String basename = what;
-    String extension = "";
     int pt;
-    if ((pt = what.indexOf(";")) >= 0) {
-      basename = what.substring(0, pt);
-      extension = what.substring(pt);
-      for (int i = 0; i < extension.length(); i++) {
-        if (extension.charAt(i) == '_')
-          extension = extension.substring(0, i) + " "
-              + extension.substring(i + 1);
-      }
+    if (what.indexOf("##") < 0) {
+      // not a special computed checkbox
+      String basename = what.substring(0, (pt = what.indexOf(":")));
+      if (viewer.getBooleanProperty(basename) == TF)
+        return;
+      what = what.substring(pt + 1);
+      if ((pt = what.indexOf("|")) >= 0)
+        what = (TF ? what.substring(0, pt) : what.substring(pt + 1)).trim();
+      what = TextFormat.simpleReplace(what, "T/F", (TF ? " TRUE" : " FALSE"));
     }
-    if (what.indexOf("#") > 0)
-      viewer.evalStringQuiet(what);
-    else if (viewer.getBooleanProperty(basename) != TF)
-      viewer.evalStringQuiet("set " + basename
-          + (TF ? " TRUE" : " FALSE" + extension));
+    viewer.evalStringQuiet(what);
     if (what.indexOf("#CONFIG") >= 0) {
       configurationSelected = what;
-      updateCONFIGURATIONComputedMenu();
+      updateConfigurationComputedMenu();
       updateModelSetComputedMenu();
     }
   }
@@ -736,39 +737,20 @@ abstract public class JmolPopup {
     int pt;
     if (script == "" || id.endsWith("Checkbox"))
       return script;
-    if (id.indexOf("Url") >= 0)
-      return "show url \"" + script + "\"";
-    if (id.indexOf(".setSpin") >= 0) {
-      // setSpinFooMenu
-      pt = id.lastIndexOf(".setSpin");
-      return (pt < 0 ? script : "set spin "
-          + id.substring(pt + 8, id.indexOf("Menu", pt)) + " " + script);
+
+    if (script.indexOf("SELECT") == 0) {
+      return "select thisModel and (" + script.substring(6) + ")";
     }
-    if (id.indexOf("._") >= 0) {
-      // setFooMenu
-      pt = id.lastIndexOf("._");
-      return (pt < 0 ? script : id.substring(pt + 2, id.indexOf("Menu", pt))
-          + " " + script);
-    }
-    if (id.indexOf(".set") >= 0) {
-      // setFooMenu
-      pt = id.lastIndexOf(".set");
-      return (pt < 0 ? script : "set "
-          + id.substring(pt + 4, id.indexOf("Menu", pt)) + " " + script);
-    }
-    if (id.indexOf(".select") >= 0) {
-      // select item but not selectMenu set selectionHalos
-      // two spaces means "ignore after this"
-      if ((pt = script.indexOf("  ")) >= 0)
-        script = script.substring(0, pt);
-      return (script.indexOf("set") == 0 ? script : "select thisModel and ("
-          + script + ")");
-    }
-    if (id.indexOf(".color") >= 0) {
-      // colorFooMenu
-      pt = id.lastIndexOf(".color");
-      return (pt < 0 ? script : "color "
-          + id.substring(pt + 6, id.indexOf("Menu", pt)) + " " + script);
+    
+    if ((pt = id.lastIndexOf("[")) >= 0) { 
+      // setSpin
+      id = id.substring(pt + 1);
+      if ((pt = id.indexOf("]")) >= 0)
+        id = id.substring(0, pt);
+      id = TextFormat.simpleReplace(id, "_", " ");
+      if (script.indexOf("[]") < 0)
+        script = "[] " + script;
+      return TextFormat.simpleReplace(script, "[]", id);
     }
     return script;
   }
@@ -795,8 +777,7 @@ abstract public class JmolPopup {
     for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements();) {
       String key = (String) keys.nextElement();
       Object item = htCheckbox.get(key);
-      String basename = (key.indexOf(";") >= 0 ? key.substring(0, key
-          .indexOf(";")) : key);
+      String basename = key.substring(0, key.indexOf(":"));
       boolean b = viewer.getBooleanProperty(basename);
       setCheckBoxState(item, b);
     }
@@ -828,7 +809,7 @@ abstract public class JmolPopup {
     currentFrankId = id;
     nFrankList = 0;
     frankList[nFrankList++] = new Object[] { null, null, null };
-    addMenuItem(frankPopup, GT._("Main Menu"), "MAIN", "");
+    addMenuItem(frankPopup, GT._(getMenuText("mainMenuText")), "MAIN", "");
     for (int i = id.indexOf(".", 2) + 1;;) {
       int iNew = id.indexOf(".", i);
       if (iNew < 0)

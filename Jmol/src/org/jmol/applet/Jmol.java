@@ -30,6 +30,7 @@ import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.popup.JmolPopup;
 import org.jmol.i18n.GT;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Viewer;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
@@ -831,6 +832,8 @@ public class Jmol implements WrappedApplet, JmolAppletInterface {
   class MyStatusListener implements JmolStatusListener {
 
     public String eval(String strEval) {
+      if (strEval.equals("_GET_MENU"))
+        return (jmolpopup == null ? "" : jmolpopup.getMenu("Jmol version " + Viewer.getJmolVersion()));
       try {
         if(!haveDocumentAccess || ((Boolean)jsoDocument.eval("!!_jmol.noEval")).booleanValue())
           return "NO EVAL ALLOWED";

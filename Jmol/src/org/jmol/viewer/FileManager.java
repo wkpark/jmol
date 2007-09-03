@@ -267,7 +267,7 @@ class FileManager {
   }
   
   String getFileAsString(String name) {
-    Logger.info("FileManager.getFileAsString(" + name + ")");
+    //System.out.println("FileManager.getFileAsString(" + name + ")");
     Object t = getInputStreamOrErrorMessageFromName(name);
     if (t instanceof String)
       return "Error:" + t;

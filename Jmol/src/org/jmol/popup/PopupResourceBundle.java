@@ -31,9 +31,22 @@ import org.jmol.i18n.GT;
 
 class PopupResourceBundle {
 
-  PopupResourceBundle(String menuStructure) {
+  PopupResourceBundle(String menuStructure, Properties menuText) {
     buildStructure(menuStructure);
-    localize();
+    localize(menuStructure != null, menuText);
+  }
+
+  String getMenu(String title) {
+    return "# Jmol.mnu " + title + "\n\n" +
+           "# Part I -- Menu Structure\n" +
+           "# ------------------------\n\n" +
+           dumpStructure(menuContents) + "\n\n" +
+           "# Part II -- Key Definitions\n" +
+           "# --------------------------\n\n" +
+           dumpStructure(structureContents) + "\n\n" +
+           "# Part III -- Word Translations\n" +
+           "# -----------------------------\n\n" +
+           dumpWords();
   }
   
   String getStructure(String key) {
@@ -52,27 +65,24 @@ class PopupResourceBundle {
   // Properties to store menu structure and contents
   private Properties structure = new Properties();
   private Properties words = new Properties();
-
-  final static String INHERIT = "none";
-  final static String COLOR = "black white red orange yellow green cyan blue indigo violet";
-  final static String SCHEME = "SchemeMenu";
-  final static String TRANSLUCENCY = "opaque translucent";
-  final static String AXESCOLOR = "gray salmon maroon olive slateblue gold orchid";
-
   
   private static String Box(String cmd) {
     return "if not(showBoundBox);if not(showUnitcell);boundbox on;"+cmd+";boundbox off;else;"+cmd+";endif;endif;";
   }
   private static String[][] menuContents = {
+    
+      {   "@COLOR", "black white red orange yellow green cyan blue indigo violet"},      
+      {   "@AXESCOLOR", "gray salmon maroon olive slateblue gold orchid"},
+      
       {   "popupMenu",
-          "modelSetMenu FRAMESbyModelComputedMenu CONFIGURATIONComputedMenu - selectMenu viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYunitCellMenu - "
+          "modelSetMenu FRAMESbyModelComputedMenu configurationComputedMenu - selectMenu viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYUNITCELLmenu - "
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "
               + "measureMenu pickingMenu - JVM12showConsole JVM12showMenu - "
               + "languageComputedMenu aboutComputedMenu" },
               
       {   "selectMenu",
-          "hideNotSelected;hide(none)Checkbox showSelectionsCheckbox - selectAll selectNone invertSelection - elementsComputedMenu SYMMETRYComputedMenu - "
+          "hideNotSelectedCheckbox showSelectionsCheckbox - selectAll selectNone invertSelection - elementsComputedMenu SYMMETRYComputedMenu - "
               + "PDBproteinMenu PDBnucleicMenu PDBheteroMenu PDBcarboMenu PDBnoneOfTheAbove" },
 
       {   "PDBproteinMenu", 
@@ -85,7 +95,7 @@ class PopupResourceBundle {
           "PDBcarboResiduesComputedMenu - allCarbo" },
 
       {   "PDBnucleicMenu",
-          "PDBnucleicResiduesComputedMenu - allNucleic nucleicBackbone nucleicBases - " + "DNA RNA - "
+          "PDBnucleicResiduesComputedMenu - allNucleic nucleicBackbone nucleicBases - DNA RNA - "
               + "atPairs auPairs gcPairs" },
               
       {   "PDBheteroMenu",
@@ -96,12 +106,12 @@ class PopupResourceBundle {
           "front left right top bottom back" },
 
       {   "renderMenu",
-          "perspectiveDepthCheckbox showBoundBoxCheckbox showUnitCellCheckbox showAxes;set_axesMolecularCheckbox stereoMenu - renderSchemeMenu - atomMenu labelMenu bondMenu hbondMenu ssbondMenu - "
-              + "PDBstructureMenu _AxesMenu _BoundBoxMenu _UnitCellMenu" },
+          "perspectiveDepthCheckbox showBoundBoxCheckbox showUNITCELLCheckbox showAxesCheckbox stereoMenu - renderSchemeMenu - atomMenu labelMenu bondMenu hbondMenu ssbondMenu - "
+              + "PDBstructureMenu [set_axes]Menu [set_boundbox]Menu [set_UNITCEL]menu" },
 
       {   "renderSchemeMenu",
           "renderCpkSpacefill renderBallAndStick "
-              + "renderSticks renderWireframe renderPDBCartoonsOnly renderPDBTraceOnly" },
+              + "renderSticks renderWireframe PDBrenderCartoonsOnly PDBrenderTraceOnly" },
                             
       {   "atomMenu",
           "showHydrogensCheckbox - atomNone - "
@@ -140,42 +150,41 @@ class PopupResourceBundle {
           "labelCentered labelUpperRight labelLowerRight labelUpperLeft labelLowerLeft" },
 
       {   "colorMenu",
-          "colorrasmolCheckbox - colorAtomsMenu colorBondsMenu colorHbondsMenu colorSSbondsMenu colorPDBstructuresMenu colorIsoSurfaceMenu"
-              + " - colorLabelsMenu colorVectorsMenu - colorAxesMenu colorBoundBoxMenu colorUnitCellMenu colorBackgroundMenu" },
+          "colorrasmolCheckbox - [color_atoms]Menu [color_bonds]Menu [color_hbonds]Menu [color_ssbonds]Menu colorPDBStructuresMenu [color_isosurface]Menu"
+              + " - [color_labels]Menu [color_vectors]Menu - [color_axes]Menu [color_boundbox]Menu [color_UNITCELL]Menu [color_background]Menu" },
+
+      { "[color_atoms]Menu", "schemeMenu - @COLOR - opaque translucent" },
+      { "[color_bonds]Menu", "none - @COLOR - opaque translucent" },
+      { "[color_hbonds]Menu", null },
+      { "[color_ssbonds]Menu", null },
+      { "[color_labels]Menu", null },
+      { "[color_vectors]Menu", null },
+      { "[color_backbone]Menu", "none - schemeMenu - @COLOR - opaque translucent" },
+      { "[color_cartoon]sMenu", null },
+      { "[color_ribbon]sMenu", null },
+      { "[color_rockets]Menu", null },
+      { "[color_strands]Menu", null },
+      { "[color_trace]Menu", null },
+      { "[color_background]Menu", "@COLOR" },
+      { "[color_isosurface]Menu", "@COLOR - opaque translucent" },
+      { "[color_axes]Menu", "@AXESCOLOR" },
+      { "[color_boundbox]Menu", null },
+      { "[color_UNITCELL]Menu", null },
 
 
-      { "colorAtomsMenu", "@ SCHEME COLOR TRANSLUCENCY" },
-      { "colorBondsMenu", "@ INHERIT_ALL COLOR TRANSLUCENCY" },
-      { "colorHbondsMenu", null },
-      { "colorSSbondsMenu", null },
-      { "colorLabelsMenu", null },
-      { "colorVectorsMenu", null },
-      { "colorBackboneMenu", "@ INHERIT_ALL SCHEME COLOR TRANSLUCENCY" },
-      { "colorCartoonsMenu", null },
-      { "colorRibbonsMenu", null },
-      { "colorRocketsMenu", null },
-      { "colorStrandsMenu", null },
-      { "colorTraceMenu", null },
-      { "colorBackgroundMenu", "@ COLOR" },
-      { "colorIsoSurfaceMenu", "@ COLOR TRANSLUCENCY" },
-      { "colorAxesMenu", "@ AXESCOLOR" },
-      { "colorBoundBoxMenu", null },
-      { "colorUnitCellMenu", null },
+      {   "colorPDBStructuresMenu",
+          "[color_backbone]Menu [color_cartoon]sMenu [color_ribbon]sMenu [color_rockets]Menu [color_strands]Menu [color_trace]Menu" },
 
-
-      {   "colorPDBstructuresMenu",
-          "colorBackboneMenu colorCartoonsMenu colorRibbonsMenu colorRocketsMenu colorStrandsMenu colorTraceMenu" },
-
-      {   "SchemeMenu",
-          "cpk altloc molecule formalcharge partialCHARGE - amino#PDB structure#PDB chain#PDB " },
+      {   "schemeMenu",
+          "cpk altloc molecule formalcharge partialcharge#CHARGE - amino#PDB structure#PDB chain#PDB " },
 
       {   "zoomMenu",
           "zoom50 zoom100 zoom150 zoom200 zoom400 zoom800 - "
               + "zoomIn zoomOut" },
 
       {   "spinMenu",
-          "spinOn spinOff - " + "setSpinXMenu setSpinYMenu setSpinZMenu - "
-              + "setSpinFpsMenu" },
+          "spinOn spinOff - " + "[set_spin_X]Menu [set_spin_Y]Menu [set_spin_Z]Menu - "
+              + "[set_spin_FPS]Menu" },
 
       {   "VIBRATIONMenu", 
           "vibrationOff vibrationOn VIBRATIONvectorMenu" },
@@ -194,19 +203,19 @@ class PopupResourceBundle {
 
       {   "pickingMenu",
           "pickOff pickCenter pickIdent pickLabel pickAtom "
-              + "pickMolecule pickElement pickPDBChain pickPDBGroup pickSYMMETRYSite pickSpin" },
+              + "pickMolecule pickElement PDBpickChain PDBpickGroup SYMMETRYpickSite pickSpin" },
 
 
       {   "JVM12showMenu",
           "showHistory showFile showFileHeader - "
               + "showOrient showMeasure - "
-              + "showSpacegroup showState SYMMETRYshowSymmetry showUnitCell - showIsosurface showMo - extractMOL" },
+              + "showSpacegroup showState SYMMETRYshowSymmetry UNITCELLshow - showIsosurface showMo - extractMOL" },
 
 
-      { "setSpinXMenu", "s0 s5 s10 s20 s30 s40 s50" },
-      { "setSpinYMenu", null },
-      { "setSpinZMenu", null },
-      { "setSpinFpsMenu", null },
+      { "[set_spin_X]Menu", "s0 s5 s10 s20 s30 s40 s50" },
+      { "[set_spin_Y]Menu", null },
+      { "[set_spin_Z]Menu", null },
+      { "[set_spin_FPS]Menu", null },
 
       {   "animModeMenu", 
           "onceThrough palindrome loop" },
@@ -215,14 +224,14 @@ class PopupResourceBundle {
       {   "surfaceMenu",
           "surfDots surfVDW surfSolventAccessible14 surfSolvent14 surfMolecular CHARGEsurfMEP surfMoComputedMenu - surfOpaque surfTranslucent surfOff" },
 
-      {   "SYMMETRYunitCellMenu",
-          "oneUnitCell nineUnitCells nineUnitCellsRestricted nineUnitCellsPoly" },
+      {   "SYMMETRYUNITCELLmenu",
+          "UNITCELLone UNITCELLnine UNITCELLnineRestricted UNITCELLninePoly" },
 
-      {   "_AxesMenu", 
-          "off dotted - byPixelMenu byAngstromMenu" },
+      {   "[set_axes]Menu", 
+          "off#axes dotted - byPixelMenu byAngstromMenu" },
 
-      { "_BoundBoxMenu", null },
-      { "_UnitCellMenu", null },
+      { "[set_boundbox]Menu", null },
+      { "[set_UNITCEL]menu", null },
 
       {   "byPixelMenu", 
           "1p 3p 5p 10p" },
@@ -230,55 +239,68 @@ class PopupResourceBundle {
       {   "byAngstromMenu", 
           "10a 20a 25a 50a 100a" },
 
-      {   "optionsMenu", 
+/*
+ *       {   "optionsMenu", 
           "rasmolChimeCompatibility" },
+*/
 
       {   "aboutComputedMenu", 
-          "jmolUrl mouseManualUrl translatingUrl" },
+          "APPLETjmolUrl APPLETmouseManualUrl APPLETtranslationUrl" },
 
   };
   
+  
+  
   private static String[][] structureContents = {
 
-      { "selectAll", "all" },
-      { "selectNone", "none" },
-      { "invertSelection", "not selected" },
-      { "hideNotSelected;hide(none)Checkbox", "selected; hide not selected" },
+      { "colorrasmolCheckbox", ""},
+      { "hideNotSelectedCheckbox", "set hideNotSelected true | set hideNotSelected false; hide(none)" },
+      { "perspectiveDepthCheckbox", ""},
+      { "showAxesCheckbox", "set showAxes true | set showAxes false;set axesMolecular" },
+      { "showBoundBoxCheckbox", ""},
+      { "showHydrogensCheckbox", ""},
+      { "showMeasurementsCheckbox", ""},
+      { "showSelectionsCheckbox", ""},
+      { "showUNITCELLCheckbox", ""},
 
-      { "allProtein", "protein" },
-      { "proteinBackbone", "protein and backbone" },
-      { "proteinSideChains", "protein and not backbone" },
-      { "polar", "protein and polar" },
-      { "nonpolar", "protein and not polar" },
-      { "positiveCharge", "protein and basic" },
-      { "negativeCharge", "protein and acidic" },
-      { "noCharge", "protein and not (acidic,basic)" },
-      { "allCarbo", "carbohydrate" },
+      { "selectAll", "SELECT all" },
+      { "selectNone", "SELECT none" },
+      { "invertSelection", "SELECT not selected" },
+   
+      { "allProtein", "SELECT protein" },
+      { "proteinBackbone", "SELECT protein and backbone" },
+      { "proteinSideChains", "SELECT protein and not backbone" },
+      { "polar", "SELECT protein and polar" },
+      { "nonpolar", "SELECT protein and not polar" },
+      { "positiveCharge", "SELECT protein and basic" },
+      { "negativeCharge", "SELECT protein and acidic" },
+      { "noCharge", "SELECT protein and not (acidic,basic)" },
+      { "allCarbo", "SELECT carbohydrate" },
 
-      { "allNucleic", "nucleic" },
-      { "DNA", "dna" },
-      { "RNA", "rna" },
-      { "nucleicBackbone", "nucleic and backbone" },
-      { "nucleicBases", "nucleic and not backbone" },
-      { "atPairs", "a,t" },
-      { "gcPairs", "g,c" },
-      { "auPairs", "a,u" },
-      { "A", "a" },
-      { "C", "c" },
-      { "G", "g" },
-      { "T", "t" },
-      { "U", "u" },
+      { "allNucleic", "SELECT nucleic" },
+      { "DNA", "SELECT dna" },
+      { "RNA", "SELECT rna" },
+      { "nucleicBackbone", "SELECT nucleic and backbone" },
+      { "nucleicBases", "SELECT nucleic and not backbone" },
+      { "atPairs", "SELECT a,t" },
+      { "gcPairs", "SELECT g,c" },
+      { "auPairs", "SELECT a,u" },
+      { "A", "SELECT a" },
+      { "C", "SELECT c" },
+      { "G", "SELECT g" },
+      { "T", "SELECT t" },
+      { "U", "SELECT u" },
 
-      { "allHetero", "hetero" },
-      { "Solvent", "solvent" },
-      { "Water", "water" },
-      // same as ligand    { "exceptSolvent", "hetero and not solvent" },
-      { "nonWaterSolvent", "solvent and not water" },
-      { "exceptWater", "hetero and not water" },
-      { "Ligand", "ligand" },
+      { "allHetero", "SELECT hetero" },
+      { "Solvent", "SELECT solvent" },
+      { "Water", "SELECT water" },
+      // same as ligand    { "exceptSolvent", "SELECT hetero and not solvent" },
+      { "nonWaterSolvent", "SELECT solvent and not water" },
+      { "exceptWater", "SELECT hetero and not water" },
+      { "Ligand", "SELECT ligand" },
 
-      // not implemented    { "Lipid", "lipid" },
-      { "PDBnoneOfTheAbove", "not(hetero,protein,nucleic,carbohydrate)" },
+      // not implemented    { "Lipid", "SELECT lipid" },
+      { "PDBnoneOfTheAbove", "SELECT not(hetero,protein,nucleic,carbohydrate)" },
 
       { "front", Box( "moveto 2.0 front;delay 1" ) },
       { "left", Box( "moveto 1.0 front;moveto 2.0 left;delay 1"  ) },
@@ -291,8 +313,8 @@ class PopupResourceBundle {
       { "renderBallAndStick", "restrict not selected;select not selected;spacefill 20%;wireframe 0.15;color cpk" },
       { "renderSticks", "restrict not selected;select not selected;wireframe 0.3;color cpk" },
       { "renderWireframe", "restrict not selected;select not selected;wireframe on;color cpk" },
-      { "renderPDBCartoonsOnly", "restrict not selected;select not selected;cartoons on;color structure" },
-      { "renderPDBTraceOnly", "restrict not selected;select not selected;trace on;color structure" },
+      { "PDBrenderCartoonsOnly", "restrict not selected;select not selected;cartoons on;color structure" },
+      { "PDBrenderTraceOnly", "restrict not selected;select not selected;trace on;color structure" },
 
       { "atomNone", "cpk off" },
       { "atom15", "cpk 15%" },
@@ -432,11 +454,11 @@ class PopupResourceBundle {
       { "pickIdent", "set picking ident" },
       { "pickLabel", "set picking label" },
       { "pickAtom", "set picking atom" },
-      { "pickPDBChain", "set picking chain" },
+      { "PDBpickChain", "set picking chain" },
       { "pickElement", "set picking element" },
-      { "pickPDBGroup", "set picking group" },
+      { "PDBpickGroup", "set picking group" },
       { "pickMolecule", "set picking molecule" },
-      { "pickSYMMETRYSite", "set picking site" },
+      { "SYMMETRYpickSite", "set picking site" },
       { "pickSpin", "set picking spin" },
 
       { "JVM12showConsole", "console" },
@@ -451,7 +473,7 @@ class PopupResourceBundle {
       { "showSpacegroup", "console on;show spacegroup" },
       { "showState", "console on;show state" },
       { "SYMMETRYshowSymmetry", "console on;show symmetry" },
-      { "showUnitCell", "console on;show unitcell" },
+      { "UNITCELLshow", "console on;show unitcell" },
       { "extractMOL", "console on;getproperty extractModel \"visible\" " },
 
       { "surfDots", "dots on" },
@@ -467,13 +489,13 @@ class PopupResourceBundle {
       { "surfTranslucent", "mo translucent;isosurface translucent" },
       { "surfOff", "mo delete;isosurface delete;select *;dots off" },
 
-      { "oneUnitCell",
+      { "UNITCELLone",
           "save orientation;load \"\" {1 1 1} ;restore orientation;center" },
-      { "nineUnitCells",
+      { "UNITCELLnine",
           "save orientation;load \"\" {444 666 1} ;restore orientation;center" },
-      { "nineUnitCellsRestricted",
+      { "UNITCELLnineRestricted",
           "save orientation;load \"\" {444 666 1} ;restore orientation; unitcell on; display cell=555;center visible;zoom 200" },
-      { "nineUnitCellsPoly",
+      { "UNITCELLninePoly",
           "save orientation;load \"\" {444 666 1} ;restore orientation; unitcell on; display cell=555; polyhedra 4,6 (displayed);center (visible);zoom 200" },
 
       { "1p", "on" },
@@ -487,79 +509,53 @@ class PopupResourceBundle {
       { "50a", "0.50" },
       { "100a", "1.0" },
 
-      { "rasmolChimeCompatibility",
-          "set color rasmol; set zeroBasedXyzRasmol on; "
-              + "set axesOrientationRasmol on; load \"\"; select *; cpk off; wireframe on; " },
+//      { "rasmolChimeCompatibility",
+//        "set color rasmol; set zeroBasedXyzRasmol on; "
+  //          + "set axesOrientationRasmol on; load \"\"; select *; cpk off; wireframe on; " },
 
-      { "jmolUrl", "http://www.jmol.org" },
-      { "mouseManualUrl", "http://wiki.jmol.org/index.php/Mouse_Manual" },
-      { "translatingUrl", "http://wiki.jmol.org/index.php/Internationalisation" }, };
+      { "APPLETjmolUrl", "show url \"http://www.jmol.org\"" },
+      { "APPLETmouseManualUrl", "show url \"http://wiki.jmol.org/index.php/Mouse_Manual\"" },
+      { "APPLETtranslationUrl", "show url \"http://wiki.jmol.org/index.php/Internationalisation\"" }, };
   
-  private void buildStructure(String menuStructure) {
-    addItems(menuContents);
-    addItems(structureContents);
-    setStructure(menuStructure);
-    //dumpStructure(menuContents);
-    //dumpStructure(structureContents);
-  }
-  
-  /*
-  
-  private void dumpStructure(String[][] items) {
-    String previous = "";
-    for (int i = 0; i < items.length; i++)
-      System.out.println(items[i][0] + " = \t"
-          + (items[i][1] == null ? previous : (previous = items[i][1])));
-  }
- 
-   */
-   
-  public void setStructure(String slist) {
-    if (slist == null)
-      return;
-    BufferedReader br = new BufferedReader(new StringReader(slist));
-    String line;
-    int pt;
-    try {
-      while ((line = br.readLine()) != null) {
-        if (line.length() == 0 || line.charAt(0) == '#' 
-          || (pt = line.indexOf("=")) < 0)
-          continue;
-        String name = line.substring(0, pt).trim();
-        String value = line.substring(pt + 1).trim();
-        if (value.length() > 0)
-          structure.setProperty(name, value);
-      }
-    } catch (Exception e) {
-      //
-    }
-  }
-  
-  private void addItems(String[][] itemPairs) {   
-    String previous = "";
-    for (int i = 0; i < itemPairs.length; i++) {
-      String str = itemPairs[i][1];
-      if (str == null)
-        str = previous;
-      previous = str;
-      structure.setProperty(itemPairs[i][0], str);
-    }
-  }
-  
-  private void localize() {
+  private String[] getWordContents() {
+    
     boolean wasTranslating = GT.getDoTranslate();
     if (!wasTranslating)
       GT.setDoTranslate(true);
-    String[] wordContents = new String[] {
+    String[] words = new String[] {
         "modelSetMenu", GT._("No atoms loaded"),
-        "CONFIGURATIONComputedMenu", GT._("Configurations"),
-        "hiddenModelSetName", GT._("Model information"),
-
-        "selectMenu", GT._("Select"),
+        
+        "configurationComputedMenu", GT._("Configurations"),
         "elementsComputedMenu", GT._("Element"),
+        "FRAMESbyModelComputedMenu", GT._("Model/Frame"),
+        "languageComputedMenu", GT._("Language"),
+        "PDBaaResiduesComputedMenu", GT._("By Residue Name"),
+        "PDBnucleicResiduesComputedMenu", GT._("By Residue Name"),
+        "PDBcarboResiduesComputedMenu", GT._("By Residue Name"),
+        "PDBheteroComputedMenu", GT._("By HETATM"),
+        "surfMoComputedMenu", GT._("Molecular Orbitals"),
+        "SYMMETRYComputedMenu", GT._("Symmetry"),
+        
+        
+        "hiddenModelSetText", GT._("Model information"),
+        "selectMenuText", GT._("Select ({0})"),
+        "allModelsText", GT._("All {0} models"),
+        "configurationMenuText", GT._("Configurations ({0})"),
+        "modelSetCollectionText", GT._("Collection of {0} models"),
+        "atomsText", GT._("atoms: {0}"),
+        "bondsText", GT._("bonds: {0}"),
+        "groupsText", GT._("groups: {0}"),
+        "chainsText", GT._("chains: {0}"),
+        "polymersText", GT._("polymers: {0}"),
+        "modelMenuText", GT._("model {0}"),
+        "viewMenuText", GT._("View {0}"),
+        "mainMenuText", GT._("Main Menu"),
+        
+        
+        "selectMenu", GT._("Select"),
         "selectAll", GT._("All"),
         "selectNone", GT._("None"),
-        "hideNotSelected;hide(none)Checkbox", GT._("Display Selected Only"),
+        "hideNotSelectedCheckbox", GT._("Display Selected Only"),
         "invertSelection", GT._("Invert Selection"),
 
         "viewMenu", GT._("View"),
@@ -579,10 +575,6 @@ class PopupResourceBundle {
         "positiveCharge", GT._("Basic Residues (+)"),
         "negativeCharge", GT._("Acidic Residues (-)"),
         "noCharge", GT._("Uncharged Residues"),
-        "PDBaaResiduesComputedMenu", GT._("By Residue Name"),
-        "PDBnucleicResiduesComputedMenu", GT._("By Residue Name"),
-        "PDBcarboResiduesComputedMenu", GT._("By Residue Name"),
-        "PDBheteroComputedMenu", GT._("By HETATM"),
         "PDBnucleicMenu", GT._("Nucleic"),
         "allNucleic", GT._("All"),
         "DNA", GT._("DNA"),
@@ -605,16 +597,14 @@ class PopupResourceBundle {
         "PDBcarboMenu", GT._("Carbohydrate"),
         "PDBnoneOfTheAbove", GT._("None of the above"),
 
-        "FRAMESbyModelComputedMenu", GT._("Model/Frame"),
-
         "renderMenu", GT._("Style"),
         "renderSchemeMenu", GT._("Scheme"),
         "renderCpkSpacefill", GT._("CPK Spacefill"),
         "renderBallAndStick", GT._("Ball and Stick"),
         "renderSticks", GT._("Sticks"),
         "renderWireframe", GT._("Wireframe"),
-        "renderPDBCartoonsOnly", GT._("Cartoon"),
-        "renderPDBTraceOnly", GT._("Trace"),
+        "PDBrenderCartoonsOnly", GT._("Cartoon"),
+        "PDBrenderTraceOnly", GT._("Trace"),
 
         "atomMenu", GT._("Atoms"),
         "atomNone", GT._("Off"),
@@ -705,14 +695,14 @@ class PopupResourceBundle {
         "labelLowerLeft", GT._("Lower Left"),
 
         "colorMenu", GT._("Color"),
-        "colorAtomsMenu", GT._("Atoms"),
+        "[color_atoms]Menu", GT._("Atoms"),
 
-        "SchemeMenu", GT._("By Scheme"),
+        "schemeMenu", GT._("By Scheme"),
         "cpk", GT._("Element (CPK)"),
         "altloc", GT._("Alternative Location"),
         "molecule", GT._("Molecule"),
         "formalcharge", GT._("Formal Charge"),
-        "partialCHARGE", GT._("Partial Charge"),
+        "partialcharge#CHARGE", GT._("Partial Charge"),
 
         "amino#PDB", GT._("Amino Acid"),
         "structure#PDB", GT._("Secondary Structure"),
@@ -742,23 +732,23 @@ class PopupResourceBundle {
         "opaque", GT._("Make Opaque"),
         "translucent", GT._("Make Translucent"),
 
-        "colorBondsMenu", GT._("Bonds"),
-        "colorHbondsMenu", GT._("Hydrogen Bonds"),
-        "colorSSbondsMenu", GT._("Disulfide Bonds"),
-        "colorPDBstructuresMenu", GT._("Structure"),
-        "colorBackboneMenu", GT._("Backbone"),
-        "colorTraceMenu", GT._("Trace"),
-        "colorCartoonsMenu", GT._("Cartoon"),
-        "colorRibbonsMenu", GT._("Ribbons"),
-        "colorRocketsMenu", GT._("Rockets"),
-        "colorStrandsMenu", GT._("Strands"),
-        "colorLabelsMenu", GT._("Labels"),
-        "colorBackgroundMenu", GT._("Background"),
-        "colorIsoSurfaceMenu", GT._("Surface"),
-        "colorVectorsMenu", GT._("Vectors"),
-        "colorAxesMenu", GT._("Axes"),
-        "colorBoundBoxMenu", GT._("Boundbox"),
-        "colorUnitCellMenu", GT._("Unitcell"),
+        "[color_bonds]Menu", GT._("Bonds"),
+        "[color_hbonds]Menu", GT._("Hydrogen Bonds"),
+        "[color_ssbonds]Menu", GT._("Disulfide Bonds"),
+        "colorPDBStructuresMenu", GT._("Structure"),
+        "[color_backbone]Menu", GT._("Backbone"),
+        "[color_trace]Menu", GT._("Trace"),
+        "[color_cartoon]sMenu", GT._("Cartoon"),
+        "[color_ribbon]sMenu", GT._("Ribbons"),
+        "[color_rockets]Menu", GT._("Rockets"),
+        "[color_strands]Menu", GT._("Strands"),
+        "[color_labels]Menu", GT._("Labels"),
+        "[color_background]Menu", GT._("Background"),
+        "[color_isosurface]Menu", GT._("Surface"),
+        "[color_vectors]Menu", GT._("Vectors"),
+        "[color_axes]Menu", GT._("Axes"),
+        "[color_boundbox]Menu", GT._("Boundbox"),
+        "[color_UNITCELL]Menu", GT._("Unitcell"),
 
         "zoomMenu", GT._("Zoom"),
         "zoom50", "50%",
@@ -774,10 +764,10 @@ class PopupResourceBundle {
         "spinOn", GT._("On"),
         "spinOff", GT._("Off"),
 
-        "setSpinXMenu", GT._("Set X Rate"),
-        "setSpinYMenu", GT._("Set Y Rate"),
-        "setSpinZMenu", GT._("Set Z Rate"),
-        "setSpinFpsMenu", GT._("Set FPS"),
+        "[set_spin_X]Menu", GT._("Set X Rate"),
+        "[set_spin_Y]Menu", GT._("Set Y Rate"),
+        "[set_spin_Z]Menu", GT._("Set Z Rate"),
+        "[set_spin_FPS]Menu", GT._("Set FPS"),
 
         "s0", "0",
         "s5", "5",
@@ -828,11 +818,11 @@ class PopupResourceBundle {
         "pickIdent", GT._("Identity"),
         "pickLabel", GT._("Label"),
         "pickAtom", GT._("Select atom"),
-        "pickPDBChain", GT._("Select chain"),
+        "PDBpickChain", GT._("Select chain"),
         "pickElement", GT._("Select element"),
-        "pickPDBGroup", GT._("Select group"),
+        "PDBpickGroup", GT._("Select group"),
         "pickMolecule", GT._("Select molecule"),
-        "pickSYMMETRYSite", GT._("Select site"),
+        "SYMMETRYpickSite", GT._("Select site"),
         "pickSpin", GT._("Spin"),
 
         "JVM12showMenu", GT._("Show"),
@@ -848,8 +838,7 @@ class PopupResourceBundle {
         "showSpacegroup", GT._("Space group"),
         "SYMMETRYshowSymmetry", GT._("Symmetry"),
         "showState", GT._("Current state"),
-        "SYMMETRYComputedMenu", GT._("Symmetry"),
-        "showUnitCell", GT._("Unit cell"),
+        "UNITCELLshow", GT._("Unit cell"),
         "extractMOL", GT._("Extract MOL data"),
 
         "surfaceMenu", GT._("Surfaces"),
@@ -860,23 +849,22 @@ class PopupResourceBundle {
         "surfSolventAccessible14",
             GT._("Solvent-Accessible Surface (VDW + {0} Angstrom)", "1.4"),
         "CHARGEsurfMEP", GT._("Molecular Electrostatic Potential"),
-        "surfMoComputedMenu", GT._("Molecular Orbitals"),
         "surfOpaque", GT._("Make Opaque"),
         "surfTranslucent", GT._("Make Translucent"),
         "surfOff", GT._("Off"),
 
-        "SYMMETRYunitCellMenu", GT._("Symmetry"),
-        "oneUnitCell", GT._("Reload {0}", "{1 1 1}"),
-        "nineUnitCells", GT._("Reload {0}", "{444 666 1}"),
-        "nineUnitCellsRestricted", GT._("Reload {0}", "{444 666 1};display 555"),
-        "nineUnitCellsPoly", GT._("Reload + Polyhedra"),
+        "SYMMETRYUNITCELLmenu", GT._("Symmetry"),
+        "UNITCELLone", GT._("Reload {0}", "{1 1 1}"),
+        "UNITCELLnine", GT._("Reload {0}", "{444 666 1}"),
+        "UNITCELLnineRestricted", GT._("Reload {0}", "{444 666 1};display 555"),
+        "UNITCELLninePoly", GT._("Reload + Polyhedra"),
         
 
-        "_AxesMenu", GT._("Axes"), 
-        "_BoundBoxMenu", GT._("Boundbox"),
-        "_UnitCellMenu", GT._("Unitcell"),
+        "[set_axes]Menu", GT._("Axes"), 
+        "[set_boundbox]Menu", GT._("Boundbox"),
+        "[set_UNITCEL]menu", GT._("Unitcell"),
 
-        "off", GT._("Hide"), 
+        "off#axes", GT._("Hide"), 
         "dotted", GT._("Dotted"),
 
         "byPixelMenu", GT._("Pixel Width"), 
@@ -892,30 +880,133 @@ class PopupResourceBundle {
         "50a", GT._("{0} \u00C5", "0.50"),
         "100a", GT._("{0} \u00C5", "1.0"),
 
-        "optionsMenu", GT._("Compatibility"),
+//        "optionsMenu", GT._("Compatibility"),
         "showSelectionsCheckbox", GT._("Selection Halos"),
         "showHydrogensCheckbox", GT._("Show Hydrogens"),
         "showMeasurementsCheckbox", GT._("Show Measurements"),
         "perspectiveDepthCheckbox", GT._("Perspective Depth"),      
         "showBoundBoxCheckbox", GT._("Bound Box"),
-        "showAxes;set_axesMolecularCheckbox", GT._("Axes"),
-        "showUnitCellCheckbox", GT._("Unit Cell"),      
-        "rasmolChimeCompatibility", GT._("RasMol/Chime Settings"),
+        "showAxesCheckbox", GT._("Axes"),
+        "showUNITCELLCheckbox", GT._("Unit Cell"),      
         "colorrasmolCheckbox", GT._("RasMol Colors"),
-        "axesOrientationRasmolCheckbox", GT._("Axes RasMol/Chime"),
-        "zeroBasedXyzRasmolCheckbox", GT._("Zero-Based Xyz Rasmol"),
 
-        "languageComputedMenu", GT._("Language"),
         "aboutComputedMenu", GT._("About Jmol"),
-        "jmolUrl", "http://www.jmol.org",
-        "mouseManualUrl", GT._("Mouse Manual"),
-        "translatingUrl", GT._("Translations"),
+        
+        //"rasmolChimeCompatibility", GT._("RasMol/Chime Settings"),
+
+        "APPLETjmolUrl", "http://www.jmol.org",
+        "APPLETmouseManualUrl", GT._("Mouse Manual"),
+        "APPLETtranslationUrl", GT._("Translations")
     };
-    
+ 
     if (!wasTranslating)
       GT.setDoTranslate(wasTranslating);
 
-    for (int i = 0; i < wordContents.length;)
-      words.setProperty(wordContents[i++], wordContents[i++]);
+    return words;
+  }
+  
+  private void buildStructure(String menuStructure) {
+    addItems(menuContents);
+    addItems(structureContents);
+    setStructure(menuStructure);
+  }
+  
+  
+  private String dumpWords() {
+    String[] wordContents = getWordContents();
+    StringBuffer s = new StringBuffer();
+    for (int i = 0; i < wordContents.length; i++) {
+      String key = wordContents[i++];
+      if (structure.getProperty(key) == null)
+        s.append(key).append(" | ").append(wordContents[i]).append('\n');
+    }
+    return s.toString();
+  }
+  
+  private String dumpStructure(String[][] items) {
+    String previous = "";
+    StringBuffer s = new StringBuffer();
+    for (int i = 0; i < items.length; i++) {
+      String key = items[i][0];
+      String label = words.getProperty(key);
+      if (label != null)
+        key += " | " + label;
+      s.append(key).append(" = ")
+       .append(items[i][1] == null ? previous : (previous = items[i][1]))
+       .append('\n');
+    }
+    return s.toString();
+  }
+ 
+   
+   
+  public void setStructure(String slist) {
+    if (slist == null)
+      return;
+    BufferedReader br = new BufferedReader(new StringReader(slist));
+    String line;
+    int pt;
+    try {
+      while ((line = br.readLine()) != null) {
+        if (line.length() == 0 || line.charAt(0) == '#') 
+          continue;
+        pt = line.indexOf("=");
+        if (pt < 0) {
+          pt = line.length();
+          line += "=";
+        }
+        String name = line.substring(0, pt).trim();
+        String value = line.substring(pt + 1).trim();
+        String label = null;
+        if ((pt = name.indexOf("|")) >= 0) {
+          label = name.substring(pt + 1).trim();
+          name = name.substring(0, pt).trim();
+        }
+        if (name.length() == 0)
+          continue;
+        if (value.length() > 0)
+          structure.setProperty(name, value);
+        if (label != null && label.length() > 0)
+          words.setProperty(name, GT._(label));
+        /* note that in this case we are using a variable in 
+         * the GT._() method. That's because all standard labels
+         * have been preprocessed already, so any standard label
+         * will be translated. Any other label MIGHT be translated
+         * if by chance that word or phrase appears in some other
+         * GT._() call somewhere else in Jmol. Otherwise it will not
+         * be translated by this call, because it hasn't been 
+         * internationalized. 
+         */
+      }
+    } catch (Exception e) {
+      //
+    }
+  }
+  
+  private void addItems(String[][] itemPairs) {   
+    String previous = "";
+    for (int i = 0; i < itemPairs.length; i++) {
+      String str = itemPairs[i][1];
+      if (str == null)
+        str = previous;
+      previous = str;
+      structure.setProperty(itemPairs[i][0], str);
+    }
+  }
+  
+  private void localize(boolean haveUserMenu, Properties menuText) {
+    String[] wordContents = getWordContents();
+    for (int i = 0; i < wordContents.length;)      
+      if (haveUserMenu && words.getProperty(wordContents[i]) != null)
+        i += 2;
+      else {
+        String item = wordContents[i++];
+        String word = wordContents[i++];
+        words.setProperty(item, word);
+        // save a few names for later
+        if (menuText != null && item.indexOf("Text") >= 0)
+          menuText.setProperty(item, word);
+      }
+
   }
 }

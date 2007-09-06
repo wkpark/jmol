@@ -28,6 +28,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
 import org.jmol.shape.Text;
 import org.jmol.util.BitSetUtil;
+import org.jmol.util.ColorEncoder;
 import org.jmol.util.CommandHistory;
 import org.jmol.util.Escape;
 import org.jmol.util.Logger;
@@ -647,13 +648,17 @@ class Eval { //implements Runnable {
           v = getStringObjectAsToken((String) v);
           if (v instanceof Token)
             fixed[j] = (Token) v;
-          else
+          else {
             // identifiers cannot have periods; file names can, though
-            fixed[j] = new Token(
-                (isExpression ? Token.select 
-                    : ((String) v).indexOf(".") >= 0 ? Token.string
-                    : Token.identifier)
-                , (String) v);
+            // in addition, we need this for 
+            String s = (String) v;
+            tok = (isExpression ? Token.select 
+                : s.indexOf(".") >= 0  
+                    || s.indexOf("=") >= 0 
+                    || s.indexOf("[") >= 0 ? Token.string
+                : Token.identifier) ;
+            fixed[j] = new Token(tok, s);
+          }
         } else {
           Point3f center = getDrawObjectCenter(var);
           if (center == null)
@@ -2241,7 +2246,8 @@ class Eval { //implements Runnable {
     return (tok == Token.colorRGB || tok == Token.leftsquare
         || tok == Token.point3f || isPoint3f(i) 
         || tok == Token.string 
-           && (s = (String) statement[i].value).startsWith("[x")
+           && ((s = (String) statement[i].value).startsWith("[x")
+               || s.startsWith("[0x"))
            && s.indexOf("[") == s.lastIndexOf("["));
   }
 
@@ -2308,9 +2314,10 @@ class Eval { //implements Runnable {
   int getColorTriad(int i) throws ScriptException {
     int[] colors = new int[3];
     int n = 0;
+    String hex = "";
     getToken(i);
-    System.out.println(theTok + " " + Token.integer);
-    switch (theTok) {
+    Point3f pt = null;
+    out: switch (theTok) {
     case Token.integer:
     case Token.spec_seqcode:
       for (; i < statementLength; i++) {
@@ -2318,6 +2325,11 @@ class Eval { //implements Runnable {
         switch (theTok) {
         case Token.comma:
           continue;
+        case Token.identifier:
+          if(n != 1 || colors[0] != 0)
+            badRGBColor();
+          hex = "0" + parameterAsString(i);
+          break out;
         case Token.integer:
           if (n > 2)
             badRGBColor();
@@ -2337,23 +2349,21 @@ class Eval { //implements Runnable {
       }
       badRGBColor();
     case Token.point3f:
-      Point3f pt = (Point3f) theToken.value;
-      if (getToken(++i).tok != Token.rightsquare)
-        badRGBColor();
-      return colorPtToInt(pt);
+      pt = (Point3f) theToken.value;
+      break;
     case Token.identifier:
-      String hex = parameterAsString(i);
-      if (getToken(++i).tok == Token.rightsquare && hex.length() == 7
-          && hex.charAt(0) == 'x')
-        try {
-          return 0xFF000000 | Integer.parseInt(hex.substring(1), 16);
-        } catch (NumberFormatException e) {
-          badRGBColor();
-        }
+      hex = parameterAsString(i);
+      break;
+    default:
+      badRGBColor();
     }
-    badRGBColor();
-    // impossible return
-    return 0;
+    if (getToken(++i).tok != Token.rightsquare)
+      badRGBColor();
+    if (pt != null)
+      return colorPtToInt(pt);
+    if((n = Graphics3D.getArgbFromString("[" + hex + "]")) == 0)
+      badRGBColor();
+    return n;
   }
 
   boolean coordinatesAreFractional;
@@ -3417,26 +3427,36 @@ class Eval { //implements Runnable {
         // checked later -- they must be turned into a color NOW.
 
         // "cpk" value would be "spacefill"
-
         String name = parameterAsString(index).toLowerCase();
-        byte pid = (shapeType == JmolConstants.SHAPE_ISOSURFACE ? JmolConstants.PALETTE_PROPERTY
+        boolean isByElement = (name.indexOf(ColorEncoder.BYELEMENT_PREFIX) == 0);
+        boolean isColorIndex = (isByElement || name.indexOf(ColorEncoder.BYRESIDUE_PREFIX) == 0);
+        byte pid = (isColorIndex || shapeType == JmolConstants.SHAPE_ISOSURFACE ? JmolConstants.PALETTE_PROPERTY
             : tok == Token.spacefill ? JmolConstants.PALETTE_CPK
                 : JmolConstants.getPaletteID(name));
+        // color atoms "cpkScheme"
         if (pid == JmolConstants.PALETTE_UNKNOWN
             || pid == JmolConstants.PALETTE_TYPE
             && shapeType != JmolConstants.SHAPE_HSTICKS)
           invalidArgument();
         Object data = null;
         if (pid == JmolConstants.PALETTE_PROPERTY) {
-          if (shapeType != JmolConstants.SHAPE_ISOSURFACE)
-            index++;
-          if (name.equals("property")
-              && Compiler.tokAttr(getToken(index).tok, Token.atomproperty)) {
+          if (isColorIndex) {
             if (!isSyntaxCheck) {
-              data = getBitsetProperty(null, getToken(index++).tok
-                  | Token.minmaxmask, null, null, null, null, false);
-              if (!(data instanceof float[]))
-                invalidArgument();
+              data = getBitsetProperty(null, 
+                  (isByElement ? Token.elemno : Token.groupID)  | Token.minmaxmask
+                  , null, null, null, null, false);
+            }
+          } else {
+            if (!isColorIndex && shapeType != JmolConstants.SHAPE_ISOSURFACE)
+              index++;
+            if (name.equals("property")
+                && Compiler.tokAttr(getToken(index).tok, Token.atomproperty)) {
+              if (!isSyntaxCheck) {
+                data = getBitsetProperty(null, getToken(index++).tok
+                    | Token.minmaxmask, null, null, null, null, false);
+                if (!(data instanceof float[]))
+                  invalidArgument();
+              }
             }
           }
         } else if (pid == JmolConstants.PALETTE_VARIABLE) {
@@ -3448,14 +3468,15 @@ class Eval { //implements Runnable {
           pid = JmolConstants.PALETTE_PROPERTY;
         }
         if (pid == JmolConstants.PALETTE_PROPERTY) {
-          if (tokAt(index) == Token.string) {
-            if (index == 1 && shapeType == JmolConstants.SHAPE_BALLS)
-              shapeType = -1;
-            setStringProperty("propertyColorScheme", parameterAsString(index++));
+          String scheme = (tokAt(index) == Token.string ? parameterAsString(index++).toLowerCase() : null);
+          if (scheme != null) {
+            setStringProperty("propertyColorScheme", scheme);
+            isColorIndex = (scheme.indexOf(ColorEncoder.BYELEMENT_PREFIX) == 0
+                || scheme.indexOf(ColorEncoder.BYRESIDUE_PREFIX) == 0);
           }
           float min = 0;
           float max = Float.MAX_VALUE;
-          if (tokAt(index) == Token.absolute || tokAt(index) == Token.range) {
+          if (!isColorIndex && (tokAt(index) == Token.absolute || tokAt(index) == Token.range)) {
             min = floatParameter(index + 1);
             max = floatParameter(index + 2);
             index += 3;
@@ -3469,7 +3490,7 @@ class Eval { //implements Runnable {
               max = Float.MAX_VALUE;
           }
           if (!isSyntaxCheck) {
-            if (shapeType != JmolConstants.SHAPE_ISOSURFACE) {
+            if (shapeType != JmolConstants.SHAPE_ISOSURFACE  && max != -Float.MAX_VALUE) {
               if (data == null)
                 viewer.setCurrentColorRange(name);
               else

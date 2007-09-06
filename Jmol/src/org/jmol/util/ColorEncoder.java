@@ -43,31 +43,81 @@ import org.jmol.util.ArrayUtil;
   }
     
   
-  private final static String[] colorSchemes = {"roygb", "bgyor", "rwb", "bwr", "low", "high", "user", "resu"}; 
+  public final static String BYELEMENT_PREFIX  = "byelement";
+  public final static String BYRESIDUE_PREFIX = "byresidue";
+  private final static String BYELEMENT_JMOL = BYELEMENT_PREFIX + "_jmol"; 
+  private final static String BYELEMENT_RASMOL = BYELEMENT_PREFIX + "_rasmol";
+  private final static String BYRESIDUE_JMOL = BYRESIDUE_PREFIX + "_jmol"; 
+  private final static String BYRESIDUE_RASMOL = BYRESIDUE_PREFIX + "_rasmol"; 
+  
+
+  private final static String[] colorSchemes = {"roygb", "bgyor", "rwb", "bwr", "low", "high", 
+    BYELEMENT_JMOL, BYELEMENT_RASMOL, BYRESIDUE_JMOL, BYRESIDUE_RASMOL, "user", "resu"}; 
   private final static int ROYGB = 0;
   private final static int BGYOR = 1;
   private final static int RWB   = 2;
   private final static int BWR   = 3;
   private final static int LOW   = 4;
   private final static int HIGH  = 5;
-  private final static int USER = -6;
-  private final static int RESU = -7;
+  private final static int JMOL = 6;
+  private final static int RASMOL = 7;
+  private final static int RESJMOL = 8;
+  private final static int RESRASMOL = 9;
+  private final static int USER = -10;
+  private final static int RESU = -11;
 
   private int palette = ROYGB;
 
   private static int[] userScale = new int[] {0xFF808080};
   private static int[] thisScale = new int[] {0xFF808080};
   private static String thisName = "scheme";
-
+  private static boolean isColorIndex;
   private static Hashtable schemes = new Hashtable();
+  private static int[] rasmolScale;
+  private static int rasmolScaleLength;
+  
+  public static synchronized int[] getRasmolScale(boolean forceNew) {
+    if (rasmolScale == null) {
+      int[] a = ArrayUtil.arrayCopy(JmolConstants.argbsCpk, 0, -1, false);
+      for (int i = JmolConstants.argbsCpkRasmol.length; --i >= 0;) {
+        int argbRasmol = JmolConstants.argbsCpkRasmol[i];
+        a[argbRasmol >> 24] = argbRasmol | 0xFF000000;
+      }
+      rasmolScale = a;
+      rasmolScaleLength = a.length;
+    }
+    return rasmolScale;
+  }
 
   private static synchronized int makeColorScheme(String name, int[] scale) {
+    name = fixName(name);
     if (scale == null) {
       schemes.remove(name);
+      if (name.equals(BYELEMENT_RASMOL))
+        getRasmolScale(true);
       return getColorScheme(name);
     }
     schemes.put(thisName = name, thisScale = scale);
+    checkColorIndex();
     return -1;
+  }
+
+  private static void checkColorIndex() {
+    isColorIndex = (thisName.indexOf(BYELEMENT_PREFIX) == 0 
+        || thisName.indexOf(BYRESIDUE_PREFIX) == 0);
+  }
+  
+  private static String fixName(String name) {
+    name = name.toLowerCase();
+    if (name.equals(BYELEMENT_PREFIX))
+      return BYELEMENT_JMOL;
+    if (name.equals("jmol"))
+      return BYELEMENT_JMOL;
+    if (name.equals("rasmol"))
+      return BYELEMENT_RASMOL;
+    if (name.equals(BYRESIDUE_PREFIX))
+      return BYRESIDUE_JMOL;
+    return name;  
   }
   
   public int setColorScheme(String colorScheme) {
@@ -84,10 +134,14 @@ import org.jmol.util.ArrayUtil;
   }
   
   public final static int getColorScheme(String colorScheme) {
+    colorScheme = colorScheme.toLowerCase();
     int pt = colorScheme.indexOf("[");
+    if (pt < 0)
+      pt = colorScheme.indexOf("=");
+    
     if (pt >= 0) {
       String name = TextFormat.replaceAllCharacters(
-          colorScheme.substring(0, pt), " =:", "");
+          colorScheme.substring(0, pt), " =", "");
       int n = 0;
       pt = -1;
       while ((pt = colorScheme.indexOf("[", pt + 1)) >= 0)
@@ -110,9 +164,11 @@ import org.jmol.util.ArrayUtil;
       }
       return makeColorScheme(name, scale);
     }
+    colorScheme = fixName(colorScheme);
     if (schemes.containsKey(colorScheme)) {
       thisName = colorScheme;
       thisScale = (int[]) schemes.get(colorScheme);
+      checkColorIndex();
       return -1;
     }
     for (int i = 0; i < colorSchemes.length; i++)
@@ -174,6 +230,14 @@ import org.jmol.util.ArrayUtil;
       return ArrayUtil.arrayCopy(JmolConstants.argbsRwbScale, 0, -1, false);
     case BWR:
       return ArrayUtil.arrayCopy(JmolConstants.argbsRwbScale, 0, -1, true);
+    case JMOL:
+      return ArrayUtil.arrayCopy(JmolConstants.argbsCpk, 0, -1, false);
+    case RASMOL:
+      return ArrayUtil.arrayCopy(getRasmolScale(false), 0, -1, false);
+    case RESJMOL:
+      return ArrayUtil.arrayCopy(JmolConstants.argbsShapely, 0, -1, false);
+    case RESRASMOL:
+      return ArrayUtil.arrayCopy(JmolConstants.argbsAmino, 0, -1, false);
     case USER:
       return ArrayUtil.arrayCopy(userScale, 0, -1, false);
     case RESU:
@@ -192,6 +256,10 @@ import org.jmol.util.ArrayUtil;
       break;
 */
     case -1:
+      if (isColorIndex) {
+        lo = 0;
+        hi = thisScale.length;
+      }
       c = thisScale[quantize(val, lo, hi, thisScale.length)];
       break;
     case ROYGB:
@@ -217,6 +285,18 @@ import org.jmol.util.ArrayUtil;
       break;
     case RESU:
       c = (userScale.length == 0 ? 0xFF808080 : userScale[quantize(-val, -hi, -lo, userScale.length)]);
+      break;
+    case JMOL:
+      c = JmolConstants.argbsCpk[colorIndex((int)val, JmolConstants.argbsCpk.length)];
+      break;
+    case RASMOL:
+      c = getRasmolScale(false)[colorIndex((int)val, rasmolScaleLength)];
+      break;
+    case RESJMOL:
+      c = JmolConstants.argbsShapely[colorIndex((int)val, JmolConstants.argbsShapely.length)];
+      break;
+    case RESRASMOL:
+      c = JmolConstants.argbsAmino[colorIndex((int)val, JmolConstants.argbsAmino.length)];
       break;
     default:
       c = 0xFF808080; // GRAY
@@ -281,6 +361,10 @@ import org.jmol.util.ArrayUtil;
     if (q >= segmentCount)
       q = segmentCount - 1;
     return q;
+  }
+
+  public final static int colorIndex(int q, int segmentCount) {
+    return (q <= 0 | q >= segmentCount ? 0 : q);
   }
 
   public short getColorIndexFromPalette(float val, float lo, float hi) {

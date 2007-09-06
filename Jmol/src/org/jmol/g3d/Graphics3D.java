@@ -2365,27 +2365,47 @@ final public class Graphics3D {
       mapJavaScriptColors.put(colorNames[i], new Integer(colorArgbs[i]));
   }
 
+  /**
+   * accepts [xRRGGBB] or [0xRRGGBB] or [0xFFRRGGBB] or #RRGGBB
+   * or a valid JavaScript color
+   * 
+   * @param strColor
+   * @return 0 if invalid or integer color 
+   */
   public static int getArgbFromString(String strColor) {
-    if (strColor != null && strColor.length() > 0) {
-      if (strColor.length() == 9 && strColor.indexOf("[x") == 0
-          && strColor.indexOf("]") == 8)
-        strColor = "#" + strColor.substring(2, 8);
-      if (strColor.length() == 7 && strColor.charAt(0) == '#') {
-        try {
-          int red = Integer.parseInt(strColor.substring(1, 3), 16);
-          int grn = Integer.parseInt(strColor.substring(3, 5), 16);
-          int blu = Integer.parseInt(strColor.substring(5, 7), 16);
-          return (0xFF000000 | (red & 0xFF) << 16 | (grn & 0xFF) << 8 | (blu & 0xFF));
-        } catch (NumberFormatException e) {
-        }
-      } else {
-        Integer boxedArgb = (Integer) mapJavaScriptColors.get(strColor
-            .toLowerCase());
-        if (boxedArgb != null)
-          return boxedArgb.intValue();
+    int len = 0;
+    if (strColor == null || (len = strColor.length()) == 0)
+      return 0;
+    if (strColor.charAt(0) == '[' && strColor.charAt(len - 1) == ']') {
+      String check;
+      switch (len) {
+      case 9:
+        check = "x";
+        break;
+      case 10:
+        check = "0x";
+        break;
+      default:
+        return 0;
+      }
+      if (strColor.indexOf(check) != 1)
+        return 0;
+      strColor = "#" + strColor.substring(len - 7, len - 1);
+      len = 7;
+    }
+    if (len == 7 && strColor.charAt(0) == '#') {
+      try {
+        int red = Integer.parseInt(strColor.substring(1, 3), 16);
+        int grn = Integer.parseInt(strColor.substring(3, 5), 16);
+        int blu = Integer.parseInt(strColor.substring(5, 7), 16);
+        return (0xFF000000 | (red & 0xFF) << 16 | (grn & 0xFF) << 8 | (blu & 0xFF));
+      } catch (NumberFormatException e) {
+        return 0;
       }
     }
-    return 0;
+    Integer boxedArgb = 
+        (Integer) mapJavaScriptColors.get(strColor.toLowerCase());
+    return (boxedArgb == null ? 0 : boxedArgb.intValue());
   }
 
   /* ***************************************************************

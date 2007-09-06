@@ -1556,7 +1556,6 @@ class Compiler {
       if (tokPeek() != Token.asterisk)
         tokenNext();
       tok = tokPeek();
-      //System.out.println ("clauseItemSelector" + Integer.toHexString(tok) + " " + Integer.toHexString(Token.mathop));
       if (tok == Token.rightsquare || !tokAttr(tok, Token.mathop))
         break;
       if (tok != Token.leftparen)

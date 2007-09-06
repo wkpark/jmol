@@ -32,10 +32,10 @@ import org.jmol.util.ColorEncoder;
 
 class ColorManager {
 
-  Viewer viewer;
-  Graphics3D g3d;
-  int[] argbsCpk;
-  int[] altArgbsCpk;
+  private Viewer viewer;
+  private Graphics3D g3d;
+  private int[] argbsCpk;
+  private int[] altArgbsCpk;
 
   ColorManager(Viewer viewer, Graphics3D g3d) {
     this.viewer = viewer;
@@ -46,7 +46,7 @@ class ColorManager {
       altArgbsCpk[i] = JmolConstants.altArgbsCpk[i];
   }
 
-  boolean isDefaultColorRasmol;
+  private boolean isDefaultColorRasmol;
   boolean getDefaultColorRasmol() {
     return isDefaultColorRasmol;
   }
@@ -88,7 +88,7 @@ class ColorManager {
       g3d.changeColixArgb((short)(JmolConstants.elementNumberMax + i), altArgbsCpk[i]);
   }
 
-  void copyArgbsCpk() {
+  private void copyArgbsCpk() {
     argbsCpk = new int[JmolConstants.argbsCpk.length];
     for (int i = JmolConstants.argbsCpk.length; --i >= 0; )
       argbsCpk[i] = JmolConstants.argbsCpk[i];
@@ -103,22 +103,17 @@ class ColorManager {
     colixRubberband = (argb == 0 ? 0 : Graphics3D.getColix(argb));
   }
 
-  short colixBackgroundContrast;
-  void setColixBackgroundContrast(int argb) {
-    colixBackgroundContrast =
-      ((Graphics3D.calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128
-       ? Graphics3D.WHITE : Graphics3D.BLACK);
-  }
-
-  /**
+  /*
    * black or white, whichever contrasts more with the current background
    *
    *
    * @return black or white colix value
    */
-  short getColixBackgroundContrast() {
-    //not implemented
-    return colixBackgroundContrast;
+  short colixBackgroundContrast;
+  void setColixBackgroundContrast(int argb) {
+    colixBackgroundContrast =
+      ((Graphics3D.calcGreyscaleRgbFromRgb(argb) & 0xFF) < 128
+       ? Graphics3D.WHITE : Graphics3D.BLACK);
   }
 
   short getColixAtomPalette(Atom atom, byte pid) {
@@ -147,22 +142,22 @@ class ColorManager {
       if (id < 256)
         return g3d.getChangeableColix(id, argbsCpk[id]);
       id = (short) JmolConstants.altElementIndexFromNumber(id);
-      return g3d.getChangeableColix((short) (JmolConstants.elementNumberMax + id),
-          altArgbsCpk[id]);
-      case JmolConstants.PALETTE_PARTIAL_CHARGE:
-        // This code assumes that the range of partial charges is [-1, 1].
-        index = ColorEncoder.quantize(atom.getPartialCharge(), -1, 1,
-            JmolConstants.PARTIAL_CHARGE_RANGE_SIZE);
-        return g3d.getChangeableColix(
-            (short) (JmolConstants.PARTIAL_CHARGE_COLIX_RED + index),
-            JmolConstants.argbsRwbScale[index]);
-      case JmolConstants.PALETTE_FORMAL_CHARGE:
-        index = atom.getFormalCharge() - JmolConstants.FORMAL_CHARGE_MIN;
-        return g3d.getChangeableColix(
-            (short) (JmolConstants.FORMAL_CHARGE_COLIX_RED + index),
-            JmolConstants.argbsFormalCharge[index]);
-      case JmolConstants.PALETTE_TEMP:
-      case JmolConstants.PALETTE_FIXEDTEMP:
+      return g3d.getChangeableColix(
+          (short) (JmolConstants.elementNumberMax + id), altArgbsCpk[id]);
+    case JmolConstants.PALETTE_PARTIAL_CHARGE:
+      // This code assumes that the range of partial charges is [-1, 1].
+      index = ColorEncoder.quantize(atom.getPartialCharge(), -1, 1,
+          JmolConstants.PARTIAL_CHARGE_RANGE_SIZE);
+      return g3d.getChangeableColix(
+          (short) (JmolConstants.PARTIAL_CHARGE_COLIX_RED + index),
+          JmolConstants.argbsRwbScale[index]);
+    case JmolConstants.PALETTE_FORMAL_CHARGE:
+      index = atom.getFormalCharge() - JmolConstants.FORMAL_CHARGE_MIN;
+      return g3d.getChangeableColix(
+          (short) (JmolConstants.FORMAL_CHARGE_COLIX_RED + index),
+          JmolConstants.argbsFormalCharge[index]);
+    case JmolConstants.PALETTE_TEMP:
+    case JmolConstants.PALETTE_FIXEDTEMP:
       if (pid == JmolConstants.PALETTE_TEMP) {
         modelSet = viewer.getModelSet();
         lo = modelSet.getBfactor100Lo();
@@ -173,30 +168,25 @@ class ColorManager {
       }
       index = ColorEncoder.quantize(atom.getBfactor100(), lo, hi,
           JmolConstants.argbsRwbScale.length);
-      index = JmolConstants.argbsRwbScale.length - 1 - index;
-      argb = JmolConstants.argbsRwbScale[index];
+      argb = JmolConstants.argbsRwbScale[JmolConstants.argbsRwbScale.length - 1
+          - index];
       break;
     case JmolConstants.PALETTE_SURFACE:
       hi = viewer.getModelSet().getSurfaceDistanceMax();
       index = ColorEncoder.quantize(atom.getSurfaceDistance100(), 0, hi,
           JmolConstants.argbsRwbScale.length);
-      //index = JmolConstants.argbsRwbScale.length - 1 - index;
       argb = JmolConstants.argbsRwbScale[index];
       break;
     case JmolConstants.PALETTE_STRUCTURE:
       argb = JmolConstants.argbsStructure[atom.getProteinStructureType()];
       break;
     case JmolConstants.PALETTE_AMINO:
-      index = atom.getGroupID();
-      if (index < 0 || index >= JmolConstants.GROUPID_AMINO_MAX)
-        index = 0;
-      argb = JmolConstants.argbsAmino[index];
+      argb = JmolConstants.argbsAmino[ColorEncoder.colorIndex(
+          atom.getGroupID(), JmolConstants.argbsAmino.length)];
       break;
     case JmolConstants.PALETTE_SHAPELY:
-      index = atom.getGroupID();
-      if (index < 0 || index >= JmolConstants.GROUPID_SHAPELY_MAX)
-        index = 0;
-      argb = JmolConstants.argbsShapely[index];
+      argb = JmolConstants.argbsShapely[ColorEncoder.colorIndex(atom
+          .getGroupID(), JmolConstants.argbsShapely.length)];
       break;
     case JmolConstants.PALETTE_CHAIN:
       int chain = atom.getChainID() & 0x1F;
@@ -214,26 +204,26 @@ class ColorManager {
       // however, do not call it here because it will get recalculated
       // for each atom
       // therefore, we call it in Eval.colorObject();
-      index = ColorEncoder.quantize(atom.getSelectedGroupIndexWithinChain(), 0, atom
-          .getSelectedGroupCountWithinChain() - 1,
+      index = ColorEncoder.quantize(atom.getSelectedGroupIndexWithinChain(), 0,
+          atom.getSelectedGroupCountWithinChain() - 1,
           JmolConstants.argbsRoygbScale.length);
-      //I guess this is "blue to red" for some reason -- also for color xxx monomer
-      index = JmolConstants.argbsRoygbScale.length - 1 - index;
-      argb = JmolConstants.argbsRoygbScale[index];
+      argb = JmolConstants.argbsRoygbScale[JmolConstants.argbsRoygbScale.length
+          - 1 - index];
       break;
     case JmolConstants.PALETTE_MONOMER:
       // viewer.calcSelectedMonomersCount() must be called first ...
-      index = ColorEncoder.quantize(atom.getSelectedMonomerIndexWithinPolymer(), 0, atom
-          .getSelectedMonomerCountWithinPolymer() - 1,
+      index = ColorEncoder.quantize(
+          atom.getSelectedMonomerIndexWithinPolymer(), 0, atom
+              .getSelectedMonomerCountWithinPolymer() - 1,
           JmolConstants.argbsRoygbScale.length);
-      index = JmolConstants.argbsRoygbScale.length - 1 - index;
-      argb = JmolConstants.argbsRoygbScale[index];
+      argb = JmolConstants.argbsRoygbScale[JmolConstants.argbsRoygbScale.length
+          - 1 - index];
       break;
     case JmolConstants.PALETTE_MOLECULE:
       modelSet = viewer.getModelSet();
-      index = ColorEncoder.quantize(modelSet.getMoleculeIndex(atom.getAtomIndex()), 0, modelSet
-          .getMoleculeCountInModel(atom.getModelIndex()) - 1,
-          JmolConstants.argbsRoygbScale.length);
+      index = ColorEncoder.quantize(modelSet.getMoleculeIndex(atom
+          .getAtomIndex()), 0, modelSet.getMoleculeCountInModel(atom
+          .getModelIndex()) - 1, JmolConstants.argbsRoygbScale.length);
       argb = JmolConstants.argbsRoygbScale[index];
       break;
     case JmolConstants.PALETTE_ALTLOC:
@@ -250,8 +240,8 @@ class ColorManager {
       modelSet = viewer.getModelSet();
       //very inefficient!
       modelIndex = atom.getModelIndex();
-      index = ColorEncoder.quantize(modelSet.getInsertionCodeIndexInModel(modelIndex, atom
-          .getInsertionCode()), 0, modelSet
+      index = ColorEncoder.quantize(modelSet.getInsertionCodeIndexInModel(
+          modelIndex, atom.getInsertionCode()), 0, modelSet
           .getInsertionCountInModel(modelIndex),
           JmolConstants.argbsRoygbScale.length);
       argb = JmolConstants.argbsRoygbScale[index];
@@ -262,6 +252,7 @@ class ColorManager {
 
   private float colorHi, colorLo;
   private float[] colorData;
+  boolean is_Rasmol;
   
   float[] getCurrentColorRange() {
     return new float[] {colorLo, colorHi};
@@ -270,6 +261,7 @@ class ColorManager {
   void setCurrentColorRange(float[] data, BitSet bs, String colorScheme) {
     colorData = data;
     palette = ColorEncoder.getColorScheme(colorScheme);
+    is_Rasmol = (colorScheme.equals("_rasmol"));
     colorHi = Float.MIN_VALUE;
     colorLo = Float.MAX_VALUE;
     if (data == null)
@@ -402,11 +394,11 @@ class ColorManager {
   }
 
   /*
-  void setLightsourceZ(float dist) {
-    Graphics3D.setLightsourceZ(dist);
-    flushCaches();
-  }
-  */
+   void setLightsourceZ(float dist) {
+   Graphics3D.setLightsourceZ(dist);
+   flushCaches();
+   }
+   */
   
   static int getJmolOrRasmolArgb(int id, int argb) {
     if (argb == Token.jmol) {
@@ -414,22 +406,12 @@ class ColorManager {
           : JmolConstants.altArgbsCpk[JmolConstants
               .altElementIndexFromNumber(id)]);
     }
-    if (argb == Token.rasmol) {
-      if (id >= 256)
-        return JmolConstants.altArgbsCpk[JmolConstants
-            .altElementIndexFromNumber(id)];
-      argb = JmolConstants.argbsCpk[id];
-      for (int i = JmolConstants.argbsCpkRasmol.length; --i >= 0;) {
-        int argbRasmol = JmolConstants.argbsCpkRasmol[i];
-        int atomNo = argbRasmol >> 24;
-        if (atomNo == id) {
-          argb = argbRasmol | 0xFF000000;
-          break;
-        }
-      }
-      return argb;
-    }
-    return argb | 0xFF000000;
+    if (argb != Token.rasmol)
+      return argb | 0xFF000000;
+    if (id >= 256)
+      return JmolConstants.altArgbsCpk[JmolConstants
+          .altElementIndexFromNumber(id)];
+    return ColorEncoder.getRasmolScale(false)[id];
   }
 
   void setElementArgb(int id, int argb) {

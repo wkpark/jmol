@@ -2679,6 +2679,10 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
       Logger.error("argbsShapely wrong length");
       throw new NullPointerException();
     }
+    if (argbsChainHetero.length != argbsChainAtom.length) {
+      Logger.error("argbsChainHetero wrong length");
+      throw new NullPointerException();
+    }
   }
 
 }

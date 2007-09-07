@@ -36,7 +36,7 @@ public class DrawRenderer extends MeshRenderer {
 
   private int drawType;
   private DrawMesh dmesh;
-  
+
   protected void render() {
     /*
      * Each drawn object, draw.meshes[i], may consist of several polygons, one
@@ -56,12 +56,13 @@ public class DrawRenderer extends MeshRenderer {
           && (mesh.modelFlags == null || mesh.modelFlags[i] != 0); 
   }
   
-  private final Point3i pt0 = new Point3i();
-  private final Point3i pt3 = new Point3i();
+  private Point3f[] controlHermites;
+  private Point3f pt1f;
+  private Point3f pt2f;
 
-  Point3f[] controlHermites;
-  Point3f pt1f;
-  Point3f pt2f;
+  private final Point3i pt1i = new Point3i();
+  private final Point3i pt2i = new Point3i();
+
   
   protected void render2() {
     boolean isDrawPickMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
@@ -103,9 +104,9 @@ public class DrawRenderer extends MeshRenderer {
       tip.scale(5);
       pt1f.set(pt2f);
       pt1f.sub(tip);
-      viewer.transformPoint(pt2f, pt3);
-      viewer.transformPoint(pt1f, pt0);
-      tip.set(pt3.x - pt0.x, pt3.y - pt0.y, pt3.z - pt0.z);
+      viewer.transformPoint(pt2f, pt2i);
+      viewer.transformPoint(pt1f, pt1i);
+      tip.set(pt2i.x - pt1i.x, pt2i.y - pt1i.y, pt2i.z - pt1i.z);
       d = tip.length();
       headDiameter = (int) (d / 2);
       diameter = headDiameter / 5;
@@ -113,7 +114,7 @@ public class DrawRenderer extends MeshRenderer {
         diameter = 1;
       if ((d = tip.length()) < 2)
         break;
-      g3d.fillCone(Graphics3D.ENDCAPS_FLAT, headDiameter, pt0, pt3);
+      g3d.fillCone(Graphics3D.ENDCAPS_FLAT, headDiameter, pt1i, pt2i);
       break;
     case JmolConstants.DRAW_CIRCLE:
       //unimplemented
@@ -162,8 +163,6 @@ public class DrawRenderer extends MeshRenderer {
       }
     }
   }
-
-  private final Point3i xyz = new Point3i();
   
   private void renderInfo() {
     if (dmesh == null || dmesh.title == null || dmesh.visibilityFlags == 0
@@ -173,8 +172,8 @@ public class DrawRenderer extends MeshRenderer {
     byte fid = g3d.getFontFid("SansSerif", 14);
     g3d.setFont(fid);
     if (dmesh.title[0].length() > 0) {
-      viewer.transformPoint(vertices[0], xyz);
-      g3d.drawString(dmesh.title[0], null, xyz.x + 5, xyz.y - 5, xyz.z, xyz.z);
+      viewer.transformPoint(vertices[0], pt1i);
+      g3d.drawString(dmesh.title[0], null, pt1i.x + 5, pt1i.y - 5, pt1i.z, pt1i.z);
     }
   }
 }

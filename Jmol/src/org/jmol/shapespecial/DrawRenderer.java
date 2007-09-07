@@ -107,14 +107,12 @@ public class DrawRenderer extends MeshRenderer {
       viewer.transformPoint(pt2f, pt2i);
       viewer.transformPoint(pt1f, pt1i);
       tip.set(pt2i.x - pt1i.x, pt2i.y - pt1i.y, pt2i.z - pt1i.z);
-      d = tip.length();
-      headDiameter = (int) (d / 2);
+      headDiameter = (int) (tip.length() / 2);
       diameter = headDiameter / 5;
       if (diameter < 1)
         diameter = 1;
-      if ((d = tip.length()) < 2)
-        break;
-      g3d.fillCone(Graphics3D.ENDCAPS_FLAT, headDiameter, pt1i, pt2i);
+      if (headDiameter > 2)
+        g3d.fillCone(Graphics3D.ENDCAPS_FLAT, headDiameter, pt1i, pt2i);
       break;
     case JmolConstants.DRAW_CIRCLE:
       //unimplemented

@@ -982,7 +982,7 @@ class Compiler {
     return true;
   }
 
-  boolean isSetOrIf;
+  boolean isImplicitExpression;
   boolean isSetOrDefine;
   Token tokenCommand;
   int tokCommand;
@@ -996,7 +996,7 @@ class Compiler {
   private boolean compileCommand() {
     tokenCommand = (Token) ltoken.firstElement();
     tokCommand = tokenCommand.tok;
-    isSetOrIf =  (tokCommand == Token.set || tokCommand == Token.ifcmd);
+    isImplicitExpression =  (tokCommand == Token.set || tokCommand == Token.ifcmd || tokCommand == Token.print);
     isSetOrDefine = (tokCommand == Token.set || tokCommand == Token.define);
     isCommaAsOrAllowed = tokAttr(tokCommand, Token.expressionCommand);
     int size = ltoken.size();
@@ -1069,12 +1069,12 @@ class Compiler {
         if (!moreTokens())
           break;
       }
-      if (!isSetOrIf)
+      if (!isImplicitExpression)
         addTokenToPostfix(Token.tokenExpressionBegin);
-      if (!clauseOr(isCommaAsOrAllowed || !isSetOrIf
+      if (!clauseOr(isCommaAsOrAllowed || !isImplicitExpression
           && tokPeek(Token.leftparen)))
         return false;
-      if (!isSetOrIf
+      if (!isImplicitExpression
           && !(isEmbeddedExpression && lastToken == Token.tokenCoordinateEnd))
         addTokenToPostfix(Token.tokenExpressionEnd);
       if (moreTokens() && !isEmbeddedExpression)
@@ -1086,7 +1086,7 @@ class Compiler {
   }
 
   private boolean isExpressionNext() {
-    return tokPeek(Token.leftbrace) || !isSetOrIf && tokPeek(Token.leftparen);
+    return tokPeek(Token.leftbrace) || !isImplicitExpression && tokPeek(Token.leftparen);
   }
 
   private static boolean tokenAttr(Token token, int tok) {
@@ -1338,7 +1338,7 @@ class Compiler {
        */
       boolean isCoordinate = false;
       int pt = ltokenPostfix.size();
-      if (isSetOrIf) {
+      if (isImplicitExpression) {
         addTokenToPostfix(Token.tokenExpressionBegin);
         tokenNext();
       }else if (isEmbeddedExpression) {
@@ -1357,11 +1357,11 @@ class Compiler {
           n++;
       }
       isCoordinate = (n >= 2); // could be {1 -2 3}
-      if (isCoordinate && (isSetOrIf || isEmbeddedExpression)) {
+      if (isCoordinate && (isImplicitExpression || isEmbeddedExpression)) {
         ltokenPostfix.set(pt, Token.tokenCoordinateBegin);
         addTokenToPostfix(Token.tokenCoordinateEnd);
         tokenNext();
-      } else if (isSetOrIf) {
+      } else if (isImplicitExpression) {
         addTokenToPostfix(Token.tokenExpressionEnd);
         tokenNext();
       } else if (isEmbeddedExpression)

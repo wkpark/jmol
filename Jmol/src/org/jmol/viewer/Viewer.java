@@ -3164,12 +3164,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
     //typically request: "+scriptStarted,+scriptStatus,+scriptEcho,+scriptTerminated"
     //set up first with applet.jmolGetProperty("jmolStatus",statusList)
-
     //flush list
     String oldStatusList = statusManager.statusList;
     getProperty("String", "jmolStatus", statusList);
     if (checkScriptOnly)
-      Logger.info("--checking script:\n" + eval.script + "\n----\n");
+      Logger.info("--checking script:\n" + eval.getScript() + "\n----\n");
     boolean historyDisabled = (strScript.indexOf(")") == 0);
     if (historyDisabled)
       strScript = strScript.substring(1);
@@ -3749,7 +3748,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   Object getParameterEscaped(String key) {
-    return global.getParameterEscaped(key);
+    return global.getParameterEscaped(key, 0);
   }
 
   public Object getParameter(String key) {
@@ -5868,5 +5867,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   String getMenu() {
     return statusManager.eval("_GET_MENU");
   }
-  
+
+  void setListVariable(String name, Token value) {
+    global.setListVariable(name, value);
+  }
+
+  Object getListVariable(String name, Object value) {
+    return global.getListVariable(name, value);
+  }
 }

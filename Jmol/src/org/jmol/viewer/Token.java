@@ -216,6 +216,7 @@ public class Token {
   final static int quaternion     = command | 120;
   final static int ramachandran   = command | 121;
   final static int sync           = command | 122;
+  final static int print          = command | 123 | negnums | embeddedExpression;
 
 
   //the following are listed with atomproperty because they must be registered as atom property names
@@ -583,9 +584,9 @@ public class Token {
     
     int i1 = token.intValue;
     if (i1 == Integer.MAX_VALUE) {
-      if (i2 != Integer.MIN_VALUE)
-      token.intValue = i2;
-      return token;
+      if (i2 == Integer.MIN_VALUE)
+        i2 = token.intValue;
+      return new Token(token.tok, i2, token.value);
     }
     int len = 0;
     int n = 0;
@@ -896,6 +897,7 @@ public class Token {
     "rama",              null, 
     "synchronize",       new Token(sync,                maxArg2),
     "sync",              null,
+    "print",             new Token(print,           varArgCount),
     "model",             new Token(model,           varArgCount),
     "models",            null, 
     "thisModel",         new Token(thismodel),

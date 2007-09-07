@@ -371,6 +371,23 @@ public class StateManager {
       //
     }
 
+    Hashtable listVariables = new Hashtable();
+    
+    void setListVariable(String name, Token value) {
+      name = name.toLowerCase();
+      if (value == null)
+        listVariables.remove(name);
+      else
+        listVariables.put(name, value);
+    }
+
+    Object getListVariable(String name, Object value) {
+      if (name == null)
+        return value;
+      name = name.toLowerCase();
+      return (listVariables.containsKey(name) ? listVariables.get(name) : value);
+    }
+    
     //lighting (see Graphics3D.Shade3D
     
     boolean specular     = true;
@@ -710,14 +727,11 @@ public class StateManager {
       return (unnecessaryProperties.indexOf(";" + name + ";") < 0);
     }
 
-    String getParameterEscaped(String name) {
-      return getParameterEscaped(name, 0);
-    }
-
     String getParameterEscaped(String name, int nMax) {
       name = name.toLowerCase();
       if (htParameterValues.containsKey(name)) {
-        String sv = Escape.escape(htParameterValues.get(name));
+        Object v = htParameterValues.get(name);
+        String sv = escapeVariable(name, v);
         if (nMax > 0 && sv.length() > nMax)
           sv = sv.substring(0, nMax) + "\n#...(" + sv.length()
               + " bytes -- use SHOW " + name + " or MESSAGE @" + name
@@ -794,6 +808,7 @@ public class StateManager {
       e = htParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
+        String name = key;
         if (key.charAt(0) != '@' && doRegister(key)) {
           Object value = htParameterValues.get(key);
           if (key.charAt(0) == '_') {
@@ -802,10 +817,9 @@ public class StateManager {
             if (key.indexOf("default") == 0)
               key = " " + key;
             key += " = ";
-            if (value instanceof String)
-              value = Escape.escape((String) value);
+            value = escapeVariable(name, value);
           }
-          list[n++] = key +  value;
+          list[n++] = key + value;
         }
       }
       switch (axesMode) {
@@ -833,6 +847,15 @@ public class StateManager {
       return commands.toString();
     }
     
+    private String escapeVariable(String name, Object value) {
+      if (!(value instanceof String))
+        return Escape.escape(value);
+      Token var = (Token) getListVariable(name, (Token) null);
+      if (var == null)
+        return Escape.escape(value);
+      return Escape.escape((String[]) var.value);
+    }
+        
     void registerAllValues() {
       htParameterValues = new Hashtable();
       htPropertyFlags = new Hashtable();
@@ -986,4 +1009,6 @@ public class StateManager {
       return;
     s.append(cmd).append(";\n");
   }
+  
+
 }

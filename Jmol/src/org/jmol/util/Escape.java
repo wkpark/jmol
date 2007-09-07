@@ -82,6 +82,29 @@ public class Escape {
     return "\"" + str + "\"";
   }
 
+  public static String escape(String[] list) {
+    if (list == null || list.length == 0)
+      return escape("");
+    int ch = ' ';
+    for (int i = 0; i < list.length; i++) {
+      String item = list[i];
+      if (item.indexOf(ch) >= 0) {
+        if (ch == ' ')
+          ch = 1;
+        ch++;
+        if (ch == 9)
+          break; //give up
+        i = -1;
+      }  
+    }
+    String sch = (ch == ' ' ? " " : "\\" + ch);
+    int nch = sch.length();
+    StringBuffer s = new StringBuffer();
+    for (int i = 0; i < list.length; i++)
+      s.append(sch).append(list[i]);
+    return escape(s.toString().substring(nch))+".split(\"" + sch + "\")";
+  }
+
   private static String unicode(char c) {
     String s = "0000" + Integer.toHexString(c);
     return "\\u" + s.substring(s.length() - 4);

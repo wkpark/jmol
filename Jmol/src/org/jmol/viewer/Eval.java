@@ -6048,6 +6048,10 @@ class Eval { //implements Runnable {
           viewer.setDefaultLattice(pt);
         return;
       }
+      if (key.equalsIgnoreCase("defaultDrawArrowScale")) {
+        setFloatProperty(key, floatParameter(2));
+        return;
+      }
       if (key.equalsIgnoreCase("toggleLabel")) { //from PickingManager
         BitSet bs = expression(2);
         if (!isSyntaxCheck)

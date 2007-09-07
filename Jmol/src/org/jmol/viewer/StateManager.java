@@ -543,6 +543,7 @@ public class StateManager {
 
     boolean hideNameInPopup      = false;
     boolean disablePopupMenu     = false;
+    float defaultDrawArrowScale  = 0.5f;
     float vibrationScale         = 1f;
     float vibrationPeriod        = 1f;
     float vectorScale            = 1f;
@@ -877,6 +878,7 @@ public class StateManager {
       setParameterValue("chainCaseSensitive",chainCaseSensitive);
       setParameterValue("debugScript",debugScript);
       setParameterValue("defaultAngleLabel",defaultAngleLabel);
+      setParameterValue("defaultDrawArrowScale",defaultDrawArrowScale);
       setParameterValue("defaultDirectory",defaultDirectory);
       setParameterValue("defaultDistanceLabel",defaultDistanceLabel);
       setParameterValue("defaultLoadScript",defaultLoadScript);

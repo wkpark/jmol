@@ -969,6 +969,16 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     refresh(0, "set vectorScale");
   }
 
+  public float getDefaultDrawArrowScale() {
+    return global.defaultDrawArrowScale;
+  }
+
+  public void setDefaultDrawArrowScale(float scale) {
+    global.setParameterValue("defaultDrawArrowScale", scale);
+    global.defaultDrawArrowScale = scale;
+    refresh(0, "set defaultDrawArrowScale");
+  }
+
   float getVibrationScale() {
     return global.vibrationScale;
   }
@@ -3986,6 +3996,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     //Eval
     while (true) {
 
+      ///11.3.17//
+      
+      if (key.equalsIgnoreCase("defaultDrawArrowScale")) {
+        setDefaultDrawArrowScale(value);
+        break;
+      }
+      
       ///11.1///
       if (key.equalsIgnoreCase("defaultTranslucent")) {
         setDefaultTranslucent(value);

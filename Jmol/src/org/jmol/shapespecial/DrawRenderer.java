@@ -24,6 +24,7 @@
 package org.jmol.shapespecial;
 
 
+import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Vector3f;
 
@@ -58,36 +59,61 @@ public class DrawRenderer extends MeshRenderer {
   private final Point3i pt0 = new Point3i();
   private final Point3i pt3 = new Point3i();
 
+  Point3f[] controlHermites;
+  Point3f pt1f;
+  Point3f pt2f;
+  
   protected void render2() {
     boolean isDrawPickMode = (viewer.getPickingMode() == JmolConstants.PICKING_DRAW);
     drawType = dmesh.drawType;
-    if ((drawType == JmolConstants.DRAW_CURVE || drawType == JmolConstants.DRAW_ARROW)
-        && vertexCount >= 2) {
-      int diameter = (dmesh.diameter > 0 ? dmesh.diameter : 3);
-      for (int i = 0, i0 = 0; i < vertexCount - 1; i++) {
-        g3d.fillHermite(5, diameter, diameter, diameter, screens[i0],
-            screens[i], screens[i + 1], screens[i
-                + (i + 2 == vertexCount ? 1 : 2)]);
-        i0 = i;
-      }
-    }
+    int diameter = (dmesh.diameter > 0 ? dmesh.diameter : 3);
+    int tension = 5;
     switch (drawType) {
     case JmolConstants.DRAW_ARROW:
-      Point3i pt1 = screens[vertexCount - 2];
-      Point3i pt2 = screens[vertexCount - 1];
-      Vector3f tip = new Vector3f(pt2.x - pt1.x, pt2.y - pt1.y, pt2.z - pt1.z);
-      int diameter = (dmesh.diameter > 0 ? dmesh.diameter : 3);
-      float d = tip.length();
-      if (d > 0) {
-        tip.scale(5 / d);
-        pt0.x = pt2.x - (int) Math.floor(4 * tip.x);
-        pt0.y = pt2.y - (int) Math.floor(4 * tip.y);
-        pt0.z = pt2.z - (int) Math.floor(4 * tip.z);
-        pt3.x = pt2.x + (int) Math.floor(tip.x);
-        pt3.y = pt2.y + (int) Math.floor(tip.y);
-        pt3.z = pt2.z + (int) Math.floor(tip.z);
-        g3d.fillCone(Graphics3D.ENDCAPS_FLAT, diameter * 5, pt0, pt3);
+      int headDiameter = diameter * 5;
+      Vector3f tip = new Vector3f();
+      float d;
+      float fScale = dmesh.drawArrowScale;
+      if (fScale == 0)
+        fScale = viewer.getDefaultDrawArrowScale();
+      if (fScale == 0)
+        fScale = 0.5f;
+      int nHermites = 5;
+      if (controlHermites == null || controlHermites.length < nHermites + 1) {
+        controlHermites = new Point3f[nHermites + 1];
       }
+      if (vertexCount == 2) {
+        controlHermites[nHermites - 2] = vertices[0];
+        controlHermites[nHermites - 1] = vertices[1];
+      } else {
+        Graphics3D.getHermiteList(tension, vertices[vertexCount - 3],
+            vertices[vertexCount - 2], vertices[vertexCount - 1],
+            vertices[vertexCount - 1], vertices[vertexCount - 1],
+            controlHermites, 0, nHermites);
+      }
+      pt1f = controlHermites[nHermites - 2];
+      pt2f = controlHermites[nHermites - 1];
+      tip.set(pt2f);
+      tip.sub(pt1f);
+      d = tip.length();
+      if (d == 0)
+        break;
+      tip.scale(fScale / d / 5);
+      pt2f.add(tip);
+      tip.scale(5);
+      pt1f.set(pt2f);
+      pt1f.sub(tip);
+      viewer.transformPoint(pt2f, pt3);
+      viewer.transformPoint(pt1f, pt0);
+      tip.set(pt3.x - pt0.x, pt3.y - pt0.y, pt3.z - pt0.z);
+      d = tip.length();
+      headDiameter = (int) (d / 2);
+      diameter = headDiameter / 5;
+      if (diameter < 1)
+        diameter = 1;
+      if ((d = tip.length()) < 2)
+        break;
+      g3d.fillCone(Graphics3D.ENDCAPS_FLAT, headDiameter, pt0, pt3);
       break;
     case JmolConstants.DRAW_CIRCLE:
       //unimplemented
@@ -97,6 +123,15 @@ public class DrawRenderer extends MeshRenderer {
       break;
     default:
       super.render2();
+    }
+    if ((drawType == JmolConstants.DRAW_CURVE || drawType == JmolConstants.DRAW_ARROW)
+        && vertexCount >= 2) {
+      for (int i = 0, i0 = 0; i < vertexCount - 1; i++) {
+        g3d.fillHermite(tension, diameter, diameter, diameter, screens[i0],
+            screens[i], screens[i + 1], screens[i
+                + (i + 2 == vertexCount ? 1 : 2)]);
+        i0 = i;
+      }
     }
     if (isDrawPickMode) {
       renderHandles();

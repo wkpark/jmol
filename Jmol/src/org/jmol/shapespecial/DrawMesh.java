@@ -45,6 +45,7 @@ public class DrawMesh extends Mesh {
   int drawVertexCount;
   int[] drawVertexCounts;
   boolean isFixed;
+  float drawArrowScale;
 
   String getDrawType() {
     switch (drawType) {

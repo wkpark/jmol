@@ -71,6 +71,8 @@ class IsoMOReader extends AtomDataReader {
       line = TextFormat.formatString(line, "S", mo.containsKey("symmetry") && ++rep != 0 ? "" + mo.get("symmetry") : "");
     if (line.indexOf("%O") >= 0)
       line = TextFormat.formatString(line, "O", mo.containsKey("occupancy") && ++rep != 0  ? "" + mo.get("occupancy") : "");
+    if (line.indexOf("%T") >= 0)
+      line = TextFormat.formatString(line, "T", mo.containsKey("type") && ++rep != 0  ? "" + mo.get("type") : "");
     boolean isOptional = (line.indexOf("?") == 0);
     params.title[iLine] = (!isOptional ? line : rep > 0 ? line.substring(1) : "");
   }

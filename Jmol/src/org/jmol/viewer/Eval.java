@@ -10446,6 +10446,7 @@ class Eval { //implements Runnable {
 
       //unary:
 
+
       if (op.tok == Token.opNot)
         return (x2.tok == Token.bitset ? addX(BitSetUtil.invertInPlace(Token.bsSelect(x2), viewer.getAtomCount()))
             : addX(!Token.bValue(x2)));
@@ -10550,6 +10551,10 @@ class Eval { //implements Runnable {
           return addX(!(Token.sValue(x1).equalsIgnoreCase(Token.sValue(x2))));
         return addX(Token.fValue(x1) != Token.fValue(x2));
       case Token.plus:
+        if (x1.tok == Token.list) 
+          x1 = Token.selectItem(x1, Integer.MIN_VALUE);
+        if (x2.tok == Token.list) 
+          x2 = Token.selectItem(x2, Integer.MIN_VALUE);
         if (x1.tok == Token.list) {
           if (x2.tok == Token.list || x2.tok == Token.string)
             return addX(Token.concatList(x1, x2, true, x2.tok == Token.list));
@@ -10643,6 +10648,8 @@ class Eval { //implements Runnable {
             return addX(TextFormat.format(s, n, n, true, false));
           return addX(TextFormat.format(s, -n, n, false, false));
         case Token.list:
+          if (x1.tok == Token.list) 
+            x1 = Token.selectItem(x1, Integer.MIN_VALUE);
           String[] list = (String[]) x1.value;
           for (int i = 0; i < list.length; i++) {
             if (n == 0)

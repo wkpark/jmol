@@ -49,8 +49,9 @@ public class MopacGraphfReader extends MopacDataReader {
     try {
       readAtoms();
       readSlaterBasis();
-      readMOs();
-      readKeywords();
+      readMOs(false);
+      if (readKeywords())
+        readMOs(true);
     } catch (Exception e) {
       return setError(e);
     }
@@ -145,14 +146,17 @@ public class MopacGraphfReader extends MopacDataReader {
     nOrbitals = intinfo.size();
     setSlaters();
   }
-  
-  void readMOs() throws Exception {
+
+  float[][] list;
+
+  void readMOs(boolean isBeta) throws Exception {
 
     // read mo coefficients
 
     //  (5 data per line, 15 characters per datum, FORTRAN format: 5d15.8)
 
-    float[][] list = new float[nOrbitals][nOrbitals];
+    if (!isBeta) {
+    list = new float[nOrbitals][nOrbitals];
     for (int iMo = 0; iMo < nOrbitals; iMo++) {
       int n = -1;
       for (int i = 0; i < nOrbitals; i++) {
@@ -160,6 +164,7 @@ public class MopacGraphfReader extends MopacDataReader {
           readLine();
         list[iMo][i] = parseFloat(line.substring(n * 15, (n + 1) * 15));
       }
+    }
     }
     // read lower triangle of symmetric inverse sqrt matrix and multiply
     float[][] invMatrix = new float[nOrbitals][nOrbitals];
@@ -198,14 +203,21 @@ public class MopacGraphfReader extends MopacDataReader {
       mo.put("energy", new Float(values[0]));
       mo.put("occupancy", new Integer((int) values[1]));
       mo.put("coefficients", list2[iMo]);
+      if (isBeta)
+        mo.put("type", "beta");
       orbitals.addElement(mo); 
     }
     setMOs("eV");
   }
   
-  private void readKeywords() throws Exception {
+  private boolean readKeywords() throws Exception {
     if (readLine() == null || line.indexOf(" Keywords:") < 0)
-      return;
+      return false;
     moData.put("calculationType", line.substring(11).trim());
+    boolean isUHF = (line.indexOf("UHF") >= 0);
+    if (isUHF)
+      for (int i = orbitals.size(); --i >= 0;)
+        ((Hashtable)orbitals.get(i)).put("type", "alpha");
+    return isUHF;
   }
 }

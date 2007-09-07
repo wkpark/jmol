@@ -152,11 +152,16 @@ import org.jmol.util.ArrayUtil;
       pt = -1;
       n = 0;
       int c;
+      int pt2;
       while ((pt = colorScheme.indexOf("[", pt + 1)) >= 0) {
-        scale[n++] = c = Graphics3D.getArgbFromString(colorScheme.substring(pt,
-            pt + 9));
-        if (c == 0)
+        pt2 = colorScheme.indexOf("]", pt);
+        if (pt2 < 0)
+          pt2 = colorScheme.length() - 1;
+        scale[n++] = c = Graphics3D.getArgbFromString(colorScheme.substring(pt, pt2 + 1));
+        if (c == 0) {
+          Logger.error("error in color value: " + colorScheme.substring(pt, pt2 + 1));
           return ROYGB;
+        }
       }
       if (name.equals("user")) {
         setUserScale(scale);

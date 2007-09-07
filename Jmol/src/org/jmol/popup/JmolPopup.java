@@ -280,8 +280,9 @@ abstract public class JmolPopup {
         htMenus.put(id, subMenu);
         pt = 1;
       }
-      String entryName = "#" + (i + 1) + " "
-          + ((Hashtable) (mos.get(i))).get("energy");
+      Hashtable mo = (Hashtable) mos.get(i);
+      String type = (mo.containsKey("type") ? (String)mo.get("type") : "");
+      String entryName = "#" + (i + 1) + " " + mo.get("energy") + " " + type;
       String script = "mo " + (i + 1);
       addMenuItem(subMenu, entryName, script, null);
     }

@@ -42,17 +42,15 @@ import org.jmol.util.ArrayUtil;
   public ColorEncoder() {
   }
     
-  
   public final static String BYELEMENT_PREFIX  = "byelement";
   public final static String BYRESIDUE_PREFIX = "byresidue";
   private final static String BYELEMENT_JMOL = BYELEMENT_PREFIX + "_jmol"; 
   private final static String BYELEMENT_RASMOL = BYELEMENT_PREFIX + "_rasmol";
-  private final static String BYRESIDUE_JMOL = BYRESIDUE_PREFIX + "_jmol"; 
-  private final static String BYRESIDUE_RASMOL = BYRESIDUE_PREFIX + "_rasmol"; 
+  private final static String BYRESIDUE_SHAPELY = BYRESIDUE_PREFIX + "_shapely"; 
+  private final static String BYRESIDUE_AMINO = BYRESIDUE_PREFIX + "_amino"; 
   
-
   private final static String[] colorSchemes = {"roygb", "bgyor", "rwb", "bwr", "low", "high", 
-    BYELEMENT_JMOL, BYELEMENT_RASMOL, BYRESIDUE_JMOL, BYRESIDUE_RASMOL, "user", "resu"}; 
+    BYELEMENT_JMOL, BYELEMENT_RASMOL, BYRESIDUE_SHAPELY, BYRESIDUE_AMINO, "user", "resu"}; 
   private final static int ROYGB = 0;
   private final static int BGYOR = 1;
   private final static int RWB   = 2;
@@ -61,8 +59,8 @@ import org.jmol.util.ArrayUtil;
   private final static int HIGH  = 5;
   private final static int JMOL = 6;
   private final static int RASMOL = 7;
-  private final static int RESJMOL = 8;
-  private final static int RESRASMOL = 9;
+  private final static int SHAPELY = 8;
+  private final static int AMINO = 9;
   private final static int USER = -10;
   private final static int RESU = -11;
 
@@ -116,7 +114,7 @@ import org.jmol.util.ArrayUtil;
     if (name.equals("rasmol"))
       return BYELEMENT_RASMOL;
     if (name.equals(BYRESIDUE_PREFIX))
-      return BYRESIDUE_JMOL;
+      return BYRESIDUE_SHAPELY;
     return name;  
   }
   
@@ -239,9 +237,9 @@ import org.jmol.util.ArrayUtil;
       return ArrayUtil.arrayCopy(JmolConstants.argbsCpk, 0, -1, false);
     case RASMOL:
       return ArrayUtil.arrayCopy(getRasmolScale(false), 0, -1, false);
-    case RESJMOL:
+    case SHAPELY:
       return ArrayUtil.arrayCopy(JmolConstants.argbsShapely, 0, -1, false);
-    case RESRASMOL:
+    case AMINO:
       return ArrayUtil.arrayCopy(JmolConstants.argbsAmino, 0, -1, false);
     case USER:
       return ArrayUtil.arrayCopy(userScale, 0, -1, false);
@@ -297,10 +295,10 @@ import org.jmol.util.ArrayUtil;
     case RASMOL:
       c = getRasmolScale(false)[colorIndex((int)val, rasmolScaleLength)];
       break;
-    case RESJMOL:
+    case SHAPELY:
       c = JmolConstants.argbsShapely[colorIndex((int)val, JmolConstants.argbsShapely.length)];
       break;
-    case RESRASMOL:
+    case AMINO:
       c = JmolConstants.argbsAmino[colorIndex((int)val, JmolConstants.argbsAmino.length)];
       break;
     default:

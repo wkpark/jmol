@@ -65,37 +65,37 @@ public class Draw extends MeshCollection {
     myType = "draw";
   }
   
-  final static int MAX_POINTS = 256; // a few extras here
-  Point3f[] ptList = new Point3f[MAX_POINTS];
-  int[] ptIdentifiers = new int[MAX_POINTS];
-  boolean[] reversePoints = new boolean[MAX_POINTS];
-  boolean[] useVertices = new boolean[MAX_POINTS];
-  BitSet[] ptBitSets = new BitSet[MAX_POINTS];
-  BitSet bsAllAtoms = new BitSet();
-  Vector3f offset = new Vector3f();
-  int nPoints;
-  int nbitsets;
-  int ncoord;
-  int nidentifiers;
-  int diameter;
-  Integer rgb;
-  float newScale;
-  float length;
-  boolean isCurve;
-  boolean isArrow;
-  boolean isCircle;
-  boolean isVisible;
-  boolean isPerpendicular;
-  boolean isVertices;
-  boolean isPlane;
-  boolean isReversed;
-  boolean isRotated45;
-  boolean isCrossed;
-  boolean isValid;
-  int indicatedModelIndex = -1;
-  Point3f[][] modelVertices;
+  private final static int MAX_POINTS = 256; // a few extras here
+  private Point3f[] ptList = new Point3f[MAX_POINTS];
+  private int[] ptIdentifiers = new int[MAX_POINTS];
+  private boolean[] reversePoints = new boolean[MAX_POINTS];
+  private boolean[] useVertices = new boolean[MAX_POINTS];
+  private BitSet[] ptBitSets = new BitSet[MAX_POINTS];
+  private BitSet bsAllAtoms = new BitSet();
+  private Vector3f offset = new Vector3f();
+  private int nPoints;
+  private int nbitsets;
+  private int ncoord;
+  private int nidentifiers;
+  private int diameter;
+  private Integer rgb;
+  private float newScale;
+  private float length;
+  private boolean isCurve;
+  private boolean isArrow;
+  private boolean isCircle;
+  private boolean isVisible;
+  private boolean isPerpendicular;
+  private boolean isVertices;
+  private boolean isPlane;
+  private boolean isReversed;
+  private boolean isRotated45;
+  private boolean isCrossed;
+  private boolean isValid;
+  private int indicatedModelIndex = -1;
+  private Point3f[][] modelVertices;
 
- public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BitSet bs) {
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug("draw " + propertyName + " " + value);
     }
@@ -296,7 +296,7 @@ public class Draw extends MeshCollection {
     return super.getProperty(property, index);
   }
 
-  Point3f getSpinCenter(String axisID, int modelIndex) {
+  private Point3f getSpinCenter(String axisID, int modelIndex) {
     int pt = axisID.indexOf(".");
     String id = (pt > 0 ? axisID.substring(0, pt) : axisID);
     int meshIndex = getIndexFromName(id);
@@ -304,18 +304,18 @@ public class Draw extends MeshCollection {
     return (meshIndex < 0 ? null : getSpinCenter(meshIndex, vertexIndex, modelIndex));
    }
    
-  Vector3f getSpinAxis(String axisID, int modelIndex) {
+  private Vector3f getSpinAxis(String axisID, int modelIndex) {
     int meshIndex = getIndexFromName(axisID);
     return (meshIndex < 0 ? null : getSpinAxis(meshIndex, modelIndex));
    }
   
-  Object getPath(Mesh mesh) {
+  private Object getPath(Mesh mesh) {
     if (mesh == null)
       return null;
     return mesh.vertices;
   }
   
-  boolean setDrawing() {
+  private boolean setDrawing() {
     if (thisMesh == null)
       allocMesh(null);
     thisMesh.clear("draw");
@@ -406,7 +406,7 @@ public class Draw extends MeshCollection {
     return true;
   }
 
-  void addPoint(Point3f newPt) {
+  private void addPoint(Point3f newPt) {
     ptList[nPoints] = new Point3f(newPt);
     if (offset != null)
       ptList[nPoints].add(offset);    
@@ -468,8 +468,8 @@ public class Draw extends MeshCollection {
     return setPolygon(thisMesh, nPoints, nPoly);
   }
 
-  final Vector3f vAB = new Vector3f();
-  final Vector3f vAC = new Vector3f();
+  private final Vector3f vAB = new Vector3f();
+  private final Vector3f vAC = new Vector3f();
 
   private int setPolygon(DrawMesh mesh, int nVertices, int nPoly) {
     /*
@@ -628,7 +628,7 @@ public class Draw extends MeshCollection {
     }
   }
 
-  final Point3f getSpinCenter(int meshIndex, int vertexIndex, int modelIndex) {
+  private final Point3f getSpinCenter(int meshIndex, int vertexIndex, int modelIndex) {
     DrawMesh m = dmeshes[meshIndex];
     if (m.vertices == null || m.vertexCount <= vertexIndex)
       return null;
@@ -638,14 +638,14 @@ public class Draw extends MeshCollection {
     return pt;
   }
   
-  final Vector3f getSpinAxis(int meshIndex, int modelIndex) {
+  private final Vector3f getSpinAxis(int meshIndex, int modelIndex) {
     DrawMesh m = dmeshes[meshIndex];
     if (m.vertices == null)
       return null;
     return (m.ptCenters == null || modelIndex < 0 ? m.axis : m.axes[modelIndex]);
   }
   
-  final static void setAxes(DrawMesh m) {
+  private final static void setAxes(DrawMesh m) {
     m.axis = new Vector3f(0, 0, 0);
     m.axes = new Vector3f[m.polygonCount > 0 ? m.polygonCount : 1];
     if (m.vertices == null)
@@ -693,12 +693,12 @@ public class Draw extends MeshCollection {
     }
   }
   
-  final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 10 * 10;
+  private final static int MAX_OBJECT_CLICK_DISTANCE_SQUARED = 10 * 10;
 
-  DrawMesh pickedMesh = null;
-  int pickedModel;
-  int pickedVertex;
-  final Point3i ptXY = new Point3i();
+  private DrawMesh pickedMesh = null;
+  private int pickedModel;
+  private int pickedVertex;
+  private final Point3i ptXY = new Point3i();
   
   public boolean checkObjectClicked(int x, int y, int modifiers) {
     if (viewer.getPickingMode() == JmolConstants.PICKING_DRAW)
@@ -754,7 +754,7 @@ public class Draw extends MeshCollection {
     return true;
   }
   
-  void move2D(DrawMesh mesh, int[] vertexes, int iVertex, int x, int y,
+  private void move2D(DrawMesh mesh, int[] vertexes, int iVertex, int x, int y,
               boolean moveAll) {
     if (vertexes == null || vertexes.length == 0)
       return;
@@ -785,7 +785,7 @@ public class Draw extends MeshCollection {
     viewer.refresh(0, "draw");
   }
   
-  boolean findPickedObject(int x, int y, boolean isPicking) {
+  private boolean findPickedObject(int x, int y, boolean isPicking) {
     int dmin2 = MAX_OBJECT_CLICK_DISTANCE_SQUARED;
     pickedModel = 0;
     pickedVertex = 0;
@@ -815,7 +815,7 @@ public class Draw extends MeshCollection {
     return (pickedMesh != null);
   }
 
-  int coordinateInRange(int x, int y, Point3f vertex, int dmin2) {
+  private int coordinateInRange(int x, int y, Point3f vertex, int dmin2) {
     int d2 = dmin2;
     viewer.transformPoint(vertex, ptXY);
     d2 = (x - ptXY.x) * (x - ptXY.x) + (y - ptXY.y) * (y - ptXY.y);

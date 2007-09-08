@@ -237,7 +237,6 @@ public class Token {
   final static int group        = expression | 8;
   final static int chain        = expression | 9;
   final static int sequence     = expression | 10;
-  final static int comma        = expression | 11;
   final static int coord        = expression | 12;
   final static int none         = expression | 13;
   final static int all          = expression | 15;
@@ -287,33 +286,37 @@ public class Token {
   final static int leftparen    = 0  | mathop | 0 << 3;
   final static int rightparen   = 1  | mathop | 0 << 3;
 
-  final static int leftsquare   = 0  | mathop | 1 << 3;
-  final static int rightsquare  = 1  | mathop | 1 << 3;
+  final static int comma        = 0  | mathop | 1 << 3;
 
-  final static int opOr         = 0  | mathop | 2 << 3;
-  final static int opXor        = 1  | mathop | 2 << 3;
-  final static int opToggle     = 2  | mathop | 2 << 3;
+  final static int leftsquare   = 0  | mathop | 2 << 3;
+  final static int rightsquare  = 1  | mathop | 2 << 3;
 
-  final static int opAnd        = 0  | mathop | 3 << 3;
+  final static int opOr         = 0  | mathop | 3 << 3;
+  final static int opXor        = 1  | mathop | 3 << 3;
+  final static int opToggle     = 2  | mathop | 3 << 3;
+
+  final static int opAnd        = 0  | mathop | 4 << 3;
   
-  final static int opNot        = 0  | mathop | 4 << 3;
+  final static int opNot        = 0  | mathop | 5 << 3;
  
-  final static int opGT         = 0  | mathop | 5 << 3 | comparator;
-  final static int opGE         = 1  | mathop | 5 << 3 | comparator;
-  final static int opLE         = 2  | mathop | 5 << 3 | comparator;
-  final static int opLT         = 3  | mathop | 5 << 3 | comparator;
-  final static int opEQ         = 4  | mathop | 5 << 3 | comparator;
-  final static int opNE         = 5  | mathop | 5 << 3 | comparator;
+  final static int opGT         = 0  | mathop | 6 << 3 | comparator;
+  final static int opGE         = 1  | mathop | 6 << 3 | comparator;
+  final static int opLE         = 2  | mathop | 6 << 3 | comparator;
+  final static int opLT         = 3  | mathop | 6 << 3 | comparator;
+  final static int opEQ         = 4  | mathop | 6 << 3 | comparator;
+  final static int opNE         = 5  | mathop | 6 << 3 | comparator;
    
-  final static int hyphen       = 0  | mathop | 6 << 3;
-  final static int plus         = 1  | mathop | 6 << 3;
+  final static int minus        = 0  | mathop | 7 << 3;
+  final static int plus         = 1  | mathop | 7 << 3;
+ 
+  final static int divide       = 0  | mathop | 8 << 3;
+  final static int times        = 1  | mathop | 8 << 3;
+  final static int percent      = 2  | mathop | 8 << 3;
   
-  final static int slash        = 0  | mathop | 7 << 3;
-  final static int asterisk     = 1  | mathop | 7 << 3;
-  final static int percent      = 2  | mathop | 7 << 3;
+  final static int unaryMinus   = 0  | mathop | 9 << 3;
   
-  final static int unaryMinus   = 0  | mathop | 8 << 3;
-  final static int propselector = 1  | mathop | 9 << 3;
+  final static int propselector = 1  | mathop | 10 << 3;
+
 
   // these atom and math properties are invoked after a ".":
   // x.atoms
@@ -418,7 +421,7 @@ public class Token {
   // xxx(a,b,c,d)
   
   final static int angle        = 1  | 4 << 3 | mathfunc;
-  final static int plane        = 2  | 4 << 3 | mathfunc;
+  final static int plane        = 2  | 4 << 3 | mathfunc | specialstring; //may appear as string alone
 
   // xxx(a,b,c,d,e)
   
@@ -773,7 +776,7 @@ public class Token {
   final static Token tokenAnd = new Token(opAnd, "and");
   final static Token tokenOr  = new Token(opOr, "or");
   final static Token tokenComma = new Token(comma, ",");
-  final static Token tokenMinus = new Token(hyphen, "-");
+  final static Token tokenMinus = new Token(minus, "-");
  
   final static Token tokenExpressionBegin =
     new Token(expressionBegin, "expressionBegin");
@@ -1029,9 +1032,9 @@ public class Token {
     "}",            new Token(rightbrace),
     "$",            new Token(dollarsign),
     "%",            new Token(percent),
-    "*",            new Token(asterisk),
+    "*",            new Token(times),
     ":",            new Token(colon),
-    "/",            new Token(slash),
+    "/",            new Token(divide),
     
     "molecule",          new Token(molecule),
     "molecules",         null, 

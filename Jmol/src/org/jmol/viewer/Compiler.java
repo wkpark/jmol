@@ -25,7 +25,6 @@ package org.jmol.viewer;
 
 import org.jmol.util.Logger;
 import org.jmol.util.CommandHistory;
-import org.jmol.util.Parser;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.i18n.GT;
 import org.jmol.modelset.Group;
@@ -1176,6 +1175,18 @@ class Compiler {
     return 0;
   }
 
+  private boolean addTokenToPostfix(int tok) {
+    return addTokenToPostfix(new Token(tok));
+  }
+
+  private boolean addTokenToPostfix(int tok, Object value) {
+    return addTokenToPostfix(new Token(tok, value));
+  }
+
+  private boolean addTokenToPostfix(int tok, int intValue, Object value) {
+    return addTokenToPostfix(new Token(tok, intValue, value));
+  }
+
   private boolean addTokenToPostfix(Token token) {
     if (token == null)
       return false;
@@ -1245,9 +1256,9 @@ class Compiler {
   private boolean clausePrimitive() {
     int tok = tokPeek();
     switch (tok) {
-    case Token.hyphen: // selecting a negative residue spec
+    case Token.minus: // selecting a negative residue spec
     case Token.seqcode:
-    case Token.asterisk:
+    case Token.times:
     case Token.leftsquare:
     case Token.identifier:
     case Token.colon:
@@ -1268,7 +1279,7 @@ class Compiler {
     case Token.integer:
       if (clauseResidueSpec())
         return true;
-    case Token.slash:
+    case Token.divide:
       addNextToken();
       return true;
     case Token.string:
@@ -1277,7 +1288,7 @@ class Compiler {
     case Token.define:
       addNextToken();
       if (tokPeek()!=Token.nada)
-        return addTokenToPostfix(new Token(Token.identifier, tokenNext().value));
+        return addTokenToPostfix(Token.identifier, tokenNext().value);
       //fall through
       case Token.nada:
         return endOfCommandUnexpected();
@@ -1303,8 +1314,7 @@ class Compiler {
       addNextToken();
       return clauseSubstructure();
     case Token.decimal:
-      return addTokenToPostfix(new Token(Token.spec_model2,
-          getToken().intValue, theValue));
+      return addTokenToPostfix(Token.spec_model2, getToken().intValue, theValue);
     case Token.leftparen:
       addNextToken();
       if (!clauseOr(true))
@@ -1407,7 +1417,7 @@ class Compiler {
     float distance = 0;
     String key = null;
     switch (theToken.tok) {
-    case Token.hyphen:
+    case Token.minus:
       if (getToken() == null)
         return false;
       if (theToken.tok != Token.integer)
@@ -1435,31 +1445,41 @@ class Compiler {
       return unrecognizedParameter("WITHIN", "" + theToken.value);
     }
     if (key == null)
-      addTokenToPostfix(new Token(Token.decimal, new Float(distance)));
+      addTokenToPostfix(Token.decimal, new Float(distance));
     else
-      addTokenToPostfix(new Token(Token.string, key));
+      addTokenToPostfix(Token.string, key);
 
     while (true) {
       if (!addNextTokenIf(Token.comma))
         break;
       int tok = tokPeek();
       boolean isCoordOrPlane = false;
-      if (key == null && tok == Token.identifier || tok == Token.coord) {
-        //distance was specified, but to what?
-        getToken();
-        key = ((String) theValue).toLowerCase();
-        if (Parser.isOneOf(key, "plane;hkl;coord")) {
-          addTokenToPostfix(new Token(Token.string, key));
-        } else {
-          returnToken();
-          if (tok == Token.leftbrace) {
+      if (key == null) {
+        if (tok == Token.identifier) {
+          //distance was specified, but to what?
+          getToken();
+          key = ((String) theValue).toLowerCase();
+          if (key.equals("hkl")) {
             isCoordOrPlane = true;
-            addTokenToPostfix(new Token(Token.string, "coord"));
+            addTokenToPostfix(Token.string, key);
+          } else if (key.equals("coord")) {
+            isCoordOrPlane = true;
+            addTokenToPostfix(Token.coord);
+          } else if (key.equals("plane")) {
+            isCoordOrPlane = true;
+            addTokenToPostfix(Token.plane);
+          } else {
+            returnToken();
           }
+        } else if (tok == Token.coord || tok == Token.plane) {
+          isCoordOrPlane = true;
+          addNextToken();
+        } else if (tok == Token.leftbrace) {
+          returnToken();
+          isCoordOrPlane = true;
+          addTokenToPostfix(Token.coord);
         }
       }
-      if (Parser.isOneOf(key, "plane;hkl;coord"))
-        isCoordOrPlane = true;
       addNextTokenIf(Token.comma);
       if (isCoordOrPlane) {
         while (!tokPeek(Token.rightparen)) {
@@ -1491,8 +1511,8 @@ class Compiler {
   private boolean clauseConnected() {
     // connected (1,3, single, .....)
     if (!addNextTokenIf(Token.leftparen)) {
-      addTokenToPostfix(new Token(Token.leftparen));
-      addTokenToPostfix(new Token(Token.rightparen));
+      addTokenToPostfix(Token.leftparen);
+      addTokenToPostfix(Token.rightparen);
       return true;
     }
     while (true) {
@@ -1514,7 +1534,7 @@ class Compiler {
         if (intType == JmolConstants.BOND_ORDER_NULL) {
           returnToken();
         } else {
-          addTokenToPostfix(new Token(Token.string, strOrder));
+          addTokenToPostfix(Token.string, strOrder);
           if (!addNextTokenIf(Token.comma))
             break;
         }
@@ -1553,7 +1573,7 @@ class Compiler {
       if (!clauseOr(false))
         return false;
       returnToken();
-      if (tokPeek() != Token.asterisk)
+      if (tokPeek() != Token.times)
         tokenNext();
       tok = tokPeek();
       if (tok == Token.rightsquare || !tokAttr(tok, Token.mathop))
@@ -1571,7 +1591,7 @@ class Compiler {
       return comparisonOperatorExpected();
     if (getToken() == null)
       return unrecognizedExpressionToken();
-    boolean isNegative = (isToken(Token.hyphen));
+    boolean isNegative = (isToken(Token.minus));
     if (isNegative && getToken() == null)
       return numberExpected();
     switch (theToken.tok) {
@@ -1585,8 +1605,8 @@ class Compiler {
     default:
       return numberOrVariableNameExpected();
     }
-    addTokenToPostfix(new Token(tokenComparator.tok, tokenAtomProperty.tok,
-        tokenComparator.value + (isNegative ? " -" : "")));
+    addTokenToPostfix(tokenComparator.tok, tokenAtomProperty.tok,
+        tokenComparator.value + (isNegative ? " -" : ""));
     if (tokenAtomProperty.tok == Token.property)
       addTokenToPostfix(tokenAtomProperty);
     if (isToken(Token.leftbrace)) {
@@ -1613,7 +1633,7 @@ class Compiler {
       cell.x = nnn / 100 - 4;
       cell.y = (nnn % 100) / 10 - 4;
       cell.z = (nnn % 10) - 4;
-      return addTokenToPostfix(new Token(Token.cell, cell));
+      return addTokenToPostfix(Token.cell, cell);
     }
     if (!isToken(Token.leftbrace) || !getNumericalToken())
       return coordinateExpected(); // i
@@ -1628,7 +1648,7 @@ class Compiler {
     if (!getNumericalToken() || !tokenNext(Token.rightbrace))
       return coordinateExpected(); // k
     cell.z = floatValue();
-    return addTokenToPostfix(new Token(Token.cell, cell));
+    return addTokenToPostfix(Token.cell, cell);
   }
 
   private boolean residueSpecCodeGenerated;
@@ -1645,7 +1665,7 @@ class Compiler {
     boolean specSeen = false;
     residueSpecCodeGenerated = false;
     int tok = tokPeek();
-    if (tok == Token.asterisk || tok == Token.leftsquare
+    if (tok == Token.times || tok == Token.leftsquare
         || tok == Token.identifier) {
 
       //note: there are many groups that could
@@ -1660,7 +1680,7 @@ class Compiler {
       tok = tokPeek();
     }
     boolean wasInteger = false;
-    if (tok == Token.asterisk || tok == Token.hyphen || tok == Token.integer
+    if (tok == Token.times || tok == Token.minus || tok == Token.integer
         || tok == Token.seqcode) {
       wasInteger = (tok == Token.integer);
       if (!clauseResNumSpec())
@@ -1668,7 +1688,7 @@ class Compiler {
       specSeen = true;
       tok = tokPeek();
     }
-    if (tok == Token.colon || tok == Token.asterisk || tok == Token.identifier
+    if (tok == Token.colon || tok == Token.times || tok == Token.identifier
         || tok == Token.integer && !wasInteger) {
       if (!clauseChainSpec(tok))
         return false;
@@ -1687,7 +1707,7 @@ class Compiler {
       specSeen = true;
       tok = tokPeek();
     }
-    if (tok == Token.colon || tok == Token.slash) {
+    if (tok == Token.colon || tok == Token.divide) {
       if (!clauseModelSpec())
         return false;
       specSeen = true;
@@ -1704,7 +1724,7 @@ class Compiler {
 
   private boolean clauseResNameSpec() {
     getToken();
-    if (isToken(Token.asterisk) || isToken(Token.nada))
+    if (isToken(Token.times) || isToken(Token.nada))
       return (!isToken(Token.nada));
     if (isToken(Token.leftsquare)) {
       String strSpec = "";
@@ -1729,7 +1749,7 @@ class Compiler {
     //check for a * in the next token, which
     //would indicate this must be a name with wildcard
 
-    if (tokPeek(Token.asterisk)) {
+    if (tokPeek(Token.times)) {
       String res = theValue + "*";
       getToken();
       return generateResidueSpecCode(new Token(Token.identifier, res));
@@ -1739,7 +1759,7 @@ class Compiler {
 
   private boolean clauseResNumSpec() {
     log("clauseResNumSpec()");
-    if (tokPeek(Token.asterisk))
+    if (tokPeek(Token.times))
       return (getToken() != null);
     return clauseSequenceRange();
   }
@@ -1749,8 +1769,8 @@ class Compiler {
     if (seqToken == null)
       return false;
     int tok = tokPeek();
-    if (tok == Token.hyphen || tok == Token.integer && intPeek() < 0) {
-      if (tok == Token.hyphen) {
+    if (tok == Token.minus || tok == Token.integer && intPeek() < 0) {
+      if (tok == Token.minus) {
         tokenNext();
       } else if (tokPeek() == Token.integer && intPeek() < 0) {
          // hyphen masquerading as neg int
@@ -1783,7 +1803,7 @@ class Compiler {
     int seqcode = Integer.MAX_VALUE;
     int seqvalue = Integer.MAX_VALUE;
     int tokPeek = tokPeek();
-    if (tokPeek == Token.hyphen) {
+    if (tokPeek == Token.minus) {
       tokenNext();
       tokPeek = tokPeek();
       negative = true;
@@ -1808,7 +1828,7 @@ class Compiler {
         return generateResidueSpecCode(new Token(Token.spec_chain, '\0',
             "spec_chain"));
     }
-    if (tok == Token.asterisk)
+    if (tok == Token.times)
       return (getToken() != null);
     char chain;
     switch (tok) {
@@ -1837,7 +1857,7 @@ class Compiler {
   private boolean isSpecTerminator(int tok) {
     switch (tok) {
     case Token.nada:
-    case Token.slash:
+    case Token.divide:
     case Token.opAnd:
     case Token.opOr:
     case Token.opNot:
@@ -1856,7 +1876,7 @@ class Compiler {
       return generateResidueSpecCode(new Token(Token.spec_alternate, null));
     String alternate = (String) getToken().value;
     switch (theToken.tok) {
-    case Token.asterisk:
+    case Token.times:
     case Token.string:
     case Token.integer:
     case Token.identifier:
@@ -1870,7 +1890,7 @@ class Compiler {
 
   private boolean clauseModelSpec() {
     getToken();
-    if (tokPeek(Token.asterisk)) {
+    if (tokPeek(Token.times)) {
       getToken();
       return true;
     }
@@ -1901,7 +1921,7 @@ class Compiler {
         return invalidAtomSpecification();
     }
     switch (theToken.tok) {
-    case Token.asterisk:
+    case Token.times:
       return true;
     case Token.identifier:
       break;
@@ -1909,7 +1929,7 @@ class Compiler {
       return invalidAtomSpecification();
     }
     atomSpec += theValue;
-    if (tokPeek(Token.asterisk)) {
+    if (tokPeek(Token.times)) {
       tokenNext();
       // this one is a '*' as a prime, not a wildcard
       atomSpec += "*";

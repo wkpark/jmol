@@ -1226,17 +1226,16 @@ class Eval { //implements Runnable {
         rpn.addX(new Token(Token.point4f, planeParameter(pc + 2)));
         pc = iToken;
         break;
+      case Token.coord:
+        rpn.addX(instruction);
+        rpn.addX(getPoint3f(pc + 2, true));
+        pc = iToken;
+        break;
       case Token.string:
         rpn.addX(instruction);
-        val = (String) value;
-        if (val.equals("hkl")) {
+        if (((String) value).equals("hkl")) {
           rpn.addX(new Token(Token.point4f, hklParameter(pc + 2)));
           pc = iToken;
-          break;
-        } else if (val.equals("coord")) {
-          rpn.addX(getPoint3f(pc + 2, true));
-          pc = iToken;
-          break;
         }
         break;
       case Token.within:
@@ -2426,7 +2425,7 @@ class Eval { //implements Runnable {
         coord[n++] = theToken.intValue * multiplier;
         multiplier = 1;
         break;
-      case Token.slash:
+      case Token.divide:
         getToken(++i);
       case Token.spec_model: // after a slash
         n--;
@@ -2776,7 +2775,7 @@ class Eval { //implements Runnable {
         if (!isSyntaxCheck)
           viewer.navTranslatePercent(timeSec, x, y);
         continue;
-      case Token.slash:
+      case Token.divide:
         continue;
       case Token.trace:
         Point3f[][] pathGuide;
@@ -4289,7 +4288,7 @@ class Eval { //implements Runnable {
       case Token.spin:
         isSpin = true;
         break;
-      case Token.hyphen:
+      case Token.minus:
         direction = -1;
         break;
       case Token.axisangle:
@@ -4478,7 +4477,7 @@ class Eval { //implements Runnable {
       i++;
       lineEnd = lineNumber = Math.max(intParameter(i++), 0);
       if (checkToken(i))
-        if (getToken(i++).tok == Token.hyphen)
+        if (getToken(i++).tok == Token.minus)
           lineEnd = (checkToken(i) ? intParameter(i++) : 0);
         else
           invalidArgument();
@@ -4488,7 +4487,7 @@ class Eval { //implements Runnable {
       pc = Math.max(intParameter(i++) - 1, 0);
       pcEnd = pc + 1;
       if (checkToken(i))
-        if (getToken(i++).tok == Token.hyphen)
+        if (getToken(i++).tok == Token.minus)
           pcEnd = (checkToken(i) ? intParameter(i++) : 0);
         else
           invalidArgument();
@@ -4827,10 +4826,10 @@ class Eval { //implements Runnable {
       if (isFloatParameter(i + 1)) {
         float value = floatParameter(i+1);
         switch (getToken(i++).tok) {
-        case Token.slash:
+        case Token.divide:
           factor /= value;
           break;
-        case Token.asterisk:
+        case Token.times:
           factor *= value;
           break;
         case Token.plus:
@@ -5442,7 +5441,7 @@ class Eval { //implements Runnable {
     checkStatementLength(4);
     boolean negative = false;
     getToken(2);
-    if (theTok == Token.hyphen)
+    if (theTok == Token.minus)
       negative = true;
     else if (theTok != Token.plus)
       invalidArgument();
@@ -5635,7 +5634,7 @@ class Eval { //implements Runnable {
     // for now -- as before -- remove to implement
     // frame/model difference
 
-    if (getToken(offset).tok == Token.hyphen) {
+    if (getToken(offset).tok == Token.minus) {
       ++offset;
       checkStatementLength(offset + 1);
       if (getToken(offset).tok != Token.integer || intParameter(offset) != 1)
@@ -5653,11 +5652,11 @@ class Eval { //implements Runnable {
     for (int i = offset; i < statementLength; i++) {
       switch (getToken(i).tok) {
       case Token.all:
-      case Token.asterisk:
+      case Token.times:
         checkStatementLength(offset + (isRange ? 2 : 1));
         isAll = true;
         break;
-      case Token.hyphen: //ignore
+      case Token.minus: //ignore
         if (nFrames != 1)
           invalidArgument();
         isHyphen = true;
@@ -6243,6 +6242,8 @@ class Eval { //implements Runnable {
       case Token.rightbrace:
         invalidArgument();
       case Token.comma: //ignore commas
+        if (!rpn.addOp(theToken))
+          invalidArgument();
         break;
       case Token.dot:
         Token token = getBitsetPropertySelector(i);
@@ -6263,7 +6264,7 @@ class Eval { //implements Runnable {
         if (Compiler.tokAttr(theTok, Token.mathop)
             || Compiler.tokAttr(theTok, Token.mathfunc)) {
           if (!rpn.addOp(theToken)) {
-            iToken--;
+            //iToken--;
             invalidArgument();
           }
         } else {
@@ -8606,7 +8607,7 @@ class Eval { //implements Runnable {
         offset += intParameter(index);
       else if (tokAt(index) == Token.plus)
         offset += intParameter(index+1);
-      else if (tokAt(index) == Token.hyphen)
+      else if (tokAt(index) == Token.minus)
         offset -= intParameter(index+1);
     }
     return offset;
@@ -9806,23 +9807,32 @@ class Eval { //implements Runnable {
       // Do we have the appropriate context for this operator?
 
       if (logMessages) {
-        Logger.info("\naddOp: " + op);
         dumpStacks();
+        Logger.info("\naddOp: " + op);
       }
       Token newOp = null;
       int tok;
       boolean isLeftOp = false;
       boolean isDotSelector = (op.tok == Token.propselector);
-      boolean isMathFunc = isOpFunc(op);
+
       if (isDotSelector && !wasX)
         return false;
-
+      
+      boolean isMathFunc = isOpFunc(op);
+      
+      // the word "plane" can also appear alone, not as a function
+      if (oPt >= 1 && op.tok != Token.leftparen 
+          && Compiler.tokAttr(oStack[oPt].tok, Token.specialstring))
+        oPt--;
+      
+      // math functions as arguments appear without a prefixing operator
+      boolean isArgument = (oPt >= 1 && oStack[oPt].tok == Token.leftparen);
+      
       switch (op.tok) {
       case Token.comma:
         if (!wasX)
           return false;
-        wasX = false;
-        return true;
+        break;
       case Token.min:
       case Token.max:
       case Token.minmaxmask:
@@ -9837,7 +9847,7 @@ class Eval { //implements Runnable {
         if (isLeftOp)
           op = newOp = new Token(Token.leftsquare, 0);
         break;
-      case Token.hyphen:
+      case Token.minus:
         if (wasX)
           break;
         addX(0);
@@ -9852,8 +9862,8 @@ class Eval { //implements Runnable {
       case Token.leftparen:
         isLeftOp = true;
       default:
-        if (isMathFunc) {
-          if (!isDotSelector && wasX)
+      if (isMathFunc) {
+          if (!isDotSelector && wasX && ! isArgument)
             return false;
           newOp = op;
           isLeftOp = true;
@@ -9910,6 +9920,10 @@ class Eval { //implements Runnable {
       // right ) and ] are not added to the stack
 
       switch (op.tok) {
+      
+      case Token.comma:
+        wasX = false;
+        return true;
       case Token.leftparen:
         parenCount++;
         wasX = false;
@@ -9987,6 +10001,7 @@ class Eval { //implements Runnable {
       Logger.info("RPN stacks: for " + getScript());
       for (int i = 0; i <= xPt; i++)
         Logger.info("x[" + i + "]: " + xStack[i]);
+      Logger.info("\n");
       for (int i = 0; i <= oPt; i++)
         Logger.info("o[" + i + "]: " + oStack[i] + " prec="
             + Token.prec(oStack[i].tok));
@@ -10249,6 +10264,8 @@ class Eval { //implements Runnable {
 
       float factor = (isScalar ? Token.fValue(x2) : 0);
 
+      String sValue = (isScalar ? Token.sValue(x2) : "");
+      
       String[] sList1 = (x1.value instanceof String ? TextFormat.split(
           (String) x1.value, "\n") : (String[]) x1.value);
       float[] list1 = new float[sList1.length];
@@ -10264,12 +10281,25 @@ class Eval { //implements Runnable {
           list2[i] = factor;
       else
         Parser.parseFloatArray(sList2, list2);
+      
+      String[] sList3 = new String[len]; 
+
       switch (tok) {
       case Token.add:
+        if (Float.isNaN(factor)) {
+          for (int i = len; --i >= 0;)
+            sList3[i] = sList1[i] + (isScalar ? sValue : sList2[i]); 
+          return addX(sList3);
+        }
         for (int i = len; --i >= 0;)
           list1[i] += list2[i];
         break;
       case Token.sub:
+        if (Float.isNaN(factor)) {
+          for (int i = len; --i >= 0;)
+            sList3[i] = (isScalar ? sValue : sList2[i]) + sList1[i]; 
+          return addX(sList3);
+        }
         for (int i = len; --i >= 0;)
           list1[i] -= list2[i];
         break;
@@ -10286,8 +10316,8 @@ class Eval { //implements Runnable {
         break;
       }
       for (int i = len; --i >= 0;)
-        sList1[i] = "" + list1[i];
-      return addX(sList1);
+        sList3[i] = "" + list1[i];
+      return addX(sList3);
     }
 
     private boolean evaluateLoad(Token[] args) throws ScriptException {
@@ -10376,7 +10406,8 @@ class Eval { //implements Runnable {
       if (withinSpec instanceof String)
         isSequence = !Parser.isOneOf(withinStr,
             "element;site;group;chain;molecule;model");
-      else if (withinSpec instanceof Float)
+      else if (withinSpec instanceof Float 
+          || args[0].tok == Token.integer)
         distance = Token.fValue(args[0]);
       else
         return false;
@@ -10392,7 +10423,7 @@ class Eval { //implements Runnable {
       int i = args.length - 1;
       if (args[i].value instanceof Point4f)
         plane = (Point4f) args[i].value;
-      if (args[i].value instanceof Point3f)
+      else if (args[i].value instanceof Point3f)
         pt = (Point3f) args[i].value;
       if (plane == null && pt == null && !(args[i].value instanceof BitSet))
         return false;
@@ -10659,7 +10690,7 @@ class Eval { //implements Runnable {
           }
         }
         return addX(Token.fValue(x1) + Token.fValue(x2));
-      case Token.hyphen:
+      case Token.minus:
         if (x1.tok == Token.integer)
           return addX(x1.intValue - Token.iValue(x2));
       //fall through
@@ -10678,7 +10709,7 @@ class Eval { //implements Runnable {
           }
         }
         return addX(Token.fValue(x1) - Token.fValue(x2));
-      case Token.asterisk:
+      case Token.times:
         if (x1.tok == Token.integer && x2.tok != Token.decimal)
           return addX(x1.intValue * Token.iValue(x2));
         if (x1.tok == Token.point3f) {
@@ -10748,7 +10779,7 @@ class Eval { //implements Runnable {
         case Token.bitset:
           return addX(Token.bsSelect(x1, n));
         }
-      case Token.slash:
+      case Token.divide:
         if (x1.tok == Token.integer && x2.tok == Token.integer
             && x2.intValue != 0)
           return addX(x1.intValue / x2.intValue);

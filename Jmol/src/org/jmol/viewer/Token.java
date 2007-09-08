@@ -108,7 +108,7 @@ public class Token {
   final static int mathfunc          = (1 << 21) | expression;  
   final static int comparator        = (1 << 22) | expression;
 
-  final static int coordOrSet = negnums | embeddedExpression; 
+  final static int numberOrExpression = negnums | embeddedExpression; 
 
   // These are unrelated
   final static int varArgCount       = (1 << 4);
@@ -141,13 +141,13 @@ public class Token {
   final static int reset        = command | 24;
   final static int restrict     = command | 25 | expressionCommand;
   final static int ribbon       = command | 26;
-  final static int rotate       = command | 27 | coordOrSet;
+  final static int rotate       = command | 27 | numberOrExpression;
   final static int save         = command | 28;
 //  final static int script       = command | 29; with mathfunc
   final static int select       = command | 30 | expressionCommand;
-  final static int set          = command | 31 | negnums | embeddedExpression | colorparam;
+  final static int set          = command | 31 | numberOrExpression | colorparam;
   final static int show         = command | 32;
-  final static int slab         = command | 33 | negnums | embeddedExpression;
+  final static int slab         = command | 33 | numberOrExpression;
   final static int spacefill    = command | 35 | negnums;
   final static int ssbond       = command | 36 | setparam;
   final static int stereo       = command | 38 | colorparam | negnums;
@@ -157,17 +157,17 @@ public class Token {
   final static int wireframe    = command | 44;
   final static int write        = command | 45;
   final static int zap          = command | 46;
-  final static int zoom         = command | 47 | negnums | embeddedExpression;
-  final static int zoomTo       = command | 48 | negnums | embeddedExpression;
+  final static int zoom         = command | 47 | numberOrExpression;
+  final static int zoomTo       = command | 48 | numberOrExpression;
   final static int initialize   = command | 49;
   // openrasmol commands
-  final static int depth        = command | 50 | negnums | embeddedExpression;
+  final static int depth        = command | 50 | numberOrExpression;
   final static int star         = command | 51;
   // chime commands
   final static int delay        = command | 60;
   final static int loop         = command | 61;
   final static int move         = command | 62 | negnums;
-  final static int spin         = command | 64 | setparam | coordOrSet;
+  final static int spin         = command | 64 | setparam | numberOrExpression;
   final static int animation    = command | 67;
   final static int frame        = command | 68;
   // jmol commands
@@ -181,19 +181,19 @@ public class Token {
   final static int halo         = command | 85;
   final static int rocket       = command | 86;
   final static int geosurface   = command | 87 | embeddedExpression;
-  final static int moveto       = command | 88 | negnums | embeddedExpression;
+  final static int moveto       = command | 88 | numberOrExpression;
   final static int bondorder    = command | 89;
   final static int console      = command | 90;
   final static int pmesh        = command | 91;
   final static int polyhedra    = command | 92 | embeddedExpression | colorparam;
   final static int centerAt     = command | 93;
-  final static int isosurface   = command | 94 | colorparam | coordOrSet;
-  final static int draw         = command | 95 | coordOrSet | colorparam;
+  final static int isosurface   = command | 94 | colorparam | numberOrExpression;
+  final static int draw         = command | 95 | numberOrExpression | colorparam;
   final static int getproperty  = command | 96 | embeddedExpression;
-  final static int dipole       = command | 97 | coordOrSet;
+  final static int dipole       = command | 97 | numberOrExpression;
   final static int configuration = command | 98;
   final static int mo           = command | 99 | colorparam | negnums;
-  final static int lcaocartoon  = command | 100| colorparam | negnums | embeddedExpression;
+  final static int lcaocartoon  = command | 100| colorparam | numberOrExpression;
   final static int message      = command | 101 | specialstring;
   final static int translateSelected = command | 102 | negnums;
   final static int calculate    = command | 103;
@@ -201,7 +201,7 @@ public class Token {
   final static int selectionHalo = command | 105 | setparam;
   final static int history       = command | 106 | setparam;
   final static int display       = command | 107 | setparam | expressionCommand;
-  final static int ifcmd         = command | 108 |  negnums | embeddedExpression;
+  final static int ifcmd         = command | 108 |  numberOrExpression;
   final static int elsecmd       = command | 109;
   final static int endifcmd      = command | 110;
   final static int subset        = command | 111 | expressionCommand | predefinedset;
@@ -209,14 +209,14 @@ public class Token {
   final static int boundbox      = command | 113 | setparam;
   final static int unitcell      = command | 114 | setparam | expression | predefinedset;
   final static int frank         = command | 115 | setparam;
-  final static int navigate      = command | 116 | negnums | embeddedExpression;
+  final static int navigate      = command | 116 | numberOrExpression;
   final static int gotocmd       = command | 117;
-  final static int invertSelected = command | 118 | negnums | embeddedExpression;
-  final static int rotateSelected = command | 119 | negnums | embeddedExpression;
+  final static int invertSelected = command | 118 | numberOrExpression;
+  final static int rotateSelected = command | 119 | numberOrExpression;
   final static int quaternion     = command | 120;
   final static int ramachandran   = command | 121;
   final static int sync           = command | 122;
-  final static int print          = command | 123 | negnums | embeddedExpression;
+  final static int print          = command | 123 | numberOrExpression;
 
 
   //the following are listed with atomproperty because they must be registered as atom property names
@@ -278,8 +278,8 @@ public class Token {
   final static int symmetry      = predefinedset | 22;
   final static int specialposition = predefinedset | 23;
 
-  final static int prec(Token op) {
-    return ((op.tok >> 3) & 0xF);  
+  final static int prec(int tok) {
+    return ((tok >> 3) & 0xF);  
   }
 
   // precedence is set by the << 3 shift
@@ -315,50 +315,21 @@ public class Token {
   final static int unaryMinus   = 0  | mathop | 8 << 3;
   final static int propselector = 1  | mathop | 9 << 3;
 
-  // for non-.-operators only, the maximum number of parameters is << 3
-  // for .-operators, the maximum is 9, set byt propselector, above
-  // no more than 7 per group due to << 3.
+  // these atom and math properties are invoked after a ".":
+  // x.atoms
+  // myset.bonds
   
-  // .distance (Point3f)
-  // .label (String format)
-  // within (float min|int tokType|String planeType|String sequence, BitSet atomset|Point3f pt, Point4f plane)
-  // connected(float min, float max, String type, BitSet atomset1, BitSet atomset2)
-  // substructure("smiles")
-
-  final static int split        = 1  | mathfunc | mathproperty | 0 << 3;
-  final static int join         = 2  | mathfunc | mathproperty | 0 << 3;
-  final static int trim         = 3  | mathfunc | mathproperty | 0 << 3;
-  
-  // for lists: 
-  
-  final static int add          = 4  | mathfunc | mathproperty | 0 << 3;
-  final static int sub          = 5  | mathfunc | mathproperty | 0 << 3;
-  final static int mul          = 6  | mathfunc | mathproperty | 0 << 3;
-  final static int div          = 7  | mathfunc | mathproperty | 0 << 3;
-
-  final static int label        = 1  | mathfunc | mathproperty | 1 << 3 | command | specialstring | setparam;
-  final static int find         = 2  | mathfunc | mathproperty | 1 << 3;
-  final static int load         = 3  | mathfunc | 1 << 3 | command | negnums;
-  final static int substructure = 4  | mathfunc | 1 << 3;
-  final static int script       = 5  | mathfunc | 1 << 3 | command;
-  final static int javascript   = 6  | mathfunc | 1 << 3 | command | specialstring;
-
-  final static int distance     = 1  | mathfunc | mathproperty | 2 << 3;
-  final static int data         = 2  | mathfunc | 2 << 3 | command;
-  final static int replace      = 3  | mathfunc | mathproperty | 2 << 3;
-
-  final static int angle        = 1  | mathfunc | 4 << 3;
-  final static int within       = 1  | mathfunc | 5 << 3;
-  final static int connected    = 2  | mathfunc | 5 << 3;
-
+  // ___.min and ___.max are bitfields added to a preceding property selector
 
   final static int minmaxmask = 3 << 6;
   final static int min        = 1 << 6;
   final static int max        = 2 << 6;
   
-  final static int atom      = 1 | mathproperty;
+  // ___.xxx math properties and all atom properties 
+  
+  final static int atoms     = 1 | mathproperty;
   final static int bonds     = 2 | mathproperty | setparam;
-  final static int color     = 3 | mathproperty | command | colorparam | setparam | embeddedExpression | negnums;
+  final static int color     = 3 | mathproperty | command | colorparam | setparam | numberOrExpression;
   final static int ident     = 4 | mathproperty;
   final static int length    = 5 | mathproperty;
   final static int lines     = 6 | mathproperty;
@@ -400,6 +371,61 @@ public class Token {
   final static int psi             = atompropertyfloat | 8;
   final static int surfacedistance = atompropertyfloat | 9;
   final static int temperature     = atompropertyfloat |10;
+
+
+  // mathfunc               means x = somefunc(a,b,c)
+  // mathfunc|mathproperty  means x = y.somefunc(a,b,c)
+  // 
+  // maximum number of parameters is set by the << 3 shift
+  // that << 3 shift means the first number here must not exceed 7
+  // the only requirement is that these numbers be unique
+
+  // xxx(a)
+  
+  final static int load         = 1  | 1 << 3 | mathfunc | command | negnums;
+  final static int substructure = 2  | 1 << 3 | mathfunc;
+  final static int script       = 3  | 1 << 3 | mathfunc | command;
+  final static int javascript   = 4  | 1 << 3 | mathfunc | command | specialstring;
+
+  // ___.xxx(a)
+  
+  final static int split        = 0  | 1 << 3 | mathfunc | mathproperty;
+  final static int join         = 1  | 1 << 3 | mathfunc | mathproperty;
+  final static int trim         = 2  | 1 << 3 | mathfunc | mathproperty;  
+  final static int find         = 3  | 1 << 3 | mathfunc | mathproperty;
+  final static int add          = 4  | 1 << 3 | mathfunc | mathproperty;
+  final static int sub          = 5  | 1 << 3 | mathfunc | mathproperty;
+  final static int mul          = 6  | 1 << 3 | mathfunc | mathproperty;
+  final static int div          = 7  | 1 << 3 | mathfunc | mathproperty;
+  final static int label        = 7  | 1 << 3 | mathfunc | mathproperty | command | specialstring | setparam;
+  // two ids with 7 are ok here because the additional command bits of label distinguish it  
+  // we really could put any of these in the 2 << 3 set, because this only specifies
+  // a maximum number of parameters, and the actual number is check in the evaluateXXX call.
+  
+  // xxx(a,b)
+  
+  final static int data         = 2  | 2 << 3 | mathfunc | command;
+
+  // ___.xxx(a,b)
+  
+  final static int distance     = 1  | 2 << 3 | mathfunc | mathproperty;
+  final static int replace      = 3  | 2 << 3 | mathfunc | mathproperty;
+
+  // xxx(a,b,c)
+  
+  final static int point        = 2  | 3 << 3 | mathfunc;
+
+  // xxx(a,b,c,d)
+  
+  final static int angle        = 1  | 4 << 3 | mathfunc;
+  final static int plane        = 2  | 4 << 3 | mathfunc;
+
+  // xxx(a,b,c,d,e)
+  
+  final static int within       = 1  | 5 << 3 | mathfunc;
+  final static int connected    = 2  | 5 << 3 | mathfunc;
+
+
   
  // math-related Token static methods
   
@@ -949,7 +975,7 @@ public class Token {
     "rotation",          new Token(rotation),
     "group",             new Token(group),
     "chain",             new Token(chain),
-    "atom",              new Token(atom),
+    "atom",              new Token(atoms),
     "atoms",             null, 
     "sequence",          new Token(sequence),
     "specialPosition",   new Token(specialposition),
@@ -1140,6 +1166,8 @@ public class Token {
     "split",        new Token(split),
     "join",         new Token(join),
     "trim",         new Token(trim),
+    "plane",        new Token(plane),
+    "point",        new Token(point),
     "replace",      new Token(replace),
     "add",          new Token(add),
     "sub",          new Token(sub),

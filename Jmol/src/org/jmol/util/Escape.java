@@ -120,8 +120,12 @@ public class Escape {
     int[] next = new int[1];
     for (; nPoints < 5;nPoints++) {
       points[nPoints] = Parser.parseFloat(str, next);
-      if (Float.isNaN(points[nPoints]))
-        break;
+      if (Float.isNaN(points[nPoints])) {
+        if (next[0] >= str.length() || str.charAt(next[0]) != ',')
+          break;
+        next[0]++;
+        nPoints--;
+      }
     }
     if (nPoints == 3)
       return new Point3f(points[0], points[1], points[2]);

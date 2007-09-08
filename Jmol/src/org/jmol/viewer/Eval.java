@@ -1221,14 +1221,15 @@ class Eval { //implements Runnable {
       case Token.select:
         rpn.addX(getAtomBitSet(this, viewer, (String) value));
         break;
+      case Token.plane:
+        rpn.addX(instruction);
+        rpn.addX(new Token(Token.point4f, planeParameter(pc + 2)));
+        pc = iToken;
+        break;
       case Token.string:
         rpn.addX(instruction);
         val = (String) value;
-        if (val.equals("plane")) {
-          rpn.addX(new Token(Token.point4f, planeParameter(pc + 2)));
-          pc = iToken;
-          break;
-        } else if (val.equals("hkl")) {
+        if (val.equals("hkl")) {
           rpn.addX(new Token(Token.point4f, hklParameter(pc + 2)));
           pc = iToken;
           break;
@@ -3208,7 +3209,7 @@ class Eval { //implements Runnable {
   private void color() throws ScriptException {
     int argb;
     if (isColorParam(1)) {
-      colorObject(Token.atom, 1);
+      colorObject(Token.atoms, 1);
       return;
     }
     switch (getToken(1).tok) {
@@ -3238,7 +3239,7 @@ class Eval { //implements Runnable {
     case Token.rasmol:
     case Token.user:
     case Token.property:
-      colorObject(Token.atom, 1);
+      colorObject(Token.atoms, 1);
       return;
     case Token.string:
       String strColor = stringParameter(1);
@@ -3267,7 +3268,7 @@ class Eval { //implements Runnable {
       return;
     case Token.bitset:
     case Token.expressionBegin:
-      colorObject(Token.atom, -1);
+      colorObject(Token.atoms, -1);
       return;
     case Token.rubberband:
       argb = getArgbParamLast(2, false);
@@ -4938,25 +4939,30 @@ class Eval { //implements Runnable {
       viewer.setSlabDepthInternal(isDepth);
       setBooleanProperty("slabEnabled", true);
       return;
-    case Token.identifier:
-      if (parameterAsString(1).equalsIgnoreCase("plane")) {
-        switch (getToken(2).tok) {
-        case Token.none:
-          break;
-        default:
-          plane = planeParameter(2);
-        }
-        if (!isSyntaxCheck)
-          viewer.slabInternal(plane, isDepth);
-        return;
+    case Token.leftbrace:
+      plane = planeParameter(1);
+      if (!isSyntaxCheck)
+        viewer.slabInternal(plane, isDepth);
+      return;
+    case Token.plane:
+      switch (getToken(2).tok) {
+      case Token.none:
+        break;
+      default:
+        plane = planeParameter(2);
       }
-      if (parameterAsString(1).equalsIgnoreCase("hkl")) {
+      if (!isSyntaxCheck)
+        viewer.slabInternal(plane, isDepth);
+      return;
+    case Token.identifier:
+      String str = parameterAsString(1); 
+      if (str.equalsIgnoreCase("hkl")) {
         plane = (getToken(2).tok == Token.none ? null : hklParameter(2));
         if (!isSyntaxCheck)
           viewer.slabInternal(plane, isDepth);
         return;
       }
-      if (parameterAsString(1).equalsIgnoreCase("reference")) {
+      if (str.equalsIgnoreCase("reference")) {
         Point3f pt = centerParameter(2);
         if (!isSyntaxCheck)
           viewer.slabInternalReference(pt);
@@ -6461,7 +6467,7 @@ class Eval { //implements Runnable {
     float[] list = null;
     BitSet bsNew = null;
     
-    if (tok == Token.atom)
+    if (tok == Token.atoms)
       bsNew = (!isAtoms && !isSyntaxCheck ? getAtomBitsetFromBonds(bs) : bs);
     if (tok == Token.bonds)
       bsNew = (isAtoms && !isSyntaxCheck ? viewer.getBondsForSelectedAtoms(bs)
@@ -7786,7 +7792,7 @@ class Eval { //implements Runnable {
       unrecognizedShowParameter("getProperty CHAININFO (atom expression)");
     case Token.selected:
       unrecognizedShowParameter("getProperty ATOMINFO (selected)");
-    case Token.atom:
+    case Token.atoms:
       unrecognizedShowParameter("getProperty ATOMINFO (atom expression)");
     case Token.echo:
     case Token.fontsize:
@@ -7860,8 +7866,7 @@ class Eval { //implements Runnable {
       Object propertyValue = null;
       switch (getToken(i).tok) {
       case Token.identifier:
-        propertyValue = theToken.value;
-        String str = ((String) propertyValue);
+        String str = parameterAsString(i);
         if (str.equalsIgnoreCase("FIXED")) {
           propertyName = "fixed";
           propertyValue = Boolean.TRUE;
@@ -7875,6 +7880,7 @@ class Eval { //implements Runnable {
         if (idSeen)
           invalidArgument();
         propertyName = "thisID";
+        propertyValue = str;
         break;
       case Token.model:
         int modelIndex = modelNumberParameter(++i);
@@ -7979,9 +7985,11 @@ class Eval { //implements Runnable {
         if ((isSavedState = !isSavedState) == (theTok == Token.rightsquare))
           invalidArgument();
         break;
+      case Token.plane:
+        propertyName = "plane";
+        break;
       case Token.identifier:
-        propertyValue = theToken.value;
-        String str = (String) propertyValue;
+        String str =  parameterAsString(i);
         if (str.equalsIgnoreCase("FIXED")) {
           propertyName = "fixed";
           propertyValue = Boolean.TRUE;
@@ -7990,10 +7998,6 @@ class Eval { //implements Runnable {
         if (str.equalsIgnoreCase("MODELBASED")) {
           propertyName = "fixed";
           propertyValue = Boolean.FALSE;
-          break;
-        }
-        if (str.equalsIgnoreCase("PLANE")) {
-          propertyName = "plane";
           break;
         }
         if (str.equalsIgnoreCase("CROSSED")) {
@@ -8058,6 +8062,7 @@ class Eval { //implements Runnable {
         if (idSeen)
           invalidArgument();
         propertyName = "thisID";
+        propertyValue = str;
         break;
       case Token.dollarsign:
         // $drawObject[m]
@@ -8444,7 +8449,7 @@ class Eval { //implements Runnable {
           break;
         }
         propertyValue = str;
-        //fall through
+        //fall through for identifiers
       case Token.all:
         if (idSeen)
           invalidArgument();
@@ -8497,6 +8502,11 @@ class Eval { //implements Runnable {
     case Token.color:
       setColorOptions(2, JmolConstants.SHAPE_MO, 2);
       break;
+    case Token.plane:
+      // plane {X, Y, Z, W}
+      propertyName = "plane";
+      propertyValue = planeParameter(2);
+      break;
     case Token.identifier:
       str = parameterAsString(1);
       if ((offset = moOffset(1)) != Integer.MAX_VALUE) {
@@ -8534,15 +8544,8 @@ class Eval { //implements Runnable {
         propertyName = "debug";
         break;
       }
-      if (str.equalsIgnoreCase("plane")) {
-        // plane {X, Y, Z, W}
-        propertyName = "plane";
-        propertyValue = planeParameter(2);
-        break;
-      }
       if (str.equalsIgnoreCase("noplane")) {
         propertyName = "plane";
-        propertyValue = null;
         break;
       }
       invalidArgument();
@@ -8838,6 +8841,13 @@ class Eval { //implements Runnable {
         propertyValue = new Float(radiusParameter(++i, 0));
         i = iToken;
         break;
+      case Token.plane:
+        // plane {X, Y, Z, W}
+        planeSeen = true;
+        propertyName = "plane";
+        propertyValue = planeParameter(++i);
+        i = iToken;
+        break;
       case Token.identifier:
         str = parameterAsString(i);
         if (str.equalsIgnoreCase("REMAPPABLE")) { // testing only
@@ -8983,14 +8993,6 @@ class Eval { //implements Runnable {
           propertyName = "map";
           break;
         }
-        if (str.equalsIgnoreCase("plane")) {
-          // plane {X, Y, Z, W}
-          planeSeen = true;
-          propertyName = "plane";
-          propertyValue = planeParameter(++i);
-          i = iToken;
-          break;
-        }
         if (str.equalsIgnoreCase("hkl")) {
           // miller indices hkl 
           planeSeen = true;
@@ -9073,7 +9075,7 @@ class Eval { //implements Runnable {
           propertyValue = data;
           break;
         }
-        propertyValue = theToken.value;
+        propertyValue = str;
       //fall through for identifiers
       case Token.all:
         if (idSeen)
@@ -9163,7 +9165,7 @@ class Eval { //implements Runnable {
          * then jmolSurfaceInfo is used by default.
          * 
          */
-        String filename = (String) theToken.value;
+        String filename = parameterAsString(i);
         if (filename.length() == 0) {
           if (surfaceObjectSeen || planeSeen)
             propertyValue = viewer.getModelAuxiliaryInfo(modelIndex,
@@ -9730,6 +9732,8 @@ class Eval { //implements Runnable {
         return addX((String) x);
       if (x instanceof Point3f)
         return addX((Point3f) x);
+      if (x instanceof Point4f)
+        return addX((Point4f) x);
       if (x instanceof BitSet)
         return addX((BitSet) x);
       if (x instanceof Token)
@@ -9779,6 +9783,13 @@ class Eval { //implements Runnable {
       return wasX = true;
     }
 
+    boolean addX(Point4f x) throws ScriptException {
+      if (++xPt == maxLevel)
+        stackOverflow();
+      xStack[xPt] = new Token(Token.point4f, x);
+      return wasX = true;
+    }
+
     boolean addX(BitSet x) throws ScriptException {
       if (++xPt == maxLevel)
         stackOverflow();
@@ -9818,7 +9829,7 @@ class Eval { //implements Runnable {
       case Token.minmaxmask:
         tok = oPt < 0 ? Token.nada : oStack[oPt].tok;
         if (!wasX
-            || !(tok == Token.propselector || tok == Token.bonds || tok == Token.atom))
+            || !(tok == Token.propselector || tok == Token.bonds || tok == Token.atoms))
           return false;
         oStack[oPt].intValue |= op.tok;
         return true;
@@ -9859,14 +9870,14 @@ class Eval { //implements Runnable {
       while (oPt >= 0
           && (!(isLeftOp || op.tok == Token.leftsquare) || (op.tok == Token.propselector || op.tok == Token.leftsquare)
               && oStack[oPt].tok == Token.propselector)
-          && Token.prec(oStack[oPt]) >= Token.prec(op)) {
+          && Token.prec(oStack[oPt].tok) >= Token.prec(op.tok)) {
 
         if (logMessages) {
           dumpStacks();
           Logger.info("\noperating, oPt=" + oPt + " isLeftOp=" + isLeftOp
               + " oStack[oPt]=" + Token.nameOf(oStack[oPt].tok) + "/"
-              + Token.prec(oStack[oPt]) + " op=" + Token.nameOf(op.tok) + "/"
-              + Token.prec(op));
+              + Token.prec(oStack[oPt].tok) + " op=" + Token.nameOf(op.tok) + "/"
+              + Token.prec(op.tok));
         }
         // ) and ] must wait until matching ( or [ is found
         if (op.tok == Token.rightparen && oStack[oPt].tok == Token.leftparen)
@@ -9979,7 +9990,7 @@ class Eval { //implements Runnable {
         Logger.info("x[" + i + "]: " + xStack[i]);
       for (int i = 0; i <= oPt; i++)
         Logger.info("o[" + i + "]: " + oStack[i] + " prec="
-            + Token.prec(oStack[i]));
+            + Token.prec(oStack[i].tok));
     }
 
     Token getX() throws ScriptException {
@@ -9992,7 +10003,9 @@ class Eval { //implements Runnable {
 
       Token op = oStack[oPt--];
       int tok = (op.tok == Token.propselector ? op.intValue : op.tok);
-      int nParamMax = Token.prec(op); // note - this is NINE for dot-operators
+      // for .xxx or .xxx() functions
+      // we store the token inthe intValue field of the propselector token
+      int nParamMax = Token.prec(tok); // note - this is NINE for dot-operators
       int nParam = 0;
       int pt = xPt;
       while (xStack[pt--] != op)
@@ -10028,6 +10041,10 @@ class Eval { //implements Runnable {
         return evaluateScript(args, tok == Token.javascript);
       case Token.within:
         return evaluateWithin(args);
+      case Token.point:
+        return evaluatePoint(args);
+      case Token.plane:
+        return evaluatePlane(args);
       case Token.distance:
         if (op.tok == Token.propselector)
           return evaluateDistance(args);
@@ -10111,6 +10128,64 @@ class Eval { //implements Runnable {
               listNew[--n] = list[i];
         return addX(listNew);
       }
+    }
+
+    private boolean evaluatePoint(Token[] args) throws ScriptException {
+      if (args.length != 1 && args.length != 3)
+        return false;
+      if (isSyntaxCheck)
+        return addX(new Point3f(0,0,0));
+      
+      switch(args.length) {
+      case 1:
+        Object pt = Escape.unescapePoint(Token.sValue(args[0]));
+        if (pt instanceof Point3f)
+          return addX((Point3f)pt);
+        return addX("" + pt);
+      case 3:
+       float x = Token.fValue(args[0]);
+       float y = Token.fValue(args[1]);
+       float z = Token.fValue(args[2]);
+       return addX(new Point3f(x, y, z));
+      }
+      return false;
+    }
+
+    private boolean evaluatePlane(Token[] args) throws ScriptException {
+      if (args.length != 1 && args.length != 3 && args.length != 4)
+        return false;
+      if (isSyntaxCheck)
+        return addX(new Point4f(0, 0, 1, 0));
+
+      switch (args.length) {
+      case 1:
+        Object pt = Escape.unescapePoint(Token.sValue(args[0]));
+        if (pt instanceof Point4f)
+          return addX((Point4f) pt);
+        return addX("" + pt);
+      case 3:
+      case 4:
+        switch (args[0].tok) {
+        case Token.bitset:
+        case Token.point3f:
+          Point3f pt1 = ptValue(args[0]);
+          Point3f pt2 = ptValue(args[1]);
+          Point3f pt3 = ptValue(args[2]);
+          Vector3f vAB = new Vector3f();
+          Vector3f vAC = new Vector3f();
+          Vector3f norm = new Vector3f();
+          float nd = Graphics3D.getDirectedNormalThroughPoints(pt1, pt2, pt3, 
+              (args.length == 4 ? ptValue(args[3]) : null), norm, vAB, vAC);
+          return addX(new Point4f(norm.x, norm.y, norm.z, nd));
+        default:
+          float x = Token.fValue(args[0]);
+          float y = Token.fValue(args[1]);
+          float z = Token.fValue(args[2]);
+          float w = Token.fValue(args[3]);
+          return addX(new Point4f(x, y, z, w));
+        }
+      }
+      return false;
     }
 
     private boolean evaluateReplace(Token[] args) throws ScriptException {
@@ -10702,10 +10777,14 @@ class Eval { //implements Runnable {
       case Token.bitset:
         return (Point3f) getBitsetProperty(Token.bsSelect(x), Token.xyz, null,
             null, x.value, null, false);
-      default:
-        float f = Token.fValue(x);
-        return new Point3f(f, f, f);
+      case Token.string:
+        Object pt = Escape.unescapePoint((String) x.value);
+        if (pt instanceof Point3f)
+          return (Point3f) pt;
+        break;
       }
+      float f = Token.fValue(x);
+      return new Point3f(f, f, f);
     }
 
     Point4f planeValue(Token x) {
@@ -10714,11 +10793,14 @@ class Eval { //implements Runnable {
       switch (x.tok) {
       case Token.point4f:
         return (Point4f) x.value;
+      case Token.string:
+        Object pt = Escape.unescapePoint((String) x.value);
+        return (pt instanceof Point4f ? (Point4f) pt : null);
       case Token.bitset:
-      //ooooh, wouldn't THIS be nice!
-      default:
-        return null;
+        //ooooh, wouldn't THIS be nice!
+        break;
       }
+      return null;
     }
 
     void stackOverflow() throws ScriptException {

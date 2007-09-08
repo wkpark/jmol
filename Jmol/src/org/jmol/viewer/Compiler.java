@@ -1021,7 +1021,7 @@ class Compiler {
     boolean checkExpression = (tokAttrOr(tokCommand,
         Token.expressionCommand, Token.embeddedExpression));
 
-    if (!tokAttr(tokCommand, Token.coordOrSet)) {
+    if (!tokAttr(tokCommand, Token.numberOrExpression)) {
       // $ at beginning disallow expression checking for center command
       if (tokCommand == Token.center && tokAt(1) == Token.dollarsign)
         checkExpression = false;

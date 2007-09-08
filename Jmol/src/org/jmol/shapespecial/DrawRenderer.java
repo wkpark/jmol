@@ -107,6 +107,8 @@ public class DrawRenderer extends MeshRenderer {
       viewer.transformPoint(pt2f, pt2i);
       viewer.transformPoint(pt1f, pt1i);
       tip.set(pt2i.x - pt1i.x, pt2i.y - pt1i.y, pt2i.z - pt1i.z);
+      if (pt2i.z == 1 || pt1i.z == 1) //slabbed
+        break;
       headDiameter = (int) (tip.length() / 2);
       diameter = headDiameter / 5;
       if (diameter < 1)

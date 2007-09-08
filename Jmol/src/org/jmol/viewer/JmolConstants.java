@@ -2626,7 +2626,7 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   //done by Sticks.
   
   public final static int[] shapeToks = { 
-    Token.atom, Token.bonds, Token.hbond, Token.ssbond, 
+    Token.atoms, Token.bonds, Token.hbond, Token.ssbond, 
     Token.label, Token.vector, Token.monitor, Token.dots, Token.geosurface, 
     Token.backbone, Token.trace, Token.cartoon, Token.strands,
     Token.meshRibbon, Token.ribbon, Token.rocket, Token.star, Token.halo, 

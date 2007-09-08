@@ -2432,13 +2432,32 @@ final public class Graphics3D {
   }
   
   public static void calcNormalizedNormal(Point3f pointA, Point3f pointB,
-                                   Point3f pointC, Vector3f vNormNorm, Vector3f vAB, Vector3f vAC) {
+         Point3f pointC, Vector3f vNormNorm, Vector3f vAB, Vector3f vAC) {
     vAB.sub(pointB, pointA);
     vAC.sub(pointC, pointA);
     vNormNorm.cross(vAB, vAC);
     vNormNorm.normalize();
   }
 
+  public static float getDirectedNormalThroughPoints(Point3f pointA, 
+         Point3f pointB, Point3f pointC, Point3f ptRef, Vector3f vNorm, 
+         Vector3f vAB, Vector3f vAC) {
+    // for x = plane({atomno=1}, {atomno=2}, {atomno=3}, {atomno=4})
+    float nd = getNormalThroughPoints(pointA, pointB, pointC, vNorm, vAB, vAC);
+    if (ptRef != null) {
+      Point3f pt0 = new Point3f(pointA);
+      pt0.add(vNorm);
+      float d = pt0.distance(ptRef);
+      pt0.set(pointA);
+      pt0.sub(vNorm);
+      if (d > pt0.distance(ptRef)) {
+        vNorm.scale(-1);
+        nd = -nd;
+      }
+    }
+    return nd;
+  }
+  
   public static float getNormalThroughPoints(Point3f pointA, Point3f pointB,
                                    Point3f pointC, Vector3f vNorm, Vector3f vAB, Vector3f vAC) {
     // for Polyhedra

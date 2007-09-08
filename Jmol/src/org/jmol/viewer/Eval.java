@@ -3243,7 +3243,7 @@ class Eval { //implements Runnable {
     case Token.string:
       String strColor = stringParameter(1);
       if (!isSyntaxCheck) {
-        viewer.setStringProperty("propertyColorScheme", strColor);
+        viewer.setStringProperty("propertyColorSchemeOverLoad", strColor);
       }
       if (tokAt(2) == Token.range || tokAt(2) == Token.absolute) {
         float min = floatParameter(3);

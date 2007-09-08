@@ -626,7 +626,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     setScriptInfo();
     setJvxlInfo();
     String schemeName = colorEncoder.getColorSchemeName();
-    viewer.setPropertyColorScheme(schemeName);
+    viewer.setPropertyColorScheme(schemeName, false);
     viewer.setCurrentColorRange(jvxlData.mappedDataMin, jvxlData.mappedDataMax);
     thisMesh.isColorSolid = false;
     thisMesh.colorCommand = "color $" + thisMesh.thisID + " " + getUserColorScheme(schemeName) + " range " 

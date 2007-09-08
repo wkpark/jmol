@@ -1096,9 +1096,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
    }  
    */
 
-  public void setPropertyColorScheme(String scheme) {
+  public void setPropertyColorScheme(String scheme, boolean isOverloaded) {
     global.propertyColorScheme = scheme;
-    colorManager.setColorScheme(scheme);
+    colorManager.setColorScheme(scheme, isOverloaded);
   }
 
   public String getPropertyColorScheme() {
@@ -3909,8 +3909,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
 
       if (key.equalsIgnoreCase("propertyColorScheme")) {
-        setPropertyColorScheme(value);
-        break;
+        setPropertyColorScheme(value, false);
+        return;
+      }
+
+      if (key.equalsIgnoreCase("propertyColorSchemeOverload")) {
+        setPropertyColorScheme(value, true);
+        return;
       }
 
       if (key.equalsIgnoreCase("hoverLabel")) {

@@ -6500,7 +6500,6 @@ class Eval { //implements Runnable {
     int ivAvg = 0, ivMax = Integer.MIN_VALUE, ivMin = Integer.MAX_VALUE;
     float fvAvg = 0, fvMax = -Float.MAX_VALUE, fvMin = Float.MAX_VALUE;
     Point3f pt = new Point3f();
-
     if (tok == Token.distance && ptRef == null && planeRef == null)
       return pt;
 
@@ -10066,15 +10065,17 @@ class Eval { //implements Runnable {
       if (isSyntaxCheck)
         return addX(1f);
       Token x2 = args[0];
-      Point3f pt = ptValue(x2);
-      Point4f plane = planeValue(x2);
+      Point3f pt2 = ptValue(x2);
+      Point4f plane2 = planeValue(x2);
       if (x1.tok == Token.bitset)
-        return addX(getBitsetProperty(Token.bsSelect(x1), Token.distance, pt,
-            plane, x1.value, null, false));
-      else if (x1.tok == Token.point3f)
-        return addX(plane == null ? pt.distance(ptValue(x1)) : Graphics3D
-            .distanceToPlane(plane, ptValue(x1)));
-      return false;
+        return addX(getBitsetProperty(Token.bsSelect(x1), Token.distance, pt2,
+            plane2, x1.value, null, false));
+      Point3f pt1 = ptValue(x1);
+      Point4f plane1 = planeValue(x1);
+      if (plane1 == null)
+        return addX(plane2 == null ? pt2.distance(pt1) : Graphics3D
+            .distanceToPlane(plane2, pt1));
+      return addX(Graphics3D.distanceToPlane(plane1, pt2));      
     }
 
     private boolean evaluateMeasure(Token[] args, boolean isAngle)

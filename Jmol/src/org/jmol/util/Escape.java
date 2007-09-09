@@ -97,7 +97,7 @@ public class Escape {
         i = -1;
       }  
     }
-    String sch = (ch == ' ' ? " " : "\\" + ch);
+    String sch = (ch == ' ' ? " " : "\\x0" + ch);
     int nch = sch.length();
     StringBuffer s = new StringBuffer();
     for (int i = 0; i < list.length; i++)

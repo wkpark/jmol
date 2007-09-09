@@ -417,7 +417,7 @@ class Compiler {
                   "SET", ident);
             if (isSetArray) {
               addTokenToPrefix(token);
-              token = Token.tokenArray;
+              token = Token.tokenArraySelector;
               tok = Token.leftsquare;
             }
           }

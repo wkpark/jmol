@@ -9967,7 +9967,7 @@ class Eval { //implements Runnable {
             //}
           //} else 
           if (xPt == 0 && isAssignment) {
-            addX(Token.tokenArray);
+            addX(Token.tokenArraySelector);
             break;
           }
           if (!doBitsetSelect())
@@ -10098,7 +10098,7 @@ class Eval { //implements Runnable {
       int pt = xPt;
       while (xStack[pt--] != op)
         nParam++;
-      if (nParam > nParamMax)
+      if (nParamMax > 0 && nParam > nParamMax)
         return false;
       Token[] args = new Token[nParam];
       for (int i = nParam; --i >= 0;)
@@ -10109,6 +10109,8 @@ class Eval { //implements Runnable {
         return evaluateFind(args);
       case Token.replace:
         return evaluateReplace(args);
+      case Token.array:
+        return evaluateArray(args);
       case Token.split:
       case Token.join:
       case Token.trim:
@@ -10394,6 +10396,15 @@ class Eval { //implements Runnable {
       return addX(sList3);
     }
 
+    private boolean evaluateArray(Token[] args) throws ScriptException {
+      if (isSyntaxCheck)
+        return addX("");
+      String[] array = new String[args.length];
+      for (int i = 0; i < args.length; i++)
+        array[i] = Token.sValue(args[i]);
+      return addX(array);
+    }
+
     private boolean evaluateLoad(Token[] args) throws ScriptException {
       //System.out.println("eval load");
       if (args.length != 1)
@@ -10633,7 +10644,7 @@ class Eval { //implements Runnable {
       }
       
       Token x2 = getX();
-      if (x2 == Token.tokenArray)
+      if (x2 == Token.tokenArraySelector)
         return false;
 
       //unary:

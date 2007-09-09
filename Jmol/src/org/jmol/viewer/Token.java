@@ -384,7 +384,9 @@ public class Token {
   // the only requirement is that these numbers be unique
 
   // xxx(a)
-  
+ 
+  final static int array        = 1  | 0 << 3 | mathfunc;
+
   final static int load         = 1  | 1 << 3 | mathfunc | command | negnums;
   final static int substructure = 2  | 1 << 3 | mathfunc;
   final static int script       = 3  | 1 << 3 | mathfunc | command;
@@ -777,7 +779,7 @@ public class Token {
   final static Token tokenOr  = new Token(opOr, "or");
   final static Token tokenComma = new Token(comma, ",");
   final static Token tokenMinus = new Token(minus, "-");
-  final static Token tokenArray = new Token(leftsquare, "[");
+  final static Token tokenArraySelector = new Token(leftsquare, "[");
  
   final static Token tokenExpressionBegin =
     new Token(expressionBegin, "expressionBegin");
@@ -1171,6 +1173,7 @@ public class Token {
     "angle",        new Token(angle),
     "find",         new Token(find),
     "size",         new Token(size),
+    "array",        new Token(array),
     "split",        new Token(split),
     "join",         new Token(join),
     "trim",         new Token(trim),

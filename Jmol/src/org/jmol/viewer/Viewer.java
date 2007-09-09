@@ -3713,6 +3713,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void scriptEcho(String strEcho) {
     statusManager.setScriptEcho(strEcho);
   }
+  
+  private void scriptError(String msg) {
+    Logger.error(msg);
+    scriptEcho(msg);
+  }
 
   void scriptStatus(String strStatus) {
     statusManager.setScriptStatus(strStatus);
@@ -3766,7 +3771,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   void unsetProperty(String name) {
-    global.setParameterValue(name, Float.NaN);
+    global.setUserParameterValue(name, null);
   }
 
   public boolean getBooleanProperty(String key) {
@@ -3840,6 +3845,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   public void setStringProperty(String key, String value) {
     //Eval
+    boolean notFound = false;
     while (true) {
       ///11.1.31//
       /*  didn't work      
@@ -3953,7 +3959,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (key.equalsIgnoreCase("defaults")) {
         setDefaults(value);
-        break;
+        return;
       }
       if (key.equalsIgnoreCase("defaultColorScheme")) {
         setDefaultColors(value);
@@ -3975,22 +3981,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         setCallbackFunction(key, value);
         break;
       }
-      //not found -- @ is a silent mode indicator
-      if (key.charAt(0) != '@') {
-        key = key.toLowerCase();
-        if (!global.htParameterValues.containsKey(key)) {
-          if (global.htPropertyFlags.containsKey(key)) {
-            scriptStatus("ERROR: cannot set boolean flag to string value");
-            return;
-          }
-          Logger.warn(key + " -- string variable defined (" + value.length()
-              + " bytes)");
-          break;
-        }
-      }
+      notFound = true;
       break;
     }
-    global.setParameterValue(key, value);
+    key = key.toLowerCase();
+    boolean isJmol = global.htParameterValues.containsKey(key);
+    if (!isJmol && notFound && key.charAt(0) != '@') {
+      //not found -- @ is a silent mode indicator
+        if (global.htPropertyFlags.containsKey(key)) {
+          scriptError(GT._("ERROR: cannot set boolean flag to string value"));
+          return;
+        }
+        //Logger.warn(key + " -- string variable defined (" + value.length()
+          //  + " bytes)");
+    }
+    if (isJmol)
+      global.setParameterValue(key, value);
+    else
+      global.setUserParameterValue(key, new Token(Token.string, value));
   }
 
   public void setFloatProperty(String key, float value) {
@@ -3999,6 +4007,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private boolean setFloatProperty(String key, float value, boolean isInt) {
     //Eval
+    boolean notFound = false;
     while (true) {
 
       ///11.3.17//
@@ -4076,11 +4085,11 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (key.equalsIgnoreCase("bondTolerance")) {
         setBondTolerance(value);
-        break;
+        return true;
       }
       if (key.equalsIgnoreCase("minBondDistance")) {
         setMinBondDistance(value);
-        break;
+        return true;
       }
       if (key.equalsIgnoreCase("scaleAngstromsPerInch")) {
         setScaleAngstromsPerInch(value);
@@ -4093,24 +4102,27 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       if (key.equalsIgnoreCase("radius")) { //deprecated
         setFloatProperty("solventProbeRadius", value);
         return true;
-      }
+      }      
       // not found
       if (isInt)
         return false;
-      key = key.toLowerCase();
-      if (!global.htParameterValues.containsKey(key)) {
-        if (global.htPropertyFlags.containsKey(key)) {
-          Logger.error("cannot set boolean flag to numeric value");
-          scriptEcho("script WARNING: cannot set boolean flag to numeric value");
-          return true;
-        }
-        Logger.warn("viewer.setFloatProperty(" + key + "," + value
-            + ") - float variable defined");
-        break;
-      }
+      notFound = true;
       break;
     }
-    global.setParameterValue(key, value);
+    key = key.toLowerCase();
+    boolean isJmol = global.htParameterValues.containsKey(key);
+    if (!isJmol && notFound) {
+        if (global.htPropertyFlags.containsKey(key)) {
+          scriptError(GT._("ERROR: cannot set boolean flag to numeric value"));
+          return true;
+        }
+        //Logger.warn("viewer.setFloatProperty(" + key + "," + value
+          //  + ") - float variable defined");
+    }
+    if (isJmol)
+      global.setParameterValue(key, value);
+    else
+      global.setUserParameterValue(key, new Token(Token.decimal, new Float(value)));
     return true;
   }
 
@@ -4125,6 +4137,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   private void setIntProperty(String key, int value, boolean defineNew) {
+    boolean notFound = false;    
     while (true) {
 
       ///11.1.31//
@@ -4216,30 +4229,26 @@ public class Viewer extends JmolViewer implements AtomDataServer {
           || !setBooleanProperty(key, value == 1, false)) {
         if (setFloatProperty(key, value, true))
           return;
-        key = key.toLowerCase();
-        if (!global.htParameterValues.containsKey(key)) {
-          if (global.htPropertyFlags.containsKey(key)) {
-            Logger.error("cannot set boolean flag to numeric value");
-            scriptEcho("script WARNING: cannot set boolean flag to numeric value");
-            return;
-          }
-          Logger.info("viewer.setIntProperty(" + key + "," + value
-              + ") - integer variable defined");
-          break;
-        }
-        break;
       }
+      notFound = true;
       break;
     }
-    if (defineNew) {
+    key = key.toLowerCase();
+    boolean isJmol = global.htParameterValues.containsKey(key);
+    if (!isJmol && notFound) {
       if (global.htPropertyFlags.containsKey(key)) {
-        scriptStatus(GT
-            ._(
-                "ERROR: Cannot set value of a boolean to another type. use \"{0}\" first.",
-                key + " = NONE"));
-        return; // don't allow setting boolean of a numeric
+        scriptError("ERROR: cannot set boolean flag to numeric value");
+        return;
       }
-      global.setParameterValue(key, value);
+      //Logger.info("viewer.setIntProperty(" + key + "," + value
+        //  + ") - integer variable defined");      
+    }
+    if (!defineNew)
+      return;
+    if (isJmol) {
+      global.setParameterValue(key, value);      
+    } else {
+      global.setUserParameterValue(key, new Token(Token.integer, value));
     }
   }
 
@@ -4253,6 +4262,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   boolean setBooleanProperty(String key, boolean value, boolean defineNew) {
     boolean notFound = false;
+    boolean doRepaint = true;
     while (true) {
 
       //11.1.29
@@ -4522,6 +4532,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         return setBooleanProperty("selectionHalos", value, true);
       // these next return, because there is no need to repaint
       while (true) {
+        doRepaint = false;
         if (key.equalsIgnoreCase("bondModeOr")) {
           setBondSelectionModeOr(value);
           break;
@@ -4567,34 +4578,30 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       }
       if (!defineNew)
         return !notFound;
-      if (!notFound) {
-        global.setParameterValue(key, value);
-        return true;
-      }
       notFound = true;
       break;
     }
     if (!defineNew)
       return !notFound;
-    if (notFound) {
-      key = key.toLowerCase();
+    key = key.toLowerCase();
+    boolean isJmol = global.htPropertyFlags.containsKey(key);
+    if (!isJmol && notFound) {
       if (global.htParameterValues.containsKey(key)) {
-        scriptStatus(GT
-            ._(
-                "ERROR: Cannot set value of this variable to a boolean. use \"{0}\" first.",
-                key + " = NONE"));
-        return true; // don't allow setting boolean of a numeric
-      }
-      if (!value && !global.htPropertyFlags.containsKey(key)) {
-        Logger.warn("viewer.setBooleanProperty(" + key + "," + value
-            + ") - boolean variable defined");
+        scriptError(
+            GT._("ERROR: Cannot set value of this variable to a boolean."));
+        return true;
       }
     }
-    global.setParameterValue(key, value);
+    if (isJmol)
+      global.setParameterValue(key, value);
+    else
+      global.setUserParameterValue(key, value ? Token.tokenOn : Token.tokenOff);
     if (notFound)
       return false;
-    setTainted(true);
-    refresh(0, "viewer.setBooleanProperty");
+    if (doRepaint) {
+      setTainted(true);
+      refresh(0, "viewer.setBooleanProperty");
+    }
     return true;
   }
 

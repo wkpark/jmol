@@ -34,6 +34,7 @@ import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Bond;
 import org.jmol.modelset.ModelSet;
 import org.jmol.util.Escape;
+import org.jmol.util.Logger;
 import org.jmol.util.TextFormat;
 
 import java.util.Arrays;
@@ -659,7 +660,7 @@ public class StateManager {
       + ";slabEnabled;zoomEnabled;axeswindow;axesunitcell;axesmolecular;windowcentered;"
       + ";cameradepth;navigationmode;rotationradius;"
       + ";zerobasedxyzrasmol;axesorientationrasmol;"
-      + ";exportdrivers;"
+      + ";exportdrivers;stateversion;"
       + ";language;_spinning;_animating;_modelnumber;_modelname;_currentmodelnumberinfile;"
       + ";_currentfilenumber;_modelfile;_modeltitle;_version;_memory;"
       + ";_width;_height;_atompicked;_atomhovered;";
@@ -718,10 +719,30 @@ public class StateManager {
     }
     
     void setParameterValue(String name, String value) {
+      name = name.toLowerCase();
       if (value == null || htPropertyFlags.containsKey(name))
         return; // don't allow setting string of a boolean
-      name = name.toLowerCase();
       htParameterValues.put(name, value);
+    }
+    
+    Hashtable htUserVariables = new Hashtable();
+    void setUserParameterValue(String key, Token value) {
+      key = key.toLowerCase();
+      if (value == null) {
+        if (key.equals("all")) {
+          htUserVariables.clear();
+          Logger.info("all user-defined variables deleted");
+        } else if (htUserVariables.containsKey(key)) {
+          Logger.info("variable " + key + " deleted");
+          htUserVariables.remove(key);
+        }
+        return;
+      }
+      htUserVariables.put(key, value);
+    }
+    
+    Object getUserParameterValue(String key) {
+      return htUserVariables.get(key);  
     }
     
     boolean doRegister(String name) {
@@ -741,7 +762,24 @@ public class StateManager {
       }
       if (htPropertyFlags.containsKey(name))
         return htPropertyFlags.get(name).toString();
+      if (htUserVariables.containsKey(name))
+        return escapeUserVariable(name);
       return "<not set>";
+    }
+
+    private String escapeUserVariable(String name) {
+      Token token = (Token) htUserVariables.get(name);
+      // previously known to contain 
+      switch (token.tok) {
+      case Token.on:
+        return "true";
+      case Token.off:
+        return "false";
+      case Token.integer:
+        return "" + token.intValue;
+      default:
+        return escapeVariable(name, token.value);
+      }        
     }
     
     Object getParameter(String name) {
@@ -757,6 +795,19 @@ public class StateManager {
         return htParameterValues.get(name);
       if (htPropertyFlags.containsKey(name))
         return htPropertyFlags.get(name);
+      if (htUserVariables.containsKey(name)) {
+        Token token = (Token) htUserVariables.get(name);
+        switch (token.tok) {
+        case Token.on:
+          return Boolean.TRUE;
+        case Token.off:
+          return Boolean.FALSE;
+        case Token.integer:
+          return new Integer(token.intValue);
+        default:
+          return token.value;
+        }        
+      }
       return "";
     }
     
@@ -833,7 +884,8 @@ public class StateManager {
       default:
         list[n++] =  "axes = molecular";
       }
-      //variables only:
+      
+      //nonboolean variables:
       e = htParameterValues.keys();
       while (e.hasMoreElements()) {
         key = (String) e.nextElement();
@@ -844,6 +896,21 @@ public class StateManager {
       for (int i = 0; i < n; i++)
         if (list[i] != null)
           appendCmd(commands, list[i]);
+      
+      //user variables only:
+      commands.append("\n#user-defined variables; \n");
+      
+      e = htUserVariables.keys();
+      n = 0;
+      list = new String[htUserVariables.size()];
+      while (e.hasMoreElements())
+        list[n++] = (key = (String) e.nextElement()) + " = "  + escapeUserVariable(key);
+      Arrays.sort(list, 0, n);
+      for (int i = 0; i < n; i++)
+        if (list[i] != null)
+          appendCmd(commands, list[i]);
+      if (n == 0)
+        commands.append("# --none--;\n");
       commands.append("\n");
       return commands.toString();
     }
@@ -861,6 +928,8 @@ public class StateManager {
       htParameterValues = new Hashtable();
       htPropertyFlags = new Hashtable();
 
+      setParameterValue("_version",0);
+      setParameterValue("stateversion",0);
       setParameterValue("allowEmbeddedScripts",allowEmbeddedScripts);
       setParameterValue("allowRotateSelected",allowRotateSelected);
       setParameterValue("ambientPercent",ambientPercent);
@@ -870,6 +939,8 @@ public class StateManager {
       setParameterValue("autoFps",autoFps);
       setParameterValue("axesMode",axesMode);
       setParameterValue("axesScale",axesScale);
+      setParameterValue("axesOrientationRasmol", false);
+
       setParameterValue("bondModeOr",bondModeOr);
       setParameterValue("bondRadiusMilliAngstroms",bondRadiusMilliAngstroms);
       setParameterValue("bondTolerance",bondTolerance);
@@ -878,6 +949,7 @@ public class StateManager {
       setParameterValue("chainCaseSensitive",chainCaseSensitive);
       setParameterValue("debugScript",debugScript);
       setParameterValue("defaultAngleLabel",defaultAngleLabel);
+      setParameterValue("defaultColorScheme","Jmol");
       setParameterValue("defaultDrawArrowScale",defaultDrawArrowScale);
       setParameterValue("defaultDirectory",defaultDirectory);
       setParameterValue("defaultDistanceLabel",defaultDistanceLabel);
@@ -916,6 +988,7 @@ public class StateManager {
       setParameterValue("propertyDataField",0);
       setParameterValue("propertyAtomNumberField",0);
       setParameterValue("rangeSelected",rangeSelected);
+      setParameterValue("refreshing",true);
       setParameterValue("ribbonAspectRatio",ribbonAspectRatio);
       setParameterValue("ribbonBorder",ribbonBorder);
       setParameterValue("scriptDelay",scriptDelay);
@@ -931,7 +1004,7 @@ public class StateManager {
       setParameterValue("showMultipleBonds",showMultipleBonds);
       setParameterValue("showNavigationPointAlways",showNavigationPointAlways);
       setParameterValue("showunitcell",false);
-      setParameterValue("solvent",solventOn);
+      setParameterValue("solventProbe",solventOn);
       setParameterValue("solventProbeRadius",solventProbeRadius);
       setParameterValue("specular",specular);
       setParameterValue("specularExponent",specularExponent);
@@ -950,9 +1023,9 @@ public class StateManager {
       setParameterValue("vibrationScale",vibrationScale);
       setParameterValue("zoomLarge",zoomLarge);
       setParameterValue("zShade",zShade);
+      setParameterValue("zeroBasedXyzRasmol",zeroBasedXyzRasmol);
 //      setParameterValue("argbBackground",argbBackground);
 //nah      setParameterValue("enableFullSceneAntialiasing",enableFullSceneAntialiasing);
-//nah    setParameterValue("zeroBasedXyzRasmol",zeroBasedXyzRasmol);
     }
   }
 

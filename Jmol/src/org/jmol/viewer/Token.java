@@ -76,6 +76,7 @@ public class Token {
   final static int point3f           =  7;
   final static int point4f           =  8; 
   final static int keyword           =  9;
+  final static int truefalse         = 10;
 
   final static String[] astrType = {
     "nada", "identifier", "integer", "decimal", "string",

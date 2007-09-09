@@ -212,7 +212,9 @@ public final class ScriptWindow extends JDialog
       console.appendNewline();
       console.setPrompt();
       return;
-    } 
+    } else if (strCommand.equalsIgnoreCase("exitJmol")) {
+      System.exit(0);
+    }
       
     if (strCommand.length() > 0) {
       execThread = new ExecuteCommandThread(strCommand);

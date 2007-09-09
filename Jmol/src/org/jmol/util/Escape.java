@@ -82,22 +82,37 @@ public class Escape {
     return "\"" + str + "\"";
   }
 
+  
+  static String ESCAPE_SET = " ,./;:_+-~=><?'!@#$%^&*";
+  static int nEscape = ESCAPE_SET.length();
+
+  /**
+   * Serialize a simple string-based array as a single 
+   * string followed by a .split(x) where x is some character
+   * not in the string. A bit kludgy, but it works. 
+   * 
+   * 
+   * @param list list of strings to serialize
+   * @return     serialized array
+   */
   public static String escape(String[] list) {
     if (list == null || list.length == 0)
       return escape("");
-    int ch = ' ';
+    int pt = 0;
+    char ch = ESCAPE_SET.charAt(0);
     for (int i = 0; i < list.length; i++) {
       String item = list[i];
       if (item.indexOf(ch) >= 0) {
-        if (ch == ' ')
-          ch = 1;
-        ch++;
-        if (ch == 9)
-          break; //give up
+        pt++;
+        if (pt == nEscape)
+          break;
+        ch = ESCAPE_SET.charAt(pt);
         i = -1;
       }  
     }
-    String sch = (ch == ' ' ? " " : "\\x0" + ch);
+    String sch = "" + ch;
+    if (pt == nEscape)
+      sch = "--" + Math.random() + "--";
     int nch = sch.length();
     StringBuffer s = new StringBuffer();
     for (int i = 0; i < list.length; i++)

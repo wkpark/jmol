@@ -4156,6 +4156,7 @@ class Eval { //implements Runnable {
       viewer.reset();
       return;
     }
+    // possibly "all"
     String var = parameterAsString(1);
     if (var.charAt(0) == '_')
       invalidArgument();
@@ -7356,6 +7357,7 @@ class Eval { //implements Runnable {
         String state = viewer.getSavedState(saveName);
         if (state == null)
           invalidArgument();
+        //state = TextFormat.simpleReplace(state, "\\\"", "\"");
         runScript(state);
         return;
       case Token.structure:
@@ -10399,7 +10401,11 @@ class Eval { //implements Runnable {
     private boolean evaluateArray(Token[] args) throws ScriptException {
       if (isSyntaxCheck)
         return addX("");
-      String[] array = new String[args.length];
+      int len = args.length;
+      if (len == 0)
+        len = 1;
+      String[] array = new String[len];
+      array[0] = "";
       for (int i = 0; i < args.length; i++)
         array[i] = Token.sValue(args[i]);
       return addX(array);
@@ -10710,6 +10716,7 @@ class Eval { //implements Runnable {
       }
 
       //binary:
+      String s;
       Token x1 = getX();
       switch (op.tok) {
       case Token.opAnd:
@@ -10767,8 +10774,19 @@ class Eval { //implements Runnable {
             return addX(Token.concatList(x1, x2, false, true));
           return addX(Token.sValue(x1) + Token.sValue(x2));
         }
-        if (x1.tok == Token.integer && x2.tok != Token.decimal)
-          return addX(x1.intValue + Token.iValue(x2));
+        if (x1.tok == Token.string && x2.tok == Token.integer) { 
+          if ((s = (Token.sValue(x1)).trim()).indexOf(".") < 0
+              && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
+            return addX(Token.iValue(x1) + x2.intValue);
+        }
+        if (x1.tok == Token.integer) {
+          if (x2.tok == Token.string) { 
+              if ((s = (Token.sValue(x2)).trim()).indexOf(".") < 0
+              && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
+            return addX(x1.intValue + Token.iValue(x2));
+          } else if (x2.tok != Token.decimal)
+            return addX(x1.intValue + Token.iValue(x2));
+        }
         if (x1.tok == Token.point3f) {
           Point3f pt = new Point3f((Point3f) x1.value);
           switch (x2.tok) {
@@ -10782,8 +10800,19 @@ class Eval { //implements Runnable {
         }
         return addX(Token.fValue(x1) + Token.fValue(x2));
       case Token.minus:
-        if (x1.tok == Token.integer)
-          return addX(x1.intValue - Token.iValue(x2));
+        if (x1.tok == Token.integer) {
+          if (x2.tok == Token.string) { 
+              if ((s = (Token.sValue(x2)).trim()).indexOf(".") < 0
+              && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
+            return addX(x1.intValue - Token.iValue(x2));
+          } else if (x2.tok != Token.decimal)
+            return addX(x1.intValue - Token.iValue(x2));
+        }
+        if (x1.tok == Token.string && x2.tok == Token.integer) { 
+          if ((s = (Token.sValue(x1)).trim()).indexOf(".") < 0
+              && s.indexOf("+") <= 0 && s.lastIndexOf("-") <= 0)
+            return addX(Token.iValue(x1) - x2.intValue);
+        }
       //fall through
       case Token.unaryMinus:
         if (x1.tok == Token.integer && x2.tok == Token.integer)
@@ -10827,7 +10856,7 @@ class Eval { //implements Runnable {
         //  Point3f / Point3f  divides by magnitude
         //  float * Point3f gets magnitude
 
-        String s = null;
+        s = null;
         int n = Token.iValue(x2);
         switch (x1.tok) {
         case Token.on:

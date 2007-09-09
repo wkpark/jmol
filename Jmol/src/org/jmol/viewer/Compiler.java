@@ -222,12 +222,13 @@ class Compiler {
         }
         break;
       }
+      char ch;
       if (nTokens == 0) {
         isNewSet = false;
       } else {
-        if (nTokens == 1 && script.charAt(ichToken) == '='
-            && tokAttr(tokCommand, Token.setparam)) {
-          tokenCommand = Token.getTokenFromName("set");
+        if (nTokens == 1 && tokAttr(tokCommand, Token.setparam)
+            && ((ch = script.charAt(ichToken)) == '[' || ch == '=')) {
+          tokenCommand = (ch == '=' ? Token.tokenSet : Token.tokenSetArray);
           tokCommand = Token.set;
           ltoken.insertElementAt(tokenCommand, 0);
           cchToken = 1;
@@ -331,7 +332,7 @@ class Compiler {
           continue;
         }
         if (lookingAtSeqcode()) {
-          char ch = script.charAt(ichToken);
+          ch = script.charAt(ichToken);
           int seqNum = (ch == '*' || ch == '^' ? 0 : Integer.parseInt(script
               .substring(ichToken, ichToken + cchToken - 2)));
           char insertionCode = script.charAt(ichToken + cchToken - 1);
@@ -401,17 +402,24 @@ class Compiler {
           break;
         case Token.set:
           if (nTokens == 1) {
-            // set x   or   x = 
-            if (tok == Token.opEQ) {
+            // set x   or   x =
+            boolean isSetArray = false;
+            if (tok == Token.opEQ || tok == Token.leftsquare) {
               token = (Token) ltoken.get(0);
               ltoken.removeElementAt(0);
-              ltoken.addElement(Token.getTokenFromName("set"));
+              isSetArray = (tok == Token.leftsquare);
+              ltoken.addElement(tok == Token.leftsquare ? Token.tokenSetArray : Token.tokenSet);
               tok = token.tok;
               tokCommand = Token.set;
             }
             if (tok != Token.identifier && (!tokAttr(tok, Token.setparam)))
               return isNewSet ? commandExpected() : unrecognizedParameter(
                   "SET", ident);
+            if (isSetArray) {
+              addTokenToPrefix(token);
+              token = Token.tokenArray;
+              tok = Token.leftsquare;
+            }
           }
           break;
         case Token.define:

@@ -27,6 +27,7 @@ import org.jmol.api.SmilesMatcherInterface;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.g3d.Font3D;
 import org.jmol.shape.Text;
+import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.ColorEncoder;
 import org.jmol.util.CommandHistory;
@@ -1164,7 +1165,7 @@ class Eval { //implements Runnable {
       tempStatement = statement;
       statement = code;
     }
-    Rpn rpn = new Rpn(10);
+    Rpn rpn = new Rpn(10, null);
     Object val;
     int comparisonValue = Integer.MAX_VALUE;
     boolean refreshed = false;
@@ -3242,9 +3243,7 @@ class Eval { //implements Runnable {
       return;
     case Token.string:
       String strColor = stringParameter(1);
-      if (!isSyntaxCheck) {
-        viewer.setStringProperty("propertyColorSchemeOverLoad", strColor);
-      }
+      setStringProperty("propertyColorSchemeOverLoad", strColor);
       if (tokAt(2) == Token.range || tokAt(2) == Token.absolute) {
         float min = floatParameter(3);
         float max = floatParameter(4);
@@ -6112,7 +6111,7 @@ class Eval { //implements Runnable {
     } else {
       Object v = parameterExpression((getToken(2).tok == Token.opEQ ? 3 : 2),
           key);
-      if (isSyntaxCheck)
+      if (isSyntaxCheck || v == null)
         return;
       if (key.startsWith("property_")) {
         n = viewer.getAtomCount();
@@ -6120,6 +6119,8 @@ class Eval { //implements Runnable {
             viewer.getSelectedAtoms() }, n, 0, Integer.MIN_VALUE);
         return;
       }
+      if (v == null)
+        return;
       if (v instanceof Boolean) {
         setBooleanProperty(key, ((Boolean) v).booleanValue());
       } else if (v instanceof Integer) {
@@ -6210,7 +6211,7 @@ class Eval { //implements Runnable {
 
   private Object parameterExpression(int pt, String key) throws ScriptException {
     Object v;
-    Rpn rpn = new Rpn(16);
+    Rpn rpn = new Rpn(16, key == null || key.length() == 0 || tokAt(pt) != Token.leftsquare ? null : key);
     for (int i = pt; i < statementLength; i++) {
       v = null;
       switch (getToken(i).tok) {
@@ -6311,8 +6312,16 @@ class Eval { //implements Runnable {
 
     if (key == null)
       return Boolean.valueOf(Token.bValue(result));
-    if (key.length() == 0)
+    if (key.length() == 0) {
+      if (result.tok == Token.string)
+        result.intValue = Integer.MAX_VALUE;
       return Token.sValue(result);
+    }
+    if (result.tok == Token.string && result.intValue != Integer.MAX_VALUE) {
+      if (!isSyntaxCheck && !insertArrayValue(key, result))
+        invalidArgument();
+      return (String) null;
+    }
     switch (result.tok) {
     case Token.on:
     case Token.off:
@@ -6328,6 +6337,52 @@ class Eval { //implements Runnable {
     }
   }
 
+  private boolean insertArrayValue(String key, Token result) {
+    int selector = result.intValue;
+    if (selector == Integer.MAX_VALUE)
+      return false;
+    result.intValue = Integer.MAX_VALUE;
+    String s = Token.sValue(result);
+    Object v = viewer.getParameter(key);
+    if (!(v instanceof String))
+      return false;
+    v = getStringObjectAsToken((String) v, key);
+    if (v instanceof Token) {
+      Token token = (Token) v;
+      if (token.tok != Token.list)
+        return false;
+      String[] array = (String[]) token.value;
+      if (selector <= 0)
+        selector = array.length + selector;
+      if (--selector < 0)
+        selector = 0;
+      if (array.length > selector) {
+        array[selector] = s;
+        viewer.setListVariable(key, token);
+        return true;
+      }
+      String[] arrayNew = ArrayUtil.ensureLength(array, selector + 1);
+      for (int i = array.length; i <= selector; i++)
+        arrayNew[i] = "";
+      arrayNew[selector] = s;
+      token.value = arrayNew;
+      viewer.setListVariable(key, token);
+      return true;
+    } else if (v instanceof String) {
+      String str = (String) v;
+      int pt = str.length();
+      if (selector <= 0)
+        selector = pt + selector;
+      if (--selector < 0)
+        selector = 0;
+      while (selector >= str.length())
+        str += " ";
+      str = str.substring(0, selector) + s + str.substring(selector + 1);
+      setStringProperty(key, str);
+      return true;
+    }
+    return false;
+  }
   private void assignBitsetVariable(String variable, BitSet bs) {
     variables.put(variable, bs);
     setStringProperty("@" + variable, Escape.escape(bs));
@@ -9673,9 +9728,12 @@ class Eval { //implements Runnable {
     private int parenCount;
     private int squareCount;
     private int braceCount;
-    private boolean wasX = false;
-
-    Rpn(int maxLevel) {
+    private boolean wasX;
+    private boolean isAssignment;
+    String assignmentVariable;
+    Rpn(int maxLevel, String assignmentVariable) {
+      this.assignmentVariable = assignmentVariable;
+      this.isAssignment = (assignmentVariable != null);
       this.maxLevel = maxLevel;
       oStack = new Token[maxLevel];
       xStack = new Token[maxLevel];
@@ -9685,17 +9743,25 @@ class Eval { //implements Runnable {
 
     Token getResult(boolean allowUnderflow, String key) throws ScriptException {
       boolean isOK = true;
+      Token x = null;
+      int selector = Integer.MAX_VALUE;
       while (isOK && oPt >= 0)
-        isOK = operate(Token.nada);
+        isOK = operate();
+      if (isOK && isAssignment && xPt == 2 && xStack[1].tok == Token.leftsquare) {
+        x = xStack[2];
+        selector = Token.iValue(xStack[0]);
+        xPt = 0;
+      }
       if (isOK && xPt == 0) {
-        Token x = xStack[0];
+        if (x == null)
+          x = xStack[0];
         if (x.tok == Token.bitset || x.tok == Token.list
             || x.tok == Token.string)
           x = xStack[0] = Token.selectItem(x, Integer.MIN_VALUE);
-        if (key != null && key.length() > 0 && !isSyntaxCheck)
+        if (selector == Integer.MAX_VALUE && key != null && key.length() > 0 && !isSyntaxCheck)
           viewer.setListVariable(key, x.tok == Token.list ? x : null);
-        if (x.tok == Token.list)
-          x = new Token(Token.string, Token.sValue(x));
+        if (selector != Integer.MAX_VALUE || x.tok == Token.list)
+          x = new Token(Token.string, selector, Token.sValue(x));
         return x;
       }
       if (!allowUnderflow && (xPt >= 0 || oPt >= 0)) {
@@ -9843,9 +9909,9 @@ class Eval { //implements Runnable {
         oStack[oPt].intValue |= op.tok;
         return true;
       case Token.leftsquare: // two contexts: [x x].distance or {....}[n]
-        isLeftOp = !wasX;
-        if (isLeftOp)
-          op = newOp = new Token(Token.leftsquare, 0);
+        isLeftOp = true;//!wasX;
+        //if (isLeftOp)
+          //op = newOp = new Token(Token.leftsquare, 0, "[");
         break;
       case Token.minus:
         if (wasX)
@@ -9893,20 +9959,25 @@ class Eval { //implements Runnable {
           break;
 
         if (op.tok == Token.rightsquare && oStack[oPt].tok == Token.leftsquare) {
-          if (oStack[oPt].intValue == 0) {
-            if (xPt >= 0 && xStack[xPt].tok == Token.string) {
-              if (!concatList())
-                return false;
-            }
-          } else if (!doBitsetSelect()) {
-            return false;
+          //if (oStack[oPt].intValue == 0) {
+            //special left square as concat list business
+            //if (xPt >= 0 && xStack[xPt].tok == Token.string) {
+            //  if (!concatList())
+              //  return false;
+            //}
+          //} else 
+          if (xPt == 0 && isAssignment) {
+            addX(Token.tokenArray);
+            break;
           }
+          if (!doBitsetSelect())
+            return false;
           break;
         }
 
         // if not, it's time to operate
 
-        if (!operate(op.tok))
+        if (!operate())
           return false;
 
       }
@@ -9966,6 +10037,7 @@ class Eval { //implements Runnable {
       return true;
     }
 
+/* abandoned -- unnecessary
     private boolean concatList() throws ScriptException {
       int nPoints = 0;
       int pt = xPt;
@@ -9979,10 +10051,12 @@ class Eval { //implements Runnable {
       return true;
 
     }
+*/
 
     private boolean doBitsetSelect() {
-      if (xPt < 1)
+      if (xPt < 0 || xPt == 0 && !isAssignment) {
         return false;
+      }
       int i = Token.iValue(xStack[xPt--]);
       Token token = xStack[xPt];
       switch (token.tok) {
@@ -10551,10 +10625,16 @@ class Eval { //implements Runnable {
       return addX(bs);
     }
 
-    private boolean operate(int thisOp) throws ScriptException {
+    private boolean operate() throws ScriptException {
 
       Token op = oStack[oPt--];
+      if (oPt < 0 && op.tok == Token.opEQ && isAssignment && xPt == 2) {
+        return true;
+      }
+      
       Token x2 = getX();
+      if (x2 == Token.tokenArray)
+        return false;
 
       //unary:
 

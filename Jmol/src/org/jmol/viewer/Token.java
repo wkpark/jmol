@@ -777,6 +777,7 @@ public class Token {
   final static Token tokenOr  = new Token(opOr, "or");
   final static Token tokenComma = new Token(comma, ",");
   final static Token tokenMinus = new Token(minus, "-");
+  final static Token tokenArray = new Token(leftsquare, "[");
  
   final static Token tokenExpressionBegin =
     new Token(expressionBegin, "expressionBegin");
@@ -786,6 +787,10 @@ public class Token {
     new Token(leftbrace, "{");
   final static Token tokenCoordinateEnd =
     new Token(rightbrace, "}");
+  final static Token tokenSet =
+    new Token(set, '=', "set");
+  final static Token tokenSetArray =
+    new Token(set, '[', "set");
   
   // user names
   
@@ -1215,9 +1220,9 @@ public class Token {
    
   public String toString() {
     return "Token[" + astrType[tok<=keyword ? tok : keyword] +
-      "-" + tok +
-      ((intValue == Integer.MAX_VALUE) ? "" : ":" + intValue + " = 0x" + Integer.toHexString(intValue)) +
-      ((value == null) ? "" : ":" + value) + "]";
+      "(0x" + Integer.toHexString(tok)+")" +
+      ((intValue == Integer.MAX_VALUE) ? "" : " intValue=" + intValue + "(0x" + Integer.toHexString(intValue) + ")") +
+      ((value == null) ? "" : value instanceof String ? " value=\"" + value + "\"" : " value=" + value) + "]";
   }
   
   ////////command sets ///////

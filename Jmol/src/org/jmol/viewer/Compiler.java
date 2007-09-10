@@ -1047,7 +1047,10 @@ class Compiler {
     }
     
     size -= nDefined;
-    
+    if (isNewSet && size < 3)
+      return commandExpected();
+    if (isSetOrDefine) //intValue is NOT of this nature
+      return true;
     int allowedLen = (tokenCommand.intValue & 0x0F) + 1;
     if (!tokAttr(tokenCommand.intValue, Token.varArgCount)) {
       if (size > allowedLen)
@@ -1058,8 +1061,6 @@ class Compiler {
       // max2, max3, max4, etc.
       return badArgumentCount();
     }
-    if (isNewSet && size < 3)
-      return commandExpected();
     return true;
   }
 

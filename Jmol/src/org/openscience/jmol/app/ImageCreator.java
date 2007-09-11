@@ -81,8 +81,7 @@ public class ImageCreator {
           PpmEncoder pc = new PpmEncoder(eImage, os);
           pc.encode();
         } else if (type_or_text.equalsIgnoreCase("PNG")) {
-          PngEncoder png = new PngEncoder(eImage);
-          png.setCompressionLevel(quality == 0 ? 2 : quality); //reasonable? 500x500 is 38K
+          PngEncoder png = new PngEncoder(eImage, false, PngEncoder.FILTER_NONE, quality);
           byte[] pngbytes = png.pngEncode();
           os.write(pngbytes);
         } else if (type_or_text.equalsIgnoreCase("JPG64")) {

@@ -7466,7 +7466,7 @@ class Eval { //implements Runnable {
       //      if (isApplet)
       //      evalError(GT._("The {0} command is not available for the applet.",
       //        "WRITE CLIPBOARD"));
-    } else if (Parser.isOneOf(val.toLowerCase(), "jpg;jpeg;jpg64") && tokAt(pt + 1) == Token.integer) {
+    } else if (Parser.isOneOf(val.toLowerCase(), "png;jpg;jpeg;jpg64") && tokAt(pt + 1) == Token.integer) {
         quality = intParameter(++pt);
     }
 
@@ -7554,8 +7554,13 @@ class Eval { //implements Runnable {
         evalError(GT._("No data available"));
     } else {
       len = -1;
-      if (quality <= 0)
-        quality = 75;
+      if (data == "PNG") {
+        if (quality == Integer.MIN_VALUE)
+          quality = 2;
+        else if (quality < 0 || quality > 9)
+          quality = 0;
+      } else if (quality <= 0)
+        quality = 75; //JPG
     }
     if (len == 0)
       len = data.length();
@@ -7574,7 +7579,7 @@ class Eval { //implements Runnable {
           + (fileName == null ? "CLIPBOARD" : fileName)
           + (len >= 0 ? "; length=" + len : "")
           + (isImage ? "; width=" + width + "; height=" + height : "")
-          + (quality > 0 ? "; quality=" + quality : ""));
+          + (quality >= 0 ? "; quality=" + quality : ""));
     }
     return data;
   }

@@ -842,7 +842,7 @@ public class Draw extends MeshCollection {
       iModel = 0;
     if (mesh.diameter > 0)
       str.append(" diameter ").append(mesh.diameter);
-    int nVertices = 0;
+    int nVertices = mesh.vertexCount;
     switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
     case JmolConstants.DRAW_ARROW:
       str.append(" ARROW");
@@ -854,13 +854,12 @@ public class Draw extends MeshCollection {
       str.append(" CURVE");
       break;
     case JmolConstants.DRAW_POINT:
-      nVertices = 1;
+      nVertices = 1; // because this might be multiple points
       break;
     case JmolConstants.DRAW_LINE:
-      nVertices = 2;
+      nVertices = 2; // because this might be multiple lines
       break;
     }
-
     if (mesh.modelIndex < 0 && !mesh.isFixed) {
       for (int i = 0; i < modelCount; i++)
         if (isPolygonDisplayable(mesh, i)) {
@@ -885,8 +884,6 @@ public class Draw extends MeshCollection {
   
   private static String getVertexList(Mesh mesh, int iModel, int nVertices) {
     String str = "";
-    if (nVertices == 0)
-      nVertices = mesh.polygonIndexes[iModel].length;
     for (int i = 0; i < nVertices; i++) {
       Point3f v = new Point3f();
       try{

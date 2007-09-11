@@ -71,7 +71,6 @@ public class DrawRenderer extends MeshRenderer {
     int tension = 5;
     switch (drawType) {
     case JmolConstants.DRAW_ARROW:
-      int headDiameter = diameter * 5;
       Vector3f tip = new Vector3f();
       float d;
       float fScale = dmesh.drawArrowScale;
@@ -114,7 +113,7 @@ public class DrawRenderer extends MeshRenderer {
       tip.set(pt2i.x - pt1i.x, pt2i.y - pt1i.y, pt2i.z - pt1i.z);
       if (pt2i.z == 1 || pt1i.z == 1) //slabbed
         break;
-      headDiameter = (int) (tip.length() / .5);
+      int headDiameter = (int) (tip.length() * .5);
       diameter = headDiameter / 5;
       if (diameter < 1)
         diameter = 1;

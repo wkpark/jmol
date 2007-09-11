@@ -582,12 +582,12 @@ class Cylinder3D {
       line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
           (int) xUp, (int) yUp, (int) zUp, (int) Math.ceil(xTip - xUp),
           (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp), false);
-      line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
-          (int) xUp, (int) yUp + 1, (int) zUp, (int) Math.ceil(xTip - xUp),
-          (int) Math.ceil(yTip - yUp) + 1, (int) Math.ceil(zTip - zUp), false);
-      line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
-          (int) xUp + 1, (int) yUp, (int) zUp, (int) Math.ceil(xTip - xUp) + 1,
-          (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp), false);
+ //     line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
+   //       (int) xUp, (int) yUp + 1, (int) zUp, (int) Math.ceil(xTip - xUp),
+     //     (int) Math.ceil(yTip - yUp) + 1, (int) Math.ceil(zTip - zUp), false);
+ //     line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
+   //       (int) xUp + 1, (int) yUp, (int) zUp, (int) Math.ceil(xTip - xUp) + 1,
+     //     (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp), false);
       if (!(endcaps == Graphics3D.ENDCAPS_FLAT && dzB > 0)) {
         line3d.plotLineDelta(argb, isScreenedA, argb, isScreenedA, (int) xDn,
             (int) yDn, (int) zDn, (int) Math.ceil(xTip - xDn), (int) Math

@@ -68,6 +68,10 @@ class Eval { //implements Runnable {
     int iToken;
     int ifs[];
     StringBuffer outputBuffer;
+    
+    public Context() {
+      //
+    }
   }
 
   private final static int scriptLevelMax = 10;

@@ -84,8 +84,13 @@ public class DrawRenderer extends MeshRenderer {
         controlHermites = new Point3f[nHermites + 1];
       }
       if (vertexCount == 2) {
-        controlHermites[nHermites - 2] = vertices[0];
-        controlHermites[nHermites - 1] = vertices[1];
+        if (controlHermites[nHermites - 1] == null) {
+          controlHermites[nHermites - 2]= new Point3f(vertices[0]);
+          controlHermites[nHermites - 1]= new Point3f(vertices[1]);          
+        } else {
+          controlHermites[nHermites - 2].set(vertices[0]);
+          controlHermites[nHermites - 1].set(vertices[1]);
+        }
       } else {
         Graphics3D.getHermiteList(tension, vertices[vertexCount - 3],
             vertices[vertexCount - 2], vertices[vertexCount - 1],
@@ -109,7 +114,7 @@ public class DrawRenderer extends MeshRenderer {
       tip.set(pt2i.x - pt1i.x, pt2i.y - pt1i.y, pt2i.z - pt1i.z);
       if (pt2i.z == 1 || pt1i.z == 1) //slabbed
         break;
-      headDiameter = (int) (tip.length() / 2);
+      headDiameter = (int) (tip.length() / .5);
       diameter = headDiameter / 5;
       if (diameter < 1)
         diameter = 1;

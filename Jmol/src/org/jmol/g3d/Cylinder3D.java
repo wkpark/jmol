@@ -215,7 +215,7 @@ class Cylinder3D {
   float xTip, yTip, zTip;
 
   void renderCone(short colix, boolean isScreened, byte endcap, int diameter, float xA, float yA,
-                  float zA, float xTip, float yTip, float zTip) {
+                  float zA, float xTip, float yTip, float zTip, boolean doFill) {
     if (diameter > g3d.height * 3)
       return;
     dxBf = (xTip) - (xAf = xA);
@@ -230,7 +230,6 @@ class Cylinder3D {
     this.xTip = xTip;
     this.yTip = yTip;
     this.zTip = zTip;
-
     colixA = colix;
     this.isScreenedA = isScreened;
     shadesA = g3d.getShades(colix);
@@ -254,7 +253,7 @@ class Cylinder3D {
       renderFlatEndcap(false);
     g3d.setZMargin(5);
     for (int i = rasterCount; --i >= 0;)
-      plotRasterCone(i);
+      plotRasterCone(i, doFill);
     g3d.setZMargin(0);
   }
 
@@ -563,7 +562,7 @@ class Cylinder3D {
       g3d.fillSphereCentered(diameter, xA + dxB, yA + dyB, zA + dzB + 1);
   }
 
-  private void plotRasterCone(int i) {
+  private void plotRasterCone(int i, boolean doFill) {
     float x = txRaster[i];
     float y = tyRaster[i];
     float z = tzRaster[i];
@@ -582,12 +581,16 @@ class Cylinder3D {
       line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
           (int) xUp, (int) yUp, (int) zUp, (int) Math.ceil(xTip - xUp),
           (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp), false);
- //     line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
-   //       (int) xUp, (int) yUp + 1, (int) zUp, (int) Math.ceil(xTip - xUp),
-     //     (int) Math.ceil(yTip - yUp) + 1, (int) Math.ceil(zTip - zUp), false);
- //     line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
-   //       (int) xUp + 1, (int) yUp, (int) zUp, (int) Math.ceil(xTip - xUp) + 1,
-     //     (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp), false);
+      
+      if (doFill) { //rockets, not arrows
+        line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
+          (int) xUp, (int) yUp + 1, (int) zUp, (int) Math.ceil(xTip - xUp),
+          (int) Math.ceil(yTip - yUp) + 1, (int) Math.ceil(zTip - zUp), false);
+        line3d.plotLineDelta(shadesA, isScreenedA, shadesA, isScreenedA, fpz,
+          (int) xUp + 1, (int) yUp, (int) zUp, (int) Math.ceil(xTip - xUp) + 1,
+          (int) Math.ceil(yTip - yUp), (int) Math.ceil(zTip - zUp), false);
+      }    
+  
       if (!(endcaps == Graphics3D.ENDCAPS_FLAT && dzB > 0)) {
         line3d.plotLineDelta(argb, isScreenedA, argb, isScreenedA, (int) xDn,
             (int) yDn, (int) zDn, (int) Math.ceil(xTip - xDn), (int) Math

@@ -947,7 +947,7 @@ final public class Graphics3D {
     // dipoles, mesh, vectors
     cylinder3d.renderCone(colixCurrent, !addAllPixels, endcap, diameter,
                           screenBase.x, screenBase.y, screenBase.z,
-                          screenTip.x, screenTip.y, screenTip.z);
+                          screenTip.x, screenTip.y, screenTip.z, false);
   }
 
   public void fillCone(byte endcap, int diameter,
@@ -955,7 +955,7 @@ final public class Graphics3D {
     // cartoons, rockets
     cylinder3d.renderCone(colixCurrent, !addAllPixels, endcap, diameter,
                           screenBase.x, screenBase.y, screenBase.z,
-                          screenTip.x, screenTip.y, screenTip.z);
+                          screenTip.x, screenTip.y, screenTip.z, true);
   }
 
   public void drawHermite(int tension,

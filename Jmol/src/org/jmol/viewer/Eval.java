@@ -39,7 +39,9 @@ import org.jmol.util.Parser;
 import org.jmol.modelset.Bond.BondSet;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Hashtable;
 import javax.vecmath.Point3f;
@@ -57,7 +59,7 @@ class Eval { //implements Runnable {
   private static class Context {
     String filename;
     String script;
-    short[] linenumbers;
+    short[] lineNumbers;
     int[] lineIndices;
     Token[][] aatoken;
     Token[] statement;
@@ -89,7 +91,7 @@ class Eval { //implements Runnable {
   }
   
   private String thisCommand;
-  private short[] linenumbers;
+  private short[] lineNumbers;
   private int[] lineIndices;
   private Token[][] aatoken;
   private int pc; // program counter
@@ -270,7 +272,7 @@ class Eval { //implements Runnable {
     Context context = new Context();
     context.filename = filename;
     context.script = script;
-    context.linenumbers = linenumbers;
+    context.lineNumbers = lineNumbers;
     context.lineIndices = lineIndices;
     context.aatoken = aatoken;
     context.statement = statement;
@@ -295,7 +297,7 @@ class Eval { //implements Runnable {
     stack[scriptLevel] = null;
     filename = context.filename;
     script = context.script;
-    linenumbers = context.linenumbers;
+    lineNumbers = context.lineNumbers;
     lineIndices = context.lineIndices;
     aatoken = context.aatoken;
     statement = context.statement;
@@ -311,7 +313,7 @@ class Eval { //implements Runnable {
   private boolean loadScript(String filename, String script, boolean debugCompiler) {
     //use runScript, not loadScript from within Eval
     this.filename = filename;
-    if (!compiler.compile(filename, script, false, false, debugCompiler)) {
+    if (!compiler.compile(filename, script, false, false, debugCompiler, false)) {
       error = true;
       errorMessage = compiler.getErrorMessage();
       return false;
@@ -319,13 +321,33 @@ class Eval { //implements Runnable {
     this.script = compiler.getScript();
     pc = 0;
     aatoken = compiler.getAatokenCompiled();
-    linenumbers = compiler.getLineNumbers();
+    lineNumbers = compiler.getLineNumbers();
     lineIndices = compiler.getLineIndices();
     return true;
   }
 
+  private Function getMacro(String name) {
+    if (name == null)
+      return null;
+    Function function = (Function) Compiler.htFunctions.get(name);
+    return (function == null || function.aatoken == null
+        || function.tokType != Token.macro ? null : function);
+  }
+  
+  private boolean loadMacro(String name) {
+    Function function = getMacro(name);
+    if (function == null)
+      return false;
+    aatoken = function.aatoken;
+    lineNumbers = function.lineNumbers;
+    lineIndices = function.lineIndices;
+    script = function.script;
+    pc = 0;
+    return true;
+  }
+
   Object checkScriptSilent(String script) {
-    if (!compiler.compile(null, script, false, true, false))
+    if (!compiler.compile(null, script, false, true, false, true))
       return compiler.getErrorMessage();
     isSyntaxCheck = true;
     isScriptCheck = false;
@@ -333,7 +355,7 @@ class Eval { //implements Runnable {
     this.script = compiler.getScript();
     pc = 0;
     aatoken = compiler.getAatokenCompiled();
-    linenumbers = compiler.getLineNumbers();
+    lineNumbers = compiler.getLineNumbers();
     lineIndices = compiler.getLineIndices();
     try {
       instructionDispatchLoop(false);
@@ -490,7 +512,7 @@ class Eval { //implements Runnable {
   }
 
   private void predefine(String script) {
-    if (compiler.compile("#predefine", script, true, false, false)) {
+    if (compiler.compile("#predefine", script, true, false, false, false)) {
       Token[][] aatoken = compiler.getAatokenCompiled();
       if (aatoken.length != 1) {
         viewer
@@ -736,7 +758,7 @@ class Eval { //implements Runnable {
       statement = aatoken[pc];
       statementLength = statement.length;
       fixVariables();
-      if (linenumbers[pc] > lineEnd)
+      if (lineNumbers[pc] > lineEnd)
         break;
       thisCommand = getCommand();
       iToken = 0;
@@ -748,14 +770,14 @@ class Eval { //implements Runnable {
         if (doList || milliSecDelay > 0 && scriptLevel > 0) {
           if (milliSecDelay > 0)
             delay((long) milliSecDelay);
-          viewer.scriptEcho("$[" + scriptLevel + "." + linenumbers[pc] + "."
+          viewer.scriptEcho("$[" + scriptLevel + "." + lineNumbers[pc] + "."
               + (pc + 1) + "] " + thisCommand);
         }
       }
       if (isSyntaxCheck) {
         if (isScriptCheck)
           Logger.info(thisCommand);
-        if (statementLength == 1)
+        if (statementLength == 1 && statement[0].tok != Token.macro)
           //            && !Compiler.tokAttr(token.tok, Token.unimplemented))
           continue;
       } else {
@@ -852,6 +874,9 @@ class Eval { //implements Runnable {
       case Token.script:
       case Token.javascript:
         script(token.tok == Token.javascript);
+        break;
+      case Token.macro:
+        macro();
         break;
       case Token.sync:
         sync();
@@ -1097,7 +1122,7 @@ class Eval { //implements Runnable {
   }
 
   private int getLinenumber() {
-    return linenumbers[pc];
+    return lineNumbers[pc];
   }
 
   private String getCommand() {
@@ -4161,6 +4186,10 @@ class Eval { //implements Runnable {
       return;
     }
     // possibly "all"
+    if (tokAt(1) == Token.macro) {
+      Compiler.htFunctions = new Hashtable();
+      return;
+    }
     String var = parameterAsString(1);
     if (var.charAt(0) == '_')
       invalidArgument();
@@ -4514,7 +4543,7 @@ class Eval { //implements Runnable {
     if (isOK) {
       this.pcEnd = pcEnd;
       this.lineEnd = lineEnd;
-      while (pc < linenumbers.length && linenumbers[pc] < lineNumber)
+      while (pc < lineNumbers.length && lineNumbers[pc] < lineNumber)
         pc++;
       this.pc = pc;
       boolean saveLoadCheck = fileOpenCheck;
@@ -4535,6 +4564,20 @@ class Eval { //implements Runnable {
 
     isSyntaxCheck = wasSyntaxCheck;
     isScriptCheck = wasScriptCheck;
+  }
+
+  private void macro() throws ScriptException {
+    if (isSyntaxCheck && !isScriptCheck)
+      return;
+    String name = (String) getToken(0).value;
+    if (getMacro(name) == null)
+      evalError(GT._("command expected"));
+    if (isSyntaxCheck)
+      return;
+    pushContext();
+    loadMacro(name);
+    instructionDispatchLoop(false);
+    popContext();
   }
 
   private void sync() throws ScriptException {
@@ -7420,6 +7463,10 @@ class Eval { //implements Runnable {
       type2 = "ramachandran";
       pt++;
       break;
+    case Token.macro:
+      type = "MACROS";
+      pt++;
+      break;
     case Token.coord:
     case Token.data:
       type = optParameterAsString(pt + 1).toLowerCase();
@@ -7523,9 +7570,9 @@ class Eval { //implements Runnable {
     if (isImage && (isApplet || isShow))
       type = "JPG64";
     if (!isImage && !isExport
-        && !Parser.isOneOf(type, "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB;QUAT;RAMA;"))
+        && !Parser.isOneOf(type, "SPT;HIS;MO;ISO;VAR;XYZ;MOL;PDB;QUAT;RAMA;MACROS;"))
       evalError(GT._("write what? {0} or {1} \"filename\"", new Object[] {
-          "COORDS|HISTORY|IMAGE|ISOSURFACE|MO|QUATERNION [w,x,y,z] [derivative]"
+          "COORDS|HISTORY|IMAGE|ISOSURFACE|MACROS|MO|QUATERNION [w,x,y,z] [derivative]"
               + "|RAMACHANDRAN|STATE|VAR x  CLIPBOARD",
           "JPG|JPG64|PNG|PPM|SPT|JVXL|XYZ|MOL|PDB|"
               + TextFormat.simpleReplace(driverList.toUpperCase(), ";", "|") }));
@@ -7538,6 +7585,8 @@ class Eval { //implements Runnable {
       data = viewer.getData("selected", data);
     } else if (data == "QUAT" || data == "RAMA") {
       data = viewer.getPdbData(type2);
+    } else if (data == "MACROS") {
+      data = getMacros();
     } else if (data == "VAR") {
       data = "" + viewer.getParameter(parameterAsString(2));
     } else if (data == "SPT") {
@@ -7608,6 +7657,11 @@ class Eval { //implements Runnable {
     String msg = null;
     int len = 2;
     switch (getToken(1).tok) {
+    case Token.macro:
+      checkLength2();
+      if (!isSyntaxCheck)
+        showString(getMacros());
+      return;
     case Token.set:
       checkLength2();
       if (!isSyntaxCheck)
@@ -7891,6 +7945,27 @@ class Eval { //implements Runnable {
       viewer.showString(str);
   }
 
+  private String getMacros() {
+   StringBuffer s = new StringBuffer();
+   String[] names = new String[Compiler.htFunctions.size()];
+   Enumeration e = Compiler.htFunctions.keys();
+   int n = 0;
+   while (e.hasMoreElements())
+     names[n++] = (String)e.nextElement();
+   Arrays.sort(names, 0, n);
+   for (int i = 0; i < n; i++) {
+     Function f = (Function) Compiler.htFunctions.get(names[i]);
+     if (f.tokType == Token.macro) {
+       s.append("##########;\nmacro " + names[i] + ";\n");
+       s.append(f.script);
+       if (f.script.length() > 0 && f.script.charAt(f.script.length() - 1) != '\n')
+         s.append("\n");
+       s.append("end macro;\n");
+     }
+   }
+   return s.toString();
+  }
+  
   private String getIsosurfaceJvxl() {
     if (isSyntaxCheck)
       return "";

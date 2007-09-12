@@ -92,23 +92,24 @@ public class Token {
 //generally, the minus sign is used to denote atom ranges
   // this property is used for the commands which allow negative integers
   final static int negnums           = (1 << 12);
+  final static int noeval          = (1 << 13);
   
   // parameter types
   
-  final static int setparam          = (1 << 13); // parameter to set command
-  final static int colorparam        = (1 << 14);
-  final static int misc              = (1 << 15); // misc parameter
+  final static int setparam          = (1 << 14); // parameter to set command
+  final static int colorparam        = (1 << 15);
+  final static int misc              = (1 << 16); // misc parameter
   
   // expression terms
   
-  final static int expression        = (1 << 16);
-  final static int predefinedset     = (1 << 17) | expression;
-  final static int atomproperty      = (1 << 18) | expression;
-  final static int mathproperty      = (1 << 19) | atomproperty;
-  final static int mathop            = (1 << 20) | expression;
-  final static int mathfunc          = (1 << 21) | expression;  
-  final static int comparator        = (1 << 22) | expression;
-
+  final static int expression        = (1 << 17);
+  final static int predefinedset     = (1 << 18) | expression;
+  final static int atomproperty      = (1 << 19) | expression;
+  final static int mathproperty      = (1 << 20) | atomproperty;
+  final static int mathop            = (1 << 21) | expression;
+  final static int mathfunc          = (1 << 22) | expression;  
+  final static int comparator        = (1 << 23) | expression;
+  
   final static int numberOrExpression = negnums | embeddedExpression; 
 
   // These are unrelated
@@ -218,6 +219,11 @@ public class Token {
   final static int ramachandran   = command | 121;
   final static int sync           = command | 122;
   final static int print          = command | 123 | numberOrExpression;
+
+  final static int macro          = command | 124 | noeval;
+  final static int end            = command | 125 | noeval;
+  final static int function       = command | 126 | noeval; //not implemented
+  final static int subroutine     = command | 127 | noeval; //not implemented
 
 
   //the following are listed with atomproperty because they must be registered as atom property names
@@ -881,6 +887,11 @@ public class Token {
     "anim",              null, 
                           
     //                   Jmol commands
+    "macro",             new Token(macro,           varArgCount), //varArgCount required
+    "macros",            null,
+    "function",          new Token(function,        varArgCount), //varArgCount required
+    "subroutine",        new Token(subroutine,      varArgCount), //varArgCount required
+    "end",               new Token(end,             varArgCount), //varArgCount required
     "centerat",          new Token(centerAt,        varArgCount),
     "font",              new Token(font,            varArgCount),
     "hover",             new Token(hover,            onDefault1),
@@ -1185,6 +1196,7 @@ public class Token {
     "sub",          new Token(sub),
     "mul",          new Token(mul),
     "div",          new Token(div),
+    
   };
 
   static Hashtable map = new Hashtable();

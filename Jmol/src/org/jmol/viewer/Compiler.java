@@ -30,6 +30,7 @@ import org.jmol.i18n.GT;
 import org.jmol.modelset.Group;
 import org.jmol.modelset.Bond.BondSet;
 
+import java.util.Hashtable;
 import java.util.Vector;
 import java.util.BitSet;
 
@@ -37,6 +38,9 @@ import javax.vecmath.Point3f;
 
 class Compiler {
 
+  static Hashtable htFunctions = new Hashtable();
+
+  private Function thisFunction;
   private Viewer viewer;
   private String filename;
   private String script;
@@ -50,7 +54,8 @@ class Compiler {
   private boolean preDefining;
   private boolean isSilent;
   private boolean isShowScriptOutput;
-
+  private boolean isCheckOnly;
+  
   private boolean logMessages = false;
 
   Compiler(Viewer viewer) {
@@ -58,7 +63,8 @@ class Compiler {
   }
 
   boolean compile(String filename, String script, boolean isPredefining,
-                  boolean isSilent, boolean debugScript) {
+                  boolean isSilent, boolean debugScript, boolean isCheckOnly) {
+    this.isCheckOnly = isCheckOnly;
     this.filename = filename;
     this.isSilent = isSilent;
     this.script = cleanScriptComments(script);
@@ -186,30 +192,43 @@ class Compiler {
     isNewSet = false;
     for (; true; ichToken += cchToken) {
       int nTokens = ltoken.size();
+      if (nTokens == 0) {
+        if (thisFunction != null && thisFunction.chpt0 == 0) {
+          thisFunction.chpt0 = ichToken;
+        }
+      }
       if (lookingAtLeadingWhitespace())
         continue;
-      if (nTokens == 0)
-        ichCurrentCommand = ichToken;
       if (lookingAtComment())
         continue;
       boolean endOfLine = lookingAtEndOfLine();
       if (endOfLine || lookingAtEndOfStatement()) {
         if (nTokens > 0) {
+          iCommand = lltoken.size();
+          if (thisFunction != null && thisFunction.cmdpt0 < 0) {
+            thisFunction.cmdpt0 = iCommand;
+          }
           if (!compileCommand())
             return false;
-          iCommand = lltoken.size();
-          if (iCommand == lnLength) {
-            short[] lnT = new short[lnLength * 2];
-            System.arraycopy(lineNumbers, 0, lnT, 0, lnLength);
-            lineNumbers = lnT;
-            int[] lnI = new int[lnLength * 2];
-            System.arraycopy(lineIndices, 0, lnI, 0, lnLength);
-            lineIndices = lnI;
-            lnLength *= 2;
+          if (thisFunction != null && tokCommand == Token.end) {
+            for (int i = iCommand; --i >= thisFunction.cmdpt0;)
+              lltoken.remove(i);
+            thisFunction = null;
+          } else if (!tokAttr(tokCommand, Token.noeval)
+              || atokenInfix[0].intValue == 0) {
+            if (iCommand == lnLength) {
+              short[] lnT = new short[lnLength * 2];
+              System.arraycopy(lineNumbers, 0, lnT, 0, lnLength);
+              lineNumbers = lnT;
+              int[] lnI = new int[lnLength * 2];
+              System.arraycopy(lineIndices, 0, lnI, 0, lnLength);
+              lineIndices = lnI;
+              lnLength *= 2;
+            }
+            lineNumbers[iCommand] = lineCurrent;
+            lineIndices[iCommand] = ichCurrentCommand;
+            lltoken.addElement(atokenInfix);
           }
-          lineNumbers[iCommand] = lineCurrent;
-          lineIndices[iCommand] = ichCurrentCommand;
-          lltoken.addElement(atokenInfix);
           ltoken.setSize(0);
           nTokens = 0;
           tokCommand = Token.nada;
@@ -255,7 +274,8 @@ class Compiler {
           if (lookingAtLoadFormat()) {
             String strFormat = script.substring(ichToken, ichToken + cchToken);
             strFormat = strFormat.toLowerCase();
-            if (strFormat.equals("append") || strFormat.equals("files") || strFormat.equals("menu"))
+            if (strFormat.equals("append") || strFormat.equals("files")
+                || strFormat.equals("menu"))
               addTokenToPrefix(new Token(Token.identifier, strFormat));
             else if (strFormat.equals("trajectory"))
               addTokenToPrefix(new Token(Token.trajectory));
@@ -400,6 +420,41 @@ class Compiler {
           tokCommand = Token.set;
           isNewSet = true;
           break;
+        case Token.macro:
+          if (nTokens != 1)
+            return badArgumentCount();
+          if (tokenCommand.intValue == 0) {
+            // user has given macro command
+            tokenCommand.value = ident;
+            continue;
+          }
+          thisFunction = new Function();
+          thisFunction.name = ident;
+          thisFunction.tokType = Token.macro;
+          break;
+        case Token.end:
+          if (thisFunction == null)
+            return unrecognizedToken("endxx");
+          if (nTokens != 1)
+            return badArgumentCount();
+          int chpt0 = thisFunction.chpt0;
+          int cmdpt0 = thisFunction.cmdpt0;
+          thisFunction.script = script.substring(chpt0, ichCurrentCommand);
+          int nCommands = iCommand + 1 - cmdpt0;
+          thisFunction.aatoken = new Token[nCommands][];
+          thisFunction.lineIndices = new int[nCommands];
+          thisFunction.lineNumbers = new short[nCommands];
+          short line0 = (short) (lineNumbers[cmdpt0] - 1);
+          for (int i = 0; i < nCommands; i++) {
+            thisFunction.lineNumbers[i] = (short) (lineNumbers[thisFunction.cmdpt0
+                + i] - line0);
+            thisFunction.lineIndices[i] = lineIndices[thisFunction.cmdpt0 + i]
+                - chpt0;
+            thisFunction.aatoken[i] = (Token[]) lltoken.get(cmdpt0 + i);
+          }
+          if (!isCheckOnly)
+            htFunctions.put(thisFunction.name, thisFunction);
+          continue;
         case Token.set:
           if (nTokens == 1) {
             // set x   or   x =
@@ -408,7 +463,8 @@ class Compiler {
               token = (Token) ltoken.get(0);
               ltoken.removeElementAt(0);
               isSetArray = (tok == Token.leftsquare);
-              ltoken.addElement(tok == Token.leftsquare ? Token.tokenSetArray : Token.tokenSet);
+              ltoken.addElement(tok == Token.leftsquare ? Token.tokenSetArray
+                  : Token.tokenSet);
               tok = token.tok;
               tokCommand = Token.set;
             }
@@ -1047,8 +1103,15 @@ class Compiler {
     }
     
     size -= nDefined;
+    if (isNewSet) {
+      if (size == 1) {
+        atokenInfix[0] = new Token(Token.macro, 0, atokenInfix[0].value);
+        isNewSet = false; 
+      }
+    }
+      
     if (isNewSet && size < 3)
-      return commandExpected();
+      return  commandExpected();
     if (isSetOrDefine) //intValue is NOT of this nature
       return true;
     int allowedLen = (tokenCommand.intValue & 0x0F) + 1;

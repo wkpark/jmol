@@ -252,15 +252,21 @@ class Compiler {
       if (nTokens == 0) {
         isNewSet = false;
       } else {
-        if (nTokens == 1
-            && tokAttr(tokCommand, Token.setparam)
-            && ((ch = script.charAt(ichToken)) == '[' || ch == '=' || ch == '(')) {
-          tokenCommand = (ch == '(' ? Token.tokenSetVar
-              : ch == '=' ? Token.tokenSet : Token.tokenSetArray);
-          tokCommand = Token.set;
-          ltoken.insertElementAt(tokenCommand, 0);
-          cchToken = 1;
-          continue;
+        if (nTokens == 1) {
+          ch = script.charAt(ichToken);
+          System.out.println(Integer.toHexString(tokCommand) + " "
+              + Integer.toHexString(Token.setparam));
+          if (tokCommand == Token.set || tokAttr(tokCommand, Token.setparam)) {
+            if (isNewSet && (ch == '=' || ch == '[')) {
+              tokenCommand = (ch == '=' ? Token.tokenSet : Token.tokenSetArray);
+              tokCommand = Token.set;
+              ltoken.insertElementAt(tokenCommand, 0);
+              cchToken = 1;
+              if (ch == '[')
+                addTokenToPrefix(new Token(Token.leftsquare, "["));
+              continue;
+            }
+          }
         }
         if (lookingAtString()) {
           if (cchToken < 0)
@@ -454,7 +460,7 @@ class Compiler {
             if (tok != Token.comma && tok != Token.rightparen)
               return commaOrCloseExpected();
             break;
-          }          
+          }
           thisFunction.addVariable(ident, true);
           break;
         case Token.var:

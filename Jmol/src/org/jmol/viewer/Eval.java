@@ -6338,8 +6338,8 @@ class Eval { //implements Runnable {
   private Object parameterExpression(int pt, String key, boolean asVector)
       throws ScriptException {
     Object v;
-    Rpn rpn = new Rpn(16, key != null && key.length() > 0
-        && tokAt(pt) != Token.leftsquare, asVector);
+    Rpn rpn = new Rpn(16, key != null && key.length() > 0 && tokAt(pt) == Token.leftsquare, asVector);
+        
     for (int i = pt; i < statementLength; i++) {
       v = null;
       switch (getToken(i).tok) {

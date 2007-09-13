@@ -586,7 +586,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
         allocMesh(null);
       thisMesh.clear("isosurface", sg.getIAddGridPoints(), thisMesh.showTriangles);
       thisMesh.colix = getDefaultColix();
-      if (isPhaseColored) 
+      if (isPhaseColored || thisMesh.jvxlData.isBicolorMap) 
         thisMesh.isColorSolid = false;
       return;
     }

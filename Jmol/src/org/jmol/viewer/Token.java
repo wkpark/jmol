@@ -219,11 +219,10 @@ public class Token {
   final static int ramachandran   = command | 121;
   final static int sync           = command | 122;
   final static int print          = command | 123 | numberOrExpression;
-
-  final static int macro          = command | 124 | noeval;
-  final static int end            = command | 125 | noeval;
-  final static int function       = command | 126 | noeval; //not implemented
-  final static int subroutine     = command | 127 | noeval; //not implemented
+  final static int function       = command | 124 | noeval | mathfunc; //not implemented
+  final static int var            = command | 125 | noeval | setparam;
+  final static int returnval      = command | 126 | numberOrExpression;  
+  final static int end            = command | 127 | noeval;
 
 
   //the following are listed with atomproperty because they must be registered as atom property names
@@ -613,7 +612,11 @@ public class Token {
   }
 
   static Token selectItem(Token token, int i2) {
-    
+    if (token.tok != Token.bitset 
+        && token.tok != Token.list
+        && token.tok != Token.string)
+      return token;
+
     // negative number is a count from the end
     
     BitSet bs = null;
@@ -786,6 +789,7 @@ public class Token {
   final static Token tokenOr  = new Token(opOr, "or");
   final static Token tokenComma = new Token(comma, ",");
   final static Token tokenMinus = new Token(minus, "-");
+  final static Token tokenLeftParen = new Token(leftparen, "(");
   final static Token tokenArraySelector = new Token(leftsquare, "[");
  
   final static Token tokenExpressionBegin =
@@ -800,6 +804,8 @@ public class Token {
     new Token(set, '=', "set");
   final static Token tokenSetArray =
     new Token(set, '[', "set");
+  final static Token tokenSetVar =
+    new Token(set, '=', "var");
   
   // user names
   
@@ -887,11 +893,11 @@ public class Token {
     "anim",              null, 
                           
     //                   Jmol commands
-    "macro",             new Token(macro,           varArgCount), //varArgCount required
-    "macros",            null,
     "function",          new Token(function,        varArgCount), //varArgCount required
-    "subroutine",        new Token(subroutine,      varArgCount), //varArgCount required
+    "functions",         null,
     "end",               new Token(end,             varArgCount), //varArgCount required
+    "return",            new Token(returnval,          varArgCount), //varArgCount required
+    "var",               new Token(var,             varArgCount),
     "centerat",          new Token(centerAt,        varArgCount),
     "font",              new Token(font,            varArgCount),
     "hover",             new Token(hover,            onDefault1),
@@ -1016,7 +1022,7 @@ public class Token {
     "url",               new Token(url),
 
     // atom expressions
-    "(",            new Token(leftparen),
+    "(",            tokenLeftParen,
     ")",            new Token(rightparen),
     "-",            tokenMinus,
     "and",          tokenAnd,

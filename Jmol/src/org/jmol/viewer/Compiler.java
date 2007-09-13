@@ -55,6 +55,7 @@ class Compiler {
   private boolean isSilent;
   private boolean isShowScriptOutput;
   private boolean isCheckOnly;
+  private Hashtable contextVariables;
   
   private boolean logMessages = false;
 
@@ -68,6 +69,7 @@ class Compiler {
     this.filename = filename;
     this.isSilent = isSilent;
     this.script = cleanScriptComments(script);
+    this.contextVariables = null;
     logMessages = (!isSilent && !isPredefining && debugScript);
     lineNumbers = null;
     lineIndices = null;
@@ -89,6 +91,10 @@ class Compiler {
     return lineIndices;
   }
 
+  Hashtable getContextVariables() {
+    return contextVariables;
+  }
+  
   Token[][] getAatokenCompiled() {
     return aatokenCompiled;
   }
@@ -232,6 +238,7 @@ class Compiler {
           ltoken.setSize(0);
           nTokens = 0;
           tokCommand = Token.nada;
+          tokenCommand = null;
           iHaveQuotedString = false;
         }
         if (ichToken < cchScript) {
@@ -245,9 +252,11 @@ class Compiler {
       if (nTokens == 0) {
         isNewSet = false;
       } else {
-        if (nTokens == 1 && tokAttr(tokCommand, Token.setparam)
-            && ((ch = script.charAt(ichToken)) == '[' || ch == '=')) {
-          tokenCommand = (ch == '=' ? Token.tokenSet : Token.tokenSetArray);
+        if (nTokens == 1
+            && tokAttr(tokCommand, Token.setparam)
+            && ((ch = script.charAt(ichToken)) == '[' || ch == '=' || ch == '(')) {
+          tokenCommand = (ch == '(' ? Token.tokenSetVar
+              : ch == '=' ? Token.tokenSet : Token.tokenSetArray);
           tokCommand = Token.set;
           ltoken.insertElementAt(tokenCommand, 0);
           cchToken = 1;
@@ -407,6 +416,8 @@ class Compiler {
           else
             token = new Token(Token.identifier, ident);
         }
+        if (tokenCommand == null)
+          tokenCommand = token;
         int tok = token.tok;
         switch (tokCommand) {
         // special cases
@@ -420,21 +431,49 @@ class Compiler {
           tokCommand = Token.set;
           isNewSet = true;
           break;
-        case Token.macro:
-          if (nTokens != 1)
-            return badArgumentCount();
+        case Token.function:
           if (tokenCommand.intValue == 0) {
+            if (nTokens != 1)
+              break;
             // user has given macro command
             tokenCommand.value = ident;
             continue;
           }
-          thisFunction = new Function();
-          thisFunction.name = ident;
-          thisFunction.tokType = Token.macro;
+          if (nTokens == 1) {
+            thisFunction = new Function(ident);
+            break;
+          }
+          if (nTokens == 2) {
+            if (tok != Token.leftparen)
+              return leftParenthesisExpected();
+            break;
+          }
+          if (nTokens == 3 && tok == Token.rightparen)
+            break;
+          if (nTokens % 2 == 0) {
+            if (tok != Token.comma && tok != Token.rightparen)
+              return commaOrCloseExpected();
+            break;
+          }          
+          thisFunction.addVariable(ident, true);
+          break;
+        case Token.var:
+          if (nTokens != 1)
+            break;
+          if (thisFunction == null) {
+            if (contextVariables == null)
+              contextVariables = new Hashtable();
+            contextVariables.put(ident, new Token(Token.string, ""));
+          } else {
+            thisFunction.addVariable(ident, false);
+          }
+          ltoken.removeElementAt(0);
+          ltoken.addElement(Token.tokenSetVar);
+          tokCommand = Token.set;
           break;
         case Token.end:
           if (thisFunction == null)
-            return unrecognizedToken("endxx");
+            return unrecognizedToken("end");
           if (nTokens != 1)
             return badArgumentCount();
           int chpt0 = thisFunction.chpt0;
@@ -446,12 +485,12 @@ class Compiler {
           thisFunction.lineNumbers = new short[nCommands];
           short line0 = (short) (lineNumbers[cmdpt0] - 1);
           for (int i = 0; i < nCommands; i++) {
-            thisFunction.lineNumbers[i] = (short) (lineNumbers[thisFunction.cmdpt0
-                + i] - line0);
-            thisFunction.lineIndices[i] = lineIndices[thisFunction.cmdpt0 + i]
-                - chpt0;
+            thisFunction.lineNumbers[i] = (short) (lineNumbers[cmdpt0 + i] - line0);
+            thisFunction.lineIndices[i] = lineIndices[cmdpt0 + i] - chpt0;
             thisFunction.aatoken[i] = (Token[]) lltoken.get(cmdpt0 + i);
           }
+          for (int i = cmdpt0; i <= iCommand; i++)
+            lineIndices[i] = 0;
           if (!isCheckOnly)
             htFunctions.put(thisFunction.name, thisFunction);
           continue;
@@ -463,10 +502,21 @@ class Compiler {
               token = (Token) ltoken.get(0);
               ltoken.removeElementAt(0);
               isSetArray = (tok == Token.leftsquare);
-              ltoken.addElement(tok == Token.leftsquare ? Token.tokenSetArray
+              ltoken.addElement(isSetArray ? Token.tokenSetArray
                   : Token.tokenSet);
               tok = token.tok;
               tokCommand = Token.set;
+            }
+            if (tok == Token.leftparen) {
+              token = (Token) ltoken.get(0);
+              ltoken.removeElementAt(0);
+              tokenCommand = new Token(Token.function, 0, token.value);
+              ltoken.add(0, tokenCommand);
+              tokCommand = Token.function;
+              token = Token.tokenLeftParen;
+              tok = Token.leftparen;
+              break;
+              // mysub(xxx,xxx,xxx)
             }
             if (tok != Token.identifier && (!tokAttr(tok, Token.setparam)))
               return isNewSet ? commandExpected() : unrecognizedParameter(
@@ -1059,7 +1109,10 @@ class Compiler {
   private boolean compileCommand() {
     tokenCommand = (Token) ltoken.firstElement();
     tokCommand = tokenCommand.tok;
-    isImplicitExpression =  (tokCommand == Token.set || tokCommand == Token.ifcmd || tokCommand == Token.print);
+    isImplicitExpression =  (tokCommand == Token.set 
+        || tokCommand == Token.ifcmd 
+        || tokCommand == Token.print 
+        || tokCommand == Token.returnval);
     isSetOrDefine = (tokCommand == Token.set || tokCommand == Token.define);
     isCommaAsOrAllowed = tokAttr(tokCommand, Token.expressionCommand);
     int size = ltoken.size();
@@ -1105,14 +1158,14 @@ class Compiler {
     size -= nDefined;
     if (isNewSet) {
       if (size == 1) {
-        atokenInfix[0] = new Token(Token.macro, 0, atokenInfix[0].value);
+        atokenInfix[0] = new Token(Token.function, 0, atokenInfix[0].value);
         isNewSet = false; 
       }
     }
       
     if (isNewSet && size < 3)
       return  commandExpected();
-    if (isSetOrDefine) //intValue is NOT of this nature
+    if (isSetOrDefine || tokAttr(tokenCommand.tok, Token.noeval)) //intValue is NOT of this nature
       return true;
     int allowedLen = (tokenCommand.intValue & 0x0F) + 1;
     if (!tokAttr(tokenCommand.intValue, Token.varArgCount)) {
@@ -2055,6 +2108,10 @@ class Compiler {
 
   private boolean rightParenthesisExpected() {
     return compileError(GT._("right parenthesis expected"));
+  }
+
+  private boolean leftParenthesisExpected() {
+    return compileError(GT._("left parenthesis expected"));
   }
 
   private boolean rightBraceExpected() {

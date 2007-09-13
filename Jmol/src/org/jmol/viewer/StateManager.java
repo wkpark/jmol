@@ -679,6 +679,13 @@ public class StateManager {
         if (volatileProperties.indexOf(";" + key + ";") >= 0 || key.charAt(0) == '@') 
           htParameterValues.remove(key);
       }
+      e = htUserVariables.keys();
+      while (e.hasMoreElements()) {
+        String key = (String) e.nextElement();
+        if (volatileProperties.indexOf(";" + key + ";") >= 0 || key.charAt(0) == '@') 
+          htUserVariables.remove(key);
+      }
+
       setParameterValue("_atompicked", -1);
       setParameterValue("_atomhovered", -1);
     }
@@ -844,7 +851,8 @@ public class StateManager {
     
     String getState() {
       int n = 0;
-      String[] list = new String[htPropertyFlags.size() + htParameterValues.size()];
+      String[] list = new String[htPropertyFlags.size()
+          + htParameterValues.size()];
       StringBuffer commands = new StringBuffer("# settings;\n");
       appendCmd(commands, "refreshing = false");
       Enumeration e;
@@ -882,9 +890,9 @@ public class StateManager {
         list[n++] = "axes = window";
         break;
       default:
-        list[n++] =  "axes = molecular";
+        list[n++] = "axes = molecular";
       }
-      
+
       //nonboolean variables:
       e = htParameterValues.keys();
       while (e.hasMoreElements()) {
@@ -896,15 +904,17 @@ public class StateManager {
       for (int i = 0; i < n; i++)
         if (list[i] != null)
           appendCmd(commands, list[i]);
-      
+
       //user variables only:
       commands.append("\n#user-defined variables; \n");
-      
+
       e = htUserVariables.keys();
       n = 0;
       list = new String[htUserVariables.size()];
       while (e.hasMoreElements())
-        list[n++] = (key = (String) e.nextElement()) + " = "  + escapeUserVariable(key);
+        list[n++] = (key = (String) e.nextElement())
+            + (key.charAt(0) == '@' ? " " : " = ") + escapeUserVariable(key);
+
       Arrays.sort(list, 0, n);
       for (int i = 0; i < n; i++)
         if (list[i] != null)

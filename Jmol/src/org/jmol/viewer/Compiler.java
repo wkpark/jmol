@@ -254,8 +254,6 @@ class Compiler {
       } else {
         if (nTokens == 1) {
           ch = script.charAt(ichToken);
-          System.out.println(Integer.toHexString(tokCommand) + " "
-              + Integer.toHexString(Token.setparam));
           if (tokCommand == Token.set || tokAttr(tokCommand, Token.setparam)) {
             if (isNewSet && (ch == '=' || ch == '[')) {
               tokenCommand = (ch == '=' ? Token.tokenSet : Token.tokenSetArray);

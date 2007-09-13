@@ -288,6 +288,8 @@ function showProjectInfo(value) {
     document.fahForm.infoCode.value = "Gromacs PS3";
   } else if (code == "GB") {
     document.fahForm.infoCode.value = "GB Gromacs";
+  } else if (code == "GC") {
+    document.fahForm.infoCode.value = "GroCVS";
   } else if (code == "GG") {
     document.fahForm.infoCode.value = "Gromacs GPU";
   } else if (code == "GS") {

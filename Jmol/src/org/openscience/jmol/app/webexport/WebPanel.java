@@ -33,6 +33,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.zip.*;
 
 import javax.swing.*;
 
@@ -63,7 +64,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
   private JScrollPane editorScrollPane;
   private JButton saveButton, addInstanceButton;
   private JButton deleteInstanceButton, showInstanceButton;
-  private JTextField appletPath;
+  private JTextField appletPath, pageAuthorName, webPageTitle;
   private JFileChooser fc;
   private JList instanceList;
   private JmolViewer viewer;
@@ -76,10 +77,16 @@ abstract class WebPanel extends JPanel implements ActionListener {
     this.fc = fc;
     this.webPanels = webPanels;
     this.panelIndex = panelIndex;
-    //Create the text field for the path to the Jmol applet
+    //Create the text fields for the path to the Jmol applet, page author(s) name(s) and  web page title.
     appletPath = new JTextField(20);
     appletPath.addActionListener(this);
     appletPath.setText(WebExport.getAppletPath());
+    pageAuthorName= new JTextField(20);
+    pageAuthorName.addActionListener(this);
+    pageAuthorName.setText(WebExport.getPageAuthorName());
+    webPageTitle = new JTextField(20);
+    webPageTitle.addActionListener(this);
+    webPageTitle.setText("A web page containing Jmol applets");
   }
 
   //Need the panel maker and the action listener.
@@ -220,13 +227,32 @@ abstract class WebPanel extends JPanel implements ActionListener {
     pathPanel.setBorder(BorderFactory
         .createTitledBorder("Relative Path to Jmol Applet:"));
     pathPanel.add(appletPath, BorderLayout.NORTH);
-    pathPanel.add(savePanel, BorderLayout.SOUTH);
+   
+    //Page Author Panel
+    JPanel authorPanel = new JPanel();
+    authorPanel.setBorder(BorderFactory
+        .createTitledBorder("Author (your name):"));
+    authorPanel.add(pageAuthorName, BorderLayout.NORTH);
+    
+    //Page Title Panel
+    JPanel titlePanel = new JPanel();
+    titlePanel.setLayout(new BorderLayout());
+    titlePanel.setBorder(BorderFactory
+        .createTitledBorder("Browser window title for this web page:"));
+    titlePanel.add(webPageTitle, BorderLayout.NORTH);
+    titlePanel.add(savePanel, BorderLayout.SOUTH);
+    
+    JPanel settingsPanel = new JPanel();
+    settingsPanel.setLayout(new BorderLayout());
+    settingsPanel.add(pathPanel, BorderLayout.NORTH);
+    settingsPanel.add(authorPanel, BorderLayout.CENTER);
+    settingsPanel.add(titlePanel, BorderLayout.SOUTH);
 
     //Combine previous three panels into one
     JPanel leftpanel = new JPanel();
     leftpanel.setLayout(new BorderLayout());
     leftpanel.add(editorScrollPane, BorderLayout.CENTER);
-    leftpanel.add(pathPanel, BorderLayout.SOUTH);
+    leftpanel.add(settingsPanel, BorderLayout.SOUTH);
     return leftpanel;
   }
 
@@ -347,7 +373,9 @@ abstract class WebPanel extends JPanel implements ActionListener {
       try {
         String path = appletPath.getText();
         WebExport.setAppletPath(path);
-        retVal = fileWriter(file, instanceList, path);
+        String authorName = pageAuthorName.getText();
+        WebExport.setWebPageAuthor(authorName);
+        retVal = fileWriter(file, instanceList);
       } catch (IOException IOe) {
         LogPanel.log(IOe.getMessage());
       }
@@ -365,7 +393,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
     return (instance == null ? "" : instance.name);
   }
 
-  boolean fileWriter(File file, JList InstanceList, String appletPath)
+  boolean fileWriter(File file, JList InstanceList)
       throws IOException { //returns true if successful.
     useAppletJS = JmolViewer.checkOption(viewer, "webMakerCreateJS");
     //          JOptionPane.showMessageDialog(null, "Creating directory for data...");
@@ -428,6 +456,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
         //Get the path to the file from the Jmol
 
         String structureFile = thisInstance.file;
+        long structureFileSize = (new File(structureFile).length());
         String extension = structureFile.substring(structureFile
             .lastIndexOf(".") + 1, structureFile.length());
         String newName = lastName;
@@ -438,7 +467,17 @@ abstract class WebPanel extends JPanel implements ActionListener {
           LogPanel
               .log("      ...copying " + newName + " from " + structureFile);
           String data = viewer.getFileAsString(structureFile);
+          if (structureFileSize > 32000){ //gzip it!
+            outfilename  = outfilename+".gz";
+            newName = newName+".gz";
+            GZIPOutputStream gzFile = new GZIPOutputStream(new FileOutputStream(outfilename));
+            gzFile.write(data.getBytes());
+            gzFile.close();
+            LogPanel
+              .log("          ...compressing large file "+structureFile);
+          } else {
           viewer.createImage(outfilename, data, Integer.MIN_VALUE, 0, 0);
+          }
           lastFile = structureFile;
           lastName = newName;
         } else {
@@ -476,7 +515,9 @@ abstract class WebPanel extends JPanel implements ActionListener {
       for (int i = 0; i < listModel.getSize(); i++)
         html = getAppletDefs(i, html, appletDefs, (JmolInstance) listModel
             .getElementAt(i));
-      html = TextFormat.simpleReplace(html, "@APPLETPATH@", appletPath);
+      html = TextFormat.simpleReplace(html, "@AUTHOR@", pageAuthorName.getText());
+      html = TextFormat.simpleReplace(html, "@TITLE@", webPageTitle.getText());
+      html = TextFormat.simpleReplace(html, "@APPLETPATH@", appletPath.getText());
       html = TextFormat.simpleReplace(html, "@DATADIRNAME@", datadirName);
       if (appletInfoDivs.length() > 0)
         appletInfoDivs = "\n<div style='display:none'>\n" + appletInfoDivs

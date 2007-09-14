@@ -56,6 +56,8 @@ public class WebExport extends JPanel {
 
     historyFile = hFile;
     appletPath = historyFile.getProperty("webMakerAppletPath", "..");
+    pageAuthorName = historyFile.getProperty("webMakerPageAuthorName", "Jmol Web Export");
+
 
     //Define the tabbed pane
     JTabbedPane mainTabs = new JTabbedPane();
@@ -166,7 +168,8 @@ public class WebExport extends JPanel {
     prop.setProperty("webMakerInfoWidth", "" + webPanels[0].getInfoWidth());
     prop.setProperty("webMakerInfoHeight", "" + webPanels[0].getInfoHeight());
     prop.setProperty("webMakerAppletPath", appletPath);
-    historyFile.addProperties(prop);
+    prop.setProperty("webMakerPageAuthorName", pageAuthorName);
+   historyFile.addProperties(prop);
   }
 
   static String appletPath;
@@ -182,6 +185,20 @@ public class WebExport extends JPanel {
       path = "..";
     appletPath = path;
     prop.setProperty("webMakerAppletPath", appletPath);
+    historyFile.addProperties(prop);
+  }
+  
+  static String pageAuthorName;
+  
+  static String getPageAuthorName() {
+    return pageAuthorName;
+  }
+ 
+  static void setWebPageAuthor(String pageAuthor) {
+    if (pageAuthor == null)
+      pageAuthor = "Jmol Web Export";
+    pageAuthorName = pageAuthor;
+    prop.setProperty("webMakerPageAuthorName", pageAuthorName);
     historyFile.addProperties(prop);
   }
 }

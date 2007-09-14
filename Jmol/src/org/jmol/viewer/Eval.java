@@ -6222,7 +6222,9 @@ class Eval { //implements Runnable {
     }
 
     String str = "";
-    boolean showing = (!isSyntaxCheck && !tQuiet && scriptLevel <= scriptReportingLevel);
+    boolean showing = (!isSyntaxCheck && !tQuiet 
+        && scriptLevel <= scriptReportingLevel
+        && !((String)statement[0].value).equals("var"));
 
     if (key != null && setParameter(key, val)) {
       if (isSyntaxCheck)

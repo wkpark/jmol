@@ -1152,20 +1152,22 @@ class Eval { //implements Runnable {
 
   private void flowControl(int tok) throws ScriptException {
     int pt = statement[0].intValue;
-    boolean isDone = (pt < 0);
+    boolean isDone = (pt < 0 && !isSyntaxCheck);
     boolean isOK = true;
     int ptNext = 0;
     switch (tok) {
     case Token.ifcmd:
     case Token.elseif:
       isOK = (!isDone && ifCmd());
+      if (isSyntaxCheck)
+        break;
       ptNext = Math.abs(aatoken[Math.abs(pt)][0].intValue);
       ptNext = (isDone || isOK ? -ptNext : ptNext);
       aatoken[Math.abs(pt)][0].intValue = ptNext;
       break;
     case Token.elsecmd:
       checkStatementLength(1);
-      if (pt < 0)
+      if (pt < 0 && !isSyntaxCheck)
         pc = -pt - 1;
       break;
     case Token.endifcmd:
@@ -1178,17 +1180,25 @@ class Eval { //implements Runnable {
       break;
     case Token.whilecmd:
       isForCheck = false;
-      if (!ifCmd())
+      if (!ifCmd() && !isSyntaxCheck)
         pc = pt;
       break;
     case Token.breakcmd:
-      checkStatementLength(1);
-      pc = aatoken[pt][0].intValue;
+      if (!isSyntaxCheck)
+        pc = aatoken[pt][0].intValue;
+      if (statementLength > 1) {
+        checkLength2();
+        intParameter(1);
+      }
       break;
     case Token.continuecmd:
-      checkStatementLength(1);
       isForCheck = true;
-      pc = pt - 1;
+      if (!isSyntaxCheck)
+        pc = pt - 1;
+      if (statementLength > 1) {
+        checkLength2();
+        intParameter(1);
+      }
       break;
     case Token.forcmd:
       // for (i = 1; i < 3; i = i + 1);
@@ -1218,7 +1228,7 @@ class Eval { //implements Runnable {
       pt++;
       break;
     }
-    if (!isOK)
+    if (!isOK && !isSyntaxCheck)
       pc = Math.abs(pt) - 1;
   }
   
@@ -9806,13 +9816,7 @@ class Eval { //implements Runnable {
     StringBuffer sb = new StringBuffer();
     int tok = statement[0].tok;
     boolean addParens = (Compiler.tokAttr(tok, Token.embeddedExpression));
-    boolean useBraces = (tok == Token.ifcmd 
-        || tok == Token.set  
-        || tok == Token.whilecmd
-        || tok == Token.forcmd
-        || tok == Token.print 
-        || tok == Token.returncmd 
-        || tok == Token.elseif);
+    boolean useBraces = (Compiler.tokAttr(tok, Token.implicitExpression));
     boolean inBrace = false;
     for (int i = 0; i < statementLength; ++i) {
       if (iToken == i - 1)

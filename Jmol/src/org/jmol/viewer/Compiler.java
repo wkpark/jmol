@@ -59,6 +59,88 @@ class Compiler {
   
   private boolean logMessages = false;
 
+  /*
+   * Flow Contexts in Jmol 11.3.23+
+   * 
+   * As of Jmol 11.3.23, the Jmol scripting language includes a variety of 
+   * standard flow control structures:
+   * 
+   * script filename.spt  # the principal file-based context
+   * 
+   * function xxx(a,b,c)/end function
+   * 
+   * if/elseif/else/endif
+   * for/break/continue/end for
+   * while/break/continue/end while
+   * 
+   * This is being handled by creating a "flow context" for each of these elements. 
+   * There can be only one currently active flow context. 
+   * 
+   * The primary context is the script file. Variables declared using the "var"
+   * keyword are isolated to that script file. 
+   * 
+   * Function contexts may only be created within the .spt file context. Note that
+   * functions are saved in a STATIC Hashtable, htFunctions, so these definitions
+   * apply to all applets present from a given server and for an entire user session.
+   * There is no particular reason they HAVE to be static, however.
+   * 
+   * Other contexts may be nested to potentially any depth, as in all programming
+   * languages.
+   * 
+   * The syntactic model is related most closely to JavaScript. But there is no
+   * exact model, because we are already useing { } for too many things (select
+   * criteria, points, planes, and bitsets). So this syntax uses no braces. 
+   * 
+   * Instead, the syntax uses the Visual Basic-like "end" syntax. So we have;
+   * 
+   * if (x)
+   *  [do this]
+   * else if (y)
+   *  [do this]
+   * else
+   *  [do this]
+   * end if
+   * 
+   * The keywords "elseif" and "endif" are synonymous with "else if" and "end if",
+   * just to make that a non-issue. Documentation will refer to "else if" and "end if"
+   * so as to be fully consistent with "end for", "end while", and "end function".
+   * 
+   * TOKENIZATION OF FLOW CONTROL
+   * ----------------------------
+   * 
+   * The .tok field of the command token maintains a variety of attributes for all
+   * commands. Two new attributes include 
+   * 
+   *   noeval        function/end function are never passed to Eval
+   *   flowcommand   function/if/else/elseif/endif/for/while/break/continue/end
+   *                   indicates special intValue is in effect and that parameter
+   *                   number checking is done separately. 
+   * 
+   * Tokens in general have three fields: int tok, int intValue, and Object value.  
+   * The system implemented in jmol 11.3.23 involves coopting the intValue field of
+   * the first token of each statement -- the command token. This formerly static field is 
+   * generally used to indicate the number of allowed parameters, but that's not
+   * necessary for this small set of special commands. Because we are using it dynamically,
+   * all flowcommand tokens are copies, not the originals. 
+   * 
+   * The commands if/elseif/else/endif are implemented as a singly-linked list. 
+   * Each intValue field points to the next in the series. In the case of elseif and else, 
+   * if this pointer is negative, it indicates that a previous block has been 
+   * executed, and this block should be skipped.   
+   *  
+   * The commands for/end for and while/end while implement intValue as circularly-linked
+   * lists. The for/while statement intValue field points to its end statement, and the 
+   * end statement points to its corresponding for/while statement. 
+   * 
+   * In addition, break and continue point to their corresponding for or while 
+   * statement so that the end statement pointer can be retrieved (in the case of break)
+   * or used for direction (continue). 
+   * 
+   * If a number is added after break or continue, it indicates the number of levels 
+   * of for/while to skip. Thus, "break 1" breaks to one level above the current context.  
+   * 
+   */
+  
   private class FlowContext {
     Token token;
     int pt0;
@@ -117,7 +199,7 @@ class Compiler {
     this.contextVariables = null;
     logMessages = (!isSilent && !isPredefining && debugScript);
     preDefining = (filename == "#predefine");
-    return (compile0() ? true : handleError());
+    return (compile0() || handleError());
   }
 
   String getScript() {
@@ -431,6 +513,14 @@ class Compiler {
         if (lookingAtInteger(tokAttr(tokCommand, Token.negnums))) {
           String intString = script.substring(ichToken, ichToken + cchToken);
           int val = Integer.parseInt(intString);
+          if (tokCommand == Token.breakcmd || tokCommand == Token.continuecmd) {
+            if (nTokens != 1)
+              return badArgumentCount();
+            FlowContext f = getBreakableContext(val = Math.abs(val));
+            if (f == null)
+              return badContext((String)tokenCommand.value);
+            ((Token)ltoken.get(0)).intValue = f.pt0; //copy
+          }
           addTokenToPrefix(new Token(Token.integer, val, intString));
           continue;
         }
@@ -513,10 +603,7 @@ class Compiler {
             case Token.breakcmd:
             case Token.continuecmd:
               isNew = false;
-              FlowContext f = flowContext;
-              while (f != null && f.token.tok != Token.forcmd
-                  && f.token.tok != Token.whilecmd)
-                f = f.parent;
+              FlowContext f = getBreakableContext(0);
               if (f == null)
                 return badContext((String)token.value);
               token = new Token(tok, f.pt0, token.value); //copy
@@ -584,7 +671,7 @@ class Compiler {
           if (nTokens != 1 || tok != Token.ifcmd)
             return badArgumentCount();
           ltoken.removeElementAt(0);
-          ltoken.addElement(token = new Token (Token.elseif, tokenCommand.intValue, "elseif"));
+          ltoken.addElement(token = new Token (Token.elseif, "elseif"));
           flowContext.token = token;
           tokCommand = Token.elseif;      
           continue;
@@ -731,6 +818,14 @@ class Compiler {
     return true;
   }
 
+  private FlowContext getBreakableContext(int nLevelsUp) {
+    FlowContext f = flowContext;
+    while (f != null && (f.token.tok != Token.forcmd
+      && f.token.tok != Token.whilecmd || nLevelsUp-- > 0))
+      f = f.parent;
+    return f;
+  }
+  
   private void getData(String key) {
     ichToken += key.length() + 2;
     if (script.length() > ichToken && script.charAt(ichToken) == '\r')
@@ -1253,10 +1348,7 @@ class Compiler {
   private boolean compileCommand() {
     tokenCommand = (Token) ltoken.firstElement();
     tokCommand = tokenCommand.tok;
-    isImplicitExpression = (tokCommand == Token.set
-        || tokCommand == Token.ifcmd ||  tokCommand == Token.elseif
-        || tokCommand == Token.forcmd || tokCommand == Token.whilecmd
-        ||tokCommand == Token.print || tokCommand == Token.returncmd);
+    isImplicitExpression = tokAttr(tokCommand, Token.implicitExpression);
     isSetOrDefine = (tokCommand == Token.set || tokCommand == Token.define);
     isCommaAsOrAllowed = tokAttr(tokCommand, Token.expressionCommand);
     int size = ltoken.size();

@@ -92,26 +92,38 @@ public class Token {
   // generally, the minus sign is used to denote atom ranges
   // this property is used for the commands which allow negative integers
   final static int negnums           = (1 << 12);
+  // the noeval keyword indicates that a command should be processed by the 
+  // compiler but should not be passed on to Eval. Use: function, end
+  // "var" also takes this just to remind us that it will never appear in Eval
   final static int noeval            = (1 << 13);
   final static int flowCommand       = (1 << 14);
+
+  // this next flag indicates that the parameters may be negative numbers
+  // and that expressions such as {atomno=3} may be included. It is only used privately
+  private final static int numberOrExpression = negnums | embeddedExpression; 
+
+  // this next flag indicates that phrases surrounded by ( ) should be
+  // considered the same as { }. It is for set, print, return, if, elseif, for, while
+  final static int implicitExpression= (1 << 15) | numberOrExpression;
+
+  
   
   // parameter types
   
-  final static int setparam          = (1 << 15); // parameter to set command
-  final static int colorparam        = (1 << 16);
-  final static int misc              = (1 << 17); // misc parameter
+  final static int setparam          = (1 << 16); // parameter to set command
+  final static int colorparam        = (1 << 17);
+  final static int misc              = (1 << 18); // misc parameter
   
   // expression terms
   
-  final static int expression        = (1 << 18);
-  final static int predefinedset     = (1 << 19) | expression;
-  final static int atomproperty      = (1 << 20) | expression;
-  final static int mathproperty      = (1 << 21) | atomproperty;
-  final static int mathop            = (1 << 22) | expression;
-  final static int mathfunc          = (1 << 23) | expression;  
-  final static int comparator        = (1 << 24) | expression;
+  final static int expression        = (1 << 19);
+  final static int predefinedset     = (1 << 20) | expression;
+  final static int atomproperty      = (1 << 21) | expression;
+  final static int mathproperty      = (1 << 22) | atomproperty;
+  final static int mathop            = (1 << 23) | expression;
+  final static int mathfunc          = (1 << 24) | expression;  
+  final static int comparator        = (1 << 25) | expression;
   
-  final static int numberOrExpression = negnums | embeddedExpression; 
 
   // These are unrelated
   final static int varArgCount       = (1 << 4);
@@ -148,7 +160,7 @@ public class Token {
   final static int save         = command | 28;
 //  final static int script       = command | 29; with mathfunc
   final static int select       = command | 30 | expressionCommand;
-  final static int set          = command | 31 | numberOrExpression | colorparam;
+  final static int set          = command | 31 | implicitExpression | colorparam;
   final static int show         = command | 32;
   final static int slab         = command | 33 | numberOrExpression;
   final static int spacefill    = command | 35 | negnums;
@@ -216,19 +228,19 @@ public class Token {
   final static int quaternion     = command | 117;
   final static int ramachandran   = command | 118;
   final static int sync           = command | 119;
-  final static int print          = command | 120 | numberOrExpression;
-  final static int returncmd      = command | 121 | numberOrExpression;  
-  final static int var            = command | 122 | numberOrExpression | noeval | setparam;
+  final static int print          = command | 120 | implicitExpression;
+  final static int returncmd      = command | 121 | implicitExpression;  
+  final static int var            = command | 122 | implicitExpression | noeval | setparam;
   
   //these commands control flow and may not be nested
   //sorry about GOTO!
   final static int function       = command | 1 | flowCommand | noeval | mathfunc; //not implemented
-  final static int ifcmd          = command | 2 | flowCommand | numberOrExpression;
-  final static int elseif         = command | 3 | flowCommand | numberOrExpression;
+  final static int ifcmd          = command | 2 | flowCommand | implicitExpression;
+  final static int elseif         = command | 3 | flowCommand | implicitExpression;
   final static int elsecmd        = command | 4 | flowCommand;
   final static int endifcmd       = command | 5 | flowCommand;
-  final static int forcmd         = command | 6 | flowCommand | numberOrExpression;
-  final static int whilecmd       = command | 7 | flowCommand | numberOrExpression;
+  final static int forcmd         = command | 6 | flowCommand | implicitExpression;
+  final static int whilecmd       = command | 7 | flowCommand | implicitExpression;
   final static int breakcmd       = command | 8 | flowCommand;
   final static int continuecmd    = command | 9 | flowCommand;
   final static int end            = command | 10 | flowCommand | noeval;

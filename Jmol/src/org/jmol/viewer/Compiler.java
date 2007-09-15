@@ -59,6 +59,51 @@ class Compiler {
   
   private boolean logMessages = false;
 
+  private class FlowContext {
+    Token token;
+    int pt0;
+    Function function;
+    FlowContext parent;
+    
+    FlowContext(Token token, int pt0, FlowContext parent) {
+      this.token = token;
+      this.pt0 = pt0;
+      this.parent = parent;
+    }
+    
+    void setFunction(Function function) {
+      this.function = function;
+    }
+
+    void setFunction(String script, int ichCurrentCommand, 
+                     int iCommand, short[] lineNumbers,
+                     int[] lineIndices, Vector lltoken) {
+      int cmdpt0 = function.cmdpt0;
+      int chpt0 = function.chpt0;
+      int nCommands = iCommand + 1 - cmdpt0;
+      function.script = script.substring(chpt0, ichCurrentCommand);
+      Token[][] aatoken = function.aatoken = new Token[nCommands][];
+      function.lineIndices = new int[nCommands];
+      function.lineNumbers = new short[nCommands];
+      short line0 = (short) (lineNumbers[cmdpt0] - 1);
+      for (int i = 0; i < nCommands; i++) {
+        function.lineNumbers[i] = (short) (lineNumbers[cmdpt0 + i] - line0);
+        function.lineIndices[i] = lineIndices[cmdpt0 + i] - chpt0;
+        aatoken[i] = (Token[]) lltoken.get(cmdpt0 + i);
+        Token tokenCommand = aatoken[i][0];
+        if (Compiler.tokAttr(tokenCommand.tok, Token.flowCommand))
+          tokenCommand.intValue -= (tokenCommand.intValue < 0 ? -cmdpt0 : cmdpt0);
+      }
+      for (int i = iCommand + 1; --i >= cmdpt0;) {
+        lltoken.remove(i);
+        lineIndices[i] = 0;
+      }
+    }
+  }
+  
+  private FlowContext flowContext;
+  private int nSemiSkip = 0;
+  
   Compiler(Viewer viewer) {
     this.viewer = viewer;
   }
@@ -71,10 +116,6 @@ class Compiler {
     this.script = cleanScriptComments(script);
     this.contextVariables = null;
     logMessages = (!isSilent && !isPredefining && debugScript);
-    lineNumbers = null;
-    lineIndices = null;
-    aatokenCompiled = null;
-    errorMessage = errorLine = null;
     preDefining = (filename == "#predefine");
     return (compile0() ? true : handleError());
   }
@@ -95,6 +136,16 @@ class Compiler {
     return contextVariables;
   }
   
+  private void addContextVariable(String ident) {
+    if (thisFunction == null) {
+      if (contextVariables == null)
+        contextVariables = new Hashtable();
+      contextVariables.put(ident, new Token(Token.string, ""));
+    } else {
+      thisFunction.addVariable(ident, false);
+    }
+  }
+
   Token[][] getAatokenCompiled() {
     return aatokenCompiled;
   }
@@ -182,6 +233,12 @@ class Compiler {
   }
 
   private boolean compile0() {
+    lineNumbers = null;
+    lineIndices = null;
+    aatokenCompiled = null;
+    errorMessage = errorLine = null;
+    flowContext = null;
+    nSemiSkip = 0;
     cchScript = script.length();
     ichToken = 0;
     lineCurrent = 1;
@@ -216,12 +273,8 @@ class Compiler {
           }
           if (!compileCommand())
             return false;
-          if (thisFunction != null && tokCommand == Token.end) {
-            for (int i = iCommand; --i >= thisFunction.cmdpt0;)
-              lltoken.remove(i);
-            thisFunction = null;
-          } else if (!tokAttr(tokCommand, Token.noeval)
-              || atokenInfix[0].intValue == 0) {
+          if (!tokAttr(tokCommand, Token.noeval)
+              || atokenInfix[0].intValue <= 0) {
             if (iCommand == lnLength) {
               short[] lnT = new short[lnLength * 2];
               System.arraycopy(lineNumbers, 0, lnT, 0, lnLength);
@@ -420,14 +473,68 @@ class Compiler {
           else
             token = new Token(Token.identifier, ident);
         }
-        if (tokenCommand == null)
-          tokenCommand = token;
         int tok = token.tok;
         switch (tokCommand) {
         // special cases
         case Token.nada:
           ichCurrentCommand = ichToken;
+          tokenCommand = token;
           tokCommand = tok;
+          if (tokAttr(tokCommand, Token.flowCommand)) {
+            boolean isEnd = false;
+            switch (tok) {
+            case Token.end:
+              if (flowContext == null)
+                return badContext("end");
+              isEnd = true;
+              if (flowContext.token.tok != Token.function)
+                token = new Token(tok, -flowContext.pt0, token.value); //copy
+              break;
+            case Token.ifcmd:
+            case Token.forcmd:
+            case Token.whilecmd:
+              break;
+            case Token.endifcmd:
+              isEnd = true;
+              if (flowContext == null || 
+                  flowContext.token.tok != Token.ifcmd
+                  && flowContext.token.tok != Token.elsecmd 
+                  && flowContext.token.tok != Token.elseif)
+                return badContext("endif");
+              break;
+            case Token.elsecmd:
+              if (flowContext == null 
+                  || flowContext.token.tok != Token.ifcmd
+                  && flowContext.token.tok != Token.elseif)
+                return badContext("else");
+              flowContext.token.intValue = flowContext.pt0 = iCommand;
+              break;
+            case Token.elseif:
+              if (flowContext == null 
+                  || flowContext.token.tok != Token.ifcmd
+                  && flowContext.token.tok != Token.elseif
+                  && flowContext.token.tok != Token.elsecmd)
+                return badContext("elseif");
+              flowContext.token.intValue = flowContext.pt0 = iCommand;
+              break;
+            case Token.function:
+              if (flowContext != null)
+                return badContext("function");
+              break;
+            }
+            if (isEnd) {
+              flowContext.token.intValue = iCommand;
+              if (tok == Token.endifcmd)
+                flowContext = flowContext.parent;
+            } else {
+              token = new Token(tok, token.value); //copy
+              if (tok == Token.elsecmd || tok == Token.elseif)
+                flowContext.token = token;
+              else
+                flowContext = new FlowContext(token, iCommand, flowContext);
+            }
+            break;
+          }
           if (tokAttr(tokCommand, Token.command))
             break;
           if (!tokAttr(tok, Token.identifier) && !tokAttr(tok, Token.setparam))
@@ -444,7 +551,7 @@ class Compiler {
             continue;
           }
           if (nTokens == 1) {
-            thisFunction = new Function(ident);
+            flowContext.setFunction(thisFunction = new Function(ident));
             break;
           }
           if (nTokens == 2) {
@@ -461,43 +568,59 @@ class Compiler {
           }
           thisFunction.addVariable(ident, true);
           break;
+        case Token.elsecmd:
+          if (nTokens != 1 || tok != Token.ifcmd)
+            return badArgumentCount();
+          ltoken.removeElementAt(0);
+          ltoken.addElement(token = new Token (Token.elseif, "elseif"));
+          flowContext.token = token;
+          tokCommand = Token.elseif;      
+          continue;
         case Token.var:
           if (nTokens != 1)
             break;
-          if (thisFunction == null) {
-            if (contextVariables == null)
-              contextVariables = new Hashtable();
-            contextVariables.put(ident, new Token(Token.string, ""));
-          } else {
-            thisFunction.addVariable(ident, false);
-          }
+          addContextVariable(ident);
           ltoken.removeElementAt(0);
           ltoken.addElement(Token.tokenSetVar);
           tokCommand = Token.set;
           break;
         case Token.end:
-          if (thisFunction == null)
-            return unrecognizedToken("end");
           if (nTokens != 1)
             return badArgumentCount();
-          int chpt0 = thisFunction.chpt0;
-          int cmdpt0 = thisFunction.cmdpt0;
-          thisFunction.script = script.substring(chpt0, ichCurrentCommand);
-          int nCommands = iCommand + 1 - cmdpt0;
-          thisFunction.aatoken = new Token[nCommands][];
-          thisFunction.lineIndices = new int[nCommands];
-          thisFunction.lineNumbers = new short[nCommands];
-          short line0 = (short) (lineNumbers[cmdpt0] - 1);
-          for (int i = 0; i < nCommands; i++) {
-            thisFunction.lineNumbers[i] = (short) (lineNumbers[cmdpt0 + i] - line0);
-            thisFunction.lineIndices[i] = lineIndices[cmdpt0 + i] - chpt0;
-            thisFunction.aatoken[i] = (Token[]) lltoken.get(cmdpt0 + i);
+          if (flowContext == null || flowContext.token.tok != tok)
+            if (tok != Token.ifcmd || 
+                flowContext.token.tok != Token.elsecmd 
+                && flowContext.token.tok != Token.elseif)
+              return badContext("end " + ident);
+          switch (tok) {
+          case Token.ifcmd:
+          case Token.forcmd:
+          case Token.whilecmd:
+            break;
+          case Token.function:
+            if (!isCheckOnly)
+              htFunctions.put(thisFunction.name, thisFunction);
+            flowContext.setFunction(script, ichCurrentCommand, iCommand,
+                lineNumbers, lineIndices, lltoken);
+            thisFunction = null;
+            tokenCommand.intValue = Integer.MAX_VALUE; // don't include this one
+            flowContext = flowContext.parent;
+            continue;
+          default:
+            return unrecognizedToken("end " + ident);
           }
-          for (int i = cmdpt0; i <= iCommand; i++)
-            lineIndices[i] = 0;
-          if (!isCheckOnly)
-            htFunctions.put(thisFunction.name, thisFunction);
-          continue;
+          flowContext = flowContext.parent;
+          break;
+        case Token.forcmd:
+          if (nTokens == 1) {
+            // for (
+            if (tok != Token.leftparen)
+              return unrecognizedToken(ident);
+            nSemiSkip = 2; //checked twice
+          }
+          if (nTokens == 3 && ((Token)ltoken.get(2)).tok == Token.var)
+              addContextVariable(ident);
+          break;
         case Token.set:
           if (nTokens == 1) {
             // set x   or   x =
@@ -586,10 +709,13 @@ class Compiler {
       }
       if (nTokens == 0 || isNewSet && nTokens == 1)
         return commandExpected();
-      return unrecognizedToken(script);
+      return unrecognizedToken(script.substring(ichToken, ichToken+1));
     }
     aatokenCompiled = new Token[lltoken.size()][];
     lltoken.copyInto(aatokenCompiled);
+    if (flowContext != null)
+      return compileError(GT._("missing END for {0}", Token
+          .nameOf(flowContext.token.tok)));
     return true;
   }
 
@@ -613,8 +739,8 @@ class Compiler {
     return ch == ' ' || ch == '\t';
   }
 
-  private static boolean eol(char ch) {
-    return (ch == ';' || ch == '\r' || ch == '\n');  
+  private boolean eol(char ch) {
+    return (ch == '\r' || ch == '\n' || ch == ';' && nSemiSkip == 0);  
   }
   
   private boolean lookingAtLeadingWhitespace() {
@@ -725,7 +851,8 @@ class Compiler {
   }
 
   private boolean lookingAtEndOfStatement() {
-    if (ichToken == cchScript || script.charAt(ichToken) != ';')
+    if (ichToken == cchScript 
+        || !(script.charAt(ichToken) == ';' && nSemiSkip-- <= 0))
       return false;
     cchToken = 1;
     return true;
@@ -1043,6 +1170,7 @@ class Compiler {
     case '$':
     case '+':
     case ':':
+    case ';':
     case '@':
     case '.':
     case '%':
@@ -1113,14 +1241,16 @@ class Compiler {
   private boolean compileCommand() {
     tokenCommand = (Token) ltoken.firstElement();
     tokCommand = tokenCommand.tok;
-    isImplicitExpression =  (tokCommand == Token.set 
-        || tokCommand == Token.ifcmd 
-        || tokCommand == Token.print 
-        || tokCommand == Token.returnval);
+    isImplicitExpression = (tokCommand == Token.set
+        || tokCommand == Token.ifcmd ||  tokCommand == Token.elseif
+        || tokCommand == Token.forcmd || tokCommand == Token.whilecmd
+        ||tokCommand == Token.print || tokCommand == Token.returncmd);
     isSetOrDefine = (tokCommand == Token.set || tokCommand == Token.define);
     isCommaAsOrAllowed = tokAttr(tokCommand, Token.expressionCommand);
     int size = ltoken.size();
-    if (size == 1 && tokenCommand.intValue != Integer.MAX_VALUE && tokAttr(tokenCommand.intValue, Token.onDefault1))
+    if (size == 1 && !tokAttr(tokCommand, Token.flowCommand) 
+        && tokenCommand.intValue != Integer.MAX_VALUE
+        && tokAttr(tokenCommand.intValue, Token.onDefault1))
       addTokenToPrefix(Token.tokenOn);
     atokenInfix = new Token[ltoken.size()];
     ltoken.copyInto(atokenInfix);
@@ -1128,7 +1258,6 @@ class Compiler {
       for (int i = 0; i < atokenInfix.length; i++)
         Logger.debug(i + ": " + atokenInfix[i]);
     }
-    
 
     //compile color parameters
 
@@ -1138,14 +1267,13 @@ class Compiler {
     //compile expressions
 
     isEmbeddedExpression = (tokAttr(tokCommand, Token.embeddedExpression));
-    boolean checkExpression = (tokAttrOr(tokCommand,
-        Token.expressionCommand, Token.embeddedExpression));
+    boolean checkExpression = (tokAttrOr(tokCommand, Token.expressionCommand,
+        Token.embeddedExpression));
 
-    if (!tokAttr(tokCommand, Token.numberOrExpression)) {
       // $ at beginning disallow expression checking for center command
-      if (tokCommand == Token.center && tokAt(1) == Token.dollarsign)
-        checkExpression = false;
-    }
+    if (tokCommand == Token.center && tokAt(1) == Token.dollarsign)
+      checkExpression = false;
+
     if (checkExpression && !compileExpression())
       return false;
 
@@ -1158,20 +1286,21 @@ class Compiler {
       if (tokAt(i) == Token.define)
         nDefined++;
     }
-    
+
     size -= nDefined;
     if (isNewSet) {
       if (size == 1) {
         atokenInfix[0] = new Token(Token.function, 0, atokenInfix[0].value);
-        isNewSet = false; 
+        isNewSet = false;
       }
     }
-      
+
     if (isNewSet && size < 3)
-      return  commandExpected();
+      return commandExpected();
     if (isSetOrDefine || tokAttr(tokenCommand.tok, Token.noeval)) //intValue is NOT of this nature
       return true;
-    int allowedLen = (tokenCommand.intValue & 0x0F) + 1;
+    int allowedLen = (tokAttr(tokenCommand.tok, Token.flowCommand) ? 0
+        : tokenCommand.intValue & 0x0F) + 1;
     if (!tokAttr(tokenCommand.intValue, Token.varArgCount)) {
       if (size > allowedLen)
         return badArgumentCount();
@@ -2086,6 +2215,10 @@ class Compiler {
   
   /// error handling
   
+  private boolean badContext(String type) {
+    return compileError(GT._("invalid context for {0}", type));
+  }
+
   private boolean commandExpected() {
     return compileError(GT._("command expected"));
   }

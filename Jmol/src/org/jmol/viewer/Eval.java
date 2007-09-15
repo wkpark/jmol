@@ -58,6 +58,7 @@ class Eval { //implements Runnable {
 
   private static class Context {
     String filename;
+    String functionName;
     String script;
     short[] lineNumbers;
     int[] lineIndices;
@@ -68,24 +69,23 @@ class Eval { //implements Runnable {
     int pcEnd = Integer.MAX_VALUE;
     int lineEnd = Integer.MAX_VALUE;
     int iToken;
-    int ifs[];
     StringBuffer outputBuffer;
     Hashtable contextVariables;
 
-    public Context() {
+    Context() {
       //
     }
 
   }
 
   private final static int scriptLevelMax = 10;
-  private final static int MAX_IF_DEPTH = 10; //should be plenty
 
   private Compiler compiler;
   private int scriptLevel;
   private int scriptReportingLevel;
   private Context[] stack = new Context[scriptLevelMax];
   private String filename;
+  private String functionName;
   private String script;
   private Hashtable contextVariables;
 
@@ -107,7 +107,6 @@ class Eval { //implements Runnable {
   private Token[] statement;
   private int statementLength;
   private BitSet bsSubset;
-  private int[] ifs;
   private boolean isScriptCheck, historyDisabled;
 
   //Thread myThread;
@@ -132,7 +131,7 @@ class Eval { //implements Runnable {
   private Object getParameter(String var, boolean asToken) {
     Token token = getContextVariableAsToken(var);
     return (token == null ? viewer.getParameter(var) : asToken ? token
-        : token.value);
+        : token.tok == Token.integer ? new Integer(token.intValue) : token.value);
   }
   
   private Token getContextVariableAsToken(String var) {
@@ -167,7 +166,7 @@ class Eval { //implements Runnable {
       if (e.loadScript(null, EXPRESSION_KEY + " = " + expr, false)) {
         e.statement = e.aatoken[0];
         e.statementLength = e.statement.length;
-        return e.parameterExpression(2, "", false);
+        return e.parameterExpression(2, 0, "", false);
       }
     } catch (Exception ex) {
       Logger.error("Error evaluating: " + expr + "\n" + ex);
@@ -297,6 +296,7 @@ class Eval { //implements Runnable {
       evalError(GT._("too many script levels"));
     Context context = new Context();
     context.filename = filename;
+    context.functionName = functionName;
     context.script = script;
     context.lineNumbers = lineNumbers;
     context.lineIndices = lineIndices;
@@ -307,7 +307,6 @@ class Eval { //implements Runnable {
     context.lineEnd = lineEnd;
     context.pcEnd = pcEnd;
     context.iToken = iToken;
-    context.ifs = ifs;
     context.outputBuffer = outputBuffer;
     context.contextVariables = contextVariables;
     stack[scriptLevel++] = context;
@@ -323,6 +322,7 @@ class Eval { //implements Runnable {
     Context context = stack[--scriptLevel];
     stack[scriptLevel] = null;
     filename = context.filename;
+    functionName = context.functionName;
     script = context.script;
     lineNumbers = context.lineNumbers;
     lineIndices = context.lineIndices;
@@ -333,7 +333,6 @@ class Eval { //implements Runnable {
     lineEnd = context.lineEnd;
     pcEnd = context.pcEnd;
     iToken = context.iToken;
-    ifs = context.ifs;
     outputBuffer = context.outputBuffer;
     contextVariables = context.contextVariables;
   }
@@ -376,6 +375,7 @@ class Eval { //implements Runnable {
       contextVariables = new Hashtable();
       function.setVariables(contextVariables, params);
     }
+    functionName = name;
     return true;
   }
 
@@ -775,11 +775,11 @@ class Eval { //implements Runnable {
     return v;
   }
 
+  boolean isForCheck = false;
+  
   private void instructionDispatchLoop(boolean doList) throws ScriptException {
     long timeBegin = 0;
-    int ifLevel = 0;
-    ifs = new int[MAX_IF_DEPTH + 1];
-    ifs[0] = 0;
+    isForCheck = false;
     debugScript = (!isSyntaxCheck && viewer.getDebugScript());
     logMessages = (debugScript && Logger.isActiveLevel(Logger.LEVEL_DEBUG));
     if (logMessages) {
@@ -825,37 +825,20 @@ class Eval { //implements Runnable {
           continue;
       } else {
         if (debugScript)
-          logDebugScript(ifLevel
-              + (token.tok == Token.elsecmd || token.tok == Token.endifcmd ? -1
-                  : 0));
+          logDebugScript(0);
         if (logMessages)
           Logger.debug(token.toString());
-        if (ifLevel > 0 && ifs[ifLevel] < 0 && token.tok != Token.endifcmd
-            && token.tok != Token.ifcmd && token.tok != Token.elsecmd)
-          continue;
       }
       switch (token.tok) {
+
+      case Token.elseif:
       case Token.ifcmd:
-        for (int i = 1; i <= ifLevel; i++)
-          if (ifs[i] == pc || ifs[i] == -1 - pc) {
-            ifLevel = i - 1;
-            break;
-          }
-        if (++ifLevel == MAX_IF_DEPTH)
-          evalError(GT._("Too many nested {0} commands", "IF"));
-        ifs[ifLevel] = (ifs[ifLevel - 1] >= 0 && ifCmd() ? pc : -1 - pc);
-        //System.out.println("if " + ifLevel + " = " + ifs[ifLevel]);
-        break;
-      case Token.elsecmd:
-        if (ifLevel < 1)
-          evalError(GT._("Invalid {0} command", "ELSE"));
-        if (!isSyntaxCheck)
-          ifs[ifLevel] = -1 - ifs[ifLevel];
-        break;
+      case Token.whilecmd:
+      case Token.forcmd:
       case Token.endifcmd:
-        //System.out.println("if " + pc +" " + ifLevel);
-        if (--ifLevel < 0)
-          evalError(GT._("Invalid {0} command", "ENDIF"));
+      case Token.elsecmd:
+      case Token.end:
+        flowControl(token.tok);
         break;
       case Token.backbone:
         proteinShape(JmolConstants.SHAPE_BACKBONE);
@@ -1148,7 +1131,7 @@ class Eval { //implements Runnable {
       case Token.print:
         print();
         break;
-      case Token.returnval:
+      case Token.returncmd:
         returnCmd();
         break;
       case Token.pause: //resume is done differently
@@ -1165,8 +1148,68 @@ class Eval { //implements Runnable {
       runScript(script);
   }
 
+  private void flowControl(int tok) throws ScriptException {
+    int pt = statement[0].intValue;
+    boolean isDone = (pt < 0);
+    boolean isOK = true;
+    int ptNext = 0;
+    switch (tok) {
+    case Token.ifcmd:
+    case Token.elseif:
+      isOK = (!isDone && ifCmd());
+      ptNext = Math.abs(aatoken[Math.abs(pt) + 1][0].intValue);
+      aatoken[Math.abs(pt) + 1][0].intValue = (isDone || isOK ? -ptNext
+          : ptNext);
+      break;
+    case Token.elsecmd:
+      if (pt < 0)
+        pc = -pt;
+      break;
+    case Token.endifcmd:
+      break;
+    case Token.end: //if, for, while
+      checkLength2();
+      isForCheck = (tokAt(1) == Token.forcmd);
+      isOK = (tokAt(1) == Token.ifcmd);
+      break;
+    case Token.whilecmd:
+      if (!ifCmd())
+        pc = pt + 1;
+      break;
+    case Token.forcmd:
+      // for (i = 1; i < 3; i = i + 1);
+      // for (var i = 1; i < 3; i = i + 1);
+      // for (;;;);
+      int[] pts = new int[2];
+      int j = 0;
+      for (int i = 1; i < statementLength && j < 2; i++)
+        if (tokAt(i) == Token.semicolon)
+          pts[j++] = i;
+      if (isForCheck) {
+        j = pts[1] + 1;
+        isForCheck = false;
+      } else {
+        j = 2;
+        if (tokAt(j) == Token.var)
+          j++;
+      }
+      if (tokAt(j) == Token.identifier) {
+        String key = parameterAsString(j);
+        if (getToken(++j).tok != Token.opEQ)
+          invalidArgument();
+        setVariable(++j, statementLength - 1, key, false);
+      }
+      isOK = ((Boolean) parameterExpression(pts[0] + 1, pts[1], null, false))
+          .booleanValue();
+      pt++;
+      break;
+    }
+    if (!isOK)
+      pc = Math.abs(pt);
+  }
+  
   private boolean ifCmd() throws ScriptException {
-    return ((Boolean) parameterExpression(1, null, false)).booleanValue();
+    return ((Boolean) parameterExpression(1, 0, null, false)).booleanValue();
   }
 
   private int getLinenumber() {
@@ -2542,14 +2585,12 @@ class Eval { //implements Runnable {
       Point3f pt = new Point3f(coord[0], coord[1], coord[2]);
       if (coordinatesAreFractional && doConvert && !isSyntaxCheck)
         viewer.toCartesian(pt);
-      //System.out.println("getPointOrPlane:" + pt);
       return pt;
     }
     if (n == 4) {
       if (coordinatesAreFractional) // no fractional coordinates for planes (how to convert?)
         invalidArgument();
       Point4f plane = new Point4f(coord[0], coord[1], coord[2], coord[3]);
-      //System.out.println("getPointOrPlane:" + plane);
       return plane;
     }
     return coord;
@@ -4639,7 +4680,7 @@ class Eval { //implements Runnable {
     if (getFunction(name, tokType) == null)
       evalError(GT._("command expected"));
     Vector params = (statementLength == 1 ? null
-        : (Vector) parameterExpression(1, null, true));
+        : (Vector) parameterExpression(1, 0, null, true));
     if (isSyntaxCheck)
       return;
     pushContext(null);
@@ -6221,7 +6262,6 @@ class Eval { //implements Runnable {
 
     }
 
-    String str = "";
     boolean showing = (!isSyntaxCheck && !tQuiet 
         && scriptLevel <= scriptReportingLevel
         && !((String)statement[0].value).equals("var"));
@@ -6230,61 +6270,67 @@ class Eval { //implements Runnable {
       if (isSyntaxCheck)
         return;
     } else {
-      Token t = getContextVariableAsToken(key);
-      Object v = parameterExpression((getToken(2).tok == Token.opEQ ? 3 : 2),
-          key, t != null);
-      if (isSyntaxCheck || v == null)
-        return;
-      if (t != null) {
-        Token tv = (Token)((Vector) v).get(0);
-        t.value = tv.value;
-        t.intValue = tv.intValue;
-        t.tok = tv.tok;
-      }
-      if (key.startsWith("property_")) {
-        n = viewer.getAtomCount();
-        Viewer.setData(key, new Object[] { key, "" + v,
-            viewer.getSelectedAtoms() }, n, 0, Integer.MIN_VALUE);
-        return;
-      }
-      if (v == null)
-        return;
-      if (v instanceof Boolean) {
-        setBooleanProperty(key, ((Boolean) v).booleanValue());
-      } else if (v instanceof Integer) {
-        setIntProperty(key, ((Integer) v).intValue());
-      } else if (v instanceof Float) {
-        setFloatProperty(key, ((Float) v).floatValue());
-      } else if (v instanceof String) {
-        setStringProperty(key, (String) v);
-      } else if (v instanceof BondSet) {
-        setIntProperty(key, BitSetUtil.cardinalityOf((BitSet) v));
-        setStringProperty(key + "_set", Escape.escape((BitSet) v, false));
-        if (showing)
-          viewer.showParameter(key + "_set", true, 80);
-      } else if (v instanceof BitSet) {
-        setIntProperty(key, BitSetUtil.cardinalityOf((BitSet) v));
-        setStringProperty(key + "_set", Escape.escape((BitSet) v));
-        if (showing)
-          viewer.showParameter(key + "_set", true, 80);
-      } else if (v instanceof Point3f) {
-        //drawPoint(key, (Point3f) v, false);
-        str = Escape.escape((Point3f) v);
-        setStringProperty(key, str);
-        //if (showing)
-        //showString("to visualize, use DRAW @" + key);
-      } else if (v instanceof Point4f) {
-        //drawPlane(key, (Point4f) v, false);
-        str = Escape.escape((Point4f) v);
-        setStringProperty(key, str);
-        //if (showing)
-        //showString("to visualize, use ISOSURFACE PLANE @" + key);
-      }
+      setVariable((getToken(2).tok == Token.opEQ ? 3 : 2), 0, key, showing);
     }
     if (showing)
       viewer.showParameter(key, true, 80);
   }
 
+  private void setVariable(int pt, int ptMax, String key, boolean showing)
+      throws ScriptException {
+    String str;
+    Token t = getContextVariableAsToken(key);
+    Object v = parameterExpression(pt, ptMax, key, t != null);
+    if (isSyntaxCheck || v == null)
+      return;
+    if (t != null) {
+      Token tv = (Token) ((Vector) v).get(0);
+      t.value = tv.value;
+      t.intValue = tv.intValue;
+      t.tok = tv.tok;
+    }
+    if (key.startsWith("property_")) {
+      int n = viewer.getAtomCount();
+      Viewer.setData(key,
+          new Object[] { key, "" + v, viewer.getSelectedAtoms() }, n, 0,
+          Integer.MIN_VALUE);
+      return;
+    }
+    if (v == null)
+      return;
+    if (v instanceof Boolean) {
+      setBooleanProperty(key, ((Boolean) v).booleanValue());
+    } else if (v instanceof Integer) {
+      setIntProperty(key, ((Integer) v).intValue());
+    } else if (v instanceof Float) {
+      setFloatProperty(key, ((Float) v).floatValue());
+    } else if (v instanceof String) {
+      setStringProperty(key, (String) v);
+    } else if (v instanceof BondSet) {
+      setIntProperty(key, BitSetUtil.cardinalityOf((BitSet) v));
+      setStringProperty(key + "_set", Escape.escape((BitSet) v, false));
+      if (showing)
+        viewer.showParameter(key + "_set", true, 80);
+    } else if (v instanceof BitSet) {
+      setIntProperty(key, BitSetUtil.cardinalityOf((BitSet) v));
+      setStringProperty(key + "_set", Escape.escape((BitSet) v));
+      if (showing)
+        viewer.showParameter(key + "_set", true, 80);
+    } else if (v instanceof Point3f) {
+      //drawPoint(key, (Point3f) v, false);
+      str = Escape.escape((Point3f) v);
+      setStringProperty(key, str);
+      //if (showing)
+      //showString("to visualize, use DRAW @" + key);
+    } else if (v instanceof Point4f) {
+      //drawPlane(key, (Point4f) v, false);
+      str = Escape.escape((Point4f) v);
+      setStringProperty(key, str);
+      //if (showing)
+      //showString("to visualize, use ISOSURFACE PLANE @" + key);
+    }
+  }
+  
   private boolean setParameter(String key, int intVal) throws ScriptException {
     if (key.equalsIgnoreCase("scriptReportingLevel")) { //11.1.13
       checkLength3();
@@ -6337,14 +6383,17 @@ class Eval { //implements Runnable {
 
   }
 
-  private Object parameterExpression(int pt, String key, boolean asVector)
+  private Object parameterExpression(int pt, int ptMax, String key, boolean asVector)
       throws ScriptException {
     Object v;
     Rpn rpn = new Rpn(16, key != null && key.length() > 0 && tokAt(pt) == Token.leftsquare, asVector);
-        
-    for (int i = pt; i < statementLength; i++) {
+    if (ptMax < pt)
+      ptMax = statementLength;
+    out: for (int i = pt; i < ptMax; i++) {
       v = null;
       switch (getToken(i).tok) {
+      case Token.semicolon: //for (i = 1; i < 3; i=i+1)
+        break out;
       case Token.on:
       case Token.off:
       case Token.decimal:
@@ -7736,7 +7785,7 @@ class Eval { //implements Runnable {
   private void print() throws ScriptException {
     if (statementLength == 1)
       badArgumentCount();
-    String s = (String) parameterExpression(1, "", false);
+    String s = (String) parameterExpression(1, 0, "", false);
     if (!isSyntaxCheck)
       showString(s);
   }
@@ -7745,7 +7794,7 @@ class Eval { //implements Runnable {
     if (statementLength == 1)
       badArgumentCount();
     Token t = getContextVariableAsToken("_retval");
-    Object v = parameterExpression(1, null, true);
+    Object v = parameterExpression(1, 0, null, true);
     if (isSyntaxCheck || v == null || t == null)
       return;
     Token tv = (Token)((Vector) v).get(0);
@@ -9734,7 +9783,13 @@ class Eval { //implements Runnable {
     StringBuffer sb = new StringBuffer();
     int tok = statement[0].tok;
     boolean addParens = (Compiler.tokAttr(tok, Token.embeddedExpression));
-    boolean useBraces = (tok == Token.ifcmd || tok == Token.set);
+    boolean useBraces = (tok == Token.ifcmd 
+        || tok == Token.set  
+        || tok == Token.whilecmd
+        || tok == Token.forcmd
+        || tok == Token.print 
+        || tok == Token.returncmd 
+        || tok == Token.elseif);
     boolean inBrace = false;
     for (int i = 0; i < statementLength; ++i) {
       if (iToken == i - 1)
@@ -9877,7 +9932,9 @@ class Eval { //implements Runnable {
   String contextTrace() {
     StringBuffer sb = new StringBuffer();
     for (;;) {
-      sb.append(setErrorLineMessage(filename, getLinenumber(), pc,
+      String s = (functionName == null ? "" : " function " + functionName)
+          + " file " + filename;
+      sb.append(setErrorLineMessage(s, getLinenumber(), pc,
           statementAsString()));
       if (scriptLevel > 0)
         popContext();
@@ -9892,7 +9949,7 @@ class Eval { //implements Runnable {
     String err = "\n----";
     if (filename != null)
       err += "line " + lineCurrent + " command " + (pcCurrent + 1)
-          + " of file " + filename + ":";
+          + " of" + filename + ":";
     err += "\n         " + lineInfo;
     return err;
   }
@@ -10631,7 +10688,6 @@ class Eval { //implements Runnable {
     }
 
     private boolean evaluateLoad(Token[] args) throws ScriptException {
-      //System.out.println("eval load");
       if (args.length != 1)
         return false;
       if (isSyntaxCheck)
@@ -10641,7 +10697,6 @@ class Eval { //implements Runnable {
 
     private boolean evaluateScript(Token[] args, boolean isJavaScript)
         throws ScriptException {
-      //System.out.println("eval load");
       if (args.length != 1)
         return false;
       if (isSyntaxCheck)
@@ -10655,7 +10710,6 @@ class Eval { //implements Runnable {
     }
 
     private boolean evaluateData(Token[] args) throws ScriptException {
-      //System.out.println("eval data");
       if (args.length == 0 || args.length > 2)
         return false;
       if (isSyntaxCheck)
@@ -10688,7 +10742,6 @@ class Eval { //implements Runnable {
     }
 
     private boolean evaluateLabel(Token[] args) throws ScriptException {
-      //System.out.println("eval label");
       Token x1 = getX();
       if (args.length != 1)
         return false;
@@ -10705,7 +10758,6 @@ class Eval { //implements Runnable {
       // within ( distance, expression)
       // within ( group, etc., expression)
       // within ( plane or hkl or coord  atomcenter atomcenter atomcenter )
-      //System.out.println("eval within");
       if (args.length < 1)
         return false;
       Object withinSpec = args[0].value;
@@ -10840,7 +10892,6 @@ class Eval { //implements Runnable {
     }
 
     private boolean evaluateSubstructure(Token[] args) throws ScriptException {
-      //System.out.println("eval subs");
       if (args.length != 1)
         return false;
       BitSet bs = new BitSet();

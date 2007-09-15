@@ -71,5 +71,5 @@ class Function {
       s.append("\n");
     s.append("end function;\n\n");
     return s.toString();
-  }
+  }  
 }

@@ -89,26 +89,27 @@ public class Token {
   final static int expressionCommand = (1 <<  9); // expression command
   final static int embeddedExpression= (1 << 10); // embedded expression
   final static int specialstring     = (1 << 11); // echo, label, javascript
-//generally, the minus sign is used to denote atom ranges
+  // generally, the minus sign is used to denote atom ranges
   // this property is used for the commands which allow negative integers
   final static int negnums           = (1 << 12);
-  final static int noeval          = (1 << 13);
+  final static int noeval            = (1 << 13);
+  final static int flowCommand       = (1 << 14);
   
   // parameter types
   
-  final static int setparam          = (1 << 14); // parameter to set command
-  final static int colorparam        = (1 << 15);
-  final static int misc              = (1 << 16); // misc parameter
+  final static int setparam          = (1 << 15); // parameter to set command
+  final static int colorparam        = (1 << 16);
+  final static int misc              = (1 << 17); // misc parameter
   
   // expression terms
   
-  final static int expression        = (1 << 17);
-  final static int predefinedset     = (1 << 18) | expression;
-  final static int atomproperty      = (1 << 19) | expression;
-  final static int mathproperty      = (1 << 20) | atomproperty;
-  final static int mathop            = (1 << 21) | expression;
-  final static int mathfunc          = (1 << 22) | expression;  
-  final static int comparator        = (1 << 23) | expression;
+  final static int expression        = (1 << 18);
+  final static int predefinedset     = (1 << 19) | expression;
+  final static int atomproperty      = (1 << 20) | expression;
+  final static int mathproperty      = (1 << 21) | atomproperty;
+  final static int mathop            = (1 << 22) | expression;
+  final static int mathfunc          = (1 << 23) | expression;  
+  final static int comparator        = (1 << 24) | expression;
   
   final static int numberOrExpression = negnums | embeddedExpression; 
 
@@ -203,28 +204,33 @@ public class Token {
   final static int selectionHalo = command | 105 | setparam;
   final static int history       = command | 106 | setparam;
   final static int display       = command | 107 | setparam | expressionCommand;
-  final static int ifcmd         = command | 108 |  numberOrExpression;
-  final static int elsecmd       = command | 109;
-  final static int endifcmd      = command | 110;
-  final static int subset        = command | 111 | expressionCommand | predefinedset;
-  final static int axes          = command | 112 | setparam;
-  final static int boundbox      = command | 113 | setparam;
-  final static int unitcell      = command | 114 | setparam | expression | predefinedset;
-  final static int frank         = command | 115 | setparam;
-  final static int navigate      = command | 116 | numberOrExpression;
-  final static int gotocmd       = command | 117;
-  final static int invertSelected = command | 118 | numberOrExpression;
-  final static int rotateSelected = command | 119 | numberOrExpression;
-  final static int quaternion     = command | 120;
-  final static int ramachandran   = command | 121;
-  final static int sync           = command | 122;
-  final static int print          = command | 123 | numberOrExpression;
-  final static int function       = command | 124 | noeval | mathfunc; //not implemented
-  final static int var            = command | 125 | noeval | setparam;
-  final static int returnval      = command | 126 | numberOrExpression;  
-  final static int end            = command | 127 | noeval;
-
-
+  final static int subset        = command | 108 | expressionCommand | predefinedset;
+  final static int axes          = command | 109 | setparam;
+  final static int boundbox      = command | 110 | setparam;
+  final static int unitcell      = command | 111 | setparam | expression | predefinedset;
+  final static int frank         = command | 112 | setparam;
+  final static int navigate      = command | 113 | numberOrExpression;
+  final static int gotocmd       = command | 114;
+  final static int invertSelected = command | 115 | numberOrExpression;
+  final static int rotateSelected = command | 116 | numberOrExpression;
+  final static int quaternion     = command | 117;
+  final static int ramachandran   = command | 118;
+  final static int sync           = command | 119;
+  final static int print          = command | 120 | numberOrExpression;
+  final static int returncmd      = command | 121 | numberOrExpression;  
+  final static int var            = command | 122 | numberOrExpression | noeval | setparam;
+  
+  //these commands control flow and may not be nested
+  //sorry about GOTO!
+  final static int function       = command | 1 | flowCommand | noeval | mathfunc; //not implemented
+  final static int ifcmd          = command | 2 | flowCommand | numberOrExpression;
+  final static int elseif         = command | 3 | flowCommand | numberOrExpression;
+  final static int elsecmd        = command | 4 | flowCommand;
+  final static int endifcmd       = command | 5 | flowCommand;
+  final static int forcmd         = command | 6 | flowCommand | numberOrExpression;
+  final static int whilecmd       = command | 7 | flowCommand | numberOrExpression;
+  final static int end            = command | 8 | flowCommand | noeval;
+  
   //the following are listed with atomproperty because they must be registered as atom property names
   //final static int model           = atomproperty | 5 | command;
   //final static int file            = atomproperty | 26 | command;
@@ -245,6 +251,7 @@ public class Token {
   final static int sequence     = expression | 10;
   final static int coord        = expression | 12;
   final static int none         = expression | 13;
+  final static int semicolon    = expression | 14;
   final static int all          = expression | 15;
 
   // generated by compiler:
@@ -896,7 +903,7 @@ public class Token {
     "function",          new Token(function,        varArgCount), //varArgCount required
     "functions",         null,
     "end",               new Token(end,             varArgCount), //varArgCount required
-    "return",            new Token(returnval,          varArgCount), //varArgCount required
+    "return",            new Token(returncmd,          varArgCount), //varArgCount required
     "var",               new Token(var,             varArgCount),
     "centerat",          new Token(centerAt,        varArgCount),
     "font",              new Token(font,            varArgCount),
@@ -928,8 +935,11 @@ public class Token {
     "lcaocartoons",      null, 
     "message",           new Token(message,                   1),
     "if",                new Token(ifcmd,           varArgCount),
+    "for",               new Token(forcmd,          varArgCount),
+    "while",             new Token(whilecmd,        varArgCount),
     "else",              new Token(elsecmd,                   0),
     "endif",             new Token(endifcmd,                  0),
+    "elseif",            new Token(elseif,          varArgCount),
     "goto",              new Token(gotocmd,                   1),
     "calculate",         new Token(calculate,       varArgCount),
     "history",           new Token(history,             maxArg2),
@@ -1059,6 +1069,7 @@ public class Token {
     "%",            new Token(percent),
     "*",            new Token(times),
     ":",            new Token(colon),
+    ";",            new Token(semicolon),
     "/",            new Token(divide),
     
     "molecule",          new Token(molecule),

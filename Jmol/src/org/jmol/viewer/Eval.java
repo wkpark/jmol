@@ -130,8 +130,8 @@ class Eval { //implements Runnable {
 
   private Object getParameter(String var, boolean asToken) {
     Token token = getContextVariableAsToken(var);
-    return (token == null ? viewer.getParameter(var) : asToken ? token
-        : token.tok == Token.integer ? new Integer(token.intValue) : token.value);
+    return (token == null ? viewer.getParameter(var) 
+        : asToken ? token : Token.oValue(token));
   }
   
   private Token getContextVariableAsToken(String var) {
@@ -838,6 +838,8 @@ class Eval { //implements Runnable {
       case Token.endifcmd:
       case Token.elsecmd:
       case Token.end:
+      case Token.breakcmd:
+      case Token.continuecmd:
         flowControl(token.tok);
         break;
       case Token.backbone:
@@ -1157,15 +1159,17 @@ class Eval { //implements Runnable {
     case Token.ifcmd:
     case Token.elseif:
       isOK = (!isDone && ifCmd());
-      ptNext = Math.abs(aatoken[Math.abs(pt) + 1][0].intValue);
-      aatoken[Math.abs(pt) + 1][0].intValue = (isDone || isOK ? -ptNext
-          : ptNext);
+      ptNext = Math.abs(aatoken[Math.abs(pt)][0].intValue);
+      ptNext = (isDone || isOK ? -ptNext : ptNext);
+      aatoken[Math.abs(pt)][0].intValue = ptNext;
       break;
     case Token.elsecmd:
+      checkStatementLength(1);
       if (pt < 0)
-        pc = -pt;
+        pc = -pt - 1;
       break;
     case Token.endifcmd:
+      checkStatementLength(1);
       break;
     case Token.end: //if, for, while
       checkLength2();
@@ -1173,8 +1177,18 @@ class Eval { //implements Runnable {
       isOK = (tokAt(1) == Token.ifcmd);
       break;
     case Token.whilecmd:
+      isForCheck = false;
       if (!ifCmd())
-        pc = pt + 1;
+        pc = pt;
+      break;
+    case Token.breakcmd:
+      checkStatementLength(1);
+      pc = aatoken[pt][0].intValue;
+      break;
+    case Token.continuecmd:
+      checkStatementLength(1);
+      isForCheck = true;
+      pc = pt - 1;
       break;
     case Token.forcmd:
       // for (i = 1; i < 3; i = i + 1);
@@ -1205,7 +1219,7 @@ class Eval { //implements Runnable {
       break;
     }
     if (!isOK)
-      pc = Math.abs(pt);
+      pc = Math.abs(pt) - 1;
   }
   
   private boolean ifCmd() throws ScriptException {
@@ -6265,12 +6279,12 @@ class Eval { //implements Runnable {
     boolean showing = (!isSyntaxCheck && !tQuiet 
         && scriptLevel <= scriptReportingLevel
         && !((String)statement[0].value).equals("var"));
-
-    if (key != null && setParameter(key, val)) {
+    if (getContextVariableAsToken(key) == null && setParameter(key, val)) {
       if (isSyntaxCheck)
         return;
     } else {
       setVariable((getToken(2).tok == Token.opEQ ? 3 : 2), 0, key, showing);
+      showing = false;
     }
     if (showing)
       viewer.showParameter(key, true, 80);
@@ -6332,6 +6346,7 @@ class Eval { //implements Runnable {
   }
   
   private boolean setParameter(String key, int intVal) throws ScriptException {
+    
     if (key.equalsIgnoreCase("scriptReportingLevel")) { //11.1.13
       checkLength3();
       int iLevel = intParameter(2);
@@ -6339,29 +6354,39 @@ class Eval { //implements Runnable {
         scriptReportingLevel = iLevel;
         setIntProperty(key, iLevel);
       }
-    } else if (key.equalsIgnoreCase("defaults")) {
+      return true;
+    } 
+    if (key.equalsIgnoreCase("defaults")) {
       checkLength3();
       String val = parameterAsString(2).toLowerCase();
       if (!val.equals("jmol") && !val.equals("rasmol"))
         invalidArgument();
       setStringProperty("defaults", val);
-    } else if (key.equalsIgnoreCase("historyLevel")) {
+      return true;
+    } 
+    if (key.equalsIgnoreCase("historyLevel")) {
       checkLength3();
       int iLevel = intParameter(2);
       if (!isSyntaxCheck) {
         commandHistoryLevelMax = iLevel;
         setIntProperty(key, iLevel);
       }
-    } else if (key.equalsIgnoreCase("dipoleScale")) {
+      return true;
+    } 
+    if (key.equalsIgnoreCase("dipoleScale")) {
       checkLength3();
       float scale = floatParameter(2);
       if (scale < -10 || scale > 10)
         numberOutOfRange(-10f, 10f);
       setFloatProperty("dipoleScale", scale);
-    } else if (statementLength == 2) {
+      return true;
+    } 
+    if (statementLength == 2) {
       if (!isSyntaxCheck)
         setBooleanProperty(key, true);
-    } else if (statementLength == 3) {
+      return true;
+    }
+    if (statementLength == 3) {
       if (intVal != Integer.MAX_VALUE) {
         setIntProperty(key, intVal);
         return true;
@@ -6376,11 +6401,9 @@ class Eval { //implements Runnable {
       } else {
         return false;
       }
-    } else {
-      return false;
+      return true;
     }
-    return true;
-
+    return false;
   }
 
   private Object parameterExpression(int pt, int ptMax, String key, boolean asVector)

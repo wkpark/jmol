@@ -229,7 +229,9 @@ public class Token {
   final static int endifcmd       = command | 5 | flowCommand;
   final static int forcmd         = command | 6 | flowCommand | numberOrExpression;
   final static int whilecmd       = command | 7 | flowCommand | numberOrExpression;
-  final static int end            = command | 8 | flowCommand | noeval;
+  final static int breakcmd       = command | 8 | flowCommand;
+  final static int continuecmd    = command | 9 | flowCommand;
+  final static int end            = command | 10 | flowCommand | noeval;
   
   //the following are listed with atomproperty because they must be registered as atom property names
   //final static int model           = atomproperty | 5 | command;
@@ -449,6 +451,19 @@ public class Token {
   
   final static Point3f pt0 = new Point3f();
 
+  static Object oValue(Token token) {
+    switch (token.tok) {
+    case Token.on:
+      return Boolean.TRUE;
+    case Token.off:
+      return Boolean.FALSE;
+    case Token.integer:
+      return new Integer(token.intValue);
+    default:
+      return token.value;
+    }        
+  }
+  
   static boolean bValue(Token x) {
     switch (x.tok) {
     case Token.on:
@@ -937,6 +952,8 @@ public class Token {
     "if",                new Token(ifcmd,           varArgCount),
     "for",               new Token(forcmd,          varArgCount),
     "while",             new Token(whilecmd,        varArgCount),
+    "break",             new Token(breakcmd,                  0),
+    "continue",          new Token(continuecmd,               0),
     "else",              new Token(elsecmd,                   0),
     "endif",             new Token(endifcmd,                  0),
     "elseif",            new Token(elseif,          varArgCount),

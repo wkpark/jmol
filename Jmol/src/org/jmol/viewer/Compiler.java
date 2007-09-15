@@ -482,6 +482,7 @@ class Compiler {
           tokCommand = tok;
           if (tokAttr(tokCommand, Token.flowCommand)) {
             boolean isEnd = false;
+            boolean isNew = true;
             switch (tok) {
             case Token.end:
               if (flowContext == null)
@@ -507,7 +508,18 @@ class Compiler {
                   || flowContext.token.tok != Token.ifcmd
                   && flowContext.token.tok != Token.elseif)
                 return badContext("else");
-              flowContext.token.intValue = flowContext.pt0 = iCommand;
+              flowContext.token.intValue = flowContext.pt0 = iCommand + 1;
+              break;
+            case Token.breakcmd:
+            case Token.continuecmd:
+              isNew = false;
+              FlowContext f = flowContext;
+              while (f != null && f.token.tok != Token.forcmd
+                  && f.token.tok != Token.whilecmd)
+                f = f.parent;
+              if (f == null)
+                return badContext((String)token.value);
+              token = new Token(tok, f.pt0, token.value); //copy
               break;
             case Token.elseif:
               if (flowContext == null 
@@ -515,7 +527,7 @@ class Compiler {
                   && flowContext.token.tok != Token.elseif
                   && flowContext.token.tok != Token.elsecmd)
                 return badContext("elseif");
-              flowContext.token.intValue = flowContext.pt0 = iCommand;
+              flowContext.token.intValue = flowContext.pt0 = iCommand + 1;
               break;
             case Token.function:
               if (flowContext != null)
@@ -523,15 +535,15 @@ class Compiler {
               break;
             }
             if (isEnd) {
-              flowContext.token.intValue = iCommand;
+              flowContext.token.intValue = iCommand + 1;
               if (tok == Token.endifcmd)
                 flowContext = flowContext.parent;
-            } else {
+            } else if (isNew) {
               token = new Token(tok, token.value); //copy
               if (tok == Token.elsecmd || tok == Token.elseif)
                 flowContext.token = token;
               else
-                flowContext = new FlowContext(token, iCommand, flowContext);
+                flowContext = new FlowContext(token, iCommand + 1, flowContext);
             }
             break;
           }
@@ -572,7 +584,7 @@ class Compiler {
           if (nTokens != 1 || tok != Token.ifcmd)
             return badArgumentCount();
           ltoken.removeElementAt(0);
-          ltoken.addElement(token = new Token (Token.elseif, "elseif"));
+          ltoken.addElement(token = new Token (Token.elseif, tokenCommand.intValue, "elseif"));
           flowContext.token = token;
           tokCommand = Token.elseif;      
           continue;
@@ -1297,10 +1309,9 @@ class Compiler {
 
     if (isNewSet && size < 3)
       return commandExpected();
-    if (isSetOrDefine || tokAttr(tokenCommand.tok, Token.noeval)) //intValue is NOT of this nature
+    if (isSetOrDefine || tokAttrOr(tokenCommand.tok, Token.noeval, Token.flowCommand)) //intValue is NOT of this nature
       return true;
-    int allowedLen = (tokAttr(tokenCommand.tok, Token.flowCommand) ? 0
-        : tokenCommand.intValue & 0x0F) + 1;
+    int allowedLen = (tokenCommand.intValue & 0x0F) + 1;
     if (!tokAttr(tokenCommand.intValue, Token.varArgCount)) {
       if (size > allowedLen)
         return badArgumentCount();

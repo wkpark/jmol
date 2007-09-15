@@ -803,21 +803,11 @@ public class StateManager {
       if (htPropertyFlags.containsKey(name))
         return htPropertyFlags.get(name);
       if (htUserVariables.containsKey(name)) {
-        Token token = (Token) htUserVariables.get(name);
-        switch (token.tok) {
-        case Token.on:
-          return Boolean.TRUE;
-        case Token.off:
-          return Boolean.FALSE;
-        case Token.integer:
-          return new Integer(token.intValue);
-        default:
-          return token.value;
-        }        
+        return Token.oValue((Token) htUserVariables.get(name));
       }
       return "";
     }
-    
+
     String getAllSettings(int nMax) {
       StringBuffer commands = new StringBuffer("");
       Enumeration e;

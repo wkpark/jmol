@@ -842,7 +842,7 @@ public class Draw extends MeshCollection {
       iModel = 0;
     if (mesh.diameter > 0)
       str.append(" diameter ").append(mesh.diameter);
-    int nVertices = mesh.vertexCount;
+    int nVertices = mesh.drawVertexCount > 0 ? mesh.drawVertexCount : mesh.drawVertexCounts[0];
     switch (mesh.drawTypes == null ? mesh.drawType : mesh.drawTypes[iModel]) {
     case JmolConstants.DRAW_ARROW:
       str.append(" ARROW");

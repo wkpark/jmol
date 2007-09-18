@@ -729,6 +729,7 @@ String getAtomInfoChime(int i) {
     if (withinAllModels)
       for (int i = modelSet.getAtomCount(); --i >= 0;) {
         if (bs.get(i)) {
+          bsResult.set(i);
           for (int model = modelSet.getModelCount(); --model >= 0;) {
             AtomIndexIterator iterWithin = modelSet.getWithinAtomSetIterator(model,
                 i, distance);

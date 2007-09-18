@@ -51,8 +51,13 @@ class RepaintManager {
     isTrajectory = (iTraj >= 0); 
     currentTrajectory = iTraj;
   }
-  
+
+
   void setCurrentModelIndex(int modelIndex) {
+    setCurrentModelIndex(modelIndex, true);  
+  }
+  
+  void setCurrentModelIndex(int modelIndex, boolean clearBackgroundModel) {
       ModelSet modelSet = viewer.getModelSet();
     if (modelIndex != 0 && isTrajectory)
       viewer.setTrajectory(-1);
@@ -72,7 +77,7 @@ class RepaintManager {
       currentModelIndex = -1;
     else
       currentModelIndex = modelIndex;
-    if (currentModelIndex == -1)
+    if (currentModelIndex == -1 && clearBackgroundModel)
       setBackgroundModelIndex(-1);
     if (modelSet != null && currentModelIndex >= 0) {
       // entering data frame
@@ -94,10 +99,8 @@ class RepaintManager {
   
   int backgroundModelIndex = -1;
   void setBackgroundModelIndex(int modelIndex) {
-    // no background unless only a SINGLE model is being displayed (for now)
     ModelSet modelSet = viewer.getModelSet();
-    if (modelSet == null || modelIndex < 0 || modelIndex >= modelSet.getModelCount() ||
-        currentModelIndex == -1)
+    if (modelSet == null || modelIndex < 0 || modelIndex >= modelSet.getModelCount())
       modelIndex = -1;
     backgroundModelIndex = modelIndex;
     viewer.setTainted(true);
@@ -111,10 +114,10 @@ class RepaintManager {
   
   private void setFrameRangeVisible() {
     bsVisibleFrames.clear();
+    if (backgroundModelIndex >= 0)
+      bsVisibleFrames.set(backgroundModelIndex);
     if (currentModelIndex >= 0) {
       bsVisibleFrames.set(currentModelIndex);
-      if (backgroundModelIndex >= 0)
-        bsVisibleFrames.set(backgroundModelIndex);
       return;
     }
     if (frameStep == 0 || isTrajectory)

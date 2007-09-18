@@ -2713,6 +2713,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     repaintManager.setCurrentModelIndex(modelIndex);
   }
 
+  void setCurrentModelIndex(int modelIndex, boolean clearBackground) {
+    //Eval
+    //initializeModel
+    repaintManager.setCurrentModelIndex(modelIndex, clearBackground);
+  }
+
   public int getCurrentModelIndex() {
     return repaintManager.currentModelIndex;
   }

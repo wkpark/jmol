@@ -1044,6 +1044,7 @@ class Eval { //implements Runnable {
         break;
       case Token.frame:
       case Token.model:
+
         frame(1, false);
         break;
       case Token.trajectory:
@@ -5819,7 +5820,6 @@ class Eval { //implements Runnable {
     boolean useModelNumber = true;
     // for now -- as before -- remove to implement
     // frame/model difference
-
     if (getToken(offset).tok == Token.minus) {
       ++offset;
       checkStatementLength(offset + 1);
@@ -5930,7 +5930,7 @@ class Eval { //implements Runnable {
       if (isTrajectory)
         viewer.setTrajectory(modelIndex);
       else
-        viewer.setCurrentModelIndex(modelIndex);
+        viewer.setCurrentModelIndex(modelIndex, false);
     }
     if (isPlay && nFrames == 2 || isRange || isHyphen) {
       if (modelIndex2 < 0)
@@ -5943,7 +5943,7 @@ class Eval { //implements Runnable {
         viewer.setTrajectory(modelIndex);
       else
         viewer.setCurrentModelIndex(isHyphen && !isRange ? -1
-            : modelIndex >= 0 ? modelIndex : 0);
+            : modelIndex >= 0 ? modelIndex : 0, false);
     }
     if (isPlay)
       viewer.resumeAnimation();

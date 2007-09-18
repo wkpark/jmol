@@ -1775,7 +1775,7 @@ class Compiler {
       return false;
     if (getToken() == null)
       return false;
-    float distance = 0;
+    float distance = Float.MAX_VALUE;
     String key = null;
     switch (theToken.tok) {
     case Token.minus:
@@ -1814,6 +1814,13 @@ class Compiler {
       if (!addNextTokenIf(Token.comma))
         break;
       int tok = tokPeek();
+      if (distance != Float.MAX_VALUE && 
+          (tok == Token.on || tok == Token.off)) {
+        addTokenToPostfix(getToken());
+        if (!addNextTokenIf(Token.comma))
+          break;
+        tok = tokPeek();
+      }
       boolean isCoordOrPlane = false;
       if (key == null) {
         if (tok == Token.identifier) {
@@ -1842,6 +1849,7 @@ class Compiler {
         }
       }
       addNextTokenIf(Token.comma);
+      tok = tokPeek();
       if (isCoordOrPlane) {
         while (!tokPeek(Token.rightparen)) {
           switch (tokPeek()) {

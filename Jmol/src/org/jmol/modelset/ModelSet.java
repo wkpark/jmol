@@ -132,7 +132,7 @@ abstract public class ModelSet {
   private final AtomIteratorWithinModel withinModelIterator = new AtomIteratorWithinModel();
 
   AtomIterator getWithinModelIterator(Atom atomCenter, float radius) {
-    //Polyhedra
+    //Polyhedra, within()
     initializeBspf();
     withinModelIterator.initialize(bspf, atomCenter.modelIndex, atomCenter, radius);
     return withinModelIterator;
@@ -141,9 +141,16 @@ abstract public class ModelSet {
   private final AtomIteratorWithinSet withinAtomSetIterator = new AtomIteratorWithinSet();
 
   AtomIndexIterator getWithinAtomSetIterator(int atomIndex, float distance, BitSet bsSelected, boolean isGreaterOnly, boolean modelZeroBased) {
-    //EnvelopeCalculation, IsoSolventReader
+    //EnvelopeCalculation, IsoSolventReader, within 
     initializeBspf();
     withinAtomSetIterator.initialize(this, bspf, atoms[atomIndex].modelIndex, atomIndex, distance, bsSelected, isGreaterOnly, modelZeroBased);
+    return withinAtomSetIterator;
+  }
+  
+  AtomIndexIterator getWithinAtomSetIterator(int modelIndex, int atomIndex, float distance) {
+    //EnvelopeCalculation, IsoSolventReader, within 
+    initializeBspf();
+    withinAtomSetIterator.initialize(this, bspf, modelIndex, atomIndex, distance, null, false, false);
     return withinAtomSetIterator;
   }
   

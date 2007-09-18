@@ -2157,8 +2157,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelManager.getAtomsWithin(withinWhat, specInfo, bs);
   }
 
-  BitSet getAtomsWithin(float distance, BitSet bs) {
-    return modelManager.getAtomsWithin(distance, bs);
+  BitSet getAtomsWithin(float distance, BitSet bs, boolean isWithinModelSet) {
+    return modelManager.getAtomsWithin(distance, bs, isWithinModelSet);
   }
 
   BitSet getAtomsConnected(float min, float max, int intType, BitSet bs) {

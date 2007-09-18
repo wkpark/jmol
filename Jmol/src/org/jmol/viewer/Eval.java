@@ -1396,6 +1396,10 @@ class Eval { //implements Runnable {
       case Token.none:
         rpn.addX(new BitSet());
         break;
+      case Token.on:
+      case Token.off:
+        rpn.addX(instruction.tok == Token.on);
+        break;
       case Token.selected:
         rpn.addX(BitSetUtil.copy(viewer.getSelectionSet()));
         break;
@@ -10792,23 +10796,32 @@ class Eval { //implements Runnable {
       BitSet bs = new BitSet();
       float distance = 0;
       boolean isSequence = false;
-      if (withinSpec instanceof String)
+      int i = args.length;
+      boolean isWithinModelSet = false;
+      if (withinSpec instanceof String) {
         isSequence = !Parser.isOneOf(withinStr,
             "element;site;group;chain;molecule;model");
-      else if (withinSpec instanceof Float || args[0].tok == Token.integer)
+      } else if (withinSpec instanceof Float || args[0].tok == Token.integer) {
         distance = Token.fValue(args[0]);
-      else
+        if (i < 2)
+          return false;
+        if (args[1].tok == Token.on || args[1].tok == Token.off) {
+          isWithinModelSet = Token.bValue(args[1]);
+          i = 0;
+        }
+      } else {
         return false;
-      if (args.length == 3) {
+      }
+      if (i == 3) {
         withinStr = Token.sValue(args[1]);
-        if (!Parser.isOneOf(withinStr, "plane;hkl;coord"))
+        if (!Parser.isOneOf(withinStr, "on;off;plane;hkl;coord"))
           return false;
       }
       if (isSyntaxCheck)
         return addX(bs);
       Point3f pt = null;
       Point4f plane = null;
-      int i = args.length - 1;
+      i = args.length - 1;
       if (args[i].value instanceof Point4f)
         plane = (Point4f) args[i].value;
       else if (args[i].value instanceof Point3f)
@@ -10823,7 +10836,7 @@ class Eval { //implements Runnable {
         return addX(viewer.getAtomsWithin(distance, pt));
       bs = Token.bsSelect(args[i]);
       if (withinSpec instanceof Float)
-        return addX(viewer.getAtomsWithin(distance, bs));
+        return addX(viewer.getAtomsWithin(distance, bs, isWithinModelSet));
       if (isSequence)
         return addX(viewer.getAtomsWithin("sequence", withinStr, bs));
       return addX(viewer.getAtomsWithin(withinStr, bs));

@@ -726,20 +726,18 @@ String getAtomInfoChime(int i) {
   public BitSet getAtomsWithin(float distance, BitSet bs,
                                boolean withinAllModels) {
     BitSet bsResult = new BitSet();
-    if (withinAllModels)
-      for (int i = modelSet.getAtomCount(); --i >= 0;) {
-        if (bs.get(i)) {
-          bsResult.set(i);
+    if (withinAllModels) {
+      bsResult.or(bs);
+      for (int i = modelSet.getAtomCount(); --i >= 0;)
+        if (bs.get(i))
           for (int model = modelSet.getModelCount(); --model >= 0;) {
-            AtomIndexIterator iterWithin = modelSet.getWithinAtomSetIterator(model,
-                i, distance);
+            AtomIndexIterator iterWithin = modelSet.getWithinAtomSetIterator(
+                model, i, distance);
             while (iterWithin.hasNext())
               bsResult.set(iterWithin.next());
           }
-        }
-      }
-    else
-      for (int i = modelSet.getAtomCount(); --i >= 0;) {
+    } else {
+      for (int i = modelSet.getAtomCount(); --i >= 0;)
         if (bs.get(i)) {
           Atom atom = modelSet.getAtomAt(i);
           AtomIterator iterWithin = modelSet.getWithinModelIterator(atom,
@@ -747,7 +745,7 @@ String getAtomInfoChime(int i) {
           while (iterWithin.hasNext())
             bsResult.set(iterWithin.next().getAtomIndex());
         }
-      }
+    }
     return bsResult;
   }
 

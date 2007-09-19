@@ -486,7 +486,9 @@ abstract class WebPanel extends JPanel implements ActionListener {
         //First modify to use the newly copied structure file
         String structureFileName = (new File(structureFile)).getName();
         int pt = script.indexOf("/" + structureFileName + "\"");
-        if (pt > 0) {
+        if (pt < 0)
+          pt = script.indexOf("\\" + structureFileName + "\"");
+        if (pt >= 0) {
           int pt0 = pt;
           while (pt0 >= 0 && script.charAt(pt0) != '"')
             pt0--;

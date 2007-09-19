@@ -386,6 +386,7 @@ class Compiler {
       char ch;
       if (nTokens == 0) {
         isNewSet = false;
+        nSemiSkip = 0;
       } else {
         if (nTokens == 1) {
           ch = script.charAt(ichToken);
@@ -847,7 +848,7 @@ class Compiler {
   }
 
   private boolean eol(char ch) {
-    return (ch == '\r' || ch == '\n' || ch == ';' && nSemiSkip == 0);  
+    return (ch == '\r' || ch == '\n' || ch == ';' && nSemiSkip <= 0);  
   }
   
   private boolean lookingAtLeadingWhitespace() {

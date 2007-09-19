@@ -7026,9 +7026,6 @@ class Eval { //implements Runnable {
       setShapeSize(JmolConstants.SHAPE_AXES, 1);
       return;
     }
-    // axes = ....
-    if (tokAt(index) == Token.opEQ)
-      index++;
     String type = optParameterAsString(index).toLowerCase();
     if (statementLength == index + 1
         && Parser.isOneOf(type, "window;unitcell;molecular")) {

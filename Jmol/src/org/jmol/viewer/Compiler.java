@@ -391,7 +391,8 @@ class Compiler {
         if (nTokens == 1) {
           ch = script.charAt(ichToken);
           if (tokCommand == Token.set || tokAttr(tokCommand, Token.setparam)) {
-            if (isNewSet && (ch == '=' || ch == '[')) {
+            if (tokAttr(tokCommand, Token.setparam) && ch == '=' ||
+                isNewSet && (ch == '=' || ch == '[')) {
               tokenCommand = (ch == '=' ? Token.tokenSet : Token.tokenSetArray);
               tokCommand = Token.set;
               ltoken.insertElementAt(tokenCommand, 0);

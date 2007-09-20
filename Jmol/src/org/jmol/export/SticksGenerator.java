@@ -25,6 +25,8 @@
 
 package org.jmol.export;
 
+import javax.vecmath.Point3f;
+
 import org.jmol.shape.*;
 
 public class SticksGenerator extends SticksRenderer {
@@ -37,21 +39,31 @@ public class SticksGenerator extends SticksRenderer {
     this.exporter = (Exporter)exporter;
   }
 
-  protected void renderCylinder(int dottedMask) {
-    //boolean lineBond = (width <= 1);
-    //if (bondOrder == 1) {
-      //if ((dottedMask & 1) != 0) {
-       // drawDashed(lineBond, xA, yA, zA, xB, yB, zB);
-      //} else {
-        //if (lineBond)
-        //  g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
-      //  else if (asBits) // time test shows bitset method to be slower
-        //  g3d.fillCylinderBits(colixA, colixB, endcaps,
-          //    width, xA, yA, zA, xB, yB, zB);
-       // else
-          exporter.renderBond(atomA, atomB, colixA, colixB, endcaps, madBond);
-      //}
-    //}
+  Point3f pt = new Point3f();
+  Point3f ptA = new Point3f();
+  Point3f ptB = new Point3f();
+  
+  protected void renderBond(int dottedMask) {
+    // Maya and Vrml right now don't render bond orders
+    if (exporter.use2dBondOrderCalculation) {
+      super.renderBond(dottedMask); //use fillCylinder
+      return;
+    }
+    exporter.renderBond(atomA, atomB, colixA, colixB, endcaps, madBond, bondOrder);
   }
 
+
+  protected void fillCylinder(short colixA, short colixB, byte endcaps,
+                              int diameter, int xA, int yA, int zA, int xB, int yB, int zB) {
+    /*
+     * Idea here is to use the screen points Jmol determines, but then to 
+     * transform those BACK into 3D molecular coordinates
+     *
+     */
+    pt.set(xA, yA, zA);
+    viewer.unTransformPoint(pt, ptA);
+    pt.set(xB, yB, zB);
+    viewer.unTransformPoint(pt, ptB);
+    exporter.renderBond(ptA, ptB, colixA, colixB, endcaps, madBond, 1);
+  }
 }

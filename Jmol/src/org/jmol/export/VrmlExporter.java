@@ -34,6 +34,10 @@ public class VrmlExporter extends Exporter {
   
   //VERY  preliminary -- in process -- 7/2007 Bob Hanson
 
+  public VrmlExporter() {
+    use2dBondOrderCalculation = false;
+  }
+  
   public void getHeader() {
     output.append("#VRML V2.0 utf8\n");
     output.append("Transform {\n");
@@ -63,8 +67,9 @@ public class VrmlExporter extends Exporter {
     nBalls++;
   }
 
-  public void renderBond(Atom atom1, Atom atom2, short colix1, short colix2,
-                           byte endcaps, int madBond) {
+  public void renderBond(Point3f atom1, Point3f atom2, short colix1, short colix2,
+                           byte endcaps, int madBond, int bondOrder) {
+    //ignoring bond order for vrml -- but this needs fixing
     if (colix1 == colix2) {
       renderCylinder(atom1, atom2, colix1, endcaps, madBond);
       return;

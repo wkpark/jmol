@@ -26,8 +26,8 @@ public interface JmolExportInterface {
 
   abstract void renderAtom(Atom atom, short colix);
 
-  abstract void renderBond(Atom atom1, Atom atom2, short colix1, short colix2,
-                           byte endcaps, int madBond);
+  abstract void renderBond(Point3f atom1, Point3f atom2, short colix1, short colix2,
+                           byte endcaps, int madBond, int bondOrder);
 
   // The following methods are used by a variety of shape generators and 
   // replace methods in org.jmol.g3d. More will be added as needed. 

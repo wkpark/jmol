@@ -111,24 +111,24 @@ public class SticksRenderer extends ShapeRenderer {
       return;
     dx = xB - xA;
     dy = yB - yA;
-    width = viewer.scaleToScreen((zA + zB)/2, bond.getMad());
+    width = viewer.scaleToScreen((zA + zB)/2, madBond);
     bondOrder = getRenderBondOrder(bond.getOrder());
     switch(bondOrder) {
     case 1:
     case 2:
     case 3:
     case 4:
-      renderCylinder(0);
+      renderBond(0);
       break;
     case JmolConstants.BOND_ORDER_UNSPECIFIED:
     case JmolConstants.BOND_PARTIAL01:
       bondOrder = 1;
-      renderCylinder(1);
+      renderBond(1);
       break;
     case JmolConstants.BOND_PARTIAL12:
     case JmolConstants.BOND_AROMATIC:
       bondOrder = 2;
-      renderCylinder(getAromaticDottedBondMask(bond));
+      renderBond(getAromaticDottedBondMask(bond));
       break;
     case JmolConstants.BOND_STEREO_NEAR:
     case JmolConstants.BOND_STEREO_FAR:
@@ -138,7 +138,7 @@ public class SticksRenderer extends ShapeRenderer {
       if ((bondOrder & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
         if (hbondsSolid) {
           bondOrder = 1;
-          renderCylinder(0);
+          renderBond(0);
         } else {
           renderHbondDashed();
         }
@@ -164,8 +164,9 @@ public class SticksRenderer extends ShapeRenderer {
     return order;
   }
 
-  protected void renderCylinder(int dottedMask) {
-    boolean lineBond = (width <= 1);
+  protected boolean lineBond;
+  protected void renderBond(int dottedMask) {
+    lineBond = (width <= 1);
     if (dx == 0 && dy == 0) {
       // end-on view
       if (! lineBond) {
@@ -175,7 +176,7 @@ public class SticksRenderer extends ShapeRenderer {
                       ? 0
                       : (bondOrder == 2) ? step / 2 : step);
         do {
-          g3d.fillCylinder(colixA, colixA, endcaps,
+          fillCylinder(colixA, colixA, endcaps,
                            width, xA, y, zA, xA, y, zA);
           y += step;
         } while (--bondOrder > 0);
@@ -183,18 +184,11 @@ public class SticksRenderer extends ShapeRenderer {
       return;
     }
     if (bondOrder == 1) {
-      if ((dottedMask & 1) != 0) {
-        drawDashed(lineBond, xA, yA, zA, xB, yB, zB);
-      } else {
-        if (lineBond)
-          g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
-      //  else if (asBits) // time test shows bitset method to be slower
-        //  g3d.fillCylinderBits(colixA, colixB, endcaps,
-          //    width, xA, yA, zA, xB, yB, zB);
-        else
-          g3d.fillCylinder(colixA, colixB, endcaps,
+      if ((dottedMask & 1) != 0)
+        drawDashed(xA, yA, zA, xB, yB, zB);
+      else
+        fillCylinder(colixA, colixB, endcaps,
                            width, xA, yA, zA, xB, yB, zB);
-      }
       return;
     }
     int dxB = dx * dx;
@@ -203,18 +197,13 @@ public class SticksRenderer extends ShapeRenderer {
     if (bondOrder == 4)
       mag2d2 *= 4;
     mag2d = (int)(Math.sqrt(mag2d2) + 0.5);
-    resetAxisCoordinates(lineBond);
+    resetAxisCoordinates();
     while (true) {
-      if ((dottedMask & 1) != 0) {
-        drawDashed(lineBond, xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
-      } else {
-        if (lineBond)
-          g3d.drawLine(colixA, colixB,
-                       xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
-        else
-          g3d.fillCylinder(colixA, colixB, endcaps, width,
+      if ((dottedMask & 1) != 0)
+        drawDashed(xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
+      else
+        fillCylinder(colixA, colixB, endcaps, width,
                            xAxis1, yAxis1, zA, xAxis2, yAxis2, zB);
-      }
       dottedMask >>= 1;
       if (--bondOrder == 0)
         break;
@@ -222,9 +211,17 @@ public class SticksRenderer extends ShapeRenderer {
     }
   }
 
+  protected void fillCylinder(short colixA, short colixB, byte endcaps,
+                    int diameter, int xA, int yA, int zA, int xB, int yB, int zB) {
+    if (lineBond)
+      g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
+    else
+      g3d.fillCylinder(colixA, colixB, endcaps, diameter, xA, yA, zA, xB, yB, zB);
+  }
+
   int xAxis1, yAxis1, xAxis2, yAxis2, dxStep, dyStep;
 
-  void resetAxisCoordinates(boolean lineBond) {
+  void resetAxisCoordinates() {
     int space = mag2d >> 3;
     int step = width + space;
     dxStep = step * dy / mag2d; dyStep = step * -dx / mag2d;
@@ -375,9 +372,7 @@ public class SticksRenderer extends ShapeRenderer {
     return null;
   }
 
-  void drawDashed(boolean lineBond,
-                  int xA, int yA, int zA,
-                  int xB, int yB, int zB) {
+  void drawDashed(int xA, int yA, int zA, int xB, int yB, int zB) {
     int dx = xB - xA;
     int dy = yB - yA;
     int dz = zB - zA;
@@ -391,16 +386,12 @@ public class SticksRenderer extends ShapeRenderer {
       int yE = yA + (dy * i) / 12;
       int zE = zA + (dz * i) / 12;
       i += 2;
-      if (lineBond)
-        g3d.drawLine(colixA, colixB, xS, yS, zS, xE, yE, zE);
-      else 
-        g3d.fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_FLAT, width,
+      fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_FLAT, width,
                          xS, yS, zS, xE, yE, zE);
     }
   }
 
   void renderHbondDashed() {
-    boolean lineBond = (width <= 1);
    int dx = xB - xA;
     int dy = yB - yA;
     int dz = zB - zA;
@@ -416,10 +407,7 @@ public class SticksRenderer extends ShapeRenderer {
       int zE = zA + (dz * i) / 10;
       short colixE = i < 5 ? colixA : colixB;
       ++i;
-      if (lineBond)
-        g3d.drawLine(colixS, colixE, xS, yS, zS, xE, yE, zE);
-      else 
-        g3d.fillCylinder(colixS, colixE, Graphics3D.ENDCAPS_FLAT, width,
+      fillCylinder(colixS, colixE, Graphics3D.ENDCAPS_FLAT, width,
                          xS, yS, zS, xE, yE, zE);
     }
   }

@@ -32,6 +32,10 @@ import javax.vecmath.Tuple3f;
 import org.jmol.modelset.Atom;
 
 public class MayaExporter extends Exporter {
+
+  public MayaExporter() {
+    use2dBondOrderCalculation = false;
+  }
   
  public void getHeader() {
     output.append("//  Maya ASCII 8.5 scene\n");
@@ -71,8 +75,9 @@ public class MayaExporter extends Exporter {
     addConnect();
   }
 
-  public void renderBond(Atom atom1, Atom atom2, short colix1, short colix2,
-                      byte endcaps, int madBond) {
+  public void renderBond(Point3f atom1, Point3f atom2, short colix1, short colix2,
+                      byte endcaps, int madBond, int bondOrder) {
+    //ignoring bond order for Maya
     if (colix1 == colix2) {
       renderCylinder(atom1, atom2, colix1, endcaps, madBond);
       return;

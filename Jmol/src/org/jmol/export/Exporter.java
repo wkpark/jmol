@@ -128,6 +128,8 @@ public abstract class Exporter implements JmolExportInterface {
   int nCyl = 0;
   String name;
   String id;
+  
+  boolean use2dBondOrderCalculation = true;
 
   Point3f center = new Point3f();
   Vector3f tempV = new Vector3f();
@@ -178,12 +180,10 @@ public abstract class Exporter implements JmolExportInterface {
   
   protected String rgbFractionalFromColix(short colix, char sep) {
     int argb = g3d.getColixArgb(colix);
-//    System.out.println(Integer.toHexString(argb));
     return new StringBuffer()
     .append(((argb >> 16) & 0xFF)/255f).append(sep)
     .append(((argb >> 8) & 0xFF)/255f).append(sep)
-    .append(((argb  ) & 0xFF)/255f).toString();
-    
+    .append(((argb  ) & 0xFF)/255f).toString();    
   }
 
 }

@@ -201,6 +201,7 @@
         <include name="**/*.gif" />
       	<include name="**/*.png" />
         <include name="**/*.html" />
+        <include name="**/*.js" />
         <include name="**/*.dtd" />
         <include name="**/*.properties" />
         <include name="**/Properties/*" />

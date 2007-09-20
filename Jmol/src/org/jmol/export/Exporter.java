@@ -129,7 +129,7 @@ public abstract class Exporter implements JmolExportInterface {
   String name;
   String id;
   
-  boolean use2dBondOrderCalculation = true;
+  boolean use2dBondOrderCalculation = false;
 
   Point3f center = new Point3f();
   Vector3f tempV = new Vector3f();

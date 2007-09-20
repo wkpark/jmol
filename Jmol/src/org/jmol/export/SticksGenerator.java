@@ -39,7 +39,6 @@ public class SticksGenerator extends SticksRenderer {
     this.exporter = (Exporter)exporter;
   }
 
-  Point3f pt = new Point3f();
   Point3f ptA = new Point3f();
   Point3f ptB = new Point3f();
   
@@ -56,14 +55,11 @@ public class SticksGenerator extends SticksRenderer {
   protected void fillCylinder(short colixA, short colixB, byte endcaps,
                               int diameter, int xA, int yA, int zA, int xB, int yB, int zB) {
     /*
-     * Idea here is to use the screen points Jmol determines, but then to 
-     * transform those BACK into 3D molecular coordinates
-     *
+     * Use the screen points Jmol determines
+     *  
      */
-    pt.set(xA, yA, zA);
-    viewer.unTransformPoint(pt, ptA);
-    pt.set(xB, yB, zB);
-    viewer.unTransformPoint(pt, ptB);
+    ptA.set(xA, yA, zA);
+    ptB.set(xB, yB, zB);
     exporter.renderBond(ptA, ptB, colixA, colixB, endcaps, madBond, 1);
   }
 }

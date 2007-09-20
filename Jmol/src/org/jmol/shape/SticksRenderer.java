@@ -329,7 +329,7 @@ public class SticksRenderer extends ShapeRenderer {
                            xWideUp, yWideUp, zB, xWideDn, yWideDn, zB);
     }
   }
-
+/*
   void drawDottedCylinder(short colixA, short colixB, int width,
                           int x1, int y1, int z1, int x2, int y2, int z2) {
     int dx = x2 - x1;
@@ -346,7 +346,7 @@ public class SticksRenderer extends ShapeRenderer {
         g3d.fillSphereCentered(width, x, y, z);
     }
   }
-
+*/
   private int getAromaticDottedBondMask(Bond bond) {
     Atom atomC = findAromaticNeighbor();
     if (atomC == null)

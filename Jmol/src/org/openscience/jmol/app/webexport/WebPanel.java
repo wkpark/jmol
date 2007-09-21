@@ -200,7 +200,10 @@ abstract class WebPanel extends JPanel implements ActionListener {
     }
     StringBuffer sb = new StringBuffer();
     try {
-      LogPanel.log(name + " : " + url.getContent().toString());
+      //turns out from the Jar file
+      // it's a sun.net.www.protocol.jar.JarURLConnection$JarURLInputStream
+      // and within Eclipse it's a BufferedInputStream
+      //LogPanel.log(name + " : " + url.getContent().toString());
       BufferedReader br = new BufferedReader(new InputStreamReader(
           (InputStream) url.getContent()));
       String line;

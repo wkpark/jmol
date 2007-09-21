@@ -195,17 +195,24 @@ abstract class WebPanel extends JPanel implements ActionListener {
 
   private String getResourceString(String name) throws IOException {
     URL url = getResource(name);
-    if (url == null)
+    if (url == null) {
       throw new FileNotFoundException("Error loading resource " + name);
-    BufferedReader br = new BufferedReader(new InputStreamReader((BufferedInputStream)url.getContent()));
+    }
     StringBuffer sb = new StringBuffer();
-    String line;
-    while ((line = br.readLine()) != null)
-      sb.append(line).append("\n");
-    br.close();
+    try {
+      LogPanel.log(name + " : " + url.getContent().toString());
+      BufferedReader br = new BufferedReader(new InputStreamReader(
+          (InputStream) url.getContent()));
+      String line;
+      while ((line = br.readLine()) != null)
+        sb.append(line).append("\n");
+      br.close();
+    } catch (Exception e) {
+      LogPanel.log(e.getMessage());
+    }
     String str = sb.toString();
     //LogPanel.log("Loading resource " + name + "("
-      //  + str.length() + " bytes)");
+    //  + str.length() + " bytes)");
     return str;
   }
 

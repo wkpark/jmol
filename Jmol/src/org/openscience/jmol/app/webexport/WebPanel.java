@@ -414,16 +414,8 @@ abstract class WebPanel extends JPanel implements ActionListener {
     if (made_datadir) {
       LogPanel.log("Using directory " + datadirPath);
       LogPanel.log("  adding JmolPopIn.js");
-      PrintStream out = null;
-      try {
-        String outfilename = datadirPath + "/JmolPopIn.js";
-        out = new PrintStream(new FileOutputStream(outfilename));
-        String js = getResourceString("JmolPopIn.js");
-        out.println(js);
-        out.close();
-      } catch (FileNotFoundException IOe) {
-        throw IOe;
-      }
+      viewer.createImage(datadirPath + "/JmolPopIn.js", getResourceString("JmolPopIn.html"), 
+          Integer.MIN_VALUE, 0, 0);
       String lastFile = "";
       String lastName = "";
       String outfilename = "";
@@ -438,7 +430,6 @@ abstract class WebPanel extends JPanel implements ActionListener {
         } catch (IOException IOe) {
           throw IOe;
         }
-        out = null;
         //Get the path to the file from the Jmol
 
         String structureFile = thisInstance.file;
@@ -462,7 +453,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
             LogPanel
               .log("          ...compressing large file "+structureFile);
           } else {
-          viewer.createImage(outfilename, data, Integer.MIN_VALUE, 0, 0);
+            viewer.createImage(outfilename, data, Integer.MIN_VALUE, 0, 0);
           }
           lastFile = structureFile;
           lastName = newName;
@@ -485,14 +476,8 @@ abstract class WebPanel extends JPanel implements ActionListener {
             '"' + structureFileName + '"', '"' + newName + '"');
         //script = fixScript(script);
         LogPanel.log("      ...adding " + javaname + ".spt");
-        try {
-          String scriptname = datadirPath + "/" + javaname + ".spt";
-          out = new PrintStream(new FileOutputStream(scriptname));
-          out.print(script);
-          out.close();
-        } catch (FileNotFoundException IOe) {
-          throw IOe;
-        }
+        String scriptname = datadirPath + "/" + javaname + ".spt";
+        viewer.createImage(scriptname, script, Integer.MIN_VALUE, 0, 0);
       }
       String html = getResourceString(templateName);
       html = fixHtml(html);

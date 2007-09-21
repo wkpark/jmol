@@ -31,6 +31,7 @@ html, body { height:100%; overflow:hidden; margin:0; padding:0; }
  <script>
 	var jmoljarpath = "@APPLETPATH@"; // where Jmol.jar is to be found 
     var jmoljspath = "@APPLETPATH@";  // where Jmol.js is to be found
+    var jmoljarfile = "JmolApplet0.jar";  // first of a set of many files; "JmolApplet.jar" is everything in one file; 
  	var dataDir = ".";                // where the model AND .spt files are to be found.
   </script>
   <script src="JmolPopIn.js" type="text/javascript"></script>
@@ -39,7 +40,7 @@ html, body { height:100%; overflow:hidden; margin:0; padding:0; }
     addJavaScript(jmoljspath, "Jmol.js");
 </script>
 <script type='text/javascript'>
-  jmolInitialize("@APPLETPATH@", "JmolApplet.jar");   //Where Jmol.jar is; if you change this, also change it in the above script tag
+  jmolInitialize(jmoljarpath, jmoljarfile); 
   jmolSetDocument(0);
 </script>
 

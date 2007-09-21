@@ -194,22 +194,27 @@ abstract class WebPanel extends JPanel implements ActionListener {
   }
 
   private String getResourceString(String name) throws IOException {
-    URL templateFile = this.getClass().getResource(name);
-    if (templateFile == null)
+    URL url = getResource(name);
+    if (url == null)
       throw new FileNotFoundException("Error loading resource " + name);
-    String filename = templateFile.getFile();
-    BufferedReader br = new BufferedReader(new FileReader(filename));
-    StringBuffer htmlBuf = new StringBuffer();
+    BufferedReader br = new BufferedReader(new InputStreamReader((BufferedInputStream)url.getContent()));
+    StringBuffer sb = new StringBuffer();
     String line;
     while ((line = br.readLine()) != null)
-      htmlBuf.append(line).append("\n");
+      sb.append(line).append("\n");
     br.close();
-    String html = htmlBuf.toString();
-    //LogPanel.Log("Loading html template " + templateFile + "("
-    //  + html.length() + " bytes)");
-    return html;
+    String str = sb.toString();
+    //LogPanel.log("Loading resource " + name + "("
+      //  + str.length() + " bytes)");
+    return str;
   }
 
+  private void writeFile(String filename, String data) {
+    //LogPanel.log("Writing file " + filename + "("
+      //  + data.length() + " bytes)");
+    viewer.createImage(filename, data, Integer.MIN_VALUE, 0, 0);
+  }
+  
   private JPanel getLeftPanel(int w, int h) {
 
     editorScrollPane = getInstructionPane(w, h);
@@ -414,8 +419,8 @@ abstract class WebPanel extends JPanel implements ActionListener {
     if (made_datadir) {
       LogPanel.log("Using directory " + datadirPath);
       LogPanel.log("  adding JmolPopIn.js");
-      viewer.createImage(datadirPath + "/JmolPopIn.js", getResourceString("JmolPopIn.html"), 
-          Integer.MIN_VALUE, 0, 0);
+      
+      writeFile(datadirPath + "/JmolPopIn.js", getResourceString("JmolPopIn.js"));
       String lastFile = "";
       String lastName = "";
       String outfilename = "";
@@ -453,7 +458,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
             LogPanel
               .log("          ...compressing large file "+structureFile);
           } else {
-            viewer.createImage(outfilename, data, Integer.MIN_VALUE, 0, 0);
+            writeFile(outfilename, data);
           }
           lastFile = structureFile;
           lastName = newName;
@@ -476,8 +481,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
             '"' + structureFileName + '"', '"' + newName + '"');
         //script = fixScript(script);
         LogPanel.log("      ...adding " + javaname + ".spt");
-        String scriptname = datadirPath + "/" + javaname + ".spt";
-        viewer.createImage(scriptname, script, Integer.MIN_VALUE, 0, 0);
+        writeFile(datadirPath + "/" + javaname + ".spt", script);
       }
       String html = getResourceString(templateName);
       html = fixHtml(html);
@@ -507,8 +511,7 @@ abstract class WebPanel extends JPanel implements ActionListener {
       html = TextFormat.simpleReplace(html, "@LOGDATA@", "<pre>\n"
           + LogPanel.getText() + "\n</pre>\n");
       LogPanel.log("      ...creating " + fileName);
-      viewer.createImage(datadirPath + "/" + fileName, html, Integer.MIN_VALUE,
-          0, 0);
+      writeFile(datadirPath + "/" + fileName, html);
     } else {
       IOException IOe = new IOException("Error creating directory: "
           + datadirPath);

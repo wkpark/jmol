@@ -414,28 +414,14 @@ abstract class WebPanel extends JPanel implements ActionListener {
     if (made_datadir) {
       LogPanel.log("Using directory " + datadirPath);
       LogPanel.log("  adding JmolPopIn.js");
-      URL url = getResource("JmolPopIn.js");
       PrintStream out = null;
       try {
         String outfilename = datadirPath + "/JmolPopIn.js";
         out = new PrintStream(new FileOutputStream(outfilename));
-      } catch (FileNotFoundException IOe) {
-        throw IOe;
-      }
-      BufferedReader in = null;
-      try {
-        in = new BufferedReader(new FileReader(url.getPath()));
-      } catch (IOException IOe) {
-        throw IOe;
-      }
-      try {
-        String str = null;
-        while ((str = in.readLine()) != null) {
-          out.println(str);
-        }
+        String js = getResourceString("JmolPopIn.js");
+        out.println(js);
         out.close();
-        in.close();
-      } catch (IOException IOe) {
+      } catch (FileNotFoundException IOe) {
         throw IOe;
       }
       String lastFile = "";

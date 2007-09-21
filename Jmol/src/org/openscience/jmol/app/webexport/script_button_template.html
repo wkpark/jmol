@@ -20,6 +20,7 @@ html, body { height:100%; overflow:hidden; margin:0; padding:0; }
 #JmolPane {left:@LEFTPERCENT@%; width: @WIDTHPERCENT@%; top:0px; height:100%; }
 #mainPane { left:0px; width:@LEFTPERCENT@%; top:0px; height:100%; }
 #JmolDiv {width:100%; height:100%;}
+#Jmol0 {width:100%; height:100%;}
 /* Don't add margin or padding to textPane; if needed, use an inner div with desired style (like 'contents' below) */
 
 /* These are aesthetic, can be customized: */
@@ -38,18 +39,17 @@ html, body { height:100%; overflow:hidden; margin:0; padding:0; }
     addJavaScript(jmoljspath, "Jmol.js");
 </script>
 <script type='text/javascript'>
-  jmolInitialize("@APPLETPATH@");   //Where Jmol.jar is; if you change this, also change it in the above script tag
+  jmolInitialize("@APPLETPATH@", "JmolApplet.jar");   //Where Jmol.jar is; if you change this, also change it in the above script tag
+  jmolSetDocument(0);
 </script>
 
 </head>
 <body style="color: rgb(0, 0, 0); background-color: rgb(102, 255, 255);"
- alink="#000099" link="#000099" vlink="#990099">
+ alink="#000099" link="#000099" vlink="#990099"
+ onload="scriptbuttonJmol('@APPLETNAME0@.spt')">
 
 <div id="JmolPane" class="JmolPanels">
-     <script type="text/javascript">
-      scriptbuttonJmol("@APPLETNAME0@.spt");
-    </script>
-  <div id="Jmol0" class="JmolDiv"><image src = "@APPLETNAME0@.png" style = "height:100%; width:100%;"></div>
+  <div id="Jmol0" class="JmolDiv"><image src = "@APPLETNAME0@.png"></div>
 </div>
 
 

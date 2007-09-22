@@ -1215,7 +1215,7 @@ Cada páginaCada página      </p>
 	var viewer = jmolGetPropertyAsJavaObject("jmolViewer")
 	var radius = viewer.getRotationRadius() </pre>
 	Hay una lista con la mayoría de estos métodos públicos en 
-	http://svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/api/JmolViewer.java?view=markup
+	http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/api/JmolViewer.java?view=markup
 	</p>
 			</section>
 			<section title="jmolDecodeJSON">

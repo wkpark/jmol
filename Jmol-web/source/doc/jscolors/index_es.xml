@@ -335,7 +335,7 @@
       
       <section title="Fuentes">
         <ul>
-          <li><a href="http://svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/viewer/JmolConstants.java?view=markup">
+          <li><a href="http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/viewer/JmolConstants.java?view=markup">
             JmolConstants.java</a></li>
           <li><a href="http://www.umass.edu/microbio/rasmol/distrib/rasman.htm#cpkcolours">
             Colores usados por Rasmol y Chime</a>

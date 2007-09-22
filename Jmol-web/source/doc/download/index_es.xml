@@ -27,7 +27,7 @@
 	<a href="http://subversion.tigris.org/">Subversion</a> (SVN).
       </p>
 			<p>
-				<a href="http://svn.sourceforge.net/viewcvs.cgi/jmol/">
+				<a href="http://jmol.svn.sourceforge.net/viewcvs.cgi/jmol/trunk/Jmol">
 	  Ojear el repositorio SVN
 	</a>
 			</p>
@@ -36,7 +36,7 @@
       </p>
 			<p>
 				<tt>
-	  svn co https://svn.sourceforge.net/svnroot/jmol/trunk/Jmol
+	  svn co https://jmol.svn.sourceforge.net/svnroot/jmol/trunk/Jmol
 	</tt>
 			</p>
 			<p>

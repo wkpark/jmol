@@ -1183,7 +1183,7 @@
 	var viewer = jmolGetPropertyAsJavaObject("jmolViewer")
 	var radius = viewer.getRotationRadius() </pre>
 	Most of these public methods are listed in 
-	http://svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/api/JmolViewer.java?view=markup
+	http://jmol.svn.sourceforge.net/viewvc/jmol/trunk/Jmol/src/org/jmol/api/JmolViewer.java?view=markup
 	</p>
 			</section>
 			<section title="jmolDecodeJSON">

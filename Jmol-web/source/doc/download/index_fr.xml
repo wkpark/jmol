@@ -36,7 +36,7 @@
         repository <a href="http://subversion.tigris.org/">Subversion</a> (SVN).
       </p>
       <p>
-        <a href="http://svn.sourceforge.net/viewcvs.cgi/jmol/">
+        <a href="http://jmol.svn.sourceforge.net/viewcvs.cgi/jmol/trunk/Jmol">
         Parcourir le repository SVN
         </a>
       </p>
@@ -45,7 +45,7 @@
         Pour extraire le code source, utiliser les commandes suivantes.
       </p>
       <p><tt>
-        svn co https://svn.sourceforge.net/svnroot/jmol/trunk/Jmol
+        svn co https://jmol.svn.sourceforge.net/svnroot/jmol/trunk/Jmol
       </tt></p>
       <p>
         Ceci extraiera le sous-r&#x00E9;pertoire <code>Jmol</code>

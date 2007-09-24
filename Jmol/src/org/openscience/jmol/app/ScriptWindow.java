@@ -36,7 +36,7 @@ import javax.swing.JPanel;
 import javax.swing.JFrame;
 import javax.swing.JSplitPane;
 import javax.swing.JTextPane;
-import javax.swing.SwingUtilities;
+//import javax.swing.SwingUtilities;
 import javax.swing.text.Position;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.BadLocationException;
@@ -218,7 +218,11 @@ public final class ScriptWindow extends JDialog
       
     if (strCommand.length() > 0) {
       execThread = new ExecuteCommandThread(strCommand);
-      SwingUtilities.invokeLater(execThread);
+      execThread.start();
+      //can't do this: 
+      //SwingUtilities.invokeLater(execThread);
+      //because then the thread runs from the event queue, and that 
+      //causes PAUSE to hang the application on refresh()
     }
   }
 

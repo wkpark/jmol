@@ -158,11 +158,11 @@ class Compiler {
     }
 
     void setFunction(String script, int ichCurrentCommand, 
-                     int iCommand, short[] lineNumbers,
+                     int pt, short[] lineNumbers,
                      int[] lineIndices, Vector lltoken) {
       int cmdpt0 = function.cmdpt0;
       int chpt0 = function.chpt0;
-      int nCommands = iCommand + 1 - cmdpt0;
+      int nCommands = pt - cmdpt0;
       function.script = script.substring(chpt0, ichCurrentCommand);
       Token[][] aatoken = function.aatoken = new Token[nCommands][];
       function.lineIndices = new int[nCommands];
@@ -176,7 +176,7 @@ class Compiler {
         if (Compiler.tokAttr(tokenCommand.tok, Token.flowCommand))
           tokenCommand.intValue -= (tokenCommand.intValue < 0 ? -cmdpt0 : cmdpt0);
       }
-      for (int i = iCommand + 1; --i >= cmdpt0;) {
+      for (int i = pt; --i >= cmdpt0;) {
         lltoken.remove(i);
         lineIndices[i] = 0;
       }
@@ -573,6 +573,7 @@ class Compiler {
           tokenCommand = token;
           tokCommand = tok;
           if (tokAttr(tokCommand, Token.flowCommand)) {
+            int pt = lltoken.size();
             boolean isEnd = false;
             boolean isNew = true;
             switch (tok) {
@@ -600,7 +601,7 @@ class Compiler {
                   || flowContext.token.tok != Token.ifcmd
                   && flowContext.token.tok != Token.elseif)
                 return badContext("else");
-              flowContext.token.intValue = flowContext.pt0 = iCommand + 1;
+              flowContext.token.intValue = flowContext.pt0 = pt;
               break;
             case Token.breakcmd:
             case Token.continuecmd:
@@ -616,7 +617,7 @@ class Compiler {
                   && flowContext.token.tok != Token.elseif
                   && flowContext.token.tok != Token.elsecmd)
                 return badContext("elseif");
-              flowContext.token.intValue = flowContext.pt0 = iCommand + 1;
+              flowContext.token.intValue = flowContext.pt0 = pt;
               break;
             case Token.function:
               if (flowContext != null)
@@ -624,7 +625,7 @@ class Compiler {
               break;
             }
             if (isEnd) {
-              flowContext.token.intValue = iCommand + 1;
+              flowContext.token.intValue = pt;
               if (tok == Token.endifcmd)
                 flowContext = flowContext.parent;
             } else if (isNew) {
@@ -632,7 +633,7 @@ class Compiler {
               if (tok == Token.elsecmd || tok == Token.elseif)
                 flowContext.token = token;
               else
-                flowContext = new FlowContext(token, iCommand + 1, flowContext);
+                flowContext = new FlowContext(token, pt, flowContext);
             }
             break;
           }
@@ -2444,8 +2445,8 @@ class Compiler {
       icharEnd = script.length();
     errorLine = script.substring(ichCurrentCommand, icharEnd);
     String lineInfo = (ichToken < errorLine.length() ? errorLine.substring(0,
-        ichToken)
-        + " >>>> " + errorLine.substring(ichToken) : errorLine)
+        ichToken - ichCurrentCommand)
+        + " >>>> " + errorLine.substring(ichToken - ichCurrentCommand) : errorLine)
         + " <<<<";
     errorMessage = "script compiler ERROR: " + errorMessage
          + Eval.setErrorLineMessage(filename, lineCurrent, iCommand, lineInfo);

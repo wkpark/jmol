@@ -3176,6 +3176,7 @@ class Eval { //implements Runnable {
     int nDistances = 0;
     BitSet bsBonds = new BitSet();
     boolean isBonds = false;
+    int expression2 = 0;
     /*
      * connect [<=2 distance parameters] [<=2 atom sets] 
      *             [<=1 bond type] [<=1 operation]
@@ -3216,6 +3217,15 @@ class Eval { //implements Runnable {
         if (haveType || isColorOrRadius)
           invalidParameterOrder();
         atomSets[atomSetCount++] = expression(i);
+        if (atomSetCount == 2) {
+          int pt = iToken;
+          for (int j = i; j < pt; j++) 
+            if (tokAt(j) == Token.identifier && parameterAsString(j).equals("_1")) {
+              expression2 = i;
+              break;
+          }
+          iToken = pt;
+        }
         isBonds = isBondSet;
         i = iToken; // the for loop will increment i
         break;
@@ -3279,8 +3289,21 @@ class Eval { //implements Runnable {
       if (!haveOperation)
         operation = JmolConstants.CONNECT_MODIFY_ONLY;
     }
-    int n = viewer.makeConnections(distances[0], distances[1], bondOrder,
-        operation, atomSets[0], atomSets[1], bsBonds, isBonds);
+    int n = 0;
+    if (expression2 > 0) {
+      BitSet bs = new BitSet();
+      variables.put("_1", bs);
+      for (int atom1 = atomSets[0].size(); atom1 >= 0; atom1--)
+        if (atomSets[0].get(atom1)) {
+          bs.set(atom1);
+          n += viewer.makeConnections(distances[0], distances[1], bondOrder,
+              operation, bs, expression(expression2), bsBonds, isBonds);
+          bs.clear(atom1);       
+        }
+    } else {
+      n = viewer.makeConnections(distances[0], distances[1], bondOrder,
+         operation, atomSets[0], atomSets[1], bsBonds, isBonds);
+    }
     if (isDelete) {
       if (!(tQuiet || scriptLevel > scriptReportingLevel))
         scriptStatus(GT._("{0} connections deleted", n));

@@ -648,7 +648,7 @@ String getAtomInfoChime(int i) {
       if (chain != chainLast) {
         for (int j = atomCount; --j >= 0;)
           if (atoms[j].getChain() == chain)
-            bs.set(j);
+            bsResult.set(j);
         chainLast = chain;
       }
     }

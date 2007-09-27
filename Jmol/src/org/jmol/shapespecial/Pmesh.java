@@ -28,7 +28,6 @@ import java.util.BitSet;
 import java.io.BufferedReader;
 import javax.vecmath.Point3f;
 
-import org.jmol.shape.MeshFileCollection;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 

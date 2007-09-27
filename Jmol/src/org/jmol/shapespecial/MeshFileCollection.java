@@ -22,8 +22,9 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.shape;
+package org.jmol.shapespecial;
 
+import org.jmol.shape.MeshCollection;
 import org.jmol.util.Parser;
 
 public abstract class MeshFileCollection extends MeshCollection {

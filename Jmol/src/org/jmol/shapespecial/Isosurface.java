@@ -97,7 +97,6 @@ import org.jmol.util.ColorEncoder;
 import org.jmol.util.ArrayUtil;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.jvxl.readers.JvxlReader;
-import org.jmol.shape.MeshFileCollection;
 
 import java.util.BitSet;
 import java.util.Hashtable;

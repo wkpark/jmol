@@ -22,15 +22,14 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.shape;
+package org.jmol.shapespecial;
 
 import java.util.BitSet;
 
+import org.jmol.shape.AtomShape;
 
 public class Vectors extends AtomShape {
 
-  float scale = Float.NaN;
-  
  protected void initModelSet() {
     if (!(isActive = modelSet.modelSetHasVibrationVectors()))
       return;
@@ -40,17 +39,10 @@ public class Vectors extends AtomShape {
  public void setProperty(String propertyName, Object value, BitSet bsSelected) {
     if (!isActive)
       return;
-    if (propertyName == "scale") {
-      scale = ((Float)value).floatValue();
-      return;
-    }
     super.setProperty(propertyName, value, bsSelected);
   }
   
  public String getShapeState() {
-    if (!isActive)
-      return "";
-    return super.getShapeState() 
-    + (Float.isNaN(scale) ? "" : "vector scale " + scale +";\n");
+    return (isActive ? super.getShapeState() : "");
   }
 }

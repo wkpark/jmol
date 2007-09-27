@@ -247,7 +247,7 @@ public abstract class Shape {
         + Graphics3D.getColixTranslucencyLevel(colix): "opaque");
   }
 
-  static short getColix(short[] colixes, int i, Atom atom) {
+  public static short getColix(short[] colixes, int i, Atom atom) {
     return Graphics3D.getColixInherited(
         (colixes == null || i >= colixes.length ? Graphics3D.INHERIT_ALL
             : colixes[i]), atom.getColix());

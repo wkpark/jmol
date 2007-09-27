@@ -23,10 +23,12 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.shape;
+package org.jmol.shapespecial;
 
 import org.jmol.g3d.*;
 import org.jmol.modelset.Atom;
+import org.jmol.shape.Shape;
+import org.jmol.shape.ShapeRenderer;
 
 import javax.vecmath.*;
 

@@ -43,9 +43,9 @@ import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.SphereIterator;
 import org.jmol.shape.Closest;
-import org.jmol.shape.Dipoles;
 import org.jmol.shape.Labels;
 import org.jmol.shape.Shape;
+import org.jmol.shapespecial.Dipoles;
 import org.jmol.symmetry.UnitCell;
 
 import javax.vecmath.Point3f;

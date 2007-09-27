@@ -35,7 +35,8 @@ import java.util.Hashtable;
 
 public class Dots extends AtomShape {
 
-  EnvelopeCalculation ec;
+  public EnvelopeCalculation ec;
+  public boolean isSurface = false;
 
   final static float SURFACE_DISTANCE_FOR_CALCULATION = 10f;
 
@@ -64,8 +65,6 @@ public class Dots extends AtomShape {
     translucentAllowed = false; //except for geosurface
     ec = new EnvelopeCalculation(viewer, atomCount, mads);
   }
-
-  boolean isSurface = false;
 
   public void setProperty(String propertyName, Object value, BitSet bs) {
 

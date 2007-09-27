@@ -34,13 +34,13 @@ import javax.vecmath.Vector3f;
 
 public class DotsRenderer extends ShapeRenderer {
 
-  boolean iShowSolid;
+  public boolean iShowSolid;
   
   Vector3f[] verticesTransformed;
-  int screenLevel;
-  int screenDotCount;
-  int[] screenCoordinates;
-  int[] faceMap = null; // used only by GeoSurface, but set here
+  public int screenLevel;
+  public int screenDotCount;
+  public int[] screenCoordinates;
+  public int[] faceMap = null; // used only by GeoSurface, but set here
   
   protected void initRenderer() {
     screenLevel = Dots.MAX_LEVEL;

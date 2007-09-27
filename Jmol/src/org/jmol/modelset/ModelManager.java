@@ -24,9 +24,9 @@
  */
 package org.jmol.modelset;
 
-import org.jmol.shape.Dipoles;
 import org.jmol.shape.Shape;
 import org.jmol.shape.MeshCollection;
+import org.jmol.shapespecial.Dipoles;
 import org.jmol.symmetry.SpaceGroup;
 import org.jmol.symmetry.UnitCell;
 import org.jmol.util.Escape;

@@ -4374,7 +4374,7 @@ class Eval { //implements Runnable {
     setShapeSize(JmolConstants.SHAPE_STICKS, 0);
 
     // also need to turn off backbones, ribbons, strands, cartoons
-    for (int shapeType = JmolConstants.SHAPE_MIN_SELECTION_INDEPENDENT; --shapeType >= 0;)
+    for (int shapeType = JmolConstants.SHAPE_MAX_SIZE_ZERO_ON_RESTRICT; --shapeType >= 0;)
       if (shapeType != JmolConstants.SHAPE_MEASURES)
         setShapeSize(shapeType, 0);
     setShapeProperty(JmolConstants.SHAPE_POLYHEDRA, "delete", null);

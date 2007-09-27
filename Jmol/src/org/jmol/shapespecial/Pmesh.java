@@ -22,41 +22,74 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package org.jmol.shape;
+package org.jmol.shapespecial;
 
 import java.util.BitSet;
 import java.io.BufferedReader;
 import javax.vecmath.Point3f;
 
+import org.jmol.shape.MeshFileCollection;
 import org.jmol.util.Logger;
 import org.jmol.viewer.JmolConstants;
 
 public class Pmesh extends MeshFileCollection {
 
-  boolean isOnePerLine;
-  int modelIndex;
-  String pmeshError;
+  /* 
+   * Example:
+   * 
 
- public void initShape() {
+100
+3.0000 3.0000 1.0000
+2.3333 3.0000 1.0000
+...(98 more like this)
+81
+5
+0
+10
+11
+1
+0
+...(80 more sets like this)
+
+    * The first line defines the number of grid points 
+    *   defining the surface (integer, n)
+    * The next n lines define the Cartesian coordinates 
+    *   of each of the grid points (n lines of x, y, z floating point data points)
+    * The next line specifies the number of polygons, m, to be drawn (81 in this case).
+    * The next m sets of numbers, one number per line, 
+    *   define the polygons. In each set, the first number, p, specifies 
+    *   the number of points in each set. Currently this number must be either 
+    *   4 (for triangles) or 5 (for quadrilaterals). The next p numbers specify 
+    *   indexes into the list of data points (starting with 0). 
+    *   The first and last of these numbers must be identical in order to 
+    *   "close" the polygon.
+    * 
+   */
+  
+  private boolean isOnePerLine;
+  private int modelIndex;
+  private String pmeshError;
+
+  public void initShape() {
     super.initShape();
     myType = "pmesh";
   }
-    
- public void setProperty(String propertyName, Object value, BitSet bs) {
+
+  public void setProperty(String propertyName, Object value, BitSet bs) {
     //Logger.debug(propertyName + " "+ value);
-    
+
     if ("init" == propertyName) {
       pmeshError = null;
       isFixed = false;
       modelIndex = -1;
       isOnePerLine = false;
-      script = (String)value;    
+      script = (String) value;
       super.setProperty("thisID", JmolConstants.PREVIOUS_MESH_ID, null);
       //fall through to MeshCollection "init"
     }
-    
+
     if ("modelIndex" == propertyName) {
-      modelIndex = ((Integer)value).intValue();
+      modelIndex = ((Integer) value).intValue();
       return;
     }
 
@@ -69,15 +102,15 @@ public class Pmesh extends MeshFileCollection {
     if ("bufferedReaderOnePerLine" == propertyName) {
       isOnePerLine = true;
       propertyName = "bufferedReader";
-    }  
-  
+    }
+
     if ("bufferedReader" == propertyName) {
-      BufferedReader br = (BufferedReader)value;
+      BufferedReader br = (BufferedReader) value;
       if (currentMesh == null)
         allocMesh(null);
       currentMesh.clear("pmesh");
       currentMesh.isValid = readPmesh(br);
-      if(currentMesh.isValid) {
+      if (currentMesh.isValid) {
         currentMesh.initialize(JmolConstants.FULLYLIT);
         currentMesh.visible = true;
         currentMesh.title = title;
@@ -87,7 +120,6 @@ public class Pmesh extends MeshFileCollection {
       setModelIndex(-1, modelIndex);
       return;
     }
-    
     super.setProperty(propertyName, value, bs);
   }
 
@@ -98,41 +130,51 @@ public class Pmesh extends MeshFileCollection {
    *
    */
 
- public Object getProperty(String property, int index) {
-   if (property.equals("pmeshError"))
-     return pmeshError;
-   return super.getProperty(property, index);
- }
- 
- boolean readPmesh(BufferedReader br) {
-    //Logger.debug("Pmesh.readPmesh(" + br + ")");
+  public Object getProperty(String property, int index) {
+    if (property.equals("pmeshError"))
+      return pmeshError;
+    return super.getProperty(property, index);
+  }
+
+  private boolean readPmesh(BufferedReader br) {
     try {
-      readVertexCount(br);
+      if (!readVertexCount(br))
+        return false;
       Logger.debug("vertexCount=" + currentMesh.vertexCount);
-      readVertices(br);
+      if (!readVertices(br))
+        return false;
       Logger.debug("vertices read");
-      readPolygonCount(br);
+      if (!readPolygonCount(br))
+        return false;
       Logger.debug("polygonCount=" + currentMesh.polygonCount);
-      readPolygonIndexes(br);
+      if (!readPolygonIndexes(br))
+        return false;
       Logger.debug("polygonIndexes read");
     } catch (Exception e) {
       if (pmeshError == null)
-        pmeshError = "pmesh ERROR: read exception: " + e; 
+        pmeshError = "pmesh ERROR: read exception: " + e;
       return false;
     }
     return true;
   }
 
-  void readVertexCount(BufferedReader br) throws Exception {
+  private boolean readVertexCount(BufferedReader br) throws Exception {
+    pmeshError = "pmesh ERROR: vertex count must be positive";
     currentMesh.vertexCount = 0;
     currentMesh.vertices = new Point3f[0];
-    currentMesh.vertexCount = (currentMesh.vertices = 
-      new Point3f[parseInt(br.readLine())]).length;
+    int n = parseInt(br.readLine());
+    if (n <= 0) {
+      pmeshError += " (" + n + ")";
+      return false;
+    }
+    currentMesh.vertices = new Point3f[n];
+    currentMesh.vertexCount = n;
+    pmeshError = null;
+    return true;
   }
 
-  void readVertices(BufferedReader br) throws Exception {
-    if (currentMesh.vertexCount <= 0)
-      return;
+  private boolean readVertices(BufferedReader br) throws Exception {
+    pmeshError = "pmesh ERROR: invalid vertex list";
     if (isOnePerLine) {
       for (int i = 0; i < currentMesh.vertexCount; ++i) {
         float x = parseFloat(br.readLine());
@@ -149,40 +191,52 @@ public class Pmesh extends MeshFileCollection {
         currentMesh.vertices[i] = new Point3f(x, y, z);
       }
     }
+    pmeshError = null;
+    return true;
   }
 
-  void readPolygonCount(BufferedReader br) throws Exception {
-    currentMesh.setPolygonCount(parseInt(br.readLine()));
+  private boolean readPolygonCount(BufferedReader br) throws Exception {
+    int n = parseInt(br.readLine());
+    if (n > 0)
+      currentMesh.setPolygonCount(n);
+    else
+      pmeshError = "pmesh ERROR: polygon count must be > 0 (" + n + ")";
+    return (n > 0);
   }
 
-  void readPolygonIndexes(BufferedReader br) throws Exception {
-    if (currentMesh.polygonCount > 0) {
-      for (int i = 0; i < currentMesh.polygonCount; ++i)
-        currentMesh.polygonIndexes[i] = readPolygon(i, br);
-    }
+  private boolean readPolygonIndexes(BufferedReader br) throws Exception {
+    for (int i = 0; i < currentMesh.polygonCount; ++i)
+      if ((currentMesh.polygonIndexes[i] = readPolygon(i, br)) == null)
+        return false;
+    return true;
   }
 
-  int[] readPolygon(int iPoly, BufferedReader br) throws Exception {
+  private int[] readPolygon(int iPoly, BufferedReader br) throws Exception {
     int vertexIndexCount = parseInt(br.readLine());
     if (vertexIndexCount < 2) {
-      pmeshError = "pmesh ERROR: each polygon must have at least two verticies indicated -- polygon " + (iPoly + 1);
-      currentMesh.isValid = false;
+      pmeshError = "pmesh ERROR: each polygon must have at least two verticies indicated -- polygon "
+          + (iPoly + 1);
       return null;
     }
     int vertexCount = vertexIndexCount - 1;
     int nVertex = (vertexCount < 3 ? 3 : vertexCount);
     int[] vertices = new int[nVertex];
     for (int i = 0; i < vertexCount; ++i)
-      vertices[i] = parseInt(br.readLine());
+      if ((vertices[i] = parseInt(br.readLine())) < 0
+          || vertices[i] >= currentMesh.vertexCount) {
+        pmeshError = "pmesh ERROR: invalid vertex index: " + vertices[i];
+        return null;
+      }
     for (int i = vertexCount; i < nVertex; ++i)
       vertices[i] = vertices[i - 1];
     int extraVertex = parseInt(br.readLine());
     if (extraVertex != vertices[0]) {
-      pmeshError = "pmesh ERROR: last polygon point reference (" + extraVertex + ") is not the same as the first (" + vertices[0] +  ") for polygon " + (iPoly + 1);
-      currentMesh.isValid = false;
-      throw new NullPointerException();
+      pmeshError = "pmesh ERROR: last polygon point reference (" + extraVertex
+          + ") is not the same as the first (" + vertices[0] + ") for polygon "
+          + (iPoly + 1);
+      return null;
     }
     return vertices;
   }
-  
+
 }

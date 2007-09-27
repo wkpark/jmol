@@ -2547,9 +2547,9 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
   public final static int SHAPE_ISOSURFACE = 26;
   public final static int SHAPE_LCAOCARTOON = 27;
   public final static int SHAPE_DRAW       = 28;
-  public final static int SHAPE_MAX_SPECIAL = 29;
-  
   public final static int SHAPE_PMESH      = 29;
+  
+  public final static int SHAPE_MAX_SPECIAL = 30;
   
   // last should be frank:
   public final static int SHAPE_FRANK      = 30;

@@ -879,7 +879,7 @@ public class Draw extends MeshCollection {
   }
 
   static boolean isPolygonDisplayable(Mesh mesh, int i) {
-    return (mesh.polygonIndexes[i] != null && mesh.polygonIndexes[i].length > 0 && mesh.polygonIndexes[i].length > 0);
+    return (mesh.polygonIndexes[i] != null && mesh.polygonIndexes[i].length > 0);
   }
   
   private static String getVertexList(Mesh mesh, int iModel, int nVertices) {

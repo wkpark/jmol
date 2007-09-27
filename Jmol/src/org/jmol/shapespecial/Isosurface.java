@@ -116,30 +116,27 @@ import org.jmol.jvxl.api.MeshDataServer;
 import org.jmol.jvxl.readers.SurfaceGenerator;
 
 
-
-
 public class Isosurface extends MeshFileCollection implements MeshDataServer {
 
-  IsosurfaceMesh[] isomeshes = new IsosurfaceMesh[4];
-  IsosurfaceMesh thisMesh;
-  boolean logMessages;
-  
+  private IsosurfaceMesh[] isomeshes = new IsosurfaceMesh[4];
+  private IsosurfaceMesh thisMesh;
+
   public void allocMesh(String thisID) {
     meshes = isomeshes = (IsosurfaceMesh[])ArrayUtil.ensureLength(isomeshes, meshCount + 1);
     currentMesh = thisMesh = isomeshes[meshCount++] = new IsosurfaceMesh(thisID, g3d, colix);
     sg.setJvxlData(jvxlData = thisMesh.jvxlData);
     //System.out.println("Isosurface allocMesh thisMesh:" + thisMesh.thisID + " " + thisMesh);
-
   }
 
- public void initShape() {
+  public void initShape() {
     super.initShape();
     myType = "isosurface";
     jvxlData = new JvxlData();
     sg = new SurfaceGenerator(viewer, this, colorEncoder, null, jvxlData);
   }
 
-  int lighting;
+  //private boolean logMessages;
+  private int lighting;
   private BitSet bsSelected;
   private BitSet bsIgnore;
   private boolean iHaveBitSets;
@@ -155,7 +152,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
 
   private ColorEncoder colorEncoder = new ColorEncoder();
   
- public void setProperty(String propertyName, Object value, BitSet bs) {
+  public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug("Isosurface state=" + sg.getState() + " setProperty: "
@@ -225,10 +222,6 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
 
     // isosurface FIRST, but also need to set some parameters
 
-    if ("debug" == propertyName) {
-      logMessages = ((Boolean) value).booleanValue();
-    }
-    
     if ("title" == propertyName) {
       if (value instanceof String && "-".equals((String)value))
         value = null;
@@ -318,14 +311,14 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     setPropertySuper(propertyName, value, bs);
   }
 
-  void setPropertySuper(String propertyName, Object value, BitSet bs) {
+  private void setPropertySuper(String propertyName, Object value, BitSet bs) {
     currentMesh = thisMesh;
     super.setProperty(propertyName, value, bs);
     thisMesh = (IsosurfaceMesh)currentMesh;
     jvxlData = (thisMesh == null ? null : thisMesh.jvxlData);
   }
   
- public Object getProperty(String property, int index) {
+  public Object getProperty(String property, int index) {
     if (property == "dataRange")
       return (thisMesh == null ? null : new float[] {
           thisMesh.jvxlData.mappedDataMin, thisMesh.jvxlData.mappedDataMax });
@@ -344,11 +337,11 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     return super.getProperty(property, index);
   }
 
-  String shortScript() {
+  private String shortScript() {
     return (thisMesh.scriptCommand == null ? "" : thisMesh.scriptCommand.substring(0, (thisMesh.scriptCommand+";").indexOf(";")));
   }
   
-  boolean getScriptBitSets(String script) {
+  private boolean getScriptBitSets(String script) {
     if (script == null)
       return false;
     int i = script.indexOf("# ({");
@@ -363,7 +356,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     return true;
   }
 
-  String fixScript(String script, BitSet bsSelected, BitSet bsIgnore) {
+  private String fixScript(String script, BitSet bsSelected, BitSet bsIgnore) {
     if (script == null)
       return null;
     if (script.indexOf("# ({") >= 0)
@@ -377,7 +370,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
         + " " + (bsIgnore == null ? "({null})" : Escape.escape(bsIgnore));
   }
 
-  void initializeIsosurface() {
+  private void initializeIsosurface() {
     lighting = JmolConstants.FRONTLIT;
     modelIndex = viewer.getCurrentModelIndex();
     isFixed = (modelIndex < 0);
@@ -393,43 +386,28 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     initState();
   }
 
-  void initState() {
+  private void initState() {
     associateNormals = true;
     sg.initState();
 //TODO   need to pass assocCutoff to sg
   }
 
+  /*
   void checkFlags() {
-    //if (viewer.getTestFlag1()) // turn off new solvent method
-      //newSolventMethod = false;
     if (viewer.getTestFlag2())
       associateNormals = false;
-    
-    if (logMessages) {
-      Logger.debug("Isosurface using testflag2: no associative grouping = "
-          + !associateNormals);
-      Logger.debug("IsosurfaceRenderer using testflag3: separated triangles = "
-          + viewer.getTestFlag3());
-      Logger.debug("IsosurfaceRenderer using testflag4: show vertex normals = "
-          + viewer.getTestFlag4());
-      Logger
-          .debug("For grid points, use: isosurface delete myiso gridpoints \"\"");
-    }
+    if (!logMessages)
+      return;
+    Logger.info("Isosurface using testflag2: no associative grouping = "
+        + !associateNormals);
+    Logger.info("IsosurfaceRenderer using testflag4: show vertex normals = "
+        + viewer.getTestFlag4());
+    Logger
+        .info("For grid points, use: isosurface delete myiso gridpoints \"\"");
   }
-
-  /**
-   * simple processing of mesh rendering information:
-   * type fill|nofill|mesh|nomesh|dots|nodots|backlit|frontlit|fullylit
-   * @param data
-   */
-  void setRendering(String data) {
-    line = data.toLowerCase();
-    String[] tokens = getTokens();
-    for (int i = 1; i < tokens.length; i++) { //skip first
-      super.setProperty(tokens[i].intern(),Boolean.TRUE, null);
-    }
-  }
-  void discardTempData(boolean discardAll) {
+  */
+  
+  private void discardTempData(boolean discardAll) {
     if (!discardAll)
       return;
     title = null;
@@ -442,10 +420,10 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   // default color stuff (deprecated in 11.2)
   ////////////////////////////////////////////////////////////////
 
-  int indexColorPositive;
-  int indexColorNegative;
+  private int indexColorPositive;
+  private int indexColorNegative;
 
-  short getDefaultColix() {
+  private short getDefaultColix() {
     if (defaultColix != 0)
       return defaultColix;
     if (!sg.isCubeData())
@@ -464,7 +442,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
   ///////////////////////////////////////////////////
   ////  LCAO Cartoons  are sets of lobes ////
 
-  int nLCAO = 0;
+  private int nLCAO = 0;
 
   private void drawLcaoCartoon(Vector3f z, Vector3f x, Vector3f rotAxis) {
     String lcaoCartoon = sg.setLcao();
@@ -554,9 +532,9 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     return;
   }
 
-  Point4f lcaoDir = new Point4f();
+  private Point4f lcaoDir = new Point4f();
 
-  void createLcaoLobe(Vector3f lobeAxis, float factor) {
+  private void createLcaoLobe(Vector3f lobeAxis, float factor) {
     initState();
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug("creating isosurface " + thisMesh.thisID);
@@ -679,7 +657,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     jvxlData.jvxlInfoLine = JvxlReader.jvxlGetDefinitionLine(jvxlData, true);
   }
 
- public Vector getShapeDetail() {
+  public Vector getShapeDetail() {
     Vector V = new Vector();
     for (int i = 0; i < meshCount; i++) {
       Hashtable info = new Hashtable();

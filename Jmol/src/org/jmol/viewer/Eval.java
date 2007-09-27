@@ -8290,6 +8290,11 @@ class Eval { //implements Runnable {
       if (propertyName != null)
         setShapeProperty(JmolConstants.SHAPE_PMESH, propertyName, propertyValue);
     }
+    if (!isSyntaxCheck) {
+      String pmeshError = (String)viewer.getShapeProperty(JmolConstants.SHAPE_PMESH, "pmeshError");
+      if (pmeshError != null)
+        evalError(pmeshError);
+    }
     if (translucency != null)
       setShapeProperty(JmolConstants.SHAPE_PMESH, "translucency", translucency);
   }

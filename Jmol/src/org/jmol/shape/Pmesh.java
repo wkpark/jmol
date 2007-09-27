@@ -35,6 +35,7 @@ public class Pmesh extends MeshFileCollection {
 
   boolean isOnePerLine;
   int modelIndex;
+  String pmeshError;
 
  public void initShape() {
     super.initShape();
@@ -45,6 +46,7 @@ public class Pmesh extends MeshFileCollection {
     //Logger.debug(propertyName + " "+ value);
     
     if ("init" == propertyName) {
+      pmeshError = null;
       isFixed = false;
       modelIndex = -1;
       isOnePerLine = false;
@@ -79,6 +81,8 @@ public class Pmesh extends MeshFileCollection {
         currentMesh.initialize(JmolConstants.FULLYLIT);
         currentMesh.visible = true;
         currentMesh.title = title;
+      } else {
+        Logger.error(pmeshError);
       }
       setModelIndex(-1, modelIndex);
       return;
@@ -94,20 +98,26 @@ public class Pmesh extends MeshFileCollection {
    *
    */
 
-  boolean readPmesh(BufferedReader br) {
+ public Object getProperty(String property, int index) {
+   if (property.equals("pmeshError"))
+     return pmeshError;
+   return super.getProperty(property, index);
+ }
+ 
+ boolean readPmesh(BufferedReader br) {
     //Logger.debug("Pmesh.readPmesh(" + br + ")");
     try {
       readVertexCount(br);
-      //Logger.debug("vertexCount=" + currentMesh.vertexCount);
+      Logger.debug("vertexCount=" + currentMesh.vertexCount);
       readVertices(br);
-      //Logger.debug("vertices read");
+      Logger.debug("vertices read");
       readPolygonCount(br);
-      //Logger.debug("polygonCount=" + currentMesh.polygonCount);
+      Logger.debug("polygonCount=" + currentMesh.polygonCount);
       readPolygonIndexes(br);
-      //Logger.debug("polygonIndexes read");
+      Logger.debug("polygonIndexes read");
     } catch (Exception e) {
-//Logger.debug("Pmesh.readPmesh exception:" + e);
-      Logger.error("pmesh ERROR: read exception: " + e);
+      if (pmeshError == null)
+        pmeshError = "pmesh ERROR: read exception: " + e; 
       return false;
     }
     return true;
@@ -148,14 +158,14 @@ public class Pmesh extends MeshFileCollection {
   void readPolygonIndexes(BufferedReader br) throws Exception {
     if (currentMesh.polygonCount > 0) {
       for (int i = 0; i < currentMesh.polygonCount; ++i)
-        currentMesh.polygonIndexes[i] = readPolygon(br);
+        currentMesh.polygonIndexes[i] = readPolygon(i, br);
     }
   }
 
-  int[] readPolygon(BufferedReader br) throws Exception {
+  int[] readPolygon(int iPoly, BufferedReader br) throws Exception {
     int vertexIndexCount = parseInt(br.readLine());
     if (vertexIndexCount < 2) {
-      Logger.error("pmesh ERROR: each polygon must have at least two verticies indicated");
+      pmeshError = "pmesh ERROR: each polygon must have at least two verticies indicated -- polygon " + (iPoly + 1);
       currentMesh.isValid = false;
       return null;
     }
@@ -168,8 +178,7 @@ public class Pmesh extends MeshFileCollection {
       vertices[i] = vertices[i - 1];
     int extraVertex = parseInt(br.readLine());
     if (extraVertex != vertices[0]) {
-//Logger.debug("?Que? polygon is not complete");
-      Logger.error("pmesh ERROR: last polygon point reference (" + extraVertex + ") is not the same as the first (" + vertices[0] + ")");
+      pmeshError = "pmesh ERROR: last polygon point reference (" + extraVertex + ") is not the same as the first (" + vertices[0] +  ") for polygon " + (iPoly + 1);
       currentMesh.isValid = false;
       throw new NullPointerException();
     }

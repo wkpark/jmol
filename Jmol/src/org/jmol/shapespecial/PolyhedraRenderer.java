@@ -29,7 +29,7 @@ import org.jmol.shape.ShapeRenderer;
 
 public class PolyhedraRenderer extends ShapeRenderer {
 
-  int drawEdges;
+  private int drawEdges;
 
   protected void render() {
     Polyhedra polyhedra = (Polyhedra) shape;
@@ -42,7 +42,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
     }
   }
 
-  void render1(Polyhedra.Polyhedron p, short colix) {
+  private void render1(Polyhedra.Polyhedron p, short colix) {
     if (p.visibilityFlags == 0)
       return;
     colix = Graphics3D.getColixInherited(colix, p.centralAtom.getColix());
@@ -70,7 +70,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
           vertices[planes[j++]], vertices[planes[j++]], isAll, isFrontOnly);
   }
 
-  void drawFace(short normix, Atom atomA, Atom atomB, Atom atomC,
+  private void drawFace(short normix, Atom atomA, Atom atomB, Atom atomC,
                 boolean isAll, boolean isFrontOnly) {
     if (isAll || isFrontOnly && g3d.isDirectedTowardsCamera(normix))
       g3d.drawCylinderTriangle(atomA.screenX, atomA.screenY, atomA.screenZ,
@@ -78,7 +78,7 @@ public class PolyhedraRenderer extends ShapeRenderer {
           atomC.screenY, atomC.screenZ, 3);
   }
 
-  void fillFace(short normix,
+  private void fillFace(short normix,
                   Atom atomA, Atom atomB, Atom atomC) {
     g3d.fillTriangle(normix,
                      atomA.screenX, atomA.screenY, atomA.screenZ,

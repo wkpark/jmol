@@ -37,7 +37,7 @@ import org.jmol.jvxl.readers.Parameters;
 
 public class MolecularOrbital extends Isosurface {
 
- public void initShape() {
+  public void initShape() {
     super.initShape();
     myType = "molecularOrbital";
     super.setProperty("thisID", "mo", null);
@@ -45,31 +45,32 @@ public class MolecularOrbital extends Isosurface {
 
   // these are globals, stored here and only passed on when the they are needed. 
 
-  String moTranslucency = null;
-  Float moTranslucentLevel = null;
-  Point4f moPlane = null;
-  Float moCutoff = null;
-  Float moResolution = null;
-  Float moScale = null;
-  Integer moColorPos = null;
-  Integer moColorNeg = null;
-  boolean moIsPositiveOnly = false;
-  boolean moFill = false;
-  boolean moMesh = true;
-  boolean moDots = false;
-  boolean moFrontOnly = true;  
-  String moTitleFormat = null;
-  boolean moDebug;
-  int myColorPt;
-  String strID;
-  int moNumber;
-  Hashtable htModels;
-  Hashtable thisModel;
-  
- public void setProperty(String propertyName, Object value, BitSet bs) {
+  private String moTranslucency = null;
+  private Float moTranslucentLevel = null;
+  private Point4f moPlane = null;
+  private Float moCutoff = null;
+  private Float moResolution = null;
+  private Float moScale = null;
+  private Integer moColorPos = null;
+  private Integer moColorNeg = null;
+  private boolean moIsPositiveOnly = false;
+  private boolean moFill = false;
+  private boolean moMesh = true;
+  private boolean moDots = false;
+  private boolean moFrontOnly = true;
+  private String moTitleFormat = null;
+  private boolean moDebug;
+  private int myColorPt;
+  private String strID;
+  private int moNumber;
+  private Hashtable htModels;
+  private Hashtable thisModel;
+
+  public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
-      Logger.debug("MolecularOrbital.setProperty " + propertyName + " " + value);
+      Logger
+          .debug("MolecularOrbital.setProperty " + propertyName + " " + value);
     }
 
     // in the case of molecular orbitals, we just cache the information and
@@ -86,8 +87,8 @@ public class MolecularOrbital extends Isosurface {
       if (!htModels.containsKey(strID))
         htModels.put(strID, new Hashtable());
       thisModel = (Hashtable) htModels.get(strID);
-      moNumber = (thisModel == null || !thisModel.containsKey("moNumber")? 0 : ((Integer) thisModel.get("moNumber"))
-          .intValue());
+      moNumber = (thisModel == null || !thisModel.containsKey("moNumber") ? 0
+          : ((Integer) thisModel.get("moNumber")).intValue());
       return;
     }
 
@@ -125,7 +126,7 @@ public class MolecularOrbital extends Isosurface {
       myColorPt = 0;
       //fall through
     }
-    
+
     if ("colorRGB" == propertyName) {
       moColorPos = (Integer) value;
       if (myColorPt++ == 0)
@@ -153,8 +154,8 @@ public class MolecularOrbital extends Isosurface {
     if ("translucentLevel" == propertyName) {
       if (thisModel == null) {
         if (currentMesh == null)
-          return;      
-        thisModel = (Hashtable) htModels.get(currentMesh.thisID);        
+          return;
+        thisModel = (Hashtable) htModels.get(currentMesh.thisID);
       }
       thisModel.put("moTranslucentLevel", value);
       //pass through
@@ -163,13 +164,13 @@ public class MolecularOrbital extends Isosurface {
     if ("translucency" == propertyName) {
       if (thisModel == null) {
         if (currentMesh == null)
-          return;      
-        thisModel = (Hashtable) htModels.get(currentMesh.thisID);        
+          return;
+        thisModel = (Hashtable) htModels.get(currentMesh.thisID);
       }
       thisModel.put("moTranslucency", value);
       //pass through
     }
-    
+
     if ("dots" == propertyName) {
       moDots = (value == Boolean.TRUE);
       //pass through
@@ -198,11 +199,11 @@ public class MolecularOrbital extends Isosurface {
 
   }
 
-  String getId(int modelIndex) {
+  private String getId(int modelIndex) {
     return "mo_model" + viewer.getModelNumber(modelIndex);
   }
-  
- public Object getProperty(String propertyName, int param) {
+
+  public Object getProperty(String propertyName, int param) {
     if (propertyName == "list")
       return super.getProperty(propertyName, param);
     if (propertyName == "moNumber")
@@ -238,31 +239,31 @@ public class MolecularOrbital extends Isosurface {
     }
     return null;
   }
-  
-  boolean getSettings(String strID) {
-    thisModel = (Hashtable)htModels.get(strID);
+
+  private boolean getSettings(String strID) {
+    thisModel = (Hashtable) htModels.get(strID);
     if (thisModel == null || thisModel.get("moNumber") == null)
       return false;
-    moTranslucency = (String)thisModel.get("moTranslucency");
-    moTranslucentLevel = (Float)thisModel.get("moTranslucentLevel");
-    moPlane = (Point4f)thisModel.get("moPlane");
-    moCutoff = (Float )thisModel.get("moCutoff");
+    moTranslucency = (String) thisModel.get("moTranslucency");
+    moTranslucentLevel = (Float) thisModel.get("moTranslucentLevel");
+    moPlane = (Point4f) thisModel.get("moPlane");
+    moCutoff = (Float) thisModel.get("moCutoff");
     if (moCutoff == null)
-      moCutoff = (Float)sg.getMoData().get("defaultCutoff");
+      moCutoff = (Float) sg.getMoData().get("defaultCutoff");
     if (moCutoff == null) {
       moCutoff = new Float(Parameters.defaultQMOrbitalCutoff);
     }
-    moResolution = (Float)thisModel.get("moResolution");
-    moScale = (Float)thisModel.get("moScale");
-    moColorPos = (Integer)thisModel.get("moColorPos");
-    moColorNeg = (Integer)thisModel.get("moColorNeg");
-    moNumber = ((Integer)thisModel.get("moNumber")).intValue();
+    moResolution = (Float) thisModel.get("moResolution");
+    moScale = (Float) thisModel.get("moScale");
+    moColorPos = (Integer) thisModel.get("moColorPos");
+    moColorNeg = (Integer) thisModel.get("moColorNeg");
+    moNumber = ((Integer) thisModel.get("moNumber")).intValue();
     Object b = thisModel.get("moIsPositiveOnly");
-    moIsPositiveOnly = (b != null  && ((Boolean)(b)).booleanValue());
+    moIsPositiveOnly = (b != null && ((Boolean) (b)).booleanValue());
     return true;
   }
- 
-  void setOrbital(int moNumber) {
+
+  private void setOrbital(int moNumber) {
     super.setProperty("reset", strID, null);
     if (moDebug)
       super.setProperty("debug", Boolean.TRUE, null);
@@ -293,16 +294,17 @@ public class MolecularOrbital extends Isosurface {
       super.setProperty("translucenctLevel", moTranslucentLevel, null);
     if (moTranslucency != null)
       super.setProperty("translucency", moTranslucency, null);
-    super.setProperty("fill", moFill ? Boolean.TRUE: Boolean.FALSE, null);
-    super.setProperty("mesh", moMesh ? Boolean.TRUE: Boolean.FALSE, null);
-    super.setProperty("dots", moDots ? Boolean.TRUE: Boolean.FALSE, null);
-    super.setProperty("frontOnly", moFrontOnly ? Boolean.TRUE: Boolean.FALSE, null);
-    
+    super.setProperty("fill", moFill ? Boolean.TRUE : Boolean.FALSE, null);
+    super.setProperty("mesh", moMesh ? Boolean.TRUE : Boolean.FALSE, null);
+    super.setProperty("dots", moDots ? Boolean.TRUE : Boolean.FALSE, null);
+    super.setProperty("frontOnly", moFrontOnly ? Boolean.TRUE : Boolean.FALSE,
+        null);
+
     thisModel.put("mesh", currentMesh);
     return;
   }
- 
- public String getShapeState() {
+
+  public String getShapeState() {
     if (htModels == null)
       return "";
     StringBuffer s = new StringBuffer();
@@ -310,8 +312,8 @@ public class MolecularOrbital extends Isosurface {
       s.append(getMoState(i));
     return s.toString();
   }
-  
-  String getMoState(int modelIndex) {
+
+  private String getMoState(int modelIndex) {
     strID = getId(modelIndex);
     if (!getSettings(strID))
       return "";
@@ -319,23 +321,27 @@ public class MolecularOrbital extends Isosurface {
     if (modelCount > 1)
       appendCmd(s, "frame " + viewer.getModelNumber(modelIndex));
     if (moCutoff != null)
-      appendCmd(s, "mo cutoff " + (sg.getIsPositiveOnly() ? "+" : "") + moCutoff);
+      appendCmd(s, "mo cutoff " + (sg.getIsPositiveOnly() ? "+" : "")
+          + moCutoff);
     if (moScale != null)
       appendCmd(s, "mo scale " + moScale);
     if (moResolution != null)
       appendCmd(s, "mo resolution " + moResolution);
     if (moPlane != null)
-      appendCmd(s, "mo plane {" + moPlane.x + " " + moPlane.y + " " + moPlane.z + " " + moPlane.w + "}");
+      appendCmd(s, "mo plane {" + moPlane.x + " " + moPlane.y + " " + moPlane.z
+          + " " + moPlane.w + "}");
     if (moTitleFormat != null)
       appendCmd(s, "mo titleFormat " + Escape.escape(moTitleFormat));
     //the following is a correct object==object test
     if (moColorNeg != null)
-      appendCmd(s, "mo color " + Escape.escapeColor(moColorNeg.intValue())
-          + (moColorNeg.equals(moColorPos) ? "" : " " + Escape.escapeColor(moColorPos.intValue())));
+      appendCmd(s, "mo color "
+          + Escape.escapeColor(moColorNeg.intValue())
+          + (moColorNeg.equals(moColorPos) ? "" : " "
+              + Escape.escapeColor(moColorPos.intValue())));
     appendCmd(s, "mo " + moNumber);
     if (moTranslucency != null)
       appendCmd(s, "mo translucent " + moTranslucentLevel);
-    appendCmd(s, ((IsosurfaceMesh)thisModel.get("mesh")).getState("mo"));
+    appendCmd(s, ((IsosurfaceMesh) thisModel.get("mesh")).getState("mo"));
     return s.toString();
   }
 }

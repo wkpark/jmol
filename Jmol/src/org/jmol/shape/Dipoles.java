@@ -48,20 +48,21 @@ public class Dipoles extends Shape {
   float dipoleVectorScale = 1.0f;
   int dipoleCount = 0;
   Dipole[] dipoles = new Dipole[4];
-  Dipole currentDipole;
-  Dipole tempDipole;
-  Point3f startCoord = new Point3f();
-  Point3f endCoord = new Point3f();
-  float dipoleValue;
-  boolean isUserValue;
-  boolean isBond;
-  boolean iHaveTwoEnds;
-  int atomIndex1;
-  int atomIndex2;
-  short colix;
-  Vector3f calculatedDipole;
-  
- public void setProperty(String propertyName, Object value, BitSet bs) {
+
+  private Dipole currentDipole;
+  private Dipole tempDipole;
+  private Point3f startCoord = new Point3f();
+  private Point3f endCoord = new Point3f();
+  private float dipoleValue;
+  private boolean isUserValue;
+  private boolean isBond;
+  private boolean iHaveTwoEnds;
+  private int atomIndex1;
+  private int atomIndex2;
+  private short colix;
+  private Vector3f calculatedDipole;
+
+  public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug("dipoles setProperty " + propertyName + " " + value);
@@ -83,11 +84,11 @@ public class Dipoles extends Shape {
 
     if ("calculate" == propertyName) {
       calculatedDipole = viewer.calculateMolecularDipole();
-      Logger.info("calculated molecular dipole = " + calculatedDipole + " " 
+      Logger.info("calculated molecular dipole = " + calculatedDipole + " "
           + (calculatedDipole == null ? "" : "" + calculatedDipole.length()));
       return;
     }
-    
+
     if ("thisID" == propertyName) {
       if (value == null) {
         currentDipole = null;
@@ -100,15 +101,17 @@ public class Dipoles extends Shape {
       Logger.debug("current dipole now " + currentDipole.thisID);
       tempDipole = currentDipole;
       if (thisID.equals("molecular")) {
-        Vector3f v  = calculatedDipole;
+        Vector3f v = calculatedDipole;
         if (v == null) {
           v = viewer.getModelDipole();
-          Logger.info("file molecular dipole = " + v + " " + (v != null ? "" + v.length() : ""));
+          Logger.info("file molecular dipole = " + v + " "
+              + (v != null ? "" + v.length() : ""));
         }
         if (v == null)
           calculatedDipole = v = viewer.calculateMolecularDipole();
         if (v == null) {
-          Logger.warn("No molecular dipole found for this model; setting to {0 0 0}");
+          Logger
+              .warn("No molecular dipole found for this model; setting to {0 0 0}");
           v = new Vector3f();
         }
         tempDipole.set(new Point3f(0, 0, 0), new Vector3f(-v.x, -v.y, -v.z));
@@ -264,13 +267,14 @@ public class Dipoles extends Shape {
       propertyName = "endSet";
       //passes to endSet
     }
-    
+
     if ("endSet" == propertyName) {
       iHaveTwoEnds = true;
       BitSet atomset = (BitSet) value;
       if (atomIndex1 >= 0 && BitSetUtil.cardinalityOf(atomset) == 1) {
         atomIndex2 = BitSetUtil.firstSetBit(atomset);
-        tempDipole.set(modelSet.atoms[atomIndex1], modelSet.atoms[atomIndex2], 1);
+        tempDipole.set(modelSet.atoms[atomIndex1], modelSet.atoms[atomIndex2],
+            1);
         currentDipole = findDipole(tempDipole.thisID, tempDipole.dipoleInfo);
         tempDipole.thisID = currentDipole.thisID;
         if (isSameAtoms(currentDipole, tempDipole.dipoleInfo)) {
@@ -341,14 +345,13 @@ public class Dipoles extends Shape {
       currentDipole = allocDipole("", "");
     currentDipole.set(tempDipole.thisID, tempDipole.dipoleInfo,
         tempDipole.atoms, tempDipole.dipoleValue, tempDipole.mad,
-        tempDipole.offsetAngstroms, tempDipole.offsetPercent, tempDipole.offsetSide, tempDipole.origin,
-        tempDipole.vector);
+        tempDipole.offsetAngstroms, tempDipole.offsetPercent,
+        tempDipole.offsetSide, tempDipole.origin, tempDipole.vector);
     currentDipole.isUserValue = isUserValue;
     currentDipole.modelIndex = viewer.getCurrentModelIndex();
   }
 
   final private static float E_ANG_PER_DEBYE = 0.208194f;
-
 
   public void setDipole(Atom atom1, Atom atom2, float c1, float c2) {
     Dipole dipole = findDipole(atom1, atom2, true);
@@ -383,7 +386,8 @@ public class Dipoles extends Shape {
           && dipoles[i].atoms[0] != null
           && dipoles[i].atoms[1] != null
           && (dipoles[i].atoms[0].getAtomIndex() == atomIndex1
-              && dipoles[i].atoms[1].getAtomIndex() == atomIndex2 || dipoles[i].atoms[1].getAtomIndex() == atomIndex1
+              && dipoles[i].atoms[1].getAtomIndex() == atomIndex2 || dipoles[i].atoms[1]
+              .getAtomIndex() == atomIndex1
               && dipoles[i].atoms[0].getAtomIndex() == atomIndex2))
         return i;
     }
@@ -413,7 +417,7 @@ public class Dipoles extends Shape {
     return null;
   }
 
-  Dipole findDipole(Atom atom1, Atom atom2, boolean doAllocate) {
+  private Dipole findDipole(Atom atom1, Atom atom2, boolean doAllocate) {
     int dipoleIndex = getDipoleIndex(atom1.getAtomIndex(), atom2.getAtomIndex());
     if (dipoleIndex >= 0) {
       return dipoles[dipoleIndex];
@@ -442,16 +446,16 @@ public class Dipoles extends Shape {
     dipoles = (Dipole[]) ArrayUtil.ensureLength(dipoles, dipoleCount + 1);
     if (thisID == null || thisID.length() == 0)
       thisID = "dipole" + (dipoleCount + 1);
-    Dipole d = dipoles[dipoleCount++] = new Dipole(viewer.getCurrentModelIndex(), 
-        thisID, dipoleInfo, colix, DEFAULT_MAD, true);
+    Dipole d = dipoles[dipoleCount++] = new Dipole(viewer
+        .getCurrentModelIndex(), thisID, dipoleInfo, colix, DEFAULT_MAD, true);
     return d;
   }
 
   private void dumpDipoles(String msg) {
     for (int i = dipoleCount; --i >= 0;) {
       Dipole dipole = dipoles[i];
-      Logger.info("\n\n" + msg + " dump dipole " + i + " " + dipole
-          + " " + dipole.thisID + " " + dipole.dipoleInfo + " "
+      Logger.info("\n\n" + msg + " dump dipole " + i + " " + dipole + " "
+          + dipole.thisID + " " + dipole.dipoleInfo + " "
           + dipole.visibilityFlags + " mad=" + dipole.mad + " vis="
           + dipole.visible + "\n orig" + dipole.origin + " " + " vect"
           + dipole.vector + " val=" + dipole.dipoleValue);
@@ -461,7 +465,7 @@ public class Dipoles extends Shape {
     if (tempDipole != null)
       Logger.info(" temp = " + tempDipole + " " + tempDipole.origin);
   }
- 
+
   public void clear(boolean clearBondDipolesOnly) {
     if (clearBondDipolesOnly) {
       for (int i = dipoleCount; --i >= 0;)
@@ -484,7 +488,7 @@ public class Dipoles extends Shape {
     return -1;
   }
 
- public Vector getShapeDetail() {
+  public Vector getShapeDetail() {
     Vector V = new Vector();
     Hashtable atomInfo;
     for (int i = 0; i < dipoleCount; i++) {
@@ -509,14 +513,14 @@ public class Dipoles extends Shape {
     return V;
   }
 
-  void setModelIndex() {
+  private void setModelIndex() {
     if (currentDipole == null)
       return;
     currentDipole.visible = true;
     currentDipole.modelIndex = viewer.getCurrentModelIndex();
   }
 
- public void setVisibilityFlags(BitSet bs) {
+  public void setVisibilityFlags(BitSet bs) {
     /*
      * set all fixed objects visible; others based on model being displayed
      * 
@@ -534,8 +538,8 @@ public class Dipoles extends Shape {
     }
     //dumpDipoles("setVis");
   }
-  
- public String getShapeState() {
+
+  public String getShapeState() {
     if (dipoleCount == 0)
       return "";
     StringBuffer s = new StringBuffer();

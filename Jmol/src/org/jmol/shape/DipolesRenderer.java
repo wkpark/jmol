@@ -31,7 +31,7 @@ import javax.vecmath.*;
 
 public class DipolesRenderer extends ShapeRenderer {
 
-  float dipoleVectorScale;
+  private float dipoleVectorScale;
 
   protected void render() {
     Dipoles dipoles = (Dipoles) shape;
@@ -43,35 +43,35 @@ public class DipolesRenderer extends ShapeRenderer {
     }
   }
 
-  final Vector3f offset = new Vector3f();
-  final Point3i[] screens = new Point3i[6];
-  final Point3f[] points = new Point3f[6];
+  private final Vector3f offset = new Vector3f();
+  private final Point3i[] screens = new Point3i[6];
+  private final Point3f[] points = new Point3f[6];
   {
     for (int i = 0; i < 6; i++) {
       screens[i] = new Point3i();
       points[i] = new Point3f();
     }
   }
-  Point3f cross0 = new Point3f();
-  Point3f cross1 = new Point3f();
+  private Point3f cross0 = new Point3f();
+  private Point3f cross1 = new Point3f();
   
-  final static int cylinderBase = 0;
-  final static int cross = 1;
-  final static int crossEnd = 2;
-  final static int center = 3;
-  final static int arrowHeadBase = 4;
-  final static int arrowHeadTip = 5;
+  private final static int cylinderBase = 0;
+  private final static int cross = 1;
+  private final static int crossEnd = 2;
+  private final static int center = 3;
+  private final static int arrowHeadBase = 4;
+  private final static int arrowHeadTip = 5;
 
-  int diameter;
-  int headWidthPixels;
-  int crossWidthPixels;
+  private int diameter;
+  private int headWidthPixels;
+  private int crossWidthPixels;
 
-  final static float arrowHeadOffset = 0.8f;
-  final static float arrowHeadWidthFactor = 4f;
-  final static float crossOffset = 0.1f;
-  final static float crossWidth = 0.04f;
+  private final static float arrowHeadOffset = 0.8f;
+  private final static float arrowHeadWidthFactor = 4f;
+  private final static float crossOffset = 0.1f;
+  private final static float crossWidth = 0.04f;
 
-  boolean transform(Dipole dipole) {
+  private boolean transform(Dipole dipole) {
     Vector3f vector = dipole.vector;
     offset.set(vector);
     if (dipole.center == null) { 
@@ -129,7 +129,7 @@ public class DipolesRenderer extends ShapeRenderer {
     return true;
   }
 
-  void renderDipoleVector(Dipole dipole) {
+  private void renderDipoleVector(Dipole dipole) {
     short colixA = (dipole.bond == null ? dipole.colix : Graphics3D
         .getColixInherited(dipole.colix, dipole.bond.getColix()));
     short colixB = colixA;

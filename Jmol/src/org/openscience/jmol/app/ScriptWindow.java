@@ -657,8 +657,6 @@ class ConsoleDocument extends DefaultStyledDocument {
   public void insertString(int offs, String str, AttributeSet a)
     throws BadLocationException {
     int ichNewline = str.indexOf('\n');
-    if (ichNewline > 0)
-      str = str.substring(0, ichNewline);
     if (ichNewline != 0) {
       if (offs < offsetAfterPrompt) {
         offs = getLength();

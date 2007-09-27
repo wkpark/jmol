@@ -36,29 +36,28 @@ public class LcaoCartoon extends Isosurface {
 
   // these are globals, stored here and only passed on when the they are needed. 
 
- public void initShape() {
+  public void initShape() {
     super.initShape();
     myType = "lcaoCartoon";
     allowMesh = false;
   }
- 
-  //transient
-  String thisType;
-  int myColorPt;
-  String lcaoID;
-  BitSet thisSet;
-  boolean isMolecular;
-  Vector3f rotationAxis;
- 
-  //persistent
-  Float lcaoScale;
-  boolean isTranslucent;
-  float translucentLevel;
-  Integer lcaoColorPos;
-  Integer lcaoColorNeg;
-  
 
- public void setProperty(String propertyName, Object value, BitSet bs) {
+  //transient
+  private String thisType;
+  private int myColorPt;
+  private String lcaoID;
+  private BitSet thisSet;
+  private boolean isMolecular;
+  private Vector3f rotationAxis;
+
+  //persistent
+  private Float lcaoScale;
+  private boolean isTranslucent;
+  private float translucentLevel;
+  private Integer lcaoColorPos;
+  private Integer lcaoColorNeg;
+
+  public void setProperty(String propertyName, Object value, BitSet bs) {
 
     if (Logger.isActiveLevel(Logger.LEVEL_DEBUG)) {
       Logger.debug("\nLcaoCartoon.setProperty " + propertyName + " " + value);
@@ -80,7 +79,7 @@ public class LcaoCartoon extends Isosurface {
     }
 
     //setup
-    
+
     if ("lcaoID" == propertyName) {
       lcaoID = (String) value;
       return;
@@ -109,7 +108,7 @@ public class LcaoCartoon extends Isosurface {
     }
 
     if ("select" == propertyName) {
-      thisSet = (BitSet)value;
+      thisSet = (BitSet) value;
       //pass through
     }
 
@@ -160,38 +159,38 @@ public class LcaoCartoon extends Isosurface {
       return;
     }
 
-    super.setProperty(propertyName,value,bs);
+    super.setProperty(propertyName, value, bs);
   }
 
-  void setLcaoOn(boolean TF) {
+  private void setLcaoOn(boolean TF) {
     int atomCount = viewer.getAtomCount();
     for (int i = atomCount; --i >= 0;)
       if (lcaoID != null || thisSet.get(i))
         setLcaoOn(i, TF);
   }
 
-  void setLcaoOn(int iAtom, boolean TF) {
+  private void setLcaoOn(int iAtom, boolean TF) {
     String id = getID(lcaoID, iAtom);
-    for (int i = meshCount; --i >=0;)
+    for (int i = meshCount; --i >= 0;)
       if (meshes[i].thisID.indexOf(id) == 0)
         meshes[i].visible = TF;
   }
-    
-  void deleteLcaoCartoon() {
+
+  private void deleteLcaoCartoon() {
     int atomCount = viewer.getAtomCount();
     for (int i = atomCount; --i >= 0;)
       if (lcaoID != null || thisSet.get(i))
         deleteLcaoCartoon(i);
   }
 
-  void deleteLcaoCartoon(int iAtom) {
+  private void deleteLcaoCartoon(int iAtom) {
     String id = getID(lcaoID, iAtom);
-    for (int i = meshCount; --i >=0;)
+    for (int i = meshCount; --i >= 0;)
       if (meshes[i].thisID.indexOf(id) == 0)
         deleteMesh(i);
   }
-    
-  void createLcaoCartoon() {
+
+  private void createLcaoCartoon() {
     isMolecular = (isMolecular && (thisType.indexOf("px") >= 0
         || thisType.indexOf("py") >= 0 || thisType.indexOf("pz") >= 0));
     int atomCount = viewer.getAtomCount();
@@ -200,7 +199,7 @@ public class LcaoCartoon extends Isosurface {
         createLcaoCartoon(i);
   }
 
-  void createLcaoCartoon(int iAtom) {
+  private void createLcaoCartoon(int iAtom) {
     String id = getID(lcaoID, iAtom);
     for (int i = meshCount; --i >= 0;)
       if (meshes[i].thisID.indexOf(id) == 0)
@@ -232,17 +231,19 @@ public class LcaoCartoon extends Isosurface {
       }
       if (thisType.indexOf("-") == 0)
         axes[0].scale(-1);
-    }     
-    if (isMolecular || thisType.equalsIgnoreCase("s")
-        || viewer.getHybridizationAndAxes(iAtom, axes[0], axes[1], thisType, true) != null)
+    }
+    if (isMolecular
+        || thisType.equalsIgnoreCase("s")
+        || viewer.getHybridizationAndAxes(iAtom, axes[0], axes[1], thisType,
+            true) != null)
       super.setProperty("lcaoCartoon", axes, null);
     if (isTranslucent)
-      for (int i = meshCount; --i >=0;)
+      for (int i = meshCount; --i >= 0;)
         if (meshes[i].thisID.indexOf(id) == 0)
           meshes[i].setTranslucent(true, translucentLevel);
   }
-    
-  String getID(String id, int i) {
+
+  private String getID(String id, int i) {
     // remove "-" from "-px" "-py" "-pz" because we never want to have
     // both "pz" and "-pz" on the same atom
     // but we can have "-sp3a" and "sp3a"

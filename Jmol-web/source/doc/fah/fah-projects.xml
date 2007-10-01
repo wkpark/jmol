@@ -4407,7 +4407,7 @@
   <fah_proj number="2306" name="p2306_BBA5_pfold in water" public="y" file="y"
     server="171.64.122.139" atoms="374" preferred="36" deadline="53"
     credit="188" frames="100" code="GB" contact="alexrson" contrib="uncle_fungus"/>
-  <fah_proj number="2307" name="p2307_BBA5" public="n" file="y"
+  <fah_proj number="2307" name="p2307_BBA5" public="y" file="y"
     server="171.64.122.139" atoms="12200" preferred="30" deadline="61"
     credit="218" frames="100" code="DG" contact="alexrson" contrib="Ivoshiee"/>
   <fah_proj number="2308" name="p2308_BBA5" public="n" file="y"

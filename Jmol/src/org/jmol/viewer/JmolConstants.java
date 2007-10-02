@@ -242,8 +242,6 @@ final public class JmolConstants {
   public final static short BOND_ORDER_ANY      = -2;
   public final static short BOND_ORDER_NULL      = -1;
 
-  public final static short BOND_ALL_MASK      = 0x1FFF;
-
   public final static short BOND_COVALENT_MASK   = 0x07;
   public final static short BOND_COVALENT_SINGLE = 1;   //actually, this MUST be 1
   public final static short BOND_COVALENT_DOUBLE = 2;   //actually, this MUST be 2
@@ -276,11 +274,13 @@ final public class JmolConstants {
   public final static short BOND_PARTIAL12     = (1 << 12) | 2;
   
   final static String[] bondOrderNames = {
-    "single", "double", "triple", "quadruple", "aromatic", "hbond", "partial", "partialDouble", "unspecified"
+    "single", "double", "triple", "quadruple", 
+    "aromatic", "hbond", "partial", "partialDouble", "unspecified"
   };
 
   final static String[] bondOrderNumbers = {
-    "1", "2", "3", "4", "1.5", "1", "0.5", "1.5", "1"
+    "1", "2", "3", "4", 
+    "1.5", "1", "0.5", "1.5", "1"
   };
 
   final static short[] bondOrderValues = {
@@ -289,9 +289,20 @@ final public class JmolConstants {
   };
 
   public final static short getBondOrderFromString(String bondOrderString) {
-    for (int i = bondOrderNames.length; --i >= 0; ) {
+    for (int i = 0; i < bondOrderNumbers.length; i++) {
       if (bondOrderNames[i].equalsIgnoreCase(bondOrderString))
         return bondOrderValues[i];
+    }
+    return BOND_ORDER_NULL;
+  }
+  
+  public final static short getBondOrderFromFloat(float fOrder) {
+    for (int i = 0; i < bondOrderNumbers.length; i++) {
+      if (Float.valueOf(bondOrderNumbers[i]).floatValue() == Math.abs(fOrder)) {
+        if (fOrder > 0)
+          return bondOrderValues[i];
+        fOrder = -fOrder;
+      }
     }
     return BOND_ORDER_NULL;
   }

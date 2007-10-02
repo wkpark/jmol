@@ -103,7 +103,7 @@ public class Sticks extends Shape {
         bsOrderSet = new BitSet();
       short order = ((Short) value).shortValue();
       BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)
-          : modelSet.getBondIterator(myMask, bsSelected));
+          : modelSet.getBondIterator(JmolConstants.BOND_ORDER_ANY, bsSelected));
       while (iter.hasNext()) {
         bsOrderSet.set(iter.nextIndex());
         iter.next().setOrder(order);

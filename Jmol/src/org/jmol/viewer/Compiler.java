@@ -247,7 +247,7 @@ class Compiler {
     //simultaneously up to 2147 files. Yeah, sure!
     int pt = strDecimal.indexOf(".");
     if (pt < 1 || strDecimal.charAt(0) == '-')
-      return 0;
+      return Integer.MAX_VALUE;
     int i = 0;
     int j = 0;
     if (pt > 0 && (i = Integer.parseInt(strDecimal.substring(0, pt))) < 0)
@@ -1900,7 +1900,7 @@ class Compiler {
       if (addNextTokenIf(Token.decimal))
         if (!addNextTokenIf(Token.comma))
           break;
-      if (tokPeek() == Token.identifier) {
+      if (tokPeek() == Token.identifier || tokPeek() == Token.hbond) {
         String strOrder = (String) getToken().value;
         int intType = JmolConstants.getBondOrderFromString(strOrder);
         if (intType == JmolConstants.BOND_ORDER_NULL) {

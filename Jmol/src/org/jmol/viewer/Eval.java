@@ -3000,33 +3000,15 @@ class Eval { //implements Runnable {
     short order = 0;
     switch (getToken(1).tok) {
     case Token.integer:
-      order = (short) intParameter(1);
-      if (order < 0 || order > 3)
-        invalidArgument();
-      break;
-    case Token.hbond:
-      order = JmolConstants.BOND_H_REGULAR;
-      break;
     case Token.decimal:
-      float f = floatParameter(1);
-      if (f == (short) f) {
-        order = (short) f;
-        if (order < 0 || order > 3)
-          invalidArgument();
-      } else if (f == 0.5f)
-        order = JmolConstants.BOND_H_REGULAR;
-      else if (f == 1.5f)
-        order = JmolConstants.BOND_AROMATIC;
-      else
+      if ((order = JmolConstants.getBondOrderFromFloat(floatParameter(1))) 
+          == JmolConstants.BOND_ORDER_NULL)
         invalidArgument();
       break;
-    case Token.identifier:
-      order = JmolConstants.getBondOrderFromString(parameterAsString(1));
-      if (order >= 1)
-        break;
-    // fall into
     default:
-      invalidArgument();
+      if ((order = JmolConstants.getBondOrderFromString(parameterAsString(1)))
+          == JmolConstants.BOND_ORDER_NULL)
+        invalidArgument();
     }
     setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder", new Short(order));
   }
@@ -3195,7 +3177,7 @@ class Eval { //implements Runnable {
         isColorOrRadius = true;
         continue;
       }
-      switch_tag: switch (getToken(i).tok) {
+      switch (getToken(i).tok) {
       case Token.on:
       case Token.off:
         checkLength2();
@@ -3232,15 +3214,13 @@ class Eval { //implements Runnable {
       case Token.identifier:
       case Token.hbond:
         String cmd = parameterAsString(i);
-        for (int j = JmolConstants.bondOrderNames.length; --j >= 0;) {
-          if (cmd.equalsIgnoreCase(JmolConstants.bondOrderNames[j])) {
-            if (haveType)
-              incompatibleArguments();
-            cmd = JmolConstants.bondOrderNames[j];
-            bondOrder = JmolConstants.getBondOrderFromString(cmd);
-            haveType = true;
-            break switch_tag;
-          }
+        short bo = JmolConstants.getBondOrderFromString(cmd);
+        if (bo != JmolConstants.BOND_ORDER_NULL) {
+          if (haveType)
+            incompatibleArguments();
+          bondOrder = bo;
+          haveType = true;
+          break;
         }
         if (++i != statementLength)
           invalidParameterOrder();

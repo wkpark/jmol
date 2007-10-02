@@ -65,7 +65,7 @@ class BondIteratorSelected implements BondIterator {
         if (bsSelected.get(iBond))
           return true;
         continue;
-      } else if (bondType != JmolConstants.BOND_ALL_MASK
+      } else if (bondType != JmolConstants.BOND_ORDER_ANY
           && (bond.order & bondType) == 0) {
         continue;
       }

@@ -197,7 +197,7 @@ public class Token {
   final static int rocket       = command | 86;
   final static int geosurface   = command | 87 | embeddedExpression;
   final static int moveto       = command | 88 | numberOrExpression;
-  final static int bondorder    = command | 89;
+  final static int bondorder    = command | 89 | negnums;
   final static int console      = command | 90;
   final static int pmesh        = command | 91;
   final static int polyhedra    = command | 92 | embeddedExpression | colorparam;

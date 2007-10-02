@@ -557,6 +557,12 @@ final public class Atom extends Point3fi implements Tuple {
      Vector3f[] vibrationVectors = group.chain.modelSet.vibrationVectors;
      return vibrationVectors == null ? null : vibrationVectors[atomIndex];
    }
+   
+   public float getVibrationCoord(char ch) {
+     Vector3f[] v = group.chain.modelSet.vibrationVectors;
+     return (v == null || v[atomIndex] == null ? 0 
+         : ch == 'x' ? v[atomIndex].x : ch == 'y' ? v[atomIndex].y : v[atomIndex].z);
+   }
 
    public void transform(Viewer viewer) {
      Point3i screen;
@@ -1104,6 +1110,7 @@ final public class Atom extends Point3fi implements Tuple {
          case 't': temperature factor
          case 'U': identity
          case 'u': sUrface distance
+         case 'v': vibration x, y, or z  vx vy vz
          case 'V': van der Waals
          case 'x': x coord
          case 'X': fractional X coord
@@ -1116,7 +1123,7 @@ final public class Atom extends Point3fi implements Tuple {
          */
         char ch0 = ch = strFormat.charAt(ich++);
 
-        if (chAtom != '\0' && ich < cch && ch != 'v' && ch != 'u') {
+        if (chAtom != '\0' && ich < cch) {
           if (strFormat.charAt(ich) != chAtom) {
             strLabel = strLabel + "%";
             ich = ichPercent + 1;
@@ -1179,6 +1186,25 @@ final public class Atom extends Point3fi implements Tuple {
           break;
         case 'P':
           floatT = getPartialCharge();
+          break;
+        case 'v':
+          ch = (ich < strFormat.length() ? strFormat.charAt(ich++) : '\0');
+          switch (ch) {
+          case 'x':
+          case 'y':
+          case 'z':
+            floatT = getVibrationCoord(ch);
+            break;
+          default:
+            if (ch != '\0')
+              --ich;
+            Vector3f v = getVibrationVector();
+            if (v == null) {
+              floatT = 0;
+              break;
+            }
+            strT = v.x + " " + v.y + " " + v.z;
+          }
           break;
         case 'V':
           floatT = getVanderwaalsRadiusFloat();

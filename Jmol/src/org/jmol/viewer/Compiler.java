@@ -702,7 +702,7 @@ class Compiler {
           case Token.function:
             if (!isCheckOnly)
               htFunctions.put(thisFunction.name, thisFunction);
-            flowContext.setFunction(script, ichCurrentCommand, iCommand,
+            flowContext.setFunction(script, ichCurrentCommand, iCommand + 1,
                 lineNumbers, lineIndices, lltoken);
             thisFunction = null;
             tokenCommand.intValue = Integer.MAX_VALUE; // don't include this one

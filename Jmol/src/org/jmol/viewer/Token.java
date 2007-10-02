@@ -403,6 +403,9 @@ public class Token {
   final static int psi             = atompropertyfloat | 8;
   final static int surfacedistance = atompropertyfloat | 9;
   final static int temperature     = atompropertyfloat |10;
+  final static int vibX            = atompropertyfloat |11;
+  final static int vibY            = atompropertyfloat |12;
+  final static int vibZ            = atompropertyfloat |13;
 
 
   // mathfunc               means x = somefunc(a,b,c)
@@ -568,7 +571,7 @@ public class Token {
     case Token.point4f:
       return Escape.escape((Point4f) x.value);
     case Token.bitset:
-      return Escape.escape((BitSet) x.value, !(x.value instanceof BondSet));
+      return Escape.escape(bsSelect(x), !(x.value instanceof BondSet));
     case Token.list:
       String[] list = (String[]) x.value;
       i = x.intValue;
@@ -636,22 +639,22 @@ public class Token {
   }
 
   static BitSet bsSelect(Token token) {
-    selectItem(token, Integer.MIN_VALUE);
+    token = selectItem(token, Integer.MIN_VALUE);
     return (BitSet)token.value;
   }
 
   static BitSet bsSelect(Token token, int n) {
-    selectItem(token, Integer.MIN_VALUE);
-    selectItem(token, 1);
-    selectItem(token, n);
+    token = selectItem(token, Integer.MIN_VALUE);
+    token = selectItem(token, 1);
+    token = selectItem(token, n);
     return (BitSet)token.value;
   }
 
-  static Token selectItem(Token token, int i2) {
-    if (token.tok != Token.bitset 
-        && token.tok != Token.list
-        && token.tok != Token.string)
-      return token;
+  static Token selectItem(Token tokenIn, int i2) {
+    if (tokenIn.tok != Token.bitset 
+        && tokenIn.tok != Token.list
+        && tokenIn.tok != Token.string)
+      return tokenIn;
 
     // negative number is a count from the end
     
@@ -659,29 +662,31 @@ public class Token {
     String[] st = null;
     String s =null;
     
-    int i1 = token.intValue;
+    int i1 = tokenIn.intValue;
     if (i1 == Integer.MAX_VALUE) {
       if (i2 == Integer.MIN_VALUE)
-        i2 = token.intValue;
-      return new Token(token.tok, i2, token.value);
+        i2 = tokenIn.intValue;
+      return new Token(tokenIn.tok, i2, tokenIn.value);
     }
     int len = 0;
     int n = 0;
-    switch (token.tok) {
+    Token tokenOut = new Token(tokenIn.tok);
+    tokenOut.intValue = Integer.MAX_VALUE;
+    switch (tokenIn.tok) {
     case Token.bitset:
-      bs = (BitSet) token.value;
+      bs = BitSetUtil.copy((BitSet) tokenIn.value);
       len = BitSetUtil.length(bs);
+      tokenOut.value = bs;
       break;
     case Token.list:
-      st = (String[]) token.value;
+      st = (String[]) tokenIn.value;
       len = st.length;
       break;
     case Token.string:
-      s = (String) token.value;
+      s = (String) tokenIn.value;
       len = s.length();
     }
 
-    token.intValue = Integer.MAX_VALUE;
     // "testing"[0] gives "g"
     // "testing"[-1] gives "n"
     // "testing"[3][0] gives "sting"
@@ -701,18 +706,18 @@ public class Token {
     else if (i2 < i1)
       i2 = i1;
 
-    switch (token.tok) {
+    switch (tokenIn.tok) {
     case Token.bitset:
       for (int j = 0; j < len; j++)
         if (bs.get(j) && (++n < i1 || n > i2))
           bs.clear(j);
-      return token;
+      break;
     case Token.string:
       if (i1 < 1 || i1 > len)
-        token.value = "";
+        tokenOut.value = "";
       else
-        token.value = s.substring(i1 - 1, i2);
-      return token;
+        tokenOut.value = s.substring(i1 - 1, i2);
+      break;
     case Token.list:
       if (i1 < 1 || i1 > len || i2 > len)
         return new Token(Token.string, "");     
@@ -721,10 +726,10 @@ public class Token {
       String[]list = new String[i2 - i1 + 1];
       for (int i = 0; i < list.length; i++)
         list[i] = st[i + i1 - 1];
-      token.value = list;
-      return token;
+      tokenOut.value = list;
+      break;
     }
-    return token;
+    return tokenOut;
   }
   
   // parameters
@@ -1140,6 +1145,9 @@ public class Token {
     "fx",             new Token(fracX),
     "fy",             new Token(fracY),
     "fz",             new Token(fracZ),
+    "vx",             new Token(vibX),
+    "vy",             new Token(vibY),
+    "vz",             new Token(vibZ),
     "all",          tokenAll,
     "none",         new Token(none),
     "null",         null,

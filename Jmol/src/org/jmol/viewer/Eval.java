@@ -6497,6 +6497,11 @@ class Eval { //implements Runnable {
           if (isSyntaxCheck) {
             v = name;
           } else {
+            if (tokAt(i + 1) == Token.leftsquare || tokAt(i + 1) == Token.dot) {
+              Object o = getParameter(name+"_set", true);
+              if (o instanceof String && ((String) o).indexOf("({") == 0)
+                name += "_set";            
+            }
             v = getParameter(name, true);
             if (v instanceof String)
               v = getStringObjectAsToken((String) v, name);
@@ -6914,6 +6919,15 @@ class Eval { //implements Runnable {
             break;
           case Token.fracZ:
             fv = atom.getFractionalCoord('Z');
+            break;
+          case Token.vibX:
+            fv = atom.getVibrationCoord('x');
+            break;
+          case Token.vibY:
+            fv = atom.getVibrationCoord('y');
+            break;
+          case Token.vibZ:
+            fv = atom.getVibrationCoord('z');
             break;
           case Token.distance:
             if (planeRef != null)
@@ -7672,6 +7686,10 @@ class Eval { //implements Runnable {
       type = "HIS";
       pt++;
       break;
+    case Token.var:
+      pt += 2;
+      type = "VAR";      
+      break;
     case Token.identifier:
       type = parameterAsString(1).toLowerCase();
       if (type.equals("image")) {
@@ -7680,9 +7698,6 @@ class Eval { //implements Runnable {
           width = intParameter(pt++);
           height = intParameter(pt++);
         }
-      } else if (type.equals("var")) {
-        pt += 2;
-        type = "VAR";
       } else if (Parser.isOneOf(type, driverList.toLowerCase())) {
         pt++;
         type = type.substring(0, 1).toUpperCase() + type.substring(1);

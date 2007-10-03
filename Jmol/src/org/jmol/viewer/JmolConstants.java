@@ -2652,11 +2652,12 @@ cpk on; select atomno>100; label %i; color chain; select selected & hetero; cpk 
     Token.meshRibbon, Token.ribbon, Token.rocket, 
     Token.star, Token.halo, 
     Token.vector, Token.geosurface, 
-    Token.axes, Token.boundbox, Token.unitcell, Token.echo, Token.hover,
     Token.polyhedra, Token.dipole, Token.mo, Token.isosurface, 
-    Token.lcaocartoon, Token.draw, Token.pmesh, 
+    Token.lcaocartoon, Token.draw, Token.pmesh,
+    Token.axes, Token.boundbox, Token.unitcell,
+    Token.echo, Token.hover,
     Token.frank
-      };
+  };
 
   static {
     if (shapeToks.length != SHAPE_MAX) {

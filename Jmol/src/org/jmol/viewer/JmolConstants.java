@@ -272,20 +272,23 @@ final public class JmolConstants {
   public final static short BOND_PARTIAL_MASK  = (3 << 11);
   public final static short BOND_PARTIAL01     = (1 << 11) | 1;
   public final static short BOND_PARTIAL12     = (1 << 12) | 2;
+  public final static short BOND_PARTIAL23     = (1 << 11) | 3;
+  public final static short BOND_PARTIAL32     = (1 << 12) | 4;
   
   final static String[] bondOrderNames = {
     "single", "double", "triple", "quadruple", 
-    "aromatic", "hbond", "partial", "partialDouble", "unspecified"
+    "aromatic", "hbond", "partial", "partialDouble", "partialTriple", "partialTriple2", "unspecified"
   };
 
   final static String[] bondOrderNumbers = {
     "1", "2", "3", "4", 
-    "1.5", "1", "0.5", "1.5", "1"
+    "1.5", "1", "0.5", "1.5", "2.5", "2.5", "1"
   };
 
   final static short[] bondOrderValues = {
     BOND_COVALENT_SINGLE, BOND_COVALENT_DOUBLE, BOND_COVALENT_TRIPLE, BOND_COVALENT_QUADRUPLE,
-    BOND_AROMATIC, BOND_H_REGULAR, BOND_PARTIAL01, BOND_PARTIAL12, BOND_ORDER_UNSPECIFIED
+    BOND_AROMATIC, BOND_H_REGULAR, BOND_PARTIAL01, BOND_PARTIAL12, 
+    BOND_PARTIAL23, BOND_PARTIAL32, BOND_ORDER_UNSPECIFIED
   };
 
   public final static short getBondOrderFromString(String bondOrderString) {

@@ -112,13 +112,18 @@ public class SticksRenderer extends ShapeRenderer {
     dx = xB - xA;
     dy = yB - yA;
     width = viewer.scaleToScreen((zA + zB)/2, madBond);
-    bondOrder = getRenderBondOrder(bond.getOrder());
+    bondOrder = getRenderBondOrder(order);
     switch(bondOrder) {
     case 1:
     case 2:
     case 3:
     case 4:
       renderBond(0);
+      break;
+    case JmolConstants.BOND_PARTIAL23:
+    case JmolConstants.BOND_PARTIAL32:
+      bondOrder = 3;
+      renderBond(order == JmolConstants.BOND_PARTIAL23 ? 1 : 4);
       break;
     case JmolConstants.BOND_ORDER_UNSPECIFIED:
     case JmolConstants.BOND_PARTIAL01:

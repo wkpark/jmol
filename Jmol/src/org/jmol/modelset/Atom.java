@@ -1307,4 +1307,24 @@ final public class Atom extends Point3fi implements Tuple {
   public Quaternion getQuaternion() {
     return group.getQuaternion();
   }
+  
+  public Atom findAromaticNeighbor(BitSet notAtoms) {
+    for (int i = bonds.length; --i >= 0; ) {
+      Bond bondT = bonds[i];
+      Atom a = bondT.getOtherAtom(this);
+      if (bondT.isAromatic() && (notAtoms == null || !notAtoms.get(a.atomIndex)))
+        return a;
+    }
+    return null;
+  }
+
+  public Atom findAromaticNeighbor(int notAtomIndex) {
+    for (int i = bonds.length; --i >= 0; ) {
+      Bond bondT = bonds[i];
+      Atom a = bondT.getOtherAtom(this);
+      if (bondT.isAromatic() && a.atomIndex != notAtomIndex)
+        return a;
+    }
+    return null;
+  }
 }

@@ -289,6 +289,7 @@ abstract public class ModelSet {
   //new way:
   
   protected boolean someModelsHaveSymmetry;
+  protected boolean someModelsHaveAromaticBonds;
   
   boolean haveSymmetry() {
     return someModelsHaveSymmetry;
@@ -1392,7 +1393,11 @@ abstract public class ModelSet {
                       int connectOperation, BitSet bsA, BitSet bsB,
                       BitSet bsBonds, boolean isBonds) {
     if (connectOperation != JmolConstants.CONNECT_IDENTIFY_ONLY) {
-      String stateScript = "connect " + minDistance + " " + maxDistance + " ";
+      String stateScript = "connect ";
+      if (minDistance != JmolConstants.DEFAULT_MIN_CONNECT_DISTANCE)
+        stateScript += minDistance + " ";
+      if (maxDistance != JmolConstants.DEFAULT_MAX_CONNECT_DISTANCE)
+        stateScript += maxDistance + " ";
       if (isBonds)
         stateScript += Escape.escape(bsA, false) + " ";
       else
@@ -1457,8 +1462,10 @@ abstract public class ModelSet {
             || distanceSquared > maxDistanceSquared)
           continue;
         if (bondAB != null) {
-          if (order >= 0 && !identifyOnly)
-            bondAB.setOrder(order);
+          if (order >= 0 && !identifyOnly) {
+            bondAB.order = order;
+            bsAromatic.clear(bondAB.index); 
+          }
           if (!identifyOnly || order == bondAB.order
               || order == JmolConstants.BOND_ORDER_ANY
               || order == JmolConstants.BOND_H_REGULAR && bondAB.isHydrogen()) {
@@ -2768,10 +2775,9 @@ abstract public class ModelSet {
       Vector fs = stateScripts;
       int len = fs.size();
       if (len > 0) {
-        commands.append("\n# connections;\n");
+        commands.append("\n");
         for (int i = 0; i < len; i++)
           commands.append("  ").append(fs.get(i)).append("\n");
-        commands.append("\n");
       }
 
       commands.append("\n");
@@ -2839,5 +2845,153 @@ abstract public class ModelSet {
     boolean isDerivative = (type.indexOf(" deriv") >= 0);
     return mmset.getPdbData(type, ctype, bsAtoms, isDerivative);
   }
- 
+  
+  private BitSet bsAromaticSingle;
+  private BitSet bsAromaticDouble;
+  private BitSet bsAromatic = new BitSet();
+
+  void resetAromatic() {
+    for (int i = bondCount; --i >= 0;) {
+      Bond bond = bonds[i];
+      if (bond.isAromatic())
+        bond.order = JmolConstants.BOND_AROMATIC;
+    }
+  }
+  
+  void assignAromaticBonds() {
+    assignAromaticBonds(true);
+  }
+  
+  void assignAromaticBonds(boolean isUserCalculation) {
+    if (!isUserCalculation)
+      bsAromatic = new BitSet();
+    bsAromaticSingle = new BitSet();
+    bsAromaticDouble = new BitSet();
+    for (int i = bondCount; --i >= 0;) {
+      Bond bond = bonds[i];
+      if (bsAromatic.get(i))
+        bond.order = JmolConstants.BOND_AROMATIC;
+      switch (bond.order) {
+      case JmolConstants.BOND_AROMATIC:
+        bsAromatic.set(i);
+        break;
+      case JmolConstants.BOND_AROMATIC_SINGLE:
+        bsAromaticSingle.set(i);
+        break;
+      case JmolConstants.BOND_AROMATIC_DOUBLE:
+        bsAromaticDouble.set(i);
+        break;
+      }
+    }
+    Bond bond;
+    for (int i = bondCount; --i >= 0;) {
+      bond = bonds[i];
+      if (bond.order != JmolConstants.BOND_AROMATIC || bsAromaticDouble.get(i)
+          || bsAromaticSingle.get(i))
+        continue;
+      if (!assignAromaticDouble(bond))
+        assignAromaticSingle(bond);
+    }
+    for (int i = bondCount; --i >= 0;) {
+      bond = bonds[i];      
+      if (bsAromaticSingle.get(i)) {
+        if(bond.order != JmolConstants.BOND_AROMATIC_SINGLE) {
+          bsAromatic.set(i);
+          bond.order = JmolConstants.BOND_AROMATIC_SINGLE;
+        }
+      } else if (bsAromaticDouble.get(i)) {
+        if(bond.order != JmolConstants.BOND_AROMATIC_DOUBLE) {
+          bsAromatic.set(i);
+          bond.order = JmolConstants.BOND_AROMATIC_DOUBLE;
+        }
+      }
+    }
+    if (isUserCalculation)
+      setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, bsAromatic);
+
+    //System.out.println("SINGLE: " + bsAromaticSingle);
+    //System.out.println("DOUBLE: " + bsAromaticDouble);
+  }
+
+  private boolean assignAromaticSingle(Bond bond) {
+    int bondIndex = bond.index;
+    if (bsAromaticDouble.get(bondIndex))
+      return false;
+    if (bsAromaticSingle.get(bondIndex))
+      return true;
+    //System.out.println("Trying to assign single to bond " + bond.index + " between " + bond.atom1.getIdentity() + " and " + bond.atom2.getIdentity());
+    bsAromaticSingle.set(bondIndex);
+    if (!assignAromaticDouble(bond.atom1) 
+        || !assignAromaticDouble(bond.atom2)) {
+      bsAromaticSingle.clear(bondIndex);
+      //System.out.println("Trying to assign single to bond " + bond.index + " NO!");
+      return false;
+    }
+    //System.out.println("Trying to assign single to bond " + bond.index + " OK");
+    return true;
+  }
+
+  private boolean assignAromaticSingle(Atom atom, int notBondIndex) {
+    Bond[] bonds = atom.bonds;
+    for (int i = bonds.length; --i >= 0;) {
+      Bond bond = bonds[i];
+      int bondIndex = bond.index;
+      if (bondIndex == notBondIndex || !bond.isAromatic() || bsAromaticSingle.get(bondIndex))
+        continue;
+      if (bsAromaticDouble.get(bondIndex) || !assignAromaticSingle(bond)) {
+        //System.out.println("Trying to assign single to " + atom.getInfo() + " NO WAY");
+        return false;
+      }
+    }
+    //System.out.println("Trying to assign single to " + atom.getInfo() + " OK");
+    return true;
+  }
+  
+  private boolean assignAromaticDouble(Bond bond) {
+    int bondIndex = bond.index;
+    if (bsAromaticSingle.get(bondIndex))
+      return false;
+    if (bsAromaticDouble.get(bondIndex))
+      return true;
+    //System.out.println("Trying to assign double to bond " + bond.index + " between " + bond.atom1.getIdentity() + " and " + bond.atom2.getIdentity());
+    bsAromaticDouble.set(bondIndex);
+    if (!assignAromaticSingle(bond.atom1, bondIndex) 
+        || !assignAromaticSingle(bond.atom2, bondIndex)) {
+      bsAromaticDouble.clear(bondIndex);
+      //System.out.println("Trying to assign double to bond " + bond.index + " NO!!!!");
+      return false;
+    }
+    //System.out.println("Trying to assign double to bond " + bond.index + " OK");
+    return true;
+  }
+  
+  private boolean assignAromaticDouble(Atom atom) {
+    //find an unassigned bond and assign it double
+    //System.out.println("Trying to assign double to " + atom.getInfo());
+    Bond[] bonds = atom.bonds;
+    boolean haveDouble = false;
+    int lastBond = -1;
+    for (int i = bonds.length; --i >= 0;) {
+      if (bsAromaticDouble.get(bonds[i].index))
+        haveDouble = true;
+      if (bonds[i].isAromatic())
+        lastBond = i;
+    }
+    for (int i = bonds.length; --i >= 0;) {
+      Bond bond = bonds[i];
+      int bondIndex = bond.index;
+      if (!bond.isAromatic() || bsAromaticDouble.get(bondIndex)
+          || bsAromaticSingle.get(bondIndex))
+        continue;
+      if (!haveDouble && assignAromaticDouble(bond))
+        haveDouble = true;
+      else if ((haveDouble || i < lastBond) && !assignAromaticSingle(bond)) {
+        //System.out.println("Trying to assign double to " + atom.getInfo() + " NOPE");
+        return false;
+      }
+    }
+    //System.out.println("Trying to assign double to " + atom.getInfo() + " OK");
+    return haveDouble;
+  } 
+
 }

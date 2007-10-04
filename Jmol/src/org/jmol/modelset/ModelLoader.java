@@ -131,6 +131,7 @@ public final class ModelLoader extends ModelSet {
           .getModelSetAuxiliaryInfoBoolean("someModelsHaveUnitcells");
       someModelsHaveFractionalCoordinates |= mergeModelSet.mmset
           .getModelSetAuxiliaryInfoBoolean("someModelsHaveFractionalCoordinates");
+      someModelsHaveAromaticBonds |= mergeModelSet.someModelsHaveAromaticBonds;
     }
     initializeBuild(nAtoms);
   }
@@ -470,6 +471,8 @@ public final class ModelLoader extends ModelSet {
     if (atom1.isBonded(atom2))
       return;
     Bond bond = bondMutually(atom1, atom2, order, getDefaultMadFromOrder(order));
+    if (bond.isAromatic())
+      someModelsHaveAromaticBonds = true;
     if (bondCount == bonds.length)
       bonds = (Bond[]) ArrayUtil.setLength(bonds, bondCount + 2
           * ATOM_GROWTH_INCREMENT);
@@ -861,6 +864,7 @@ public final class ModelLoader extends ModelSet {
     currentModel = null;
     currentChain = null;
     htAtomMap.clear();
+    
   }
 
   private void setAtomNamesAndNumbers() {
@@ -919,6 +923,8 @@ public final class ModelLoader extends ModelSet {
   ///////////////  shapes  ///////////////
   
   private void finalizeShapes() {
+    if (someModelsHaveAromaticBonds && viewer.getSmartAromatic())
+      assignAromaticBonds(false);
     if (merging) {
       for (int i = 0; i < JmolConstants.SHAPE_MAX; i++)
         if ((shapes[i] = mergeModelSet.shapes[i]) != null)

@@ -64,6 +64,12 @@ public class Sticks extends Shape {
       selectedBonds = (bsSelected == null ? null : BitSetUtil.copy(bsSelected));
       return;
     }
+    if (size == Integer.MIN_VALUE) { // smartaromatic has set the orders directly 
+      if (bsOrderSet == null)
+        bsOrderSet = new BitSet();
+      bsOrderSet.or(bsSelected);
+      return;
+    }
     if (bsSizeSet == null)
       bsSizeSet = new BitSet();
     BondIterator iter = (selectedBonds != null ? modelSet.getBondIterator(selectedBonds)

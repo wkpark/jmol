@@ -130,8 +130,7 @@ public class SticksRenderer extends ShapeRenderer {
     case JmolConstants.BOND_AROMATIC:
     case JmolConstants.BOND_AROMATIC_DOUBLE:
       bondOrder = 2;
-      renderBond(order == JmolConstants.BOND_AROMATIC ? getAromaticDottedBondMask(bond)
-          : 0);
+      renderBond(order == JmolConstants.BOND_AROMATIC ? getAromaticDottedBondMask() : 0);
       break;
     case JmolConstants.BOND_STEREO_NEAR:
     case JmolConstants.BOND_STEREO_FAR:
@@ -346,29 +345,17 @@ public class SticksRenderer extends ShapeRenderer {
     }
   }
 */
-  private int getAromaticDottedBondMask(Bond bond) {
-    Atom atomC = findAromaticNeighbor();
+  
+  //not suitable for multiple rings
+  
+  private int getAromaticDottedBondMask() {
+    Atom atomC = atomB.findAromaticNeighbor(atomA.getAtomIndex());
     if (atomC == null)
       return 1;
+    //System.out.println("SticksRenderer atomA " + atomA.getInfo() + " atomB " + atomB.getInfo() + " atomC " + atomC.getInfo());
     int dxAC = atomC.screenX - xA;
     int dyAC = atomC.screenY - yA;
-    return (dx * dyAC - dy * dxAC) >= 0 ? 2 : 1;
-  }
-
-  private Atom findAromaticNeighbor() {
-    Bond[] bonds = atomB.getBonds();
-    for (int i = bonds.length; --i >= 0; ) {
-      Bond bondT = bonds[i];
-      if ((bondT.getOrder() & JmolConstants.BOND_AROMATIC) == 0)
-        continue;
-      if (bondT == bond)
-        continue;
-      if (bondT.getAtom1() == atomB)
-        return bondT.getAtom2();
-      if (bondT.getAtom2() == atomB)
-        return bondT.getAtom1();
-    }
-    return null;
+    return ((dx * dyAC - dy * dxAC) < 0 ? 2 : 1);
   }
 
   void drawDashed(int xA, int yA, int zA, int xB, int yB, int zB) {

@@ -3424,7 +3424,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     setShapeSize(shapeID, size, selectionManager.bsSelection);
   }
 
-  void setShapeSize(int shapeID, int size, BitSet bsAtoms) {
+  public void setShapeSize(int shapeID, int size, BitSet bsAtoms) {
     //above,
     //Eval.configuration
     modelManager.setShapeSize(shapeID, size, bsAtoms);
@@ -3856,6 +3856,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (global.htPropertyFlags.containsKey(key)) {
       return ((Boolean) global.htPropertyFlags.get(key)).booleanValue();
     }
+    if (global.htUserVariables.containsKey(key)) {
+      Token t = (Token) global.getUserParameterValue(key);
+      if (t.tok == Token.on)
+        return true;
+      if (t.tok == Token.off)
+        return false;
+    }
     if (doICare)
       Logger.error("viewer.getBooleanProperty(" + key + ") - unrecognized");
     return false;
@@ -4283,6 +4290,13 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     boolean doRepaint = true;
     while (true) {
 
+      //11.3.29
+      
+      if (key.equalsIgnoreCase("smartAromatic")) {
+        setSmartAromatic(value);
+        break;
+      }
+
       //11.1.29
 
       if (key.equalsIgnoreCase("applySymmetryToBonds")) {
@@ -4598,7 +4612,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         return !notFound;
       notFound = true;
       break;
-    }
+    } 
     if (!defineNew)
       return !notFound;
     key = key.toLowerCase();
@@ -5393,7 +5407,23 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public short getBondOrder(int i) {
     return modelManager.getBondOrder(i);
   }
+  
+  void assignAromaticBonds() {
+    modelManager.assignAromaticBonds();
+  }
+  
+  public boolean getSmartAromatic() {
+    return global.smartAromatic;
+  }
+  
+  private void setSmartAromatic(boolean TF) {
+    global.smartAromatic = TF;
+  }
 
+  void resetAromatic() {
+    modelManager.resetAromatic();
+  }
+  
   public int getBondArgb1(int i) {
     return g3d.getColixArgb(modelManager.getBondColix1(i));
   }

@@ -4349,7 +4349,10 @@ class Eval { //implements Runnable {
     String var = parameterAsString(1);
     if (var.charAt(0) == '_')
       invalidArgument();
-    viewer.unsetProperty(var);
+    if (var.equalsIgnoreCase("aromatic"))
+      viewer.resetAromatic();
+    else
+      viewer.unsetProperty(var);
   }
 
   private void initialize() {
@@ -5674,6 +5677,14 @@ class Eval { //implements Runnable {
         if (!isSyntaxCheck)
           viewer.addStateScript(thisCommand);
         return;
+      case Token.identifier:
+        if (parameterAsString(1).equalsIgnoreCase("AROMATIC")) {
+          checkLength2();
+          if (!isSyntaxCheck)
+            viewer.assignAromaticBonds();
+          return;
+        }
+        break;
       case Token.hbond:
         checkLength2();
         if (isSyntaxCheck)
@@ -5687,7 +5698,7 @@ class Eval { //implements Runnable {
         return;
       }
     }
-    evalError(GT._("Calculate what?") + "hbonds?  surface? structure?");
+    evalError(GT._("Calculate what?") + "aromatic? hbonds? surface? structure?");
   }
 
   private void dots(int ipt, int iShape) throws ScriptException {

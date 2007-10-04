@@ -407,6 +407,7 @@ public class StateManager {
     boolean forceAutoBond      = false;
     boolean autoBond           = true;
     boolean allowEmbeddedScripts = true;
+    boolean smartAromatic = true;
     int percentVdwAtom    = JmolConstants.DEFAULT_PERCENT_VDW_ATOM;
     short bondRadiusMilliAngstroms         = JmolConstants.DEFAULT_BOND_MILLIANGSTROM_RADIUS;
     float bondTolerance   = JmolConstants.DEFAULT_BOND_TOLERANCE;
@@ -449,6 +450,7 @@ public class StateManager {
       appendCmd(str, "forceAutoBond = " + forceAutoBond);
       appendCmd(str, "minBondDistance = " + minBondDistance);
       appendCmd(str, "percentVdwAtom = " + percentVdwAtom);
+      appendCmd(str, "smartAromatic = " + smartAromatic);
       if (zeroBasedXyzRasmol)
         appendCmd(str, "zeroBasedXyzRasmol = true");
       return str.toString();
@@ -1008,6 +1010,7 @@ public class StateManager {
       setParameterValue("showMultipleBonds",showMultipleBonds);
       setParameterValue("showNavigationPointAlways",showNavigationPointAlways);
       setParameterValue("showunitcell",false);
+      setParameterValue("smartAromatic",smartAromatic);
       setParameterValue("solventProbe",solventOn);
       setParameterValue("solventProbeRadius",solventProbeRadius);
       setParameterValue("specular",specular);

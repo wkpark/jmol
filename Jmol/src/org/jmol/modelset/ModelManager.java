@@ -565,6 +565,14 @@ String getAtomInfoChime(int i) {
     return modelSet.getBondAt(i).getOrder();
   }
 
+  public void assignAromaticBonds() {
+    modelSet.assignAromaticBonds();
+  }
+  
+  public void resetAromatic() {
+    modelSet.resetAromatic();
+  }
+  
   float getBondLength(int i) {
     return getBondAtom1(i).distance(getBondAtom2(i));
   }

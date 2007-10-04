@@ -38,8 +38,12 @@ import javax.vecmath.Point3f;
 
 class Compiler {
 
-  static Hashtable htFunctions = new Hashtable();
-
+  Hashtable localFunctions = new Hashtable();
+  static Hashtable globalFunctions = new Hashtable();
+  boolean isFunction(String name) {
+    return (name.indexOf("_") == 0 ? localFunctions : globalFunctions).containsKey(name);
+  }
+  
   private Function thisFunction;
   private Viewer viewer;
   private String filename;
@@ -701,7 +705,7 @@ class Compiler {
             break;
           case Token.function:
             if (!isCheckOnly)
-              htFunctions.put(thisFunction.name, thisFunction);
+              (thisFunction.name.indexOf("_") == 0 ? localFunctions : globalFunctions).put(thisFunction.name, thisFunction);
             flowContext.setFunction(script, ichCurrentCommand, lltoken.size(),
                 lineNumbers, lineIndices, lltoken);
             thisFunction = null;

@@ -123,7 +123,7 @@ class Eval { //implements Runnable {
   private StringBuffer outputBuffer;
 
   Eval(Viewer viewer) {
-    compiler = new Compiler(viewer);
+    compiler = viewer.getCompiler();
     this.viewer = viewer;
     clearDefinitionsAndLoadPredefined();
   }
@@ -358,7 +358,8 @@ class Eval { //implements Runnable {
   private Function getFunction(String name, int tok) {
     if (name == null)
       return null;
-    Function function = (Function) Compiler.htFunctions.get(name);
+    Function function = (Function) (name.indexOf("_") == 0 
+        ? compiler.localFunctions : Compiler.globalFunctions).get(name);
     return (function == null || function.aatoken == null ? null : function);
   }
 
@@ -4340,7 +4341,8 @@ class Eval { //implements Runnable {
     }
     // possibly "all"
     if (tokAt(1) == Token.function) {
-      Compiler.htFunctions = new Hashtable();
+      Compiler.globalFunctions.clear();
+      compiler.localFunctions.clear();
       return;
     }
     String var = parameterAsString(1);
@@ -6496,7 +6498,7 @@ class Eval { //implements Runnable {
         i = iToken;
         break;
       default:
-        if (theTok == Token.identifier && Compiler.htFunctions.containsKey((String)theToken.value)) {
+        if (theTok == Token.identifier && compiler.isFunction((String)theToken.value)) {
           if (!rpn.addOp(new Token(Token.function, theToken.value))) {
             //iToken--;
             invalidArgument();
@@ -8176,17 +8178,16 @@ class Eval { //implements Runnable {
 
   private String getFunctionCalls() {
     StringBuffer s = new StringBuffer();
-    String[] names = new String[Compiler.htFunctions.size()];
-    Enumeration e = Compiler.htFunctions.keys();
+    String[] names = new String[Compiler.globalFunctions.size()];
+    Enumeration e = Compiler.globalFunctions.keys();
     int n = 0;
     while (e.hasMoreElements()) {
       String name = (String) e.nextElement();
-      if (name.indexOf("_") != 0)
-        names[n++] = name;
+      names[n++] = name;
     }
     Arrays.sort(names, 0, n);
     for (int i = 0; i < n; i++)
-      s.append(((Function) Compiler.htFunctions.get(names[i])).toString());
+      s.append(((Function) Compiler.globalFunctions.get(names[i])).toString());
     return s.toString();
   }
 

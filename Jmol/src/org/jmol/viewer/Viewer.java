@@ -111,6 +111,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
 
   private CommandHistory commandHistory = new CommandHistory();
   private ColorManager colorManager;
+  private Compiler compiler;
+  Compiler getCompiler() {
+    return compiler;
+  }
   private Eval eval;
   private FileManager fileManager;
   private ModelManager modelManager;
@@ -175,9 +179,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     tempManager = new TempArray();
     fileManager = new FileManager(this, modelAdapter);
     repaintManager = new RepaintManager(this);
+    compiler = new Compiler(this);
     eval = new Eval(this);
   }
-
+  
   /**
    * NOTE: for APPLICATION (not APPLET) call
    * 

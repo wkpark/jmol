@@ -3009,6 +3009,10 @@ class Eval { //implements Runnable {
       if ((order = JmolConstants.getBondOrderFromString(parameterAsString(1)))
           == JmolConstants.BOND_ORDER_NULL)
         invalidArgument();
+      // generic partial can be indicated by "partial n.m"
+      if (order == JmolConstants.BOND_PARTIAL01 && tokAt(2) == Token.decimal) {
+        order = JmolConstants.getPartialBondOrderFromInteger(statement[2].intValue);
+      }
     }
     setShapeProperty(JmolConstants.SHAPE_STICKS, "bondOrder", new Short(order));
   }
@@ -3147,6 +3151,7 @@ class Eval { //implements Runnable {
     int distanceCount = 0;
     int atomSetCount = 0;
     short bondOrder = JmolConstants.BOND_ORDER_NULL;
+    short bo;
     int operation = JmolConstants.CONNECT_MODIFY_OR_CREATE;
     boolean isDelete = false;
     boolean haveType = false;
@@ -3186,10 +3191,18 @@ class Eval { //implements Runnable {
         return;
       case Token.integer:
       case Token.decimal:
+        if (nAtomSets > 0) {
+          if (haveType || isColorOrRadius)
+            invalidParameterOrder();
+          bo = JmolConstants.getBondOrderFromFloat(floatParameter(i));
+          if (bo == JmolConstants.BOND_ORDER_NULL)
+            invalidArgument();
+          bondOrder = bo;
+          haveType = true;
+          break;
+        }
         if (++nDistances > 2)
           badArgumentCount();
-        if (nAtomSets > 0 || haveType || isColorOrRadius)
-          invalidParameterOrder();
         distances[distanceCount++] = floatParameter(i);
         break;
       case Token.bitset:
@@ -3214,10 +3227,12 @@ class Eval { //implements Runnable {
       case Token.identifier:
       case Token.hbond:
         String cmd = parameterAsString(i);
-        short bo = JmolConstants.getBondOrderFromString(cmd);
+        bo = JmolConstants.getBondOrderFromString(cmd);
         if (bo != JmolConstants.BOND_ORDER_NULL) {
           if (haveType)
             incompatibleArguments();
+          if (bo == JmolConstants.BOND_PARTIAL01 && tokAt(i + 1) == Token.decimal)
+            bo = JmolConstants.getPartialBondOrderFromInteger(statement[++i].intValue);
           bondOrder = bo;
           haveType = true;
           break;
@@ -8164,8 +8179,11 @@ class Eval { //implements Runnable {
     String[] names = new String[Compiler.htFunctions.size()];
     Enumeration e = Compiler.htFunctions.keys();
     int n = 0;
-    while (e.hasMoreElements())
-      names[n++] = (String) e.nextElement();
+    while (e.hasMoreElements()) {
+      String name = (String) e.nextElement();
+      if (name.indexOf("_") != 0)
+        names[n++] = name;
+    }
     Arrays.sort(names, 0, n);
     for (int i = 0; i < n; i++)
       s.append(((Function) Compiler.htFunctions.get(names[i])).toString());

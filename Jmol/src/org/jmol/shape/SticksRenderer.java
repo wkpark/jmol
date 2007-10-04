@@ -120,17 +120,10 @@ public class SticksRenderer extends ShapeRenderer {
     case 4:
       renderBond(0);
       break;
-    case JmolConstants.BOND_PARTIAL23:
-    case JmolConstants.BOND_PARTIAL32:
-      bondOrder = 3;
-      renderBond(order == JmolConstants.BOND_PARTIAL23 ? 1 : 4);
-      break;
     case JmolConstants.BOND_ORDER_UNSPECIFIED:
-    case JmolConstants.BOND_PARTIAL01:
       bondOrder = 1;
       renderBond(1);
       break;
-    case JmolConstants.BOND_PARTIAL12:
     case JmolConstants.BOND_AROMATIC:
       bondOrder = 2;
       renderBond(getAromaticDottedBondMask(bond));
@@ -140,7 +133,10 @@ public class SticksRenderer extends ShapeRenderer {
       renderTriangle(bond);
       break;
     default:
-      if ((bondOrder & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
+      if ((bondOrder & JmolConstants.BOND_PARTIAL_MASK) != 0) {
+        bondOrder = JmolConstants.getPartialBondOrder(order);
+        renderBond(JmolConstants.getPartialBondDotted(order));
+      } else if ((bondOrder & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
         if (hbondsSolid) {
           bondOrder = 1;
           renderBond(0);
@@ -148,15 +144,15 @@ public class SticksRenderer extends ShapeRenderer {
           renderHbondDashed();
         }
         break;
-      }
+      } 
     }
   }
     
   int getRenderBondOrder(int order) {
-    if ((order & JmolConstants.BOND_SULFUR_MASK) != 0)
-      order &= ~JmolConstants.BOND_SULFUR_MASK;
     if ((order & JmolConstants.BOND_PARTIAL_MASK) != 0)
       return order;
+    if ((order & JmolConstants.BOND_SULFUR_MASK) != 0)
+      order &= ~JmolConstants.BOND_SULFUR_MASK;
     if ((order & JmolConstants.BOND_COVALENT_MASK) != 0) {
       if (order == 1 ||
           !showMultipleBonds ||
@@ -177,9 +173,7 @@ public class SticksRenderer extends ShapeRenderer {
       if (! lineBond) {
         int space = width / 8 + 3;
         int step = width + space;
-        int y = yA - ((bondOrder == 1)
-                      ? 0
-                      : (bondOrder == 2) ? step / 2 : step);
+        int y = yA - (bondOrder - 1) * step / 2;
         do {
           fillCylinder(colixA, colixA, endcaps,
                            width, xA, y, zA, xA, y, zA);
@@ -199,8 +193,8 @@ public class SticksRenderer extends ShapeRenderer {
     int dxB = dx * dx;
     int dyB = dy * dy;
     int mag2d2 = dxB + dyB;
-    if (bondOrder == 4)
-      mag2d2 *= 4;
+    //if (bondOrder == 4)
+      //mag2d2 *= 4;
     mag2d = (int)(Math.sqrt(mag2d2) + 0.5);
     resetAxisCoordinates();
     while (true) {
@@ -234,15 +228,10 @@ public class SticksRenderer extends ShapeRenderer {
     xAxis1 = xA; yAxis1 = yA; 
     xAxis2 = xB; yAxis2 = yB; 
 
-    if (bondOrder == 2) {
-      xAxis1 -= dxStep / 2; yAxis1 -= dyStep / 2;
-      xAxis2 -= dxStep / 2; yAxis2 -= dyStep / 2;
-    } else if (bondOrder == 3) {
-      xAxis1 -= dxStep; yAxis1 -= dyStep;
-      xAxis2 -= dxStep; yAxis2 -= dyStep;
-    } else if (bondOrder == 4) {
-      xAxis1 -= dxStep * 1.5; yAxis1 -= dyStep * 1.5;
-      xAxis2 -= dxStep * 1.5; yAxis2 -= dyStep * 1.5;
+    if (bondOrder > 1) {
+      int f = (bondOrder - 1);
+      xAxis1 -= dxStep * f / 2; yAxis1 -= dyStep * f / 2;
+      xAxis2 -= dxStep * f / 2; yAxis2 -= dyStep * f / 2;
     }
   }
 

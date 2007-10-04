@@ -205,8 +205,16 @@ public class MolReader extends AtomSetCollectionReader {
       int atomIndex1 = parseInt(line, 0, 3);
       int atomIndex2 = parseInt(line, 3, 6);
       int order = parseInt(line, 6, 9);
-      if (order == 4)
+      switch (order) {
+      case 4:
+      case 6: //1.25 ??
+      case 7: //1.75 ??
         order = JmolAdapter.ORDER_AROMATIC;
+        break;
+      case 5:
+        order = JmolAdapter.ORDER_PARTIAL12;
+        break;
+      }
       atomSetCollection
           .addBond(new Bond(atom0 + atomIndex1 - 1, atom0 + atomIndex2 - 1, order));
     }

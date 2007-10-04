@@ -2270,6 +2270,8 @@ abstract public class ModelSet {
       return getPurineSet();
     if (setType.equals("pyrimidine"))
       return getPyrimidineSet();
+    if (setType.equals("isaromatic"))
+      return getAromaticSet();
     return null;
   }
 
@@ -2393,6 +2395,16 @@ abstract public class ModelSet {
     for (int i = atomCount; --i >= 0;)
       if (atoms[i].isPyrimidine())
         bs.set(i);
+    return bs;
+  }
+
+  private BitSet getAromaticSet() {
+    BitSet bs = new BitSet();
+    for (int i = bondCount; --i >= 0;)
+      if (bonds[i].isAromatic()) {
+        bs.set(bonds[i].getAtomIndex1());
+        bs.set(bonds[i].getAtomIndex2());
+      }
     return bs;
   }
 

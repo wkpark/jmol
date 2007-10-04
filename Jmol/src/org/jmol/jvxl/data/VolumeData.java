@@ -280,12 +280,19 @@ public class VolumeData {
     voxelData = new float[nx][ny][nz];
     for (int x = 0; x < nx; x++)
       for (int y = 0; y < ny; y++)
-        for (int z = 0; z < nz; z++) {
+        for (int z = 0; z < nz; z++)
           voxelData[x][y][z] = calcVoxelPlaneDistance(x, y, z);
-          //if ((x + y + z) % 100 == 0)
-            //System.out.println("xyz "+ x + " " + y + " " + z + " " + voxelData[x][y][z]);
-        }
-    //System.out.println("OK");
   }
+
+  public void squareData() {
+    int nx = voxelCounts[0];
+    int ny = voxelCounts[1];
+    int nz = voxelCounts[2];
+    for (int x = 0; x < nx; x++)
+      for (int y = 0; y < ny; y++)
+        for (int z = 0; z < nz; z++)
+          voxelData[x][y][z] = voxelData[x][y][z] * voxelData[x][y][z];
+  }
+  
 }
 

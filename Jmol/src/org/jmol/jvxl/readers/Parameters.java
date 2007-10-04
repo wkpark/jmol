@@ -192,6 +192,7 @@ public class Parameters {
     isBicolorMap = isCutoffAbsolute = isPositiveOnly = false;
     isCavity = false;
     isColorReversed = false;
+    isSquared = false;
     isContoured = false;
     isEccentric = isAnisotropic = false;
     isSilent = false;
@@ -372,8 +373,11 @@ public class Parameters {
     void setLobe(Point4f v) {
     dataType = SURFACE_LOBE;
     setEccentricity(v);
-    if (cutoff == Float.MAX_VALUE)
+    if (cutoff == Float.MAX_VALUE) {
       cutoff = defaultOrbitalCutoff;
+      if (isSquared)
+        cutoff = cutoff * cutoff;
+    }
     isSilent = !logMessages;
     script = " center " + Escape.escape(center)
         + (Float.isNaN(scale) ? "" : " scale " + scale) + " LOBE {" + v.x + " "
@@ -472,8 +476,11 @@ public class Parameters {
     psi_Znuc = nlmZ[3];
     psi_ptsPerAngstrom = 10;
     // quantum rule is abs(m) <= l < n
-    if (cutoff == Float.MAX_VALUE)
+    if (cutoff == Float.MAX_VALUE) {
       cutoff = defaultOrbitalCutoff;
+      if (isSquared)
+        cutoff = cutoff * cutoff;
+    }
     isCutoffAbsolute = true;
     if (!isMapping && thePlane == null) {
       if (colorBySign) {
@@ -495,8 +502,11 @@ public class Parameters {
     dataType = SURFACE_MEP;
     theProperty = charges;
     isEccentric = isAnisotropic = false;
-    if (cutoff == Float.MAX_VALUE)
+    if (cutoff == Float.MAX_VALUE) {
       cutoff = defaultMepCutoff;
+      if (isSquared)
+        cutoff = cutoff * cutoff;
+    }
     isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
     contourFromZero = false;
     //colorBySign = false;
@@ -561,8 +571,11 @@ public class Parameters {
     }
   //  colorBySign = false;
   //  isBicolorMap = false;
-    if (cutoff == Float.MAX_VALUE)
+    if (cutoff == Float.MAX_VALUE) {
       cutoff = defaultQMOrbitalCutoff;
+      if (isSquared)
+        cutoff = cutoff * cutoff;
+    }
     isCutoffAbsolute = (cutoff > 0 && !isPositiveOnly);
     if (isMapping || thePlane != null)
       return;
@@ -601,6 +614,7 @@ public class Parameters {
   float mappedDataMax;
   boolean isColorReversed;
   boolean isBicolorMap;
+  boolean isSquared;
 
   Point4f thePlane;
   boolean isContoured;

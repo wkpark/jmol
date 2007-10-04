@@ -406,6 +406,11 @@ public class SurfaceGenerator {
       return true;
     }
 
+    if ("squareData" == propertyName) {
+      params.isSquared = ((Boolean) value).booleanValue();
+      return true;
+    }
+
     if ("gridPoints" == propertyName) {
       params.iAddGridPoints = true;
       return true;

@@ -366,6 +366,8 @@ public abstract class VoxelReader implements VertexDataServer {
     contourVertexCount = 0;
     int contourType = -1;
     marchingSquares = null;
+    if (params.isSquared)
+      volumeData.squareData();
     if (params.thePlane != null || params.isContoured) {
       marchingSquares = new MarchingSquares(this, volumeData, params.thePlane,
           params.nContours, params.thisContour, params.contourFromZero);
@@ -481,6 +483,8 @@ public abstract class VoxelReader implements VertexDataServer {
   ////////////////////////////////////////////////////////////////
 
   void colorIsosurface() {
+    if (params.isSquared)
+      volumeData.squareData();
     if (params.isContoured && marchingSquares == null) {
       //    if (params.isContoured && !(jvxlDataIs2dContour || params.thePlane != null)) {
       Logger.error("Isosurface error: Cannot contour this type of data.");
@@ -543,7 +547,6 @@ public abstract class VoxelReader implements VertexDataServer {
               : params.colorPos);
     }
     jvxlData.isTruncated = (jvxlData.minColorIndex >= 0 && !params.isContoured);
-    
     float value;
     for (int i = meshData.vertexCount; --i >= 0;) {
       /* right, so what we are doing here is setting a range within the 

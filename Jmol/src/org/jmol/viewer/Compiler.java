@@ -1642,6 +1642,7 @@ class Compiler {
     // fall into the code and below and just add the token
     case Token.all:
     case Token.none:
+    case Token.isaromatic:
     case Token.bitset:
       return addNextToken();
     case Token.integer:

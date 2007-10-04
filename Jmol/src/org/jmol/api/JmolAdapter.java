@@ -55,6 +55,8 @@ public abstract class JmolAdapter {
   public final static short ORDER_COVALENT_DOUBLE = JmolConstants.BOND_COVALENT_DOUBLE;
   public final static short ORDER_COVALENT_TRIPLE = JmolConstants.BOND_COVALENT_TRIPLE;
   public final static short ORDER_AROMATIC        = JmolConstants.BOND_AROMATIC;
+  public final static short ORDER_AROMATIC_SINGLE = JmolConstants.BOND_AROMATIC_SINGLE;
+  public final static short ORDER_AROMATIC_DOUBLE = JmolConstants.BOND_AROMATIC_DOUBLE;
   public final static short ORDER_HBOND           = JmolConstants.BOND_H_REGULAR;
   public final static short ORDER_STEREO_NEAR     = JmolConstants.BOND_STEREO_NEAR;
   public final static short ORDER_STEREO_FAR      = JmolConstants.BOND_STEREO_FAR;

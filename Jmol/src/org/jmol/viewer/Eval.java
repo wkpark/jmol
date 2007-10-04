@@ -1439,6 +1439,7 @@ class Eval { //implements Runnable {
       case Token.carbohydrate:
       case Token.purine:
       case Token.pyrimidine:
+      case Token.isaromatic:
         rpn.addX(getAtomBits(((String) value).toLowerCase()));
         break;
       case Token.spec_atom:
@@ -8910,6 +8911,11 @@ class Eval { //implements Runnable {
         propertyValue = new Float(floatParameter(2));
         break;
       }
+      if (str.equalsIgnoreCase("SQUARED")) {
+        propertyName = "squareData";
+        propertyValue= Boolean.TRUE;
+        break;
+      }
       if (str.equalsIgnoreCase("TITLEFORMAT")) {
         if (2 < statementLength && statement[2].tok == Token.string) {
           propertyName = "titleFormat";
@@ -9233,6 +9239,11 @@ class Eval { //implements Runnable {
         str = parameterAsString(i);
         if (str.equalsIgnoreCase("REMAPPABLE")) { // testing only
           propertyName = "remappable";
+          break;
+        }
+        if (str.equalsIgnoreCase("SQUARED")) {
+          propertyName = "squareData";
+          propertyValue= Boolean.TRUE;
           break;
         }
         if (str.equalsIgnoreCase("IGNORE")) {

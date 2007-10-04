@@ -180,6 +180,7 @@ public class Isosurface extends MeshFileCollection implements MeshDataServer {
     }
 
     if ("map" == propertyName) {
+      setProperty("squareData", Boolean.FALSE, null);
       return;
     }
 

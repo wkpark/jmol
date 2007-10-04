@@ -261,7 +261,9 @@ final public class JmolConstants {
   public final static short BOND_STEREO_FAR    = 0x402;
 
   public final static short BOND_AROMATIC_MASK = 0x200;
-  public final static short BOND_AROMATIC      = 0x201; // same as partial 2.1
+  public final static short BOND_AROMATIC_SINGLE = 0x201; // same as single
+  public final static short BOND_AROMATIC_DOUBLE = 0x202; // same as double
+  public final static short BOND_AROMATIC      = 0x203; // same as partial 2.1
 
   public final static short BOND_SULFUR_MASK   = 0x100; // will be incremented
 
@@ -280,18 +282,29 @@ final public class JmolConstants {
   
   private final static String[] bondOrderNames = {
     "single", "double", "triple", "quadruple", 
-    "aromatic", "hbond", "partial", "partialDouble", "partialTriple", "partialTriple2", "unspecified"
+    "aromatic", 
+    "hbond", "partial", "partialDouble",
+    "partialTriple", "partialTriple2", 
+    "aromaticSingle", "aromaticDouble",
+    "unspecified"
   };
 
   private final static String[] bondOrderNumbers = {
     "1", "2", "3", "4", 
-    "1.5", "1", "0.5", "1.5", "2.5", "2.5", "1"
+    "1.5", 
+    "1", "0.5", "1.5", 
+    "2.5", "2.5", 
+    "1", "2", 
+    "1"
   };
 
   private final static short[] bondOrderValues = {
     BOND_COVALENT_SINGLE, BOND_COVALENT_DOUBLE, BOND_COVALENT_TRIPLE, BOND_COVALENT_QUADRUPLE,
-    BOND_AROMATIC, BOND_H_REGULAR, BOND_PARTIAL01, BOND_PARTIAL12, 
-    BOND_PARTIAL23, BOND_PARTIAL32, BOND_ORDER_UNSPECIFIED
+    BOND_AROMATIC, 
+    BOND_H_REGULAR, BOND_PARTIAL01, BOND_PARTIAL12, 
+    BOND_PARTIAL23, BOND_PARTIAL32, 
+    BOND_AROMATIC_SINGLE, BOND_AROMATIC_DOUBLE,
+    BOND_ORDER_UNSPECIFIED
   };
 
   final static short getBondOrderFromString(String bondOrderString) {

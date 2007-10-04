@@ -75,45 +75,47 @@ public class SticksRenderer extends ShapeRenderer {
     int order = bond.getOrder();
     atomA = bond.getAtom1();
     atomB = bond.getAtom2();
-    if (!atomA.isModelVisible()
-        || !atomB.isModelVisible()
+    if (!atomA.isModelVisible() || !atomB.isModelVisible()
         || !g3d.isInDisplayRange(atomA.screenX, atomA.screenY)
         || !g3d.isInDisplayRange(atomB.screenX, atomB.screenY)
-        || modelSet.isAtomHidden(atomA.getAtomIndex()) 
+        || modelSet.isAtomHidden(atomA.getAtomIndex())
         || modelSet.isAtomHidden(atomB.getAtomIndex()))
       return;
 
     short colix = bond.getColix();
-    colixA = Graphics3D.getColixInherited(colix, atomA.getColix());    
+    colixA = Graphics3D.getColixInherited(colix, atomA.getColix());
     colixB = Graphics3D.getColixInherited(colix, atomB.getColix());
     if (bondsBackbone) {
-      if (ssbondsBackbone &&
-          (order & JmolConstants.BOND_SULFUR_MASK) != 0) {
+      if (ssbondsBackbone && (order & JmolConstants.BOND_SULFUR_MASK) != 0) {
         // for ssbonds, always render the sidechain,
         // then render the backbone version
         /*
-          mth 2004 04 26
-          No, we are not going to do this any more
-        render(bond, atomA, atomB);
-        */
-        
+         mth 2004 04 26
+         No, we are not going to do this any more
+         render(bond, atomA, atomB);
+         */
+
         atomA = atomA.getGroup().getLeadAtom(atomA);
         atomB = atomB.getGroup().getLeadAtom(atomB);
-      } else if (hbondsBackbone &&
-                 (order & JmolConstants.BOND_HYDROGEN_MASK)!=0) {
+      } else if (hbondsBackbone
+          && (order & JmolConstants.BOND_HYDROGEN_MASK) != 0) {
         atomA = atomA.getGroup().getLeadAtom(atomA);
         atomB = atomB.getGroup().getLeadAtom(atomB);
       }
     }
-    xA = atomA.screenX; yA = atomA.screenY; zA = atomA.screenZ;
-    xB = atomB.screenX; yB = atomB.screenY; zB = atomB.screenZ;
-    if (zA ==1 || zB == 1)
+    xA = atomA.screenX;
+    yA = atomA.screenY;
+    zA = atomA.screenZ;
+    xB = atomB.screenX;
+    yB = atomB.screenY;
+    zB = atomB.screenZ;
+    if (zA == 1 || zB == 1)
       return;
     dx = xB - xA;
     dy = yB - yA;
-    width = viewer.scaleToScreen((zA + zB)/2, madBond);
+    width = viewer.scaleToScreen((zA + zB) / 2, madBond);
     bondOrder = getRenderBondOrder(order);
-    switch(bondOrder) {
+    switch (bondOrder) {
     case 1:
     case 2:
     case 3:
@@ -121,12 +123,15 @@ public class SticksRenderer extends ShapeRenderer {
       renderBond(0);
       break;
     case JmolConstants.BOND_ORDER_UNSPECIFIED:
+    case JmolConstants.BOND_AROMATIC_SINGLE:
       bondOrder = 1;
-      renderBond(1);
+      renderBond(order == JmolConstants.BOND_AROMATIC_SINGLE ? 0 : 1);
       break;
     case JmolConstants.BOND_AROMATIC:
+    case JmolConstants.BOND_AROMATIC_DOUBLE:
       bondOrder = 2;
-      renderBond(getAromaticDottedBondMask(bond));
+      renderBond(order == JmolConstants.BOND_AROMATIC ? getAromaticDottedBondMask(bond)
+          : 0);
       break;
     case JmolConstants.BOND_STEREO_NEAR:
     case JmolConstants.BOND_STEREO_FAR:
@@ -144,7 +149,7 @@ public class SticksRenderer extends ShapeRenderer {
           renderHbondDashed();
         }
         break;
-      } 
+      }
     }
   }
     

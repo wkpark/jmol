@@ -454,11 +454,12 @@ public class Measures extends Shape {
   }
   
  public String getShapeState() {
-    StringBuffer commands = new StringBuffer();
+    StringBuffer commands = new StringBuffer("");
+    appendCmd(commands, "measures delete");
     for (int i = 0; i < measurementCount; i++)
-      commands.append(getState(i));
+      appendCmd(commands, getState(i));
     if (!showMeasurementNumbers)
-      commands.append("set measures off; # numbers off\n");
+      appendCmd(commands, "set measures off; # numbers off");
     appendCmd(commands, "measures = " + viewer.getMeasureDistanceUnits());
     appendCmd(commands, getFontCommand("measures", font3d));
     int n = 0;
@@ -477,7 +478,7 @@ public class Measures extends Shape {
     }
     if (n > 0)
       if (n == measurementCount)
-        commands.append("measures off; # lines and numbers off\n");
+        appendCmd(commands, "measures off; # lines and numbers off");
       else
         for (int i = 0; i < measurementCount; i++)
           if (measurements[i].isHidden())
@@ -495,7 +496,7 @@ public class Measures extends Shape {
     String info = "measure";
     for (int i = 0; i < count; i++)
       info += "({" + measurements[index].getIndex(i + 1) + "})";
-    info += "; # " + getInfoAsString(index) + "\n";
+    info += "; # " + getInfoAsString(index);
     return info;
   }
 }

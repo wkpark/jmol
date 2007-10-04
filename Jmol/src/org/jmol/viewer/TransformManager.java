@@ -139,69 +139,68 @@ abstract class TransformManager {
     resetNavigationPoint();
   }
 
-  String getState() {
-    StringBuffer commands = new StringBuffer(
-        "# orientation/center/spin state;\nset refreshing false;\n");
-    commands.append("perspectiveModel = "+ perspectiveModel +";\n");
+  String getState(StringBuffer sfunc) {
+    sfunc.append("  _setPerspectiveState;\n");
+    StringBuffer commands = new StringBuffer("function _setPerspectiveState();\n");
+    StateManager.appendCmd(commands, "perspectiveModel = "+ perspectiveModel);
     if (!isWindowCentered())
-      commands.append("windowCentered = false;\n");
-    commands.append("cameraDepth = ").append(cameraDepth).append(";\n");
+      StateManager.appendCmd(commands, "windowCentered = false");
+    StateManager.appendCmd(commands, "cameraDepth = " + cameraDepth);
     if (isNavigationMode)
-      commands.append("navigationMode = true;\n");
-    commands.append("center ").append(Escape.escape(fixedRotationCenter)).append(";\n");
-    commands.append(getMoveToText(0)).append(";\n");
+      StateManager.appendCmd(commands, "navigationMode = true");
+    StateManager.appendCmd(commands, "center " + Escape.escape(fixedRotationCenter));
+    StateManager.appendCmd(commands, getMoveToText(0));
     if (!isNavigationMode && !zoomEnabled)
-      commands.append("zoom off;\n");
-    commands.append("slab ").append(slabPercentSetting).
+      StateManager.appendCmd(commands, "zoom off");
+    commands.append("  slab ").append(slabPercentSetting).
              append(";depth ").append(depthPercentSetting).
              append(slabEnabled && !isNavigationMode ? ";slab on" : "").append(";\n");
     if (slabPlane != null)
-      commands.append("slab plane {").append(slabPlane.x).
+      commands.append("  slab plane {").append(slabPlane.x).
                append(" ").append(slabPlane.y).
                append(" ").append(slabPlane.z).
                append(" ").append(slabPlane.w).append(" };\n");
     if (depthPlane != null)
-      commands.append("depth plane {").append(depthPlane.x).
+      commands.append("  depth plane {").append(depthPlane.x).
                append(" ").append(depthPlane.y).
                append(" ").append(depthPlane.z).
                append(" ").append(depthPlane.w).append(" };\n");
     if (depthPlane != null || slabPlane != null)
-      commands.append("slab reference ").append(Escape.escape(slabRef)).
+      commands.append("  slab reference ").append(Escape.escape(slabRef)).
                append(slabEnabled || isNavigationMode? ";slab on" : "").append(";\n");
     commands.append(getSpinState(true)).append("\n");
     if (viewer.modelSetHasVibrationVectors()) {
-      commands.append("vibration scale ").append(viewer.getVibrationScale()).append(";\n");
+      StateManager.appendCmd(commands, "vibration scale " + viewer.getVibrationScale());
       if (vibrationOn)
-        commands.append("vibration ").append(vibrationPeriod).append(";\n");
+        StateManager.appendCmd(commands, "vibration " + vibrationPeriod);
       else
-        commands.append("vibration period ").append(vibrationPeriod).append(";\n");
+        StateManager.appendCmd(commands, "vibration period " + vibrationPeriod);
     }
-
-    commands.append("\n");
     if (isNavigationMode)
       commands.append(getNavigationState());
+    commands.append("end function;\n\n");
     return commands.toString();
   }
 
   String getSpinState(boolean isAll) {
-    String s = "spinX = " + (int) spinX + ";spinY = " + (int) spinY
+    String s = "  spinX = " + (int) spinX + ";spinY = " + (int) spinY
         + ";spinZ = " + (int) spinZ + ";spinFps = " + (int) spinFps + ";";
     if (spinOn) {
       if (isAll)
-        s += "\nrefreshing = true;refresh;";
+        s += "\n  refreshing = true;refresh;";
       if (isSpinSelected)
-          s +="\nselect " + Escape.escape(viewer.getSelectionSet()) + ";\nrotateSelected ";
+          s +="\n  select " + Escape.escape(viewer.getSelectionSet()) + ";\nrotateSelected ";
       if (isSpinInternal) {
         Point3f pt = new Point3f(internalRotationCenter);
         pt.sub(rotationAxis);
-        s += "\nspin " + rotationRate + " "
+        s += "\n  spin " + rotationRate + " "
             + Escape.escape(internalRotationCenter) + " "
             + Escape.escape(pt);
       } else if (isSpinFixed) {
-        s += "\nspin axisangle " + Escape.escape(rotationAxis) + " "
+        s += "\n  spin axisangle " + Escape.escape(rotationAxis) + " "
             + rotationRate;
       } else {
-        s += "\nspin on";
+        s += "\n  spin on";
       }
       s += ";";
     }

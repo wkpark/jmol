@@ -451,7 +451,6 @@ public class StateManager {
       appendCmd(str, "percentVdwAtom = " + percentVdwAtom);
       if (zeroBasedXyzRasmol)
         appendCmd(str, "zeroBasedXyzRasmol = true");
-      str.append("\n");
       return str.toString();
     }
 
@@ -572,13 +571,12 @@ public class StateManager {
     boolean navigationCentered = false;
     float navigationSpeed      = 5;
 
-    String getWindowState() {
-      StringBuffer str = new StringBuffer("# window state;\n# height "
+    String getWindowState(StringBuffer sfunc) {
+      sfunc.append("  initialize;\n  refreshing = false;\n  _setWindowState;\n");
+      StringBuffer str = new StringBuffer("\nfunction _setWindowState();\n# height "
           + viewer.getScreenHeight() + ";\n# width " + viewer.getScreenWidth()
           + ";\n");
-      appendCmd(str, "initialize");
       appendCmd(str, "stateVersion = " + getParameter("_version"));
-      appendCmd(str, "refreshing = false");
       for (int i = 0; i < OBJ_MAX; i++)
         if (objColors[i] != 0)
           appendCmd(str, getObjectNameFromId(i) + "Color = \""
@@ -586,7 +584,7 @@ public class StateManager {
       str.append(getSpecularState());
       if (stereoState != null)
         appendCmd(str, "stereo" + stereoState);
-      str.append("\n");
+      str.append("end function;\n\n");
       return str.toString();
     }
 
@@ -839,12 +837,12 @@ public class StateManager {
       return commands.toString();
     }
     
-    String getState() {
+    String getState(StringBuffer sfunc) {
+      sfunc.append("  _setVariableState;\n");
       int n = 0;
       String[] list = new String[htPropertyFlags.size()
           + htParameterValues.size()];
-      StringBuffer commands = new StringBuffer("# settings;\n");
-      appendCmd(commands, "refreshing = false");
+      StringBuffer commands = new StringBuffer("function _setVariableState();\n\n");
       Enumeration e;
       String key;
       //booleans
@@ -911,7 +909,13 @@ public class StateManager {
           appendCmd(commands, list[i]);
       if (n == 0)
         commands.append("# --none--;\n");
-      commands.append("\n");
+      
+      // label defaults
+
+      viewer.loadShape(JmolConstants.SHAPE_LABELS);
+      commands.append(viewer.getShapeProperty(JmolConstants.SHAPE_LABELS, "defaultState"));
+
+      commands.append("\nend function;\n\n");
       return commands.toString();
     }
     
@@ -1082,7 +1086,7 @@ public class StateManager {
   public static void appendCmd(StringBuffer s, String cmd) {
     if (cmd.length() == 0)
       return;
-    s.append(cmd).append(";\n");
+    s.append("  ").append(cmd).append(";\n");
   }
   
 

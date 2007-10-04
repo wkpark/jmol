@@ -289,8 +289,8 @@ class ColorManager {
     Logger.info("color \"" + ColorEncoder.getColorSchemeName(palette) + "\" range " + colorLo + " " + colorHi);
   }
 
-  static String getState() {
-    return ColorEncoder.getState();
+  static String getState(StringBuffer sfunc) {
+    return ColorEncoder.getState(sfunc);
   }
   
   static void setUserScale(int[] scale) {

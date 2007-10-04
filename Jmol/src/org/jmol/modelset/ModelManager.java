@@ -1230,12 +1230,12 @@ String getAtomInfoChime(int i) {
     modelSet.addStateScript(script);  
   }
  
-  public String getState() {
-    return modelSet.getState(true);
+  public String getState(StringBuffer sfunc) {
+    return modelSet.getState(sfunc);
   }
   
   public String getStructureState() {
-    return modelSet.getState(false);
+    return modelSet.getState(null);
   }
   
   public Hashtable getBoundBoxInfo() {

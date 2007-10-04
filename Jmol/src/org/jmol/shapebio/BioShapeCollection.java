@@ -111,7 +111,7 @@ public abstract class BioShapeCollection extends Shape {
       if (bioShape.monomerCount > 0)
         bioShape.setShapeState(temp, temp2);
     }
-    return getShapeCommands(temp, temp2, modelSet.getAtomCount());
+    return "\n" + getShapeCommands(temp, temp2, modelSet.getAtomCount());
   }
 
   void initialize() {

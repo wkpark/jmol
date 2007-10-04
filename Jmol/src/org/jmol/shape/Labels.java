@@ -273,6 +273,12 @@ public class Labels extends AtomShape {
     }
   }
 
+  public Object getProperty(String property, int index) {
+    if (property.equals("defaultState"))
+      return getDefaultState();
+    return null;
+  }
+
   void putLabel(int i, Text text) {
     if (text == null)
       atomLabels.remove(atoms[i]);
@@ -396,8 +402,9 @@ public class Labels extends AtomShape {
     }
   }
 
-  public void getDefaultState(StringBuffer s) {
-    appendCmd(s, "\n# label defaults;\nselect none");
+  private String getDefaultState() {
+    StringBuffer s = new StringBuffer("\n# label defaults;\n");
+    appendCmd(s, "select none");
     appendCmd(s, getColorCommand("label", defaultPaletteID, defaultColix));
     appendCmd(s, "background label " + encodeColor(defaultBgcolix));
     appendCmd(s, "labelOffset = " + Text.getXOffset(defaultOffset) + " "
@@ -411,6 +418,7 @@ public class Labels extends AtomShape {
     if ((defaultOffset & GROUP_FLAG) != 0)
       appendCmd(s, "set labelGroup");
     appendCmd(s, getFontCommand("label", Font3D.getFont3D(defaultFontId)));
+    return s.toString();
   }
 
   public String getShapeState() {

@@ -326,8 +326,9 @@ class SelectionManager {
     }
   }
     
-  String getState() {
-    StringBuffer commands = new StringBuffer("# selection state;\n");
+  String getState(StringBuffer sfunc) {
+    sfunc.append("  _setSelectionState;\n");
+    StringBuffer commands = new StringBuffer("function _setSelectionState();\n");
     String cmd = null;
     Hashtable temp = new Hashtable();
     if (BitSetUtil.firstSetBit(bsHidden) >= 0)
@@ -341,11 +342,11 @@ class SelectionManager {
     temp.put("-", bsSelection);
     cmd = StateManager.getCommands(temp, null, viewer.getAtomCount());
     if (cmd == null)
-      commands.append("select none;");
+      StateManager.appendCmd(commands, "select none");
     else
       commands.append(cmd);
     commands.append(viewer.getShapeProperty(JmolConstants.SHAPE_STICKS, "selectionState"));
-    commands.append("\n");
+    commands.append("end function\n\n");
     return commands.toString();
   }
 

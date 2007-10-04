@@ -60,6 +60,8 @@ public abstract class JmolAdapter {
   public final static short ORDER_STEREO_FAR      = JmolConstants.BOND_STEREO_FAR;
   public final static short ORDER_PARTIAL01       = JmolConstants.BOND_PARTIAL01;
   public final static short ORDER_PARTIAL12       = JmolConstants.BOND_PARTIAL12;
+  public final static short ORDER_PARTIAL23       = JmolConstants.BOND_PARTIAL23;
+  public final static short ORDER_PARTIAL32       = JmolConstants.BOND_PARTIAL32;
   public final static short ORDER_UNSPECIFIED     = JmolConstants.BOND_ORDER_UNSPECIFIED;
   
   //////////////////////////////////////////////////////////////////

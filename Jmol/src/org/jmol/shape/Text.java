@@ -554,16 +554,16 @@ public class Text {
       case XYZ:
         if (strOff == null)
           strOff = Escape.escape(xyz);
-        s.append("set echo ").append(target).append(" ").append(strOff);
+        s.append("  set echo ").append(target).append(" ").append(strOff);
         if (align != LEFT)
-          s.append("set echo ").append(target).append(" ").append(hAlignNames[align]);
+          s.append("  set echo ").append(target).append(" ").append(hAlignNames[align]);
         break;
       default:
-        s.append("set echo ").append(vAlignNames[valign]).append(" ").append(hAlignNames[align]);
+        s.append("  set echo ").append(vAlignNames[valign]).append(" ").append(hAlignNames[align]);
       }
       s.append("; echo ").append(Escape.escape(textUnformatted)).append(";\n");
       if (script != null)
-        s.append("set echo ").append(target).append(" script ").append(Escape.escape(script)).append(";\n");
+        s.append("  set echo ").append(target).append(" script ").append(Escape.escape(script)).append(";\n");
     }
     //isDefine and target==top: do all
     //isDefine and target!=top: just start
@@ -574,8 +574,8 @@ public class Text {
     if (isDefine != target.equals("top"))
       return s.toString();
     // these may not change much:
-    s.append(Shape.getFontCommand("echo", font)).append(";\n");
-    s.append("color echo");
+    s.append("  " + Shape.getFontCommand("echo", font)).append(";\n");
+    s.append("  color echo");
     if (Graphics3D.isColixTranslucent(colix))
       s.append(" translucent " + Graphics3D.getColixTranslucencyLevel(colix));
     s.append(" [x").append(g3d.getHexColorFromIndex(colix)).append("]");

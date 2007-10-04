@@ -255,7 +255,7 @@ import org.jmol.util.ArrayUtil;
     makeColorScheme("user", scale, false);
   }
   
-  public final static String getState() {
+  public final static String getState(StringBuffer sfunc) {
     StringBuffer s = new StringBuffer("");
     Enumeration e = schemes.keys();
     int n = 0;
@@ -267,7 +267,11 @@ import org.jmol.util.ArrayUtil;
     //String colors = getColorSchemeList(getColorSchemeArray(USER));
     //if (colors.length() > 0)
       //s.append("userColorScheme = " + colors + ";\n");
-    return (n > 0 ? s.append("\n").toString() : "");
+    if (n > 0) {
+      sfunc.append("\n  _setColorState\n");
+    }
+    return (n > 0 ? "function _setColorState();\n" 
+        + s.append("end function;\n\n").toString() : "");
   }
   
   public static String getColorSchemeList(int[] scheme) {

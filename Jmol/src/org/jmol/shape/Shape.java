@@ -196,9 +196,7 @@ public abstract class Shape {
   }
 
   static public void appendCmd(StringBuffer s, String cmd) {
-    if (cmd.length() == 0)
-      return;
-    s.append(cmd).append(";\n");
+    StateManager.appendCmd(s, cmd);
   }
 
   static public String getFontCommand(String type, Font3D font) {

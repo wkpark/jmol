@@ -833,9 +833,8 @@ public class Draw extends MeshCollection {
       return "";
     StringBuffer str = new StringBuffer();
     if (!mesh.isFixed && iModel >= 0 && modelCount > 1)
-      str.append("frame ").append(viewer.getModelNumberDotted(iModel)).append(
-          ";\n");
-    str.append("draw ").append(mesh.thisID);
+      appendCmd(str,"frame " + viewer.getModelNumberDotted(iModel));
+    str.append("  draw ").append(mesh.thisID);
     if (mesh.isFixed)
       str.append(" fixed");
     if (iModel < 0)
@@ -955,9 +954,8 @@ public class Draw extends MeshCollection {
   }
 
  public String getShapeState() {
-    StringBuffer s = new StringBuffer();
-    if (nPoints == 0)
-      return "";
+    StringBuffer s = new StringBuffer("\n");
+    appendCmd(s, "draw delete");
     for (int i = 0; i < meshCount; i++) {
       DrawMesh mesh = dmeshes[i];
       if (mesh.vertexCount == 0)

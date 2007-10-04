@@ -1046,7 +1046,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     if (objId < 0)
       return "";
     short mad = getObjectMad(objId);
-    StringBuffer s = new StringBuffer();
+    StringBuffer s = new StringBuffer("\n");
     Shape.appendCmd(s, name
         + (mad == 0 ? " off" : mad == 1 ? " on" : mad == -1 ? " dotted"
             : mad < 20 ? " " + mad : " " + (mad / 2000f)));
@@ -2242,6 +2242,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   }
 
   public String getStateInfo() {
+    StringBuffer sfunc = new StringBuffer("function _setState();\n");
     StringBuffer s = new StringBuffer("# Jmol state version "
         + getJmolVersion() + ";\n");
     if (isApplet) {
@@ -2253,26 +2254,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
       s.append("\n");
     }
     //  window state
-    s.append(global.getWindowState());
+    s.append(global.getWindowState(sfunc));
     //  file state
-    s.append(fileManager.getState());
-    if (getModelSetFileName().equals("zapped"))
-      s.append("zap;\n\n");
+    s.append(fileManager.getState(sfunc));
     //  numerical values
-    s.append(global.getState());
-    getDataState(s);
+    s.append(global.getState(sfunc));
+    getDataState(s,sfunc);
     //  definitions, connections, atoms, bonds, labels, echos, shapes
-    s.append(modelManager.getState());
+    s.append(modelManager.getState(sfunc));
     //  color scheme
-    s.append(ColorManager.getState());
+    s.append(ColorManager.getState(sfunc));
     //  frame information
-    s.append(repaintManager.getState());
+    s.append(repaintManager.getState(sfunc));
     //  orientation and slabbing
-    s.append(transformManager.getState());
+    s.append(transformManager.getState(sfunc));
     //  display and selections
-    s.append(selectionManager.getState());
-    s.append("refreshing = true;\n");
-
+    s.append(selectionManager.getState(sfunc));
+    sfunc.append("  refreshing = true;\nend function;\n\n_setState;\n");
+    s.append(sfunc);
     return s.toString();
   }
 
@@ -2367,13 +2366,17 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return Float.NaN;
   }
 
-  static private void getDataState(StringBuffer s) {
+  static private void getDataState(StringBuffer s, StringBuffer sfunc) {
     if (dataValues == null)
       return;
     Enumeration e = (dataValues.keys());
+    int n = 0;
     while (e.hasMoreElements()) {
       String name = (String) e.nextElement();
       if (name.indexOf("property_") == 0) {
+        if (n == 0)
+          s.append("function _setDataState();\n");
+        n++;
         Object data = ((Object[]) dataValues.get(name))[1];
         s.append("DATA \"").append(name).append("\"");
         if (data instanceof float[]) {
@@ -2388,6 +2391,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
         s.append("end \"").append(name).append("\";\n");
       }
     }
+    if (n == 0)
+      return;
+    sfunc.append("  _setDataState\n");
+    s.append("end function;\n\n");
   }
 
   public String getAltLocListInModel(int modelIndex) {

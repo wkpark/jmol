@@ -43,7 +43,6 @@ import org.jmol.geodesic.EnvelopeCalculation;
 import org.jmol.bspt.Bspf;
 import org.jmol.bspt.SphereIterator;
 import org.jmol.shape.Closest;
-import org.jmol.shape.Labels;
 import org.jmol.shape.Shape;
 import org.jmol.shapespecial.Dipoles;
 import org.jmol.symmetry.UnitCell;
@@ -2712,8 +2711,13 @@ abstract public class ModelSet {
     stateScripts.addElement(script);
   }
 
-  String getState(boolean isAll) {
+  String getState(StringBuffer sfunc) {
     StringBuffer commands = new StringBuffer();
+    boolean isAll = (sfunc != null);
+    if (isAll) {
+      sfunc.append("  _setModelState;\n");
+      commands.append("function _setModelState();\n");
+    }
     String cmd;
     if (isAll && reportFormalCharges) {
       commands.append("\n# charges;\n");
@@ -2732,35 +2736,33 @@ abstract public class ModelSet {
       int n = 0;
       for (int i = 0; i < atomCount; i++)
         if (tainted.get(i)) {
-          s.append(i + 1).append(" ").append(atoms[i].getElementSymbol())
-              .append(" ").append(
+          s.append(i + 1).append(" ")
+          .append(atoms[i].getElementSymbol()).append(" ").append(
                   TextFormat.simpleReplace(atoms[i].getIdentity(), " ", "_"))
               .append(" ").append(atoms[i].x).append(" ").append(atoms[i].y)
               .append(" ").append(atoms[i].z).append(" ;\n");
           ++n;
         }
-      commands.append("DATA \"coord set\"\n").append(n).append(
+      commands.append("  DATA \"coord set\"\n").append(n).append(
           " ;\nJmol Coordinate Data Format 1 -- Jmol ").append(
           Viewer.getJmolVersion()).append(";\n");
       commands.append(s);
-      commands.append("end \"coord set\";\n");
+      commands.append("  end \"coord set\";\n");
     }
 
     // connections
 
     if (isAll) {
-      commands.append("\n# connections;\n");
       Vector fs = stateScripts;
       int len = fs.size();
-      for (int i = 0; i < len; i++)
-        commands.append(fs.get(i)).append("\n");
+      if (len > 0) {
+        commands.append("\n# connections;\n");
+        for (int i = 0; i < len; i++)
+          commands.append("  ").append(fs.get(i)).append("\n");
+        commands.append("\n");
+      }
 
-      // labels
-
-      viewer.loadShape(JmolConstants.SHAPE_LABELS);
-      ((Labels) shapes[JmolConstants.SHAPE_LABELS]).getDefaultState(commands);
-
-      commands.append("\n# model state;\n");
+      commands.append("\n");
       // shape construction
 
     }
@@ -2768,7 +2770,6 @@ abstract public class ModelSet {
     setModelVisibility();
 
     commands.append(getProteinStructureState());
-    commands.append("\n");
     
     for (int i = 0; i < JmolConstants.SHAPE_MAX; ++i) {
       Shape shape = shapes[i];
@@ -2776,6 +2777,8 @@ abstract public class ModelSet {
           && (cmd = shape.getShapeState()) != null && cmd.length() > 1)
         commands.append(cmd);
     }
+    if (isAll)
+      commands.append("\nend function;\n\n");
     return commands.toString();
   }
 
@@ -2788,12 +2791,14 @@ abstract public class ModelSet {
     int lastId = -1;
     int res1 = 0;
     int res2 = 0;
+    int n = 0;
     for (int i = 0; i <= atomCount; i++) {
       id = Integer.MIN_VALUE;
       if (i == atomCount
           || (id = atoms[i].getProteinStructureID()) != lastId) {
         if (bs != null) {
-          cmd.append("structure ")
+          n++;
+          cmd.append("  structure ")
               .append(JmolConstants.getProteinStructureName(itype))
               .append(" ").append(Escape.escape(bs))
               .append("    \t# model=").append(getModelName(-1 - atoms[iLastAtom].modelIndex))
@@ -2813,6 +2818,8 @@ abstract public class ModelSet {
       res2 = atoms[i].getResno();
       iLastAtom = i;
     }
+    if (n > 0)
+      cmd.append("\n");
     return cmd.toString();
   }
 

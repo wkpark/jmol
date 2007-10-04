@@ -139,7 +139,7 @@ public class Token {
   final static int cartoon      = command |  3;
   final static int center       = command |  4 | expressionCommand;
   //final static int color        = command |  6 | colorparam | setparam | embeddedExpression; with mathfunc
-  final static int connect      = command |  7 | embeddedExpression | colorparam;
+  final static int connect      = command |  7 | numberOrExpression | colorparam;
   //final static int data         = command |  8; with mathfunc
   final static int define       = command |  9 | expressionCommand | expression | setparam;
   final static int dots         = command | 10 | embeddedExpression;
@@ -952,7 +952,7 @@ public class Token {
     "moveto",            new Token(moveto,          varArgCount),
     "navigate",          new Token(navigate,        varArgCount),
     "navigation",        null, 
-    "bondorder",         new Token(bondorder,                 1),
+    "bondorder",         new Token(bondorder,           maxArg2),
     "console",           new Token(console,          onDefault1),
     "pmesh",             new Token(pmesh,           varArgCount),
     "draw",              new Token(draw,            varArgCount),

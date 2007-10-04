@@ -351,7 +351,7 @@ public abstract class MeshCollection extends Shape {
   }
 
  public String getShapeState() {
-    StringBuffer s = new StringBuffer();
+    StringBuffer s = new StringBuffer("\n");
     for (int i = 0; i < meshCount; i++) {
       String cmd = meshes[i].scriptCommand;
       if (cmd == null)
@@ -359,7 +359,7 @@ public abstract class MeshCollection extends Shape {
       Mesh mesh = meshes[i];
       if (mesh.modelIndex > 0 && modelCount > 1)
         appendCmd(s, "frame " + viewer.getModelNumber(mesh.modelIndex));
-      s.append(cmd).append("\n");
+      appendCmd(s, cmd);
       if (cmd.charAt(0) != '#') {
         if (allowMesh)
         appendCmd(s, mesh.getState(myType));

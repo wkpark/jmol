@@ -91,10 +91,13 @@ class FileManager {
     clear();
   }
 
-  String getState() {
-    StringBuffer commands = new StringBuffer("# file state;\n\n");
+  String getState(StringBuffer sfunc) {
+    sfunc.append("  _setFileState;\n");
+    StringBuffer commands = new StringBuffer("function _setFileState();\n\n");
     commands.append(loadScript);
-    commands.append("\n\n");
+    if (viewer.getModelSetFileName().equals("zapped"))
+      commands.append("  zap;\n");
+    commands.append("\nend function;\n\n");
     return commands.toString();
   }
 
@@ -119,7 +122,7 @@ class FileManager {
   void setLoadScript(String script, boolean isMerge) {
     if (loadScript == null || !isMerge)
       loadScript = "";
-    loadScript += "\n"+viewer.getLoadState() + script + "\n";
+    loadScript += viewer.getLoadState() + "  " + script + "\n";
   }
 
   void openFile(String name, Hashtable htParams, String loadScript, boolean isMerge) {

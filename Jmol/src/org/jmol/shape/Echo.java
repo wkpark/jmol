@@ -103,7 +103,7 @@ public class Echo extends TextShape {
   }
 
   public String getShapeState() {
-    StringBuffer s = new StringBuffer();
+    StringBuffer s = new StringBuffer("\n  set echo off;\n");
     String lastFormat = "";
     Enumeration e = texts.elements();
     while (e.hasMoreElements()) {

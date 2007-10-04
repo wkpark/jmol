@@ -110,7 +110,7 @@ public class Axes extends FontLineShape {
   }
   
  public String getShapeState() {
-    return super.getShapeState() + "axisScale = " + viewer.getAxesScale() + ";\n";
+    return super.getShapeState() + "  axisScale = " + viewer.getAxesScale() + ";\n";
   }
 
 }

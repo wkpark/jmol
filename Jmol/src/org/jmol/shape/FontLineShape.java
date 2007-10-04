@@ -48,7 +48,10 @@ public abstract class FontLineShape extends Shape {
   }
 
   public String getShapeState() {
-    return viewer.getObjectState(myType) + Shape.getFontCommand(myType, font3d)
-        + ";\n";
+    String s = viewer.getObjectState(myType);
+    String fcmd = Shape.getFontCommand(myType, font3d);
+      if (fcmd.length() > 0)
+        fcmd = "  " + fcmd + ";\n"; 
+    return (s.length() < 3 ? "" : s + fcmd);
   }
 }

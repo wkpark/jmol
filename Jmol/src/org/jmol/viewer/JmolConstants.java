@@ -299,6 +299,8 @@ final public class JmolConstants {
       if (bondOrderNames[i].equalsIgnoreCase(bondOrderString))
         return bondOrderValues[i];
     }
+    if (bondOrderString.toLowerCase().indexOf("partial ") == 0)
+      return getPartialBondOrderFromInteger(Compiler.modelValue(bondOrderString.substring(8).trim()));
     return BOND_ORDER_NULL;
   }
   

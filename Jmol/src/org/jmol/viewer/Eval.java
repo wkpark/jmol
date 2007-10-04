@@ -10889,6 +10889,8 @@ class Eval { //implements Runnable {
        * 
        * connected(1, 3, "single", {carbon})
        * 
+       * connected(1, 3, "partial 3.1", {carbon})
+       * 
        *  means "atoms connected to carbon by from 1 to 3 single bonds"
        * 
        * connected(1.0, 1.5, "single", {carbon}, {oxygen})

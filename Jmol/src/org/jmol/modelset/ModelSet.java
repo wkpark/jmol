@@ -3055,8 +3055,7 @@ abstract public class ModelSet {
    */
   private boolean assignAromaticSingle(Atom atom, int notBondIndex) {
     Bond[] bonds = atom.bonds;
-    if (bonds.length == 3 && atom.getElementNumber() == 7
-        && atom.getFormalCharge() == 0)
+    if (assignAromaticSingleHetero(atom, bonds.length))
       return false;
     for (int i = bonds.length; --i >= 0;) {
       Bond bond = bonds[i];
@@ -3081,8 +3080,7 @@ abstract public class ModelSet {
    */
   private boolean assignAromaticDouble(Atom atom) {
     Bond[] bonds = atom.bonds;
-    boolean haveDouble = (bonds.length == 3 && atom.getElementNumber() == 7 && atom
-        .getFormalCharge() == 0);
+    boolean haveDouble = assignAromaticSingleHetero(atom, bonds.length);
     int lastBond = -1;
     for (int i = bonds.length; --i >= 0;) {
       if (bsAromaticDouble.get(bonds[i].index))
@@ -3105,4 +3103,14 @@ abstract public class ModelSet {
     return haveDouble;
   } 
   
+  private boolean assignAromaticSingleHetero(Atom atom, int nAtoms) {
+    switch (atom.getElementNumber()) {
+    case 7: // N
+      return (nAtoms == 3 && atom.getFormalCharge() == 0);
+    case 8: // O
+    case 16: // S
+      return (nAtoms == 2);    
+    }
+    return false;
+  }
 }

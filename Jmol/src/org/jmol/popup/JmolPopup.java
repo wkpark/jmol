@@ -192,7 +192,7 @@ abstract public class JmolPopup {
   }
 
   void updateSelectMenu() {
-    Object menu = htMenus.get("selectMenu");
+    Object menu = htMenus.get("selectMenuText");
     if (menu == null)
       return;
     enableMenu(menu, atomCount != 0);
@@ -222,7 +222,6 @@ abstract public class JmolPopup {
         String elementName = JmolConstants.elementNameFromNumber(n);
         String elementSymbol = JmolConstants.elementSymbolFromNumber(n);
         String entryName = elementSymbol + " - " + elementName;
-        System.out.println("adding " + entryName + " " + elementName);
         addMenuItem(menu, entryName, elementName, null);
       }
     }
@@ -610,7 +609,7 @@ abstract public class JmolPopup {
       boolean isDisabled = (!isJVM12orGreater && item.indexOf("JVM12") >= 0);
       String word = popupResourceBundle.getWord(item);
       if (item.indexOf("Menu") >= 0) {
-        Object subMenu = newMenu(word, id + "." + item);
+        Object subMenu = newMenu(word, id + "." + item);        
         addMenuSubMenu(menu, subMenu);
         htMenus.put(item, subMenu);
         if (item.indexOf("Computed") < 0)
@@ -773,7 +772,6 @@ abstract public class JmolPopup {
     thisx = x;
     thisy = y;
     String id = currentMenuItemId;
-    //System.out.println (id);
     updateForShow();
     for (Enumeration keys = htCheckbox.keys(); keys.hasMoreElements();) {
       String key = (String) keys.nextElement();

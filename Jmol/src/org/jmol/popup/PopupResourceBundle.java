@@ -75,13 +75,13 @@ class PopupResourceBundle {
       {   "@AXESCOLOR", "gray salmon maroon olive slateblue gold orchid"},
       
       {   "popupMenu",
-          "modelSetMenu FRAMESbyModelComputedMenu configurationComputedMenu - selectMenu viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYUNITCELLmenu - "
+          "modelSetMenu FRAMESbyModelComputedMenu configurationComputedMenu - selectMenuText viewMenu renderMenu colorMenu - surfaceMenu SYMMETRYUNITCELLMenu - "
               + "zoomMenu spinMenu VIBRATIONMenu "
               + "FRAMESanimateMenu - "
               + "measureMenu pickingMenu - JVM12showConsole JVM12showMenu - "
               + "languageComputedMenu aboutComputedMenu" },
               
-      {   "selectMenu",
+      {   "selectMenuText",
           "hideNotSelectedCheckbox showSelectionsCheckbox - selectAll selectNone invertSelection - elementsComputedMenu SYMMETRYComputedMenu - "
               + "PDBproteinMenu PDBnucleicMenu PDBheteroMenu PDBcarboMenu PDBnoneOfTheAbove" },
 
@@ -107,7 +107,7 @@ class PopupResourceBundle {
 
       {   "renderMenu",
           "perspectiveDepthCheckbox showBoundBoxCheckbox showUNITCELLCheckbox showAxesCheckbox stereoMenu - renderSchemeMenu - atomMenu labelMenu bondMenu hbondMenu ssbondMenu - "
-              + "PDBstructureMenu [set_axes]Menu [set_boundbox]Menu [set_UNITCEL]menu" },
+              + "PDBstructureMenu [set_axes]Menu [set_boundbox]Menu [set_UNITCELL]Menu" },
 
       {   "renderSchemeMenu",
           "renderCpkSpacefill renderBallAndStick "
@@ -224,14 +224,14 @@ class PopupResourceBundle {
       {   "surfaceMenu",
           "surfDots surfVDW surfSolventAccessible14 surfSolvent14 surfMolecular CHARGEsurfMEP surfMoComputedMenu - surfOpaque surfTranslucent surfOff" },
 
-      {   "SYMMETRYUNITCELLmenu",
+      {   "SYMMETRYUNITCELLMenu",
           "UNITCELLone UNITCELLnine UNITCELLnineRestricted UNITCELLninePoly" },
 
       {   "[set_axes]Menu", 
           "off#axes dotted - byPixelMenu byAngstromMenu" },
 
       { "[set_boundbox]Menu", null },
-      { "[set_UNITCEL]menu", null },
+      { "[set_UNITCELL]Menu", null },
 
       {   "byPixelMenu", 
           "1p 3p 5p 10p" },
@@ -552,7 +552,7 @@ class PopupResourceBundle {
         "mainMenuText", GT._("Main Menu"),
         
         
-        "selectMenu", GT._("Select"),
+//        "selectMenu", GT._("Select"),
         "selectAll", GT._("All"),
         "selectNone", GT._("None"),
         "hideNotSelectedCheckbox", GT._("Display Selected Only"),
@@ -853,7 +853,7 @@ class PopupResourceBundle {
         "surfTranslucent", GT._("Make Translucent"),
         "surfOff", GT._("Off"),
 
-        "SYMMETRYUNITCELLmenu", GT._("Symmetry"),
+        "SYMMETRYUNITCELLMenu", GT._("Symmetry"),
         "UNITCELLone", GT._("Reload {0}", "{1 1 1}"),
         "UNITCELLnine", GT._("Reload {0}", "{444 666 1}"),
         "UNITCELLnineRestricted", GT._("Reload {0}", "{444 666 1};display 555"),
@@ -862,7 +862,7 @@ class PopupResourceBundle {
 
         "[set_axes]Menu", GT._("Axes"), 
         "[set_boundbox]Menu", GT._("Boundbox"),
-        "[set_UNITCEL]menu", GT._("Unitcell"),
+        "[set_UNITCELL]Menu", GT._("Unitcell"),
 
         "off#axes", GT._("Hide"), 
         "dotted", GT._("Dotted"),

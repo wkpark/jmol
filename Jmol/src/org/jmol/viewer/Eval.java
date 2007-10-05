@@ -7815,7 +7815,7 @@ class Eval { //implements Runnable {
     } else if (data == "QUAT" || data == "RAMA") {
       data = viewer.getPdbData(type2);
     } else if (data == "FUNCS") {
-      data = getFunctionCalls();
+      data = getFunctionCalls("");
     } else if (data == "VAR") {
       data = "" + getParameter(parameterAsString(2), false);
     } else if (data == "SPT") {
@@ -7901,9 +7901,9 @@ class Eval { //implements Runnable {
     int len = 2;
     switch (getToken(1).tok) {
     case Token.function:
-      checkLength2();
+      checkLength23();
       if (!isSyntaxCheck)
-        showString(getFunctionCalls());
+        showString(getFunctionCalls(optParameterAsString(2)));
       return;
     case Token.set:
       checkLength2();
@@ -8188,18 +8188,28 @@ class Eval { //implements Runnable {
       viewer.showString(str);
   }
 
-  private String getFunctionCalls() {
+  private String getFunctionCalls(String selectedFunction) {
     StringBuffer s = new StringBuffer();
-    String[] names = new String[Compiler.globalFunctions.size()];
-    Enumeration e = Compiler.globalFunctions.keys();
+    int pt = selectedFunction.indexOf("*");
+    boolean isGeneric = (pt >= 0);
+    boolean isLocal = (selectedFunction.indexOf("_") == 0);
+    if (isGeneric)
+      selectedFunction = selectedFunction.substring(0, pt);
+    selectedFunction = selectedFunction.toLowerCase();
+    Hashtable ht = (isLocal ? compiler.localFunctions
+        : Compiler.globalFunctions);
+    String[] names = new String[ht.size()];
+    Enumeration e = ht.keys();
     int n = 0;
     while (e.hasMoreElements()) {
       String name = (String) e.nextElement();
-      names[n++] = name;
+      if (selectedFunction.length() == 0 || name.equalsIgnoreCase(selectedFunction) 
+          || isGeneric && name.toLowerCase().indexOf(selectedFunction) == 0)
+        names[n++] = name;
     }
     Arrays.sort(names, 0, n);
     for (int i = 0; i < n; i++)
-      s.append(((Function) Compiler.globalFunctions.get(names[i])).toString());
+      s.append(((Function) ht.get(names[i])).toString());
     return s.toString();
   }
 

@@ -2846,6 +2846,74 @@ abstract public class ModelSet {
     return mmset.getPdbData(type, ctype, bsAtoms, isDerivative);
   }
   
+  /*
+   * aromatic single/double bond assignment 
+   * by Bob Hanson, hansonr@stolaf.edu, Oct. 2007
+   * Jmol 11.3.29.
+   * 
+   * This algorithm assigns alternating single/double bonds to all 
+   * sets of bonds of type AROMATIC in a system. Any bonds already
+   * assigned AROMATICSINGLE or AROMATICDOUBLE by the user are preserved.
+   * 
+   * In this way the user can assign ONE bond, and Jmol will take it from
+   * there.
+   * 
+   * The algorithm is highly recursive.
+   * 
+   * We track two bond bitsets: bsAromaticSingle and bsAromaticDouble.
+   *  
+   * Loop through all aromatic bonds. 
+   *   If unassigned, assignAromaticDouble(Bond bond).
+   *   If unsuccessful, assignAromaticSingle(Bond bond).
+   * 
+   * assignAromaticDouble(Bond bond):
+   * 
+   *   Each of the two atoms must have exactly one double bond.
+   *   
+   *   bsAromaticDouble.set(thisBond)
+   *   
+   *   For each aromatic bond connected to each atom that is not
+   *   already assigned AROMATICSINGLE or AROMATICDOUBLE:
+   *   
+   *     assignAromaticSingle(Bond bond)
+   *     
+   *   If unsuccessful, bsAromaticDouble.clear(thisBond) and 
+   *   return FALSE, otherwise return TRUE.
+   * 
+   * assignAromaticSingle(Bond bond):
+   * 
+   *   Each of the two atoms must have exactly one double bond.
+   *   
+   *   bsAromaticSingle.set(thisBond)
+   *   
+   *   For each aromatic bond connected to this atom that is not
+   *   already assigned:
+   *   
+   *     for one: assignAromaticDouble(Bond bond) 
+   *     the rest: assignAromaticSingle(Bond bond)
+   *     
+   *   If two AROMATICDOUBLE bonds to the same atom are found
+   *   or unsuccessful in assigning AROMATICDOUBLE or AROMATICSINGLE, 
+   *   bsAromaticSingle.clear(thisBond) and 
+   *   return FALSE, otherwise return TRUE.
+   *   
+   * The process continues until all bonds are processed. It is quite
+   * possible that the first assignment will fail either because somewhere
+   * down the line the user has assigned an incompatible AROMATICDOUBLE or
+   * AROMATICSINGLE bond. 
+   * 
+   * This is no problem though, because the assignment is self-correcting, 
+   * and in the second pass the process will be opposite, and success will
+   * be achieved.
+   * 
+   * It is possible that no correct assignment is possible because the structure
+   * has no valid closed-shell Lewis structure. In that case, AROMATICSINGLE 
+   * bonds will be assigned to problematic areas.  
+   * 
+   * Bob Hanson -- 10/2007
+   * 
+   */
+
   private BitSet bsAromaticSingle;
   private BitSet bsAromaticDouble;
   private BitSet bsAromatic = new BitSet();
@@ -2861,10 +2929,23 @@ abstract public class ModelSet {
   void assignAromaticBonds() {
     assignAromaticBonds(true);
   }
-  
+
+  /**
+   * algorithm discussed above.
+   * 
+   * @param isUserCalculation   if set, don't reset the base aromatic bitset
+   *                            and do report changes to STICKS as though this
+   *                            were a bondOrder command.  
+   */
   void assignAromaticBonds(boolean isUserCalculation) {
+    // bsAromatic tracks what was originally in the file, but
+    // individual bonds are cleared if the connect command has been used.
+    // in this way, users can override the file designations.
     if (!isUserCalculation)
       bsAromatic = new BitSet();
+    
+    //set up the two temporary bitsets and reset bonds.
+    
     bsAromaticSingle = new BitSet();
     bsAromaticDouble = new BitSet();
     for (int i = bondCount; --i >= 0;) {
@@ -2883,15 +2964,17 @@ abstract public class ModelSet {
         break;
       }
     }
+    // main recursive loop
     Bond bond;
     for (int i = bondCount; --i >= 0;) {
       bond = bonds[i];
-      if (bond.order != JmolConstants.BOND_AROMATIC || bsAromaticDouble.get(i)
-          || bsAromaticSingle.get(i))
+      if (bond.order != JmolConstants.BOND_AROMATIC 
+          || bsAromaticDouble.get(i) || bsAromaticSingle.get(i))
         continue;
       if (!assignAromaticDouble(bond))
         assignAromaticSingle(bond);
     }
+    // all done: do the actual assignments and clear arrays.
     for (int i = bondCount; --i >= 0;) {
       bond = bonds[i];      
       if (bsAromaticSingle.get(i)) {
@@ -2906,68 +2989,92 @@ abstract public class ModelSet {
         }
       }
     }
+    bsAromaticSingle = null;
+    bsAromaticDouble = null;
+
+    // send a message to STICKS indicating that these bonds
+    // should be part of the state of the model. They will 
+    // appear in the state as bondOrder commands.
+    
     if (isUserCalculation)
       setShapeSize(JmolConstants.SHAPE_STICKS, Integer.MIN_VALUE, bsAromatic);
 
-    //System.out.println("SINGLE: " + bsAromaticSingle);
-    //System.out.println("DOUBLE: " + bsAromaticDouble);
-  }
+}
 
-  private boolean assignAromaticSingle(Bond bond) {
-    int bondIndex = bond.index;
-    if (bsAromaticDouble.get(bondIndex))
-      return false;
-    if (bsAromaticSingle.get(bondIndex))
-      return true;
-    //System.out.println("Trying to assign single to bond " + bond.index + " between " + bond.atom1.getIdentity() + " and " + bond.atom2.getIdentity());
-    bsAromaticSingle.set(bondIndex);
-    if (!assignAromaticDouble(bond.atom1) 
-        || !assignAromaticDouble(bond.atom2)) {
-      bsAromaticSingle.clear(bondIndex);
-      //System.out.println("Trying to assign single to bond " + bond.index + " NO!");
-      return false;
-    }
-    //System.out.println("Trying to assign single to bond " + bond.index + " OK");
-    return true;
-  }
-
-  private boolean assignAromaticSingle(Atom atom, int notBondIndex) {
-    Bond[] bonds = atom.bonds;
-    for (int i = bonds.length; --i >= 0;) {
-      Bond bond = bonds[i];
-      int bondIndex = bond.index;
-      if (bondIndex == notBondIndex || !bond.isAromatic() || bsAromaticSingle.get(bondIndex))
-        continue;
-      if (bsAromaticDouble.get(bondIndex) || !assignAromaticSingle(bond)) {
-        //System.out.println("Trying to assign single to " + atom.getInfo() + " NO WAY");
-        return false;
-      }
-    }
-    //System.out.println("Trying to assign single to " + atom.getInfo() + " OK");
-    return true;
-  }
-  
+  /**
+   * try to assign AROMATICDOUBLE to this bond. Each atom needs to be
+   * have all single bonds except for this one.  
+   * 
+   * @param bond
+   * @return      true if successful; false otherwise
+   */
   private boolean assignAromaticDouble(Bond bond) {
     int bondIndex = bond.index;
     if (bsAromaticSingle.get(bondIndex))
       return false;
     if (bsAromaticDouble.get(bondIndex))
       return true;
-    //System.out.println("Trying to assign double to bond " + bond.index + " between " + bond.atom1.getIdentity() + " and " + bond.atom2.getIdentity());
     bsAromaticDouble.set(bondIndex);
-    if (!assignAromaticSingle(bond.atom1, bondIndex) 
+    if (!assignAromaticSingle(bond.atom1, bondIndex)
         || !assignAromaticSingle(bond.atom2, bondIndex)) {
       bsAromaticDouble.clear(bondIndex);
-      //System.out.println("Trying to assign double to bond " + bond.index + " NO!!!!");
       return false;
     }
-    //System.out.println("Trying to assign double to bond " + bond.index + " OK");
     return true;
   }
   
+  /**
+   * try to assign AROMATICSINGLE to this bond. Each atom needs to be
+   * able to have one aromatic double bond attached.  
+   * 
+   * @param bond
+   * @return      true if successful; false otherwise
+   */
+  private boolean assignAromaticSingle(Bond bond) {
+    int bondIndex = bond.index;
+    if (bsAromaticDouble.get(bondIndex))
+      return false;
+    if (bsAromaticSingle.get(bondIndex))
+      return true;
+    bsAromaticSingle.set(bondIndex);
+    if (!assignAromaticDouble(bond.atom1) || !assignAromaticDouble(bond.atom2)) {
+      bsAromaticSingle.clear(bondIndex);
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * This atom needs all single bonds, 
+   * because the bond leading up to it is double.
+   * 
+   * @param atom
+   * @param notBondIndex  that index of the bond leading to this atom --- to be ignored
+   * @return      true if successful, false if not
+   */
+  private boolean assignAromaticSingle(Atom atom, int notBondIndex) {
+    Bond[] bonds = atom.bonds;
+    for (int i = bonds.length; --i >= 0;) {
+      Bond bond = bonds[i];
+      int bondIndex = bond.index;
+      if (bondIndex == notBondIndex || !bond.isAromatic()
+          || bsAromaticSingle.get(bondIndex))
+        continue;
+      if (bsAromaticDouble.get(bondIndex) || !assignAromaticSingle(bond)) {
+        return false;
+      }
+    }
+    return true;
+  }
+ 
+  /**
+   * This atom needs one and only one double bond; 
+   * the rest must be single bonds.
+   * 
+   * @param atom
+   * @return      true if successful, false if not
+   */
   private boolean assignAromaticDouble(Atom atom) {
-    //find an unassigned bond and assign it double
-    //System.out.println("Trying to assign double to " + atom.getInfo());
     Bond[] bonds = atom.bonds;
     boolean haveDouble = false;
     int lastBond = -1;
@@ -2986,12 +3093,10 @@ abstract public class ModelSet {
       if (!haveDouble && assignAromaticDouble(bond))
         haveDouble = true;
       else if ((haveDouble || i < lastBond) && !assignAromaticSingle(bond)) {
-        //System.out.println("Trying to assign double to " + atom.getInfo() + " NOPE");
         return false;
       }
     }
-    //System.out.println("Trying to assign double to " + atom.getInfo() + " OK");
     return haveDouble;
   } 
-
+  
 }

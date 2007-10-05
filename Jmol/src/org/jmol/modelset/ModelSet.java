@@ -3106,10 +3106,10 @@ abstract public class ModelSet {
   private boolean assignAromaticSingleHetero(Atom atom, int nAtoms) {
     switch (atom.getElementNumber()) {
     case 7: // N
-      return (nAtoms == 3 && atom.getFormalCharge() == 0);
+      return (nAtoms == 3 && atom.getFormalCharge() < 1);
     case 8: // O
     case 16: // S
-      return (nAtoms == 2);    
+      return (nAtoms == 2 && atom.getFormalCharge() < 1);    
     }
     return false;
   }

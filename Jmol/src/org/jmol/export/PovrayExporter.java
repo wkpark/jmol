@@ -64,6 +64,8 @@ public class PovrayExporter extends Exporter {
     int minScreenDimension = screenWidth < screenHeight ? screenWidth
         : screenHeight;
 
+    output.append(getAuxiliaryFileData());
+    output.append("\\-PART II-\\");
     output.append("//******************************************************\n");
     output.append("// Jmol generated povray script.\n");
     output.append("//\n");
@@ -121,22 +123,26 @@ public class PovrayExporter extends Exporter {
   }
 
   public void getFooter() {
-    //no footer is necessary
-    // ????  viewer.createImage("jmol.ini","test\n",Integer.MAX_VALUE,0,0);
-    // Input_File_Name=/home/schra/povtest
-    // Output_to_File=true
-    // Output_File_Type=T
-    // Output_File_Name=/home/schra/jmol.tga
-    // Height=498
-    // Width=804
-    // Antialias=true
-    // Antialias_Threshold=0.1
-    // Display=true
-    // Pause_When_Done=true
-    // Verbose=false
-
+    // no footer
   }
 
+  private String getAuxiliaryFileData() {
+    return 
+        "Input_File_Name=%INPUTFILENAME%"
+      + "\nOutput_to_File=true"
+      + "\nOutput_File_Type=T"
+      + "\nOutput_File_Name=%OUTPUTFILENAME%"
+      + "\nHeight=498"
+      + "\nWidth=804"
+      + "\nAntialias=true"
+      + "\nAntialias_Threshold=0.1"
+      + "\nDisplay=true"
+      + "\nPause_When_Done=true"
+      + "\nVerbose=false"
+      + "\n";
+    
+  }
+  
   Point3f povpt1 = new Point3f();
   Point3f povpt2 = new Point3f();
   Point3f povpt3 = new Point3f();

@@ -7810,6 +7810,13 @@ class Eval { //implements Runnable {
     data = type.intern();
     if (isExport) {
       data = "" + viewer.generateOutput(data);
+      if (type.equals("Povray")) {
+        String[] parts = TextFormat.split(data, "\\-PART II-\\");
+        data = parts[1];
+        parts[0] = TextFormat.simpleReplace(parts[0], "%INPUTFILENAME%", fileName);
+        parts[0] = TextFormat.simpleReplace(parts[0], "%OUTPUTFILENAME%", fileName + ".tga");
+        viewer.createImage(fileName + ".ini", parts[0], Integer.MIN_VALUE, 0, 0);
+      }
     } else if (data == "PDB" || data == "XYZ" || data == "MOL") {
       data = viewer.getData("selected", data);
     } else if (data == "QUAT" || data == "RAMA") {

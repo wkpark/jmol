@@ -25,6 +25,9 @@
 
 package org.jmol.export;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import javax.vecmath.AxisAngle4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
@@ -148,6 +151,11 @@ public abstract class Exporter implements JmolExportInterface {
     center.set(viewer.getRotationCenter());
   }
  
+  protected String getExportDate() {
+    return new SimpleDateFormat("EEE, MMMM dd, yyyy 'at' h:mm aaa")
+        .format(new Date());  
+  }
+  
   final protected static float degreesPerRadian = (float) (360 / (2 * Math.PI));
   protected Vector3f getRotation(Vector3f v) {
     tempR.set(v);
@@ -184,6 +192,21 @@ public abstract class Exporter implements JmolExportInterface {
     .append(((argb >> 16) & 0xFF)/255f).append(sep)
     .append(((argb >> 8) & 0xFF)/255f).append(sep)
     .append(((argb  ) & 0xFF)/255f).toString();    
+  }
+
+  protected String translucencyFractionalFromColix(short colix) {
+    int translevel = Graphics3D.getColixTranslucencyLevel(colix);
+    if (Graphics3D.isColixTranslucent(colix))
+      return new StringBuffer().append(translevel / 255f).toString();
+    return new StringBuffer().append(0f).toString();
+  }  
+    
+  protected String rgbFractionalBackground(char sep) {
+    int argb = viewer.getBackgroundArgb();
+    return new StringBuffer()
+    .append(((argb >> 16) & 0xFF) / 255f).append(sep)
+    .append(((argb >> 8) & 0xFF) / 255f).append(sep)
+    .append(((argb) & 0xFF) / 255f).toString();
   }
 
 }

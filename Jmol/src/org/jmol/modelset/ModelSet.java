@@ -3045,7 +3045,8 @@ abstract public class ModelSet {
   }
 
   /**
-   * This atom needs all single bonds, 
+   * N atoms with 3 bonds cannot also have a double bond; 
+   * other atoms needs all single bonds, 
    * because the bond leading up to it is double.
    * 
    * @param atom
@@ -3054,6 +3055,9 @@ abstract public class ModelSet {
    */
   private boolean assignAromaticSingle(Atom atom, int notBondIndex) {
     Bond[] bonds = atom.bonds;
+    if (bonds.length == 3 && atom.getElementNumber() == 7
+        && atom.getFormalCharge() == 0)
+      return false;
     for (int i = bonds.length; --i >= 0;) {
       Bond bond = bonds[i];
       int bondIndex = bond.index;
@@ -3068,7 +3072,8 @@ abstract public class ModelSet {
   }
  
   /**
-   * This atom needs one and only one double bond; 
+   * N atoms with 3 bonds cannot also have a double bond; 
+   * other atoms need one and only one double bond;
    * the rest must be single bonds.
    * 
    * @param atom
@@ -3076,7 +3081,8 @@ abstract public class ModelSet {
    */
   private boolean assignAromaticDouble(Atom atom) {
     Bond[] bonds = atom.bonds;
-    boolean haveDouble = false;
+    boolean haveDouble = (bonds.length == 3 && atom.getElementNumber() == 7 && atom
+        .getFormalCharge() == 0);
     int lastBond = -1;
     for (int i = bonds.length; --i >= 0;) {
       if (bsAromaticDouble.get(bonds[i].index))

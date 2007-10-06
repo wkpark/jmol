@@ -168,15 +168,14 @@ class SelectionManager {
   void select(BitSet bs, boolean isQuiet) {
     if (bs == null) {
       if (!viewer.getRasmolHydrogenSetting())
-        excludeSelectionSet(viewer.getAtomBits("hydrogen"));
+        excludeSelectionSet(viewer.getAtomBits(Token.hydrogen));
       if (!viewer.getRasmolHeteroSetting())
-        excludeSelectionSet(viewer.getAtomBits("hetero"));
+        excludeSelectionSet(viewer.getAtomBits(Token.hetero));
     } else {
       setSelectionSet(bs);
     }
     if (!isQuiet)
-      viewer.reportSelection(GT._(
-          "{0} atoms selected",
+      viewer.reportSelection(GT._("{0} atoms selected",
           "" + getSelectionCount()));
   }
 

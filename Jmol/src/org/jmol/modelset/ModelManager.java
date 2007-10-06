@@ -33,6 +33,7 @@ import org.jmol.util.Escape;
 import org.jmol.util.Logger;
 import org.jmol.util.Parser;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
 
 import org.jmol.api.JmolAdapter;
@@ -279,20 +280,20 @@ public class ModelManager {
     return modelSet.getAtomSetCenter(bs);
   }
 
-  public BitSet getAtomBits(String setType) {
-    return modelSet.getAtomBits(setType);
+  public BitSet getAtomBits(int tokType) {
+    return modelSet.getAtomBits(tokType);
   }
 
-  public BitSet getAtomBits(String setType, String specInfo) {
-    return modelSet.getAtomBits(setType, specInfo);
+  public BitSet getAtomBits(int tokType, String specInfo) {
+    return modelSet.getAtomBits(tokType, specInfo);
   }
 
-  public BitSet getAtomBits(String setType, int specInfo) {
-    return modelSet.getAtomBits(setType, specInfo);
+  public BitSet getAtomBits(int tokType, int specInfo) {
+    return modelSet.getAtomBits(tokType, specInfo);
   }
 
-  public BitSet getAtomBits(String setType, int[] specInfo) {
-    return modelSet.getAtomBits(setType, specInfo);
+  public BitSet getAtomBits(int tokType, int[] specInfo) {
+    return modelSet.getAtomBits(tokType, specInfo);
   }
 
   public int getAtomCount() {
@@ -605,25 +606,27 @@ String getAtomInfoChime(int i) {
     return 0;
   }
 
-  public BitSet getAtomsWithin(String withinWhat, String specInfo, BitSet bs) {
-    if (withinWhat.equals("sequence"))
+  public BitSet getAtomsWithin(int tokType, String specInfo, BitSet bs) {
+    if (tokType == Token.sequence)
       return withinSequence(specInfo, bs);
     return null;
   }
   
-  public BitSet getAtomsWithin(String withinWhat, BitSet bs) {
-    if (withinWhat.equals("group"))
+  public BitSet getAtomsWithin(int tokType, BitSet bs) {
+    switch (tokType) {
+    case Token.group:
       return withinGroup(bs);
-    if (withinWhat.equals("chain"))
+    case Token.chain:
       return withinChain(bs);
-    if (withinWhat.equals("molecule"))
+    case Token.molecule:
       return withinMolecule(bs);
-    if (withinWhat.equals("model"))
+    case Token.model:
       return withinModel(bs);
-    if (withinWhat.equals("element"))
+    case Token.element:
       return withinElement(bs);
-    if (withinWhat.equals("site"))
+    case Token.site:
       return withinSite(bs);
+    }
     return null;
   }
 
@@ -771,8 +774,8 @@ String getAtomInfoChime(int i) {
     return modelSet.getAtomsWithin(distance, plane);
   }
 
-  public void loadCoordinates(String coordinateData) {
-    modelSet.loadCoordinates(coordinateData);
+  public void loadData(String type, String coordinateData) {
+    modelSet.loadData(type, coordinateData);
   }
  
   public BitSet getAtomsConnected(float min, float max, int intType, BitSet bs) {
@@ -1398,13 +1401,34 @@ String getAtomInfoChime(int i) {
   }
   
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
-    modelSet.setAtomCoord(atomIndex,x,y,z); 
+    modelSet.setAtomCoord(atomIndex, x, y, z);
+  }
+
+  public void setAtomCoord(BitSet bs, int tokType, Point3f xyz) {
+    for (int i = getAtomCount(); --i >= 0;)
+      if (bs.get(i)) {
+        switch (tokType) {
+        case Token.xyz:
+          modelSet.setAtomCoord(i, xyz.x, xyz.y, xyz.z);
+          break;
+        case Token.fracXyz:
+          modelSet.setAtomCoordFractional(i, xyz);
+          break;
+        case Token.vibXyz:
+          modelSet.setAtomVibrationVector(i, xyz.x, xyz.y, xyz.z);
+          break;
+        }
+      }
   }
 
   public void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
-    modelSet.setAtomCoordRelative(atomIndex,x,y,z);
+    modelSet.setAtomCoordRelative(atomIndex, x, y, z);
   }
 
+  public void setAtomProperty(BitSet bs, int tok, int iValue, float fValue) {
+    modelSet.setAtomProperty(bs, tok, iValue, fValue);
+  }
+ 
   public void setAtomCoordRelative(Point3f offset, BitSet bs) {
     modelSet.setAtomCoordRelative(bs, offset.x, offset.y, offset.z);
   }
@@ -1530,12 +1554,12 @@ String getAtomInfoChime(int i) {
     return true;
   }
   
-  public BitSet getTaintedAtoms() {
-    return modelSet.getTaintedAtoms();
+  public BitSet getTaintedAtoms(byte type) {
+    return modelSet.getTaintedAtoms(type);
   }
   
-  public void setTaintedAtoms(BitSet bs) {
-    modelSet.setTaintedAtoms(bs);
+  public void setTaintedAtoms(BitSet bs, byte type) {
+    modelSet.setTaintedAtoms(bs, type);
   }
   
   public Point3f[] calculateSurface(BitSet bsSelected, BitSet bsIgnore,

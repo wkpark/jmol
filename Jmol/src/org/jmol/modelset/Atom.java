@@ -27,6 +27,7 @@ package org.jmol.modelset;
 
 import org.jmol.vecmath.Point3fi;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.bspt.Tuple;
@@ -42,9 +43,10 @@ import javax.vecmath.Point3i;
 
 final public class Atom extends Point3fi implements Tuple {
 
-  final static byte VIBRATION_VECTOR_FLAG = 0x02;
-  final static byte IS_HETERO_FLAG = 0x04;
-  final static byte FORMALCHARGE_FLAGS = 0x07;
+  final static byte VIBRATION_VECTOR_FLAG = 0x01;
+  final static byte IS_HETERO_FLAG = 0x02;
+  final static byte FORMAL_CHARGE_MASK = 0x1C;
+  final static byte VALENCY_MASK = (byte)0xE0;
 
   Group group;
   int atomIndex;
@@ -59,7 +61,7 @@ final public class Atom extends Point3fi implements Tuple {
   
   short modelIndex;
   private short atomicAndIsotopeNumber;
-  byte formalChargeAndFlags;
+  private byte formalChargeAndFlags;
   byte alternateLocationID;
   short madAtom;
   public short getMadAtom() {
@@ -115,6 +117,10 @@ final public class Atom extends Point3fi implements Tuple {
     this.atomIndex = atomIndex;
     this.atomicAndIsotopeNumber = atomicAndIsotopeNumber;
     setFormalCharge(formalCharge);
+    setOccupancy(modelSet, occupancy);
+    if (Float.isNaN(vibrationX))
+      setVibrationVector(modelSet, vibrationX, vibrationY, vibrationZ);
+
     this.colixAtom = modelSet.viewer.getColixAtomPalette(this, JmolConstants.PALETTE_CPK);
     this.alternateLocationID = (byte)alternateLocationID;
     this.radius = radius;
@@ -142,42 +148,12 @@ final public class Atom extends Point3fi implements Tuple {
       modelSet.specialAtomIDs[atomIndex] = specialAtomID;
     }
 
-    if (occupancy < 0)
-      occupancy = 0;
-    else if (occupancy > 100)
-      occupancy = 100;
-    if (occupancy != 100) {
-      if (modelSet.occupancies == null)
-        modelSet.occupancies = new byte[modelSet.atoms.length];
-      modelSet.occupancies[atomIndex] = (byte)occupancy;
-    }
-
     if (atomSerial != Integer.MIN_VALUE) {
       if (modelSet.atomSerials == null)
         modelSet.atomSerials = new int[modelSet.atoms.length];
       modelSet.atomSerials[atomIndex] = atomSerial;
     }
 
-    if (! Float.isNaN(partialCharge)) {
-      if (modelSet.partialCharges == null)
-        modelSet.partialCharges = new float[modelSet.atoms.length];
-      modelSet.partialCharges[atomIndex] = partialCharge;
-    }
-
-    if (! Float.isNaN(bfactor) && bfactor != 0) {
-      if (modelSet.bfactor100s == null)
-        modelSet.bfactor100s = new short[modelSet.atoms.length];
-      modelSet.bfactor100s[atomIndex] = (short)(bfactor * 100);
-    }
-
-    if (!Float.isNaN(vibrationX) && !Float.isNaN(vibrationY) &&
-        !Float.isNaN(vibrationZ)) {
-      if (modelSet.vibrationVectors == null)
-        modelSet.vibrationVectors = new Vector3f[modelSet.atoms.length];
-      modelSet.vibrationVectors[atomIndex] = 
-        new Vector3f(vibrationX, vibrationY, vibrationZ);
-      formalChargeAndFlags |= VIBRATION_VECTOR_FLAG;
-    }
     if (clientAtomReference != null) {
       if (modelSet.clientAtomReferences == null)
         modelSet.clientAtomReferences = new Object[modelSet.atoms.length];
@@ -236,11 +212,6 @@ final public class Atom extends Point3fi implements Tuple {
     } else {
       shapeVisibilityFlags &=~shapeVisibilityFlag;
     }
-  }
-  
-  void setFormalCharge(int charge) {
-    //note,this may be negative
-    formalChargeAndFlags = (byte)((formalChargeAndFlags & FORMALCHARGE_FLAGS) | (charge << 3));
   }
   
   public boolean isBonded(Atom atomOther) {
@@ -433,26 +404,110 @@ final public class Atom extends Point3fi implements Tuple {
     return (formalChargeAndFlags & IS_HETERO_FLAG) != 0;
   }
 
+  void setFormalCharge(int charge) {
+    if (charge > 7)
+      charge = 7;
+    formalChargeAndFlags = (byte)((formalChargeAndFlags & ~FORMAL_CHARGE_MASK) | (charge << 2));
+  }
+  
   public int getFormalCharge() {
-    return formalChargeAndFlags >> 3;
+    return (formalChargeAndFlags >> 2) & 7;
   }
 
-  float getAtomX() {
-    return x;
+  void setOccupancy(ModelSet modelSet, int occupancy) {
+    if (occupancy < 0)
+      occupancy = 0;
+    else if (occupancy > 100)
+      occupancy = 100;
+    if (occupancy != 100) {
+      if (modelSet.occupancies == null)
+        modelSet.occupancies = new byte[modelSet.atoms.length];
+      modelSet.occupancies[atomIndex] = (byte)occupancy;
+    }
+  }
+  
+  // a percentage value in the range 0-100
+  public int getOccupancy() {
+    byte[] occupancies = group.chain.modelSet.occupancies;
+    return occupancies == null ? 100 : occupancies[atomIndex];
   }
 
-  float getAtomY() {
-    return y;
+  void setPartialCharge(ModelSet modelSet, float partialCharge) {
+    if (Float.isNaN(partialCharge))
+      return;
+    if (modelSet.partialCharges == null)
+      modelSet.partialCharges = new float[modelSet.atoms.length];
+    modelSet.partialCharges[atomIndex] = partialCharge;
   }
 
-  float getAtomZ() {
-    return z;
+  void setBFactor(ModelSet modelSet, float bfactor) {
+  if (Float.isNaN(bfactor) || bfactor == 0)
+    return;
+    if (modelSet.bfactor100s == null)
+      modelSet.bfactor100s = new short[modelSet.atoms.length];
+    modelSet.bfactor100s[atomIndex] = (short)(bfactor * 100);
+  }
+
+  // This is called bfactor100 because it is stored as an integer
+  // 100 times the bfactor(temperature) value
+  public int getBfactor100() {
+    short[] bfactor100s = group.chain.modelSet.bfactor100s;
+    if (bfactor100s == null)
+      return 0;
+    return bfactor100s[atomIndex];
+  }
+
+  void setVibrationVector(ModelSet modelSet, float x, float y, float z) {
+    if (Float.isNaN(x) || Float.isNaN(y) || Float.isNaN(z))
+      return;
+    if (modelSet.vibrationVectors == null)
+      modelSet.vibrationVectors = new Vector3f[modelSet.atoms.length];
+    modelSet.vibrationVectors[atomIndex] = new Vector3f(x, y, z);
+    formalChargeAndFlags |= VIBRATION_VECTOR_FLAG;
+  }
+
+  void setVibrationVector(ModelSet modelSet, int tok, float fValue) {
+    Vector3f v = getVibrationVector();
+    if (v == null)
+      v = new Vector3f();
+    switch(tok) {
+    case Token.vibX:
+      v.x = fValue;
+      break;
+    case Token.vibY:
+      v.y = fValue;
+      break;
+    case Token.vibZ:
+      v.z = fValue;
+      break;
+    }
+    setVibrationVector(modelSet, v.x, v.y, v.z);
+  }
+  
+  public Vector3f getVibrationVector() {
+    Vector3f[] vibrationVectors = group.chain.modelSet.vibrationVectors;
+    return vibrationVectors == null ? null : vibrationVectors[atomIndex];
+  }
+  
+  public float getVibrationCoord(char ch) {
+    Vector3f[] v = group.chain.modelSet.vibrationVectors;
+    return (v == null || v[atomIndex] == null ? 0 
+        : ch == 'x' ? v[atomIndex].x : ch == 'y' ? v[atomIndex].y : v[atomIndex].z);
+  }
+
+  public void setValency(int nBonds) {
+    if (nBonds > 7)
+      nBonds = 7;
+    formalChargeAndFlags = (byte) ((formalChargeAndFlags & ~VALENCY_MASK) | ((byte) nBonds << 5));
+  }
+
+  public int getValency() {
+    int n = (formalChargeAndFlags >> 5) & 7;
+    return (n > 0 ? n : bonds.length);
   }
 
   public float getDimensionValue(int dimension) {
-    return (dimension == 0
-       ? x
-       : (dimension == 1 ? y : z));
+    return (dimension == 0 ? x : (dimension == 1 ? y : z));
   }
 
   short getVanderwaalsMar() {
@@ -465,7 +520,7 @@ final public class Atom extends Point3fi implements Tuple {
 
   short getBondingMar() {
     return JmolConstants.getBondingMar(atomicAndIsotopeNumber % 128,
-                                       formalChargeAndFlags >> 3);
+        getFormalCharge());
   }
 
   public float getBondingRadiusFloat() {
@@ -550,20 +605,6 @@ final public class Atom extends Point3fi implements Tuple {
      return group;
    }
    
-   // the following methods will work anytime, since we now have
-   // a dummy group and chain
-
-   public Vector3f getVibrationVector() {
-     Vector3f[] vibrationVectors = group.chain.modelSet.vibrationVectors;
-     return vibrationVectors == null ? null : vibrationVectors[atomIndex];
-   }
-   
-   public float getVibrationCoord(char ch) {
-     Vector3f[] v = group.chain.modelSet.vibrationVectors;
-     return (v == null || v[atomIndex] == null ? 0 
-         : ch == 'x' ? v[atomIndex].x : ch == 'y' ? v[atomIndex].y : v[atomIndex].z);
-   }
-
    public void transform(Viewer viewer) {
      Point3i screen;
      Vector3f[] vibrationVectors;
@@ -640,21 +681,6 @@ final public class Atom extends Point3fi implements Tuple {
 
    int getArgb() {
      return group.chain.modelSet.viewer.getColixArgb(colixAtom);
-   }
-
-   // a percentage value in the range 0-100
-   public int getOccupancy() {
-     byte[] occupancies = group.chain.modelSet.occupancies;
-     return occupancies == null ? 100 : occupancies[atomIndex];
-   }
-
-   // This is called bfactor100 because it is stored as an integer
-   // 100 times the bfactor(temperature) value
-   public int getBfactor100() {
-     short[] bfactor100s = group.chain.modelSet.bfactor100s;
-     if (bfactor100s == null)
-       return 0;
-     return bfactor100s[atomIndex];
    }
 
    /**
@@ -743,13 +769,42 @@ final public class Atom extends Point3fi implements Tuple {
     return (ch == 'X' ? pt.x : ch == 'Y' ? pt.y : pt.z);
   }
     
-  Point3f getFractionalCoord() {
+  public Point3f getFractionalCoord() {
     CellInfo[] c = group.chain.modelSet.cellInfos;
     if (c == null)
       return this;
     Point3f pt = new Point3f(this);
     c[modelIndex].toFractional(pt);
     return pt;
+  }
+  
+  void setFractionalCoord(int tok, float fValue) {
+    CellInfo[] c = group.chain.modelSet.cellInfos;
+    Point3f pt = new Point3f(this);
+    if (c != null)
+      c[modelIndex].toFractional(pt);
+    switch (tok) {
+    case Token.fracX:
+      pt.x = fValue;
+      break;
+    case Token.fracY:
+      pt.y = fValue;
+      break;
+    case Token.fracZ:
+      pt.z = fValue;
+      break;
+    }
+    if (c != null)
+      c[modelIndex].toCartesian(pt);
+    set(pt);
+  }
+  
+  void setFractionalCoord(Point3f ptNew) {
+    CellInfo[] c = group.chain.modelSet.cellInfos;
+    Point3f pt = new Point3f(ptNew);
+    if (c != null)
+      c[modelIndex].toCartesian(pt);
+    set(pt);
   }
   
   boolean isCursorOnTopOf(int xCursor, int yCursor,

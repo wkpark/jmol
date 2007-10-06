@@ -1533,8 +1533,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     global.applySymmetryToBonds = TF;
   }
 
-  void loadCoordinates(String coordinateData) {
-    modelManager.loadCoordinates(coordinateData);
+  void loadData(String type, String coordinateData) {
+    modelManager.loadData(type, coordinateData);
   }
 
   public void openDOM(Object DOMNode) {
@@ -2130,24 +2130,24 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.minBondDistance;
   }
 
-  BitSet getAtomBits(String setType) {
-    return modelManager.getAtomBits(setType);
+  BitSet getAtomBits(int tokType) {
+    return modelManager.getAtomBits(tokType);
   }
 
-  BitSet getAtomBits(String setType, String specInfo) {
-    return modelManager.getAtomBits(setType, specInfo);
+  BitSet getAtomBits(int tokType, String specInfo) {
+    return modelManager.getAtomBits(tokType, specInfo);
   }
 
-  public BitSet getAtomBits(String setType, int specInfo) {
-    return modelManager.getAtomBits(setType, specInfo);
+  public BitSet getAtomBits(int tokType, int specInfo) {
+    return modelManager.getAtomBits(tokType, specInfo);
   }
 
-  BitSet getAtomBits(String setType, int[] specInfo) {
-    return modelManager.getAtomBits(setType, specInfo);
+  BitSet getAtomBits(int tokType, int[] specInfo) {
+    return modelManager.getAtomBits(tokType, specInfo);
   }
 
-  BitSet getAtomsWithin(String withinWhat, BitSet bs) {
-    return modelManager.getAtomsWithin(withinWhat, bs);
+  BitSet getAtomsWithin(int tokType, BitSet bs) {
+    return modelManager.getAtomsWithin(tokType, bs);
   }
 
   BitSet getAtomsWithin(float distance, Point3f coord) {
@@ -2158,8 +2158,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelManager.getAtomsWithin(distance, plane);
   }
 
-  BitSet getAtomsWithin(String withinWhat, String specInfo, BitSet bs) {
-    return modelManager.getAtomsWithin(withinWhat, specInfo, bs);
+  BitSet getAtomsWithin(int tokType, String specInfo, BitSet bs) {
+    return modelManager.getAtomsWithin(tokType, specInfo, bs);
   }
 
   BitSet getAtomsWithin(float distance, BitSet bs, boolean isWithinModelSet) {
@@ -5629,12 +5629,12 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return global.getDefaultLatticePoint();
   }
 
-  BitSet getTaintedAtoms() {
-    return modelManager.getTaintedAtoms();
+  BitSet getTaintedAtoms(byte type) {
+    return modelManager.getTaintedAtoms(type);
   }
 
-  void setTaintedAtoms(BitSet bs) {
-    modelManager.setTaintedAtoms(bs);
+  void setTaintedAtoms(BitSet bs, byte type) {
+    modelManager.setTaintedAtoms(bs, type);
   }
 
   public String getData(String atomExpression, String type) {
@@ -5663,6 +5663,14 @@ public class Viewer extends JmolViewer implements AtomDataServer {
   public void setAtomCoord(int atomIndex, float x, float y, float z) {
     //Frame equivalent used in DATA "coord set"
     modelManager.setAtomCoord(atomIndex, x, y, z);
+  }
+
+  void setAtomProperty(BitSet bs, int tok, int iValue, float fValue) {
+    modelManager.setAtomProperty(bs, tok, iValue, fValue);
+  }
+ 
+  void setAtomCoord(BitSet bs, int tokType, Point3f xyz) {
+    modelManager.setAtomCoord(bs, tokType, xyz);
   }
 
   public void setAtomCoordRelative(int atomIndex, float x, float y, float z) {

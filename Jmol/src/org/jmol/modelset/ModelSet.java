@@ -33,7 +33,7 @@ import org.jmol.util.Measure;
 import org.jmol.util.Parser;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.JmolConstants;
-import org.jmol.viewer.StateManager;
+import org.jmol.viewer.Token;
 import org.jmol.viewer.Viewer;
 
 import org.jmol.atomdata.AtomData;
@@ -325,34 +325,102 @@ abstract public class ModelSet {
 
   protected BitSet[] elementsPresent;
 
-  ////  atom coordinate changing  //////////
+  ////  atom coordinate and property changing  //////////
   
-  private BitSet tainted;  // not final -- can be set to null
+  final public static byte TAINT_COORD = 0;
+  final static byte TAINT_FORMALCHARGE = 1;
+  final static byte TAINT_OCCUPANCY = 2;
+  final static byte TAINT_PARTIALCHARGE = 3;
+  final static byte TAINT_TEMPERATURE = 4;
+  final static byte TAINT_VALENCE = 5;
+  final static byte TAINT_VIBRATION = 6;
+  final static byte TAINT_MAX = 7;
+  
+  
+  private BitSet[] tainted;  // not final -- can be set to null
 
-  BitSet getTaintedAtoms() {
-    return tainted;
+  BitSet getTaintedAtoms(byte type) {
+    return tainted == null ? null : tainted[type];
   }
   
-  private void taint(int atomIndex) {
+  private void taint(int atomIndex, byte type) {
     if (tainted == null)
-      tainted = new BitSet(atomCount);
-    tainted.set(atomIndex);
+      tainted = new BitSet[TAINT_MAX];
+    if (tainted[type] == null)
+      tainted[type] = new BitSet(atomCount);
+    tainted[type].set(atomIndex);
   }
 
-  void setTaintedAtoms(BitSet bs) {
+  void setTaintedAtoms(BitSet bs, byte type) {
     if (bs == null) {
-      tainted = null;
+      if (tainted == null)
+        return;
+      tainted[type] = null;
       return;
     }
     if (tainted == null)
-      tainted = new BitSet(atomCount);
-    BitSetUtil.copy(bs, tainted);
+      tainted = new BitSet[TAINT_MAX];
+    if (tainted[type] == null)
+      tainted[type] = new BitSet(atomCount);
+    BitSetUtil.copy(bs, tainted[type]);
   }
 
   Bspf bspf;
 
-  void loadCoordinates(String data) {
-    bspf = null;
+  void loadData(String dataType, String dataString) {
+    if (dataType.equalsIgnoreCase("coord")) {
+      loadCoordinates(dataString, false);
+      return;
+    } else if (dataType.equalsIgnoreCase("vibrationvector")) {
+      loadCoordinates(dataString, true);
+      return;
+    }
+    byte type = 0;
+    if (dataType.equalsIgnoreCase("formalcharge"))
+      type = TAINT_FORMALCHARGE;
+    else if (dataType.equalsIgnoreCase("occupancy"))
+      type = TAINT_OCCUPANCY;
+    else if (dataType.equalsIgnoreCase("partialcharge"))
+      type = TAINT_PARTIALCHARGE;
+    else if (dataType.equalsIgnoreCase("temperature"))
+      type = TAINT_TEMPERATURE;
+    else if (dataType.equalsIgnoreCase("valence"))
+      type = TAINT_VALENCE;
+    else
+      return;
+    
+    int[] lines = Parser.markLines(dataString, ';');
+    try {
+      int nData = Parser.parseInt(dataString.substring(0, lines[0] - 1));
+      for (int i = 1; i <= nData; i++) {
+        String[] tokens = Parser.getTokens(Parser.parseTrimmed(dataString.substring(
+            lines[i], lines[i + 1])));
+        int atomIndex = Parser.parseInt(tokens[0]) - 1;
+        float x = Parser.parseFloat(tokens[tokens.length - 1]);
+        switch (type) {
+        case TAINT_FORMALCHARGE:
+          atoms[atomIndex].setFormalCharge((int)x);          
+          break;
+        case TAINT_PARTIALCHARGE:
+          atoms[atomIndex].setPartialCharge(this, x);          
+          break;
+        case TAINT_TEMPERATURE:
+          atoms[atomIndex].setBFactor(this, x);          
+          break;
+        case TAINT_VALENCE:
+          atoms[atomIndex].setValency((int)x);          
+          break;
+        }
+        taint(atomIndex, type);
+      }
+    } catch (Exception e) {
+      Logger.error("Frame.loadCoordinate error: " + e);
+    }    
+  }
+  
+  void loadCoordinates(String data, boolean isVibrationVectors) {
+    if (!isVibrationVectors)
+      bspf = null;
     int[] lines = Parser.markLines(data, ';');
     try {
       int nData = Parser.parseInt(data.substring(0, lines[0] - 1));
@@ -363,13 +431,27 @@ abstract public class ModelSet {
         float x = Parser.parseFloat(tokens[3]);
         float y = Parser.parseFloat(tokens[4]);
         float z = Parser.parseFloat(tokens[5]);
-        setAtomCoord(atomIndex, x, y, z);
+        if (isVibrationVectors) {
+          setAtomVibrationVector(atomIndex, x, y, z);
+        } else {
+          setAtomCoord(atomIndex, x, y, z);
+        }
       }
     } catch (Exception e) {
       Logger.error("Frame.loadCoordinate error: " + e);
     }
   }
 
+  void setAtomVibrationVector(int atomIndex, float x, float y, float z) {
+    atoms[atomIndex].setVibrationVector(this, x, y, z);  
+    taint(atomIndex, TAINT_VIBRATION);
+  }
+  
+  void setAtomCoordFractional(int atomIndex, Point3f pt) {
+    atoms[atomIndex].setFractionalCoord(pt);
+    taint(atomIndex, TAINT_COORD);
+  }
+  
   void setAtomCoord(int atomIndex, float x, float y, float z) {
     if (atomIndex < 0 || atomIndex >= atomCount)
       return;
@@ -377,7 +459,7 @@ abstract public class ModelSet {
     atoms[atomIndex].x = x;
     atoms[atomIndex].y = y;
     atoms[atomIndex].z = z;
-    taint(atomIndex);
+    taint(atomIndex, TAINT_COORD);
   }
 
   void setAtomCoordRelative(int atomIndex, float x, float y, float z) {
@@ -387,7 +469,7 @@ abstract public class ModelSet {
     atoms[atomIndex].x += x;
     atoms[atomIndex].y += y;
     atoms[atomIndex].z += z;
-    taint(atomIndex);
+    taint(atomIndex, TAINT_COORD);
   }
 
   void setAtomCoordRelative(BitSet atomSet, float x, float y, float z) {
@@ -397,6 +479,60 @@ abstract public class ModelSet {
         setAtomCoordRelative(i, x, y, z);
   }
 
+  void setAtomProperty(BitSet bs, int tok, int iValue, float fValue) {
+    for (int i = atomCount; --i >= 0;) {
+      if (!bs.get(i))
+        continue;
+      Atom atom = atoms[i];
+      switch (tok) {
+      case Token.atomX:
+        setAtomCoord(i, fValue, atom.y, atom.z);
+        break;
+      case Token.atomY:
+        setAtomCoord(i, atom.x, fValue, atom.z);
+        break;
+      case Token.atomZ:
+        setAtomCoord(i, atom.x, atom.y, fValue);
+        break;
+      case Token.fracX:
+      case Token.fracY:
+      case Token.fracZ:
+        atom.setFractionalCoord(tok, fValue);
+        taint(i, TAINT_COORD);
+        break;
+      case Token.formalCharge:
+        atom.setFormalCharge(iValue);
+        taint(i, TAINT_FORMALCHARGE);
+        break;
+      case Token.occupancy:
+        atom.setOccupancy(this, iValue);
+        taint(i, TAINT_OCCUPANCY);
+        break;
+      case Token.partialCharge:
+        atom.setPartialCharge(this, fValue);
+        taint(i, TAINT_PARTIALCHARGE);
+        break;
+      case Token.temperature:
+        atom.setBFactor(this, fValue);
+        taint(i, TAINT_TEMPERATURE);
+        break;
+      case Token.valence:
+        atom.setValency(iValue);
+        taint(i, TAINT_VALENCE);
+        break;
+      case Token.vibX:
+      case Token.vibY:
+      case Token.vibZ:
+        atom.setVibrationVector(this, tok, fValue);
+        taint(i, TAINT_VIBRATION);
+        break;
+      }
+    }
+    if ((tok == Token.valence || tok == Token.formalCharge)
+        && viewer.getSmartAromatic())
+      assignAromaticBonds();
+  }
+ 
   private final Matrix3f matTemp = new Matrix3f();
   private final Matrix3f matInv = new Matrix3f();
   private final Point3f ptTemp = new Point3f();
@@ -416,7 +552,7 @@ abstract public class ModelSet {
         ptTemp.add(atoms[i]);
         matTemp.transform(atoms[i]);
         ptTemp.sub(atoms[i]);
-        taint(i);
+        taint(i, TAINT_COORD);
         n++;
       }
     if (isInternal)
@@ -755,9 +891,9 @@ abstract public class ModelSet {
     if (cellInfos == null || modelIndex >= cellInfos.length
         || cellInfos[modelIndex] == null)
       return;
-    String str = "Frame convertFractional " + pt + "--->";
     cellInfos[modelIndex].toCartesian(pt);
-    Logger.info(str + pt);
+    //String str = "Frame convertFractional " + pt + "--->";
+    //Logger.info(str + pt);
   }
 
   void toUnitCell(int modelIndex, Point3f pt, Point3f offset) {
@@ -803,13 +939,12 @@ abstract public class ModelSet {
     return -1;
   }
 
-  private boolean reportFormalCharges = false;
-
   void setFormalCharges(BitSet bs, int formalCharge) {
     for (int i = 0; i < atomCount; i++)
-      if (bs.get(i))
+      if (bs.get(i)) {
         atoms[i].setFormalCharge(formalCharge);
-    reportFormalCharges = true;
+        taint(i, TAINT_FORMALCHARGE);
+      }
   }
   
   void setProteinType(BitSet bs, byte iType) {
@@ -2249,36 +2384,38 @@ abstract public class ModelSet {
 
   /**
    * general unqualified lookup of atom set type
-   * @param setType
+   * @param tokType
    * @return BitSet; or null if we mess up the type
    */
-  BitSet getAtomBits(String setType) {
-    if (setType.equals("specialposition"))
+  BitSet getAtomBits(int tokType) {
+    switch (tokType) {
+    case Token.specialposition:
       return getSpecialPosition();
-    if (setType.equals("symmetry"))
+    case Token.symmetry:
       return getSymmetrySet();
-    if (setType.equals("unitcell"))
+    case Token.unitcell:
       return getUnitCellSet();
-    if (setType.equals("hetero"))
+    case Token.hetero:
       return getHeteroSet();
-    if (setType.equals("hydrogen"))
+    case Token.hydrogen:
       return getHydrogenSet();
-    if (setType.equals("protein"))
+    case Token.protein:
       return getProteinSet();
-    if (setType.equals("carbohydrate"))
+    case Token.carbohydrate:
       return getCarbohydrateSet();
-    if (setType.equals("nucleic"))
+    case Token.nucleic:
       return getNucleicSet();
-    if (setType.equals("dna"))
+    case Token.dna:
       return getDnaSet();
-    if (setType.equals("rna"))
+    case Token.rna:
       return getRnaSet();
-    if (setType.equals("purine"))
+    case Token.purine:
       return getPurineSet();
-    if (setType.equals("pyrimidine"))
+    case Token.pyrimidine:
       return getPyrimidineSet();
-    if (setType.equals("isaromatic"))
+    case Token.isaromatic:
       return getAromaticSet();
+    }
     return null;
   }
 
@@ -2417,19 +2554,21 @@ abstract public class ModelSet {
 
   /**
    * general lookup for String type
-   * @param setType
+   * @param tokType
    * @param specInfo
    * @return BitSet or null in certain cases
    */
-  BitSet getAtomBits(String setType, String specInfo) {
-    if (setType.equals("IdentifierOrNull"))
+  BitSet getAtomBits(int tokType, String specInfo) {
+    switch (tokType) {
+    case Token.identifier:
       return getIdentifierOrNull(specInfo);
-    if (setType.equals("SpecAtom"))
+    case Token.spec_atom:
       return getSpecAtom(specInfo);
-    if (setType.equals("SpecName"))
+    case Token.spec_name_pattern:
       return getSpecName(specInfo);
-    if (setType.equals("SpecAlternate"))
+    case Token.spec_alternate:
       return getSpecAlternate(specInfo);
+    }
     return null;
   }
 
@@ -2561,21 +2700,21 @@ abstract public class ModelSet {
 
   /**
    * general lookup for integer type -- from Eval
-   * @param setType   
+   * @param tokType   
    * @param specInfo  
    * @return bitset; null only if we mess up with name
    */
-  BitSet getAtomBits(String setType, int specInfo) {
-    if (setType.equals("SpecResid"))
+  BitSet getAtomBits(int tokType, int specInfo) {
+    switch (tokType) {
+    case Token.spec_resid:
       return getSpecResid(specInfo);
-    if (setType.equals("SpecSeqcode"))
-      return getSpecSeqcode(specInfo, true);
-    if (setType.equals("SpecChain"))
+    case Token.spec_chain:
       return getSpecChain((char) specInfo);
-    if (setType.equals("atomno"))
-      return getSpecAtomNumber(specInfo);
-    if (setType.equals("SpecModel"))
+    case Token.spec_seqcode:
+      return getSpecSeqcode(specInfo, true);
+    case Token.spec_model:
       return getSpecModel(specInfo);
+    }
     return null;
   }
 
@@ -2633,30 +2772,23 @@ abstract public class ModelSet {
     return bs;
   }
 
-  private BitSet getSpecAtomNumber(int atomno) {
-    BitSet bs = new BitSet();
-    for (int i = atomCount; --i >= 0;) {
-      if (atoms[i].getAtomNumber() == atomno)
-        bs.set(i);
-    }
-    return bs;
-  }
-
   private BitSet getSpecModel(int modelNumber) {
     return getModelAtomBitSet(getModelNumberIndex(modelNumber, true));
   }
 
   /**
    * general lookup involving a range
-   * @param setType
+   * @param tokType
    * @param specInfo
    * @return BitSet; or null if mess up with type
    */
-  BitSet getAtomBits(String setType, int[] specInfo) {
-    if (setType.equals("SpecSeqcodeRange"))
+  BitSet getAtomBits(int tokType, int[] specInfo) {
+    switch (tokType) {
+    case Token.spec_seqcode_range:
       return getSpecSeqcodeRange(specInfo[0], specInfo[1]);
-    if (setType.equals("Cell"))
+    case Token.cell:
       return getCellSet(specInfo[0], specInfo[1], specInfo[2]);
+    }
     return null;
   }
 
@@ -2738,35 +2870,13 @@ abstract public class ModelSet {
       commands.append("function _setModelState();\n");
     }
     String cmd;
-    if (isAll && reportFormalCharges) {
-      commands.append("\n# charges;\n");
-      Hashtable ht = new Hashtable();
-      for (int i = 0; i < atomCount; i++)
-        StateManager.setStateInfo(ht, i, i, "formalCharge = "
-            + atoms[i].getFormalCharge());
-      commands.append(StateManager.getCommands(ht));
-    }
 
-    // positions
+    // properties
 
-    if (isAll && tainted != null) {
-      commands.append("\n# positions;\n");
-      StringBuffer s = new StringBuffer();
-      int n = 0;
-      for (int i = 0; i < atomCount; i++)
-        if (tainted.get(i)) {
-          s.append(i + 1).append(" ")
-          .append(atoms[i].getElementSymbol()).append(" ").append(
-                  TextFormat.simpleReplace(atoms[i].getIdentity(), " ", "_"))
-              .append(" ").append(atoms[i].x).append(" ").append(atoms[i].y)
-              .append(" ").append(atoms[i].z).append(" ;\n");
-          ++n;
-        }
-      commands.append("  DATA \"coord set\"\n").append(n).append(
-          " ;\nJmol Coordinate Data Format 1 -- Jmol ").append(
-          Viewer.getJmolVersion()).append(";\n");
-      commands.append(s);
-      commands.append("  end \"coord set\";\n");
+    if (isAll) {
+      for (byte i = 0; i < TAINT_MAX; i++)
+        if(getTaintedAtoms(i) != null) 
+          getTaintedState(commands, i);
     }
 
     // connections
@@ -2800,6 +2910,56 @@ abstract public class ModelSet {
     return commands.toString();
   }
 
+  private void getTaintedState(StringBuffer commands, byte type) {
+    BitSet t = getTaintedAtoms(type);
+    commands.append("\n");
+    StringBuffer s = new StringBuffer();
+    int n = 0;
+    String dataLabel = "";
+    for (int i = 0; i < atomCount; i++)
+      if (t.get(i)) {
+        s.append(i + 1).append(" ").append(atoms[i].getElementSymbol())
+        .append(" ").append(
+            TextFormat.simpleReplace(atoms[i].getIdentity(), " ", "_"))
+            .append(" ");
+        switch (type) {
+        case TAINT_COORD:
+          dataLabel = "coord set";
+              s.append(" ").append(atoms[i].x).append(" ").append(atoms[i].y)
+              .append(" ").append(atoms[i].z);
+          break;
+        case TAINT_FORMALCHARGE:
+          dataLabel = "formalcharge set";
+          s.append(atoms[i].getFormalCharge());
+          break;
+        case TAINT_PARTIALCHARGE:
+          dataLabel = "partialcharge set";
+          s.append(atoms[i].getPartialCharge());
+          break;
+        case TAINT_TEMPERATURE:
+          dataLabel = "temperature set";
+          s.append(atoms[i].getBfactor100() / 100f);
+          break;
+        case TAINT_VALENCE:
+          dataLabel = "valence set";
+          s.append(atoms[i].getValency());
+          break;
+        case TAINT_VIBRATION:
+          dataLabel = "vibrationvector set";
+          Vector3f v = atoms[i].getVibrationVector();
+          if (v == null)
+            v = new Vector3f();
+          s.append(" ").append(v.x).append(" ").append(v.y).append(" ").append(v.z);
+        }
+        s.append(" ;\n");
+        ++n;
+      }
+    commands.append("  DATA \"" + dataLabel + "\"\n").append(n).append(
+        " ;\nJmol Property Data Format 1 -- Jmol ").append(
+        Viewer.getJmolVersion()).append(";\n");
+    commands.append(s);
+    commands.append("  end \"" + dataLabel + "\";\n");
+  }
   private String getProteinStructureState() {
     BitSet bs = null;
     StringBuffer cmd = new StringBuffer();
@@ -2937,7 +3097,7 @@ abstract public class ModelSet {
    *                            and do report changes to STICKS as though this
    *                            were a bondOrder command.  
    */
-  void assignAromaticBonds(boolean isUserCalculation) {
+  protected void assignAromaticBonds(boolean isUserCalculation) {
     // bsAromatic tracks what was originally in the file, but
     // individual bonds are cleared if the connect command has been used.
     // in this way, users can override the file designations.
@@ -3055,7 +3215,7 @@ abstract public class ModelSet {
    */
   private boolean assignAromaticSingle(Atom atom, int notBondIndex) {
     Bond[] bonds = atom.bonds;
-    if (assignAromaticSingleHetero(atom, bonds.length))
+    if (assignAromaticSingleHetero(atom))
       return false;
     for (int i = bonds.length; --i >= 0;) {
       Bond bond = bonds[i];
@@ -3080,7 +3240,7 @@ abstract public class ModelSet {
    */
   private boolean assignAromaticDouble(Atom atom) {
     Bond[] bonds = atom.bonds;
-    boolean haveDouble = assignAromaticSingleHetero(atom, bonds.length);
+    boolean haveDouble = assignAromaticSingleHetero(atom);
     int lastBond = -1;
     for (int i = bonds.length; --i >= 0;) {
       if (bsAromaticDouble.get(bonds[i].index))
@@ -3103,24 +3263,27 @@ abstract public class ModelSet {
     return haveDouble;
   } 
   
-  private boolean assignAromaticSingleHetero(Atom atom, int nAtoms) {
-    // the added H F Cl Br I and C mean that just about 
-    // anything can be labeled aromatic, and the bonding will be set.
+  private boolean assignAromaticSingleHetero(Atom atom) {
+    // only C N O S may be a problematic:
     int n = atom.getElementNumber();
     switch (n) {
-    case 1: // H
-    case 9: // F
-    case 17: // Cl
-    case 35: // Br
-    case 53: // I
+    case 6: // C
+    case 7: // N
+    case 8: // O
+    case 16: // S
+      break;
+    default:
       return true;
+    }
+    int nAtoms = atom.getValency();
+    switch (n) {
     case 6: // C
       return (nAtoms == 4);
     case 7: // N
     case 8: // O
-      return (nAtoms == 10 - n && atom.getFormalCharge() < 1);    
+      return (nAtoms == 10 - n && atom.getFormalCharge() < 1);
     case 16: // S
-      return (nAtoms == 18 - n && atom.getFormalCharge() < 1);    
+      return (nAtoms == 18 - n && atom.getFormalCharge() < 1);
     }
     return false;
   }

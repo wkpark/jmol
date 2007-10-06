@@ -308,7 +308,7 @@ class Compiler {
 
   private int ichCurrentCommand;
   private boolean isNewSet;
-
+  
   private boolean iHaveQuotedString = false;
   
   private Vector ltoken;
@@ -396,13 +396,15 @@ class Compiler {
           ch = script.charAt(ichToken);
           if (tokCommand == Token.set || tokAttr(tokCommand, Token.setparam)) {
             if (tokAttr(tokCommand, Token.setparam) && ch == '=' ||
-                isNewSet && (ch == '=' || ch == '[')) {
-              tokenCommand = (ch == '=' ? Token.tokenSet : Token.tokenSetArray);
+                isNewSet && (ch == '=' || ch == '[' || ch == '.')) {
+              tokenCommand = (ch == '=' ? Token.tokenSet : ch == '[' ? Token.tokenSetArray : Token.tokenSetProperty);
               tokCommand = Token.set;
               ltoken.insertElementAt(tokenCommand, 0);
               cchToken = 1;
               if (ch == '[')
                 addTokenToPrefix(new Token(Token.leftsquare, "["));
+              if (ch == '.')
+                addTokenToPrefix(new Token(Token.dot, "."));
               continue;
             }
           }

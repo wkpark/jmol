@@ -137,7 +137,7 @@ public class Bond {
   int getValency() {
     return (!isCovalent() ? 0
         : isPartial() || order == JmolConstants.BOND_AROMATIC ? 1
-        : order & JmolConstants.BOND_COVALENT_MASK);
+        : order & 7);
   }
 
   void deleteAtomReferences() {

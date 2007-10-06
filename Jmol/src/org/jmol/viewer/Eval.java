@@ -1890,7 +1890,7 @@ class Eval { //implements Runnable {
     case Token.bondcount:
       return atom.getCovalentBondCount();
     case Token.valence:
-      return atom.getValency();
+      return atom.getValence();
     case Token.file:
       return atom.getModelFileIndex() + 1;
     case Token.model:
@@ -6926,7 +6926,7 @@ class Eval { //implements Runnable {
               iv = atom.getCovalentBondCount();
               break;
             case Token.valence:
-              iv = atom.getValency();
+              iv = atom.getValence();
               break;
             case Token.file:
               iv = atom.getModelFileIndex() + 1;

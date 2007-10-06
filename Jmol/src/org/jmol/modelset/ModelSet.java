@@ -2942,7 +2942,7 @@ abstract public class ModelSet {
           break;
         case TAINT_VALENCE:
           dataLabel = "valence set";
-          s.append(atoms[i].getValency());
+          s.append(atoms[i].getValence());
           break;
         case TAINT_VIBRATION:
           dataLabel = "vibrationvector set";
@@ -3275,7 +3275,7 @@ abstract public class ModelSet {
     default:
       return true;
     }
-    int nAtoms = atom.getValency();
+    int nAtoms = atom.getValence();
     switch (n) {
     case 6: // C
       return (nAtoms == 4);

@@ -134,7 +134,7 @@ public class Bond {
     return (order & JmolConstants.BOND_AROMATIC_MASK) != 0;
   }
 
-  int getValency() {
+  int getValence() {
     return (!isCovalent() ? 0
         : isPartial() || order == JmolConstants.BOND_AROMATIC ? 1
         : order & 7);

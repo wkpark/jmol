@@ -501,11 +501,11 @@ final public class Atom extends Point3fi implements Tuple {
     formalChargeAndFlags = (byte) ((formalChargeAndFlags & ~VALENCY_MASK) | ((byte) nBonds << 5));
   }
 
-  public int getValency() {
+  public int getValence() {
     int n = (formalChargeAndFlags >> 5) & 7;
     if (n == 0)
       for (int i = bonds.length; --i >= 0;)
-        n += bonds[i].getValency();
+        n += bonds[i].getValence();
     return n;
   }
 

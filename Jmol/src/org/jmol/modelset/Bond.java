@@ -126,8 +126,18 @@ public class Bond {
     return (order & JmolConstants.BOND_STEREO_MASK) != 0;
   }
 
+  boolean isPartial() {
+    return (order & JmolConstants.BOND_PARTIAL_MASK) != 0;
+  }
+
   boolean isAromatic() {
     return (order & JmolConstants.BOND_AROMATIC_MASK) != 0;
+  }
+
+  int getValency() {
+    return (!isCovalent() ? 0
+        : isPartial() || order == JmolConstants.BOND_AROMATIC ? 1
+        : order & JmolConstants.BOND_COVALENT_MASK);
   }
 
   void deleteAtomReferences() {

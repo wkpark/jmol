@@ -503,7 +503,10 @@ final public class Atom extends Point3fi implements Tuple {
 
   public int getValency() {
     int n = (formalChargeAndFlags >> 5) & 7;
-    return (n > 0 ? n : bonds.length);
+    if (n == 0)
+      for (int i = bonds.length; --i >= 0;)
+        n += bonds[i].getValency();
+    return n;
   }
 
   public float getDimensionValue(int dimension) {

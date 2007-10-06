@@ -2977,15 +2977,15 @@ abstract public class ModelSet {
     // all done: do the actual assignments and clear arrays.
     for (int i = bondCount; --i >= 0;) {
       bond = bonds[i];      
-      if (bsAromaticSingle.get(i)) {
-        if(bond.order != JmolConstants.BOND_AROMATIC_SINGLE) {
-          bsAromatic.set(i);
-          bond.order = JmolConstants.BOND_AROMATIC_SINGLE;
-        }
-      } else if (bsAromaticDouble.get(i)) {
+      if (bsAromaticDouble.get(i)) {
         if(bond.order != JmolConstants.BOND_AROMATIC_DOUBLE) {
           bsAromatic.set(i);
           bond.order = JmolConstants.BOND_AROMATIC_DOUBLE;
+        }
+      } else if (bsAromaticSingle.get(i) || bond.isAromatic()) {
+        if(bond.order != JmolConstants.BOND_AROMATIC_SINGLE) {
+          bsAromatic.set(i);
+          bond.order = JmolConstants.BOND_AROMATIC_SINGLE;
         }
       }
     }
@@ -3104,12 +3104,23 @@ abstract public class ModelSet {
   } 
   
   private boolean assignAromaticSingleHetero(Atom atom, int nAtoms) {
-    switch (atom.getElementNumber()) {
+    // the added H F Cl Br I and C mean that just about 
+    // anything can be labeled aromatic, and the bonding will be set.
+    int n = atom.getElementNumber();
+    switch (n) {
+    case 1: // H
+    case 9: // F
+    case 17: // Cl
+    case 35: // Br
+    case 53: // I
+      return true;
+    case 6: // C
+      return (nAtoms == 4);
     case 7: // N
-      return (nAtoms == 3 && atom.getFormalCharge() < 1);
     case 8: // O
+      return (nAtoms == 10 - n && atom.getFormalCharge() < 1);    
     case 16: // S
-      return (nAtoms == 2 && atom.getFormalCharge() < 1);    
+      return (nAtoms == 18 - n && atom.getFormalCharge() < 1);    
     }
     return false;
   }

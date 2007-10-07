@@ -32,7 +32,7 @@ import org.jmol.symmetry.UnitCell;
 import org.jmol.util.TextFormat;
 import org.jmol.viewer.StateManager;
 
-public class UccageRenderer extends ShapeRenderer {
+public class UccageRenderer extends FontLineShapeRenderer {
 
   NumberFormat nf;
   byte fid;
@@ -49,7 +49,8 @@ public class UccageRenderer extends ShapeRenderer {
 
   protected void render() {
     short mad = viewer.getObjectMad(StateManager.OBJ_UNITCELL);
-    if (mad == 0 || !g3d.setColix(viewer.getObjectColix(StateManager.OBJ_UNITCELL)))
+    colix = viewer.getObjectColix(StateManager.OBJ_UNITCELL);
+    if (mad == 0 || !isGenerator && !g3d.setColix(colix))
         return;
     doLocalize = viewer.getUseNumberLocalization();
     render1(mad);
@@ -68,9 +69,16 @@ public class UccageRenderer extends ShapeRenderer {
     for (int i = 8; --i >= 0;)
       verticesT[i].add(vertices[i], offset);
     Point3f[] axisPoints = viewer.getAxisPoints();
-    BbcageRenderer.render(viewer, g3d, mad, verticesT, screens, axisPoints, viewer.getAxesScale() < 2 ? 0 : 3);
-    if (!viewer.getDisplayCellParameters() || cellInfo.isPeriodic())
-      return;
+    render(mad, verticesT, screens, axisPoints, viewer.getAxesScale() < 2 ? 0 : 3);
+    if (!isGenerator && viewer.getDisplayCellParameters() && !cellInfo.isPeriodic())
+      renderInfo(cellInfo, unitCell);
+  }
+  
+  private String nfformat(float x) {
+    return (doLocalize && nf != null ? nf.format(x) : TextFormat.formatDecimal(x, 3));
+  }
+
+  private void renderInfo(CellInfo cellInfo, UnitCell unitCell) {
     if (nf == null) {
       nf = NumberFormat.getInstance();
       fid = g3d.getFontFid("Monospaced", 14);
@@ -111,10 +119,5 @@ public class UccageRenderer extends ShapeRenderer {
         + nfformat(unitCell.getInfo(UnitCell.INFO_GAMMA)) + "\u00B0", null,
         (short) 0, 5, line, 0);
   }
-  
-  String nfformat(float x) {
-    return (doLocalize && nf != null ? nf.format(x) : TextFormat.formatDecimal(x, 3));
-  }
-
 }
 

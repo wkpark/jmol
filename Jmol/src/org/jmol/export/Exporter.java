@@ -208,5 +208,4 @@ public abstract class Exporter implements JmolExportInterface {
     .append(((argb >> 8) & 0xFF) / 255f).append(sep)
     .append(((argb) & 0xFF) / 255f).toString();
   }
-
 }

@@ -28,8 +28,12 @@ package org.jmol.export;
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 import javax.vecmath.Tuple3f;
+
+import org.jmol.g3d.Font3D;
 import org.jmol.modelset.Atom;
+import org.jmol.shape.Text;
 
 public class MayaExporter extends Exporter {
 
@@ -153,5 +157,22 @@ public class MayaExporter extends Exporter {
                                int[][] indices, BitSet bsFaces,
                                int nVertices, int nPoints) {
   }
-         
+
+  public void renderText(Text t) {
+  }  
+
+  public void drawString(short colix, String str, Font3D font3d, 
+                         int xBaseline, int yBaseline, int z, int zSlab) {
+  }
+
+  public void fillCylinder(short colix, byte endcaps, int diameter, 
+                           Point3i screenA, Point3i screenB) {
+  }
+
+  public void drawDottedLine(short colix, Point3i pointA, Point3i pointB) {
+  }
+
+  public void drawPoints(short colix, int count, int[] coordinates) { 
+  }
+
 }

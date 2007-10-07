@@ -34,10 +34,10 @@ public class LabelsRenderer extends ShapeRenderer {
 
   // offsets are from the font baseline
   byte fidPrevious;
-  Font3D font3d;
   FontMetrics fontMetrics;
-  int ascent;
-  int descent;
+  protected Font3D font3d;
+  protected int ascent;
+  protected int descent;
   //int msgWidth;
 
   protected void render() {
@@ -64,6 +64,8 @@ public class LabelsRenderer extends ShapeRenderer {
         continue;
       short colix = (colixes == null || i >= colixes.length) ? 0 : colixes[i];
       colix = Graphics3D.getColixInherited(colix, atom.getColix());
+      if (!g3d.setColix(colix))
+        continue;
       short bgcolix = (bgcolixes == null || i >= bgcolixes.length) ? 0
           : bgcolixes[i];
       if (bgcolix == 0 && g3d.getColixArgb(colix) == backgroundColor)
@@ -80,12 +82,13 @@ public class LabelsRenderer extends ShapeRenderer {
       if (zSlab < 1)
         zSlab = 1;
       Group group;
-      int zBox = (labelsFront ? 1
-          : labelsGroup && (group = atom.getGroup()) != null ? group.getMinZ() : zSlab);
+      int zBox = (labelsFront ? 1 : labelsGroup
+          && (group = atom.getGroup()) != null ? group.getMinZ() : zSlab);
       if (zBox < 1)
         zBox = 1;
 
-      boolean isSimple = (textAlign == 0 && label.indexOf("|") < 0 && label.indexOf("<su") < 0);
+      boolean isSimple = (!isGenerator && textAlign == 0 && label.indexOf("|") < 0 
+          && label.indexOf("<su") < 0);
 
       Text text = (isSimple ? null : labels.getLabel(i));
       if (text != null) {
@@ -93,7 +96,7 @@ public class LabelsRenderer extends ShapeRenderer {
         text.setBgColix(bgcolix);
         text.setXYZs(atom.screenX, atom.screenY - 8, zBox, zSlab);
         text.setPointer(pointer);
-        text.render();
+        renderText(text);
         continue;
       }
       if (fid != fidPrevious || ascent == 0) {
@@ -110,19 +113,25 @@ public class LabelsRenderer extends ShapeRenderer {
         boolean doPointer = ((pointer & Text.POINTER_ON) != 0);
         //(viewer.getLabelPointerBox() && bgcolix != 0 || bgcolix == 0 && viewer.getLabelPointerNoBox());
         //short pointercolix = (viewer.getLabelPointerBackground() && bgcolix != 0 ? bgcolix : colix);
-        short pointercolix = ((pointer & Text.POINTER_BACKGROUND) != 0 
+        short pointercolix = ((pointer & Text.POINTER_BACKGROUND) != 0
             && bgcolix != 0 ? bgcolix : colix);
-        Text.renderSimple(g3d, font3d, label, colix, bgcolix, atom.screenX,
-            atom.screenY, zBox, zSlab, Text.getXOffset(offset), Text
-                .getYOffset(offset), ascent, descent, doPointer, pointercolix);
+        Text.renderSimple(g3d, font3d, label, colix, bgcolix, 
+            atom.screenX, atom.screenY, zBox, zSlab, 
+            Text.getXOffset(offset), Text.getYOffset(offset), 
+            ascent, descent, doPointer, pointercolix);        
       } else {
         text = new Text(g3d, font3d, label, colix, bgcolix, atom.screenX,
             atom.screenY - 8, zBox, zSlab, textAlign);
         labels.putLabel(i, text);
         text.setPointer(pointer);
         text.setOffset(offset);
-        text.render();
+        renderText(text);
       }
     }
   }
+    
+  protected void renderText(Text t) {
+    t.render();
+  }  
+
 }

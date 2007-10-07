@@ -482,8 +482,8 @@ public class Text {
                                  boolean doPointer, short pointerColix) {
 
     // old static style -- quick, simple, no line breaks, odd alignment?
-    if (strLabel == null || strLabel.length() == 0 || !g3d.setColix(colix))
-      return;
+    // LabelsRenderer only
+    
     int x0 = x;
     int y0 = y;
     int boxWidth = font.fontMetrics.stringWidth(strLabel) + 8;

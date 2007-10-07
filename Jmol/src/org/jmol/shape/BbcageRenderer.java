@@ -23,14 +23,10 @@
  */
 package org.jmol.shape;
 
-import org.jmol.g3d.Graphics3D;
 import org.jmol.viewer.StateManager;
-import org.jmol.viewer.Viewer;
-
-import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-public class BbcageRenderer extends ShapeRenderer {
+public class BbcageRenderer extends FontLineShapeRenderer {
 
   final Point3i[] screens = new Point3i[8];
   {
@@ -40,38 +36,10 @@ public class BbcageRenderer extends ShapeRenderer {
 
   protected void render() {
     short mad = viewer.getObjectMad(StateManager.OBJ_BOUNDBOX);
-    if (mad == 0 || !g3d.checkTranslucent(false))
+    if (mad == 0 || !isGenerator && !g3d.checkTranslucent(false))
       return;
-    g3d.setColix(viewer.getObjectColix(StateManager.OBJ_BOUNDBOX));
-    render(viewer, g3d, mad, modelSet.getBboxVertices(), screens, null, 0);
+    colix = viewer.getObjectColix(StateManager.OBJ_BOUNDBOX);
+    render(mad, modelSet.getBboxVertices(), screens, null, 0);
   }
-
-  static void render(Viewer viewer, Graphics3D g3d,
-                     short mad,
-                     Point3f[] vertices, Point3i[] screens, Point3f[]axisPoints, int firstLine) {
-    int zSum = 0;
-    for (int i = 8; --i >= 0; ) {
-      viewer.transformPoint(vertices[i], screens[i]);
-      zSum += screens[i].z;
-    }
-    if (mad > 0 && mad < 2)
-      mad = 2;
-    int widthPixels = mad;
-    if (mad >= 20) {
-      widthPixels = viewer.scaleToScreen(zSum / 8, mad);
-    }
-    int axisPt = 2;
-    for (int i = firstLine * 2; i < 24; i += 2) {
-      int edge0 = Bbcage.edges[i];
-      if (axisPoints != null && edge0 == 0)
-        viewer.transformPoint(axisPoints[axisPt--], screens[0]);
-      if (mad < 0)
-        g3d.drawDottedLine(screens[edge0],
-                           screens[Bbcage.edges[i+1]]);
-      else
-        g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, widthPixels,
-                         screens[edge0],
-                         screens[Bbcage.edges[i+1]]);
-    }
-  }  
+  
 }

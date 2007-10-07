@@ -33,7 +33,7 @@ import org.jmol.viewer.StateManager;
 
 import javax.vecmath.Point3i;
 
-public class AxesRenderer extends ShapeRenderer {
+public class AxesRenderer extends FontLineShapeRenderer {
 
   String[] axisLabels = { "+X", "+Y", "+Z",
                           null, null, null, "a", "b", "c" };
@@ -49,7 +49,7 @@ public class AxesRenderer extends ShapeRenderer {
   protected void render() {
     Axes axes = (Axes) shape;
     short mad = viewer.getObjectMad(StateManager.OBJ_AXIS1);
-    if (mad == 0 || !g3d.checkTranslucent(false))
+    if (mad == 0 || !isGenerator && !g3d.checkTranslucent(false))
       return;
     if (viewer.areAxesTainted())
       axes.initShape();
@@ -74,25 +74,28 @@ public class AxesRenderer extends ShapeRenderer {
     colixes[1] = viewer.getObjectColix(StateManager.OBJ_AXIS2);
     colixes[2] = viewer.getObjectColix(StateManager.OBJ_AXIS3);
     for (int i = nPoints; --i >= 0;) {
-      g3d.setColix(colixes[i % 3]);                          
+      colix = colixes[i % 3];
+      if (!isGenerator)
+        g3d.setColix(colix);
       String label = axisLabels[i + labelPtr];
       if (label != null)
         renderLabel(label, axes.font3d, axisScreens[i].x,
-            axisScreens[i].y, axisScreens[i].z, g3d);
+            axisScreens[i].y, axisScreens[i].z);
       if (mad < 0)
-        g3d.drawDottedLine(originScreen, axisScreens[i]);
+        drawDottedLine(originScreen, axisScreens[i]);
       else
-        g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, widthPixels,
+        fillCylinder(Graphics3D.ENDCAPS_FLAT, widthPixels,
             originScreen, axisScreens[i]);
     }
     if (nPoints == 3) { //a b c
-      g3d.setColix(viewer.getColixBackgroundContrast());
-      renderLabel("0", axes.font3d, originScreen.x, originScreen.y, originScreen.z, g3d);
+      colix = viewer.getColixBackgroundContrast();
+      if (!isGenerator)
+        g3d.setColix(colix);
+      renderLabel("0", axes.font3d, originScreen.x, originScreen.y, originScreen.z);
     }
   }
   
-  void renderLabel(String str, Font3D font3d, int x,
-                           int y, int z, Graphics3D g3d) {
+  void renderLabel(String str, Font3D font3d, int x, int y, int z) {
     FontMetrics fontMetrics = font3d.fontMetrics;
     int strAscent = fontMetrics.getAscent();
     int strWidth = fontMetrics.stringWidth(str);
@@ -107,6 +110,6 @@ public class AxesRenderer extends ShapeRenderer {
     }
     int xStrBaseline = x - strWidth / 2;
     int yStrBaseline = y + strAscent / 2;
-    g3d.drawString(str, font3d, xStrBaseline, yStrBaseline, z, z);
+    drawString(str, font3d, xStrBaseline, yStrBaseline, z, z);
   }
 }

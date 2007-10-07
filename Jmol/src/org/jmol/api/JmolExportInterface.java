@@ -1,9 +1,12 @@
 package org.jmol.api;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 
+import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
+import org.jmol.shape.Text;
 import org.jmol.viewer.Viewer;
 import java.util.BitSet;
 
@@ -38,4 +41,17 @@ public interface JmolExportInterface {
                                  short[] colixes, short[] normals,
                                  int[][] indices, BitSet bsFaces,
                                  int nVertices, int nPoints);
+  
+  abstract void renderText(Text t);
+  
+  abstract void drawString(short colix, String str, Font3D font3d, int xBaseline,
+                            int yBaseline, int z, int zSlab);
+  
+  abstract void fillCylinder(short colix, byte endcaps, int diameter, 
+                             Point3i screenA, Point3i screenB);
+
+  abstract void drawDottedLine(short colix, Point3i pointA, Point3i pointB);
+  
+  abstract void drawPoints(short colix, int count, int[] coordinates); //for dots
+
 }

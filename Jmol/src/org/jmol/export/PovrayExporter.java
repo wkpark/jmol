@@ -29,8 +29,11 @@ import java.util.BitSet;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 import javax.vecmath.Matrix4f;
+
+import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
+import org.jmol.shape.Text;
 
 /*
  * Contributed by pim schravendijk <pimlists@googlemail.com>
@@ -215,17 +218,6 @@ public class PovrayExporter extends Exporter {
     }
   }
 
-  public void fillSphereCentered(int mad, Point3f pt, short colix) {
-    //not a mad -- a number of pixels?
-    //TODO
-  }
-
-  public void renderIsosurface(Point3f[] vertices, short colix,
-                               short[] colixes, short[] normals,
-                               int[][] indices, BitSet bsFaces, int nVertices,
-                               int nPoints) {
-  }
-
   private void writeMacros() {
     output.append("#default { finish {\n" + "  ambient "
         + (float) Graphics3D.getAmbientPercent() / 100f + "\n" + "  diffuse "
@@ -276,5 +268,33 @@ public class PovrayExporter extends Exporter {
     output.append("#macro joint(X,Y,Z,RADIUS,R,G,B,T)\n"
         + " sphere{<X,Y,Z>,RADIUS\n" + "  pigment{rgbt<R,G,B,T>}\n"
         + "  no_shadow}\n" + "#end\n\n");
+  }
+  
+  public void fillSphereCentered(int mad, Point3f pt, short colix) {
+    //not a mad -- a number of pixels?
+    //TODO
+  }
+
+  public void renderIsosurface(Point3f[] vertices, short colix,
+                               short[] colixes, short[] normals,
+                               int[][] indices, BitSet bsFaces, int nVertices,
+                               int nPoints) {
+  }
+
+  public void renderText(Text t) {
+  }  
+  
+  public void drawString(short colix, String str, Font3D font3d, 
+                         int xBaseline, int yBaseline, int z, int zSlab) {
+  }
+
+  public void fillCylinder(short colix, byte endcaps, int diameter, 
+                           Point3i screenA, Point3i screenB) {
+  }
+
+  public void drawDottedLine(short colix, Point3i pointA, Point3i pointB) {
+  }
+
+  public void drawPoints(short colix, int count, int[] coordinates) { 
   }
 }

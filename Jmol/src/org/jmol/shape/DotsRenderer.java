@@ -58,7 +58,7 @@ public class DotsRenderer extends ShapeRenderer {
 
   protected void render1(Dots dots) {
     //dots.timeBeginExecution = System.currentTimeMillis();
-    if (!iShowSolid && !g3d.setColix(Graphics3D.BLACK)) // no translucent for dots
+    if (!iShowSolid && !isGenerator && !g3d.setColix(Graphics3D.BLACK)) // no translucent for dots
       return;
     int sppa = (int) viewer.getScalePixelsPerAngstrom();
     screenLevel = (iShowSolid || sppa > 20 ? 3 : sppa > 10 ? 2 : sppa > 5 ? 1
@@ -124,7 +124,7 @@ public class DotsRenderer extends ShapeRenderer {
    * @param nPoints
    */
   protected void renderConvex(short colix, int[] map, int nPoints) {
-    renderDots(colix, nPoints);
+    renderDots(Graphics3D.getColixTranslucent(colix, false, 0), nPoints);
   }
 
   /**
@@ -134,7 +134,7 @@ public class DotsRenderer extends ShapeRenderer {
    * @param nPoints
    */
   protected void renderDots(short colix, int nPoints) {
-    g3d.setColix(Graphics3D.getColixTranslucent(colix, false, 0));
+    g3d.setColix(colix);
     g3d.drawPoints(nPoints, screenCoordinates);
   }
 }

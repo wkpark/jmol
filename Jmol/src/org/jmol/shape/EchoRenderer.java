@@ -26,7 +26,6 @@ package org.jmol.shape;
 import java.util.Enumeration;
 import javax.vecmath.Point3i;
 
-
 public class EchoRenderer extends ShapeRenderer {
 
   protected void render() {
@@ -40,7 +39,11 @@ public class EchoRenderer extends ShapeRenderer {
         viewer.transformPoint(t.xyz, pt);
         t.setXYZs(pt.x, pt.y, pt.z, pt.z);
       }
-      t.render();
+      renderText(t);
     }
   }
+  
+  protected void renderText(Text t) {
+    t.render();
+  }  
 }

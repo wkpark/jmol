@@ -69,7 +69,9 @@ public class UccageRenderer extends FontLineShapeRenderer {
     for (int i = 8; --i >= 0;)
       verticesT[i].add(vertices[i], offset);
     Point3f[] axisPoints = viewer.getAxisPoints();
-    render(mad, verticesT, screens, axisPoints, viewer.getAxesScale() < 2 ? 0 : 3);
+    boolean drawAllLines = (viewer.getObjectMad(StateManager.OBJ_AXIS1) == 0 
+        || viewer.getAxesScale() < 2);
+    render(mad, verticesT, screens, axisPoints, drawAllLines ? 0 : 3);
     if (!isGenerator && viewer.getDisplayCellParameters() && !cellInfo.isPeriodic())
       renderInfo(cellInfo, unitCell);
   }

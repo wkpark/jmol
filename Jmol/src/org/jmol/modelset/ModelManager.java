@@ -52,6 +52,10 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Vector3f;
 import java.awt.Rectangle;
 
+// NOTE: This is the gateway class to ModelSet
+//
+// This class, though public, should ONLY be called by methods in Viewer.java
+
 public class ModelManager {
 
   private final Viewer viewer;

@@ -49,18 +49,22 @@ final class Shade3D {
   static byte shadeNormal = 52;
 
   // the light source vector
-  static final float xLightsource = -1;
-  static final float yLightsource = -1;
-  static final float zLightsource = 2.5f;
-  static final float magnitudeLight =
+  private static final float xLightsource = -1;
+  private static final float yLightsource = -1;
+  private static final float zLightsource = 2.5f;
+  private static final float magnitudeLight =
     (float)Math.sqrt(xLightsource * xLightsource +
                      yLightsource * yLightsource +
                      zLightsource * zLightsource);
   // the light source vector normalized
-  static final float xLight = xLightsource / magnitudeLight;
-  static final float yLight = yLightsource / magnitudeLight;
-  static final float zLight = zLightsource / magnitudeLight;
+  private static final float xLight = xLightsource / magnitudeLight;
+  private static final float yLight = yLightsource / magnitudeLight;
+  private static final float zLight = zLightsource / magnitudeLight;
 
+  static float[] getLightSource() {
+    return new float[] {xLight, yLight, zLight};
+  }
+  
   // the viewer vector is always 0,0,1
 
   /*  

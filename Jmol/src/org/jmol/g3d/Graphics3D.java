@@ -1937,6 +1937,10 @@ final public class Graphics3D {
     return (int) (lighting[Shade3D.AMBIENT_PERCENT]);
   }
   
+  public static float[] getLightSource() {
+    return Shade3D.getLightSource();
+  }
+  
   /*
   public void setLightsourceZ(float dist) {
     Shade3D.setLightsourceZ(dist);

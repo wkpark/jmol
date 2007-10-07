@@ -27,6 +27,7 @@ package org.jmol.export;
 
 import java.util.BitSet;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point3i;
 import javax.vecmath.Matrix4f;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.modelset.Atom;
@@ -44,6 +45,11 @@ public class PovrayExporter extends Exporter {
   int screenHeight;
 
   Matrix4f transformMatrix;
+
+  Point3f povpt1 = new Point3f();
+  Point3f povpt2 = new Point3f();
+  Point3f povpt3 = new Point3f();
+  Point3i povpti = new Point3i();
 
   public PovrayExporter() {
     use2dBondOrderCalculation = true;
@@ -109,8 +115,14 @@ public class PovrayExporter extends Exporter {
     output.append("// " + rgbFractionalBackground(',') + " \n");
     output.append("\n");
 
-    output.append("light_source { < -Width, -2.0*Height, 0> "
-        + " rgb <0.6,0.6,0.6> }\n");
+    // light source
+    
+    povpt1.set(Graphics3D.getLightSource());
+    viewer.transformPoint(povpt1,povpti);
+
+    output.append("light_source { <" + povpt1.x*screenWidth + "," 
+        + povpt1.y*screenHeight + ", "
+        + povpt1.z + "> " + " rgb <0.6,0.6,0.6> }\n");
     output.append("\n");
     output.append("\n");
 
@@ -132,8 +144,8 @@ public class PovrayExporter extends Exporter {
       + "\nOutput_to_File=true"
       + "\nOutput_File_Type=T"
       + "\nOutput_File_Name=%OUTPUTFILENAME%"
-      + "\nHeight=498"
-      + "\nWidth=804"
+      + "\nHeight=" + screenHeight 
+      + "\nWidth=" + screenWidth
       + "\nAntialias=true"
       + "\nAntialias_Threshold=0.1"
       + "\nDisplay=true"
@@ -143,9 +155,6 @@ public class PovrayExporter extends Exporter {
     
   }
   
-  Point3f povpt1 = new Point3f();
-  Point3f povpt2 = new Point3f();
-  Point3f povpt3 = new Point3f();
 
   public void renderAtom(Atom atom, short colix) {
     String color = rgbFractionalFromColix(colix, ',');

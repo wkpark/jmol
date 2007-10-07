@@ -1937,8 +1937,8 @@ final public class Graphics3D {
     return (int) (lighting[Shade3D.AMBIENT_PERCENT]);
   }
   
-  public static float[] getLightSource() {
-    return Shade3D.getLightSource();
+  public static Point3f getLightSource() {
+    return new Point3f(Shade3D.xLight, Shade3D.yLight, Shade3D.zLight);
   }
   
   /*

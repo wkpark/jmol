@@ -3778,7 +3778,7 @@ class Eval { //implements Runnable {
         BitSet bsAtoms = new BitSet(atomCount);
         if (matchField > 0) {
           atomMap = new int[atomCount + 1];
-          for (int j = 0; j < atomCount; j++)
+          for (int j = 0; j <= atomCount; j++)
             atomMap[j] = -1;
           for (int j = 0; j < atomCount; j++) {
             if (!bs.get(j))
@@ -6373,11 +6373,10 @@ class Eval { //implements Runnable {
         bs = (BitSet) t.value;
       }
       if (propertyName.startsWith("property_")) {
-        int n = viewer.getAtomCount();
-        String s = (tv.tok == Token.integer ? "" + tv.intValue : "" + tv.value);
         viewer.setData(propertyName,
-            new Object[] { propertyName, s, bs }, n, 0,
-            Integer.MIN_VALUE);
+            new Object[] { propertyName, Token.sValue(tv), bs }, 
+            viewer.getAtomCount(), 0,
+            tv.tok == Token.list ? Integer.MAX_VALUE : Integer.MIN_VALUE);
         return;
       }
       setBitsetProperty(bs, tokProperty, Token.iValue(tv), Token.fValue(tv), tv);
@@ -7129,7 +7128,7 @@ class Eval { //implements Runnable {
     case Token.xyz:
     case Token.fracXyz:
     case Token.vibXyz:
-      viewer.setAtomCoord(bs, tok, (Point3f) tokenValue.value);
+      viewer.setAtomCoord(bs, tok, tokenValue.value);
       break;
     case Token.color:
       viewer.setShapeProperty(JmolConstants.SHAPE_BALLS, "color", new Integer(iValue), bs);

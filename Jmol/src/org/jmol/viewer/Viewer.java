@@ -58,7 +58,6 @@ import java.util.Hashtable;
 import java.util.BitSet;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.Enumeration;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Point4f;
@@ -116,6 +115,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return compiler;
   }
   private Eval eval;
+  private DataManager dataManager;
   private FileManager fileManager;
   private ModelManager modelManager;
   public MouseManager mouseManager;
@@ -178,6 +178,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     propertyManager = new PropertyManager(this);
     tempManager = new TempArray();
     fileManager = new FileManager(this, modelAdapter);
+    dataManager = new DataManager();
     repaintManager = new RepaintManager(this);
     compiler = new Compiler(this);
     eval = new Eval(this);
@@ -1754,7 +1755,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     tempManager.clear();
     //setRefreshing(true);
     refresh(0, "Viewer:clear()");
-    setData(null, null, 0, 0, 0);
+    dataManager.clear();
     System.gc();
   }
 
@@ -2265,7 +2266,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     s.append(fileManager.getState(sfunc));
     //  numerical values
     s.append(global.getState(sfunc));
-    getDataState(s,sfunc);
+    
+    dataManager.getDataState(s,sfunc);
+    
     //  definitions, connections, atoms, bonds, labels, echos, shapes
     s.append(modelManager.getState(sfunc));
     //  color scheme
@@ -2285,57 +2288,10 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelManager.getStructureState();
   }
 
-  Hashtable dataValues = new Hashtable();
-
-  void setData(String type, Object[] data, int atomCount,
-                      int matchField, int field) {
-    //Eval
-    /*
-     * data[0] -- label
-     * data[1] -- string or float[]
-     * data[2] -- selection bitset or int[] atomMap when field < 0
-     * 
-     * matchField = Integer.MIN_VALUE ==> one SINGLE data value should be used for all selected atoms
-     */
-    if (type == null) {
-      dataValues.clear();
-      return;
-    }
-    if (data[2] != null) {
-      float[] f = new float[atomCount];
-      String stringData = (String) data[1];
-      if (field == 0)
-        Parser.parseFloatArray(stringData, (BitSet) data[2], f);
-      else if (matchField == 0)
-        Parser.parseFloatArrayFromMatchAndField(stringData, (BitSet) data[2],
-            0, null, field, f);
-      else
-        Parser.parseFloatArrayFromMatchAndField(stringData, null, matchField,
-            (int[]) data[2], field, f);
-      data[1] = f;
-    }
-    dataValues.put(type, data);
-  }
-
-  Object[] getData(String type) {
-    if (dataValues == null)
-      return null;
-    if (type.equalsIgnoreCase("types")) {
-      String[] info = new String[2];
-      info[0] = "types";
-      info[1] = "";
-      int n = 0;
-      Enumeration e = (dataValues.keys());
-      while (e.hasMoreElements())
-        info[1] += (n++ == 0 ? "," : "") + e.nextElement();
-      return info;
-    }
-    return (Object[]) dataValues.get(type);
-  }
-
   void setCurrentColorRange(String label) {
     float[] data = getDataFloat(label);
-    BitSet bs = (data == null ? null : (BitSet) ((Object[]) getData(label))[2]);
+    BitSet bs = (data == null ? null 
+        : (BitSet) ((Object[]) dataManager.getData(label))[2]);
     setCurrentColorRange(data, bs);
   }
 
@@ -2351,56 +2307,21 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return colorManager.getCurrentColorRange();
   }
   
+  void setData(String type, Object[] data, int atomCount, int matchField,
+               int field) {
+    dataManager.setData(type, data, atomCount, matchField, field);
+  }
+  
+  Object[] getData(String type) {
+    return dataManager.getData(type);  
+  }
+  
   float[] getDataFloat(String label) {
-    if (dataValues == null)
-      return null;
-    Object[] data = getData(label);
-    if (data == null || !(data[1] instanceof float[]))
-      return null;
-    return (float[]) data[1];
+    return dataManager.getDataFloat(label);
   }
 
   float getDataFloat(String label, int atomIndex) {
-    if (dataValues != null) {
-      Object[] data = getData(label);
-      if (data != null && data[1] instanceof float[]) {
-        float[] f = (float[]) data[1];
-        if (atomIndex < f.length)
-          return f[atomIndex];
-      }
-    }
-    return Float.NaN;
-  }
-
-  private void getDataState(StringBuffer s, StringBuffer sfunc) {
-    if (dataValues == null)
-      return;
-    Enumeration e = (dataValues.keys());
-    int n = 0;
-    while (e.hasMoreElements()) {
-      String name = (String) e.nextElement();
-      if (name.indexOf("property_") == 0) {
-        if (n == 0)
-          s.append("function _setDataState();\n");
-        n++;
-        Object data = ((Object[]) dataValues.get(name))[1];
-        s.append("DATA \"").append(name).append("\"");
-        if (data instanceof float[]) {
-          s.append("\n");
-          float[] f = (float[]) data;
-          for (int i = 0; i < f.length; i++)
-            s.append(" ").append(f[i]);
-          s.append("\n");
-        } else {
-          s.append("").append(data);
-        }
-        s.append("end \"").append(name).append("\";\n");
-      }
-    }
-    if (n == 0)
-      return;
-    sfunc.append("  _setDataState\n");
-    s.append("end function;\n\n");
+    return dataManager.getDataFloat(label, atomIndex);
   }
 
   public String getAltLocListInModel(int modelIndex) {
@@ -5670,8 +5591,8 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     modelManager.setAtomProperty(bs, tok, iValue, fValue);
   }
  
-  void setAtomCoord(BitSet bs, int tokType, Point3f xyz) {
-    modelManager.setAtomCoord(bs, tokType, xyz);
+  void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
+    modelManager.setAtomCoord(bs, tokType, xyzValues);
   }
 
   public void setAtomCoordRelative(int atomIndex, float x, float y, float z) {

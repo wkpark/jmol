@@ -45,7 +45,10 @@ public class Parser {
    *  @param data    the (sparce) array to fill
    */
   public static void parseFloatArray(String str, BitSet bs, float[] data) {
-    String[] tokens = getTokens(str);
+    parseFloatArray(getTokens(str), bs, data);
+  }
+
+  public static void parseFloatArray(String[] tokens, BitSet bs, float[] data) {
     int len = data.length;
     int nTokens = tokens.length;
     int n = 0;
@@ -90,6 +93,8 @@ public class Parser {
       int iData;
       if (isMatch) {
         iData = parseInt(tokens[fieldMatch - 1]);
+        //in the fieldMatch column we have an integer pointing into matchData
+        //we replace that number then with the corresponding number in matchData
         if (iData == Integer.MIN_VALUE || iData < 0 || iData >= len
             || (iData = matchData[iData]) < 0)
           continue;

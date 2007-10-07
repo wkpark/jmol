@@ -1404,9 +1404,22 @@ String getAtomInfoChime(int i) {
     modelSet.setAtomCoord(atomIndex, x, y, z);
   }
 
-  public void setAtomCoord(BitSet bs, int tokType, Point3f xyz) {
-    for (int i = getAtomCount(); --i >= 0;)
-      if (bs.get(i)) {
+  public void setAtomCoord(BitSet bs, int tokType, Object xyzValues) {
+    Point3f xyz = (xyzValues instanceof Point3f ? (Point3f) xyzValues : null);
+    String[] values = (xyzValues instanceof String[] ? (String[]) xyzValues : null);
+    int nValues = (values == null ? Integer.MAX_VALUE : values.length);
+    if (xyz == null && values == null || nValues == 0)
+      return;
+    int n = 0;
+    int atomCount = getAtomCount();
+    for (int i = 0; i < atomCount; i++)
+      if (bs.get(i) && n < nValues) {
+        if (values != null) {
+          Object o = Escape.unescapePoint(values[n++]);
+          if (!(o instanceof Point3f))
+            break;
+          xyz = (Point3f) o;
+        }
         switch (tokType) {
         case Token.xyz:
           modelSet.setAtomCoord(i, xyz.x, xyz.y, xyz.z);

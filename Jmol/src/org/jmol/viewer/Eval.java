@@ -1558,7 +1558,7 @@ class Eval { //implements Runnable {
         }
         if (((String) value).indexOf("-") >= 0)
           comparisonValue = -comparisonValue;
-        float[] data = (tokWhat == Token.property ? Viewer
+        float[] data = (tokWhat == Token.property ? viewer
             .getDataFloat(property) : null);
         rpn.addX(comparatorInstruction(instruction, tokWhat, data, tokOperator,
             comparisonValue, comparisonFloat));
@@ -3743,7 +3743,7 @@ class Eval { //implements Runnable {
       dataLabel = parameterAsString(1);
       if (dataLabel.equalsIgnoreCase("clear")) {
         if (!isSyntaxCheck)
-          Viewer.setData(null, null, 0, 0, 0);
+          viewer.setData(null, null, 0, 0, 0);
         return;
       }
       if ((i = dataLabel.indexOf("@")) >= 0) {
@@ -3793,9 +3793,9 @@ class Eval { //implements Runnable {
         } else {
           data[2] = bs;
         }
-        Viewer.setData(dataType, data, atomCount, matchField, dataField);
+        viewer.setData(dataType, data, atomCount, matchField, dataField);
       } else {
-        Viewer.setData(dataType, data, 0, 0, 0);
+        viewer.setData(dataType, data, 0, 0, 0);
       }
     }
     if ((isModel || isAppend)
@@ -6336,6 +6336,7 @@ class Eval { //implements Runnable {
   private void setVariable(int pt, int ptMax, String key, boolean showing)
       throws ScriptException {
     BitSet bs = null;
+    String propertyName = "";
     if (tokAt(pt - 1) == Token.expressionBegin) {
       bs = expression(pt - 1);
       pt = iToken + 1;
@@ -6347,6 +6348,7 @@ class Eval { //implements Runnable {
         invalidArgument();
       pt++;
       tokProperty = token.intValue;
+      propertyName = (String) token.value;
     } else if (bs != null)
       invalidArgument();
     String str;
@@ -6370,6 +6372,14 @@ class Eval { //implements Runnable {
           invalidArgument();
         bs = (BitSet) t.value;
       }
+      if (propertyName.startsWith("property_")) {
+        int n = viewer.getAtomCount();
+        String s = (tv.tok == Token.integer ? "" + tv.intValue : "" + tv.value);
+        viewer.setData(propertyName,
+            new Object[] { propertyName, s, bs }, n, 0,
+            Integer.MIN_VALUE);
+        return;
+      }
       setBitsetProperty(bs, tokProperty, Token.iValue(tv), Token.fValue(tv), tv);
       return;
     }
@@ -6381,7 +6391,7 @@ class Eval { //implements Runnable {
     }
     if (key.startsWith("property_")) {
       int n = viewer.getAtomCount();
-      Viewer.setData(key,
+      viewer.setData(key,
           new Object[] { key, "" + v, viewer.getSelectedAtoms() }, n, 0,
           Integer.MIN_VALUE);
       return;
@@ -6734,7 +6744,7 @@ class Eval { //implements Runnable {
           nProp = 0;
         }
         String name = label.substring(pt + 1, pt2);
-        float[] f = Viewer.getDataFloat(name);
+        float[] f = viewer.getDataFloat(name);
         if (f != null) {
           propArray[nProp] = f;
           props[nProp++] = '{' + name + '}';
@@ -6789,6 +6799,8 @@ class Eval { //implements Runnable {
       if (Compiler.tokAttrOr(tok, Token.atomproperty, Token.mathproperty))
         break;
       invalidArgument();
+    case Token.property:
+      break;
     case Token.identifier:
       if (s.equals("x"))
         tok = Token.atomX;
@@ -6857,7 +6869,7 @@ class Eval { //implements Runnable {
     boolean isInt = true;
     Point3f ptT = (tok == Token.color ? new Point3f() : null);
     ModelSet modelSet = viewer.getModelSet();
-    float[] data = (tok == Token.property ? Viewer
+    float[] data = (tok == Token.property ? viewer
         .getDataFloat((String) opValue) : null);
     int count = 0;
     if (isAtoms) {
@@ -8103,7 +8115,7 @@ class Eval { //implements Runnable {
     case Token.data:
       String type = ((len = statementLength) == 3 ? parameterAsString(2) : null);
       if (!isSyntaxCheck) {
-        Object[] data = (type == null ? this.data : Viewer.getData(type));
+        Object[] data = (type == null ? this.data : viewer.getData(type));
         msg = (data == null ? "no data" : "data \""
             + data[0]
             + "\"\n"
@@ -9215,7 +9227,7 @@ class Eval { //implements Runnable {
           data = new float[viewer.getAtomCount()];
           if (isSyntaxCheck)
             continue;
-          data = Viewer.getDataFloat(str);
+          data = viewer.getDataFloat(str);
           if (data == null)
             invalidArgument();
           propertyValue = data;
@@ -10892,10 +10904,10 @@ class Eval { //implements Runnable {
       // parallel addition of float property data sets
 
       if (selected.indexOf("property_") == 0) {
-        float[] f1 = Viewer.getDataFloat(selected);
+        float[] f1 = viewer.getDataFloat(selected);
         if (f1 == null)
           return addX("");
-        float[] f2 = (type.indexOf("property_") == 0 ? Viewer
+        float[] f2 = (type.indexOf("property_") == 0 ? viewer
             .getDataFloat(type) : null);
         if (f2 != null)
           for (int i = Math.min(f1.length, f2.length); --i >= 0;)
@@ -10906,7 +10918,7 @@ class Eval { //implements Runnable {
       // some other data type -- just return it
 
       if (args.length == 1) {
-        Object[] data = Viewer.getData(selected);
+        Object[] data = viewer.getData(selected);
         return addX(data == null ? "" : "" + data[1]);
       }
       // {selected atoms} XYZ, MOL, PDB file format 

@@ -370,7 +370,7 @@ public class Token {
   final public static int xyz       = 8 | mathproperty | settable;
   final public static int fracXyz   = 9 | mathproperty | settable;
   final public static int vibXyz    =10 | mathproperty | settable;
-  final static int property  =11 | mathproperty | setparam;
+  final static int property  =11 | mathproperty | setparam | settable;
 
   final static int atompropertyfloat = atomproperty | 1 << 5;
   

@@ -1754,6 +1754,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     tempManager.clear();
     //setRefreshing(true);
     refresh(0, "Viewer:clear()");
+    setData(null, null, 0, 0, 0);
     System.gc();
   }
 
@@ -2284,9 +2285,9 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return modelManager.getStructureState();
   }
 
-  static Hashtable dataValues = new Hashtable();
+  Hashtable dataValues = new Hashtable();
 
-  static void setData(String type, Object[] data, int atomCount,
+  void setData(String type, Object[] data, int atomCount,
                       int matchField, int field) {
     //Eval
     /*
@@ -2316,7 +2317,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     dataValues.put(type, data);
   }
 
-  static public Object[] getData(String type) {
+  Object[] getData(String type) {
     if (dataValues == null)
       return null;
     if (type.equalsIgnoreCase("types")) {
@@ -2350,7 +2351,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return colorManager.getCurrentColorRange();
   }
   
-  static public float[] getDataFloat(String label) {
+  float[] getDataFloat(String label) {
     if (dataValues == null)
       return null;
     Object[] data = getData(label);
@@ -2359,7 +2360,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return (float[]) data[1];
   }
 
-  static public float getDataFloat(String label, int atomIndex) {
+  float getDataFloat(String label, int atomIndex) {
     if (dataValues != null) {
       Object[] data = getData(label);
       if (data != null && data[1] instanceof float[]) {
@@ -2371,7 +2372,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return Float.NaN;
   }
 
-  static private void getDataState(StringBuffer s, StringBuffer sfunc) {
+  private void getDataState(StringBuffer s, StringBuffer sfunc) {
     if (dataValues == null)
       return;
     Enumeration e = (dataValues.keys());

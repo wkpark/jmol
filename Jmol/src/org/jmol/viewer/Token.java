@@ -839,9 +839,9 @@ public class Token {
   final static Token tokenExpressionEnd   = new Token(expressionEnd, "expressionEnd");
   final static Token tokenCoordinateBegin = new Token(leftbrace, "{");
   final static Token tokenCoordinateEnd   = new Token(rightbrace, "}");
-  final static Token tokenSet             = new Token(set, '=', "set");
-  final static Token tokenSetArray        = new Token(set, '[', "set");
-  final static Token tokenSetProperty     = new Token(set, '.', "set");
+  final static Token tokenSet             = new Token(set, '=', "");
+  final static Token tokenSetArray        = new Token(set, '[', "");
+  final static Token tokenSetProperty     = new Token(set, '.', "");
   final static Token tokenSetVar          = new Token(set, '=', "var");
   
   // user names

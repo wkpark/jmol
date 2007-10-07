@@ -187,7 +187,7 @@ class Eval { //implements Runnable {
       scr = TextFormat.simpleReplace(scr, "()", "(none)");
       if (e.loadScript(null, scr, false)) {
         e.statement = e.aatoken[0];
-        bs = e.expression(e.statement, 1, false, false, true);
+        bs = e.expression(e.statement, 1, 0, false, false, true);
       }
       e.popContext();
     } catch (Exception ex) {
@@ -1295,10 +1295,10 @@ class Eval { //implements Runnable {
   private BitSet expression(int index) throws ScriptException {
     if (!checkToken(index))
       badArgumentCount();
-    return expression(statement, index, true, false, true);
+    return expression(statement, index, 0, true, false, true);
   }
 
-  private BitSet expression(Token[] code, int pcStart, boolean allowRefresh,
+  private BitSet expression(Token[] code, int pcStart, int pcStop, boolean allowRefresh,
                             boolean allowUnderflow, boolean bsRequired)
       throws ScriptException {
     //note that this is general -- NOT just statement[]
@@ -1322,7 +1322,8 @@ class Eval { //implements Runnable {
     int atomCount = viewer.getAtomCount();
     if (ignoreSubset)
       pcStart = -pcStart;
-    int pcStop = pcStart + 1;
+    if (pcStop == 0)
+      pcStop = pcStart + 1;
     //    if (logMessages)
     //    viewer.scriptStatus("start to evaluate expression");
     expression_loop: for (int pc = pcStart; pc < pcStop; ++pc) {
@@ -1660,7 +1661,7 @@ class Eval { //implements Runnable {
     if (value != null) {
       if (value instanceof Token[]) {
         pushContext(null);
-        value = expression((Token[]) value, -2, true, false, true);
+        value = expression((Token[]) value, -2, 0, true, false, true);
         popContext();
         if (!isDynamic)
           variables.put(variable, value);
@@ -2137,7 +2138,7 @@ class Eval { //implements Runnable {
     switch (getToken(i).tok) {
     case Token.bitset:
     case Token.expressionBegin:
-      BitSet bs = expression(statement, i, true, false, false);
+      BitSet bs = expression(statement, i, 0, true, false, false);
       if (bs != null)
         return viewer.getAtomSetCenter(bs);
       if (expressionResult.value instanceof Point3f)
@@ -5014,7 +5015,7 @@ class Eval { //implements Runnable {
       switch (statement[ptCenter].tok) {
       case Token.bitset:
       case Token.expressionBegin:
-        bs = expression(statement, ptCenter, true, false, false);
+        bs = expression(statement, ptCenter, 0, true, false, false);
       }
       if (bs == null)
         invalidArgument();
@@ -6324,9 +6325,8 @@ class Eval { //implements Runnable {
       if (isSyntaxCheck)
         return;
     } else {
-      int tok2 = getToken(2).tok;
-      setVariable((tok2 == Token.opEQ ? 3 : 2), 
-          0, key, showing);
+      int tok2 = (tokAt(1) == Token.expressionBegin ? 0 : tokAt(2));
+      setVariable((tok2 == Token.opEQ ? 3 : 2), 0, key, showing);
       showing = false;
     }
     if (showing)
@@ -6335,6 +6335,11 @@ class Eval { //implements Runnable {
 
   private void setVariable(int pt, int ptMax, String key, boolean showing)
       throws ScriptException {
+    BitSet bs = null;
+    if (tokAt(pt - 1) == Token.expressionBegin) {
+      bs = expression(pt - 1);
+      pt = iToken + 1;
+    }
     int tokProperty = Token.nada;
     if (tokAt(pt) == Token.dot) {
       Token token = getBitsetPropertySelector(pt++, true);
@@ -6342,7 +6347,8 @@ class Eval { //implements Runnable {
         invalidArgument();
       pt++;
       tokProperty = token.intValue;
-    }
+    } else if (bs != null)
+      invalidArgument();
     String str;
     Token t = getContextVariableAsToken(key);
     boolean asVector = (t != null || tokProperty != Token.nada);
@@ -6351,18 +6357,20 @@ class Eval { //implements Runnable {
       return;
     Token tv = (asVector ? (Token) ((Vector) v).get(0) : null);
     if (tokProperty != Token.nada) {
-      if (t == null) {
-        if (!((v = viewer.getParameter(key + "_set")) instanceof String))
+      if (bs == null) {
+        if (t == null) {
+          if (!((v = viewer.getParameter(key + "_set")) instanceof String))
+            invalidArgument();
+          v = getStringObjectAsToken((String) v, null);
+          if (!(v instanceof Token))
+            invalidArgument();
+          t = (Token) v;
+        }
+        if (!(t.value instanceof BitSet))
           invalidArgument();
-        v = getStringObjectAsToken((String) v, null);
-        if (!(v instanceof Token))
-          invalidArgument();
-        t = (Token) v;
+        bs = (BitSet) t.value;
       }
-      if (!(t.value instanceof BitSet))
-        invalidArgument();
-      setBitsetProperty((BitSet) t.value, tokProperty, Token.iValue(tv), Token
-          .fValue(tv), tv);
+      setBitsetProperty(bs, tokProperty, Token.iValue(tv), Token.fValue(tv), tv);
       return;
     }
 
@@ -6508,7 +6516,7 @@ class Eval { //implements Runnable {
         i = iToken;
         break;
       case Token.expressionBegin:
-        v = expression(statement, i, true, true, false);
+        v = expression(statement, i, 0, true, true, false);
         i = iToken;
         break;
       case Token.rightbrace:

@@ -308,7 +308,8 @@ class Compiler {
 
   private int ichCurrentCommand;
   private boolean isNewSet;
-  
+  private boolean isSetBrace;
+  private int ptNewSetModifier;
   private boolean iHaveQuotedString = false;
   
   private Vector ltoken;
@@ -330,15 +331,16 @@ class Compiler {
     lineCurrent = 1;
     iCommand = 0;
     int lnLength = 8;
+    int braceCount = 0;
     lineNumbers = new short[lnLength];
     lineIndices = new int[lnLength];
-    isNewSet = false;
+    isNewSet = isSetBrace = false;
+    ptNewSetModifier = 1;
     isShowScriptOutput = false;
 
     Vector lltoken = new Vector();
     ltoken = new Vector();
     int tokCommand = Token.nada;
-    isNewSet = false;
     for (; true; ichToken += cchToken) {
       int nTokens = ltoken.size();
       if (nTokens == 0) {
@@ -389,14 +391,16 @@ class Compiler {
       }
       char ch;
       if (nTokens == 0) {
-        isNewSet = false;
+        isNewSet = isSetBrace = false;
+        ptNewSetModifier = 1;
         nSemiSkip = 0;
+        braceCount = 0;
       } else {
-        if (nTokens == 1) {
+        if (nTokens == ptNewSetModifier) {
           ch = script.charAt(ichToken);
           if (tokCommand == Token.set || tokAttr(tokCommand, Token.setparam)) {
             if (tokAttr(tokCommand, Token.setparam) && ch == '=' ||
-                isNewSet && (ch == '=' || ch == '[' || ch == '.')) {
+                (isNewSet || isSetBrace) && (ch == '=' || ch == '[' || ch == '.')) {
               tokenCommand = (ch == '=' ? Token.tokenSet : ch == '[' ? Token.tokenSetArray : Token.tokenSetProperty);
               tokCommand = Token.set;
               ltoken.insertElementAt(tokenCommand, 0);
@@ -648,7 +652,10 @@ class Compiler {
           if (!tokAttr(tok, Token.identifier) && !tokAttr(tok, Token.setparam))
             return commandExpected();
           tokCommand = Token.set;
-          isNewSet = true;
+          isSetBrace = (tok == Token.leftbrace);
+          isNewSet = !isSetBrace;
+          braceCount = (isSetBrace ? 1 : 0);
+          ptNewSetModifier = (isNewSet ? 1 : Integer.MAX_VALUE);
           break;
         case Token.function:
           if (tokenCommand.intValue == 0) {
@@ -730,10 +737,17 @@ class Compiler {
               addContextVariable(ident);
           break;
         case Token.set:
-          if (nTokens == 1) {
-            // set x   or   x =
+          if (tok == Token.leftbrace)
+            braceCount++;
+          else if (tok == Token.rightbrace) {
+            braceCount--;
+            if (isSetBrace && braceCount == 0 && ptNewSetModifier == Integer.MAX_VALUE)
+              ptNewSetModifier = nTokens + 1;
+          }
+          if (nTokens == ptNewSetModifier) {  // 1 when { is not present
             boolean isSetArray = false;
             if (tok == Token.opEQ || tok == Token.leftsquare) {
+              // x =   or   x[n] = 
               token = (Token) ltoken.get(0);
               ltoken.removeElementAt(0);
               isSetArray = (tok == Token.leftsquare);
@@ -743,6 +757,7 @@ class Compiler {
               tokCommand = Token.set;
             }
             if (tok == Token.leftparen) {
+              // mysub(xxx,xxx,xxx)
               token = (Token) ltoken.get(0);
               ltoken.removeElementAt(0);
               tokenCommand = new Token(Token.function, 0, token.value);
@@ -751,7 +766,6 @@ class Compiler {
               token = Token.tokenLeftParen;
               tok = Token.leftparen;
               break;
-              // mysub(xxx,xxx,xxx)
             }
             if (tok != Token.identifier && (!tokAttr(tok, Token.setparam)))
               return isNewSet ? commandExpected() : unrecognizedParameter(
@@ -815,7 +829,8 @@ class Compiler {
         addTokenToPrefix(token);
         continue;
       }
-      if (nTokens == 0 || isNewSet && nTokens == 1)
+      if (nTokens == 0 || 
+          (isNewSet || isSetBrace) && nTokens == ptNewSetModifier)
         return commandExpected();
       return unrecognizedToken(script.substring(ichToken, ichToken+1));
     }
@@ -1408,7 +1423,7 @@ class Compiler {
       }
     }
 
-    if (isNewSet && size < 3)
+    if ((isNewSet || isSetBrace) && size < ptNewSetModifier + 2)
       return commandExpected();
     if (isSetOrDefine || tokAttrOr(tokenCommand.tok, Token.noeval, Token.flowCommand)) //intValue is NOT of this nature
       return true;
@@ -1426,7 +1441,7 @@ class Compiler {
   }
 
   private boolean compileExpression() {
-    int firstToken = (isSetOrDefine ? 2 : 1);
+    int firstToken = (isSetOrDefine && !isSetBrace ? 2 : 1);
     ltokenPostfix = new Vector();
     itokenInfix = 0;
     for (int i = 0; i < firstToken && addNextToken(); i++) {
@@ -2341,6 +2356,7 @@ class Compiler {
   }
 
   private boolean commandExpected() {
+    ichToken = ichCurrentCommand;
     return compileError(GT._("command expected"));
   }
 

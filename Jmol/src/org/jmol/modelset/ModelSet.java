@@ -2714,6 +2714,8 @@ abstract public class ModelSet {
       return getSpecSeqcode(specInfo, true);
     case Token.spec_model:
       return getSpecModel(specInfo);
+    case Token.atomno:
+      return getSpecAtomNumber(specInfo);
     }
     return null;
   }
@@ -2774,6 +2776,16 @@ abstract public class ModelSet {
 
   private BitSet getSpecModel(int modelNumber) {
     return getModelAtomBitSet(getModelNumberIndex(modelNumber, true));
+  }
+
+  private BitSet getSpecAtomNumber(int atomno) {
+    //for Measures
+    BitSet bs = new BitSet();
+    for (int i = atomCount; --i >= 0;) {
+      if (atoms[i].getAtomNumber() == atomno)
+        bs.set(i);
+    }
+    return bs;
   }
 
   /**

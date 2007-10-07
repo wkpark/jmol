@@ -32,6 +32,7 @@ import org.jmol.util.ArrayUtil;
 import org.jmol.util.BitSetUtil;
 import org.jmol.util.Escape;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.viewer.Token;
 
 import java.util.BitSet;
 import java.util.Vector;
@@ -250,7 +251,7 @@ public class Measures extends Shape {
       int nPoints = atomCountPlusIndices[0];
       for (int i = 1; i <= nPoints; i++) {
         Atom atom = modelSet.atoms[atomCountPlusIndices[i]];
-        measureList.addElement(viewer.getAtomBits("atomno", atom.getAtomNumber()));
+        measureList.addElement(viewer.getAtomBits(Token.atomno, atom.getAtomNumber()));
       }
       define(measureList, isDelete, false, false);
       return;

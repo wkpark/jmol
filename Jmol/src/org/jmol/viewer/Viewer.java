@@ -2320,7 +2320,7 @@ public class Viewer extends JmolViewer implements AtomDataServer {
     return dataManager.getDataFloat(label);
   }
 
-  float getDataFloat(String label, int atomIndex) {
+  public float getDataFloat(String label, int atomIndex) {
     return dataManager.getDataFloat(label, atomIndex);
   }
 

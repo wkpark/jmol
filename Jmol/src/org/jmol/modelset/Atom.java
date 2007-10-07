@@ -1298,7 +1298,7 @@ final public class Atom extends Point3fi implements Tuple {
           int ichCloseBracket = strFormat.indexOf('}', ich);
           if (ichCloseBracket > ich) { // also picks up -1 when no '}' is found
             String propertyName = strFormat.substring(ich, ichCloseBracket);
-            floatT = Viewer.getDataFloat(propertyName, atomIndex);
+            floatT = group.chain.modelSet.viewer.getDataFloat(propertyName, atomIndex);
             if (Float.isNaN(floatT))
               strT = getClientAtomStringProperty(propertyName);
             if (strT != null || !Float.isNaN(floatT)) {

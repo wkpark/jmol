@@ -374,7 +374,7 @@ public class Token {
 
   final static int atompropertyfloat = atomproperty | 1 << 5;
   
-  final static int atomno        = atomproperty | 1;
+  final public static int atomno        = atomproperty | 1;
   final static int atomID        = atomproperty | 2;
   final static int bondcount     = atomproperty | 3;
   final static int atomIndex     = atomproperty | 4;

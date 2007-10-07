@@ -503,7 +503,7 @@ final public class Atom extends Point3fi implements Tuple {
 
   public int getValence() {
     int n = (formalChargeAndFlags >> 5) & 7;
-    if (n == 0)
+    if (n == 0 && bonds != null)
       for (int i = bonds.length; --i >= 0;)
         n += bonds[i].getValence();
     return n;
@@ -532,32 +532,6 @@ final public class Atom extends Point3fi implements Tuple {
 
   int getCurrentBondCount() {
     return bonds == null ? 0 : bonds.length;
-    /*
-    int currentBondCount = 0;
-    for (int i = (bonds == null ? 0 : bonds.length); --i >= 0; )
-      currentBondCount += bonds[i].order & JmolConstants.BOND_COVALENT;
-    return currentBondCount;
-    */
-  }
-
-  // find the longest bond to discard
-  // but return null if atomChallenger is longer than any
-  // established bonds
-  // note that this algorithm works when maximum valence == 0
-  Bond getLongestBondToDiscard(Atom atomChallenger) {
-    float dist2Longest = distanceSquared(atomChallenger);
-    Bond bondLongest = null;
-    for (int i = bonds.length; --i >= 0; ) {
-      Bond bond = bonds[i];
-      float dist2 = distanceSquared(bond.getOtherAtom(this));
-      if (dist2 > dist2Longest) {
-        bondLongest = bond;
-        dist2Longest = dist2;
-      }
-    }
-    //Logger.debug("atom at " + point3f + " suggests discard of " +
-    //                       bondLongest + " dist2=" + dist2Longest);
-    return bondLongest;
   }
 
   public short getColix() {

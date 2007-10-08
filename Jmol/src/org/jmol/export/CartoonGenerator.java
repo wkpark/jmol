@@ -42,26 +42,26 @@ public class CartoonGenerator extends CartoonRenderer {
   }
 
   protected void fillSphereCentered(int diameter, Point3i pt) {
-    exporter.fillSphereCentered(colixPending, diameter, pt);
+    exporter.fillSphereCentered(colix, diameter, pt);
   }
 
   protected void fillCylinderBits(byte endcaps, int diameter, Point3f screenA,
                                   Point3f screenB) {
-    exporter.renderBond(screenA, screenB, colixPending, colixPending, endcaps, madPending, 1);
+    exporter.renderBond(screenA, screenB, colix, colix, endcaps, madBond, 1);
   }
 
   protected void fillTriangle(Point3f ptA, Point3f ptB, Point3f ptC) {
-    exporter.fillTriangle(colixPending, ptA, ptB, ptC);
+    exporter.fillTriangle(colix, ptA, ptB, ptC);
   }
 
   protected void fillQuadrilateral(Point3f ptA, Point3f ptB, Point3f ptC,
                                    Point3f ptD) {
-    exporter.fillQuadrilateral(colixPending, ptA, ptB, ptC, ptD);
+    exporter.fillQuadrilateral(colix, ptA, ptB, ptC, ptD);
   }
 
   protected void fillCone(byte endcap, int diameter, Point3f screenBase,
                           Point3f screenTip) {
-    exporter.fillCone(colixPending, endcap, madPending, screenBase, screenTip);
+    exporter.fillCone(colix, endcap, madBond, screenBase, screenTip);
   }
 
   public void fillHermite(int tension, int diameterBeg, int diameterMid,

@@ -97,11 +97,11 @@ public class RocketsRenderer extends BioShapeRenderer {
     renderPending();
   }
 
-  protected void renderSpecialSegment(Monomer monomer, short colix, short mad) {
+  protected void renderSpecialSegment(Monomer monomer, short thisColix, short mad) {
     ProteinStructure proteinstructure = monomer.getProteinStructure();
     if (tPending) {
-      if (proteinstructure == proteinstructurePending && mad == madPending
-          && colix == colixPending
+      if (proteinstructure == proteinstructurePending && mad == madBond
+          && thisColix == colix
           && proteinstructure.getIndex(monomer) == endIndexPending + 1) {
         ++endIndexPending;
         return;
@@ -110,8 +110,8 @@ public class RocketsRenderer extends BioShapeRenderer {
     }
     proteinstructurePending = proteinstructure;
     startIndexPending = endIndexPending = proteinstructure.getIndex(monomer);
-    colixPending = colix;
-    madPending = mad;
+    colix = thisColix;
+    madBond = mad;
     tPending = true;
   }
 
@@ -145,10 +145,10 @@ public class RocketsRenderer extends BioShapeRenderer {
     viewer.transformPoint(pointStart, screenA);
     viewer.transformPoint(pointEnd, screenB);
     int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);
-    int diameter = viewer.scaleToScreen(zMid, madPending);
+    int diameter = viewer.scaleToScreen(zMid, madBond);
     if (tEnd) {
       viewer.transformPoint(pointBeforeEnd, screenC);
-      if (isGenerator || g3d.setColix(colixPending)) {
+      if (isGenerator || g3d.setColix(colix)) {
         if (pointBeforeEnd.distance(pointEnd) > MIN_CONE_HEIGHT)
           renderCone(i, pointBeforeEnd, pointEnd, screenC, screenB);
         else
@@ -161,13 +161,13 @@ public class RocketsRenderer extends BioShapeRenderer {
       screenB = screenC;
       screenC = t;
     }
-    if (isGenerator || g3d.setColix(colixPending))
+    if (isGenerator || g3d.setColix(colix))
       fillCylinderBits(Graphics3D.ENDCAPS_FLAT, diameter, screenA, screenB);
   }
 
   private void renderPendingSheet(Point3f pointStart, Point3f pointBeforeEnd,
                           Point3f pointEnd, boolean tEnd) {
-    if (!isGenerator && !g3d.setColix(colixPending))
+    if (!isGenerator && !g3d.setColix(colix))
       return;
     if (tEnd) {
       drawArrowHeadBox(pointBeforeEnd, pointEnd);
@@ -242,7 +242,7 @@ public class RocketsRenderer extends BioShapeRenderer {
 
   void drawBox(Point3f pointA, Point3f pointB) {
     Sheet sheet = (Sheet)proteinstructurePending;
-    float scale = madPending / 1000f;
+    float scale = madBond / 1000f;
     scaledWidthVector.set(sheet.getWidthUnitVector());
     scaledWidthVector.scale(scale);
     scaledHeightVector.set(sheet.getHeightUnitVector());
@@ -266,7 +266,7 @@ public class RocketsRenderer extends BioShapeRenderer {
 
   void drawArrowHeadBox(Point3f base, Point3f tip) {
     Sheet sheet = (Sheet)proteinstructurePending;
-    float scale = madPending / 1000f;
+    float scale = madBond / 1000f;
     scaledWidthVector.set(sheet.getWidthUnitVector());
     scaledWidthVector.scale(scale * 1.25f);
     scaledHeightVector.set(sheet.getHeightUnitVector());

@@ -77,8 +77,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
   byte[] structureTypes;
 
   protected int madBond;
-  protected short madPending;
-  protected short colixPending;
 
   protected void render() {
     if (shape == null)
@@ -414,7 +412,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   void renderCone(int i, Point3f pointBegin, Point3f pointEnd,
                   Point3f screenPtBegin, Point3f screenPtEnd) {
     int coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
-        madPending + (madPending >> 2));
+        madBond + (madBond >> 2));
 /*    
     if (false && aspectRatio > 0 && checkDiameter(coneDiameter)) {
       try {

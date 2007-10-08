@@ -63,7 +63,7 @@ public class RocketsGenerator extends RocketsRenderer {
     exporter.fillCone(colix, endcap, madBond, screenBase, screenTip);
   }
 
-  public void fillHermite(int tension, int diameterBeg, int diameterMid,
+  protected void fillHermite(int tension, int diameterBeg, int diameterMid,
                           int diameterEnd, Point3i s0, Point3i s1, Point3i s2,
                           Point3i s3) {
     exporter.fillHermite(colix, tension, diameterBeg, diameterMid, diameterEnd,

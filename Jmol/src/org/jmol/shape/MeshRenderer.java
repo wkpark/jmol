@@ -196,7 +196,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
   }
   
   //cartoons, rockets, trace:
-  public void fillHermite(int tension, int diameterBeg,
+  protected void fillHermite(int tension, int diameterBeg,
                           int diameterMid, int diameterEnd,
                           Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
     if (isGenerator)System.out.println("ERROR--missing function fillHermite "+ this);

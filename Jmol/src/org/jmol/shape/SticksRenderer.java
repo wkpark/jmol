@@ -51,7 +51,6 @@ public class SticksRenderer extends ShapeRenderer {
   protected short colixA, colixB;
   protected int width;
   protected int bondOrder;
-  protected short madBond;
 
   protected void render() {
     endcaps = Graphics3D.ENDCAPS_SPHERICAL;
@@ -71,7 +70,7 @@ public class SticksRenderer extends ShapeRenderer {
   }
 
   protected void renderBond() {
-    madBond = bond.getMad();
+    mad = bond.getMad();
     int order = bond.getOrder();
     atomA = bond.getAtom1();
     atomB = bond.getAtom2();
@@ -113,7 +112,7 @@ public class SticksRenderer extends ShapeRenderer {
       return;
     dx = xB - xA;
     dy = yB - yA;
-    width = viewer.scaleToScreen((zA + zB) / 2, madBond);
+    width = viewer.scaleToScreen((zA + zB) / 2, mad);
     bondOrder = getRenderBondOrder(order);
     switch (bondOrder) {
     case 1:
@@ -162,7 +161,7 @@ public class SticksRenderer extends ShapeRenderer {
           !showMultipleBonds ||
           modeMultipleBond == JmolConstants.MULTIBOND_NEVER ||
           (modeMultipleBond == JmolConstants.MULTIBOND_NOTSMALL &&
-           madBond > JmolConstants.madMultipleBondSmallMaximum)) {
+           mad > JmolConstants.madMultipleBondSmallMaximum)) {
         return 1;
       }
     }
@@ -284,6 +283,9 @@ public class SticksRenderer extends ShapeRenderer {
 
   private void renderTriangle(Bond bond) {
     // for now, always solid, always opaque
+    if (isGenerator)
+      return;     // actually, not implemented
+    
     if (!g3d.checkTranslucent(false))
       return;
     int mag2d = (int)Math.sqrt(dx*dx + dy*dy);
@@ -319,26 +321,7 @@ public class SticksRenderer extends ShapeRenderer {
                            xWideUp, yWideUp, zB, xWideDn, yWideDn, zB);
     }
   }
-/*
-  void drawDottedCylinder(short colixA, short colixB, int width,
-                          int x1, int y1, int z1, int x2, int y2, int z2) {
-    int dx = x2 - x1;
-    int dy = y2 - y1;
-    int dz = z2 - z1;
-    boolean ok = g3d.setColix(colixB);
-    for (int i = 8; --i >= 0; ) {
-      int x = x1 + (dx * i) / 7;
-      int y = y1 + (dy * i) / 7;
-      int z = z1 + (dz * i) / 7;
-      if (i == 3 && !(ok = g3d.setColix(colixA)))
-        return;
-      if (ok)
-        g3d.fillSphereCentered(width, x, y, z);
-    }
-  }
-*/
-  
-  //not suitable for multiple rings
+
   
   private int getAromaticDottedBondMask() {
     Atom atomC = atomB.findAromaticNeighbor(atomA.getAtomIndex());
@@ -389,6 +372,8 @@ public class SticksRenderer extends ShapeRenderer {
                          xS, yS, zS, xE, yE, zE);
     }
   }
+  
+  ////////////////////////
   
   protected void fillCylinder(short colixA, short colixB, byte endcaps,
                               int diameter, int xA, int yA, int zA, int xB,

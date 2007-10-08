@@ -76,7 +76,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   int[] leadAtomIndices;
   byte[] structureTypes;
 
-  protected int madBond;
+  protected int mad;
 
   protected void render() {
     if (shape == null)
@@ -249,7 +249,9 @@ abstract class BioShapeRenderer extends MeshRenderer {
   //// cardinal hermite constant cylinder (meshRibbon, strands)
 
   int iPrev, iNext, iNext2, iNext3;
-  int madMid, madBeg, madEnd;
+  protected int madBeg;
+  protected int madMid;
+  protected int madEnd;
   int diameterBeg, diameterMid, diameterEnd;
   boolean doCap0, doCap1;
 
@@ -398,21 +400,23 @@ abstract class BioShapeRenderer extends MeshRenderer {
         screenArrowTopPrev);
     calc1Screen(controlPoints[i], wingVectors[i], (short) madBeg, -0.001f,
         screenArrowBotPrev);
-    if (ribbonBorder && aspectRatio == 0)
-      fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
-          screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
-          screenArrowBot.x, screenArrowBot.y, screenArrowBot.z);
     drawHermite(true, ribbonBorder, isNucleic ? 4 : 7,
         screenArrowTopPrev, screenArrowTop, controlPointScreens[iNext],
         controlPointScreens[iNext2], screenArrowBotPrev, screenArrowBot,
         controlPointScreens[iNext], controlPointScreens[iNext2], aspectRatio);
+    if (ribbonBorder && aspectRatio == 0) {
+      mad = 3;
+      fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
+          screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
+          screenArrowBot.x, screenArrowBot.y, screenArrowBot.z);
+    }
   }
 
   //  rockets --not satisfactory yet
   void renderCone(int i, Point3f pointBegin, Point3f pointEnd,
                   Point3f screenPtBegin, Point3f screenPtEnd) {
     int coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
-        madBond + (madBond >> 2));
+        mad + (mad >> 2));
 /*    
     if (false && aspectRatio > 0 && checkDiameter(coneDiameter)) {
       try {

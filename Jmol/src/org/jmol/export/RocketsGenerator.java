@@ -46,7 +46,7 @@ public class RocketsGenerator extends RocketsRenderer {
 
   protected void fillCylinderBits(byte endcaps, int diameter, Point3f screenA,
                                   Point3f screenB) {
-    exporter.renderBond(screenA, screenB, colix, colix, endcaps, madBond, 1);
+    exporter.renderBond(screenA, screenB, colix, colix, endcaps, mad, 1);
   }
 
   protected void fillTriangle(Point3f ptA, Point3f ptB, Point3f ptC) {
@@ -60,13 +60,14 @@ public class RocketsGenerator extends RocketsRenderer {
 
   protected void fillCone(byte endcap, int diameter, Point3f screenBase,
                           Point3f screenTip) {
-    exporter.fillCone(colix, endcap, madBond, screenBase, screenTip);
+    exporter.fillCone(colix, endcap, mad, screenBase, screenTip);
   }
 
   protected void fillHermite(int tension, int diameterBeg, int diameterMid,
                           int diameterEnd, Point3i s0, Point3i s1, Point3i s2,
                           Point3i s3) {
-    exporter.fillHermite(colix, tension, diameterBeg, diameterMid, diameterEnd,
+    //could be a problem. These diameters are screen coordinates.
+    exporter.fillHermite(colix, tension, madBeg, madMid, madEnd,
         s0, s1, s2, s3);
   }
 

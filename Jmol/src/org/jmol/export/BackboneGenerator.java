@@ -56,6 +56,6 @@ public class BackboneGenerator extends BackboneRenderer {
      */
     ptA.set(xA, yA, zA);
     ptB.set(xB, yB, zB);
-    exporter.renderBond(ptA, ptB, colixA, colixB, endcaps, madBond, 1);
+    exporter.renderBond(ptA, ptB, colixA, colixB, endcaps, mad, 1);
   }
 }

@@ -37,7 +37,6 @@ public abstract class MeshRenderer extends ShapeRenderer {
   protected int vertexCount;
   protected int lighting;
   protected boolean frontOnly;
-  protected short colix;
   
   protected Mesh mesh;
 
@@ -89,7 +88,7 @@ public abstract class MeshRenderer extends ShapeRenderer {
     return true;
   }
 
-  //draw, isosurface,meshRenderer::render1
+  //draw, isosurface,meshRenderer::render1 (just about everything)
   protected void render2() {
     if (mesh.showPoints)
       renderPoints();

@@ -72,6 +72,8 @@ public interface JmolExportInterface {
   //rockets:
   abstract void fillQuadrilateral(short colix, Point3f ptA, Point3f ptB, 
                                   Point3f ptC, Point3f ptD);
+  
+  //rockets and dipoles
   abstract void fillCone(short colix, byte endcap, int diameter, 
                          Point3f screenBase, Point3f screenTip);
   

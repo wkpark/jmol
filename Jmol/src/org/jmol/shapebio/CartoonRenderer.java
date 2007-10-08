@@ -156,7 +156,7 @@ public class CartoonRenderer extends RocketsRenderer {
   }
 
   private void renderNucleicBaseStep(NucleicMonomer nucleotide,
-                             short mad, Point3i backboneScreen) {
+                             short thisMad, Point3i backboneScreen) {
     nucleotide.getBaseRing6Points(ring6Points);
     viewer.transformPoints(ring6Points, ring6Screens);
     renderRing6();
@@ -169,10 +169,10 @@ public class CartoonRenderer extends RocketsRenderer {
     } else {
       stepScreen = ring6Screens[2];//was 1
     }
-    madBond = mad > 1 ? mad / 2 : mad;
+    mad = thisMad > 1 ? thisMad / 2 : thisMad;
     fillCylinder(Graphics3D.ENDCAPS_SPHERICAL,
                      viewer.scaleToScreen(backboneScreen.z,
-                                          madBond),
+                                          mad),
                      backboneScreen, stepScreen);
     --ring6Screens[5].z;
     for (int i = 5; --i > 0; ) {

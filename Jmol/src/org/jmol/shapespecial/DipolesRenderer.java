@@ -121,7 +121,7 @@ public class DipolesRenderer extends ShapeRenderer {
       viewer.transformPoint(points[i], screens[i]);
     viewer.transformPoint(points[cross], cross0);
     viewer.transformPoint(points[crossEnd], cross1);
-    short mad = dipole.mad;
+    mad = dipole.mad;
     diameter = viewer.scaleToScreen(screens[center].z, mad);
     headWidthPixels = (int) (diameter * arrowHeadWidthFactor);
     if (headWidthPixels < diameter + 10)
@@ -147,18 +147,38 @@ public class DipolesRenderer extends ShapeRenderer {
       colixA = colixB;
       colixB = c;
     }
-    if (g3d.setColix(colixA)) {
-      g3d.fillCylinder(Graphics3D.ENDCAPS_OPEN, diameter,
+    colix = colixA;
+    if (isGenerator || g3d.setColix(colix)) {
+      fillCylinder(Graphics3D.ENDCAPS_OPEN, diameter,
           screens[cylinderBase], screens[center]);
       if (!dipole.noCross)
-        g3d.fillCylinderBits(Graphics3D.ENDCAPS_FLAT, crossWidthPixels, cross0,
+        fillCylinderBits(Graphics3D.ENDCAPS_FLAT, crossWidthPixels, cross0,
             cross1);
     }
-    if (g3d.setColix(colixB)) {
-      g3d.fillCylinder(Graphics3D.ENDCAPS_OPEN, diameter,
+    colix = colixB;
+    if (isGenerator || g3d.setColix(colix)) {
+      fillCylinder(Graphics3D.ENDCAPS_OPEN, diameter,
           screens[center], screens[arrowHeadBase]);
       g3d.fillCone(Graphics3D.ENDCAPS_FLAT, headWidthPixels,
           screens[arrowHeadBase], screens[arrowHeadTip]);
     }
   }
+  
+  ///////////////////
+
+  protected void fillCylinder(byte endcaps, int diameter, Point3i screenA,
+                              Point3i screenB) {
+    g3d.fillCylinder(endcaps, diameter, screenA, screenB);
+  }
+
+  protected void fillCylinderBits(byte endcaps, int diameter, Point3f screenA,
+                                  Point3f screenB) {
+    g3d.fillCylinderBits(endcaps, diameter, screenA, screenB);
+  }
+
+  protected void fillCone(byte endcap, int diameter,
+                          Point3i screenBase, Point3i screenTip) {
+     g3d.fillCone(endcap, diameter, screenBase,
+         screenTip);
+   }
 }

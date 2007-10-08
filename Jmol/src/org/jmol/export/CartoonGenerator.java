@@ -47,7 +47,7 @@ public class CartoonGenerator extends CartoonRenderer {
 
   protected void fillCylinderBits(byte endcaps, int diameter, Point3f screenA,
                                   Point3f screenB) {
-    exporter.renderBond(screenA, screenB, colix, colix, endcaps, madBond, 1);
+    exporter.renderBond(screenA, screenB, colix, colix, endcaps, mad, 1);
   }
 
   protected void fillTriangle(Point3f ptA, Point3f ptB, Point3f ptC) {
@@ -61,13 +61,13 @@ public class CartoonGenerator extends CartoonRenderer {
 
   protected void fillCone(byte endcap, int diameter, Point3f screenBase,
                           Point3f screenTip) {
-    exporter.fillCone(colix, endcap, madBond, screenBase, screenTip);
+    exporter.fillCone(colix, endcap, mad, screenBase, screenTip);
   }
 
   public void fillHermite(int tension, int diameterBeg, int diameterMid,
                           int diameterEnd, Point3i s0, Point3i s1, Point3i s2,
                           Point3i s3) {
-    exporter.fillHermite(colix, tension, diameterBeg, diameterMid, diameterEnd,
+    exporter.fillHermite(colix, tension, madBeg, madMid, madEnd,
         s0, s1, s2, s3);
   }
 
@@ -76,11 +76,11 @@ public class CartoonGenerator extends CartoonRenderer {
   
   protected void fillCylinder(byte endcaps, int diameter, Point3i screenA,
                               Point3i screenB) {
-    exporter.fillCylinder(colix, endcaps, diameter, screenA, screenB);
+    exporter.fillCylinder(colix, endcaps, mad, screenA, screenB);
   }
 
-  Point3f ptA = new Point3f();
-  Point3f ptB = new Point3f();
+  private Point3f ptA = new Point3f();
+  private Point3f ptB = new Point3f();
 
   protected void fillCylinder(short colixA, short colixB, byte endcaps,
                               int diameter, int xA, int yA, int zA, int xB, int yB, int zB) {
@@ -95,9 +95,9 @@ public class CartoonGenerator extends CartoonRenderer {
     exporter.renderBond(ptA, ptB, colixA, colixB, endcaps, diameter, 1);
   }
 
-  Point3f pt1 = new Point3f();
-  Point3f pt2 = new Point3f();
-  Point3f pt3 = new Point3f();
+  private Point3f pt1 = new Point3f();
+  private Point3f pt2 = new Point3f();
+  private Point3f pt3 = new Point3f();
   
   protected void fillTriangle(Point3i ptA, Point3i ptB, Point3i ptC) {
     pt1.set(ptA.x, ptA.y, ptA.z);

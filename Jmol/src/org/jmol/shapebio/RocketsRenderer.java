@@ -97,10 +97,10 @@ public class RocketsRenderer extends BioShapeRenderer {
     renderPending();
   }
 
-  protected void renderSpecialSegment(Monomer monomer, short thisColix, short mad) {
+  protected void renderSpecialSegment(Monomer monomer, short thisColix, short thisMad) {
     ProteinStructure proteinstructure = monomer.getProteinStructure();
     if (tPending) {
-      if (proteinstructure == proteinstructurePending && mad == madBond
+      if (proteinstructure == proteinstructurePending && thisMad == mad
           && thisColix == colix
           && proteinstructure.getIndex(monomer) == endIndexPending + 1) {
         ++endIndexPending;
@@ -111,7 +111,7 @@ public class RocketsRenderer extends BioShapeRenderer {
     proteinstructurePending = proteinstructure;
     startIndexPending = endIndexPending = proteinstructure.getIndex(monomer);
     colix = thisColix;
-    madBond = mad;
+    mad = thisMad;
     tPending = true;
   }
 
@@ -145,7 +145,7 @@ public class RocketsRenderer extends BioShapeRenderer {
     viewer.transformPoint(pointStart, screenA);
     viewer.transformPoint(pointEnd, screenB);
     int zMid = (int) Math.floor((screenA.z + screenB.z) / 2f);
-    int diameter = viewer.scaleToScreen(zMid, madBond);
+    int diameter = viewer.scaleToScreen(zMid, mad);
     if (tEnd) {
       viewer.transformPoint(pointBeforeEnd, screenC);
       if (isGenerator || g3d.setColix(colix)) {
@@ -242,7 +242,7 @@ public class RocketsRenderer extends BioShapeRenderer {
 
   void drawBox(Point3f pointA, Point3f pointB) {
     Sheet sheet = (Sheet)proteinstructurePending;
-    float scale = madBond / 1000f;
+    float scale = mad / 1000f;
     scaledWidthVector.set(sheet.getWidthUnitVector());
     scaledWidthVector.scale(scale);
     scaledHeightVector.set(sheet.getHeightUnitVector());
@@ -266,7 +266,7 @@ public class RocketsRenderer extends BioShapeRenderer {
 
   void drawArrowHeadBox(Point3f base, Point3f tip) {
     Sheet sheet = (Sheet)proteinstructurePending;
-    float scale = madBond / 1000f;
+    float scale = mad / 1000f;
     scaledWidthVector.set(sheet.getWidthUnitVector());
     scaledWidthVector.scale(scale * 1.25f);
     scaledHeightVector.set(sheet.getHeightUnitVector());

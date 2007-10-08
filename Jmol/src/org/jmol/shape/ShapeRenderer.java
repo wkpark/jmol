@@ -63,6 +63,10 @@ public abstract class ShapeRenderer {
   protected ModelSet modelSet;
   protected Shape shape;
 
+  //working values, for export generators
+  protected short colix;
+  protected short mad;
+
   public void render(Graphics3D g3d, ModelSet modelSet, Shape shape) { //, Rectangle rectClip
     this.g3d = g3d;
     //this.rectClip = rectClip; //not implemented -- could be a place for optimization

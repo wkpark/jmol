@@ -25,11 +25,12 @@
 
 package org.jmol.export;
 
+import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-import org.jmol.shapebio.*;
+import org.jmol.shapespecial.*;
 
-public class TraceGenerator extends TraceRenderer {
+public class DipolesGenerator extends DipolesRenderer {
 
   private _Exporter exporter;
   
@@ -39,10 +40,24 @@ public class TraceGenerator extends TraceRenderer {
     this.exporter = (_Exporter)exporter;
   }
 
-  protected void fillHermite(int tension, int diameterBeg,
-                   int diameterMid, int diameterEnd,
-                   Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
-    exporter.fillHermite(colix, tension, madBeg, madMid, madEnd,
-                              s0, s1, s2, s3);
+  protected void fillCylinder(byte endcaps, int diameter, Point3i screenA,
+                              Point3i screenB) {
+    exporter.fillCylinder(colix, endcaps, mad, screenA, screenB);
   }
+
+  protected void fillCylinderBits(byte endcaps, int diameter, Point3f screenA,
+                                  Point3f screenB) {
+    exporter.renderBond(screenA, screenB, colix, colix, endcaps, mad, 1);
+  }
+
+  private Point3f ptA = new Point3f();
+  private Point3f ptB = new Point3f();
+
+  protected void fillCone(byte endcap, int diameter,
+                          Point3i screenBase, Point3i screenTip) {
+    ptA.set(screenBase.x, screenBase.y, screenBase.z);
+    ptB.set(screenTip.x, screenTip.y, screenTip.z);
+    exporter.fillCone(colix, endcap, mad, ptA, ptB);
+   }
+
 }

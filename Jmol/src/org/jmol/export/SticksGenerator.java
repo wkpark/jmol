@@ -48,7 +48,7 @@ public class SticksGenerator extends SticksRenderer {
       super.renderBond(dottedMask); //use fillCylinder
       return;
     }
-    exporter.renderBond(atomA, atomB, colixA, colixB, endcaps, madBond, bondOrder);
+    exporter.renderBond(atomA, atomB, colixA, colixB, endcaps, mad, bondOrder);
   }
 
 
@@ -60,6 +60,6 @@ public class SticksGenerator extends SticksRenderer {
      */
     ptA.set(xA, yA, zA);
     ptB.set(xB, yB, zB);
-    exporter.renderBond(ptA, ptB, colixA, colixB, endcaps, madBond, 1);
+    exporter.renderBond(ptA, ptB, colixA, colixB, endcaps, mad, 1);
   }
 }

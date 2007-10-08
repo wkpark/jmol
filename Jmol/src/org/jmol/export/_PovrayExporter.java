@@ -359,8 +359,7 @@ public class _PovrayExporter extends _Exporter {
           
   public void fillSphereCentered(short colix, int diameter, Point3i pt) {
     //rockets:    
-System.out.println("pov fillspherecentered -- rockets"+this);
-}
+  }
 
 
 }

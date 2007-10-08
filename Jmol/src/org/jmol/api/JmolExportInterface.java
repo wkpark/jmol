@@ -50,8 +50,16 @@ public interface JmolExportInterface {
   abstract void fillCylinder(short colix, byte endcaps, int diameter, 
                              Point3i screenA, Point3i screenB);
 
-  abstract void drawDottedLine(short colix, Point3i pointA, Point3i pointB);
+  abstract void drawDottedLine(short colix, Point3i pointA, Point3i pointB); //axes
   
-  abstract void drawPoints(short colix, int count, int[] coordinates); //for dots
+  abstract void drawPoints(short colix, int count, int[] coordinates); //dots
+
+  abstract void drawLine(short colix, Point3i pointA, Point3i pointB); //stars
+  
+  abstract void fillScreenedCircleCentered(short colix, int diameter, int x,
+                                                    int y, int z);  //halos 
+
+  abstract void drawPixel(short colix, int x, int y, int z); //measures
+  abstract void drawDashedLine(short colix, int run, int rise, Point3i ptA, Point3i ptB); //measures
 
 }

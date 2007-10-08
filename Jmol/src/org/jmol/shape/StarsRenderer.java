@@ -29,6 +29,8 @@ import org.jmol.modelset.Atom;
 
 public class StarsRenderer extends ShapeRenderer {
 
+  protected short colix;
+  
   protected void render() {
     Stars stars = (Stars) shape;
     if (stars.mads == null)
@@ -36,8 +38,10 @@ public class StarsRenderer extends ShapeRenderer {
     Atom[] atoms = modelSet.atoms;
     for (int i = modelSet.getAtomCount(); --i >= 0;) {
       Atom atom = atoms[i];
-      if (!atom.isShapeVisible(myVisibilityFlag) || modelSet.isAtomHidden(i)
-          || !g3d.setColix(Shape.getColix(stars.colixes, i, atom)))
+      if (!atom.isShapeVisible(myVisibilityFlag) || modelSet.isAtomHidden(i))
+        continue;
+      colix = Shape.getColix(stars.colixes, i, atom);
+      if (!isGenerator && !g3d.setColix(colix))
         continue;
       render1(atom, stars.mads[i]);
     }
@@ -50,8 +54,11 @@ public class StarsRenderer extends ShapeRenderer {
     int d = viewer.scaleToScreen(z, mad);
     d -= (d & 1) ^ 1; // round down to odd value
     int r = d / 2;
-    g3d.drawLine(x - r, y, z, x - r + d, y, z);
-    g3d.drawLine(x, y - r, z, x, y - r + d, z);
+    drawLine(x - r, y, z, x - r + d, y, z);
+    drawLine(x, y - r, z, x, y - r + d, z);
   }
 
+  protected void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
+    g3d.drawLine(x1, y1, z1, x2, y2, z2);
+  }
 }

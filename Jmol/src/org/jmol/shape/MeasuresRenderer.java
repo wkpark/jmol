@@ -34,16 +34,15 @@ import javax.vecmath.Point3i;
 import javax.vecmath.Matrix3f;
 import javax.vecmath.AxisAngle4f;
 
-public class MeasuresRenderer extends ShapeRenderer {
+public class MeasuresRenderer extends FontLineShapeRenderer {
 
   boolean showMeasurementNumbers;
   short measurementMad;
   Font3D font3d;
   Measurement measurement;
   boolean doJustify;
-  short colix;
   protected void render() {
-    if (!viewer.getShowMeasurements() || !g3d.checkTranslucent(false))
+    if (!viewer.getShowMeasurements() || !isGenerator && !g3d.checkTranslucent(false))
       return;
 
     Measures measures = (Measures) shape;
@@ -64,7 +63,8 @@ public class MeasuresRenderer extends ShapeRenderer {
         colix = measures.colix;
       if (colix == 0)
         colix = viewer.getColixBackgroundContrast();
-      g3d.setColix(colix);
+      if (!isGenerator)
+        g3d.setColix(colix);
       renderMeasurement(m);
     }
     renderPendingMeasurement(measures.pendingMeasurement);
@@ -91,16 +91,20 @@ public class MeasuresRenderer extends ShapeRenderer {
     }
   }
 
+  Point3i ptA = new Point3i();
+  Point3i ptB = new Point3i();
+
   int drawSegment(int x1, int y1, int z1, int x2, int y2, int z2) {
     if (measurementMad < 0) {
-      g3d.drawDashedLine(4, 2, x1, y1, z1, x2, y2, z2);
+      ptA.set(x1, y1, z1);
+      ptB.set(x2, y2, z2);
+      drawDashedLine(4, 2, ptA, ptB);
       return 1;
     }
     int widthPixels = measurementMad;
     if (measurementMad >= 20)
       widthPixels = viewer.scaleToScreen((z1 + z2) / 2, measurementMad);
-    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT,
-                     widthPixels, x1, y1, z1, x2, y2, z2);
+    fillCylinder(Graphics3D.ENDCAPS_FLAT, widthPixels, ptA, ptB);
 
     return (widthPixels + 1) / 2;
   }
@@ -176,7 +180,7 @@ public class MeasuresRenderer extends ShapeRenderer {
       Point3i screenArc = viewer.transformPoint(pointT);
       int zArc = screenArc.z - zOffset;
       if (zArc < 0) zArc = 0;
-      g3d.drawPixel(screenArc.x, screenArc.y, zArc);
+      drawPixel(screenArc.x, screenArc.y, zArc);
       if (i == iMid) {
         pointT.set(ptArc);
         pointT.scale(1.1f);
@@ -234,10 +238,12 @@ public class MeasuresRenderer extends ShapeRenderer {
     int zT = z - radius - 2;
     if (zT < 1)
       zT = 1;
-    g3d.drawString(strMeasurement, font3d, xT, yT, zT, zT);
+    drawString(strMeasurement, font3d, xT, yT, zT, zT);
   }
 
   void renderPendingMeasurement(MeasurementPending pendingMeasurement) {
+    if (isGenerator)
+      return;
     int count = pendingMeasurement.getCount();
     if (! pendingMeasurement.getIsActive() || count < 2)
       return;
@@ -259,4 +265,13 @@ public class MeasuresRenderer extends ShapeRenderer {
     drawSegment(atomLast.screenX, atomLast.screenY, lastZ,
                 viewer.getCursorX(), viewer.getCursorY(), 0);
   }
+  
+  protected void drawPixel(int x, int y, int z) {
+    g3d.drawPixel(x, y, z);
+  }
+
+  protected void drawDashedLine(int run, int rise, Point3i ptA, Point3i ptB) {
+    g3d.drawDashedLine(run, rise, ptA, ptB);
+  }
+
 }

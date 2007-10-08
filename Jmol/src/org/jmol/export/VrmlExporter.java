@@ -168,9 +168,28 @@ public class VrmlExporter extends Exporter {
   }
 
   public void drawDottedLine(short colix, Point3i pointA, Point3i pointB) {
+    //axes
   }
 
-  public void drawPoints(short colix, int count, int[] coordinates) { 
+  public void drawPoints(short colix, int count, int[] coordinates) {
+    //dots
+  }
+
+  public void drawLine(short colix, Point3i pointA, Point3i pointB) {
+    //stars
+  }
+  
+  public void fillScreenedCircleCentered(short colix, int diameter, int x,
+                                         int y, int z) {
+   //halos 
+  }
+
+  public void drawPixel(short colix, int x, int y, int z) {
+    //measures
+  }
+
+  public void drawDashedLine(short colix, int run, int rise, Point3i ptA, Point3i ptB) {
+    //measures
   }
 
 }

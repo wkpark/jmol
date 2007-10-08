@@ -32,12 +32,12 @@ import org.jmol.shapebio.*;
 
 public class RocketsGenerator extends RocketsRenderer {
 
-  protected Exporter exporter;
+  private _Exporter exporter;
   
   public void initializeGenerator(Object exporter, String type, StringBuffer output) {
     super.initializeGenerator(exporter, type, output);
     isGenerator = true;
-    this.exporter = (Exporter)exporter;
+    this.exporter = (_Exporter)exporter;
   }
 
   protected void fillSphereCentered(int diameter, Point3i pt) {

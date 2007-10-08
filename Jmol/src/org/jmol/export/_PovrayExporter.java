@@ -42,7 +42,7 @@ import org.jmol.shape.Text;
  * 
  */
 
-public class PovrayExporter extends Exporter {
+public class _PovrayExporter extends _Exporter {
 
   int screenWidth;
   int screenHeight;
@@ -54,13 +54,13 @@ public class PovrayExporter extends Exporter {
   Point3f povpt3 = new Point3f();
   Point3i povpti = new Point3i();
 
-  public PovrayExporter() {
+  public _PovrayExporter() {
     use2dBondOrderCalculation = true;
   }
 
   public void getHeader() {
 
-    // frame size formatting should be general part of Exporter class
+    // frame size formatting should be general part of _Exporter class
     float zoom = viewer.getRotationRadius() * 2;
     zoom *= 1.1f; // for some reason I need a little more margin
     zoom /= viewer.getZoomPercentFloat() / 100f;

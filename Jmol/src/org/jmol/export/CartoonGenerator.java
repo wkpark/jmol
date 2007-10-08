@@ -28,8 +28,52 @@ package org.jmol.export;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-public class CartoonGenerator extends RocketsGenerator {
+import org.jmol.shapebio.CartoonRenderer;
 
+public class CartoonGenerator extends CartoonRenderer {
+
+
+  protected _Exporter exporter;
+  
+  public void initializeGenerator(Object exporter, String type, StringBuffer output) {
+    super.initializeGenerator(exporter, type, output);
+    isGenerator = true;
+    this.exporter = (_Exporter)exporter;
+  }
+
+  protected void fillSphereCentered(int diameter, Point3i pt) {
+    exporter.fillSphereCentered(colixPending, diameter, pt);
+  }
+
+  protected void fillCylinderBits(byte endcaps, int diameter, Point3f screenA,
+                                  Point3f screenB) {
+    exporter.renderBond(screenA, screenB, colixPending, colixPending, endcaps, madPending, 1);
+  }
+
+  protected void fillTriangle(Point3f ptA, Point3f ptB, Point3f ptC) {
+    exporter.fillTriangle(colixPending, ptA, ptB, ptC);
+  }
+
+  protected void fillQuadrilateral(Point3f ptA, Point3f ptB, Point3f ptC,
+                                   Point3f ptD) {
+    exporter.fillQuadrilateral(colixPending, ptA, ptB, ptC, ptD);
+  }
+
+  protected void fillCone(byte endcap, int diameter, Point3f screenBase,
+                          Point3f screenTip) {
+    exporter.fillCone(colixPending, endcap, madPending, screenBase, screenTip);
+  }
+
+  public void fillHermite(int tension, int diameterBeg, int diameterMid,
+                          int diameterEnd, Point3i s0, Point3i s1, Point3i s2,
+                          Point3i s3) {
+    exporter.fillHermite(colix, tension, diameterBeg, diameterMid, diameterEnd,
+        s0, s1, s2, s3);
+  }
+
+/////////////////above required?//////////////
+  
+  
   protected void fillCylinder(byte endcaps, int diameter, Point3i screenA,
                               Point3i screenB) {
     exporter.fillCylinder(colix, endcaps, diameter, screenA, screenB);

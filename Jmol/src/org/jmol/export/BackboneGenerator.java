@@ -32,12 +32,12 @@ import org.jmol.shapebio.*;
 
 public class BackboneGenerator extends BackboneRenderer {
 
-  private Exporter exporter;
+  private _Exporter exporter;
   
   public void initializeGenerator(Object exporter, String type, StringBuffer output) {
     super.initializeGenerator(exporter, type, output);
     isGenerator = true;
-    this.exporter = (Exporter)exporter;
+    this.exporter = (_Exporter)exporter;
   }
 
   protected void drawLine(short colixA, short colixB, int xA, int yA, int zA, int xB, int yB, int zB) {

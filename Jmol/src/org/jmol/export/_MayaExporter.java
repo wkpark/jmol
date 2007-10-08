@@ -35,9 +35,9 @@ import org.jmol.g3d.Font3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
 
-public class MayaExporter extends Exporter {
+public class _MayaExporter extends _Exporter {
 
-  public MayaExporter() {
+  public _MayaExporter() {
     use2dBondOrderCalculation = false;
   }
   

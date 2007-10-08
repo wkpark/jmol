@@ -31,12 +31,12 @@ import org.jmol.shapebio.*;
 
 public class StrandsGenerator extends StrandsRenderer {
 
-  protected Exporter exporter;
+  private _Exporter exporter;
   
   public void initializeGenerator(Object exporter, String type, StringBuffer output) {
     super.initializeGenerator(exporter, type, output);
     isGenerator = true;
-    this.exporter = (Exporter)exporter;
+    this.exporter = (_Exporter)exporter;
   }
 
   protected void drawHermite(int tension, Point3i s0, Point3i s1, Point3i s2,

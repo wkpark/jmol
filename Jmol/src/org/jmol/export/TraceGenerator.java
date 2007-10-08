@@ -31,12 +31,12 @@ import org.jmol.shapebio.*;
 
 public class TraceGenerator extends TraceRenderer {
 
-  private Exporter exporter;
+  private _Exporter exporter;
   
   public void initializeGenerator(Object exporter, String type, StringBuffer output) {
     super.initializeGenerator(exporter, type, output);
     isGenerator = true;
-    this.exporter = (Exporter)exporter;
+    this.exporter = (_Exporter)exporter;
   }
 
   public void fillHermite(int tension, int diameterBeg,

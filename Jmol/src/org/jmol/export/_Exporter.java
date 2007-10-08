@@ -39,9 +39,9 @@ import org.jmol.viewer.Viewer;
 /*
  * Jmol Export Drivers
  * 
- * org.jmol.export.Exporter
+ * org.jmol.export._Exporter
  * org.jmol.export.ExportedMethods
- * org.jmol.export.[Driver]Exporter
+ * org.jmol.export.[Driver]_Exporter
  * org.jmol.export.[Shape]Generator
  * 
  *  org.jmol.export is a package that contains export drivers --
@@ -79,7 +79,7 @@ import org.jmol.viewer.Viewer;
  *  Each of these "Generators"  provides generalized off-screen rendering to
  *  the drivers. 
  *  
- *  The two roles --- Generator and Exporter --- are independent and, in general,
+ *  The two roles --- Generator and _Exporter --- are independent and, in general,
  *  can be developed (almost) independently. Thus, if a CartoonGenerator is 
  *  developed, the various export drivers may need to be updated. This is done by
  *  adding a new class here that is functionally equivalent to one of the Graphics3D
@@ -95,7 +95,7 @@ import org.jmol.viewer.Viewer;
  *  developers. The process should be:
  *  
  *   1) Add the Driver name to org.jmol.viewer.JmolConstants.EXPORT_DRIVER_LIST.
- *   2) Copy one of the exporters to create org.jmol.export.[Driver]Exporter.java
+ *   2) Copy one of the exporters to create org.jmol.export.[Driver]_Exporter.java
  *   3) Fill out the template with proper calls. 
  *  
  *  Alternatively, Java-savvy users can create their own drivers entirely independently
@@ -118,7 +118,7 @@ import org.jmol.viewer.Viewer;
  * 
  */
 
-public abstract class Exporter implements JmolExportInterface {
+public abstract class _Exporter implements JmolExportInterface {
  
   // The following fields and methods are required for instantiation or provide
   // generally useful functionality:
@@ -141,7 +141,7 @@ public abstract class Exporter implements JmolExportInterface {
   Vector3f temp2 = new Vector3f();
   AxisAngle4f tempA = new AxisAngle4f();
   
-  public Exporter() {  
+  public _Exporter() {  
   }
   
   public void initialize(Viewer viewer, Graphics3D g3d, StringBuffer output) {

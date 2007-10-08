@@ -31,12 +31,12 @@ import org.jmol.shape.*;
 
 public class MeasuresGenerator extends MeasuresRenderer {
 
-  private Exporter exporter;
+  private _Exporter exporter;
   
   public void initializeGenerator(Object exporter, String type, StringBuffer output) {
     super.initializeGenerator(exporter, type, output);
     isGenerator = true;
-    this.exporter = (Exporter)exporter;
+    this.exporter = (_Exporter)exporter;
   }
 
   protected void drawPixel(int x, int y, int z) {

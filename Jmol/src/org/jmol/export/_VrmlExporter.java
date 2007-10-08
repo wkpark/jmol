@@ -34,11 +34,11 @@ import org.jmol.g3d.Font3D;
 import org.jmol.modelset.Atom;
 import org.jmol.shape.Text;
 
-public class VrmlExporter extends Exporter {
+public class _VrmlExporter extends _Exporter {
 
   //VERY  preliminary -- in process -- 7/2007 Bob Hanson
 
-  public VrmlExporter() {
+  public _VrmlExporter() {
     use2dBondOrderCalculation = false;
   }
 

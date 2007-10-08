@@ -12,7 +12,7 @@ import java.util.BitSet;
 
 public interface JmolExportInterface {
 
-  // This method is implemented in org.jmol.export.Exporter 
+  // This method is implemented in org.jmol.export._Exporter 
   // when selecting a specific driver:
 
   abstract void initialize(Viewer viewer, Graphics3D g3d, StringBuffer output);

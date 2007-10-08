@@ -99,7 +99,7 @@ public class FrameRenderer {
     JmolExportInterface exporter = null;
     StringBuffer output = new StringBuffer();
     try {
-      Class exporterClass = Class.forName("org.jmol.export."+type+"Exporter");
+      Class exporterClass = Class.forName("org.jmol.export._"+type+"Exporter");
       exporter = (JmolExportInterface) exporterClass.newInstance();
     } catch (Exception e) {
       Logger.error("Cannot export " + type);

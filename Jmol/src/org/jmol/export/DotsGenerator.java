@@ -29,12 +29,12 @@ import org.jmol.shape.*;
 
 public class DotsGenerator extends DotsRenderer {
 
-  private Exporter exporter;
+  private _Exporter exporter;
   
   public void initializeGenerator(Object exporter, String type, StringBuffer output) {
     super.initializeGenerator(exporter, type, output);
     isGenerator = true;
-    this.exporter = (Exporter)exporter;
+    this.exporter = (_Exporter)exporter;
   }
 
   protected void renderDots(short colix, int nPoints) {

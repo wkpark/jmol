@@ -25,6 +25,31 @@
 
 package org.jmol.export;
 
-public class MeshRibbonGenerator extends StrandsGenerator {
- //nothing new here
+import javax.vecmath.Point3i;
+
+import org.jmol.shapebio.MeshRibbonRenderer;
+
+public class MeshRibbonGenerator extends MeshRibbonRenderer {
+
+  private _Exporter exporter;
+  
+  public void initializeGenerator(Object exporter, String type, StringBuffer output) {
+    super.initializeGenerator(exporter, type, output);
+    isGenerator = true;
+    this.exporter = (_Exporter)exporter;
+  }
+
+  protected void drawHermite(int tension, Point3i s0, Point3i s1, Point3i s2,
+                             Point3i s3) {
+    exporter.drawHermite(colix, tension, s0, s1, s2, s3);
+  }
+
+  protected void drawHermite(boolean fill, boolean border, int tension,
+                             Point3i s0, Point3i s1, Point3i s2, Point3i s3,
+                             Point3i s4, Point3i s5, Point3i s6, Point3i s7,
+                             int aspectRatio) {
+    exporter.drawHermite(colix, fill, border, tension, s0, s1, s2, s3, s4, s5,
+        s6, s7, aspectRatio);
+  }
+
 }

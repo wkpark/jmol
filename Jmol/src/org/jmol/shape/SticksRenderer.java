@@ -214,14 +214,6 @@ public class SticksRenderer extends ShapeRenderer {
     }
   }
 
-  protected void fillCylinder(short colixA, short colixB, byte endcaps,
-                    int diameter, int xA, int yA, int zA, int xB, int yB, int zB) {
-    if (lineBond)
-      g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
-    else
-      g3d.fillCylinder(colixA, colixB, endcaps, diameter, xA, yA, zA, xB, yB, zB);
-  }
-
   int xAxis1, yAxis1, xAxis2, yAxis2, dxStep, dyStep;
 
   void resetAxisCoordinates() {
@@ -397,4 +389,15 @@ public class SticksRenderer extends ShapeRenderer {
                          xS, yS, zS, xE, yE, zE);
     }
   }
+  
+  protected void fillCylinder(short colixA, short colixB, byte endcaps,
+                              int diameter, int xA, int yA, int zA, int xB,
+                              int yB, int zB) {
+    if (lineBond)
+      g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
+    else
+      g3d.fillCylinder(colixA, colixB, endcaps, diameter, xA, yA, zA, xB, yB,
+          zB);
+  }
+
 }

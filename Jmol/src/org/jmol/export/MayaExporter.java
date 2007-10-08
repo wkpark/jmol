@@ -194,4 +194,40 @@ public class MayaExporter extends Exporter {
     //measures
   }
 
+  public void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
+    //cartoons, rockets
+  }
+
+  public void fillQuadrilateral(short colix, Point3f ptA, Point3f ptB, Point3f ptC, Point3f ptD) {
+    //rockets
+  }
+  
+  public void fillCone(short colix, byte endcap, int diameter, 
+                Point3f screenBase, Point3f screenTip) {
+    //rockets
+  }
+  
+  public void fillHermite(short colix, int tension, int diameterBeg,
+                          int diameterMid, int diameterEnd,
+                          Point3i s0, Point3i s1, Point3i s2, Point3i s3){
+    //cartoons, rockets, trace:
+  }
+  
+  public void drawHermite(short colix, int tension,
+                             Point3i s0, Point3i s1, Point3i s2, Point3i s3){
+    //strands:
+  }
+
+  public void drawHermite(short colix, boolean fill, boolean border, int tension,
+                            Point3i s0, Point3i s1, Point3i s2, Point3i s3,
+                            Point3i s4, Point3i s5, Point3i s6, Point3i s7,
+                            int aspectRatio) {
+    //cartoons, meshRibbons:
+  }
+           
+          
+  public void fillSphereCentered(short colix, int diameter, Point3i pt) {
+    //rockets:    
+  }
+
 }

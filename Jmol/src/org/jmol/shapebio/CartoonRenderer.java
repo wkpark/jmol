@@ -72,7 +72,8 @@ public class CartoonRenderer extends RocketsRenderer {
             ptConnect.set(controlPointScreens[i + 1]);
           }
           renderHermiteConic(i, false);
-          if (g3d.setColix(getLeadColix(i)))
+          colix = getLeadColix(i);
+          if (isGenerator || g3d.setColix(colix))
             renderNucleicBaseStep((NucleicMonomer) monomers[i], mads[i],
                 ptConnect);
         }
@@ -132,8 +133,10 @@ public class CartoonRenderer extends RocketsRenderer {
     // the special segments routine takes care of heads
     tPending = false;
     for (int i = 0; i < monomerCount; ++i)
-      if (bsVisible.get(i) && isHelix(i))
-        renderSpecialSegment(monomers[i],getLeadColix(i), mads[i]);
+      if (bsVisible.get(i) && isHelix(i)) {
+        colix = getLeadColix(i);
+        renderSpecialSegment(monomers[i],colix, mads[i]);
+      }
     renderPending();
   }
   
@@ -166,9 +169,10 @@ public class CartoonRenderer extends RocketsRenderer {
     } else {
       stepScreen = ring6Screens[2];//was 1
     }
-    g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL,
+    madBond = mad > 1 ? mad / 2 : mad;
+    fillCylinder(Graphics3D.ENDCAPS_SPHERICAL,
                      viewer.scaleToScreen(backboneScreen.z,
-                                          mad > 1 ? mad / 2 : mad),
+                                          madBond),
                      backboneScreen, stepScreen);
     --ring6Screens[5].z;
     for (int i = 5; --i > 0; ) {
@@ -177,30 +181,32 @@ public class CartoonRenderer extends RocketsRenderer {
         --ring5Screens[i].z;
     }
     for (int i = 6; --i > 0; )
-      g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+      fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
                        ring6Screens[i], ring6Screens[i - 1]);
     if (hasRing5) {
       for (int i = 5; --i > 0; )
-        g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+        fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
                          ring5Screens[i], ring5Screens[i - 1]);
     } else {
-      g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
+      fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, 3,
                        ring6Screens[5], ring6Screens[0]);
     }
   }
 
   private void renderRing6() {
-    g3d.calcSurfaceShade(ring6Screens[0], ring6Screens[2], ring6Screens[4]);
-    g3d.fillTriangle(ring6Screens[0], ring6Screens[2], ring6Screens[4]);
-    g3d.fillTriangle(ring6Screens[0], ring6Screens[1], ring6Screens[2]);
-    g3d.fillTriangle(ring6Screens[0], ring6Screens[4], ring6Screens[5]);
-    g3d.fillTriangle(ring6Screens[2], ring6Screens[3], ring6Screens[4]);
+    if (!isGenerator)
+      g3d.calcSurfaceShade(ring6Screens[0], ring6Screens[2], ring6Screens[4]);
+    fillTriangle(ring6Screens[0], ring6Screens[2], ring6Screens[4]);
+    fillTriangle(ring6Screens[0], ring6Screens[1], ring6Screens[2]);
+    fillTriangle(ring6Screens[0], ring6Screens[4], ring6Screens[5]);
+    fillTriangle(ring6Screens[2], ring6Screens[3], ring6Screens[4]);
   }
 
   private void renderRing5() {
     // shade was calculated previously by renderRing6();
-    g3d.fillTriangle(ring5Screens[0], ring5Screens[2], ring5Screens[3]);
-    g3d.fillTriangle(ring5Screens[0], ring5Screens[1], ring5Screens[2]);
-    g3d.fillTriangle(ring5Screens[0], ring5Screens[3], ring5Screens[4]);
+    fillTriangle(ring5Screens[0], ring5Screens[2], ring5Screens[3]);
+    fillTriangle(ring5Screens[0], ring5Screens[1], ring5Screens[2]);
+    fillTriangle(ring5Screens[0], ring5Screens[3], ring5Screens[4]);
   }  
+  
 }

@@ -119,8 +119,6 @@ public class RocketsRenderer extends BioShapeRenderer {
   private ProteinStructure proteinstructurePending;
   private int startIndexPending;
   private int endIndexPending;
-  private short madPending;
-  private short colixPending;
 
   protected void renderPending() {
     if (!tPending)
@@ -150,12 +148,11 @@ public class RocketsRenderer extends BioShapeRenderer {
     int diameter = viewer.scaleToScreen(zMid, madPending);
     if (tEnd) {
       viewer.transformPoint(pointBeforeEnd, screenC);
-      if (g3d.setColix(colixPending)) {
+      if (isGenerator || g3d.setColix(colixPending)) {
         if (pointBeforeEnd.distance(pointEnd) > MIN_CONE_HEIGHT)
-          renderCone(i, pointBeforeEnd, pointEnd, screenC, screenB, madPending,
-              colixPending);
+          renderCone(i, pointBeforeEnd, pointEnd, screenC, screenB);
         else
-          g3d.fillCylinderBits(Graphics3D.ENDCAPS_FLAT, diameter, screenB,
+          fillCylinderBits(Graphics3D.ENDCAPS_FLAT, diameter, screenB,
               screenC);
       }
       if (startIndexPending == endIndexPending)
@@ -164,13 +161,13 @@ public class RocketsRenderer extends BioShapeRenderer {
       screenB = screenC;
       screenC = t;
     }
-    if (g3d.setColix(colixPending))
-      g3d.fillCylinderBits(Graphics3D.ENDCAPS_FLAT, diameter, screenA, screenB);
+    if (isGenerator || g3d.setColix(colixPending))
+      fillCylinderBits(Graphics3D.ENDCAPS_FLAT, diameter, screenA, screenB);
   }
 
   private void renderPendingSheet(Point3f pointStart, Point3f pointBeforeEnd,
                           Point3f pointEnd, boolean tEnd) {
-    if (!g3d.setColix(colixPending))
+    if (!isGenerator && !g3d.setColix(colixPending))
       return;
     if (tEnd) {
       drawArrowHeadBox(pointBeforeEnd, pointEnd);
@@ -260,8 +257,7 @@ public class RocketsRenderer extends BioShapeRenderer {
       int i1 = boxFaces[i * 4 + 1];
       int i2 = boxFaces[i * 4 + 2];
       int i3 = boxFaces[i * 4 + 3];
-      if (g3d.setColix(colixPending))
-        g3d.fillQuadrilateral(screenCorners[i0],
+      fillQuadrilateral(screenCorners[i0],
                               screenCorners[i1],
                               screenCorners[i2],
                               screenCorners[i3]);
@@ -269,8 +265,6 @@ public class RocketsRenderer extends BioShapeRenderer {
   }
 
   void drawArrowHeadBox(Point3f base, Point3f tip) {
-    if (!g3d.setColix(colixPending))
-      return;
     Sheet sheet = (Sheet)proteinstructurePending;
     float scale = madPending / 1000f;
     scaledWidthVector.set(sheet.getWidthUnitVector());
@@ -283,10 +277,10 @@ public class RocketsRenderer extends BioShapeRenderer {
     pointTipOffset.scaleAdd(-0.5f, tip);
     buildArrowHeadBox(pointCorner, scaledWidthVector,
                       scaledHeightVector, pointTipOffset);
-    g3d.fillTriangle(screenCorners[0],
+    fillTriangle(screenCorners[0],
                      screenCorners[1],
                      screenCorners[4]);
-    g3d.fillTriangle(screenCorners[2],
+    fillTriangle(screenCorners[2],
                      screenCorners[3],
                      screenCorners[5]);
     for (int i = 0; i < 12; i += 4) {
@@ -294,10 +288,10 @@ public class RocketsRenderer extends BioShapeRenderer {
       int i1 = arrowHeadFaces[i + 1];
       int i2 = arrowHeadFaces[i + 2];
       int i3 = arrowHeadFaces[i + 3];
-      g3d.fillQuadrilateral(screenCorners[i0],
+      fillQuadrilateral(screenCorners[i0],
                               screenCorners[i1],
                               screenCorners[i2],
                               screenCorners[i3]);
     }
-  }
+  }  
 }

@@ -72,8 +72,13 @@ abstract class BioShapeRenderer extends MeshRenderer {
   Vector3f[] wingVectors;
   short[] mads;
   short[] colixes;
+  
   int[] leadAtomIndices;
   byte[] structureTypes;
+
+  protected int madBond;
+  protected short madPending;
+  protected short colixPending;
 
   protected void render() {
     if (shape == null)
@@ -258,10 +263,11 @@ abstract class BioShapeRenderer extends MeshRenderer {
   }
 
   final void renderHermiteCylinder(Point3i[] screens, int i) {
-    if (!g3d.setColix(getLeadColix(i)))
+    colix = getLeadColix(i);
+    if (!isGenerator && !g3d.setColix(colix))
       return;
     setNeighbors(i);
-    g3d.drawHermite(isNucleic ? 4 : 7, screens[iPrev],
+    drawHermite(isNucleic ? 4 : 7, screens[iPrev],
         screens[i], screens[iNext], screens[iNext2]);
   }
 
@@ -303,10 +309,11 @@ abstract class BioShapeRenderer extends MeshRenderer {
     return (isHighRes & d > ABSOLUTE_MIN_MESH_SIZE || d >= MIN_MESH_RENDER_SIZE);
   }
 
+  //cartoons, rockets, trace:
   final void renderHermiteConic(int i, boolean thisTypeOnly) {
     setNeighbors(i);
-    short colix = getLeadColix(i);
-    if (!g3d.setColix(colix))
+    colix = getLeadColix(i);
+    if (!isGenerator && !g3d.setColix(colix))
       return;
     if (setMads(i, thisTypeOnly)) {
       try {
@@ -322,18 +329,19 @@ abstract class BioShapeRenderer extends MeshRenderer {
         //e.printStackTrace();
       }
     }
-    g3d.fillHermite(isNucleic ? 4 : 7, diameterBeg, diameterMid,
+    fillHermite(isNucleic ? 4 : 7, diameterBeg, diameterMid,
         diameterEnd, controlPointScreens[iPrev], controlPointScreens[i],
         controlPointScreens[iNext], controlPointScreens[iNext2]);
   }
 
   //// cardinal hermite box or flat ribbon or twin strand (cartoons, meshRibbon, ribbon)
 
+  //cartoons, meshribbon
   final void renderHermiteRibbon(boolean doFill, int i, boolean thisTypeOnly) {
     setNeighbors(i);
-    short colix = getLeadColix(i);
-    if (!g3d.setColix(colix))
-      return;    
+    colix = getLeadColix(i);
+    if (!isGenerator && !g3d.setColix(colix))
+      return;
     if (doFill && aspectRatio != 0) {
       if (setMads(i, thisTypeOnly)) {
         try {
@@ -348,7 +356,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         }
       }
     }
-    g3d.drawHermite(doFill, ribbonBorder, isNucleic ? 4 : 7,
+    drawHermite(doFill, ribbonBorder, isNucleic ? 4 : 7,
         ribbonTopScreens[iPrev], ribbonTopScreens[i], ribbonTopScreens[iNext],
         ribbonTopScreens[iNext2], ribbonBottomScreens[iPrev],
         ribbonBottomScreens[i], ribbonBottomScreens[iNext],
@@ -362,9 +370,10 @@ abstract class BioShapeRenderer extends MeshRenderer {
   final Point3i screenArrowBot = new Point3i();
   final Point3i screenArrowBotPrev = new Point3i();
 
+  //cartoons
   final void renderHermiteArrowHead(int i) {
-    short colix = getLeadColix(i);
-    if (!g3d.setColix(colix))
+    colix = getLeadColix(i);
+    if (!isGenerator && !g3d.setColix(colix))
       return;
     setNeighbors(i);
     if (setMads(i, false)) {
@@ -392,23 +401,20 @@ abstract class BioShapeRenderer extends MeshRenderer {
     calc1Screen(controlPoints[i], wingVectors[i], (short) madBeg, -0.001f,
         screenArrowBotPrev);
     if (ribbonBorder && aspectRatio == 0)
-      g3d.fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
+      fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
           screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
           screenArrowBot.x, screenArrowBot.y, screenArrowBot.z);
-    g3d.drawHermite(true, ribbonBorder, isNucleic ? 4 : 7,
+    drawHermite(true, ribbonBorder, isNucleic ? 4 : 7,
         screenArrowTopPrev, screenArrowTop, controlPointScreens[iNext],
         controlPointScreens[iNext2], screenArrowBotPrev, screenArrowBot,
         controlPointScreens[iNext], controlPointScreens[iNext2], aspectRatio);
   }
 
-  //  rockets --not satisfactory yet 
+  //  rockets --not satisfactory yet
   void renderCone(int i, Point3f pointBegin, Point3f pointEnd,
-                  Point3f screenPtBegin, Point3f screenPtEnd,
-                  int mad, short colix) {
-    if (!g3d.setColix(colix))
-      return;
+                  Point3f screenPtBegin, Point3f screenPtEnd) {
     int coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
-        mad + (mad >> 2));
+        madPending + (madPending >> 2));
 /*    
     if (false && aspectRatio > 0 && checkDiameter(coneDiameter)) {
       try {
@@ -423,7 +429,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       }
     }
 */    
-    g3d.fillCone(Graphics3D.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
+    fillCone(Graphics3D.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
         screenPtEnd);
   }
 
@@ -628,4 +634,5 @@ abstract class BioShapeRenderer extends MeshRenderer {
     g3d.fillSphereCentered(color, 5, pt2);
   }
   */
+  
 }

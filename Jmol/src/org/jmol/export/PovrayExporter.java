@@ -311,10 +311,56 @@ public class PovrayExporter extends Exporter {
 
   public void drawPixel(short colix, int x, int y, int z) {
     //measures
+   // System.out.println("pov drawPixel "+this);
   }
 
   public void drawDashedLine(short colix, int run, int rise, Point3i ptA, Point3i ptB) {
     //measures
+    //System.out.println("pov drawDashedLine == measures "+this);
   }
+
+  public void fillTriangle(short colix, Point3f ptA, Point3f ptB, Point3f ptC) {
+    //cartoons
+    System.out.println("pov fillTriangle - cartoons "+this);
+  }
+
+  public void fillQuadrilateral(short colix, Point3f ptA, Point3f ptB, Point3f ptC, Point3f ptD) {
+    //rockets
+    //System.out.println("pov fillQuadrilateral -- rockets "+this);
+  }
+
+  public void fillCone(short colix, byte endcap, int diameter,
+                       Point3f screenBase, Point3f screenTip) {
+    //rockets
+    //System.out.println("pov fillCone rockets "+this);
+  }
+  
+  public void fillHermite(short colix, int tension, int diameterBeg,
+                          int diameterMid, int diameterEnd,
+                          Point3i s0, Point3i s1, Point3i s2, Point3i s3){
+    //cartoons, rockets, trace:
+    //System.out.println("pov fileHermite cartoons rockets trace "+this);
+  }
+  
+  public void drawHermite(short colix, int tension,
+                             Point3i s0, Point3i s1, Point3i s2, Point3i s3){
+    //strands, meshribbon:
+    //System.out.println("pov drawhermite "+this);
+  }
+
+  public void drawHermite(short colix, boolean fill, boolean border, int tension,
+                            Point3i s0, Point3i s1, Point3i s2, Point3i s3,
+                            Point3i s4, Point3i s5, Point3i s6, Point3i s7,
+                            int aspectRatio) {
+    //cartoons, meshRibbons:
+    //System.out.println("pov draw hermite -- cartoons, meshribbons "+this);
+  }
+           
+          
+  public void fillSphereCentered(short colix, int diameter, Point3i pt) {
+    //rockets:    
+System.out.println("pov fillspherecentered -- rockets"+this);
+}
+
 
 }

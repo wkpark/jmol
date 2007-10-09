@@ -3161,6 +3161,9 @@ abstract public class ModelSet {
         }
       }
     }
+
+    assignAromaticNandO();
+    
     bsAromaticSingle = null;
     bsAromaticDouble = null;
 
@@ -3299,4 +3302,48 @@ abstract public class ModelSet {
     }
     return false;
   }
+  
+  private void assignAromaticNandO() {
+    Bond bond;
+    for (int i = bondCount; --i >= 0;) {
+      bond = bonds[i];
+      if (bond.order != JmolConstants.BOND_AROMATIC_SINGLE) 
+        continue;
+      Atom atom1;
+      Atom atom2 = bond.atom2;
+      int n1;
+      int n2 = atom2.getElementNumber();
+      if (n2 == 7 || n2 == 8) {
+        n1 = n2;
+        atom1 = atom2;
+        atom2 = bond.atom1;
+        n2 = atom2.getElementNumber();
+      } else {
+        atom1 = bond.atom1;
+        n1 = atom1.getElementNumber();
+      }
+      if (n1 != 7 && n1 != 8)
+        continue;
+      int valence = atom1.getValence();
+      int bondorder = atom1.getCovalentBondCount();
+      int charge = atom1.getFormalCharge();
+      switch (n1) {
+      case 7:
+        //trivalent nonpositive N with lone pair in p orbital
+        //next to trivalent C --> N=C
+        if (valence == 3 && bondorder == 3 
+            && charge < 1 
+            && n2 == 6 && atom2.getValence() == 3)
+          bond.order = JmolConstants.BOND_AROMATIC_DOUBLE; 
+        break;
+      case 8:
+        //monovalent nonnegative O next to P or S
+        if (valence == 1 && charge == 0 
+            && (n2 == 14 || n2 == 16))
+          bond.order = JmolConstants.BOND_AROMATIC_DOUBLE; 
+        break;
+      }
+    }
+  }
+
 }

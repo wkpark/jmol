@@ -1,7 +1,6 @@
 package org.jmol.api;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
@@ -48,25 +47,25 @@ public interface JmolExportInterface {
                             int yBaseline, int z, int zSlab);
   
   abstract void fillCylinder(short colix, byte endcaps, int diameter, 
-                             Point3i screenA, Point3i screenB);
+                             Point3f screenA, Point3f screenB);
 
-  abstract void drawDottedLine(short colix, Point3i pointA, Point3i pointB); //axes
+  abstract void drawDottedLine(short colix, Point3f pointA, Point3f pointB); //axes
   
   abstract void drawPoints(short colix, int count, int[] coordinates); //dots
 
-  abstract void drawLine(short colix, Point3i pointA, Point3i pointB); //stars
+  abstract void drawLine(short colix, Point3f pointA, Point3f pointB); //stars
   
   abstract void fillScreenedCircleCentered(short colix, int diameter, int x,
                                                     int y, int z);  //halos 
 
   abstract void drawPixel(short colix, int x, int y, int z); //measures
   abstract void drawDashedLine(short colix, int run, int rise, 
-                               Point3i ptA, Point3i ptB); //measures
+                               Point3f ptA, Point3f ptB); //measures
  
   //cartoons, meshRibbons:
   abstract void drawHermite(short colix, boolean fill, boolean border, int tension,
-                   Point3i s0, Point3i s1, Point3i s2, Point3i s3,
-                   Point3i s4, Point3i s5, Point3i s6, Point3i s7,
+                   Point3f s0, Point3f s1, Point3f s2, Point3f s3,
+                   Point3f s4, Point3f s5, Point3f s6, Point3f s7,
                    int aspectRatio);
   
   //rockets:
@@ -83,14 +82,16 @@ public interface JmolExportInterface {
   //cartoons, rockets, trace:
   abstract void fillHermite(short colix, int tension, int diameterBeg,
                           int diameterMid, int diameterEnd,
-                          Point3i s0, Point3i s1, Point3i s2, Point3i s3);
-
+                          Point3f s0, Point3f s1, Point3f s2, Point3f s3);
   
   //strands:
   abstract void drawHermite(short colix, int tension,
-                             Point3i s0, Point3i s1, Point3i s2, Point3i s3);
+                             Point3f s0, Point3f s1, Point3f s2, Point3f s3);
 
   //rockets:
-  abstract void fillSphereCentered(short colix, int diameter, Point3i pt);
+  abstract void fillSphereCentered(short colix, int diameter, Point3f pt);
+  
+  abstract void plotText(int x, int y, int z, short colix, short bgcolix,
+                   String text, Font3D font3d);
 
 }

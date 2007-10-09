@@ -25,12 +25,13 @@
 
 package org.jmol.export;
 
-import org.jmol.modelset.Atom;
-import org.jmol.shape.*;
+import org.jmol.shapespecial.*;
 
-public class BallsGenerator extends BallsRenderer {
+public class PmeshGenerator extends PmeshRenderer {
 
-  protected void renderBall(Atom atom) {
-    g3d.getExporter().renderAtom(atom, atom.getColix());
+  protected void renderExport() {
+    g3d.getExporter().renderIsosurface(mesh.vertices, mesh.colix, null,
+        mesh.normixes, mesh.polygonIndexes, bsFaces, mesh.vertexCount,
+        mesh.polygonCount);
   }
 }

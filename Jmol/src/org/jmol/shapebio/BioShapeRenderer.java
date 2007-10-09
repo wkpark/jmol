@@ -76,8 +76,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
   int[] leadAtomIndices;
   byte[] structureTypes;
 
-  protected int mad;
-
   protected void render() {
     if (shape == null)
       return;
@@ -249,9 +247,6 @@ abstract class BioShapeRenderer extends MeshRenderer {
   //// cardinal hermite constant cylinder (meshRibbon, strands)
 
   int iPrev, iNext, iNext2, iNext3;
-  protected int madBeg;
-  protected int madMid;
-  protected int madEnd;
   int diameterBeg, diameterMid, diameterEnd;
   boolean doCap0, doCap1;
 
@@ -263,11 +258,12 @@ abstract class BioShapeRenderer extends MeshRenderer {
   }
 
   final void renderHermiteCylinder(Point3i[] screens, int i) {
+    //strands
     colix = getLeadColix(i);
-    if (!isGenerator && !g3d.setColix(colix))
+    if (!g3d.setColix(colix))
       return;
     setNeighbors(i);
-    drawHermite(isNucleic ? 4 : 7, screens[iPrev],
+    g3d.drawHermite(isNucleic ? 4 : 7, screens[iPrev],
         screens[i], screens[iNext], screens[iNext2]);
   }
 
@@ -285,24 +281,30 @@ abstract class BioShapeRenderer extends MeshRenderer {
             madEnd = madBeg;
           }
         }
-        madMid = (madBeg + madEnd) >> 1;
+        madMid = (short)((madBeg + madEnd) >> 1);
       }
     } else {
       if (!thisTypeOnly || structureTypes[i] == structureTypes[iPrev])
-        madBeg = ((mads[iPrev] == 0 ? madMid : mads[iPrev]) + madMid) >> 1;
+        madBeg = (short)(((mads[iPrev] == 0 ? madMid : mads[iPrev]) + madMid) >> 1);
       if (!thisTypeOnly || structureTypes[i] == structureTypes[iNext])
-        madEnd = ((mads[iNext] == 0 ? madMid : mads[iNext]) + madMid) >> 1;
+        madEnd = (short)(((mads[iNext] == 0 ? madMid : mads[iNext]) + madMid) >> 1);
     }
     doCap0 = (i == iPrev || thisTypeOnly
         && structureTypes[i] != structureTypes[iPrev]);
     doCap1 = (iNext == iNext2 || thisTypeOnly
         && structureTypes[i] != structureTypes[iNext]);
     diameterBeg = viewer.scaleToScreen(controlPointScreens[i].z, madBeg);
-    diameterMid = viewer.scaleToScreen(monomers[i].getLeadAtom().screenZ,
-        madMid);
+    diameterMid = viewer.scaleToScreen(monomers[i].getLeadAtom().screenZ, madMid);
     diameterEnd = viewer.scaleToScreen(controlPointScreens[iNext].z, madEnd);
-    return (aspectRatio > 0 && (checkDiameter(diameterBeg)
-        || checkDiameter(diameterMid) || checkDiameter(diameterEnd)));
+    if ((aspectRatio <= 0 || (!checkDiameter(diameterBeg)
+        && !checkDiameter(diameterMid) && !checkDiameter(diameterEnd))))
+      return false;
+    if (isGenerator) {
+      diameterBeg = madBeg;
+      diameterMid = madMid;
+      diameterEnd = madEnd;
+    }
+    return true;
   }
 
   private boolean checkDiameter(int d) {
@@ -313,7 +315,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   final void renderHermiteConic(int i, boolean thisTypeOnly) {
     setNeighbors(i);
     colix = getLeadColix(i);
-    if (!isGenerator && !g3d.setColix(colix))
+    if (!g3d.setColix(colix))
       return;
     if (setMads(i, thisTypeOnly)) {
       try {
@@ -329,7 +331,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         //e.printStackTrace();
       }
     }
-    fillHermite(isNucleic ? 4 : 7, diameterBeg, diameterMid,
+    g3d.fillHermite(isNucleic ? 4 : 7, diameterBeg, diameterMid,
         diameterEnd, controlPointScreens[iPrev], controlPointScreens[i],
         controlPointScreens[iNext], controlPointScreens[iNext2]);
   }
@@ -340,7 +342,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   final void renderHermiteRibbon(boolean doFill, int i, boolean thisTypeOnly) {
     setNeighbors(i);
     colix = getLeadColix(i);
-    if (!isGenerator && !g3d.setColix(colix))
+    if (!g3d.setColix(colix))
       return;
     if (doFill && aspectRatio != 0) {
       if (setMads(i, thisTypeOnly)) {
@@ -356,7 +358,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
         }
       }
     }
-    drawHermite(doFill, ribbonBorder, isNucleic ? 4 : 7,
+    g3d.drawHermite(doFill, ribbonBorder, isNucleic ? 4 : 7,
         ribbonTopScreens[iPrev], ribbonTopScreens[i], ribbonTopScreens[iNext],
         ribbonTopScreens[iNext2], ribbonBottomScreens[iPrev],
         ribbonBottomScreens[i], ribbonBottomScreens[iNext],
@@ -373,7 +375,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
   //cartoons
   final void renderHermiteArrowHead(int i) {
     colix = getLeadColix(i);
-    if (!isGenerator && !g3d.setColix(colix))
+    if (!g3d.setColix(colix))
       return;
     setNeighbors(i);
     if (setMads(i, false)) {
@@ -400,13 +402,13 @@ abstract class BioShapeRenderer extends MeshRenderer {
         screenArrowTopPrev);
     calc1Screen(controlPoints[i], wingVectors[i], (short) madBeg, -0.001f,
         screenArrowBotPrev);
-    drawHermite(true, ribbonBorder, isNucleic ? 4 : 7,
+    g3d.drawHermite(true, ribbonBorder, isNucleic ? 4 : 7,
         screenArrowTopPrev, screenArrowTop, controlPointScreens[iNext],
         controlPointScreens[iNext2], screenArrowBotPrev, screenArrowBot,
         controlPointScreens[iNext], controlPointScreens[iNext2], aspectRatio);
     if (ribbonBorder && aspectRatio == 0) {
-      mad = 3;
-      fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, 3,
+      g3d.fillCylinder(colix, colix, Graphics3D.ENDCAPS_SPHERICAL, 
+          (isGenerator ? 50 : 3), //may not be right 0.05 
           screenArrowTop.x, screenArrowTop.y, screenArrowTop.z,
           screenArrowBot.x, screenArrowBot.y, screenArrowBot.z);
     }
@@ -415,8 +417,10 @@ abstract class BioShapeRenderer extends MeshRenderer {
   //  rockets --not satisfactory yet
   void renderCone(int i, Point3f pointBegin, Point3f pointEnd,
                   Point3f screenPtBegin, Point3f screenPtEnd) {
-    int coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z),
-        mad + (mad >> 2));
+    int coneDiameter = mad + (mad >> 2);
+    if (!isGenerator)
+      coneDiameter = viewer.scaleToScreen((int) Math.floor(screenPtBegin.z), 
+          coneDiameter);
 /*    
     if (false && aspectRatio > 0 && checkDiameter(coneDiameter)) {
       try {
@@ -431,7 +435,7 @@ abstract class BioShapeRenderer extends MeshRenderer {
       }
     }
 */    
-    fillCone(Graphics3D.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
+    g3d.fillCone(Graphics3D.ENDCAPS_FLAT, coneDiameter, screenPtBegin,
         screenPtEnd);
   }
 

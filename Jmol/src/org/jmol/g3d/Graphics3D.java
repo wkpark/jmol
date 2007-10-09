@@ -25,7 +25,6 @@ package org.jmol.g3d;
 
 import java.awt.Component;
 import java.awt.Image;
-import java.awt.FontMetrics;
 import java.util.Hashtable;
 import javax.vecmath.Point3i;
 import javax.vecmath.Point3f;
@@ -33,6 +32,10 @@ import javax.vecmath.Point4f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 import javax.vecmath.Matrix3f;
+
+import org.jmol.api.JmolExportInterface;
+import org.jmol.api.JmolRendererInterface;
+import org.jmol.shape.ShapeRenderer;
 import org.jmol.util.Logger;
 
 /**
@@ -46,7 +49,7 @@ import org.jmol.util.Logger;
  * @author Miguel, miguel@jmol.org
  */
 
-final public class Graphics3D {
+final public class Graphics3D implements JmolRendererInterface {
 
   Platform3D platform;
   Line3D line3d;
@@ -95,6 +98,41 @@ final public class Graphics3D {
 
   Font3D font3dCurrent;
 
+  public final static byte ENDCAPS_NONE = 0;
+  public final static byte ENDCAPS_OPEN = 1;
+  public final static byte ENDCAPS_FLAT = 2;
+  public final static byte ENDCAPS_SPHERICAL = 3;
+
+  
+  public final static byte shadeMax = Shade3D.shadeMax;
+  public final static byte shadeLast = Shade3D.shadeMax - 1;
+  public final static byte shadeNormal = Shade3D.shadeNormal;
+  public final static byte intensitySpecularSurfaceLimit = Shade3D.intensitySpecularSurfaceLimit;
+
+  public final static short INHERIT_ALL = 0;
+  public final static short USE_PALETTE = 2;
+  public final static short BLACK = 4;
+  public final static short ORANGE = 5;
+  public final static short PINK = 6;
+  public final static short BLUE = 7;
+  public final static short WHITE = 8;
+  public final static short CYAN = 9;
+  public final static short RED = 10;
+  public final static short GREEN = 11;
+  public final static short GRAY = 12;
+  public final static short SILVER = 13;
+  public final static short LIME = 14;
+  public final static short MAROON = 15;
+  public final static short NAVY = 16;
+  public final static short OLIVE = 17;
+  public final static short PURPLE = 18;
+  public final static short TEAL = 19;
+  public final static short MAGENTA = 20;
+  public final static short YELLOW = 21;
+  public final static short HOTPINK = 22;
+  public final static short GOLD = 23;
+
+
   /**
    * Allocates a g3d object
    *
@@ -112,6 +150,16 @@ final public class Graphics3D {
     this.hermite3d = new Hermite3D(this);
     this.normix3d = new Normix3D();
     //    setFontOfSize(13);
+  }
+  
+  public void setg3dExporter(Graphics3D g3d, JmolExportInterface exporter) {
+  }
+  
+  public JmolExportInterface getExporter() {
+    return null;
+  }
+  
+  public void setRenderer(ShapeRenderer shapeRenderer) {
   }
   
   /**
@@ -668,28 +716,12 @@ final public class Graphics3D {
                 z, argbCurrent, getColixArgb(bgcolix), str, font3dCurrent, this);
   }
   
-  public void setFontOfSize(int fontsize) {
-    font3dCurrent = getFont3D(fontsize);
-  }
-
   public void setFont(byte fid) {
     font3dCurrent = Font3D.getFont3D(fid);
   }
   
-  public void setFont(Font3D font3d) {
-    font3dCurrent = font3d;
-  }
-  
   public Font3D getFont3DCurrent() {
     return font3dCurrent;
-  }
-
-  public byte getFontFidCurrent() {
-    return font3dCurrent.fid;
-  }
-  
-  public FontMetrics getFontMetrics() {
-    return font3dCurrent.fontMetrics;
   }
 
   boolean currentlyRendering;
@@ -898,11 +930,6 @@ final public class Graphics3D {
                     pointB.x, pointB.y, pointB.z, false);
   }
   
-  public final static byte ENDCAPS_NONE = 0;
-  public final static byte ENDCAPS_OPEN = 1;
-  public final static byte ENDCAPS_FLAT = 2;
-  public final static byte ENDCAPS_SPHERICAL = 3;
-
   public void fillCylinder(short colixA, short colixB, byte endcaps,
                            int diameter,
                            int xA, int yA, int zA, int xB, int yB, int zB) {
@@ -1174,7 +1201,7 @@ final public class Graphics3D {
    * lower-level plotting routines
    * ***************************************************************/
 
-  private boolean isClipped(int x, int y, int z) {
+  public boolean isClipped(int x, int y, int z) {
     // this is the one that could be augmented with slabPlane
     return (x < 0 || x >= width || y < 0 || y >= height || z < slab || z > depth);
   }
@@ -1606,44 +1633,10 @@ final public class Graphics3D {
   final static short         OPAQUE_MASK              = ~TRANSLUCENT_MASK;
 
 
-  public final static short  INHERIT_ALL         = 0;
   private final static short INHERIT_COLOR       = 1;
-  public final static short  USE_PALETTE         = 2;
   final static short         UNUSED_OPTION3      = 3;
   final static short         SPECIAL_COLIX_MAX   = 4;
 
-  public final static short BLACK       = 4;
-  public final static short ORANGE      = 5;
-  public final static short PINK        = 6;
-  public final static short BLUE        = 7;
-  public final static short WHITE       = 8;
-  public final static short CYAN        = 9;
-  public final static short RED         = 10;
-  public final static short GREEN       = 11;
-  public final static short GRAY        = 12;
-  public final static short SILVER      = 13;
-  public final static short LIME        = 14;
-  public final static short MAROON      = 15;
-  public final static short NAVY        = 16;
-  public final static short OLIVE       = 17;
-  public final static short PURPLE      = 18;
-  public final static short TEAL        = 19;
-  public final static short MAGENTA     = 20;
-  public final static short YELLOW      = 21;
-  public final static short HOTPINK     = 22;
-  public final static short GOLD        = 23;
-
-
-  /* no refs
-   * 
-    void averageOffsetArgb(int offset, int argb) {
-    pbuf[offset] =((((pbuf[offset] >> 1) & 0x007F7F7F) +
-                    ((argb >> 1) & 0xFF7F7F7F)) |
-                   (argb & 0xFF010101));
-  }
-
-   */
-  
   /**
    * Return a greyscale rgb value 0-FF using NTSC color luminance algorithm
    *<p>
@@ -1761,7 +1754,7 @@ final public class Graphics3D {
     return Colix3D.getArgbGreyscale(colix);
   }
 
-  public int[] getShades(short colix) {
+  int[] getShades(short colix) {
     if (colix < 0)
       colix = changeableColixMap[colix & UNMASK_CHANGEABLE_TRANSLUCENT];
     if (! inGreyscaleMode)
@@ -1877,12 +1870,6 @@ final public class Graphics3D {
     Sphere3D.flushSphereCache();
   }
 
-  public final static byte shadeMax = Shade3D.shadeMax;
-  public final static byte shadeLast = Shade3D.shadeMax - 1;
-  public final static byte shadeNormal = Shade3D.shadeNormal;
-  public final static byte intensitySpecularSurfaceLimit =
-    Shade3D.intensitySpecularSurfaceLimit;
-
   final static float[] lighting = Shade3D.lighting;
   
   public synchronized static void setSpecular(boolean specular) {
@@ -1970,7 +1957,7 @@ final public class Graphics3D {
     setColorNoisy(intensity);
   }
 
-  public int calcIntensityScreen(Point3f screenA,
+  private int calcIntensityScreen(Point3f screenA,
                                  Point3f screenB, Point3f screenC) {
     // for fillTriangle and fillQuad.
     vectorAB.sub(screenB, screenA);
@@ -2011,10 +1998,6 @@ final public class Graphics3D {
 
   public byte getFontFid(String fontFace, int fontSize) {
     return getFont3D(fontFace, fontSize).fid;
-  }
-
-  public byte getFontFid(String fontFace, String fontStyle, int fontSize) {
-    return getFont3D(fontFace, fontStyle, fontSize).fid;
   }
 
   /* ***************************************************************
@@ -2652,15 +2635,6 @@ final public class Graphics3D {
                               Normix3D.NORMIX_GEODESIC_LEVEL);
   }
 
-  public short getNormix(Vector3f vector, int geodesicLevel) {
-    return normix3d.getNormix(vector.x, vector.y, vector.z, geodesicLevel);
-  }
-
-  public short getInverseNormix(Vector3f vector) {
-    return normix3d.getNormix(-vector.x, -vector.y, -vector.z,
-                              Normix3D.NORMIX_GEODESIC_LEVEL);
-  }
-
   public short getInverseNormix(short normix) {
     if (normix3d.inverseNormixes == null)
       normix3d.calculateInverseNormixes();
@@ -2673,6 +2647,7 @@ final public class Graphics3D {
   }
 
   public boolean isDirectedTowardsCamera(short normix) {
+    //polyhedra
     return normix3d.isDirectedTowardsCamera(normix);
   }
 
@@ -2682,9 +2657,5 @@ final public class Graphics3D {
 
   public Vector3f getNormixVector(short normix) {
     return normix3d.getVector(normix);
-  }
-
-  public short[] getGeodesicFaceNormixes(int level) {
-    return normix3d.getFaceNormixes(level);
   }
 }

@@ -42,7 +42,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
   Measurement measurement;
   boolean doJustify;
   protected void render() {
-    if (!viewer.getShowMeasurements() || !isGenerator && !g3d.checkTranslucent(false))
+    if (!viewer.getShowMeasurements() || !g3d.checkTranslucent(false))
       return;
 
     Measures measures = (Measures) shape;
@@ -63,8 +63,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
         colix = measures.colix;
       if (colix == 0)
         colix = viewer.getColixBackgroundContrast();
-      if (!isGenerator)
-        g3d.setColix(colix);
+      g3d.setColix(colix);
       renderMeasurement(m);
     }
     renderPendingMeasurement(measures.pendingMeasurement);
@@ -104,7 +103,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     int widthPixels = measurementMad;
     if (measurementMad >= 20)
       widthPixels = viewer.scaleToScreen((z1 + z2) / 2, measurementMad);
-    fillCylinder(Graphics3D.ENDCAPS_FLAT, widthPixels, ptA, ptB);
+    g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, widthPixels, ptA, ptB);
 
     return (widthPixels + 1) / 2;
   }
@@ -238,7 +237,7 @@ public class MeasuresRenderer extends FontLineShapeRenderer {
     int zT = z - radius - 2;
     if (zT < 1)
       zT = 1;
-    drawString(strMeasurement, font3d, xT, yT, zT, zT);
+    g3d.drawString(strMeasurement, font3d, xT, yT, zT, zT);
   }
 
   void renderPendingMeasurement(MeasurementPending pendingMeasurement) {

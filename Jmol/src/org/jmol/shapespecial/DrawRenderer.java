@@ -76,7 +76,7 @@ public class DrawRenderer extends MeshRenderer {
       float fScale = dmesh.drawArrowScale;
       if (fScale == 0)
         fScale = viewer.getDefaultDrawArrowScale();
-      if (fScale == 0)
+      if (fScale <= 0)
         fScale = 0.5f;
       int nHermites = 5;
       if (controlHermites == null || controlHermites.length < nHermites + 1) {
@@ -113,10 +113,16 @@ public class DrawRenderer extends MeshRenderer {
       tip.set(pt2i.x - pt1i.x, pt2i.y - pt1i.y, pt2i.z - pt1i.z);
       if (pt2i.z == 1 || pt1i.z == 1) //slabbed
         break;
-      int headDiameter = (int) (tip.length() * .5);
-      diameter = headDiameter / 5;
-      if (diameter < 1)
-        diameter = 1;
+      int headDiameter = 0;
+      if (isGenerator) {
+        diameter = (short)(fScale * 100);
+        headDiameter = diameter * 5; 
+      } else {
+        headDiameter = (int) (tip.length() * .5);
+        diameter = headDiameter / 5;
+        if (diameter < 1)
+          diameter = 1;
+      }
       if (headDiameter > 2)
         g3d.fillCone(Graphics3D.ENDCAPS_FLAT, headDiameter, pt1i, pt2i);
       break;
@@ -138,7 +144,7 @@ public class DrawRenderer extends MeshRenderer {
         i0 = i;
       }
     }
-    if (isDrawPickMode) {
+    if (isDrawPickMode && !isGenerator) {
       renderHandles();
     }
   }
@@ -170,7 +176,10 @@ public class DrawRenderer extends MeshRenderer {
   
   private void renderInfo() {
     if (dmesh == null || dmesh.title == null || dmesh.visibilityFlags == 0
-        || viewer.getDrawHover() || !g3d.setColix(viewer.getColixBackgroundContrast()))
+        || viewer.getDrawHover())
+      return;
+    colix = viewer.getColixBackgroundContrast();
+    if (!g3d.setColix(colix))
       return;
     //just the first line of the title -- nothing fancy here.
     byte fid = g3d.getFontFid("SansSerif", 14);
@@ -180,4 +189,5 @@ public class DrawRenderer extends MeshRenderer {
       g3d.drawString(dmesh.title[0], null, pt1i.x + 5, pt1i.y - 5, pt1i.z, pt1i.z);
     }
   }
+  
 }

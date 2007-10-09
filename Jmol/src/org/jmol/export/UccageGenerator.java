@@ -25,34 +25,7 @@
 
 package org.jmol.export;
 
-import javax.vecmath.Point3i;
-
-import org.jmol.g3d.Font3D;
 import org.jmol.shape.*;
 
 public class UccageGenerator extends UccageRenderer {
-
-  private _Exporter exporter;
-
-  public void initializeGenerator(Object exporter, String type,
-                                  StringBuffer output) {
-    super.initializeGenerator(exporter, type, output);
-    isGenerator = true;
-    this.exporter = (_Exporter) exporter;
-  }
-
-  protected void drawString(String str, Font3D font3d, int xBaseline,
-                            int yBaseline, int z, int zSlab) {
-    exporter.drawString(colix, str, font3d, xBaseline, yBaseline, z, zSlab);
-  }
-
-  protected void fillCylinder(byte endcaps, int diameter, Point3i screenA,
-                              Point3i screenB) {
-    exporter.fillCylinder(colix, endcaps, diameter, screenA, screenB);
-  }
-
-  protected void drawDottedLine(Point3i pointA, Point3i pointB) {
-    exporter.drawDottedLine(colix, pointA, pointB);
-  }
-
 }

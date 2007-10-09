@@ -25,24 +25,7 @@
 
 package org.jmol.export;
 
-import javax.vecmath.Point3i;
-
 import org.jmol.shapebio.*;
 
 public class TraceGenerator extends TraceRenderer {
-
-  private _Exporter exporter;
-  
-  public void initializeGenerator(Object exporter, String type, StringBuffer output) {
-    super.initializeGenerator(exporter, type, output);
-    isGenerator = true;
-    this.exporter = (_Exporter)exporter;
-  }
-
-  protected void fillHermite(int tension, int diameterBeg,
-                   int diameterMid, int diameterEnd,
-                   Point3i s0, Point3i s1, Point3i s2, Point3i s3) {
-    exporter.fillHermite(colix, tension, madBeg, madMid, madEnd,
-                              s0, s1, s2, s3);
-  }
 }

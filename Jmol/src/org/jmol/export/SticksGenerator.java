@@ -25,41 +25,16 @@
 
 package org.jmol.export;
 
-import javax.vecmath.Point3f;
-
 import org.jmol.shape.*;
 
 public class SticksGenerator extends SticksRenderer {
-
-  private _Exporter exporter;
-  
-  public void initializeGenerator(Object exporter, String type, StringBuffer output) {
-    super.initializeGenerator(exporter, type, output);
-    isGenerator = true;
-    this.exporter = (_Exporter)exporter;
-  }
-
-  Point3f ptA = new Point3f();
-  Point3f ptB = new Point3f();
-  
   protected void renderBond(int dottedMask) {
+    _Exporter exporter = (_Exporter) g3d.getExporter();
     // Maya and Vrml right now don't render bond orders
     if (exporter.use2dBondOrderCalculation) {
       super.renderBond(dottedMask); //use fillCylinder
       return;
     }
     exporter.renderBond(atomA, atomB, colixA, colixB, endcaps, mad, bondOrder);
-  }
-
-
-  protected void fillCylinder(short colixA, short colixB, byte endcaps,
-                              int diameter, int xA, int yA, int zA, int xB, int yB, int zB) {
-    /*
-     * Use the screen points Jmol determines
-     *  
-     */
-    ptA.set(xA, yA, zA);
-    ptB.set(xB, yB, zB);
-    exporter.renderBond(ptA, ptB, colixA, colixB, endcaps, mad, 1);
   }
 }

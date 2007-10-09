@@ -25,26 +25,7 @@
 
 package org.jmol.export;
 
-import javax.vecmath.Point3i;
-
 import org.jmol.shape.*;
 
 public class MeasuresGenerator extends MeasuresRenderer {
-
-  private _Exporter exporter;
-  
-  public void initializeGenerator(Object exporter, String type, StringBuffer output) {
-    super.initializeGenerator(exporter, type, output);
-    isGenerator = true;
-    this.exporter = (_Exporter)exporter;
-  }
-
-  protected void drawPixel(int x, int y, int z) {
-    exporter.drawPixel(colix, x, y, z);
-  }
-
-  protected void drawDashedLine(int run, int rise, Point3i ptA, Point3i ptB) {
-    exporter.drawDashedLine(colix, run, rise, ptA, ptB);
-  }
-
 }

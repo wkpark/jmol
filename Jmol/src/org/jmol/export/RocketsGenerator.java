@@ -25,50 +25,7 @@
 
 package org.jmol.export;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-
 import org.jmol.shapebio.*;
 
 public class RocketsGenerator extends RocketsRenderer {
-
-  private _Exporter exporter;
-  
-  public void initializeGenerator(Object exporter, String type, StringBuffer output) {
-    super.initializeGenerator(exporter, type, output);
-    isGenerator = true;
-    this.exporter = (_Exporter)exporter;
-  }
-
-  protected void fillSphereCentered(int diameter, Point3i pt) {
-    exporter.fillSphereCentered(colix, diameter, pt);
-  }
-
-  protected void fillCylinderBits(byte endcaps, int diameter, Point3f screenA,
-                                  Point3f screenB) {
-    exporter.renderBond(screenA, screenB, colix, colix, endcaps, mad, 1);
-  }
-
-  protected void fillTriangle(Point3f ptA, Point3f ptB, Point3f ptC) {
-    exporter.fillTriangle(colix, ptA, ptB, ptC);
-  }
-
-  protected void fillQuadrilateral(Point3f ptA, Point3f ptB, Point3f ptC,
-                                   Point3f ptD) {
-    exporter.fillQuadrilateral(colix, ptA, ptB, ptC, ptD);
-  }
-
-  protected void fillCone(byte endcap, int diameter, Point3f screenBase,
-                          Point3f screenTip) {
-    exporter.fillCone(colix, endcap, mad, screenBase, screenTip);
-  }
-
-  protected void fillHermite(int tension, int diameterBeg, int diameterMid,
-                          int diameterEnd, Point3i s0, Point3i s1, Point3i s2,
-                          Point3i s3) {
-    //could be a problem. These diameters are screen coordinates.
-    exporter.fillHermite(colix, tension, madBeg, madMid, madEnd,
-        s0, s1, s2, s3);
-  }
-
 }

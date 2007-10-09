@@ -58,7 +58,7 @@ public class DotsRenderer extends ShapeRenderer {
 
   protected void render1(Dots dots) {
     //dots.timeBeginExecution = System.currentTimeMillis();
-    if (!iShowSolid && !isGenerator && !g3d.setColix(Graphics3D.BLACK)) // no translucent for dots
+    if (!iShowSolid && !g3d.setColix(Graphics3D.BLACK)) // no translucent for dots
       return;
     int sppa = (int) viewer.getScalePixelsPerAngstrom();
     screenLevel = (iShowSolid || sppa > 20 ? 3 : sppa > 10 ? 2 : sppa > 5 ? 1

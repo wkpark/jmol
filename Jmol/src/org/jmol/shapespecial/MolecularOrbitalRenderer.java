@@ -39,7 +39,8 @@ public class MolecularOrbitalRenderer extends IsosurfaceRenderer {
   }
 
   private void renderInfo() {
-    if (mesh == null || !g3d.setColix(viewer.getColixBackgroundContrast()))
+    if (mesh == null || isGenerator
+        || !g3d.setColix(viewer.getColixBackgroundContrast()))
         return;
     if (nf == null) {
       nf = NumberFormat.getInstance();

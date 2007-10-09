@@ -29,18 +29,4 @@ package org.jmol.export;
 import org.jmol.shape.*;
 
 public class HalosGenerator extends HalosRenderer {
-
-  private _Exporter exporter;
-  
-  public void initializeGenerator(Object exporter, String type, StringBuffer output) {
-    super.initializeGenerator(exporter, type, output);
-    isGenerator = true;
-    this.exporter = (_Exporter)exporter;
-  }
-  
-  public void fillScreenedCircleCentered(short colix, int diameter, int x,
-                                  int y, int z) {
-    exporter.fillScreenedCircleCentered(colix, diameter, x, y, z);
-  }
-
 }

@@ -26,6 +26,7 @@ package org.jmol.shape;
 import java.awt.FontMetrics;
 import javax.vecmath.Point3f;
 
+import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 import org.jmol.util.Escape;
@@ -55,7 +56,7 @@ public class Text {
 
   boolean atomBased;
   Viewer viewer;
-  Graphics3D g3d;
+  JmolRendererInterface g3d;
   Point3f xyz;
   String target;
   String text, textUnformatted;
@@ -96,7 +97,7 @@ public class Text {
   int textHeight;
 
   // for labels and hover
-  Text(Graphics3D g3d, Font3D font, String text, short colix,
+  Text(JmolRendererInterface g3d, Font3D font, String text, short colix,
       short bgcolix, int offsetX, int offsetY, int z, int zSlab, int textAlign) {
     this.viewer = null;
     this.g3d = g3d;
@@ -375,7 +376,7 @@ public class Text {
     recalc();
   }
   
-  void render() {
+  void render(JmolRendererInterface g3d) {
     if (text == null)
       return;
     windowWidth = g3d.getRenderWidth();
@@ -475,7 +476,7 @@ public class Text {
     boxY = y;
   }
 
-  final static void renderSimple(Graphics3D g3d, Font3D font,
+  final static void renderSimple(JmolRendererInterface g3d, Font3D font,
                                  String strLabel, short colix, short bgcolix,
                                  int x, int y, int z, int zSlab, int xOffset,
                                  int yOffset, int ascent, int descent,

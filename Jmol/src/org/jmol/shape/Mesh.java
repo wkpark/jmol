@@ -26,6 +26,7 @@ package org.jmol.shape;
 
 import org.jmol.util.ArrayUtil;
 import org.jmol.viewer.JmolConstants;
+import org.jmol.api.JmolRendererInterface;
 import org.jmol.g3d.*;
 
 import javax.vecmath.Point3f;
@@ -34,7 +35,7 @@ import javax.vecmath.Vector3f;
 public class Mesh {
   
   public final static String PREVIOUS_MESH_ID = "+PREVIOUS_MESH+";
-  public Graphics3D g3d;
+  private JmolRendererInterface g3d;
   
   public String[] title = null;
   public String thisID;
@@ -77,7 +78,7 @@ public class Mesh {
   
   public Mesh() {}
   
-  public Mesh(String thisID, Graphics3D g3d, short colix) {  //for mps
+  public Mesh(String thisID, JmolRendererInterface g3d, short colix) {  //for mps
     if (PREVIOUS_MESH_ID.equals(thisID))
       thisID = null;
     this.thisID = thisID;

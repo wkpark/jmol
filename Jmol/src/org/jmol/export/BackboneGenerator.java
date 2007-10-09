@@ -25,37 +25,8 @@
 
 package org.jmol.export;
 
-import javax.vecmath.Point3f;
-
-import org.jmol.g3d.Graphics3D;
 import org.jmol.shapebio.*;
 
 public class BackboneGenerator extends BackboneRenderer {
 
-  private _Exporter exporter;
-  
-  public void initializeGenerator(Object exporter, String type, StringBuffer output) {
-    super.initializeGenerator(exporter, type, output);
-    isGenerator = true;
-    this.exporter = (_Exporter)exporter;
-  }
-
-  protected void drawLine(short colixA, short colixB, int xA, int yA, int zA, int xB, int yB, int zB) {
-    //mads[i] < 0
-    fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_FLAT, 1, xA, yA, zA, xB, yB, zB);
-  }
-  
-  Point3f ptA = new Point3f();
-  Point3f ptB = new Point3f();
-
-  protected void fillCylinder(short colixA, short colixB, byte endcaps,
-                              int diameter, int xA, int yA, int zA, int xB, int yB, int zB) {
-    /*
-     * Use the screen points Jmol determines
-     *  
-     */
-    ptA.set(xA, yA, zA);
-    ptB.set(xB, yB, zB);
-    exporter.renderBond(ptA, ptB, colixA, colixB, endcaps, mad, 1);
-  }
 }

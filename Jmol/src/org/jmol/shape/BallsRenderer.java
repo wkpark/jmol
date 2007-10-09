@@ -41,7 +41,7 @@ public class BallsRenderer extends ShapeRenderer {
     //maxX = minX + rectClip.width;
     //minY = rectClip.y;
     //maxY = minY + rectClip.height;
-    boolean slabbing = viewer.getSlabEnabled() && !isGenerator;
+    boolean slabbing = viewer.getSlabEnabled();
     //isNav = viewer.getNavigationMode();
     if (slabbing) {
       minZ = g3d.getSlab();
@@ -82,7 +82,8 @@ public class BallsRenderer extends ShapeRenderer {
         if (z < group.getMinZ())
           group.setMinZ(Math.max(1, z));
       }
-      if ((atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0)
+      if ((atom.getShapeVisibilityFlags() & myVisibilityFlag) != 0
+          && g3d.setColix(atom.getColix()))
         renderBall(atom);
     }
 
@@ -101,8 +102,6 @@ public class BallsRenderer extends ShapeRenderer {
   }
 
   protected void renderBall(Atom atom) {
-    if (!g3d.setColix(atom.getColix()))
-        return;    
     g3d.fillSphereCentered(atom.screenDiameter,
                            atom.screenX, atom.screenY, atom.screenZ);
   }

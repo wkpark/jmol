@@ -73,27 +73,31 @@ public class HalosRenderer extends ShapeRenderer {
   void render1(Atom atom, short mad, short colix) {
     int z = atom.screenZ;
     int diameter = mad;
-    if (diameter < 0) { //unsized selection
-      diameter = atom.screenDiameter;
-      if (diameter == 0)
-        diameter = viewer.scaleToScreen(z, 500);
+    int halowidth = 0;
+    if (isGenerator) {
+      if (diameter < 0 && (diameter = atom.getMadAtom()) == 0)
+        diameter = 500;
+      halowidth = diameter / 4;
+      if (halowidth > 125)
+        halowidth = 125; // may need tweaking
     } else {
-      diameter = viewer.scaleToScreen(z, mad);
+      if (diameter < 0) { //unsized selection
+        diameter = atom.screenDiameter;
+        if (diameter == 0)
+          diameter = viewer.scaleToScreen(z, 500);
+      } else {
+        diameter = viewer.scaleToScreen(z, mad);
+      }
+      halowidth = (diameter / 4);
+      if (halowidth < 4)
+        halowidth = 4;
+      if (halowidth > 10)
+        halowidth = 10;
     }
-    int halowidth = (diameter / 4);
-    if (halowidth < 4)
-      halowidth = 4;
-    if (halowidth > 10)
-      halowidth = 10;
     int haloDiameter = diameter + 2 * halowidth;
     if (haloDiameter <= 0)
       return;
-    fillScreenedCircleCentered(colix, haloDiameter, atom.screenX,
+    g3d.fillScreenedCircleCentered(colix, haloDiameter, atom.screenX,
         atom.screenY, atom.screenZ);
-  }
-  
-  protected void fillScreenedCircleCentered(short colix, int diameter, int x,
-                                            int y, int z) {
-    g3d.fillScreenedCircleCentered(colix, diameter, x, y, z);
-  }
+  }  
 }

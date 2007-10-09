@@ -28,17 +28,4 @@ package org.jmol.export;
 import org.jmol.shape.*;
 
 public class LabelsGenerator extends LabelsRenderer {
-
-  private _Exporter exporter;
-  
-  public void initializeGenerator(Object exporter, String type, StringBuffer output) {
-    super.initializeGenerator(exporter, type, output);
-    isGenerator = true;
-    this.exporter = (_Exporter)exporter;
-  }
-
- protected void renderText(Text t) {
-   exporter.renderText(t);
- }  
-
 }

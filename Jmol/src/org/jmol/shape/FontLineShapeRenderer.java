@@ -26,18 +26,14 @@ package org.jmol.shape;
 import javax.vecmath.Point3f;
 import javax.vecmath.Point3i;
 
-import org.jmol.g3d.Font3D;
 import org.jmol.g3d.Graphics3D;
 
 abstract class FontLineShapeRenderer extends ShapeRenderer {
 
-  protected short colix;
-  
   protected void render(short mad, Point3f[] vertices, Point3i[] screens,
                         Point3f[] axisPoints, int firstLine) {
     //used by Bbcage and Uccage
-    if (!isGenerator)
-      g3d.setColix(colix);
+    g3d.setColix(colix);
     int zSum = 0;
     for (int i = 8; --i >= 0;) {
       viewer.transformPoint(vertices[i], screens[i]);
@@ -55,26 +51,11 @@ abstract class FontLineShapeRenderer extends ShapeRenderer {
       if (axisPoints != null && edge0 == 0)
         viewer.transformPoint(axisPoints[axisPt--], screens[0]);
       if (mad < 0)
-        drawDottedLine(screens[edge0], screens[Bbcage.edges[i + 1]]);
+        g3d.drawDottedLine(screens[edge0], screens[Bbcage.edges[i + 1]]);
       else
-        fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, widthPixels, screens[edge0],
+        g3d.fillCylinder(Graphics3D.ENDCAPS_SPHERICAL, widthPixels, screens[edge0],
             screens[Bbcage.edges[i + 1]]);
     }
-  }  
-
-  protected void drawString(String str, Font3D font3d,
-                         int xBaseline, int yBaseline, int z, int zSlab) {
-    g3d.drawString(str, font3d, xBaseline, yBaseline, z, zSlab);
-  }
-  
-  protected void fillCylinder(byte endcaps, int diameter,
-                              Point3i screenA, Point3i screenB) {
-    g3d.fillCylinder(endcaps, diameter, screenA, screenB);
-  }
-  
-  protected void drawDottedLine(Point3i pointA, Point3i pointB) {
-    g3d.drawDottedLine(pointA, pointB);
-  }
-  
+  }    
 }
 

@@ -25,12 +25,8 @@
 
 package org.jmol.export;
 
-import org.jmol.modelset.Atom;
-import org.jmol.shape.*;
+import org.jmol.shapespecial.*;
 
-public class BallsGenerator extends BallsRenderer {
+public class DrawGenerator extends DrawRenderer {
 
-  protected void renderBall(Atom atom) {
-    g3d.getExporter().renderAtom(atom, atom.getColix());
-  }
 }

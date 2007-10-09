@@ -28,9 +28,4 @@ package org.jmol.export;
 import org.jmol.shape.*;
 
 public class FrankGenerator extends FrankRenderer {
-
-  public void initializeGenerator(Object exporter, String type, StringBuffer output) {
-    isGenerator = true;  //nothing to do
-  }
-
 }

@@ -49,7 +49,7 @@ public class AxesRenderer extends FontLineShapeRenderer {
   protected void render() {
     Axes axes = (Axes) shape;
     short mad = viewer.getObjectMad(StateManager.OBJ_AXIS1);
-    if (mad == 0 || !isGenerator && !g3d.checkTranslucent(false))
+    if (mad == 0 || !g3d.checkTranslucent(false))
       return;
     if (viewer.areAxesTainted())
       axes.initShape();
@@ -75,22 +75,20 @@ public class AxesRenderer extends FontLineShapeRenderer {
     colixes[2] = viewer.getObjectColix(StateManager.OBJ_AXIS3);
     for (int i = nPoints; --i >= 0;) {
       colix = colixes[i % 3];
-      if (!isGenerator)
-        g3d.setColix(colix);
+      g3d.setColix(colix);
       String label = axisLabels[i + labelPtr];
       if (label != null)
         renderLabel(label, axes.font3d, axisScreens[i].x,
             axisScreens[i].y, axisScreens[i].z);
       if (mad < 0)
-        drawDottedLine(originScreen, axisScreens[i]);
+        g3d.drawDottedLine(originScreen, axisScreens[i]);
       else
-        fillCylinder(Graphics3D.ENDCAPS_FLAT, widthPixels,
+        g3d.fillCylinder(Graphics3D.ENDCAPS_FLAT, widthPixels,
             originScreen, axisScreens[i]);
     }
     if (nPoints == 3) { //a b c
       colix = viewer.getColixBackgroundContrast();
-      if (!isGenerator)
-        g3d.setColix(colix);
+      g3d.setColix(colix);
       renderLabel("0", axes.font3d, originScreen.x, originScreen.y, originScreen.z);
     }
   }
@@ -110,6 +108,6 @@ public class AxesRenderer extends FontLineShapeRenderer {
     }
     int xStrBaseline = x - strWidth / 2;
     int yStrBaseline = y + strAscent / 2;
-    drawString(str, font3d, xStrBaseline, yStrBaseline, z, z);
+    g3d.drawString(str, font3d, xStrBaseline, yStrBaseline, z, z);
   }
 }

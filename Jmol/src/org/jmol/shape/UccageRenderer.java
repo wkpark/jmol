@@ -50,7 +50,7 @@ public class UccageRenderer extends FontLineShapeRenderer {
   protected void render() {
     short mad = viewer.getObjectMad(StateManager.OBJ_UNITCELL);
     colix = viewer.getObjectColix(StateManager.OBJ_UNITCELL);
-    if (mad == 0 || !isGenerator && !g3d.setColix(colix))
+    if (mad == 0 || !g3d.setColix(colix))
         return;
     doLocalize = viewer.getUseNumberLocalization();
     render1(mad);
@@ -72,7 +72,7 @@ public class UccageRenderer extends FontLineShapeRenderer {
     boolean drawAllLines = (viewer.getObjectMad(StateManager.OBJ_AXIS1) == 0 
         || viewer.getAxesScale() < 2);
     render(mad, verticesT, screens, axisPoints, drawAllLines ? 0 : 3);
-    if (!isGenerator && viewer.getDisplayCellParameters() && !cellInfo.isPeriodic())
+    if (viewer.getDisplayCellParameters() && !cellInfo.isPeriodic())
       renderInfo(cellInfo, unitCell);
   }
   
@@ -81,6 +81,8 @@ public class UccageRenderer extends FontLineShapeRenderer {
   }
 
   private void renderInfo(CellInfo cellInfo, UnitCell unitCell) {
+    if (isGenerator)
+      return;
     if (nf == null) {
       nf = NumberFormat.getInstance();
       fid = g3d.getFontFid("Monospaced", 14);

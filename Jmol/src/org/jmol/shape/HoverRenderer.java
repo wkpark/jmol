@@ -42,12 +42,12 @@ public class HoverRenderer extends ShapeRenderer {
       Text text = hover.hoverText;
       text.setText(label);
       text.setXY(atom.screenX, atom.screenY);
-      text.render();
+      text.render(g3d);
     } else if (hover.text != null) {
       Text text = hover.hoverText;
       text.setText(hover.text);
       text.setXY(hover.xy.x, hover.xy.y);
-      text.render();
+      text.render(g3d);
     }
   }
 }

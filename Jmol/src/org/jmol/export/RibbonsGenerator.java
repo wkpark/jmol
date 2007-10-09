@@ -25,49 +25,7 @@
 
 package org.jmol.export;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-
 import org.jmol.shapebio.RibbonsRenderer;
 
 public class RibbonsGenerator extends RibbonsRenderer {
-
-  private _Exporter exporter;
-  
-  public void initializeGenerator(Object exporter, String type, StringBuffer output) {
-    super.initializeGenerator(exporter, type, output);
-    isGenerator = true;
-    this.exporter = (_Exporter)exporter;
-  }
-
-  protected void drawHermite(int tension, Point3i s0, Point3i s1, Point3i s2,
-                             Point3i s3) {
-    exporter.drawHermite(colix, tension, s0, s1, s2, s3);
-  }
-
-  protected void drawHermite(boolean fill, boolean border, int tension,
-                             Point3i s0, Point3i s1, Point3i s2, Point3i s3,
-                             Point3i s4, Point3i s5, Point3i s6, Point3i s7,
-                             int aspectRatio) {
-    exporter.drawHermite(colix, fill, border, tension, s0, s1, s2, s3, s4, s5,
-        s6, s7, aspectRatio);
-  }
-
-  private Point3f ptA = new Point3f();
-  private Point3f ptB = new Point3f();
-
-  protected void fillCylinder(short colixA, short colixB, byte endcaps,
-                              int diameter, int xA, int yA, int zA, int xB, int yB, int zB) {
-    /*
-     * Use the screen points Jmol determines 
-     * 
-     * this also uses the diameter -- fixed at 3 pixels, but will be 0.003 angstroms here.
-     *  
-     */
-    ptA.set(xA, yA, zA);
-    ptB.set(xB, yB, zB);
-    exporter.renderBond(ptA, ptB, colixA, colixB, endcaps, diameter, 1);
-  }
-
-
 }

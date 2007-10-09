@@ -25,27 +25,7 @@
 
 package org.jmol.export;
 
-import javax.vecmath.Point3i;
-
 import org.jmol.shape.*;
 
 public class StarsGenerator extends StarsRenderer {
-
-  private _Exporter exporter;
-  
-  public void initializeGenerator(Object exporter, String type, StringBuffer output) {
-    super.initializeGenerator(exporter, type, output);
-    isGenerator = true;
-    this.exporter = (_Exporter)exporter;
-  }
-
-  Point3i p1 = new Point3i();
-  Point3i p2 = new Point3i();
-  
-  protected void drawLine(int x1, int y1, int z1, int x2, int y2, int z2) {
-    p1.set(x1, y1, z1);
-    p2.set(x2, y2, z2);
-    exporter.drawLine(colix, p1, p2);
-  }
-
 }

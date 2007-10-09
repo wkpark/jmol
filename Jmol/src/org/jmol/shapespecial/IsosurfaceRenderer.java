@@ -34,7 +34,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   private boolean iShowNormals;
   protected boolean iHideBackground;
-  private boolean isPlane;
   protected boolean isBicolorMap;
   protected short backgroundColix;
   protected boolean isTranslucent;
@@ -56,17 +55,12 @@ public class IsosurfaceRenderer extends MeshRenderer {
       if (vertexValues == null || !Float.isNaN(vertexValues[i])
           || imesh.hasGridPoints) {
         viewer.transformPoint(vertices[i], screens[i]);
-        //System.out.println(i + " meshRender " + vertices[i] + screens[i]);
       }
     }
   }
   
   protected void render2() {
     isTranslucent = Graphics3D.isColixTranslucent(imesh.colix);
-    iHideBackground = (isPlane && imesh.hideBackground);
-    if (iHideBackground)
-      backgroundColix = Graphics3D.getColix(viewer.getBackgroundArgb());
-    isPlane = (imesh.jvxlData.jvxlPlane != null);
     isBicolorMap = imesh.jvxlData.isBicolorMap;
     super.render2();
   }
@@ -76,13 +70,14 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   protected void renderPoints() {
     int incr = imesh.vertexIncrement;
+    int diam = (isGenerator ? 20 : 4);
     for (int i = (!imesh.hasGridPoints || imesh.firstRealVertex < 0 ? 0 : imesh.firstRealVertex); i < vertexCount; i += incr) {
       if (vertexValues != null && Float.isNaN(vertexValues[i]) || frontOnly
           && transformedVectors[normixes[i]].z < 0)
         continue;
       if (imesh.vertexColixes != null)
         g3d.setColix(imesh.vertexColixes[i]);
-      g3d.fillSphereCentered(4, screens[i]);
+      g3d.fillSphereCentered(diam, screens[i]);
     }
     if (incr != 3)
       return;
@@ -103,23 +98,16 @@ public class IsosurfaceRenderer extends MeshRenderer {
 
   protected void renderTriangles(boolean fill, boolean iShowTriangles) {
     int[][] polygonIndexes = imesh.polygonIndexes;
-    short colix = imesh.colix;
+    colix = imesh.colix;
     short[] vertexColixes = imesh.vertexColixes;
-    short hideColix = 0;
-    try {
-      hideColix = vertexColixes[imesh.polygonIndexes[0][0]];
-    } catch (Exception e) {
-    }
     g3d.setColix(imesh.colix);
+    if (isGenerator)
+      bsFaces.clear();
     //System.out.println("Isosurface renderTriangle polygoncount = "
     //  + mesh.polygonCount + " screens: " + screens.length + " normixes: "
     //+ normixes.length);
     // two-sided means like a plane, with no front/back distinction
     for (int i = imesh.polygonCount; --i >= 0;) {
-      //if (!mesh.isPolygonDisplayable(i))
-      // continue;
-      //if (i !=20)
-        //continue;
       int[] vertexIndexes = polygonIndexes[i];
       if (vertexIndexes == null)
         continue;
@@ -129,19 +117,6 @@ public class IsosurfaceRenderer extends MeshRenderer {
       short nA = normixes[iA];
       short nB = normixes[iB];
       short nC = normixes[iC];
-/*
-      if ((vertexIndexes[3] & 1) == 1)
-        System.out.println(iA + " " + vertices[iA] + ", "+iB + " "+ vertices[iB]);
-      if ((vertexIndexes[3] & 2) == 2)
-        System.out.println(iB + " " + vertices[iB] + ", "+iC + " "+ vertices[iC]);
-      if ((vertexIndexes[3] & 4) == 4)
-        System.out.println(iC + " " + vertices[iC] + ", "+iA + " "+ vertices[iA]);
-*/
-           
-      //if (frontOnly && (nA < 0 || nB < 0 || nC < 0))
-      //frontOnly = false;
-    //if (frontOnly)
-      
       if (frontOnly && transformedVectors[nA].z < 0
           && transformedVectors[nB].z < 0 && transformedVectors[nC].z < 0)
         continue;
@@ -152,22 +127,14 @@ public class IsosurfaceRenderer extends MeshRenderer {
         colixC = vertexColixes[iC];
         if (isBicolorMap && (colixA != colixB || colixB != colixC))
           continue;
-        //if (iA >90 && iA < 100)
-          //System.out.println("isosurfacemeshrender " + iA + " " + iB + " " + iC + " " + colixA + " " + colixB + " " + colixC + " " + imesh.vertexValues[iA]+screens[iA] + " " + imesh.vertexValues[iB]+screens[iB] + " " + imesh.vertexValues[iC]+screens[iC]);
       } else {
         colixA = colixB = colixC = colix;
       }
-      if (iHideBackground) {
-        if (colixA == hideColix && colixB == hideColix && colixC == hideColix)
-          continue;
-        if (colixA == hideColix)
-          colixA = backgroundColix;
-        if (colixB == hideColix)
-          colixB = backgroundColix;
-        if (colixC == hideColix)
-          colixC = backgroundColix;
-      }
       if (fill) {
+        if (isGenerator) {
+          bsFaces.set(i);
+          continue;
+        }
         if (iShowTriangles) {
           g3d.fillTriangle(screens[iA], colixA, nA, screens[iB], colixB, nB,
               screens[iC], colixC, nC, 0.1f);
@@ -194,6 +161,8 @@ public class IsosurfaceRenderer extends MeshRenderer {
               screens[iC], colixC, check);
       }
     }
+    if (isGenerator && fill)
+     renderExport();
   }
 
   private void renderNormals() {

@@ -28,7 +28,6 @@ package org.jmol.export;
 import java.util.BitSet;
 
 import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
 
 import org.jmol.g3d.Font3D;
 import org.jmol.modelset.Atom;
@@ -163,11 +162,11 @@ public class _VrmlExporter extends _Exporter {
                          int yBaseline, int z, int zSlab) {
   }
 
-  public void fillCylinder(short colix, byte endcaps, int diameter, Point3i screenA,
-                           Point3i screenB) {
+  public void fillCylinder(short colix, byte endcaps, int diameter, Point3f screenA,
+                           Point3f screenB) {
   }
 
-  public void drawDottedLine(short colix, Point3i pointA, Point3i pointB) {
+  public void drawDottedLine(short colix, Point3f pointA, Point3f pointB) {
     //axes
   }
 
@@ -175,7 +174,7 @@ public class _VrmlExporter extends _Exporter {
     //dots
   }
 
-  public void drawLine(short colix, Point3i pointA, Point3i pointB) {
+  public void drawLine(short colix, Point3f pointA, Point3f pointB) {
     //stars
   }
   
@@ -188,7 +187,7 @@ public class _VrmlExporter extends _Exporter {
     //measures
   }
 
-  public void drawDashedLine(short colix, int run, int rise, Point3i ptA, Point3i ptB) {
+  public void drawDashedLine(short colix, int run, int rise, Point3f ptA, Point3f ptB) {
     //measures
   }
 
@@ -208,25 +207,30 @@ public class _VrmlExporter extends _Exporter {
   
   public void fillHermite(short colix, int tension, int diameterBeg,
                           int diameterMid, int diameterEnd,
-                          Point3i s0, Point3i s1, Point3i s2, Point3i s3){
+                          Point3f s0, Point3f s1, Point3f s2, Point3f s3){
     //cartoons, rockets, trace:
   }
   
   public void drawHermite(short colix, int tension,
-                             Point3i s0, Point3i s1, Point3i s2, Point3i s3){
+                             Point3f s0, Point3f s1, Point3f s2, Point3f s3){
     //strands:
   }
 
   public void drawHermite(short colix, boolean fill, boolean border, int tension,
-                            Point3i s0, Point3i s1, Point3i s2, Point3i s3,
-                            Point3i s4, Point3i s5, Point3i s6, Point3i s7,
+                            Point3f s0, Point3f s1, Point3f s2, Point3f s3,
+                            Point3f s4, Point3f s5, Point3f s6, Point3f s7,
                             int aspectRatio) {
     //cartoons, meshRibbons:
   }
            
           
-  public void fillSphereCentered(short colix, int diameter, Point3i pt) {
+  public void fillSphereCentered(short colix, int diameter, Point3f pt) {
     //rockets:    
+  }
+
+  public void plotText(int x, int y, int z, short colix, short bgcolix, String text, Font3D font3d) {
+    // TODO
+    
   }
 
 }

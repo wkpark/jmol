@@ -47,10 +47,10 @@ public class BackboneRenderer extends BioShapeRenderer {
       short colixB = Graphics3D.getColixInherited(colixes[i + 1], atomB.getColix());
       mad = mads[i];
       if (mad < 0) {
-        drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
+        g3d.drawLine(colixA, colixB, xA, yA, zA, xB, yB, zB);
       } else {
         int width = viewer.scaleToScreen((zA + zB) / 2, mad);
-        fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_SPHERICAL, width,
+        g3d.fillCylinder(colixA, colixB, Graphics3D.ENDCAPS_SPHERICAL, width,
             xA, yA, zA, xB, yB, zB);
       }
     }

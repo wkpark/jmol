@@ -39,11 +39,7 @@ public class EchoRenderer extends ShapeRenderer {
         viewer.transformPoint(t.xyz, pt);
         t.setXYZs(pt.x, pt.y, pt.z, pt.z);
       }
-      renderText(t);
+      t.render(g3d);
     }
   }
-  
-  protected void renderText(Text t) {
-    t.render();
-  }  
 }

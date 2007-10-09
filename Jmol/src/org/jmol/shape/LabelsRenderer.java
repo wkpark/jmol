@@ -87,7 +87,7 @@ public class LabelsRenderer extends ShapeRenderer {
       if (zBox < 1)
         zBox = 1;
 
-      boolean isSimple = (!isGenerator && textAlign == 0 && label.indexOf("|") < 0 
+      boolean isSimple = (textAlign == 0 && label.indexOf("|") < 0 
           && label.indexOf("<su") < 0);
 
       Text text = (isSimple ? null : labels.getLabel(i));
@@ -96,7 +96,7 @@ public class LabelsRenderer extends ShapeRenderer {
         text.setBgColix(bgcolix);
         text.setXYZs(atom.screenX, atom.screenY - 8, zBox, zSlab);
         text.setPointer(pointer);
-        renderText(text);
+        text.render(g3d);
         continue;
       }
       if (fid != fidPrevious || ascent == 0) {
@@ -125,13 +125,8 @@ public class LabelsRenderer extends ShapeRenderer {
         labels.putLabel(i, text);
         text.setPointer(pointer);
         text.setOffset(offset);
-        renderText(text);
+        text.render(g3d);
       }
     }
   }
-    
-  protected void renderText(Text t) {
-    t.render();
-  }  
-
 }

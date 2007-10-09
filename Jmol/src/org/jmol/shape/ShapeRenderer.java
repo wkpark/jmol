@@ -24,7 +24,7 @@
 
 package org.jmol.shape;
 
-import org.jmol.g3d.Graphics3D;
+import org.jmol.api.JmolRendererInterface;
 import org.jmol.modelset.ModelSet;
 import org.jmol.viewer.JmolConstants;
 import org.jmol.viewer.Viewer;
@@ -33,21 +33,39 @@ import org.jmol.viewer.Viewer;
 public abstract class ShapeRenderer {
 
   protected Viewer viewer;
+  protected JmolRendererInterface g3d;
+  //Rectangle rectClip; //not implemented
+  protected ModelSet modelSet;
+  protected Shape shape;
+
   protected int myVisibilityFlag;
   protected int shapeID;
+  
+  //working values, for export generators
+  protected short colix;
+  protected short mad;
+  protected short madBeg;
+  protected short madMid;
+  protected short madEnd;
   protected boolean isGenerator;
-  protected String generatorType;
-  protected StringBuffer generatorOutput;
 
-  public void initializeGenerator(Object exporter, String type, StringBuffer output) {
-    
-    //Object exporter is only used by org.jmol.export extentions
-    
-    generatorType = type;
-    generatorOutput = output;
+  public void setGenerator(boolean isGenerator) {
+    this.isGenerator = isGenerator;
   }
 
-  public final void setViewerG3dShapeID(Viewer viewer, Graphics3D g3d, int shapeID) {
+    public short getMad(int which) {
+    switch (which) {
+    case 1:
+      return madBeg;
+    case 2:
+      return madMid;
+    case 3:
+      return madEnd;
+    }
+    return mad;
+  }
+
+  public final void setViewerG3dShapeID(Viewer viewer, JmolRendererInterface g3d, int shapeID) {
     this.viewer = viewer;
     this.g3d = g3d;
     this.shapeID = shapeID;
@@ -58,16 +76,7 @@ public abstract class ShapeRenderer {
   protected void initRenderer() {
   }
 
-  protected Graphics3D g3d;
-  //Rectangle rectClip; //not implemented
-  protected ModelSet modelSet;
-  protected Shape shape;
-
-  //working values, for export generators
-  protected short colix;
-  protected short mad;
-
-  public void render(Graphics3D g3d, ModelSet modelSet, Shape shape) { //, Rectangle rectClip
+  public void render(JmolRendererInterface g3d, ModelSet modelSet, Shape shape) { //, Rectangle rectClip
     this.g3d = g3d;
     //this.rectClip = rectClip; //not implemented -- could be a place for optimization
     this.modelSet = modelSet;

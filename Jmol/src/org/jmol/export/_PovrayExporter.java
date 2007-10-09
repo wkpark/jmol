@@ -289,10 +289,10 @@ public class _PovrayExporter extends _Exporter {
   }
 
   public void fillCylinder(short colix, byte endcaps, int diameter, 
-                           Point3i screenA, Point3i screenB) {
+                           Point3f screenA, Point3f screenB) {
   }
 
-  public void drawDottedLine(short colix, Point3i pointA, Point3i pointB) {
+  public void drawDottedLine(short colix, Point3f pointA, Point3f pointB) {
     //axes
   }
 
@@ -300,7 +300,7 @@ public class _PovrayExporter extends _Exporter {
     //dots
   }
 
-  public void drawLine(short colix, Point3i pointA, Point3i pointB) {
+  public void drawLine(short colix, Point3f pointA, Point3f pointB) {
     //stars
   }
   
@@ -314,7 +314,7 @@ public class _PovrayExporter extends _Exporter {
    // System.out.println("pov drawPixel "+this);
   }
 
-  public void drawDashedLine(short colix, int run, int rise, Point3i ptA, Point3i ptB) {
+  public void drawDashedLine(short colix, int run, int rise, Point3f ptA, Point3f ptB) {
     //measures
     //System.out.println("pov drawDashedLine == measures "+this);
   }
@@ -337,28 +337,33 @@ public class _PovrayExporter extends _Exporter {
   
   public void fillHermite(short colix, int tension, int diameterBeg,
                           int diameterMid, int diameterEnd,
-                          Point3i s0, Point3i s1, Point3i s2, Point3i s3){
+                          Point3f s0, Point3f s1, Point3f s2, Point3f s3){
     //cartoons, rockets, trace:
     //System.out.println("pov fileHermite cartoons rockets trace "+this);
   }
   
   public void drawHermite(short colix, int tension,
-                             Point3i s0, Point3i s1, Point3i s2, Point3i s3){
+                             Point3f s0, Point3f s1, Point3f s2, Point3f s3){
     //strands, meshribbon:
     //System.out.println("pov drawhermite "+this);
   }
 
   public void drawHermite(short colix, boolean fill, boolean border, int tension,
-                            Point3i s0, Point3i s1, Point3i s2, Point3i s3,
-                            Point3i s4, Point3i s5, Point3i s6, Point3i s7,
+                            Point3f s0, Point3f s1, Point3f s2, Point3f s3,
+                            Point3f s4, Point3f s5, Point3f s6, Point3f s7,
                             int aspectRatio) {
     //cartoons, meshRibbons:
     //System.out.println("pov draw hermite -- cartoons, meshribbons "+this);
   }
            
           
-  public void fillSphereCentered(short colix, int diameter, Point3i pt) {
+  public void fillSphereCentered(short colix, int diameter, Point3f pt) {
     //rockets:    
+  }
+
+  public void plotText(int x, int y, int z, short colix, short bgcolix, String text, Font3D font3d) {
+    // TODO
+    
   }
 
 

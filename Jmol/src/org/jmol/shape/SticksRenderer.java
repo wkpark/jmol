@@ -112,7 +112,7 @@ public class SticksRenderer extends ShapeRenderer {
       return;
     dx = xB - xA;
     dy = yB - yA;
-    width = viewer.scaleToScreen((zA + zB) / 2, mad);
+    width = (isGenerator ? mad : viewer.scaleToScreen((zA + zB) / 2, mad));
     bondOrder = getRenderBondOrder(order);
     switch (bondOrder) {
     case 1:
@@ -283,9 +283,6 @@ public class SticksRenderer extends ShapeRenderer {
 
   private void renderTriangle(Bond bond) {
     // for now, always solid, always opaque
-    if (isGenerator)
-      return;     // actually, not implemented
-    
     if (!g3d.checkTranslucent(false))
       return;
     int mag2d = (int)Math.sqrt(dx*dx + dy*dy);

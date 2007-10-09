@@ -25,39 +25,7 @@
 
 package org.jmol.export;
 
-import javax.vecmath.Point3f;
-import javax.vecmath.Point3i;
-
 import org.jmol.shapespecial.*;
 
 public class DipolesGenerator extends DipolesRenderer {
-
-  private _Exporter exporter;
-  
-  public void initializeGenerator(Object exporter, String type, StringBuffer output) {
-    super.initializeGenerator(exporter, type, output);
-    isGenerator = true;
-    this.exporter = (_Exporter)exporter;
-  }
-
-  protected void fillCylinder(byte endcaps, int diameter, Point3i screenA,
-                              Point3i screenB) {
-    exporter.fillCylinder(colix, endcaps, mad, screenA, screenB);
-  }
-
-  protected void fillCylinderBits(byte endcaps, int diameter, Point3f screenA,
-                                  Point3f screenB) {
-    exporter.renderBond(screenA, screenB, colix, colix, endcaps, mad, 1);
-  }
-
-  private Point3f ptA = new Point3f();
-  private Point3f ptB = new Point3f();
-
-  protected void fillCone(byte endcap, int diameter,
-                          Point3i screenBase, Point3i screenTip) {
-    ptA.set(screenBase.x, screenBase.y, screenBase.z);
-    ptB.set(screenTip.x, screenTip.y, screenTip.z);
-    exporter.fillCone(colix, endcap, mad, ptA, ptB);
-   }
-
 }

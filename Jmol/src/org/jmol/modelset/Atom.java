@@ -116,8 +116,10 @@ final public class Atom extends Point3fi implements Tuple {
     this.atomSite = atomSite;
     this.atomIndex = atomIndex;
     this.atomicAndIsotopeNumber = atomicAndIsotopeNumber;
+    setBFactor(modelSet, bfactor);
     setFormalCharge(formalCharge);
     setOccupancy(modelSet, occupancy);
+    setPartialCharge(modelSet, bfactor);
     if (Float.isNaN(vibrationX))
       setVibrationVector(modelSet, vibrationX, vibrationY, vibrationZ);
 
@@ -125,7 +127,7 @@ final public class Atom extends Point3fi implements Tuple {
     this.alternateLocationID = (byte)alternateLocationID;
     this.radius = radius;
     setMadAtom(mad);
-    this.x = x; this.y = y; this.z = z;
+    set(x, y, z);
     if (isHetero)
       formalChargeAndFlags |= IS_HETERO_FLAG;
 

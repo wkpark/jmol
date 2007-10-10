@@ -39,6 +39,9 @@ public class Group {
   int selectedIndex;
   protected int firstAtomIndex = -1;
   protected int lastAtomIndex;
+  private final static int SEQUENCE_NUMBER_FLAG = 0x80;
+  private final static int INSERTION_CODE_MASK = 0x3F; //7-bit character codes, please!
+  private final static int SEQUENCE_NUMBER_SHIFT = 8;
   
   public int getFirstAtomIndex(){
     return firstAtomIndex;
@@ -242,7 +245,7 @@ public class Group {
   ////////////////////////////////////////////////////////////////
 
   public final int getResno() {
-    return (seqcode == Integer.MIN_VALUE ? 0 : seqcode >> 8); 
+    return (seqcode == Integer.MIN_VALUE ? 0 : seqcode >> SEQUENCE_NUMBER_SHIFT); 
   }
 
   public final int getSeqcode() {
@@ -250,7 +253,20 @@ public class Group {
   }
 
   public final int getSeqNumber() {
-    return seqcode >> 8;
+    return seqcode >> SEQUENCE_NUMBER_SHIFT;
+  }
+
+  public final static int getSequenceNumber(int seqcode) {
+    return (haveSequenceNumber(seqcode)? seqcode >> SEQUENCE_NUMBER_SHIFT 
+        : Integer.MAX_VALUE);
+  }
+  
+  public final static int getInsertionCodeValue(int seqcode) {
+    return (seqcode & INSERTION_CODE_MASK);
+  }
+  
+  public final static boolean haveSequenceNumber(int seqcode) {
+    return ((seqcode & SEQUENCE_NUMBER_FLAG) != 0);
   }
 
   public final String getSeqcodeString() {
@@ -268,27 +284,29 @@ public class Group {
         Logger.warn("unrecognized insertionCode:" + insertionCode);
       insertionCode = '\0';
     }
-    return (sequenceNumber << 8) + insertionCode;
+    return ((sequenceNumber << SEQUENCE_NUMBER_SHIFT) | SEQUENCE_NUMBER_FLAG)
+        + insertionCode;
   }
 
   public static String getSeqcodeString(int seqcode) {
     if (seqcode == Integer.MIN_VALUE)
       return null;
-    return (seqcode & 0xFF) == 0
-      ? "" + (seqcode >> 8)
-      : "" + (seqcode >> 8) + '^' + (char)(seqcode & 0xFF);
+    return (seqcode & INSERTION_CODE_MASK) == 0
+      ? "" + (seqcode >> SEQUENCE_NUMBER_SHIFT)
+      : "" + (seqcode >> SEQUENCE_NUMBER_SHIFT) 
+           + '^' + (char)(seqcode & INSERTION_CODE_MASK);
   }
 
   public char getInsertionCode() {
     if (seqcode == Integer.MIN_VALUE)
       return '\0';
-    return (char)(seqcode & 0xFF);
+    return (char)(seqcode & INSERTION_CODE_MASK);
   }
   
   public static char getInsertionCode(int seqcode) {
     if (seqcode == Integer.MIN_VALUE)
       return '\0';
-    return (char)(seqcode & 0xFF);
+    return (char)(seqcode & INSERTION_CODE_MASK);
   }
   
   public final void selectAtoms(BitSet bs) {

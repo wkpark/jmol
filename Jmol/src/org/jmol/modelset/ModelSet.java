@@ -2731,15 +2731,17 @@ abstract public class ModelSet {
 
   private BitSet getSpecSeqcode(int seqcode, boolean returnEmpty) {
     BitSet bs = new BitSet();
-    int seqNum = (seqcode >> 8);
+    int seqNum = Group.getSequenceNumber(seqcode);
+    boolean haveSeqNumber = (seqNum != Integer.MAX_VALUE);
     boolean isEmpty = true;
     char insCode = Group.getInsertionCode(seqcode);
     switch (insCode) {
     case '?':
       for (int i = atomCount; --i >= 0;) {
         int atomSeqcode = atoms[i].getSeqcode();
-        if ((seqNum == 0 || seqNum == (atomSeqcode >> 8))
-            && (atomSeqcode & 0xFF) != 0) {
+        if (!haveSeqNumber 
+            || seqNum == Group.getSequenceNumber(atomSeqcode)
+            && Group.getInsertionCodeValue(atomSeqcode) != 0) {
           bs.set(i);
           isEmpty = false;
         }
@@ -2748,9 +2750,9 @@ abstract public class ModelSet {
     default:
       for (int i = atomCount; --i >= 0;) {
         int atomSeqcode = atoms[i].getSeqcode();
-        if (seqcode == atomSeqcode || seqNum == 0
-            && seqcode == (atomSeqcode & 0xFF) || insCode == '*'
-            && seqNum == (atomSeqcode >> 8)) {
+        if (seqcode == atomSeqcode || 
+            !haveSeqNumber && seqcode == Group.getInsertionCodeValue(atomSeqcode) 
+            || insCode == '*' && seqNum == Group.getSequenceNumber(atomSeqcode)) {
           bs.set(i);
           isEmpty = false;
         }

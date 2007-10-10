@@ -1756,6 +1756,7 @@ abstract class TransformManager {
       sb.append("; rotate z");
       truncate2(sb, rZ2);
     }
+    sb.append(";");
     addZoomTranslationNavigationText(sb);
     return sb.toString();
   }

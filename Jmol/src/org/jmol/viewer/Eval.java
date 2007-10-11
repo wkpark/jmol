@@ -7837,9 +7837,14 @@ class Eval { //implements Runnable {
     case Token.identifier:
     case Token.string:
       fileName = parameterAsString(pt);
-      //write filename.xxx  gets separated as filename .spt
-      //write isosurface filename.xxx also 
-      if (fileName.charAt(0) == '.' && (pt == 2 || pt == 3)) {
+      if (pt == statementLength - 3 && tokAt(pt + 1) == Token.dot) {
+        //write filename.xxx  gets separated as filename .spt
+        //write isosurface filename.xxx also 
+        fileName += "." + parameterAsString(pt + 2);
+      }
+      if (type != "VAR" && pt == 1)
+        type = "image";
+      else if (fileName.charAt(0) == '.' && (pt == 2 || pt == 3)) {
         fileName = parameterAsString(pt - 1) + fileName;
         if (type != "VAR" && pt == 2)
           type = "image";
